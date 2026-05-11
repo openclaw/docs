@@ -1,40 +1,40 @@
 ---
 read_when:
     - Je wilt Gateway-plugins of compatibele bundels installeren of beheren
-    - Je wilt laadfouten van Plugins debuggen
+    - Je wilt Plugin-laadfouten debuggen
 sidebarTitle: Plugins
 summary: CLI-referentie voor `openclaw plugins` (list, install, marketplace, uninstall, enable/disable, doctor)
 title: Plugins
 x-i18n:
-    generated_at: "2026-05-10T19:29:33Z"
+    generated_at: "2026-05-11T20:27:17Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c6afa3ff12b3672d321d16c831672340ccde70b153671f2c328f578b5c66348b
+    source_hash: 7ad7d6341d6c2325bfef966b00ca1956f8b337fd0ffe40dba3384ed7eefd1285
     source_path: cli/plugins.md
     workflow: 16
 ---
 
-Beheer Gateway-plugins, hook-packs en compatibele bundels.
+Beheer Gateway plugins, hookpakketten en compatibele bundels.
 
 <CardGroup cols={2}>
-  <Card title="Plugin-systeem" href="/nl/tools/plugin">
-    Handleiding voor eindgebruikers voor het installeren, inschakelen en oplossen van problemen met plugins.
+  <Card title="Plugin system" href="/nl/tools/plugin">
+    Eindgebruikersgids voor het installeren, inschakelen en oplossen van problemen met plugins.
   </Card>
-  <Card title="Plugins beheren" href="/nl/plugins/manage-plugins">
+  <Card title="Manage plugins" href="/nl/plugins/manage-plugins">
     Snelle voorbeelden voor installeren, weergeven, bijwerken, verwijderen en publiceren.
   </Card>
-  <Card title="Plugin-bundels" href="/nl/plugins/bundles">
+  <Card title="Plugin bundles" href="/nl/plugins/bundles">
     Compatibiliteitsmodel voor bundels.
   </Card>
-  <Card title="Plugin-manifest" href="/nl/plugins/manifest">
+  <Card title="Plugin manifest" href="/nl/plugins/manifest">
     Manifestvelden en configuratieschema.
   </Card>
-  <Card title="Beveiliging" href="/nl/gateway/security">
-    Beveiligingshardening voor plugin-installaties.
+  <Card title="Security" href="/nl/gateway/security">
+    Beveiligingsverharding voor Plugin-installaties.
   </Card>
 </CardGroup>
 
-## Commando's
+## Opdrachten
 
 ```bash
 openclaw plugins list
@@ -62,20 +62,18 @@ openclaw plugins marketplace list <marketplace>
 openclaw plugins marketplace list <marketplace> --json
 ```
 
-Voor onderzoek naar trage installatie, inspectie, verwijdering of registry-vernieuwing voer je het
-commando uit met `OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1`. De trace schrijft fasetimings
-naar stderr en houdt JSON-uitvoer parseerbaar. Zie [Debuggen](/nl/help/debugging#plugin-lifecycle-trace).
+Voor onderzoek naar traag installeren, inspecteren, verwijderen of vernieuwen van de registry voer je de opdracht uit met `OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1`. De trace schrijft fasetimings naar stderr en houdt JSON-uitvoer parsebaar. Zie [Foutopsporing](/nl/help/debugging#plugin-lifecycle-trace).
 
 <Note>
-In Nix-modus (`OPENCLAW_NIX_MODE=1`) zijn mutators voor de plugin-levenscyclus uitgeschakeld. Gebruik voor deze installatie de Nix-bron in plaats van `plugins install`, `plugins update`, `plugins uninstall`, `plugins enable` of `plugins disable`; gebruik voor nix-openclaw de agent-first [Snelstart](https://github.com/openclaw/nix-openclaw#quick-start).
+In Nix-modus (`OPENCLAW_NIX_MODE=1`) zijn mutators voor de Plugin-levenscyclus uitgeschakeld. Gebruik in plaats van `plugins install`, `plugins update`, `plugins uninstall`, `plugins enable` of `plugins disable` de Nix-bron voor deze installatie; gebruik voor nix-openclaw de agent-first [Quick Start](https://github.com/openclaw/nix-openclaw#quick-start).
 </Note>
 
 <Note>
-Meegeleverde plugins worden met OpenClaw geleverd. Sommige zijn standaard ingeschakeld (bijvoorbeeld meegeleverde modelproviders, meegeleverde spraakproviders en de meegeleverde browserplugin); andere vereisen `plugins enable`.
+Gebundelde plugins worden met OpenClaw meegeleverd. Sommige zijn standaard ingeschakeld (bijvoorbeeld gebundelde modelproviders, gebundelde spraakproviders en de gebundelde browserplugin); andere vereisen `plugins enable`.
 
-Native OpenClaw-plugins moeten `openclaw.plugin.json` leveren met een inline JSON Schema (`configSchema`, zelfs als het leeg is). Compatibele bundels gebruiken in plaats daarvan hun eigen bundelmanifesten.
+Native OpenClaw plugins moeten `openclaw.plugin.json` leveren met een inline JSON Schema (`configSchema`, zelfs als dit leeg is). Compatibele bundels gebruiken in plaats daarvan hun eigen bundelmanifesten.
 
-`plugins list` toont `Format: openclaw` of `Format: bundle`. Uitvoer van uitgebreide lijsten/info toont ook het bundel-subtype (`codex`, `claude` of `cursor`) plus gedetecteerde bundelcapaciteiten.
+`plugins list` toont `Format: openclaw` of `Format: bundle`. Uitgebreide uitvoer van list/info toont ook het bundelsubtype (`codex`, `claude` of `cursor`) plus gedetecteerde bundelmogelijkheden.
 </Note>
 
 ### Installeren
@@ -97,94 +95,84 @@ openclaw plugins install <plugin> --marketplace <name>  # marketplace (explicit)
 openclaw plugins install <plugin> --marketplace https://github.com/<owner>/<repo>
 ```
 
-Maintainers die installaties tijdens setup testen, kunnen automatische plugin-installatiebronnen
-overschrijven met bewaakte omgevingsvariabelen. Zie
-[Overschrijvingen voor plugin-installatie](/plugins/install-overrides).
+Onderhouders die setup-time-installaties testen, kunnen automatische Plugin-installatiebronnen overschrijven met afgeschermde omgevingsvariabelen. Zie [Overschrijvingen voor Plugin-installaties](/nl/plugins/install-overrides).
 
 <Warning>
-Kale pakketnamen installeren tijdens de launch-cutover standaard vanuit npm. Gebruik `clawhub:<package>` voor ClawHub. Behandel plugin-installaties alsof je code uitvoert. Geef de voorkeur aan vastgepinde versies.
+Kale pakketnamen installeren tijdens de launch-cutover standaard vanaf npm. Gebruik `clawhub:<package>` voor ClawHub. Behandel Plugin-installaties alsof je code uitvoert. Geef de voorkeur aan vastgezette versies.
 </Warning>
 
-`plugins search` bevraagt ClawHub op installeerbare plugin-pakketten en drukt
-pakketnamen af die klaar zijn voor installatie. Het doorzoekt code-plugin- en bundle-plugin-pakketten,
-geen skills. Gebruik `openclaw skills search` voor ClawHub-skills.
+`plugins search` bevraagt ClawHub op installeerbare Plugin-pakketten en drukt pakketnamen af die direct te installeren zijn. Het zoekt code-plugin- en bundle-plugin-pakketten, geen Skills. Gebruik `openclaw skills search` voor ClawHub Skills.
 
 <Note>
-ClawHub is het primaire distributie- en ontdekkingsoppervlak voor de meeste plugins. Npm
-blijft een ondersteunde fallback en direct-installatiepad. Plugin-pakketten van OpenClaw
-`@openclaw/*` worden weer op npm gepubliceerd; zie de huidige lijst
-op [npmjs.com/org/openclaw](https://www.npmjs.com/org/openclaw) of de
-[plugin-inventaris](/nl/plugins/plugin-inventory). Stabiele installaties gebruiken `latest`.
-Installaties en updates in het bètakanaal geven de voorkeur aan de npm `beta` dist-tag wanneer die tag
-beschikbaar is, en vallen daarna terug op `latest`.
+ClawHub is het primaire distributie- en ontdekkingsoppervlak voor de meeste plugins. Npm blijft een ondersteunde fallback en direct-installatiepad. OpenClaw-eigen `@openclaw/*` Plugin-pakketten worden weer op npm gepubliceerd; zie de huidige lijst op [npmjs.com/org/openclaw](https://www.npmjs.com/org/openclaw) of de [Plugin-inventaris](/nl/plugins/plugin-inventory). Stabiele installaties gebruiken `latest`. Installaties en updates via het betakanaal geven de voorkeur aan de npm `beta` dist-tag wanneer die tag beschikbaar is, en vallen daarna terug op `latest`.
 </Note>
 
 <AccordionGroup>
-  <Accordion title="Config-includes en reparatie van ongeldige configuratie">
-    Als je `plugins`-sectie wordt ondersteund door een single-file `$include`, schrijven `plugins install/update/enable/disable/uninstall` door naar dat included bestand en laten ze `openclaw.json` ongemoeid. Root-includes, include-arrays en includes met sibling-overrides falen gesloten in plaats van te flattenen. Zie [Config-includes](/nl/gateway/configuration) voor de ondersteunde vormen.
+  <Accordion title="Config includes and invalid-config repair">
+    Als je `plugins`-sectie wordt ondersteund door een single-file `$include`, schrijven `plugins install/update/enable/disable/uninstall` door naar dat opgenomen bestand en laten ze `openclaw.json` ongemoeid. Root-includes, include-arrays en includes met sibling-overrides falen gesloten in plaats van te flattenen. Zie [Config includes](/nl/gateway/configuration) voor de ondersteunde vormen.
 
-    Als de configuratie ongeldig is tijdens installatie, faalt `plugins install` normaal gesproken gesloten en wordt je gevraagd eerst `openclaw doctor --fix` uit te voeren. Tijdens het opstarten en hot reloaden van de Gateway faalt ongeldige plugin-configuratie gesloten zoals elke andere ongeldige configuratie; `openclaw doctor --fix` kan de ongeldige plugin-vermelding in quarantaine plaatsen. De enige gedocumenteerde uitzondering tijdens installatie is een smal herstelpad voor meegeleverde plugins voor plugins die expliciet kiezen voor `openclaw.install.allowInvalidConfigRecovery`.
-
-  </Accordion>
-  <Accordion title="--force en opnieuw installeren versus bijwerken">
-    `--force` hergebruikt het bestaande installatiedoel en overschrijft een al geinstalleerde plugin of hook-pack ter plaatse. Gebruik dit wanneer je bewust dezelfde id opnieuw installeert vanuit een nieuw lokaal pad, archief, ClawHub-pakket of npm-artefact. Voor routinematige upgrades van een al gevolgde npm-plugin geef je de voorkeur aan `openclaw plugins update <id-or-npm-spec>`.
-
-    Als je `plugins install` uitvoert voor een plugin-id die al is geinstalleerd, stopt OpenClaw en verwijst het je naar `plugins update <id-or-npm-spec>` voor een normale upgrade, of naar `plugins install <package> --force` wanneer je de huidige installatie echt vanuit een andere bron wilt overschrijven.
+    Als de configuratie ongeldig is tijdens installatie, faalt `plugins install` normaal gesproken gesloten en zegt het dat je eerst `openclaw doctor --fix` moet uitvoeren. Tijdens Gateway-startup en hot reload faalt ongeldige Plugin-configuratie gesloten zoals elke andere ongeldige configuratie; `openclaw doctor --fix` kan de ongeldige Plugin-vermelding in quarantaine plaatsen. De enige gedocumenteerde install-time-uitzondering is een smal herstelpad voor gebundelde plugins voor plugins die expliciet kiezen voor `openclaw.install.allowInvalidConfigRecovery`.
 
   </Accordion>
-  <Accordion title="--pin-scope">
-    `--pin` geldt alleen voor npm-installaties. Het wordt niet ondersteund met `git:`-installaties; gebruik een expliciete git-ref zoals `git:github.com/acme/plugin@v1.2.3` wanneer je een vastgepinde bron wilt. Het wordt niet ondersteund met `--marketplace`, omdat marketplace-installaties marketplace-bronmetadata bewaren in plaats van een npm-spec.
+  <Accordion title="--force and reinstall vs update">
+    `--force` hergebruikt het bestaande installatiedoel en overschrijft een al geinstalleerde Plugin of hookpakket ter plekke. Gebruik dit wanneer je bewust dezelfde id opnieuw installeert vanaf een nieuw lokaal pad, archief, ClawHub-pakket of npm-artefact. Geef voor routine-upgrades van een al gevolgde npm-Plugin de voorkeur aan `openclaw plugins update <id-or-npm-spec>`.
+
+    Als je `plugins install` uitvoert voor een Plugin-id die al is geinstalleerd, stopt OpenClaw en wijst het je op `plugins update <id-or-npm-spec>` voor een normale upgrade, of op `plugins install <package> --force` wanneer je de huidige installatie echt vanuit een andere bron wilt overschrijven.
+
+  </Accordion>
+  <Accordion title="--pin scope">
+    `--pin` geldt alleen voor npm-installaties. Het wordt niet ondersteund met `git:`-installaties; gebruik een expliciete git-ref zoals `git:github.com/acme/plugin@v1.2.3` wanneer je een vastgezette bron wilt. Het wordt niet ondersteund met `--marketplace`, omdat marketplace-installaties marketplace-bronmetadata bewaren in plaats van een npm-spec.
   </Accordion>
   <Accordion title="--dangerously-force-unsafe-install">
-    `--dangerously-force-unsafe-install` is een break-glass-optie voor fout-positieven in de ingebouwde scanner voor gevaarlijke code. Hiermee kan de installatie doorgaan, zelfs wanneer de ingebouwde scanner `critical`-bevindingen rapporteert, maar het omzeilt **niet** beleidsblokkades van plugin-`before_install`-hooks en omzeilt **geen** scanfouten.
+    `--dangerously-force-unsafe-install` is een break-glass-optie voor false positives in de ingebouwde scanner voor gevaarlijke code. Hiermee kan de installatie doorgaan, zelfs wanneer de ingebouwde scanner `critical`-bevindingen rapporteert, maar dit omzeilt **niet** de beleidsblokkades van Plugin-`before_install`-hooks en omzeilt **niet** scanfouten.
 
-    Deze CLI-flag geldt voor plugin-installatie-/updateflows. Door de Gateway ondersteunde installaties van skill-afhankelijkheden gebruiken de bijpassende aanvraagoverride `dangerouslyForceUnsafeInstall`, terwijl `openclaw skills install` een aparte download-/installatieflow voor ClawHub-skills blijft.
+    Deze CLI-vlag geldt voor Plugin-installatie-/updateflows. Gateway-ondersteunde Skills-afhankelijkheidsinstallaties gebruiken de bijbehorende aanvraagoverride `dangerouslyForceUnsafeInstall`, terwijl `openclaw skills install` een aparte download-/installflow voor ClawHub Skills blijft.
 
-    Als een plugin die je op ClawHub hebt gepubliceerd wordt geblokkeerd door een registryscan, gebruik dan de publisherstappen in [ClawHub](/nl/clawhub/security).
-
-  </Accordion>
-  <Accordion title="Hook-packs en npm-specs">
-    `plugins install` is ook het installatieoppervlak voor hook-packs die `openclaw.hooks` in `package.json` blootstellen. Gebruik `openclaw hooks` voor gefilterde zichtbaarheid van hooks en inschakeling per hook, niet voor pakketinstallatie.
-
-    Npm-specs zijn **alleen registry** (pakketnaam + optionele **exacte versie** of **dist-tag**). Git-/URL-/file-specs en semver-ranges worden geweigerd. Afhankelijkheidsinstallaties worden projectlokaal uitgevoerd met `--ignore-scripts` voor veiligheid, zelfs wanneer je shell globale npm-installatie-instellingen heeft. Beheerde npm-roots voor plugins erven OpenClaw's npm-`overrides` op pakketniveau, zodat hostbeveiligingspinnen ook gelden voor gehoste plugin-afhankelijkheden.
-
-    Gebruik `npm:<package>` wanneer je npm-resolutie expliciet wilt maken. Kale pakketspecs installeren tijdens de launch-cutover ook direct vanuit npm.
-
-    Kale specs en `@latest` blijven op het stabiele spoor. OpenClaw-correctieversies met datumstempel zoals `2026.5.3-1` zijn stabiele releases voor deze controle. Als npm een van beide naar een prerelease resolveert, stopt OpenClaw en vraagt het je expliciet in te stemmen met een prerelease-tag zoals `@beta`/`@rc` of een exacte prereleaseversie zoals `@1.2.3-beta.4`.
-
-    Als een kale installatiespec overeenkomt met een officiele plugin-id (bijvoorbeeld `diffs`), installeert OpenClaw de catalogusvermelding direct. Gebruik een expliciete scoped spec (bijvoorbeeld `@scope/diffs`) om een npm-pakket met dezelfde naam te installeren.
+    Als een Plugin die je op ClawHub hebt gepubliceerd wordt geblokkeerd door een registryscan, gebruik dan de publicatiestappen in [ClawHub](/nl/clawhub/security).
 
   </Accordion>
-  <Accordion title="Git-repositories">
-    Gebruik `git:<repo>` om direct vanuit een git-repository te installeren. Ondersteunde vormen zijn onder andere `git:github.com/owner/repo`, `git:owner/repo`, volledige `https://`-, `ssh://`-, `git://`-, `file://`- en `git@host:owner/repo.git`-clone-URL's. Voeg `@<ref>` of `#<ref>` toe om voor installatie een branch, tag of commit uit te checken.
+  <Accordion title="Hook packs and npm specs">
+    `plugins install` is ook het installatieoppervlak voor hookpakketten die `openclaw.hooks` in `package.json` beschikbaar stellen. Gebruik `openclaw hooks` voor gefilterde zichtbaarheid van hooks en inschakeling per hook, niet voor pakketinstallatie.
 
-    Git-installaties clonen naar een tijdelijke directory, checken de gevraagde ref uit wanneer die aanwezig is, en gebruiken daarna de normale installer voor plugin-directories. Dat betekent dat manifestvalidatie, scannen op gevaarlijke code, installatiewerk van package managers en installatierecords zich gedragen zoals bij npm-installaties. Vastgelegde git-installaties bevatten de bron-URL/ref plus de opgeloste commit zodat `openclaw plugins update` de bron later opnieuw kan resolven.
+    Npm-specs zijn **alleen registry** (pakketnaam + optionele **exacte versie** of **dist-tag**). Git-/URL-/file-specs en semver-ranges worden geweigerd. Afhankelijkheidsinstallaties draaien project-lokaal met `--ignore-scripts` voor veiligheid, zelfs wanneer je shell globale npm-installatie-instellingen heeft. Beheerde npm-roots van plugins erven OpenClaw's npm `overrides` op pakketniveau, zodat hostbeveiligingspins ook gelden voor gehesen Plugin-afhankelijkheden.
 
-    Gebruik na installatie vanuit git `openclaw plugins inspect <id> --runtime --json` om runtimeregistraties te verifieren, zoals gateway-methoden en CLI-commando's. Als de plugin een CLI-root heeft geregistreerd met `api.registerCli`, voer dat commando dan rechtstreeks uit via de OpenClaw-root-CLI, bijvoorbeeld `openclaw demo-plugin ping`.
+    Gebruik `npm:<package>` wanneer je npm-resolutie expliciet wilt maken. Kale pakketspecs installeren tijdens de launch-cutover ook rechtstreeks vanaf npm.
+
+    Kale specs en `@latest` blijven op het stabiele spoor. OpenClaw-correctieversies met datumstempel, zoals `2026.5.3-1`, zijn stabiele releases voor deze controle. Als npm een van deze naar een prerelease resolveert, stopt OpenClaw en vraagt het je expliciet in te stemmen met een prerelease-tag zoals `@beta`/`@rc` of een exacte prereleaseversie zoals `@1.2.3-beta.4`.
+
+    Als een kale installatiespec overeenkomt met een officiele Plugin-id (bijvoorbeeld `diffs`), installeert OpenClaw de catalogusvermelding rechtstreeks. Gebruik een expliciete scoped spec (bijvoorbeeld `@scope/diffs`) om een npm-pakket met dezelfde naam te installeren.
 
   </Accordion>
-  <Accordion title="Archieven">
-    Ondersteunde archieven: `.zip`, `.tgz`, `.tar.gz`, `.tar`. Native OpenClaw-pluginarchieven moeten een geldig `openclaw.plugin.json` bevatten in de uitgepakte plugin-root; archieven die alleen `package.json` bevatten, worden geweigerd voordat OpenClaw installatierecords schrijft.
+  <Accordion title="Git repositories">
+    Gebruik `git:<repo>` om rechtstreeks vanuit een git-repository te installeren. Ondersteunde vormen zijn onder andere `git:github.com/owner/repo`, `git:owner/repo`, volledige `https://`, `ssh://`, `git://`, `file://` en `git@host:owner/repo.git` clone-URL's. Voeg `@<ref>` of `#<ref>` toe om een branch, tag of commit uit te checken voordat je installeert.
+
+    Git-installaties clonen naar een tijdelijke directory, checken de gevraagde ref uit wanneer die aanwezig is en gebruiken daarna de normale installer voor Plugin-directories. Dat betekent dat manifestvalidatie, scanning op gevaarlijke code, package-manager-installatiewerk en installatierecords zich gedragen zoals bij npm-installaties. Vastgelegde git-installaties bevatten de bron-URL/ref plus de opgeloste commit, zodat `openclaw plugins update` de bron later opnieuw kan resolven.
+
+    Gebruik na installatie vanuit git `openclaw plugins inspect <id> --runtime --json` om runtimeregistraties zoals gatewaymethoden en CLI-opdrachten te verifiëren. Als de Plugin een CLI-root heeft geregistreerd met `api.registerCli`, voer die opdracht dan rechtstreeks uit via de OpenClaw-root-CLI, bijvoorbeeld `openclaw demo-plugin ping`.
+
+  </Accordion>
+  <Accordion title="Archives">
+    Ondersteunde archieven: `.zip`, `.tgz`, `.tar.gz`, `.tar`. Native OpenClaw Plugin-archieven moeten een geldige `openclaw.plugin.json` bevatten in de uitgepakte Plugin-root; archieven die alleen `package.json` bevatten, worden geweigerd voordat OpenClaw installatierecords schrijft.
 
     Gebruik `npm-pack:<path.tgz>` wanneer het bestand een npm-pack-tarball is en je
     hetzelfde beheerde npm-root-installatiepad wilt testen dat door registry-installaties wordt gebruikt,
-    inclusief `package-lock.json`-verificatie, scannen van gehoste afhankelijkheden en
+    inclusief verificatie van `package-lock.json`, scanning van gehesen afhankelijkheden en
     npm-installatierecords. Platte archiefpaden installeren nog steeds als lokale archieven
-    onder de plugin-extensieroot.
+    onder de plugin extensions-root.
 
-    Claude-marketplace-installaties worden ook ondersteund.
+    Claude marketplace-installaties worden ook ondersteund.
 
   </Accordion>
 </AccordionGroup>
 
-ClawHub-installaties gebruiken een expliciete `clawhub:<package>`-locator:
+ClawHub-installaties gebruiken een expliciete locator `clawhub:<package>`:
 
 ```bash
 openclaw plugins install clawhub:openclaw-codex-app-server
 openclaw plugins install clawhub:openclaw-codex-app-server@1.2.3
 ```
 
-Kale npm-veilige plugin-specs installeren tijdens de launch-cutover standaard vanuit npm:
+Kale npm-veilige Plugin-specs installeren tijdens de launch-cutover standaard vanaf npm:
 
 ```bash
 openclaw plugins install openclaw-codex-app-server
@@ -197,19 +185,19 @@ openclaw plugins install npm:openclaw-codex-app-server
 openclaw plugins install npm:@scope/plugin-name@1.0.1
 ```
 
-OpenClaw controleert de geadverteerde plugin-API / minimale Gateway-compatibiliteit vóór installatie. Wanneer de geselecteerde ClawHub-versie een ClawPack-artefact publiceert, downloadt OpenClaw de geversioneerde npm-pack `.tgz`, verifieert het de ClawHub-digestheader en de artefactdigest, en installeert het dit vervolgens via het normale archiefpad. Oudere ClawHub-versies zonder ClawPack-metadata installeren nog steeds via het verouderde verificatiepad voor pakketarchieven. Vastgelegde installaties behouden hun ClawHub-bronmetadata, artefactsoort, npm-integriteit, npm-shasum, tarballnaam en ClawPack-digestfeiten voor latere updates.
-Ongeversioneerde ClawHub-installaties behouden een ongeversioneerde vastgelegde specificatie zodat `openclaw plugins update` nieuwere ClawHub-releases kan volgen; expliciete versie- of tagselectoren zoals `clawhub:pkg@1.2.3` en `clawhub:pkg@beta` blijven aan die selector vastgezet.
+OpenClaw controleert de geadverteerde plugin-API / minimale Gateway-compatibiliteit vóór installatie. Wanneer de geselecteerde ClawHub-versie een ClawPack-artefact publiceert, downloadt OpenClaw de geversioneerde npm-pack `.tgz`, verifieert de ClawHub-digest-header en de artefact-digest en installeert het daarna via het normale archiefpad. Oudere ClawHub-versies zonder ClawPack-metadata installeren nog steeds via het verouderde verificatiepad voor pakketarchieven. Geregistreerde installaties bewaren hun ClawHub-bronmetadata, artefactsoort, npm-integriteit, npm-shasum, tarballnaam en ClawPack-digestgegevens voor latere updates.
+Niet-geversioneerde ClawHub-installaties behouden een niet-geversioneerde geregistreerde spec zodat `openclaw plugins update` nieuwere ClawHub-releases kan volgen; expliciete versie- of tagselectoren zoals `clawhub:pkg@1.2.3` en `clawhub:pkg@beta` blijven vastgepind aan die selector.
 
-#### Marketplace-afkorting
+#### Marketplace-shorthand
 
-Gebruik de afkorting `plugin@marketplace` wanneer de marketplacenaam bestaat in Claude's lokale registercache op `~/.claude/plugins/known_marketplaces.json`:
+Gebruik `plugin@marketplace`-shorthand wanneer de marketplace-naam bestaat in de lokale registry-cache van Claude op `~/.claude/plugins/known_marketplaces.json`:
 
 ```bash
 openclaw plugins marketplace list <marketplace-name>
 openclaw plugins install <plugin-name>@<marketplace-name>
 ```
 
-Gebruik `--marketplace` wanneer je de marketplacebron expliciet wilt meegeven:
+Gebruik `--marketplace` wanneer je de marketplace-bron expliciet wilt doorgeven:
 
 ```bash
 openclaw plugins install <plugin-name> --marketplace <marketplace-name>
@@ -219,16 +207,16 @@ openclaw plugins install <plugin-name> --marketplace ./my-marketplace
 ```
 
 <Tabs>
-  <Tab title="Marketplace sources">
-    - een Claude-naam voor een bekende marketplace uit `~/.claude/plugins/known_marketplaces.json`
+  <Tab title="Marketplace-bronnen">
+    - een bekende marketplace-naam van Claude uit `~/.claude/plugins/known_marketplaces.json`
     - een lokale marketplace-root of `marketplace.json`-pad
-    - een GitHub-repoafkorting zoals `owner/repo`
+    - een GitHub-repo-shorthand zoals `owner/repo`
     - een GitHub-repo-URL zoals `https://github.com/owner/repo`
     - een git-URL
 
   </Tab>
-  <Tab title="Remote marketplace rules">
-    Voor externe marketplaces die vanuit GitHub of git worden geladen, moeten pluginvermeldingen binnen de gekloonde marketplace-repo blijven. OpenClaw accepteert relatieve padbronnen uit die repo en wijst HTTP(S), absolute paden, git, GitHub en andere niet-pad-pluginbronnen uit externe manifests af.
+  <Tab title="Regels voor externe marketplaces">
+    Voor externe marketplaces die vanuit GitHub of git worden geladen, moeten plugin-items binnen de gekloonde marketplace-repo blijven. OpenClaw accepteert relatieve padbronnen uit die repo en weigert HTTP(S)-, absolute-pad-, git-, GitHub- en andere niet-pad-pluginbronnen uit externe manifests.
   </Tab>
 </Tabs>
 
@@ -240,10 +228,10 @@ Voor lokale paden en archieven detecteert OpenClaw automatisch:
 - Cursor-compatibele bundels (`.cursor-plugin/plugin.json`)
 
 <Note>
-Compatibele bundels worden in de normale plugin-root geïnstalleerd en nemen deel aan dezelfde list/info/enable/disable-stroom. Momenteel worden bundel-Skills, Claude command-skills, Claude `settings.json`-standaarden, Claude `.lsp.json` / manifest-gedeclareerde `lspServers`-standaarden, Cursor command-skills en compatibele Codex-hookmappen ondersteund; andere gedetecteerde bundelmogelijkheden worden getoond in diagnostiek/info maar zijn nog niet gekoppeld aan runtime-uitvoering.
+Compatibele bundels worden geïnstalleerd in de normale plugin-root en nemen deel aan dezelfde list/info/enable/disable-flow. Momenteel worden bundel-skills, Claude-command-skills, Claude-standaarden voor `settings.json`, Claude-standaarden voor `.lsp.json` / door het manifest gedeclareerde `lspServers`, Cursor-command-skills en compatibele Codex-hookdirectory's ondersteund; andere gedetecteerde bundelmogelijkheden worden weergegeven in diagnostiek/info, maar zijn nog niet aangesloten op runtime-uitvoering.
 </Note>
 
-### Weergeven
+### Lijst
 
 ```bash
 openclaw plugins list
@@ -259,55 +247,56 @@ openclaw plugins search <query> --json
   Toon alleen ingeschakelde plugins.
 </ParamField>
 <ParamField path="--verbose" type="boolean">
-  Schakel over van de tabelweergave naar detailregels per plugin met metadata over bron/oorsprong/versie/activatie.
+  Schakel over van de tabelweergave naar detailregels per plugin met bron-/oorsprong-/versie-/activeringsmetadata.
 </ParamField>
 <ParamField path="--json" type="boolean">
-  Machineleesbare inventaris plus registerdiagnostiek en installatiestatus van pakketafhankelijkheden.
+  Machineleesbare inventaris plus registry-diagnostiek en installatiestatus van pakketafhankelijkheden.
 </ParamField>
 
 <Note>
-`plugins list` leest eerst het persistente lokale pluginregister, met een alleen-van-manifest-afgeleide fallback wanneer het register ontbreekt of ongeldig is. Dit is nuttig om te controleren of een plugin is geïnstalleerd, ingeschakeld en zichtbaar is voor koude opstartplanning, maar het is geen live runtime-probe van een al draaiend Gateway-proces. Nadat je plugincode, inschakeling, hookbeleid of `plugins.load.paths` hebt gewijzigd, herstart je de Gateway die het kanaal bedient voordat je verwacht dat nieuwe `register(api)`-code of hooks worden uitgevoerd. Controleer voor externe/containerdeployments dat je het daadwerkelijke `openclaw gateway run`-child herstart, niet alleen een wrapperproces.
+`plugins list` leest eerst de vastgelegde lokale plugin-registry, met een alleen-uit-manifest-afgeleide fallback wanneer de registry ontbreekt of ongeldig is. Dit is nuttig om te controleren of een plugin is geïnstalleerd, ingeschakeld en zichtbaar is voor koude opstartplanning, maar het is geen live runtime-probe van een Gateway-proces dat al draait. Herstart na het wijzigen van plugin-code, inschakeling, hookbeleid of `plugins.load.paths` de Gateway die het kanaal bedient voordat je verwacht dat nieuwe `register(api)`-code of hooks worden uitgevoerd. Controleer bij externe/containerdeployments of je het daadwerkelijke `openclaw gateway run`-childproces herstart, niet alleen een wrapperproces.
 
 `plugins list --json` bevat de `dependencyStatus` van elke plugin uit `package.json`
-`dependencies` en `optionalDependencies`. OpenClaw controleert of die pakketnamen aanwezig zijn langs het normale Node `node_modules`-zoekpad van de plugin; het
-importeert geen plugin-runtimecode, voert geen pakketbeheerder uit en repareert geen
-ontbrekende afhankelijkheden.
+`dependencies` en `optionalDependencies`. OpenClaw controleert of die pakketnamen
+aanwezig zijn langs het normale Node-`node_modules`-opzoekpad van de plugin; het
+importeert geen plugin-runtimecode, voert geen pakketbeheerder uit en repareert
+ontbrekende afhankelijkheden niet.
 </Note>
 
-`plugins search` is een externe ClawHub-cataloguszoekopdracht. Het inspecteert geen lokale
-staat, wijzigt geen config, installeert geen pakketten en laadt geen plugin-runtimecode. Zoekresultaten
-bevatten de ClawHub-pakketnaam, familie, kanaal, versie, samenvatting en
-een installatietip zoals `openclaw plugins install clawhub:<package>`.
+`plugins search` is een externe ClawHub-cataloguslookup. Het inspecteert geen lokale
+status, wijzigt geen config, installeert geen pakketten en laadt geen plugin-runtimecode. Zoek
+resultaten bevatten de ClawHub-pakketnaam, familie, kanaal, versie, samenvatting en
+een installatiehint zoals `openclaw plugins install clawhub:<package>`.
 
-Voor werk aan gebundelde plugins binnen een verpakte Docker-image bind-mount je de plugin-
-bronmap over het overeenkomende verpakte bronpad, zoals
-`/app/extensions/synology-chat`. OpenClaw ontdekt die aangekoppelde bron-
-overlay vóór `/app/dist/extensions/synology-chat`; een gewone gekopieerde bron-
-map blijft inert zodat normale verpakte installaties nog steeds de gecompileerde dist gebruiken.
+Voor gebundeld plugin-werk binnen een verpakte Docker-image koppel je de plugin-
+brondirectory als bind-mount over het overeenkomende verpakte bronpad, zoals
+`/app/extensions/synology-chat`. OpenClaw ontdekt die gekoppelde source-
+overlay vóór `/app/dist/extensions/synology-chat`; een gewoon gekopieerde source-
+directory blijft inert zodat normale verpakte installaties nog steeds gecompileerde dist gebruiken.
 
-Voor debuggen van runtime-hooks:
+Voor debugging van runtime-hooks:
 
-- `openclaw plugins inspect <id> --runtime --json` toont geregistreerde hooks en diagnostiek uit een inspectiepass waarbij de module is geladen. Runtime-inspectie installeert nooit afhankelijkheden; gebruik `openclaw doctor --fix` om verouderde afhankelijkheidsstaat op te schonen of ontbrekende downloadbare plugins te herstellen waarnaar door config wordt verwezen.
+- `openclaw plugins inspect <id> --runtime --json` toont geregistreerde hooks en diagnostiek uit een inspectiepass waarbij de module is geladen. Runtime-inspectie installeert nooit afhankelijkheden; gebruik `openclaw doctor --fix` om verouderde afhankelijkheidsstatus op te schonen of ontbrekende downloadbare plugins te herstellen waarnaar config verwijst.
 - `openclaw gateway status --deep --require-rpc` bevestigt de bereikbare Gateway, service-/proceshints, configpad en RPC-gezondheid.
-- Niet-gebundelde conversatiehooks (`llm_input`, `llm_output`, `before_model_resolve`, `before_agent_reply`, `before_agent_run`, `before_agent_finalize`, `agent_end`) vereisen `plugins.entries.<id>.hooks.allowConversationAccess=true`.
+- Niet-gebundelde conversation hooks (`llm_input`, `llm_output`, `before_model_resolve`, `before_agent_reply`, `before_agent_run`, `before_agent_finalize`, `agent_end`) vereisen `plugins.entries.<id>.hooks.allowConversationAccess=true`.
 
-Gebruik `--link` om het kopiëren van een lokale map te vermijden (voegt toe aan `plugins.load.paths`):
+Gebruik `--link` om het kopiëren van een lokale directory te vermijden (voegt toe aan `plugins.load.paths`):
 
 ```bash
 openclaw plugins install -l ./my-plugin
 ```
 
 <Note>
-`--force` wordt niet ondersteund met `--link` omdat gekoppelde installaties het bronpad hergebruiken in plaats van over een beheerd installatiedoel heen te kopiëren.
+`--force` wordt niet ondersteund met `--link` omdat gekoppelde installaties het bronpad hergebruiken in plaats van over een beheerd installatiedoel te kopiëren.
 
-Gebruik `--pin` bij npm-installaties om de opgeloste exacte specificatie (`name@version`) op te slaan in de beheerde pluginindex, terwijl het standaardgedrag niet-vastgezet blijft.
+Gebruik `--pin` bij npm-installaties om de opgeloste exacte spec (`name@version`) op te slaan in de beheerde plugin-index terwijl het standaardgedrag niet-vastgepind blijft.
 </Note>
 
-### Pluginindex
+### Plugin-index
 
-Metadata van plugininstallaties is machinebeheerde staat, geen gebruikersconfig. Installaties en updates schrijven dit naar `plugins/installs.json` onder de actieve OpenClaw-statusmap. De top-level `installRecords`-map is de duurzame bron van installatiemetadata, inclusief records voor kapotte of ontbrekende pluginmanifests. De `plugins`-array is de van manifests afgeleide koude registercache. Het bestand bevat een waarschuwing om het niet te bewerken en wordt gebruikt door `openclaw plugins update`, verwijderen, diagnostiek en het koude pluginregister.
+Metadata van plugin-installaties is machinebeheerde status, geen gebruikersconfig. Installaties en updates schrijven dit naar `plugins/installs.json` onder de actieve OpenClaw-statusdirectory. De top-level `installRecords`-map is de duurzame bron van installatiemetadata, inclusief records voor kapotte of ontbrekende plugin-manifests. De `plugins`-array is de uit manifests afgeleide koude registry-cache. Het bestand bevat een niet-bewerken-waarschuwing en wordt gebruikt door `openclaw plugins update`, uninstall, diagnostiek en de koude plugin-registry.
 
-Wanneer OpenClaw meegeleverde verouderde `plugins.installs`-records in config ziet, behandelen runtime-reads deze als compatibiliteitsinput zonder `openclaw.json` te herschrijven. Expliciete pluginwrites en `openclaw doctor --fix` verplaatsen die records naar de pluginindex en verwijderen de configsleutel wanneer configwrites zijn toegestaan; als een van beide writes mislukt, blijven de configrecords behouden zodat de installatiemetadata niet verloren gaat.
+Wanneer OpenClaw meegeleverde verouderde `plugins.installs`-records in config ziet, behandelen runtime-lezingen die als compatibiliteitsinvoer zonder `openclaw.json` te herschrijven. Expliciete plugin-schrijfacties en `openclaw doctor --fix` verplaatsen die records naar de plugin-index en verwijderen de config-sleutel wanneer config-schrijfacties zijn toegestaan; als een van beide schrijfacties mislukt, worden de config-records behouden zodat de installatiemetadata niet verloren gaat.
 
 ### Verwijderen
 
@@ -317,7 +306,7 @@ openclaw plugins uninstall <id> --dry-run
 openclaw plugins uninstall <id> --keep-files
 ```
 
-`uninstall` verwijdert pluginrecords uit `plugins.entries`, de persistente pluginindex, plugin-allow/deny-list-vermeldingen en gekoppelde `plugins.load.paths`-vermeldingen waar van toepassing. Tenzij `--keep-files` is ingesteld, verwijdert uninstall ook de bijgehouden beheerde installatiemap wanneer die zich binnen de plugin-extensions-root van OpenClaw bevindt. Voor Active Memory-plugins wordt het geheugenslot teruggezet naar `memory-core`.
+`uninstall` verwijdert plugin-records uit `plugins.entries`, de vastgelegde plugin-index, allow/deny-lijstitems voor plugins en gekoppelde `plugins.load.paths`-items wanneer van toepassing. Tenzij `--keep-files` is ingesteld, verwijdert uninstall ook de bijgehouden beheerde installatiedirectory wanneer die zich binnen de plugin-extensieroot van OpenClaw bevindt. Voor active memory-plugins wordt het geheugenslot teruggezet naar `memory-core`.
 
 <Note>
 `--keep-config` wordt ondersteund als verouderd alias voor `--keep-files`.
@@ -333,29 +322,29 @@ openclaw plugins update @openclaw/voice-call
 openclaw plugins update openclaw-codex-app-server --dangerously-force-unsafe-install
 ```
 
-Updates zijn van toepassing op bijgehouden plugininstallaties in de beheerde pluginindex en bijgehouden hook-pack-installaties in `hooks.internal.installs`.
+Updates zijn van toepassing op bijgehouden plugin-installaties in de beheerde plugin-index en bijgehouden hook-pack-installaties in `hooks.internal.installs`.
 
 <AccordionGroup>
-  <Accordion title="Resolving plugin id vs npm spec">
-    Wanneer je een plugin-id doorgeeft, hergebruikt OpenClaw de vastgelegde installatiespecificatie voor die plugin. Dat betekent dat eerder opgeslagen dist-tags zoals `@beta` en exacte vastgezette versies gebruikt blijven worden bij latere `update <id>`-runs.
+  <Accordion title="Plugin-id versus npm-spec oplossen">
+    Wanneer je een plugin-id doorgeeft, hergebruikt OpenClaw de geregistreerde installatiespec voor die plugin. Dat betekent dat eerder opgeslagen dist-tags zoals `@beta` en exacte vastgepinde versies bij latere `update <id>`-runs gebruikt blijven worden.
 
-    Voor npm-installaties kun je ook een expliciete npm-pakketspecificatie met een dist-tag of exacte versie doorgeven. OpenClaw herleidt die pakketnaam naar het bijgehouden pluginrecord, werkt die geïnstalleerde plugin bij en legt de nieuwe npm-specificatie vast voor toekomstige id-gebaseerde updates.
+    Voor npm-installaties kun je ook een expliciete npm-pakketspec met een dist-tag of exacte versie doorgeven. OpenClaw herleidt die pakketnaam naar het bijgehouden plugin-record, werkt die geïnstalleerde plugin bij en registreert de nieuwe npm-spec voor toekomstige id-gebaseerde updates.
 
-    Het doorgeven van de npm-pakketnaam zonder versie of tag wordt ook teruggeleid naar het bijgehouden pluginrecord. Gebruik dit wanneer een plugin aan een exacte versie was vastgezet en je deze terug wilt verplaatsen naar de standaard releaselijn van het register.
-
-  </Accordion>
-  <Accordion title="Beta channel updates">
-    `openclaw plugins update` hergebruikt de bijgehouden pluginspecificatie tenzij je een nieuwe specificatie doorgeeft. `openclaw update` kent daarnaast het actieve OpenClaw-updatekanaal: op het bètakanaal proberen standaardlijn-npm- en ClawHub-pluginrecords eerst `@beta`, en vallen daarna terug op de vastgelegde default/latest-specificatie als er geen plugin-bètarelease bestaat. Exacte versies en expliciete tags blijven vastgezet aan die selector.
+    Het doorgeven van de npm-pakketnaam zonder versie of tag wordt ook terug herleid naar het bijgehouden plugin-record. Gebruik dit wanneer een plugin aan een exacte versie was vastgepind en je die terug wilt verplaatsen naar de standaardreleaselijn van de registry.
 
   </Accordion>
-  <Accordion title="Version checks and integrity drift">
-    Vóór een live npm-update controleert OpenClaw de geïnstalleerde pakketversie tegen de metadata van het npm-register. Als de geïnstalleerde versie en vastgelegde artefactidentiteit al overeenkomen met het opgeloste doel, wordt de update overgeslagen zonder te downloaden, opnieuw te installeren of `openclaw.json` te herschrijven.
-
-    Wanneer er een opgeslagen integriteitshash bestaat en de opgehaalde artefacthash verandert, behandelt OpenClaw dat als npm-artefactdrift. De interactieve opdracht `openclaw plugins update` drukt de verwachte en daadwerkelijke hashes af en vraagt om bevestiging voordat wordt doorgegaan. Niet-interactieve updatehelpers falen gesloten tenzij de aanroeper een expliciet vervolgbeleid opgeeft.
+  <Accordion title="Updates voor het bètakanaal">
+    `openclaw plugins update` hergebruikt de bijgehouden plugin-spec tenzij je een nieuwe spec doorgeeft. `openclaw update` kent daarnaast het actieve OpenClaw-updatekanaal: op het bètakanaal proberen npm- en ClawHub-plugin-records op de standaardlijn eerst `@beta` en vallen daarna terug op de geregistreerde standaard-/latest-spec als er geen bèta-release van de plugin bestaat. Die fallback wordt als waarschuwing gemeld en laat de core-update niet mislukken. Exacte versies en expliciete tags blijven vastgepind aan die selector.
 
   </Accordion>
-  <Accordion title="--dangerously-force-unsafe-install on update">
-    `--dangerously-force-unsafe-install` is ook beschikbaar op `plugins update` als break-glass-override voor fout-positieven in de ingebouwde gevaarlijke-code-scan tijdens pluginupdates. Het omzeilt nog steeds geen plugin-`before_install`-beleidsblokkades of blokkering door scanfouten, en is alleen van toepassing op pluginupdates, niet op hook-pack-updates.
+  <Accordion title="Versiecontroles en integriteitsdrift">
+    Vóór een live npm-update controleert OpenClaw de geïnstalleerde pakketversie tegen de npm-registrymetadata. Als de geïnstalleerde versie en geregistreerde artefactidentiteit al overeenkomen met het opgeloste doel, wordt de update overgeslagen zonder te downloaden, opnieuw te installeren of `openclaw.json` te herschrijven.
+
+    Wanneer een opgeslagen integriteitshash bestaat en de opgehaalde artefacthash verandert, behandelt OpenClaw dat als npm-artefactdrift. Het interactieve commando `openclaw plugins update` toont de verwachte en daadwerkelijke hashes en vraagt om bevestiging voordat het doorgaat. Niet-interactieve updatehelpers falen gesloten tenzij de aanroeper een expliciet vervolgbeleid opgeeft.
+
+  </Accordion>
+  <Accordion title="--dangerously-force-unsafe-install bij update">
+    `--dangerously-force-unsafe-install` is ook beschikbaar op `plugins update` als noodoverride voor fout-positieven in de ingebouwde dangerous-code-scan tijdens plugin-updates. Het omzeilt nog steeds geen plugin-`before_install`-beleidsblokkades of blokkering bij scanfouten, en het geldt alleen voor plugin-updates, niet voor hook-pack-updates.
   </Accordion>
 </AccordionGroup>
 
@@ -367,21 +356,21 @@ openclaw plugins inspect <id> --runtime
 openclaw plugins inspect <id> --json
 ```
 
-Inspect toont identiteit, laadstatus, bron, manifestmogelijkheden, beleidsvlaggen, diagnostiek, installatiemetadata, bundelmogelijkheden en eventuele gedetecteerde MCP- of LSP-serverondersteuning zonder standaard plugin-runtime te importeren. Voeg `--runtime` toe om de pluginmodule te laden en geregistreerde hooks, tools, opdrachten, services, Gateway-methoden en HTTP-routes op te nemen. Runtime-inspectie rapporteert ontbrekende pluginafhankelijkheden direct; installaties en reparaties blijven in `openclaw plugins install`, `openclaw plugins update` en `openclaw doctor --fix`.
+Inspect toont identiteit, laadstatus, bron, manifestmogelijkheden, beleidsvlaggen, diagnostiek, installatiemetadata, bundelmogelijkheden en eventuele gedetecteerde MCP- of LSP-serverondersteuning zonder standaard plugin-runtime te importeren. Voeg `--runtime` toe om de plugin-module te laden en geregistreerde hooks, tools, commando's, services, gateway-methoden en HTTP-routes op te nemen. Runtime-inspectie rapporteert ontbrekende plugin-afhankelijkheden direct; installaties en reparaties blijven in `openclaw plugins install`, `openclaw plugins update` en `openclaw doctor --fix`.
 
-CLI-opdrachten die eigendom zijn van plugins worden meestal geïnstalleerd als root-`openclaw`-opdrachtgroepen, maar plugins kunnen ook geneste opdrachten registreren onder een core-parent zoals `openclaw nodes`. Nadat `inspect --runtime` een opdracht onder `cliCommands` toont, voer je deze uit op het vermelde pad; een plugin die bijvoorbeeld `demo-git` registreert, kan worden geverifieerd met `openclaw demo-git ping`.
+CLI-commando's die eigendom zijn van plugins worden meestal geïnstalleerd als root-`openclaw`-commandogroepen, maar plugins kunnen ook geneste commando's registreren onder een core-parent zoals `openclaw nodes`. Nadat `inspect --runtime` een commando onder `cliCommands` toont, voer je het uit op het vermelde pad; een plugin die bijvoorbeeld `demo-git` registreert, kan worden geverifieerd met `openclaw demo-git ping`.
 
 Elke plugin wordt geclassificeerd op basis van wat deze daadwerkelijk registreert tijdens runtime:
 
-- **plain-capability** — één capability-type (bijv. een Plugin met alleen een provider)
-- **hybrid-capability** — meerdere capability-typen (bijv. tekst + spraak + afbeeldingen)
-- **hook-only** — alleen hooks, geen capabilities of oppervlakken
-- **non-capability** — tools/opdrachten/services maar geen capabilities
+- **plain-capability** — één capaciteitstype (bijv. een provider-only plugin)
+- **hybrid-capability** — meerdere capaciteitstypen (bijv. tekst + spraak + afbeeldingen)
+- **hook-only** — alleen hooks, geen capaciteiten of oppervlakken
+- **non-capability** — tools/opdrachten/services, maar geen capaciteiten
 
-Zie [Plugin-vormen](/nl/plugins/architecture#plugin-shapes) voor meer over het capability-model.
+Zie [Plugin-vormen](/nl/plugins/architecture#plugin-shapes) voor meer over het capaciteitsmodel.
 
 <Note>
-De vlag `--json` geeft een machineleesbaar rapport uit dat geschikt is voor scripting en auditing. `inspect --all` rendert een tabel voor de hele vloot met kolommen voor vorm, capability-soorten, compatibiliteitsmeldingen, bundel-capabilities en een hooksamenvatting. `info` is een alias voor `inspect`.
+De vlag `--json` voert een machineleesbaar rapport uit dat geschikt is voor scripting en auditing. `inspect --all` toont een vlootbrede tabel met kolommen voor vorm, capaciteitssoorten, compatibiliteitsmeldingen, bundelcapaciteiten en hook-samenvatting. `info` is een alias voor `inspect`.
 </Note>
 
 ### Doctor
@@ -390,11 +379,11 @@ De vlag `--json` geeft een machineleesbaar rapport uit dat geschikt is voor scri
 openclaw plugins doctor
 ```
 
-`doctor` rapporteert laadfouten van Plugins, diagnostiek voor manifest/discovery en compatibiliteitsmeldingen. Wanneer alles schoon is, drukt het `No plugin issues detected.` af.
+`doctor` rapporteert laadfouten van plugins, manifest-/detectiediagnostiek en compatibiliteitsmeldingen. Wanneer alles schoon is, wordt `No plugin issues detected.` afgedrukt.
 
-Als een geconfigureerde Plugin op schijf aanwezig is maar wordt geblokkeerd door de padveiligheidscontroles van de loader, behoudt configvalidatie de Plugin-vermelding en rapporteert die als `present but blocked`. Los de voorafgaande diagnostiek voor de geblokkeerde Plugin op, zoals padeigendom of wereldwijd schrijfbare machtigingen, in plaats van de configuratie `plugins.entries.<id>` of `plugins.allow` te verwijderen.
+Als een geconfigureerde plugin op schijf aanwezig is maar wordt geblokkeerd door de padveiligheidscontroles van de loader, behoudt configuratievalidatie de pluginvermelding en rapporteert deze als `present but blocked`. Los de voorafgaande diagnose voor de geblokkeerde plugin op, zoals padeigendom of world-writable machtigingen, in plaats van de configuratie `plugins.entries.<id>` of `plugins.allow` te verwijderen.
 
-Voor fouten in modulevormen zoals ontbrekende exports `register`/`activate`, voer opnieuw uit met `OPENCLAW_PLUGIN_LOAD_DEBUG=1` om een compacte samenvatting van de exportvorm op te nemen in de diagnostische uitvoer.
+Voor modulevormfouten, zoals ontbrekende `register`-/`activate`-exports, voer je opnieuw uit met `OPENCLAW_PLUGIN_LOAD_DEBUG=1` om een compacte samenvatting van de exportvorm in de diagnostische uitvoer op te nemen.
 
 ### Register
 
@@ -404,14 +393,14 @@ openclaw plugins registry --refresh
 openclaw plugins registry --json
 ```
 
-Het lokale Plugin-register is OpenClaw's persistente cold-readmodel voor geïnstalleerde Plugin-identiteit, inschakeling, bronmetadata en eigenaarschap van bijdragen. Normaal opstarten, het opzoeken van providereigenaars, classificatie van kanaalconfiguratie en Plugin-inventarisatie kunnen het lezen zonder Plugin-runtime-modules te importeren.
+Het lokale pluginregister is OpenClaw's persistente koude leesmodel voor geïnstalleerde pluginidentiteit, inschakeling, bronmetadata en eigenaarschap van bijdragen. Normale startup, opzoeken van providereigenaar, classificatie van kanaalconfiguratie en plugininventaris kunnen dit lezen zonder runtime-modules van plugins te importeren.
 
-Gebruik `plugins registry` om te inspecteren of het persistente register aanwezig, actueel of verouderd is. Gebruik `--refresh` om het opnieuw op te bouwen vanuit de persistente Plugin-index, het configuratiebeleid en manifest-/pakketmetadata. Dit is een herstelpad, geen runtime-activeringspad.
+Gebruik `plugins registry` om te controleren of het persistente register aanwezig, actueel of verouderd is. Gebruik `--refresh` om het opnieuw op te bouwen vanuit de persistente pluginindex, configuratiepolicy en manifest-/pakketmetadata. Dit is een herstelpad, geen runtime-activeringspad.
 
-`openclaw doctor --fix` herstelt ook beheerde npm-afwijkingen rond het register: als een verweesd of hersteld `@openclaw/*`-pakket onder de beheerde Plugin-npm-root een gebundelde Plugin overschaduwt, verwijdert doctor dat verouderde pakket en bouwt het register opnieuw op, zodat het opstarten tegen het gebundelde manifest valideert.
+`openclaw doctor --fix` herstelt ook registry-aangrenzende beheerde npm-drift: als een verweesd of hersteld `@openclaw/*`-pakket onder de beheerde plugin-npm-root een gebundelde plugin overschaduwt, verwijdert doctor dat verouderde pakket en bouwt het register opnieuw op, zodat startup tegen het gebundelde manifest valideert.
 
 <Warning>
-`OPENCLAW_DISABLE_PERSISTED_PLUGIN_REGISTRY=1` is een verouderde break-glass-compatibiliteitsschakelaar voor leesfouten van het register. Geef de voorkeur aan `plugins registry --refresh` of `openclaw doctor --fix`; de env-fallback is alleen bedoeld voor noodherstel bij opstarten terwijl de migratie wordt uitgerold.
+`OPENCLAW_DISABLE_PERSISTED_PLUGIN_REGISTRY=1` is een verouderde break-glass-compatibiliteitsschakelaar voor leesfouten van het register. Geef de voorkeur aan `plugins registry --refresh` of `openclaw doctor --fix`; de env-fallback is alleen bedoeld voor noodherstel van startup terwijl de migratie wordt uitgerold.
 </Warning>
 
 ### Marketplace
@@ -421,7 +410,7 @@ openclaw plugins marketplace list <source>
 openclaw plugins marketplace list <source> --json
 ```
 
-Marketplace list accepteert een lokaal marketplace-pad, een `marketplace.json`-pad, een GitHub-shorthand zoals `owner/repo`, een GitHub-repo-URL of een git-URL. `--json` drukt het opgeloste bronlabel af plus het geparste marketplace-manifest en de Plugin-vermeldingen.
+Marketplace list accepteert een lokaal marketplace-pad, een `marketplace.json`-pad, een GitHub-shorthand zoals `owner/repo`, een GitHub-repo-URL of een git-URL. `--json` drukt het opgeloste bronlabel af plus het geparsete marketplace-manifest en de pluginvermeldingen.
 
 ## Gerelateerd
 

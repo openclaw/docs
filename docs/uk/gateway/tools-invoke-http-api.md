@@ -1,75 +1,75 @@
 ---
 read_when:
-    - Виклик інструментів без запуску повного ходу агента
-    - Створення автоматизацій, яким потрібне забезпечення дотримання політик інструментів
-summary: Викликайте один інструмент безпосередньо через HTTP-кінцеву точку Gateway
+    - Виклик інструментів без виконання повного ходу агента
+    - Створення автоматизацій, які потребують забезпечення дотримання політики інструментів
+summary: Викличте один інструмент безпосередньо через HTTP-ендпоінт Gateway
 title: API виклику інструментів
 x-i18n:
-    generated_at: "2026-05-06T03:31:03Z"
+    generated_at: "2026-05-11T20:40:13Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 2fcd490d4eaa63f23b0d502e537c4094ade88afcdd04e2b7df1a5f0484a11c57
+    source_hash: 531e77673fb9c06d0cc8f8145d874e22f7e590dc3e4c5dee1574874af5666886
     source_path: gateway/tools-invoke-http-api.md
     workflow: 16
 ---
 
-OpenClaw's Gateway exposes a simple HTTP endpoint for invoking a single tool directly. It is always enabled and uses Gateway auth plus tool policy. Like the OpenAI-compatible `/v1/*` surface, shared-secret bearer auth is treated as trusted operator access for the whole gateway.
+Gateway OpenClaw надає простий HTTP-ендпоїнт для прямого виклику одного інструмента. Він завжди ввімкнений і використовує автентифікацію Gateway плюс політику інструментів. Як і OpenAI-сумісна поверхня `/v1/*`, автентифікація bearer зі спільним секретом вважається довіреним операторським доступом до всього gateway.
 
 - `POST /tools/invoke`
-- Same port as the Gateway (WS + HTTP multiplex): `http://<gateway-host>:<port>/tools/invoke`
+- Той самий порт, що й Gateway (мультиплексування WS + HTTP): `http://<gateway-host>:<port>/tools/invoke`
 
-Default max payload size is 2 MB.
+Стандартний максимальний розмір корисного навантаження становить 2 MB.
 
-## Authentication
+## Автентифікація
 
-Uses the Gateway auth configuration.
+Використовує конфігурацію автентифікації Gateway.
 
-Common HTTP auth paths:
+Поширені шляхи HTTP-автентифікації:
 
-- shared-secret auth (`gateway.auth.mode="token"` or `"password"`):
+- автентифікація зі спільним секретом (`gateway.auth.mode="token"` або `"password"`):
   `Authorization: Bearer <token-or-password>`
-- trusted identity-bearing HTTP auth (`gateway.auth.mode="trusted-proxy"`):
-  route through the configured identity-aware proxy and let it inject the
-  required identity headers
-- private-ingress open auth (`gateway.auth.mode="none"`):
-  no auth header required
+- довірена HTTP-автентифікація з ідентичністю (`gateway.auth.mode="trusted-proxy"`):
+  маршрутизуйте через налаштований identity-aware proxy і дозвольте йому вставити
+  потрібні заголовки ідентичності
+- відкрита автентифікація для приватного ingress (`gateway.auth.mode="none"`):
+  заголовок автентифікації не потрібен
 
-Notes:
+Примітки:
 
-- When `gateway.auth.mode="token"`, use `gateway.auth.token` (or `OPENCLAW_GATEWAY_TOKEN`).
-- When `gateway.auth.mode="password"`, use `gateway.auth.password` (or `OPENCLAW_GATEWAY_PASSWORD`).
-- When `gateway.auth.mode="trusted-proxy"`, the HTTP request must come from a
-  configured trusted proxy source; same-host loopback proxies require explicit
+- Коли `gateway.auth.mode="token"`, використовуйте `gateway.auth.token` (або `OPENCLAW_GATEWAY_TOKEN`).
+- Коли `gateway.auth.mode="password"`, використовуйте `gateway.auth.password` (або `OPENCLAW_GATEWAY_PASSWORD`).
+- Коли `gateway.auth.mode="trusted-proxy"`, HTTP-запит має надходити з
+  налаштованого довіреного джерела proxy; same-host local loopback proxy потребують явного
   `gateway.auth.trustedProxy.allowLoopback = true`.
-- If `gateway.auth.rateLimit` is configured and too many auth failures occur, the endpoint returns `429` with `Retry-After`.
+- Якщо `gateway.auth.rateLimit` налаштовано і трапляється забагато невдалих спроб автентифікації, ендпоїнт повертає `429` з `Retry-After`.
 
-## Security boundary (important)
+## Межа безпеки (важливо)
 
-Treat this endpoint as a **full operator-access** surface for the gateway instance.
+Вважайте цей ендпоїнт поверхнею **повного операторського доступу** для екземпляра gateway.
 
-- HTTP bearer auth here is not a narrow per-user scope model.
-- A valid Gateway token/password for this endpoint should be treated like an owner/operator credential.
-- For shared-secret auth modes (`token` and `password`), the endpoint restores the normal full operator defaults even if the caller sends a narrower `x-openclaw-scopes` header.
-- Shared-secret auth also treats direct tool invokes on this endpoint as owner-sender turns.
-- Trusted identity-bearing HTTP modes (for example trusted proxy auth or `gateway.auth.mode="none"` on a private ingress) honor `x-openclaw-scopes` when present and otherwise fall back to the normal operator default scope set.
-- Keep this endpoint on loopback/tailnet/private ingress only; do not expose it directly to the public internet.
+- HTTP bearer auth тут не є вузькою моделлю per-user scope.
+- Чинний токен/пароль Gateway для цього ендпоїнта слід вважати обліковими даними власника/оператора.
+- Для режимів автентифікації зі спільним секретом (`token` і `password`) ендпоїнт відновлює звичайні повні операторські типові значення, навіть якщо викликач надсилає вужчий заголовок `x-openclaw-scopes`.
+- Автентифікація зі спільним секретом також розглядає прямі виклики інструментів на цьому ендпоїнті як ходи owner-sender.
+- Довірені HTTP-режими з ідентичністю (наприклад, автентифікація trusted proxy або `gateway.auth.mode="none"` на приватному ingress) враховують `x-openclaw-scopes`, коли він присутній, інакше повертаються до звичайного набору типових операторських scope.
+- Тримайте цей ендпоїнт лише на loopback/tailnet/private ingress; не виставляйте його напряму в публічний інтернет.
 
-Auth matrix:
+Матриця автентифікації:
 
-- `gateway.auth.mode="token"` or `"password"` + `Authorization: Bearer ...`
-  - proves possession of the shared gateway operator secret
-  - ignores narrower `x-openclaw-scopes`
-  - restores the full default operator scope set:
+- `gateway.auth.mode="token"` або `"password"` + `Authorization: Bearer ...`
+  - доводить володіння спільним операторським секретом gateway
+  - ігнорує вужчий `x-openclaw-scopes`
+  - відновлює повний набір типових операторських scope:
     `operator.admin`, `operator.approvals`, `operator.pairing`,
     `operator.read`, `operator.talk.secrets`, `operator.write`
-  - treats direct tool invokes on this endpoint as owner-sender turns
-- trusted identity-bearing HTTP modes (for example trusted proxy auth, or `gateway.auth.mode="none"` on private ingress)
-  - authenticate some outer trusted identity or deployment boundary
-  - honor `x-openclaw-scopes` when the header is present
-  - fall back to the normal operator default scope set when the header is absent
-  - only lose owner semantics when the caller explicitly narrows scopes and omits `operator.admin`
+  - розглядає прямі виклики інструментів на цьому ендпоїнті як ходи owner-sender
+- довірені HTTP-режими з ідентичністю (наприклад, автентифікація trusted proxy або `gateway.auth.mode="none"` на приватному ingress)
+  - автентифікують певну зовнішню довірену ідентичність або межу розгортання
+  - враховують `x-openclaw-scopes`, коли заголовок присутній
+  - повертаються до звичайного набору типових операторських scope, коли заголовок відсутній
+  - втрачають семантику власника лише тоді, коли викликач явно звужує scope і пропускає `operator.admin`
 
-## Request body
+## Тіло запиту
 
 ```json
 {
@@ -81,48 +81,49 @@ Auth matrix:
 }
 ```
 
-Fields:
+Поля:
 
-- `tool` (string, required): tool name to invoke.
-- `action` (string, optional): mapped into args if the tool schema supports `action` and the args payload omitted it.
-- `args` (object, optional): tool-specific arguments.
-- `sessionKey` (string, optional): target session key. If omitted or `"main"`, the Gateway uses the configured main session key (honors `session.mainKey` and default agent, or `global` in global scope).
-- `dryRun` (boolean, optional): reserved for future use; currently ignored.
+- `tool` (рядок, обов’язкове): назва інструмента для виклику.
+- `action` (рядок, необов’язкове): зіставляється з args, якщо схема інструмента підтримує `action`, а корисне навантаження args його пропустило.
+- `args` (об’єкт, необов’язкове): аргументи, специфічні для інструмента.
+- `sessionKey` (рядок, необов’язкове): ключ цільової сесії. Якщо пропущено або дорівнює `"main"`, Gateway використовує налаштований ключ основної сесії (враховує `session.mainKey` і default agent, або `global` у global scope).
+- `dryRun` (логічне значення, необов’язкове): зарезервовано для майбутнього використання; наразі ігнорується.
 
-## Policy + routing behavior
+## Поведінка політики та маршрутизації
 
-Tool availability is filtered through the same policy chain used by Gateway agents:
+Доступність інструментів фільтрується через той самий ланцюг політик, який використовують агенти Gateway:
 
 - `tools.profile` / `tools.byProvider.profile`
 - `tools.allow` / `tools.byProvider.allow`
 - `agents.<id>.tools.allow` / `agents.<id>.tools.byProvider.allow`
-- group policies (if the session key maps to a group or channel)
-- subagent policy (when invoking with a subagent session key)
+- групові політики (якщо ключ сесії зіставляється з групою або каналом)
+- політика субагента (під час виклику з ключем сесії субагента)
 
-If a tool is not allowed by policy, the endpoint returns **404**.
+Якщо інструмент не дозволено політикою, ендпоїнт повертає **404**.
 
-Important boundary notes:
+Важливі примітки щодо меж:
 
-- Exec approvals are operator guardrails, not a separate authorization boundary for this HTTP endpoint. If a tool is reachable here via Gateway auth + tool policy, `/tools/invoke` does not add an extra per-call approval prompt.
-- Do not share Gateway bearer credentials with untrusted callers. If you need separation across trust boundaries, run separate gateways (and ideally separate OS users/hosts).
+- Підтвердження exec є операторськими запобіжниками, а не окремою межею авторизації для цього HTTP-ендпоїнта. Якщо інструмент доступний тут через автентифікацію Gateway + політику інструментів, `/tools/invoke` не додає додатковий prompt підтвердження для кожного виклику.
+- Якщо `exec` доступний тут, вважайте його мутаційною shell-поверхнею. Заборона `write`, `edit`, `apply_patch` або HTTP-інструментів запису у файлову систему не робить виконання shell доступним лише для читання.
+- Не передавайте bearer-облікові дані Gateway недовіреним викликачам. Якщо вам потрібне розділення між межами довіри, запускайте окремі gateways (і в ідеалі окремих користувачів/хости ОС).
 
-Gateway HTTP also applies a hard deny list by default (even if session policy allows the tool):
+Gateway HTTP також типово застосовує жорсткий deny list (навіть якщо політика сесії дозволяє інструмент):
 
-- `exec` - direct command execution (RCE surface)
-- `spawn` - arbitrary child process creation (RCE surface)
-- `shell` - shell command execution (RCE surface)
-- `fs_write` - arbitrary file mutation on the host
-- `fs_delete` - arbitrary file deletion on the host
-- `fs_move` - arbitrary file move/rename on the host
-- `apply_patch` - patch application can rewrite arbitrary files
-- `sessions_spawn` - session orchestration; spawning agents remotely is RCE
-- `sessions_send` - cross-session message injection
-- `cron` - persistent automation control plane
-- `gateway` - gateway control plane; prevents reconfiguration via HTTP
-- `nodes` - node command relay can reach system.run on paired hosts
-- `whatsapp_login` - interactive setup requiring terminal QR scan; hangs on HTTP
+- `exec` - пряме виконання команд (поверхня RCE)
+- `spawn` - довільне створення дочірніх процесів (поверхня RCE)
+- `shell` - виконання команд shell (поверхня RCE)
+- `fs_write` - довільна зміна файлів на хості
+- `fs_delete` - довільне видалення файлів на хості
+- `fs_move` - довільне переміщення/перейменування файлів на хості
+- `apply_patch` - застосування patch може переписувати довільні файли
+- `sessions_spawn` - оркестрація сесій; віддалене створення агентів є RCE
+- `sessions_send` - вставлення повідомлень між сесіями
+- `cron` - площина керування постійною автоматизацією
+- `gateway` - площина керування gateway; запобігає переналаштуванню через HTTP
+- `nodes` - ретрансляція команд вузла може досягати system.run на спарених хостах
+- `whatsapp_login` - інтерактивне налаштування, що потребує сканування QR у терміналі; зависає на HTTP
 
-You can customize this deny list via `gateway.tools`:
+Ви можете налаштувати цей deny list через `gateway.tools`:
 
 ```json5
 {
@@ -137,22 +138,22 @@ You can customize this deny list via `gateway.tools`:
 }
 ```
 
-To help group policies resolve context, you can optionally set:
+Щоб допомогти груповим політикам визначити контекст, ви можете необов’язково встановити:
 
-- `x-openclaw-message-channel: <channel>` (example: `slack`, `telegram`)
-- `x-openclaw-account-id: <accountId>` (when multiple accounts exist)
+- `x-openclaw-message-channel: <channel>` (приклад: `slack`, `telegram`)
+- `x-openclaw-account-id: <accountId>` (коли існує кілька облікових записів)
 
-## Responses
+## Відповіді
 
 - `200` → `{ ok: true, result }`
-- `400` → `{ ok: false, error: { type, message } }` (invalid request or tool input error)
-- `401` → unauthorized
-- `429` → auth rate-limited (`Retry-After` set)
-- `404` → tool not available (not found or not allowlisted)
-- `405` → method not allowed
-- `500` → `{ ok: false, error: { type, message } }` (unexpected tool execution error; sanitized message)
+- `400` → `{ ok: false, error: { type, message } }` (некоректний запит або помилка вхідних даних інструмента)
+- `401` → не авторизовано
+- `429` → автентифікацію обмежено за частотою (`Retry-After` встановлено)
+- `404` → інструмент недоступний (не знайдено або не додано до allowlist)
+- `405` → метод не дозволено
+- `500` → `{ ok: false, error: { type, message } }` (неочікувана помилка виконання інструмента; повідомлення очищено)
 
-## Example
+## Приклад
 
 ```bash
 curl -sS http://127.0.0.1:18789/tools/invoke \
@@ -165,7 +166,7 @@ curl -sS http://127.0.0.1:18789/tools/invoke \
   }'
 ```
 
-## Related
+## Пов’язане
 
-- [Gateway protocol](/uk/gateway/protocol)
-- [Tools and plugins](/uk/tools)
+- [Протокол Gateway](/uk/gateway/protocol)
+- [Інструменти та plugins](/uk/tools)

@@ -1,32 +1,32 @@
 ---
 read_when:
-    - คุณต้องการใส่ system event เข้าแถวโดยไม่สร้างงาน Cron
-    - คุณต้องการเปิดหรือปิด Heartbeat
-    - คุณต้องการตรวจสอบรายการ presence ของระบบ
-summary: ข้อมูลอ้างอิง CLI สำหรับ `openclaw system` (system events, Heartbeat, presence)
+    - คุณต้องการเพิ่มเหตุการณ์ของระบบเข้าคิวโดยไม่ต้องสร้างงาน Cron
+    - คุณต้องเปิดหรือปิดใช้งาน Heartbeat
+    - คุณต้องการตรวจสอบรายการสถานะการมีอยู่ของระบบ
+summary: เอกสารอ้างอิง CLI สำหรับ `openclaw system` (เหตุการณ์ของระบบ, Heartbeat, สถานะการปรากฏตัว)
 title: ระบบ
 x-i18n:
-    generated_at: "2026-04-24T09:04:34Z"
-    model: gpt-5.4
+    generated_at: "2026-05-11T20:27:26Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 0f4be30b0b2d18ee5653071d6375cebeb9fc94733e30bdb7b89a19c286df880b
+    source_hash: 2810fb064ea4afeac24ca0d71419913a664bbec0721cabdb09196075914f4864
     source_path: cli/system.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw system`
 
-ตัวช่วยระดับระบบสำหรับ Gateway: ใส่ system events เข้าแถว ควบคุม Heartbeat
-และดู presence
+ตัวช่วยระดับระบบสำหรับ Gateway: จัดคิวเหตุการณ์ระบบ ควบคุม Heartbeat
+และดูสถานะการปรากฏ
 
-subcommands ทั้งหมดของ `system` ใช้ Gateway RPC และรองรับแฟลกไคลเอนต์ที่ใช้ร่วมกัน:
+คำสั่งย่อย `system` ทั้งหมดใช้ Gateway RPC และยอมรับแฟล็กไคลเอนต์ที่ใช้ร่วมกัน:
 
 - `--url <url>`
 - `--token <token>`
 - `--timeout <ms>`
 - `--expect-final`
 
-## คำสั่งที่ใช้บ่อย
+## คำสั่งทั่วไป
 
 ```bash
 openclaw system event --text "Check for urgent follow-ups" --mode now
@@ -38,44 +38,57 @@ openclaw system presence
 
 ## `system event`
 
-ใส่ system event เข้าแถวใน session **หลัก** Heartbeat ครั้งถัดไปจะฉีด
-เหตุการณ์นี้เป็นบรรทัด `System:` ในพรอมป์ต์ ใช้ `--mode now` เพื่อทริกเกอร์ Heartbeat
-ทันที; `next-heartbeat` จะรอ tick ตามกำหนดครั้งถัดไป
+โดยค่าเริ่มต้น จะจัดคิวเหตุการณ์ระบบบนเซสชัน**หลัก** Heartbeat ถัดไป
+จะแทรกเหตุการณ์นั้นเป็นบรรทัด `System:` ในพรอมป์ ใช้ `--mode now` เพื่อทริกเกอร์
+Heartbeat ทันที; `next-heartbeat` จะรอ tick ตามกำหนดการถัดไป
 
-แฟลก:
+ส่ง `--session-key` เพื่อกำหนดเป้าหมายเป็นเซสชันเฉพาะ (เช่น เพื่อส่งต่อ
+การเสร็จสิ้นของงานแบบอะซิงโครนัสกลับไปยังช่องทางที่เริ่มงานนั้น)
 
-- `--text <text>`: ข้อความ system event ที่จำเป็น
+> **ข้อยกเว้นด้านเวลากับ `--session-key`:** เมื่อระบุ `--session-key`,
+> `--mode next-heartbeat` จะยุบเป็นการปลุกเป้าหมายทันทีแทนที่จะ
+> รอ tick ตามกำหนดการถัดไป การปลุกเป้าหมายใช้เจตนา Heartbeat
+> `immediate` จึงข้ามด่าน not-due ของรันเนอร์ ซึ่งไม่เช่นนั้นจะ
+> เลื่อน (และเท่ากับทิ้ง) การปลุกที่มีเจตนาเป็น `event` หากคุณต้องการ
+> การส่งมอบแบบหน่วงเวลา ให้ละ `--session-key` เพื่อให้เหตุการณ์ลงที่เซสชันหลักและ
+> ไปกับ Heartbeat ปกติถัดไป
+
+แฟล็ก:
+
+- `--text <text>`: ข้อความเหตุการณ์ระบบที่จำเป็นต้องระบุ
 - `--mode <mode>`: `now` หรือ `next-heartbeat` (ค่าเริ่มต้น)
-- `--json`: เอาต์พุตแบบเครื่องอ่านได้
-- `--url`, `--token`, `--timeout`, `--expect-final`: แฟลก Gateway RPC ที่ใช้ร่วมกัน
+- `--session-key <sessionKey>`: ไม่บังคับ; กำหนดเป้าหมายเป็นเซสชันเอเจนต์เฉพาะ
+  แทนเซสชันหลักของเอเจนต์ คีย์ที่ไม่ได้เป็นของเอเจนต์ที่แก้ไขได้จะย้อนกลับไปยังเซสชันหลักของเอเจนต์
+- `--json`: เอาต์พุตที่เครื่องอ่านได้
+- `--url`, `--token`, `--timeout`, `--expect-final`: แฟล็ก Gateway RPC ที่ใช้ร่วมกัน
 
 ## `system heartbeat last|enable|disable`
 
-ตัวควบคุม Heartbeat:
+การควบคุม Heartbeat:
 
 - `last`: แสดงเหตุการณ์ Heartbeat ล่าสุด
-- `enable`: เปิด Heartbeat กลับมาอีกครั้ง (ใช้เมื่อถูกปิดไว้)
+- `enable`: เปิด Heartbeat อีกครั้ง (ใช้สิ่งนี้หากถูกปิดไว้)
 - `disable`: หยุด Heartbeat ชั่วคราว
 
-แฟลก:
+แฟล็ก:
 
-- `--json`: เอาต์พุตแบบเครื่องอ่านได้
-- `--url`, `--token`, `--timeout`, `--expect-final`: แฟลก Gateway RPC ที่ใช้ร่วมกัน
+- `--json`: เอาต์พุตที่เครื่องอ่านได้
+- `--url`, `--token`, `--timeout`, `--expect-final`: แฟล็ก Gateway RPC ที่ใช้ร่วมกัน
 
 ## `system presence`
 
-แสดงรายการ presence ของระบบปัจจุบันที่ Gateway รู้จัก (Nodes,
-instances และบรรทัดสถานะในลักษณะเดียวกัน)
+แสดงรายการเอนทรีสถานะการปรากฏของระบบปัจจุบันที่ Gateway ทราบ (โหนด,
+อินสแตนซ์ และบรรทัดสถานะที่คล้ายกัน)
 
-แฟลก:
+แฟล็ก:
 
-- `--json`: เอาต์พุตแบบเครื่องอ่านได้
-- `--url`, `--token`, `--timeout`, `--expect-final`: แฟลก Gateway RPC ที่ใช้ร่วมกัน
+- `--json`: เอาต์พุตที่เครื่องอ่านได้
+- `--url`, `--token`, `--timeout`, `--expect-final`: แฟล็ก Gateway RPC ที่ใช้ร่วมกัน
 
 ## หมายเหตุ
 
-- ต้องมี Gateway ที่กำลังรันและเข้าถึงได้ตาม config ปัจจุบันของคุณ (โลคัลหรือระยะไกล)
-- system events เป็นแบบชั่วคราวและจะไม่ถูกเก็บไว้ข้ามการรีสตาร์ต
+- ต้องมี Gateway ที่กำลังทำงานและเข้าถึงได้โดยการกำหนดค่าปัจจุบันของคุณ (ภายในเครื่องหรือระยะไกล)
+- เหตุการณ์ระบบเป็นแบบชั่วคราวและจะไม่คงอยู่ข้ามการรีสตาร์ต
 
 ## ที่เกี่ยวข้อง
 

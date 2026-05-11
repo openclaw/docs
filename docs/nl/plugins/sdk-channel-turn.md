@@ -1,90 +1,91 @@
 ---
 read_when:
-    - Je bouwt een kanaal-Plugin en wilt de gedeelde levenscyclus voor inkomende beurten
-    - Je migreert een kanaalmonitor weg van zelfgeschreven registratie-/dispatch-lijmcode
-    - Je moet de fasen voor toelating, inname, classificatie, voorcontrole, oplossing, vastlegging, verzending en afronding begrijpen
+    - Je bouwt een kanaalplugin en wilt de gedeelde levenscyclus voor inkomende beurten
+    - Je migreert een kanaalmonitor weg van zelfgeschreven record-/dispatch-lijmcode
+    - Je moet de fasen toelating, inname, classificatie, voorafcontrole, oplossing, registratie, verzending en afronding begrijpen
 sidebarTitle: Channel turn
-summary: runtime.channel.turn -- de gedeelde kernel voor inkomende turns die gebundelde en externe kanaalplugins gebruiken om agentturns vast te leggen, te dispatchen en af te ronden
+summary: runtime.channel.turn -- de gedeelde kernel voor inkomende beurten die gebundelde en externe kanaalplugins gebruiken om agentbeurten vast te leggen, te dispatchen en af te ronden
 title: Kanaalbeurtkernel
 x-i18n:
-    generated_at: "2026-05-06T09:25:59Z"
+    generated_at: "2026-05-11T20:42:46Z"
     model: gpt-5.5
     provider: openai
-    source_hash: a2af51bcbf179d68221e800b4c7ec6fa7db5d02a0812dc303eb1438d111c2ea4
+    source_hash: 1eb474bf2bf6f30270deb8a8ac0237ce4fc9b923521c5ac0cf7cb0714db13966
     source_path: plugins/sdk-channel-turn.md
     workflow: 16
 ---
 
-De channel-turn-kernel is de gedeelde inkomende state machine die een genormaliseerde platformgebeurtenis omzet in een agent-turn. Kanaalplugins leveren de platformfeiten en de bezorgcallback. Core beheert de orkestratie: innemen, classificeren, preflight, oplossen, autoriseren, samenstellen, vastleggen, dispatchen en afronden.
+De kanaal-turn-kernel is de gedeelde inkomende toestandsmachine die een genormaliseerde platformgebeurtenis omzet in een agent-turn. Kanaalplugins leveren de platformfeiten en de bezorgcallback. Core beheert de orkestratie: opnemen, classificeren, preflighten, oplossen, autoriseren, samenstellen, vastleggen, dispatchen en afronden.
 
 Gebruik dit wanneer je plugin zich op het hot path voor inkomende berichten bevindt. Houd niet-berichtgebeurtenissen (slash-commando's, modals, knopinteracties, lifecycle-gebeurtenissen, reacties, spraakstatus) plugin-lokaal. De kernel beheert alleen gebeurtenissen die een tekst-turn van een agent kunnen worden.
 
 <Info>
-  De kernel wordt bereikt via de geïnjecteerde plugin-runtime als `runtime.channel.turn.*`. Het plugin-runtime-type wordt geëxporteerd vanuit `openclaw/plugin-sdk/core`, zodat native plugins van derden deze entrypoints op dezelfde manier kunnen gebruiken als gebundelde kanaalplugins.
+  De kernel wordt bereikt via de geïnjecteerde pluginruntime als `runtime.channel.turn.*`. Het pluginruntime-type wordt geëxporteerd vanuit `openclaw/plugin-sdk/core`, zodat native plugins van derden deze entrypoints op dezelfde manier kunnen gebruiken als gebundelde kanaalplugins.
 </Info>
 
 ## Waarom een gedeelde kernel
 
-Kanaalplugins herhalen dezelfde inkomende flow: normaliseren, routeren, afschermen, een context bouwen, sessiemetadata vastleggen, de agent-turn dispatchen en de bezorgstatus afronden. Zonder gedeelde kernel moet een wijziging in mention-gating, tool-only zichtbare antwoorden, sessiemetadata, pending geschiedenis of afronding van dispatch per kanaal worden toegepast.
+Kanaalplugins herhalen dezelfde inkomende flow: normaliseren, routeren, gaten, een context bouwen, sessiemetadata vastleggen, de agent-turn dispatchen, bezorgstatus afronden. Zonder gedeelde kernel moet een wijziging in mention-gating, tool-only zichtbare antwoorden, sessiemetadata, pending history of dispatch-finalisatie per kanaal worden toegepast.
 
 De kernel houdt vier concepten bewust gescheiden:
 
 - `ConversationFacts`: waar het bericht vandaan kwam
 - `RouteFacts`: welke agent en sessie het moeten verwerken
-- `ReplyPlanFacts`: waar zichtbare antwoorden naartoe moeten
+- `ReplyPlanFacts`: waar zichtbare antwoorden heen moeten
 - `MessageFacts`: welke body en aanvullende context de agent moet zien
 
-Slack-DM's, Telegram-topics, Matrix-threads en Feishu-topicsessies onderscheiden deze in de praktijk allemaal. Ze als één identifier behandelen veroorzaakt na verloop van tijd drift.
+Slack-DM's, Telegram-onderwerpen, Matrix-threads en Feishu-onderwerpsessies maken hier in de praktijk allemaal onderscheid tussen. Ze als één identifier behandelen veroorzaakt na verloop van tijd drift.
 
 ## Stage-lifecycle
 
-De kernel voert dezelfde vaste pipeline uit, ongeacht kanaal:
+De kernel voert dezelfde vaste pipeline uit, ongeacht het kanaal:
 
-1. `ingest` -- adapter zet een raw platformgebeurtenis om naar `NormalizedTurnInput`
+1. `ingest` -- adapter zet een ruwe platformgebeurtenis om in `NormalizedTurnInput`
 2. `classify` -- adapter declareert of deze gebeurtenis een agent-turn kan starten
-3. `preflight` -- adapter doet dedupe, self-echo, hydration, debounce, decryptie, gedeeltelijke voorinvulling van feiten
-4. `resolve` -- adapter retourneert een volledig samengestelde turn (route, reply plan, message, delivery)
-5. `authorize` -- DM-, groeps-, mention- en commandobeleid toegepast op de samengestelde feiten
-6. `assemble` -- `FinalizedMsgContext` opgebouwd uit de feiten via `buildContext`
-7. `record` -- inkomende sessiemetadata en laatste route opgeslagen
-8. `dispatch` -- agent-turn uitgevoerd via de buffered block dispatcher
-9. `finalize` -- adapter `onFinalize` draait zelfs bij een dispatchfout
+3. `preflight` -- adapter doet deduplicatie, self-echo, hydratie, debounce, decryptie, gedeeltelijke fact-prefill
+4. `resolve` -- adapter retourneert een volledig samengestelde turn (route, antwoordplan, bericht, bezorging)
+5. `authorize` -- DM-, groep-, mention- en commandobeleid toegepast op de samengestelde feiten
+6. `assemble` -- `FinalizedMsgContext` gebouwd uit de feiten via `buildContext`
+7. `record` -- inkomende sessiemetadata en laatste route gepersisteerd
+8. `dispatch` -- agent-turn uitgevoerd via de gebufferde block-dispatcher
+9. `finalize` -- adapter `onFinalize` draait ook bij een dispatch-fout
 
-Elke stage emit een gestructureerde loggebeurtenis wanneer een `log`-callback wordt meegegeven. Zie [Observability](#observability).
+Elke stage emit een gestructureerde loggebeurtenis wanneer een `log`-callback is meegegeven. Zie [Observability](#observability).
 
-## Admission-soorten
+## Toelatingssoorten
 
-De kernel throwt niet wanneer een turn wordt tegengehouden. Hij retourneert een `ChannelTurnAdmission`:
+De kernel gooit geen exception wanneer een turn wordt tegengehouden. Hij retourneert een `ChannelTurnAdmission`:
 
-| Soort         | Wanneer                                                                                                                                       |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `dispatch`    | Turn wordt toegelaten. Agent-turn draait en het zichtbare antwoordpad wordt gebruikt.                                                          |
-| `observeOnly` | Turn draait end-to-end maar de delivery-adapter verzendt niets zichtbaars. Gebruikt voor broadcast-observeragents en andere passieve multi-agentflows. |
-| `handled`     | Een platformgebeurtenis is lokaal verwerkt (lifecycle, reactie, knop, modal). Kernel slaat dispatch over.                                      |
-| `drop`        | Overslaan-pad. Optioneel houdt `recordHistory: true` het bericht in pending groepsgeschiedenis zodat een toekomstige mention context heeft.     |
+| Soort         | Wanneer                                                                                                                                     |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `dispatch`    | Turn wordt toegelaten. Agent-turn draait en het zichtbare antwoordpad wordt gebruikt.                                                        |
+| `observeOnly` | Turn draait end-to-end, maar de bezorgadapter verzendt niets zichtbaars. Gebruikt voor broadcast-observeragents en andere passieve multi-agentflows. |
+| `handled`     | Een platformgebeurtenis werd lokaal afgehandeld (lifecycle, reactie, knop, modal). Kernel slaat dispatch over.                               |
+| `drop`        | Oversla-pad. Optioneel houdt `recordHistory: true` het bericht in pending groepsgeschiedenis, zodat een toekomstige mention context heeft.    |
 
-Admission kan komen uit `classify` (gebeurtenisklasse zei dat deze geen turn kan starten), uit `preflight` (dedupe, self-echo, ontbrekende mention met geschiedenisregistratie), of uit `resolveTurn` zelf.
+Toelating kan komen uit `classify` (gebeurtenisklasse zei dat deze geen turn kan starten), uit `preflight` (deduplicatie, self-echo, ontbrekende mention met geschiedenisvastlegging), of uit `resolveTurn` zelf.
 
-## Entrypoints
+## Entry points
 
-De runtime exposeert drie aanbevolen entrypoints zodat adapters kunnen instappen op het niveau dat bij het kanaal past.
+De runtime stelt drie voorkeurs-entrypoints beschikbaar, zodat adapters kunnen instappen op het niveau dat bij het kanaal past.
 
 ```typescript
 runtime.channel.turn.run(...)             // adapter-driven full pipeline
+runtime.channel.turn.runAssembled(...)    // already-built context + delivery adapter
 runtime.channel.turn.runPrepared(...)     // channel owns dispatch; kernel runs record + finalize
 runtime.channel.turn.buildContext(...)    // pure facts to FinalizedMsgContext mapping
 ```
 
-Twee oudere runtime-helpers blijven beschikbaar voor compatibiliteit met de Plugin SDK:
+Twee oudere runtimehelpers blijven beschikbaar voor Plugin SDK-compatibiliteit:
 
 ```typescript
 runtime.channel.turn.runResolved(...)      // deprecated compatibility alias; prefer run
-runtime.channel.turn.dispatchAssembled(...) // deprecated compatibility alias; prefer run or runPrepared
+runtime.channel.turn.dispatchAssembled(...) // deprecated compatibility alias; prefer runAssembled
 ```
 
 ### run
 
-Gebruik dit wanneer je kanaal zijn inkomende flow kan uitdrukken als een `ChannelTurnAdapter<TRaw>`. De adapter heeft callbacks voor `ingest`, optioneel `classify`, optioneel `preflight`, verplicht `resolveTurn` en optioneel `onFinalize`.
+Gebruik wanneer je kanaal zijn inkomende flow kan uitdrukken als een `ChannelTurnAdapter<TRaw>`. De adapter heeft callbacks voor `ingest`, optioneel `classify`, optioneel `preflight`, verplicht `resolveTurn` en optioneel `onFinalize`.
 
 ```typescript
 await runtime.channel.turn.run({
@@ -119,11 +120,46 @@ await runtime.channel.turn.run({
 });
 ```
 
-`run` is de juiste vorm wanneer het kanaal kleine adapterlogica heeft en baat heeft bij lifecycle-beheer via hooks.
+`run` is de juiste vorm wanneer het kanaal kleine adapterlogica heeft en baat heeft bij eigenaarschap over de lifecycle via hooks.
+
+### runAssembled
+
+Gebruik wanneer het kanaal de routering al heeft opgelost, een `FinalizedMsgContext`
+heeft gebouwd, en alleen de gedeelde record-, antwoordpipeline-, dispatch- en finalize-
+volgorde nodig heeft. Dit is de voorkeursvorm voor eenvoudige gebundelde inkomende paden die
+anders `createChannelMessageReplyPipeline(...)`- en
+`runPrepared(...)`-boilerplate zouden herhalen.
+
+```typescript
+await runtime.channel.turn.runAssembled({
+  cfg,
+  channel: "irc",
+  accountId,
+  agentId: route.agentId,
+  routeSessionKey: route.sessionKey,
+  storePath,
+  ctxPayload,
+  recordInboundSession: runtime.channel.session.recordInboundSession,
+  dispatchReplyWithBufferedBlockDispatcher:
+    runtime.channel.reply.dispatchReplyWithBufferedBlockDispatcher,
+  delivery: {
+    deliver: async (payload) => {
+      await sendPlatformReply(payload);
+    },
+    onError: (err, info) => {
+      runtime.error?.(`reply ${info.kind} failed: ${String(err)}`);
+    },
+  },
+});
+```
+
+Kies `runAssembled` boven `runPrepared` wanneer het enige kanaal-eigen dispatch-
+gedrag bestaat uit uiteindelijke payloadbezorging plus optioneel typen, antwoordopties, duurzame
+bezorging of foutlogging.
 
 ### runPrepared
 
-Gebruik dit wanneer het kanaal een complexe lokale dispatcher heeft met previews, retries, edits of thread-bootstrap die kanaal-eigendom moet blijven. De kernel registreert nog steeds de inkomende sessie vóór dispatch en levert een uniforme `DispatchedChannelTurnResult`.
+Gebruik wanneer het kanaal een complexe lokale dispatcher heeft met previews, retries, edits of thread-bootstrap die kanaal-eigen moet blijven. De kernel legt de inkomende sessie nog steeds vast vóór dispatch en geeft een uniforme `DispatchedChannelTurnResult` door.
 
 ```typescript
 const { dispatchResult } = await runtime.channel.turn.runPrepared({
@@ -146,11 +182,11 @@ const { dispatchResult } = await runtime.channel.turn.runPrepared({
 });
 ```
 
-Rijke kanalen (Matrix, Mattermost, Microsoft Teams, Feishu, QQ Bot) gebruiken `runPrepared` omdat hun dispatcher platformspecifiek gedrag orkestreert waarover de kernel niets hoeft te weten.
+Rijke kanalen (Matrix, Mattermost, Microsoft Teams, Feishu, QQ Bot) gebruiken `runPrepared` omdat hun dispatcher platformspecifiek gedrag orkestreert waar de kernel niets over mag hoeven weten.
 
 ### buildContext
 
-Een pure functie die feitenbundels mapt naar `FinalizedMsgContext`. Gebruik dit wanneer je kanaal een deel van de pipeline met de hand opbouwt, maar een consistente contextvorm wil.
+Een pure functie die factbundels mapt naar `FinalizedMsgContext`. Gebruik deze wanneer je kanaal een deel van de pipeline handmatig bouwt maar een consistente contextvorm wil.
 
 ```typescript
 const ctxPayload = runtime.channel.turn.buildContext({
@@ -170,13 +206,13 @@ const ctxPayload = runtime.channel.turn.buildContext({
 });
 ```
 
-`buildContext` is ook nuttig binnen `resolveTurn`-callbacks bij het samenstellen van een turn voor `run`.
+`buildContext` is ook nuttig binnen `resolveTurn`-callbacks wanneer je een turn voor `run` samenstelt.
 
 <Note>
   Verouderde SDK-helpers zoals `dispatchInboundReplyWithBase` bridgen nog steeds via een assembled-turn-helper. Nieuwe plugincode moet `run` of `runPrepared` gebruiken.
 </Note>
 
-## Feitentypen
+## Fact-typen
 
 De feiten die de kernel van je adapter consumeert zijn platformagnostisch. Vertaal platformobjecten naar deze vormen voordat je ze aan de kernel doorgeeft.
 
@@ -184,111 +220,111 @@ De feiten die de kernel van je adapter consumeert zijn platformagnostisch. Verta
 
 | Veld              | Doel                                                                         |
 | ----------------- | ---------------------------------------------------------------------------- |
-| `id`              | Stabiele bericht-id gebruikt voor dedupe en logs                             |
+| `id`              | Stabiele bericht-id gebruikt voor deduplicatie en logs                       |
 | `timestamp`       | Optionele epoch ms                                                           |
 | `rawText`         | Body zoals ontvangen van het platform                                        |
-| `textForAgent`    | Optionele opgeschoonde body voor de agent (mention strip, typing trim)       |
+| `textForAgent`    | Optionele opgeschoonde body voor de agent (mention-strip, type-trim)         |
 | `textForCommands` | Optionele body gebruikt voor `/command`-parsing                              |
 | `raw`             | Optionele pass-through-referentie voor adaptercallbacks die het origineel nodig hebben |
 
 ### ChannelEventClass
 
 | Veld                   | Doel                                                                    |
-| ---------------------- | ------------------------------------------------------------------------ |
+| ---------------------- | ----------------------------------------------------------------------- |
 | `kind`                 | `message`, `command`, `interaction`, `reaction`, `lifecycle`, `unknown` |
 | `canStartAgentTurn`    | Als false retourneert de kernel `{ kind: "handled" }`                   |
-| `requiresImmediateAck` | Hint voor adapters die vóór dispatch moeten ACK'en                      |
+| `requiresImmediateAck` | Hint voor adapters die vóór dispatch een ACK moeten sturen              |
 
 ### SenderFacts
 
-| Veld           | Doel                                                              |
-| -------------- | ------------------------------------------------------------------ |
-| `id`           | Stabiele platform-sender-id                                        |
-| `name`         | Weergavenaam                                                       |
-| `username`     | Handle als die verschilt van `name`                                |
-| `tag`          | Discord-achtige discriminator of platformtag                       |
-| `roles`        | Rol-id's, gebruikt voor matching van member-role-allowlists        |
-| `isBot`        | True wanneer de afzender een bekende bot is (kernel gebruikt dit voor droppen) |
-| `isSelf`       | True wanneer de afzender de geconfigureerde agent zelf is          |
-| `displayLabel` | Vooraf gerenderd label voor enveloptekst                           |
+| Veld           | Doel                                                            |
+| -------------- | --------------------------------------------------------------- |
+| `id`           | Stabiele platform-sender-id                                     |
+| `name`         | Weergavenaam                                                    |
+| `username`     | Handle indien verschillend van `name`                           |
+| `tag`          | Discord-achtige discriminator of platformtag                    |
+| `roles`        | Rol-id's, gebruikt voor allowlist-matching op memberrollen      |
+| `isBot`        | True wanneer de sender een bekende bot is (kernel gebruikt dit voor droppen) |
+| `isSelf`       | True wanneer de sender de geconfigureerde agent zelf is         |
+| `displayLabel` | Vooraf gerenderd label voor enveloptekst                        |
 
 ### ConversationFacts
 
-| Veld              | Doel                                                                  |
-| ----------------- | ---------------------------------------------------------------------- |
-| `kind`            | `direct`, `group` of `channel`                                        |
-| `id`              | Gespreks-id gebruikt voor routering                                   |
-| `label`           | Menselijk label voor de envelop                                       |
-| `spaceId`         | Optionele buitenste space-identifier (Slack-workspace, Matrix-homeserver) |
-| `parentId`        | Buitenste gespreks-id wanneer dit een thread is                       |
-| `threadId`        | Thread-id wanneer dit bericht zich in een thread bevindt              |
-| `nativeChannelId` | Platform-native kanaal-id wanneer die verschilt van de routing-id     |
-| `routePeer`       | Peer gebruikt voor `resolveAgentRoute`-lookup                         |
+| Veld              | Doel                                                                    |
+| ----------------- | ----------------------------------------------------------------------- |
+| `kind`            | `direct`, `group` of `channel`                                          |
+| `id`              | Gespreks-id gebruikt voor routering                                     |
+| `label`           | Menselijk label voor de envelop                                         |
+| `spaceId`         | Optionele outer space-identifier (Slack-workspace, Matrix-homeserver)   |
+| `parentId`        | Outer conversation-id wanneer dit een thread is                         |
+| `threadId`        | Thread-id wanneer dit bericht zich in een thread bevindt                |
+| `nativeChannelId` | Platform-native kanaal-id wanneer die verschilt van de routerings-id    |
+| `routePeer`       | Peer gebruikt voor `resolveAgentRoute`-lookup                           |
 
 ### RouteFacts
 
-| Veld                    | Doel                                                        |
-| ----------------------- | ----------------------------------------------------------- |
-| `agentId`               | Agent die deze turn moet afhandelen                         |
-| `accountId`             | Optionele override (multi-accountkanalen)                   |
-| `routeSessionKey`       | Sessiesleutel gebruikt voor routering                       |
-| `dispatchSessionKey`    | Sessiesleutel gebruikt bij dispatch wanneer die verschilt van de routesleutel |
-| `persistedSessionKey`   | Sessiesleutel geschreven naar opgeslagen sessiemetadata     |
-| `parentSessionKey`      | Parent voor vertakte/threaded sessies                       |
-| `modelParentSessionKey` | Model-side parent voor vertakte sessies                     |
-| `mainSessionKey`        | Hoofd-DM-ownerpin voor directe gesprekken                   |
-| `createIfMissing`       | Sta de record-stap toe een ontbrekende sessierij aan te maken |
+| Veld                    | Doel                                                       |
+| ----------------------- | ---------------------------------------------------------- |
+| `agentId`               | Agent die deze beurt moet afhandelen                       |
+| `accountId`             | Optionele overschrijving (kanalen met meerdere accounts)   |
+| `routeSessionKey`       | Sessiesleutel gebruikt voor routering                      |
+| `dispatchSessionKey`    | Sessiesleutel gebruikt bij dispatch wanneer die verschilt van de routeersleutel |
+| `persistedSessionKey`   | Sessiesleutel geschreven naar persistente sessiemetadata   |
+| `parentSessionKey`      | Bovenliggende sessie voor vertakte/threaded sessies        |
+| `modelParentSessionKey` | Modelzijde-bovenliggende sessie voor vertakte sessies      |
+| `mainSessionKey`        | Hoofd-DM-eigenaarspin voor directe gesprekken              |
+| `createIfMissing`       | Sta de recordstap toe een ontbrekende sessierij te maken   |
 
 ### ReplyPlanFacts
 
 | Veld                      | Doel                                                    |
 | ------------------------- | ------------------------------------------------------- |
-| `to`                      | Logisch antwoorddoel dat naar context `To` wordt geschreven |
+| `to`                      | Logisch antwoorddoel geschreven naar context `To`       |
 | `originatingTo`           | Oorspronkelijk contextdoel (`OriginatingTo`)            |
-| `nativeChannelId`         | Platformeigen kanaal-id voor levering                   |
-| `replyTarget`             | Uiteindelijke zichtbare antwoordbestemming als die afwijkt van `to` |
-| `deliveryTarget`          | Lager-niveau overschrijving voor levering               |
+| `nativeChannelId`         | Platform-native kanaal-id voor aflevering               |
+| `replyTarget`             | Uiteindelijke zichtbare antwoordbestemming als die verschilt van `to` |
+| `deliveryTarget`          | Lagere-niveau afleveringsoverschrijving                 |
 | `replyToId`               | Geciteerd/verankerd bericht-id                          |
 | `replyToIdFull`           | Volledige geciteerde id wanneer het platform beide heeft |
-| `messageThreadId`         | Thread-id op het moment van levering                    |
-| `threadParentId`          | Id van het bovenliggende bericht van de thread          |
+| `messageThreadId`         | Thread-id op aflevermoment                              |
+| `threadParentId`          | Bovenliggende bericht-id van de thread                  |
 | `sourceReplyDeliveryMode` | `thread`, `reply`, `channel`, `direct` of `none`        |
 
 ### AccessFacts
 
-`AccessFacts` bevat de booleans die de autorisatiefase nodig heeft. Identiteitsmatching blijft in het kanaal: de kernel gebruikt alleen het resultaat.
+`AccessFacts` bevat de booleans die de autorisatiestap nodig heeft. Identiteitsmatching blijft in het kanaal: de kernel verbruikt alleen het resultaat.
 
 | Veld       | Doel                                                                      |
 | ---------- | ------------------------------------------------------------------------- |
-| `dm`       | DM-toestaan/koppelen/weigeren-beslissing en `allowFrom`-lijst             |
-| `group`    | Groepsbeleid, route toestaan, afzender toestaan, allowlist, vermeldingsvereiste |
-| `commands` | Opdracht-autorisatie over geconfigureerde autoriseerders heen             |
-| `mentions` | Of vermeldingsdetectie mogelijk is en of de agent is vermeld              |
+| `dm`       | DM-toestaan/koppelen/weigeren-besluit en `allowFrom`-lijst                |
+| `group`    | Groepsbeleid, route toestaan, afzender toestaan, allowlist, mentionvereiste |
+| `commands` | Commandoautorisatie over geconfigureerde authorizers                      |
+| `mentions` | Of mentiondetectie mogelijk is en of de agent werd genoemd                |
 
 ### MessageFacts
 
-| Veld             | Doel                                                        |
-| ---------------- | ----------------------------------------------------------- |
-| `body`           | Uiteindelijke envelop-body (geformatteerd)                  |
-| `rawBody`        | Ruwe inkomende body                                         |
-| `bodyForAgent`   | Body die de agent ziet                                      |
-| `commandBody`    | Body die wordt gebruikt voor opdrachtparsing                |
-| `envelopeFrom`   | Vooraf gerenderd afzenderlabel voor de envelop              |
-| `senderLabel`    | Optionele overschrijving voor de gerenderde afzender        |
-| `preview`        | Korte geredigeerde preview voor logs                        |
-| `inboundHistory` | Recente inkomende historie-items wanneer het kanaal een buffer bijhoudt |
+| Veld             | Doel                                                       |
+| ---------------- | ---------------------------------------------------------- |
+| `body`           | Definitieve envelope-body (geformatteerd)                  |
+| `rawBody`        | Ruwe inkomende body                                        |
+| `bodyForAgent`   | Body die de agent ziet                                     |
+| `commandBody`    | Body gebruikt voor commandoparsing                         |
+| `envelopeFrom`   | Vooraf gerenderd afzenderlabel voor de envelope            |
+| `senderLabel`    | Optionele overschrijving voor de gerenderde afzender       |
+| `preview`        | Korte geredigeerde preview voor logs                       |
+| `inboundHistory` | Recente inkomende geschiedenisitems wanneer het kanaal een buffer bewaart |
 
 ### SupplementalContextFacts
 
-Aanvullende context dekt citaat-, doorgestuurde en thread-bootstrap-context. De kernel past het geconfigureerde `contextVisibility`-beleid toe. De kanaaladapter levert alleen feiten en `senderAllowed`-vlaggen zodat beleid tussen kanalen consistent blijft.
+Aanvullende context omvat quote-, forwarded- en thread-bootstrapcontext. De kernel past het geconfigureerde `contextVisibility`-beleid toe. De kanaaladapter levert alleen feiten en `senderAllowed`-vlaggen, zodat beleid tussen kanalen consistent blijft.
 
 ### InboundMediaFacts
 
-Media heeft de vorm van feiten. Platformdownload, auth, SSRF-beleid, CDN-regels en ontsleuteling blijven kanaal-lokaal. De kernel zet feiten om naar `MediaPath`, `MediaUrl`, `MediaType`, `MediaPaths`, `MediaUrls`, `MediaTypes` en `MediaTranscribedIndexes`.
+Media is feitvormig. Platformdownload, auth, SSRF-beleid, CDN-regels en decryptie blijven kanaallokaal. De kernel zet feiten om naar `MediaPath`, `MediaUrl`, `MediaType`, `MediaPaths`, `MediaUrls`, `MediaTypes` en `MediaTranscribedIndexes`.
 
 ## Adaptercontract
 
-Voor volledige `run` heeft de adapter deze vorm:
+Voor volledige `run` is de adaptervorm:
 
 ```typescript
 type ChannelTurnAdapter<TRaw> = {
@@ -307,11 +343,11 @@ type ChannelTurnAdapter<TRaw> = {
 };
 ```
 
-`resolveTurn` retourneert een `ChannelTurnResolved`, wat een `AssembledChannelTurn` is met een optionele toelatingssoort. Het retourneren van `{ admission: { kind: "observeOnly" } }` voert de beurt uit zonder zichtbare uitvoer te produceren. De adapter blijft eigenaar van de delivery-callback; die wordt voor die beurt alleen een no-op.
+`resolveTurn` retourneert een `ChannelTurnResolved`, wat een `AssembledChannelTurn` is met een optionele toelatingssoort. Het retourneren van `{ admission: { kind: "observeOnly" } }` voert de beurt uit zonder zichtbare output te produceren. De adapter blijft eigenaar van de aflevercallback; die wordt voor die beurt alleen een no-op.
 
-`onFinalize` wordt uitgevoerd op elk resultaat, inclusief dispatchfouten. Gebruik dit om openstaande groepsgeschiedenis te wissen, ack-reacties te verwijderen, statusindicatoren te stoppen en lokale status weg te schrijven.
+`onFinalize` draait op elk resultaat, inclusief dispatchfouten. Gebruik dit om wachtende groepsgeschiedenis te wissen, ack-reacties te verwijderen, statusindicatoren te stoppen en lokale state te flushen.
 
-## Leveringsadapter
+## Afleveradapter
 
 De kernel roept het platform niet rechtstreeks aan. Het kanaal geeft de kernel een `ChannelTurnDeliveryAdapter`:
 
@@ -331,15 +367,15 @@ type ChannelDeliveryResult = {
 };
 ```
 
-`deliver` wordt eenmaal per gebufferd antwoordfragment aangeroepen. Tijdens de migratie van de berichtlevenscyclus is samengestelde levering van kanaalbeurten standaard eigendom van het kanaal: een weggelaten `durable`-veld betekent dat de kernel `deliver` rechtstreeks moet aanroepen en niet via generieke uitgaande levering mag routeren. Stel `durable` pas in nadat het kanaal is geaudit om te bewijzen dat het generieke verzendpad het oude leveringsgedrag bewaart, inclusief antwoord-/threaddoelen, media-afhandeling, verzonden-bericht-/self-echo-caches, statusopschoning en geretourneerde bericht-id's. `durable: false` blijft een compatibele spelling voor "gebruik de callback die eigendom is van het kanaal", maar ongemigreerde kanalen zouden dit niet hoeven toe te voegen. Retourneer platformbericht-id's wanneer het kanaal die heeft, zodat de dispatcher threadankers kan behouden en latere fragmenten kan bewerken; nieuwere leveringspaden moeten ook `receipt` retourneren zodat herstel, afronding van previews en duplicaatonderdrukking van `messageIds` af kunnen. Retourneer voor observe-only beurten `{ visibleReplySent: false }` of gebruik `createNoopChannelTurnDeliveryAdapter()`.
+`deliver` wordt eenmaal aangeroepen per gebufferde antwoordchunk. Tijdens de message-lifecycle-migratie is samengestelde channel-turn-aflevering standaard kanaaleigendom: een weggelaten `durable`-veld betekent dat de kernel `deliver` rechtstreeks moet aanroepen en niet via generieke uitgaande aflevering mag routeren. Stel `durable` pas in nadat het kanaal is geaudit om te bewijzen dat het generieke verzendpad het oude aflevergedrag behoudt, inclusief antwoord-/threaddoelen, mediaverwerking, verzonden-bericht-/self-echo-caches, statusopschoning en geretourneerde bericht-id's. `durable: false` blijft een compatibiliteitsspelling voor "gebruik de callback in kanaaleigendom", maar ongemigreerde kanalen zouden dit niet hoeven toe te voegen. Retourneer platformbericht-id's wanneer het kanaal die heeft, zodat de dispatcher threadankers kan behouden en latere chunks kan bewerken; nieuwere afleverpaden zouden ook `receipt` moeten retourneren zodat herstel, previewfinalisatie en duplicaatonderdrukking van `messageIds` af kunnen bewegen. Retourneer voor observe-only-beurten `{ visibleReplySent: false }` of gebruik `createNoopChannelTurnDeliveryAdapter()`.
 
-Kanalen die `runPrepared` gebruiken met een dispatcher die volledig eigendom is van het kanaal, hebben geen `ChannelTurnDeliveryAdapter`. Die dispatchers zijn standaard niet durable. Ze moeten hun directe leveringspad behouden totdat ze expliciet kiezen voor de nieuwe verzendcontext met een compleet doel, replay-veilige adapter, ontvangstbewijscontract en kanaal-side-effect-hooks.
+Kanalen die `runPrepared` gebruiken met een volledig kanaaleigen dispatcher hebben geen `ChannelTurnDeliveryAdapter`. Die dispatchers zijn standaard niet durable. Ze moeten hun directe afleverpad behouden totdat ze expliciet opt-innen op de nieuwe verzendcontext met een compleet doel, replay-veilige adapter, ontvangstbewijscontract en kanaal-side-effect-hooks.
 
-Publieke compatibiliteitshelpers zoals `recordInboundSessionAndDispatchReply`, `dispatchInboundReplyWithBase` en direct-DM-helpers moeten tijdens de migratie gedragbehoudend blijven. Ze mogen geen generieke durable levering aanroepen vóór `deliver`- of `reply`-callbacks die eigendom zijn van de aanroeper.
+Publieke compatibiliteitshelpers zoals `recordInboundSessionAndDispatchReply`, `dispatchInboundReplyWithBase` en direct-DM-helpers moeten tijdens de migratie gedragbehoudend blijven. Ze mogen generieke durable aflevering niet aanroepen vóór caller-owned `deliver`- of `reply`-callbacks.
 
-## Record-opties
+## Recordopties
 
-De recordfase wikkelt `recordInboundSession`. De meeste kanalen kunnen de standaardwaarden gebruiken. Overschrijf via `record`:
+De recordstap wrapt `recordInboundSession`. De meeste kanalen kunnen de defaults gebruiken. Overschrijf via `record`:
 
 ```typescript
 record: {
@@ -351,11 +387,11 @@ record: {
 }
 ```
 
-De dispatcher wacht op de recordfase. Als record een fout gooit, voert de kernel `onPreDispatchFailure` uit (wanneer meegegeven aan `runPrepared`) en gooit opnieuw.
+De dispatcher wacht op de recordstap. Als record een fout gooit, voert de kernel `onPreDispatchFailure` uit (wanneer meegegeven aan `runPrepared`) en gooit opnieuw.
 
 ## Observeerbaarheid
 
-Elke fase emit een gestructureerd event wanneer een `log`-callback wordt geleverd:
+Elke stap emit een gestructureerde gebeurtenis wanneer een `log`-callback wordt meegegeven:
 
 ```typescript
 await runtime.channel.turn.run({
@@ -376,32 +412,32 @@ await runtime.channel.turn.run({
 });
 ```
 
-Geloggede fasen: `ingest`, `classify`, `preflight`, `resolve`, `authorize`, `assemble`, `record`, `dispatch`, `finalize`. Vermijd het loggen van ruwe bodies; gebruik `MessageFacts.preview` voor korte geredigeerde previews.
+Geloggede stappen: `ingest`, `classify`, `preflight`, `resolve`, `authorize`, `assemble`, `record`, `dispatch`, `finalize`. Vermijd het loggen van ruwe bodies; gebruik `MessageFacts.preview` voor korte geredigeerde previews.
 
-## Wat kanaal-lokaal blijft
+## Wat kanaallokaal blijft
 
 De kernel is eigenaar van de orkestratie. Het kanaal blijft eigenaar van:
 
-- Platformtransports (Gateway, REST, websocket, polling, webhooks)
-- Identiteitsresolutie en matching van weergavenamen
-- Native opdrachten, slash commands, autocomplete, modals, knoppen, spraakstatus
+- Platformtransports (Gateway, REST, websocket, polling, Webhooks)
+- Identiteitsresolutie en display-name-matching
+- Native commando's, slashcommando's, autocomplete, modals, knoppen, voice-state
 - Rendering van kaarten, modals en adaptive cards
 - Media-auth, CDN-regels, versleutelde media, transcriptie
-- API's voor bewerken, reactie, redactie en aanwezigheid
-- Backfill en ophalen van geschiedenis aan platformzijde
+- Bewerk-, reactie-, redactie- en presence-API's
+- Backfill en ophalen van platformzijdige geschiedenis
 - Koppelingsflows die platformspecifieke verificatie vereisen
 
-Als twee kanalen dezelfde helper voor een van deze nodig krijgen, extraheer dan een gedeelde SDK-helper in plaats van die naar de kernel te verplaatsen.
+Als twee kanalen dezelfde helper nodig gaan hebben voor een van deze zaken, extraheer dan een gedeelde SDK-helper in plaats van die in de kernel te duwen.
 
 ## Stabiliteit
 
-`runtime.channel.turn.*` maakt deel uit van het publieke runtime-oppervlak voor Plugins. De feittypen (`SenderFacts`, `ConversationFacts`, `RouteFacts`, `ReplyPlanFacts`, `AccessFacts`, `MessageFacts`, `SupplementalContextFacts`, `InboundMediaFacts`) en toelatingsvormen (`ChannelTurnAdmission`, `ChannelEventClass`) zijn bereikbaar via `PluginRuntime` vanuit `openclaw/plugin-sdk/core`.
+`runtime.channel.turn.*` maakt deel uit van het publieke Plugin-runtimeoppervlak. De feittypen (`SenderFacts`, `ConversationFacts`, `RouteFacts`, `ReplyPlanFacts`, `AccessFacts`, `MessageFacts`, `SupplementalContextFacts`, `InboundMediaFacts`) en toelatingsvormen (`ChannelTurnAdmission`, `ChannelEventClass`) zijn bereikbaar via `PluginRuntime` vanuit `openclaw/plugin-sdk/core`.
 
-Regels voor achterwaartse compatibiliteit zijn van toepassing: nieuwe feitvelden zijn additief, toelatingssoorten worden niet hernoemd en de namen van entrypoints blijven stabiel. Nieuwe kanaalbehoeften die een niet-additieve wijziging vereisen, moeten via het migratieproces van de Plugin-SDK lopen.
+Regels voor achterwaartse compatibiliteit zijn van toepassing: nieuwe feitvelden zijn additief, toelatingssoorten worden niet hernoemd en de entrypointnamen blijven stabiel. Nieuwe kanaalbehoeften die een niet-additieve wijziging vereisen, moeten via het Plugin SDK-migratieproces lopen.
 
 ## Gerelateerd
 
-- [Refactor van berichtlevenscyclus](/nl/concepts/message-lifecycle-refactor) voor de geplande levenscyclus voor verzenden/ontvangen/live die deze kernel zal omwikkelen
-- [Kanaal-Plugins bouwen](/nl/plugins/sdk-channel-plugins) voor het bredere contract voor kanaal-Plugins
+- [Message-lifecycle-refactor](/nl/concepts/message-lifecycle-refactor) voor de geplande verzend-/ontvangst-/live-lifecycle die deze kernel zal wrappen
+- [Kanaalplugins bouwen](/nl/plugins/sdk-channel-plugins) voor het bredere kanaalplugincontract
 - [Plugin-runtimehelpers](/nl/plugins/sdk-runtime) voor andere `runtime.*`-oppervlakken
-- [Plugin-internals](/nl/plugins/architecture-internals) voor laadpipeline en registry-mechanica
+- [Plugin-internals](/nl/plugins/architecture-internals) voor laadpipeline- en registry-mechanica

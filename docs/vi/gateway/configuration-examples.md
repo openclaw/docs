@@ -1,20 +1,20 @@
 ---
 read_when:
     - Tìm hiểu cách cấu hình OpenClaw
-    - Tìm ví dụ cấu hình
+    - Đang tìm ví dụ cấu hình
     - Thiết lập OpenClaw lần đầu tiên
-summary: Các ví dụ cấu hình đúng theo schema cho các thiết lập OpenClaw phổ biến
+summary: Các ví dụ cấu hình đúng theo lược đồ cho các thiết lập OpenClaw phổ biến
 title: Ví dụ cấu hình
 x-i18n:
-    generated_at: "2026-05-10T19:33:38Z"
+    generated_at: "2026-05-11T20:29:34Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9fd1c93d8c491de13c3679c766293a3401853625308e90588d7c83272c5b6e73
+    source_hash: e077b2fe83b1c6e4ffd2ff0029fe3b754c7dc5dced06f134ddf18e9ed6a11fd2
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Các ví dụ dưới đây được căn chỉnh với schema cấu hình hiện tại. Để xem tham chiếu đầy đủ và ghi chú theo từng trường, hãy xem [Cấu hình](/vi/gateway/configuration).
+Các ví dụ bên dưới được căn chỉnh với schema cấu hình hiện tại. Để xem tài liệu tham chiếu đầy đủ và ghi chú theo từng trường, hãy xem [Cấu hình](/vi/gateway/configuration).
 
 ## Bắt đầu nhanh
 
@@ -22,25 +22,32 @@ Các ví dụ dưới đây được căn chỉnh với schema cấu hình hiệ
 
 ```json5
 {
-  agent: { workspace: "~/.openclaw/workspace" },
+  agents: { defaults: { workspace: "~/.openclaw/workspace" } },
   channels: { whatsapp: { allowFrom: ["+15555550123"] } },
 }
 ```
 
-Lưu vào `~/.openclaw/openclaw.json` và bạn có thể DM bot từ số đó.
+Lưu vào `~/.openclaw/openclaw.json` và bạn có thể nhắn tin trực tiếp cho bot từ số đó.
 
-### Cấu hình khởi đầu khuyến nghị
+### Cấu hình khởi đầu được khuyến nghị
 
 ```json5
 {
-  identity: {
-    name: "Clawd",
-    theme: "helpful assistant",
-    emoji: "🦞",
-  },
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: { primary: "anthropic/claude-sonnet-4-6" },
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: { primary: "anthropic/claude-sonnet-4-6" },
+    },
+    list: [
+      {
+        id: "main",
+        identity: {
+          name: "Clawd",
+          theme: "helpful assistant",
+          emoji: "🦞",
+        },
+      },
+    ],
   },
   channels: {
     whatsapp: {
@@ -90,12 +97,7 @@ Lưu vào `~/.openclaw/openclaw.json` và bạn có thể DM bot từ số đó.
     },
   },
 
-  // Identity
-  identity: {
-    name: "Samantha",
-    theme: "helpful sloth",
-    emoji: "🦥",
-  },
+  // Identity is per agent — set it on agents.list[].identity below.
 
   // Logging
   logging: {
@@ -314,6 +316,11 @@ Lưu vào `~/.openclaw/openclaw.json` và bạn có thể DM bot từ số đó.
       {
         id: "main",
         default: true,
+        identity: {
+          name: "Samantha",
+          theme: "helpful sloth",
+          emoji: "🦥",
+        },
         // inherits defaults.skills -> github, weather
         groupChat: {
           mentionPatterns: ["@openclaw", "openclaw"],
@@ -473,9 +480,9 @@ Lưu vào `~/.openclaw/openclaw.json` và bạn có thể DM bot từ số đó.
 }
 ```
 
-### Kho skill cùng cấp được liên kết tượng trưng
+### Kho kỹ năng anh em được liên kết symlink
 
-Dùng phần này khi gốc skill tích hợp sẵn chứa một liên kết tượng trưng tới một kho cùng cấp, ví dụ `~/.agents/skills/manager -> ~/Projects/manager/skills`.
+Dùng cấu hình này khi thư mục gốc kỹ năng tích hợp sẵn chứa một symlink trỏ vào kho anh em, ví dụ `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ```json5
 {
@@ -488,12 +495,12 @@ Dùng phần này khi gốc skill tích hợp sẵn chứa một liên kết tư
 }
 ```
 
-- `extraDirs` quét repo cùng cấp như một gốc skill rõ ràng.
-- `allowSymlinkTargets` cho phép các thư mục skill được liên kết tượng trưng phân giải vào gốc đích thực đáng tin cậy đó mà không cho phép thoát liên kết tượng trưng tùy ý.
+- `extraDirs` quét kho anh em như một thư mục gốc kỹ năng tường minh.
+- `allowSymlinkTargets` cho phép các thư mục kỹ năng được liên kết symlink phân giải vào thư mục gốc đích thực đáng tin cậy đó mà không cho phép thoát symlink tùy ý.
 
-## Mẫu thường gặp
+## Mẫu phổ biến
 
-### Đường cơ sở skill dùng chung với một ghi đè
+### Đường cơ sở kỹ năng dùng chung với một ghi đè
 
 ```json5
 {
@@ -511,14 +518,14 @@ Dùng phần này khi gốc skill tích hợp sẵn chứa một liên kết tư
 ```
 
 - `agents.defaults.skills` là đường cơ sở dùng chung.
-- `agents.list[].skills` thay thế đường cơ sở đó cho một agent.
-- Dùng `skills: []` khi một agent không nên thấy skill nào.
+- `agents.list[].skills` thay thế đường cơ sở đó cho một tác tử.
+- Dùng `skills: []` khi một tác tử không nên thấy kỹ năng nào.
 
 ### Thiết lập đa nền tảng
 
 ```json5
 {
-  agent: { workspace: "~/.openclaw/workspace" },
+  agents: { defaults: { workspace: "~/.openclaw/workspace" } },
   channels: {
     whatsapp: { allowFrom: ["+15555550123"] },
     telegram: {
@@ -537,7 +544,9 @@ Dùng phần này khi gốc skill tích hợp sẵn chứa một liên kết tư
 
 ### Tự động phê duyệt mạng Node đáng tin cậy
 
-Giữ thao tác ghép đôi thiết bị ở chế độ thủ công trừ khi bạn kiểm soát đường dẫn mạng. Với một lab chuyên dụng hoặc subnet tailnet, bạn có thể chọn bật tự động phê duyệt thiết bị Node lần đầu bằng CIDR hoặc IP chính xác:
+Giữ việc ghép đôi thiết bị ở chế độ thủ công trừ khi bạn kiểm soát đường dẫn mạng. Với một
+lab chuyên dụng hoặc subnet tailnet, bạn có thể chọn bật tự động phê duyệt
+thiết bị Node lần đầu bằng CIDR hoặc IP chính xác:
 
 ```json5
 {
@@ -551,11 +560,13 @@ Giữ thao tác ghép đôi thiết bị ở chế độ thủ công trừ khi b
 }
 ```
 
-Tùy chọn này vẫn tắt khi không được đặt. Nó chỉ áp dụng cho ghép đôi `role: node` mới, không có phạm vi được yêu cầu. Các client operator/browser và nâng cấp vai trò, phạm vi, metadata hoặc public-key vẫn cần phê duyệt thủ công.
+Tùy chọn này vẫn tắt khi chưa được thiết lập. Nó chỉ áp dụng cho ghép đôi `role: node` mới
+không có phạm vi được yêu cầu. Máy khách operator/browser và các nâng cấp vai trò, phạm vi,
+metadata hoặc khóa công khai vẫn yêu cầu phê duyệt thủ công.
 
-### Chế độ DM bảo mật (hộp thư dùng chung / DM nhiều người dùng)
+### Chế độ DM an toàn (hộp thư đến dùng chung / DM nhiều người dùng)
 
-Nếu nhiều hơn một người có thể DM bot của bạn (nhiều mục trong `allowFrom`, phê duyệt ghép đôi cho nhiều người, hoặc `dmPolicy: "open"`), hãy bật **chế độ DM bảo mật** để DM từ các người gửi khác nhau mặc định không dùng chung một ngữ cảnh:
+Nếu nhiều hơn một người có thể DM bot của bạn (nhiều mục trong `allowFrom`, phê duyệt ghép đôi cho nhiều người, hoặc `dmPolicy: "open"`), hãy bật **chế độ DM an toàn** để DM từ các người gửi khác nhau mặc định không dùng chung một ngữ cảnh:
 
 ```json5
 {
@@ -579,10 +590,10 @@ Nếu nhiều hơn một người có thể DM bot của bạn (nhiều mục tr
 }
 ```
 
-Với Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, ủy quyền người gửi mặc định ưu tiên ID.
-Chỉ bật so khớp trực tiếp theo tên/email/nick có thể thay đổi bằng `dangerouslyAllowNameMatching: true` của từng kênh nếu bạn chấp nhận rõ ràng rủi ro đó.
+Đối với Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, ủy quyền người gửi mặc định ưu tiên ID.
+Chỉ bật khớp tên/email/nick có thể thay đổi trực tiếp bằng `dangerouslyAllowNameMatching: true` của từng kênh nếu bạn chấp nhận rõ ràng rủi ro đó.
 
-### Khóa API Anthropic + dự phòng MiniMax
+### Khóa API Anthropic + phương án dự phòng MiniMax
 
 ```json5
 {
@@ -606,11 +617,13 @@ Chỉ bật so khớp trực tiếp theo tên/email/nick có thể thay đổi b
       },
     },
   },
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: {
-      primary: "anthropic/claude-opus-4-6",
-      fallbacks: ["minimax/MiniMax-M2.7"],
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: {
+        primary: "anthropic/claude-opus-4-6",
+        fallbacks: ["minimax/MiniMax-M2.7"],
+      },
     },
   },
 }
@@ -620,13 +633,20 @@ Chỉ bật so khớp trực tiếp theo tên/email/nick có thể thay đổi b
 
 ```json5
 {
-  identity: {
-    name: "WorkBot",
-    theme: "professional assistant",
-  },
-  agent: {
-    workspace: "~/work-openclaw",
-    elevated: { enabled: false },
+  agents: {
+    defaults: {
+      workspace: "~/work-openclaw",
+      elevatedDefault: "off",
+    },
+    list: [
+      {
+        id: "main",
+        identity: {
+          name: "WorkBot",
+          theme: "professional assistant",
+        },
+      },
+    ],
   },
   channels: {
     slack: {
@@ -645,9 +665,11 @@ Chỉ bật so khớp trực tiếp theo tên/email/nick có thể thay đổi b
 
 ```json5
 {
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: { primary: "lmstudio/my-local-model" },
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: { primary: "lmstudio/my-local-model" },
+    },
   },
   models: {
     mode: "merge",
@@ -676,11 +698,11 @@ Chỉ bật so khớp trực tiếp theo tên/email/nick có thể thay đổi b
 ## Mẹo
 
 - Nếu bạn đặt `dmPolicy: "open"`, danh sách `allowFrom` tương ứng phải bao gồm `"*"`.
-- ID nhà cung cấp khác nhau (số điện thoại, ID người dùng, ID kênh). Dùng tài liệu của nhà cung cấp để xác nhận định dạng.
-- Các phần tùy chọn để thêm sau: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
-- Xem [Nhà cung cấp](/vi/providers) và [Khắc phục sự cố](/vi/gateway/troubleshooting) để biết thêm ghi chú thiết lập chuyên sâu.
+- ID nhà cung cấp khác nhau (số điện thoại, ID người dùng, ID kênh). Hãy dùng tài liệu của nhà cung cấp để xác nhận định dạng.
+- Các phần tùy chọn có thể thêm sau: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
+- Xem [Nhà cung cấp](/vi/providers) và [Khắc phục sự cố](/vi/gateway/troubleshooting) để biết ghi chú thiết lập chuyên sâu hơn.
 
 ## Liên quan
 
-- [Tham chiếu cấu hình](/vi/gateway/configuration-reference)
+- [Tài liệu tham chiếu cấu hình](/vi/gateway/configuration-reference)
 - [Cấu hình](/vi/gateway/configuration)

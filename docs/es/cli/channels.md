@@ -1,21 +1,21 @@
 ---
 read_when:
-    - Quieres añadir o quitar cuentas de canal (WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (Plugin)/Signal/iMessage/Matrix)
-    - Quiere comprobar el estado del canal o seguir los registros del canal
-summary: Referencia de la CLI para `openclaw channels` (cuentas, estado, inicio/cierre de sesión, registros)
+    - Desea agregar/quitar cuentas de canal (WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (Plugin)/Signal/iMessage/Matrix)
+    - Desea comprobar el estado del canal o seguir los registros del canal
+summary: Referencia de CLI para `openclaw channels` (cuentas, estado, inicio/cierre de sesión, registros)
 title: Canales
 x-i18n:
-    generated_at: "2026-05-07T13:13:16Z"
+    generated_at: "2026-05-11T20:25:42Z"
     model: gpt-5.5
     provider: openai
-    source_hash: a78d7a5306c822314052151e0a9aa8bed347481f59d9a19f92240dfa562e4b23
+    source_hash: 58a964b4db9526defab6ee47b7a99c11086e345d42c8d20f5262fc134337947f
     source_path: cli/channels.md
     workflow: 16
 ---
 
 # `openclaw channels`
 
-Gestiona las cuentas de canales de chat y su estado de ejecución en el Gateway.
+Administra cuentas de canales de chat y su estado de ejecución en el Gateway.
 
 Documentación relacionada:
 
@@ -35,19 +35,19 @@ openclaw channels resolve --channel slack "#general" "@jane"
 openclaw channels logs --channel all
 ```
 
-`channels list` muestra solo canales de chat: cuentas configuradas de forma predeterminada, con etiquetas de estado `installed`, `configured` y `enabled` por cuenta. Pasa `--all` para mostrar también los canales incluidos que aún no tienen una cuenta configurada y los canales del catálogo instalables que todavía no están en disco. Los proveedores de autenticación (OAuth + claves de API) y las instantáneas de uso/cuota de proveedores de modelos ya no se imprimen aquí; usa `openclaw models auth list` para los perfiles de autenticación de proveedores y `openclaw status` u `openclaw models list` para el uso.
+`channels list` muestra solo canales de chat: cuentas configuradas de forma predeterminada, con etiquetas de estado `installed`, `configured` y `enabled` por cuenta. Pasa `--all` para mostrar también canales incluidos que todavía no tienen una cuenta configurada y canales del catálogo instalables que aún no están en disco. Los proveedores de autenticación (OAuth + claves de API) y las instantáneas de uso/cuota de proveedores de modelos ya no se imprimen aquí; usa `openclaw models auth list` para los perfiles de autenticación de proveedores y `openclaw status` u `openclaw models list` para el uso.
 
 ## Estado / capacidades / resolución / registros
 
-- `channels status`: `--probe`, `--timeout <ms>`, `--json`
+- `channels status`: `--channel <name>`, `--probe`, `--timeout <ms>`, `--json`
 - `channels capabilities`: `--channel <name>`, `--account <id>` (solo con `--channel`), `--target <dest>`, `--timeout <ms>`, `--json`
 - `channels resolve`: `<entries...>`, `--channel <name>`, `--account <id>`, `--kind <auto|user|group>`, `--json`
 - `channels logs`: `--channel <name|all>`, `--lines <n>`, `--json`
 
-`channels status --probe` es la ruta en vivo: en un gateway alcanzable ejecuta comprobaciones `probeAccount` y, opcionalmente, `auditAccount` por cuenta, por lo que la salida puede incluir el estado del transporte más resultados de sondeo como `works`, `probe failed`, `audit ok` o `audit failed`.
-Si el gateway no es alcanzable, `channels status` recurre a resúmenes solo de configuración en lugar de salida de sondeo en vivo.
+`channels status --probe` es la ruta en vivo: en un Gateway accesible ejecuta comprobaciones `probeAccount` y, opcionalmente, `auditAccount` por cuenta, por lo que la salida puede incluir el estado del transporte además de resultados de sondeo como `works`, `probe failed`, `audit ok` o `audit failed`.
+Si el Gateway no es accesible, `channels status` recurre a resúmenes basados solo en la configuración en lugar de una salida de sondeo en vivo.
 
-No uses `openclaw sessions`, Gateway `sessions.list` ni la herramienta `sessions_list` del agente como señal de estado del socket del canal. Esas superficies informan filas de conversaciones almacenadas, no el estado de ejecución del proveedor. Después de reiniciar un proveedor de Discord, una cuenta conectada pero sin actividad puede estar sana aunque no aparezca ninguna fila de sesión de Discord hasta el siguiente evento de conversación entrante o saliente.
+No uses `openclaw sessions`, `sessions.list` del Gateway ni la herramienta `sessions_list` del agente como señal de estado de los sockets del canal. Esas superficies informan filas de conversaciones almacenadas, no el estado de ejecución del proveedor. Después de reiniciar un proveedor de Discord, una cuenta conectada pero sin actividad puede estar en buen estado aunque no aparezca ninguna fila de sesión de Discord hasta el siguiente evento de conversación entrante o saliente.
 
 ## Agregar / eliminar cuentas
 
@@ -58,43 +58,43 @@ openclaw channels remove --channel telegram --delete
 ```
 
 <Tip>
-`openclaw channels add --help` muestra flags por canal (token, clave privada, token de app, rutas de signal-cli, etc.).
+`openclaw channels add --help` muestra las opciones por canal (token, clave privada, token de aplicación, rutas de signal-cli, etc.).
 </Tip>
 
-`channels remove` solo opera sobre plugins de canal instalados/configurados. Usa primero `channels add` para canales instalables del catálogo.
-Para plugins de canal respaldados por ejecución, `channels remove` también solicita al Gateway en ejecución que detenga la cuenta seleccionada antes de actualizar la configuración, de modo que deshabilitar o eliminar una cuenta no deje activo el listener anterior hasta el reinicio.
+`channels remove` solo funciona con plugins de canal instalados/configurados. Usa primero `channels add` para canales instalables del catálogo.
+En plugins de canal respaldados por runtime, `channels remove` también solicita al Gateway en ejecución que detenga la cuenta seleccionada antes de actualizar la configuración, de modo que deshabilitar o eliminar una cuenta no deje activo el listener anterior hasta el reinicio.
 
 Las superficies comunes de agregado no interactivo incluyen:
 
-- canales con bot-token: `--token`, `--bot-token`, `--app-token`, `--token-file`
+- canales con token de bot: `--token`, `--bot-token`, `--app-token`, `--token-file`
 - campos de transporte de Signal/iMessage: `--signal-number`, `--cli-path`, `--http-url`, `--http-host`, `--http-port`, `--db-path`, `--service`, `--region`
 - campos de Google Chat: `--webhook-path`, `--webhook-url`, `--audience-type`, `--audience`
 - campos de Matrix: `--homeserver`, `--user-id`, `--access-token`, `--password`, `--device-name`, `--initial-sync-limit`
 - campos de Nostr: `--private-key`, `--relay-urls`
 - campos de Tlon: `--ship`, `--url`, `--code`, `--group-channels`, `--dm-allowlist`, `--auto-discover-channels`
-- `--use-env` para autenticación respaldada por variables de entorno de la cuenta predeterminada cuando esté admitido
+- `--use-env` para autenticación respaldada por variables de entorno en la cuenta predeterminada donde sea compatible
 
-Si un plugin de canal debe instalarse durante un comando de agregado controlado por flags, OpenClaw usa el origen de instalación predeterminado del canal sin abrir el prompt interactivo de instalación de plugins.
+Si es necesario instalar un Plugin de canal durante un comando de agregado controlado por opciones, OpenClaw usa la fuente de instalación predeterminada del canal sin abrir el aviso interactivo de instalación de plugins.
 
-Cuando ejecutas `openclaw channels add` sin flags, el asistente interactivo puede solicitar:
+Cuando ejecutas `openclaw channels add` sin opciones, el asistente interactivo puede solicitar:
 
-- ids de cuenta por canal seleccionado
+- identificadores de cuenta por canal seleccionado
 - nombres visibles opcionales para esas cuentas
-- `Bind configured channel accounts to agents now?`
+- `Route these channel accounts to agents now?`
 
-Si confirmas vincular ahora, el asistente pregunta qué agente debe poseer cada cuenta de canal configurada y escribe vinculaciones de enrutamiento con alcance de cuenta.
+Si confirmas vincular ahora, el asistente pregunta qué agente debe poseer cada cuenta de canal configurada y escribe bindings de enrutamiento con alcance de cuenta.
 
-También puedes gestionar las mismas reglas de enrutamiento más tarde con `openclaw agents bindings`, `openclaw agents bind` y `openclaw agents unbind` (consulta [agentes](/es/cli/agents)).
+También puedes administrar las mismas reglas de enrutamiento más adelante con `openclaw agents bindings`, `openclaw agents bind` y `openclaw agents unbind` (consulta [agentes](/es/cli/agents)).
 
-Cuando agregas una cuenta no predeterminada a un canal que todavía usa ajustes de nivel superior de cuenta única, OpenClaw promueve los valores de nivel superior con alcance de cuenta al mapa de cuentas del canal antes de escribir la cuenta nueva. La mayoría de los canales colocan esos valores en `channels.<channel>.accounts.default`, pero los canales incluidos pueden conservar en su lugar una cuenta promovida coincidente existente. Matrix es el ejemplo actual: si ya existe una cuenta con nombre, o `defaultAccount` apunta a una cuenta con nombre existente, la promoción conserva esa cuenta en lugar de crear una nueva `accounts.default`.
+Cuando agregas una cuenta no predeterminada a un canal que todavía usa ajustes de nivel superior de una sola cuenta, OpenClaw promueve los valores de nivel superior con alcance de cuenta al mapa de cuentas del canal antes de escribir la nueva cuenta. La mayoría de los canales colocan esos valores en `channels.<channel>.accounts.default`, pero los canales incluidos pueden conservar en su lugar una cuenta promovida coincidente existente. Matrix es el ejemplo actual: si ya existe una cuenta con nombre, o si `defaultAccount` apunta a una cuenta con nombre existente, la promoción conserva esa cuenta en lugar de crear una nueva `accounts.default`.
 
-El comportamiento de enrutamiento permanece consistente:
+El comportamiento de enrutamiento se mantiene coherente:
 
-- Las vinculaciones existentes solo de canal (sin `accountId`) siguen coincidiendo con la cuenta predeterminada.
-- `channels add` no crea ni reescribe automáticamente vinculaciones en modo no interactivo.
-- La configuración interactiva puede agregar opcionalmente vinculaciones con alcance de cuenta.
+- Los bindings existentes solo de canal (sin `accountId`) siguen coincidiendo con la cuenta predeterminada.
+- `channels add` no crea ni reescribe bindings automáticamente en modo no interactivo.
+- La configuración interactiva puede agregar opcionalmente bindings con alcance de cuenta.
 
-Si tu configuración ya estaba en un estado mixto (cuentas con nombre presentes y valores de cuenta única de nivel superior todavía definidos), ejecuta `openclaw doctor --fix` para mover los valores con alcance de cuenta a la cuenta promovida elegida para ese canal. La mayoría de los canales promueven a `accounts.default`; Matrix puede conservar en su lugar un destino con nombre/predeterminado existente.
+Si tu configuración ya estaba en un estado mixto (cuentas con nombre presentes y valores de una sola cuenta de nivel superior aún establecidos), ejecuta `openclaw doctor --fix` para mover los valores con alcance de cuenta a la cuenta promovida elegida para ese canal. La mayoría de los canales se promueven a `accounts.default`; Matrix puede conservar en su lugar un destino con nombre/predeterminado existente.
 
 ## Inicio y cierre de sesión (interactivo)
 
@@ -104,20 +104,20 @@ openclaw channels logout --channel whatsapp
 ```
 
 - `channels login` admite `--verbose`.
-- `channels login` y `logout` pueden inferir el canal cuando solo hay configurado un destino de inicio de sesión admitido.
-- `channels logout` prefiere la ruta del Gateway en vivo cuando es alcanzable, por lo que el cierre de sesión detiene cualquier listener activo antes de borrar el estado de autenticación del canal. Si no se puede alcanzar un Gateway local, recurre a la limpieza local de autenticación.
-- Ejecuta `channels login` desde una terminal en el host del gateway. `exec` del agente bloquea este flujo de inicio de sesión interactivo; las herramientas nativas de inicio de sesión de canal para agentes, como `whatsapp_login`, deben usarse desde el chat cuando estén disponibles.
+- `channels login` y `logout` pueden inferir el canal cuando solo hay configurado un destino de inicio de sesión compatible.
+- `channels logout` prefiere la ruta en vivo del Gateway cuando es accesible, de modo que el cierre de sesión detiene cualquier listener activo antes de limpiar el estado de autenticación del canal. Si no se puede acceder a un Gateway local, recurre a la limpieza local de autenticación.
+- Ejecuta `channels login` desde una terminal en el host del Gateway. `exec` del agente bloquea este flujo interactivo de inicio de sesión; las herramientas de inicio de sesión nativas del canal para agentes, como `whatsapp_login`, deben usarse desde el chat cuando estén disponibles.
 
 ## Solución de problemas
 
 - Ejecuta `openclaw status --deep` para un sondeo amplio.
 - Usa `openclaw doctor` para correcciones guiadas.
 - `openclaw channels list` ya no imprime instantáneas de uso/cuota de proveedores de modelos. Para eso, usa `openclaw status` (vista general) u `openclaw models list` (por proveedor).
-- `openclaw channels status` recurre a resúmenes solo de configuración cuando el gateway no es alcanzable. Si una credencial de canal admitida está configurada mediante SecretRef pero no está disponible en la ruta de comando actual, informa esa cuenta como configurada con notas de degradación en lugar de mostrarla como no configurada.
+- `openclaw channels status` recurre a resúmenes basados solo en la configuración cuando no se puede acceder al Gateway. Si una credencial de canal compatible está configurada mediante SecretRef pero no está disponible en la ruta del comando actual, informa esa cuenta como configurada con notas de degradación en lugar de mostrarla como no configurada.
 
 ## Sondeo de capacidades
 
-Obtén pistas de capacidades del proveedor (intents/scopes donde estén disponibles) más compatibilidad de funcionalidades estáticas:
+Obtén indicios de capacidades del proveedor (intenciones/ámbitos donde estén disponibles) además de soporte estático de funciones:
 
 ```bash
 openclaw channels capabilities
@@ -126,10 +126,10 @@ openclaw channels capabilities --channel discord --target channel:123
 
 Notas:
 
-- `--channel` es opcional; omítelo para listar todos los canales (incluidas las extensions).
+- `--channel` es opcional; omítelo para enumerar todos los canales (incluidas las extensiones).
 - `--account` solo es válido con `--channel`.
-- `--target` acepta `channel:<id>` o un id de canal numérico sin procesar y solo se aplica a Discord. Para canales de voz de Discord, la comprobación de permisos marca la falta de `ViewChannel`, `Connect`, `Speak`, `SendMessages` y `ReadMessageHistory`.
-- Los sondeos son específicos del proveedor: intents de Discord + permisos de canal opcionales; scopes de bot + usuario de Slack; flags de bot + webhook de Telegram; versión del demonio de Signal; token de app + roles/scopes de Graph de Microsoft Teams (anotados cuando se conocen). Los canales sin sondeos informan `Probe: unavailable`.
+- `--target` acepta `channel:<id>` o un id numérico de canal sin procesar y solo se aplica a Discord. Para los canales de voz de Discord, la comprobación de permisos marca la ausencia de `ViewChannel`, `Connect`, `Speak`, `SendMessages` y `ReadMessageHistory`.
+- Los sondeos son específicos del proveedor: intenciones de Discord + permisos opcionales del canal; bot de Slack + ámbitos de usuario; flags de bot de Telegram + webhook; versión del daemon de Signal; token de aplicación de Microsoft Teams + roles/ámbitos de Graph (anotados cuando se conocen). Los canales sin sondeos informan `Probe: unavailable`.
 
 ## Resolver nombres a IDs
 
@@ -145,10 +145,10 @@ Notas:
 
 - Usa `--kind user|group|auto` para forzar el tipo de destino.
 - La resolución prefiere coincidencias activas cuando varias entradas comparten el mismo nombre.
-- `channels resolve` es de solo lectura. Si una cuenta seleccionada está configurada mediante SecretRef pero esa credencial no está disponible en la ruta de comando actual, el comando devuelve resultados no resueltos degradados con notas en lugar de abortar toda la ejecución.
+- `channels resolve` es de solo lectura. Si una cuenta seleccionada está configurada mediante SecretRef pero esa credencial no está disponible en la ruta del comando actual, el comando devuelve resultados no resueltos degradados con notas en lugar de abortar toda la ejecución.
 - `channels resolve` no instala plugins de canal. Usa `channels add --channel <name>` antes de resolver nombres para un canal instalable del catálogo.
 
 ## Relacionado
 
-- [Referencia de la CLI](/es/cli)
+- [Referencia de CLI](/es/cli)
 - [Vista general de canales](/es/channels)

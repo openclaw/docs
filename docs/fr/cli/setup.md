@@ -1,30 +1,46 @@
 ---
 read_when:
-    - Vous effectuez la configuration au premier lancement sans l’intégration complète via la CLI
-    - Vous voulez définir le chemin par défaut de l’espace de travail
-summary: Référence CLI pour `openclaw setup` (initialiser la configuration + l’espace de travail)
+    - Vous effectuez la configuration de première exécution sans l’intégration complète de la CLI
+    - Vous souhaitez définir le chemin de l’espace de travail par défaut
+    - Il vous faut toutes les options et savoir comment la configuration choisit entre le mode de référence et le mode assistant
+summary: Référence CLI pour `openclaw setup` (initialiser la configuration ainsi que l’espace de travail, exécuter éventuellement le processus d’intégration)
 title: Configuration
 x-i18n:
-    generated_at: "2026-05-06T17:54:31Z"
+    generated_at: "2026-05-11T20:29:00Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9a47d41f8c6c59395eaa4bc6055fa09f863af819c7920e29969793904180c910
+    source_hash: 55f0d771bb07c4c69293a470d54f4b6bb108ee521889bfb944fe450b24938b5e
     source_path: cli/setup.md
     workflow: 16
 ---
 
 # `openclaw setup`
 
-Initialisez `~/.openclaw/openclaw.json` et l’espace de travail de l’agent.
+Initialisez la configuration de base et l’espace de travail de l’agent. Lorsqu’un indicateur d’onboarding est présent, exécute également l’assistant.
 
 <Note>
-`openclaw setup` est destiné aux installations à configuration modifiable. En mode Nix (`OPENCLAW_NIX_MODE=1`), OpenClaw refuse les écritures de configuration, car le fichier de configuration est géré par Nix. Les agents doivent utiliser le [démarrage rapide nix-openclaw](https://github.com/openclaw/nix-openclaw#quick-start) officiel ou la configuration source équivalente pour un autre paquet Nix.
+`openclaw setup` est destiné aux installations de configuration modifiables. En mode Nix (`OPENCLAW_NIX_MODE=1`), OpenClaw refuse les écritures de configuration, car le fichier de configuration est géré par Nix. Utilisez le [démarrage rapide nix-openclaw](https://github.com/openclaw/nix-openclaw#quick-start) officiel ou la configuration source équivalente pour un autre paquet Nix.
 </Note>
 
-Connexe :
+## Options
 
-- Premiers pas : [Premiers pas](/fr/start/getting-started)
-- Intégration CLI : [Intégration (CLI)](/fr/start/wizard)
+| Indicateur                | Description                                                                                                      |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `--workspace <dir>`       | Répertoire d’espace de travail de l’agent (par défaut `~/.openclaw/workspace`; stocké dans `agents.defaults.workspace`). |
+| `--wizard`                | Exécuter l’onboarding interactif.                                                                                 |
+| `--non-interactive`       | Exécuter l’onboarding sans invites.                                                                               |
+| `--mode <mode>`           | Mode d’onboarding : `local` ou `remote`.                                                                          |
+| `--import-from <provider>` | Fournisseur de migration à exécuter pendant l’onboarding.                                                        |
+| `--import-source <path>`  | Répertoire d’origine de l’agent source pour `--import-from`.                                                      |
+| `--import-secrets`        | Importer les secrets pris en charge pendant la migration d’onboarding.                                            |
+| `--remote-url <url>`      | URL WebSocket du Gateway distant.                                                                                 |
+| `--remote-token <token>`  | Jeton du Gateway distant (facultatif).                                                                            |
+
+### Déclenchement automatique de l’assistant
+
+`openclaw setup` exécute l’assistant lorsque l’un de ces indicateurs est explicitement présent, même sans `--wizard` :
+
+`--wizard`, `--non-interactive`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`.
 
 ## Exemples
 
@@ -36,32 +52,15 @@ openclaw setup --wizard --import-from hermes --import-source ~/.hermes
 openclaw setup --non-interactive --mode remote --remote-url wss://gateway-host:18789 --remote-token <token>
 ```
 
-## Options
+## Notes
 
-- `--workspace <dir>` : répertoire d’espace de travail de l’agent (stocké sous `agents.defaults.workspace`)
-- `--wizard` : exécuter l’intégration
-- `--non-interactive` : exécuter l’intégration sans invites
-- `--mode <local|remote>` : mode d’intégration
-- `--import-from <provider>` : fournisseur de migration à exécuter pendant l’intégration
-- `--import-source <path>` : répertoire personnel source de l’agent pour `--import-from`
-- `--import-secrets` : importer les secrets pris en charge pendant la migration d’intégration
-- `--remote-url <url>` : URL WebSocket du Gateway distant
-- `--remote-token <token>` : jeton du Gateway distant
-
-Pour exécuter l’intégration via la configuration :
-
-```bash
-openclaw setup --wizard
-```
-
-Notes :
-
-- `openclaw setup` simple initialise la configuration et l’espace de travail sans le flux d’intégration complet.
-- Après une configuration simple, exécutez `openclaw configure` pour choisir les modèles, les canaux, le Gateway, les plugins, les skills ou les contrôles d’intégrité.
-- L’intégration s’exécute automatiquement lorsque des indicateurs d’intégration sont présents (`--wizard`, `--non-interactive`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`).
-- Si un état Hermes est détecté, l’intégration interactive peut proposer automatiquement une migration. L’intégration d’importation nécessite une configuration fraîche ; utilisez [Migrer](/fr/cli/migrate) pour les plans en simulation, les sauvegardes et le mode d’écrasement en dehors de l’intégration.
+- `openclaw setup` simple initialise la configuration et l’espace de travail sans exécuter le flux d’onboarding complet.
+- Après une configuration simple, exécutez `openclaw onboard` pour le parcours guidé complet, `openclaw configure` pour des changements ciblés, ou `openclaw channels add` pour ajouter des comptes de canaux.
+- Si un état Hermes est détecté, l’onboarding interactif peut proposer automatiquement la migration. L’onboarding d’importation nécessite une configuration fraîche ; utilisez [Migrer](/fr/cli/migrate) pour les plans d’essai à blanc, les sauvegardes et le mode d’écrasement en dehors de l’onboarding.
 
 ## Connexe
 
 - [Référence CLI](/fr/cli)
+- [Onboarding (CLI)](/fr/start/wizard)
+- [Bien démarrer](/fr/start/getting-started)
 - [Vue d’ensemble de l’installation](/fr/install)

@@ -1,58 +1,59 @@
 ---
 read_when:
-    - Anda memelihara Plugin OpenClaw
+    - Anda mengelola Plugin OpenClaw
     - Anda melihat peringatan kompatibilitas Plugin
-    - Anda sedang merencanakan migrasi SDK Plugin atau manifes
-summary: Kontrak kompatibilitas Plugin, metadata penghentian dukungan, dan ekspektasi migrasi
+    - Anda merencanakan migrasi SDK Plugin atau manifes
+summary: Kontrak kompatibilitas Plugin, metadata penghentian, dan ekspektasi migrasi
 title: Kompatibilitas Plugin
 x-i18n:
-    generated_at: "2026-05-02T09:26:39Z"
+    generated_at: "2026-05-11T20:33:03Z"
     model: gpt-5.5
     provider: openai
-    source_hash: eecf94743cf34c5b773bfa8066164f90b7c8a75667c43f3f1002d32ec1d04902
+    source_hash: 1afd37697f55721ca8419256a6e8187c398d4b20fb11a65776b755050dd5368b
     source_path: plugins/compatibility.md
     workflow: 16
 ---
 
-OpenClaw menjaga kontrak plugin lama tetap terhubung melalui adapter kompatibilitas
-bernama sebelum menghapusnya. Ini melindungi plugin bawaan dan eksternal yang ada
-saat kontrak SDK, manifes, penyiapan, konfigurasi, dan runtime agen
+OpenClaw menjaga kontrak Plugin lama tetap terhubung melalui adapter kompatibilitas
+bernama sebelum menghapusnya. Ini melindungi Plugin bawaan dan eksternal yang
+sudah ada sementara kontrak SDK, manifes, setup, konfigurasi, dan runtime agen
 berkembang.
 
 ## Registri kompatibilitas
 
-Kontrak kompatibilitas plugin dilacak di registri inti di
+Kontrak kompatibilitas Plugin dilacak dalam registri inti di
 `src/plugins/compat/registry.ts`.
 
-Setiap catatan memiliki:
+Setiap rekaman memiliki:
 
 - kode kompatibilitas yang stabil
 - status: `active`, `deprecated`, `removal-pending`, atau `removed`
-- pemilik: SDK, konfigurasi, penyiapan, channel, provider, eksekusi plugin, runtime agen,
+- pemilik: SDK, konfigurasi, setup, channel, penyedia, eksekusi Plugin, runtime agen,
   atau inti
 - tanggal pengenalan dan deprekasi jika berlaku
 - panduan pengganti
-- docs, diagnostik, dan pengujian yang mencakup perilaku lama dan baru
+- dokumentasi, diagnostik, dan pengujian yang mencakup perilaku lama dan baru
 
-Registri adalah sumber untuk perencanaan maintainer dan pemeriksaan inspektur plugin
-di masa mendatang. Jika perilaku yang menghadap plugin berubah, tambahkan atau perbarui catatan kompatibilitas
-dalam perubahan yang sama yang menambahkan adapter.
+Registri ini adalah sumber untuk perencanaan pemelihara dan pemeriksaan
+inspektur Plugin di masa depan. Jika perilaku yang menghadap Plugin berubah,
+tambahkan atau perbarui rekaman kompatibilitas dalam perubahan yang sama yang
+menambahkan adapternya.
 
-Kompatibilitas perbaikan dan migrasi Doctor dilacak secara terpisah di
-`src/commands/doctor/shared/deprecation-compat.ts`. Catatan tersebut mencakup bentuk
-konfigurasi lama, tata letak ledger instalasi, dan shim perbaikan yang mungkin perlu tetap
-tersedia setelah jalur kompatibilitas runtime dihapus.
+Kompatibilitas perbaikan dan migrasi Doctor dilacak terpisah di
+`src/commands/doctor/shared/deprecation-compat.ts`. Rekaman tersebut mencakup
+bentuk konfigurasi lama, tata letak ledger instalasi, dan shim perbaikan yang
+mungkin perlu tetap tersedia setelah jalur kompatibilitas runtime dihapus.
 
-Penyisiran rilis harus memeriksa kedua registri. Jangan hapus migrasi doctor
-hanya karena catatan kompatibilitas runtime atau konfigurasi yang sesuai telah kedaluwarsa; pertama
-verifikasi bahwa tidak ada jalur peningkatan yang didukung yang masih membutuhkan perbaikan tersebut. Juga
-validasi ulang setiap anotasi pengganti selama perencanaan rilis karena kepemilikan plugin
-dan jejak konfigurasi dapat berubah saat provider dan channel dipindahkan keluar dari
-inti.
+Sweep rilis harus memeriksa kedua registri. Jangan hapus migrasi Doctor hanya
+karena rekaman kompatibilitas runtime atau konfigurasi yang cocok sudah
+kedaluwarsa; verifikasi dahulu bahwa tidak ada jalur upgrade yang didukung yang
+masih membutuhkan perbaikan tersebut. Validasi ulang juga setiap anotasi
+pengganti selama perencanaan rilis karena kepemilikan Plugin dan jejak
+konfigurasi dapat berubah saat penyedia dan channel keluar dari inti.
 
-## Paket inspektur plugin
+## Paket inspektur Plugin
 
-Inspektur plugin harus berada di luar repo inti OpenClaw sebagai
+Inspektur Plugin harus berada di luar repo inti OpenClaw sebagai
 paket/repositori terpisah yang didukung oleh kontrak kompatibilitas dan manifes
 berversi.
 
@@ -65,107 +66,109 @@ openclaw-plugin-inspector ./my-plugin
 Itu harus menghasilkan:
 
 - validasi manifes/skema
-- versi kompatibilitas kontrak yang sedang diperiksa
+- versi kompatibilitas kontrak yang diperiksa
 - pemeriksaan metadata instalasi/sumber
-- pemeriksaan impor cold-path
+- pemeriksaan impor jalur dingin
 - peringatan deprekasi dan kompatibilitas
 
-Gunakan `--json` untuk output stabil yang dapat dibaca mesin dalam anotasi CI. Inti OpenClaw
-harus mengekspos kontrak dan fixture yang dapat dikonsumsi inspektur, tetapi tidak boleh
-menerbitkan biner inspektur dari paket utama `openclaw`.
+Gunakan `--json` untuk output stabil yang dapat dibaca mesin dalam anotasi CI.
+Inti OpenClaw harus mengekspos kontrak dan fixture yang dapat dikonsumsi
+inspektur, tetapi tidak boleh memublikasikan biner inspektur dari paket utama
+`openclaw`.
 
-### Lane penerimaan maintainer
+### Lane penerimaan pemelihara
 
-Gunakan Blacksmith Testbox untuk lane penerimaan paket yang dapat diinstal saat memvalidasi
-inspektur eksternal terhadap paket plugin OpenClaw. Jalankan dari checkout OpenClaw
-yang bersih setelah paket dibangun:
+Gunakan Blacksmith Testbox yang didukung Crabbox untuk lane penerimaan paket yang
+dapat diinstal saat memvalidasi inspektur eksternal terhadap paket Plugin
+OpenClaw. Jalankan dari checkout OpenClaw yang bersih setelah paket dibangun:
 
 ```sh
-blacksmith testbox warmup ci-check-testbox.yml --ref main --idle-timeout 90
-blacksmith testbox run --id <tbx_id> "pnpm install && pnpm build && npm exec --yes @openclaw/plugin-inspector@0.1.0 -- ./extensions/telegram --json"
-blacksmith testbox run --id <tbx_id> "npm exec --yes @openclaw/plugin-inspector@0.1.0 -- ./extensions/discord --json"
-blacksmith testbox run --id <tbx_id> "npm exec --yes @openclaw/plugin-inspector@0.1.0 -- <clawhub-plugin-dir> --json"
-blacksmith testbox stop <tbx_id>
+pnpm crabbox:run -- --provider blacksmith-testbox --timing-json --shell -- "pnpm install && pnpm build && npm exec --yes @openclaw/plugin-inspector@0.1.0 -- ./extensions/telegram --json"
+pnpm crabbox:run -- --provider blacksmith-testbox --timing-json --shell -- "npm exec --yes @openclaw/plugin-inspector@0.1.0 -- ./extensions/discord --json"
+pnpm crabbox:run -- --provider blacksmith-testbox --timing-json --shell -- "npm exec --yes @openclaw/plugin-inspector@0.1.0 -- <clawhub-plugin-dir> --json"
 ```
 
-Biarkan lane ini opt-in untuk maintainer karena ia menginstal paket npm eksternal
-dan dapat memeriksa paket plugin yang dikloning di luar repo. Guard repo lokal
-mencakup peta ekspor SDK, metadata registri kompatibilitas, pengurangan impor SDK
-yang dideprekasi, dan batas impor ekstensi bawaan; bukti inspektur Testbox
-mencakup paket sebagaimana dikonsumsi oleh penulis plugin eksternal.
+Biarkan lane ini bersifat opt-in bagi pemelihara karena memasang paket npm
+eksternal dan dapat memeriksa paket Plugin yang dikloning di luar repo. Guard
+repo lokal mencakup peta ekspor SDK, metadata registri kompatibilitas,
+pengurangan impor SDK yang deprecated, dan batas impor ekstensi bawaan; bukti
+inspektur Testbox mencakup paket sebagaimana dikonsumsi oleh penulis Plugin
+eksternal.
 
 ## Kebijakan deprekasi
 
-OpenClaw tidak boleh menghapus kontrak plugin terdokumentasi dalam rilis yang sama
-yang memperkenalkan penggantinya.
+OpenClaw tidak boleh menghapus kontrak Plugin terdokumentasi dalam rilis yang
+sama yang memperkenalkan penggantinya.
 
 Urutan migrasinya adalah:
 
 1. Tambahkan kontrak baru.
-2. Pertahankan perilaku lama yang terhubung melalui adapter kompatibilitas bernama.
-3. Keluarkan diagnostik atau peringatan saat penulis plugin dapat bertindak.
-4. Dokumentasikan pengganti dan linimasa.
+2. Pertahankan perilaku lama tetap terhubung melalui adapter kompatibilitas bernama.
+3. Keluarkan diagnostik atau peringatan saat penulis Plugin dapat bertindak.
+4. Dokumentasikan pengganti dan linimasanya.
 5. Uji jalur lama dan baru.
-6. Tunggu selama jendela migrasi yang diumumkan.
-7. Hapus hanya dengan persetujuan rilis breaking yang eksplisit.
+6. Tunggu sepanjang jendela migrasi yang diumumkan.
+7. Hapus hanya dengan persetujuan rilis pemutus kompatibilitas yang eksplisit.
 
-Catatan yang dideprekasi harus menyertakan tanggal mulai peringatan, pengganti, tautan docs,
-dan tanggal penghapusan akhir tidak lebih dari tiga bulan setelah peringatan dimulai. Jangan
-tambahkan jalur kompatibilitas yang dideprekasi dengan jendela penghapusan terbuka kecuali
-maintainer secara eksplisit memutuskan bahwa itu adalah kompatibilitas permanen dan menandainya sebagai `active`
-sebagai gantinya.
+Rekaman deprecated harus menyertakan tanggal mulai peringatan, pengganti, tautan
+dokumentasi, dan tanggal penghapusan final tidak lebih dari tiga bulan setelah
+peringatan dimulai. Jangan tambahkan jalur kompatibilitas deprecated dengan
+jendela penghapusan terbuka kecuali pemelihara secara eksplisit memutuskan bahwa
+itu adalah kompatibilitas permanen dan menandainya sebagai `active`.
 
 ## Area kompatibilitas saat ini
 
-Catatan kompatibilitas saat ini mencakup:
+Rekaman kompatibilitas saat ini mencakup:
 
 - impor SDK luas lama seperti `openclaw/plugin-sdk/compat`
-- bentuk plugin lama yang hanya hook dan `before_agent_start`
-- entrypoint plugin lama `activate(api)` sementara plugin bermigrasi ke
+- bentuk Plugin lama yang hanya berupa hook dan `before_agent_start`
+- entrypoint Plugin `activate(api)` lama sementara Plugin bermigrasi ke
   `register(api)`
 - alias SDK lama seperti `openclaw/extension-api`,
-  `openclaw/plugin-sdk/channel-runtime`, pembuat status `openclaw/plugin-sdk/command-auth`,
-  `openclaw/plugin-sdk/test-utils` (digantikan oleh subpath pengujian
-  `openclaw/plugin-sdk/*` yang terfokus), dan alias tipe `ClawdbotConfig` /
-  `OpenClawSchemaType`
-- allowlist plugin bawaan dan perilaku pengaktifan
-- metadata manifes env-var provider/channel lama
-- hook plugin provider lama dan alias tipe sementara provider pindah ke
-  hook katalog, auth, thinking, replay, dan transport eksplisit
+  `openclaw/plugin-sdk/channel-runtime`, builder status
+  `openclaw/plugin-sdk/command-auth`, `openclaw/plugin-sdk/test-utils` (diganti
+  oleh subpath pengujian `openclaw/plugin-sdk/*` yang terfokus), dan alias tipe
+  `ClawdbotConfig` / `OpenClawSchemaType`
+- allowlist Plugin bawaan dan perilaku enablement
+- metadata manifes env-var penyedia/channel lama
+- hook dan alias tipe Plugin penyedia lama sementara penyedia berpindah ke hook
+  katalog, auth, thinking, replay, dan transport yang eksplisit
 - alias runtime lama seperti `api.runtime.taskFlow`,
   `api.runtime.subagent.getSession`, `api.runtime.stt`, dan
-  `api.runtime.config.loadConfig()` / `api.runtime.config.writeConfigFile(...)` yang dideprekasi
-- registrasi pemisahan plugin memori lama sementara plugin memori pindah ke
+  `api.runtime.config.loadConfig()` / `api.runtime.config.writeConfigFile(...)`
+  yang deprecated
+- pendaftaran terbagi Plugin memori lama sementara Plugin memori berpindah ke
   `registerMemoryCapability`
 - helper SDK channel lama untuk skema pesan native, gating mention,
-  pemformatan amplop inbound, dan nesting kapabilitas persetujuan
-- kunci route channel lama dan alias helper comparable-target sementara plugin
-  pindah ke `openclaw/plugin-sdk/channel-route`
-- hint aktivasi yang sedang digantikan oleh kepemilikan kontribusi manifes
-- fallback runtime `setup-api` sementara deskriptor penyiapan pindah ke metadata cold
-  `setup.requiresRuntime: false`
-- hook `discovery` provider sementara hook katalog provider pindah ke
+  pemformatan envelope inbound, dan nesting kapabilitas persetujuan
+- alias helper kunci rute channel dan target sebanding lama sementara Plugin
+  berpindah ke `openclaw/plugin-sdk/channel-route`
+- petunjuk aktivasi yang sedang diganti oleh kepemilikan kontribusi manifes
+- fallback runtime `setup-api` sementara deskriptor setup berpindah ke metadata
+  dingin `setup.requiresRuntime: false`
+- hook `discovery` penyedia sementara hook katalog penyedia berpindah ke
   `catalog.run(...)`
-- metadata channel `showConfigured` / `showInSetup` sementara paket channel pindah
-  ke `openclaw.channel.exposure`
-- kunci konfigurasi runtime-policy lama sementara doctor memigrasikan operator ke
+- metadata channel `showConfigured` / `showInSetup` sementara paket channel
+  berpindah ke `openclaw.channel.exposure`
+- kunci konfigurasi runtime-policy lama sementara Doctor memigrasikan operator ke
   `agentRuntime`
 - fallback metadata konfigurasi channel bawaan yang dihasilkan sementara metadata
-  `channelConfigs` yang registry-first mendarat
-- flag env penonaktifan registri plugin persisten dan migrasi instalasi sementara
-  alur perbaikan memigrasikan operator ke `openclaw plugins registry --refresh` dan
-  `openclaw doctor --fix`
-- jalur konfigurasi web search, web fetch, dan x_search milik plugin lama sementara
-  doctor memigrasikannya ke `plugins.entries.<plugin>.config`
-- konfigurasi `plugins.installs` lama yang ditulis pengguna dan alias load-path plugin bawaan
-  sementara metadata instalasi pindah ke ledger plugin yang dikelola state
+  `channelConfigs` yang mengutamakan registri masuk
+- flag env penonaktifan registri Plugin persisten dan migrasi instalasi sementara
+  alur perbaikan memigrasikan operator ke `openclaw plugins registry --refresh`
+  dan `openclaw doctor --fix`
+- jalur konfigurasi pencarian web, fetch web, dan x_search milik Plugin lama
+  sementara Doctor memigrasikannya ke `plugins.entries.<plugin>.config`
+- konfigurasi buatan `plugins.installs` lama dan alias jalur muat Plugin bawaan
+  sementara metadata instalasi berpindah ke ledger Plugin yang dikelola state
 
-Kode plugin baru harus memilih pengganti yang tercantum di registri dan di
-panduan migrasi spesifik. Plugin yang ada dapat terus menggunakan jalur kompatibilitas
-hingga docs, diagnostik, dan catatan rilis mengumumkan jendela penghapusan.
+Kode Plugin baru harus memilih pengganti yang tercantum dalam registri dan dalam
+panduan migrasi spesifik. Plugin yang sudah ada dapat terus menggunakan jalur
+kompatibilitas sampai dokumentasi, diagnostik, dan catatan rilis mengumumkan
+jendela penghapusan.
 
 ## Catatan rilis
 
-Catatan rilis harus menyertakan deprekasi plugin mendatang dengan tanggal target dan
-tautan ke docs migrasi. Peringatan tersebut perlu terjadi sebelum jalur kompatibilitas
-berpindah ke `removal-pending` atau `removed`.
+Catatan rilis harus menyertakan deprekasi Plugin mendatang dengan tanggal target
+dan tautan ke dokumentasi migrasi. Peringatan tersebut perlu terjadi sebelum
+jalur kompatibilitas berpindah ke `removal-pending` atau `removed`.

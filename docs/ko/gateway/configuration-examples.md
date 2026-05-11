@@ -1,20 +1,20 @@
 ---
 read_when:
-    - OpenClaw 구성 방법 배우기
-    - 구성 예시 찾기
-    - 처음으로 OpenClaw 설정하기
-summary: 일반적인 OpenClaw 설정을 위한 스키마에 정확히 맞는 구성 예시
-title: 구성 예시
+    - OpenClaw 구성 방법 알아보기
+    - 구성 예제를 찾고 있습니다
+    - OpenClaw 처음 설정하기
+summary: 일반적인 OpenClaw 설정을 위한 스키마에 정확히 맞는 구성 예제
+title: 설정 예시
 x-i18n:
-    generated_at: "2026-05-10T19:34:27Z"
+    generated_at: "2026-05-11T20:29:33Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9fd1c93d8c491de13c3679c766293a3401853625308e90588d7c83272c5b6e73
+    source_hash: e077b2fe83b1c6e4ffd2ff0029fe3b754c7dc5dced06f134ddf18e9ed6a11fd2
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-아래 예시는 현재 구성 스키마와 일치합니다. 전체 참조와 필드별 참고 사항은 [Configuration](/ko/gateway/configuration)을 참조하세요.
+아래 예시는 현재 구성 스키마에 맞춰져 있습니다. 전체 참조와 필드별 참고 사항은 [구성](/ko/gateway/configuration)을 참조하세요.
 
 ## 빠른 시작
 
@@ -22,25 +22,32 @@ x-i18n:
 
 ```json5
 {
-  agent: { workspace: "~/.openclaw/workspace" },
+  agents: { defaults: { workspace: "~/.openclaw/workspace" } },
   channels: { whatsapp: { allowFrom: ["+15555550123"] } },
 }
 ```
 
-`~/.openclaw/openclaw.json`에 저장하면 해당 번호에서 봇에게 DM을 보낼 수 있습니다.
+`~/.openclaw/openclaw.json`에 저장하면 해당 번호에서 봇에게 다이렉트 메시지를 보낼 수 있습니다.
 
 ### 권장 시작 구성
 
 ```json5
 {
-  identity: {
-    name: "Clawd",
-    theme: "helpful assistant",
-    emoji: "🦞",
-  },
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: { primary: "anthropic/claude-sonnet-4-6" },
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: { primary: "anthropic/claude-sonnet-4-6" },
+    },
+    list: [
+      {
+        id: "main",
+        identity: {
+          name: "Clawd",
+          theme: "helpful assistant",
+          emoji: "🦞",
+        },
+      },
+    ],
   },
   channels: {
     whatsapp: {
@@ -51,7 +58,7 @@ x-i18n:
   messages: {
     visibleReplies: "automatic",
     groupChat: {
-      visibleReplies: "message_tool", // 기본값; 레거시 방 답장에는 "automatic" 사용
+      visibleReplies: "message_tool", // default; use "automatic" for legacy room replies
     },
   },
 }
@@ -59,7 +66,7 @@ x-i18n:
 
 ## 확장 예시(주요 옵션)
 
-> JSON5에서는 주석과 후행 쉼표를 사용할 수 있습니다. 일반 JSON도 작동합니다.
+> JSON5를 사용하면 주석과 후행 쉼표를 사용할 수 있습니다. 일반 JSON도 작동합니다.
 
 ```json5
 {
@@ -75,7 +82,7 @@ x-i18n:
     },
   },
 
-  // 인증 프로필 메타데이터(비밀 값은 auth-profiles.json에 저장)
+  // 인증 프로필 메타데이터(시크릿은 auth-profiles.json에 있음)
   auth: {
     profiles: {
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
@@ -90,12 +97,7 @@ x-i18n:
     },
   },
 
-  // ID
-  identity: {
-    name: "Samantha",
-    theme: "helpful sloth",
-    emoji: "🦥",
-  },
+  // Identity는 에이전트별 설정입니다. 아래 agents.list[].identity에서 설정하세요.
 
   // 로깅
   logging: {
@@ -106,7 +108,7 @@ x-i18n:
     redactSensitive: "tools",
   },
 
-  // 메시지 형식
+  // 메시지 형식 지정
   messages: {
     messagePrefix: "[openclaw]",
     visibleReplies: "automatic",
@@ -115,7 +117,7 @@ x-i18n:
     ackReactionScope: "group-mentions",
     groupChat: {
       historyLimit: 50,
-      visibleReplies: "message_tool", // 일반 최종 답장은 그룹/채널에서 비공개로 유지
+      visibleReplies: "message_tool", // 일반 최종 답장은 그룹/채널에서 비공개로 유지됩니다
     },
     queue: {
       mode: "steer",
@@ -158,7 +160,7 @@ x-i18n:
   // 세션 동작
   session: {
     scope: "per-sender",
-    dmScope: "per-channel-peer", // 여러 사용자가 쓰는 받은 편지함에 권장
+    dmScope: "per-channel-peer", // 다중 사용자 받은 편지함에 권장
     reset: {
       mode: "daily",
       atHour: 4,
@@ -253,7 +255,7 @@ x-i18n:
         "anthropic/claude-sonnet-4-6": { alias: "sonnet" },
         "openai/gpt-5.4": { alias: "gpt" },
       },
-      skills: ["github", "weather"], // list[].skills를 생략한 에이전트가 상속
+      skills: ["github", "weather"], // list[].skills를 생략한 에이전트가 상속함
       thinkingDefault: "low",
       verboseDefault: "off",
       toolProgressDetail: "explain",
@@ -295,7 +297,7 @@ x-i18n:
       },
       sandbox: {
         mode: "non-main",
-        scope: "session", // 레거시 perSession: true보다 권장
+        scope: "session", // 기존 perSession: true보다 선호
         workspaceRoot: "~/.openclaw/sandboxes",
         docker: {
           image: "openclaw-sandbox:bookworm-slim",
@@ -314,18 +316,23 @@ x-i18n:
       {
         id: "main",
         default: true,
-        // defaults.skills 상속 -> github, weather
+        identity: {
+          name: "Samantha",
+          theme: "helpful sloth",
+          emoji: "🦥",
+        },
+        // defaults.skills -> github, weather를 상속함
         groupChat: {
           mentionPatterns: ["@openclaw", "openclaw"],
         },
-        thinkingDefault: "high", // 에이전트별 사고 설정 재정의
-        reasoningDefault: "on", // 에이전트별 추론 표시 여부
+        thinkingDefault: "high", // 에이전트별 thinking 재정의
+        reasoningDefault: "on", // 에이전트별 reasoning 표시 여부
         fastModeDefault: false, // 에이전트별 빠른 모드
       },
       {
         id: "quick",
-        skills: [], // 이 에이전트에는 Skills 없음
-        fastModeDefault: true, // 이 에이전트는 항상 빠르게 실행
+        skills: [], // 이 에이전트에는 skills 없음
+        fastModeDefault: true, // 이 에이전트는 항상 빠르게 실행됨
         thinkingDefault: "off",
       },
     ],
@@ -353,7 +360,7 @@ x-i18n:
     },
   },
 
-  // 사용자 지정 모델 제공자
+  // 사용자 지정 모델 공급자
   models: {
     mode: "merge",
     providers: {
@@ -383,7 +390,7 @@ x-i18n:
   cron: {
     enabled: true,
     store: "~/.openclaw/cron/cron.json",
-    maxConcurrentRuns: 2, // Cron 디스패치 + 격리된 Cron 에이전트 턴 실행
+    maxConcurrentRuns: 2, // cron 디스패치 + 격리된 cron 에이전트 턴 실행
     sessionRetention: "24h",
     runLog: {
       maxBytes: "2mb",
@@ -475,7 +482,7 @@ x-i18n:
 
 ### 심볼릭 링크된 형제 skill 저장소
 
-기본 제공 skill 루트에 형제 저장소로 향하는 심볼릭 링크가 포함된 경우 사용하세요. 예:
+기본 제공 skill 루트에 형제 저장소로 연결되는 심볼릭 링크가 있을 때 사용합니다. 예:
 `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ```json5
@@ -489,13 +496,13 @@ x-i18n:
 }
 ```
 
-- `extraDirs`는 형제 리포지토리를 명시적 Skills 루트로 스캔합니다.
-- `allowSymlinkTargets`는 심볼릭 링크된 Skills 폴더가 임의의 심볼릭 링크 이탈을 허용하지 않고도 신뢰할 수 있는
+- `extraDirs`는 형제 저장소를 명시적 skill 루트로 스캔합니다.
+- `allowSymlinkTargets`는 심볼릭 링크된 skill 폴더가 임의의 심볼릭 링크 이탈을 허용하지 않고도 신뢰할 수 있는
   실제 대상 루트로 해석되도록 합니다.
 
-## 일반 패턴
+## 일반적인 패턴
 
-### 하나의 재정의가 있는 공유 Skills 기준값
+### 하나의 재정의가 있는 공유 skill 기준선
 
 ```json5
 {
@@ -512,15 +519,15 @@ x-i18n:
 }
 ```
 
-- `agents.defaults.skills`는 공유 기준값입니다.
-- `agents.list[].skills`는 한 에이전트에 대해 해당 기준값을 대체합니다.
-- 에이전트가 Skills를 보지 않아야 하는 경우 `skills: []`를 사용하세요.
+- `agents.defaults.skills`는 공유 기준선입니다.
+- `agents.list[].skills`는 한 에이전트에 대해 해당 기준선을 대체합니다.
+- 에이전트가 skills를 보지 않아야 할 때는 `skills: []`를 사용합니다.
 
-### 멀티 플랫폼 설정
+### 다중 플랫폼 설정
 
 ```json5
 {
-  agent: { workspace: "~/.openclaw/workspace" },
+  agents: { defaults: { workspace: "~/.openclaw/workspace" } },
   channels: {
     whatsapp: { allowFrom: ["+15555550123"] },
     telegram: {
@@ -540,8 +547,8 @@ x-i18n:
 ### 신뢰할 수 있는 Node 네트워크 자동 승인
 
 네트워크 경로를 제어하지 않는 한 기기 페어링은 수동으로 유지하세요. 전용
-랩 또는 tailnet 서브넷의 경우, 정확한 CIDR 또는 IP로 최초 Node 기기 자동 승인을
-선택적으로 활성화할 수 있습니다.
+랩 또는 tailnet 서브넷의 경우, 정확한 CIDR 또는 IP로 최초 Node 기기 자동 승인에
+옵트인할 수 있습니다.
 
 ```json5
 {
@@ -555,13 +562,13 @@ x-i18n:
 }
 ```
 
-설정하지 않으면 이 기능은 꺼진 상태로 유지됩니다. 요청된 범위가 없는 새 `role: node` 페어링에만 적용됩니다.
-운영자/브라우저 클라이언트와 역할, 범위, 메타데이터 또는
+설정하지 않으면 계속 꺼진 상태입니다. 요청된 범위가 없는 새로운 `role: node`
+페어링에만 적용됩니다. 운영자/브라우저 클라이언트와 역할, 범위, 메타데이터 또는
 공개 키 업그레이드는 여전히 수동 승인이 필요합니다.
 
-### 보안 DM 모드(공유 받은 편지함 / 다중 사용자 DM)
+### 보안 DM 모드(공유 받은편지함 / 다중 사용자 DM)
 
-두 명 이상이 봇에게 DM을 보낼 수 있는 경우(`allowFrom`에 여러 항목, 여러 사람에 대한 페어링 승인 또는 `dmPolicy: "open"`), **보안 DM 모드**를 활성화하여 서로 다른 발신자의 DM이 기본적으로 하나의 컨텍스트를 공유하지 않도록 하세요.
+두 명 이상이 봇에 DM을 보낼 수 있다면(`allowFrom`의 여러 항목, 여러 사람에 대한 페어링 승인 또는 `dmPolicy: "open"`), **보안 DM 모드**를 활성화하여 서로 다른 발신자의 DM이 기본적으로 하나의 컨텍스트를 공유하지 않도록 하세요.
 
 ```json5
 {
@@ -585,8 +592,8 @@ x-i18n:
 }
 ```
 
-Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC의 경우 발신자 권한 부여는 기본적으로 ID 우선입니다.
-해당 위험을 명시적으로 수락하는 경우에만 각 채널의 `dangerouslyAllowNameMatching: true`로 직접 변경 가능한 이름/이메일/닉네임 매칭을 활성화하세요.
+Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC의 경우, 발신자 권한 부여는 기본적으로 ID 우선입니다.
+그 위험을 명시적으로 수락하는 경우에만 각 채널의 `dangerouslyAllowNameMatching: true`로 직접 변경 가능한 이름/이메일/닉네임 매칭을 활성화하세요.
 
 ### Anthropic API 키 + MiniMax 폴백
 
@@ -612,27 +619,36 @@ Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC의 경우 발신자 권
       },
     },
   },
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: {
-      primary: "anthropic/claude-opus-4-6",
-      fallbacks: ["minimax/MiniMax-M2.7"],
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: {
+        primary: "anthropic/claude-opus-4-6",
+        fallbacks: ["minimax/MiniMax-M2.7"],
+      },
     },
   },
 }
 ```
 
-### 업무용 봇(제한된 액세스)
+### 업무 봇(제한된 액세스)
 
 ```json5
 {
-  identity: {
-    name: "WorkBot",
-    theme: "professional assistant",
-  },
-  agent: {
-    workspace: "~/work-openclaw",
-    elevated: { enabled: false },
+  agents: {
+    defaults: {
+      workspace: "~/work-openclaw",
+      elevatedDefault: "off",
+    },
+    list: [
+      {
+        id: "main",
+        identity: {
+          name: "WorkBot",
+          theme: "professional assistant",
+        },
+      },
+    ],
   },
   channels: {
     slack: {
@@ -651,9 +667,11 @@ Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC의 경우 발신자 권
 
 ```json5
 {
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: { primary: "lmstudio/my-local-model" },
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: { primary: "lmstudio/my-local-model" },
+    },
   },
   models: {
     mode: "merge",
@@ -681,10 +699,10 @@ Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC의 경우 발신자 권
 
 ## 팁
 
-- `dmPolicy: "open"`을 설정하는 경우, 일치하는 `allowFrom` 목록에 `"*"`가 포함되어야 합니다.
-- 제공자 ID는 서로 다릅니다(전화번호, 사용자 ID, 채널 ID). 형식을 확인하려면 제공자 문서를 사용하세요.
+- `dmPolicy: "open"`을 설정하면, 일치하는 `allowFrom` 목록에 `"*"`가 포함되어야 합니다.
+- 공급자 ID는 서로 다릅니다(전화번호, 사용자 ID, 채널 ID). 형식을 확인하려면 공급자 문서를 사용하세요.
 - 나중에 추가할 선택적 섹션: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
-- 더 자세한 설정 참고 사항은 [제공자](/ko/providers) 및 [문제 해결](/ko/gateway/troubleshooting)을 참조하세요.
+- 더 자세한 설정 참고 사항은 [공급자](/ko/providers) 및 [문제 해결](/ko/gateway/troubleshooting)을 참조하세요.
 
 ## 관련 항목
 

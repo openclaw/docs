@@ -1,24 +1,24 @@
 ---
 read_when:
     - Thêm hoặc sửa đổi các hành động CLI cho tin nhắn
-    - Thay đổi hành vi kênh gửi đi
-summary: Tham chiếu CLI cho `openclaw message` (send + các hành động kênh)
+    - Thay đổi hành vi của kênh gửi đi
+summary: Tham chiếu CLI cho `openclaw message` (gửi + thao tác kênh)
 title: Tin nhắn
 x-i18n:
-    generated_at: "2026-05-04T09:37:06Z"
+    generated_at: "2026-05-11T20:26:47Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9ef57d33c93206a61a6d044667de4faf6340f7d8cc324300f235e838ee3b7ff1
+    source_hash: 12ae0e32e86a87076e795cbb18e34d9a37797323f805f4edbd4351e73dbdac46
     source_path: cli/message.md
     workflow: 16
 ---
 
 # `openclaw message`
 
-Lệnh gửi đi duy nhất để gửi tin nhắn và thao tác kênh
+Lệnh gửi đi duy nhất để gửi tin nhắn và hành động kênh
 (Discord/Google Chat/iMessage/Matrix/Mattermost (Plugin)/Microsoft Teams/Signal/Slack/Telegram/WhatsApp).
 
-## Cách dùng
+## Cách sử dụng
 
 ```
 openclaw message <subcommand> [flags]
@@ -26,21 +26,21 @@ openclaw message <subcommand> [flags]
 
 Chọn kênh:
 
-- Bắt buộc có `--channel` nếu cấu hình nhiều hơn một kênh.
-- Nếu cấu hình đúng một kênh, kênh đó trở thành mặc định.
+- Bắt buộc có `--channel` nếu đã cấu hình nhiều hơn một kênh.
+- Nếu chỉ cấu hình đúng một kênh, kênh đó sẽ trở thành mặc định.
 - Giá trị: `discord|googlechat|imessage|matrix|mattermost|msteams|signal|slack|telegram|whatsapp` (Mattermost yêu cầu Plugin)
-- `openclaw message` phân giải kênh đã chọn tới Plugin sở hữu kênh đó khi có `--channel` hoặc một đích có tiền tố kênh; nếu không, nó tải các Plugin kênh đã cấu hình để suy luận kênh mặc định.
+- `openclaw message` phân giải kênh đã chọn thành Plugin sở hữu kênh đó khi có `--channel` hoặc mục tiêu có tiền tố kênh; nếu không, lệnh sẽ tải các Plugin kênh đã cấu hình để suy luận kênh mặc định.
 
-Định dạng đích (`--target`):
+Định dạng mục tiêu (`--target`):
 
-- WhatsApp: E.164, JID nhóm, hoặc JID WhatsApp Channel/Newsletter (`...@newsletter`)
-- Telegram: id cuộc trò chuyện, `@username`, hoặc đích chủ đề diễn đàn (`-1001234567890:topic:42`, hoặc `--thread-id 42`)
-- Discord: `channel:<id>` hoặc `user:<id>` (hoặc mention `<@id>`; id số thô được xem là kênh)
+- WhatsApp: E.164, group JID, hoặc WhatsApp Channel/Newsletter JID (`...@newsletter`)
+- Telegram: id cuộc trò chuyện, `@username`, hoặc mục tiêu chủ đề diễn đàn (`-1001234567890:topic:42`, hoặc `--thread-id 42`)
+- Discord: `channel:<id>` hoặc `user:<id>` (hoặc nhắc đến `<@id>`; id số thô được xem là kênh)
 - Google Chat: `spaces/<spaceId>` hoặc `users/<userId>`
 - Slack: `channel:<id>` hoặc `user:<id>` (chấp nhận id kênh thô)
 - Mattermost (Plugin): `channel:<id>`, `user:<id>`, hoặc `@username` (id trần được xem là kênh)
 - Signal: `+E.164`, `group:<id>`, `signal:+E.164`, `signal:group:<id>`, hoặc `username:<name>`/`u:<name>`
-- iMessage: định danh, `chat_id:<id>`, `chat_guid:<guid>`, hoặc `chat_identifier:<id>`
+- iMessage: handle, `chat_id:<id>`, `chat_guid:<guid>`, hoặc `chat_identifier:<id>`
 - Matrix: `@user:server`, `!room:server`, hoặc `#alias:server`
 - Microsoft Teams: id cuộc hội thoại (`19:...@thread.tacv2`) hoặc `conversation:<id>` hoặc `user:<aad-object-id>`
 
@@ -49,11 +49,11 @@ Tra cứu tên:
 - Với các nhà cung cấp được hỗ trợ (Discord/Slack/v.v.), tên kênh như `Help` hoặc `#help` được phân giải qua bộ nhớ đệm thư mục.
 - Khi không tìm thấy trong bộ nhớ đệm, OpenClaw sẽ thử tra cứu thư mục trực tiếp nếu nhà cung cấp hỗ trợ.
 
-## Cờ thường dùng
+## Cờ phổ biến
 
 - `--channel <name>`
 - `--account <id>`
-- `--target <dest>` (kênh hoặc người dùng đích cho send/poll/read/v.v.)
+- `--target <dest>` (kênh hoặc người dùng mục tiêu cho send/poll/read/v.v.)
 - `--targets <name>` (lặp lại; chỉ broadcast)
 - `--json`
 - `--dry-run`
@@ -61,25 +61,25 @@ Tra cứu tên:
 
 ## Hành vi SecretRef
 
-- `openclaw message` phân giải các SecretRef kênh được hỗ trợ trước khi chạy thao tác đã chọn.
-- Việc phân giải được giới hạn theo đích thao tác đang hoạt động khi có thể:
-  - theo phạm vi kênh khi đặt `--channel` (hoặc được suy luận từ các đích có tiền tố như `discord:...`)
-  - theo phạm vi tài khoản khi đặt `--account` (biến toàn cục của kênh + các bề mặt tài khoản đã chọn)
-  - khi bỏ qua `--account`, OpenClaw không ép phạm vi SecretRef tài khoản `default`
-- SecretRef chưa phân giải trên các kênh không liên quan không chặn một thao tác nhắn tin có đích cụ thể.
-- Nếu SecretRef của kênh/tài khoản đã chọn chưa được phân giải, lệnh sẽ đóng thất bại cho thao tác đó.
+- `openclaw message` phân giải các SecretRef kênh được hỗ trợ trước khi chạy hành động đã chọn.
+- Việc phân giải được giới hạn theo mục tiêu hành động đang hoạt động khi có thể:
+  - theo phạm vi kênh khi đặt `--channel` (hoặc suy luận từ mục tiêu có tiền tố như `discord:...`)
+  - theo phạm vi tài khoản khi đặt `--account` (globals của kênh + các bề mặt tài khoản đã chọn)
+  - khi bỏ qua `--account`, OpenClaw không ép phạm vi SecretRef của tài khoản `default`
+- SecretRef chưa phân giải trên các kênh không liên quan không chặn hành động nhắn tin có mục tiêu.
+- Nếu SecretRef của kênh/tài khoản đã chọn chưa được phân giải, lệnh sẽ đóng thất bại cho hành động đó.
 
-## Thao tác
+## Hành động
 
-### Lõi
+### Cốt lõi
 
 - `send`
   - Kênh: WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (Plugin)/Signal/iMessage/Matrix/Microsoft Teams
   - Bắt buộc: `--target`, cộng với `--message`, `--media`, hoặc `--presentation`
   - Tùy chọn: `--media`, `--presentation`, `--delivery`, `--pin`, `--reply-to`, `--thread-id`, `--gif-playback`, `--force-document`, `--silent`
-  - Payload trình bày dùng chung: `--presentation` gửi các khối ngữ nghĩa (`text`, `context`, `divider`, `buttons`, `select`) mà lõi kết xuất qua các khả năng đã khai báo của kênh đã chọn. Xem [Trình bày tin nhắn](/vi/plugins/message-presentation).
-  - Tùy chọn phân phối chung: `--delivery` chấp nhận các gợi ý phân phối như `{ "pin": true }`; `--pin` là cách viết tắt cho phân phối được ghim khi kênh hỗ trợ.
-  - Chỉ Telegram: `--force-document` (gửi ảnh và GIF dưới dạng tài liệu để tránh Telegram nén)
+  - Payload trình bày dùng chung: `--presentation` gửi các khối ngữ nghĩa (`text`, `context`, `divider`, `buttons`, `select`) mà phần lõi kết xuất thông qua các khả năng đã khai báo của kênh được chọn. Xem [Trình bày tin nhắn](/vi/plugins/message-presentation).
+  - Tùy chọn phân phối chung: `--delivery` chấp nhận gợi ý phân phối như `{ "pin": true }`; `--pin` là dạng viết tắt cho phân phối được ghim khi kênh hỗ trợ.
+  - Chỉ Telegram: `--force-document` (gửi hình ảnh, GIF và video dưới dạng tài liệu để tránh nén của Telegram)
   - Chỉ Telegram: `--thread-id` (id chủ đề diễn đàn)
   - Chỉ Slack: `--thread-id` (dấu thời gian luồng; `--reply-to` dùng cùng trường)
   - Telegram + Discord: `--silent`
@@ -109,7 +109,7 @@ Tra cứu tên:
   - Kênh: Discord/Slack/Matrix
   - Bắt buộc: `--target`
   - Tùy chọn: `--limit`, `--message-id`, `--before`, `--after`
-  - Chỉ Slack: `--message-id` đọc một dấu thời gian tin nhắn Slack cụ thể; kết hợp với `--thread-id` để đọc một phản hồi luồng chính xác.
+  - Chỉ Slack: `--message-id` đọc một dấu thời gian tin nhắn Slack cụ thể; kết hợp với `--thread-id` để đọc chính xác một phản hồi trong luồng.
   - Chỉ Discord: `--around`
 
 - `edit`
@@ -124,14 +124,14 @@ Tra cứu tên:
   - Kênh: Discord/Slack/Matrix
   - Bắt buộc: `--message-id`, `--target`
 
-- `pins` (liệt kê)
+- `pins` (danh sách)
   - Kênh: Discord/Slack/Matrix
   - Bắt buộc: `--target`
 
 - `permissions`
   - Kênh: Discord/Matrix
   - Bắt buộc: `--target`
-  - Chỉ Matrix: khả dụng khi mã hóa Matrix được bật và các thao tác xác minh được cho phép
+  - Chỉ Matrix: khả dụng khi mã hóa Matrix được bật và cho phép hành động xác minh
 
 - `search`
   - Kênh: Discord
@@ -166,7 +166,7 @@ Tra cứu tên:
   - Bắt buộc: `--guild-id`, `--emoji-name`, `--media`
   - Tùy chọn: `--role-ids` (lặp lại)
 
-### Nhãn dán
+### Sticker
 
 - `sticker send`
   - Kênh: Discord
@@ -202,7 +202,7 @@ Tra cứu tên:
 ### Broadcast
 
 - `broadcast`
-  - Kênh: bất kỳ kênh đã cấu hình nào; dùng `--channel all` để nhắm tới tất cả nhà cung cấp
+  - Kênh: bất kỳ kênh nào đã cấu hình; dùng `--channel all` để nhắm đến tất cả nhà cung cấp
   - Bắt buộc: `--targets <target...>`
   - Tùy chọn: `--message`, `--media`, `--dry-run`
 
@@ -215,7 +215,7 @@ openclaw message send --channel discord \
   --target channel:123 --message "hi" --reply-to 456
 ```
 
-Gửi tin nhắn với các nút ngữ nghĩa:
+Gửi một tin nhắn với nút ngữ nghĩa:
 
 ```
 openclaw message send --channel discord \
@@ -223,9 +223,9 @@ openclaw message send --channel discord \
   --presentation '{"blocks":[{"type":"buttons","buttons":[{"label":"Approve","value":"approve","style":"success"},{"label":"Decline","value":"decline","style":"danger"}]}]}'
 ```
 
-Lõi kết xuất cùng payload `presentation` thành các thành phần Discord, khối Slack, nút nội tuyến Telegram, props Mattermost, hoặc thẻ Teams/Feishu tùy theo khả năng của kênh. Xem [Trình bày tin nhắn](/vi/plugins/message-presentation) để biết hợp đồng đầy đủ và quy tắc dự phòng.
+Phần lõi kết xuất cùng payload `presentation` thành thành phần Discord, khối Slack, nút nội tuyến Telegram, props Mattermost, hoặc thẻ Teams/Feishu tùy theo khả năng của kênh. Xem [Trình bày tin nhắn](/vi/plugins/message-presentation) để biết hợp đồng đầy đủ và quy tắc dự phòng.
 
-Gửi một payload trình bày phong phú hơn:
+Gửi payload trình bày phong phú hơn:
 
 ```bash
 openclaw message send --channel googlechat --target spaces/AAA... \
@@ -233,7 +233,7 @@ openclaw message send --channel googlechat --target spaces/AAA... \
   --presentation '{"title":"Deploy approval","tone":"warning","blocks":[{"type":"text","text":"Choose a path"},{"type":"buttons","buttons":[{"label":"Approve","value":"approve"},{"label":"Decline","value":"decline"}]}]}'
 ```
 
-Tạo một cuộc thăm dò Discord:
+Tạo một khảo sát Discord:
 
 ```
 openclaw message poll --channel discord \
@@ -243,7 +243,7 @@ openclaw message poll --channel discord \
   --poll-multi --poll-duration-hours 48
 ```
 
-Tạo một cuộc thăm dò Telegram (tự động đóng sau 2 phút):
+Tạo một khảo sát Telegram (tự động đóng sau 2 phút):
 
 ```
 openclaw message poll --channel telegram \
@@ -253,14 +253,14 @@ openclaw message poll --channel telegram \
   --poll-duration-seconds 120 --silent
 ```
 
-Gửi tin nhắn chủ động Teams:
+Gửi một tin nhắn chủ động Teams:
 
 ```
 openclaw message send --channel msteams \
   --target conversation:19:abc@thread.tacv2 --message "hi"
 ```
 
-Tạo một cuộc thăm dò Teams:
+Tạo một khảo sát Teams:
 
 ```
 openclaw message poll --channel msteams \
@@ -284,14 +284,14 @@ openclaw message react --channel signal \
   --emoji "✅" --target-author-uuid 123e4567-e89b-12d3-a456-426614174000
 ```
 
-Gửi các nút nội tuyến Telegram qua trình bày chung:
+Gửi nút nội tuyến Telegram thông qua trình bày chung:
 
 ```
 openclaw message send --channel telegram --target @mychat --message "Choose:" \
   --presentation '{"blocks":[{"type":"buttons","buttons":[{"label":"Yes","value":"cmd:yes"},{"label":"No","value":"cmd:no"}]}]}'
 ```
 
-Gửi một thẻ Teams qua trình bày chung:
+Gửi thẻ Teams thông qua trình bày chung:
 
 ```bash
 openclaw message send --channel msteams \
@@ -299,7 +299,7 @@ openclaw message send --channel msteams \
   --presentation '{"title":"Status update","blocks":[{"type":"text","text":"Build completed"}]}'
 ```
 
-Gửi ảnh Telegram dưới dạng tài liệu để tránh nén:
+Gửi hình ảnh Telegram dưới dạng tài liệu để tránh nén:
 
 ```bash
 openclaw message send --channel telegram --target @mychat \
@@ -309,4 +309,4 @@ openclaw message send --channel telegram --target @mychat \
 ## Liên quan
 
 - [Tham chiếu CLI](/vi/cli)
-- [Agent send](/vi/tools/agent-send)
+- [Gửi agent](/vi/tools/agent-send)

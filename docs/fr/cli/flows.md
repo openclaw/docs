@@ -1,30 +1,59 @@
 ---
 read_when:
-    - Vous rencontrez openclaw flows dans d’anciennes pages de documentation ou notes de version
-summary: 'Redirection : les commandes de flux se trouvent sous `openclaw tasks flow`'
+    - Vous rencontrez `openclaw flows` dans d’anciennes pages de documentation ou notes de publication
+    - Vous voulez une référence rapide pour inspecter TaskFlow
+summary: 'Redirection : les commandes flow se trouvent sous `openclaw tasks flow`'
 title: Flux (redirection)
 x-i18n:
-    generated_at: "2026-04-24T07:04:08Z"
-    model: gpt-5.4
+    generated_at: "2026-05-11T20:27:08Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: c818ebd740a395fdbb4d68be21a29b524b45c7348c39efd4cf6eab125c86d44c
+    source_hash: b41e8a911cfbba32f3a1af059df34f73443ea7649bce46a5926cdf26c8399c12
     source_path: cli/flows.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw tasks flow`
 
-Les commandes de flux sont des sous-commandes de `openclaw tasks`, et non une commande autonome `flows`.
+Il n’existe pas de commande `openclaw flows` de premier niveau. L’inspection persistante de TaskFlow se trouve sous `openclaw tasks flow`.
+
+## Sous-commandes
 
 ```bash
-openclaw tasks flow list [--json]
-openclaw tasks flow show <lookup>
+openclaw tasks flow list   [--json] [--status <name>]
+openclaw tasks flow show   <lookup> [--json]
 openclaw tasks flow cancel <lookup>
 ```
 
-Pour la documentation complète, consultez [Task Flow](/fr/automation/taskflow) et la [référence CLI tasks](/fr/cli/tasks).
+| Sous-commande | Description                     | Arguments / options                                                                                     |
+| ------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `list`        | Répertorier les TaskFlows suivis. | Sortie lisible par machine `--json` ; filtre `--status <name>` (voir les valeurs d’état ci-dessous).    |
+| `show`        | Afficher un TaskFlow.           | ID de flux ou clé de propriétaire `<lookup>` ; sortie lisible par machine `--json`.                     |
+| `cancel`      | Annuler un TaskFlow en cours d’exécution. | ID de flux ou clé de propriétaire `<lookup>`.                                                           |
 
-## Associé
+`<lookup>` accepte soit un ID de flux (renvoyé par `list` / `show`), soit la clé de propriétaire du flux (l’identifiant stable que le sous-système propriétaire utilise pour suivre le flux).
+
+### Valeurs du filtre d’état
+
+`--status` sur `list` accepte l’une des valeurs suivantes :
+
+`queued`, `running`, `waiting`, `blocked`, `succeeded`, `failed`, `cancelled`, `lost`
+
+## Exemples
+
+```bash
+openclaw tasks flow list
+openclaw tasks flow list --status running
+openclaw tasks flow list --json
+openclaw tasks flow show flow_abc123
+openclaw tasks flow show flow_abc123 --json
+openclaw tasks flow cancel flow_abc123
+```
+
+Pour les concepts complets de TaskFlow et sa création, consultez [TaskFlow](/fr/automation/taskflow). Pour la commande parente `tasks`, consultez la [référence CLI de tasks](/fr/cli/tasks).
+
+## Associés
 
 - [Référence CLI](/fr/cli)
-- [Automation](/fr/automation)
+- [Automatisation](/fr/automation)
+- [TaskFlow](/fr/automation/taskflow)

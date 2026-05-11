@@ -1,34 +1,34 @@
 ---
 read_when:
-    - Je debugt afwijzingen van providerverzoeken die samenhangen met de transcriptstructuur
-    - Je wijzigt de opschoning van transcripties of de reparatielogica voor toolaanroepen
-    - Je onderzoekt niet-overeenkomende toolaanroep-id's tussen aanbieders
-summary: 'Referentie: providerspecifieke regels voor opschoning en herstel van transcripties'
+    - Je onderzoekt afwijzingen van providerverzoeken die samenhangen met de transcriptstructuur
+    - Je wijzigt de transcriptopschoning of de herstellogica voor toolaanroepen
+    - Je onderzoekt niet-overeenkomende toolaanroep-ID's tussen aanbieders
+summary: 'Referentie: providerspecifieke regels voor het opschonen en herstellen van transcripties'
 title: Transcripthygiëne
 x-i18n:
-    generated_at: "2026-05-05T01:50:02Z"
+    generated_at: "2026-05-11T20:49:58Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9441494f3e8bb18d1648acc789a40bf9501fe3f2d32b6293792e6a24710675d0
+    source_hash: 197081fe829cf6463e84c5ead9b4c631a8088e771e68163a35ed39d9efbdbf6a
     source_path: reference/transcript-hygiene.md
     workflow: 16
 ---
 
-OpenClaw past **provider-specifieke fixes** toe op transcripties vóór een run (bij het opbouwen van modelcontext). De meeste hiervan zijn **in-memory** aanpassingen die worden gebruikt om aan strikte providervereisten te voldoen. Een aparte reparatiepas voor sessiebestanden kan opgeslagen JSONL ook herschrijven voordat de sessie wordt geladen, maar alleen voor misvormde regels of gepersisteerde beurten die geen geldige duurzame records zijn. Afgeleverde assistentantwoorden blijven op schijf behouden; provider-specifieke verwijdering van assistent-prefill gebeurt alleen tijdens het samenstellen van uitgaande payloads. Wanneer een reparatie plaatsvindt, wordt er naast het sessiebestand een back-up van het oorspronkelijke bestand gemaakt.
+OpenClaw past **providerspecifieke correcties** toe op transcripties vóór een run (bij het bouwen van modelcontext). De meeste hiervan zijn **in-memory** aanpassingen die worden gebruikt om aan strikte providervereisten te voldoen. Een afzonderlijke herstelpass voor sessiebestanden kan opgeslagen JSONL ook herschrijven voordat de sessie wordt geladen, maar alleen voor misvormde regels of opgeslagen turns die geen geldige duurzame records zijn. Afgeleverde assistentantwoorden blijven op schijf behouden; providerspecifiek verwijderen van assistentprefill gebeurt alleen tijdens het samenstellen van uitgaande payloads. Wanneer herstel plaatsvindt, wordt er naast het sessiebestand een back-up van het oorspronkelijke bestand gemaakt.
 
 Scope omvat:
 
-- Runtime-only promptcontext die buiten gebruikerszichtbare transcriptiebeurten blijft
-- Opschoning van tool call-id's
+- Runtime-only promptcontext buiten gebruikerszichtbare transcriptieturns houden
+- Sanering van tool call-id's
 - Validatie van tool call-invoer
-- Reparatie van koppeling met toolresultaten
-- Beurtvalidatie / volgorde
-- Opschoning van thought signatures
-- Opschoning van thinking signatures
-- Opschoning van image-payloads
-- Opschoning van lege tekstblokken vóór provider-replay
-- Herkomsttagging van gebruikersinvoer (voor tussen sessies gerouteerde prompts)
-- Reparatie van lege assistentfoutbeurten voor Bedrock Converse-replay
+- Herstel van koppeling van toolresultaten
+- Turnvalidatie / ordening
+- Opschonen van gedachtesignatures
+- Opschonen van thinking-signatures
+- Sanering van afbeeldingspayloads
+- Opschonen van lege tekstblokken vóór provider-replay
+- Tagging van herkomst van gebruikersinvoer (voor tussen sessies gerouteerde prompts)
+- Herstel van lege assistentfoutturns voor Bedrock Converse-replay
 
 Als je details over transcriptieopslag nodig hebt, zie:
 
@@ -38,57 +38,58 @@ Als je details over transcriptieopslag nodig hebt, zie:
 
 ## Globale regel: runtimecontext is geen gebruikerstranscriptie
 
-Runtime-/systeemcontext kan voor een beurt aan de modelprompt worden toegevoegd, maar is
-geen door de eindgebruiker geschreven inhoud. OpenClaw houdt een aparte
-transcriptiegerichte promptbody bij voor Gateway-antwoorden, opvolgitems in de wachtrij, ACP, CLI en embedded Pi-runs. Opgeslagen zichtbare gebruikersbeurten gebruiken die transcriptiebody in plaats van de
+Runtime-/systeemcontext kan voor een turn aan de modelprompt worden toegevoegd, maar het is
+geen inhoud die door de eindgebruiker is geschreven. OpenClaw houdt een afzonderlijke, op transcriptie gerichte
+promptbody bij voor Gateway-antwoorden, vervolgberichten in de wachtrij, ACP, CLI en ingebedde Pi-
+runs. Opgeslagen zichtbare gebruikersturns gebruiken die transcriptiebody in plaats van de
 met runtime verrijkte prompt.
 
-Voor verouderde sessies die al runtime-wrappers hebben gepersisteerd, passen Gateway-geschiedenisoppervlakken
-een weergaveprojectie toe voordat berichten worden teruggegeven aan WebChat-,
+Voor legacy-sessies die al runtime-wrappers hebben opgeslagen, passen Gateway-geschiedenis-
+surfaces een displayprojectie toe voordat berichten worden teruggestuurd naar WebChat,
 TUI-, REST- of SSE-clients.
 
 ---
 
 ## Waar dit draait
 
-Alle transcriptiehygiëne is gecentraliseerd in de embedded runner:
+Alle transcriptiehygiëne is gecentraliseerd in de ingebedde runner:
 
 - Beleidsselectie: `src/agents/transcript-policy.ts`
-- Toepassing van opschoning/reparatie: `sanitizeSessionHistory` in `src/agents/pi-embedded-runner/replay-history.ts`
+- Toepassing van sanering/herstel: `sanitizeSessionHistory` in `src/agents/pi-embedded-runner/replay-history.ts`
 
 Het beleid gebruikt `provider`, `modelApi` en `modelId` om te bepalen wat wordt toegepast.
 
-Los van transcriptiehygiëne worden sessiebestanden vóór het laden gerepareerd (indien nodig):
+Los van transcriptiehygiëne worden sessiebestanden (indien nodig) vóór het laden hersteld:
 
 - `repairSessionFileIfNeeded` in `src/agents/session-file-repair.ts`
-- Aangeroepen vanuit `run/attempt.ts` en `compact.ts` (embedded runner)
+- Aangeroepen vanuit `run/attempt.ts` en `compact.ts` (ingebedde runner)
 
 ---
 
-## Globale regel: image-opschoning
+## Globale regel: afbeeldingssanering
 
-Image-payloads worden altijd opgeschoond om provider-side weigering door groottebeperkingen
-te voorkomen (te grote base64-afbeeldingen verkleinen/opnieuw comprimeren).
+Afbeeldingspayloads worden altijd gesaneerd om afwijzing aan providerzijde door grootte-
+limieten te voorkomen (oversized base64-afbeeldingen verkleinen/opnieuw comprimeren).
 
-Dit helpt ook de door afbeeldingen veroorzaakte tokendruk te beheersen voor modellen met vision-mogelijkheden.
-Lagere maximumafmetingen verminderen doorgaans het tokengebruik; hogere afmetingen behouden details.
+Dit helpt ook de door afbeeldingen gedreven tokendruk te beheersen voor vision-capable modellen.
+Lagere maximale afmetingen verminderen doorgaans tokengebruik; hogere afmetingen behouden detail.
 
 Implementatie:
 
 - `sanitizeSessionMessagesImages` in `src/agents/pi-embedded-helpers/images.ts`
 - `sanitizeContentBlocksImages` in `src/agents/tool-images.ts`
-- De maximale image-zijde is configureerbaar via `agents.defaults.imageMaxDimensionPx` (standaard: `1200`).
-- Lege tekstblokken worden verwijderd terwijl deze pas replay-inhoud doorloopt. Assistentbeurten
-  die leeg worden, worden uit de replay-kopie verwijderd; gebruikers- en toolresultaatbeurten
-  die leeg worden, krijgen een niet-lege placeholder voor weggelaten inhoud.
+- Maximale afbeeldingszijde is configureerbaar via `agents.defaults.imageMaxDimensionPx` (standaard: `1200`).
+- Lege tekstblokken worden verwijderd terwijl deze pass replay-inhoud doorloopt. Assistent-
+  turns die daardoor leeg worden, worden uit de replay-kopie verwijderd; gebruikers- en toolresultaat-
+  turns die leeg worden, krijgen een niet-lege placeholder voor weggelaten inhoud.
 
 ---
 
 ## Globale regel: misvormde tool calls
 
-Assistentblokken voor tool calls waarbij zowel `input` als `arguments` ontbreken, worden verwijderd
-voordat modelcontext wordt opgebouwd. Dit voorkomt provider-weigeringen door gedeeltelijk
-gepersisteerde tool calls (bijvoorbeeld na een rate-limit-fout).
+Assistentblokken voor tool calls waarbij zowel `input` als `arguments` ontbreekt, worden verwijderd
+voordat modelcontext wordt gebouwd. Dit voorkomt providerafwijzingen door gedeeltelijk
+opgeslagen tool calls (bijvoorbeeld na een rate limit-fout).
 
 Implementatie:
 
@@ -100,19 +101,19 @@ Implementatie:
 ## Globale regel: herkomst van invoer tussen sessies
 
 Wanneer een agent via `sessions_send` een prompt naar een andere sessie stuurt (inclusief
-agent-naar-agent antwoord-/aankondigingsstappen), persisteert OpenClaw de aangemaakte gebruikersbeurt met:
+antwoord-/aankondigingsstappen van agent naar agent), slaat OpenClaw de aangemaakte gebruikersturn op met:
 
 - `message.provenance.kind = "inter_session"`
 
-OpenClaw voegt ook een same-turn marker `[Inter-session message ... isUser=false]`
-toe vóór de gerouteerde prompttekst, zodat de actieve modelaanroep buitenlandse
-sessie-uitvoer kan onderscheiden van externe eindgebruikersinstructies. Deze marker bevat
+OpenClaw voegt ook een same-turn-marker `[Inter-session message ... isUser=false]`
+toe vóór de gerouteerde prompttekst, zodat de actieve modelaanroep uitvoer uit een vreemde sessie kan onderscheiden
+van externe eindgebruikersinstructies. Deze marker bevat
 de bronsessie, het kanaal en de tool wanneer beschikbaar. De transcriptie gebruikt nog steeds
-`role: "user"` voor providercompatibiliteit, maar zowel de zichtbare tekst als de herkomstmetadata
-markeren de beurt als gegevens tussen sessies.
+`role: "user"` voor providercompatibiliteit, maar zowel de zichtbare tekst als de herkomst-
+metadata markeren de turn als gegevens tussen sessies.
 
-Tijdens contextherbouw past OpenClaw dezelfde marker toe op oudere gepersisteerde
-gebruikersbeurten tussen sessies die alleen herkomstmetadata hebben.
+Tijdens het opnieuw bouwen van context past OpenClaw dezelfde marker toe op oudere opgeslagen
+gebruikersturns tussen sessies die alleen herkomstmetadata hebben.
 
 ---
 
@@ -120,77 +121,80 @@ gebruikersbeurten tussen sessies die alleen herkomstmetadata hebben.
 
 **OpenAI / OpenAI Codex**
 
-- Alleen image-opschoning.
-- Verwijder verweesde reasoning signatures (zelfstandige reasoning-items zonder een volgend inhoudsblok) voor OpenAI Responses-/Codex-transcripties, en verwijder replaybare OpenAI-reasoning na een modelrouteschakeling.
-- Behoud replaybare OpenAI Responses-payloads van reasoning-items, inclusief versleutelde items met lege samenvatting, zodat handmatige/WebSocket-replay de vereiste `rs_*`-status gekoppeld houdt aan assistentuitvoeritems.
-- Native ChatGPT Codex Responses volgt Codex-wirepariteit door eerdere Responses-reasoning-/bericht-/functiepayloads opnieuw af te spelen zonder eerdere item-ID's, terwijl sessie-`prompt_cache_key` behouden blijft.
-- Geen opschoning van tool call-id's.
-- Reparatie van koppeling met toolresultaten kan echte gematchte uitvoer verplaatsen en Codex-stijl `aborted`-uitvoer synthetiseren voor ontbrekende tool calls.
-- Geen beurtvalidatie of herordening.
+- Alleen afbeeldingssanering.
+- Laat verweesde redeneringssignatures vallen (losstaande redeneringsitems zonder een volgend inhoudsblok) voor OpenAI Responses/Codex-transcripties, en laat replaybare OpenAI-redenering vallen na een modelrouteswitch.
+- Behoud replaybare OpenAI Responses-redeneringsitempayloads, inclusief versleutelde items met lege samenvatting, zodat handmatige/WebSocket-replay de vereiste `rs_*`-status gekoppeld houdt aan assistentuitvoeritems.
+- Native ChatGPT Codex Responses volgt Codex wire-pariteit door eerdere Responses-redenerings-/bericht-/functiepayloads opnieuw af te spelen zonder eerdere item-id's, terwijl sessie-`prompt_cache_key` behouden blijft.
+- Geen sanering van tool call-id's.
+- Herstel van koppeling van toolresultaten kan echte gematchte uitvoer verplaatsen en Codex-achtige `aborted`-uitvoer synthetiseren voor ontbrekende tool calls.
+- Geen turnvalidatie of herordening.
 - Ontbrekende tooluitvoer uit de OpenAI Responses-familie wordt gesynthetiseerd als `aborted` om overeen te komen met Codex-replaynormalisatie.
-- Geen verwijdering van thought signatures.
+- Geen verwijdering van gedachtesignatures.
 
-**OpenAI-compatibele Gemma 4**
+**OpenAI-compatibele Chat Completions**
 
-- Historische assistentblokken voor thinking/reasoning worden vóór replay verwijderd, zodat lokale
-  OpenAI-compatibele Gemma 4-servers geen reasoning-inhoud van eerdere beurten ontvangen.
-- Huidige tool-call-vervolgen binnen dezelfde beurt behouden het assistent-reasoningblok
-  gekoppeld aan de tool call totdat het toolresultaat opnieuw is afgespeeld.
+- Historische thinking-/redeneringsblokken van de assistent worden vóór replay verwijderd, zodat
+  lokale en proxy-achtige OpenAI-compatibele servers geen redeneringsvelden uit eerdere turns ontvangen,
+  zoals `reasoning` of `reasoning_content`.
+- Huidige same-turn-vervolgen van tool calls behouden het assistentredeneringsblok
+  dat aan de tool call is gekoppeld totdat het toolresultaat opnieuw is afgespeeld.
+- Provider-eigen uitzonderingen kunnen zich afmelden wanneer hun wire-protocol
+  opnieuw afgespeelde redeneringsmetadata vereist.
 
 **Google (Generative AI / Gemini CLI / Antigravity)**
 
-- Opschoning van tool call-id's: strikt alfanumeriek.
-- Reparatie van koppeling met toolresultaten en synthetische toolresultaten.
-- Beurtvalidatie (Gemini-stijl beurtafwisseling).
-- Google-fixup voor beurtvolgorde (voeg een kleine gebruikersbootstrap toe als de geschiedenis met de assistent begint).
-- Antigravity Claude: thinking signatures normaliseren; unsigned thinking-blokken verwijderen.
+- Sanering van tool call-id's: strikt alfanumeriek.
+- Herstel van koppeling van toolresultaten en synthetische toolresultaten.
+- Turnvalidatie (Gemini-achtige turnafwisseling).
+- Google-turnordeningsfixup (voeg een kleine gebruikersbootstrap vooraan toe als geschiedenis met assistent begint).
+- Antigravity Claude: thinking-signatures normaliseren; niet-ondertekende thinking-blokken verwijderen.
 
 **Anthropic / Minimax (Anthropic-compatibel)**
 
-- Reparatie van koppeling met toolresultaten en synthetische toolresultaten.
-- Beurtvalidatie (opeenvolgende gebruikersbeurten samenvoegen om aan strikte afwisseling te voldoen).
-- Afsluitende assistent-prefillbeurten worden verwijderd uit uitgaande Anthropic Messages-
-  payloads wanneer thinking is ingeschakeld, inclusief Cloudflare AI Gateway-routes.
-- Thinking-blokken met ontbrekende, lege of blanco replay signatures worden verwijderd
-  vóór providerconversie. Als daardoor een assistentbeurt leeg wordt, behoudt OpenClaw
-  de beurtvorm met niet-lege tekst voor weggelaten reasoning.
-- Oudere assistentbeurten met alleen thinking die moeten worden verwijderd, worden vervangen door
-  niet-lege tekst voor weggelaten reasoning, zodat provideradapters de replaybeurt
-  niet laten vallen.
+- Herstel van koppeling van toolresultaten en synthetische toolresultaten.
+- Turnvalidatie (opeenvolgende gebruikersturns samenvoegen om aan strikte afwisseling te voldoen).
+- Trailing assistentprefill-turns worden uit uitgaande Anthropic Messages-
+  payloads verwijderd wanneer thinking is ingeschakeld, inclusief Cloudflare AI Gateway-routes.
+- Thinking-blokken met ontbrekende, lege of blanke replaysignatures worden verwijderd
+  vóór providerconversie. Als daardoor een assistentturn leeg wordt, behoudt OpenClaw
+  de turnvorm met niet-lege tekst voor weggelaten redenering.
+- Oudere thinking-only assistentturns die moeten worden verwijderd, worden vervangen door
+  niet-lege tekst voor weggelaten redenering, zodat provideradapters de replay-
+  turn niet laten vallen.
 
 **Amazon Bedrock (Converse API)**
 
-- Lege assistentbeurten voor streamfouten worden gerepareerd naar een niet-leeg fallback-tekstblok
-  vóór replay. Bedrock Converse weigert assistentberichten met `content: []`, dus
-  gepersisteerde assistentbeurten met `stopReason: "error"` en lege inhoud worden ook
-  vóór het laden op schijf gerepareerd.
-- Assistentbeurten voor streamfouten die alleen blanco tekstblokken bevatten, worden verwijderd
-  uit de in-memory replay-kopie in plaats van een ongeldig blanco blok opnieuw af te spelen.
-- Claude thinking-blokken met ontbrekende, lege of blanco replay signatures worden
-  verwijderd vóór Converse-replay. Als daardoor een assistentbeurt leeg wordt, behoudt OpenClaw
-  de beurtvorm met niet-lege tekst voor weggelaten reasoning.
-- Oudere assistentbeurten met alleen thinking die moeten worden verwijderd, worden vervangen door
-  niet-lege tekst voor weggelaten reasoning, zodat de Converse-replay de strikte beurtvorm behoudt.
-- Replay filtert OpenClaw delivery-mirror- en door Gateway geïnjecteerde assistentbeurten.
-- Image-opschoning wordt toegepast via de globale regel.
+- Lege assistentstreamfoutturns worden vóór replay hersteld naar een niet-leeg fallbacktekstblok.
+  Bedrock Converse wijst assistentberichten met `content: []` af, dus
+  opgeslagen assistentturns met `stopReason: "error"` en lege inhoud worden ook
+  vóór het laden op schijf hersteld.
+- Assistentstreamfoutturns die alleen blanke tekstblokken bevatten, worden verwijderd
+  uit de in-memory replay-kopie in plaats van een ongeldig blank blok opnieuw af te spelen.
+- Claude thinking-blokken met ontbrekende, lege of blanke replaysignatures worden
+  vóór Converse-replay verwijderd. Als daardoor een assistentturn leeg wordt, behoudt OpenClaw
+  de turnvorm met niet-lege tekst voor weggelaten redenering.
+- Oudere thinking-only assistentturns die moeten worden verwijderd, worden vervangen door
+  niet-lege tekst voor weggelaten redenering, zodat Converse-replay de strikte turnvorm behoudt.
+- Replay filtert delivery-mirror- en gateway-geïnjecteerde assistentturns van OpenClaw.
+- Afbeeldingssanering wordt toegepast via de globale regel.
 
 **Mistral (inclusief detectie op basis van model-id)**
 
-- Opschoning van tool call-id's: strict9 (alfanumeriek lengte 9).
+- Sanering van tool call-id's: strict9 (alfanumeriek, lengte 9).
 
 **OpenRouter Gemini**
 
-- Opschoning van thought signatures: verwijder niet-base64 `thought_signature`-waarden (behoud base64).
+- Opschonen van gedachtesignatures: verwijder niet-base64 `thought_signature`-waarden (behoud base64).
 
 **OpenRouter Anthropic**
 
-- Afsluitende assistent-prefillbeurten worden verwijderd uit geverifieerde OpenRouter
-  OpenAI-compatibele Anthropic-modelpayloads wanneer reasoning is ingeschakeld, in overeenstemming met
+- Trailing assistentprefill-turns worden verwijderd uit geverifieerde OpenRouter
+  OpenAI-compatibele Anthropic-modelpayloads wanneer redenering is ingeschakeld, overeenkomstig
   direct Anthropic- en Cloudflare Anthropic-replaygedrag.
 
 **Al het andere**
 
-- Alleen image-opschoning.
+- Alleen afbeeldingssanering.
 
 ---
 
@@ -198,18 +202,18 @@ gebruikersbeurten tussen sessies die alleen herkomstmetadata hebben.
 
 Vóór de release 2026.1.22 paste OpenClaw meerdere lagen transcriptiehygiëne toe:
 
-- Een **transcript-sanitize-extensie** draaide bij elke contextopbouw en kon:
-  - Koppeling tussen toolgebruik en resultaat repareren.
-  - Tool call-id's opschonen (inclusief een niet-strikte modus die `_`/`-` behield).
-- De runner voerde ook provider-specifieke opschoning uit, wat werk dupliceerde.
-- Er vonden extra mutaties plaats buiten het providerbeleid, waaronder:
-  - `<final>`-tags verwijderen uit assistenttekst vóór persistentie.
-  - Lege assistentfoutbeurten verwijderen.
+- Een **transcript-sanitize Plugin** draaide bij elke contextbuild en kon:
+  - Koppeling van toolgebruik/resultaten herstellen.
+  - Tool call-id's saneren (inclusief een niet-strikte modus die `_`/`-` behield).
+- De runner voerde ook providerspecifieke sanering uit, wat werk dupliceerde.
+- Aanvullende mutaties vonden plaats buiten het providerbeleid, waaronder:
+  - `<final>`-tags uit assistenttekst verwijderen vóór opslag.
+  - Lege assistentfoutturns verwijderen.
   - Assistentinhoud na tool calls inkorten.
 
 Deze complexiteit veroorzaakte regressies tussen providers (met name `openai-responses`
-`call_id|fc_id`-koppeling). De opschoning in 2026.1.22 verwijderde de extensie, centraliseerde
-logica in de runner en maakte OpenAI **ongemoeid** buiten image-opschoning.
+`call_id|fc_id`-koppeling). De opschoning in 2026.1.22 verwijderde de Plugin, centraliseerde
+logica in de runner en maakte OpenAI **no-touch** behalve afbeeldingssanering.
 
 ## Gerelateerd
 

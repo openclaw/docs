@@ -3,18 +3,18 @@ read_when:
     - Aprendendo a configurar o OpenClaw
     - Procurando exemplos de configuração
     - Configurando o OpenClaw pela primeira vez
-summary: Exemplos de configuração precisos conforme o esquema para configurações comuns do OpenClaw
+summary: Exemplos de configuração alinhados ao esquema para ambientes comuns do OpenClaw
 title: Exemplos de configuração
 x-i18n:
-    generated_at: "2026-05-10T19:33:36Z"
+    generated_at: "2026-05-11T20:29:22Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9fd1c93d8c491de13c3679c766293a3401853625308e90588d7c83272c5b6e73
+    source_hash: e077b2fe83b1c6e4ffd2ff0029fe3b754c7dc5dced06f134ddf18e9ed6a11fd2
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Os exemplos abaixo estão alinhados com o esquema de configuração atual. Para a referência completa e observações por campo, consulte [Configuração](/pt-BR/gateway/configuration).
+Os exemplos abaixo estão alinhados com o esquema de configuração atual. Para a referência exaustiva e observações por campo, consulte [Configuração](/pt-BR/gateway/configuration).
 
 ## Início rápido
 
@@ -22,7 +22,7 @@ Os exemplos abaixo estão alinhados com o esquema de configuração atual. Para 
 
 ```json5
 {
-  agent: { workspace: "~/.openclaw/workspace" },
+  agents: { defaults: { workspace: "~/.openclaw/workspace" } },
   channels: { whatsapp: { allowFrom: ["+15555550123"] } },
 }
 ```
@@ -33,14 +33,21 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
 
 ```json5
 {
-  identity: {
-    name: "Clawd",
-    theme: "helpful assistant",
-    emoji: "🦞",
-  },
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: { primary: "anthropic/claude-sonnet-4-6" },
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: { primary: "anthropic/claude-sonnet-4-6" },
+    },
+    list: [
+      {
+        id: "main",
+        identity: {
+          name: "Clawd",
+          theme: "helpful assistant",
+          emoji: "🦞",
+        },
+      },
+    ],
   },
   channels: {
     whatsapp: {
@@ -57,7 +64,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
 }
 ```
 
-## Exemplo expandido (opções principais)
+## Exemplo expandido (principais opções)
 
 > JSON5 permite usar comentários e vírgulas finais. JSON comum também funciona.
 
@@ -90,12 +97,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
     },
   },
 
-  // Identity
-  identity: {
-    name: "Samantha",
-    theme: "helpful sloth",
-    emoji: "🦥",
-  },
+  // Identity is per agent — set it on agents.list[].identity below.
 
   // Logging
   logging: {
@@ -314,6 +316,11 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
       {
         id: "main",
         default: true,
+        identity: {
+          name: "Samantha",
+          theme: "helpful sloth",
+          emoji: "🦥",
+        },
         // inherits defaults.skills -> github, weather
         groupChat: {
           mentionPatterns: ["@openclaw", "openclaw"],
@@ -473,9 +480,10 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
 }
 ```
 
-### Repositório irmão de Skills com link simbólico
+### Repositório irmão de Skills com symlink
 
-Use isto quando uma raiz de skill integrada contiver um link simbólico para um repositório irmão, por exemplo `~/.agents/skills/manager -> ~/Projects/manager/skills`.
+Use isto quando uma raiz de Skills integrada contiver um symlink para um repositório irmão, por
+exemplo `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ```json5
 {
@@ -488,8 +496,8 @@ Use isto quando uma raiz de skill integrada contiver um link simbólico para um 
 }
 ```
 
-- `extraDirs` examina o repositório irmão como uma raiz explícita de Skills.
-- `allowSymlinkTargets` permite que pastas de Skills vinculadas por symlink sejam resolvidas para essa raiz
+- `extraDirs` verifica o repositório irmão como uma raiz explícita de Skills.
+- `allowSymlinkTargets` permite que pastas de Skills com symlink resolvam para essa raiz
   de destino real confiável sem permitir escapes arbitrários por symlink.
 
 ## Padrões comuns
@@ -519,7 +527,7 @@ Use isto quando uma raiz de skill integrada contiver um link simbólico para um 
 
 ```json5
 {
-  agent: { workspace: "~/.openclaw/workspace" },
+  agents: { defaults: { workspace: "~/.openclaw/workspace" } },
   channels: {
     whatsapp: { allowFrom: ["+15555550123"] },
     telegram: {
@@ -536,11 +544,11 @@ Use isto quando uma raiz de skill integrada contiver um link simbólico para um 
 }
 ```
 
-### Aprovação automática de rede de nodes confiáveis
+### Aprovação automática de rede de Node confiável
 
-Mantenha o pareamento de dispositivos manual, a menos que você controle o caminho de rede. Para um laboratório
-dedicado ou uma sub-rede tailnet, você pode optar pela aprovação automática de dispositivos node
-na primeira vez com CIDRs ou IPs exatos:
+Mantenha o pareamento de dispositivos manual, a menos que você controle o caminho de rede. Para um
+laboratório dedicado ou uma sub-rede tailnet, você pode optar pela aprovação automática
+de dispositivos Node no primeiro uso com CIDRs ou IPs exatos:
 
 ```json5
 {
@@ -554,13 +562,13 @@ na primeira vez com CIDRs ou IPs exatos:
 }
 ```
 
-Isso permanece desativado quando não configurado. Aplica-se apenas ao pareamento novo com `role: node`
-sem escopos solicitados. Clientes de operador/navegador e atualizações de função, escopo, metadados ou
+Isso permanece desativado quando não configurado. Só se aplica ao pareamento novo de `role: node` sem
+escopos solicitados. Clientes de operador/navegador e upgrades de função, escopo, metadados ou
 chave pública ainda exigem aprovação manual.
 
 ### Modo de DM seguro (caixa de entrada compartilhada / DMs multiusuário)
 
-Se mais de uma pessoa puder enviar DM para o seu bot (várias entradas em `allowFrom`, aprovações de pareamento para várias pessoas ou `dmPolicy: "open"`), ative o **modo de DM seguro** para que DMs de remetentes diferentes não compartilhem um único contexto por padrão:
+Se mais de uma pessoa puder enviar DM para o seu bot (várias entradas em `allowFrom`, aprovações de pareamento para várias pessoas ou `dmPolicy: "open"`), habilite o **modo de DM seguro** para que DMs de remetentes diferentes não compartilhem um contexto por padrão:
 
 ```json5
 {
@@ -584,10 +592,10 @@ Se mais de uma pessoa puder enviar DM para o seu bot (várias entradas em `allow
 }
 ```
 
-Para Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, a autorização de remetente usa IDs por padrão.
-Ative a correspondência direta por nome/e-mail/apelido mutável com `dangerouslyAllowNameMatching: true` de cada canal somente se você aceitar explicitamente esse risco.
+Para Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, a autorização do remetente prioriza o ID por padrão.
+Só habilite correspondência direta mutável por nome/email/apelido com `dangerouslyAllowNameMatching: true` de cada canal se você aceitar explicitamente esse risco.
 
-### Chave de API da Anthropic + fallback MiniMax
+### Chave de API Anthropic + fallback MiniMax
 
 ```json5
 {
@@ -611,11 +619,13 @@ Ative a correspondência direta por nome/e-mail/apelido mutável com `dangerousl
       },
     },
   },
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: {
-      primary: "anthropic/claude-opus-4-6",
-      fallbacks: ["minimax/MiniMax-M2.7"],
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: {
+        primary: "anthropic/claude-opus-4-6",
+        fallbacks: ["minimax/MiniMax-M2.7"],
+      },
     },
   },
 }
@@ -625,13 +635,20 @@ Ative a correspondência direta por nome/e-mail/apelido mutável com `dangerousl
 
 ```json5
 {
-  identity: {
-    name: "WorkBot",
-    theme: "professional assistant",
-  },
-  agent: {
-    workspace: "~/work-openclaw",
-    elevated: { enabled: false },
+  agents: {
+    defaults: {
+      workspace: "~/work-openclaw",
+      elevatedDefault: "off",
+    },
+    list: [
+      {
+        id: "main",
+        identity: {
+          name: "WorkBot",
+          theme: "professional assistant",
+        },
+      },
+    ],
   },
   channels: {
     slack: {
@@ -646,13 +663,15 @@ Ative a correspondência direta por nome/e-mail/apelido mutável com `dangerousl
 }
 ```
 
-### Somente modelos locais
+### Apenas modelos locais
 
 ```json5
 {
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: { primary: "lmstudio/my-local-model" },
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: { primary: "lmstudio/my-local-model" },
+    },
   },
   models: {
     mode: "merge",
@@ -681,11 +700,11 @@ Ative a correspondência direta por nome/e-mail/apelido mutável com `dangerousl
 ## Dicas
 
 - Se você definir `dmPolicy: "open"`, a lista `allowFrom` correspondente deve incluir `"*"`.
-- IDs de provedores variam (números de telefone, IDs de usuário, IDs de canal). Use a documentação do provedor para confirmar o formato.
+- IDs de provedores diferem (números de telefone, IDs de usuário, IDs de canal). Use a documentação do provedor para confirmar o formato.
 - Seções opcionais para adicionar depois: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
-- Consulte [Provedores](/pt-BR/providers) e [Solução de problemas](/pt-BR/gateway/troubleshooting) para notas de configuração mais detalhadas.
+- Consulte [Provedores](/pt-BR/providers) e [Solução de problemas](/pt-BR/gateway/troubleshooting) para observações de configuração mais detalhadas.
 
-## Relacionado
+## Relacionados
 
 - [Referência de configuração](/pt-BR/gateway/configuration-reference)
 - [Configuração](/pt-BR/gateway/configuration)

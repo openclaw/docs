@@ -1,54 +1,54 @@
 ---
 read_when:
-    - Diriges chats grupales a agentes dedicados
-    - Quieres trabajo en paralelo sin que una tarea larga bloquee todas las conversaciones
+    - Enrutas los chats grupales a agentes dedicados
+    - Quieres trabajar en paralelo sin que una tarea larga bloquee todos los chats
     - Estás diseñando una configuración de operaciones multiagente
 sidebarTitle: Specialist lanes
 status: active
 summary: Ejecuta agentes especializados en paralelo sin saturar la capacidad compartida de modelos y herramientas
 title: Líneas paralelas de especialistas
 x-i18n:
-    generated_at: "2026-05-02T20:45:38Z"
+    generated_at: "2026-05-11T20:32:16Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b09f10ce4fbd79954a7196fbedb23f9b3f34b459b98eb7a5480f7eeb0bb6be98
+    source_hash: 8721056fbe08822ac92d4bc14c8c2b0977e93eaa58c2849f83b3c0f310992f93
     source_path: concepts/parallel-specialist-lanes.md
     workflow: 16
 ---
 
-Los carriles especializados paralelos permiten que un Gateway enrute distintos chats o salas a
-distintos agentes, manteniendo rápida la experiencia del usuario. El truco consiste en tratar
+Los carriles de especialistas en paralelo permiten que un Gateway enrute diferentes chats o salas a
+diferentes agentes, manteniendo rápida la experiencia del usuario. El truco es tratar
 el paralelismo como un problema de diseño de recursos escasos, no solo como "más agentes".
 
-## Principios básicos
+## Primeros principios
 
-Un carril especializado solo mejora el rendimiento cuando reduce la contención de los
+Un carril de especialista solo mejora el rendimiento cuando reduce la contención por los
 cuellos de botella reales:
 
 - **Bloqueos de sesión**: solo una ejecución debe modificar una sesión determinada a la vez.
-- **Capacidad global del modelo**: todas las ejecuciones visibles de chat siguen compartiendo los límites del proveedor.
-- **Capacidad de herramientas**: el trabajo con shell, navegador, red y repositorio puede ser más lento
+- **Capacidad global del modelo**: todas las ejecuciones de chat visibles siguen compartiendo los límites del proveedor.
+- **Capacidad de herramientas**: el trabajo de shell, navegador, red y repositorio puede ser más lento
   que el propio turno del modelo.
 - **Presupuesto de contexto**: las transcripciones largas hacen que cada turno futuro sea más lento y menos
   enfocado.
-- **Ambigüedad de propiedad**: los agentes duplicados que hacen el mismo trabajo desperdician capacidad.
+- **Ambigüedad de propiedad**: agentes duplicados haciendo el mismo trabajo desperdician capacidad.
 
 OpenClaw ya serializa las ejecuciones por sesión y limita el paralelismo global mediante
-la [cola de comandos](/es/concepts/queue). Los carriles especializados añaden una política encima:
-qué agente es propietario de qué trabajo, qué permanece en el chat y qué pasa a ser trabajo en segundo plano.
+la [cola de comandos](/es/concepts/queue). Los carriles de especialistas añaden una política encima:
+qué agente es dueño de qué trabajo, qué permanece en el chat y qué se convierte en trabajo en segundo plano.
 
 ## Despliegue recomendado
 
 ### Fase 1: contratos de carril + trabajo pesado en segundo plano
 
-Dale a cada carril un contrato escrito en su espacio de trabajo y prompt del sistema:
+Dale a cada carril un contrato escrito en su espacio de trabajo y en el prompt del sistema:
 
-- **Propósito**: el trabajo del que es propietario este carril.
-- **No objetivos**: trabajo que debe transferir en lugar de intentar hacer.
-- **Presupuesto de chat**: las respuestas rápidas permanecen en el chat; las tareas largas deben confirmarse
+- **Propósito**: el trabajo del que este carril es dueño.
+- **No objetivos**: trabajo que debe traspasar en lugar de intentar.
+- **Presupuesto de chat**: las respuestas rápidas permanecen en el chat; las tareas largas deben acusar recibo
   brevemente y luego ejecutarse en un subagente o tarea en segundo plano.
-- **Regla de transferencia**: cuando otro carril es propietario del trabajo, indica a dónde debe ir y
-  proporciona un resumen compacto de transferencia.
+- **Regla de traspaso**: cuando otro carril es dueño del trabajo, indica a dónde debe ir y
+  proporciona un resumen compacto de traspaso.
 - **Regla de riesgo de herramientas**: prefiere la superficie de herramientas más pequeña que pueda hacer el trabajo.
 
 Esta es la fase más barata y corrige la mayor parte de los atascos: un trabajo de programación ya no
@@ -56,14 +56,14 @@ convierte el carril de investigación en melaza, y cada chat mantiene limpio su 
 
 ### Fase 2: controles de prioridad y concurrencia
 
-Ajusta la cola y la capacidad del modelo según el valor empresarial de cada carril:
+Ajusta la capacidad de cola y modelo en torno al valor de negocio de cada carril:
 
 ```json5
 {
   agents: {
     defaults: {
       maxConcurrent: 4,
-      subagents: { maxConcurrent: 8 },
+      subagents: { maxConcurrent: 8, delegationMode: "prefer" },
     },
   },
   messages: {
@@ -77,53 +77,53 @@ Ajusta la cola y la capacidad del modelo según el valor empresarial de cada car
 }
 ```
 
-Usa chats directos/personales y agentes de operaciones de producción para el trabajo de alta prioridad. Deja
-que la investigación, la redacción y la programación por lotes pasen a tareas en segundo plano cuando el sistema esté
+Usa chats directos/personales y agentes de operaciones de producción para el trabajo de alta prioridad. Deja que
+la investigación, la redacción y la programación por lotes pasen a tareas en segundo plano cuando el sistema esté
 ocupado.
 
 ### Fase 3: coordinador / controlador de tráfico
 
-Añade un patrón de coordinador pequeño cuando haya varios carriles activos:
+Añade un pequeño patrón de coordinador una vez que haya varios carriles activos:
 
-- Hacer seguimiento de las tareas y propietarios activos de los carriles.
+- Hacer seguimiento de las tareas y responsables de carril activos.
 - Detectar solicitudes duplicadas entre grupos.
-- Enrutar resúmenes de transferencia entre carriles.
-- Mostrar solo bloqueos, resultados completados y decisiones que el humano debe tomar.
+- Enrutar resúmenes de traspaso entre carriles.
+- Mostrar solo bloqueos, resultados completados y decisiones que deba tomar la persona.
 
-No empieces por aquí. Un coordinador sin contratos de carril solo coordina el caos.
+No empieces aquí. Un coordinador sin contratos de carril solo coordina el caos.
 
 ## Plantilla mínima de contrato de carril
 
 ```md
-# Contrato de carril
+# Lane contract
 
-## Propiedad
+## Owns
 
-- <trabajo del que este carril es responsable>
+- <job this lane is responsible for>
 
-## No es propietario de
+## Does not own
 
-- <trabajo que se debe transferir>
+- <work to hand off>
 
-## Presupuesto de chat
+## Chat budget
 
-- Responde directamente las preguntas rápidas.
-- Para trabajo de varios pasos, lento o intensivo en herramientas: confirma brevemente, genera/envía a segundo plano
-  el trabajo y luego devuelve el resultado cuando esté completo.
+- Answer quick questions directly.
+- For multi-step, slow, or tool-heavy work: acknowledge briefly, spawn/background
+  the work, then return the result when complete.
 
-## Transferencia
+## Handoff
 
-Si otro carril es propietario de la solicitud, responde con:
+If another lane owns the request, reply with:
 
-- carril de destino
-- objetivo
-- contexto relevante
-- siguiente acción exacta
+- target lane
+- objective
+- relevant context
+- exact next action
 
-## Postura de herramientas
+## Tool posture
 
-Usa la superficie de herramientas más pequeña que pueda completar la tarea. Evita trabajo amplio con shell o
-red salvo que este carril sea explícitamente propietario de ello.
+Use the smallest tool surface that can complete the task. Avoid broad shell or
+network work unless this lane explicitly owns it.
 ```
 
 ## Relacionado

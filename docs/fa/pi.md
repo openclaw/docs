@@ -1,48 +1,48 @@
 ---
 read_when:
-    - آشنایی با طراحی یکپارچه‌سازی کیت توسعه نرم‌افزار Pi در OpenClaw
-    - اصلاح چرخهٔ حیات نشست عامل، ابزارها، یا اتصال‌دهی ارائه‌دهنده برای Pi
-summary: معماری یکپارچه‌سازی عامل Pi تعبیه‌شدهٔ OpenClaw و چرخهٔ حیات نشست
+    - درک طراحی یکپارچه‌سازی SDKِ Pi در OpenClaw
+    - تغییر چرخهٔ حیات نشست عامل، ابزارها یا اتصال‌دهی ارائه‌دهنده برای Pi
+summary: معماری یکپارچه‌سازی عامل Pi تعبیه‌شدهٔ OpenClaw و چرخهٔ حیات جلسه
 title: معماری یکپارچه‌سازی Pi
 x-i18n:
-    generated_at: "2026-05-10T19:51:05Z"
+    generated_at: "2026-05-11T20:38:19Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 93f468416b453f4f3277406f5f40386748b7388502444266f611926cd66c96ba
+    source_hash: 44d1f3fb0e04302f09c6259dbce8a12a0f25e345c2407162d82c7712d33d5e0a
     source_path: pi.md
     workflow: 16
 ---
 
-OpenClaw با [pi-coding-agent](https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent) و بسته‌های هم‌خانوادهٔ آن (`pi-ai`، `pi-agent-core`، `pi-tui`) یکپارچه می‌شود تا قابلیت‌های عامل هوش مصنوعی خود را فراهم کند.
+OpenClaw با [pi-coding-agent](https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent) و بسته‌های خواهر آن (`pi-ai`، `pi-agent-core`، `pi-tui`) یکپارچه می‌شود تا قابلیت‌های عامل هوش مصنوعی خود را فراهم کند.
 
 ## نمای کلی
 
-OpenClaw از pi SDK برای嵌‌کردن یک عامل کدنویسی هوش مصنوعی در معماری Gateway پیام‌رسانی خود استفاده می‌کند. به‌جای اجرای pi به‌عنوان یک زیرفرایند یا استفاده از حالت RPC، OpenClaw مستقیماً `AgentSession` مربوط به pi را از طریق `createAgentSession()` وارد و نمونه‌سازی می‌کند. این رویکرد تعبیه‌شده این موارد را فراهم می‌کند:
+OpenClaw از pi SDK برای تعبیه یک عامل کدنویسی هوش مصنوعی در معماری Gateway پیام‌رسانی خود استفاده می‌کند. به‌جای اجرای pi به‌صورت یک فرایند فرعی یا استفاده از حالت RPC، OpenClaw مستقیما `AgentSession` متعلق به pi را از طریق `createAgentSession()` وارد و نمونه‌سازی می‌کند. این رویکرد تعبیه‌شده فراهم می‌کند:
 
-- کنترل کامل بر چرخهٔ عمر نشست و مدیریت رویداد
-- تزریق ابزار سفارشی (پیام‌رسانی، سندباکس، کنش‌های ویژهٔ کانال)
-- سفارشی‌سازی پرامپت سیستم برای هر کانال/زمینه
-- ماندگاری نشست با پشتیبانی از شاخه‌سازی/Compaction
+- کنترل کامل بر چرخه عمر نشست و مدیریت رویدادها
+- تزریق ابزار سفارشی (پیام‌رسانی، sandbox، کنش‌های مختص کانال)
+- سفارشی‌سازی اعلان سیستم برای هر کانال/زمینه
+- ماندگاری نشست با پشتیبانی از شاخه‌بندی/Compaction
 - چرخش پروفایل احراز هویت چندحسابی با failover
-- تغییر مدل مستقل از ارائه‌دهنده
+- تعویض مدل مستقل از ارائه‌دهنده
 
 ## وابستگی‌های بسته
 
 ```json
 {
-  "@mariozechner/pi-agent-core": "0.73.0",
-  "@mariozechner/pi-ai": "0.73.0",
-  "@mariozechner/pi-coding-agent": "0.73.0",
-  "@mariozechner/pi-tui": "0.73.0"
+  "@earendil-works/pi-agent-core": "0.74.0",
+  "@earendil-works/pi-ai": "0.74.0",
+  "@earendil-works/pi-coding-agent": "0.74.0",
+  "@earendil-works/pi-tui": "0.74.0"
 }
 ```
 
 | بسته              | هدف                                                                                                   |
 | ----------------- | ------------------------------------------------------------------------------------------------------ |
-| `pi-ai`           | انتزاع‌های هستهٔ LLM: `Model`، `streamSimple`، انواع پیام، APIهای ارائه‌دهنده                           |
-| `pi-agent-core`   | حلقهٔ عامل، اجرای ابزار، انواع `AgentMessage`                                                         |
-| `pi-coding-agent` | SDK سطح‌بالا: `createAgentSession`، `SessionManager`، `AuthStorage`، `ModelRegistry`، ابزارهای داخلی |
-| `pi-tui`          | مؤلفه‌های رابط کاربری ترمینال (در حالت TUI محلی OpenClaw استفاده می‌شود)                               |
+| `pi-ai`           | انتزاع‌های اصلی LLM: `Model`، `streamSimple`، انواع پیام، APIهای ارائه‌دهنده                           |
+| `pi-agent-core`   | حلقه عامل، اجرای ابزار، انواع `AgentMessage`                                                          |
+| `pi-coding-agent` | SDK سطح بالا: `createAgentSession`، `SessionManager`، `AuthStorage`، `ModelRegistry`، ابزارهای داخلی |
+| `pi-tui`          | مولفه‌های رابط کاربری ترمینال (در حالت TUI محلی OpenClaw استفاده می‌شود)                              |
 
 ## ساختار فایل
 
@@ -134,19 +134,19 @@ src/agents/
 └── ...
 ```
 
-اکنون زمان‌اجرای کنش‌های پیام ویژهٔ کانال به‌جای `src/agents/tools` در
-دایرکتوری‌های extension متعلق به Plugin قرار دارد، برای نمونه:
+اکنون runtimeهای کنش پیام مختص کانال به‌جای `src/agents/tools` در
+دایرکتوری‌های افزونه تحت مالکیت Plugin قرار دارند، برای مثال:
 
-- فایل‌های زمان‌اجرای کنش Plugin مربوط به Discord
-- فایل زمان‌اجرای کنش Plugin مربوط به Slack
-- فایل زمان‌اجرای کنش Plugin مربوط به Telegram
-- فایل زمان‌اجرای کنش Plugin مربوط به WhatsApp
+- فایل‌های runtime کنش Plugin متعلق به Discord
+- فایل runtime کنش Plugin متعلق به Slack
+- فایل runtime کنش Plugin متعلق به Telegram
+- فایل runtime کنش Plugin متعلق به WhatsApp
 
 ## جریان یکپارچه‌سازی هسته
 
-### ۱. اجرای یک عامل تعبیه‌شده
+### 1. اجرای یک عامل تعبیه‌شده
 
-نقطهٔ ورود اصلی `runEmbeddedPiAgent()` در `pi-embedded-runner/run.ts` است:
+نقطه ورود اصلی `runEmbeddedPiAgent()` در `pi-embedded-runner/run.ts` است:
 
 ```typescript
 import { runEmbeddedPiAgent } from "./agents/pi-embedded-runner.js";
@@ -168,7 +168,7 @@ const result = await runEmbeddedPiAgent({
 });
 ```
 
-### ۲. ایجاد نشست
+### 2. ایجاد نشست
 
 درون `runEmbeddedAttempt()` (که توسط `runEmbeddedPiAgent()` فراخوانی می‌شود)، از pi SDK استفاده می‌شود:
 
@@ -178,7 +178,7 @@ import {
   DefaultResourceLoader,
   SessionManager,
   SettingsManager,
-} from "@mariozechner/pi-coding-agent";
+} from "@earendil-works/pi-coding-agent";
 
 const resourceLoader = new DefaultResourceLoader({
   cwd: resolvedWorkspace,
@@ -205,9 +205,9 @@ const { session } = await createAgentSession({
 applySystemPromptOverrideToSession(session, systemPromptOverride);
 ```
 
-### ۳. اشتراک رویداد
+### 3. اشتراک رویداد
 
-`subscribeEmbeddedPiSession()` در رویدادهای `AgentSession` مربوط به pi مشترک می‌شود:
+`subscribeEmbeddedPiSession()` در رویدادهای `AgentSession` متعلق به pi مشترک می‌شود:
 
 ```typescript
 const subscription = subscribeEmbeddedPiSession({
@@ -224,7 +224,7 @@ const subscription = subscribeEmbeddedPiSession({
 });
 ```
 
-رویدادهای مدیریت‌شده شامل این مواردند:
+رویدادهای مدیریت‌شده شامل این موارد هستند:
 
 - `message_start` / `message_end` / `message_update` (متن/تفکر جریانی)
 - `tool_execution_start` / `tool_execution_update` / `tool_execution_end`
@@ -232,35 +232,35 @@ const subscription = subscribeEmbeddedPiSession({
 - `agent_start` / `agent_end`
 - `compaction_start` / `compaction_end`
 
-### ۴. پرامپت‌دهی
+### 4. اعلان‌دهی
 
-پس از راه‌اندازی، به نشست پرامپت داده می‌شود:
+پس از راه‌اندازی، به نشست اعلان داده می‌شود:
 
 ```typescript
 await session.prompt(effectivePrompt, { images: imageResult.images });
 ```
 
-SDK حلقهٔ کامل عامل را مدیریت می‌کند: ارسال به LLM، اجرای فراخوانی‌های ابزار، و پاسخ‌های جریانی.
+SDK حلقه کامل عامل را مدیریت می‌کند: ارسال به LLM، اجرای فراخوانی‌های ابزار، و پخش پاسخ‌ها.
 
-تزریق تصویر محلیِ پرامپت است: OpenClaw ارجاع‌های تصویر را از پرامپت فعلی بارگذاری می‌کند و
-آن‌ها را فقط برای همان نوبت از طریق `images` ارسال می‌کند. تاریخچهٔ نوبت‌های قدیمی‌تر را
-برای تزریق دوبارهٔ payloadهای تصویر دوباره اسکن نمی‌کند.
+تزریق تصویر محلیِ اعلان است: OpenClaw ارجاع‌های تصویر را از اعلان فعلی بارگذاری می‌کند و
+آن‌ها را فقط برای همان نوبت از طریق `images` عبور می‌دهد. نوبت‌های قدیمی‌تر تاریخچه را دوباره اسکن نمی‌کند
+تا payloadهای تصویر را دوباره تزریق کند.
 
 ## معماری ابزار
 
-### خط لولهٔ ابزار
+### خط لوله ابزار
 
-1. **ابزارهای پایه**: `codingTools` مربوط به pi (read، bash، edit، write)
-2. **جایگزین‌های سفارشی**: OpenClaw، bash را با `exec`/`process` جایگزین می‌کند و read/edit/write را برای سندباکس سفارشی می‌کند
-3. **ابزارهای OpenClaw**: پیام‌رسانی، مرورگر، canvas، نشست‌ها، cron، Gateway، و غیره
-4. **ابزارهای کانال**: ابزارهای کنش ویژهٔ Discord/Telegram/Slack/WhatsApp
-5. **فیلترسازی سیاست**: ابزارها بر اساس سیاست‌های پروفایل، ارائه‌دهنده، عامل، گروه، سندباکس فیلتر می‌شوند
-6. **نرمال‌سازی اسکیما**: اسکیماها برای ناسازگاری‌های Gemini/OpenAI پاک‌سازی می‌شوند
-7. **پیچیدن با AbortSignal**: ابزارها wrap می‌شوند تا به سیگنال‌های abort احترام بگذارند
+1. **ابزارهای پایه**: `codingTools` متعلق به pi (read، bash، edit، write)
+2. **جایگزین‌های سفارشی**: OpenClaw ابزار bash را با `exec`/`process` جایگزین می‌کند و read/edit/write را برای sandbox سفارشی می‌کند
+3. **ابزارهای OpenClaw**: پیام‌رسانی، مرورگر، canvas، نشست‌ها، cron، Gateway و غیره.
+4. **ابزارهای کانال**: ابزارهای کنش مختص Discord/Telegram/Slack/WhatsApp
+5. **فیلترگذاری سیاستی**: ابزارها بر اساس سیاست‌های پروفایل، ارائه‌دهنده، عامل، گروه و sandbox فیلتر می‌شوند
+6. **نرمال‌سازی schema**: schemaها برای ویژگی‌های خاص Gemini/OpenAI پاک‌سازی می‌شوند
+7. **پوشش AbortSignal**: ابزارها پوشانده می‌شوند تا به سیگنال‌های لغو احترام بگذارند
 
-### آداپتور تعریف ابزار
+### تطبیق‌دهنده تعریف ابزار
 
-`AgentTool` مربوط به pi-agent-core امضای `execute` متفاوتی نسبت به `ToolDefinition` مربوط به pi-coding-agent دارد. آداپتور موجود در `pi-tool-definition-adapter.ts` این فاصله را پوشش می‌دهد:
+`AgentTool` متعلق به pi-agent-core امضای `execute` متفاوتی نسبت به `ToolDefinition` متعلق به pi-coding-agent دارد. تطبیق‌دهنده در `pi-tool-definition-adapter.ts` این فاصله را پر می‌کند:
 
 ```typescript
 export function toToolDefinitions(tools: AnyAgentTool[]): ToolDefinition[] {
@@ -277,9 +277,9 @@ export function toToolDefinitions(tools: AnyAgentTool[]): ToolDefinition[] {
 }
 ```
 
-### راهبرد تقسیم ابزار
+### راهبرد جداسازی ابزار
 
-`splitSdkTools()` همهٔ ابزارها را از طریق `customTools` ارسال می‌کند:
+`splitSdkTools()` همه ابزارها را از طریق `customTools` عبور می‌دهد:
 
 ```typescript
 export function splitSdkTools(options: { tools: AnyAgentTool[]; sandboxEnabled: boolean }) {
@@ -290,11 +290,11 @@ export function splitSdkTools(options: { tools: AnyAgentTool[]; sandboxEnabled: 
 }
 ```
 
-این تضمین می‌کند که فیلترگذاری سیاست OpenClaw، یکپارچه‌سازی sandbox، و مجموعه ابزار توسعه‌یافته در همه providerها یکسان باقی بمانند.
+این تضمین می‌کند که فیلترگذاری سیاست، یکپارچه‌سازی sandbox، و مجموعه‌ابزار توسعه‌یافته‌ی OpenClaw در میان providerها سازگار بمانند.
 
 ## ساخت system prompt
 
-system prompt در `buildAgentSystemPrompt()` (`system-prompt.ts`) ساخته می‌شود. این تابع یک prompt کامل را با بخش‌هایی شامل Tooling، Tool Call Style، Safety guardrails، OpenClaw Control، Skills، Docs، Workspace، Sandbox، Messaging، Assistant Output Directives، Voice، Silent Replies، Heartbeats، Runtime metadata، به‌همراه Memory و Reactions در صورت فعال بودن، و فایل‌های context اختیاری و محتوای system prompt اضافی، سرهم می‌کند. بخش‌ها برای حالت prompt حداقلی که توسط subagentها استفاده می‌شود، کوتاه‌سازی می‌شوند.
+system prompt در `buildAgentSystemPrompt()` (`system-prompt.ts`) ساخته می‌شود. این تابع یک prompt کامل را با بخش‌هایی از جمله Tooling، Tool Call Style، نرده‌های ایمنی، OpenClaw Control، Skills، Docs، Workspace، Sandbox، Messaging، Assistant Output Directives، Voice، Silent Replies، Heartbeats، فراداده‌ی Runtime، به‌همراه Memory و Reactions در صورت فعال بودن، و فایل‌های زمینه‌ای اختیاری و محتوای system prompt اضافی مونتاژ می‌کند. بخش‌ها برای حالت prompt کمینه که توسط subagentها استفاده می‌شود کوتاه می‌شوند.
 
 prompt پس از ایجاد session از طریق `applySystemPromptOverrideToSession()` اعمال می‌شود:
 
@@ -307,17 +307,17 @@ applySystemPromptOverrideToSession(session, systemPromptOverride);
 
 ### فایل‌های session
 
-sessionها فایل‌های JSONL با ساختار درختی هستند (پیونددهی id/parentId). `SessionManager` مربوط به Pi پایداری داده‌ها را مدیریت می‌کند:
+Sessionها فایل‌های JSONL با ساختار درختی هستند (پیونددهی id/parentId). `SessionManager` مربوط به Pi پایداری داده‌ها را مدیریت می‌کند:
 
 ```typescript
 const sessionManager = SessionManager.open(params.sessionFile);
 ```
 
-OpenClaw این را با `guardSessionManager()` برای ایمنی نتیجه ابزار بسته‌بندی می‌کند.
+OpenClaw این را با `guardSessionManager()` برای ایمنی نتیجه‌ی ابزار wrap می‌کند.
 
-### کش کردن session
+### cache کردن session
 
-`session-manager-cache.ts` نمونه‌های SessionManager را کش می‌کند تا از parse مکرر فایل جلوگیری شود:
+`session-manager-cache.ts` نمونه‌های SessionManager را cache می‌کند تا از parsing تکراری فایل جلوگیری شود:
 
 ```typescript
 await prewarmSessionFile(params.sessionFile);
@@ -327,11 +327,14 @@ trackSessionManagerAccess(params.sessionFile);
 
 ### محدودسازی history
 
-`limitHistoryTurns()` تاریخچه گفتگو را بر اساس نوع channel (DM در برابر group) کوتاه می‌کند.
+`limitHistoryTurns()` history مکالمه را بر اساس نوع کانال (DM در برابر گروه) کوتاه می‌کند.
 
 ### Compaction
 
-auto-compaction هنگام سرریز context فعال می‌شود. امضاهای رایج سرریز شامل `request_too_large`، `context length exceeded`، `input exceeds the maximum number of tokens`، `input token count exceeds the maximum number of input tokens`، `input is too long for the model`، و `ollama error: context length exceeded` هستند. `compactEmbeddedPiSessionDirect()` compaction دستی را مدیریت می‌کند:
+Auto-compaction هنگام overflow شدن context فعال می‌شود. امضاهای رایج overflow شامل `request_too_large`، `context length exceeded`، `input exceeds the
+maximum number of tokens`، `input token count exceeds the maximum number of
+input tokens`، `input is too long for the model`، و `ollama error: context
+length exceeded` هستند. `compactEmbeddedPiSessionDirect()`، compaction دستی را مدیریت می‌کند:
 
 ```typescript
 const compactResult = await compactEmbeddedPiSessionDirect({
@@ -339,25 +342,25 @@ const compactResult = await compactEmbeddedPiSessionDirect({
 });
 ```
 
-## احراز هویت و تعیین model
+## احراز هویت و resolve کردن model
 
 ### پروفایل‌های auth
 
-OpenClaw یک مخزن auth profile با چندین API key برای هر provider نگه می‌دارد:
+OpenClaw یک store برای auth profileها با چند API key برای هر provider نگه می‌دارد:
 
 ```typescript
 const authStore = ensureAuthProfileStore(agentDir, { allowKeychainPrompt: false });
 const profileOrder = resolveAuthProfileOrder({ cfg, store: authStore, provider, preferredProfile });
 ```
 
-profileها هنگام failure با ردیابی cooldown چرخش می‌کنند:
+Profileها هنگام failure با ردیابی cooldown چرخش می‌کنند:
 
 ```typescript
 await markAuthProfileFailure({ store, profileId, reason, cfg, agentDir });
 const rotated = await advanceAuthProfile();
 ```
 
-### تعیین model
+### Resolve کردن model
 
 ```typescript
 import { resolveModel } from "./pi-embedded-runner/model.js";
@@ -373,9 +376,9 @@ const { model, error, authStorage, modelRegistry } = resolveModel(
 authStorage.setRuntimeApiKey(model.provider, apiKeyInfo.apiKey);
 ```
 
-### failover
+### Failover
 
-`FailoverError` وقتی پیکربندی شده باشد، fallback مدل را فعال می‌کند:
+`FailoverError` وقتی پیکربندی شده باشد fallback مدل را فعال می‌کند:
 
 ```typescript
 if (fallbackConfigured && isFailoverErrorMessage(errorText)) {
@@ -391,11 +394,11 @@ if (fallbackConfigured && isFailoverErrorMessage(errorText)) {
 
 ## افزونه‌های Pi
 
-OpenClaw افزونه‌های سفارشی Pi را برای رفتارهای تخصصی بارگذاری می‌کند:
+OpenClaw افزونه‌های سفارشی pi را برای رفتار تخصصی بارگذاری می‌کند:
 
 ### محافظ Compaction
 
-`src/agents/pi-hooks/compaction-safeguard.ts` guardrailهایی به compaction اضافه می‌کند، از جمله بودجه‌بندی adaptive token به‌همراه خلاصه‌های failure ابزار و عملیات فایل:
+`src/agents/pi-hooks/compaction-safeguard.ts` نرده‌های محافظتی را به compaction اضافه می‌کند، از جمله بودجه‌بندی adaptive token به‌همراه خلاصه‌های failure ابزار و operationهای فایل:
 
 ```typescript
 if (resolveCompactionMode(params.cfg) === "safeguard") {
@@ -420,19 +423,19 @@ if (cfg?.agents?.defaults?.contextPruning?.mode === "cache-ttl") {
 }
 ```
 
-## streaming و block replyها
+## Streaming و پاسخ‌های بلوکی
 
-### قطعه‌بندی block
+### قطعه‌بندی بلوک
 
-`EmbeddedBlockChunker` متن streaming را در blockهای پاسخ مجزا مدیریت می‌کند:
+`EmbeddedBlockChunker` متن streaming را به بلوک‌های پاسخ مجزا مدیریت می‌کند:
 
 ```typescript
 const blockChunker = blockChunking ? new EmbeddedBlockChunker(blockChunking) : null;
 ```
 
-### حذف Thinking/Final Tag
+### حذف تگ Thinking/Final
 
-خروجی streaming پردازش می‌شود تا blockهای `<think>`/`<thinking>` حذف شوند و محتوای `<final>` استخراج شود:
+خروجی streaming پردازش می‌شود تا بلوک‌های `<think>`/`<thinking>` حذف شوند و محتوای `<final>` استخراج شود:
 
 ```typescript
 const stripBlockTags = (text: string, state: { thinking: boolean; final: boolean }) => {
@@ -441,9 +444,9 @@ const stripBlockTags = (text: string, state: { thinking: boolean; final: boolean
 };
 ```
 
-### دستورهای پاسخ
+### دستورالعمل‌های پاسخ
 
-دستورهای پاسخ مانند `[[media:url]]`، `[[voice]]`، `[[reply:id]]` parse و استخراج می‌شوند:
+دستورالعمل‌های پاسخ مانند `[[media:url]]`، `[[voice]]`، `[[reply:id]]` parse و استخراج می‌شوند:
 
 ```typescript
 const { text: cleanedText, mediaUrls, audioAsVoice, replyToId } = consumeReplyDirectives(chunk);
@@ -464,9 +467,9 @@ isFailoverAssistantError(...)         // Should failover
 classifyFailoverReason(errorText)     // "auth" | "rate_limit" | "quota" | "timeout" | ...
 ```
 
-### fallback سطح thinking
+### Fallback سطح thinking
 
-اگر یک سطح thinking پشتیبانی نشود، fallback می‌شود:
+اگر یک سطح thinking پشتیبانی نشود، fallback می‌کند:
 
 ```typescript
 const fallbackThinking = pickFallbackThinkingLevel({
@@ -479,7 +482,7 @@ if (fallbackThinking) {
 }
 ```
 
-## یکپارچه‌سازی Sandbox
+## یکپارچه‌سازی sandbox
 
 وقتی حالت sandbox فعال باشد، ابزارها و مسیرها محدود می‌شوند:
 
@@ -497,55 +500,55 @@ if (sandboxRoot) {
 }
 ```
 
-## مدیریت مختص provider
+## مدیریت ویژه‌ی provider
 
 ### Anthropic
 
-- پاک‌سازی رشته جادویی refusal
+- پاک‌سازی magic string مربوط به refusal
 - اعتبارسنجی turn برای roleهای متوالی
-- اعتبارسنجی سخت‌گیرانه پارامتر ابزار Pi در upstream
+- اعتبارسنجی سخت‌گیرانه‌ی پارامتر ابزار upstream Pi
 
 ### Google/Gemini
 
-- پاک‌سازی schema ابزار تحت مالکیت Plugin
+- سالم‌سازی schema ابزار تحت مالکیت Plugin
 
 ### OpenAI
 
-- ابزار `apply_patch` برای modelهای Codex
+- ابزار `apply_patch` برای مدل‌های Codex
 - مدیریت downgrade سطح thinking
 
 ## یکپارچه‌سازی TUI
 
-OpenClaw همچنین یک حالت TUI محلی دارد که مستقیما از کامپوننت‌های pi-tui استفاده می‌کند:
+OpenClaw همچنین یک حالت TUI محلی دارد که مستقیماً از کامپوننت‌های pi-tui استفاده می‌کند:
 
 ```typescript
 // src/tui/tui.ts
-import { ... } from "@mariozechner/pi-tui";
+import { ... } from "@earendil-works/pi-tui";
 ```
 
-این تجربه terminal تعاملی مشابه حالت native مربوط به Pi را فراهم می‌کند.
+این تجربه‌ی ترمینال تعاملی مشابه حالت native در pi را فراهم می‌کند.
 
 ## تفاوت‌های کلیدی با Pi CLI
 
 | جنبه            | Pi CLI                  | OpenClaw Embedded                                                                              |
 | --------------- | ----------------------- | ---------------------------------------------------------------------------------------------- |
-| فراخوانی        | دستور `pi` / RPC        | SDK از طریق `createAgentSession()`                                                             |
-| ابزارها         | ابزارهای پیش‌فرض coding | مجموعه ابزار سفارشی OpenClaw                                                                   |
-| system prompt   | AGENTS.md + promptها    | پویا بر اساس channel/context                                                                   |
+| فراخوانی        | دستور `pi` / RPC        | SDK از طریق `createAgentSession()`                                                            |
+| ابزارها         | ابزارهای coding پیش‌فرض | مجموعه ابزار سفارشی OpenClaw                                                                   |
+| system prompt   | AGENTS.md + promptها    | پویا برای هر کانال/context                                                                     |
 | ذخیره‌سازی session | `~/.pi/agent/sessions/` | `~/.openclaw/agents/<agentId>/sessions/` (یا `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/`) |
-| auth            | یک credential           | چند profile با چرخش                                                                            |
-| افزونه‌ها       | بارگذاری‌شده از disk    | برنامه‌ای + مسیرهای disk                                                                       |
+| Auth            | credential تکی          | چند profile با rotation                                                                        |
+| افزونه‌ها       | بارگذاری‌شده از disk    | مسیرهای برنامه‌نویسی‌شده + disk                                                                |
 | مدیریت event    | rendering در TUI        | مبتنی بر callback (onBlockReply و غیره)                                                        |
 
 ## ملاحظات آینده
 
-حوزه‌های مناسب برای بازنگری احتمالی:
+حوزه‌های دارای پتانسیل بازکاری:
 
-1. **هم‌ترازسازی signature ابزار**: در حال حاضر بین signatureهای pi-agent-core و pi-coding-agent سازگاری ایجاد می‌شود
-2. **بسته‌بندی session manager**: `guardSessionManager` ایمنی اضافه می‌کند، اما پیچیدگی را افزایش می‌دهد
-3. **بارگذاری افزونه**: می‌تواند از `ResourceLoader` مربوط به Pi مستقیم‌تر استفاده کند
-4. **پیچیدگی handler streaming**: `subscribeEmbeddedPiSession` بزرگ شده است
-5. **ویژگی‌های خاص provider**: codepathهای مختص provider زیادی وجود دارد که Pi احتمالا می‌تواند مدیریت کند
+1. **هم‌ترازی امضای ابزار**: در حال حاضر بین امضاهای pi-agent-core و pi-coding-agent adapter انجام می‌شود
+2. **wrap کردن session manager**: `guardSessionManager` ایمنی اضافه می‌کند اما پیچیدگی را افزایش می‌دهد
+3. **بارگذاری افزونه**: می‌تواند مستقیماً بیشتر از `ResourceLoader` مربوط به pi استفاده کند
+4. **پیچیدگی handler مربوط به streaming**: `subscribeEmbeddedPiSession` بزرگ شده است
+5. **ویژگی‌های خاص provider**: codepathهای ویژه‌ی provider زیادی وجود دارد که pi بالقوه می‌تواند مدیریت کند
 
 ## تست‌ها
 
@@ -563,13 +566,13 @@ import { ... } from "@mariozechner/pi-tui";
 - `src/agents/pi-settings.test.ts`
 - `src/agents/pi-hooks/**/*.test.ts`
 
-live/opt-in:
+Live/opt-in:
 
-- `src/agents/pi-embedded-runner-extraparams.live.test.ts` (فعال‌سازی با `OPENCLAW_LIVE_TEST=1`)
+- `src/agents/pi-embedded-runner-extraparams.live.test.ts` (`OPENCLAW_LIVE_TEST=1` را فعال کنید)
 
-برای commandهای اجرای فعلی، [گردش‌کار توسعه Pi](/fa/pi-dev) را ببینید.
+برای دستورهای اجرای فعلی، [گردش‌کار توسعه‌ی Pi](/fa/pi-dev) را ببینید.
 
 ## مرتبط
 
-- [گردش‌کار توسعه Pi](/fa/pi-dev)
+- [گردش‌کار توسعه‌ی Pi](/fa/pi-dev)
 - [نمای کلی نصب](/fa/install)

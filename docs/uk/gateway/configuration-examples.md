@@ -1,46 +1,53 @@
 ---
 read_when:
-    - Навчання налаштуванню OpenClaw
-    - Пошук прикладів конфігурації
+    - Дізнайтеся, як налаштувати OpenClaw
+    - Шукаєте приклади конфігурації
     - Перше налаштування OpenClaw
-summary: Приклади конфігурації, що точно відповідають схемі, для поширених налаштувань OpenClaw
+summary: Приклади конфігурації, точні відповідно до схеми, для типових налаштувань OpenClaw
 title: Приклади конфігурації
 x-i18n:
-    generated_at: "2026-05-07T13:17:12Z"
+    generated_at: "2026-05-11T20:36:11Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 87c7e75841ee36121c764f1ed51b6547d0fccf7ed6c1f05895d916dbf93f061a
+    source_hash: e077b2fe83b1c6e4ffd2ff0029fe3b754c7dc5dced06f134ddf18e9ed6a11fd2
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Наведені нижче приклади узгоджені з поточною схемою конфігурації. Повний довідник і примітки для кожного поля див. у [Конфігурації](/uk/gateway/configuration).
+Приклади нижче узгоджені з поточною схемою конфігурації. Повну довідку та примітки щодо кожного поля див. у [Конфігурації](/uk/gateway/configuration).
 
-## Швидкий початок
+## Швидкий старт
 
 ### Абсолютний мінімум
 
 ```json5
 {
-  agent: { workspace: "~/.openclaw/workspace" },
+  agents: { defaults: { workspace: "~/.openclaw/workspace" } },
   channels: { whatsapp: { allowFrom: ["+15555550123"] } },
 }
 ```
 
-Збережіть у `~/.openclaw/openclaw.json`, і ви зможете надіслати боту DM з цього номера.
+Збережіть у `~/.openclaw/openclaw.json`, і ви зможете надсилати боту приватні повідомлення з цього номера.
 
-### Рекомендований стартовий варіант
+### Рекомендована початкова конфігурація
 
 ```json5
 {
-  identity: {
-    name: "Clawd",
-    theme: "helpful assistant",
-    emoji: "🦞",
-  },
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: { primary: "anthropic/claude-sonnet-4-6" },
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: { primary: "anthropic/claude-sonnet-4-6" },
+    },
+    list: [
+      {
+        id: "main",
+        identity: {
+          name: "Clawd",
+          theme: "helpful assistant",
+          emoji: "🦞",
+        },
+      },
+    ],
   },
   channels: {
     whatsapp: {
@@ -59,7 +66,7 @@ x-i18n:
 
 ## Розширений приклад (основні параметри)
 
-> JSON5 дає змогу використовувати коментарі та кінцеві коми. Звичайний JSON також працює.
+> JSON5 дозволяє використовувати коментарі та кінцеві коми. Звичайний JSON також працює.
 
 ```json5
 {
@@ -90,12 +97,7 @@ x-i18n:
     },
   },
 
-  // Identity
-  identity: {
-    name: "Samantha",
-    theme: "helpful sloth",
-    emoji: "🦥",
-  },
+  // Identity is per agent — set it on agents.list[].identity below.
 
   // Logging
   logging: {
@@ -314,6 +316,11 @@ x-i18n:
       {
         id: "main",
         default: true,
+        identity: {
+          name: "Samantha",
+          theme: "helpful sloth",
+          emoji: "🦥",
+        },
         // inherits defaults.skills -> github, weather
         groupChat: {
           mentionPatterns: ["@openclaw", "openclaw"],
@@ -454,10 +461,12 @@ x-i18n:
     allowBundled: ["gemini", "peekaboo"],
     load: {
       extraDirs: ["~/Projects/agent-scripts/skills"],
+      allowSymlinkTargets: ["~/Projects/agent-scripts/skills"],
     },
     install: {
       preferBrew: true,
       nodeManager: "npm", // npm | pnpm | yarn | bun
+      allowUploadedArchives: false,
     },
     entries: {
       "image-lab": {
@@ -470,6 +479,24 @@ x-i18n:
   },
 }
 ```
+
+### Сусідній репозиторій Skills із символічним посиланням
+
+Використовуйте це, коли вбудований корінь Skills містить символічне посилання на сусідній репозиторій, наприклад `~/.agents/skills/manager -> ~/Projects/manager/skills`.
+
+```json5
+{
+  skills: {
+    load: {
+      extraDirs: ["~/Projects/manager/skills"],
+      allowSymlinkTargets: ["~/Projects/manager/skills"],
+    },
+  },
+}
+```
+
+- `extraDirs` сканує сусідній репозиторій як явний корінь Skills.
+- `allowSymlinkTargets` дозволяє папкам Skills із символічними посиланнями розв’язуватися в цей довірений реальний цільовий корінь без дозволу на довільні виходи через символічні посилання.
 
 ## Поширені шаблони
 
@@ -492,13 +519,13 @@ x-i18n:
 
 - `agents.defaults.skills` — це спільна базова конфігурація.
 - `agents.list[].skills` замінює цю базову конфігурацію для одного агента.
-- Використовуйте `skills: []`, коли агент не повинен бачити жодних Skills.
+- Використовуйте `skills: []`, коли агент не має бачити жодних Skills.
 
 ### Налаштування для кількох платформ
 
 ```json5
 {
-  agent: { workspace: "~/.openclaw/workspace" },
+  agents: { defaults: { workspace: "~/.openclaw/workspace" } },
   channels: {
     whatsapp: { allowFrom: ["+15555550123"] },
     telegram: {
@@ -518,8 +545,8 @@ x-i18n:
 ### Автосхвалення довіреної мережі Node
 
 Залишайте сполучення пристроїв ручним, якщо ви не контролюєте мережевий шлях. Для виділеної
-лабораторії або підмережі tailnet можна ввімкнути автосхвалення пристрою Node під час першого сполучення
-за точними CIDR або IP-адресами:
+лабораторної або tailnet-підмережі можна ввімкнути одноразове автосхвалення
+Node-пристроїв за точними CIDR або IP-адресами:
 
 ```json5
 {
@@ -534,12 +561,12 @@ x-i18n:
 ```
 
 Якщо параметр не задано, це залишається вимкненим. Це застосовується лише до нового сполучення `role: node`
-без запитаних областей доступу. Клієнти оператора/браузера, а також зміни ролі, областей доступу, метаданих або
-оновлення відкритого ключа все одно потребують ручного схвалення.
+без запитаних областей доступу. Клієнти операторів/браузера, а також оновлення ролі, області доступу,
+метаданих або публічного ключа все одно потребують ручного схвалення.
 
-### Безпечний режим DM (спільна скринька / багатокористувацькі DM)
+### Безпечний режим DM (спільна вхідна скринька / багатокористувацькі DM)
 
-Якщо більше ніж одна людина може надсилати DM вашому боту (кілька записів у `allowFrom`, схвалення сполучення для кількох людей або `dmPolicy: "open"`), увімкніть **безпечний режим DM**, щоб DM від різних відправників за замовчуванням не використовували один спільний контекст:
+Якщо більше ніж одна людина може надсилати DM вашому боту (кілька записів у `allowFrom`, схвалення сполучення для кількох людей або `dmPolicy: "open"`), увімкніть **безпечний режим DM**, щоб DM від різних відправників типово не використовували один спільний контекст:
 
 ```json5
 {
@@ -563,10 +590,10 @@ x-i18n:
 }
 ```
 
-Для Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC авторизація відправника за замовчуванням спочатку перевіряє ID.
-Увімкніть пряме зіставлення змінного імені/email/nick за допомогою `dangerouslyAllowNameMatching: true` відповідного каналу лише якщо ви явно приймаєте цей ризик.
+Для Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC авторизація відправника типово спершу перевіряє ID.
+Увімкніть пряме зіставлення змінних імен/email/ніків через `dangerouslyAllowNameMatching: true` для кожного каналу лише тоді, коли ви явно приймаєте цей ризик.
 
-### API-ключ Anthropic + резервний MiniMax
+### Ключ API Anthropic + резервний MiniMax
 
 ```json5
 {
@@ -590,11 +617,13 @@ x-i18n:
       },
     },
   },
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: {
-      primary: "anthropic/claude-opus-4-6",
-      fallbacks: ["minimax/MiniMax-M2.7"],
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: {
+        primary: "anthropic/claude-opus-4-6",
+        fallbacks: ["minimax/MiniMax-M2.7"],
+      },
     },
   },
 }
@@ -604,13 +633,20 @@ x-i18n:
 
 ```json5
 {
-  identity: {
-    name: "WorkBot",
-    theme: "professional assistant",
-  },
-  agent: {
-    workspace: "~/work-openclaw",
-    elevated: { enabled: false },
+  agents: {
+    defaults: {
+      workspace: "~/work-openclaw",
+      elevatedDefault: "off",
+    },
+    list: [
+      {
+        id: "main",
+        identity: {
+          name: "WorkBot",
+          theme: "professional assistant",
+        },
+      },
+    ],
   },
   channels: {
     slack: {
@@ -629,9 +665,11 @@ x-i18n:
 
 ```json5
 {
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: { primary: "lmstudio/my-local-model" },
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: { primary: "lmstudio/my-local-model" },
+    },
   },
   models: {
     mode: "merge",
@@ -659,10 +697,10 @@ x-i18n:
 
 ## Поради
 
-- Якщо ви задаєте `dmPolicy: "open"`, відповідний список `allowFrom` має містити `"*"`.
-- ID провайдерів різняться (номери телефонів, ID користувачів, ID каналів). Скористайтеся документацією провайдера, щоб підтвердити формат.
+- Якщо ви встановлюєте `dmPolicy: "open"`, відповідний список `allowFrom` має містити `"*"`.
+- ID провайдерів відрізняються (номери телефонів, ID користувачів, ID каналів). Скористайтеся документацією провайдера, щоб підтвердити формат.
 - Необов’язкові розділи, які можна додати пізніше: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
-- Див. [Провайдери](/uk/providers) і [Усунення несправностей](/uk/gateway/troubleshooting), щоб отримати докладніші примітки з налаштування.
+- Див. [Провайдери](/uk/providers) і [Усунення несправностей](/uk/gateway/troubleshooting), щоб отримати докладніші примітки щодо налаштування.
 
 ## Пов’язане
 

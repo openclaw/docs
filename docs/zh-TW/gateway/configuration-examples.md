@@ -1,20 +1,20 @@
 ---
 read_when:
-    - 了解如何設定 OpenClaw
-    - 尋找設定範例
+    - 瞭解如何設定 OpenClaw
+    - 正在尋找設定範例
     - 首次設定 OpenClaw
 summary: 符合結構描述的常見 OpenClaw 設定範例
 title: 設定範例
 x-i18n:
-    generated_at: "2026-05-10T19:33:48Z"
+    generated_at: "2026-05-11T20:29:00Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9fd1c93d8c491de13c3679c766293a3401853625308e90588d7c83272c5b6e73
+    source_hash: e077b2fe83b1c6e4ffd2ff0029fe3b754c7dc5dced06f134ddf18e9ed6a11fd2
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-以下範例與目前的設定結構描述一致。如需完整參考與各欄位說明，請參閱[設定](/zh-TW/gateway/configuration)。
+以下範例與目前的設定架構一致。完整參考資料與各欄位說明，請參閱[設定](/zh-TW/gateway/configuration)。
 
 ## 快速開始
 
@@ -22,25 +22,32 @@ x-i18n:
 
 ```json5
 {
-  agent: { workspace: "~/.openclaw/workspace" },
+  agents: { defaults: { workspace: "~/.openclaw/workspace" } },
   channels: { whatsapp: { allowFrom: ["+15555550123"] } },
 }
 ```
 
-儲存到 `~/.openclaw/openclaw.json`，你就可以從該號碼私訊機器人。
+儲存至 `~/.openclaw/openclaw.json`，即可從該號碼私訊機器人。
 
-### 建議起始設定
+### 建議的起始設定
 
 ```json5
 {
-  identity: {
-    name: "Clawd",
-    theme: "helpful assistant",
-    emoji: "🦞",
-  },
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: { primary: "anthropic/claude-sonnet-4-6" },
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: { primary: "anthropic/claude-sonnet-4-6" },
+    },
+    list: [
+      {
+        id: "main",
+        identity: {
+          name: "Clawd",
+          theme: "helpful assistant",
+          emoji: "🦞",
+        },
+      },
+    ],
   },
   channels: {
     whatsapp: {
@@ -57,7 +64,7 @@ x-i18n:
 }
 ```
 
-## 展開範例（主要選項）
+## 擴充範例（主要選項）
 
 > JSON5 可讓你使用註解和尾隨逗號。一般 JSON 也可以使用。
 
@@ -90,12 +97,7 @@ x-i18n:
     },
   },
 
-  // Identity
-  identity: {
-    name: "Samantha",
-    theme: "helpful sloth",
-    emoji: "🦥",
-  },
+  // Identity is per agent — set it on agents.list[].identity below.
 
   // Logging
   logging: {
@@ -314,6 +316,11 @@ x-i18n:
       {
         id: "main",
         default: true,
+        identity: {
+          name: "Samantha",
+          theme: "helpful sloth",
+          emoji: "🦥",
+        },
         // inherits defaults.skills -> github, weather
         groupChat: {
           mentionPatterns: ["@openclaw", "openclaw"],
@@ -473,9 +480,9 @@ x-i18n:
 }
 ```
 
-### 符號連結的同層 skill 儲存庫
+### 符號連結的同層 Skill 儲存庫
 
-當內建 skill 根目錄包含指向同層儲存庫的符號連結時，請使用這項設定，例如 `~/.agents/skills/manager -> ~/Projects/manager/skills`。
+當內建 Skill 根目錄包含指向同層儲存庫的符號連結時，請使用此設定，例如 `~/.agents/skills/manager -> ~/Projects/manager/skills`。
 
 ```json5
 {
@@ -488,13 +495,12 @@ x-i18n:
 }
 ```
 
-- `extraDirs` 會將同層 repo 掃描為明確的 Skills 根目錄。
-- `allowSymlinkTargets` 可讓符號連結的 Skills 資料夾解析到該受信任的
-  真實目標根目錄，而不允許任意符號連結跳脫。
+- `extraDirs` 會將同層儲存庫掃描為明確的 Skill 根目錄。
+- `allowSymlinkTargets` 讓符號連結的 Skill 資料夾解析到該受信任的實際目標根目錄，而不允許任意符號連結逸出。
 
 ## 常見模式
 
-### 共用 Skills 基準搭配一項覆寫
+### 具有單一覆寫的共用 Skill 基準
 
 ```json5
 {
@@ -512,14 +518,14 @@ x-i18n:
 ```
 
 - `agents.defaults.skills` 是共用基準。
-- `agents.list[].skills` 會為單一代理程式取代該基準。
-- 當某個代理程式不應看到任何 Skills 時，使用 `skills: []`。
+- `agents.list[].skills` 會取代單一代理程式的該基準。
+- 當代理程式不應看到任何 Skills 時，請使用 `skills: []`。
 
 ### 多平台設定
 
 ```json5
 {
-  agent: { workspace: "~/.openclaw/workspace" },
+  agents: { defaults: { workspace: "~/.openclaw/workspace" } },
   channels: {
     whatsapp: { allowFrom: ["+15555550123"] },
     telegram: {
@@ -536,10 +542,11 @@ x-i18n:
 }
 ```
 
-### 受信任節點網路自動核准
+### 受信任的 Node 網路自動核准
 
-除非你控制網路路徑，否則請維持手動裝置配對。對於專用的
-實驗室或 tailnet 子網，你可以選擇使用精確的 CIDR 或 IP，啟用首次節點裝置自動核准：
+除非你能控制網路路徑，否則請維持手動裝置配對。對於專用
+實驗室或 tailnet 子網路，你可以選擇使用精確的 CIDR 或 IP，
+啟用首次 Node 裝置自動核准：
 
 ```json5
 {
@@ -553,13 +560,13 @@ x-i18n:
 }
 ```
 
-未設定時，此功能保持關閉。它只適用於沒有要求作用域的新 `role: node` 配對。
-操作員/瀏覽器用戶端，以及角色、作用域、中繼資料或
-公開金鑰升級仍需要手動核准。
+未設定時此功能會保持關閉。它只適用於沒有請求範圍的全新
+`role: node` 配對。操作員/瀏覽器用戶端，以及角色、範圍、中繼資料或
+公開金鑰升級，仍需要手動核准。
 
 ### 安全 DM 模式（共用收件匣 / 多使用者 DM）
 
-如果不只一個人可以 DM 你的 bot（`allowFrom` 中有多個項目、核准多人的配對，或 `dmPolicy: "open"`），請啟用 **安全 DM 模式**，讓不同傳送者的 DM 預設不共用同一個上下文：
+如果有一個以上的人可以 DM 你的 bot（`allowFrom` 中有多個項目、多人的配對核准，或 `dmPolicy: "open"`），請啟用**安全 DM 模式**，讓不同傳送者的 DM 預設不會共用同一個內容脈絡：
 
 ```json5
 {
@@ -584,7 +591,7 @@ x-i18n:
 ```
 
 對於 Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC，傳送者授權預設會優先使用 ID。
-只有在你明確接受該風險時，才使用各通道的 `dangerouslyAllowNameMatching: true` 啟用直接可變的名稱/電子郵件/nick 比對。
+只有在你明確接受該風險時，才啟用每個頻道的 `dangerouslyAllowNameMatching: true`，以直接依可變動的名稱/電子郵件/暱稱比對。
 
 ### Anthropic API 金鑰 + MiniMax 備援
 
@@ -610,27 +617,36 @@ x-i18n:
       },
     },
   },
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: {
-      primary: "anthropic/claude-opus-4-6",
-      fallbacks: ["minimax/MiniMax-M2.7"],
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: {
+        primary: "anthropic/claude-opus-4-6",
+        fallbacks: ["minimax/MiniMax-M2.7"],
+      },
     },
   },
 }
 ```
 
-### 工作 bot（受限存取）
+### 工作 bot（受限制存取）
 
 ```json5
 {
-  identity: {
-    name: "WorkBot",
-    theme: "professional assistant",
-  },
-  agent: {
-    workspace: "~/work-openclaw",
-    elevated: { enabled: false },
+  agents: {
+    defaults: {
+      workspace: "~/work-openclaw",
+      elevatedDefault: "off",
+    },
+    list: [
+      {
+        id: "main",
+        identity: {
+          name: "WorkBot",
+          theme: "professional assistant",
+        },
+      },
+    ],
   },
   channels: {
     slack: {
@@ -645,13 +661,15 @@ x-i18n:
 }
 ```
 
-### 僅限本機模型
+### 僅使用本機模型
 
 ```json5
 {
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: { primary: "lmstudio/my-local-model" },
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: { primary: "lmstudio/my-local-model" },
+    },
   },
   models: {
     mode: "merge",
@@ -679,12 +697,12 @@ x-i18n:
 
 ## 提示
 
-- 如果你設定 `dmPolicy: "open"`，相符的 `allowFrom` 清單必須包含 `"*"`。
-- 提供者 ID 各不相同（電話號碼、使用者 ID、通道 ID）。請使用提供者文件確認格式。
-- 稍後可新增的選用區段：`web`、`browser`、`ui`、`discovery`、`plugins`、`talk`、`signal`、`imessage`。
-- 如需更深入的設定說明，請參閱 [提供者](/zh-TW/providers) 和 [疑難排解](/zh-TW/gateway/troubleshooting)。
+- 如果你設定 `dmPolicy: "open"`，對應的 `allowFrom` 清單必須包含 `"*"`。
+- 提供者 ID 會有所不同（電話號碼、使用者 ID、頻道 ID）。請使用提供者文件確認格式。
+- 之後可新增的選用章節：`web`、`browser`、`ui`、`discovery`、`plugins`、`talk`、`signal`、`imessage`。
+- 請參閱[提供者](/zh-TW/providers)和[疑難排解](/zh-TW/gateway/troubleshooting)，了解更深入的設定說明。
 
 ## 相關
 
-- [組態參考](/zh-TW/gateway/configuration-reference)
-- [組態](/zh-TW/gateway/configuration)
+- [設定參考](/zh-TW/gateway/configuration-reference)
+- [設定](/zh-TW/gateway/configuration)

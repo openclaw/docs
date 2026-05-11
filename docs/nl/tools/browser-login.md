@@ -1,39 +1,39 @@
 ---
 read_when:
-    - Je moet inloggen op sites voor browserautomatisering
-    - Je wilt updates op X/Twitter plaatsen
-summary: Handmatige aanmeldingen voor browserautomatisering + posten op X/Twitter
-title: Browseraanmelding
+    - Je moet inloggen bij sites voor browserautomatisering
+    - Je wilt updates plaatsen op X/Twitter
+summary: Handmatige aanmeldingen voor browserautomatisering + plaatsen op X/Twitter
+title: Inloggen via browser
 x-i18n:
-    generated_at: "2026-05-06T09:34:19Z"
+    generated_at: "2026-05-11T20:51:12Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 235194fd3a49724247f98e6d7c848c4cc3317f749ff4a8918c2172b73baf21e3
+    source_hash: 89501b47611a39df5a658ed7e144b7c16a07188dfa52544b56cbfc6e296e2ecc
     source_path: tools/browser-login.md
     workflow: 16
 ---
 
 ## Handmatig inloggen (aanbevolen)
 
-Wanneer een site inloggen vereist, **log dan handmatig in** in het **hostbrowserprofiel** (de openclaw-browser).
+Wanneer een site inloggen vereist, **log dan handmatig in** in het **host**browserprofiel (de openclaw-browser).
 
-Geef het model **niet** je inloggegevens. Geautomatiseerde logins activeren vaak anti-botverdediging en kunnen het account vergrendelen.
+Geef het model **niet** je inloggegevens. Geautomatiseerde logins activeren vaak anti-botbeveiliging en kunnen het account blokkeren.
 
-Terug naar de hoofd-browserdocumentatie: [Browser](/nl/tools/browser).
+Terug naar de hoofddocumentatie voor de browser: [Browser](/nl/tools/browser).
 
 ## Welk Chrome-profiel wordt gebruikt?
 
-OpenClaw beheert een **speciaal Chrome-profiel** (genaamd `openclaw`, met oranje getinte UI). Dit staat los van je dagelijkse browserprofiel.
+OpenClaw bestuurt een **speciaal Chrome-profiel** (genaamd `openclaw`, oranje getinte UI). Dit staat los van je dagelijkse browserprofiel.
 
-Voor browsertoolaanroepen van agents:
+Voor aanroepen van de browsertool door agents:
 
-- Standaardkeuze: de agent moet de geïsoleerde `openclaw`-browser gebruiken.
+- Standaardkeuze: de agent moet zijn geïsoleerde `openclaw`-browser gebruiken.
 - Gebruik `profile="user"` alleen wanneer bestaande ingelogde sessies belangrijk zijn en de gebruiker achter de computer zit om op een eventuele koppelingsprompt te klikken of deze goed te keuren.
-- Als je meerdere gebruikersbrowserprofielen hebt, specificeer het profiel dan expliciet in plaats van te gokken.
+- Als je meerdere gebruikersbrowserprofielen hebt, geef het profiel dan expliciet op in plaats van te gokken.
 
 Twee eenvoudige manieren om toegang te krijgen:
 
-1. **Vraag de agent om de browser te openen** en log vervolgens zelf in.
+1. **Vraag de agent om de browser te openen** en log daarna zelf in.
 2. **Open deze via de CLI**:
 
 ```bash
@@ -43,16 +43,16 @@ openclaw browser open https://x.com
 
 Als je meerdere profielen hebt, geef dan `--browser-profile <name>` mee (de standaard is `openclaw`).
 
-## X/Twitter: aanbevolen werkwijze
+## X/Twitter: aanbevolen flow
 
-- **Lezen/zoeken/threads:** gebruik de **hostbrowser** (handmatig inloggen).
-- **Updates plaatsen:** gebruik de **hostbrowser** (handmatig inloggen).
+- **Lezen/zoeken/threads:** gebruik de **host**browser (handmatig inloggen).
+- **Updates posten:** gebruik de **host**browser (handmatig inloggen).
 
-## Sandboxing + toegang tot de hostbrowser
+## Sandboxing + toegang tot hostbrowser
 
-Gesandboxte browsersessies hebben **meer kans** om botdetectie te activeren. Geef voor X/Twitter (en andere strenge sites) de voorkeur aan de **hostbrowser**.
+Gesandboxte browsersessies activeren **vaker** botdetectie. Voor X/Twitter (en andere strikte sites) geef je de voorkeur aan de **host**browser.
 
-Als de agent gesandboxt is, gebruikt de browsertool standaard de sandbox. Om hostbesturing toe te staan:
+Als de agent gesandboxed is, gebruikt de browsertool standaard de sandbox. Om hostbesturing toe te staan:
 
 ```json5
 {
@@ -69,13 +69,13 @@ Als de agent gesandboxt is, gebruikt de browsertool standaard de sandbox. Om hos
 }
 ```
 
-Richt je vervolgens op de hostbrowser:
+Open daarna zelf de hostbrowser (CLI-aanroepen worden altijd uitgevoerd tegen de hostbrowser):
 
 ```bash
-openclaw browser open https://x.com --browser-profile openclaw --target host
+openclaw browser open https://x.com --browser-profile openclaw
 ```
 
-Of schakel sandboxing uit voor de agent die updates plaatst.
+De `browser`-toolaanroepen van de agent kunnen dan de host als doel gebruiken zodra `sandbox.browser.allowHostControl: true` is ingesteld. Je kunt ook sandboxing uitschakelen voor de agent die updates post.
 
 ## Gerelateerd
 

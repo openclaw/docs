@@ -3,27 +3,27 @@ read_when:
     - Je wilt door Bedrock Mantle gehoste OSS-modellen gebruiken met OpenClaw
     - Je hebt het OpenAI-compatibele Mantle-eindpunt nodig voor GPT-OSS, Qwen, Kimi of GLM
 summary: Gebruik Amazon Bedrock Mantle-modellen (OpenAI-compatibel) met OpenClaw
-title: Amazon Bedrock-mantel
+title: Amazon Bedrock Mantle
 x-i18n:
-    generated_at: "2026-04-29T23:08:36Z"
+    generated_at: "2026-05-11T20:45:35Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c5e9fb65cd5f5151470f0d8eeb9edceb9b035863dcd863d2bcabe233c1cfce41
+    source_hash: 721eef5b7ff606b8c5e02234dae1b8d846b43ff9f3d7bf871f701bb3136fec0e
     source_path: providers/bedrock-mantle.md
     workflow: 16
 ---
 
 OpenClaw bevat een gebundelde **Amazon Bedrock Mantle**-provider die verbinding maakt met
-het Mantle OpenAI-compatibele endpoint. Mantle host open-source- en
-externe modellen (GPT-OSS, Qwen, Kimi, GLM en vergelijkbaar) via een standaard
-`/v1/chat/completions`-oppervlak dat wordt ondersteund door Bedrock-infrastructuur.
+het OpenAI-compatibele Mantle-eindpunt. Mantle host open-source- en
+externe modellen (GPT-OSS, Qwen, Kimi, GLM en vergelijkbare) via een standaard
+`/v1/chat/completions`-surface, ondersteund door Bedrock-infrastructuur.
 
-| Eigenschap        | Waarde                                                                                      |
-| ----------------- | ------------------------------------------------------------------------------------------- |
-| Provider-ID       | `amazon-bedrock-mantle`                                                                     |
-| API               | `openai-completions` (OpenAI-compatibel) of `anthropic-messages` (Anthropic Messages-route) |
-| Authenticatie     | Expliciete `AWS_BEARER_TOKEN_BEDROCK` of IAM-referentieketen voor bearer-token-generatie    |
-| Standaardregio    | `us-east-1` (overschrijven met `AWS_REGION` of `AWS_DEFAULT_REGION`)                        |
+| Eigenschap      | Waarde                                                                                           |
+| --------------- | ------------------------------------------------------------------------------------------------ |
+| Provider-ID     | `amazon-bedrock-mantle`                                                                          |
+| API             | `openai-completions` (OpenAI-compatibel) of `anthropic-messages` (Anthropic Messages-route)      |
+| Authenticatie   | Expliciete `AWS_BEARER_TOKEN_BEDROCK` of bearer-token-generatie via IAM-credentialketen          |
+| Standaardregio  | `us-east-1` (overschrijven met `AWS_REGION` of `AWS_DEFAULT_REGION`)                             |
 
 ## Aan de slag
 
@@ -31,7 +31,7 @@ Kies je gewenste authenticatiemethode en volg de installatiestappen.
 
 <Tabs>
   <Tab title="Expliciet bearer-token">
-    **Beste voor:** omgevingen waarin je al een Mantle bearer-token hebt.
+    **Het meest geschikt voor:** omgevingen waarin je al een Mantle bearer-token hebt.
 
     <Steps>
       <Step title="Stel het bearer-token in op de Gateway-host">
@@ -39,29 +39,29 @@ Kies je gewenste authenticatiemethode en volg de installatiestappen.
         export AWS_BEARER_TOKEN_BEDROCK="..."
         ```
 
-        Stel optioneel een regio in (standaard `us-east-1`):
+        Stel eventueel een regio in (standaard `us-east-1`):
 
         ```bash
         export AWS_REGION="us-west-2"
         ```
       </Step>
-      <Step title="Controleer of modellen worden gevonden">
+      <Step title="Controleer of modellen worden ontdekt">
         ```bash
         openclaw models list
         ```
 
-        Gevonden modellen verschijnen onder de `amazon-bedrock-mantle`-provider. Er is geen
+        Ontdekte modellen verschijnen onder de provider `amazon-bedrock-mantle`. Er is geen
         aanvullende configuratie vereist, tenzij je standaardwaarden wilt overschrijven.
       </Step>
     </Steps>
 
   </Tab>
 
-  <Tab title="IAM-referenties">
-    **Beste voor:** het gebruik van AWS SDK-compatibele referenties (gedeelde configuratie, SSO, webidentiteit, instantie- of taakrollen).
+  <Tab title="IAM-credentials">
+    **Het meest geschikt voor:** gebruik van AWS SDK-compatibele credentials (gedeelde configuratie, SSO, webidentiteit, instance- of taakrollen).
 
     <Steps>
-      <Step title="Configureer AWS-referenties op de Gateway-host">
+      <Step title="Configureer AWS-credentials op de Gateway-host">
         Elke AWS SDK-compatibele authenticatiebron werkt:
 
         ```bash
@@ -69,17 +69,17 @@ Kies je gewenste authenticatiemethode en volg de installatiestappen.
         export AWS_REGION="us-west-2"
         ```
       </Step>
-      <Step title="Controleer of modellen worden gevonden">
+      <Step title="Controleer of modellen worden ontdekt">
         ```bash
         openclaw models list
         ```
 
-        OpenClaw genereert automatisch een Mantle bearer-token uit de referentieketen.
+        OpenClaw genereert automatisch een Mantle bearer-token vanuit de credentialketen.
       </Step>
     </Steps>
 
     <Tip>
-    Wanneer `AWS_BEARER_TOKEN_BEDROCK` niet is ingesteld, maakt OpenClaw het bearer-token voor je aan vanuit de standaard AWS-referentieketen, inclusief gedeelde referenties/configuratieprofielen, SSO, webidentiteit en instantie- of taakrollen.
+    Wanneer `AWS_BEARER_TOKEN_BEDROCK` niet is ingesteld, maakt OpenClaw het bearer-token voor je aan vanuit de standaard AWS-credentialketen, inclusief gedeelde credentials/configuratieprofielen, SSO, webidentiteit en instance- of taakrollen.
     </Tip>
 
   </Tab>
@@ -87,21 +87,28 @@ Kies je gewenste authenticatiemethode en volg de installatiestappen.
 
 ## Automatische modeldetectie
 
-Wanneer `AWS_BEARER_TOKEN_BEDROCK` is ingesteld, gebruikt OpenClaw dit rechtstreeks. Anders
-probeert OpenClaw een Mantle bearer-token te genereren uit de standaard
-AWS-referentieketen. Daarna worden beschikbare Mantle-modellen gevonden door het
-`/v1/models`-endpoint van de regio te bevragen.
+Wanneer `AWS_BEARER_TOKEN_BEDROCK` is ingesteld, gebruikt OpenClaw het direct. Anders
+probeert OpenClaw een Mantle bearer-token te genereren vanuit de standaard
+AWS-credentialketen. Daarna worden beschikbare Mantle-modellen ontdekt door het
+`/v1/models`-eindpunt van de regio op te vragen.
 
-| Gedrag             | Detail                          |
-| ------------------ | ------------------------------- |
-| Detectiecache      | Resultaten 1 uur in cache       |
-| IAM-tokenverversing | Elk uur                         |
+| Gedrag           | Detail                         |
+| ---------------- | ------------------------------ |
+| Detectiecache    | Resultaten 1 uur gecachet      |
+| IAM-tokenverversing | Elk uur                      |
+
+Als je de Mantle-Plugin ingeschakeld wilt houden maar automatische detectie en IAM
+bearer-token-generatie wilt onderdrukken, schakel je de detectieschakelaar van de Plugin uit:
+
+```bash
+openclaw config set plugins.entries.amazon-bedrock-mantle.config.discovery.enabled false
+```
 
 <Note>
 Het bearer-token is hetzelfde `AWS_BEARER_TOKEN_BEDROCK` dat wordt gebruikt door de standaard [Amazon Bedrock](/nl/providers/bedrock)-provider.
 </Note>
 
-### Ondersteunde regio's
+### Ondersteunde regio’s
 
 `us-east-1`, `us-east-2`, `us-west-2`, `ap-northeast-1`,
 `ap-south-1`, `ap-southeast-3`, `eu-central-1`, `eu-west-1`, `eu-west-2`,
@@ -140,22 +147,22 @@ Als je expliciete configuratie verkiest boven automatische detectie:
 ## Geavanceerde configuratie
 
 <AccordionGroup>
-  <Accordion title="Ondersteuning voor redeneren">
-    Ondersteuning voor redeneren wordt afgeleid uit model-ID's die patronen bevatten zoals
+  <Accordion title="Ondersteuning voor reasoning">
+    Ondersteuning voor reasoning wordt afgeleid uit model-ID’s die patronen bevatten zoals
     `thinking`, `reasoner` of `gpt-oss-120b`. OpenClaw stelt tijdens detectie automatisch
     `reasoning: true` in voor overeenkomende modellen.
   </Accordion>
 
-  <Accordion title="Endpoint niet beschikbaar">
-    Als het Mantle-endpoint niet beschikbaar is of geen modellen retourneert, wordt de provider
-    stilzwijgend overgeslagen. OpenClaw geeft geen foutmelding; andere geconfigureerde providers
+  <Accordion title="Niet-beschikbaarheid van eindpunt">
+    Als het Mantle-eindpunt niet beschikbaar is of geen modellen retourneert, wordt de provider
+    stilzwijgend overgeslagen. OpenClaw geeft geen fout; andere geconfigureerde providers
     blijven normaal werken.
   </Accordion>
 
   <Accordion title="Claude Opus 4.7 via de Anthropic Messages-route">
     Mantle biedt ook een Anthropic Messages-route die Claude-modellen via hetzelfde met bearer-authenticatie beveiligde streamingpad doorgeeft. Claude Opus 4.7 (`amazon-bedrock-mantle/claude-opus-4.7`) kan via deze route worden aangeroepen met streaming die eigendom is van de provider, zodat AWS bearer-tokens niet worden behandeld als Anthropic API-sleutels.
 
-    Wanneer je een Anthropic Messages-model vastzet op de Mantle-provider, gebruikt OpenClaw voor dat model het `anthropic-messages`-API-oppervlak in plaats van `openai-completions`. Authenticatie komt nog steeds uit `AWS_BEARER_TOKEN_BEDROCK` (of het aangemaakte IAM bearer-token).
+    Wanneer je een Anthropic Messages-model vastzet op de Mantle-provider, gebruikt OpenClaw voor dat model de `anthropic-messages`-API-surface in plaats van `openai-completions`. Authenticatie komt nog steeds van `AWS_BEARER_TOKEN_BEDROCK` (of het aangemaakte IAM bearer-token).
 
     ```json5
     {
@@ -181,14 +188,14 @@ Als je expliciete configuratie verkiest boven automatische detectie:
 
   </Accordion>
 
-  <Accordion title="Relatie tot Amazon Bedrock-provider">
-    Bedrock Mantle is een andere provider dan de standaard
+  <Accordion title="Relatie tot de Amazon Bedrock-provider">
+    Bedrock Mantle is een afzonderlijke provider naast de standaard
     [Amazon Bedrock](/nl/providers/bedrock)-provider. Mantle gebruikt een
-    OpenAI-compatibel `/v1`-oppervlak, terwijl de standaard Bedrock-provider
-    de native Bedrock-API gebruikt.
+    OpenAI-compatibele `/v1`-surface, terwijl de standaard Bedrock-provider de
+    native Bedrock-API gebruikt.
 
-    Beide providers delen dezelfde `AWS_BEARER_TOKEN_BEDROCK`-referentie wanneer
-    die aanwezig is.
+    Beide providers delen dezelfde `AWS_BEARER_TOKEN_BEDROCK`-credential wanneer
+    deze aanwezig is.
 
   </Accordion>
 </AccordionGroup>
@@ -200,10 +207,10 @@ Als je expliciete configuratie verkiest boven automatische detectie:
     Native Bedrock-provider voor Anthropic Claude, Titan en andere modellen.
   </Card>
   <Card title="Modelselectie" href="/nl/concepts/model-providers" icon="layers">
-    Providers, modelreferenties en failovergedrag kiezen.
+    Providers, modelrefs en failover-gedrag kiezen.
   </Card>
   <Card title="OAuth en authenticatie" href="/nl/gateway/authentication" icon="key">
-    Authenticatiedetails en regels voor hergebruik van referenties.
+    Authenticatiedetails en regels voor hergebruik van credentials.
   </Card>
   <Card title="Probleemoplossing" href="/nl/help/troubleshooting" icon="wrench">
     Veelvoorkomende problemen en hoe je ze oplost.

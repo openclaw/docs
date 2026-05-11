@@ -1,15 +1,15 @@
 ---
 read_when:
     - Erfahren Sie, wie Sie OpenClaw konfigurieren
-    - Nach Konfigurationsbeispielen suchen
+    - Suche nach Konfigurationsbeispielen
     - OpenClaw zum ersten Mal einrichten
-summary: Schemakonforme Konfigurationsbeispiele für gängige OpenClaw-Setups
+summary: Schemagenaue Konfigurationsbeispiele für gängige OpenClaw-Setups
 title: Konfigurationsbeispiele
 x-i18n:
-    generated_at: "2026-05-10T19:34:27Z"
+    generated_at: "2026-05-11T20:29:26Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9fd1c93d8c491de13c3679c766293a3401853625308e90588d7c83272c5b6e73
+    source_hash: e077b2fe83b1c6e4ffd2ff0029fe3b754c7dc5dced06f134ddf18e9ed6a11fd2
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
@@ -22,25 +22,32 @@ Die folgenden Beispiele sind auf das aktuelle Konfigurationsschema abgestimmt. D
 
 ```json5
 {
-  agent: { workspace: "~/.openclaw/workspace" },
+  agents: { defaults: { workspace: "~/.openclaw/workspace" } },
   channels: { whatsapp: { allowFrom: ["+15555550123"] } },
 }
 ```
 
-Speichern Sie dies unter `~/.openclaw/openclaw.json`, und Sie können dem Bot von dieser Nummer aus eine Direktnachricht senden.
+Speichern Sie dies unter `~/.openclaw/openclaw.json`, dann können Sie dem Bot von dieser Nummer aus eine Direktnachricht senden.
 
 ### Empfohlener Einstieg
 
 ```json5
 {
-  identity: {
-    name: "Clawd",
-    theme: "helpful assistant",
-    emoji: "🦞",
-  },
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: { primary: "anthropic/claude-sonnet-4-6" },
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: { primary: "anthropic/claude-sonnet-4-6" },
+    },
+    list: [
+      {
+        id: "main",
+        identity: {
+          name: "Clawd",
+          theme: "helpful assistant",
+          emoji: "🦞",
+        },
+      },
+    ],
   },
   channels: {
     whatsapp: {
@@ -90,12 +97,7 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`, und Sie können dem Bot vo
     },
   },
 
-  // Identity
-  identity: {
-    name: "Samantha",
-    theme: "helpful sloth",
-    emoji: "🦥",
-  },
+  // Identity is per agent — set it on agents.list[].identity below.
 
   // Logging
   logging: {
@@ -314,6 +316,11 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`, und Sie können dem Bot vo
       {
         id: "main",
         default: true,
+        identity: {
+          name: "Samantha",
+          theme: "helpful sloth",
+          emoji: "🦥",
+        },
         // inherits defaults.skills -> github, weather
         groupChat: {
           mentionPatterns: ["@openclaw", "openclaw"],
@@ -473,9 +480,9 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`, und Sie können dem Bot vo
 }
 ```
 
-### Skill-Repository mit Symlink als Geschwister-Repo
+### Per Symlink eingebundenes benachbartes Skill-Repo
 
-Verwenden Sie dies, wenn ein integriertes Skill-Stammverzeichnis einen Symlink in ein Geschwister-Repo enthält, zum
+Verwenden Sie dies, wenn ein integriertes Skill-Stammverzeichnis einen Symlink in ein benachbartes Repo enthält, zum
 Beispiel `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ```json5
@@ -489,13 +496,13 @@ Beispiel `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 }
 ```
 
-- `extraDirs` durchsucht das benachbarte Repository als expliziten Skills-Stamm.
-- `allowSymlinkTargets` ermöglicht es, per Symlink eingebundene Skills-Ordner auf diesen vertrauenswürdigen
-  realen Zielstamm aufzulösen, ohne beliebige Symlink-Ausbrüche zu erlauben.
+- `extraDirs` durchsucht das benachbarte Repo als explizites Skill-Stammverzeichnis.
+- `allowSymlinkTargets` ermöglicht, dass per Symlink eingebundene Skill-Ordner in dieses vertrauenswürdige
+  echte Ziel-Stammverzeichnis aufgelöst werden, ohne beliebige Symlink-Ausbrüche zu erlauben.
 
-## Häufige Muster
+## Gängige Muster
 
-### Gemeinsame Skills-Basiskonfiguration mit einer Überschreibung
+### Gemeinsame Skill-Basis mit einer Überschreibung
 
 ```json5
 {
@@ -512,15 +519,15 @@ Beispiel `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 }
 ```
 
-- `agents.defaults.skills` ist die gemeinsame Basiskonfiguration.
-- `agents.list[].skills` ersetzt diese Basiskonfiguration für einen Agenten.
+- `agents.defaults.skills` ist die gemeinsame Basis.
+- `agents.list[].skills` ersetzt diese Basis für einen Agenten.
 - Verwenden Sie `skills: []`, wenn ein Agent keine Skills sehen soll.
 
 ### Einrichtung für mehrere Plattformen
 
 ```json5
 {
-  agent: { workspace: "~/.openclaw/workspace" },
+  agents: { defaults: { workspace: "~/.openclaw/workspace" } },
   channels: {
     whatsapp: { allowFrom: ["+15555550123"] },
     telegram: {
@@ -537,11 +544,11 @@ Beispiel `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 }
 ```
 
-### Automatische Genehmigung vertrauenswürdiger Node-Netzwerke
+### Automatische Genehmigung für vertrauenswürdige Node-Netzwerke
 
-Halten Sie die Gerätekopplung manuell, sofern Sie den Netzwerkpfad nicht kontrollieren. Für ein dediziertes
-Labor- oder Tailnet-Subnetz können Sie sich für die erstmalige automatische Genehmigung von Node-Geräten
-mit exakten CIDRs oder IPs entscheiden:
+Belassen Sie das Geräte-Pairing manuell, sofern Sie den Netzwerkpfad nicht kontrollieren. Für ein dediziertes
+Lab oder ein Tailnet-Subnetz können Sie die automatische Erstgenehmigung von Node-Geräten
+mit exakten CIDRs oder IPs aktivieren:
 
 ```json5
 {
@@ -555,13 +562,13 @@ mit exakten CIDRs oder IPs entscheiden:
 }
 ```
 
-Dies bleibt deaktiviert, wenn es nicht gesetzt ist. Es gilt nur für frische Kopplungen mit `role: node`
-ohne angeforderte Scopes. Operator-/Browser-Clients sowie Rollen-, Scope-, Metadaten- oder
-Public-Key-Upgrades erfordern weiterhin manuelle Genehmigung.
+Dies bleibt deaktiviert, wenn es nicht festgelegt ist. Es gilt nur für frisches `role: node`-Pairing mit
+keinen angeforderten Scopes. Operator-/Browser-Clients sowie Upgrades von Rolle, Scope, Metadaten oder
+öffentlichen Schlüsseln erfordern weiterhin eine manuelle Genehmigung.
 
 ### Sicherer DM-Modus (gemeinsamer Posteingang / Mehrbenutzer-DMs)
 
-Wenn mehr als eine Person Ihrem Bot eine DM senden kann (mehrere Einträge in `allowFrom`, Kopplungsgenehmigungen für mehrere Personen oder `dmPolicy: "open"`), aktivieren Sie den **sicheren DM-Modus**, damit DMs von verschiedenen Absendern standardmäßig keinen gemeinsamen Kontext teilen:
+Wenn mehr als eine Person Ihrem Bot eine DM senden kann (mehrere Einträge in `allowFrom`, Pairing-Genehmigungen für mehrere Personen oder `dmPolicy: "open"`), aktivieren Sie den **sicheren DM-Modus**, damit DMs von verschiedenen Absendern standardmäßig nicht denselben Kontext teilen:
 
 ```json5
 {
@@ -586,7 +593,7 @@ Wenn mehr als eine Person Ihrem Bot eine DM senden kann (mehrere Einträge in `a
 ```
 
 Für Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC erfolgt die Absenderautorisierung standardmäßig zuerst anhand der ID.
-Aktivieren Sie direkte veränderliche Namens-/E-Mail-/Nick-Abgleiche mit `dangerouslyAllowNameMatching: true` des jeweiligen Kanals nur, wenn Sie dieses Risiko ausdrücklich akzeptieren.
+Aktivieren Sie direktes, veränderliches Matching nach Name/E-Mail/Nick mit dem `dangerouslyAllowNameMatching: true` des jeweiligen Kanals nur, wenn Sie dieses Risiko ausdrücklich akzeptieren.
 
 ### Anthropic-API-Schlüssel + MiniMax-Fallback
 
@@ -612,11 +619,13 @@ Aktivieren Sie direkte veränderliche Namens-/E-Mail-/Nick-Abgleiche mit `danger
       },
     },
   },
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: {
-      primary: "anthropic/claude-opus-4-6",
-      fallbacks: ["minimax/MiniMax-M2.7"],
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: {
+        primary: "anthropic/claude-opus-4-6",
+        fallbacks: ["minimax/MiniMax-M2.7"],
+      },
     },
   },
 }
@@ -626,13 +635,20 @@ Aktivieren Sie direkte veränderliche Namens-/E-Mail-/Nick-Abgleiche mit `danger
 
 ```json5
 {
-  identity: {
-    name: "WorkBot",
-    theme: "professional assistant",
-  },
-  agent: {
-    workspace: "~/work-openclaw",
-    elevated: { enabled: false },
+  agents: {
+    defaults: {
+      workspace: "~/work-openclaw",
+      elevatedDefault: "off",
+    },
+    list: [
+      {
+        id: "main",
+        identity: {
+          name: "WorkBot",
+          theme: "professional assistant",
+        },
+      },
+    ],
   },
   channels: {
     slack: {
@@ -651,9 +667,11 @@ Aktivieren Sie direkte veränderliche Namens-/E-Mail-/Nick-Abgleiche mit `danger
 
 ```json5
 {
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: { primary: "lmstudio/my-local-model" },
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: { primary: "lmstudio/my-local-model" },
+    },
   },
   models: {
     mode: "merge",
@@ -681,10 +699,10 @@ Aktivieren Sie direkte veränderliche Namens-/E-Mail-/Nick-Abgleiche mit `danger
 
 ## Tipps
 
-- Wenn Sie `dmPolicy: "open"` setzen, muss die passende `allowFrom`-Liste `"*"` enthalten.
+- Wenn Sie `dmPolicy: "open"` festlegen, muss die zugehörige `allowFrom`-Liste `"*"` enthalten.
 - Provider-IDs unterscheiden sich (Telefonnummern, Benutzer-IDs, Kanal-IDs). Verwenden Sie die Provider-Dokumentation, um das Format zu bestätigen.
-- Optionale Abschnitte, die später ergänzt werden können: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
-- Weitere Hinweise zur Einrichtung finden Sie unter [Provider](/de/providers) und [Fehlerbehebung](/de/gateway/troubleshooting).
+- Optionale Abschnitte, die Sie später hinzufügen können: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
+- Siehe [Provider](/de/providers) und [Fehlerbehebung](/de/gateway/troubleshooting) für ausführlichere Einrichtungshinweise.
 
 ## Verwandt
 

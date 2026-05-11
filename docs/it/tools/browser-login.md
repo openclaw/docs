@@ -1,14 +1,14 @@
 ---
 read_when:
-    - È necessario effettuare l'accesso ai siti per l'automazione del browser
+    - È necessario accedere ai siti per l'automazione del browser
     - Vuoi pubblicare aggiornamenti su X/Twitter
 summary: Accessi manuali per l'automazione del browser + pubblicazione su X/Twitter
 title: Accesso tramite browser
 x-i18n:
-    generated_at: "2026-05-06T09:10:12Z"
+    generated_at: "2026-05-11T20:36:42Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 235194fd3a49724247f98e6d7c848c4cc3317f749ff4a8918c2172b73baf21e3
+    source_hash: 89501b47611a39df5a658ed7e144b7c16a07188dfa52544b56cbfc6e296e2ecc
     source_path: tools/browser-login.md
     workflow: 16
 ---
@@ -23,12 +23,12 @@ Torna alla documentazione principale del browser: [Browser](/it/tools/browser).
 
 ## Quale profilo Chrome viene usato?
 
-OpenClaw controlla un **profilo Chrome dedicato** (chiamato `openclaw`, con interfaccia arancione). È separato dal profilo del browser che usi ogni giorno.
+OpenClaw controlla un **profilo Chrome dedicato** (chiamato `openclaw`, con interfaccia a tonalità arancione). Questo è separato dal tuo profilo browser quotidiano.
 
 Per le chiamate allo strumento browser dell'agente:
 
-- Scelta predefinita: l'agente deve usare il proprio browser `openclaw` isolato.
-- Usa `profile="user"` solo quando le sessioni già autenticate sono importanti e l'utente è al computer per fare clic/approvare eventuali richieste di collegamento.
+- Scelta predefinita: l'agente dovrebbe usare il proprio browser `openclaw` isolato.
+- Usa `profile="user"` solo quando le sessioni con accesso esistenti sono rilevanti e l'utente è al computer per fare clic/approvare eventuali prompt di collegamento.
 - Se hai più profili del browser utente, specifica esplicitamente il profilo invece di tirare a indovinare.
 
 Due modi semplici per accedervi:
@@ -46,13 +46,13 @@ Se hai più profili, passa `--browser-profile <name>` (il valore predefinito è 
 ## X/Twitter: flusso consigliato
 
 - **Lettura/ricerca/thread:** usa il browser **host** (accesso manuale).
-- **Pubblicare aggiornamenti:** usa il browser **host** (accesso manuale).
+- **Pubblicazione aggiornamenti:** usa il browser **host** (accesso manuale).
 
 ## Sandboxing + accesso al browser host
 
-Le sessioni del browser in sandbox hanno **maggiori probabilità** di attivare il rilevamento dei bot. Per X/Twitter (e altri siti rigidi), preferisci il browser **host**.
+Le sessioni browser in sandbox hanno **maggiori probabilità** di attivare il rilevamento dei bot. Per X/Twitter (e altri siti rigorosi), preferisci il browser **host**.
 
-Se l'agente è in sandbox, lo strumento browser usa la sandbox per impostazione predefinita. Per consentire il controllo dell'host:
+Se l'agente è in sandbox, lo strumento browser usa per impostazione predefinita la sandbox. Per consentire il controllo dell'host:
 
 ```json5
 {
@@ -69,13 +69,13 @@ Se l'agente è in sandbox, lo strumento browser usa la sandbox per impostazione 
 }
 ```
 
-Poi seleziona il browser host come destinazione:
+Poi apri tu il browser host (le invocazioni CLI vengono sempre eseguite rispetto al browser host):
 
 ```bash
-openclaw browser open https://x.com --browser-profile openclaw --target host
+openclaw browser open https://x.com --browser-profile openclaw
 ```
 
-Oppure disattiva la sandbox per l'agente che pubblica aggiornamenti.
+Le chiamate allo strumento `browser` dell'agente possono quindi puntare all'host una volta impostato `sandbox.browser.allowHostControl: true`. In alternativa, disabilita il sandboxing per l'agente che pubblica aggiornamenti.
 
 ## Correlati
 

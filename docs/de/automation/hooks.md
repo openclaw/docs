@@ -1,26 +1,26 @@
 ---
 read_when:
-    - Sie möchten ereignisgesteuerte Automatisierung für /new, /reset, /stop und Agent-Lebenszyklusereignisse
+    - Sie möchten ereignisgesteuerte Automatisierung für /new, /reset, /stop und Ereignisse im Agentenlebenszyklus
     - Sie möchten Hooks erstellen, installieren oder debuggen
 summary: 'Hooks: ereignisgesteuerte Automatisierung für Befehle und Lebenszyklusereignisse'
-title: Hooks
+title: Einhängepunkte
 x-i18n:
-    generated_at: "2026-05-05T08:25:26Z"
+    generated_at: "2026-05-11T20:20:34Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 321eb7a583d5e8c90d2c2026f6e1cf46cd207bef52213774b469a8d46b993967
+    source_hash: 02f44dd117d52040ea1205521c6ecd4eb410510175e2312e2584a15e6df27d96
     source_path: automation/hooks.md
     workflow: 16
 ---
 
-Hooks sind kleine Skripte, die ausgeführt werden, wenn im Gateway etwas passiert. Sie können aus Verzeichnissen erkannt und mit `openclaw hooks` geprüft werden. Das Gateway lädt interne Hooks erst, nachdem Sie Hooks aktiviert oder mindestens einen Hook-Eintrag, ein Hook-Pack, einen Legacy-Handler oder ein zusätzliches Hook-Verzeichnis konfiguriert haben.
+Hooks sind kleine Skripte, die ausgeführt werden, wenn im Gateway etwas passiert. Sie können in Verzeichnissen gefunden und mit `openclaw hooks` geprüft werden. Das Gateway lädt interne Hooks erst, nachdem Sie Hooks aktiviert oder mindestens einen Hook-Eintrag, ein Hook-Pack, einen Legacy-Handler oder ein zusätzliches Hook-Verzeichnis konfiguriert haben.
 
 In OpenClaw gibt es zwei Arten von Hooks:
 
-- **Interne Hooks** (diese Seite): werden im Gateway ausgeführt, wenn Agent-Ereignisse ausgelöst werden, z. B. `/new`, `/reset`, `/stop` oder Lebenszyklusereignisse.
-- **Webhooks**: externe HTTP-Endpunkte, mit denen andere Systeme Arbeit in OpenClaw auslösen können. Siehe [Webhooks](/de/automation/cron-jobs#webhooks).
+- **Interne Hooks** (diese Seite): werden im Gateway ausgeführt, wenn Agent-Ereignisse ausgelöst werden, zum Beispiel `/new`, `/reset`, `/stop` oder Lebenszyklusereignisse.
+- **Webhooks**: externe HTTP-Endpunkte, über die andere Systeme Arbeit in OpenClaw auslösen können. Siehe [Webhooks](/de/automation/cron-jobs#webhooks).
 
-Hooks können auch in Plugins gebündelt werden. `openclaw hooks list` zeigt sowohl eigenständige Hooks als auch Plugin-verwaltete Hooks an.
+Hooks können auch in Plugins gebündelt sein. `openclaw hooks list` zeigt sowohl eigenständige Hooks als auch Plugin-verwaltete Hooks.
 
 ## Schnellstart
 
@@ -42,27 +42,27 @@ openclaw hooks info session-memory
 
 | Ereignis                 | Wann es ausgelöst wird                                     |
 | ------------------------ | ---------------------------------------------------------- |
-| `command:new`            | Befehl `/new` ausgegeben                                   |
-| `command:reset`          | Befehl `/reset` ausgegeben                                 |
-| `command:stop`           | Befehl `/stop` ausgegeben                                  |
+| `command:new`            | `/new`-Befehl ausgegeben                                   |
+| `command:reset`          | `/reset`-Befehl ausgegeben                                 |
+| `command:stop`           | `/stop`-Befehl ausgegeben                                  |
 | `command`                | Beliebiges Befehlsereignis (allgemeiner Listener)          |
 | `session:compact:before` | Bevor Compaction den Verlauf zusammenfasst                 |
 | `session:compact:after`  | Nachdem Compaction abgeschlossen ist                       |
 | `session:patch`          | Wenn Sitzungseigenschaften geändert werden                 |
-| `agent:bootstrap`        | Bevor Workspace-Bootstrap-Dateien eingefügt werden         |
-| `gateway:startup`        | Nachdem Channels gestartet und Hooks geladen wurden        |
-| `gateway:shutdown`       | Wenn das Herunterfahren des Gateways beginnt               |
+| `agent:bootstrap`        | Bevor Workspace-Bootstrap-Dateien injiziert werden         |
+| `gateway:startup`        | Nachdem Kanäle gestartet und Hooks geladen wurden          |
+| `gateway:shutdown`       | Wenn das Herunterfahren des Gateway beginnt                |
 | `gateway:pre-restart`    | Vor einem erwarteten Gateway-Neustart                      |
-| `message:received`       | Eingehende Nachricht aus einem beliebigen Channel          |
+| `message:received`       | Eingehende Nachricht aus einem beliebigen Kanal            |
 | `message:transcribed`    | Nachdem die Audiotranskription abgeschlossen ist           |
-| `message:preprocessed`   | Nachdem Medien- und Link-Vorverarbeitung abgeschlossen ist oder übersprungen wurde |
+| `message:preprocessed`   | Nachdem Medien- und Link-Vorverarbeitung abgeschlossen oder übersprungen wurde |
 | `message:sent`           | Ausgehende Nachricht zugestellt                            |
 
 ## Hooks schreiben
 
 ### Hook-Struktur
 
-Jeder Hook ist ein Verzeichnis mit zwei Dateien:
+Jeder Hook ist ein Verzeichnis, das zwei Dateien enthält:
 
 ```
 my-hook/
@@ -90,8 +90,8 @@ Detailed documentation goes here.
 | Feld       | Beschreibung                                         |
 | ---------- | ---------------------------------------------------- |
 | `emoji`    | Anzeige-Emoji für die CLI                            |
-| `events`   | Array von Ereignissen, auf die gewartet wird         |
-| `export`   | Zu verwendender benannter Export (Standard ist `"default"`) |
+| `events`   | Array von Ereignissen, auf die gelauscht wird        |
+| `export`   | Zu verwendender benannter Export (Standard: `"default"`) |
 | `os`       | Erforderliche Plattformen (z. B. `["darwin", "linux"]`) |
 | `requires` | Erforderliche `bins`-, `anyBins`-, `env`- oder `config`-Pfade |
 | `always`   | Eignungsprüfungen umgehen (boolesch)                 |
@@ -115,19 +115,19 @@ const handler = async (event) => {
 export default handler;
 ```
 
-Jedes Ereignis enthält: `type`, `action`, `sessionKey`, `timestamp`, `messages` (per Push senden Sie an den Benutzer) und `context` (ereignisspezifische Daten). Hook-Kontexte von Agent- und Tool-Plugins können außerdem `trace` enthalten, einen schreibgeschützten, W3C-kompatiblen diagnostischen Trace-Kontext, den Plugins zur OTEL-Korrelation an strukturierte Logs übergeben können.
+Jedes Ereignis enthält: `type`, `action`, `sessionKey`, `timestamp`, `messages` (Push zum Senden an den Benutzer) und `context` (ereignisspezifische Daten). Agent- und Tool-Plugin-Hook-Kontexte können außerdem `trace` enthalten, einen schreibgeschützten, W3C-kompatiblen Diagnose-Trace-Kontext, den Plugins zur OTEL-Korrelation an strukturierte Logs übergeben können.
 
 ### Wichtige Ereigniskontexte
 
 **Befehlsereignisse** (`command:new`, `command:reset`): `context.sessionEntry`, `context.previousSessionEntry`, `context.commandSource`, `context.workspaceDir`, `context.cfg`.
 
-**Nachrichtenereignisse** (`message:received`): `context.from`, `context.content`, `context.channelId`, `context.metadata` (Provider-spezifische Daten einschließlich `senderId`, `senderName`, `guildId`). `context.content` bevorzugt bei befehlsartigen Nachrichten einen nicht leeren Befehlsinhalt, fällt dann auf den rohen eingehenden Inhalt und den generischen Inhalt zurück; es enthält keine rein Agent-seitige Anreicherung wie Thread-Verlauf oder Link-Zusammenfassungen.
+**Nachrichtenereignisse** (`message:received`): `context.from`, `context.content`, `context.channelId`, `context.metadata` (Provider-spezifische Daten einschließlich `senderId`, `senderName`, `guildId`). `context.content` bevorzugt bei befehlsartigen Nachrichten einen nicht leeren Befehlstext und fällt dann auf den rohen eingehenden Text und den generischen Text zurück; es enthält keine Agent-exklusiven Anreicherungen wie Thread-Verlauf oder Link-Zusammenfassungen.
 
 **Nachrichtenereignisse** (`message:sent`): `context.to`, `context.content`, `context.success`, `context.channelId`.
 
 **Nachrichtenereignisse** (`message:transcribed`): `context.transcript`, `context.from`, `context.channelId`, `context.mediaPath`.
 
-**Nachrichtenereignisse** (`message:preprocessed`): `context.bodyForAgent` (endgültig angereicherter Inhalt), `context.from`, `context.channelId`.
+**Nachrichtenereignisse** (`message:preprocessed`): `context.bodyForAgent` (endgültig angereicherter Text), `context.from`, `context.channelId`.
 
 **Bootstrap-Ereignisse** (`agent:bootstrap`): `context.bootstrapFiles` (änderbares Array), `context.agentId`.
 
@@ -135,32 +135,34 @@ Jedes Ereignis enthält: `type`, `action`, `sessionKey`, `timestamp`, `messages`
 
 **Compaction-Ereignisse**: `session:compact:before` enthält `messageCount`, `tokenCount`. `session:compact:after` fügt `compactedCount`, `summaryLength`, `tokensBefore`, `tokensAfter` hinzu.
 
-`command:stop` beobachtet, dass der Benutzer `/stop` ausgibt; es gehört zum Abbruch-/Befehlslebenszyklus, ist aber kein Gate für die Agent-Finalisierung. Plugins, die eine natürliche Abschlussantwort prüfen und den Agent um einen weiteren Durchlauf bitten müssen, sollten stattdessen den typisierten Plugin-Hook `before_agent_finalize` verwenden. Siehe [Plugin-Hooks](/de/plugins/hooks).
+`command:stop` beobachtet, dass der Benutzer `/stop` ausgibt; es ist Teil des Abbruch-/Befehlslebenszyklus, kein Gate für die Agent-Finalisierung. Plugins, die eine natürliche finale Antwort prüfen und den Agent um einen weiteren Durchlauf bitten müssen, sollten stattdessen den typisierten Plugin-Hook `before_agent_finalize` verwenden. Siehe [Plugin-Hooks](/de/plugins/hooks).
 
-**Gateway-Lebenszyklusereignisse**: `gateway:shutdown` enthält `reason` und `restartExpectedMs` und wird ausgelöst, wenn das Herunterfahren des Gateways beginnt. `gateway:pre-restart` enthält denselben Kontext, wird aber nur ausgelöst, wenn das Herunterfahren Teil eines erwarteten Neustarts ist und ein endlicher Wert für `restartExpectedMs` bereitgestellt wird. Während des Herunterfahrens ist das Warten auf jeden Lebenszyklus-Hook Best-Effort und begrenzt, sodass das Herunterfahren fortgesetzt wird, falls ein Handler hängen bleibt.
+**Gateway-Lebenszyklusereignisse**: `gateway:shutdown` enthält `reason` und `restartExpectedMs` und wird ausgelöst, wenn das Herunterfahren des Gateway beginnt. `gateway:pre-restart` enthält denselben Kontext, wird aber nur ausgelöst, wenn das Herunterfahren Teil eines erwarteten Neustarts ist und ein endlicher `restartExpectedMs`-Wert angegeben wird. Während des Herunterfahrens ist jedes Warten auf Lebenszyklus-Hooks Best-Effort und begrenzt, damit das Herunterfahren fortgesetzt wird, falls ein Handler hängen bleibt.
+
+Zwischen dem Ereignis `gateway:shutdown` (oder `gateway:pre-restart`) und dem Rest der Herunterfahrsequenz löst das Gateway außerdem für jede Sitzung, die beim Stoppen des Prozesses noch aktiv war, einen typisierten `session_end`-Plugin-Hook aus. Der `reason` des Ereignisses ist `shutdown` für einen einfachen SIGTERM/SIGINT-Stopp und `restart`, wenn das Schließen als Teil eines erwarteten Neustarts geplant war. Dieses Leeren ist begrenzt, sodass ein langsamer `session_end`-Handler den Prozessausstieg nicht blockieren kann; Sitzungen, die bereits durch Ersetzen / Zurücksetzen / Löschen / Compaction finalisiert wurden, werden übersprungen, um doppelte Auslösungen zu vermeiden.
 
 ## Hook-Erkennung
 
-Hooks werden aus diesen Verzeichnissen erkannt, in der Reihenfolge zunehmender Überschreibungspriorität:
+Hooks werden in diesen Verzeichnissen erkannt, in aufsteigender Override-Priorität:
 
 1. **Gebündelte Hooks**: werden mit OpenClaw ausgeliefert
 2. **Plugin-Hooks**: Hooks, die in installierten Plugins gebündelt sind
-3. **Verwaltete Hooks**: `~/.openclaw/hooks/` (vom Benutzer installiert, über Workspaces hinweg geteilt). Zusätzliche Verzeichnisse aus `hooks.internal.load.extraDirs` teilen diese Priorität.
+3. **Verwaltete Hooks**: `~/.openclaw/hooks/` (vom Benutzer installiert, über Workspaces hinweg gemeinsam genutzt). Zusätzliche Verzeichnisse aus `hooks.internal.load.extraDirs` teilen diese Priorität.
 4. **Workspace-Hooks**: `<workspace>/hooks/` (pro Agent, standardmäßig deaktiviert, bis sie ausdrücklich aktiviert werden)
 
 Workspace-Hooks können neue Hook-Namen hinzufügen, aber keine gebündelten, verwalteten oder von Plugins bereitgestellten Hooks mit demselben Namen überschreiben.
 
-Das Gateway überspringt die interne Hook-Erkennung beim Start, bis interne Hooks konfiguriert sind. Aktivieren Sie einen gebündelten oder verwalteten Hook mit `openclaw hooks enable <name>`, installieren Sie ein Hook-Pack oder setzen Sie `hooks.internal.enabled=true`, um sich dafür zu entscheiden. Wenn Sie einen benannten Hook aktivieren, lädt das Gateway nur den Handler dieses Hooks; `hooks.internal.enabled=true`, zusätzliche Hook-Verzeichnisse und Legacy-Handler aktivieren die breite Erkennung.
+Das Gateway überspringt die interne Hook-Erkennung beim Start, bis interne Hooks konfiguriert sind. Aktivieren Sie einen gebündelten oder verwalteten Hook mit `openclaw hooks enable <name>`, installieren Sie ein Hook-Pack oder setzen Sie `hooks.internal.enabled=true`, um sich dafür zu entscheiden. Wenn Sie einen benannten Hook aktivieren, lädt das Gateway nur den Handler dieses Hooks; `hooks.internal.enabled=true`, zusätzliche Hook-Verzeichnisse und Legacy-Handler entscheiden sich für eine breite Erkennung.
 
 ### Hook-Packs
 
-Hook-Pakete sind npm-Pakete, die Hooks über `openclaw.hooks` in `package.json` exportieren. Installieren Sie mit:
+Hook-Packs sind npm-Pakete, die Hooks über `openclaw.hooks` in `package.json` exportieren. Installieren Sie sie mit:
 
 ```bash
 openclaw plugins install <path-or-spec>
 ```
 
-npm-Spezifikationen sind ausschließlich registry-basiert (Paketname + optionale exakte Version oder dist-tag). Git-/URL-/Datei-Spezifikationen und semver-Bereiche werden abgelehnt.
+npm-Spezifikationen sind ausschließlich registrybasiert (Paketname + optionale exakte Version oder dist-tag). Git-/URL-/Datei-Spezifikationen und semver-Bereiche werden abgelehnt.
 
 ## Gebündelte Hooks
 
@@ -169,10 +171,10 @@ npm-Spezifikationen sind ausschließlich registry-basiert (Paketname + optionale
 | session-memory        | `command:new`, `command:reset`                    | Speichert Sitzungskontext in `<workspace>/memory/`             |
 | bootstrap-extra-files | `agent:bootstrap`                                 | Injiziert zusätzliche Bootstrap-Dateien aus Glob-Mustern       |
 | command-logger        | `command`                                         | Protokolliert alle Befehle in `~/.openclaw/logs/commands.log`  |
-| compaction-notifier   | `session:compact:before`, `session:compact:after` | Sendet sichtbare Chat-Hinweise, wenn die Sitzungs-Compaction startet/endet |
+| compaction-notifier   | `session:compact:before`, `session:compact:after` | Sendet sichtbare Chat-Hinweise, wenn Sitzungs-Compaction startet/endet |
 | boot-md               | `gateway:startup`                                 | Führt `BOOT.md` aus, wenn das Gateway startet                  |
 
-Aktivieren Sie einen beliebigen gebündelten Hook:
+Einen beliebigen gebündelten Hook aktivieren:
 
 ```bash
 openclaw hooks enable <hook-name>
@@ -182,7 +184,7 @@ openclaw hooks enable <hook-name>
 
 ### Details zu session-memory
 
-Extrahiert die letzten 15 Benutzer-/Assistant-Nachrichten und speichert sie mit dem lokalen Datum des Hosts unter `<workspace>/memory/YYYY-MM-DD-HHMM.md`. Die Speichererfassung läuft im Hintergrund, sodass Bestätigungen für `/new` und `/reset` nicht durch Transkriptlesevorgänge oder optionale Slug-Generierung verzögert werden. Setzen Sie `hooks.internal.entries.session-memory.llmSlug: true`, um mit dem konfigurierten Modell beschreibende Dateinamen-Slugs zu generieren. Erfordert, dass `workspace.dir` konfiguriert ist.
+Extrahiert die letzten 15 Benutzer-/Assistenten-Nachrichten und speichert sie mit dem lokalen Datum des Hosts unter `<workspace>/memory/YYYY-MM-DD-HHMM.md`. Die Speichererfassung läuft im Hintergrund, sodass `/new`- und `/reset`-Bestätigungen nicht durch das Lesen von Transkripten oder die optionale Slug-Generierung verzögert werden. Setzen Sie `hooks.internal.entries.session-memory.llmSlug: true`, um mit dem konfigurierten Modell beschreibende Dateinamen-Slugs zu erzeugen. Erfordert, dass `workspace.dir` konfiguriert ist.
 
 <a id="bootstrap-extra-files"></a>
 
@@ -215,7 +217,7 @@ Protokolliert jeden Slash-Befehl in `~/.openclaw/logs/commands.log`.
 
 ### Details zu compaction-notifier
 
-Sendet kurze Statusmeldungen in die aktuelle Unterhaltung, wenn OpenClaw mit der Kompaktierung des Sitzungstranskripts beginnt und sie abschließt. Dadurch werden lange Durchläufe auf Chat-Oberflächen weniger verwirrend, weil der Benutzer sehen kann, dass der Assistant Kontext zusammenfasst und nach der Compaction fortfährt.
+Sendet kurze Statusmeldungen in die aktuelle Unterhaltung, wenn OpenClaw beginnt und beendet, das Sitzungstranskript zu kompaktieren. Dadurch werden lange Durchläufe auf Chat-Oberflächen weniger verwirrend, weil der Benutzer sehen kann, dass der Assistent den Kontext zusammenfasst und nach der Compaction fortfahren wird.
 
 <a id="boot-md"></a>
 
@@ -225,12 +227,12 @@ Führt `BOOT.md` aus dem aktiven Workspace aus, wenn das Gateway startet.
 
 ## Plugin-Hooks
 
-Plugins können typisierte Hooks über das Plugin-SDK für tiefere Integration registrieren:
+Plugins können über das Plugin SDK typisierte Hooks für eine tiefere Integration registrieren:
 Abfangen von Tool-Aufrufen, Ändern von Prompts, Steuern des Nachrichtenflusses und mehr.
 Verwenden Sie Plugin-Hooks, wenn Sie `before_tool_call`, `before_agent_reply`,
-`before_install` oder andere In-Process-Lifecycle-Hooks benötigen.
+`before_install` oder andere prozessinterne Lebenszyklus-Hooks benötigen.
 
-Die vollständige Referenz zu Plugin-Hooks finden Sie unter [Plugin-Hooks](/de/plugins/hooks).
+Die vollständige Plugin-Hook-Referenz finden Sie unter [Plugin-Hooks](/de/plugins/hooks).
 
 ## Konfiguration
 
@@ -280,7 +282,7 @@ Zusätzliche Hook-Verzeichnisse:
 ```
 
 <Note>
-Das ältere Array-Konfigurationsformat `hooks.internal.handlers` wird aus Gründen der Abwärtskompatibilität weiterhin unterstützt, neue Hooks sollten jedoch das erkennungbasierte System verwenden.
+Das ältere Konfigurationsformat mit dem Array `hooks.internal.handlers` wird aus Gründen der Abwärtskompatibilität weiterhin unterstützt, neue Hooks sollten jedoch das discovery-basierte System verwenden.
 </Note>
 
 ## CLI-Referenz
@@ -300,16 +302,16 @@ openclaw hooks enable <hook-name>
 openclaw hooks disable <hook-name>
 ```
 
-## Bewährte Methoden
+## Bewährte Verfahren
 
-- **Halten Sie Handler schnell.** Hooks laufen während der Befehlsverarbeitung. Starten Sie aufwändige Arbeit im Hintergrund, ohne darauf zu warten, mit `void processInBackground(event)`.
-- **Behandeln Sie Fehler robust.** Umschließen Sie riskante Operationen mit try/catch; werfen Sie keine Fehler, damit andere Handler weiterlaufen können.
-- **Filtern Sie Ereignisse früh.** Kehren Sie sofort zurück, wenn Ereignistyp oder Aktion nicht relevant sind.
-- **Verwenden Sie spezifische Ereignisschlüssel.** Bevorzugen Sie `"events": ["command:new"]` gegenüber `"events": ["command"]`, um Overhead zu reduzieren.
+- **Halten Sie Handler schnell.** Hooks werden während der Befehlsverarbeitung ausgeführt. Starten Sie aufwendige Arbeit im Fire-and-forget-Modus mit `void processInBackground(event)`.
+- **Behandeln Sie Fehler sauber.** Kapseln Sie riskante Operationen in try/catch; werfen Sie keine Fehler, damit andere Handler ausgeführt werden können.
+- **Filtern Sie Ereignisse früh.** Kehren Sie sofort zurück, wenn der Ereignistyp oder die Aktion nicht relevant ist.
+- **Verwenden Sie spezifische Ereignisschlüssel.** Bevorzugen Sie `"events": ["command:new"]` statt `"events": ["command"]`, um Overhead zu reduzieren.
 
 ## Fehlerbehebung
 
-### Hook nicht gefunden
+### Hook nicht erkannt
 
 ```bash
 # Verify directory structure
@@ -320,23 +322,23 @@ ls -la ~/.openclaw/hooks/my-hook/
 openclaw hooks list
 ```
 
-### Hook nicht zulässig
+### Hook nicht berechtigt
 
 ```bash
 openclaw hooks info my-hook
 ```
 
-Prüfen Sie auf fehlende Binärdateien (PATH), Umgebungsvariablen, Konfigurationswerte oder OS-Kompatibilität.
+Prüfen Sie auf fehlende Binärdateien (PATH), Umgebungsvariablen, Konfigurationswerte oder Betriebssystemkompatibilität.
 
 ### Hook wird nicht ausgeführt
 
-1. Vergewissern Sie sich, dass der Hook aktiviert ist: `openclaw hooks list`
-2. Starten Sie Ihren Gateway-Prozess neu, damit Hooks erneut geladen werden.
+1. Prüfen Sie, ob der Hook aktiviert ist: `openclaw hooks list`
+2. Starten Sie Ihren Gateway-Prozess neu, damit Hooks neu geladen werden.
 3. Prüfen Sie die Gateway-Logs: `./scripts/clawlog.sh | grep hook`
 
 ## Verwandte Themen
 
-- [CLI-Referenz: Hooks](/de/cli/hooks)
+- [CLI-Referenz: hooks](/de/cli/hooks)
 - [Webhooks](/de/automation/cron-jobs#webhooks)
-- [Plugin-Hooks](/de/plugins/hooks) — Plugin-Lebenszyklus-Hooks im Prozess
+- [Plugin-Hooks](/de/plugins/hooks) — prozessinterne Plugin-Lebenszyklus-Hooks
 - [Konfiguration](/de/gateway/configuration-reference#hooks)

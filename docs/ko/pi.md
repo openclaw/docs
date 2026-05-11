@@ -1,48 +1,48 @@
 ---
 read_when:
-    - OpenClaw의 Pi SDK 통합 설계 이해
-    - Pi용 에이전트 세션 수명 주기, 도구 체계 또는 공급자 연결 수정
-summary: OpenClaw의 임베디드 Pi 에이전트 통합 및 세션 수명 주기 아키텍처
+    - OpenClaw에서 Pi SDK 통합 설계 이해하기
+    - Pi용 에이전트 세션 수명 주기, 도구 체계 또는 제공자 연결 수정
+summary: OpenClaw의 내장 Pi 에이전트 통합 및 세션 수명 주기 아키텍처
 title: Pi 통합 아키텍처
 x-i18n:
-    generated_at: "2026-05-10T19:41:10Z"
+    generated_at: "2026-05-11T20:32:48Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 93f468416b453f4f3277406f5f40386748b7388502444266f611926cd66c96ba
+    source_hash: 44d1f3fb0e04302f09c6259dbce8a12a0f25e345c2407162d82c7712d33d5e0a
     source_path: pi.md
     workflow: 16
 ---
 
-OpenClaw는 AI agent 기능을 구동하기 위해 [pi-coding-agent](https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent) 및 그 형제 패키지(`pi-ai`, `pi-agent-core`, `pi-tui`)와 통합됩니다.
+OpenClaw는 AI 에이전트 기능을 구동하기 위해 [pi-coding-agent](https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent) 및 그 형제 패키지(`pi-ai`, `pi-agent-core`, `pi-tui`)와 통합됩니다.
 
 ## 개요
 
-OpenClaw는 pi SDK를 사용해 AI coding agent를 메시징 Gateway 아키텍처에 임베드합니다. pi를 하위 프로세스로 실행하거나 RPC 모드를 사용하는 대신, OpenClaw는 `createAgentSession()`을 통해 pi의 `AgentSession`을 직접 가져오고 인스턴스화합니다. 이 임베드 방식은 다음을 제공합니다.
+OpenClaw는 pi SDK를 사용하여 메시징 Gateway 아키텍처에 AI 코딩 에이전트를 내장합니다. pi를 하위 프로세스로 실행하거나 RPC 모드를 사용하는 대신, OpenClaw는 `createAgentSession()`을 통해 pi의 `AgentSession`을 직접 가져와 인스턴스화합니다. 이 내장 방식은 다음을 제공합니다.
 
 - 세션 수명 주기와 이벤트 처리에 대한 완전한 제어
 - 사용자 지정 도구 주입(메시징, 샌드박스, 채널별 작업)
 - 채널/컨텍스트별 시스템 프롬프트 사용자 지정
-- 분기/Compaction 지원을 포함한 세션 지속성
+- 분기/Compaction 지원이 포함된 세션 지속성
 - 장애 조치가 포함된 다중 계정 인증 프로필 순환
-- 제공자에 구애받지 않는 모델 전환
+- 공급자에 구애받지 않는 모델 전환
 
 ## 패키지 의존성
 
 ```json
 {
-  "@mariozechner/pi-agent-core": "0.73.0",
-  "@mariozechner/pi-ai": "0.73.0",
-  "@mariozechner/pi-coding-agent": "0.73.0",
-  "@mariozechner/pi-tui": "0.73.0"
+  "@earendil-works/pi-agent-core": "0.74.0",
+  "@earendil-works/pi-ai": "0.74.0",
+  "@earendil-works/pi-coding-agent": "0.74.0",
+  "@earendil-works/pi-tui": "0.74.0"
 }
 ```
 
-| 패키지            | 목적                                                                                                   |
+| 패키지           | 목적                                                                                                |
 | ----------------- | ------------------------------------------------------------------------------------------------------ |
-| `pi-ai`           | 핵심 LLM 추상화: `Model`, `streamSimple`, 메시지 타입, 제공자 API                                      |
-| `pi-agent-core`   | agent 루프, 도구 실행, `AgentMessage` 타입                                                            |
-| `pi-coding-agent` | 고수준 SDK: `createAgentSession`, `SessionManager`, `AuthStorage`, `ModelRegistry`, 내장 도구          |
-| `pi-tui`          | 터미널 UI 구성 요소(OpenClaw의 로컬 TUI 모드에서 사용)                                                |
+| `pi-ai`           | 핵심 LLM 추상화: `Model`, `streamSimple`, 메시지 유형, 공급자 API                           |
+| `pi-agent-core`   | 에이전트 루프, 도구 실행, `AgentMessage` 유형                                                       |
+| `pi-coding-agent` | 고수준 SDK: `createAgentSession`, `SessionManager`, `AuthStorage`, `ModelRegistry`, 내장 도구 |
+| `pi-tui`          | 터미널 UI 구성 요소(OpenClaw의 로컬 TUI 모드에서 사용)                                             |
 
 ## 파일 구조
 
@@ -134,7 +134,8 @@ src/agents/
 └── ...
 ```
 
-채널별 메시지 작업 런타임은 이제 `src/agents/tools` 아래가 아니라 Plugin이 소유한 확장 디렉터리에 있습니다. 예를 들면 다음과 같습니다.
+채널별 메시지 작업 런타임은 이제 `src/agents/tools` 아래가 아니라 Plugin 소유 확장
+디렉터리에 있습니다. 예를 들면 다음과 같습니다.
 
 - Discord Plugin 작업 런타임 파일
 - Slack Plugin 작업 런타임 파일
@@ -143,9 +144,9 @@ src/agents/
 
 ## 핵심 통합 흐름
 
-### 1. 임베드된 agent 실행
+### 1. 내장 에이전트 실행
 
-주요 진입점은 `pi-embedded-runner/run.ts`의 `runEmbeddedPiAgent()`입니다.
+주 진입점은 `pi-embedded-runner/run.ts`의 `runEmbeddedPiAgent()`입니다.
 
 ```typescript
 import { runEmbeddedPiAgent } from "./agents/pi-embedded-runner.js";
@@ -169,7 +170,7 @@ const result = await runEmbeddedPiAgent({
 
 ### 2. 세션 생성
 
-`runEmbeddedAttempt()` 내부(`runEmbeddedPiAgent()`가 호출)에서 pi SDK가 사용됩니다.
+`runEmbeddedAttempt()`(`runEmbeddedPiAgent()`에서 호출됨) 내부에서 pi SDK가 사용됩니다.
 
 ```typescript
 import {
@@ -177,7 +178,7 @@ import {
   DefaultResourceLoader,
   SessionManager,
   SettingsManager,
-} from "@mariozechner/pi-coding-agent";
+} from "@earendil-works/pi-coding-agent";
 
 const resourceLoader = new DefaultResourceLoader({
   cwd: resolvedWorkspace,
@@ -223,7 +224,7 @@ const subscription = subscribeEmbeddedPiSession({
 });
 ```
 
-처리되는 이벤트는 다음을 포함합니다.
+처리되는 이벤트는 다음과 같습니다.
 
 - `message_start` / `message_end` / `message_update`(스트리밍 텍스트/사고)
 - `tool_execution_start` / `tool_execution_update` / `tool_execution_end`
@@ -233,15 +234,17 @@ const subscription = subscribeEmbeddedPiSession({
 
 ### 4. 프롬프트 입력
 
-설정 후 세션에 프롬프트를 전달합니다.
+설정 후 세션에 프롬프트가 전달됩니다.
 
 ```typescript
 await session.prompt(effectivePrompt, { images: imageResult.images });
 ```
 
-SDK는 LLM으로 전송, 도구 호출 실행, 응답 스트리밍까지 전체 agent 루프를 처리합니다.
+SDK는 LLM에 전송, 도구 호출 실행, 응답 스트리밍을 포함한 전체 에이전트 루프를 처리합니다.
 
-이미지 주입은 프롬프트 로컬입니다. OpenClaw는 현재 프롬프트에서 이미지 참조를 로드하고 해당 턴에만 `images`를 통해 전달합니다. 이미지 페이로드를 다시 주입하기 위해 이전 기록 턴을 다시 스캔하지 않습니다.
+이미지 주입은 프롬프트 로컬입니다. OpenClaw는 현재 프롬프트에서 이미지 참조를 로드하고
+해당 턴에만 `images`를 통해 전달합니다. 이전 기록 턴을 다시 스캔하여
+이미지 페이로드를 다시 주입하지 않습니다.
 
 ## 도구 아키텍처
 
@@ -249,11 +252,11 @@ SDK는 LLM으로 전송, 도구 호출 실행, 응답 스트리밍까지 전체 
 
 1. **기본 도구**: pi의 `codingTools`(read, bash, edit, write)
 2. **사용자 지정 대체**: OpenClaw는 bash를 `exec`/`process`로 대체하고, 샌드박스에 맞게 read/edit/write를 사용자 지정합니다.
-3. **OpenClaw 도구**: messaging, browser, canvas, sessions, cron, gateway 등
+3. **OpenClaw 도구**: 메시징, 브라우저, 캔버스, 세션, cron, Gateway 등
 4. **채널 도구**: Discord/Telegram/Slack/WhatsApp별 작업 도구
-5. **정책 필터링**: 프로필, 제공자, agent, 그룹, 샌드박스 정책에 따라 도구가 필터링됩니다.
-6. **스키마 정규화**: Gemini/OpenAI 특이 사항에 맞게 스키마가 정리됩니다.
-7. **AbortSignal 래핑**: abort signal을 준수하도록 도구가 래핑됩니다.
+5. **정책 필터링**: 프로필, 공급자, 에이전트, 그룹, 샌드박스 정책에 따라 도구 필터링
+6. **스키마 정규화**: Gemini/OpenAI 특성에 맞게 스키마 정리
+7. **AbortSignal 래핑**: 중단 신호를 준수하도록 도구 래핑
 
 ### 도구 정의 어댑터
 
@@ -287,32 +290,32 @@ export function splitSdkTools(options: { tools: AnyAgentTool[]; sandboxEnabled: 
 }
 ```
 
-이는 OpenClaw의 정책 필터링, 샌드박스 통합, 확장된 도구 세트가 제공자 전반에서 일관되게 유지되도록 합니다.
+이는 OpenClaw의 정책 필터링, sandbox 통합, 확장된 도구 집합이 provider 전반에서 일관되게 유지되도록 합니다.
 
-## 시스템 프롬프트 구성
+## 시스템 prompt 구성
 
-시스템 프롬프트는 `buildAgentSystemPrompt()`(`system-prompt.ts`)에서 빌드됩니다. 이 함수는 Tooling, Tool Call Style, Safety guardrails, OpenClaw Control, Skills, Docs, Workspace, Sandbox, Messaging, Assistant Output Directives, Voice, Silent Replies, Heartbeats, Runtime metadata를 비롯해 활성화된 경우 Memory와 Reactions, 선택적 컨텍스트 파일 및 추가 시스템 프롬프트 콘텐츠를 포함하는 섹션들로 전체 프롬프트를 조립합니다. 하위 에이전트에서 사용하는 최소 프롬프트 모드에서는 섹션이 정리됩니다.
+시스템 prompt는 `buildAgentSystemPrompt()`(`system-prompt.ts`)에서 빌드됩니다. Tooling, Tool Call Style, Safety guardrails, OpenClaw Control, Skills, Docs, Workspace, Sandbox, Messaging, Assistant Output Directives, Voice, Silent Replies, Heartbeats, Runtime metadata를 비롯해, 활성화된 경우 Memory와 Reactions, 그리고 선택적 context 파일과 추가 시스템 prompt 콘텐츠를 포함하는 섹션들로 전체 prompt를 조립합니다. subagent에서 사용하는 최소 prompt 모드에서는 섹션이 축약됩니다.
 
-프롬프트는 세션 생성 후 `applySystemPromptOverrideToSession()`을 통해 적용됩니다.
+prompt는 session 생성 후 `applySystemPromptOverrideToSession()`을 통해 적용됩니다.
 
 ```typescript
 const systemPromptOverride = createSystemPromptOverride(appendPrompt);
 applySystemPromptOverrideToSession(session, systemPromptOverride);
 ```
 
-## 세션 관리
+## Session 관리
 
-### 세션 파일
+### Session 파일
 
-세션은 트리 구조(id/parentId 연결)를 가진 JSONL 파일입니다. Pi의 `SessionManager`가 영속성을 처리합니다.
+Session은 트리 구조(id/parentId 연결)를 가진 JSONL 파일입니다. Pi의 `SessionManager`가 영속성을 처리합니다.
 
 ```typescript
 const sessionManager = SessionManager.open(params.sessionFile);
 ```
 
-OpenClaw는 도구 결과 안전성을 위해 이를 `guardSessionManager()`로 래핑합니다.
+OpenClaw는 도구 결과 안전성을 위해 이를 `guardSessionManager()`로 감쌉니다.
 
-### 세션 캐싱
+### Session 캐싱
 
 `session-manager-cache.ts`는 반복적인 파일 파싱을 피하기 위해 SessionManager 인스턴스를 캐시합니다.
 
@@ -322,13 +325,13 @@ sessionManager = SessionManager.open(params.sessionFile);
 trackSessionManagerAccess(params.sessionFile);
 ```
 
-### 기록 제한
+### 이력 제한
 
-`limitHistoryTurns()`는 채널 유형(DM 또는 그룹)에 따라 대화 기록을 줄입니다.
+`limitHistoryTurns()`는 channel 유형(DM과 group)에 따라 대화 이력을 잘라냅니다.
 
 ### Compaction
 
-컨텍스트가 초과되면 자동 Compaction이 트리거됩니다. 일반적인 초과 시그니처에는 `request_too_large`, `context length exceeded`, `input exceeds the maximum number of tokens`, `input token count exceeds the maximum number of input tokens`, `input is too long for the model`, `ollama error: context length exceeded`가 포함됩니다. `compactEmbeddedPiSessionDirect()`는 수동 Compaction을 처리합니다.
+자동 Compaction은 context overflow에서 트리거됩니다. 일반적인 overflow 시그니처에는 `request_too_large`, `context length exceeded`, `input exceeds the maximum number of tokens`, `input token count exceeds the maximum number of input tokens`, `input is too long for the model`, `ollama error: context length exceeded`가 포함됩니다. `compactEmbeddedPiSessionDirect()`는 수동 Compaction을 처리합니다.
 
 ```typescript
 const compactResult = await compactEmbeddedPiSessionDirect({
@@ -336,25 +339,25 @@ const compactResult = await compactEmbeddedPiSessionDirect({
 });
 ```
 
-## 인증 및 모델 해석
+## 인증 및 model 해석
 
-### 인증 프로필
+### Auth profile
 
-OpenClaw는 제공자별로 여러 API 키를 포함하는 인증 프로필 저장소를 유지합니다.
+OpenClaw는 provider별 여러 API 키를 포함하는 auth profile store를 유지합니다.
 
 ```typescript
 const authStore = ensureAuthProfileStore(agentDir, { allowKeychainPrompt: false });
 const profileOrder = resolveAuthProfileOrder({ cfg, store: authStore, provider, preferredProfile });
 ```
 
-프로필은 실패 시 쿨다운 추적과 함께 순환됩니다.
+Profile은 실패 시 cooldown 추적과 함께 순환됩니다.
 
 ```typescript
 await markAuthProfileFailure({ store, profileId, reason, cfg, agentDir });
 const rotated = await advanceAuthProfile();
 ```
 
-### 모델 해석
+### Model 해석
 
 ```typescript
 import { resolveModel } from "./pi-embedded-runner/model.js";
@@ -370,9 +373,9 @@ const { model, error, authStorage, modelRegistry } = resolveModel(
 authStorage.setRuntimeApiKey(model.provider, apiKeyInfo.apiKey);
 ```
 
-### 장애 조치
+### Failover
 
-`FailoverError`는 구성된 경우 모델 대체를 트리거합니다.
+`FailoverError`는 구성된 경우 model fallback을 트리거합니다.
 
 ```typescript
 if (fallbackConfigured && isFailoverErrorMessage(errorText)) {
@@ -388,11 +391,11 @@ if (fallbackConfigured && isFailoverErrorMessage(errorText)) {
 
 ## Pi 확장
 
-OpenClaw는 특수한 동작을 위해 사용자 지정 pi 확장을 로드합니다.
+OpenClaw는 특수 동작을 위해 사용자 지정 pi 확장을 로드합니다.
 
-### Compaction 안전장치
+### Compaction safeguard
 
-`src/agents/pi-hooks/compaction-safeguard.ts`는 적응형 토큰 예산 책정과 도구 실패 및 파일 작업 요약을 포함해 Compaction에 안전장치를 추가합니다.
+`src/agents/pi-hooks/compaction-safeguard.ts`는 적응형 token 예산과 도구 실패 및 파일 작업 요약을 포함해 Compaction에 guardrail을 추가합니다.
 
 ```typescript
 if (resolveCompactionMode(params.cfg) === "safeguard") {
@@ -401,9 +404,9 @@ if (resolveCompactionMode(params.cfg) === "safeguard") {
 }
 ```
 
-### 컨텍스트 가지치기
+### Context 가지치기
 
-`src/agents/pi-hooks/context-pruning.ts`는 캐시 TTL 기반 컨텍스트 가지치기를 구현합니다.
+`src/agents/pi-hooks/context-pruning.ts`는 cache-TTL 기반 context 가지치기를 구현합니다.
 
 ```typescript
 if (cfg?.agents?.defaults?.contextPruning?.mode === "cache-ttl") {
@@ -417,19 +420,19 @@ if (cfg?.agents?.defaults?.contextPruning?.mode === "cache-ttl") {
 }
 ```
 
-## 스트리밍 및 블록 응답
+## Streaming 및 block reply
 
-### 블록 청킹
+### Block chunking
 
-`EmbeddedBlockChunker`는 스트리밍 텍스트를 개별 응답 블록으로 관리합니다.
+`EmbeddedBlockChunker`는 streaming text를 개별 reply block으로 관리합니다.
 
 ```typescript
 const blockChunker = blockChunking ? new EmbeddedBlockChunker(blockChunking) : null;
 ```
 
-### Thinking/Final 태그 제거
+### Thinking/Final tag 제거
 
-스트리밍 출력은 `<think>`/`<thinking>` 블록을 제거하고 `<final>` 콘텐츠를 추출하도록 처리됩니다.
+Streaming output은 `<think>`/`<thinking>` block을 제거하고 `<final>` 콘텐츠를 추출하도록 처리됩니다.
 
 ```typescript
 const stripBlockTags = (text: string, state: { thinking: boolean; final: boolean }) => {
@@ -438,9 +441,9 @@ const stripBlockTags = (text: string, state: { thinking: boolean; final: boolean
 };
 ```
 
-### 응답 지시문
+### Reply 지시문
 
-`[[media:url]]`, `[[voice]]`, `[[reply:id]]` 같은 응답 지시문은 파싱되어 추출됩니다.
+`[[media:url]]`, `[[voice]]`, `[[reply:id]]` 같은 reply 지시문은 파싱되고 추출됩니다.
 
 ```typescript
 const { text: cleanedText, mediaUrls, audioAsVoice, replyToId } = consumeReplyDirectives(chunk);
@@ -461,9 +464,9 @@ isFailoverAssistantError(...)         // Should failover
 classifyFailoverReason(errorText)     // "auth" | "rate_limit" | "quota" | "timeout" | ...
 ```
 
-### thinking 수준 대체
+### Thinking level fallback
 
-thinking 수준이 지원되지 않으면 대체 수준으로 전환됩니다.
+thinking level이 지원되지 않으면 fallback됩니다.
 
 ```typescript
 const fallbackThinking = pickFallbackThinkingLevel({
@@ -476,9 +479,9 @@ if (fallbackThinking) {
 }
 ```
 
-## 샌드박스 통합
+## Sandbox 통합
 
-샌드박스 모드가 활성화되면 도구와 경로가 제한됩니다.
+sandbox mode가 활성화되면 도구와 경로가 제한됩니다.
 
 ```typescript
 const sandbox = await resolveSandboxContext({
@@ -494,59 +497,59 @@ if (sandboxRoot) {
 }
 ```
 
-## 제공자별 처리
+## Provider별 처리
 
 ### Anthropic
 
-- 거부 매직 문자열 정리
-- 연속 역할에 대한 턴 검증
-- 엄격한 업스트림 Pi 도구 매개변수 검증
+- 거부 magic string 제거
+- 연속 role에 대한 turn validation
+- 엄격한 upstream Pi 도구 parameter validation
 
 ### Google/Gemini
 
-- Plugin 소유 도구 스키마 정리
+- Plugin 소유 도구 schema sanitization
 
 ### OpenAI
 
-- Codex 모델용 `apply_patch` 도구
-- thinking 수준 다운그레이드 처리
+- Codex model용 `apply_patch` 도구
+- Thinking level downgrade 처리
 
 ## TUI 통합
 
-OpenClaw에는 pi-tui 컴포넌트를 직접 사용하는 로컬 TUI 모드도 있습니다.
+OpenClaw에는 pi-tui component를 직접 사용하는 local TUI 모드도 있습니다.
 
 ```typescript
 // src/tui/tui.ts
-import { ... } from "@mariozechner/pi-tui";
+import { ... } from "@earendil-works/pi-tui";
 ```
 
-이는 pi의 네이티브 모드와 유사한 대화형 터미널 경험을 제공합니다.
+이는 pi의 native mode와 비슷한 interactive terminal 경험을 제공합니다.
 
 ## Pi CLI와의 주요 차이점
 
-| 측면          | Pi CLI                  | OpenClaw Embedded                                                                              |
+| 측면            | Pi CLI                  | OpenClaw Embedded                                                                              |
 | --------------- | ----------------------- | ---------------------------------------------------------------------------------------------- |
-| 호출      | `pi` 명령 / RPC      | `createAgentSession()`를 통한 SDK                                                                 |
-| 도구           | 기본 코딩 도구    | 사용자 지정 OpenClaw 도구 모음                                                                     |
-| 시스템 프롬프트   | AGENTS.md + 프롬프트     | 채널/컨텍스트별 동적 구성                                                                    |
-| 세션 저장소 | `~/.pi/agent/sessions/` | `~/.openclaw/agents/<agentId>/sessions/` 또는 `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/` |
-| 인증            | 단일 자격 증명       | 순환을 포함한 다중 프로필                                                                    |
-| 확장      | 디스크에서 로드        | 프로그래밍 방식 + 디스크 경로                                                                      |
-| 이벤트 처리  | TUI 렌더링           | 콜백 기반(onBlockReply 등)                                                            |
+| 호출            | `pi` command / RPC      | `createAgentSession()`를 통한 SDK                                                              |
+| 도구            | 기본 coding tools       | 사용자 지정 OpenClaw 도구 모음                                                                |
+| 시스템 prompt   | AGENTS.md + prompts     | channel/context별 동적 구성                                                                    |
+| Session storage | `~/.pi/agent/sessions/` | `~/.openclaw/agents/<agentId>/sessions/` (또는 `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/`) |
+| Auth            | 단일 credential         | 순환 기능이 있는 multi-profile                                                                 |
+| 확장            | 디스크에서 로드         | Programmatic + disk paths                                                                      |
+| Event 처리      | TUI rendering           | Callback 기반(onBlockReply 등)                                                                 |
 
 ## 향후 고려 사항
 
 잠재적 재작업 영역:
 
-1. **도구 시그니처 정렬**: 현재 pi-agent-core와 pi-coding-agent 시그니처 사이를 조정하고 있음
-2. **세션 관리자 래핑**: `guardSessionManager`는 안전성을 더하지만 복잡성을 증가시킴
+1. **도구 signature 정렬**: 현재 pi-agent-core와 pi-coding-agent signature 사이를 조정하고 있음
+2. **Session manager wrapping**: `guardSessionManager`는 안전성을 더하지만 복잡성을 증가시킴
 3. **확장 로딩**: pi의 `ResourceLoader`를 더 직접적으로 사용할 수 있음
-4. **스트리밍 핸들러 복잡성**: `subscribeEmbeddedPiSession`이 커졌음
-5. **제공자 특이 사항**: pi가 잠재적으로 처리할 수 있는 제공자별 코드 경로가 많음
+4. **Streaming handler 복잡성**: `subscribeEmbeddedPiSession`이 커졌음
+5. **Provider 특이점**: pi가 잠재적으로 처리할 수 있는 provider별 codepath가 많음
 
 ## 테스트
 
-Pi 통합 범위는 다음 스위트에 걸쳐 있습니다.
+Pi 통합 coverage는 다음 suite에 걸쳐 있습니다.
 
 - `src/agents/pi-*.test.ts`
 - `src/agents/pi-auth-json.test.ts`
@@ -560,13 +563,13 @@ Pi 통합 범위는 다음 스위트에 걸쳐 있습니다.
 - `src/agents/pi-settings.test.ts`
 - `src/agents/pi-hooks/**/*.test.ts`
 
-라이브/옵트인:
+Live/opt-in:
 
-- `src/agents/pi-embedded-runner-extraparams.live.test.ts`(`OPENCLAW_LIVE_TEST=1` 활성화)
+- `src/agents/pi-embedded-runner-extraparams.live.test.ts` (`OPENCLAW_LIVE_TEST=1` 활성화)
 
-현재 실행 명령은 [Pi 개발 워크플로](/ko/pi-dev)를 참조하세요.
+현재 실행 command는 [Pi 개발 workflow](/ko/pi-dev)를 참조하세요.
 
-## 관련
+## 관련 항목
 
-- [Pi 개발 워크플로](/ko/pi-dev)
-- [설치 개요](/ko/install)
+- [Pi 개발 workflow](/ko/pi-dev)
+- [Install 개요](/ko/install)

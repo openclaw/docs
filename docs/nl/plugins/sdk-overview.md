@@ -1,32 +1,32 @@
 ---
 read_when:
-    - Je moet weten uit welk SDK-subpad je moet importeren
+    - U moet weten uit welk SDK-subpad u moet importeren
     - Je wilt een referentie voor alle registratiemethoden van OpenClawPluginApi
     - Je zoekt een specifieke SDK-export op
 sidebarTitle: Plugin SDK overview
 summary: Importmap, registratie-API-referentie en SDK-architectuur
-title: Overzicht van de Plugin SDK
+title: Plugin SDK-overzicht
 x-i18n:
-    generated_at: "2026-05-07T13:24:16Z"
+    generated_at: "2026-05-11T20:43:31Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ce2d4480368a11f559da7c5116d51c0cd603dd38985ca744723ecdf134fa21f3
+    source_hash: 633fcffa4256c84c40e8c61e692521583370a368d3058b44d10922279a096b06
     source_path: plugins/sdk-overview.md
     workflow: 16
 ---
 
-De plugin-SDK is het getypeerde contract tussen plugins en core. Deze pagina is de
-referentie voor **wat je moet importeren** en **wat je kunt registreren**.
+De Plugin SDK is het getypeerde contract tussen Plugins en core. Deze pagina is de
+referentie voor **wat je importeert** en **wat je kunt registreren**.
 
 <Note>
-  Deze pagina is voor plugin-auteurs die `openclaw/plugin-sdk/*` gebruiken binnen
-  OpenClaw. Voor externe apps, scripts, dashboards, CI-taken en IDE-extensies
+  Deze pagina is voor Plugin-auteurs die `openclaw/plugin-sdk/*` binnen
+  OpenClaw gebruiken. Voor externe apps, scripts, dashboards, CI-taken en IDE-extensies
   die agents via de Gateway willen uitvoeren, gebruik je in plaats daarvan de
   [OpenClaw App SDK](/nl/concepts/openclaw-sdk) en het pakket `@openclaw/sdk`.
 </Note>
 
 <Tip>
-Zoek je in plaats daarvan een handleiding? Begin met [Plugins bouwen](/nl/plugins/building-plugins), gebruik [Kanaalplugins](/nl/plugins/sdk-channel-plugins) voor kanaalplugins, [Providerplugins](/nl/plugins/sdk-provider-plugins) voor providerplugins, [CLI-backendplugins](/nl/plugins/cli-backend-plugins) voor lokale AI-CLI-backends, en [Plugin-hooks](/nl/plugins/hooks) voor tool- of levenscyclus-hookplugins.
+Zoek je in plaats daarvan een handleiding? Begin met [Plugins bouwen](/nl/plugins/building-plugins), gebruik [Channel-Plugins](/nl/plugins/sdk-channel-plugins) voor Channel-Plugins, [Provider-Plugins](/nl/plugins/sdk-provider-plugins) voor Provider-Plugins, [CLI-backend-Plugins](/nl/plugins/cli-backend-plugins) voor lokale AI CLI-backends en [Plugin hooks](/nl/plugins/hooks) voor tool- of lifecycle-hook-Plugins.
 </Tip>
 
 ## Importconventie
@@ -39,47 +39,54 @@ import { defineChannelPluginEntry } from "openclaw/plugin-sdk/channel-core";
 ```
 
 Elk subpad is een kleine, zelfstandige module. Dit houdt het opstarten snel en
-voorkomt problemen met circulaire afhankelijkheden. Voor kanaalspecifieke
-entry-/build-helpers geef je de voorkeur aan `openclaw/plugin-sdk/channel-core`;
-houd `openclaw/plugin-sdk/core` voor het bredere overkoepelende oppervlak en
-gedeelde helpers zoals `buildChannelConfigSchema`.
+voorkomt problemen met circulaire afhankelijkheden. Voor channel-specifieke entry/build-helpers
+heeft `openclaw/plugin-sdk/channel-core` de voorkeur; houd `openclaw/plugin-sdk/core` voor
+het bredere overkoepelende oppervlak en gedeelde helpers zoals
+`buildChannelConfigSchema`.
 
-Voor kanaalconfiguratie publiceer je het kanaaleigen JSON Schema via
+Voor channel-configuratie publiceer je het JSON Schema dat eigendom is van de channel via
 `openclaw.plugin.json#channelConfigs`. Het subpad `plugin-sdk/channel-config-schema`
-is bedoeld voor gedeelde schemaprimitieven en de generieke builder. De
-meegeleverde plugins van OpenClaw gebruiken `plugin-sdk/bundled-channel-config-schema`
-voor behouden schema's van meegeleverde kanalen. Verouderde compatibiliteitsexports
-blijven op `plugin-sdk/channel-config-schema-legacy`; geen van beide meegeleverde
-schemasubpaden is een patroon voor nieuwe plugins.
+is bedoeld voor gedeelde schemaprimitieven en de generieke builder. De gebundelde
+Plugins van OpenClaw gebruiken `plugin-sdk/bundled-channel-config-schema` voor behouden
+gebundelde-channel-schema's. Verouderde compatibiliteitsexports blijven beschikbaar op
+`plugin-sdk/channel-config-schema-legacy`; geen van beide gebundelde schemasubpaden is een
+patroon voor nieuwe Plugins.
 
 <Warning>
-  Importeer geen provider- of kanaalgemerkte convenience-seams (bijvoorbeeld
+  Importeer geen provider- of channel-gebonden convenience seams (bijvoorbeeld
   `openclaw/plugin-sdk/slack`, `.../discord`, `.../signal`, `.../whatsapp`).
-  Meegeleverde plugins stellen generieke SDK-subpaden samen binnen hun eigen
-  `api.ts`- / `runtime-api.ts`-barrels; core-consumenten moeten die pluginlokale
-  barrels gebruiken of een smal generiek SDK-contract toevoegen wanneer een
-  behoefte echt kanaaloverstijgend is.
+  Gebundelde Plugins combineren generieke SDK-subpaden binnen hun eigen `api.ts` /
+  `runtime-api.ts` barrels; core-consumers moeten ofwel die Plugin-lokale
+  barrels gebruiken, of een smal generiek SDK-contract toevoegen wanneer een behoefte echt
+  channel-overstijgend is.
 
-Een kleine set helper-seams voor meegeleverde plugins verschijnt nog steeds in
-de gegenereerde export-map wanneer ze bijgehouden eigenaargebruik hebben. Ze
-bestaan alleen voor onderhoud van meegeleverde plugins en worden niet aanbevolen
-als importpaden voor nieuwe plugins van derden.
+Een kleine set gebundelde-Plugin-helperseams verschijnt nog steeds in de gegenereerde exportmap
+wanneer ze bijgehouden owner-gebruik hebben. Ze bestaan alleen voor onderhoud van gebundelde Plugins
+en zijn geen aanbevolen importpaden voor nieuwe externe
+Plugins.
 
 `openclaw/plugin-sdk/discord` en `openclaw/plugin-sdk/telegram-account` worden
-ook behouden als verouderde compatibiliteitsfacades voor bijgehouden eigenaargebruik.
-Kopieer die importpaden niet naar nieuwe plugins; gebruik in plaats daarvan
-geinjecteerde runtime-helpers en generieke kanaal-SDK-subpaden.
+ook behouden als verouderde compatibiliteitsfacades voor bijgehouden owner-gebruik. Kopieer
+die importpaden niet naar nieuwe Plugins; gebruik in plaats daarvan geïnjecteerde runtime-helpers en
+generieke channel-SDK-subpaden.
 </Warning>
 
 ## Subpadreferentie
 
-De plugin-SDK wordt beschikbaar gesteld als een set smalle subpaden, gegroepeerd
-per gebied (plugin-entry, kanaal, provider, auth, runtime, capability, memory en
-gereserveerde helpers voor meegeleverde plugins). Zie
-[Plugin-SDK-subpaden](/nl/plugins/sdk-subpaths) voor de volledige catalogus,
-gegroepeerd en met links.
+De Plugin SDK wordt beschikbaar gesteld als een set smalle subpaden, gegroepeerd per gebied (Plugin
+entry, channel, provider, auth, runtime, capability, memory en gereserveerde
+gebundelde-Plugin-helpers). Zie voor de volledige catalogus, gegroepeerd en gelinkt,
+[Plugin SDK-subpaden](/nl/plugins/sdk-subpaths).
 
-De gegenereerde lijst met meer dan 200 subpaden staat in `scripts/lib/plugin-sdk-entrypoints.json`.
+De compiler-entrypoint-inventaris staat in
+`scripts/lib/plugin-sdk-entrypoints.json`; package-exports worden gegenereerd uit
+de publieke subset na aftrek van repo-lokale test/interne subpaden die staan vermeld in
+`scripts/lib/plugin-sdk-private-local-only-subpaths.json`. Voer
+`pnpm plugin-sdk:surface` uit om het aantal publieke exports te controleren. Verouderde publieke
+subpaden die oud genoeg zijn en niet worden gebruikt door productiecode van gebundelde extensies worden
+bijgehouden in `scripts/lib/plugin-sdk-deprecated-public-subpaths.json`; brede
+verouderde re-export-barrels worden bijgehouden in
+`scripts/lib/plugin-sdk-deprecated-barrel-subpaths.json`.
 
 ## Registratie-API
 
@@ -88,112 +95,152 @@ methoden:
 
 ### Capability-registratie
 
-| Methode                                          | Wat dit registreert                    |
-| ------------------------------------------------ | -------------------------------------- |
-| `api.registerProvider(...)`                      | Tekstinferentie (LLM)                  |
-| `api.registerAgentHarness(...)`                  | Experimentele low-level agentexecutor  |
-| `api.registerCliBackend(...)`                    | Lokale CLI-inferentiebackend           |
-| `api.registerChannel(...)`                       | Messagingkanaal                        |
-| `api.registerSpeechProvider(...)`                | Tekst-naar-spraak / STT-synthese       |
-| `api.registerRealtimeTranscriptionProvider(...)` | Streaming realtime transcriptie        |
-| `api.registerRealtimeVoiceProvider(...)`         | Duplex realtime spraaksessies          |
-| `api.registerMediaUnderstandingProvider(...)`    | Beeld-/audio-/videoanalyse             |
-| `api.registerImageGenerationProvider(...)`       | Beeldgeneratie                         |
-| `api.registerMusicGenerationProvider(...)`       | Muziekgeneratie                        |
-| `api.registerVideoGenerationProvider(...)`       | Videogeneratie                         |
-| `api.registerWebFetchProvider(...)`              | Web-fetch-/scrapeprovider              |
-| `api.registerWebSearchProvider(...)`             | Webzoekfunctie                         |
+| Methode                                          | Wat deze registreert                 |
+| ------------------------------------------------ | ------------------------------------ |
+| `api.registerProvider(...)`                      | Tekstinferentie (LLM)                |
+| `api.registerAgentHarness(...)`                  | Experimentele low-level agent executor |
+| `api.registerCliBackend(...)`                    | Lokale CLI-inferentiebackend         |
+| `api.registerChannel(...)`                       | Messaging-channel                    |
+| `api.registerSpeechProvider(...)`                | Tekst-naar-spraak / STT-synthese     |
+| `api.registerRealtimeTranscriptionProvider(...)` | Streaming realtime-transcriptie      |
+| `api.registerRealtimeVoiceProvider(...)`         | Duplex realtime-spraaksessies        |
+| `api.registerMediaUnderstandingProvider(...)`    | Beeld-/audio-/videoanalyse           |
+| `api.registerImageGenerationProvider(...)`       | Beeldgeneratie                       |
+| `api.registerMusicGenerationProvider(...)`       | Muziekgeneratie                      |
+| `api.registerVideoGenerationProvider(...)`       | Videogeneratie                       |
+| `api.registerWebFetchProvider(...)`              | Webfetch-/scrape-provider            |
+| `api.registerWebSearchProvider(...)`             | Webzoekfunctie                       |
 
 ### Tools en opdrachten
 
-| Methode                         | Wat dit registreert                              |
-| ------------------------------- | ------------------------------------------------ |
-| `api.registerTool(tool, opts?)` | Agenttool (vereist of `{ optional: true }`)      |
-| `api.registerCommand(def)`      | Aangepaste opdracht (omzeilt de LLM)             |
+| Methode                         | Wat deze registreert                              |
+| ------------------------------- | ------------------------------------------------- |
+| `api.registerTool(tool, opts?)` | Agent-tool (vereist of `{ optional: true }`)      |
+| `api.registerCommand(def)`      | Aangepaste opdracht (omzeilt de LLM)              |
 
-Plugin-opdrachten kunnen `agentPromptGuidance` instellen wanneer de agent een
-korte, opdrachteigen routinghint nodig heeft. Houd die tekst gericht op de
-opdracht zelf; voeg geen provider- of pluginspecifiek beleid toe aan core
-prompt-builders.
+Plugin-opdrachten kunnen `agentPromptGuidance` instellen wanneer de agent een korte,
+opdracht-eigen routinghint nodig heeft. Houd die tekst gericht op de opdracht zelf; voeg geen
+provider- of Plugin-specifiek beleid toe aan core-promptbuilders.
 
 ### Infrastructuur
 
-| Methode                                        | Wat dit registreert                       |
-| ---------------------------------------------- | ----------------------------------------- |
-| `api.registerHook(events, handler, opts?)`     | Event-hook                                |
-| `api.registerHttpRoute(params)`                | Gateway HTTP-eindpunt                     |
-| `api.registerGatewayMethod(name, handler)`     | Gateway RPC-methode                       |
-| `api.registerGatewayDiscoveryService(service)` | Lokale Gateway-discovery-adverteerder     |
-| `api.registerCli(registrar, opts?)`            | CLI-subopdracht                           |
-| `api.registerNodeCliFeature(registrar, opts?)` | Node-functie-CLI onder `openclaw nodes`   |
-| `api.registerService(service)`                 | Achtergrondservice                        |
-| `api.registerInteractiveHandler(registration)` | Interactieve handler                      |
-| `api.registerAgentToolResultMiddleware(...)`   | Runtime-middleware voor toolresultaten    |
-| `api.registerMemoryPromptSupplement(builder)`  | Additieve promptsectie naast memory       |
-| `api.registerMemoryCorpusSupplement(adapter)`  | Additieve zoek-/leescorpus voor memory    |
+| Methode                                        | Wat deze registreert                         |
+| ---------------------------------------------- | -------------------------------------------- |
+| `api.registerHook(events, handler, opts?)`     | Event-hook                                   |
+| `api.registerHttpRoute(params)`                | Gateway HTTP-eindpunt                        |
+| `api.registerGatewayMethod(name, handler)`     | Gateway RPC-methode                          |
+| `api.registerGatewayDiscoveryService(service)` | Lokale Gateway-discovery-adverteerder        |
+| `api.registerCli(registrar, opts?)`            | CLI-subopdracht                              |
+| `api.registerNodeCliFeature(registrar, opts?)` | Node-feature-CLI onder `openclaw nodes`      |
+| `api.registerService(service)`                 | Achtergrondservice                           |
+| `api.registerInteractiveHandler(registration)` | Interactieve handler                         |
+| `api.registerAgentToolResultMiddleware(...)`   | Runtime-toolresultaatmiddleware              |
+| `api.registerMemoryPromptSupplement(builder)`  | Additieve memory-aangrenzende promptsectie   |
+| `api.registerMemoryCorpusSupplement(adapter)`  | Additief memory-zoek-/leescorpus             |
 
-### Host-hooks voor workflowplugins
+### Host-hooks voor workflow-Plugins
 
-Host-hooks zijn de SDK-seams voor plugins die moeten deelnemen aan de
-hostlevenscyclus in plaats van alleen een provider, kanaal of tool toe te voegen.
-Het zijn generieke contracten; Plan Mode kan ze gebruiken, maar dat geldt ook voor
-approval-workflows, workspace-beleidscontroles, achtergrondmonitors,
-setupwizards en UI-companionplugins.
+Host-hooks zijn de SDK-seams voor Plugins die moeten deelnemen aan de host-
+lifecycle in plaats van alleen een provider, channel of tool toe te voegen. Het zijn
+generieke contracten; Plan Mode kan ze gebruiken, maar dat geldt ook voor approval-workflows,
+workspace-policy-gates, achtergrondmonitors, setupwizards en UI-companion-
+Plugins.
 
-| Methode                                                                  | Contract dat dit beheert                                                                                                           |
-| ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `api.registerSessionExtension(...)`                                      | Plugineigen, JSON-compatibele sessiestatus die via Gateway-sessies wordt geprojecteerd                                             |
-| `api.enqueueNextTurnInjection(...)`                                      | Duurzame precies-eenmaal-context die in de volgende agentbeurt voor een sessie wordt geinjecteerd                                  |
-| `api.registerTrustedToolPolicy(...)`                                     | Meegeleverd/vertrouwd pre-plugin toolbeleid dat toolparameters kan blokkeren of herschrijven                                      |
-| `api.registerToolMetadata(...)`                                          | Weergavemetadata voor de toolcatalogus zonder de toolimplementatie te wijzigen                                                     |
-| `api.registerCommand(...)`                                               | Gescopeerde plugin-opdrachten; opdrachtresultaten kunnen `continueAgent: true` instellen; Discord-native opdrachten ondersteunen `descriptionLocalizations` |
-| `api.registerControlUiDescriptor(...)`                                   | Control UI-contributiedescriptors voor sessie-, tool-, run- of instellingenoppervlakken                                           |
-| `api.registerRuntimeLifecycle(...)`                                      | Cleanup-callbacks voor plugineigen runtime-resources op reset-/delete-/reload-paden                                                |
-| `api.registerAgentEventSubscription(...)`                                | Gesaneerde eventabonnementen voor workflowstatus en monitors                                                                       |
-| `api.setRunContext(...)` / `getRunContext(...)` / `clearRunContext(...)` | Per-run plugin scratch state die wordt gewist bij de terminale runlevenscyclus                                                     |
-| `api.registerSessionSchedulerJob(...)`                                   | Plugineigen sessieplanner-jobrecords met deterministische cleanup                                                                  |
+| Methode                                                                              | Contract waarvan deze eigenaar is                                                                                                 |
+| ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| `api.session.state.registerSessionExtension(...)`                                    | Plugin-eigen, JSON-compatibele sessiestatus geprojecteerd via Gateway-sessies                                                     |
+| `api.session.workflow.enqueueNextTurnInjection(...)`                                 | Duurzame exactly-once-context geïnjecteerd in de volgende agent-turn voor één sessie                                               |
+| `api.registerTrustedToolPolicy(...)`                                                 | Gebundeld/vertrouwd pre-Plugin-toolbeleid dat toolparameters kan blokkeren of herschrijven                                        |
+| `api.registerToolMetadata(...)`                                                      | Weergavemetadata voor de toolcatalogus zonder de toolimplementatie te wijzigen                                                     |
+| `api.registerCommand(...)`                                                           | Scoped Plugin-opdrachten; opdrachtresultaten kunnen `continueAgent: true` instellen; Discord-native opdrachten ondersteunen `descriptionLocalizations` |
+| `api.session.controls.registerControlUiDescriptor(...)`                              | Control-UI-contributiedescriptors voor sessie-, tool-, run- of instellingenoppervlakken                                            |
+| `api.lifecycle.registerRuntimeLifecycle(...)`                                        | Cleanup-callbacks voor Plugin-eigen runtime-resources op reset-/delete-/reload-paden                                              |
+| `api.agent.events.registerAgentEventSubscription(...)`                               | Gesaniteerde event-abonnementen voor workflowstatus en monitors                                                                   |
+| `api.runContext.setRunContext(...)` / `getRunContext(...)` / `clearRunContext(...)`  | Plugin-scratchstatus per run, opgeschoond bij terminale run-lifecycle                                                             |
+| `api.session.workflow.registerSessionSchedulerJob(...)`                              | Cleanupmetadata voor Plugin-eigen scheduler-jobs; plant geen werk en maakt geen taakrecords aan                                   |
+| `api.session.workflow.sendSessionAttachment(...)`                                    | Alleen gebundeld: door de host bemiddelde bestandsbijlagelevering aan de actieve direct-outbound-sessieroute                      |
+| `api.session.workflow.scheduleSessionTurn(...)` / `unscheduleSessionTurnsByTag(...)` | Alleen gebundeld: door Cron ondersteunde geplande sessie-turns plus taggebaseerde cleanup                                         |
+| `api.session.controls.registerSessionAction(...)`                                    | Getypeerde sessieacties die clients via de Gateway kunnen dispatchen                                                              |
 
-De contracten splitsen autoriteit bewust op:
+Gebruik de gegroepeerde namespaces voor nieuwe Plugin-code:
 
-- Externe plugins kunnen sessie-extensies, UI-descriptors, opdrachten, toolmetadata, next-turn-injections en normale hooks beheren.
-- Vertrouwd toolbeleid draait voor gewone `before_tool_call`-hooks en is alleen meegeleverd, omdat het deelneemt aan het veiligheidsbeleid van de host.
-- Gereserveerd opdrachteigendom is alleen voor meegeleverde onderdelen. Externe plugins moeten hun eigen opdrachtnamen of aliassen gebruiken.
-- `allowPromptInjection=false` schakelt promptmuterende hooks uit, inclusief `agent_turn_prepare`, `before_prompt_build`, `heartbeat_prompt_contribution`, promptvelden van legacy `before_agent_start` en `enqueueNextTurnInjection`.
+- `api.session.state.registerSessionExtension(...)`
+- `api.session.workflow.enqueueNextTurnInjection(...)`
+- `api.session.workflow.registerSessionSchedulerJob(...)`
+- `api.session.workflow.sendSessionAttachment(...)`
+- `api.session.workflow.scheduleSessionTurn(...)`
+- `api.session.workflow.unscheduleSessionTurnsByTag(...)`
+- `api.session.controls.registerSessionAction(...)`
+- `api.session.controls.registerControlUiDescriptor(...)`
+- `api.agent.events.registerAgentEventSubscription(...)`
+- `api.agent.events.emitAgentEvent(...)`
+- `api.runContext.setRunContext(...)` / `getRunContext(...)` / `clearRunContext(...)`
+- `api.lifecycle.registerRuntimeLifecycle(...)`
+
+De equivalente platte methoden blijven beschikbaar als verouderde compatibiliteitsaliassen
+voor bestaande Plugins. Voeg geen nieuwe Plugin-code toe die
+`api.registerSessionExtension`, `api.enqueueNextTurnInjection`,
+`api.registerControlUiDescriptor`, `api.registerRuntimeLifecycle`,
+`api.registerAgentEventSubscription`, `api.emitAgentEvent`,
+`api.setRunContext`, `api.getRunContext`, `api.clearRunContext`,
+`api.registerSessionSchedulerJob`, `api.registerSessionAction`,
+`api.sendSessionAttachment`, `api.scheduleSessionTurn` of
+`api.unscheduleSessionTurnsByTag` rechtstreeks aanroept.
+
+`scheduleSessionTurn(...)` is een sessiegebonden gemakslaag boven de Gateway
+Cron-planner. Cron beheert de timing en maakt de achtergrondtaakrecord aan
+wanneer de beurt wordt uitgevoerd; de Plugin SDK beperkt alleen de doelsessie,
+Plugin-eigen naamgeving en opschoning. Gebruik `api.runtime.tasks.managedFlows`
+binnen de geplande beurt wanneer het werk zelf duurzame meerstaps-Task Flow-status
+nodig heeft.
+
+De contracten splitsen de bevoegdheid bewust op:
+
+- Externe plugins kunnen sessie-uitbreidingen, UI-descriptors, commando's,
+  toolmetadata, injecties voor de volgende beurt en normale hooks beheren.
+- Vertrouwde toolbeleidsregels worden uitgevoerd vóór gewone `before_tool_call`-hooks
+  en zijn alleen gebundeld omdat ze deelnemen aan het veiligheidsbeleid van de host.
+- Gereserveerd commando-eigenaarschap is alleen gebundeld. Externe plugins moeten hun
+  eigen commandonamen of aliassen gebruiken.
+- `allowPromptInjection=false` schakelt promptwijzigende hooks uit, waaronder
+  `agent_turn_prepare`, `before_prompt_build`, `heartbeat_prompt_contribution`,
+  promptvelden van de verouderde `before_agent_start` en
+  `enqueueNextTurnInjection`.
 
 Voorbeelden van niet-Plan-consumenten:
 
-| Plugin-archetype            | Gebruikte hooks                                                                                                                     |
-| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Approval-workflow           | Sessie-extensie, opdrachtcontinuatie, next-turn-injection, UI-descriptor                                                            |
-| Budget-/workspace-beleidsgate | Vertrouwd toolbeleid, toolmetadata, sessieprojectie                                                                                 |
-| Achtergrond-levenscyclusmonitor | Runtime-levenscyclus-cleanup, agent-eventabonnement, eigendom/cleanup van sessieplanner, Heartbeat-promptcontributie, UI-descriptor |
-| Setup- of onboardingwizard  | Sessie-extensie, gescopeerde opdrachten, Control UI-descriptor                                                                      |
+| Plugin-archetype            | Gebruikte hooks                                                                                                                    |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Goedkeuringsworkflow        | Sessie-uitbreiding, commandovoortzetting, injectie voor volgende beurt, UI-descriptor                                              |
+| Beleidsgrens voor budget/werkruimte | Vertrouwd toolbeleid, toolmetadata, sessieprojectie                                                                         |
+| Achtergrondmonitor voor levenscyclus | Opschoning van runtimelevenscyclus, abonnement op agentevents, eigenaarschap/opschoning van sessieplanner, bijdrage aan heartbeat-prompt, UI-descriptor |
+| Installatie- of onboardingwizard | Sessie-uitbreiding, gescopete commando's, Control-UI-descriptor                                                               |
 
 <Note>
-  Gereserveerde core-adminnamespaces (`config.*`, `exec.approvals.*`, `wizard.*`,
+  Gereserveerde kernbeheernamespaces (`config.*`, `exec.approvals.*`, `wizard.*`,
   `update.*`) blijven altijd `operator.admin`, zelfs als een plugin probeert een
-  smallere gateway-method scope toe te wijzen. Geef de voorkeur aan pluginspecifieke
-  prefixes voor plugineigen methoden.
+  nauwere Gateway-methodescope toe te wijzen. Geef de voorkeur aan pluginspecifieke
+  voorvoegsels voor Plugin-eigen methoden.
 </Note>
 
 <Accordion title="Wanneer toolresultaat-middleware gebruiken">
-  Meegeleverde plugins kunnen `api.registerAgentToolResultMiddleware(...)` gebruiken
-  wanneer ze een toolresultaat moeten herschrijven na uitvoering en voordat de
-  runtime dat resultaat terugvoert naar het model. Dit is de vertrouwde
-  runtime-neutrale seam voor async-outputreducers zoals tokenjuice.
+  Gebundelde plugins kunnen `api.registerAgentToolResultMiddleware(...)` gebruiken
+  wanneer ze een toolresultaat na uitvoering en voordat de runtime dat resultaat
+  terugvoert naar het model moeten herschrijven. Dit is de vertrouwde runtime-neutrale
+  naad voor asynchrone uitvoerreducers zoals tokenjuice.
 
 Gebundelde plugins moeten `contracts.agentToolResultMiddleware` declareren voor elke
-beoogde runtime, bijvoorbeeld `["pi", "codex"]`. Externe plugins
-kunnen deze middleware niet registreren; behoud normale OpenClaw-pluginhooks voor werk
-dat geen toolresultaattiming vóór het model nodig heeft. Het oude, alleen voor Pi bedoelde pad voor registratie van ingebedde
-extension-factory's is verwijderd.
+gerichte runtime, bijvoorbeeld `["pi", "codex"]`. Externe plugins
+kunnen deze middleware niet registreren; houd normale OpenClaw-pluginhooks aan voor werk
+waarvoor geen timing van toolresultaten vóór het model nodig is. Het oude, alleen voor Pi
+bedoelde registratiepad voor ingebedde uitbreidingsfabrieken is verwijderd.
 </Accordion>
 
-### Registratie van Gateway-detectie
+### Gateway-discoveryregistratie
 
-Met `api.registerGatewayDiscoveryService(...)` kan een plugin de actieve
-Gateway adverteren op een lokaal detectietransport zoals mDNS/Bonjour. OpenClaw roept de
-service aan tijdens het opstarten van de Gateway wanneer lokale detectie is ingeschakeld, geeft de
+`api.registerGatewayDiscoveryService(...)` laat een plugin de actieve
+Gateway adverteren op een lokaal discoverytransport zoals mDNS/Bonjour. OpenClaw roept de
+service aan tijdens het opstarten van de Gateway wanneer lokale discovery is ingeschakeld, geeft de
 huidige Gateway-poorten en niet-geheime TXT-hintgegevens door, en roept de geretourneerde
 `stop`-handler aan tijdens het afsluiten van de Gateway.
 
@@ -211,28 +258,28 @@ api.registerGatewayDiscoveryService({
 });
 ```
 
-Gateway-detectieplugins mogen geadverteerde TXT-waarden niet behandelen als geheimen of
-authenticatie. Detectie is een routeringshint; Gateway-authenticatie en TLS-pinning
-blijven eigenaar van vertrouwen.
+Gateway-discoveryplugins mogen geadverteerde TXT-waarden niet behandelen als geheimen of
+authenticatie. Discovery is een routeringshint; Gateway-authenticatie en TLS-pinning
+beheren nog steeds vertrouwen.
 
 ### CLI-registratiemetadata
 
-`api.registerCli(registrar, opts?)` accepteert twee soorten opdrachtmetadata:
+`api.registerCli(registrar, opts?)` accepteert twee soorten commandometadata:
 
-- `commands`: expliciete opdrachtnamen die eigendom zijn van de registrar
-- `descriptors`: opdrachtbeschrijvingen tijdens het parsen die worden gebruikt voor CLI-help,
-  routering en luie registratie van plugin-CLI's
-- `parentPath`: optioneel pad van de bovenliggende opdracht voor geneste opdrachtgroepen, zoals
+- `commands`: expliciete commandonamen die eigendom zijn van de registrar
+- `descriptors`: commandodescriptors tijdens het parsen die worden gebruikt voor CLI-help,
+  routering en luie CLI-registratie van plugins
+- `parentPath`: optioneel bovenliggend commandopad voor geneste commandogroepen, zoals
   `["nodes"]`
 
-Voor paired-node-functies heeft
+Voor gekoppelde-node-functies heeft
 `api.registerNodeCliFeature(registrar, opts?)` de voorkeur. Dit is een kleine wrapper rond
-`api.registerCli(..., { parentPath: ["nodes"] })` en maakt opdrachten zoals
-`openclaw nodes canvas` expliciete node-functies die eigendom zijn van de plugin.
+`api.registerCli(..., { parentPath: ["nodes"] })` en maakt commando's zoals
+`openclaw nodes canvas` expliciete Plugin-eigen node-functies.
 
-Als je wilt dat een pluginopdracht lui geladen blijft in het normale root-CLI-pad,
-geef dan `descriptors` op die elke top-level opdrachtroot dekken die door die
-registrar wordt aangeboden.
+Als je wilt dat een plugincommando lui geladen blijft in het normale root-CLI-pad,
+geef dan `descriptors` op die elke root van een topniveaucommando dekken die door die
+registrar wordt blootgesteld.
 
 ```typescript
 api.registerCli(
@@ -252,7 +299,7 @@ api.registerCli(
 );
 ```
 
-Geneste opdrachten ontvangen de opgeloste bovenliggende opdracht als `program`:
+Geneste commando's ontvangen het opgeloste bovenliggende commando als `program`:
 
 ```typescript
 api.registerCli(
@@ -277,80 +324,77 @@ Gebruik `commands` op zichzelf alleen wanneer je geen luie root-CLI-registratie 
 Dat gretige compatibiliteitspad blijft ondersteund, maar het installeert geen
 door descriptors ondersteunde placeholders voor lui laden tijdens het parsen.
 
-### Registratie van CLI-backend
+### CLI-backendregistratie
 
-Met `api.registerCliBackend(...)` kan een plugin eigenaar zijn van de standaardconfiguratie voor een lokale
+`api.registerCliBackend(...)` laat een plugin de standaardconfiguratie beheren voor een lokale
 AI-CLI-backend zoals `codex-cli`.
 
-- De backend-`id` wordt het providerprefix in modelreferenties zoals `codex-cli/gpt-5`.
+- De backend-`id` wordt het providervoorvoegsel in modelrefs zoals `codex-cli/gpt-5`.
 - De backend-`config` gebruikt dezelfde vorm als `agents.defaults.cliBackends.<id>`.
-- Gebruikersconfiguratie wint nog steeds. OpenClaw voegt `agents.defaults.cliBackends.<id>` samen over de
-  pluginstandaard voordat de CLI wordt uitgevoerd.
-- Gebruik `normalizeConfig` wanneer een backend compatibiliteitsherschrijvingen nodig heeft na het samenvoegen
-  (bijvoorbeeld het normaliseren van oude flag-vormen).
-- Gebruik `resolveExecutionArgs` voor request-scoped argv-herschrijvingen die bij
-  het CLI-dialect horen, zoals het koppelen van OpenClaw-denkniveaus aan een native effort-
-  flag.
+- Gebruikersconfiguratie wint nog steeds. OpenClaw voegt `agents.defaults.cliBackends.<id>` samen boven op de
+  Plugin-standaard voordat de CLI wordt uitgevoerd.
+- Gebruik `normalizeConfig` wanneer een backend compatibiliteitsherschrijvingen na het samenvoegen nodig heeft
+  (bijvoorbeeld het normaliseren van oude flagvormen).
+- Gebruik `resolveExecutionArgs` voor aanvraaggebonden argv-herschrijvingen die bij
+  het CLI-dialect horen, zoals het mappen van OpenClaw-denkniveaus naar een native effort-flag.
 
-Zie voor een end-to-end auteursgids
+Zie voor een end-to-end auteurshandleiding
 [CLI-backendplugins](/nl/plugins/cli-backend-plugins).
 
 ### Exclusieve slots
 
-| Methode                                    | Wat deze registreert                                                                                                                                       |
+| Methode                                    | Wat deze registreert                                                                                                                                      |
 | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `api.registerContextEngine(id, factory)`   | Contextengine (één tegelijk actief). De `assemble()`-callback ontvangt `availableTools` en `citationsMode` zodat de engine prompttoevoegingen kan aanpassen. |
-| `api.registerMemoryCapability(capability)` | Geünificeerde geheugencapaciteit                                                                                                                           |
-| `api.registerMemoryPromptSection(builder)` | Builder voor geheugenpromptsectie                                                                                                                          |
-| `api.registerMemoryFlushPlan(resolver)`    | Resolver voor geheugenflushplan                                                                                                                            |
-| `api.registerMemoryRuntime(runtime)`       | Runtime-adapter voor geheugen                                                                                                                              |
+| `api.registerContextEngine(id, factory)`   | Contextengine (één tegelijk actief). De callback `assemble()` ontvangt `availableTools` en `citationsMode`, zodat de engine prompttoevoegingen kan afstemmen. |
+| `api.registerMemoryCapability(capability)` | Uniforme geheugencapability                                                                                                                               |
+| `api.registerMemoryPromptSection(builder)` | Bouwer voor geheugenpromptsecties                                                                                                                         |
+| `api.registerMemoryFlushPlan(resolver)`    | Resolver voor geheugenflushplan                                                                                                                           |
+| `api.registerMemoryRuntime(runtime)`       | Geheugenruntime-adapter                                                                                                                                    |
 
 ### Adapters voor geheugenembeddings
 
-| Methode                                        | Wat deze registreert                           |
-| ---------------------------------------------- | ---------------------------------------------- |
+| Methode                                        | Wat deze registreert                         |
+| ---------------------------------------------- | -------------------------------------------- |
 | `api.registerMemoryEmbeddingProvider(adapter)` | Geheugenembeddingadapter voor de actieve plugin |
 
 - `registerMemoryCapability` is de voorkeurs-API voor exclusieve geheugenplugins.
-- `registerMemoryCapability` kan ook `publicArtifacts.listArtifacts(...)` beschikbaar maken
-  zodat begeleidende plugins geëxporteerde geheugenartefacten kunnen gebruiken via
+- `registerMemoryCapability` kan ook `publicArtifacts.listArtifacts(...)` blootstellen,
+  zodat begeleidende plugins geëxporteerde geheugenartefacten kunnen consumeren via
   `openclaw/plugin-sdk/memory-host-core` in plaats van in de privé-indeling van een specifieke
-  geheugenplugin te grijpen.
+  geheugenplugin te reiken.
 - `registerMemoryPromptSection`, `registerMemoryFlushPlan` en
   `registerMemoryRuntime` zijn legacy-compatibele API's voor exclusieve geheugenplugins.
-- `MemoryFlushPlan.model` kan de flushbeurt vastzetten op een exacte `provider/model`-
-  referentie, zoals `ollama/qwen3:8b`, zonder de actieve fallback-
-  keten te erven.
-- Met `registerMemoryEmbeddingProvider` kan de actieve geheugenplugin één
-  of meer embeddingadapter-id's registreren (bijvoorbeeld `openai`, `gemini` of een aangepaste,
-  door de plugin gedefinieerde id).
+- `MemoryFlushPlan.model` kan de flushbeurt vastpinnen op een exacte `provider/model`-referentie,
+  zoals `ollama/qwen3:8b`, zonder de actieve fallbackketen te erven.
+- `registerMemoryEmbeddingProvider` laat de actieve geheugenplugin één of meer
+  embeddingadapter-id's registreren (bijvoorbeeld `openai`, `gemini` of een aangepaste
+  door een plugin gedefinieerde id).
 - Gebruikersconfiguratie zoals `agents.defaults.memorySearch.provider` en
   `agents.defaults.memorySearch.fallback` wordt opgelost tegen die geregistreerde
   adapter-id's.
 
-### Gebeurtenissen en lifecycle
+### Events en levenscyclus
 
-| Methode                                      | Wat deze doet                  |
-| -------------------------------------------- | ------------------------------ |
-| `api.on(hookName, handler, opts?)`           | Getypte lifecycle-hook         |
-| `api.onConversationBindingResolved(handler)` | Callback voor gespreksbinding  |
+| Methode                                      | Wat deze doet                |
+| -------------------------------------------- | ---------------------------- |
+| `api.on(hookName, handler, opts?)`           | Getypeerde levenscyclushook  |
+| `api.onConversationBindingResolved(handler)` | Callback voor gespreksbinding |
 
-Zie [Plugin-hooks](/nl/plugins/hooks) voor voorbeelden, veelvoorkomende hooknamen en guard-
-semantiek.
+Zie [Plugin-hooks](/nl/plugins/hooks) voor voorbeelden, veelvoorkomende hooknamen en guard-semantiek.
 
-### Beslissingssemantiek voor hooks
+### Semantiek van hookbeslissingen
 
-- `before_tool_call`: het retourneren van `{ block: true }` is terminal. Zodra een handler dit instelt, worden handlers met lagere prioriteit overgeslagen.
-- `before_tool_call`: het retourneren van `{ block: false }` wordt behandeld als geen beslissing (hetzelfde als het weglaten van `block`), niet als een override.
-- `before_install`: het retourneren van `{ block: true }` is terminal. Zodra een handler dit instelt, worden handlers met lagere prioriteit overgeslagen.
-- `before_install`: het retourneren van `{ block: false }` wordt behandeld als geen beslissing (hetzelfde als het weglaten van `block`), niet als een override.
-- `reply_dispatch`: het retourneren van `{ handled: true, ... }` is terminal. Zodra een handler de dispatch claimt, worden handlers met lagere prioriteit en het standaardpad voor modeldispatch overgeslagen.
-- `message_sending`: het retourneren van `{ cancel: true }` is terminal. Zodra een handler dit instelt, worden handlers met lagere prioriteit overgeslagen.
-- `message_sending`: het retourneren van `{ cancel: false }` wordt behandeld als geen beslissing (hetzelfde als het weglaten van `cancel`), niet als een override.
-- `message_received`: gebruik het getypte veld `threadId` wanneer je routering van inkomende threads/onderwerpen nodig hebt. Houd `metadata` voor kanaalspecifieke extra's.
-- `message_sending`: gebruik getypte routeringsvelden `replyToId` / `threadId` voordat je terugvalt op kanaalspecifieke `metadata`.
-- `gateway_start`: gebruik `ctx.config`, `ctx.workspaceDir` en `ctx.getCron?.()` voor opstartstatus die eigendom is van de gateway, in plaats van te vertrouwen op interne `gateway:startup`-hooks.
-- `cron_changed`: observeer lifecycle-wijzigingen van cron die eigendom zijn van de gateway. Gebruik `event.job?.state?.nextRunAtMs` en `ctx.getCron?.()` bij het synchroniseren van externe wake-schedulers, en houd OpenClaw als bron van waarheid voor vervalcontroles en uitvoering.
+- `before_tool_call`: het retourneren van `{ block: true }` is terminaal. Zodra een handler dit instelt, worden handlers met lagere prioriteit overgeslagen.
+- `before_tool_call`: het retourneren van `{ block: false }` wordt behandeld als geen beslissing (hetzelfde als `block` weglaten), niet als een overschrijving.
+- `before_install`: het retourneren van `{ block: true }` is terminaal. Zodra een handler dit instelt, worden handlers met lagere prioriteit overgeslagen.
+- `before_install`: het retourneren van `{ block: false }` wordt behandeld als geen beslissing (hetzelfde als `block` weglaten), niet als een overschrijving.
+- `reply_dispatch`: het retourneren van `{ handled: true, ... }` is terminaal. Zodra een handler dispatch claimt, worden handlers met lagere prioriteit en het standaarddispatchpad van het model overgeslagen.
+- `message_sending`: het retourneren van `{ cancel: true }` is terminaal. Zodra een handler dit instelt, worden handlers met lagere prioriteit overgeslagen.
+- `message_sending`: het retourneren van `{ cancel: false }` wordt behandeld als geen beslissing (hetzelfde als `cancel` weglaten), niet als een overschrijving.
+- `message_received`: gebruik het getypeerde veld `threadId` wanneer je routering van inkomende threads/onderwerpen nodig hebt. Bewaar `metadata` voor kanaalspecifieke extra's.
+- `message_sending`: gebruik getypeerde routeringsvelden `replyToId` / `threadId` voordat je terugvalt op kanaalspecifieke `metadata`.
+- `gateway_start`: gebruik `ctx.config`, `ctx.workspaceDir` en `ctx.getCron?.()` voor Gateway-eigen opstartstatus in plaats van te vertrouwen op interne `gateway:startup`-hooks.
+- `cron_changed`: observeer wijzigingen in de Gateway-eigen Cron-levenscyclus. Gebruik `event.job?.state?.nextRunAtMs` en `ctx.getCron?.()` bij het synchroniseren van externe wekkerschedulers, en houd OpenClaw als de bron van waarheid voor vervalcontroles en uitvoering.
 
 ### API-objectvelden
 
@@ -358,20 +402,20 @@ semantiek.
 | ------------------------ | ------------------------- | ------------------------------------------------------------------------------------------- |
 | `api.id`                 | `string`                  | Plugin-id                                                                                   |
 | `api.name`               | `string`                  | Weergavenaam                                                                                |
-| `api.version`            | `string?`                 | Pluginversie (optioneel)                                                                    |
-| `api.description`        | `string?`                 | Pluginbeschrijving (optioneel)                                                              |
-| `api.source`             | `string`                  | Bronpad van plugin                                                                          |
-| `api.rootDir`            | `string?`                 | Hoofdmap van plugin (optioneel)                                                             |
-| `api.config`             | `OpenClawConfig`          | Huidige configuratiesnapshot (actieve in-memory runtimesnapshot wanneer beschikbaar)        |
-| `api.pluginConfig`       | `Record<string, unknown>` | Pluginspecifieke configuratie uit `plugins.entries.<id>.config`                             |
+| `api.version`            | `string?`                 | Plugin-versie (optioneel)                                                                   |
+| `api.description`        | `string?`                 | Plugin-beschrijving (optioneel)                                                             |
+| `api.source`             | `string`                  | Bronpad van Plugin                                                                          |
+| `api.rootDir`            | `string?`                 | Hoofdmap van Plugin (optioneel)                                                             |
+| `api.config`             | `OpenClawConfig`          | Huidige config-snapshot (actieve runtime-snapshot in het geheugen wanneer beschikbaar)       |
+| `api.pluginConfig`       | `Record<string, unknown>` | Plugin-specifieke config uit `plugins.entries.<id>.config`                                  |
 | `api.runtime`            | `PluginRuntime`           | [Runtimehelpers](/nl/plugins/sdk-runtime)                                                      |
 | `api.logger`             | `PluginLogger`            | Scoped logger (`debug`, `info`, `warn`, `error`)                                            |
 | `api.registrationMode`   | `PluginRegistrationMode`  | Huidige laadmodus; `"setup-runtime"` is het lichte opstart-/setupvenster vóór volledige entry |
-| `api.resolvePath(input)` | `(string) => string`      | Los pad op relatief aan de pluginroot                                                       |
+| `api.resolvePath(input)` | `(string) => string`      | Pad relatief aan de Plugin-root oplossen                                                    |
 
 ## Conventie voor interne modules
 
-Gebruik binnen je plugin lokale barrelbestanden voor interne imports:
+Gebruik binnen je Plugin lokale barrel-bestanden voor interne imports:
 
 ```
 my-plugin/
@@ -382,57 +426,56 @@ my-plugin/
 ```
 
 <Warning>
-  Importeer je eigen plugin nooit via `openclaw/plugin-sdk/<your-plugin>`
-  vanuit productiecode. Routeer interne imports via `./api.ts` of
+  Importeer je eigen Plugin nooit via `openclaw/plugin-sdk/<your-plugin>`
+  vanuit productiecode. Leid interne imports via `./api.ts` of
   `./runtime-api.ts`. Het SDK-pad is alleen het externe contract.
 </Warning>
 
-Publieke oppervlakken van via facades geladen gebundelde plugins (`api.ts`, `runtime-api.ts`,
-`index.ts`, `setup-entry.ts` en vergelijkbare publieke entrybestanden) gebruiken bij voorkeur de
-actieve runtimeconfiguratiesnapshot wanneer OpenClaw al draait. Als er nog geen runtime-
-snapshot bestaat, vallen ze terug op het opgeloste configuratiebestand op schijf.
-Verpakte facades van gebundelde plugins moeten worden geladen via OpenClaw's plugin-
+Door facade geladen publieke oppervlakken van gebundelde Plugins (`api.ts`, `runtime-api.ts`,
+`index.ts`, `setup-entry.ts` en vergelijkbare publieke entrybestanden) geven de voorkeur aan de
+actieve runtime-configsnapshot wanneer OpenClaw al draait. Als er nog geen runtime-
+snapshot bestaat, vallen ze terug op het opgeloste configbestand op schijf.
+Verpakte facades van gebundelde Plugins moeten worden geladen via OpenClaw's Plugin-
 facadeladers; directe imports uit `dist/extensions/...` omzeilen de manifest-
-en runtime-sidecarcontroles die verpakte installaties gebruiken voor code die eigendom is van plugins.
+en runtime-sidecarcontroles die verpakte installaties gebruiken voor code die eigendom is van de Plugin.
 
-Provider-Plugins kunnen een smalle, Plugin-lokale contractbarrel beschikbaar maken wanneer een
+Provider-Plugins kunnen een smalle, Plugin-lokale contract-barrel blootstellen wanneer een
 helper bewust provider-specifiek is en nog niet thuishoort in een generiek SDK-
 subpad. Gebundelde voorbeelden:
 
-- **Anthropic**: openbare `api.ts` / `contract-api.ts`-seam voor Claude-
-  beta-header en `service_tier`-streamhelpers.
-- **`@openclaw/openai-provider`**: `api.ts` exporteert providerbuilders,
-  standaardmodelhelpers en realtime-providerbuilders.
-- **`@openclaw/openrouter-provider`**: `api.ts` exporteert de providerbuilder
-  plus onboarding-/configuratiehelpers.
+- **Anthropic**: publieke `api.ts` / `contract-api.ts`-seam voor Claude
+  beta-header- en `service_tier`-streamhelpers.
+- **`@openclaw/openai-provider`**: `api.ts` exporteert provider-builders,
+  helpers voor standaardmodellen en realtime provider-builders.
+- **`@openclaw/openrouter-provider`**: `api.ts` exporteert de provider-builder
+  plus onboarding-/confighelpers.
 
 <Warning>
-  Productiecode van extensies moet ook `openclaw/plugin-sdk/<other-plugin>`-
-  imports vermijden. Als een helper echt gedeeld is, promoot deze dan naar een
-  neutraal SDK-subpad zoals `openclaw/plugin-sdk/speech`,
-  `.../provider-model-shared`, of een ander capability-gericht oppervlak in
-  plaats van twee Plugins aan elkaar te koppelen.
+  Productiecode van extensions moet ook imports uit `openclaw/plugin-sdk/<other-plugin>`
+  vermijden. Als een helper echt gedeeld is, promoveer die dan naar een neutraal SDK-subpad
+  zoals `openclaw/plugin-sdk/speech`, `.../provider-model-shared` of een ander
+  capability-georiënteerd oppervlak in plaats van twee Plugins aan elkaar te koppelen.
 </Warning>
 
 ## Gerelateerd
 
 <CardGroup cols={2}>
-  <Card title="Toegangspunten" icon="door-open" href="/nl/plugins/sdk-entrypoints">
+  <Card title="Entry points" icon="door-open" href="/nl/plugins/sdk-entrypoints">
     Opties voor `definePluginEntry` en `defineChannelPluginEntry`.
   </Card>
-  <Card title="Runtime-helpers" icon="gears" href="/nl/plugins/sdk-runtime">
-    Volledige referentie voor de `api.runtime`-naamruimte.
+  <Card title="Runtime helpers" icon="gears" href="/nl/plugins/sdk-runtime">
+    Volledige referentie voor de `api.runtime`-namespace.
   </Card>
-  <Card title="Setup en configuratie" icon="sliders" href="/nl/plugins/sdk-setup">
-    Packaging, manifesten en configuratieschema's.
+  <Card title="Setup and config" icon="sliders" href="/nl/plugins/sdk-setup">
+    Packaging, manifests en config-schema's.
   </Card>
-  <Card title="Testen" icon="vial" href="/nl/plugins/sdk-testing">
-    Testhulpprogramma's en lintregels.
+  <Card title="Testing" icon="vial" href="/nl/plugins/sdk-testing">
+    Testhulpmiddelen en lintregels.
   </Card>
-  <Card title="SDK-migratie" icon="arrows-turn-right" href="/nl/plugins/sdk-migration">
+  <Card title="SDK migration" icon="arrows-turn-right" href="/nl/plugins/sdk-migration">
     Migreren vanaf verouderde oppervlakken.
   </Card>
-  <Card title="Plugin-internals" icon="diagram-project" href="/nl/plugins/architecture">
+  <Card title="Plugin internals" icon="diagram-project" href="/nl/plugins/architecture">
     Diepgaande architectuur en capability-model.
   </Card>
 </CardGroup>

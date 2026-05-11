@@ -3,44 +3,51 @@ read_when:
     - 学习如何配置 OpenClaw
     - 查找配置示例
     - 首次设置 OpenClaw
-summary: 适用于常见 OpenClaw 设置的符合模式定义的配置示例
+summary: 适用于常见 OpenClaw 设置的符合模式规范的配置示例
 title: 配置示例
 x-i18n:
-    generated_at: "2026-05-10T19:32:58Z"
+    generated_at: "2026-05-11T20:28:13Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9fd1c93d8c491de13c3679c766293a3401853625308e90588d7c83272c5b6e73
+    source_hash: e077b2fe83b1c6e4ffd2ff0029fe3b754c7dc5dced06f134ddf18e9ed6a11fd2
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-以下示例与当前配置架构保持一致。完整参考和逐字段说明请参阅[配置](/zh-CN/gateway/configuration)。
+下面的示例与当前配置结构保持一致。有关完整参考和每个字段的说明，请参阅 [配置](/zh-CN/gateway/configuration)。
 
 ## 快速开始
 
-### 绝对最低配置
+### 绝对最小配置
 
 ```json5
 {
-  agent: { workspace: "~/.openclaw/workspace" },
+  agents: { defaults: { workspace: "~/.openclaw/workspace" } },
   channels: { whatsapp: { allowFrom: ["+15555550123"] } },
 }
 ```
 
-保存到 `~/.openclaw/openclaw.json` 后，你就可以从该号码向机器人发送私信。
+保存到 `~/.openclaw/openclaw.json`，然后你就可以用该号码私信机器人。
 
 ### 推荐入门配置
 
 ```json5
 {
-  identity: {
-    name: "Clawd",
-    theme: "helpful assistant",
-    emoji: "🦞",
-  },
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: { primary: "anthropic/claude-sonnet-4-6" },
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: { primary: "anthropic/claude-sonnet-4-6" },
+    },
+    list: [
+      {
+        id: "main",
+        identity: {
+          name: "Clawd",
+          theme: "helpful assistant",
+          emoji: "🦞",
+        },
+      },
+    ],
   },
   channels: {
     whatsapp: {
@@ -57,9 +64,9 @@ x-i18n:
 }
 ```
 
-## 展开示例（主要选项）
+## 扩展示例（主要选项）
 
-> JSON5 允许使用注释和尾随逗号。普通 JSON 也可以使用。
+> JSON5 允许你使用注释和尾随逗号。普通 JSON 也可以。
 
 ```json5
 {
@@ -90,12 +97,7 @@ x-i18n:
     },
   },
 
-  // Identity
-  identity: {
-    name: "Samantha",
-    theme: "helpful sloth",
-    emoji: "🦥",
-  },
+  // Identity is per agent — set it on agents.list[].identity below.
 
   // Logging
   logging: {
@@ -314,6 +316,11 @@ x-i18n:
       {
         id: "main",
         default: true,
+        identity: {
+          name: "Samantha",
+          theme: "helpful sloth",
+          emoji: "🦥",
+        },
         // inherits defaults.skills -> github, weather
         groupChat: {
           mentionPatterns: ["@openclaw", "openclaw"],
@@ -488,9 +495,8 @@ x-i18n:
 }
 ```
 
-- `extraDirs` 会将同级仓库作为显式技能根目录扫描。
-- `allowSymlinkTargets` 允许符号链接的技能文件夹解析到该受信任的
-  真实目标根目录，而不会允许任意符号链接逃逸。
+- `extraDirs` 会将同级仓库扫描为显式技能根目录。
+- `allowSymlinkTargets` 允许符号链接的技能文件夹解析到该受信任的真实目标根目录，而不会允许任意符号链接逃逸。
 
 ## 常见模式
 
@@ -512,14 +518,14 @@ x-i18n:
 ```
 
 - `agents.defaults.skills` 是共享基线。
-- `agents.list[].skills` 会为一个智能体替换该基线。
-- 当智能体不应看到任何 Skills 时，使用 `skills: []`。
+- `agents.list[].skills` 会为某个智能体替换该基线。
+- 当某个智能体不应看到任何 Skills 时，使用 `skills: []`。
 
 ### 多平台设置
 
 ```json5
 {
-  agent: { workspace: "~/.openclaw/workspace" },
+  agents: { defaults: { workspace: "~/.openclaw/workspace" } },
   channels: {
     whatsapp: { allowFrom: ["+15555550123"] },
     telegram: {
@@ -536,10 +542,10 @@ x-i18n:
 }
 ```
 
-### 受信任节点网络自动批准
+### 可信节点网络自动批准
 
-除非你控制网络路径，否则请保持设备配对为手动。对于专用
-实验室或 tailnet 子网，你可以选择使用精确的 CIDR 或 IP 来启用首次节点设备自动批准：
+除非你控制网络路径，否则保持设备配对为手动模式。对于专用
+实验室或 tailnet 子网，你可以选择使用精确 CIDR 或 IP 启用首次节点设备自动批准：
 
 ```json5
 {
@@ -553,12 +559,12 @@ x-i18n:
 }
 ```
 
-未设置时，此功能保持关闭。它只适用于没有请求作用域的新 `role: node` 配对。操作员/浏览器客户端，以及角色、作用域、元数据或
+未设置时，此功能保持关闭。它仅适用于没有请求作用域的新 `role: node` 配对。操作员/浏览器客户端，以及角色、作用域、元数据或
 公钥升级仍需要手动批准。
 
 ### 安全私信模式（共享收件箱 / 多用户私信）
 
-如果不止一个人可以私信你的机器人（`allowFrom` 中有多个条目、为多个人批准了配对，或 `dmPolicy: "open"`），请启用**安全私信模式**，这样默认情况下来自不同发送者的私信不会共享同一个上下文：
+如果不止一个人可以私信你的机器人（`allowFrom` 中有多个条目、为多人批准配对，或使用 `dmPolicy: "open"`），请启用**安全私信模式**，这样不同发送者的私信默认不会共享同一个上下文：
 
 ```json5
 {
@@ -583,7 +589,7 @@ x-i18n:
 ```
 
 对于 Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC，默认优先使用 ID 进行发送者授权。
-只有在你明确接受该风险时，才使用每个渠道的 `dangerouslyAllowNameMatching: true` 启用可直接变更的名称/电子邮件/nick 匹配。
+只有在你明确接受该风险时，才为每个渠道启用直接可变的名称/邮箱/昵称匹配，即 `dangerouslyAllowNameMatching: true`。
 
 ### Anthropic API key + MiniMax 回退
 
@@ -609,11 +615,13 @@ x-i18n:
       },
     },
   },
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: {
-      primary: "anthropic/claude-opus-4-6",
-      fallbacks: ["minimax/MiniMax-M2.7"],
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: {
+        primary: "anthropic/claude-opus-4-6",
+        fallbacks: ["minimax/MiniMax-M2.7"],
+      },
     },
   },
 }
@@ -623,13 +631,20 @@ x-i18n:
 
 ```json5
 {
-  identity: {
-    name: "WorkBot",
-    theme: "professional assistant",
-  },
-  agent: {
-    workspace: "~/work-openclaw",
-    elevated: { enabled: false },
+  agents: {
+    defaults: {
+      workspace: "~/work-openclaw",
+      elevatedDefault: "off",
+    },
+    list: [
+      {
+        id: "main",
+        identity: {
+          name: "WorkBot",
+          theme: "professional assistant",
+        },
+      },
+    ],
   },
   channels: {
     slack: {
@@ -644,13 +659,15 @@ x-i18n:
 }
 ```
 
-### 仅本地模型
+### 仅使用本地模型
 
 ```json5
 {
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: { primary: "lmstudio/my-local-model" },
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: { primary: "lmstudio/my-local-model" },
+    },
   },
   models: {
     mode: "merge",
@@ -678,10 +695,10 @@ x-i18n:
 
 ## 提示
 
-- 如果你设置了 `dmPolicy: "open"`，匹配的 `allowFrom` 列表必须包含 `"*"`。
-- 提供商 ID 各不相同（电话号码、用户 ID、渠道 ID）。请使用提供商文档确认格式。
-- 可稍后添加的可选部分：`web`、`browser`、`ui`、`discovery`、`plugins`、`talk`、`signal`、`imessage`。
-- 请参阅[提供商](/zh-CN/providers)和[故障排除](/zh-CN/gateway/troubleshooting)，了解更深入的设置说明。
+- 如果你设置 `dmPolicy: "open"`，对应的 `allowFrom` 列表必须包含 `"*"`。
+- 提供商 ID 各不相同（电话号码、用户 ID、渠道 ID）。使用提供商文档确认格式。
+- 后续可添加的可选部分：`web`、`browser`、`ui`、`discovery`、`plugins`、`talk`、`signal`、`imessage`。
+- 参阅[提供商](/zh-CN/providers)和[故障排除](/zh-CN/gateway/troubleshooting)，了解更深入的设置说明。
 
 ## 相关
 

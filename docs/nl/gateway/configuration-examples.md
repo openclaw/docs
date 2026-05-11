@@ -1,46 +1,53 @@
 ---
 read_when:
     - Leren hoe u OpenClaw configureert
-    - Configuratievoorbeelden zoeken
+    - Op zoek naar configuratievoorbeelden
     - OpenClaw voor het eerst instellen
-summary: Schema-conforme configuratievoorbeelden voor veelvoorkomende OpenClaw-opstellingen
+summary: Schema-getrouwe configuratievoorbeelden voor veelvoorkomende OpenClaw-opstellingen
 title: Configuratievoorbeelden
 x-i18n:
-    generated_at: "2026-05-10T19:35:17Z"
+    generated_at: "2026-05-11T20:29:59Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9fd1c93d8c491de13c3679c766293a3401853625308e90588d7c83272c5b6e73
+    source_hash: e077b2fe83b1c6e4ffd2ff0029fe3b754c7dc5dced06f134ddf18e9ed6a11fd2
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-De onderstaande voorbeelden zijn afgestemd op het huidige configuratieschema. Zie [Configuratie](/nl/gateway/configuration) voor de volledige referentie en opmerkingen per veld.
+Voorbeelden hieronder zijn afgestemd op het huidige configuratieschema. Zie [Configuratie](/nl/gateway/configuration) voor de volledige referentie en opmerkingen per veld.
 
-## Snel aan de slag
+## Snel starten
 
 ### Absoluut minimum
 
 ```json5
 {
-  agent: { workspace: "~/.openclaw/workspace" },
+  agents: { defaults: { workspace: "~/.openclaw/workspace" } },
   channels: { whatsapp: { allowFrom: ["+15555550123"] } },
 }
 ```
 
-Sla dit op in `~/.openclaw/openclaw.json` en u kunt de bot vanaf dat nummer een DM sturen.
+Sla dit op in `~/.openclaw/openclaw.json` en je kunt de bot vanaf dat nummer een DM sturen.
 
 ### Aanbevolen startconfiguratie
 
 ```json5
 {
-  identity: {
-    name: "Clawd",
-    theme: "helpful assistant",
-    emoji: "🦞",
-  },
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: { primary: "anthropic/claude-sonnet-4-6" },
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: { primary: "anthropic/claude-sonnet-4-6" },
+    },
+    list: [
+      {
+        id: "main",
+        identity: {
+          name: "Clawd",
+          theme: "helpful assistant",
+          emoji: "🦞",
+        },
+      },
+    ],
   },
   channels: {
     whatsapp: {
@@ -59,7 +66,7 @@ Sla dit op in `~/.openclaw/openclaw.json` en u kunt de bot vanaf dat nummer een 
 
 ## Uitgebreid voorbeeld (belangrijkste opties)
 
-> Met JSON5 kunt u opmerkingen en afsluitende komma's gebruiken. Gewone JSON werkt ook.
+> Met JSON5 kun je opmerkingen en afsluitende komma's gebruiken. Gewone JSON werkt ook.
 
 ```json5
 {
@@ -90,12 +97,7 @@ Sla dit op in `~/.openclaw/openclaw.json` en u kunt de bot vanaf dat nummer een 
     },
   },
 
-  // Identity
-  identity: {
-    name: "Samantha",
-    theme: "helpful sloth",
-    emoji: "🦥",
-  },
+  // Identity is per agent — set it on agents.list[].identity below.
 
   // Logging
   logging: {
@@ -314,6 +316,11 @@ Sla dit op in `~/.openclaw/openclaw.json` en u kunt de bot vanaf dat nummer een 
       {
         id: "main",
         default: true,
+        identity: {
+          name: "Samantha",
+          theme: "helpful sloth",
+          emoji: "🦥",
+        },
         // inherits defaults.skills -> github, weather
         groupChat: {
           mentionPatterns: ["@openclaw", "openclaw"],
@@ -473,9 +480,9 @@ Sla dit op in `~/.openclaw/openclaw.json` en u kunt de bot vanaf dat nummer een 
 }
 ```
 
-### Skill-repo met symlink als sibling
+### Via symbolische link gekoppelde sibling-repository voor Skills
 
-Gebruik dit wanneer een ingebouwde Skill-root een symlink bevat naar een sibling-repo, bijvoorbeeld `~/.agents/skills/manager -> ~/Projects/manager/skills`.
+Gebruik dit wanneer een ingebouwde root voor Skills een symbolische link bevat naar een sibling-repository, bijvoorbeeld `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ```json5
 {
@@ -488,13 +495,12 @@ Gebruik dit wanneer een ingebouwde Skill-root een symlink bevat naar een sibling
 }
 ```
 
-- `extraDirs` scant de naastliggende repo als een expliciete Skills-root.
-- `allowSymlinkTargets` laat gesymlinkte Skills-mappen naar die vertrouwde echte
-  doelroot verwijzen zonder willekeurige symlink-ontsnappingen toe te staan.
+- `extraDirs` scant de sibling-repository als een expliciete root voor Skills.
+- Met `allowSymlinkTargets` kunnen via symbolische links gekoppelde Skill-mappen worden omgezet naar die vertrouwde echte doelroot, zonder willekeurige ontsnappingen via symbolische links toe te staan.
 
 ## Veelvoorkomende patronen
 
-### Gedeelde Skills-basislijn met één overschrijving
+### Gedeelde Skill-baseline met één override
 
 ```json5
 {
@@ -511,15 +517,15 @@ Gebruik dit wanneer een ingebouwde Skill-root een symlink bevat naar een sibling
 }
 ```
 
-- `agents.defaults.skills` is de gedeelde basislijn.
-- `agents.list[].skills` vervangt die basislijn voor één agent.
+- `agents.defaults.skills` is de gedeelde baseline.
+- `agents.list[].skills` vervangt die baseline voor één agent.
 - Gebruik `skills: []` wanneer een agent geen Skills mag zien.
 
-### Setup voor meerdere platforms
+### Multi-platformconfiguratie
 
 ```json5
 {
-  agent: { workspace: "~/.openclaw/workspace" },
+  agents: { defaults: { workspace: "~/.openclaw/workspace" } },
   channels: {
     whatsapp: { allowFrom: ["+15555550123"] },
     telegram: {
@@ -536,11 +542,11 @@ Gebruik dit wanneer een ingebouwde Skill-root een symlink bevat naar een sibling
 }
 ```
 
-### Vertrouwd Node-netwerk met automatische goedkeuring
+### Automatische goedkeuring voor vertrouwd Node-netwerk
 
 Houd apparaatkoppeling handmatig, tenzij je het netwerkpad beheert. Voor een speciaal
-lab of tailnet-subnet kun je automatische eerste goedkeuring voor Node-apparaten
-inschakelen met exacte CIDR's of IP's:
+lab of tailnet-subnet kun je je aanmelden voor automatische goedkeuring
+van Node-apparaten bij eerste gebruik met exacte CIDR's of IP's:
 
 ```json5
 {
@@ -554,13 +560,13 @@ inschakelen met exacte CIDR's of IP's:
 }
 ```
 
-Dit blijft uitgeschakeld wanneer het niet is ingesteld. Het geldt alleen voor nieuwe koppeling met `role: node`
-zonder aangevraagde scopes. Operator-/browserclients en upgrades van rol, scope, metadata of
-publieke sleutel vereisen nog steeds handmatige goedkeuring.
+Dit blijft uitgeschakeld wanneer het niet is ingesteld. Het is alleen van toepassing op nieuwe `role: node`-koppelingen zonder
+aangevraagde scopes. Operator-/browserclients en upgrades van rol, scope, metadata of
+public key vereisen nog steeds handmatige goedkeuring.
 
-### Veilige DM-modus (gedeelde inbox / DM's met meerdere gebruikers)
+### Veilige DM-modus (gedeelde inbox / DM's voor meerdere gebruikers)
 
-Als meer dan één persoon je bot een DM kan sturen (meerdere vermeldingen in `allowFrom`, koppelingsgoedkeuringen voor meerdere personen, of `dmPolicy: "open"`), schakel dan **veilige DM-modus** in zodat DM's van verschillende afzenders standaard niet één context delen:
+Als meer dan één persoon je bot kan DM'en (meerdere vermeldingen in `allowFrom`, koppelingsgoedkeuringen voor meerdere personen of `dmPolicy: "open"`), schakel dan **veilige DM-modus** in zodat DM's van verschillende afzenders standaard niet één context delen:
 
 ```json5
 {
@@ -584,10 +590,10 @@ Als meer dan één persoon je bot een DM kan sturen (meerdere vermeldingen in `a
 }
 ```
 
-Voor Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC is afzenderautorisatie standaard eerst op ID gebaseerd.
-Schakel directe matching op wijzigbare naam/e-mail/nickname met `dangerouslyAllowNameMatching: true` van elk kanaal alleen in als je dat risico expliciet accepteert.
+Voor Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC is afzenderautorisatie standaard ID-first.
+Schakel directe matching op veranderbare naam/e-mail/nick alleen in met `dangerouslyAllowNameMatching: true` van elk kanaal als je dat risico expliciet accepteert.
 
-### Anthropic API-sleutel + MiniMax-terugval
+### Anthropic API-sleutel + MiniMax-fallback
 
 ```json5
 {
@@ -611,11 +617,13 @@ Schakel directe matching op wijzigbare naam/e-mail/nickname met `dangerouslyAllo
       },
     },
   },
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: {
-      primary: "anthropic/claude-opus-4-6",
-      fallbacks: ["minimax/MiniMax-M2.7"],
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: {
+        primary: "anthropic/claude-opus-4-6",
+        fallbacks: ["minimax/MiniMax-M2.7"],
+      },
     },
   },
 }
@@ -625,13 +633,20 @@ Schakel directe matching op wijzigbare naam/e-mail/nickname met `dangerouslyAllo
 
 ```json5
 {
-  identity: {
-    name: "WorkBot",
-    theme: "professional assistant",
-  },
-  agent: {
-    workspace: "~/work-openclaw",
-    elevated: { enabled: false },
+  agents: {
+    defaults: {
+      workspace: "~/work-openclaw",
+      elevatedDefault: "off",
+    },
+    list: [
+      {
+        id: "main",
+        identity: {
+          name: "WorkBot",
+          theme: "professional assistant",
+        },
+      },
+    ],
   },
   channels: {
     slack: {
@@ -650,9 +665,11 @@ Schakel directe matching op wijzigbare naam/e-mail/nickname met `dangerouslyAllo
 
 ```json5
 {
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: { primary: "lmstudio/my-local-model" },
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: { primary: "lmstudio/my-local-model" },
+    },
   },
   models: {
     mode: "merge",
@@ -683,7 +700,7 @@ Schakel directe matching op wijzigbare naam/e-mail/nickname met `dangerouslyAllo
 - Als je `dmPolicy: "open"` instelt, moet de bijbehorende `allowFrom`-lijst `"*"` bevatten.
 - Provider-ID's verschillen (telefoonnummers, gebruikers-ID's, kanaal-ID's). Gebruik de providerdocumentatie om het formaat te bevestigen.
 - Optionele secties om later toe te voegen: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
-- Zie [Providers](/nl/providers) en [Probleemoplossing](/nl/gateway/troubleshooting) voor uitgebreidere setupnotities.
+- Zie [Providers](/nl/providers) en [Probleemoplossing](/nl/gateway/troubleshooting) voor uitgebreidere installatie-informatie.
 
 ## Gerelateerd
 

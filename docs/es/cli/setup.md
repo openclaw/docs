@@ -1,30 +1,46 @@
 ---
 read_when:
-    - Estás realizando la configuración inicial sin la incorporación completa de la CLI
+    - Estás realizando la configuración de primera ejecución sin el proceso completo de incorporación de la CLI
     - Quieres establecer la ruta predeterminada del espacio de trabajo
-summary: Referencia de CLI para `openclaw setup` (inicializar configuración + espacio de trabajo)
+    - Necesitas todas las opciones y cómo la configuración decide entre el modo de línea base y el modo asistente
+summary: Referencia de CLI para `openclaw setup` (inicializar la configuración y el espacio de trabajo; ejecutar opcionalmente la incorporación)
 title: Configuración
 x-i18n:
-    generated_at: "2026-05-06T17:54:41Z"
+    generated_at: "2026-05-11T20:28:26Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9a47d41f8c6c59395eaa4bc6055fa09f863af819c7920e29969793904180c910
+    source_hash: 55f0d771bb07c4c69293a470d54f4b6bb108ee521889bfb944fe450b24938b5e
     source_path: cli/setup.md
     workflow: 16
 ---
 
 # `openclaw setup`
 
-Inicializa `~/.openclaw/openclaw.json` y el espacio de trabajo del agente.
+Inicializa la configuración base y el espacio de trabajo del agente. Si hay alguna opción de incorporación presente, también ejecuta el asistente.
 
 <Note>
-`openclaw setup` es para instalaciones con configuración mutable. En modo Nix (`OPENCLAW_NIX_MODE=1`), OpenClaw rechaza las escrituras de configuración porque el archivo de configuración lo gestiona Nix. Los agentes deben usar el [Inicio rápido de nix-openclaw](https://github.com/openclaw/nix-openclaw#quick-start) oficial o la configuración de origen equivalente para otro paquete de Nix.
+`openclaw setup` es para instalaciones con configuración mutable. En modo Nix (`OPENCLAW_NIX_MODE=1`), OpenClaw rechaza las escrituras de setup porque el archivo de configuración lo administra Nix. Usa el [inicio rápido de nix-openclaw](https://github.com/openclaw/nix-openclaw#quick-start) oficial o la configuración de origen equivalente para otro paquete de Nix.
 </Note>
 
-Relacionado:
+## Opciones
 
-- Primeros pasos: [Primeros pasos](/es/start/getting-started)
-- Incorporación de CLI: [Incorporación (CLI)](/es/start/wizard)
+| Opción                     | Descripción                                                                                                        |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `--workspace <dir>`        | Directorio del espacio de trabajo del agente (predeterminado `~/.openclaw/workspace`; se almacena como `agents.defaults.workspace`). |
+| `--wizard`                 | Ejecuta la incorporación interactiva.                                                                              |
+| `--non-interactive`        | Ejecuta la incorporación sin solicitudes.                                                                          |
+| `--mode <mode>`            | Modo de incorporación: `local` o `remote`.                                                                         |
+| `--import-from <provider>` | Proveedor de migración que se ejecutará durante la incorporación.                                                   |
+| `--import-source <path>`   | Directorio principal del agente de origen para `--import-from`.                                                     |
+| `--import-secrets`         | Importa secretos compatibles durante la migración de incorporación.                                                 |
+| `--remote-url <url>`       | URL WebSocket del Gateway remoto.                                                                                  |
+| `--remote-token <token>`   | Token del Gateway remoto (opcional).                                                                               |
+
+### Activación automática del asistente
+
+`openclaw setup` ejecuta el asistente cuando cualquiera de estas opciones está presente explícitamente, incluso sin `--wizard`:
+
+`--wizard`, `--non-interactive`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`.
 
 ## Ejemplos
 
@@ -36,32 +52,15 @@ openclaw setup --wizard --import-from hermes --import-source ~/.hermes
 openclaw setup --non-interactive --mode remote --remote-url wss://gateway-host:18789 --remote-token <token>
 ```
 
-## Opciones
+## Notas
 
-- `--workspace <dir>`: directorio del espacio de trabajo del agente (se almacena como `agents.defaults.workspace`)
-- `--wizard`: ejecutar la incorporación
-- `--non-interactive`: ejecutar la incorporación sin solicitudes
-- `--mode <local|remote>`: modo de incorporación
-- `--import-from <provider>`: proveedor de migración que se ejecutará durante la incorporación
-- `--import-source <path>`: directorio de inicio del agente de origen para `--import-from`
-- `--import-secrets`: importar secretos compatibles durante la migración de incorporación
-- `--remote-url <url>`: URL WebSocket del Gateway remoto
-- `--remote-token <token>`: token del Gateway remoto
-
-Para ejecutar la incorporación mediante la configuración:
-
-```bash
-openclaw setup --wizard
-```
-
-Notas:
-
-- `openclaw setup` simple inicializa la configuración y el espacio de trabajo sin el flujo completo de incorporación.
-- Después de la configuración simple, ejecuta `openclaw configure` para elegir modelos, canales, Gateway, plugins, skills o comprobaciones de estado.
-- La incorporación se ejecuta automáticamente cuando está presente cualquier indicador de incorporación (`--wizard`, `--non-interactive`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`).
-- Si se detecta el estado de Hermes, la incorporación interactiva puede ofrecer la migración automáticamente. La incorporación de importación requiere una configuración nueva; usa [Migrar](/es/cli/migrate) para planes de simulación, copias de seguridad y modo de sobrescritura fuera de la incorporación.
+- `openclaw setup` simple inicializa la configuración y el espacio de trabajo sin ejecutar el flujo de incorporación completo.
+- Después del setup simple, ejecuta `openclaw onboard` para el recorrido guiado completo, `openclaw configure` para cambios específicos o `openclaw channels add` para agregar cuentas de canal.
+- Si se detecta el estado de Hermes, la incorporación interactiva puede ofrecer la migración automáticamente. La importación durante la incorporación requiere un setup nuevo; usa [Migrar](/es/cli/migrate) para planes de prueba, copias de seguridad y modo de sobrescritura fuera de la incorporación.
 
 ## Relacionado
 
-- [Referencia de CLI](/es/cli)
+- [Referencia de la CLI](/es/cli)
+- [Incorporación (CLI)](/es/start/wizard)
+- [Primeros pasos](/es/start/getting-started)
 - [Resumen de instalación](/es/install)

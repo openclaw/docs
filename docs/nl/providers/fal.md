@@ -1,15 +1,15 @@
 ---
 read_when:
-    - Je wilt fal-beeldgeneratie gebruiken in OpenClaw
+    - Je wilt fal-afbeeldingsgeneratie gebruiken in OpenClaw
     - Je hebt de FAL_KEY-authenticatiestroom nodig
-    - Je wilt fal-standaardinstellingen voor image_generate of video_generate
-summary: Configuratie voor afbeeldings- en videogeneratie met fal in OpenClaw
+    - Je wilt fal-standaardwaarden voor image_generate of video_generate
+summary: fal-configuratie voor afbeeldings- en videogeneratie in OpenClaw
 title: Fal
 x-i18n:
-    generated_at: "2026-04-29T23:09:58Z"
+    generated_at: "2026-05-11T20:46:25Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e6789f0fa1140cf76f0206c7384a79ee8b96de4af9e1dfedc00e5a3382f742bb
+    source_hash: 7f074629e5274154b7a17686264a8b137d61df321d791d6e47c9d8abe67ad273
     source_path: providers/fal.md
     workflow: 16
 ---
@@ -30,7 +30,7 @@ OpenClaw levert een gebundelde `fal`-provider voor gehoste beeld- en videogenera
     openclaw onboard --auth-choice fal-api-key
     ```
   </Step>
-  <Step title="Stel een standaard beeldmodel in">
+  <Step title="Stel een standaardbeeldmodel in">
     ```json5
     {
       agents: {
@@ -50,24 +50,26 @@ OpenClaw levert een gebundelde `fal`-provider voor gehoste beeld- en videogenera
 De gebundelde `fal`-provider voor beeldgeneratie gebruikt standaard
 `fal/fal-ai/flux/dev`.
 
-| Mogelijkheid       | Waarde                         |
-| ------------------ | ------------------------------ |
-| Max. afbeeldingen  | 4 per aanvraag                 |
-| Bewerkingsmodus    | Ingeschakeld, 1 referentiebeeld |
-| Grootte-overschrijvingen | Ondersteund              |
-| Beeldverhouding    | Ondersteund                    |
-| Resolutie          | Ondersteund                    |
-| Uitvoerformaat     | `png` of `jpeg`                |
+| Mogelijkheid        | Waarde                                                        |
+| ------------------- | ------------------------------------------------------------- |
+| Max. afbeeldingen   | 4 per aanvraag                                                |
+| Bewerkingsmodus     | Flux: 1 referentieafbeelding; GPT Image 2: 10; Nano Banana 2: 14 |
+| Grootte-overschrijvingen | Ondersteund                                             |
+| Beeldverhouding     | Ondersteund voor genereren en GPT Image 2-/Nano Banana 2-bewerking |
+| Resolutie           | Ondersteund                                                   |
+| Uitvoerformaat      | `png` of `jpeg`                                               |
 
 <Warning>
-Het fal-eindpunt voor beeldbewerking ondersteunt **geen** `aspectRatio`-overschrijvingen.
+Flux-aanvragen voor image-to-image ondersteunen **geen** `aspectRatio`-overschrijvingen. GPT
+Image 2- en Nano Banana 2-bewerkingsaanvragen gebruiken het `/edit`-eindpunt van fal en accepteren
+hints voor beeldverhoudingen.
 </Warning>
 
 Gebruik `outputFormat: "png"` wanneer je PNG-uitvoer wilt. fal declareert geen
 expliciete regeling voor transparante achtergronden in OpenClaw, dus `background:
 "transparent"` wordt gerapporteerd als een genegeerde overschrijving voor fal-modellen.
 
-Om fal als standaard beeldprovider te gebruiken:
+Om fal als standaardbeeldprovider te gebruiken:
 
 ```json5
 {
@@ -86,10 +88,10 @@ Om fal als standaard beeldprovider te gebruiken:
 De gebundelde `fal`-provider voor videogeneratie gebruikt standaard
 `fal/fal-ai/minimax/video-01-live`.
 
-| Mogelijkheid | Waarde                                                                 |
-| ------------ | ---------------------------------------------------------------------- |
-| Modi         | Tekst-naar-video, referentie met één afbeelding, Seedance referentie-naar-video |
-| Runtime      | Wachtrijgestuurde indien/status/resultaat-stroom voor langlopende taken |
+| Mogelijkheid | Waarde                                                             |
+| ------------ | ------------------------------------------------------------------ |
+| Modi         | Tekst-naar-video, enkele-afbeeldingsreferentie, Seedance-referentie-naar-video |
+| Runtime      | Wachtrijgebaseerde submit/status/result-flow voor langlopende taken |
 
 <AccordionGroup>
   <Accordion title="Beschikbare videomodellen">
@@ -108,7 +110,7 @@ De gebundelde `fal`-provider voor videogeneratie gebruikt standaard
 
   </Accordion>
 
-  <Accordion title="Seedance 2.0 configuratievoorbeeld">
+  <Accordion title="Configuratievoorbeeld voor Seedance 2.0">
     ```json5
     {
       agents: {
@@ -122,7 +124,7 @@ De gebundelde `fal`-provider voor videogeneratie gebruikt standaard
     ```
   </Accordion>
 
-  <Accordion title="Seedance 2.0 referentie-naar-video configuratievoorbeeld">
+  <Accordion title="Configuratievoorbeeld voor Seedance 2.0 reference-to-video">
     ```json5
     {
       agents: {
@@ -135,13 +137,13 @@ De gebundelde `fal`-provider voor videogeneratie gebruikt standaard
     }
     ```
 
-    Referentie-naar-video accepteert maximaal 9 afbeeldingen, 3 video's en 3 audioverwijzingen
+    Reference-to-video accepteert maximaal 9 afbeeldingen, 3 video's en 3 audioreferenties
     via de gedeelde `video_generate`-parameters `images`, `videos` en `audioRefs`,
     met maximaal 12 referentiebestanden in totaal.
 
   </Accordion>
 
-  <Accordion title="HeyGen video-agent configuratievoorbeeld">
+  <Accordion title="Configuratievoorbeeld voor HeyGen video-agent">
     ```json5
     {
       agents: {
@@ -157,8 +159,8 @@ De gebundelde `fal`-provider voor videogeneratie gebruikt standaard
 </AccordionGroup>
 
 <Tip>
-Gebruik `openclaw models list --provider fal` om de volledige lijst met beschikbare fal-modellen
-te bekijken, inclusief recent toegevoegde items.
+Gebruik `openclaw models list --provider fal` om de volledige lijst met beschikbare fal-modellen te bekijken,
+inclusief recent toegevoegde vermeldingen.
 </Tip>
 
 ## Gerelateerd

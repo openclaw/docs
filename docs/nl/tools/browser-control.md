@@ -3,27 +3,27 @@ read_when:
     - De agentbrowser scripten of debuggen via de lokale besturings-API
     - Op zoek naar de `openclaw browser` CLI-referentie
     - Aangepaste browserautomatisering toevoegen met momentopnamen en referenties
-summary: OpenClaw-API voor browserbesturing, CLI-referentie en scriptacties
+summary: OpenClaw-browserbesturings-API, CLI-referentie en scriptacties
 title: API voor browserbesturing
 x-i18n:
-    generated_at: "2026-05-06T09:34:16Z"
+    generated_at: "2026-05-11T20:51:21Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 5367561122448fa21037c9125581eb38b7f01413310e9f9ca5880942acfffa5d
+    source_hash: 317ac82cb9060ae1f9495a992dcbb25356ef23b98a5802cf0ed65d1720c2a57d
     source_path: tools/browser-control.md
     workflow: 16
 ---
 
-Voor installatie, configuratie en probleemoplossing, zie [Browser](/nl/tools/browser).
-Deze pagina is de referentie voor de lokale HTTP-API voor bediening, de `openclaw browser`
+Zie [Browser](/nl/tools/browser) voor installatie, configuratie en probleemoplossing.
+Deze pagina is de referentie voor de lokale control-HTTP-API, de `openclaw browser`
 CLI en scriptpatronen (snapshots, refs, waits, debugflows).
 
-## Bedienings-API (optioneel)
+## Control-API (optioneel)
 
-Alleen voor lokale integraties stelt de Gateway een kleine HTTP-API via loopback beschikbaar:
+Alleen voor lokale integraties stelt de Gateway een kleine local loopback HTTP-API beschikbaar:
 
 - Status/start/stop: `GET /`, `POST /start`, `POST /stop`
-- Tabbladen: `GET /tabs`, `POST /tabs/open`, `POST /tabs/focus`, `DELETE /tabs/:targetId`
+- Tabs: `GET /tabs`, `POST /tabs/open`, `POST /tabs/focus`, `DELETE /tabs/:targetId`
 - Snapshot/screenshot: `GET /snapshot`, `POST /screenshot`
 - Acties: `POST /navigate`, `POST /act`
 - Hooks: `POST /hooks/file-chooser`, `POST /hooks/dialog`
@@ -37,26 +37,26 @@ Alleen voor lokale integraties stelt de Gateway een kleine HTTP-API via loopback
 - Instellingen: `POST /set/offline`, `POST /set/headers`, `POST /set/credentials`, `POST /set/geolocation`, `POST /set/media`, `POST /set/timezone`, `POST /set/locale`, `POST /set/device`
 
 Alle endpoints accepteren `?profile=<name>`. `POST /start?headless=true` vraagt een
-eenmalige headless-start aan voor lokaal beheerde profielen zonder de persistente
-browserconfiguratie te wijzigen; attach-only-, externe CDP- en bestaande-sessieprofielen weigeren
-die overschrijving omdat OpenClaw die browserprocessen niet start.
+eenmalige headless start aan voor lokaal beheerde profielen zonder de permanente
+browserconfiguratie te wijzigen; profielen voor attach-only, externe CDP en bestaande sessies wijzen
+die override af omdat OpenClaw die browserprocessen niet start.
 
-Als Gateway-authenticatie met een gedeeld geheim is geconfigureerd, vereisen browser-HTTP-routes ook authenticatie:
+Als shared-secret-authenticatie voor de Gateway is geconfigureerd, vereisen browser-HTTP-routes ook authenticatie:
 
 - `Authorization: Bearer <gateway token>`
 - `x-openclaw-password: <gateway password>` of HTTP Basic-authenticatie met dat wachtwoord
 
 Opmerkingen:
 
-- Deze zelfstandige browser-API via loopback gebruikt **geen** trusted-proxy- of
+- Deze zelfstandige local loopback browser-API gebruikt **geen** vertrouwde-proxy- of
   Tailscale Serve-identiteitsheaders.
-- Als `gateway.auth.mode` `none` of `trusted-proxy` is, erven deze browserroutes via loopback
-  die identiteitsdragende modi niet; houd ze uitsluitend beschikbaar via loopback.
+- Als `gateway.auth.mode` `none` of `trusted-proxy` is, nemen deze local loopback browser-
+  routes die identiteitsdragende modi niet over; houd ze uitsluitend op local loopback.
 
-### Foutcontract van `/act`
+### `/act`-foutcontract
 
-`POST /act` gebruikt een gestructureerde foutrespons voor validatie op routeniveau en
-beleidsfouten:
+`POST /act` gebruikt een gestructureerd foutantwoord voor validatie op routeniveau en
+policyfouten:
 
 ```json
 { "error": "<message>", "code": "ACT_*" }
@@ -66,9 +66,9 @@ Huidige `code`-waarden:
 
 - `ACT_KIND_REQUIRED` (HTTP 400): `kind` ontbreekt of wordt niet herkend.
 - `ACT_INVALID_REQUEST` (HTTP 400): de actiepayload is niet door normalisatie of validatie gekomen.
-- `ACT_SELECTOR_UNSUPPORTED` (HTTP 400): `selector` is gebruikt met een niet-ondersteunde actiesoort.
-- `ACT_EVALUATE_DISABLED` (HTTP 403): `evaluate` (of `wait --fn`) is uitgeschakeld via configuratie.
-- `ACT_TARGET_ID_MISMATCH` (HTTP 403): `targetId` op topniveau of in een batch conflicteert met het doel van de aanvraag.
+- `ACT_SELECTOR_UNSUPPORTED` (HTTP 400): `selector` is gebruikt met een niet-ondersteund actietype.
+- `ACT_EVALUATE_DISABLED` (HTTP 403): `evaluate` (of `wait --fn`) is uitgeschakeld door de configuratie.
+- `ACT_TARGET_ID_MISMATCH` (HTTP 403): `targetId` op topniveau of in batches conflicteert met het aanvraagtarged.
 - `ACT_EXISTING_SESSION_UNSUPPORTED` (HTTP 501): de actie wordt niet ondersteund voor bestaande-sessieprofielen.
 
 Andere runtimefouten kunnen nog steeds `{ "error": "<message>" }` retourneren zonder een
@@ -77,7 +77,7 @@ Andere runtimefouten kunnen nog steeds `{ "error": "<message>" }` retourneren zo
 ### Playwright-vereiste
 
 Sommige functies (navigate/act/AI-snapshot/rolsnapshot, elementscreenshots,
-PDF) vereisen Playwright. Als Playwright niet is geinstalleerd, retourneren die endpoints
+PDF) vereisen Playwright. Als Playwright niet is geïnstalleerd, retourneren die endpoints
 een duidelijke 501-fout.
 
 Wat nog werkt zonder Playwright:
@@ -85,12 +85,12 @@ Wat nog werkt zonder Playwright:
 - ARIA-snapshots
 - Rolachtige toegankelijkheidssnapshots (`--interactive`, `--compact`,
   `--depth`, `--efficient`) wanneer een CDP-WebSocket per tabblad beschikbaar is. Dit is
-  een fallback voor inspectie en ref-detectie; Playwright blijft de primaire
+  een fallback voor inspectie en ref-ontdekking; Playwright blijft de primaire
   actie-engine.
 - Paginascreenshots voor de beheerde `openclaw`-browser wanneer een CDP-
   WebSocket per tabblad beschikbaar is
-- Paginascreenshots voor `existing-session`- / Chrome MCP-profielen
-- Op refs gebaseerde screenshots van `existing-session` (`--ref`) vanuit snapshotuitvoer
+- Paginascreenshots voor `existing-session` / Chrome MCP-profielen
+- Op refs gebaseerde `existing-session`-screenshots (`--ref`) uit snapshotuitvoer
 
 Wat nog steeds Playwright nodig heeft:
 
@@ -98,37 +98,44 @@ Wat nog steeds Playwright nodig heeft:
 - `act`
 - AI-snapshots die afhankelijk zijn van Playwrights native AI-snapshotformaat
 - Elementscreenshots met CSS-selector (`--element`)
-- volledige browserexport naar PDF
+- volledige browser-PDF-export
 
-Elementscreenshots weigeren ook `--full-page`; de route retourneert `fullPage is
+Elementscreenshots wijzen ook `--full-page` af; de route retourneert `fullPage is
 not supported for element screenshots`.
 
 Als je `Playwright is not available in this gateway build` ziet, mist de verpakte
-Gateway de kernruntime-afhankelijkheid voor de browser. Installeer OpenClaw opnieuw of werk het bij
+Gateway de kernruntime-afhankelijkheid voor browsers. Installeer OpenClaw opnieuw of werk het bij,
 en herstart daarna de Gateway. Installeer voor Docker ook de Chromium-
-browserbinaries zoals hieronder getoond.
+browserbinaries zoals hieronder weergegeven.
 
-#### Playwright installeren in Docker
+#### Docker Playwright-installatie
 
-Als je Gateway in Docker draait, vermijd dan `npx playwright` (conflicten met npm-overschrijvingen).
-Gebruik in plaats daarvan de meegeleverde CLI:
+Als je Gateway in Docker draait, vermijd dan `npx playwright` (npm-overrideconflicten).
+Bak voor aangepaste images Chromium in de image:
+
+```bash
+OPENCLAW_INSTALL_BROWSER=1 ./scripts/docker/setup.sh
+```
+
+Installeer voor een bestaande image in plaats daarvan via de gebundelde CLI:
 
 ```bash
 docker compose run --rm openclaw-cli \
   node /app/node_modules/playwright-core/cli.js install chromium
 ```
 
-Stel `PLAYWRIGHT_BROWSERS_PATH` in om browserdownloads te bewaren (bijvoorbeeld
-`/home/node/.cache/ms-playwright`) en zorg dat `/home/node` persistent is via
-`OPENCLAW_HOME_VOLUME` of een bind mount. Zie [Docker](/nl/install/docker).
+Om browserdownloads persistent te maken, stel je `PLAYWRIGHT_BROWSERS_PATH` in (bijvoorbeeld
+`/home/node/.cache/ms-playwright`) en zorg je dat `/home/node` persistent is via
+`OPENCLAW_HOME_VOLUME` of een bind mount. OpenClaw detecteert de persistente
+Chromium automatisch op Linux. Zie [Docker](/nl/install/docker).
 
 ## Hoe het werkt (intern)
 
-Een kleine bedieningsserver via loopback accepteert HTTP-aanvragen en verbindt met Chromium-gebaseerde browsers via CDP. Geavanceerde acties (click/type/snapshot/PDF) lopen via Playwright bovenop CDP; wanneer Playwright ontbreekt, zijn alleen niet-Playwright-bewerkingen beschikbaar. De agent ziet een stabiele interface terwijl lokale/externe browsers en profielen eronder vrij worden gewisseld.
+Een kleine local loopback control-server accepteert HTTP-verzoeken en maakt verbinding met Chromium-gebaseerde browsers via CDP. Geavanceerde acties (click/type/snapshot/PDF) lopen via Playwright boven op CDP; wanneer Playwright ontbreekt, zijn alleen niet-Playwright-bewerkingen beschikbaar. De agent ziet één stabiele interface terwijl lokale/externe browsers en profielen eronder vrij worden gewisseld.
 
-## Snelle CLI-referentie
+## CLI-snelreferentie
 
-Alle commando's accepteren `--browser-profile <name>` om een specifiek profiel te targeten, en `--json` voor machineleesbare uitvoer.
+Alle opdrachten accepteren `--browser-profile <name>` om een specifiek profiel te targeten, en `--json` voor machineleesbare uitvoer.
 
 <AccordionGroup>
 
@@ -137,10 +144,10 @@ Alle commando's accepteren `--browser-profile <name>` om een specifiek profiel t
 ```bash
 openclaw browser status
 openclaw browser start
-openclaw browser start --headless # one-shot local managed headless launch
-openclaw browser stop            # also clears emulation on attach-only/remote CDP
+openclaw browser start --headless # eenmalige lokaal beheerde headless start
+openclaw browser stop            # wist ook emulatie op attach-only/externe CDP
 openclaw browser tabs
-openclaw browser tab             # shortcut for current tab
+openclaw browser tab             # snelkoppeling voor huidig tabblad
 openclaw browser tab new
 openclaw browser tab select 2
 openclaw browser tab close 2
@@ -151,12 +158,12 @@ openclaw browser close abcd1234
 
 </Accordion>
 
-<Accordion title="Inspectie: screenshot, snapshot, console, fouten, aanvragen">
+<Accordion title="Inspectie: screenshot, snapshot, console, fouten, verzoeken">
 
 ```bash
 openclaw browser screenshot
 openclaw browser screenshot --full-page
-openclaw browser screenshot --ref 12        # or --ref e12
+openclaw browser screenshot --ref 12        # of --ref e12
 openclaw browser screenshot --labels
 openclaw browser snapshot
 openclaw browser snapshot --format aria --limit 200
@@ -180,8 +187,8 @@ openclaw browser responsebody "**/api" --max-chars 5000
 ```bash
 openclaw browser navigate https://example.com
 openclaw browser resize 1280 720
-openclaw browser click 12 --double           # or e12 for role refs
-openclaw browser click-coords 120 340        # viewport coordinates
+openclaw browser click 12 --double           # of e12 voor rolrefs
+openclaw browser click-coords 120 340        # viewportcoördinaten
 openclaw browser type 23 "hello" --submit
 openclaw browser press Enter
 openclaw browser hover 44
@@ -203,7 +210,7 @@ openclaw browser trace stop
 
 </Accordion>
 
-<Accordion title="Status: cookies, opslag, offline, headers, geo, apparaat">
+<Accordion title="Status: cookies, storage, offline, headers, geo, apparaat">
 
 ```bash
 openclaw browser cookies
@@ -214,7 +221,7 @@ openclaw browser storage local set theme dark
 openclaw browser storage session clear
 openclaw browser set offline on
 openclaw browser set headers --headers-json '{"X-Debug":"1"}'
-openclaw browser set credentials user pass            # --clear to remove
+openclaw browser set credentials user pass            # --clear om te verwijderen
 openclaw browser set geo 37.7749 -122.4194 --origin "https://example.com"
 openclaw browser set media dark
 openclaw browser set timezone America/New_York
@@ -228,23 +235,23 @@ openclaw browser set device "iPhone 14"
 
 Opmerkingen:
 
-- `upload` en `dialog` zijn **bewapeningsaanroepen**; voer ze uit vóór de click/press die de kiezer/dialoog activeert.
-- `click`/`type`/enz. vereisen een `ref` uit `snapshot` (numeriek `12`, rol-ref `e12` of uitvoerbare ARIA-ref `ax12`). CSS-selectors worden bewust niet ondersteund voor acties. Gebruik `click-coords` wanneer de zichtbare viewportpositie het enige betrouwbare doel is.
-- Download-, trace- en uploadpaden zijn beperkt tot tijdelijke OpenClaw-roots: `/tmp/openclaw{,/downloads,/uploads}` (fallback: `${os.tmpdir()}/openclaw/...`).
-- `upload` kan ook bestandsinvoer direct instellen via `--input-ref` of `--element`.
+- `upload` en `dialog` zijn **voorbereidende** calls; voer ze uit vóór de klik/toetsdruk die de chooser/dialog activeert.
+- `click`/`type`/enzovoort vereisen een `ref` uit `snapshot` (numerieke `12`, rolref `e12`, of uitvoerbare ARIA-ref `ax12`). CSS-selectors worden bewust niet ondersteund voor acties. Gebruik `click-coords` wanneer de zichtbare viewportpositie het enige betrouwbare doel is.
+- Download-, trace- en uploadpaden zijn beperkt tot OpenClaw-temproots: `/tmp/openclaw{,/downloads,/uploads}` (fallback: `${os.tmpdir()}/openclaw/...`).
+- `upload` kan bestandsinputs ook rechtstreeks instellen via `--input-ref` of `--element`.
 
-Stabiele tabblad-id's en labels blijven behouden bij vervanging van raw Chromium-targets wanneer OpenClaw
-het vervangende tabblad kan bewijzen, zoals dezelfde URL of een enkel oud tabblad dat een
-enkel nieuw tabblad wordt na formulierverzending. Raw target-id's blijven vluchtig; geef in scripts de voorkeur aan
+Stabiele tabblad-id's en labels overleven vervanging van raw Chromium-targets wanneer OpenClaw
+de vervangende tab kan bewijzen, zoals dezelfde URL of één oud tabblad dat na formulierverzending
+één nieuw tabblad wordt. Raw target-id's blijven vluchtig; geef in scripts de voorkeur aan
 `suggestedTargetId` uit `tabs`.
 
-Snapshotvlaggen in het kort:
+Snapshotflags in één oogopslag:
 
 - `--format ai` (standaard met Playwright): AI-snapshot met numerieke refs (`aria-ref="<n>"`).
-- `--format aria`: toegankelijkheidsboom met `axN`-refs. Wanneer Playwright beschikbaar is, bindt OpenClaw refs met backend-DOM-id's aan de live pagina zodat vervolgacties ze kunnen gebruiken; behandel de uitvoer anders als alleen voor inspectie.
-- `--efficient` (of `--mode efficient`): compacte rol-snapshotpreset. Stel `browser.snapshotDefaults.mode: "efficient"` in om dit de standaard te maken (zie [Gateway-configuratie](/nl/gateway/configuration-reference#browser)).
+- `--format aria`: toegankelijkheidsboom met `axN`-refs. Wanneer Playwright beschikbaar is, bindt OpenClaw refs met backend-DOM-id's aan de live pagina zodat vervolgacties ze kunnen gebruiken; behandel de uitvoer anders als uitsluitend voor inspectie.
+- `--efficient` (of `--mode efficient`): compacte voorinstelling voor rolsnapshot. Stel `browser.snapshotDefaults.mode: "efficient"` in om dit de standaard te maken (zie [Gateway-configuratie](/nl/gateway/configuration-reference#browser)).
 - `--interactive`, `--compact`, `--depth`, `--selector` forceren een rolsnapshot met `ref=e12`-refs. `--frame "<iframe>"` beperkt rolsnapshots tot een iframe.
-- `--labels` voegt een viewport-only screenshot toe met overlappende ref-labels (print `MEDIA:<path>`).
+- `--labels` voegt een viewport-only screenshot toe met overlay-reflabels (print `MEDIA:<path>`).
 - `--urls` voegt gevonden linkbestemmingen toe aan AI-snapshots.
 
 ## Snapshots en refs
@@ -256,37 +263,38 @@ OpenClaw ondersteunt twee "snapshot"-stijlen:
   - Acties: `openclaw browser click 12`, `openclaw browser type 23 "hello"`.
   - Intern wordt de ref opgelost via Playwrights `aria-ref`.
 
-- **Rolsnapshot (rol-refs zoals `e12`)**: `openclaw browser snapshot --interactive` (of `--compact`, `--depth`, `--selector`, `--frame`)
+- **Rolsnapshot (rolrefs zoals `e12`)**: `openclaw browser snapshot --interactive` (of `--compact`, `--depth`, `--selector`, `--frame`)
   - Uitvoer: een rolgebaseerde lijst/boom met `[ref=e12]` (en optioneel `[nth=1]`).
   - Acties: `openclaw browser click e12`, `openclaw browser highlight e12`.
   - Intern wordt de ref opgelost via `getByRole(...)` (plus `nth()` voor duplicaten).
-  - Voeg `--labels` toe om een viewportscreenshot met overlappende `e12`-labels op te nemen.
-  - Voeg `--urls` toe wanneer linktekst dubbelzinnig is en de agent concrete
+  - Voeg `--labels` toe om een viewportscreenshot met overlay-`e12`-labels op te nemen.
+  - Voeg `--urls` toe wanneer linktekst ambigu is en de agent concrete
     navigatiedoelen nodig heeft.
 
-- **ARIA-snapshot (ARIA-refs zoals `ax12`)**: `openclaw browser snapshot --format aria`
+- **ARIA-snapshot (ARIA-verwijzingen zoals `ax12`)**: `openclaw browser snapshot --format aria`
   - Uitvoer: de toegankelijkheidsboom als gestructureerde knooppunten.
-  - Acties: `openclaw browser click ax12` werkt wanneer het snapshotpad de ref kan binden
-    via Playwright en Chrome-backend-DOM-id's.
-- Als Playwright niet beschikbaar is, kunnen ARIA-snapshots nog steeds nuttig zijn voor
-  inspectie, maar refs zijn mogelijk niet uitvoerbaar. Maak opnieuw een snapshot met `--format ai`
-  of `--interactive` wanneer je actierefs nodig hebt.
-- Docker-bewijs voor het raw-CDP-fallbackpad: `pnpm test:docker:browser-cdp-snapshot`
-  start Chromium met CDP, voert `browser doctor --deep` uit en verifieert dat rolsnapshots
-  link-URL's, naar cursor gepromoveerde klikbare elementen en iframe-metadata bevatten.
+  - Acties: `openclaw browser click ax12` werkt wanneer het snapshotpad
+    de verwijzing via Playwright en DOM-id's van de Chrome-backend kan binden.
+- Als Playwright niet beschikbaar is, kunnen ARIA-snapshots nog steeds nuttig
+  zijn voor inspectie, maar verwijzingen zijn mogelijk niet uitvoerbaar. Maak
+  opnieuw een snapshot met `--format ai` of `--interactive` wanneer je
+  actieverwijzingen nodig hebt.
+- Docker-bewijs voor het raw-CDP-terugvalpad: `pnpm test:docker:browser-cdp-snapshot`
+  start Chromium met CDP, voert `browser doctor --deep` uit en verifieert dat
+  rolsnapshots link-URL's, door de cursor gepromoveerde klikbare elementen en iframe-metadata bevatten.
 
-Ref-gedrag:
+Gedrag van verwijzingen:
 
-- Verwijzingen zijn **niet stabiel tussen navigaties**; als iets mislukt, voer `snapshot` opnieuw uit en gebruik een verse verwijzing.
-- `/act` retourneert de huidige ruwe `targetId` na door een actie getriggerde vervanging
-  wanneer het de vervangende tab kan bewijzen. Blijf stabiele tab-id's/-labels gebruiken voor
-  vervolgcommando's.
-- Als de rolsnapshot is gemaakt met `--frame`, zijn rolverwijzingen beperkt tot dat iframe tot de volgende rolsnapshot.
-- Onbekende of verouderde `axN`-verwijzingen falen snel in plaats van door te vallen naar
-  Playwrights `aria-ref`-selector. Maak een verse snapshot op dezelfde tab wanneer
+- Verwijzingen zijn **niet stabiel tussen navigaties**; als iets mislukt, voer `snapshot` opnieuw uit en gebruik een nieuwe verwijzing.
+- `/act` retourneert de huidige ruwe `targetId` na door een actie veroorzaakte vervanging
+  wanneer het het vervangende tabblad kan bewijzen. Blijf stabiele tabblad-id's/labels gebruiken voor
+  vervolgopdrachten.
+- Als de rolsnapshot met `--frame` is gemaakt, zijn rolverwijzingen beperkt tot dat iframe tot de volgende rolsnapshot.
+- Onbekende of verouderde `axN`-verwijzingen mislukken snel in plaats van door te vallen naar
+  Playwrights `aria-ref`-selector. Voer een nieuwe snapshot uit op hetzelfde tabblad wanneer
   dat gebeurt.
 
-## Wachtuitbreidingen
+## Krachtigere wachtopties
 
 Je kunt op meer wachten dan alleen tijd/tekst:
 
@@ -309,9 +317,9 @@ openclaw browser wait "#main" \
   --timeout-ms 15000
 ```
 
-## Debugworkflows
+## Debug-workflows
 
-Wanneer een actie mislukt (bijv. "not visible", "strict mode violation", "covered"):
+Wanneer een actie mislukt (bijv. "niet zichtbaar", "strict mode violation", "bedekt"):
 
 1. `openclaw browser snapshot --interactive`
 2. Gebruik `click <ref>` / `type <ref>` (geef in interactieve modus de voorkeur aan rolverwijzingen)
@@ -337,16 +345,16 @@ openclaw browser requests --filter api --json
 openclaw browser cookies --json
 ```
 
-Rolsnapshots in JSON bevatten `refs` plus een klein `stats`-blok (regels/tekens/verwijzingen/interactief), zodat tools kunnen redeneren over payloadgrootte en dichtheid.
+Rolsnapshots in JSON bevatten `refs` plus een klein `stats`-blok (lines/chars/refs/interactive), zodat tools kunnen redeneren over payloadgrootte en -dichtheid.
 
 ## Status- en omgevingsknoppen
 
-Deze zijn nuttig voor workflows zoals "laat de site zich gedragen als X":
+Deze zijn handig voor workflows zoals "laat de site zich gedragen als X":
 
 - Cookies: `cookies`, `cookies set`, `cookies clear`
 - Opslag: `storage local|session get|set|clear`
 - Offline: `set offline on|off`
-- Headers: `set headers --headers-json '{"X-Debug":"1"}'` (legacy `set headers --json '{"X-Debug":"1"}'` blijft ondersteund)
+- Headers: `set headers --headers-json '{"X-Debug":"1"}'` (verouderde `set headers --json '{"X-Debug":"1"}'` blijft ondersteund)
 - HTTP-basisverificatie: `set credentials user pass` (of `--clear`)
 - Geolocatie: `set geo <lat> <lon> --origin "https://example.com"` (of `--clear`)
 - Media: `set media dark|light|no-preference|none`
@@ -360,12 +368,12 @@ Deze zijn nuttig voor workflows zoals "laat de site zich gedragen als X":
 - Het openclaw-browserprofiel kan ingelogde sessies bevatten; behandel het als gevoelig.
 - `browser act kind=evaluate` / `openclaw browser evaluate` en `wait --fn`
   voeren willekeurige JavaScript uit in de paginacontext. Promptinjectie kan
-  dit sturen. Schakel het uit met `browser.evaluateEnabled=false` als je het niet nodig hebt.
-- Zie voor logins en anti-botnotities (X/Twitter, enz.) [Browserlogin + posten op X/Twitter](/nl/tools/browser-login).
-- Houd de Gateway-/Node-host privé (local loopback of alleen tailnet).
+  dit sturen. Schakel dit uit met `browser.evaluateEnabled=false` als je het niet nodig hebt.
+- Zie [Browserlogin + X/Twitter plaatsen](/nl/tools/browser-login) voor aanmeldingen en anti-bot-opmerkingen (X/Twitter, enzovoort).
+- Houd de Gateway/Node-host privé (loopback of alleen tailnet).
 - Externe CDP-eindpunten zijn krachtig; tunnel en bescherm ze.
 
-Strict-mode-voorbeeld (blokkeer standaard privé/interne bestemmingen):
+Voorbeeld van strikte modus (blokkeer standaard privé/interne bestemmingen):
 
 ```json5
 {
@@ -382,6 +390,6 @@ Strict-mode-voorbeeld (blokkeer standaard privé/interne bestemmingen):
 ## Gerelateerd
 
 - [Browser](/nl/tools/browser) - overzicht, configuratie, profielen, beveiliging
-- [Browserlogin](/nl/tools/browser-login) - inloggen op sites
+- [Browserlogin](/nl/tools/browser-login) - aanmelden bij sites
 - [Browser Linux-probleemoplossing](/nl/tools/browser-linux-troubleshooting)
 - [Browser WSL2-probleemoplossing](/nl/tools/browser-wsl2-windows-remote-cdp-troubleshooting)

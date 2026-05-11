@@ -1,23 +1,23 @@
 ---
 read_when:
-    - Anda ingin memasukkan event sistem ke antrean tanpa membuat job Cron
+    - Anda ingin mengantrekan peristiwa sistem tanpa membuat tugas Cron
     - Anda perlu mengaktifkan atau menonaktifkan Heartbeat
-    - Anda ingin memeriksa entri presence sistem
-summary: Referensi CLI untuk `openclaw system` (event sistem, Heartbeat, presence)
+    - Anda ingin memeriksa entri kehadiran sistem
+summary: Referensi CLI untuk `openclaw system` (peristiwa sistem, Heartbeat, kehadiran)
 title: Sistem
 x-i18n:
-    generated_at: "2026-04-24T09:03:05Z"
-    model: gpt-5.4
+    generated_at: "2026-05-11T20:26:45Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 0f4be30b0b2d18ee5653071d6375cebeb9fc94733e30bdb7b89a19c286df880b
+    source_hash: 2810fb064ea4afeac24ca0d71419913a664bbec0721cabdb09196075914f4864
     source_path: cli/system.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw system`
 
-Helper tingkat sistem untuk Gateway: masukkan event sistem ke antrean, kendalikan Heartbeat,
-dan lihat presence.
+Pembantu tingkat sistem untuk Gateway: mengantrekan peristiwa sistem, mengontrol Heartbeat,
+dan melihat kehadiran.
 
 Semua subperintah `system` menggunakan RPC Gateway dan menerima flag klien bersama:
 
@@ -38,14 +38,28 @@ openclaw system presence
 
 ## `system event`
 
-Masukkan event sistem ke antrean pada sesi **main**. Heartbeat berikutnya akan menyuntikkannya
-sebagai baris `System:` di prompt. Gunakan `--mode now` untuk memicu Heartbeat
-segera; `next-heartbeat` menunggu tick terjadwal berikutnya.
+Secara default, mengantrekan peristiwa sistem pada sesi **utama**. Heartbeat berikutnya
+akan menyisipkannya sebagai baris `System:` dalam prompt. Gunakan `--mode now` untuk memicu
+Heartbeat segera; `next-heartbeat` menunggu tick terjadwal berikutnya.
+
+Berikan `--session-key` untuk menargetkan sesi tertentu (misalnya untuk meneruskan
+penyelesaian tugas asinkron kembali ke channel yang memulainya).
+
+> **Pengecualian waktu dengan `--session-key`:** saat `--session-key` diberikan,
+> `--mode next-heartbeat` berubah menjadi wake tertarget langsung, bukan
+> menunggu tick terjadwal berikutnya. Wake tertarget menggunakan intent Heartbeat
+> `immediate` sehingga melewati gate not-due runner yang jika tidak
+> akan menunda (dan secara efektif membuang) wake berintent `event`. Jika Anda menginginkan
+> pengiriman tertunda, hilangkan `--session-key` agar peristiwa masuk ke sesi utama dan
+> ikut dalam Heartbeat reguler berikutnya.
 
 Flag:
 
-- `--text <text>`: teks event sistem yang wajib.
+- `--text <text>`: teks peristiwa sistem wajib.
 - `--mode <mode>`: `now` atau `next-heartbeat` (default).
+- `--session-key <sessionKey>`: opsional; targetkan sesi agen tertentu
+  alih-alih sesi utama agen. Kunci yang bukan milik agen yang
+  di-resolve akan kembali ke sesi utama agen.
 - `--json`: output yang dapat dibaca mesin.
 - `--url`, `--token`, `--timeout`, `--expect-final`: flag RPC Gateway bersama.
 
@@ -53,7 +67,7 @@ Flag:
 
 Kontrol Heartbeat:
 
-- `last`: tampilkan event Heartbeat terakhir.
+- `last`: tampilkan peristiwa Heartbeat terakhir.
 - `enable`: aktifkan kembali Heartbeat (gunakan ini jika sebelumnya dinonaktifkan).
 - `disable`: jeda Heartbeat.
 
@@ -64,8 +78,8 @@ Flag:
 
 ## `system presence`
 
-Daftarkan entri presence sistem saat ini yang diketahui Gateway (Node,
-instance, dan baris status serupa).
+Cantumkan entri kehadiran sistem saat ini yang diketahui Gateway (node,
+instans, dan baris status serupa).
 
 Flag:
 
@@ -74,8 +88,8 @@ Flag:
 
 ## Catatan
 
-- Memerlukan Gateway yang sedang berjalan dan dapat dijangkau oleh config saat ini (lokal atau remote).
-- Event sistem bersifat ephemeral dan tidak dipersistenkan saat restart.
+- Memerlukan Gateway yang berjalan dan dapat dijangkau oleh konfigurasi Anda saat ini (lokal atau remote).
+- Peristiwa sistem bersifat sementara dan tidak dipertahankan setelah restart.
 
 ## Terkait
 

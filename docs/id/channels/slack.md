@@ -1,51 +1,51 @@
 ---
 read_when:
     - Menyiapkan Slack atau memecahkan masalah mode soket/HTTP Slack
-summary: Penyiapan Slack dan perilaku runtime (Mode Socket + URL Permintaan HTTP)
+summary: Penyiapan Slack dan perilaku saat berjalan (Mode Soket + URL Permintaan HTTP)
 title: Slack
 x-i18n:
-    generated_at: "2026-05-10T19:23:55Z"
+    generated_at: "2026-05-11T20:21:35Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fbebdd96c28aed547179d89ac5ea86e4c6b3b420aaceff5e7aa491317697db1e
+    source_hash: 34e740fd5cb0ca936edce1843316cde17570d77778bdf4fc761cad77c51ee9cf
     source_path: channels/slack.md
     workflow: 16
 ---
 
-Siap produksi untuk DM dan saluran melalui integrasi aplikasi Slack. Mode default adalah Socket Mode; HTTP Request URL juga didukung.
+Siap produksi untuk DM dan kanal melalui integrasi aplikasi Slack. Mode default adalah Socket Mode; HTTP Request URLs juga didukung.
 
 <CardGroup cols={3}>
   <Card title="Pemasangan" icon="link" href="/id/channels/pairing">
     DM Slack secara default menggunakan mode pemasangan.
   </Card>
   <Card title="Perintah slash" icon="terminal" href="/id/tools/slash-commands">
-    Perilaku perintah bawaan dan katalog perintah.
+    Perilaku perintah native dan katalog perintah.
   </Card>
-  <Card title="Pemecahan masalah saluran" icon="wrench" href="/id/channels/troubleshooting">
-    Diagnostik lintas saluran dan playbook perbaikan.
+  <Card title="Pemecahan masalah kanal" icon="wrench" href="/id/channels/troubleshooting">
+    Diagnostik lintas kanal dan playbook perbaikan.
   </Card>
 </CardGroup>
 
-## Memilih Socket Mode atau HTTP Request URL
+## Memilih Socket Mode atau HTTP Request URLs
 
-Kedua transport siap produksi dan mencapai kesetaraan fitur untuk pengiriman pesan, perintah slash, App Home, dan interaktivitas. Pilih berdasarkan bentuk deployment, bukan fitur.
+Kedua transport siap produksi dan mencapai paritas fitur untuk perpesanan, perintah slash, App Home, dan interaktivitas. Pilih berdasarkan bentuk deployment, bukan fitur.
 
-| Pertimbangan                 | Socket Mode (default)                                                               | HTTP Request URL                                                                                               |
-| ---------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
-| URL Gateway publik           | Tidak diperlukan                                                                     | Diperlukan (DNS, TLS, reverse proxy atau tunnel)                                                               |
-| Jaringan keluar              | WSS keluar ke `wss-primary.slack.com` harus dapat dijangkau                          | Tidak ada WS keluar; hanya HTTPS masuk                                                                         |
-| Token yang dibutuhkan        | Token bot (`xoxb-...`) + App-Level Token (`xapp-...`) dengan `connections:write`     | Token bot (`xoxb-...`) + Signing Secret                                                                        |
-| Laptop dev / di balik firewall | Berfungsi apa adanya                                                               | Membutuhkan tunnel publik (ngrok, Cloudflare Tunnel, Tailscale Funnel) atau Gateway staging                    |
-| Penskalaan horizontal        | Satu sesi Socket Mode per aplikasi per host; beberapa Gateway memerlukan aplikasi Slack terpisah | Handler POST stateless; beberapa replika Gateway dapat berbagi satu aplikasi di balik load balancer            |
-| Multi-akun pada satu Gateway | Didukung; setiap akun membuka WS-nya sendiri                                         | Didukung; setiap akun memerlukan `webhookPath` unik (default `/slack/events`) agar registrasi tidak bertabrakan |
-| Transport perintah slash     | Dikirim melalui koneksi WS; `slash_commands[].url` diabaikan                         | Slack melakukan POST ke `slash_commands[].url`; kolom ini wajib agar perintah dikirim                          |
-| Penandatanganan permintaan   | Tidak digunakan (autentikasi adalah App-Level Token)                                 | Slack menandatangani setiap permintaan; OpenClaw memverifikasi dengan `signingSecret`                          |
-| Pemulihan saat koneksi terputus | Slack SDK menyambung ulang otomatis; tuning transport pong-timeout gateway berlaku | Tidak ada koneksi persisten yang dapat terputus; retry dilakukan per permintaan dari Slack                     |
+| Pertimbangan                 | Socket Mode (default)                                                               | HTTP Request URLs                                                                                                 |
+| ---------------------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| URL Gateway publik           | Tidak diperlukan                                                                     | Diperlukan (DNS, TLS, reverse proxy atau tunnel)                                                                  |
+| Jaringan keluar              | WSS keluar ke `wss-primary.slack.com` harus dapat dijangkau                          | Tidak ada WS keluar; hanya HTTPS masuk                                                                            |
+| Token yang diperlukan        | Token bot (`xoxb-...`) + App-Level Token (`xapp-...`) dengan `connections:write`     | Token bot (`xoxb-...`) + Signing Secret                                                                           |
+| Laptop dev / di balik firewall | Berfungsi apa adanya                                                               | Memerlukan tunnel publik (ngrok, Cloudflare Tunnel, Tailscale Funnel) atau Gateway staging                        |
+| Penskalaan horizontal        | Satu sesi Socket Mode per aplikasi per host; beberapa Gateway memerlukan aplikasi Slack terpisah | Handler POST stateless; beberapa replika Gateway dapat berbagi satu aplikasi di balik load balancer       |
+| Multi-akun pada satu Gateway | Didukung; setiap akun membuka WS-nya sendiri                                         | Didukung; setiap akun memerlukan `webhookPath` unik (default `/slack/events`) agar registrasi tidak bertabrakan   |
+| Transport perintah slash     | Dikirim melalui koneksi WS; `slash_commands[].url` diabaikan                         | Slack mengirim POST ke `slash_commands[].url`; field ini diperlukan agar perintah dikirim                         |
+| Penandatanganan request      | Tidak digunakan (auth adalah App-Level Token)                                        | Slack menandatangani setiap request; OpenClaw memverifikasi dengan `signingSecret`                                |
+| Pemulihan saat koneksi terputus | Slack SDK otomatis menyambung ulang; tuning transport pong-timeout gateway berlaku | Tidak ada koneksi persisten yang dapat terputus; retry dilakukan per request dari Slack                           |
 
 <Note>
   **Pilih Socket Mode** untuk host Gateway tunggal, laptop dev, dan jaringan on-prem yang dapat menjangkau `*.slack.com` keluar tetapi tidak dapat menerima HTTPS masuk.
 
-**Pilih HTTP Request URL** saat menjalankan beberapa replika Gateway di balik load balancer, saat WSS keluar diblokir tetapi HTTPS masuk diizinkan, atau saat Anda sudah menghentikan webhook Slack di reverse proxy.
+**Pilih HTTP Request URLs** saat menjalankan beberapa replika Gateway di balik load balancer, ketika WSS keluar diblokir tetapi HTTPS masuk diizinkan, atau ketika Anda sudah menghentikan webhook Slack di reverse proxy.
 </Note>
 
 ## Penyiapan cepat
@@ -188,17 +188,17 @@ Kedua transport siap produksi dan mencapai kesetaraan fitur untuk pengiriman pes
         </CodeGroup>
 
         <Note>
-          **Recommended** cocok dengan set fitur lengkap Plugin Slack bawaan: App Home, perintah slash, file, reaksi, pin, DM grup, serta pembacaan emoji/usergroup. Pilih **Minimal** saat kebijakan workspace membatasi scope — ini mencakup DM, riwayat saluran/grup, mention, dan perintah slash tetapi menghilangkan file, reaksi, pin, DM grup (`mpim:*`), `emoji:read`, dan `usergroups:read`. Lihat [Checklist manifest dan scope](#manifest-and-scope-checklist) untuk alasan per scope dan opsi aditif seperti perintah slash tambahan.
+          **Recommended** cocok dengan rangkaian fitur lengkap Plugin Slack bawaan: App Home, perintah slash, file, reaction, pin, DM grup, dan pembacaan emoji/usergroup. Pilih **Minimal** ketika kebijakan workspace membatasi scope — ini mencakup DM, riwayat kanal/grup, mention, dan perintah slash tetapi menghapus file, reaction, pin, DM grup (`mpim:*`), `emoji:read`, dan `usergroups:read`. Lihat [Checklist manifest dan scope](#manifest-and-scope-checklist) untuk alasan per scope dan opsi aditif seperti perintah slash tambahan.
         </Note>
 
         Setelah Slack membuat aplikasi:
 
         - **Basic Information → App-Level Tokens → Generate Token and Scopes**: tambahkan `connections:write`, simpan, salin nilai `xapp-...`.
-        - **Install App → Install to Workspace**: salin Bot User OAuth Token `xoxb-...`.
+        - **Install App → Install to Workspace**: salin `xoxb-...` Bot User OAuth Token.
 
       </Step>
 
-      <Step title="Konfigurasikan OpenClaw">
+      <Step title="Konfigurasi OpenClaw">
 
         Penyiapan SecretRef yang direkomendasikan:
 
@@ -241,7 +241,7 @@ openclaw gateway
 
   </Tab>
 
-  <Tab title="HTTP Request URL">
+  <Tab title="HTTP Request URLs">
     <Steps>
       <Step title="Buat aplikasi Slack baru">
         Buka [api.slack.com/apps](https://api.slack.com/apps/new) → **Create New App** → **From a manifest** → pilih workspace Anda → tempel salah satu manifest di bawah → ganti `https://gateway-host.example.com/slack/events` dengan URL Gateway publik Anda → **Next** → **Create**.
@@ -390,11 +390,11 @@ openclaw gateway
         </CodeGroup>
 
         <Note>
-          **Direkomendasikan** cocok dengan rangkaian fitur lengkap Plugin Slack bawaan; **Minimal** menghapus file, reaksi, pin, DM grup (`mpim:*`), `emoji:read`, dan `usergroups:read` untuk workspace yang restriktif. Lihat [Daftar periksa manifes dan cakupan](#manifest-and-scope-checklist) untuk alasan per cakupan.
+          **Direkomendasikan** cocok dengan rangkaian fitur lengkap Plugin Slack bawaan; **Minimal** menghilangkan file, reaksi, pin, DM grup (`mpim:*`), `emoji:read`, dan `usergroups:read` untuk workspace yang ketat. Lihat [Daftar periksa manifes dan cakupan](#manifest-and-scope-checklist) untuk alasan per cakupan.
         </Note>
 
         <Info>
-          Tiga kolom URL (`slash_commands[].url`, `event_subscriptions.request_url`, dan `interactivity.request_url` / `message_menu_options_url`) semuanya mengarah ke endpoint OpenClaw yang sama. Skema manifes Slack mengharuskan semuanya diberi nama secara terpisah, tetapi OpenClaw merutekan berdasarkan jenis payload sehingga satu `webhookPath` (default `/slack/events`) sudah cukup. Perintah slash tanpa `slash_commands[].url` akan diam-diam tidak melakukan apa pun dalam mode HTTP.
+          Ketiga bidang URL (`slash_commands[].url`, `event_subscriptions.request_url`, dan `interactivity.request_url` / `message_menu_options_url`) semuanya mengarah ke endpoint OpenClaw yang sama. Skema manifes Slack mengharuskannya diberi nama secara terpisah, tetapi OpenClaw merutekan berdasarkan jenis payload sehingga satu `webhookPath` (default `/slack/events`) sudah cukup. Perintah slash tanpa `slash_commands[].url` akan diam-diam tidak melakukan apa pun dalam mode HTTP.
         </Info>
 
         Setelah Slack membuat aplikasi:
@@ -404,7 +404,7 @@ openclaw gateway
 
       </Step>
 
-      <Step title="Konfigurasikan OpenClaw">
+      <Step title="Configure OpenClaw">
 
         Penyiapan SecretRef yang direkomendasikan:
 
@@ -436,7 +436,7 @@ openclaw config patch --file ./slack.http.patch.json5
 
       </Step>
 
-      <Step title="Mulai Gateway">
+      <Step title="Start gateway">
 
 ```bash
 openclaw gateway
@@ -448,9 +448,9 @@ openclaw gateway
   </Tab>
 </Tabs>
 
-## Penyetelan transport Socket Mode
+## Penyetelan transport Mode Socket
 
-OpenClaw menetapkan waktu habis pong klien Slack SDK ke 15 detik secara default untuk Socket Mode. Timpa pengaturan transport hanya saat Anda memerlukan penyetelan khusus workspace atau host:
+OpenClaw mengatur batas waktu pong klien SDK Slack menjadi 15 detik secara default untuk Mode Socket. Timpa pengaturan transport hanya saat Anda membutuhkan penyetelan khusus workspace atau host:
 
 ```json5
 {
@@ -467,13 +467,13 @@ OpenClaw menetapkan waktu habis pong klien Slack SDK ke 15 detik secara default 
 }
 ```
 
-Gunakan ini hanya untuk workspace Socket Mode yang mencatat waktu habis pong websocket/ping-server Slack atau berjalan pada host dengan kelaparan event-loop yang diketahui. `clientPingTimeout` adalah waktu tunggu pong setelah SDK mengirim ping klien; `serverPingTimeout` adalah waktu tunggu untuk ping server Slack. Pesan dan peristiwa aplikasi tetap merupakan status aplikasi, bukan sinyal keaktifan transport.
+Gunakan ini hanya untuk workspace Mode Socket yang mencatat batas waktu pong websocket Slack/server-ping atau berjalan pada host dengan kelaparan event-loop yang diketahui. `clientPingTimeout` adalah waktu tunggu pong setelah SDK mengirim ping klien; `serverPingTimeout` adalah waktu tunggu untuk ping server Slack. Pesan dan peristiwa aplikasi tetap merupakan status aplikasi, bukan sinyal keaktifan transport.
 
 ## Daftar periksa manifes dan cakupan
 
-Manifes aplikasi Slack dasar sama untuk Socket Mode dan URL Permintaan HTTP. Hanya blok `settings` (dan `url` perintah slash) yang berbeda.
+Manifes aplikasi Slack dasar sama untuk Mode Socket dan URL Permintaan HTTP. Hanya blok `settings` (dan `url` perintah slash) yang berbeda.
 
-Manifes dasar (default Socket Mode):
+Manifes dasar (default Mode Socket):
 
 ```json
 {
@@ -548,7 +548,7 @@ Manifes dasar (default Socket Mode):
 }
 ```
 
-Untuk **mode URL Permintaan HTTP**, ganti `settings` dengan varian HTTP dan tambahkan `url` ke setiap perintah slash. URL publik diperlukan:
+Untuk **mode URL Permintaan HTTP**, ganti `settings` dengan varian HTTP dan tambahkan `url` ke setiap perintah slash. URL publik wajib:
 
 ```json
 {
@@ -592,19 +592,19 @@ Untuk **mode URL Permintaan HTTP**, ganti `settings` dengan varian HTTP dan tamb
 
 ### Pengaturan manifes tambahan
 
-Tampilkan berbagai fitur yang memperluas default di atas.
+Munculkan fitur berbeda yang memperluas default di atas.
 
-Manifes default mengaktifkan tab **Home** Slack App Home dan berlangganan ke `app_home_opened`. Saat anggota workspace membuka tab Home, OpenClaw memublikasikan tampilan Home default yang aman dengan `views.publish`; tidak ada payload percakapan atau konfigurasi pribadi yang disertakan. Tab **Messages** tetap diaktifkan untuk DM Slack.
+Manifes default mengaktifkan tab **Home** Slack App Home dan berlangganan `app_home_opened`. Saat anggota workspace membuka tab Home, OpenClaw menerbitkan tampilan Home default yang aman dengan `views.publish`; tidak ada payload percakapan atau konfigurasi privat yang disertakan. Tab **Messages** tetap diaktifkan untuk DM Slack.
 
 <AccordionGroup>
-  <Accordion title="Perintah slash native opsional">
+  <Accordion title="Optional native slash commands">
 
-    Beberapa [perintah slash native](#commands-and-slash-behavior) dapat digunakan sebagai pengganti satu perintah yang dikonfigurasi dengan nuansa:
+    Beberapa [perintah slash native](#commands-and-slash-behavior) dapat digunakan alih-alih satu perintah yang dikonfigurasi dengan nuansa:
 
     - Gunakan `/agentstatus` alih-alih `/status` karena perintah `/status` dicadangkan.
     - Tidak lebih dari 25 perintah slash dapat disediakan sekaligus.
 
-    Ganti bagian `features.slash_commands` yang ada dengan subset dari [perintah yang tersedia](/id/tools/slash-commands#command-list):
+    Ganti bagian `features.slash_commands` yang ada dengan subset [perintah yang tersedia](/id/tools/slash-commands#command-list):
 
     <Tabs>
       <Tab title="Socket Mode (default)">
@@ -730,8 +730,8 @@ Manifes default mengaktifkan tab **Home** Slack App Home dan berlangganan ke `ap
 ```
 
       </Tab>
-      <Tab title="URL Permintaan HTTP">
-        Gunakan daftar `slash_commands` yang sama seperti Socket Mode di atas, dan tambahkan `"url": "https://gateway-host.example.com/slack/events"` ke setiap entri. Contoh:
+      <Tab title="HTTP Request URLs">
+        Gunakan daftar `slash_commands` yang sama seperti Mode Socket di atas, dan tambahkan `"url": "https://gateway-host.example.com/slack/events"` ke setiap entri. Contoh:
 
 ```json
 {
@@ -758,7 +758,7 @@ Manifes default mengaktifkan tab **Home** Slack App Home dan berlangganan ke `ap
 
   </Accordion>
   <Accordion title="Cakupan kepengarangan opsional (operasi tulis)">
-    Tambahkan cakupan bot `chat:write.customize` jika Anda ingin pesan keluar menggunakan identitas agen aktif (nama pengguna dan ikon kustom), bukan identitas aplikasi Slack default.
+    Tambahkan cakupan bot `chat:write.customize` jika Anda ingin pesan keluar menggunakan identitas agen aktif (nama pengguna dan ikon kustom) alih-alih identitas aplikasi Slack default.
 
     Jika Anda menggunakan ikon emoji, Slack mengharapkan sintaks `:emoji_name:`.
 
@@ -779,46 +779,46 @@ Manifes default mengaktifkan tab **Home** Slack App Home dan berlangganan ke `ap
 
 ## Model token
 
-- `botToken` + `appToken` wajib untuk Socket Mode.
+- `botToken` + `appToken` diperlukan untuk Socket Mode.
 - Mode HTTP memerlukan `botToken` + `signingSecret`.
-- `botToken`, `appToken`, `signingSecret`, dan `userToken` menerima string teks biasa
-  atau objek SecretRef.
-- Token konfigurasi menggantikan fallback env.
+- `botToken`, `appToken`, `signingSecret`, dan `userToken` menerima string
+  plaintext atau objek SecretRef.
+- Token konfigurasi mengesampingkan fallback env.
 - Fallback env `SLACK_BOT_TOKEN` / `SLACK_APP_TOKEN` hanya berlaku untuk akun default.
-- `userToken` (`xoxp-...`) hanya berbasis konfigurasi (tanpa fallback env) dan defaultnya adalah perilaku hanya-baca (`userTokenReadOnly: true`).
+- `userToken` (`xoxp-...`) hanya konfigurasi (tanpa fallback env) dan default-nya adalah perilaku baca saja (`userTokenReadOnly: true`).
 
 Perilaku snapshot status:
 
-- Inspeksi akun Slack melacak bidang `*Source` dan `*Status`
+- Inspeksi akun Slack melacak kolom `*Source` dan `*Status`
   per kredensial (`botToken`, `appToken`, `signingSecret`, `userToken`).
 - Status adalah `available`, `configured_unavailable`, atau `missing`.
 - `configured_unavailable` berarti akun dikonfigurasi melalui SecretRef
-  atau sumber rahasia non-inline lainnya, tetapi jalur perintah/runtime saat ini
-  tidak dapat menyelesaikan nilai aktualnya.
+  atau sumber rahasia non-inline lain, tetapi jalur perintah/runtime saat ini
+  tidak dapat menyelesaikan nilai sebenarnya.
 - Dalam mode HTTP, `signingSecretStatus` disertakan; dalam Socket Mode,
-  pasangan wajibnya adalah `botTokenStatus` + `appTokenStatus`.
+  pasangan yang diperlukan adalah `botTokenStatus` + `appTokenStatus`.
 
 <Tip>
-Untuk pembacaan tindakan/direktori, token pengguna dapat diprioritaskan saat dikonfigurasi. Untuk penulisan, token bot tetap diprioritaskan; penulisan dengan token pengguna hanya diizinkan ketika `userTokenReadOnly: false` dan token bot tidak tersedia.
+Untuk aksi/pembacaan direktori, token pengguna dapat diprioritaskan saat dikonfigurasi. Untuk penulisan, token bot tetap diprioritaskan; penulisan token pengguna hanya diizinkan ketika `userTokenReadOnly: false` dan token bot tidak tersedia.
 </Tip>
 
-## Tindakan dan gate
+## Aksi dan gerbang
 
-Tindakan Slack dikendalikan oleh `channels.slack.actions.*`.
+Aksi Slack dikontrol oleh `channels.slack.actions.*`.
 
-Grup tindakan yang tersedia di tooling Slack saat ini:
+Grup aksi yang tersedia di tooling Slack saat ini:
 
 | Grup       | Default |
 | ---------- | ------- |
-| messages   | aktif |
-| reactions  | aktif |
-| pins       | aktif |
-| memberInfo | aktif |
-| emojiList  | aktif |
+| messages   | aktif   |
+| reactions  | aktif   |
+| pins       | aktif   |
+| memberInfo | aktif   |
+| emojiList  | aktif   |
 
-Tindakan pesan Slack saat ini mencakup `send`, `upload-file`, `download-file`, `read`, `edit`, `delete`, `pin`, `unpin`, `list-pins`, `member-info`, dan `emoji-list`. `download-file` menerima ID file Slack yang ditampilkan dalam placeholder file masuk dan mengembalikan pratinjau gambar untuk gambar atau metadata file lokal untuk jenis file lain.
+Aksi pesan Slack saat ini mencakup `send`, `upload-file`, `download-file`, `read`, `edit`, `delete`, `pin`, `unpin`, `list-pins`, `member-info`, dan `emoji-list`. `download-file` menerima ID file Slack yang ditampilkan di placeholder file masuk dan mengembalikan pratinjau gambar untuk gambar atau metadata file lokal untuk jenis file lain.
 
-## Kontrol akses dan perutean
+## Kontrol akses dan routing
 
 <Tabs>
   <Tab title="Kebijakan DM">
@@ -840,10 +840,10 @@ Tindakan pesan Slack saat ini mencakup `send`, `upload-file`, `download-file`, `
     Presedensi multi-akun:
 
     - `channels.slack.accounts.default.allowFrom` hanya berlaku untuk akun `default`.
-    - Akun bernama mewarisi `channels.slack.allowFrom` ketika `allowFrom` miliknya belum disetel.
+    - Akun bernama mewarisi `channels.slack.allowFrom` ketika `allowFrom` miliknya sendiri tidak disetel.
     - Akun bernama tidak mewarisi `channels.slack.accounts.default.allowFrom`.
 
-    Legacy `channels.slack.dm.policy` dan `channels.slack.dm.allowFrom` masih dibaca untuk kompatibilitas. `openclaw doctor --fix` memigrasikannya ke `dmPolicy` dan `allowFrom` ketika dapat dilakukan tanpa mengubah akses.
+    Legacy `channels.slack.dm.policy` dan `channels.slack.dm.allowFrom` masih dibaca untuk kompatibilitas. `openclaw doctor --fix` memigrasikannya ke `dmPolicy` dan `allowFrom` ketika dapat melakukannya tanpa mengubah akses.
 
     Pairing di DM menggunakan `openclaw pairing approve slack <code>`.
 
@@ -858,16 +858,16 @@ Tindakan pesan Slack saat ini mencakup `send`, `upload-file`, `download-file`, `
 
     Allowlist channel berada di bawah `channels.slack.channels` dan **harus menggunakan ID channel Slack yang stabil** (misalnya `C12345678`) sebagai kunci konfigurasi.
 
-    Catatan runtime: jika `channels.slack` benar-benar tidak ada (penyiapan hanya env), runtime kembali ke `groupPolicy="allowlist"` dan mencatat peringatan (meskipun `channels.defaults.groupPolicy` disetel).
+    Catatan runtime: jika `channels.slack` benar-benar tidak ada (setup hanya env), runtime melakukan fallback ke `groupPolicy="allowlist"` dan mencatat peringatan (bahkan jika `channels.defaults.groupPolicy` disetel).
 
     Resolusi nama/ID:
 
-    - entri allowlist channel dan entri allowlist DM diselesaikan saat startup ketika akses token mengizinkan
-    - entri nama channel yang tidak terselesaikan dipertahankan seperti yang dikonfigurasi tetapi diabaikan untuk perutean secara default
-    - otorisasi masuk dan perutean channel mengutamakan ID secara default; pencocokan nama pengguna/slug langsung memerlukan `channels.slack.dangerouslyAllowNameMatching: true`
+    - entri allowlist channel dan entri allowlist DM diselesaikan saat startup ketika akses token memungkinkan
+    - entri nama channel yang tidak terselesaikan dipertahankan sesuai konfigurasi tetapi diabaikan untuk routing secara default
+    - otorisasi masuk dan routing channel secara default mengutamakan ID; pencocokan nama pengguna/slug langsung memerlukan `channels.slack.dangerouslyAllowNameMatching: true`
 
     <Warning>
-    Kunci berbasis nama (`#channel-name` atau `channel-name`) **tidak** cocok di bawah `groupPolicy: "allowlist"`. Pencarian channel mengutamakan ID secara default, sehingga kunci berbasis nama tidak akan pernah berhasil dirutekan dan semua pesan di channel tersebut akan diblokir secara diam-diam. Ini berbeda dari `groupPolicy: "open"`, ketika kunci channel tidak diperlukan untuk perutean dan kunci berbasis nama tampak berfungsi.
+    Kunci berbasis nama (`#channel-name` atau `channel-name`) **tidak** cocok di bawah `groupPolicy: "allowlist"`. Pencarian channel secara default mengutamakan ID, sehingga kunci berbasis nama tidak akan pernah berhasil dirutekan dan semua pesan di channel tersebut akan diblokir diam-diam. Ini berbeda dari `groupPolicy: "open"`, tempat kunci channel tidak diperlukan untuk routing dan kunci berbasis nama tampak berfungsi.
 
     Selalu gunakan ID channel Slack sebagai kunci. Untuk menemukannya: klik kanan channel di Slack → **Copy link** — ID (`C...`) muncul di akhir URL.
 
@@ -905,14 +905,14 @@ Tindakan pesan Slack saat ini mencakup `send`, `upload-file`, `download-file`, `
   </Tab>
 
   <Tab title="Mention dan pengguna channel">
-    Pesan channel secara default dibatasi oleh mention.
+    Pesan channel secara default digerbangi mention.
 
     Sumber mention:
 
     - mention aplikasi eksplisit (`<@botId>`)
     - mention grup pengguna Slack (`<!subteam^S...>`) ketika pengguna bot adalah anggota grup pengguna tersebut; memerlukan `usergroups:read`
     - pola regex mention (`agents.list[].groupChat.mentionPatterns`, fallback `messages.groupChat.mentionPatterns`)
-    - perilaku thread balasan-ke-bot implisit (dinonaktifkan ketika `thread.requireExplicitMention` bernilai `true`)
+    - perilaku thread balas-ke-bot implisit (dinonaktifkan ketika `thread.requireExplicitMention` adalah `true`)
 
     Kontrol per channel (`channels.slack.channels.<id>`; nama hanya melalui resolusi startup atau `dangerouslyAllowNameMatching`):
 
@@ -922,10 +922,10 @@ Tindakan pesan Slack saat ini mencakup `send`, `upload-file`, `download-file`, `
     - `skills`
     - `systemPrompt`
     - `tools`, `toolsBySender`
-    - format kunci `toolsBySender`: `id:`, `e164:`, `username:`, `name:`, atau wildcard `"*"`
-      (kunci legacy tanpa prefiks masih dipetakan hanya ke `id:`)
+    - format kunci `toolsBySender`: `channel:`, `id:`, `e164:`, `username:`, `name:`, atau wildcard `"*"`
+      (kunci legacy tanpa prefiks tetap hanya dipetakan ke `id:`)
 
-    `allowBots` bersifat konservatif untuk channel dan channel privat: pesan ruang yang ditulis bot hanya diterima ketika bot pengirim tercantum secara eksplisit dalam allowlist `users` ruang tersebut, atau ketika setidaknya satu ID pemilik Slack eksplisit dari `channels.slack.allowFrom` saat ini adalah anggota ruang. Wildcard dan entri pemilik nama tampilan tidak memenuhi keberadaan pemilik. Keberadaan pemilik menggunakan Slack `conversations.members`; pastikan aplikasi memiliki cakupan baca yang sesuai untuk jenis ruang (`channels:read` untuk channel publik, `groups:read` untuk channel privat). Jika pencarian anggota gagal, OpenClaw menghapus pesan ruang yang ditulis bot.
+    `allowBots` bersifat konservatif untuk channel dan channel privat: pesan ruang yang dibuat bot hanya diterima ketika bot pengirim tercantum secara eksplisit dalam allowlist `users` ruang tersebut, atau ketika setidaknya satu ID pemilik Slack eksplisit dari `channels.slack.allowFrom` saat ini merupakan anggota ruang. Wildcard dan entri pemilik berbasis nama tampilan tidak memenuhi kehadiran pemilik. Kehadiran pemilik menggunakan Slack `conversations.members`; pastikan aplikasi memiliki cakupan baca yang sesuai untuk jenis ruang (`channels:read` untuk channel publik, `groups:read` untuk channel privat). Jika pencarian anggota gagal, OpenClaw membuang pesan ruang yang dibuat bot.
 
   </Tab>
 </Tabs>
@@ -933,14 +933,14 @@ Tindakan pesan Slack saat ini mencakup `send`, `upload-file`, `download-file`, `
 ## Thread, sesi, dan tag balasan
 
 - DM dirutekan sebagai `direct`; channel sebagai `channel`; MPIM sebagai `group`.
-- Binding rute Slack menerima ID peer mentah ditambah bentuk target Slack seperti `channel:C12345678`, `user:U12345678`, dan `<@U12345678>`.
-- Dengan default `session.dmScope=main`, DM Slack digabungkan ke sesi utama agen.
+- Binding rute Slack menerima ID peer mentah plus bentuk target Slack seperti `channel:C12345678`, `user:U12345678`, dan `<@U12345678>`.
+- Dengan default `session.dmScope=main`, DM Slack diciutkan ke sesi utama agen.
 - Sesi channel: `agent:<agentId>:slack:channel:<channelId>`.
-- Balasan thread dapat membuat sufiks sesi thread (`:thread:<threadTs>`) bila berlaku.
-- Di channel tempat OpenClaw menangani pesan tingkat atas tanpa memerlukan mention eksplisit, `replyToMode` selain `off` merutekan setiap root yang ditangani ke `agent:<agentId>:slack:channel:<channelId>:thread:<rootTs>` sehingga thread Slack yang terlihat dipetakan ke satu sesi OpenClaw sejak giliran pertama.
+- Balasan thread dapat membuat suffix sesi thread (`:thread:<threadTs>`) jika berlaku.
+- Di channel tempat OpenClaw menangani pesan tingkat atas tanpa memerlukan mention eksplisit, `replyToMode` non-`off` merutekan setiap root yang ditangani ke `agent:<agentId>:slack:channel:<channelId>:thread:<rootTs>` sehingga thread Slack yang terlihat dipetakan ke satu sesi OpenClaw sejak giliran pertama.
 - Default `channels.slack.thread.historyScope` adalah `thread`; default `thread.inheritParent` adalah `false`.
-- `channels.slack.thread.initialHistoryLimit` mengontrol berapa banyak pesan thread yang ada yang diambil ketika sesi thread baru dimulai (default `20`; setel `0` untuk menonaktifkan).
-- `channels.slack.thread.requireExplicitMention` (default `false`): ketika `true`, menekan mention thread implisit sehingga bot hanya merespons mention `@bot` eksplisit di dalam thread, bahkan ketika bot sudah berpartisipasi dalam thread. Tanpa ini, balasan dalam thread yang diikuti bot melewati gate `requireMention`.
+- `channels.slack.thread.initialHistoryLimit` mengontrol berapa banyak pesan thread yang sudah ada yang diambil ketika sesi thread baru dimulai (default `20`; setel `0` untuk menonaktifkan).
+- `channels.slack.thread.requireExplicitMention` (default `false`): ketika `true`, menekan mention thread implisit sehingga bot hanya merespons mention `@bot` eksplisit di dalam thread, bahkan ketika bot sudah berpartisipasi dalam thread. Tanpa ini, balasan dalam thread yang diikuti bot melewati gating `requireMention`.
 
 Kontrol threading balasan:
 
@@ -953,9 +953,9 @@ Tag balasan manual didukung:
 - `[[reply_to_current]]`
 - `[[reply_to:<id>]]`
 
-Untuk balasan thread Slack eksplisit dari tool `message`, setel `replyBroadcast: true` dengan `action: "send"` dan `threadId` atau `replyTo` untuk meminta Slack juga menyiarkan balasan thread ke channel induk. Ini dipetakan ke flag `reply_broadcast` `chat.postMessage` Slack dan hanya didukung untuk pengiriman teks atau Block Kit, bukan unggahan media.
+Untuk balasan thread Slack eksplisit dari tool `message`, setel `replyBroadcast: true` dengan `action: "send"` dan `threadId` atau `replyTo` untuk meminta Slack juga menyiarkan balasan thread ke channel induk. Ini dipetakan ke flag `reply_broadcast` `chat.postMessage` milik Slack dan hanya didukung untuk pengiriman teks atau Block Kit, bukan upload media.
 
-Ketika panggilan tool `message` berjalan di dalam thread Slack dan menargetkan channel yang sama, OpenClaw biasanya mewarisi thread Slack saat ini sesuai dengan `replyToMode`. Setel `topLevel: true` pada `action: "send"` atau `action: "upload-file"` untuk memaksa pesan channel induk baru sebagai gantinya. `threadId: null` diterima sebagai opt-out tingkat atas yang sama.
+Ketika panggilan tool `message` berjalan di dalam thread Slack dan menargetkan channel yang sama, OpenClaw biasanya mewarisi thread Slack saat ini sesuai dengan `replyToMode`. Setel `topLevel: true` pada `action: "send"` atau `action: "upload-file"` untuk memaksa pesan channel induk baru. `threadId: null` diterima sebagai opt-out tingkat atas yang sama.
 
 <Note>
 `replyToMode="off"` menonaktifkan **semua** threading balasan di Slack, termasuk tag `[[reply_to_*]]` eksplisit. Ini berbeda dari Telegram, tempat tag eksplisit tetap dihormati dalam mode `"off"`. Thread Slack menyembunyikan pesan dari channel sementara balasan Telegram tetap terlihat inline.
@@ -970,25 +970,25 @@ Urutan resolusi:
 - `channels.slack.accounts.<accountId>.ackReaction`
 - `channels.slack.ackReaction`
 - `messages.ackReaction`
-- fallback emoji identitas agen (`agents.list[].identity.emoji`, selain itu "👀")
+- fallback emoji identitas agen (`agents.list[].identity.emoji`, jika tidak ada "👀")
 
 Catatan:
 
 - Slack mengharapkan shortcode (misalnya `"eyes"`).
-- Gunakan `""` untuk menonaktifkan reaksi untuk akun Slack atau secara global.
+- Gunakan `""` untuk menonaktifkan reaksi bagi akun Slack atau secara global.
 
 ## Streaming teks
 
-`channels.slack.streaming` mengontrol perilaku pratinjau langsung:
+`channels.slack.streaming` mengontrol perilaku pratinjau live:
 
-- `off`: menonaktifkan streaming pratinjau langsung.
-- `partial` (default): mengganti teks pratinjau dengan output parsial terbaru.
-- `block`: menambahkan pembaruan pratinjau yang dipecah menjadi chunk.
-- `progress`: menampilkan teks status progres saat menghasilkan, lalu mengirim teks final.
-- `streaming.preview.toolProgress`: ketika pratinjau draf aktif, rute pembaruan tool/progres ke pesan pratinjau yang sama yang diedit (default: `true`). Setel `false` untuk mempertahankan pesan tool/progres terpisah.
-- `streaming.preview.commandText` / `streaming.progress.commandText`: setel ke `status` untuk mempertahankan baris progres tool yang ringkas sambil menyembunyikan teks command/exec mentah (default: `raw`).
+- `off`: nonaktifkan streaming pratinjau live.
+- `partial` (default): ganti teks pratinjau dengan output parsial terbaru.
+- `block`: tambahkan pembaruan pratinjau yang dipecah menjadi chunk.
+- `progress`: tampilkan teks status progres saat menghasilkan, lalu kirim teks final.
+- `streaming.preview.toolProgress`: ketika pratinjau draf aktif, rutekan pembaruan tool/progres ke pesan pratinjau yang diedit yang sama (default: `true`). Setel `false` untuk mempertahankan pesan tool/progres terpisah.
+- `streaming.preview.commandText` / `streaming.progress.commandText`: setel ke `status` untuk mempertahankan baris progres tool yang ringkas sambil menyembunyikan teks perintah/exec mentah (default: `raw`).
 
-Sembunyikan teks command/exec mentah sambil mempertahankan baris progres ringkas:
+Sembunyikan teks perintah/exec mentah sambil mempertahankan baris progres ringkas:
 
 ```json
 {
@@ -1008,14 +1008,14 @@ Sembunyikan teks command/exec mentah sambil mempertahankan baris progres ringkas
 
 `channels.slack.streaming.nativeTransport` mengontrol streaming teks native Slack ketika `channels.slack.streaming.mode` adalah `partial` (default: `true`).
 
-- Utas balasan harus tersedia agar streaming teks native dan status utas asisten Slack muncul. Pemilihan utas tetap mengikuti `replyToMode`.
-- Akar channel, group-chat, dan DM tingkat atas tetap dapat menggunakan pratinjau draf normal saat streaming native tidak tersedia atau tidak ada utas balasan.
-- DM Slack tingkat atas tetap di luar utas secara default, sehingga tidak menampilkan pratinjau streaming/status native bergaya utas milik Slack; OpenClaw memposting dan mengedit pratinjau draf di DM sebagai gantinya.
+- Thread balasan harus tersedia agar streaming teks native dan status thread asisten Slack muncul. Pemilihan thread tetap mengikuti `replyToMode`.
+- Root kanal, obrolan grup, dan DM tingkat atas tetap dapat menggunakan pratinjau draf normal saat streaming native tidak tersedia atau tidak ada thread balasan.
+- DM Slack tingkat atas tetap di luar thread secara default, sehingga tidak menampilkan pratinjau stream/status native bergaya thread Slack; OpenClaw memposting dan mengedit pratinjau draf di DM sebagai gantinya.
 - Media dan payload non-teks kembali ke pengiriman normal.
-- Final media/error membatalkan edit pratinjau yang tertunda; final teks/blok yang memenuhi syarat hanya dikirim habis saat dapat mengedit pratinjau di tempat.
+- Final media/error membatalkan pengeditan pratinjau tertunda; final teks/blok yang memenuhi syarat hanya di-flush saat dapat mengedit pratinjau di tempat.
 - Jika streaming gagal di tengah balasan, OpenClaw kembali ke pengiriman normal untuk payload yang tersisa.
 
-Gunakan pratinjau draf alih-alih streaming teks native Slack:
+Gunakan pratinjau draf sebagai pengganti streaming teks native Slack:
 
 ```json5
 {
@@ -1034,12 +1034,12 @@ Kunci legacy:
 
 - `channels.slack.streamMode` (`replace | status_final | append`) adalah alias runtime legacy untuk `channels.slack.streaming.mode`.
 - boolean `channels.slack.streaming` adalah alias runtime legacy untuk `channels.slack.streaming.mode` dan `channels.slack.streaming.nativeTransport`.
-- legacy `channels.slack.nativeStreaming` adalah alias runtime untuk `channels.slack.streaming.nativeTransport`.
+- `channels.slack.nativeStreaming` legacy adalah alias runtime untuk `channels.slack.streaming.nativeTransport`.
 - Jalankan `openclaw doctor --fix` untuk menulis ulang konfigurasi streaming Slack yang tersimpan ke kunci kanonis.
 
 ## Fallback reaksi mengetik
 
-`typingReaction` menambahkan reaksi sementara ke pesan Slack masuk saat OpenClaw sedang memproses balasan, lalu menghapusnya saat run selesai. Ini paling berguna di luar balasan utas, yang menggunakan indikator status default "sedang mengetik...".
+`typingReaction` menambahkan reaksi sementara ke pesan Slack masuk saat OpenClaw sedang memproses balasan, lalu menghapusnya saat run selesai. Ini paling berguna di luar balasan thread, yang menggunakan indikator status default "sedang mengetik...".
 
 Urutan resolusi:
 
@@ -1049,35 +1049,35 @@ Urutan resolusi:
 Catatan:
 
 - Slack mengharapkan shortcode (misalnya `"hourglass_flowing_sand"`).
-- Reaksi bersifat upaya-terbaik dan pembersihan dicoba secara otomatis setelah jalur balasan atau kegagalan selesai.
+- Reaksi bersifat best-effort dan pembersihan dicoba secara otomatis setelah jalur balasan atau kegagalan selesai.
 
-## Media, pemotongan, dan pengiriman
+## Media, chunking, dan pengiriman
 
 <AccordionGroup>
   <Accordion title="Lampiran masuk">
     Lampiran file Slack diunduh dari URL privat yang di-host Slack (alur permintaan terautentikasi token) dan ditulis ke penyimpanan media saat pengambilan berhasil dan batas ukuran mengizinkan. Placeholder file menyertakan `fileId` Slack agar agen dapat mengambil file asli dengan `download-file`.
 
-    Unduhan menggunakan batas waktu idle dan total yang dibatasi. Jika pengambilan file Slack macet atau gagal, OpenClaw tetap memproses pesan dan kembali ke placeholder file.
+    Unduhan menggunakan timeout idle dan total yang dibatasi. Jika pengambilan file Slack macet atau gagal, OpenClaw tetap memproses pesan dan kembali ke placeholder file.
 
-    Batas ukuran runtime masuk default adalah `20MB` kecuali ditimpa oleh `channels.slack.mediaMaxMb`.
+    Batas ukuran masuk runtime default adalah `20MB` kecuali ditimpa oleh `channels.slack.mediaMaxMb`.
 
   </Accordion>
 
   <Accordion title="Teks dan file keluar">
-    - potongan teks menggunakan `channels.slack.textChunkLimit` (default 4000)
+    - chunk teks menggunakan `channels.slack.textChunkLimit` (default 4000)
     - `channels.slack.chunkMode="newline"` mengaktifkan pemisahan dengan paragraf sebagai prioritas
-    - pengiriman file menggunakan API unggah Slack dan dapat menyertakan balasan utas (`thread_ts`)
-    - batas media keluar mengikuti `channels.slack.mediaMaxMb` saat dikonfigurasi; jika tidak, pengiriman channel menggunakan default jenis MIME dari pipeline media
+    - pengiriman file menggunakan API unggah Slack dan dapat menyertakan balasan thread (`thread_ts`)
+    - batas media keluar mengikuti `channels.slack.mediaMaxMb` saat dikonfigurasi; jika tidak, pengiriman kanal menggunakan default jenis MIME dari pipeline media
 
   </Accordion>
 
   <Accordion title="Target pengiriman">
-    Target eksplisit yang disarankan:
+    Target eksplisit yang direkomendasikan:
 
     - `user:<id>` untuk DM
-    - `channel:<id>` untuk channel
+    - `channel:<id>` untuk kanal
 
-    DM Slack yang hanya berisi teks/blok dapat memposting langsung ke ID pengguna; unggahan file dan pengiriman berutas membuka DM melalui API percakapan Slack terlebih dahulu karena jalur tersebut memerlukan ID percakapan konkret.
+    DM Slack yang hanya berisi teks/blok dapat memposting langsung ke ID pengguna; unggahan file dan pengiriman ber-thread membuka DM melalui API percakapan Slack terlebih dahulu karena jalur tersebut memerlukan ID percakapan konkret.
 
   </Accordion>
 </AccordionGroup>
@@ -1095,15 +1095,15 @@ Perintah slash muncul di Slack sebagai satu perintah yang dikonfigurasi atau beb
 /openclaw /help
 ```
 
-Perintah native memerlukan [pengaturan manifest tambahan](#additional-manifest-settings) di aplikasi Slack Anda dan diaktifkan dengan `channels.slack.commands.native: true` atau `commands.native: true` dalam konfigurasi global sebagai gantinya.
+Perintah native memerlukan [pengaturan manifest tambahan](#additional-manifest-settings) di aplikasi Slack Anda dan diaktifkan dengan `channels.slack.commands.native: true` atau `commands.native: true` di konfigurasi global sebagai gantinya.
 
-- Mode otomatis perintah native **nonaktif** untuk Slack sehingga `commands.native: "auto"` tidak mengaktifkan perintah native Slack.
+- Mode otomatis perintah native **mati** untuk Slack sehingga `commands.native: "auto"` tidak mengaktifkan perintah native Slack.
 
 ```txt
 /help
 ```
 
-Menu argumen native menggunakan strategi perenderan adaptif yang menampilkan modal konfirmasi sebelum mengirim nilai opsi yang dipilih:
+Menu argumen native menggunakan strategi rendering adaptif yang menampilkan modal konfirmasi sebelum mengirim nilai opsi yang dipilih:
 
 - hingga 5 opsi: blok tombol
 - 6-100 opsi: menu pilih statis
@@ -1118,7 +1118,7 @@ Sesi slash menggunakan kunci terisolasi seperti `agent:<agentId>:slack:slash:<us
 
 ## Balasan interaktif
 
-Slack dapat merender kontrol balasan interaktif yang dibuat agen, tetapi fitur ini dinonaktifkan secara default.
+Slack dapat merender kontrol balasan interaktif yang ditulis agen, tetapi fitur ini dinonaktifkan secara default.
 
 Aktifkan secara global:
 
@@ -1152,42 +1152,42 @@ Atau aktifkan hanya untuk satu akun Slack:
 }
 ```
 
-Saat diaktifkan, agen dapat mengeluarkan arahan balasan khusus Slack:
+Saat diaktifkan, agen dapat memancarkan direktif balasan khusus Slack:
 
 - `[[slack_buttons: Approve:approve, Reject:reject]]`
 - `[[slack_select: Choose a target | Canary:canary, Production:production]]`
 
-Arahan ini dikompilasi menjadi Slack Block Kit dan merutekan klik atau pilihan kembali melalui jalur peristiwa interaksi Slack yang sudah ada.
+Direktif ini dikompilasi menjadi Slack Block Kit dan merutekan klik atau pilihan kembali melalui jalur event interaksi Slack yang sudah ada.
 
 Catatan:
 
-- Ini adalah UI khusus Slack. Kanal lain tidak menerjemahkan arahan Slack Block Kit ke sistem tombol mereka sendiri.
-- Nilai callback interaktif adalah token buram yang dihasilkan OpenClaw, bukan nilai mentah yang ditulis agen.
-- Jika blok interaktif yang dihasilkan akan melampaui batas Slack Block Kit, OpenClaw kembali ke balasan teks asli alih-alih mengirim payload blok yang tidak valid.
+- Ini adalah UI khusus Slack. Kanal lain tidak menerjemahkan direktif Slack Block Kit ke sistem tombol mereka sendiri.
+- Nilai callback interaktif adalah token buram yang dibuat OpenClaw, bukan nilai mentah yang ditulis agen.
+- Jika blok interaktif yang dibuat akan melampaui batas Slack Block Kit, OpenClaw kembali ke balasan teks asli alih-alih mengirim payload blok yang tidak valid.
 
 ## Persetujuan exec di Slack
 
 Slack dapat bertindak sebagai klien persetujuan native dengan tombol dan interaksi interaktif, alih-alih kembali ke UI Web atau terminal.
 
 - Persetujuan exec menggunakan `channels.slack.execApprovals.*` untuk perutean DM/kanal native.
-- Persetujuan Plugin masih dapat diselesaikan melalui permukaan tombol native Slack yang sama ketika permintaan sudah masuk ke Slack dan jenis id persetujuan adalah `plugin:`.
+- Persetujuan Plugin tetap dapat diselesaikan melalui permukaan tombol native Slack yang sama saat permintaan sudah masuk ke Slack dan jenis id persetujuan adalah `plugin:`.
 - Otorisasi pemberi persetujuan tetap diberlakukan: hanya pengguna yang diidentifikasi sebagai pemberi persetujuan yang dapat menyetujui atau menolak permintaan melalui Slack.
 
 Ini menggunakan permukaan tombol persetujuan bersama yang sama seperti kanal lain. Saat `interactivity` diaktifkan di pengaturan aplikasi Slack Anda, prompt persetujuan dirender sebagai tombol Block Kit langsung di percakapan.
-Saat tombol tersebut ada, tombol tersebut adalah UX persetujuan utama; OpenClaw
-hanya boleh menyertakan perintah manual `/approve` ketika hasil alat mengatakan persetujuan
-chat tidak tersedia atau persetujuan manual adalah satu-satunya jalur.
+Saat tombol tersebut tersedia, tombol itu adalah UX persetujuan utama; OpenClaw
+hanya boleh menyertakan perintah `/approve` manual saat hasil alat mengatakan persetujuan chat
+tidak tersedia atau persetujuan manual adalah satu-satunya jalur.
 
-Jalur konfigurasi:
+Path konfigurasi:
 
 - `channels.slack.execApprovals.enabled`
-- `channels.slack.execApprovals.approvers` (opsional; kembali ke `commands.ownerAllowFrom` jika memungkinkan)
+- `channels.slack.execApprovals.approvers` (opsional; kembali ke `commands.ownerAllowFrom` saat memungkinkan)
 - `channels.slack.execApprovals.target` (`dm` | `channel` | `both`, default: `dm`)
 - `agentFilter`, `sessionFilter`
 
-Slack secara otomatis mengaktifkan persetujuan exec native ketika `enabled` tidak disetel atau `"auto"` dan setidaknya satu
-pemberi persetujuan berhasil diresolusikan. Setel `enabled: false` untuk menonaktifkan Slack sebagai klien persetujuan native secara eksplisit.
-Setel `enabled: true` untuk memaksa persetujuan native aktif ketika pemberi persetujuan berhasil diresolusikan.
+Slack secara otomatis mengaktifkan persetujuan exec native saat `enabled` tidak disetel atau `"auto"` dan setidaknya satu
+pemberi persetujuan berhasil di-resolve. Setel `enabled: false` untuk menonaktifkan Slack sebagai klien persetujuan native secara eksplisit.
+Setel `enabled: true` untuk memaksa persetujuan native aktif saat pemberi persetujuan berhasil di-resolve.
 
 Perilaku default tanpa konfigurasi persetujuan exec Slack eksplisit:
 
@@ -1199,8 +1199,8 @@ Perilaku default tanpa konfigurasi persetujuan exec Slack eksplisit:
 }
 ```
 
-Konfigurasi native Slack eksplisit hanya diperlukan ketika Anda ingin mengganti pemberi persetujuan, menambahkan filter, atau
-memilih pengiriman chat asal:
+Konfigurasi native Slack eksplisit hanya diperlukan saat Anda ingin menimpa pemberi persetujuan, menambahkan filter, atau
+ikut menggunakan pengiriman chat asal:
 
 ```json5
 {
@@ -1216,33 +1216,33 @@ memilih pengiriman chat asal:
 }
 ```
 
-Penerusan bersama `approvals.exec` bersifat terpisah. Gunakan hanya ketika prompt persetujuan exec juga harus
-dirutekan ke chat lain atau target out-of-band eksplisit. Penerusan bersama `approvals.plugin` juga
-terpisah; tombol native Slack tetap dapat menyelesaikan persetujuan Plugin ketika permintaan tersebut sudah masuk
+Penerusan `approvals.exec` bersama terpisah. Gunakan hanya saat prompt persetujuan exec juga harus
+dirutekan ke chat lain atau target out-of-band eksplisit. Penerusan `approvals.plugin` bersama juga
+terpisah; tombol native Slack tetap dapat menyelesaikan persetujuan Plugin saat permintaan tersebut sudah masuk
 ke Slack.
 
 `/approve` dalam chat yang sama juga berfungsi di kanal Slack dan DM yang sudah mendukung perintah. Lihat [Persetujuan exec](/id/tools/exec-approvals) untuk model penerusan persetujuan lengkap.
 
-## Peristiwa dan perilaku operasional
+## Event dan perilaku operasional
 
-- Pengeditan/penghapusan pesan dipetakan ke peristiwa sistem.
-- Siaran thread (balasan thread "Also send to channel") diproses sebagai pesan pengguna normal.
-- Peristiwa penambahan/penghapusan reaksi dipetakan ke peristiwa sistem.
-- Peristiwa anggota bergabung/keluar, kanal dibuat/diubah namanya, dan pin ditambahkan/dihapus dipetakan ke peristiwa sistem.
-- `channel_id_changed` dapat memigrasikan kunci konfigurasi kanal ketika `configWrites` diaktifkan.
+- Pengeditan/penghapusan pesan dipetakan menjadi event sistem.
+- Siaran thread (balasan thread "Kirim juga ke kanal") diproses sebagai pesan pengguna normal.
+- Event tambah/hapus reaksi dipetakan menjadi event sistem.
+- Event anggota bergabung/keluar, kanal dibuat/diganti nama, dan pin ditambah/dihapus dipetakan menjadi event sistem.
+- `channel_id_changed` dapat memigrasikan kunci konfigurasi kanal saat `configWrites` diaktifkan.
 - Metadata topik/tujuan kanal diperlakukan sebagai konteks tidak tepercaya dan dapat disuntikkan ke konteks perutean.
-- Penyemaian konteks pembuka thread dan riwayat thread awal difilter oleh allowlist pengirim yang dikonfigurasi jika berlaku.
-- Tindakan blok dan interaksi modal mengeluarkan peristiwa sistem `Slack interaction: ...` terstruktur dengan field payload yang kaya:
-  - tindakan blok: nilai terpilih, label, nilai pemilih, dan metadata `workflow_*`
-  - peristiwa modal `view_submission` dan `view_closed` dengan metadata kanal terute dan input formulir
+- Starter thread dan seeding konteks riwayat thread awal difilter oleh allowlist pengirim yang dikonfigurasi saat berlaku.
+- Tindakan blok dan interaksi modal memancarkan event sistem `Slack interaction: ...` terstruktur dengan field payload kaya:
+  - tindakan blok: nilai yang dipilih, label, nilai picker, dan metadata `workflow_*`
+  - event modal `view_submission` dan `view_closed` dengan metadata kanal yang dirutekan dan input formulir
 
 ## Referensi konfigurasi
 
 Referensi utama: [Referensi konfigurasi - Slack](/id/gateway/config-channels#slack).
 
-<Accordion title="Field Slack bersinyal tinggi">
+<Accordion title="Field Slack bernilai tinggi">
 
-- mode/auth: `mode`, `botToken`, `appToken`, `signingSecret`, `webhookPath`, `accounts.*`
+- mode/autentikasi: `mode`, `botToken`, `appToken`, `signingSecret`, `webhookPath`, `accounts.*`
 - akses DM: `dm.enabled`, `dmPolicy`, `allowFrom` (legacy: `dm.policy`, `dm.allowFrom`), `dm.groupEnabled`, `dm.groupChannels`
 - toggle kompatibilitas: `dangerouslyAllowNameMatching` (break-glass; tetap nonaktif kecuali diperlukan)
 - akses kanal: `groupPolicy`, `channels.*`, `channels.*.users`, `channels.*.requireMention`
@@ -1260,7 +1260,7 @@ Referensi utama: [Referensi konfigurasi - Slack](/id/gateway/config-channels#sla
     Periksa, secara berurutan:
 
     - `groupPolicy`
-    - allowlist kanal (`channels.slack.channels`) — **kunci harus berupa ID kanal** (`C12345678`), bukan nama (`#channel-name`). Kunci berbasis nama gagal secara diam-diam di bawah `groupPolicy: "allowlist"` karena perutean kanal secara default mengutamakan ID. Untuk menemukan ID: klik kanan kanal di Slack → **Copy link** — nilai `C...` di akhir URL adalah ID kanal.
+    - allowlist kanal (`channels.slack.channels`) — **kunci harus berupa ID kanal** (`C12345678`), bukan nama (`#channel-name`). Kunci berbasis nama gagal diam-diam di bawah `groupPolicy: "allowlist"` karena perutean kanal secara default mengutamakan ID. Untuk menemukan ID: klik kanan kanal di Slack → **Salin tautan** — nilai `C...` di akhir URL adalah ID kanal.
     - `requireMention`
     - allowlist `users` per kanal
 
@@ -1280,8 +1280,8 @@ openclaw doctor
     - `channels.slack.dm.enabled`
     - `channels.slack.dmPolicy` (atau legacy `channels.slack.dm.policy`)
     - persetujuan pairing / entri allowlist
-    - Peristiwa DM Slack Assistant: log verbose yang menyebut `drop message_changed`
-      biasanya berarti Slack mengirim peristiwa thread Assistant yang diedit tanpa
+    - Event DM Slack Assistant: log verbose yang menyebut `drop message_changed`
+      biasanya berarti Slack mengirim event thread Assistant yang diedit tanpa
       pengirim manusia yang dapat dipulihkan dalam metadata pesan
 
 ```bash
@@ -1290,60 +1290,59 @@ openclaw pairing list slack
 
   </Accordion>
 
-  <Accordion title="Mode Socket tidak terhubung">
-    Validasi token bot + aplikasi dan pengaktifan Mode Socket di pengaturan aplikasi Slack.
+  <Accordion title="Socket mode tidak terhubung">
+    Validasi token bot + app dan pengaktifan Socket Mode di pengaturan aplikasi Slack.
 
     Jika `openclaw channels status --probe --json` menampilkan `botTokenStatus` atau
     `appTokenStatus: "configured_unavailable"`, akun Slack sudah
-    dikonfigurasi tetapi runtime saat ini tidak dapat meresolusikan nilai berbasis SecretRef.
+    dikonfigurasi tetapi runtime saat ini tidak dapat me-resolve nilai yang
+    didukung SecretRef.
 
   </Accordion>
 
   <Accordion title="Mode HTTP tidak menerima peristiwa">
     Validasi:
 
-    - secret penandatanganan
+    - rahasia penandatanganan
     - jalur webhook
     - URL Permintaan Slack (Peristiwa + Interaktivitas + Perintah Slash)
     - `webhookPath` unik per akun HTTP
 
-    Jika `signingSecretStatus: "configured_unavailable"` muncul di snapshot
-    akun, akun HTTP sudah dikonfigurasi tetapi runtime saat ini tidak dapat
-    menyelesaikan secret penandatanganan berbasis SecretRef.
+    Jika `signingSecretStatus: "configured_unavailable"` muncul di snapshot akun, akun HTTP sudah dikonfigurasi tetapi runtime saat ini tidak dapat menyelesaikan rahasia penandatanganan yang didukung SecretRef.
 
   </Accordion>
 
   <Accordion title="Perintah native/slash tidak berjalan">
     Verifikasi apakah yang Anda maksud adalah:
 
-    - mode perintah native (`channels.slack.commands.native: true`) dengan perintah slash yang cocok terdaftar di Slack
+    - mode perintah native (`channels.slack.commands.native: true`) dengan perintah slash yang sesuai terdaftar di Slack
     - atau mode perintah slash tunggal (`channels.slack.slashCommand.enabled: true`)
 
-    Periksa juga `commands.useAccessGroups` dan allowlist kanal/pengguna.
+    Periksa juga `commands.useAccessGroups` serta daftar izin channel/pengguna.
 
   </Accordion>
 </AccordionGroup>
 
-## Referensi vision lampiran
+## Referensi visi lampiran
 
-Slack dapat melampirkan media yang diunduh ke giliran agen saat unduhan file Slack berhasil dan batas ukuran mengizinkan. File gambar dapat diteruskan melalui jalur pemahaman media atau langsung ke model balasan yang mendukung vision; file lain dipertahankan sebagai konteks file yang dapat diunduh, bukan diperlakukan sebagai input gambar.
+Slack dapat melampirkan media yang diunduh ke giliran agen saat unduhan file Slack berhasil dan batas ukuran mengizinkan. File gambar dapat diteruskan melalui jalur pemahaman media atau langsung ke model balasan yang mendukung visi; file lain dipertahankan sebagai konteks file yang dapat diunduh, bukan diperlakukan sebagai input gambar.
 
 ### Jenis media yang didukung
 
-| Jenis media                    | Sumber               | Perilaku saat ini                                                               | Catatan                                                                    |
-| ------------------------------ | -------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| Gambar JPEG / PNG / GIF / WebP | URL file Slack       | Diunduh dan dilampirkan ke giliran untuk penanganan yang mendukung vision       | Batas per file: `channels.slack.mediaMaxMb` (default 20 MB)                |
-| File PDF                       | URL file Slack       | Diunduh dan diekspos sebagai konteks file untuk alat seperti `download-file` atau `pdf` | Inbound Slack tidak otomatis mengonversi PDF menjadi input image-vision    |
-| File lain                      | URL file Slack       | Diunduh jika memungkinkan dan diekspos sebagai konteks file                     | File biner tidak diperlakukan sebagai input gambar                         |
+| Jenis media                    | Sumber               | Perilaku saat ini                                                                 | Catatan                                                                   |
+| ------------------------------ | -------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Gambar JPEG / PNG / GIF / WebP | URL file Slack       | Diunduh dan dilampirkan ke giliran untuk penanganan yang mendukung visi           | Batas per file: `channels.slack.mediaMaxMb` (default 20 MB)               |
+| File PDF                       | URL file Slack       | Diunduh dan diekspos sebagai konteks file untuk alat seperti `download-file` atau `pdf` | Inbound Slack tidak mengonversi PDF menjadi input visi gambar secara otomatis |
+| File lain                      | URL file Slack       | Diunduh jika memungkinkan dan diekspos sebagai konteks file                       | File biner tidak diperlakukan sebagai input gambar                        |
 | Balasan thread                 | File pemulai thread  | File pesan root dapat dihidrasi sebagai konteks saat balasan tidak memiliki media langsung | Pemulai yang hanya berisi file menggunakan placeholder lampiran            |
-| Pesan multi-gambar             | Beberapa file Slack  | Setiap file dievaluasi secara independen                                        | Pemrosesan Slack dibatasi hingga delapan file per pesan                    |
+| Pesan multi-gambar             | Beberapa file Slack  | Setiap file dievaluasi secara independen                                          | Pemrosesan Slack dibatasi hingga delapan file per pesan                   |
 
 ### Pipeline inbound
 
 Saat pesan Slack dengan lampiran file tiba:
 
 1. OpenClaw mengunduh file dari URL privat Slack menggunakan token bot (`xoxb-...`).
-2. File ditulis ke penyimpanan media saat berhasil.
+2. File ditulis ke penyimpanan media jika berhasil.
 3. Jalur media yang diunduh dan jenis konten ditambahkan ke konteks inbound.
 4. Jalur model/alat yang mendukung gambar dapat menggunakan lampiran gambar dari konteks tersebut.
 5. File non-gambar tetap tersedia sebagai metadata file atau referensi media untuk alat yang dapat menanganinya.
@@ -1353,7 +1352,7 @@ Saat pesan Slack dengan lampiran file tiba:
 Saat pesan tiba dalam thread (memiliki induk `thread_ts`):
 
 - Jika balasan itu sendiri tidak memiliki media langsung dan pesan root yang disertakan memiliki file, Slack dapat menghidrasi file root sebagai konteks pemulai thread.
-- Lampiran balasan langsung diprioritaskan dibanding lampiran pesan root.
+- Lampiran balasan langsung lebih diutamakan daripada lampiran pesan root.
 - Pesan root yang hanya memiliki file dan tanpa teks direpresentasikan dengan placeholder lampiran sehingga fallback tetap dapat menyertakan filenya.
 
 ### Penanganan multi-lampiran
@@ -1363,49 +1362,49 @@ Saat satu pesan Slack berisi beberapa lampiran file:
 - Setiap lampiran diproses secara independen melalui pipeline media.
 - Referensi media yang diunduh digabungkan ke dalam konteks pesan.
 - Urutan pemrosesan mengikuti urutan file Slack dalam payload peristiwa.
-- Kegagalan unduhan pada satu lampiran tidak memblokir lampiran lain.
+- Kegagalan unduhan satu lampiran tidak memblokir lampiran lain.
 
 ### Batas ukuran, unduhan, dan model
 
 - **Batas ukuran**: Default 20 MB per file. Dapat dikonfigurasi melalui `channels.slack.mediaMaxMb`.
-- **Kegagalan unduhan**: File yang tidak dapat disajikan Slack, URL kedaluwarsa, file tidak dapat diakses, file terlalu besar, dan respons HTML auth/login Slack dilewati, bukan dilaporkan sebagai format yang tidak didukung.
-- **Model vision**: Analisis gambar menggunakan model balasan aktif saat mendukung vision, atau model gambar yang dikonfigurasi di `agents.defaults.imageModel`.
+- **Kegagalan unduhan**: File yang tidak dapat disajikan oleh Slack, URL kedaluwarsa, file yang tidak dapat diakses, file yang terlalu besar, dan respons HTML auth/login Slack dilewati alih-alih dilaporkan sebagai format yang tidak didukung.
+- **Model visi**: Analisis gambar menggunakan model balasan aktif saat model tersebut mendukung visi, atau model gambar yang dikonfigurasi di `agents.defaults.imageModel`.
 
-### Batas yang diketahui
+### Batasan yang diketahui
 
-| Skenario                               | Perilaku saat ini                                                            | Solusi sementara                                                           |
+| Skenario                               | Perilaku saat ini                                                           | Solusi sementara                                                           |
 | -------------------------------------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| URL file Slack kedaluwarsa             | File dilewati; tidak ada error yang ditampilkan                              | Unggah ulang file di Slack                                                 |
-| Model vision belum dikonfigurasi       | Lampiran gambar disimpan sebagai referensi media, tetapi tidak dianalisis sebagai gambar | Konfigurasikan `agents.defaults.imageModel` atau gunakan model balasan yang mendukung vision |
-| Gambar sangat besar (> 20 MB secara default) | Dilewati sesuai batas ukuran                                            | Tingkatkan `channels.slack.mediaMaxMb` jika Slack mengizinkan              |
-| Lampiran yang diteruskan/dibagikan     | Teks dan media gambar/file yang dihosting Slack bersifat best-effort         | Bagikan ulang langsung di thread OpenClaw                                  |
-| Lampiran PDF                           | Disimpan sebagai konteks file/media, tidak otomatis dirutekan melalui image vision | Gunakan `download-file` untuk metadata file atau alat `pdf` untuk analisis PDF |
+| URL file Slack kedaluwarsa             | File dilewati; tidak ada kesalahan yang ditampilkan                         | Unggah ulang file di Slack                                                 |
+| Model visi tidak dikonfigurasi         | Lampiran gambar disimpan sebagai referensi media, tetapi tidak dianalisis sebagai gambar | Konfigurasikan `agents.defaults.imageModel` atau gunakan model balasan yang mendukung visi |
+| Gambar sangat besar (> 20 MB secara default) | Dilewati sesuai batas ukuran                                                | Tingkatkan `channels.slack.mediaMaxMb` jika Slack mengizinkan              |
+| Lampiran yang diteruskan/dibagikan     | Teks dan media gambar/file yang dihosting Slack bersifat upaya terbaik      | Bagikan ulang langsung di thread OpenClaw                                  |
+| Lampiran PDF                           | Disimpan sebagai konteks file/media, tidak otomatis dirutekan melalui visi gambar | Gunakan `download-file` untuk metadata file atau alat `pdf` untuk analisis PDF |
 
 ### Dokumentasi terkait
 
 - [Pipeline pemahaman media](/id/nodes/media-understanding)
 - [Alat PDF](/id/tools/pdf)
-- Epic: [#51349](https://github.com/openclaw/openclaw/issues/51349) — Pengaktifan vision lampiran Slack
-- Tes regresi: [#51353](https://github.com/openclaw/openclaw/issues/51353)
-- Verifikasi live: [#51354](https://github.com/openclaw/openclaw/issues/51354)
+- Epic: [#51349](https://github.com/openclaw/openclaw/issues/51349) — pengaktifan visi lampiran Slack
+- Uji regresi: [#51353](https://github.com/openclaw/openclaw/issues/51353)
+- Verifikasi langsung: [#51354](https://github.com/openclaw/openclaw/issues/51354)
 
 ## Terkait
 
 <CardGroup cols={2}>
-  <Card title="Pairing" icon="link" href="/id/channels/pairing">
-    Pasangkan pengguna Slack ke Gateway.
+  <Card title="Pemasangan" icon="link" href="/id/channels/pairing">
+    Pasangkan pengguna Slack ke gateway.
   </Card>
   <Card title="Grup" icon="users" href="/id/channels/groups">
-    Perilaku kanal dan DM grup.
+    Perilaku channel dan DM grup.
   </Card>
-  <Card title="Perutean kanal" icon="route" href="/id/channels/channel-routing">
+  <Card title="Perutean channel" icon="route" href="/id/channels/channel-routing">
     Rutekan pesan inbound ke agen.
   </Card>
   <Card title="Keamanan" icon="shield" href="/id/gateway/security">
     Model ancaman dan hardening.
   </Card>
   <Card title="Konfigurasi" icon="sliders" href="/id/gateway/configuration">
-    Tata letak config dan presedensi.
+    Tata letak dan presedensi konfigurasi.
   </Card>
   <Card title="Perintah slash" icon="terminal" href="/id/tools/slash-commands">
     Katalog dan perilaku perintah.

@@ -1,30 +1,29 @@
 ---
 read_when:
     - Je wilt Grok gebruiken voor web_search
-    - Je hebt een XAI_API_KEY nodig voor zoeken op het web
-summary: Grok-webzoekfunctie via op het web gebaseerde antwoorden van xAI
+    - Je hebt een XAI_API_KEY nodig om op het web te zoeken
+summary: Grok-webzoekfunctie via door webbronnen onderbouwde xAI-antwoorden
 title: Grok zoeken
 x-i18n:
-    generated_at: "2026-05-02T11:29:36Z"
+    generated_at: "2026-05-11T20:52:43Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7238be2b488ba285c948065f5c1deff21898409aa11bdaa9ec893274d0eadd4a
+    source_hash: 91220e1f9d3fb998d8270af5d5e9e2e47658688de00be0bab7a265910acef478
     source_path: tools/grok-search.md
     workflow: 16
 ---
 
-OpenClaw ondersteunt Grok als `web_search`-provider, met webgegronde
-antwoorden van xAI om door AI gesynthetiseerde antwoorden te produceren die worden ondersteund door live zoekresultaten
+OpenClaw ondersteunt Grok als `web_search`-provider en gebruikt xAI-webgegronde
+antwoorden om door AI gesynthetiseerde antwoorden te produceren, ondersteund door live zoekresultaten
 met citaties.
 
-Dezelfde `XAI_API_KEY` kan ook de ingebouwde `x_search`-tool aandrijven voor het zoeken naar X
-(voorheen Twitter)-berichten. Als je de sleutel opslaat onder
-`plugins.entries.xai.config.webSearch.apiKey`, gebruikt OpenClaw die nu ook opnieuw als
-fallback voor de gebundelde xAI-modelprovider.
+Dezelfde xAI-API-sleutel kan ook de ingebouwde `x_search`-tool voor X
+(voorheen Twitter) berichtzoekopdrachten en de `code_execution`-tool aandrijven. Als je de
+sleutel opslaat onder `plugins.entries.xai.config.webSearch.apiKey`, gebruikt OpenClaw deze nu ook
+als fallback voor de gebundelde xAI-modelprovider.
 
-Voor X-metrics op berichtniveau, zoals reposts, reacties, bookmarks of views, gebruik bij voorkeur
-`x_search` met de exacte bericht-URL of status-ID in plaats van een brede
-zoekquery.
+Voor X-metrics op berichtniveau, zoals reposts, antwoorden, bladwijzers of weergaven, geef je de voorkeur aan
+`x_search` met de exacte bericht-URL of status-ID in plaats van een brede zoekopdracht.
 
 ## Onboarding en configureren
 
@@ -33,22 +32,22 @@ Als je **Grok** kiest tijdens:
 - `openclaw onboard`
 - `openclaw configure --section web`
 
-kan OpenClaw een aparte vervolgstap tonen om `x_search` in te schakelen met dezelfde
-`XAI_API_KEY`. Die vervolgstap:
+kan OpenClaw een afzonderlijke vervolgstap tonen om `x_search` met dezelfde
+`XAI_API_KEY` in te schakelen. Die vervolgstap:
 
-- verschijnt alleen nadat je Grok kiest voor `web_search`
-- is geen aparte webzoekproviderkeuze op het hoogste niveau
-- kan optioneel het `x_search`-model instellen tijdens dezelfde flow
+- verschijnt alleen nadat je Grok voor `web_search` kiest
+- is geen afzonderlijke webzoekproviderkeuze op het hoogste niveau
+- kan optioneel het `x_search`-model tijdens dezelfde flow instellen
 
-Als je die overslaat, kun je `x_search` later in de configuratie inschakelen of wijzigen.
+Als je deze overslaat, kun je `x_search` later in de configuratie inschakelen of wijzigen.
 
 ## Een API-sleutel verkrijgen
 
 <Steps>
-  <Step title="Een sleutel maken">
+  <Step title="Create a key">
     Haal een API-sleutel op bij [xAI](https://console.x.ai/).
   </Step>
-  <Step title="De sleutel opslaan">
+  <Step title="Store the key">
     Stel `XAI_API_KEY` in de Gateway-omgeving in, of configureer via:
 
     ```bash
@@ -84,33 +83,33 @@ Als je die overslaat, kun je `x_search` later in de configuratie inschakelen of 
 }
 ```
 
-**Alternatief via omgeving:** stel `XAI_API_KEY` in de Gateway-omgeving in.
-Voor een gatewayinstallatie plaats je die in `~/.openclaw/.env`.
+**Omgevingsalternatief:** stel `XAI_API_KEY` in de Gateway-omgeving in.
+Voor een gateway-installatie zet je deze in `~/.openclaw/.env`.
 
 ## Hoe het werkt
 
-Grok gebruikt webgegronde antwoorden van xAI om antwoorden te synthetiseren met inline
-citaties, vergelijkbaar met Gemini's benadering voor Google Search-grounding.
+Grok gebruikt xAI-webgegronde antwoorden om antwoorden met inline
+citaties te synthetiseren, vergelijkbaar met de Google Search-groundingaanpak van Gemini.
 
 ## Ondersteunde parameters
 
-Grok Search ondersteunt `query`.
+Grok-zoekopdrachten ondersteunen `query`.
 
-`count` wordt geaccepteerd voor gedeelde `web_search`-compatibiliteit, maar Grok retourneert nog steeds
-één gesynthetiseerd antwoord met citaties in plaats van een lijst met N resultaten.
+`count` wordt geaccepteerd voor gedeelde `web_search`-compatibiliteit, maar Grok
+retourneert nog steeds één gesynthetiseerd antwoord met citaties in plaats van een lijst met N resultaten.
 
 Providerspecifieke filters worden momenteel niet ondersteund.
 
 Grok gebruikt een providerspecifieke standaardtime-out van 60 seconden, omdat xAI Responses
-webgegronde zoekopdrachten langer kunnen duren dan de gedeelde standaardwaarde van `web_search`. Stel
-`tools.web.search.timeoutSeconds` in om dit te overschrijven.
+webgegronde zoekopdrachten langer kunnen duren dan de gedeelde `web_search`-standaard. Stel
+`tools.web.search.timeoutSeconds` in om deze te overschrijven.
 
-## Basis-URL overschrijven
+## Base-URL-overschrijvingen
 
-Stel `plugins.entries.xai.config.webSearch.baseUrl` in wanneer Grok-webzoekopdrachten moeten
-worden gerouteerd via een operatorproxy of een xAI-compatibel Responses-eindpunt. OpenClaw
-post naar `<baseUrl>/responses` nadat afsluitende slashes zijn verwijderd. `x_search`
-gebruikt dezelfde fallback via `webSearch.baseUrl`, tenzij
+Stel `plugins.entries.xai.config.webSearch.baseUrl` in wanneer Grok-webzoekopdrachten via een operatorproxy of xAI-compatibel Responses-eindpunt moeten
+lopen. OpenClaw
+post naar `<baseUrl>/responses` na het verwijderen van afsluitende slashes. `x_search`
+gebruikt dezelfde `webSearch.baseUrl`-fallback, tenzij
 `plugins.entries.xai.config.xSearch.baseUrl` is ingesteld.
 
 ## Gerelateerd

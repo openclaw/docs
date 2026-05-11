@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Bạn muốn hỏi nhanh một câu hỏi bên lề về phiên hiện tại
-    - Bạn đang triển khai hoặc gỡ lỗi hành vi BTW trên các ứng dụng khách
-summary: Câu hỏi phụ tạm thời với /btw
+    - Bạn muốn hỏi nhanh một câu hỏi phụ về phiên hiện tại
+    - Bạn đang triển khai hoặc gỡ lỗi hành vi BTW trên các máy khách
+summary: Các câu hỏi phụ tạm thời với /btw
 title: Nhân tiện, các câu hỏi phụ
 x-i18n:
-    generated_at: "2026-05-06T09:31:59Z"
+    generated_at: "2026-05-11T20:37:09Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 356c9817001ba77271c671d20b45640f9d8178ced178aa5390375a79fc97eb6d
+    source_hash: fba82915b0a8f59d20073dac5c159c4aff4e81ccb1be5979be521212e22c493a
     source_path: tools/btw.md
     workflow: 16
 ---
 
-`/btw` cho phép bạn đặt một câu hỏi phụ nhanh về **phiên hiện tại** mà không
+`/btw` cho phép bạn hỏi nhanh một câu hỏi phụ về **phiên hiện tại** mà không
 biến câu hỏi đó thành lịch sử hội thoại thông thường. `/side` là một bí danh.
 
 Nó được mô phỏng theo hành vi `/btw` của Claude Code, nhưng được điều chỉnh cho
 Gateway và kiến trúc đa kênh của OpenClaw.
 
-## Nó làm gì
+## Chức năng
 
 Khi bạn gửi:
 
@@ -30,69 +30,76 @@ Khi bạn gửi:
 OpenClaw:
 
 1. chụp nhanh ngữ cảnh phiên hiện tại,
-2. chạy một lệnh gọi mô hình **không dùng công cụ** riêng biệt,
+2. chạy một truy vấn phụ tạm thời riêng biệt,
 3. chỉ trả lời câu hỏi phụ,
-4. giữ nguyên lượt chạy chính,
+4. giữ nguyên lần chạy chính,
 5. **không** ghi câu hỏi hoặc câu trả lời BTW vào lịch sử phiên,
-6. phát câu trả lời dưới dạng **kết quả phụ trực tiếp** thay vì một thông điệp trợ lý thông thường.
+6. phát câu trả lời dưới dạng **kết quả phụ trực tiếp** thay vì thông điệp trợ lý thông thường.
 
 Mô hình tư duy quan trọng là:
 
 - cùng ngữ cảnh phiên
 - truy vấn phụ một lần riêng biệt
-- không có lệnh gọi công cụ
+- cùng cơ chế truyền tải bộ khung gốc khi phiên dùng bộ khung gốc
 - không làm ô nhiễm ngữ cảnh tương lai
 - không lưu bản ghi hội thoại
 
-## Nó không làm gì
+Đối với các phiên dùng bộ khung Codex, BTW vẫn nằm trong Codex bằng cách fork
+luồng app-server đang hoạt động thành một luồng phụ tạm thời. Điều đó giữ nguyên
+OAuth của Codex và hành vi luồng gốc, đồng thời vẫn cô lập câu trả lời phụ khỏi
+bản ghi hội thoại cha. Giống như `/side` của Codex, luồng phụ giữ các quyền
+Codex hiện tại và bề mặt công cụ gốc, với các biện pháp bảo vệ yêu cầu mô hình
+không xem công việc kế thừa từ luồng cha là chỉ dẫn đang hoạt động. Các runtime
+không phải Codex vẫn giữ đường dẫn một lần trực tiếp cũ hơn.
+
+## Điều nó không làm
 
 `/btw` **không**:
 
 - tạo một phiên bền vững mới,
-- tiếp tục tác vụ chính chưa hoàn tất,
-- chạy công cụ hoặc vòng lặp công cụ của tác tử,
+- tiếp tục tác vụ chính còn dang dở,
 - ghi dữ liệu câu hỏi/câu trả lời BTW vào lịch sử bản ghi hội thoại,
 - xuất hiện trong `chat.history`,
 - tồn tại sau khi tải lại.
 
-Nó được thiết kế có chủ đích là **tạm thời**.
+Nó được thiết kế có chủ ý là **tạm thời**.
 
 ## Cách ngữ cảnh hoạt động
 
-BTW chỉ sử dụng phiên hiện tại làm **ngữ cảnh nền**.
+BTW chỉ dùng phiên hiện tại làm **ngữ cảnh nền**.
 
-Nếu lượt chạy chính hiện đang hoạt động, OpenClaw sẽ chụp nhanh trạng thái thông điệp
-hiện tại và đưa lời nhắc chính đang chạy vào làm ngữ cảnh nền, đồng thời
-chỉ dẫn rõ cho mô hình:
+Nếu lần chạy chính hiện đang hoạt động, OpenClaw chụp nhanh trạng thái thông điệp
+hiện tại và bao gồm prompt chính đang chạy làm ngữ cảnh nền, đồng thời yêu cầu
+mô hình một cách rõ ràng:
 
 - chỉ trả lời câu hỏi phụ,
-- không tiếp tục hoặc hoàn tất tác vụ chính chưa hoàn tất,
-- không phát lệnh gọi công cụ hoặc lệnh gọi công cụ giả.
+- không tiếp tục hoặc hoàn tất tác vụ chính còn dang dở,
+- không điều hướng hội thoại cha.
 
-Điều đó giữ BTW tách biệt khỏi lượt chạy chính trong khi vẫn giúp nó biết phiên
-đang nói về nội dung gì.
+Điều đó giữ BTW tách biệt khỏi lần chạy chính, đồng thời vẫn giúp nó biết phiên
+đang nói về điều gì.
 
 ## Mô hình phân phối
 
-BTW **không** được phân phối như một thông điệp bản ghi hội thoại của trợ lý thông thường.
+BTW **không** được phân phối dưới dạng thông điệp bản ghi hội thoại trợ lý thông thường.
 
 Ở cấp giao thức Gateway:
 
-- chat trợ lý thông thường dùng sự kiện `chat`
+- cuộc trò chuyện trợ lý thông thường dùng sự kiện `chat`
 - BTW dùng sự kiện `chat.side_result`
 
-Sự tách biệt này là có chủ đích. Nếu BTW dùng lại đường dẫn sự kiện `chat`
-thông thường, các máy khách sẽ xử lý nó như lịch sử hội thoại thường lệ.
+Sự tách biệt này là có chủ ý. Nếu BTW dùng lại đường dẫn sự kiện `chat` thông thường,
+client sẽ xử lý nó như lịch sử hội thoại thông thường.
 
-Vì BTW dùng một sự kiện trực tiếp riêng và không được phát lại từ
-`chat.history`, nó sẽ biến mất sau khi tải lại.
+Vì BTW dùng một sự kiện trực tiếp riêng biệt và không được phát lại từ
+`chat.history`, nó biến mất sau khi tải lại.
 
 ## Hành vi trên bề mặt
 
 ### TUI
 
 Trong TUI, BTW được hiển thị nội tuyến trong chế độ xem phiên hiện tại, nhưng nó vẫn
-tạm thời:
+mang tính tạm thời:
 
 - khác biệt rõ ràng với phản hồi trợ lý thông thường
 - có thể đóng bằng `Enter` hoặc `Esc`
@@ -100,28 +107,27 @@ tạm thời:
 
 ### Kênh bên ngoài
 
-Trên các kênh như Telegram, WhatsApp và Discord, BTW được phân phối dưới dạng một
-phản hồi một lần được gắn nhãn rõ ràng vì những bề mặt đó không có khái niệm lớp phủ
-tạm thời cục bộ.
+Trên các kênh như Telegram, WhatsApp và Discord, BTW được gửi dưới dạng một phản hồi
+một lần có nhãn rõ ràng vì các bề mặt đó không có khái niệm lớp phủ tạm thời cục bộ.
 
 Câu trả lời vẫn được xử lý như một kết quả phụ, không phải lịch sử phiên thông thường.
 
 ### Control UI / web
 
-Gateway phát BTW đúng dưới dạng `chat.side_result`, và BTW không được đưa vào
-`chat.history`, vì vậy hợp đồng lưu giữ đã đúng cho web.
+Gateway phát BTW đúng cách dưới dạng `chat.side_result`, và BTW không được đưa vào
+`chat.history`, nên hợp đồng lưu giữ đã đúng cho web.
 
-Control UI hiện tại vẫn cần một bộ tiêu thụ `chat.side_result` chuyên dụng để
-hiển thị BTW trực tiếp trong trình duyệt. Cho đến khi phần hỗ trợ phía máy khách đó được hoàn thiện, BTW là một
-tính năng cấp Gateway với đầy đủ hành vi trên TUI và kênh bên ngoài, nhưng chưa phải là
-một trải nghiệm trình duyệt hoàn chỉnh.
+Control UI hiện tại vẫn cần một consumer riêng cho `chat.side_result` để hiển thị
+BTW trực tiếp trong trình duyệt. Cho đến khi phần hỗ trợ phía client đó được đưa vào,
+BTW là một tính năng ở cấp Gateway với đầy đủ hành vi trên TUI và kênh bên ngoài,
+nhưng chưa phải là một trải nghiệm trình duyệt hoàn chỉnh.
 
 ## Khi nào dùng BTW
 
 Dùng `/btw` khi bạn muốn:
 
-- một lời làm rõ nhanh về công việc hiện tại,
-- một câu trả lời phụ mang tính sự kiện trong khi một lượt chạy dài vẫn đang diễn ra,
+- làm rõ nhanh về công việc hiện tại,
+- nhận câu trả lời phụ mang tính sự kiện trong khi một lần chạy dài vẫn đang diễn ra,
 - một câu trả lời tạm thời không nên trở thành một phần của ngữ cảnh phiên trong tương lai.
 
 Ví dụ:
@@ -136,7 +142,7 @@ Ví dụ:
 
 ## Khi nào không nên dùng BTW
 
-Không dùng `/btw` khi bạn muốn câu trả lời trở thành một phần trong ngữ cảnh làm việc
+Không dùng `/btw` khi bạn muốn câu trả lời trở thành một phần của ngữ cảnh làm việc
 tương lai của phiên.
 
 Trong trường hợp đó, hãy hỏi bình thường trong phiên chính thay vì dùng BTW.
@@ -144,16 +150,16 @@ Trong trường hợp đó, hãy hỏi bình thường trong phiên chính thay 
 ## Liên quan
 
 <CardGroup cols={2}>
-  <Card title="Slash commands" href="/vi/tools/slash-commands" icon="terminal">
-    Danh mục lệnh gốc và chỉ thị chat.
+  <Card title="Lệnh gạch chéo" href="/vi/tools/slash-commands" icon="terminal">
+    Danh mục lệnh gốc và chỉ thị trò chuyện.
   </Card>
-  <Card title="Thinking levels" href="/vi/tools/thinking" icon="brain">
-    Các mức nỗ lực suy luận cho lệnh gọi mô hình của câu hỏi phụ.
+  <Card title="Mức độ suy nghĩ" href="/vi/tools/thinking" icon="brain">
+    Các mức nỗ lực lập luận cho lệnh gọi mô hình câu hỏi phụ.
   </Card>
-  <Card title="Session" href="/vi/concepts/session" icon="comments">
+  <Card title="Phiên" href="/vi/concepts/session" icon="comments">
     Khóa phiên, lịch sử và ngữ nghĩa lưu giữ.
   </Card>
-  <Card title="Steer command" href="/vi/tools/steer" icon="arrow-right">
-    Chèn một thông điệp điều hướng vào lượt chạy đang hoạt động mà không kết thúc nó.
+  <Card title="Lệnh điều hướng" href="/vi/tools/steer" icon="arrow-right">
+    Chèn thông điệp điều hướng vào lần chạy đang hoạt động mà không kết thúc nó.
   </Card>
 </CardGroup>

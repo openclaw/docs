@@ -1,26 +1,26 @@
 ---
 read_when:
-    - OpenClaw'da fal görsel üretimini kullanmak istiyorsunuz.
-    - '`FAL_KEY` auth akışına ihtiyacınız var.'
-    - '`image_generate` veya `video_generate` için fal varsayılanlarını istiyorsunuz.'
-summary: OpenClaw'da fal görsel ve video üretimi kurulumu
+    - OpenClaw'da fal görüntü oluşturmayı kullanmak istiyorsunuz
+    - FAL_KEY kimlik doğrulama akışına ihtiyacınız var
+    - image_generate veya video_generate için fal varsayılanlarını istiyorsunuz
+summary: OpenClaw'da fal görüntü ve video oluşturma kurulumu
 title: Fal
 x-i18n:
-    generated_at: "2026-04-26T11:38:58Z"
-    model: gpt-5.4
+    generated_at: "2026-05-11T20:35:11Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: e6789f0fa1140cf76f0206c7384a79ee8b96de4af9e1dfedc00e5a3382f742bb
+    source_hash: 7f074629e5274154b7a17686264a8b137d61df321d791d6e47c9d8abe67ad273
     source_path: providers/fal.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw, barındırılan görsel ve video üretimi için paketlenmiş bir `fal` sağlayıcısıyla gelir.
+OpenClaw, barındırılan görüntü ve video üretimi için yerleşik bir `fal` sağlayıcısıyla gelir.
 
-| Özellik   | Değer                                                         |
-| --------- | ------------------------------------------------------------- |
+| Özellik | Değer                                                         |
+| -------- | ------------------------------------------------------------- |
 | Sağlayıcı | `fal`                                                         |
-| Auth      | `FAL_KEY` (kanonik; `FAL_API_KEY` de geri dönüş olarak çalışır) |
-| API       | fal model uç noktaları                                        |
+| Kimlik doğrulama     | `FAL_KEY` (kanonik; `FAL_API_KEY` yedek olarak da çalışır) |
+| API      | fal model uç noktaları                                           |
 
 ## Başlarken
 
@@ -30,7 +30,7 @@ OpenClaw, barındırılan görsel ve video üretimi için paketlenmiş bir `fal`
     openclaw onboard --auth-choice fal-api-key
     ```
   </Step>
-  <Step title="Varsayılan bir görsel modeli ayarlayın">
+  <Step title="Varsayılan bir görüntü modeli ayarlayın">
     ```json5
     {
       agents: {
@@ -45,29 +45,31 @@ OpenClaw, barındırılan görsel ve video üretimi için paketlenmiş bir `fal`
   </Step>
 </Steps>
 
-## Görsel üretimi
+## Görüntü üretimi
 
-Paketlenmiş `fal` görsel üretimi sağlayıcısı varsayılan olarak
-`fal/fal-ai/flux/dev` kullanır.
+Yerleşik `fal` görüntü üretimi sağlayıcısının varsayılanı
+`fal/fal-ai/flux/dev` olur.
 
-| Yetenek          | Değer                     |
-| ---------------- | ------------------------- |
-| En fazla görsel  | İstek başına 4            |
-| Düzenleme modu   | Etkin, 1 referans görsel  |
-| Boyut geçersiz kılmaları | Desteklenir         |
-| En-boy oranı     | Desteklenir               |
-| Çözünürlük       | Desteklenir               |
-| Çıktı biçimi     | `png` veya `jpeg`         |
+| Yetenek     | Değer                                                       |
+| -------------- | ----------------------------------------------------------- |
+| Maksimum görüntü     | İstek başına 4                                               |
+| Düzenleme modu      | Flux: 1 referans görüntü; GPT Image 2: 10; Nano Banana 2: 14 |
+| Boyut geçersiz kılmaları | Desteklenir                                                   |
+| En boy oranı   | Üretme ve GPT Image 2/Nano Banana 2 düzenleme için desteklenir   |
+| Çözünürlük     | Desteklenir                                                   |
+| Çıktı biçimi  | `png` veya `jpeg`                                             |
 
 <Warning>
-fal görsel düzenleme uç noktası `aspectRatio` geçersiz kılmalarını desteklemez.
+Flux görüntüden görüntüye istekleri `aspectRatio` geçersiz kılmalarını **desteklemez**. GPT
+Image 2 ve Nano Banana 2 düzenleme istekleri fal'in `/edit` uç noktasını kullanır ve
+en boy oranı ipuçlarını kabul eder.
 </Warning>
 
-PNG çıktısı istediğinizde `outputFormat: "png"` kullanın. fal, OpenClaw içinde açık bir
-şeffaf arka plan denetimi bildirmez; bu nedenle `background:
-"transparent"` fal modelleri için yok sayılan bir geçersiz kılma olarak bildirilir.
+PNG çıktısı istediğinizde `outputFormat: "png"` kullanın. fal, OpenClaw içinde
+açık bir saydam arka plan denetimi bildirmez; bu nedenle `background:
+"transparent"` fal modelleri için yok sayılan bir geçersiz kılma olarak raporlanır.
 
-fal'ı varsayılan görsel sağlayıcı olarak kullanmak için:
+fal'i varsayılan görüntü sağlayıcısı olarak kullanmak için:
 
 ```json5
 {
@@ -83,13 +85,13 @@ fal'ı varsayılan görsel sağlayıcı olarak kullanmak için:
 
 ## Video üretimi
 
-Paketlenmiş `fal` video üretimi sağlayıcısı varsayılan olarak
-`fal/fal-ai/minimax/video-01-live` kullanır.
+Yerleşik `fal` video üretimi sağlayıcısının varsayılanı
+`fal/fal-ai/minimax/video-01-live` olur.
 
-| Yetenek | Değer                                                                |
-| ------- | -------------------------------------------------------------------- |
-| Modlar  | Metinden videoya, tek görsel referansı, Seedance referansla videoya  |
-| Çalışma zamanı | Uzun süren işler için kuyruk destekli gönderim/durum/sonuç akışı |
+| Yetenek | Değer                                                              |
+| ---------- | ------------------------------------------------------------------ |
+| Modlar      | Metinden videoya, tek görüntü referansı, Seedance referanstan videoya |
+| Çalışma zamanı    | Uzun süren işler için kuyruk destekli gönderme/durum/sonuç akışı       |
 
 <AccordionGroup>
   <Accordion title="Kullanılabilir video modelleri">
@@ -122,7 +124,7 @@ Paketlenmiş `fal` video üretimi sağlayıcısı varsayılan olarak
     ```
   </Accordion>
 
-  <Accordion title="Seedance 2.0 referansla videoya yapılandırma örneği">
+  <Accordion title="Seedance 2.0 referanstan videoya yapılandırma örneği">
     ```json5
     {
       agents: {
@@ -135,8 +137,9 @@ Paketlenmiş `fal` video üretimi sağlayıcısı varsayılan olarak
     }
     ```
 
-    Referansla videoya, paylaşılan `video_generate` `images`, `videos` ve `audioRefs`
-    parametreleri üzerinden en fazla 9 görsel, 3 video ve 3 ses referansı kabul eder; toplam referans dosyası sayısı en fazla 12 olabilir.
+    Referanstan videoya, paylaşılan `video_generate` `images`, `videos` ve `audioRefs`
+    parametreleri aracılığıyla en fazla 9 görüntü, 3 video ve 3 ses referansı kabul eder;
+    toplamda en fazla 12 referans dosyası olabilir.
 
   </Accordion>
 
@@ -156,20 +159,20 @@ Paketlenmiş `fal` video üretimi sağlayıcısı varsayılan olarak
 </AccordionGroup>
 
 <Tip>
-Sonradan eklenen girdiler dahil mevcut tüm fal
-modellerinin tam listesini görmek için `openclaw models list --provider fal` kullanın.
+Son eklenen girişler dahil kullanılabilir fal modellerinin tam listesini görmek için
+`openclaw models list --provider fal` kullanın.
 </Tip>
 
 ## İlgili
 
 <CardGroup cols={2}>
-  <Card title="Görsel üretimi" href="/tr/tools/image-generation" icon="image">
-    Paylaşılan görsel aracı parametreleri ve sağlayıcı seçimi.
+  <Card title="Görüntü üretimi" href="/tr/tools/image-generation" icon="image">
+    Paylaşılan görüntü aracı parametreleri ve sağlayıcı seçimi.
   </Card>
   <Card title="Video üretimi" href="/tr/tools/video-generation" icon="video">
     Paylaşılan video aracı parametreleri ve sağlayıcı seçimi.
   </Card>
   <Card title="Yapılandırma başvurusu" href="/tr/gateway/config-agents#agent-defaults" icon="gear">
-    Görsel ve video model seçimi dahil ajan varsayılanları.
+    Görüntü ve video modeli seçimi dahil aracı varsayılanları.
   </Card>
 </CardGroup>

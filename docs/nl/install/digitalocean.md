@@ -5,10 +5,10 @@ read_when:
 summary: OpenClaw hosten op een DigitalOcean Droplet
 title: DigitalOcean
 x-i18n:
-    generated_at: "2026-05-06T09:19:04Z"
+    generated_at: "2026-05-11T20:35:09Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7aa09915d845c9ede27db794cac464490ba038e8e5e0a2ef0f5bfc62ef7e59ff
+    source_hash: 2ddfe3e6df5e48616584e912e12eede30a62f869fc307f586c9604c9c06c9e5b
     source_path: install/digitalocean.md
     workflow: 16
 ---
@@ -17,8 +17,8 @@ Voer een persistente OpenClaw Gateway uit op een DigitalOcean Droplet (~$6/maand
 
 DigitalOcean is de eenvoudigste betaalde VPS-route. Als je goedkopere of gratis opties verkiest:
 
-- [Hetzner](/nl/install/hetzner) — €3,79/maand, meer cores/RAM per dollar.
-- [Oracle Cloud](/nl/install/oracle) — Always Free ARM (tot 4 OCPU, 24 GB RAM), maar aanmelden kan lastig zijn en het is alleen ARM.
+- [Hetzner](/nl/install/hetzner) — €3,79/mnd, meer cores/RAM per dollar.
+- [Oracle Cloud](/nl/install/oracle) — Always Free ARM (tot 4 OCPU, 24 GB RAM), maar aanmelden kan lastig zijn en is alleen ARM.
 
 ## Vereisten
 
@@ -26,12 +26,12 @@ DigitalOcean is de eenvoudigste betaalde VPS-route. Als je goedkopere of gratis 
 - SSH-sleutelpaar (of bereidheid om wachtwoordauthenticatie te gebruiken)
 - Ongeveer 20 minuten
 
-## Installatie
+## Instellen
 
 <Steps>
-  <Step title="Maak een Droplet aan">
+  <Step title="Een Droplet maken">
     <Warning>
-    Gebruik een schone basisimage (Ubuntu 24.04 LTS). Vermijd 1-klik-images van derden uit de Marketplace, tenzij je hun opstartscripts en firewallstandaarden hebt gecontroleerd.
+    Gebruik een schone basisimage (Ubuntu 24.04 LTS). Vermijd Marketplace 1-click-images van derden, tenzij je hun opstartscripts en firewallstandaarden hebt gecontroleerd.
     </Warning>
 
     1. Log in bij [DigitalOcean](https://cloud.digitalocean.com/).
@@ -45,7 +45,7 @@ DigitalOcean is de eenvoudigste betaalde VPS-route. Als je goedkopere of gratis 
 
   </Step>
 
-  <Step title="Maak verbinding en installeer">
+  <Step title="Verbinden en installeren">
     ```bash
     ssh root@YOUR_DROPLET_IP
 
@@ -57,21 +57,30 @@ DigitalOcean is de eenvoudigste betaalde VPS-route. Als je goedkopere of gratis 
 
     # Install OpenClaw
     curl -fsSL https://openclaw.ai/install.sh | bash
+
+    # Create the non-root user that will own OpenClaw state and services.
+    adduser openclaw
+    usermod -aG sudo openclaw
+    loginctl enable-linger openclaw
+
+    su - openclaw
     openclaw --version
     ```
 
+    Gebruik de root-shell alleen voor de systeem-bootstrap. Voer OpenClaw-opdrachten uit als de niet-rootgebruiker `openclaw`, zodat de status onder `/home/openclaw/.openclaw/` staat en de Gateway wordt geïnstalleerd als systemd-service van die gebruiker.
+
   </Step>
 
-  <Step title="Voer onboarding uit">
+  <Step title="Onboarding uitvoeren">
     ```bash
     openclaw onboard --install-daemon
     ```
 
-    De wizard leidt je door modelauthenticatie, kanaalconfiguratie, het genereren van een Gateway-token en daemon-installatie (systemd).
+    De wizard leidt je door modelauthenticatie, kanaalconfiguratie, het genereren van een gateway-token en daemoninstallatie (systemd).
 
   </Step>
 
-  <Step title="Voeg swap toe (aanbevolen voor 1 GB Droplets)">
+  <Step title="Swap toevoegen (aanbevolen voor 1 GB Droplets)">
     ```bash
     fallocate -l 2G /swapfile
     chmod 600 /swapfile
@@ -81,7 +90,7 @@ DigitalOcean is de eenvoudigste betaalde VPS-route. Als je goedkopere of gratis 
     ```
   </Step>
 
-  <Step title="Controleer de Gateway">
+  <Step title="De gateway verifiëren">
     ```bash
     openclaw status
     systemctl --user status openclaw-gateway.service
@@ -89,8 +98,8 @@ DigitalOcean is de eenvoudigste betaalde VPS-route. Als je goedkopere of gratis 
     ```
   </Step>
 
-  <Step title="Open de Control UI">
-    De Gateway bindt standaard aan loopback. Kies een van deze opties.
+  <Step title="Toegang tot de Control UI">
+    De gateway bindt standaard aan loopback. Kies een van deze opties.
 
     **Optie A: SSH-tunnel (eenvoudigst)**
 
@@ -104,17 +113,17 @@ DigitalOcean is de eenvoudigste betaalde VPS-route. Als je goedkopere of gratis 
     **Optie B: Tailscale Serve**
 
     ```bash
-    curl -fsSL https://tailscale.com/install.sh | sh
-    tailscale up
+    curl -fsSL https://tailscale.com/install.sh | sudo sh
+    sudo tailscale up
     openclaw config set gateway.tailscale.mode serve
     openclaw gateway restart
     ```
 
     Open daarna `https://<magicdns>/` vanaf elk apparaat op je tailnet.
 
-    Tailscale Serve authenticeert verkeer van de Control UI en WebSocket-verkeer via tailnet-identiteitsheaders, waarbij wordt aangenomen dat de Gateway-host zelf vertrouwd is. HTTP API-eindpunten volgen hoe dan ook de normale authenticatiemodus van de Gateway (token/wachtwoord). Stel `gateway.auth.allowTailscale: false` in en gebruik `gateway.auth.mode: "token"` of `"password"` om expliciete shared-secret-credentials via Serve te vereisen.
+    Tailscale Serve authenticeert Control UI- en WebSocket-verkeer via tailnet-identiteitsheaders, waarbij wordt aangenomen dat de gateway-host zelf vertrouwd is. HTTP API-eindpunten volgen ongeacht dit de normale auth-modus van de gateway (token/wachtwoord). Stel `gateway.auth.allowTailscale: false` in en gebruik `gateway.auth.mode: "token"` of `"password"` om expliciete gedeelde-geheime aanmeldgegevens via Serve te vereisen.
 
-    **Optie C: Tailnet-bind (zonder Serve)**
+    **Optie C: Tailnet-bind (geen Serve)**
 
     ```bash
     openclaw config set gateway.bind tailnet
@@ -133,7 +142,7 @@ OpenClaw-status staat onder:
 - `~/.openclaw/` — `openclaw.json`, per-agent `auth-profiles.json`, kanaal-/providerstatus en sessiegegevens.
 - `~/.openclaw/workspace/` — de agentwerkruimte (SOUL.md, geheugen, artefacten).
 
-Deze blijven behouden na Droplet-herstarts. Maak een draagbare snapshot met:
+Deze blijven behouden na herstarts van de Droplet. Een draagbare snapshot maken:
 
 ```bash
 openclaw backup create
@@ -145,18 +154,18 @@ DigitalOcean-snapshots maken een back-up van de hele Droplet; `openclaw backup c
 
 De Droplet van $6 heeft slechts 1 GB RAM. Om alles soepel te houden:
 
-- Zorg dat de swapstap hierboven in `/etc/fstab` staat, zodat deze herstarts overleeft.
+- Zorg ervoor dat de swapstap hierboven in `/etc/fstab` staat, zodat deze herstarts overleeft.
 - Geef de voorkeur aan API-gebaseerde modellen (Claude, GPT) boven lokale modellen — lokale LLM-inferentie past niet in 1 GB.
-- Stel `agents.defaults.model.primary` in op een kleiner model als je OOM's krijgt bij grote prompts.
+- Stel `agents.defaults.model.primary` in op een kleiner model als je OOMs krijgt bij grote prompts.
 - Monitor met `free -h` en `htop`.
 
-## Probleemoplossing
+## Problemen oplossen
 
 **Gateway start niet** -- Voer `openclaw doctor --non-interactive` uit en controleer logs met `journalctl --user -u openclaw-gateway.service -n 50`.
 
 **Poort is al in gebruik** -- Voer `lsof -i :18789` uit om het proces te vinden en stop het daarna.
 
-**Onvoldoende geheugen** -- Controleer met `free -h` of swap actief is. Als je nog steeds OOM krijgt, gebruik dan API-gebaseerde modellen (Claude, GPT) in plaats van lokale modellen, of upgrade naar een Droplet van 2 GB.
+**Onvoldoende geheugen** -- Controleer met `free -h` of swap actief is. Als je nog steeds OOM krijgt, gebruik dan API-gebaseerde modellen (Claude, GPT) in plaats van lokale modellen, of upgrade naar een 2 GB Droplet.
 
 ## Volgende stappen
 

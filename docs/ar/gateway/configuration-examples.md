@@ -3,18 +3,18 @@ read_when:
     - تعلّم كيفية تكوين OpenClaw
     - البحث عن أمثلة للتكوين
     - إعداد OpenClaw لأول مرة
-summary: أمثلة تكوين مطابقة للمخطط لعمليات إعداد OpenClaw الشائعة
+summary: أمثلة تكوين مطابقة للمخطط لإعدادات OpenClaw الشائعة
 title: أمثلة التكوين
 x-i18n:
-    generated_at: "2026-05-10T19:38:06Z"
+    generated_at: "2026-05-11T20:32:01Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9fd1c93d8c491de13c3679c766293a3401853625308e90588d7c83272c5b6e73
+    source_hash: e077b2fe83b1c6e4ffd2ff0029fe3b754c7dc5dced06f134ddf18e9ed6a11fd2
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-الأمثلة أدناه متوافقة مع مخطط الإعدادات الحالي. للاطلاع على المرجع الشامل وملاحظات كل حقل، راجع [الإعدادات](/ar/gateway/configuration).
+الأمثلة أدناه متوافقة مع مخطط التهيئة الحالي. للاطلاع على المرجع الشامل وملاحظات كل حقل، راجع [التهيئة](/ar/gateway/configuration).
 
 ## البدء السريع
 
@@ -22,25 +22,32 @@ x-i18n:
 
 ```json5
 {
-  agent: { workspace: "~/.openclaw/workspace" },
+  agents: { defaults: { workspace: "~/.openclaw/workspace" } },
   channels: { whatsapp: { allowFrom: ["+15555550123"] } },
 }
 ```
 
-احفظه في `~/.openclaw/openclaw.json` ويمكنك مراسلة البوت مباشرة من ذلك الرقم.
+احفظه في `~/.openclaw/openclaw.json` ويمكنك مراسلة الروبوت برسالة خاصة من ذلك الرقم.
 
-### بداية موصى بها
+### إعداد البدء الموصى به
 
 ```json5
 {
-  identity: {
-    name: "Clawd",
-    theme: "helpful assistant",
-    emoji: "🦞",
-  },
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: { primary: "anthropic/claude-sonnet-4-6" },
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: { primary: "anthropic/claude-sonnet-4-6" },
+    },
+    list: [
+      {
+        id: "main",
+        identity: {
+          name: "Clawd",
+          theme: "helpful assistant",
+          emoji: "🦞",
+        },
+      },
+    ],
   },
   channels: {
     whatsapp: {
@@ -90,12 +97,7 @@ x-i18n:
     },
   },
 
-  // Identity
-  identity: {
-    name: "Samantha",
-    theme: "helpful sloth",
-    emoji: "🦥",
-  },
+  // Identity is per agent — set it on agents.list[].identity below.
 
   // Logging
   logging: {
@@ -314,6 +316,11 @@ x-i18n:
       {
         id: "main",
         default: true,
+        identity: {
+          name: "Samantha",
+          theme: "helpful sloth",
+          emoji: "🦥",
+        },
         // inherits defaults.skills -> github, weather
         groupChat: {
           mentionPatterns: ["@openclaw", "openclaw"],
@@ -473,10 +480,9 @@ x-i18n:
 }
 ```
 
-### مستودع Skills شقيق مرتبط برابط رمزي
+### مستودع Skills شقيق مرتبط رمزياً
 
-استخدم هذا عندما يحتوي جذر Skills مدمج على رابط رمزي إلى مستودع شقيق، على
-سبيل المثال `~/.agents/skills/manager -> ~/Projects/manager/skills`.
+استخدم هذا عندما يحتوي جذر Skills مدمج على رابط رمزي إلى مستودع شقيق، على سبيل المثال `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ```json5
 {
@@ -489,13 +495,12 @@ x-i18n:
 }
 ```
 
-- يفحص `extraDirs` المستودع الشقيق كجذر Skills صريح.
-- يتيح `allowSymlinkTargets` لمجلدات Skills المرتبطة رمزيا أن تُحل إلى جذر الهدف
-  الحقيقي الموثوق هذا من دون السماح بأي خروج عشوائي عبر الروابط الرمزية.
+- يفحص `extraDirs` المستودع الشقيق باعتباره جذر Skills صريحاً.
+- يتيح `allowSymlinkTargets` لمجلدات Skills المرتبطة رمزياً أن تُحل إلى جذر الهدف الحقيقي الموثوق هذا من دون السماح بأي إفلات عشوائي عبر الروابط الرمزية.
 
-## أنماط شائعة
+## الأنماط الشائعة
 
-### خط أساس مشترك لـ Skills مع تجاوز واحد
+### خط أساس Skills مشترك مع تجاوز واحد
 
 ```json5
 {
@@ -512,15 +517,15 @@ x-i18n:
 }
 ```
 
-- يمثل `agents.defaults.skills` خط الأساس المشترك.
-- يستبدل `agents.list[].skills` ذلك الخط الأساسي لوكيل واحد.
-- استخدم `skills: []` عندما لا ينبغي أن يرى الوكيل أي Skills.
+- `agents.defaults.skills` هو خط الأساس المشترك.
+- يستبدل `agents.list[].skills` خط الأساس هذا لوكيل واحد.
+- استخدم `skills: []` عندما ينبغي ألا يرى الوكيل أي Skills.
 
 ### إعداد متعدد المنصات
 
 ```json5
 {
-  agent: { workspace: "~/.openclaw/workspace" },
+  agents: { defaults: { workspace: "~/.openclaw/workspace" } },
   channels: {
     whatsapp: { allowFrom: ["+15555550123"] },
     telegram: {
@@ -537,10 +542,10 @@ x-i18n:
 }
 ```
 
-### الموافقة التلقائية على شبكة Node موثوقة
+### الموافقة التلقائية لشبكة Node الموثوقة
 
-أبقِ إقران الأجهزة يدويا ما لم تكن تتحكم في مسار الشبكة. بالنسبة إلى مختبر مخصص
-أو شبكة فرعية ضمن tailnet، يمكنك تفعيل الموافقة التلقائية لأول مرة على أجهزة Node
+أبقِ إقران الأجهزة يدويًا ما لم تكن تتحكم في مسار الشبكة. بالنسبة إلى مختبر مخصص
+أو شبكة فرعية ضمن tailnet، يمكنك تفعيل الموافقة التلقائية على جهاز Node عند أول استخدام
 باستخدام CIDR أو عناوين IP دقيقة:
 
 ```json5
@@ -555,13 +560,13 @@ x-i18n:
 }
 ```
 
-يبقى هذا معطلا عندما لا يتم تعيينه. ولا ينطبق إلا على إقران جديد بقيمة `role: node`
-من دون نطاقات مطلوبة. ولا يزال العملاء من نوع المشغل/المتصفح وترقيات الدور أو النطاق
-أو البيانات الوصفية أو المفتاح العام تتطلب موافقة يدوية.
+يبقى هذا معطلاً عند عدم ضبطه. لا ينطبق إلا على إقران جديد لـ `role: node` دون
+نطاقات مطلوبة. لا يزال عملاء المشغّل/المتصفح وترقيات الدور أو النطاق أو البيانات الوصفية أو
+المفتاح العام تتطلب موافقة يدوية.
 
-### وضع الرسائل المباشرة الآمن (صندوق وارد مشترك / رسائل مباشرة متعددة المستخدمين)
+### وضع DM الآمن (صندوق وارد مشترك / رسائل DM متعددة المستخدمين)
 
-إذا كان يمكن لأكثر من شخص مراسلة روبوتك برسالة مباشرة (إدخالات متعددة في `allowFrom`، أو موافقات إقران لعدة أشخاص، أو `dmPolicy: "open"`)، ففعّل **وضع الرسائل المباشرة الآمن** حتى لا تشترك الرسائل المباشرة من مرسلين مختلفين في سياق واحد افتراضيا:
+إذا كان بإمكان أكثر من شخص مراسلة برنامجك عبر DM (إدخالات متعددة في `allowFrom`، أو موافقات إقران لعدة أشخاص، أو `dmPolicy: "open"`)، ففعّل **وضع DM الآمن** حتى لا تشارك رسائل DM من مرسلين مختلفين سياقًا واحدًا افتراضيًا:
 
 ```json5
 {
@@ -585,10 +590,10 @@ x-i18n:
 }
 ```
 
-بالنسبة إلى Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC، يكون تفويض المرسل قائما على المعرف أولا افتراضيا.
-لا تفعّل مطابقة الاسم/البريد الإلكتروني/اللقب المباشرة والقابلة للتغيير عبر `dangerouslyAllowNameMatching: true` الخاص بكل قناة إلا إذا قبلت هذه المخاطرة صراحة.
+بالنسبة إلى Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC، يكون تفويض المرسل قائمًا على المعرّف أولاً افتراضيًا.
+لا تفعّل المطابقة المباشرة القابلة للتغيير للاسم/البريد الإلكتروني/اللقب باستخدام `dangerouslyAllowNameMatching: true` الخاص بكل قناة إلا إذا كنت تقبل هذا الخطر صراحةً.
 
-### مفتاح Anthropic API مع رجوع احتياطي إلى MiniMax
+### مفتاح Anthropic API + احتياط MiniMax
 
 ```json5
 {
@@ -612,27 +617,36 @@ x-i18n:
       },
     },
   },
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: {
-      primary: "anthropic/claude-opus-4-6",
-      fallbacks: ["minimax/MiniMax-M2.7"],
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: {
+        primary: "anthropic/claude-opus-4-6",
+        fallbacks: ["minimax/MiniMax-M2.7"],
+      },
     },
   },
 }
 ```
 
-### روبوت عمل (وصول مقيد)
+### بوت العمل (وصول مقيّد)
 
 ```json5
 {
-  identity: {
-    name: "WorkBot",
-    theme: "professional assistant",
-  },
-  agent: {
-    workspace: "~/work-openclaw",
-    elevated: { enabled: false },
+  agents: {
+    defaults: {
+      workspace: "~/work-openclaw",
+      elevatedDefault: "off",
+    },
+    list: [
+      {
+        id: "main",
+        identity: {
+          name: "WorkBot",
+          theme: "professional assistant",
+        },
+      },
+    ],
   },
   channels: {
     slack: {
@@ -651,9 +665,11 @@ x-i18n:
 
 ```json5
 {
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: { primary: "lmstudio/my-local-model" },
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: { primary: "lmstudio/my-local-model" },
+    },
   },
   models: {
     mode: "merge",
@@ -681,12 +697,12 @@ x-i18n:
 
 ## نصائح
 
-- إذا عيّنت `dmPolicy: "open"`، فيجب أن تتضمن قائمة `allowFrom` المطابقة `"*"`.
-- تختلف معرفات المزودين (أرقام الهواتف، معرفات المستخدمين، معرفات القنوات). استخدم وثائق المزود لتأكيد الصيغة.
-- أقسام اختيارية يمكن إضافتها لاحقا: `web`، `browser`، `ui`، `discovery`، `plugins`، `talk`، `signal`، `imessage`.
-- راجع [المزودون](/ar/providers) و[استكشاف الأخطاء وإصلاحها](/ar/gateway/troubleshooting) للاطلاع على ملاحظات إعداد أعمق.
+- إذا ضبطت `dmPolicy: "open"`، فيجب أن تتضمن قائمة `allowFrom` المطابقة `"*"`.
+- تختلف معرّفات المزوّدين (أرقام الهواتف، معرّفات المستخدمين، معرّفات القنوات). استخدم وثائق المزوّد لتأكيد التنسيق.
+- أقسام اختيارية لإضافتها لاحقًا: `web`، `browser`، `ui`، `discovery`، `plugins`، `talk`، `signal`، `imessage`.
+- راجع [المزوّدون](/ar/providers) و[استكشاف الأخطاء وإصلاحها](/ar/gateway/troubleshooting) للحصول على ملاحظات إعداد أعمق.
 
 ## ذات صلة
 
-- [مرجع التكوين](/ar/gateway/configuration-reference)
-- [التكوين](/ar/gateway/configuration)
+- [مرجع الإعدادات](/ar/gateway/configuration-reference)
+- [الإعدادات](/ar/gateway/configuration)

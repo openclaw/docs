@@ -1,26 +1,26 @@
 ---
 read_when:
     - /new, /reset, /stop ve ajan yaşam döngüsü olayları için olay güdümlü otomasyon istiyorsunuz
-    - Kancalar oluşturmak, yüklemek veya kancalarda hata ayıklamak istiyorsunuz
+    - Kancalar oluşturmak, yüklemek veya hata ayıklamak istiyorsunuz
 summary: 'Kancalar: komutlar ve yaşam döngüsü olayları için olay odaklı otomasyon'
 title: Kancalar
 x-i18n:
-    generated_at: "2026-05-05T08:25:32Z"
+    generated_at: "2026-05-11T20:20:38Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 321eb7a583d5e8c90d2c2026f6e1cf46cd207bef52213774b469a8d46b993967
+    source_hash: 02f44dd117d52040ea1205521c6ecd4eb410510175e2312e2584a15e6df27d96
     source_path: automation/hooks.md
     workflow: 16
 ---
 
-Hooks, Gateway içinde bir şey olduğunda çalışan küçük betiklerdir. Dizinlerden keşfedilebilir ve `openclaw hooks` ile incelenebilirler. Gateway, dahili hook'ları yalnızca hook'ları etkinleştirdikten veya en az bir hook girdisi, hook paketi, eski işleyici ya da ek hook dizini yapılandırdıktan sonra yükler.
+Hooks, Gateway içinde bir şey olduğunda çalışan küçük betiklerdir. Dizinlerden keşfedilebilir ve `openclaw hooks` ile incelenebilirler. Gateway, dahili hooks öğelerini yalnızca hooks öğelerini etkinleştirdikten veya en az bir hook girdisi, hook paketi, eski handler ya da ek hook dizini yapılandırdıktan sonra yükler.
 
-OpenClaw'da iki tür hook vardır:
+OpenClaw içinde iki tür hooks vardır:
 
-- **Dahili hook'lar** (bu sayfa): `/new`, `/reset`, `/stop` veya yaşam döngüsü olayları gibi ajan olayları tetiklendiğinde Gateway içinde çalışır.
-- **Webhook'lar**: diğer sistemlerin OpenClaw'da iş tetiklemesini sağlayan harici HTTP uç noktalarıdır. Bkz. [Webhook'lar](/tr/automation/cron-jobs#webhooks).
+- **Dahili hooks** (bu sayfa): `/new`, `/reset`, `/stop` veya yaşam döngüsü olayları gibi agent olayları tetiklendiğinde Gateway içinde çalışır.
+- **Webhooks**: diğer sistemlerin OpenClaw içinde iş tetiklemesini sağlayan harici HTTP uç noktaları. Bkz. [Webhooks](/tr/automation/cron-jobs#webhooks).
 
-Hook'lar ayrıca plugin'lerin içinde paketlenebilir. `openclaw hooks list`, hem bağımsız hook'ları hem de plugin tarafından yönetilen hook'ları gösterir.
+Hooks, plugins içinde de paketlenebilir. `openclaw hooks list` hem bağımsız hooks öğelerini hem de plugin tarafından yönetilen hooks öğelerini gösterir.
 
 ## Hızlı başlangıç
 
@@ -40,25 +40,25 @@ openclaw hooks info session-memory
 
 ## Olay türleri
 
-| Olay                     | Ne zaman tetiklenir                                         |
-| ------------------------ | ----------------------------------------------------------- |
-| `command:new`            | `/new` komutu verildiğinde                                  |
-| `command:reset`          | `/reset` komutu verildiğinde                                |
-| `command:stop`           | `/stop` komutu verildiğinde                                 |
-| `command`                | Herhangi bir komut olayı (genel dinleyici)                  |
-| `session:compact:before` | Compaction geçmişi özetlemeden önce                         |
-| `session:compact:after`  | Compaction tamamlandıktan sonra                             |
-| `session:patch`          | Oturum özellikleri değiştirildiğinde                        |
-| `agent:bootstrap`        | Çalışma alanı bootstrap dosyaları enjekte edilmeden önce     |
-| `gateway:startup`        | Kanallar başladıktan ve hook'lar yüklendikten sonra         |
-| `gateway:shutdown`       | Gateway kapatma işlemi başladığında                         |
-| `gateway:pre-restart`    | Beklenen bir Gateway yeniden başlatmasından önce             |
-| `message:received`       | Herhangi bir kanaldan gelen mesaj                           |
-| `message:transcribed`    | Ses transkripsiyonu tamamlandıktan sonra                    |
-| `message:preprocessed`   | Medya ve bağlantı ön işleme tamamlandıktan veya atlandıktan sonra |
-| `message:sent`           | Giden mesaj teslim edildiğinde                              |
+| Olay                     | Ne zaman tetiklenir                                        |
+| ------------------------ | ---------------------------------------------------------- |
+| `command:new`            | `/new` komutu verildi                                      |
+| `command:reset`          | `/reset` komutu verildi                                    |
+| `command:stop`           | `/stop` komutu verildi                                     |
+| `command`                | Herhangi bir komut olayı (genel dinleyici)                 |
+| `session:compact:before` | Compaction geçmişi özetlemeden önce                        |
+| `session:compact:after`  | Compaction tamamlandıktan sonra                            |
+| `session:patch`          | Oturum özellikleri değiştirildiğinde                       |
+| `agent:bootstrap`        | Çalışma alanı bootstrap dosyaları enjekte edilmeden önce    |
+| `gateway:startup`        | Kanallar başladıktan ve hooks yüklendikten sonra           |
+| `gateway:shutdown`       | Gateway kapatması başladığında                             |
+| `gateway:pre-restart`    | Beklenen bir gateway yeniden başlatmasından önce            |
+| `message:received`       | Herhangi bir kanaldan gelen ileti                          |
+| `message:transcribed`    | Ses transkripsiyonu tamamlandıktan sonra                   |
+| `message:preprocessed`   | Medya ve bağlantı ön işlemesi tamamlandıktan veya atlandıktan sonra |
+| `message:sent`           | Giden ileti teslim edildi                                  |
 
-## Hook yazma
+## Hooks yazma
 
 ### Hook yapısı
 
@@ -89,15 +89,15 @@ Detailed documentation goes here.
 
 | Alan       | Açıklama                                             |
 | ---------- | ---------------------------------------------------- |
-| `emoji`    | CLI için görüntülenecek emoji                        |
+| `emoji`    | CLI için görüntüleme emojisi                         |
 | `events`   | Dinlenecek olaylar dizisi                            |
-| `export`   | Kullanılacak adlandırılmış dışa aktarım (varsayılan `"default"`) |
+| `export`   | Kullanılacak adlandırılmış export (varsayılan `"default"`) |
 | `os`       | Gerekli platformlar (örn. `["darwin", "linux"]`)     |
 | `requires` | Gerekli `bins`, `anyBins`, `env` veya `config` yolları |
 | `always`   | Uygunluk kontrollerini atla (boolean)                |
 | `install`  | Kurulum yöntemleri                                   |
 
-### İşleyici uygulaması
+### Handler uygulaması
 
 ```typescript
 const handler = async (event) => {
@@ -115,67 +115,66 @@ const handler = async (event) => {
 export default handler;
 ```
 
-Her olay şunları içerir: `type`, `action`, `sessionKey`, `timestamp`, `messages` (kullanıcıya göndermek için push yapın) ve `context` (olaya özgü veri). Ajan ve araç plugin hook bağlamları ayrıca, plugin'lerin OTEL korelasyonu için yapılandırılmış günlüklere aktarabileceği salt okunur W3C uyumlu tanılama izleme bağlamı olan `trace` içerebilir.
+Her olay şunları içerir: `type`, `action`, `sessionKey`, `timestamp`, `messages` (kullanıcıya göndermek için push edin) ve `context` (olaya özgü veriler). Agent ve araç plugin hook bağlamları ayrıca `trace` içerebilir; bu, plugins öğelerinin OTEL korelasyonu için yapılandırılmış günlüklere aktarabileceği salt okunur W3C uyumlu bir tanılama izleme bağlamıdır.
 
 ### Olay bağlamı öne çıkanları
 
 **Komut olayları** (`command:new`, `command:reset`): `context.sessionEntry`, `context.previousSessionEntry`, `context.commandSource`, `context.workspaceDir`, `context.cfg`.
 
-**Mesaj olayları** (`message:received`): `context.from`, `context.content`, `context.channelId`, `context.metadata` (`senderId`, `senderName`, `guildId` dahil sağlayıcıya özgü veriler). `context.content`, komut benzeri mesajlar için boş olmayan bir komut gövdesini tercih eder, ardından ham gelen gövdeye ve genel gövdeye geri döner; iş parçacığı geçmişi veya bağlantı özetleri gibi yalnızca ajana özgü zenginleştirmeleri içermez.
+**İleti olayları** (`message:received`): `context.from`, `context.content`, `context.channelId`, `context.metadata` (`senderId`, `senderName`, `guildId` dahil sağlayıcıya özgü veriler). `context.content`, komut benzeri iletiler için boş olmayan bir komut gövdesini tercih eder, ardından ham gelen gövdeye ve genel gövdeye geri döner; thread geçmişi veya bağlantı özetleri gibi yalnızca agent'a ait zenginleştirmeleri içermez.
 
-**Mesaj olayları** (`message:sent`): `context.to`, `context.content`, `context.success`, `context.channelId`.
+**İleti olayları** (`message:sent`): `context.to`, `context.content`, `context.success`, `context.channelId`.
 
-**Mesaj olayları** (`message:transcribed`): `context.transcript`, `context.from`, `context.channelId`, `context.mediaPath`.
+**İleti olayları** (`message:transcribed`): `context.transcript`, `context.from`, `context.channelId`, `context.mediaPath`.
 
-**Mesaj olayları** (`message:preprocessed`): `context.bodyForAgent` (son zenginleştirilmiş gövde), `context.from`, `context.channelId`.
+**İleti olayları** (`message:preprocessed`): `context.bodyForAgent` (son zenginleştirilmiş gövde), `context.from`, `context.channelId`.
 
 **Bootstrap olayları** (`agent:bootstrap`): `context.bootstrapFiles` (değiştirilebilir dizi), `context.agentId`.
 
 **Oturum patch olayları** (`session:patch`): `context.sessionEntry`, `context.patch` (yalnızca değişen alanlar), `context.cfg`. Patch olaylarını yalnızca ayrıcalıklı istemciler tetikleyebilir.
 
-**Compaction olayları**: `session:compact:before`, `messageCount`, `tokenCount` içerir. `session:compact:after`; `compactedCount`, `summaryLength`, `tokensBefore`, `tokensAfter` ekler.
+**Compaction olayları**: `session:compact:before`, `messageCount`, `tokenCount` içerir. `session:compact:after`, `compactedCount`, `summaryLength`, `tokensBefore`, `tokensAfter` ekler.
 
-`command:stop`, kullanıcının `/stop` vermesini gözlemler; bu, iptal/komut
-yaşam döngüsüdür, ajan sonlandırma kapısı değildir. Doğal bir son yanıtı incelemesi
-ve ajandan bir geçiş daha istemesi gereken plugin'ler bunun yerine tipli
-plugin hook'u `before_agent_finalize` kullanmalıdır. Bkz. [Plugin hook'ları](/tr/plugins/hooks).
+`command:stop`, kullanıcının `/stop` vermesini gözlemler; bu, bir agent sonlandırma kapısı değil, iptal/komut yaşam döngüsüdür. Doğal bir son yanıtı incelemesi ve agent'tan bir geçiş daha istemesi gereken plugins, bunun yerine typed plugin hook `before_agent_finalize` kullanmalıdır. Bkz. [Plugin hooks](/tr/plugins/hooks).
 
-**Gateway yaşam döngüsü olayları**: `gateway:shutdown`, `reason` ve `restartExpectedMs` içerir ve Gateway kapatma işlemi başladığında tetiklenir. `gateway:pre-restart` aynı bağlamı içerir ancak yalnızca kapatma beklenen bir yeniden başlatmanın parçası olduğunda ve sonlu bir `restartExpectedMs` değeri sağlandığında tetiklenir. Kapatma sırasında, her yaşam döngüsü hook beklemesi en iyi çaba esaslıdır ve sınırlıdır; böylece bir işleyici takılırsa kapatma devam eder.
+**Gateway yaşam döngüsü olayları**: `gateway:shutdown`, `reason` ve `restartExpectedMs` içerir ve gateway kapatması başladığında tetiklenir. `gateway:pre-restart` aynı bağlamı içerir, ancak yalnızca kapatma beklenen bir yeniden başlatmanın parçası olduğunda ve sonlu bir `restartExpectedMs` değeri sağlandığında tetiklenir. Kapatma sırasında, her yaşam döngüsü hook beklemesi best-effort ve sınırlıdır; böylece bir handler takılsa bile kapatma devam eder.
+
+`gateway:shutdown` (veya `gateway:pre-restart`) olayı ile kapatma dizisinin geri kalanı arasında, gateway ayrıca süreç durduğunda hâlâ etkin olan her oturum için typed `session_end` plugin hook tetikler. Olayın `reason` değeri, düz bir SIGTERM/SIGINT durdurması için `shutdown`, kapatma beklenen bir yeniden başlatmanın parçası olarak zamanlandıysa `restart` olur. Bu boşaltma sınırlıdır; böylece yavaş bir `session_end` handler süreç çıkışını engelleyemez ve replace / reset / delete / compaction üzerinden zaten sonlandırılmış oturumlar çift tetiklemeyi önlemek için atlanır.
 
 ## Hook keşfi
 
-Hook'lar, artan geçersiz kılma önceliği sırasına göre şu dizinlerden keşfedilir:
+Hooks, artan override önceliği sırasıyla şu dizinlerden keşfedilir:
 
-1. **Paketlenmiş hook'lar**: OpenClaw ile gönderilir
-2. **Plugin hook'ları**: yüklü plugin'lerin içinde paketlenmiş hook'lar
-3. **Yönetilen hook'lar**: `~/.openclaw/hooks/` (kullanıcı tarafından yüklenmiş, çalışma alanları arasında paylaşılan). `hooks.internal.load.extraDirs` içindeki ek dizinler bu önceliği paylaşır.
-4. **Çalışma alanı hook'ları**: `<workspace>/hooks/` (ajan başına, açıkça etkinleştirilene kadar varsayılan olarak devre dışı)
+1. **Paketlenmiş hooks**: OpenClaw ile gönderilir
+2. **Plugin hooks**: kurulu plugins içinde paketlenmiş hooks
+3. **Yönetilen hooks**: `~/.openclaw/hooks/` (kullanıcı tarafından kurulur, çalışma alanları arasında paylaşılır). `hooks.internal.load.extraDirs` üzerinden gelen ek dizinler bu önceliği paylaşır.
+4. **Çalışma alanı hooks**: `<workspace>/hooks/` (agent başına, açıkça etkinleştirilene kadar varsayılan olarak devre dışı)
 
-Çalışma alanı hook'ları yeni hook adları ekleyebilir ancak aynı ada sahip paketlenmiş, yönetilen veya plugin tarafından sağlanan hook'ları geçersiz kılamaz.
+Çalışma alanı hooks yeni hook adları ekleyebilir, ancak aynı ada sahip paketlenmiş, yönetilen veya plugin tarafından sağlanan hooks öğelerini override edemez.
 
-Gateway, dahili hook'lar yapılandırılana kadar başlangıçta dahili hook keşfini atlar. Paketlenmiş veya yönetilen bir hook'u `openclaw hooks enable <name>` ile etkinleştirin, bir hook paketi yükleyin ya da katılmak için `hooks.internal.enabled=true` ayarlayın. Bir adlandırılmış hook'u etkinleştirdiğinizde Gateway yalnızca o hook'un işleyicisini yükler; `hooks.internal.enabled=true`, ek hook dizinleri ve eski işleyiciler geniş keşfe katılır.
+Gateway, dahili hooks yapılandırılana kadar başlangıçta dahili hook keşfini atlar. Katılmak için `openclaw hooks enable <name>` ile paketlenmiş veya yönetilen bir hook etkinleştirin, bir hook paketi kurun ya da `hooks.internal.enabled=true` ayarlayın. Adlandırılmış bir hook etkinleştirdiğinizde Gateway yalnızca o hook'un handler öğesini yükler; `hooks.internal.enabled=true`, ek hook dizinleri ve eski handlers geniş keşfe katılır.
 
 ### Hook paketleri
 
-Kanca paketleri, `package.json` içindeki `openclaw.hooks` aracılığıyla kancalar dışa aktaran npm paketleridir. Şununla kurun:
+Hook paketleri, `package.json` içindeki `openclaw.hooks` üzerinden hooks export eden npm paketleridir. Şununla kurun:
 
 ```bash
 openclaw plugins install <path-or-spec>
 ```
 
-Npm belirtimleri yalnızca kayıt defteri içindir (paket adı + isteğe bağlı tam sürüm veya dist-tag). Git/URL/dosya belirtimleri ve semver aralıkları reddedilir.
+Npm spec'leri yalnızca registry'dendir (paket adı + isteğe bağlı tam sürüm veya dist-tag). Git/URL/file spec'leri ve semver aralıkları reddedilir.
 
-## Birlikte gelen kancalar
+## Paketlenmiş hooks
 
-| Kanca                 | Olaylar                                           | Ne yapar                                                       |
+| Hook                  | Olaylar                                           | Ne yapar                                                       |
 | --------------------- | ------------------------------------------------- | -------------------------------------------------------------- |
-| session-memory        | `command:new`, `command:reset`                    | Oturum bağlamını `<workspace>/memory/` konumuna kaydeder       |
+| session-memory        | `command:new`, `command:reset`                    | Oturum bağlamını `<workspace>/memory/` içine kaydeder          |
 | bootstrap-extra-files | `agent:bootstrap`                                 | Glob desenlerinden ek bootstrap dosyaları enjekte eder         |
-| command-logger        | `command`                                         | Tüm komutları `~/.openclaw/logs/commands.log` konumuna kaydeder |
-| compaction-notifier   | `session:compact:before`, `session:compact:after` | Oturum Compaction başlarken/biterken görünür sohbet bildirimleri gönderir |
+| command-logger        | `command`                                         | Tüm komutları `~/.openclaw/logs/commands.log` içine günlüğe kaydeder |
+| compaction-notifier   | `session:compact:before`, `session:compact:after` | Oturum compaction başladığında/bittiğinde görünür sohbet bildirimleri gönderir |
 | boot-md               | `gateway:startup`                                 | Gateway başladığında `BOOT.md` çalıştırır                     |
 
-Birlikte gelen herhangi bir kancayı etkinleştirin:
+Herhangi bir paketlenmiş hook etkinleştirin:
 
 ```bash
 openclaw hooks enable <hook-name>
@@ -185,7 +184,7 @@ openclaw hooks enable <hook-name>
 
 ### session-memory ayrıntıları
 
-Son 15 kullanıcı/asistan iletisini çıkarır ve ana makinenin yerel tarihini kullanarak `<workspace>/memory/YYYY-MM-DD-HHMM.md` konumuna kaydeder. Bellek yakalama arka planda çalışır; böylece `/new` ve `/reset` onayları transkript okumaları veya isteğe bağlı slug oluşturma nedeniyle gecikmez. Yapılandırılmış modelle açıklayıcı dosya adı slug'ları oluşturmak için `hooks.internal.entries.session-memory.llmSlug: true` ayarlayın. `workspace.dir` yapılandırılmış olmalıdır.
+Son 15 kullanıcı/assistant iletisini çıkarır ve host yerel tarihini kullanarak `<workspace>/memory/YYYY-MM-DD-HHMM.md` içine kaydeder. Bellek yakalama arka planda çalışır; böylece `/new` ve `/reset` onayları transcript okumaları veya isteğe bağlı slug üretimi nedeniyle gecikmez. Yapılandırılmış modelle açıklayıcı dosya adı slug'ları oluşturmak için `hooks.internal.entries.session-memory.llmSlug: true` ayarlayın. `workspace.dir` yapılandırılmış olmalıdır.
 
 <a id="bootstrap-extra-files"></a>
 
@@ -206,19 +205,19 @@ Son 15 kullanıcı/asistan iletisini çıkarır ve ana makinenin yerel tarihini 
 }
 ```
 
-Yollar çalışma alanına göre çözümlenir. Yalnızca tanınan bootstrap temel adları yüklenir (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md`, `MEMORY.md`).
+Yollar çalışma alanına göre çözülür. Yalnızca tanınan bootstrap basename'leri yüklenir (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md`, `MEMORY.md`).
 
 <a id="command-logger"></a>
 
 ### command-logger ayrıntıları
 
-Her slash komutunu `~/.openclaw/logs/commands.log` konumuna kaydeder.
+Her slash komutunu `~/.openclaw/logs/commands.log` içine günlüğe kaydeder.
 
 <a id="compaction-notifier"></a>
 
 ### compaction-notifier ayrıntıları
 
-OpenClaw oturum transkriptini sıkıştırmaya başladığında ve bitirdiğinde geçerli konuşmaya kısa durum iletileri gönderir. Bu, sohbet yüzeylerinde uzun dönüşleri daha az kafa karıştırıcı hale getirir; çünkü kullanıcı asistanın bağlamı özetlediğini ve Compaction sonrasında devam edeceğini görebilir.
+OpenClaw oturum transcript'ini compact etmeye başladığında ve bitirdiğinde mevcut konuşmaya kısa durum iletileri gönderir. Bu, sohbet yüzeylerinde uzun turları daha az kafa karıştırıcı hale getirir; çünkü kullanıcı, assistant'ın bağlamı özetlediğini ve compaction sonrasında devam edeceğini görebilir.
 
 <a id="boot-md"></a>
 
@@ -226,13 +225,13 @@ OpenClaw oturum transkriptini sıkıştırmaya başladığında ve bitirdiğinde
 
 Gateway başladığında etkin çalışma alanından `BOOT.md` çalıştırır.
 
-## Plugin kancaları
+## Plugin hooks
 
-Plugin'ler, daha derin tümleştirme için Plugin SDK üzerinden türlendirilmiş kancalar kaydedebilir:
-araç çağrılarını kesme, istemleri değiştirme, ileti akışını denetleme ve daha fazlası.
-`before_tool_call`, `before_agent_reply`, `before_install` veya diğer işlem içi yaşam döngüsü kancalarına ihtiyacınız olduğunda Plugin kancalarını kullanın.
+Plugins daha derin entegrasyon için Plugin SDK üzerinden typed hooks kaydedebilir:
+araç çağrılarını yakalama, prompt'ları değiştirme, ileti akışını denetleme ve daha fazlası.
+`before_tool_call`, `before_agent_reply`, `before_install` veya diğer süreç içi yaşam döngüsü hooks gerektiğinde plugin hooks kullanın.
 
-Eksiksiz Plugin kancası başvurusu için bkz. [Plugin kancaları](/tr/plugins/hooks).
+Eksiksiz plugin hook başvurusu için bkz. [Plugin hooks](/tr/plugins/hooks).
 
 ## Yapılandırma
 
@@ -250,7 +249,7 @@ Eksiksiz Plugin kancası başvurusu için bkz. [Plugin kancaları](/tr/plugins/h
 }
 ```
 
-Kanca başına ortam değişkenleri:
+Hook başına ortam değişkenleri:
 
 ```json
 {
@@ -267,7 +266,7 @@ Kanca başına ortam değişkenleri:
 }
 ```
 
-Ek kanca dizinleri:
+Ek hook dizinleri:
 
 ```json
 {
@@ -304,14 +303,14 @@ openclaw hooks disable <hook-name>
 
 ## En iyi uygulamalar
 
-- **İşleyicileri hızlı tutun.** Hook'lar komut işleme sırasında çalışır. Ağır işleri `void processInBackground(event)` ile başlatıp beklemeden bırakın.
-- **Hataları zarif biçimde ele alın.** Riskli işlemleri try/catch içine alın; diğer işleyicilerin çalışabilmesi için hata fırlatmayın.
+- **İşleyicileri hızlı tutun.** Kancalar komut işleme sırasında çalışır. Ağır işleri `void processInBackground(event)` ile başlatıp arka planda bırakın.
+- **Hataları düzgün şekilde ele alın.** Riskli işlemleri try/catch içine alın; diğer işleyicilerin çalışabilmesi için hata fırlatmayın.
 - **Olayları erken filtreleyin.** Olay türü/eylemi ilgili değilse hemen dönün.
-- **Belirli olay anahtarları kullanın.** Ek yükü azaltmak için `"events": ["command"]` yerine `"events": ["command:new"]` tercih edin.
+- **Belirli olay anahtarlarını kullanın.** Ek yükü azaltmak için `"events": ["command"]` yerine `"events": ["command:new"]` tercih edin.
 
 ## Sorun giderme
 
-### Hook keşfedilmiyor
+### Kanca keşfedilmiyor
 
 ```bash
 # Verify directory structure
@@ -322,7 +321,7 @@ ls -la ~/.openclaw/hooks/my-hook/
 openclaw hooks list
 ```
 
-### Hook uygun değil
+### Kanca uygun değil
 
 ```bash
 openclaw hooks info my-hook
@@ -330,15 +329,15 @@ openclaw hooks info my-hook
 
 Eksik ikili dosyaları (PATH), ortam değişkenlerini, yapılandırma değerlerini veya işletim sistemi uyumluluğunu kontrol edin.
 
-### Hook yürütülmüyor
+### Kanca yürütülmüyor
 
-1. Hook'un etkin olduğunu doğrulayın: `openclaw hooks list`
-2. Hook'ların yeniden yüklenmesi için gateway sürecinizi yeniden başlatın.
+1. Kancanın etkin olduğunu doğrulayın: `openclaw hooks list`
+2. Kancaların yeniden yüklenmesi için gateway işleminizi yeniden başlatın.
 3. Gateway günlüklerini kontrol edin: `./scripts/clawlog.sh | grep hook`
 
 ## İlgili
 
-- [CLI Referansı: hook'lar](/tr/cli/hooks)
+- [CLI Başvurusu: kancalar](/tr/cli/hooks)
 - [Webhook'lar](/tr/automation/cron-jobs#webhooks)
-- [Plugin hook'ları](/tr/plugins/hooks) — süreç içi Plugin yaşam döngüsü hook'ları
+- [Plugin kancaları](/tr/plugins/hooks) — işlem içi plugin yaşam döngüsü kancaları
 - [Yapılandırma](/tr/gateway/configuration-reference#hooks)

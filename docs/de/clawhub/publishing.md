@@ -1,30 +1,28 @@
 ---
 read_when:
     - Einen Skill oder ein Plugin veröffentlichen
-    - Debuggen von Owner- oder Paket-Scope-Fehlern
-    - Hinzufügen von Veröffentlichungsoberfläche, CLI- oder Backend-Verhalten
-summary: So funktioniert das Veröffentlichen über ClawHub für Skills, Plugins, Owner, Scopes, Releases und Reviews.
+    - Debugging von Fehlern im Owner- oder Paket-Scope
+    - Veröffentlichungs-UI, CLI- oder Backend-Verhalten hinzufügen
+summary: Wie die Veröffentlichung in ClawHub für Skills, Plugins, Owner, Scopes, Releases und Review funktioniert.
 x-i18n:
-    generated_at: "2026-05-10T19:26:01Z"
+    generated_at: "2026-05-11T20:24:33Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 61de013f0ac82acbf20f99c3e0c92c8e31d3de14e9ee64f7bc7659d522747089
+    source_hash: 566c37b7845159ad100837e34bed7c60411bba6a0b3436ab899fe5e345237727
     source_path: clawhub/publishing.md
     workflow: 16
 ---
 
 # Veröffentlichen
 
-ClawHub-Veröffentlichungen sind auf Eigentümer begrenzt: Jede Veröffentlichung zielt auf einen Veröffentlicher, und der
-Server entscheidet, ob der angemeldete Benutzer dort veröffentlichen darf.
+Das Veröffentlichen auf ClawHub ist nach Ownern gegliedert: Jede Veröffentlichung zielt auf einen Publisher, und der Server entscheidet, ob der angemeldete Benutzer dort veröffentlichen darf.
 
-## Eigentümer
+## Owner
 
-Ein Eigentümer ist eine ClawHub-Veröffentlicherkennung, zum Beispiel `@alice` oder `@openclaw`.
-Persönliche Eigentümer werden für Benutzer erstellt. Organisationseigentümer können mehrere Mitglieder haben.
+Ein Owner ist ein ClawHub-Publisher-Handle, z. B. `@alice` oder `@openclaw`.
+Persönliche Owner werden für Benutzer erstellt. Organisations-Owner können mehrere Mitglieder haben.
 
-Wenn Sie veröffentlichen, verwenden Sie entweder Ihren persönlichen Eigentümer oder wählen einen Organisationseigentümer,
-bei dem Sie Veröffentlichungszugriff haben.
+Beim Veröffentlichen verwenden Sie entweder Ihren persönlichen Owner oder wählen einen Organisations-Owner aus, für den Sie Publisher-Zugriff haben.
 
 ## Skills
 
@@ -40,56 +38,56 @@ Beispiel:
 https://clawhub.ai/alice/review-helper
 ```
 
-Die Veröffentlichungsanfrage enthält den ausgewählten Eigentümer, Slug, die Version, das Changelog und
-Dateien. Der Server überprüft, ob der Akteur als dieser Eigentümer veröffentlichen darf, bevor er
+Die Veröffentlichungsanfrage enthält den ausgewählten Owner, Slug, Version, Changelog und
+Dateien. Der Server überprüft, ob der Akteur als dieser Owner veröffentlichen darf, bevor er
 das Release erstellt.
 
-Um einen vorhandenen Skill beim Veröffentlichen einer neuen Version zu einem anderen Eigentümer zu verschieben, wählen Sie
-den neuen Eigentümer und bestätigen Sie den Eigentümerwechsel ausdrücklich. Über CLI/API übergeben Sie den
-Ziel-Eigentümer plus die Zustimmung zur Migration:
+Um einen bestehenden Skill beim Veröffentlichen einer neuen Version zu einem anderen Owner zu verschieben, wählen Sie
+den neuen Owner aus und bestätigen Sie die Owner-Verschiebung ausdrücklich. In der CLI/API übergeben Sie
+den Ziel-Owner plus die Migrationszustimmung:
 
 ```sh
 clawhub skill publish ./review-helper --owner openclaw --migrate-owner --version 1.2.0
 ```
 
-Die Migration eines Skill-Eigentümers erfordert Administrator- oder Eigentümerzugriff sowohl beim aktuellen Eigentümer
-als auch beim Ziel-Eigentümer. Sie erhält den Skill, die Versionshistorie, Statistiken,
-Kommentare, Forks, Aliase und den Audit-Trail; alte Eigentümer-URLs funktionieren weiterhin über den
-Alias-/Weiterleitungspfad.
+Die Migration eines Skill-Owners erfordert Admin- oder Owner-Zugriff sowohl auf den aktuellen Owner
+als auch auf den Ziel-Owner. Sie bewahrt den Skill, die Versionshistorie, Statistiken,
+Kommentare, Forks, Aliase und Audit-Trail; alte Owner-URLs funktionieren weiterhin über den
+Alias-/Redirect-Pfad.
 
 ## Plugins
 
-Plugins verwenden Paketnamen im npm-Stil. Paketnamen mit Scope enthalten den Eigentümer im
+Plugins verwenden Paketnamen im npm-Stil. Scoped-Paketnamen enthalten den Owner im
 ersten Teil des Namens:
 
 ```text
 @owner/package-name
 ```
 
-Der Scope muss mit dem ausgewählten Veröffentlichungseigentümer übereinstimmen. Wenn Ihr Paket
+Der Scope muss mit dem ausgewählten Veröffentlichungs-Owner übereinstimmen. Wenn Ihr Paket
 `@openclaw/dronzer` heißt, kann es nur als `@openclaw` veröffentlicht werden. Wenn Sie als
 `@vintageayu` veröffentlichen, benennen Sie das Paket in `@vintageayu/dronzer` um.
 
-Dies verhindert, dass ein Paket einen Organisations-Namensraum beansprucht, den der Veröffentlicher nicht
-kontrolliert.
+Dadurch wird verhindert, dass ein Paket einen Organisations-Namespace beansprucht, den der Publisher
+nicht kontrolliert.
 
 ## Release-Ablauf
 
 1. Die UI, CLI oder der GitHub-Workflow sammelt Paketmetadaten und Dateien.
-2. Die Veröffentlichungsanfrage wird mit dem ausgewählten Eigentümer an ClawHub gesendet.
-3. Der Server validiert Eigentümerberechtigungen, Paket-Scope, Paketnamen, Version,
-   Dateigrenzwerte und Quellmetadaten.
+2. Die Veröffentlichungsanfrage wird mit dem ausgewählten Owner an ClawHub gesendet.
+3. Der Server validiert Owner-Berechtigungen, Paket-Scope, Paketnamen, Version,
+   Dateigrenzen und Quellmetadaten.
 4. ClawHub speichert das Release und startet automatisierte Sicherheitsprüfungen.
-5. Neue Releases werden von normalen Installations-/Download-Oberflächen ausgeblendet, bis Überprüfung
+5. Neue Releases werden vor normalen Installations-/Download-Oberflächen verborgen, bis Review
    und Verifizierung abgeschlossen sind.
 
 Wenn die Validierung fehlschlägt, wird das Release nicht erstellt.
 
 ## FAQ
 
-### Paket-Scope muss mit ausgewähltem Eigentümer übereinstimmen
+### Paket-Scope muss mit ausgewähltem Owner übereinstimmen
 
-Wenn Paket-Scope und ausgewählter Eigentümer nicht übereinstimmen, lehnt ClawHub die
+Wenn Paket-Scope und ausgewählter Owner nicht übereinstimmen, lehnt ClawHub die
 Veröffentlichung ab:
 
 ```text
@@ -97,20 +95,20 @@ Package scope "@openclaw" must match selected owner "@vintageayu".
 Publish as "@openclaw" or rename this package to "@vintageayu/dronzer".
 ```
 
-Um das zu beheben, wählen Sie entweder den durch den Paket-Scope benannten Eigentümer oder benennen Sie das
-Paket so um, dass der Scope mit dem Eigentümer übereinstimmt, als der Sie veröffentlichen dürfen.
+Um das zu beheben, wählen Sie entweder den Owner, der durch den Paket-Scope benannt wird, oder benennen Sie das
+Paket so um, dass der Scope dem Owner entspricht, als den Sie veröffentlichen können.
 
-Wenn der Paketname bereits den richtigen Scope hat, das Paket aber dem falschen
-Veröffentlicher gehört, übertragen Sie stattdessen die Eigentümerschaft:
+Wenn der Paketname bereits den richtigen Scope hat, das Paket aber dem
+falschen Publisher gehört, übertragen Sie stattdessen die Ownership:
 
 ```sh
 clawhub package transfer @opik/opik-openclaw --to opik
 ```
 
-Verwenden Sie Paketübertragung nur, wenn Sie Administratorzugriff sowohl auf den aktuellen Paket-
-Eigentümer als auch auf den Ziel-Veröffentlicher haben. Damit können Sie nicht in einem Scope veröffentlichen, den Sie
-nicht verwalten dürfen.
+Verwenden Sie Paket- oder Skill-Transfer nur, wenn Sie Admin-Zugriff sowohl auf den
+aktuellen Owner als auch auf den Ziel-Publisher haben. Paket-Transfer erlaubt Ihnen nicht,
+in einen Scope zu veröffentlichen, den Sie nicht verwalten können.
 
-Dies schützt Organisations-Namensräume. Ein Paket namens `@openclaw/dronzer` beansprucht den
-Namensraum `@openclaw`, daher können nur Veröffentlicher mit Zugriff auf den Eigentümer `@openclaw`
-es veröffentlichen.
+Dies schützt Organisations-Namespaces. Ein Paket namens `@openclaw/dronzer` beansprucht den
+`@openclaw`-Namespace, daher können es nur Publisher mit Zugriff auf den `@openclaw`-Owner
+veröffentlichen.

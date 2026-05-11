@@ -1,36 +1,36 @@
 ---
 read_when:
     - Quieres usar la generación de imágenes de fal en OpenClaw
-    - Necesitas el flujo de autenticación de `FAL_KEY`
-    - Quieres los valores predeterminados de fal para `image_generate` o `video_generate`
-summary: Configuración de generación de imágenes y vídeo de fal en OpenClaw
+    - Necesitas el flujo de autenticación de FAL_KEY
+    - Quieres los valores predeterminados de fal para image_generate o video_generate
+summary: Configuración de generación de imágenes y video de fal en OpenClaw
 title: Fal
 x-i18n:
-    generated_at: "2026-04-26T11:36:41Z"
-    model: gpt-5.4
+    generated_at: "2026-05-11T20:50:13Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: e6789f0fa1140cf76f0206c7384a79ee8b96de4af9e1dfedc00e5a3382f742bb
+    source_hash: 7f074629e5274154b7a17686264a8b137d61df321d791d6e47c9d8abe67ad273
     source_path: providers/fal.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw incluye un proveedor `fal` integrado para la generación alojada de imágenes y video.
+OpenClaw incluye un proveedor `fal` integrado para generación alojada de imágenes y video.
 
 | Propiedad | Valor                                                         |
-| --------- | ------------------------------------------------------------- |
+| -------- | ------------------------------------------------------------- |
 | Proveedor | `fal`                                                         |
-| Autenticación | `FAL_KEY` (canónico; `FAL_API_KEY` también funciona como alternativa) |
-| API       | endpoints de modelos de fal                                   |
+| Autenticación | `FAL_KEY` (canónica; `FAL_API_KEY` también funciona como alternativa) |
+| API      | Endpoints de modelos fal                                      |
 
 ## Primeros pasos
 
 <Steps>
-  <Step title="Configura la clave de API">
+  <Step title="Configurar la clave de API">
     ```bash
     openclaw onboard --auth-choice fal-api-key
     ```
   </Step>
-  <Step title="Configura un modelo de imagen predeterminado">
+  <Step title="Configurar un modelo de imagen predeterminado">
     ```json5
     {
       agents: {
@@ -47,25 +47,27 @@ OpenClaw incluye un proveedor `fal` integrado para la generación alojada de im�
 
 ## Generación de imágenes
 
-El proveedor integrado de generación de imágenes `fal` usa por defecto
+El proveedor integrado de generación de imágenes `fal` usa de forma predeterminada
 `fal/fal-ai/flux/dev`.
 
-| Capacidad         | Valor                      |
-| ----------------- | -------------------------- |
-| Máximo de imágenes | 4 por solicitud            |
-| Modo de edición   | Activado, 1 imagen de referencia |
-| Reemplazos de tamaño | Compatibles             |
-| Relación de aspecto | Compatible               |
-| Resolución        | Compatible                 |
-| Formato de salida | `png` o `jpeg`             |
+| Capacidad        | Valor                                                       |
+| -------------- | ----------------------------------------------------------- |
+| Imágenes máximas | 4 por solicitud                                             |
+| Modo de edición  | Flux: 1 imagen de referencia; GPT Image 2: 10; Nano Banana 2: 14 |
+| Sustituciones de tamaño | Compatibles                                          |
+| Relación de aspecto | Compatible para generación y edición de GPT Image 2/Nano Banana 2 |
+| Resolución     | Compatible                                                  |
+| Formato de salida | `png` o `jpeg`                                           |
 
 <Warning>
-El endpoint de edición de imágenes de fal **no** admite reemplazos de `aspectRatio`.
+Las solicitudes de imagen a imagen de Flux **no** admiten sustituciones de
+`aspectRatio`. Las solicitudes de edición de GPT Image 2 y Nano Banana 2 usan el
+endpoint `/edit` de fal y aceptan indicaciones de relación de aspecto.
 </Warning>
 
-Usa `outputFormat: "png"` cuando quieras salida PNG. fal no declara un
+Usa `outputFormat: "png"` cuando quieras una salida PNG. fal no declara un
 control explícito de fondo transparente en OpenClaw, por lo que `background:
-"transparent"` se informa como un reemplazo ignorado para los modelos fal.
+"transparent"` se informa como una sustitución ignorada para los modelos fal.
 
 Para usar fal como proveedor de imágenes predeterminado:
 
@@ -83,17 +85,17 @@ Para usar fal como proveedor de imágenes predeterminado:
 
 ## Generación de video
 
-El proveedor integrado de generación de video `fal` usa por defecto
+El proveedor integrado de generación de video `fal` usa de forma predeterminada
 `fal/fal-ai/minimax/video-01-live`.
 
 | Capacidad | Valor                                                              |
-| --------- | ------------------------------------------------------------------ |
-| Modos     | Texto a video, referencia de una sola imagen, referencia a video de Seedance |
-| Ejecución | Flujo de envío/estado/resultado respaldado por cola para trabajos de larga duración |
+| ---------- | ------------------------------------------------------------------ |
+| Modos      | Texto a video, referencia de una sola imagen, referencia a video de Seedance |
+| Runtime    | Flujo de envío/estado/resultado respaldado por cola para trabajos de larga duración |
 
 <AccordionGroup>
   <Accordion title="Modelos de video disponibles">
-    **Agente de video de HeyGen:**
+    **HeyGen video-agent:**
 
     - `fal/fal-ai/heygen/v2/video-agent`
 
@@ -135,13 +137,13 @@ El proveedor integrado de generación de video `fal` usa por defecto
     }
     ```
 
-    La referencia a video acepta hasta 9 imágenes, 3 videos y 3 referencias de audio
-    mediante los parámetros compartidos `images`, `videos` y `audioRefs` de `video_generate`,
-    con un máximo de 12 archivos de referencia en total.
+    Referencia a video acepta hasta 9 imágenes, 3 videos y 3 referencias de audio
+    mediante los parámetros compartidos `video_generate` `images`, `videos` y
+    `audioRefs`, con un máximo de 12 archivos de referencia en total.
 
   </Accordion>
 
-  <Accordion title="Ejemplo de configuración del agente de video de HeyGen">
+  <Accordion title="Ejemplo de configuración de HeyGen video-agent">
     ```json5
     {
       agents: {
@@ -157,8 +159,8 @@ El proveedor integrado de generación de video `fal` usa por defecto
 </AccordionGroup>
 
 <Tip>
-Usa `openclaw models list --provider fal` para ver la lista completa de modelos fal
-disponibles, incluidas las entradas agregadas recientemente.
+Usa `openclaw models list --provider fal` para ver la lista completa de modelos
+fal disponibles, incluidas las entradas agregadas recientemente.
 </Tip>
 
 ## Relacionado

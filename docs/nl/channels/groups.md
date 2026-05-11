@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Groepschatgedrag of vermeldingsvereisten wijzigen
+    - Gedrag van groepschats of vermeldingsgating wijzigen
 sidebarTitle: Groups
-summary: Gedrag van groepschats op verschillende platforms (Discord/iMessage/Matrix/Microsoft Teams/Signal/Slack/Telegram/WhatsApp/Zalo)
+summary: Gedrag van groepschats op verschillende oppervlakken (Discord/iMessage/Matrix/Microsoft Teams/Signal/Slack/Telegram/WhatsApp/Zalo)
 title: Groepen
 x-i18n:
-    generated_at: "2026-05-10T19:21:03Z"
+    generated_at: "2026-05-11T20:20:29Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3a040df975829cd35f45577522ea2813fd98fd8babbb42663e502cedde088d89
+    source_hash: 19297ef9c3043b00c4785567a7c02266bd08fe5228c8275c3233e87e917dd09f
     source_path: channels/groups.md
     workflow: 16
 ---
@@ -17,22 +17,22 @@ OpenClaw behandelt groepschats consistent op alle oppervlakken: Discord, iMessag
 
 ## Introductie voor beginners (2 minuten)
 
-OpenClaw "leeft" op je eigen berichtenaccounts. Er is geen aparte WhatsApp-botgebruiker. Als **jij** in een groep zit, kan OpenClaw die groep zien en daar reageren.
+OpenClaw "leeft" op je eigen messaging-accounts. Er is geen aparte WhatsApp-botgebruiker. Als **jij** in een groep zit, kan OpenClaw die groep zien en daar reageren.
 
 Standaardgedrag:
 
 - Groepen zijn beperkt (`groupPolicy: "allowlist"`).
-- Antwoorden vereisen een vermelding, tenzij je mention-gating expliciet uitschakelt.
-- Normale eindantwoorden in groepen/kanalen zijn standaard privé. Zichtbare kameruitvoer gebruikt de `message`-tool.
+- Antwoorden vereisen een vermelding, tenzij je mention gating expliciet uitschakelt.
+- Normale eindantwoorden in groepen/kanalen zijn standaard privé. Zichtbare uitvoer in de ruimte gebruikt de `message`-tool.
 
-Vertaling: afzenders op de allowlist kunnen OpenClaw activeren door het te vermelden.
+Vertaling: toegestane afzenders kunnen OpenClaw activeren door het te vermelden.
 
 <Note>
 **TL;DR**
 
 - **DM-toegang** wordt beheerd door `*.allowFrom`.
 - **Groepstoegang** wordt beheerd door `*.groupPolicy` + allowlists (`*.groups`, `*.groupAllowFrom`).
-- **Antwoordactivering** wordt beheerd door mention-gating (`requireMention`, `/activation`).
+- **Antwoordactivering** wordt beheerd door mention gating (`requireMention`, `/activation`).
 
 </Note>
 
@@ -47,29 +47,29 @@ otherwise -> reply
 
 ## Zichtbare antwoorden
 
-Voor groeps-/kanaalkamers gebruikt OpenClaw standaard `messages.groupChat.visibleReplies: "message_tool"`.
-`openclaw doctor --fix` schrijft deze standaardwaarde naar configuraties van geconfigureerde kanalen waarin deze ontbreekt.
-Dat betekent dat de agent de beurt nog steeds verwerkt en geheugen-/sessiestatus kan bijwerken, maar dat het normale eindantwoord niet automatisch terug in de kamer wordt geplaatst. Om zichtbaar te spreken gebruikt de agent `message(action=send)`.
+Voor groeps-/kanaalruimtes gebruikt OpenClaw standaard `messages.groupChat.visibleReplies: "message_tool"`.
+`openclaw doctor --fix` schrijft deze standaardwaarde naar geconfigureerde kanaalconfiguraties waarin deze ontbreekt.
+Dat betekent dat de agent de beurt nog steeds verwerkt en geheugen-/sessiestatus kan bijwerken, maar dat het normale eindantwoord niet automatisch terug in de ruimte wordt geplaatst. Om zichtbaar te spreken, gebruikt de agent `message(action=send)`.
 
-Deze standaard hangt af van een model/runtime die betrouwbaar tools aanroept. Als logs
-assistanttekst tonen maar `didSendViaMessagingTool: false`, heeft het model
-privé geantwoord in plaats van de message-tool aan te roepen. Dat is geen
-Discord/Slack/Telegram-verzendfout. Gebruik een model dat betrouwbaar tool-calls doet voor
+Deze standaard hangt af van een model/runtime die tools betrouwbaar aanroept. Als logs
+assistant-tekst tonen maar `didSendViaMessagingTool: false`, heeft het model
+privé geantwoord in plaats van de berichtentool aan te roepen. Dat is geen
+verzendfout van Discord/Slack/Telegram. Gebruik een model dat betrouwbaar tools aanroept voor
 groeps-/kanaalsessies, of stel
-`messages.groupChat.visibleReplies: "automatic"` in om de oude zichtbare
+`messages.groupChat.visibleReplies: "automatic"` in om verouderde zichtbare
 eindantwoorden te herstellen.
 
-Als de message-tool niet beschikbaar is onder het actieve toolbeleid, valt OpenClaw
-terug op automatische zichtbare antwoorden in plaats van de respons stilzwijgend te onderdrukken.
+Als de berichtentool niet beschikbaar is onder het actieve toolbeleid, valt OpenClaw
+terug op automatische zichtbare antwoorden in plaats van de reactie stilzwijgend te onderdrukken.
 `openclaw doctor` waarschuwt voor deze mismatch.
 
-Gebruik voor directe chats en elke andere bronbeurt `messages.visibleReplies: "message_tool"` om hetzelfde tool-only zichtbare-antwoordgedrag globaal toe te passen. Harnesses kunnen dit ook kiezen als hun niet-ingestelde standaard; de Codex-harness doet dit voor directe chats in Codex-modus. `messages.groupChat.visibleReplies` blijft de specifiekere override voor groeps-/kanaalkamers.
+Voor directe chats en elke andere bronbeurt gebruik je `messages.visibleReplies: "message_tool"` om hetzelfde tool-only zichtbare-antwoordgedrag globaal toe te passen. Harnesses kunnen dit ook kiezen als hun niet-ingestelde standaard; de Codex-harness doet dit voor directe chats in Codex-modus. `messages.groupChat.visibleReplies` blijft de specifiekere override voor groeps-/kanaalruimtes.
 
-Dit vervangt het oude patroon waarbij het model werd gedwongen `NO_REPLY` te antwoorden voor de meeste beurten in lurk-modus. In tool-only modus betekent niets zichtbaars doen simpelweg dat de message-tool niet wordt aangeroepen.
+Dit vervangt het oude patroon waarbij het model werd gedwongen om `NO_REPLY` te antwoorden voor de meeste lurk-modusbeurten. In tool-only modus betekent niets zichtbaar doen simpelweg dat de berichtentool niet wordt aangeroepen.
 
-Type-indicatoren worden nog steeds verzonden terwijl de agent in tool-only modus werkt. De standaard groepstypemodus wordt voor deze beurten opgewaardeerd van "message" naar "instant", omdat er mogelijk nooit normale assistantberichttekst is voordat de agent beslist of de message-tool wordt aangeroepen. Expliciete typemodusconfiguratie blijft voorrang houden.
+Typing-indicatoren worden nog steeds verzonden terwijl de agent in tool-only modus werkt. De standaard groeps-typingmodus wordt voor deze beurten opgewaardeerd van "message" naar "instant", omdat er mogelijk nooit normale assistant-berichttekst is voordat de agent beslist of hij de berichtentool aanroept. Expliciete typingmodusconfiguratie blijft voorrang hebben.
 
-Om oude automatische eindantwoorden voor groeps-/kanaalkamers te herstellen:
+Om verouderde automatische eindantwoorden voor groeps-/kanaalruimtes te herstellen:
 
 ```json5
 {
@@ -81,10 +81,10 @@ Om oude automatische eindantwoorden voor groeps-/kanaalkamers te herstellen:
 }
 ```
 
-De Gateway herlaadt `messages`-configuratie hot nadat het bestand is opgeslagen. Herstart alleen
-wanneer bestandsbewaking of configuratieherladen in de deployment is uitgeschakeld.
+De Gateway laadt de `messages`-configuratie hot-reload nadat het bestand is opgeslagen. Herstart alleen
+wanneer file watching of config reload in de deployment is uitgeschakeld.
 
-Om te vereisen dat zichtbare uitvoer voor elke bronchat via de message-tool loopt:
+Om zichtbare uitvoer voor elke bronchat via de berichtentool te verplichten:
 
 ```json5
 {
@@ -94,7 +94,7 @@ Om te vereisen dat zichtbare uitvoer voor elke bronchat via de message-tool loop
 }
 ```
 
-Native slash-commando's (Discord, Telegram en andere oppervlakken met native commandondersteuning) omzeilen `visibleReplies: "message_tool"` en antwoorden altijd zichtbaar, zodat de kanaalnative command-UI de respons krijgt die deze verwacht. Dit geldt alleen voor gevalideerde native commandbeurten; als tekst getypte `/...`-commando's en gewone chatbeurten volgen nog steeds de geconfigureerde groepsstandaard.
+Native slash-commando's (Discord, Telegram en andere oppervlakken met native commando-ondersteuning) omzeilen `visibleReplies: "message_tool"` en antwoorden altijd zichtbaar, zodat de kanaal-native commando-UI de reactie krijgt die deze verwacht. Dit geldt alleen voor gevalideerde native commandobeurten; als tekst getypte `/...`-commando's en gewone chatbeurten volgen nog steeds de geconfigureerde groepsstandaard.
 
 ## Contextzichtbaarheid en allowlists
 
@@ -103,25 +103,25 @@ Bij groepsveiligheid zijn twee verschillende controles betrokken:
 - **Triggerautorisatie**: wie de agent kan activeren (`groupPolicy`, `groups`, `groupAllowFrom`, kanaalspecifieke allowlists).
 - **Contextzichtbaarheid**: welke aanvullende context in het model wordt geïnjecteerd (antwoordtekst, citaten, threadgeschiedenis, doorgestuurde metadata).
 
-Standaard geeft OpenClaw prioriteit aan normaal chatgedrag en houdt het context grotendeels zoals ontvangen. Dit betekent dat allowlists vooral bepalen wie acties kan activeren, niet een universele redactielimiet voor elk geciteerd of historisch fragment.
+Standaard geeft OpenClaw prioriteit aan normaal chatgedrag en houdt het context grotendeels zoals ontvangen. Dit betekent dat allowlists vooral bepalen wie acties kan activeren, en geen universele redactiegrens vormen voor elk geciteerd of historisch fragment.
 
 <AccordionGroup>
-  <Accordion title="Huidig gedrag is kanaalspecifiek">
-    - Sommige kanalen passen al afzendergebaseerde filtering toe op aanvullende context in specifieke paden (bijvoorbeeld Slack-threadseeding, Matrix-antwoord-/threadlookups).
+  <Accordion title="Current behavior is channel-specific">
+    - Sommige kanalen passen al afzendergebaseerde filtering toe voor aanvullende context in specifieke paden (bijvoorbeeld Slack-thread seeding, Matrix-antwoord-/threadlookups).
     - Andere kanalen geven citaat-/antwoord-/doorstuurcontext nog steeds door zoals ontvangen.
 
   </Accordion>
-  <Accordion title="Richting voor hardening (gepland)">
+  <Accordion title="Hardening direction (planned)">
     - `contextVisibility: "all"` (standaard) behoudt het huidige gedrag zoals ontvangen.
-    - `contextVisibility: "allowlist"` filtert aanvullende context tot afzenders op de allowlist.
+    - `contextVisibility: "allowlist"` filtert aanvullende context tot toegestane afzenders.
     - `contextVisibility: "allowlist_quote"` is `allowlist` plus één expliciete citaat-/antwoorduitzondering.
 
-    Verwacht verschillen per oppervlak totdat dit hardening-model consistent over kanalen is geïmplementeerd.
+    Totdat dit hardening-model consistent over kanalen is geïmplementeerd, kun je verschillen per oppervlak verwachten.
 
   </Accordion>
 </AccordionGroup>
 
-![Groepsberichtflow](/images/groups-flow.svg)
+![Groepsberichtenflow](/images/groups-flow.svg)
 
 Als je wilt...
 
@@ -133,13 +133,13 @@ Als je wilt...
 | Alleen jij kunt in groepen activeren         | `groupPolicy: "allowlist"`, `groupAllowFrom: ["+1555..."]` |
 | Eén vertrouwde afzenderset hergebruiken over kanalen | `groupAllowFrom: ["accessGroup:operators"]`                |
 
-Zie [Toegangsgroepen](/nl/channels/access-groups) voor herbruikbare allowlists voor afzenders.
+Voor herbruikbare afzender-allowlists, zie [Toegangsgroepen](/nl/channels/access-groups).
 
 ## Sessiesleutels
 
-- Groepssessies gebruiken `agent:<agentId>:<channel>:group:<id>`-sessiesleutels (kamers/kanalen gebruiken `agent:<agentId>:<channel>:channel:<id>`).
+- Groepssessies gebruiken `agent:<agentId>:<channel>:group:<id>`-sessiesleutels (ruimtes/kanalen gebruiken `agent:<agentId>:<channel>:channel:<id>`).
 - Telegram-forumonderwerpen voegen `:topic:<threadId>` toe aan de groeps-id, zodat elk onderwerp een eigen sessie heeft.
-- Directe chats gebruiken de hoofdsessie (of per afzender als dat is geconfigureerd).
+- Directe chats gebruiken de hoofdsessie (of per afzender indien geconfigureerd).
 - Heartbeats worden overgeslagen voor groepssessies.
 
 <a id="pattern-personal-dms-public-groups-single-agent"></a>
@@ -148,7 +148,7 @@ Zie [Toegangsgroepen](/nl/channels/access-groups) voor herbruikbare allowlists v
 
 Ja — dit werkt goed als je "persoonlijke" verkeer **DM's** is en je "openbare" verkeer **groepen** is.
 
-Waarom: in single-agent-modus komen DM's meestal terecht in de **hoofd**sessiesleutel (`agent:main:main`), terwijl groepen altijd **niet-hoofd**sessiesleutels gebruiken (`agent:main:<channel>:group:<id>`). Als je sandboxing inschakelt met `mode: "non-main"`, draaien die groepssessies in de geconfigureerde sandbox-backend terwijl je hoofd-DM-sessie op de host blijft. Docker is de standaardbackend als je er geen kiest.
+Waarom: in single-agentmodus komen DM's meestal terecht in de **hoofd**sessiesleutel (`agent:main:main`), terwijl groepen altijd **niet-hoofd**sessiesleutels gebruiken (`agent:main:<channel>:group:<id>`). Als je sandboxing inschakelt met `mode: "non-main"`, draaien die groepssessies in de geconfigureerde sandboxbackend terwijl je hoofd-DM-sessie op de host blijft. Docker is de standaardbackend als je er geen kiest.
 
 Dit geeft je één agent-"brein" (gedeelde workspace + geheugen), maar twee uitvoeringshoudingen:
 
@@ -156,11 +156,11 @@ Dit geeft je één agent-"brein" (gedeelde workspace + geheugen), maar twee uitv
 - **Groepen**: sandbox + beperkte tools
 
 <Note>
-Als je echt gescheiden workspaces/persona's nodig hebt ("persoonlijk" en "openbaar" mogen nooit mengen), gebruik dan een tweede agent + bindings. Zie [Multi-Agent-routing](/nl/concepts/multi-agent).
+Als je echt gescheiden workspaces/persona's nodig hebt ("persoonlijk" en "openbaar" mogen nooit mengen), gebruik dan een tweede agent + bindings. Zie [Multi-Agent Routing](/nl/concepts/multi-agent).
 </Note>
 
 <Tabs>
-  <Tab title="DM's op host, groepen in sandbox">
+  <Tab title="DMs on host, groups sandboxed">
     ```json5
     {
       agents: {
@@ -184,8 +184,8 @@ Als je echt gescheiden workspaces/persona's nodig hebt ("persoonlijk" en "openba
     }
     ```
   </Tab>
-  <Tab title="Groepen zien alleen een map op de allowlist">
-    Wil je "groepen kunnen alleen map X zien" in plaats van "geen hosttoegang"? Houd `workspaceAccess: "none"` en mount alleen paden op de allowlist in de sandbox:
+  <Tab title="Groups see only an allowlisted folder">
+    Wil je "groepen kunnen alleen map X zien" in plaats van "geen hosttoegang"? Houd `workspaceAccess: "none"` aan en mount alleen toegestane paden in de sandbox:
 
     ```json5
     {
@@ -213,17 +213,17 @@ Als je echt gescheiden workspaces/persona's nodig hebt ("persoonlijk" en "openba
 Gerelateerd:
 
 - Configuratiesleutels en standaardwaarden: [Gateway-configuratie](/nl/gateway/config-agents#agentsdefaultssandbox)
-- Debuggen waarom een tool is geblokkeerd: [Sandbox versus toolbeleid versus Elevated](/nl/gateway/sandbox-vs-tool-policy-vs-elevated)
-- Details van bind mounts: [Sandboxing](/nl/gateway/sandboxing#custom-bind-mounts)
+- Debuggen waarom een tool wordt geblokkeerd: [Sandbox vs Toolbeleid vs Elevated](/nl/gateway/sandbox-vs-tool-policy-vs-elevated)
+- Details over bind mounts: [Sandboxing](/nl/gateway/sandboxing#custom-bind-mounts)
 
 ## Weergavelabels
 
 - UI-labels gebruiken `displayName` wanneer beschikbaar, geformatteerd als `<channel>:<token>`.
-- `#room` is gereserveerd voor kamers/kanalen; groepschats gebruiken `g-<slug>` (kleine letters, spaties -> `-`, behoud `#@+._-`).
+- `#room` is gereserveerd voor ruimtes/kanalen; groepschats gebruiken `g-<slug>` (kleine letters, spaties -> `-`, behoud `#@+._-`).
 
 ## Groepsbeleid
 
-Beheer hoe groeps-/kamerberichten per kanaal worden afgehandeld:
+Bepaal hoe groeps-/ruimteberichten per kanaal worden verwerkt:
 
 ```json5
 {
@@ -270,25 +270,25 @@ Beheer hoe groeps-/kamerberichten per kanaal worden afgehandeld:
 }
 ```
 
-| Beleid        | Gedrag                                                      |
+| Beleid        | Gedrag                                                       |
 | ------------- | ------------------------------------------------------------ |
-| `"open"`      | Groepen omzeilen allowlists; mention-gating blijft gelden.   |
+| `"open"`      | Groepen omzeilen allowlists; mention gating blijft van toepassing. |
 | `"disabled"`  | Blokkeer alle groepsberichten volledig.                      |
-| `"allowlist"` | Sta alleen groepen/kamers toe die overeenkomen met de geconfigureerde allowlist. |
+| `"allowlist"` | Sta alleen groepen/ruimtes toe die overeenkomen met de geconfigureerde allowlist. |
 
 <AccordionGroup>
   <Accordion title="Opmerkingen per kanaal">
-    - `groupPolicy` staat los van mention-gating (waarvoor @mentions vereist zijn).
-    - WhatsApp/Telegram/Signal/iMessage/Microsoft Teams/Zalo: gebruik `groupAllowFrom` (fallback: expliciete `allowFrom`).
+    - `groupPolicy` staat los van vermeldingstoegang (waarvoor @mentions vereist zijn).
+    - WhatsApp/Telegram/Signal/iMessage/Microsoft Teams/Zalo: gebruik `groupAllowFrom` (terugval: expliciete `allowFrom`).
     - Signal: `groupAllowFrom` kan overeenkomen met de inkomende Signal-groeps-id of met het telefoonnummer/de UUID van de afzender.
-    - Goedkeuringen voor DM-koppeling (`*-allowFrom`-storevermeldingen) gelden alleen voor DM-toegang; autorisatie van groepsafzenders blijft expliciet via groeps-allowlists.
-    - Discord: allowlist gebruikt `channels.discord.guilds.<id>.channels`.
-    - Slack: allowlist gebruikt `channels.slack.channels`.
-    - Matrix: allowlist gebruikt `channels.matrix.groups`. Geef de voorkeur aan room-ID's of aliassen; het opzoeken van namen van rooms waaraan is deelgenomen is best-effort, en onopgeloste namen worden tijdens runtime genegeerd. Gebruik `channels.matrix.groupAllowFrom` om afzenders te beperken; per-room `users`-allowlists worden ook ondersteund.
+    - DM-koppelingsgoedkeuringen (`*-allowFrom`-opslagitems) gelden alleen voor DM-toegang; autorisatie van groepsafzenders blijft expliciet via groepstoestaanlijsten.
+    - Discord: de toestaanlijst gebruikt `channels.discord.guilds.<id>.channels`.
+    - Slack: de toestaanlijst gebruikt `channels.slack.channels`.
+    - Matrix: de toestaanlijst gebruikt `channels.matrix.groups`. Geef de voorkeur aan kamer-ID's of aliassen; zoeken op naam van een joined room gebeurt naar beste vermogen, en onopgeloste namen worden tijdens runtime genegeerd. Gebruik `channels.matrix.groupAllowFrom` om afzenders te beperken; per-room `users`-toestaanlijsten worden ook ondersteund.
     - Groeps-DM's worden afzonderlijk beheerd (`channels.discord.dm.*`, `channels.slack.dm.*`).
-    - Telegram-allowlist kan overeenkomen met gebruikers-ID's (`"123456789"`, `"telegram:123456789"`, `"tg:123456789"`) of gebruikersnamen (`"@alice"` of `"alice"`); prefixes zijn niet hoofdlettergevoelig.
-    - De standaard is `groupPolicy: "allowlist"`; als je groeps-allowlist leeg is, worden groepsberichten geblokkeerd.
-    - Runtime-veiligheid: wanneer een providerblok volledig ontbreekt (`channels.<provider>` ontbreekt), valt het groepsbeleid terug op een fail-closed modus (meestal `allowlist`) in plaats van `channels.defaults.groupPolicy` te erven.
+    - De Telegram-toestaanlijst kan overeenkomen met gebruikers-ID's (`"123456789"`, `"telegram:123456789"`, `"tg:123456789"`) of gebruikersnamen (`"@alice"` of `"alice"`); prefixen zijn hoofdletterongevoelig.
+    - De standaard is `groupPolicy: "allowlist"`; als je groepstoestaanlijst leeg is, worden groepsberichten geblokkeerd.
+    - Runtime-veiligheid: wanneer een providerblok volledig ontbreekt (`channels.<provider>` afwezig), valt groepsbeleid terug op een fail-closed-modus (meestal `allowlist`) in plaats van `channels.defaults.groupPolicy` te erven.
 
   </Accordion>
 </AccordionGroup>
@@ -299,19 +299,19 @@ Snel mentaal model (evaluatievolgorde voor groepsberichten):
   <Step title="groupPolicy">
     `groupPolicy` (open/disabled/allowlist).
   </Step>
-  <Step title="Groeps-allowlists">
-    Groeps-allowlists (`*.groups`, `*.groupAllowFrom`, kanaalspecifieke allowlist).
+  <Step title="Groepstoestaanlijsten">
+    Groepstoestaanlijsten (`*.groups`, `*.groupAllowFrom`, kanaalspecifieke toestaanlijst).
   </Step>
-  <Step title="Mention-gating">
-    Mention-gating (`requireMention`, `/activation`).
+  <Step title="Vermeldingstoegang">
+    Vermeldingstoegang (`requireMention`, `/activation`).
   </Step>
 </Steps>
 
-## Mention-gating (standaard)
+## Vermeldingstoegang (standaard)
 
-Groepsberichten vereisen een mention, tenzij dit per groep wordt overschreven. Standaarden staan per subsysteem onder `*.groups."*"`.
+Groepsberichten vereisen een vermelding, tenzij dit per groep wordt overschreven. Standaarden staan per subsysteem onder `*.groups."*"`.
 
-Reageren op een botbericht telt als een impliciete mention wanneer het kanaal antwoordmetadata ondersteunt. Een botbericht citeren kan ook tellen als een impliciete mention op kanalen die citaatmetadata beschikbaar maken. Huidige ingebouwde gevallen zijn Telegram, WhatsApp, Slack, Discord, Microsoft Teams en ZaloUser.
+Antwoorden op een botbericht telt als een impliciete vermelding wanneer het kanaal antwoordmetadata ondersteunt. Een botbericht citeren kan ook tellen als een impliciete vermelding op kanalen die citaatmetadata beschikbaar maken. Huidige ingebouwde gevallen zijn Telegram, WhatsApp, Slack, Discord, Microsoft Teams en ZaloUser.
 
 ```json5
 {
@@ -350,40 +350,40 @@ Reageren op een botbericht telt als een impliciete mention wanneer het kanaal an
 ```
 
 <AccordionGroup>
-  <Accordion title="Opmerkingen over mention-gating">
-    - `mentionPatterns` zijn niet-hoofdlettergevoelige veilige regex-patronen; ongeldige patronen en onveilige vormen met geneste herhaling worden genegeerd.
-    - Oppervlakken die expliciete mentions leveren, slagen nog steeds; patronen zijn een fallback.
-    - Per-agent overschrijving: `agents.list[].groupChat.mentionPatterns` (handig wanneer meerdere agents een groep delen).
-    - Mention-gating wordt alleen afgedwongen wanneer mention-detectie mogelijk is (native mentions of `mentionPatterns` zijn geconfigureerd).
-    - Het allowlisten van een groep of afzender schakelt mention-gating niet uit; zet `requireMention` van die groep op `false` wanneer alle berichten moeten triggeren.
-    - De promptcontext voor groepschats bevat elke beurt de opgeloste instructie voor stil antwoorden; workspacebestanden mogen `NO_REPLY`-mechanica niet dupliceren.
-    - Groepen waarin stille antwoorden zijn toegestaan, behandelen schone lege of alleen-redenerende modelbeurten als stil, gelijkwaardig aan `NO_REPLY`. Directe chats doen hetzelfde alleen wanneer directe stille antwoorden expliciet zijn toegestaan; anders blijven lege antwoorden mislukte agentbeurten.
+  <Accordion title="Opmerkingen over vermeldingstoegang">
+    - `mentionPatterns` zijn hoofdletterongevoelige veilige regex-patronen; ongeldige patronen en onveilige vormen met geneste herhaling worden genegeerd.
+    - Oppervlakken die expliciete vermeldingen leveren, blijven slagen; patronen zijn een terugval.
+    - Overschrijving per agent: `agents.list[].groupChat.mentionPatterns` (handig wanneer meerdere agents een groep delen).
+    - Vermeldingstoegang wordt alleen afgedwongen wanneer detectie van vermeldingen mogelijk is (native vermeldingen of `mentionPatterns` zijn geconfigureerd).
+    - Een groep of afzender opnemen in de toestaanlijst schakelt vermeldingstoegang niet uit; stel de `requireMention` van die groep in op `false` wanneer alle berichten moeten activeren.
+    - De promptcontext voor groepschats bevat bij elke beurt de opgeloste instructie voor stil antwoorden; werkruimtebestanden mogen `NO_REPLY`-mechanismen niet dupliceren.
+    - Groepen waar stille antwoorden zijn toegestaan behandelen schone lege of alleen-redenering modelbeurten als stil, gelijkwaardig aan `NO_REPLY`. Directe chats doen hetzelfde alleen wanneer directe stille antwoorden expliciet zijn toegestaan; anders blijven lege antwoorden mislukte agentbeurten.
     - Discord-standaarden staan in `channels.discord.guilds."*"` (overschrijfbaar per guild/kanaal).
-    - Groepsgeschiedeniscontext wordt uniform verpakt over kanalen heen. Mention-gated groepen bewaren overgeslagen berichten die nog in behandeling zijn; altijd-aan-groepen kunnen ook recente verwerkte roombberichten bewaren wanneer het kanaal dit ondersteunt. Gebruik `messages.groupChat.historyLimit` voor de globale standaard en `channels.<channel>.historyLimit` (of `channels.<channel>.accounts.*.historyLimit`) voor overschrijvingen. Stel `0` in om uit te schakelen.
+    - Groepsgeschiedeniscontext wordt uniform over kanalen heen verpakt. Groepen met vermeldingstoegang bewaren overgeslagen berichten die nog wachten; groepen die altijd aan staan kunnen ook recente verwerkte kamerberichten bewaren wanneer het kanaal dit ondersteunt. Gebruik `messages.groupChat.historyLimit` voor de globale standaard en `channels.<channel>.historyLimit` (of `channels.<channel>.accounts.*.historyLimit`) voor overschrijvingen. Stel `0` in om uit te schakelen.
 
   </Accordion>
 </AccordionGroup>
 
-## Toolbeperkingen voor groepen/kanalen (optioneel)
+## Beperkingen voor groeps-/kanaaltools (optioneel)
 
-Sommige kanaalconfiguraties ondersteunen het beperken welke tools beschikbaar zijn **binnen een specifieke groep/room/kanaal**.
+Sommige kanaalconfiguraties ondersteunen het beperken welke tools beschikbaar zijn **binnen een specifieke groep/kamer/kanaal**.
 
 - `tools`: tools toestaan/weigeren voor de hele groep.
-- `toolsBySender`: per-afzender overschrijvingen binnen de groep. Gebruik expliciete key-prefixes: `id:<senderId>`, `e164:<phone>`, `username:<handle>`, `name:<displayName>` en `"*"` wildcard. Verouderde keys zonder prefix worden nog steeds geaccepteerd en alleen als `id:` gematcht.
+- `toolsBySender`: overschrijvingen per afzender binnen de groep. Gebruik expliciete sleutelprefixen: `channel:<channelId>:<senderId>`, `id:<senderId>`, `e164:<phone>`, `username:<handle>`, `name:<displayName>` en `"*"`-wildcard. Kanaal-id's gebruiken canonieke OpenClaw-kanaal-id's; aliassen zoals `teams` normaliseren naar `msteams`. Verouderde sleutels zonder prefix worden nog steeds geaccepteerd en alleen als `id:` gematcht.
 
-Oplossingsvolgorde (meest specifiek wint):
+Oplosvolgorde (meest specifiek wint):
 
 <Steps>
-  <Step title="Groeps-toolsBySender">
-    Groeps-/kanaal-`toolsBySender`-match.
+  <Step title="Groep toolsBySender">
+    Overeenkomst voor groep/kanaal `toolsBySender`.
   </Step>
-  <Step title="Groeps-tools">
-    Groeps-/kanaal-`tools`.
+  <Step title="Groep tools">
+    Groep/kanaal `tools`.
   </Step>
-  <Step title="Standaard-toolsBySender">
-    Standaard (`"*"`) `toolsBySender`-match.
+  <Step title="Standaard toolsBySender">
+    Standaard (`"*"`) `toolsBySender`-overeenkomst.
   </Step>
-  <Step title="Standaard-tools">
+  <Step title="Standaard tools">
     Standaard (`"*"`) `tools`.
   </Step>
 </Steps>
@@ -409,15 +409,15 @@ Voorbeeld (Telegram):
 ```
 
 <Note>
-Toolbeperkingen voor groepen/kanalen worden toegepast naast globaal/agent-toolbeleid (weigeren wint nog steeds). Sommige kanalen gebruiken andere nesting voor rooms/kanalen (bijv. Discord `guilds.*.channels.*`, Slack `channels.*`, Microsoft Teams `teams.*.channels.*`).
+Beperkingen voor groeps-/kanaaltools worden toegepast naast globaal/agent-toolbeleid (weigeren wint nog steeds). Sommige kanalen gebruiken andere nesting voor kamers/kanalen (bijv. Discord `guilds.*.channels.*`, Slack `channels.*`, Microsoft Teams `teams.*.channels.*`).
 </Note>
 
-## Groeps-allowlists
+## Groepstoestaanlijsten
 
-Wanneer `channels.whatsapp.groups`, `channels.telegram.groups` of `channels.imessage.groups` is geconfigureerd, fungeren de keys als een groeps-allowlist. Gebruik `"*"` om alle groepen toe te staan terwijl je nog steeds standaard mention-gedrag instelt.
+Wanneer `channels.whatsapp.groups`, `channels.telegram.groups` of `channels.imessage.groups` is geconfigureerd, fungeren de sleutels als groepstoestaanlijst. Gebruik `"*"` om alle groepen toe te staan terwijl je nog steeds standaard vermeldingsgedrag instelt.
 
 <Warning>
-Veelvoorkomende verwarring: goedkeuring voor DM-koppeling is niet hetzelfde als groepsautorisatie. Voor kanalen die DM-koppeling ondersteunen, ontgrendelt de koppelingsstore alleen DM's. Groepscommando's vereisen nog steeds expliciete autorisatie van groepsafzenders via configuratie-allowlists zoals `groupAllowFrom` of de gedocumenteerde configuratiefallback voor dat kanaal.
+Veelvoorkomende verwarring: DM-koppelingsgoedkeuring is niet hetzelfde als groepsautorisatie. Voor kanalen die DM-koppeling ondersteunen, ontgrendelt de koppelingsopslag alleen DM's. Groepscommando's vereisen nog steeds expliciete autorisatie van groepsafzenders uit configuratietoestaanlijsten zoals `groupAllowFrom` of de gedocumenteerde configuratieterugval voor dat kanaal.
 </Warning>
 
 Veelvoorkomende intenties (kopiëren/plakken):
@@ -444,7 +444,7 @@ Veelvoorkomende intenties (kopiëren/plakken):
     }
     ```
   </Tab>
-  <Tab title="Alle groepen toestaan maar mention vereisen">
+  <Tab title="Alle groepen toestaan maar vermelding vereisen">
     ```json5
     {
       channels: {
@@ -455,7 +455,7 @@ Veelvoorkomende intenties (kopiëren/plakken):
     }
     ```
   </Tab>
-  <Tab title="Triggers alleen voor eigenaar (WhatsApp)">
+  <Tab title="Alleen eigenaarstriggers (WhatsApp)">
     ```json5
     {
       channels: {
@@ -477,33 +477,33 @@ Groepseigenaren kunnen activering per groep omschakelen:
 - `/activation mention`
 - `/activation always`
 
-De eigenaar wordt bepaald door `channels.whatsapp.allowFrom` (of de eigen E.164 van de bot wanneer niet ingesteld). Verstuur de opdracht als een zelfstandig bericht. Andere oppervlakken negeren `/activation` momenteel.
+Eigenaar wordt bepaald door `channels.whatsapp.allowFrom` (of de eigen E.164 van de bot wanneer niet ingesteld). Verstuur het commando als een zelfstandig bericht. Andere oppervlakken negeren `/activation` momenteel.
 
 ## Contextvelden
 
-Inkomende payloads van groepen stellen in:
+Inkomende groepspayloads stellen in:
 
 - `ChatType=group`
 - `GroupSubject` (indien bekend)
 - `GroupMembers` (indien bekend)
-- `WasMentioned` (resultaat van mention-gating)
+- `WasMentioned` (resultaat van vermeldingstoegang)
 - Telegram-forumtopics bevatten ook `MessageThreadId` en `IsForum`.
 
-De systeemprompt van de agent bevat een groepsintro bij de eerste beurt van een nieuwe groepssessie. Die herinnert het model eraan te reageren als een mens, Markdown-tabellen te vermijden, lege regels te minimaliseren en normale chatafstand te volgen, en te vermijden letterlijke `\n`-reeksen te typen. Door kanalen geleverde groepsnamen en deelnemerslabels worden weergegeven als omheinde niet-vertrouwde metadata, niet als inline systeeminstructies.
+De systeemprompt van de agent bevat bij de eerste beurt van een nieuwe groepssessie een groepsintro. Die herinnert het model eraan om te reageren als een mens, Markdown-tabellen te vermijden, lege regels te beperken en normale chatafstand te volgen, en geen letterlijke `\n`-reeksen te typen. Groepsnamen en deelnemerslabels afkomstig van kanalen worden weergegeven als fenced niet-vertrouwde metadata, niet als inline systeeminstructies.
 
 ## iMessage-specifiek
 
-- Geef de voorkeur aan `chat_id:<id>` bij routering of allowlisting.
+- Geef de voorkeur aan `chat_id:<id>` bij routeren of opnemen in een toestaanlijst.
 - Chats weergeven: `imsg chats --limit 20`.
 - Groepsantwoorden gaan altijd terug naar dezelfde `chat_id`.
 
 ## WhatsApp-systeemprompts
 
-Zie [WhatsApp](/nl/channels/whatsapp#system-prompts) voor de canonieke WhatsApp-regels voor systeemprompts, inclusief oplossing van groeps- en directe prompts, wildcardgedrag en semantiek voor accountoverschrijvingen.
+Zie [WhatsApp](/nl/channels/whatsapp#system-prompts) voor de canonieke regels voor WhatsApp-systeemprompts, inclusief oplossing van groeps- en directe prompts, wildcardgedrag en semantiek voor accountoverschrijvingen.
 
 ## WhatsApp-specifiek
 
-Zie [Groepsberichten](/nl/channels/group-messages) voor WhatsApp-specifiek gedrag (geschiedenisinjectie, details van mention-afhandeling).
+Zie [Groepsberichten](/nl/channels/group-messages) voor gedrag dat alleen voor WhatsApp geldt (geschiedenisinjectie, details over vermeldingsafhandeling).
 
 ## Gerelateerd
 

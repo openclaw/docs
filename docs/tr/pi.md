@@ -1,26 +1,26 @@
 ---
 read_when:
     - OpenClaw'da Pi SDK entegrasyon tasarımını anlama
-    - Pi için ajan oturumu yaşam döngüsünü, araç altyapısını veya sağlayıcı bağlantılarını değiştirme
+    - Pi için aracı oturum yaşam döngüsünü, araçları veya sağlayıcı bağlantılarını değiştirme
 summary: OpenClaw'ın gömülü Pi ajan entegrasyonu ve oturum yaşam döngüsü mimarisi
 title: Pi entegrasyon mimarisi
 x-i18n:
-    generated_at: "2026-05-10T19:43:20Z"
+    generated_at: "2026-05-11T20:33:00Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 93f468416b453f4f3277406f5f40386748b7388502444266f611926cd66c96ba
+    source_hash: 44d1f3fb0e04302f09c6259dbce8a12a0f25e345c2407162d82c7712d33d5e0a
     source_path: pi.md
     workflow: 16
 ---
 
-OpenClaw, AI ajanı yeteneklerini sağlamak için [pi-coding-agent](https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent) ve onun kardeş paketleriyle (`pi-ai`, `pi-agent-core`, `pi-tui`) entegre olur.
+OpenClaw, yapay zeka ajanı yeteneklerini sağlamak için [pi-coding-agent](https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent) ve kardeş paketleri (`pi-ai`, `pi-agent-core`, `pi-tui`) ile entegre olur.
 
 ## Genel Bakış
 
-OpenClaw, mesajlaşma Gateway mimarisine bir AI kodlama ajanı gömmek için pi SDK'sini kullanır. OpenClaw, pi'yi bir alt süreç olarak başlatmak veya RPC modunu kullanmak yerine, pi'nin `AgentSession` örneğini `createAgentSession()` aracılığıyla doğrudan içe aktarır ve oluşturur. Bu gömülü yaklaşım şunları sağlar:
+OpenClaw, mesajlaşma Gateway mimarisine bir yapay zeka kodlama ajanı yerleştirmek için pi SDK'sını kullanır. pi'yi bir alt süreç olarak başlatmak veya RPC modunu kullanmak yerine OpenClaw, pi'nin `AgentSession` bileşenini `createAgentSession()` aracılığıyla doğrudan içe aktarır ve örnekler. Bu yerleşik yaklaşım şunları sağlar:
 
 - Oturum yaşam döngüsü ve olay işleme üzerinde tam denetim
-- Özel araç enjeksiyonu (mesajlaşma, korumalı alan, kanala özel eylemler)
+- Özel araç enjeksiyonu (mesajlaşma, korumalı alan, kanala özgü eylemler)
 - Kanal/bağlam başına sistem istemi özelleştirmesi
 - Dallanma/Compaction desteğiyle oturum kalıcılığı
 - Yük devretmeli çok hesaplı kimlik doğrulama profili rotasyonu
@@ -30,19 +30,19 @@ OpenClaw, mesajlaşma Gateway mimarisine bir AI kodlama ajanı gömmek için pi 
 
 ```json
 {
-  "@mariozechner/pi-agent-core": "0.73.0",
-  "@mariozechner/pi-ai": "0.73.0",
-  "@mariozechner/pi-coding-agent": "0.73.0",
-  "@mariozechner/pi-tui": "0.73.0"
+  "@earendil-works/pi-agent-core": "0.74.0",
+  "@earendil-works/pi-ai": "0.74.0",
+  "@earendil-works/pi-coding-agent": "0.74.0",
+  "@earendil-works/pi-tui": "0.74.0"
 }
 ```
 
-| Paket             | Amaç                                                                                                   |
-| ----------------- | ------------------------------------------------------------------------------------------------------ |
-| `pi-ai`           | Temel LLM soyutlamaları: `Model`, `streamSimple`, mesaj türleri, sağlayıcı API'leri                    |
-| `pi-agent-core`   | Ajan döngüsü, araç yürütme, `AgentMessage` türleri                                                     |
+| Paket            | Amaç                                                                                                  |
+| ---------------- | ----------------------------------------------------------------------------------------------------- |
+| `pi-ai`          | Temel LLM soyutlamaları: `Model`, `streamSimple`, mesaj türleri, sağlayıcı API'leri                   |
+| `pi-agent-core`  | Ajan döngüsü, araç yürütme, `AgentMessage` türleri                                                    |
 | `pi-coding-agent` | Üst düzey SDK: `createAgentSession`, `SessionManager`, `AuthStorage`, `ModelRegistry`, yerleşik araçlar |
-| `pi-tui`          | Terminal UI bileşenleri (OpenClaw'ın yerel TUI modunda kullanılır)                                     |
+| `pi-tui`         | Terminal UI bileşenleri (OpenClaw'ın yerel TUI modunda kullanılır)                                    |
 
 ## Dosya yapısı
 
@@ -134,17 +134,17 @@ src/agents/
 └── ...
 ```
 
-Kanala özel mesaj eylemi çalışma zamanları artık `src/agents/tools` altında değil,
-Plugin tarafından sahip olunan uzantı dizinlerinde bulunur; örneğin:
+Kanala özgü mesaj eylemi çalışma zamanları artık `src/agents/tools` altında değil,
+Plugin sahibi uzantı dizinlerinde bulunur; örneğin:
 
 - Discord Plugin eylemi çalışma zamanı dosyaları
 - Slack Plugin eylemi çalışma zamanı dosyası
 - Telegram Plugin eylemi çalışma zamanı dosyası
 - WhatsApp Plugin eylemi çalışma zamanı dosyası
 
-## Çekirdek entegrasyon akışı
+## Temel entegrasyon akışı
 
-### 1. Gömülü Ajan Çalıştırma
+### 1. Yerleşik Bir Ajanı Çalıştırma
 
 Ana giriş noktası, `pi-embedded-runner/run.ts` içindeki `runEmbeddedPiAgent()` işlevidir:
 
@@ -178,7 +178,7 @@ import {
   DefaultResourceLoader,
   SessionManager,
   SettingsManager,
-} from "@mariozechner/pi-coding-agent";
+} from "@earendil-works/pi-coding-agent";
 
 const resourceLoader = new DefaultResourceLoader({
   cwd: resolvedWorkspace,
@@ -242,8 +242,8 @@ await session.prompt(effectivePrompt, { images: imageResult.images });
 
 SDK, tam ajan döngüsünü yönetir: LLM'ye gönderme, araç çağrılarını yürütme, yanıtları akışla iletme.
 
-Görsel enjeksiyonu isteme özeldir: OpenClaw, mevcut istemden görsel referanslarını yükler ve
-bunları yalnızca o tur için `images` aracılığıyla iletir. Görsel yüklerini yeniden enjekte etmek için
+Görüntü enjeksiyonu isteme yereldir: OpenClaw, geçerli istemden görüntü başvurularını yükler ve
+bunları yalnızca o tur için `images` aracılığıyla iletir. Görüntü yüklerini yeniden enjekte etmek için
 eski geçmiş turlarını yeniden taramaz.
 
 ## Araç mimarisi
@@ -253,10 +253,10 @@ eski geçmiş turlarını yeniden taramaz.
 1. **Temel Araçlar**: pi'nin `codingTools` araçları (read, bash, edit, write)
 2. **Özel Değiştirmeler**: OpenClaw, bash'i `exec`/`process` ile değiştirir; read/edit/write araçlarını korumalı alan için özelleştirir
 3. **OpenClaw Araçları**: mesajlaşma, tarayıcı, canvas, oturumlar, Cron, Gateway vb.
-4. **Kanal Araçları**: Discord/Telegram/Slack/WhatsApp'a özel eylem araçları
-5. **Politika Filtreleme**: Araçlar profil, sağlayıcı, ajan, grup ve korumalı alan politikalarına göre filtrelenir
-6. **Şema Normalleştirme**: Şemalar Gemini/OpenAI uyumsuzlukları için temizlenir
-7. **AbortSignal Sarmalama**: Araçlar abort sinyallerine uyması için sarmalanır
+4. **Kanal Araçları**: Discord/Telegram/Slack/WhatsApp'a özgü eylem araçları
+5. **İlke Filtreleme**: Araçlar profil, sağlayıcı, ajan, grup ve korumalı alan ilkelerine göre filtrelenir
+6. **Şema Normalleştirme**: Şemalar Gemini/OpenAI özelliklerine göre temizlenir
+7. **AbortSignal Sarmalama**: Araçlar, iptal sinyallerine uyacak şekilde sarmalanır
 
 ### Araç tanımı bağdaştırıcısı
 
@@ -277,7 +277,7 @@ export function toToolDefinitions(tools: AnyAgentTool[]): ToolDefinition[] {
 }
 ```
 
-### Araç ayırma stratejisi
+### Araç bölme stratejisi
 
 `splitSdkTools()`, tüm araçları `customTools` aracılığıyla iletir:
 
@@ -292,11 +292,11 @@ export function splitSdkTools(options: { tools: AnyAgentTool[]; sandboxEnabled: 
 
 Bu, OpenClaw'ın ilke filtrelemesinin, sandbox entegrasyonunun ve genişletilmiş araç setinin sağlayıcılar arasında tutarlı kalmasını sağlar.
 
-## Sistem istemi oluşturma
+## Sistem prompt'u oluşturma
 
-Sistem istemi `buildAgentSystemPrompt()` (`system-prompt.ts`) içinde oluşturulur. Tooling, Tool Call Style, Safety guardrails, OpenClaw Control, Skills, Docs, Workspace, Sandbox, Messaging, Assistant Output Directives, Voice, Silent Replies, Heartbeats, Runtime metadata dahil olmak üzere bölümlerle, etkinleştirildiğinde Memory ve Reactions ile isteğe bağlı bağlam dosyaları ve ek sistem istemi içeriğini içeren tam bir istem birleştirir. Bölümler, alt aracılar tarafından kullanılan en küçük istem modu için kırpılır.
+Sistem prompt'u `buildAgentSystemPrompt()` içinde oluşturulur (`system-prompt.ts`). Tooling, Tool Call Style, Safety guardrails, OpenClaw Control, Skills, Docs, Workspace, Sandbox, Messaging, Assistant Output Directives, Voice, Silent Replies, Heartbeats, Runtime metadata dahil bölümlerin yanı sıra etkinleştirildiğinde Memory ve Reactions ile isteğe bağlı bağlam dosyaları ve ek sistem prompt'u içeriğini içeren tam bir prompt derler. Bölümler, alt aracılar tarafından kullanılan minimum prompt modu için kırpılır.
 
-İstem, oturum oluşturulduktan sonra `applySystemPromptOverrideToSession()` aracılığıyla uygulanır:
+Prompt, oturum oluşturulduktan sonra `applySystemPromptOverrideToSession()` aracılığıyla uygulanır:
 
 ```typescript
 const systemPromptOverride = createSystemPromptOverride(appendPrompt);
@@ -317,7 +317,7 @@ OpenClaw bunu araç sonucu güvenliği için `guardSessionManager()` ile sarmala
 
 ### Oturum önbelleğe alma
 
-`session-manager-cache.ts`, dosya ayrıştırmayı tekrar tekrar yapmamak için SessionManager örneklerini önbelleğe alır:
+`session-manager-cache.ts`, dosyaların tekrar tekrar ayrıştırılmasını önlemek için SessionManager örneklerini önbelleğe alır:
 
 ```typescript
 await prewarmSessionFile(params.sessionFile);
@@ -327,11 +327,16 @@ trackSessionManagerAccess(params.sessionFile);
 
 ### Geçmişi sınırlama
 
-`limitHistoryTurns()`, kanal türüne göre konuşma geçmişini kırpar (DM veya grup).
+`limitHistoryTurns()`, konuşma geçmişini kanal türüne göre (DM ve grup) kırpar.
 
 ### Compaction
 
-Otomatik Compaction, bağlam taşmasında tetiklenir. Yaygın taşma imzaları arasında `request_too_large`, `context length exceeded`, `input exceeds the maximum number of tokens`, `input token count exceeds the maximum number of input tokens`, `input is too long for the model` ve `ollama error: context length exceeded` bulunur. `compactEmbeddedPiSessionDirect()` manuel Compaction işlemini yönetir:
+Otomatik Compaction, bağlam taşmasında tetiklenir. Yaygın taşma imzaları
+`request_too_large`, `context length exceeded`, `input exceeds the
+maximum number of tokens`, `input token count exceeds the maximum number of
+input tokens`, `input is too long for the model` ve `ollama error: context
+length exceeded` içerir. `compactEmbeddedPiSessionDirect()` manuel
+compaction işlemini yönetir:
 
 ```typescript
 const compactResult = await compactEmbeddedPiSessionDirect({
@@ -343,14 +348,14 @@ const compactResult = await compactEmbeddedPiSessionDirect({
 
 ### Kimlik doğrulama profilleri
 
-OpenClaw, sağlayıcı başına birden çok API anahtarı içeren bir kimlik doğrulama profili deposu tutar:
+OpenClaw, sağlayıcı başına birden fazla API anahtarı içeren bir kimlik doğrulama profili deposu tutar:
 
 ```typescript
 const authStore = ensureAuthProfileStore(agentDir, { allowKeychainPrompt: false });
 const profileOrder = resolveAuthProfileOrder({ cfg, store: authStore, provider, preferredProfile });
 ```
 
-Profiller, bekleme süresi takibiyle hatalarda döndürülür:
+Profiller, soğuma süresi takibiyle hatalarda döndürülür:
 
 ```typescript
 await markAuthProfileFailure({ store, profileId, reason, cfg, agentDir });
@@ -373,9 +378,9 @@ const { model, error, authStorage, modelRegistry } = resolveModel(
 authStorage.setRuntimeApiKey(model.provider, apiKeyInfo.apiKey);
 ```
 
-### Failover
+### Yedek sağlayıcıya geçiş
 
-`FailoverError`, yapılandırıldığında model yedeğe geçişini tetikler:
+`FailoverError`, yapılandırıldığında model yedeğine geçişi tetikler:
 
 ```typescript
 if (fallbackConfigured && isFailoverErrorMessage(errorText)) {
@@ -395,7 +400,7 @@ OpenClaw, özelleştirilmiş davranış için özel pi uzantıları yükler:
 
 ### Compaction koruması
 
-`src/agents/pi-hooks/compaction-safeguard.ts`, uyarlanabilir token bütçelemesi ile araç hatası ve dosya işlemi özetleri dahil olmak üzere Compaction işlemine korumalar ekler:
+`src/agents/pi-hooks/compaction-safeguard.ts`, uyarlanabilir token bütçelemesinin yanı sıra araç hatası ve dosya işlemi özetleri dahil olmak üzere Compaction için koruma sınırları ekler:
 
 ```typescript
 if (resolveCompactionMode(params.cfg) === "safeguard") {
@@ -406,7 +411,7 @@ if (resolveCompactionMode(params.cfg) === "safeguard") {
 
 ### Bağlam budama
 
-`src/agents/pi-hooks/context-pruning.ts`, önbellek TTL tabanlı bağlam budamayı uygular:
+`src/agents/pi-hooks/context-pruning.ts`, cache-TTL tabanlı bağlam budamayı uygular:
 
 ```typescript
 if (cfg?.agents?.defaults?.contextPruning?.mode === "cache-ttl") {
@@ -424,13 +429,13 @@ if (cfg?.agents?.defaults?.contextPruning?.mode === "cache-ttl") {
 
 ### Blok parçalama
 
-`EmbeddedBlockChunker`, akış metnini ayrı yanıt blokları halinde yönetir:
+`EmbeddedBlockChunker`, akış metnini ayrı yanıt bloklarına yönetir:
 
 ```typescript
 const blockChunker = blockChunking ? new EmbeddedBlockChunker(blockChunking) : null;
 ```
 
-### Thinking/Final etiketi ayıklama
+### Thinking/Final Etiketlerini Ayıklama
 
 Akış çıktısı, `<think>`/`<thinking>` bloklarını ayıklamak ve `<final>` içeriğini çıkarmak için işlenir:
 
@@ -464,9 +469,9 @@ isFailoverAssistantError(...)         // Should failover
 classifyFailoverReason(errorText)     // "auth" | "rate_limit" | "quota" | "timeout" | ...
 ```
 
-### Düşünme seviyesi yedeği
+### Thinking düzeyi yedeği
 
-Bir düşünme seviyesi desteklenmiyorsa yedeğe düşer:
+Bir thinking düzeyi desteklenmiyorsa, yedeğe düşer:
 
 ```typescript
 const fallbackThinking = pickFallbackThinkingLevel({
@@ -481,7 +486,7 @@ if (fallbackThinking) {
 
 ## Sandbox entegrasyonu
 
-Sandbox modu etkinleştirildiğinde, araçlar ve yollar kısıtlanır:
+Sandbox modu etkin olduğunda, araçlar ve yollar kısıtlanır:
 
 ```typescript
 const sandbox = await resolveSandboxContext({
@@ -507,12 +512,12 @@ if (sandboxRoot) {
 
 ### Google/Gemini
 
-- Plugin sahibi araç şeması temizleme
+- Plugin'e ait araç şeması temizleme
 
 ### OpenAI
 
 - Codex modelleri için `apply_patch` aracı
-- Düşünme seviyesi düşürme işleme
+- Thinking düzeyi düşürme işleme
 
 ## TUI Entegrasyonu
 
@@ -520,36 +525,36 @@ OpenClaw ayrıca pi-tui bileşenlerini doğrudan kullanan yerel bir TUI moduna s
 
 ```typescript
 // src/tui/tui.ts
-import { ... } from "@mariozechner/pi-tui";
+import { ... } from "@earendil-works/pi-tui";
 ```
 
 Bu, pi'nin yerel moduna benzer etkileşimli terminal deneyimi sağlar.
 
 ## Pi CLI'dan temel farklar
 
-| Özellik         | Pi CLI                  | OpenClaw Embedded                                                                              |
+| Boyut           | Pi CLI                  | OpenClaw Gömülü                                                                              |
 | --------------- | ----------------------- | ---------------------------------------------------------------------------------------------- |
-| Çağırma         | `pi` komutu / RPC       | `createAgentSession()` aracılığıyla SDK                                                         |
-| Araçlar         | Varsayılan kodlama araçları | Özel OpenClaw araç paketi                                                                    |
-| Sistem istemi   | AGENTS.md + istemler    | Kanal/bağlam başına dinamik                                                                    |
+| Çağırma         | `pi` komutu / RPC       | `createAgentSession()` üzerinden SDK                                                                 |
+| Araçlar         | Varsayılan kodlama araçları | Özel OpenClaw araç paketi                                                                     |
+| Sistem prompt'u | AGENTS.md + prompt'lar  | Kanal/bağlam başına dinamik                                                                    |
 | Oturum depolama | `~/.pi/agent/sessions/` | `~/.openclaw/agents/<agentId>/sessions/` (veya `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/`) |
-| Kimlik doğrulama | Tek kimlik bilgisi     | Döndürmeli çoklu profil                                                                        |
-| Uzantılar       | Diskten yüklenir        | Programatik + disk yolları                                                                     |
-| Olay işleme     | TUI işleme              | Geri çağırım tabanlı (onBlockReply vb.)                                                        |
+| Kimlik doğrulama | Tek kimlik bilgisi      | Döndürmeli çoklu profil                                                                    |
+| Uzantılar       | Diskten yüklenir        | Programatik + disk yolları                                                                      |
+| Olay işleme     | TUI render etme         | Callback tabanlı (onBlockReply vb.)                                                            |
 
 ## Gelecekte değerlendirilecekler
 
 Olası yeniden çalışma alanları:
 
-1. **Araç imzası hizalama**: Şu anda pi-agent-core ile pi-coding-agent imzaları arasında uyarlama yapılıyor
+1. **Araç imzası hizalaması**: Şu anda pi-agent-core ve pi-coding-agent imzaları arasında uyarlama yapılıyor
 2. **Oturum yöneticisi sarmalama**: `guardSessionManager` güvenlik ekler ancak karmaşıklığı artırır
-3. **Uzantı yükleme**: pi'nin `ResourceLoader`'ını daha doğrudan kullanabilir
-4. **Akış işleyici karmaşıklığı**: `subscribeEmbeddedPiSession` büyüdü
-5. **Sağlayıcı tuhaflıkları**: pi'nin potansiyel olarak işleyebileceği birçok sağlayıcıya özgü kod yolu
+3. **Uzantı yükleme**: Pi'nin `ResourceLoader`'ı daha doğrudan kullanılabilir
+4. **Akış işleyicisi karmaşıklığı**: `subscribeEmbeddedPiSession` büyüdü
+5. **Sağlayıcı özel durumları**: Pi'nin potansiyel olarak yönetebileceği birçok sağlayıcıya özgü kod yolu
 
 ## Testler
 
-Pi entegrasyon kapsamı şu paketlere yayılır:
+Pi entegrasyon kapsamı şu test paketlerini içerir:
 
 - `src/agents/pi-*.test.ts`
 - `src/agents/pi-auth-json.test.ts`
@@ -567,7 +572,7 @@ Canlı/isteğe bağlı:
 
 - `src/agents/pi-embedded-runner-extraparams.live.test.ts` (`OPENCLAW_LIVE_TEST=1` ile etkinleştirin)
 
-Güncel çalıştırma komutları için bkz. [Pi Geliştirme İş Akışı](/tr/pi-dev).
+Geçerli çalıştırma komutları için [Pi Geliştirme İş Akışı](/tr/pi-dev) bölümüne bakın.
 
 ## İlgili
 

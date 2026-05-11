@@ -2,21 +2,21 @@
 read_when:
     - Je wilt één API-sleutel voor veel LLM's
     - Je wilt modellen via OpenRouter uitvoeren in OpenClaw
-    - Je wilt OpenRouter gebruiken voor het genereren van afbeeldingen
+    - Je wilt OpenRouter gebruiken voor beeldgeneratie
     - Je wilt OpenRouter gebruiken voor videogeneratie
 summary: Gebruik de uniforme API van OpenRouter om toegang te krijgen tot veel modellen in OpenClaw
 title: OpenRouter
 x-i18n:
-    generated_at: "2026-05-05T01:49:17Z"
+    generated_at: "2026-05-11T20:47:49Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b2876669c6fcc958ac13c19930cd23977b8ec27ae57069d9231932cc13c75244
+    source_hash: 5016c522cb2239dadebbfe63459d0e00f43b3dc76aa49cd5b4acfd542b31be71
     source_path: providers/openrouter.md
     workflow: 16
 ---
 
-OpenRouter biedt een **uniforme API** die aanvragen routeert naar veel modellen achter één
-endpoint en API-sleutel. Deze is OpenAI-compatibel, dus de meeste OpenAI-SDK's werken door de basis-URL te wijzigen.
+OpenRouter biedt een **uniforme API** die verzoeken naar veel modellen achter één
+eindpunt en één API-sleutel routeert. De API is OpenAI-compatibel, dus de meeste OpenAI-SDK's werken door de basis-URL te wijzigen.
 
 ## Aan de slag
 
@@ -59,12 +59,13 @@ Modelreferenties volgen het patroon `openrouter/<provider>/<model>`. Zie [/conce
 beschikbare providers en modellen.
 </Note>
 
-Voorbeelden van meegeleverde fallbacks:
+Meegeleverde fallbackvoorbeelden:
 
-| Modelreferentie                 | Opmerkingen                  |
+| Modelreferentie                 | Opmerkingen                         |
 | --------------------------------- | ---------------------------- |
-| `openrouter/auto`                 | Automatische OpenRouter-routering |
+| `openrouter/auto`                 | Automatische routering van OpenRouter |
 | `openrouter/moonshotai/kimi-k2.6` | Kimi K2.6 via MoonshotAI     |
+| `openrouter/moonshotai/kimi-k2.5` | Kimi K2.5 via MoonshotAI     |
 
 ## Afbeeldingen genereren
 
@@ -84,11 +85,11 @@ OpenRouter kan ook de `image_generate`-tool ondersteunen. Gebruik een OpenRouter
 }
 ```
 
-OpenClaw stuurt afbeeldingsaanvragen naar OpenRouters chat-completions-afbeeldings-API met `modalities: ["image", "text"]`. Gemini-afbeeldingsmodellen ontvangen ondersteunde hints voor `aspectRatio` en `resolution` via OpenRouters `image_config`. Gebruik `agents.defaults.imageGenerationModel.timeoutMs` voor tragere OpenRouter-afbeeldingsmodellen; de parameter `timeoutMs` per aanroep van de `image_generate`-tool heeft nog steeds voorrang.
+OpenClaw stuurt afbeeldingsverzoeken naar OpenRouter's chat-completions-afbeeldings-API met `modalities: ["image", "text"]`. Gemini-afbeeldingsmodellen ontvangen ondersteunde hints voor `aspectRatio` en `resolution` via OpenRouter's `image_config`. Gebruik `agents.defaults.imageGenerationModel.timeoutMs` voor tragere OpenRouter-afbeeldingsmodellen; de per-call-parameter `timeoutMs` van de `image_generate`-tool heeft nog steeds voorrang.
 
-## Video's genereren
+## Video genereren
 
-OpenRouter kan ook de `video_generate`-tool ondersteunen via de asynchrone `/videos`-API. Gebruik een OpenRouter-videomodel onder `agents.defaults.videoGenerationModel`:
+OpenRouter kan ook de `video_generate`-tool ondersteunen via zijn asynchrone `/videos`-API. Gebruik een OpenRouter-videomodel onder `agents.defaults.videoGenerationModel`:
 
 ```json5
 {
@@ -104,19 +105,19 @@ OpenRouter kan ook de `video_generate`-tool ondersteunen via de asynchrone `/vid
 ```
 
 OpenClaw dient tekst-naar-video- en afbeelding-naar-video-taken in bij OpenRouter, pollt
-de geretourneerde `polling_url` en downloadt de voltooide video via
-OpenRouters `unsigned_urls` of het gedocumenteerde endpoint voor taakinhoud.
-Referentieafbeeldingen worden standaard verzonden als afbeeldingen voor het eerste/laatste frame; afbeeldingen
-met de tag `reference_image` worden verzonden als OpenRouter-invoerreferenties. De
-meegeleverde standaard `google/veo-3.1-fast` vermeldt de momenteel ondersteunde duur van 4/6/8
+de geretourneerde `polling_url` en downloadt de voltooide video van
+OpenRouter's `unsigned_urls` of het gedocumenteerde eindpunt voor taakinhoud.
+Referentieafbeeldingen worden standaard als eerste/laatste-frame-afbeeldingen verzonden; afbeeldingen
+met de tag `reference_image` worden als OpenRouter-invoerreferenties verzonden. De
+meegeleverde standaard `google/veo-3.1-fast` adverteert de momenteel ondersteunde duurwaarden van 4/6/8
 seconden, resoluties `720P`/`1080P` en beeldverhoudingen `16:9`/`9:16`.
 Video-naar-video is niet geregistreerd voor OpenRouter, omdat de upstream
-API voor videogeneratie momenteel tekst- en afbeeldingsreferenties accepteert.
+videogeneratie-API momenteel tekst- en afbeeldingsreferenties accepteert.
 
 ## Tekst-naar-spraak
 
-OpenRouter kan ook worden gebruikt als TTS-provider via het OpenAI-compatibele
-`/audio/speech`-endpoint.
+OpenRouter kan ook als TTS-provider worden gebruikt via zijn OpenAI-compatibele
+`/audio/speech`-eindpunt.
 
 ```json5
 {
@@ -136,15 +137,15 @@ OpenRouter kan ook worden gebruikt als TTS-provider via het OpenAI-compatibele
 }
 ```
 
-Als `messages.tts.providers.openrouter.apiKey` wordt weggelaten, hergebruikt TTS
+Als `messages.tts.providers.openrouter.apiKey` wordt weggelaten, gebruikt TTS opnieuw
 `models.providers.openrouter.apiKey` en daarna `OPENROUTER_API_KEY`.
 
 ## Authenticatie en headers
 
 OpenRouter gebruikt onder de motorkap een Bearer-token met je API-sleutel.
 
-Bij echte OpenRouter-aanvragen (`https://openrouter.ai/api/v1`) voegt OpenClaw ook
-OpenRouters gedocumenteerde app-toewijzingsheaders toe:
+Bij echte OpenRouter-verzoeken (`https://openrouter.ai/api/v1`) voegt OpenClaw ook
+OpenRouter's gedocumenteerde headers voor app-attributie toe:
 
 | Header                    | Waarde                                                                                                  |
 | ------------------------- | ------------------------------------------------------------------------------------------------------ |
@@ -181,13 +182,13 @@ die OpenRouter-specifieke headers of Anthropic-cachemarkeringen **niet**.
     }
     ```
 
-    OpenClaw stuurt `X-OpenRouter-Cache: true` en, wanneer geconfigureerd,
-    `X-OpenRouter-Cache-TTL`. `responseCacheClear: true` dwingt een vernieuwing af voor
-    de huidige aanvraag en slaat de vervangende respons op. Snake_case-aliassen
+    OpenClaw stuurt `X-OpenRouter-Cache: true` en, indien geconfigureerd,
+    `X-OpenRouter-Cache-TTL`. `responseCacheClear: true` forceert een vernieuwing voor
+    het huidige verzoek en slaat het vervangende antwoord op. Snake_case-aliassen
     (`response_cache`, `response_cache_ttl_seconds` en
     `response_cache_clear`) worden ook geaccepteerd.
 
-    Dit staat los van promptcaching van providers en van OpenRouters
+    Dit staat los van promptcaching van de provider en van OpenRouter's
     Anthropic-`cache_control`-markeringen. Het wordt alleen toegepast op geverifieerde
     `openrouter.ai`-routes, niet op aangepaste proxy-basis-URL's.
 
@@ -196,47 +197,47 @@ die OpenRouter-specifieke headers of Anthropic-cachemarkeringen **niet**.
   <Accordion title="Anthropic-cachemarkeringen">
     Op geverifieerde OpenRouter-routes behouden Anthropic-modelreferenties de
     OpenRouter-specifieke Anthropic-`cache_control`-markeringen die OpenClaw gebruikt voor
-    beter hergebruik van de promptcache op promptblokken voor systeem/ontwikkelaar.
+    beter hergebruik van promptcaches op systeem-/ontwikkelaarspromptblokken.
   </Accordion>
 
   <Accordion title="Anthropic-redeneerprefill">
-    Op geverifieerde OpenRouter-routes verwijderen Anthropic-modelreferenties waarvoor redeneren is ingeschakeld
-    afsluitende assistant-prefill-beurten voordat de aanvraag OpenRouter bereikt,
-    in overeenstemming met Anthropics vereiste dat redeneergesprekken eindigen met een gebruikersbeurt.
+    Op geverifieerde OpenRouter-routes laten Anthropic-modelreferenties met ingeschakeld redeneren
+    afsluitende assistant-prefill-beurten weg voordat het verzoek OpenRouter bereikt,
+    conform Anthropic's vereiste dat redeneergesprekken eindigen met een gebruikersbeurt.
   </Accordion>
 
-  <Accordion title="Injectie van denken / redeneren">
+  <Accordion title="Injectie van denken/redeneren">
     Op ondersteunde niet-`auto`-routes koppelt OpenClaw het geselecteerde denkniveau aan
-    OpenRouter-proxy-redeneerpayloads. Niet-ondersteunde modelhints en
+    OpenRouter-proxyredeneerpayloads. Niet-ondersteunde modelhints en
     `openrouter/auto` slaan die redeneerinjectie over. Hunter Alpha slaat ook
     proxyredeneren over voor verouderde geconfigureerde modelreferenties, omdat OpenRouter
-    definitieve antwoordtekst in redeneervelden kon retourneren voor die ingetrokken route.
+    uiteindelijke antwoordtekst in redeneervelden kon retourneren voor die uitgefaseerde route.
   </Accordion>
 
   <Accordion title="DeepSeek V4-redeneerreplay">
     Op geverifieerde OpenRouter-routes vullen `openrouter/deepseek/deepseek-v4-flash` en
-    `openrouter/deepseek/deepseek-v4-pro` ontbrekende `reasoning_content` in op
-    opnieuw afgespeelde assistant-beurten, zodat denk-/toolgesprekken de vereiste
-    vervolgvorm van DeepSeek V4 behouden. OpenClaw stuurt door OpenRouter ondersteunde
+    `openrouter/deepseek/deepseek-v4-pro` ontbrekende `reasoning_content` aan op
+    opnieuw afgespeelde assistant-beurten, zodat denk-/toolgesprekken de door DeepSeek V4
+    vereiste vervolgvorm behouden. OpenClaw stuurt door OpenRouter ondersteunde
     `reasoning_effort`-waarden voor deze routes; `xhigh` is het hoogst geadverteerde
-    niveau en verouderde `max`-overrides worden toegewezen aan `xhigh`.
+    niveau, en verouderde `max`-overrides worden naar `xhigh` gemapt.
   </Accordion>
 
   <Accordion title="Alleen-OpenAI-aanvraagvorming">
-    OpenRouter loopt nog steeds via het proxy-achtige OpenAI-compatibele pad, dus
+    OpenRouter loopt nog steeds via het proxyachtige OpenAI-compatibele pad, dus
     native alleen-OpenAI-aanvraagvorming zoals `serviceTier`, Responses `store`,
     OpenAI-redeneercompatibele payloads en promptcachehints worden niet doorgestuurd.
   </Accordion>
 
   <Accordion title="Door Gemini ondersteunde routes">
     Door Gemini ondersteunde OpenRouter-referenties blijven op het proxy-Gemini-pad: OpenClaw behoudt
-    daar Gemini-gedachtesignatuur-opschoning, maar schakelt geen native Gemini
+    daar Gemini-thought-signature-opschoning, maar schakelt geen native Gemini
     replayvalidatie of bootstrap-herschrijvingen in.
   </Accordion>
 
-  <Accordion title="Routeringsmetadata van providers">
-    Als je OpenRouter-providerroutering doorgeeft onder modelparameters, stuurt OpenClaw
-    deze door als OpenRouter-routeringsmetadata voordat de gedeelde streamwrappers worden uitgevoerd.
+  <Accordion title="Metadata voor providerrouting">
+    Als je OpenRouter-providerrouting onder modelparameters doorgeeft, stuurt OpenClaw
+    die door als OpenRouter-routeringsmetadata voordat de gedeelde streamwrappers worden uitgevoerd.
   </Accordion>
 </AccordionGroup>
 

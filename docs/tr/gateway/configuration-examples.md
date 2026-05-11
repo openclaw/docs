@@ -2,19 +2,19 @@
 read_when:
     - OpenClaw'ı yapılandırmayı öğrenme
     - Yapılandırma örnekleri aranıyor
-    - OpenClaw'ı ilk kez kurma
+    - OpenClaw'ı ilk kez ayarlama
 summary: Yaygın OpenClaw kurulumları için şemaya uygun yapılandırma örnekleri
 title: Yapılandırma örnekleri
 x-i18n:
-    generated_at: "2026-05-10T19:35:38Z"
+    generated_at: "2026-05-11T20:29:19Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9fd1c93d8c491de13c3679c766293a3401853625308e90588d7c83272c5b6e73
+    source_hash: e077b2fe83b1c6e4ffd2ff0029fe3b754c7dc5dced06f134ddf18e9ed6a11fd2
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı başvuru ve alan bazlı notlar için [Yapılandırma](/tr/gateway/configuration) sayfasına bakın.
+Aşağıdaki örnekler geçerli yapılandırma şemasıyla uyumludur. Kapsamlı başvuru ve alan başına notlar için bkz. [Yapılandırma](/tr/gateway/configuration).
 
 ## Hızlı başlangıç
 
@@ -22,25 +22,32 @@ Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı ba
 
 ```json5
 {
-  agent: { workspace: "~/.openclaw/workspace" },
+  agents: { defaults: { workspace: "~/.openclaw/workspace" } },
   channels: { whatsapp: { allowFrom: ["+15555550123"] } },
 }
 ```
 
-`~/.openclaw/openclaw.json` olarak kaydedin; ardından bot'a bu numaradan doğrudan mesaj gönderebilirsiniz.
+`~/.openclaw/openclaw.json` olarak kaydedin; ardından bota bu numaradan DM gönderebilirsiniz.
 
 ### Önerilen başlangıç
 
 ```json5
 {
-  identity: {
-    name: "Clawd",
-    theme: "helpful assistant",
-    emoji: "🦞",
-  },
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: { primary: "anthropic/claude-sonnet-4-6" },
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: { primary: "anthropic/claude-sonnet-4-6" },
+    },
+    list: [
+      {
+        id: "main",
+        identity: {
+          name: "Clawd",
+          theme: "helpful assistant",
+          emoji: "🦞",
+        },
+      },
+    ],
   },
   channels: {
     whatsapp: {
@@ -59,7 +66,7 @@ Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı ba
 
 ## Genişletilmiş örnek (başlıca seçenekler)
 
-> JSON5, yorumları ve sondaki virgülleri kullanmanıza izin verir. Normal JSON da çalışır.
+> JSON5 yorumları ve sondaki virgülleri kullanmanıza olanak tanır. Normal JSON de çalışır.
 
 ```json5
 {
@@ -90,12 +97,7 @@ Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı ba
     },
   },
 
-  // Identity
-  identity: {
-    name: "Samantha",
-    theme: "helpful sloth",
-    emoji: "🦥",
-  },
+  // Identity is per agent — set it on agents.list[].identity below.
 
   // Logging
   logging: {
@@ -314,6 +316,11 @@ Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı ba
       {
         id: "main",
         default: true,
+        identity: {
+          name: "Samantha",
+          theme: "helpful sloth",
+          emoji: "🦥",
+        },
         // inherits defaults.skills -> github, weather
         groupChat: {
           mentionPatterns: ["@openclaw", "openclaw"],
@@ -473,9 +480,9 @@ Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı ba
 }
 ```
 
-### Sembolik bağlantılı kardeş skill deposu
+### Symlink eklenmiş kardeş Skills deposu
 
-Yerleşik skill kökü bir kardeş depoya sembolik bağlantı içeriyorsa bunu kullanın; örneğin `~/.agents/skills/manager -> ~/Projects/manager/skills`.
+Bunu, yerleşik bir Skills kökü kardeş bir depoya symlink içerdiğinde kullanın; örneğin `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ```json5
 {
@@ -489,12 +496,11 @@ Yerleşik skill kökü bir kardeş depoya sembolik bağlantı içeriyorsa bunu k
 ```
 
 - `extraDirs`, kardeş depoyu açık bir Skills kökü olarak tarar.
-- `allowSymlinkTargets`, sembolik bağlı Skills klasörlerinin rastgele sembolik bağ kaçışlarına izin vermeden bu güvenilir
-  gerçek hedef köke çözülmesini sağlar.
+- `allowSymlinkTargets`, symlink eklenmiş Skills klasörlerinin, rastgele symlink kaçışlarına izin vermeden bu güvenilen gerçek hedef köke çözümlenmesini sağlar.
 
-## Yaygın desenler
+## Yaygın kalıplar
 
-### Tek geçersiz kılma ile paylaşılan Skills temeli
+### Tek geçersiz kılmayla paylaşılan Skills temel yapılandırması
 
 ```json5
 {
@@ -511,15 +517,15 @@ Yerleşik skill kökü bir kardeş depoya sembolik bağlantı içeriyorsa bunu k
 }
 ```
 
-- `agents.defaults.skills` paylaşılan temeldir.
-- `agents.list[].skills`, bir agent için bu temelin yerini alır.
+- `agents.defaults.skills`, paylaşılan temel yapılandırmadır.
+- `agents.list[].skills`, bir agent için bu temel yapılandırmanın yerini alır.
 - Bir agent hiçbir Skills görmemeliyse `skills: []` kullanın.
 
 ### Çok platformlu kurulum
 
 ```json5
 {
-  agent: { workspace: "~/.openclaw/workspace" },
+  agents: { defaults: { workspace: "~/.openclaw/workspace" } },
   channels: {
     whatsapp: { allowFrom: ["+15555550123"] },
     telegram: {
@@ -536,11 +542,11 @@ Yerleşik skill kökü bir kardeş depoya sembolik bağlantı içeriyorsa bunu k
 }
 ```
 
-### Güvenilir Node ağı otomatik onayı
+### Güvenilir node ağı otomatik onayı
 
-Ağ yolunu siz kontrol etmiyorsanız cihaz eşleştirmeyi manuel tutun. Ayrılmış bir
-laboratuvar veya tailnet alt ağı için, ilk kez Node cihaz otomatik onayını
-tam CIDR'ler veya IP'lerle etkinleştirebilirsiniz:
+Ağ yolunu siz kontrol etmiyorsanız cihaz eşleştirmeyi manuel tutun. Özel bir
+laboratuvar veya tailnet alt ağı için, ilk kez yapılan node cihazı otomatik
+onayını tam CIDR'ler veya IP'lerle etkinleştirebilirsiniz:
 
 ```json5
 {
@@ -554,12 +560,13 @@ tam CIDR'ler veya IP'lerle etkinleştirebilirsiniz:
 }
 ```
 
-Bu, ayarlanmamışsa kapalı kalır. Yalnızca istenen kapsamları olmayan yeni `role: node` eşleştirmesine uygulanır. Operatör/tarayıcı istemcileri ve rol, kapsam, meta veri veya
-açık anahtar yükseltmeleri yine de manuel onay gerektirir.
+Bu, ayarlanmadığında kapalı kalır. Yalnızca istenen kapsamları olmayan yeni
+`role: node` eşleştirmesine uygulanır. Operatör/tarayıcı istemcileri ve rol,
+kapsam, meta veri veya açık anahtar yükseltmeleri hâlâ manuel onay gerektirir.
 
 ### Güvenli DM modu (paylaşılan gelen kutusu / çok kullanıcılı DM'ler)
 
-Birden fazla kişi botunuza DM gönderebiliyorsa (`allowFrom` içinde birden fazla giriş, birden fazla kişi için eşleştirme onayları veya `dmPolicy: "open"`), farklı göndericilerden gelen DM'lerin varsayılan olarak tek bir bağlamı paylaşmaması için **güvenli DM modunu** etkinleştirin:
+Birden fazla kişi botunuza DM gönderebiliyorsa (`allowFrom` içinde birden fazla giriş, birden fazla kişi için eşleştirme onayları veya `dmPolicy: "open"`), farklı gönderenlerden gelen DM'lerin varsayılan olarak tek bir bağlamı paylaşmaması için **güvenli DM modunu** etkinleştirin:
 
 ```json5
 {
@@ -583,8 +590,8 @@ Birden fazla kişi botunuza DM gönderebiliyorsa (`allowFrom` içinde birden faz
 }
 ```
 
-Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC için gönderici yetkilendirmesi varsayılan olarak önce ID'ye göre yapılır.
-Doğrudan değiştirilebilir ad/e-posta/rumuz eşleştirmesini yalnızca bu riski açıkça kabul ediyorsanız her kanalın `dangerouslyAllowNameMatching: true` ayarıyla etkinleştirin.
+Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC için gönderen yetkilendirmesi varsayılan olarak önce ID temellidir.
+Doğrudan değiştirilebilir ad/e-posta/takma ad eşleştirmeyi yalnızca bu riski açıkça kabul ediyorsanız her kanalın `dangerouslyAllowNameMatching: true` ayarıyla etkinleştirin.
 
 ### Anthropic API anahtarı + MiniMax yedeği
 
@@ -610,11 +617,13 @@ Doğrudan değiştirilebilir ad/e-posta/rumuz eşleştirmesini yalnızca bu risk
       },
     },
   },
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: {
-      primary: "anthropic/claude-opus-4-6",
-      fallbacks: ["minimax/MiniMax-M2.7"],
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: {
+        primary: "anthropic/claude-opus-4-6",
+        fallbacks: ["minimax/MiniMax-M2.7"],
+      },
     },
   },
 }
@@ -624,13 +633,20 @@ Doğrudan değiştirilebilir ad/e-posta/rumuz eşleştirmesini yalnızca bu risk
 
 ```json5
 {
-  identity: {
-    name: "WorkBot",
-    theme: "professional assistant",
-  },
-  agent: {
-    workspace: "~/work-openclaw",
-    elevated: { enabled: false },
+  agents: {
+    defaults: {
+      workspace: "~/work-openclaw",
+      elevatedDefault: "off",
+    },
+    list: [
+      {
+        id: "main",
+        identity: {
+          name: "WorkBot",
+          theme: "professional assistant",
+        },
+      },
+    ],
   },
   channels: {
     slack: {
@@ -649,9 +665,11 @@ Doğrudan değiştirilebilir ad/e-posta/rumuz eşleştirmesini yalnızca bu risk
 
 ```json5
 {
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: { primary: "lmstudio/my-local-model" },
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: { primary: "lmstudio/my-local-model" },
+    },
   },
   models: {
     mode: "merge",
@@ -679,8 +697,8 @@ Doğrudan değiştirilebilir ad/e-posta/rumuz eşleştirmesini yalnızca bu risk
 
 ## İpuçları
 
-- `dmPolicy: "open"` ayarlarsanız, eşleşen `allowFrom` listesi `"*"` içermelidir.
-- Sağlayıcı ID'leri farklılık gösterir (telefon numaraları, kullanıcı ID'leri, kanal ID'leri). Biçimi doğrulamak için sağlayıcı belgelerini kullanın.
+- `dmPolicy: "open"` ayarlarsanız, eşleşen `allowFrom` listesi `"*"` değerini içermelidir.
+- Sağlayıcı kimlikleri farklılık gösterir (telefon numaraları, kullanıcı kimlikleri, kanal kimlikleri). Biçimi doğrulamak için sağlayıcı belgelerini kullanın.
 - Daha sonra eklenecek isteğe bağlı bölümler: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
 - Daha ayrıntılı kurulum notları için [Sağlayıcılar](/tr/providers) ve [Sorun giderme](/tr/gateway/troubleshooting) bölümlerine bakın.
 

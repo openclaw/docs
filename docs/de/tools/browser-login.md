@@ -1,37 +1,37 @@
 ---
 read_when:
-    - Sie müssen sich für die Browserautomatisierung bei Websites anmelden
-    - Sie möchten Neuigkeiten auf X/Twitter veröffentlichen
-summary: Manuelle Anmeldungen für Browserautomatisierung + Veröffentlichen auf X/Twitter
+    - Für die Browser-Automatisierung müssen Sie sich bei Websites anmelden
+    - Sie möchten Updates auf X/Twitter veröffentlichen
+summary: Manuelle Anmeldungen für Browser-Automatisierung + Posten auf X/Twitter
 title: Browser-Anmeldung
 x-i18n:
-    generated_at: "2026-05-06T07:04:29Z"
+    generated_at: "2026-05-11T20:37:02Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 235194fd3a49724247f98e6d7c848c4cc3317f749ff4a8918c2172b73baf21e3
+    source_hash: 89501b47611a39df5a658ed7e144b7c16a07188dfa52544b56cbfc6e296e2ecc
     source_path: tools/browser-login.md
     workflow: 16
 ---
 
 ## Manuelle Anmeldung (empfohlen)
 
-Wenn eine Website eine Anmeldung erfordert, **melden Sie sich manuell** im **Host**-Browserprofil an (dem OpenClaw-Browser).
+Wenn eine Website eine Anmeldung erfordert, **melden Sie sich manuell** im **Host**-Browserprofil an (dem openclaw-Browser).
 
-Geben Sie dem Modell **nicht** Ihre Zugangsdaten. Automatisierte Anmeldungen lösen oft Anti-Bot-Schutzmaßnahmen aus und können das Konto sperren.
+Geben Sie dem Modell **nicht** Ihre Anmeldedaten. Automatisierte Anmeldungen lösen häufig Anti-Bot-Schutzmaßnahmen aus und können das Konto sperren.
 
-Zurück zur Hauptdokumentation zum Browser: [Browser](/de/tools/browser).
+Zurück zur Hauptdokumentation für den Browser: [Browser](/de/tools/browser).
 
 ## Welches Chrome-Profil wird verwendet?
 
-OpenClaw steuert ein **dediziertes Chrome-Profil** (mit dem Namen `openclaw`, orange getönte UI). Dieses ist von Ihrem täglichen Browserprofil getrennt.
+OpenClaw steuert ein **dediziertes Chrome-Profil** (namens `openclaw`, orange getönte Benutzeroberfläche). Dieses ist von Ihrem alltäglichen Browserprofil getrennt.
 
-Für Browser-Tool-Aufrufe des Agenten:
+Für Browser-Toolaufrufe des Agenten:
 
 - Standardauswahl: Der Agent sollte seinen isolierten `openclaw`-Browser verwenden.
-- Verwenden Sie `profile="user"` nur, wenn bestehende angemeldete Sitzungen wichtig sind und der Benutzer am Computer ist, um eine Attach-Aufforderung anzuklicken/zu genehmigen.
-- Wenn Sie mehrere Benutzer-Browserprofile haben, geben Sie das Profil explizit an, statt zu raten.
+- Verwenden Sie `profile="user"` nur, wenn vorhandene angemeldete Sitzungen relevant sind und der Benutzer am Computer ist, um jede Aufforderung zum Anhängen anzuklicken bzw. zu genehmigen.
+- Wenn Sie mehrere Benutzer-Browserprofile haben, geben Sie das Profil ausdrücklich an, statt zu raten.
 
-Zwei einfache Möglichkeiten, darauf zuzugreifen:
+Zwei einfache Möglichkeiten für den Zugriff:
 
 1. **Bitten Sie den Agenten, den Browser zu öffnen**, und melden Sie sich dann selbst an.
 2. **Öffnen Sie ihn über die CLI**:
@@ -46,13 +46,13 @@ Wenn Sie mehrere Profile haben, übergeben Sie `--browser-profile <name>` (Stand
 ## X/Twitter: empfohlener Ablauf
 
 - **Lesen/Suchen/Threads:** Verwenden Sie den **Host**-Browser (manuelle Anmeldung).
-- **Updates veröffentlichen:** Verwenden Sie den **Host**-Browser (manuelle Anmeldung).
+- **Updates posten:** Verwenden Sie den **Host**-Browser (manuelle Anmeldung).
 
 ## Sandboxing + Zugriff auf den Host-Browser
 
-Browser-Sitzungen in der Sandbox lösen **eher** Bot-Erkennung aus. Für X/Twitter (und andere strenge Websites) sollten Sie den **Host**-Browser bevorzugen.
+Sandbox-Browsersitzungen lösen **mit höherer Wahrscheinlichkeit** Bot-Erkennung aus. Für X/Twitter (und andere strenge Websites) sollten Sie den **Host**-Browser bevorzugen.
 
-Wenn der Agent in einer Sandbox ausgeführt wird, verwendet das Browser-Tool standardmäßig die Sandbox. So erlauben Sie die Host-Steuerung:
+Wenn der Agent in einer Sandbox läuft, verwendet das Browser-Tool standardmäßig die Sandbox. So erlauben Sie die Steuerung des Hosts:
 
 ```json5
 {
@@ -69,16 +69,16 @@ Wenn der Agent in einer Sandbox ausgeführt wird, verwendet das Browser-Tool sta
 }
 ```
 
-Steuern Sie dann den Host-Browser an:
+Öffnen Sie dann den Host-Browser selbst (CLI-Aufrufe werden immer gegen den Host-Browser ausgeführt):
 
 ```bash
-openclaw browser open https://x.com --browser-profile openclaw --target host
+openclaw browser open https://x.com --browser-profile openclaw
 ```
 
-Oder deaktivieren Sie Sandboxing für den Agenten, der Updates veröffentlicht.
+Die `browser`-Toolaufrufe des Agenten können dann den Host als Ziel verwenden, sobald `sandbox.browser.allowHostControl: true` gesetzt ist. Alternativ können Sie Sandboxing für den Agenten deaktivieren, der Updates postet.
 
-## Verwandt
+## Verwandte Themen
 
 - [Browser](/de/tools/browser)
 - [Fehlerbehebung für Browser unter Linux](/de/tools/browser-linux-troubleshooting)
-- [Fehlerbehebung für Browser unter WSL2](/de/tools/browser-wsl2-windows-remote-cdp-troubleshooting)
+- [Fehlerbehebung für Browser mit WSL2 und Windows Remote CDP](/de/tools/browser-wsl2-windows-remote-cdp-troubleshooting)

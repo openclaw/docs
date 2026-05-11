@@ -1,20 +1,20 @@
 ---
 read_when:
-    - Desea ejecutar un turno de agente desde scripts (opcionalmente enviar la respuesta)
-summary: Referencia de CLI para `openclaw agent` (envía un turno de agente mediante el Gateway)
+    - Quiere ejecutar un turno de agente desde secuencias de comandos (opcionalmente entregar la respuesta)
+summary: Referencia de la CLI para `openclaw agent` (enviar un turno de agente a través del Gateway)
 title: Agente
 x-i18n:
-    generated_at: "2026-04-30T05:32:03Z"
+    generated_at: "2026-05-11T20:25:26Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b77668949040933c5281f2f183e48cc2593d09252470483b9ae38dcffd13d071
+    source_hash: ae5c2f895cadf70a6253e49a3c7c698a04840a24231076cf8ef5bab340162f52
     source_path: cli/agent.md
     workflow: 16
 ---
 
 # `openclaw agent`
 
-Ejecuta un turno de agente mediante el Gateway (usa `--local` para modo embebido).
+Ejecuta un turno de agente mediante el Gateway (usa `--local` para integrado).
 Usa `--agent <id>` para apuntar directamente a un agente configurado.
 
 Pasa al menos un selector de sesión:
@@ -25,24 +25,24 @@ Pasa al menos un selector de sesión:
 
 Relacionado:
 
-- Herramienta de envío del agente: [Envío del agente](/es/tools/agent-send)
+- Herramienta de envío de agente: [Envío de agente](/es/tools/agent-send)
 
 ## Opciones
 
 - `-m, --message <text>`: cuerpo del mensaje obligatorio
 - `-t, --to <dest>`: destinatario usado para derivar la clave de sesión
 - `--session-id <id>`: id de sesión explícito
-- `--agent <id>`: id del agente; anula las vinculaciones de enrutamiento
-- `--model <id>`: anulación del modelo para esta ejecución (`provider/model` o id de modelo)
-- `--thinking <level>`: nivel de razonamiento del agente (`off`, `minimal`, `low`, `medium`, `high`, además de niveles personalizados compatibles con el proveedor, como `xhigh`, `adaptive` o `max`)
-- `--verbose <on|off>`: conservar el nivel detallado para la sesión
+- `--agent <id>`: id de agente; anula los enlaces de enrutamiento
+- `--model <id>`: anulación de modelo para esta ejecución (`provider/model` o id de modelo)
+- `--thinking <level>`: nivel de razonamiento del agente (`off`, `minimal`, `low`, `medium`, `high`, además de niveles personalizados admitidos por el proveedor, como `xhigh`, `adaptive` o `max`)
+- `--verbose <on|off>`: persiste el nivel detallado para la sesión
 - `--channel <channel>`: canal de entrega; omítelo para usar el canal principal de la sesión
 - `--reply-to <target>`: anulación del destino de entrega
 - `--reply-channel <channel>`: anulación del canal de entrega
 - `--reply-account <id>`: anulación de la cuenta de entrega
-- `--local`: ejecuta directamente el agente embebido (después de precargar el registro de Plugins)
+- `--local`: ejecuta directamente el agente integrado (después de la precarga del registro de Plugin)
 - `--deliver`: envía la respuesta de vuelta al canal/destino seleccionado
-- `--timeout <seconds>`: anula el tiempo de espera del agente (predeterminado 600 o el valor de configuración)
+- `--timeout <seconds>`: anula el tiempo de espera del agente (predeterminado 600 o valor de configuración)
 - `--json`: genera JSON
 
 ## Ejemplos
@@ -59,18 +59,52 @@ openclaw agent --agent ops --message "Run locally" --local
 
 ## Notas
 
-- El modo Gateway recurre al agente embebido cuando falla la solicitud al Gateway. Usa `--local` para forzar la ejecución embebida desde el inicio.
-- `--local` sigue precargando primero el registro de Plugins, por lo que los proveedores, herramientas y canales proporcionados por Plugins siguen estando disponibles durante las ejecuciones embebidas.
-- `--local` y las ejecuciones de reserva embebidas se tratan como ejecuciones de una sola vez. Los recursos de loopback de MCP incluidos y las sesiones cálidas de stdio de Claude abiertas para ese proceso local se retiran después de la respuesta, por lo que las invocaciones mediante scripts no mantienen activos procesos secundarios locales.
-- Las ejecuciones respaldadas por Gateway dejan los recursos de loopback de MCP propiedad del Gateway bajo el proceso Gateway en ejecución; los clientes antiguos aún pueden enviar la marca histórica de limpieza, pero el Gateway la acepta como una operación sin efecto por compatibilidad.
-- `--channel`, `--reply-channel` y `--reply-account` afectan a la entrega de respuestas, no al enrutamiento de la sesión.
-- `--json` mantiene stdout reservado para la respuesta JSON. Los diagnósticos del Gateway, del Plugin y de la reserva embebida se enrutan a stderr para que los scripts puedan analizar stdout directamente.
-- El JSON de reserva embebida incluye `meta.transport: "embedded"` y `meta.fallbackFrom: "gateway"` para que los scripts puedan distinguir las ejecuciones de reserva de las ejecuciones del Gateway.
-- Si el Gateway acepta una ejecución de agente pero la CLI agota el tiempo de espera para la respuesta final, la reserva embebida usa un id explícito y nuevo de sesión/ejecución `gateway-fallback-*` e informa `meta.fallbackReason: "gateway_timeout"` junto con los campos de sesión de reserva. Esto evita competir con el bloqueo de transcripción propiedad del Gateway o reemplazar silenciosamente la sesión de conversación enrutada original.
-- Cuando este comando activa la regeneración de `models.json`, las credenciales de proveedor gestionadas por SecretRef se conservan como marcadores no secretos (por ejemplo, nombres de variables de entorno, `secretref-env:ENV_VAR_NAME` o `secretref-managed`), no como texto sin formato de secretos resueltos.
-- Las escrituras de marcadores tienen autoridad de origen: OpenClaw conserva marcadores desde la instantánea de configuración de origen activa, no desde valores secretos resueltos en tiempo de ejecución.
+- El modo Gateway recurre al agente integrado cuando falla la solicitud al Gateway. Usa `--local` para forzar la ejecución integrada desde el principio.
+- `--local` todavía precarga primero el registro de Plugin, por lo que los proveedores, herramientas y canales proporcionados por Plugins permanecen disponibles durante las ejecuciones integradas.
+- `--local` y las ejecuciones de respaldo integradas se tratan como ejecuciones de una sola vez. Los recursos de loopback MCP empaquetados y las sesiones stdio Claude preparadas abiertas para ese proceso local se retiran después de la respuesta, por lo que las invocaciones con scripts no mantienen vivos los procesos secundarios locales.
+- Las ejecuciones respaldadas por Gateway dejan los recursos de loopback MCP propiedad del Gateway bajo el proceso Gateway en ejecución; los clientes más antiguos aún pueden enviar la marca histórica de limpieza, pero el Gateway la acepta como una operación sin efecto por compatibilidad.
+- `--channel`, `--reply-channel` y `--reply-account` afectan la entrega de respuestas, no el enrutamiento de sesiones.
+- `--json` mantiene stdout reservado para la respuesta JSON. Los diagnósticos de Gateway, Plugin y respaldo integrado se enrutan a stderr para que los scripts puedan analizar stdout directamente.
+- El JSON de respaldo integrado incluye `meta.transport: "embedded"` y `meta.fallbackFrom: "gateway"` para que los scripts puedan distinguir las ejecuciones de respaldo de las ejecuciones de Gateway.
+- Si el Gateway acepta una ejecución de agente pero la CLI agota el tiempo de espera al esperar la respuesta final, el respaldo integrado usa un id explícito nuevo de sesión/ejecución `gateway-fallback-*` e informa `meta.fallbackReason: "gateway_timeout"` más los campos de la sesión de respaldo. Esto evita competir con el bloqueo de transcripción propiedad del Gateway o reemplazar silenciosamente la sesión de conversación enrutada original.
+- Cuando este comando activa la regeneración de `models.json`, las credenciales de proveedor gestionadas por SecretRef se persisten como marcadores no secretos (por ejemplo, nombres de variables de entorno, `secretref-env:ENV_VAR_NAME` o `secretref-managed`), no como texto sin formato de secretos resueltos.
+- Las escrituras de marcadores son autoritativas según la fuente: OpenClaw persiste marcadores desde la instantánea de configuración de fuente activa, no desde valores secretos resueltos en tiempo de ejecución.
+
+## Estado de entrega JSON
+
+Cuando se usa `--json --deliver`, la respuesta JSON de la CLI puede incluir `deliveryStatus` de nivel superior para que los scripts puedan distinguir envíos entregados, suprimidos, parciales y fallidos:
+
+```json
+{
+  "payloads": [{ "text": "Report ready", "mediaUrl": null }],
+  "meta": { "durationMs": 1200 },
+  "deliveryStatus": {
+    "requested": true,
+    "attempted": true,
+    "status": "sent",
+    "succeeded": true,
+    "resultCount": 1
+  }
+}
+```
+
+`deliveryStatus.status` es uno de `sent`, `suppressed`, `partial_failed` o `failed`. `suppressed` significa que la entrega no se envió intencionalmente, por ejemplo porque un hook de envío de mensajes la canceló o no hubo ningún resultado visible; sigue siendo un resultado terminal sin reintentos. `partial_failed` significa que al menos una carga útil se envió antes de que fallara una carga útil posterior. `failed` significa que no se completó ningún envío duradero o que falló la comprobación previa de entrega.
+
+Las respuestas de CLI respaldadas por Gateway también preservan la forma sin procesar del resultado de Gateway, donde el mismo objeto está disponible en `result.deliveryStatus`.
+
+Campos comunes:
+
+- `requested`: siempre `true` cuando el objeto está presente.
+- `attempted`: `true` después de que se ejecutó la ruta de envío duradero; `false` para fallos de comprobación previa o si no hay cargas útiles visibles.
+- `succeeded`: `true`, `false` o `"partial"`; `"partial"` se combina con `status: "partial_failed"`.
+- `reason`: un motivo en snake-case en minúsculas procedente de la entrega duradera o de la validación de comprobación previa. Los motivos conocidos incluyen `cancelled_by_message_sending_hook`, `no_visible_payload`, `no_visible_result`, `channel_resolved_to_internal`, `unknown_channel`, `invalid_delivery_target` y `no_delivery_target`; los envíos duraderos fallidos también pueden informar la etapa fallida. Trata los valores desconocidos como opacos porque el conjunto puede ampliarse.
+- `resultCount`: número de resultados de envío del canal cuando está disponible.
+- `sentBeforeError`: `true` cuando un fallo parcial envió al menos una carga útil antes del error.
+- `error`: booleano `true` para envíos fallidos o parcialmente fallidos.
+- `errorMessage`: se incluye solo cuando se captura un mensaje de error de entrega subyacente. Los fallos de comprobación previa llevan `error` y `reason`, pero no `errorMessage`.
+- `payloadOutcomes`: resultados opcionales por carga útil con `index`, `status`, `reason`, `resultCount`, `error`, `stage`, `sentBeforeError` o metadatos del hook cuando están disponibles.
 
 ## Relacionado
 
 - [Referencia de CLI](/es/cli)
-- [Tiempo de ejecución del agente](/es/concepts/agent)
+- [Tiempo de ejecución de agente](/es/concepts/agent)

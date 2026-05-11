@@ -1,23 +1,23 @@
 ---
 read_when:
-    - Sie möchten ein Systemereignis in die Warteschlange stellen, ohne einen Cron-Job zu erstellen
+    - Sie möchten ein Systemereignis in die Warteschlange einreihen, ohne einen Cron-Job zu erstellen
     - Sie müssen Heartbeats aktivieren oder deaktivieren
-    - Sie möchten System-Presence-Einträge prüfen
-summary: CLI-Referenz für `openclaw system` (Systemereignisse, Heartbeat, Presence)
+    - Sie möchten System-Präsenz-Einträge einsehen
+summary: CLI-Referenz für `openclaw system` (Systemereignisse, Heartbeat, Präsenz)
 title: System
 x-i18n:
-    generated_at: "2026-04-24T06:32:55Z"
-    model: gpt-5.4
+    generated_at: "2026-05-11T20:26:54Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 0f4be30b0b2d18ee5653071d6375cebeb9fc94733e30bdb7b89a19c286df880b
+    source_hash: 2810fb064ea4afeac24ca0d71419913a664bbec0721cabdb09196075914f4864
     source_path: cli/system.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw system`
 
-Helfer auf Systemebene für das Gateway: Systemereignisse in die Warteschlange stellen, Heartbeats steuern
-und Presence anzeigen.
+Systemweite Helfer für den Gateway: Systemereignisse einreihen, Heartbeats steuern
+und Präsenz anzeigen.
 
 Alle `system`-Unterbefehle verwenden Gateway-RPC und akzeptieren die gemeinsamen Client-Flags:
 
@@ -29,8 +29,8 @@ Alle `system`-Unterbefehle verwenden Gateway-RPC und akzeptieren die gemeinsamen
 ## Häufige Befehle
 
 ```bash
-openclaw system event --text "Nach dringenden Nachfassaktionen suchen" --mode now
-openclaw system event --text "Nach dringenden Nachfassaktionen suchen" --url ws://127.0.0.1:18789 --token "$OPENCLAW_GATEWAY_TOKEN"
+openclaw system event --text "Check for urgent follow-ups" --mode now
+openclaw system event --text "Check for urgent follow-ups" --url ws://127.0.0.1:18789 --token "$OPENCLAW_GATEWAY_TOKEN"
 openclaw system heartbeat enable
 openclaw system heartbeat last
 openclaw system presence
@@ -38,14 +38,28 @@ openclaw system presence
 
 ## `system event`
 
-Ein Systemereignis in der Warteschlange der **Haupt**sitzung einreihen. Der nächste Heartbeat fügt
-es als Zeile `System:` in den Prompt ein. Verwenden Sie `--mode now`, um den Heartbeat
-sofort auszulösen; `next-heartbeat` wartet auf den nächsten geplanten Tick.
+Reiht standardmäßig ein Systemereignis in der **Haupt**-Sitzung ein. Der nächste Heartbeat
+fügt es als `System:`-Zeile in den Prompt ein. Verwenden Sie `--mode now`, um
+den Heartbeat sofort auszulösen; `next-heartbeat` wartet auf den nächsten geplanten Tick.
+
+Übergeben Sie `--session-key`, um eine bestimmte Sitzung anzusteuern (zum Beispiel, um den
+Abschluss einer asynchronen Aufgabe an den Kanal zurückzumelden, der sie gestartet hat).
+
+> **Timing-Ausnahme mit `--session-key`:** Wenn `--session-key` angegeben wird,
+> wird `--mode next-heartbeat` zu einem sofortigen gezielten Wake, statt
+> auf den nächsten geplanten Tick zu warten. Gezielte Wakes verwenden die Heartbeat-Absicht
+> `immediate`, sodass sie die Noch-nicht-fällig-Sperre des Runners umgehen, die andernfalls
+> einen Wake mit `event`-Absicht verzögern (und effektiv verwerfen) würde. Wenn Sie eine verzögerte
+> Zustellung wünschen, lassen Sie `--session-key` weg, sodass das Ereignis in der Hauptsitzung landet und
+> mit dem nächsten regulären Heartbeat mitläuft.
 
 Flags:
 
-- `--text <text>`: erforderlicher Text des Systemereignisses.
+- `--text <text>`: erforderlicher Systemereignistext.
 - `--mode <mode>`: `now` oder `next-heartbeat` (Standard).
+- `--session-key <sessionKey>`: optional; steuert eine bestimmte Agent-Sitzung an
+  statt der Hauptsitzung des Agenten. Schlüssel, die nicht zum
+  aufgelösten Agenten gehören, fallen auf die Hauptsitzung des Agenten zurück.
 - `--json`: maschinenlesbare Ausgabe.
 - `--url`, `--token`, `--timeout`, `--expect-final`: gemeinsame Gateway-RPC-Flags.
 
@@ -53,9 +67,9 @@ Flags:
 
 Heartbeat-Steuerung:
 
-- `last`: das letzte Heartbeat-Ereignis anzeigen.
-- `enable`: Heartbeats wieder aktivieren (verwenden Sie dies, wenn sie deaktiviert wurden).
-- `disable`: Heartbeats pausieren.
+- `last`: zeigt das letzte Heartbeat-Ereignis an.
+- `enable`: schaltet Heartbeats wieder ein (verwenden Sie dies, wenn sie deaktiviert wurden).
+- `disable`: pausiert Heartbeats.
 
 Flags:
 
@@ -64,7 +78,7 @@ Flags:
 
 ## `system presence`
 
-Die aktuellen System-Presence-Einträge auflisten, die dem Gateway bekannt sind (Nodes,
+Listet die aktuellen Systempräsenz-Einträge auf, die dem Gateway bekannt sind (Nodes,
 Instanzen und ähnliche Statuszeilen).
 
 Flags:
@@ -74,8 +88,8 @@ Flags:
 
 ## Hinweise
 
-- Erfordert ein laufendes Gateway, das über Ihre aktuelle Konfiguration erreichbar ist (lokal oder entfernt).
-- Systemereignisse sind flüchtig und werden nicht über Neustarts hinweg gespeichert.
+- Erfordert einen laufenden Gateway, der über Ihre aktuelle Konfiguration erreichbar ist (lokal oder remote).
+- Systemereignisse sind flüchtig und bleiben über Neustarts hinweg nicht erhalten.
 
 ## Verwandt
 

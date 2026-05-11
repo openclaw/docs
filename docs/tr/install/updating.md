@@ -1,14 +1,14 @@
 ---
 read_when:
     - OpenClaw'ı Güncelleme
-    - Bir güncellemeden sonra bir şey bozuluyor
-summary: OpenClaw’ı güvenli şekilde güncelleme (global kurulum veya kaynak) ve geri alma stratejisi
-title: Güncelleme
+    - Güncellemeden sonra bir şey bozuluyor
+summary: OpenClaw’ı güvenle güncelleme (global kurulum veya kaynak) ve geri alma stratejisi
+title: Güncelleniyor
 x-i18n:
-    generated_at: "2026-05-07T13:21:27Z"
+    generated_at: "2026-05-11T20:32:11Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3c9ff1d70d74f45efea3c148718e5cbc74001ce3d924b760edc4d68622d23714
+    source_hash: cb1506ed87b1cf2e4928987c9dbfaff17d47b87f6c18239d694e0f55deb609f7
     source_path: install/updating.md
     workflow: 16
 ---
@@ -17,7 +17,7 @@ OpenClaw'ı güncel tutun.
 
 ## Önerilen: `openclaw update`
 
-Güncellemenin en hızlı yolu. Kurulum türünüzü (npm veya git) algılar, en son sürümü getirir, `openclaw doctor` çalıştırır ve gateway'i yeniden başlatır.
+Güncellemenin en hızlı yolu. Kurulum türünüzü (npm veya git) algılar, en son sürümü getirir, `openclaw doctor` çalıştırır ve Gateway'i yeniden başlatır.
 
 ```bash
 openclaw update
@@ -32,22 +32,17 @@ openclaw update --tag main
 openclaw update --dry-run   # preview without applying
 ```
 
-`openclaw update`, `--verbose` kabul etmez. Güncelleme tanılaması için planlanan eylemleri önizlemek üzere
-`--dry-run`, yapılandırılmış sonuçlar için `--json` veya kanal ve kullanılabilirlik durumunu incelemek için
-`openclaw update status --json` kullanın. Yükleyicinin kendi `--verbose` bayrağı vardır, ancak bu bayrak
-`openclaw update` parçası değildir.
+`openclaw update`, `--verbose` kabul etmez. Güncelleme tanılamaları için planlanan eylemleri önizlemek üzere `--dry-run`, yapılandırılmış sonuçlar için `--json` veya kanal ve kullanılabilirlik durumunu incelemek için `openclaw update status --json` kullanın. Kurucunun kendi `--verbose` bayrağı vardır, ancak bu bayrak `openclaw update` kapsamına dahil değildir.
 
-`--channel beta` beta'yı tercih eder, ancak beta etiketi eksikse veya en son kararlı sürümden eskiyse
-çalışma zamanı kararlı/en son sürüme geri döner. Tek seferlik paket güncellemesi için ham npm beta dist-tag'ini istiyorsanız `--tag beta`
-kullanın.
+`--channel beta` betayı tercih eder, ancak beta etiketi eksikse veya en son kararlı sürümden daha eskiyse çalışma zamanı kararlı/en son sürüme geri döner. Tek seferlik bir paket güncellemesi için ham npm beta dist-tag değerini istiyorsanız `--tag beta` kullanın.
 
-Kanal semantiği için [Geliştirme kanalları](/tr/install/development-channels) bölümüne bakın.
+Yönetilen plugin'ler için beta kanalı geri dönüşü bir uyarıdır: plugin betası mevcut olmadığı için bir plugin kayıtlı varsayılan/en son sürümünü kullanırken çekirdek güncellemesi yine de başarılı olabilir.
+
+Kanal anlamları için [Geliştirme kanalları](/tr/install/development-channels) bölümüne bakın.
 
 ## npm ve git kurulumları arasında geçiş yapın
 
-Kurulum türünü değiştirmek istediğinizde kanalları kullanın. Güncelleyici
-durumunuzu, yapılandırmanızı, kimlik bilgilerinizi ve çalışma alanınızı `~/.openclaw` içinde tutar; yalnızca
-CLI ve gateway'in hangi OpenClaw kod kurulumunu kullandığını değiştirir.
+Kurulum türünü değiştirmek istediğinizde kanalları kullanın. Güncelleyici durumunuzu, yapılandırmanızı, kimlik bilgilerinizi ve çalışma alanınızı `~/.openclaw` içinde tutar; yalnızca CLI ve Gateway'in hangi OpenClaw kod kurulumunu kullandığını değiştirir.
 
 ```bash
 # npm package install -> editable git checkout
@@ -57,31 +52,24 @@ openclaw update --channel dev
 openclaw update --channel stable
 ```
 
-Kesin kurulum modu geçişini önizlemek için önce `--dry-run` ile çalıştırın:
+Tam kurulum modu geçişini önizlemek için önce `--dry-run` ile çalıştırın:
 
 ```bash
 openclaw update --channel dev --dry-run
 openclaw update --channel stable --dry-run
 ```
 
-`dev` kanalı bir git checkout'u sağlar, onu derler ve global CLI'yi
-bu checkout'tan kurar. `stable` ve `beta` kanalları paket kurulumlarını kullanır. Gateway
-zaten kuruluysa, `openclaw update` servis meta verilerini yeniler
-ve `--no-restart` geçmediğiniz sürece yeniden başlatır.
+`dev` kanalı bir git checkout sağlar, onu derler ve global CLI'yi bu checkout'tan yükler. `stable` ve `beta` kanalları paket kurulumlarını kullanır. Gateway zaten kuruluysa, `openclaw update` servis metaverilerini yeniler ve `--no-restart` geçmediğiniz sürece yeniden başlatır.
 
-## Alternatif: yükleyiciyi yeniden çalıştırın
+## Alternatif: kurucuyu yeniden çalıştırın
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash
 ```
 
-İlk kurulumu atlamak için `--no-onboard` ekleyin. Yükleyici üzerinden belirli bir kurulum türünü zorlamak için
-`--install-method git --no-onboard` veya
-`--install-method npm --no-onboard` geçin.
+İlk kurulumu atlamak için `--no-onboard` ekleyin. Kurucu üzerinden belirli bir kurulum türünü zorlamak için `--install-method git --no-onboard` veya `--install-method npm --no-onboard` geçin.
 
-`openclaw update`, npm paket kurulum aşamasından sonra başarısız olursa
-yükleyiciyi yeniden çalıştırın. Yükleyici eski güncelleyiciyi çağırmaz; global
-paket kurulumunu doğrudan çalıştırır ve kısmen güncellenmiş bir npm kurulumunu kurtarabilir.
+`openclaw update`, npm paket kurulum aşamasından sonra başarısız olursa kurucuyu yeniden çalıştırın. Kurucu eski güncelleyiciyi çağırmaz; global paket kurulumunu doğrudan çalıştırır ve kısmen güncellenmiş bir npm kurulumunu kurtarabilir.
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method npm
@@ -99,18 +87,9 @@ curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method npm --ve
 npm i -g openclaw@latest
 ```
 
-Denetimli kurulumlar için `openclaw update` tercih edin, çünkü paket değişimini
-çalışan Gateway servisiyle koordine edebilir. Yönetilen bir Gateway çalışırken
-manuel güncelleme yaparsanız, paket yöneticisi tamamlandıktan hemen sonra Gateway'i yeniden başlatın;
-böylece eski süreç, değiştirilmiş paket dosyalarından sunmaya devam etmez.
+Denetimli kurulumlar için `openclaw update` tercih edin, çünkü paket değişimini çalışan Gateway servisiyle koordine edebilir. Yönetilen bir Gateway çalışırken manuel güncelleme yaparsanız, paket yöneticisi tamamlanır tamamlanmaz Gateway'i yeniden başlatın; böylece eski süreç, değiştirilmiş paket dosyalarından hizmet vermeyi sürdürmez.
 
-`openclaw update` global bir npm kurulumunu yönettiğinde, hedefi önce
-geçici bir npm prefix'ine kurar, paketlenmiş `dist` envanterini doğrular, sonra temiz
-paket ağacını gerçek global prefix'e taşır. Bu, npm'in yeni paketi eski paketten kalan bayat dosyaların üzerine
-bindirmesini önler. Kurulum komutu başarısız olursa,
-OpenClaw `--omit=optional` ile bir kez daha dener. Bu yeniden deneme, yerel
-isteğe bağlı bağımlılıkların derlenemediği makinelerde yardımcı olurken, yedek de başarısız olursa
-asıl hatayı görünür tutar.
+`openclaw update` global bir npm kurulumunu yönettiğinde, hedefi önce geçici bir npm önekine yükler, paketlenmiş `dist` envanterini doğrular ve ardından temiz paket ağacını gerçek global öneke taşır. Bu, npm'in yeni bir paketi eski paketten kalan bayat dosyaların üzerine yerleştirmesini önler. Kurulum komutu başarısız olursa OpenClaw `--omit=optional` ile bir kez yeniden dener. Bu yeniden deneme, yerel isteğe bağlı bağımlılıkların derlenemediği host'larda yardımcı olurken, geri dönüş de başarısız olursa özgün hatayı görünür tutar.
 
 ```bash
 pnpm add -g openclaw@latest
@@ -123,22 +102,22 @@ bun add -g openclaw@latest
 ### Gelişmiş npm kurulum konuları
 
 <AccordionGroup>
-  <Accordion title="Salt okunur paket ağacı">
-    OpenClaw, global paket dizini mevcut kullanıcı tarafından yazılabilir olsa bile paketlenmiş global kurulumları çalışma zamanında salt okunur kabul eder. Plugin paket kurulumları, kullanıcı yapılandırma dizini altındaki OpenClaw sahipli npm/git köklerinde bulunur ve Gateway başlangıcı OpenClaw paket ağacını değiştirmez.
+  <Accordion title="Read-only package tree">
+    OpenClaw, global paket dizini geçerli kullanıcı tarafından yazılabilir olsa bile, paketlenmiş global kurulumları çalışma zamanında salt okunur olarak ele alır. Plugin paket kurulumları, kullanıcı yapılandırma dizini altındaki OpenClaw'a ait npm/git köklerinde bulunur ve Gateway başlangıcı OpenClaw paket ağacını değiştirmez.
 
-    Bazı Linux npm kurulumları global paketleri `/usr/lib/node_modules/openclaw` gibi root sahipli dizinler altına kurar. OpenClaw bu düzeni destekler, çünkü Plugin kurulum/güncelleme komutları bu global paket dizininin dışına yazar.
+    Bazı Linux npm kurulumları, global paketleri `/usr/lib/node_modules/openclaw` gibi root'a ait dizinlerin altına yükler. OpenClaw bu düzeni destekler, çünkü plugin kurulum/güncelleme komutları bu global paket dizininin dışına yazar.
 
   </Accordion>
-  <Accordion title="Güçlendirilmiş systemd birimleri">
-    OpenClaw'a yapılandırma/durum köklerine yazma erişimi verin; böylece açık Plugin kurulumları, Plugin güncellemeleri ve doctor temizliği değişikliklerini kalıcı hale getirebilir:
+  <Accordion title="Hardened systemd units">
+    Açık plugin kurulumları, plugin güncellemeleri ve doctor temizliği değişikliklerini kalıcı hale getirebilsin diye OpenClaw'a yapılandırma/durum köklerine yazma erişimi verin:
 
     ```ini
     ReadWritePaths=/var/lib/openclaw /home/openclaw/.openclaw /tmp
     ```
 
   </Accordion>
-  <Accordion title="Disk alanı ön kontrolü">
-    Paket güncellemeleri ve açık Plugin kurulumlarından önce OpenClaw, hedef birim için en iyi çaba düzeyinde bir disk alanı kontrolü dener. Düşük alan, kontrol edilen yolla birlikte bir uyarı üretir, ancak dosya sistemi kotaları, anlık görüntüler ve ağ birimleri kontrolden sonra değişebileceği için güncellemeyi engellemez. Asıl paket yöneticisi kurulumu ve kurulum sonrası doğrulama belirleyici olmaya devam eder.
+  <Accordion title="Disk-space preflight">
+    Paket güncellemelerinden ve açık plugin kurulumlarından önce OpenClaw, hedef birim için elinden gelen en iyi disk alanı denetimini dener. Düşük alan, denetlenen yolla birlikte bir uyarı üretir, ancak güncellemeyi engellemez; çünkü dosya sistemi kotaları, snapshot'lar ve ağ birimleri denetimden sonra değişebilir. Asıl paket yöneticisi kurulumu ve kurulum sonrası doğrulama yetkili olmaya devam eder.
   </Accordion>
 </AccordionGroup>
 
@@ -162,30 +141,26 @@ Otomatik güncelleyici varsayılan olarak kapalıdır. `~/.openclaw/openclaw.jso
 
 | Kanal    | Davranış                                                                                                      |
 | -------- | ------------------------------------------------------------------------------------------------------------- |
-| `stable` | `stableDelayHours` kadar bekler, sonra `stableJitterHours` boyunca deterministik jitter ile uygular (yayılmış dağıtım). |
-| `beta`   | Her `betaCheckIntervalHours` aralığında kontrol eder (varsayılan: saatlik) ve hemen uygular.                  |
+| `stable` | `stableDelayHours` kadar bekler, ardından `stableJitterHours` boyunca deterministik jitter ile uygular (yayılmış dağıtım). |
+| `beta`   | Her `betaCheckIntervalHours` aralığında denetler (varsayılan: saatlik) ve hemen uygular.                      |
 | `dev`    | Otomatik uygulama yoktur. `openclaw update` komutunu manuel kullanın.                                         |
 
 Gateway ayrıca başlangıçta bir güncelleme ipucu günlüğe yazar (`update.checkOnStart: false` ile devre dışı bırakın).
-Sürüm düşürme veya olay kurtarma için, `update.auto.enabled` yapılandırılmış olsa bile otomatik uygulamaları engellemek üzere gateway ortamında `OPENCLAW_NO_AUTO_UPDATE=1` ayarlayın. Başlangıç güncelleme ipuçları, `update.checkOnStart` da devre dışı bırakılmadıkça çalışmaya devam edebilir.
+Sürüm düşürme veya olay kurtarma için, `update.auto.enabled` yapılandırılmış olsa bile otomatik uygulamaları engellemek üzere Gateway ortamında `OPENCLAW_NO_AUTO_UPDATE=1` ayarlayın. `update.checkOnStart` da devre dışı bırakılmadığı sürece başlangıç güncelleme ipuçları çalışmaya devam edebilir.
 
-Canlı Gateway kontrol düzlemi işleyicisi üzerinden istenen paket yöneticisi güncellemeleri,
-paket değişiminden sonra ertelenmeyen, soğuma süresi olmayan bir güncelleme yeniden başlatmasını zorlar. Bu,
-eski bellek içi sürecin, zaten değiştirilmiş bir paket ağacından parçaları tembel yükleyecek kadar uzun süre
-ortada kalmasını önler. Shell `openclaw update`, servisi güncelleme etrafında durdurup
-yeniden başlatabildiği için denetimli kurulumlarda tercih edilen yol olmaya devam eder.
+Canlı Gateway denetim düzlemi işleyicisi üzerinden istenen paket yöneticisi güncellemeleri, paket değişiminden sonra ertelenmeyen ve bekleme süresi olmayan bir güncelleme yeniden başlatmasını zorlar. Bu, eski bellek içi sürecin, zaten değiştirilmiş bir paket ağacından parçaları lazy-load edecek kadar uzun süre ortada kalmasını önler. Shell `openclaw update`, servisi güncelleme etrafında durdurup yeniden başlatabildiği için denetimli kurulumlarda tercih edilen yol olmaya devam eder.
 
 ## Güncellemeden sonra
 
 <Steps>
 
-### Doctor çalıştırın
+### Doctor'ı çalıştırın
 
 ```bash
 openclaw doctor
 ```
 
-Yapılandırmayı taşır, DM ilkelerini denetler ve gateway sağlığını kontrol eder. Ayrıntılar: [Doctor](/tr/gateway/doctor)
+Yapılandırmayı taşır, DM ilkelerini denetler ve Gateway sağlığını kontrol eder. Ayrıntılar: [Doctor](/tr/gateway/doctor)
 
 ### Gateway'i yeniden başlatın
 
@@ -212,7 +187,7 @@ openclaw gateway restart
 ```
 
 <Tip>
-`npm view openclaw version` mevcut yayımlanmış sürümü gösterir.
+`npm view openclaw version` geçerli yayımlanmış sürümü gösterir.
 </Tip>
 
 ### Bir commit'e sabitleyin (kaynak)
@@ -229,12 +204,12 @@ En son sürüme dönmek için: `git checkout main && git pull`.
 ## Takılırsanız
 
 - `openclaw doctor` komutunu yeniden çalıştırın ve çıktıyı dikkatle okuyun.
-- Kaynak checkout'larında `openclaw update --channel dev` için güncelleyici gerektiğinde `pnpm`'i otomatik olarak önyükler. Bir pnpm/corepack önyükleme hatası görürseniz, `pnpm`'i manuel kurun (veya `corepack`'i yeniden etkinleştirin) ve güncellemeyi tekrar çalıştırın.
-- Kontrol edin: [Sorun giderme](/tr/gateway/troubleshooting)
+- Kaynak checkout'larında `openclaw update --channel dev` için güncelleyici gerektiğinde `pnpm`'i otomatik olarak bootstraps eder. Bir pnpm/corepack bootstrap hatası görürseniz `pnpm`'i manuel yükleyin (veya `corepack`'i yeniden etkinleştirin) ve güncellemeyi yeniden çalıştırın.
+- Denetleyin: [Sorun giderme](/tr/gateway/troubleshooting)
 - Discord'da sorun: [https://discord.gg/clawd](https://discord.gg/clawd)
 
 ## İlgili
 
-- [Kurulum özeti](/tr/install): tüm kurulum yöntemleri.
-- [Doctor](/tr/gateway/doctor): güncellemelerden sonra sağlık kontrolleri.
-- [Geçiş](/tr/install/migrating): büyük sürüm geçiş kılavuzları.
+- [Kurulum genel bakışı](/tr/install): tüm kurulum yöntemleri.
+- [Doctor](/tr/gateway/doctor): güncellemelerden sonra sağlık denetimleri.
+- [Geçiş](/tr/install/migrating): ana sürüm geçiş kılavuzları.

@@ -5,34 +5,32 @@ read_when:
 summary: Adaptadores RPC para CLI externas (signal-cli, imsg) y patrones de Gateway
 title: Adaptadores RPC
 x-i18n:
-    generated_at: "2026-05-07T01:53:27Z"
+    generated_at: "2026-05-11T20:52:10Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 446e54d736352f45e6cc6988a1835233cace7f854b6e62c64bb1fae115ce76f6
+    source_hash: 63556f140bee55821fa0a09ff9808e163728049f8db4c58f7bb4ceca6e1cac1a
     source_path: reference/rpc.md
     workflow: 16
 ---
 
-OpenClaw integra CLI externas mediante JSON-RPC. Actualmente se usan dos patrones.
+OpenClaw integra CLI externas mediante JSON-RPC. Hoy se utilizan dos patrones.
 
-## Patrón A: daemon HTTP (signal-cli)
+## Patrón A: demonio HTTP (signal-cli)
 
-- `signal-cli` se ejecuta como daemon con JSON-RPC sobre HTTP.
+- `signal-cli` se ejecuta como demonio con JSON-RPC sobre HTTP.
 - El flujo de eventos es SSE (`/api/v1/events`).
-- Sondeo de salud: `/api/v1/check`.
+- Sondeo de estado: `/api/v1/check`.
 - OpenClaw controla el ciclo de vida cuando `channels.signal.autoStart=true`.
 
-Consulta [Signal](/es/channels/signal) para la configuración y los endpoints.
+Consulta [Signal](/es/channels/signal) para la configuración y los puntos de conexión.
 
-## Patrón B: proceso hijo stdio (heredado: imsg)
+## Patrón B: proceso hijo stdio (imsg)
 
-> **Nota:** Para nuevas configuraciones de iMessage, usa [BlueBubbles](/es/channels/bluebubbles) en su lugar.
+- OpenClaw genera `imsg rpc` como proceso hijo para [iMessage](/es/channels/imessage).
+- JSON-RPC está delimitado por líneas sobre stdin/stdout (un objeto JSON por línea).
+- No se requiere puerto TCP ni demonio.
 
-- OpenClaw inicia `imsg rpc` como proceso hijo (integración heredada de iMessage).
-- JSON-RPC se delimita por líneas sobre stdin/stdout (un objeto JSON por línea).
-- No se requiere puerto TCP ni daemon.
-
-Métodos principales usados:
+Métodos principales utilizados:
 
 - `watch.subscribe` → notificaciones (`method: "message"`)
 - `watch.unsubscribe`
@@ -41,11 +39,11 @@ Métodos principales usados:
 
 Consulta [iMessage](/es/channels/imessage) para la configuración heredada y el direccionamiento (`chat_id` preferido).
 
-## Pautas para adaptadores
+## Directrices para adaptadores
 
 - Gateway controla el proceso (inicio/detención vinculados al ciclo de vida del proveedor).
-- Mantén los clientes RPC resilientes: tiempos de espera, reinicio al salir.
-- Prefiere identificadores estables (por ejemplo, `chat_id`) en lugar de cadenas de visualización.
+- Mantén resilientes los clientes RPC: tiempos de espera, reinicio al salir.
+- Prefiere IDs estables (por ejemplo, `chat_id`) en lugar de cadenas de visualización.
 
 ## Relacionado
 

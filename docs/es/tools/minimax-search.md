@@ -1,20 +1,22 @@
 ---
 read_when:
     - Quieres usar MiniMax para web_search
-    - Necesita una clave de MiniMax Token Plan o un token OAuth
-    - Quieres orientación sobre el servidor de búsqueda de MiniMax CN/global
-summary: Búsqueda de MiniMax mediante la API de búsqueda de Token Plan
+    - Necesitas una clave de MiniMax Token Plan o un token OAuth
+    - Quieres orientación sobre el host de búsqueda CN/global de MiniMax
+summary: MiniMax Search mediante la API de búsqueda de Token Plan
 title: Búsqueda de MiniMax
 x-i18n:
-    generated_at: "2026-05-02T05:37:46Z"
+    generated_at: "2026-05-11T20:57:16Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 5bb84f38c1407c203b76eea2d7a3ab5fefbdab0844dc20899742581945d7d77e
+    source_hash: d0a2dfe4261ab4bc5d234cedf9dff41fbbfbbad8914c6c9c43bc76e8694d99d4
     source_path: tools/minimax-search.md
     workflow: 16
 ---
 
-OpenClaw admite MiniMax como proveedor de `web_search` mediante la API de búsqueda Token Plan de MiniMax. Devuelve resultados de búsqueda estructurados con títulos, URL, fragmentos y consultas relacionadas.
+OpenClaw admite MiniMax como proveedor de `web_search` mediante la API de búsqueda de MiniMax
+Token Plan. Devuelve resultados de búsqueda estructurados con títulos, URL,
+fragmentos y consultas relacionadas.
 
 ## Obtener una credencial de Token Plan
 
@@ -36,7 +38,8 @@ OpenClaw admite MiniMax como proveedor de `web_search` mediante la API de búsqu
 
 OpenClaw también acepta `MINIMAX_CODING_API_KEY`, `MINIMAX_OAUTH_TOKEN` y
 `MINIMAX_API_KEY` como alias de entorno. `MINIMAX_API_KEY` debe apuntar a una
-credencial de Token Plan con búsqueda habilitada; es posible que las claves ordinarias de la API de modelos de MiniMax no sean aceptadas por el endpoint de búsqueda de Token Plan.
+credencial de Token Plan con búsqueda habilitada; las claves ordinarias de la API de modelos de MiniMax podrían no
+ser aceptadas por el endpoint de búsqueda de Token Plan.
 
 ## Configuración
 
@@ -78,29 +81,29 @@ MiniMax Search usa estos endpoints:
 Si `plugins.entries.minimax.config.webSearch.region` no está definido, OpenClaw resuelve
 la región en este orden:
 
-1. `tools.web.search.minimax.region` / `webSearch.region` propio del Plugin
+1. `tools.web.search.minimax.region` / `webSearch.region` propiedad del plugin
 2. `MINIMAX_API_HOST`
 3. `models.providers.minimax.baseUrl`
 4. `models.providers.minimax-portal.baseUrl`
 
-Esto significa que el onboarding de CN o `MINIMAX_API_HOST=https://api.minimaxi.com/...`
+Eso significa que el onboarding de CN o `MINIMAX_API_HOST=https://api.minimaxi.com/...`
 también mantiene automáticamente MiniMax Search en el host de CN.
 
-Aunque hayas autenticado MiniMax mediante la ruta OAuth `minimax-portal`,
-la búsqueda web se registra igualmente con el id de proveedor `minimax`; la URL base
-del proveedor OAuth se usa como indicio de región para seleccionar el host CN/global, y `MINIMAX_OAUTH_TOKEN`
+Incluso cuando hayas autenticado MiniMax mediante la ruta de OAuth `minimax-portal`,
+la búsqueda web se sigue registrando con el id de proveedor `minimax`; la URL base del proveedor de OAuth
+se usa como indicio de región para la selección de host CN/global, y `MINIMAX_OAUTH_TOKEN`
 puede satisfacer la credencial bearer de MiniMax Search.
 
-## Parámetros admitidos
+## Parámetros compatibles
 
-MiniMax Search admite:
+| Parámetro | Tipo    | Restricciones | Descripción                                                                 |
+| --------- | ------- | ----------- | --------------------------------------------------------------------------- |
+| `query`   | string  | required    | Cadena de consulta de búsqueda.                                             |
+| `count`   | integer | 1-10        | Número de resultados que devolver. OpenClaw recorta la lista devuelta a este tamaño. |
 
-- `query`
-- `count` (OpenClaw recorta la lista de resultados devuelta al recuento solicitado)
-
-Actualmente no se admiten filtros específicos del proveedor.
+Los filtros específicos del proveedor no son compatibles actualmente.
 
 ## Relacionado
 
-- [Descripción general de Web Search](/es/tools/web) -- todos los proveedores y detección automática
-- [MiniMax](/es/providers/minimax) -- configuración de modelos, imágenes, voz y autenticación
+- [Información general de Web Search](/es/tools/web) -- todos los proveedores y la detección automática
+- [MiniMax](/es/providers/minimax) -- configuración de modelo, imagen, voz y autenticación

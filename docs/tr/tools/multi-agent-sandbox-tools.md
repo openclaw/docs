@@ -2,33 +2,33 @@
 read_when: You want per-agent sandboxing or per-agent tool allow/deny policies in a multi-agent gateway.
 sidebarTitle: Multi-agent sandbox and tools
 status: active
-summary: Ajan başına korumalı alan ve araç kısıtlamaları, öncelik sırası ve örnekler
+summary: Aracı başına sandbox + araç kısıtlamaları, öncelik sırası ve örnekler
 title: Çok ajanlı korumalı alan ve araçlar
 x-i18n:
-    generated_at: "2026-05-10T19:58:03Z"
+    generated_at: "2026-05-11T20:38:07Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c988613438f2d179b859902d3f7a39a1e29b60a0e2ae6ed598bb5f5881cf0b9f
+    source_hash: 8d11af55e30996a89e665b258604108a93f4c4271fbe4edfd1caf54864e40f01
     source_path: tools/multi-agent-sandbox-tools.md
     workflow: 16
 ---
 
-Çok aracılı bir kurulumda her aracı, genel sandbox ve araç ilkesini geçersiz kılabilir. Bu sayfa aracı başına yapılandırmayı, öncelik kurallarını ve örnekleri kapsar.
+Çok ajanlı bir kurulumda her ajan, genel korumalı alan ve araç ilkesini geçersiz kılabilir. Bu sayfa ajan başına yapılandırmayı, öncelik kurallarını ve örnekleri kapsar.
 
 <CardGroup cols={3}>
-  <Card title="Sandboxlama" href="/tr/gateway/sandboxing">
-    Arka uçlar ve modlar — tam sandbox başvurusu.
+  <Card title="Korumalı alan kullanımı" href="/tr/gateway/sandboxing">
+    Arka uçlar ve modlar — tam korumalı alan başvurusu.
   </Card>
-  <Card title="Sandbox ile araç ilkesi ile yükseltilmiş karşılaştırması" href="/tr/gateway/sandbox-vs-tool-policy-vs-elevated">
-    "Bu neden engellendi?" sorusunda hata ayıklayın
+  <Card title="Korumalı alan ile araç ilkesi ile yükseltilmiş" href="/tr/gateway/sandbox-vs-tool-policy-vs-elevated">
+    "Bu neden engellendi?" hata ayıklaması
   </Card>
   <Card title="Yükseltilmiş mod" href="/tr/tools/elevated">
-    Güvenilen gönderenler için yükseltilmiş exec.
+    Güvenilen göndericiler için yükseltilmiş exec.
   </Card>
 </CardGroup>
 
 <Warning>
-Kimlik doğrulama aracı kapsamındadır: her aracının `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` konumunda kendi `agentDir` kimlik doğrulama deposu vardır. `agentDir` değerini aracılar arasında asla yeniden kullanmayın. Aracılar yerel profilleri olmadığında varsayılan/ana aracının kimlik doğrulama profillerini okuyabilir, ancak OAuth yenileme token'ları ikincil aracı depolarına klonlanmaz. Kimlik bilgilerini elle kopyalarsanız yalnızca taşınabilir statik `api_key` veya `token` profillerini kopyalayın.
+Kimlik doğrulama ajan kapsamındadır: her ajanın `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` konumunda kendi `agentDir` kimlik doğrulama deposu vardır. `agentDir` değerini ajanlar arasında asla yeniden kullanmayın. Ajanlar yerel profilleri olmadığında varsayılan/ana ajanın kimlik doğrulama profillerini okuyabilir, ancak OAuth yenileme token'ları ikincil ajan depolarına kopyalanmaz. Kimlik bilgilerini elle kopyalıyorsanız, yalnızca taşınabilir statik `api_key` veya `token` profillerini kopyalayın.
 </Warning>
 
 ---
@@ -36,7 +36,7 @@ Kimlik doğrulama aracı kapsamındadır: her aracının `~/.openclaw/agents/<ag
 ## Yapılandırma örnekleri
 
 <AccordionGroup>
-  <Accordion title="Örnek 1: Kişisel + kısıtlı aile aracısı">
+  <Accordion title="Örnek 1: Kişisel + kısıtlı aile ajanı">
     ```json
     {
       "agents": {
@@ -57,8 +57,14 @@ Kimlik doğrulama aracı kapsamındadır: her aracının `~/.openclaw/agents/<ag
               "scope": "agent"
             },
             "tools": {
-              "allow": ["read"],
-              "deny": ["exec", "write", "edit", "apply_patch", "process", "browser"]
+              "allow": ["read", "message"],
+              "deny": ["exec", "write", "edit", "apply_patch", "process", "browser"],
+              "message": {
+                "crossContext": {
+                  "allowWithinProvider": false,
+                  "allowAcrossProviders": false
+                }
+              }
             }
           }
         ]
@@ -81,11 +87,11 @@ Kimlik doğrulama aracı kapsamındadır: her aracının `~/.openclaw/agents/<ag
 
     **Sonuç:**
 
-    - `main` aracısı: ana makinede çalışır, tam araç erişimi vardır.
-    - `family` aracısı: Docker içinde çalışır (aracı başına bir konteyner), yalnızca `read` aracı.
+    - `main` ajanı: ana makinede çalışır, tam araç erişimine sahiptir.
+    - `family` ajanı: Docker içinde çalışır (ajan başına bir kapsayıcı), yalnızca `read` ve geçerli konuşmaya ileti gönderimleri.
 
   </Accordion>
-  <Accordion title="Örnek 2: Paylaşılan sandbox ile iş aracısı">
+  <Accordion title="Örnek 2: Paylaşılan korumalı alana sahip iş ajanı">
     ```json
     {
       "agents": {
@@ -113,7 +119,7 @@ Kimlik doğrulama aracı kapsamındadır: her aracının `~/.openclaw/agents/<ag
     }
     ```
   </Accordion>
-  <Accordion title="Örnek 2b: Genel kodlama profili + yalnızca mesajlaşma aracısı">
+  <Accordion title="Örnek 2b: Genel kodlama profili + yalnızca mesajlaşma ajanı">
     ```json
     {
       "tools": { "profile": "coding" },
@@ -130,11 +136,11 @@ Kimlik doğrulama aracı kapsamındadır: her aracının `~/.openclaw/agents/<ag
 
     **Sonuç:**
 
-    - varsayılan aracılar kodlama araçlarını alır.
-    - `support` aracısı yalnızca mesajlaşma içindir (+ Slack aracı).
+    - varsayılan ajanlar kodlama araçlarını alır.
+    - `support` ajanı yalnızca mesajlaşma içindir (+ Slack aracı).
 
   </Accordion>
-  <Accordion title="Örnek 3: Aracı başına farklı sandbox modları">
+  <Accordion title="Örnek 3: Ajan başına farklı korumalı alan modları">
     ```json
     {
       "agents": {
@@ -175,11 +181,11 @@ Kimlik doğrulama aracı kapsamındadır: her aracının `~/.openclaw/agents/<ag
 
 ## Yapılandırma önceliği
 
-Hem genel (`agents.defaults.*`) hem de aracıya özgü (`agents.list[].*`) yapılandırmalar varsa:
+Hem genel (`agents.defaults.*`) hem de ajana özgü (`agents.list[].*`) yapılandırmalar mevcut olduğunda:
 
-### Sandbox yapılandırması
+### Korumalı alan yapılandırması
 
-Aracıya özgü ayarlar genel ayarları geçersiz kılar:
+Ajana özgü ayarlar geneli geçersiz kılar:
 
 ```
 agents.list[].sandbox.mode > agents.defaults.sandbox.mode
@@ -192,12 +198,12 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 ```
 
 <Note>
-`agents.list[].sandbox.{docker,browser,prune}.*`, o aracı için `agents.defaults.sandbox.{docker,browser,prune}.*` değerini geçersiz kılar (sandbox kapsamı `"shared"` olarak çözümlendiğinde yok sayılır).
+`agents.list[].sandbox.{docker,browser,prune}.*`, o ajan için `agents.defaults.sandbox.{docker,browser,prune}.*` değerini geçersiz kılar (korumalı alan kapsamı `"shared"` olarak çözümlendiğinde yok sayılır).
 </Note>
 
 ### Araç kısıtlamaları
 
-Filtreleme sırası şöyledir:
+Filtreleme sırası şudur:
 
 <Steps>
   <Step title="Araç profili">
@@ -212,43 +218,43 @@ Filtreleme sırası şöyledir:
   <Step title="Sağlayıcı araç ilkesi">
     `tools.byProvider[provider].allow/deny`.
   </Step>
-  <Step title="Aracıya özgü araç ilkesi">
+  <Step title="Ajana özgü araç ilkesi">
     `agents.list[].tools.allow/deny`.
   </Step>
-  <Step title="Aracı sağlayıcı ilkesi">
+  <Step title="Ajan sağlayıcı ilkesi">
     `agents.list[].tools.byProvider[provider].allow/deny`.
   </Step>
-  <Step title="Sandbox araç ilkesi">
+  <Step title="Korumalı alan araç ilkesi">
     `tools.sandbox.tools` veya `agents.list[].tools.sandbox.tools`.
   </Step>
-  <Step title="Alt aracı araç ilkesi">
-    Varsa `tools.subagents.tools`.
+  <Step title="Alt ajan araç ilkesi">
+    Geçerliyse `tools.subagents.tools`.
   </Step>
 </Steps>
 
 <AccordionGroup>
   <Accordion title="Öncelik kuralları">
     - Her seviye araçları daha da kısıtlayabilir, ancak önceki seviyelerde reddedilen araçları geri veremez.
-    - `agents.list[].tools.sandbox.tools` ayarlanmışsa, o aracı için `tools.sandbox.tools` değerinin yerini alır.
-    - `agents.list[].tools.profile` ayarlanmışsa, o aracı için `tools.profile` değerini geçersiz kılar.
-    - Sağlayıcı araç anahtarları `provider` (örn. `google-antigravity`) veya `provider/model` (örn. `openai/gpt-5.4`) kabul eder.
+    - `agents.list[].tools.sandbox.tools` ayarlanmışsa, o ajan için `tools.sandbox.tools` değerinin yerini alır.
+    - `agents.list[].tools.profile` ayarlanmışsa, o ajan için `tools.profile` değerini geçersiz kılar.
+    - Sağlayıcı araç anahtarları `provider` (ör. `google-antigravity`) veya `provider/model` (ör. `openai/gpt-5.4`) kabul eder.
 
   </Accordion>
   <Accordion title="Boş izin listesi davranışı">
-    Bu zincirdeki herhangi bir açık izin listesi çalıştırmayı çağrılabilir araçsız bırakırsa, OpenClaw istemi modele göndermeden önce durur. Bu bilinçlidir: `agents.list[].tools.allow: ["query_db"]` gibi eksik bir araçla yapılandırılmış bir aracı, `query_db` kaydeden Plugin etkinleştirilene kadar açıkça başarısız olmalı, yalnızca metin aracısı olarak devam etmemelidir.
+    Bu zincirdeki açık izin listelerinden herhangi biri çalıştırmada çağrılabilir araç bırakmazsa, OpenClaw istemi modele göndermeden önce durur. Bu kasıtlıdır: `agents.list[].tools.allow: ["query_db"]` gibi eksik bir araçla yapılandırılmış bir ajan, `query_db` kaydını yapan Plugin etkinleştirilene kadar açık şekilde başarısız olmalıdır; yalnızca metin ajanı olarak devam etmemelidir.
   </Accordion>
 </AccordionGroup>
 
-Araç ilkeleri, birden fazla araca genişleyen `group:*` kısayollarını destekler. Tam liste için [Araç grupları](/tr/gateway/sandbox-vs-tool-policy-vs-elevated#tool-groups-shorthands) bölümüne bakın.
+Araç ilkeleri, birden çok araca genişleyen `group:*` kısaltmalarını destekler. Tam liste için [Araç grupları](/tr/gateway/sandbox-vs-tool-policy-vs-elevated#tool-groups-shorthands) bölümüne bakın.
 
-Aracı başına yükseltilmiş geçersiz kılmalar (`agents.list[].tools.elevated`), belirli aracılar için yükseltilmiş exec kullanımını daha da kısıtlayabilir. Ayrıntılar için [Yükseltilmiş mod](/tr/tools/elevated) bölümüne bakın.
+Ajan başına yükseltilmiş geçersiz kılmalar (`agents.list[].tools.elevated`), belirli ajanlar için yükseltilmiş exec'i daha da kısıtlayabilir. Ayrıntılar için [Yükseltilmiş mod](/tr/tools/elevated) bölümüne bakın.
 
 ---
 
-## Tek aracıdan geçiş
+## Tek ajandan geçiş
 
 <Tabs>
-  <Tab title="Önce (tek aracı)">
+  <Tab title="Önce (tek ajan)">
     ```json
     {
       "agents": {
@@ -270,7 +276,7 @@ Aracı başına yükseltilmiş geçersiz kılmalar (`agents.list[].tools.elevate
     }
     ```
   </Tab>
-  <Tab title="Sonra (çok aracılı)">
+  <Tab title="Sonra (çok ajanlı)">
     ```json
     {
       "agents": {
@@ -289,7 +295,7 @@ Aracı başına yükseltilmiş geçersiz kılmalar (`agents.list[].tools.elevate
 </Tabs>
 
 <Note>
-Eski `agent.*` yapılandırmaları `openclaw doctor` tarafından taşınır; ileride `agents.defaults` + `agents.list` tercih edin.
+Eski `agent.*` yapılandırmaları `openclaw doctor` tarafından taşınır; bundan sonrası için `agents.defaults` + `agents.list` tercih edin.
 </Note>
 
 ---
@@ -297,7 +303,7 @@ Eski `agent.*` yapılandırmaları `openclaw doctor` tarafından taşınır; ile
 ## Araç kısıtlama örnekleri
 
 <Tabs>
-  <Tab title="Salt okunur aracı">
+  <Tab title="Salt okunur ajan">
     ```json
     {
       "tools": {
@@ -307,7 +313,7 @@ Eski `agent.*` yapılandırmaları `openclaw doctor` tarafından taşınır; ile
     }
     ```
   </Tab>
-  <Tab title="Dosya sistemi araçları devre dışıyken shell yürütme">
+  <Tab title="Dosya sistemi araçları devre dışıyken kabuk yürütme">
     ```json
     {
       "tools": {
@@ -318,7 +324,7 @@ Eski `agent.*` yapılandırmaları `openclaw doctor` tarafından taşınır; ile
     ```
 
     <Warning>
-    Bu ilke OpenClaw dosya sistemi araçlarını devre dışı bırakır, ancak `exec` hâlâ bir shell'dir ve seçili ana makine ya da sandbox dosya sisteminin izin verdiği her yere dosya yazabilir. Salt okunur bir aracı için `exec` ve `process` değerlerini reddedin veya shell erişimini `agents.defaults.sandbox.workspaceAccess: "ro"` ya da `"none"` gibi sandbox dosya sistemi denetimleriyle birleştirin.
+    Bu ilke OpenClaw dosya sistemi araçlarını devre dışı bırakır, ancak `exec` hâlâ bir kabuktur ve seçili ana makinenin veya sandbox dosya sisteminin izin verdiği her yerde dosya yazabilir. Salt okunur bir ajan için `exec` ve `process` değerlerini reddedin veya kabuk erişimini `agents.defaults.sandbox.workspaceAccess: "ro"` ya da `"none"` gibi sandbox dosya sistemi denetimleriyle birleştirin.
     </Warning>
 
   </Tab>
@@ -333,7 +339,7 @@ Eski `agent.*` yapılandırmaları `openclaw doctor` tarafından taşınır; ile
     }
     ```
 
-    Bu profildeki `sessions_history`, ham transcript dökümü yerine yine de sınırlı, arındırılmış bir hatırlama görünümü döndürür. Asistan hatırlaması; düşünme etiketlerini, `<relevant-memories>` iskeletini, düz metin araç çağrısı XML yüklerini (`<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` ve kesilmiş araç çağrısı blokları dahil), derecesi düşürülmüş araç çağrısı iskeletini, sızmış ASCII/tam genişlikli model denetim token'larını ve hatalı biçimlendirilmiş MiniMax araç çağrısı XML'ini redaksiyon/kısaltma öncesinde kaldırır.
+    Bu profildeki `sessions_history`, ham bir transkript dökümü yerine hâlâ sınırlı ve temizlenmiş bir hatırlama görünümü döndürür. Asistan hatırlaması; düşünme etiketlerini, `<relevant-memories>` iskeletini, düz metin araç çağrısı XML yüklerini (`<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` ve kısaltılmış araç çağrısı blokları dahil), derecesi düşürülmüş araç çağrısı iskeletini, sızmış ASCII/tam genişlikli model denetim belirteçlerini ve hatalı biçimlendirilmiş MiniMax araç çağrısı XML'ini redaksiyon/kısaltma öncesinde ayıklar.
 
   </Tab>
 </Tabs>
@@ -343,29 +349,29 @@ Eski `agent.*` yapılandırmaları `openclaw doctor` tarafından taşınır; ile
 ## Yaygın tuzak: "non-main"
 
 <Warning>
-`agents.defaults.sandbox.mode: "non-main"` aracı kimliğine değil, `session.mainKey` değerine (varsayılan `"main"`) dayanır. Grup/kanal oturumları her zaman kendi anahtarlarını alır, bu nedenle ana olmayan olarak değerlendirilir ve sandbox'a alınır. Bir aracının asla sandbox'a alınmamasını istiyorsanız `agents.list[].sandbox.mode: "off"` ayarlayın.
+`agents.defaults.sandbox.mode: "non-main"`, ajan kimliğine değil `session.mainKey` değerine (varsayılan `"main"`) dayanır. Grup/kanal oturumları her zaman kendi anahtarlarını alır; bu nedenle non-main olarak değerlendirilir ve sandbox içine alınır. Bir ajanın hiçbir zaman sandbox içine alınmamasını istiyorsanız `agents.list[].sandbox.mode: "off"` ayarını yapın.
 </Warning>
 
 ---
 
-## Test etme
+## Test
 
-Çok aracılı sandbox ve araçları yapılandırdıktan sonra:
+Çok ajanlı sandbox ve araçları yapılandırdıktan sonra:
 
 <Steps>
-  <Step title="Aracı çözümlemesini denetleyin">
+  <Step title="Ajan çözümlemesini denetleyin">
     ```bash
     openclaw agents list --bindings
     ```
   </Step>
-  <Step title="Sandbox konteynerlerini doğrulayın">
+  <Step title="Sandbox kapsayıcılarını doğrulayın">
     ```bash
     docker ps --filter "name=openclaw-sbx-"
     ```
   </Step>
   <Step title="Araç kısıtlamalarını test edin">
-    - Kısıtlı araçlar gerektiren bir mesaj gönderin.
-    - Aracının reddedilen araçları kullanamadığını doğrulayın.
+    - Kısıtlı araçlar gerektiren bir ileti gönderin.
+    - Ajanın reddedilen araçları kullanamadığını doğrulayın.
 
   </Step>
   <Step title="Günlükleri izleyin">
@@ -380,20 +386,20 @@ Eski `agent.*` yapılandırmaları `openclaw doctor` tarafından taşınır; ile
 ## Sorun giderme
 
 <AccordionGroup>
-  <Accordion title="`mode: 'all'` olmasına rağmen aracı sandbox'a alınmadı">
+  <Accordion title="`mode: 'all'` olmasına rağmen ajan sandbox içinde değil">
     - Bunu geçersiz kılan genel bir `agents.defaults.sandbox.mode` olup olmadığını denetleyin.
-    - Aracıya özgü yapılandırma önceliklidir; bu yüzden `agents.list[].sandbox.mode: "all"` ayarlayın.
+    - Ajana özel yapılandırma önceliklidir; bu nedenle `agents.list[].sandbox.mode: "all"` ayarını yapın.
 
   </Accordion>
   <Accordion title="Reddetme listesine rağmen araçlar hâlâ kullanılabilir">
-    - Araç filtreleme sırasını denetleyin: genel → aracı → sandbox → alt aracı.
-    - Her seviye yalnızca daha da kısıtlayabilir, geri izin veremez.
+    - Araç filtreleme sırasını denetleyin: genel → ajan → sandbox → alt ajan.
+    - Her düzey yalnızca daha fazla kısıtlayabilir, tekrar izin veremez.
     - Günlüklerle doğrulayın: `[tools] filtering tools for agent:${agentId}`.
 
   </Accordion>
-  <Accordion title="Konteyner aracı başına yalıtılmış değil">
-    - Aracıya özgü sandbox yapılandırmasında `scope: "agent"` ayarlayın.
-    - Varsayılan değer, oturum başına bir konteyner oluşturan `"session"` değeridir.
+  <Accordion title="Kapsayıcı ajan başına yalıtılmamış">
+    - Ajana özel sandbox yapılandırmasında `scope: "agent"` ayarını yapın.
+    - Varsayılan değer, oturum başına bir kapsayıcı oluşturan `"session"` değeridir.
 
   </Accordion>
 </AccordionGroup>
@@ -403,8 +409,8 @@ Eski `agent.*` yapılandırmaları `openclaw doctor` tarafından taşınır; ile
 ## İlgili
 
 - [Yükseltilmiş mod](/tr/tools/elevated)
-- [Çok ajanlı yönlendirme](/tr/concepts/multi-agent)
-- [Korumalı alan yapılandırması](/tr/gateway/config-agents#agentsdefaultssandbox)
-- [Korumalı alan, araç ilkesi ve yükseltilmiş mod](/tr/gateway/sandbox-vs-tool-policy-vs-elevated) — "bu neden engellendi?" hata ayıklaması
-- [Korumalı alan kullanımı](/tr/gateway/sandboxing) — tam korumalı alan referansı (modlar, kapsamlar, arka uçlar, imajlar)
+- [Çoklu ajan yönlendirme](/tr/concepts/multi-agent)
+- [Sandbox yapılandırması](/tr/gateway/config-agents#agentsdefaultssandbox)
+- [Sandbox, araç ilkesi ve yükseltilmiş mod karşılaştırması](/tr/gateway/sandbox-vs-tool-policy-vs-elevated) — "bu neden engelleniyor?" hatalarını ayıklama
+- [Sandboxing](/tr/gateway/sandboxing) — tam sandbox başvurusu (modlar, kapsamlar, arka uçlar, imajlar)
 - [Oturum yönetimi](/tr/concepts/session)

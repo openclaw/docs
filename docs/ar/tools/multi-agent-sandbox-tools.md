@@ -2,41 +2,41 @@
 read_when: You want per-agent sandboxing or per-agent tool allow/deny policies in a multi-agent gateway.
 sidebarTitle: Multi-agent sandbox and tools
 status: active
-summary: بيئة العزل وقيود الأدوات لكل وكيل، والأسبقية، والأمثلة
-title: صندوق حماية متعدد الوكلاء والأدوات
+summary: صندوق العزل + قيود الأدوات لكل وكيل، والأسبقية، والأمثلة
+title: بيئة معزولة وأدوات متعددة الوكلاء
 x-i18n:
-    generated_at: "2026-05-10T20:04:49Z"
+    generated_at: "2026-05-11T20:42:57Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c988613438f2d179b859902d3f7a39a1e29b60a0e2ae6ed598bb5f5881cf0b9f
+    source_hash: 8d11af55e30996a89e665b258604108a93f4c4271fbe4edfd1caf54864e40f01
     source_path: tools/multi-agent-sandbox-tools.md
     workflow: 16
 ---
 
-يمكن لكل وكيل في إعداد متعدد الوكلاء تجاوز سياسة العزل والأدوات العامة. تغطي هذه الصفحة الإعدادات الخاصة بكل وكيل، وقواعد الأسبقية، والأمثلة.
+Each agent in a multi-agent setup can override the global sandbox and tool policy. This page covers per-agent configuration, precedence rules, and examples.
 
 <CardGroup cols={3}>
-  <Card title="العزل" href="/ar/gateway/sandboxing">
-    الخلفيات والأوضاع — مرجع العزل الكامل.
+  <Card title="Sandboxing" href="/ar/gateway/sandboxing">
+    Backends and modes — full sandbox reference.
   </Card>
-  <Card title="العزل مقابل سياسة الأدوات مقابل الوضع المرتفع" href="/ar/gateway/sandbox-vs-tool-policy-vs-elevated">
-    تصحيح "لماذا تم حظر هذا؟"
+  <Card title="Sandbox vs tool policy vs elevated" href="/ar/gateway/sandbox-vs-tool-policy-vs-elevated">
+    Debug "why is this blocked?"
   </Card>
-  <Card title="الوضع المرتفع" href="/ar/tools/elevated">
-    تنفيذ مرتفع للمرسلين الموثوقين.
+  <Card title="Elevated mode" href="/ar/tools/elevated">
+    Elevated exec for trusted senders.
   </Card>
 </CardGroup>
 
 <Warning>
-المصادقة محددة النطاق حسب الوكيل: لكل وكيل مخزن مصادقة `agentDir` خاص به في `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`. لا تعد استخدام `agentDir` مطلقا عبر الوكلاء. يمكن للوكلاء القراءة وصولا إلى ملفات تعريف المصادقة الخاصة بالوكيل الافتراضي/الرئيسي عندما لا يكون لديهم ملف تعريف محلي، لكن رموز تحديث OAuth لا تستنسخ إلى مخازن الوكلاء الثانوية. إذا نسخت بيانات الاعتماد يدويا، فانسخ فقط ملفات تعريف `api_key` أو `token` الثابتة القابلة للنقل.
+Auth is scoped by agent: each agent has its own `agentDir` auth store at `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`. Never reuse `agentDir` across agents. Agents can read through to the default/main agent's auth profiles when they do not have a local profile, but OAuth refresh tokens are not cloned into secondary agent stores. If you copy credentials manually, copy only portable static `api_key` or `token` profiles.
 </Warning>
 
 ---
 
-## أمثلة الإعدادات
+## Configuration examples
 
 <AccordionGroup>
-  <Accordion title="مثال 1: وكيل شخصي + وكيل عائلي مقيد">
+  <Accordion title="Example 1: Personal + restricted family agent">
     ```json
     {
       "agents": {
@@ -57,8 +57,14 @@ x-i18n:
               "scope": "agent"
             },
             "tools": {
-              "allow": ["read"],
-              "deny": ["exec", "write", "edit", "apply_patch", "process", "browser"]
+              "allow": ["read", "message"],
+              "deny": ["exec", "write", "edit", "apply_patch", "process", "browser"],
+              "message": {
+                "crossContext": {
+                  "allowWithinProvider": false,
+                  "allowAcrossProviders": false
+                }
+              }
             }
           }
         ]
@@ -79,13 +85,13 @@ x-i18n:
     }
     ```
 
-    **النتيجة:**
+    **Result:**
 
-    - وكيل `main`: يعمل على المضيف، مع وصول كامل إلى الأدوات.
-    - وكيل `family`: يعمل في Docker (حاوية واحدة لكل وكيل)، وأداة `read` فقط.
+    - `main` agent: runs on host, full tool access.
+    - `family` agent: runs in Docker (one container per agent), only `read` and current-conversation message sends.
 
   </Accordion>
-  <Accordion title="مثال 2: وكيل عمل بعزل مشترك">
+  <Accordion title="Example 2: Work agent with shared sandbox">
     ```json
     {
       "agents": {
@@ -113,7 +119,7 @@ x-i18n:
     }
     ```
   </Accordion>
-  <Accordion title="مثال 2ب: ملف تعريف برمجة عام + وكيل للمراسلة فقط">
+  <Accordion title="Example 2b: Global coding profile + messaging-only agent">
     ```json
     {
       "tools": { "profile": "coding" },
@@ -128,13 +134,13 @@ x-i18n:
     }
     ```
 
-    **النتيجة:**
+    **Result:**
 
-    - يحصل الوكلاء الافتراضيون على أدوات البرمجة.
-    - وكيل `support` للمراسلة فقط (+ أداة Slack).
+    - default agents get coding tools.
+    - `support` agent is messaging-only (+ Slack tool).
 
   </Accordion>
-  <Accordion title="مثال 3: أوضاع عزل مختلفة لكل وكيل">
+  <Accordion title="Example 3: Different sandbox modes per agent">
     ```json
     {
       "agents": {
@@ -173,13 +179,13 @@ x-i18n:
 
 ---
 
-## أسبقية الإعدادات
+## Configuration precedence
 
-عند وجود إعدادات عامة (`agents.defaults.*`) وأخرى خاصة بالوكيل (`agents.list[].*`):
+When both global (`agents.defaults.*`) and agent-specific (`agents.list[].*`) configs exist:
 
-### إعدادات العزل
+### Sandbox config
 
-تتجاوز الإعدادات الخاصة بالوكيل الإعدادات العامة:
+Agent-specific settings override global:
 
 ```
 agents.list[].sandbox.mode > agents.defaults.sandbox.mode
@@ -192,56 +198,56 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 ```
 
 <Note>
-يتجاوز `agents.list[].sandbox.{docker,browser,prune}.*` القيمة `agents.defaults.sandbox.{docker,browser,prune}.*` لذلك الوكيل (ويتم تجاهله عندما ينتهي نطاق العزل إلى `"shared"`).
+`agents.list[].sandbox.{docker,browser,prune}.*` overrides `agents.defaults.sandbox.{docker,browser,prune}.*` for that agent (ignored when sandbox scope resolves to `"shared"`).
 </Note>
 
-### قيود الأدوات
+### Tool restrictions
 
-ترتيب التصفية هو:
+The filtering order is:
 
 <Steps>
-  <Step title="ملف تعريف الأداة">
-    `tools.profile` أو `agents.list[].tools.profile`.
+  <Step title="Tool profile">
+    `tools.profile` or `agents.list[].tools.profile`.
   </Step>
-  <Step title="ملف تعريف أداة المزود">
-    `tools.byProvider[provider].profile` أو `agents.list[].tools.byProvider[provider].profile`.
+  <Step title="Provider tool profile">
+    `tools.byProvider[provider].profile` or `agents.list[].tools.byProvider[provider].profile`.
   </Step>
-  <Step title="سياسة الأدوات العامة">
+  <Step title="Global tool policy">
     `tools.allow` / `tools.deny`.
   </Step>
-  <Step title="سياسة أداة المزود">
+  <Step title="Provider tool policy">
     `tools.byProvider[provider].allow/deny`.
   </Step>
-  <Step title="سياسة الأدوات الخاصة بالوكيل">
+  <Step title="Agent-specific tool policy">
     `agents.list[].tools.allow/deny`.
   </Step>
-  <Step title="سياسة مزود الوكيل">
+  <Step title="Agent provider policy">
     `agents.list[].tools.byProvider[provider].allow/deny`.
   </Step>
-  <Step title="سياسة أدوات العزل">
-    `tools.sandbox.tools` أو `agents.list[].tools.sandbox.tools`.
+  <Step title="Sandbox tool policy">
+    `tools.sandbox.tools` or `agents.list[].tools.sandbox.tools`.
   </Step>
-  <Step title="سياسة أدوات الوكيل الفرعي">
-    `tools.subagents.tools`، إن كانت قابلة للتطبيق.
+  <Step title="Subagent tool policy">
+    `tools.subagents.tools`, if applicable.
   </Step>
 </Steps>
 
 <AccordionGroup>
-  <Accordion title="قواعد الأسبقية">
-    - يمكن لكل مستوى تقييد الأدوات أكثر، لكنه لا يستطيع إعادة منح الأدوات المرفوضة من المستويات السابقة.
-    - إذا تم تعيين `agents.list[].tools.sandbox.tools`، فإنه يستبدل `tools.sandbox.tools` لذلك الوكيل.
-    - إذا تم تعيين `agents.list[].tools.profile`، فإنه يتجاوز `tools.profile` لذلك الوكيل.
-    - تقبل مفاتيح أدوات المزود إما `provider` (مثل `google-antigravity`) أو `provider/model` (مثل `openai/gpt-5.4`).
+  <Accordion title="Precedence rules">
+    - Each level can further restrict tools, but cannot grant back denied tools from earlier levels.
+    - If `agents.list[].tools.sandbox.tools` is set, it replaces `tools.sandbox.tools` for that agent.
+    - If `agents.list[].tools.profile` is set, it overrides `tools.profile` for that agent.
+    - Provider tool keys accept either `provider` (e.g. `google-antigravity`) or `provider/model` (e.g. `openai/gpt-5.4`).
 
   </Accordion>
-  <Accordion title="سلوك قائمة السماح الفارغة">
-    إذا تركت أي قائمة سماح صريحة في تلك السلسلة التشغيل بلا أدوات قابلة للاستدعاء، يوقف OpenClaw العملية قبل إرسال الموجه إلى النموذج. هذا مقصود: يجب أن يفشل الوكيل المهيأ بأداة مفقودة مثل `agents.list[].tools.allow: ["query_db"]` بوضوح إلى أن يتم تمكين Plugin الذي يسجل `query_db`، لا أن يستمر كوكيل نصي فقط.
+  <Accordion title="Empty allowlist behavior">
+    If any explicit allowlist in that chain leaves the run with no callable tools, OpenClaw stops before submitting the prompt to the model. This is intentional: an agent configured with a missing tool such as `agents.list[].tools.allow: ["query_db"]` should fail loudly until the plugin that registers `query_db` is enabled, not continue as a text-only agent.
   </Accordion>
 </AccordionGroup>
 
-تدعم سياسات الأدوات اختصارات `group:*` التي تتوسع إلى أدوات متعددة. راجع [مجموعات الأدوات](/ar/gateway/sandbox-vs-tool-policy-vs-elevated#tool-groups-shorthands) للاطلاع على القائمة الكاملة.
+Tool policies support `group:*` shorthands that expand to multiple tools. See [Tool groups](/ar/gateway/sandbox-vs-tool-policy-vs-elevated#tool-groups-shorthands) for the full list.
 
-يمكن لتجاوزات الوضع المرتفع لكل وكيل (`agents.list[].tools.elevated`) أن تزيد تقييد التنفيذ المرتفع لوكلاء محددين. راجع [الوضع المرتفع](/ar/tools/elevated) للتفاصيل.
+Per-agent elevated overrides (`agents.list[].tools.elevated`) can further restrict elevated exec for specific agents. See [Elevated mode](/ar/tools/elevated) for details.
 
 ---
 
@@ -270,7 +276,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
     }
     ```
   </Tab>
-  <Tab title="بعد (متعدد الوكلاء)">
+  <Tab title="بعد (وكلاء متعددون)">
     ```json
     {
       "agents": {
@@ -289,12 +295,12 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 </Tabs>
 
 <Note>
-يتم ترحيل إعدادات `agent.*` القديمة بواسطة `openclaw doctor`؛ يفضل استخدام `agents.defaults` + `agents.list` مستقبلا.
+تُرحَّل إعدادات `agent.*` القديمة بواسطة `openclaw doctor`؛ ويفضَّل استخدام `agents.defaults` + `agents.list` من الآن فصاعدًا.
 </Note>
 
 ---
 
-## أمثلة قيود الأدوات
+## أمثلة تقييد الأدوات
 
 <Tabs>
   <Tab title="وكيل للقراءة فقط">
@@ -318,11 +324,11 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
     ```
 
     <Warning>
-    تعطل هذه السياسة أدوات نظام الملفات في OpenClaw، لكن `exec` لا يزال Shell ويمكنه كتابة الملفات في أي مكان يسمح به نظام ملفات المضيف أو العزل المحدد. لوكيل للقراءة فقط، ارفض `exec` و`process`، أو ادمج وصول Shell مع ضوابط نظام ملفات العزل مثل `agents.defaults.sandbox.workspaceAccess: "ro"` أو `"none"`.
+    تُعطّل هذه السياسة أدوات نظام الملفات في OpenClaw، لكن `exec` يظل Shell ويمكنه كتابة الملفات حيثما يسمح المضيف المحدد أو نظام ملفات صندوق العزل. للحصول على وكيل للقراءة فقط، امنع `exec` و`process`، أو ادمج الوصول إلى Shell مع عناصر التحكم في نظام ملفات صندوق العزل مثل `agents.defaults.sandbox.workspaceAccess: "ro"` أو `"none"`.
     </Warning>
 
   </Tab>
-  <Tab title="للاتصال فقط">
+  <Tab title="الاتصال فقط">
     ```json
     {
       "tools": {
@@ -333,39 +339,39 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
     }
     ```
 
-    لا يزال `sessions_history` في ملف التعريف هذا يعيد عرض استدعاء محدودا ومنقحا بدلا من تفريغ خام للنص الكامل. يزيل استدعاء المساعد وسوم التفكير، وسقالات `<relevant-memories>`، وحمولات XML لاستدعاءات الأدوات بنص عادي (بما في ذلك `<tool_call>...</tool_call>` و`<function_call>...</function_call>` و`<tool_calls>...</tool_calls>` و`<function_calls>...</function_calls>`، وكتل استدعاءات الأدوات المقتطعة)، وسقالات استدعاءات الأدوات المخفضة، ورموز تحكم النموذج المسرّبة بصيغة ASCII/العرض الكامل، وXML استدعاءات أدوات MiniMax المشوه قبل التنقيح/الاقتطاع.
+    لا يزال `sessions_history` في هذا الملف الشخصي يعيد عرض استدعاء محدودًا ومنقحًا بدلًا من تفريغ نصي خام. يزيل استدعاء المساعد وسوم التفكير، وبنية `<relevant-memories>`، وحمولات XML لاستدعاءات الأدوات بنص عادي (بما في ذلك `<tool_call>...</tool_call>` و`<function_call>...</function_call>` و`<tool_calls>...</tool_calls>` و`<function_calls>...</function_calls>` وكتل استدعاء الأدوات المقتطعة)، وبنية استدعاءات الأدوات المخفّضة، ورموز تحكم النموذج المسرّبة بنمط ASCII/العرض الكامل، وXML استدعاءات أدوات MiniMax غير الصالح قبل التنقيح/الاقتطاع.
 
   </Tab>
 </Tabs>
 
 ---
 
-## مزلق شائع: "non-main"
+## خطأ شائع: "non-main"
 
 <Warning>
-يعتمد `agents.defaults.sandbox.mode: "non-main"` على `session.mainKey` (الافتراضي `"main"`)، وليس على معرف الوكيل. تحصل جلسات المجموعة/القناة دائما على مفاتيحها الخاصة، لذلك تعامل على أنها غير رئيسية وسيتم عزلها. إذا أردت ألا يخضع وكيل للعزل مطلقا، فعيّن `agents.list[].sandbox.mode: "off"`.
+يعتمد `agents.defaults.sandbox.mode: "non-main"` على `session.mainKey` (الافتراضي `"main"`)، وليس على معرّف الوكيل. تحصل جلسات المجموعة/القناة دائمًا على مفاتيحها الخاصة، لذلك تُعامل على أنها غير رئيسية وسيُطبّق عليها صندوق العزل. إذا أردت ألا يستخدم وكيل صندوق العزل أبدًا، فاضبط `agents.list[].sandbox.mode: "off"`.
 </Warning>
 
 ---
 
 ## الاختبار
 
-بعد إعداد العزل والأدوات للوكلاء المتعددين:
+بعد تكوين صندوق العزل والأدوات للوكلاء المتعددين:
 
 <Steps>
-  <Step title="تحقق من حل الوكيل">
+  <Step title="تحقق من حلّ الوكيل">
     ```bash
     openclaw agents list --bindings
     ```
   </Step>
-  <Step title="تحقق من حاويات العزل">
+  <Step title="تحقق من حاويات صندوق العزل">
     ```bash
     docker ps --filter "name=openclaw-sbx-"
     ```
   </Step>
   <Step title="اختبر قيود الأدوات">
     - أرسل رسالة تتطلب أدوات مقيدة.
-    - تحقق من أن الوكيل لا يستطيع استخدام الأدوات المرفوضة.
+    - تحقق من أن الوكيل لا يستطيع استخدام الأدوات الممنوعة.
 
   </Step>
   <Step title="راقب السجلات">
@@ -380,31 +386,31 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 ## استكشاف الأخطاء وإصلاحها
 
 <AccordionGroup>
-  <Accordion title="الوكيل غير معزول رغم `mode: 'all'`">
+  <Accordion title="الوكيل غير موضوع في صندوق العزل رغم `mode: 'all'`">
     - تحقق مما إذا كان هناك `agents.defaults.sandbox.mode` عام يتجاوزه.
-    - للإعدادات الخاصة بالوكيل الأسبقية، لذلك عيّن `agents.list[].sandbox.mode: "all"`.
+    - تكون للإعدادات الخاصة بالوكيل الأولوية، لذلك اضبط `agents.list[].sandbox.mode: "all"`.
 
   </Accordion>
-  <Accordion title="الأدوات لا تزال متاحة رغم قائمة الرفض">
-    - تحقق من ترتيب تصفية الأدوات: عام → وكيل → عزل → وكيل فرعي.
-    - لا يمكن لكل مستوى إلا زيادة التقييد، لا إعادة المنح.
-    - تحقق من السجلات: `[tools] filtering tools for agent:${agentId}`.
+  <Accordion title="الأدوات لا تزال متاحة رغم قائمة المنع">
+    - تحقق من ترتيب تصفية الأدوات: عام → وكيل → صندوق عزل → وكيل فرعي.
+    - يمكن لكل مستوى أن يزيد التقييد فقط، ولا يمكنه إعادة المنح.
+    - تحقق من ذلك عبر السجلات: `[tools] filtering tools for agent:${agentId}`.
 
   </Accordion>
   <Accordion title="الحاوية غير معزولة لكل وكيل">
-    - عيّن `scope: "agent"` في إعدادات العزل الخاصة بالوكيل.
-    - الافتراضي هو `"session"` الذي ينشئ حاوية واحدة لكل جلسة.
+    - اضبط `scope: "agent"` في تكوين صندوق العزل الخاص بالوكيل.
+    - الافتراضي هو `"session"`، وهو ما ينشئ حاوية واحدة لكل جلسة.
 
   </Accordion>
 </AccordionGroup>
 
 ---
 
-## ذو صلة
+## ذات صلة
 
-- [وضع الصلاحيات المرتفعة](/ar/tools/elevated)
-- [توجيه الوكلاء المتعددين](/ar/concepts/multi-agent)
+- [وضع الامتيازات المرتفعة](/ar/tools/elevated)
+- [التوجيه متعدد الوكلاء](/ar/concepts/multi-agent)
 - [تكوين بيئة العزل](/ar/gateway/config-agents#agentsdefaultssandbox)
-- [بيئة العزل مقابل سياسة الأدوات مقابل الصلاحيات المرتفعة](/ar/gateway/sandbox-vs-tool-policy-vs-elevated) — تصحيح أخطاء "لماذا تم حظر هذا؟"
+- [بيئة العزل مقابل سياسة الأدوات مقابل الامتيازات المرتفعة](/ar/gateway/sandbox-vs-tool-policy-vs-elevated) — تصحيح أخطاء "لماذا تم حظر هذا؟"
 - [العزل](/ar/gateway/sandboxing) — مرجع بيئة العزل الكامل (الأوضاع، النطاقات، الخلفيات، الصور)
 - [إدارة الجلسات](/ar/concepts/session)

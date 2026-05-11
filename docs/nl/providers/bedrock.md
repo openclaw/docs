@@ -1,39 +1,39 @@
 ---
 read_when:
     - Je wilt Amazon Bedrock-modellen gebruiken met OpenClaw
-    - Voor modelaanroepen moet je AWS-referentiegegevens en een regio configureren.
+    - Je hebt AWS-referentie-/regio-instellingen nodig voor modelaanroepen
 summary: Amazon Bedrock-modellen (Converse API) gebruiken met OpenClaw
 title: Amazon Bedrock
 x-i18n:
-    generated_at: "2026-04-29T23:08:43Z"
+    generated_at: "2026-05-11T20:45:42Z"
     model: gpt-5.5
     provider: openai
-    source_hash: d6c08ab141423a70e5283ddaf72bf6396bcef411dfa36e1c4b5632377f8ea2d8
+    source_hash: fb5a131a11b98dca68746cd6dfef8f36f1fdcbfbb985730176b334083574dc89
     source_path: providers/bedrock.md
     workflow: 16
 ---
 
 OpenClaw kan **Amazon Bedrock**-modellen gebruiken via pi-ai's **Bedrock Converse**
-streamingprovider. Bedrock-authenticatie gebruikt de **standaard credentialketen van de AWS SDK**,
+streamingprovider. Bedrock-authenticatie gebruikt de **AWS SDK default credential chain**,
 niet een API-sleutel.
 
 | Eigenschap | Waarde                                                       |
 | -------- | ----------------------------------------------------------- |
 | Provider | `amazon-bedrock`                                            |
 | API      | `bedrock-converse-stream`                                   |
-| Auth     | AWS-credentials (env-vars, gedeelde config of instantierol) |
+| Authenticatie     | AWS-referenties (env-vars, gedeelde config, of instantierol) |
 | Regio   | `AWS_REGION` of `AWS_DEFAULT_REGION` (standaard: `us-east-1`) |
 
 ## Aan de slag
 
-Kies je voorkeursmethode voor authenticatie en volg de installatiestappen.
+Kies je gewenste authenticatiemethode en volg de installatiestappen.
 
 <Tabs>
-  <Tab title="Access keys / env vars">
-    **Beste voor:** ontwikkelaarsmachines, CI of hosts waar je AWS-credentials rechtstreeks beheert.
+  <Tab title="Toegangssleutels / env-vars">
+    **Beste voor:** ontwikkelmachines, CI, of hosts waarop je AWS-referenties rechtstreeks beheert.
 
     <Steps>
-      <Step title="Set AWS credentials on the gateway host">
+      <Step title="Stel AWS-referenties in op de Gateway-host">
         ```bash
         export AWS_ACCESS_KEY_ID="AKIA..."
         export AWS_SECRET_ACCESS_KEY="..."
@@ -45,7 +45,7 @@ Kies je voorkeursmethode voor authenticatie en volg de installatiestappen.
         export AWS_BEARER_TOKEN_BEDROCK="..."
         ```
       </Step>
-      <Step title="Add a Bedrock provider and model to your config">
+      <Step title="Voeg een Bedrock-provider en model toe aan je config">
         Er is geen `apiKey` vereist. Configureer de provider met `auth: "aws-sdk"`:
 
         ```json5
@@ -78,7 +78,7 @@ Kies je voorkeursmethode voor authenticatie en volg de installatiestappen.
         }
         ```
       </Step>
-      <Step title="Verify models are available">
+      <Step title="Controleer of modellen beschikbaar zijn">
         ```bash
         openclaw models list
         ```
@@ -86,25 +86,25 @@ Kies je voorkeursmethode voor authenticatie en volg de installatiestappen.
     </Steps>
 
     <Tip>
-    Met env-marker-authenticatie (`AWS_ACCESS_KEY_ID`, `AWS_PROFILE` of `AWS_BEARER_TOKEN_BEDROCK`) schakelt OpenClaw de impliciete Bedrock-provider automatisch in voor modeldetectie zonder extra config.
+    Met env-marker-authenticatie (`AWS_ACCESS_KEY_ID`, `AWS_PROFILE`, of `AWS_BEARER_TOKEN_BEDROCK`) schakelt OpenClaw automatisch de impliciete Bedrock-provider in voor modelontdekking zonder extra config.
     </Tip>
 
   </Tab>
 
-  <Tab title="EC2 instance roles (IMDS)">
-    **Beste voor:** EC2-instanties waaraan een IAM-rol is gekoppeld, met gebruik van de instantie-metadataservice voor authenticatie.
+  <Tab title="EC2-instantierollen (IMDS)">
+    **Beste voor:** EC2-instanties waaraan een IAM-rol is gekoppeld, met de instance metadata service voor authenticatie.
 
     <Steps>
-      <Step title="Enable discovery explicitly">
-        Bij gebruik van IMDS kan OpenClaw AWS-authenticatie niet alleen op basis van env-markers detecteren, dus moet je expliciet deelnemen:
+      <Step title="Schakel ontdekking expliciet in">
+        Wanneer je IMDS gebruikt, kan OpenClaw AWS-authenticatie niet alleen op basis van env-markers detecteren, dus je moet expliciet kiezen:
 
         ```bash
         openclaw config set plugins.entries.amazon-bedrock.config.discovery.enabled true
         openclaw config set plugins.entries.amazon-bedrock.config.discovery.region us-east-1
         ```
       </Step>
-      <Step title="Optionally add an env marker for auto mode">
-        Als je ook wilt dat het pad voor automatische detectie via env-markers werkt (bijvoorbeeld voor `openclaw status`-oppervlakken):
+      <Step title="Voeg optioneel een env-marker toe voor automatische modus">
+        Als je ook wilt dat het pad voor automatische env-marker-detectie werkt (bijvoorbeeld voor `openclaw status`-oppervlakken):
 
         ```bash
         export AWS_PROFILE=default
@@ -113,7 +113,7 @@ Kies je voorkeursmethode voor authenticatie en volg de installatiestappen.
 
         Je hebt **geen** nep-API-sleutel nodig.
       </Step>
-      <Step title="Verify models are discovered">
+      <Step title="Controleer of modellen worden ontdekt">
         ```bash
         openclaw models list
         ```
@@ -125,45 +125,45 @@ Kies je voorkeursmethode voor authenticatie en volg de installatiestappen.
 
     - `bedrock:InvokeModel`
     - `bedrock:InvokeModelWithResponseStream`
-    - `bedrock:ListFoundationModels` (voor automatische detectie)
-    - `bedrock:ListInferenceProfiles` (voor detectie van inferentieprofielen)
+    - `bedrock:ListFoundationModels` (voor automatische ontdekking)
+    - `bedrock:ListInferenceProfiles` (voor ontdekking van inferenceprofielen)
 
     Of koppel het beheerde beleid `AmazonBedrockFullAccess`.
     </Warning>
 
     <Note>
-    Je hebt `AWS_PROFILE=default` alleen nodig als je specifiek een env-marker voor automatische modus of statusoppervlakken wilt. Het daadwerkelijke authenticatiepad van de Bedrock-runtime gebruikt de standaardketen van de AWS SDK, dus authenticatie met IMDS-instantierol werkt zelfs zonder env-markers.
+    Je hebt `AWS_PROFILE=default` alleen nodig als je specifiek een env-marker wilt voor automatische modus of statusoppervlakken. Het daadwerkelijke Bedrock-runtime-authenticatiepad gebruikt de AWS SDK default chain, dus IMDS-instantierol-authenticatie werkt zelfs zonder env-markers.
     </Note>
 
   </Tab>
 </Tabs>
 
-## Automatische modeldetectie
+## Automatische modelontdekking
 
-OpenClaw kan automatisch Bedrock-modellen detecteren die **streaming**
-en **tekstuitvoer** ondersteunen. Detectie gebruikt `bedrock:ListFoundationModels` en
+OpenClaw kan automatisch Bedrock-modellen ontdekken die **streaming**
+en **tekstuitvoer** ondersteunen. Ontdekking gebruikt `bedrock:ListFoundationModels` en
 `bedrock:ListInferenceProfiles`, en resultaten worden gecachet (standaard: 1 uur).
 
-Hoe de impliciete provider wordt ingeschakeld:
+Zo wordt de impliciete provider ingeschakeld:
 
 - Als `plugins.entries.amazon-bedrock.config.discovery.enabled` `true` is,
-  probeert OpenClaw detectie zelfs wanneer er geen AWS-env-marker aanwezig is.
+  probeert OpenClaw discovery zelfs wanneer er geen AWS-env-marker aanwezig is.
 - Als `plugins.entries.amazon-bedrock.config.discovery.enabled` niet is ingesteld,
   voegt OpenClaw de
   impliciete Bedrock-provider alleen automatisch toe wanneer het een van deze AWS-auth-markers ziet:
   `AWS_BEARER_TOKEN_BEDROCK`, `AWS_ACCESS_KEY_ID` +
-  `AWS_SECRET_ACCESS_KEY` of `AWS_PROFILE`.
-- Het daadwerkelijke authenticatiepad van de Bedrock-runtime gebruikt nog steeds de standaardketen van de AWS SDK, zodat
-  gedeelde config, SSO en authenticatie via IMDS-instantierollen kunnen werken, zelfs wanneer detectie
-  `enabled: true` nodig had om expliciet deel te nemen.
+  `AWS_SECRET_ACCESS_KEY`, of `AWS_PROFILE`.
+- Het daadwerkelijke auth-pad van de Bedrock-runtime gebruikt nog steeds de standaardketen van de AWS SDK, zodat
+  gedeelde configuratie, SSO en IMDS-instance-role-auth kunnen werken, zelfs wanneer discovery
+  `enabled: true` nodig had om in te schrijven.
 
 <Note>
-Voor expliciete `models.providers["amazon-bedrock"]`-items kan OpenClaw Bedrock-env-marker-authenticatie nog steeds vroeg oplossen vanuit AWS-env-markers zoals `AWS_BEARER_TOKEN_BEDROCK` zonder volledige runtime-authenticatielading af te dwingen. Het daadwerkelijke authenticatiepad voor modelaanroepen gebruikt nog steeds de standaardketen van de AWS SDK.
+Voor expliciete `models.providers["amazon-bedrock"]`-vermeldingen kan OpenClaw Bedrock-env-marker-auth nog steeds vroeg oplossen vanuit AWS-env-markers zoals `AWS_BEARER_TOKEN_BEDROCK`, zonder het volledig laden van runtime-auth af te dwingen. Het daadwerkelijke auth-pad voor modelaanroepen gebruikt nog steeds de standaardketen van de AWS SDK.
 </Note>
 
 <AccordionGroup>
-  <Accordion title="Discovery config options">
-    Configopties staan onder `plugins.entries.amazon-bedrock.config.discovery`:
+  <Accordion title="Discovery-configuratieopties">
+    Configuratieopties staan onder `plugins.entries.amazon-bedrock.config.discovery`:
 
     ```json5
     {
@@ -186,22 +186,22 @@ Voor expliciete `models.providers["amazon-bedrock"]`-items kan OpenClaw Bedrock-
     }
     ```
 
-    | Optie | Standaard | Beschrijving |
+    | Optie | Standaardwaarde | Beschrijving |
     | ------ | ------- | ----------- |
-    | `enabled` | auto | In automatische modus schakelt OpenClaw de impliciete Bedrock-provider alleen in wanneer het een ondersteunde AWS-env-marker ziet. Stel in op `true` om detectie af te dwingen. |
-    | `region` | `AWS_REGION` / `AWS_DEFAULT_REGION` / `us-east-1` | AWS-regio die wordt gebruikt voor detectie-API-aanroepen. |
-    | `providerFilter` | (alle) | Komt overeen met namen van Bedrock-providers (bijvoorbeeld `anthropic`, `amazon`). |
+    | `enabled` | auto | In automatische modus schakelt OpenClaw de impliciete Bedrock-provider alleen in wanneer het een ondersteunde AWS-env-marker ziet. Stel in op `true` om discovery af te dwingen. |
+    | `region` | `AWS_REGION` / `AWS_DEFAULT_REGION` / `us-east-1` | AWS-regio die wordt gebruikt voor discovery-API-aanroepen. |
+    | `providerFilter` | (alle) | Komt overeen met Bedrock-providernamen (bijvoorbeeld `anthropic`, `amazon`). |
     | `refreshInterval` | `3600` | Cacheduur in seconden. Stel in op `0` om caching uit te schakelen. |
-    | `defaultContextWindow` | `32000` | Contextvenster dat wordt gebruikt voor gedetecteerde modellen (overschrijf dit als je de limieten van je model kent). |
-    | `defaultMaxTokens` | `4096` | Maximaal aantal uitvoertokens dat wordt gebruikt voor gedetecteerde modellen (overschrijf dit als je de limieten van je model kent). |
+    | `defaultContextWindow` | `32000` | Contextvenster dat wordt gebruikt voor gevonden modellen (overschrijf dit als je de limieten van je model kent). |
+    | `defaultMaxTokens` | `4096` | Maximale outputtokens die worden gebruikt voor gevonden modellen (overschrijf dit als je de limieten van je model kent). |
 
   </Accordion>
 </AccordionGroup>
 
-## Snelle installatie (AWS-pad)
+## Snelle configuratie (AWS-pad)
 
 Deze walkthrough maakt een IAM-rol aan, koppelt Bedrock-machtigingen, associeert
-het instantieprofiel en schakelt OpenClaw-detectie in op de EC2-host.
+het instance profile en schakelt OpenClaw-discovery in op de EC2-host.
 
 ```bash
 # 1. Create IAM role and instance profile
@@ -245,41 +245,84 @@ openclaw models list
 
 <AccordionGroup>
   <Accordion title="Inference profiles">
-    OpenClaw detecteert **regionale en globale inferentieprofielen** naast
-    foundation-modellen. Wanneer een profiel is gekoppeld aan een bekend foundation-model, erft het
+    OpenClaw ontdekt **regionale en globale inference profiles** naast
+    foundation models. Wanneer een profiel naar een bekend foundation model verwijst, erft het
     profiel de mogelijkheden van dat model (contextvenster, maximale tokens,
-    redeneren, vision) en wordt de juiste Bedrock-aanvraagregio automatisch
-    geïnjecteerd. Dit betekent dat cross-region Claude-profielen werken zonder handmatige
+    reasoning, vision) en wordt de juiste Bedrock-aanvraagregio automatisch
+    geïnjecteerd. Dit betekent dat Claude-profielen voor meerdere regio's werken zonder handmatige
     provider-overschrijvingen.
 
-    Inferentieprofiel-ID's zien eruit als `us.anthropic.claude-opus-4-6-v1:0` (regionaal)
+    Inference profile-ID's zien eruit als `us.anthropic.claude-opus-4-6-v1:0` (regionaal)
     of `anthropic.claude-opus-4-6-v1:0` (globaal). Als het onderliggende model al
-    in de detectieresultaten staat, erft het profiel de volledige set mogelijkheden;
-    anders gelden veilige standaardwaarden.
+    in de discovery-resultaten staat, erft het profiel de volledige set mogelijkheden;
+    anders worden veilige standaardwaarden toegepast.
 
-    Er is geen extra configuratie nodig. Zolang detectie is ingeschakeld en de IAM-
+    Er is geen extra configuratie nodig. Zolang discovery is ingeschakeld en de IAM
     principal `bedrock:ListInferenceProfiles` heeft, verschijnen profielen naast
-    foundation-modellen in `openclaw models list`.
+    foundation models in `openclaw models list`.
 
   </Accordion>
 
-  <Accordion title="Claude Opus 4.7 temperature">
-    Bedrock weigert de parameter `temperature` voor Claude Opus 4.7. OpenClaw
+  <Accordion title="Serviceniveau">
+    Sommige Bedrock-modellen ondersteunen een parameter `service_tier` om te optimaliseren voor kosten
+    of latency. De volgende niveaus zijn beschikbaar:
+
+    | Niveau | Beschrijving |
+    |------|-------------|
+    | `default` | Standaard Bedrock-niveau |
+    | `flex` | Verwerking met korting voor workloads die langere latency kunnen verdragen |
+    | `priority` | Geprioriteerde verwerking voor latencygevoelige workloads |
+    | `reserved` | Gereserveerde capaciteit voor workloads met een stabiele belasting |
+
+    Stel `serviceTier` (of `service_tier`) in via `agents.defaults.params` voor
+    Bedrock-modelaanvragen, of per model in
+    `agents.defaults.models["<model-key>"].params`:
+
+    ```json5
+    {
+      agents: {
+        defaults: {
+          params: {
+            serviceTier: "flex", // applies to all models
+          },
+          models: {
+            "amazon-bedrock/mistral.mistral-large-3-675b-instruct": {
+              params: {
+                serviceTier: "priority", // per-model override
+              },
+            },
+          },
+        },
+      },
+    }
+    ```
+
+    Geldige waarden zijn `default`, `flex`, `priority` en `reserved`. Niet alle
+    modellen ondersteunen alle niveaus — als een niet-ondersteund niveau wordt aangevraagd, retourneert Bedrock
+    een validatiefout. Let op: het foutbericht is enigszins misleidend;
+    het kan "The provided model identifier is invalid" zeggen in plaats van
+    een niet-ondersteund serviceniveau aan te geven. Als je deze fout ziet, controleer dan of het model
+    het aangevraagde niveau ondersteunt.
+
+  </Accordion>
+
+  <Accordion title="Claude Opus 4.7-temperatuur">
+    Bedrock wijst de parameter `temperature` af voor Claude Opus 4.7. OpenClaw
     laat `temperature` automatisch weg voor elke Opus 4.7-Bedrock-ref, inclusief
-    foundation-model-ID's, benoemde inferentieprofielen, applicatie-inferentieprofielen
-    waarvan het onderliggende model via `bedrock:GetInferenceProfile` naar Opus 4.7 wordt herleid,
-    en gestippelde `opus-4.7`-varianten met
-    optionele regiovoorvoegsels (`us.`, `eu.`, `ap.`, `apac.`, `au.`, `jp.`,
-    `global.`). Er is geen configknop vereist, en het weglaten geldt voor zowel
-    het aanvraagoptiesobject als het payloadveld `inferenceConfig`.
+    foundation model-ID's, benoemde inference profiles, application inference
+    profiles waarvan het onderliggende model via
+    `bedrock:GetInferenceProfile` wordt opgelost naar Opus 4.7, en gestippelde `opus-4.7`-varianten met
+    optionele regioprefixen (`us.`, `eu.`, `ap.`, `apac.`, `au.`, `jp.`,
+    `global.`). Er is geen configuratieknop vereist, en de weglating geldt voor zowel
+    het object met aanvraagopties als het payloadveld `inferenceConfig`.
   </Accordion>
 
   <Accordion title="Guardrails">
     Je kunt [Amazon Bedrock Guardrails](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails.html)
     toepassen op alle Bedrock-modelaanroepen door een `guardrail`-object toe te voegen aan de
-    `amazon-bedrock`-Plugin-config. Guardrails laten je contentfiltering,
-    onderwerpweigering, woordfilters, filters voor gevoelige informatie en contextuele
-    groundingcontroles afdwingen.
+    Plugin-configuratie van `amazon-bedrock`. Guardrails laten je inhoudsfiltering,
+    onderwerpweigering, woordfilters, filters voor gevoelige informatie en controles op contextuele
+    grounding afdwingen.
 
     ```json5
     {
@@ -304,8 +347,8 @@ openclaw models list
     | ------ | -------- | ----------- |
     | `guardrailIdentifier` | Ja | Guardrail-ID (bijv. `abc123`) of volledige ARN (bijv. `arn:aws:bedrock:us-east-1:123456789012:guardrail/abc123`). |
     | `guardrailVersion` | Ja | Gepubliceerd versienummer, of `"DRAFT"` voor het werkconcept. |
-    | `streamProcessingMode` | Nee | `"sync"` of `"async"` voor guardrail-evaluatie tijdens streaming. Als dit wordt weggelaten, gebruikt Bedrock de standaardwaarde. |
-    | `trace` | Nee | `"enabled"` of `"enabled_full"` voor debugging; laat weg of stel in op `"disabled"` voor productie. |
+    | `streamProcessingMode` | Nee | `"sync"` of `"async"` voor guardrail-evaluatie tijdens streaming. Als dit wordt weggelaten, gebruikt Bedrock de standaardinstelling. |
+    | `trace` | Nee | `"enabled"` of `"enabled_full"` voor foutopsporing; laat weg of stel in op `"disabled"` voor productie. |
 
     <Warning>
     De IAM-principal die door de Gateway wordt gebruikt, moet naast de standaard aanroepmachtigingen ook de machtiging `bedrock:ApplyGuardrail` hebben.
@@ -314,9 +357,9 @@ openclaw models list
   </Accordion>
 
   <Accordion title="Embeddings voor geheugenzoekopdrachten">
-    Bedrock kan ook dienen als de embeddingprovider voor
-    [geheugenzoekopdrachten](/nl/concepts/memory-search). Dit wordt apart geconfigureerd van de
-    inferentieprovider -- stel `agents.defaults.memorySearch.provider` in op `"bedrock"`:
+    Bedrock kan ook dienen als embeddingprovider voor
+    [geheugenzoekopdrachten](/nl/concepts/memory-search). Dit wordt afzonderlijk van de
+    inferentieprovider geconfigureerd -- stel `agents.defaults.memorySearch.provider` in op `"bedrock"`:
 
     ```json5
     {
@@ -334,9 +377,9 @@ openclaw models list
     Bedrock-embeddings gebruiken dezelfde AWS SDK-referentieketen als inferentie (instantie-
     rollen, SSO, toegangssleutels, gedeelde configuratie en webidentiteit). Er is geen API-sleutel
     nodig. Wanneer `provider` `"auto"` is, wordt Bedrock automatisch gedetecteerd als die
-    referentieketen succesvol wordt herleid.
+    referentieketen succesvol wordt opgelost.
 
-    Ondersteunde embeddingmodellen zijn onder andere Amazon Titan Embed (v1, v2), Amazon Nova
+    Ondersteunde embeddingmodellen zijn onder meer Amazon Titan Embed (v1, v2), Amazon Nova
     Embed, Cohere Embed (v3, v4) en TwelveLabs Marengo. Zie
     [Referentie voor geheugenconfiguratie -- Bedrock](/nl/reference/memory-config#bedrock-embedding-config)
     voor de volledige modellijst en dimensieopties.
@@ -345,17 +388,17 @@ openclaw models list
 
   <Accordion title="Opmerkingen en kanttekeningen">
     - Bedrock vereist dat **modeltoegang** is ingeschakeld in je AWS-account/regio.
-    - Automatische detectie vereist de machtigingen `bedrock:ListFoundationModels` en
+    - Automatische ontdekking vereist de machtigingen `bedrock:ListFoundationModels` en
       `bedrock:ListInferenceProfiles`.
-    - Als je op de automatische modus vertrouwt, stel dan een van de ondersteunde AWS-auth-env-markeringen in op de
-      Gateway-host. Als je IMDS/gedeelde-configuratie-auth zonder env-markeringen verkiest, stel dan
+    - Als je op automatische modus vertrouwt, stel dan een van de ondersteunde AWS-auth-env-markeringen in op de
+      Gateway-host. Als je IMDS/gedeelde-config-auth zonder env-markeringen verkiest, stel dan
       `plugins.entries.amazon-bedrock.config.discovery.enabled: true` in.
     - OpenClaw toont de referentiebron in deze volgorde: `AWS_BEARER_TOKEN_BEDROCK`,
       daarna `AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY`, daarna `AWS_PROFILE`, daarna de
       standaard AWS SDK-keten.
-    - Ondersteuning voor redeneren hangt af van het model; raadpleeg de Bedrock-modelkaart voor
-      de huidige mogelijkheden.
-    - Als je de voorkeur geeft aan een beheerde sleutelstroom, kun je ook een OpenAI-compatibele
+    - Ondersteuning voor redeneren is afhankelijk van het model; controleer de Bedrock-modelkaart voor
+      actuele mogelijkheden.
+    - Als je een beheerde sleutelstroom verkiest, kun je ook een OpenAI-compatibele
       proxy voor Bedrock plaatsen en deze in plaats daarvan configureren als OpenAI-provider.
   </Accordion>
 </AccordionGroup>

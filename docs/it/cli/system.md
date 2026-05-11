@@ -1,23 +1,23 @@
 ---
 read_when:
-    - Vuoi mettere in coda un evento di sistema senza creare un processo Cron
-    - Devi abilitare o disabilitare gli Heartbeat
+    - Vuoi accodare un evento di sistema senza creare un job Cron
+    - È necessario abilitare o disabilitare gli Heartbeat
     - Vuoi ispezionare le voci di presenza del sistema
 summary: Riferimento CLI per `openclaw system` (eventi di sistema, Heartbeat, presenza)
 title: Sistema
 x-i18n:
-    generated_at: "2026-04-24T08:35:22Z"
-    model: gpt-5.4
+    generated_at: "2026-05-11T20:26:33Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 0f4be30b0b2d18ee5653071d6375cebeb9fc94733e30bdb7b89a19c286df880b
+    source_hash: 2810fb064ea4afeac24ca0d71419913a664bbec0721cabdb09196075914f4864
     source_path: cli/system.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw system`
 
-Helper a livello di sistema per il Gateway: mette in coda eventi di sistema, controlla gli Heartbeat
-e mostra la presenza.
+Helper a livello di sistema per il Gateway: accodano eventi di sistema, controllano gli heartbeat
+e visualizzano la presenza.
 
 Tutti i sottocomandi `system` usano Gateway RPC e accettano i flag client condivisi:
 
@@ -38,24 +38,38 @@ openclaw system presence
 
 ## `system event`
 
-Mette in coda un evento di sistema nella sessione **principale**. L'Heartbeat successivo lo inserirà
-nel prompt come riga `System:`. Usa `--mode now` per attivare immediatamente l'Heartbeat;
-`next-heartbeat` attende il successivo tick pianificato.
+Accoda un evento di sistema nella sessione **main** per impostazione predefinita. Il prossimo heartbeat
+lo inserirà come riga `System:` nel prompt. Usa `--mode now` per attivare
+subito l'heartbeat; `next-heartbeat` attende il prossimo tick pianificato.
+
+Passa `--session-key` per indirizzare una sessione specifica (per esempio per inoltrare il completamento di un
+async-task al canale che l'ha avviato).
+
+> **Eccezione di timing con `--session-key`:** quando viene fornito `--session-key`,
+> `--mode next-heartbeat` si riduce a un risveglio mirato immediato invece di
+> attendere il prossimo tick pianificato. I risvegli mirati usano l'intent heartbeat
+> `immediate`, quindi bypassano il gate not-due del runner che altrimenti
+> differirebbe (e di fatto scarterebbe) un risveglio con intent `event`. Se vuoi una
+> consegna ritardata, ometti `--session-key` così l'evento arriva nella sessione main e
+> segue il successivo heartbeat regolare.
 
 Flag:
 
-- `--text <text>`: testo obbligatorio dell'evento di sistema.
-- `--mode <mode>`: `now` oppure `next-heartbeat` (predefinito).
+- `--text <text>`: testo dell'evento di sistema obbligatorio.
+- `--mode <mode>`: `now` o `next-heartbeat` (predefinito).
+- `--session-key <sessionKey>`: opzionale; indirizza una sessione agente specifica
+  invece della sessione main dell'agente. Le chiavi che non appartengono
+  all'agente risolto ricadono sulla sessione main dell'agente.
 - `--json`: output leggibile dalla macchina.
 - `--url`, `--token`, `--timeout`, `--expect-final`: flag Gateway RPC condivisi.
 
 ## `system heartbeat last|enable|disable`
 
-Controlli Heartbeat:
+Controlli heartbeat:
 
-- `last`: mostra l'ultimo evento Heartbeat.
-- `enable`: riattiva gli Heartbeat (usalo se sono stati disabilitati).
-- `disable`: mette in pausa gli Heartbeat.
+- `last`: mostra l'ultimo evento heartbeat.
+- `enable`: riattiva gli heartbeat (usalo se erano stati disabilitati).
+- `disable`: mette in pausa gli heartbeat.
 
 Flag:
 
@@ -64,7 +78,7 @@ Flag:
 
 ## `system presence`
 
-Elenca le voci di presenza di sistema correnti note al Gateway (Node,
+Elenca le voci di presenza di sistema correnti note al Gateway (nodi,
 istanze e righe di stato simili).
 
 Flag:
@@ -74,7 +88,7 @@ Flag:
 
 ## Note
 
-- Richiede un Gateway in esecuzione raggiungibile dalla configurazione corrente (locale o remota).
+- Richiede un Gateway in esecuzione raggiungibile dalla configurazione corrente (locale o remoto).
 - Gli eventi di sistema sono effimeri e non vengono mantenuti tra i riavvii.
 
 ## Correlati

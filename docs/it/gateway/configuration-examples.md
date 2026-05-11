@@ -1,20 +1,20 @@
 ---
 read_when:
     - Imparare a configurare OpenClaw
-    - Ricerca di esempi di configurazione
+    - Cerchi esempi di configurazione
     - Configurare OpenClaw per la prima volta
-summary: Esempi di configurazione conformi allo schema per configurazioni OpenClaw comuni
+summary: Esempi di configurazione conformi allo schema per installazioni OpenClaw comuni
 title: Esempi di configurazione
 x-i18n:
-    generated_at: "2026-05-10T19:34:09Z"
+    generated_at: "2026-05-11T20:28:41Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9fd1c93d8c491de13c3679c766293a3401853625308e90588d7c83272c5b6e73
+    source_hash: e077b2fe83b1c6e4ffd2ff0029fe3b754c7dc5dced06f134ddf18e9ed6a11fd2
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Gli esempi seguenti sono allineati allo schema di configurazione corrente. Per il riferimento completo e le note per campo, consulta [Configurazione](/it/gateway/configuration).
+Gli esempi seguenti sono allineati con lo schema di configurazione attuale. Per il riferimento completo e le note per campo, consulta [Configurazione](/it/gateway/configuration).
 
 ## Avvio rapido
 
@@ -22,25 +22,32 @@ Gli esempi seguenti sono allineati allo schema di configurazione corrente. Per i
 
 ```json5
 {
-  agent: { workspace: "~/.openclaw/workspace" },
+  agents: { defaults: { workspace: "~/.openclaw/workspace" } },
   channels: { whatsapp: { allowFrom: ["+15555550123"] } },
 }
 ```
 
-Salva in `~/.openclaw/openclaw.json` e potrai inviare DM al bot da quel numero.
+Salva in `~/.openclaw/openclaw.json` e puoi inviare un messaggio diretto al bot da quel numero.
 
 ### Configurazione iniziale consigliata
 
 ```json5
 {
-  identity: {
-    name: "Clawd",
-    theme: "helpful assistant",
-    emoji: "🦞",
-  },
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: { primary: "anthropic/claude-sonnet-4-6" },
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: { primary: "anthropic/claude-sonnet-4-6" },
+    },
+    list: [
+      {
+        id: "main",
+        identity: {
+          name: "Clawd",
+          theme: "helpful assistant",
+          emoji: "🦞",
+        },
+      },
+    ],
   },
   channels: {
     whatsapp: {
@@ -59,7 +66,7 @@ Salva in `~/.openclaw/openclaw.json` e potrai inviare DM al bot da quel numero.
 
 ## Esempio esteso (opzioni principali)
 
-> JSON5 consente di usare commenti e virgole finali. Funziona anche il normale JSON.
+> JSON5 ti consente di usare commenti e virgole finali. Anche il JSON normale funziona.
 
 ```json5
 {
@@ -90,12 +97,7 @@ Salva in `~/.openclaw/openclaw.json` e potrai inviare DM al bot da quel numero.
     },
   },
 
-  // Identity
-  identity: {
-    name: "Samantha",
-    theme: "helpful sloth",
-    emoji: "🦥",
-  },
+  // Identity is per agent — set it on agents.list[].identity below.
 
   // Logging
   logging: {
@@ -314,6 +316,11 @@ Salva in `~/.openclaw/openclaw.json` e potrai inviare DM al bot da quel numero.
       {
         id: "main",
         default: true,
+        identity: {
+          name: "Samantha",
+          theme: "helpful sloth",
+          emoji: "🦥",
+        },
         // inherits defaults.skills -> github, weather
         groupChat: {
           mentionPatterns: ["@openclaw", "openclaw"],
@@ -473,9 +480,9 @@ Salva in `~/.openclaw/openclaw.json` e potrai inviare DM al bot da quel numero.
 }
 ```
 
-### Repository skill sibling con symlink
+### Repository di skill adiacente con symlink
 
-Usa questa opzione quando una radice skill integrata contiene un symlink verso un repository sibling, per
+Usalo quando una radice skill integrata contiene un symlink verso un repository adiacente, per
 esempio `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ```json5
@@ -489,13 +496,13 @@ esempio `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 }
 ```
 
-- `extraDirs` analizza il repository sibling come root delle skill esplicita.
-- `allowSymlinkTargets` consente alle cartelle delle skill collegate tramite symlink di risolversi in quella root di destinazione
-  reale attendibile senza consentire escape arbitrari tramite symlink.
+- `extraDirs` esegue la scansione del repository adiacente come radice skill esplicita.
+- `allowSymlinkTargets` consente alle cartelle skill collegate tramite symlink di risolversi in quella radice di destinazione reale
+  attendibile, senza consentire escape di symlink arbitrari.
 
 ## Pattern comuni
 
-### Baseline delle skill condivisa con una sovrascrittura
+### Baseline skill condivisa con un override
 
 ```json5
 {
@@ -520,7 +527,7 @@ esempio `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ```json5
 {
-  agent: { workspace: "~/.openclaw/workspace" },
+  agents: { defaults: { workspace: "~/.openclaw/workspace" } },
   channels: {
     whatsapp: { allowFrom: ["+15555550123"] },
     telegram: {
@@ -537,11 +544,11 @@ esempio `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 }
 ```
 
-### Approvazione automatica della rete di Node attendibili
+### Approvazione automatica dei nodi in una rete attendibile
 
-Mantieni manuale l'associazione dei dispositivi a meno che tu non controlli il percorso di rete. Per un laboratorio dedicato
-o una sottorete tailnet, puoi abilitare l'approvazione automatica dei dispositivi Node al primo utilizzo
-con CIDR o IP esatti:
+Mantieni manuale l'abbinamento dei dispositivi, a meno che tu non controlli il percorso di rete. Per un
+laboratorio dedicato o una sottorete tailnet, puoi abilitare l'approvazione automatica
+dei dispositivi nodo al primo utilizzo con CIDR o IP esatti:
 
 ```json5
 {
@@ -555,13 +562,13 @@ con CIDR o IP esatti:
 }
 ```
 
-Questa opzione resta disattivata quando non è impostata. Si applica solo alle nuove associazioni `role: node` con
-nessuno scope richiesto. I client operatore/browser e gli aggiornamenti di ruolo, scope, metadati o
-chiave pubblica richiedono comunque l'approvazione manuale.
+Questa opzione resta disattivata se non viene impostata. Si applica solo all'abbinamento
+nuovo con `role: node` e senza ambiti richiesti. Client operatore/browser e aggiornamenti
+di ruolo, ambito, metadati o chiave pubblica richiedono comunque l'approvazione manuale.
 
-### Modalità DM sicura (posta in arrivo condivisa / DM multiutente)
+### Modalità DM sicura (inbox condivisa / DM multiutente)
 
-Se più di una persona può inviare DM al tuo bot (più voci in `allowFrom`, approvazioni di associazione per più persone o `dmPolicy: "open"`), abilita la **modalità DM sicura** in modo che i DM di mittenti diversi non condividano un unico contesto per impostazione predefinita:
+Se più di una persona può inviare DM al tuo bot (più voci in `allowFrom`, approvazioni di abbinamento per più persone o `dmPolicy: "open"`), abilita la **modalità DM sicura** in modo che i DM provenienti da mittenti diversi non condividano un unico contesto per impostazione predefinita:
 
 ```json5
 {
@@ -586,7 +593,7 @@ Se più di una persona può inviare DM al tuo bot (più voci in `allowFrom`, app
 ```
 
 Per Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, l'autorizzazione del mittente è basata sugli ID per impostazione predefinita.
-Abilita il matching diretto mutabile per nome/email/nick con `dangerouslyAllowNameMatching: true` di ciascun canale solo se accetti esplicitamente tale rischio.
+Abilita la corrispondenza diretta e mutabile per nome/email/nick con `dangerouslyAllowNameMatching: true` di ciascun canale solo se accetti esplicitamente quel rischio.
 
 ### Chiave API Anthropic + fallback MiniMax
 
@@ -612,11 +619,13 @@ Abilita il matching diretto mutabile per nome/email/nick con `dangerouslyAllowNa
       },
     },
   },
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: {
-      primary: "anthropic/claude-opus-4-6",
-      fallbacks: ["minimax/MiniMax-M2.7"],
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: {
+        primary: "anthropic/claude-opus-4-6",
+        fallbacks: ["minimax/MiniMax-M2.7"],
+      },
     },
   },
 }
@@ -626,13 +635,20 @@ Abilita il matching diretto mutabile per nome/email/nick con `dangerouslyAllowNa
 
 ```json5
 {
-  identity: {
-    name: "WorkBot",
-    theme: "professional assistant",
-  },
-  agent: {
-    workspace: "~/work-openclaw",
-    elevated: { enabled: false },
+  agents: {
+    defaults: {
+      workspace: "~/work-openclaw",
+      elevatedDefault: "off",
+    },
+    list: [
+      {
+        id: "main",
+        identity: {
+          name: "WorkBot",
+          theme: "professional assistant",
+        },
+      },
+    ],
   },
   channels: {
     slack: {
@@ -651,9 +667,11 @@ Abilita il matching diretto mutabile per nome/email/nick con `dangerouslyAllowNa
 
 ```json5
 {
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: { primary: "lmstudio/my-local-model" },
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: { primary: "lmstudio/my-local-model" },
+    },
   },
   models: {
     mode: "merge",
@@ -682,11 +700,11 @@ Abilita il matching diretto mutabile per nome/email/nick con `dangerouslyAllowNa
 ## Suggerimenti
 
 - Se imposti `dmPolicy: "open"`, l'elenco `allowFrom` corrispondente deve includere `"*"`.
-- Gli ID dei provider sono diversi (numeri di telefono, ID utente, ID canale). Usa la documentazione del provider per confermare il formato.
+- Gli ID dei provider differiscono (numeri di telefono, ID utente, ID canale). Usa la documentazione del provider per confermare il formato.
 - Sezioni facoltative da aggiungere in seguito: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
 - Consulta [Provider](/it/providers) e [Risoluzione dei problemi](/it/gateway/troubleshooting) per note di configurazione più approfondite.
 
 ## Correlati
 
-- [Riferimento configurazione](/it/gateway/configuration-reference)
+- [Riferimento della configurazione](/it/gateway/configuration-reference)
 - [Configurazione](/it/gateway/configuration)

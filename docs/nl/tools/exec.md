@@ -1,34 +1,35 @@
 ---
 read_when:
     - De exec-tool gebruiken of wijzigen
-    - Stdin- of TTY-gedrag debuggen
-summary: Gebruik van exec-tool, stdin-modi en TTY-ondersteuning
+    - stdin- of TTY-gedrag debuggen
+summary: Gebruik van de Exec-tool, stdin-modi en TTY-ondersteuning
 title: Uitvoeringstool
 x-i18n:
-    generated_at: "2026-05-06T09:35:48Z"
+    generated_at: "2026-05-11T20:52:38Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9892f030f1eeb83ca0cebac462c469e5f9f000763e4c96d62d82b819f98c3084
+    source_hash: 43ed3dc70d1998f2f2a3eed70aaf20da61ba93d23b7fa7d378f22e8635c6ec68
     source_path: tools/exec.md
     workflow: 16
 ---
 
-Shellopdrachten uitvoeren in de werkruimte. Ondersteunt uitvoering op de voorgrond + achtergrond via `process`.
-Als `process` niet is toegestaan, draait `exec` synchroon en negeert het `yieldMs`/`background`.
-Achtergrondsessies hebben een bereik per agent; `process` ziet alleen sessies van dezelfde agent.
+Voer shell-opdrachten uit in de workspace. `exec` is een muterend shell-oppervlak: opdrachten kunnen bestanden maken, bewerken of verwijderen waar het geselecteerde host- of sandbox-bestandssysteem dat toestaat. Het uitschakelen van OpenClaw-bestandssysteemtools zoals `write`, `edit` of `apply_patch` maakt `exec` niet alleen-lezen.
+
+Ondersteunt voorgrond- en achtergronduitvoering via `process`. Als `process` niet is toegestaan, wordt `exec` synchroon uitgevoerd en negeert het `yieldMs`/`background`.
+Achtergrondsessies zijn per agent gescoped; `process` ziet alleen sessies van dezelfde agent.
 
 ## Parameters
 
 <ParamField path="command" type="string" required>
-Uit te voeren shellopdracht.
+Uit te voeren shell-opdracht.
 </ParamField>
 
 <ParamField path="workdir" type="string" default="cwd">
-Werkdirectory voor de opdracht.
+Werkmap voor de opdracht.
 </ParamField>
 
 <ParamField path="env" type="object">
-Key/value-omgevingsoverschrijvingen die boven op de geërfde omgeving worden samengevoegd.
+Sleutel/waarde-omgevingsoverschrijvingen die bovenop de geërfde omgeving worden samengevoegd.
 </ParamField>
 
 <ParamField path="yieldMs" type="number" default="10000">
@@ -36,27 +37,29 @@ Zet de opdracht automatisch op de achtergrond na deze vertraging (ms).
 </ParamField>
 
 <ParamField path="background" type="boolean" default="false">
-Zet de opdracht direct op de achtergrond in plaats van te wachten op `yieldMs`.
+Zet de opdracht onmiddellijk op de achtergrond in plaats van te wachten op `yieldMs`.
 </ParamField>
 
 <ParamField path="timeout" type="number" default="tools.exec.timeoutSec">
-Overschrijf de geconfigureerde exec-time-out voor deze aanroep. Stel `timeout: 0` alleen in wanneer de opdracht zonder time-out van het exec-proces moet draaien.
+Overschrijf de geconfigureerde exec-time-out voor deze aanroep. Stel `timeout: 0` alleen in wanneer de opdracht zonder time-out van het exec-proces moet worden uitgevoerd.
 </ParamField>
 
 <ParamField path="pty" type="boolean" default="false">
-Draai in een pseudo-terminal wanneer beschikbaar. Gebruik dit voor TTY-only CLI's, coding agents en terminal-UI's.
+Voer uit in een pseudo-terminal wanneer beschikbaar. Gebruik dit voor TTY-only CLI's, coding agents en terminal-UI's.
 </ParamField>
 
 <ParamField path="host" type="'auto' | 'sandbox' | 'gateway' | 'node'" default="auto">
-Waar moet worden uitgevoerd. `auto` wordt omgezet naar `sandbox` wanneer een sandboxruntime actief is en anders naar `gateway`.
+Waar uit te voeren. `auto` wordt opgelost naar `sandbox` wanneer een sandbox-runtime actief is en anders naar `gateway`.
 </ParamField>
 
 <ParamField path="security" type="'deny' | 'allowlist' | 'full'">
-Handhavingsmodus voor uitvoering via `gateway` / `node`.
+Genegeerd voor normale tool-aanroepen. `gateway`- / `node`-beveiliging wordt beheerd door
+`tools.exec.security` en `~/.openclaw/exec-approvals.json`; verhoogde modus kan
+`security=full` alleen afdwingen wanneer de operator expliciet verhoogde toegang verleent.
 </ParamField>
 
 <ParamField path="ask" type="'off' | 'on-miss' | 'always'">
-Gedrag van de goedkeuringsprompt voor uitvoering via `gateway` / `node`.
+Gedrag van goedkeuringsprompts voor `gateway`- / `node`-uitvoering.
 </ParamField>
 
 <ParamField path="node" type="string">
@@ -64,58 +67,58 @@ Node-id/naam wanneer `host=node`.
 </ParamField>
 
 <ParamField path="elevated" type="boolean" default="false">
-Vraag verhoogde modus aan — ontsnap uit de sandbox naar het geconfigureerde hostpad. `security=full` wordt alleen afgedwongen wanneer verhoogd wordt omgezet naar `full`.
+Vraag verhoogde modus aan — ontsnap uit de sandbox naar het geconfigureerde hostpad. `security=full` wordt alleen afgedwongen wanneer verhoogd wordt opgelost naar `full`.
 </ParamField>
 
 Opmerkingen:
 
-- `host` staat standaard op `auto`: sandbox wanneer een sandboxruntime actief is voor de sessie, anders gateway.
-- `host` accepteert alleen `auto`, `sandbox`, `gateway` of `node`. Het is geen hostnaamselector; hostnaamachtige waarden worden geweigerd voordat de opdracht draait.
-- `auto` is de standaard routeringsstrategie, geen wildcard. Per aanroep is `host=node` toegestaan vanuit `auto`; per aanroep is `host=gateway` alleen toegestaan wanneer er geen sandboxruntime actief is.
-- Zonder extra configuratie werkt `host=auto` nog steeds gewoon: geen sandbox betekent dat het wordt omgezet naar `gateway`; een live sandbox betekent dat het in de sandbox blijft.
+- `host` staat standaard op `auto`: sandbox wanneer sandbox-runtime actief is voor de sessie, anders Gateway.
+- `host` accepteert alleen `auto`, `sandbox`, `gateway` of `node`. Het is geen hostnaamselector; hostnaamachtige waarden worden geweigerd voordat de opdracht wordt uitgevoerd.
+- `auto` is de standaardrouteringsstrategie, geen wildcard. Per aanroep is `host=node` toegestaan vanuit `auto`; per aanroep is `host=gateway` alleen toegestaan wanneer er geen sandbox-runtime actief is.
+- Zonder extra configuratie werkt `host=auto` nog steeds gewoon: geen sandbox betekent dat het wordt opgelost naar `gateway`; een live sandbox betekent dat het in de sandbox blijft.
 - `elevated` ontsnapt uit de sandbox naar het geconfigureerde hostpad: standaard `gateway`, of `node` wanneer `tools.exec.host=node` (of de sessiestandaard `host=node` is). Het is alleen beschikbaar wanneer verhoogde toegang is ingeschakeld voor de huidige sessie/provider.
-- Goedkeuringen voor `gateway`/`node` worden beheerd door `~/.openclaw/exec-approvals.json`.
-- `node` vereist een gekoppelde node (begeleidende app of headless node-host).
-- Als er meerdere nodes beschikbaar zijn, stel dan `exec.node` of `tools.exec.node` in om er een te selecteren.
-- `exec host=node` is het enige shell-uitvoeringspad voor nodes; de oude `nodes.run`-wrapper is verwijderd.
-- `timeout` geldt voor voorgrond-, achtergrond-, `yieldMs`-, gateway-, sandbox- en node-`system.run`-uitvoering. Als dit wordt weggelaten, gebruikt OpenClaw `tools.exec.timeoutSec`; expliciet `timeout: 0` schakelt de time-out van het exec-proces voor die aanroep uit.
+- `gateway`/`node`-goedkeuringen worden beheerd door `~/.openclaw/exec-approvals.json`.
+- `node` vereist een gekoppelde Node (companion-app of headless Node-host).
+- Als er meerdere Nodes beschikbaar zijn, stel dan `exec.node` of `tools.exec.node` in om er een te selecteren.
+- `exec host=node` is het enige shell-uitvoeringspad voor Nodes; de legacy `nodes.run`-wrapper is verwijderd.
+- `timeout` is van toepassing op voorgrond-, achtergrond-, `yieldMs`-, Gateway-, sandbox- en Node-`system.run`-uitvoering. Als het wordt weggelaten, gebruikt OpenClaw `tools.exec.timeoutSec`; expliciet `timeout: 0` schakelt de time-out van het exec-proces uit voor die aanroep.
 - Op niet-Windows-hosts gebruikt exec `SHELL` wanneer ingesteld; als `SHELL` `fish` is, geeft het de voorkeur aan `bash` (of `sh`)
-  uit `PATH` om scripts te vermijden die niet compatibel zijn met fish, en valt daarna terug op `SHELL` als geen van beide bestaat.
+  uit `PATH` om scripts die niet compatibel zijn met fish te vermijden, en valt daarna terug op `SHELL` als geen van beide bestaat.
 - Op Windows-hosts geeft exec de voorkeur aan detectie van PowerShell 7 (`pwsh`) (Program Files, ProgramW6432, daarna PATH),
   en valt daarna terug op Windows PowerShell 5.1.
 - Hostuitvoering (`gateway`/`node`) weigert `env.PATH` en loader-overschrijvingen (`LD_*`/`DYLD_*`) om
   binary hijacking of geïnjecteerde code te voorkomen.
-- OpenClaw stelt `OPENCLAW_SHELL=exec` in de omgeving van de gestarte opdracht in (inclusief PTY- en sandboxuitvoering), zodat shell-/profielregels exec-toolcontext kunnen detecteren.
-- `openclaw channels login` wordt geblokkeerd vanuit `exec` omdat het een interactieve channel-auth-flow is; draai het in een terminal op de gateway-host, of gebruik de channel-native logintool vanuit chat wanneer die bestaat.
-- Belangrijk: sandboxing is **standaard uitgeschakeld**. Als sandboxing uit staat, wordt impliciet `host=auto`
-  omgezet naar `gateway`. Expliciet `host=sandbox` faalt nog steeds gesloten in plaats van stilzwijgend
-  op de gateway-host te draaien. Schakel sandboxing in of gebruik `host=gateway` met goedkeuringen.
-- Script-preflightcontroles (voor veelvoorkomende Python/Node-shellsyntaxfouten) inspecteren alleen bestanden binnen de
-  effectieve `workdir`-grens. Als een scriptpad buiten `workdir` wordt omgezet, wordt preflight voor
+- OpenClaw stelt `OPENCLAW_SHELL=exec` in de omgeving van de gestarte opdracht in (inclusief PTY- en sandbox-uitvoering), zodat shell-/profielregels exec-toolcontext kunnen detecteren.
+- `openclaw channels login` wordt vanuit `exec` geblokkeerd omdat het een interactieve kanaal-authenticatiestroom is; voer het uit in een terminal op de Gateway-host, of gebruik de kanaaleigen login-tool vanuit chat wanneer die bestaat.
+- Belangrijk: sandboxing staat **standaard uit**. Als sandboxing uit staat, wordt impliciet `host=auto`
+  opgelost naar `gateway`. Expliciet `host=sandbox` faalt nog steeds gesloten in plaats van stilzwijgend
+  op de Gateway-host te draaien. Schakel sandboxing in of gebruik `host=gateway` met goedkeuringen.
+- Script-preflightcontroles (voor veelvoorkomende Python/Node-shellsyntaxisfouten) inspecteren alleen bestanden binnen de
+  effectieve `workdir`-grens. Als een scriptpad buiten `workdir` wordt opgelost, wordt preflight voor
   dat bestand overgeslagen.
-- Voor langlopend werk dat nu start, start het één keer en vertrouw op automatische
-  completion wake wanneer die is ingeschakeld en de opdracht uitvoer geeft of faalt.
-  Gebruik `process` voor logs, status, invoer of interventie; simuleer geen
-  planning met slaaplussen, time-outlussen of herhaald pollen.
-- Voor werk dat later of volgens een schema moet plaatsvinden, gebruik cron in plaats van
-  `exec`-slaap-/vertragingspatronen.
+- Voor langlopende werkzaamheden die nu starten, start u deze eenmaal en vertrouwt u op automatische
+  completion wake wanneer dit is ingeschakeld en de opdracht uitvoer produceert of faalt.
+  Gebruik `process` voor logs, status, invoer of interventie; emuleer geen
+  planning met sleep-lussen, time-outlussen of herhaald pollen.
+- Gebruik cron in plaats van `exec`-sleep-/vertragingspatronen voor werk dat later of volgens een schema moet plaatsvinden.
 
 ## Configuratie
 
-- `tools.exec.notifyOnExit` (standaard: true): wanneer true, plaatsen naar de achtergrond verplaatste exec-sessies een systeemevent in de wachtrij en vragen ze bij afsluiten om een Heartbeat.
-- `tools.exec.approvalRunningNoticeMs` (standaard: 10000): geef één enkele melding "draait" wanneer een exec met verplichte goedkeuring langer draait dan dit (0 schakelt dit uit).
+- `tools.exec.notifyOnExit` (standaard: true): wanneer true, plaatsen exec-sessies op de achtergrond een systeemgebeurtenis in de wachtrij en vragen ze een Heartbeat aan bij afsluiten.
+- `tools.exec.approvalRunningNoticeMs` (standaard: 10000): geef één "running"-melding af wanneer een exec met goedkeuringspoort langer draait dan dit (0 schakelt uit).
 - `tools.exec.timeoutSec` (standaard: 1800): standaard exec-time-out per opdracht in seconden. Per-aanroep `timeout` overschrijft dit; per-aanroep `timeout: 0` schakelt de time-out van het exec-proces uit.
-- `tools.exec.host` (standaard: `auto`; wordt omgezet naar `sandbox` wanneer een sandboxruntime actief is, anders naar `gateway`)
-- `tools.exec.security` (standaard: `deny` voor sandbox, `full` voor gateway + node wanneer niet ingesteld)
+- `tools.exec.host` (standaard: `auto`; wordt opgelost naar `sandbox` wanneer sandbox-runtime actief is, anders `gateway`)
+- `tools.exec.security` (standaard: `deny` voor sandbox, `full` voor Gateway + Node wanneer niet ingesteld)
 - `tools.exec.ask` (standaard: `off`)
-- Host-exec zonder goedkeuring is de standaard voor gateway + node. Als je goedkeuringen/allowlist-gedrag wilt, maak dan zowel `tools.exec.*` als het hostbestand `~/.openclaw/exec-approvals.json` strikter; zie [Exec-goedkeuringen](/nl/tools/exec-approvals#yolo-mode-no-approval).
-- YOLO komt uit de hostbeleidsstandaarden (`security=full`, `ask=off`), niet uit `host=auto`. Als je routering naar gateway of node wilt afdwingen, stel dan `tools.exec.host` in of gebruik `/exec host=...`.
-- In de modus `security=full` plus `ask=off` volgt host-exec direct het geconfigureerde beleid; er is geen extra heuristische voorfilter voor opdrachtverhulling of script-preflightweigeringslaag.
+- Host-exec zonder goedkeuring is de standaard voor Gateway + Node. Als u goedkeuringen/allowlist-gedrag wilt, verscherp dan zowel `tools.exec.*` als de host-`~/.openclaw/exec-approvals.json`; zie [Exec-goedkeuringen](/nl/tools/exec-approvals#yolo-mode-no-approval).
+- YOLO komt voort uit de standaardwaarden van het hostbeleid (`security=full`, `ask=off`), niet uit `host=auto`. Als u Gateway- of Node-routering wilt afdwingen, stel dan `tools.exec.host` in of gebruik `/exec host=...`.
+- In de modus `security=full` plus `ask=off` volgt host-exec direct het geconfigureerde beleid; er is geen extra heuristische prefilter voor opdrachtverhulling of script-preflight-weigeringslaag.
 - `tools.exec.node` (standaard: niet ingesteld)
-- `tools.exec.strictInlineEval` (standaard: false): wanneer true, vereisen inline interpreter-eval-vormen zoals `python -c`, `node -e`, `ruby -e`, `perl -e`, `php -r`, `lua -e` en `osascript -e` altijd expliciete goedkeuring. `allow-always` kan nog steeds goedaardige interpreter-/scriptaanroepen bewaren, maar inline-eval-vormen vragen nog steeds elke keer om bevestiging.
-- `tools.exec.pathPrepend`: lijst met directories die vóór `PATH` worden geplaatst voor exec-runs (alleen gateway + sandbox).
-- `tools.exec.safeBins`: stdin-only veilige binaries die zonder expliciete allowlist-vermeldingen kunnen draaien. Zie [Veilige bins](/nl/tools/exec-approvals-advanced#safe-bins-stdin-only) voor gedragsdetails.
-- `tools.exec.safeBinTrustedDirs`: aanvullende expliciete directories die worden vertrouwd voor `safeBins`-padcontroles. `PATH`-items worden nooit automatisch vertrouwd. Ingebouwde standaarden zijn `/bin` en `/usr/bin`.
+- `tools.exec.strictInlineEval` (standaard: false): wanneer true, vereisen inline interpreter-eval-vormen zoals `python -c`, `node -e`, `ruby -e`, `perl -e`, `php -r`, `lua -e` en `osascript -e` altijd expliciete goedkeuring. `allow-always` kan nog steeds onschuldige interpreter-/scriptaanroepen blijvend toestaan, maar inline-eval-vormen vragen nog steeds elke keer om bevestiging.
+- `tools.exec.commandHighlighting` (standaard: false): wanneer true, kunnen goedkeuringsprompts door de parser afgeleide opdrachtspans in de opdrachttekst markeren. Stel wereldwijd of per agent in op `true` om markering van opdrachttekst in te schakelen zonder het exec-goedkeuringsbeleid te wijzigen.
+- `tools.exec.pathPrepend`: lijst met mappen om voor exec-runs aan `PATH` vooraf toe te voegen (alleen Gateway + sandbox).
+- `tools.exec.safeBins`: veilige binaries met alleen stdin die zonder expliciete allowlist-vermeldingen kunnen worden uitgevoerd. Zie [Veilige bins](/nl/tools/exec-approvals-advanced#safe-bins-stdin-only) voor gedragsdetails.
+- `tools.exec.safeBinTrustedDirs`: aanvullende expliciete mappen die worden vertrouwd voor `safeBins`-padcontroles. `PATH`-items worden nooit automatisch vertrouwd. Ingebouwde standaardwaarden zijn `/bin` en `/usr/bin`.
 - `tools.exec.safeBinProfiles`: optioneel aangepast argv-beleid per veilige bin (`minPositional`, `maxPositional`, `allowedValueFlags`, `deniedFlags`).
 
 Voorbeeld:
@@ -132,30 +135,30 @@ Voorbeeld:
 
 ### PATH-afhandeling
 
-- `host=gateway`: voegt je login-shell-`PATH` samen in de exec-omgeving. `env.PATH`-overschrijvingen worden
+- `host=gateway`: voegt de `PATH` van uw login-shell samen in de exec-omgeving. `env.PATH`-overschrijvingen worden
   geweigerd voor hostuitvoering. De daemon zelf draait nog steeds met een minimale `PATH`:
   - macOS: `/opt/homebrew/bin`, `/usr/local/bin`, `/usr/bin`, `/bin`
   - Linux: `/usr/local/bin`, `/usr/bin`, `/bin`
-- `host=sandbox`: draait `sh -lc` (login-shell) binnen de container, dus `/etc/profile` kan `PATH` resetten.
-  OpenClaw plaatst `env.PATH` vooraan na het sourcen van het profiel via een interne env-var (geen shellinterpolatie);
-  `tools.exec.pathPrepend` geldt hier ook.
-- `host=node`: alleen niet-geblokkeerde env-overschrijvingen die je doorgeeft, worden naar de node gestuurd. `env.PATH`-overschrijvingen worden
-  geweigerd voor hostuitvoering en genegeerd door node-hosts. Als je extra PATH-items op een node nodig hebt,
-  configureer dan de serviceomgeving van de node-host (systemd/launchd) of installeer tools op standaardlocaties.
+- `host=sandbox`: voert `sh -lc` (login-shell) uit binnen de container, dus `/etc/profile` kan `PATH` resetten.
+  OpenClaw voegt `env.PATH` vooraf toe na het sourcen van het profiel via een interne omgevingsvariabele (geen shell-interpolatie);
+  `tools.exec.pathPrepend` is hier ook van toepassing.
+- `host=node`: alleen niet-geblokkeerde omgevingsoverschrijvingen die u doorgeeft, worden naar de Node verzonden. `env.PATH`-overschrijvingen worden
+  geweigerd voor hostuitvoering en genegeerd door Node-hosts. Als u extra PATH-items op een Node nodig hebt,
+  configureer dan de omgeving van de Node-hostservice (systemd/launchd) of installeer tools op standaardlocaties.
 
-Node-binding per agent (gebruik de agentlijstindex in config):
+Node-binding per agent (gebruik de agentlijstindex in de configuratie):
 
 ```bash
 openclaw config get agents.list
 openclaw config set agents.list[0].tools.exec.node "node-id-or-name"
 ```
 
-Control-UI: het tabblad Nodes bevat een klein paneel "Exec-nodebinding" voor dezelfde instellingen.
+Besturings-UI: het tabblad Nodes bevat een klein paneel "Exec node binding" voor dezelfde instellingen.
 
-## Sessie-overschrijvingen (`/exec`)
+## Sessieoverschrijvingen (`/exec`)
 
-Gebruik `/exec` om **per-sessie** standaarden voor `host`, `security`, `ask` en `node` in te stellen.
-Stuur `/exec` zonder argumenten om de huidige waarden te tonen.
+Gebruik `/exec` om **per sessie** standaardwaarden in te stellen voor `host`, `security`, `ask` en `node`.
+Verzend `/exec` zonder argumenten om de huidige waarden te tonen.
 
 Voorbeeld:
 
@@ -165,53 +168,53 @@ Voorbeeld:
 
 ## Autorisatiemodel
 
-`/exec` wordt alleen gerespecteerd voor **geautoriseerde afzenders** (channel-allowlists/koppeling plus `commands.useAccessGroups`).
-Het werkt alleen **sessiestatus** bij en schrijft geen config. Om exec hard uit te schakelen, weiger het via toolbeleid
-(`tools.deny: ["exec"]` of per agent). Hostgoedkeuringen blijven van toepassing tenzij je expliciet
+`/exec` wordt alleen gehonoreerd voor **geautoriseerde afzenders** (kanaal-allowlists/koppeling plus `commands.useAccessGroups`).
+Het werkt alleen **sessiestatus** bij en schrijft geen configuratie. Om exec hard uit te schakelen, weigert u het via toolbeleid
+(`tools.deny: ["exec"]` of per agent). Hostgoedkeuringen blijven van toepassing, tenzij u expliciet
 `security=full` en `ask=off` instelt.
 
-## Exec-goedkeuringen (begeleidende app / node-host)
+## Exec-goedkeuringen (companion-app / Node-host)
 
-Gesandboxte agents kunnen goedkeuring per verzoek vereisen voordat `exec` op de gateway- of node-host draait.
-Zie [Exec-goedkeuringen](/nl/tools/exec-approvals) voor het beleid, de allowlist en de UI-flow.
+Gesandboxte agents kunnen per-request-goedkeuring vereisen voordat `exec` op de Gateway- of Node-host draait.
+Zie [Exec-goedkeuringen](/nl/tools/exec-approvals) voor het beleid, de allowlist en de UI-stroom.
 
-Wanneer goedkeuringen vereist zijn, retourneert de exec-tool direct met
+Wanneer goedkeuringen vereist zijn, retourneert de exec-tool onmiddellijk met
 `status: "approval-pending"` en een goedkeurings-id. Na goedkeuring (of weigering / time-out)
-zendt de Gateway systeemevents uit (`Exec finished` / `Exec denied`). Als de opdracht nog
-draait na `tools.exec.approvalRunningNoticeMs`, wordt één enkele melding `Exec running` uitgezonden.
-Op channels met native goedkeuringskaarten/knoppen moet de agent eerst op die
+zendt de Gateway systeemgebeurtenissen uit (`Exec finished` / `Exec denied`). Als de opdracht nog
+actief is na `tools.exec.approvalRunningNoticeMs`, wordt één `Exec running`-melding uitgegeven.
+Op kanalen met native goedkeuringskaarten/-knoppen moet de agent eerst op die
 native UI vertrouwen en alleen een handmatige `/approve`-opdracht opnemen wanneer het toolresultaat
 expliciet zegt dat chatgoedkeuringen niet beschikbaar zijn of dat handmatige goedkeuring het
 enige pad is.
 
 ## Allowlist + veilige bins
 
-Handmatige allowlist-handhaving matcht opgeloste binary-padglobs en kale opdrachtnaam-
+Handmatige allowlist-afdwinging matcht opgeloste binarypad-globs en kale opdrachtnaam-
 globs. Kale namen matchen alleen opdrachten die via PATH worden aangeroepen, dus `rg` kan matchen met
 `/opt/homebrew/bin/rg` wanneer de opdracht `rg` is, maar niet met `./rg` of `/tmp/rg`.
-Wanneer `security=allowlist`, worden shellopdrachten alleen automatisch toegestaan als elk pipeline-
+Wanneer `security=allowlist` is, worden shell-opdrachten alleen automatisch toegestaan als elk pipeline-
 segment op de allowlist staat of een veilige bin is. Chaining (`;`, `&&`, `||`) en omleidingen
-worden in allowlist-modus geweigerd tenzij elk segment op topniveau aan de
-allowlist voldoet (inclusief veilige bins). Omleidingen blijven niet ondersteund.
-Duurzaam `allow-always`-vertrouwen omzeilt die regel niet: een geketende opdracht vereist nog steeds dat elk
-segment op topniveau matcht.
+worden in allowlist-modus geweigerd, tenzij elk top-level segment voldoet aan de
+allowlist (inclusief veilige bins). Omleidingen blijven niet ondersteund.
+Duurzaam `allow-always`-vertrouwen omzeilt die regel niet: een chained opdracht vereist nog steeds dat elk
+top-level segment matcht.
 
 `autoAllowSkills` is een apart gemakspad in exec-goedkeuringen. Het is niet hetzelfde als
 handmatige pad-allowlist-vermeldingen. Houd `autoAllowSkills` uitgeschakeld voor strikt expliciet vertrouwen.
 
-Gebruik de twee controles voor verschillende taken:
+Gebruik de twee bedieningselementen voor verschillende taken:
 
-- `tools.exec.safeBins`: kleine, stdin-only streamfilters.
-- `tools.exec.safeBinTrustedDirs`: expliciete extra vertrouwde directories voor uitvoerbare paden van veilige bins.
-- `tools.exec.safeBinProfiles`: expliciet argv-beleid voor aangepaste veilige bins.
-- allowlist: expliciet vertrouwen voor uitvoerbare paden.
+- `tools.exec.safeBins`: kleine, alleen-stdin streamfilters.
+- `tools.exec.safeBinTrustedDirs`: expliciete extra vertrouwde mappen voor safe-bin-paden naar uitvoerbare bestanden.
+- `tools.exec.safeBinProfiles`: expliciet argv-beleid voor aangepaste safe bins.
+- allowlist: expliciet vertrouwen voor paden naar uitvoerbare bestanden.
 
-Behandel `safeBins` niet als een generieke lijst met toegestane items en voeg geen interpreter-/runtime-binaries toe (bijvoorbeeld `python3`, `node`, `ruby`, `bash`). Als je die nodig hebt, gebruik dan expliciete vermeldingen in de toegestane lijst en laat goedkeuringsprompts ingeschakeld.
-`openclaw security audit` waarschuwt wanneer interpreter-/runtime-vermeldingen in `safeBins` expliciete profielen missen, en `openclaw doctor --fix` kan ontbrekende aangepaste vermeldingen voor `safeBinProfiles` aanmaken.
+Behandel `safeBins` niet als een generieke allowlist en voeg geen interpreter-/runtime-binaries toe (bijvoorbeeld `python3`, `node`, `ruby`, `bash`). Als je die nodig hebt, gebruik dan expliciete allowlist-vermeldingen en laat goedkeuringsprompts ingeschakeld.
+`openclaw security audit` waarschuwt wanneer interpreter-/runtime-vermeldingen in `safeBins` expliciete profielen missen, en `openclaw doctor --fix` kan ontbrekende aangepaste `safeBinProfiles`-vermeldingen scaffolden.
 `openclaw security audit` en `openclaw doctor` waarschuwen ook wanneer je expliciet bins met breed gedrag, zoals `jq`, weer toevoegt aan `safeBins`.
-Als je interpreters expliciet toestaat, schakel dan `tools.exec.strictInlineEval` in, zodat vormen voor inline code-evaluatie nog steeds een nieuwe goedkeuring vereisen.
+Als je interpreters expliciet op de allowlist zet, schakel dan `tools.exec.strictInlineEval` in zodat inline code-eval-vormen nog steeds een nieuwe goedkeuring vereisen.
 
-Zie [Exec-goedkeuringen](/nl/tools/exec-approvals-advanced#safe-bins-stdin-only) en [Veilige bins versus toegestane lijst](/nl/tools/exec-approvals-advanced#safe-bins-versus-allowlist) voor alle beleidsdetails en voorbeelden.
+Zie [Exec-goedkeuringen](/nl/tools/exec-approvals-advanced#safe-bins-stdin-only) en [Safe bins versus allowlist](/nl/tools/exec-approvals-advanced#safe-bins-versus-allowlist) voor volledige beleidsdetails en voorbeelden.
 
 ## Voorbeelden
 
@@ -229,7 +232,7 @@ Achtergrond + pollen:
 ```
 
 Pollen is bedoeld voor status op aanvraag, niet voor wachtlussen. Als automatisch wekken bij voltooiing
-is ingeschakeld, kan de opdracht de sessie wekken wanneer deze uitvoer produceert of mislukt.
+is ingeschakeld, kan de opdracht de sessie wekken wanneer deze uitvoer produceert of faalt.
 
 Toetsen verzenden (tmux-stijl):
 
@@ -245,7 +248,7 @@ Indienen (alleen CR verzenden):
 { "tool": "process", "action": "submit", "sessionId": "<id>" }
 ```
 
-Plakken (standaard tussen brackets):
+Plakken (standaard met brackets):
 
 ```json
 { "tool": "process", "action": "paste", "sessionId": "<id>", "text": "line1\nline2\n" }
@@ -271,14 +274,14 @@ Opmerkingen:
 
 - Alleen beschikbaar voor OpenAI-/OpenAI Codex-modellen.
 - Toolbeleid blijft van toepassing; `allow: ["write"]` staat `apply_patch` impliciet toe.
-- `deny: ["write"]` weigert `apply_patch` niet; weiger `apply_patch` expliciet of gebruik `deny: ["group:fs"]` wanneer patch-schrijfacties ook moeten worden geblokkeerd.
+- `deny: ["write"]` weigert `apply_patch` niet; weiger `apply_patch` expliciet of gebruik `deny: ["group:fs"]` wanneer patch-writes ook moeten worden geblokkeerd.
 - Configuratie staat onder `tools.exec.applyPatch`.
 - `tools.exec.applyPatch.enabled` is standaard `true`; stel dit in op `false` om de tool voor OpenAI-modellen uit te schakelen.
-- `tools.exec.applyPatch.workspaceOnly` is standaard `true` (beperkt tot de werkruimte). Stel dit alleen in op `false` als je bewust wilt dat `apply_patch` buiten de werkruimtemap schrijft/verwijdert.
+- `tools.exec.applyPatch.workspaceOnly` is standaard `true` (binnen de workspace). Stel dit alleen in op `false` als je bewust wilt dat `apply_patch` buiten de workspace-map schrijft/verwijdert.
 
 ## Gerelateerd
 
 - [Exec-goedkeuringen](/nl/tools/exec-approvals) — goedkeuringspoorten voor shellopdrachten
-- [Sandboxing](/nl/gateway/sandboxing) — opdrachten uitvoeren in gesandboxte omgevingen
-- [Achtergrondproces](/nl/gateway/background-process) — langlopende exec- en proces-tool
+- [Sandboxing](/nl/gateway/sandboxing) — opdrachten uitvoeren in sandboxomgevingen
+- [Achtergrondproces](/nl/gateway/background-process) — langlopende exec- en process-tool
 - [Beveiliging](/nl/gateway/security) — toolbeleid en verhoogde toegang

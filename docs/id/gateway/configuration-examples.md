@@ -3,44 +3,51 @@ read_when:
     - Mempelajari cara mengonfigurasi OpenClaw
     - Mencari contoh konfigurasi
     - Menyiapkan OpenClaw untuk pertama kalinya
-summary: Contoh konfigurasi yang sesuai skema untuk penyiapan OpenClaw yang umum
+summary: Contoh konfigurasi yang akurat menurut skema untuk penyiapan OpenClaw umum
 title: Contoh konfigurasi
 x-i18n:
-    generated_at: "2026-05-10T19:34:31Z"
+    generated_at: "2026-05-11T20:29:13Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9fd1c93d8c491de13c3679c766293a3401853625308e90588d7c83272c5b6e73
+    source_hash: e077b2fe83b1c6e4ffd2ff0029fe3b754c7dc5dced06f134ddf18e9ed6a11fd2
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Contoh di bawah ini diselaraskan dengan skema konfigurasi saat ini. Untuk referensi lengkap dan catatan per bidang, lihat [Konfigurasi](/id/gateway/configuration).
+Contoh di bawah selaras dengan skema konfigurasi saat ini. Untuk referensi lengkap dan catatan per bidang, lihat [Konfigurasi](/id/gateway/configuration).
 
 ## Mulai cepat
 
-### Minimum absolut
+### Minimum mutlak
 
 ```json5
 {
-  agent: { workspace: "~/.openclaw/workspace" },
+  agents: { defaults: { workspace: "~/.openclaw/workspace" } },
   channels: { whatsapp: { allowFrom: ["+15555550123"] } },
 }
 ```
 
 Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nomor tersebut.
 
-### Awalan yang direkomendasikan
+### Konfigurasi awal yang direkomendasikan
 
 ```json5
 {
-  identity: {
-    name: "Clawd",
-    theme: "helpful assistant",
-    emoji: "🦞",
-  },
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: { primary: "anthropic/claude-sonnet-4-6" },
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: { primary: "anthropic/claude-sonnet-4-6" },
+    },
+    list: [
+      {
+        id: "main",
+        identity: {
+          name: "Clawd",
+          theme: "helpful assistant",
+          emoji: "🦞",
+        },
+      },
+    ],
   },
   channels: {
     whatsapp: {
@@ -90,12 +97,7 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
     },
   },
 
-  // Identity
-  identity: {
-    name: "Samantha",
-    theme: "helpful sloth",
-    emoji: "🦥",
-  },
+  // Identity is per agent — set it on agents.list[].identity below.
 
   // Logging
   logging: {
@@ -314,6 +316,11 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
       {
         id: "main",
         default: true,
+        identity: {
+          name: "Samantha",
+          theme: "helpful sloth",
+          emoji: "🦥",
+        },
         // inherits defaults.skills -> github, weather
         groupChat: {
           mentionPatterns: ["@openclaw", "openclaw"],
@@ -473,9 +480,9 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
 }
 ```
 
-### Repo skill saudara yang disymlink
+### Repo skill saudara yang ditautkan dengan symlink
 
-Gunakan ini saat root skill bawaan berisi symlink ke repo saudara, misalnya `~/.agents/skills/manager -> ~/Projects/manager/skills`.
+Gunakan ini ketika root skill bawaan berisi symlink ke repo saudara, misalnya `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ```json5
 {
@@ -489,12 +496,11 @@ Gunakan ini saat root skill bawaan berisi symlink ke repo saudara, misalnya `~/.
 ```
 
 - `extraDirs` memindai repo saudara sebagai root skill eksplisit.
-- `allowSymlinkTargets` memungkinkan folder skill yang disymlink diselesaikan ke
-  root target nyata tepercaya tersebut tanpa mengizinkan escape symlink sembarang.
+- `allowSymlinkTargets` memungkinkan folder skill yang ditautkan dengan symlink diselesaikan ke root target nyata tepercaya tersebut tanpa mengizinkan keluar melalui symlink sembarang.
 
 ## Pola umum
 
-### Baseline skill bersama dengan satu penggantian
+### Baseline skill bersama dengan satu penimpaan
 
 ```json5
 {
@@ -515,11 +521,11 @@ Gunakan ini saat root skill bawaan berisi symlink ke repo saudara, misalnya `~/.
 - `agents.list[].skills` menggantikan baseline tersebut untuk satu agen.
 - Gunakan `skills: []` ketika agen tidak boleh melihat skill apa pun.
 
-### Penyiapan lintas platform
+### Penyiapan multi-platform
 
 ```json5
 {
-  agent: { workspace: "~/.openclaw/workspace" },
+  agents: { defaults: { workspace: "~/.openclaw/workspace" } },
   channels: {
     whatsapp: { allowFrom: ["+15555550123"] },
     telegram: {
@@ -538,9 +544,7 @@ Gunakan ini saat root skill bawaan berisi symlink ke repo saudara, misalnya `~/.
 
 ### Persetujuan otomatis jaringan Node tepercaya
 
-Biarkan pemasangan perangkat tetap manual kecuali Anda mengendalikan jalur jaringan. Untuk
-lab khusus atau subnet tailnet, Anda dapat ikut serta dalam persetujuan otomatis
-perangkat Node pertama kali dengan CIDR atau IP yang tepat:
+Tetapkan pemasangan perangkat secara manual kecuali Anda mengontrol jalur jaringan. Untuk lab khusus atau subnet tailnet, Anda dapat ikut serta dalam persetujuan otomatis perangkat Node pertama kali dengan CIDR atau IP yang persis:
 
 ```json5
 {
@@ -554,11 +558,9 @@ perangkat Node pertama kali dengan CIDR atau IP yang tepat:
 }
 ```
 
-Ini tetap nonaktif jika tidak diatur. Ini hanya berlaku untuk pemasangan `role: node` baru dengan
-tanpa scope yang diminta. Klien operator/browser dan peningkatan role, scope, metadata, atau
-public-key tetap memerlukan persetujuan manual.
+Ini tetap nonaktif jika tidak disetel. Ini hanya berlaku untuk pemasangan `role: node` baru tanpa cakupan yang diminta. Klien operator/browser serta peningkatan peran, cakupan, metadata, atau kunci publik tetap memerlukan persetujuan manual.
 
-### Mode DM aman (kotak masuk bersama / DM multipengguna)
+### Mode DM aman (kotak masuk bersama / DM multi-pengguna)
 
 Jika lebih dari satu orang dapat mengirim DM ke bot Anda (beberapa entri di `allowFrom`, persetujuan pemasangan untuk beberapa orang, atau `dmPolicy: "open"`), aktifkan **mode DM aman** agar DM dari pengirim berbeda tidak berbagi satu konteks secara default:
 
@@ -584,10 +586,10 @@ Jika lebih dari satu orang dapat mengirim DM ke bot Anda (beberapa entri di `all
 }
 ```
 
-Untuk Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, otorisasi pengirim secara default mengutamakan ID.
-Hanya aktifkan pencocokan nama/email/nick langsung yang dapat berubah dengan `dangerouslyAllowNameMatching: true` milik tiap channel jika Anda secara eksplisit menerima risiko tersebut.
+Untuk Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, otorisasi pengirim secara default mendahulukan ID.
+Hanya aktifkan pencocokan nama/email/nick langsung yang dapat berubah dengan `dangerouslyAllowNameMatching: true` milik tiap saluran jika Anda secara eksplisit menerima risiko tersebut.
 
-### Kunci API Anthropic + fallback MiniMax
+### Kunci API Anthropic + cadangan MiniMax
 
 ```json5
 {
@@ -611,11 +613,13 @@ Hanya aktifkan pencocokan nama/email/nick langsung yang dapat berubah dengan `da
       },
     },
   },
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: {
-      primary: "anthropic/claude-opus-4-6",
-      fallbacks: ["minimax/MiniMax-M2.7"],
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: {
+        primary: "anthropic/claude-opus-4-6",
+        fallbacks: ["minimax/MiniMax-M2.7"],
+      },
     },
   },
 }
@@ -625,13 +629,20 @@ Hanya aktifkan pencocokan nama/email/nick langsung yang dapat berubah dengan `da
 
 ```json5
 {
-  identity: {
-    name: "WorkBot",
-    theme: "professional assistant",
-  },
-  agent: {
-    workspace: "~/work-openclaw",
-    elevated: { enabled: false },
+  agents: {
+    defaults: {
+      workspace: "~/work-openclaw",
+      elevatedDefault: "off",
+    },
+    list: [
+      {
+        id: "main",
+        identity: {
+          name: "WorkBot",
+          theme: "professional assistant",
+        },
+      },
+    ],
   },
   channels: {
     slack: {
@@ -650,9 +661,11 @@ Hanya aktifkan pencocokan nama/email/nick langsung yang dapat berubah dengan `da
 
 ```json5
 {
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: { primary: "lmstudio/my-local-model" },
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: { primary: "lmstudio/my-local-model" },
+    },
   },
   models: {
     mode: "merge",
@@ -678,10 +691,10 @@ Hanya aktifkan pencocokan nama/email/nick langsung yang dapat berubah dengan `da
 }
 ```
 
-## Tips
+## Kiat
 
-- Jika Anda menetapkan `dmPolicy: "open"`, daftar `allowFrom` yang cocok harus menyertakan `"*"`.
-- ID penyedia berbeda-beda (nomor telepon, ID pengguna, ID channel). Gunakan dokumentasi penyedia untuk mengonfirmasi formatnya.
+- Jika Anda menyetel `dmPolicy: "open"`, daftar `allowFrom` yang cocok harus menyertakan `"*"`.
+- ID penyedia berbeda-beda (nomor telepon, ID pengguna, ID saluran). Gunakan dokumentasi penyedia untuk memastikan formatnya.
 - Bagian opsional untuk ditambahkan nanti: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
 - Lihat [Penyedia](/id/providers) dan [Pemecahan masalah](/id/gateway/troubleshooting) untuk catatan penyiapan yang lebih mendalam.
 

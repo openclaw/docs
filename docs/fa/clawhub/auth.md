@@ -1,0 +1,89 @@
+---
+read_when:
+    - ورود به ClawHub
+    - استفاده از ClawHub CLI
+    - اشکال‌زدایی 401ها
+summary: ورود به ClawHub، توکن‌های API، ورود CLI، ذخیره‌سازی توکن و ابطال.
+x-i18n:
+    generated_at: "2026-05-11T20:24:42Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 261f5a93200db8415e3bc8f35251c3486110ce8e076c482e846ad11f2ccd517f
+    source_path: clawhub/auth.md
+    workflow: 16
+---
+
+# احراز هویت
+
+ClawHub برای ورود وب از GitHub استفاده می‌کند. CLI از توکن‌های API ClawHub استفاده می‌کند که
+از طریق همان حساب واردشده ایجاد شده‌اند.
+
+## ورود وب
+
+برای ورود، از GitHub در [clawhub.ai](https://clawhub.ai) استفاده کنید.
+
+حساب‌های حذف‌شده، مسدودشده یا غیرفعال نمی‌توانند ورود عادی به ClawHub را کامل کنند.
+اگر ورود شما را به وضعیت خارج‌شده از حساب برگرداند، ممکن است حساب شما در وضعیت
+مناسبی نباشد.
+
+## ورود CLI
+
+جریان پیش‌فرض ورود CLI مرورگر شما را باز می‌کند:
+
+```bash
+clawhub login
+clawhub whoami
+```
+
+چه اتفاقی می‌افتد:
+
+1. CLI یک سرور callback موقت روی `127.0.0.1` راه‌اندازی می‌کند.
+2. مرورگر شما صفحه ورود ClawHub را باز می‌کند.
+3. پس از ورود با GitHub، ClawHub یک توکن API ایجاد می‌کند.
+4. مرورگر دوباره به callback محلی هدایت می‌شود.
+5. CLI توکن را در فایل پیکربندی ClawHub شما ذخیره می‌کند.
+
+اگر مرورگر شما به‌دلیل قواعد firewall، VPN یا
+proxy نتواند به callback محلی دسترسی پیدا کند، از جریان توکن headless استفاده کنید.
+
+## ورود headless
+
+یک توکن در رابط وب ClawHub ایجاد کنید، سپس آن را به CLI بدهید:
+
+```bash
+clawhub login --token clh_...
+```
+
+از این جریان برای سرورها، کارهای CI، یا محیط‌هایی که فقط terminal دارند استفاده کنید.
+
+برای shellهای راه دور که در آن‌ها می‌توانید مرورگری را در جای دیگری باز کنید، اجرا کنید:
+
+```bash
+clawhub login --device
+```
+
+CLI یک کد یک‌بارمصرف چاپ می‌کند و منتظر می‌ماند تا شما آن را در
+`https://clawhub.ai/cli/device` مجاز کنید.
+
+## ذخیره‌سازی توکن
+
+مسیرهای پیش‌فرض پیکربندی:
+
+- macOS: `~/Library/Application Support/clawhub/config.json`
+- Linux/XDG: `$XDG_CONFIG_HOME/clawhub/config.json` یا `~/.config/clawhub/config.json`
+- Windows: `%APPDATA%\\clawhub\\config.json`
+
+مسیر را با این مورد بازنویسی کنید:
+
+```bash
+export CLAWHUB_CONFIG_PATH=/path/to/config.json
+```
+
+## لغو دسترسی
+
+می‌توانید توکن‌های API را در رابط وب ClawHub لغو کنید.
+
+توکن‌های لغوشده، نامعتبر یا مفقود، `401 Unauthorized` برمی‌گردانند. دوباره
+با `clawhub login` وارد شوید یا با `clawhub login --token` یک توکن تازه ارائه کنید.
+
+حساب‌های حذف‌شده، مسدودشده یا غیرفعال نمی‌توانند به استفاده از توکن‌های API موجود ادامه دهند.

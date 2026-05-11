@@ -1,14 +1,14 @@
 ---
 read_when:
-    - 스크립트에서 여전히 `openclaw daemon ...`을 사용합니다
+    - 여전히 스크립트에서 `openclaw daemon ...`을 사용합니다
     - 서비스 수명 주기 명령(install/start/stop/restart/status)이 필요합니다
-summary: '`openclaw daemon`에 대한 CLI 참조(게이트웨이 서비스 관리를 위한 레거시 별칭)'
+summary: '`openclaw daemon`용 CLI 참조(Gateway 서비스 관리를 위한 레거시 별칭)'
 title: 데몬
 x-i18n:
-    generated_at: "2026-05-10T19:28:12Z"
+    generated_at: "2026-05-11T20:26:08Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b1951ade64d538130e4f04954cc8dec136f54a78b1fdf94e6ce988ded8cab516
+    source_hash: 0131c3838ac0240f38e755eb779134d19a935821d90bb2898648b947696be12e
     source_path: cli/daemon.md
     workflow: 16
 ---
@@ -32,7 +32,7 @@ openclaw daemon uninstall
 
 ## 하위 명령
 
-- `status`: 서비스 설치 상태를 표시하고 Gateway 상태를 검사합니다
+- `status`: 서비스 설치 상태를 표시하고 Gateway 상태를 프로브합니다
 - `install`: 서비스를 설치합니다(`launchd`/`systemd`/`schtasks`)
 - `uninstall`: 서비스를 제거합니다
 - `start`: 서비스를 시작합니다
@@ -48,26 +48,27 @@ openclaw daemon uninstall
 
 참고:
 
-- `status`는 가능할 때 검사 인증에 구성된 인증 SecretRefs를 해석합니다.
-- 이 명령 경로에서 필수 인증 SecretRef가 해석되지 않은 경우, 검사 연결/인증이 실패하면 `daemon status --json`이 `rpc.authWarning`을 보고합니다. `--token`/`--password`를 명시적으로 전달하거나 먼저 비밀 소스를 해석하세요.
-- 검사가 성공하면 미해결 auth-ref 경고는 거짓 양성을 피하기 위해 표시되지 않습니다.
-- `status --deep`은 최선 노력 방식의 시스템 수준 서비스 스캔을 추가합니다. 다른 gateway 유사 서비스를 찾으면 사람이 읽는 출력에 정리 힌트를 표시하고, 머신당 하나의 gateway가 여전히 일반적인 권장 사항임을 경고합니다.
+- `status`는 가능할 때 프로브 인증을 위해 구성된 인증 SecretRef를 해석합니다.
+- 이 명령 경로에서 필요한 인증 SecretRef가 해석되지 않은 경우, 프로브 연결/인증이 실패하면 `daemon status --json`은 `rpc.authWarning`을 보고합니다. `--token`/`--password`를 명시적으로 전달하거나 먼저 시크릿 소스를 해석하세요.
+- 프로브가 성공하면 잘못된 양성 결과를 방지하기 위해 해석되지 않은 auth-ref 경고가 억제됩니다.
+- `status --deep`은 최선 노력 방식의 시스템 수준 서비스 스캔을 추가합니다. 다른 Gateway 유사 서비스를 발견하면 사람이 읽는 출력은 정리 힌트를 출력하고 머신당 하나의 Gateway가 여전히 일반적인 권장 사항임을 경고합니다.
+- `status --deep`은 Plugin 인식 모드에서 구성 검증도 실행하고, 구성된 Plugin 매니페스트 경고(예: 누락된 채널 구성 메타데이터)를 노출하여 설치 및 업데이트 스모크 검사가 이를 포착하도록 합니다. 기본 `status`는 Plugin 검증을 건너뛰는 빠른 읽기 전용 경로를 유지합니다.
 - Linux systemd 설치에서 `status` 토큰 드리프트 검사는 `Environment=` 및 `EnvironmentFile=` 유닛 소스를 모두 포함합니다.
-- 드리프트 검사는 병합된 런타임 env를 사용해 `gateway.auth.token` SecretRefs를 해석합니다(서비스 명령 env가 먼저, 그다음 프로세스 env 폴백).
-- 토큰 인증이 실질적으로 활성 상태가 아닌 경우(명시적 `gateway.auth.mode`가 `password`/`none`/`trusted-proxy`이거나, 모드가 설정되지 않았고 비밀번호가 우선될 수 있으며 토큰 후보가 우선될 수 없는 경우), 토큰 드리프트 검사는 구성 토큰 해석을 건너뜁니다.
-- 토큰 인증에 토큰이 필요하고 `gateway.auth.token`이 SecretRef로 관리되는 경우, `install`은 SecretRef를 해석할 수 있는지 검증하지만 해석된 토큰을 서비스 환경 메타데이터에 유지하지 않습니다.
-- 토큰 인증에 토큰이 필요하지만 구성된 토큰 SecretRef가 해석되지 않으면 설치는 실패 폐쇄됩니다.
+- 드리프트 검사는 병합된 런타임 env(먼저 서비스 명령 env, 그다음 프로세스 env 폴백)를 사용하여 `gateway.auth.token` SecretRef를 해석합니다.
+- 토큰 인증이 실질적으로 활성 상태가 아닌 경우(명시적 `gateway.auth.mode`가 `password`/`none`/`trusted-proxy`이거나, 모드가 설정되지 않았고 password가 우선될 수 있으며 이길 수 있는 토큰 후보가 없는 경우), 토큰 드리프트 검사는 구성 토큰 해석을 건너뜁니다.
+- 토큰 인증에 토큰이 필요하고 `gateway.auth.token`이 SecretRef로 관리되는 경우, `install`은 SecretRef가 해석 가능한지 검증하지만 해석된 토큰을 서비스 환경 메타데이터에 유지하지 않습니다.
+- 토큰 인증에 토큰이 필요하고 구성된 토큰 SecretRef가 해석되지 않으면 설치는 닫힌 상태로 실패합니다.
 - `gateway.auth.token`과 `gateway.auth.password`가 모두 구성되어 있고 `gateway.auth.mode`가 설정되지 않은 경우, 모드가 명시적으로 설정될 때까지 설치가 차단됩니다.
-- macOS에서 `install`은 LaunchAgent plist를 소유자 전용으로 유지하고, API 키나 auth-profile env refs를 `EnvironmentVariables`에 직렬화하는 대신 소유자 전용 파일과 래퍼를 통해 관리형 서비스 환경 값을 로드합니다.
-- 하나의 호스트에서 여러 gateways를 의도적으로 실행하는 경우 포트, 구성/상태, 워크스페이스를 격리하세요. [/gateway#multiple-gateways-same-host](/ko/gateway#multiple-gateways-same-host)를 참조하세요.
-- `restart --safe`는 실행 중인 Gateway에 활성 작업을 사전 검사하고 활성 작업이 빠져나간 뒤 하나로 합쳐진 재시작을 예약하도록 요청합니다. 일반 `restart`는 기존 서비스 관리자 동작을 유지합니다. `--force`는 즉시 재정의 경로로 유지됩니다.
-- `restart --safe --skip-deferral`은 OpenClaw 인식 안전 재시작을 실행하지만 활성 작업 지연 게이트를 우회하므로, 차단 요인이 보고되더라도 Gateway가 즉시 재시작을 내보냅니다. 멈춘 작업 실행이 안전 재시작을 고정할 때 사용하는 운영자 탈출구이며, `--safe`가 필요합니다.
+- macOS에서 `install`은 LaunchAgent plist를 소유자 전용으로 유지하고 API 키 또는 auth-profile env ref를 `EnvironmentVariables`에 직렬화하는 대신 소유자 전용 파일과 래퍼를 통해 관리형 서비스 환경 값을 로드합니다.
+- 의도적으로 한 호스트에서 여러 Gateway를 실행하는 경우 포트, 구성/상태, 워크스페이스를 격리하세요. [/gateway#multiple-gateways-same-host](/ko/gateway#multiple-gateways-same-host)를 참조하세요.
+- `restart --safe`는 실행 중인 Gateway에 활성 작업을 사전 점검하고 활성 작업이 비워진 뒤 하나로 병합된 재시작을 예약하도록 요청합니다. 일반 `restart`는 기존 서비스 관리자 동작을 유지하며, `--force`는 즉시 재정의 경로로 유지됩니다.
+- `restart --safe --skip-deferral`은 OpenClaw 인식 안전 재시작을 실행하지만 활성 작업 지연 게이트를 우회하므로 차단 요소가 보고되더라도 Gateway가 즉시 재시작을 내보냅니다. 안전 재시작을 고정하는 멈춘 작업 실행이 있을 때 운영자용 탈출구이며, `--safe`가 필요합니다.
 
 ## 권장
 
-현재 문서와 예시는 [`openclaw gateway`](/ko/cli/gateway)를 사용하세요.
+현재 문서와 예제는 [`openclaw gateway`](/ko/cli/gateway)를 사용하세요.
 
-## 관련 항목
+## 관련
 
 - [CLI 참조](/ko/cli)
 - [Gateway 런북](/ko/gateway)

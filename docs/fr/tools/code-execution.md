@@ -1,33 +1,33 @@
 ---
 read_when:
     - Vous souhaitez activer ou configurer code_execution
-    - Vous souhaitez une analyse à distance sans accès au shell local
-    - Vous souhaitez combiner x_search ou web_search avec une analyse Python distante
-summary: 'code_execution: exécuter une analyse Python distante en sandbox avec xAI'
+    - Vous voulez une analyse à distance sans accès au shell local
+    - Vous voulez combiner x_search ou web_search avec une analyse Python distante
+summary: 'code_execution: exécuter une analyse Python distante en bac à sable avec xAI'
 title: Exécution de code
 x-i18n:
-    generated_at: "2026-05-06T07:40:30Z"
+    generated_at: "2026-05-11T20:57:43Z"
     model: gpt-5.5
     provider: openai
-    source_hash: a37e921c0016a32b01558c255bc05fcf24146f363a022da87feb94f3d6d48527
+    source_hash: 76be496e459fac9c7f6b0324cceb884d3a693fd72d7541094d1bb64a4f1b7b8b
     source_path: tools/code-execution.md
     workflow: 16
 ---
 
-`code_execution` exécute une analyse Python distante en bac à sable sur l’API Responses de xAI. Il est enregistré par le Plugin `xai` fourni (sous le contrat `tools`) et envoie les requêtes au même point de terminaison `https://api.x.ai/v1/responses` que celui utilisé par `x_search`.
+`code_execution` exécute des analyses Python distantes en bac à sable sur l’API Responses de xAI. Il est enregistré par le Plugin `xai` fourni avec OpenClaw (sous le contrat `tools`) et envoie les requêtes au même point de terminaison `https://api.x.ai/v1/responses` que celui utilisé par `x_search`.
 
-| Propriété          | Valeur                                                         |
-| ------------------ | -------------------------------------------------------------- |
-| Nom de l’outil     | `code_execution`                                               |
-| Plugin fournisseur | `xai` (fourni, `enabledByDefault: true`)                       |
-| Authentification   | `XAI_API_KEY` ou `plugins.entries.xai.config.webSearch.apiKey` |
-| Modèle par défaut  | `grok-4-1-fast`                                                |
-| Délai par défaut   | 30 secondes                                                    |
-| `maxTurns` par défaut | non défini (xAI applique sa propre limite interne)          |
+| Propriété          | Valeur                                                                            |
+| ------------------ | --------------------------------------------------------------------------------- |
+| Nom de l’outil     | `code_execution`                                                                  |
+| Plugin fournisseur | `xai` (fourni avec OpenClaw, `enabledByDefault: true`)                            |
+| Authentification   | Profil d’authentification xAI, `XAI_API_KEY`, ou `plugins.entries.xai.config.webSearch.apiKey` |
+| Modèle par défaut  | `grok-4-1-fast`                                                                   |
+| Délai par défaut   | 30 secondes                                                                       |
+| `maxTurns` par défaut | non défini (xAI applique sa propre limite interne)                             |
 
-C’est différent de l’outil local [`exec`](/fr/tools/exec) :
+C’est différent de l’[`exec`](/fr/tools/exec) local :
 
-- `exec` exécute des commandes shell sur votre machine ou votre nœud appairé.
+- `exec` exécute des commandes shell sur votre machine ou sur le nœud associé.
 - `code_execution` exécute Python dans le bac à sable distant de xAI.
 
 Utilisez `code_execution` pour :
@@ -36,15 +36,17 @@ Utilisez `code_execution` pour :
 - La tabulation.
 - Les statistiques rapides.
 - Les analyses de type graphique.
-- L’analyse de données renvoyées par `x_search` ou `web_search`.
+- L’analyse des données renvoyées par `x_search` ou `web_search`.
 
-Ne l’utilisez **pas** lorsque vous avez besoin de fichiers locaux, de votre shell, de votre dépôt ou d’appareils appairés. Utilisez [`exec`](/fr/tools/exec) pour cela.
+Ne l’utilisez **pas** lorsque vous avez besoin de fichiers locaux, de votre shell, de votre dépôt ou d’appareils associés. Utilisez [`exec`](/fr/tools/exec) pour cela.
 
 ## Configuration
 
 <Steps>
-  <Step title="Fournir une clé d’API xAI">
-    Définissez `XAI_API_KEY` dans l’environnement du Gateway, ou configurez la clé sous le Plugin xAI afin que le même identifiant couvre `code_execution`, `x_search`, la recherche web et les autres outils xAI :
+  <Step title="Fournir une clé API xAI">
+    Exécutez `openclaw onboard --auth-choice xai-api-key` pour `code_execution` et
+    `x_search`, ou définissez `XAI_API_KEY` / configurez la clé sous le Plugin xAI
+    lorsque vous voulez aussi que la recherche web Grok utilise le même identifiant :
 
     ```bash
     export XAI_API_KEY=xai-...
@@ -70,8 +72,8 @@ Ne l’utilisez **pas** lorsque vous avez besoin de fichiers locaux, de votre sh
 
   </Step>
 
-  <Step title="Activer et ajuster code_execution">
-    L’outil est contrôlé par `plugins.entries.xai.config.codeExecution.enabled`. La valeur par défaut est désactivé.
+  <Step title="Activer et régler code_execution">
+    L’outil est contrôlé par `plugins.entries.xai.config.codeExecution.enabled`. La valeur par défaut est désactivée.
 
     ```json5
     {
@@ -81,9 +83,9 @@ Ne l’utilisez **pas** lorsque vous avez besoin de fichiers locaux, de votre sh
             config: {
               codeExecution: {
                 enabled: true,
-                model: "grok-4-1-fast", // remplacer le modèle xAI d’exécution de code par défaut
-                maxTurns: 2,            // limite optionnelle des tours d’outil internes
-                timeoutSeconds: 30,     // délai de requête (par défaut : 30)
+                model: "grok-4-1-fast", // override the default xAI code-execution model
+                maxTurns: 2,            // optional cap on internal tool turns
+                timeoutSeconds: 30,     // request timeout (default: 30)
               },
             },
           },
@@ -106,7 +108,7 @@ Ne l’utilisez **pas** lorsque vous avez besoin de fichiers locaux, de votre sh
 
 ## Comment l’utiliser
 
-Demandez naturellement et rendez l’intention d’analyse explicite :
+Demandez naturellement et explicitez l’objectif de l’analyse :
 
 ```text
 Use code_execution to calculate the 7-day moving average for these numbers: ...
@@ -120,34 +122,34 @@ Use x_search to find posts mentioning OpenClaw this week, then use code_executio
 Use web_search to gather the latest AI benchmark numbers, then use code_execution to compare percent changes.
 ```
 
-L’outil prend en interne un seul paramètre `task`, donc l’agent doit envoyer la demande d’analyse complète et toutes les données en ligne dans une seule invite.
+L’outil accepte en interne un seul paramètre `task`, l’agent doit donc envoyer la demande d’analyse complète et toutes les données en ligne dans une seule invite.
 
 ## Erreurs
 
-Lorsque l’outil s’exécute sans authentification, il renvoie une erreur structurée `missing_xai_api_key` pointant vers la variable d’environnement et le chemin de configuration. L’erreur est du JSON, pas une exception levée, ce qui permet à l’agent de s’autocorriger :
+Lorsque l’outil s’exécute sans authentification, il renvoie une erreur structurée `missing_xai_api_key` qui pointe vers le profil d’authentification, la variable d’environnement et les options de configuration. L’erreur est du JSON, pas une exception levée, ce qui permet à l’agent de s’autocorriger :
 
 ```json
 {
   "error": "missing_xai_api_key",
-  "message": "code_execution needs an xAI API key. Set XAI_API_KEY in the Gateway environment, or configure plugins.entries.xai.config.webSearch.apiKey.",
+  "message": "code_execution needs an xAI API key. Run openclaw onboard --auth-choice xai-api-key, set XAI_API_KEY in the Gateway environment, or configure plugins.entries.xai.config.webSearch.apiKey.",
   "docs": "https://docs.openclaw.ai/tools/code-execution"
 }
 ```
 
 ## Limites
 
-- Il s’agit d’une exécution distante xAI, pas d’une exécution de processus locale.
+- Il s’agit d’une exécution xAI distante, pas d’une exécution de processus locale.
 - Traitez les résultats comme une analyse éphémère, pas comme une session de notebook persistante.
 - Ne supposez pas l’accès aux fichiers locaux ni à votre espace de travail.
 - Pour des données X récentes, utilisez d’abord [`x_search`](/fr/tools/web#x_search), puis transmettez le résultat à `code_execution`.
 
-## Associés
+## Liens connexes
 
 <CardGroup cols={2}>
-  <Card title="Outil exec" href="/fr/tools/exec" icon="terminal">
-    Exécution shell locale sur votre machine ou votre nœud appairé.
+  <Card title="Outil Exec" href="/fr/tools/exec" icon="terminal">
+    Exécution shell locale sur votre machine ou sur le nœud associé.
   </Card>
-  <Card title="Approbations exec" href="/fr/tools/exec-approvals" icon="shield">
+  <Card title="Approbations Exec" href="/fr/tools/exec-approvals" icon="shield">
     Politique d’autorisation/refus pour l’exécution shell.
   </Card>
   <Card title="Outils web" href="/fr/tools/web" icon="globe">

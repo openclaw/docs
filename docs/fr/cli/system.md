@@ -1,25 +1,25 @@
 ---
 read_when:
     - Vous souhaitez mettre en file d’attente un événement système sans créer de tâche Cron
-    - Vous devez activer ou désactiver les Heartbeats
-    - Vous souhaitez inspecter les entrées de présence système
+    - Vous devez activer ou désactiver les Heartbeat
+    - Vous voulez inspecter les entrées de présence système
 summary: Référence CLI pour `openclaw system` (événements système, Heartbeat, présence)
 title: Système
 x-i18n:
-    generated_at: "2026-04-24T07:05:57Z"
-    model: gpt-5.4
+    generated_at: "2026-05-11T20:29:39Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 0f4be30b0b2d18ee5653071d6375cebeb9fc94733e30bdb7b89a19c286df880b
+    source_hash: 2810fb064ea4afeac24ca0d71419913a664bbec0721cabdb09196075914f4864
     source_path: cli/system.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw system`
 
-Assistants au niveau système pour le Gateway : mise en file d’attente d’événements système, contrôle des Heartbeats,
-et affichage de la présence.
+Assistants au niveau système pour le Gateway : mettre en file d’attente des événements système, contrôler les heartbeats,
+et afficher la présence.
 
-Toutes les sous-commandes `system` utilisent le RPC Gateway et acceptent les options client partagées :
+Toutes les sous-commandes `system` utilisent le RPC du Gateway et acceptent les indicateurs client partagés :
 
 - `--url <url>`
 - `--token <token>`
@@ -38,45 +38,59 @@ openclaw system presence
 
 ## `system event`
 
-Mettre en file d’attente un événement système sur la session **principale**. Le prochain Heartbeat l’injectera
-comme ligne `System:` dans le prompt. Utilisez `--mode now` pour déclencher le Heartbeat
-immédiatement ; `next-heartbeat` attend le prochain tick planifié.
+Met en file d’attente un événement système sur la session **principale** par défaut. Le prochain heartbeat
+l’injectera comme une ligne `System:` dans le prompt. Utilisez `--mode now` pour déclencher
+le heartbeat immédiatement ; `next-heartbeat` attend le prochain tick planifié.
 
-Options :
+Passez `--session-key` pour cibler une session spécifique (par exemple pour relayer la
+fin d’une tâche asynchrone au canal qui l’a démarrée).
 
-- `--text <text>` : texte de l’événement système requis.
-- `--mode <mode>` : `now` ou `next-heartbeat` (par défaut).
-- `--json` : sortie lisible par machine.
-- `--url`, `--token`, `--timeout`, `--expect-final` : options RPC Gateway partagées.
+> **Exception de synchronisation avec `--session-key` :** lorsque `--session-key` est fourni,
+> `--mode next-heartbeat` se réduit à un réveil ciblé immédiat au lieu
+> d’attendre le prochain tick planifié. Les réveils ciblés utilisent l’intention de heartbeat
+> `immediate`, ce qui leur permet de contourner la barrière not-due du runner qui autrement
+> différerait (et abandonnerait effectivement) un réveil d’intention `event`. Si vous voulez une
+> livraison différée, omettez `--session-key` afin que l’événement arrive sur la session principale et
+> accompagne le prochain heartbeat régulier.
+
+Indicateurs :
+
+- `--text <text>` : texte d’événement système requis.
+- `--mode <mode>` : `now` ou `next-heartbeat` (par défaut).
+- `--session-key <sessionKey>` : facultatif ; cible une session d’agent spécifique
+  au lieu de la session principale de l’agent. Les clés qui n’appartiennent pas à l’agent
+  résolu retombent sur la session principale de l’agent.
+- `--json` : sortie lisible par machine.
+- `--url`, `--token`, `--timeout`, `--expect-final` : indicateurs RPC Gateway partagés.
 
 ## `system heartbeat last|enable|disable`
 
-Contrôles du Heartbeat :
+Contrôles Heartbeat :
 
-- `last` : afficher le dernier événement Heartbeat.
-- `enable` : réactiver les Heartbeats (utilisez ceci s’ils ont été désactivés).
-- `disable` : mettre les Heartbeats en pause.
+- `last` : affiche le dernier événement heartbeat.
+- `enable` : réactive les heartbeats (à utiliser s’ils ont été désactivés).
+- `disable` : met les heartbeats en pause.
 
-Options :
+Indicateurs :
 
-- `--json` : sortie lisible par machine.
-- `--url`, `--token`, `--timeout`, `--expect-final` : options RPC Gateway partagées.
+- `--json` : sortie lisible par machine.
+- `--url`, `--token`, `--timeout`, `--expect-final` : indicateurs RPC Gateway partagés.
 
 ## `system presence`
 
-Lister les entrées de présence système actuelles connues du Gateway (Node,
+Répertorie les entrées de présence système actuelles connues du Gateway (nœuds,
 instances et lignes d’état similaires).
 
-Options :
+Indicateurs :
 
-- `--json` : sortie lisible par machine.
-- `--url`, `--token`, `--timeout`, `--expect-final` : options RPC Gateway partagées.
+- `--json` : sortie lisible par machine.
+- `--url`, `--token`, `--timeout`, `--expect-final` : indicateurs RPC Gateway partagés.
 
-## Remarques
+## Notes
 
-- Nécessite un Gateway en cours d’exécution, accessible via votre configuration actuelle (locale ou distante).
-- Les événements système sont éphémères et ne sont pas conservés après redémarrage.
+- Nécessite un Gateway en cours d’exécution, joignable par votre configuration actuelle (locale ou distante).
+- Les événements système sont éphémères et ne persistent pas entre les redémarrages.
 
-## Lié
+## Associé
 
 - [Référence CLI](/fr/cli)

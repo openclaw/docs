@@ -1,65 +1,77 @@
 ---
 read_when:
     - Je wijzigt de ingebedde agentruntime of het harnasregister
-    - Je registreert een agentharnas vanuit een gebundelde of vertrouwde Plugin
+    - Je registreert een agent-harnas vanuit een gebundelde of vertrouwde Plugin
     - Je moet begrijpen hoe de Codex-Plugin zich verhoudt tot modelproviders
 sidebarTitle: Agent Harness
 summary: Experimenteel SDK-oppervlak voor plugins die de ingebedde agentuitvoerder op laag niveau vervangen
-title: Agentharnas-plugins
+title: Plugins voor agentharnas
 x-i18n:
-    generated_at: "2026-05-07T13:23:53Z"
+    generated_at: "2026-05-11T20:42:14Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ab47fbedbd429a4c0e72da0057a88be34528b69804fa1e7af795f377c4907f55
+    source_hash: 1685af479a8502ac743b0f520f0afae2cdc905524e48b3a84ce95ffe85c8fb49
     source_path: plugins/sdk-agent-harness.md
     workflow: 16
 ---
 
-Een **agentharnas** is de uitvoerder op laag niveau voor één voorbereide OpenClaw-agentbeurt. Het is geen modelprovider, geen kanaal en geen toolregister. Zie [Agentruntimes](/nl/concepts/agent-runtimes) voor het gebruikersgerichte mentale model.
+Een **agent harness** is de low-level uitvoerder voor één voorbereide OpenClaw-agentbeurt. Het is geen modelprovider, geen kanaal en geen toolregister.
+Voor het gebruikersgerichte mentale model, zie [Agent-runtimes](/nl/concepts/agent-runtimes).
 
-Gebruik dit oppervlak alleen voor gebundelde of vertrouwde native plugins. Het contract is nog experimenteel, omdat de parametertypen bewust de huidige ingebedde runner weerspiegelen.
+Gebruik dit oppervlak alleen voor gebundelde of vertrouwde native plugins. Het contract is
+nog experimenteel omdat de parametertypen bewust de huidige
+embedded runner weerspiegelen.
 
-## Wanneer je een harnas gebruikt
+## Wanneer een harness gebruiken
 
-Registreer een agentharnas wanneer een modelfamilie een eigen native sessieruntime heeft en de normale OpenClaw-providertransportlaag de verkeerde abstractie is.
+Registreer een agent harness wanneer een modelfamilie een eigen native sessie-
+runtime heeft en het normale OpenClaw-providertransport de verkeerde abstractie is.
 
 Voorbeelden:
 
-- een native coding-agentserver die eigenaar is van threads en compaction
-- een lokale CLI of daemon die native plan-/redeneer-/tool-events moet streamen
-- een modelruntime die naast het OpenClaw-sessietranscript een eigen hervat-ID nodig heeft
+- een native coding-agent-server die threads en Compaction beheert
+- een lokale CLI of daemon die native plan-/redenerings-/tool-events moet streamen
+- een modelruntime die een eigen resume-id nodig heeft naast het OpenClaw-
+  sessietranscript
 
-Registreer **geen** harnas alleen om een nieuwe LLM-API toe te voegen. Bouw voor normale HTTP- of WebSocket-model-API's een [providerplugin](/nl/plugins/sdk-provider-plugins).
+Registreer **geen** harness alleen om een nieuwe LLM-API toe te voegen. Voor normale HTTP- of
+WebSocket-model-API's bouw je een [providerplugin](/nl/plugins/sdk-provider-plugins).
 
 ## Wat core nog steeds beheert
 
-Voordat een harnas wordt geselecteerd, heeft OpenClaw al het volgende opgelost:
+Voordat een harness wordt geselecteerd, heeft OpenClaw al het volgende bepaald:
 
 - provider en model
 - runtime-authenticatiestatus
 - denkniveau en contextbudget
 - het OpenClaw-transcript-/sessiebestand
-- workspace, sandbox en toolbeleid
-- kanaalantwoordcallbacks en streamingcallbacks
-- beleid voor modelterugval en live wisselen van model
+- werkruimte, sandbox en toolbeleid
+- callbacks voor kanaalantwoorden en streamingcallbacks
+- model-fallback en beleid voor live modelwisselingen
 
-Die scheiding is bewust. Een harnas voert een voorbereide poging uit; het kiest geen providers, vervangt geen kanaallevering en wisselt niet stilzwijgend van model.
+Die scheiding is bewust. Een harness voert een voorbereide poging uit; het kiest geen
+providers, vervangt geen kanaalbezorging en wisselt niet stilzwijgend van model.
 
-De voorbereide poging bevat ook `params.runtimePlan`, een door OpenClaw beheerde beleidsbundel voor runtimebeslissingen die gedeeld moeten blijven tussen PI en native harnassen:
+De voorbereide poging bevat ook `params.runtimePlan`, een door OpenClaw beheerde
+beleidsbundel voor runtimebeslissingen die gedeeld moet blijven tussen PI en native
+harnesses:
 
 - `runtimePlan.tools.normalize(...)` en
   `runtimePlan.tools.logDiagnostics(...)` voor providerbewust toolschemabeleid
 - `runtimePlan.transcript.resolvePolicy(...)` voor transcriptsanering en
-  tool-call-herstelbeleid
-- `runtimePlan.delivery.isSilentPayload(...)` voor gedeelde `NO_REPLY` en onderdrukking van medialevering
-- `runtimePlan.outcome.classifyRunResult(...)` voor classificatie van modelterugval
-- `runtimePlan.observability` voor opgeloste provider-/model-/harnasmetadata
+  herstelbeleid voor toolaanroepen
+- `runtimePlan.delivery.isSilentPayload(...)` voor gedeelde `NO_REPLY` en onderdrukking van media-
+  bezorging
+- `runtimePlan.outcome.classifyRunResult(...)` voor classificatie van model-fallback
+- `runtimePlan.observability` voor opgeloste provider-/model-/harnessmetadata
 
-Harnassen mogen het plan gebruiken voor beslissingen die moeten overeenkomen met PI-gedrag, maar moeten het nog steeds behandelen als pogingsstatus die eigendom is van de host. Wijzig het niet en gebruik het niet om binnen een beurt van provider/model te wisselen.
+Harnesses mogen het plan gebruiken voor beslissingen die moeten overeenkomen met PI-gedrag, maar
+moeten het nog steeds behandelen als door de host beheerde pogingstatus. Muteer het niet en gebruik het niet om
+binnen een beurt van provider/model te wisselen.
 
-## Een harnas registreren
+## Een harness registreren
 
-**Importeren:** `openclaw/plugin-sdk/agent-harness`
+**Import:** `openclaw/plugin-sdk/agent-harness`
 
 ```typescript
 import type { AgentHarness } from "openclaw/plugin-sdk/agent-harness";
@@ -95,66 +107,181 @@ export default definePluginEntry({
 
 ## Selectiebeleid
 
-OpenClaw kiest een harnas na provider-/modelresolutie:
+OpenClaw kiest een harness na provider-/modelresolutie:
 
-1. De vastgelegde harnas-ID van een bestaande sessie wint, zodat configuratie-/env-wijzigingen dat transcript niet live overschakelen naar een andere runtime.
-2. `OPENCLAW_AGENT_RUNTIME=<id>` dwingt een geregistreerd harnas met die ID af voor sessies die nog niet vastgepind zijn.
-3. `OPENCLAW_AGENT_RUNTIME=pi` dwingt het ingebouwde PI-harnas af.
-4. `OPENCLAW_AGENT_RUNTIME=auto` vraagt geregistreerde harnassen of ze de opgeloste provider/het opgeloste model ondersteunen.
-5. Als geen geregistreerd harnas overeenkomt, gebruikt OpenClaw PI tenzij PI-terugval is uitgeschakeld.
+1. Modelgescoped runtimebeleid wint.
+2. Providergescoped runtimebeleid komt daarna.
+3. `auto` vraagt geregistreerde harnesses of ze de opgeloste
+   provider/model-combinatie ondersteunen.
+4. Als geen geregistreerde harness overeenkomt, gebruikt OpenClaw PI tenzij PI-fallback is
+   uitgeschakeld.
 
-Fouten van Plugin-harnassen komen naar voren als runfouten. In `auto`-modus wordt PI-terugval alleen gebruikt wanneer geen geregistreerd Plugin-harnas de opgeloste provider/het opgeloste model ondersteunt. Zodra een Plugin-harnas een run heeft opgeëist, speelt OpenClaw diezelfde beurt niet opnieuw af via PI, omdat dat authenticatie-/runtimesemantiek kan veranderen of neveneffecten kan dupliceren.
+Fouten in plugin-harnesses verschijnen als uitvoeringsfouten. In `auto`-modus wordt PI-fallback
+alleen gebruikt wanneer geen geregistreerde plugin-harness de opgeloste
+provider/model-combinatie ondersteunt. Zodra een plugin-harness een run heeft geclaimd, speelt OpenClaw
+diezelfde beurt niet opnieuw via PI af, omdat dat auth-/runtime-semantiek kan wijzigen
+of neveneffecten kan dupliceren.
 
-De geselecteerde harnas-ID wordt na een ingebedde run persistent gemaakt met de sessie-ID. Legacy sessies die zijn aangemaakt vóór harnaspins worden behandeld als PI-vastgepind zodra ze transcriptgeschiedenis hebben. Gebruik een nieuwe/geresette sessie wanneer je wisselt tussen PI en een native Plugin-harnas. `/status` toont niet-standaard harnas-ID's zoals `codex` naast `Fast`; PI blijft verborgen omdat het het standaardcompatibiliteitspad is. Als het geselecteerde harnas verrassend is, schakel dan debuglogging voor `agents/harness` in en inspecteer het gestructureerde `agent harness selected`-record van de gateway. Het bevat de geselecteerde harnas-ID, selectiereden, runtime-/terugvalbeleid en, in `auto`-modus, het ondersteuningsresultaat van elke Plugin-kandidaat.
+Runtime-pins voor hele sessies en hele agents worden genegeerd door de selectie. Dat
+omvat verouderde sessiewaarden voor `agentHarnessId`, `agents.defaults.agentRuntime`,
+`agents.list[].agentRuntime` en `OPENCLAW_AGENT_RUNTIME`. `/status` toont de
+effectieve runtime die is geselecteerd vanuit de provider-/modelroute.
+Als de geselecteerde harness verrassend is, schakel dan debuglogging voor `agents/harness` in en
+inspecteer de gestructureerde `agent harness selected`-record van de gateway. Die bevat
+de geselecteerde harness-id, selectiereden, runtime-/fallbackbeleid en, in
+`auto`-modus, het ondersteuningsresultaat van elke pluginkandidaat.
 
-De gebundelde Codex-plugin registreert `codex` als harnas-ID. Core behandelt dat als een gewone Plugin-harnas-ID; Codex-specifieke aliassen horen thuis in de plugin of operatorconfiguratie, niet in de gedeelde runtimeselector.
+De gebundelde Codex-plugin registreert `codex` als harness-id. Core behandelt dat
+als een gewone plugin-harness-id; Codex-specifieke aliassen horen thuis in de plugin
+of operatorconfiguratie, niet in de gedeelde runtimeselector.
 
-## Provider plus harnaskoppeling
+## Provider plus harness-koppeling
 
-De meeste harnassen moeten ook een provider registreren. De provider maakt modelrefs, authenticatiestatus, modelmetadata en `/model`-selectie zichtbaar voor de rest van OpenClaw. Het harnas claimt die provider vervolgens in `supports(...)`.
+De meeste harnesses moeten ook een provider registreren. De provider maakt modelreferenties,
+authenticatiestatus, modelmetadata en `/model`-selectie zichtbaar voor de rest van
+OpenClaw. De harness claimt die provider vervolgens in `supports(...)`.
 
 De gebundelde Codex-plugin volgt dit patroon:
 
-- voorkeursmodelrefs voor gebruikers: `openai/gpt-5.5` plus
-  `agentRuntime.id: "codex"`
-- compatibiliteitsrefs: legacy `codex/gpt-*`-refs blijven geaccepteerd, maar nieuwe configuraties moeten ze niet gebruiken als normale provider-/modelrefs
-- harnas-ID: `codex`
-- auth: synthetische providerbeschikbaarheid, omdat het Codex-harnas eigenaar is van de native Codex-login/-sessie
-- app-serververzoek: OpenClaw stuurt de kale model-ID naar Codex en laat het harnas met het native app-serverprotocol praten
+- voorkeursmodelreferenties voor gebruikers: `openai/gpt-5.5`
+- compatibiliteitsreferenties: legacy `codex/gpt-*`-referenties blijven geaccepteerd, maar nieuwe
+  configuraties zouden ze niet als normale provider-/modelreferenties moeten gebruiken
+- harness-id: `codex`
+- auth: synthetische providerbeschikbaarheid, omdat de Codex-harness de
+  native Codex-login/-sessie beheert
+- app-server-aanvraag: OpenClaw stuurt de kale model-id naar Codex en laat de
+  harness met het native app-serverprotocol praten
 
-De Codex-plugin is additief. Gewone `openai/gpt-*`-refs blijven het normale OpenClaw-providerpad gebruiken, tenzij je het Codex-harnas afdwingt met `agentRuntime.id: "codex"`. Oudere `codex/gpt-*`-refs selecteren nog steeds de Codex-provider en het Codex-harnas voor compatibiliteit.
+De Codex-plugin is additief. Gewone `openai/gpt-*`-agentreferenties op de officiële
+OpenAI-provider selecteren standaard de Codex-harness. Oudere `codex/gpt-*`-referenties
+selecteren nog steeds de Codex-provider en -harness voor compatibiliteit.
 
-Zie [Codex-harnas](/nl/plugins/codex-harness) voor operatorconfiguratie, voorbeelden van modelprefixen en configuraties die alleen voor Codex gelden.
+Voor operatorconfiguratie, voorbeelden van modelprefixen en Codex-only configuraties, zie
+[Codex Harness](/nl/plugins/codex-harness).
 
-OpenClaw vereist Codex app-server `0.125.0` of nieuwer. De Codex-plugin controleert de initialize-handshake van de app-server en blokkeert oudere servers of servers zonder versie, zodat OpenClaw alleen draait tegen het protocoloppervlak waarmee het is getest. De ondergrens `0.125.0` omvat de native MCP-hookpayloadondersteuning die in Codex `0.124.0` is geland, terwijl OpenClaw wordt vastgepind op de nieuwere geteste stabiele lijn.
+OpenClaw vereist Codex app-server `0.125.0` of nieuwer. De Codex-plugin controleert
+de initialize-handshake van de app-server en blokkeert oudere of niet-geversioneerde servers zodat
+OpenClaw alleen draait tegen het protocoloppervlak waarmee het is getest. De
+`0.125.0`-ondergrens omvat de ondersteuning voor native MCP-hookpayloads die in
+Codex `0.124.0` is geland, terwijl OpenClaw wordt vastgezet op de nieuwere geteste stabiele lijn.
 
-### Toolresultaatmiddleware
+### Toolresultaat-middleware
 
-Gebundelde plugins kunnen runtimeneutrale toolresultaatmiddleware koppelen via `api.registerAgentToolResultMiddleware(...)` wanneer hun manifest de beoogde runtime-ID's declareert in `contracts.agentToolResultMiddleware`. Dit vertrouwde koppelvlak is bedoeld voor async toolresultaattransformaties die moeten draaien voordat PI of Codex tooluitvoer terugvoert naar het model.
+Gebundelde plugins kunnen runtime-neutrale toolresultaat-middleware koppelen via
+`api.registerAgentToolResultMiddleware(...)` wanneer hun manifest de
+gerichte runtime-id's declareert in `contracts.agentToolResultMiddleware`. Deze vertrouwde
+naad is voor asynchrone toolresultaattransformaties die moeten draaien voordat PI of Codex
+tooluitvoer terugvoert naar het model.
 
-Legacy gebundelde plugins kunnen nog steeds `api.registerCodexAppServerExtensionFactory(...)` gebruiken voor middleware die alleen voor Codex app-server geldt, maar nieuwe resultaattransformaties moeten de runtimeneutrale API gebruiken. De hook `api.registerEmbeddedExtensionFactory(...)` die alleen voor Pi gold, is verwijderd; Pi-toolresultaattransformaties moeten runtimeneutrale middleware gebruiken.
+Legacy gebundelde plugins kunnen nog steeds
+`api.registerCodexAppServerExtensionFactory(...)` gebruiken voor middleware die alleen voor Codex app-server is,
+maar nieuwe resultaattransformaties moeten de runtime-neutrale API gebruiken.
+De Pi-only hook `api.registerEmbeddedExtensionFactory(...)` is verwijderd;
+Pi-toolresultaattransformaties moeten runtime-neutrale middleware gebruiken.
 
-### Classificatie van terminaal resultaat
+### Classificatie van terminale uitkomst
 
-Native harnassen die hun eigen protocolprojectie beheren, kunnen `classifyAgentHarnessTerminalOutcome(...)` uit `openclaw/plugin-sdk/agent-harness-runtime` gebruiken wanneer een voltooide beurt geen zichtbare assistenttekst heeft geproduceerd. De helper retourneert `empty`, `reasoning-only` of `planning-only`, zodat het terugvalbeleid van OpenClaw kan beslissen of opnieuw geprobeerd moet worden op een ander model. Het laat promptfouten, lopende beurten en bedoelde stille antwoorden zoals `NO_REPLY` bewust ongeclassificeerd.
+Native harnesses die hun eigen protocolprojectie beheren, kunnen
+`classifyAgentHarnessTerminalOutcome(...)` uit
+`openclaw/plugin-sdk/agent-harness-runtime` gebruiken wanneer een voltooide beurt geen
+zichtbare assistenttekst heeft geproduceerd. De helper retourneert `empty`, `reasoning-only` of
+`planning-only`, zodat het fallbackbeleid van OpenClaw kan beslissen of opnieuw moet worden geprobeerd op een
+ander model. Promptfouten, lopende beurten en
+opzettelijke stille antwoorden zoals `NO_REPLY` blijven bewust ongeclassificeerd.
 
-### Native Codex-harnasmodus
+### Native Codex-harnessmodus
 
-Het gebundelde `codex`-harnas is de native Codex-modus voor ingebedde OpenClaw-agentbeurten. Schakel eerst de gebundelde `codex`-plugin in en neem `codex` op in `plugins.allow` als je configuratie een beperkende allowlist gebruikt. Native app-serverconfiguraties moeten `openai/gpt-*` gebruiken; OpenAI-agentbeurten selecteren standaard het Codex-harnas. Legacy `openai-codex/*`-routes moeten worden gerepareerd met `openclaw doctor --fix`, en legacy `codex/*`-modelrefs blijven compatibiliteitsaliassen voor het native harnas.
+De gebundelde `codex`-harness is de native Codex-modus voor embedded OpenClaw-
+agentbeurten. Schakel eerst de gebundelde `codex`-plugin in en neem `codex` op in
+`plugins.allow` als je configuratie een restrictieve allowlist gebruikt. Native app-server-
+configuraties moeten `openai/gpt-*` gebruiken; OpenAI-agentbeurten selecteren standaard de Codex-harness. Legacy `openai-codex/*`-routes moeten worden hersteld met
+`openclaw doctor --fix`, en legacy `codex/*`-modelreferenties blijven compatibiliteitsaliassen voor de native harness.
 
-Wanneer deze modus draait, beheert Codex de native thread-ID, het hervatgedrag, Compaction en app-serveruitvoering. OpenClaw beheert nog steeds het chatkanaal, de zichtbare transcriptspiegel, het toolbeleid, goedkeuringen, medialevering en sessieselectie. Gebruik `agentRuntime.id: "codex"` wanneer je moet bewijzen dat alleen het Codex app-serverpad de run kan claimen. Expliciete Plugin-runtimes falen gesloten; selectiefouten van Codex app-server en runtimefouten worden niet opnieuw geprobeerd via PI.
+Wanneer deze modus draait, beheert Codex de native thread-id, resume-gedrag,
+Compaction en app-serveruitvoering. OpenClaw beheert nog steeds het chatkanaal,
+de zichtbare transcriptspiegel, toolbeleid, goedkeuringen, mediabezorging en sessie-
+selectie. Gebruik provider/model `agentRuntime.id: "codex"` wanneer je moet aantonen
+dat alleen het Codex app-server-pad de run kan claimen. Expliciete pluginruntimes
+falen gesloten; fouten bij Codex app-server-selectie en runtimefouten worden niet
+opnieuw geprobeerd via PI.
 
-## Runtimestriktheid
+## Runtime-striktheid
 
-Standaard voert OpenClaw ingebedde agents uit met OpenClaw Pi. In `auto`-modus kunnen geregistreerde Plugin-harnassen een provider-/modelpaar claimen, en PI verwerkt de beurt wanneer niets overeenkomt. Gebruik een expliciete Plugin-runtime zoals `agentRuntime.id: "codex"` wanneer ontbrekende harnasselectie moet falen in plaats van via PI te routeren. Fouten van geselecteerde Plugin-harnassen falen altijd hard. Dit blokkeert geen expliciete `agentRuntime.id: "pi"` of `OPENCLAW_AGENT_RUNTIME=pi`.
+Standaard gebruikt OpenClaw `auto` provider-/modelruntimebeleid: geregistreerde
+plugin-harnesses kunnen een provider/model-paar claimen, en PI verwerkt de beurt wanneer
+niets overeenkomt. OpenAI-agentreferenties op de officiële OpenAI-provider gaan standaard naar Codex.
+Gebruik een expliciete provider-/model-pluginruntime zoals
+`agentRuntime.id: "codex"` wanneer ontbrekende harnessselectie moet falen in plaats van
+via PI te routeren. Fouten in geselecteerde plugin-harnesses falen altijd hard. Dit
+blokkeert geen expliciete provider/model `agentRuntime.id: "pi"`.
 
-Voor ingebedde runs die alleen voor Codex zijn:
+Voor Codex-only embedded runs:
+
+```json
+{
+  "models": {
+    "providers": {
+      "openai": {
+        "agentRuntime": {
+          "id": "codex"
+        }
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": "openai/gpt-5.5"
+    }
+  }
+}
+```
+
+Als je een CLI-backend voor één canoniek model wilt, zet de runtime dan op die
+modelvermelding:
 
 ```json
 {
   "agents": {
     "defaults": {
-      "model": "openai/gpt-5.5",
+      "model": "anthropic/claude-opus-4-7",
+      "models": {
+        "anthropic/claude-opus-4-7": {
+          "agentRuntime": {
+            "id": "claude-cli"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+Per-agent overrides gebruiken dezelfde modelgescoped vorm:
+
+```json
+{
+  "agents": {
+    "list": [
+      {
+        "id": "codex-only",
+        "model": "openai/gpt-5.5",
+        "models": {
+          "openai/gpt-5.5": {
+            "agentRuntime": { "id": "codex" }
+          }
+        }
+      }
+    ]
+  }
+}
+```
+
+Legacy voorbeelden van runtime voor hele agents zoals deze worden genegeerd:
+
+```json
+{
+  "agents": {
+    "defaults": {
       "agentRuntime": {
         "id": "codex"
       }
@@ -163,82 +290,54 @@ Voor ingebedde runs die alleen voor Codex zijn:
 }
 ```
 
-Als je wilt dat elk geregistreerd Plugin-harnas overeenkomende modellen claimt en anders PI gebruikt, stel dan `id: "auto"` in:
+Met een expliciete pluginruntime faalt een sessie vroeg wanneer de gevraagde
+harness niet is geregistreerd, de opgeloste provider/model-combinatie niet ondersteunt, of
+faalt voordat beurtlevenseffecten worden geproduceerd. Dat is bewust voor Codex-only
+deployments en voor live tests die moeten aantonen dat het Codex app-server-pad
+daadwerkelijk in gebruik is.
 
-```json
-{
-  "agents": {
-    "defaults": {
-      "agentRuntime": {
-        "id": "auto"
-      }
-    }
-  }
-}
-```
-
-Overrides per agent gebruiken dezelfde vorm:
-
-```json
-{
-  "agents": {
-    "defaults": {
-      "agentRuntime": { "id": "auto" }
-    },
-    "list": [
-      {
-        "id": "codex-only",
-        "model": "openai/gpt-5.5",
-        "agentRuntime": { "id": "codex" }
-      }
-    ]
-  }
-}
-```
-
-`OPENCLAW_AGENT_RUNTIME` overschrijft nog steeds de geconfigureerde runtime.
-
-```bash
-OPENCLAW_AGENT_RUNTIME=codex openclaw gateway run
-```
-
-Met een expliciete Plugin-runtime faalt een sessie vroeg wanneer het aangevraagde harnas niet geregistreerd is, de opgeloste provider/het opgeloste model niet ondersteunt, of faalt voordat het neveneffecten van de beurt produceert. Dat is bewust voor deployments die alleen voor Codex zijn en voor live tests die moeten bewijzen dat het Codex app-serverpad daadwerkelijk in gebruik is.
-
-Deze instelling beheert alleen het ingebedde agentharnas. Ze schakelt image-, video-, muziek-, TTS-, PDF- of andere providerspecifieke modelroutering niet uit.
+Deze instelling regelt alleen de embedded agent harness. Zij schakelt
+image-, video-, music-, TTS-, PDF- of andere providerspecifieke modelroutering niet uit.
 
 ## Native sessies en transcriptspiegel
 
-Een harnas kan een native sessie-ID, thread-ID of hervattoken aan de daemonzijde bijhouden. Houd die binding expliciet gekoppeld aan de OpenClaw-sessie en blijf gebruikerszichtbare assistent-/tooluitvoer spiegelen naar het OpenClaw-transcript.
+Een harness kan een native sessie-id, thread-id of resume-token aan de daemonzijde bewaren.
+Houd die binding expliciet gekoppeld aan de OpenClaw-sessie, en blijf
+gebruikerszichtbare assistent-/tooluitvoer spiegelen naar het OpenClaw-transcript.
 
 Het OpenClaw-transcript blijft de compatibiliteitslaag voor:
 
 - kanaalzichtbare sessiegeschiedenis
-- transcriptzoekfunctie en indexering
-- terugschakelen naar het ingebouwde PI-harnas bij een latere beurt
+- transcriptzoekopdrachten en indexering
+- terugschakelen naar de ingebouwde PI-harness in een latere beurt
 - generiek gedrag voor `/new`, `/reset` en sessieverwijdering
 
-Als je harnas een sidecarbinding opslaat, implementeer dan `reset(...)` zodat OpenClaw die kan wissen wanneer de eigenaar-OpenClaw-sessie wordt gereset.
+Als je harness een sidecar-binding opslaat, implementeer dan `reset(...)` zodat OpenClaw die kan
+wissen wanneer de eigenaar-OpenClaw-sessie wordt gereset.
 
 ## Tool- en mediaresultaten
 
-Core construeert de OpenClaw-toollijst en geeft die door aan de voorbereide poging. Wanneer een harnas een dynamische tool-call uitvoert, retourneer het toolresultaat dan via de resultaatvorm van het harnas in plaats van zelf kanaalmedia te verzenden.
+Core construeert de OpenClaw-toollijst en geeft die door aan de voorbereide poging.
+Wanneer een harness een dynamische toolaanroep uitvoert, retourneer het toolresultaat dan via
+de resultaatvorm van de harness in plaats van zelf kanaalmedia te verzenden.
 
-Zo blijven tekst-, image-, video-, muziek-, TTS-, goedkeurings- en messaging-tooluitvoer op hetzelfde leveringspad als runs die door PI worden ondersteund.
+Zo blijven tekst-, image-, video-, music-, TTS-, goedkeurings- en messaging-tool-uitvoer
+op hetzelfde bezorgpad als door PI ondersteunde runs.
 
 ## Huidige beperkingen
 
-- Het openbare importpad is generiek, maar sommige typealiassen voor pogingen/resultaten
-  dragen om compatibiliteitsredenen nog `Pi`-namen.
-- Installatie van harnassen van derden is experimenteel. Geef de voorkeur aan provider-plugins
+- Het publieke importpad is generiek, maar sommige poging-/resultaattype-aliassen dragen nog steeds
+  `Pi`-namen voor compatibiliteit.
+- Installatie van harnesses van derden is experimenteel. Geef de voorkeur aan providerplugins
   totdat je een native sessieruntime nodig hebt.
-- Schakelen tussen harnassen wordt over beurten heen ondersteund. Schakel niet van harnas
-  midden in een beurt nadat native tools, goedkeuringen, assistenttekst of het verzenden van
-  berichten is gestart.
+- Wisselen van harness wordt ondersteund tussen beurten. Wissel niet van harness midden in een
+  beurt nadat native tools, goedkeuringen, assistenttekst of berichtverzendingen
+  zijn gestart.
 
 ## Gerelateerd
 
 - [SDK-overzicht](/nl/plugins/sdk-overview)
-- [Runtime-hulpfuncties](/nl/plugins/sdk-runtime)
+- [Runtime-helpers](/nl/plugins/sdk-runtime)
 - [Provider-Plugins](/nl/plugins/sdk-provider-plugins)
 - [Codex-harnas](/nl/plugins/codex-harness)
 - [Modelproviders](/nl/concepts/model-providers)

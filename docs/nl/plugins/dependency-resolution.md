@@ -1,41 +1,41 @@
 ---
 read_when:
     - Je debugt installaties van Plugin-pakketten
-    - Je wijzigt het opstartgedrag van plugins, doctor of het installatiegedrag van de pakketbeheerder
-    - Je onderhoudt verpakte OpenClaw-installaties of gebundelde Plugin-manifesten
+    - Je wijzigt het opstartgedrag van Plugins, doctor of het installatiegedrag van de pakketbeheerder
+    - U onderhoudt verpakte OpenClaw-installaties of gebundelde Plugin-manifesten
 sidebarTitle: Dependencies
 summary: Hoe OpenClaw Plugin-pakketten installeert en Plugin-afhankelijkheden oplost
-title: Plugin-afhankelijkheidsresolutie
+title: Resolutie van Plugin-afhankelijkheden
 x-i18n:
-    generated_at: "2026-05-06T19:35:41Z"
+    generated_at: "2026-05-11T20:40:06Z"
     model: gpt-5.5
     provider: openai
-    source_hash: d51785b67d491d09e3a7a3ffcd6c991f7415c46b207596151dbc29b0c43e9341
+    source_hash: eb9637f46f273de976ff9203d23558d8bb51922b347871bc71917ef61d3c04a3
     source_path: plugins/dependency-resolution.md
     workflow: 16
 ---
 
-OpenClaw houdt werk aan Plugin-afhankelijkheden bij installatie-/updatetijd. Runtime laden
-voert geen package managers uit, repareert geen afhankelijkheidsbomen en muteert de OpenClaw
-pakketmap niet.
+OpenClaw houdt werk voor plugin-afhankelijkheden bij installaties/updates. Runtime-laden
+voert geen package managers uit, herstelt geen afhankelijkheidsbomen en muteert de
+OpenClaw-pakketmap niet.
 
-## Verantwoordelijkheidsverdeling
+## Verdeling van verantwoordelijkheid
 
-Plugin-pakketten zijn eigenaar van hun afhankelijkheidsgraaf:
+Pluginpakketten beheren hun eigen afhankelijkheidsgraaf:
 
-- runtime-afhankelijkheden staan in de Plugin-pakket-`dependencies` of
+- runtime-afhankelijkheden staan in de pluginpakket-`dependencies` of
   `optionalDependencies`
-- SDK-/core-imports zijn peer-imports of door OpenClaw geleverde imports
-- lokale ontwikkelings-Plugins brengen hun eigen al geïnstalleerde afhankelijkheden mee
-- npm- en git-Plugins worden geïnstalleerd in pakketroots die eigendom zijn van OpenClaw
+- SDK/core-imports zijn peer-imports of door OpenClaw geleverde imports
+- lokale ontwikkelplugins brengen hun eigen al geïnstalleerde afhankelijkheden mee
+- npm- en git-plugins worden geïnstalleerd in pakketroots die door OpenClaw worden beheerd
 
-OpenClaw is alleen eigenaar van de Plugin-levenscyclus:
+OpenClaw beheert alleen de pluginlevenscyclus:
 
-- de Plugin-bron ontdekken
-- het pakket installeren of updaten wanneer daar expliciet om wordt gevraagd
+- de pluginbron ontdekken
+- het pakket installeren of bijwerken wanneer daar expliciet om wordt gevraagd
 - de installatiemetadata vastleggen
-- het Plugin-entrypoint laden
-- mislukken met een uitvoerbare fout wanneer afhankelijkheden ontbreken
+- het plugin-entrypoint laden
+- falen met een uitvoerbare fout wanneer afhankelijkheden ontbreken
 
 ## Installatieroots
 
@@ -43,61 +43,62 @@ OpenClaw gebruikt stabiele roots per bron:
 
 - npm-pakketten worden geïnstalleerd onder `~/.openclaw/npm`
 - git-pakketten worden gekloond onder `~/.openclaw/git`
-- lokale/pad-/archiefinstallaties worden gekopieerd of gerefereerd zonder afhankelijkheidsreparatie
+- lokale/pad-/archiefinstallaties worden gekopieerd of gerefereerd zonder afhankelijkheidsherstel
 
-npm-installaties worden uitgevoerd in de npm-root met:
+npm-installaties draaien in de npm-root met:
 
 ```bash
-npm install --prefix ~/.openclaw/npm <spec> --omit=dev --omit=peer --legacy-peer-deps --ignore-scripts --no-audit --no-fund
+cd ~/.openclaw/npm
+npm install --omit=dev --omit=peer --legacy-peer-deps --ignore-scripts --no-audit --no-fund
 ```
 
-`openclaw plugins install npm-pack:<path.tgz>` gebruikt dezelfde beheerde npm-root
+`openclaw plugins install npm-pack:<path.tgz>` gebruikt diezelfde beheerde npm-root
 voor een lokale npm-pack-tarball. OpenClaw leest de npm-metadata van de tarball, voegt deze
 toe aan de beheerde root als een gekopieerde `file:`-afhankelijkheid, voert de normale npm-installatie uit
-en verifieert daarna de geïnstalleerde lockfile-metadata voordat de Plugin wordt vertrouwd.
-Dit is bedoeld voor pakketacceptatie- en releasecandidate-bewijs waarbij een
+en verifieert daarna de geïnstalleerde lockfilemetadata voordat de plugin wordt vertrouwd.
+Dit is bedoeld voor pakketacceptatie en bewijs voor release candidates waarbij een
 lokaal pack-artefact zich moet gedragen als het registry-artefact dat het simuleert.
 
 npm kan transitieve afhankelijkheden hoisten naar `~/.openclaw/npm/node_modules` naast
-het Plugin-pakket. OpenClaw scant de beheerde npm-root voordat de
-installatie wordt vertrouwd en gebruikt npm om door npm beheerde pakketten te verwijderen tijdens deïnstallatie, zodat gehoste
+het pluginpakket. OpenClaw scant de beheerde npm-root voordat de
+installatie wordt vertrouwd en gebruikt npm om door npm beheerde pakketten te verwijderen tijdens het verwijderen, zodat gehoiste
 runtime-afhankelijkheden binnen de beheerde opschoongrens blijven.
 
 Plugins die `openclaw/plugin-sdk/*` importeren, declareren `openclaw` als een peer-
 afhankelijkheid. OpenClaw laat npm geen aparte registry-kopie van het
-hostpakket installeren in de beheerde root, omdat verouderde hostpakketten de npm
-peer-resolutie kunnen beïnvloeden tijdens latere Plugin-installaties. Beheerde npm-installaties slaan npm peer-
-resolutie/materialisatie over voor de gedeelde root en OpenClaw bevestigt opnieuw
-Plugin-lokale `node_modules/openclaw`-links voor geïnstalleerde pakketten die
-de host-peer declareren na installatie, update of deïnstallatie.
+hostpakket installeren in de beheerde root, omdat verouderde hostpakketten npm-
+peerresolutie kunnen beïnvloeden tijdens latere plugininstallaties. Beheerde npm-installaties slaan npm-peer-
+resolutie/materialisatie over voor de gedeelde root en OpenClaw bevestigt
+pluginlokale `node_modules/openclaw`-links opnieuw voor geïnstalleerde pakketten die
+de host-peer declareren na installatie, update of verwijdering.
 
-git-installaties klonen of verversen de repository en voeren daarna uit:
+git-installaties klonen of vernieuwen de repository en voeren daarna uit:
 
 ```bash
 npm install --omit=dev --ignore-scripts --no-audit --no-fund
 ```
 
-De geïnstalleerde Plugin wordt daarna geladen vanuit die pakketmap, zodat pakketlokale
+De geïnstalleerde plugin laadt daarna vanuit die pakketmap, zodat pakketlokale
 en bovenliggende `node_modules`-resolutie op dezelfde manier werkt als bij een normaal
 Node-pakket.
 
-## Lokale Plugins
+## Lokale plugins
 
-Lokale Plugins worden behandeld als door ontwikkelaars beheerde mappen. OpenClaw voert geen
-`npm install`, `pnpm install` of afhankelijkheidsreparatie voor ze uit. Als een lokale
-Plugin afhankelijkheden heeft, installeer die dan in die Plugin voordat je deze laadt.
+Lokale plugins worden behandeld als door ontwikkelaars beheerde mappen. OpenClaw voert geen
+`npm install`, `pnpm install` of afhankelijkheidsherstel voor ze uit. Als een lokale
+plugin afhankelijkheden heeft, installeer die dan in die plugin voordat je deze laadt.
 
-Lokale TypeScript-Plugins van derden kunnen het noodpad via Jiti gebruiken. Verpakte
-JavaScript-Plugins en gebundelde interne Plugins laden via native
-import/require in plaats van via Jiti.
+Lokale TypeScript-plugins van derden kunnen het noodpad via Jiti gebruiken. Verpakte
+JavaScript-plugins en gebundelde interne plugins laden via native
+import/require in plaats van Jiti.
 
 ## Opstarten en herladen
 
-Gateway-opstart en config-herladen installeren nooit Plugin-afhankelijkheden. Ze lezen
-de Plugin-installatierecords, berekenen het entrypoint en laden dit.
+Gateway-opstart en config-herladen installeren nooit pluginafhankelijkheden. Ze lezen
+de plugininstallatierecords, berekenen het entrypoint en laden dit.
 
-Als een afhankelijkheid bij runtime ontbreekt, laadt de Plugin niet en moet de fout
-de operator naar een expliciete oplossing wijzen:
+Als een afhankelijkheid ontbreekt tijdens runtime, wordt de plugin niet geladen en moet de fout
+de operator wijzen op een expliciete oplossing:
 
 ```bash
 openclaw plugins update <id>
@@ -105,45 +106,45 @@ openclaw plugins install <source>
 openclaw doctor --fix
 ```
 
-`doctor --fix` kan verouderde door OpenClaw gegenereerde afhankelijkheidsstatus opschonen en herstel uitvoeren voor
-downloadbare Plugins die ontbreken in de lokale installatierecords wanneer config
-ernaar verwijst. Doctor repareert geen afhankelijkheden voor een al geïnstalleerde
-lokale Plugin.
+`doctor --fix` kan legacy door OpenClaw gegenereerde afhankelijkheidsstatus opschonen en
+downloadbare plugins herstellen die ontbreken in de lokale installatierecords wanneer de config
+ernaar verwijst. Doctor herstelt geen afhankelijkheden voor een al geïnstalleerde
+lokale plugin.
 
-## Gebundelde Plugins
+## Gebundelde plugins
 
-Lichtgewicht en core-kritieke gebundelde Plugins worden als onderdeel van OpenClaw geleverd.
-Ze zouden geen zware runtime-afhankelijkheidsboom moeten hebben, of anders moeten worden verplaatst naar een
+Lichtgewicht en core-kritieke gebundelde plugins worden meegeleverd als onderdeel van OpenClaw.
+Ze moeten geen zware runtime-afhankelijkheidsboom hebben of worden verplaatst naar een
 downloadbaar pakket op ClawHub/npm.
 
-Zie [Plugin-inventaris](/nl/plugins/plugin-inventory) voor de huidige gegenereerde lijst van Plugins die in het core-pakket worden meegeleverd,
-extern worden geïnstalleerd of alleen als bron blijven bestaan.
+Voor de huidige gegenereerde lijst met plugins die in het corepakket worden meegeleverd,
+extern worden geïnstalleerd of alleen als bron blijven bestaan, zie [Plugin-inventaris](/nl/plugins/plugin-inventory).
 
-Gebundelde Plugin-manifests mogen niet om afhankelijkheidsstaging vragen. Grote of optionele
-Plugin-functionaliteit moet als een normale Plugin worden verpakt en geïnstalleerd via
-hetzelfde npm-/git-/ClawHub-pad als Plugins van derden.
+Manifesten van gebundelde plugins mogen geen afhankelijkheidsstaging aanvragen. Grote of optionele
+pluginfunctionaliteit moet worden verpakt als een normale plugin en worden geïnstalleerd via
+hetzelfde npm/git/ClawHub-pad als plugins van derden.
 
-In source-checkouts behandelt OpenClaw de repository als een pnpm-monorepo. Na
-`pnpm install` laden gebundelde Plugins vanuit `extensions/<id>`, zodat pakketlokale
-workspace-afhankelijkheden beschikbaar zijn en bewerkingen direct worden opgepakt. Ontwikkeling vanuit een source-
-checkout is alleen pnpm; gewone `npm install` in de repository-root is
-geen ondersteunde manier om gebundelde Plugin-afhankelijkheden voor te bereiden.
+In broncheckouts behandelt OpenClaw de repository als een pnpm-monorepo. Na
+`pnpm install` laden gebundelde plugins vanuit `extensions/<id>`, zodat pakketlokale
+workspace-afhankelijkheden beschikbaar zijn en bewerkingen direct worden opgepikt. Ontwikkeling vanuit een
+broncheckout is alleen pnpm; gewone `npm install` in de repositoryroot is
+geen ondersteunde manier om afhankelijkheden van gebundelde plugins voor te bereiden.
 
-| Installatievorm                  | Locatie van gebundelde Plugin         | Eigenaar van afhankelijkheden                                        |
+| Installatievorm                  | Locatie van gebundelde plugin         | Eigenaar van afhankelijkheden                                        |
 | -------------------------------- | ------------------------------------- | -------------------------------------------------------------------- |
-| `npm install -g openclaw`        | Gebouwde runtime-boom binnen het pakket | OpenClaw-pakket en expliciete Plugin-installatie-/update-/doctor-flows |
-| Git-checkout plus `pnpm install` | `extensions/<id>`-workspacepakketten  | De pnpm-workspace, inclusief de eigen afhankelijkheden van elk Plugin-pakket |
-| `openclaw plugins install ...`   | Beheerde npm-/git-/ClawHub-Plugin-root | De Plugin-installatie-/updateflow                                    |
+| `npm install -g openclaw`        | Gebouwde runtimeboom binnen het pakket | OpenClaw-pakket en expliciete plugininstallatie-/update-/doctorflows |
+| Git-checkout plus `pnpm install` | `extensions/<id>`-workspacepakketten  | De pnpm-workspace, inclusief de eigen afhankelijkheden van elk pluginpakket |
+| `openclaw plugins install ...`   | Beheerde npm/git/ClawHub-pluginroot   | De plugininstallatie-/updateflow                                     |
 
-## Verouderde opschoning
+## Legacy-opschoning
 
-Oudere OpenClaw-versies genereerden afhankelijkheidsroots voor gebundelde Plugins bij het opstarten of
+Oudere OpenClaw-versies genereerden afhankelijkheidsroots voor gebundelde plugins bij het opstarten of
 tijdens doctor-reparatie. De huidige doctor-opschoning verwijdert die verouderde mappen en
 symlinks wanneer `--fix` wordt gebruikt, inclusief oude `plugin-runtime-deps`-roots, globale
-Node-prefix-pakketsymlinks die wijzen naar opgeschoonde `plugin-runtime-deps`-doelen,
-`.openclaw-runtime-deps*`-manifests, gegenereerde Plugin-`node_modules`, installatie-
-stagingmappen en pakketlokale pnpm-stores. Verpakte postinstall verwijdert ook
-die globale symlinks voordat de verouderde doelroots worden opgeschoond, zodat upgrades
-geen hangende ESM-pakketimports achterlaten.
+Node-prefix-pakketsymlinks die verwijzen naar opgeschoonde `plugin-runtime-deps`-doelen,
+`.openclaw-runtime-deps*`-manifesten, gegenereerde plugin-`node_modules`, installatiestagingmappen
+en pakketlokale pnpm-stores. Verpakte postinstall verwijdert ook
+die globale symlinks voordat de legacy-doelroots worden opgeschoond, zodat upgrades
+geen losse ESM-pakketimports achterlaten.
 
-Deze paden zijn alleen verouderde restanten. Nieuwe installaties zouden ze niet moeten maken.
+Deze paden zijn alleen legacy-afval. Nieuwe installaties mogen ze niet aanmaken.

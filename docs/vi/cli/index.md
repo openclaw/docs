@@ -1,72 +1,72 @@
 ---
 read_when:
     - Tìm lệnh con `openclaw` phù hợp
-    - Tra cứu cờ toàn cục hoặc quy tắc định kiểu đầu ra
-summary: 'Chỉ mục CLI OpenClaw: danh sách lệnh, cờ toàn cục và liên kết đến các trang theo từng lệnh'
-title: Tham chiếu CLI
+    - Tra cứu các cờ toàn cục hoặc quy tắc định kiểu đầu ra
+summary: 'Chỉ mục OpenClaw CLI: danh sách lệnh, cờ toàn cục và liên kết đến các trang riêng cho từng lệnh'
+title: Tài liệu tham khảo CLI
 x-i18n:
-    generated_at: "2026-05-10T19:28:19Z"
+    generated_at: "2026-05-11T20:26:36Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 34d37fea072d4f05098567456db832ecb93f40884892d8bc4b063319500933f5
+    source_hash: 7003579c741d193ba77bf0b672fa16446b5e4fb3a9a9dc4a0a838eaf758fb196
     source_path: cli/index.md
     workflow: 16
 ---
 
 `openclaw` là điểm vào CLI chính. Mỗi lệnh lõi có một trang tham chiếu
-riêng hoặc được ghi lại cùng với lệnh mà nó là bí danh; chỉ mục này liệt kê
-các lệnh, các cờ toàn cục và quy tắc kiểu dáng đầu ra áp dụng trên toàn CLI.
+riêng hoặc được ghi tài liệu cùng với lệnh mà nó là bí danh; mục lục này liệt kê
+các lệnh, cờ toàn cục, và quy tắc kiểu hiển thị đầu ra áp dụng trên toàn CLI.
 
 Dùng các lệnh thiết lập theo mục đích:
 
-- `openclaw setup` tạo cấu hình nền tảng và không gian làm việc mà không đi qua toàn bộ luồng hướng dẫn nhập môn.
-- `openclaw onboard` là đường dẫn chạy lần đầu có hướng dẫn đầy đủ cho Gateway, xác thực mô hình, không gian làm việc, kênh, Skills và tình trạng hoạt động.
-- `openclaw configure` thay đổi các phần cụ thể của một thiết lập hiện có, chẳng hạn như xác thực mô hình, Gateway, kênh, Plugin hoặc Skills.
-- `openclaw channels add` cấu hình tài khoản kênh sau khi nền tảng đã tồn tại; chạy lệnh này không kèm cờ để thiết lập kênh có hướng dẫn hoặc kèm các cờ dành riêng cho kênh trong script.
+- `openclaw setup` tạo cấu hình nền tảng và workspace mà không đi qua toàn bộ luồng hướng dẫn onboarding.
+- `openclaw onboard` là đường dẫn chạy lần đầu được hướng dẫn đầy đủ cho Gateway, xác thực mô hình, workspace, kênh, Skills, và tình trạng hệ thống.
+- `openclaw configure` thay đổi các phần được nhắm mục tiêu của một thiết lập hiện có, chẳng hạn như xác thực mô hình, Gateway, kênh, Plugin, hoặc Skills.
+- `openclaw channels add` cấu hình tài khoản kênh sau khi nền tảng đã tồn tại; chạy không có cờ để thiết lập kênh theo hướng dẫn hoặc dùng các cờ riêng theo kênh cho script.
 
 ## Trang lệnh
 
 | Khu vực              | Lệnh                                                                                                                                                                                                                                      |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Thiết lập và nhập môn | [`crestodian`](/vi/cli/crestodian) · [`setup`](/vi/cli/setup) · [`onboard`](/vi/cli/onboard) · [`configure`](/vi/cli/configure) · [`config`](/vi/cli/config) · [`completion`](/vi/cli/completion) · [`doctor`](/vi/cli/doctor) · [`dashboard`](/vi/cli/dashboard) |
+| Thiết lập và onboarding | [`crestodian`](/vi/cli/crestodian) · [`setup`](/vi/cli/setup) · [`onboard`](/vi/cli/onboard) · [`configure`](/vi/cli/configure) · [`config`](/vi/cli/config) · [`completion`](/vi/cli/completion) · [`doctor`](/vi/cli/doctor) · [`dashboard`](/vi/cli/dashboard) |
 | Đặt lại và gỡ cài đặt | [`backup`](/vi/cli/backup) · [`reset`](/vi/cli/reset) · [`uninstall`](/vi/cli/uninstall) · [`update`](/vi/cli/update)                                                                                                                                 |
-| Nhắn tin và tác tử   | [`message`](/vi/cli/message) · [`agent`](/vi/cli/agent) · [`agents`](/vi/cli/agents) · [`acp`](/vi/cli/acp) · [`mcp`](/vi/cli/mcp)                                                                                                                       |
+| Nhắn tin và agent    | [`message`](/vi/cli/message) · [`agent`](/vi/cli/agent) · [`agents`](/vi/cli/agents) · [`acp`](/vi/cli/acp) · [`mcp`](/vi/cli/mcp)                                                                                                                       |
 | Tình trạng và phiên  | [`status`](/vi/cli/status) · [`health`](/vi/cli/health) · [`sessions`](/vi/cli/sessions)                                                                                                                                                           |
 | Gateway và nhật ký   | [`gateway`](/vi/cli/gateway) · [`logs`](/vi/cli/logs) · [`system`](/vi/cli/system)                                                                                                                                                                 |
-| Mô hình và suy luận  | [`models`](/vi/cli/models) · [`infer`](/vi/cli/infer) · `capability` (bí danh của [`infer`](/vi/cli/infer)) · [`memory`](/vi/cli/memory) · [`commitments`](/vi/cli/commitments) · [`wiki`](/vi/cli/wiki)                                                     |
-| Mạng và node         | [`directory`](/vi/cli/directory) · [`nodes`](/vi/cli/nodes) · [`devices`](/vi/cli/devices) · [`node`](/vi/cli/node)                                                                                                                                   |
+| Mô hình và suy luận  | [`models`](/vi/cli/models) · [`infer`](/vi/cli/infer) · `capability` (bí danh của [`infer`](/vi/cli/infer)) · [`memory`](/vi/cli/memory) · [`commitments`](/vi/cli/commitments) · [`wiki`](/vi/cli/wiki)                                                      |
+| Mạng và nút          | [`directory`](/vi/cli/directory) · [`nodes`](/vi/cli/nodes) · [`devices`](/vi/cli/devices) · [`node`](/vi/cli/node)                                                                                                                                   |
 | Runtime và sandbox   | [`approvals`](/vi/cli/approvals) · `exec-policy` (xem [`approvals`](/vi/cli/approvals)) · [`sandbox`](/vi/cli/sandbox) · [`tui`](/vi/cli/tui) · `chat`/`terminal` (bí danh của [`tui --local`](/vi/cli/tui)) · [`browser`](/vi/cli/browser)                 |
 | Tự động hóa          | [`cron`](/vi/cli/cron) · [`tasks`](/vi/cli/tasks) · [`hooks`](/vi/cli/hooks) · [`webhooks`](/vi/cli/webhooks)                                                                                                                                         |
 | Khám phá và tài liệu | [`dns`](/vi/cli/dns) · [`docs`](/vi/cli/docs)                                                                                                                                                                                                   |
 | Ghép nối và kênh     | [`pairing`](/vi/cli/pairing) · [`qr`](/vi/cli/qr) · [`channels`](/vi/cli/channels)                                                                                                                                                                 |
 | Bảo mật và Plugin    | [`security`](/vi/cli/security) · [`secrets`](/vi/cli/secrets) · [`skills`](/vi/cli/skills) · [`plugins`](/vi/cli/plugins) · [`proxy`](/vi/cli/proxy)                                                                                                     |
-| Bí danh cũ           | [`daemon`](/vi/cli/daemon) (dịch vụ Gateway) · [`clawbot`](/vi/cli/clawbot) (không gian tên)                                                                                                                                                    |
+| Bí danh cũ           | [`daemon`](/vi/cli/daemon) (dịch vụ Gateway) · [`clawbot`](/vi/cli/clawbot) (namespace)                                                                                                                                                         |
 | Plugin (tùy chọn)    | [`path`](/vi/cli/path) · [`voicecall`](/vi/cli/voicecall) (nếu đã cài đặt)                                                                                                                                                                      |
 
 ## Cờ toàn cục
 
-| Cờ                      | Mục đích                                                                 |
-| ----------------------- | ------------------------------------------------------------------------ |
+| Cờ                      | Mục đích                                                              |
+| ----------------------- | --------------------------------------------------------------------- |
 | `--dev`                 | Cô lập trạng thái dưới `~/.openclaw-dev` và dịch chuyển các cổng mặc định |
-| `--profile <name>`      | Cô lập trạng thái dưới `~/.openclaw-<name>`                              |
-| `--container <name>`    | Nhắm tới một container có tên để thực thi                                |
-| `--no-color`            | Tắt màu ANSI (`NO_COLOR=1` cũng được tôn trọng)                          |
-| `--update`              | Viết tắt cho [`openclaw update`](/vi/cli/update) (chỉ cài đặt từ nguồn)     |
-| `-V`, `--version`, `-v` | In phiên bản rồi thoát                                                   |
+| `--profile <name>`      | Cô lập trạng thái dưới `~/.openclaw-<name>`                           |
+| `--container <name>`    | Nhắm tới một container đã đặt tên để thực thi                         |
+| `--no-color`            | Tắt màu ANSI (`NO_COLOR=1` cũng được tôn trọng)                       |
+| `--update`              | Viết tắt cho [`openclaw update`](/vi/cli/update) (chỉ với cài đặt từ nguồn) |
+| `-V`, `--version`, `-v` | In phiên bản và thoát                                                 |
 
 ## Chế độ đầu ra
 
-- Màu ANSI và chỉ báo tiến trình chỉ hiển thị trong phiên TTY.
+- Màu ANSI và chỉ báo tiến trình chỉ hiển thị trong các phiên TTY.
 - Siêu liên kết OSC-8 hiển thị dưới dạng liên kết có thể nhấp ở nơi được hỗ trợ; nếu không,
   CLI sẽ quay về URL thuần.
-- `--json` (và `--plain` ở nơi được hỗ trợ) tắt kiểu dáng để có đầu ra sạch.
+- `--json` (và `--plain` ở nơi được hỗ trợ) tắt kiểu hiển thị để có đầu ra sạch.
 - Các lệnh chạy lâu hiển thị chỉ báo tiến trình (OSC 9;4 khi được hỗ trợ).
 
-Nguồn chân lý của bảng màu: `src/terminal/palette.ts`.
+Nguồn sự thật của bảng màu: `src/terminal/palette.ts`.
 
 ## Cây lệnh
 
-<Accordion title="Cây lệnh đầy đủ">
+<Accordion title="Full command tree">
 
 ```
 openclaw [--dev] [--profile <name>] <command>
@@ -262,6 +262,7 @@ openclaw [--dev] [--profile <name>] <command>
   cron
     status
     list
+    get
     add
     edit
     rm
@@ -373,29 +374,29 @@ Plugin có thể thêm các lệnh cấp cao nhất bổ sung (ví dụ `opencla
 
 </Accordion>
 
-## Lệnh gạch chéo trong chat
+## Lệnh slash trong chat
 
-Tin nhắn chat hỗ trợ các lệnh `/...`. Xem [lệnh gạch chéo](/vi/tools/slash-commands).
+Tin nhắn chat hỗ trợ các lệnh `/...`. Xem [lệnh slash](/vi/tools/slash-commands).
 
 Điểm nổi bật:
 
 - `/status` — chẩn đoán nhanh.
 - `/trace` — các dòng trace/gỡ lỗi Plugin trong phạm vi phiên.
 - `/config` — thay đổi cấu hình được lưu bền vững.
-- `/debug` — ghi đè cấu hình chỉ trong runtime (bộ nhớ, không ghi đĩa; yêu cầu `commands.debug: true`).
+- `/debug` — ghi đè cấu hình chỉ trong runtime (bộ nhớ, không phải đĩa; yêu cầu `commands.debug: true`).
 
 ## Theo dõi mức sử dụng
 
 `openclaw status --usage` và Control UI hiển thị mức sử dụng/hạn mức của nhà cung cấp khi
-có thông tin xác thực OAuth/API. Dữ liệu đến trực tiếp từ các endpoint sử dụng
-của nhà cung cấp và được chuẩn hóa thành `X% left`. Các nhà cung cấp có cửa sổ
-sử dụng hiện tại: Anthropic, GitHub Copilot, Gemini CLI, OpenAI Codex, MiniMax,
-Xiaomi và z.ai.
+có thông tin xác thực OAuth/API. Dữ liệu đến trực tiếp từ các endpoint mức sử dụng
+của nhà cung cấp và được chuẩn hóa thành `X% left`. Các nhà cung cấp có cửa sổ mức sử dụng
+hiện tại: Anthropic, GitHub Copilot, Gemini CLI, OpenAI Codex, MiniMax,
+Xiaomi, và z.ai.
 
 Xem [Theo dõi mức sử dụng](/vi/concepts/usage-tracking) để biết chi tiết.
 
 ## Liên quan
 
-- [Lệnh gạch chéo](/vi/tools/slash-commands)
+- [Lệnh slash](/vi/tools/slash-commands)
 - [Cấu hình](/vi/gateway/configuration)
 - [Môi trường](/vi/help/environment)

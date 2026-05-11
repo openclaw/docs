@@ -1,29 +1,29 @@
 ---
 read_when:
     - การอัปเดต OpenClaw
-    - บางอย่างใช้งานไม่ได้หลังจากการอัปเดต
-summary: การอัปเดต OpenClaw อย่างปลอดภัย (การติดตั้งแบบโกลบอลหรือจากซอร์สโค้ด) พร้อมกลยุทธ์การย้อนกลับ
-title: การอัปเดต
+    - มีบางอย่างใช้งานไม่ได้หลังการอัปเดต
+summary: การอัปเดต OpenClaw อย่างปลอดภัย (การติดตั้งทั้งระบบหรือจากซอร์สโค้ด) พร้อมกลยุทธ์การย้อนกลับ
+title: กำลังอัปเดต
 x-i18n:
-    generated_at: "2026-05-07T13:22:00Z"
+    generated_at: "2026-05-11T20:32:28Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3c9ff1d70d74f45efea3c148718e5cbc74001ce3d924b760edc4d68622d23714
+    source_hash: cb1506ed87b1cf2e4928987c9dbfaff17d47b87f6c18239d694e0f55deb609f7
     source_path: install/updating.md
     workflow: 16
 ---
 
-อัปเดต OpenClaw ให้เป็นเวอร์ชันล่าสุดอยู่เสมอ
+อัปเดต OpenClaw ให้เป็นเวอร์ชันล่าสุดเสมอ
 
 ## แนะนำ: `openclaw update`
 
-วิธีอัปเดตที่เร็วที่สุด โดยจะตรวจจับประเภทการติดตั้งของคุณ (npm หรือ git), ดึงเวอร์ชันล่าสุด, รัน `openclaw doctor` และรีสตาร์ท Gateway
+วิธีอัปเดตที่เร็วที่สุด โดยจะตรวจหาประเภทการติดตั้งของคุณ (npm หรือ git), ดึงเวอร์ชันล่าสุด, รัน `openclaw doctor` และรีสตาร์ท Gateway
 
 ```bash
 openclaw update
 ```
 
-หากต้องการสลับแชนเนลหรือระบุเวอร์ชันเฉพาะ:
+หากต้องการสลับช่องทางหรือระบุเวอร์ชันเป้าหมาย:
 
 ```bash
 openclaw update --channel beta
@@ -34,21 +34,25 @@ openclaw update --dry-run   # preview without applying
 
 `openclaw update` ไม่รับ `--verbose` สำหรับการวินิจฉัยการอัปเดต ให้ใช้
 `--dry-run` เพื่อดูตัวอย่างการดำเนินการที่วางแผนไว้, `--json` สำหรับผลลัพธ์แบบมีโครงสร้าง หรือ
-`openclaw update status --json` เพื่อตรวจสอบสถานะแชนเนลและความพร้อมใช้งาน
-ตัวติดตั้งมีแฟล็ก `--verbose` ของตัวเอง แต่แฟล็กนั้นไม่ได้เป็นส่วนหนึ่งของ
+`openclaw update status --json` เพื่อตรวจสอบสถานะช่องทางและความพร้อมใช้งาน
+ตัวติดตั้งมีแฟล็ก `--verbose` ของตัวเอง แต่แฟล็กนั้นไม่ใช่ส่วนหนึ่งของ
 `openclaw update`
 
-`--channel beta` จะให้ความสำคัญกับ beta แต่ runtime จะ fallback ไปยัง stable/latest เมื่อ
-ไม่มีแท็ก beta หรือแท็กนั้นเก่ากว่า stable release ล่าสุด ใช้ `--tag beta`
-หากคุณต้องการ npm beta dist-tag ดิบสำหรับการอัปเดตแพ็กเกจแบบครั้งเดียว
+`--channel beta` จะให้ความสำคัญกับ beta แต่ runtime จะถอยกลับไปใช้ stable/latest เมื่อ
+ไม่มีแท็ก beta หรือแท็กนั้นเก่ากว่ารุ่น stable ล่าสุด ใช้ `--tag beta`
+หากคุณต้องการ npm beta dist-tag แบบดิบสำหรับการอัปเดตแพ็กเกจครั้งเดียว
 
-ดู [แชนเนลสำหรับการพัฒนา](/th/install/development-channels) สำหรับความหมายของแชนเนล
+สำหรับ Plugin ที่มีการจัดการ การถอยกลับของช่องทาง beta จะเป็นคำเตือน: การอัปเดต core ยัง
+สำเร็จได้ในขณะที่ Plugin ใช้รุ่น default/latest ที่บันทึกไว้ เพราะไม่มี
+Plugin beta ให้ใช้
+
+ดู [ช่องทางการพัฒนา](/th/install/development-channels) สำหรับความหมายของช่องทาง
 
 ## สลับระหว่างการติดตั้งแบบ npm และ git
 
-ใช้แชนเนลเมื่อคุณต้องการเปลี่ยนประเภทการติดตั้ง ตัวอัปเดตจะคง
-state, config, credentials และ workspace ของคุณไว้ใน `~/.openclaw`; โดยจะเปลี่ยนเฉพาะ
-การติดตั้งโค้ด OpenClaw ที่ CLI และ Gateway ใช้
+ใช้ช่องทางเมื่อคุณต้องการเปลี่ยนประเภทการติดตั้ง ตัวอัปเดตจะเก็บ
+สถานะ, config, credentials และ workspace ของคุณไว้ใน `~/.openclaw`; โดยจะเปลี่ยนเฉพาะ
+การติดตั้งโค้ด OpenClaw ที่ CLI และ Gateway ใช้เท่านั้น
 
 ```bash
 # npm package install -> editable git checkout
@@ -58,19 +62,19 @@ openclaw update --channel dev
 openclaw update --channel stable
 ```
 
-รันพร้อม `--dry-run` ก่อนเพื่อดูตัวอย่างการสลับโหมดการติดตั้งที่แน่นอน:
+รันด้วย `--dry-run` ก่อนเพื่อดูตัวอย่างการสลับโหมดการติดตั้งที่แน่นอน:
 
 ```bash
 openclaw update --channel dev --dry-run
 openclaw update --channel stable --dry-run
 ```
 
-แชนเนล `dev` จะตรวจให้แน่ใจว่ามี git checkout, build มัน และติดตั้ง global CLI
-จาก checkout นั้น แชนเนล `stable` และ `beta` ใช้การติดตั้งแบบแพ็กเกจ หาก
-ติดตั้ง Gateway ไว้อยู่แล้ว `openclaw update` จะรีเฟรช metadata ของบริการ
+ช่องทาง `dev` จะรับประกันว่ามี git checkout, build และติดตั้ง CLI แบบ global
+จาก checkout นั้น ช่องทาง `stable` และ `beta` ใช้การติดตั้งแบบแพ็กเกจ หาก
+Gateway ติดตั้งไว้แล้ว `openclaw update` จะรีเฟรช metadata ของ service
 และรีสตาร์ท เว้นแต่คุณจะส่ง `--no-restart`
 
-## ทางเลือก: รันตัวติดตั้งอีกครั้ง
+## ทางเลือกอื่น: รันตัวติดตั้งอีกครั้ง
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash
@@ -82,36 +86,36 @@ curl -fsSL https://openclaw.ai/install.sh | bash
 
 หาก `openclaw update` ล้มเหลวหลังจากขั้นตอนการติดตั้งแพ็กเกจ npm ให้รัน
 ตัวติดตั้งอีกครั้ง ตัวติดตั้งจะไม่เรียกตัวอัปเดตเก่า แต่จะรันการติดตั้ง
-แพ็กเกจแบบ global โดยตรง และสามารถกู้คืนการติดตั้ง npm ที่อัปเดตไปบางส่วนได้
+แพ็กเกจ global โดยตรง และสามารถกู้คืนการติดตั้ง npm ที่อัปเดตไปบางส่วนได้
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method npm
 ```
 
-หากต้องการ pin การกู้คืนไปยังเวอร์ชันหรือ dist-tag เฉพาะ ให้เพิ่ม `--version`:
+หากต้องการตรึงการกู้คืนไว้กับเวอร์ชันหรือ dist-tag เฉพาะ ให้เพิ่ม `--version`:
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method npm --version <version-or-dist-tag>
 ```
 
-## ทางเลือก: npm, pnpm หรือ bun แบบแมนนวล
+## ทางเลือกอื่น: npm, pnpm หรือ bun แบบ manual
 
 ```bash
 npm i -g openclaw@latest
 ```
 
-แนะนำให้ใช้ `openclaw update` สำหรับการติดตั้งที่มีการควบคุม เพราะสามารถประสาน
-การสลับแพ็กเกจกับบริการ Gateway ที่กำลังทำงานอยู่ได้ หากคุณอัปเดตแบบแมนนวลขณะที่
-Gateway ที่จัดการอยู่กำลังทำงาน ให้รีสตาร์ท Gateway ทันทีหลังจาก package
-manager ทำงานเสร็จ เพื่อไม่ให้ process เก่ายังให้บริการจากไฟล์แพ็กเกจที่ถูกแทนที่แล้ว
+ควรใช้ `openclaw update` สำหรับการติดตั้งที่มีการกำกับดูแล เพราะสามารถประสาน
+การสลับแพ็กเกจกับ service Gateway ที่กำลังทำงานอยู่ได้ หากคุณอัปเดตแบบ manual ขณะที่
+Gateway ที่มีการจัดการกำลังทำงานอยู่ ให้รีสตาร์ท Gateway ทันทีหลังจาก package
+manager เสร็จสิ้น เพื่อไม่ให้โปรเซสเก่ายังคงให้บริการจากไฟล์แพ็กเกจที่ถูกแทนที่แล้ว
 
-เมื่อ `openclaw update` จัดการการติดตั้ง global npm มันจะติดตั้งเป้าหมายลงใน
-npm prefix ชั่วคราวก่อน, ตรวจสอบ inventory ของ `dist` ที่แพ็กมา แล้วจึงสลับ
-package tree ที่สะอาดเข้าไปยัง global prefix จริง วิธีนี้หลีกเลี่ยงไม่ให้ npm overlay
+เมื่อ `openclaw update` จัดการการติดตั้ง npm แบบ global จะติดตั้งเป้าหมายลงใน
+npm prefix ชั่วคราวก่อน ตรวจสอบ inventory ของ `dist` ที่แพ็กมา แล้วจึงสลับ
+package tree ที่สะอาดเข้าไปใน global prefix จริง วิธีนี้หลีกเลี่ยงไม่ให้ npm ซ้อน
 แพ็กเกจใหม่ทับไฟล์ค้างจากแพ็กเกจเก่า หากคำสั่งติดตั้งล้มเหลว
-OpenClaw จะลองซ้ำหนึ่งครั้งพร้อม `--omit=optional` การลองซ้ำนั้นช่วยโฮสต์ที่
-native optional dependencies คอมไพล์ไม่ได้ ขณะยังคงแสดงความล้มเหลวเดิม
-หาก fallback ก็ล้มเหลวเช่นกัน
+OpenClaw จะลองอีกครั้งหนึ่งด้วย `--omit=optional` การลองซ้ำนั้นช่วย host ที่ native
+optional dependencies คอมไพล์ไม่ได้ ขณะที่ยังคงแสดงข้อผิดพลาดเดิมให้เห็น
+หาก fallback ก็ล้มเหลวด้วย
 
 ```bash
 pnpm add -g openclaw@latest
@@ -121,31 +125,31 @@ pnpm add -g openclaw@latest
 bun add -g openclaw@latest
 ```
 
-### หัวข้อการติดตั้ง npm ขั้นสูง
+### หัวข้อขั้นสูงเกี่ยวกับการติดตั้ง npm
 
 <AccordionGroup>
-  <Accordion title="Package tree แบบอ่านอย่างเดียว">
-    OpenClaw ถือว่าการติดตั้ง global แบบแพ็กเกจเป็นแบบอ่านอย่างเดียวใน runtime แม้ว่าไดเรกทอรีแพ็กเกจ global จะเขียนได้โดยผู้ใช้ปัจจุบันก็ตาม การติดตั้งแพ็กเกจ Plugin จะอยู่ใน npm/git roots ที่ OpenClaw เป็นเจ้าของใต้ไดเรกทอรี config ของผู้ใช้ และการเริ่มต้น Gateway จะไม่แก้ไข package tree ของ OpenClaw
+  <Accordion title="package tree แบบอ่านอย่างเดียว">
+    OpenClaw ถือว่าการติดตั้งแบบ global ที่แพ็กมาเป็นแบบอ่านอย่างเดียวใน runtime แม้ว่าไดเรกทอรีแพ็กเกจ global จะเขียนได้โดยผู้ใช้ปัจจุบัน การติดตั้งแพ็กเกจ Plugin จะอยู่ใน root npm/git ที่ OpenClaw เป็นเจ้าของภายใต้ไดเรกทอรี config ของผู้ใช้ และการเริ่มต้น Gateway จะไม่แก้ไข package tree ของ OpenClaw
 
-    การตั้งค่า npm บางแบบบน Linux ติดตั้งแพ็กเกจ global ไว้ใต้ไดเรกทอรีที่ root เป็นเจ้าของ เช่น `/usr/lib/node_modules/openclaw` OpenClaw รองรับเลย์เอาต์นั้น เพราะคำสั่งติดตั้ง/อัปเดต Plugin จะเขียนนอกไดเรกทอรีแพ็กเกจ global นั้น
+    การตั้งค่า npm บน Linux บางแบบติดตั้งแพ็กเกจ global ไว้ใต้ไดเรกทอรีที่ root เป็นเจ้าของ เช่น `/usr/lib/node_modules/openclaw` OpenClaw รองรับ layout นั้นเพราะคำสั่งติดตั้ง/อัปเดต Plugin จะเขียนภายนอกไดเรกทอรีแพ็กเกจ global นั้น
 
   </Accordion>
-  <Accordion title="systemd units ที่เสริมความแข็งแรง">
-    ให้ OpenClaw มีสิทธิ์เขียนไปยัง roots ของ config/state เพื่อให้การติดตั้ง Plugin แบบ explicit, การอัปเดต Plugin และการ cleanup ของ doctor สามารถบันทึกการเปลี่ยนแปลงได้:
+  <Accordion title="systemd units ที่เพิ่มความแข็งแกร่ง">
+    ให้สิทธิ์เขียนแก่ OpenClaw สำหรับ root ของ config/state เพื่อให้การติดตั้ง Plugin แบบ explicit, การอัปเดต Plugin และการล้างข้อมูลของ doctor สามารถบันทึกการเปลี่ยนแปลงได้:
 
     ```ini
     ReadWritePaths=/var/lib/openclaw /home/openclaw/.openclaw /tmp
     ```
 
   </Accordion>
-  <Accordion title="การตรวจพื้นที่ดิสก์ล่วงหน้า">
-    ก่อนการอัปเดตแพ็กเกจและการติดตั้ง Plugin แบบ explicit OpenClaw จะพยายามตรวจพื้นที่ดิสก์แบบ best-effort สำหรับ volume เป้าหมาย พื้นที่ต่ำจะสร้างคำเตือนพร้อม path ที่ตรวจสอบ แต่จะไม่บล็อกการอัปเดต เพราะ filesystem quotas, snapshots และ network volumes อาจเปลี่ยนแปลงได้หลังการตรวจ การติดตั้งของ package-manager จริงและการตรวจสอบหลังติดตั้งยังคงเป็นหลักฐานชี้ขาด
+  <Accordion title="การตรวจสอบพื้นที่ดิสก์ล่วงหน้า">
+    ก่อนการอัปเดตแพ็กเกจและการติดตั้ง Plugin แบบ explicit OpenClaw จะพยายามตรวจสอบพื้นที่ดิสก์ของ volume เป้าหมายแบบ best-effort พื้นที่เหลือน้อยจะแสดงคำเตือนพร้อม path ที่ตรวจสอบ แต่จะไม่บล็อกการอัปเดต เพราะ quota ของ filesystem, snapshot และ network volume อาจเปลี่ยนหลังการตรวจสอบได้ การติดตั้งของ package-manager จริงและการตรวจสอบหลังติดตั้งยังคงเป็นแหล่งอ้างอิงที่เชื่อถือได้
   </Accordion>
 </AccordionGroup>
 
 ## ตัวอัปเดตอัตโนมัติ
 
-ตัวอัปเดตอัตโนมัติปิดอยู่ตามค่าเริ่มต้น เปิดใช้งานใน `~/.openclaw/openclaw.json`:
+ตัวอัปเดตอัตโนมัติปิดอยู่โดย default เปิดใช้งานใน `~/.openclaw/openclaw.json`:
 
 ```json5
 {
@@ -161,23 +165,23 @@ bun add -g openclaw@latest
 }
 ```
 
-| แชนเนล  | พฤติกรรม                                                                                                      |
+| ช่องทาง | พฤติกรรม |
 | -------- | ------------------------------------------------------------------------------------------------------------- |
-| `stable` | รอ `stableDelayHours` จากนั้นนำไปใช้พร้อม jitter แบบกำหนดแน่นอนทั่ว `stableJitterHours` (การ rollout แบบกระจาย) |
-| `beta`   | ตรวจทุก `betaCheckIntervalHours` (ค่าเริ่มต้น: ทุกชั่วโมง) และนำไปใช้ทันที                              |
-| `dev`    | ไม่มีการนำไปใช้โดยอัตโนมัติ ใช้ `openclaw update` แบบแมนนวล                                                           |
+| `stable` | รอ `stableDelayHours` จากนั้นนำไปใช้พร้อม jitter แบบ deterministic ตลอดช่วง `stableJitterHours` (การ rollout แบบกระจาย) |
+| `beta`   | ตรวจสอบทุก `betaCheckIntervalHours` (default: รายชั่วโมง) และนำไปใช้ทันที |
+| `dev`    | ไม่มีการนำไปใช้อัตโนมัติ ใช้ `openclaw update` แบบ manual |
 
-Gateway ยังบันทึก hint การอัปเดตตอนเริ่มต้นด้วย (ปิดด้วย `update.checkOnStart: false`)
-สำหรับการ downgrade หรือการกู้คืนจากเหตุการณ์ ให้ตั้ง `OPENCLAW_NO_AUTO_UPDATE=1` ใน environment ของ Gateway เพื่อบล็อกการนำไปใช้อัตโนมัติ แม้จะกำหนดค่า `update.auto.enabled` ไว้ก็ตาม hint การอัปเดตตอนเริ่มต้นยังคงรันได้ เว้นแต่จะปิด `update.checkOnStart` ด้วย
+Gateway ยังบันทึกคำแนะนำการอัปเดตเมื่อเริ่มต้นด้วย (ปิดได้ด้วย `update.checkOnStart: false`)
+สำหรับการ downgrade หรือการกู้คืนจาก incident ให้ตั้ง `OPENCLAW_NO_AUTO_UPDATE=1` ใน environment ของ Gateway เพื่อบล็อกการนำไปใช้อัตโนมัติ แม้จะกำหนดค่า `update.auto.enabled` ไว้แล้วก็ตาม คำแนะนำการอัปเดตตอนเริ่มต้นยังคงรันได้ เว้นแต่จะปิด `update.checkOnStart` ด้วย
 
-การอัปเดตผ่าน package-manager ที่ร้องขอผ่าน handler ของ live Gateway control-plane
-จะบังคับให้รีสตาร์ทการอัปเดตแบบไม่เลื่อนเวลาและไม่มี cooldown หลังจากสลับแพ็กเกจ
-วิธีนี้หลีกเลี่ยงการปล่อยให้ process เก่าในหน่วยความจำอยู่นานพอที่จะ lazy-load chunks
-จาก package tree ที่ถูกแทนที่ไปแล้ว Shell `openclaw update`
-ยังคงเป็นเส้นทางที่แนะนำสำหรับการติดตั้งที่มีการควบคุม เพราะสามารถหยุดและ
-รีสตาร์ทบริการรอบการอัปเดตได้
+การอัปเดตผ่าน package-manager ที่ร้องขอผ่าน live Gateway control-plane handler
+จะบังคับการรีสตาร์ทอัปเดตแบบไม่เลื่อนเวลาและไม่มี cooldown หลังจากสลับแพ็กเกจ
+วิธีนี้หลีกเลี่ยงการปล่อยโปรเซสเก่าในหน่วยความจำไว้นานพอที่จะ lazy-load chunks
+จาก package tree ที่ถูกแทนที่แล้ว Shell `openclaw update`
+ยังคงเป็นเส้นทางที่แนะนำสำหรับการติดตั้งที่มีการกำกับดูแล เพราะสามารถหยุดและ
+รีสตาร์ท service ระหว่างการอัปเดตได้
 
-## หลังจากอัปเดต
+## หลังอัปเดต
 
 <Steps>
 
@@ -187,7 +191,7 @@ Gateway ยังบันทึก hint การอัปเดตตอนเ
 openclaw doctor
 ```
 
-ย้าย config, ตรวจสอบ DM policies และตรวจสุขภาพ Gateway รายละเอียด: [Doctor](/th/gateway/doctor)
+ย้าย config, audit นโยบาย DM และตรวจสุขภาพ Gateway รายละเอียด: [Doctor](/th/gateway/doctor)
 
 ### รีสตาร์ท Gateway
 
@@ -203,9 +207,9 @@ openclaw health
 
 </Steps>
 
-## ย้อนกลับ
+## Rollback
 
-### Pin เวอร์ชัน (npm)
+### ตรึงเวอร์ชัน (npm)
 
 ```bash
 npm i -g openclaw@<version>
@@ -214,10 +218,10 @@ openclaw gateway restart
 ```
 
 <Tip>
-`npm view openclaw version` แสดงเวอร์ชันที่เผยแพร่ปัจจุบัน
+`npm view openclaw version` แสดงเวอร์ชันที่เผยแพร่อยู่ในปัจจุบัน
 </Tip>
 
-### Pin commit (source)
+### ตรึง commit (source)
 
 ```bash
 git fetch origin
@@ -226,17 +230,17 @@ pnpm install && pnpm build
 openclaw gateway restart
 ```
 
-หากต้องการกลับไปยังล่าสุด: `git checkout main && git pull`
+หากต้องการกลับไปใช้ล่าสุด: `git checkout main && git pull`
 
 ## หากคุณติดขัด
 
-- รัน `openclaw doctor` อีกครั้งและอ่าน output อย่างรอบคอบ
-- สำหรับ `openclaw update --channel dev` บน source checkouts ตัวอัปเดตจะ bootstrap `pnpm` ให้อัตโนมัติเมื่อจำเป็น หากคุณเห็นข้อผิดพลาด bootstrap ของ pnpm/corepack ให้ติดตั้ง `pnpm` แบบแมนนวล (หรือเปิดใช้งาน `corepack` อีกครั้ง) แล้วรันการอัปเดตซ้ำ
+- รัน `openclaw doctor` อีกครั้งและอ่านผลลัพธ์อย่างรอบคอบ
+- สำหรับ `openclaw update --channel dev` บน source checkout ตัวอัปเดตจะ bootstrap `pnpm` อัตโนมัติเมื่อจำเป็น หากคุณเห็นข้อผิดพลาด bootstrap ของ pnpm/corepack ให้ติดตั้ง `pnpm` แบบ manual (หรือเปิดใช้ `corepack` อีกครั้ง) แล้วรันการอัปเดตซ้ำ
 - ตรวจสอบ: [การแก้ไขปัญหา](/th/gateway/troubleshooting)
 - ถามใน Discord: [https://discord.gg/clawd](https://discord.gg/clawd)
 
 ## ที่เกี่ยวข้อง
 
-- [ภาพรวมการติดตั้ง](/th/install): วิธีการติดตั้งทั้งหมด
-- [Doctor](/th/gateway/doctor): การตรวจสุขภาพหลังการอัปเดต
+- [ภาพรวมการติดตั้ง](/th/install): วิธีติดตั้งทั้งหมด
+- [Doctor](/th/gateway/doctor): การตรวจสุขภาพหลังอัปเดต
 - [การย้ายเวอร์ชัน](/th/install/migrating): คู่มือการย้ายเวอร์ชันหลัก

@@ -1,37 +1,37 @@
 ---
 read_when:
-    - Musisz logować się do witryn na potrzeby automatyzacji przeglądarki
+    - Musisz zalogować się do witryn na potrzeby automatyzacji przeglądarki
     - Chcesz publikować aktualizacje na X/Twitterze
-summary: Ręczne logowania na potrzeby automatyzacji przeglądarki + publikowania na X/Twitter
+summary: Ręczne logowania na potrzeby automatyzacji przeglądarki + publikowania na X/Twitterze
 title: Logowanie w przeglądarce
 x-i18n:
-    generated_at: "2026-05-06T09:31:32Z"
+    generated_at: "2026-05-11T20:37:57Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 235194fd3a49724247f98e6d7c848c4cc3317f749ff4a8918c2172b73baf21e3
+    source_hash: 89501b47611a39df5a658ed7e144b7c16a07188dfa52544b56cbfc6e296e2ecc
     source_path: tools/browser-login.md
     workflow: 16
 ---
 
-## Ręczne logowanie (zalecane)
+## Logowanie ręczne (zalecane)
 
-Gdy witryna wymaga logowania, **zaloguj się ręcznie** w profilu przeglądarki **hosta** (przeglądarka openclaw).
+Gdy witryna wymaga logowania, **zaloguj się ręcznie** w profilu przeglądarki **hosta** (przeglądarce openclaw).
 
-**Nie** podawaj modelowi swoich danych logowania. Zautomatyzowane logowania często uruchamiają zabezpieczenia antybotowe i mogą zablokować konto.
+**Nie** przekazuj modelowi swoich poświadczeń. Automatyczne logowania często uruchamiają zabezpieczenia antybotowe i mogą zablokować konto.
 
 Powrót do głównej dokumentacji przeglądarki: [Przeglądarka](/pl/tools/browser).
 
 ## Który profil Chrome jest używany?
 
-OpenClaw kontroluje **dedykowany profil Chrome** (o nazwie `openclaw`, z pomarańczowo zabarwionym interfejsem). Jest on oddzielny od Twojego codziennego profilu przeglądarki.
+OpenClaw kontroluje **dedykowany profil Chrome** (o nazwie `openclaw`, z pomarańczowym odcieniem interfejsu). Jest on oddzielony od Twojego codziennego profilu przeglądarki.
 
-Dla wywołań narzędzia przeglądarki przez agenta:
+W przypadku wywołań narzędzia przeglądarki przez agenta:
 
-- Domyślny wybór: agent powinien używać swojej izolowanej przeglądarki `openclaw`.
-- Używaj `profile="user"` tylko wtedy, gdy istniejące zalogowane sesje mają znaczenie, a użytkownik jest przy komputerze, aby kliknąć/zatwierdzić ewentualny monit o dołączenie.
-- Jeśli masz wiele profili przeglądarki użytkownika, wskaż profil jawnie zamiast zgadywać.
+- Domyślny wybór: agent powinien używać swojej odizolowanej przeglądarki `openclaw`.
+- Używaj `profile="user"` tylko wtedy, gdy znaczenie mają istniejące zalogowane sesje, a użytkownik jest przy komputerze, aby kliknąć/zatwierdzić ewentualny monit o dołączenie.
+- Jeśli masz wiele profili przeglądarki użytkownika, określ profil jawnie zamiast zgadywać.
 
-Dwa proste sposoby uzyskania dostępu:
+Dwa proste sposoby dostępu:
 
 1. **Poproś agenta o otwarcie przeglądarki**, a następnie zaloguj się samodzielnie.
 2. **Otwórz ją przez CLI**:
@@ -41,18 +41,18 @@ openclaw browser start
 openclaw browser open https://x.com
 ```
 
-Jeśli masz wiele profili, przekaż `--browser-profile <name>` (wartość domyślna to `openclaw`).
+Jeśli masz wiele profili, przekaż `--browser-profile <name>` (domyślnie jest to `openclaw`).
 
 ## X/Twitter: zalecany przepływ
 
-- **Czytanie/wyszukiwanie/wątki:** używaj przeglądarki **hosta** (ręczne logowanie).
-- **Publikowanie aktualizacji:** używaj przeglądarki **hosta** (ręczne logowanie).
+- **Czytanie/wyszukiwanie/wątki:** używaj przeglądarki **hosta** (logowanie ręczne).
+- **Publikowanie aktualizacji:** używaj przeglądarki **hosta** (logowanie ręczne).
 
-## Sandboxing + dostęp do przeglądarki hosta
+## Piaskownica + dostęp do przeglądarki hosta
 
-Sesje przeglądarki w sandboxie **częściej** uruchamiają wykrywanie botów. W przypadku X/Twitter (i innych restrykcyjnych witryn) preferuj przeglądarkę **hosta**.
+Sesje przeglądarki w piaskownicy **częściej** uruchamiają wykrywanie botów. W przypadku X/Twitter (i innych restrykcyjnych witryn) preferuj przeglądarkę **hosta**.
 
-Jeśli agent działa w sandboxie, narzędzie przeglądarki domyślnie używa sandboxa. Aby zezwolić na kontrolę hosta:
+Jeśli agent działa w piaskownicy, narzędzie przeglądarki domyślnie używa piaskownicy. Aby zezwolić na sterowanie hostem:
 
 ```json5
 {
@@ -69,16 +69,16 @@ Jeśli agent działa w sandboxie, narzędzie przeglądarki domyślnie używa san
 }
 ```
 
-Następnie skieruj polecenie do przeglądarki hosta:
+Następnie samodzielnie otwórz przeglądarkę hosta (wywołania CLI zawsze działają na przeglądarce hosta):
 
 ```bash
-openclaw browser open https://x.com --browser-profile openclaw --target host
+openclaw browser open https://x.com --browser-profile openclaw
 ```
 
-Albo wyłącz sandboxing dla agenta, który publikuje aktualizacje.
+Wywołania narzędzia `browser` agenta mogą wtedy wskazywać hosta po ustawieniu `sandbox.browser.allowHostControl: true`. Alternatywnie wyłącz piaskownicę dla agenta, który publikuje aktualizacje.
 
 ## Powiązane
 
 - [Przeglądarka](/pl/tools/browser)
 - [Rozwiązywanie problemów z przeglądarką w systemie Linux](/pl/tools/browser-linux-troubleshooting)
-- [Rozwiązywanie problemów z przeglądarką WSL2 przez zdalne CDP systemu Windows](/pl/tools/browser-wsl2-windows-remote-cdp-troubleshooting)
+- [Rozwiązywanie problemów z przeglądarką w WSL2](/pl/tools/browser-wsl2-windows-remote-cdp-troubleshooting)

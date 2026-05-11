@@ -1,73 +1,73 @@
 ---
 read_when:
     - exec onaylarını veya izin listelerini yapılandırma
-    - macOS uygulamasında exec onayı kullanıcı deneyimini uygulama
-    - Sandbox kaçışı istemlerini ve bunların etkilerini inceleme
+    - macOS uygulamasında yürütme onayı kullanıcı deneyimini uygulama
+    - Korumalı alandan kaçış istemlerini ve bunların etkilerini inceleme
 sidebarTitle: Exec approvals
-summary: 'Ana makine yürütme onayları: politika ayarları, izin listeleri ve YOLO/katı iş akışı'
-title: Komut çalıştırma onayları
+summary: 'Ana makinede yürütme onayları: politika ayarları, izin listeleri ve YOLO/katı iş akışı'
+title: Yürütme onayları
 x-i18n:
-    generated_at: "2026-05-10T19:57:02Z"
+    generated_at: "2026-05-11T20:37:29Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8b1a9649161440bca445e318654b9a48a54ae1dbbca42349ac94b13ecc9fbfbd
+    source_hash: 2966a6f4633046941a9ef3267bad10f3a153956361b9f088fb3e29fcd3fcb99d
     source_path: tools/exec-approvals.md
     workflow: 16
 ---
 
-Exec onayları, korumalı alandaki bir aracının gerçek bir host üzerinde (`gateway` veya `node`) komut çalıştırmasına izin vermek için kullanılan **yardımcı uygulama / node host koruma sınırıdır**. Bir güvenlik kilidi: komutlara yalnızca policy + allowlist + (isteğe bağlı) kullanıcı onayı birlikte kabul ettiğinde izin verilir. Exec onayları, tool policy ve elevated gating **üzerine eklenir** (`elevated` `full` olarak ayarlanmışsa onaylar atlanır).
+Exec onayları, sandbox uygulanmış bir agent'ın gerçek bir ana makinede (`gateway` veya `node`) komut çalıştırmasına izin vermek için kullanılan **yardımcı uygulama / node ana makinesi güvenlik bariyeridir**. Bir güvenlik kilidi: komutlara yalnızca ilke + izin listesi + (isteğe bağlı) kullanıcı onayı aynı fikirde olduğunda izin verilir. Exec onayları, araç ilkesinin ve yükseltilmiş geçiş denetiminin **üzerine** eklenir (`elevated` `full` olarak ayarlanmadığı sürece; bu durumda onaylar atlanır).
 
 <Note>
-Etkin policy, `tools.exec.*` ve onay varsayılanları arasındaki **daha katı** olandır; bir onay alanı atlanırsa `tools.exec` değeri kullanılır. Host exec ayrıca o makinedeki yerel onay durumunu kullanır - `~/.openclaw/exec-approvals.json` içinde hosta yerel bir `ask: "always"` ayarı, oturum veya config varsayılanları `ask: "on-miss"` istese bile sormaya devam eder.
+Etkin ilke, `tools.exec.*` ve onay varsayılanlarının **daha katı** olanıdır; bir onay alanı atlanırsa `tools.exec` değeri kullanılır. Ana makine exec'i ayrıca o makinedeki yerel onay durumunu kullanır - `~/.openclaw/exec-approvals.json` içindeki ana makineye yerel `ask: "always"`, oturum veya yapılandırma varsayılanları `ask: "on-miss"` istese bile sormaya devam eder.
 </Note>
 
-## Etkin policy'yi inceleme
+## Etkin ilkeyi inceleme
 
-| Komut                                                            | Ne gösterir                                                                            |
-| ---------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `openclaw approvals get` / `--gateway` / `--node <id\|name\|ip>` | İstenen policy, host policy kaynakları ve etkin sonuç.                                 |
-| `openclaw exec-policy show`                                      | Yerel makinenin birleştirilmiş görünümü.                                               |
-| `openclaw exec-policy set` / `preset`                            | Yerel istenen policy'yi yerel host onayları dosyasıyla tek adımda eşitler.             |
+| Komut                                                            | Ne gösterir                                                                           |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `openclaw approvals get` / `--gateway` / `--node <id\|name\|ip>` | İstenen ilke, ana makine ilke kaynakları ve etkin sonuç.                              |
+| `openclaw exec-policy show`                                      | Yerel makinenin birleştirilmiş görünümü.                                              |
+| `openclaw exec-policy set` / `preset`                            | Yerel istenen ilkeyi yerel ana makine onayları dosyasıyla tek adımda eşitler.         |
 
-Yerel bir kapsam `host=node` istediğinde, `exec-policy show` bu kapsamı yerel onay dosyasını gerçeğin kaynağı gibi göstermek yerine çalışma zamanında node tarafından yönetiliyor olarak raporlar.
+Yerel bir kapsam `host=node` istediğinde, `exec-policy show` bu kapsamı yerel onaylar dosyasını doğruluk kaynağıymış gibi göstermek yerine çalışma zamanında node tarafından yönetiliyor olarak bildirir.
 
-Yardımcı uygulama arayüzü **kullanılabilir değilse**, normalde istem gösterecek her istek **ask fallback** ile çözülür (varsayılan: `deny`).
+Yardımcı uygulama UI'ı **kullanılamıyorsa**, normalde istem gösterecek her istek **ask fallback** ile çözümlenir (varsayılan: `deny`).
 
 <Tip>
-Yerel chat onay istemcileri, bekleyen onay mesajına kanala özgü olanaklar ekleyebilir. Örneğin Matrix, `/approve ...` komutlarını mesajda yedek seçenek olarak bırakırken reaction kısayolları ekler (`✅` bir kez izin ver, `❌` reddet, `♾️` her zaman izin ver).
+Yerel sohbet onay istemcileri, bekleyen onay iletisinde kanala özgü kolaylıkları önceden yerleştirebilir. Örneğin Matrix, iletide yedek olarak `/approve ...` komutlarını bırakmaya devam ederken tepki kısayollarını (`✅` bir kez izin ver, `❌` reddet, `♾️` her zaman izin ver) önceden yerleştirir.
 </Tip>
 
 ## Nerede uygulanır
 
-Exec onayları yürütme hostunda yerel olarak zorunlu kılınır:
+Exec onayları yürütme ana makinesinde yerel olarak uygulanır:
 
-- **Gateway hostu** → gateway makinesindeki `openclaw` süreci.
-- **Node hostu** → node çalıştırıcısı (macOS yardımcı uygulaması veya başsız node hostu).
+- **Gateway ana makinesi** → Gateway makinesindeki `openclaw` işlemi.
+- **Node ana makinesi** → node çalıştırıcısı (macOS yardımcı uygulaması veya başsız node ana makinesi).
 
 ### Güven modeli
 
-- Gateway kimliği doğrulanmış çağırıcılar, o Gateway için güvenilen operatörlerdir.
-- Eşleştirilmiş node'lar, bu güvenilen operatör yeteneğini node hostuna taşır.
-- Exec onayları kazara yürütme riskini azaltır, ancak kullanıcı bazlı bir auth sınırı veya dosya sistemi salt okunur policy'si **değildir**.
-- Onaylandıktan sonra bir komut, seçilen host veya korumalı alan dosya sistemi izinlerine göre dosyaları değiştirebilir.
-- Onaylanmış node-host çalıştırmaları canonical yürütme bağlamını bağlar: canonical cwd, tam argv, varsa env binding ve uygulanabiliyorsa sabitlenmiş executable path.
-- Shell scriptleri ve doğrudan interpreter/runtime dosya çağrıları için OpenClaw ayrıca somut bir yerel dosya operandı bağlamaya çalışır. Bu bağlı dosya onaydan sonra ama yürütmeden önce değişirse, değişmiş içeriği yürütmek yerine çalıştırma reddedilir.
-- Dosya bağlama bilinçli olarak en iyi çabadır; her interpreter/runtime loader yolunun eksiksiz semantic modeli **değildir**. Onay modu bağlanacak tam olarak bir somut yerel dosyayı belirleyemezse, tam kapsama varmış gibi davranmak yerine onay destekli bir çalıştırma üretmeyi reddeder.
+- Gateway ile kimliği doğrulanmış çağıranlar, o Gateway için güvenilir operatörlerdir.
+- Eşleştirilmiş node'lar, bu güvenilir operatör yeteneğini node ana makinesine taşır.
+- Exec onayları yanlışlıkla yürütme riskini azaltır, ancak **kullanıcı başına bir kimlik doğrulama sınırı veya dosya sistemi salt okunur ilkesi değildir**.
+- Onaylandıktan sonra bir komut, seçilen ana makine veya sandbox dosya sistemi izinlerine göre dosyaları değiştirebilir.
+- Onaylanmış node ana makinesi çalıştırmaları kanonik yürütme bağlamını bağlar: kanonik cwd, tam argv, varsa env bağlaması ve uygulanabildiğinde sabitlenmiş yürütülebilir dosya yolu.
+- Kabuk betikleri ve doğrudan yorumlayıcı/çalışma zamanı dosya çağrıları için OpenClaw ayrıca somut bir yerel dosya işlenenini bağlamaya çalışır. Bu bağlı dosya onaydan sonra ancak yürütmeden önce değişirse, çalışma sapmış içeriği yürütmek yerine reddedilir.
+- Dosya bağlama bilinçli olarak en iyi çaba düzeyindedir; her yorumlayıcı/çalışma zamanı yükleyici yolunun **tam** anlamsal modeli değildir. Onay modu bağlanacak tam olarak bir somut yerel dosyayı belirleyemezse, tam kapsama sahipmiş gibi davranmak yerine onay destekli bir çalışma üretmeyi reddeder.
 
 ### macOS ayrımı
 
-- **Node host servisi**, `system.run` çağrısını yerel IPC üzerinden **macOS uygulamasına** iletir.
-- **macOS uygulaması** onayları zorunlu kılar ve komutu UI bağlamında yürütür.
+- **node ana makine hizmeti**, `system.run` çağrılarını yerel IPC üzerinden **macOS uygulamasına** iletir.
+- **macOS uygulaması** onayları uygular ve komutu UI bağlamında yürütür.
 
 ## Ayarlar ve depolama
 
-Onaylar yürütme hostundaki yerel bir JSON dosyasında bulunur:
+Onaylar yürütme ana makinesindeki yerel bir JSON dosyasında bulunur:
 
 ```text
 ~/.openclaw/exec-approvals.json
 ```
 
-Örnek schema:
+Örnek şema:
 
 ```json
 {
@@ -104,44 +104,44 @@ Onaylar yürütme hostundaki yerel bir JSON dosyasında bulunur:
 }
 ```
 
-## Policy düğmeleri
+## İlke düğmeleri
 
 ### `exec.security`
 
 <ParamField path="security" type='"deny" | "allowlist" | "full"'>
-  - `deny` - tüm host exec isteklerini engeller.
-  - `allowlist` - yalnızca allowlist'e alınmış komutlara izin verir.
-  - `full` - her şeye izin verir (elevated ile eşdeğer).
+  - `deny` - tüm ana makine exec isteklerini engelle.
+  - `allowlist` - yalnızca izin listesindeki komutlara izin ver.
+  - `full` - her şeye izin ver (yükseltilmiş ile eşdeğer).
 
 </ParamField>
 
 ### `exec.ask`
 
 <ParamField path="ask" type='"off" | "on-miss" | "always"'>
-  - `off` - asla sormaz.
-  - `on-miss` - yalnızca allowlist eşleşmediğinde sorar.
-  - `always` - her komutta sorar. Etkin ask modu `always` olduğunda `allow-always` kalıcı güveni istemleri **bastırmaz**.
+  - `off` - hiçbir zaman istem gösterme.
+  - `on-miss` - yalnızca izin listesi eşleşmediğinde istem göster.
+  - `always` - her komutta istem göster. Etkin ask modu `always` olduğunda `allow-always` kalıcı güveni istemleri **bastırmaz**.
 
 </ParamField>
 
 ### `askFallback`
 
 <ParamField path="askFallback" type='"deny" | "allowlist" | "full"'>
-  Bir istem gerektiğinde ancak hiçbir UI erişilebilir olmadığında çözüm.
+  İstem gerekli olduğunda ancak hiçbir UI'a ulaşılamadığında çözüm.
 
-- `deny` - engeller.
-- `allowlist` - yalnızca allowlist eşleşirse izin verir.
-- `full` - izin verir.
+- `deny` - engelle.
+- `allowlist` - yalnızca izin listesi eşleşirse izin ver.
+- `full` - izin ver.
 
 </ParamField>
 
 ### `tools.exec.strictInlineEval`
 
 <ParamField path="strictInlineEval" type="boolean">
-  `true` olduğunda OpenClaw, interpreter binary'sinin kendisi allowlist'te olsa bile inline code-eval biçimlerini yalnızca onayla çalıştırılabilir kabul eder. Tek bir kararlı dosya operandına temiz biçimde eşlenmeyen interpreter loader'ları için savunma derinliği sağlar.
+  `true` olduğunda OpenClaw, yorumlayıcı ikilisi izin listesinde olsa bile satır içi kod değerlendirme biçimlerini yalnızca onayla çalışır kabul eder. Tek bir kararlı dosya işlenenine temiz biçimde eşlenmeyen yorumlayıcı yükleyiciler için derinlemesine savunma sağlar.
 </ParamField>
 
-Strict modun yakaladığı örnekler:
+Katı modun yakaladığı örnekler:
 
 - `python -c`
 - `node -e`, `node --eval`, `node -p`
@@ -151,38 +151,46 @@ Strict modun yakaladığı örnekler:
 - `lua -e`
 - `osascript -e`
 
-Strict modda bu komutlar yine de açık onay gerektirir ve `allow-always` bunlar için yeni allowlist girdilerini otomatik olarak kalıcı hale getirmez.
+Katı modda bu komutlar yine de açık onay gerektirir ve `allow-always` onlar için yeni izin listesi girdilerini otomatik olarak kalıcı hale getirmez.
+
+### `tools.exec.commandHighlighting`
+
+<ParamField path="commandHighlighting" type="boolean" default="false">
+  Yalnızca exec onay istemlerindeki sunumu denetler. Etkinleştirildiğinde OpenClaw, Web onay istemlerinin komut belirteçlerini vurgulayabilmesi için ayrıştırıcıdan türetilmiş komut aralıkları ekleyebilir. Komut metni vurgulamayı etkinleştirmek için bunu `true` olarak ayarlayın.
+</ParamField>
+
+Bu ayar `security`, `ask`, izin listesi eşleşmesini, katı satır içi değerlendirme davranışını, onay iletmeyi veya komut yürütmeyi **değiştirmez**. Genel olarak `tools.exec.commandHighlighting` altında veya agent başına `agents.list[].tools.exec.commandHighlighting` altında ayarlanabilir.
 
 ## YOLO modu (onaysız)
 
-Host exec'in onay istemleri olmadan çalışmasını istiyorsanız, **iki** policy katmanını da açmanız gerekir: OpenClaw config içindeki istenen exec policy (`tools.exec.*`) **ve** `~/.openclaw/exec-approvals.json` içindeki host-yerel onay policy'si.
+Ana makine exec'inin onay istemleri olmadan çalışmasını istiyorsanız **her iki** ilke katmanını da açmanız gerekir - OpenClaw yapılandırmasındaki istenen exec ilkesi (`tools.exec.*`) **ve** `~/.openclaw/exec-approvals.json` içindeki ana makineye yerel onaylar ilkesi.
 
-YOLO, açıkça sıkılaştırmadığınız sürece varsayılan host davranışıdır:
+Açıkça sıkılaştırmadığınız sürece YOLO varsayılan ana makine davranışıdır:
 
-| Katman                | YOLO ayarı                |
-| --------------------- | ------------------------- |
+| Katman                | YOLO ayarı                 |
+| --------------------- | -------------------------- |
 | `tools.exec.security` | `gateway`/`node` üzerinde `full` |
-| `tools.exec.ask`      | `off`                     |
-| Host `askFallback`    | `full`                    |
+| `tools.exec.ask`      | `off`                      |
+| Ana makine `askFallback` | `full`                  |
 
 <Warning>
 **Önemli ayrımlar:**
 
-- `tools.exec.host=auto`, exec'in **nerede** çalışacağını seçer: varsa korumalı alanda, yoksa gateway'de.
-- YOLO, host exec'in **nasıl** onaylanacağını seçer: `security=full` ve `ask=off`.
-- YOLO modunda OpenClaw, yapılandırılmış host exec policy'sinin üzerine ayrı bir heuristic command-obfuscation onay kapısı veya script-preflight red katmanı eklemez.
-- `auto`, gateway yönlendirmesini korumalı alan oturumundan serbest bir override yapmaz. `auto` içinden çağrı bazında `host=node` isteğine izin verilir; `host=gateway` ise `auto` içinden yalnızca etkin bir korumalı alan runtime'ı yokken izinlidir. Kararlı, auto olmayan bir varsayılan için `tools.exec.host` ayarlayın veya açıkça `/exec host=...` kullanın.
+- `tools.exec.host=auto`, exec'in **nerede** çalışacağını seçer: varsa sandbox, aksi halde Gateway.
+- YOLO, ana makine exec'inin **nasıl** onaylanacağını seçer: `security=full` artı `ask=off`.
+- YOLO modunda OpenClaw, yapılandırılmış ana makine exec ilkesinin üzerine ayrı bir sezgisel komut gizleme onay kapısı veya betik ön kontrol reddi katmanı eklemez.
+- `auto`, Gateway yönlendirmesini sandbox uygulanmış bir oturumdan serbest bir geçersiz kılma haline getirmez. `auto` içinden çağrı başına `host=node` isteğine izin verilir; `host=gateway` yalnızca etkin bir sandbox çalışma zamanı yokken `auto` içinden izinlidir. Kararlı bir otomatik olmayan varsayılan için `tools.exec.host` ayarlayın veya açıkça `/exec host=...` kullanın.
 
 </Warning>
 
-Kendi noninteractive permission modunu sunan CLI destekli provider'lar bu policy'yi izleyebilir. Claude CLI, OpenClaw'ın istenen exec policy'si YOLO olduğunda `--permission-mode bypassPermissions` ekler. Bu backend davranışını `agents.defaults.cliBackends.claude-cli.args` / `resumeArgs` altında açık Claude argümanlarıyla override edin - örneğin `--permission-mode default`, `acceptEdits` veya `bypassPermissions`.
+Kendi etkileşimsiz izin modlarını sunan CLI destekli sağlayıcılar bu ilkeyi izleyebilir. Claude CLI, OpenClaw'ın istenen exec ilkesi YOLO olduğunda `--permission-mode bypassPermissions` ekler. Bu backend davranışını `agents.defaults.cliBackends.claude-cli.args` / `resumeArgs` altında açık Claude argümanlarıyla geçersiz kılın - örneğin `--permission-mode default`, `acceptEdits` veya `bypassPermissions`.
 
-Daha korumacı bir kurulum istiyorsanız, katmanlardan birini yeniden `allowlist` / `on-miss` veya `deny` olarak sıkılaştırın.
+Daha muhafazakar bir kurulum istiyorsanız katmanlardan birini tekrar `allowlist` / `on-miss` veya `deny` olarak sıkılaştırın.
 
-### Kalıcı gateway-host "asla sorma" kurulumu
+### Kalıcı Gateway ana makinesi "asla istem gösterme" kurulumu
 
 <Steps>
-  <Step title="Set the requested config policy">
+  <Step title="İstenen yapılandırma ilkesini ayarlayın">
     ```bash
     openclaw config set tools.exec.host gateway
     openclaw config set tools.exec.security full
@@ -190,7 +198,7 @@ Daha korumacı bir kurulum istiyorsanız, katmanlardan birini yeniden `allowlist
     openclaw gateway restart
     ```
   </Step>
-  <Step title="Match the host approvals file">
+  <Step title="Ana makine onayları dosyasını eşleştirin">
     ```bash
     openclaw approvals set --stdin <<'EOF'
     {
@@ -217,11 +225,11 @@ Bu yerel kısayol ikisini de günceller:
 - Yerel `tools.exec.host/security/ask`.
 - Yerel `~/.openclaw/exec-approvals.json` varsayılanları.
 
-Bilinçli olarak yalnızca yereldir. Gateway-host veya node-host onaylarını uzaktan değiştirmek için `openclaw approvals set --gateway` veya `openclaw approvals set --node <id|name|ip>` kullanın.
+Bilerek yalnızca yereldir. Gateway ana makinesi veya node ana makinesi onaylarını uzaktan değiştirmek için `openclaw approvals set --gateway` veya `openclaw approvals set --node <id|name|ip>` kullanın.
 
-### Node host
+### Node ana makinesi
 
-Bir node hostu için bunun yerine aynı onay dosyasını o node üzerinde uygulayın:
+Bir node ana makinesi için aynı onaylar dosyasını bunun yerine o node üzerinde uygulayın:
 
 ```bash
 openclaw approvals set --node <id|name|ip> --stdin <<'EOF'
@@ -241,24 +249,24 @@ EOF
 
 - `openclaw exec-policy` node onaylarını eşitlemez.
 - `openclaw exec-policy set --host node` reddedilir.
-- Node exec onayları çalışma zamanında node'dan alınır, bu yüzden node hedefli güncellemeler `openclaw approvals --node ...` kullanmalıdır.
+- Node exec onayları çalışma zamanında node'dan alınır, bu nedenle node hedefli güncellemeler `openclaw approvals --node ...` kullanmalıdır.
 
 </Note>
 
 ### Yalnızca oturum kısayolu
 
 - `/exec security=full ask=off` yalnızca geçerli oturumu değiştirir.
-- `/elevated full`, o oturum için exec onaylarını da atlayan bir break-glass kısayoludur.
+- `/elevated full`, o oturum için exec onaylarını da atlayan bir acil durum kısayoludur.
 
-Host onayları dosyası config'ten daha katı kalırsa daha katı host policy yine kazanır.
+Ana makine onayları dosyası yapılandırmadan daha katı kalırsa, daha katı ana makine ilkesi yine kazanır.
 
-## Allowlist (agent başına)
+## İzin listesi (agent başına)
 
-Allowlist'ler **agent başınadır**. Birden fazla agent varsa macOS uygulamasında düzenlediğiniz agent'ı değiştirin. Pattern'ler glob eşleşmeleridir.
+İzin listeleri **agent başınadır**. Birden çok agent varsa, macOS uygulamasında hangi agent'ı düzenlediğinizi değiştirin. Kalıplar glob eşleşmeleridir.
 
-Pattern'ler çözümlenmiş binary path glob'ları veya yalın command-name glob'ları olabilir. Yalın adlar yalnızca `PATH` üzerinden çağrılan komutlarla eşleşir; bu nedenle komut `rg` olduğunda `rg`, `/opt/homebrew/bin/rg` ile eşleşebilir, ancak `./rg` veya `/tmp/rg` ile **eşleşmez**. Belirli bir binary konumuna güvenmek istediğinizde path glob kullanın.
+Kalıplar çözümlenmiş ikili yol glob'ları veya yalın komut adı glob'ları olabilir. Yalın adlar yalnızca `PATH` üzerinden çağrılan komutlarla eşleşir; bu nedenle komut `rg` olduğunda `rg`, `/opt/homebrew/bin/rg` ile eşleşebilir, ancak `./rg` veya `/tmp/rg` ile **eşleşmez**. Belirli bir ikili konuma güvenmek istediğinizde bir yol glob'u kullanın.
 
-Eski `agents.default` girdileri yüklemede `agents.main` içine taşınır. `echo ok && pwd` gibi shell zincirlerinde yine de her üst seviye segmentin allowlist kurallarını karşılaması gerekir.
+Eski `agents.default` girdileri yüklemede `agents.main` öğesine taşınır. `echo ok && pwd` gibi kabuk zincirleri yine de her üst düzey segmentin izin listesi kurallarını karşılamasını gerektirir.
 
 Örnekler:
 
@@ -267,9 +275,9 @@ Eski `agents.default` girdileri yüklemede `agents.main` içine taşınır. `ech
 - `~/.local/bin/*`
 - `/opt/homebrew/bin/rg`
 
-### Argümanları argPattern ile sınırlama
+### argPattern ile argümanları kısıtlama
 
-Bir allowlist girdisi bir binary ve belirli bir argüman şekliyle eşleşmeli olduğunda `argPattern` ekleyin. OpenClaw, regular expression'ı executable token (`argv[0]`) hariç tutarak ayrıştırılmış komut argümanlarına karşı değerlendirir. Elle yazılmış girdiler için argümanlar tek bir boşlukla birleştirilir; bu nedenle tam eşleşme gerektiğinde pattern'i anchor edin.
+Bir izin listesi girdisi bir ikiliyle ve belirli bir argüman şekliyle eşleşmeliyse `argPattern` ekleyin. OpenClaw, düzenli ifadeyi yürütülebilir dosya belirtecini (`argv[0]`) hariç tutarak ayrıştırılmış komut argümanlarına karşı değerlendirir. Elle yazılmış girdiler için argümanlar tek bir boşlukla birleştirilir; bu nedenle tam eşleşme gerektiğinde kalıbı sabitleyin.
 
 ```json
 {
@@ -287,16 +295,20 @@ Bir allowlist girdisi bir binary ve belirli bir argüman şekliyle eşleşmeli o
 }
 ```
 
-Bu girdi `python3 safe.py` komutuna izin verir; `python3 other.py` bir allowlist kaçırmasıdır. Aynı binary için yalnızca path içeren bir girdi de varsa, eşleşmeyen argümanlar yine de yalnızca path içeren o girdiye fallback yapabilir. Amaç binary'yi bildirilen argümanlarla sınırlamaksa yalnızca path içeren girdiyi atlayın.
+Bu girdi `python3 safe.py` komutuna izin verir; `python3 other.py` bir izin listesi ıskalamasıdır. Aynı ikili için yalnızca yol içeren bir girdi de varsa eşleşmeyen argümanlar yine o yalnızca yol girdisine geri dönebilir. Amaç ikiliyi bildirilen argümanlarla kısıtlamak olduğunda yalnızca yol girdisini atlayın.
 
-Onay akışları tarafından kaydedilen girdiler, tam argv eşleşmesi için dahili bir separator biçimi kullanabilir. Encoded değeri elle düzenlemek yerine bu girdileri yeniden oluşturmak için UI veya onay akışını tercih edin. OpenClaw bir komut segmenti için argv ayrıştıramazsa `argPattern` içeren girdiler eşleşmez.
+Onay akışları tarafından kaydedilen girdiler, tam argv eşleşmesi için
+dahili bir ayırıcı biçimi kullanabilir. Kodlanmış değeri elle düzenlemek
+yerine bu girdileri yeniden oluşturmak için UI'ı veya onay akışını tercih
+edin. OpenClaw bir komut segmenti için argv'yi ayrıştıramazsa,
+`argPattern` içeren girdiler eşleşmez.
 
-Her allowlist girdisi şunları destekler:
+Her izin listesi girdisi şunları destekler:
 
 | Alan               | Anlam                                                         |
 | ------------------ | ------------------------------------------------------------- |
-| `pattern`          | Çözümlenmiş ikili yol glob'u veya yalın komut adı glob'u      |
-| `argPattern`       | İsteğe bağlı argv regex'i; atlanan girdiler yalnızca yoldur    |
+| `pattern`          | Çözümlenmiş ikili yol glob'u veya çıplak komut adı glob'u     |
+| `argPattern`       | İsteğe bağlı argv regex'i; atlanan girdiler yalnızca yol içindir |
 | `id`               | UI kimliği için kullanılan kararlı UUID                       |
 | `source`           | `allow-always` gibi girdi kaynağı                             |
 | `commandText`      | Bir onay akışı girdiyi oluşturduğunda yakalanan komut metni   |
@@ -304,61 +316,61 @@ Her allowlist girdisi şunları destekler:
 | `lastUsedCommand`  | Eşleşen son komut                                             |
 | `lastResolvedPath` | Son çözümlenen ikili yol                                      |
 
-## Skill CLI'larını otomatik izinli yapma
+## Skill CLI'lerini otomatik olarak izin ver
 
-**Skill CLI'larını otomatik izinli yapma** etkinleştirildiğinde, bilinen
-skills tarafından başvurulan çalıştırılabilir dosyalar Node'larda (macOS
-Node'u veya başsız Node host'u) izin listesinde kabul edilir. Bu, skill
-ikili dosya listesini almak için Gateway RPC üzerinden `skills.bins`
-kullanır. Katı manuel izin listeleri istiyorsanız bunu devre dışı bırakın.
+**Skill CLI'lerini otomatik olarak izin ver** etkinleştirildiğinde,
+bilinen Skills tarafından başvurulan yürütülebilir dosyalar Node'larda
+(macOS Node'u veya başsız Node host'u) izin listesine alınmış kabul edilir.
+Bu, skill ikili listesini almak için Gateway RPC üzerinden `skills.bins`
+kullanır. Katı elle yönetilen izin listeleri istiyorsanız bunu devre dışı bırakın.
 
 <Warning>
-- Bu, manuel yol izin listesi girdilerinden ayrı bir **örtük kolaylık izin listesidir**.
-- Gateway ile Node'un aynı güven sınırı içinde olduğu güvenilir operatör ortamları için tasarlanmıştır.
-- Katı açık güven gerektiriyorsanız `autoAllowSkills: false` değerini koruyun ve yalnızca manuel yol izin listesi girdilerini kullanın.
+- Bu, elle eklenen yol izin listesi girdilerinden ayrı bir **örtük kolaylık izin listesidir**.
+- Gateway ile Node'un aynı güven sınırı içinde olduğu güvenilen operatör ortamları için tasarlanmıştır.
+- Katı açık güven gerekiyorsa `autoAllowSkills: false` değerini koruyun ve yalnızca elle eklenen yol izin listesi girdilerini kullanın.
 
 </Warning>
 
 ## Güvenli ikililer ve onay yönlendirme
 
-Güvenli ikililer (yalnızca stdin hızlı yolu), yorumlayıcı bağlama ayrıntıları ve
-onay istemlerini Slack/Discord/Telegram'a nasıl yönlendireceğiniz (veya bunları
-yerel onay istemcileri olarak nasıl çalıştıracağınız) için
-[Exec onayları - gelişmiş](/tr/tools/exec-approvals-advanced) sayfasına bakın.
+Güvenli ikililer (yalnızca stdin hızlı yolu), yorumlayıcı bağlama ayrıntıları
+ve onay istemlerini Slack/Discord/Telegram'a nasıl yönlendireceğiniz (veya
+bunları yerel onay istemcileri olarak nasıl çalıştıracağınız) için bkz.
+[Exec onayları - gelişmiş](/tr/tools/exec-approvals-advanced).
 
-## Denetim UI düzenlemesi
+## Kontrol UI düzenleme
 
-Varsayılanları, ajan başına geçersiz kılmaları ve izin listelerini düzenlemek için
-**Denetim UI → Node'lar → Exec onayları** kartını kullanın. Bir kapsam seçin
-(Varsayılanlar veya bir ajan), politikayı ayarlayın, izin listesi desenleri
+Varsayılanları, ajan başına geçersiz kılmaları ve izin listelerini düzenlemek
+için **Kontrol UI → Node'lar → Exec onayları** kartını kullanın. Bir kapsam
+seçin (Varsayılanlar veya bir ajan), ilkeyi ayarlayın, izin listesi kalıpları
 ekleyin/kaldırın, ardından **Kaydet**'i seçin. UI, listeyi düzenli tutabilmeniz
-için desen başına son kullanım meta verilerini gösterir.
+için kalıp başına son kullanım meta verilerini gösterir.
 
-Hedef seçici **Gateway** (yerel onaylar) veya bir **Node** seçer.
-Node'lar `system.execApprovals.get/set` duyurusu yapmalıdır (macOS uygulaması
-veya başsız Node host'u). Bir Node henüz exec onaylarını duyurmuyorsa,
-yerel `~/.openclaw/exec-approvals.json` dosyasını doğrudan düzenleyin.
+Hedef seçici **Gateway**'i (yerel onaylar) veya bir **Node**'u seçer.
+Node'lar `system.execApprovals.get/set` duyurmalıdır (macOS uygulaması veya
+başsız Node host'u). Bir Node henüz exec onaylarını duyurmuyorsa yerel
+`~/.openclaw/exec-approvals.json` dosyasını doğrudan düzenleyin.
 
-CLI: `openclaw approvals`, gateway veya node düzenlemeyi destekler - bkz.
-[Onaylar CLI'ı](/tr/cli/approvals).
+CLI: `openclaw approvals` Gateway veya Node düzenlemeyi destekler - bkz.
+[Onaylar CLI](/tr/cli/approvals).
 
 ## Onay akışı
 
-Bir istem gerektiğinde gateway, operatör istemcilerine
-`exec.approval.requested` yayınlar. Denetim UI ve macOS uygulaması bunu
-`exec.approval.resolve` ile çözer, ardından gateway onaylanan isteği
+Bir istem gerektiğinde Gateway, operatör istemcilerine
+`exec.approval.requested` yayınlar. Kontrol UI ve macOS uygulaması bunu
+`exec.approval.resolve` ile çözer, ardından Gateway onaylanan isteği
 Node host'una iletir.
 
 `host=node` için onay istekleri kanonik bir `systemRunPlan` yükü içerir.
-Gateway, onaylanan `system.run` isteklerini iletirken bu planı yetkili
-command/cwd/session bağlamı olarak kullanır.
+Gateway, onaylanmış `system.run` isteklerini iletirken bu planı yetkili
+komut/cwd/oturum bağlamı olarak kullanır.
 
 Bu, asenkron onay gecikmesi için önemlidir:
 
-- Node exec yolu, baştan tek bir kanonik plan hazırlar.
+- Node exec yolu baştan tek bir kanonik plan hazırlar.
 - Onay kaydı bu planı ve bağlama meta verilerini saklar.
-- Onaylandıktan sonra son iletilen `system.run` çağrısı, daha sonraki çağıran düzenlemelerine güvenmek yerine saklanan planı yeniden kullanır.
-- Çağıran, onay isteği oluşturulduktan sonra `command`, `rawCommand`, `cwd`, `agentId` veya `sessionKey` değerlerini değiştirirse gateway, iletilen çalıştırmayı onay uyuşmazlığı olarak reddeder.
+- Onaylandıktan sonra, iletilen son `system.run` çağrısı daha sonraki çağıran düzenlemelerine güvenmek yerine saklanan planı yeniden kullanır.
+- Çağıran, onay isteği oluşturulduktan sonra `command`, `rawCommand`, `cwd`, `agentId` veya `sessionKey` değerini değiştirirse Gateway iletilen çalıştırmayı onay uyuşmazlığı olarak reddeder.
 
 ## Sistem olayları
 
@@ -369,27 +381,26 @@ Exec yaşam döngüsü sistem mesajları olarak gösterilir:
 - `Exec denied`.
 
 Bunlar, Node olayı bildirdikten sonra ajanın oturumuna gönderilir.
-Gateway host'lu exec onayları, komut tamamlandığında aynı yaşam döngüsü
-olaylarını yayar (ve isteğe bağlı olarak eşikten daha uzun çalıştığında da).
-Onay kapılı exec'ler, kolay ilişkilendirme için bu mesajlarda onay kimliğini
+Gateway host'lu exec onayları, komut tamamlandığında (ve isteğe bağlı olarak
+eşikten daha uzun süre çalıştığında) aynı yaşam döngüsü olaylarını yayar.
+Onay geçitli exec'ler, kolay ilişkilendirme için bu mesajlarda onay kimliğini
 `runId` olarak yeniden kullanır.
 
 ## Reddedilen onay davranışı
 
-Bir asenkron exec onayı reddedildiğinde OpenClaw, ajanın oturumdaki aynı
-komutun daha önceki bir çalıştırmasından gelen çıktıyı yeniden kullanmasını
-engeller. Reddetme nedeni, hiçbir komut çıktısının mevcut olmadığına dair açık
-yönlendirmeyle iletilir; bu da ajanın yeni çıktı olduğunu iddia etmesini veya
-reddedilen komutu önceki başarılı bir çalıştırmadan kalan eski sonuçlarla
-tekrarlamasını durdurur.
+Bir asenkron exec onayı reddedildiğinde OpenClaw, ajanın oturumda aynı komutun
+daha önceki herhangi bir çalıştırmasından gelen çıktıyı yeniden kullanmasını
+engeller. Ret nedeni, komut çıktısının mevcut olmadığına dair açık yönlendirmeyle
+iletilir; bu da ajanın yeni çıktı olduğunu iddia etmesini veya reddedilen komutu
+önceki başarılı bir çalıştırmadan kalan eski sonuçlarla yinelemesini durdurur.
 
-## Sonuçlar
+## Etkileri
 
 - **`full`** güçlüdür; mümkün olduğunda izin listelerini tercih edin.
-- **`ask`**, hızlı onaylara hâlâ izin verirken sizi döngüde tutar.
-- Ajan başına izin listeleri, bir ajanın onaylarının diğerlerine sızmasını önler.
-- Onaylar yalnızca **yetkili gönderenlerden** gelen host exec isteklerine uygulanır. Yetkisiz gönderenler `/exec` yayınlayamaz.
-- `/exec security=full`, yetkili operatörler için oturum düzeyinde bir kolaylıktır ve tasarım gereği onayları atlar. Host exec'i kesin olarak engellemek için onay güvenliğini `deny` olarak ayarlayın veya araç politikası üzerinden `exec` aracını reddedin.
+- **`ask`** hızlı onaylara hâlâ izin verirken sizi döngüde tutar.
+- Ajan başına izin listeleri, bir ajanın onaylarının başkalarına sızmasını önler.
+- Onaylar yalnızca **yetkili gönderenlerden** gelen host exec isteklerine uygulanır. Yetkisiz gönderenler `/exec` veremez.
+- `/exec security=full`, yetkili operatörler için oturum düzeyinde bir kolaylıktır ve tasarım gereği onayları atlar. Host exec'i kesin olarak engellemek için onay güvenliğini `deny` olarak ayarlayın veya araç ilkesi üzerinden `exec` aracını reddedin.
 
 ## İlgili
 
@@ -407,10 +418,10 @@ tekrarlamasını durdurur.
     Sandbox modları ve çalışma alanı erişimi.
   </Card>
   <Card title="Güvenlik" href="/tr/gateway/security" icon="lock">
-    Güvenlik modeli ve sağlamlaştırma.
+    Güvenlik modeli ve sertleştirme.
   </Card>
-  <Card title="Sandbox ile araç politikası ve yükseltilmiş mod karşılaştırması" href="/tr/gateway/sandbox-vs-tool-policy-vs-elevated" icon="sliders">
-    Hangi denetime ne zaman başvurulmalı.
+  <Card title="Sandbox ve araç ilkesi ve yükseltilmiş" href="/tr/gateway/sandbox-vs-tool-policy-vs-elevated" icon="sliders">
+    Her bir kontrole ne zaman başvurulacağı.
   </Card>
   <Card title="Skills" href="/tr/tools/skills" icon="sparkles">
     Skill destekli otomatik izin davranışı.

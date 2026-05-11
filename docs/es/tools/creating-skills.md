@@ -1,28 +1,28 @@
 ---
 read_when:
     - Estás creando una nueva habilidad personalizada en tu espacio de trabajo
-    - Necesita un flujo de trabajo inicial rápido para Skills basadas en SKILL.md
-summary: Crea y prueba Skills de espacio de trabajo personalizadas con SKILL.md
-title: Crear Skills
+    - Necesitas un flujo de trabajo de inicio rápido para Skills basadas en SKILL.md
+summary: Crea y prueba Skills personalizadas del espacio de trabajo con SKILL.md
+title: Creación de Skills
 x-i18n:
-    generated_at: "2026-04-30T06:03:53Z"
+    generated_at: "2026-05-11T20:55:25Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 201718f4088f4243b0dabe12fb4fce4b8a7e64df9a4b7d651356ab4ae0dd3579
+    source_hash: a468a0b21f4e43542b175b8acb8ad8b19dbbea06ce8e0b97c48206bf88a661c5
     source_path: tools/creating-skills.md
     workflow: 16
 ---
 
-Skills enseñan al agente cómo y cuándo usar herramientas. Cada skill es un directorio
+Skills enseña al agente cómo y cuándo usar herramientas. Cada skill es un directorio
 que contiene un archivo `SKILL.md` con frontmatter YAML e instrucciones en markdown.
 
-Para saber cómo se cargan y priorizan las Skills, consulta [Skills](/es/tools/skills).
+Para saber cómo se cargan y priorizan las skills, consulta [Skills](/es/tools/skills).
 
 ## Crea tu primera skill
 
 <Steps>
   <Step title="Crea el directorio de la skill">
-    Las Skills viven en tu workspace. Crea una carpeta nueva:
+    Las Skills viven en tu espacio de trabajo. Crea una carpeta nueva:
 
     ```bash
     mkdir -p ~/.openclaw/workspace/skills/hello-world
@@ -32,7 +32,7 @@ Para saber cómo se cargan y priorizan las Skills, consulta [Skills](/es/tools/s
 
   <Step title="Escribe SKILL.md">
     Crea `SKILL.md` dentro de ese directorio. El frontmatter define los metadatos,
-    y el cuerpo en markdown contiene instrucciones para el agente.
+    y el cuerpo markdown contiene instrucciones para el agente.
 
     ```markdown
     ---
@@ -46,15 +46,15 @@ Para saber cómo se cargan y priorizan las Skills, consulta [Skills](/es/tools/s
     "Hello from your custom skill!".
     ```
 
-    Usa estilo con guiones y letras minúsculas, dígitos y guiones para el
+    Usa formato con guiones y letras minúsculas, dígitos y guiones para el
     `name` de la skill. Mantén alineados el nombre de la carpeta y el `name` del frontmatter.
 
   </Step>
 
-  <Step title="Añade herramientas (opcional)">
+  <Step title="Agrega herramientas (opcional)">
     Puedes definir esquemas de herramientas personalizados en el frontmatter o indicar al agente
     que use herramientas del sistema existentes (como `exec` o `browser`). Las Skills también pueden
-    distribuirse dentro de plugins junto con las herramientas que documentan.
+    incluirse dentro de plugins junto con las herramientas que documentan.
 
   </Step>
 
@@ -89,39 +89,39 @@ Para saber cómo se cargan y priorizan las Skills, consulta [Skills](/es/tools/s
   </Step>
 </Steps>
 
-## Referencia de metadatos de skill
+## Referencia de metadatos de skills
 
 El frontmatter YAML admite estos campos:
 
-| Campo                               | Requerido | Descripción                                                     |
-| ----------------------------------- | --------- | --------------------------------------------------------------- |
-| `name`                              | Sí        | Identificador único que usa letras minúsculas, dígitos y guiones |
-| `description`                       | Sí        | Descripción de una línea que se muestra al agente               |
-| `metadata.openclaw.os`              | No        | Filtro de SO (`["darwin"]`, `["linux"]`, etc.)                  |
-| `metadata.openclaw.requires.bins`   | No        | Binarios requeridos en PATH                                     |
-| `metadata.openclaw.requires.config` | No        | Claves de configuración requeridas                              |
+| Campo                               | Obligatorio | Descripción                                                    |
+| ----------------------------------- | ----------- | -------------------------------------------------------------- |
+| `name`                              | Sí          | Identificador único que usa letras minúsculas, dígitos y guiones |
+| `description`                       | Sí          | Descripción de una línea que se muestra al agente              |
+| `metadata.openclaw.os`              | No          | Filtro de SO (`["darwin"]`, `["linux"]`, etc.)                 |
+| `metadata.openclaw.requires.bins`   | No          | Binarios requeridos en PATH                                    |
+| `metadata.openclaw.requires.config` | No          | Claves de configuración requeridas                             |
 
 ## Buenas prácticas
 
 - **Sé conciso** — indica al modelo _qué_ hacer, no cómo ser una IA
 - **La seguridad primero** — si tu skill usa `exec`, asegúrate de que los prompts no permitan inyección arbitraria de comandos desde entradas no confiables
 - **Prueba localmente** — usa `openclaw agent --message "..."` para probar antes de compartir
-- **Usa ClawHub** — explora y contribuye Skills en [ClawHub](https://clawhub.ai)
+- **Usa ClawHub** — explora y contribuye skills en [ClawHub](https://clawhub.ai)
 
-## Dónde viven las Skills
+## Dónde viven las skills
 
-| Ubicación                       | Prioridad  | Alcance                    |
-| ------------------------------- | ---------- | -------------------------- |
-| `\<workspace\>/skills/`         | Máxima     | Por agente                 |
-| `\<workspace\>/.agents/skills/` | Alta       | Agente por workspace       |
-| `~/.agents/skills/`             | Media      | Perfil de agente compartido |
-| `~/.openclaw/skills/`           | Media      | Compartido (todos los agentes) |
-| Incluidas (distribuidas con OpenClaw) | Baja       | Global                     |
-| `skills.load.extraDirs`         | Mínima     | Carpetas compartidas personalizadas |
+| Ubicación                       | Precedencia | Alcance               |
+| ------------------------------- | ----------- | --------------------- |
+| `\<workspace\>/skills/`         | Más alta    | Por agente            |
+| `\<workspace\>/.agents/skills/` | Alta        | Agente por espacio de trabajo |
+| `~/.agents/skills/`             | Media       | Perfil de agente compartido |
+| `~/.openclaw/skills/`           | Media       | Compartido (todos los agentes) |
+| Incluidas (enviadas con OpenClaw) | Baja      | Global                |
+| `skills.load.extraDirs`         | Más baja    | Carpetas compartidas personalizadas |
 
 ## Relacionado
 
-- [Referencia de Skills](/es/tools/skills) — reglas de carga, prioridad y gating
+- [Referencia de Skills](/es/tools/skills) — carga, precedencia y reglas de control
 - [Configuración de Skills](/es/tools/skills-config) — esquema de configuración `skills.*`
-- [ClawHub](/es/tools/clawhub) — registro público de Skills
-- [Construir Plugins](/es/plugins/building-plugins) — los plugins pueden distribuir Skills
+- [ClawHub](/es/clawhub) — registro público de skills
+- [Creación de Plugins](/es/plugins/building-plugins) — los plugins pueden incluir skills

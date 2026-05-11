@@ -4,28 +4,28 @@ read_when:
     - Ви обслуговуєте Gemma або іншу модель через inferrs
     - Вам потрібні точні прапорці сумісності OpenClaw для inferrs
 summary: Запуск OpenClaw через inferrs (локальний сервер, сумісний з OpenAI)
-title: Робить висновки
+title: Виводить
 x-i18n:
-    generated_at: "2026-05-06T00:38:53Z"
+    generated_at: "2026-05-11T20:54:52Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 216783689527229835acf4f0fb6d2981d1915bd5df28e631b5384c4cbb9ee158
+    source_hash: 8352da589baaa3a193bb3a56d12ee1a50630346dda186898346e805844d22aa1
     source_path: providers/inferrs.md
     workflow: 16
 ---
 
 [inferrs](https://github.com/ericcurtin/inferrs) може обслуговувати локальні моделі за OpenAI-сумісним API `/v1`. OpenClaw працює з `inferrs` через загальний шлях `openai-completions`.
 
-| Властивість             | Значення                                                          |
-| ----------------------- | ----------------------------------------------------------------- |
-| Ідентифікатор провайдера | `inferrs` (власний; налаштовується в `models.providers.inferrs`)  |
-| Plugin                  | немає — `inferrs` не є вбудованим Plugin провайдера OpenClaw      |
-| Змінна середовища автентифікації | Необов’язково. Підійде будь-яке значення, якщо ваш сервер inferrs не має автентифікації |
-| API                     | OpenAI-сумісний (`openai-completions`)                            |
-| Пропонований базовий URL | `http://127.0.0.1:8080/v1` (або там, де працює ваш сервер inferrs) |
+| Властивість       | Значення                                                           |
+| ----------------- | ------------------------------------------------------------------ |
+| ID провайдера     | `inferrs` (користувацький; налаштовується в `models.providers.inferrs`) |
+| Plugin            | немає — `inferrs` не є вбудованим Plugin провайдера OpenClaw       |
+| Змінна env для автентифікації | Необов’язкова. Будь-яке значення працює, якщо ваш сервер inferrs не має автентифікації |
+| API               | OpenAI-сумісний (`openai-completions`)                             |
+| Пропонована базова URL-адреса | `http://127.0.0.1:8080/v1` (або там, де працює ваш сервер inferrs) |
 
 <Note>
-  `inferrs` наразі найкраще розглядати як власний самостійно розгорнутий OpenAI-сумісний бекенд, а не як окремий Plugin провайдера OpenClaw. Його налаштовують через `models.providers.inferrs`, а не через прапорець вибору під час онбордингу. Якщо вам потрібен справжній вбудований Plugin з автоматичним виявленням, див. [SGLang](/uk/providers/sglang) або [vLLM](/uk/providers/vllm).
+  `inferrs` наразі найкраще розглядати як користувацький самостійно розміщений OpenAI-сумісний бекенд, а не як окремий Plugin провайдера OpenClaw. Ви налаштовуєте його через `models.providers.inferrs`, а не через прапорець вибору під час онбордингу. Якщо вам потрібен справжній вбудований Plugin з автовиявленням, див. [SGLang](/uk/providers/sglang) або [vLLM](/uk/providers/vllm).
 </Note>
 
 ## Початок роботи
@@ -46,7 +46,7 @@ x-i18n:
     ```
   </Step>
   <Step title="Додайте запис провайдера OpenClaw">
-    Додайте явний запис провайдера й спрямуйте на нього свою типову модель. Повний приклад конфігурації наведено нижче.
+    Додайте явний запис провайдера та спрямуйте на нього вашу модель за замовчуванням. Повний приклад конфігурації наведено нижче.
   </Step>
 </Steps>
 
@@ -93,10 +93,64 @@ x-i18n:
 }
 ```
 
+## Запуск на вимогу
+
+Inferrs також може запускатися OpenClaw лише тоді, коли вибрано модель `inferrs/...`.
+Додайте `localService` до того самого запису провайдера:
+
+```json5
+{
+  models: {
+    providers: {
+      inferrs: {
+        baseUrl: "http://127.0.0.1:8080/v1",
+        apiKey: "inferrs-local",
+        api: "openai-completions",
+        timeoutSeconds: 300,
+        localService: {
+          command: "/opt/homebrew/bin/inferrs",
+          args: [
+            "serve",
+            "google/gemma-4-E2B-it",
+            "--host",
+            "127.0.0.1",
+            "--port",
+            "8080",
+            "--device",
+            "metal",
+          ],
+          healthUrl: "http://127.0.0.1:8080/v1/models",
+          readyTimeoutMs: 180000,
+          idleStopMs: 0,
+        },
+        models: [
+          {
+            id: "google/gemma-4-E2B-it",
+            name: "Gemma 4 E2B (inferrs)",
+            reasoning: false,
+            input: ["text"],
+            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            contextWindow: 131072,
+            maxTokens: 4096,
+            compat: {
+              requiresStringContent: true,
+            },
+          },
+        ],
+      },
+    },
+  },
+}
+```
+
+`command` має бути абсолютним. Використайте `which inferrs` на хості Gateway і вкажіть цей
+шлях у конфігурації. Повний довідник полів див. у
+[Служби локальних моделей](/uk/gateway/local-model-services).
+
 ## Розширена конфігурація
 
 <AccordionGroup>
-  <Accordion title="Чому requiresStringContent має значення">
+  <Accordion title="Чому requiresStringContent важливий">
     Деякі маршрути Chat Completions у `inferrs` приймають лише рядковий
     `messages[].content`, а не структуровані масиви частин вмісту.
 
@@ -107,7 +161,7 @@ x-i18n:
     messages[1].content: invalid type: sequence, expected a string
     ```
 
-    установіть `compat.requiresStringContent: true` у записі моделі.
+    задайте `compat.requiresStringContent: true` у записі вашої моделі.
     </Warning>
 
     ```json5
@@ -116,15 +170,15 @@ x-i18n:
     }
     ```
 
-    OpenClaw перетворить частини з чистим текстовим вмістом на звичайні рядки перед надсиланням
+    OpenClaw перетворить частини суто текстового вмісту на прості рядки перед надсиланням
     запиту.
 
   </Accordion>
 
-  <Accordion title="Застереження щодо Gemma та схеми інструментів">
+  <Accordion title="Застереження щодо Gemma і схем інструментів">
     Деякі поточні комбінації `inferrs` + Gemma приймають невеликі прямі
     запити `/v1/chat/completions`, але все одно дають збій на повних ходах
-    середовища виконання агента OpenClaw.
+    agent-runtime OpenClaw.
 
     Якщо це трапляється, спершу спробуйте таке:
 
@@ -135,17 +189,17 @@ x-i18n:
     }
     ```
 
-    Це вимикає поверхню схеми інструментів OpenClaw для моделі й може зменшити навантаження промпта
+    Це вимикає поверхню схем інструментів OpenClaw для моделі й може зменшити навантаження промпта
     на суворіші локальні бекенди.
 
-    Якщо дуже малі прямі запити все ще працюють, але звичайні ходи агента OpenClaw і далі
-    аварійно завершуються всередині `inferrs`, решта проблеми зазвичай пов’язана з поведінкою
+    Якщо крихітні прямі запити все ще працюють, але звичайні ходи агента OpenClaw продовжують
+    аварійно завершуватися всередині `inferrs`, решта проблеми зазвичай пов’язана з поведінкою
     upstream-моделі або сервера, а не з транспортним шаром OpenClaw.
 
   </Accordion>
 
   <Accordion title="Ручний smoke-тест">
-    Після налаштування протестуйте обидва шари:
+    Після налаштування перевірте обидва шари:
 
     ```bash
     curl http://127.0.0.1:8080/v1/chat/completions \
@@ -164,15 +218,15 @@ x-i18n:
 
   </Accordion>
 
-  <Accordion title="Поведінка в стилі проксі">
+  <Accordion title="Поведінка у стилі проксі">
     `inferrs` розглядається як OpenAI-сумісний бекенд `/v1` у стилі проксі, а не як
     нативна кінцева точка OpenAI.
 
     - Формування запитів, призначене лише для нативного OpenAI, тут не застосовується
-    - Немає `service_tier`, Responses `store`, підказок prompt-cache і
-      формування payload для сумісності з reasoning OpenAI
+    - Немає `service_tier`, немає Responses `store`, немає підказок prompt-cache і немає
+      формування payload для сумісності reasoning OpenAI
     - Приховані заголовки атрибуції OpenClaw (`originator`, `version`, `User-Agent`)
-      не додаються до власних базових URL `inferrs`
+      не додаються до користувацьких базових URL-адрес `inferrs`
 
   </Accordion>
 </AccordionGroup>
@@ -187,34 +241,37 @@ x-i18n:
   </Accordion>
 
   <Accordion title="messages[].content очікує рядок">
-    Установіть `compat.requiresStringContent: true` у записі моделі. Докладніше див.
-    у розділі `requiresStringContent` вище.
+    Задайте `compat.requiresStringContent: true` у записі моделі. Докладніше див.
+    розділ `requiresStringContent` вище.
   </Accordion>
 
   <Accordion title="Прямі виклики /v1/chat/completions проходять, але openclaw infer model run завершується помилкою">
-    Спробуйте встановити `compat.supportsTools: false`, щоб вимкнути поверхню схеми інструментів.
-    Див. застереження щодо схеми інструментів Gemma вище.
+    Спробуйте задати `compat.supportsTools: false`, щоб вимкнути поверхню схем інструментів.
+    Див. застереження щодо схем інструментів Gemma вище.
   </Accordion>
 
-  <Accordion title="inferrs усе ще аварійно завершується на більших ходах агента">
-    Якщо OpenClaw більше не отримує помилки схеми, але `inferrs` усе ще аварійно завершується на більших
-    ходах агента, розглядайте це як обмеження upstream-`inferrs` або моделі. Зменште
+  <Accordion title="inferrs все ще аварійно завершується на більших ходах агента">
+    Якщо OpenClaw більше не отримує помилок схеми, але `inferrs` усе ще аварійно завершується на більших
+    ходах агента, розглядайте це як обмеження upstream `inferrs` або моделі. Зменште
     навантаження промпта або перейдіть на інший локальний бекенд чи модель.
   </Accordion>
 </AccordionGroup>
 
 <Tip>
-Загальну довідку див. у [Усуненні несправностей](/uk/help/troubleshooting) і [FAQ](/uk/help/faq).
+Загальну довідку див. у [Усунення несправностей](/uk/help/troubleshooting) і [FAQ](/uk/help/faq).
 </Tip>
 
 ## Пов’язане
 
 <CardGroup cols={2}>
   <Card title="Локальні моделі" href="/uk/gateway/local-models" icon="server">
-    Запуск OpenClaw з локальними серверами моделей.
+    Запуск OpenClaw із локальними серверами моделей.
+  </Card>
+  <Card title="Служби локальних моделей" href="/uk/gateway/local-model-services" icon="play">
+    Запуск локальних серверів моделей на вимогу для налаштованих провайдерів.
   </Card>
   <Card title="Усунення несправностей Gateway" href="/uk/gateway/troubleshooting#local-openai-compatible-backend-passes-direct-probes-but-agent-runs-fail" icon="wrench">
-    Налагодження локальних OpenAI-сумісних бекендів, які проходять проби, але дають збій під час запусків агента.
+    Налагодження локальних OpenAI-сумісних бекендів, які проходять перевірки, але дають збій під час запусків агента.
   </Card>
   <Card title="Вибір моделі" href="/uk/concepts/model-providers" icon="layers">
     Огляд усіх провайдерів, посилань на моделі та поведінки failover.

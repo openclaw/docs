@@ -2,13 +2,13 @@
 read_when:
     - 메시지 CLI 작업 추가 또는 수정
     - 아웃바운드 채널 동작 변경
-summary: 'CLI 참조: `openclaw message`(전송 + 채널 작업)'
+summary: '`openclaw message`의 CLI 참조(send + 채널 작업)'
 title: 메시지
 x-i18n:
-    generated_at: "2026-05-04T09:37:06Z"
+    generated_at: "2026-05-11T20:26:54Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9ef57d33c93206a61a6d044667de4faf6340f7d8cc324300f235e838ee3b7ff1
+    source_hash: 12ae0e32e86a87076e795cbb18e34d9a37797323f805f4edbd4351e73dbdac46
     source_path: cli/message.md
     workflow: 16
 ---
@@ -26,35 +26,35 @@ openclaw message <subcommand> [flags]
 
 채널 선택:
 
-- 구성된 채널이 둘 이상이면 `--channel`이 필요합니다.
-- 정확히 하나의 채널만 구성되어 있으면 해당 채널이 기본값이 됩니다.
-- 값: `discord|googlechat|imessage|matrix|mattermost|msteams|signal|slack|telegram|whatsapp` (Mattermost는 Plugin 필요)
-- `openclaw message`는 `--channel` 또는 채널 접두사가 붙은 대상이 있으면 선택한 채널을 소유 Plugin으로 해석합니다. 그렇지 않으면 기본 채널 추론을 위해 구성된 채널 Plugin을 로드합니다.
+- 채널이 둘 이상 구성된 경우 `--channel`이 필요합니다.
+- 채널이 정확히 하나만 구성된 경우 해당 채널이 기본값이 됩니다.
+- 값: `discord|googlechat|imessage|matrix|mattermost|msteams|signal|slack|telegram|whatsapp` (Mattermost에는 Plugin 필요)
+- `openclaw message`는 `--channel` 또는 채널 접두사가 붙은 대상이 있으면 선택한 채널을 해당 소유 Plugin으로 해석합니다. 그렇지 않으면 기본 채널 추론을 위해 구성된 채널 Plugin을 로드합니다.
 
 대상 형식(`--target`):
 
-- WhatsApp: E.164, 그룹 JID, 또는 WhatsApp Channel/Newsletter JID(`...@newsletter`)
-- Telegram: 채팅 ID, `@username`, 또는 포럼 주제 대상(`-1001234567890:topic:42`, 또는 `--thread-id 42`)
-- Discord: `channel:<id>` 또는 `user:<id>`(또는 `<@id>` 멘션. 원시 숫자 ID는 채널로 처리됨)
+- WhatsApp: E.164, 그룹 JID 또는 WhatsApp Channel/Newsletter JID(`...@newsletter`)
+- Telegram: 채팅 ID, `@username` 또는 포럼 토픽 대상(`-1001234567890:topic:42` 또는 `--thread-id 42`)
+- Discord: `channel:<id>` 또는 `user:<id>`(또는 `<@id>` 멘션; 원시 숫자 ID는 채널로 처리됨)
 - Google Chat: `spaces/<spaceId>` 또는 `users/<userId>`
 - Slack: `channel:<id>` 또는 `user:<id>`(원시 채널 ID 허용)
-- Mattermost(Plugin): `channel:<id>`, `user:<id>`, 또는 `@username`(접두사 없는 ID는 채널로 처리됨)
-- Signal: `+E.164`, `group:<id>`, `signal:+E.164`, `signal:group:<id>`, 또는 `username:<name>`/`u:<name>`
-- iMessage: 핸들, `chat_id:<id>`, `chat_guid:<guid>`, 또는 `chat_identifier:<id>`
-- Matrix: `@user:server`, `!room:server`, 또는 `#alias:server`
+- Mattermost(Plugin): `channel:<id>`, `user:<id>` 또는 `@username`(단독 ID는 채널로 처리됨)
+- Signal: `+E.164`, `group:<id>`, `signal:+E.164`, `signal:group:<id>` 또는 `username:<name>`/`u:<name>`
+- iMessage: 핸들, `chat_id:<id>`, `chat_guid:<guid>` 또는 `chat_identifier:<id>`
+- Matrix: `@user:server`, `!room:server` 또는 `#alias:server`
 - Microsoft Teams: 대화 ID(`19:...@thread.tacv2`) 또는 `conversation:<id>` 또는 `user:<aad-object-id>`
 
 이름 조회:
 
 - 지원되는 제공자(Discord/Slack 등)의 경우 `Help` 또는 `#help` 같은 채널 이름은 디렉터리 캐시를 통해 해석됩니다.
-- 캐시 미스 시, 제공자가 지원하면 OpenClaw가 실시간 디렉터리 조회를 시도합니다.
+- 캐시 누락 시, 제공자가 지원하면 OpenClaw가 실시간 디렉터리 조회를 시도합니다.
 
 ## 공통 플래그
 
 - `--channel <name>`
 - `--account <id>`
 - `--target <dest>`(send/poll/read 등의 대상 채널 또는 사용자)
-- `--targets <name>`(반복 가능, 브로드캐스트 전용)
+- `--targets <name>`(반복; 브로드캐스트 전용)
 - `--json`
 - `--dry-run`
 - `--verbose`
@@ -65,29 +65,29 @@ openclaw message <subcommand> [flags]
 - 가능한 경우 해석 범위는 활성 작업 대상으로 제한됩니다.
   - `--channel`이 설정된 경우(또는 `discord:...` 같은 접두사 대상에서 추론된 경우) 채널 범위
   - `--account`가 설정된 경우 계정 범위(채널 전역 + 선택한 계정 표면)
-  - `--account`가 생략되면 OpenClaw는 `default` 계정 SecretRef 범위를 강제하지 않습니다.
-- 관련 없는 채널의 미해결 SecretRef는 대상 지정 메시지 작업을 차단하지 않습니다.
-- 선택한 채널/계정 SecretRef가 해석되지 않으면 해당 작업에서 명령이 실패로 닫힙니다.
+  - `--account`가 생략되면 OpenClaw는 `default` 계정 SecretRef 범위를 강제하지 않습니다
+- 관련 없는 채널의 해석되지 않은 SecretRef는 대상 지정 메시지 작업을 차단하지 않습니다.
+- 선택한 채널/계정 SecretRef가 해석되지 않으면 해당 작업의 명령은 닫힌 상태로 실패합니다.
 
 ## 작업
 
-### 코어
+### 핵심
 
 - `send`
   - 채널: WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (Plugin)/Signal/iMessage/Matrix/Microsoft Teams
-  - 필수: `--target`, 그리고 `--message`, `--media`, 또는 `--presentation`
+  - 필수: `--target` 및 `--message`, `--media` 또는 `--presentation`
   - 선택 사항: `--media`, `--presentation`, `--delivery`, `--pin`, `--reply-to`, `--thread-id`, `--gif-playback`, `--force-document`, `--silent`
-  - 공유 프레젠테이션 페이로드: `--presentation`은 코어가 선택한 채널의 선언된 기능을 통해 렌더링하는 의미적 블록(`text`, `context`, `divider`, `buttons`, `select`)을 보냅니다. [메시지 프레젠테이션](/ko/plugins/message-presentation)을 참조하세요.
-  - 일반 전달 기본 설정: `--delivery`는 `{ "pin": true }` 같은 전달 힌트를 받습니다. `--pin`은 채널이 지원하는 경우 고정 전달의 축약형입니다.
-  - Telegram 전용: `--force-document`(Telegram 압축을 피하기 위해 이미지와 GIF를 문서로 전송)
-  - Telegram 전용: `--thread-id`(포럼 주제 ID)
-  - Slack 전용: `--thread-id`(스레드 타임스탬프. `--reply-to`는 같은 필드를 사용)
+  - 공유 프레젠테이션 페이로드: `--presentation`은 코어가 선택한 채널의 선언된 기능을 통해 렌더링하는 의미 블록(`text`, `context`, `divider`, `buttons`, `select`)을 보냅니다. [Message Presentation](/ko/plugins/message-presentation)을 참조하세요.
+  - 일반 전달 기본 설정: `--delivery`는 `{ "pin": true }` 같은 전달 힌트를 허용합니다. 채널이 지원하는 경우 `--pin`은 고정 전달의 단축 표현입니다.
+  - Telegram 전용: `--force-document`(Telegram 압축을 피하기 위해 이미지, GIF, 비디오를 문서로 전송)
+  - Telegram 전용: `--thread-id`(포럼 토픽 ID)
+  - Slack 전용: `--thread-id`(스레드 타임스탬프; `--reply-to`는 같은 필드를 사용)
   - Telegram + Discord: `--silent`
-  - WhatsApp 전용: `--gif-playback`. WhatsApp Channels/Newsletters는 네이티브 `@newsletter` JID로 주소를 지정합니다.
+  - WhatsApp 전용: `--gif-playback`; WhatsApp Channel/Newsletter는 네이티브 `@newsletter` JID로 지정됩니다.
 
 - `poll`
   - 채널: WhatsApp/Telegram/Discord/Matrix/Microsoft Teams
-  - 필수: `--target`, `--poll-question`, `--poll-option`(반복 가능)
+  - 필수: `--target`, `--poll-question`, `--poll-option`(반복)
   - 선택 사항: `--poll-multi`
   - Discord 전용: `--poll-duration-hours`, `--silent`, `--message`
   - Telegram 전용: `--poll-duration-seconds`(5-600), `--silent`, `--poll-anonymous` / `--poll-public`, `--thread-id`
@@ -96,7 +96,7 @@ openclaw message <subcommand> [flags]
   - 채널: Discord/Google Chat/Slack/Telegram/WhatsApp/Signal/Matrix
   - 필수: `--message-id`, `--target`
   - 선택 사항: `--emoji`, `--remove`, `--participant`, `--from-me`, `--target-author`, `--target-author-uuid`
-  - 참고: `--remove`에는 `--emoji`가 필요합니다(지원되는 경우 자신의 반응을 지우려면 `--emoji` 생략. /tools/reactions 참조)
+  - 참고: `--remove`에는 `--emoji`가 필요합니다(지원되는 경우 자신의 반응을 지우려면 `--emoji`를 생략하세요. /tools/reactions 참조)
   - WhatsApp 전용: `--participant`, `--from-me`
   - Signal 그룹 반응: `--target-author` 또는 `--target-author-uuid` 필요
 
@@ -131,12 +131,12 @@ openclaw message <subcommand> [flags]
 - `permissions`
   - 채널: Discord/Matrix
   - 필수: `--target`
-  - Matrix 전용: Matrix 암호화가 활성화되어 있고 확인 작업이 허용된 경우 사용 가능
+  - Matrix 전용: Matrix 암호화가 활성화되고 검증 작업이 허용된 경우 사용 가능
 
 - `search`
   - 채널: Discord
   - 필수: `--guild-id`, `--query`
-  - 선택 사항: `--channel-id`, `--channel-ids`(반복 가능), `--author-id`, `--author-ids`(반복 가능), `--limit`
+  - 선택 사항: `--channel-id`, `--channel-ids`(반복), `--author-id`, `--author-ids`(반복), `--limit`
 
 ### 스레드
 
@@ -164,13 +164,13 @@ openclaw message <subcommand> [flags]
 - `emoji upload`
   - 채널: Discord
   - 필수: `--guild-id`, `--emoji-name`, `--media`
-  - 선택 사항: `--role-ids`(반복 가능)
+  - 선택 사항: `--role-ids`(반복)
 
 ### 스티커
 
 - `sticker send`
   - 채널: Discord
-  - 필수: `--target`, `--sticker-id`(반복 가능)
+  - 필수: `--target`, `--sticker-id`(반복)
   - 선택 사항: `--message`
 
 - `sticker upload`
@@ -183,7 +183,7 @@ openclaw message <subcommand> [flags]
 - `role add` / `role remove`(Discord): `--guild-id`, `--user-id`, `--role-id`
 - `channel info`(Discord): `--target`
 - `channel list`(Discord): `--guild-id`
-- `member info`(Discord/Slack): `--user-id`(Discord의 경우 `--guild-id` 추가)
+- `member info`(Discord/Slack): `--user-id`(Discord의 경우 + `--guild-id`)
 - `voice status`(Discord): `--guild-id`, `--user-id`
 
 ### 이벤트
@@ -194,15 +194,15 @@ openclaw message <subcommand> [flags]
 
 ### 중재(Discord)
 
-- `timeout`: `--guild-id`, `--user-id`(선택 사항 `--duration-min` 또는 `--until`. 시간 제한을 해제하려면 둘 다 생략)
+- `timeout`: `--guild-id`, `--user-id`(선택 사항 `--duration-min` 또는 `--until`; 타임아웃을 해제하려면 둘 다 생략)
 - `kick`: `--guild-id`, `--user-id`(+ `--reason`)
 - `ban`: `--guild-id`, `--user-id`(+ `--delete-days`, `--reason`)
-  - `timeout`도 `--reason`을 지원합니다.
+  - `timeout`은 `--reason`도 지원합니다
 
 ### 브로드캐스트
 
 - `broadcast`
-  - 채널: 구성된 모든 채널. 모든 제공자를 대상으로 하려면 `--channel all` 사용
+  - 채널: 구성된 모든 채널. 모든 제공자를 대상으로 지정하려면 `--channel all` 사용
   - 필수: `--targets <target...>`
   - 선택 사항: `--message`, `--media`, `--dry-run`
 
@@ -215,7 +215,7 @@ openclaw message send --channel discord \
   --target channel:123 --message "hi" --reply-to 456
 ```
 
-의미적 버튼이 포함된 메시지 보내기:
+의미 버튼이 포함된 메시지 보내기:
 
 ```
 openclaw message send --channel discord \
@@ -223,7 +223,7 @@ openclaw message send --channel discord \
   --presentation '{"blocks":[{"type":"buttons","buttons":[{"label":"Approve","value":"approve","style":"success"},{"label":"Decline","value":"decline","style":"danger"}]}]}'
 ```
 
-코어는 채널 기능에 따라 동일한 `presentation` 페이로드를 Discord 컴포넌트, Slack 블록, Telegram 인라인 버튼, Mattermost props, 또는 Teams/Feishu 카드로 렌더링합니다. 전체 계약과 폴백 규칙은 [메시지 프레젠테이션](/ko/plugins/message-presentation)을 참조하세요.
+코어는 채널 기능에 따라 동일한 `presentation` 페이로드를 Discord 컴포넌트, Slack 블록, Telegram 인라인 버튼, Mattermost 속성 또는 Teams/Feishu 카드로 렌더링합니다. 전체 계약과 대체 규칙은 [Message Presentation](/ko/plugins/message-presentation)을 참조하세요.
 
 더 풍부한 프레젠테이션 페이로드 보내기:
 
@@ -309,4 +309,4 @@ openclaw message send --channel telegram --target @mychat \
 ## 관련 항목
 
 - [CLI 참조](/ko/cli)
-- [Agent 전송](/ko/tools/agent-send)
+- [Agent 보내기](/ko/tools/agent-send)

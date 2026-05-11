@@ -1,20 +1,20 @@
 ---
 read_when:
     - یادگیری نحوه پیکربندی OpenClaw
-    - در جست‌وجوی نمونه‌های پیکربندی
+    - در حال جست‌وجوی نمونه‌های پیکربندی
     - راه‌اندازی OpenClaw برای نخستین بار
-summary: نمونه‌های پیکربندی منطبق با طرح‌واره برای راه‌اندازی‌های رایج OpenClaw
+summary: نمونه‌های پیکربندی مطابق با طرح‌واره برای راه‌اندازی‌های رایج OpenClaw
 title: نمونه‌های پیکربندی
 x-i18n:
-    generated_at: "2026-05-10T19:40:30Z"
+    generated_at: "2026-05-11T20:33:26Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9fd1c93d8c491de13c3679c766293a3401853625308e90588d7c83272c5b6e73
+    source_hash: e077b2fe83b1c6e4ffd2ff0029fe3b754c7dc5dced06f134ddf18e9ed6a11fd2
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-نمونه‌های زیر با شِمای پیکربندی فعلی هم‌راستا هستند. برای مرجع کامل و یادداشت‌های هر فیلد، [پیکربندی](/fa/gateway/configuration) را ببینید.
+مثال‌های زیر با طرح‌واره پیکربندی فعلی هم‌راستا هستند. برای مرجع کامل و یادداشت‌های هر فیلد، [پیکربندی](/fa/gateway/configuration) را ببینید.
 
 ## شروع سریع
 
@@ -22,25 +22,32 @@ x-i18n:
 
 ```json5
 {
-  agent: { workspace: "~/.openclaw/workspace" },
+  agents: { defaults: { workspace: "~/.openclaw/workspace" } },
   channels: { whatsapp: { allowFrom: ["+15555550123"] } },
 }
 ```
 
-در `~/.openclaw/openclaw.json` ذخیره کنید و می‌توانید از آن شماره به ربات پیام مستقیم بدهید.
+در `~/.openclaw/openclaw.json` ذخیره کنید و می‌توانید از آن شماره به بات پیام خصوصی بدهید.
 
 ### شروع پیشنهادی
 
 ```json5
 {
-  identity: {
-    name: "Clawd",
-    theme: "helpful assistant",
-    emoji: "🦞",
-  },
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: { primary: "anthropic/claude-sonnet-4-6" },
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: { primary: "anthropic/claude-sonnet-4-6" },
+    },
+    list: [
+      {
+        id: "main",
+        identity: {
+          name: "Clawd",
+          theme: "helpful assistant",
+          emoji: "🦞",
+        },
+      },
+    ],
   },
   channels: {
     whatsapp: {
@@ -57,9 +64,9 @@ x-i18n:
 }
 ```
 
-## نمونه گسترش‌یافته (گزینه‌های اصلی)
+## مثال گسترش‌یافته (گزینه‌های اصلی)
 
-> JSON5 به شما امکان می‌دهد از توضیحات و ویرگول‌های پایانی استفاده کنید. JSON معمولی هم کار می‌کند.
+> JSON5 به شما امکان می‌دهد از کامنت‌ها و ویرگول‌های انتهایی استفاده کنید. JSON معمولی هم کار می‌کند.
 
 ```json5
 {
@@ -90,12 +97,7 @@ x-i18n:
     },
   },
 
-  // Identity
-  identity: {
-    name: "Samantha",
-    theme: "helpful sloth",
-    emoji: "🦥",
-  },
+  // Identity is per agent — set it on agents.list[].identity below.
 
   // Logging
   logging: {
@@ -314,6 +316,11 @@ x-i18n:
       {
         id: "main",
         default: true,
+        identity: {
+          name: "Samantha",
+          theme: "helpful sloth",
+          emoji: "🦥",
+        },
         // inherits defaults.skills -> github, weather
         groupChat: {
           mentionPatterns: ["@openclaw", "openclaw"],
@@ -473,9 +480,9 @@ x-i18n:
 }
 ```
 
-### مخزن Skills هم‌نیای پیوند نمادین‌شده
+### مخزن Skills هم‌سطح با پیوند نمادین
 
-وقتی از این استفاده کنید که یک ریشه Skills داخلی شامل پیوند نمادین به یک مخزن هم‌نیا است؛ برای
+وقتی ریشهٔ یک Skills داخلی شامل یک پیوند نمادین به یک مخزن هم‌سطح است، از این استفاده کنید؛ برای
 مثال `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ```json5
@@ -489,13 +496,13 @@ x-i18n:
 }
 ```
 
-- `extraDirs` مخزن هم‌سطح را به‌عنوان یک ریشهٔ صریح مهارت اسکن می‌کند.
-- `allowSymlinkTargets` اجازه می‌دهد پوشه‌های مهارتِ symlinkشده به آن ریشهٔ واقعی و قابل‌اعتماد
-  resolve شوند، بدون اینکه خروج دلخواه از طریق symlink مجاز شود.
+- `extraDirs` مخزن هم‌سطح را به‌عنوان یک ریشهٔ صریح Skills اسکن می‌کند.
+- `allowSymlinkTargets` اجازه می‌دهد پوشه‌های Skills دارای پیوند نمادین به آن ریشهٔ واقعیِ مورد اعتماد
+  resolve شوند، بدون اینکه خروج دلخواه از طریق پیوند نمادین مجاز شود.
 
 ## الگوهای رایج
 
-### خط پایهٔ مشترک مهارت با یک override
+### خط پایهٔ مشترک Skills با یک بازنویسی
 
 ```json5
 {
@@ -513,14 +520,14 @@ x-i18n:
 ```
 
 - `agents.defaults.skills` خط پایهٔ مشترک است.
-- `agents.list[].skills` آن خط پایه را برای یک عامل جایگزین می‌کند.
-- زمانی از `skills: []` استفاده کنید که یک عامل نباید هیچ مهارتی را ببیند.
+- `agents.list[].skills` آن خط پایه را برای یک agent جایگزین می‌کند.
+- وقتی یک agent نباید هیچ Skillsی ببیند، از `skills: []` استفاده کنید.
 
 ### راه‌اندازی چندسکویی
 
 ```json5
 {
-  agent: { workspace: "~/.openclaw/workspace" },
+  agents: { defaults: { workspace: "~/.openclaw/workspace" } },
   channels: {
     whatsapp: { allowFrom: ["+15555550123"] },
     telegram: {
@@ -537,11 +544,9 @@ x-i18n:
 }
 ```
 
-### تأیید خودکار شبکهٔ Node قابل‌اعتماد
+### تأیید خودکار شبکهٔ Nodeهای مورد اعتماد
 
-جفت‌سازی دستگاه را دستی نگه دارید، مگر اینکه مسیر شبکه را کنترل کنید. برای یک آزمایشگاه اختصاصی
-یا زیرشبکهٔ tailnet، می‌توانید با CIDRها یا IPهای دقیق، تأیید خودکار دستگاه Node در اولین اتصال
-را فعال کنید:
+جفت‌سازی دستگاه را دستی نگه دارید، مگر اینکه مسیر شبکه را کنترل کنید. برای یک آزمایشگاه اختصاصی یا زیرشبکهٔ tailnet، می‌توانید با CIDRها یا IPهای دقیق، تأیید خودکار دستگاه Node در نخستین اتصال را فعال کنید:
 
 ```json5
 {
@@ -555,13 +560,11 @@ x-i18n:
 }
 ```
 
-وقتی تنظیم نشده باشد، خاموش می‌ماند. این فقط برای جفت‌سازی تازهٔ `role: node` بدون
-scopeهای درخواستی اعمال می‌شود. کلاینت‌های operator/browser و ارتقاهای role، scope، metadata یا
-کلید عمومی همچنان به تأیید دستی نیاز دارند.
+وقتی تنظیم نشده باشد، این قابلیت غیرفعال می‌ماند. این فقط برای جفت‌سازی تازهٔ `role: node` بدون محدوده‌های درخواستی اعمال می‌شود. کلاینت‌های اپراتور/مرورگر و ارتقاهای نقش، محدوده، فراداده یا کلید عمومی همچنان به تأیید دستی نیاز دارند.
 
 ### حالت DM امن (صندوق ورودی مشترک / DMهای چندکاربره)
 
-اگر بیش از یک نفر می‌تواند به ربات شما DM بدهد (چند ورودی در `allowFrom`، تأییدهای جفت‌سازی برای چند نفر، یا `dmPolicy: "open"`)، **حالت DM امن** را فعال کنید تا DMهای فرستنده‌های مختلف به‌طور پیش‌فرض یک زمینه را به اشتراک نگذارند:
+اگر بیش از یک نفر می‌تواند به ربات شما DM بفرستد (چندین ورودی در `allowFrom`، تأییدهای جفت‌سازی برای چند نفر، یا `dmPolicy: "open"`)، **حالت DM امن** را فعال کنید تا DMهای فرستنده‌های مختلف به‌صورت پیش‌فرض یک زمینهٔ مشترک نداشته باشند:
 
 ```json5
 {
@@ -585,10 +588,10 @@ scopeهای درخواستی اعمال می‌شود. کلاینت‌های ope
 }
 ```
 
-برای Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC، مجوزدهی فرستنده به‌طور پیش‌فرض ابتدا بر اساس شناسه انجام می‌شود.
-تطبیق مستقیم و قابل‌تغییر نام/ایمیل/نام مستعار را با `dangerouslyAllowNameMatching: true` هر کانال فقط زمانی فعال کنید که آن ریسک را صریحاً پذیرفته باشید.
+برای Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC، مجوزدهی فرستنده به‌صورت پیش‌فرض ابتدا بر اساس شناسه انجام می‌شود.
+تطبیق مستقیم نام/ایمیل/نام مستعارِ قابل تغییر را با `dangerouslyAllowNameMatching: true` هر کانال فقط زمانی فعال کنید که صراحتاً این ریسک را پذیرفته باشید.
 
-### کلید API Anthropic + fallback MiniMax
+### کلید API Anthropic + جایگزین MiniMax
 
 ```json5
 {
@@ -612,27 +615,36 @@ scopeهای درخواستی اعمال می‌شود. کلاینت‌های ope
       },
     },
   },
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: {
-      primary: "anthropic/claude-opus-4-6",
-      fallbacks: ["minimax/MiniMax-M2.7"],
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: {
+        primary: "anthropic/claude-opus-4-6",
+        fallbacks: ["minimax/MiniMax-M2.7"],
+      },
     },
   },
 }
 ```
 
-### ربات کاری (دسترسی محدود)
+### بات کاری (دسترسی محدود)
 
 ```json5
 {
-  identity: {
-    name: "WorkBot",
-    theme: "professional assistant",
-  },
-  agent: {
-    workspace: "~/work-openclaw",
-    elevated: { enabled: false },
+  agents: {
+    defaults: {
+      workspace: "~/work-openclaw",
+      elevatedDefault: "off",
+    },
+    list: [
+      {
+        id: "main",
+        identity: {
+          name: "WorkBot",
+          theme: "professional assistant",
+        },
+      },
+    ],
   },
   channels: {
     slack: {
@@ -651,9 +663,11 @@ scopeهای درخواستی اعمال می‌شود. کلاینت‌های ope
 
 ```json5
 {
-  agent: {
-    workspace: "~/.openclaw/workspace",
-    model: { primary: "lmstudio/my-local-model" },
+  agents: {
+    defaults: {
+      workspace: "~/.openclaw/workspace",
+      model: { primary: "lmstudio/my-local-model" },
+    },
   },
   models: {
     mode: "merge",
@@ -684,7 +698,7 @@ scopeهای درخواستی اعمال می‌شود. کلاینت‌های ope
 - اگر `dmPolicy: "open"` را تنظیم می‌کنید، فهرست متناظر `allowFrom` باید شامل `"*"` باشد.
 - شناسه‌های ارائه‌دهنده متفاوت‌اند (شماره تلفن‌ها، شناسه‌های کاربر، شناسه‌های کانال). برای تأیید قالب، از مستندات ارائه‌دهنده استفاده کنید.
 - بخش‌های اختیاری برای افزودن در آینده: `web`، `browser`، `ui`، `discovery`، `plugins`، `talk`، `signal`، `imessage`.
-- برای نکته‌های عمیق‌تر راه‌اندازی، [ارائه‌دهنده‌ها](/fa/providers) و [عیب‌یابی](/fa/gateway/troubleshooting) را ببینید.
+- برای نکته‌های عمیق‌تر درباره راه‌اندازی، [ارائه‌دهندگان](/fa/providers) و [عیب‌یابی](/fa/gateway/troubleshooting) را ببینید.
 
 ## مرتبط
 

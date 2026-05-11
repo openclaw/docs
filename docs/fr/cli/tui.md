@@ -1,38 +1,55 @@
 ---
 read_when:
-    - Vous souhaitez une interface terminal pour le Gateway (adaptée au mode distant)
+    - Vous voulez une interface utilisateur en terminal pour le Gateway (adaptée à un usage à distance)
     - Vous souhaitez transmettre url/token/session depuis des scripts
-    - Vous souhaitez exécuter la TUI en mode intégré local sans Gateway
+    - Vous souhaitez exécuter le TUI en mode intégré local sans Gateway
     - Vous souhaitez utiliser openclaw chat ou openclaw tui --local
-summary: Référence CLI pour `openclaw tui` (interface terminal intégrée locale ou adossée au Gateway)
+summary: Référence CLI pour `openclaw tui` (interface utilisateur de terminal adossée au Gateway ou intégrée localement)
 title: TUI
 x-i18n:
-    generated_at: "2026-04-24T07:06:00Z"
-    model: gpt-5.4
+    generated_at: "2026-05-11T20:30:07Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: c3b3d337c55411fbcbae3bda85d9ca8d0f1b2a4224b5d4c9bbc5f96c41c5363c
+    source_hash: 3e59f0f5360a456d19cfee38adc540b27665c55de68480616f269d1088f13677
     source_path: cli/tui.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw tui`
 
-Ouvrir l’interface terminal connectée au Gateway, ou l’exécuter en mode
-intégré local.
+Ouvrez l’interface utilisateur de terminal connectée au Gateway, ou exécutez-la en mode
+local intégré.
 
 Associé :
 
 - Guide TUI : [TUI](/fr/web/tui)
 
+## Options
+
+| Drapeau               | Par défaut                               | Description                                                                                     |
+| --------------------- | ---------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `--local`             | `false`                                  | Exécuter avec le runtime d’agent local intégré au lieu d’un Gateway.                            |
+| `--url <url>`         | `gateway.remote.url` depuis la config    | URL WebSocket du Gateway.                                                                       |
+| `--token <token>`     | (aucun)                                  | Jeton du Gateway, si requis.                                                                    |
+| `--password <pass>`   | (aucun)                                  | Mot de passe du Gateway, si requis.                                                             |
+| `--session <key>`     | `main` (ou `global` quand la portée est globale) | Clé de session. Dans un espace de travail d’agent, sélectionne automatiquement cet agent sauf si préfixée. |
+| `--deliver`           | `false`                                  | Distribuer les réponses de l’assistant via les canaux configurés.                               |
+| `--thinking <level>`  | (par défaut du modèle)                   | Remplacement du niveau de réflexion.                                                            |
+| `--message <text>`    | (aucun)                                  | Envoyer un message initial après la connexion.                                                   |
+| `--timeout-ms <ms>`   | `agents.defaults.timeoutSeconds`         | Délai d’expiration de l’agent. Les valeurs invalides consignent un avertissement et sont ignorées. |
+| `--history-limit <n>` | `200`                                    | Entrées d’historique à charger lors de l’attachement.                                           |
+
+Alias : `openclaw chat` et `openclaw terminal` invoquent la même commande avec `--local` implicite.
+
 Remarques :
 
 - `chat` et `terminal` sont des alias de `openclaw tui --local`.
 - `--local` ne peut pas être combiné avec `--url`, `--token` ou `--password`.
-- `tui` résout les SecretRef d’authentification Gateway configurés pour l’authentification par jeton/mot de passe lorsque c’est possible (fournisseurs `env`/`file`/`exec`).
-- Lorsqu’elle est lancée depuis l’intérieur d’un répertoire d’espace de travail d’agent configuré, la TUI sélectionne automatiquement cet agent comme valeur par défaut de clé de session (sauf si `--session` est explicitement `agent:<id>:...`).
-- Le mode local utilise directement le runtime d’agent intégré. La plupart des outils locaux fonctionnent, mais les fonctionnalités réservées au Gateway ne sont pas disponibles.
-- Le mode local ajoute `/auth [provider]` dans la surface de commande de la TUI.
-- Les paliers d’approbation de Plugin s’appliquent toujours en mode local. Les outils qui nécessitent une approbation demandent une décision dans le terminal ; rien n’est automatiquement approuvé en silence, car le Gateway n’est pas impliqué.
+- `tui` résout les SecretRefs d’authentification du gateway configurés pour l’authentification par jeton/mot de passe lorsque c’est possible (fournisseurs `env`/`file`/`exec`).
+- Lorsqu’il est lancé depuis un répertoire d’espace de travail d’agent configuré, TUI sélectionne automatiquement cet agent comme valeur par défaut de la clé de session (sauf si `--session` est explicitement `agent:<id>:...`).
+- Le mode local utilise directement le runtime d’agent intégré. La plupart des outils locaux fonctionnent, mais les fonctionnalités propres au Gateway ne sont pas disponibles.
+- Le mode local ajoute `/auth [provider]` dans la surface de commande TUI.
+- Les barrières d’approbation des Plugins s’appliquent toujours en mode local. Les outils qui exigent une approbation demandent une décision dans le terminal ; rien n’est approuvé automatiquement en silence parce que le Gateway n’intervient pas.
 
 ## Exemples
 
@@ -47,21 +64,21 @@ openclaw chat --message "Compare my config to the docs and tell me what to fix"
 openclaw tui --session bugfix
 ```
 
-## Boucle de réparation de configuration
+## Boucle de réparation de la config
 
-Utilisez le mode local lorsque la configuration actuelle est déjà valide et que vous voulez que l’agent
-intégré l’inspecte, la compare à la documentation et aide à la réparer
+Utilisez le mode local lorsque la config actuelle est déjà valide et que vous voulez que
+l’agent intégré l’inspecte, la compare à la documentation et aide à la réparer
 depuis le même terminal :
 
 Si `openclaw config validate` échoue déjà, utilisez d’abord `openclaw configure` ou
-`openclaw doctor --fix`. `openclaw chat` ne contourne pas la protection contre une
-configuration invalide.
+`openclaw doctor --fix`. `openclaw chat` ne contourne pas le garde-fou de config
+invalide.
 
 ```bash
 openclaw chat
 ```
 
-Puis dans la TUI :
+Puis dans TUI :
 
 ```text
 !openclaw config file
@@ -71,7 +88,7 @@ Puis dans la TUI :
 ```
 
 Appliquez des correctifs ciblés avec `openclaw config set` ou `openclaw configure`, puis
-relancez `openclaw config validate`. Voir [TUI](/fr/web/tui) et [Config](/fr/cli/config).
+relancez `openclaw config validate`. Consultez [TUI](/fr/web/tui) et [Config](/fr/cli/config).
 
 ## Associé
 

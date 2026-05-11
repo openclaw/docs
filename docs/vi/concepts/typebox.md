@@ -1,33 +1,33 @@
 ---
 read_when:
     - Cập nhật lược đồ giao thức hoặc sinh mã
-summary: Các lược đồ TypeBox làm nguồn chân lý duy nhất cho giao thức Gateway
+summary: Các lược đồ TypeBox là nguồn chân lý duy nhất cho giao thức Gateway
 title: TypeBox
 x-i18n:
-    generated_at: "2026-05-07T13:15:49Z"
+    generated_at: "2026-05-11T20:28:29Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 95baccfdfa6f77ba57f6ac8502d502084289a84cfd03a450dd1e9422931706dd
+    source_hash: ecc9a69ac6d4ac101a4a6f34e44acfbe952dce0f90d178d4f8559191fb92c3b4
     source_path: concepts/typebox.md
     workflow: 16
 ---
 
-TypeBox là thư viện schema ưu tiên TypeScript. Chúng tôi dùng nó để định nghĩa **giao thức WebSocket Gateway** (bắt tay, yêu cầu/phản hồi, sự kiện máy chủ). Các schema đó điều khiển **xác thực khi chạy**, **xuất JSON Schema**, và **sinh mã Swift** cho ứng dụng macOS. Một nguồn sự thật duy nhất; mọi thứ khác đều được tạo ra.
+TypeBox là thư viện schema ưu tiên TypeScript. Chúng tôi dùng thư viện này để định nghĩa **giao thức WebSocket Gateway** (bắt tay, yêu cầu/phản hồi, sự kiện máy chủ). Các schema đó điều khiển **xác thực lúc chạy**, **xuất JSON Schema** và **sinh mã Swift** cho ứng dụng macOS. Một nguồn sự thật duy nhất; mọi thứ khác đều được tạo sinh.
 
-Nếu bạn muốn ngữ cảnh giao thức ở cấp cao hơn, hãy bắt đầu với
-[Kiến trúc Gateway](/vi/concepts/architecture).
+Nếu bạn muốn xem ngữ cảnh giao thức ở mức cao hơn, hãy bắt đầu với
+[kiến trúc Gateway](/vi/concepts/architecture).
 
 ## Mô hình tư duy (30 giây)
 
-Mọi thông điệp Gateway WS là một trong ba frame:
+Mọi thông điệp WS của Gateway là một trong ba frame:
 
 - **Yêu cầu**: `{ type: "req", id, method, params }`
 - **Phản hồi**: `{ type: "res", id, ok, payload | error }`
 - **Sự kiện**: `{ type: "event", event, payload, seq?, stateVersion? }`
 
-Frame đầu tiên **phải** là yêu cầu `connect`. Sau đó, ứng dụng khách có thể gọi
-các phương thức (ví dụ `health`, `send`, `chat.send`) và đăng ký nhận sự kiện (ví dụ
-`presence`, `tick`, `agent`).
+Frame đầu tiên **phải** là một yêu cầu `connect`. Sau đó, máy khách có thể gọi
+các phương thức (ví dụ `health`, `send`, `chat.send`) và đăng ký theo dõi sự kiện
+(ví dụ `presence`, `tick`, `agent`).
 
 Luồng kết nối (tối thiểu):
 
@@ -46,47 +46,47 @@ Các phương thức + sự kiện phổ biến:
 | ---------- | ---------------------------------------------------------- | ---------------------------------- |
 | Lõi        | `connect`, `health`, `status`                              | `connect` phải là đầu tiên         |
 | Nhắn tin   | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail` | tác dụng phụ cần `idempotencyKey`  |
-| Trò chuyện | `chat.history`, `chat.send`, `chat.abort`                  | WebChat dùng các mục này           |
+| Trò chuyện | `chat.history`, `chat.send`, `chat.abort`                  | WebChat dùng các phương thức này   |
 | Phiên      | `sessions.list`, `sessions.patch`, `sessions.delete`       | quản trị phiên                     |
-| Tự động hóa | `wake`, `cron.list`, `cron.run`, `cron.runs`               | wake + điều khiển cron             |
-| Node       | `node.list`, `node.invoke`, `node.pair.*`                  | Gateway WS + hành động node        |
+| Tự động hóa | `wake`, `cron.list`, `cron.run`, `cron.runs`              | điều khiển wake + cron             |
+| Node       | `node.list`, `node.invoke`, `node.pair.*`                  | WS Gateway + hành động node        |
 | Sự kiện    | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown`  | máy chủ đẩy                        |
 
-Danh mục **khám phá** được quảng bá có thẩm quyền nằm trong
+Kho **khám phá** được quảng bá chính thức nằm trong
 `src/gateway/server-methods-list.ts` (`listGatewayMethods`, `GATEWAY_EVENTS`).
 
-## Nơi đặt schema
+## Vị trí của các schema
 
 - Nguồn: `src/gateway/protocol/schema.ts`
-- Bộ xác thực khi chạy (AJV): `src/gateway/protocol/index.ts`
+- Bộ xác thực lúc chạy (AJV): `src/gateway/protocol/index.ts`
 - Registry tính năng/khám phá được quảng bá: `src/gateway/server-methods-list.ts`
 - Bắt tay máy chủ + điều phối phương thức: `src/gateway/server.impl.ts`
-- Ứng dụng khách Node: `src/gateway/client.ts`
-- JSON Schema được tạo: `dist/protocol.schema.json`
-- Mô hình Swift được tạo: `apps/macos/Sources/OpenClawProtocol/GatewayModels.swift`
+- Máy khách Node: `src/gateway/client.ts`
+- JSON Schema được tạo sinh: `dist/protocol.schema.json`
+- Mô hình Swift được tạo sinh: `apps/macos/Sources/OpenClawProtocol/GatewayModels.swift`
 
 ## Pipeline hiện tại
 
 - `pnpm protocol:gen`
   - ghi JSON Schema (draft-07) vào `dist/protocol.schema.json`
 - `pnpm protocol:gen:swift`
-  - tạo mô hình gateway Swift
+  - tạo các mô hình Gateway Swift
 - `pnpm protocol:check`
   - chạy cả hai trình tạo và xác minh đầu ra đã được commit
 
-## Cách schema được dùng khi chạy
+## Cách schema được dùng lúc chạy
 
 - **Phía máy chủ**: mọi frame đến đều được xác thực bằng AJV. Bắt tay chỉ
   chấp nhận yêu cầu `connect` có params khớp với `ConnectParams`.
-- **Phía ứng dụng khách**: ứng dụng khách JS xác thực các frame sự kiện và phản hồi trước khi
-  sử dụng chúng.
+- **Phía máy khách**: máy khách JS xác thực các frame sự kiện và phản hồi trước
+  khi sử dụng chúng.
 - **Khám phá tính năng**: Gateway gửi danh sách `features.methods`
   và `features.events` thận trọng trong `hello-ok` từ `listGatewayMethods()` và
   `GATEWAY_EVENTS`.
-- Danh sách khám phá đó không phải là bản kết xuất được tạo của mọi helper có thể gọi trong
-  `coreGatewayHandlers`; một số RPC helper được triển khai trong
-  `src/gateway/server-methods/*.ts` mà không được liệt kê trong danh sách
-  tính năng được quảng bá.
+- Danh sách khám phá đó không phải là bản kết xuất được tạo sinh của mọi helper
+  có thể gọi trong `coreGatewayHandlers`; một số RPC helper được triển khai trong
+  `src/gateway/server-methods/*.ts` mà không được liệt kê trong danh sách tính
+  năng được quảng bá.
 
 ## Frame ví dụ
 
@@ -98,7 +98,7 @@ Connect (thông điệp đầu tiên):
   "id": "c1",
   "method": "connect",
   "params": {
-    "minProtocol": 4,
+    "minProtocol": 3,
     "maxProtocol": 4,
     "client": {
       "id": "openclaw-macos",
@@ -112,7 +112,7 @@ Connect (thông điệp đầu tiên):
 }
 ```
 
-Phản hồi Hello-ok:
+Phản hồi hello-ok:
 
 ```json
 {
@@ -151,9 +151,9 @@ Sự kiện:
 { "type": "event", "event": "tick", "payload": { "ts": 1730000000 }, "seq": 12 }
 ```
 
-## Ứng dụng khách tối thiểu (Node.js)
+## Máy khách tối thiểu (Node.js)
 
-Luồng hữu ích nhỏ nhất: connect + health.
+Luồng hữu ích nhỏ nhất: kết nối + kiểm tra sức khỏe.
 
 ```ts
 import { WebSocket } from "ws";
@@ -195,7 +195,7 @@ ws.on("message", (data) => {
 
 ## Ví dụ hoàn chỉnh: thêm một phương thức từ đầu đến cuối
 
-Ví dụ: thêm yêu cầu `system.echo` mới trả về `{ ok: true, text }`.
+Ví dụ: thêm một yêu cầu `system.echo` mới trả về `{ ok: true, text }`.
 
 1. **Schema (nguồn sự thật)**
 
@@ -250,11 +250,11 @@ export const systemHandlers: GatewayRequestHandlers = {
 sau đó thêm `"system.echo"` vào đầu vào `listGatewayMethods` trong
 `src/gateway/server-methods-list.ts`.
 
-Nếu phương thức có thể được gọi bởi ứng dụng khách operator hoặc node, cũng phân loại nó trong
-`src/gateway/method-scopes.ts` để việc thực thi scope và quảng bá tính năng `hello-ok`
-luôn đồng bộ.
+Nếu phương thức có thể được gọi bởi máy khách operator hoặc node, cũng hãy phân loại nó trong
+`src/gateway/method-scopes.ts` để việc thực thi phạm vi và quảng bá tính năng
+`hello-ok` luôn khớp nhau.
 
-4. **Tạo lại**
+4. **Tạo sinh lại**
 
 ```bash
 pnpm protocol:check
@@ -262,48 +262,50 @@ pnpm protocol:check
 
 5. **Kiểm thử + tài liệu**
 
-Thêm kiểm thử máy chủ trong `src/gateway/server.*.test.ts` và ghi chú phương thức trong tài liệu.
+Thêm một kiểm thử máy chủ trong `src/gateway/server.*.test.ts` và ghi chú phương thức trong tài liệu.
 
 ## Hành vi sinh mã Swift
 
 Trình tạo Swift phát ra:
 
-- enum `GatewayFrame` với các trường hợp `req`, `res`, `event`, và `unknown`
-- struct/enum payload có kiểu mạnh
-- giá trị `ErrorCode` và `GATEWAY_PROTOCOL_VERSION`
+- enum `GatewayFrame` với các trường hợp `req`, `res`, `event` và `unknown`
+- struct/enum payload được định kiểu mạnh
+- các giá trị `ErrorCode`, `GATEWAY_PROTOCOL_VERSION` và `GATEWAY_MIN_PROTOCOL_VERSION`
 
-Các kiểu frame không xác định được giữ nguyên dưới dạng payload thô để tương thích về sau.
+Các kiểu frame không xác định được giữ lại dưới dạng payload thô để tương thích về sau.
 
-## Phiên bản + tương thích
+## Phiên bản hóa + tương thích
 
 - `PROTOCOL_VERSION` nằm trong `src/gateway/protocol/version.ts`.
-- Ứng dụng khách gửi `minProtocol` + `maxProtocol`; máy chủ từ chối các trường hợp không khớp.
-- Các mô hình Swift giữ lại kiểu frame không xác định để tránh làm hỏng ứng dụng khách cũ.
+- Máy khách gửi `minProtocol` + `maxProtocol`; máy chủ từ chối các khoảng không
+  bao gồm giao thức hiện tại của nó.
+- Các mô hình Swift giữ lại kiểu frame không xác định để tránh làm hỏng máy khách cũ hơn.
 
-## Mẫu schema và quy ước
+## Mẫu và quy ước schema
 
-- Hầu hết object dùng `additionalProperties: false` để có payload nghiêm ngặt.
+- Hầu hết object dùng `additionalProperties: false` cho payload nghiêm ngặt.
 - `NonEmptyString` là mặc định cho ID và tên phương thức/sự kiện.
-- `GatewayFrame` cấp cao nhất dùng một **discriminator** trên `type`.
+- `GatewayFrame` cấp cao nhất dùng một **bộ phân biệt** trên `type`.
 - Các phương thức có tác dụng phụ thường yêu cầu `idempotencyKey` trong params
   (ví dụ: `send`, `poll`, `agent`, `chat.send`).
-- `agent` chấp nhận `internalEvents` tùy chọn cho ngữ cảnh điều phối được tạo khi chạy
+- `agent` chấp nhận `internalEvents` tùy chọn cho ngữ cảnh điều phối được tạo lúc chạy
   (ví dụ bàn giao hoàn tất tác vụ subagent/cron); hãy xem đây là bề mặt API nội bộ.
 
 ## JSON schema trực tiếp
 
-JSON Schema được tạo nằm trong repo tại `dist/protocol.schema.json`. Tệp thô đã xuất bản thường có sẵn tại:
+JSON Schema được tạo sinh nằm trong repo tại `dist/protocol.schema.json`. Tệp thô
+đã xuất bản thường có tại:
 
 - [https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json](https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json)
 
 ## Khi bạn thay đổi schema
 
-1. Cập nhật schema TypeBox.
+1. Cập nhật các schema TypeBox.
 2. Đăng ký phương thức/sự kiện trong `src/gateway/server-methods-list.ts`.
-3. Cập nhật `src/gateway/method-scopes.ts` khi RPC mới cần phân loại scope operator hoặc
+3. Cập nhật `src/gateway/method-scopes.ts` khi RPC mới cần phân loại phạm vi operator hoặc
    node.
 4. Chạy `pnpm protocol:check`.
-5. Commit schema được tạo lại + mô hình Swift.
+5. Commit schema được tạo sinh lại + mô hình Swift.
 
 ## Liên quan
 

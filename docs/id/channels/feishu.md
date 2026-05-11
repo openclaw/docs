@@ -2,27 +2,27 @@
 read_when:
     - Anda ingin menghubungkan bot Feishu/Lark
     - Anda sedang mengonfigurasi saluran Feishu
-summary: Gambaran umum bot Feishu, fitur, dan konfigurasi
+summary: Ikhtisar, fitur, dan konfigurasi bot Feishu
 title: Feishu
 x-i18n:
-    generated_at: "2026-05-06T09:02:02Z"
+    generated_at: "2026-05-11T20:20:27Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 2498c3b800563105c00345426a70a95914486633a07894cd74dbe487b167a6f4
+    source_hash: 8d4e43c65072d44cb5973a1ed09cb5336f18d100d0cb5b43c5e31f37aecff329
     source_path: channels/feishu.md
     workflow: 16
 ---
 
-Feishu/Lark adalah platform kolaborasi terpadu tempat tim dapat mengobrol, berbagi dokumen, mengelola kalender, dan menyelesaikan pekerjaan bersama.
+Feishu/Lark adalah platform kolaborasi serba ada tempat tim mengobrol, berbagi dokumen, mengelola kalender, dan menyelesaikan pekerjaan bersama.
 
-**Status:** siap produksi untuk DM bot + obrolan grup. WebSocket adalah mode bawaan; mode Webhook bersifat opsional.
+**Status:** siap produksi untuk DM bot + chat grup. WebSocket adalah mode default; mode Webhook bersifat opsional.
 
 ---
 
 ## Mulai cepat
 
 <Note>
-Memerlukan OpenClaw 2026.4.25 atau yang lebih baru. Jalankan `openclaw --version` untuk memeriksa. Tingkatkan dengan `openclaw update`.
+Memerlukan OpenClaw 2026.4.25 atau lebih baru. Jalankan `openclaw --version` untuk memeriksa. Tingkatkan dengan `openclaw update`.
 </Note>
 
 <Steps>
@@ -30,10 +30,10 @@ Memerlukan OpenClaw 2026.4.25 atau yang lebih baru. Jalankan `openclaw --version
   ```bash
   openclaw channels login --channel feishu
   ```
-  Pindai kode QR dengan aplikasi seluler Feishu/Lark Anda untuk membuat bot Feishu/Lark secara otomatis.
+  Pilih penyiapan manual untuk menempelkan App ID dan App Secret dari Feishu Open Platform, atau pilih penyiapan QR untuk membuat bot secara otomatis. Jika aplikasi seluler Feishu domestik tidak bereaksi terhadap kode QR, jalankan ulang penyiapan dan pilih penyiapan manual.
   </Step>
   
-  <Step title="Setelah penyiapan selesai, mulai ulang Gateway untuk menerapkan perubahan">
+  <Step title="Setelah penyiapan selesai, mulai ulang gateway untuk menerapkan perubahan">
   ```bash
   openclaw gateway restart
   ```
@@ -48,42 +48,42 @@ Memerlukan OpenClaw 2026.4.25 atau yang lebih baru. Jalankan `openclaw --version
 
 Konfigurasikan `dmPolicy` untuk mengontrol siapa yang dapat mengirim DM ke bot:
 
-- `"pairing"` - pengguna tidak dikenal menerima kode pemasangan; setujui melalui CLI
-- `"allowlist"` - hanya pengguna yang tercantum di `allowFrom` yang dapat mengobrol (bawaan: hanya pemilik bot)
-- `"open"` - izinkan DM publik hanya ketika `allowFrom` menyertakan `"*"`; dengan entri terbatas, hanya pengguna yang cocok yang dapat mengobrol
+- `"pairing"` - pengguna tidak dikenal menerima kode pairing; setujui melalui CLI
+- `"allowlist"` - hanya pengguna yang tercantum di `allowFrom` yang dapat chat (default: hanya pemilik bot)
+- `"open"` - izinkan DM publik hanya ketika `allowFrom` menyertakan `"*"`; dengan entri terbatas, hanya pengguna yang cocok yang dapat chat
 - `"disabled"` - nonaktifkan semua DM
 
-**Setujui permintaan pemasangan:**
+**Setujui permintaan pairing:**
 
 ```bash
 openclaw pairing list feishu
 openclaw pairing approve feishu <CODE>
 ```
 
-### Obrolan grup
+### Chat grup
 
 **Kebijakan grup** (`channels.feishu.groupPolicy`):
 
 | Nilai         | Perilaku                                                                                     |
 | ------------- | -------------------------------------------------------------------------------------------- |
-| `"open"`      | Merespons semua pesan dalam grup                                                            |
-| `"allowlist"` | Hanya merespons grup dalam `groupAllowFrom` atau yang dikonfigurasi secara eksplisit di bawah `groups.<chat_id>` |
-| `"disabled"`  | Menonaktifkan semua pesan grup; entri eksplisit `groups.<chat_id>` tidak mengganti ini         |
+| `"open"`      | Merespons semua pesan di grup                                                                |
+| `"allowlist"` | Hanya merespons grup dalam `groupAllowFrom` atau yang dikonfigurasi eksplisit di `groups.<chat_id>` |
+| `"disabled"`  | Menonaktifkan semua pesan grup; entri eksplisit `groups.<chat_id>` tidak menimpa ini         |
 
-Bawaan: `allowlist`
+Default: `allowlist`
 
 **Persyaratan mention** (`channels.feishu.requireMention`):
 
-- `true` - memerlukan @mention (bawaan)
-- `false` - merespons tanpa @mention
+- `true` - wajib @mention (default)
+- `false` - respons tanpa @mention
 - Override per grup: `channels.feishu.groups.<chat_id>.requireMention`
-- `@all` dan `@_all` yang hanya untuk broadcast tidak diperlakukan sebagai mention bot. Pesan yang menyebut `@all` dan bot secara langsung tetap dihitung sebagai mention bot.
+- `@all` dan `@_all` yang hanya untuk broadcast tidak dianggap sebagai mention bot. Pesan yang menyebut `@all` sekaligus bot secara langsung tetap dihitung sebagai mention bot.
 
 ---
 
 ## Contoh konfigurasi grup
 
-### Izinkan semua grup, tidak perlu @mention
+### Izinkan semua grup, tanpa perlu @mention
 
 ```json5
 {
@@ -95,7 +95,7 @@ Bawaan: `allowlist`
 }
 ```
 
-### Izinkan semua grup, tetap perlu @mention
+### Izinkan semua grup, tetap wajib @mention
 
 ```json5
 {
@@ -108,7 +108,7 @@ Bawaan: `allowlist`
 }
 ```
 
-### Hanya izinkan grup tertentu
+### Izinkan hanya grup tertentu
 
 ```json5
 {
@@ -122,7 +122,7 @@ Bawaan: `allowlist`
 }
 ```
 
-Dalam mode `allowlist`, Anda juga dapat mengizinkan grup dengan menambahkan entri eksplisit `groups.<chat_id>`. Entri eksplisit tidak mengganti `groupPolicy: "disabled"`. Bawaan wildcard di bawah `groups.*` mengonfigurasi grup yang cocok, tetapi tidak mengizinkan grup dengan sendirinya.
+Dalam mode `allowlist`, Anda juga dapat mengizinkan grup dengan menambahkan entri eksplisit `groups.<chat_id>`. Entri eksplisit tidak menimpa `groupPolicy: "disabled"`. Default wildcard di bawah `groups.*` mengonfigurasi grup yang cocok, tetapi tidak mengizinkan grup dengan sendirinya.
 
 ```json5
 {
@@ -166,19 +166,19 @@ Dalam mode `allowlist`, Anda juga dapat mengizinkan grup dengan menambahkan entr
 
 ### ID grup (`chat_id`, format: `oc_xxx`)
 
-Buka grup di Feishu/Lark, klik ikon menu di sudut kanan atas, lalu buka **Pengaturan**. ID grup (`chat_id`) tercantum di halaman pengaturan.
+Buka grup di Feishu/Lark, klik ikon menu di sudut kanan atas, lalu buka **Settings**. ID grup (`chat_id`) tercantum di halaman pengaturan.
 
 ![Dapatkan ID Grup](/images/feishu-get-group-id.png)
 
 ### ID pengguna (`open_id`, format: `ou_xxx`)
 
-Jalankan Gateway, kirim DM ke bot, lalu periksa log:
+Mulai gateway, kirim DM ke bot, lalu periksa log:
 
 ```bash
 openclaw logs --follow
 ```
 
-Cari `open_id` dalam output log. Anda juga dapat memeriksa permintaan pemasangan yang tertunda:
+Cari `open_id` dalam output log. Anda juga dapat memeriksa permintaan pairing yang tertunda:
 
 ```bash
 openclaw pairing list feishu
@@ -188,24 +188,24 @@ openclaw pairing list feishu
 
 ## Perintah umum
 
-| Perintah   | Deskripsi                 |
+| Perintah  | Deskripsi                   |
 | --------- | --------------------------- |
-| `/status` | Menampilkan status bot             |
-| `/reset`  | Mengatur ulang sesi saat ini   |
-| `/model`  | Menampilkan atau mengganti model AI |
+| `/status` | Tampilkan status bot        |
+| `/reset`  | Reset sesi saat ini         |
+| `/model`  | Tampilkan atau ganti model AI |
 
 <Note>
-Feishu/Lark tidak mendukung menu perintah slash native, jadi kirimkan ini sebagai pesan teks biasa.
+Feishu/Lark tidak mendukung menu slash-command native, jadi kirim ini sebagai pesan teks biasa.
 </Note>
 
 ---
 
 ## Pemecahan masalah
 
-### Bot tidak merespons dalam obrolan grup
+### Bot tidak merespons di chat grup
 
-1. Pastikan bot telah ditambahkan ke grup
-2. Pastikan Anda @mention bot (diperlukan secara bawaan)
+1. Pastikan bot ditambahkan ke grup
+2. Pastikan Anda @mention bot (wajib secara default)
 3. Verifikasi `groupPolicy` bukan `"disabled"`
 4. Periksa log: `openclaw logs --follow`
 
@@ -213,16 +213,23 @@ Feishu/Lark tidak mendukung menu perintah slash native, jadi kirimkan ini sebaga
 
 1. Pastikan bot sudah dipublikasikan dan disetujui di Feishu Open Platform / Lark Developer
 2. Pastikan langganan event menyertakan `im.message.receive_v1`
-3. Pastikan **koneksi persisten** (WebSocket) dipilih
-4. Pastikan semua cakupan izin yang diperlukan telah diberikan
-5. Pastikan Gateway berjalan: `openclaw gateway status`
+3. Pastikan **persistent connection** (WebSocket) dipilih
+4. Pastikan semua cakupan izin yang diperlukan diberikan
+5. Pastikan gateway berjalan: `openclaw gateway status`
 6. Periksa log: `openclaw logs --follow`
+
+### Penyiapan QR tidak bereaksi di aplikasi seluler Feishu
+
+1. Jalankan ulang penyiapan: `openclaw channels login --channel feishu`
+2. Pilih penyiapan manual
+3. Di Feishu Open Platform, buat aplikasi self-built dan salin App ID serta App Secret-nya
+4. Tempel kredensial tersebut ke wizard penyiapan
 
 ### App Secret bocor
 
-1. Atur ulang App Secret di Feishu Open Platform / Lark Developer
+1. Reset App Secret di Feishu Open Platform / Lark Developer
 2. Perbarui nilai dalam konfigurasi Anda
-3. Mulai ulang Gateway: `openclaw gateway restart`
+3. Mulai ulang gateway: `openclaw gateway restart`
 
 ---
 
@@ -260,18 +267,18 @@ Feishu/Lark tidak mendukung menu perintah slash native, jadi kirimkan ini sebaga
 
 `defaultAccount` mengontrol akun mana yang digunakan ketika API keluar tidak menentukan `accountId`.
 `accounts.<id>.tts` menggunakan bentuk yang sama seperti `messages.tts` dan melakukan deep-merge di atas
-konfigurasi TTS global, sehingga penyiapan multi-bot Feishu dapat menyimpan kredensial
-penyedia bersama secara global sambil hanya mengganti voice, model, persona, atau mode otomatis
+konfigurasi TTS global, sehingga penyiapan Feishu multi-bot dapat menyimpan kredensial penyedia
+bersama secara global sambil hanya meng-override suara, model, persona, atau mode otomatis
 per akun.
 
 ### Batas pesan
 
-- `textChunkLimit` - ukuran potongan teks keluar (bawaan: `2000` karakter)
-- `mediaMaxMb` - batas unggah/unduh media (bawaan: `30` MB)
+- `textChunkLimit` - ukuran potongan teks keluar (default: `2000` karakter)
+- `mediaMaxMb` - batas unggah/unduh media (default: `30` MB)
 
 ### Streaming
 
-Feishu/Lark mendukung balasan streaming melalui kartu interaktif. Saat diaktifkan, bot memperbarui kartu secara real time saat menghasilkan teks.
+Feishu/Lark mendukung balasan streaming melalui kartu interaktif. Saat diaktifkan, bot memperbarui kartu secara real time ketika menghasilkan teks.
 
 ```json5
 {
@@ -284,14 +291,14 @@ Feishu/Lark mendukung balasan streaming melalui kartu interaktif. Saat diaktifka
 }
 ```
 
-Atur `streaming: false` untuk mengirim balasan lengkap dalam satu pesan. `blockStreaming` nonaktif secara bawaan; aktifkan hanya ketika Anda ingin blok asisten yang selesai dikirim sebelum balasan akhir.
+Atur `streaming: false` untuk mengirim balasan lengkap dalam satu pesan. `blockStreaming` nonaktif secara default; aktifkan hanya ketika Anda ingin blok assistant yang sudah selesai dikirim sebelum balasan final.
 
-### Optimisasi kuota
+### Optimalisasi kuota
 
 Kurangi jumlah panggilan API Feishu/Lark dengan dua flag opsional:
 
-- `typingIndicator` (bawaan `true`): atur `false` untuk melewati panggilan reaksi mengetik
-- `resolveSenderNames` (bawaan `true`): atur `false` untuk melewati pencarian profil pengirim
+- `typingIndicator` (default `true`): atur `false` untuk melewati panggilan reaksi mengetik
+- `resolveSenderNames` (default `true`): atur `false` untuk melewati lookup profil pengirim
 
 ```json5
 {
@@ -306,7 +313,7 @@ Kurangi jumlah panggilan API Feishu/Lark dengan dua flag opsional:
 
 ### Sesi ACP
 
-Feishu/Lark mendukung ACP untuk DM dan pesan thread grup. ACP Feishu/Lark digerakkan oleh perintah teks - tidak ada menu perintah slash native, jadi gunakan pesan `/acp ...` langsung dalam percakapan.
+Feishu/Lark mendukung ACP untuk DM dan pesan thread grup. ACP Feishu/Lark dikendalikan oleh perintah teks - tidak ada menu slash-command native, jadi gunakan pesan `/acp ...` langsung dalam percakapan.
 
 #### Binding ACP persisten
 
@@ -352,7 +359,7 @@ Feishu/Lark mendukung ACP untuk DM dan pesan thread grup. ACP Feishu/Lark digera
 }
 ```
 
-#### Spawn ACP dari obrolan
+#### Spawn ACP dari chat
 
 Dalam DM atau thread Feishu/Lark:
 
@@ -360,7 +367,7 @@ Dalam DM atau thread Feishu/Lark:
 /acp spawn codex --thread here
 ```
 
-`--thread here` berfungsi untuk DM dan pesan thread Feishu/Lark. Pesan tindak lanjut dalam percakapan yang terikat dirutekan langsung ke sesi ACP tersebut.
+`--thread here` berfungsi untuk DM dan pesan thread Feishu/Lark. Pesan lanjutan dalam percakapan yang terikat dirutekan langsung ke sesi ACP tersebut.
 
 ### Routing multi-agent
 
@@ -394,13 +401,13 @@ Gunakan `bindings` untuk merutekan DM atau grup Feishu/Lark ke agent yang berbed
 }
 ```
 
-Kolom routing:
+Field routing:
 
 - `match.channel`: `"feishu"`
-- `match.peer.kind`: `"direct"` (DM) atau `"group"` (obrolan grup)
+- `match.peer.kind`: `"direct"` (DM) atau `"group"` (chat grup)
 - `match.peer.id`: Open ID pengguna (`ou_xxx`) atau ID grup (`oc_xxx`)
 
-Lihat [Dapatkan ID grup/pengguna](#get-groupuser-ids) untuk tips pencarian.
+Lihat [Dapatkan ID grup/pengguna](#get-groupuser-ids) untuk tips lookup.
 
 ---
 
@@ -408,12 +415,12 @@ Lihat [Dapatkan ID grup/pengguna](#get-groupuser-ids) untuk tips pencarian.
 
 Konfigurasi lengkap: [Konfigurasi Gateway](/id/gateway/configuration)
 
-| Pengaturan                                       | Deskripsi                                                                        | Bawaan           |
+| Pengaturan                                       | Deskripsi                                                                        | Default          |
 | ------------------------------------------------- | -------------------------------------------------------------------------------- | ---------------- |
 | `channels.feishu.enabled`                         | Aktifkan/nonaktifkan channel                                                     | `true`           |
 | `channels.feishu.domain`                          | Domain API (`feishu` atau `lark`)                                                | `feishu`         |
 | `channels.feishu.connectionMode`                  | Transport peristiwa (`websocket` atau `webhook`)                                 | `websocket`      |
-| `channels.feishu.defaultAccount`                  | Akun bawaan untuk perutean keluar                                                | `default`        |
+| `channels.feishu.defaultAccount`                  | Akun default untuk perutean keluar                                               | `default`        |
 | `channels.feishu.verificationToken`               | Wajib untuk mode webhook                                                         | -                |
 | `channels.feishu.encryptKey`                      | Wajib untuk mode webhook                                                         | -                |
 | `channels.feishu.webhookPath`                     | Jalur rute webhook                                                               | `/feishu/events` |
@@ -424,18 +431,18 @@ Konfigurasi lengkap: [Konfigurasi Gateway](/id/gateway/configuration)
 | `channels.feishu.accounts.<id>.domain`            | Override domain per akun                                                         | `feishu`         |
 | `channels.feishu.accounts.<id>.tts`               | Override TTS per akun                                                            | `messages.tts`   |
 | `channels.feishu.dmPolicy`                        | Kebijakan DM                                                                     | `allowlist`      |
-| `channels.feishu.allowFrom`                       | Allowlist DM (daftar open_id)                                                    | [BotOwnerId]     |
+| `channels.feishu.allowFrom`                       | Daftar allowlist DM (daftar open_id)                                             | [BotOwnerId]     |
 | `channels.feishu.groupPolicy`                     | Kebijakan grup                                                                   | `allowlist`      |
-| `channels.feishu.groupAllowFrom`                  | Allowlist grup                                                                   | -                |
-| `channels.feishu.requireMention`                  | Wajibkan @mention dalam grup                                                     | `true`           |
-| `channels.feishu.groups.<chat_id>.requireMention` | Override @mention per grup; ID eksplisit juga mengizinkan grup dalam mode allowlist | diwarisi         |
+| `channels.feishu.groupAllowFrom`                  | Daftar allowlist grup                                                            | -                |
+| `channels.feishu.requireMention`                  | Wajibkan @mention di grup                                                        | `true`           |
+| `channels.feishu.groups.<chat_id>.requireMention` | Override @mention per grup; ID eksplisit juga mengizinkan grup dalam mode allowlist | inherited        |
 | `channels.feishu.groups.<chat_id>.enabled`        | Aktifkan/nonaktifkan grup tertentu                                               | `true`           |
 | `channels.feishu.textChunkLimit`                  | Ukuran potongan pesan                                                            | `2000`           |
 | `channels.feishu.mediaMaxMb`                      | Batas ukuran media                                                               | `30`             |
 | `channels.feishu.streaming`                       | Output kartu streaming                                                           | `true`           |
-| `channels.feishu.blockStreaming`                  | Streaming balasan blok yang selesai                                              | `false`          |
+| `channels.feishu.blockStreaming`                  | Streaming balasan blok selesai                                                   | `false`          |
 | `channels.feishu.typingIndicator`                 | Kirim reaksi mengetik                                                            | `true`           |
-| `channels.feishu.resolveSenderNames`              | Resolusi nama tampilan pengirim                                                  | `true`           |
+| `channels.feishu.resolveSenderNames`              | Resolve nama tampilan pengirim                                                   | `true`           |
 
 ---
 
@@ -451,13 +458,13 @@ Konfigurasi lengkap: [Konfigurasi Gateway](/id/gateway/configuration)
 - ✅ Video/media
 - ✅ Stiker
 
-Pesan audio masuk Feishu/Lark dinormalisasi sebagai placeholder media, bukan
-JSON `file_key` mentah. Ketika `tools.media.audio` dikonfigurasi, OpenClaw
-mengunduh sumber daya catatan suara dan menjalankan transkripsi audio bersama sebelum
-giliran agen, sehingga agen menerima transkrip lisan. Jika Feishu menyertakan
+Pesan audio Feishu/Lark yang masuk dinormalisasi sebagai placeholder media, bukan
+JSON `file_key` mentah. Saat `tools.media.audio` dikonfigurasi, OpenClaw
+mengunduh resource catatan suara dan menjalankan transkripsi audio bersama sebelum
+giliran agen, sehingga agen menerima transkrip ucapan. Jika Feishu menyertakan
 teks transkrip langsung dalam payload audio, teks tersebut digunakan tanpa
 panggilan ASR lain. Tanpa penyedia transkripsi audio, agen tetap menerima
-placeholder `<media:audio>` beserta lampiran tersimpan, bukan payload sumber daya
+placeholder `<media:audio>` plus lampiran yang disimpan, bukan payload resource
 Feishu mentah.
 
 ### Kirim
@@ -468,15 +475,15 @@ Feishu mentah.
 - ✅ Audio
 - ✅ Video/media
 - ✅ Kartu interaktif (termasuk pembaruan streaming)
-- ⚠️ Teks kaya (pemformatan gaya post; tidak mendukung kemampuan authoring Feishu/Lark penuh)
+- ⚠️ Teks kaya (pemformatan bergaya post; tidak mendukung kemampuan penulisan Feishu/Lark penuh)
 
-Gelembung audio native Feishu/Lark menggunakan jenis pesan `audio` Feishu dan memerlukan
-media unggahan Ogg/Opus (`file_type: "opus"`). Media `.opus` dan `.ogg` yang ada
+Bubble audio native Feishu/Lark menggunakan jenis pesan `audio` Feishu dan memerlukan
+media unggahan Ogg/Opus (`file_type: "opus"`). Media `.opus` dan `.ogg` yang sudah ada
 dikirim langsung sebagai audio native. MP3/WAV/M4A dan format lain yang kemungkinan audio
 ditranskode ke Ogg/Opus 48kHz dengan `ffmpeg` hanya ketika balasan meminta pengiriman suara
-(`audioAsVoice` / alat pesan `asVoice`, termasuk balasan catatan suara TTS).
-Lampiran MP3 biasa tetap menjadi file reguler. Jika `ffmpeg` tidak ada atau
-konversi gagal, OpenClaw kembali ke lampiran file dan mencatat alasannya.
+(`audioAsVoice` / message tool `asVoice`, termasuk balasan catatan suara TTS).
+Lampiran MP3 biasa tetap menjadi file reguler. Jika `ffmpeg` tidak tersedia atau
+konversi gagal, OpenClaw beralih ke lampiran file dan mencatat alasannya di log.
 
 ### Thread dan balasan
 
@@ -486,17 +493,17 @@ konversi gagal, OpenClaw kembali ke lampiran file dan mencatat alasannya.
 
 Untuk `groupSessionScope: "group_topic"` dan `"group_topic_sender"`, grup topik
 native Feishu/Lark menggunakan `thread_id` peristiwa (`omt_*`) sebagai kunci sesi
-topik kanonis. Jika peristiwa pemula topik native menghilangkan `thread_id`, OpenClaw
+topik kanonis. Jika peristiwa pembuka topik native tidak menyertakan `thread_id`, OpenClaw
 menghidrasinya dari Feishu sebelum merutekan giliran. Balasan grup normal yang
-diubah OpenClaw menjadi thread tetap menggunakan ID pesan akar balasan (`om_*`) sehingga
+diubah OpenClaw menjadi thread tetap menggunakan ID pesan root balasan (`om_*`) sehingga
 giliran pertama dan giliran lanjutan tetap berada dalam sesi yang sama.
 
 ---
 
 ## Terkait
 
-- [Ikhtisar Channel](/id/channels) - semua channel yang didukung
-- [Pemasangan](/id/channels/pairing) - autentikasi DM dan alur pemasangan
+- [Ringkasan Channel](/id/channels) - semua channel yang didukung
+- [Pairing](/id/channels/pairing) - autentikasi DM dan alur pairing
 - [Grup](/id/channels/groups) - perilaku chat grup dan gating mention
 - [Perutean Channel](/id/channels/channel-routing) - perutean sesi untuk pesan
-- [Keamanan](/id/gateway/security) - model akses dan hardening
+- [Keamanan](/id/gateway/security) - model akses dan pengerasan

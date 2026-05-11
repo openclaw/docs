@@ -1,40 +1,40 @@
 ---
 read_when:
-    - Berichtkaart-, knop- of keuzelijstweergave toevoegen of wijzigen
-    - Een Plugin voor een kanaal bouwen die uitgebreide uitgaande berichten ondersteunt
-    - De presentatie of afleveringsmogelijkheden van berichttools wijzigen
-    - Debuggen van providerspecifieke renderingregressies voor kaarten/blokken/componenten
-summary: Semantische berichtkaarten, knoppen, selectievakken, fallbacktekst en afleveringshints voor kanaalplugins
+    - Berichtkaart-, knop- of selectieweergave toevoegen of wijzigen
+    - Een kanaal-Plugin bouwen die rijke uitgaande berichten ondersteunt
+    - De presentatie of bezorgmogelijkheden van de berichtentool wijzigen
+    - Fouten opsporen bij providerspecifieke regressies in de weergave van kaarten/blokken/componenten
+summary: Semantische berichtkaarten, knoppen, selectievakken, fallbacktekst en bezorgingshints voor kanaalplugins
 title: Berichtweergave
 x-i18n:
-    generated_at: "2026-04-29T23:04:00Z"
+    generated_at: "2026-05-11T20:41:00Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 23ef0eab890ee174c1433f72e84932a84a481f2bcf4b69bc793a2660ec94b10c
+    source_hash: e3b6fc82b5faaff50e8c58f2c68e14a6a1b30ccf1d8dba7da8164dbec5ebe1b0
     source_path: plugins/message-presentation.md
     workflow: 16
 ---
 
-Berichtpresentatie is het gedeelde contract van OpenClaw voor rijke uitgaande chat-UI.
-Hiermee kunnen agents, CLI-opdrachten, goedkeuringsflows en plugins de berichtintentie
-één keer beschrijven, terwijl elke kanaalplugin de best mogelijke native vorm rendert.
+Berichtpresentatie is OpenClaw's gedeelde contract voor rijke uitgaande chat-UI.
+Hiermee kunnen agents, CLI-opdrachten, goedkeuringsstromen en plugins de berichtintentie
+eenmaal beschrijven, terwijl elke kanaalplugin de best mogelijke native vorm rendert.
 
-Gebruik presentation voor draagbare bericht-UI:
+Gebruik presentatie voor draagbare bericht-UI:
 
 - tekstsecties
-- kleine context-/voettekst
+- korte context-/voettekst
 - scheidingslijnen
 - knoppen
 - selectiemenu's
 - kaarttitel en toon
 
-Voeg geen nieuwe provider-native velden toe, zoals Discord `components`, Slack
-`blocks`, Telegram `buttons`, Teams `card` of Feishu `card`, aan de gedeelde
-berichttool. Dit zijn rendereruitvoerwaarden die eigendom zijn van de kanaalplugin.
+Voeg geen nieuwe provider-native velden zoals Discord `components`, Slack
+`blocks`, Telegram `buttons`, Teams `card` of Feishu `card` toe aan de gedeelde
+berichttool. Dat zijn rendereruitvoer die eigendom is van de kanaalplugin.
 
 ## Contract
 
-Plugin-auteurs importeren het openbare contract vanuit:
+Plugin-auteurs importeren het publieke contract uit:
 
 ```ts
 import type {
@@ -84,21 +84,21 @@ type ReplyPayloadDelivery = {
 
 Knopsemantiek:
 
-- `value` is een applicatieactiewaarde die wordt teruggeleid via het bestaande
-  interactiepad van het kanaal wanneer het kanaal klikbare besturingselementen ondersteunt.
+- `value` is een toepassingsactiewaarde die wordt teruggerouteerd via het
+  bestaande interactiepad van het kanaal wanneer het kanaal klikbare bedieningselementen ondersteunt.
 - `url` is een linkknop. Deze kan bestaan zonder `value`.
 - `label` is verplicht en wordt ook gebruikt in de tekstfallback.
-- `style` is adviserend. Renderers moeten niet-ondersteunde stijlen toewijzen aan een veilige
-  standaardwaarde, niet het verzenden laten mislukken.
+- `style` is adviserend. Renderers moeten niet-ondersteunde stijlen mappen naar een veilige
+  standaard, en de verzending niet laten mislukken.
 
 Selectiesemantiek:
 
-- `options[].value` is de geselecteerde applicatiewaarde.
+- `options[].value` is de geselecteerde toepassingswaarde.
 - `placeholder` is adviserend en kan worden genegeerd door kanalen zonder native
   selectieondersteuning.
-- Als een kanaal selecties niet ondersteunt, vermeldt fallbacktekst de labels.
+- Als een kanaal geen selecties ondersteunt, toont fallbacktekst de labels als lijst.
 
-## Voorbeelden voor producenten
+## Producer-voorbeelden
 
 Eenvoudige kaart:
 
@@ -120,7 +120,7 @@ Eenvoudige kaart:
 }
 ```
 
-Linkknop met alleen URL:
+Alleen-URL-linkknop:
 
 ```json
 {
@@ -161,7 +161,7 @@ openclaw message send --channel slack \
   --presentation '{"title":"Deploy approval","tone":"warning","blocks":[{"type":"text","text":"Canary is ready."},{"type":"buttons","buttons":[{"label":"Approve","value":"deploy:approve","style":"success"},{"label":"Decline","value":"deploy:decline","style":"danger"}]}]}'
 ```
 
-Vastgezette bezorging:
+Vastgezette levering:
 
 ```bash
 openclaw message send --channel telegram \
@@ -170,7 +170,7 @@ openclaw message send --channel telegram \
   --pin
 ```
 
-Vastgezette bezorging met expliciete JSON:
+Vastgezette levering met expliciete JSON:
 
 ```json
 {
@@ -208,25 +208,25 @@ const adapter: ChannelOutboundAdapter = {
 };
 ```
 
-Capaciteitsvelden zijn bewust eenvoudige booleans. Ze beschrijven wat de
+Capability-velden zijn bewust eenvoudige booleans. Ze beschrijven wat de
 renderer interactief kan maken, niet elke native platformlimiet. Renderers blijven
-eigenaar van platformspecifieke limieten, zoals het maximale aantal knoppen,
-het aantal blokken en de kaartgrootte.
+eigenaar van platformspecifieke limieten zoals het maximumaantal knoppen, het
+aantal blokken en de kaartgrootte.
 
-## Kernrenderflow
+## Kernrenderstroom
 
-Wanneer een `ReplyPayload` of berichtactie `presentation` bevat, doet core het volgende:
+Wanneer een `ReplyPayload` of berichtactie `presentation` bevat, doet de kern het volgende:
 
 1. Normaliseert de presentatiepayload.
 2. Lost de uitgaande adapter van het doelkanaal op.
 3. Leest `presentationCapabilities`.
 4. Roept `renderPresentation` aan wanneer de adapter de payload kan renderen.
 5. Valt terug op conservatieve tekst wanneer de adapter ontbreekt of niet kan renderen.
-6. Verzendt de resulterende payload via het normale bezorgpad van het kanaal.
-7. Past bezorgmetadata zoals `delivery.pin` toe na het eerste succesvol
+6. Verzendt de resulterende payload via het normale kanaalleveringspad.
+7. Past leveringsmetadata zoals `delivery.pin` toe na het eerste succesvol
    verzonden bericht.
 
-Core is eigenaar van fallbackgedrag, zodat producenten kanaalagnostisch kunnen blijven. Kanaalplugins
+De kern is eigenaar van fallbackgedrag zodat producers kanaalagnostisch kunnen blijven. Kanaalplugins
 zijn eigenaar van native rendering en interactieafhandeling.
 
 ## Degradatieregels
@@ -238,37 +238,37 @@ Fallbacktekst bevat:
 - `title` als de eerste regel
 - `text`-blokken als normale alinea's
 - `context`-blokken als compacte contextregels
-- `divider`-blokken als visueel scheidingsteken
+- `divider`-blokken als visuele scheiding
 - knoplabels, inclusief URL's voor linkknoppen
 - labels van selectieopties
 
-Niet-ondersteunde native besturingselementen moeten degraderen in plaats van de hele verzending te laten mislukken.
+Niet-ondersteunde native bedieningselementen moeten degraderen in plaats van de hele verzending te laten mislukken.
 Voorbeelden:
 
-- Telegram met uitgeschakelde inlineknoppen verzendt tekstfallback.
-- Een kanaal zonder selectieondersteuning vermeldt selectieopties als tekst.
-- Een knop met alleen URL wordt een native linkknop of een fallback-URL-regel.
-- Optionele pinfouten laten het bezorgde bericht niet mislukken.
+- Telegram met inline knoppen uitgeschakeld verzendt tekstfallback.
+- Een kanaal zonder selectieondersteuning toont selectieopties als tekst.
+- Een alleen-URL-knop wordt een native linkknop of een fallback-URL-regel.
+- Optionele pinfouten laten het geleverde bericht niet mislukken.
 
 De belangrijkste uitzondering is `delivery.pin.required: true`; als vastzetten als
-verplicht is aangevraagd en het kanaal het verzonden bericht niet kan vastzetten, rapporteert bezorging een fout.
+verplicht is aangevraagd en het kanaal het verzonden bericht niet kan vastzetten, rapporteert levering een fout.
 
-## Providertoewijzing
+## Providermapping
 
 Huidige gebundelde renderers:
 
-| Kanaal          | Native renderdoel                   | Opmerkingen                                                                                                                                          |
-| --------------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Discord         | Componenten en componentcontainers  | Behoudt legacy `channelData.discord.components` voor bestaande provider-native payloadproducenten, maar nieuwe gedeelde verzendingen moeten `presentation` gebruiken. |
-| Slack           | Block Kit                           | Behoudt legacy `channelData.slack.blocks` voor bestaande provider-native payloadproducenten, maar nieuwe gedeelde verzendingen moeten `presentation` gebruiken.       |
-| Telegram        | Tekst plus inline toetsenborden     | Knoppen/selecties vereisen inlineknopcapaciteit voor het doeloppervlak; anders wordt tekstfallback gebruikt.                                          |
-| Mattermost      | Tekst plus interactieve props       | Andere blokken degraderen naar tekst.                                                                                                                |
-| Microsoft Teams | Adaptive Cards                      | Platte `message`-tekst wordt met de kaart opgenomen wanneer beide worden opgegeven.                                                                   |
-| Feishu          | Interactieve kaarten                | Kaartkop kan `title` gebruiken; body vermijdt duplicatie van die titel.                                                                               |
-| Gewone kanalen  | Tekstfallback                       | Kanalen zonder renderer krijgen nog steeds leesbare uitvoer.                                                                                         |
+| Kanaal          | Native renderdoel                  | Opmerkingen                                                                                                                                       |
+| --------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Discord         | Componenten en componentcontainers  | Behoudt legacy `channelData.discord.components` voor bestaande provider-native payload-producers, maar nieuwe gedeelde verzendingen moeten `presentation` gebruiken. |
+| Slack           | Block Kit                           | Behoudt legacy `channelData.slack.blocks` voor bestaande provider-native payload-producers, maar nieuwe gedeelde verzendingen moeten `presentation` gebruiken.       |
+| Telegram        | Tekst plus inline toetsenborden     | Knoppen/selecties vereisen inline-knopcapaciteit voor het doeloppervlak; anders wordt tekstfallback gebruikt.                                     |
+| Mattermost      | Tekst plus interactieve props       | Andere blokken degraderen naar tekst.                                                                                                             |
+| Microsoft Teams | Adaptive Cards                      | Platte `message`-tekst wordt bij de kaart opgenomen wanneer beide worden opgegeven.                                                               |
+| Feishu          | Interactieve kaarten                | Kaartkop kan `title` gebruiken; body voorkomt duplicatie van die titel.                                                                           |
+| Platte kanalen  | Tekstfallback                       | Kanalen zonder renderer krijgen nog steeds leesbare uitvoer.                                                                                      |
 
 Compatibiliteit met provider-native payloads is een overgangsvoorziening voor bestaande
-antwoordproducenten. Het is geen reden om nieuwe gedeelde native velden toe te voegen.
+antwoordproducers. Het is geen reden om nieuwe gedeelde native velden toe te voegen.
 
 ## Presentation versus InteractiveReply
 
@@ -285,8 +285,8 @@ Deze ondersteunt:
 - toon
 - context
 - scheidingslijn
-- knoppen met alleen URL
-- generieke bezorgmetadata via `ReplyPayload.delivery`
+- alleen-URL-knoppen
+- generieke leveringsmetadata via `ReplyPayload.delivery`
 
 Gebruik helpers uit `openclaw/plugin-sdk/interactive-runtime` bij het overbruggen van oudere
 code:
@@ -295,49 +295,62 @@ code:
 import {
   interactiveReplyToPresentation,
   normalizeMessagePresentation,
+  presentationToInteractiveControlsReply,
   presentationToInteractiveReply,
   renderMessagePresentationFallbackText,
 } from "openclaw/plugin-sdk/interactive-runtime";
 ```
 
-Nieuwe code moet `MessagePresentation` direct accepteren of produceren.
+Nieuwe code moet `MessagePresentation` rechtstreeks accepteren of produceren.
 
-## Bezorgpin
+`presentationToInteractiveReply(...)` behoudt zichtbare presentatietekst door
+de titel, tekst, context, knoppen en selecties naar de oudere
+`InteractiveReply`-vorm te mappen. Componentrenderers die titel, tekst,
+context en scheidingsblokken al native tekenen, moeten in plaats daarvan
+`presentationToInteractiveControlsReply(...)` gebruiken en daarna alleen de
+knop- en selectiebedieningselementen toevoegen.
 
-Vastzetten is bezorggedrag, geen presentatie. Gebruik `delivery.pin` in plaats van
+`renderMessagePresentationFallbackText(...)` retourneert een lege tekenreeks voor
+presentatieblokken die geen tekstfallback hebben, zoals een presentatie met alleen een scheidingslijn.
+Transports die een niet-lege verzendbody vereisen, kunnen `emptyFallback` doorgeven
+om voor een minimale body te kiezen zonder het standaard fallbackcontract te wijzigen.
+
+## Leveringspin
+
+Vastzetten is leveringsgedrag, geen presentatie. Gebruik `delivery.pin` in plaats van
 provider-native velden zoals `channelData.telegram.pin`.
 
 Semantiek:
 
-- `pin: true` zet het eerste succesvol bezorgde bericht vast.
-- `pin.notify` heeft standaardwaarde `false`.
-- `pin.required` heeft standaardwaarde `false`.
+- `pin: true` zet het eerste succesvol geleverde bericht vast.
+- `pin.notify` staat standaard op `false`.
+- `pin.required` staat standaard op `false`.
 - Optionele pinfouten degraderen en laten het verzonden bericht intact.
-- Vereiste pinfouten laten bezorging mislukken.
-- Berichten in chunks zetten de eerste bezorgde chunk vast, niet de laatste chunk.
+- Vereiste pinfouten laten levering mislukken.
+- Opgesplitste berichten zetten het eerste geleverde deel vast, niet het laatste deel.
 
-Handmatige `pin`-, `unpin`- en `pins`-berichtacties blijven bestaan voor bestaande
-berichten waar de provider die bewerkingen ondersteunt.
+Handmatige `pin`-, `unpin`- en `pins`-berichtacties bestaan nog steeds voor bestaande
+berichten waarbij de provider die bewerkingen ondersteunt.
 
 ## Checklist voor Plugin-auteurs
 
 - Declareer `presentation` vanuit `describeMessageTool(...)` wanneer het kanaal
   semantische presentatie kan renderen of veilig kan degraderen.
-- Voeg `presentationCapabilities` toe aan de uitgaande runtime-adapter.
-- Implementeer `renderPresentation` in runtimecode, niet in control-plane plugin-
+- Voeg `presentationCapabilities` toe aan de uitgaande runtimeadapter.
+- Implementeer `renderPresentation` in runtimecode, niet in control-plane Plugin-
   setupcode.
 - Houd native UI-bibliotheken uit hete setup-/cataloguspaden.
 - Behoud platformlimieten in de renderer en tests.
 - Voeg fallbacktests toe voor niet-ondersteunde knoppen, selecties, URL-knoppen, duplicatie van titel/tekst
   en gemengde verzendingen met `message` plus `presentation`.
-- Voeg ondersteuning voor bezorgpin toe via `deliveryCapabilities.pin` en
+- Voeg leveringspinondersteuning toe via `deliveryCapabilities.pin` en
   `pinDeliveredMessage` alleen wanneer de provider de verzonden bericht-id kan vastzetten.
-- Stel geen nieuwe provider-native kaart-/blok-/component-/knopvelden bloot via
-  het gedeelde schema voor berichtacties.
+- Stel geen nieuwe provider-native kaart-/blok-/component-/knopvelden beschikbaar via
+  het gedeelde berichtactieschema.
 
 ## Gerelateerde docs
 
 - [Bericht-CLI](/nl/cli/message)
 - [Overzicht van Plugin SDK](/nl/plugins/sdk-overview)
-- [Plugin-architectuur](/nl/plugins/architecture-internals#message-tool-schemas)
+- [Pluginarchitectuur](/nl/plugins/architecture-internals#message-tool-schemas)
 - [Refactorplan voor kanaalpresentatie](/nl/plan/ui-channels)

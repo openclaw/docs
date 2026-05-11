@@ -1,41 +1,41 @@
 ---
 read_when:
-    - Je wilt OpenClaw-Plugins van derden vinden
+    - Je wilt OpenClaw-plugins van derden vinden
     - Je wilt je eigen Plugin publiceren of vermelden
 summary: 'Door de community onderhouden OpenClaw-plugins: bekijk, installeer en dien je eigen plugin in'
-title: Community-plugins
+title: Communityplugins
 x-i18n:
-    generated_at: "2026-05-02T20:46:31Z"
+    generated_at: "2026-05-11T20:39:35Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3a58fbc153c837f5ac79ee70406a5611e8a9a273c18c0c5642763531fbe10dca
+    source_hash: ee23598011f79f46b9171296501605cf0a5ef5aa7b67040135ea47cac21ca6a4
     source_path: plugins/community.md
     workflow: 16
 ---
 
-Communityplugins zijn pakketten van derden die OpenClaw uitbreiden met nieuwe
+Community plugins zijn pakketten van derden die OpenClaw uitbreiden met nieuwe
 kanalen, tools, providers of andere mogelijkheden. Ze worden gebouwd en onderhouden
-door de community, meestal gepubliceerd op [ClawHub](/nl/tools/clawhub), en zijn
-installeerbaar met één opdracht. Npm blijft de standaard voor kale pakketspecificaties
-bij het starten terwijl ClawHub-packinstallaties worden uitgerold.
+door de community, meestal gepubliceerd op [ClawHub](/nl/clawhub), en zijn te installeren
+met één opdracht. Npm blijft de startstandaard voor kale pakketspecificaties
+terwijl ClawHub-packinstallaties worden uitgerold.
 
-ClawHub is het canonieke ontdekkingsoppervlak voor communityplugins. Open geen
-docs-only PR's alleen om je Plugin hier toe te voegen voor vindbaarheid; publiceer deze in plaats daarvan op
+ClawHub is de canonieke ontdekkingsplek voor community plugins. Open geen
+docs-only PR's alleen om je plugin hier toe te voegen voor vindbaarheid; publiceer deze in plaats daarvan op
 ClawHub.
 
 ```bash
 openclaw plugins install clawhub:<package-name>
 ```
 
-Gebruik `openclaw plugins install <package-name>` voor pakketten die op npm worden gehost.
+Gebruik `openclaw plugins install <package-name>` voor npm-gehoste pakketten.
 
 ## Vermelde plugins
 
 ### Apify
 
-Scrape gegevens van elke website met meer dan 20.000 kant-en-klare scrapers. Laat je agent
+Scrape gegevens van elke website met 20.000+ kant-en-klare scrapers. Laat je agent
 gegevens extraheren uit Instagram, Facebook, TikTok, YouTube, Google Maps, Google
-Search, e-commercesites en meer — gewoon door erom te vragen.
+Search, e-commercesites en meer — gewoon door het te vragen.
 
 - **npm:** `@apify/apify-openclaw-plugin`
 - **repo:** [github.com/apify/apify-openclaw-plugin](https://github.com/apify/apify-openclaw-plugin)
@@ -46,9 +46,9 @@ openclaw plugins install @apify/apify-openclaw-plugin
 
 ### Codex App Server Bridge
 
-Onafhankelijke OpenClaw-bridge voor gesprekken met Codex App Server. Koppel een chat aan
-een Codex-thread, praat ermee met platte tekst en beheer deze met chat-native
-opdrachten voor hervatten, planning, review, modelselectie, Compaction en meer.
+Onafhankelijke OpenClaw-bridge voor Codex App Server-gesprekken. Koppel een chat aan
+een Codex-thread, praat ermee met platte tekst en bedien deze met chat-native
+opdrachten voor hervatten, plannen, reviewen, modelselectie, Compaction en meer.
 
 - **npm:** `openclaw-codex-app-server`
 - **repo:** [github.com/pwrdrvr/openclaw-codex-app-server](https://github.com/pwrdrvr/openclaw-codex-app-server)
@@ -59,7 +59,7 @@ openclaw plugins install openclaw-codex-app-server
 
 ### DingTalk
 
-Integratie met enterprise-robot via Stream-modus. Ondersteunt tekst, afbeeldingen en
+Enterprise-robotintegratie met Stream-modus. Ondersteunt tekst-, afbeeldings- en
 bestandsberichten via elke DingTalk-client.
 
 - **npm:** `@largezhou/ddingtalk`
@@ -71,9 +71,9 @@ openclaw plugins install @largezhou/ddingtalk
 
 ### Lossless Claw (LCM)
 
-Plugin voor Lossless Context Management voor OpenClaw. DAG-gebaseerde gesprekssamenvatting
-met incrementele Compaction — behoudt volledige contextgetrouwheid
-terwijl het tokengebruik wordt verminderd.
+Lossless Context Management-plugin voor OpenClaw. DAG-gebaseerde
+gesprekssamenvatting met incrementele Compaction — behoudt volledige contextgetrouwheid
+terwijl tokengebruik wordt verminderd.
 
 - **npm:** `@martian-engineering/lossless-claw`
 - **repo:** [github.com/Martian-Engineering/lossless-claw](https://github.com/Martian-Engineering/lossless-claw)
@@ -84,7 +84,7 @@ openclaw plugins install @martian-engineering/lossless-claw
 
 ### Opik
 
-Officiële Plugin die agent-traces naar Opik exporteert. Monitor agentgedrag,
+Officiële plugin die agent-traces naar Opik exporteert. Monitor agentgedrag,
 kosten, tokens, fouten en meer.
 
 - **npm:** `@opik/opik-openclaw`
@@ -96,8 +96,8 @@ openclaw plugins install @opik/opik-openclaw
 
 ### Prometheus Avatar
 
-Geef je OpenClaw-agent een Live2D-avatar met realtime lipsynchronisatie, emotionele
-expressies en tekst-naar-spraak. Bevat makertools voor AI-assetgeneratie
+Geef je OpenClaw-agent een Live2D-avatar met realtime lipsynchronisatie, emotie-
+expressies en tekst-naar-spraak. Bevat creator-tools voor AI-assetgeneratie
 en implementatie met één klik naar de Prometheus Marketplace. Momenteel in alfa.
 
 - **npm:** `@prometheusavatar/openclaw-plugin`
@@ -109,13 +109,13 @@ openclaw plugins install @prometheusavatar/openclaw-plugin
 
 ### QQbot
 
-Verbind OpenClaw met QQ via de QQ Bot API. Ondersteunt privéchats, groepsvermeldingen,
-kanaalberichten en rich media waaronder spraak, afbeeldingen, video's
+Verbind OpenClaw met QQ via de QQ Bot API. Ondersteunt privéchats, groeps-
+vermeldingen, kanaalberichten en rich media, waaronder spraak, afbeeldingen, video's
 en bestanden.
 
 Huidige OpenClaw-releases bundelen QQ Bot. Gebruik de gebundelde setup in
-[QQ Bot](/nl/channels/qqbot) voor normale installaties; installeer deze externe Plugin alleen
-wanneer je bewust het door Tencent onderhouden zelfstandige pakket wilt.
+[QQ Bot](/nl/channels/qqbot) voor normale installaties; installeer deze externe plugin alleen
+wanneer je bewust het zelfstandige pakket van Tencent wilt.
 
 - **npm:** `@tencent-connect/openclaw-qqbot`
 - **repo:** [github.com/tencent-connect/openclaw-qqbot](https://github.com/tencent-connect/openclaw-qqbot)
@@ -126,10 +126,10 @@ openclaw plugins install @tencent-connect/openclaw-qqbot
 
 ### wecom
 
-WeCom-kanaalPlugin voor OpenClaw door het Tencent WeCom-team. Aangedreven door
-persistente WeCom Bot WebSocket-verbindingen ondersteunt deze directe berichten en groepschats,
-streaming-antwoorden, proactieve berichten, verwerking van afbeeldingen/bestanden, Markdown-
-opmaak, ingebouwde toegangscontrole en document-/vergader-/berichtvaardigheden.
+WeCom-kanaalplugin voor OpenClaw door het Tencent WeCom-team. Aangedreven door
+persistente WeCom Bot WebSocket-verbindingen ondersteunt deze directe berichten en groeps-
+chats, streamingantwoorden, proactieve berichten, verwerking van afbeeldingen/bestanden, Markdown-
+opmaak, ingebouwde toegangscontrole en document-/vergader-/berichtenvaardigheden.
 
 - **npm:** `@wecom/wecom-openclaw-plugin`
 - **repo:** [github.com/WecomTeam/wecom-openclaw-plugin](https://github.com/WecomTeam/wecom-openclaw-plugin)
@@ -140,9 +140,9 @@ openclaw plugins install @wecom/wecom-openclaw-plugin
 
 ### Yuanbao
 
-Yuanbao-kanaalPlugin voor OpenClaw door het Tencent Yuanbao-team. Aangedreven door
+Yuanbao-kanaalplugin voor OpenClaw door het Tencent Yuanbao-team. Aangedreven door
 persistente WebSocket-verbindingen ondersteunt deze directe berichten en groepschats,
-streaming-antwoorden, proactieve berichten, verwerking van afbeeldingen/bestanden/audio/video,
+streamingantwoorden, proactieve berichten, verwerking van afbeeldingen/bestanden/audio/video,
 Markdown-opmaak, ingebouwde toegangscontrole en slash-command-menu's.
 
 - **npm:** `openclaw-plugin-yuanbao`
@@ -152,42 +152,42 @@ Markdown-opmaak, ingebouwde toegangscontrole en slash-command-menu's.
 openclaw plugins install openclaw-plugin-yuanbao
 ```
 
-## Dien je Plugin in
+## Dien je plugin in
 
-We verwelkomen communityplugins die nuttig, gedocumenteerd en veilig te gebruiken zijn.
+We verwelkomen community plugins die nuttig, gedocumenteerd en veilig te gebruiken zijn.
 
 <Steps>
-  <Step title="Publiceren naar ClawHub of npm">
-    Je Plugin moet installeerbaar zijn via `openclaw plugins install \<package-name\>`.
-    Publiceer naar [ClawHub](/nl/tools/clawhub), tenzij je specifiek distributie
-    alleen via npm nodig hebt.
+  <Step title="Publiceer op ClawHub of npm">
+    Je plugin moet installeerbaar zijn via `openclaw plugins install \<package-name\>`.
+    Publiceer op [ClawHub](/nl/clawhub), tenzij je specifiek npm-only
+    distributie nodig hebt.
     Zie [Plugins bouwen](/nl/plugins/building-plugins) voor de volledige gids.
 
   </Step>
 
-  <Step title="Hosten op GitHub">
+  <Step title="Host op GitHub">
     Broncode moet in een openbare repository staan met setupdocumentatie en een issue-
     tracker.
 
   </Step>
 
-  <Step title="Gebruik docs-PR's alleen voor wijzigingen in brondocumentatie">
-    Je hebt geen docs-PR nodig alleen om je Plugin vindbaar te maken. Publiceer deze
+  <Step title="Gebruik docs-PR's alleen voor wijzigingen aan brondocumentatie">
+    Je hebt geen docs-PR nodig alleen om je plugin vindbaar te maken. Publiceer deze
     in plaats daarvan op ClawHub.
 
     Open alleen een docs-PR wanneer de brondocumentatie van OpenClaw een daadwerkelijke inhoudelijke
     wijziging nodig heeft, zoals het corrigeren van installatierichtlijnen of het toevoegen van cross-repo-
-    documentatie die thuishoort in de hoofdset met documentatie.
+    documentatie die in de hoofdset met docs thuishoort.
 
   </Step>
 </Steps>
 
 ## Kwaliteitslat
 
-| Vereiste                    | Waarom                                      |
-| --------------------------- | ------------------------------------------- |
-| Gepubliceerd op ClawHub of npm | Gebruikers hebben `openclaw plugins install` nodig om te werken |
-| Openbare GitHub-repo        | Bronreview, issue-tracking, transparantie   |
+| Vereiste                    | Waarom                                        |
+| --------------------------- | --------------------------------------------- |
+| Gepubliceerd op ClawHub of npm | Gebruikers hebben werkende `openclaw plugins install` nodig |
+| Openbare GitHub-repo        | Bronreview, issue-tracking, transparantie     |
 | Setup- en gebruiksdocumentatie | Gebruikers moeten weten hoe ze deze configureren |
 | Actief onderhoud            | Recente updates of responsieve issue-afhandeling |
 
@@ -195,6 +195,6 @@ Wrappers met weinig inspanning, onduidelijk eigenaarschap of niet-onderhouden pa
 
 ## Gerelateerd
 
-- [Plugins installeren en configureren](/nl/tools/plugin) — hoe je elke Plugin installeert
-- [Plugins bouwen](/nl/plugins/building-plugins) — maak je eigen
-- [Plugin Manifest](/nl/plugins/manifest) — manifestschema
+- [Plugins installeren en configureren](/nl/tools/plugin) — hoe je elke plugin installeert
+- [Plugins bouwen](/nl/plugins/building-plugins) — maak je eigen plugin
+- [Pluginmanifest](/nl/plugins/manifest) — manifestschema

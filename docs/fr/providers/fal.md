@@ -1,28 +1,28 @@
 ---
 read_when:
     - Vous voulez utiliser la génération d’images fal dans OpenClaw
-    - Vous avez besoin du flux d’authentification FAL_KEY
-    - Vous voulez des valeurs par défaut fal pour image_generate ou video_generate
-summary: Configuration de génération d’images et de vidéos fal dans OpenClaw
+    - Vous avez besoin du flux d’authentification `FAL_KEY`
+    - Vous voulez les valeurs par défaut de fal pour image_generate ou video_generate
+summary: Configuration de la génération d’images et de vidéos avec fal dans OpenClaw
 title: Fal
 x-i18n:
-    generated_at: "2026-04-26T11:37:19Z"
-    model: gpt-5.4
+    generated_at: "2026-05-11T20:52:18Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: e6789f0fa1140cf76f0206c7384a79ee8b96de4af9e1dfedc00e5a3382f742bb
+    source_hash: 7f074629e5274154b7a17686264a8b137d61df321d791d6e47c9d8abe67ad273
     source_path: providers/fal.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw inclut un fournisseur intégré `fal` pour la génération hébergée d’images et de vidéos.
+OpenClaw inclut un fournisseur `fal` groupé pour la génération hébergée d’images et de vidéos.
 
 | Propriété | Valeur                                                        |
 | --------- | ------------------------------------------------------------- |
 | Fournisseur | `fal`                                                       |
-| Auth      | `FAL_KEY` (canonique ; `FAL_API_KEY` fonctionne aussi en repli) |
-| API       | points de terminaison de modèles fal                          |
+| Authentification | `FAL_KEY` (canonique ; `FAL_API_KEY` fonctionne aussi comme solution de repli) |
+| API       | Points de terminaison de modèles fal                         |
 
-## Démarrage
+## Bien démarrer
 
 <Steps>
   <Step title="Définir la clé API">
@@ -47,27 +47,31 @@ OpenClaw inclut un fournisseur intégré `fal` pour la génération hébergée d
 
 ## Génération d’images
 
-Le fournisseur intégré de génération d’images `fal` utilise par défaut
+Le fournisseur de génération d’images `fal` groupé utilise par défaut
 `fal/fal-ai/flux/dev`.
 
-| Capacité       | Valeur                    |
-| -------------- | ------------------------- |
-| Nombre max d’images | 4 par requête         |
-| Mode édition   | Activé, 1 image de référence |
-| Remplacements de taille | Pris en charge     |
-| Ratio d’aspect | Pris en charge            |
-| Résolution     | Prise en charge           |
-| Format de sortie | `png` ou `jpeg`         |
+| Capacité              | Valeur                                                     |
+| --------------------- | ---------------------------------------------------------- |
+| Nombre maximal d’images | 4 par requête                                            |
+| Mode édition          | Flux : 1 image de référence ; GPT Image 2 : 10 ; Nano Banana 2 : 14 |
+| Remplacements de taille | Pris en charge                                          |
+| Rapport d’aspect      | Pris en charge pour la génération et l’édition GPT Image 2/Nano Banana 2 |
+| Résolution            | Prise en charge                                           |
+| Format de sortie      | `png` ou `jpeg`                                           |
 
 <Warning>
-Le point de terminaison d’édition d’image fal ne prend **pas** en charge les remplacements `aspectRatio`.
+Les requêtes image-à-image Flux ne prennent **pas** en charge les remplacements
+`aspectRatio`. Les requêtes d’édition GPT Image 2 et Nano Banana 2 utilisent le
+point de terminaison `/edit` de fal et acceptent les indications de rapport
+d’aspect.
 </Warning>
 
 Utilisez `outputFormat: "png"` lorsque vous voulez une sortie PNG. fal ne déclare
-pas de contrôle explicite d’arrière-plan transparent dans OpenClaw, donc `background:
-"transparent"` est signalé comme remplacement ignoré pour les modèles fal.
+pas de contrôle explicite d’arrière-plan transparent dans OpenClaw, donc
+`background: "transparent"` est signalé comme un remplacement ignoré pour les
+modèles fal.
 
-Pour utiliser fal comme fournisseur d’image par défaut :
+Pour utiliser fal comme fournisseur d’images par défaut :
 
 ```json5
 {
@@ -83,13 +87,13 @@ Pour utiliser fal comme fournisseur d’image par défaut :
 
 ## Génération de vidéos
 
-Le fournisseur intégré de génération de vidéos `fal` utilise par défaut
+Le fournisseur de génération de vidéos `fal` groupé utilise par défaut
 `fal/fal-ai/minimax/video-01-live`.
 
-| Capacité | Valeur                                                              |
-| -------- | ------------------------------------------------------------------- |
-| Modes    | Texte vers vidéo, référence image unique, Seedance reference-to-video |
-| Runtime  | Flux soutenu par file d’attente submit/status/result pour les jobs longue durée |
+| Capacité | Valeur                                                            |
+| -------- | ----------------------------------------------------------------- |
+| Modes    | Texte-vers-vidéo, référence d’image unique, référence-vers-vidéo Seedance |
+| Exécution | Flux soumission/état/résultat adossé à une file d’attente pour les tâches longues |
 
 <AccordionGroup>
   <Accordion title="Modèles vidéo disponibles">
@@ -122,7 +126,7 @@ Le fournisseur intégré de génération de vidéos `fal` utilise par défaut
     ```
   </Accordion>
 
-  <Accordion title="Exemple de configuration Seedance 2.0 reference-to-video">
+  <Accordion title="Exemple de configuration référence-vers-vidéo Seedance 2.0">
     ```json5
     {
       agents: {
@@ -135,9 +139,9 @@ Le fournisseur intégré de génération de vidéos `fal` utilise par défaut
     }
     ```
 
-    Reference-to-video accepte jusqu’à 9 images, 3 vidéos, et 3 références audio
-    via les paramètres partagés `video_generate` `images`, `videos`, et `audioRefs`,
-    avec un maximum de 12 fichiers de référence au total.
+    La référence-vers-vidéo accepte jusqu’à 9 images, 3 vidéos et 3 références
+    audio via les paramètres partagés `video_generate` `images`, `videos` et
+    `audioRefs`, avec au maximum 12 fichiers de référence au total.
 
   </Accordion>
 
@@ -157,15 +161,15 @@ Le fournisseur intégré de génération de vidéos `fal` utilise par défaut
 </AccordionGroup>
 
 <Tip>
-Utilisez `openclaw models list --provider fal` pour voir la liste complète des modèles fal
-disponibles, y compris les entrées ajoutées récemment.
+Utilisez `openclaw models list --provider fal` pour voir la liste complète des
+modèles fal disponibles, y compris les entrées récemment ajoutées.
 </Tip>
 
-## Associé
+## Connexe
 
 <CardGroup cols={2}>
   <Card title="Génération d’images" href="/fr/tools/image-generation" icon="image">
-    Paramètres partagés de l’outil image et sélection du fournisseur.
+    Paramètres partagés de l’outil d’image et sélection du fournisseur.
   </Card>
   <Card title="Génération de vidéos" href="/fr/tools/video-generation" icon="video">
     Paramètres partagés de l’outil vidéo et sélection du fournisseur.
