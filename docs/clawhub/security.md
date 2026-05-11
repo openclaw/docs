@@ -137,8 +137,9 @@ Static suspicious findings are retained as file/line evidence for moderators,
 but they do not hide content or decide the public scan verdict on their own.
 New uploads remain in review/pending state until the VirusTotal and LLM reviews
 settle; static scanning only blocks immediately for malicious signatures.
-ClawScan LLM reviews keep purpose-aligned notes as guidance; they only return a
-Review/suspicious verdict when the structured review includes a material concern.
+ClawScan LLM reviews keep purpose-aligned notes as guidance. Medium review
+findings remain visible on the artifact, while the suspicious filter is reserved
+for high-impact review concerns or malicious findings.
 
 Admins can lift a false-positive hold:
 
