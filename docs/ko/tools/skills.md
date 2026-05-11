@@ -74,6 +74,7 @@ Skill **위치**와 Skill **표시 여부**는 별개의 제어입니다. 위치
     - Skills가 없도록 하려면 `agents.list[].skills: []`를 설정합니다.
     - 비어 있지 않은 `agents.list[].skills` 목록은 해당 에이전트의 **최종** 집합입니다. 기본값과 병합되지 않습니다.
     - 유효 허용 목록은 프롬프트 구성, Skill 슬래시 명령 검색, 샌드박스 동기화, Skill 스냅샷 전반에 적용됩니다.
+
   </Accordion>
 </AccordionGroup>
 
