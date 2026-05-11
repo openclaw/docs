@@ -1062,7 +1062,8 @@
               {
                 "group": "Overview",
                 "pages": [
-                  "channels/index"
+                  "channels/index",
+                  "announcements/bluebubbles-imessage"
                 ]
               },
               {
@@ -2601,7 +2602,8 @@
               {
                 "group": "Overview",
                 "pages": [
-                  "zh-TW/channels/index"
+                  "zh-TW/channels/index",
+                  "zh-TW/announcements/bluebubbles-imessage"
                 ]
               },
               {
@@ -3493,7 +3495,8 @@
               {
                 "group": "Overview",
                 "pages": [
-                  "ja-JP/channels/index"
+                  "ja-JP/channels/index",
+                  "ja-JP/announcements/bluebubbles-imessage"
                 ]
               },
               {
@@ -4385,7 +4388,8 @@
               {
                 "group": "Overview",
                 "pages": [
-                  "es/channels/index"
+                  "es/channels/index",
+                  "es/announcements/bluebubbles-imessage"
                 ]
               },
               {
@@ -5277,7 +5281,8 @@
               {
                 "group": "Overview",
                 "pages": [
-                  "pt-BR/channels/index"
+                  "pt-BR/channels/index",
+                  "pt-BR/announcements/bluebubbles-imessage"
                 ]
               },
               {
@@ -6169,7 +6174,8 @@
               {
                 "group": "Overview",
                 "pages": [
-                  "ko/channels/index"
+                  "ko/channels/index",
+                  "ko/announcements/bluebubbles-imessage"
                 ]
               },
               {
@@ -7061,7 +7067,8 @@
               {
                 "group": "Overview",
                 "pages": [
-                  "de/channels/index"
+                  "de/channels/index",
+                  "de/announcements/bluebubbles-imessage"
                 ]
               },
               {
@@ -7953,7 +7960,8 @@
               {
                 "group": "Overview",
                 "pages": [
-                  "fr/channels/index"
+                  "fr/channels/index",
+                  "fr/announcements/bluebubbles-imessage"
                 ]
               },
               {
@@ -8845,7 +8853,8 @@
               {
                 "group": "Overview",
                 "pages": [
-                  "ar/channels/index"
+                  "ar/channels/index",
+                  "ar/announcements/bluebubbles-imessage"
                 ]
               },
               {
@@ -9737,7 +9746,8 @@
               {
                 "group": "Overview",
                 "pages": [
-                  "it/channels/index"
+                  "it/channels/index",
+                  "it/announcements/bluebubbles-imessage"
                 ]
               },
               {
@@ -10629,7 +10639,8 @@
               {
                 "group": "Overview",
                 "pages": [
-                  "vi/channels/index"
+                  "vi/channels/index",
+                  "vi/announcements/bluebubbles-imessage"
                 ]
               },
               {
@@ -11521,7 +11532,8 @@
               {
                 "group": "Overview",
                 "pages": [
-                  "nl/channels/index"
+                  "nl/channels/index",
+                  "nl/announcements/bluebubbles-imessage"
                 ]
               },
               {
@@ -12413,7 +12425,8 @@
               {
                 "group": "Overview",
                 "pages": [
-                  "tr/channels/index"
+                  "tr/channels/index",
+                  "tr/announcements/bluebubbles-imessage"
                 ]
               },
               {
@@ -13305,7 +13318,8 @@
               {
                 "group": "Overview",
                 "pages": [
-                  "uk/channels/index"
+                  "uk/channels/index",
+                  "uk/announcements/bluebubbles-imessage"
                 ]
               },
               {
@@ -14197,7 +14211,8 @@
               {
                 "group": "Overview",
                 "pages": [
-                  "id/channels/index"
+                  "id/channels/index",
+                  "id/announcements/bluebubbles-imessage"
                 ]
               },
               {
@@ -15089,7 +15104,8 @@
               {
                 "group": "Overview",
                 "pages": [
-                  "pl/channels/index"
+                  "pl/channels/index",
+                  "pl/announcements/bluebubbles-imessage"
                 ]
               },
               {
