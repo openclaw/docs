@@ -135,11 +135,13 @@ start hidden, and creates a `user.moderation.auto` audit log entry.
 
 Static suspicious findings are retained as file/line evidence for moderators,
 but they do not hide content or decide the public scan verdict on their own.
-New uploads remain in review/pending state until the VirusTotal and LLM reviews
-settle; static scanning only blocks immediately for malicious signatures.
-ClawScan LLM reviews keep purpose-aligned notes as guidance. Medium review
-findings remain visible on the artifact, while the suspicious filter is reserved
-for high-impact review concerns or malicious findings.
+New uploads remain in review/pending state until the LLM review settles. Static
+scanning only blocks immediately for malicious signatures. VirusTotal engine
+hits remain visible security evidence, but VirusTotal Code Insight/Palm
+verdicts are advisory and do not hide skills on their own. ClawScan LLM reviews
+keep purpose-aligned notes as guidance. Medium review findings remain visible on
+the artifact, while the suspicious filter is reserved for high-impact LLM
+concerns, malicious findings, or corroborated AV-engine detections.
 
 Admins can lift a false-positive hold:
 
