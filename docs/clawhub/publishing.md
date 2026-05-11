@@ -100,9 +100,9 @@ wrong publisher, transfer ownership instead:
 clawhub package transfer @opik/opik-openclaw --to opik
 ```
 
-Use package transfer only when you have admin access to both the current package
-owner and the destination publisher. It does not let you publish into a scope you
-cannot manage.
+Use package or skill transfer only when you have admin access to both the
+current owner and the destination publisher. Package transfer does not let you
+publish into a scope you cannot manage.
 
 This protects org namespaces. A package named `@openclaw/dronzer` claims the
 `@openclaw` namespace, so only publishers with access to the `@openclaw` owner

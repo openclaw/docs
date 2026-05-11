@@ -240,6 +240,9 @@ clawhub skill rescan suspicious-skill --yes
 ### `transfer`
 
 - Ownership transfer workflow.
+- Transfers to user handles create a pending request that the recipient accepts.
+- Transfers to org/publisher handles apply immediately only when the actor has
+  admin access to both the current owner and destination publisher.
 - Subcommands:
   - `transfer request <slug> <handle> [--message "..."] [--yes]`
   - `transfer list [--outgoing]`
@@ -351,6 +354,40 @@ Example:
 
 ```bash
 clawhub package delete @openclaw/example-plugin --yes
+```
+
+### `package undelete <name>`
+
+- Restores a soft-deleted package and releases.
+- Requires the package owner, an org publisher owner/admin, platform moderator,
+  or platform admin.
+- Calls `POST /api/v1/packages/{name}/undelete`.
+- Flags:
+  - `--yes`: skip confirmation.
+  - `--json`: machine-readable output.
+
+Example:
+
+```bash
+clawhub package undelete @openclaw/example-plugin --yes
+```
+
+### `package transfer <name>`
+
+- Transfers a package to another publisher.
+- Requires admin access to both the current package owner and destination
+  publisher, unless performed by a platform admin.
+- Scoped package names must transfer to the matching scope owner.
+- Calls `POST /api/v1/packages/{name}/transfer`.
+- Flags:
+  - `--to <owner>`: destination publisher handle.
+  - `--reason <text>`: optional audit reason.
+  - `--json`: machine-readable output.
+
+Example:
+
+```bash
+clawhub package transfer @openclaw/example-plugin --to openclaw
 ```
 
 ### `package rescan <name>`
@@ -545,7 +582,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/ff53a3735355dbf7beb96dbc021703aeabf95288/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/8287c494b20c5c7d95efd5577cde9fe13487a600/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
