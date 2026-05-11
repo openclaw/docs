@@ -1193,7 +1193,7 @@
             ]
           },
           {
-            "tab": "Tools & Plugins",
+            "tab": "Capabilities",
             "groups": [
               {
                 "group": "Overview",
@@ -1266,7 +1266,7 @@
                 ]
               },
               {
-                "group": "Automation and tasks",
+                "group": "Automation",
                 "pages": [
                   "automation/index",
                   "automation/cron-jobs",
@@ -2733,7 +2733,7 @@
             ]
           },
           {
-            "tab": "Tools & Plugins",
+            "tab": "Capabilities",
             "groups": [
               {
                 "group": "Overview",
@@ -2806,7 +2806,7 @@
                 ]
               },
               {
-                "group": "Automation and tasks",
+                "group": "Automation",
                 "pages": [
                   "zh-TW/automation/index",
                   "zh-TW/automation/cron-jobs",
@@ -3626,7 +3626,7 @@
             ]
           },
           {
-            "tab": "Tools & Plugins",
+            "tab": "Capabilities",
             "groups": [
               {
                 "group": "Overview",
@@ -3699,7 +3699,7 @@
                 ]
               },
               {
-                "group": "Automation and tasks",
+                "group": "Automation",
                 "pages": [
                   "ja-JP/automation/index",
                   "ja-JP/automation/cron-jobs",
@@ -4519,7 +4519,7 @@
             ]
           },
           {
-            "tab": "Tools & Plugins",
+            "tab": "Capabilities",
             "groups": [
               {
                 "group": "Overview",
@@ -4592,7 +4592,7 @@
                 ]
               },
               {
-                "group": "Automation and tasks",
+                "group": "Automation",
                 "pages": [
                   "es/automation/index",
                   "es/automation/cron-jobs",
@@ -5412,7 +5412,7 @@
             ]
           },
           {
-            "tab": "Tools & Plugins",
+            "tab": "Capabilities",
             "groups": [
               {
                 "group": "Overview",
@@ -5485,7 +5485,7 @@
                 ]
               },
               {
-                "group": "Automation and tasks",
+                "group": "Automation",
                 "pages": [
                   "pt-BR/automation/index",
                   "pt-BR/automation/cron-jobs",
@@ -6305,7 +6305,7 @@
             ]
           },
           {
-            "tab": "Tools & Plugins",
+            "tab": "Capabilities",
             "groups": [
               {
                 "group": "Overview",
@@ -6378,7 +6378,7 @@
                 ]
               },
               {
-                "group": "Automation and tasks",
+                "group": "Automation",
                 "pages": [
                   "ko/automation/index",
                   "ko/automation/cron-jobs",
@@ -7198,7 +7198,7 @@
             ]
           },
           {
-            "tab": "Tools & Plugins",
+            "tab": "Capabilities",
             "groups": [
               {
                 "group": "Overview",
@@ -7271,7 +7271,7 @@
                 ]
               },
               {
-                "group": "Automation and tasks",
+                "group": "Automation",
                 "pages": [
                   "de/automation/index",
                   "de/automation/cron-jobs",
@@ -8091,7 +8091,7 @@
             ]
           },
           {
-            "tab": "Tools & Plugins",
+            "tab": "Capabilities",
             "groups": [
               {
                 "group": "Overview",
@@ -8164,7 +8164,7 @@
                 ]
               },
               {
-                "group": "Automation and tasks",
+                "group": "Automation",
                 "pages": [
                   "fr/automation/index",
                   "fr/automation/cron-jobs",
@@ -8984,7 +8984,7 @@
             ]
           },
           {
-            "tab": "Tools & Plugins",
+            "tab": "Capabilities",
             "groups": [
               {
                 "group": "Overview",
@@ -9057,7 +9057,7 @@
                 ]
               },
               {
-                "group": "Automation and tasks",
+                "group": "Automation",
                 "pages": [
                   "ar/automation/index",
                   "ar/automation/cron-jobs",
@@ -9877,7 +9877,7 @@
             ]
           },
           {
-            "tab": "Tools & Plugins",
+            "tab": "Capabilities",
             "groups": [
               {
                 "group": "Overview",
@@ -9950,7 +9950,7 @@
                 ]
               },
               {
-                "group": "Automation and tasks",
+                "group": "Automation",
                 "pages": [
                   "it/automation/index",
                   "it/automation/cron-jobs",
@@ -10770,7 +10770,7 @@
             ]
           },
           {
-            "tab": "Tools & Plugins",
+            "tab": "Capabilities",
             "groups": [
               {
                 "group": "Overview",
@@ -10843,7 +10843,7 @@
                 ]
               },
               {
-                "group": "Automation and tasks",
+                "group": "Automation",
                 "pages": [
                   "vi/automation/index",
                   "vi/automation/cron-jobs",
@@ -11663,7 +11663,7 @@
             ]
           },
           {
-            "tab": "Tools & Plugins",
+            "tab": "Capabilities",
             "groups": [
               {
                 "group": "Overview",
@@ -11736,7 +11736,7 @@
                 ]
               },
               {
-                "group": "Automation and tasks",
+                "group": "Automation",
                 "pages": [
                   "nl/automation/index",
                   "nl/automation/cron-jobs",
@@ -12556,7 +12556,7 @@
             ]
           },
           {
-            "tab": "Tools & Plugins",
+            "tab": "Capabilities",
             "groups": [
               {
                 "group": "Overview",
@@ -12629,7 +12629,7 @@
                 ]
               },
               {
-                "group": "Automation and tasks",
+                "group": "Automation",
                 "pages": [
                   "tr/automation/index",
                   "tr/automation/cron-jobs",
@@ -13449,7 +13449,7 @@
             ]
           },
           {
-            "tab": "Tools & Plugins",
+            "tab": "Capabilities",
             "groups": [
               {
                 "group": "Overview",
@@ -13522,7 +13522,7 @@
                 ]
               },
               {
-                "group": "Automation and tasks",
+                "group": "Automation",
                 "pages": [
                   "uk/automation/index",
                   "uk/automation/cron-jobs",
@@ -14342,7 +14342,7 @@
             ]
           },
           {
-            "tab": "Tools & Plugins",
+            "tab": "Capabilities",
             "groups": [
               {
                 "group": "Overview",
@@ -14415,7 +14415,7 @@
                 ]
               },
               {
-                "group": "Automation and tasks",
+                "group": "Automation",
                 "pages": [
                   "id/automation/index",
                   "id/automation/cron-jobs",
@@ -15235,7 +15235,7 @@
             ]
           },
           {
-            "tab": "Tools & Plugins",
+            "tab": "Capabilities",
             "groups": [
               {
                 "group": "Overview",
@@ -15308,7 +15308,7 @@
                 ]
               },
               {
-                "group": "Automation and tasks",
+                "group": "Automation",
                 "pages": [
                   "pl/automation/index",
                   "pl/automation/cron-jobs",
