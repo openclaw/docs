@@ -2,27 +2,27 @@
 read_when:
     - Agent-Standardeinstellungen anpassen (Modelle, Denken, Arbeitsbereich, Heartbeat, Medien, Skills)
     - Multi-Agent-Routing und Bindungen konfigurieren
-    - Verhalten von Sitzungen, Nachrichtenzustellung und Talk-Modus anpassen
+    - Verhalten von Sitzungen, Nachrichtenzustellung und Sprechmodus anpassen
 summary: Agent-Standardwerte, Multi-Agent-Routing, Sitzung, Nachrichten und Talk-Konfiguration
 title: Konfiguration — Agenten
 x-i18n:
-    generated_at: "2026-05-12T12:55:17Z"
+    generated_at: "2026-05-12T23:30:18Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 517aec30ff6c65a269c7e5c8baefb5dc371dabe52d4c38a47a41cae1a1a785e1
+    source_hash: 08ddc1b36f4b9408ebaa5f071693b1c1333cedc9b00f75df93f12e73081e1033
     source_path: gateway/config-agents.md
     workflow: 16
 ---
 
-Agent-spezifische Konfigurationsschlüssel unter `agents.*`, `multiAgent.*`, `session.*`,
-`messages.*` und `talk.*`. Für Kanäle, Tools, Gateway-Laufzeit und andere
-Schlüssel auf oberster Ebene siehe [Konfigurationsreferenz](/de/gateway/configuration-reference).
+Agent-bezogene Konfigurationsschlüssel unter `agents.*`, `multiAgent.*`, `session.*`,
+`messages.*` und `talk.*`. Für Kanäle, Tools, Gateway-Runtime und andere
+Top-Level-Schlüssel siehe [Konfigurationsreferenz](/de/gateway/configuration-reference).
 
 ## Agent-Standardwerte
 
 ### `agents.defaults.workspace`
 
-Standardwert: `~/.openclaw/workspace`.
+Standard: `~/.openclaw/workspace`.
 
 ```json5
 {
@@ -32,7 +32,7 @@ Standardwert: `~/.openclaw/workspace`.
 
 ### `agents.defaults.repoRoot`
 
-Optionales Repository-Stammverzeichnis, das in der Runtime-Zeile des System-Prompts angezeigt wird. Wenn nicht gesetzt, erkennt OpenClaw es automatisch, indem es vom Workspace aus nach oben traversiert.
+Optionaler Repository-Root, der in der Runtime-Zeile des System-Prompts angezeigt wird. Wenn nicht gesetzt, erkennt OpenClaw ihn automatisch, indem es vom Workspace aus nach oben sucht.
 
 ```json5
 {
@@ -42,7 +42,7 @@ Optionales Repository-Stammverzeichnis, das in der Runtime-Zeile des System-Prom
 
 ### `agents.defaults.skills`
 
-Optionale Standard-Allowlist für Skills für Agents, die
+Optionale Standard-Zulassungsliste für Skills für Agenten, die
 `agents.list[].skills` nicht setzen.
 
 ```json5
@@ -58,10 +58,10 @@ Optionale Standard-Allowlist für Skills für Agents, die
 }
 ```
 
-- Lassen Sie `agents.defaults.skills` weg, um Skills standardmäßig uneingeschränkt zuzulassen.
+- Lassen Sie `agents.defaults.skills` weg, um standardmäßig uneingeschränkte Skills zu verwenden.
 - Lassen Sie `agents.list[].skills` weg, um die Standardwerte zu übernehmen.
-- Setzen Sie `agents.list[].skills: []`, um keine Skills zuzulassen.
-- Eine nicht leere Liste `agents.list[].skills` ist die endgültige Menge für diesen Agent; sie
+- Setzen Sie `agents.list[].skills: []`, um keine Skills zu verwenden.
+- Eine nicht leere Liste `agents.list[].skills` ist die endgültige Menge für diesen Agenten; sie
   wird nicht mit Standardwerten zusammengeführt.
 
 ### `agents.defaults.skipBootstrap`
@@ -90,10 +90,10 @@ Deaktiviert die automatische Erstellung von Workspace-Bootstrap-Dateien (`AGENTS
 
 ### `agents.defaults.contextInjection`
 
-Steuert, wann Workspace-Bootstrap-Dateien in den System-Prompt injiziert werden. Standardwert: `"always"`.
+Steuert, wann Workspace-Bootstrap-Dateien in den System-Prompt injiziert werden. Standard: `"always"`.
 
-- `"continuation-skip"`: Sichere Fortsetzungs-Turns (nach einer abgeschlossenen Assistant-Antwort) überspringen die erneute Injektion des Workspace-Bootstraps und reduzieren so die Prompt-Größe. Heartbeat-Läufe und Wiederholungen nach Compaction bauen den Kontext weiterhin neu auf.
-- `"never"`: Deaktiviert Workspace-Bootstrap und Kontextdatei-Injektion bei jedem Turn. Verwenden Sie dies nur für Agents, die ihren Prompt-Lebenszyklus vollständig selbst steuern (benutzerdefinierte Kontext-Engines, native Laufzeiten, die ihren eigenen Kontext erstellen, oder spezialisierte Workflows ohne Bootstrap). Heartbeat- und Compaction-Recovery-Turns überspringen die Injektion ebenfalls.
+- `"continuation-skip"`: Sichere Fortsetzungs-Turns (nach einer abgeschlossenen Assistentenantwort) überspringen die erneute Injektion des Workspace-Bootstraps und reduzieren so die Prompt-Größe. Heartbeat-Läufe und Wiederholungsversuche nach der Compaction bauen den Kontext weiterhin neu auf.
+- `"never"`: Deaktiviert Workspace-Bootstrap und Kontextdatei-Injektion bei jedem Turn. Verwenden Sie dies nur für Agenten, die ihren Prompt-Lebenszyklus vollständig selbst besitzen (benutzerdefinierte Kontext-Engines, native Runtimes, die ihren eigenen Kontext erstellen, oder spezialisierte bootstrapfreie Workflows). Heartbeat- und Compaction-Recovery-Turns überspringen die Injektion ebenfalls.
 
 ```json5
 {
@@ -103,7 +103,7 @@ Steuert, wann Workspace-Bootstrap-Dateien in den System-Prompt injiziert werden.
 
 ### `agents.defaults.bootstrapMaxChars`
 
-Maximale Zeichenanzahl pro Workspace-Bootstrap-Datei vor der Kürzung. Standardwert: `12000`.
+Maximale Zeichenanzahl pro Workspace-Bootstrap-Datei vor der Kürzung. Standard: `12000`.
 
 ```json5
 {
@@ -113,7 +113,7 @@ Maximale Zeichenanzahl pro Workspace-Bootstrap-Datei vor der Kürzung. Standardw
 
 ### `agents.defaults.bootstrapTotalMaxChars`
 
-Maximale Gesamtzeichenanzahl, die über alle Workspace-Bootstrap-Dateien hinweg injiziert wird. Standardwert: `60000`.
+Maximale Gesamtzahl injizierter Zeichen über alle Workspace-Bootstrap-Dateien hinweg. Standard: `60000`.
 
 ```json5
 {
@@ -123,15 +123,15 @@ Maximale Gesamtzeichenanzahl, die über alle Workspace-Bootstrap-Dateien hinweg 
 
 ### `agents.defaults.bootstrapPromptTruncationWarning`
 
-Steuert den für den Agent sichtbaren System-Prompt-Hinweis, wenn Bootstrap-Kontext gekürzt wird.
-Standardwert: `"once"`.
+Steuert den für den Agenten sichtbaren Hinweis im System-Prompt, wenn Bootstrap-Kontext gekürzt wird.
+Standard: `"once"`.
 
-- `"off"`: Hinweistext zur Kürzung nie in den System-Prompt injizieren.
-- `"once"`: Einmal pro eindeutiger Kürzungssignatur einen knappen Hinweis injizieren (empfohlen).
+- `"off"`: Niemals Hinweistext zur Kürzung in den System-Prompt injizieren.
+- `"once"`: Einen knappen Hinweis einmal pro eindeutiger Kürzungssignatur injizieren (empfohlen).
 - `"always"`: Bei jedem Lauf einen knappen Hinweis injizieren, wenn eine Kürzung vorliegt.
 
 Detaillierte Roh-/Injektionszählungen und Felder zur Konfigurationsabstimmung bleiben in Diagnosen wie
-Kontext-/Statusberichten und Logs; der routinemäßige WebChat-Benutzer-/Laufzeitkontext erhält nur
+Kontext-/Statusberichten und Logs; regulärer WebChat-Benutzer-/Runtime-Kontext erhält nur
 den knappen Wiederherstellungshinweis.
 
 ```json5
@@ -142,21 +142,21 @@ den knappen Wiederherstellungshinweis.
 
 ### Zuständigkeitskarte für Kontextbudgets
 
-OpenClaw hat mehrere Prompt-/Kontextbudgets mit hohem Volumen, und diese sind
-absichtlich nach Subsystemen getrennt, statt alle über einen einzelnen generischen
+OpenClaw hat mehrere umfangreiche Prompt-/Kontextbudgets, die bewusst nach
+Subsystem aufgeteilt sind, statt alle über einen generischen
 Regler zu laufen.
 
 - `agents.defaults.bootstrapMaxChars` /
   `agents.defaults.bootstrapTotalMaxChars`:
   normale Workspace-Bootstrap-Injektion.
 - `agents.defaults.startupContext.*`:
-  einmalige Präambel für Reset-/Startup-Modellläufe, einschließlich aktueller täglicher
+  einmalige Reset-/Startup-Modelllauf-Einleitung, einschließlich aktueller täglicher
   `memory/*.md`-Dateien. Reine Chat-Befehle `/new` und `/reset` werden
   bestätigt, ohne das Modell aufzurufen.
 - `skills.limits.*`:
   die kompakte Skills-Liste, die in den System-Prompt injiziert wird.
 - `agents.defaults.contextLimits.*`:
-  begrenzte Laufzeit-Auszüge und injizierte laufzeiteigene Blöcke.
+  begrenzte Runtime-Auszüge und injizierte Runtime-eigene Blöcke.
 - `memory.qmd.limits.*`:
   Größen für indizierte Speicher-Suchsnippets und Injektion.
 
@@ -168,9 +168,9 @@ Budget benötigt:
 
 #### `agents.defaults.startupContext`
 
-Steuert die Startup-Präambel für den ersten Turn, die bei Reset-/Startup-Modellläufen injiziert wird.
-Reine Chat-Befehle `/new` und `/reset` bestätigen den Reset, ohne das Modell
-aufzurufen, daher laden sie diese Präambel nicht.
+Steuert die First-Turn-Startup-Einleitung, die bei Reset-/Startup-Modellläufen injiziert wird.
+Reine Chat-Befehle `/new` und `/reset` bestätigen den Reset, ohne das
+Modell aufzurufen, daher laden sie diese Einleitung nicht.
 
 ```json5
 {
@@ -191,7 +191,7 @@ aufzurufen, daher laden sie diese Präambel nicht.
 
 #### `agents.defaults.contextLimits`
 
-Gemeinsame Standardwerte für begrenzte Laufzeit-Kontextflächen.
+Gemeinsame Standardwerte für begrenzte Runtime-Kontextflächen.
 
 ```json5
 {
@@ -208,19 +208,19 @@ Gemeinsame Standardwerte für begrenzte Laufzeit-Kontextflächen.
 }
 ```
 
-- `memoryGetMaxChars`: Standardobergrenze für `memory_get`-Auszüge, bevor Kürzungsmetadaten
+- `memoryGetMaxChars`: Standard-Auszugslimit für `memory_get`, bevor Kürzungsmetadaten
   und Fortsetzungshinweis hinzugefügt werden.
 - `memoryGetDefaultLines`: Standard-Zeilenfenster für `memory_get`, wenn `lines`
   weggelassen wird.
-- `toolResultMaxChars`: Live-Obergrenze für Tool-Ergebnisse, die für persistierte Ergebnisse und
+- `toolResultMaxChars`: Live-Tool-Ergebnislimit, das für persistierte Ergebnisse und
   Overflow-Wiederherstellung verwendet wird.
-- `postCompactionMaxChars`: Obergrenze für AGENTS.md-Auszüge, die während der
-  Aktualisierungsinjektion nach Compaction verwendet wird.
+- `postCompactionMaxChars`: AGENTS.md-Auszugslimit, das während der Aktualisierungsinjektion
+  nach der Compaction verwendet wird.
 
 #### `agents.list[].contextLimits`
 
-Agentenspezifische Überschreibung für die gemeinsamen `contextLimits`-Regler. Weggelassene Felder übernehmen
-Werte aus `agents.defaults.contextLimits`.
+Agentenspezifische Überschreibung für die gemeinsamen `contextLimits`-Regler. Weggelassene Felder erben
+von `agents.defaults.contextLimits`.
 
 ```json5
 {
@@ -246,8 +246,8 @@ Werte aus `agents.defaults.contextLimits`.
 
 #### `skills.limits.maxSkillsPromptChars`
 
-Globale Obergrenze für die kompakte Skills-Liste, die in den System-Prompt injiziert wird. Dies
-wirkt sich nicht darauf aus, `SKILL.md`-Dateien bei Bedarf zu lesen.
+Globales Limit für die kompakte Skills-Liste, die in den System-Prompt injiziert wird. Dies
+wirkt sich nicht auf das bedarfsweise Lesen von `SKILL.md`-Dateien aus.
 
 ```json5
 {
@@ -280,11 +280,11 @@ Agentenspezifische Überschreibung für das Skills-Prompt-Budget.
 
 ### `agents.defaults.imageMaxDimensionPx`
 
-Maximale Pixelgröße der längsten Bildseite in Transcript-/Tool-Bildblöcken vor Provider-Aufrufen.
-Standardwert: `1200`.
+Maximale Pixelgröße für die längste Bildseite in Transkript-/Tool-Bildblöcken vor Provider-Aufrufen.
+Standard: `1200`.
 
-Niedrigere Werte reduzieren normalerweise die Nutzung von Vision-Tokens und die Größe der Request-Payload bei screenshotlastigen Läufen.
-Höhere Werte erhalten mehr visuelle Details.
+Niedrigere Werte reduzieren in der Regel die Vision-Token-Nutzung und die Größe der Request-Payload bei screenshotlastigen Läufen.
+Höhere Werte bewahren mehr visuelle Details.
 
 ```json5
 {
@@ -304,7 +304,7 @@ Zeitzone für den System-Prompt-Kontext (nicht für Nachrichtenzeitstempel). Fä
 
 ### `agents.defaults.timeFormat`
 
-Zeitformat im System-Prompt. Standardwert: `auto` (Betriebssystemeinstellung).
+Zeitformat im System-Prompt. Standard: `auto` (Betriebssystemeinstellung).
 
 ```json5
 {
@@ -359,55 +359,55 @@ Zeitformat im System-Prompt. Standardwert: `auto` (Betriebssystemeinstellung).
 }
 ```
 
-- `model`: akzeptiert entweder eine Zeichenkette (`"provider/model"`) oder ein Objekt (`{ primary, fallbacks }`).
-  - Die Zeichenkettenform legt nur das primäre Modell fest.
+- `model`: akzeptiert entweder eine Zeichenfolge (`"provider/model"`) oder ein Objekt (`{ primary, fallbacks }`).
+  - Die Zeichenfolgenform legt nur das primäre Modell fest.
   - Die Objektform legt das primäre Modell plus geordnete Failover-Modelle fest.
-- `imageModel`: akzeptiert entweder eine Zeichenkette (`"provider/model"`) oder ein Objekt (`{ primary, fallbacks }`).
-  - Wird vom `image`-Toolpfad als dessen Vision-Modellkonfiguration verwendet.
-  - Wird außerdem als Fallback-Routing verwendet, wenn das ausgewählte/Standardmodell keine Bildeingaben akzeptieren kann.
-  - Bevorzugen Sie explizite `provider/model`-Referenzen. Bloße IDs werden aus Kompatibilitätsgründen akzeptiert; wenn eine bloße ID eindeutig mit einem konfigurierten bildeingabefähigen Eintrag in `models.providers.*.models` übereinstimmt, qualifiziert OpenClaw sie für diesen Provider. Mehrdeutige konfigurierte Treffer erfordern ein explizites Provider-Präfix.
-- `imageGenerationModel`: akzeptiert entweder eine Zeichenkette (`"provider/model"`) oder ein Objekt (`{ primary, fallbacks }`).
-  - Wird von der gemeinsamen Bildgenerierungsfähigkeit und jeder zukünftigen Tool-/Plugin-Oberfläche verwendet, die Bilder generiert.
-  - Typische Werte: `google/gemini-3.1-flash-image-preview` für native Gemini-Bildgenerierung, `fal/fal-ai/flux/dev` für fal, `openai/gpt-image-2` für OpenAI Images oder `openai/gpt-image-1.5` für OpenAI-PNG/WebP-Ausgabe mit transparentem Hintergrund.
-  - Wenn Sie einen Provider/ein Modell direkt auswählen, konfigurieren Sie auch die passende Provider-Authentifizierung (zum Beispiel `GEMINI_API_KEY` oder `GOOGLE_API_KEY` für `google/*`, `OPENAI_API_KEY` oder OpenAI Codex OAuth für `openai/gpt-image-2` / `openai/gpt-image-1.5`, `FAL_KEY` für `fal/*`).
-  - Wenn ausgelassen, kann `image_generate` weiterhin einen authentifizierungsgestützten Provider-Standard ableiten. Es versucht zuerst den aktuellen Standard-Provider, danach die verbleibenden registrierten Bildgenerierungs-Provider in Provider-ID-Reihenfolge.
-- `musicGenerationModel`: akzeptiert entweder eine Zeichenkette (`"provider/model"`) oder ein Objekt (`{ primary, fallbacks }`).
-  - Wird von der gemeinsamen Musikgenerierungsfähigkeit und dem integrierten Tool `music_generate` verwendet.
+- `imageModel`: akzeptiert entweder eine Zeichenfolge (`"provider/model"`) oder ein Objekt (`{ primary, fallbacks }`).
+  - Wird vom `image`-Tool-Pfad als dessen Vision-Modellkonfiguration verwendet.
+  - Wird außerdem als Fallback-Routing verwendet, wenn das ausgewählte/standardmäßige Modell keine Bildeingabe akzeptieren kann.
+  - Bevorzugen Sie explizite `provider/model`-Referenzen. Bloße IDs werden aus Kompatibilitätsgründen akzeptiert; wenn eine bloße ID eindeutig einem konfigurierten bildfähigen Eintrag in `models.providers.*.models` entspricht, qualifiziert OpenClaw sie für diesen Provider. Mehrdeutige konfigurierte Treffer erfordern ein explizites Provider-Präfix.
+- `imageGenerationModel`: akzeptiert entweder eine Zeichenfolge (`"provider/model"`) oder ein Objekt (`{ primary, fallbacks }`).
+  - Wird von der gemeinsamen Bildgenerierungsfunktion und jeder zukünftigen Tool-/Plugin-Oberfläche verwendet, die Bilder generiert.
+  - Typische Werte: `google/gemini-3.1-flash-image-preview` für native Gemini-Bildgenerierung, `fal/fal-ai/flux/dev` für fal, `openai/gpt-image-2` für OpenAI Images oder `openai/gpt-image-1.5` für OpenAI-PNG-/WebP-Ausgabe mit transparentem Hintergrund.
+  - Wenn Sie direkt einen Provider/ein Modell auswählen, konfigurieren Sie auch die passende Provider-Authentifizierung (zum Beispiel `GEMINI_API_KEY` oder `GOOGLE_API_KEY` für `google/*`, `OPENAI_API_KEY` oder OpenAI Codex OAuth für `openai/gpt-image-2` / `openai/gpt-image-1.5`, `FAL_KEY` für `fal/*`).
+  - Wenn ausgelassen, kann `image_generate` weiterhin einen authentifizierungsbasierten Provider-Standard ableiten. Es versucht zuerst den aktuellen Standard-Provider und danach die übrigen registrierten Bildgenerierungs-Provider in Reihenfolge der Provider-ID.
+- `musicGenerationModel`: akzeptiert entweder eine Zeichenfolge (`"provider/model"`) oder ein Objekt (`{ primary, fallbacks }`).
+  - Wird von der gemeinsamen Musikgenerierungsfunktion und dem integrierten `music_generate`-Tool verwendet.
   - Typische Werte: `google/lyria-3-clip-preview`, `google/lyria-3-pro-preview` oder `minimax/music-2.6`.
-  - Wenn ausgelassen, kann `music_generate` weiterhin einen authentifizierungsgestützten Provider-Standard ableiten. Es versucht zuerst den aktuellen Standard-Provider, danach die verbleibenden registrierten Musikgenerierungs-Provider in Provider-ID-Reihenfolge.
-  - Wenn Sie einen Provider/ein Modell direkt auswählen, konfigurieren Sie auch die passende Provider-Authentifizierung/den passenden API-Schlüssel.
-- `videoGenerationModel`: akzeptiert entweder eine Zeichenkette (`"provider/model"`) oder ein Objekt (`{ primary, fallbacks }`).
-  - Wird von der gemeinsamen Videogenerierungsfähigkeit und dem integrierten Tool `video_generate` verwendet.
+  - Wenn ausgelassen, kann `music_generate` weiterhin einen authentifizierungsbasierten Provider-Standard ableiten. Es versucht zuerst den aktuellen Standard-Provider und danach die übrigen registrierten Musikgenerierungs-Provider in Reihenfolge der Provider-ID.
+  - Wenn Sie direkt einen Provider/ein Modell auswählen, konfigurieren Sie auch die passende Provider-Authentifizierung/den passenden API-Schlüssel.
+- `videoGenerationModel`: akzeptiert entweder eine Zeichenfolge (`"provider/model"`) oder ein Objekt (`{ primary, fallbacks }`).
+  - Wird von der gemeinsamen Videogenerierungsfunktion und dem integrierten `video_generate`-Tool verwendet.
   - Typische Werte: `qwen/wan2.6-t2v`, `qwen/wan2.6-i2v`, `qwen/wan2.6-r2v`, `qwen/wan2.6-r2v-flash` oder `qwen/wan2.7-r2v`.
-  - Wenn ausgelassen, kann `video_generate` weiterhin einen authentifizierungsgestützten Provider-Standard ableiten. Es versucht zuerst den aktuellen Standard-Provider, danach die verbleibenden registrierten Videogenerierungs-Provider in Provider-ID-Reihenfolge.
-  - Wenn Sie einen Provider/ein Modell direkt auswählen, konfigurieren Sie auch die passende Provider-Authentifizierung/den passenden API-Schlüssel.
-  - Der gebündelte Qwen-Videogenerierungs-Provider unterstützt bis zu 1 Ausgabevideo, 1 Eingabebild, 4 Eingabevideos, 10 Sekunden Dauer sowie Optionen auf Provider-Ebene für `size`, `aspectRatio`, `resolution`, `audio` und `watermark`.
-- `pdfModel`: akzeptiert entweder eine Zeichenkette (`"provider/model"`) oder ein Objekt (`{ primary, fallbacks }`).
-  - Wird vom `pdf`-Tool für Modell-Routing verwendet.
+  - Wenn ausgelassen, kann `video_generate` weiterhin einen authentifizierungsbasierten Provider-Standard ableiten. Es versucht zuerst den aktuellen Standard-Provider und danach die übrigen registrierten Videogenerierungs-Provider in Reihenfolge der Provider-ID.
+  - Wenn Sie direkt einen Provider/ein Modell auswählen, konfigurieren Sie auch die passende Provider-Authentifizierung/den passenden API-Schlüssel.
+  - Der gebündelte Qwen-Videogenerierungs-Provider unterstützt bis zu 1 Ausgabevideo, 1 Eingabebild, 4 Eingabevideos, 10 Sekunden Dauer sowie Provider-weite Optionen für `size`, `aspectRatio`, `resolution`, `audio` und `watermark`.
+- `pdfModel`: akzeptiert entweder eine Zeichenfolge (`"provider/model"`) oder ein Objekt (`{ primary, fallbacks }`).
+  - Wird vom `pdf`-Tool für das Modell-Routing verwendet.
   - Wenn ausgelassen, fällt das PDF-Tool auf `imageModel` und danach auf das aufgelöste Sitzungs-/Standardmodell zurück.
 - `pdfMaxBytesMb`: Standardgrößenlimit für PDFs für das `pdf`-Tool, wenn `maxBytesMb` beim Aufruf nicht übergeben wird.
-- `pdfMaxPages`: standardmäßige maximale Seitenzahl, die der Extraktions-Fallback-Modus im `pdf`-Tool berücksichtigt.
-- `verboseDefault`: standardmäßige Ausführlichkeitsstufe für Agents. Werte: `"off"`, `"on"`, `"full"`. Standard: `"off"`.
-- `toolProgressDetail`: Detailmodus für `/verbose`-Tool-Zusammenfassungen und Tool-Zeilen in Fortschrittsentwürfen. Werte: `"explain"` (Standard, kompakte menschenlesbare Labels) oder `"raw"` (hängt den rohen Befehl/das rohe Detail an, wenn verfügbar). Agent-spezifisches `agents.list[].toolProgressDetail` überschreibt diesen Standard.
-- `reasoningDefault`: standardmäßige Sichtbarkeit des Reasonings für Agents. Werte: `"off"`, `"on"`, `"stream"`. Agent-spezifisches `agents.list[].reasoningDefault` überschreibt diesen Standard. Konfigurierte Reasoning-Standards werden nur für Eigentümer, autorisierte Absender oder Operator-Admin-Gateway-Kontexte angewendet, wenn keine Reasoning-Überschreibung pro Nachricht oder Sitzung gesetzt ist.
-- `elevatedDefault`: standardmäßige Stufe für erhöhte Ausgabe für Agents. Werte: `"off"`, `"on"`, `"ask"`, `"full"`. Standard: `"on"`.
-- `model.primary`: Format `provider/model` (z. B. `openai/gpt-5.5` für OpenAI-API-Schlüssel- oder Codex-OAuth-Zugriff). Wenn Sie den Provider auslassen, versucht OpenClaw zuerst einen Alias, dann eine eindeutige Übereinstimmung mit einem konfigurierten Provider für genau diese Modell-ID und fällt erst danach auf den konfigurierten Standard-Provider zurück (veraltetes Kompatibilitätsverhalten, bevorzugen Sie daher explizites `provider/model`). Wenn dieser Provider das konfigurierte Standardmodell nicht mehr bereitstellt, fällt OpenClaw auf den ersten konfigurierten Provider/das erste konfigurierte Modell zurück, statt einen veralteten entfernten Provider-Standard anzuzeigen.
-- `models`: der konfigurierte Modellkatalog und die Zulassungsliste für `/model`. Jeder Eintrag kann `alias` (Kurzform) und `params` (Provider-spezifisch, zum Beispiel `temperature`, `maxTokens`, `cacheRetention`, `context1m`, `responsesServerCompaction`, `responsesCompactThreshold`, `chat_template_kwargs`, `extra_body`/`extraBody`) enthalten.
+- `pdfMaxPages`: standardmäßige maximale Seitenanzahl, die vom Extraktions-Fallback-Modus im `pdf`-Tool berücksichtigt wird.
+- `verboseDefault`: standardmäßige Ausführlichkeitsstufe für Agenten. Werte: `"off"`, `"on"`, `"full"`. Standard: `"off"`.
+- `toolProgressDetail`: Detailmodus für `/verbose`-Tool-Zusammenfassungen und Tool-Zeilen in Fortschrittsentwürfen. Werte: `"explain"` (Standard, kompakte menschliche Bezeichnungen) oder `"raw"` (hängt rohe Befehle/Details an, wenn verfügbar). Agentenspezifisches `agents.list[].toolProgressDetail` überschreibt diesen Standard.
+- `reasoningDefault`: standardmäßige Reasoning-Sichtbarkeit für Agenten. Werte: `"off"`, `"on"`, `"stream"`. Agentenspezifisches `agents.list[].reasoningDefault` überschreibt diesen Standard. Konfigurierte Reasoning-Standards werden nur für Besitzer, autorisierte Absender oder Operator-Admin-Gateway-Kontexte angewendet, wenn keine Reasoning-Überschreibung pro Nachricht oder Sitzung gesetzt ist.
+- `elevatedDefault`: standardmäßige Stufe für erhöhte Ausgabe für Agenten. Werte: `"off"`, `"on"`, `"ask"`, `"full"`. Standard: `"on"`.
+- `model.primary`: Format `provider/model` (z. B. `openai/gpt-5.5` für OpenAI-API-Schlüssel oder Codex-OAuth-Zugriff). Wenn Sie den Provider weglassen, versucht OpenClaw zuerst einen Alias, dann einen eindeutigen Treffer bei konfigurierten Providern für genau diese Modell-ID und fällt erst danach auf den konfigurierten Standard-Provider zurück (veraltetes Kompatibilitätsverhalten, daher bevorzugen Sie explizit `provider/model`). Wenn dieser Provider das konfigurierte Standardmodell nicht mehr bereitstellt, fällt OpenClaw auf den ersten konfigurierten Provider/das erste konfigurierte Modell zurück, statt einen veralteten Standard eines entfernten Providers anzuzeigen.
+- `models`: der konfigurierte Modellkatalog und die Allowlist für `/model`. Jeder Eintrag kann `alias` (Kurzbefehl) und `params` (Provider-spezifisch, zum Beispiel `temperature`, `maxTokens`, `cacheRetention`, `context1m`, `responsesServerCompaction`, `responsesCompactThreshold`, `chat_template_kwargs`, `extra_body`/`extraBody`) enthalten.
   - Verwenden Sie `provider/*`-Einträge wie `"openai-codex/*": {}` oder `"vllm/*": {}`, um alle erkannten Modelle für ausgewählte Provider anzuzeigen, ohne jede Modell-ID manuell aufzuführen.
-  - Sichere Änderungen: Verwenden Sie `openclaw config set agents.defaults.models '<json>' --strict-json --merge`, um Einträge hinzuzufügen. `config set` verweigert Ersetzungen, die vorhandene Zulassungslisteneinträge entfernen würden, es sei denn, Sie übergeben `--replace`.
-  - Provider-bezogene Konfigurations-/Onboarding-Abläufe führen ausgewählte Provider-Modelle in diese Map zusammen und behalten bereits konfigurierte, nicht verwandte Provider bei.
-  - Für direkte OpenAI-Responses-Modelle wird serverseitige Compaction automatisch aktiviert. Verwenden Sie `params.responsesServerCompaction: false`, um das Einfügen von `context_management` zu stoppen, oder `params.responsesCompactThreshold`, um den Schwellenwert zu überschreiben. Siehe [OpenAI-serverseitige Compaction](/de/providers/openai#server-side-compaction-responses-api).
-- `params`: globale Standard-Provider-Parameter, die auf alle Modelle angewendet werden. Festgelegt unter `agents.defaults.params` (z. B. `{ cacheRetention: "long" }`).
-- Zusammenführungspriorität von `params` (Konfiguration): `agents.defaults.params` (globale Basis) wird von `agents.defaults.models["provider/model"].params` (pro Modell) überschrieben, danach überschreibt `agents.list[].params` (passende Agent-ID) schlüsselweise. Siehe [Prompt Caching](/de/reference/prompt-caching) für Details.
-- `params.extra_body`/`params.extraBody`: erweiterte JSON-Durchleitung, die in `api: "openai-completions"`-Request-Bodys für OpenAI-kompatible Proxys zusammengeführt wird. Wenn sie mit generierten Request-Schlüsseln kollidiert, gewinnt der zusätzliche Body; nicht-native Completions-Routen entfernen anschließend weiterhin OpenAI-spezifisches `store`.
-- `params.chat_template_kwargs`: vLLM-/OpenAI-kompatible Chat-Template-Argumente, die in `api: "openai-completions"`-Request-Bodys der obersten Ebene zusammengeführt werden. Für `vllm/nemotron-3-*` mit deaktiviertem Denken sendet das gebündelte vLLM-Plugin automatisch `enable_thinking: false` und `force_nonempty_content: true`; explizite `chat_template_kwargs` überschreiben generierte Standards, und `extra_body.chat_template_kwargs` hat weiterhin die letzte Priorität. Für vLLM-Qwen-Denkensteuerungen setzen Sie `params.qwenThinkingFormat` für diesen Modelleintrag auf `"chat-template"` oder `"top-level"`.
-- `compat.thinkingFormat`: OpenAI-kompatibler Stil für Thinking-Payloads. Verwenden Sie `"qwen"` für Qwen-artiges `enable_thinking` auf oberster Ebene oder `"qwen-chat-template"` für `chat_template_kwargs.enable_thinking` auf Qwen-Family-Backends, die Chat-Template-Kwargs auf Request-Ebene unterstützen, wie vLLM. OpenClaw ordnet deaktiviertes Denken `false` und aktiviertes Denken `true` zu.
-- `compat.supportedReasoningEfforts`: OpenAI-kompatible Liste von Reasoning-Aufwänden pro Modell. Schließen Sie `"xhigh"` für benutzerdefinierte Endpunkte ein, die es tatsächlich akzeptieren; OpenClaw stellt dann `/think xhigh` in Befehlsmenüs, Gateway-Sitzungszeilen, Sitzungs-Patch-Validierung, Agent-CLI-Validierung und `llm-task`-Validierung für diesen konfigurierten Provider/dieses konfigurierte Modell bereit. Verwenden Sie `compat.reasoningEffortMap`, wenn das Backend einen Provider-spezifischen Wert für eine kanonische Stufe erwartet.
-- `params.preserveThinking`: Z.AI-spezifische Opt-in-Option für beibehaltenes Denken. Wenn aktiviert und Denken eingeschaltet ist, sendet OpenClaw `thinking.clear_thinking: false` und spielt vorheriges `reasoning_content` erneut ab; siehe [Z.AI-Denken und beibehaltenes Denken](/de/providers/zai#thinking-and-preserved-thinking).
-- `localService`: optionaler Prozessmanager auf Provider-Ebene für lokale/selbst gehostete Modellserver. Wenn das ausgewählte Modell zu diesem Provider gehört, prüft OpenClaw `healthUrl` (oder `baseUrl + "/models"`), startet `command` mit `args`, wenn der Endpunkt nicht erreichbar ist, wartet bis zu `readyTimeoutMs` und sendet dann die Modellanfrage. `command` muss ein absoluter Pfad sein. `idleStopMs: 0` hält den Prozess bis zum Beenden von OpenClaw am Leben; ein positiver Wert stoppt den von OpenClaw gestarteten Prozess nach so vielen Millisekunden Leerlauf. Siehe [Lokale Modelldienste](/de/gateway/local-model-services).
-- Laufzeitrichtlinien gehören auf Provider oder Modelle, nicht auf `agents.defaults`. Verwenden Sie `models.providers.<provider>.agentRuntime` für Provider-weite Regeln oder `agents.defaults.models["provider/model"].agentRuntime` / `agents.list[].models["provider/model"].agentRuntime` für modellspezifische Regeln. OpenAI-Agent-Modelle beim offiziellen OpenAI-Provider wählen standardmäßig Codex aus.
-- Konfigurationsschreiber, die diese Felder ändern (zum Beispiel `/models set`, `/models set-image` und Befehle zum Hinzufügen/Entfernen von Fallbacks), speichern die kanonische Objektform und behalten vorhandene Fallback-Listen nach Möglichkeit bei.
-- `maxConcurrent`: maximale parallele Agent-Ausführungen über Sitzungen hinweg (jede Sitzung bleibt weiterhin serialisiert). Standard: 4.
+  - Sichere Änderungen: Verwenden Sie `openclaw config set agents.defaults.models '<json>' --strict-json --merge`, um Einträge hinzuzufügen. `config set` verweigert Ersetzungen, die bestehende Allowlist-Einträge entfernen würden, sofern Sie nicht `--replace` übergeben.
+  - Provider-bezogene Configure-/Onboarding-Flows führen ausgewählte Provider-Modelle in diese Zuordnung ein und bewahren bereits konfigurierte, nicht verwandte Provider.
+  - Für direkte OpenAI-Responses-Modelle ist serverseitige Compaction automatisch aktiviert. Verwenden Sie `params.responsesServerCompaction: false`, um das Einfügen von `context_management` zu stoppen, oder `params.responsesCompactThreshold`, um den Schwellenwert zu überschreiben. Siehe [OpenAI serverseitige Compaction](/de/providers/openai#server-side-compaction-responses-api).
+- `params`: globale standardmäßige Provider-Parameter, die auf alle Modelle angewendet werden. Wird unter `agents.defaults.params` gesetzt (z. B. `{ cacheRetention: "long" }`).
+- Zusammenführungsrangfolge für `params` (Konfiguration): `agents.defaults.params` (globale Basis) wird durch `agents.defaults.models["provider/model"].params` (pro Modell) überschrieben, danach überschreibt `agents.list[].params` (passende Agenten-ID) schlüsselweise. Siehe [Prompt Caching](/de/reference/prompt-caching) für Details.
+- `params.extra_body`/`params.extraBody`: erweiterte Pass-through-JSON-Daten, die in `api: "openai-completions"`-Request-Bodies für OpenAI-kompatible Proxys eingefügt werden. Wenn sie mit generierten Request-Schlüsseln kollidieren, gewinnt der zusätzliche Body; nicht native Completions-Routen entfernen anschließend weiterhin OpenAI-spezifisches `store`.
+- `params.chat_template_kwargs`: vLLM-/OpenAI-kompatible Chat-Template-Argumente, die in Top-Level-`api: "openai-completions"`-Request-Bodies eingefügt werden. Für `vllm/nemotron-3-*` mit deaktiviertem Thinking sendet das gebündelte vLLM-Plugin automatisch `enable_thinking: false` und `force_nonempty_content: true`; explizite `chat_template_kwargs` überschreiben generierte Standards, und `extra_body.chat_template_kwargs` hat weiterhin endgültigen Vorrang. Für vLLM-Qwen-Thinking-Steuerungen setzen Sie `params.qwenThinkingFormat` für diesen Modelleintrag auf `"chat-template"` oder `"top-level"`.
+- `compat.thinkingFormat`: OpenAI-kompatibler Thinking-Payload-Stil. Verwenden Sie `"qwen"` für Qwen-artiges Top-Level-`enable_thinking` oder `"qwen-chat-template"` für `chat_template_kwargs.enable_thinking` auf Backends der Qwen-Familie, die Chat-Template-Kwargs auf Request-Ebene unterstützen, wie vLLM. OpenClaw ordnet deaktiviertes Thinking `false` und aktiviertes Thinking `true` zu.
+- `compat.supportedReasoningEfforts`: OpenAI-kompatible Liste der Reasoning-Aufwände pro Modell. Fügen Sie `"xhigh"` für benutzerdefinierte Endpunkte hinzu, die es tatsächlich akzeptieren; OpenClaw zeigt dann `/think xhigh` in Befehlsmenüs, Gateway-Sitzungszeilen, Sitzungs-Patch-Validierung, Agent-CLI-Validierung und `llm-task`-Validierung für diesen konfigurierten Provider/dieses Modell an. Verwenden Sie `compat.reasoningEffortMap`, wenn das Backend einen Provider-spezifischen Wert für eine kanonische Stufe erwartet.
+- `params.preserveThinking`: nur für Z.AI geltendes Opt-in für beibehaltenes Thinking. Wenn aktiviert und Thinking eingeschaltet ist, sendet OpenClaw `thinking.clear_thinking: false` und spielt vorheriges `reasoning_content` erneut ab; siehe [Z.AI-Thinking und beibehaltenes Thinking](/de/providers/zai#thinking-and-preserved-thinking).
+- `localService`: optionaler Prozessmanager auf Provider-Ebene für lokale/selbst gehostete Modellserver. Wenn das ausgewählte Modell zu diesem Provider gehört, prüft OpenClaw `healthUrl` (oder `baseUrl + "/models"`), startet `command` mit `args`, falls der Endpunkt nicht erreichbar ist, wartet bis zu `readyTimeoutMs` und sendet dann die Modellanfrage. `command` muss ein absoluter Pfad sein. `idleStopMs: 0` hält den Prozess am Leben, bis OpenClaw beendet wird; ein positiver Wert stoppt den von OpenClaw gestarteten Prozess nach entsprechend vielen Leerlauf-Millisekunden. Siehe [Lokale Modelldienste](/de/gateway/local-model-services).
+- Laufzeitrichtlinien gehören auf Provider oder Modelle, nicht auf `agents.defaults`. Verwenden Sie `models.providers.<provider>.agentRuntime` für Provider-weite Regeln oder `agents.defaults.models["provider/model"].agentRuntime` / `agents.list[].models["provider/model"].agentRuntime` für modellspezifische Regeln. OpenAI-Agentenmodelle beim offiziellen OpenAI-Provider wählen standardmäßig Codex aus.
+- Konfigurationsschreiber, die diese Felder verändern (zum Beispiel `/models set`, `/models set-image` und Befehle zum Hinzufügen/Entfernen von Fallbacks), speichern die kanonische Objektform und bewahren bestehende Fallback-Listen, wenn möglich.
+- `maxConcurrent`: maximale parallele Agentenläufe über Sitzungen hinweg (jede Sitzung bleibt weiterhin serialisiert). Standard: 4.
 
 ### Laufzeitrichtlinie
 
@@ -434,15 +434,15 @@ Zeitformat im System-Prompt. Standardwert: `auto` (Betriebssystemeinstellung).
 ```
 
 - `id`: `"auto"`, `"pi"`, eine registrierte Plugin-Harness-ID oder ein unterstützter CLI-Backend-Alias. Das gebündelte Codex-Plugin registriert `codex`; das gebündelte Anthropic-Plugin stellt das `claude-cli`-CLI-Backend bereit.
-- `id: "auto"` lässt registrierte Plugin-Harnesses unterstützte Turns beanspruchen und verwendet PI, wenn kein Harness passt. Eine explizite Plugin-Laufzeit wie `id: "codex"` erfordert dieses Harness und schlägt geschlossen fehl, wenn es nicht verfügbar ist oder fehlschlägt.
-- Laufzeitschlüssel für den ganzen Agent sind veraltet. `agents.defaults.agentRuntime`, `agents.list[].agentRuntime`, Sitzungs-Laufzeit-Pins und `OPENCLAW_AGENT_RUNTIME` werden von der Laufzeitauswahl ignoriert. Führen Sie `openclaw doctor --fix` aus, um veraltete Werte zu entfernen.
-- OpenAI-Agent-Modelle verwenden standardmäßig das Codex-Harness; Provider-/Modell-`agentRuntime.id: "codex"` bleibt gültig, wenn Sie dies explizit machen möchten.
-- Für Claude-CLI-Deployments bevorzugen Sie `model: "anthropic/claude-opus-4-7"` plus modellbezogenes `agentRuntime.id: "claude-cli"`. Veraltete `claude-cli/claude-opus-4-7`-Modellreferenzen funktionieren aus Kompatibilitätsgründen weiterhin, aber neue Konfigurationen sollten die Provider-/Modellauswahl kanonisch halten und das Ausführungs-Backend in der Provider-/Modell-Laufzeitrichtlinie ablegen.
+- `id: "auto"` lässt registrierte Plugin-Harnesses unterstützte Turns übernehmen und verwendet PI, wenn kein Harness passt. Eine explizite Plugin-Laufzeit wie `id: "codex"` erfordert diesen Harness und schlägt geschlossen fehl, wenn er nicht verfügbar ist oder fehlschlägt.
+- Laufzeitschlüssel auf Agentenebene als Ganzes sind Legacy. `agents.defaults.agentRuntime`, `agents.list[].agentRuntime`, Sitzungs-Laufzeit-Pins und `OPENCLAW_AGENT_RUNTIME` werden von der Laufzeitauswahl ignoriert. Führen Sie `openclaw doctor --fix` aus, um veraltete Werte zu entfernen.
+- OpenAI-Agentenmodelle verwenden standardmäßig den Codex-Harness; Provider-/Modell-`agentRuntime.id: "codex"` bleibt gültig, wenn Sie dies explizit machen möchten.
+- Für Claude-CLI-Deployments bevorzugen Sie `model: "anthropic/claude-opus-4-7"` plus modellspezifisches `agentRuntime.id: "claude-cli"`. Legacy-`claude-cli/claude-opus-4-7`-Modellreferenzen funktionieren aus Kompatibilitätsgründen weiterhin, aber neue Konfiguration sollte die Provider-/Modellauswahl kanonisch halten und das Ausführungs-Backend in der Provider-/Modell-Laufzeitrichtlinie platzieren.
 - Dies steuert nur die Ausführung von Text-Agent-Turns. Mediengenerierung, Vision, PDF, Musik, Video und TTS verwenden weiterhin ihre Provider-/Modelleinstellungen.
 
-**Integrierte Alias-Kurzformen** (gelten nur, wenn das Modell in `agents.defaults.models` enthalten ist):
+**Integrierte Alias-Kurzformen** (gelten nur, wenn sich das Modell in `agents.defaults.models` befindet):
 
-| Alias               | Modell                                 |
+| Alias               | Modell                                |
 | ------------------- | -------------------------------------- |
 | `opus`              | `anthropic/claude-opus-4-6`            |
 | `sonnet`            | `anthropic/claude-sonnet-4-6`          |
@@ -453,15 +453,15 @@ Zeitformat im System-Prompt. Standardwert: `auto` (Betriebssystemeinstellung).
 | `gemini-flash`      | `google/gemini-3-flash-preview`        |
 | `gemini-flash-lite` | `google/gemini-3.1-flash-lite-preview` |
 
-Ihre konfigurierten Aliasse haben immer Vorrang vor Standardwerten.
+Ihre konfigurierten Aliase haben immer Vorrang vor den Standardwerten.
 
-Z.AI-GLM-4.x-Modelle aktivieren automatisch den Denkmodus, sofern Sie nicht `--thinking off` festlegen oder `agents.defaults.models["zai/<model>"].params.thinking` selbst definieren.
+Z.AI GLM-4.x-Modelle aktivieren automatisch den Denkmodus, sofern Sie nicht `--thinking off` festlegen oder `agents.defaults.models["zai/<model>"].params.thinking` selbst definieren.
 Z.AI-Modelle aktivieren standardmäßig `tool_stream` für Tool-Call-Streaming. Setzen Sie `agents.defaults.models["zai/<model>"].params.tool_stream` auf `false`, um es zu deaktivieren.
-Anthropic-Claude-4.6-Modelle verwenden standardmäßig `adaptive` Thinking, wenn keine explizite Denkstufe festgelegt ist.
+Anthropic-Claude-4.6-Modelle verwenden standardmäßig `adaptive`-Denken, wenn keine explizite Denkstufe festgelegt ist.
 
 ### `agents.defaults.cliBackends`
 
-Optionale CLI-Backends für reine Text-Fallback-Läufe (keine Tool-Aufrufe). Nützlich als Sicherung, wenn API-Provider fehlschlagen.
+Optionale CLI-Backends für reine Text-Fallback-Läufe (keine Tool-Aufrufe). Nützlich als Backup, wenn API-Provider fehlschlagen.
 
 ```json5
 {
@@ -490,17 +490,17 @@ Optionale CLI-Backends für reine Text-Fallback-Läufe (keine Tool-Aufrufe). Nü
 }
 ```
 
-- CLI-Backends sind zuerst auf Text ausgelegt; Tools sind immer deaktiviert.
-- Sitzungen werden unterstützt, wenn `sessionArg` festgelegt ist.
-- Bild-Durchleitung wird unterstützt, wenn `imageArg` Dateipfade akzeptiert.
+- CLI-Backends sind auf Text ausgelegt; Tools sind immer deaktiviert.
+- Sitzungen werden unterstützt, wenn `sessionArg` gesetzt ist.
+- Bilddurchleitung wird unterstützt, wenn `imageArg` Dateipfade akzeptiert.
 - `reseedFromRawTranscriptWhenUncompacted: true` ermöglicht einem Backend, sichere
-  ungültig gewordene Sitzungen aus einem begrenzten rohen OpenClaw-Transkriptende wiederherzustellen, bevor die
-  erste Compaction-Zusammenfassung vorhanden ist. Änderungen am Authentifizierungsprofil oder an der Anmeldeinformations-Epoche
-  werden weiterhin nie roh neu ausgesät.
+  ungültig gewordene Sitzungen aus einem begrenzten unverarbeiteten OpenClaw-Transkriptausschnitt wiederherzustellen, bevor die
+  erste Compaction-Zusammenfassung vorhanden ist. Änderungen am Auth-Profil oder an der Credential-Epoche
+  werden dennoch niemals aus Rohdaten neu eingespeist.
 
 ### `agents.defaults.systemPromptOverride`
 
-Ersetzt den gesamten von OpenClaw zusammengestellten System-Prompt durch eine feste Zeichenfolge. Legen Sie dies auf Standardebene (`agents.defaults.systemPromptOverride`) oder pro Agent (`agents.list[].systemPromptOverride`) fest. Agentenspezifische Werte haben Vorrang; ein leerer oder nur aus Leerraum bestehender Wert wird ignoriert. Nützlich für kontrollierte Prompt-Experimente.
+Ersetzt den gesamten von OpenClaw zusammengesetzten System-Prompt durch eine feste Zeichenkette. Auf Standardebene (`agents.defaults.systemPromptOverride`) oder pro Agent (`agents.list[].systemPromptOverride`) festlegen. Agentenspezifische Werte haben Vorrang; ein leerer oder nur aus Leerzeichen bestehender Wert wird ignoriert. Nützlich für kontrollierte Prompt-Experimente.
 
 ```json5
 {
@@ -536,7 +536,7 @@ Provider-unabhängige Prompt-Overlays, die nach Modellfamilie angewendet werden.
 
 ### `agents.defaults.heartbeat`
 
-Regelmäßige Heartbeat-Läufe.
+Periodische Heartbeat-Läufe.
 
 ```json5
 {
@@ -549,7 +549,7 @@ Regelmäßige Heartbeat-Läufe.
         includeSystemPromptSection: true, // default: true; false omits the Heartbeat section from the system prompt
         lightContext: false, // default: false; true keeps only HEARTBEAT.md from workspace bootstrap files
         isolatedSession: false, // default: false; true runs each heartbeat in a fresh session (no conversation history)
-        skipWhenBusy: false, // default: false; true also waits for subagent/nested lanes
+        skipWhenBusy: false, // default: false; true also waits for this agent's subagent/nested lanes
         session: "main",
         to: "+15555550123",
         directPolicy: "allow", // allow (default) | block
@@ -564,16 +564,16 @@ Regelmäßige Heartbeat-Läufe.
 }
 ```
 
-- `every`: Dauerzeichenfolge (ms/s/m/h). Standard: `30m` (API-Schlüssel-Authentifizierung) oder `1h` (OAuth-Authentifizierung). Auf `0m` setzen, um zu deaktivieren.
-- `includeSystemPromptSection`: Wenn false, wird der Heartbeat-Abschnitt aus dem System-Prompt ausgelassen und die Injektion von `HEARTBEAT.md` in den Bootstrap-Kontext übersprungen. Standard: `true`.
-- `suppressToolErrorWarnings`: Wenn true, werden Warnungs-Payloads zu Tool-Fehlern während Heartbeat-Läufen unterdrückt.
+- `every`: Dauerzeichenkette (ms/s/m/h). Standard: `30m` (API-Key-Auth) oder `1h` (OAuth-Auth). Auf `0m` setzen, um zu deaktivieren.
+- `includeSystemPromptSection`: Wenn false, wird der Heartbeat-Abschnitt im System-Prompt ausgelassen und die Injektion von `HEARTBEAT.md` in den Bootstrap-Kontext übersprungen. Standard: `true`.
+- `suppressToolErrorWarnings`: Wenn true, werden Tool-Fehlerwarn-Payloads während Heartbeat-Läufen unterdrückt.
 - `timeoutSeconds`: Maximale Zeit in Sekunden, die für einen Heartbeat-Agent-Turn zulässig ist, bevor er abgebrochen wird. Nicht setzen, um `agents.defaults.timeoutSeconds` zu verwenden.
-- `directPolicy`: Zustellungsrichtlinie für Direktnachrichten/DMs. `allow` (Standard) erlaubt die Zustellung an direkte Ziele. `block` unterdrückt die Zustellung an direkte Ziele und gibt `reason=dm-blocked` aus.
+- `directPolicy`: Richtlinie für Direkt-/DM-Zustellung. `allow` (Standard) erlaubt die Zustellung an direkte Ziele. `block` unterdrückt die Zustellung an direkte Ziele und gibt `reason=dm-blocked` aus.
 - `lightContext`: Wenn true, verwenden Heartbeat-Läufe einen leichtgewichtigen Bootstrap-Kontext und behalten aus den Workspace-Bootstrap-Dateien nur `HEARTBEAT.md`.
-- `isolatedSession`: Wenn true, läuft jeder Heartbeat in einer frischen Sitzung ohne vorherigen Gesprächsverlauf. Dasselbe Isolationsmuster wie bei Cron `sessionTarget: "isolated"`. Reduziert die Token-Kosten pro Heartbeat von etwa 100K auf etwa 2-5K Tokens.
-- `skipWhenBusy`: Wenn true, werden Heartbeat-Läufe bei zusätzlichen ausgelasteten Lanes zurückgestellt: Subagent- oder verschachtelte Befehlsarbeit. Cron-Lanes stellen Heartbeats immer zurück, auch ohne dieses Flag.
-- Pro Agent: Legen Sie `agents.list[].heartbeat` fest. Wenn ein Agent `heartbeat` definiert, führen **nur diese Agenten** Heartbeats aus.
-- Heartbeats führen vollständige Agent-Turns aus — kürzere Intervalle verbrauchen mehr Tokens.
+- `isolatedSession`: Wenn true, läuft jeder Heartbeat in einer frischen Sitzung ohne vorherigen Konversationsverlauf. Dasselbe Isolationsmuster wie bei Cron `sessionTarget: "isolated"`. Reduziert die Tokenkosten pro Heartbeat von etwa 100K auf etwa 2-5K Token.
+- `skipWhenBusy`: Wenn true, werden Heartbeat-Läufe bei zusätzlichen ausgelasteten Lanes dieses Agenten zurückgestellt: dessen eigene sitzungsschlüsselgebundene Subagent- oder verschachtelte Command-Arbeit. Cron-Lanes stellen Heartbeats immer zurück, auch ohne dieses Flag.
+- Pro Agent: `agents.list[].heartbeat` festlegen. Wenn ein Agent `heartbeat` definiert, führen **nur diese Agenten** Heartbeats aus.
+- Heartbeats führen vollständige Agent-Turns aus — kürzere Intervalle verbrauchen mehr Token.
 
 ### `agents.defaults.compaction`
 
@@ -609,23 +609,23 @@ Regelmäßige Heartbeat-Läufe.
 }
 ```
 
-- `mode`: `default` oder `safeguard` (aufgeteilte Zusammenfassung für lange Verläufe). Siehe [Compaction](/de/concepts/compaction).
-- `provider`: ID eines registrierten Compaction-Provider-Plugins. Wenn gesetzt, wird `summarize()` des Providers statt der integrierten LLM-Zusammenfassung aufgerufen. Fällt bei Fehler auf die integrierte Variante zurück. Das Festlegen eines Providers erzwingt `mode: "safeguard"`. Siehe [Compaction](/de/concepts/compaction).
-- `timeoutSeconds`: Maximale Sekunden, die für einen einzelnen Compaction-Vorgang zulässig sind, bevor OpenClaw ihn abbricht. Standard: `900`.
-- `keepRecentTokens`: Pi-Schnittpunkt-Budget, um das neueste Transkriptende wörtlich beizubehalten. Manuelles `/compact` berücksichtigt dies, wenn es explizit gesetzt ist; andernfalls ist manuelle Compaction ein harter Checkpoint.
-- `identifierPolicy`: `strict` (Standard), `off` oder `custom`. `strict` stellt während der Compaction-Zusammenfassung integrierte Anweisungen zur Beibehaltung undurchsichtiger Kennungen voran.
-- `identifierInstructions`: Optionaler benutzerdefinierter Text zur Bewahrung von Kennungen, der verwendet wird, wenn `identifierPolicy=custom`.
-- `qualityGuard`: Prüfungen mit Wiederholung bei fehlerhafter Ausgabe für Safeguard-Zusammenfassungen. Im Safeguard-Modus standardmäßig aktiviert; setzen Sie `enabled: false`, um das Audit zu überspringen.
-- `midTurnPrecheck`: Optionale Pi-Tool-Loop-Druckprüfung. Wenn `enabled: true`, prüft OpenClaw den Kontextdruck, nachdem Tool-Ergebnisse angehängt wurden und bevor der nächste Modellaufruf erfolgt. Wenn der Kontext nicht mehr passt, bricht es den aktuellen Versuch vor dem Einreichen des Prompts ab und verwendet den bestehenden Precheck-Wiederherstellungspfad erneut, um Tool-Ergebnisse zu kürzen oder zu compacten und erneut zu versuchen. Funktioniert sowohl mit dem Compaction-Modus `default` als auch mit `safeguard`. Standard: deaktiviert.
-- `postCompactionSections`: Optionale AGENTS.md-H2/H3-Abschnittsnamen, die nach der Compaction erneut injiziert werden. Standard ist `["Session Startup", "Red Lines"]`; setzen Sie `[]`, um die erneute Injektion zu deaktivieren. Wenn nicht gesetzt oder explizit auf dieses Standardpaar gesetzt, werden ältere Überschriften `Every Session`/`Safety` ebenfalls als Legacy-Fallback akzeptiert.
-- `model`: Optionale `provider/model-id`-Überschreibung nur für Compaction-Zusammenfassungen. Verwenden Sie dies, wenn die Hauptsitzung ein Modell behalten soll, Compaction-Zusammenfassungen aber auf einem anderen ausgeführt werden sollen; wenn nicht gesetzt, verwendet Compaction das primäre Modell der Sitzung.
-- `maxActiveTranscriptBytes`: Optionaler Byte-Schwellenwert (`number` oder Zeichenfolgen wie `"20mb"`), der vor einem Lauf normale lokale Compaction auslöst, wenn die aktive JSONL den Schwellenwert überschreitet. Erfordert `truncateAfterCompaction`, damit erfolgreiche Compaction auf ein kleineres Nachfolge-Transkript rotieren kann. Deaktiviert, wenn nicht gesetzt oder `0`.
-- `notifyUser`: Wenn `true`, sendet kurze Hinweise an den Benutzer, wenn Compaction startet und wenn sie abgeschlossen ist (zum Beispiel „Kontext wird compacted...“ und „Compaction abgeschlossen“). Standardmäßig deaktiviert, damit Compaction still bleibt.
-- `memoryFlush`: Stiller agentischer Turn vor automatischer Compaction, um dauerhafte Erinnerungen zu speichern. Setzen Sie `model` auf einen exakten Provider/ein exaktes Modell wie `ollama/qwen3:8b`, wenn dieser Wartungs-Turn auf einem lokalen Modell bleiben soll; die Überschreibung erbt nicht die aktive Sitzungs-Fallback-Kette. Wird übersprungen, wenn der Workspace schreibgeschützt ist.
+- `mode`: `default` oder `safeguard` (gestückelte Zusammenfassung für lange Verläufe). Siehe [Compaction](/de/concepts/compaction).
+- `provider`: ID eines registrierten Compaction-Provider-Plugins. Wenn gesetzt, wird statt der integrierten LLM-Zusammenfassung die `summarize()`-Funktion des Providers aufgerufen. Bei Fehler wird auf die integrierte Zusammenfassung zurückgefallen. Das Setzen eines Providers erzwingt `mode: "safeguard"`. Siehe [Compaction](/de/concepts/compaction).
+- `timeoutSeconds`: Maximale Anzahl Sekunden, die für einen einzelnen Compaction-Vorgang zulässig ist, bevor OpenClaw ihn abbricht. Standard: `900`.
+- `keepRecentTokens`: Pi-Schnittpunkt-Budget zum wortgetreuen Beibehalten des jüngsten Transkriptausschnitts. Manuelles `/compact` berücksichtigt dies, wenn es explizit gesetzt ist; andernfalls ist manuelle Compaction ein harter Checkpoint.
+- `identifierPolicy`: `strict` (Standard), `off` oder `custom`. `strict` stellt der Compaction-Zusammenfassung integrierte Leitlinien zur Beibehaltung undurchsichtiger Kennungen voran.
+- `identifierInstructions`: Optionaler benutzerdefinierter Text zur Beibehaltung von Kennungen, der verwendet wird, wenn `identifierPolicy=custom` ist.
+- `qualityGuard`: Prüfungen für erneute Versuche bei fehlerhaft formatierten Ausgaben für Safeguard-Zusammenfassungen. Im Safeguard-Modus standardmäßig aktiviert; setzen Sie `enabled: false`, um das Audit zu überspringen.
+- `midTurnPrecheck`: Optionale Pi-Tool-Loop-Druckprüfung. Wenn `enabled: true`, prüft OpenClaw den Kontextdruck, nachdem Tool-Ergebnisse angehängt wurden und bevor der nächste Modellaufruf erfolgt. Wenn der Kontext nicht mehr passt, bricht es den aktuellen Versuch vor dem Einreichen des Prompts ab und verwendet den vorhandenen Precheck-Wiederherstellungspfad erneut, um Tool-Ergebnisse zu kürzen oder zu komprimieren und es erneut zu versuchen. Funktioniert mit den Compaction-Modi `default` und `safeguard`. Standard: deaktiviert.
+- `postCompactionSections`: Optionale AGENTS.md-H2/H3-Abschnittsnamen zur erneuten Injektion nach Compaction. Standardmäßig `["Session Startup", "Red Lines"]`; setzen Sie `[]`, um die erneute Injektion zu deaktivieren. Wenn nicht gesetzt oder explizit auf dieses Standardpaar gesetzt, werden ältere Überschriften `Every Session`/`Safety` ebenfalls als Legacy-Fallback akzeptiert.
+- `model`: Optionale `provider/model-id`-Überschreibung nur für die Compaction-Zusammenfassung. Verwenden Sie dies, wenn die Hauptsitzung ein Modell behalten soll, Compaction-Zusammenfassungen aber auf einem anderen laufen sollen; wenn nicht gesetzt, verwendet Compaction das primäre Modell der Sitzung.
+- `maxActiveTranscriptBytes`: Optionaler Byte-Schwellenwert (`number` oder Zeichenketten wie `"20mb"`), der vor einem Lauf normale lokale Compaction auslöst, wenn das aktive JSONL den Schwellenwert überschreitet. Erfordert `truncateAfterCompaction`, damit erfolgreiche Compaction zu einem kleineren Nachfolge-Transkript rotieren kann. Deaktiviert, wenn nicht gesetzt oder `0`.
+- `notifyUser`: Wenn `true`, werden kurze Hinweise an den Benutzer gesendet, wenn Compaction beginnt und wenn sie abgeschlossen ist (zum Beispiel „Compacting context...“ und „Compaction complete“). Standardmäßig deaktiviert, damit Compaction stumm bleibt.
+- `memoryFlush`: Stummer agentischer Turn vor automatischer Compaction, um dauerhafte Erinnerungen zu speichern. Setzen Sie `model` auf ein exaktes Provider/Modell wie `ollama/qwen3:8b`, wenn dieser Verwaltungs-Turn auf einem lokalen Modell bleiben soll; die Überschreibung übernimmt nicht die Fallback-Kette der aktiven Sitzung. Wird übersprungen, wenn der Workspace schreibgeschützt ist.
 
 ### `agents.defaults.runRetries`
 
-Grenzen für Wiederholungsiterationen der äußeren Ausführungsschleife für den eingebetteten Pi-Runner, um Endlosschleifen bei der Fehlerwiederherstellung zu verhindern. Beachten Sie, dass diese Einstellung derzeit nur für die eingebettete Agent-Laufzeit gilt, nicht für ACP- oder CLI-Laufzeiten.
+Grenzen für Wiederholungsiterationen der äußeren Ausführungsschleife für den eingebetteten Pi-Runner, um während der Fehlerwiederherstellung endlose Ausführungsschleifen zu verhindern. Beachten Sie, dass diese Einstellung derzeit nur für die eingebettete Agent-Laufzeit gilt, nicht für ACP- oder CLI-Laufzeiten.
 
 ```json5
 {
@@ -648,14 +648,14 @@ Grenzen für Wiederholungsiterationen der äußeren Ausführungsschleife für de
 }
 ```
 
-- `base`: Grundanzahl von Ausführungs-Wiederholungsiterationen für die äußere Ausführungsschleife. Standard: `24`.
-- `perProfile`: Zusätzliche Ausführungs-Wiederholungsiterationen, die pro Fallback-Profilkandidat gewährt werden. Standard: `8`.
-- `min`: Absolute Mindestgrenze für Ausführungs-Wiederholungsiterationen. Standard: `32`.
-- `max`: Absolute Höchstgrenze für Ausführungs-Wiederholungsiterationen, um ausufernde Ausführung zu verhindern. Standard: `160`.
+- `base`: Basisanzahl der Wiederholungsiterationen für die äußere Ausführungsschleife. Standard: `24`.
+- `perProfile`: Zusätzliche Wiederholungsiterationen, die pro Fallback-Profilkandidat gewährt werden. Standard: `8`.
+- `min`: Absolutes Mindestlimit für Wiederholungsiterationen. Standard: `32`.
+- `max`: Absolutes Höchstlimit für Wiederholungsiterationen, um unkontrollierte Ausführung zu verhindern. Standard: `160`.
 
 ### `agents.defaults.contextPruning`
 
-Entfernt **alte Tool-Ergebnisse** aus dem In-Memory-Kontext, bevor er an das LLM gesendet wird. Ändert den Sitzungsverlauf auf dem Datenträger **nicht**.
+Entfernt **alte Tool-Ergebnisse** aus dem In-Memory-Kontext, bevor dieser an das LLM gesendet wird. Ändert den Sitzungsverlauf auf der Festplatte **nicht**.
 
 ```json5
 {
@@ -679,23 +679,23 @@ Entfernt **alte Tool-Ergebnisse** aus dem In-Memory-Kontext, bevor er an das LLM
 
 <Accordion title="cache-ttl mode behavior">
 
-- `mode: "cache-ttl"` aktiviert Pruning-Durchläufe.
-- `ttl` steuert, wie oft Pruning erneut ausgeführt werden kann (nach der letzten Cache-Berührung).
-- Pruning kürzt zuerst übergroße Tool-Ergebnisse weich und löscht anschließend bei Bedarf ältere Tool-Ergebnisse hart.
+- `mode: "cache-ttl"` aktiviert Bereinigungsdurchläufe.
+- `ttl` steuert, wie oft die Bereinigung erneut ausgeführt werden kann (nach dem letzten Cache-Zugriff).
+- Die Bereinigung kürzt zunächst übergroße Tool-Ergebnisse weich und löscht anschließend bei Bedarf ältere Tool-Ergebnisse hart.
 
-**Weiches Kürzen** behält Anfang + Ende bei und fügt `...` in der Mitte ein.
+**Soft-trim** behält Anfang und Ende bei und fügt `...` in der Mitte ein.
 
-**Hartes Löschen** ersetzt das gesamte Tool-Ergebnis durch den Platzhalter.
+**Hard-clear** ersetzt das gesamte Tool-Ergebnis durch den Platzhalter.
 
 Hinweise:
 
-- Bildblöcke werden niemals gekürzt/gelöscht.
-- Verhältnisse sind zeichenbasiert (näherungsweise), keine exakten Token-Zahlen.
-- Wenn weniger als `keepLastAssistants` Assistant-Nachrichten vorhanden sind, wird Pruning übersprungen.
+- Bildblöcke werden nie gekürzt oder gelöscht.
+- Verhältnisse basieren auf Zeichen (ungefähr), nicht auf exakten Token-Zahlen.
+- Wenn weniger als `keepLastAssistants` Assistant-Nachrichten vorhanden sind, wird die Bereinigung übersprungen.
 
 </Accordion>
 
-Siehe [Session-Pruning](/de/concepts/session-pruning) für Verhaltensdetails.
+Weitere Verhaltensdetails finden Sie unter [Sitzungsbereinigung](/de/concepts/session-pruning).
 
 ### Block-Streaming
 
@@ -717,7 +717,7 @@ Siehe [Session-Pruning](/de/concepts/session-pruning) für Verhaltensdetails.
 - Kanal-Overrides: `channels.<channel>.blockStreamingCoalesce` (und Varianten pro Konto). Signal/Slack/Discord/Google Chat verwenden standardmäßig `minChars: 1500`.
 - `humanDelay`: zufällige Pause zwischen Blockantworten. `natural` = 800–2500 ms. Override pro Agent: `agents.list[].humanDelay`.
 
-Siehe [Streaming](/de/concepts/streaming) für Details zu Verhalten + Chunking.
+Weitere Details zu Verhalten und Chunking finden Sie unter [Streaming](/de/concepts/streaming).
 
 ### Tippindikatoren
 
@@ -732,7 +732,7 @@ Siehe [Streaming](/de/concepts/streaming) für Details zu Verhalten + Chunking.
 }
 ```
 
-- Standardwerte: `instant` für direkte Chats/Erwähnungen, `message` für nicht erwähnte Gruppenchats.
+- Standardwerte: `instant` für Direktchats/Erwähnungen, `message` für nicht erwähnte Gruppenchats.
 - Overrides pro Sitzung: `session.typingMode`, `session.typingIntervalSeconds`.
 
 Siehe [Tippindikatoren](/de/concepts/typing-indicators).
@@ -741,7 +741,7 @@ Siehe [Tippindikatoren](/de/concepts/typing-indicators).
 
 ### `agents.defaults.sandbox`
 
-Optionales Sandboxing für den eingebetteten Agent. Siehe [Sandboxing](/de/gateway/sandboxing) für die vollständige Anleitung.
+Optionales Sandboxing für den eingebetteten Agenten. Die vollständige Anleitung finden Sie unter [Sandboxing](/de/gateway/sandboxing).
 
 ```json5
 {
@@ -840,48 +840,48 @@ Optionales Sandboxing für den eingebetteten Agent. Siehe [Sandboxing](/de/gatew
 
 **Backend:**
 
-- `docker`: lokale Docker-Runtime (Standard)
-- `ssh`: generische SSH-gestützte Remote-Runtime
-- `openshell`: OpenShell-Runtime
+- `docker`: lokale Docker-Laufzeitumgebung (Standard)
+- `ssh`: generische SSH-gestützte Remote-Laufzeitumgebung
+- `openshell`: OpenShell-Laufzeitumgebung
 
-Wenn `backend: "openshell"` ausgewählt ist, werden runtime-spezifische Einstellungen nach
+Wenn `backend: "openshell"` ausgewählt ist, werden laufzeitspezifische Einstellungen nach
 `plugins.entries.openshell.config` verschoben.
 
 **SSH-Backend-Konfiguration:**
 
 - `target`: SSH-Ziel im Format `user@host[:port]`
 - `command`: SSH-Client-Befehl (Standard: `ssh`)
-- `workspaceRoot`: absoluter Remote-Stamm, der für Arbeitsbereiche pro Geltungsbereich verwendet wird
+- `workspaceRoot`: absoluter Remote-Root, der für Workspaces pro Scope verwendet wird
 - `identityFile` / `certificateFile` / `knownHostsFile`: vorhandene lokale Dateien, die an OpenSSH übergeben werden
 - `identityData` / `certificateData` / `knownHostsData`: Inline-Inhalte oder SecretRefs, die OpenClaw zur Laufzeit in temporäre Dateien materialisiert
-- `strictHostKeyChecking` / `updateHostKeys`: OpenSSH-Regler für Hostschlüssel-Richtlinien
+- `strictHostKeyChecking` / `updateHostKeys`: OpenSSH-Regler für die Host-Key-Richtlinie
 
 **SSH-Auth-Priorität:**
 
 - `identityData` hat Vorrang vor `identityFile`
 - `certificateData` hat Vorrang vor `certificateFile`
 - `knownHostsData` hat Vorrang vor `knownHostsFile`
-- SecretRef-gestützte `*Data`-Werte werden aus dem aktiven Secrets-Runtime-Snapshot aufgelöst, bevor die Sandbox-Sitzung startet
+- SecretRef-gestützte `*Data`-Werte werden aus dem aktiven Runtime-Snapshot der Secrets aufgelöst, bevor die Sandbox-Sitzung startet
 
-**Verhalten des SSH-Backends:**
+**SSH-Backend-Verhalten:**
 
-- initialisiert den Remote-Arbeitsbereich einmal nach Erstellung oder Neuerstellung
-- hält anschließend den Remote-SSH-Arbeitsbereich kanonisch
-- leitet `exec`, Datei-Tools und Medienpfade über SSH
+- initialisiert den Remote-Workspace einmal nach dem Erstellen oder Neuerstellen
+- hält anschließend den Remote-SSH-Workspace kanonisch
+- leitet `exec`, Datei-Tools und Medienpfade über SSH weiter
 - synchronisiert Remote-Änderungen nicht automatisch zurück zum Host
 - unterstützt keine Sandbox-Browser-Container
 
-**Arbeitsbereichszugriff:**
+**Workspace-Zugriff:**
 
-- `none`: Sandbox-Arbeitsbereich pro Geltungsbereich unter `~/.openclaw/sandboxes`
-- `ro`: Sandbox-Arbeitsbereich unter `/workspace`, Agent-Arbeitsbereich schreibgeschützt unter `/agent` eingehängt
-- `rw`: Agent-Arbeitsbereich mit Lese-/Schreibzugriff unter `/workspace` eingehängt
+- `none`: Sandbox-Workspace pro Scope unter `~/.openclaw/sandboxes`
+- `ro`: Sandbox-Workspace unter `/workspace`, Agent-Workspace schreibgeschützt unter `/agent` eingehängt
+- `rw`: Agent-Workspace mit Lese-/Schreibzugriff unter `/workspace` eingehängt
 
-**Geltungsbereich:**
+**Scope:**
 
-- `session`: Container + Arbeitsbereich pro Sitzung
-- `agent`: ein Container + Arbeitsbereich pro Agent (Standard)
-- `shared`: gemeinsam genutzter Container und Arbeitsbereich (keine sitzungsübergreifende Isolation)
+- `session`: Container und Workspace pro Sitzung
+- `agent`: ein Container und Workspace pro Agent (Standard)
+- `shared`: gemeinsamer Container und Workspace (keine sitzungsübergreifende Isolation)
 
 **OpenShell-Plugin-Konfiguration:**
 
@@ -911,28 +911,28 @@ Wenn `backend: "openshell"` ausgewählt ist, werden runtime-spezifische Einstell
 
 **OpenShell-Modus:**
 
-- `mirror`: vor `exec` von lokal nach remote initialisieren, nach `exec` zurücksynchronisieren; der lokale Arbeitsbereich bleibt kanonisch
-- `remote`: Remote einmal beim Erstellen der Sandbox initialisieren, anschließend den Remote-Arbeitsbereich kanonisch halten
+- `mirror`: Remote vor `exec` aus lokalem Workspace initialisieren, nach `exec` zurücksynchronisieren; lokaler Workspace bleibt kanonisch
+- `remote`: Remote einmal initialisieren, wenn die Sandbox erstellt wird, anschließend den Remote-Workspace kanonisch halten
 
 Im Modus `remote` werden host-lokale Änderungen, die außerhalb von OpenClaw vorgenommen wurden, nach dem Initialisierungsschritt nicht automatisch in die Sandbox synchronisiert.
-Der Transport erfolgt per SSH in die OpenShell-Sandbox, aber das Plugin verwaltet den Sandbox-Lebenszyklus und die optionale Spiegel-Synchronisierung.
+Der Transport erfolgt per SSH in die OpenShell-Sandbox, aber das Plugin besitzt den Sandbox-Lebenszyklus und die optionale Spiegelungssynchronisierung.
 
-**`setupCommand`** wird einmal nach der Container-Erstellung ausgeführt (über `sh -lc`). Erfordert Netzwerk-Egress, beschreibbares Root-Dateisystem und Root-Benutzer.
+**`setupCommand`** wird einmal nach der Container-Erstellung ausgeführt (über `sh -lc`). Erfordert Netzwerk-Egress, beschreibbaren Root und Root-Benutzer.
 
 **Container verwenden standardmäßig `network: "none"`** — setzen Sie dies auf `"bridge"` (oder ein benutzerdefiniertes Bridge-Netzwerk), wenn der Agent ausgehenden Zugriff benötigt.
 `"host"` ist blockiert. `"container:<id>"` ist standardmäßig blockiert, sofern Sie nicht explizit
-`sandbox.docker.dangerouslyAllowContainerNamespaceJoin: true` setzen (Notfalloption).
+`sandbox.docker.dangerouslyAllowContainerNamespaceJoin: true` setzen (Break-Glass).
 
-**Eingehende Anhänge** werden im aktiven Arbeitsbereich unter `media/inbound/*` bereitgestellt.
+**Eingehende Anhänge** werden im aktiven Workspace unter `media/inbound/*` bereitgestellt.
 
 **`docker.binds`** hängt zusätzliche Host-Verzeichnisse ein; globale und agentenspezifische Bind-Mounts werden zusammengeführt.
 
-**Sandbox-Browser** (`sandbox.browser.enabled`): Chromium + CDP in einem Container. noVNC-URL wird in den System-Prompt injiziert. Erfordert nicht `browser.enabled` in `openclaw.json`.
-noVNC-Beobachterzugriff verwendet standardmäßig VNC-Authentifizierung, und OpenClaw gibt eine kurzlebige Token-URL aus (anstatt das Passwort in der gemeinsam genutzten URL offenzulegen).
+**Sandbox-Browser** (`sandbox.browser.enabled`): Chromium + CDP in einem Container. noVNC-URL wird in den System-Prompt eingefügt. Erfordert kein `browser.enabled` in `openclaw.json`.
+Der noVNC-Beobachterzugriff verwendet standardmäßig VNC-Auth, und OpenClaw gibt eine kurzlebige Token-URL aus (statt das Passwort in der gemeinsamen URL offenzulegen).
 
-- `allowHostControl: false` (Standard) blockiert Sandbox-Sitzungen daran, den Host-Browser anzusteuern.
-- `network` ist standardmäßig `openclaw-sandbox-browser` (dediziertes Bridge-Netzwerk). Setzen Sie es nur dann auf `bridge`, wenn Sie ausdrücklich globale Bridge-Konnektivität wünschen.
-- `cdpSourceRange` beschränkt optional den CDP-Eingang am Container-Rand auf einen CIDR-Bereich (zum Beispiel `172.21.0.1/32`).
+- `allowHostControl: false` (Standard) hindert Sandbox-Sitzungen daran, den Host-Browser anzusteuern.
+- `network` ist standardmäßig `openclaw-sandbox-browser` (dediziertes Bridge-Netzwerk). Setzen Sie es nur dann auf `bridge`, wenn Sie explizit globale Bridge-Konnektivität wünschen.
+- `cdpSourceRange` beschränkt optional eingehenden CDP-Zugriff am Container-Rand auf einen CIDR-Bereich (zum Beispiel `172.21.0.1/32`).
 - `sandbox.browser.binds` hängt zusätzliche Host-Verzeichnisse nur in den Sandbox-Browser-Container ein. Wenn gesetzt (einschließlich `[]`), ersetzt es `docker.binds` für den Browser-Container.
 - Start-Standardwerte sind in `scripts/sandbox-browser-entrypoint.sh` definiert und für Container-Hosts abgestimmt:
   - `--remote-debugging-address=127.0.0.1`
@@ -955,18 +955,18 @@ noVNC-Beobachterzugriff verwendet standardmäßig VNC-Authentifizierung, und Ope
   - `--disable-3d-apis`, `--disable-software-rasterizer` und `--disable-gpu` sind
     standardmäßig aktiviert und können mit
     `OPENCLAW_BROWSER_DISABLE_GRAPHICS_FLAGS=0` deaktiviert werden, wenn WebGL-/3D-Nutzung dies erfordert.
-  - `OPENCLAW_BROWSER_DISABLE_EXTENSIONS=0` aktiviert Erweiterungen wieder, wenn Ihr Workflow
+  - `OPENCLAW_BROWSER_DISABLE_EXTENSIONS=0` aktiviert Erweiterungen wieder, falls Ihr Workflow
     davon abhängt.
   - `--renderer-process-limit=2` kann mit
     `OPENCLAW_BROWSER_RENDERER_PROCESS_LIMIT=<N>` geändert werden; setzen Sie `0`, um Chromiums
-    standardmäßiges Prozesslimit zu verwenden.
-  - plus `--no-sandbox`, wenn `noSandbox` aktiviert ist.
+    Standard-Prozesslimit zu verwenden.
+  - zusätzlich `--no-sandbox`, wenn `noSandbox` aktiviert ist.
   - Standardwerte sind die Baseline des Container-Images; verwenden Sie ein benutzerdefiniertes Browser-Image mit einem benutzerdefinierten
-    Entrypoint, um Container-Standardwerte zu ändern.
+    Einstiegspunkt, um Container-Standardwerte zu ändern.
 
 </Accordion>
 
-Browser-Sandboxing und `sandbox.docker.binds` funktionieren nur mit Docker.
+Browser-Sandboxing und `sandbox.docker.binds` sind nur für Docker verfügbar.
 
 Images bauen (aus einem Source-Checkout):
 
@@ -975,11 +975,17 @@ scripts/sandbox-setup.sh           # main sandbox image
 scripts/sandbox-browser-setup.sh   # optional browser image
 ```
 
-Für npm-Installationen ohne Source-Checkout siehe [Sandboxing § Images und Einrichtung](/de/gateway/sandboxing#images-and-setup) für Inline-`docker build`-Befehle.
+Für npm-Installationen ohne Source-Checkout finden Sie unter [Sandboxing § Images und Einrichtung](/de/gateway/sandboxing#images-and-setup) Inline-`docker build`-Befehle.
 
 ### `agents.list` (Overrides pro Agent)
 
-Verwenden Sie `agents.list[].tts`, um einem Agent einen eigenen TTS-Provider, eine Stimme, ein Modell, einen Stil oder einen Auto-TTS-Modus zu geben. Der Agent-Block wird tief über die globalen `messages.tts` zusammengeführt, sodass gemeinsame Zugangsdaten an einer Stelle bleiben können, während einzelne Agenten nur die benötigten Felder für Stimme oder Provider überschreiben. Die Überschreibung des aktiven Agent gilt für automatische gesprochene Antworten, `/tts audio`, `/tts status` und das Agent-Tool `tts`. Siehe [Text-zu-Sprache](/de/tools/tts#per-agent-voice-overrides) für Provider-Beispiele und Vorrangregeln.
+Verwenden Sie `agents.list[].tts`, um einem Agenten einen eigenen TTS-Provider, eine Stimme, ein Modell,
+einen Stil oder einen Auto-TTS-Modus zu geben. Der Agentenblock wird per Deep-Merge über das globale
+`messages.tts` gelegt, sodass gemeinsam genutzte Zugangsdaten an einer Stelle bleiben können, während einzelne
+Agenten nur die Sprach- oder Provider-Felder überschreiben, die sie benötigen. Die Überschreibung des aktiven Agenten
+gilt für automatische gesprochene Antworten, `/tts audio`, `/tts status` und
+das Agenten-Tool `tts`. Siehe [Text-to-Speech](/de/tools/tts#per-agent-voice-overrides)
+für Provider-Beispiele und Vorrangregeln.
 
 ```json5
 {
@@ -1032,28 +1038,28 @@ Verwenden Sie `agents.list[].tts`, um einem Agent einen eigenen TTS-Provider, ei
 }
 ```
 
-- `id`: stabile Agent-ID (erforderlich).
+- `id`: stabile Agenten-ID (erforderlich).
 - `default`: Wenn mehrere gesetzt sind, gewinnt der erste Eintrag (Warnung wird protokolliert). Wenn keiner gesetzt ist, ist der erste Listeneintrag der Standard.
-- `model`: Die Zeichenkettenform legt einen strikten primären Wert pro Agent ohne Modell-Fallback fest; die Objektform `{ primary }` ist ebenfalls strikt, sofern Sie keine `fallbacks` hinzufügen. Verwenden Sie `{ primary, fallbacks: [...] }`, um Fallback für diesen Agent zu aktivieren, oder `{ primary, fallbacks: [] }`, um striktes Verhalten ausdrücklich zu machen. Cron-Jobs, die nur `primary` überschreiben, erben weiterhin die Standard-Fallbacks, sofern Sie nicht `fallbacks: []` setzen.
-- `params`: Stream-Parameter pro Agent, die über den ausgewählten Modelleintrag in `agents.defaults.models` zusammengeführt werden. Verwenden Sie dies für agentspezifische Überschreibungen wie `cacheRetention`, `temperature` oder `maxTokens`, ohne den gesamten Modellkatalog zu duplizieren.
-- `tts`: optionale Text-zu-Sprache-Überschreibungen pro Agent. Der Block wird tief über `messages.tts` zusammengeführt; bewahren Sie daher gemeinsame Provider-Zugangsdaten und Fallback-Richtlinien in `messages.tts` auf und setzen Sie hier nur personaspezifische Werte wie Provider, Stimme, Modell, Stil oder Auto-Modus.
-- `skills`: optionale Skill-Zulassungsliste pro Agent. Wenn ausgelassen, erbt der Agent `agents.defaults.skills`, sofern gesetzt; eine explizite Liste ersetzt Standards statt sie zusammenzuführen, und `[]` bedeutet keine Skills.
-- `thinkingDefault`: optionale Standard-Denkstufe pro Agent (`off | minimal | low | medium | high | xhigh | adaptive | max`). Überschreibt `agents.defaults.thinkingDefault` für diesen Agent, wenn keine Überschreibung pro Nachricht oder Sitzung gesetzt ist. Das ausgewählte Provider-/Modellprofil steuert, welche Werte gültig sind; für Google Gemini behält `adaptive` das vom Provider gesteuerte dynamische Denken bei (`thinkingLevel` bei Gemini 3/3.1 ausgelassen, `thinkingBudget: -1` bei Gemini 2.5).
-- `reasoningDefault`: optionale Standard-Sichtbarkeit für Reasoning pro Agent (`on | off | stream`). Überschreibt `agents.defaults.reasoningDefault` für diesen Agent, wenn keine Reasoning-Überschreibung pro Nachricht oder Sitzung gesetzt ist.
+- `model`: Die Zeichenkettenform legt ein striktes primäres Modell pro Agent ohne Modell-Fallback fest; die Objektform `{ primary }` ist ebenfalls strikt, sofern Sie keine `fallbacks` hinzufügen. Verwenden Sie `{ primary, fallbacks: [...] }`, um diesen Agenten für Fallbacks zu aktivieren, oder `{ primary, fallbacks: [] }`, um das strikte Verhalten ausdrücklich zu machen. Cron-Jobs, die nur `primary` überschreiben, erben weiterhin Standard-Fallbacks, sofern Sie nicht `fallbacks: []` setzen.
+- `params`: Stream-Parameter pro Agent, die über den ausgewählten Modelleintrag in `agents.defaults.models` gelegt werden. Verwenden Sie dies für agentenspezifische Überschreibungen wie `cacheRetention`, `temperature` oder `maxTokens`, ohne den gesamten Modellkatalog zu duplizieren.
+- `tts`: optionale Text-to-Speech-Überschreibungen pro Agent. Der Block wird per Deep-Merge über `messages.tts` gelegt. Belassen Sie daher gemeinsam genutzte Provider-Zugangsdaten und Fallback-Richtlinien in `messages.tts` und setzen Sie hier nur personaspezifische Werte wie Provider, Stimme, Modell, Stil oder Auto-Modus.
+- `skills`: optionale Skill-Zulassungsliste pro Agent. Wenn sie weggelassen wird, erbt der Agent `agents.defaults.skills`, falls gesetzt; eine explizite Liste ersetzt die Standardwerte, statt sie zusammenzuführen, und `[]` bedeutet keine Skills.
+- `thinkingDefault`: optionales Standard-Denkniveau pro Agent (`off | minimal | low | medium | high | xhigh | adaptive | max`). Überschreibt `agents.defaults.thinkingDefault` für diesen Agenten, wenn keine Überschreibung pro Nachricht oder Sitzung gesetzt ist. Das ausgewählte Provider-/Modellprofil steuert, welche Werte gültig sind; bei Google Gemini behält `adaptive` das vom Provider verwaltete dynamische Denken bei (`thinkingLevel` wird bei Gemini 3/3.1 weggelassen, `thinkingBudget: -1` bei Gemini 2.5).
+- `reasoningDefault`: optionale Standard-Sichtbarkeit für Reasoning pro Agent (`on | off | stream`). Überschreibt `agents.defaults.reasoningDefault` für diesen Agenten, wenn keine Reasoning-Überschreibung pro Nachricht oder Sitzung gesetzt ist.
 - `fastModeDefault`: optionaler Standard für den Schnellmodus pro Agent (`true | false`). Gilt, wenn keine Schnellmodus-Überschreibung pro Nachricht oder Sitzung gesetzt ist.
-- `models`: optionale Modellkatalog-/Laufzeitüberschreibungen pro Agent, indexiert nach vollständigen `provider/model`-IDs. Verwenden Sie `models["provider/model"].agentRuntime` für Laufzeitausnahmen pro Agent.
-- `runtime`: optionaler Laufzeitdeskriptor pro Agent. Verwenden Sie `type: "acp"` mit `runtime.acp`-Standards (`agent`, `backend`, `mode`, `cwd`), wenn der Agent standardmäßig ACP-Harness-Sitzungen verwenden soll.
+- `models`: optionale Modellkatalog-/Runtime-Überschreibungen pro Agent, indiziert nach vollständigen `provider/model`-IDs. Verwenden Sie `models["provider/model"].agentRuntime` für Runtime-Ausnahmen pro Agent.
+- `runtime`: optionaler Runtime-Deskriptor pro Agent. Verwenden Sie `type: "acp"` mit `runtime.acp`-Standardwerten (`agent`, `backend`, `mode`, `cwd`), wenn der Agent standardmäßig ACP-Harness-Sitzungen verwenden soll.
 - `identity.avatar`: arbeitsbereichsrelativer Pfad, `http(s)`-URL oder `data:`-URI.
-- `identity` leitet Standards ab: `ackReaction` aus `emoji`, `mentionPatterns` aus `name`/`emoji`.
-- `subagents.allowAgents`: Zulassungsliste von Agent-IDs für explizite `sessions_spawn.agentId`-Ziele (`["*"]` = beliebig; Standard: nur derselbe Agent). Schließen Sie die anfragende ID ein, wenn selbstadressierte `agentId`-Aufrufe erlaubt sein sollen.
-- Sandbox-Vererbungswächter: Wenn die anfragende Sitzung sandboxed ist, lehnt `sessions_spawn` Ziele ab, die ohne Sandbox laufen würden.
-- `subagents.requireAgentId`: Wenn true, werden `sessions_spawn`-Aufrufe blockiert, die `agentId` auslassen (erzwingt explizite Profilauswahl; Standard: false).
+- `identity` leitet Standardwerte ab: `ackReaction` aus `emoji`, `mentionPatterns` aus `name`/`emoji`.
+- `subagents.allowAgents`: Zulassungsliste von Agenten-IDs für explizite `sessions_spawn.agentId`-Ziele (`["*"]` = beliebig; Standard: nur derselbe Agent). Fügen Sie die ID des Anfragenden ein, wenn selbstadressierte `agentId`-Aufrufe erlaubt sein sollen.
+- Sandbox-Vererbungsprüfung: Wenn die anfragende Sitzung in einer Sandbox läuft, lehnt `sessions_spawn` Ziele ab, die ohne Sandbox laufen würden.
+- `subagents.requireAgentId`: Wenn true, werden `sessions_spawn`-Aufrufe blockiert, die `agentId` weglassen (erzwingt explizite Profilauswahl; Standard: false).
 
 ---
 
 ## Multi-Agent-Routing
 
-Führen Sie mehrere isolierte Agenten innerhalb eines Gateway aus. Siehe [Multi-Agent](/de/concepts/multi-agent).
+Führen Sie mehrere isolierte Agenten innerhalb eines Gateways aus. Siehe [Multi-Agent](/de/concepts/multi-agent).
 
 ```json5
 {
@@ -1072,9 +1078,9 @@ Führen Sie mehrere isolierte Agenten innerhalb eines Gateway aus. Siehe [Multi-
 
 ### Binding-Abgleichfelder
 
-- `type` (optional): `route` für normales Routing (fehlender Typ ist standardmäßig route), `acp` für persistente ACP-Konversationsbindungen.
+- `type` (optional): `route` für normales Routing (fehlender Typ ist standardmäßig route), `acp` für persistente ACP-Konversations-Bindings.
 - `match.channel` (erforderlich)
-- `match.accountId` (optional; `*` = beliebiges Konto; ausgelassen = Standardkonto)
+- `match.accountId` (optional; `*` = beliebiges Konto; weggelassen = Standardkonto)
 - `match.peer` (optional; `{ kind: direct|group|channel, id }`)
 - `match.guildId` / `match.teamId` (optional; kanalspezifisch)
 - `acp` (optional; nur für `type: "acp"`): `{ mode, label, cwd, backend }`
@@ -1084,13 +1090,13 @@ Führen Sie mehrere isolierte Agenten innerhalb eines Gateway aus. Siehe [Multi-
 1. `match.peer`
 2. `match.guildId`
 3. `match.teamId`
-4. `match.accountId` (exakt, kein Peer/Guild/Team)
+4. `match.accountId` (exakt, ohne Peer/Guild/Team)
 5. `match.accountId: "*"` (kanalweit)
-6. Standard-Agent
+6. Standardagent
 
 Innerhalb jeder Ebene gewinnt der erste passende `bindings`-Eintrag.
 
-Für `type: "acp"`-Einträge löst OpenClaw nach exakter Konversationsidentität auf (`match.channel` + Konto + `match.peer.id`) und verwendet nicht die oben genannte Routenbindungs-Ebenenreihenfolge.
+Für Einträge mit `type: "acp"` löst OpenClaw anhand der exakten Konversationsidentität auf (`match.channel` + Konto + `match.peer.id`) und verwendet nicht die oben genannte Ebenenreihenfolge für Route-Bindings.
 
 ### Zugriffsprofile pro Agent
 
@@ -1187,7 +1193,7 @@ Für `type: "acp"`-Einträge löst OpenClaw nach exakter Konversationsidentität
 
 </Accordion>
 
-Siehe [Multi-Agent-Sandbox & Tools](/de/tools/multi-agent-sandbox-tools) für Details zur Vorranglogik.
+Siehe [Multi-Agent-Sandbox und Tools](/de/tools/multi-agent-sandbox-tools) für Details zur Vorrangreihenfolge.
 
 ---
 
@@ -1240,32 +1246,32 @@ Siehe [Multi-Agent-Sandbox & Tools](/de/tools/multi-agent-sandbox-tools) für De
 
 - **`scope`**: grundlegende Sitzungsgruppierungsstrategie für Gruppenchats.
   - `per-sender` (Standard): Jeder Absender erhält eine isolierte Sitzung innerhalb eines Kanalkontexts.
-  - `global`: Alle Teilnehmer in einem Kanalkontext teilen sich eine einzige Sitzung (nur verwenden, wenn ein gemeinsamer Kontext beabsichtigt ist).
+  - `global`: Alle Teilnehmer in einem Kanalkontext teilen sich eine einzelne Sitzung (nur verwenden, wenn ein gemeinsamer Kontext beabsichtigt ist).
 - **`dmScope`**: wie DMs gruppiert werden.
   - `main`: Alle DMs teilen sich die Hauptsitzung.
   - `per-peer`: nach Absender-ID kanalübergreifend isolieren.
   - `per-channel-peer`: pro Kanal + Absender isolieren (empfohlen für Posteingänge mit mehreren Benutzern).
   - `per-account-channel-peer`: pro Konto + Kanal + Absender isolieren (empfohlen für mehrere Konten).
-- **`identityLinks`**: ordnet kanonische IDs Provider-präfixierten Peers für kanalübergreifende Sitzungsfreigabe zu. Dock-Befehle wie `/dock_discord` verwenden dieselbe Zuordnung, um die Antwort-Route der aktiven Sitzung zu einem anderen verknüpften Kanal-Peer zu wechseln; siehe [Channel-Docking](/de/concepts/channel-docking).
-- **`reset`**: primäre Zurücksetzungsrichtlinie. `daily` setzt zur lokalen Zeit `atHour` zurück; `idle` setzt nach `idleMinutes` zurück. Wenn beide konfiguriert sind, gilt der zuerst ablaufende Wert. Die Aktualität des täglichen Zurücksetzens verwendet `sessionStartedAt` der Sitzungszeile; die Aktualität des Leerlauf-Zurücksetzens verwendet `lastInteractionAt`. Hintergrund-/Systemereignis-Schreibvorgänge wie Heartbeat, Cron-Aufweckvorgänge, Exec-Benachrichtigungen und Gateway-Buchhaltung können `updatedAt` aktualisieren, halten tägliche/Leerlauf-Sitzungen jedoch nicht frisch.
-- **`resetByType`**: Überschreibungen pro Typ (`direct`, `group`, `thread`). Legacy-`dm` wird als Alias für `direct` akzeptiert.
-- **`mainKey`**: Legacy-Feld. Die Laufzeit verwendet für den Haupt-Bucket für Direktchats immer `"main"`.
-- **`agentToAgent.maxPingPongTurns`**: maximale Antwortwechsel zwischen Agenten während Agent-zu-Agent-Austauschen (Ganzzahl, Bereich: `0`-`20`, Standard: `5`). `0` deaktiviert Ping-Pong-Verkettung.
-- **`sendPolicy`**: Abgleich nach `channel`, `chatType` (`direct|group|channel`, mit Legacy-Alias `dm`), `keyPrefix` oder `rawKeyPrefix`. Die erste Verweigerung gewinnt.
-- **`maintenance`**: Bereinigung des Sitzungsspeichers + Aufbewahrungssteuerungen.
+- **`identityLinks`**: ordnet kanonische IDs Provider-präfixierten Peers für kanalübergreifende Sitzungsfreigabe zu. Dock-Befehle wie `/dock_discord` verwenden dieselbe Zuordnung, um die Antwortroute der aktiven Sitzung zu einem anderen verknüpften Kanal-Peer zu wechseln; siehe [Channel-Docking](/de/concepts/channel-docking).
+- **`reset`**: primäre Reset-Richtlinie. `daily` setzt zur lokalen Zeit `atHour` zurück; `idle` setzt nach `idleMinutes` zurück. Wenn beides konfiguriert ist, gewinnt das, was zuerst abläuft. Die Aktualität des täglichen Resets verwendet `sessionStartedAt` der Sitzungszeile; die Aktualität des Leerlauf-Resets verwendet `lastInteractionAt`. Hintergrund-/Systemereignis-Schreibvorgänge wie Heartbeat, Cron-Weckvorgänge, Exec-Benachrichtigungen und Gateway-Buchhaltung können `updatedAt` aktualisieren, halten tägliche/Leerlauf-Sitzungen aber nicht aktuell.
+- **`resetByType`**: typspezifische Überschreibungen (`direct`, `group`, `thread`). Das ältere `dm` wird als Alias für `direct` akzeptiert.
+- **`mainKey`**: älteres Feld. Die Laufzeit verwendet für den Haupt-Bucket direkter Chats immer `"main"`.
+- **`agentToAgent.maxPingPongTurns`**: maximale Hin-und-her-Antwortzüge zwischen Agenten während Agent-zu-Agent-Austauschen (Ganzzahl, Bereich: `0`-`20`, Standard: `5`). `0` deaktiviert Ping-Pong-Verkettung.
+- **`sendPolicy`**: Abgleich nach `channel`, `chatType` (`direct|group|channel`, mit älterem Alias `dm`), `keyPrefix` oder `rawKeyPrefix`. Die erste Ablehnung gewinnt.
+- **`maintenance`**: Sitzungs-Store-Bereinigung + Aufbewahrungssteuerung.
   - `mode`: `warn` gibt nur Warnungen aus; `enforce` wendet die Bereinigung an.
   - `pruneAfter`: Altersgrenze für veraltete Einträge (Standard `30d`).
-  - `maxEntries`: maximale Anzahl von Einträgen in `sessions.json` (Standard `500`). Die Laufzeit schreibt Batch-Bereinigungen mit einem kleinen Hochwasser-Puffer für produktionsgroße Grenzwerte; `openclaw sessions cleanup --enforce` wendet den Grenzwert sofort an.
-  - `rotateBytes`: veraltet und wird ignoriert; `openclaw doctor --fix` entfernt es aus älteren Konfigurationen.
-  - `resetArchiveRetention`: Aufbewahrung für `*.reset.<timestamp>`-Transkriptarchive. Standard ist `pruneAfter`; auf `false` setzen, um sie zu deaktivieren.
-  - `maxDiskBytes`: optionales Festplattenbudget für das Sitzungsverzeichnis. Im Modus `warn` protokolliert es Warnungen; im Modus `enforce` entfernt es zuerst die ältesten Artefakte/Sitzungen.
-  - `highWaterBytes`: optionales Ziel nach Budgetbereinigung. Standard ist `80%` von `maxDiskBytes`.
-- **`threadBindings`**: globale Standards für threadgebundene Sitzungsfunktionen.
-  - `enabled`: zentraler Standardschalter (Provider können überschreiben; Discord verwendet `channels.discord.threadBindings.enabled`)
-  - `idleHours`: standardmäßiges automatisches Entfernen des Fokus nach Inaktivität in Stunden (`0` deaktiviert; Provider können überschreiben)
-  - `maxAgeHours`: standardmäßiges hartes Höchstalter in Stunden (`0` deaktiviert; Provider können überschreiben)
-  - `spawnSessions`: Standard-Gate zum Erstellen threadgebundener Arbeitssitzungen aus `sessions_spawn` und ACP-Thread-Spawns. Standard ist `true`, wenn Thread-Bindings aktiviert sind; Provider/Konten können überschreiben.
-  - `defaultSpawnContext`: standardmäßiger nativer Subagent-Kontext für threadgebundene Spawns (`"fork"` oder `"isolated"`). Standard ist `"fork"`.
+  - `maxEntries`: maximale Anzahl von Einträgen in `sessions.json` (Standard `500`). Die Laufzeit schreibt Batch-Bereinigungen mit einem kleinen High-Water-Puffer für produktionsgroße Obergrenzen; `openclaw sessions cleanup --enforce` wendet die Obergrenze sofort an.
+  - `rotateBytes`: veraltet und ignoriert; `openclaw doctor --fix` entfernt es aus älteren Konfigurationen.
+  - `resetArchiveRetention`: Aufbewahrung für `*.reset.<timestamp>`-Transkriptarchive. Standardmäßig `pruneAfter`; auf `false` setzen, um sie zu deaktivieren.
+  - `maxDiskBytes`: optionales Speicherplatzbudget für das Sitzungsverzeichnis. Im Modus `warn` protokolliert es Warnungen; im Modus `enforce` entfernt es zuerst die ältesten Artefakte/Sitzungen.
+  - `highWaterBytes`: optionales Ziel nach Budgetbereinigung. Standardmäßig `80%` von `maxDiskBytes`.
+- **`threadBindings`**: globale Standardwerte für threadgebundene Sitzungsfunktionen.
+  - `enabled`: zentraler Standardschalter (Provider können ihn überschreiben; Discord verwendet `channels.discord.threadBindings.enabled`)
+  - `idleHours`: standardmäßiges automatisches Aufheben des Fokus bei Inaktivität in Stunden (`0` deaktiviert; Provider können überschreiben)
+  - `maxAgeHours`: standardmäßiges hartes Maximalalter in Stunden (`0` deaktiviert; Provider können überschreiben)
+  - `spawnSessions`: Standard-Gate zum Erstellen threadgebundener Arbeitssitzungen aus `sessions_spawn` und ACP-Thread-Spawns. Standardmäßig `true`, wenn Thread-Bindings aktiviert sind; Provider/Konten können überschreiben.
+  - `defaultSpawnContext`: standardmäßiger nativer Subagent-Kontext für threadgebundene Spawns (`"fork"` oder `"isolated"`). Standardmäßig `"fork"`.
 
 </Accordion>
 
@@ -1305,36 +1311,36 @@ Siehe [Multi-Agent-Sandbox & Tools](/de/tools/multi-agent-sandbox-tools) für De
 
 Überschreibungen pro Kanal/Konto: `channels.<channel>.responsePrefix`, `channels.<channel>.accounts.<id>.responsePrefix`.
 
-Auflösung (spezifischster Wert gewinnt): Konto → Kanal → global. `""` deaktiviert und stoppt die Kaskade. `"auto"` leitet `[{identity.name}]` ab.
+Auflösung (am spezifischsten gewinnt): Konto → Kanal → global. `""` deaktiviert und stoppt die Kaskade. `"auto"` leitet `[{identity.name}]` ab.
 
 **Template-Variablen:**
 
-| Variable          | Beschreibung              | Beispiel                    |
-| ----------------- | ------------------------- | --------------------------- |
-| `{model}`         | Kurzer Modellname         | `claude-opus-4-6`           |
+| Variable          | Beschreibung               | Beispiel                    |
+| ----------------- | -------------------------- | --------------------------- |
+| `{model}`         | Kurzer Modellname          | `claude-opus-4-6`           |
 | `{modelFull}`     | Vollständige Modellkennung | `anthropic/claude-opus-4-6` |
-| `{provider}`      | Provider-Name             | `anthropic`                 |
-| `{thinkingLevel}` | Aktuelle Denkstufe        | `high`, `low`, `off`        |
-| `{identity.name}` | Name der Agentenidentität | (wie `"auto"`)              |
+| `{provider}`      | Provider-Name              | `anthropic`                 |
+| `{thinkingLevel}` | Aktuelle Denkstufe         | `high`, `low`, `off`        |
+| `{identity.name}` | Name der Agentenidentität  | (identisch mit `"auto"`)    |
 
-Variablen beachten keine Groß-/Kleinschreibung. `{think}` ist ein Alias für `{thinkingLevel}`.
+Bei Variablen wird die Groß-/Kleinschreibung ignoriert. `{think}` ist ein Alias für `{thinkingLevel}`.
 
-### Ack-Reaktion
+### Bestätigungsreaktion
 
-- Standard ist `identity.emoji` des aktiven Agenten, andernfalls `"👀"`. Auf `""` setzen, um sie zu deaktivieren.
+- Standardmäßig `identity.emoji` des aktiven Agenten, andernfalls `"👀"`. Auf `""` setzen, um sie zu deaktivieren.
 - Überschreibungen pro Kanal: `channels.<channel>.ackReaction`, `channels.<channel>.accounts.<id>.ackReaction`.
 - Auflösungsreihenfolge: Konto → Kanal → `messages.ackReaction` → Identitäts-Fallback.
-- Geltungsbereich: `group-mentions` (Standard), `group-all`, `direct`, `all`.
-- `removeAckAfterReply`: entfernt die Ack-Reaktion nach der Antwort auf reaktionsfähigen Kanälen wie Slack, Discord, Telegram, WhatsApp und iMessage.
+- Umfang: `group-mentions` (Standard), `group-all`, `direct`, `all`.
+- `removeAckAfterReply`: entfernt die Bestätigung nach der Antwort auf reaktionsfähigen Kanälen wie Slack, Discord, Telegram, WhatsApp und iMessage.
 - `messages.statusReactions.enabled`: aktiviert Lebenszyklus-Statusreaktionen auf Slack, Discord und Telegram.
-  Bei Slack und Discord bleiben Statusreaktionen aktiviert, wenn der Wert nicht gesetzt ist und Ack-Reaktionen aktiv sind.
-  Bei Telegram setzen Sie ihn explizit auf `true`, um Lebenszyklus-Statusreaktionen zu aktivieren.
+  Auf Slack und Discord bleiben Statusreaktionen bei nicht gesetztem Wert aktiviert, wenn Bestätigungsreaktionen aktiv sind.
+  Auf Telegram setzen Sie dies ausdrücklich auf `true`, um Lebenszyklus-Statusreaktionen zu aktivieren.
 
-### Eingangs-Debounce
+### Inbound-Entprellung
 
-Fasst schnell aufeinanderfolgende reine Textnachrichten desselben Absenders zu einem einzigen Agentendurchlauf zusammen. Medien/Anhänge lösen sofort aus. Steuerbefehle umgehen Debouncing.
+Bündelt schnell aufeinanderfolgende reine Textnachrichten desselben Absenders zu einem einzelnen Agentendurchlauf. Medien/Anhänge lösen sofortiges Senden aus. Steuerbefehle umgehen die Entprellung.
 
-### TTS (Text-to-Speech)
+### TTS (Text-zu-Sprache)
 
 ```json5
 {
@@ -1382,11 +1388,11 @@ Fasst schnell aufeinanderfolgende reine Textnachrichten desselben Absenders zu e
 }
 ```
 
-- `auto` steuert den standardmäßigen Auto-TTS-Modus: `off`, `always`, `inbound` oder `tagged`. `/tts on|off` kann lokale Einstellungen überschreiben, und `/tts status` zeigt den wirksamen Zustand.
+- `auto` steuert den standardmäßigen automatischen TTS-Modus: `off`, `always`, `inbound` oder `tagged`. `/tts on|off` kann lokale Einstellungen überschreiben, und `/tts status` zeigt den effektiven Zustand.
 - `summaryModel` überschreibt `agents.defaults.model.primary` für automatische Zusammenfassungen.
 - `modelOverrides` ist standardmäßig aktiviert; `modelOverrides.allowProvider` ist standardmäßig `false` (Opt-in).
-- API-Schlüssel fallen auf `ELEVENLABS_API_KEY`/`XI_API_KEY` und `OPENAI_API_KEY` zurück.
-- Gebündelte Sprach-Provider gehören dem Plugin. Wenn `plugins.allow` gesetzt ist, nehmen Sie jedes TTS-Provider-Plugin auf, das Sie verwenden möchten, zum Beispiel `microsoft` für Edge TTS. Die Legacy-Provider-ID `edge` wird als Alias für `microsoft` akzeptiert.
+- API-Schlüssel greifen auf `ELEVENLABS_API_KEY`/`XI_API_KEY` und `OPENAI_API_KEY` zurück.
+- Gebündelte Sprach-Provider gehören Plugins. Wenn `plugins.allow` gesetzt ist, fügen Sie jedes TTS-Provider-Plugin ein, das Sie verwenden möchten, zum Beispiel `microsoft` für Edge TTS. Die ältere Provider-ID `edge` wird als Alias für `microsoft` akzeptiert.
 - `providers.openai.baseUrl` überschreibt den OpenAI-TTS-Endpunkt. Die Auflösungsreihenfolge ist Konfiguration, dann `OPENAI_TTS_BASE_URL`, dann `https://api.openai.com/v1`.
 - Wenn `providers.openai.baseUrl` auf einen Nicht-OpenAI-Endpunkt verweist, behandelt OpenClaw ihn als OpenAI-kompatiblen TTS-Server und lockert die Modell-/Stimmenvalidierung.
 
@@ -1394,7 +1400,7 @@ Fasst schnell aufeinanderfolgende reine Textnachrichten desselben Absenders zu e
 
 ## Talk
 
-Standards für den Talk-Modus (macOS/iOS/Android).
+Standardwerte für den Talk-Modus (macOS/iOS/Android).
 
 ```json5
 {
@@ -1438,19 +1444,19 @@ Standards für den Talk-Modus (macOS/iOS/Android).
 }
 ```
 
-- `talk.provider` muss einem Schlüssel in `talk.providers` entsprechen, wenn mehrere Talk-Provider konfiguriert sind.
-- Legacy-flache Talk-Schlüssel (`talk.voiceId`, `talk.voiceAliases`, `talk.modelId`, `talk.outputFormat`, `talk.apiKey`) dienen nur der Kompatibilität. Führen Sie `openclaw doctor --fix` aus, um gespeicherte Konfigurationen in `talk.providers.<provider>` umzuschreiben.
-- Voice-IDs fallen auf `ELEVENLABS_VOICE_ID` oder `SAG_VOICE_ID` zurück.
+- `talk.provider` muss mit einem Schlüssel in `talk.providers` übereinstimmen, wenn mehrere Talk-Provider konfiguriert sind.
+- Ältere flache Talk-Schlüssel (`talk.voiceId`, `talk.voiceAliases`, `talk.modelId`, `talk.outputFormat`, `talk.apiKey`) dienen nur der Kompatibilität. Führen Sie `openclaw doctor --fix` aus, um persistierte Konfiguration in `talk.providers.<provider>` umzuschreiben.
+- Stimmen-IDs greifen auf `ELEVENLABS_VOICE_ID` oder `SAG_VOICE_ID` zurück.
 - `providers.*.apiKey` akzeptiert Klartextzeichenfolgen oder SecretRef-Objekte.
 - Der Fallback `ELEVENLABS_API_KEY` gilt nur, wenn kein Talk-API-Schlüssel konfiguriert ist.
-- `providers.*.voiceAliases` ermöglicht Talk-Direktiven die Verwendung benutzerfreundlicher Namen.
-- `providers.mlx.modelId` wählt das Hugging-Face-Repo aus, das vom lokalen macOS-MLX-Helfer verwendet wird. Wenn ausgelassen, verwendet macOS `mlx-community/Soprano-80M-bf16`.
-- macOS-MLX-Wiedergabe läuft über den gebündelten `openclaw-mlx-tts`-Helfer, wenn vorhanden, oder über eine ausführbare Datei auf `PATH`; `OPENCLAW_MLX_TTS_BIN` überschreibt den Helferpfad für die Entwicklung.
-- `consultThinkingLevel` steuert die Denkstufe für den vollständigen OpenClaw-Agentenlauf hinter Control-UI-Talk-Realtime-`openclaw_agent_consult`-Aufrufen. Nicht setzen, um normales Sitzungs-/Modellverhalten beizubehalten.
-- `consultFastMode` setzt eine einmalige Fast-Mode-Überschreibung für Control-UI-Talk-Realtime-Consults, ohne die normale Fast-Mode-Einstellung der Sitzung zu ändern.
-- `speechLocale` legt die BCP-47-Locale-ID fest, die von der iOS-/macOS-Talk-Spracherkennung verwendet wird. Nicht setzen, um den Gerätestandard zu verwenden.
-- `silenceTimeoutMs` steuert, wie lange der Talk-Modus nach Benutzerschweigen wartet, bevor er das Transkript sendet. Nicht gesetzt bleibt das plattformseitige Standard-Pausenfenster erhalten (`700 ms on macOS and Android, 900 ms on iOS`).
-- `realtime.instructions` hängt providerseitige Systemanweisungen an den integrierten Realtime-Prompt von OpenClaw an, sodass der Sprachstil konfiguriert werden kann, ohne die standardmäßige `openclaw_agent_consult`-Anleitung zu verlieren.
+- `providers.*.voiceAliases` lässt Talk-Direktiven Anzeigenamen verwenden.
+- `providers.mlx.modelId` wählt das Hugging-Face-Repository aus, das vom lokalen macOS-MLX-Helfer verwendet wird. Wenn ausgelassen, verwendet macOS `mlx-community/Soprano-80M-bf16`.
+- Die macOS-MLX-Wiedergabe läuft über den gebündelten Helfer `openclaw-mlx-tts`, wenn vorhanden, oder über eine ausführbare Datei in `PATH`; `OPENCLAW_MLX_TTS_BIN` überschreibt den Helferpfad für die Entwicklung.
+- `consultThinkingLevel` steuert die Denkstufe für den vollständigen OpenClaw-Agentendurchlauf hinter Control-UI-Talk-Echtzeitaufrufen von `openclaw_agent_consult`. Nicht setzen, um das normale Sitzungs-/Modellverhalten beizubehalten.
+- `consultFastMode` setzt eine einmalige Fast-Mode-Überschreibung für Control-UI-Talk-Echtzeitabfragen, ohne die normale Fast-Mode-Einstellung der Sitzung zu ändern.
+- `speechLocale` legt die BCP-47-Locale-ID fest, die von der iOS/macOS-Talk-Spracherkennung verwendet wird. Nicht setzen, um die Gerätestandardeinstellung zu verwenden.
+- `silenceTimeoutMs` steuert, wie lange der Talk-Modus nach Benutzerstille wartet, bevor er das Transkript sendet. Bei nicht gesetztem Wert bleibt das plattformspezifische Standard-Pausenfenster erhalten (`700 ms on macOS and Android, 900 ms on iOS`).
+- `realtime.instructions` hängt Provider-seitige Systemanweisungen an den integrierten Echtzeit-Prompt von OpenClaw an, sodass der Sprachstil konfiguriert werden kann, ohne die standardmäßige Anleitung für `openclaw_agent_consult` zu verlieren.
 
 ---
 
