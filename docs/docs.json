@@ -1207,11 +1207,12 @@
                   "tools/plugin",
                   "plugins/manage-plugins",
                   "plugins/community",
-                  "plugins/plugin-inventory",
-                  "plugins/reference",
-                  "plugins/bundles",
-                  "plugins/dependency-resolution",
-                  "plugins/install-overrides",
+                  "plugins/bundles"
+                ]
+              },
+              {
+                "group": "Bundled plugin guides",
+                "pages": [
                   "plugins/codex-harness",
                   "plugins/codex-computer-use",
                   "plugins/google-meet",
@@ -1219,40 +1220,20 @@
                   "plugins/voice-call",
                   "plugins/memory-wiki",
                   "plugins/memory-lancedb",
-                  "plugins/message-presentation",
                   "plugins/oc-path",
                   "plugins/skill-workshop",
-                  "plugins/zalouser",
-                  {
-                    "group": "Building plugins",
-                    "pages": [
-                      "plugins/building-plugins",
-                      "plugins/hooks",
-                      "plugins/sdk-channel-plugins",
-                      "plugins/sdk-channel-message",
-                      "plugins/sdk-provider-plugins",
-                      "plugins/cli-backend-plugins",
-                      "plugins/adding-capabilities",
-                      "plugins/compatibility",
-                      "plugins/sdk-migration"
-                    ]
-                  },
-                  {
-                    "group": "Plugin SDK reference",
-                    "pages": [
-                      "plugins/sdk-overview",
-                      "plugins/sdk-subpaths",
-                      "plugins/sdk-entrypoints",
-                      "plugins/sdk-runtime",
-                      "plugins/sdk-channel-turn",
-                      "plugins/sdk-agent-harness",
-                      "plugins/sdk-setup",
-                      "plugins/sdk-testing",
-                      "plugins/manifest",
-                      "plugins/architecture",
-                      "plugins/architecture-internals"
-                    ]
-                  }
+                  "plugins/zalouser"
+                ]
+              },
+              {
+                "group": "Building plugins",
+                "pages": [
+                  "plugins/building-plugins",
+                  "plugins/sdk-channel-plugins",
+                  "plugins/sdk-provider-plugins",
+                  "plugins/cli-backend-plugins",
+                  "plugins/hooks",
+                  "plugins/adding-capabilities"
                 ]
               },
               {
@@ -1772,6 +1753,41 @@
                   "plugins/codex-harness-reference",
                   "plugins/codex-harness-runtime",
                   "plugins/codex-native-plugins"
+                ]
+              },
+              {
+                "group": "Plugin reference",
+                "pages": [
+                  "plugins/plugin-inventory",
+                  "plugins/reference",
+                  "plugins/dependency-resolution",
+                  "plugins/install-overrides"
+                ]
+              },
+              {
+                "group": "Plugin SDK reference",
+                "pages": [
+                  "plugins/sdk-overview",
+                  "plugins/sdk-subpaths",
+                  "plugins/sdk-entrypoints",
+                  "plugins/sdk-runtime",
+                  "plugins/sdk-agent-harness",
+                  "plugins/sdk-setup",
+                  "plugins/sdk-testing",
+                  "plugins/manifest"
+                ]
+              },
+              {
+                "group": "Plugin maintainer reference",
+                "pages": [
+                  "plugins/architecture",
+                  "plugins/architecture-internals",
+                  "plugins/sdk-migration",
+                  "plugins/compatibility",
+                  "plugins/sdk-channel-message",
+                  "plugins/sdk-channel-turn",
+                  "plugins/sdk-channel-ingress",
+                  "plugins/message-presentation"
                 ]
               },
               {
@@ -2747,11 +2763,12 @@
                   "zh-TW/tools/plugin",
                   "zh-TW/plugins/manage-plugins",
                   "zh-TW/plugins/community",
-                  "zh-TW/plugins/plugin-inventory",
-                  "zh-TW/plugins/reference",
-                  "zh-TW/plugins/bundles",
-                  "zh-TW/plugins/dependency-resolution",
-                  "zh-TW/plugins/install-overrides",
+                  "zh-TW/plugins/bundles"
+                ]
+              },
+              {
+                "group": "Bundled plugin guides",
+                "pages": [
                   "zh-TW/plugins/codex-harness",
                   "zh-TW/plugins/codex-computer-use",
                   "zh-TW/plugins/google-meet",
@@ -2759,40 +2776,20 @@
                   "zh-TW/plugins/voice-call",
                   "zh-TW/plugins/memory-wiki",
                   "zh-TW/plugins/memory-lancedb",
-                  "zh-TW/plugins/message-presentation",
                   "zh-TW/plugins/oc-path",
                   "zh-TW/plugins/skill-workshop",
-                  "zh-TW/plugins/zalouser",
-                  {
-                    "group": "Building plugins",
-                    "pages": [
-                      "zh-TW/plugins/building-plugins",
-                      "zh-TW/plugins/hooks",
-                      "zh-TW/plugins/sdk-channel-plugins",
-                      "zh-TW/plugins/sdk-channel-message",
-                      "zh-TW/plugins/sdk-provider-plugins",
-                      "zh-TW/plugins/cli-backend-plugins",
-                      "zh-TW/plugins/adding-capabilities",
-                      "zh-TW/plugins/compatibility",
-                      "zh-TW/plugins/sdk-migration"
-                    ]
-                  },
-                  {
-                    "group": "Plugin SDK reference",
-                    "pages": [
-                      "zh-TW/plugins/sdk-overview",
-                      "zh-TW/plugins/sdk-subpaths",
-                      "zh-TW/plugins/sdk-entrypoints",
-                      "zh-TW/plugins/sdk-runtime",
-                      "zh-TW/plugins/sdk-channel-turn",
-                      "zh-TW/plugins/sdk-agent-harness",
-                      "zh-TW/plugins/sdk-setup",
-                      "zh-TW/plugins/sdk-testing",
-                      "zh-TW/plugins/manifest",
-                      "zh-TW/plugins/architecture",
-                      "zh-TW/plugins/architecture-internals"
-                    ]
-                  }
+                  "zh-TW/plugins/zalouser"
+                ]
+              },
+              {
+                "group": "Building plugins",
+                "pages": [
+                  "zh-TW/plugins/building-plugins",
+                  "zh-TW/plugins/sdk-channel-plugins",
+                  "zh-TW/plugins/sdk-provider-plugins",
+                  "zh-TW/plugins/cli-backend-plugins",
+                  "zh-TW/plugins/hooks",
+                  "zh-TW/plugins/adding-capabilities"
                 ]
               },
               {
@@ -3281,6 +3278,41 @@
                 ]
               },
               {
+                "group": "Plugin reference",
+                "pages": [
+                  "zh-TW/plugins/plugin-inventory",
+                  "zh-TW/plugins/reference",
+                  "zh-TW/plugins/dependency-resolution",
+                  "zh-TW/plugins/install-overrides"
+                ]
+              },
+              {
+                "group": "Plugin SDK reference",
+                "pages": [
+                  "zh-TW/plugins/sdk-overview",
+                  "zh-TW/plugins/sdk-subpaths",
+                  "zh-TW/plugins/sdk-entrypoints",
+                  "zh-TW/plugins/sdk-runtime",
+                  "zh-TW/plugins/sdk-agent-harness",
+                  "zh-TW/plugins/sdk-setup",
+                  "zh-TW/plugins/sdk-testing",
+                  "zh-TW/plugins/manifest"
+                ]
+              },
+              {
+                "group": "Plugin maintainer reference",
+                "pages": [
+                  "zh-TW/plugins/architecture",
+                  "zh-TW/plugins/architecture-internals",
+                  "zh-TW/plugins/sdk-migration",
+                  "zh-TW/plugins/compatibility",
+                  "zh-TW/plugins/sdk-channel-message",
+                  "zh-TW/plugins/sdk-channel-turn",
+                  "zh-TW/plugins/sdk-channel-ingress",
+                  "zh-TW/plugins/message-presentation"
+                ]
+              },
+              {
                 "group": "Templates",
                 "pages": [
                   "zh-TW/reference/AGENTS.default",
@@ -3640,11 +3672,12 @@
                   "ja-JP/tools/plugin",
                   "ja-JP/plugins/manage-plugins",
                   "ja-JP/plugins/community",
-                  "ja-JP/plugins/plugin-inventory",
-                  "ja-JP/plugins/reference",
-                  "ja-JP/plugins/bundles",
-                  "ja-JP/plugins/dependency-resolution",
-                  "ja-JP/plugins/install-overrides",
+                  "ja-JP/plugins/bundles"
+                ]
+              },
+              {
+                "group": "Bundled plugin guides",
+                "pages": [
                   "ja-JP/plugins/codex-harness",
                   "ja-JP/plugins/codex-computer-use",
                   "ja-JP/plugins/google-meet",
@@ -3652,40 +3685,20 @@
                   "ja-JP/plugins/voice-call",
                   "ja-JP/plugins/memory-wiki",
                   "ja-JP/plugins/memory-lancedb",
-                  "ja-JP/plugins/message-presentation",
                   "ja-JP/plugins/oc-path",
                   "ja-JP/plugins/skill-workshop",
-                  "ja-JP/plugins/zalouser",
-                  {
-                    "group": "Building plugins",
-                    "pages": [
-                      "ja-JP/plugins/building-plugins",
-                      "ja-JP/plugins/hooks",
-                      "ja-JP/plugins/sdk-channel-plugins",
-                      "ja-JP/plugins/sdk-channel-message",
-                      "ja-JP/plugins/sdk-provider-plugins",
-                      "ja-JP/plugins/cli-backend-plugins",
-                      "ja-JP/plugins/adding-capabilities",
-                      "ja-JP/plugins/compatibility",
-                      "ja-JP/plugins/sdk-migration"
-                    ]
-                  },
-                  {
-                    "group": "Plugin SDK reference",
-                    "pages": [
-                      "ja-JP/plugins/sdk-overview",
-                      "ja-JP/plugins/sdk-subpaths",
-                      "ja-JP/plugins/sdk-entrypoints",
-                      "ja-JP/plugins/sdk-runtime",
-                      "ja-JP/plugins/sdk-channel-turn",
-                      "ja-JP/plugins/sdk-agent-harness",
-                      "ja-JP/plugins/sdk-setup",
-                      "ja-JP/plugins/sdk-testing",
-                      "ja-JP/plugins/manifest",
-                      "ja-JP/plugins/architecture",
-                      "ja-JP/plugins/architecture-internals"
-                    ]
-                  }
+                  "ja-JP/plugins/zalouser"
+                ]
+              },
+              {
+                "group": "Building plugins",
+                "pages": [
+                  "ja-JP/plugins/building-plugins",
+                  "ja-JP/plugins/sdk-channel-plugins",
+                  "ja-JP/plugins/sdk-provider-plugins",
+                  "ja-JP/plugins/cli-backend-plugins",
+                  "ja-JP/plugins/hooks",
+                  "ja-JP/plugins/adding-capabilities"
                 ]
               },
               {
@@ -4174,6 +4187,41 @@
                 ]
               },
               {
+                "group": "Plugin reference",
+                "pages": [
+                  "ja-JP/plugins/plugin-inventory",
+                  "ja-JP/plugins/reference",
+                  "ja-JP/plugins/dependency-resolution",
+                  "ja-JP/plugins/install-overrides"
+                ]
+              },
+              {
+                "group": "Plugin SDK reference",
+                "pages": [
+                  "ja-JP/plugins/sdk-overview",
+                  "ja-JP/plugins/sdk-subpaths",
+                  "ja-JP/plugins/sdk-entrypoints",
+                  "ja-JP/plugins/sdk-runtime",
+                  "ja-JP/plugins/sdk-agent-harness",
+                  "ja-JP/plugins/sdk-setup",
+                  "ja-JP/plugins/sdk-testing",
+                  "ja-JP/plugins/manifest"
+                ]
+              },
+              {
+                "group": "Plugin maintainer reference",
+                "pages": [
+                  "ja-JP/plugins/architecture",
+                  "ja-JP/plugins/architecture-internals",
+                  "ja-JP/plugins/sdk-migration",
+                  "ja-JP/plugins/compatibility",
+                  "ja-JP/plugins/sdk-channel-message",
+                  "ja-JP/plugins/sdk-channel-turn",
+                  "ja-JP/plugins/sdk-channel-ingress",
+                  "ja-JP/plugins/message-presentation"
+                ]
+              },
+              {
                 "group": "Templates",
                 "pages": [
                   "ja-JP/reference/AGENTS.default",
@@ -4533,11 +4581,12 @@
                   "es/tools/plugin",
                   "es/plugins/manage-plugins",
                   "es/plugins/community",
-                  "es/plugins/plugin-inventory",
-                  "es/plugins/reference",
-                  "es/plugins/bundles",
-                  "es/plugins/dependency-resolution",
-                  "es/plugins/install-overrides",
+                  "es/plugins/bundles"
+                ]
+              },
+              {
+                "group": "Bundled plugin guides",
+                "pages": [
                   "es/plugins/codex-harness",
                   "es/plugins/codex-computer-use",
                   "es/plugins/google-meet",
@@ -4545,40 +4594,20 @@
                   "es/plugins/voice-call",
                   "es/plugins/memory-wiki",
                   "es/plugins/memory-lancedb",
-                  "es/plugins/message-presentation",
                   "es/plugins/oc-path",
                   "es/plugins/skill-workshop",
-                  "es/plugins/zalouser",
-                  {
-                    "group": "Building plugins",
-                    "pages": [
-                      "es/plugins/building-plugins",
-                      "es/plugins/hooks",
-                      "es/plugins/sdk-channel-plugins",
-                      "es/plugins/sdk-channel-message",
-                      "es/plugins/sdk-provider-plugins",
-                      "es/plugins/cli-backend-plugins",
-                      "es/plugins/adding-capabilities",
-                      "es/plugins/compatibility",
-                      "es/plugins/sdk-migration"
-                    ]
-                  },
-                  {
-                    "group": "Plugin SDK reference",
-                    "pages": [
-                      "es/plugins/sdk-overview",
-                      "es/plugins/sdk-subpaths",
-                      "es/plugins/sdk-entrypoints",
-                      "es/plugins/sdk-runtime",
-                      "es/plugins/sdk-channel-turn",
-                      "es/plugins/sdk-agent-harness",
-                      "es/plugins/sdk-setup",
-                      "es/plugins/sdk-testing",
-                      "es/plugins/manifest",
-                      "es/plugins/architecture",
-                      "es/plugins/architecture-internals"
-                    ]
-                  }
+                  "es/plugins/zalouser"
+                ]
+              },
+              {
+                "group": "Building plugins",
+                "pages": [
+                  "es/plugins/building-plugins",
+                  "es/plugins/sdk-channel-plugins",
+                  "es/plugins/sdk-provider-plugins",
+                  "es/plugins/cli-backend-plugins",
+                  "es/plugins/hooks",
+                  "es/plugins/adding-capabilities"
                 ]
               },
               {
@@ -5067,6 +5096,41 @@
                 ]
               },
               {
+                "group": "Plugin reference",
+                "pages": [
+                  "es/plugins/plugin-inventory",
+                  "es/plugins/reference",
+                  "es/plugins/dependency-resolution",
+                  "es/plugins/install-overrides"
+                ]
+              },
+              {
+                "group": "Plugin SDK reference",
+                "pages": [
+                  "es/plugins/sdk-overview",
+                  "es/plugins/sdk-subpaths",
+                  "es/plugins/sdk-entrypoints",
+                  "es/plugins/sdk-runtime",
+                  "es/plugins/sdk-agent-harness",
+                  "es/plugins/sdk-setup",
+                  "es/plugins/sdk-testing",
+                  "es/plugins/manifest"
+                ]
+              },
+              {
+                "group": "Plugin maintainer reference",
+                "pages": [
+                  "es/plugins/architecture",
+                  "es/plugins/architecture-internals",
+                  "es/plugins/sdk-migration",
+                  "es/plugins/compatibility",
+                  "es/plugins/sdk-channel-message",
+                  "es/plugins/sdk-channel-turn",
+                  "es/plugins/sdk-channel-ingress",
+                  "es/plugins/message-presentation"
+                ]
+              },
+              {
                 "group": "Templates",
                 "pages": [
                   "es/reference/AGENTS.default",
@@ -5426,11 +5490,12 @@
                   "pt-BR/tools/plugin",
                   "pt-BR/plugins/manage-plugins",
                   "pt-BR/plugins/community",
-                  "pt-BR/plugins/plugin-inventory",
-                  "pt-BR/plugins/reference",
-                  "pt-BR/plugins/bundles",
-                  "pt-BR/plugins/dependency-resolution",
-                  "pt-BR/plugins/install-overrides",
+                  "pt-BR/plugins/bundles"
+                ]
+              },
+              {
+                "group": "Bundled plugin guides",
+                "pages": [
                   "pt-BR/plugins/codex-harness",
                   "pt-BR/plugins/codex-computer-use",
                   "pt-BR/plugins/google-meet",
@@ -5438,40 +5503,20 @@
                   "pt-BR/plugins/voice-call",
                   "pt-BR/plugins/memory-wiki",
                   "pt-BR/plugins/memory-lancedb",
-                  "pt-BR/plugins/message-presentation",
                   "pt-BR/plugins/oc-path",
                   "pt-BR/plugins/skill-workshop",
-                  "pt-BR/plugins/zalouser",
-                  {
-                    "group": "Building plugins",
-                    "pages": [
-                      "pt-BR/plugins/building-plugins",
-                      "pt-BR/plugins/hooks",
-                      "pt-BR/plugins/sdk-channel-plugins",
-                      "pt-BR/plugins/sdk-channel-message",
-                      "pt-BR/plugins/sdk-provider-plugins",
-                      "pt-BR/plugins/cli-backend-plugins",
-                      "pt-BR/plugins/adding-capabilities",
-                      "pt-BR/plugins/compatibility",
-                      "pt-BR/plugins/sdk-migration"
-                    ]
-                  },
-                  {
-                    "group": "Plugin SDK reference",
-                    "pages": [
-                      "pt-BR/plugins/sdk-overview",
-                      "pt-BR/plugins/sdk-subpaths",
-                      "pt-BR/plugins/sdk-entrypoints",
-                      "pt-BR/plugins/sdk-runtime",
-                      "pt-BR/plugins/sdk-channel-turn",
-                      "pt-BR/plugins/sdk-agent-harness",
-                      "pt-BR/plugins/sdk-setup",
-                      "pt-BR/plugins/sdk-testing",
-                      "pt-BR/plugins/manifest",
-                      "pt-BR/plugins/architecture",
-                      "pt-BR/plugins/architecture-internals"
-                    ]
-                  }
+                  "pt-BR/plugins/zalouser"
+                ]
+              },
+              {
+                "group": "Building plugins",
+                "pages": [
+                  "pt-BR/plugins/building-plugins",
+                  "pt-BR/plugins/sdk-channel-plugins",
+                  "pt-BR/plugins/sdk-provider-plugins",
+                  "pt-BR/plugins/cli-backend-plugins",
+                  "pt-BR/plugins/hooks",
+                  "pt-BR/plugins/adding-capabilities"
                 ]
               },
               {
@@ -5960,6 +6005,41 @@
                 ]
               },
               {
+                "group": "Plugin reference",
+                "pages": [
+                  "pt-BR/plugins/plugin-inventory",
+                  "pt-BR/plugins/reference",
+                  "pt-BR/plugins/dependency-resolution",
+                  "pt-BR/plugins/install-overrides"
+                ]
+              },
+              {
+                "group": "Plugin SDK reference",
+                "pages": [
+                  "pt-BR/plugins/sdk-overview",
+                  "pt-BR/plugins/sdk-subpaths",
+                  "pt-BR/plugins/sdk-entrypoints",
+                  "pt-BR/plugins/sdk-runtime",
+                  "pt-BR/plugins/sdk-agent-harness",
+                  "pt-BR/plugins/sdk-setup",
+                  "pt-BR/plugins/sdk-testing",
+                  "pt-BR/plugins/manifest"
+                ]
+              },
+              {
+                "group": "Plugin maintainer reference",
+                "pages": [
+                  "pt-BR/plugins/architecture",
+                  "pt-BR/plugins/architecture-internals",
+                  "pt-BR/plugins/sdk-migration",
+                  "pt-BR/plugins/compatibility",
+                  "pt-BR/plugins/sdk-channel-message",
+                  "pt-BR/plugins/sdk-channel-turn",
+                  "pt-BR/plugins/sdk-channel-ingress",
+                  "pt-BR/plugins/message-presentation"
+                ]
+              },
+              {
                 "group": "Templates",
                 "pages": [
                   "pt-BR/reference/AGENTS.default",
@@ -6319,11 +6399,12 @@
                   "ko/tools/plugin",
                   "ko/plugins/manage-plugins",
                   "ko/plugins/community",
-                  "ko/plugins/plugin-inventory",
-                  "ko/plugins/reference",
-                  "ko/plugins/bundles",
-                  "ko/plugins/dependency-resolution",
-                  "ko/plugins/install-overrides",
+                  "ko/plugins/bundles"
+                ]
+              },
+              {
+                "group": "Bundled plugin guides",
+                "pages": [
                   "ko/plugins/codex-harness",
                   "ko/plugins/codex-computer-use",
                   "ko/plugins/google-meet",
@@ -6331,40 +6412,20 @@
                   "ko/plugins/voice-call",
                   "ko/plugins/memory-wiki",
                   "ko/plugins/memory-lancedb",
-                  "ko/plugins/message-presentation",
                   "ko/plugins/oc-path",
                   "ko/plugins/skill-workshop",
-                  "ko/plugins/zalouser",
-                  {
-                    "group": "Building plugins",
-                    "pages": [
-                      "ko/plugins/building-plugins",
-                      "ko/plugins/hooks",
-                      "ko/plugins/sdk-channel-plugins",
-                      "ko/plugins/sdk-channel-message",
-                      "ko/plugins/sdk-provider-plugins",
-                      "ko/plugins/cli-backend-plugins",
-                      "ko/plugins/adding-capabilities",
-                      "ko/plugins/compatibility",
-                      "ko/plugins/sdk-migration"
-                    ]
-                  },
-                  {
-                    "group": "Plugin SDK reference",
-                    "pages": [
-                      "ko/plugins/sdk-overview",
-                      "ko/plugins/sdk-subpaths",
-                      "ko/plugins/sdk-entrypoints",
-                      "ko/plugins/sdk-runtime",
-                      "ko/plugins/sdk-channel-turn",
-                      "ko/plugins/sdk-agent-harness",
-                      "ko/plugins/sdk-setup",
-                      "ko/plugins/sdk-testing",
-                      "ko/plugins/manifest",
-                      "ko/plugins/architecture",
-                      "ko/plugins/architecture-internals"
-                    ]
-                  }
+                  "ko/plugins/zalouser"
+                ]
+              },
+              {
+                "group": "Building plugins",
+                "pages": [
+                  "ko/plugins/building-plugins",
+                  "ko/plugins/sdk-channel-plugins",
+                  "ko/plugins/sdk-provider-plugins",
+                  "ko/plugins/cli-backend-plugins",
+                  "ko/plugins/hooks",
+                  "ko/plugins/adding-capabilities"
                 ]
               },
               {
@@ -6853,6 +6914,41 @@
                 ]
               },
               {
+                "group": "Plugin reference",
+                "pages": [
+                  "ko/plugins/plugin-inventory",
+                  "ko/plugins/reference",
+                  "ko/plugins/dependency-resolution",
+                  "ko/plugins/install-overrides"
+                ]
+              },
+              {
+                "group": "Plugin SDK reference",
+                "pages": [
+                  "ko/plugins/sdk-overview",
+                  "ko/plugins/sdk-subpaths",
+                  "ko/plugins/sdk-entrypoints",
+                  "ko/plugins/sdk-runtime",
+                  "ko/plugins/sdk-agent-harness",
+                  "ko/plugins/sdk-setup",
+                  "ko/plugins/sdk-testing",
+                  "ko/plugins/manifest"
+                ]
+              },
+              {
+                "group": "Plugin maintainer reference",
+                "pages": [
+                  "ko/plugins/architecture",
+                  "ko/plugins/architecture-internals",
+                  "ko/plugins/sdk-migration",
+                  "ko/plugins/compatibility",
+                  "ko/plugins/sdk-channel-message",
+                  "ko/plugins/sdk-channel-turn",
+                  "ko/plugins/sdk-channel-ingress",
+                  "ko/plugins/message-presentation"
+                ]
+              },
+              {
                 "group": "Templates",
                 "pages": [
                   "ko/reference/AGENTS.default",
@@ -7212,11 +7308,12 @@
                   "de/tools/plugin",
                   "de/plugins/manage-plugins",
                   "de/plugins/community",
-                  "de/plugins/plugin-inventory",
-                  "de/plugins/reference",
-                  "de/plugins/bundles",
-                  "de/plugins/dependency-resolution",
-                  "de/plugins/install-overrides",
+                  "de/plugins/bundles"
+                ]
+              },
+              {
+                "group": "Bundled plugin guides",
+                "pages": [
                   "de/plugins/codex-harness",
                   "de/plugins/codex-computer-use",
                   "de/plugins/google-meet",
@@ -7224,40 +7321,20 @@
                   "de/plugins/voice-call",
                   "de/plugins/memory-wiki",
                   "de/plugins/memory-lancedb",
-                  "de/plugins/message-presentation",
                   "de/plugins/oc-path",
                   "de/plugins/skill-workshop",
-                  "de/plugins/zalouser",
-                  {
-                    "group": "Building plugins",
-                    "pages": [
-                      "de/plugins/building-plugins",
-                      "de/plugins/hooks",
-                      "de/plugins/sdk-channel-plugins",
-                      "de/plugins/sdk-channel-message",
-                      "de/plugins/sdk-provider-plugins",
-                      "de/plugins/cli-backend-plugins",
-                      "de/plugins/adding-capabilities",
-                      "de/plugins/compatibility",
-                      "de/plugins/sdk-migration"
-                    ]
-                  },
-                  {
-                    "group": "Plugin SDK reference",
-                    "pages": [
-                      "de/plugins/sdk-overview",
-                      "de/plugins/sdk-subpaths",
-                      "de/plugins/sdk-entrypoints",
-                      "de/plugins/sdk-runtime",
-                      "de/plugins/sdk-channel-turn",
-                      "de/plugins/sdk-agent-harness",
-                      "de/plugins/sdk-setup",
-                      "de/plugins/sdk-testing",
-                      "de/plugins/manifest",
-                      "de/plugins/architecture",
-                      "de/plugins/architecture-internals"
-                    ]
-                  }
+                  "de/plugins/zalouser"
+                ]
+              },
+              {
+                "group": "Building plugins",
+                "pages": [
+                  "de/plugins/building-plugins",
+                  "de/plugins/sdk-channel-plugins",
+                  "de/plugins/sdk-provider-plugins",
+                  "de/plugins/cli-backend-plugins",
+                  "de/plugins/hooks",
+                  "de/plugins/adding-capabilities"
                 ]
               },
               {
@@ -7746,6 +7823,41 @@
                 ]
               },
               {
+                "group": "Plugin reference",
+                "pages": [
+                  "de/plugins/plugin-inventory",
+                  "de/plugins/reference",
+                  "de/plugins/dependency-resolution",
+                  "de/plugins/install-overrides"
+                ]
+              },
+              {
+                "group": "Plugin SDK reference",
+                "pages": [
+                  "de/plugins/sdk-overview",
+                  "de/plugins/sdk-subpaths",
+                  "de/plugins/sdk-entrypoints",
+                  "de/plugins/sdk-runtime",
+                  "de/plugins/sdk-agent-harness",
+                  "de/plugins/sdk-setup",
+                  "de/plugins/sdk-testing",
+                  "de/plugins/manifest"
+                ]
+              },
+              {
+                "group": "Plugin maintainer reference",
+                "pages": [
+                  "de/plugins/architecture",
+                  "de/plugins/architecture-internals",
+                  "de/plugins/sdk-migration",
+                  "de/plugins/compatibility",
+                  "de/plugins/sdk-channel-message",
+                  "de/plugins/sdk-channel-turn",
+                  "de/plugins/sdk-channel-ingress",
+                  "de/plugins/message-presentation"
+                ]
+              },
+              {
                 "group": "Templates",
                 "pages": [
                   "de/reference/AGENTS.default",
@@ -8105,11 +8217,12 @@
                   "fr/tools/plugin",
                   "fr/plugins/manage-plugins",
                   "fr/plugins/community",
-                  "fr/plugins/plugin-inventory",
-                  "fr/plugins/reference",
-                  "fr/plugins/bundles",
-                  "fr/plugins/dependency-resolution",
-                  "fr/plugins/install-overrides",
+                  "fr/plugins/bundles"
+                ]
+              },
+              {
+                "group": "Bundled plugin guides",
+                "pages": [
                   "fr/plugins/codex-harness",
                   "fr/plugins/codex-computer-use",
                   "fr/plugins/google-meet",
@@ -8117,40 +8230,20 @@
                   "fr/plugins/voice-call",
                   "fr/plugins/memory-wiki",
                   "fr/plugins/memory-lancedb",
-                  "fr/plugins/message-presentation",
                   "fr/plugins/oc-path",
                   "fr/plugins/skill-workshop",
-                  "fr/plugins/zalouser",
-                  {
-                    "group": "Building plugins",
-                    "pages": [
-                      "fr/plugins/building-plugins",
-                      "fr/plugins/hooks",
-                      "fr/plugins/sdk-channel-plugins",
-                      "fr/plugins/sdk-channel-message",
-                      "fr/plugins/sdk-provider-plugins",
-                      "fr/plugins/cli-backend-plugins",
-                      "fr/plugins/adding-capabilities",
-                      "fr/plugins/compatibility",
-                      "fr/plugins/sdk-migration"
-                    ]
-                  },
-                  {
-                    "group": "Plugin SDK reference",
-                    "pages": [
-                      "fr/plugins/sdk-overview",
-                      "fr/plugins/sdk-subpaths",
-                      "fr/plugins/sdk-entrypoints",
-                      "fr/plugins/sdk-runtime",
-                      "fr/plugins/sdk-channel-turn",
-                      "fr/plugins/sdk-agent-harness",
-                      "fr/plugins/sdk-setup",
-                      "fr/plugins/sdk-testing",
-                      "fr/plugins/manifest",
-                      "fr/plugins/architecture",
-                      "fr/plugins/architecture-internals"
-                    ]
-                  }
+                  "fr/plugins/zalouser"
+                ]
+              },
+              {
+                "group": "Building plugins",
+                "pages": [
+                  "fr/plugins/building-plugins",
+                  "fr/plugins/sdk-channel-plugins",
+                  "fr/plugins/sdk-provider-plugins",
+                  "fr/plugins/cli-backend-plugins",
+                  "fr/plugins/hooks",
+                  "fr/plugins/adding-capabilities"
                 ]
               },
               {
@@ -8639,6 +8732,41 @@
                 ]
               },
               {
+                "group": "Plugin reference",
+                "pages": [
+                  "fr/plugins/plugin-inventory",
+                  "fr/plugins/reference",
+                  "fr/plugins/dependency-resolution",
+                  "fr/plugins/install-overrides"
+                ]
+              },
+              {
+                "group": "Plugin SDK reference",
+                "pages": [
+                  "fr/plugins/sdk-overview",
+                  "fr/plugins/sdk-subpaths",
+                  "fr/plugins/sdk-entrypoints",
+                  "fr/plugins/sdk-runtime",
+                  "fr/plugins/sdk-agent-harness",
+                  "fr/plugins/sdk-setup",
+                  "fr/plugins/sdk-testing",
+                  "fr/plugins/manifest"
+                ]
+              },
+              {
+                "group": "Plugin maintainer reference",
+                "pages": [
+                  "fr/plugins/architecture",
+                  "fr/plugins/architecture-internals",
+                  "fr/plugins/sdk-migration",
+                  "fr/plugins/compatibility",
+                  "fr/plugins/sdk-channel-message",
+                  "fr/plugins/sdk-channel-turn",
+                  "fr/plugins/sdk-channel-ingress",
+                  "fr/plugins/message-presentation"
+                ]
+              },
+              {
                 "group": "Templates",
                 "pages": [
                   "fr/reference/AGENTS.default",
@@ -8998,11 +9126,12 @@
                   "ar/tools/plugin",
                   "ar/plugins/manage-plugins",
                   "ar/plugins/community",
-                  "ar/plugins/plugin-inventory",
-                  "ar/plugins/reference",
-                  "ar/plugins/bundles",
-                  "ar/plugins/dependency-resolution",
-                  "ar/plugins/install-overrides",
+                  "ar/plugins/bundles"
+                ]
+              },
+              {
+                "group": "Bundled plugin guides",
+                "pages": [
                   "ar/plugins/codex-harness",
                   "ar/plugins/codex-computer-use",
                   "ar/plugins/google-meet",
@@ -9010,40 +9139,20 @@
                   "ar/plugins/voice-call",
                   "ar/plugins/memory-wiki",
                   "ar/plugins/memory-lancedb",
-                  "ar/plugins/message-presentation",
                   "ar/plugins/oc-path",
                   "ar/plugins/skill-workshop",
-                  "ar/plugins/zalouser",
-                  {
-                    "group": "Building plugins",
-                    "pages": [
-                      "ar/plugins/building-plugins",
-                      "ar/plugins/hooks",
-                      "ar/plugins/sdk-channel-plugins",
-                      "ar/plugins/sdk-channel-message",
-                      "ar/plugins/sdk-provider-plugins",
-                      "ar/plugins/cli-backend-plugins",
-                      "ar/plugins/adding-capabilities",
-                      "ar/plugins/compatibility",
-                      "ar/plugins/sdk-migration"
-                    ]
-                  },
-                  {
-                    "group": "Plugin SDK reference",
-                    "pages": [
-                      "ar/plugins/sdk-overview",
-                      "ar/plugins/sdk-subpaths",
-                      "ar/plugins/sdk-entrypoints",
-                      "ar/plugins/sdk-runtime",
-                      "ar/plugins/sdk-channel-turn",
-                      "ar/plugins/sdk-agent-harness",
-                      "ar/plugins/sdk-setup",
-                      "ar/plugins/sdk-testing",
-                      "ar/plugins/manifest",
-                      "ar/plugins/architecture",
-                      "ar/plugins/architecture-internals"
-                    ]
-                  }
+                  "ar/plugins/zalouser"
+                ]
+              },
+              {
+                "group": "Building plugins",
+                "pages": [
+                  "ar/plugins/building-plugins",
+                  "ar/plugins/sdk-channel-plugins",
+                  "ar/plugins/sdk-provider-plugins",
+                  "ar/plugins/cli-backend-plugins",
+                  "ar/plugins/hooks",
+                  "ar/plugins/adding-capabilities"
                 ]
               },
               {
@@ -9532,6 +9641,41 @@
                 ]
               },
               {
+                "group": "Plugin reference",
+                "pages": [
+                  "ar/plugins/plugin-inventory",
+                  "ar/plugins/reference",
+                  "ar/plugins/dependency-resolution",
+                  "ar/plugins/install-overrides"
+                ]
+              },
+              {
+                "group": "Plugin SDK reference",
+                "pages": [
+                  "ar/plugins/sdk-overview",
+                  "ar/plugins/sdk-subpaths",
+                  "ar/plugins/sdk-entrypoints",
+                  "ar/plugins/sdk-runtime",
+                  "ar/plugins/sdk-agent-harness",
+                  "ar/plugins/sdk-setup",
+                  "ar/plugins/sdk-testing",
+                  "ar/plugins/manifest"
+                ]
+              },
+              {
+                "group": "Plugin maintainer reference",
+                "pages": [
+                  "ar/plugins/architecture",
+                  "ar/plugins/architecture-internals",
+                  "ar/plugins/sdk-migration",
+                  "ar/plugins/compatibility",
+                  "ar/plugins/sdk-channel-message",
+                  "ar/plugins/sdk-channel-turn",
+                  "ar/plugins/sdk-channel-ingress",
+                  "ar/plugins/message-presentation"
+                ]
+              },
+              {
                 "group": "Templates",
                 "pages": [
                   "ar/reference/AGENTS.default",
@@ -9891,11 +10035,12 @@
                   "it/tools/plugin",
                   "it/plugins/manage-plugins",
                   "it/plugins/community",
-                  "it/plugins/plugin-inventory",
-                  "it/plugins/reference",
-                  "it/plugins/bundles",
-                  "it/plugins/dependency-resolution",
-                  "it/plugins/install-overrides",
+                  "it/plugins/bundles"
+                ]
+              },
+              {
+                "group": "Bundled plugin guides",
+                "pages": [
                   "it/plugins/codex-harness",
                   "it/plugins/codex-computer-use",
                   "it/plugins/google-meet",
@@ -9903,40 +10048,20 @@
                   "it/plugins/voice-call",
                   "it/plugins/memory-wiki",
                   "it/plugins/memory-lancedb",
-                  "it/plugins/message-presentation",
                   "it/plugins/oc-path",
                   "it/plugins/skill-workshop",
-                  "it/plugins/zalouser",
-                  {
-                    "group": "Building plugins",
-                    "pages": [
-                      "it/plugins/building-plugins",
-                      "it/plugins/hooks",
-                      "it/plugins/sdk-channel-plugins",
-                      "it/plugins/sdk-channel-message",
-                      "it/plugins/sdk-provider-plugins",
-                      "it/plugins/cli-backend-plugins",
-                      "it/plugins/adding-capabilities",
-                      "it/plugins/compatibility",
-                      "it/plugins/sdk-migration"
-                    ]
-                  },
-                  {
-                    "group": "Plugin SDK reference",
-                    "pages": [
-                      "it/plugins/sdk-overview",
-                      "it/plugins/sdk-subpaths",
-                      "it/plugins/sdk-entrypoints",
-                      "it/plugins/sdk-runtime",
-                      "it/plugins/sdk-channel-turn",
-                      "it/plugins/sdk-agent-harness",
-                      "it/plugins/sdk-setup",
-                      "it/plugins/sdk-testing",
-                      "it/plugins/manifest",
-                      "it/plugins/architecture",
-                      "it/plugins/architecture-internals"
-                    ]
-                  }
+                  "it/plugins/zalouser"
+                ]
+              },
+              {
+                "group": "Building plugins",
+                "pages": [
+                  "it/plugins/building-plugins",
+                  "it/plugins/sdk-channel-plugins",
+                  "it/plugins/sdk-provider-plugins",
+                  "it/plugins/cli-backend-plugins",
+                  "it/plugins/hooks",
+                  "it/plugins/adding-capabilities"
                 ]
               },
               {
@@ -10425,6 +10550,41 @@
                 ]
               },
               {
+                "group": "Plugin reference",
+                "pages": [
+                  "it/plugins/plugin-inventory",
+                  "it/plugins/reference",
+                  "it/plugins/dependency-resolution",
+                  "it/plugins/install-overrides"
+                ]
+              },
+              {
+                "group": "Plugin SDK reference",
+                "pages": [
+                  "it/plugins/sdk-overview",
+                  "it/plugins/sdk-subpaths",
+                  "it/plugins/sdk-entrypoints",
+                  "it/plugins/sdk-runtime",
+                  "it/plugins/sdk-agent-harness",
+                  "it/plugins/sdk-setup",
+                  "it/plugins/sdk-testing",
+                  "it/plugins/manifest"
+                ]
+              },
+              {
+                "group": "Plugin maintainer reference",
+                "pages": [
+                  "it/plugins/architecture",
+                  "it/plugins/architecture-internals",
+                  "it/plugins/sdk-migration",
+                  "it/plugins/compatibility",
+                  "it/plugins/sdk-channel-message",
+                  "it/plugins/sdk-channel-turn",
+                  "it/plugins/sdk-channel-ingress",
+                  "it/plugins/message-presentation"
+                ]
+              },
+              {
                 "group": "Templates",
                 "pages": [
                   "it/reference/AGENTS.default",
@@ -10784,11 +10944,12 @@
                   "vi/tools/plugin",
                   "vi/plugins/manage-plugins",
                   "vi/plugins/community",
-                  "vi/plugins/plugin-inventory",
-                  "vi/plugins/reference",
-                  "vi/plugins/bundles",
-                  "vi/plugins/dependency-resolution",
-                  "vi/plugins/install-overrides",
+                  "vi/plugins/bundles"
+                ]
+              },
+              {
+                "group": "Bundled plugin guides",
+                "pages": [
                   "vi/plugins/codex-harness",
                   "vi/plugins/codex-computer-use",
                   "vi/plugins/google-meet",
@@ -10796,40 +10957,20 @@
                   "vi/plugins/voice-call",
                   "vi/plugins/memory-wiki",
                   "vi/plugins/memory-lancedb",
-                  "vi/plugins/message-presentation",
                   "vi/plugins/oc-path",
                   "vi/plugins/skill-workshop",
-                  "vi/plugins/zalouser",
-                  {
-                    "group": "Building plugins",
-                    "pages": [
-                      "vi/plugins/building-plugins",
-                      "vi/plugins/hooks",
-                      "vi/plugins/sdk-channel-plugins",
-                      "vi/plugins/sdk-channel-message",
-                      "vi/plugins/sdk-provider-plugins",
-                      "vi/plugins/cli-backend-plugins",
-                      "vi/plugins/adding-capabilities",
-                      "vi/plugins/compatibility",
-                      "vi/plugins/sdk-migration"
-                    ]
-                  },
-                  {
-                    "group": "Plugin SDK reference",
-                    "pages": [
-                      "vi/plugins/sdk-overview",
-                      "vi/plugins/sdk-subpaths",
-                      "vi/plugins/sdk-entrypoints",
-                      "vi/plugins/sdk-runtime",
-                      "vi/plugins/sdk-channel-turn",
-                      "vi/plugins/sdk-agent-harness",
-                      "vi/plugins/sdk-setup",
-                      "vi/plugins/sdk-testing",
-                      "vi/plugins/manifest",
-                      "vi/plugins/architecture",
-                      "vi/plugins/architecture-internals"
-                    ]
-                  }
+                  "vi/plugins/zalouser"
+                ]
+              },
+              {
+                "group": "Building plugins",
+                "pages": [
+                  "vi/plugins/building-plugins",
+                  "vi/plugins/sdk-channel-plugins",
+                  "vi/plugins/sdk-provider-plugins",
+                  "vi/plugins/cli-backend-plugins",
+                  "vi/plugins/hooks",
+                  "vi/plugins/adding-capabilities"
                 ]
               },
               {
@@ -11318,6 +11459,41 @@
                 ]
               },
               {
+                "group": "Plugin reference",
+                "pages": [
+                  "vi/plugins/plugin-inventory",
+                  "vi/plugins/reference",
+                  "vi/plugins/dependency-resolution",
+                  "vi/plugins/install-overrides"
+                ]
+              },
+              {
+                "group": "Plugin SDK reference",
+                "pages": [
+                  "vi/plugins/sdk-overview",
+                  "vi/plugins/sdk-subpaths",
+                  "vi/plugins/sdk-entrypoints",
+                  "vi/plugins/sdk-runtime",
+                  "vi/plugins/sdk-agent-harness",
+                  "vi/plugins/sdk-setup",
+                  "vi/plugins/sdk-testing",
+                  "vi/plugins/manifest"
+                ]
+              },
+              {
+                "group": "Plugin maintainer reference",
+                "pages": [
+                  "vi/plugins/architecture",
+                  "vi/plugins/architecture-internals",
+                  "vi/plugins/sdk-migration",
+                  "vi/plugins/compatibility",
+                  "vi/plugins/sdk-channel-message",
+                  "vi/plugins/sdk-channel-turn",
+                  "vi/plugins/sdk-channel-ingress",
+                  "vi/plugins/message-presentation"
+                ]
+              },
+              {
                 "group": "Templates",
                 "pages": [
                   "vi/reference/AGENTS.default",
@@ -11677,11 +11853,12 @@
                   "nl/tools/plugin",
                   "nl/plugins/manage-plugins",
                   "nl/plugins/community",
-                  "nl/plugins/plugin-inventory",
-                  "nl/plugins/reference",
-                  "nl/plugins/bundles",
-                  "nl/plugins/dependency-resolution",
-                  "nl/plugins/install-overrides",
+                  "nl/plugins/bundles"
+                ]
+              },
+              {
+                "group": "Bundled plugin guides",
+                "pages": [
                   "nl/plugins/codex-harness",
                   "nl/plugins/codex-computer-use",
                   "nl/plugins/google-meet",
@@ -11689,40 +11866,20 @@
                   "nl/plugins/voice-call",
                   "nl/plugins/memory-wiki",
                   "nl/plugins/memory-lancedb",
-                  "nl/plugins/message-presentation",
                   "nl/plugins/oc-path",
                   "nl/plugins/skill-workshop",
-                  "nl/plugins/zalouser",
-                  {
-                    "group": "Building plugins",
-                    "pages": [
-                      "nl/plugins/building-plugins",
-                      "nl/plugins/hooks",
-                      "nl/plugins/sdk-channel-plugins",
-                      "nl/plugins/sdk-channel-message",
-                      "nl/plugins/sdk-provider-plugins",
-                      "nl/plugins/cli-backend-plugins",
-                      "nl/plugins/adding-capabilities",
-                      "nl/plugins/compatibility",
-                      "nl/plugins/sdk-migration"
-                    ]
-                  },
-                  {
-                    "group": "Plugin SDK reference",
-                    "pages": [
-                      "nl/plugins/sdk-overview",
-                      "nl/plugins/sdk-subpaths",
-                      "nl/plugins/sdk-entrypoints",
-                      "nl/plugins/sdk-runtime",
-                      "nl/plugins/sdk-channel-turn",
-                      "nl/plugins/sdk-agent-harness",
-                      "nl/plugins/sdk-setup",
-                      "nl/plugins/sdk-testing",
-                      "nl/plugins/manifest",
-                      "nl/plugins/architecture",
-                      "nl/plugins/architecture-internals"
-                    ]
-                  }
+                  "nl/plugins/zalouser"
+                ]
+              },
+              {
+                "group": "Building plugins",
+                "pages": [
+                  "nl/plugins/building-plugins",
+                  "nl/plugins/sdk-channel-plugins",
+                  "nl/plugins/sdk-provider-plugins",
+                  "nl/plugins/cli-backend-plugins",
+                  "nl/plugins/hooks",
+                  "nl/plugins/adding-capabilities"
                 ]
               },
               {
@@ -12211,6 +12368,41 @@
                 ]
               },
               {
+                "group": "Plugin reference",
+                "pages": [
+                  "nl/plugins/plugin-inventory",
+                  "nl/plugins/reference",
+                  "nl/plugins/dependency-resolution",
+                  "nl/plugins/install-overrides"
+                ]
+              },
+              {
+                "group": "Plugin SDK reference",
+                "pages": [
+                  "nl/plugins/sdk-overview",
+                  "nl/plugins/sdk-subpaths",
+                  "nl/plugins/sdk-entrypoints",
+                  "nl/plugins/sdk-runtime",
+                  "nl/plugins/sdk-agent-harness",
+                  "nl/plugins/sdk-setup",
+                  "nl/plugins/sdk-testing",
+                  "nl/plugins/manifest"
+                ]
+              },
+              {
+                "group": "Plugin maintainer reference",
+                "pages": [
+                  "nl/plugins/architecture",
+                  "nl/plugins/architecture-internals",
+                  "nl/plugins/sdk-migration",
+                  "nl/plugins/compatibility",
+                  "nl/plugins/sdk-channel-message",
+                  "nl/plugins/sdk-channel-turn",
+                  "nl/plugins/sdk-channel-ingress",
+                  "nl/plugins/message-presentation"
+                ]
+              },
+              {
                 "group": "Templates",
                 "pages": [
                   "nl/reference/AGENTS.default",
@@ -12570,11 +12762,12 @@
                   "tr/tools/plugin",
                   "tr/plugins/manage-plugins",
                   "tr/plugins/community",
-                  "tr/plugins/plugin-inventory",
-                  "tr/plugins/reference",
-                  "tr/plugins/bundles",
-                  "tr/plugins/dependency-resolution",
-                  "tr/plugins/install-overrides",
+                  "tr/plugins/bundles"
+                ]
+              },
+              {
+                "group": "Bundled plugin guides",
+                "pages": [
                   "tr/plugins/codex-harness",
                   "tr/plugins/codex-computer-use",
                   "tr/plugins/google-meet",
@@ -12582,40 +12775,20 @@
                   "tr/plugins/voice-call",
                   "tr/plugins/memory-wiki",
                   "tr/plugins/memory-lancedb",
-                  "tr/plugins/message-presentation",
                   "tr/plugins/oc-path",
                   "tr/plugins/skill-workshop",
-                  "tr/plugins/zalouser",
-                  {
-                    "group": "Building plugins",
-                    "pages": [
-                      "tr/plugins/building-plugins",
-                      "tr/plugins/hooks",
-                      "tr/plugins/sdk-channel-plugins",
-                      "tr/plugins/sdk-channel-message",
-                      "tr/plugins/sdk-provider-plugins",
-                      "tr/plugins/cli-backend-plugins",
-                      "tr/plugins/adding-capabilities",
-                      "tr/plugins/compatibility",
-                      "tr/plugins/sdk-migration"
-                    ]
-                  },
-                  {
-                    "group": "Plugin SDK reference",
-                    "pages": [
-                      "tr/plugins/sdk-overview",
-                      "tr/plugins/sdk-subpaths",
-                      "tr/plugins/sdk-entrypoints",
-                      "tr/plugins/sdk-runtime",
-                      "tr/plugins/sdk-channel-turn",
-                      "tr/plugins/sdk-agent-harness",
-                      "tr/plugins/sdk-setup",
-                      "tr/plugins/sdk-testing",
-                      "tr/plugins/manifest",
-                      "tr/plugins/architecture",
-                      "tr/plugins/architecture-internals"
-                    ]
-                  }
+                  "tr/plugins/zalouser"
+                ]
+              },
+              {
+                "group": "Building plugins",
+                "pages": [
+                  "tr/plugins/building-plugins",
+                  "tr/plugins/sdk-channel-plugins",
+                  "tr/plugins/sdk-provider-plugins",
+                  "tr/plugins/cli-backend-plugins",
+                  "tr/plugins/hooks",
+                  "tr/plugins/adding-capabilities"
                 ]
               },
               {
@@ -13104,6 +13277,41 @@
                 ]
               },
               {
+                "group": "Plugin reference",
+                "pages": [
+                  "tr/plugins/plugin-inventory",
+                  "tr/plugins/reference",
+                  "tr/plugins/dependency-resolution",
+                  "tr/plugins/install-overrides"
+                ]
+              },
+              {
+                "group": "Plugin SDK reference",
+                "pages": [
+                  "tr/plugins/sdk-overview",
+                  "tr/plugins/sdk-subpaths",
+                  "tr/plugins/sdk-entrypoints",
+                  "tr/plugins/sdk-runtime",
+                  "tr/plugins/sdk-agent-harness",
+                  "tr/plugins/sdk-setup",
+                  "tr/plugins/sdk-testing",
+                  "tr/plugins/manifest"
+                ]
+              },
+              {
+                "group": "Plugin maintainer reference",
+                "pages": [
+                  "tr/plugins/architecture",
+                  "tr/plugins/architecture-internals",
+                  "tr/plugins/sdk-migration",
+                  "tr/plugins/compatibility",
+                  "tr/plugins/sdk-channel-message",
+                  "tr/plugins/sdk-channel-turn",
+                  "tr/plugins/sdk-channel-ingress",
+                  "tr/plugins/message-presentation"
+                ]
+              },
+              {
                 "group": "Templates",
                 "pages": [
                   "tr/reference/AGENTS.default",
@@ -13463,11 +13671,12 @@
                   "uk/tools/plugin",
                   "uk/plugins/manage-plugins",
                   "uk/plugins/community",
-                  "uk/plugins/plugin-inventory",
-                  "uk/plugins/reference",
-                  "uk/plugins/bundles",
-                  "uk/plugins/dependency-resolution",
-                  "uk/plugins/install-overrides",
+                  "uk/plugins/bundles"
+                ]
+              },
+              {
+                "group": "Bundled plugin guides",
+                "pages": [
                   "uk/plugins/codex-harness",
                   "uk/plugins/codex-computer-use",
                   "uk/plugins/google-meet",
@@ -13475,40 +13684,20 @@
                   "uk/plugins/voice-call",
                   "uk/plugins/memory-wiki",
                   "uk/plugins/memory-lancedb",
-                  "uk/plugins/message-presentation",
                   "uk/plugins/oc-path",
                   "uk/plugins/skill-workshop",
-                  "uk/plugins/zalouser",
-                  {
-                    "group": "Building plugins",
-                    "pages": [
-                      "uk/plugins/building-plugins",
-                      "uk/plugins/hooks",
-                      "uk/plugins/sdk-channel-plugins",
-                      "uk/plugins/sdk-channel-message",
-                      "uk/plugins/sdk-provider-plugins",
-                      "uk/plugins/cli-backend-plugins",
-                      "uk/plugins/adding-capabilities",
-                      "uk/plugins/compatibility",
-                      "uk/plugins/sdk-migration"
-                    ]
-                  },
-                  {
-                    "group": "Plugin SDK reference",
-                    "pages": [
-                      "uk/plugins/sdk-overview",
-                      "uk/plugins/sdk-subpaths",
-                      "uk/plugins/sdk-entrypoints",
-                      "uk/plugins/sdk-runtime",
-                      "uk/plugins/sdk-channel-turn",
-                      "uk/plugins/sdk-agent-harness",
-                      "uk/plugins/sdk-setup",
-                      "uk/plugins/sdk-testing",
-                      "uk/plugins/manifest",
-                      "uk/plugins/architecture",
-                      "uk/plugins/architecture-internals"
-                    ]
-                  }
+                  "uk/plugins/zalouser"
+                ]
+              },
+              {
+                "group": "Building plugins",
+                "pages": [
+                  "uk/plugins/building-plugins",
+                  "uk/plugins/sdk-channel-plugins",
+                  "uk/plugins/sdk-provider-plugins",
+                  "uk/plugins/cli-backend-plugins",
+                  "uk/plugins/hooks",
+                  "uk/plugins/adding-capabilities"
                 ]
               },
               {
@@ -13997,6 +14186,41 @@
                 ]
               },
               {
+                "group": "Plugin reference",
+                "pages": [
+                  "uk/plugins/plugin-inventory",
+                  "uk/plugins/reference",
+                  "uk/plugins/dependency-resolution",
+                  "uk/plugins/install-overrides"
+                ]
+              },
+              {
+                "group": "Plugin SDK reference",
+                "pages": [
+                  "uk/plugins/sdk-overview",
+                  "uk/plugins/sdk-subpaths",
+                  "uk/plugins/sdk-entrypoints",
+                  "uk/plugins/sdk-runtime",
+                  "uk/plugins/sdk-agent-harness",
+                  "uk/plugins/sdk-setup",
+                  "uk/plugins/sdk-testing",
+                  "uk/plugins/manifest"
+                ]
+              },
+              {
+                "group": "Plugin maintainer reference",
+                "pages": [
+                  "uk/plugins/architecture",
+                  "uk/plugins/architecture-internals",
+                  "uk/plugins/sdk-migration",
+                  "uk/plugins/compatibility",
+                  "uk/plugins/sdk-channel-message",
+                  "uk/plugins/sdk-channel-turn",
+                  "uk/plugins/sdk-channel-ingress",
+                  "uk/plugins/message-presentation"
+                ]
+              },
+              {
                 "group": "Templates",
                 "pages": [
                   "uk/reference/AGENTS.default",
@@ -14356,11 +14580,12 @@
                   "id/tools/plugin",
                   "id/plugins/manage-plugins",
                   "id/plugins/community",
-                  "id/plugins/plugin-inventory",
-                  "id/plugins/reference",
-                  "id/plugins/bundles",
-                  "id/plugins/dependency-resolution",
-                  "id/plugins/install-overrides",
+                  "id/plugins/bundles"
+                ]
+              },
+              {
+                "group": "Bundled plugin guides",
+                "pages": [
                   "id/plugins/codex-harness",
                   "id/plugins/codex-computer-use",
                   "id/plugins/google-meet",
@@ -14368,40 +14593,20 @@
                   "id/plugins/voice-call",
                   "id/plugins/memory-wiki",
                   "id/plugins/memory-lancedb",
-                  "id/plugins/message-presentation",
                   "id/plugins/oc-path",
                   "id/plugins/skill-workshop",
-                  "id/plugins/zalouser",
-                  {
-                    "group": "Building plugins",
-                    "pages": [
-                      "id/plugins/building-plugins",
-                      "id/plugins/hooks",
-                      "id/plugins/sdk-channel-plugins",
-                      "id/plugins/sdk-channel-message",
-                      "id/plugins/sdk-provider-plugins",
-                      "id/plugins/cli-backend-plugins",
-                      "id/plugins/adding-capabilities",
-                      "id/plugins/compatibility",
-                      "id/plugins/sdk-migration"
-                    ]
-                  },
-                  {
-                    "group": "Plugin SDK reference",
-                    "pages": [
-                      "id/plugins/sdk-overview",
-                      "id/plugins/sdk-subpaths",
-                      "id/plugins/sdk-entrypoints",
-                      "id/plugins/sdk-runtime",
-                      "id/plugins/sdk-channel-turn",
-                      "id/plugins/sdk-agent-harness",
-                      "id/plugins/sdk-setup",
-                      "id/plugins/sdk-testing",
-                      "id/plugins/manifest",
-                      "id/plugins/architecture",
-                      "id/plugins/architecture-internals"
-                    ]
-                  }
+                  "id/plugins/zalouser"
+                ]
+              },
+              {
+                "group": "Building plugins",
+                "pages": [
+                  "id/plugins/building-plugins",
+                  "id/plugins/sdk-channel-plugins",
+                  "id/plugins/sdk-provider-plugins",
+                  "id/plugins/cli-backend-plugins",
+                  "id/plugins/hooks",
+                  "id/plugins/adding-capabilities"
                 ]
               },
               {
@@ -14890,6 +15095,41 @@
                 ]
               },
               {
+                "group": "Plugin reference",
+                "pages": [
+                  "id/plugins/plugin-inventory",
+                  "id/plugins/reference",
+                  "id/plugins/dependency-resolution",
+                  "id/plugins/install-overrides"
+                ]
+              },
+              {
+                "group": "Plugin SDK reference",
+                "pages": [
+                  "id/plugins/sdk-overview",
+                  "id/plugins/sdk-subpaths",
+                  "id/plugins/sdk-entrypoints",
+                  "id/plugins/sdk-runtime",
+                  "id/plugins/sdk-agent-harness",
+                  "id/plugins/sdk-setup",
+                  "id/plugins/sdk-testing",
+                  "id/plugins/manifest"
+                ]
+              },
+              {
+                "group": "Plugin maintainer reference",
+                "pages": [
+                  "id/plugins/architecture",
+                  "id/plugins/architecture-internals",
+                  "id/plugins/sdk-migration",
+                  "id/plugins/compatibility",
+                  "id/plugins/sdk-channel-message",
+                  "id/plugins/sdk-channel-turn",
+                  "id/plugins/sdk-channel-ingress",
+                  "id/plugins/message-presentation"
+                ]
+              },
+              {
                 "group": "Templates",
                 "pages": [
                   "id/reference/AGENTS.default",
@@ -15249,11 +15489,12 @@
                   "pl/tools/plugin",
                   "pl/plugins/manage-plugins",
                   "pl/plugins/community",
-                  "pl/plugins/plugin-inventory",
-                  "pl/plugins/reference",
-                  "pl/plugins/bundles",
-                  "pl/plugins/dependency-resolution",
-                  "pl/plugins/install-overrides",
+                  "pl/plugins/bundles"
+                ]
+              },
+              {
+                "group": "Bundled plugin guides",
+                "pages": [
                   "pl/plugins/codex-harness",
                   "pl/plugins/codex-computer-use",
                   "pl/plugins/google-meet",
@@ -15261,40 +15502,20 @@
                   "pl/plugins/voice-call",
                   "pl/plugins/memory-wiki",
                   "pl/plugins/memory-lancedb",
-                  "pl/plugins/message-presentation",
                   "pl/plugins/oc-path",
                   "pl/plugins/skill-workshop",
-                  "pl/plugins/zalouser",
-                  {
-                    "group": "Building plugins",
-                    "pages": [
-                      "pl/plugins/building-plugins",
-                      "pl/plugins/hooks",
-                      "pl/plugins/sdk-channel-plugins",
-                      "pl/plugins/sdk-channel-message",
-                      "pl/plugins/sdk-provider-plugins",
-                      "pl/plugins/cli-backend-plugins",
-                      "pl/plugins/adding-capabilities",
-                      "pl/plugins/compatibility",
-                      "pl/plugins/sdk-migration"
-                    ]
-                  },
-                  {
-                    "group": "Plugin SDK reference",
-                    "pages": [
-                      "pl/plugins/sdk-overview",
-                      "pl/plugins/sdk-subpaths",
-                      "pl/plugins/sdk-entrypoints",
-                      "pl/plugins/sdk-runtime",
-                      "pl/plugins/sdk-channel-turn",
-                      "pl/plugins/sdk-agent-harness",
-                      "pl/plugins/sdk-setup",
-                      "pl/plugins/sdk-testing",
-                      "pl/plugins/manifest",
-                      "pl/plugins/architecture",
-                      "pl/plugins/architecture-internals"
-                    ]
-                  }
+                  "pl/plugins/zalouser"
+                ]
+              },
+              {
+                "group": "Building plugins",
+                "pages": [
+                  "pl/plugins/building-plugins",
+                  "pl/plugins/sdk-channel-plugins",
+                  "pl/plugins/sdk-provider-plugins",
+                  "pl/plugins/cli-backend-plugins",
+                  "pl/plugins/hooks",
+                  "pl/plugins/adding-capabilities"
                 ]
               },
               {
@@ -15780,6 +16001,41 @@
                   "pl/plugins/codex-harness-reference",
                   "pl/plugins/codex-harness-runtime",
                   "pl/plugins/codex-native-plugins"
+                ]
+              },
+              {
+                "group": "Plugin reference",
+                "pages": [
+                  "pl/plugins/plugin-inventory",
+                  "pl/plugins/reference",
+                  "pl/plugins/dependency-resolution",
+                  "pl/plugins/install-overrides"
+                ]
+              },
+              {
+                "group": "Plugin SDK reference",
+                "pages": [
+                  "pl/plugins/sdk-overview",
+                  "pl/plugins/sdk-subpaths",
+                  "pl/plugins/sdk-entrypoints",
+                  "pl/plugins/sdk-runtime",
+                  "pl/plugins/sdk-agent-harness",
+                  "pl/plugins/sdk-setup",
+                  "pl/plugins/sdk-testing",
+                  "pl/plugins/manifest"
+                ]
+              },
+              {
+                "group": "Plugin maintainer reference",
+                "pages": [
+                  "pl/plugins/architecture",
+                  "pl/plugins/architecture-internals",
+                  "pl/plugins/sdk-migration",
+                  "pl/plugins/compatibility",
+                  "pl/plugins/sdk-channel-message",
+                  "pl/plugins/sdk-channel-turn",
+                  "pl/plugins/sdk-channel-ingress",
+                  "pl/plugins/message-presentation"
                 ]
               },
               {
