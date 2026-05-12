@@ -1,0 +1,115 @@
+---
+read_when:
+    - Zrozumienie wyników skanowania i moderacji ClawHub
+    - Zgłaszanie umiejętności lub pakietu
+    - Przywracanie wstrzymanego, ukrytego lub zablokowanego wpisu
+summary: Zachowanie ClawHub dotyczące zaufania, skanowania, raportowania i moderacji.
+x-i18n:
+    generated_at: "2026-05-12T08:44:53Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 49e2650b23ff7657bb01c43fff50f3bb555b3bc7961b503b02a51096e2fceb27
+    source_path: clawhub/security.md
+    workflow: 16
+---
+
+# Security + Moderacja
+
+ClawHub jest otwarty na publikowanie, ale publiczne wpisy nadal przechodzą przez mechanizmy zaufania, skanowania, zgłaszania i moderacji. Cel jest praktyczny: pomóc użytkownikom sprawdzać, co instalują, dać wydawcom ścieżkę naprawy w przypadku wyników fałszywie dodatnich oraz utrzymywać nadużywające pakiety poza publicznym odkrywaniem.
+
+Zobacz też [Dopuszczalne użycie](/pl/clawhub/acceptable-usage).
+
+## Co użytkownicy mogą sprawdzić
+
+Przed zainstalowaniem umiejętności lub pluginu sprawdź jej wpis w ClawHub pod kątem:
+
+- właściciela i przypisania źródła
+- najnowszej wersji i dziennika zmian
+- wymaganych zmiennych środowiskowych lub uprawnień
+- metadanych zgodności dla pluginów
+- statusu skanowania lub moderacji
+- zgłoszeń, komentarzy, gwiazdek, pobrań i sygnałów instalacji tam, gdzie są pokazywane
+
+Instaluj tylko treści, które rozumiesz i którym ufasz.
+
+## Stany skanowania
+
+ClawHub może pokazywać wyniki skanowania lub moderacji na stronach publicznych oraz w diagnostyce widocznej dla właściciela.
+
+Typowe wyniki obejmują:
+
+- `clean`: nie znaleziono problemu blokującego.
+- `suspicious`: wydanie wymaga ostrożności lub przeglądu.
+- `malicious`: wydanie jest uznawane za niebezpieczne.
+- `pending`: kontrole jeszcze się nie zakończyły.
+- `held`, `quarantined`, `revoked` lub `hidden`: wydanie nie jest w pełni
+  dostępne w publicznych miejscach instalacji.
+
+Dokładne sformułowania mogą się różnić zależnie od powierzchni, ale praktyczne znaczenie jest takie samo: jeśli wydanie jest wstrzymane lub zablokowane, użytkownicy nie powinni go instalować, dopóki właściciel nie rozwiąże problemu albo moderacja go nie przywróci.
+
+## Skills
+
+Skanowanie umiejętności obejmuje opublikowany pakiet umiejętności, metadane, zadeklarowane wymagania i podejrzane instrukcje.
+
+ClawHub zwraca szczególną uwagę na niezgodności między tym, co umiejętność deklaruje, a tym, co wydaje się robić. Na przykład umiejętność, która odwołuje się do wymaganego klucza API, powinna zadeklarować to wymaganie w `SKILL.md`, aby użytkownicy mogli je zobaczyć przed instalacją.
+
+Ustalenia skanowania są oparte na artefaktach. Oczekiwane zachowanie dostawcy, takie jak zadeklarowane dane uwierzytelniające API, wywołania zwrotne OAuth do localhost, porządkowanie odinstalowania w określonym zakresie, kodowanie Basic Auth lub wybrane przez użytkownika przesyłanie plików do wskazanego dostawcy, jest traktowane inaczej niż ukryte przekazywanie danych uwierzytelniających, szeroki dostęp do plików prywatnych, niepowiązane miejsca docelowe w sieci lub ukryte nadużycia przeglądarki.
+
+Zobacz [Format umiejętności](/pl/clawhub/skill-format).
+
+## Plugins
+
+Wydania pluginów obejmują metadane pakietu, przypisanie źródła, pola zgodności i informacje o integralności artefaktu.
+
+OpenClaw sprawdza zgodność przed zainstalowaniem pluginów hostowanych w ClawHub. Rekordy pakietów mogą także ujawniać metadane skrótu, aby OpenClaw mógł weryfikować pobrane artefakty. ClawScan uwzględnia zadeklarowane metadane env/config pakietu `openclaw.environment` podczas przeglądu wydań pluginów, aby zadeklarowane wymagania uruchomieniowe były porównywane z zaobserwowanym zachowaniem.
+
+## Zgłoszenia
+
+Zalogowani użytkownicy mogą zgłaszać umiejętności, pakiety i komentarze.
+
+Zgłoszenia powinny być konkretne i możliwe do podjęcia działania. Nadużywanie zgłaszania samo w sobie może prowadzić do działań wobec konta.
+
+Przykłady zgłoszeń:
+
+- mylące metadane
+- niezadeklarowane wymagania dotyczące danych uwierzytelniających lub uprawnień
+- podejrzane instrukcje instalacji
+- komentarze oszukańcze lub podszywanie się
+- rejestracje w złej wierze lub nadużycie znaku towarowego
+- treści naruszające [Dopuszczalne użycie](/pl/clawhub/acceptable-usage)
+
+## Notatki ClawScan wydawcy
+
+Wydawcy mogą podać opcjonalną notatkę ClawScan podczas publikowania umiejętności lub pluginu. Ta notatka daje ClawScan kontekst dla zachowania, które w przeciwnym razie mogłoby wyglądać nietypowo, takiego jak dostęp do sieci, dostęp do natywnego hosta lub dane uwierzytelniające specyficzne dla dostawcy.
+
+## Wstrzymania moderacyjne
+
+Gdy statyczny skaner oznaczy przesłaną umiejętność jako złośliwą, wydawca zostaje automatycznie objęty wstrzymaniem moderacyjnym (`requiresModerationAt` ustawione na użytkowniku). Ukrywa to wszystkie umiejętności wydawcy, powoduje, że przyszłe publikacje zaczynają jako ukryte, i tworzy wpis dziennika audytu `user.moderation.auto`.
+
+Statyczne podejrzane ustalenia są zachowywane jako dowody plik/wiersz dla moderatorów, ale same nie ukrywają treści ani nie decydują o publicznym werdykcie skanowania. Nowe przesłania pozostają w stanie przeglądu/oczekiwania, dopóki przegląd LLM nie zostanie rozstrzygnięty. Skanowanie statyczne blokuje natychmiast tylko w przypadku sygnatur złośliwych. Trafienia silnika VirusTotal pozostają widocznym dowodem bezpieczeństwa, ale werdykty VirusTotal Code Insight/Palm mają charakter doradczy i same nie ukrywają umiejętności. Przeglądy LLM w ClawScan zachowują notatki zgodne z celem jako wskazówki. Ustalenia średniego poziomu pozostają widoczne na artefakcie, natomiast filtr podejrzanych jest zarezerwowany dla istotnych obaw LLM, ustaleń złośliwych lub potwierdzonych wykryć silnika AV.
+
+Administratorzy mogą zdjąć wstrzymanie wynikające z wyniku fałszywie dodatniego:
+
+```bash
+npx convex run users:liftModerationHold '{"userId": "<user-id>", "reason": "False positive from security tool scanning"}'
+```
+
+To czyści `requiresModerationAt` i `requiresModerationReason`, przywraca umiejętności ukryte przez wstrzymanie na poziomie użytkownika oraz zapisuje wpis dziennika audytu `user.moderation.lift`. Umiejętności ukryte z innych powodów albo takie, których własne skanowanie statyczne nadal pozostaje złośliwe, pozostają ukryte.
+
+## Bany i stan konta
+
+Konta naruszające zasady ClawHub mogą utracić dostęp do publikowania. Poważne nadużycia mogą skutkować banami konta, unieważnieniem tokenów, ukryciem treści lub usunięciem wpisów.
+
+Usunięte, zbanowane lub wyłączone konta nie mogą używać tokenów API ClawHub. Jeśli uwierzytelnianie CLI zacznie zawodzić po działaniu wobec konta, zaloguj się do interfejsu webowego, aby sprawdzić stan konta. Jeśli logowanie lub normalny dostęp CLI są zablokowane, skontaktuj się z security@openclaw.ai w celu przeglądu odzyskiwania.
+
+## Wskazówki dla wydawców
+
+Aby ograniczyć wyniki fałszywie dodatnie i zwiększyć zaufanie użytkowników:
+
+- dbaj o dokładność nazw, streszczeń, tagów i dzienników zmian
+- deklaruj wymagane zmienne środowiskowe i uprawnienia
+- dodaj notatkę ClawScan wydawcy, gdy wydanie ma nietypowe, ale zamierzone zachowanie
+- unikaj zaciemnionych poleceń instalacji
+- linkuj do źródła, gdy to możliwe
+- używaj przebiegów próbnych przed publikowaniem pluginów
+- odpowiadaj jasno, jeśli użytkownicy lub moderatorzy pytają o zachowanie pakietu

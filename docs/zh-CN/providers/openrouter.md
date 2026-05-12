@@ -1,21 +1,21 @@
 ---
 read_when:
-    - 你想为多个 LLM 使用同一个 API 密钥
-    - 你想在 OpenClaw 中通过 OpenRouter 运行模型
+    - 你希望用一个 API 密钥访问多个 LLM
+    - 你想通过 OpenRouter 在 OpenClaw 中运行模型
     - 你想使用 OpenRouter 进行图像生成
     - 你想使用 OpenRouter 进行视频生成
-summary: 使用 OpenRouter 的统一 API 在 OpenClaw 中访问多种模型
+summary: 使用 OpenRouter 的统一 API 在 OpenClaw 中访问众多模型
 title: OpenRouter
 x-i18n:
-    generated_at: "2026-05-10T19:47:13Z"
+    generated_at: "2026-05-12T08:45:40Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 5016c522cb2239dadebbfe63459d0e00f43b3dc76aa49cd5b4acfd542b31be71
+    source_hash: 0dbf2b5a69636eb18471dd7d1dcf05ee30da931e2e3b5c9ae5d44a20d3e46f78
     source_path: providers/openrouter.md
     workflow: 16
 ---
 
-OpenRouter 提供一个**统一 API**，可将请求通过单一端点和 API key 路由到多个模型。它兼容 OpenAI，因此大多数 OpenAI SDK 只需切换 base URL 即可使用。
+OpenRouter 提供一个**统一 API**，可通过单一端点和 API key 将请求路由到多个模型。它兼容 OpenAI，因此大多数 OpenAI SDK 只需切换 base URL 即可使用。
 
 ## 入门指南
 
@@ -29,7 +29,7 @@ OpenRouter 提供一个**统一 API**，可将请求通过单一端点和 API ke
     ```
   </Step>
   <Step title="（可选）切换到特定模型">
-    新手引导默认使用 `openrouter/auto`。之后可以选择一个具体模型：
+    新手引导默认使用 `openrouter/auto`。之后可选择一个具体模型：
 
     ```bash
     openclaw models set openrouter/<provider>/<model>
@@ -54,12 +54,12 @@ OpenRouter 提供一个**统一 API**，可将请求通过单一端点和 API ke
 ## 模型引用
 
 <Note>
-模型引用遵循 `openrouter/<provider>/<model>` 模式。可用提供商和模型的完整列表见 [/concepts/model-providers](/zh-CN/concepts/model-providers)。
+模型引用遵循 `openrouter/<provider>/<model>` 模式。完整的可用提供商和模型列表，请参阅 [/concepts/model-providers](/zh-CN/concepts/model-providers)。
 </Note>
 
 内置回退示例：
 
-| 模型引用                          | 备注                         |
+| 模型引用                          | 说明                         |
 | --------------------------------- | ---------------------------- |
 | `openrouter/auto`                 | OpenRouter 自动路由          |
 | `openrouter/moonshotai/kimi-k2.6` | 通过 MoonshotAI 使用 Kimi K2.6 |
@@ -67,7 +67,7 @@ OpenRouter 提供一个**统一 API**，可将请求通过单一端点和 API ke
 
 ## 图像生成
 
-OpenRouter 也可以作为 `image_generate` 工具的后端。在 `agents.defaults.imageGenerationModel` 下使用 OpenRouter 图像模型：
+OpenRouter 也可以支持 `image_generate` 工具。在 `agents.defaults.imageGenerationModel` 下使用 OpenRouter 图像模型：
 
 ```json5
 {
@@ -83,11 +83,11 @@ OpenRouter 也可以作为 `image_generate` 工具的后端。在 `agents.defaul
 }
 ```
 
-OpenClaw 会使用 `modalities: ["image", "text"]` 将图像请求发送到 OpenRouter 的 chat completions image API。Gemini 图像模型会通过 OpenRouter 的 `image_config` 接收受支持的 `aspectRatio` 和 `resolution` 提示。对于较慢的 OpenRouter 图像模型，使用 `agents.defaults.imageGenerationModel.timeoutMs`；`image_generate` 工具每次调用的 `timeoutMs` 参数仍然优先生效。
+OpenClaw 会将图像请求发送到 OpenRouter 的 chat completions 图像 API，并带上 `modalities: ["image", "text"]`。Gemini 图像模型会通过 OpenRouter 的 `image_config` 接收受支持的 `aspectRatio` 和 `resolution` 提示。对于较慢的 OpenRouter 图像模型，请使用 `agents.defaults.imageGenerationModel.timeoutMs`；`image_generate` 工具每次调用的 `timeoutMs` 参数仍会优先。
 
 ## 视频生成
 
-OpenRouter 也可以通过其异步 `/videos` API 作为 `video_generate` 工具的后端。在 `agents.defaults.videoGenerationModel` 下使用 OpenRouter 视频模型：
+OpenRouter 也可以通过其异步 `/videos` API 支持 `video_generate` 工具。在 `agents.defaults.videoGenerationModel` 下使用 OpenRouter 视频模型：
 
 ```json5
 {
@@ -102,11 +102,11 @@ OpenRouter 也可以通过其异步 `/videos` API 作为 `video_generate` 工具
 }
 ```
 
-OpenClaw 会向 OpenRouter 提交文生视频和图生视频任务，轮询返回的 `polling_url`，并从 OpenRouter 的 `unsigned_urls` 或已文档化的任务内容端点下载完成的视频。默认情况下，参考图像会作为第一帧/最后一帧图像发送；标记为 `reference_image` 的图像会作为 OpenRouter 输入引用发送。内置的 `google/veo-3.1-fast` 默认值声明当前支持 4/6/8 秒时长、`720P`/`1080P` 分辨率，以及 `16:9`/`9:16` 宽高比。OpenRouter 未注册视频到视频，因为上游视频生成 API 目前接受文本和图像引用。
+OpenClaw 会向 OpenRouter 提交文生视频和图生视频任务，轮询返回的 `polling_url`，并从 OpenRouter 的 `unsigned_urls` 或文档化的任务内容端点下载已完成的视频。默认情况下，参考图像会作为首帧/末帧图像发送；标记为 `reference_image` 的图像会作为 OpenRouter 输入引用发送。内置的 `google/veo-3.1-fast` 默认值声明了当前支持的 4/6/8 秒时长、`720P`/`1080P` 分辨率，以及 `16:9`/`9:16` 宽高比。OpenRouter 未注册视频到视频功能，因为上游视频生成 API 目前接受文本和图像引用。
 
 ## 文本转语音
 
-OpenRouter 也可以通过其兼容 OpenAI 的 `/audio/speech` 端点用作 TTS 提供商。
+OpenRouter 也可以通过其 OpenAI 兼容的 `/audio/speech` 端点用作 TTS 提供商。
 
 ```json5
 {
@@ -128,11 +128,30 @@ OpenRouter 也可以通过其兼容 OpenAI 的 `/audio/speech` 端点用作 TTS 
 
 如果省略 `messages.tts.providers.openrouter.apiKey`，TTS 会复用 `models.providers.openrouter.apiKey`，然后再使用 `OPENROUTER_API_KEY`。
 
+## 语音转文本（入站音频）
+
+OpenRouter 可以通过共享的 `tools.media.audio` 路径，使用其 STT 端点（`/audio/transcriptions`）转录入站语音/音频附件。这适用于任何会将入站语音/音频转发到媒体理解预检的渠道插件。
+
+```json5
+{
+  tools: {
+    media: {
+      audio: {
+        enabled: true,
+        models: [{ provider: "openrouter", model: "openai/whisper-large-v3-turbo" }],
+      },
+    },
+  },
+}
+```
+
+OpenClaw 会将 OpenRouter STT 请求作为 JSON 发送，并在 `input_audio` 下携带 base64 音频（OpenRouter STT 契约），而不是作为 multipart OpenAI 表单上传。
+
 ## 身份验证和标头
 
-OpenRouter 底层使用携带你的 API key 的 Bearer token。
+OpenRouter 在底层使用带有你的 API key 的 Bearer token。
 
-在真实的 OpenRouter 请求（`https://openrouter.ai/api/v1`）中，OpenClaw 还会添加 OpenRouter 文档中说明的应用归因标头：
+在真实 OpenRouter 请求（`https://openrouter.ai/api/v1`）中，OpenClaw 还会添加 OpenRouter 文档化的应用归因标头：
 
 | 标头                      | 值                                                                                                     |
 | ------------------------- | ------------------------------------------------------------------------------------------------------ |
@@ -148,7 +167,7 @@ OpenRouter 底层使用携带你的 API key 的 Bearer token。
 
 <AccordionGroup>
   <Accordion title="响应缓存">
-    OpenRouter 响应缓存需要显式启用。通过模型参数为每个 OpenRouter 模型启用：
+    OpenRouter 响应缓存是选择启用的。通过模型参数为每个 OpenRouter 模型启用：
 
     ```json5
     {
@@ -167,42 +186,42 @@ OpenRouter 底层使用携带你的 API key 的 Bearer token。
     }
     ```
 
-    OpenClaw 会发送 `X-OpenRouter-Cache: true`，并在配置时发送 `X-OpenRouter-Cache-TTL`。`responseCacheClear: true` 会强制刷新当前请求并存储替换响应。也接受 snake_case 别名（`response_cache`、`response_cache_ttl_seconds` 和 `response_cache_clear`）。
+    OpenClaw 会发送 `X-OpenRouter-Cache: true`，并在配置后发送 `X-OpenRouter-Cache-TTL`。`responseCacheClear: true` 会强制刷新当前请求并存储替换响应。也接受 snake_case 别名（`response_cache`、`response_cache_ttl_seconds` 和 `response_cache_clear`）。
 
-    这独立于提供商提示缓存，也独立于 OpenRouter 的 Anthropic `cache_control` 标记。它只应用于已验证的 `openrouter.ai` 路由，而不是自定义代理 base URL。
+    这独立于提供商提示词缓存，也独立于 OpenRouter 的 Anthropic `cache_control` 标记。它只会应用于已验证的 `openrouter.ai` 路由，而不会应用于自定义代理 base URL。
 
   </Accordion>
 
   <Accordion title="Anthropic 缓存标记">
-    在已验证的 OpenRouter 路由上，Anthropic 模型引用会保留 OpenRouter 专用的 Anthropic `cache_control` 标记，OpenClaw 使用这些标记在 system/developer 提示块上更好地复用提示缓存。
+    在已验证的 OpenRouter 路由上，Anthropic 模型引用会保留 OpenRouter 专用的 Anthropic `cache_control` 标记，OpenClaw 使用这些标记来更好地复用 system/developer 提示词块的提示词缓存。
   </Accordion>
 
-  <Accordion title="Anthropic 推理预填充">
-    在已验证的 OpenRouter 路由上，启用推理的 Anthropic 模型引用会在请求到达 OpenRouter 之前删除尾随的 assistant 预填充轮次，以匹配 Anthropic 要求推理对话以用户轮次结束的规定。
+  <Accordion title="Anthropic reasoning 预填充">
+    在已验证的 OpenRouter 路由上，启用 reasoning 的 Anthropic 模型引用会在请求到达 OpenRouter 前丢弃末尾的 assistant 预填充轮次，以匹配 Anthropic 要求 reasoning 对话以用户轮次结束的约束。
   </Accordion>
 
-  <Accordion title="Thinking / 推理注入">
-    在受支持的非 `auto` 路由上，OpenClaw 会将所选 thinking 级别映射到 OpenRouter 代理推理负载。不受支持的模型提示和 `openrouter/auto` 会跳过该推理注入。Hunter Alpha 也会对过时配置的模型引用跳过代理推理，因为 OpenRouter 可能会在该已弃用路由的推理字段中返回最终答案文本。
+  <Accordion title="Thinking / reasoning 注入">
+    在受支持的非 `auto` 路由上，OpenClaw 会将所选 thinking 级别映射到 OpenRouter 代理 reasoning payload。不受支持的模型提示和 `openrouter/auto` 会跳过该 reasoning 注入。Hunter Alpha 也会针对过期配置的模型引用跳过代理 reasoning，因为 OpenRouter 可能会在该已退役路由的 reasoning 字段中返回最终答案文本。
   </Accordion>
 
-  <Accordion title="DeepSeek V4 推理重放">
-    在已验证的 OpenRouter 路由上，`openrouter/deepseek/deepseek-v4-flash` 和 `openrouter/deepseek/deepseek-v4-pro` 会在重放的 assistant 轮次上填充缺失的 `reasoning_content`，使 thinking/工具对话保持 DeepSeek V4 要求的后续形态。OpenClaw 会为这些路由发送 OpenRouter 支持的 `reasoning_effort` 值；`xhigh` 是声明的最高级别，过时的 `max` 覆盖会映射到 `xhigh`。
+  <Accordion title="DeepSeek V4 reasoning 重放">
+    在已验证的 OpenRouter 路由上，`openrouter/deepseek/deepseek-v4-flash` 和 `openrouter/deepseek/deepseek-v4-pro` 会在重放的 assistant 轮次中填充缺失的 `reasoning_content`，使 thinking/tool 对话保持 DeepSeek V4 所需的后续形态。OpenClaw 会为这些路由发送 OpenRouter 支持的 `reasoning_effort` 值；`xhigh` 是已声明的最高级别，过期的 `max` 覆盖值会映射到 `xhigh`。
   </Accordion>
 
-  <Accordion title="仅 OpenAI 请求整形">
-    OpenRouter 仍会走代理风格、兼容 OpenAI 的路径，因此不会转发原生仅 OpenAI 的请求整形，例如 `serviceTier`、Responses `store`、OpenAI 推理兼容负载和提示缓存提示。
+  <Accordion title="仅 OpenAI 的请求整形">
+    OpenRouter 仍会通过代理风格的 OpenAI 兼容路径运行，因此不会转发仅原生 OpenAI 支持的请求整形，例如 `serviceTier`、Responses `store`、OpenAI reasoning 兼容 payload 和提示词缓存提示。
   </Accordion>
 
   <Accordion title="Gemini 后端路由">
-    Gemini 后端的 OpenRouter 引用会保留在代理 Gemini 路径上：OpenClaw 会在那里保留 Gemini thought-signature 清理，但不会启用原生 Gemini 重放验证或引导重写。
+    Gemini 后端的 OpenRouter 引用会保留在代理 Gemini 路径上：OpenClaw 会在那里保留 Gemini thought-signature 清理，但不会启用原生 Gemini 重放验证或 bootstrap 重写。
   </Accordion>
 
   <Accordion title="提供商路由元数据">
-    如果你在模型参数下传入 OpenRouter 提供商路由，OpenClaw 会在共享流包装器运行之前，将其作为 OpenRouter 路由元数据转发。
+    如果你在模型参数下传递 OpenRouter 提供商路由，OpenClaw 会在共享流包装器运行前将其作为 OpenRouter 路由元数据转发。
   </Accordion>
 </AccordionGroup>
 
-## 相关内容
+## 相关
 
 <CardGroup cols={2}>
   <Card title="模型选择" href="/zh-CN/concepts/model-providers" icon="layers">
