@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Bạn đang triển khai OpenClaw trên một VM đám mây bằng Docker
-    - Bạn cần quy trình tạo binary dùng chung, cơ chế lưu trữ bền vững và luồng cập nhật
-summary: Các bước thời gian chạy VM Docker dùng chung cho các máy chủ OpenClaw Gateway chạy dài hạn
+    - Bạn đang triển khai OpenClaw trên máy ảo đám mây bằng Docker
+    - Bạn cần quy trình tạo nhị phân dùng chung, lưu trữ bền vững và cập nhật
+summary: Các bước thời gian chạy của VM Docker dùng chung cho các máy chủ OpenClaw Gateway hoạt động lâu dài
 title: Môi trường chạy VM Docker
 x-i18n:
-    generated_at: "2026-05-02T10:45:31Z"
+    generated_at: "2026-05-12T12:51:02Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7489d42e01199a7b5e6f3b98dcfe624d1b3133ef1682dda764b2c8ddd1324e78
+    source_hash: e6a01c20ac6b85a32167fd1d897368ee0ebc6997cbc95a25f831ea7dd2e623c9
     source_path: install/docker-vm-runtime.md
     workflow: 16
 ---
 
-Các bước runtime dùng chung cho các cài đặt Docker dựa trên máy ảo như GCP, Hetzner và các nhà cung cấp VPS tương tự.
+Các bước runtime dùng chung cho các bản cài đặt Docker dựa trên VM như GCP, Hetzner và các nhà cung cấp VPS tương tự.
 
 ## Đưa các binary bắt buộc vào image
 
-Cài đặt binary bên trong container đang chạy là một cái bẫy.
-Bất cứ thứ gì được cài đặt lúc runtime sẽ bị mất khi khởi động lại.
+Cài đặt binary bên trong một container đang chạy là một cái bẫy.
+Bất cứ thứ gì được cài đặt ở runtime sẽ bị mất khi khởi động lại.
 
 Tất cả binary bên ngoài mà Skills yêu cầu phải được cài đặt tại thời điểm build image.
 
@@ -83,7 +83,7 @@ CMD ["node","dist/index.js"]
 ```
 
 <Note>
-Các URL ở trên là ví dụ. Với máy ảo dựa trên ARM, hãy chọn các asset `arm64`. Để build có thể tái lập, hãy ghim URL bản phát hành có phiên bản.
+Các URL ở trên là ví dụ. Đối với VM dựa trên ARM, hãy chọn asset `arm64`. Để build có thể tái lập, hãy ghim URL bản phát hành có phiên bản.
 </Note>
 
 ## Build và khởi chạy
@@ -93,8 +93,8 @@ docker compose build
 docker compose up -d openclaw-gateway
 ```
 
-Nếu build thất bại với `Killed` hoặc `exit code 137` trong lúc chạy `pnpm install --frozen-lockfile`, máy ảo đã hết bộ nhớ.
-Hãy dùng lớp máy lớn hơn trước khi thử lại.
+Nếu build thất bại với `Killed` hoặc `exit code 137` trong lúc chạy `pnpm install --frozen-lockfile`, VM đã hết bộ nhớ.
+Hãy dùng một lớp máy lớn hơn trước khi thử lại.
 
 Xác minh các binary:
 
@@ -104,7 +104,7 @@ docker compose exec openclaw-gateway which goplaces
 docker compose exec openclaw-gateway which wacli
 ```
 
-Đầu ra mong đợi:
+Kết quả mong đợi:
 
 ```
 /usr/local/bin/gog
@@ -118,34 +118,35 @@ Xác minh Gateway:
 docker compose logs -f openclaw-gateway
 ```
 
-Đầu ra mong đợi:
+Kết quả mong đợi:
 
 ```
 [gateway] listening on ws://0.0.0.0:18789
 ```
 
-## Nội dung nào được lưu bền vững ở đâu
+## Thành phần nào được lưu bền vững ở đâu
 
-OpenClaw chạy trong Docker, nhưng Docker không phải nguồn chân lý.
+OpenClaw chạy trong Docker, nhưng Docker không phải là nguồn sự thật.
 Mọi trạng thái tồn tại lâu dài phải sống sót qua các lần khởi động lại, build lại và reboot.
 
-| Thành phần           | Vị trí                                                 | Cơ chế lưu bền vững        | Ghi chú                                                       |
-| -------------------- | ----------------------------------------------------- | -------------------------- | ------------------------------------------------------------- |
-| Cấu hình Gateway     | `/home/node/.openclaw/`                               | Mount volume host          | Bao gồm `openclaw.json`, `.env`                               |
-| Hồ sơ xác thực model | `/home/node/.openclaw/agents/`                        | Mount volume host          | `agents/<agentId>/agent/auth-profiles.json` (OAuth, khóa API) |
-| Cấu hình Skills      | `/home/node/.openclaw/skills/`                        | Mount volume host          | Trạng thái cấp Skill                                          |
-| Workspace agent      | `/home/node/.openclaw/workspace/`                     | Mount volume host          | Mã và artifact của agent                                      |
-| Phiên WhatsApp       | `/home/node/.openclaw/`                               | Mount volume host          | Giữ đăng nhập QR                                              |
-| Keyring Gmail        | `/home/node/.openclaw/`                               | Volume host + mật khẩu     | Yêu cầu `GOG_KEYRING_PASSWORD`                                |
-| Gói Plugin           | `/home/node/.openclaw/npm`, `/home/node/.openclaw/git` | Mount volume host          | Gốc gói Plugin có thể tải xuống                               |
-| Binary bên ngoài     | `/usr/local/bin/`                                     | Image Docker               | Phải được đưa vào tại thời điểm build                         |
-| Runtime Node         | Hệ thống tệp container                                | Image Docker               | Được build lại mỗi lần build image                            |
-| Gói OS               | Hệ thống tệp container                                | Image Docker               | Không cài đặt lúc runtime                                     |
-| Container Docker     | Tạm thời                                              | Có thể khởi động lại       | Có thể hủy an toàn                                            |
+| Thành phần          | Vị trí                                                 | Cơ chế lưu bền vững    | Ghi chú                                                       |
+| ------------------- | ------------------------------------------------------ | ---------------------- | ------------------------------------------------------------- |
+| Cấu hình Gateway    | `/home/node/.openclaw/`                                | Gắn volume từ host     | Bao gồm `openclaw.json`, `.env`                               |
+| Hồ sơ xác thực model | `/home/node/.openclaw/agents/`                        | Gắn volume từ host     | `agents/<agentId>/agent/auth-profiles.json` (OAuth, API keys) |
+| Khóa hồ sơ xác thực | `/home/node/.config/openclaw/`                         | Gắn volume từ host     | Khóa mã hóa cục bộ cho vật liệu token của hồ sơ xác thực OAuth |
+| Cấu hình Skills     | `/home/node/.openclaw/skills/`                         | Gắn volume từ host     | Trạng thái cấp Skill                                          |
+| Workspace của agent | `/home/node/.openclaw/workspace/`                      | Gắn volume từ host     | Mã và artifact của agent                                      |
+| Phiên WhatsApp      | `/home/node/.openclaw/`                                | Gắn volume từ host     | Giữ đăng nhập QR                                              |
+| Keyring Gmail       | `/home/node/.openclaw/`                                | Host volume + mật khẩu | Yêu cầu `GOG_KEYRING_PASSWORD`                                |
+| Gói Plugin          | `/home/node/.openclaw/npm`, `/home/node/.openclaw/git` | Gắn volume từ host     | Gốc gói Plugin có thể tải xuống                               |
+| Binary bên ngoài    | `/usr/local/bin/`                                      | Docker image           | Phải được đưa vào tại thời điểm build                         |
+| Node runtime        | Hệ thống tệp container                                 | Docker image           | Được build lại mỗi lần build image                            |
+| Gói OS              | Hệ thống tệp container                                 | Docker image           | Không cài đặt ở runtime                                       |
+| Container Docker    | Tạm thời                                               | Có thể khởi động lại   | Có thể hủy an toàn                                            |
 
 ## Cập nhật
 
-Để cập nhật OpenClaw trên máy ảo:
+Để cập nhật OpenClaw trên VM:
 
 ```bash
 git pull

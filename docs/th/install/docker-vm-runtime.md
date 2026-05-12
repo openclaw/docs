@@ -1,41 +1,41 @@
 ---
 read_when:
-    - คุณกำลังปรับใช้ OpenClaw บน VM บนคลาวด์ด้วย Docker
-    - คุณต้องใช้กระบวนการร่วมสำหรับการสร้างไบนารี การคงอยู่ และการอัปเดต
-summary: ขั้นตอนรันไทม์ Docker VM แบบใช้ร่วมกันสำหรับโฮสต์ OpenClaw Gateway ที่ทำงานระยะยาว
+    - คุณกำลังปรับใช้ OpenClaw บน VM คลาวด์ด้วย Docker
+    - คุณต้องใช้โฟลว์การสร้างไบนารีร่วม การคงอยู่ และการอัปเดต
+summary: ขั้นตอนรันไทม์ของ Docker VM ที่ใช้ร่วมกันสำหรับโฮสต์ OpenClaw Gateway ที่ใช้งานระยะยาว
 title: รันไทม์ VM ของ Docker
 x-i18n:
-    generated_at: "2026-05-02T10:20:35Z"
+    generated_at: "2026-05-12T12:50:58Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7489d42e01199a7b5e6f3b98dcfe624d1b3133ef1682dda764b2c8ddd1324e78
+    source_hash: e6a01c20ac6b85a32167fd1d897368ee0ebc6997cbc95a25f831ea7dd2e623c9
     source_path: install/docker-vm-runtime.md
     workflow: 16
 ---
 
 ขั้นตอน runtime ที่ใช้ร่วมกันสำหรับการติดตั้ง Docker บน VM เช่น GCP, Hetzner และผู้ให้บริการ VPS ที่คล้ายกัน
 
-## ฝัง binary ที่จำเป็นไว้ใน image
+## ใส่ไบนารีที่จำเป็นไว้ในอิมเมจ
 
-การติดตั้ง binary ภายใน container ที่กำลังทำงานอยู่เป็นกับดัก
-ทุกอย่างที่ติดตั้งตอน runtime จะหายไปเมื่อ restart
+การติดตั้งไบนารีภายในคอนเทนเนอร์ที่กำลังทำงานอยู่เป็นกับดัก
+สิ่งใดก็ตามที่ติดตั้งตอน runtime จะหายไปเมื่อรีสตาร์ท
 
-binary ภายนอกทั้งหมดที่ Skills ต้องใช้ต้องติดตั้งตอน build image
+ไบนารีภายนอกทั้งหมดที่ Skills ต้องใช้ต้องติดตั้งในช่วงสร้างอิมเมจ
 
-ตัวอย่างด้านล่างแสดง binary ทั่วไปเพียงสามรายการ:
+ตัวอย่างด้านล่างแสดงไบนารีทั่วไปเพียงสามรายการ:
 
-- `gog` (จาก `gogcli`) สำหรับเข้าถึง Gmail
+- `gog` (จาก `gogcli`) สำหรับการเข้าถึง Gmail
 - `goplaces` สำหรับ Google Places
 - `wacli` สำหรับ WhatsApp
 
-รายการเหล่านี้เป็นตัวอย่าง ไม่ใช่รายการที่ครบถ้วน
-คุณสามารถติดตั้ง binary ได้มากเท่าที่ต้องการโดยใช้รูปแบบเดียวกัน
+สิ่งเหล่านี้เป็นตัวอย่าง ไม่ใช่รายการที่ครบถ้วน
+คุณสามารถติดตั้งไบนารีได้มากเท่าที่ต้องการโดยใช้รูปแบบเดียวกัน
 
-หากคุณเพิ่ม Skills ใหม่ในภายหลังที่ต้องพึ่งพา binary เพิ่มเติม คุณต้อง:
+หากคุณเพิ่ม Skills ใหม่ในภายหลังที่ต้องพึ่งพาไบนารีเพิ่มเติม คุณต้อง:
 
 1. อัปเดต Dockerfile
-2. build image ใหม่
-3. restart containers
+2. สร้างอิมเมจใหม่
+3. รีสตาร์ทคอนเทนเนอร์
 
 **ตัวอย่าง Dockerfile**
 
@@ -83,20 +83,20 @@ CMD ["node","dist/index.js"]
 ```
 
 <Note>
-URL ด้านบนเป็นตัวอย่าง สำหรับ VM ที่ใช้ ARM ให้เลือก asset `arm64` สำหรับ build ที่ทำซ้ำได้ ให้ pin URL ของ release ที่ระบุเวอร์ชันไว้
+URL ด้านบนเป็นตัวอย่าง สำหรับ VM ที่ใช้ ARM ให้เลือก asset `arm64` สำหรับ build ที่ทำซ้ำได้ ให้ตรึง URL ของ release ที่ระบุเวอร์ชัน
 </Note>
 
-## Build และ launch
+## สร้างและเปิดใช้งาน
 
 ```bash
 docker compose build
 docker compose up -d openclaw-gateway
 ```
 
-หาก build ล้มเหลวด้วย `Killed` หรือ `exit code 137` ระหว่าง `pnpm install --frozen-lockfile` แสดงว่า VM มีหน่วยความจำไม่พอ
-ใช้ machine class ที่ใหญ่ขึ้นก่อนลองอีกครั้ง
+หาก build ล้มเหลวด้วย `Killed` หรือ `exit code 137` ระหว่าง `pnpm install --frozen-lockfile` แสดงว่า VM หน่วยความจำไม่พอ
+ให้ใช้คลาสเครื่องที่ใหญ่ขึ้นก่อนลองใหม่
 
-ตรวจสอบ binary:
+ตรวจสอบไบนารี:
 
 ```bash
 docker compose exec openclaw-gateway which gog
@@ -124,24 +124,25 @@ docker compose logs -f openclaw-gateway
 [gateway] listening on ws://0.0.0.0:18789
 ```
 
-## สิ่งใดคงอยู่ที่ไหน
+## สิ่งใดคงอยู่ที่ใด
 
-OpenClaw ทำงานใน Docker แต่ Docker ไม่ใช่แหล่งข้อมูลจริง
-สถานะที่ต้องคงอยู่ในระยะยาวทั้งหมดต้องรอดจากการ restart, rebuild และ reboot
+OpenClaw ทำงานใน Docker แต่ Docker ไม่ใช่แหล่งข้อมูลหลัก
+สถานะที่มีอายุยาวทั้งหมดต้องอยู่รอดหลังการรีสตาร์ท การ rebuild และการ reboot
 
-| องค์ประกอบ           | ตำแหน่ง                                                | กลไกการคงอยู่          | หมายเหตุ                                                      |
+| ส่วนประกอบ | ตำแหน่ง | กลไกการคงอยู่ | หมายเหตุ |
 | ------------------- | ------------------------------------------------------ | ---------------------- | ------------------------------------------------------------- |
-| การกำหนดค่า Gateway | `/home/node/.openclaw/`                                | host volume mount      | รวม `openclaw.json`, `.env`                                   |
-| โปรไฟล์ auth ของโมเดล | `/home/node/.openclaw/agents/`                         | host volume mount      | `agents/<agentId>/agent/auth-profiles.json` (OAuth, API keys) |
-| การกำหนดค่า Skill    | `/home/node/.openclaw/skills/`                         | host volume mount      | สถานะระดับ Skill                                              |
-| workspace ของ agent | `/home/node/.openclaw/workspace/`                      | host volume mount      | โค้ดและ artifact ของ agent                                    |
-| session ของ WhatsApp | `/home/node/.openclaw/`                                | host volume mount      | เก็บการ login ด้วย QR ไว้                                     |
-| keyring ของ Gmail    | `/home/node/.openclaw/`                                | host volume + password | ต้องใช้ `GOG_KEYRING_PASSWORD`                                |
-| package ของ Plugin   | `/home/node/.openclaw/npm`, `/home/node/.openclaw/git` | host volume mount      | root ของ package Plugin ที่ดาวน์โหลดได้                       |
-| binary ภายนอก        | `/usr/local/bin/`                                      | Docker image           | ต้องฝังไว้ตอน build                                           |
-| Node runtime         | filesystem ของ container                              | Docker image           | build ใหม่ทุกครั้งที่ build image                             |
-| package ของ OS       | filesystem ของ container                              | Docker image           | อย่าติดตั้งตอน runtime                                        |
-| Docker container     | ชั่วคราว                                               | restart ได้            | ทำลายทิ้งได้อย่างปลอดภัย                                      |
+| การกำหนดค่า Gateway | `/home/node/.openclaw/` | การ mount volume จากโฮสต์ | รวม `openclaw.json`, `.env` |
+| โปรไฟล์การยืนยันตัวตนของโมเดล | `/home/node/.openclaw/agents/` | การ mount volume จากโฮสต์ | `agents/<agentId>/agent/auth-profiles.json` (OAuth, API keys) |
+| คีย์โปรไฟล์การยืนยันตัวตน | `/home/node/.config/openclaw/` | การ mount volume จากโฮสต์ | คีย์เข้ารหัสภายในเครื่องสำหรับวัสดุ token ของโปรไฟล์การยืนยันตัวตน OAuth |
+| การกำหนดค่า Skills | `/home/node/.openclaw/skills/` | การ mount volume จากโฮสต์ | สถานะระดับ Skill |
+| พื้นที่ทำงานของเอเจนต์ | `/home/node/.openclaw/workspace/` | การ mount volume จากโฮสต์ | โค้ดและ artifact ของเอเจนต์ |
+| เซสชัน WhatsApp | `/home/node/.openclaw/` | การ mount volume จากโฮสต์ | เก็บรักษาการเข้าสู่ระบบด้วย QR |
+| keyring ของ Gmail | `/home/node/.openclaw/` | volume ของโฮสต์ + รหัสผ่าน | ต้องใช้ `GOG_KEYRING_PASSWORD` |
+| แพ็กเกจ Plugin | `/home/node/.openclaw/npm`, `/home/node/.openclaw/git` | การ mount volume จากโฮสต์ | รากของแพ็กเกจ Plugin ที่ดาวน์โหลดได้ |
+| ไบนารีภายนอก | `/usr/local/bin/` | อิมเมจ Docker | ต้องใส่ไว้ในช่วง build |
+| runtime ของ Node | ระบบไฟล์ของคอนเทนเนอร์ | อิมเมจ Docker | สร้างใหม่ทุกครั้งที่ build อิมเมจ |
+| แพ็กเกจ OS | ระบบไฟล์ของคอนเทนเนอร์ | อิมเมจ Docker | อย่าติดตั้งตอน runtime |
+| คอนเทนเนอร์ Docker | ชั่วคราว | รีสตาร์ทได้ | ลบทิ้งได้อย่างปลอดภัย |
 
 ## การอัปเดต
 

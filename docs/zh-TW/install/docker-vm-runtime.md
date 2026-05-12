@@ -1,37 +1,37 @@
 ---
 read_when:
     - 您正在使用 Docker 在雲端 VM 上部署 OpenClaw
-    - 你需要共用的二進位檔建置、持久化與更新流程
-summary: 長期執行的 OpenClaw Gateway 主機共用 Docker VM 執行階段步驟
-title: Docker VM 執行階段
+    - 你需要共用的二進位檔建置、持久化和更新流程
+summary: 用於長期運作的 OpenClaw Gateway 主機的共用 Docker VM 執行階段步驟
+title: Docker 虛擬機執行環境
 x-i18n:
-    generated_at: "2026-05-02T02:53:09Z"
+    generated_at: "2026-05-12T12:50:27Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7489d42e01199a7b5e6f3b98dcfe624d1b3133ef1682dda764b2c8ddd1324e78
+    source_hash: e6a01c20ac6b85a32167fd1d897368ee0ebc6997cbc95a25f831ea7dd2e623c9
     source_path: install/docker-vm-runtime.md
     workflow: 16
 ---
 
-供 GCP、Hetzner 與類似 VPS 供應商等基於 VM 的 Docker 安裝使用的共用執行階段步驟。
+以 VM 為基礎的 Docker 安裝共用執行階段步驟，例如 GCP、Hetzner，以及類似的 VPS 供應商。
 
-## 將必要的二進位檔內建到映像檔
+## 將必要的二進位檔烘焙進映像檔
 
-在執行中的容器內安裝二進位檔是個陷阱。
-任何在執行階段安裝的內容，都會在重新啟動時遺失。
+在執行中的容器內安裝二進位檔是一個陷阱。
+任何在執行階段安裝的內容，都會在重新啟動後遺失。
 
-Skills 所需的所有外部二進位檔，都必須在映像檔建置期間安裝。
+Skills 所需的所有外部二進位檔，都必須在映像檔建置時安裝。
 
-以下範例只示範三個常見的二進位檔：
+以下範例只展示三個常見二進位檔：
 
-- 用於 Gmail 存取的 `gog`（來自 `gogcli`）
-- 用於 Google Places 的 `goplaces`
-- 用於 WhatsApp 的 `wacli`
+- `gog`（來自 `gogcli`）用於 Gmail 存取
+- `goplaces` 用於 Google Places
+- `wacli` 用於 WhatsApp
 
-這些只是範例，不是完整清單。
+這些是範例，不是完整清單。
 你可以使用相同模式安裝所需的任意數量二進位檔。
 
-如果你之後新增依賴其他二進位檔的 Skills，則必須：
+如果你之後新增依賴其他二進位檔的 Skills，必須：
 
 1. 更新 Dockerfile
 2. 重新建置映像檔
@@ -83,7 +83,7 @@ CMD ["node","dist/index.js"]
 ```
 
 <Note>
-上述 URL 是範例。對於基於 ARM 的 VM，請選擇 `arm64` 資產。若要可重現的建置，請固定使用帶版本的發布 URL。
+上述 URL 是範例。若使用 ARM 架構 VM，請選擇 `arm64` 資產。若需要可重現建置，請釘選有版本的發行 URL。
 </Note>
 
 ## 建置並啟動
@@ -93,8 +93,8 @@ docker compose build
 docker compose up -d openclaw-gateway
 ```
 
-如果建置在 `pnpm install --frozen-lockfile` 期間以 `Killed` 或 `exit code 137` 失敗，表示 VM 記憶體不足。
-請改用更大的機器等級後再重試。
+如果建置在 `pnpm install --frozen-lockfile` 期間因 `Killed` 或 `exit code 137` 失敗，表示 VM 記憶體不足。
+請先使用更大的機器類型，再重試。
 
 驗證二進位檔：
 
@@ -126,19 +126,20 @@ docker compose logs -f openclaw-gateway
 
 ## 什麼會持久化到哪裡
 
-OpenClaw 在 Docker 中執行，但 Docker 不是真實來源。
-所有長期狀態都必須能在重新啟動、重新建置與重開機後保留下來。
+OpenClaw 在 Docker 中執行，但 Docker 不是事實來源。
+所有長期狀態都必須在重新啟動、重新建置和重新開機後保留下來。
 
 | 元件                | 位置                                                   | 持久化機制             | 備註                                                          |
 | ------------------- | ------------------------------------------------------ | ---------------------- | ------------------------------------------------------------- |
 | Gateway 設定        | `/home/node/.openclaw/`                                | 主機磁碟區掛載         | 包含 `openclaw.json`、`.env`                                  |
-| 模型驗證設定檔      | `/home/node/.openclaw/agents/`                         | 主機磁碟區掛載         | `agents/<agentId>/agent/auth-profiles.json`（OAuth、API keys） |
+| 模型驗證設定檔      | `/home/node/.openclaw/agents/`                         | 主機磁碟區掛載         | `agents/<agentId>/agent/auth-profiles.json`（OAuth、API 金鑰） |
+| 驗證設定檔金鑰      | `/home/node/.config/openclaw/`                         | 主機磁碟區掛載         | OAuth 驗證設定檔權杖材料的本機加密金鑰                        |
 | Skill 設定          | `/home/node/.openclaw/skills/`                         | 主機磁碟區掛載         | Skill 層級狀態                                                |
 | Agent 工作區        | `/home/node/.openclaw/workspace/`                      | 主機磁碟區掛載         | 程式碼與 agent 成品                                           |
 | WhatsApp 工作階段   | `/home/node/.openclaw/`                                | 主機磁碟區掛載         | 保留 QR 登入                                                  |
 | Gmail keyring       | `/home/node/.openclaw/`                                | 主機磁碟區 + 密碼      | 需要 `GOG_KEYRING_PASSWORD`                                   |
-| Plugin 套件         | `/home/node/.openclaw/npm`, `/home/node/.openclaw/git` | 主機磁碟區掛載         | 可下載的 Plugin 套件根目錄                                    |
-| 外部二進位檔        | `/usr/local/bin/`                                      | Docker 映像檔          | 必須在建置期間內建                                            |
+| Plugin 套件         | `/home/node/.openclaw/npm`, `/home/node/.openclaw/git` | 主機磁碟區掛載         | 可下載 Plugin 套件根目錄                                      |
+| 外部二進位檔        | `/usr/local/bin/`                                      | Docker 映像檔          | 必須在建置時烘焙                                              |
 | Node 執行階段       | 容器檔案系統                                           | Docker 映像檔          | 每次映像檔建置都會重新建置                                    |
 | OS 套件             | 容器檔案系統                                           | Docker 映像檔          | 不要在執行階段安裝                                            |
 | Docker 容器         | 暫時性                                                 | 可重新啟動             | 可安全銷毀                                                    |

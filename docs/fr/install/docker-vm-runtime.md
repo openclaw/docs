@@ -1,19 +1,19 @@
 ---
 read_when:
-    - Vous déployez OpenClaw sur une VM dans le cloud avec Docker
-    - Vous avez besoin de la génération du binaire partagé, de la persistance et du flux de mise à jour
-summary: Étapes d’exécution de VM Docker partagées pour les hôtes OpenClaw Gateway de longue durée
+    - Vous déployez OpenClaw sur une VM cloud avec Docker
+    - Vous avez besoin de la préparation binaire partagée, de la persistance et du flux de mise à jour
+summary: Étapes d’exécution de la VM Docker partagée pour les hôtes OpenClaw Gateway de longue durée
 title: Environnement d’exécution de VM Docker
 x-i18n:
-    generated_at: "2026-05-02T07:11:13Z"
+    generated_at: "2026-05-12T12:50:47Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7489d42e01199a7b5e6f3b98dcfe624d1b3133ef1682dda764b2c8ddd1324e78
+    source_hash: e6a01c20ac6b85a32167fd1d897368ee0ebc6997cbc95a25f831ea7dd2e623c9
     source_path: install/docker-vm-runtime.md
     workflow: 16
 ---
 
-Étapes d’exécution partagées pour les installations Docker basées sur des VM, telles que GCP, Hetzner et des fournisseurs VPS similaires.
+Étapes d’exécution partagées pour les installations Docker basées sur des VM, comme GCP, Hetzner et les fournisseurs de VPS similaires.
 
 ## Intégrer les binaires requis dans l’image
 
@@ -22,7 +22,7 @@ Tout ce qui est installé à l’exécution sera perdu au redémarrage.
 
 Tous les binaires externes requis par les Skills doivent être installés au moment de la construction de l’image.
 
-Les exemples ci-dessous montrent seulement trois binaires courants :
+Les exemples ci-dessous ne montrent que trois binaires courants :
 
 - `gog` (depuis `gogcli`) pour l’accès à Gmail
 - `goplaces` pour Google Places
@@ -31,7 +31,7 @@ Les exemples ci-dessous montrent seulement trois binaires courants :
 Ce sont des exemples, pas une liste complète.
 Vous pouvez installer autant de binaires que nécessaire en utilisant le même modèle.
 
-Si vous ajoutez plus tard de nouveaux Skills qui dépendent de binaires supplémentaires, vous devez :
+Si vous ajoutez plus tard de nouvelles Skills qui dépendent de binaires supplémentaires, vous devez :
 
 1. Mettre à jour le Dockerfile
 2. Reconstruire l’image
@@ -83,7 +83,7 @@ CMD ["node","dist/index.js"]
 ```
 
 <Note>
-Les URL ci-dessus sont des exemples. Pour les VM basées sur ARM, choisissez les ressources `arm64`. Pour des constructions reproductibles, épinglez les URL de versions de publication versionnées.
+Les URL ci-dessus sont des exemples. Pour les VM basées sur ARM, choisissez les ressources `arm64`. Pour des constructions reproductibles, épinglez des URL de publication versionnées.
 </Note>
 
 ## Construire et lancer
@@ -124,23 +124,24 @@ Sortie attendue :
 [gateway] listening on ws://0.0.0.0:18789
 ```
 
-## Ce qui persiste et où
+## Ce qui persiste, et où
 
 OpenClaw s’exécute dans Docker, mais Docker n’est pas la source de vérité.
-Tout état durable doit survivre aux redémarrages, aux reconstructions et aux redémarrages système.
+Tout état durable doit survivre aux redémarrages, reconstructions et redémarrages système.
 
-| Composant           | Emplacement                                            | Mécanisme de persistance | Notes                                                         |
+| Composant           | Emplacement                                           | Mécanisme de persistance | Notes                                                         |
 | ------------------- | ------------------------------------------------------ | ------------------------ | ------------------------------------------------------------- |
 | Configuration du Gateway | `/home/node/.openclaw/`                                | Montage de volume hôte   | Inclut `openclaw.json`, `.env`                                |
-| Profils d’authentification des modèles | `/home/node/.openclaw/agents/`                         | Montage de volume hôte   | `agents/<agentId>/agent/auth-profiles.json` (OAuth, clés d’API) |
+| Profils d’authentification des modèles | `/home/node/.openclaw/agents/`                         | Montage de volume hôte   | `agents/<agentId>/agent/auth-profiles.json` (OAuth, clés API) |
+| Clé de profil d’authentification | `/home/node/.config/openclaw/`                         | Montage de volume hôte   | Clé de chiffrement locale pour le matériel de jeton du profil d’authentification OAuth |
 | Configurations des Skills | `/home/node/.openclaw/skills/`                         | Montage de volume hôte   | État au niveau des Skills                                     |
-| Espace de travail de l’agent | `/home/node/.openclaw/workspace/`                      | Montage de volume hôte   | Code et artefacts de l’agent                                  |
-| Session WhatsApp    | `/home/node/.openclaw/`                                | Montage de volume hôte   | Préserve la connexion par QR                                  |
-| Trousseau Gmail     | `/home/node/.openclaw/`                                | Volume hôte + mot de passe | Requiert `GOG_KEYRING_PASSWORD`                               |
+| Espace de travail de l’agent | `/home/node/.openclaw/workspace/`                      | Montage de volume hôte   | Code et artefacts d’agent                                     |
+| Session WhatsApp    | `/home/node/.openclaw/`                                | Montage de volume hôte   | Préserve la connexion par QR code                             |
+| Trousseau Gmail     | `/home/node/.openclaw/`                                | Volume hôte + mot de passe | Nécessite `GOG_KEYRING_PASSWORD`                              |
 | Paquets de Plugin   | `/home/node/.openclaw/npm`, `/home/node/.openclaw/git` | Montage de volume hôte   | Racines des paquets de Plugin téléchargeables                 |
 | Binaires externes   | `/usr/local/bin/`                                      | Image Docker             | Doivent être intégrés au moment de la construction            |
 | Runtime Node        | Système de fichiers du conteneur                       | Image Docker             | Reconstruit à chaque construction d’image                     |
-| Paquets du SE       | Système de fichiers du conteneur                       | Image Docker             | Ne pas installer à l’exécution                                |
+| Paquets du système d’exploitation | Système de fichiers du conteneur                       | Image Docker             | Ne pas installer à l’exécution                                |
 | Conteneur Docker    | Éphémère                                              | Redémarrable             | Peut être détruit sans risque                                 |
 
 ## Mises à jour

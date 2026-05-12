@@ -1,26 +1,26 @@
 ---
 read_when:
     - Sie stellen OpenClaw auf einer Cloud-VM mit Docker bereit
-    - Sie benötigen den gemeinsamen Binary-Bake, die Persistenz und den Update-Ablauf
-summary: Gemeinsame Docker-VM-Laufzeitschritte für dauerhaft betriebene OpenClaw Gateway-Hosts
+    - Sie benötigen die gemeinsame Erstellung der Binärdatei, Persistenz und den Aktualisierungsablauf
+summary: Gemeinsame Laufzeitschritte der Docker-VM für dauerhaft betriebene OpenClaw Gateway-Hosts
 title: Docker-VM-Laufzeit
 x-i18n:
-    generated_at: "2026-05-02T06:37:54Z"
+    generated_at: "2026-05-12T12:55:06Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7489d42e01199a7b5e6f3b98dcfe624d1b3133ef1682dda764b2c8ddd1324e78
+    source_hash: e6a01c20ac6b85a32167fd1d897368ee0ebc6997cbc95a25f831ea7dd2e623c9
     source_path: install/docker-vm-runtime.md
     workflow: 16
 ---
 
 Gemeinsame Laufzeitschritte für VM-basierte Docker-Installationen wie GCP, Hetzner und ähnliche VPS-Provider.
 
-## Erforderliche Binärdateien in das Image einbauen
+## Erforderliche Binärdateien in das Image einbacken
 
 Binärdateien in einem laufenden Container zu installieren, ist eine Falle.
-Alles, was zur Laufzeit installiert wird, geht beim Neustart verloren.
+Alles, was zur Laufzeit installiert wird, geht bei einem Neustart verloren.
 
-Alle externen Binärdateien, die von Skills benötigt werden, müssen beim Image-Build installiert werden.
+Alle externen Binärdateien, die von Skills benötigt werden, müssen zur Image-Build-Zeit installiert werden.
 
 Die folgenden Beispiele zeigen nur drei gängige Binärdateien:
 
@@ -29,11 +29,11 @@ Die folgenden Beispiele zeigen nur drei gängige Binärdateien:
 - `wacli` für WhatsApp
 
 Dies sind Beispiele, keine vollständige Liste.
-Sie können mit demselben Muster so viele Binärdateien installieren, wie nötig sind.
+Sie können nach demselben Muster so viele Binärdateien installieren, wie nötig sind.
 
 Wenn Sie später neue Skills hinzufügen, die von zusätzlichen Binärdateien abhängen, müssen Sie:
 
-1. Das Dockerfile aktualisieren
+1. Die Dockerfile aktualisieren
 2. Das Image neu bauen
 3. Die Container neu starten
 
@@ -83,7 +83,7 @@ CMD ["node","dist/index.js"]
 ```
 
 <Note>
-Die obigen URLs sind Beispiele. Wählen Sie für ARM-basierte VMs die `arm64`-Assets. Für reproduzierbare Builds sollten Sie versionierte Release-URLs festpinnen.
+Die oben genannten URLs sind Beispiele. Wählen Sie für ARM-basierte VMs die `arm64`-Assets aus. Verwenden Sie für reproduzierbare Builds versionierte Release-URLs.
 </Note>
 
 ## Bauen und starten
@@ -93,10 +93,10 @@ docker compose build
 docker compose up -d openclaw-gateway
 ```
 
-Wenn der Build während `pnpm install --frozen-lockfile` mit `Killed` oder `exit code 137` fehlschlägt, hat die VM nicht genug Arbeitsspeicher.
+Wenn der Build während `pnpm install --frozen-lockfile` mit `Killed` oder `exit code 137` fehlschlägt, hat die VM nicht genügend Arbeitsspeicher.
 Verwenden Sie eine größere Maschinenklasse, bevor Sie es erneut versuchen.
 
-Binärdateien prüfen:
+Binärdateien überprüfen:
 
 ```bash
 docker compose exec openclaw-gateway which gog
@@ -112,7 +112,7 @@ Erwartete Ausgabe:
 /usr/local/bin/wacli
 ```
 
-Gateway prüfen:
+Gateway überprüfen:
 
 ```bash
 docker compose logs -f openclaw-gateway
@@ -126,22 +126,23 @@ Erwartete Ausgabe:
 
 ## Was wo dauerhaft gespeichert wird
 
-OpenClaw läuft in Docker, aber Docker ist nicht die Quelle der Wahrheit.
-Alle langlebigen Zustandsdaten müssen Neustarts, Neubuilds und Reboots überstehen.
+OpenClaw läuft in Docker, aber Docker ist nicht die Source of Truth.
+Alle langlebigen Zustände müssen Neustarts, Neubuilds und Reboots überstehen.
 
-| Komponente          | Speicherort                                            | Persistenzmechanismus        | Hinweise                                                      |
-| ------------------- | ------------------------------------------------------ | ---------------------------- | ------------------------------------------------------------- |
-| Gateway-Konfiguration | `/home/node/.openclaw/`                              | Host-Volume-Mount            | Enthält `openclaw.json`, `.env`                               |
-| Modell-Auth-Profile | `/home/node/.openclaw/agents/`                         | Host-Volume-Mount            | `agents/<agentId>/agent/auth-profiles.json` (OAuth, API-Schlüssel) |
-| Skill-Konfigurationen | `/home/node/.openclaw/skills/`                       | Host-Volume-Mount            | Zustand auf Skill-Ebene                                       |
-| Agent-Arbeitsbereich | `/home/node/.openclaw/workspace/`                     | Host-Volume-Mount            | Code- und Agent-Artefakte                                     |
-| WhatsApp-Sitzung    | `/home/node/.openclaw/`                                | Host-Volume-Mount            | Bewahrt den QR-Login                                          |
-| Gmail-Keyring       | `/home/node/.openclaw/`                                | Host-Volume + Passwort       | Erfordert `GOG_KEYRING_PASSWORD`                              |
-| Plugin-Pakete       | `/home/node/.openclaw/npm`, `/home/node/.openclaw/git` | Host-Volume-Mount            | Paket-Roots für herunterladbare Plugins                       |
-| Externe Binärdateien | `/usr/local/bin/`                                     | Docker-Image                 | Müssen beim Build eingebaut werden                            |
-| Node-Laufzeit       | Container-Dateisystem                                  | Docker-Image                 | Wird bei jedem Image-Build neu gebaut                         |
-| Betriebssystempakete | Container-Dateisystem                                | Docker-Image                 | Nicht zur Laufzeit installieren                               |
-| Docker-Container    | Flüchtig                                               | Neustartbar                  | Kann gefahrlos zerstört werden                                |
+| Komponente          | Speicherort                                            | Persistenzmechanismus       | Hinweise                                                       |
+| ------------------- | ------------------------------------------------------ | --------------------------- | -------------------------------------------------------------- |
+| Gateway-Konfiguration | `/home/node/.openclaw/`                              | Host-Volume-Mount           | Enthält `openclaw.json`, `.env`                                |
+| Modellauthentifizierungsprofile | `/home/node/.openclaw/agents/`              | Host-Volume-Mount           | `agents/<agentId>/agent/auth-profiles.json` (OAuth, API-Schlüssel) |
+| Schlüssel für Authentifizierungsprofile | `/home/node/.config/openclaw/`        | Host-Volume-Mount           | Lokaler Verschlüsselungsschlüssel für OAuth-Tokenmaterial von Authentifizierungsprofilen |
+| Skill-Konfigurationen | `/home/node/.openclaw/skills/`                       | Host-Volume-Mount           | Zustand auf Skill-Ebene                                        |
+| Agent-Arbeitsbereich | `/home/node/.openclaw/workspace/`                     | Host-Volume-Mount           | Code- und Agent-Artefakte                                      |
+| WhatsApp-Sitzung    | `/home/node/.openclaw/`                                | Host-Volume-Mount           | Bewahrt die QR-Anmeldung auf                                   |
+| Gmail-Schlüsselbund | `/home/node/.openclaw/`                                | Host-Volume + Passwort      | Erfordert `GOG_KEYRING_PASSWORD`                               |
+| Plugin-Pakete       | `/home/node/.openclaw/npm`, `/home/node/.openclaw/git` | Host-Volume-Mount           | Stammverzeichnisse für herunterladbare Plugin-Pakete           |
+| Externe Binärdateien | `/usr/local/bin/`                                     | Docker-Image                | Müssen zur Build-Zeit eingebacken werden                       |
+| Node-Laufzeit       | Container-Dateisystem                                  | Docker-Image                | Wird bei jedem Image-Build neu gebaut                          |
+| Betriebssystempakete | Container-Dateisystem                                 | Docker-Image                | Nicht zur Laufzeit installieren                                |
+| Docker-Container    | Kurzlebig                                              | Neustartbar                 | Kann sicher gelöscht werden                                    |
 
 ## Updates
 

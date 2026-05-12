@@ -1,26 +1,26 @@
 ---
 read_when:
     - Estás desplegando OpenClaw en una VM en la nube con Docker
-    - Necesitas el flujo compartido de compilación del binario, persistencia y actualización
-summary: Pasos de tiempo de ejecución de VM Docker compartida para hosts de OpenClaw Gateway de larga duración
-title: Entorno de ejecución de la VM de Docker
+    - Necesitas el flujo compartido de preparación del binario, persistencia y actualización
+summary: Pasos de tiempo de ejecución de la VM de Docker compartida para hosts de OpenClaw Gateway de larga duración
+title: Entorno de ejecución de máquina virtual de Docker
 x-i18n:
-    generated_at: "2026-05-02T05:29:12Z"
+    generated_at: "2026-05-12T12:50:56Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7489d42e01199a7b5e6f3b98dcfe624d1b3133ef1682dda764b2c8ddd1324e78
+    source_hash: e6a01c20ac6b85a32167fd1d897368ee0ebc6997cbc95a25f831ea7dd2e623c9
     source_path: install/docker-vm-runtime.md
     workflow: 16
 ---
 
-Pasos de runtime compartidos para instalaciones de Docker basadas en VM, como GCP, Hetzner y proveedores de VPS similares.
+Pasos de runtime compartidos para instalaciones de Docker basadas en VM, como GCP, Hetzner y proveedores VPS similares.
 
-## Incluye los binarios requeridos en la imagen
+## Incorpora los binarios requeridos en la imagen
 
 Instalar binarios dentro de un contenedor en ejecución es una trampa.
 Todo lo que se instale en runtime se perderá al reiniciar.
 
-Todos los binarios externos requeridos por Skills deben instalarse durante la compilación de la imagen.
+Todos los binarios externos requeridos por Skills deben instalarse en tiempo de compilación de la imagen.
 
 Los ejemplos siguientes muestran solo tres binarios comunes:
 
@@ -34,7 +34,7 @@ Puedes instalar tantos binarios como necesites usando el mismo patrón.
 Si más adelante agregas nuevas Skills que dependen de binarios adicionales, debes:
 
 1. Actualizar el Dockerfile
-2. Reconstruir la imagen
+2. Recompilar la imagen
 3. Reiniciar los contenedores
 
 **Dockerfile de ejemplo**
@@ -83,10 +83,10 @@ CMD ["node","dist/index.js"]
 ```
 
 <Note>
-Las URLs anteriores son ejemplos. Para VM basadas en ARM, elige los assets `arm64`. Para compilaciones reproducibles, fija URLs de releases versionadas.
+Las URL anteriores son ejemplos. Para VM basadas en ARM, elige los recursos `arm64`. Para compilaciones reproducibles, fija URL de versiones publicadas específicas.
 </Note>
 
-## Compilar y lanzar
+## Compilar e iniciar
 
 ```bash
 docker compose build
@@ -94,7 +94,7 @@ docker compose up -d openclaw-gateway
 ```
 
 Si la compilación falla con `Killed` o `exit code 137` durante `pnpm install --frozen-lockfile`, la VM no tiene memoria suficiente.
-Usa una clase de máquina más grande antes de volver a intentarlo.
+Usa una clase de máquina más grande antes de reintentarlo.
 
 Verifica los binarios:
 
@@ -126,22 +126,23 @@ Salida esperada:
 
 ## Qué persiste y dónde
 
-OpenClaw se ejecuta en Docker, pero Docker no es la fuente de la verdad.
-Todo el estado de larga duración debe sobrevivir a reinicios, reconstrucciones y reinicios del sistema.
+OpenClaw se ejecuta en Docker, pero Docker no es la fuente de verdad.
+Todo el estado de larga duración debe sobrevivir a reinicios, recompilaciones y reinicios de la máquina.
 
-| Componente          | Ubicación                                              | Mecanismo de persistencia      | Notas                                                         |
-| ------------------- | ------------------------------------------------------ | ------------------------------ | ------------------------------------------------------------- |
-| Configuración del Gateway | `/home/node/.openclaw/`                                | Montaje de volumen del host    | Incluye `openclaw.json`, `.env`                               |
-| Perfiles de autenticación del modelo | `/home/node/.openclaw/agents/`                         | Montaje de volumen del host    | `agents/<agentId>/agent/auth-profiles.json` (OAuth, claves de API) |
-| Configuraciones de Skills | `/home/node/.openclaw/skills/`                         | Montaje de volumen del host    | Estado a nivel de Skill                                       |
-| Workspace del agente | `/home/node/.openclaw/workspace/`                      | Montaje de volumen del host    | Código y artefactos del agente                                |
-| Sesión de WhatsApp  | `/home/node/.openclaw/`                                | Montaje de volumen del host    | Conserva el inicio de sesión por QR                           |
-| Keyring de Gmail    | `/home/node/.openclaw/`                                | Volumen del host + contraseña  | Requiere `GOG_KEYRING_PASSWORD`                               |
-| Paquetes de Plugin  | `/home/node/.openclaw/npm`, `/home/node/.openclaw/git` | Montaje de volumen del host    | Raíces de paquetes de Plugin descargables                     |
-| Binarios externos   | `/usr/local/bin/`                                      | Imagen de Docker               | Deben incluirse durante la compilación                        |
-| Runtime de Node     | Sistema de archivos del contenedor                     | Imagen de Docker               | Se reconstruye en cada compilación de imagen                  |
-| Paquetes del SO     | Sistema de archivos del contenedor                     | Imagen de Docker               | No los instales en runtime                                    |
-| Contenedor de Docker | Efímero                                               | Reiniciable                    | Seguro de destruir                                            |
+| Componente          | Ubicación                                              | Mecanismo de persistencia | Notas                                                         |
+| ------------------- | ------------------------------------------------------ | ------------------------- | ------------------------------------------------------------- |
+| Configuración del Gateway | `/home/node/.openclaw/`                                | Montaje de volumen del host | Incluye `openclaw.json`, `.env`                              |
+| Perfiles de autenticación de modelos | `/home/node/.openclaw/agents/`                         | Montaje de volumen del host | `agents/<agentId>/agent/auth-profiles.json` (OAuth, claves de API) |
+| Clave del perfil de autenticación | `/home/node/.config/openclaw/`                         | Montaje de volumen del host | Clave de cifrado local para material de tokens del perfil de autenticación OAuth |
+| Configuraciones de Skills | `/home/node/.openclaw/skills/`                         | Montaje de volumen del host | Estado a nivel de Skill                                      |
+| Espacio de trabajo del agente | `/home/node/.openclaw/workspace/`                      | Montaje de volumen del host | Código y artefactos del agente                              |
+| Sesión de WhatsApp  | `/home/node/.openclaw/`                                | Montaje de volumen del host | Conserva el inicio de sesión por QR                          |
+| Llavero de Gmail    | `/home/node/.openclaw/`                                | Volumen del host + contraseña | Requiere `GOG_KEYRING_PASSWORD`                               |
+| Paquetes de Plugin  | `/home/node/.openclaw/npm`, `/home/node/.openclaw/git` | Montaje de volumen del host | Raíces de paquetes de Plugin descargables                    |
+| Binarios externos   | `/usr/local/bin/`                                      | Imagen de Docker          | Deben incorporarse en tiempo de compilación                  |
+| Runtime de Node     | Sistema de archivos del contenedor                     | Imagen de Docker          | Se reconstruye en cada compilación de imagen                 |
+| Paquetes del SO     | Sistema de archivos del contenedor                     | Imagen de Docker          | No los instales en runtime                                   |
+| Contenedor Docker   | Efímero                                                | Reiniciable               | Seguro de destruir                                           |
 
 ## Actualizaciones
 
