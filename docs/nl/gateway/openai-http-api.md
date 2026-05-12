@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Tools integreren die OpenAI Chat Completions verwachten
-summary: Stel een OpenAI-compatibel /v1/chat/completions-HTTP-eindpunt beschikbaar vanuit de Gateway
+    - Hulpmiddelen integreren die OpenAI Chat Completions verwachten
+summary: Maak een OpenAI-compatibel HTTP-eindpunt /v1/chat/completions beschikbaar vanuit de Gateway
 title: OpenAI-chatvoltooiingen
 x-i18n:
-    generated_at: "2026-05-11T20:30:30Z"
+    generated_at: "2026-05-12T15:43:29Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e71e25fc1299754ebc65d3998834dc5e9c03acfbd005387aef96f946be1d04a1
+    source_hash: 21d901ab70908d6e4e3770e716319b961348c2a7ff6ef9bb2d0ffc6952a073f2
     source_path: gateway/openai-http-api.md
     workflow: 16
 ---
@@ -26,70 +26,70 @@ Wanneer het OpenAI-compatibele HTTP-oppervlak van de Gateway is ingeschakeld, bi
 - `POST /v1/embeddings`
 - `POST /v1/responses`
 
-Onder de motorkap worden verzoeken uitgevoerd als een normale Gateway-agentrun (hetzelfde codepad als `openclaw agent`), zodat routering/machtigingen/configuratie overeenkomen met je Gateway.
+Onder de motorkap worden aanvragen uitgevoerd als een normale Gateway-agentrun (hetzelfde codepad als `openclaw agent`), zodat routering/machtigingen/configuratie overeenkomen met je Gateway.
 
 ## Authenticatie
 
-Gebruikt de Gateway-authconfiguratie.
+Gebruikt de authenticatieconfiguratie van de Gateway.
 
-Veelvoorkomende HTTP-authpaden:
+Veelvoorkomende HTTP-authenticatiepaden:
 
 - authenticatie met gedeeld geheim (`gateway.auth.mode="token"` of `"password"`):
   `Authorization: Bearer <token-or-password>`
 - vertrouwde identiteitsdragende HTTP-authenticatie (`gateway.auth.mode="trusted-proxy"`):
   routeer via de geconfigureerde identiteitsbewuste proxy en laat die de
   vereiste identiteitsheaders injecteren
-- open authenticatie via private ingress (`gateway.auth.mode="none"`):
-  geen authheader vereist
+- open authenticatie voor private ingress (`gateway.auth.mode="none"`):
+  geen authenticatieheader vereist
 
 Opmerkingen:
 
 - Wanneer `gateway.auth.mode="token"` is, gebruik `gateway.auth.token` (of `OPENCLAW_GATEWAY_TOKEN`).
 - Wanneer `gateway.auth.mode="password"` is, gebruik `gateway.auth.password` (of `OPENCLAW_GATEWAY_PASSWORD`).
-- Wanneer `gateway.auth.mode="trusted-proxy"` is, moet het HTTP-verzoek afkomstig zijn van een
-  geconfigureerde vertrouwde proxybron; same-host loopback-proxy's vereisen expliciet
+- Wanneer `gateway.auth.mode="trusted-proxy"` is, moet de HTTP-aanvraag afkomstig zijn van een
+  geconfigureerde vertrouwde proxybron; loopback-proxy's op dezelfde host vereisen expliciet
   `gateway.auth.trustedProxy.allowLoopback = true`.
 - Als `gateway.auth.rateLimit` is geconfigureerd en er te veel authenticatiefouten optreden, retourneert het eindpunt `429` met `Retry-After`.
 
 ## Beveiligingsgrens (belangrijk)
 
-Behandel dit eindpunt als een oppervlak met **volledige operatortoegang** voor de gateway-instantie.
+Behandel dit eindpunt als een oppervlak met **volledige operatortoegang** voor de gatewayinstantie.
 
-- HTTP-bearer-authenticatie hier is geen beperkt per-gebruiker scope-model.
-- Een geldige Gateway-token/wachtwoord voor dit eindpunt moet worden behandeld als een eigenaar-/operatorcredential.
-- Verzoeken lopen via hetzelfde control-plane-agentpad als vertrouwde operatoracties.
-- Er is geen afzonderlijke niet-eigenaar/per-gebruiker toolgrens op dit eindpunt; zodra een aanroeper hier door Gateway-authenticatie komt, behandelt OpenClaw die aanroeper als een vertrouwde operator voor deze gateway.
-- Voor authenticatiemodi met gedeeld geheim (`token` en `password`) herstelt het eindpunt de normale volledige operatorstandaarden, zelfs als de aanroeper een beperktere `x-openclaw-scopes`-header meestuurt.
-- Vertrouwde identiteitsdragende HTTP-modi (bijvoorbeeld trusted proxy-authenticatie of `gateway.auth.mode="none"`) respecteren `x-openclaw-scopes` wanneer aanwezig en vallen anders terug op de normale standaardscopeset voor operators.
-- Als het doelagentbeleid gevoelige tools toestaat, kan dit eindpunt ze gebruiken.
+- HTTP-bearer-authenticatie is hier geen smal scopemodel per gebruiker.
+- Een geldig Gateway-token/wachtwoord voor dit eindpunt moet worden behandeld als een eigenaar-/operatorcredential.
+- Aanvragen lopen via hetzelfde control-plane-agentpad als vertrouwde operatoracties.
+- Er is geen afzonderlijke niet-eigenaar/per-gebruiker-toolgrens op dit eindpunt; zodra een aanroeper hier slaagt voor Gateway-authenticatie, behandelt OpenClaw die aanroeper als een vertrouwde operator voor deze gateway.
+- Voor authenticatiemodi met gedeeld geheim (`token` en `password`) herstelt het eindpunt de normale volledige operatorstandaarden, zelfs als de aanroeper een smallere `x-openclaw-scopes`-header meestuurt.
+- Vertrouwde identiteitsdragende HTTP-modi (bijvoorbeeld trusted proxy-authenticatie of `gateway.auth.mode="none"`) respecteren `x-openclaw-scopes` wanneer die aanwezig is en vallen anders terug op de normale standaardscopeset voor operators.
+- Als het beleid van de doelagent gevoelige tools toestaat, kan dit eindpunt die gebruiken.
 - Houd dit eindpunt alleen op loopback/tailnet/private ingress; stel het niet rechtstreeks bloot aan het openbare internet.
 
-Authmatrix:
+Authenticatiematrix:
 
 - `gateway.auth.mode="token"` of `"password"` + `Authorization: Bearer ...`
-  - bewijst bezit van het gedeelde gateway-operatorgeheim
-  - negeert beperktere `x-openclaw-scopes`
-  - herstelt de volledige standaardscopeset voor operators:
+  - bewijst bezit van het gedeelde gatewayoperatorgeheim
+  - negeert smallere `x-openclaw-scopes`
+  - herstelt de volledige standaardoperatorscopeset:
     `operator.admin`, `operator.approvals`, `operator.pairing`,
     `operator.read`, `operator.talk.secrets`, `operator.write`
   - behandelt chatbeurten op dit eindpunt als beurten van de eigenaar-afzender
 - vertrouwde identiteitsdragende HTTP-modi (bijvoorbeeld trusted proxy-authenticatie, of `gateway.auth.mode="none"` op private ingress)
   - authenticeren een externe vertrouwde identiteit of implementatiegrens
   - respecteren `x-openclaw-scopes` wanneer de header aanwezig is
-  - vallen terug op de normale standaardscopeset voor operators wanneer de header ontbreekt
-  - verliezen alleen eigenaarssemantiek wanneer de aanroeper expliciet scopes beperkt en `operator.admin` weglaat
+  - vallen terug op de normale standaardoperatorscopeset wanneer de header ontbreekt
+  - verliezen alleen eigenaarsemantiek wanneer de aanroeper scopes expliciet vernauwt en `operator.admin` weglaat
 
 Zie [Beveiliging](/nl/gateway/security) en [Externe toegang](/nl/gateway/remote).
 
 ## Agent-first modelcontract
 
-OpenClaw behandelt het OpenAI-veld `model` als een **agentdoel**, niet als een ruwe provider-model-id.
+OpenClaw behandelt het OpenAI-veld `model` als een **agentdoel**, niet als een ruwe providermodel-id.
 
 - `model: "openclaw"` routeert naar de geconfigureerde standaardagent.
 - `model: "openclaw/default"` routeert ook naar de geconfigureerde standaardagent.
 - `model: "openclaw/<agentId>"` routeert naar een specifieke agent.
 
-Optionele verzoekheaders:
+Optionele aanvraagheaders:
 
 - `x-openclaw-model: <provider/model-or-bare-id>` overschrijft het backendmodel voor de geselecteerde agent.
 - `x-openclaw-agent-id: <agentId>` blijft ondersteund als compatibiliteitsoverschrijving.
@@ -103,7 +103,7 @@ Compatibiliteitsaliassen die nog steeds worden geaccepteerd:
 
 ## Het eindpunt inschakelen
 
-Zet `gateway.http.endpoints.chatCompletions.enabled` op `true`:
+Stel `gateway.http.endpoints.chatCompletions.enabled` in op `true`:
 
 ```json5
 {
@@ -119,7 +119,7 @@ Zet `gateway.http.endpoints.chatCompletions.enabled` op `true`:
 
 ## Het eindpunt uitschakelen
 
-Zet `gateway.http.endpoints.chatCompletions.enabled` op `false`:
+Stel `gateway.http.endpoints.chatCompletions.enabled` in op `false`:
 
 ```json5
 {
@@ -133,17 +133,17 @@ Zet `gateway.http.endpoints.chatCompletions.enabled` op `false`:
 }
 ```
 
-## Sessiegedrag
+## Sessiesgedrag
 
-Standaard is het eindpunt **stateless per verzoek** (bij elke aanroep wordt een nieuwe sessiesleutel gegenereerd).
+Standaard is het eindpunt **stateless per aanvraag** (bij elke aanroep wordt een nieuwe sessiesleutel gegenereerd).
 
-Als het verzoek een OpenAI-`user`-string bevat, leidt de Gateway daar een stabiele sessiesleutel uit af, zodat herhaalde aanroepen een agentsessie kunnen delen.
+Als de aanvraag een OpenAI-`user`-string bevat, leidt de Gateway daar een stabiele sessiesleutel uit af, zodat herhaalde aanroepen een agentsessie kunnen delen.
 
 ## Waarom dit oppervlak belangrijk is
 
-Dit is de compatibiliteitsset met de hoogste hefboomwerking voor self-hosted frontends en tooling:
+Dit is de compatibiliteitsset met de hoogste hefboomwerking voor zelfgehoste frontends en tooling:
 
-- De meeste Open WebUI-, LobeChat- en LibreChat-setups verwachten `/v1/models`.
+- De meeste Open WebUI-, LobeChat- en LibreChat-installaties verwachten `/v1/models`.
 - Veel RAG-systemen verwachten `/v1/embeddings`.
 - Bestaande OpenAI-chatclients kunnen meestal beginnen met `/v1/chat/completions`.
 - Meer agent-native clients geven steeds vaker de voorkeur aan `/v1/responses`.
@@ -154,20 +154,20 @@ Dit is de compatibiliteitsset met de hoogste hefboomwerking voor self-hosted fro
   <Accordion title="Wat retourneert `/v1/models`?">
     Een OpenClaw-agentdoellijst.
 
-    De geretourneerde id's zijn `openclaw`, `openclaw/default` en `openclaw/<agentId>`-items.
+    De geretourneerde id's zijn `openclaw`, `openclaw/default` en `openclaw/<agentId>`-vermeldingen.
     Gebruik ze rechtstreeks als OpenAI-`model`-waarden.
 
   </Accordion>
-  <Accordion title="Vermeldt `/v1/models` agents of subagents?">
-    Het vermeldt agentdoelen op topniveau, geen backendprovidermodellen en geen subagents.
+  <Accordion title="Vermeldt `/v1/models` agenten of subagenten?">
+    Het vermeldt agentdoelen op topniveau, geen backendprovidermodellen en geen subagenten.
 
-    Subagents blijven interne uitvoeringstopologie. Ze verschijnen niet als pseudomodellen.
+    Subagenten blijven interne uitvoeringstopologie. Ze verschijnen niet als pseudomodellen.
 
   </Accordion>
   <Accordion title="Waarom is `openclaw/default` opgenomen?">
     `openclaw/default` is de stabiele alias voor de geconfigureerde standaardagent.
 
-    Dit betekent dat clients één voorspelbare id kunnen blijven gebruiken, zelfs als de echte standaardagent-id tussen omgevingen verandert.
+    Dat betekent dat clients één voorspelbare id kunnen blijven gebruiken, zelfs als de echte standaardagent-id tussen omgevingen verandert.
 
   </Accordion>
   <Accordion title="Hoe overschrijf ik het backendmodel?">
@@ -184,15 +184,15 @@ Dit is de compatibiliteitsset met de hoogste hefboomwerking voor self-hosted fro
     `/v1/embeddings` gebruikt dezelfde agentdoel-`model`-id's.
 
     Gebruik `model: "openclaw/default"` of `model: "openclaw/<agentId>"`.
-    Wanneer je een specifiek embeddingmodel nodig hebt, stuur je dit mee in `x-openclaw-model`.
-    Zonder die header wordt het verzoek doorgegeven aan de normale embeddingsetup van de geselecteerde agent.
+    Wanneer je een specifiek embeddingmodel nodig hebt, stuur dat in `x-openclaw-model`.
+    Zonder die header wordt de aanvraag doorgegeven aan de normale embeddingsconfiguratie van de geselecteerde agent.
 
   </Accordion>
 </AccordionGroup>
 
 ## Streaming (SSE)
 
-Zet `stream: true` om Server-Sent Events (SSE) te ontvangen:
+Stel `stream: true` in om Server-Sent Events (SSE) te ontvangen:
 
 - `Content-Type: text/event-stream`
 - Elke eventregel is `data: <json>`
@@ -200,33 +200,37 @@ Zet `stream: true` om Server-Sent Events (SSE) te ontvangen:
 
 ## Chat-toolcontract
 
-`/v1/chat/completions` ondersteunt een subset van functie-tools die compatibel is met gangbare OpenAI Chat-clients.
+`/v1/chat/completions` ondersteunt een functie-toolsubset die compatibel is met gangbare OpenAI Chat-clients.
 
-### Ondersteunde verzoekvelden
+### Ondersteunde aanvraagvelden
 
 - `tools`: array van `{ "type": "function", "function": { ... } }`
 - `tool_choice`: `"auto"`, `"none"`
-- `messages[*].role: "tool"` vervolgbeurten
-- `messages[*].tool_call_id` voor het koppelen van toolresultaten terug aan een eerdere toolaanroep
+- vervolgbeurten met `messages[*].role: "tool"`
+- `messages[*].tool_call_id` om toolresultaten terug te koppelen aan een eerdere toolaanroep
+- `max_completion_tokens`: getal; limiet per aanroep voor totale voltooiingstokens (inclusief redeneertokens). Huidige OpenAI Chat Completions-veldnaam; heeft de voorkeur wanneer zowel `max_completion_tokens` als `max_tokens` worden meegestuurd.
+- `max_tokens`: getal; legacy-alias die wordt geaccepteerd voor achterwaartse compatibiliteit. Genegeerd wanneer `max_completion_tokens` ook aanwezig is.
+
+Wanneer een van beide velden is ingesteld, wordt de waarde via het agent-streamparamkanaal doorgestuurd naar de upstreamprovider. De daadwerkelijke wire-veldnaam die naar de upstreamprovider wordt gestuurd, wordt gekozen door het providertransport: `max_completion_tokens` voor OpenAI-familie-eindpunten, en `max_tokens` voor providers die alleen de legacy-naam accepteren (zoals Mistral en Chutes).
 
 ### Niet-ondersteunde varianten
 
 Het eindpunt retourneert `400 invalid_request_error` voor niet-ondersteunde toolvarianten, waaronder:
 
 - niet-array `tools`
-- niet-function-toolitems
+- niet-functie-toolvermeldingen
 - ontbrekende `tool.function.name`
 - `tool_choice`-varianten zoals `allowed_tools` en `custom`
 - `tool_choice: "required"` (nog niet afgedwongen tijdens runtime; wordt ondersteund zodra harde afdwinging is geïmplementeerd)
-- `tool_choice: { "type": "function", "function": { "name": "..." } }` (dezelfde rationale als `required`)
+- `tool_choice: { "type": "function", "function": { "name": "..." } }` (zelfde reden als `required`)
 - `tool_choice.function.name`-waarden die niet overeenkomen met opgegeven `tools`
 
-### Vorm van niet-streaming toolrespons
+### Responsvorm voor niet-streaming tools
 
 Wanneer de agent besluit tools aan te roepen, gebruikt de respons:
 
 - `choices[0].finish_reason = "tool_calls"`
-- `choices[0].message.tool_calls[]`-items met:
+- `choices[0].message.tool_calls[]`-vermeldingen met:
   - `id`
   - `type: "function"`
   - `function.name`
@@ -234,39 +238,39 @@ Wanneer de agent besluit tools aan te roepen, gebruikt de respons:
 
 Assistentcommentaar vóór de toolaanroep wordt geretourneerd in `choices[0].message.content` (mogelijk leeg).
 
-### Vorm van streaming toolrespons
+### Responsvorm voor streaming tools
 
 Wanneer `stream: true`, worden toolaanroepen uitgezonden als incrementele SSE-chunks:
 
-- initiële assistentroldelta
-- optionele assistentcommentaardelta's
-- één of meer `delta.tool_calls`-chunks met toolidentiteit en argumentfragmenten
+- initiële assistentrol-delta
+- optionele assistentcommentaar-delta's
+- een of meer `delta.tool_calls`-chunks met toolidentiteit en argumentfragmenten
 - laatste chunk met `finish_reason: "tool_calls"`
 - `data: [DONE]`
 
-Als `stream_options.include_usage=true`, wordt vóór `[DONE]` een afsluitende usage-chunk uitgezonden.
+Als `stream_options.include_usage=true`, wordt een afsluitende usage-chunk uitgezonden vóór `[DONE]`.
 
-### Tool-vervolglus
+### Vervolgloop voor tools
 
-Na ontvangst van `tool_calls` moet de client de gevraagde functie(s) uitvoeren en een vervolgverzoek sturen dat het volgende bevat:
+Na ontvangst van `tool_calls` moet de client de aangevraagde functie(s) uitvoeren en een vervolgaanvraag sturen met:
 
-- eerder assistentbericht met toolaanroep
-- één of meer `role: "tool"`-berichten met overeenkomende `tool_call_id`
+- eerder assistent-toolaanroepbericht
+- een of meer `role: "tool"`-berichten met overeenkomende `tool_call_id`
 
-Hierdoor kan de gateway-agentrun dezelfde redeneerlus voortzetten en het uiteindelijke assistentantwoord produceren.
+Hierdoor kan de gatewayagentrun dezelfde redeneerloop voortzetten en het uiteindelijke assistentantwoord produceren.
 
-## Snelle setup voor Open WebUI
+## Snelle installatie voor Open WebUI
 
-Voor een basisverbinding met Open WebUI:
+Voor een eenvoudige Open WebUI-verbinding:
 
-- Base URL: `http://127.0.0.1:18789/v1`
-- Docker op macOS base URL: `http://host.docker.internal:18789/v1`
-- API-sleutel: je Gateway-bearer-token
+- Basis-URL: `http://127.0.0.1:18789/v1`
+- Basis-URL voor Docker op macOS: `http://host.docker.internal:18789/v1`
+- API-sleutel: je Gateway-bearertoken
 - Model: `openclaw/default`
 
 Verwacht gedrag:
 
-- `GET /v1/models` moet `openclaw/default` tonen
+- `GET /v1/models` moet `openclaw/default` vermelden
 - Open WebUI moet `openclaw/default` gebruiken als chatmodel-id
 - Als je een specifieke backendprovider/model voor die agent wilt, stel dan het normale standaardmodel van de agent in of stuur `x-openclaw-model`
 
@@ -277,7 +281,7 @@ curl -sS http://127.0.0.1:18789/v1/models \
   -H 'Authorization: Bearer YOUR_TOKEN'
 ```
 
-Als dit `openclaw/default` retourneert, kunnen de meeste Open WebUI-setups verbinding maken met dezelfde base URL en token.
+Als dat `openclaw/default` retourneert, kunnen de meeste Open WebUI-installaties verbinden met dezelfde basis-URL en hetzelfde token.
 
 ## Voorbeelden
 
@@ -336,10 +340,10 @@ curl -sS http://127.0.0.1:18789/v1/embeddings \
 
 Opmerkingen:
 
-- `/v1/models` retourneert OpenClaw-agentdoelen, geen ruwe providercatalogi.
-- `openclaw/default` is altijd aanwezig, zodat één stabiele id in alle omgevingen werkt.
-- Backendprovider/model-overschrijvingen horen in `x-openclaw-model`, niet in het OpenAI-veld `model`.
-- `/v1/embeddings` ondersteunt `input` als een string of array van strings.
+- `/v1/models` retourneert OpenClaw-agentdoelen, geen onbewerkte providercatalogi.
+- `openclaw/default` is altijd aanwezig, zodat één stabiele id in verschillende omgevingen werkt.
+- Backend-provider-/modeloverschrijvingen horen thuis in `x-openclaw-model`, niet in het OpenAI-veld `model`.
+- `/v1/embeddings` ondersteunt `input` als tekenreeks of als array van tekenreeksen.
 
 ## Gerelateerd
 
