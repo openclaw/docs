@@ -1,236 +1,171 @@
 ---
+doc-schema-version: 1
 read_when:
-    - OpenClaw が提供するツールについて理解したい
-    - ツールを設定、許可、または拒否する必要があります
+    - OpenClaw が提供するツールを理解したい場合
     - 組み込みツール、Skills、Plugin のどれを使うかを判断している
-summary: 'OpenClaw のツールと Plugin の概要: エージェントができることと拡張方法'
-title: ツールとPlugin
+    - ツールポリシー、自動化、またはエージェント連携に適したドキュメントのエントリーポイントが必要です
+summary: 'OpenClaw のツール、Skills、Plugin の概要: エージェントが呼び出せるものと、それらを拡張する方法'
+title: 概要
 x-i18n:
-    generated_at: "2026-05-10T19:55:25Z"
+    generated_at: "2026-05-12T01:00:15Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b12b2d605c8fccb0de378f8a63fb92b8c3bad8abd3edf10bb79632d6ef6089fd
+    source_hash: 94424b04a520009d40d851e46f7ea0e4e914ff39b7d79958194bb123a6ec0b7b
     source_path: tools/index.md
     workflow: 16
 ---
 
-エージェントがテキスト生成以外で行うすべてのことは、**ツール**を通じて行われます。
-ツールは、エージェントがファイルを読み取り、コマンドを実行し、ウェブを閲覧し、
-メッセージを送信し、デバイスとやり取りするための手段です。
+このページは、適切な Capabilities サーフェスを選ぶために使用します。**ツール**は呼び出し可能なアクションであり、**Skills**はエージェントに作業方法を教え、**plugins**はツール、プロバイダー、チャネル、フック、パッケージ化された Skills などのランタイム機能を追加します。
 
-## ツール、Skills、Plugin
+これは概要とルーティングのページです。網羅的なツールポリシー、デフォルト、グループメンバーシップ、プロバイダー制限、設定フィールドについては、[ツールとカスタムプロバイダー](/ja-JP/gateway/config-tools)を使用してください。
 
-OpenClaw には、連携して動作する 3 つのレイヤーがあります。
+## ここから始める
+
+ほとんどのエージェントでは、まず組み込みツールカテゴリから始め、その後、エージェントに見せるツールを減らす必要がある場合や、明示的なホストアクセスが必要な場合にだけポリシーを調整します。
+
+| 必要なこと                                      | 最初に使うもの                                   | 次に読むもの                                                              |
+| ------------------------------------------- | ---------------------------------------------- | ----------------------------------------------------------------------- |
+| 既存の機能でエージェントに動作させる | [組み込みツール](#built-in-tool-categories)    | [ツールカテゴリ](#built-in-tool-categories)                            |
+| エージェントが呼び出せるものを制御する              | [ツールポリシー](#configure-access-and-approvals) | [ツールとカスタムプロバイダー](/ja-JP/gateway/config-tools)                     |
+| エージェントにワークフローを教える                   | [Skills](#choose-tools-skills-or-plugins)      | [Skills](/ja-JP/tools/skills) と [Skills の作成](/ja-JP/tools/creating-skills)   |
+| 新しいインテグレーションまたはランタイムサーフェスを追加する    | [Plugins](#extend-capabilities)                | [Plugins](/ja-JP/tools/plugin) と [plugins のビルド](/ja-JP/plugins/building-plugins) |
+| 後で、またはバックグラウンドで作業を実行する         | [Automation](/ja-JP/automation)                      | [Automation の概要](/ja-JP/automation)                                      |
+| 複数のエージェントまたはハーネスを調整する     | [サブエージェント](/ja-JP/tools/subagents)                 | [ACP エージェント](/ja-JP/tools/acp-agents) と [エージェント送信](/ja-JP/tools/agent-send)     |
+| 大規模な PI ツールカタログを検索する              | [Tool Search](/ja-JP/tools/tool-search)              | [Tool Search](/ja-JP/tools/tool-search)                                       |
+
+## ツール、Skills、plugins を選ぶ
 
 <Steps>
-  <Step title="ツールはエージェントが呼び出すものです">
-    ツールは、エージェントが呼び出せる型付き関数です（例: `exec`、`browser`、
-    `web_search`、`message`）。OpenClaw には一連の**組み込みツール**が同梱されており、
-    Plugin は追加のツールを登録できます。
+  <Step title="エージェントが行動する必要がある場合はツールを使う">
+    ツールは、エージェントが呼び出せる型付き関数です。たとえば `exec`、`browser`、
+    `web_search`、`message`、`image_generate` などです。エージェントがデータを読み取る、
+    ファイルを変更する、メッセージを送信する、プロバイダーを呼び出す、または別のシステムを操作する必要がある場合にツールを使います。
+    表示されるツールは、構造化された関数定義としてモデルに送信されます。
 
-    エージェントには、モデル API に送信される構造化された関数定義としてツールが見えます。
-
-  </Step>
-
-  <Step title="Skills はエージェントにいつ、どのように行うかを教えます">
-    Skill は、システムプロンプトに注入される Markdown ファイル（`SKILL.md`）です。
-    Skills は、ツールを効果的に使用するためのコンテキスト、制約、段階的なガイダンスを
-    エージェントに提供します。Skills はワークスペース、共有フォルダー、または
-    Plugin 内に同梱されます。
-
-    [Skills リファレンス](/ja-JP/tools/skills) | [Skills の作成](/ja-JP/tools/creating-skills)
+    モデルが見るのは、アクティブなプロファイル、許可/拒否ポリシー、
+    プロバイダー制限、サンドボックス状態、チャネル権限、
+    plugin の可用性を通過したツールだけです。
 
   </Step>
 
-  <Step title="Plugin はすべてをまとめてパッケージ化します">
-    Plugin は、チャネル、モデルプロバイダー、ツール、Skills、音声、リアルタイム文字起こし、
-    リアルタイム音声、メディア理解、画像生成、動画生成、ウェブ取得、ウェブ検索など、
-    任意の組み合わせの機能を登録できるパッケージです。一部の Plugin は**コア**（OpenClaw に同梱）
-    であり、その他は**外部**（コミュニティによって npm で公開）です。
+  <Step title="エージェントに指示が必要な場合は Skill を使う">
+    Skill は、エージェントプロンプトに読み込まれる `SKILL.md` 指示パックです。
+    エージェントが必要なツールをすでに持っているが、再現可能なワークフロー、
+    レビュー基準、コマンドシーケンス、または操作上の制約が必要な場合に Skill を使います。
 
-    [Plugin のインストールと設定](/ja-JP/tools/plugin) | [独自に構築する](/ja-JP/plugins/building-plugins)
+    Skills は、ワークスペース、共有 Skill ディレクトリ、管理対象の OpenClaw
+    Skill ルート、または plugin パッケージに置くことができます。
+
+    [Skills](/ja-JP/tools/skills) | [Skills の作成](/ja-JP/tools/creating-skills) | [Skills 設定](/ja-JP/tools/skills-config)
+
+  </Step>
+
+  <Step title="OpenClaw に新しい機能が必要な場合は plugin を使う">
+    plugin は、ツール、Skills、チャネル、モデルプロバイダー、音声、リアルタイム音声、
+    メディア生成、Web 検索、Web 取得、フック、その他のランタイム機能を追加できます。
+    機能にコード、資格情報、ライフサイクルフック、マニフェストメタデータ、
+    またはインストール可能なパッケージングがある場合に plugin を使います。既存の
+    plugins は、ClawHub、npm、git、ローカルディレクトリ、または
+    アーカイブからインストールできます。
+
+    [plugins のインストールと設定](/ja-JP/tools/plugin) | [plugins のビルド](/ja-JP/plugins/building-plugins) | [Plugin SDK](/ja-JP/plugins/sdk-overview)
 
   </Step>
 </Steps>
 
-## 組み込みツール
+## 組み込みツールカテゴリ
 
-これらのツールは OpenClaw に同梱されており、Plugin をインストールしなくても使用できます。
+この表には、サーフェスを認識できるよう代表的なツールを示しています。これは
+完全なポリシーリファレンスではありません。正確なグループ、デフォルト、許可/拒否
+セマンティクスについては、[ツールとカスタムプロバイダー](/ja-JP/gateway/config-tools)を使用してください。
 
-| ツール                                     | 何をするか                                                          | ページ                                                       |
-| ------------------------------------------ | ------------------------------------------------------------------- | ------------------------------------------------------------ |
-| `exec` / `process`                         | シェルコマンドを実行し、バックグラウンドプロセスを管理する          | [Exec](/ja-JP/tools/exec), [Exec Approvals](/ja-JP/tools/exec-approvals) |
-| `code_execution`                           | サンドボックス化されたリモート Python 解析を実行する                | [Code Execution](/ja-JP/tools/code-execution)                      |
-| `browser`                                  | Chromium ブラウザーを制御する（移動、クリック、スクリーンショット） | [Browser](/ja-JP/tools/browser)                                    |
-| `web_search` / `x_search` / `web_fetch`    | ウェブを検索し、X の投稿を検索し、ページ内容を取得する              | [Web](/ja-JP/tools/web), [Web Fetch](/ja-JP/tools/web-fetch)             |
-| `read` / `write` / `edit`                  | ワークスペース内のファイル I/O                                      |                                                              |
-| `apply_patch`                              | 複数ハンクのファイルパッチ                                          | [Apply Patch](/ja-JP/tools/apply-patch)                            |
-| `message`                                  | すべてのチャネルにメッセージを送信する                              | [Agent Send](/ja-JP/tools/agent-send)                              |
-| `nodes`                                    | ペアリング済みデバイスを検出し、対象にする                          |                                                              |
-| `cron` / `gateway`                         | スケジュール済みジョブを管理し、Gateway を検査、パッチ、再起動、または更新する |                                                              |
-| `image` / `image_generate`                 | 画像を解析または生成する                                            | [画像生成](/ja-JP/tools/image-generation)                          |
-| `music_generate`                           | 音楽トラックを生成する                                              | [音楽生成](/ja-JP/tools/music-generation)                          |
-| `video_generate`                           | 動画を生成する                                                      | [動画生成](/ja-JP/tools/video-generation)                          |
-| `tts`                                      | 単発のテキスト読み上げ変換                                          | [TTS](/ja-JP/tools/tts)                                            |
-| `sessions_*` / `subagents` / `agents_list` | セッション管理、ステータス、サブエージェントのオーケストレーション  | [サブエージェント](/ja-JP/tools/subagents)                         |
-| `session_status`                           | 軽量な `/status` 形式の読み戻しとセッションモデルの上書き           | [セッションツール](/ja-JP/concepts/session-tool)                   |
-
-画像作業では、解析には `image` を使用し、生成または編集には `image_generate` を使用します。`openai/*`、`google/*`、`fal/*`、または別の非デフォルト画像プロバイダーを対象にする場合は、先にそのプロバイダーの認証/API キーを設定してください。
-
-音楽作業では、`music_generate` を使用します。`google/*`、`minimax/*`、または別の非デフォルト音楽プロバイダーを対象にする場合は、先にそのプロバイダーの認証/API キーを設定してください。
-
-動画作業では、`video_generate` を使用します。`qwen/*`、または別の非デフォルト動画プロバイダーを対象にする場合は、先にそのプロバイダーの認証/API キーを設定してください。
-
-ワークフロー駆動の音声生成には、ComfyUI などの Plugin が登録している場合は
-`music_generate` を使用します。これはテキスト読み上げである `tts` とは別です。
-
-`session_status` は、セッショングループ内の軽量なステータス/読み戻しツールです。
-現在のセッションに関する `/status` 形式の質問に回答し、必要に応じて
-セッション単位のモデル上書きを設定できます。`model=default` はその
-上書きを解除します。`/status` と同様に、最新のトランスクリプト使用状況エントリから、
-まばらなトークン/キャッシュカウンターとアクティブなランタイムモデルラベルを補完できます。
-
-`gateway` は、Gateway 操作用の所有者専用ランタイムツールです。
-
-- 編集前に、1 つのパススコープ付き設定サブツリーに対して `config.schema.lookup`
-- 現在の設定スナップショット + ハッシュに対して `config.get`
-- 再起動を伴う部分的な設定更新に対して `config.patch`
-- 完全な設定置換のみに `config.apply`
-- 明示的な自己更新 + 再起動に対して `update.run`
-
-部分的な変更では、`config.schema.lookup` の後に `config.patch` を使用してください。
-設定全体を意図的に置換する場合にのみ `config.apply` を使用します。
-より広範な設定ドキュメントについては、[設定](/ja-JP/gateway/configuration) と
-[設定リファレンス](/ja-JP/gateway/configuration-reference) を参照してください。
-このツールは `tools.exec.ask` または `tools.exec.security` の変更も拒否します。
-従来の `tools.bash.*` エイリアスは、同じ保護対象の exec パスに正規化されます。
-
-### Plugin 提供ツール
-
-Plugin は追加のツールを登録できます。例:
-
-- [Canvas](/ja-JP/plugins/reference/canvas) — Node Canvas 制御と A2UI レンダリング向けの実験的な同梱 Plugin
-- [Diffs](/ja-JP/tools/diffs) — diff ビューアーおよびレンダラー
-- [LLM Task](/ja-JP/tools/llm-task) — 構造化出力向けの JSON 専用 LLM ステップ
-- [Lobster](/ja-JP/tools/lobster) — 再開可能な承認を備えた型付きワークフローランタイム
-- [音楽生成](/ja-JP/tools/music-generation) — ワークフロー支援プロバイダーを備えた共有 `music_generate` ツール
-- [OpenProse](/ja-JP/prose) — Markdown 優先のワークフローオーケストレーション
-- [Tokenjuice](/ja-JP/tools/tokenjuice) — ノイズの多い `exec` および `bash` ツール結果をコンパクト化
-
-Plugin ツールは引き続き `api.registerTool(...)` で作成され、
-Plugin マニフェストの `contracts.tools` リストで宣言されます。OpenClaw は検出時に
-検証済みのツール記述子を取得し、Plugin ソースとコントラクトごとにキャッシュするため、
-後続のツール計画では Plugin ランタイムの読み込みを省略できます。ツール実行では引き続き
-所有元の Plugin を読み込み、ライブ登録済みの実装を呼び出します。
-
-[ツール検索](/ja-JP/tools/tool-search) は、大規模カタログ向けのコンパクトなサーフェスです。
-すべての OpenClaw、MCP、またはクライアントツールスキーマをプロンプトに入れる代わりに、
-OpenClaw は `openclaw.tools.search`、`openclaw.tools.describe`、
-`openclaw.tools.call` を備えた分離された Node ランタイムをモデルに提供できます。
-呼び出しは引き続き Gateway を通って戻るため、ツールポリシー、承認、フック、
-セッションログは引き続き信頼できる情報源のままです。
-
-## ツール設定
-
-### 許可リストと拒否リスト
-
-設定内の `tools.allow` / `tools.deny` によって、エージェントが呼び出せるツールを制御します。
-拒否は常に許可より優先されます。
-
-```json5
-{
-  tools: {
-    allow: ["group:fs", "browser", "web_search"],
-    deny: ["exec"],
-  },
-}
-```
-
-OpenClaw は、明示的な許可リストが呼び出し可能なツールに解決されない場合、閉じた状態で失敗します。
-たとえば、`tools.allow: ["query_db"]` は、読み込まれた Plugin が実際に
-`query_db` を登録している場合にのみ機能します。組み込み、Plugin、または同梱 MCP ツールのいずれも
-許可リストに一致しない場合、実行は、ツール結果を幻覚する可能性のあるテキスト専用実行として続行するのではなく、
-モデル呼び出しの前に停止します。
-
-### ツールプロファイル
-
-`tools.profile` は、`allow`/`deny` が適用される前の基本許可リストを設定します。
-エージェント単位の上書き: `agents.list[].tools.profile`。
-
-| プロファイル | 含まれるもの                                                                                                                                        |
-| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `full`      | すべてのコアおよび任意の Plugin ツール。より広範なコマンド/制御アクセス向けの無制限のベースライン                                                   |
-| `coding`    | `group:fs`, `group:runtime`, `group:web`, `group:sessions`, `group:memory`, `cron`, `image`, `image_generate`, `music_generate`, `video_generate` |
-| `messaging` | `group:messaging`, `sessions_list`, `sessions_history`, `sessions_send`, `session_status`                                                          |
-| `minimal`   | `session_status` のみ                                                                                                                               |
+| カテゴリ               | エージェントに必要なこと                                                | 代表的なツール                                                 | 次に読むもの                                                              |
+| ---------------------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| ランタイム                | コマンドを実行する、プロセスを管理する、またはプロバイダー支援の Python 解析を使う        | `exec`, `process`, `code_execution`                                  | [Exec](/ja-JP/tools/exec), [コード実行](/ja-JP/tools/code-execution)           |
+| ファイル                  | ワークスペースファイルを読み取り、変更する                                               | `read`, `write`, `edit`, `apply_patch`                               | [Apply patch](/ja-JP/tools/apply-patch)                                      |
+| Web                    | Web を検索する、X 投稿を検索する、または読み取り可能なページ内容を取得する                | `web_search`, `x_search`, `web_fetch`                                | [Web ツール](/ja-JP/tools/web), [Web fetch](/ja-JP/tools/web-fetch)                 |
+| ブラウザ                | ブラウザセッションを操作する                                                     | `browser`                                                            | [ブラウザ](/ja-JP/tools/browser)                                              |
+| メッセージングとチャネル | 返信またはチャネルアクションを送信する                                               | `message`                                                            | [エージェント送信](/ja-JP/tools/agent-send)                                        |
+| セッションとエージェント    | セッションを調べる、作業を委任する、別の実行を誘導する、またはステータスを報告する          | `sessions_*`, `subagents`, `agents_list`, `session_status`           | [サブエージェント](/ja-JP/tools/subagents), [セッションツール](/ja-JP/concepts/session-tool) |
+| Automation             | 作業をスケジュールする、またはバックグラウンドイベントに応答する                                 | `cron`, `heartbeat_respond`                                          | [Automation](/ja-JP/automation)                                              |
+| Gateway とノード      | Gateway 状態またはペアリングされたターゲットデバイスを調べる                                | `gateway`, `nodes`                                                   | [Gateway 設定](/ja-JP/gateway/configuration), [ノード](/ja-JP/nodes)       |
+| メディア                  | メディアを分析、生成、または読み上げる                                             | `image`, `image_generate`, `music_generate`, `video_generate`, `tts` | [メディア概要](/ja-JP/tools/media-overview)                                |
+| 大規模な PI カタログ      | すべてのスキーマをモデルに送らずに、多数の対象ツールを検索して呼び出す | `tool_search_code`, `tool_search`, `tool_describe`                   | [Tool Search](/ja-JP/tools/tool-search)                                      |
 
 <Note>
-`tools.profile: "messaging"` は、チャネル中心のエージェント向けに意図的に狭くなっています。
-ファイルシステム、ランタイム、ブラウザー、canvas、nodes、cron、Gateway 制御などの
-より広範なコマンド/制御ツールは含まれません。より広範なコマンド/制御アクセス向けの無制限の
-ベースラインとして `tools.profile: "full"` を使用し、必要に応じて
-`tools.allow` / `tools.deny` でアクセスを絞り込んでください。
+Tool Search は実験的な PI エージェントサーフェスです。Codex ハーネスの実行では、
+`tools.toolSearch` の代わりに、Codex ネイティブのコードモード、ネイティブツール検索、
+遅延動的ツール、ネストされたツール呼び出しを使用します。
 </Note>
 
-`coding` には軽量なウェブツール（`web_search`、`web_fetch`、`x_search`）が含まれますが、
-完全なブラウザー制御ツールは含まれません。ブラウザー自動化は実際のセッションや
-ログイン済みプロファイルを操作できるため、`tools.alsoAllow: ["browser"]` または
-エージェント単位の `agents.list[].tools.alsoAllow: ["browser"]` で明示的に追加してください。
+## plugin 提供のツール
 
-<Note>
-制限的なプロファイル（`messaging`、`minimal`）の下で `tools.exec` または `tools.fs` を設定しても、
-プロファイルの許可リストは暗黙的に拡張されません。制限的なプロファイルでそれらの設定セクションを使いたい場合は、
-明示的な `tools.alsoAllow` エントリ（たとえば exec には `["exec", "process"]`、fs には `["read", "write", "edit"]`）を追加してください。
-設定セクションが存在するのに対応する `alsoAllow` 許可がない場合、OpenClaw は起動時に警告をログに記録します。
-</Note>
+plugins は追加のツールを登録できます。plugin 作者は
+`api.registerTool(...)` とマニフェストの `contracts.tools` を通じてツールを接続します。契約の詳細については
+[Plugin SDK](/ja-JP/plugins/sdk-overview) と [Plugin マニフェスト](/ja-JP/plugins/manifest)
+を使用してください。
 
-`coding` および `messaging` プロファイルでは、Plugin キー `bundle-mcp` の下にある
-設定済みのバンドル MCP ツールも許可されます。プロファイルに通常の組み込みツールを維持させつつ、
-設定済みの MCP ツールをすべて非表示にしたい場合は、`tools.deny: ["bundle-mcp"]` を追加してください。
-`minimal` プロファイルにはバンドル MCP ツールは含まれません。
+一般的な plugin 提供ツールには次があります。
 
-例（デフォルトで最も広いツールサーフェス）:
+- ファイルと Markdown の差分をレンダリングするための [Diffs](/ja-JP/tools/diffs)
+- JSON のみのワークフローステップ用の [LLM Task](/ja-JP/tools/llm-task)
+- 再開可能な承認を伴う型付きワークフロー用の [Lobster](/ja-JP/tools/lobster)
+- ノイズの多い `exec` と `bash` ツール出力を圧縮するための
+  [Tokenjuice](/ja-JP/tools/tokenjuice)
+- すべてのスキーマをプロンプトに入れずに大規模なツールカタログを発見して呼び出すための [Tool Search](/ja-JP/tools/tool-search)
+- ノード Canvas 制御と A2UI レンダリング用の [Canvas](/ja-JP/plugins/reference/canvas)
 
-```json5
-{
-  tools: {
-    profile: "full",
-  },
-}
-```
+## アクセスと承認を設定する
 
-### ツールグループ
+ツールポリシーはモデル呼び出しの前に適用されます。ポリシーがツールを削除した場合、
+モデルはそのターンでそのツールのスキーマを受け取りません。実行では、
+グローバル設定、エージェントごとの設定、チャネルポリシー、プロバイダー
+制限、サンドボックスルール、オーナー限定ゲート、または plugin の可用性によってツールを失うことがあります。
 
-許可/拒否リストでは `group:*` 省略形を使用します:
+- [ツールとカスタムプロバイダー](/ja-JP/gateway/config-tools)では、ツールプロファイル、
+  許可/拒否リスト、プロバイダー固有の制限、ループ検出、
+  プロバイダー支援ツール設定を説明しています。
+- [Exec 承認](/ja-JP/tools/exec-approvals)では、ホストコマンド承認
+  ポリシーを説明しています。
+- [昇格 exec](/ja-JP/tools/elevated)では、サンドボックス外での制御された実行を
+  説明しています。
+- [サンドボックス vs ツールポリシー vs 昇格](/ja-JP/gateway/sandbox-vs-tool-policy-vs-elevated)では、どのレイヤーがファイルとプロセスのアクセスを制御するかを説明しています。
+- [エージェントごとのサンドボックスとツール制限](/ja-JP/tools/multi-agent-sandbox-tools)
+  では、委任された実行に対するエージェント固有の制限を説明しています。
 
-| グループ           | ツール                                                                                                    |
-| ------------------ | --------------------------------------------------------------------------------------------------------- |
-| `group:runtime`    | exec, process, code_execution (`bash` は `exec` のエイリアスとして受け入れられます)                       |
-| `group:fs`         | read, write, edit, apply_patch                                                                            |
-| `group:sessions`   | sessions_list, sessions_history, sessions_send, sessions_spawn, sessions_yield, subagents, session_status |
-| `group:memory`     | memory_search, memory_get                                                                                 |
-| `group:web`        | web_search, x_search, web_fetch                                                                           |
-| `group:ui`         | バンドルされた Canvas Plugin が有効な場合の browser, canvas                                               |
-| `group:automation` | heartbeat_respond, cron, gateway                                                                          |
-| `group:messaging`  | message                                                                                                   |
-| `group:nodes`      | nodes                                                                                                     |
-| `group:agents`     | agents_list, update_plan                                                                                  |
-| `group:media`      | image, image_generate, music_generate, video_generate, tts                                                |
-| `group:openclaw`   | すべての組み込み OpenClaw ツール (Plugin ツールを除く)                                                    |
+## 機能を拡張する
 
-`sessions_history` は、範囲が制限され安全性フィルターが適用されたリコールビューを返します。これは、生のトランスクリプトダンプとして動作する代わりに、thinking タグ、`<relevant-memories>` スキャフォールディング、プレーンテキストのツール呼び出し XML ペイロード (`<tool_call>...</tool_call>`、`<function_call>...</function_call>`、`<tool_calls>...</tool_calls>`、`<function_calls>...</function_calls>`、および切り詰められたツール呼び出しブロックを含む)、格下げされたツール呼び出しスキャフォールディング、漏えいした ASCII/全角のモデル制御トークン、アシスタントテキスト内の不正な MiniMax ツール呼び出し XML を取り除き、その後で墨消し/切り詰めと、必要に応じて過大な行のプレースホルダーを適用します。
+OpenClaw に実行させる必要がある作業に応じて、拡張パスを選びます。
 
-### プロバイダー固有の制限
+- [Plugins](/ja-JP/tools/plugin)で既存の plugin をインストールまたは管理します。
+- [plugins のビルド](/ja-JP/plugins/building-plugins)で新しいインテグレーション、プロバイダー、チャネル、ツール、またはフックを構築します。
+- [Skills](/ja-JP/tools/skills) と
+  [Skills の作成](/ja-JP/tools/creating-skills)で再利用可能なエージェント指示を追加または調整します。
+- ワークフローが plugin 配布の Skill バンドルに属する場合は、
+  [Skill workshop](/ja-JP/plugins/skill-workshop)で再利用可能なワークフロー素材をパッケージ化します。
+- 実装契約が必要な場合は、[Plugin SDK](/ja-JP/plugins/sdk-overview) と [Plugin マニフェスト](/ja-JP/plugins/manifest)を使用します。
 
-グローバルデフォルトを変更せずに特定のプロバイダーのツールを制限するには、`tools.byProvider` を使用します。
+## 見つからないツールのトラブルシューティング
 
-```json5
-{
-  tools: {
-    profile: "coding",
-    byProvider: {
-      "google-antigravity": { profile: "minimal" },
-    },
-  },
-}
-```
+モデルがツールを見たり呼び出したりできない場合は、現在のターンの有効なポリシーから始めます。
+
+1. [ツールとカスタムプロバイダー](/ja-JP/gateway/config-tools)で、アクティブなプロファイル、`tools.allow`、`tools.deny` を確認します。
+2. [ツールとカスタムプロバイダー](/ja-JP/gateway/config-tools)でプロバイダー固有の制限を確認し、選択した
+   [モデルプロバイダー](/ja-JP/concepts/model-providers)がそのツール形状をサポートしていることを確認します。
+3. [サンドボックス vs ツールポリシー vs 昇格](/ja-JP/gateway/sandbox-vs-tool-policy-vs-elevated) と [昇格 exec](/ja-JP/tools/elevated)で、チャネル権限、サンドボックス状態、昇格アクセスを確認します。
+4. 所有元の plugin が
+   [Plugins](/ja-JP/tools/plugin)でインストールされ、有効化されているかを確認します。
+5. 委任された実行では、
+   [エージェントごとのサンドボックスとツール制限](/ja-JP/tools/multi-agent-sandbox-tools)でエージェントごとの制限を確認します。
+6. 大規模な PI カタログでは、その実行が直接のツール公開を使っているのか、
+   [Tool Search](/ja-JP/tools/tool-search)を使っているのかを確認します。
+
+## 関連
+
+- cron、タスク、Heartbeat、コミットメント、フック、常設指示、Task Flow については [Automation](/ja-JP/automation)
+- エージェントモデル、セッション、メモリ、マルチエージェント調整については [エージェント](/ja-JP/concepts/agent)
+- 正規のツールポリシーリファレンスについては [ツールとカスタムプロバイダー](/ja-JP/gateway/config-tools)
+- plugin のインストールと管理については [Plugins](/ja-JP/tools/plugin)
+- plugin 作者向けリファレンスについては [Plugin SDK](/ja-JP/plugins/sdk-overview)
+- Skill の読み込み順、ゲート、設定については [Skills](/ja-JP/tools/skills)
+- コンパクトな PI ツールカタログ探索については [Tool Search](/ja-JP/tools/tool-search)

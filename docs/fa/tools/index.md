@@ -1,243 +1,177 @@
 ---
+doc-schema-version: 1
 read_when:
-    - می‌خواهید بدانید OpenClaw چه ابزارهایی ارائه می‌کند
-    - باید ابزارها را پیکربندی، مجاز یا رد کنید
-    - شما در حال انتخاب بین ابزارهای داخلی، Skills و Pluginها هستید
-summary: 'نمای کلی ابزارها و Pluginهای OpenClaw: عامل چه کارهایی می‌تواند انجام دهد و چگونه آن را گسترش دهید'
-title: ابزارها و Plugin‌ها
+    - می‌خواهید بدانید OpenClaw چه ابزارهایی ارائه می‌دهد
+    - شما در حال انتخاب میان ابزارهای توکار، Skills و Pluginها هستید
+    - برای سیاست ابزار، خودکارسازی، یا هماهنگی عامل‌ها به نقطهٔ ورود درست در مستندات نیاز دارید
+summary: 'نمای کلی ابزارها، Skills و Plugin‌های OpenClaw: عامل‌ها چه چیزهایی را می‌توانند فراخوانی کنند و چگونه آن‌ها را گسترش دهید'
+title: نمای کلی
 x-i18n:
-    generated_at: "2026-05-10T20:11:05Z"
+    generated_at: "2026-05-12T01:01:57Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b12b2d605c8fccb0de378f8a63fb92b8c3bad8abd3edf10bb79632d6ef6089fd
+    source_hash: 94424b04a520009d40d851e46f7ea0e4e914ff39b7d79958194bb123a6ec0b7b
     source_path: tools/index.md
     workflow: 16
 ---
 
-هر کاری که عامل فراتر از تولید متن انجام می‌دهد از طریق **ابزارها** انجام می‌شود.
-ابزارها راهی هستند که عامل با آن‌ها فایل‌ها را می‌خواند، دستورها را اجرا می‌کند، وب را مرور می‌کند، پیام می‌فرستد، و با دستگاه‌ها تعامل دارد.
+از این صفحه برای انتخاب سطح مناسب قابلیت‌ها استفاده کنید. **ابزارها** کنش‌های قابل فراخوانی هستند، **Skills** به عامل‌ها می‌آموزند چگونه کار کنند، و **Pluginها** قابلیت‌های زمان اجرا مانند ابزارها، ارائه‌دهندگان، کانال‌ها، هوک‌ها، و Skills بسته‌بندی‌شده اضافه می‌کنند.
 
-## ابزارها، Skills، و Pluginها
+این صفحه یک نمای کلی و صفحه مسیریابی است. برای سیاست کامل ابزارها، پیش‌فرض‌ها، عضویت گروه‌ها، محدودیت‌های ارائه‌دهنده، و فیلدهای پیکربندی، از [ابزارها و ارائه‌دهندگان سفارشی](/fa/gateway/config-tools) استفاده کنید.
 
-OpenClaw سه لایه دارد که با هم کار می‌کنند:
+## از اینجا شروع کنید
+
+برای بیشتر عامل‌ها، با دسته‌های ابزار داخلی شروع کنید، سپس فقط وقتی سیاست را تنظیم کنید که عامل باید ابزارهای کمتری ببیند یا به دسترسی صریح میزبان نیاز دارد.
+
+| اگر لازم دارید... | ابتدا از این استفاده کنید | سپس بخوانید |
+| ------------------------------------------- | ---------------------------------------------- | ----------------------------------------------------------------------- |
+| اجازه دهید یک عامل با قابلیت‌های موجود عمل کند | [ابزارهای داخلی](#built-in-tool-categories) | [دسته‌های ابزار](#built-in-tool-categories) |
+| کنترل کنید یک عامل چه چیزی را می‌تواند فراخوانی کند | [سیاست ابزار](#configure-access-and-approvals) | [ابزارها و ارائه‌دهندگان سفارشی](/fa/gateway/config-tools) |
+| یک گردش‌کار را به عامل آموزش دهید | [Skills](#choose-tools-skills-or-plugins) | [Skills](/fa/tools/skills) و [ایجاد Skills](/fa/tools/creating-skills) |
+| یک ادغام جدید یا سطح زمان اجرا اضافه کنید | [Pluginها](#extend-capabilities) | [Pluginها](/fa/tools/plugin) و [ساخت Pluginها](/fa/plugins/building-plugins) |
+| کار را بعدا یا در پس‌زمینه اجرا کنید | [اتوماسیون](/fa/automation) | [نمای کلی اتوماسیون](/fa/automation) |
+| چند عامل یا هارنس را هماهنگ کنید | [زیرعامل‌ها](/fa/tools/subagents) | [عامل‌های ACP](/fa/tools/acp-agents) و [ارسال عامل](/fa/tools/agent-send) |
+| یک کاتالوگ بزرگ ابزار PI را جستجو کنید | [جستجوی ابزار](/fa/tools/tool-search) | [جستجوی ابزار](/fa/tools/tool-search) |
+
+## ابزارها، Skills، یا Pluginها را انتخاب کنید
 
 <Steps>
-  <Step title="ابزارها همان چیزی هستند که عامل فراخوانی می‌کند">
-    ابزار یک تابع تایپ‌شده است که عامل می‌تواند آن را فراخوانی کند (مثلاً `exec`، `browser`،
-    `web_search`، `message`). OpenClaw مجموعه‌ای از **ابزارهای توکار** را ارائه می‌کند و
-    Pluginها می‌توانند ابزارهای بیشتری ثبت کنند.
+  <Step title="وقتی عامل نیاز به اقدام دارد، از ابزار استفاده کنید">
+    ابزار یک تابع تایپ‌شده است که عامل می‌تواند آن را فراخوانی کند، مانند `exec`، `browser`،
+    `web_search`، `message`، یا `image_generate`. وقتی عامل نیاز دارد
+    داده بخواند، فایل‌ها را تغییر دهد، پیام بفرستد، یک ارائه‌دهنده را فراخوانی کند، یا
+    سامانه دیگری را به کار بگیرد، از ابزارها استفاده کنید. ابزارهای قابل مشاهده به‌صورت تعریف‌های
+    ساختاریافته تابع به مدل ارسال می‌شوند.
 
-    عامل ابزارها را به‌صورت تعریف‌های تابع ساختاریافته می‌بیند که به API مدل ارسال می‌شوند.
-
-  </Step>
-
-  <Step title="Skills به عامل یاد می‌دهند چه زمانی و چگونه">
-    یک skill یک فایل مارک‌داون (`SKILL.md`) است که در system prompt تزریق می‌شود.
-    Skills به عامل زمینه، محدودیت‌ها، و راهنمایی گام‌به‌گام برای
-    استفاده مؤثر از ابزارها می‌دهند. Skills در workspace شما، در پوشه‌های مشترک،
-    یا داخل Pluginها ارائه می‌شوند.
-
-    [مرجع Skills](/fa/tools/skills) | [ایجاد Skills](/fa/tools/creating-skills)
+    مدل فقط ابزارهایی را می‌بیند که از پروفایل فعال، سیاست مجاز/ممنوع،
+    محدودیت‌های ارائه‌دهنده، وضعیت سندباکس، مجوزهای کانال، و دسترس‌پذیری
+    Plugin عبور کنند.
 
   </Step>
 
-  <Step title="Pluginها همه چیز را در کنار هم بسته‌بندی می‌کنند">
-    Plugin بسته‌ای است که می‌تواند هر ترکیبی از قابلیت‌ها را ثبت کند:
-    کانال‌ها، ارائه‌دهندگان مدل، ابزارها، Skills، گفتار، رونویسی بلادرنگ،
-    صدای بلادرنگ، درک رسانه، تولید تصویر، تولید ویدیو،
-    دریافت وب، جستجوی وب، و موارد بیشتر. برخی Pluginها **core** هستند (همراه با
-    OpenClaw ارائه می‌شوند)، و برخی دیگر **external** هستند (توسط جامعه در npm منتشر می‌شوند).
+  <Step title="وقتی عامل به دستورالعمل نیاز دارد، از skill استفاده کنید">
+    skill یک بسته دستورالعمل `SKILL.md` است که در پرامپت عامل بارگذاری می‌شود. وقتی
+    عامل از قبل ابزارهای لازم را دارد، اما به یک گردش‌کار تکرارپذیر،
+    معیار بازبینی، توالی فرمان، یا محدودیت عملیاتی نیاز دارد، از skill استفاده کنید.
 
-    [نصب و پیکربندی Pluginها](/fa/tools/plugin) | [خودتان بسازید](/fa/plugins/building-plugins)
+    Skills می‌توانند در یک فضای کاری، دایرکتوری skill مشترک، ریشه skill مدیریت‌شده OpenClaw،
+    یا بسته Plugin قرار داشته باشند.
+
+    [Skills](/fa/tools/skills) | [ایجاد Skills](/fa/tools/creating-skills) | [پیکربندی Skills](/fa/tools/skills-config)
+
+  </Step>
+
+  <Step title="وقتی OpenClaw به قابلیت جدیدی نیاز دارد، از Plugin استفاده کنید">
+    یک Plugin می‌تواند ابزارها، Skills، کانال‌ها، ارائه‌دهندگان مدل، گفتار، صدای بلادرنگ،
+    تولید رسانه، جستجوی وب، واکشی وب، هوک‌ها، و دیگر قابلیت‌های زمان اجرا
+    را اضافه کند. وقتی قابلیت دارای کد، اعتبارنامه‌ها،
+    هوک‌های چرخه عمر، فراداده manifest، یا بسته‌بندی قابل نصب است، از Plugin استفاده کنید. Pluginهای موجود
+    می‌توانند از ClawHub، npm، git، دایرکتوری‌های محلی، یا
+    آرشیوها نصب شوند.
+
+    [نصب و پیکربندی Pluginها](/fa/tools/plugin) | [ساخت Pluginها](/fa/plugins/building-plugins) | [SDK Plugin](/fa/plugins/sdk-overview)
 
   </Step>
 </Steps>
 
-## ابزارهای توکار
+## دسته‌های ابزار داخلی
 
-این ابزارها همراه OpenClaw ارائه می‌شوند و بدون نصب هیچ Pluginی در دسترس هستند:
+این جدول ابزارهای نماینده را فهرست می‌کند تا بتوانید سطح را تشخیص دهید. این
+مرجع کامل سیاست نیست. برای گروه‌های دقیق، پیش‌فرض‌ها، و معناشناسی مجاز/ممنوع،
+از [ابزارها و ارائه‌دهندگان سفارشی](/fa/gateway/config-tools) استفاده کنید.
 
-| ابزار                                      | کاری که انجام می‌دهد                                                  | صفحه                                                        |
-| ------------------------------------------ | --------------------------------------------------------------------- | ------------------------------------------------------------ |
-| `exec` / `process`                         | اجرای دستورهای shell، مدیریت پردازش‌های پس‌زمینه                     | [Exec](/fa/tools/exec), [تأییدهای Exec](/fa/tools/exec-approvals) |
-| `code_execution`                           | اجرای تحلیل Python راه‌دور در sandbox                                 | [اجرای کد](/fa/tools/code-execution)                           |
-| `browser`                                  | کنترل یک مرورگر Chromium (پیمایش، کلیک، screenshot)                  | [مرورگر](/fa/tools/browser)                                    |
-| `web_search` / `x_search` / `web_fetch`    | جستجوی وب، جستجوی پست‌های X، دریافت محتوای صفحه                     | [وب](/fa/tools/web), [دریافت وب](/fa/tools/web-fetch)             |
-| `read` / `write` / `edit`                  | ورودی/خروجی فایل در workspace                                         |                                                              |
-| `apply_patch`                              | patchهای چندبخشی فایل                                                 | [اعمال Patch](/fa/tools/apply-patch)                           |
-| `message`                                  | ارسال پیام در همه کانال‌ها                                           | [ارسال عامل](/fa/tools/agent-send)                             |
-| `nodes`                                    | کشف و هدف‌گیری دستگاه‌های جفت‌شده                                     |                                                              |
-| `cron` / `gateway`                         | مدیریت jobهای زمان‌بندی‌شده؛ بازرسی، patch، راه‌اندازی مجدد، یا به‌روزرسانی gateway |                                                              |
-| `image` / `image_generate`                 | تحلیل یا تولید تصاویر                                                 | [تولید تصویر](/fa/tools/image-generation)                      |
-| `music_generate`                           | تولید ترک‌های موسیقی                                                  | [تولید موسیقی](/fa/tools/music-generation)                     |
-| `video_generate`                           | تولید ویدیوها                                                         | [تولید ویدیو](/fa/tools/video-generation)                      |
-| `tts`                                      | تبدیل یک‌باره متن به گفتار                                           | [TTS](/fa/tools/tts)                                            |
-| `sessions_*` / `subagents` / `agents_list` | مدیریت session، وضعیت، و هماهنگ‌سازی sub-agentها                     | [Sub-agentها](/fa/tools/subagents)                             |
-| `session_status`                           | readback سبک به سبک `/status` و override مدل session                 | [ابزارهای Session](/fa/concepts/session-tool)                  |
-
-برای کارهای تصویری، از `image` برای تحلیل و از `image_generate` برای تولید یا ویرایش استفاده کنید. اگر `openai/*`، `google/*`، `fal/*`، یا ارائه‌دهنده تصویر غیرپیش‌فرض دیگری را هدف می‌گیرید، ابتدا کلید auth/API آن ارائه‌دهنده را پیکربندی کنید.
-
-برای کارهای موسیقی، از `music_generate` استفاده کنید. اگر `google/*`، `minimax/*`، یا ارائه‌دهنده موسیقی غیرپیش‌فرض دیگری را هدف می‌گیرید، ابتدا کلید auth/API آن ارائه‌دهنده را پیکربندی کنید.
-
-برای کارهای ویدیویی، از `video_generate` استفاده کنید. اگر `qwen/*` یا ارائه‌دهنده ویدیوی غیرپیش‌فرض دیگری را هدف می‌گیرید، ابتدا کلید auth/API آن ارائه‌دهنده را پیکربندی کنید.
-
-برای تولید صوت مبتنی بر workflow، وقتی Pluginی مانند
-ComfyUI آن را ثبت می‌کند از `music_generate` استفاده کنید. این جدا از `tts` است که متن‌به‌گفتار است.
-
-`session_status` ابزار سبک وضعیت/readback در گروه sessions است.
-این ابزار به پرسش‌های به سبک `/status` درباره session فعلی پاسخ می‌دهد و می‌تواند
-به‌صورت اختیاری override مدل در سطح هر session را تنظیم کند؛ `model=default` آن
-override را پاک می‌کند. مانند `/status`، می‌تواند شمارنده‌های پراکنده token/cache و
-برچسب مدل runtime فعال را از آخرین ورودی usage در transcript تکمیل کند.
-
-`gateway` ابزار runtime فقط مالک برای عملیات gateway است:
-
-- `config.schema.lookup` برای یک زیردرخت config محدود به یک path پیش از ویرایش‌ها
-- `config.get` برای snapshot + hash فعلی config
-- `config.patch` برای به‌روزرسانی‌های جزئی config همراه با راه‌اندازی مجدد
-- `config.apply` فقط برای جایگزینی کامل config
-- `update.run` برای خودبه‌روزرسانی صریح + راه‌اندازی مجدد
-
-برای تغییرات جزئی، ابتدا `config.schema.lookup` و سپس `config.patch` را ترجیح دهید. از
-`config.apply` فقط زمانی استفاده کنید که عمداً کل config را جایگزین می‌کنید.
-برای مستندات گسترده‌تر config، [پیکربندی](/fa/gateway/configuration) و
-[مرجع پیکربندی](/fa/gateway/configuration-reference) را بخوانید.
-این ابزار همچنین از تغییر `tools.exec.ask` یا `tools.exec.security` خودداری می‌کند؛
-aliasهای قدیمی `tools.bash.*` به همان مسیرهای exec محافظت‌شده normalize می‌شوند.
-
-### ابزارهای ارائه‌شده توسط Plugin
-
-Pluginها می‌توانند ابزارهای بیشتری ثبت کنند. چند نمونه:
-
-- [Canvas](/fa/plugins/reference/canvas) — Plugin آزمایشی bundled برای کنترل Canvas در Node و rendering A2UI
-- [Diffs](/fa/tools/diffs) — نمایشگر و renderer diff
-- [LLM Task](/fa/tools/llm-task) — گام LLM فقط JSON برای خروجی ساختاریافته
-- [Lobster](/fa/tools/lobster) — runtime workflow تایپ‌شده با تأییدهای قابل‌ازسرگیری
-- [تولید موسیقی](/fa/tools/music-generation) — ابزار مشترک `music_generate` با ارائه‌دهندگان پشتیبانی‌شده توسط workflow
-- [OpenProse](/fa/prose) — هماهنگ‌سازی workflow با اولویت مارک‌داون
-- [Tokenjuice](/fa/tools/tokenjuice) — فشرده‌سازی نتایج پرنویز ابزارهای `exec` و `bash`
-
-ابزارهای Plugin همچنان با `api.registerTool(...)` نوشته می‌شوند و در
-فهرست `contracts.tools` در manifest Plugin اعلام می‌شوند. OpenClaw توصیفگر
-اعتبارسنجی‌شده ابزار را هنگام discovery ثبت می‌کند و آن را بر اساس منبع Plugin و contract cache می‌کند، تا
-برنامه‌ریزی ابزار بعداً بتواند از بارگذاری runtime Plugin صرف‌نظر کند. اجرای ابزار همچنان
-Plugin مالک را بارگذاری می‌کند و پیاده‌سازی ثبت‌شده زنده را فراخوانی می‌کند.
-
-[جستجوی ابزار](/fa/tools/tool-search) سطح فشرده
-برای کاتالوگ‌های بزرگ است. به‌جای قرار دادن schema هر ابزار OpenClaw، MCP، یا client
-در prompt، OpenClaw می‌تواند به مدل یک runtime ایزوله Node
-با `openclaw.tools.search`، `openclaw.tools.describe`، و
-`openclaw.tools.call` بدهد. فراخوانی‌ها همچنان از طریق Gateway برمی‌گردند، بنابراین
-سیاست ابزار، تأییدها، hooks، و logهای session مرجع معتبر باقی می‌مانند.
-
-## پیکربندی ابزار
-
-### فهرست‌های مجاز و ممنوع
-
-از طریق `tools.allow` / `tools.deny` در
-config کنترل کنید عامل کدام ابزارها را می‌تواند فراخوانی کند. ممنوعیت همیشه بر مجوز غلبه می‌کند.
-
-```json5
-{
-  tools: {
-    allow: ["group:fs", "browser", "web_search"],
-    deny: ["exec"],
-  },
-}
-```
-
-وقتی allowlist صریح به هیچ ابزار قابل‌فراخوانی‌ای resolve نشود، OpenClaw بسته می‌ماند.
-برای مثال، `tools.allow: ["query_db"]` فقط زمانی کار می‌کند که یک Plugin بارگذاری‌شده واقعاً
-`query_db` را ثبت کند. اگر هیچ ابزار توکار، Plugin، یا MCP bundled با
-allowlist مطابقت نداشته باشد، اجرا پیش از فراخوانی مدل متوقف می‌شود، به‌جای اینکه به‌صورت
-اجرای فقط‌متنی ادامه دهد که ممکن است نتایج ابزار را hallucinate کند.
-
-### پروفایل‌های ابزار
-
-`tools.profile` پیش از اعمال `allow`/`deny` یک allowlist پایه تنظیم می‌کند.
-override در سطح هر عامل: `agents.list[].tools.profile`.
-
-| پروفایل    | شامل چه چیزهایی است                                                                                                                              |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `full`      | همه ابزارهای core و Plugin اختیاری؛ baseline نامحدود برای دسترسی گسترده‌تر command/control                                                       |
-| `coding`    | `group:fs`, `group:runtime`, `group:web`, `group:sessions`, `group:memory`, `cron`, `image`, `image_generate`, `music_generate`, `video_generate` |
-| `messaging` | `group:messaging`, `sessions_list`, `sessions_history`, `sessions_send`, `session_status`                                                         |
-| `minimal`   | فقط `session_status`                                                                                                                             |
+| دسته | وقتی استفاده کنید که عامل لازم دارد... | ابزارهای نماینده | بعدی را بخوانید |
+| ---------------------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| زمان اجرا | فرمان‌ها را اجرا کند، فرایندها را مدیریت کند، یا از تحلیل Python پشتیبانی‌شده توسط ارائه‌دهنده استفاده کند | `exec`، `process`، `code_execution` | [Exec](/fa/tools/exec)، [اجرای کد](/fa/tools/code-execution) |
+| فایل‌ها | فایل‌های فضای کاری را بخواند و تغییر دهد | `read`، `write`، `edit`، `apply_patch` | [اعمال patch](/fa/tools/apply-patch) |
+| وب | وب را جستجو کند، پست‌های X را جستجو کند، یا محتوای خوانای صفحه را واکشی کند | `web_search`، `x_search`، `web_fetch` | [ابزارهای وب](/fa/tools/web)، [واکشی وب](/fa/tools/web-fetch) |
+| مرورگر | یک نشست مرورگر را به کار بگیرد | `browser` | [مرورگر](/fa/tools/browser) |
+| پیام‌رسانی و کانال‌ها | پاسخ‌ها یا کنش‌های کانال را ارسال کند | `message` | [ارسال عامل](/fa/tools/agent-send) |
+| نشست‌ها و عامل‌ها | نشست‌ها را بررسی کند، کار را واگذار کند، اجرای دیگری را هدایت کند، یا وضعیت را گزارش کند | `sessions_*`، `subagents`، `agents_list`، `session_status` | [زیرعامل‌ها](/fa/tools/subagents)، [ابزار نشست](/fa/concepts/session-tool) |
+| اتوماسیون | کار را زمان‌بندی کند یا به رویدادهای پس‌زمینه پاسخ دهد | `cron`، `heartbeat_respond` | [اتوماسیون](/fa/automation) |
+| Gateway و گره‌ها | وضعیت Gateway یا دستگاه‌های هدف جفت‌شده را بررسی کند | `gateway`، `nodes` | [پیکربندی Gateway](/fa/gateway/configuration)، [گره‌ها](/fa/nodes) |
+| رسانه | رسانه را تحلیل کند، تولید کند، یا بیان کند | `image`، `image_generate`، `music_generate`، `video_generate`، `tts` | [نمای کلی رسانه](/fa/tools/media-overview) |
+| کاتالوگ‌های بزرگ PI | ابزارهای واجد شرایط زیادی را بدون ارسال هر schema به مدل جستجو و فراخوانی کند | `tool_search_code`، `tool_search`، `tool_describe` | [جستجوی ابزار](/fa/tools/tool-search) |
 
 <Note>
-`tools.profile: "messaging"` عمداً برای عامل‌های متمرکز بر کانال محدود است.
-این پروفایل ابزارهای گسترده‌تر command/control مانند filesystem، runtime،
-browser، canvas، nodes، cron، و کنترل gateway را کنار می‌گذارد. از `tools.profile: "full"`
-به‌عنوان baseline نامحدود برای دسترسی گسترده‌تر command/control استفاده کنید، سپس
-در صورت نیاز دسترسی را با `tools.allow` / `tools.deny` کاهش دهید.
+جستجوی ابزار یک سطح آزمایشی عامل PI است. اجراهای هارنس Codex از
+حالت کد بومی Codex، جستجوی ابزار بومی، ابزارهای پویا تعویق‌افتاده، و فراخوانی‌های
+ابزار تودرتو به‌جای `tools.toolSearch` استفاده می‌کنند.
 </Note>
 
-`coding` شامل ابزارهای سبک وب (`web_search`، `web_fetch`، `x_search`) است
-اما ابزار کامل کنترل مرورگر را شامل نمی‌شود. automation مرورگر می‌تواند sessionهای واقعی و
-profileهای واردشده را هدایت کند، بنابراین آن را صراحتاً با
-`tools.alsoAllow: ["browser"]` یا
-`agents.list[].tools.alsoAllow: ["browser"]` در سطح هر عامل اضافه کنید.
+## ابزارهای ارائه‌شده توسط Plugin
 
-<Note>
-پیکربندی `tools.exec` یا `tools.fs` زیر یک پروفایل محدود (`messaging`، `minimal`) به‌صورت ضمنی allowlist پروفایل را گسترش نمی‌دهد. وقتی می‌خواهید یک پروفایل محدود از آن بخش‌های پیکربندی‌شده استفاده کند، ورودی‌های صریح `tools.alsoAllow` اضافه کنید (برای مثال `["exec", "process"]` برای exec، یا `["read", "write", "edit"]` برای fs). وقتی یک بخش config بدون grant متناظر `alsoAllow` وجود داشته باشد، OpenClaw هنگام startup یک هشدار ثبت می‌کند.
-</Note>
+Pluginها می‌توانند ابزارهای اضافی ثبت کنند. نویسندگان Plugin ابزارها را از طریق
+`api.registerTool(...)` و `contracts.tools` در manifest سیم‌کشی می‌کنند؛ برای جزئیات قرارداد از
+[SDK Plugin](/fa/plugins/sdk-overview) و [manifest Plugin](/fa/plugins/manifest)
+استفاده کنید.
 
-پروفایل‌های `coding` و `messaging` همچنین ابزارهای bundle MCP پیکربندی‌شده را
-زیر کلید Plugin با نام `bundle-mcp` مجاز می‌کنند. وقتی می‌خواهید
-یک پروفایل built-inهای عادی خود را نگه دارد اما همه ابزارهای MCP پیکربندی‌شده را پنهان کند،
-`tools.deny: ["bundle-mcp"]` را اضافه کنید.
-پروفایل `minimal` شامل ابزارهای bundle MCP نیست.
+ابزارهای رایج ارائه‌شده توسط Plugin شامل این‌ها هستند:
 
-مثال (گسترده‌ترین سطح ابزار به‌صورت پیش‌فرض):
+- [Diffها](/fa/tools/diffs) برای رندر کردن diffهای فایل و markdown
+- [وظیفه LLM](/fa/tools/llm-task) برای گام‌های گردش‌کار فقط JSON
+- [Lobster](/fa/tools/lobster) برای گردش‌کارهای تایپ‌شده با تاییدهای قابل ازسرگیری
+- [Tokenjuice](/fa/tools/tokenjuice) برای فشرده‌سازی خروجی پرنویز ابزارهای `exec` و `bash`
+- [جستجوی ابزار](/fa/tools/tool-search) برای کشف و فراخوانی کاتالوگ‌های بزرگ ابزار بدون قرار دادن هر schema در پرامپت
+- [Canvas](/fa/plugins/reference/canvas) برای کنترل Canvas گره و رندر A2UI
 
-```json5
-{
-  tools: {
-    profile: "full",
-  },
-}
-```
+## پیکربندی دسترسی و تاییدها
 
-### گروه‌های ابزار
+سیاست ابزار پیش از فراخوانی مدل اعمال می‌شود. اگر سیاست ابزاری را حذف کند،
+مدل schema آن ابزار را برای آن نوبت دریافت نمی‌کند. یک اجرا ممکن است ابزارها را
+به‌دلیل پیکربندی سراسری، پیکربندی هر عامل، سیاست کانال، محدودیت‌های ارائه‌دهنده،
+قواعد سندباکس، دروازه‌گذاری فقط مالک، یا دسترس‌پذیری Plugin از دست بدهد.
 
-از کوتاه‌نویسی‌های `group:*` در فهرست‌های allow/deny استفاده کنید:
+- [ابزارها و ارائه‌دهندگان سفارشی](/fa/gateway/config-tools) پروفایل‌های ابزار،
+  فهرست‌های مجاز/ممنوع، محدودیت‌های مختص ارائه‌دهنده، تشخیص حلقه، و
+  تنظیمات ابزار پشتیبانی‌شده توسط ارائه‌دهنده را مستند می‌کند.
+- [تاییدهای Exec](/fa/tools/exec-approvals) سیاست تایید فرمان میزبان را
+  مستند می‌کند.
+- [exec ارتقایافته](/fa/tools/elevated) اجرای کنترل‌شده بیرون از
+  سندباکس را مستند می‌کند.
+- [سندباکس در برابر سیاست ابزار در برابر ارتقایافته](/fa/gateway/sandbox-vs-tool-policy-vs-elevated) توضیح می‌دهد کدام لایه دسترسی فایل و فرایند را کنترل می‌کند.
+- [سندباکس و محدودیت‌های ابزار برای هر عامل](/fa/tools/multi-agent-sandbox-tools)
+  محدودیت‌های مختص عامل برای اجراهای واگذارشده را مستند می‌کند.
 
-| گروه               | ابزارها                                                                                                   |
-| ------------------ | --------------------------------------------------------------------------------------------------------- |
-| `group:runtime`    | exec, process, code_execution (`bash` به‌عنوان نام مستعار برای `exec` پذیرفته می‌شود)                    |
-| `group:fs`         | read, write, edit, apply_patch                                                                            |
-| `group:sessions`   | sessions_list, sessions_history, sessions_send, sessions_spawn, sessions_yield, subagents, session_status |
-| `group:memory`     | memory_search, memory_get                                                                                 |
-| `group:web`        | web_search, x_search, web_fetch                                                                           |
-| `group:ui`         | browser, canvas هنگامی که Plugin همراهِ Canvas فعال باشد                                                 |
-| `group:automation` | heartbeat_respond, cron, gateway                                                                          |
-| `group:messaging`  | message                                                                                                   |
-| `group:nodes`      | nodes                                                                                                     |
-| `group:agents`     | agents_list, update_plan                                                                                  |
-| `group:media`      | image, image_generate, music_generate, video_generate, tts                                                |
-| `group:openclaw`   | همه ابزارهای داخلی OpenClaw (ابزارهای Plugin را شامل نمی‌شود)                                           |
+## گسترش قابلیت‌ها
 
-`sessions_history` یک نمای یادآوری محدود و فیلترشده از نظر ایمنی برمی‌گرداند. این نما
-برچسب‌های تفکر، سازه‌های `<relevant-memories>`، payloadهای XML فراخوانی ابزار به‌صورت متن ساده
-(از جمله `<tool_call>...</tool_call>`،
-`<function_call>...</function_call>`، `<tool_calls>...</tool_calls>`،
-`<function_calls>...</function_calls>` و بلوک‌های کوتاه‌شده فراخوانی ابزار)،
-سازه‌های تنزل‌یافته فراخوانی ابزار، توکن‌های کنترلی مدل افشاشده ASCII/تمام‌عرض
-و XML نادرست فراخوانی ابزار MiniMax را از متن دستیار حذف می‌کند، سپس
-به‌جای عمل کردن مانند یک خروجی خام رونوشت، حذف‌سازی/کوتاه‌سازی و جایگزین‌های احتمالی برای ردیف‌های بیش‌ازحد بزرگ را اعمال می‌کند.
+مسیر گسترش را بر اساس کاری که لازم دارید OpenClaw انجام دهد انتخاب کنید:
 
-### محدودیت‌های ویژه ارائه‌دهنده
+- یک Plugin موجود را با [Pluginها](/fa/tools/plugin) نصب یا مدیریت کنید.
+- یک ادغام، ارائه‌دهنده، کانال، ابزار، یا هوک جدید را با
+  [ساخت Pluginها](/fa/plugins/building-plugins) بسازید.
+- دستورالعمل‌های عامل قابل استفاده مجدد را با [Skills](/fa/tools/skills) و
+  [ایجاد Skills](/fa/tools/creating-skills) اضافه یا تنظیم کنید.
+- وقتی گردش‌کار باید در یک بسته skill توزیع‌شده با Plugin قرار بگیرد،
+  مواد گردش‌کار قابل استفاده مجدد را با
+  [کارگاه skill](/fa/plugins/skill-workshop) بسته‌بندی کنید.
+- وقتی به قراردادهای پیاده‌سازی نیاز دارید، از [SDK Plugin](/fa/plugins/sdk-overview) و [manifest Plugin](/fa/plugins/manifest) استفاده کنید.
 
-از `tools.byProvider` برای محدود کردن ابزارها برای ارائه‌دهنده‌های مشخص استفاده کنید، بدون آن‌که
-پیش‌فرض‌های سراسری تغییر کنند:
+## عیب‌یابی ابزارهای گمشده
 
-```json5
-{
-  tools: {
-    profile: "coding",
-    byProvider: {
-      "google-antigravity": { profile: "minimal" },
-    },
-  },
-}
-```
+اگر مدل نمی‌تواند ابزاری را ببیند یا فراخوانی کند، با سیاست موثر برای
+نوبت فعلی شروع کنید:
+
+1. پروفایل فعال، `tools.allow`، و `tools.deny` را در
+   [ابزارها و ارائه‌دهندگان سفارشی](/fa/gateway/config-tools) بررسی کنید.
+2. محدودیت‌های مختص ارائه‌دهنده را در
+   [ابزارها و ارائه‌دهندگان سفارشی](/fa/gateway/config-tools) بررسی کنید و تایید کنید
+   [ارائه‌دهنده مدل](/fa/concepts/model-providers) انتخاب‌شده از شکل ابزار پشتیبانی می‌کند.
+3. مجوزهای کانال، وضعیت سندباکس، و دسترسی ارتقایافته را با
+   [سندباکس در برابر سیاست ابزار در برابر ارتقایافته](/fa/gateway/sandbox-vs-tool-policy-vs-elevated) و [exec ارتقایافته](/fa/tools/elevated) بررسی کنید.
+4. بررسی کنید آیا Plugin مالک در
+   [Pluginها](/fa/tools/plugin) نصب و فعال شده است.
+5. برای اجراهای واگذارشده، محدودیت‌های هر عامل را در
+   [سندباکس و محدودیت‌های ابزار برای هر عامل](/fa/tools/multi-agent-sandbox-tools) بررسی کنید.
+6. برای کاتالوگ‌های بزرگ PI، تایید کنید آیا اجرا از ارائه مستقیم ابزار یا
+   [جستجوی ابزار](/fa/tools/tool-search) استفاده می‌کند.
+
+## مرتبط
+
+- [اتوماسیون](/fa/automation) برای cron، وظایف، heartbeat، تعهدات، هوک‌ها، دستورهای پایدار، و جریان وظیفه
+- [عامل‌ها](/fa/concepts/agent) برای مدل عامل، نشست‌ها، حافظه، و هماهنگی چندعاملی
+- [ابزارها و ارائه‌دهندگان سفارشی](/fa/gateway/config-tools) برای مرجع canonical سیاست ابزار
+- [Pluginها](/fa/tools/plugin) برای نصب و مدیریت Plugin
+- [SDK Plugin](/fa/plugins/sdk-overview) برای مرجع نویسنده Plugin
+- [Skills](/fa/tools/skills) برای ترتیب بارگذاری skill، دروازه‌گذاری، و پیکربندی
+- [جستجوی ابزار](/fa/tools/tool-search) برای کشف فشرده کاتالوگ ابزار PI

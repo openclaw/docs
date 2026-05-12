@@ -1,22 +1,22 @@
 ---
 read_when:
-    - Menyiapkan alur kerja agen otonom yang berjalan tanpa prompt per tugas
-    - Menentukan apa yang dapat dilakukan agen secara mandiri dibandingkan dengan apa yang memerlukan persetujuan manusia
-    - Menyusun agen multi-program dengan batasan dan aturan eskalasi yang jelas
+    - Menyiapkan alur kerja agen otonom yang berjalan tanpa pemberian prompt untuk setiap tugas
+    - Menentukan apa yang dapat dilakukan agen secara mandiri dan apa yang memerlukan persetujuan manusia
+    - Menyusun agen multiprogram dengan batasan dan aturan eskalasi yang jelas
 summary: Tetapkan kewenangan operasional permanen untuk program agen otonom
 title: Instruksi tetap
 x-i18n:
-    generated_at: "2026-05-10T19:21:12Z"
+    generated_at: "2026-05-12T00:56:11Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3c78a723c296e1b695fd0fa7b0c3dbc3572fcfc1f49d6fadcab7a5a7a44c4b8d
+    source_hash: 3a51baa7aca31cb34b682983374d4d551ed6ab57ae54a5c63e7d044bffeef756
     source_path: automation/standing-orders.md
     workflow: 16
 ---
 
-Perintah tetap memberi agen Anda **wewenang operasi permanen** untuk program yang ditentukan. Alih-alih memberikan instruksi tugas individual setiap kali, Anda mendefinisikan program dengan cakupan, pemicu, dan aturan eskalasi yang jelas - dan agen menjalankannya secara mandiri dalam batas tersebut.
+Perintah tetap memberi agen Anda **otoritas operasi permanen** untuk program yang ditentukan. Alih-alih memberikan instruksi tugas satu per satu setiap kali, Anda mendefinisikan program dengan cakupan, pemicu, dan aturan eskalasi yang jelas - lalu agen mengeksekusi secara otonom di dalam batasan tersebut.
 
-Inilah perbedaan antara memberi tahu asisten Anda "kirim laporan mingguan" setiap Jumat vs. memberikan wewenang tetap: "Anda bertanggung jawab atas laporan mingguan. Susun setiap Jumat, kirimkan, dan hanya eskalasikan jika ada sesuatu yang tampak salah."
+Inilah perbedaan antara memberi tahu asisten Anda "kirim laporan mingguan" setiap hari Jumat dan memberikan otoritas tetap: "Anda bertanggung jawab atas laporan mingguan. Susun setiap hari Jumat, kirimkan, dan hanya eskalasikan jika ada sesuatu yang tampak salah."
 
 ## Mengapa perintah tetap
 
@@ -24,71 +24,71 @@ Inilah perbedaan antara memberi tahu asisten Anda "kirim laporan mingguan" setia
 
 - Anda harus memberi prompt kepada agen untuk setiap tugas
 - Agen menganggur di antara permintaan
-- Pekerjaan rutin terlupa atau tertunda
-- Anda menjadi penghambat
+- Pekerjaan rutin terlupakan atau tertunda
+- Anda menjadi hambatan
 
 **Dengan perintah tetap:**
 
-- Agen berjalan secara mandiri dalam batas yang ditentukan
+- Agen mengeksekusi secara otonom di dalam batasan yang ditentukan
 - Pekerjaan rutin berjalan sesuai jadwal tanpa prompt
 - Anda hanya terlibat untuk pengecualian dan persetujuan
 - Agen mengisi waktu menganggur secara produktif
 
 ## Cara kerjanya
 
-Perintah tetap didefinisikan dalam file [ruang kerja agen](/id/concepts/agent-workspace) Anda. Pendekatan yang direkomendasikan adalah menyertakannya langsung di `AGENTS.md` (yang disuntikkan otomatis setiap sesi) agar agen selalu memilikinya dalam konteks. Untuk konfigurasi yang lebih besar, Anda juga dapat menempatkannya dalam file khusus seperti `standing-orders.md` dan merujuknya dari `AGENTS.md`.
+Perintah tetap didefinisikan dalam file [ruang kerja agen](/id/concepts/agent-workspace) Anda. Pendekatan yang direkomendasikan adalah menyertakannya langsung di `AGENTS.md` (yang disuntikkan otomatis setiap sesi) sehingga agen selalu memilikinya dalam konteks. Untuk konfigurasi yang lebih besar, Anda juga dapat menaruhnya di file khusus seperti `standing-orders.md` dan merujuknya dari `AGENTS.md`.
 
 Setiap program menentukan:
 
-1. **Cakupan** - apa yang berwenang dilakukan agen
-2. **Pemicu** - kapan dijalankan (jadwal, peristiwa, atau kondisi)
+1. **Cakupan** - apa yang diizinkan untuk dilakukan agen
+2. **Pemicu** - kapan mengeksekusi (jadwal, peristiwa, atau kondisi)
 3. **Gerbang persetujuan** - apa yang memerlukan persetujuan manusia sebelum bertindak
 4. **Aturan eskalasi** - kapan harus berhenti dan meminta bantuan
 
-Agen memuat instruksi ini setiap sesi melalui file bootstrap ruang kerja (lihat [Ruang Kerja Agen](/id/concepts/agent-workspace) untuk daftar lengkap file yang disuntikkan otomatis) dan menjalankannya, digabungkan dengan [pekerjaan cron](/id/automation/cron-jobs) untuk penegakan berbasis waktu.
+Agen memuat instruksi ini setiap sesi melalui file bootstrap ruang kerja (lihat [Ruang Kerja Agen](/id/concepts/agent-workspace) untuk daftar lengkap file yang disuntikkan otomatis) dan mengeksekusinya, dikombinasikan dengan [tugas cron](/id/automation/cron-jobs) untuk penegakan berbasis waktu.
 
 <Tip>
-Letakkan perintah tetap di `AGENTS.md` untuk menjamin perintah tersebut dimuat setiap sesi. Bootstrap ruang kerja secara otomatis menyuntikkan `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md`, dan `MEMORY.md` - tetapi bukan file arbitrer dalam subdirektori.
+Letakkan perintah tetap di `AGENTS.md` untuk menjamin semuanya dimuat setiap sesi. Bootstrap ruang kerja otomatis menyuntikkan `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md`, dan `MEMORY.md` - tetapi tidak file arbitrer dalam subdirektori.
 </Tip>
 
 ## Anatomi perintah tetap
 
 ```markdown
-## Program: Weekly Status Report
+## Program: Laporan Status Mingguan
 
-**Authority:** Compile data, generate report, deliver to stakeholders
-**Trigger:** Every Friday at 4 PM (enforced via cron job)
-**Approval gate:** None for standard reports. Flag anomalies for human review.
-**Escalation:** If data source is unavailable or metrics look unusual (>2σ from norm)
+**Otoritas:** Mengompilasi data, menghasilkan laporan, mengirimkannya ke pemangku kepentingan
+**Pemicu:** Setiap Jumat pukul 16.00 (ditegakkan melalui tugas cron)
+**Gerbang persetujuan:** Tidak ada untuk laporan standar. Tandai anomali untuk ditinjau manusia.
+**Eskalasi:** Jika sumber data tidak tersedia atau metrik tampak tidak biasa (>2σ dari norma)
 
-### Execution steps
+### Langkah eksekusi
 
-1. Pull metrics from configured sources
-2. Compare to prior week and targets
-3. Generate report in Reports/weekly/YYYY-MM-DD.md
-4. Deliver summary via configured channel
-5. Log completion to Agent/Logs/
+1. Ambil metrik dari sumber yang dikonfigurasi
+2. Bandingkan dengan minggu sebelumnya dan target
+3. Hasilkan laporan di Reports/weekly/YYYY-MM-DD.md
+4. Kirim ringkasan melalui kanal yang dikonfigurasi
+5. Catat penyelesaian ke Agent/Logs/
 
-### What NOT to do
+### Yang TIDAK boleh dilakukan
 
-- Do not send reports to external parties
-- Do not modify source data
-- Do not skip delivery if metrics look bad - report accurately
+- Jangan kirim laporan ke pihak eksternal
+- Jangan ubah data sumber
+- Jangan lewati pengiriman jika metrik tampak buruk - laporkan secara akurat
 ```
 
-## Perintah tetap plus pekerjaan cron
+## Perintah tetap plus tugas cron
 
-Perintah tetap mendefinisikan **apa** yang berwenang dilakukan agen. [Pekerjaan cron](/id/automation/cron-jobs) mendefinisikan **kapan** hal itu terjadi. Keduanya bekerja bersama:
+Perintah tetap mendefinisikan **apa** yang diizinkan untuk dilakukan agen. [Tugas Cron](/id/automation/cron-jobs) mendefinisikan **kapan** hal itu terjadi. Keduanya bekerja bersama:
 
 ```
-Standing Order: "You own the daily inbox triage"
+Perintah Tetap: "Anda bertanggung jawab atas triase kotak masuk harian"
     ↓
-Cron Job (8 AM daily): "Execute inbox triage per standing orders"
+Tugas Cron (08.00 setiap hari): "Eksekusi triase kotak masuk sesuai perintah tetap"
     ↓
-Agent: Reads standing orders → executes steps → reports results
+Agen: Membaca perintah tetap → mengeksekusi langkah → melaporkan hasil
 ```
 
-Prompt pekerjaan cron sebaiknya merujuk perintah tetap alih-alih menduplikasinya:
+Prompt tugas cron harus merujuk ke perintah tetap, bukan menduplikasinya:
 
 ```bash
 openclaw cron add \
@@ -99,7 +99,7 @@ openclaw cron add \
   --announce \
   --channel imessage \
   --to "+1XXXXXXXXXX" \
-  --message "Execute daily inbox triage per standing orders. Check mail for new alerts. Parse, categorize, and persist each item. Report summary to owner. Escalate unknowns."
+  --message "Eksekusi triase kotak masuk harian sesuai perintah tetap. Periksa email untuk peringatan baru. Urai, kategorikan, dan simpan setiap item. Laporkan ringkasan kepada pemilik. Eskalasikan hal yang tidak dikenal."
 ```
 
 ## Contoh
@@ -107,151 +107,151 @@ openclaw cron add \
 ### Contoh 1: konten dan media sosial (siklus mingguan)
 
 ```markdown
-## Program: Content & Social Media
+## Program: Konten & Media Sosial
 
-**Authority:** Draft content, schedule posts, compile engagement reports
-**Approval gate:** All posts require owner review for first 30 days, then standing approval
-**Trigger:** Weekly cycle (Monday review → mid-week drafts → Friday brief)
+**Otoritas:** Menyusun draf konten, menjadwalkan posting, mengompilasi laporan keterlibatan
+**Gerbang persetujuan:** Semua posting memerlukan tinjauan pemilik selama 30 hari pertama, lalu persetujuan tetap
+**Pemicu:** Siklus mingguan (tinjauan Senin → draf pertengahan minggu → ringkasan Jumat)
 
-### Weekly cycle
+### Siklus mingguan
 
-- **Monday:** Review platform metrics and audience engagement
-- **Tuesday-Thursday:** Draft social posts, create blog content
-- **Friday:** Compile weekly marketing brief → deliver to owner
+- **Senin:** Tinjau metrik platform dan keterlibatan audiens
+- **Selasa-Kamis:** Susun draf posting sosial, buat konten blog
+- **Jumat:** Kompilasi ringkasan pemasaran mingguan → kirim ke pemilik
 
-### Content rules
+### Aturan konten
 
-- Voice must match the brand (see SOUL.md or brand voice guide)
-- Never identify as AI in public-facing content
-- Include metrics when available
-- Focus on value to audience, not self-promotion
+- Suara harus sesuai dengan merek (lihat SOUL.md atau panduan suara merek)
+- Jangan pernah mengidentifikasi diri sebagai AI dalam konten yang menghadap publik
+- Sertakan metrik jika tersedia
+- Fokus pada nilai bagi audiens, bukan promosi diri
 ```
 
 ### Contoh 2: operasi keuangan (dipicu peristiwa)
 
 ```markdown
-## Program: Financial Processing
+## Program: Pemrosesan Keuangan
 
-**Authority:** Process transaction data, generate reports, send summaries
-**Approval gate:** None for analysis. Recommendations require owner approval.
-**Trigger:** New data file detected OR scheduled monthly cycle
+**Otoritas:** Memproses data transaksi, menghasilkan laporan, mengirim ringkasan
+**Gerbang persetujuan:** Tidak ada untuk analisis. Rekomendasi memerlukan persetujuan pemilik.
+**Pemicu:** File data baru terdeteksi ATAU siklus bulanan terjadwal
 
-### When new data arrives
+### Saat data baru tiba
 
-1. Detect new file in designated input directory
-2. Parse and categorize all transactions
-3. Compare against budget targets
-4. Flag: unusual items, threshold breaches, new recurring charges
-5. Generate report in designated output directory
-6. Deliver summary to owner via configured channel
+1. Deteksi file baru di direktori input yang ditentukan
+2. Urai dan kategorikan semua transaksi
+3. Bandingkan dengan target anggaran
+4. Tandai: item tidak biasa, pelanggaran ambang batas, tagihan berulang baru
+5. Hasilkan laporan di direktori output yang ditentukan
+6. Kirim ringkasan kepada pemilik melalui kanal yang dikonfigurasi
 
-### Escalation rules
+### Aturan eskalasi
 
-- Single item > $500: immediate alert
-- Category > budget by 20%: flag in report
-- Unrecognizable transaction: ask owner for categorization
-- Failed processing after 2 retries: report failure, do not guess
+- Satu item > $500: peringatan langsung
+- Kategori > anggaran sebesar 20%: tandai dalam laporan
+- Transaksi tidak dapat dikenali: minta pemilik untuk kategorisasi
+- Pemrosesan gagal setelah 2 percobaan ulang: laporkan kegagalan, jangan menebak
 ```
 
 ### Contoh 3: pemantauan dan peringatan (berkelanjutan)
 
 ```markdown
-## Program: System Monitoring
+## Program: Pemantauan Sistem
 
-**Authority:** Check system health, restart services, send alerts
-**Approval gate:** Restart services automatically. Escalate if restart fails twice.
-**Trigger:** Every heartbeat cycle
+**Otoritas:** Memeriksa kesehatan sistem, memulai ulang layanan, mengirim peringatan
+**Gerbang persetujuan:** Mulai ulang layanan secara otomatis. Eskalasikan jika mulai ulang gagal dua kali.
+**Pemicu:** Setiap siklus Heartbeat
 
-### Checks
+### Pemeriksaan
 
-- Service health endpoints responding
-- Disk space above threshold
-- Pending tasks not stale (>24 hours)
-- Delivery channels operational
+- Endpoint kesehatan layanan merespons
+- Ruang disk di atas ambang batas
+- Tugas tertunda tidak kedaluwarsa (>24 jam)
+- Kanal pengiriman beroperasi
 
-### Response matrix
+### Matriks respons
 
-| Condition        | Action                   | Escalate?                |
+| Kondisi          | Tindakan                 | Eskalasi?                |
 | ---------------- | ------------------------ | ------------------------ |
-| Service down     | Restart automatically    | Only if restart fails 2x |
-| Disk space < 10% | Alert owner              | Yes                      |
-| Stale task > 24h | Remind owner             | No                       |
-| Channel offline  | Log and retry next cycle | If offline > 2 hours     |
+| Layanan mati     | Mulai ulang otomatis     | Hanya jika mulai ulang gagal 2x |
+| Ruang disk < 10% | Peringatkan pemilik      | Ya                       |
+| Tugas kedaluwarsa > 24j | Ingatkan pemilik       | Tidak                    |
+| Kanal offline    | Catat dan coba lagi siklus berikutnya | Jika offline > 2 jam     |
 ```
 
-## Pola jalankan-verifikasi-laporkan
+## Pola eksekusi-verifikasi-laporan
 
-Perintah tetap bekerja paling baik bila digabungkan dengan disiplin eksekusi yang ketat. Setiap tugas dalam perintah tetap sebaiknya mengikuti loop ini:
+Perintah tetap bekerja paling baik saat digabungkan dengan disiplin eksekusi yang ketat. Setiap tugas dalam perintah tetap harus mengikuti loop ini:
 
-1. **Jalankan** - Lakukan pekerjaan yang sebenarnya (jangan hanya mengakui instruksi)
-2. **Verifikasi** - Konfirmasi hasilnya benar (file ada, pesan terkirim, data diurai)
-3. **Laporkan** - Beri tahu pemilik apa yang telah dilakukan dan apa yang telah diverifikasi
+1. **Eksekusi** - Lakukan pekerjaan sebenarnya (jangan hanya mengakui instruksi)
+2. **Verifikasi** - Pastikan hasilnya benar (file ada, pesan terkirim, data terurai)
+3. **Laporan** - Beri tahu pemilik apa yang sudah dilakukan dan apa yang sudah diverifikasi
 
 ```markdown
-### Execution rules
+### Aturan eksekusi
 
-- Every task follows Execute-Verify-Report. No exceptions.
-- "I'll do that" is not execution. Do it, then report.
-- "Done" without verification is not acceptable. Prove it.
-- If execution fails: retry once with adjusted approach.
-- If still fails: report failure with diagnosis. Never silently fail.
-- Never retry indefinitely - 3 attempts max, then escalate.
+- Setiap tugas mengikuti Eksekusi-Verifikasi-Laporan. Tanpa pengecualian.
+- "Saya akan melakukannya" bukan eksekusi. Lakukan, lalu laporkan.
+- "Selesai" tanpa verifikasi tidak dapat diterima. Buktikan.
+- Jika eksekusi gagal: coba ulang sekali dengan pendekatan yang disesuaikan.
+- Jika masih gagal: laporkan kegagalan dengan diagnosis. Jangan pernah gagal diam-diam.
+- Jangan pernah mencoba ulang tanpa batas - maksimal 3 percobaan, lalu eskalasikan.
 ```
 
 Pola ini mencegah mode kegagalan agen yang paling umum: mengakui tugas tanpa menyelesaikannya.
 
 ## Arsitektur multi-program
 
-Untuk agen yang mengelola banyak urusan, susun perintah tetap sebagai program terpisah dengan batas yang jelas:
+Untuk agen yang mengelola beberapa urusan, atur perintah tetap sebagai program terpisah dengan batasan yang jelas:
 
 ```markdown
-## Program 1: [Domain A] (Weekly)
+## Program 1: [Domain A] (Mingguan)
 
 ...
 
-## Program 2: [Domain B] (Monthly + On-Demand)
+## Program 2: [Domain B] (Bulanan + Sesuai Permintaan)
 
 ...
 
-## Program 3: [Domain C] (As-Needed)
+## Program 3: [Domain C] (Sesuai Kebutuhan)
 
 ...
 
-## Escalation Rules (All Programs)
+## Aturan Eskalasi (Semua Program)
 
-- [Common escalation criteria]
-- [Approval gates that apply across programs]
+- [Kriteria eskalasi umum]
+- [Gerbang persetujuan yang berlaku di seluruh program]
 ```
 
-Setiap program sebaiknya memiliki:
+Setiap program harus memiliki:
 
-- **Irama pemicu** sendiri (mingguan, bulanan, digerakkan peristiwa, berkelanjutan)
-- **Gerbang persetujuan** sendiri (beberapa program memerlukan pengawasan lebih daripada yang lain)
-- **Batas** yang jelas (agen sebaiknya tahu di mana satu program berakhir dan program lain dimulai)
+- **Irama pemicu** sendiri (mingguan, bulanan, dipicu peristiwa, berkelanjutan)
+- **Gerbang persetujuan** sendiri (beberapa program memerlukan pengawasan lebih banyak daripada yang lain)
+- **Batasan** yang jelas (agen harus tahu di mana satu program berakhir dan program lain dimulai)
 
 ## Praktik terbaik
 
 ### Lakukan
 
-- Mulai dengan wewenang sempit dan perluas seiring tumbuhnya kepercayaan
+- Mulai dengan otoritas sempit dan perluas seiring kepercayaan terbangun
 - Definisikan gerbang persetujuan eksplisit untuk tindakan berisiko tinggi
-- Sertakan bagian "Apa yang TIDAK boleh dilakukan" - batas sama pentingnya dengan izin
-- Gabungkan dengan pekerjaan cron untuk eksekusi berbasis waktu yang andal
+- Sertakan bagian "Yang TIDAK boleh dilakukan" - batasan sama pentingnya dengan izin
+- Kombinasikan dengan tugas cron untuk eksekusi berbasis waktu yang andal
 - Tinjau log agen setiap minggu untuk memverifikasi perintah tetap diikuti
-- Perbarui perintah tetap seiring kebutuhan Anda berkembang - perintah tersebut adalah dokumen hidup
+- Perbarui perintah tetap seiring kebutuhan Anda berkembang - itu adalah dokumen hidup
 
 ### Hindari
 
-- Memberikan wewenang luas pada hari pertama ("lakukan apa pun yang menurut Anda terbaik")
-- Melewatkan aturan eskalasi - setiap program memerlukan klausul "kapan harus berhenti dan bertanya"
-- Menganggap agen akan mengingat instruksi verbal - letakkan semuanya di file
+- Memberikan otoritas luas pada hari pertama ("lakukan apa pun yang menurut Anda terbaik")
+- Melewati aturan eskalasi - setiap program memerlukan klausul "kapan harus berhenti dan bertanya"
+- Mengasumsikan agen akan mengingat instruksi verbal - letakkan semuanya dalam file
 - Mencampur urusan dalam satu program - pisahkan program untuk domain yang berbeda
-- Lupa menegakkan dengan pekerjaan cron - perintah tetap tanpa pemicu menjadi saran
+- Lupa menegakkan dengan tugas cron - perintah tetap tanpa pemicu menjadi saran
 
 ## Terkait
 
-- [Otomasi dan tugas](/id/automation): semua mekanisme otomasi secara ringkas.
-- [Pekerjaan cron](/id/automation/cron-jobs): penegakan jadwal untuk perintah tetap.
-- [Hook](/id/automation/hooks): skrip berbasis peristiwa untuk peristiwa siklus hidup agen.
+- [Otomasi](/id/automation): semua mekanisme otomasi sekilas.
+- [Tugas Cron](/id/automation/cron-jobs): penegakan jadwal untuk perintah tetap.
+- [Hook](/id/automation/hooks): skrip yang dipicu peristiwa untuk peristiwa siklus hidup agen.
 - [Webhook](/id/automation/cron-jobs#webhooks): pemicu peristiwa HTTP masuk.
 - [Ruang kerja agen](/id/concepts/agent-workspace): tempat perintah tetap berada, termasuk daftar lengkap file bootstrap yang disuntikkan otomatis (`AGENTS.md`, `SOUL.md`, dll.).

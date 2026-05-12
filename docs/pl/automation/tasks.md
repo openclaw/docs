@@ -1,53 +1,53 @@
 ---
 read_when:
-    - Sprawdzanie trwających lub niedawno ukończonych prac w tle
-    - Debugowanie niepowodzeń dostarczania dla odłączonych uruchomień agentów
-    - Zrozumienie relacji między uruchomieniami w tle a sesjami, Cron i Heartbeat
+    - Sprawdzanie trwającej lub niedawno ukończonej pracy w tle
+    - Debugowanie niepowodzeń dostarczania dla odłączonych uruchomień agenta
+    - Zrozumienie tego, jak uruchomienia w tle są powiązane z sesjami, Cron i Heartbeat
 sidebarTitle: Background tasks
 summary: Śledzenie zadań w tle dla uruchomień ACP, subagentów, izolowanych zadań Cron i operacji CLI
 title: Zadania w tle
 x-i18n:
-    generated_at: "2026-05-10T19:21:13Z"
+    generated_at: "2026-05-12T00:56:22Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 5764a89634f90181d826ff3990ec8dac9538239074934d30fd446c1eb4564869
+    source_hash: 31cbf09df48bab0686a1350f91aefffffef899c86704bb97b68320fc47e78021
     source_path: automation/tasks.md
     workflow: 16
 ---
 
 <Note>
-Szukasz planowania? Zobacz [Automatyzacja i zadania](/pl/automation), aby wybrać właściwy mechanizm. Ta strona jest dziennikiem aktywności dla pracy w tle, a nie harmonogramem.
+Szukasz planowania? Zobacz [Automation](/pl/automation), aby wybrać właściwy mechanizm. Ta strona jest rejestrem aktywności dla pracy w tle, a nie harmonogramem.
 </Note>
 
-Zadania w tle śledzą pracę wykonywaną **poza główną sesją konwersacji**: uruchomienia ACP, tworzenie subagentów, izolowane wykonania zadań Cron oraz operacje inicjowane przez CLI.
+Zadania w tle śledzą pracę uruchamianą **poza główną sesją konwersacji**: uruchomienia ACP, tworzenie subagentów, izolowane wykonania zadań cron oraz operacje inicjowane przez CLI.
 
-Zadania **nie** zastępują sesji, zadań Cron ani Heartbeat - są **dziennikiem aktywności**, który zapisuje, jaka odłączona praca została wykonana, kiedy i czy zakończyła się powodzeniem.
+Zadania **nie** zastępują sesji, zadań cron ani heartbeatów - są **rejestrem aktywności**, który zapisuje, jaka odłączona praca została wykonana, kiedy i czy zakończyła się powodzeniem.
 
 <Note>
-Nie każde uruchomienie agenta tworzy zadanie. Tury Heartbeat i zwykły czat interaktywny tego nie robią. Wszystkie wykonania Cron, uruchomienia ACP, uruchomienia subagentów i polecenia agenta CLI to robią.
+Nie każde uruchomienie agenta tworzy zadanie. Zwroty heartbeat i zwykły czat interaktywny tego nie robią. Robią to wszystkie wykonania cron, uruchomienia ACP, uruchomienia subagentów i polecenia agenta CLI.
 </Note>
 
 ## TL;DR
 
-- Zadania to **rekordy**, nie harmonogramy - Cron i Heartbeat decydują, _kiedy_ praca jest uruchamiana, a zadania śledzą, _co się stało_.
-- ACP, subagenci, wszystkie zadania Cron i operacje CLI tworzą zadania. Tury Heartbeat tego nie robią.
-- Każde zadanie przechodzi przez `queued → running → terminal` (succeeded, failed, timed_out, cancelled albo lost).
-- Zadania Cron pozostają aktywne, dopóki środowisko wykonawcze Cron nadal posiada zadanie; jeśli
-  stan środowiska wykonawczego w pamięci zniknął, utrzymanie zadań najpierw sprawdza trwałą historię
-  uruchomień Cron, zanim oznaczy zadanie jako lost.
-- Ukończenie jest sterowane wypychaniem: odłączona praca może powiadomić bezpośrednio lub wybudzić
-  sesję/Heartbeat zlecającego po zakończeniu, więc pętle odpytywania statusu mają
-  zwykle niewłaściwy kształt.
-- Izolowane uruchomienia Cron i ukończenia subagentów podejmują najlepszą możliwą próbę wyczyszczenia śledzonych kart przeglądarki/procesów dla swojej sesji podrzędnej przed końcowym księgowaniem czyszczenia.
-- Izolowane dostarczanie Cron tłumi nieaktualne pośrednie odpowiedzi nadrzędne, gdy praca potomnych subagentów nadal się opróżnia, i preferuje końcowy wynik potomny, jeśli nadejdzie przed dostarczeniem.
+- Zadania są **rekordami**, a nie harmonogramami - cron i Heartbeat decydują, _kiedy_ praca jest uruchamiana, zadania śledzą _co się stało_.
+- ACP, subagenci, wszystkie zadania cron i operacje CLI tworzą zadania. Zwroty Heartbeat tego nie robią.
+- Każde zadanie przechodzi przez `queued → running → terminal` (succeeded, failed, timed_out, cancelled lub lost).
+- Zadania cron pozostają aktywne, dopóki środowisko wykonawcze cron nadal jest właścicielem zadania; jeśli
+  stan środowiska wykonawczego w pamięci zniknął, konserwacja zadań najpierw sprawdza trwałą historię
+  uruchomień cron, zanim oznaczy zadanie jako utracone.
+- Ukończenie jest sterowane wypychaniem: odłączona praca może powiadomić bezpośrednio albo wybudzić
+  sesję/Heartbeat żądającego po zakończeniu, więc pętle odpytywania statusu
+  zwykle mają niewłaściwy kształt.
+- Izolowane uruchomienia cron i ukończenia subagentów czyszczą w miarę możliwości śledzone karty/procesy przeglądarki dla swojej sesji podrzędnej przed końcowym księgowaniem czyszczenia.
+- Izolowane dostarczanie cron tłumi nieaktualne tymczasowe odpowiedzi nadrzędne, gdy praca subagentów potomnych nadal się kończy, i preferuje końcowe dane wyjściowe potomka, jeśli dotrą przed dostarczeniem.
 - Powiadomienia o ukończeniu są dostarczane bezpośrednio do kanału albo kolejkowane do następnego Heartbeat.
 - `openclaw tasks list` pokazuje wszystkie zadania; `openclaw tasks audit` ujawnia problemy.
-- Rekordy końcowe są przechowywane przez 7 dni, a następnie automatycznie usuwane.
+- Rekordy terminalne są przechowywane przez 7 dni, a potem automatycznie usuwane.
 
 ## Szybki start
 
 <Tabs>
-  <Tab title="Lista i filtrowanie">
+  <Tab title="List and filter">
     ```bash
     # List all tasks (newest first)
     openclaw tasks list
@@ -58,13 +58,13 @@ Nie każde uruchomienie agenta tworzy zadanie. Tury Heartbeat i zwykły czat int
     ```
 
   </Tab>
-  <Tab title="Inspekcja">
+  <Tab title="Inspect">
     ```bash
     # Show details for a specific task (by ID, run ID, or session key)
     openclaw tasks show <lookup>
     ```
   </Tab>
-  <Tab title="Anulowanie i powiadomienia">
+  <Tab title="Cancel and notify">
     ```bash
     # Cancel a running task (kills the child session)
     openclaw tasks cancel <lookup>
@@ -74,7 +74,7 @@ Nie każde uruchomienie agenta tworzy zadanie. Tury Heartbeat i zwykły czat int
     ```
 
   </Tab>
-  <Tab title="Audyt i utrzymanie">
+  <Tab title="Audit and maintenance">
     ```bash
     # Run a health audit
     openclaw tasks audit
@@ -85,7 +85,7 @@ Nie każde uruchomienie agenta tworzy zadanie. Tury Heartbeat i zwykły czat int
     ```
 
   </Tab>
-  <Tab title="Przepływ zadań">
+  <Tab title="Task flow">
     ```bash
     # Inspect TaskFlow state
     openclaw tasks flow list
@@ -97,27 +97,27 @@ Nie każde uruchomienie agenta tworzy zadanie. Tury Heartbeat i zwykły czat int
 
 ## Co tworzy zadanie
 
-| Źródło                 | Typ środowiska wykonawczego | Kiedy tworzony jest rekord zadania                      | Domyślna polityka powiadomień |
+| Źródło                 | Typ środowiska wykonawczego | Kiedy tworzony jest rekord zadania                         | Domyślna polityka powiadomień |
 | ---------------------- | ------------ | ------------------------------------------------------ | --------------------- |
-| Uruchomienia ACP w tle | `acp`        | Tworzenie podrzędnej sesji ACP                         | `done_only`           |
-| Orkiestracja subagentów | `subagent`   | Tworzenie subagenta przez `sessions_spawn`             | `done_only`           |
-| Zadania Cron (wszystkie typy) | `cron`       | Każde wykonanie Cron (w sesji głównej i izolowane)     | `silent`              |
-| Operacje CLI           | `cli`        | Polecenia `openclaw agent`, które przechodzą przez Gateway | `silent`              |
-| Zadania multimedialne agenta | `cli`        | Uruchomienia `music_generate`/`video_generate` oparte na sesji | `silent`              |
+| Uruchomienia ACP w tle    | `acp`        | Utworzenie podrzędnej sesji ACP                           | `done_only`           |
+| Orkiestracja subagentów | `subagent`   | Utworzenie subagenta przez `sessions_spawn`               | `done_only`           |
+| Zadania cron (wszystkie typy)  | `cron`       | Każde wykonanie cron (w sesji głównej i izolowane)       | `silent`              |
+| Operacje CLI         | `cli`        | Polecenia `openclaw agent`, które działają przez Gateway | `silent`              |
+| Zadania multimedialne agenta       | `cli`        | Uruchomienia `music_generate`/`video_generate` oparte na sesji  | `silent`              |
 
 <AccordionGroup>
-  <Accordion title="Domyślne powiadomienia dla Cron i multimediów">
-    Zadania Cron w sesji głównej domyślnie używają polityki powiadomień `silent` - tworzą rekordy do śledzenia, ale nie generują powiadomień. Izolowane zadania Cron także domyślnie używają `silent`, ale są bardziej widoczne, ponieważ działają we własnej sesji.
+  <Accordion title="Notify defaults for cron and media">
+    Zadania cron w sesji głównej domyślnie używają polityki powiadomień `silent` - tworzą rekordy do śledzenia, ale nie generują powiadomień. Izolowane zadania cron również domyślnie używają `silent`, ale są bardziej widoczne, ponieważ działają we własnej sesji.
 
-    Uruchomienia `music_generate` i `video_generate` oparte na sesji także używają polityki powiadomień `silent`. Nadal tworzą rekordy zadań, ale ukończenie jest przekazywane z powrotem do oryginalnej sesji agenta jako wewnętrzne wybudzenie, aby agent mógł sam napisać wiadomość uzupełniającą i dołączyć ukończone multimedia. Ukończenia w grupach/kanałach są zgodne ze zwykłą polityką widocznych odpowiedzi, więc agent używa narzędzia wiadomości, gdy wymaga tego dostarczanie źródłowe. Jeśli agent ukończenia nie dostarczy dowodu dostarczenia przez narzędzie wiadomości w trasie wyłącznie narzędziowej, OpenClaw wysyła zapasowe ukończenie bezpośrednio do oryginalnego kanału, zamiast pozostawiać multimedia prywatne.
+    Uruchomienia `music_generate` i `video_generate` oparte na sesji również używają polityki powiadomień `silent`. Nadal tworzą rekordy zadań, ale ukończenie jest przekazywane z powrotem do oryginalnej sesji agenta jako wewnętrzne wybudzenie, aby agent mógł sam napisać wiadomość uzupełniającą i dołączyć gotowe media. Ukończenia grupowe/kanałowe stosują normalną politykę widocznej odpowiedzi, więc agent używa narzędzia wiadomości, gdy wymaga tego dostarczenie źródłowe. Jeśli agent ukończenia nie wygeneruje dowodu dostarczenia narzędziem wiadomości w trasie tylko narzędziowej, OpenClaw wysyła zastępcze ukończenie bezpośrednio do oryginalnego kanału zamiast pozostawić media prywatne.
 
   </Accordion>
-  <Accordion title="Zabezpieczenie współbieżnego video_generate">
-    Gdy zadanie `video_generate` oparte na sesji jest nadal aktywne, narzędzie działa również jako zabezpieczenie: powtórne wywołania `video_generate` w tej samej sesji zwracają status aktywnego zadania zamiast uruchamiać drugie współbieżne generowanie. Użyj `action: "status"`, gdy chcesz jawnie sprawdzić postęp/status od strony agenta.
+  <Accordion title="Concurrent video_generate guardrail">
+    Gdy zadanie `video_generate` oparte na sesji nadal jest aktywne, narzędzie działa także jako mechanizm ochronny: powtórne wywołania `video_generate` w tej samej sesji zwracają status aktywnego zadania zamiast rozpoczynać drugie równoległe generowanie. Użyj `action: "status"`, gdy chcesz jawnie sprawdzić postęp/status od strony agenta.
   </Accordion>
-  <Accordion title="Co nie tworzy zadań">
-    - Tury Heartbeat - sesja główna; zobacz [Heartbeat](/pl/gateway/heartbeat)
-    - Zwykłe interaktywne tury czatu
+  <Accordion title="What does not create tasks">
+    - Zwroty Heartbeat - sesja główna; zobacz [Heartbeat](/pl/gateway/heartbeat)
+    - Zwykłe zwroty czatu interaktywnego
     - Bezpośrednie odpowiedzi `/command`
 
   </Accordion>
@@ -137,57 +137,57 @@ stateDiagram-v2
     running --> lost : session gone > 5 min
 ```
 
-| Status      | Co oznacza                                                               |
+| Status      | Znaczenie                                                              |
 | ----------- | -------------------------------------------------------------------------- |
-| `queued`    | Utworzone, oczekuje na uruchomienie agenta                                |
-| `running`   | Tura agenta jest aktywnie wykonywana                                      |
-| `succeeded` | Zakończone powodzeniem                                                     |
-| `failed`    | Zakończone błędem                                                          |
-| `timed_out` | Przekroczono skonfigurowany limit czasu                                   |
-| `cancelled` | Zatrzymane przez operatora za pomocą `openclaw tasks cancel`              |
-| `lost`      | Środowisko wykonawcze utraciło autorytatywny stan zaplecza po 5-minutowym okresie karencji |
+| `queued`    | Utworzone, oczekuje na uruchomienie agenta                                    |
+| `running`   | Zwrot agenta jest aktywnie wykonywany                                           |
+| `succeeded` | Zakończono pomyślnie                                                     |
+| `failed`    | Zakończono z błędem                                                    |
+| `timed_out` | Przekroczono skonfigurowany limit czasu                                            |
+| `cancelled` | Zatrzymane przez operatora przez `openclaw tasks cancel`                        |
+| `lost`      | Środowisko wykonawcze utraciło autorytatywny stan bazowy po 5-minutowym okresie karencji |
 
-Przejścia następują automatycznie - gdy powiązane uruchomienie agenta się kończy, status zadania jest aktualizowany odpowiednio do wyniku.
+Przejścia zachodzą automatycznie - gdy powiązane uruchomienie agenta się kończy, status zadania jest aktualizowany odpowiednio.
 
-Ukończenie uruchomienia agenta jest autorytatywne dla aktywnych rekordów zadań. Pomyślne odłączone uruchomienie finalizuje jako `succeeded`, zwykłe błędy uruchomienia finalizują jako `failed`, a wyniki przekroczenia limitu czasu lub przerwania finalizują jako `timed_out`. Jeśli operator już anulował zadanie albo środowisko wykonawcze już zapisało silniejszy stan końcowy, taki jak `failed`, `timed_out` lub `lost`, późniejszy sygnał sukcesu nie obniża tego statusu końcowego.
+Ukończenie uruchomienia agenta jest autorytatywne dla aktywnych rekordów zadań. Pomyślne odłączone uruchomienie finalizuje się jako `succeeded`, zwykłe błędy uruchomienia finalizują się jako `failed`, a wyniki przekroczenia limitu czasu lub przerwania finalizują się jako `timed_out`. Jeśli operator już anulował zadanie albo środowisko wykonawcze już zapisało silniejszy stan terminalny, taki jak `failed`, `timed_out` lub `lost`, późniejszy sygnał powodzenia nie obniża tego statusu terminalnego.
 
 `lost` uwzględnia środowisko wykonawcze:
 
-- Zadania ACP: zniknęły metadane zaplecza podrzędnej sesji ACP.
-- Zadania subagentów: podrzędna sesja zaplecza zniknęła z magazynu agenta docelowego.
-- Zadania Cron: środowisko wykonawcze Cron nie śledzi już zadania jako aktywnego, a trwała
-  historia uruchomień Cron nie pokazuje wyniku końcowego dla tego uruchomienia. Audyt CLI
-  offline nie traktuje własnego pustego stanu Cron w procesie jako autorytetu.
+- Zadania ACP: zniknęły metadane bazowej podrzędnej sesji ACP.
+- Zadania subagentów: bazowa sesja podrzędna zniknęła z docelowego magazynu agenta.
+- Zadania cron: środowisko wykonawcze cron nie śledzi już zadania jako aktywnego, a trwała
+  historia uruchomień cron nie pokazuje terminalnego wyniku dla tego uruchomienia. Audyt CLI
+  offline nie traktuje własnego pustego stanu środowiska cron w procesie jako autorytatywnego.
 - Zadania CLI: zadania z identyfikatorem uruchomienia/identyfikatorem źródła używają aktywnego kontekstu uruchomienia, więc
-  zalegające wiersze sesji podrzędnych lub sesji czatu nie utrzymują ich przy życiu po
-  zniknięciu uruchomienia należącego do Gateway. Starsze zadania CLI bez tożsamości uruchomienia nadal
-  wracają do sesji podrzędnej. Uruchomienia `openclaw agent` wspierane przez Gateway także finalizują
-  na podstawie swojego wyniku uruchomienia, więc ukończone uruchomienia nie pozostają aktywne, aż proces sprzątający
-  oznaczy je jako `lost`.
+  zalegające wiersze sesji podrzędnej lub sesji czatu nie utrzymują ich przy życiu po zniknięciu
+  uruchomienia należącego do Gateway. Starsze zadania CLI bez tożsamości uruchomienia nadal wracają
+  do sesji podrzędnej. Uruchomienia `openclaw agent` oparte na Gateway również finalizują się
+  na podstawie wyniku uruchomienia, więc ukończone uruchomienia nie pozostają aktywne, dopóki proces porządkujący
+  nie oznaczy ich jako `lost`.
 
 ## Dostarczanie i powiadomienia
 
-Gdy zadanie osiąga stan końcowy, OpenClaw powiadamia użytkownika. Istnieją dwie ścieżki dostarczania:
+Gdy zadanie osiąga stan terminalny, OpenClaw Cię powiadamia. Istnieją dwie ścieżki dostarczania:
 
-**Dostarczanie bezpośrednie** - jeśli zadanie ma docelowy kanał (`requesterOrigin`), wiadomość o ukończeniu trafia prosto do tego kanału (Telegram, Discord, Slack itd.). Ukończenia zadań grupowych i kanałowych są zamiast tego kierowane przez sesję zlecającego, aby agent nadrzędny mógł napisać widoczną odpowiedź. W przypadku ukończeń subagentów OpenClaw zachowuje także powiązane routowanie wątku/tematu, gdy jest dostępne, i może uzupełnić brakujące `to` / konto na podstawie zapisanej trasy sesji zlecającego (`lastChannel` / `lastTo` / `lastAccountId`), zanim zrezygnuje z dostarczania bezpośredniego.
+**Dostarczanie bezpośrednie** - jeśli zadanie ma cel kanału (`requesterOrigin`), wiadomość o ukończeniu trafia prosto do tego kanału (Telegram, Discord, Slack itd.). Ukończenia zadań grupowych i kanałowych są zamiast tego kierowane przez sesję żądającego, aby agent nadrzędny mógł napisać widoczną odpowiedź. W przypadku ukończeń subagentów OpenClaw zachowuje również powiązane kierowanie wątku/tematu, gdy jest dostępne, i może uzupełnić brakujące `to` / konto z zapisanej trasy sesji żądającego (`lastChannel` / `lastTo` / `lastAccountId`), zanim zrezygnuje z dostarczania bezpośredniego.
 
-**Dostarczanie kolejkowane w sesji** - jeśli dostarczanie bezpośrednie się nie powiedzie lub nie ustawiono źródła, aktualizacja jest kolejkowana jako zdarzenie systemowe w sesji zlecającego i pojawia się przy następnym Heartbeat.
+**Dostarczanie kolejkowane w sesji** - jeśli dostarczanie bezpośrednie się nie powiedzie lub nie ustawiono źródła, aktualizacja jest kolejkowana jako zdarzenie systemowe w sesji żądającego i pojawia się przy następnym Heartbeat.
 
 <Tip>
-Ukończenie zadania wyzwala natychmiastowe wybudzenie Heartbeat, więc szybko widzisz wynik - nie musisz czekać na następny zaplanowany takt Heartbeat.
+Ukończenie zadania wyzwala natychmiastowe wybudzenie Heartbeat, więc szybko zobaczysz wynik - nie musisz czekać na następny zaplanowany takt Heartbeat.
 </Tip>
 
-Oznacza to, że zwykły przepływ pracy opiera się na wypychaniu: uruchom odłączoną pracę raz, a następnie pozwól środowisku wykonawczemu wybudzić Cię lub powiadomić po ukończeniu. Odpytuj stan zadania tylko wtedy, gdy potrzebujesz debugowania, interwencji lub jawnego audytu.
+Oznacza to, że typowy przepływ pracy jest oparty na wypychaniu: uruchom odłączoną pracę raz, a następnie pozwól środowisku wykonawczemu wybudzić Cię lub powiadomić po ukończeniu. Odpytuj stan zadania tylko wtedy, gdy potrzebujesz debugowania, interwencji lub jawnego audytu.
 
 ### Polityki powiadomień
 
 Kontroluj, ile informacji otrzymujesz o każdym zadaniu:
 
-| Polityka             | Co jest dostarczane                                                    |
+| Polityka                | Co jest dostarczane                                                       |
 | --------------------- | ----------------------------------------------------------------------- |
-| `done_only` (domyślna) | Tylko stan końcowy (succeeded, failed itd.) - **to jest wartość domyślna** |
-| `state_changes`       | Każde przejście stanu i aktualizacja postępu                            |
-| `silent`              | Nic                                                                     |
+| `done_only` (domyślna) | Tylko stan terminalny (succeeded, failed itd.) - **to jest wartość domyślna** |
+| `state_changes`       | Każde przejście stanu i aktualizacja postępu                              |
+| `silent`              | Nic                                                          |
 
 Zmień politykę, gdy zadanie jest uruchomione:
 
@@ -203,7 +203,7 @@ openclaw tasks notify <lookup> state_changes
     openclaw tasks list [--runtime <acp|subagent|cron|cli>] [--status <status>] [--json]
     ```
 
-    Kolumny wyjścia: identyfikator zadania, rodzaj, status, dostarczanie, identyfikator uruchomienia, sesja podrzędna, podsumowanie.
+    Kolumny danych wyjściowych: ID zadania, rodzaj, status, dostarczanie, ID uruchomienia, sesja podrzędna, podsumowanie.
 
   </Accordion>
   <Accordion title="tasks show">
@@ -211,7 +211,7 @@ openclaw tasks notify <lookup> state_changes
     openclaw tasks show <lookup>
     ```
 
-    Token wyszukiwania przyjmuje identyfikator zadania, identyfikator uruchomienia lub klucz sesji. Pokazuje pełny rekord, w tym czasy, stan dostarczania, błąd i podsumowanie końcowe.
+    Token wyszukiwania akceptuje ID zadania, ID uruchomienia lub klucz sesji. Pokazuje pełny rekord, w tym czas, stan dostarczania, błąd i podsumowanie terminalne.
 
   </Accordion>
   <Accordion title="tasks cancel">
@@ -219,7 +219,7 @@ openclaw tasks notify <lookup> state_changes
     openclaw tasks cancel <lookup>
     ```
 
-    W przypadku zadań ACP i subagentów zabija to sesję podrzędną. W przypadku zadań śledzonych przez CLI anulowanie jest zapisywane w rejestrze zadań (nie ma osobnego uchwytu podrzędnego środowiska wykonawczego). Status przechodzi na `cancelled`, a powiadomienie o dostarczeniu jest wysyłane, gdy ma zastosowanie.
+    W przypadku zadań ACP i subagentów zabija to sesję podrzędną. W przypadku zadań śledzonych przez CLI anulowanie jest zapisywane w rejestrze zadań (nie ma osobnego uchwytu środowiska podrzędnego). Status przechodzi na `cancelled`, a powiadomienie o dostarczeniu jest wysyłane, gdy ma zastosowanie.
 
   </Accordion>
   <Accordion title="tasks notify">
@@ -232,67 +232,67 @@ openclaw tasks notify <lookup> state_changes
     openclaw tasks audit [--json]
     ```
 
-    Ujawnia problemy operacyjne. Ustalenia pojawiają się również w `openclaw status`, gdy wykryte zostaną problemy.
+    Ujawnia problemy operacyjne. Ustalenia pojawiają się również w `openclaw status`, gdy zostaną wykryte problemy.
 
-    | Ustalenie                  | Ważność    | Wyzwalacz                                                                                                      |
-    | ------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------ |
-    | `stale_queued`            | warn       | W kolejce od ponad 10 minut                                                                                   |
-    | `stale_running`           | error      | Działa od ponad 30 minut                                                                                      |
-    | `lost`                    | warn/error | Własność zadania obsługiwanego przez runtime zniknęła; zachowane utracone zadania ostrzegają do `cleanupAfter`, potem stają się błędami |
-    | `delivery_failed`         | warn       | Dostarczenie nie powiodło się, a polityka powiadamiania nie jest `silent`                                     |
-    | `missing_cleanup`         | warn       | Zadanie terminalne bez znacznika czasu czyszczenia                                                            |
-    | `inconsistent_timestamps` | warn       | Naruszenie osi czasu (na przykład zakończono przed rozpoczęciem)                                              |
+    | Ustalenie                 | Ważność    | Wyzwalacz                                                                                                             |
+    | ------------------------- | ---------- | --------------------------------------------------------------------------------------------------------------------- |
+    | `stale_queued`            | warn       | W kolejce przez ponad 10 minut                                                                                        |
+    | `stale_running`           | error      | Uruchomione przez ponad 30 minut                                                                                      |
+    | `lost`                    | warn/error | Własność zadania wspierana przez środowisko wykonawcze zniknęła; zachowane utracone zadania ostrzegają do `cleanupAfter`, a następnie stają się błędami |
+    | `delivery_failed`         | warn       | Dostarczenie nie powiodło się, a zasada powiadamiania nie ma wartości `silent`                                        |
+    | `missing_cleanup`         | warn       | Zadanie terminalne bez znacznika czasu czyszczenia                                                                    |
+    | `inconsistent_timestamps` | warn       | Naruszenie osi czasu (na przykład zakończone przed rozpoczęciem)                                                      |
 
   </Accordion>
-  <Accordion title="tasks maintenance">
+  <Accordion title="konserwacja zadań">
     ```bash
     openclaw tasks maintenance [--json]
     openclaw tasks maintenance --apply [--json]
     ```
 
-    Użyj tego, aby podejrzeć lub zastosować uzgadnianie, oznaczanie czyszczenia i przycinanie dla zadań, stanu Task Flow oraz przestarzałych wierszy rejestru sesji uruchomień cron.
+    Użyj tego, aby podejrzeć lub zastosować uzgadnianie, znakowanie czyszczenia i przycinanie dla zadań, stanu Task Flow oraz nieaktualnych wierszy rejestru sesji uruchomień cron.
 
-    Uzgadnianie uwzględnia runtime:
+    Uzgadnianie uwzględnia środowisko wykonawcze:
 
     - Zadania ACP/subagent sprawdzają swoją bazową sesję podrzędną.
     - Zadania subagent, których sesja podrzędna ma nagrobek odzyskiwania po restarcie, są oznaczane jako utracone zamiast traktowania ich jako możliwe do odzyskania sesje bazowe.
-    - Zadania cron sprawdzają, czy runtime cron nadal jest właścicielem zadania, następnie odzyskują status terminalny z utrwalonych dzienników uruchomień cron/stanu zadania, zanim awaryjnie przejdą do `lost`. Tylko proces Gateway jest autorytatywny dla zestawu aktywnych zadań cron w pamięci; audyt CLI offline używa trwałej historii, ale nie oznacza zadania cron jako utraconego wyłącznie dlatego, że ten lokalny Set jest pusty.
-    - Zadania CLI z tożsamością uruchomienia sprawdzają właścicielski aktywny kontekst uruchomienia, a nie tylko wiersze sesji podrzędnej lub sesji czatu.
+    - Zadania Cron sprawdzają, czy środowisko wykonawcze cron nadal jest właścicielem zadania, a następnie odzyskują status terminalny z utrwalonych dzienników uruchomień cron/stanu zadania przed powrotem do `lost`. Tylko proces Gateway jest autorytatywny dla przechowywanego w pamięci zbioru aktywnych zadań cron; audyt CLI offline używa trwałej historii, ale nie oznacza zadania cron jako utraconego wyłącznie dlatego, że ten lokalny Set jest pusty.
+    - Zadania CLI z tożsamością uruchomienia sprawdzają należący do właściciela kontekst aktywnego uruchomienia, a nie tylko wiersze sesji podrzędnej lub sesji czatu.
 
-    Czyszczenie po zakończeniu także uwzględnia runtime:
+    Czyszczenie po zakończeniu również uwzględnia środowisko wykonawcze:
 
-    - Zakończenie subagent podejmuje najlepszą próbę zamknięcia śledzonych kart przeglądarki/procesów dla sesji podrzędnej, zanim czyszczenie ogłoszeń będzie kontynuowane.
-    - Zakończenie izolowanego cron podejmuje najlepszą próbę zamknięcia śledzonych kart przeglądarki/procesów dla sesji cron, zanim uruchomienie zostanie w pełni rozebrane.
-    - Dostarczanie izolowanego cron w razie potrzeby czeka na dalsze działania potomnego subagent i tłumi przestarzały tekst potwierdzenia rodzica zamiast go ogłaszać.
-    - Dostarczanie zakończenia subagent preferuje najnowszy widoczny tekst asystenta; jeśli jest pusty, używa awaryjnie oczyszczonego najnowszego tekstu tool/toolResult, a uruchomienia wywołań narzędzi zakończone wyłącznie przekroczeniem limitu czasu mogą zostać zwinięte do krótkiego podsumowania częściowego postępu. Terminalne nieudane uruchomienia ogłaszają status niepowodzenia bez ponownego odtwarzania przechwyconego tekstu odpowiedzi.
-    - Niepowodzenia czyszczenia nie maskują rzeczywistego wyniku zadania.
+    - Zakończenie subagent w trybie najlepszej próby zamyka śledzone karty/procesy przeglądarki dla sesji podrzędnej, zanim będzie kontynuowane czyszczenie ogłoszenia.
+    - Zakończenie izolowanego cron w trybie najlepszej próby zamyka śledzone karty/procesy przeglądarki dla sesji cron, zanim uruchomienie zostanie w pełni zakończone.
+    - Dostarczenie izolowanego cron w razie potrzeby oczekuje na dalsze działania potomnego subagent i tłumi nieaktualny tekst potwierdzenia nadrzędnego zamiast go ogłaszać.
+    - Dostarczenie zakończenia subagent preferuje najnowszy widoczny tekst asystenta; jeśli jest pusty, wraca do oczyszczonego najnowszego tekstu narzędzia/toolResult, a uruchomienia wywołań narzędzi zakończone wyłącznie limitem czasu mogą zostać zredukowane do krótkiego podsumowania częściowego postępu. Terminalne nieudane uruchomienia ogłaszają status niepowodzenia bez ponownego odtwarzania przechwyconego tekstu odpowiedzi.
+    - Niepowodzenia czyszczenia nie przesłaniają rzeczywistego wyniku zadania.
 
-    Podczas stosowania konserwacji OpenClaw usuwa także przestarzałe wiersze rejestru sesji `cron:<jobId>:run:<uuid>` starsze niż 7 dni, zachowując wiersze aktualnie działających zadań cron i pozostawiając wiersze sesji innych niż cron bez zmian.
+    Podczas stosowania konserwacji OpenClaw usuwa również nieaktualne wiersze rejestru sesji `cron:<jobId>:run:<uuid>` starsze niż 7 dni, zachowując wiersze dla aktualnie działających zadań cron i pozostawiając wiersze sesji innych niż cron bez zmian.
 
   </Accordion>
-  <Accordion title="tasks flow list | show | cancel">
+  <Accordion title="lista | pokaż | anuluj przepływ zadań">
     ```bash
     openclaw tasks flow list [--status <status>] [--json]
     openclaw tasks flow show <lookup> [--json]
     openclaw tasks flow cancel <lookup>
     ```
 
-    Użyj ich, gdy interesuje Cię orkiestrujący Task Flow, a nie pojedynczy rekord zadania w tle.
+    Użyj ich, gdy zależy Ci na orkiestrującym Task Flow, a nie na pojedynczym rekordzie zadania w tle.
 
   </Accordion>
 </AccordionGroup>
 
 ## Tablica zadań czatu (`/tasks`)
 
-Użyj `/tasks` w dowolnej sesji czatu, aby zobaczyć zadania w tle powiązane z tą sesją. Tablica pokazuje aktywne i niedawno zakończone zadania z runtime, statusem, czasem oraz szczegółami postępu lub błędu.
+Użyj `/tasks` w dowolnej sesji czatu, aby zobaczyć zadania w tle powiązane z tą sesją. Tablica pokazuje aktywne i niedawno zakończone zadania wraz ze środowiskiem wykonawczym, statusem, czasem oraz szczegółami postępu lub błędu.
 
-Gdy bieżąca sesja nie ma widocznych powiązanych zadań, `/tasks` przełącza się awaryjnie na lokalne dla agenta liczniki zadań, aby nadal pokazać przegląd bez ujawniania szczegółów innych sesji.
+Gdy bieżąca sesja nie ma widocznych powiązanych zadań, `/tasks` przełącza się na lokalne dla agenta liczby zadań, aby nadal dać przegląd bez ujawniania szczegółów innych sesji.
 
-Pełny rejestr operatorski znajdziesz w CLI: `openclaw tasks list`.
+Aby zobaczyć pełny rejestr operatora, użyj CLI: `openclaw tasks list`.
 
 ## Integracja statusu (obciążenie zadaniami)
 
-`openclaw status` zawiera szybkie podsumowanie zadań:
+`openclaw status` zawiera podsumowanie zadań w skrócie:
 
 ```
 Tasks: 3 queued · 2 running · 1 issues
@@ -300,11 +300,11 @@ Tasks: 3 queued · 2 running · 1 issues
 
 Podsumowanie raportuje:
 
-- **aktywne** - liczba `queued` + `running`
-- **niepowodzenia** - liczba `failed` + `timed_out` + `lost`
-- **wedługRuntime** - podział według `acp`, `subagent`, `cron`, `cli`
+- **active** - liczba `queued` + `running`
+- **failures** - liczba `failed` + `timed_out` + `lost`
+- **byRuntime** - podział według `acp`, `subagent`, `cron`, `cli`
 
-Zarówno `/status`, jak i narzędzie `session_status` używają migawki zadań uwzględniającej czyszczenie: preferowane są aktywne zadania, przestarzałe zakończone wiersze są ukrywane, a ostatnie niepowodzenia pojawiają się tylko wtedy, gdy nie ma już aktywnej pracy. Dzięki temu karta statusu skupia się na tym, co liczy się teraz.
+Zarówno `/status`, jak i narzędzie `session_status` używają migawki zadań uwzględniającej czyszczenie: preferowane są aktywne zadania, nieaktualne zakończone wiersze są ukrywane, a ostatnie niepowodzenia pojawiają się tylko wtedy, gdy nie pozostała żadna aktywna praca. Dzięki temu karta statusu pozostaje skupiona na tym, co jest teraz istotne.
 
 ## Przechowywanie i konserwacja
 
@@ -316,25 +316,25 @@ Rekordy zadań są utrwalane w SQLite pod adresem:
 $OPENCLAW_STATE_DIR/tasks/runs.sqlite
 ```
 
-Rejestr ładuje się do pamięci przy starcie Gateway i synchronizuje zapisy z SQLite, aby zapewnić trwałość między restartami.
-Gateway utrzymuje dziennik zapisu z wyprzedzeniem SQLite w ograniczonym rozmiarze, używając domyślnego progu
-autocheckpoint SQLite oraz okresowych i wykonywanych przy zamykaniu punktów kontrolnych `TRUNCATE`.
+Rejestr ładuje się do pamięci przy starcie gateway i synchronizuje zapisy do SQLite, aby zapewnić trwałość między restartami.
+Gateway utrzymuje dziennik wyprzedzającego zapisu SQLite w ograniczonym rozmiarze, używając domyślnego progu
+autocheckpoint SQLite oraz okresowych punktów kontrolnych `TRUNCATE` i punktów kontrolnych przy zamykaniu.
 
 ### Automatyczna konserwacja
 
 Proces czyszczący działa co **60 sekund** i obsługuje cztery rzeczy:
 
 <Steps>
-  <Step title="Reconciliation">
-    Sprawdza, czy aktywne zadania nadal mają autorytatywne wsparcie runtime. Zadania ACP/subagent używają stanu sesji podrzędnej, zadania cron używają własności aktywnego zadania, a zadania CLI z tożsamością uruchomienia używają właścicielskiego kontekstu uruchomienia. Jeśli ten stan wsparcia zniknie na ponad 5 minut, zadanie jest oznaczane jako `lost`.
+  <Step title="Uzgadnianie">
+    Sprawdza, czy aktywne zadania nadal mają autorytatywne wsparcie środowiska wykonawczego. Zadania ACP/subagent używają stanu sesji podrzędnej, zadania cron używają własności aktywnego zadania, a zadania CLI z tożsamością uruchomienia używają należącego do właściciela kontekstu uruchomienia. Jeśli ten stan bazowy zniknie na ponad 5 minut, zadanie zostanie oznaczone jako `lost`.
   </Step>
-  <Step title="ACP session repair">
-    Zamyka terminalne lub osierocone jednorazowe sesje ACP należące do rodzica, a przestarzałe terminalne lub osierocone trwałe sesje ACP zamyka tylko wtedy, gdy nie pozostaje aktywne powiązanie konwersacji.
+  <Step title="Naprawa sesji ACP">
+    Zamyka terminalne lub osierocone jednorazowe sesje ACP należące do rodzica oraz zamyka nieaktualne terminalne lub osierocone trwałe sesje ACP tylko wtedy, gdy nie pozostaje żadne aktywne powiązanie konwersacji.
   </Step>
-  <Step title="Cleanup stamping">
-    Ustawia znacznik czasu `cleanupAfter` na zadaniach terminalnych (endedAt + 7 dni). W okresie przechowywania utracone zadania nadal pojawiają się w audycie jako ostrzeżenia; po wygaśnięciu `cleanupAfter` albo gdy brakuje metadanych czyszczenia, są błędami.
+  <Step title="Znakowanie czyszczenia">
+    Ustawia znacznik czasu `cleanupAfter` dla zadań terminalnych (endedAt + 7 dni). W okresie przechowywania utracone zadania nadal pojawiają się w audycie jako ostrzeżenia; po wygaśnięciu `cleanupAfter` lub gdy brakuje metadanych czyszczenia, są błędami.
   </Step>
-  <Step title="Pruning">
+  <Step title="Przycinanie">
     Usuwa rekordy po ich dacie `cleanupAfter`.
   </Step>
 </Steps>
@@ -346,36 +346,36 @@ Proces czyszczący działa co **60 sekund** i obsługuje cztery rzeczy:
 ## Jak zadania odnoszą się do innych systemów
 
 <AccordionGroup>
-  <Accordion title="Tasks and Task Flow">
-    [Task Flow](/pl/automation/taskflow) to warstwa orkiestracji przepływów ponad zadaniami w tle. Pojedynczy przepływ może koordynować wiele zadań w czasie swojego życia, używając zarządzanych lub lustrzanych trybów synchronizacji. Użyj `openclaw tasks`, aby sprawdzać pojedyncze rekordy zadań, oraz `openclaw tasks flow`, aby sprawdzać orkiestrujący przepływ.
+  <Accordion title="Zadania i Task Flow">
+    [Task Flow](/pl/automation/taskflow) to warstwa orkiestracji przepływu ponad zadaniami w tle. Pojedynczy przepływ może koordynować wiele zadań w trakcie swojego cyklu życia, używając trybów synchronizacji zarządzanej lub lustrzanej. Użyj `openclaw tasks`, aby sprawdzić pojedyncze rekordy zadań, oraz `openclaw tasks flow`, aby sprawdzić orkiestrujący przepływ.
 
     Szczegóły znajdziesz w [Task Flow](/pl/automation/taskflow).
 
   </Accordion>
-  <Accordion title="Tasks and cron">
-    **Definicja** zadania cron znajduje się w `~/.openclaw/cron/jobs.json`; stan wykonania runtime znajduje się obok niej w `~/.openclaw/cron/jobs-state.json`. **Każde** wykonanie cron tworzy rekord zadania - zarówno w sesji głównej, jak i izolowanej. Zadania cron sesji głównej domyślnie używają polityki powiadamiania `silent`, więc są śledzone bez generowania powiadomień.
+  <Accordion title="Zadania i cron">
+    **Definicja** zadania cron znajduje się w `~/.openclaw/cron/jobs.json`; stan wykonania w czasie działania znajduje się obok niej w `~/.openclaw/cron/jobs-state.json`. **Każde** wykonanie cron tworzy rekord zadania - zarówno w sesji głównej, jak i izolowanej. Zadania cron w sesji głównej domyślnie używają zasady powiadamiania `silent`, więc są śledzone bez generowania powiadomień.
 
     Zobacz [Zadania Cron](/pl/automation/cron-jobs).
 
   </Accordion>
-  <Accordion title="Tasks and heartbeat">
-    Uruchomienia Heartbeat są turami sesji głównej - nie tworzą rekordów zadań. Gdy zadanie się zakończy, może wyzwolić wybudzenie Heartbeat, aby wynik był widoczny natychmiast.
+  <Accordion title="Zadania i heartbeat">
+    Uruchomienia Heartbeat są turami sesji głównej - nie tworzą rekordów zadań. Gdy zadanie się zakończy, może wyzwolić wybudzenie heartbeat, aby szybko pokazać wynik.
 
     Zobacz [Heartbeat](/pl/gateway/heartbeat).
 
   </Accordion>
-  <Accordion title="Tasks and sessions">
-    Zadanie może odwoływać się do `childSessionKey` (gdzie działa praca) oraz `requesterSessionKey` (kto ją rozpoczął). Sesje są kontekstem konwersacji; zadania to śledzenie aktywności nad nimi.
+  <Accordion title="Zadania i sesje">
+    Zadanie może odwoływać się do `childSessionKey` (gdzie wykonywana jest praca) oraz `requesterSessionKey` (kto je uruchomił). Sesje są kontekstem konwersacji; zadania są śledzeniem aktywności na tej podstawie.
   </Accordion>
-  <Accordion title="Tasks and agent runs">
-    `runId` zadania łączy je z uruchomieniem agenta wykonującym pracę. Zdarzenia cyklu życia agenta (start, koniec, błąd) automatycznie aktualizują status zadania - nie musisz ręcznie zarządzać cyklem życia.
+  <Accordion title="Zadania i uruchomienia agenta">
+    `runId` zadania łączy je z uruchomieniem agenta wykonującym pracę. Zdarzenia cyklu życia agenta (start, koniec, błąd) automatycznie aktualizują status zadania - nie trzeba ręcznie zarządzać cyklem życia.
   </Accordion>
 </AccordionGroup>
 
 ## Powiązane
 
-- [Automatyzacja i zadania](/pl/automation) - wszystkie mechanizmy automatyzacji w skrócie
+- [Automatyzacja](/pl/automation) - wszystkie mechanizmy automatyzacji w skrócie
 - [CLI: Zadania](/pl/cli/tasks) - dokumentacja poleceń CLI
 - [Heartbeat](/pl/gateway/heartbeat) - okresowe tury sesji głównej
 - [Zaplanowane zadania](/pl/automation/cron-jobs) - planowanie pracy w tle
-- [Task Flow](/pl/automation/taskflow) - orkiestracja przepływów nad zadaniami
+- [Task Flow](/pl/automation/taskflow) - orkiestracja przepływu ponad zadaniami

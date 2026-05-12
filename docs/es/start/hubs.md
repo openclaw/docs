@@ -1,22 +1,22 @@
 ---
 read_when:
     - Quieres un mapa completo de la documentación
-summary: Centros que enlazan a todos los documentos de OpenClaw
+summary: Centros que enlazan a toda la documentación de OpenClaw
 title: Centros de documentación
 x-i18n:
-    generated_at: "2026-05-11T20:53:28Z"
+    generated_at: "2026-05-12T00:59:04Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fdf4128ddb05bb009faec0a21d45933ffb0a3abf5e5ba8dbe1b9710c8eee3bde
+    source_hash: f4675773105bbff55e1f38c8449d688dcefc6ad70d9f5e572193f1e0c638e243
     source_path: start/hubs.md
     workflow: 16
 ---
 
 <Note>
-Si eres nuevo en OpenClaw, empieza con [Primeros pasos](/es/start/getting-started).
+Si eres nuevo en OpenClaw, comienza con [Primeros pasos](/es/start/getting-started).
 </Note>
 
-Usa estos hubs para descubrir todas las páginas, incluidas las profundizaciones y la documentación de referencia que no aparecen en la navegación izquierda.
+Usa estos centros para descubrir todas las páginas, incluidas guías detalladas y documentación de referencia que no aparecen en la navegación izquierda.
 
 ## Empieza aquí
 
@@ -24,7 +24,7 @@ Usa estos hubs para descubrir todas las páginas, incluidas las profundizaciones
 - [Primeros pasos](/es/start/getting-started)
 - [Incorporación](/es/start/onboarding)
 - [Incorporación (CLI)](/es/start/wizard)
-- [Configuración](/es/start/setup)
+- [Configuración inicial](/es/start/setup)
 - [Panel (Gateway local)](http://127.0.0.1:18789/)
 - [Ayuda](/es/help)
 - [Directorio de documentación](/es/start/docs-directory)
@@ -32,9 +32,9 @@ Usa estos hubs para descubrir todas las páginas, incluidas las profundizaciones
 - [Ejemplos de configuración](/es/gateway/configuration-examples)
 - [Asistente de OpenClaw](/es/start/openclaw)
 - [Muestra](/es/start/showcase)
-- [Lore](/es/start/lore)
+- [Tradición](/es/start/lore)
 
-## Instalación + actualizaciones
+## Instalación y actualizaciones
 
 - [Docker](/es/install/docker)
 - [Nix](/es/install/nix)
@@ -45,7 +45,7 @@ Usa estos hubs para descubrir todas las páginas, incluidas las profundizaciones
 
 - [Arquitectura](/es/concepts/architecture)
 - [Funciones](/es/concepts/features)
-- [Hub de red](/es/network)
+- [Centro de red](/es/network)
 - [Runtime del agente](/es/concepts/agent)
 - [Espacio de trabajo del agente](/es/concepts/agent-workspace)
 - [Memoria](/es/concepts/memory)
@@ -54,7 +54,7 @@ Usa estos hubs para descubrir todas las páginas, incluidas las profundizaciones
 - [Enrutamiento multiagente](/es/concepts/multi-agent)
 - [Compaction](/es/concepts/compaction)
 - [Sesiones](/es/concepts/session)
-- [Depuración de sesiones](/es/concepts/session-pruning)
+- [Poda de sesiones](/es/concepts/session-pruning)
 - [Herramientas de sesión](/es/concepts/session-tool)
 - [Cola](/es/concepts/queue)
 - [Comandos slash](/es/tools/slash-commands)
@@ -62,7 +62,7 @@ Usa estos hubs para descubrir todas las páginas, incluidas las profundizaciones
 - [Esquemas TypeBox](/es/concepts/typebox)
 - [Gestión de zona horaria](/es/concepts/timezone)
 - [Presencia](/es/concepts/presence)
-- [Descubrimiento + transportes](/es/gateway/discovery)
+- [Detección + transportes](/es/gateway/discovery)
 - [Bonjour](/es/gateway/bonjour)
 - [Enrutamiento de canales](/es/channels/channel-routing)
 - [Grupos](/es/channels/groups)
@@ -72,8 +72,8 @@ Usa estos hubs para descubrir todas las páginas, incluidas las profundizaciones
 
 ## Proveedores + ingreso
 
-- [Hub de canales de chat](/es/channels)
-- [Hub de proveedores de modelos](/es/providers/models)
+- [Centro de canales de chat](/es/channels)
+- [Centro de proveedores de modelos](/es/providers/models)
 - [WhatsApp](/es/channels/whatsapp)
 - [Telegram](/es/channels/telegram)
 - [Slack](/es/channels/slack)
@@ -112,11 +112,11 @@ Usa estos hubs para descubrir todas las páginas, incluidas las profundizaciones
 - [Superficie de herramientas](/es/tools)
 - [OpenProse](/es/prose)
 - [Referencia de CLI](/es/cli)
-- [Herramienta de ejecución](/es/tools/exec)
+- [Herramienta exec](/es/tools/exec)
 - [Herramienta PDF](/es/tools/pdf)
 - [Modo elevado](/es/tools/elevated)
-- [Tareas Cron](/es/automation/cron-jobs)
-- [Automatización y tareas](/es/automation)
+- [Trabajos Cron](/es/automation/cron-jobs)
+- [Automatización](/es/automation)
 - [Pensamiento + detallado](/es/tools/thinking)
 - [Modelos](/es/concepts/models)
 - [Subagentes](/es/tools/subagents)
@@ -134,7 +134,7 @@ Usa estos hubs para descubrir todas las páginas, incluidas las profundizaciones
 - [Audio](/es/nodes/audio)
 - [Comando de ubicación](/es/nodes/location-command)
 - [Activación por voz](/es/nodes/voicewake)
-- [Modo conversación](/es/nodes/talk)
+- [Modo de conversación](/es/nodes/talk)
 
 ## Plataformas
 
@@ -148,16 +148,16 @@ Usa estos hubs para descubrir todas las páginas, incluidas las profundizaciones
 
 ## App complementaria de macOS (avanzado)
 
-- [Configuración de desarrollo de macOS](/es/platforms/mac/dev-setup)
+- [Configuración de desarrollo para macOS](/es/platforms/mac/dev-setup)
 - [Barra de menús de macOS](/es/platforms/mac/menu-bar)
 - [Activación por voz en macOS](/es/platforms/mac/voicewake)
-- [Superposición de voz de macOS](/es/platforms/mac/voice-overlay)
-- [WebChat de macOS](/es/platforms/mac/webchat)
+- [Superposición de voz en macOS](/es/platforms/mac/voice-overlay)
+- [WebChat en macOS](/es/platforms/mac/webchat)
 - [Canvas de macOS](/es/platforms/mac/canvas)
-- [Proceso secundario de macOS](/es/platforms/mac/child-process)
+- [Proceso hijo de macOS](/es/platforms/mac/child-process)
 - [Estado de macOS](/es/platforms/mac/health)
 - [Icono de macOS](/es/platforms/mac/icon)
-- [Registro de macOS](/es/platforms/mac/logging)
+- [Registro en macOS](/es/platforms/mac/logging)
 - [Permisos de macOS](/es/platforms/mac/permissions)
 - [Remoto de macOS](/es/platforms/mac/remote)
 - [Firma de macOS](/es/platforms/mac/signing)
@@ -169,10 +169,10 @@ Usa estos hubs para descubrir todas las páginas, incluidas las profundizaciones
 ## Plugins
 
 - [Resumen de plugins](/es/tools/plugin)
-- [Creación de plugins](/es/plugins/building-plugins)
-- [Hooks de plugins](/es/plugins/hooks)
+- [Crear plugins](/es/plugins/building-plugins)
+- [Hooks de Plugin](/es/plugins/hooks)
 - [Manifiesto de Plugin](/es/plugins/manifest)
-- [Herramientas de agente](/es/plugins/building-plugins#registering-agent-tools)
+- [Herramientas del agente](/es/plugins/building-plugins#registering-agent-tools)
 - [Paquetes de plugins](/es/plugins/bundles)
 - [ClawHub](/es/clawhub)
 - [Recetario de capacidades](/es/plugins/adding-capabilities)
@@ -201,7 +201,7 @@ Usa estos hubs para descubrir todas las páginas, incluidas las profundizaciones
 
 - [Pruebas](/es/reference/test)
 - [Política de lanzamiento](/es/reference/RELEASING)
-- [Modelos de dispositivos](/es/reference/device-models)
+- [Modelos de dispositivo](/es/reference/device-models)
 
 ## Relacionado
 

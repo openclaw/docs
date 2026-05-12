@@ -1,45 +1,45 @@
 ---
 read_when:
     - Vuoi una mappa completa della documentazione
-summary: Hub che rimandano a ogni documento di OpenClaw
+summary: Hub che collegano a ogni documento OpenClaw
 title: Hub della documentazione
 x-i18n:
-    generated_at: "2026-05-10T19:52:06Z"
+    generated_at: "2026-05-12T00:59:38Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fdf4128ddb05bb009faec0a21d45933ffb0a3abf5e5ba8dbe1b9710c8eee3bde
+    source_hash: f4675773105bbff55e1f38c8449d688dcefc6ad70d9f5e572193f1e0c638e243
     source_path: start/hubs.md
     workflow: 16
 ---
 
 <Note>
-Se non conosci OpenClaw, inizia da [Primi passi](/it/start/getting-started).
+Se hai appena iniziato con OpenClaw, parti da [Guida introduttiva](/it/start/getting-started).
 </Note>
 
-Usa questi hub per scoprire ogni pagina, incluse le analisi approfondite e la documentazione di riferimento che non compaiono nella navigazione a sinistra.
+Usa questi hub per scoprire ogni pagina, inclusi approfondimenti e documentazione di riferimento che non compaiono nella navigazione a sinistra.
 
 ## Inizia qui
 
 - [Indice](/it)
-- [Primi passi](/it/start/getting-started)
-- [Onboarding](/it/start/onboarding)
-- [Onboarding (CLI)](/it/start/wizard)
-- [Configurazione iniziale](/it/start/setup)
+- [Guida introduttiva](/it/start/getting-started)
+- [Configurazione iniziale](/it/start/onboarding)
+- [Configurazione iniziale (CLI)](/it/start/wizard)
+- [Configurazione](/it/start/setup)
 - [Dashboard (Gateway locale)](http://127.0.0.1:18789/)
 - [Aiuto](/it/help)
 - [Directory della documentazione](/it/start/docs-directory)
 - [Configurazione](/it/gateway/configuration)
 - [Esempi di configurazione](/it/gateway/configuration-examples)
 - [Assistente OpenClaw](/it/start/openclaw)
-- [Showcase](/it/start/showcase)
-- [Lore](/it/start/lore)
+- [Vetrina](/it/start/showcase)
+- [Contesto narrativo](/it/start/lore)
 
 ## Installazione + aggiornamenti
 
 - [Docker](/it/install/docker)
 - [Nix](/it/install/nix)
-- [Aggiornamento / rollback](/it/install/updating)
-- [Workflow Bun (sperimentale)](/it/install/bun)
+- [Aggiornamento / ripristino](/it/install/updating)
+- [Flusso di lavoro Bun (sperimentale)](/it/install/bun)
 
 ## Concetti fondamentali
 
@@ -62,7 +62,7 @@ Usa questi hub per scoprire ogni pagina, incluse le analisi approfondite e la do
 - [Schemi TypeBox](/it/concepts/typebox)
 - [Gestione del fuso orario](/it/concepts/timezone)
 - [Presenza](/it/concepts/presence)
-- [Discovery + trasporti](/it/gateway/discovery)
+- [Rilevamento + trasporti](/it/gateway/discovery)
 - [Bonjour](/it/gateway/bonjour)
 - [Routing dei canali](/it/channels/channel-routing)
 - [Gruppi](/it/channels/groups)
@@ -72,7 +72,7 @@ Usa questi hub per scoprire ogni pagina, incluse le analisi approfondite e la do
 
 ## Provider + ingresso
 
-- [Hub dei canali chat](/it/channels)
+- [Hub dei canali di chat](/it/channels)
 - [Hub dei provider di modelli](/it/providers/models)
 - [WhatsApp](/it/channels/whatsapp)
 - [Telegram](/it/channels/telegram)
@@ -82,17 +82,17 @@ Usa questi hub per scoprire ogni pagina, incluse le analisi approfondite e la do
 - [Signal](/it/channels/signal)
 - [QQ Bot](/it/channels/qqbot)
 - [iMessage](/it/channels/imessage)
-- [Parsing della posizione](/it/channels/location)
+- [Analisi della posizione](/it/channels/location)
 - [WebChat](/it/web/webchat)
 - [Webhook](/it/automation/cron-jobs#webhooks)
 - [Gmail Pub/Sub](/it/automation/cron-jobs#gmail-pubsub-integration)
 
 ## Gateway + operazioni
 
-- [Runbook del Gateway](/it/gateway)
+- [Runbook Gateway](/it/gateway)
 - [Modello di rete](/it/network#core-model)
-- [Associazione del Gateway](/it/gateway/pairing)
-- [Blocco del Gateway](/it/gateway/gateway-lock)
+- [Associazione Gateway](/it/gateway/pairing)
+- [Blocco Gateway](/it/gateway/gateway-lock)
 - [Processo in background](/it/gateway/background-process)
 - [Salute](/it/gateway/health)
 - [Heartbeat](/it/gateway/heartbeat)
@@ -100,7 +100,7 @@ Usa questi hub per scoprire ogni pagina, incluse le analisi approfondite e la do
 - [Logging](/it/gateway/logging)
 - [Sandboxing](/it/gateway/sandboxing)
 - [Dashboard](/it/web/dashboard)
-- [UI di controllo](/it/web/control-ui)
+- [Interfaccia utente di controllo](/it/web/control-ui)
 - [Accesso remoto](/it/gateway/remote)
 - [README del Gateway remoto](/it/gateway/remote-gateway-readme)
 - [Tailscale](/it/gateway/tailscale)
@@ -112,16 +112,16 @@ Usa questi hub per scoprire ogni pagina, incluse le analisi approfondite e la do
 - [Superficie degli strumenti](/it/tools)
 - [OpenProse](/it/prose)
 - [Riferimento CLI](/it/cli)
-- [Strumento exec](/it/tools/exec)
+- [Strumento Exec](/it/tools/exec)
 - [Strumento PDF](/it/tools/pdf)
 - [Modalità elevata](/it/tools/elevated)
-- [Job Cron](/it/automation/cron-jobs)
-- [Automazione e attività](/it/automation)
-- [Thinking + verbose](/it/tools/thinking)
+- [Processi Cron](/it/automation/cron-jobs)
+- [Automazione](/it/automation)
+- [Pensiero + verboso](/it/tools/thinking)
 - [Modelli](/it/concepts/models)
 - [Sotto-agenti](/it/tools/subagents)
 - [CLI di invio all'agente](/it/tools/agent-send)
-- [UI terminale](/it/web/tui)
+- [Interfaccia utente del terminale](/it/web/tui)
 - [Controllo del browser](/it/tools/browser)
 - [Browser (risoluzione dei problemi su Linux)](/it/tools/browser-linux-troubleshooting)
 - [Sondaggi](/it/cli/message)
@@ -132,8 +132,8 @@ Usa questi hub per scoprire ogni pagina, incluse le analisi approfondite e la do
 - [Fotocamera](/it/nodes/camera)
 - [Immagini](/it/nodes/images)
 - [Audio](/it/nodes/audio)
-- [Comando posizione](/it/nodes/location-command)
-- [Voice wake](/it/nodes/voicewake)
+- [Comando di posizione](/it/nodes/location-command)
+- [Attivazione vocale](/it/nodes/voicewake)
 - [Modalità conversazione](/it/nodes/talk)
 
 ## Piattaforme
@@ -146,11 +146,11 @@ Usa questi hub per scoprire ogni pagina, incluse le analisi approfondite e la do
 - [Linux](/it/platforms/linux)
 - [Superfici web](/it/web)
 
-## App companion per macOS (avanzata)
+## App companion macOS (avanzata)
 
-- [Configurazione dev per macOS](/it/platforms/mac/dev-setup)
+- [Configurazione dev macOS](/it/platforms/mac/dev-setup)
 - [Barra dei menu macOS](/it/platforms/mac/menu-bar)
-- [Voice wake macOS](/it/platforms/mac/voicewake)
+- [Attivazione vocale macOS](/it/platforms/mac/voicewake)
 - [Overlay vocale macOS](/it/platforms/mac/voice-overlay)
 - [WebChat macOS](/it/platforms/mac/webchat)
 - [Canvas macOS](/it/platforms/mac/canvas)
@@ -158,7 +158,7 @@ Usa questi hub per scoprire ogni pagina, incluse le analisi approfondite e la do
 - [Salute macOS](/it/platforms/mac/health)
 - [Icona macOS](/it/platforms/mac/icon)
 - [Logging macOS](/it/platforms/mac/logging)
-- [Autorizzazioni macOS](/it/platforms/mac/permissions)
+- [Permessi macOS](/it/platforms/mac/permissions)
 - [Remoto macOS](/it/platforms/mac/remote)
 - [Firma macOS](/it/platforms/mac/signing)
 - [Gateway macOS (launchd)](/it/platforms/mac/bundled-gateway)
@@ -169,10 +169,10 @@ Usa questi hub per scoprire ogni pagina, incluse le analisi approfondite e la do
 ## Plugin
 
 - [Panoramica dei Plugin](/it/tools/plugin)
-- [Creare Plugin](/it/plugins/building-plugins)
+- [Creazione di Plugin](/it/plugins/building-plugins)
 - [Hook dei Plugin](/it/plugins/hooks)
-- [Manifest del Plugin](/it/plugins/manifest)
-- [Strumenti agente](/it/plugins/building-plugins#registering-agent-tools)
+- [Manifest dei Plugin](/it/plugins/manifest)
+- [Strumenti dell'agente](/it/plugins/building-plugins#registering-agent-tools)
 - [Bundle di Plugin](/it/plugins/bundles)
 - [ClawHub](/it/clawhub)
 - [Ricettario delle capability](/it/plugins/adding-capabilities)
@@ -200,9 +200,9 @@ Usa questi hub per scoprire ogni pagina, incluse le analisi approfondite e la do
 ## Test + rilascio
 
 - [Test](/it/reference/test)
-- [Policy di rilascio](/it/reference/RELEASING)
+- [Criteri di rilascio](/it/reference/RELEASING)
 - [Modelli di dispositivo](/it/reference/device-models)
 
 ## Correlati
 
-- [Primi passi](/it/start/getting-started)
+- [Guida introduttiva](/it/start/getting-started)

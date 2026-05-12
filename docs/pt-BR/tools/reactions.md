@@ -1,20 +1,20 @@
 ---
 read_when:
     - Trabalhando com reações em qualquer canal
-    - Entendendo como as reações com emojis variam entre plataformas
+    - Entendendo como as reações com emojis diferem entre plataformas
 summary: Semântica da ferramenta de reação em todos os canais compatíveis
 title: Reações
 x-i18n:
-    generated_at: "2026-05-03T21:39:12Z"
+    generated_at: "2026-05-12T01:00:37Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 99008cdaf1fa7462bbe72066be7c404880df237a79d3deba01bffe00083c1e34
+    source_hash: 835c2a580f7f3e098ee956274de24191587929bfea7405a022cd68b35710c455
     source_path: tools/reactions.md
     workflow: 16
 ---
 
 O agente pode adicionar e remover reações com emoji em mensagens usando a ferramenta `message`
-com a ação `react`. O comportamento das reações varia por canal e transporte.
+com a ação `react`. O comportamento das reações varia conforme o canal e o transporte.
 
 ## Como funciona
 
@@ -29,9 +29,9 @@ com a ação `react`. O comportamento das reações varia por canal e transporte
 - `emoji` é obrigatório ao adicionar uma reação.
 - Defina `emoji` como uma string vazia (`""`) para remover a(s) reação(ões) do bot.
 - Defina `remove: true` para remover um emoji específico (requer `emoji` não vazio).
-- Em canais compatíveis com reações de status, `trackToolCalls: true` em uma
-  reação permite que o runtime use essa mensagem reagida para reações subsequentes de
-  progresso de ferramentas durante o mesmo turno.
+- Em canais que oferecem suporte a reações de status, `trackToolCalls: true` em uma
+  reação permite que o runtime use essa mensagem reagida para reações de
+  progresso de ferramentas subsequentes durante o mesmo turno.
 
 ## Comportamento por canal
 
@@ -73,21 +73,27 @@ com a ação `react`. O comportamento das reações varia por canal e transporte
   </Accordion>
 
   <Accordion title="Signal">
-    - As notificações de reações recebidas são controladas por `channels.signal.reactionNotifications`: `"off"` as desativa, `"own"` (padrão) emite eventos quando usuários reagem a mensagens do bot, e `"all"` emite eventos para todas as reações.
+    - As notificações de reação recebidas são controladas por `channels.signal.reactionNotifications`: `"off"` as desativa, `"own"` (padrão) emite eventos quando usuários reagem a mensagens do bot, e `"all"` emite eventos para todas as reações.
+
+  </Accordion>
+
+  <Accordion title="iMessage">
+    - Reações enviadas são tapbacks do iMessage (`love`, `like`, `dislike`, `laugh`, `emphasize` e `question`).
+    - As notificações de tapback recebidas são controladas por `channels.imessage.reactionNotifications`: `"off"` as desativa, `"own"` (padrão) emite eventos quando usuários reagem a mensagens criadas pelo bot, e `"all"` emite eventos para todos os tapbacks de remetentes autorizados.
 
   </Accordion>
 </AccordionGroup>
 
 ## Nível de reação
 
-A configuração `reactionLevel` por canal controla a amplitude com que o agente usa reações. Os valores normalmente são `off`, `ack`, `minimal` ou `extensive`.
+A configuração `reactionLevel` por canal controla quão amplamente o agente usa reações. Os valores normalmente são `off`, `ack`, `minimal` ou `extensive`.
 
 - [reactionLevel do Telegram](/pt-BR/channels/telegram#reaction-notifications) — `channels.telegram.reactionLevel`
 - [reactionLevel do WhatsApp](/pt-BR/channels/whatsapp#reaction-level) — `channels.whatsapp.reactionLevel`
 
-Defina `reactionLevel` em canais individuais para ajustar o quão ativamente o agente reage a mensagens em cada plataforma.
+Defina `reactionLevel` em canais individuais para ajustar com que atividade o agente reage a mensagens em cada plataforma.
 
 ## Relacionado
 
 - [Envio do agente](/pt-BR/tools/agent-send) — a ferramenta `message` que inclui `react`
-- [Canais](/pt-BR/channels) — configuração específica de canal
+- [Canais](/pt-BR/channels) — configuração específica de canais

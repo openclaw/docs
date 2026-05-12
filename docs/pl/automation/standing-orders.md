@@ -1,54 +1,54 @@
 ---
 read_when:
-    - Konfigurowanie autonomicznych przepływów pracy agentów działających bez każdorazowego podawania poleceń dla zadań
-    - Określanie, co agent może zrobić samodzielnie, a co wymaga zatwierdzenia przez człowieka
-    - Strukturyzowanie agentów wieloprogramowych z jasnymi granicami i zasadami eskalacji
-summary: Zdefiniuj stałe uprawnienia do działania dla autonomicznych programów agentowych
+    - Konfigurowanie autonomicznych przepływów pracy agentów działających bez monitowania przy każdym zadaniu
+    - Określanie, co agent może robić samodzielnie, a co wymaga zatwierdzenia przez człowieka
+    - Strukturyzowanie agentów wieloprogramowych z wyraźnymi granicami i regułami eskalacji
+summary: Zdefiniuj trwałe uprawnienia operacyjne dla autonomicznych programów agentowych
 title: Stałe polecenia
 x-i18n:
-    generated_at: "2026-05-10T19:21:13Z"
+    generated_at: "2026-05-12T00:56:20Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3c78a723c296e1b695fd0fa7b0c3dbc3572fcfc1f49d6fadcab7a5a7a44c4b8d
+    source_hash: 3a51baa7aca31cb34b682983374d4d551ed6ab57ae54a5c63e7d044bffeef756
     source_path: automation/standing-orders.md
     workflow: 16
 ---
 
-Stałe zlecenia nadają Twojemu agentowi **stałe uprawnienia operacyjne** dla zdefiniowanych programów. Zamiast za każdym razem podawać instrukcje dla pojedynczego zadania, definiujesz programy z jasnym zakresem, wyzwalaczami i regułami eskalacji - a agent wykonuje je autonomicznie w tych granicach.
+Stałe zlecenia nadają agentowi **trwałe uprawnienia operacyjne** dla zdefiniowanych programów. Zamiast za każdym razem podawać instrukcje dla pojedynczego zadania, definiujesz programy z jasnym zakresem, wyzwalaczami i regułami eskalacji - a agent działa autonomicznie w tych granicach.
 
-To różnica między mówieniem asystentowi „wyślij cotygodniowy raport” w każdy piątek a nadaniem stałych uprawnień: „Odpowiadasz za cotygodniowy raport. Przygotowuj go w każdy piątek, wysyłaj i eskaluj tylko wtedy, gdy coś wygląda nieprawidłowo”.
+To różnica między mówieniem asystentowi „wyślij cotygodniowy raport” w każdy piątek a nadaniem stałych uprawnień: „Odpowiadasz za cotygodniowy raport. Przygotuj go w każdy piątek, wyślij i eskaluj tylko wtedy, gdy coś wygląda nieprawidłowo”.
 
 ## Dlaczego stałe zlecenia
 
 **Bez stałych zleceń:**
 
-- Musisz monitować agenta dla każdego zadania
+- Musisz instruować agenta przy każdym zadaniu
 - Agent pozostaje bezczynny między żądaniami
 - Rutynowa praca jest zapominana lub opóźniana
-- Stajesz się wąskim gardłem
+- Ty stajesz się wąskim gardłem
 
 **Ze stałymi zleceniami:**
 
 - Agent działa autonomicznie w zdefiniowanych granicach
-- Rutynowa praca odbywa się zgodnie z harmonogramem bez monitowania
+- Rutynowa praca odbywa się zgodnie z harmonogramem bez przypominania
 - Angażujesz się tylko przy wyjątkach i zatwierdzeniach
 - Agent produktywnie wykorzystuje czas bezczynności
 
 ## Jak działają
 
-Stałe zlecenia są definiowane w plikach Twojego [obszaru roboczego agenta](/pl/concepts/agent-workspace). Zalecane podejście to umieszczenie ich bezpośrednio w `AGENTS.md` (który jest automatycznie wstrzykiwany w każdej sesji), aby agent zawsze miał je w kontekście. W przypadku większych konfiguracji możesz też umieścić je w dedykowanym pliku, takim jak `standing-orders.md`, i odwołać się do niego z `AGENTS.md`.
+Stałe zlecenia są definiowane w plikach [przestrzeni roboczej agenta](/pl/concepts/agent-workspace). Zalecane podejście to umieszczenie ich bezpośrednio w `AGENTS.md` (który jest automatycznie wstrzykiwany w każdej sesji), aby agent zawsze miał je w kontekście. W przypadku większych konfiguracji możesz też umieścić je w dedykowanym pliku, takim jak `standing-orders.md`, i odwołać się do niego z `AGENTS.md`.
 
 Każdy program określa:
 
-1. **Zakres** - do czego agent jest upoważniony
-2. **Wyzwalacze** - kiedy wykonywać działania (harmonogram, zdarzenie lub warunek)
-3. **Bramki zatwierdzania** - co wymaga podpisu człowieka przed działaniem
-4. **Reguły eskalacji** - kiedy zatrzymać się i poprosić o pomoc
+1. **Zakres** - co agent ma prawo robić
+2. **Wyzwalacze** - kiedy wykonać działanie (harmonogram, zdarzenie lub warunek)
+3. **Bramki zatwierdzeń** - co wymaga zgody człowieka przed działaniem
+4. **Reguły eskalacji** - kiedy przerwać i poprosić o pomoc
 
-Agent ładuje te instrukcje w każdej sesji przez pliki inicjalizujące obszar roboczy (pełną listę automatycznie wstrzykiwanych plików znajdziesz w [Obszar roboczy agenta](/pl/concepts/agent-workspace)) i wykonuje je, łącząc je z [zadaniami Cron](/pl/automation/cron-jobs) w celu egzekwowania działań opartych na czasie.
+Agent ładuje te instrukcje w każdej sesji za pośrednictwem plików inicjalizujących przestrzeń roboczą (pełna lista automatycznie wstrzykiwanych plików: [Przestrzeń robocza agenta](/pl/concepts/agent-workspace)) i wykonuje je w połączeniu z [zadaniami Cron](/pl/automation/cron-jobs) do egzekwowania działań opartych na czasie.
 
 <Tip>
-Umieść stałe zlecenia w `AGENTS.md`, aby zagwarantować, że będą ładowane w każdej sesji. Inicjalizacja obszaru roboczego automatycznie wstrzykuje `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` i `MEMORY.md` - ale nie dowolne pliki w podkatalogach.
+Umieść stałe zlecenia w `AGENTS.md`, aby zagwarantować ich ładowanie w każdej sesji. Inicjalizacja przestrzeni roboczej automatycznie wstrzykuje `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` i `MEMORY.md` - ale nie dowolne pliki w podkatalogach.
 </Tip>
 
 ## Anatomia stałego zlecenia
@@ -78,7 +78,7 @@ Umieść stałe zlecenia w `AGENTS.md`, aby zagwarantować, że będą ładowane
 
 ## Stałe zlecenia plus zadania Cron
 
-Stałe zlecenia definiują, **co** agent ma uprawnienia robić. [Zadania Cron](/pl/automation/cron-jobs) definiują, **kiedy** to się dzieje. Działają razem:
+Stałe zlecenia definiują, **co** agent ma prawo robić. [Zadania Cron](/pl/automation/cron-jobs) definiują, **kiedy** to się dzieje. Działają razem:
 
 ```
 Standing Order: "You own the daily inbox triage"
@@ -88,7 +88,7 @@ Cron Job (8 AM daily): "Execute inbox triage per standing orders"
 Agent: Reads standing orders → executes steps → reports results
 ```
 
-Monit zadania Cron powinien odwoływać się do stałego zlecenia, zamiast je powielać:
+Prompt zadania Cron powinien odwoływać się do stałego zlecenia zamiast je duplikować:
 
 ```bash
 openclaw cron add \
@@ -179,13 +179,13 @@ openclaw cron add \
 | Channel offline  | Log and retry next cycle | If offline > 2 hours     |
 ```
 
-## Wzorzec wykonaj-sprawdź-zaraportuj
+## Wzorzec wykonaj-zweryfikuj-zaraportuj
 
-Stałe zlecenia działają najlepiej w połączeniu ze ścisłą dyscypliną wykonania. Każde zadanie w stałym zleceniu powinno przebiegać według tej pętli:
+Stałe zlecenia działają najlepiej, gdy są połączone z rygorystyczną dyscypliną wykonania. Każde zadanie w stałym zleceniu powinno stosować tę pętlę:
 
-1. **Wykonaj** - Zrób faktyczną pracę (nie tylko potwierdź instrukcję)
-2. **Sprawdź** - Potwierdź, że wynik jest poprawny (plik istnieje, wiadomość dostarczona, dane sparsowane)
-3. **Zaraportuj** - Powiedz właścicielowi, co zostało zrobione i co zostało sprawdzone
+1. **Wykonaj** - Wykonaj właściwą pracę (nie tylko potwierdź instrukcję)
+2. **Zweryfikuj** - Potwierdź, że wynik jest poprawny (plik istnieje, wiadomość dostarczona, dane przeanalizowane)
+3. **Zaraportuj** - Powiedz właścicielowi, co zrobiono i co zweryfikowano
 
 ```markdown
 ### Execution rules
@@ -200,9 +200,9 @@ Stałe zlecenia działają najlepiej w połączeniu ze ścisłą dyscypliną wyk
 
 Ten wzorzec zapobiega najczęstszemu trybowi awarii agenta: potwierdzeniu zadania bez jego ukończenia.
 
-## Architektura wielu programów
+## Architektura wieloprogramowa
 
-W przypadku agentów zarządzających wieloma obszarami uporządkuj stałe zlecenia jako osobne programy z jasnymi granicami:
+W przypadku agentów zarządzających wieloma obszarami organizuj stałe zlecenia jako osobne programy z jasnymi granicami:
 
 ```markdown
 ## Program 1: [Domain A] (Weekly)
@@ -225,8 +225,8 @@ W przypadku agentów zarządzających wieloma obszarami uporządkuj stałe zlece
 
 Każdy program powinien mieć:
 
-- Własną **kadencję wyzwalania** (tygodniową, miesięczną, sterowaną zdarzeniami, ciągłą)
-- Własne **bramki zatwierdzania** (niektóre programy wymagają większego nadzoru niż inne)
+- Własną **kadencję wyzwalaczy** (tygodniową, miesięczną, sterowaną zdarzeniami, ciągłą)
+- Własne **bramki zatwierdzeń** (niektóre programy wymagają większego nadzoru niż inne)
 - Jasne **granice** (agent powinien wiedzieć, gdzie kończy się jeden program, a zaczyna drugi)
 
 ## Najlepsze praktyki
@@ -234,24 +234,24 @@ Każdy program powinien mieć:
 ### Rób
 
 - Zacznij od wąskich uprawnień i rozszerzaj je wraz ze wzrostem zaufania
-- Zdefiniuj jawne bramki zatwierdzania dla działań wysokiego ryzyka
-- Uwzględnij sekcje „Czego NIE robić” - granice są równie ważne jak uprawnienia
+- Definiuj wyraźne bramki zatwierdzeń dla działań wysokiego ryzyka
+- Uwzględniaj sekcje „Czego NIE robić” - granice są równie ważne jak uprawnienia
 - Łącz z zadaniami Cron, aby zapewnić niezawodne wykonywanie oparte na czasie
-- Przeglądaj logi agenta co tydzień, aby sprawdzać, czy stałe zlecenia są przestrzegane
+- Przeglądaj logi agenta co tydzień, aby sprawdzić, czy stałe zlecenia są przestrzegane
 - Aktualizuj stałe zlecenia wraz ze zmianą potrzeb - to żywe dokumenty
 
 ### Unikaj
 
 - Nadawania szerokich uprawnień pierwszego dnia („rób, co uważasz za najlepsze”)
-- Pomijania reguł eskalacji - każdy program potrzebuje klauzuli „kiedy zatrzymać się i zapytać”
+- Pomijania reguł eskalacji - każdy program potrzebuje klauzuli „kiedy przerwać i zapytać”
 - Zakładania, że agent zapamięta instrukcje ustne - umieść wszystko w pliku
 - Mieszania obszarów w jednym programie - osobne programy dla osobnych domen
 - Zapominania o egzekwowaniu przez zadania Cron - stałe zlecenia bez wyzwalaczy stają się sugestiami
 
 ## Powiązane
 
-- [Automatyzacja i zadania](/pl/automation): wszystkie mechanizmy automatyzacji w skrócie.
+- [Automatyzacja](/pl/automation): wszystkie mechanizmy automatyzacji w skrócie.
 - [Zadania Cron](/pl/automation/cron-jobs): egzekwowanie harmonogramu dla stałych zleceń.
-- [Hooki](/pl/automation/hooks): skrypty sterowane zdarzeniami dla zdarzeń cyklu życia agenta.
-- [Webhooki](/pl/automation/cron-jobs#webhooks): przychodzące wyzwalacze zdarzeń HTTP.
-- [Obszar roboczy agenta](/pl/concepts/agent-workspace): miejsce, w którym znajdują się stałe zlecenia, wraz z pełną listą automatycznie wstrzykiwanych plików inicjalizujących (`AGENTS.md`, `SOUL.md` itd.).
+- [Hooks](/pl/automation/hooks): skrypty sterowane zdarzeniami dla zdarzeń cyklu życia agenta.
+- [Webhooks](/pl/automation/cron-jobs#webhooks): przychodzące wyzwalacze zdarzeń HTTP.
+- [Przestrzeń robocza agenta](/pl/concepts/agent-workspace): miejsce przechowywania stałych zleceń, w tym pełna lista automatycznie wstrzykiwanych plików inicjalizujących (`AGENTS.md`, `SOUL.md` itd.).

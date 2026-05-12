@@ -1,241 +1,187 @@
 ---
+doc-schema-version: 1
 read_when:
     - OpenClaw'ın hangi araçları sağladığını anlamak istiyorsunuz
-    - Araçları yapılandırmanız, izin vermeniz veya reddetmeniz gerekir
-    - Yerleşik araçlar, Skills ve Plugin'ler arasında seçim yapıyorsunuz
-summary: 'OpenClaw araçları ve Plugin''lerine genel bakış: ajanın neler yapabileceği ve nasıl genişletileceği'
-title: Araçlar ve Pluginler
+    - Yerleşik araçlar, Skills ve Plugin'ler arasında karar veriyorsunuz
+    - Araç politikası, otomasyon veya ajan koordinasyonu için doğru dokümantasyon giriş noktasına ihtiyacınız var
+summary: 'OpenClaw araçları, Skills ve Plugin''lere genel bakış: ajanların neleri çağırabileceği ve bunların nasıl genişletileceği'
+title: Genel Bakış
 x-i18n:
-    generated_at: "2026-05-10T19:57:51Z"
+    generated_at: "2026-05-12T01:00:37Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b12b2d605c8fccb0de378f8a63fb92b8c3bad8abd3edf10bb79632d6ef6089fd
+    source_hash: 94424b04a520009d40d851e46f7ea0e4e914ff39b7d79958194bb123a6ec0b7b
     source_path: tools/index.md
     workflow: 16
 ---
 
-Aracının metin üretmenin ötesinde yaptığı her şey **araçlar** üzerinden gerçekleşir.
-Araçlar, aracının dosya okumasını, komut çalıştırmasını, web’de gezinmesini, ileti
-göndermesini ve cihazlarla etkileşime geçmesini sağlar.
+Bu sayfayı doğru Capabilities yüzeyini seçmek için kullanın. **Tools** çağrılabilir
+eylemlerdir, **skills** ajanlara nasıl çalışacaklarını öğretir ve **plugins** araçlar,
+sağlayıcılar, kanallar, hook'lar ve paketlenmiş skills gibi çalışma zamanı
+yetenekleri ekler.
 
-## Araçlar, Skills ve Plugin’ler
+Bu bir genel bakış ve yönlendirme sayfasıdır. Kapsamlı araç politikası,
+varsayılanlar, grup üyeliği, sağlayıcı kısıtlamaları ve yapılandırma alanları
+için [Araçlar ve özel sağlayıcılar](/tr/gateway/config-tools) sayfasını kullanın.
 
-OpenClaw birlikte çalışan üç katmana sahiptir:
+## Buradan başlayın
+
+Çoğu ajan için yerleşik araç kategorileriyle başlayın, ardından politikayı
+yalnızca ajanın daha az araç görmesi gerektiğinde veya açık host erişimine
+ihtiyacı olduğunda ayarlayın.
+
+| Şunu yapmanız gerekiyorsa...                         | Önce bunu kullanın                               | Ardından okuyun                                                         |
+| ---------------------------------------------------- | ------------------------------------------------ | ----------------------------------------------------------------------- |
+| Bir ajanın mevcut yeteneklerle işlem yapmasını sağlamak | [Yerleşik araçlar](#built-in-tool-categories)    | [Araç kategorileri](#built-in-tool-categories)                          |
+| Bir ajanın neyi çağırabileceğini kontrol etmek       | [Araç politikası](#configure-access-and-approvals) | [Araçlar ve özel sağlayıcılar](/tr/gateway/config-tools)                   |
+| Bir ajana bir iş akışı öğretmek                      | [Skills](#choose-tools-skills-or-plugins)        | [Skills](/tr/tools/skills) ve [Skills oluşturma](/tr/tools/creating-skills)   |
+| Yeni bir entegrasyon veya çalışma zamanı yüzeyi eklemek | [Plugins](#extend-capabilities)                  | [Plugins](/tr/tools/plugin) ve [Plugins oluşturma](/tr/plugins/building-plugins) |
+| İşi daha sonra veya arka planda çalıştırmak          | [Otomasyon](/tr/automation)                         | [Otomasyona genel bakış](/tr/automation)                                   |
+| Birden fazla ajanı veya harness'ı koordine etmek     | [Alt ajanlar](/tr/tools/subagents)                  | [ACP ajanları](/tr/tools/acp-agents) ve [Ajan gönderimi](/tr/tools/agent-send) |
+| Büyük bir PI araç kataloğunda arama yapmak           | [Araç Arama](/tr/tools/tool-search)                 | [Araç Arama](/tr/tools/tool-search)                                        |
+
+## Araçları, Skills'i veya plugins'i seçin
 
 <Steps>
-  <Step title="Araçlar, aracının çağırdığı şeylerdir">
-    Araç, aracının çağırabileceği tiplendirilmiş bir işlevdir (örn. `exec`, `browser`,
-    `web_search`, `message`). OpenClaw bir dizi **yerleşik araç** ile gelir ve
-    Plugin’ler ek araçlar kaydedebilir.
+  <Step title="Ajanın işlem yapması gerektiğinde bir araç kullanın">
+    Araç, ajanın çağırabileceği türlenmiş bir fonksiyondur; örneğin `exec`,
+    `browser`, `web_search`, `message` veya `image_generate`. Ajanın veri
+    okuması, dosyaları değiştirmesi, mesaj göndermesi, bir sağlayıcıyı çağırması
+    veya başka bir sistemi işletmesi gerektiğinde araçları kullanın. Görünür
+    araçlar modele yapılandırılmış fonksiyon tanımları olarak gönderilir.
 
-    Aracı, araçları model API’sine gönderilen yapılandırılmış işlev tanımları olarak görür.
-
-  </Step>
-
-  <Step title="Skills aracıya ne zaman ve nasıl yapılacağını öğretir">
-    Skill, sistem istemine enjekte edilen bir markdown dosyasıdır (`SKILL.md`).
-    Skills, araçları etkili şekilde kullanmak için aracıya bağlam, kısıtlar ve
-    adım adım rehberlik sağlar. Skills çalışma alanınızda, paylaşılan klasörlerde
-    bulunur veya Plugin’lerin içinde gelir.
-
-    [Skills referansı](/tr/tools/skills) | [Skills oluşturma](/tr/tools/creating-skills)
+    Model yalnızca etkin profil, izin ver/reddet politikası, sağlayıcı
+    kısıtlamaları, sandbox durumu, kanal izinleri ve plugin kullanılabilirliği
+    sonrasında kalan araçları görür.
 
   </Step>
 
-  <Step title="Plugin’ler her şeyi birlikte paketler">
-    Plugin, şu yeteneklerin herhangi bir birleşimini kaydedebilen bir pakettir:
-    kanallar, model sağlayıcıları, araçlar, Skills, konuşma, gerçek zamanlı transkripsiyon,
-    gerçek zamanlı ses, medya anlama, görüntü üretimi, video üretimi,
-    web getirme, web arama ve daha fazlası. Bazı Plugin’ler **çekirdektir** (OpenClaw ile
-    birlikte gelir), diğerleri **haricidir** (topluluk tarafından npm’de yayımlanır).
+  <Step title="Ajanın yönergelere ihtiyacı olduğunda bir skill kullanın">
+    Skill, ajan istemine yüklenen bir `SKILL.md` yönerge paketidir. Ajan zaten
+    ihtiyaç duyduğu araçlara sahipse ancak tekrarlanabilir bir iş akışına,
+    inceleme rubriğine, komut dizisine veya çalışma kısıtına ihtiyaç duyuyorsa
+    skill kullanın.
 
-    [Plugin’leri kurun ve yapılandırın](/tr/tools/plugin) | [Kendi Plugin’inizi oluşturun](/tr/plugins/building-plugins)
+    Skills bir workspace'te, paylaşılan skill dizininde, yönetilen OpenClaw
+    skill kökünde veya plugin paketinde bulunabilir.
+
+    [Skills](/tr/tools/skills) | [Skills oluşturma](/tr/tools/creating-skills) | [Skills yapılandırması](/tr/tools/skills-config)
+
+  </Step>
+
+  <Step title="OpenClaw'ın yeni bir yeteneğe ihtiyacı olduğunda bir Plugin kullanın">
+    Bir Plugin araçlar, Skills, kanallar, model sağlayıcıları, konuşma,
+    realtime ses, medya üretimi, web araması, web getirme, hook'lar ve diğer
+    çalışma zamanı yetenekleri ekleyebilir. Yeteneğin kodu, kimlik bilgileri,
+    yaşam döngüsü hook'ları, manifest meta verileri veya kurulabilir paketi
+    olduğunda Plugin kullanın. Mevcut plugins ClawHub, npm, git, yerel dizinler
+    veya arşivlerden kurulabilir.
+
+    [Plugins'i kurma ve yapılandırma](/tr/tools/plugin) | [Plugins oluşturma](/tr/plugins/building-plugins) | [Plugin SDK](/tr/plugins/sdk-overview)
 
   </Step>
 </Steps>
 
-## Yerleşik araçlar
+## Yerleşik araç kategorileri
 
-Bu araçlar OpenClaw ile birlikte gelir ve herhangi bir Plugin kurmadan kullanılabilir:
+Tablo, yüzeyi tanıyabilmeniz için temsilî araçları listeler. Tam politika
+başvurusu değildir. Kesin gruplar, varsayılanlar ve izin ver/reddet anlamları
+için [Araçlar ve özel sağlayıcılar](/tr/gateway/config-tools) sayfasını kullanın.
 
-| Araç                                      | Ne yapar                                                              | Sayfa                                                        |
-| ----------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------ |
-| `exec` / `process`                        | Kabuk komutlarını çalıştırır, arka plan süreçlerini yönetir           | [Exec](/tr/tools/exec), [Exec Onayları](/tr/tools/exec-approvals)  |
-| `code_execution`                          | Sandbox’ta uzaktan Python analizi çalıştırır                          | [Kod Yürütme](/tr/tools/code-execution)                         |
-| `browser`                                 | Chromium tarayıcıyı kontrol eder (gezinme, tıklama, ekran görüntüsü)  | [Tarayıcı](/tr/tools/browser)                                   |
-| `web_search` / `x_search` / `web_fetch`   | Web’de arama yapar, X gönderilerini arar, sayfa içeriğini getirir     | [Web](/tr/tools/web), [Web Getirme](/tr/tools/web-fetch)           |
-| `read` / `write` / `edit`                 | Çalışma alanında dosya G/Ç                                             |                                                              |
-| `apply_patch`                             | Çok parçalı dosya yamaları                                            | [Yama Uygula](/tr/tools/apply-patch)                            |
-| `message`                                 | Tüm kanallar üzerinden ileti gönderir                                 | [Aracı Gönderimi](/tr/tools/agent-send)                         |
-| `nodes`                                   | Eşleştirilmiş cihazları keşfeder ve hedefler                          |                                                              |
-| `cron` / `gateway`                        | Zamanlanmış işleri yönetir; gateway’i inceler, yamalar, yeniden başlatır veya günceller |                                                              |
-| `image` / `image_generate`                | Görüntüleri analiz eder veya üretir                                   | [Görüntü Üretimi](/tr/tools/image-generation)                   |
-| `music_generate`                          | Müzik parçaları üretir                                                | [Müzik Üretimi](/tr/tools/music-generation)                     |
-| `video_generate`                          | Videolar üretir                                                       | [Video Üretimi](/tr/tools/video-generation)                     |
-| `tts`                                     | Tek seferlik metinden konuşmaya dönüştürme                            | [TTS](/tr/tools/tts)                                            |
-| `sessions_*` / `subagents` / `agents_list` | Oturum yönetimi, durum ve alt aracı orkestrasyonu                     | [Alt aracılar](/tr/tools/subagents)                             |
-| `session_status`                          | Hafif `/status` tarzı geri okuma ve oturum modeli geçersiz kılma      | [Oturum Araçları](/tr/concepts/session-tool)                    |
-
-Görüntü çalışmaları için analizde `image`, üretim veya düzenlemede `image_generate` kullanın. `openai/*`, `google/*`, `fal/*` veya varsayılan olmayan başka bir görüntü sağlayıcısını hedefliyorsanız, önce o sağlayıcının kimlik doğrulamasını/API anahtarını yapılandırın.
-
-Müzik çalışmaları için `music_generate` kullanın. `google/*`, `minimax/*` veya varsayılan olmayan başka bir müzik sağlayıcısını hedefliyorsanız, önce o sağlayıcının kimlik doğrulamasını/API anahtarını yapılandırın.
-
-Video çalışmaları için `video_generate` kullanın. `qwen/*` veya varsayılan olmayan başka bir video sağlayıcısını hedefliyorsanız, önce o sağlayıcının kimlik doğrulamasını/API anahtarını yapılandırın.
-
-İş akışı odaklı ses üretimi için, ComfyUI gibi bir Plugin bunu kaydettiğinde
-`music_generate` kullanın. Bu, metinden konuşmaya dönüştürme olan `tts`’den ayrıdır.
-
-`sessions` grubundaki hafif durum/geri okuma aracı `session_status`’tır.
-Geçerli oturum hakkında `/status` tarzı soruları yanıtlar ve isteğe bağlı olarak
-oturum başına model geçersiz kılması ayarlayabilir; `model=default` bu
-geçersiz kılmayı temizler. `/status` gibi, son transkript kullanım girdisinden
-seyrek token/önbellek sayaçlarını ve etkin çalışma zamanı model etiketini geriye dönük doldurabilir.
-
-`gateway`, gateway işlemleri için yalnızca sahibin kullanabildiği çalışma zamanı aracıdır:
-
-- Düzenlemelerden önce tek bir yol kapsamlı yapılandırma alt ağacı için `config.schema.lookup`
-- Geçerli yapılandırma anlık görüntüsü + hash için `config.get`
-- Yeniden başlatmayla kısmi yapılandırma güncellemeleri için `config.patch`
-- Yalnızca tam yapılandırma değişimi için `config.apply`
-- Açık self-update + yeniden başlatma için `update.run`
-
-Kısmi değişikliklerde `config.schema.lookup`, ardından `config.patch` tercih edin. `config.apply`’ı
-yalnızca tüm yapılandırmayı bilinçli olarak değiştirdiğinizde kullanın.
-Daha geniş yapılandırma belgeleri için [Yapılandırma](/tr/gateway/configuration) ve
-[Yapılandırma referansı](/tr/gateway/configuration-reference) sayfalarını okuyun.
-Araç ayrıca `tools.exec.ask` veya `tools.exec.security` değerlerini değiştirmeyi reddeder;
-eski `tools.bash.*` takma adları aynı korunan exec yollarına normalleştirilir.
-
-### Plugin tarafından sağlanan araçlar
-
-Plugin’ler ek araçlar kaydedebilir. Bazı örnekler:
-
-- [Canvas](/tr/plugins/reference/canvas) — node Canvas kontrolü ve A2UI işleme için deneysel yerleşik Plugin
-- [Diffs](/tr/tools/diffs) — diff görüntüleyici ve işleyici
-- [LLM Görevi](/tr/tools/llm-task) — yapılandırılmış çıktı için yalnızca JSON LLM adımı
-- [Lobster](/tr/tools/lobster) — sürdürülebilir onaylara sahip tiplendirilmiş iş akışı çalışma zamanı
-- [Müzik Üretimi](/tr/tools/music-generation) — iş akışı destekli sağlayıcılara sahip paylaşılan `music_generate` aracı
-- [OpenProse](/tr/prose) — markdown öncelikli iş akışı orkestrasyonu
-- [Tokenjuice](/tr/tools/tokenjuice) — gürültülü `exec` ve `bash` araç sonuçlarını kompaktlaştırır
-
-Plugin araçları yine de `api.registerTool(...)` ile yazılır ve
-Plugin manifestinin `contracts.tools` listesinde bildirilir. OpenClaw, keşif sırasında
-doğrulanmış araç tanımlayıcısını yakalar ve Plugin kaynağı ile sözleşmeye göre önbelleğe alır; böylece
-sonraki araç planlaması Plugin çalışma zamanı yüklemesini atlayabilir. Araç yürütme yine de
-sahip Plugin’i yükler ve canlı kayıtlı uygulamayı çağırır.
-
-[Tool Search](/tr/tools/tool-search), büyük kataloglar için kompakt yüzeydir.
-Her OpenClaw, MCP veya istemci aracı şemasını isteme koymak yerine,
-OpenClaw modele `openclaw.tools.search`, `openclaw.tools.describe` ve
-`openclaw.tools.call` içeren yalıtılmış bir Node çalışma zamanı verebilir.
-Çağrılar yine Gateway üzerinden geri akar; böylece araç politikası,
-onaylar, kancalar ve oturum günlükleri yetkili kalır.
-
-## Araç yapılandırması
-
-### İzin ve reddetme listeleri
-
-Aracının hangi araçları çağırabileceğini yapılandırmadaki `tools.allow` / `tools.deny` ile
-kontrol edin. Reddetme her zaman izinden üstündür.
-
-```json5
-{
-  tools: {
-    allow: ["group:fs", "browser", "web_search"],
-    deny: ["exec"],
-  },
-}
-```
-
-OpenClaw, açık bir izin listesi çağrılabilir hiçbir araca çözülmediğinde kapalı başarısız olur.
-Örneğin, `tools.allow: ["query_db"]` yalnızca yüklenmiş bir Plugin gerçekten
-`query_db` kaydediyorsa çalışır. İzin listesiyle eşleşen yerleşik, Plugin veya
-yerleşik MCP aracı yoksa, çalışma model çağrısından önce durur; araç sonuçlarını
-uydurabilecek metin-only bir çalışma olarak devam etmez.
-
-### Araç profilleri
-
-`tools.profile`, `allow`/`deny` uygulanmadan önce temel bir izin listesi ayarlar.
-Aracı başına geçersiz kılma: `agents.list[].tools.profile`.
-
-| Profil      | İçerdikleri                                                                                                                                       |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `full`      | Tüm çekirdek ve isteğe bağlı Plugin araçları; daha geniş komut/kontrol erişimi için kısıtsız temel                                               |
-| `coding`    | `group:fs`, `group:runtime`, `group:web`, `group:sessions`, `group:memory`, `cron`, `image`, `image_generate`, `music_generate`, `video_generate` |
-| `messaging` | `group:messaging`, `sessions_list`, `sessions_history`, `sessions_send`, `session_status`                                                         |
-| `minimal`   | Yalnızca `session_status`                                                                                                                         |
+| Kategori               | Ajanın şunu yapması gerektiğinde kullanın...                                  | Temsilî araçlar                                                       | Sonraki okuma                                                          |
+| ---------------------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Çalışma zamanı         | Komut çalıştırmak, süreçleri yönetmek veya sağlayıcı destekli Python analizi kullanmak | `exec`, `process`, `code_execution`                                  | [Exec](/tr/tools/exec), [Kod yürütme](/tr/tools/code-execution)              |
+| Dosyalar               | Workspace dosyalarını okumak ve değiştirmek                                   | `read`, `write`, `edit`, `apply_patch`                               | [Yama uygula](/tr/tools/apply-patch)                                      |
+| Web                    | Web'de arama yapmak, X gönderilerinde arama yapmak veya okunabilir sayfa içeriği getirmek | `web_search`, `x_search`, `web_fetch`                                | [Web araçları](/tr/tools/web), [Web getirme](/tr/tools/web-fetch)            |
+| Tarayıcı               | Bir tarayıcı oturumunu işletmek                                               | `browser`                                                            | [Tarayıcı](/tr/tools/browser)                                             |
+| Mesajlaşma ve kanallar | Yanıtlar veya kanal eylemleri göndermek                                       | `message`                                                            | [Ajan gönderimi](/tr/tools/agent-send)                                    |
+| Oturumlar ve ajanlar   | Oturumları incelemek, işi devretmek, başka bir çalışmayı yönlendirmek veya durum bildirmek | `sessions_*`, `subagents`, `agents_list`, `session_status`           | [Alt ajanlar](/tr/tools/subagents), [Oturum aracı](/tr/concepts/session-tool) |
+| Otomasyon              | İş zamanlamak veya arka plan olaylarına yanıt vermek                          | `cron`, `heartbeat_respond`                                          | [Otomasyon](/tr/automation)                                               |
+| Gateway ve düğümler    | Gateway durumunu veya eşleştirilmiş hedef cihazları incelemek                 | `gateway`, `nodes`                                                   | [Gateway yapılandırması](/tr/gateway/configuration), [Düğümler](/tr/nodes)   |
+| Medya                  | Medyayı analiz etmek, üretmek veya seslendirmek                               | `image`, `image_generate`, `music_generate`, `video_generate`, `tts` | [Medyaya genel bakış](/tr/tools/media-overview)                           |
+| Büyük PI katalogları   | Her şemayı modele göndermeden çok sayıda uygun aracı aramak ve çağırmak       | `tool_search_code`, `tool_search`, `tool_describe`                   | [Araç Arama](/tr/tools/tool-search)                                       |
 
 <Note>
-`tools.profile: "messaging"` kanal odaklı aracılar için bilinçli olarak dardır.
-Dosya sistemi, çalışma zamanı, tarayıcı, canvas, düğümler, cron ve gateway kontrolü gibi
-daha geniş komut/kontrol araçlarını dışarıda bırakır. Daha geniş komut/kontrol erişimi için
-kısıtsız temel olarak `tools.profile: "full"` kullanın, ardından gerektiğinde
-erişimi `tools.allow` / `tools.deny` ile daraltın.
+Araç Arama deneysel bir PI ajan yüzeyidir. Codex harness çalışmaları
+`tools.toolSearch` yerine Codex yerel kod modunu, yerel araç aramayı,
+ertelenmiş dinamik araçları ve iç içe araç çağrılarını kullanır.
 </Note>
 
-`coding` hafif web araçlarını (`web_search`, `web_fetch`, `x_search`) içerir,
-ancak tam tarayıcı kontrol aracını içermez. Tarayıcı otomasyonu gerçek
-oturumları ve oturum açılmış profilleri sürebilir; bu nedenle bunu
-`tools.alsoAllow: ["browser"]` veya aracı başına
-`agents.list[].tools.alsoAllow: ["browser"]` ile açıkça ekleyin.
+## Plugin tarafından sağlanan araçlar
 
-<Note>
-Kısıtlayıcı bir profil (`messaging`, `minimal`) altında `tools.exec` veya `tools.fs` yapılandırmak, profilin izin listesini örtük olarak genişletmez. Kısıtlayıcı bir profilin bu yapılandırılmış bölümleri kullanmasını istediğinizde açık `tools.alsoAllow` girdileri ekleyin (exec için örneğin `["exec", "process"]` veya fs için `["read", "write", "edit"]`). Bir yapılandırma bölümü eşleşen `alsoAllow` izni olmadan mevcut olduğunda OpenClaw başlangıçta bir uyarı günlüğe yazar.
-</Note>
+Plugins ek araçlar kaydedebilir. Plugin yazarları araçları
+`api.registerTool(...)` ve manifest'in `contracts.tools` alanı üzerinden bağlar;
+sözleşme ayrıntıları için [Plugin SDK](/tr/plugins/sdk-overview) ve
+[Plugin manifesti](/tr/plugins/manifest) sayfalarını kullanın.
 
-`coding` ve `messaging` profilleri, `bundle-mcp` Plugin anahtarı altında
-yapılandırılmış bundle MCP araçlarına da izin verir. Bir profilin normal
-yerleşiklerini koruyup yapılandırılmış tüm MCP araçlarını gizlemesini istediğinizde
-`tools.deny: ["bundle-mcp"]` ekleyin. `minimal` profili bundle MCP araçlarını içermez.
+Yaygın Plugin tarafından sağlanan araçlar şunları içerir:
 
-Örnek (varsayılan olarak en geniş araç yüzeyi):
+- Dosya ve markdown farklarını işlemek için [Farklar](/tr/tools/diffs)
+- Yalnızca JSON iş akışı adımları için [LLM Görevi](/tr/tools/llm-task)
+- Sürdürülebilir onaylarla türlenmiş iş akışları için [Lobster](/tr/tools/lobster)
+- Gürültülü `exec` ve `bash` aracı çıktısını sıkıştırmak için
+  [Tokenjuice](/tr/tools/tokenjuice)
+- Her şemayı isteme koymadan büyük araç kataloglarını keşfetmek ve çağırmak için
+  [Araç Arama](/tr/tools/tool-search)
+- Düğüm Canvas kontrolü ve A2UI işleme için [Canvas](/tr/plugins/reference/canvas)
 
-```json5
-{
-  tools: {
-    profile: "full",
-  },
-}
-```
+## Erişimi ve onayları yapılandırın
 
-### Araç grupları
+Araç politikası model çağrısından önce uygulanır. Politika bir aracı kaldırırsa
+model o turun için o aracın şemasını almaz. Bir çalışma, genel yapılandırma,
+ajan başına yapılandırma, kanal politikası, sağlayıcı kısıtlamaları, sandbox
+kuralları, yalnızca sahip geçidi veya plugin kullanılabilirliği nedeniyle
+araçları kaybedebilir.
 
-İzin/reddetme listelerinde `group:*` kısaltmalarını kullanın:
+- [Araçlar ve özel sağlayıcılar](/tr/gateway/config-tools) araç profillerini,
+  izin ver/reddet listelerini, sağlayıcıya özgü kısıtlamaları, döngü algılamayı
+  ve sağlayıcı destekli araç ayarlarını belgeler.
+- [Exec onayları](/tr/tools/exec-approvals) host komutu onay politikasını belgeler.
+- [Yükseltilmiş exec](/tr/tools/elevated) sandbox dışındaki kontrollü yürütmeyi belgeler.
+- [Sandbox ve araç politikası ve yükseltilmiş](/tr/gateway/sandbox-vs-tool-policy-vs-elevated) hangi katmanın dosya ve süreç erişimini kontrol ettiğini açıklar.
+- [Ajan başına sandbox ve araç kısıtlamaları](/tr/tools/multi-agent-sandbox-tools)
+  devredilen çalışmalar için ajana özgü kısıtlamaları belgeler.
 
-| Grup               | Araçlar                                                                                                   |
-| ------------------ | --------------------------------------------------------------------------------------------------------- |
-| `group:runtime`    | exec, process, code_execution (`bash`, `exec` için bir takma ad olarak kabul edilir)                       |
-| `group:fs`         | read, write, edit, apply_patch                                                                            |
-| `group:sessions`   | sessions_list, sessions_history, sessions_send, sessions_spawn, sessions_yield, subagents, session_status |
-| `group:memory`     | memory_search, memory_get                                                                                 |
-| `group:web`        | web_search, x_search, web_fetch                                                                           |
-| `group:ui`         | paketle gelen Canvas Plugin etkin olduğunda browser, canvas                                               |
-| `group:automation` | heartbeat_respond, cron, gateway                                                                          |
-| `group:messaging`  | message                                                                                                   |
-| `group:nodes`      | nodes                                                                                                     |
-| `group:agents`     | agents_list, update_plan                                                                                  |
-| `group:media`      | image, image_generate, music_generate, video_generate, tts                                                |
-| `group:openclaw`   | Tüm yerleşik OpenClaw araçları (Plugin araçları hariç)                                                    |
+## Yetenekleri genişletin
 
-`sessions_history` sınırlı, güvenlik filtresinden geçirilmiş bir hatırlama görünümü döndürür. Ham bir konuşma dökümü gibi davranmak yerine, düşünme etiketlerini, `<relevant-memories>` iskeletini, düz metin araç çağrısı XML
-yüklerini (`<tool_call>...</tool_call>`,
-`<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`,
-`<function_calls>...</function_calls>` ve kesilmiş araç çağrısı blokları dahil),
-indirgenmiş araç çağrısı iskeletini, sızmış ASCII/tam genişlikli model kontrol
-belirteçlerini ve yardımcı metninden hatalı biçimlendirilmiş MiniMax araç çağrısı XML'ini çıkarır; ardından
-redaksiyon/kesme uygular ve gerekirse aşırı büyük satır yer tutucuları kullanır.
+OpenClaw'ın yapmasını istediğiniz işe göre genişletme yolunu seçin:
 
-### Sağlayıcıya özel kısıtlamalar
+- Mevcut bir Plugin'i [Plugins](/tr/tools/plugin) ile kurun veya yönetin.
+- Yeni bir entegrasyonu, sağlayıcıyı, kanalı, aracı veya hook'u
+  [Plugins oluşturma](/tr/plugins/building-plugins) ile oluşturun.
+- Yeniden kullanılabilir ajan yönergelerini [Skills](/tr/tools/skills) ve
+  [Skills oluşturma](/tr/tools/creating-skills) ile ekleyin veya ayarlayın.
+- İş akışı plugin dağıtımlı bir skill paketine ait olduğunda yeniden
+  kullanılabilir iş akışı materyalini [Skill atölyesi](/tr/plugins/skill-workshop)
+  ile paketleyin.
+- Uygulama sözleşmelerine ihtiyacınız olduğunda [Plugin SDK](/tr/plugins/sdk-overview)
+  ve [Plugin manifesti](/tr/plugins/manifest) sayfalarını kullanın.
 
-Genel varsayılanları değiştirmeden belirli sağlayıcılar için araçları kısıtlamak üzere `tools.byProvider` kullanın:
+## Eksik araçlarda sorun giderme
 
-```json5
-{
-  tools: {
-    profile: "coding",
-    byProvider: {
-      "google-antigravity": { profile: "minimal" },
-    },
-  },
-}
-```
+Model bir aracı göremiyor veya çağıramıyorsa, geçerli tur için etkin politikayla
+başlayın:
+
+1. [Araçlar ve özel sağlayıcılar](/tr/gateway/config-tools) içindeki etkin profili,
+   `tools.allow` ve `tools.deny` ayarlarını kontrol edin.
+2. [Araçlar ve özel sağlayıcılar](/tr/gateway/config-tools) içindeki sağlayıcıya
+   özgü kısıtlamaları kontrol edin ve seçili
+   [model sağlayıcısının](/tr/concepts/model-providers) araç şeklini desteklediğini
+   doğrulayın.
+3. [Sandbox ve araç politikası ve yükseltilmiş](/tr/gateway/sandbox-vs-tool-policy-vs-elevated) ve [Yükseltilmiş exec](/tr/tools/elevated) ile kanal izinlerini, sandbox durumunu ve yükseltilmiş erişimi kontrol edin.
+4. Sahip olan Plugin'in [Plugins](/tr/tools/plugin) içinde kurulu ve etkin olup
+   olmadığını kontrol edin.
+5. Devredilen çalışmalar için [Ajan başına sandbox ve araç kısıtlamaları](/tr/tools/multi-agent-sandbox-tools)
+   içindeki ajan başına kısıtlamaları kontrol edin.
+6. Büyük PI katalogları için çalışmanın doğrudan araç gösterimini mi yoksa
+   [Araç Arama](/tr/tools/tool-search) mı kullandığını doğrulayın.
+
+## İlgili
+
+- Cron, görevler, Heartbeat, taahhütler, hook'lar, kalıcı emirler ve Task Flow için [Otomasyon](/tr/automation)
+- Ajan modeli, oturumlar, bellek ve çok ajanlı koordinasyon için [Ajanlar](/tr/concepts/agent)
+- Kanonik araç politikası başvurusu için [Araçlar ve özel sağlayıcılar](/tr/gateway/config-tools)
+- Plugin kurulumu ve yönetimi için [Plugins](/tr/tools/plugin)
+- Plugin yazarı başvurusu için [Plugin SDK](/tr/plugins/sdk-overview)
+- Skill yükleme sırası, geçitleri ve yapılandırması için [Skills](/tr/tools/skills)
+- Kompakt PI araç kataloğu keşfi için [Araç Arama](/tr/tools/tool-search)

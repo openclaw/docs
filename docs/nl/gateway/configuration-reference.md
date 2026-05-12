@@ -1,76 +1,76 @@
 ---
 read_when:
     - Je hebt exacte configuratiesemantiek of standaardwaarden op veldniveau nodig
-    - Je valideert kanaal-, model-, Gateway- of toolconfiguratieblokken
-summary: Gateway-configuratiereferentie voor kernsleutels van OpenClaw, standaardwaarden en links naar specifieke subsystemreferenties
+    - U valideert kanaal-, model-, Gateway- of toolconfiguratieblokken
+summary: Gateway-configuratiereferentie voor OpenClaw-kernsleutels, standaardwaarden en links naar specifieke subsysteemreferenties
 title: Configuratiereferentie
 x-i18n:
-    generated_at: "2026-05-11T20:30:27Z"
+    generated_at: "2026-05-12T00:58:22Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 71a9b9ba64b334086a3e32fd9255eb45f9089818a1798a4d542d39d586d53fd9
+    source_hash: 7b8e31f7a6ed82faf3b5a50daa286bb6fce0c2e4452ae81a8e792a437004ad54
     source_path: gateway/configuration-reference.md
     workflow: 16
 ---
 
-Core-configreferentie voor `~/.openclaw/openclaw.json`. Zie [Configuratie](/nl/gateway/configuration) voor een taakgericht overzicht.
+Kernconfiguratiereferentie voor `~/.openclaw/openclaw.json`. Zie [Configuratie](/nl/gateway/configuration) voor een taakgericht overzicht.
 
-Behandelt de belangrijkste OpenClaw-configuratieoppervlakken en linkt door wanneer een subsysteem een eigen uitgebreidere referentie heeft. Kanaal- en Plugin-beheerde commandocatalogi en diepe memory/QMD-knoppen staan op hun eigen pagina's in plaats van op deze.
+Behandelt de belangrijkste OpenClaw-configuratieoppervlakken en linkt door wanneer een subsysteem een eigen diepgaandere referentie heeft. Kanaal- en pluginbeheerde opdrachtcatalogi en diepgaande geheugen-/QMD-instellingen staan op hun eigen pagina's in plaats van op deze pagina.
 
 Codewaarheid:
 
-- `openclaw config schema` drukt de live JSON Schema af die wordt gebruikt voor validatie en Control UI, met gebundelde/Plugin-/kanaalmetadata samengevoegd wanneer beschikbaar
-- `config.schema.lookup` retourneert een padgescopeerde schemaknoop voor drill-down-tooling
-- `pnpm config:docs:check` / `pnpm config:docs:gen` valideren de baseline-hash van de config-docs tegen het huidige schemaoppervlak
+- `openclaw config schema` drukt het live JSON Schema af dat wordt gebruikt voor validatie en Control UI, met gebundelde/plugin-/kanaalmetadata samengevoegd wanneer beschikbaar
+- `config.schema.lookup` retourneert één padgebonden schemaknooppunt voor drill-downtooling
+- `pnpm config:docs:check` / `pnpm config:docs:gen` valideren de baselinehash van de configuratiedocumentatie tegen het huidige schemaoppervlak
 
-Agent-opzoekpad: gebruik de `gateway`-toolactie `config.schema.lookup` voor
-exacte documentatie en beperkingen op veldniveau vóór bewerkingen. Gebruik
+Opzoekpad voor agents: gebruik de `gateway`-toolactie `config.schema.lookup` voor
+exacte veldniveau-documentatie en beperkingen vóór bewerkingen. Gebruik
 [Configuratie](/nl/gateway/configuration) voor taakgerichte begeleiding en deze pagina
-voor de bredere veldkaart, standaardwaarden en links naar subsysteemreferenties.
+voor de bredere veldenkaart, standaardwaarden en links naar subsysteemreferenties.
 
-Toegewijde diepe referenties:
+Toegewijde diepgaande referenties:
 
-- [Memory-configuratiereferentie](/nl/reference/memory-config) voor `agents.defaults.memorySearch.*`, `memory.qmd.*`, `memory.citations`, en dreaming-configuratie onder `plugins.entries.memory-core.config.dreaming`
-- [Slash-commando's](/nl/tools/slash-commands) voor de huidige ingebouwde + gebundelde commandocatalogus
-- beherende kanaal-/Plugin-pagina's voor kanaalspecifieke commando-oppervlakken
+- [Referentie voor geheugenconfiguratie](/nl/reference/memory-config) voor `agents.defaults.memorySearch.*`, `memory.qmd.*`, `memory.citations` en Dreaming-configuratie onder `plugins.entries.memory-core.config.dreaming`
+- [Slash-opdrachten](/nl/tools/slash-commands) voor de huidige ingebouwde + gebundelde opdrachtcatalogus
+- eigenaarspagina's van kanalen/plugins voor kanaalspecifieke opdrachtoppervlakken
 
-Config-indeling is **JSON5** (commentaar + afsluitende komma's toegestaan). Alle velden zijn optioneel - OpenClaw gebruikt veilige standaardwaarden wanneer ze worden weggelaten.
+Configuratie-indeling is **JSON5** (opmerkingen + afsluitende komma's toegestaan). Alle velden zijn optioneel - OpenClaw gebruikt veilige standaardwaarden wanneer ze worden weggelaten.
 
 ---
 
 ## Kanalen
 
-Per-kanaal-configuratiesleutels zijn verplaatst naar een toegewijde pagina - zie
+Configuratiesleutels per kanaal zijn verplaatst naar een toegewijde pagina - zie
 [Configuratie - kanalen](/nl/gateway/config-channels) voor `channels.*`,
 inclusief Slack, Discord, Telegram, WhatsApp, Matrix, iMessage en andere
-gebundelde kanalen (authenticatie, toegangscontrole, meerdere accounts, mention gating).
+gebundelde kanalen (auth, toegangscontrole, meerdere accounts, vermeldingsgating).
 
-## Agent-standaardwaarden, multi-agent, sessies en berichten
+## Agentstandaardwaarden, meerdere agents, sessies en berichten
 
 Verplaatst naar een toegewijde pagina - zie
 [Configuratie - agents](/nl/gateway/config-agents) voor:
 
-- `agents.defaults.*` (werkruimte, model, denken, Heartbeat, memory, media, Skills, sandbox)
-- `multiAgent.*` (multi-agent-routering en bindingen)
-- `session.*` (sessielevenscyclus, Compaction, pruning)
-- `messages.*` (berichtbezorging, TTS, markdown-rendering)
+- `agents.defaults.*` (werkruimte, model, denken, Heartbeat, geheugen, media, skills, sandbox)
+- `multiAgent.*` (routering en bindingen voor meerdere agents)
+- `session.*` (sessielevenscyclus, Compaction, snoeien)
+- `messages.*` (berichtbezorging, TTS, markdownweergave)
 - `talk.*` (Talk-modus)
-  - `talk.consultThinkingLevel`: overschrijving van denkniveau voor de volledige OpenClaw-agent-run achter realtime consulten van Control UI Talk
-  - `talk.consultFastMode`: eenmalige fast-mode-overschrijving voor realtime consulten van Control UI Talk
+  - `talk.consultThinkingLevel`: override voor denkniveau voor de volledige OpenClaw-agentrun achter realtime consults van Control UI Talk
+  - `talk.consultFastMode`: eenmalige fast-mode-override voor realtime consults van Control UI Talk
   - `talk.speechLocale`: optionele BCP 47-locale-id voor Talk-spraakherkenning op iOS/macOS
-  - `talk.silenceTimeoutMs`: wanneer niet ingesteld, behoudt Talk het standaard pauzevenster van het platform voordat het transcript wordt verzonden (`700 ms on macOS and Android, 900 ms on iOS`)
+  - `talk.silenceTimeoutMs`: wanneer niet ingesteld, behoudt Talk het platformstandaard pauzevenster voordat het transcript wordt verzonden (`700 ms on macOS and Android, 900 ms on iOS`)
 
 ## Tools en aangepaste providers
 
-Toolbeleid, experimentele schakelaars, provider-backed toolconfiguratie en aangepaste
-provider- / base-URL-instelling zijn verplaatst naar een toegewijde pagina - zie
+Toolbeleid, experimentele schakelaars, providerondersteunde toolconfiguratie en aangepaste
+provider-/basis-URL-instelling zijn verplaatst naar een toegewijde pagina - zie
 [Configuratie - tools en aangepaste providers](/nl/gateway/config-tools).
 
 ## Modellen
 
 Providerdefinities, model-allowlists en aangepaste providerinstellingen staan in
 [Configuratie - tools en aangepaste providers](/nl/gateway/config-tools#custom-providers-and-base-urls).
-De `models`-root beheert ook globaal modelcatalogusgedrag.
+De `models`-root beheert ook globaal gedrag van de modelcatalogus.
 
 ```json5
 {
@@ -81,23 +81,23 @@ De `models`-root beheert ook globaal modelcatalogusgedrag.
 }
 ```
 
-- `models.mode`: providercatalogusgedrag (`merge` of `replace`).
-- `models.providers`: aangepaste provider-map gesleuteld op provider-id.
+- `models.mode`: gedrag van providercatalogus (`merge` of `replace`).
+- `models.providers`: aangepaste providermap, gesleuteld op provider-id.
 - `models.providers.*.localService`: optionele procesmanager op aanvraag voor
-  lokale modelservers. OpenClaw test het geconfigureerde health-endpoint, start
-  de absolute `command` wanneer nodig, wacht op gereedheid en verzendt daarna de modelaanvraag.
+  lokale modelservers. OpenClaw controleert het geconfigureerde health-eindpunt, start
+  de absolute `command` wanneer nodig, wacht op gereedheid en verzendt daarna het modelverzoek.
   Zie [Lokale modelservices](/nl/gateway/local-model-services).
-- `models.pricing.enabled`: beheert de pricing-bootstrap op de achtergrond die
-  start nadat sidecars en kanalen het Gateway-ready-pad bereiken. Wanneer `false`,
-  slaat de Gateway OpenRouter- en LiteLLM-pricing-catalogusfetches over; geconfigureerde
-  `models.providers.*.models[].cost`-waarden blijven werken voor lokale kostenschattingen.
+- `models.pricing.enabled`: beheert de achtergrondbootstrap voor prijzen die
+  start nadat sidecars en kanalen het Gateway-gereedpad bereiken. Wanneer `false`,
+  slaat de Gateway het ophalen van OpenRouter- en LiteLLM-prijscatalogi over; geconfigureerde
+  waarden voor `models.providers.*.models[].cost` blijven werken voor lokale kostenramingen.
 
 ## MCP
 
 Door OpenClaw beheerde MCP-serverdefinities staan onder `mcp.servers` en worden
-gebruikt door ingebedde Pi en andere runtime-adapters. De commando's `openclaw mcp list`,
-`show`, `set` en `unset` beheren dit blok zonder verbinding te maken met de
-doelserver tijdens configuratiebewerkingen.
+gebruikt door embedded Pi en andere runtime-adapters. De opdrachten `openclaw mcp list`,
+`show`, `set` en `unset` beheren dit blok zonder tijdens configuratiebewerkingen verbinding te maken met de
+doelserver.
 
 ```json5
 {
@@ -121,17 +121,17 @@ doelserver tijdens configuratiebewerkingen.
 }
 ```
 
-- `mcp.servers`: benoemde stdio- of externe MCP-serverdefinities voor runtimes die
+- `mcp.servers`: benoemde stdio- of remote MCP-serverdefinities voor runtimes die
   geconfigureerde MCP-tools beschikbaar maken.
-  Externe items gebruiken `transport: "streamable-http"` of `transport: "sse"`;
+  Remote-items gebruiken `transport: "streamable-http"` of `transport: "sse"`;
   `type: "http"` is een CLI-native alias die `openclaw mcp set` en
   `openclaw doctor --fix` normaliseren naar het canonieke `transport`-veld.
-- `mcp.sessionIdleTtlMs`: idle-TTL voor sessiegescopeerde gebundelde MCP-runtimes.
-  Eenmalige ingebedde runs vragen opruiming aan run-einde aan; deze TTL is de terugval
-  voor langlevende sessies en toekomstige callers.
-- Wijzigingen onder `mcp.*` worden hot-applied door gecachte sessie-MCP-runtimes te verwijderen.
-  De volgende tool discovery/use maakt ze opnieuw aan vanuit de nieuwe configuratie, zodat verwijderde
-  `mcp.servers`-items direct worden opgeruimd in plaats van te wachten op de idle-TTL.
+- `mcp.sessionIdleTtlMs`: idle-TTL voor sessiegebonden gebundelde MCP-runtimes.
+  Eenmalige embedded runs vragen opschoning aan het einde van de run aan; deze TTL is de achtervang voor
+  langlevende sessies en toekomstige callers.
+- Wijzigingen onder `mcp.*` worden hot-applied door MCP-runtimes in gecachte sessies te verwijderen.
+  De volgende tooldiscovery/-gebruik maakt ze opnieuw aan vanuit de nieuwe configuratie, zodat verwijderde
+  `mcp.servers`-items direct worden opgeschoond in plaats van te wachten op de idle-TTL.
 
 Zie [MCP](/nl/cli/mcp#openclaw-as-an-mcp-client-registry) en
 [CLI-backends](/nl/gateway/cli-backends#bundle-mcp-overlays) voor runtimegedrag.
@@ -163,20 +163,20 @@ Zie [MCP](/nl/cli/mcp#openclaw-as-an-mcp-client-registry) en
 }
 ```
 
-- `allowBundled`: optionele allowlist alleen voor gebundelde Skills (beheerde/werkruimte-Skills blijven onaangetast).
-- `load.extraDirs`: extra gedeelde Skill-roots (laagste prioriteit).
-- `load.allowSymlinkTargets`: vertrouwde echte doelroots waarnaar Skill-symlinks mogen
-  verwijzen wanneer de link buiten de geconfigureerde bronroot staat.
-- `install.preferBrew`: wanneer true, geef voorkeur aan Homebrew-installers wanneer `brew`
+- `allowBundled`: optionele allowlist alleen voor gebundelde skills (beheerde/werkruimte-skills blijven onaangetast).
+- `load.extraDirs`: extra gedeelde skill-roots (laagste prioriteit).
+- `load.allowSymlinkTargets`: vertrouwde echte doelroots waarnaar skill-symlinks mogen
+  resolven wanneer de link buiten de geconfigureerde bronroot staat.
+- `install.preferBrew`: wanneer true, geef de voorkeur aan Homebrew-installers wanneer `brew`
   beschikbaar is voordat wordt teruggevallen op andere installertypen.
-- `install.nodeManager`: voorkeur voor Node-installer voor `metadata.openclaw.install`
-  specs (`npm` | `pnpm` | `yarn` | `bun`).
-- `install.allowUploadedArchives`: sta vertrouwde `operator.admin` Gateway
-  clients toe om privé-ziparchieven te installeren die via `skills.upload.*`
-  zijn klaargezet (standaard: false). Dit schakelt alleen het uploaded-archive-pad in; normale ClawHub
-  installs vereisen dit niet.
-- `entries.<skillKey>.enabled: false` schakelt een Skill uit, zelfs als deze gebundeld/geïnstalleerd is.
-- `entries.<skillKey>.apiKey`: gemak voor Skills die een primaire env-var declareren (plaintext string of SecretRef-object).
+- `install.nodeManager`: voorkeur voor node-installer voor `metadata.openclaw.install`
+  specificaties (`npm` | `pnpm` | `yarn` | `bun`).
+- `install.allowUploadedArchives`: sta vertrouwde `operator.admin` Gateway-clients toe
+  privé-ziparchieven te installeren die zijn gestaged via `skills.upload.*`
+  (standaard: false). Dit schakelt alleen het pad voor geüploade archieven in; normale ClawHub-
+  installaties vereisen dit niet.
+- `entries.<skillKey>.enabled: false` schakelt een skill uit, zelfs als deze gebundeld/geïnstalleerd is.
+- `entries.<skillKey>.apiKey`: gemak voor skills die een primaire env-var declareren (plaintext string of SecretRef-object).
 
 ---
 
@@ -206,35 +206,35 @@ Zie [MCP](/nl/cli/mcp#openclaw-as-an-mcp-client-registry) en
 ```
 
 - Geladen vanuit `~/.openclaw/extensions`, `<workspace>/.openclaw/extensions`, plus `plugins.load.paths`.
-- Discovery accepteert native OpenClaw Plugins plus compatibele Codex-bundels en Claude-bundels, inclusief manifestloze Claude-default-layout-bundels.
-- **Configwijzigingen vereisen een herstart van de Gateway.**
-- `allow`: optionele allowlist (alleen vermelde Plugins laden). `deny` wint.
+- Discovery accepteert native OpenClaw-plugins plus compatibele Codex-bundels en Claude-bundels, inclusief manifestloze Claude-bundels met standaardlay-out.
+- **Configuratiewijzigingen vereisen een gateway-herstart.**
+- `allow`: optionele allowlist (alleen vermelde plugins worden geladen). `deny` wint.
 - `bundledDiscovery`: standaard `"allowlist"` voor nieuwe configuraties, zodat een niet-lege
-  `plugins.allow` ook gebundelde provider-Plugins gate, inclusief web-search
-  runtimeproviders. Doctor schrijft `"compat"` voor gemigreerde legacy allowlist-
-  configuraties om bestaand gebundeld providergedrag te behouden totdat je je aanmeldt.
-- `plugins.entries.<id>.apiKey`: gemakveld voor API-key op Plugin-niveau (wanneer ondersteund door de Plugin).
-- `plugins.entries.<id>.env`: Plugin-gescopeerde env-var-map.
-- `plugins.entries.<id>.hooks.allowPromptInjection`: wanneer `false`, blokkeert core `before_prompt_build` en negeert prompt-mutating velden van legacy `before_agent_start`, terwijl legacy `modelOverride` en `providerOverride` behouden blijven. Van toepassing op native Plugin-hooks en ondersteunde door bundels geleverde hookdirectories.
-- `plugins.entries.<id>.hooks.allowConversationAccess`: wanneer `true`, mogen vertrouwde niet-gebundelde Plugins ruwe gespreksinhoud lezen vanuit getypeerde hooks zoals `llm_input`, `llm_output`, `before_model_resolve`, `before_agent_reply`, `before_agent_run`, `before_agent_finalize` en `agent_end`.
-- `plugins.entries.<id>.subagent.allowModelOverride`: vertrouw deze Plugin expliciet om per-run `provider`- en `model`-overschrijvingen aan te vragen voor achtergrond-subagent-runs.
-- `plugins.entries.<id>.subagent.allowedModels`: optionele allowlist van canonieke `provider/model`-doelen voor vertrouwde subagent-overschrijvingen. Gebruik `"*"` alleen wanneer je bewust elk model wilt toestaan.
-- `plugins.entries.<id>.llm.allowModelOverride`: vertrouw deze Plugin expliciet om modeloverschrijvingen aan te vragen voor `api.runtime.llm.complete`.
-- `plugins.entries.<id>.llm.allowedModels`: optionele allowlist van canonieke `provider/model`-doelen voor vertrouwde Plugin-LLM-voltooiingsoverschrijvingen. Gebruik `"*"` alleen wanneer je bewust elk model wilt toestaan.
-- `plugins.entries.<id>.llm.allowAgentIdOverride`: vertrouw deze Plugin expliciet om `api.runtime.llm.complete` uit te voeren tegen een niet-standaard agent-id.
-- `plugins.entries.<id>.config`: door de Plugin gedefinieerd configobject (gevalideerd door native OpenClaw Plugin-schema wanneer beschikbaar).
-- Account-/runtime-instellingen voor kanaal-Plugins staan onder `channels.<id>` en moeten worden beschreven door de `channelConfigs`-metadata van het manifest van de beherende Plugin, niet door een centraal OpenClaw-optieregister.
+  `plugins.allow` ook gebundelde providerplugins gate, inclusief web-search
+  runtimeproviders. Doctor schrijft `"compat"` voor gemigreerde verouderde allowlist-
+  configuraties om bestaand gedrag van gebundelde providers te behouden totdat je je aanmeldt.
+- `plugins.entries.<id>.apiKey`: gemakveld voor API-sleutel op pluginniveau (wanneer ondersteund door de plugin).
+- `plugins.entries.<id>.env`: env-var-map met pluginscope.
+- `plugins.entries.<id>.hooks.allowPromptInjection`: wanneer `false`, blokkeert core `before_prompt_build` en negeert promptmuterende velden uit legacy `before_agent_start`, terwijl legacy `modelOverride` en `providerOverride` behouden blijven. Geldt voor native pluginhooks en ondersteunde door bundels geleverde hookmappen.
+- `plugins.entries.<id>.hooks.allowConversationAccess`: wanneer `true`, mogen vertrouwde niet-gebundelde plugins ruwe conversatie-inhoud lezen uit getypte hooks zoals `llm_input`, `llm_output`, `before_model_resolve`, `before_agent_reply`, `before_agent_run`, `before_agent_finalize` en `agent_end`.
+- `plugins.entries.<id>.subagent.allowModelOverride`: vertrouw deze plugin expliciet om per-run `provider`- en `model`-overrides aan te vragen voor achtergrondsubagentruns.
+- `plugins.entries.<id>.subagent.allowedModels`: optionele allowlist van canonieke `provider/model`-doelen voor vertrouwde subagent-overrides. Gebruik `"*"` alleen wanneer je bewust elk model wilt toestaan.
+- `plugins.entries.<id>.llm.allowModelOverride`: vertrouw deze plugin expliciet om modeloverrides aan te vragen voor `api.runtime.llm.complete`.
+- `plugins.entries.<id>.llm.allowedModels`: optionele allowlist van canonieke `provider/model`-doelen voor vertrouwde LLM-voltooiingsoverrides van plugins. Gebruik `"*"` alleen wanneer je bewust elk model wilt toestaan.
+- `plugins.entries.<id>.llm.allowAgentIdOverride`: vertrouw deze plugin expliciet om `api.runtime.llm.complete` uit te voeren tegen een niet-standaard agent-id.
+- `plugins.entries.<id>.config`: door plugin gedefinieerd configuratieobject (gevalideerd door native OpenClaw-pluginschema wanneer beschikbaar).
+- Account-/runtime-instellingen van kanaalplugins staan onder `channels.<id>` en moeten worden beschreven door de `channelConfigs`-metadata van het manifest van de eigenaarplugin, niet door een centraal OpenClaw-optieregister.
 
-### Codex-harness-Plugin-configuratie
+### Configuratie van Codex-harnasplugin
 
-De gebundelde `codex`-Plugin beheert native Codex-app-server-harnessinstellingen onder
+De gebundelde `codex`-plugin beheert native Codex-app-serverharnasinstellingen onder
 `plugins.entries.codex.config`. Zie
-[Codex-harnessreferentie](/nl/plugins/codex-harness-reference) voor het volledige config-
-oppervlak en [Codex-harness](/nl/plugins/codex-harness) voor het runtimemodel.
+[Codex-harnasreferentie](/nl/plugins/codex-harness-reference) voor het volledige configuratie-
+oppervlak en [Codex-harnas](/nl/plugins/codex-harness) voor het runtimemodel.
 
-`codexPlugins` is alleen van toepassing op sessies die de native Codex-harness selecteren.
-Het schakelt Codex-Plugins niet in voor Pi, normale OpenAI-provider-runs, ACP
-conversation bindings of enige niet-Codex-harness.
+`codexPlugins` is alleen van toepassing op sessies die het native Codex-harnas selecteren.
+Het schakelt geen Codex-plugins in voor Pi, normale OpenAI-providerruns, ACP-
+conversatiebindingen of een niet-Codex-harnas.
 
 ```json5
 {
@@ -245,7 +245,7 @@ conversation bindings of enige niet-Codex-harness.
         config: {
           codexPlugins: {
             enabled: true,
-            allow_destructive_actions: false,
+            allow_destructive_actions: true,
             plugins: {
               "google-calendar": {
                 enabled: true,
@@ -263,45 +263,45 @@ conversation bindings of enige niet-Codex-harness.
 ```
 
 - `plugins.entries.codex.config.codexPlugins.enabled`: schakelt native Codex
-  plugin/app-ondersteuning in voor de Codex-harness. Standaard: `false`.
+  plugin-/app-ondersteuning in voor de Codex-harness. Standaard: `false`.
 - `plugins.entries.codex.config.codexPlugins.allow_destructive_actions`:
-  standaardbeleid voor destructieve acties voor gemigreerde Plugin-app-elicitations.
-  Standaard: `false`.
+  standaardbeleid voor destructieve acties voor gemigreerde plugin-app-elicitations.
+  Standaard: `true`.
 - `plugins.entries.codex.config.codexPlugins.plugins.<key>.enabled`: schakelt een
-  gemigreerde Plugin-vermelding in wanneer globale `codexPlugins.enabled` ook true is.
+  gemigreerde pluginvermelding in wanneer globale `codexPlugins.enabled` ook true is.
   Standaard: `true` voor expliciete vermeldingen.
 - `plugins.entries.codex.config.codexPlugins.plugins.<key>.marketplaceName`:
   stabiele marketplace-identiteit. V1 ondersteunt alleen `"openai-curated"`.
 - `plugins.entries.codex.config.codexPlugins.plugins.<key>.pluginName`: stabiele
-  Codex Plugin-identiteit uit migratie, bijvoorbeeld `"google-calendar"`.
+  Codex-pluginidentiteit uit migratie, bijvoorbeeld `"google-calendar"`.
 - `plugins.entries.codex.config.codexPlugins.plugins.<key>.allow_destructive_actions`:
-  override per Plugin voor destructieve acties. Wanneer weggelaten, wordt de globale
-  waarde `allow_destructive_actions` gebruikt.
+  override per Plugin voor beleid voor destructieve acties. Wanneer dit is weggelaten,
+  wordt de globale waarde `allow_destructive_actions` gebruikt.
 
-`codexPlugins.enabled` is de globale inschakelrichtlijn. Expliciete Plugin-
-vermeldingen die door migratie zijn geschreven, vormen de duurzame set voor installatie- en herstelgeschiktheid.
+`codexPlugins.enabled` is de globale inschakelrichtlijn. Expliciete pluginvermeldingen
+die door migratie worden geschreven, vormen de duurzame set voor installatie en herstelgeschiktheid.
 `plugins["*"]` wordt niet ondersteund, er is geen `install`-schakelaar, en lokale
-`marketplacePath`-waarden zijn bewust geen configuratievelden omdat ze
+`marketplacePath`-waarden zijn opzettelijk geen configuratievelden omdat ze
 hostspecifiek zijn.
 
-Gereedheidscontroles voor `app/list` worden een uur gecachet en asynchroon
-ververst wanneer ze verouderd zijn. Codex-thread-appconfiguratie wordt berekend bij het tot stand brengen van een Codex-harness-
-sessie, niet bij elke beurt; gebruik `/new`, `/reset` of een gateway-
-herstart na het wijzigen van native Plugin-configuratie.
+Gereedheidscontroles van `app/list` worden één uur gecachet en asynchroon vernieuwd
+wanneer ze verouderd zijn. Codex-thread-appconfiguratie wordt berekend bij het
+opzetten van de Codex-harnesssessie, niet bij elke beurt; gebruik `/new`, `/reset`,
+of een Gateway-herstart na het wijzigen van native pluginconfiguratie.
 
-- `plugins.entries.firecrawl.config.webFetch`: instellingen voor de Firecrawl web-fetch-provider.
-  - `apiKey`: Firecrawl API-sleutel (accepteert SecretRef). Valt terug op `plugins.entries.firecrawl.config.webSearch.apiKey`, legacy `tools.web.fetch.firecrawl.apiKey` of de env-var `FIRECRAWL_API_KEY`.
-  - `baseUrl`: basis-URL van de Firecrawl API (standaard: `https://api.firecrawl.dev`; self-hosted overrides moeten naar private/interne endpoints verwijzen).
+- `plugins.entries.firecrawl.config.webFetch`: Firecrawl-instellingen voor web-fetchprovider.
+  - `apiKey`: Firecrawl-API-sleutel (accepteert SecretRef). Valt terug op `plugins.entries.firecrawl.config.webSearch.apiKey`, legacy `tools.web.fetch.firecrawl.apiKey`, of de env var `FIRECRAWL_API_KEY`.
+  - `baseUrl`: basis-URL van de Firecrawl-API (standaard: `https://api.firecrawl.dev`; self-hosted overrides moeten naar private/interne endpoints wijzen).
   - `onlyMainContent`: extraheer alleen de hoofdinhoud van pagina's (standaard: `true`).
   - `maxAgeMs`: maximale cacheleeftijd in milliseconden (standaard: `172800000` / 2 dagen).
-  - `timeoutSeconds`: timeout voor scrape-aanvragen in seconden (standaard: `60`).
-- `plugins.entries.xai.config.xSearch`: instellingen voor xAI X Search (Grok-webzoekopdracht).
+  - `timeoutSeconds`: time-out voor scrapeverzoek in seconden (standaard: `60`).
+- `plugins.entries.xai.config.xSearch`: xAI X Search-instellingen (Grok-webzoekfunctie).
   - `enabled`: schakel de X Search-provider in.
-  - `model`: Grok-model om te gebruiken voor zoeken (bijv. `"grok-4-1-fast"`).
+  - `model`: Grok-model om voor zoeken te gebruiken (bijv. `"grok-4-1-fast"`).
 - `plugins.entries.memory-core.config.dreaming`: instellingen voor memory dreaming. Zie [Dreaming](/nl/concepts/dreaming) voor fasen en drempels.
   - `enabled`: hoofdschakelaar voor dreaming (standaard `false`).
-  - `frequency`: cron-cadans voor elke volledige dreaming-sweep (standaard `"0 3 * * *"`).
-  - `model`: optionele model-override voor de Dream Diary-subagent. Vereist `plugins.entries.memory-core.subagent.allowModelOverride: true`; combineer met `allowedModels` om doelen te beperken. Fouten wegens niet-beschikbare modellen proberen het eenmaal opnieuw met het standaardsessiemodel; vertrouwens- of allowlist-fouten vallen niet stilzwijgend terug.
+  - `frequency`: Cron-cadans voor elke volledige dreaming-sweep (standaard `"0 3 * * *"`).
+  - `model`: optionele model-override voor Dream Diary-subagent. Vereist `plugins.entries.memory-core.subagent.allowModelOverride: true`; combineer met `allowedModels` om doelen te beperken. Fouten door niet-beschikbare modellen worden één keer opnieuw geprobeerd met het standaardmodel van de sessie; vertrouwens- of allowlistfouten vallen niet stilzwijgend terug.
   - fasebeleid en drempels zijn implementatiedetails (geen gebruikersgerichte configuratiesleutels).
 - Volledige geheugenconfiguratie staat in [Referentie voor geheugenconfiguratie](/nl/reference/memory-config):
   - `agents.defaults.memorySearch.*`
@@ -309,9 +309,9 @@ herstart na het wijzigen van native Plugin-configuratie.
   - `memory.citations`
   - `memory.qmd.*`
   - `plugins.entries.memory-core.config.dreaming`
-- Ingeschakelde Claude-bundelplugins kunnen ook ingebedde Pi-standaarden uit `settings.json` bijdragen; OpenClaw past die toe als opgeschoonde agentinstellingen, niet als ruwe OpenClaw-configuratiepatches.
-- `plugins.slots.memory`: kies de actieve geheugenplugin-id, of `"none"` om geheugenplugins uit te schakelen.
-- `plugins.slots.contextEngine`: kies de actieve context-engine-plugin-id; standaard `"legacy"` tenzij je een andere engine installeert en selecteert.
+- Ingeschakelde Claude-bundelplugins kunnen ook ingesloten Pi-standaarden uit `settings.json` bijdragen; OpenClaw past die toe als opgeschoonde agentinstellingen, niet als ruwe OpenClaw-configuratiepatches.
+- `plugins.slots.memory`: kies de actieve geheugen-plugin-id, of `"none"` om geheugenplugins uit te schakelen.
+- `plugins.slots.contextEngine`: kies de actieve contextengine-plugin-id; standaard is `"legacy"`, tenzij je een andere engine installeert en selecteert.
 
 Zie [Plugins](/nl/tools/plugin).
 
@@ -319,10 +319,10 @@ Zie [Plugins](/nl/tools/plugin).
 
 ## Toezeggingen
 
-`commitments` beheert afgeleid opvolggeheugen: OpenClaw kan check-ins uit gespreksbeurten detecteren en ze leveren via Heartbeat-runs.
+`commitments` beheert afgeleid opvolggeheugen: OpenClaw kan check-ins uit gespreksbeurten detecteren en ze via Heartbeat-runs afleveren.
 
-- `commitments.enabled`: schakel verborgen LLM-extractie, opslag en Heartbeat-levering in voor afgeleide opvolgtoezeggingen. Standaard: `false`.
-- `commitments.maxPerDay`: maximaal aantal afgeleide opvolgtoezeggingen dat per agentsessie in een voortschrijdende dag wordt geleverd. Standaard: `3`.
+- `commitments.enabled`: schakel verborgen LLM-extractie, opslag en Heartbeat-aflevering in voor afgeleide opvolgtoezeggingen. Standaard: `false`.
+- `commitments.maxPerDay`: maximaal aantal afgeleide opvolgtoezeggingen dat per agentsessie in een rollende dag wordt afgeleverd. Standaard: `3`.
 
 Zie [Afgeleide toezeggingen](/nl/concepts/commitments).
 
@@ -375,49 +375,49 @@ Zie [Afgeleide toezeggingen](/nl/concepts/commitments).
 ```
 
 - `evaluateEnabled: false` schakelt `act:evaluate` en `wait --fn` uit.
-- `tabCleanup` ruimt gevolgde tabbladen van de primaire agent op na inactiviteit of wanneer een
+- `tabCleanup` ruimt gevolgde tabbladen van primaire agents op na inactiviteit of wanneer een
   sessie de limiet overschrijdt. Stel `idleMinutes: 0` of `maxTabsPerSession: 0` in om
   die afzonderlijke opruimmodi uit te schakelen.
 - `ssrfPolicy.dangerouslyAllowPrivateNetwork` is uitgeschakeld wanneer niet ingesteld, zodat browsernavigatie standaard strikt blijft.
-- Stel `ssrfPolicy.dangerouslyAllowPrivateNetwork: true` alleen in wanneer je browsernavigatie op een privénetwerk bewust vertrouwt.
-- In strikte modus gelden voor remote CDP-profielendpoints (`profiles.*.cdpUrl`) dezelfde blokkades voor privénetwerken tijdens bereikbaarheids- en detectiecontroles.
+- Stel `ssrfPolicy.dangerouslyAllowPrivateNetwork: true` alleen in wanneer je private-netwerkbrowsernavigatie bewust vertrouwt.
+- In strikte modus vallen externe CDP-profielendpoints (`profiles.*.cdpUrl`) onder dezelfde private-netwerkblokkering tijdens bereikbaarheids-/detectiecontroles.
 - `ssrfPolicy.allowPrivateNetwork` blijft ondersteund als legacy alias.
 - Gebruik in strikte modus `ssrfPolicy.hostnameAllowlist` en `ssrfPolicy.allowedHostnames` voor expliciete uitzonderingen.
-- Remote profielen zijn alleen attach-only (starten/stoppen/resetten uitgeschakeld).
-- `profiles.*.cdpUrl` accepteert `http://`, `https://`, `ws://` en `wss://`.
+- Externe profielen zijn alleen attach-only (start/stop/reset uitgeschakeld).
+- `profiles.*.cdpUrl` accepteert `http://`, `https://`, `ws://`, en `wss://`.
   Gebruik HTTP(S) wanneer je wilt dat OpenClaw `/json/version` detecteert; gebruik WS(S)
-  wanneer je provider je een directe DevTools WebSocket-URL geeft.
-- `remoteCdpTimeoutMs` en `remoteCdpHandshakeTimeoutMs` gelden voor remote en
+  wanneer je provider je een directe DevTools-WebSocket-URL geeft.
+- `remoteCdpTimeoutMs` en `remoteCdpHandshakeTimeoutMs` gelden voor externe en
   `attachOnly` CDP-bereikbaarheid plus aanvragen voor het openen van tabbladen. Beheerde local loopback-
   profielen behouden lokale CDP-standaarden.
-- Als een extern beheerde CDP-service bereikbaar is via loopback, stel dan
-  `attachOnly: true` voor dat profiel in; anders behandelt OpenClaw de loopback-poort als een
-  lokaal beheerd browserprofiel en kan het fouten over eigenaarschap van lokale poorten melden.
+- Als een extern beheerde CDP-service bereikbaar is via loopback, stel dan voor dat
+  profiel `attachOnly: true` in; anders behandelt OpenClaw de loopbackpoort als een
+  lokaal beheerd browserprofiel en kan het fouten over lokaal poorteigendom melden.
 - `existing-session`-profielen gebruiken Chrome MCP in plaats van CDP en kunnen koppelen op
   de geselecteerde host of via een verbonden browsernode.
 - `existing-session`-profielen kunnen `userDataDir` instellen om een specifiek
   Chromium-gebaseerd browserprofiel te targeten, zoals Brave of Edge.
-- `existing-session`-profielen behouden de huidige routelimieten van Chrome MCP:
-  snapshot/ref-gestuurde acties in plaats van CSS-selector-targeting, one-file upload-
-  hooks, geen overrides voor dialoogtimeouts, geen `wait --load networkidle` en geen
-  `responsebody`, PDF-export, downloadinterceptie of batchacties.
-- Lokaal beheerde `openclaw`-profielen wijzen `cdpPort` en `cdpUrl` automatisch toe; stel
-  `cdpUrl` alleen expliciet in voor remote CDP.
-- Lokaal beheerde profielen kunnen `executablePath` instellen om de globale
+- `existing-session`-profielen behouden de huidige Chrome MCP-routelimieten:
+  snapshot-/ref-gestuurde acties in plaats van targeting met CSS-selectors, uploadhooks
+  voor één bestand, geen overrides voor dialoogtime-outs, geen `wait --load networkidle`, en geen
+  `responsebody`, PDF-export, downloadonderschepping, of batchacties.
+- Lokale beheerde `openclaw`-profielen wijzen `cdpPort` en `cdpUrl` automatisch toe; stel
+  `cdpUrl` alleen expliciet in voor externe CDP.
+- Lokale beheerde profielen kunnen `executablePath` instellen om de globale
   `browser.executablePath` voor dat profiel te overschrijven. Gebruik dit om één profiel in
   Chrome en een ander in Brave uit te voeren.
-- Lokaal beheerde profielen gebruiken `browser.localLaunchTimeoutMs` voor Chrome CDP HTTP-
-  detectie na processtart en `browser.localCdpReadyTimeoutMs` voor
-  CDP-websocketgereedheid na lancering. Verhoog ze op tragere hosts waar Chrome
-  succesvol start maar gereedheidscontroles met het opstarten racen. Beide waarden moeten
-  positieve gehele getallen tot `120000` ms zijn; ongeldige configuratiewaarden worden geweigerd.
+- Lokale beheerde profielen gebruiken `browser.localLaunchTimeoutMs` voor Chrome CDP HTTP-
+  detectie na het starten van het proces en `browser.localCdpReadyTimeoutMs` voor
+  CDP-websocketgereedheid na het starten. Verhoog ze op langzamere hosts waar Chrome
+  succesvol start maar gereedheidscontroles met het opstarten concurreren. Beide waarden moeten
+  positieve integers tot `120000` ms zijn; ongeldige configuratiewaarden worden geweigerd.
 - Volgorde voor automatische detectie: standaardbrowser indien Chromium-gebaseerd → Chrome → Brave → Edge → Chromium → Chrome Canary.
-- `browser.executablePath` en `browser.profiles.<name>.executablePath` accepteren beide
-  `~` en `~/...` voor de homedirectory van je OS vóór het starten van Chromium.
-  `userDataDir` per profiel op `existing-session`-profielen wordt ook met tilde uitgebreid.
+- `browser.executablePath` en `browser.profiles.<name>.executablePath` accepteren allebei
+  `~` en `~/...` voor de thuismap van je OS vóór het starten van Chromium.
+  Per-profiel `userDataDir` op `existing-session`-profielen wordt ook met tilde uitgebreid.
 - Besturingsservice: alleen loopback (poort afgeleid van `gateway.port`, standaard `18791`).
-- `extraArgs` voegt extra launch-flags toe aan lokale Chromium-opstart (bijvoorbeeld
-  `--disable-gpu`, venstergrootte of debugflags).
+- `extraArgs` voegt extra launchflags toe aan lokale Chromium-startup (bijvoorbeeld
+  `--disable-gpu`, venstergrootte, of debugflags).
 
 ---
 
@@ -435,8 +435,8 @@ Zie [Afgeleide toezeggingen](/nl/concepts/commitments).
 }
 ```
 
-- `seamColor`: accentkleur voor native app-UI-chrome (Talk Mode-bubbeltint, enz.).
-- `assistant`: override voor Control UI-identiteit. Valt terug op de actieve agentidentiteit.
+- `seamColor`: accentkleur voor native app-UI-chrome (tint van Talk Mode-bubbel, enz.).
+- `assistant`: override voor Control UI-identiteit. Valt terug op actieve agentidentiteit.
 
 ---
 
@@ -512,60 +512,59 @@ Zie [Afgeleide toezeggingen](/nl/concepts/commitments).
 }
 ```
 
-<Accordion title="Gateway-velddetails">
+<Accordion title="Details van Gateway-velden">
 
-- `mode`: `local` (gateway uitvoeren) of `remote` (verbinden met externe gateway). Gateway weigert te starten tenzij dit `local` is.
+- `mode`: `local` (Gateway uitvoeren) of `remote` (verbinden met externe Gateway). Gateway weigert te starten tenzij dit `local` is.
 - `port`: enkele gemultiplexte poort voor WS + HTTP. Voorrang: `--port` > `OPENCLAW_GATEWAY_PORT` > `gateway.port` > `18789`.
 - `bind`: `auto`, `loopback` (standaard), `lan` (`0.0.0.0`), `tailnet` (alleen Tailscale-IP), of `custom`.
 - **Verouderde bind-aliassen**: gebruik bind-moduswaarden in `gateway.bind` (`auto`, `loopback`, `lan`, `tailnet`, `custom`), geen hostaliassen (`0.0.0.0`, `127.0.0.1`, `localhost`, `::`, `::1`).
-- **Docker-opmerking**: de standaard `loopback`-bind luistert op `127.0.0.1` binnen de container. Met Docker bridge-netwerken (`-p 18789:18789`) komt verkeer binnen op `eth0`, waardoor de gateway onbereikbaar is. Gebruik `--network host`, of stel `bind: "lan"` in (of `bind: "custom"` met `customBindHost: "0.0.0.0"`) om op alle interfaces te luisteren.
-- **Auth**: standaard vereist. Niet-loopback-binds vereisen gateway-auth. In de praktijk betekent dit een gedeeld token/wachtwoord of een identity-aware reverse proxy met `gateway.auth.mode: "trusted-proxy"`. De onboardingwizard genereert standaard een token.
-- Als zowel `gateway.auth.token` als `gateway.auth.password` zijn geconfigureerd (inclusief SecretRefs), stel `gateway.auth.mode` dan expliciet in op `token` of `password`. Opstart- en service-installatie-/reparatiestromen mislukken wanneer beide zijn geconfigureerd en modus niet is ingesteld.
+- **Docker-opmerking**: de standaard `loopback`-bind luistert op `127.0.0.1` binnen de container. Met Docker bridge-netwerken (`-p 18789:18789`) komt verkeer binnen op `eth0`, waardoor de Gateway onbereikbaar is. Gebruik `--network host`, of stel `bind: "lan"` in (of `bind: "custom"` met `customBindHost: "0.0.0.0"`) om op alle interfaces te luisteren.
+- **Auth**: standaard vereist. Niet-loopback-binds vereisen Gateway-auth. In de praktijk betekent dit een gedeelde token/wachtwoord of een identiteitsbewuste reverse proxy met `gateway.auth.mode: "trusted-proxy"`. De onboardingwizard genereert standaard een token.
+- Als zowel `gateway.auth.token` als `gateway.auth.password` zijn geconfigureerd (inclusief SecretRefs), stel `gateway.auth.mode` dan expliciet in op `token` of `password`. Opstart- en service-installatie-/reparatiestromen mislukken wanneer beide zijn geconfigureerd en de modus niet is ingesteld.
 - `gateway.auth.mode: "none"`: expliciete modus zonder auth. Gebruik alleen voor vertrouwde local loopback-configuraties; dit wordt bewust niet aangeboden door onboardingprompts.
-- `gateway.auth.mode: "trusted-proxy"`: delegeer browser-/gebruikersauth aan een identity-aware reverse proxy en vertrouw identity-headers van `gateway.trustedProxies` (zie [Trusted Proxy Auth](/nl/gateway/trusted-proxy-auth)). Deze modus verwacht standaard een **niet-loopback** proxybron; same-host loopback reverse proxies vereisen expliciet `gateway.auth.trustedProxy.allowLoopback = true`. Interne same-host callers kunnen `gateway.auth.password` gebruiken als lokale directe fallback; `gateway.auth.token` blijft wederzijds exclusief met trusted-proxy-modus.
-- `gateway.auth.allowTailscale`: wanneer `true`, kunnen Tailscale Serve-identity-headers voldoen aan Control UI/WebSocket-auth (geverifieerd via `tailscale whois`). HTTP API-eindpunten gebruiken die Tailscale-headerauth **niet**; ze volgen in plaats daarvan de normale HTTP-authmodus van de gateway. Deze tokenloze stroom gaat ervan uit dat de gatewayhost vertrouwd is. Staat standaard op `true` wanneer `tailscale.mode = "serve"`.
-- `gateway.auth.rateLimit`: optionele limiter voor mislukte auth. Wordt toegepast per client-IP en per auth-scope (shared-secret en device-token worden onafhankelijk bijgehouden). Geblokkeerde pogingen retourneren `429` + `Retry-After`.
-  - Op het async Tailscale Serve Control UI-pad worden mislukte pogingen voor dezelfde `{scope, clientIp}` geserialiseerd voordat de fout wordt geschreven. Gelijktijdige slechte pogingen van dezelfde client kunnen de limiter daarom bij het tweede verzoek activeren in plaats van dat beide als gewone mismatches tegelijk doorgaan.
-  - `gateway.auth.rateLimit.exemptLoopback` staat standaard op `true`; stel in op `false` wanneer je bewust ook localhost-verkeer wilt rate-limiten (voor testopstellingen of strikte proxydeployments).
-- Browser-origin WS-authpogingen worden altijd beperkt met loopback-vrijstelling uitgeschakeld (defense-in-depth tegen browsergebaseerde localhost-bruteforce).
-- Op loopback worden die browser-origin lockouts geïsoleerd per genormaliseerde `Origin`
+- `gateway.auth.mode: "trusted-proxy"`: delegeer browser-/gebruikers-auth aan een identiteitsbewuste reverse proxy en vertrouw identiteitsheaders van `gateway.trustedProxies` (zie [Trusted Proxy Auth](/nl/gateway/trusted-proxy-auth)). Deze modus verwacht standaard een **niet-loopback** proxybron; reverse proxy's op dezelfde host via loopback vereisen expliciet `gateway.auth.trustedProxy.allowLoopback = true`. Interne aanroepers op dezelfde host kunnen `gateway.auth.password` gebruiken als lokale directe fallback; `gateway.auth.token` blijft wederzijds exclusief met de trusted-proxy-modus.
+- `gateway.auth.allowTailscale`: wanneer `true`, kunnen identiteitsheaders van Tailscale Serve voldoen aan Control UI/WebSocket-auth (geverifieerd via `tailscale whois`). HTTP API-eindpunten gebruiken die Tailscale-header-auth **niet**; ze volgen in plaats daarvan de normale HTTP-authmodus van de Gateway. Deze tokenloze stroom gaat ervan uit dat de Gateway-host vertrouwd is. Standaard `true` wanneer `tailscale.mode = "serve"`.
+- `gateway.auth.rateLimit`: optionele limiter voor mislukte auth. Geldt per client-IP en per auth-scope (shared-secret en device-token worden afzonderlijk bijgehouden). Geblokkeerde pogingen retourneren `429` + `Retry-After`.
+  - Op het asynchrone Tailscale Serve Control UI-pad worden mislukte pogingen voor dezelfde `{scope, clientIp}` geserialiseerd voordat de fout wordt weggeschreven. Gelijktijdige slechte pogingen van dezelfde client kunnen daardoor de limiter activeren bij de tweede aanvraag, in plaats van dat beide als gewone mismatches doorlopen.
+  - `gateway.auth.rateLimit.exemptLoopback` is standaard `true`; stel in op `false` wanneer je bewust ook localhost-verkeer wilt rate-limiten (voor testconfiguraties of strikte proxy-implementaties).
+- WS-authpogingen vanuit browser-origins worden altijd gethrottled met loopback-vrijstelling uitgeschakeld (verdediging in de diepte tegen browsergebaseerde localhost-bruteforce).
+- Op loopback worden die lockouts vanuit browser-origins geïsoleerd per genormaliseerde `Origin`
   waarde, zodat herhaalde mislukkingen van één localhost-origin niet automatisch
   een andere origin buitensluiten.
 - `tailscale.mode`: `serve` (alleen tailnet, loopback-bind) of `funnel` (publiek, vereist auth).
 - `tailscale.preserveFunnel`: wanneer `true` en `tailscale.mode = "serve"`, controleert OpenClaw
-  `tailscale funnel status` voordat Serve opnieuw wordt toegepast bij het opstarten en slaat
-  dit over als een extern geconfigureerde Funnel-route de gatewaypoort al dekt.
+  `tailscale funnel status` voordat Serve opnieuw wordt toegepast bij het opstarten, en slaat
+  dit over als een extern geconfigureerde Funnel-route de Gateway-poort al dekt.
   Standaard `false`.
-- `controlUi.allowedOrigins`: expliciete browser-origin-allowlist voor Gateway WebSocket-verbindingen. Vereist wanneer browserclients worden verwacht vanaf niet-loopback-origins.
-- `controlUi.chatMessageMaxWidth`: optionele max-width voor gegroepeerde Control UI-chatberichten. Accepteert begrensde CSS-breedtewaarden zoals `960px`, `82%`, `min(1280px, 82%)` en `calc(100% - 2rem)`.
-- `controlUi.dangerouslyAllowHostHeaderOriginFallback`: gevaarlijke modus die Host-header-origin-fallback inschakelt voor deployments die bewust vertrouwen op Host-header-originbeleid.
+- `controlUi.allowedOrigins`: expliciete toegestane lijst voor browser-origins voor Gateway WebSocket-verbindingen. Vereist wanneer browserclients worden verwacht vanaf niet-loopback-origins.
+- `controlUi.chatMessageMaxWidth`: optionele maximale breedte voor gegroepeerde Control UI-chatberichten. Accepteert begrensde CSS-breedtewaarden zoals `960px`, `82%`, `min(1280px, 82%)` en `calc(100% - 2rem)`.
+- `controlUi.dangerouslyAllowHostHeaderOriginFallback`: gevaarlijke modus die Host-header-originfallback inschakelt voor implementaties die bewust vertrouwen op Host-header-originbeleid.
 - `remote.transport`: `ssh` (standaard) of `direct` (ws/wss). Voor `direct` moet `remote.url` `ws://` of `wss://` zijn.
-- `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1`: client-side procesomgevingsvariabele
-  als noodoverride die plaintext `ws://` toestaat naar vertrouwde privénetwerk-
-  IP's; standaard blijft plaintext beperkt tot loopback. Er is geen `openclaw.json`
-  equivalent, en browserconfiguratie voor privénetwerken zoals
+- `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1`: break-glass-override via client-side procesomgeving
+  die plaintext `ws://` toestaat naar vertrouwde privé-netwerk-IP's; standaard blijft plaintext alleen loopback. Er is geen `openclaw.json`
+  equivalent, en browserconfiguratie voor privé-netwerken zoals
   `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork` heeft geen invloed op Gateway
   WebSocket-clients.
-- `gateway.remote.token` / `.password` zijn credentialvelden voor externe clients. Ze configureren gateway-auth niet op zichzelf.
-- `gateway.push.apns.relay.baseUrl`: basis-HTTPS-URL voor de externe APNs-relay die wordt gebruikt door officiële/TestFlight iOS-builds nadat ze relay-backed registraties naar de gateway publiceren. Deze URL moet overeenkomen met de relay-URL die in de iOS-build is gecompileerd.
-- `gateway.push.apns.relay.timeoutMs`: verzendtimeout van gateway naar relay in milliseconden. Standaard `10000`.
-- Relay-backed registraties worden gedelegeerd aan een specifieke gatewayidentity. De gekoppelde iOS-app haalt `gateway.identity.get` op, neemt die identity op in de relayregistratie en stuurt een registratiegebonden verzendtoekenning door naar de gateway. Een andere gateway kan die opgeslagen registratie niet hergebruiken.
-- `OPENCLAW_APNS_RELAY_BASE_URL` / `OPENCLAW_APNS_RELAY_TIMEOUT_MS`: tijdelijke env-overrides voor de relayconfiguratie hierboven.
-- `OPENCLAW_APNS_RELAY_ALLOW_HTTP=true`: alleen-ontwikkeling uitweg voor loopback-HTTP-relay-URL's. Productierelay-URL's moeten HTTPS blijven gebruiken.
-- `gateway.handshakeTimeoutMs`: pre-auth Gateway WebSocket-handshake-timeout in milliseconden. Standaard: `15000`. `OPENCLAW_HANDSHAKE_TIMEOUT_MS` heeft voorrang wanneer ingesteld. Verhoog dit op belaste of low-powered hosts waar lokale clients kunnen verbinden terwijl de opstartwarmup nog stabiliseert.
-- `gateway.channelHealthCheckMinutes`: interval van de kanaal-healthmonitor in minuten. Stel `0` in om herstarts door de healthmonitor globaal uit te schakelen. Standaard: `5`.
-- `gateway.channelStaleEventThresholdMinutes`: stale-socket-drempel in minuten. Houd dit groter dan of gelijk aan `gateway.channelHealthCheckMinutes`. Standaard: `30`.
-- `gateway.channelMaxRestartsPerHour`: maximaal aantal healthmonitor-herstarts per kanaal/account in een rollend uur. Standaard: `10`.
-- `channels.<provider>.healthMonitor.enabled`: per-kanaal opt-out voor healthmonitor-herstarts terwijl de globale monitor ingeschakeld blijft.
-- `channels.<provider>.accounts.<accountId>.healthMonitor.enabled`: per-account override voor multi-account-kanalen. Wanneer ingesteld, heeft dit voorrang op de kanaalniveau-override.
-- Lokale gateway-aanroeppaden kunnen `gateway.remote.*` alleen als fallback gebruiken wanneer `gateway.auth.*` niet is ingesteld.
-- Als `gateway.auth.token` / `gateway.auth.password` expliciet is geconfigureerd via SecretRef en niet kan worden opgelost, mislukt resolutie gesloten (geen maskering door externe fallback).
-- `trustedProxies`: reverse proxy-IP's die TLS beëindigen of forwarded-client-headers injecteren. Vermeld alleen proxies die je beheert. Loopback-items blijven geldig voor same-host proxy-/lokale-detectieopstellingen (bijvoorbeeld Tailscale Serve of een lokale reverse proxy), maar ze maken loopback-verzoeken **niet** geschikt voor `gateway.auth.mode: "trusted-proxy"`.
-- `allowRealIpFallback`: wanneer `true`, accepteert de gateway `X-Real-IP` als `X-Forwarded-For` ontbreekt. Standaard `false` voor fail-closed gedrag.
-- `gateway.nodes.pairing.autoApproveCidrs`: optionele CIDR/IP-allowlist voor het automatisch goedkeuren van eerste node-device-pairing zonder aangevraagde scopes. Dit is uitgeschakeld wanneer niet ingesteld. Dit keurt operator-/browser-/Control UI-/WebChat-pairing niet automatisch goed, en keurt rol-, scope-, metadata- of public-key-upgrades niet automatisch goed.
-- `gateway.nodes.allowCommands` / `gateway.nodes.denyCommands`: globale allow/deny-vormgeving voor gedeclareerde nodecommando's na pairing en platform-allowlist-evaluatie. Gebruik `allowCommands` om gevaarlijke nodecommando's zoals `camera.snap`, `camera.clip` en `screen.record` expliciet toe te staan; `denyCommands` verwijdert een commando zelfs als een platformstandaard of expliciete allow het anders zou opnemen. Nadat een node zijn gedeclareerde commandolijst wijzigt, wijs je die device-pairing af en keur je deze opnieuw goed zodat de gateway de bijgewerkte commandosnapshot opslaat.
-- `gateway.tools.deny`: extra toolnamen die worden geblokkeerd voor HTTP `POST /tools/invoke` (breidt standaard denylist uit).
-- `gateway.tools.allow`: verwijder toolnamen uit de standaard HTTP-denylist.
+- `gateway.remote.token` / `.password` zijn credentialvelden voor externe clients. Ze configureren Gateway-auth niet op zichzelf.
+- `gateway.push.apns.relay.baseUrl`: basis-HTTPS-URL voor de externe APNs-relay die wordt gebruikt door officiële/TestFlight-iOS-builds nadat ze relay-backed registraties naar de Gateway publiceren. Deze URL moet overeenkomen met de relay-URL die in de iOS-build is gecompileerd.
+- `gateway.push.apns.relay.timeoutMs`: verzendtimeout van Gateway naar relay in milliseconden. Standaard `10000`.
+- Relay-backed registraties worden gedelegeerd aan een specifieke Gateway-identiteit. De gekoppelde iOS-app haalt `gateway.identity.get` op, neemt die identiteit op in de relayregistratie en stuurt een registratiespecifieke verzendmachtiging door naar de Gateway. Een andere Gateway kan die opgeslagen registratie niet hergebruiken.
+- `OPENCLAW_APNS_RELAY_BASE_URL` / `OPENCLAW_APNS_RELAY_TIMEOUT_MS`: tijdelijke omgevingsoverschrijvingen voor de relayconfiguratie hierboven.
+- `OPENCLAW_APNS_RELAY_ALLOW_HTTP=true`: ontsnappingsroute alleen voor ontwikkeling voor loopback-HTTP-relay-URL's. Productierelay-URL's moeten HTTPS blijven gebruiken.
+- `gateway.handshakeTimeoutMs`: pre-auth Gateway WebSocket-handshaketimeout in milliseconden. Standaard: `15000`. `OPENCLAW_HANDSHAKE_TIMEOUT_MS` heeft voorrang wanneer ingesteld. Verhoog dit op belaste of low-powered hosts waar lokale clients kunnen verbinden terwijl de opstartopwarming nog bezig is.
+- `gateway.channelHealthCheckMinutes`: interval voor de healthmonitor van kanalen in minuten. Stel `0` in om herstarts door de healthmonitor globaal uit te schakelen. Standaard: `5`.
+- `gateway.channelStaleEventThresholdMinutes`: drempel voor stale sockets in minuten. Houd dit groter dan of gelijk aan `gateway.channelHealthCheckMinutes`. Standaard: `30`.
+- `gateway.channelMaxRestartsPerHour`: maximaal aantal herstarts door de healthmonitor per kanaal/account in een rolling hour. Standaard: `10`.
+- `channels.<provider>.healthMonitor.enabled`: opt-out per kanaal voor herstarts door de healthmonitor terwijl de globale monitor ingeschakeld blijft.
+- `channels.<provider>.accounts.<accountId>.healthMonitor.enabled`: override per account voor kanalen met meerdere accounts. Wanneer ingesteld, heeft dit voorrang op de override op kanaalniveau.
+- Lokale Gateway-aanroeppaden kunnen `gateway.remote.*` alleen als fallback gebruiken wanneer `gateway.auth.*` niet is ingesteld.
+- Als `gateway.auth.token` / `gateway.auth.password` expliciet is geconfigureerd via SecretRef en niet kan worden opgelost, faalt de oplossing gesloten (geen maskering door externe fallback).
+- `trustedProxies`: IP's van reverse proxy's die TLS beëindigen of forwarded-client-headers injecteren. Vermeld alleen proxy's die je beheert. Loopback-items blijven geldig voor proxy-/lokale-detectieconfiguraties op dezelfde host (bijvoorbeeld Tailscale Serve of een lokale reverse proxy), maar ze maken loopback-aanvragen **niet** geschikt voor `gateway.auth.mode: "trusted-proxy"`.
+- `allowRealIpFallback`: wanneer `true`, accepteert de Gateway `X-Real-IP` als `X-Forwarded-For` ontbreekt. Standaard `false` voor fail-closed gedrag.
+- `gateway.nodes.pairing.autoApproveCidrs`: optionele CIDR/IP-toegestane lijst voor het automatisch goedkeuren van eerste node-device-pairing zonder gevraagde scopes. Dit is uitgeschakeld wanneer niet ingesteld. Dit keurt operator-/browser-/Control UI-/WebChat-pairing niet automatisch goed, en keurt geen rol-, scope-, metadata- of public-key-upgrades automatisch goed.
+- `gateway.nodes.allowCommands` / `gateway.nodes.denyCommands`: globale allow/deny-vormgeving voor gedeclareerde node-commando's na pairing en platform-allowlist-evaluatie. Gebruik `allowCommands` om gevaarlijke node-commando's zoals `camera.snap`, `camera.clip` en `screen.record` expliciet toe te staan; `denyCommands` verwijdert een commando zelfs als een platformstandaard of expliciete allow het anders zou opnemen. Nadat een node zijn gedeclareerde commandolijst wijzigt, wijs die device-pairing af en keur deze opnieuw goed zodat de Gateway de bijgewerkte commandosnapshot opslaat.
+- `gateway.tools.deny`: extra toolnamen die worden geblokkeerd voor HTTP `POST /tools/invoke` (breidt de standaard deny-lijst uit).
+- `gateway.tools.allow`: verwijder toolnamen uit de standaard HTTP-deny-lijst.
 
 </Accordion>
 
@@ -573,18 +572,18 @@ Zie [Afgeleide toezeggingen](/nl/concepts/commitments).
 
 - Chat Completions: standaard uitgeschakeld. Schakel in met `gateway.http.endpoints.chatCompletions.enabled: true`.
 - Responses API: `gateway.http.endpoints.responses.enabled`.
-- Verharding van URL-invoer voor Responses:
+- Verharding voor URL-invoer van Responses:
   - `gateway.http.endpoints.responses.maxUrlParts`
   - `gateway.http.endpoints.responses.files.urlAllowlist`
   - `gateway.http.endpoints.responses.images.urlAllowlist`
     Lege allowlists worden behandeld als niet ingesteld; gebruik `gateway.http.endpoints.responses.files.allowUrl=false`
-    en/of `gateway.http.endpoints.responses.images.allowUrl=false` om URL-fetching uit te schakelen.
-- Optionele response-verhardingsheader:
+    en/of `gateway.http.endpoints.responses.images.allowUrl=false` om URL-ophalen uit te schakelen.
+- Optionele header voor response-verharding:
   - `gateway.http.securityHeaders.strictTransportSecurity` (stel alleen in voor HTTPS-origins die je beheert; zie [Trusted Proxy Auth](/nl/gateway/trusted-proxy-auth#tls-termination-and-hsts))
 
 ### Multi-instance-isolatie
 
-Voer meerdere gateways op één host uit met unieke poorten en state dirs:
+Voer meerdere Gateways uit op één host met unieke poorten en state dirs:
 
 ```bash
 OPENCLAW_CONFIG_PATH=~/.openclaw/a.json \
@@ -612,11 +611,11 @@ Zie [Multiple Gateways](/nl/gateway/multiple-gateways).
 }
 ```
 
-- `enabled`: schakelt TLS-beëindiging in op de gateway-listener (HTTPS/WSS) (standaard: `false`).
+- `enabled`: schakelt TLS-terminatie in bij de Gateway-listener (HTTPS/WSS) (standaard: `false`).
 - `autoGenerate`: genereert automatisch een lokaal self-signed cert/key-paar wanneer expliciete bestanden niet zijn geconfigureerd; alleen voor lokaal/dev-gebruik.
 - `certPath`: bestandssysteempad naar het TLS-certificaatbestand.
-- `keyPath`: bestandssysteempad naar het TLS-private-key-bestand; houd permissies beperkt.
-- `caPath`: optioneel CA-bundelpad voor clientverificatie of aangepaste trust chains.
+- `keyPath`: bestandssysteempad naar het TLS-private-keybestand; houd permissies beperkt.
+- `caPath`: optioneel CA-bundlepad voor clientverificatie of aangepaste trust chains.
 
 ### `gateway.reload`
 
@@ -634,11 +633,11 @@ Zie [Multiple Gateways](/nl/gateway/multiple-gateways).
 
 - `mode`: bepaalt hoe configuratiewijzigingen tijdens runtime worden toegepast.
   - `"off"`: negeer live wijzigingen; wijzigingen vereisen een expliciete herstart.
-  - `"restart"`: herstart altijd het gatewayproces bij configuratiewijziging.
-  - `"hot"`: pas wijzigingen in-process toe zonder herstart.
-  - `"hybrid"` (standaard): probeer eerst hot reload; val terug op herstart indien nodig.
+  - `"restart"`: herstart altijd het Gateway-proces bij een configuratiewijziging.
+  - `"hot"`: pas wijzigingen in-process toe zonder opnieuw te starten.
+  - `"hybrid"` (standaard): probeer eerst hot reload; val terug op herstart als dat vereist is.
 - `debounceMs`: debouncevenster in ms voordat configuratiewijzigingen worden toegepast (niet-negatief geheel getal).
-- `deferralTimeoutMs`: optionele maximale wachttijd in ms voor in-flight operaties voordat een herstart of channel hot reload wordt geforceerd. Laat weg om de standaard begrensde wachttijd (`300000`) te gebruiken; stel in op `0` om onbeperkt te wachten en periodieke waarschuwingen over nog openstaande taken te loggen.
+- `deferralTimeoutMs`: optionele maximale tijd in ms om te wachten op lopende bewerkingen voordat een herstart of channel hot reload wordt geforceerd. Laat weg om de standaard begrensde wachttijd (`300000`) te gebruiken; stel `0` in om onbeperkt te wachten en periodiek waarschuwingen voor nog lopende bewerkingen te loggen.
 
 ---
 
@@ -676,47 +675,47 @@ Zie [Multiple Gateways](/nl/gateway/multiple-gateways).
 ```
 
 Auth: `Authorization: Bearer <token>` of `x-openclaw-token: <token>`.
-Hooktokens in de querystring worden geweigerd.
+Hooktokens in querystrings worden geweigerd.
 
 Validatie- en veiligheidsnotities:
 
 - `hooks.enabled=true` vereist een niet-lege `hooks.token`.
-- `hooks.token` moet **verschillend** zijn van `gateway.auth.token`; hergebruik van het Gateway-token wordt geweigerd.
-- `hooks.path` mag niet `/` zijn; gebruik een toegewijd subpad zoals `/hooks`.
+- `hooks.token` moet **verschillen** van `gateway.auth.token`; hergebruik van de Gateway-token wordt geweigerd.
+- `hooks.path` kan niet `/` zijn; gebruik een toegewijd subpad zoals `/hooks`.
 - Als `hooks.allowRequestSessionKey=true`, beperk dan `hooks.allowedSessionKeyPrefixes` (bijvoorbeeld `["hook:"]`).
-- Als een mapping of preset een gesjabloneerde `sessionKey` gebruikt, stel dan `hooks.allowedSessionKeyPrefixes` en `hooks.allowRequestSessionKey=true` in. Statische mappingsleutels vereisen die opt-in niet.
+- Als een mapping of preset een getemplate `sessionKey` gebruikt, stel dan `hooks.allowedSessionKeyPrefixes` en `hooks.allowRequestSessionKey=true` in. Statische mappingsleutels vereisen die opt-in niet.
 
 **Eindpunten:**
 
 - `POST /hooks/wake` → `{ text, mode?: "now"|"next-heartbeat" }`
 - `POST /hooks/agent` → `{ message, name?, agentId?, sessionKey?, wakeMode?, deliver?, channel?, to?, model?, thinking?, timeoutSeconds? }`
-  - `sessionKey` uit de requestpayload wordt alleen geaccepteerd wanneer `hooks.allowRequestSessionKey=true` (standaard: `false`).
+  - `sessionKey` uit de aanvraagpayload wordt alleen geaccepteerd wanneer `hooks.allowRequestSessionKey=true` (standaard: `false`).
 - `POST /hooks/<name>` → opgelost via `hooks.mappings`
-  - Door sjablonen gerenderde mappingwaarden voor `sessionKey` worden behandeld als extern aangeleverd en vereisen ook `hooks.allowRequestSessionKey=true`.
+  - Door templates gerenderde mappingwaarden voor `sessionKey` worden behandeld als extern aangeleverd en vereisen ook `hooks.allowRequestSessionKey=true`.
 
 <Accordion title="Mappingdetails">
 
-- `match.path` komt overeen met het subpad na `/hooks` (bijv. `/hooks/gmail` → `gmail`).
-- `match.source` komt overeen met een payloadveld voor generieke paden.
-- Sjablonen zoals `{{messages[0].subject}}` lezen uit de payload.
+- `match.path` matcht het subpad na `/hooks` (bijv. `/hooks/gmail` → `gmail`).
+- `match.source` matcht een payloadveld voor generieke paden.
+- Templates zoals `{{messages[0].subject}}` lezen uit de payload.
 - `transform` kan verwijzen naar een JS/TS-module die een hookactie retourneert.
   - `transform.module` moet een relatief pad zijn en blijft binnen `hooks.transformsDir` (absolute paden en traversal worden geweigerd).
-  - Houd `hooks.transformsDir` onder `~/.openclaw/hooks/transforms`; workspace-Skills-mappen worden geweigerd. Als `openclaw doctor` dit pad als ongeldig rapporteert, verplaats de transformmodule dan naar de hooks-transformmap of verwijder `hooks.transformsDir`.
-- `agentId` routeert naar een specifieke agent; onbekende id's vallen terug op de standaard.
+  - Houd `hooks.transformsDir` onder `~/.openclaw/hooks/transforms`; workspace-skillmappen worden geweigerd. Als `openclaw doctor` dit pad als ongeldig rapporteert, verplaats de transformmodule dan naar de transformmap voor hooks of verwijder `hooks.transformsDir`.
+- `agentId` routeert naar een specifieke agent; onbekende ID's vallen terug op de standaardwaarde.
 - `allowedAgentIds`: beperkt expliciete routering (`*` of weggelaten = alles toestaan, `[]` = alles weigeren).
-- `defaultSessionKey`: optionele vaste sessiesleutel voor hook-agentuitvoeringen zonder expliciete `sessionKey`.
-- `allowRequestSessionKey`: sta `/hooks/agent`-aanroepers en door sjablonen aangedreven mappingsessiesleutels toe om `sessionKey` in te stellen (standaard: `false`).
-- `allowedSessionKeyPrefixes`: optionele allowlist met prefixen voor expliciete `sessionKey`-waarden (request + mapping), bijv. `["hook:"]`. Dit wordt verplicht wanneer een mapping of preset een gesjabloneerde `sessionKey` gebruikt.
-- `deliver: true` stuurt het definitieve antwoord naar een kanaal; `channel` is standaard `last`.
-- `model` overschrijft de LLM voor deze hookuitvoering (moet toegestaan zijn als de modelcatalogus is ingesteld).
+- `defaultSessionKey`: optionele vaste sessiesleutel voor hook-agentruns zonder expliciete `sessionKey`.
+- `allowRequestSessionKey`: sta aanroepers van `/hooks/agent` en templategestuurde mappingsessiesleutels toe om `sessionKey` in te stellen (standaard: `false`).
+- `allowedSessionKeyPrefixes`: optionele allowlist met prefixen voor expliciete `sessionKey`-waarden (aanvraag + mapping), bijv. `["hook:"]`. Dit wordt vereist wanneer een mapping of preset een getemplate `sessionKey` gebruikt.
+- `deliver: true` stuurt het uiteindelijke antwoord naar een kanaal; `channel` gebruikt standaard `last`.
+- `model` overschrijft de LLM voor deze hookrun (moet toegestaan zijn als de modelcatalogus is ingesteld).
 
 </Accordion>
 
 ### Gmail-integratie
 
 - De ingebouwde Gmail-preset gebruikt `sessionKey: "hook:gmail:{{messages[0].id}}"`.
-- Als u die routering per bericht behoudt, stel dan `hooks.allowRequestSessionKey: true` in en beperk `hooks.allowedSessionKeyPrefixes` zodat deze overeenkomt met de Gmail-namespace, bijvoorbeeld `["hook:", "hook:gmail:"]`.
-- Als u `hooks.allowRequestSessionKey: false` nodig hebt, overschrijf de preset dan met een statische `sessionKey` in plaats van de gesjabloneerde standaardwaarde.
+- Als je die routering per bericht behoudt, stel dan `hooks.allowRequestSessionKey: true` in en beperk `hooks.allowedSessionKeyPrefixes` zodat die overeenkomen met de Gmail-namespace, bijvoorbeeld `["hook:", "hook:gmail:"]`.
+- Als je `hooks.allowRequestSessionKey: false` nodig hebt, overschrijf de preset dan met een statische `sessionKey` in plaats van de getemplate standaardwaarde.
 
 ```json5
 {
@@ -740,11 +739,11 @@ Validatie- en veiligheidsnotities:
 ```
 
 - Gateway start `gog gmail watch serve` automatisch bij het opstarten wanneer dit is geconfigureerd. Stel `OPENCLAW_SKIP_GMAIL_WATCHER=1` in om dit uit te schakelen.
-- Voer geen aparte `gog gmail watch serve` uit naast de Gateway.
+- Voer geen afzonderlijke `gog gmail watch serve` uit naast de Gateway.
 
 ---
 
-## Canvas-Plugin-host
+## Canvas-pluginhost
 
 ```json5
 {
@@ -768,13 +767,13 @@ Validatie- en veiligheidsnotities:
   - `http://<gateway-host>:<gateway.port>/__openclaw__/canvas/`
   - `http://<gateway-host>:<gateway.port>/__openclaw__/a2ui/`
 - Alleen lokaal: houd `gateway.bind: "loopback"` (standaard).
-- Niet-loopback-bindings: canvasroutes vereisen Gateway-authenticatie (token/wachtwoord/trusted proxy), hetzelfde als andere Gateway-HTTP-oppervlakken.
-- Node WebViews sturen doorgaans geen authenticatieheaders; nadat een node is gekoppeld en verbonden, adverteert de Gateway node-scoped capability-URL's voor toegang tot canvas/A2UI.
-- Capability-URL's zijn gebonden aan de actieve node-WS-sessie en verlopen snel. Een op IP gebaseerde fallback wordt niet gebruikt.
+- Niet-loopback-binds: canvasroutes vereisen Gateway-authenticatie (token/wachtwoord/vertrouwde proxy), hetzelfde als andere Gateway HTTP-oppervlakken.
+- Node WebViews sturen doorgaans geen auth-headers; nadat een node is gekoppeld en verbonden, adverteert de Gateway node-gescopete capability-URL's voor canvas-/A2UI-toegang.
+- Capability-URL's zijn gebonden aan de actieve node-WS-sessie en verlopen snel. IP-gebaseerde fallback wordt niet gebruikt.
 - Injecteert een live-reloadclient in geserveerde HTML.
-- Maakt automatisch een starter-`index.html` wanneer leeg.
-- Serveert A2UI ook op `/__openclaw__/a2ui/`.
-- Wijzigingen vereisen een herstart van de gateway.
+- Maakt automatisch een starter-`index.html` aan wanneer leeg.
+- Serveert ook A2UI op `/__openclaw__/a2ui/`.
+- Wijzigingen vereisen een Gateway-herstart.
 - Schakel live reload uit voor grote mappen of `EMFILE`-fouten.
 
 ---
@@ -793,13 +792,13 @@ Validatie- en veiligheidsnotities:
 }
 ```
 
-- `minimal` (standaard wanneer de gebundelde `bonjour`-Plugin is ingeschakeld): laat `cliPath` + `sshPort` weg uit TXT-records.
-- `full`: neem `cliPath` + `sshPort` op; LAN-multicastadvertising vereist nog steeds dat de gebundelde `bonjour`-Plugin is ingeschakeld.
-- `off`: onderdruk LAN-multicastadvertising zonder Plugin-inschakeling te wijzigen.
-- De gebundelde `bonjour`-Plugin start automatisch op macOS-hosts en is opt-in op Linux, Windows en gecontaineriseerde Gateway-deployments.
-- Hostnaam is standaard de systeemhostnaam wanneer die een geldig DNS-label is, met fallback naar `openclaw`. Overschrijf met `OPENCLAW_MDNS_HOSTNAME`.
+- `minimal` (standaard wanneer de gebundelde `bonjour`-plugin is ingeschakeld): laat `cliPath` + `sshPort` weg uit TXT-records.
+- `full`: neem `cliPath` + `sshPort` op; LAN-multicastadvertising vereist nog steeds dat de gebundelde `bonjour`-plugin is ingeschakeld.
+- `off`: onderdruk LAN-multicastadvertising zonder plugininschakeling te wijzigen.
+- De gebundelde `bonjour`-plugin start automatisch op macOS-hosts en is opt-in op Linux, Windows en gecontaineriseerde Gateway-deployments.
+- Hostnaam gebruikt standaard de systeemhostnaam wanneer die een geldig DNS-label is, met fallback naar `openclaw`. Overschrijf met `OPENCLAW_MDNS_HOSTNAME`.
 
-### Breed gebied (DNS-SD)
+### Wide-area (DNS-SD)
 
 ```json5
 {
@@ -809,15 +808,15 @@ Validatie- en veiligheidsnotities:
 }
 ```
 
-Schrijft een unicast DNS-SD-zone onder `~/.openclaw/dns/`. Voor detectie over netwerken heen, combineer met een DNS-server (CoreDNS aanbevolen) + Tailscale split DNS.
+Schrijft een unicast DNS-SD-zone onder `~/.openclaw/dns/`. Voor detectie tussen netwerken combineer je dit met een DNS-server (CoreDNS aanbevolen) + Tailscale split DNS.
 
-Installatie: `openclaw dns setup --apply`.
+Instellen: `openclaw dns setup --apply`.
 
 ---
 
 ## Omgeving
 
-### `env` (inline omgevingsvariabelen)
+### `env` (inline env-vars)
 
 ```json5
 {
@@ -834,14 +833,14 @@ Installatie: `openclaw dns setup --apply`.
 }
 ```
 
-- Inline omgevingsvariabelen worden alleen toegepast als de procesomgeving de sleutel mist.
-- `.env`-bestanden: CWD `.env` + `~/.openclaw/.env` (geen van beide overschrijft bestaande variabelen).
+- Inline env-vars worden alleen toegepast als de process-env de sleutel mist.
+- `.env`-bestanden: CWD `.env` + `~/.openclaw/.env` (geen van beide overschrijft bestaande vars).
 - `shellEnv`: importeert ontbrekende verwachte sleutels uit je login-shellprofiel.
 - Zie [Omgeving](/nl/help/environment) voor de volledige prioriteitsvolgorde.
 
-### Vervanging van omgevingsvariabelen
+### Vervanging van env-vars
 
-Verwijs in elke configuratiereeks naar omgevingsvariabelen met `${VAR_NAME}`:
+Verwijs naar env-vars in elke configuratiereeks met `${VAR_NAME}`:
 
 ```json5
 {
@@ -851,8 +850,8 @@ Verwijs in elke configuratiereeks naar omgevingsvariabelen met `${VAR_NAME}`:
 }
 ```
 
-- Alleen hoofdletternamen komen overeen: `[A-Z_][A-Z0-9_]*`.
-- Ontbrekende/lege variabelen geven een fout bij het laden van de configuratie.
+- Alleen namen in hoofdletters worden gematcht: `[A-Z_][A-Z0-9_]*`.
+- Ontbrekende/lege vars veroorzaken een fout bij het laden van de configuratie.
 - Escape met `$${VAR}` voor een letterlijke `${VAR}`.
 - Werkt met `$include`.
 
@@ -860,7 +859,7 @@ Verwijs in elke configuratiereeks naar omgevingsvariabelen met `${VAR_NAME}`:
 
 ## Geheimen
 
-Geheimverwijzingen zijn additief: platte-tekstwaarden werken nog steeds.
+Secret refs zijn additief: plattetekstwaarden blijven werken.
 
 ### `SecretRef`
 
@@ -876,15 +875,15 @@ Validatie:
 - `source: "env"` id-patroon: `^[A-Z][A-Z0-9_]{0,127}$`
 - `source: "file"` id: absolute JSON-pointer (bijvoorbeeld `"/providers/openai/apiKey"`)
 - `source: "exec"` id-patroon: `^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$`
-- `source: "exec"` ids mogen geen door schuine strepen gescheiden padsegmenten `.` of `..` bevatten (bijvoorbeeld `a/../b` wordt geweigerd)
+- `source: "exec"` ids mogen geen `.`- of `..`-padsegmenten bevatten die door slashes zijn gescheiden (bijvoorbeeld `a/../b` wordt geweigerd)
 
-### Ondersteund oppervlak voor referenties
+### Ondersteund credential-oppervlak
 
-- Canonieke matrix: [SecretRef-referentieoppervlak](/nl/reference/secretref-credential-surface)
-- `secrets apply` richt zich op ondersteunde referentiepaden in `openclaw.json`.
-- `auth-profiles.json`-verwijzingen zijn opgenomen in runtime-resolutie en auditdekking.
+- Canonieke matrix: [SecretRef Credential Surface](/nl/reference/secretref-credential-surface)
+- `secrets apply` richt zich op ondersteunde credential-paden in `openclaw.json`.
+- `auth-profiles.json`-refs worden opgenomen in runtime-resolutie en auditdekking.
 
-### Configuratie van geheimproviders
+### Configuratie van secret providers
 
 ```json5
 {
@@ -914,14 +913,14 @@ Validatie:
 
 Opmerkingen:
 
-- `file`-provider ondersteunt `mode: "json"` en `mode: "singleValue"` (`id` moet `"value"` zijn in singleValue-modus).
-- Paden van file- en exec-providers falen gesloten wanneer Windows ACL-verificatie niet beschikbaar is. Stel `allowInsecurePath: true` alleen in voor vertrouwde paden die niet kunnen worden geverifieerd.
-- `exec`-provider vereist een absoluut `command`-pad en gebruikt protocolpayloads op stdin/stdout.
-- Standaard worden opdrachtpaden met symlinks geweigerd. Stel `allowSymlinkCommand: true` in om symlinkpaden toe te staan terwijl het opgeloste doelpad wordt gevalideerd.
+- De `file`-provider ondersteunt `mode: "json"` en `mode: "singleValue"` (`id` moet `"value"` zijn in singleValue-modus).
+- Paden van file- en exec-providers falen gesloten wanneer Windows-ACL-verificatie niet beschikbaar is. Stel `allowInsecurePath: true` alleen in voor vertrouwde paden die niet kunnen worden geverifieerd.
+- De `exec`-provider vereist een absoluut `command`-pad en gebruikt protocolpayloads op stdin/stdout.
+- Standaard worden symlink-commandopaden geweigerd. Stel `allowSymlinkCommand: true` in om symlinkpaden toe te staan terwijl het opgeloste doelpad wordt gevalideerd.
 - Als `trustedDirs` is geconfigureerd, wordt de trusted-dir-controle toegepast op het opgeloste doelpad.
 - De child-omgeving van `exec` is standaard minimaal; geef vereiste variabelen expliciet door met `passEnv`.
-- Geheimverwijzingen worden tijdens activatie opgelost naar een in-memory snapshot; daarna lezen aanvraagpaden alleen de snapshot.
-- Filtering van actieve oppervlakken is van toepassing tijdens activatie: niet-opgeloste verwijzingen op ingeschakelde oppervlakken laten opstarten/herladen falen, terwijl inactieve oppervlakken met diagnostiek worden overgeslagen.
+- Secret refs worden tijdens activering opgelost naar een in-memory snapshot; daarna lezen aanvraagpaden alleen de snapshot.
+- Active-surface-filtering wordt toegepast tijdens activering: onopgeloste refs op ingeschakelde oppervlakken laten opstarten/herladen mislukken, terwijl inactieve oppervlakken met diagnostiek worden overgeslagen.
 
 ---
 
@@ -943,14 +942,14 @@ Opmerkingen:
 }
 ```
 
-- Profielen per agent worden opgeslagen op `<agentDir>/auth-profiles.json`.
-- `auth-profiles.json` ondersteunt verwijzingen op waardeniveau (`keyRef` voor `api_key`, `tokenRef` voor `token`) voor statische referentiemodi.
+- Per-agent-profielen worden opgeslagen op `<agentDir>/auth-profiles.json`.
+- `auth-profiles.json` ondersteunt refs op waardeniveau (`keyRef` voor `api_key`, `tokenRef` voor `token`) voor statische credential-modi.
 - Legacy platte `auth-profiles.json`-maps zoals `{ "provider": { "apiKey": "..." } }` zijn geen runtime-indeling; `openclaw doctor --fix` herschrijft ze naar canonieke `provider:default` API-key-profielen met een `.legacy-flat.*.bak`-back-up.
-- Profielen in OAuth-modus (`auth.profiles.<id>.mode = "oauth"`) ondersteunen geen door SecretRef ondersteunde auth-profile-referenties.
-- Statische runtime-referenties komen uit in-memory opgeloste snapshots; legacy statische `auth.json`-items worden verwijderd wanneer ze worden ontdekt.
-- Legacy OAuth importeert uit `~/.openclaw/credentials/oauth.json`.
+- Profielen in OAuth-modus (`auth.profiles.<id>.mode = "oauth"`) ondersteunen geen door SecretRef ondersteunde auth-profile-credentials.
+- Statische runtime-credentials komen uit in-memory opgeloste snapshots; legacy statische `auth.json`-vermeldingen worden opgeschoond wanneer ze worden gevonden.
+- Legacy OAuth-imports komen uit `~/.openclaw/credentials/oauth.json`.
 - Zie [OAuth](/nl/concepts/oauth).
-- Runtimegedrag van geheimen en `audit/configure/apply`-tools: [Geheimenbeheer](/nl/gateway/secrets).
+- Runtimegedrag van geheimen en tooling voor `audit/configure/apply`: [Geheimenbeheer](/nl/gateway/secrets).
 
 ### `auth.cooldowns`
 
@@ -972,25 +971,24 @@ Opmerkingen:
 }
 ```
 
-- `billingBackoffHours`: basis-backoff in uren wanneer een profiel mislukt door echte
-  facturerings-/onvoldoende-tegoedfouten (standaard: `5`). Expliciete factureringstekst kan
-  hier nog steeds terechtkomen, zelfs bij `401`/`403`-antwoorden, maar providerspecifieke
-  tekstmatchers blijven beperkt tot de provider die ze bezit (bijvoorbeeld OpenRouter
-  `Key limit exceeded`). Opnieuw te proberen HTTP `402`-berichten over gebruiksvensters of
-  bestedingslimieten voor organisatie/werkruimte blijven in plaats daarvan in het pad
-  `rate_limit`.
-- `billingBackoffHoursByProvider`: optionele overschrijvingen per provider voor facturerings-backoffuren.
-- `billingMaxHours`: bovengrens in uren voor exponentiële groei van facturerings-backoff (standaard: `24`).
-- `authPermanentBackoffMinutes`: basis-backoff in minuten voor `auth_permanent`-mislukkingen met hoge betrouwbaarheid (standaard: `10`).
-- `authPermanentMaxMinutes`: bovengrens in minuten voor groei van `auth_permanent`-backoff (standaard: `60`).
-- `failureWindowHours`: voortschrijdend venster in uren dat wordt gebruikt voor backoff-tellers (standaard: `24`).
-- `overloadedProfileRotations`: maximum aantal auth-profielrotaties binnen dezelfde provider voor overbelastingsfouten voordat wordt overgeschakeld naar model-fallback (standaard: `1`). Provider-bezet-vormen zoals `ModelNotReadyException` komen hier terecht.
-- `overloadedBackoffMs`: vaste vertraging voordat een overbelaste provider-/profielrotatie opnieuw wordt geprobeerd (standaard: `0`).
-- `rateLimitedProfileRotations`: maximum aantal auth-profielrotaties binnen dezelfde provider voor rate-limit-fouten voordat wordt overgeschakeld naar model-fallback (standaard: `1`). Die rate-limit-bucket bevat door providers gevormde tekst zoals `Too many concurrent requests`, `ThrottlingException`, `concurrency limit reached`, `workers_ai ... quota limit exceeded` en `resource exhausted`.
+- `billingBackoffHours`: basis-backoff in uren wanneer een profiel faalt door echte
+  facturerings-/onvoldoende-kredietfouten (standaard: `5`). Expliciete factureringstekst kan
+  hier nog steeds terechtkomen, zelfs bij `401`/`403`-responses, maar providerspecifieke tekst-
+  matchers blijven beperkt tot de provider die ze bezit (bijvoorbeeld OpenRouter
+  `Key limit exceeded`). Retrybare HTTP `402`-berichten voor gebruiksvensters of
+  bestedingslimieten voor organisatie/werkruimte blijven in plaats daarvan in het `rate_limit`-pad.
+- `billingBackoffHoursByProvider`: optionele overrides per provider voor factureringsbackoff-uren.
+- `billingMaxHours`: limiet in uren voor exponentiële groei van factureringsbackoff (standaard: `24`).
+- `authPermanentBackoffMinutes`: basis-backoff in minuten voor `auth_permanent`-fouten met hoge betrouwbaarheid (standaard: `10`).
+- `authPermanentMaxMinutes`: limiet in minuten voor `auth_permanent`-backoffgroei (standaard: `60`).
+- `failureWindowHours`: rollend venster in uren dat wordt gebruikt voor backoff-tellers (standaard: `24`).
+- `overloadedProfileRotations`: maximale auth-profielrotaties bij dezelfde provider voor overbelastingsfouten voordat wordt overgeschakeld naar model-fallback (standaard: `1`). Provider-bezet-vormen zoals `ModelNotReadyException` komen hier terecht.
+- `overloadedBackoffMs`: vaste vertraging voordat een overbelaste provider/profielrotatie opnieuw wordt geprobeerd (standaard: `0`).
+- `rateLimitedProfileRotations`: maximale auth-profielrotaties bij dezelfde provider voor rate-limit-fouten voordat wordt overgeschakeld naar model-fallback (standaard: `1`). Die rate-limit-bucket omvat providergevormde tekst zoals `Too many concurrent requests`, `ThrottlingException`, `concurrency limit reached`, `workers_ai ... quota limit exceeded` en `resource exhausted`.
 
 ---
 
-## Logboekregistratie
+## Logregistratie
 
 ```json5
 {
@@ -1007,9 +1005,9 @@ Opmerkingen:
 
 - Standaard logbestand: `/tmp/openclaw/openclaw-YYYY-MM-DD.log`.
 - Stel `logging.file` in voor een stabiel pad.
-- `consoleLevel` wordt verhoogd naar `debug` wanneer `--verbose`.
-- `maxFileBytes`: maximale grootte van het actieve logbestand in bytes vóór rotatie (positief geheel getal; standaard: `104857600` = 100 MB). OpenClaw bewaart maximaal vijf genummerde archieven naast het actieve bestand.
-- `redactSensitive` / `redactPatterns`: best-effort-maskering voor console-uitvoer, bestandslogs, OTLP-logrecords en opgeslagen sessietranscripttekst. `redactSensitive: "off"` schakelt alleen dit algemene log-/transcriptbeleid uit; UI-/tool-/diagnostische veiligheidsoppervlakken redigeren nog steeds geheimen vóór emissie.
+- `consoleLevel` wordt verhoogd naar `debug` bij `--verbose`.
+- `maxFileBytes`: maximale actieve logbestandsgrootte in bytes vóór rotatie (positief geheel getal; standaard: `104857600` = 100 MB). OpenClaw bewaart maximaal vijf genummerde archieven naast het actieve bestand.
+- `redactSensitive` / `redactPatterns`: best-effort maskering voor console-uitvoer, bestandslogs, OTLP-logrecords en blijvend opgeslagen sessietranscripttekst. `redactSensitive: "off"` schakelt alleen dit algemene log-/transcriptbeleid uit; UI-/tool-/diagnostische veiligheidsoppervlakken redigeren nog steeds geheimen vóór uitstoot.
 
 ---
 
@@ -1060,24 +1058,24 @@ Opmerkingen:
 
 - `enabled`: hoofdschakelaar voor instrumentatie-uitvoer (standaard: `true`).
 - `flags`: array van flagstrings die gerichte loguitvoer inschakelen (ondersteunt jokertekens zoals `"telegram.*"` of `"*"`).
-- `stuckSessionWarnMs`: drempel voor leeftijd zonder voortgang in ms voor het classificeren van langlopende verwerkingssessies als `session.long_running`, `session.stalled` of `session.stuck`. Antwoord-, tool-, status-, blok- en ACP-voortgang resetten de timer; herhaalde `session.stuck`-diagnostiek neemt afstand terwijl er niets verandert.
-- `stuckSessionAbortMs`: drempel voor leeftijd zonder voortgang in ms voordat in aanmerking komend vastgelopen actief werk via abort-drain kan worden hersteld. Wanneer niet ingesteld, gebruikt OpenClaw het veiligere uitgebreide venster voor ingebedde runs van ten minste 10 minuten en 5x `stuckSessionWarnMs`.
+- `stuckSessionWarnMs`: drempel voor leeftijd zonder voortgang in ms om langlopende verwerkende sessies te classificeren als `session.long_running`, `session.stalled` of `session.stuck`. Antwoord-, tool-, status-, blok- en ACP-voortgang resetten de timer; herhaalde `session.stuck`-diagnostiek past backoff toe zolang er niets verandert.
+- `stuckSessionAbortMs`: drempel voor leeftijd zonder voortgang in ms voordat geschikt vastgelopen actief werk abort-drained mag worden voor herstel. Wanneer dit niet is ingesteld, gebruikt OpenClaw het veiligere uitgebreide venster voor ingebedde runs van minimaal 10 minuten en 5x `stuckSessionWarnMs`.
 - `otel.enabled`: schakelt de OpenTelemetry-exportpipeline in (standaard: `false`). Zie [OpenTelemetry-export](/nl/gateway/opentelemetry) voor de volledige configuratie, signaalcatalogus en het privacymodel.
 - `otel.endpoint`: collector-URL voor OTel-export.
 - `otel.tracesEndpoint` / `otel.metricsEndpoint` / `otel.logsEndpoint`: optionele signaalspecifieke OTLP-eindpunten. Wanneer ingesteld, overschrijven ze `otel.endpoint` alleen voor dat signaal.
 - `otel.protocol`: `"http/protobuf"` (standaard) of `"grpc"`.
-- `otel.headers`: extra HTTP-/gRPC-metadataheaders die met OTel-exportverzoeken worden meegestuurd.
+- `otel.headers`: extra HTTP/gRPC-metadataheaders die met OTel-exportrequests worden verzonden.
 - `otel.serviceName`: servicenaam voor resource-attributen.
-- `otel.traces` / `otel.metrics` / `otel.logs`: trace-, metrics- of logexport inschakelen.
+- `otel.traces` / `otel.metrics` / `otel.logs`: schakel trace-, metrics- of logexport in.
 - `otel.sampleRate`: trace-samplingrate `0`-`1`.
 - `otel.flushIntervalMs`: periodiek telemetry-flushinterval in ms.
-- `otel.captureContent`: opt-in vastlegging van ruwe inhoud voor OTEL-spanattributen. Staat standaard uit. Booleaanse waarde `true` legt niet-systeeminhoud van berichten/tools vast; met de objectvorm kun je `inputMessages`, `outputMessages`, `toolInputs`, `toolOutputs` en `systemPrompt` expliciet inschakelen.
-- `OTEL_SEMCONV_STABILITY_OPT_IN=gen_ai_latest_experimental`: omgevingsschakelaar voor de nieuwste experimentele GenAI-spanproviderattributen. Standaard behouden spans het verouderde attribuut `gen_ai.system` voor compatibiliteit; GenAI-metrics gebruiken begrensde semantische attributen.
+- `otel.captureContent`: opt-in vastlegging van ruwe content voor OTEL-spanattributen. Standaard uit. Booleaanse waarde `true` legt niet-systeem-bericht-/toolcontent vast; met de objectvorm kun je `inputMessages`, `outputMessages`, `toolInputs`, `toolOutputs` en `systemPrompt` expliciet inschakelen.
+- `OTEL_SEMCONV_STABILITY_OPT_IN=gen_ai_latest_experimental`: omgevingsschakelaar voor nieuwste experimentele GenAI-spanproviderattributen. Standaard behouden spans het legacy `gen_ai.system`-attribuut voor compatibiliteit; GenAI-metrics gebruiken begrensde semantische attributen.
 - `OPENCLAW_OTEL_PRELOADED=1`: omgevingsschakelaar voor hosts die al een globale OpenTelemetry-SDK hebben geregistreerd. OpenClaw slaat dan het starten/afsluiten van de Plugin-eigen SDK over terwijl diagnostische listeners actief blijven.
-- `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT`, `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT` en `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT`: signaalspecifieke endpoint-env-vars die worden gebruikt wanneer de overeenkomende configuratiesleutel niet is ingesteld.
-- `cacheTrace.enabled`: cache-trace-snapshots loggen voor ingebedde runs (standaard: `false`).
-- `cacheTrace.filePath`: uitvoerpad voor cache-trace-JSONL (standaard: `$OPENCLAW_STATE_DIR/logs/cache-trace.jsonl`).
-- `cacheTrace.includeMessages` / `includePrompt` / `includeSystem`: bepalen wat wordt opgenomen in cache-trace-uitvoer (allemaal standaard: `true`).
+- `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT`, `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT` en `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT`: signaalspecifieke eindpunt-env-vars die worden gebruikt wanneer de overeenkomende configuratiesleutel niet is ingesteld.
+- `cacheTrace.enabled`: log cachetrace-snapshots voor ingebedde runs (standaard: `false`).
+- `cacheTrace.filePath`: uitvoerpad voor cachetrace-JSONL (standaard: `$OPENCLAW_STATE_DIR/logs/cache-trace.jsonl`).
+- `cacheTrace.includeMessages` / `includePrompt` / `includeSystem`: bepalen wat wordt opgenomen in cachetrace-uitvoer (allemaal standaard: `true`).
 
 ---
 
@@ -1100,11 +1098,11 @@ Opmerkingen:
 ```
 
 - `channel`: releasekanaal voor npm-/git-installaties - `"stable"`, `"beta"` of `"dev"`.
-- `checkOnStart`: controleren op npm-updates wanneer de Gateway start (standaard: `true`).
-- `auto.enabled`: automatische update op de achtergrond inschakelen voor pakketinstallaties (standaard: `false`).
-- `auto.stableDelayHours`: minimale vertraging in uren voordat auto-apply voor het stabiele kanaal plaatsvindt (standaard: `6`; max: `168`).
-- `auto.stableJitterHours`: extra uitrolspreidingsvenster voor het stabiele kanaal in uren (standaard: `12`; max: `168`).
-- `auto.betaCheckIntervalHours`: hoe vaak controles voor het bètakanaal worden uitgevoerd, in uren (standaard: `1`; max: `24`).
+- `checkOnStart`: controleer op npm-updates wanneer de Gateway start (standaard: `true`).
+- `auto.enabled`: schakel automatische updates op de achtergrond in voor pakketinstallaties (standaard: `false`).
+- `auto.stableDelayHours`: minimale vertraging in uren voordat automatische toepassing op het stabiele kanaal plaatsvindt (standaard: `6`; max: `168`).
+- `auto.stableJitterHours`: extra uitrolspreidingsvenster in uren voor het stabiele kanaal (standaard: `12`; max: `168`).
+- `auto.betaCheckIntervalHours`: hoe vaak controles voor het bètakanaal worden uitgevoerd in uren (standaard: `1`; max: `24`).
 
 ---
 
@@ -1137,23 +1135,23 @@ Opmerkingen:
 }
 ```
 
-- `enabled`: globale ACP-functiepoort (standaard: `true`; stel in op `false` om ACP-dispatch- en spawn-mogelijkheden te verbergen).
-- `dispatch.enabled`: onafhankelijke poort voor turn-dispatch van ACP-sessies (standaard: `true`). Stel in op `false` om ACP-opdrachten beschikbaar te houden terwijl uitvoering wordt geblokkeerd.
+- `enabled`: globale ACP-featuregate (standaard: `true`; stel in op `false` om ACP-dispatch- en spawnmogelijkheden te verbergen).
+- `dispatch.enabled`: onafhankelijke gate voor ACP-sessieturndispatch (standaard: `true`). Stel in op `false` om ACP-commando's beschikbaar te houden terwijl uitvoering wordt geblokkeerd.
 - `backend`: standaard ACP-runtimebackend-id (moet overeenkomen met een geregistreerde ACP-runtime-Plugin).
-  Installeer eerst de backend-Plugin en, als `plugins.allow` is ingesteld, neem dan de backend-Plugin-id op (bijvoorbeeld `acpx`), anders wordt de ACP-backend niet geladen.
-- `defaultAgent`: fallback ACP-doelagent-id wanneer spawns geen expliciet doel opgeven.
+  Installeer eerst de backend-Plugin en, als `plugins.allow` is ingesteld, neem de backend-Plugin-id op (bijvoorbeeld `acpx`) anders wordt de ACP-backend niet geladen.
+- `defaultAgent`: fallback ACP-doelagent-id wanneer spawns geen expliciet doel specificeren.
 - `allowedAgents`: allowlist van agent-id's die zijn toegestaan voor ACP-runtimesessies; leeg betekent geen aanvullende beperking.
 - `maxConcurrentSessions`: maximaal aantal gelijktijdig actieve ACP-sessies.
 - `stream.coalesceIdleMs`: idle-flushvenster in ms voor gestreamde tekst.
-- `stream.maxChunkChars`: maximale chunkgrootte voordat gestreamde blokprojectie wordt gesplitst.
-- `stream.repeatSuppression`: herhaalde status-/toolregels per turn onderdrukken (standaard: `true`).
-- `stream.deliveryMode`: `"live"` streamt incrementeel; `"final_only"` buffert tot terminale turn-events.
+- `stream.maxChunkChars`: maximale chunkgrootte voordat de projectie van gestreamde blokken wordt gesplitst.
+- `stream.repeatSuppression`: onderdruk herhaalde status-/toolregels per turn (standaard: `true`).
+- `stream.deliveryMode`: `"live"` streamt incrementeel; `"final_only"` buffert tot terminale events van de turn.
 - `stream.hiddenBoundarySeparator`: scheidingsteken vóór zichtbare tekst na verborgen tool-events (standaard: `"paragraph"`).
-- `stream.maxOutputChars`: maximaal aantal assistant-uitvoertekens dat per ACP-turn wordt geprojecteerd.
-- `stream.maxSessionUpdateChars`: maximaal aantal tekens voor geprojecteerde ACP-status-/updateregels.
-- `stream.tagVisibility`: record van tagnamen naar booleaanse zichtbaarheidsoverschrijvingen voor gestreamde events.
-- `runtime.ttlMinutes`: idle-TTL in minuten voor ACP-sessieworkers voordat ze in aanmerking komen voor opschoning.
-- `runtime.installCommand`: optionele installatieopdracht om uit te voeren bij het bootstrappen van een ACP-runtimeomgeving.
+- `stream.maxOutputChars`: maximum aantal assistant-uitvoertekens geprojecteerd per ACP-turn.
+- `stream.maxSessionUpdateChars`: maximum aantal tekens voor geprojecteerde ACP-status-/updateregels.
+- `stream.tagVisibility`: record van tagnamen naar booleaanse zichtbaarheids-overrides voor gestreamde events.
+- `runtime.ttlMinutes`: idle TTL in minuten voor ACP-sessieworkers voordat ze in aanmerking komen voor opschoning.
+- `runtime.installCommand`: optioneel installatiecommando dat wordt uitgevoerd bij het bootstrappen van een ACP-runtimeomgeving.
 
 ---
 
@@ -1169,11 +1167,11 @@ Opmerkingen:
 }
 ```
 
-- `cli.banner.taglineMode` bepaalt de stijl van de banner-tagline:
-  - `"random"` (standaard): roterende grappige/seizoensgebonden taglines.
-  - `"default"`: vaste neutrale tagline (`All your chats, one OpenClaw.`).
-  - `"off"`: geen tagline-tekst (bannertitel/-versie wordt nog steeds getoond).
-- Om de volledige banner te verbergen (niet alleen taglines), stel env `OPENCLAW_HIDE_BANNER=1` in.
+- `cli.banner.taglineMode` beheert de stijl van de bannerslogan:
+  - `"random"` (standaard): roterende grappige/seizoensgebonden slogans.
+  - `"default"`: vaste neutrale slogan (`All your chats, one OpenClaw.`).
+  - `"off"`: geen slogantekst (bannertitel/-versie blijft zichtbaar).
+- Stel env `OPENCLAW_HIDE_BANNER=1` in om de volledige banner te verbergen (niet alleen slogans).
 
 ---
 
@@ -1197,13 +1195,13 @@ Metadata geschreven door begeleide CLI-installatiestromen (`onboard`, `configure
 
 ## Identiteit
 
-Zie de identiteitsvelden van `agents.list` onder [Agent-standaarden](/nl/gateway/config-agents#agent-defaults).
+Zie `agents.list`-identiteitsvelden onder [Agent-standaarden](/nl/gateway/config-agents#agent-defaults).
 
 ---
 
 ## Bridge (legacy, verwijderd)
 
-Huidige builds bevatten de TCP-bridge niet meer. Nodes verbinden via de Gateway WebSocket. `bridge.*`-sleutels maken geen deel meer uit van het configuratieschema (validatie mislukt totdat ze zijn verwijderd; `openclaw doctor --fix` kan onbekende sleutels verwijderen).
+Huidige builds bevatten de TCP-bridge niet meer. Nodes verbinden via de Gateway WebSocket. `bridge.*`-sleutels maken geen deel meer uit van het configuratieschema (validatie faalt totdat ze zijn verwijderd; `openclaw doctor --fix` kan onbekende sleutels verwijderen).
 
 <Accordion title="Legacy bridge-configuratie (historische referentie)">
 
@@ -1231,23 +1229,23 @@ Huidige builds bevatten de TCP-bridge niet meer. Nodes verbinden via de Gateway 
 {
   cron: {
     enabled: true,
-    maxConcurrentRuns: 2, // cron-dispatch + geïsoleerde cron-uitvoering van agent-turn
-    webhook: "https://example.invalid/legacy", // verouderde fallback voor opgeslagen notify:true-taken
-    webhookToken: "replace-with-dedicated-token", // optionele bearer-token voor uitgaande webhook-auth
-    sessionRetention: "24h", // duurstring of false
+    maxConcurrentRuns: 2, // cron dispatch + isolated cron agent-turn execution
+    webhook: "https://example.invalid/legacy", // deprecated fallback for stored notify:true jobs
+    webhookToken: "replace-with-dedicated-token", // optional bearer token for outbound webhook auth
+    sessionRetention: "24h", // duration string or false
     runLog: {
-      maxBytes: "2mb", // standaard 2_000_000 bytes
-      keepLines: 2000, // standaard 2000
+      maxBytes: "2mb", // default 2_000_000 bytes
+      keepLines: 2000, // default 2000
     },
   },
 }
 ```
 
-- `sessionRetention`: hoelang voltooide geïsoleerde cron-uitvoersessies bewaard blijven voordat ze uit `sessions.json` worden opgeschoond. Regelt ook het opschonen van gearchiveerde verwijderde cron-transcripten. Standaard: `24h`; stel in op `false` om uit te schakelen.
-- `runLog.maxBytes`: maximale grootte per uitvoerlogbestand (`cron/runs/<jobId>.jsonl`) voordat opschoning plaatsvindt. Standaard: `2_000_000` bytes.
-- `runLog.keepLines`: nieuwste regels die behouden blijven wanneer opschoning van uitvoerlogs wordt geactiveerd. Standaard: `2000`.
-- `webhookToken`: bearer-token dat wordt gebruikt voor POST-levering via cron-webhook (`delivery.mode = "webhook"`); als dit wordt weggelaten, wordt er geen auth-header verzonden.
-- `webhook`: verouderde legacy fallback-webhook-URL (http/https), alleen gebruikt voor opgeslagen taken die nog steeds `notify: true` hebben.
+- `sessionRetention`: hoelang voltooide geïsoleerde Cron-uitvoeringssessies worden bewaard voordat ze uit `sessions.json` worden verwijderd. Bepaalt ook het opschonen van gearchiveerde verwijderde Cron-transcripties. Standaard: `24h`; stel in op `false` om uit te schakelen.
+- `runLog.maxBytes`: maximale grootte per uitvoeringslogbestand (`cron/runs/<jobId>.jsonl`) voordat er wordt opgeschoond. Standaard: `2_000_000` bytes.
+- `runLog.keepLines`: nieuwste regels die worden behouden wanneer opschoning van het uitvoeringslog wordt geactiveerd. Standaard: `2000`.
+- `webhookToken`: bearer-token gebruikt voor aflevering van Cron-Webhook-POST (`delivery.mode = "webhook"`); als dit wordt weggelaten, wordt er geen auth-header verzonden.
+- `webhook`: verouderde oude fallback-Webhook-URL (http/https), alleen gebruikt voor opgeslagen taken die nog steeds `notify: true` hebben.
 
 ### `cron.retry`
 
@@ -1267,7 +1265,7 @@ Huidige builds bevatten de TCP-bridge niet meer. Nodes verbinden via de Gateway 
 - `backoffMs`: array met backoff-vertragingen in ms voor elke nieuwe poging (standaard: `[30000, 60000, 300000]`; 1-10 items).
 - `retryOn`: fouttypen die nieuwe pogingen activeren - `"rate_limit"`, `"overloaded"`, `"network"`, `"timeout"`, `"server_error"`. Laat weg om alle tijdelijke typen opnieuw te proberen.
 
-Alleen van toepassing op eenmalige cron-taken. Terugkerende taken gebruiken afzonderlijke foutafhandeling.
+Geldt alleen voor eenmalige Cron-taken. Terugkerende taken gebruiken aparte foutafhandeling.
 
 ### `cron.failureAlert`
 
@@ -1286,12 +1284,12 @@ Alleen van toepassing op eenmalige cron-taken. Terugkerende taken gebruiken afzo
 }
 ```
 
-- `enabled`: schakel foutmeldingen in voor cron-taken (standaard: `false`).
-- `after`: opeenvolgende fouten voordat een melding wordt verzonden (positief geheel getal, min: `1`).
-- `cooldownMs`: minimaal aantal milliseconden tussen herhaalde meldingen voor dezelfde taak (niet-negatief geheel getal).
-- `includeSkipped`: tel opeenvolgende overgeslagen uitvoeringen mee voor de meldingsdrempel (standaard: `false`). Overgeslagen uitvoeringen worden afzonderlijk bijgehouden en hebben geen invloed op backoff voor uitvoeringsfouten.
-- `mode`: leveringsmodus - `"announce"` verzendt via een kanaalbericht; `"webhook"` plaatst naar de geconfigureerde webhook.
-- `accountId`: optioneel account- of kanaal-ID om meldingslevering af te bakenen.
+- `enabled`: schakel foutmeldingen voor Cron-taken in (standaard: `false`).
+- `after`: opeenvolgende fouten voordat een melding wordt geactiveerd (positief geheel getal, min: `1`).
+- `cooldownMs`: minimumaantal milliseconden tussen herhaalde meldingen voor dezelfde taak (niet-negatief geheel getal).
+- `includeSkipped`: tel opeenvolgende overgeslagen uitvoeringen mee voor de meldingsdrempel (standaard: `false`). Overgeslagen uitvoeringen worden apart bijgehouden en hebben geen invloed op backoff voor uitvoeringsfouten.
+- `mode`: aflevermodus - `"announce"` verzendt via een kanaalbericht; `"webhook"` post naar de geconfigureerde Webhook.
+- `accountId`: optionele account- of kanaal-id om de aflevering van meldingen af te bakenen.
 
 ### `cron.failureDestination`
 
@@ -1308,45 +1306,45 @@ Alleen van toepassing op eenmalige cron-taken. Terugkerende taken gebruiken afzo
 }
 ```
 
-- Standaardbestemming voor cron-foutmeldingen over alle taken.
+- Standaardbestemming voor Cron-foutmeldingen voor alle taken.
 - `mode`: `"announce"` of `"webhook"`; standaard `"announce"` wanneer er voldoende doelgegevens bestaan.
-- `channel`: kanaal-override voor announce-levering. `"last"` hergebruikt het laatst bekende leveringskanaal.
-- `to`: expliciet announce-doel of webhook-URL. Vereist voor webhook-modus.
-- `accountId`: optionele account-override voor levering.
-- `delivery.failureDestination` per taak overschrijft deze globale standaard.
-- Wanneer er geen globale of taakgebonden foutbestemming is ingesteld, vallen taken die al via `announce` leveren bij fouten terug op dat primaire announce-doel.
+- `channel`: kanaaloverschrijving voor aflevering via announce. `"last"` hergebruikt het laatst bekende afleverkanaal.
+- `to`: expliciet announce-doel of Webhook-URL. Vereist voor Webhook-modus.
+- `accountId`: optionele accountoverschrijving voor aflevering.
+- Per-taak `delivery.failureDestination` overschrijft deze globale standaard.
+- Wanneer er geen globale of per-taak foutbestemming is ingesteld, vallen taken die al via `announce` afleveren bij een fout terug op dat primaire announce-doel.
 - `delivery.failureDestination` wordt alleen ondersteund voor taken met `sessionTarget="isolated"`, tenzij de primaire `delivery.mode` van de taak `"webhook"` is.
 
-Zie [Cron-taken](/nl/automation/cron-jobs). Geïsoleerde cron-uitvoeringen worden bijgehouden als [achtergrondtaken](/nl/automation/tasks).
+Zie [Cron-taken](/nl/automation/cron-jobs). Geïsoleerde Cron-uitvoeringen worden bijgehouden als [achtergrondtaken](/nl/automation/tasks).
 
 ---
 
-## Templatevariabelen voor mediamodellen
+## Sjabloonvariabelen voor mediamodel
 
-Templateplaatsaanduidingen die worden uitgebreid in `tools.media.models[].args`:
+Sjabloonplaatsaanduidingen die worden uitgebreid in `tools.media.models[].args`:
 
-| Variabele          | Beschrijving                                     |
-| ------------------ | ------------------------------------------------ |
-| `{{Body}}`         | Volledige inkomende berichttekst                 |
-| `{{RawBody}}`      | Ruwe tekst (zonder geschiedenis-/afzenderwrappers) |
-| `{{BodyStripped}}` | Tekst waaruit groepsvermeldingen zijn verwijderd |
-| `{{From}}`         | Afzenderidentificatie                            |
-| `{{To}}`           | Bestemmingsidentificatie                         |
-| `{{MessageSid}}`   | Kanaalbericht-ID                                 |
-| `{{SessionId}}`    | Huidige sessie-UUID                              |
-| `{{IsNewSession}}` | `"true"` wanneer een nieuwe sessie is aangemaakt |
-| `{{MediaUrl}}`     | Inkomende media-pseudo-URL                       |
-| `{{MediaPath}}`    | Lokaal mediapad                                  |
-| `{{MediaType}}`    | Mediatype (image/audio/document/…)               |
-| `{{Transcript}}`   | Audiotranscript                                  |
-| `{{Prompt}}`       | Opgeloste mediaprompt voor CLI-items             |
-| `{{MaxChars}}`     | Opgelost maximaal aantal uitvoertekens voor CLI-items |
-| `{{ChatType}}`     | `"direct"` of `"group"`                          |
-| `{{GroupSubject}}` | Groepsonderwerp (naar beste vermogen)            |
-| `{{GroupMembers}}` | Voorvertoning van groepsleden (naar beste vermogen) |
-| `{{SenderName}}`   | Weergavenaam van afzender (naar beste vermogen)  |
+| Variabele          | Beschrijving                                      |
+| ------------------ | ------------------------------------------------- |
+| `{{Body}}`         | Volledige binnenkomende berichttekst              |
+| `{{RawBody}}`      | Ruwe tekst (geen geschiedenis-/afzenderwrappers)  |
+| `{{BodyStripped}}` | Tekst waaruit groepsvermeldingen zijn verwijderd  |
+| `{{From}}`         | Afzender-ID                                       |
+| `{{To}}`           | Bestemmings-ID                                    |
+| `{{MessageSid}}`   | Kanaalbericht-id                                  |
+| `{{SessionId}}`    | Huidige sessie-UUID                               |
+| `{{IsNewSession}}` | `"true"` wanneer een nieuwe sessie is aangemaakt  |
+| `{{MediaUrl}}`     | Binnenkomende media-pseudo-URL                    |
+| `{{MediaPath}}`    | Lokaal mediapad                                   |
+| `{{MediaType}}`    | Mediatype (afbeelding/audio/document/…)           |
+| `{{Transcript}}`   | Audiotranscriptie                                 |
+| `{{Prompt}}`       | Opgeloste mediaprompt voor CLI-items              |
+| `{{MaxChars}}`     | Opgelost maximumaantal uitvoertekens voor CLI-items |
+| `{{ChatType}}`     | `"direct"` of `"group"`                           |
+| `{{GroupSubject}}` | Groepsonderwerp (naar beste vermogen)             |
+| `{{GroupMembers}}` | Voorbeeldweergave van groepsleden (naar beste vermogen) |
+| `{{SenderName}}`   | Weergavenaam van afzender (naar beste vermogen)   |
 | `{{SenderE164}}`   | Telefoonnummer van afzender (naar beste vermogen) |
-| `{{Provider}}`     | Providerhint (whatsapp, telegram, discord, etc.) |
+| `{{Provider}}`     | Providerhint (whatsapp, telegram, discord, enz.)  |
 
 ---
 
@@ -1365,16 +1363,16 @@ Splits configuratie over meerdere bestanden:
 }
 ```
 
-**Merge-gedrag:**
+**Samenvoeggedrag:**
 
-- Enkel bestand: vervangt het omvattende object.
-- Array van bestanden: deep-merged in volgorde (latere overschrijft eerdere).
-- Zusterkeys: samengevoegd na includes (overschrijven opgenomen waarden).
+- Enkel bestand: vervangt het bevattende object.
+- Array met bestanden: diep samengevoegd op volgorde (later overschrijft eerder).
+- Sibling-sleutels: samengevoegd na includes (overschrijven opgenomen waarden).
 - Geneste includes: tot 10 niveaus diep.
-- Paden: worden opgelost relatief ten opzichte van het includende bestand, maar moeten binnen de config-hoofdmap blijven (`dirname` van `openclaw.json`). Absolute/`../`-vormen zijn alleen toegestaan wanneer ze nog steeds binnen die grens worden opgelost.
-- Schrijfacties die eigendom zijn van OpenClaw en slechts één topniveausectie wijzigen die door een single-file include wordt ondersteund, schrijven door naar dat opgenomen bestand. Bijvoorbeeld: `plugins install` werkt `plugins: { $include: "./plugins.json5" }` bij in `plugins.json5` en laat `openclaw.json` intact.
-- Root-includes, include-arrays en includes met zuster-overschrijvingen zijn alleen-lezen voor schrijfacties die eigendom zijn van OpenClaw; die schrijfacties falen gesloten in plaats van de config af te vlakken.
-- Fouten: duidelijke berichten voor ontbrekende bestanden, parsefouten en circulaire includes.
+- Paden: opgelost relatief aan het includende bestand, maar moeten binnen de hoogste configuratiemap blijven (`dirname` van `openclaw.json`). Absolute/`../`-vormen zijn alleen toegestaan wanneer ze nog steeds binnen die grens worden opgelost.
+- Door OpenClaw beheerde schrijfacties die slechts één topniveausectie wijzigen die wordt ondersteund door een include met één bestand, schrijven door naar dat opgenomen bestand. Bijvoorbeeld: `plugins install` werkt `plugins: { $include: "./plugins.json5" }` bij in `plugins.json5` en laat `openclaw.json` intact.
+- Root-includes, include-arrays en includes met sibling-overschrijvingen zijn alleen-lezen voor door OpenClaw beheerde schrijfacties; die schrijfacties falen gesloten in plaats van de configuratie vlak te maken.
+- Fouten: duidelijke berichten voor ontbrekende bestanden, parseerfouten en circulaire includes.
 
 ---
 

@@ -1,25 +1,25 @@
 ---
 read_when:
-    - チャネルの受信経路リファクタリングでコードが増えすぎた理由を監査する
-    - バンドルされた Plugin からコアへ、ルート、コマンド、イベント、アクティベーション、またはアクセスグループポリシーを移動すること
-    - チャネルイングレスヘルパーがバンドルされた Plugin コードを実際に削除するかを確認しています
+    - チャネル受信経路のリファクタリングでコードが増えすぎた理由を監査する
+    - 同梱Pluginからコアへルート、コマンド、イベント、アクティベーション、またはアクセスグループポリシーを移動する
+    - チャネル受信ヘルパーが実際に同梱Pluginコードを削除するかをレビューしています
 sidebarTitle: Ingress core deletion
-summary: 繰り返しのチャネル入力連携コードをコアへ移すための、削除優先の計画。
-title: イングレスコアの削除計画
+summary: 繰り返しのチャネル受信つなぎ込み処理をコアへ移すための削除優先の計画。
+title: Ingress コア削除計画
 x-i18n:
-    generated_at: "2026-05-10T19:51:01Z"
+    generated_at: "2026-05-12T00:59:32Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 71afcf5d4f58c57ecfe7b388325279700a723ec1fcd926f644095106b662c3d0
+    source_hash: 1fdf1e7c9636d02c48c4b5d2b4a51470317dd64e2270c7fae779777c0d787afc
     source_path: refactor/ingress-core.md
     workflow: 16
 ---
 
-# ingress コア削除計画
+# Ingress コア削除計画
 
-ingress リファクタリングは、正味で数千行を追加している間は健全ではありません。コアへの
-集約が意味を持つのは、バンドル済み Plugin の本番コードが小さくなり、
-古いサードパーティ SDK 互換性が SDK/コアの shim に隔離される場合だけです。
+Ingress リファクタリングは、正味で数千行を追加している間は健全ではない。コア
+集中化と見なせるのは、同梱Pluginの本番コードが小さくなり、
+古いサードパーティ SDK 互換性が SDK/コア shim に隔離される場合だけである。
 
 望ましいランタイム形状:
 
@@ -36,13 +36,13 @@ old third-party helper
   -> old return shape preserved
 ```
 
-バンドル済み Plugin は、その型が公開 Plugin API でない限り、ingress をローカルの `AccessResult`、
+同梱Pluginは、その型が公開Plugin APIでない限り、ingress をローカルの `AccessResult`、
 `GroupAccessDecision`、`CommandAuthDecision`、`DmCommandAccess`、または
-`{ allowed, reasonCode }` の形状へ戻す変換を行うべきではありません。
+`{ allowed, reasonCode }` 形状へ戻す変換をしてはならない。
 
 ## 予算
 
-`origin/main` との PR merge-base を基準に測定します。未追跡ファイルも含みます。
+`origin/main` との PR merge-base を基準に測定し、未追跡ファイルも含める。
 
 ```text
 merge-base            1671e7532adb
@@ -75,11 +75,11 @@ total                 needs 775 more net deleted lines
 core production       still +1,876 over standalone budget, unless paid down by plugin deletion
 ```
 
-コメントだけの削除はクリーンアップとして数えません。前回の予算パスは、
-復元された QQBot の説明コメントを含めていたため甘すぎました。このドキュメントでは、
-実行可能コード、docs、test コードの移動のみを追跡します。
+コメントだけの削除はクリーンアップとして数えない。前回の予算パスは、
+復元された QQBot の説明コメントを含めていたため寛大すぎた。この
+ドキュメントでは、実行可能コード/docs/test コードの移動のみを追跡する。
 
-各クリーンアップの波の後に再測定します:
+各クリーンアップの波の後に再測定する:
 
 ```sh
 base=$(git merge-base HEAD origin/main)
@@ -90,8 +90,8 @@ pnpm lint:extensions:no-deprecated-channel-access
 
 ## 診断
 
-最初のパスでは共有 ingress カーネルを追加した後、その横に Plugin ローカルの
-authorization を残しすぎました:
+最初のパスでは共有 ingress カーネルを追加したが、その横に Plugin ローカルの
+認可を残しすぎた:
 
 ```text
 platform facts
@@ -100,19 +100,19 @@ platform facts
   -> plugin-local if/else ladder
 ```
 
-これによりモデルが重複しています。コア本番コードは約 3,376 行増えた一方で、
-バンドル済み Plugin 本番コードは 1,240 行小さくなりました。これは最初のパスよりは良いですが、
-最低予算内には収まっていません。修正方針は引き続き削除優先です:
+これはモデルを重複させている。コア本番コードは約 3,376 行増えた一方で、
+同梱Plugin本番コードは 1,240 行小さくなった。最初のパスよりは良いが、
+最低限の予算内には収まっていない。修正は引き続き削除優先である:
 
 - ingress フィールドの名前を変えるだけの Plugin DTO を削除する
-- wrapper 形状だけをアサートするテストを削除する
-- 同じパッチでバンドル済み Plugin コードを削除する場合にのみコア helper を追加する
+- ラッパー形状だけをアサートするテストを削除する
+- 同じパッチで同梱Pluginコードを削除する場合にのみ、コアヘルパーを追加する
 - 古い SDK 互換性は SDK/コア shim のみに保持する
-- wrapper 削除によって安定した形状が見えた後にコアを再梱包する
+- ラッパー削除によって安定した形状が見えた後にコアを再梱包する
 
 ## ホットスポット
 
-まだ縮小が必要な、正の差分を持つバンドル済み本番ファイル:
+まだ縮小が必要な、正の同梱本番ファイル:
 
 ```text
 extensions/telegram/src/ingress.ts                        +126
@@ -133,65 +133,65 @@ extensions/qqbot/src/engine/commands/slash-command-handler.ts +20
 extensions/telegram/src/bot-handlers.runtime.ts            +19
 ```
 
-このブランチはまだ最低予算内に収まっていません。残りのレビュー関連作業では、
-別のコア抽象を追加する前に、繰り返しの authorization フロー、turn scaffolding、
-または wrapper テストを削除するべきです。
+ブランチはまだ最低限の予算内にない。残っているレビュー関連の作業は、
+別のコア抽象化を追加する前に、重複した認可フロー、turn スキャフォールディング、
+またはラッパーテストを削除するべきである。
 
-## 現在のコード読み取り
+## 現在のコード読解
 
-健全なコア seam はすでに `src/channels/message-access/runtime.ts` に存在します。
-これは identity adapter、有効な allowlist、pairing-store 読み取り、route descriptor、
-command/event preset、access group、そして最終的に解決された
-`ResolvedChannelMessageIngress` projection を所有しています。
+健全なコアのつなぎ目はすでに `src/channels/message-access/runtime.ts` に存在する:
+これは identity アダプター、有効な許可リスト、pairing-store 読み取り、route
+descriptor、command/event プリセット、access group、そして最終的に解決された
+`ResolvedChannelMessageIngress` projection を所有している。
 
-残っている増加分の大半は、その seam の上に積まれた Plugin glue です:
+残っている増加分は、主にそのつなぎ目の上に重ねられた Plugin グルーである:
 
-- `extensions/telegram/src/ingress.ts` はコア decision を Telegram 固有の
-  command/event helper でラップし、その後も call site は事前計算済みの正規化 allowlist と
-  owner list を渡しています。
+- `extensions/telegram/src/ingress.ts` はコア決定を Telegram 固有の
+  command/event ヘルパーでラップし、その後も呼び出し側が事前計算済みの正規化済み
+  許可リストと owner リストを渡している。
 - `extensions/discord/src/monitor/dm-command-auth.ts`、
   `extensions/feishu/src/policy.ts`、`extensions/googlechat/src/monitor-access.ts`、
-  `extensions/matrix/src/matrix/monitor/access-state.ts` は、ingress の横にまだ
-  ローカル policy DTO または legacy decision 名を保持しています。
-- `extensions/signal/src/monitor/access-policy.ts` は Signal の identity 正規化と
-  pairing reply を正しくローカルに保持していますが、直接 ingress を消費する形に畳み込むべき
-  wrapper seam がまだあります。
+  および `extensions/matrix/src/matrix/monitor/access-state.ts` は、ingress の横に
+  ローカル policy DTO またはレガシー decision 名をまだ保持している。
+- `extensions/signal/src/monitor/access-policy.ts` は、Signal の identity 正規化と
+  pairing 応答をローカルに保つ点は正しいが、直接的な ingress 消費へ畳み込むべき
+  ラッパーのつなぎ目がまだある。
 - `extensions/nextcloud-talk/src/inbound.ts`、`extensions/irc/src/inbound.ts`、
   `extensions/qa-channel/src/inbound.ts`、`extensions/zalo/src/monitor.ts`、および
-  `extensions/zalouser/src/monitor.ts` は、ingress カーネル外の共有 turn helper へ移動できる
-  route/envelope/turn 組み立てをまだ繰り返しています。
+  `extensions/zalouser/src/monitor.ts` は、ingress カーネル外の共有 turn ヘルパーへ
+  移せる route/envelope/turn 組み立てをまだ繰り返している。
 
-結論: さらにコードをコアへ移動することが有用なのは、同じパッチでこれらの
-Plugin wrapper レイヤーを削除する場合だけです。wrapper の戻り値を残したまま別の抽象を追加すると、
-同じ過ちを繰り返します。
+結論: コアへさらにコードを移すことが有用なのは、同じパッチでこれらの
+Plugin ラッパーレイヤーを削除する場合だけである。ラッパー戻り値を残したまま
+別の抽象化を追加すると、同じ誤りを繰り返す。
 
 ## 境界
 
-コアは汎用 policy を所有します:
+コアは汎用 policy を所有する:
 
-- allowlist 正規化とマッチング
-- access-group 展開と診断
-- pairing-store DM allowlist 読み取り
-- route、sender、command、event、activation gate
+- 許可リストの正規化とマッチング
+- access-group 展開と diagnostics
+- pairing-store DM 許可リスト読み取り
+- route、sender、command、event、および activation gate
 - admission mapping: dispatch、drop、skip、observe、pairing
-- redacted state、decision、診断、SDK 互換 projection
-- identity、route、command、event、activation、outcome のための再利用可能な汎用 descriptor
+- redacted state、decisions、diagnostics、および SDK compatibility projections
+- identity、route、command、event、activation、および outcomes の再利用可能な汎用 descriptor
 
-Plugin は transport fact と副作用を所有します:
+Pluginは transport facts と副作用を所有する:
 
 - webhook/socket/request の真正性
 - プラットフォーム identity 抽出と API lookup
-- channel 固有の policy default
-- pairing challenge 配信、reply、ack、reaction、typing、media、history、
-  setup、doctor、status、log、およびユーザー向け copy
+- channel 固有の policy デフォルト
+- pairing challenge の配信、replies、acks、reactions、typing、media、history、
+  setup、doctor、status、logs、およびユーザー向けコピー
 
-コアは channel 非依存を維持する必要があります。`src/channels/message-access` 内に
-Discord、Slack、Telegram、Matrix、room、guild、space、API client、または Plugin 固有の default を
-置いてはいけません。
+コアは channel 非依存のままでなければならない: `src/channels/message-access` 内に
+Discord、Slack、Telegram、Matrix、room、guild、space、API client、または
+Plugin 固有のデフォルトを置かない。
 
 ## 受け入れルール
 
-新しいコア helper はすべて、バンドル済み Plugin 本番コードを即座に削除しなければなりません。
+すべての新しいコアヘルパーは、同梱Plugin本番コードを即座に削除しなければならない。
 
 ```text
 one bundled caller        reject; keep plugin-local
@@ -200,93 +200,96 @@ three or more callers     plugin deletion must be at least 2x new core LOC
 compatibility-only helper SDK/core shim only; never bundled hot paths
 ```
 
-次の場合は停止して再設計します:
+以下の場合は停止して設計を見直す:
 
 - Plugin 本番 LOC が増える
-- production の縮小より速く tests が増える
-- バンドル済み hot path が `ResolvedChannelMessageIngress` の名前を変えるだけの DTO を返す
-- コア helper が channel id、platform object、API client、または channel 固有の default を必要とする
+- production の縮小より tests の増加が速い
+- 同梱ホットパスが `ResolvedChannelMessageIngress` の名前を変えるだけの DTO を返す
+- コアヘルパーが channel id、platform object、API client、または channel 固有のデフォルトを必要とする
 
 ## 作業パッケージ
 
 1. 予算を固定する。
-   PR に LOC を載せ、deprecated-ingress lint を green に保ち、cleanup commit に before/after
-   LOC を含めます。
+   PR に LOC を載せ、deprecated-ingress lint を green に保ち、クリーンアップコミットに
+   before/after LOC を含める。
 
-2. 薄い DTO seam を削除する。
-   Plugin ローカル wrapper の戻り値を、`ResolvedChannelMessageIngress`、
-   `senderAccess`、`commandAccess`、`routeAccess`、または `ingress` の直接参照に置き換えます。
-   QQBot、Telegram、Slack、Discord、Signal、Feishu、Matrix、iMessage、Tlon から始めます。
-   wrapper-shape テストを削除し、behavior テストは保持します。
+2. 薄い DTO のつなぎ目を削除する。
+   Plugin ローカルのラッパー戻り値を `ResolvedChannelMessageIngress`、
+   `senderAccess`、`commandAccess`、`routeAccess`、または `ingress` の直接読み取りに
+   置き換える。QQBot、Telegram、Slack、Discord、Signal、Feishu、Matrix、iMessage、
+   Tlon から始める。ラッパー形状テストを削除し、動作テストは保持する。
 
-3. outcome 分類は削除とセットの場合のみ追加する。
+3. 削除を伴う場合にのみ outcome classification を追加する。
    汎用 classifier は `dispatch`、`pairing-required`、`skip-activation`、
-   `drop-command`、`drop-route`、`drop-sender`、および `drop-ingress` を公開してもかまいません。
-   これは reason string ではなく decision graph から導出する必要があり、同じパッチで少なくとも
-   3 つの Plugin を移行しなければなりません。
+   `drop-command`、`drop-route`、`drop-sender`、および `drop-ingress` を公開してよい。
+   これは reason string ではなく decision graph から導出し、同じパッチで少なくとも
+   3 つの Plugin を移行しなければならない。
 
-4. route descriptor builder は削除とセットの場合のみ追加する。
-   汎用 route target と route sender helper は、route が多い Plugin を即座に縮小する場合のみ
-   許容されます: Google Chat、IRC、Microsoft Teams、Nextcloud Talk、Mattermost、Slack、Zalo、
-   Zalo Personal。
+4. 削除を伴う場合にのみ route descriptor builder を追加する。
+   汎用 route target と route sender ヘルパーは、route が重い Plugin を即座に縮小する
+   場合にのみ許容される: Google Chat、IRC、Microsoft Teams、Nextcloud Talk、
+   Mattermost、Slack、Zalo、Zalo Personal。
 
-5. command/event preset は削除とセットの場合のみ追加する。
-   text-command、native-command、callback、origin-subject の形状を集約します。
-   command consumer は、command gate が実行されなかった場合はデフォルトで unauthorized にする必要があります。
-   event は pairing を開始してはいけません。
+5. 削除を伴う場合にのみ command/event プリセットを追加する。
+   text-command、native-command、callback、および origin-subject 形状を集中化する。
+   command consumer は command gate が実行されなかった場合にデフォルトで unauthorized
+   としなければならない。event は pairing を開始してはならない。
 
-6. identity preset は boilerplate を削除できる場合のみ共有する。
-   stable-id、stable-id-plus-aliases、phone/e164、multi-identifier helper は、raw value が
-   adapter input のみに入り、redacted state が opaque id/count を保持する場合に許可されます。
+6. boilerplate を削除する場所でのみ identity プリセットを共有する。
+   stable-id、stable-id-plus-aliases、phone/e164、および multi-identifier ヘルパーは、
+   raw values がアダプター入力のみに入り、redacted state が不透明 ID/counts を保持する場合に許可される。
 
 7. authorized turn assembly を共有する。
-   ingress カーネルの外で、QA Channel、IRC、Nextcloud Talk、Zalo、Zalo Personal から
-   繰り返しの route/envelope/context/reply scaffolding を削除します。
-   コアは route/session/envelope/dispatch sequencing を所有してもかまいませんが、
-   Plugin は delivery と channel 固有 context を保持します。
+   ingress カーネルの外側で、QA Channel、IRC、Nextcloud Talk、Zalo、Zalo Personal から
+   繰り返しの route/envelope/context/reply スキャフォールディングを削除する。
+   コアは route/session/envelope/dispatch sequencing を所有してよい。Pluginは
+   delivery と channel 固有の context を保持する。
 
 8. 互換性を隔離する。
-   deprecated SDK helper は source-compatible のままにしますが、バンドル済み hot path は
-   deprecated ingress や command-auth facade を import してはいけません。
-   互換性テストは、バンドル済み Plugin internals ではなく、fake third-party Plugin を使うべきです。
+   Deprecated SDK ヘルパーはソース互換性を保つが、同梱ホットパスは deprecated ingress
+   または command-auth facade を import してはならない。互換性テストは、同梱Plugin
+   internals ではなく fake third-party plugins を使用するべきである。
 
 9. コアを再梱包する。
-   wrapper 削除後、one-use module を畳み、未使用 export を削除し、互換 projection を
-   hot path から外し、identity、route、command/event、activation、access group、
-   compatibility shim の focused test を維持します。
+   ラッパー削除後、1 回だけ使われる module を畳み、未使用 export を削除し、
+   compatibility projection をホットパス外へ移動し、identity、route、command/event、
+   activation、access groups、および compatibility shims の焦点を絞ったテストを保つ。
 
 ## 削除の波
 
-この順序で実行します。各 wave はバンドル済み本番 LOC を減らす必要があります。
+この順に実行する。各波は同梱 production LOC を下げなければならない。
 
-1. wrapper collapse、期待される Plugin delta: -400 から -600。
+1. ラッパーの畳み込み、期待される Plugin delta: -400 から -600。
    Plugin ローカルの `resolveXAccess`、`resolveXCommandAccess`、および
-   `accessFromIngress` の result type を、`ResolvedChannelMessageIngress` からの直接読み取りに置き換えます。
-   最初の対象: Discord DM command auth、Feishu policy、Matrix access state、Telegram ingress、
-   Signal access policy、QQBot SDK adapter。
+   `accessFromIngress` の結果型を、`ResolvedChannelMessageIngress` からの直接読み取りに
+   置き換える。最初の対象: Discord DM command auth、Feishu policy、Matrix access state、
+   Telegram ingress、Signal access policy、QQBot SDK adapter。
 
-2. 共有 outcome helper、期待される Plugin delta: -200 から -350。
-   少なくとも 3 つの Plugin にまたがる繰り返しの `shouldBlockControlCommand`、pairing、
-   activation skip、route block、sender block の ladder を削除できる場合のみ、汎用 classifier を 1 つ追加します。
+2. 共有 outcome ヘルパー、期待される Plugin delta: -200 から -350。
+   少なくとも 3 つの Plugin にまたがる、繰り返しの `shouldBlockControlCommand`、
+   pairing、activation skip、route block、sender block ladder を削除する場合にのみ、
+   1 つの汎用 classifier を追加する。
 
 3. route descriptor builder、期待される Plugin delta: -200 から -350。
-   繰り返しの route target と route sender descriptor assembly をコア helper に移動します。
-   最初の対象: Google Chat、IRC、Microsoft Teams、Nextcloud Talk、Mattermost、Slack、Zalo、Zalo Personal。
+   繰り返しの route target と route sender descriptor assembly をコアヘルパーへ移す。
+   最初の対象: Google Chat、IRC、Microsoft Teams、Nextcloud Talk、Mattermost、Slack、
+   Zalo、Zalo Personal。
 
-4. turn assembly sharing、期待される Plugin delta: -250 から -450。
-   単純な inbound Plugin には共通の route/session/envelope/dispatch sequencing を使用します。
+4. turn assembly 共有、期待される Plugin delta: -250 から -450。
+   単純な inbound Plugin には共通の route/session/envelope/dispatch sequencing を使う。
    最初の対象: QA Channel、IRC、Nextcloud Talk、Zalo、Zalo Personal。
 
-5. core repack、期待される core delta: -300 から -700。
-   Plugin が runtime projection を直接消費した後、one-use module を削除し、小さなファイルを
-   `runtime.ts` または focused sibling に戻し、SDK compatibility ファイルをバンドル済み hot path から分離して保持します。
+5. コア再梱包、期待される core delta: -300 から -700。
+   Plugin が runtime projections を直接消費した後、1 回だけ使われる module を削除し、
+   小さなファイルを `runtime.ts` または焦点を絞った sibling へ戻してマージし、
+   SDK 互換性ファイルを同梱ホットパスから分離して保つ。
 
-6. test pruning、期待される test delta: -300 から -600。
-   削除された wrapper shape だけをアサートするテストを削除します。
-   command denial、group fallback、origin-subject matching、activation skip、
-   access group、pairing、redaction の behavior テストは保持します。
+6. テストの剪定、期待される test delta: -300 から -600。
+   削除されたラッパー形状だけをアサートするテストを削除する。command denial、
+   group fallback、origin-subject matching、activation skip、access groups、pairing、
+   および redaction の動作テストは保持する。
 
-これらの wave 後に期待される最低限の landing shape:
+これらの波の後に期待される最低限の着地形状:
 
 ```text
 plugin production     <= -1,500
@@ -295,17 +298,17 @@ tests                 <= +500
 total                 <= +2,000
 ```
 
-## 移動してはいけないもの
+## 移動してはならない
 
 プラットフォーム設定のデフォルト、セットアップ UX、doctor/fix の文言、API ルックアップ、
-Slack のオーナー存在確認、Matrix エイリアス/検証処理、Telegram の
+Slack のオーナープレゼンスチェック、Matrix のエイリアス/検証処理、Telegram の
 コールバック解析、コマンド構文解析、ネイティブコマンド登録、リアクション
-ペイロード解析、ペアリング返信、コマンド返信、確認応答、入力中表示、メディア、履歴、
-またはログを移動しないでください。
+ペイロード解析、ペアリング返信、コマンド返信、ACK、入力中表示、メディア、履歴、
+またはログを移動しない。
 
 ## 検証
 
-対象を絞ったローカルループ:
+対象を絞った local loopback:
 
 ```sh
 pnpm lint:extensions:no-deprecated-channel-access
@@ -317,23 +320,23 @@ pnpm check:docs
 git diff --check
 ```
 
-LOC の傾向が予算内に収まったら、広範な変更ゲート/フルスイート証明には Testbox を使用します。
+LOC の傾向が予算内に収まったら、広範な変更ゲート/フルスイートの証明には Testbox を使用する。
 
-各作業パッケージで記録する内容:
+各ワークパッケージは以下を記録する。
 
 - カテゴリ別の変更前/変更後 LOC
-- 削除した Plugin ラッパー
-- 新しいコアヘルパー LOC（ある場合）
+- 削除された Plugin ラッパー
+- 新しいコアヘルパーの LOC（ある場合）
 - 実行した対象テスト
 - 残りのホットスポット一覧
 
-## 終了条件
+## 終了基準
 
-- バンドル済み本番インポートで、非推奨の channel-access または command-auth ファサードを使用していない
-- 互換性コードが SDK/コアシームに分離されている
+- バンドル済み本番インポートが非推奨の channel-access または command-auth ファサードを使っていない
+- 互換性コードが SDK/コアの境界に隔離されている
 - バンドル済み Plugin が ingress projection または汎用 outcome を直接消費する
-- Plugin 本番 LOC が `origin/main` に対して少なくとも 1,500 の純減になっている
-- コア本番 LOC が +1,500 以下である、または超過分が相殺され、合計が
-  +2,000 以下に収まっている
+- Plugin 本番 LOC が `origin/main` に対して少なくとも 1,500 純減している
+- コア本番 LOC が `<= +1,500`、または超過分が全体を
+  `<= +2,000` に保ったまま相殺されている
 - 代表的なテストが、リダクション、ルート、コマンド/イベント、アクティベーション、
-  アクセスグループ、およびチャネル固有のフォールバック動作をカバーしている
+  access-group、およびチャネル固有のフォールバック動作をカバーしている

@@ -1,13 +1,13 @@
 ---
 read_when:
-    - 문서의 전체 구조도를 원합니다
+    - 문서의 전체 구조를 완전히 파악하고 싶습니다
 summary: 모든 OpenClaw 문서로 연결되는 허브
 title: 문서 허브
 x-i18n:
-    generated_at: "2026-05-10T19:51:52Z"
+    generated_at: "2026-05-12T00:59:27Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fdf4128ddb05bb009faec0a21d45933ffb0a3abf5e5ba8dbe1b9710c8eee3bde
+    source_hash: f4675773105bbff55e1f38c8449d688dcefc6ad70d9f5e572193f1e0c638e243
     source_path: start/hubs.md
     workflow: 16
 ---
@@ -16,23 +16,23 @@ x-i18n:
 OpenClaw를 처음 사용하는 경우 [시작하기](/ko/start/getting-started)부터 시작하세요.
 </Note>
 
-왼쪽 탐색에 표시되지 않는 심층 분석 및 참조 문서를 포함하여 모든 페이지를 찾으려면 이 허브들을 사용하세요.
+왼쪽 탐색 메뉴에 표시되지 않는 심층 설명과 참조 문서를 포함해 모든 페이지를 찾으려면 이 허브들을 사용하세요.
 
-## 여기서 시작하기
+## 여기서 시작
 
 - [색인](/ko)
 - [시작하기](/ko/start/getting-started)
 - [온보딩](/ko/start/onboarding)
-- [온보딩(CLI)](/ko/start/wizard)
+- [온보딩 (CLI)](/ko/start/wizard)
 - [설정](/ko/start/setup)
-- [대시보드(로컬 Gateway)](http://127.0.0.1:18789/)
+- [대시보드 (로컬 Gateway)](http://127.0.0.1:18789/)
 - [도움말](/ko/help)
 - [문서 디렉터리](/ko/start/docs-directory)
 - [구성](/ko/gateway/configuration)
 - [구성 예시](/ko/gateway/configuration-examples)
 - [OpenClaw 어시스턴트](/ko/start/openclaw)
 - [쇼케이스](/ko/start/showcase)
-- [세계관](/ko/start/lore)
+- [Lore](/ko/start/lore)
 
 ## 설치 + 업데이트
 
@@ -50,7 +50,7 @@ OpenClaw를 처음 사용하는 경우 [시작하기](/ko/start/getting-started)
 - [에이전트 워크스페이스](/ko/concepts/agent-workspace)
 - [메모리](/ko/concepts/memory)
 - [에이전트 루프](/ko/concepts/agent-loop)
-- [스트리밍 + 청크 분할](/ko/concepts/streaming)
+- [스트리밍 + 청킹](/ko/concepts/streaming)
 - [멀티 에이전트 라우팅](/ko/concepts/multi-agent)
 - [Compaction](/ko/concepts/compaction)
 - [세션](/ko/concepts/session)
@@ -61,8 +61,8 @@ OpenClaw를 처음 사용하는 경우 [시작하기](/ko/start/getting-started)
 - [RPC 어댑터](/ko/reference/rpc)
 - [TypeBox 스키마](/ko/concepts/typebox)
 - [시간대 처리](/ko/concepts/timezone)
-- [Presence](/ko/concepts/presence)
-- [검색 + 전송 방식](/ko/gateway/discovery)
+- [프레즌스](/ko/concepts/presence)
+- [탐색 + 전송](/ko/gateway/discovery)
 - [Bonjour](/ko/gateway/bonjour)
 - [채널 라우팅](/ko/channels/channel-routing)
 - [그룹](/ko/channels/groups)
@@ -114,21 +114,21 @@ OpenClaw를 처음 사용하는 경우 [시작하기](/ko/start/getting-started)
 - [CLI 참조](/ko/cli)
 - [Exec 도구](/ko/tools/exec)
 - [PDF 도구](/ko/tools/pdf)
-- [상승 모드](/ko/tools/elevated)
+- [권한 상승 모드](/ko/tools/elevated)
 - [Cron 작업](/ko/automation/cron-jobs)
-- [자동화 및 작업](/ko/automation)
+- [자동화](/ko/automation)
 - [사고 + 상세 출력](/ko/tools/thinking)
 - [모델](/ko/concepts/models)
 - [하위 에이전트](/ko/tools/subagents)
 - [에이전트 전송 CLI](/ko/tools/agent-send)
 - [터미널 UI](/ko/web/tui)
 - [브라우저 제어](/ko/tools/browser)
-- [브라우저(Linux 문제 해결)](/ko/tools/browser-linux-troubleshooting)
+- [브라우저 (Linux 문제 해결)](/ko/tools/browser-linux-troubleshooting)
 - [투표](/ko/cli/message)
 
-## Nodes, 미디어, 음성
+## Node, 미디어, 음성
 
-- [Nodes 개요](/ko/nodes)
+- [Node 개요](/ko/nodes)
 - [카메라](/ko/nodes/camera)
 - [이미지](/ko/nodes/images)
 - [오디오](/ko/nodes/audio)
@@ -142,11 +142,11 @@ OpenClaw를 처음 사용하는 경우 [시작하기](/ko/start/getting-started)
 - [macOS](/ko/platforms/macos)
 - [iOS](/ko/platforms/ios)
 - [Android](/ko/platforms/android)
-- [Windows(WSL2)](/ko/platforms/windows)
+- [Windows (WSL2)](/ko/platforms/windows)
 - [Linux](/ko/platforms/linux)
 - [웹 표면](/ko/web)
 
-## macOS 컴패니언 앱(고급)
+## macOS 컴패니언 앱 (고급)
 
 - [macOS 개발 설정](/ko/platforms/mac/dev-setup)
 - [macOS 메뉴 막대](/ko/platforms/mac/menu-bar)
@@ -161,16 +161,16 @@ OpenClaw를 처음 사용하는 경우 [시작하기](/ko/start/getting-started)
 - [macOS 권한](/ko/platforms/mac/permissions)
 - [macOS 원격](/ko/platforms/mac/remote)
 - [macOS 서명](/ko/platforms/mac/signing)
-- [macOS Gateway(launchd)](/ko/platforms/mac/bundled-gateway)
+- [macOS Gateway (launchd)](/ko/platforms/mac/bundled-gateway)
 - [macOS XPC](/ko/platforms/mac/xpc)
 - [macOS Skills](/ko/platforms/mac/skills)
 - [macOS Peekaboo](/ko/platforms/mac/peekaboo)
 
-## Plugins
+## Plugin
 
 - [Plugin 개요](/ko/tools/plugin)
-- [Plugin 빌드하기](/ko/plugins/building-plugins)
-- [Plugin 후크](/ko/plugins/hooks)
+- [Plugin 빌드](/ko/plugins/building-plugins)
+- [Plugin 훅](/ko/plugins/hooks)
 - [Plugin 매니페스트](/ko/plugins/manifest)
 - [에이전트 도구](/ko/plugins/building-plugins#registering-agent-tools)
 - [Plugin 번들](/ko/plugins/bundles)

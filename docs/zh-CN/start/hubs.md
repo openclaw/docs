@@ -1,22 +1,22 @@
 ---
 read_when:
     - 你想要一份完整的文档地图
-summary: 链接到所有 OpenClaw 文档的中心页
+summary: 链接到每篇 OpenClaw 文档的汇总页
 title: 文档中心
 x-i18n:
-    generated_at: "2026-05-10T19:49:08Z"
+    generated_at: "2026-05-12T00:59:20Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fdf4128ddb05bb009faec0a21d45933ffb0a3abf5e5ba8dbe1b9710c8eee3bde
+    source_hash: f4675773105bbff55e1f38c8449d688dcefc6ad70d9f5e572193f1e0c638e243
     source_path: start/hubs.md
     workflow: 16
 ---
 
 <Note>
-如果你刚接触 OpenClaw，请从[入门指南](/zh-CN/start/getting-started)开始。
+如果你刚接触 OpenClaw，请从 [入门指南](/zh-CN/start/getting-started) 开始。
 </Note>
 
-使用这些枢纽页面发现每个页面，包括左侧导航中未显示的深入解析和参考文档。
+使用这些枢纽来发现每个页面，包括未出现在左侧导航中的深度解析和参考文档。
 
 ## 从这里开始
 
@@ -25,14 +25,14 @@ x-i18n:
 - [新手引导](/zh-CN/start/onboarding)
 - [新手引导（CLI）](/zh-CN/start/wizard)
 - [设置](/zh-CN/start/setup)
-- [仪表板（本地 Gateway 网关）](http://127.0.0.1:18789/)
+- [仪表盘（本地 Gateway 网关）](http://127.0.0.1:18789/)
 - [帮助](/zh-CN/help)
 - [文档目录](/zh-CN/start/docs-directory)
 - [配置](/zh-CN/gateway/configuration)
 - [配置示例](/zh-CN/gateway/configuration-examples)
 - [OpenClaw 助手](/zh-CN/start/openclaw)
 - [展示](/zh-CN/start/showcase)
-- [传说](/zh-CN/start/lore)
+- [背景故事](/zh-CN/start/lore)
 
 ## 安装 + 更新
 
@@ -46,12 +46,12 @@ x-i18n:
 - [架构](/zh-CN/concepts/architecture)
 - [功能](/zh-CN/concepts/features)
 - [网络枢纽](/zh-CN/network)
-- [Agent 运行时](/zh-CN/concepts/agent)
+- [智能体运行时](/zh-CN/concepts/agent)
 - [Agent 工作区](/zh-CN/concepts/agent-workspace)
 - [记忆](/zh-CN/concepts/memory)
 - [Agent loop](/zh-CN/concepts/agent-loop)
 - [流式传输 + 分块](/zh-CN/concepts/streaming)
-- [多 Agent 路由](/zh-CN/concepts/multi-agent)
+- [多智能体路由](/zh-CN/concepts/multi-agent)
 - [压缩](/zh-CN/concepts/compaction)
 - [会话](/zh-CN/concepts/session)
 - [会话裁剪](/zh-CN/concepts/session-pruning)
@@ -59,7 +59,7 @@ x-i18n:
 - [队列](/zh-CN/concepts/queue)
 - [斜杠命令](/zh-CN/tools/slash-commands)
 - [RPC 适配器](/zh-CN/reference/rpc)
-- [TypeBox 架构](/zh-CN/concepts/typebox)
+- [TypeBox schema](/zh-CN/concepts/typebox)
 - [时区处理](/zh-CN/concepts/timezone)
 - [在线状态](/zh-CN/concepts/presence)
 - [设备发现 + 传输协议](/zh-CN/gateway/discovery)
@@ -99,7 +99,7 @@ x-i18n:
 - [Doctor](/zh-CN/gateway/doctor)
 - [日志记录](/zh-CN/gateway/logging)
 - [沙箱隔离](/zh-CN/gateway/sandboxing)
-- [仪表板](/zh-CN/web/dashboard)
+- [仪表盘](/zh-CN/web/dashboard)
 - [控制 UI](/zh-CN/web/control-ui)
 - [远程访问](/zh-CN/gateway/remote)
 - [远程 Gateway 网关 README](/zh-CN/gateway/remote-gateway-readme)
@@ -114,12 +114,12 @@ x-i18n:
 - [CLI 参考](/zh-CN/cli)
 - [Exec 工具](/zh-CN/tools/exec)
 - [PDF 工具](/zh-CN/tools/pdf)
-- [提权模式](/zh-CN/tools/elevated)
-- [Cron 作业](/zh-CN/automation/cron-jobs)
-- [自动化与任务](/zh-CN/automation)
+- [提升权限模式](/zh-CN/tools/elevated)
+- [Cron 任务](/zh-CN/automation/cron-jobs)
+- [自动化](/zh-CN/automation)
 - [思考 + 详细输出](/zh-CN/tools/thinking)
 - [Models](/zh-CN/concepts/models)
-- [子 Agent](/zh-CN/tools/subagents)
+- [子智能体](/zh-CN/tools/subagents)
 - [Agent 发送 CLI](/zh-CN/tools/agent-send)
 - [终端 UI](/zh-CN/web/tui)
 - [浏览器控制](/zh-CN/tools/browser)
@@ -201,7 +201,7 @@ x-i18n:
 
 - [测试](/zh-CN/reference/test)
 - [发布策略](/zh-CN/reference/RELEASING)
-- [设备模型](/zh-CN/reference/device-models)
+- [设备型号](/zh-CN/reference/device-models)
 
 ## 相关
 

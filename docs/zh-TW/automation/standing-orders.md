@@ -1,94 +1,94 @@
 ---
 read_when:
-    - 設定無需針對每個任務提示即可執行的自主代理工作流程
+    - 設定無需逐項任務提示即可執行的自主代理工作流程
     - 定義代理可獨立執行的事項與需要人工核准的事項
-    - 以清楚的邊界與升級處理規則建構多程式代理程式
-summary: 定義自主代理程式的永久運作權限
+    - 以清楚的邊界與升級處理規則建構多程式代理
+summary: 為自主代理程式定義永久運作權限
 title: 常設指令
 x-i18n:
-    generated_at: "2026-05-10T19:21:07Z"
+    generated_at: "2026-05-12T00:56:16Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3c78a723c296e1b695fd0fa7b0c3dbc3572fcfc1f49d6fadcab7a5a7a44c4b8d
+    source_hash: 3a51baa7aca31cb34b682983374d4d551ed6ab57ae54a5c63e7d044bffeef756
     source_path: automation/standing-orders.md
     workflow: 16
 ---
 
-常駐指令會授予你的代理對已定義程式的**永久操作權限**。你不必每次都提供個別任務指示，而是定義具有明確範圍、觸發條件和升級規則的程式，代理會在這些界線內自主執行。
+長期指令會授予你的代理程式針對已定義方案的**永久操作權限**。你不必每次都給出個別任務指示，而是以明確範圍、觸發條件與升級規則來定義方案，代理程式便會在這些邊界內自主執行。
 
-這就像是每週五告訴助理「寄出週報」，與授予常駐權限之間的差異：「週報由你負責。每週五彙整、寄出，只有在看起來不對勁時才升級處理。」
+這就像是每週五都告訴助理「寄出週報」，與授予長期權限之間的差別：「週報由你負責。每週五彙整、寄出，只有在看起來有問題時才升級處理。」
 
-## 為什麼需要常駐指令
+## 為什麼需要長期指令
 
-**沒有常駐指令時：**
+**沒有長期指令時：**
 
-- 你必須針對每個任務提示代理
-- 代理會在請求之間閒置
-- 例行工作會被忘記或延誤
+- 你必須為每個任務提示代理程式
+- 代理程式會在請求之間閒置
+- 例行工作會被遺忘或延誤
 - 你會成為瓶頸
 
-**有常駐指令時：**
+**有長期指令時：**
 
-- 代理會在已定義的界線內自主執行
-- 例行工作會依排程執行，無需提示
-- 你只需介入例外狀況與核准事項
-- 代理會有效利用閒置時間
+- 代理程式會在已定義邊界內自主執行
+- 例行工作會按排程自動完成，無需提示
+- 你只需介入例外狀況與核准
+- 代理程式會有效利用閒置時間
 
 ## 運作方式
 
-常駐指令定義在你的 [代理工作區](/zh-TW/concepts/agent-workspace)檔案中。建議做法是直接放在 `AGENTS.md` 中（每個工作階段都會自動注入），讓代理始終能在上下文中取得它們。對於較大型的設定，你也可以把它們放在專用檔案中，例如 `standing-orders.md`，並從 `AGENTS.md` 參照它。
+長期指令會定義在你的[代理程式工作區](/zh-TW/concepts/agent-workspace)檔案中。建議做法是直接放在 `AGENTS.md`（每個工作階段都會自動注入）中，讓代理程式永遠能在脈絡中取得這些指令。對於較大型的設定，你也可以將它們放在專用檔案中，例如 `standing-orders.md`，並從 `AGENTS.md` 參照。
 
-每個程式都會指定：
+每個方案會指定：
 
-1. **範圍** - 代理被授權執行的事項
+1. **範圍** - 代理程式被授權執行的事項
 2. **觸發條件** - 何時執行（排程、事件或條件）
-3. **核准關卡** - 採取行動前哪些事項需要人工簽核
+3. **核准關卡** - 行動前需要人工簽核的事項
 4. **升級規則** - 何時停止並尋求協助
 
-代理會在每個工作階段透過工作區啟動檔載入這些指示（完整的自動注入檔案清單請參閱[代理工作區](/zh-TW/concepts/agent-workspace)），並依據它們執行，同時結合 [Cron 工作](/zh-TW/automation/cron-jobs)進行以時間為基礎的強制執行。
+代理程式會透過工作區啟動檔案在每個工作階段載入這些指令（自動注入檔案的完整清單請參閱[代理程式工作區](/zh-TW/concepts/agent-workspace)），並結合 [cron jobs](/zh-TW/automation/cron-jobs) 進行時間型執行。
 
 <Tip>
-將常駐指令放在 `AGENTS.md` 中，以確保每個工作階段都會載入。工作區啟動程序會自動注入 `AGENTS.md`、`SOUL.md`、`TOOLS.md`、`IDENTITY.md`、`USER.md`、`HEARTBEAT.md`、`BOOTSTRAP.md` 和 `MEMORY.md`，但不會注入子目錄中的任意檔案。
+將長期指令放在 `AGENTS.md` 中，以保證每個工作階段都會載入。工作區啟動程序會自動注入 `AGENTS.md`、`SOUL.md`、`TOOLS.md`、`IDENTITY.md`、`USER.md`、`HEARTBEAT.md`、`BOOTSTRAP.md` 與 `MEMORY.md`，但不會注入子目錄中的任意檔案。
 </Tip>
 
-## 常駐指令的結構
+## 長期指令的結構
 
 ```markdown
-## 程式：每週狀態報告
+## Program: Weekly Status Report
 
-**權限：** 彙整資料、產生報告、交付給利害關係人
-**觸發條件：** 每週五下午 4 點（透過 cron job 強制執行）
-**核准關卡：** 標準報告不需要。將異常標記給人工審查。
-**升級：** 如果資料來源無法使用，或指標看起來異常（偏離常態 >2σ）
+**Authority:** Compile data, generate report, deliver to stakeholders
+**Trigger:** Every Friday at 4 PM (enforced via cron job)
+**Approval gate:** None for standard reports. Flag anomalies for human review.
+**Escalation:** If data source is unavailable or metrics look unusual (>2σ from norm)
 
-### 執行步驟
+### Execution steps
 
-1. 從已設定來源提取指標
-2. 與前一週和目標比較
-3. 在 Reports/weekly/YYYY-MM-DD.md 中產生報告
-4. 透過已設定通道傳送摘要
-5. 將完成紀錄寫入 Agent/Logs/
+1. Pull metrics from configured sources
+2. Compare to prior week and targets
+3. Generate report in Reports/weekly/YYYY-MM-DD.md
+4. Deliver summary via configured channel
+5. Log completion to Agent/Logs/
 
-### 不應執行的事項
+### What NOT to do
 
-- 不要將報告傳送給外部人士
-- 不要修改來源資料
-- 不要因為指標看起來不好就略過交付 - 請準確回報
+- Do not send reports to external parties
+- Do not modify source data
+- Do not skip delivery if metrics look bad - report accurately
 ```
 
-## 常駐指令加上 Cron 工作
+## 長期指令加上 cron jobs
 
-常駐指令定義代理被授權執行的**事項**。[Cron 工作](/zh-TW/automation/cron-jobs)定義它發生的**時間**。它們會共同運作：
+長期指令定義代理程式被授權做**什麼**。[Cron jobs](/zh-TW/automation/cron-jobs) 定義事情在**何時**發生。兩者會一起運作：
 
 ```
-常駐指令：「每日收件匣分類由你負責」
+Standing Order: "You own the daily inbox triage"
     ↓
-Cron 工作（每天上午 8 點）：「依常駐指令執行收件匣分類」
+Cron Job (8 AM daily): "Execute inbox triage per standing orders"
     ↓
-代理：讀取常駐指令 → 執行步驟 → 回報結果
+Agent: Reads standing orders → executes steps → reports results
 ```
 
-cron job 提示應參照常駐指令，而不是重複其內容：
+Cron job 提示應參照長期指令，而不是重複其內容：
 
 ```bash
 openclaw cron add \
@@ -99,7 +99,7 @@ openclaw cron add \
   --announce \
   --channel imessage \
   --to "+1XXXXXXXXXX" \
-  --message "依常駐指令執行每日收件匣分類。檢查郵件中的新警示。剖析、分類並保存每個項目。向擁有者回報摘要。升級未知項目。"
+  --message "Execute daily inbox triage per standing orders. Check mail for new alerts. Parse, categorize, and persist each item. Report summary to owner. Escalate unknowns."
 ```
 
 ## 範例
@@ -107,151 +107,151 @@ openclaw cron add \
 ### 範例 1：內容與社群媒體（每週週期）
 
 ```markdown
-## 程式：內容與社群媒體
+## Program: Content & Social Media
 
-**權限：** 撰寫內容草稿、排程貼文、彙整互動報告
-**核准關卡：** 前 30 天所有貼文都需要擁有者審查，之後採常駐核准
-**觸發條件：** 每週週期（週一審查 → 週中草稿 → 週五簡報）
+**Authority:** Draft content, schedule posts, compile engagement reports
+**Approval gate:** All posts require owner review for first 30 days, then standing approval
+**Trigger:** Weekly cycle (Monday review → mid-week drafts → Friday brief)
 
-### 每週週期
+### Weekly cycle
 
-- **週一：** 審查平台指標和受眾互動
-- **週二至週四：** 撰寫社群貼文草稿、建立部落格內容
-- **週五：** 彙整每週行銷簡報 → 交付給擁有者
+- **Monday:** Review platform metrics and audience engagement
+- **Tuesday-Thursday:** Draft social posts, create blog content
+- **Friday:** Compile weekly marketing brief → deliver to owner
 
-### 內容規則
+### Content rules
 
-- 語氣必須符合品牌（請參閱 SOUL.md 或品牌語氣指南）
-- 絕不要在面向公眾的內容中表明自己是 AI
-- 可取得指標時納入指標
-- 著重於對受眾的價值，而非自我宣傳
+- Voice must match the brand (see SOUL.md or brand voice guide)
+- Never identify as AI in public-facing content
+- Include metrics when available
+- Focus on value to audience, not self-promotion
 ```
 
-### 範例 2：財務營運（事件觸發）
+### 範例 2：財務作業（事件觸發）
 
 ```markdown
-## 程式：財務處理
+## Program: Financial Processing
 
-**權限：** 處理交易資料、產生報告、傳送摘要
-**核准關卡：** 分析不需要核准。建議需要擁有者核准。
-**觸發條件：** 偵測到新資料檔案，或排定的每月週期
+**Authority:** Process transaction data, generate reports, send summaries
+**Approval gate:** None for analysis. Recommendations require owner approval.
+**Trigger:** New data file detected OR scheduled monthly cycle
 
-### 新資料到達時
+### When new data arrives
 
-1. 在指定的輸入目錄中偵測新檔案
-2. 剖析並分類所有交易
-3. 與預算目標比較
-4. 標記：異常項目、超過門檻、新的週期性收費
-5. 在指定的輸出目錄中產生報告
-6. 透過已設定通道將摘要交付給擁有者
+1. Detect new file in designated input directory
+2. Parse and categorize all transactions
+3. Compare against budget targets
+4. Flag: unusual items, threshold breaches, new recurring charges
+5. Generate report in designated output directory
+6. Deliver summary to owner via configured channel
 
-### 升級規則
+### Escalation rules
 
-- 單筆項目 > $500：立即警示
-- 類別超出預算 20%：在報告中標記
-- 無法辨識的交易：詢問擁有者分類
-- 重試 2 次後處理仍失敗：回報失敗，不要猜測
+- Single item > $500: immediate alert
+- Category > budget by 20%: flag in report
+- Unrecognizable transaction: ask owner for categorization
+- Failed processing after 2 retries: report failure, do not guess
 ```
 
 ### 範例 3：監控與警示（持續）
 
 ```markdown
-## 程式：系統監控
+## Program: System Monitoring
 
-**權限：** 檢查系統健康狀態、重新啟動服務、傳送警示
-**核准關卡：** 自動重新啟動服務。如果重新啟動失敗兩次則升級。
-**觸發條件：** 每個 Heartbeat 週期
+**Authority:** Check system health, restart services, send alerts
+**Approval gate:** Restart services automatically. Escalate if restart fails twice.
+**Trigger:** Every heartbeat cycle
 
-### 檢查項目
+### Checks
 
-- 服務健康端點有回應
-- 磁碟空間高於門檻
-- 待處理任務未過期（>24 小時）
-- 交付通道可運作
+- Service health endpoints responding
+- Disk space above threshold
+- Pending tasks not stale (>24 hours)
+- Delivery channels operational
 
-### 回應矩陣
+### Response matrix
 
-| 條件             | 動作                     | 是否升級？               |
+| Condition        | Action                   | Escalate?                |
 | ---------------- | ------------------------ | ------------------------ |
-| 服務停機         | 自動重新啟動             | 僅在重新啟動失敗 2 次時 |
-| 磁碟空間 < 10%   | 警示擁有者               | 是                       |
-| 任務過期 > 24h   | 提醒擁有者               | 否                       |
-| 通道離線         | 記錄並在下個週期重試     | 如果離線 > 2 小時        |
+| Service down     | Restart automatically    | Only if restart fails 2x |
+| Disk space < 10% | Alert owner              | Yes                      |
+| Stale task > 24h | Remind owner             | No                       |
+| Channel offline  | Log and retry next cycle | If offline > 2 hours     |
 ```
 
-## 執行-驗證-回報模式
+## 執行、驗證、回報模式
 
-常駐指令與嚴格的執行紀律搭配時效果最好。常駐指令中的每個任務都應遵循此迴圈：
+長期指令搭配嚴格的執行紀律時效果最好。長期指令中的每個任務都應遵循此迴圈：
 
 1. **執行** - 完成實際工作（不要只是確認收到指示）
-2. **驗證** - 確認結果正確（檔案存在、訊息已送達、資料已剖析）
+2. **驗證** - 確認結果正確（檔案存在、訊息已送達、資料已解析）
 3. **回報** - 告訴擁有者完成了什麼，以及驗證了什麼
 
 ```markdown
-### 執行規則
+### Execution rules
 
-- 每個任務都遵循執行-驗證-回報。沒有例外。
-- 「我會去做」不是執行。先做，然後回報。
-- 沒有驗證的「完成」不可接受。請證明。
-- 如果執行失敗：用調整後的方法重試一次。
-- 如果仍然失敗：回報失敗並附上診斷。絕不要靜默失敗。
-- 絕不要無限重試 - 最多 3 次，然後升級。
+- Every task follows Execute-Verify-Report. No exceptions.
+- "I'll do that" is not execution. Do it, then report.
+- "Done" without verification is not acceptable. Prove it.
+- If execution fails: retry once with adjusted approach.
+- If still fails: report failure with diagnosis. Never silently fail.
+- Never retry indefinitely - 3 attempts max, then escalate.
 ```
 
-這個模式可避免最常見的代理失敗模式：確認任務但未完成任務。
+這個模式能防止最常見的代理程式失敗模式：確認收到任務，卻沒有完成。
 
-## 多程式架構
+## 多方案架構
 
-對於管理多個關注領域的代理，請將常駐指令組織為具有明確界線的獨立程式：
+對於管理多個關注領域的代理程式，請將長期指令組織成邊界清楚的獨立方案：
 
 ```markdown
-## 程式 1：[領域 A]（每週）
+## Program 1: [Domain A] (Weekly)
 
 ...
 
-## 程式 2：[領域 B]（每月 + 隨需）
+## Program 2: [Domain B] (Monthly + On-Demand)
 
 ...
 
-## 程式 3：[領域 C]（視需要）
+## Program 3: [Domain C] (As-Needed)
 
 ...
 
-## 升級規則（所有程式）
+## Escalation Rules (All Programs)
 
-- [共同升級條件]
-- [適用於多個程式的核准關卡]
+- [Common escalation criteria]
+- [Approval gates that apply across programs]
 ```
 
-每個程式都應具備：
+每個方案都應具備：
 
 - 自己的**觸發節奏**（每週、每月、事件驅動、持續）
-- 自己的**核准關卡**（某些程式比其他程式需要更多監督）
-- 明確的**界線**（代理應知道一個程式在哪裡結束，另一個程式從哪裡開始）
+- 自己的**核准關卡**（某些方案比其他方案需要更多監督）
+- 清楚的**邊界**（代理程式應知道一個方案在哪裡結束，另一個方案從哪裡開始）
 
-## 最佳做法
+## 最佳實務
 
-### 應該做
+### 建議
 
-- 從狹窄權限開始，並隨信任建立而擴大
-- 為高風險動作定義明確的核准關卡
-- 納入「不應執行的事項」區段 - 界線與權限同等重要
-- 與 Cron 工作結合，以可靠地進行以時間為基礎的執行
-- 每週審查代理日誌，以確認常駐指令確實被遵循
-- 隨著需求演進更新常駐指令 - 它們是活文件
+- 從狹窄權限開始，隨著信任建立再擴大
+- 為高風險行動定義明確的核准關卡
+- 包含「不要做什麼」區段，邊界與權限同樣重要
+- 搭配 cron jobs，以可靠執行時間型任務
+- 每週檢閱代理程式記錄，確認長期指令正在被遵循
+- 隨著需求演進更新長期指令，它們是活文件
 
 ### 避免
 
-- 第一天就授予廣泛權限（「做你認為最好的事」）
-- 略過升級規則 - 每個程式都需要「何時停止並詢問」條款
-- 假設代理會記得口頭指示 - 把所有內容都放進檔案
-- 將多個關注領域混在單一程式中 - 不同領域使用不同程式
-- 忘記用 Cron 工作強制執行 - 沒有觸發條件的常駐指令會變成建議
+- 第一天就授予寬泛權限（「做你認為最好的事」）
+- 省略升級規則，每個方案都需要「何時停止並詢問」條款
+- 假設代理程式會記得口頭指示，請把所有內容寫進檔案
+- 在單一方案中混合多種關注事項，不同領域應使用不同方案
+- 忘記使用 cron jobs 強制執行，沒有觸發條件的長期指令只會變成建議
 
 ## 相關
 
-- [自動化與任務](/zh-TW/automation)：所有自動化機制總覽。
-- [Cron 工作](/zh-TW/automation/cron-jobs)：常駐指令的排程強制執行。
-- [Hook](/zh-TW/automation/hooks)：代理生命週期事件的事件驅動指令碼。
-- [Webhook](/zh-TW/automation/cron-jobs#webhooks)：傳入 HTTP 事件觸發條件。
-- [代理工作區](/zh-TW/concepts/agent-workspace)：常駐指令的所在位置，包括完整的自動注入啟動檔案清單（`AGENTS.md`、`SOUL.md` 等）。
+- [自動化](/zh-TW/automation)：所有自動化機制一覽。
+- [Cron jobs](/zh-TW/automation/cron-jobs)：長期指令的排程執行。
+- [Hooks](/zh-TW/automation/hooks)：用於代理程式生命週期事件的事件驅動指令碼。
+- [Webhooks](/zh-TW/automation/cron-jobs#webhooks)：傳入 HTTP 事件觸發器。
+- [代理程式工作區](/zh-TW/concepts/agent-workspace)：長期指令存放的位置，包括自動注入啟動檔案的完整清單（`AGENTS.md`、`SOUL.md` 等）。

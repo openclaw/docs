@@ -1,243 +1,186 @@
 ---
+doc-schema-version: 1
 read_when:
     - Je wilt begrijpen welke tools OpenClaw biedt
-    - Je moet hulpmiddelen configureren, toestaan of weigeren
-    - Je kiest tussen ingebouwde tools, Skills en plugins
-summary: 'Overzicht van OpenClaw-tools en -plugins: wat de agent kan doen en hoe je deze kunt uitbreiden'
-title: Hulpmiddelen en plugins
+    - Je kiest tussen ingebouwde tools, Skills en Plugins
+    - Je hebt het juiste documentatie-ingangspunt nodig voor toolbeleid, automatisering of agentcoördinatie
+summary: 'Overzicht van OpenClaw-tools, Skills en plugins: wat agenten kunnen aanroepen en hoe je ze uitbreidt'
+title: Overzicht
 x-i18n:
-    generated_at: "2026-05-11T20:53:08Z"
+    generated_at: "2026-05-12T01:00:16Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b12b2d605c8fccb0de378f8a63fb92b8c3bad8abd3edf10bb79632d6ef6089fd
+    source_hash: 94424b04a520009d40d851e46f7ea0e4e914ff39b7d79958194bb123a6ec0b7b
     source_path: tools/index.md
     workflow: 16
 ---
 
-Alles wat de agent doet behalve tekst genereren, gebeurt via **tools**.
-Tools zijn hoe de agent bestanden leest, opdrachten uitvoert, op het web browset, berichten verzendt en met apparaten communiceert.
+Gebruik deze pagina om het juiste Capabilities-oppervlak te kiezen. **Tools** zijn aanroepbare
+acties, **Skills** leren agents hoe ze moeten werken, en **plugins** voegen runtime-
+capabilities toe, zoals tools, providers, kanalen, hooks en verpakte Skills.
 
-## Tools, Skills en Plugins
+Dit is een overzichts- en routeringspagina. Gebruik
+[Tools en aangepaste providers](/nl/gateway/config-tools) voor uitputtend toolbeleid, standaarden,
+groepslidmaatschap, providerbeperkingen en configuratievelden.
 
-OpenClaw heeft drie lagen die samenwerken:
+## Begin hier
+
+Begin voor de meeste agents met de ingebouwde toolcategorieën en pas daarna het beleid aan
+alleen wanneer de agent minder tools mag zien of expliciete hosttoegang nodig heeft.
+
+| Als je dit wilt...                          | Gebruik dit eerst                              | Lees daarna                                                            |
+| ------------------------------------------- | ---------------------------------------------- | ---------------------------------------------------------------------- |
+| Een agent laten handelen met bestaande capabilities | [Ingebouwde tools](#built-in-tool-categories) | [Toolcategorieën](#built-in-tool-categories)                           |
+| Bepalen wat een agent kan aanroepen         | [Toolbeleid](#configure-access-and-approvals) | [Tools en aangepaste providers](/nl/gateway/config-tools)                 |
+| Een agent een workflow leren                | [Skills](#choose-tools-skills-or-plugins)      | [Skills](/nl/tools/skills) en [Skills maken](/nl/tools/creating-skills)      |
+| Een nieuwe integratie of runtime-oppervlak toevoegen | [Plugins](#extend-capabilities)          | [Plugins](/nl/tools/plugin) en [Plugins bouwen](/nl/plugins/building-plugins) |
+| Werk later of op de achtergrond uitvoeren   | [Automatisering](/nl/automation)                  | [Automatiseringsoverzicht](/nl/automation)                                |
+| Meerdere agents of harnassen coördineren    | [Sub-agents](/nl/tools/subagents)                 | [ACP-agents](/nl/tools/acp-agents) en [Agent send](/nl/tools/agent-send)     |
+| Een grote PI-toolcatalogus doorzoeken       | [Tool Search](/nl/tools/tool-search)              | [Tool Search](/nl/tools/tool-search)                                      |
+
+## Kies tools, Skills of plugins
 
 <Steps>
-  <Step title="Tools zijn wat de agent aanroept">
-    Een tool is een getypeerde functie die de agent kan aanroepen (bijv. `exec`, `browser`,
-    `web_search`, `message`). OpenClaw levert een set **ingebouwde tools** mee en
-    Plugins kunnen extra tools registreren.
+  <Step title="Gebruik een tool wanneer de agent moet handelen">
+    Een tool is een getypeerde functie die de agent kan aanroepen, zoals `exec`, `browser`,
+    `web_search`, `message` of `image_generate`. Gebruik tools wanneer de agent
+    gegevens moet lezen, bestanden moet wijzigen, berichten moet verzenden, een provider moet aanroepen of
+    een ander systeem moet bedienen. Zichtbare tools worden naar het model verzonden als gestructureerde functie-
+    definities.
 
-    De agent ziet tools als gestructureerde functiedefinities die naar de model-API worden gestuurd.
-
-  </Step>
-
-  <Step title="Skills leren de agent wanneer en hoe">
-    Een Skill is een markdownbestand (`SKILL.md`) dat in de systeemprompt wordt geïnjecteerd.
-    Skills geven de agent context, beperkingen en stapsgewijze begeleiding voor
-    het effectief gebruiken van tools. Skills staan in je werkruimte, in gedeelde mappen,
-    of worden meegeleverd in Plugins.
-
-    [Skills-referentie](/nl/tools/skills) | [Skills maken](/nl/tools/creating-skills)
+    Het model ziet alleen tools die het actieve profiel, allow/deny-
+    beleid, providerbeperkingen, sandboxstatus, kanaalmachtigingen en
+    pluginbeschikbaarheid doorstaan.
 
   </Step>
 
-  <Step title="Plugins bundelen alles samen">
-    Een Plugin is een pakket dat elke combinatie van mogelijkheden kan registreren:
-    kanalen, modelproviders, tools, Skills, spraak, realtime transcriptie,
-    realtime stem, mediabegrip, afbeeldingsgeneratie, videogeneratie,
-    web-fetch, webzoekopdrachten en meer. Sommige Plugins zijn **core** (meegeleverd met
-    OpenClaw), andere zijn **extern** (door de community gepubliceerd op npm).
+  <Step title="Gebruik een Skill wanneer de agent instructies nodig heeft">
+    Een Skill is een `SKILL.md`-instructiepakket dat in de agentprompt wordt geladen. Gebruik een
+    Skill wanneer de agent de benodigde tools al heeft, maar een herhaalbare
+    workflow, beoordelingsrubriek, opdrachtreeks of operationele beperking nodig heeft.
 
-    [Plugins installeren en configureren](/nl/tools/plugin) | [Bouw je eigen Plugin](/nl/plugins/building-plugins)
+    Skills kunnen zich bevinden in een workspace, gedeelde Skill-directory, beheerde OpenClaw
+    Skill-root of pluginpakket.
+
+    [Skills](/nl/tools/skills) | [Skills maken](/nl/tools/creating-skills) | [Skills-configuratie](/nl/tools/skills-config)
+
+  </Step>
+
+  <Step title="Gebruik een plugin wanneer OpenClaw een nieuwe capability nodig heeft">
+    Een plugin kan tools, Skills, kanalen, modelproviders, spraak, realtime
+    voice, mediageneratie, webzoekfuncties, web fetch, hooks en andere runtime-
+    capabilities toevoegen. Gebruik een plugin wanneer de capability code, referenties,
+    lifecycle-hooks, manifestmetadata of installeerbare packaging heeft. Bestaande
+    plugins kunnen worden geïnstalleerd vanuit ClawHub, npm, git, lokale directory's of
+    archieven.
+
+    [Plugins installeren en configureren](/nl/tools/plugin) | [Plugins bouwen](/nl/plugins/building-plugins) | [Plugin SDK](/nl/plugins/sdk-overview)
 
   </Step>
 </Steps>
 
-## Ingebouwde tools
+## Ingebouwde toolcategorieën
 
-Deze tools worden met OpenClaw meegeleverd en zijn beschikbaar zonder Plugins te installeren:
+De tabel vermeldt representatieve tools zodat je het oppervlak kunt herkennen. Dit is
+niet de volledige beleidsreferentie. Gebruik [Tools en aangepaste providers](/nl/gateway/config-tools)
+voor exacte groepen, standaarden en allow/deny-
+semantiek.
 
-| Tool                                       | Wat het doet                                                          | Pagina                                                       |
-| ------------------------------------------ | --------------------------------------------------------------------- | ------------------------------------------------------------ |
-| `exec` / `process`                         | Shellopdrachten uitvoeren, achtergrondprocessen beheren               | [Exec](/nl/tools/exec), [Exec-goedkeuringen](/nl/tools/exec-approvals) |
-| `code_execution`                           | Gesandboxte externe Python-analyse uitvoeren                          | [Code-uitvoering](/nl/tools/code-execution)                    |
-| `browser`                                  | Een Chromium-browser besturen (navigeren, klikken, screenshot maken)  | [Browser](/nl/tools/browser)                                    |
-| `web_search` / `x_search` / `web_fetch`    | Het web doorzoeken, X-berichten doorzoeken, pagina-inhoud ophalen     | [Web](/nl/tools/web), [Web Fetch](/nl/tools/web-fetch)             |
-| `read` / `write` / `edit`                  | Bestands-I/O in de werkruimte                                         |                                                              |
-| `apply_patch`                              | Bestands-patches met meerdere hunks                                   | [Apply Patch](/nl/tools/apply-patch)                            |
-| `message`                                  | Berichten verzenden via alle kanalen                                  | [Agent Send](/nl/tools/agent-send)                              |
-| `nodes`                                    | Gekoppelde apparaten ontdekken en targeten                            |                                                              |
-| `cron` / `gateway`                         | Geplande taken beheren; de Gateway inspecteren, patchen, herstarten of bijwerken |                                                              |
-| `image` / `image_generate`                 | Afbeeldingen analyseren of genereren                                  | [Afbeeldingsgeneratie](/nl/tools/image-generation)              |
-| `music_generate`                           | Muziektracks genereren                                                | [Muziekgeneratie](/nl/tools/music-generation)                   |
-| `video_generate`                           | Video's genereren                                                     | [Videogeneratie](/nl/tools/video-generation)                    |
-| `tts`                                      | Eenmalige tekst-naar-spraakconversie                                  | [TTS](/nl/tools/tts)                                            |
-| `sessions_*` / `subagents` / `agents_list` | Sessiebeheer, status en subagent-orkestratie                          | [Subagenten](/nl/tools/subagents)                               |
-| `session_status`                           | Lichtgewicht `/status`-achtige terugkoppeling en sessiemodel-override | [Sessietools](/nl/concepts/session-tool)                        |
-
-Voor afbeeldingswerk gebruik je `image` voor analyse en `image_generate` voor generatie of bewerking. Als je `openai/*`, `google/*`, `fal/*` of een andere niet-standaard afbeeldingsprovider target, configureer dan eerst de auth/API-sleutel van die provider.
-
-Voor muziekwerk gebruik je `music_generate`. Als je `google/*`, `minimax/*` of een andere niet-standaard muziekprovider target, configureer dan eerst de auth/API-sleutel van die provider.
-
-Voor videowerk gebruik je `video_generate`. Als je `qwen/*` of een andere niet-standaard videoprovider target, configureer dan eerst de auth/API-sleutel van die provider.
-
-Voor workflow-gestuurde audiogeneratie gebruik je `music_generate` wanneer een Plugin zoals
-ComfyUI dit registreert. Dit staat los van `tts`, dat tekst-naar-spraak is.
-
-`session_status` is de lichtgewicht status-/terugkoppelingstool in de sessiegroep.
-Deze beantwoordt `/status`-achtige vragen over de huidige sessie en kan
-optioneel een model-override per sessie instellen; `model=default` wist die
-override. Net als `/status` kan deze schaarse token-/cachetellers en het
-actieve runtime-modelabel aanvullen vanuit de nieuwste transcriptgebruiksvermelding.
-
-`gateway` is de runtime-tool voor Gateway-bewerkingen die alleen voor de eigenaar is:
-
-- `config.schema.lookup` voor één padgescopeerde configuratiesubtree vóór bewerkingen
-- `config.get` voor de huidige configuratiesnapshot + hash
-- `config.patch` voor gedeeltelijke configuratie-updates met herstart
-- `config.apply` alleen voor volledige configuratievervanging
-- `update.run` voor expliciete zelfupdate + herstart
-
-Voor gedeeltelijke wijzigingen gebruik je bij voorkeur `config.schema.lookup` en daarna `config.patch`. Gebruik
-`config.apply` alleen wanneer je bewust de volledige configuratie vervangt.
-Voor bredere configuratiedocumentatie lees je [Configuratie](/nl/gateway/configuration) en
-[Configuratiereferentie](/nl/gateway/configuration-reference).
-De tool weigert ook `tools.exec.ask` of `tools.exec.security` te wijzigen;
-legacy `tools.bash.*`-aliassen worden genormaliseerd naar dezelfde beschermde exec-paden.
-
-### Door Plugins geleverde tools
-
-Plugins kunnen extra tools registreren. Enkele voorbeelden:
-
-- [Canvas](/nl/plugins/reference/canvas) — experimentele gebundelde plugin voor node Canvas-besturing en A2UI-rendering
-- [Diffs](/nl/tools/diffs) — diffviewer en renderer
-- [LLM-taak](/nl/tools/llm-task) — JSON-only LLM-stap voor gestructureerde uitvoer
-- [Lobster](/nl/tools/lobster) — getypte workflowruntime met hervatbare goedkeuringen
-- [Muziekgeneratie](/nl/tools/music-generation) — gedeelde `music_generate`-tool met workflow-ondersteunde providers
-- [OpenProse](/nl/prose) — markdown-first workfloworkestratie
-- [Tokenjuice](/nl/tools/tokenjuice) — compacte ruisachtige `exec`- en `bash`-toolresultaten
-
-Plugin-tools worden nog steeds gemaakt met `api.registerTool(...)` en gedeclareerd in
-de lijst `contracts.tools` van het pluginmanifest. OpenClaw legt de gevalideerde
-tooldescriptor vast tijdens discovery en cachet deze per pluginbron en contract, zodat
-latere toolplanning het laden van de pluginruntime kan overslaan. Tooluitvoering laadt nog steeds
-de eigenaar-plugin en roept de live geregistreerde implementatie aan.
-
-[Tool zoeken](/nl/tools/tool-search) is het compacte oppervlak
-voor grote catalogi. In plaats van elk OpenClaw-, MCP- of clienttoolschema
-in de prompt te zetten, kan OpenClaw het model een geïsoleerde Node-runtime
-geven met `openclaw.tools.search`, `openclaw.tools.describe` en
-`openclaw.tools.call`. Calls lopen nog steeds terug via de Gateway, zodat toolbeleid,
-goedkeuringen, hooks en sessielogs gezaghebbend blijven.
-
-## Toolconfiguratie
-
-### Toestaan- en weigerenlijsten
-
-Bepaal welke tools de agent kan aanroepen via `tools.allow` / `tools.deny` in
-de configuratie. Weigeren wint altijd van toestaan.
-
-```json5
-{
-  tools: {
-    allow: ["group:fs", "browser", "web_search"],
-    deny: ["exec"],
-  },
-}
-```
-
-OpenClaw faalt gesloten wanneer een expliciete allowlist geen aanroepbare tools oplevert.
-Bijvoorbeeld: `tools.allow: ["query_db"]` werkt alleen als een geladen plugin daadwerkelijk
-`query_db` registreert. Als geen ingebouwde tool, plugin of gebundelde MCP-tool overeenkomt met de
-allowlist, stopt de run vóór de modelaanroep in plaats van door te gaan als een
-text-only run die toolresultaten zou kunnen hallucineren.
-
-### Toolprofielen
-
-`tools.profile` stelt een basis-allowlist in voordat `allow`/`deny` wordt toegepast.
-Override per agent: `agents.list[].tools.profile`.
-
-| Profiel     | Wat het bevat                                                                                                                                     |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `full`      | Alle core- en optionele plugin-tools; onbeperkte basis voor bredere opdracht-/besturingstoegang                                                    |
-| `coding`    | `group:fs`, `group:runtime`, `group:web`, `group:sessions`, `group:memory`, `cron`, `image`, `image_generate`, `music_generate`, `video_generate` |
-| `messaging` | `group:messaging`, `sessions_list`, `sessions_history`, `sessions_send`, `session_status`                                                         |
-| `minimal`   | Alleen `session_status`                                                                                                                           |
+| Categorie              | Gebruik wanneer de agent dit moet...                                           | Representatieve tools                                                | Lees daarna                                                           |
+| ---------------------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Runtime                | Opdrachten uitvoeren, processen beheren of provider-backed Python-analyse gebruiken | `exec`, `process`, `code_execution`                                  | [Exec](/nl/tools/exec), [Code execution](/nl/tools/code-execution)           |
+| Bestanden              | Workspacebestanden lezen en wijzigen                                           | `read`, `write`, `edit`, `apply_patch`                               | [Apply patch](/nl/tools/apply-patch)                                      |
+| Web                    | Het web doorzoeken, X-posts doorzoeken of leesbare pagina-inhoud ophalen       | `web_search`, `x_search`, `web_fetch`                                | [Webtools](/nl/tools/web), [Web fetch](/nl/tools/web-fetch)                  |
+| Browser                | Een browsersessie bedienen                                                     | `browser`                                                            | [Browser](/nl/tools/browser)                                              |
+| Berichten en kanalen   | Antwoorden of kanaalacties verzenden                                           | `message`                                                            | [Agent send](/nl/tools/agent-send)                                        |
+| Sessies en agents      | Sessies inspecteren, werk delegeren, een andere run sturen of status rapporteren | `sessions_*`, `subagents`, `agents_list`, `session_status`           | [Sub-agents](/nl/tools/subagents), [Sessietool](/nl/concepts/session-tool)   |
+| Automatisering         | Werk plannen of reageren op achtergrondgebeurtenissen                          | `cron`, `heartbeat_respond`                                          | [Automatisering](/nl/automation)                                          |
+| Gateway en nodes       | Gateway-status of gekoppelde doelapparaten inspecteren                         | `gateway`, `nodes`                                                   | [Gateway-configuratie](/nl/gateway/configuration), [Nodes](/nl/nodes)        |
+| Media                  | Media analyseren, genereren of uitspreken                                      | `image`, `image_generate`, `music_generate`, `video_generate`, `tts` | [Mediaoverzicht](/nl/tools/media-overview)                                |
+| Grote PI-catalogi      | Veel in aanmerking komende tools zoeken en aanroepen zonder elk schema naar het model te verzenden | `tool_search_code`, `tool_search`, `tool_describe`                   | [Tool Search](/nl/tools/tool-search)                                      |
 
 <Note>
-`tools.profile: "messaging"` is bewust smal voor kanaalgerichte
-agents. Het laat bredere opdracht-/besturingstools weg, zoals filesystem, runtime,
-browser, canvas, nodes, cron en gatewaybesturing. Gebruik `tools.profile: "full"`
-als onbeperkte basis voor bredere opdracht-/besturingstoegang en beperk daarna
-toegang met `tools.allow` / `tools.deny` wanneer nodig.
+Tool Search is een experimenteel PI-agent-oppervlak. Codex-harnasruns gebruiken
+Codex-native codemodus, native tool search, uitgestelde dynamische tools en geneste
+toolaanroepen in plaats van `tools.toolSearch`.
 </Note>
 
-`coding` bevat lichte webtools (`web_search`, `web_fetch`, `x_search`)
-maar niet de volledige browserbesturingstool. Browserautomatisering kan echte
-sessies en ingelogde profielen aansturen, dus voeg deze expliciet toe met
-`tools.alsoAllow: ["browser"]` of een per-agent
-`agents.list[].tools.alsoAllow: ["browser"]`.
+## Door plugins geleverde tools
 
-<Note>
-Het configureren van `tools.exec` of `tools.fs` onder een restrictief profiel (`messaging`, `minimal`) verbreedt de allowlist van het profiel niet impliciet. Voeg expliciete `tools.alsoAllow`-items toe (bijvoorbeeld `["exec", "process"]` voor exec, of `["read", "write", "edit"]` voor fs) wanneer je wilt dat een restrictief profiel die geconfigureerde secties gebruikt. OpenClaw logt een opstartwaarschuwing wanneer een configuratiesectie aanwezig is zonder een overeenkomende `alsoAllow`-toekenning.
-</Note>
+Plugins kunnen aanvullende tools registreren. Plugin-auteurs koppelen tools via
+`api.registerTool(...)` en de `contracts.tools` van het manifest; gebruik
+[Plugin SDK](/nl/plugins/sdk-overview) en [Pluginmanifest](/nl/plugins/manifest)
+voor contractdetails.
 
-De profielen `coding` en `messaging` staan ook geconfigureerde bundle MCP-tools toe
-onder de pluginsleutel `bundle-mcp`. Voeg `tools.deny: ["bundle-mcp"]` toe wanneer je
-wilt dat een profiel zijn normale ingebouwde tools behoudt maar alle geconfigureerde MCP-tools verbergt.
-Het profiel `minimal` bevat geen bundle MCP-tools.
+Veelvoorkomende door plugins geleverde tools zijn:
 
-Voorbeeld (standaard het breedste tooloppervlak):
+- [Diffs](/nl/tools/diffs) voor het renderen van bestands- en markdown-diffs
+- [LLM Task](/nl/tools/llm-task) voor JSON-only workflowstappen
+- [Lobster](/nl/tools/lobster) voor getypeerde workflows met hervatbare goedkeuringen
+- [Tokenjuice](/nl/tools/tokenjuice) voor het compacter maken van lawaaierige `exec`- en `bash`-tool
+  uitvoer
+- [Tool Search](/nl/tools/tool-search) voor het ontdekken en aanroepen van grote tool-
+  catalogi zonder elk schema in de prompt te plaatsen
+- [Canvas](/nl/plugins/reference/canvas) voor node Canvas-besturing en A2UI-
+  rendering
 
-```json5
-{
-  tools: {
-    profile: "full",
-  },
-}
-```
+## Toegang en goedkeuringen configureren
 
-### Toolgroepen
+Toolbeleid wordt afgedwongen vóór de modelaanroep. Als beleid een tool verwijdert, ontvangt het
+model het schema van die tool niet voor de beurt. Een run kan tools verliezen
+door globale configuratie, per-agentconfiguratie, kanaalbeleid, provider-
+beperkingen, sandboxregels, owner-only gating of pluginbeschikbaarheid.
 
-Gebruik `group:*`-afkortingen in allow-/deny-lijsten:
+- [Tools en aangepaste providers](/nl/gateway/config-tools) documenteert toolprofielen,
+  allow/deny-lijsten, providerspecifieke beperkingen, lusdetectie en
+  provider-backed toolinstellingen.
+- [Exec-goedkeuringen](/nl/tools/exec-approvals) documenteert hostopdrachtgoedkeurings-
+  beleid.
+- [Verhoogde exec](/nl/tools/elevated) documenteert gecontroleerde uitvoering buiten de
+  sandbox.
+- [Sandbox versus toolbeleid versus verhoogd](/nl/gateway/sandbox-vs-tool-policy-vs-elevated) legt uit welke laag bestands- en procestoegang beheert.
+- [Per-agent sandbox- en toolbeperkingen](/nl/tools/multi-agent-sandbox-tools)
+  documenteert agentspecifieke beperkingen voor gedelegeerde runs.
 
-| Groep              | Hulpmiddelen                                                                                              |
-| ------------------ | --------------------------------------------------------------------------------------------------------- |
-| `group:runtime`    | exec, process, code_execution (`bash` wordt geaccepteerd als alias voor `exec`)                           |
-| `group:fs`         | read, write, edit, apply_patch                                                                            |
-| `group:sessions`   | sessions_list, sessions_history, sessions_send, sessions_spawn, sessions_yield, subagents, session_status |
-| `group:memory`     | memory_search, memory_get                                                                                 |
-| `group:web`        | web_search, x_search, web_fetch                                                                           |
-| `group:ui`         | browser, canvas wanneer de gebundelde Canvas-Plugin is ingeschakeld                                       |
-| `group:automation` | heartbeat_respond, cron, gateway                                                                          |
-| `group:messaging`  | message                                                                                                   |
-| `group:nodes`      | nodes                                                                                                     |
-| `group:agents`     | agents_list, update_plan                                                                                  |
-| `group:media`      | image, image_generate, music_generate, video_generate, tts                                                |
-| `group:openclaw`   | Alle ingebouwde OpenClaw-hulpmiddelen (exclusief Plugin-hulpmiddelen)                                     |
+## Capabilities uitbreiden
 
-`sessions_history` retourneert een begrensde, op veiligheid gefilterde recall-weergave. Het verwijdert
-denktags, `<relevant-memories>`-scaffolding, XML-payloads voor plattetekst-tool-calls
-(inclusief `<tool_call>...</tool_call>`,
-`<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`,
-`<function_calls>...</function_calls>` en afgekorte tool-call-blokken),
-gedegradeerde tool-call-scaffolding, gelekte ASCII-/full-width modelbesturingstokens
-en ongeldige MiniMax-tool-call-XML uit assistenttekst, en past daarna
-redactie/afkapping en mogelijke placeholders voor te grote rijen toe in plaats van te fungeren
-als een ruwe transcriptdump.
+Kies het uitbreidingspad op basis van de taak die OpenClaw moet uitvoeren:
 
-### Providerspecifieke beperkingen
+- Installeer of beheer een bestaande plugin met [Plugins](/nl/tools/plugin).
+- Bouw een nieuwe integratie, provider, kanaal, tool of hook met
+  [Plugins bouwen](/nl/plugins/building-plugins).
+- Voeg herbruikbare agentinstructies toe of stem ze af met [Skills](/nl/tools/skills) en
+  [Skills maken](/nl/tools/creating-skills).
+- Verpak herbruikbaar workflowmateriaal met
+  [Skill workshop](/nl/plugins/skill-workshop) wanneer de workflow thuishoort in een
+  door een plugin gedistribueerde Skill-bundel.
+- Gebruik [Plugin SDK](/nl/plugins/sdk-overview) en [Pluginmanifest](/nl/plugins/manifest) wanneer je implementatiecontracten nodig hebt.
 
-Gebruik `tools.byProvider` om hulpmiddelen voor specifieke providers te beperken zonder
-globale standaardwaarden te wijzigen:
+## Ontbrekende tools oplossen
 
-```json5
-{
-  tools: {
-    profile: "coding",
-    byProvider: {
-      "google-antigravity": { profile: "minimal" },
-    },
-  },
-}
-```
+Als het model een tool niet kan zien of aanroepen, begin dan met het effectieve beleid voor de
+huidige beurt:
+
+1. Controleer het actieve profiel, `tools.allow` en `tools.deny` in
+   [Tools en aangepaste providers](/nl/gateway/config-tools).
+2. Controleer providerspecifieke beperkingen in
+   [Tools en aangepaste providers](/nl/gateway/config-tools) en bevestig dat de geselecteerde
+   [modelprovider](/nl/concepts/model-providers) de toolvorm ondersteunt.
+3. Controleer kanaalmachtigingen, sandboxstatus en verhoogde toegang met
+   [Sandbox versus toolbeleid versus verhoogd](/nl/gateway/sandbox-vs-tool-policy-vs-elevated) en [Verhoogde exec](/nl/tools/elevated).
+4. Controleer of de eigenaarplugin is geïnstalleerd en ingeschakeld in
+   [Plugins](/nl/tools/plugin).
+5. Controleer voor gedelegeerde runs de per-agentbeperkingen in
+   [Per-agent sandbox- en toolbeperkingen](/nl/tools/multi-agent-sandbox-tools).
+6. Bevestig voor grote PI-catalogi of de run directe toolblootstelling of
+   [Tool Search](/nl/tools/tool-search) gebruikt.
+
+## Gerelateerd
+
+- [Automatisering](/nl/automation) voor cron, taken, Heartbeat, commitments, hooks, standing orders en Task Flow
+- [Agents](/nl/concepts/agent) voor het agentmodel, sessies, geheugen en multi-agentcoördinatie
+- [Tools en aangepaste providers](/nl/gateway/config-tools) voor de canonieke toolbeleidsreferentie
+- [Plugins](/nl/tools/plugin) voor plugininstallatie en -beheer
+- [Plugin SDK](/nl/plugins/sdk-overview) voor de referentie voor pluginauteurs
+- [Skills](/nl/tools/skills) voor Skill-laadvolgorde, gating en configuratie
+- [Tool Search](/nl/tools/tool-search) voor compacte ontdekking van PI-toolcatalogi

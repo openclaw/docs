@@ -1,16 +1,16 @@
 ---
-summary: Перенаправлення до /automation
+summary: Переспрямування на /automation
 title: Cron проти Heartbeat
 x-i18n:
-    generated_at: "2026-04-27T06:22:15Z"
-    model: gpt-5.4
+    generated_at: "2026-05-12T00:55:54Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 4a4951f926f9050a9bd33b338cf4cd1869d73b9c3e7222349ea8265b959f41b4
+    source_hash: a93d407245c1dcf2632198c5f1c53406e6b8fc419250ff9901d55e59716c7f0d
     source_path: automation/cron-vs-heartbeat.md
-    workflow: 15
+    workflow: 16
 ---
 
-Посібник із вибору між Cron і Heartbeat розміщено в розділі [Автоматизація та завдання](/uk/automation).
+Посібник із вибору між Cron і Heartbeat розміщено в розділі [Автоматизація](/uk/automation).
 
 ## Пов’язане
 

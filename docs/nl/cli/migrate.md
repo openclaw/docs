@@ -1,24 +1,24 @@
 ---
 read_when:
     - Je wilt migreren van Hermes of een ander agentsysteem naar OpenClaw
-    - Je voegt een migratieprovider toe die eigendom is van de Plugin
-summary: CLI-referentie voor `openclaw migrate` (toestand importeren uit een ander agentsysteem)
+    - Je voegt een Plugin-eigen migratieprovider toe
+summary: CLI-referentie voor `openclaw migrate` (toestand importeren vanuit een ander agentsysteem)
 title: Migreren
 x-i18n:
-    generated_at: "2026-05-10T19:29:13Z"
+    generated_at: "2026-05-12T00:58:11Z"
     model: gpt-5.5
     provider: openai
-    source_hash: bb32f993d2412a97a1f91bf3f2b3ca1a653d1db3db75aa90d3b834bdc6acbb95
+    source_hash: 95d31d2995d426c7886700c9e0e6c6fa0c013a27c0bfe7cf91380c8029d6df89
     source_path: cli/migrate.md
     workflow: 16
 ---
 
 # `openclaw migrate`
 
-Importeer status vanuit een ander agentsysteem via een migratieprovider die eigendom is van een Plugin. Gebundelde providers dekken de status van Codex CLI, [Claude](/nl/install/migrating-claude) en [Hermes](/nl/install/migrating-hermes); Plugins van derden kunnen extra providers registreren.
+Importeer status uit een ander agentsysteem via een migratieprovider die eigendom is van een plugin. Meegeleverde providers ondersteunen Codex CLI-status, [Claude](/nl/install/migrating-claude) en [Hermes](/nl/install/migrating-hermes); plugins van derden kunnen aanvullende providers registreren.
 
 <Tip>
-Zie [Migreren vanaf Claude](/nl/install/migrating-claude) en [Migreren vanaf Hermes](/nl/install/migrating-hermes) voor gebruikersgerichte stappenplannen. De [migratiehub](/nl/install/migrating) vermeldt alle paden.
+Zie voor gebruikersgerichte handleidingen [Migreren vanuit Claude](/nl/install/migrating-claude) en [Migreren vanuit Hermes](/nl/install/migrating-hermes). De [migratiehub](/nl/install/migrating) vermeldt alle paden.
 </Tip>
 
 ## Opdrachten
@@ -43,37 +43,37 @@ openclaw onboard --import-from hermes --import-source ~/.hermes
 ```
 
 <ParamField path="<provider>" type="string">
-  Naam van een geregistreerde migratieprovider, bijvoorbeeld `hermes`. Voer `openclaw migrate list` uit om geinstalleerde providers te bekijken.
+  Naam van een geregistreerde migratieprovider, bijvoorbeeld `hermes`. Voer `openclaw migrate list` uit om geïnstalleerde providers te bekijken.
 </ParamField>
 <ParamField path="--dry-run" type="boolean">
-  Bouw het plan op en sluit af zonder status te wijzigen.
+  Bouw het plan en sluit af zonder de status te wijzigen.
 </ParamField>
 <ParamField path="--from <path>" type="string">
   Overschrijf de bronmap voor status. Hermes gebruikt standaard `~/.hermes`.
 </ParamField>
 <ParamField path="--include-secrets" type="boolean">
-  Importeer ondersteunde inloggegevens. Standaard uitgeschakeld.
+  Importeer ondersteunde aanmeldgegevens. Standaard uitgeschakeld.
 </ParamField>
 <ParamField path="--overwrite" type="boolean">
-  Sta toe dat toepassen bestaande doelen vervangt wanneer het plan conflicten meldt.
+  Sta toe dat toepassen bestaande doelen vervangt wanneer het plan conflicten rapporteert.
 </ParamField>
 <ParamField path="--yes" type="boolean">
   Sla de bevestigingsprompt over. Vereist in niet-interactieve modus.
 </ParamField>
 <ParamField path="--skill <name>" type="string">
-  Selecteer een skill-kopieeritem op skillnaam of item-id. Herhaal de vlag om meerdere skills te migreren. Wanneer dit wordt weggelaten, tonen interactieve Codex-migraties een selectievakjeskiezer en behouden niet-interactieve migraties alle geplande skills.
+  Selecteer één skill-kopieeritem op skillnaam of item-id. Herhaal de vlag om meerdere skills te migreren. Wanneer dit wordt weggelaten, tonen interactieve Codex-migraties een selectievakjeskiezer en behouden niet-interactieve migraties alle geplande skills.
 </ParamField>
 <ParamField path="--plugin <name>" type="string">
-  Selecteer een installatie-item voor een Codex-Plugin op Plugin-naam of item-id. Herhaal de vlag om meerdere Codex-Plugins te migreren. Wanneer dit wordt weggelaten, tonen interactieve Codex-migraties een native Codex Plugin-selectievakjeskiezer en behouden niet-interactieve migraties alle geplande Plugins. Dit geldt alleen voor brongeinstalleerde `openai-curated` Codex-Plugins die door de inventaris van de Codex-appserver zijn ontdekt.
+  Selecteer één Codex-plugininstallatie-item op pluginnaam of item-id. Herhaal de vlag om meerdere Codex-plugins te migreren. Wanneer dit wordt weggelaten, tonen interactieve Codex-migraties een native Codex-pluginselectievakjeskiezer en behouden niet-interactieve migraties alle geplande plugins. Dit geldt alleen voor brongeïnstalleerde `openai-curated` Codex-plugins die door de Codex app-serverinventaris zijn gevonden.
 </ParamField>
 <ParamField path="--no-backup" type="boolean">
-  Sla de backup voorafgaand aan toepassen over. Vereist `--force` wanneer lokale OpenClaw-status bestaat.
+  Sla de back-up vóór toepassen over. Vereist `--force` wanneer lokale OpenClaw-status bestaat.
 </ParamField>
 <ParamField path="--force" type="boolean">
-  Vereist naast `--no-backup` wanneer toepassen anders zou weigeren om de backup over te slaan.
+  Vereist naast `--no-backup` wanneer toepassen anders zou weigeren de back-up over te slaan.
 </ParamField>
 <ParamField path="--json" type="boolean">
-  Druk het plan of toepassingsresultaat af als JSON. Met `--json` en zonder `--yes` drukt toepassen het plan af en wijzigt het geen status.
+  Druk het plan of het toepassingsresultaat af als JSON. Met `--json` en zonder `--yes` drukt toepassen het plan af en wijzigt het de status niet.
 </ParamField>
 
 ## Veiligheidsmodel
@@ -81,75 +81,75 @@ openclaw onboard --import-from hermes --import-source ~/.hermes
 `openclaw migrate` werkt eerst met een voorbeeldweergave.
 
 <AccordionGroup>
-  <Accordion title="Voorbeeld bekijken voor toepassen">
-    De provider retourneert een uitgesplitst plan voordat er iets verandert, inclusief conflicten, overgeslagen items en gevoelige items. JSON-plannen, toepassingsuitvoer en migratierapporten redigeren geneste sleutels die op geheimen lijken, zoals API-sleutels, tokens, autorisatieheaders, cookies en wachtwoorden.
+  <Accordion title="Preview before apply">
+    De provider retourneert een gespecificeerd plan voordat er iets verandert, inclusief conflicten, overgeslagen items en gevoelige items. JSON-plannen, toepassingsuitvoer en migratierapporten redigeren geneste sleutels die op geheimen lijken, zoals API-sleutels, tokens, autorisatieheaders, cookies en wachtwoorden.
 
-    `openclaw migrate apply <provider>` toont eerst een voorbeeld van het plan en vraagt om bevestiging voordat status wordt gewijzigd, tenzij `--yes` is ingesteld. In niet-interactieve modus vereist toepassen `--yes`.
+    `openclaw migrate apply <provider>` toont een voorbeeld van het plan en vraagt om bevestiging voordat de status wordt gewijzigd, tenzij `--yes` is ingesteld. In niet-interactieve modus vereist toepassen `--yes`.
 
   </Accordion>
   <Accordion title="Backups">
-    Toepassen maakt en verifieert een OpenClaw-backup voordat de migratie wordt toegepast. Als er nog geen lokale OpenClaw-status bestaat, wordt de backupstap overgeslagen en kan de migratie doorgaan. Geef zowel `--no-backup` als `--force` door om een backup over te slaan wanneer status bestaat.
+    Toepassen maakt en verifieert een OpenClaw-back-up voordat de migratie wordt toegepast. Als er nog geen lokale OpenClaw-status bestaat, wordt de back-upstap overgeslagen en kan de migratie doorgaan. Geef zowel `--no-backup` als `--force` door om een back-up over te slaan wanneer er status bestaat.
   </Accordion>
-  <Accordion title="Conflicten">
-    Toepassen weigert door te gaan wanneer het plan conflicten bevat. Controleer het plan en voer daarna opnieuw uit met `--overwrite` als het vervangen van bestaande doelen de bedoeling is. Providers kunnen nog steeds backups op itemniveau voor overschreven bestanden wegschrijven in de map met migratierapporten.
+  <Accordion title="Conflicts">
+    Toepassen weigert door te gaan wanneer het plan conflicten heeft. Controleer het plan en voer daarna opnieuw uit met `--overwrite` als het vervangen van bestaande doelen de bedoeling is. Providers kunnen nog steeds back-ups op itemniveau schrijven voor overschreven bestanden in de map met migratierapporten.
   </Accordion>
-  <Accordion title="Geheimen">
-    Geheimen worden standaard nooit geimporteerd. Gebruik `--include-secrets` om ondersteunde inloggegevens te importeren.
+  <Accordion title="Secrets">
+    Geheimen worden standaard nooit geïmporteerd. Gebruik `--include-secrets` om ondersteunde aanmeldgegevens te importeren.
   </Accordion>
 </AccordionGroup>
 
 ## Claude-provider
 
-De gebundelde Claude-provider detecteert standaard Claude Code-status op `~/.claude`. Gebruik `--from <path>` om een specifieke Claude Code-home of projectroot te importeren.
+De meegeleverde Claude-provider detecteert Claude Code-status standaard op `~/.claude`. Gebruik `--from <path>` om een specifieke Claude Code-home of projectroot te importeren.
 
 <Tip>
-Zie [Migreren vanaf Claude](/nl/install/migrating-claude) voor een gebruikersgericht stappenplan.
+Zie voor een gebruikersgerichte handleiding [Migreren vanuit Claude](/nl/install/migrating-claude).
 </Tip>
 
 ### Wat Claude importeert
 
-- Project-`CLAUDE.md` en `.claude/CLAUDE.md` naar de OpenClaw-agentwerkruimte.
-- Gebruikers-`~/.claude/CLAUDE.md` toegevoegd aan werkruimte-`USER.md`.
+- Project-`CLAUDE.md` en `.claude/CLAUDE.md` naar de OpenClaw-agentworkspace.
+- Gebruikers-`~/.claude/CLAUDE.md` toegevoegd aan workspace-`USER.md`.
 - MCP-serverdefinities uit project-`.mcp.json`, Claude Code `~/.claude.json` en Claude Desktop `claude_desktop_config.json`.
 - Claude-skillmappen die `SKILL.md` bevatten.
 - Claude-opdracht-Markdown-bestanden geconverteerd naar OpenClaw-skills met alleen handmatige aanroep.
 
-### Gearchiveerde status en status voor handmatige beoordeling
+### Archief- en handmatige-beoordelingsstatus
 
-Claude-hooks, machtigingen, omgevingsstandaarden, lokaal geheugen, padgebonden regels, subagents, caches, plannen en projectgeschiedenis worden bewaard in het migratierapport of gemeld als items voor handmatige beoordeling. OpenClaw voert geen hooks uit, kopieert geen brede allowlists en importeert OAuth-/Desktop-inlogstatus niet automatisch.
+Claude-hooks, permissies, omgevingsstandaarden, lokaal geheugen, padgebonden regels, subagents, caches, plannen en projectgeschiedenis worden bewaard in het migratierapport of gerapporteerd als items voor handmatige beoordeling. OpenClaw voert geen hooks uit, kopieert geen brede allowlists en importeert OAuth/Desktop-aanmeldgegevensstatus niet automatisch.
 
 ## Codex-provider
 
-De gebundelde Codex-provider detecteert standaard Codex CLI-status op `~/.codex`, of
+De meegeleverde Codex-provider detecteert Codex CLI-status standaard op `~/.codex`, of
 op `CODEX_HOME` wanneer die omgevingsvariabele is ingesteld. Gebruik `--from <path>` om
 een specifieke Codex-home te inventariseren.
 
-Gebruik deze provider wanneer je overstapt naar de OpenClaw Codex-harness en nuttige
-persoonlijke Codex CLI-assets bewust wilt promoveren. Lokale lanceringen van de Codex-appserver
-gebruiken per-agent `CODEX_HOME`- en `HOME`-mappen, zodat ze standaard niet je
-persoonlijke Codex CLI-status lezen.
+Gebruik deze provider wanneer je overstapt naar de OpenClaw Codex-harness en bewust
+nuttige persoonlijke Codex CLI-assets wilt promoveren. Lokale Codex app-server-
+starts gebruiken per-agent-`CODEX_HOME`- en `HOME`-mappen, zodat ze standaard
+je persoonlijke Codex CLI-status niet lezen.
 
-Wanneer `openclaw migrate codex` in een interactieve terminal wordt uitgevoerd, wordt eerst het volledige
-plan getoond en worden daarna selectievakjeskiezers geopend voor de definitieve toepassingsbevestiging. Skill-
-kopieeritems worden als eerste gevraagd. Gebruik `Toggle all on` of `Toggle all off` voor bulk-
-selectie; geplande skills beginnen aangevinkt, conflict-skills beginnen uitgevinkt en
-`Skip for now` slaat skill-kopieen over voor deze uitvoering terwijl nog steeds wordt doorgegaan naar Plugin-
-selectie. Wanneer brongeinstalleerde gecureerde Codex-Plugins migreerbaar zijn en
-`--plugin` niet is opgegeven, vraagt migratie daarna om native Codex Plugin-
-activatie op Plugin-naam. Plugin-items
-beginnen aangevinkt tenzij de doelconfiguratie van de OpenClaw Codex-Plugin die
-Plugin al bevat. Bestaande doel-Plugins beginnen uitgevinkt en tonen een conflicthint zoals
+Als je `openclaw migrate codex` uitvoert in een interactieve terminal, wordt eerst het volledige
+plan getoond, waarna selectievakjeskiezers worden geopend vóór de uiteindelijke toepassingsbevestiging. Skill-
+kopieeritems worden eerst gevraagd. Gebruik `Toggle all on` of `Toggle all off` voor bulk-
+selectie; geplande skills beginnen aangevinkt, conflicterende skills beginnen uitgevinkt en
+`Skip for now` slaat skill-kopieën voor deze uitvoering over terwijl nog steeds wordt doorgegaan naar plugin-
+selectie. Wanneer brongeïnstalleerde gecureerde Codex-plugins migreerbaar zijn en
+`--plugin` niet is opgegeven, vraagt de migratie daarna om native Codex-plugin-
+activatie op pluginnaam. Plugin-items
+beginnen aangevinkt tenzij de doelconfiguratie van de OpenClaw Codex-plugin die
+plugin al heeft. Bestaande doelplugins beginnen uitgevinkt en tonen een conflicthint zoals
 `conflict: plugin exists`; kies `Toggle all off` om in die uitvoering geen native Codex-
-Plugins te migreren, of `Skip for now` om te stoppen voordat wordt toegepast. Geef voor gescripte of
-exacte uitvoeringen `--skill <name>` een keer per skill door, bijvoorbeeld:
+plugins te migreren, of `Skip for now` om te stoppen vóór toepassen. Geef voor gescripte of
+exacte uitvoeringen `--skill <name>` één keer per skill door, bijvoorbeeld:
 
 ```bash
 openclaw migrate codex --dry-run --skill gog-vault77-google-workspace
 openclaw migrate apply codex --yes --skill gog-vault77-google-workspace
 ```
 
-Gebruik `--plugin <name>` om native Codex Plugin-migratie niet-interactief te beperken
-tot een of meer brongeinstalleerde gecureerde Plugins:
+Gebruik `--plugin <name>` om native Codex-pluginmigratie niet-interactief te beperken
+tot één of meer brongeïnstalleerde gecureerde plugins:
 
 ```bash
 openclaw migrate codex --dry-run --plugin google-calendar
@@ -158,55 +158,55 @@ openclaw migrate apply codex --yes --plugin google-calendar
 
 ### Wat Codex importeert
 
-- Codex CLI-skillmappen onder `$CODEX_HOME/skills`, exclusief Codex'
+- Codex CLI-skillmappen onder `$CODEX_HOME/skills`, met uitzondering van Codex'
   `.system`-cache.
 - Persoonlijke AgentSkills onder `$HOME/.agents/skills`, gekopieerd naar de huidige
-  OpenClaw-agentwerkruimte wanneer je eigenaarschap per agent wilt.
-- Brongeinstalleerde `openai-curated` Codex-Plugins ontdekt via Codex
-  appserver-`plugin/list`. Toepassen roept appserver-`plugin/install` aan voor elke
-  geselecteerde Plugin, zelfs als de doel-appserver die Plugin al meldt als
-  geinstalleerd en ingeschakeld. Gemigreerde Codex-Plugins zijn alleen bruikbaar in sessies die
-  de native Codex-harness selecteren; ze worden niet beschikbaar gesteld aan Pi, normale OpenAI-
+  OpenClaw-agentworkspace wanneer je eigendom per agent wilt.
+- Brongeïnstalleerde `openai-curated` Codex-plugins die via Codex
+  app-server `plugin/list` zijn gevonden. Toepassen roept app-server `plugin/install` aan voor elke
+  geselecteerde plugin, zelfs als de doel-app-server die plugin al als
+  geïnstalleerd en ingeschakeld rapporteert. Gemigreerde Codex-plugins zijn alleen bruikbaar in sessies die
+  de native Codex-harness selecteren; ze worden niet beschikbaar gemaakt voor Pi, normale OpenAI-
   provideruitvoeringen, ACP-gespreksbindingen of andere harnesses.
 
 ### Codex-status voor handmatige beoordeling
 
 Codex `config.toml`, native `hooks/hooks.json`, niet-gecureerde marketplaces en
-gecachete Plugin-bundels die geen brongeinstalleerde gecureerde Plugins zijn, worden niet
+gecachete pluginbundels die geen brongeïnstalleerde gecureerde plugins zijn, worden niet
 automatisch geactiveerd. Ze worden gekopieerd of gerapporteerd in het migratierapport voor
 handmatige beoordeling.
 
-Voor gemigreerde brongeinstalleerde gecureerde Plugins schrijft toepassen:
+Voor gemigreerde brongeïnstalleerde gecureerde plugins schrijft toepassen:
 
 - `plugins.entries.codex.enabled: true`
 - `plugins.entries.codex.config.codexPlugins.enabled: true`
-- `plugins.entries.codex.config.codexPlugins.allow_destructive_actions: false`
-- een expliciete Plugin-vermelding met `marketplaceName: "openai-curated"` en
-  `pluginName` voor elke geselecteerde Plugin
+- `plugins.entries.codex.config.codexPlugins.allow_destructive_actions: true`
+- één expliciete pluginvermelding met `marketplaceName: "openai-curated"` en
+  `pluginName` voor elke geselecteerde plugin
 
-Migratie schrijft nooit `plugins["*"]` en slaat nooit lokale cachepaden van marketplaces
-op. Installaties waarvoor auth vereist is, worden gemeld op het betreffende Plugin-item met
-`status: "skipped"`, `reason: "auth_required"` en opgeschoonde app-id's.
-Hun expliciete configuratievermeldingen worden uitgeschakeld weggeschreven totdat je opnieuw autoriseert en
+Migratie schrijft nooit `plugins["*"]` en slaat nooit lokale marketplace-cache-
+paden op. Installaties waarvoor autorisatie vereist is, worden gerapporteerd op het betrokken plugin-item met
+`status: "skipped"`, `reason: "auth_required"` en opgeschoonde app-identificatoren.
+Hun expliciete configuratievermeldingen worden uitgeschakeld geschreven totdat je opnieuw autoriseert en
 ze inschakelt. Andere installatiefouten zijn itemgebonden `error`-resultaten.
 
-Als de Plugin-inventaris van de Codex-appserver tijdens planning niet beschikbaar is, valt migratie
-terug op adviesitems uit gecachete bundels in plaats van de hele
+Als Codex app-serverplugininventaris tijdens het plannen niet beschikbaar is, valt de migratie
+terug op gecachete bundeladviesitems in plaats van de hele
 migratie te laten mislukken.
 
 ## Hermes-provider
 
-De gebundelde Hermes-provider detecteert standaard status op `~/.hermes`. Gebruik `--from <path>` wanneer Hermes ergens anders staat.
+De meegeleverde Hermes-provider detecteert standaard status op `~/.hermes`. Gebruik `--from <path>` wanneer Hermes ergens anders staat.
 
 ### Wat Hermes importeert
 
 - Standaardmodelconfiguratie uit `config.yaml`.
 - Geconfigureerde modelproviders en aangepaste OpenAI-compatibele eindpunten uit `providers` en `custom_providers`.
 - MCP-serverdefinities uit `mcp_servers` of `mcp.servers`.
-- `SOUL.md` en `AGENTS.md` naar de OpenClaw-agentwerkruimte.
-- `memories/MEMORY.md` en `memories/USER.md` toegevoegd aan geheugenbestanden van de werkruimte.
-- Geheugenconfiguratiestandaarden voor OpenClaw-bestandsgeheugen, plus archiefitems of items voor handmatige beoordeling voor externe geheugenproviders zoals Honcho.
-- Skills die een `SKILL.md`-bestand bevatten onder `skills/<name>/`.
+- `SOUL.md` en `AGENTS.md` naar de OpenClaw-agentworkspace.
+- `memories/MEMORY.md` en `memories/USER.md` toegevoegd aan workspacegeheugenbestanden.
+- Geheugenconfiguratiestandaarden voor OpenClaw-bestandsgeheugen, plus archief- of handmatige-beoordelingsitems voor externe geheugenproviders zoals Honcho.
+- Skills die een `SKILL.md`-bestand onder `skills/<name>/` bevatten.
 - Configuratiewaarden per skill uit `skills.config`.
 - Ondersteunde API-sleutels uit `.env`, alleen met `--include-secrets`.
 
@@ -214,9 +214,9 @@ De gebundelde Hermes-provider detecteert standaard status op `~/.hermes`. Gebrui
 
 `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `OPENROUTER_API_KEY`, `GOOGLE_API_KEY`, `GEMINI_API_KEY`, `GROQ_API_KEY`, `XAI_API_KEY`, `MISTRAL_API_KEY`, `DEEPSEEK_API_KEY`.
 
-### Status alleen voor archief
+### Alleen-archiefstatus
 
-Hermes-status die OpenClaw niet veilig kan interpreteren, wordt naar het migratierapport gekopieerd voor handmatige beoordeling, maar wordt niet geladen in live OpenClaw-configuratie of -inloggegevens. Dit bewaart ondoorzichtige of onveilige status zonder te doen alsof OpenClaw die automatisch kan uitvoeren of vertrouwen:
+Hermes-status die OpenClaw niet veilig kan interpreteren, wordt naar het migratierapport gekopieerd voor handmatige beoordeling, maar wordt niet geladen in live OpenClaw-configuratie of aanmeldgegevens. Dit bewaart ondoorzichtige of onveilige status zonder te doen alsof OpenClaw deze automatisch kan uitvoeren of vertrouwen:
 
 - `plugins/`
 - `sessions/`
@@ -232,9 +232,9 @@ Hermes-status die OpenClaw niet veilig kan interpreteren, wordt naar het migrati
 openclaw doctor
 ```
 
-## Plugin-contract
+## Plugincontract
 
-Migratiebronnen zijn Plugins. Een Plugin declareert zijn provider-id's in `openclaw.plugin.json`:
+Migratiebronnen zijn plugins. Een plugin declareert zijn provider-id's in `openclaw.plugin.json`:
 
 ```json
 {
@@ -244,16 +244,16 @@ Migratiebronnen zijn Plugins. Een Plugin declareert zijn provider-id's in `openc
 }
 ```
 
-Tijdens runtime roept de Plugin `api.registerMigrationProvider(...)` aan. De provider implementeert `detect`, `plan` en `apply`. Core bezit CLI-orchestratie, backupbeleid, prompts, JSON-uitvoer en conflictpreflight. Core geeft het beoordeelde plan door aan `apply(ctx, plan)`, en providers mogen het plan alleen opnieuw opbouwen wanneer dat argument ontbreekt voor compatibiliteit.
+Tijdens runtime roept de plugin `api.registerMigrationProvider(...)` aan. De provider implementeert `detect`, `plan` en `apply`. Core beheert CLI-orkestratie, back-upbeleid, prompts, JSON-uitvoer en conflictpreflight. Core geeft het beoordeelde plan door aan `apply(ctx, plan)`, en providers mogen het plan alleen opnieuw bouwen wanneer dat argument ontbreekt voor compatibiliteit.
 
-Provider-Plugins kunnen `openclaw/plugin-sdk/migration` gebruiken voor itemconstructie en samenvattende tellingen, plus `openclaw/plugin-sdk/migration-runtime` voor conflictbewuste bestandskopieen, rapportkopieen die alleen voor archief zijn, gecachete config-runtime-wrappers en migratierapporten.
+Providerplugins kunnen `openclaw/plugin-sdk/migration` gebruiken voor itemconstructie en samenvattingstellingen, plus `openclaw/plugin-sdk/migration-runtime` voor conflictbewuste bestandskopieën, alleen-archiefrapportkopieën, gecachete config-runtime-wrappers en migratierapporten.
 
-## Integratie met onboarding
+## Onboarding-integratie
 
-Onboarding kan migratie aanbieden wanneer een provider een bekende bron detecteert. Zowel `openclaw onboard --flow import` als `openclaw setup --wizard --import-from hermes` gebruiken dezelfde Plugin-migratieprovider en tonen nog steeds een voorbeeld voordat wordt toegepast.
+Onboarding kan migratie aanbieden wanneer een provider een bekende bron detecteert. Zowel `openclaw onboard --flow import` als `openclaw setup --wizard --import-from hermes` gebruiken dezelfde pluginmigratieprovider en tonen nog steeds een voorbeeldweergave vóór toepassen.
 
 <Note>
-Onboarding-imports vereisen een nieuwe OpenClaw-installatie. Zet eerst de configuratie, referenties, sessies en de werkruimte terug als je al lokale staat hebt. Imports met back-up plus overschrijven of samenvoegen zijn voor bestaande installaties achter een feature gate geplaatst.
+Onboarding-imports vereisen een nieuwe OpenClaw-installatie. Reset eerst de configuratie, inloggegevens, sessies en de werkruimte als je al lokale state hebt. Importen met back-up plus overschrijven of samenvoegen zijn voor bestaande installaties achter een feature gate geplaatst.
 </Note>
 
 ## Gerelateerd
@@ -261,5 +261,5 @@ Onboarding-imports vereisen een nieuwe OpenClaw-installatie. Zet eerst de config
 - [Migreren vanaf Hermes](/nl/install/migrating-hermes): gebruikersgerichte walkthrough.
 - [Migreren vanaf Claude](/nl/install/migrating-claude): gebruikersgerichte walkthrough.
 - [Migreren](/nl/install/migrating): verplaats OpenClaw naar een nieuwe machine.
-- [Doctor](/nl/gateway/doctor): gezondheidscontrole na het toepassen van een migratie.
-- [Plugins](/nl/tools/plugin): Plugin-installatie en -registratie.
+- [Doctor](/nl/gateway/doctor): statuscontrole na het toepassen van een migratie.
+- [Plugins](/nl/tools/plugin): Plugininstallatie en -registratie.

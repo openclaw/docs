@@ -1,13 +1,13 @@
 ---
 read_when:
     - Chcesz uzyskać kompletną mapę dokumentacji
-summary: Centra z linkami do każdego dokumentu OpenClaw
+summary: Centra z odnośnikami do wszystkich dokumentów OpenClaw
 title: Centra dokumentacji
 x-i18n:
-    generated_at: "2026-05-10T19:54:59Z"
+    generated_at: "2026-05-12T00:59:44Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fdf4128ddb05bb009faec0a21d45933ffb0a3abf5e5ba8dbe1b9710c8eee3bde
+    source_hash: f4675773105bbff55e1f38c8449d688dcefc6ad70d9f5e572193f1e0c638e243
     source_path: start/hubs.md
     workflow: 16
 ---
@@ -16,14 +16,14 @@ x-i18n:
 Jeśli dopiero zaczynasz z OpenClaw, zacznij od [Pierwszych kroków](/pl/start/getting-started).
 </Note>
 
-Użyj tych centrów, aby odkryć każdą stronę, w tym szczegółowe omówienia i dokumentację referencyjną, które nie pojawiają się w lewym menu nawigacyjnym.
+Użyj tych centrów, aby odkryć każdą stronę, w tym szczegółowe omówienia i dokumentację referencyjną, które nie pojawiają się w lewej nawigacji.
 
 ## Zacznij tutaj
 
 - [Indeks](/pl)
 - [Pierwsze kroki](/pl/start/getting-started)
-- [Wprowadzenie](/pl/start/onboarding)
-- [Wprowadzenie (CLI)](/pl/start/wizard)
+- [Wdrażanie](/pl/start/onboarding)
+- [Wdrażanie (CLI)](/pl/start/wizard)
 - [Konfiguracja](/pl/start/setup)
 - [Panel (lokalny Gateway)](http://127.0.0.1:18789/)
 - [Pomoc](/pl/help)
@@ -50,19 +50,19 @@ Użyj tych centrów, aby odkryć każdą stronę, w tym szczegółowe omówienia
 - [Obszar roboczy agenta](/pl/concepts/agent-workspace)
 - [Pamięć](/pl/concepts/memory)
 - [Pętla agenta](/pl/concepts/agent-loop)
-- [Strumieniowanie i dzielenie na fragmenty](/pl/concepts/streaming)
-- [Routing wielu agentów](/pl/concepts/multi-agent)
+- [Strumieniowanie + porcjowanie](/pl/concepts/streaming)
+- [Routing wieloagentowy](/pl/concepts/multi-agent)
 - [Compaction](/pl/concepts/compaction)
 - [Sesje](/pl/concepts/session)
 - [Przycinanie sesji](/pl/concepts/session-pruning)
 - [Narzędzia sesji](/pl/concepts/session-tool)
 - [Kolejka](/pl/concepts/queue)
-- [Polecenia ukośnika](/pl/tools/slash-commands)
+- [Polecenia ukośnikiem](/pl/tools/slash-commands)
 - [Adaptery RPC](/pl/reference/rpc)
 - [Schematy TypeBox](/pl/concepts/typebox)
 - [Obsługa stref czasowych](/pl/concepts/timezone)
 - [Obecność](/pl/concepts/presence)
-- [Wykrywanie i transporty](/pl/gateway/discovery)
+- [Wykrywanie + transporty](/pl/gateway/discovery)
 - [Bonjour](/pl/gateway/bonjour)
 - [Routing kanałów](/pl/channels/channel-routing)
 - [Grupy](/pl/channels/groups)
@@ -70,7 +70,7 @@ Użyj tych centrów, aby odkryć każdą stronę, w tym szczegółowe omówienia
 - [Przełączanie awaryjne modeli](/pl/concepts/model-failover)
 - [OAuth](/pl/concepts/oauth)
 
-## Dostawcy i ingress
+## Dostawcy + ingress
 
 - [Centrum kanałów czatu](/pl/channels)
 - [Centrum dostawców modeli](/pl/providers/models)
@@ -87,17 +87,17 @@ Użyj tych centrów, aby odkryć każdą stronę, w tym szczegółowe omówienia
 - [Webhooki](/pl/automation/cron-jobs#webhooks)
 - [Gmail Pub/Sub](/pl/automation/cron-jobs#gmail-pubsub-integration)
 
-## Gateway i operacje
+## Gateway + operacje
 
 - [Runbook Gateway](/pl/gateway)
-- [Model sieciowy](/pl/network#core-model)
+- [Model sieci](/pl/network#core-model)
 - [Parowanie Gateway](/pl/gateway/pairing)
 - [Blokada Gateway](/pl/gateway/gateway-lock)
 - [Proces w tle](/pl/gateway/background-process)
-- [Kondycja](/pl/gateway/health)
+- [Stan działania](/pl/gateway/health)
 - [Heartbeat](/pl/gateway/heartbeat)
 - [Doctor](/pl/gateway/doctor)
-- [Rejestrowanie](/pl/gateway/logging)
+- [Logowanie](/pl/gateway/logging)
 - [Piaskownica](/pl/gateway/sandboxing)
 - [Panel](/pl/web/dashboard)
 - [Interfejs sterowania](/pl/web/control-ui)
@@ -107,33 +107,33 @@ Użyj tych centrów, aby odkryć każdą stronę, w tym szczegółowe omówienia
 - [Bezpieczeństwo](/pl/gateway/security)
 - [Rozwiązywanie problemów](/pl/gateway/troubleshooting)
 
-## Narzędzia i automatyzacja
+## Narzędzia + automatyzacja
 
 - [Powierzchnia narzędzi](/pl/tools)
 - [OpenProse](/pl/prose)
-- [Referencja CLI](/pl/cli)
+- [Dokumentacja referencyjna CLI](/pl/cli)
 - [Narzędzie exec](/pl/tools/exec)
 - [Narzędzie PDF](/pl/tools/pdf)
-- [Tryb podwyższonych uprawnień](/pl/tools/elevated)
+- [Tryb podwyższony](/pl/tools/elevated)
 - [Zadania Cron](/pl/automation/cron-jobs)
-- [Automatyzacja i zadania](/pl/automation)
-- [Myślenie i szczegółowe informacje](/pl/tools/thinking)
+- [Automatyzacja](/pl/automation)
+- [Myślenie + tryb szczegółowy](/pl/tools/thinking)
 - [Modele](/pl/concepts/models)
 - [Podagenci](/pl/tools/subagents)
-- [CLI wysyłania do agenta](/pl/tools/agent-send)
+- [CLI wysyłania agenta](/pl/tools/agent-send)
 - [Interfejs terminalowy](/pl/web/tui)
 - [Sterowanie przeglądarką](/pl/tools/browser)
 - [Przeglądarka (rozwiązywanie problemów w Linuksie)](/pl/tools/browser-linux-troubleshooting)
 - [Ankiety](/pl/cli/message)
 
-## Węzły, multimedia, głos
+## Node, multimedia, głos
 
-- [Przegląd węzłów](/pl/nodes)
+- [Przegląd Node](/pl/nodes)
 - [Kamera](/pl/nodes/camera)
 - [Obrazy](/pl/nodes/images)
-- [Audio](/pl/nodes/audio)
+- [Dźwięk](/pl/nodes/audio)
 - [Polecenie lokalizacji](/pl/nodes/location-command)
-- [Wybudzanie głosowe](/pl/nodes/voicewake)
+- [Wybudzanie głosem](/pl/nodes/voicewake)
 - [Tryb rozmowy](/pl/nodes/talk)
 
 ## Platformy
@@ -150,36 +150,36 @@ Użyj tych centrów, aby odkryć każdą stronę, w tym szczegółowe omówienia
 
 - [Konfiguracja deweloperska macOS](/pl/platforms/mac/dev-setup)
 - [Pasek menu macOS](/pl/platforms/mac/menu-bar)
-- [Wybudzanie głosowe macOS](/pl/platforms/mac/voicewake)
+- [Wybudzanie głosem w macOS](/pl/platforms/mac/voicewake)
 - [Nakładka głosowa macOS](/pl/platforms/mac/voice-overlay)
-- [WebChat macOS](/pl/platforms/mac/webchat)
-- [Canvas macOS](/pl/platforms/mac/canvas)
-- [Proces potomny macOS](/pl/platforms/mac/child-process)
-- [Kondycja macOS](/pl/platforms/mac/health)
+- [macOS WebChat](/pl/platforms/mac/webchat)
+- [macOS Canvas](/pl/platforms/mac/canvas)
+- [Proces podrzędny macOS](/pl/platforms/mac/child-process)
+- [Stan działania macOS](/pl/platforms/mac/health)
 - [Ikona macOS](/pl/platforms/mac/icon)
-- [Rejestrowanie macOS](/pl/platforms/mac/logging)
+- [Logowanie macOS](/pl/platforms/mac/logging)
 - [Uprawnienia macOS](/pl/platforms/mac/permissions)
-- [Zdalny dostęp macOS](/pl/platforms/mac/remote)
+- [Zdalny macOS](/pl/platforms/mac/remote)
 - [Podpisywanie macOS](/pl/platforms/mac/signing)
-- [Gateway macOS (launchd)](/pl/platforms/mac/bundled-gateway)
-- [XPC macOS](/pl/platforms/mac/xpc)
-- [Skills macOS](/pl/platforms/mac/skills)
-- [Peekaboo macOS](/pl/platforms/mac/peekaboo)
+- [macOS Gateway (launchd)](/pl/platforms/mac/bundled-gateway)
+- [macOS XPC](/pl/platforms/mac/xpc)
+- [macOS skills](/pl/platforms/mac/skills)
+- [macOS Peekaboo](/pl/platforms/mac/peekaboo)
 
-## Pluginy
+## Plugins
 
-- [Przegląd pluginów](/pl/tools/plugin)
-- [Tworzenie pluginów](/pl/plugins/building-plugins)
-- [Haki Plugin](/pl/plugins/hooks)
+- [Przegląd Plugins](/pl/tools/plugin)
+- [Tworzenie plugins](/pl/plugins/building-plugins)
+- [Hooki Plugin](/pl/plugins/hooks)
 - [Manifest Plugin](/pl/plugins/manifest)
 - [Narzędzia agenta](/pl/plugins/building-plugins#registering-agent-tools)
 - [Pakiety Plugin](/pl/plugins/bundles)
 - [ClawHub](/pl/clawhub)
-- [Przewodnik po możliwościach](/pl/plugins/adding-capabilities)
+- [Przepisy na możliwości](/pl/plugins/adding-capabilities)
 - [Plugin połączeń głosowych](/pl/plugins/voice-call)
 - [Plugin użytkownika Zalo](/pl/plugins/zalouser)
 
-## Obszar roboczy i szablony
+## Obszar roboczy + szablony
 
 - [Skills](/pl/tools/skills)
 - [ClawHub](/pl/clawhub)
@@ -197,10 +197,10 @@ Użyj tych centrów, aby odkryć każdą stronę, w tym szczegółowe omówienia
 
 - [Podziękowania](/pl/reference/credits)
 
-## Testowanie i wydanie
+## Testowanie + wydanie
 
 - [Testowanie](/pl/reference/test)
-- [Zasady wydań](/pl/reference/RELEASING)
+- [Polityka wydań](/pl/reference/RELEASING)
 - [Modele urządzeń](/pl/reference/device-models)
 
 ## Powiązane

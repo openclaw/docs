@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Mengaudit mengapa refaktor ingress saluran menambahkan terlalu banyak kode
-    - Memindahkan kebijakan rute, perintah, peristiwa, aktivasi, atau grup akses dari Plugin yang dibundel ke inti
-    - Meninjau apakah helper ingress saluran benar-benar menghapus kode Plugin bawaan
+    - Mengaudit alasan refaktor ingress saluran menambahkan terlalu banyak kode
+    - Memindahkan kebijakan rute, perintah, peristiwa, aktivasi, atau grup akses dari Plugin terbundel ke inti
+    - Meninjau apakah fungsi pembantu ingres saluran benar-benar menghapus kode Plugin yang dibundel
 sidebarTitle: Ingress core deletion
-summary: Rencana dengan penghapusan terlebih dahulu untuk memindahkan kode perekat penerimaan saluran yang berulang ke inti.
+summary: Rencana yang mengutamakan penghapusan untuk memindahkan kode perekat ingress saluran yang berulang ke inti.
 title: Rencana penghapusan inti ingress
 x-i18n:
-    generated_at: "2026-05-10T19:51:28Z"
+    generated_at: "2026-05-12T00:59:38Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 71afcf5d4f58c57ecfe7b388325279700a723ec1fcd926f644095106b662c3d0
+    source_hash: 1fdf1e7c9636d02c48c4b5d2b4a51470317dd64e2270c7fae779777c0d787afc
     source_path: refactor/ingress-core.md
     workflow: 16
 ---
 
 # Rencana penghapusan inti ingress
 
-Refactor ingress belum sehat selama masih menambahkan ribuan baris bersih. Sentralisasi inti
-baru berarti jika kode produksi Plugin bawaan menjadi lebih kecil dan kompatibilitas SDK
-pihak ketiga lama dikarantina ke shim SDK/inti.
+Refactor ingress tidak sehat selama masih menambahkan ribuan baris bersih. Sentralisasi inti
+hanya dihitung ketika kode produksi plugin bawaan menjadi lebih kecil dan
+kompatibilitas SDK pihak ketiga lama dikarantina ke shim SDK/inti.
 
 Bentuk runtime yang diinginkan:
 
@@ -38,7 +38,7 @@ old third-party helper
 
 Plugin bawaan tidak boleh menerjemahkan ingress kembali menjadi bentuk lokal
 `AccessResult`, `GroupAccessDecision`, `CommandAuthDecision`, `DmCommandAccess`, atau
-`{ allowed, reasonCode }` kecuali tipe tersebut adalah API Plugin publik.
+`{ allowed, reasonCode }` kecuali tipe tersebut adalah API plugin publik.
 
 ## Anggaran
 
@@ -75,9 +75,9 @@ total                 needs 775 more net deleted lines
 core production       still +1,876 over standalone budget, unless paid down by plugin deletion
 ```
 
-Penghapusan yang hanya berupa komentar tidak dihitung sebagai pembersihan. Putaran anggaran
-sebelumnya terlalu longgar karena menyertakan komentar penjelas QQBot yang dipulihkan; dokumen
-ini hanya melacak pergerakan kode executable/dokumentasi/pengujian.
+Penghapusan khusus komentar tidak dihitung sebagai pembersihan. Lintasan anggaran sebelumnya
+terlalu longgar karena menyertakan kembali komentar penjelasan QQBot; dokumen ini
+hanya melacak perpindahan kode executable/docs/test.
 
 Ukur ulang setelah setiap gelombang pembersihan:
 
@@ -90,8 +90,8 @@ pnpm lint:extensions:no-deprecated-channel-access
 
 ## Diagnosis
 
-Putaran pertama menambahkan kernel ingress bersama, lalu menyisakan terlalu banyak otorisasi
-lokal Plugin di sampingnya:
+Lintasan pertama menambahkan kernel ingress bersama, lalu meninggalkan terlalu banyak
+otorisasi lokal plugin di sampingnya:
 
 ```text
 platform facts
@@ -100,19 +100,19 @@ platform facts
   -> plugin-local if/else ladder
 ```
 
-Itu menggandakan model. Produksi inti bertambah sekitar 3.376 baris, sementara produksi
-Plugin bawaan berkurang 1.240 baris. Itu lebih baik daripada putaran pertama, tetapi belum
-masuk anggaran minimum. Perbaikannya tetap mengutamakan penghapusan:
+Itu menggandakan model. Produksi inti bertambah sekitar 3.376 baris, sementara
+produksi plugin bawaan berkurang 1.240 baris. Itu lebih baik daripada lintasan pertama,
+tetapi belum masuk anggaran minimum. Perbaikannya tetap mengutamakan penghapusan:
 
-- hapus DTO Plugin yang hanya mengganti nama field ingress
-- hapus pengujian yang hanya memeriksa bentuk wrapper
-- tambahkan helper inti hanya jika patch yang sama menghapus kode Plugin bawaan
+- hapus DTO plugin yang hanya mengganti nama field ingress
+- hapus pengujian yang hanya menegaskan bentuk wrapper
+- tambahkan helper inti hanya ketika patch yang sama menghapus kode plugin bawaan
 - pertahankan kompatibilitas SDK lama hanya di shim SDK/inti
-- kemas ulang inti setelah penghapusan wrapper memperlihatkan bentuk yang stabil
+- kemas ulang inti setelah penghapusan wrapper mengekspos bentuk stabil
 
-## Hotspot
+## Titik Panas
 
-File produksi bawaan positif yang masih perlu diperkecil:
+File produksi bawaan positif yang masih perlu menyusut:
 
 ```text
 extensions/telegram/src/ingress.ts                        +126
@@ -133,49 +133,49 @@ extensions/qqbot/src/engine/commands/slash-command-handler.ts +20
 extensions/telegram/src/bot-handlers.runtime.ts            +19
 ```
 
-Branch ini belum masuk anggaran minimum. Pekerjaan tersisa yang relevan untuk peninjauan
-harus menghapus alur otorisasi berulang, scaffolding turn, atau pengujian wrapper sebelum
-menambahkan abstraksi inti lain.
+Branch belum masuk anggaran minimum. Pekerjaan tersisa yang relevan untuk review
+harus menghapus alur otorisasi berulang, scaffolding giliran, atau pengujian
+wrapper sebelum menambahkan abstraksi inti lain.
 
 ## Pembacaan Kode Saat Ini
 
 Seam inti yang sehat sudah ada di `src/channels/message-access/runtime.ts`:
-ia memiliki adapter identitas, allowlist efektif, pembacaan pairing-store, deskriptor
-rute, preset perintah/event, grup akses, dan proyeksi akhir
+ia memiliki adapter identitas, allowlist efektif, pembacaan pairing-store,
+deskriptor route, preset command/event, grup akses, dan proyeksi akhir
 `ResolvedChannelMessageIngress` yang sudah diselesaikan.
 
-Pertumbuhan yang tersisa sebagian besar adalah glue Plugin yang dilapiskan di atas seam itu:
+Pertumbuhan yang tersisa sebagian besar adalah glue plugin yang dilapiskan di atas seam tersebut:
 
 - `extensions/telegram/src/ingress.ts` membungkus keputusan inti dalam helper
-  perintah/event khusus Telegram, lalu call site masih meneruskan allowlist
-  ternormalisasi dan daftar pemilik yang sudah dihitung sebelumnya.
+  command/event khusus Telegram, lalu call site masih meneruskan allowlist
+  ternormalisasi dan daftar owner yang sudah dihitung sebelumnya.
 - `extensions/discord/src/monitor/dm-command-auth.ts`,
   `extensions/feishu/src/policy.ts`, `extensions/googlechat/src/monitor-access.ts`,
   dan `extensions/matrix/src/matrix/monitor/access-state.ts` masih menyimpan
   DTO kebijakan lokal atau nama keputusan legacy di samping ingress.
-- `extensions/signal/src/monitor/access-policy.ts` dengan benar menjaga
-  normalisasi identitas Signal dan balasan pairing tetap lokal, tetapi masih memiliki seam
-  wrapper yang seharusnya dilebur menjadi konsumsi ingress langsung.
+- `extensions/signal/src/monitor/access-policy.ts` sudah benar mempertahankan
+  normalisasi identitas Signal dan balasan pairing secara lokal, tetapi masih
+  memiliki seam wrapper yang harus runtuh menjadi konsumsi ingress langsung.
 - `extensions/nextcloud-talk/src/inbound.ts`, `extensions/irc/src/inbound.ts`,
   `extensions/qa-channel/src/inbound.ts`, `extensions/zalo/src/monitor.ts`, dan
-  `extensions/zalouser/src/monitor.ts` masih mengulang penyusunan rute/envelope/turn
+  `extensions/zalouser/src/monitor.ts` masih mengulang penyusunan route/envelope/turn
   yang dapat dipindahkan ke helper turn bersama di luar kernel ingress.
 
-Kesimpulan: memindahkan lebih banyak kode ke inti hanya berguna jika menghapus lapisan
-wrapper Plugin ini dalam patch yang sama. Menambahkan abstraksi lain sambil mempertahankan
-return wrapper hanya mengulang kesalahan.
+Kesimpulan: memindahkan lebih banyak kode ke inti hanya berguna jika hal itu
+menghapus lapisan wrapper plugin ini dalam patch yang sama. Menambahkan abstraksi lain
+sambil membiarkan return wrapper tetap ada mengulang kesalahan yang sama.
 
-## Batasan
+## Batas
 
 Inti memiliki kebijakan generik:
 
 - normalisasi dan pencocokan allowlist
 - ekspansi grup akses dan diagnostik
-- pembacaan allowlist DM dari pairing-store
-- gate rute, pengirim, perintah, event, dan aktivasi
+- pembacaan allowlist DM pairing-store
+- gate route, sender, command, event, dan activation
 - pemetaan admission: dispatch, drop, skip, observe, pairing
-- state, keputusan, diagnostik, dan proyeksi kompatibilitas SDK yang sudah diredaksi
-- deskriptor generik yang dapat digunakan ulang untuk identitas, rute, perintah, event, aktivasi,
+- state yang direduksi, keputusan, diagnostik, dan proyeksi kompatibilitas SDK
+- deskriptor generik yang dapat digunakan ulang untuk identitas, route, command, event, activation,
   dan outcome
 
 Plugin memiliki fakta transport dan efek samping:
@@ -183,16 +183,16 @@ Plugin memiliki fakta transport dan efek samping:
 - keaslian webhook/socket/request
 - ekstraksi identitas platform dan lookup API
 - default kebijakan khusus channel
-- pengiriman pairing challenge, balasan, ack, reaksi, typing, media, riwayat,
+- pengiriman tantangan pairing, balasan, ack, reaction, typing, media, history,
   setup, doctor, status, log, dan salinan yang terlihat pengguna
 
 Inti harus tetap agnostik terhadap channel: tidak ada Discord, Slack, Telegram, Matrix, room,
-guild, space, klien API, atau default khusus Plugin di
+guild, space, client API, atau default khusus plugin di
 `src/channels/message-access`.
 
 ## Aturan Penerimaan
 
-Setiap helper inti baru harus langsung menghapus kode produksi Plugin bawaan.
+Setiap helper inti baru harus langsung menghapus kode produksi plugin bawaan.
 
 ```text
 one bundled caller        reject; keep plugin-local
@@ -203,97 +203,97 @@ compatibility-only helper SDK/core shim only; never bundled hot paths
 
 Berhenti dan rancang ulang jika:
 
-- LOC produksi Plugin meningkat
-- pengujian tumbuh lebih cepat daripada penyusutan produksi
+- LOC produksi plugin meningkat
+- pengujian bertambah lebih cepat daripada penyusutan produksi
 - hot path bawaan mengembalikan DTO yang hanya mengganti nama `ResolvedChannelMessageIngress`
-- helper inti memerlukan id channel, objek platform, klien API, atau
+- helper inti membutuhkan id channel, objek platform, client API, atau
   default khusus channel
 
-## Paket Pekerjaan
+## Paket Kerja
 
 1. Bekukan anggaran.
-   Letakkan LOC di PR, jaga lint deprecated-ingress tetap hijau, dan sertakan LOC sebelum/sesudah
-   dalam commit pembersihan.
+   Masukkan LOC ke PR, pastikan lint deprecated-ingress tetap hijau, dan sertakan LOC
+   sebelum/sesudah dalam commit pembersihan.
 
 2. Hapus seam DTO tipis.
-   Ganti return wrapper lokal Plugin dengan `ResolvedChannelMessageIngress`,
+   Ganti return wrapper lokal plugin dengan `ResolvedChannelMessageIngress`,
    `senderAccess`, `commandAccess`, `routeAccess`, atau `ingress` secara langsung. Mulai
    dengan QQBot, Telegram, Slack, Discord, Signal, Feishu, Matrix, iMessage, dan
    Tlon. Hapus pengujian bentuk wrapper; pertahankan pengujian perilaku.
 
-3. Tambahkan klasifikasi outcome hanya dengan penghapusan.
+3. Tambahkan klasifikasi outcome hanya bersama penghapusan.
    Classifier generik dapat mengekspos `dispatch`, `pairing-required`,
    `skip-activation`, `drop-command`, `drop-route`, `drop-sender`, dan
-   `drop-ingress`. Ia harus diturunkan dari grafik keputusan, bukan string alasan,
-   dan memigrasikan setidaknya tiga Plugin dalam patch yang sama.
+   `drop-ingress`. Ia harus diturunkan dari graph keputusan, bukan string alasan,
+   dan memigrasikan setidaknya tiga plugin dalam patch yang sama.
 
-4. Tambahkan builder deskriptor rute hanya dengan penghapusan.
-   Helper target rute dan pengirim rute generik dapat diterima hanya jika langsung
-   memperkecil Plugin yang berat pada rute: Google Chat, IRC, Microsoft Teams,
+4. Tambahkan builder deskriptor route hanya bersama penghapusan.
+   Helper target route generik dan sender route dapat diterima hanya jika langsung
+   menyusutkan plugin yang berat di route: Google Chat, IRC, Microsoft Teams,
    Nextcloud Talk, Mattermost, Slack, Zalo, dan Zalo Personal.
 
-5. Tambahkan preset perintah/event hanya dengan penghapusan.
+5. Tambahkan preset command/event hanya bersama penghapusan.
    Sentralisasikan bentuk text-command, native-command, callback, dan origin-subject.
-   Konsumen perintah harus default ke tidak terotorisasi ketika tidak ada gate perintah yang berjalan;
+   Konsumen command harus default ke tidak terotorisasi ketika tidak ada gate command yang berjalan;
    event tidak boleh memulai pairing.
 
-6. Tambahkan preset identitas hanya jika menghapus boilerplate.
+6. Tambahkan preset identitas hanya ketika menghapus boilerplate.
    Helper stable-id, stable-id-plus-aliases, phone/e164, dan multi-identifier
-   diperbolehkan ketika nilai mentah hanya masuk ke input adapter dan state yang diredaksi menjaga
-   id/jumlah tetap opaque.
+   diperbolehkan ketika nilai mentah hanya masuk input adapter dan state yang direduksi mempertahankan
+   id/jumlah buram.
 
 7. Bagikan penyusunan turn terotorisasi.
-   Di luar kernel ingress, hapus scaffolding rute/envelope/konteks/balasan berulang
-   dari QA Channel, IRC, Nextcloud Talk, Zalo, dan Zalo Personal.
-   Inti dapat memiliki sequencing rute/sesi/envelope/dispatch; Plugin mempertahankan
-   pengiriman dan konteks khusus channel.
+   Di luar kernel ingress, hapus scaffolding route/envelope/context/reply
+   yang berulang dari QA Channel, IRC, Nextcloud Talk, Zalo, dan Zalo Personal.
+   Inti dapat memiliki sequencing route/session/envelope/dispatch; plugin mempertahankan
+   delivery dan konteks khusus channel.
 
 8. Karantina kompatibilitas.
-   Helper SDK deprecated tetap kompatibel secara sumber, tetapi hot path bawaan tidak boleh
-   mengimpor facade ingress atau command-auth deprecated. Pengujian kompatibilitas harus
-   menggunakan Plugin pihak ketiga palsu, bukan internal Plugin bawaan.
+   Helper SDK yang deprecated tetap kompatibel secara source, tetapi hot path bawaan tidak boleh
+   mengimpor ingress deprecated atau facade command-auth. Pengujian kompatibilitas harus
+   menggunakan plugin pihak ketiga palsu, bukan internal plugin bawaan.
 
 9. Kemas ulang inti.
-   Setelah penghapusan wrapper, lebur modul sekali pakai, hapus export yang tidak digunakan, pindahkan
-   proyeksi kompatibilitas keluar dari hot path, dan pertahankan pengujian terfokus untuk identitas,
-   rute, perintah/event, aktivasi, grup akses, dan shim kompatibilitas.
+   Setelah plugin mengonsumsi proyeksi runtime secara langsung, runtuhkan modul sekali pakai, hapus
+   ekspor yang tidak digunakan, pindahkan proyeksi kompatibilitas keluar dari hot path, dan pertahankan
+   pengujian terfokus untuk identitas, route, command/event, activation, grup akses, dan shim kompatibilitas.
 
 ## Gelombang Penghapusan
 
-Jalankan ini secara berurutan. Setiap gelombang harus menurunkan LOC produksi bawaan.
+Jalankan ini berurutan. Setiap gelombang harus menurunkan LOC produksi bawaan.
 
-1. Peleburan wrapper, delta Plugin yang diharapkan: -400 hingga -600.
+1. Runtuhkan wrapper, delta plugin yang diharapkan: -400 hingga -600.
    Ganti tipe hasil `resolveXAccess`, `resolveXCommandAccess`, dan
-   `accessFromIngress` lokal Plugin dengan pembacaan langsung dari
-   `ResolvedChannelMessageIngress`. Target pertama: Discord DM command auth,
+   `accessFromIngress` lokal plugin dengan pembacaan langsung dari
+   `ResolvedChannelMessageIngress`. Target pertama: auth command DM Discord,
    kebijakan Feishu, state akses Matrix, ingress Telegram, kebijakan akses Signal,
    adapter SDK QQBot.
 
-2. Helper outcome bersama, delta Plugin yang diharapkan: -200 hingga -350.
-   Tambahkan satu classifier generik hanya jika ia menghapus ladder
+2. Helper outcome bersama, delta plugin yang diharapkan: -200 hingga -350.
+   Tambahkan satu classifier generik hanya jika ia menghapus ladder berulang
    `shouldBlockControlCommand`, pairing, activation skip, route block, dan sender
-   block yang berulang di setidaknya tiga Plugin.
+   block di setidaknya tiga plugin.
 
-3. Builder deskriptor rute, delta Plugin yang diharapkan: -200 hingga -350.
-   Pindahkan penyusunan deskriptor target rute dan pengirim rute berulang ke helper
+3. Builder deskriptor route, delta plugin yang diharapkan: -200 hingga -350.
+   Pindahkan penyusunan deskriptor target route dan sender route yang berulang ke helper
    inti. Target pertama: Google Chat, IRC, Microsoft Teams, Nextcloud Talk,
    Mattermost, Slack, Zalo, Zalo Personal.
 
-4. Berbagi penyusunan turn, delta Plugin yang diharapkan: -250 hingga -450.
-   Gunakan sequencing rute/sesi/envelope/dispatch bersama untuk Plugin inbound
+4. Berbagi penyusunan turn, delta plugin yang diharapkan: -250 hingga -450.
+   Gunakan sequencing route/session/envelope/dispatch umum untuk plugin inbound
    sederhana. Target pertama: QA Channel, IRC, Nextcloud Talk, Zalo, Zalo Personal.
 
-5. Pengemasan ulang inti, delta inti yang diharapkan: -300 hingga -700.
-   Setelah Plugin mengonsumsi proyeksi runtime secara langsung, hapus modul sekali pakai,
-   gabungkan file kecil kembali ke `runtime.ts` atau sibling terfokus, dan jaga file
-   kompatibilitas SDK terpisah dari hot path bawaan.
+5. Kemas ulang inti, delta inti yang diharapkan: -300 hingga -700.
+   Setelah plugin mengonsumsi proyeksi runtime secara langsung, hapus modul sekali pakai,
+   gabungkan file kecil kembali ke `runtime.ts` atau sibling terfokus, dan jaga agar file
+   kompatibilitas SDK tetap terpisah dari hot path bawaan.
 
 6. Pemangkasan pengujian, delta pengujian yang diharapkan: -300 hingga -600.
-   Hapus pengujian yang hanya memeriksa bentuk wrapper yang dihapus. Pertahankan pengujian perilaku untuk
-   penolakan perintah, fallback grup, pencocokan origin-subject, activation skip,
-   grup akses, pairing, dan redaction.
+   Hapus pengujian yang hanya menegaskan bentuk wrapper yang dihapus. Pertahankan pengujian perilaku untuk
+   penolakan command, fallback grup, pencocokan origin-subject, activation skip,
+   grup akses, pairing, dan reduksi.
 
-Bentuk minimum yang diharapkan saat landing setelah gelombang ini:
+Bentuk landing minimum yang diharapkan setelah gelombang ini:
 
 ```text
 plugin production     <= -1,500
@@ -305,14 +305,14 @@ total                 <= +2,000
 ## Jangan Pindahkan
 
 Jangan pindahkan default konfigurasi platform, UX penyiapan, teks doctor/fix, pencarian API,
-pemeriksaan keberadaan pemilik Slack, penanganan alias/verifikasi Matrix, penguraian
-panggilan balik Telegram, penguraian sintaks perintah, pendaftaran perintah native, penguraian
-muatan reaksi, balasan pemasangan, balasan perintah, pengakuan, pengetikan, media, riwayat,
+pemeriksaan keberadaan owner Slack, penanganan alias/verifikasi Matrix, parsing callback
+Telegram, parsing sintaks perintah, pendaftaran perintah native, parsing payload reaksi,
+balasan pairing, balasan perintah, ack, pengetikan, media, riwayat,
 atau log.
 
 ## Verifikasi
 
-Loop lokal tertarget:
+Loop lokal terarah:
 
 ```sh
 pnpm lint:extensions:no-deprecated-channel-access
@@ -324,24 +324,24 @@ pnpm check:docs
 git diff --check
 ```
 
-Gunakan Testbox untuk bukti gerbang perubahan luas/rangkaian pengujian lengkap setelah tren LOC
+Gunakan Testbox untuk bukti gate perubahan luas/suite penuh setelah tren LOC
 berada dalam anggaran.
 
 Setiap paket kerja mencatat:
 
-- LOC sebelum/sesudah menurut kategori
-- pembungkus plugin yang dihapus
-- LOC pembantu core baru, jika ada
-- pengujian tertarget yang dijalankan
+- LOC sebelum/sesudah berdasarkan kategori
+- wrapper Plugin yang dihapus
+- LOC helper inti baru, jika ada
+- pengujian terarah yang dijalankan
 - daftar hotspot yang tersisa
 
 ## Kriteria Keluar
 
-- impor produksi bawaan tidak memiliki facade channel-access atau command-auth yang sudah tidak digunakan
+- impor produksi bawaan tidak memiliki facade channel-access atau command-auth yang usang
 - kode kompatibilitas diisolasi ke seam SDK/core
-- plugin bawaan menggunakan proyeksi ingress atau hasil generik secara langsung
-- LOC produksi plugin setidaknya negatif bersih 1.500 terhadap `origin/main`
-- LOC produksi core <= +1.500, atau setiap kelebihan dibayar selagi total tetap
-  <= +2.000
-- pengujian representatif mencakup penyensoran, rute, perintah/peristiwa, aktivasi,
-  grup akses, dan perilaku fallback khusus channel
+- Plugin bawaan mengonsumsi proyeksi ingress atau outcome generik secara langsung
+- LOC produksi Plugin setidaknya negatif bersih 1.500 dibandingkan `origin/main`
+- LOC produksi inti adalah `<= +1,500`, atau setiap kelebihan dibayar sementara total
+  tetap `<= +2,000`
+- pengujian representatif mencakup redaksi, rute, perintah/event, aktivasi,
+  access-group, dan perilaku fallback khusus channel

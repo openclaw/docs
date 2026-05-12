@@ -1,26 +1,26 @@
 ---
 read_when:
-    - Kanal girişi yeniden düzenlemesinin neden çok fazla kod eklediğini denetleme
-    - Paketle birlikte gelen Plugin'lerden çekirdeğe rota, komut, olay, etkinleştirme veya erişim grubu politikasını taşıma
-    - Bir kanal giriş yardımcısının paketlenmiş Plugin kodunu gerçekten silip silmediğini gözden geçirme
+    - Kanal giriş yeniden düzenlemesinin neden gereğinden fazla kod eklediğini denetleme
+    - Rota, komut, olay, etkinleştirme veya erişim grubu ilkesini paketle birlikte gelen Plugin'lerden çekirdeğe taşıma
+    - Bir kanal giriş yardımcısının paketle birlikte gelen Plugin kodunu gerçekten silip silmediğini inceleme
 sidebarTitle: Ingress core deletion
-summary: Yinelenen kanal giriş bağlayıcı kodunu çekirdeğe taşımaya yönelik silme öncelikli plan.
-title: Giriş çekirdeğini silme planı
+summary: Tekrarlanan kanal giriş bağlayıcı kodunu çekirdeğe taşımaya yönelik silme öncelikli plan.
+title: Ingress çekirdeği silme planı
 x-i18n:
-    generated_at: "2026-05-10T19:53:44Z"
+    generated_at: "2026-05-12T00:59:48Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 71afcf5d4f58c57ecfe7b388325279700a723ec1fcd926f644095106b662c3d0
+    source_hash: 1fdf1e7c9636d02c48c4b5d2b4a51470317dd64e2270c7fae779777c0d787afc
     source_path: refactor/ingress-core.md
     workflow: 16
 ---
 
-# Ingress çekirdeği silme planı
+# Giriş çekirdeği silme planı
 
-Ingress yeniden düzenlemesi binlerce net satır eklerken sağlıklı değildir. Çekirdekte
-merkezileştirme yalnızca paketli Plugin üretim kodu küçüldüğünde ve eski
-üçüncü taraf SDK uyumluluğu SDK/çekirdek shim'lerine karantinaya alındığında
-anlamlıdır.
+Giriş yeniden düzenlemesi binlerce net satır eklerken sağlıklı değildir. Çekirdek
+merkezileştirme, yalnızca paketli Plugin üretim kodu küçüldüğünde ve
+eski üçüncü taraf SDK uyumluluğu SDK/çekirdek shim'lerine karantinaya alındığında
+sayılır.
 
 İstenen çalışma zamanı şekli:
 
@@ -37,14 +37,14 @@ old third-party helper
   -> old return shape preserved
 ```
 
-Paketli Plugin'ler, ilgili tür herkese açık Plugin API'si olmadığı sürece
-ingress'i yeniden yerel `AccessResult`, `GroupAccessDecision`,
-`CommandAuthDecision`, `DmCommandAccess` veya `{ allowed, reasonCode }`
-şekillerine çevirmemelidir.
+Paketli Plugin'ler, bu tür public Plugin API olmadıkça girişi yerel `AccessResult`,
+`GroupAccessDecision`, `CommandAuthDecision`, `DmCommandAccess` veya
+`{ allowed, reasonCode }` şekillerine geri çevirmemelidir.
 
 ## Bütçe
 
-İzlenmeyen dosyalar dahil, `origin/main` ile PR merge-base'ine göre ölçüldü.
+İzlenmeyen dosyalar dahil olmak üzere PR merge-base'i `origin/main` ile
+karşılaştırılarak ölçüldü.
 
 ```text
 merge-base            1671e7532adb
@@ -69,7 +69,7 @@ core production       <= +1,200
 total                 <= 0
 ```
 
-Kalan en düşük temizlik:
+Minimum kalan temizlik:
 
 ```text
 plugin production     needs 260 more net deleted lines
@@ -78,8 +78,8 @@ core production       still +1,876 over standalone budget, unless paid down by p
 ```
 
 Yalnızca yorum silme temizlik sayılmaz. Önceki bütçe geçişi, geri yüklenen QQBot
-açıklayıcı yorumlarını da içerdiği için fazla cömertti; bu belge yalnızca
-çalıştırılabilir/belge/test kodu hareketini izler.
+açıklayıcı yorumlarını içerdiği için fazla cömertti; bu belge yalnızca
+yürütülebilir/belge/test kodu hareketini izler.
 
 Her temizlik dalgasından sonra yeniden ölçün:
 
@@ -92,7 +92,7 @@ pnpm lint:extensions:no-deprecated-channel-access
 
 ## Tanı
 
-İlk geçiş paylaşılan ingress çekirdeğini ekledi, sonra yanında fazla fazla
+İlk geçiş paylaşılan giriş çekirdeğini ekledi, ardından yanında çok fazla
 Plugin-yerel yetkilendirme bıraktı:
 
 ```text
@@ -102,15 +102,15 @@ platform facts
   -> plugin-local if/else ladder
 ```
 
-Bu modeli yineler. Çekirdek üretim yaklaşık 3.376 satır büyürken paketli Plugin
-üretimi 1.240 satır küçüldü. Bu ilk geçişten daha iyi, ancak en düşük bütçenin
-içinde değil. Düzeltme hâlâ silme öncelikli olmalıdır:
+Bu, modeli yineler. Çekirdek üretim yaklaşık 3.376 satır büyürken
+paketli Plugin üretimi 1.240 satır küçüldü. Bu, ilk geçişten daha iyi,
+ancak minimum bütçenin içinde değil. Çözüm hâlâ silme önceliklidir:
 
-- yalnızca ingress alanlarını yeniden adlandıran Plugin DTO'larını sil
-- yalnızca sarmalayıcı şeklini doğrulayan testleri sil
-- çekirdek yardımcılarını yalnızca aynı yama paketli Plugin kodunu sildiğinde ekle
-- eski SDK uyumluluğunu yalnızca SDK/çekirdek shim'lerinde tut
-- sarmalayıcı silme kararlı şekli açığa çıkardıktan sonra çekirdeği yeniden paketle
+- yalnızca giriş alanlarını yeniden adlandıran Plugin DTO'larını silin
+- yalnızca sarmalayıcı şeklini doğrulayan testleri silin
+- çekirdek yardımcılarını yalnızca aynı yama paketli Plugin kodunu sildiğinde ekleyin
+- eski SDK uyumluluğunu yalnızca SDK/çekirdek shim'lerinde tutun
+- sarmalayıcı silme kararlı şekli ortaya çıkardıktan sonra çekirdeği yeniden paketleyin
 
 ## Sıcak Noktalar
 
@@ -135,64 +135,61 @@ extensions/qqbot/src/engine/commands/slash-command-handler.ts +20
 extensions/telegram/src/bot-handlers.runtime.ts            +19
 ```
 
-Dal henüz en düşük bütçenin içinde değil. Kalan inceleme açısından ilgili iş,
+Dal henüz minimum bütçenin içinde değil. Kalan incelemeyle ilgili çalışma,
 başka bir çekirdek soyutlaması eklemeden önce yinelenen yetkilendirme akışını,
-turn iskelelerini veya sarmalayıcı testlerini silmelidir.
+turn iskele kodunu veya sarmalayıcı testlerini silmelidir.
 
-## Güncel Kod Okuması
+## Geçerli Kod Okuması
 
-Sağlıklı çekirdek bağlantı noktası zaten `src/channels/message-access/runtime.ts`
-içinde var: kimlik bağdaştırıcılarını, etkili izin listelerini, eşleştirme deposu
-okumalarını, rota tanımlayıcılarını, komut/olay preset'lerini, erişim gruplarını
-ve son çözümlenmiş `ResolvedChannelMessageIngress` projeksiyonunu o sahiplenir.
+Sağlıklı çekirdek dikişi zaten `src/channels/message-access/runtime.ts` içinde var:
+kimlik bağdaştırıcıları, etkin izin listeleri, eşleştirme deposu okumaları, rota
+tanımlayıcıları, komut/olay preset'leri, erişim grupları ve son çözümlenmiş
+`ResolvedChannelMessageIngress` projeksiyonu ona aittir.
 
-Kalan büyüme çoğunlukla bu bağlantı noktasının üstüne katmanlanmış Plugin
-yapıştırıcı kodudur:
+Kalan büyüme çoğunlukla bu dikişin üstüne katmanlanan Plugin yapıştırıcısıdır:
 
 - `extensions/telegram/src/ingress.ts` çekirdek kararlarını Telegram'a özgü
-  komut/olay yardımcılarıyla sarar, sonra çağrı noktaları hâlâ önceden
-  hesaplanmış normalleştirilmiş izin listeleri ve sahip listeleri geçirir.
+  komut/olay yardımcılarında sarmalar, ardından çağrı noktaları hâlâ önceden
+  hesaplanmış normalleştirilmiş izin listelerini ve sahip listelerini geçirir.
 - `extensions/discord/src/monitor/dm-command-auth.ts`,
   `extensions/feishu/src/policy.ts`, `extensions/googlechat/src/monitor-access.ts`
-  ve `extensions/matrix/src/matrix/monitor/access-state.ts` hâlâ ingress'in
-  yanında yerel ilke DTO'ları veya eski karar adlarını tutar.
+  ve `extensions/matrix/src/matrix/monitor/access-state.ts` hâlâ girişin yanında
+  yerel ilke DTO'larını veya eski karar adlarını tutar.
 - `extensions/signal/src/monitor/access-policy.ts` Signal kimlik
-  normalleştirmesini ve eşleştirme yanıtlarını doğru şekilde yerel tutar, ancak
-  yine de doğrudan ingress tüketimine çökmeli bir sarmalayıcı bağlantı noktası
-  içerir.
+  normalleştirmesini ve eşleştirme yanıtlarını doğru biçimde yerel tutar,
+  ancak hâlâ doğrudan giriş tüketimine çökmelidir.
 - `extensions/nextcloud-talk/src/inbound.ts`, `extensions/irc/src/inbound.ts`,
   `extensions/qa-channel/src/inbound.ts`, `extensions/zalo/src/monitor.ts` ve
-  `extensions/zalouser/src/monitor.ts` hâlâ ingress çekirdeğinin dışında
-  paylaşılan turn yardımcılarına taşınabilecek rota/zarf/turn oluşturmayı yineler.
+  `extensions/zalouser/src/monitor.ts` hâlâ giriş çekirdeği dışındaki paylaşılan
+  turn yardımcılarına taşınabilecek rota/zarf/turn derlemesini yineler.
 
-Sonuç: çekirdeğe daha fazla kod taşımak yalnızca aynı yamada bu Plugin
-sarmalayıcı katmanlarını siliyorsa yararlıdır. Sarmalayıcı dönüşlerini yerinde
-bırakırken başka bir soyutlama eklemek hatayı tekrarlar.
+Sonuç: Çekirdeğe daha fazla kod taşımak, yalnızca aynı yamada bu Plugin
+sarmalayıcı katmanlarını silerse yararlıdır. Sarmalayıcı dönüşleri yerinde
+kalırken başka bir soyutlama eklemek aynı hatayı yineler.
 
 ## Sınır
 
 Çekirdek genel ilkeye sahiptir:
 
-- izin listesi normalleştirme ve eşleştirme
-- erişim grubu genişletme ve tanılama
+- izin listesi normalleştirmesi ve eşleştirmesi
+- erişim grubu genişletmesi ve tanılamaları
 - eşleştirme deposu DM izin listesi okumaları
-- rota, gönderen, komut, olay ve etkinleştirme kapıları
-- kabul eşlemesi: gönderim, düşürme, atlama, gözlemleme, eşleştirme
+- rota, gönderen, komut, olay ve aktivasyon geçitleri
+- kabul eşlemesi: dispatch, drop, skip, observe, pairing
 - redakte edilmiş durum, kararlar, tanılamalar ve SDK uyumluluk projeksiyonları
-- kimlik, rota, komut, olay, etkinleştirme ve sonuçlar için yeniden kullanılabilir
-  genel tanımlayıcılar
+- kimlik, rota, komut, olay, aktivasyon ve sonuçlar için yeniden kullanılabilir genel tanımlayıcılar
 
 Plugin'ler taşıma gerçeklerine ve yan etkilere sahiptir:
 
-- webhook/soket/istek özgünlüğü
+- Webhook/soket/istek özgünlüğü
 - platform kimliği çıkarma ve API aramaları
 - kanala özgü ilke varsayılanları
-- eşleştirme sınaması teslimi, yanıtlar, onaylar, tepkiler, yazıyor durumu, medya,
-  geçmiş, kurulum, doctor, durum, günlükler ve kullanıcıya dönük metin
+- eşleştirme sınaması teslimi, yanıtlar, ack'ler, tepkiler, yazıyor göstergesi,
+  medya, geçmiş, kurulum, doctor, durum, günlükler ve kullanıcıya dönük kopya
 
-Çekirdek kanaldan bağımsız kalmalıdır: `src/channels/message-access` içinde
-Discord, Slack, Telegram, Matrix, oda, guild, space, API istemcisi veya
-Plugin'e özgü varsayılan bulunmamalıdır.
+Çekirdek kanal-bağımsız kalmalıdır: `src/channels/message-access` içinde
+Discord, Slack, Telegram, Matrix, oda, sunucu, alan, API istemcisi veya
+Plugin'e özgü varsayılan olmamalıdır.
 
 ## Kabul Kuralı
 
@@ -205,104 +202,102 @@ three or more callers     plugin deletion must be at least 2x new core LOC
 compatibility-only helper SDK/core shim only; never bundled hot paths
 ```
 
-Şu durumlarda durup yeniden tasarlayın:
+Şu durumlarda durun ve yeniden tasarlayın:
 
-- Plugin üretim LOC artarsa
-- testler üretim küçülmesinden daha hızlı büyürse
-- paketli bir sıcak yol yalnızca `ResolvedChannelMessageIngress` adlarını yeniden
-  adlandıran bir DTO döndürürse
-- bir çekirdek yardımcısı kanal kimliğine, platform nesnesine, API istemcisine
-  veya kanala özgü varsayılana ihtiyaç duyarsa
+- Plugin üretim LOC'u artarsa
+- testler üretimin küçülmesinden daha hızlı büyürse
+- paketli bir sıcak yol yalnızca `ResolvedChannelMessageIngress` öğesini yeniden adlandıran bir DTO döndürürse
+- çekirdek yardımcısı bir kanal id'si, platform nesnesi, API istemcisi veya
+  kanala özgü varsayılan gerektirirse
 
-## İş Paketleri
+## Çalışma Paketleri
 
-1. Bütçeyi dondur.
-   LOC'u PR'a koy, deprecated-ingress lint'i yeşil tut ve temizlik commit'lerine
-   önce/sonra LOC ekle.
+1. Bütçeyi dondurun.
+   LOC'u PR'ye koyun, deprecated-ingress lint'i yeşil tutun ve temizlik commit'lerine
+   önce/sonra LOC ekleyin.
 
-2. İnce DTO bağlantı noktalarını sil.
-   Plugin-yerel sarmalayıcı dönüşlerini doğrudan
-   `ResolvedChannelMessageIngress`, `senderAccess`, `commandAccess`,
-   `routeAccess` veya `ingress` okumalarıyla değiştir. QQBot, Telegram, Slack,
-   Discord, Signal, Feishu, Matrix, iMessage ve Tlon ile başla. Sarmalayıcı
-   şekli testlerini sil; davranış testlerini koru.
+2. İnce DTO dikişlerini silin.
+   Plugin-yerel sarmalayıcı dönüşlerini doğrudan `ResolvedChannelMessageIngress`,
+   `senderAccess`, `commandAccess`, `routeAccess` veya `ingress` ile değiştirin.
+   QQBot, Telegram, Slack, Discord, Signal, Feishu, Matrix, iMessage ve
+   Tlon ile başlayın. Sarmalayıcı-şekli testlerini silin; davranış testlerini koruyun.
 
-3. Sonuç sınıflandırmasını yalnızca silmelerle ekle.
-   Genel bir sınıflandırıcı `dispatch`, `pairing-required`, `skip-activation`,
-   `drop-command`, `drop-route`, `drop-sender` ve `drop-ingress` açığa çıkarabilir.
-   Reason string'lerinden değil, karar grafiğinden türemeli ve aynı yamada en az
-   üç Plugin'i taşımalıdır.
+3. Sonuç sınıflandırmasını yalnızca silmelerle ekleyin.
+   Genel bir sınıflandırıcı `dispatch`, `pairing-required`,
+   `skip-activation`, `drop-command`, `drop-route`, `drop-sender` ve
+   `drop-ingress` açığa çıkarabilir. Reason string'lerden değil karar grafiğinden
+   türemeli ve aynı yamada en az üç Plugin'i taşımalıdır.
 
-4. Rota tanımlayıcı oluşturucularını yalnızca silmelerle ekle.
-   Genel rota hedefi ve rota gönderen yardımcıları yalnızca rota ağırlıklı
-   Plugin'leri hemen küçültürse kabul edilebilir: Google Chat, IRC,
-   Microsoft Teams, Nextcloud Talk, Mattermost, Slack, Zalo ve Zalo Personal.
+4. Rota tanımlayıcı oluşturucularını yalnızca silmelerle ekleyin.
+   Genel rota hedefi ve rota gönderen yardımcıları, yalnızca rota-ağırlıklı
+   Plugin'leri hemen küçültürse kabul edilebilir: Google Chat, IRC, Microsoft Teams,
+   Nextcloud Talk, Mattermost, Slack, Zalo ve Zalo Personal.
 
-5. Komut/olay preset'lerini yalnızca silmelerle ekle.
-   Metin komutu, native komut, callback ve origin-subject şekillerini
-   merkezileştir. Komut tüketicileri, komut kapısı çalışmadığında varsayılan
-   olarak yetkisiz olmalıdır; olaylar eşleştirme başlatmamalıdır.
+5. Komut/olay preset'lerini yalnızca silmelerle ekleyin.
+   Metin-komutu, yerel-komut, callback ve origin-subject şekillerini merkezileştirin.
+   Komut tüketicileri, komut geçidi çalışmadığında varsayılan olarak yetkisiz olmalıdır;
+   olaylar eşleştirmeyi başlatmamalıdır.
 
-6. Kimlik preset'lerini yalnızca kalıp kodu kaldırdıkları yerlerde paylaş.
-   Stable-id, stable-id-plus-aliases, phone/e164 ve multi-identifier yardımcılarına,
-   ham değerler yalnızca bağdaştırıcı girdisine girdiğinde ve redakte edilmiş
-   durum opak kimlikleri/sayımları tuttuğunda izin verilir.
+6. Kimlik preset'lerini yalnızca kalıp kodu kaldırdıkları yerde paylaşın.
+   Kararlı-id, kararlı-id-artı-takma-adlar, telefon/e164 ve çoklu-tanımlayıcı
+   yardımcılarına, ham değerler yalnızca bağdaştırıcı girdisine girdiğinde ve
+   redakte edilmiş durum opak id'leri/sayıları tuttuğunda izin verilir.
 
-7. Yetkili turn oluşturmayı paylaş.
-   Ingress çekirdeğinin dışında, QA Channel, IRC, Nextcloud Talk, Zalo ve Zalo
-   Personal'dan yinelenen rota/zarf/bağlam/yanıt iskelelerini kaldır. Çekirdek
-   rota/oturum/zarf/gönderim sıralamasına sahip olabilir; Plugin'ler teslimi ve
+7. Yetkili turn derlemesini paylaşın.
+   Giriş çekirdeği dışında, QA Channel, IRC, Nextcloud Talk, Zalo ve Zalo Personal'dan
+   yinelenen rota/zarf/bağlam/yanıt iskele kodunu kaldırın. Çekirdek
+   rota/oturum/zarf/dispatch sıralamasına sahip olabilir; Plugin'ler teslimi ve
    kanala özgü bağlamı tutar.
 
-8. Uyumluluğu karantinaya al.
-   Kullanımdan kaldırılmış SDK yardımcıları kaynak uyumlu kalır, ancak paketli
-   sıcak yollar kullanımdan kaldırılmış ingress veya command-auth cephelerini
-   içe aktarmamalıdır. Uyumluluk testleri paketli-Plugin iç ayrıntılarını değil,
-   sahte üçüncü taraf Plugin'leri kullanmalıdır.
+8. Uyumluluğu karantinaya alın.
+   Kullanımdan kaldırılmış SDK yardımcıları kaynak-uyumlu kalır, ancak paketli
+   sıcak yollar kullanımdan kaldırılmış giriş veya command-auth facade'larını
+   içe aktarmamalıdır. Uyumluluk testleri paketli-Plugin internals yerine sahte
+   üçüncü taraf Plugin'leri kullanmalıdır.
 
-9. Çekirdeği yeniden paketle.
-   Sarmalayıcı silmeden sonra tek kullanımlık modülleri birleştir, kullanılmayan
-   dışa aktarmaları kaldır, uyumluluk projeksiyonunu sıcak yollardan çıkar ve
-   kimlik, rota, komut/olay, etkinleştirme, erişim grupları ve uyumluluk
-   shim'leri için odaklanmış testleri koru.
+9. Çekirdeği yeniden paketleyin.
+   Sarmalayıcı silmeden sonra tek-kullanımlı modülleri daraltın, kullanılmayan
+   export'ları kaldırın, uyumluluk projeksiyonunu sıcak yolların dışına taşıyın
+   ve kimlik, rota, komut/olay, aktivasyon, erişim grupları ve uyumluluk shim'leri
+   için odaklı testleri koruyun.
 
 ## Silme Dalgaları
 
-Bunları sırayla çalıştırın. Her dalga paketli üretim LOC'unu düşürmelidir.
+Bunları sırayla çalıştırın. Her dalga paketli üretim LOC'unu azaltmalıdır.
 
-1. Sarmalayıcı çökertme, beklenen Plugin deltası: -400 ila -600.
+1. Sarmalayıcı çökertme, beklenen Plugin deltası: -400 ile -600.
    Plugin-yerel `resolveXAccess`, `resolveXCommandAccess` ve
-   `accessFromIngress` sonuç türlerini `ResolvedChannelMessageIngress` üzerinden
-   doğrudan okumalarla değiştir. İlk hedefler: Discord DM komut yetkilendirmesi,
-   Feishu ilkesi, Matrix erişim durumu, Telegram ingress, Signal erişim ilkesi,
-   QQBot SDK bağdaştırıcısı.
+   `accessFromIngress` sonuç türlerini doğrudan `ResolvedChannelMessageIngress`
+   okumalarıyla değiştirin. İlk hedefler: Discord DM command auth,
+   Feishu policy, Matrix access state, Telegram ingress, Signal access policy,
+   QQBot SDK adapter.
 
-2. Paylaşılan sonuç yardımcıları, beklenen Plugin deltası: -200 ila -350.
-   Tek bir genel sınıflandırıcıyı yalnızca yinelenen `shouldBlockControlCommand`,
-   eşleştirme, etkinleştirme atlama, rota engelleme ve gönderen engelleme
-   merdivenlerini en az üç Plugin'de siliyorsa ekle.
+2. Paylaşılan sonuç yardımcıları, beklenen Plugin deltası: -200 ile -350.
+   Genel bir sınıflandırıcıyı yalnızca en az üç Plugin genelinde yinelenen
+   `shouldBlockControlCommand`, eşleştirme, aktivasyon atlama, rota engelleme
+   ve gönderen engelleme merdivenlerini siliyorsa ekleyin.
 
-3. Rota tanımlayıcı oluşturucular, beklenen Plugin deltası: -200 ila -350.
-   Yinelenen rota hedefi ve rota gönderen tanımlayıcı oluşturmayı çekirdek
-   yardımcılara taşı. İlk hedefler: Google Chat, IRC, Microsoft Teams,
+3. Rota tanımlayıcı oluşturucular, beklenen Plugin deltası: -200 ile -350.
+   Yinelenen rota hedefi ve rota gönderen tanımlayıcı derlemesini çekirdek
+   yardımcılara taşıyın. İlk hedefler: Google Chat, IRC, Microsoft Teams,
    Nextcloud Talk, Mattermost, Slack, Zalo, Zalo Personal.
 
-4. Turn oluşturma paylaşımı, beklenen Plugin deltası: -250 ila -450.
-   Basit gelen Plugin'ler için ortak rota/oturum/zarf/gönderim sıralamasını
-   kullan. İlk hedefler: QA Channel, IRC, Nextcloud Talk, Zalo, Zalo Personal.
+4. Turn derlemesi paylaşımı, beklenen Plugin deltası: -250 ile -450.
+   Basit gelen Plugin'ler için ortak rota/oturum/zarf/dispatch sıralamasını
+   kullanın. İlk hedefler: QA Channel, IRC, Nextcloud Talk, Zalo, Zalo Personal.
 
-5. Çekirdek yeniden paketleme, beklenen çekirdek deltası: -300 ila -700.
+5. Çekirdek yeniden paketleme, beklenen çekirdek deltası: -300 ile -700.
    Plugin'ler çalışma zamanı projeksiyonlarını doğrudan tükettikten sonra
-   tek kullanımlık modülleri sil, küçük dosyaları yeniden `runtime.ts` veya
-   odaklı kardeş dosyalarla birleştir ve SDK uyumluluk dosyalarını paketli sıcak
-   yollardan ayrı tut.
+   tek-kullanımlı modülleri silin, küçük dosyaları yeniden `runtime.ts` içine
+   veya odaklı kardeşlere birleştirin ve SDK uyumluluk dosyalarını paketli sıcak
+   yollardan ayrı tutun.
 
-6. Test budama, beklenen test deltası: -300 ila -600.
-   Yalnızca kaldırılmış sarmalayıcı şekillerini doğrulayan testleri sil. Komut
-   reddi, grup fallback'i, origin-subject eşleştirme, etkinleştirme atlama,
-   erişim grupları, eşleştirme ve redaksiyon için davranış testlerini koru.
+6. Test budama, beklenen test deltası: -300 ile -600.
+   Yalnızca kaldırılmış sarmalayıcı şekillerini doğrulayan testleri silin.
+   Komut reddi, grup fallback'i, origin-subject eşleştirmesi, aktivasyon atlama,
+   erişim grupları, eşleştirme ve redaksiyon için davranış testlerini koruyun.
 
-Bu dalgalardan sonra beklenen en düşük iniş şekli:
+Bu dalgalardan sonra beklenen minimum landing şekli:
 
 ```text
 plugin production     <= -1,500
@@ -313,15 +308,15 @@ total                 <= +2,000
 
 ## Taşımayın
 
-Platform yapılandırma varsayılanlarını, kurulum kullanıcı deneyimini, doctor/fix metnini, API aramalarını,
-Slack sahip-varlığı kontrollerini, Matrix alias/doğrulama işlemeyi, Telegram
-callback ayrıştırmasını, komut söz dizimi ayrıştırmasını, yerel komut kaydını, reaksiyon
+Platform yapılandırma varsayılanlarını, kurulum kullanıcı deneyimini, doctor/fix kopyasını, API aramalarını,
+Slack sahip varlığı kontrollerini, Matrix takma ad/doğrulama işlemeyi, Telegram
+callback ayrıştırmasını, komut söz dizimi ayrıştırmasını, yerel komut kaydını, tepki
 yükü ayrıştırmasını, eşleştirme yanıtlarını, komut yanıtlarını, onayları, yazıyor durumunu, medyayı, geçmişi
 veya günlükleri taşımayın.
 
 ## Doğrulama
 
-Hedeflenmiş yerel döngü:
+Hedefli yerel döngü:
 
 ```sh
 pnpm lint:extensions:no-deprecated-channel-access
@@ -333,24 +328,24 @@ pnpm check:docs
 git diff --check
 ```
 
-LOC eğilimi bütçe içine girdikten sonra geniş değiştirilmiş kapılar/tam paket kanıtı için
+LOC eğilimi bütçe içinde olduğunda geniş değişiklik kapıları/tam paket kanıtı için
 Testbox kullanın.
 
 Her iş paketi şunları kaydeder:
 
 - kategoriye göre önce/sonra LOC
-- silinen Plugin sarmalayıcıları
-- varsa yeni çekirdek yardımcı LOC
-- çalıştırılan hedeflenmiş testler
+- silinen plugin sarmalayıcıları
+- varsa yeni core yardımcı LOC
+- çalıştırılan hedefli testler
 - kalan etkin nokta listesi
 
 ## Çıkış Kriterleri
 
-- paketlenmiş üretim içe aktarmalarında kullanımdan kaldırılmış channel-access veya command-auth cepheleri yok
-- uyumluluk kodu SDK/çekirdek sınırlarıyla izole edilmiştir
-- paketlenmiş Plugin'ler ingress projeksiyonlarını veya genel sonuçları doğrudan tüketir
-- Plugin üretim LOC'si `origin/main` karşısında en az 1.500 net negatiftir
-- çekirdek üretim LOC'si <= +1.500'dür veya toplam
-  <= +2.000 kalırken herhangi bir fazlalığın bedeli ödenmiştir
-- temsili testler redaksiyon, rota, komut/olay, etkinleştirme,
-  erişim grubu ve kanala özgü geri dönüş davranışını kapsar
+- paketlenmiş üretim içe aktarımları, kullanımdan kaldırılmış channel-access veya command-auth cephelerini kullanmaz
+- uyumluluk kodu SDK/core dikişleriyle sınırlandırılmıştır
+- paketlenmiş plugin'ler ingress projeksiyonlarını veya genel sonuçları doğrudan tüketir
+- plugin üretim LOC değeri `origin/main` karşısında net en az 1.500 negatiftir
+- core üretim LOC değeri `<= +1,500` olur veya toplam
+  `<= +2,000` kalırken herhangi bir fazlalık telafi edilir
+- temsili testler redaksiyon, rota, komut/olay, aktivasyon,
+  access-group ve kanala özgü geri dönüş davranışını kapsar

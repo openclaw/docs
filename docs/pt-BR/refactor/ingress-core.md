@@ -1,28 +1,27 @@
 ---
 read_when:
-    - Auditando por que a refatoração de entrada de canais adicionou código demais
-    - Mover políticas de rota, comando, evento, ativação ou grupo de acesso de plugins incluídos para o núcleo
-    - Revisando se um auxiliar de ingresso de canal realmente exclui o código de Plugin incluído
+    - Auditando por que a refatoração da entrada de canais adicionou código demais
+    - Mover política de rota, comando, evento, ativação ou grupo de acesso de plugins incluídos para o núcleo
+    - Revisando se um auxiliar de entrada de canal realmente exclui código de Plugin empacotado
 sidebarTitle: Ingress core deletion
-summary: Plano com prioridade à remoção para mover o código de integração repetido de entrada de canais para o núcleo.
-title: Plano de exclusão do núcleo de entrada
+summary: Plano que prioriza a remoção para mover o código de cola repetido de entrada de canais para o núcleo.
+title: Plano de exclusão do núcleo de ingresso
 x-i18n:
-    generated_at: "2026-05-10T19:48:55Z"
+    generated_at: "2026-05-12T00:59:41Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 71afcf5d4f58c57ecfe7b388325279700a723ec1fcd926f644095106b662c3d0
+    source_hash: 1fdf1e7c9636d02c48c4b5d2b4a51470317dd64e2270c7fae779777c0d787afc
     source_path: refactor/ingress-core.md
     workflow: 16
 ---
 
-# Plano de exclusão do núcleo de entrada
+# Plano de exclusão do núcleo de ingress
 
-A refatoração de entrada não está saudável enquanto adiciona milhares de linhas
-líquidas. A centralização no núcleo só conta quando o código de produção de
-Plugins incluídos fica menor e a compatibilidade antiga do SDK de terceiros fica
-confinada a shims de SDK/núcleo.
+A refatoração de ingress não está saudável enquanto adiciona milhares de linhas líquidas. A
+centralização no núcleo só conta quando o código de produção dos plugins empacotados fica menor e
+a compatibilidade antiga com SDKs de terceiros fica isolada em shims do SDK/núcleo.
 
-Forma desejada em runtime:
+Formato de runtime desejado:
 
 ```text
 bundled plugin event
@@ -37,14 +36,13 @@ old third-party helper
   -> old return shape preserved
 ```
 
-Plugins incluídos não devem traduzir a entrada de volta para formatos locais de
-`AccessResult`, `GroupAccessDecision`, `CommandAuthDecision`, `DmCommandAccess`
-ou `{ allowed, reasonCode }`, a menos que esse tipo seja uma API pública de
-Plugin.
+Plugins empacotados não devem traduzir ingress de volta para formatos locais de `AccessResult`,
+`GroupAccessDecision`, `CommandAuthDecision`, `DmCommandAccess` ou
+`{ allowed, reasonCode }`, a menos que esse tipo seja uma API pública de Plugin.
 
 ## Orçamento
 
-Medido em relação à base de merge do PR com `origin/main`, incluindo arquivos
+Medido contra a base de mesclagem do PR com `origin/main`, incluindo arquivos
 não rastreados.
 
 ```text
@@ -78,10 +76,9 @@ total                 needs 775 more net deleted lines
 core production       still +1,876 over standalone budget, unless paid down by plugin deletion
 ```
 
-A exclusão apenas de comentários não conta como limpeza. A passagem anterior do
-orçamento foi generosa demais porque incluiu comentários explicativos restaurados
-do QQBot; este documento acompanha apenas a movimentação de código executável,
-documentação e testes.
+Exclusão apenas de comentários não conta como limpeza. A passagem de orçamento anterior foi
+generosa demais porque incluiu comentários explicativos restaurados do QQBot; este
+documento rastreia apenas movimentação de código executável, documentação e testes.
 
 Meça novamente após cada onda de limpeza:
 
@@ -94,8 +91,8 @@ pnpm lint:extensions:no-deprecated-channel-access
 
 ## Diagnóstico
 
-A primeira passagem adicionou o kernel compartilhado de entrada e depois deixou
-autorização local demais nos Plugins ao lado dele:
+A primeira passagem adicionou o kernel compartilhado de ingress, depois deixou autorização
+local demais nos plugins ao lado dele:
 
 ```text
 platform facts
@@ -104,20 +101,19 @@ platform facts
   -> plugin-local if/else ladder
 ```
 
-Isso duplica o modelo. A produção do núcleo cresceu cerca de 3.376 linhas,
-enquanto a produção dos Plugins incluídos ficou 1.240 linhas menor. Isso é melhor
-do que a primeira passagem, mas ainda não está dentro do orçamento mínimo. A
-correção continua sendo priorizar exclusão:
+Isso duplica o modelo. A produção do núcleo cresceu cerca de 3.376 linhas, enquanto
+a produção dos plugins empacotados ficou 1.240 linhas menor. Isso é melhor que a primeira
+passagem, mas não está dentro do orçamento mínimo. A correção continua sendo orientada por exclusão:
 
-- excluir DTOs de Plugin que apenas renomeiam campos de entrada
+- excluir DTOs de plugins que apenas renomeiam campos de ingress
 - excluir testes que apenas verificam o formato de wrappers
-- adicionar helpers de núcleo somente quando o mesmo patch excluir código de Plugins incluídos
-- manter a compatibilidade antiga do SDK apenas em shims de SDK/núcleo
-- recompactar o núcleo depois que a exclusão de wrappers expuser o formato estável
+- adicionar helpers de núcleo somente quando o mesmo patch excluir código de plugins empacotados
+- manter compatibilidade antiga do SDK somente em shims de SDK/núcleo
+- reempacotar o núcleo depois que a exclusão de wrappers expuser o formato estável
 
-## Pontos Críticos
+## Pontos críticos
 
-Arquivos positivos de produção incluída que ainda precisam encolher:
+Arquivos positivos de produção empacotada que ainda precisam encolher:
 
 ```text
 extensions/telegram/src/ingress.ts                        +126
@@ -138,70 +134,66 @@ extensions/qqbot/src/engine/commands/slash-command-handler.ts +20
 extensions/telegram/src/bot-handlers.runtime.ts            +19
 ```
 
-A branch ainda não está dentro do orçamento mínimo. O trabalho restante relevante
-para revisão deve excluir fluxo de autorização repetido, scaffolding de turnos ou
-testes de wrappers antes de adicionar outra abstração ao núcleo.
+A branch ainda não está dentro do orçamento mínimo. O trabalho restante relevante para revisão
+deve excluir fluxo repetido de autorização, montagem de turnos ou testes de wrapper
+antes de adicionar outra abstração no núcleo.
 
-## Leitura Atual do Código
+## Leitura atual do código
 
-A divisa saudável do núcleo já existe em `src/channels/message-access/runtime.ts`:
-ela é responsável por adaptadores de identidade, allowlists efetivas, leituras do
-armazenamento de pareamento, descritores de rota, presets de comandos/eventos,
-grupos de acesso e a projeção final resolvida
+A interface saudável do núcleo já existe em `src/channels/message-access/runtime.ts`:
+ela concentra adaptadores de identidade, listas de permissão efetivas, leituras do repositório de pareamento, descritores
+de rota, presets de comando/evento, grupos de acesso e a projeção final resolvida
 `ResolvedChannelMessageIngress`.
 
-O crescimento restante é principalmente cola de Plugin sobreposta a essa divisa:
+O crescimento restante é, em sua maior parte, cola de plugins em camadas acima dessa interface:
 
-- `extensions/telegram/src/ingress.ts` encapsula decisões do núcleo em helpers
-  específicos do Telegram para comandos/eventos, e os locais de chamada ainda
-  passam allowlists normalizadas e listas de proprietários pré-computadas.
+- `extensions/telegram/src/ingress.ts` envolve decisões do núcleo em helpers específicos do Telegram
+  para comandos/eventos, e os pontos de chamada ainda passam listas de permissão normalizadas
+  e listas de proprietários pré-computadas.
 - `extensions/discord/src/monitor/dm-command-auth.ts`,
   `extensions/feishu/src/policy.ts`, `extensions/googlechat/src/monitor-access.ts`
   e `extensions/matrix/src/matrix/monitor/access-state.ts` ainda mantêm
-  DTOs de política locais ou nomes de decisão legados ao lado da entrada.
-- `extensions/signal/src/monitor/access-policy.ts` mantém corretamente a
-  normalização de identidade do Signal e respostas de pareamento locais, mas
-  ainda tem uma divisa de wrapper que deve colapsar para consumo direto da
-  entrada.
+  DTOs locais de política ou nomes de decisão legados ao lado de ingress.
+- `extensions/signal/src/monitor/access-policy.ts` mantém corretamente a normalização
+  de identidade do Signal e respostas de pareamento locais, mas ainda tem uma interface
+  de wrapper que deve colapsar para consumo direto de ingress.
 - `extensions/nextcloud-talk/src/inbound.ts`, `extensions/irc/src/inbound.ts`,
   `extensions/qa-channel/src/inbound.ts`, `extensions/zalo/src/monitor.ts` e
-  `extensions/zalouser/src/monitor.ts` ainda repetem a montagem de
-  rota/envelope/turno que pode ir para helpers de turno compartilhados fora do
-  kernel de entrada.
+  `extensions/zalouser/src/monitor.ts` ainda repetem montagem de rota/envelope/turno
+  que pode ir para helpers compartilhados de turno fora do kernel de ingress.
 
 Conclusão: mover mais código para o núcleo só é útil se isso excluir essas
-camadas de wrappers de Plugin no mesmo patch. Adicionar outra abstração enquanto
-mantém retornos de wrappers repete o erro.
+camadas de wrapper dos plugins no mesmo patch. Adicionar outra abstração enquanto
+mantém retornos de wrapper repete o erro.
 
 ## Limite
 
-O núcleo é responsável pela política genérica:
+O núcleo controla a política genérica:
 
-- normalização e correspondência de allowlist
+- normalização e correspondência de listas de permissão
 - expansão e diagnósticos de grupos de acesso
-- leituras de allowlist de DM no armazenamento de pareamento
-- portões de rota, remetente, comando, evento e ativação
+- leituras de listas de permissão de DM no repositório de pareamento
+- gates de rota, remetente, comando, evento e ativação
 - mapeamento de admissão: despachar, descartar, pular, observar, pareamento
 - estado redigido, decisões, diagnósticos e projeções de compatibilidade do SDK
-- descritores genéricos reutilizáveis para identidade, rota, comando, evento,
-  ativação e resultados
+- descritores genéricos reutilizáveis para identidade, rota, comando, evento, ativação
+  e resultados
 
-Plugins são responsáveis por fatos de transporte e efeitos colaterais:
+Plugins controlam fatos de transporte e efeitos colaterais:
 
-- autenticidade de webhook/socket/requisição
+- autenticidade de Webhook/socket/requisição
 - extração de identidade da plataforma e consultas de API
 - padrões de política específicos do canal
-- entrega de desafios de pareamento, respostas, confirmações, reações, digitação,
-  mídia, histórico, configuração, doctor, status, logs e texto voltado ao usuário
+- entrega de desafios de pareamento, respostas, confirmações, reações, digitação, mídia, histórico,
+  configuração, doctor, status, logs e texto visível ao usuário
 
-O núcleo deve permanecer agnóstico a canais: nada de Discord, Slack, Telegram,
-Matrix, sala, guilda, espaço, cliente de API ou padrão específico de Plugin em
+O núcleo deve permanecer independente de canal: sem Discord, Slack, Telegram, Matrix, sala,
+guilda, espaço, cliente de API ou padrão específico de Plugin em
 `src/channels/message-access`.
 
-## Regra de Aceitação
+## Regra de aceitação
 
-Todo novo helper do núcleo deve excluir imediatamente código de produção de
-Plugins incluídos.
+Todo novo helper de núcleo deve excluir código de produção de plugins empacotados imediatamente.
 
 ```text
 one bundled caller        reject; keep plugin-local
@@ -212,104 +204,97 @@ compatibility-only helper SDK/core shim only; never bundled hot paths
 
 Pare e redesenhe se:
 
-- a LOC de produção de Plugins aumentar
-- testes crescerem mais rápido do que a produção encolhe
-- um caminho quente incluído retornar um DTO que apenas renomeia `ResolvedChannelMessageIngress`
-- um helper do núcleo precisar de um id de canal, objeto de plataforma, cliente de API ou
+- as LOC de produção dos plugins aumentarem
+- os testes crescerem mais rápido do que a produção encolhe
+- um caminho quente empacotado retornar um DTO que apenas renomeia `ResolvedChannelMessageIngress`
+- um helper de núcleo precisar de um id de canal, objeto de plataforma, cliente de API ou
   padrão específico de canal
 
-## Pacotes de Trabalho
+## Pacotes de trabalho
 
 1. Congele o orçamento.
-   Coloque a LOC no PR, mantenha o lint de entrada obsoleta verde e inclua LOC
-   antes/depois nos commits de limpeza.
+   Coloque as LOC no PR, mantenha o lint de ingress obsoleto verde e inclua LOC antes/depois
+   nos commits de limpeza.
 
-2. Exclua divisas finas de DTO.
-   Substitua retornos de wrappers locais de Plugin por `ResolvedChannelMessageIngress`,
+2. Exclua interfaces finas de DTO.
+   Substitua retornos de wrappers locais de plugins por `ResolvedChannelMessageIngress`,
    `senderAccess`, `commandAccess`, `routeAccess` ou `ingress` diretamente. Comece
    com QQBot, Telegram, Slack, Discord, Signal, Feishu, Matrix, iMessage e
    Tlon. Exclua testes de formato de wrapper; mantenha testes de comportamento.
 
-3. Adicione classificação de resultados somente com exclusões.
+3. Adicione classificação de resultado somente com exclusões.
    Um classificador genérico pode expor `dispatch`, `pairing-required`,
    `skip-activation`, `drop-command`, `drop-route`, `drop-sender` e
-   `drop-ingress`. Ele deve derivar do grafo de decisões, não de strings de
-   motivo, e migrar pelo menos três Plugins no mesmo patch.
+   `drop-ingress`. Ele deve derivar do grafo de decisão, não de strings de motivo,
+   e migrar pelo menos três plugins no mesmo patch.
 
-4. Adicione builders de descritor de rota somente com exclusões.
-   Helpers genéricos de destino de rota e remetente de rota são aceitáveis apenas
-   se reduzirem imediatamente Plugins pesados em rotas: Google Chat, IRC,
-   Microsoft Teams, Nextcloud Talk, Mattermost, Slack, Zalo e Zalo Personal.
+4. Adicione construtores de descritores de rota somente com exclusões.
+   Helpers genéricos de destino de rota e remetente de rota são aceitáveis somente se
+   reduzirem imediatamente plugins pesados em rotas: Google Chat, IRC, Microsoft Teams,
+   Nextcloud Talk, Mattermost, Slack, Zalo e Zalo Personal.
 
 5. Adicione presets de comando/evento somente com exclusões.
-   Centralize formatos de comando de texto, comando nativo, callback e
-   origem-assunto. Consumidores de comandos devem padronizar para não autorizado
-   quando nenhum portão de comando tiver executado; eventos não devem iniciar
-   pareamento.
+   Centralize formatos de comando de texto, comando nativo, callback e origem-assunto.
+   Consumidores de comando devem usar não autorizado por padrão quando nenhum gate de comando rodou;
+   eventos não devem iniciar pareamento.
 
-6. Adicione presets de identidade somente onde removem boilerplate.
-   Helpers de id estável, id estável mais aliases, telefone/e164 e múltiplos
-   identificadores são permitidos quando valores brutos entram apenas na entrada
-   do adaptador e o estado redigido mantém ids/contagens opacos.
+6. Adicione presets de identidade apenas onde eles removem boilerplate.
+   Helpers de id estável, id estável mais aliases, telefone/e164 e múltiplos identificadores
+   são permitidos quando valores brutos entram apenas na entrada do adaptador e o estado redigido mantém
+   ids/contagens opacos.
 
 7. Compartilhe a montagem de turnos autorizados.
-   Fora do kernel de entrada, remova scaffolding repetido de
-   rota/envelope/contexto/resposta de QA Channel, IRC, Nextcloud Talk, Zalo e
-   Zalo Personal. O núcleo pode ser responsável pelo sequenciamento de
-   rota/sessão/envelope/despacho; Plugins mantêm entrega e contexto específico
-   do canal.
+   Fora do kernel de ingress, remova scaffolding repetido de rota/sessão/envelope/resposta
+   de QA Channel, IRC, Nextcloud Talk, Zalo e Zalo Personal.
+   O núcleo pode controlar sequenciamento de rota/sessão/envelope/despacho; plugins mantêm
+   entrega e contexto específico do canal.
 
-8. Confine a compatibilidade.
-   Helpers obsoletos do SDK permanecem compatíveis no código-fonte, mas caminhos
-   quentes incluídos não devem importar fachadas obsoletas de entrada ou
-   autenticação de comandos. Testes de compatibilidade devem usar Plugins
-   falsos de terceiros, não internals de Plugins incluídos.
+8. Isole a compatibilidade.
+   Helpers obsoletos do SDK permanecem compatíveis em código-fonte, mas caminhos quentes empacotados não devem
+   importar facades obsoletas de ingress ou auth de comandos. Testes de compatibilidade devem
+   usar plugins falsos de terceiros, não partes internas de plugins empacotados.
 
-9. Recompacte o núcleo.
-   Após a exclusão de wrappers, colapse módulos de uso único, remova exports não
-   usados, mova a projeção de compatibilidade para fora dos caminhos quentes e
-   mantenha testes focados para identidade, rota, comando/evento, ativação,
-   grupos de acesso e shims de compatibilidade.
+9. Reempacote o núcleo.
+   Após a exclusão de wrappers, colapse módulos de uso único, remova exports não usados, mova
+   a projeção de compatibilidade para fora de caminhos quentes e mantenha testes focados para identidade,
+   rota, comando/evento, ativação, grupos de acesso e shims de compatibilidade.
 
-## Ondas de Exclusão
+## Ondas de exclusão
 
-Execute nesta ordem. Cada onda deve reduzir a LOC de produção incluída.
+Execute estas etapas em ordem. Cada onda deve reduzir as LOC de produção empacotada.
 
-1. Colapso de wrappers, delta esperado de Plugins: -400 a -600.
-   Substitua tipos de resultado locais de Plugin `resolveXAccess`,
-   `resolveXCommandAccess` e `accessFromIngress` por leituras diretas de
-   `ResolvedChannelMessageIngress`. Primeiros alvos: autenticação de comandos DM
-   do Discord, política do Feishu, estado de acesso do Matrix, entrada do
-   Telegram, política de acesso do Signal, adaptador do SDK do QQBot.
+1. Colapso de wrappers, delta esperado de plugins: -400 a -600.
+   Substitua tipos de resultado locais de plugins `resolveXAccess`, `resolveXCommandAccess` e
+   `accessFromIngress` por leituras diretas de
+   `ResolvedChannelMessageIngress`. Primeiros alvos: auth de comandos de DM do Discord,
+   política do Feishu, estado de acesso do Matrix, ingress do Telegram, política de acesso do Signal,
+   adaptador de SDK do QQBot.
 
-2. Helpers de resultado compartilhados, delta esperado de Plugins: -200 a -350.
-   Adicione um classificador genérico somente se ele excluir escadas repetidas de
-   `shouldBlockControlCommand`, pareamento, pulo de ativação, bloqueio de rota e
-   bloqueio de remetente em pelo menos três Plugins.
+2. Helpers compartilhados de resultado, delta esperado de plugins: -200 a -350.
+   Adicione um classificador genérico somente se ele excluir ladders repetidos de
+   `shouldBlockControlCommand`, pareamento, pulo de ativação, bloqueio de rota e bloqueio de remetente
+   em pelo menos três plugins.
 
-3. Builders de descritor de rota, delta esperado de Plugins: -200 a -350.
-   Mova a montagem repetida de descritores de destino de rota e remetente de rota
-   para helpers do núcleo. Primeiros alvos: Google Chat, IRC, Microsoft Teams,
-   Nextcloud Talk, Mattermost, Slack, Zalo, Zalo Personal.
+3. Construtores de descritores de rota, delta esperado de plugins: -200 a -350.
+   Mova a montagem repetida de descritores de destino de rota e remetente de rota para helpers
+   do núcleo. Primeiros alvos: Google Chat, IRC, Microsoft Teams, Nextcloud Talk,
+   Mattermost, Slack, Zalo, Zalo Personal.
 
-4. Compartilhamento de montagem de turno, delta esperado de Plugins: -250 a -450.
-   Use sequenciamento comum de rota/sessão/envelope/despacho para Plugins
-   inbound simples. Primeiros alvos: QA Channel, IRC, Nextcloud Talk, Zalo, Zalo
-   Personal.
+4. Compartilhamento da montagem de turnos, delta esperado de plugins: -250 a -450.
+   Use sequenciamento comum de rota/sessão/envelope/despacho para plugins simples
+   de entrada. Primeiros alvos: QA Channel, IRC, Nextcloud Talk, Zalo, Zalo Personal.
 
-5. Recompactação do núcleo, delta esperado do núcleo: -300 a -700.
-   Depois que Plugins consumirem diretamente projeções de runtime, exclua módulos
-   de uso único, mescle arquivos pequenos de volta em `runtime.ts` ou irmãos
-   focados e mantenha arquivos de compatibilidade do SDK separados dos caminhos
-   quentes incluídos.
+5. Reempacotamento do núcleo, delta esperado do núcleo: -300 a -700.
+   Depois que plugins consumirem projeções de runtime diretamente, exclua módulos de uso único,
+   mescle arquivos pequenos de volta em `runtime.ts` ou em irmãos focados, e mantenha arquivos de
+   compatibilidade do SDK separados de caminhos quentes empacotados.
 
 6. Poda de testes, delta esperado de testes: -300 a -600.
-   Exclua testes que apenas verificam formatos de wrappers removidos. Mantenha
-   testes de comportamento para negação de comandos, fallback de grupos,
-   correspondência de origem-assunto, pulo de ativação, grupos de acesso,
-   pareamento e redação.
+   Exclua testes que apenas verificam formatos de wrappers removidos. Mantenha testes de comportamento para
+   negação de comando, fallback de grupo, correspondência de origem-assunto, pulo de ativação,
+   grupos de acesso, pareamento e redação.
 
-Forma mínima esperada para landing após essas ondas:
+Formato mínimo esperado para landing após essas ondas:
 
 ```text
 plugin production     <= -1,500
@@ -318,17 +303,17 @@ tests                 <= +500
 total                 <= +2,000
 ```
 
-## Não Mover
+## Não mover
 
-Não mova padrões de configuração de plataforma, UX de configuração, texto de doctor/fix, consultas de API,
-verificações de presença do proprietário no Slack, tratamento de alias/verificação do Matrix, análise de
-callbacks do Telegram, análise de sintaxe de comandos, registro de comandos nativos, análise de
-carga útil de reação, respostas de pareamento, respostas de comando, confirmações, digitação,
-mídia, histórico ou registros.
+Não mova padrões de configuração de plataforma, UX de configuração, texto de doctor/fix, buscas de API,
+verificações de presença do proprietário do Slack, tratamento de alias/verificação do Matrix, parsing de
+callbacks do Telegram, parsing de sintaxe de comandos, registro de comandos nativos, parsing de
+payloads de reações, respostas de pareamento, respostas de comandos, acks, digitação, mídia, histórico
+ou logs.
 
 ## Verificação
 
-Ciclo local direcionado:
+Loop local direcionado:
 
 ```sh
 pnpm lint:extensions:no-deprecated-channel-access
@@ -340,24 +325,24 @@ pnpm check:docs
 git diff --check
 ```
 
-Use o Testbox para provas amplas de gates alterados/suite completa quando a tendência de LOC estiver
+Use Testbox para gates amplos de alterações/prova de suíte completa quando a tendência de LOC estiver
 dentro do orçamento.
 
 Cada pacote de trabalho registra:
 
 - LOC antes/depois por categoria
-- wrappers de Plugin excluídos
-- LOC de novos helpers principais, se houver
+- wrappers de plugins excluídos
+- LOC de novos helpers de core, se houver
 - testes direcionados executados
 - lista de hotspots restantes
 
-## Critérios de Saída
+## Critérios de saída
 
-- imports de produção agrupados não usam facades obsoletas de acesso a canais ou autorização de comandos
-- o código de compatibilidade está isolado nas interfaces do SDK/núcleo
-- Plugins agrupados consomem projeções de ingresso ou resultados genéricos diretamente
-- LOC de produção de Plugin é pelo menos 1.500 líquido negativo em relação a `origin/main`
-- LOC de produção do núcleo é <= +1.500, ou qualquer excedente é compensado enquanto o total permanece
-  <= +2.000
-- testes representativos cobrem redação, rota, comando/evento, ativação,
-  grupo de acesso e comportamento de fallback específico de canal
+- imports de produção empacotados não usam fachadas obsoletas de channel-access ou command-auth
+- o código de compatibilidade fica isolado em seams de SDK/core
+- plugins empacotados consomem projeções de ingresso ou resultados genéricos diretamente
+- LOC de produção de plugins fica pelo menos 1.500 líquido negativo em relação a `origin/main`
+- LOC de produção de core fica `<= +1,500`, ou qualquer excedente é compensado enquanto o total
+  permanece `<= +2,000`
+- testes representativos cobrem mascaramento, rota, comando/evento, ativação,
+  grupo de acesso e comportamento de fallback específico do canal

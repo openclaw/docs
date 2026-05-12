@@ -1,25 +1,23 @@
 ---
 read_when:
-    - بررسی اینکه چرا بازآرایی ورودی کانال کد بیش از حدی اضافه کرد
-    - انتقال سیاست مسیر، دستور، رویداد، فعال‌سازی یا گروه دسترسی از Pluginهای همراه به هسته
-    - بررسی اینکه آیا یک کمک‌کنندهٔ ورودی کانال واقعاً کد Plugin همراه را حذف می‌کند
+    - بررسی اینکه چرا بازآرایی ورودی کانال کد زیادی اضافه کرد
+    - انتقال سیاست مسیر، فرمان، رویداد، فعال‌سازی یا گروه دسترسی از Pluginهای همراه به هسته
+    - بررسی اینکه آیا یک تابع کمکی ورودی کانال واقعاً کد Plugin همراه را حذف می‌کند
 sidebarTitle: Ingress core deletion
-summary: برنامهٔ حذف‌محور برای انتقال کد اتصال تکراریِ ورودی کانال به هسته.
+summary: طرح حذف‌محور برای انتقال کد اتصال تکراریِ ورودی کانال‌ها به هسته.
 title: طرح حذف هستهٔ ورودی
 x-i18n:
-    generated_at: "2026-05-10T20:05:09Z"
+    generated_at: "2026-05-12T01:01:02Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 71afcf5d4f58c57ecfe7b388325279700a723ec1fcd926f644095106b662c3d0
+    source_hash: 1fdf1e7c9636d02c48c4b5d2b4a51470317dd64e2270c7fae779777c0d787afc
     source_path: refactor/ingress-core.md
     workflow: 16
 ---
 
-# برنامه حذف هسته ورودی
+# برنامهٔ حذف هستهٔ ورودی
 
-بازطراحی ورودی تا وقتی هزاران خط خالص اضافه می‌کند سالم نیست. متمرکزسازی
-هسته فقط وقتی حساب می‌شود که کد تولیدی Plugin‌های بسته‌بندی‌شده کوچک‌تر شود و
-سازگاری SDK قدیمی شخص ثالث در shimهای SDK/هسته قرنطینه شود.
+بازآرایی ورودی تا وقتی هزاران خط خالص اضافه می‌کند سالم نیست. متمرکزسازی در هسته فقط زمانی حساب می‌شود که کد تولیدی Pluginهای بسته‌بندی‌شده کوچک‌تر شود و سازگاری SDK قدیمی شخص ثالث در شیم‌های SDK/هسته قرنطینه شود.
 
 شکل مطلوب زمان اجرا:
 
@@ -36,13 +34,11 @@ old third-party helper
   -> old return shape preserved
 ```
 
-Plugin‌های بسته‌بندی‌شده نباید ورودی را دوباره به شکل‌های محلی `AccessResult`،
-`GroupAccessDecision`، `CommandAuthDecision`، `DmCommandAccess`، یا
-`{ allowed, reasonCode }` ترجمه کنند، مگر اینکه آن نوع API عمومی Plugin باشد.
+Pluginهای بسته‌بندی‌شده نباید ورودی را دوباره به شکل‌های محلی `AccessResult`، `GroupAccessDecision`، `CommandAuthDecision`، `DmCommandAccess`، یا `{ allowed, reasonCode }` ترجمه کنند، مگر اینکه آن نوع API عمومی Plugin باشد.
 
 ## بودجه
 
-در مقایسه با merge-base این PR با `origin/main`، شامل فایل‌های untracked.
+در برابر پایهٔ ادغام PR با `origin/main`، شامل فایل‌های ردیابی‌نشده، اندازه‌گیری شده است.
 
 ```text
 merge-base            1671e7532adb
@@ -75,9 +71,7 @@ total                 needs 775 more net deleted lines
 core production       still +1,876 over standalone budget, unless paid down by plugin deletion
 ```
 
-حذف صرفا کامنتی به‌عنوان پاک‌سازی حساب نمی‌شود. عبور بودجه قبلی بیش از حد
-سخاوتمندانه بود، چون کامنت‌های توضیحی بازگردانده‌شده QQBot را شامل می‌شد؛ این
-سند فقط جابه‌جایی کد اجرایی/مستندات/تست را دنبال می‌کند.
+حذف فقط-دیدگاه به‌عنوان پاک‌سازی حساب نمی‌شود. گذر بودجهٔ قبلی بیش از حد سخاوتمندانه بود، چون دیدگاه‌های توضیحی بازیابی‌شدهٔ QQBot را هم شامل می‌شد؛ این سند فقط جابه‌جایی کد اجرایی/مستندات/تست را ردیابی می‌کند.
 
 پس از هر موج پاک‌سازی دوباره اندازه‌گیری کنید:
 
@@ -90,8 +84,7 @@ pnpm lint:extensions:no-deprecated-channel-access
 
 ## تشخیص
 
-گذر اول کرنل مشترک ورودی را اضافه کرد، سپس مقدار زیادی authorization محلی Plugin
-را کنار آن باقی گذاشت:
+گذر اول هستهٔ مشترک ورودی را اضافه کرد، سپس مقدار زیادی مجوزدهی محلی Plugin را کنار آن باقی گذاشت:
 
 ```text
 platform facts
@@ -100,15 +93,13 @@ platform facts
   -> plugin-local if/else ladder
 ```
 
-این مدل را تکرار می‌کند. کد تولیدی هسته حدود 3,376 خط رشد کرد، در حالی که کد
-تولیدی Plugin‌های بسته‌بندی‌شده 1,240 خط کوچک‌تر شده است. این از گذر اول بهتر
-است، اما داخل حداقل بودجه نیست. راه‌حل همچنان حذف‌محور است:
+این کار مدل را تکرار می‌کند. کد تولیدی هسته حدود ۳٬۳۷۶ خط رشد کرد، در حالی که کد تولیدی Pluginهای بسته‌بندی‌شده ۱٬۲۴۰ خط کوچک‌تر شد. این بهتر از گذر اول است، اما داخل حداقل بودجه نیست. راه‌حل همچنان حذف‌محور است:
 
-- حذف DTOهای Plugin که فقط نام فیلدهای ورودی را عوض می‌کنند
-- حذف تست‌هایی که فقط شکل wrapper را assert می‌کنند
-- افزودن helperهای هسته فقط وقتی همان patch کد Plugin بسته‌بندی‌شده را حذف کند
-- نگه‌داشتن سازگاری SDK قدیمی فقط در shimهای SDK/هسته
-- بازبسته‌بندی هسته پس از اینکه حذف wrapper شکل پایدار را آشکار کرد
+- DTOهای Plugin را که فقط نام فیلدهای ورودی را عوض می‌کنند حذف کنید
+- تست‌هایی را که فقط شکل wrapper را assert می‌کنند حذف کنید
+- helperهای هسته را فقط زمانی اضافه کنید که همان patch کد Plugin بسته‌بندی‌شده را حذف کند
+- سازگاری SDK قدیمی را فقط در شیم‌های SDK/هسته نگه دارید
+- پس از اینکه حذف wrapper شکل پایدار را آشکار کرد، هسته را دوباره بسته‌بندی کنید
 
 ## نقاط داغ
 
@@ -133,63 +124,48 @@ extensions/qqbot/src/engine/commands/slash-command-handler.ts +20
 extensions/telegram/src/bot-handlers.runtime.ts            +19
 ```
 
-این شاخه هنوز داخل حداقل بودجه نیست. کار باقی‌مانده مرتبط با review باید پیش
-از افزودن یک انتزاع دیگر در هسته، جریان authorization تکراری، scaffolding نوبت،
-یا تست‌های wrapper را حذف کند.
+شاخه هنوز داخل حداقل بودجه نیست. کار باقی‌ماندهٔ مرتبط با بازبینی باید پیش از افزودن انتزاع هسته‌ای دیگر، جریان مجوزدهی تکراری، scaffolding نوبت، یا تست‌های wrapper را حذف کند.
 
-## خوانش کد فعلی
+## خوانش فعلی کد
 
-مرز سالم هسته از قبل در `src/channels/message-access/runtime.ts` وجود دارد:
-این بخش مالک adapterهای هویت، allowlistهای مؤثر، خواندن pairing-store، توصیفگرهای
-route، presetهای command/event، گروه‌های access، و projection نهایی
-`ResolvedChannelMessageIngress` حل‌شده است.
+مرز سالم هسته از قبل در `src/channels/message-access/runtime.ts` وجود دارد: مالک adapterهای هویت، allowlistهای مؤثر، خواندن‌های pairing-store، توصیفگرهای route، presetهای command/event، access groupها، و projection نهایی حل‌شدهٔ `ResolvedChannelMessageIngress` است.
 
-رشد باقی‌مانده عمدتا glue مربوط به Plugin است که روی این مرز لایه شده است:
+رشد باقی‌مانده بیشتر glue مربوط به Plugin است که روی آن مرز لایه شده است:
 
-- `extensions/telegram/src/ingress.ts` تصمیم‌های هسته را در helperهای
-  command/event مختص Telegram می‌پیچد، سپس call siteها همچنان allowlistهای
-  normalized و فهرست‌های owner از پیش محاسبه‌شده را پاس می‌دهند.
+- `extensions/telegram/src/ingress.ts` تصمیم‌های هسته را در helperهای command/event ویژهٔ Telegram می‌پیچد، سپس محل‌های فراخوانی همچنان allowlistهای نرمال‌سازی‌شده و فهرست‌های مالک ازپیش‌محاسبه‌شده را پاس می‌دهند.
 - `extensions/discord/src/monitor/dm-command-auth.ts`،
   `extensions/feishu/src/policy.ts`، `extensions/googlechat/src/monitor-access.ts`،
-  و `extensions/matrix/src/matrix/monitor/access-state.ts` همچنان DTOهای policy
-  محلی یا نام‌های تصمیم legacy را کنار ورودی نگه می‌دارند.
-- `extensions/signal/src/monitor/access-policy.ts` به‌درستی normalization هویت
-  Signal و پاسخ‌های pairing را محلی نگه می‌دارد، اما هنوز یک مرز wrapper دارد
-  که باید به مصرف مستقیم ورودی فروبپاشد.
+  و `extensions/matrix/src/matrix/monitor/access-state.ts` همچنان DTOهای policy محلی یا نام‌های تصمیم legacy را کنار ورودی نگه می‌دارند.
+- `extensions/signal/src/monitor/access-policy.ts` به‌درستی نرمال‌سازی هویت Signal و پاسخ‌های pairing را محلی نگه می‌دارد، اما هنوز یک مرز wrapper دارد که باید به مصرف مستقیم ورودی فروبریزد.
 - `extensions/nextcloud-talk/src/inbound.ts`، `extensions/irc/src/inbound.ts`،
   `extensions/qa-channel/src/inbound.ts`، `extensions/zalo/src/monitor.ts`، و
-  `extensions/zalouser/src/monitor.ts` هنوز assembly مربوط به route/envelope/turn
-  را تکرار می‌کنند که می‌تواند به helperهای turn مشترک خارج از کرنل ورودی منتقل
-  شود.
+  `extensions/zalouser/src/monitor.ts` همچنان assembly مربوط به route/envelope/turn را تکرار می‌کنند که می‌تواند به helperهای مشترک turn خارج از هستهٔ ورودی منتقل شود.
 
-نتیجه: انتقال کد بیشتر به هسته فقط وقتی مفید است که همین لایه‌های wrapper
-Plugin را در همان patch حذف کند. افزودن یک انتزاع دیگر در حالی که returnهای
-wrapper سر جای خود مانده‌اند، همان اشتباه را تکرار می‌کند.
+نتیجه: انتقال کد بیشتر به هسته فقط زمانی مفید است که در همان patch این لایه‌های wrapper مربوط به Plugin را حذف کند. افزودن انتزاعی دیگر در حالی که خروجی‌های wrapper باقی مانده‌اند همان اشتباه را تکرار می‌کند.
 
 ## مرز
 
 هسته مالک policy عمومی است:
 
-- normalization و matching allowlist
-- expansion و diagnostics گروه‌های access
-- خواندن allowlist مربوط به DM از pairing-store
+- نرمال‌سازی و تطبیق allowlist
+- گسترش access-group و diagnostics
+- خواندن allowlist پیام مستقیم از pairing-store
 - gateهای route، sender، command، event، و activation
-- نگاشت admission: dispatch، drop، skip، observe، pairing
-- state، تصمیم‌ها، diagnostics، و projectionهای سازگاری SDK به‌شکل redacted
-- توصیفگرهای عمومی قابل استفاده مجدد برای identity، route، command، event،
-  activation، و outcomes
+- نگاشت پذیرش: dispatch، drop، skip، observe، pairing
+- state، تصمیم‌ها، diagnostics، و projectionهای سازگاری SDK به‌شکل redactشده
+- توصیفگرهای عمومی قابل استفادهٔ دوباره برای identity، route، command، event، activation، و outcomes
 
-Plugin‌ها مالک facts و side effectهای transport هستند:
+Pluginها مالک واقعیت‌های transport و side effectها هستند:
 
 - اصالت webhook/socket/request
 - استخراج هویت platform و lookupهای API
-- پیش‌فرض‌های policy مختص کانال
-- ارسال challenge مربوط به pairing، replyها، ackها، reactionها، typing، media،
-  history، setup، doctor، status، logها، و متن قابل مشاهده برای کاربر
+- پیش‌فرض‌های policy ویژهٔ channel
+- تحویل challenge مربوط به pairing، پاسخ‌ها، ackها، reactionها، typing، media، history،
+  setup، doctor، status، logs، و متن کاربرمحور
 
-هسته باید channel-agnostic بماند: هیچ Discord، Slack، Telegram، Matrix، room،
-guild، space، API client، یا پیش‌فرض مختص Plugin در
-`src/channels/message-access`.
+هسته باید مستقل از channel بماند: هیچ Discord، Slack، Telegram، Matrix، room،
+guild، space، API client، یا پیش‌فرض ویژهٔ Plugin در
+`src/channels/message-access` نباشد.
 
 ## قانون پذیرش
 
@@ -202,102 +178,83 @@ three or more callers     plugin deletion must be at least 2x new core LOC
 compatibility-only helper SDK/core shim only; never bundled hot paths
 ```
 
-متوقف شوید و بازطراحی کنید اگر:
+در این موارد متوقف شوید و بازطراحی کنید:
 
 - LOC تولیدی Plugin افزایش یابد
-- تست‌ها سریع‌تر از کوچک‌شدن production رشد کنند
-- یک hot path بسته‌بندی‌شده DTOای برگرداند که فقط نام `ResolvedChannelMessageIngress` را عوض می‌کند
-- یک helper هسته به channel id، platform object، API client، یا پیش‌فرض مختص
-  کانال نیاز داشته باشد
+- تست‌ها سریع‌تر از کوچک‌شدن تولید رشد کنند
+- یک مسیر داغ بسته‌بندی‌شده DTOای برگرداند که فقط نام `ResolvedChannelMessageIngress` را عوض می‌کند
+- یک helper هسته به channel id، شیء platform، API client، یا پیش‌فرض ویژهٔ channel نیاز داشته باشد
 
 ## بسته‌های کاری
 
 1. بودجه را منجمد کنید.
-   LOC را در PR بگذارید، lint مربوط به deprecated-ingress را سبز نگه دارید، و
-   LOC قبل/بعد را در commitهای پاک‌سازی وارد کنید.
+   LOC را در PR بگذارید، lint ورودی منسوخ را سبز نگه دارید، و LOC قبل/بعد را در commitهای پاک‌سازی بیاورید.
 
-2. مرزهای DTO نازک را حذف کنید.
-   returnهای wrapper محلی Plugin را با `ResolvedChannelMessageIngress`،
-   `senderAccess`، `commandAccess`، `routeAccess`، یا مستقیما `ingress` جایگزین
-   کنید. با QQBot، Telegram، Slack، Discord، Signal، Feishu، Matrix، iMessage،
-   و Tlon شروع کنید. تست‌های شکل wrapper را حذف کنید؛ تست‌های رفتار را نگه دارید.
+2. مرزهای نازک DTO را حذف کنید.
+   خروجی‌های wrapper محلی Plugin را با `ResolvedChannelMessageIngress`،
+   `senderAccess`، `commandAccess`، `routeAccess`، یا مستقیماً `ingress` جایگزین کنید. با QQBot، Telegram، Slack، Discord، Signal، Feishu، Matrix، iMessage، و
+   Tlon شروع کنید. تست‌های شکل wrapper را حذف کنید؛ تست‌های رفتاری را نگه دارید.
 
-3. classification مربوط به outcome را فقط همراه با حذف‌ها اضافه کنید.
+3. طبقه‌بندی outcome را فقط همراه با حذف‌ها اضافه کنید.
    یک classifier عمومی می‌تواند `dispatch`، `pairing-required`،
    `skip-activation`، `drop-command`، `drop-route`، `drop-sender`، و
-   `drop-ingress` را ارائه کند. باید از گراف تصمیم مشتق شود، نه از reason stringها،
-   و حداقل سه Plugin را در همان patch migrate کند.
+   `drop-ingress` را expose کند. باید از گراف تصمیم مشتق شود، نه از رشته‌های reason، و در همان patch دست‌کم سه Plugin را migrate کند.
 
-4. builderهای توصیفگر route را فقط همراه با حذف‌ها اضافه کنید.
-   helperهای عمومی route target و route sender فقط وقتی قابل قبول‌اند که فورا
-   Plugin‌های route-heavy را کوچک کنند: Google Chat، IRC، Microsoft Teams،
+4. سازنده‌های توصیفگر route را فقط همراه با حذف‌ها اضافه کنید.
+   helperهای عمومی route target و route sender فقط زمانی پذیرفتنی هستند که بلافاصله Pluginهای route-heavy را کوچک کنند: Google Chat، IRC، Microsoft Teams،
    Nextcloud Talk، Mattermost، Slack، Zalo، و Zalo Personal.
 
 5. presetهای command/event را فقط همراه با حذف‌ها اضافه کنید.
-   شکل‌های text-command، native-command، callback، و origin-subject را متمرکز
-   کنید. مصرف‌کننده‌های command باید وقتی هیچ command gate اجرا نشده است به‌طور
-   پیش‌فرض unauthorized باشند؛ eventها نباید pairing را شروع کنند.
+   شکل‌های text-command، native-command، callback، و origin-subject را متمرکز کنید.
+   مصرف‌کننده‌های command وقتی هیچ command gate اجرا نشده است باید به‌طور پیش‌فرض unauthorized باشند؛ eventها نباید pairing را شروع کنند.
 
 6. presetهای identity را فقط جایی share کنید که boilerplate را حذف می‌کنند.
-   helperهای stable-id، stable-id-plus-aliases، phone/e164، و multi-identifier
-   وقتی مجازند که مقدارهای خام فقط وارد input adapter شوند و state به‌شکل
-   redacted، id/countهای opaque را نگه دارد.
+   helperهای stable-id، stable-id-plus-aliases، phone/e164، و multi-identifier زمانی مجازند که مقدارهای خام فقط وارد adapter input شوند و state redactشده id/count مات را نگه دارد.
 
-7. assembly مربوط به turn مجاز را share کنید.
-   خارج از کرنل ورودی، scaffolding تکراری route/envelope/context/reply را از
-   QA Channel، IRC، Nextcloud Talk، Zalo، و Zalo Personal حذف کنید. هسته می‌تواند
-   sequencing مربوط به route/session/envelope/dispatch را مالک شود؛ Plugin‌ها
-   delivery و context مختص کانال را نگه می‌دارند.
+7. assembly نوبت مجاز را share کنید.
+   خارج از هستهٔ ورودی، scaffolding تکراری route/envelope/context/reply را از QA Channel، IRC، Nextcloud Talk، Zalo، و Zalo Personal حذف کنید.
+   هسته می‌تواند sequencing مربوط به route/session/envelope/dispatch را مالک شود؛ Pluginها delivery و context ویژهٔ channel را نگه می‌دارند.
 
 8. سازگاری را قرنطینه کنید.
-   helperهای SDK deprecated سازگاری source-compatible را حفظ می‌کنند، اما hot
-   pathهای بسته‌بندی‌شده نباید facadeهای ورودی یا command-auth deprecated را
-   import کنند. تست‌های سازگاری باید از Plugin‌های fake شخص ثالث استفاده کنند،
-   نه internals مربوط به Plugin‌های بسته‌بندی‌شده.
+   helperهای منسوخ SDK سازگاری source-compatible را حفظ می‌کنند، اما مسیرهای داغ بسته‌بندی‌شده نباید facadeهای منسوخ ingress یا command-auth را import کنند. تست‌های سازگاری باید از Pluginهای جعلی شخص ثالث استفاده کنند، نه internals مربوط به Pluginهای بسته‌بندی‌شده.
 
-9. هسته را بازبسته‌بندی کنید.
-   پس از اینکه Plugin‌ها projectionهای runtime را مستقیما مصرف کردند، moduleهای
-   تک‌استفاده را فروبپاشید، exportهای استفاده‌نشده را حذف کنید، projection
-   سازگاری را از hot pathها بیرون ببرید، و تست‌های متمرکز برای identity، route،
-   command/event، activation، گروه‌های access، و shimهای سازگاری نگه دارید.
+9. هسته را دوباره بسته‌بندی کنید.
+   پس از اینکه Pluginها projectionهای runtime را مستقیماً مصرف کردند، moduleهای تک‌کاربرده را collapse کنید، exportهای استفاده‌نشده را حذف کنید، projection سازگاری را از مسیرهای داغ بیرون ببرید، و تست‌های متمرکز را برای identity،
+   route، command/event، activation، access groupها، و شیم‌های سازگاری نگه دارید.
 
 ## موج‌های حذف
 
 این‌ها را به‌ترتیب اجرا کنید. هر موج باید LOC تولیدی بسته‌بندی‌شده را کاهش دهد.
 
-1. فروپاشی wrapper، delta مورد انتظار Plugin: -400 تا -600.
-   نوع‌های result مربوط به `resolveXAccess`، `resolveXCommandAccess`، و
+1. فروریختن wrapper، delta مورد انتظار Plugin: ‎-۴۰۰ تا ‎-۶۰۰.
+   نوع‌های نتیجهٔ `resolveXAccess`، `resolveXCommandAccess`، و
    `accessFromIngress` محلی Plugin را با خواندن مستقیم از
-   `ResolvedChannelMessageIngress` جایگزین کنید. هدف‌های اول: Discord DM command
-   auth، Feishu policy، Matrix access state، Telegram ingress، Signal access
-   policy، QQBot SDK adapter.
+   `ResolvedChannelMessageIngress` جایگزین کنید. هدف‌های اول: Discord DM command auth،
+   Feishu policy، Matrix access state، Telegram ingress، Signal access policy،
+   QQBot SDK adapter.
 
-2. helperهای outcome مشترک، delta مورد انتظار Plugin: -200 تا -350.
-   یک classifier عمومی فقط وقتی اضافه کنید که ladderهای تکراری
+2. helperهای outcome مشترک، delta مورد انتظار Plugin: ‎-۲۰۰ تا ‎-۳۵۰.
+   یک classifier عمومی را فقط در صورتی اضافه کنید که ladderهای تکراری
    `shouldBlockControlCommand`، pairing، activation skip، route block، و sender
-   block را در حداقل سه Plugin حذف کند.
+   block را در دست‌کم سه Plugin حذف کند.
 
-3. builderهای توصیفگر route، delta مورد انتظار Plugin: -200 تا -350.
-   assembly تکراری توصیفگرهای route target و route sender را به helperهای هسته
-   منتقل کنید. هدف‌های اول: Google Chat، IRC، Microsoft Teams، Nextcloud Talk،
+3. سازنده‌های توصیفگر route، delta مورد انتظار Plugin: ‎-۲۰۰ تا ‎-۳۵۰.
+   assembly تکراری توصیفگر route target و route sender را به helperهای هسته منتقل کنید. هدف‌های اول: Google Chat، IRC، Microsoft Teams، Nextcloud Talk،
    Mattermost، Slack، Zalo، Zalo Personal.
 
-4. share کردن assembly مربوط به turn، delta مورد انتظار Plugin: -250 تا -450.
-   برای Plugin‌های inbound ساده از sequencing مشترک route/session/envelope/dispatch
-   استفاده کنید. هدف‌های اول: QA Channel، IRC، Nextcloud Talk، Zalo، Zalo Personal.
+4. اشتراک assembly نوبت، delta مورد انتظار Plugin: ‎-۲۵۰ تا ‎-۴۵۰.
+   از sequencing مشترک route/session/envelope/dispatch برای Pluginهای inbound ساده استفاده کنید. هدف‌های اول: QA Channel، IRC، Nextcloud Talk، Zalo، Zalo Personal.
 
-5. بازبسته‌بندی هسته، delta مورد انتظار هسته: -300 تا -700.
-   پس از اینکه Plugin‌ها projectionهای runtime را مستقیما مصرف کردند، moduleهای
-   تک‌استفاده را حذف کنید، فایل‌های کوچک را دوباره در `runtime.ts` یا siblingهای
-   متمرکز merge کنید، و فایل‌های سازگاری SDK را از hot pathهای بسته‌بندی‌شده
-   جدا نگه دارید.
+5. بسته‌بندی دوبارهٔ هسته، delta مورد انتظار هسته: ‎-۳۰۰ تا ‎-۷۰۰.
+   پس از اینکه Pluginها projectionهای runtime را مستقیماً مصرف کردند، moduleهای تک‌کاربرده را حذف کنید،
+   فایل‌های کوچک را دوباره در `runtime.ts` یا siblingهای متمرکز merge کنید، و فایل‌های سازگاری SDK را از مسیرهای داغ بسته‌بندی‌شده جدا نگه دارید.
 
-6. هرس تست‌ها، delta مورد انتظار تست: -300 تا -600.
-   تست‌هایی را که فقط شکل‌های wrapper حذف‌شده را assert می‌کنند حذف کنید.
-   تست‌های رفتاری برای command denial، group fallback، origin-subject matching،
-   activation skip، access groups، pairing، و redaction را نگه دارید.
+6. هرس تست، delta مورد انتظار تست: ‎-۳۰۰ تا ‎-۶۰۰.
+   تست‌هایی را که فقط شکل‌های wrapper حذف‌شده را assert می‌کنند حذف کنید. تست‌های رفتاری را برای
+   command denial، group fallback، تطبیق origin-subject، activation skip،
+   access groupها، pairing، و redaction نگه دارید.
 
-حداقل شکل مورد انتظار برای landing پس از این موج‌ها:
+شکل حداقلی مورد انتظار برای فرود پس از این موج‌ها:
 
 ```text
 plugin production     <= -1,500
@@ -308,14 +265,14 @@ total                 <= +2,000
 
 ## منتقل نکنید
 
-پیش‌فرض‌های پیکربندی پلتفرم، تجربه راه‌اندازی، متن doctor/fix، جست‌وجوهای API،
-بررسی‌های حضور مالک Slack، مدیریت نام مستعار/تأیید Matrix، تجزیه callback در Telegram،
-تجزیه نحو فرمان، ثبت فرمان native، تجزیه payload واکنش، پاسخ‌های pairing، پاسخ‌های فرمان، ackها، typing، رسانه، تاریخچه،
-یا لاگ‌ها را جابه‌جا نکنید.
+پیش‌فرض‌های پیکربندی پلتفرم، UX راه‌اندازی، متن doctor/fix، جست‌وجوهای API،
+بررسی‌های حضور مالک Slack، مدیریت نام مستعار/راستی‌آزمایی Matrix، تجزیه callbackهای Telegram،
+تجزیه نحو فرمان، ثبت فرمان بومی، تجزیه payload واکنش، پاسخ‌های جفت‌سازی، پاسخ‌های فرمان، ackها، تایپ کردن، رسانه، تاریخچه،
+یا گزارش‌ها را جابه‌جا نکنید.
 
-## تأیید
+## راستی‌آزمایی
 
-حلقه محلی هدفمند:
+چرخه محلی هدفمند:
 
 ```sh
 pnpm lint:extensions:no-deprecated-channel-access
@@ -327,23 +284,23 @@ pnpm check:docs
 git diff --check
 ```
 
-وقتی روند LOC در محدوده بود، برای گیت‌های گسترده تغییرات/اثبات مجموعه کامل از Testbox استفاده کنید.
+پس از اینکه روند LOC در محدوده بودجه قرار گرفت، برای گیت‌های تغییر‌یافته گسترده/اثبات مجموعه کامل از Testbox استفاده کنید.
 
 هر بسته کاری ثبت می‌کند:
 
 - LOC قبل/بعد بر اساس دسته
-- wrapperهای حذف‌شده Plugin
-- LOC کمک‌کننده جدید core، در صورت وجود
-- آزمون‌های هدفمندی که اجرا شده‌اند
+- wrapperهای Plugin حذف‌شده
+- LOC کمک‌گیرنده اصلی جدید، در صورت وجود
+- آزمون‌های هدفمند اجراشده
 - فهرست hotspotهای باقی‌مانده
 
 ## معیارهای خروج
 
-- importهای تولیدی bundled از نمای deprecated channel-access یا command-auth استفاده نکنند
-- کد سازگاری به seamهای SDK/core محدود شده باشد
-- Pluginهای bundled مستقیماً projectionهای ingress یا outcomeهای عمومی را مصرف کنند
-- LOC تولیدی Plugin دست‌کم 1,500 کاهش خالص نسبت به `origin/main` داشته باشد
-- LOC تولیدی core برابر <= +1,500 باشد، یا هر مقدار اضافه جبران شده باشد در حالی که کل مقدار
-  <= +2,000 باقی بماند
-- آزمون‌های نماینده، رفتار redaction، route، command/event، activation،
-  access-group، و fallback مخصوص کانال را پوشش دهند
+- importهای تولیدی بسته‌شده از facadeهای channel-access یا command-auth منسوخ‌شده استفاده نمی‌کنند
+- کد سازگاری به درزهای SDK/core محدود شده است
+- Pluginهای بسته‌شده مستقیماً projectionهای ingress یا نتیجه‌های عمومی را مصرف می‌کنند
+- LOC تولیدی Plugin نسبت به `origin/main` دست‌کم 1,500 واحد کاهش خالص دارد
+- LOC تولیدی core برابر `<= +1,500` است، یا هر مازاد آن جبران شده و مجموع
+  همچنان `<= +2,000` می‌ماند
+- آزمون‌های نماینده رفتارهای redaction، route، command/event، activation،
+  access-group و fallback ویژه کانال را پوشش می‌دهند

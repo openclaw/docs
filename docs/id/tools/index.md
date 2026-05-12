@@ -1,244 +1,184 @@
 ---
+doc-schema-version: 1
 read_when:
     - Anda ingin memahami alat apa saja yang disediakan OpenClaw
-    - Anda perlu mengonfigurasi, mengizinkan, atau menolak alat
     - Anda sedang memilih antara alat bawaan, Skills, dan Plugin
-summary: 'Gambaran umum alat dan Plugin OpenClaw: apa yang dapat dilakukan agen dan cara memperluasnya'
-title: Alat dan plugin
+    - Anda memerlukan titik masuk dokumentasi yang tepat untuk kebijakan alat, otomatisasi, atau koordinasi agen
+summary: 'Ikhtisar alat, Skills, dan Plugin OpenClaw: apa yang dapat dipanggil agen dan cara memperluasnya'
+title: Ikhtisar
 x-i18n:
-    generated_at: "2026-05-10T19:55:42Z"
+    generated_at: "2026-05-12T00:59:57Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b12b2d605c8fccb0de378f8a63fb92b8c3bad8abd3edf10bb79632d6ef6089fd
+    source_hash: 94424b04a520009d40d851e46f7ea0e4e914ff39b7d79958194bb123a6ec0b7b
     source_path: tools/index.md
     workflow: 16
 ---
 
-Segala hal yang dilakukan agen di luar menghasilkan teks terjadi melalui **alat**.
-Alat adalah cara agen membaca berkas, menjalankan perintah, menjelajahi web, mengirim
-pesan, dan berinteraksi dengan perangkat.
+Gunakan halaman ini untuk memilih permukaan Capabilities yang tepat. **Alat** adalah
+tindakan yang dapat dipanggil, **Skills** mengajari agen cara bekerja, dan **plugin** menambahkan kemampuan
+runtime seperti alat, penyedia, channel, hook, dan Skills yang dipaketkan.
 
-## Alat, Skills, dan Plugin
+Ini adalah halaman ikhtisar dan pengarah. Untuk kebijakan alat, default,
+keanggotaan grup, pembatasan penyedia, dan kolom konfigurasi yang lengkap, gunakan
+[Alat dan penyedia kustom](/id/gateway/config-tools).
 
-OpenClaw memiliki tiga lapisan yang bekerja bersama:
+## Mulai di sini
+
+Untuk sebagian besar agen, mulai dengan kategori alat bawaan, lalu sesuaikan kebijakan
+hanya ketika agen harus melihat lebih sedikit alat atau memerlukan akses host eksplisit.
+
+| Jika Anda perlu...                              | Gunakan ini terlebih dahulu                         | Lalu baca                                                               |
+| ----------------------------------------------- | --------------------------------------------------- | ----------------------------------------------------------------------- |
+| Membiarkan agen bertindak dengan kemampuan yang ada | [Alat bawaan](#built-in-tool-categories)            | [Kategori alat](#built-in-tool-categories)                              |
+| Mengontrol apa yang dapat dipanggil agen        | [Kebijakan alat](#configure-access-and-approvals)   | [Alat dan penyedia kustom](/id/gateway/config-tools)                       |
+| Mengajari agen sebuah alur kerja                | [Skills](#choose-tools-skills-or-plugins)           | [Skills](/id/tools/skills) dan [Membuat Skills](/id/tools/creating-skills)    |
+| Menambahkan integrasi baru atau permukaan runtime | [Plugin](#extend-capabilities)                      | [Plugin](/id/tools/plugin) dan [Membangun plugin](/id/plugins/building-plugins) |
+| Menjalankan pekerjaan nanti atau di latar belakang | [Otomatisasi](/id/automation)                          | [Ikhtisar otomatisasi](/id/automation)                                     |
+| Mengoordinasikan beberapa agen atau harness     | [Sub-agen](/id/tools/subagents)                        | [Agen ACP](/id/tools/acp-agents) dan [Kirim agen](/id/tools/agent-send)       |
+| Mencari katalog alat PI yang besar              | [Pencarian Alat](/id/tools/tool-search)                | [Pencarian Alat](/id/tools/tool-search)                                    |
+
+## Pilih alat, Skills, atau plugin
 
 <Steps>
-  <Step title="Tools are what the agent calls">
-    Alat adalah fungsi bertipe yang dapat dipanggil agen (mis. `exec`, `browser`,
-    `web_search`, `message`). OpenClaw menyertakan sekumpulan **alat bawaan** dan
-    Plugin dapat mendaftarkan alat tambahan.
+  <Step title="Gunakan alat ketika agen perlu bertindak">
+    Alat adalah fungsi bertipe yang dapat dipanggil agen, seperti `exec`, `browser`,
+    `web_search`, `message`, atau `image_generate`. Gunakan alat ketika agen
+    perlu membaca data, mengubah file, mengirim pesan, memanggil penyedia, atau mengoperasikan
+    sistem lain. Alat yang terlihat dikirim ke model sebagai definisi fungsi
+    terstruktur.
 
-    Agen melihat alat sebagai definisi fungsi terstruktur yang dikirim ke API model.
-
-  </Step>
-
-  <Step title="Skills teach the agent when and how">
-    Skill adalah berkas markdown (`SKILL.md`) yang disuntikkan ke prompt sistem.
-    Skills memberi agen konteks, batasan, dan panduan langkah demi langkah untuk
-    menggunakan alat secara efektif. Skills berada di workspace Anda, di folder bersama,
-    atau disertakan di dalam Plugin.
-
-    [Referensi Skills](/id/tools/skills) | [Membuat Skills](/id/tools/creating-skills)
+    Model hanya melihat alat yang lolos dari profil aktif, kebijakan allow/deny,
+    pembatasan penyedia, status sandbox, izin channel, dan ketersediaan
+    plugin.
 
   </Step>
 
-  <Step title="Plugins package everything together">
-    Plugin adalah paket yang dapat mendaftarkan kombinasi kemampuan apa pun:
-    channel, penyedia model, alat, Skills, ucapan, transkripsi realtime,
-    suara realtime, pemahaman media, pembuatan gambar, pembuatan video,
-    pengambilan web, pencarian web, dan lainnya. Beberapa Plugin bersifat **core** (disertakan bersama
-    OpenClaw), yang lain bersifat **eksternal** (dipublikasikan di npm oleh komunitas).
+  <Step title="Gunakan Skills ketika agen memerlukan instruksi">
+    Skills adalah paket instruksi `SKILL.md` yang dimuat ke dalam prompt agen. Gunakan
+    Skills ketika agen sudah memiliki alat yang dibutuhkan, tetapi memerlukan alur kerja
+    berulang, rubrik ulasan, urutan perintah, atau batasan operasi.
 
-    [Instal dan konfigurasikan Plugin](/id/tools/plugin) | [Bangun milik Anda sendiri](/id/plugins/building-plugins)
+    Skills dapat berada di workspace, direktori Skills bersama, root Skills
+    OpenClaw terkelola, atau paket plugin.
+
+    [Skills](/id/tools/skills) | [Membuat Skills](/id/tools/creating-skills) | [Konfigurasi Skills](/id/tools/skills-config)
+
+  </Step>
+
+  <Step title="Gunakan plugin ketika OpenClaw memerlukan kemampuan baru">
+    Plugin dapat menambahkan alat, Skills, channel, penyedia model, speech, suara realtime,
+    pembuatan media, pencarian web, pengambilan web, hook, dan kemampuan runtime
+    lainnya. Gunakan plugin ketika kemampuan tersebut memiliki kode, kredensial,
+    hook siklus hidup, metadata manifes, atau paket yang dapat diinstal. Plugin yang ada
+    dapat diinstal dari ClawHub, npm, git, direktori lokal, atau
+    arsip.
+
+    [Instal dan konfigurasikan plugin](/id/tools/plugin) | [Membangun plugin](/id/plugins/building-plugins) | [Plugin SDK](/id/plugins/sdk-overview)
 
   </Step>
 </Steps>
 
-## Alat bawaan
+## Kategori alat bawaan
 
-Alat ini disertakan bersama OpenClaw dan tersedia tanpa menginstal Plugin apa pun:
+Tabel ini mencantumkan alat representatif agar Anda dapat mengenali permukaannya. Ini
+bukan referensi kebijakan lengkap. Untuk grup, default, dan semantik allow/deny
+yang tepat, gunakan [Alat dan penyedia kustom](/id/gateway/config-tools).
 
-| Alat                                       | Fungsinya                                                             | Halaman                                                      |
-| ------------------------------------------ | --------------------------------------------------------------------- | ------------------------------------------------------------ |
-| `exec` / `process`                         | Menjalankan perintah shell, mengelola proses latar belakang           | [Exec](/id/tools/exec), [Persetujuan Exec](/id/tools/exec-approvals) |
-| `code_execution`                           | Menjalankan analisis Python jarak jauh dalam sandbox                  | [Eksekusi Kode](/id/tools/code-execution)                       |
-| `browser`                                  | Mengontrol browser Chromium (navigasi, klik, tangkapan layar)        | [Browser](/id/tools/browser)                                    |
-| `web_search` / `x_search` / `web_fetch`    | Mencari di web, mencari posting X, mengambil konten halaman           | [Web](/id/tools/web), [Pengambilan Web](/id/tools/web-fetch)       |
-| `read` / `write` / `edit`                  | I/O berkas di workspace                                               |                                                              |
-| `apply_patch`                              | Patch berkas multi-hunk                                               | [Terapkan Patch](/id/tools/apply-patch)                         |
-| `message`                                  | Mengirim pesan di semua channel                                       | [Kirim Agen](/id/tools/agent-send)                              |
-| `nodes`                                    | Menemukan dan menargetkan perangkat yang dipasangkan                  |                                                              |
-| `cron` / `gateway`                         | Mengelola tugas terjadwal; memeriksa, menambal, memulai ulang, atau memperbarui gateway |                                                              |
-| `image` / `image_generate`                 | Menganalisis atau menghasilkan gambar                                 | [Pembuatan Gambar](/id/tools/image-generation)                  |
-| `music_generate`                           | Menghasilkan trek musik                                               | [Pembuatan Musik](/id/tools/music-generation)                   |
-| `video_generate`                           | Menghasilkan video                                                    | [Pembuatan Video](/id/tools/video-generation)                   |
-| `tts`                                      | Konversi teks-ke-ucapan satu kali                                     | [TTS](/id/tools/tts)                                            |
-| `sessions_*` / `subagents` / `agents_list` | Manajemen sesi, status, dan orkestrasi sub-agen                       | [Sub-agen](/id/tools/subagents)                                 |
-| `session_status`                           | Pembacaan balik ringan bergaya `/status` dan override model sesi      | [Alat Sesi](/id/concepts/session-tool)                          |
-
-Untuk pekerjaan gambar, gunakan `image` untuk analisis dan `image_generate` untuk pembuatan atau pengeditan. Jika Anda menargetkan `openai/*`, `google/*`, `fal/*`, atau penyedia gambar non-default lainnya, konfigurasikan autentikasi/kunci API penyedia tersebut terlebih dahulu.
-
-Untuk pekerjaan musik, gunakan `music_generate`. Jika Anda menargetkan `google/*`, `minimax/*`, atau penyedia musik non-default lainnya, konfigurasikan autentikasi/kunci API penyedia tersebut terlebih dahulu.
-
-Untuk pekerjaan video, gunakan `video_generate`. Jika Anda menargetkan `qwen/*` atau penyedia video non-default lainnya, konfigurasikan autentikasi/kunci API penyedia tersebut terlebih dahulu.
-
-Untuk pembuatan audio berbasis alur kerja, gunakan `music_generate` ketika Plugin seperti
-ComfyUI mendaftarkannya. Ini terpisah dari `tts`, yang merupakan teks-ke-ucapan.
-
-`session_status` adalah alat status/pembacaan balik ringan dalam grup sesi.
-Alat ini menjawab pertanyaan bergaya `/status` tentang sesi saat ini dan dapat
-secara opsional mengatur override model per sesi; `model=default` menghapus
-override tersebut. Seperti `/status`, alat ini dapat mengisi balik penghitung token/cache yang jarang dan
-label model runtime aktif dari entri penggunaan transkrip terbaru.
-
-`gateway` adalah alat runtime khusus pemilik untuk operasi gateway:
-
-- `config.schema.lookup` untuk satu subtree konfigurasi dengan cakupan path sebelum pengeditan
-- `config.get` untuk snapshot konfigurasi saat ini + hash
-- `config.patch` untuk pembaruan konfigurasi parsial dengan restart
-- `config.apply` hanya untuk penggantian konfigurasi penuh
-- `update.run` untuk self-update + restart eksplisit
-
-Untuk perubahan parsial, utamakan `config.schema.lookup` lalu `config.patch`. Gunakan
-`config.apply` hanya ketika Anda sengaja mengganti seluruh konfigurasi.
-Untuk dokumentasi konfigurasi yang lebih luas, baca [Konfigurasi](/id/gateway/configuration) dan
-[Referensi konfigurasi](/id/gateway/configuration-reference).
-Alat ini juga menolak mengubah `tools.exec.ask` atau `tools.exec.security`;
-alias lama `tools.bash.*` dinormalisasi ke path exec terlindungi yang sama.
-
-### Alat yang disediakan Plugin
-
-Plugin dapat mendaftarkan alat tambahan. Beberapa contoh:
-
-- [Canvas](/id/plugins/reference/canvas) — Plugin eksperimental bawaan untuk kontrol Canvas Node dan rendering A2UI
-- [Diffs](/id/tools/diffs) — penampil dan perender diff
-- [LLM Task](/id/tools/llm-task) — langkah LLM khusus JSON untuk keluaran terstruktur
-- [Lobster](/id/tools/lobster) — runtime alur kerja bertipe dengan persetujuan yang dapat dilanjutkan
-- [Pembuatan Musik](/id/tools/music-generation) — alat `music_generate` bersama dengan penyedia berbasis alur kerja
-- [OpenProse](/id/prose) — orkestrasi alur kerja yang mengutamakan markdown
-- [Tokenjuice](/id/tools/tokenjuice) — memadatkan hasil alat `exec` dan `bash` yang berisik
-
-Alat Plugin tetap dibuat dengan `api.registerTool(...)` dan dideklarasikan dalam
-daftar `contracts.tools` pada manifes Plugin. OpenClaw menangkap deskriptor
-alat tervalidasi selama discovery dan menyimpannya dalam cache berdasarkan sumber dan kontrak Plugin, sehingga
-perencanaan alat berikutnya dapat melewati pemuatan runtime Plugin. Eksekusi alat tetap memuat
-Plugin pemilik dan memanggil implementasi terdaftar yang aktif.
-
-[Pencarian Alat](/id/tools/tool-search) adalah permukaan ringkas
-untuk katalog besar. Alih-alih memasukkan setiap skema alat OpenClaw, MCP, atau klien
-ke dalam prompt, OpenClaw dapat memberi model runtime Node terisolasi
-dengan `openclaw.tools.search`, `openclaw.tools.describe`, dan
-`openclaw.tools.call`. Panggilan tetap mengalir kembali melalui Gateway, sehingga
-kebijakan alat, persetujuan, hook, dan log sesi tetap menjadi sumber otoritatif.
-
-## Konfigurasi alat
-
-### Daftar izinkan dan tolak
-
-Kontrol alat mana yang dapat dipanggil agen melalui `tools.allow` / `tools.deny` dalam
-konfigurasi. Tolak selalu mengalahkan izinkan.
-
-```json5
-{
-  tools: {
-    allow: ["group:fs", "browser", "web_search"],
-    deny: ["exec"],
-  },
-}
-```
-
-OpenClaw gagal tertutup ketika allowlist eksplisit tidak menghasilkan alat yang dapat dipanggil.
-Misalnya, `tools.allow: ["query_db"]` hanya berfungsi jika Plugin yang dimuat benar-benar
-mendaftarkan `query_db`. Jika tidak ada alat bawaan, Plugin, atau MCP bawaan yang cocok dengan
-allowlist, proses berhenti sebelum panggilan model alih-alih berlanjut sebagai
-proses teks-saja yang dapat berhalusinasi tentang hasil alat.
-
-### Profil alat
-
-`tools.profile` mengatur allowlist dasar sebelum `allow`/`deny` diterapkan.
-Override per agen: `agents.list[].tools.profile`.
-
-| Profil      | Yang disertakan                                                                                                                                   |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `full`      | Semua alat core dan Plugin opsional; baseline tidak terbatas untuk akses command/control yang lebih luas                                          |
-| `coding`    | `group:fs`, `group:runtime`, `group:web`, `group:sessions`, `group:memory`, `cron`, `image`, `image_generate`, `music_generate`, `video_generate` |
-| `messaging` | `group:messaging`, `sessions_list`, `sessions_history`, `sessions_send`, `session_status`                                                         |
-| `minimal`   | hanya `session_status`                                                                                                                            |
+| Kategori               | Gunakan ketika agen perlu...                                                   | Alat representatif                                                    | Baca selanjutnya                                                       |
+| ---------------------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Runtime                | Menjalankan perintah, mengelola proses, atau menggunakan analisis Python berbasis penyedia | `exec`, `process`, `code_execution`                                  | [Exec](/id/tools/exec), [Eksekusi kode](/id/tools/code-execution)            |
+| File                   | Membaca dan mengubah file workspace                                            | `read`, `write`, `edit`, `apply_patch`                               | [Terapkan patch](/id/tools/apply-patch)                                   |
+| Web                    | Mencari di web, mencari posting X, atau mengambil konten halaman yang dapat dibaca | `web_search`, `x_search`, `web_fetch`                                | [Alat web](/id/tools/web), [Pengambilan web](/id/tools/web-fetch)            |
+| Browser                | Mengoperasikan sesi browser                                                    | `browser`                                                            | [Browser](/id/tools/browser)                                              |
+| Pesan dan channel      | Mengirim balasan atau tindakan channel                                         | `message`                                                            | [Kirim agen](/id/tools/agent-send)                                        |
+| Sesi dan agen          | Memeriksa sesi, mendelegasikan pekerjaan, mengarahkan run lain, atau melaporkan status | `sessions_*`, `subagents`, `agents_list`, `session_status`           | [Sub-agen](/id/tools/subagents), [Alat sesi](/id/concepts/session-tool)      |
+| Otomatisasi            | Menjadwalkan pekerjaan atau merespons peristiwa latar belakang                 | `cron`, `heartbeat_respond`                                          | [Otomatisasi](/id/automation)                                             |
+| Gateway dan node       | Memeriksa status Gateway atau perangkat target yang dipasangkan                | `gateway`, `nodes`                                                   | [Konfigurasi Gateway](/id/gateway/configuration), [Node](/id/nodes)          |
+| Media                  | Menganalisis, menghasilkan, atau mengucapkan media                             | `image`, `image_generate`, `music_generate`, `video_generate`, `tts` | [Ikhtisar media](/id/tools/media-overview)                                |
+| Katalog PI besar       | Mencari dan memanggil banyak alat yang memenuhi syarat tanpa mengirim setiap skema ke model | `tool_search_code`, `tool_search`, `tool_describe`                   | [Pencarian Alat](/id/tools/tool-search)                                   |
 
 <Note>
-`tools.profile: "messaging"` sengaja sempit untuk agen yang berfokus pada channel.
-Profil ini mengecualikan alat command/control yang lebih luas seperti filesystem, runtime,
-browser, canvas, nodes, cron, dan kontrol gateway. Gunakan `tools.profile: "full"`
-sebagai baseline tidak terbatas untuk akses command/control yang lebih luas, lalu kurangi
-akses dengan `tools.allow` / `tools.deny` bila diperlukan.
+Tool Search adalah permukaan agen PI eksperimental. Run harness Codex menggunakan
+mode kode native Codex, pencarian alat native, alat dinamis tertunda, dan panggilan
+alat bertingkat, bukan `tools.toolSearch`.
 </Note>
 
-`coding` mencakup alat web ringan (`web_search`, `web_fetch`, `x_search`)
-tetapi bukan alat kontrol browser penuh. Otomasi browser dapat menjalankan
-sesi nyata dan profil yang sudah login, jadi tambahkan secara eksplisit dengan
-`tools.alsoAllow: ["browser"]` atau per agen
-`agents.list[].tools.alsoAllow: ["browser"]`.
+## Alat yang disediakan plugin
 
-<Note>
-Mengonfigurasi `tools.exec` atau `tools.fs` di bawah profil restriktif (`messaging`, `minimal`) tidak secara implisit memperluas allowlist profil. Tambahkan entri `tools.alsoAllow` eksplisit (misalnya `["exec", "process"]` untuk exec, atau `["read", "write", "edit"]` untuk fs) ketika Anda ingin profil restriktif menggunakan bagian yang dikonfigurasi tersebut. OpenClaw mencatat peringatan startup ketika bagian konfigurasi ada tanpa izin `alsoAllow` yang cocok.
-</Note>
+Plugin dapat mendaftarkan alat tambahan. Penulis plugin menghubungkan alat melalui
+`api.registerTool(...)` dan `contracts.tools` milik manifes; gunakan
+[Plugin SDK](/id/plugins/sdk-overview) dan [Manifes plugin](/id/plugins/manifest)
+untuk detail kontrak.
 
-Profil `coding` dan `messaging` juga mengizinkan alat MCP bundle yang dikonfigurasi
-di bawah kunci Plugin `bundle-mcp`. Tambahkan `tools.deny: ["bundle-mcp"]` ketika Anda
-ingin profil mempertahankan bawaan normalnya tetapi menyembunyikan semua alat MCP yang dikonfigurasi.
-Profil `minimal` tidak menyertakan alat MCP bundle.
+Alat umum yang disediakan plugin meliputi:
 
-Contoh (permukaan alat terluas secara default):
+- [Diff](/id/tools/diffs) untuk merender diff file dan markdown
+- [Tugas LLM](/id/tools/llm-task) untuk langkah alur kerja khusus JSON
+- [Lobster](/id/tools/lobster) untuk alur kerja bertipe dengan persetujuan yang dapat dilanjutkan
+- [Tokenjuice](/id/tools/tokenjuice) untuk memadatkan output alat `exec` dan `bash` yang berisik
+- [Pencarian Alat](/id/tools/tool-search) untuk menemukan dan memanggil katalog alat
+  besar tanpa menaruh setiap skema di prompt
+- [Canvas](/id/plugins/reference/canvas) untuk kontrol Canvas node dan rendering
+  A2UI
 
-```json5
-{
-  tools: {
-    profile: "full",
-  },
-}
-```
+## Konfigurasikan akses dan persetujuan
 
-### Grup alat
+Kebijakan alat diberlakukan sebelum panggilan model. Jika kebijakan menghapus alat, model
+tidak menerima skema alat tersebut untuk giliran itu. Sebuah run dapat kehilangan alat
+karena konfigurasi global, konfigurasi per agen, kebijakan channel, pembatasan
+penyedia, aturan sandbox, gating khusus pemilik, atau ketersediaan plugin.
 
-Gunakan singkatan `group:*` dalam daftar izinkan/tolak:
+- [Alat dan penyedia kustom](/id/gateway/config-tools) mendokumentasikan profil alat,
+  daftar allow/deny, pembatasan khusus penyedia, deteksi loop, dan
+  pengaturan alat berbasis penyedia.
+- [Persetujuan exec](/id/tools/exec-approvals) mendokumentasikan kebijakan persetujuan
+  perintah host.
+- [Exec yang ditingkatkan](/id/tools/elevated) mendokumentasikan eksekusi terkontrol di luar
+  sandbox.
+- [Sandbox vs kebijakan alat vs elevated](/id/gateway/sandbox-vs-tool-policy-vs-elevated) menjelaskan lapisan mana yang mengontrol akses file dan proses.
+- [Pembatasan sandbox dan alat per agen](/id/tools/multi-agent-sandbox-tools)
+  mendokumentasikan pembatasan khusus agen untuk run yang didelegasikan.
 
-| Grup               | Alat                                                                                                      |
-| ------------------ | --------------------------------------------------------------------------------------------------------- |
-| `group:runtime`    | exec, process, code_execution (`bash` diterima sebagai alias untuk `exec`)                                |
-| `group:fs`         | read, write, edit, apply_patch                                                                            |
-| `group:sessions`   | sessions_list, sessions_history, sessions_send, sessions_spawn, sessions_yield, subagents, session_status |
-| `group:memory`     | memory_search, memory_get                                                                                 |
-| `group:web`        | web_search, x_search, web_fetch                                                                           |
-| `group:ui`         | browser, canvas saat Plugin Canvas bawaan diaktifkan                                                      |
-| `group:automation` | heartbeat_respond, cron, gateway                                                                          |
-| `group:messaging`  | message                                                                                                   |
-| `group:nodes`      | nodes                                                                                                     |
-| `group:agents`     | agents_list, update_plan                                                                                  |
-| `group:media`      | image, image_generate, music_generate, video_generate, tts                                                |
-| `group:openclaw`   | Semua alat bawaan OpenClaw (tidak termasuk alat Plugin)                                                   |
+## Perluas kemampuan
 
-`sessions_history` mengembalikan tampilan recall yang dibatasi dan difilter demi keamanan. Ini menghapus
-tag berpikir, kerangka `<relevant-memories>`, muatan XML panggilan alat teks biasa
-(termasuk `<tool_call>...</tool_call>`,
-`<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`,
-`<function_calls>...</function_calls>`, dan blok panggilan alat yang terpotong),
-kerangka panggilan alat yang diturunkan tingkatnya, token kontrol model ASCII/lebar-penuh yang bocor,
-dan XML panggilan alat MiniMax yang tidak valid dari teks asisten, lalu menerapkan
-redaksi/pemotongan dan kemungkinan placeholder baris terlalu besar alih-alih bertindak
-sebagai dump transkrip mentah.
+Pilih jalur ekstensi berdasarkan pekerjaan yang perlu dilakukan OpenClaw:
 
-### Pembatasan khusus penyedia
+- Instal atau kelola plugin yang ada dengan [Plugin](/id/tools/plugin).
+- Bangun integrasi, penyedia, channel, alat, atau hook baru dengan
+  [Membangun plugin](/id/plugins/building-plugins).
+- Tambahkan atau sesuaikan instruksi agen yang dapat digunakan ulang dengan [Skills](/id/tools/skills) dan
+  [Membuat Skills](/id/tools/creating-skills).
+- Paketkan materi alur kerja yang dapat digunakan ulang dengan
+  [Workshop Skills](/id/plugins/skill-workshop) ketika alur kerja termasuk dalam
+  bundle Skills yang didistribusikan plugin.
+- Gunakan [Plugin SDK](/id/plugins/sdk-overview) dan [Manifes plugin](/id/plugins/manifest) ketika Anda memerlukan kontrak implementasi.
 
-Gunakan `tools.byProvider` untuk membatasi alat bagi penyedia tertentu tanpa
-mengubah default global:
+## Pecahkan masalah alat yang hilang
 
-```json5
-{
-  tools: {
-    profile: "coding",
-    byProvider: {
-      "google-antigravity": { profile: "minimal" },
-    },
-  },
-}
-```
+Jika model tidak dapat melihat atau memanggil alat, mulai dengan kebijakan efektif untuk
+giliran saat ini:
+
+1. Periksa profil aktif, `tools.allow`, dan `tools.deny` di
+   [Alat dan penyedia kustom](/id/gateway/config-tools).
+2. Periksa pembatasan khusus penyedia di
+   [Alat dan penyedia kustom](/id/gateway/config-tools) dan pastikan
+   [penyedia model](/id/concepts/model-providers) yang dipilih mendukung bentuk alat tersebut.
+3. Periksa izin channel, status sandbox, dan akses elevated dengan
+   [Sandbox vs kebijakan alat vs elevated](/id/gateway/sandbox-vs-tool-policy-vs-elevated) dan [Exec yang ditingkatkan](/id/tools/elevated).
+4. Periksa apakah plugin pemilik sudah diinstal dan diaktifkan di
+   [Plugin](/id/tools/plugin).
+5. Untuk run yang didelegasikan, periksa pembatasan per agen di
+   [Pembatasan sandbox dan alat per agen](/id/tools/multi-agent-sandbox-tools).
+6. Untuk katalog PI besar, pastikan apakah run menggunakan eksposur alat langsung atau
+   [Pencarian Alat](/id/tools/tool-search).
+
+## Terkait
+
+- [Otomatisasi](/id/automation) untuk cron, tugas, heartbeat, komitmen, hook, standing order, dan Task Flow
+- [Agen](/id/concepts/agent) untuk model agen, sesi, memori, dan koordinasi multi-agen
+- [Alat dan penyedia kustom](/id/gateway/config-tools) untuk referensi kebijakan alat kanonis
+- [Plugin](/id/tools/plugin) untuk instalasi dan manajemen plugin
+- [Plugin SDK](/id/plugins/sdk-overview) untuk referensi penulis plugin
+- [Skills](/id/tools/skills) untuk urutan pemuatan, gating, dan konfigurasi Skills
+- [Pencarian Alat](/id/tools/tool-search) untuk penemuan katalog alat PI yang ringkas

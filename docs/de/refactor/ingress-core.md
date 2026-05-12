@@ -1,26 +1,23 @@
 ---
 read_when:
-    - Untersuchung, warum das Refactoring des Channel-Ingress zu viel Code hinzugefügt hat
-    - Verschieben von Routen-, Befehls-, Ereignis-, Aktivierungs- oder Zugriffsgruppenrichtlinien aus gebündelten Plugins in den Kern
-    - Prüfung, ob eine Hilfsfunktion für den Kanal-Ingress tatsächlich gebündelten Plugin-Code löscht
+    - Prüfung, warum das Kanal-Ingress-Refactoring zu viel Code hinzugefügt hat
+    - Verschieben von Richtlinien für Routen, Befehle, Ereignisse, Aktivierungen oder Zugriffsgruppen aus gebündelten Plugins in den Core
+    - Überprüfung, ob eine Ingress-Hilfsfunktion für Kanäle tatsächlich Code gebündelter Plugins löscht
 sidebarTitle: Ingress core deletion
-summary: Löschungsorientierter Plan zum Verschieben wiederholter Kanaleingangs-Verknüpfungslogik in den Kern.
-title: Plan zur Entfernung des Ingress-Kerns
+summary: Plan mit Löschung zuerst für die Verlagerung wiederholter Kanaleingangs-Verbindungslogik in den Kern.
+title: Plan zur Löschung des Ingress-Kerns
 x-i18n:
-    generated_at: "2026-05-10T19:50:49Z"
+    generated_at: "2026-05-12T01:01:07Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 71afcf5d4f58c57ecfe7b388325279700a723ec1fcd926f644095106b662c3d0
+    source_hash: 1fdf1e7c9636d02c48c4b5d2b4a51470317dd64e2270c7fae779777c0d787afc
     source_path: refactor/ingress-core.md
     workflow: 16
 ---
 
-# Plan zur Löschung des Ingress-Core
+# Löschplan für den Ingress-Kern
 
-Der Ingress-Refactor ist nicht gesund, solange er netto Tausende Zeilen
-hinzufügt. Core-Zentralisierung zählt nur, wenn der Produktionscode gebündelter
-Plugins kleiner wird und alte Drittanbieter-SDK-Kompatibilität auf SDK-/Core-Shims
-isoliert wird.
+Das Ingress-Refactoring ist nicht gesund, solange es netto Tausende Zeilen hinzufügt. Kernzentralisierung zählt nur, wenn der Produktionscode gebündelter Plugins kleiner wird und alte SDK-Kompatibilität für Drittanbieter auf SDK-/Core-Shims beschränkt wird.
 
 Gewünschte Laufzeitstruktur:
 
@@ -37,15 +34,11 @@ old third-party helper
   -> old return shape preserved
 ```
 
-Gebündelte Plugins sollten Ingress nicht zurück in lokale `AccessResult`-,
-`GroupAccessDecision`-, `CommandAuthDecision`-, `DmCommandAccess`- oder
-`{ allowed, reasonCode }`-Formen übersetzen, außer dieser Typ ist öffentliche
-Plugin-API.
+Gebündelte Plugins sollten Ingress nicht wieder in lokale Formen wie `AccessResult`, `GroupAccessDecision`, `CommandAuthDecision`, `DmCommandAccess` oder `{ allowed, reasonCode }` übersetzen, sofern dieser Typ keine öffentliche Plugin-API ist.
 
 ## Budget
 
-Gemessen gegen die PR-Merge-Base mit `origin/main`, einschließlich nicht
-nachverfolgter Dateien.
+Gemessen gegen die PR-Merge-Base mit `origin/main`, einschließlich nicht nachverfolgter Dateien.
 
 ```text
 merge-base            1671e7532adb
@@ -70,7 +63,7 @@ core production       <= +1,200
 total                 <= 0
 ```
 
-Mindestens verbleibende Bereinigung:
+Verbleibende Mindestbereinigung:
 
 ```text
 plugin production     needs 260 more net deleted lines
@@ -78,10 +71,7 @@ total                 needs 775 more net deleted lines
 core production       still +1,876 over standalone budget, unless paid down by plugin deletion
 ```
 
-Nur Kommentare zu löschen zählt nicht als Bereinigung. Der vorige Budgetdurchlauf
-war zu großzügig, weil er wiederhergestellte erklärende QQBot-Kommentare
-einschloss; dieses Dokument verfolgt nur die Bewegung von ausführbarem Code,
-Dokumentation und Testcode.
+Das Löschen reiner Kommentare zählt nicht als Bereinigung. Der vorherige Budgetdurchlauf war zu großzügig, weil er wiederhergestellte erklärende QQBot-Kommentare einbezogen hat; dieses Dokument verfolgt nur Verschiebungen von ausführbarem Code, Dokumentation und Testcode.
 
 Nach jeder Bereinigungswelle erneut messen:
 
@@ -94,8 +84,7 @@ pnpm lint:extensions:no-deprecated-channel-access
 
 ## Diagnose
 
-Der erste Durchlauf fügte den gemeinsamen Ingress-Kernel hinzu und ließ dann zu
-viel Plugin-lokale Autorisierung daneben bestehen:
+Der erste Durchlauf fügte den gemeinsamen Ingress-Kernel hinzu, ließ dann aber zu viel Plugin-lokale Autorisierung daneben bestehen:
 
 ```text
 platform facts
@@ -104,16 +93,13 @@ platform facts
   -> plugin-local if/else ladder
 ```
 
-Das dupliziert das Modell. Core-Produktionscode ist um etwa 3.376 Zeilen
-gewachsen, während der Produktionscode gebündelter Plugins 1.240 Zeilen kleiner
-ist. Das ist besser als der erste Durchlauf, liegt aber nicht innerhalb des
-Mindestbudgets. Die Korrektur bleibt löschungsorientiert:
+Das dupliziert das Modell. Die Core-Produktion ist um etwa 3.376 Zeilen gewachsen, während die Produktion gebündelter Plugins 1.240 Zeilen kleiner ist. Das ist besser als im ersten Durchlauf, liegt aber nicht innerhalb des Mindestbudgets. Die Lösung bleibt löschungsorientiert:
 
 - Plugin-DTOs löschen, die nur Ingress-Felder umbenennen
 - Tests löschen, die nur Wrapper-Formen prüfen
-- Core-Helfer nur hinzufügen, wenn derselbe Patch gebündelten Plugin-Code löscht
+- Core-Helfer nur hinzufügen, wenn derselbe Patch Code gebündelter Plugins löscht
 - alte SDK-Kompatibilität nur in SDK-/Core-Shims halten
-- Core neu packen, nachdem die Wrapper-Löschung die stabile Form freigelegt hat
+- Core neu packen, nachdem das Löschen der Wrapper die stabile Form freilegt
 
 ## Hotspots
 
@@ -138,64 +124,41 @@ extensions/qqbot/src/engine/commands/slash-command-handler.ts +20
 extensions/telegram/src/bot-handlers.runtime.ts            +19
 ```
 
-Der Branch liegt noch nicht innerhalb des Mindestbudgets. Die verbleibende
-review-relevante Arbeit sollte wiederholten Autorisierungsfluss, Turn-Gerüst oder
-Wrapper-Tests löschen, bevor eine weitere Core-Abstraktion hinzugefügt wird.
+Der Branch liegt noch nicht innerhalb des Mindestbudgets. Die verbleibende review-relevante Arbeit sollte wiederholte Autorisierungsflüsse, Turn-Gerüstcode oder Wrapper-Tests löschen, bevor eine weitere Core-Abstraktion hinzugefügt wird.
 
-## Aktueller Codebefund
+## Aktueller Code-Stand
 
-Die gesunde Core-Nahtstelle existiert bereits in `src/channels/message-access/runtime.ts`:
-Sie besitzt Identitätsadapter, effektive Allowlists, Pairing-Store-Lesezugriffe,
-Routenbeschreibungen, Command-/Event-Presets, Zugriffsgruppen und die finale
-aufgelöste Projektion `ResolvedChannelMessageIngress`.
+Der gesunde Core-Übergang existiert bereits in `src/channels/message-access/runtime.ts`: Er besitzt Identitätsadapter, effektive Allowlists, Pairing-Store-Lesezugriffe, Routendeskriptoren, Command-/Event-Presets, Zugriffsgruppen und die endgültig aufgelöste Projektion `ResolvedChannelMessageIngress`.
 
-Das verbleibende Wachstum ist überwiegend Plugin-Glue, der auf diese Nahtstelle
-geschichtet ist:
+Das verbleibende Wachstum besteht größtenteils aus Plugin-Klebstoffcode, der auf diesem Übergang liegt:
 
-- `extensions/telegram/src/ingress.ts` kapselt Core-Entscheidungen in
-  Telegram-spezifischen Command-/Event-Helfern, und Call-Sites übergeben dennoch
-  vorab berechnete normalisierte Allowlists und Owner-Listen.
-- `extensions/discord/src/monitor/dm-command-auth.ts`,
-  `extensions/feishu/src/policy.ts`, `extensions/googlechat/src/monitor-access.ts`
-  und `extensions/matrix/src/matrix/monitor/access-state.ts` behalten weiterhin
-  lokale Policy-DTOs oder Legacy-Entscheidungsnamen neben Ingress.
-- `extensions/signal/src/monitor/access-policy.ts` behält Signal-spezifische
-  Identitätsnormalisierung und Pairing-Antworten korrekt lokal, hat aber noch
-  eine Wrapper-Nahtstelle, die in direkten Ingress-Konsum zusammenfallen sollte.
-- `extensions/nextcloud-talk/src/inbound.ts`, `extensions/irc/src/inbound.ts`,
-  `extensions/qa-channel/src/inbound.ts`, `extensions/zalo/src/monitor.ts` und
-  `extensions/zalouser/src/monitor.ts` wiederholen weiterhin Routen-/Envelope-/
-  Turn-Aufbau, der in gemeinsame Turn-Helfer außerhalb des Ingress-Kernels
-  verschoben werden kann.
+- `extensions/telegram/src/ingress.ts` kapselt Core-Entscheidungen in Telegram-spezifische Command-/Event-Helfer, während Aufrufstellen weiterhin vorab berechnete normalisierte Allowlists und Owner-Listen übergeben.
+- `extensions/discord/src/monitor/dm-command-auth.ts`, `extensions/feishu/src/policy.ts`, `extensions/googlechat/src/monitor-access.ts` und `extensions/matrix/src/matrix/monitor/access-state.ts` halten weiterhin lokale Policy-DTOs oder alte Entscheidungsnamen neben Ingress.
+- `extensions/signal/src/monitor/access-policy.ts` hält Signal-Identitätsnormalisierung und Pairing-Antworten korrekt lokal, hat aber weiterhin einen Wrapper-Übergang, der in direkte Ingress-Nutzung zusammenfallen sollte.
+- `extensions/nextcloud-talk/src/inbound.ts`, `extensions/irc/src/inbound.ts`, `extensions/qa-channel/src/inbound.ts`, `extensions/zalo/src/monitor.ts` und `extensions/zalouser/src/monitor.ts` wiederholen weiterhin Routen-/Envelope-/Turn-Zusammenbau, der in gemeinsame Turn-Helfer außerhalb des Ingress-Kernels verschoben werden kann.
 
-Fazit: Mehr Code in den Core zu verschieben ist nur dann nützlich, wenn es diese
-Plugin-Wrapper-Schichten im selben Patch löscht. Eine weitere Abstraktion
-hinzuzufügen, während Wrapper-Rückgaben bestehen bleiben, wiederholt den Fehler.
+Fazit: Mehr Code in den Core zu verschieben ist nur sinnvoll, wenn dadurch dieselben Plugin-Wrapper-Schichten im selben Patch gelöscht werden. Eine weitere Abstraktion hinzuzufügen, während Wrapper-Rückgaben bestehen bleiben, wiederholt den Fehler.
 
 ## Grenze
 
 Core besitzt generische Policy:
 
 - Allowlist-Normalisierung und -Abgleich
-- Zugriffsgruppenerweiterung und Diagnose
-- Pairing-Store-Lesezugriffe für DM-Allowlists
-- Routen-, Sender-, Command-, Event- und Aktivierungsgates
-- Zulassungs-Mapping: Dispatch, Drop, Skip, Observe, Pairing
+- Erweiterung und Diagnose von Zugriffsgruppen
+- Pairing-Store-DM-Allowlist-Lesezugriffe
+- Routen-, Sender-, Command-, Event- und Aktivierungs-Gates
+- Zulassungszuordnung: Dispatch, Drop, Skip, Observe, Pairing
 - redigierter Zustand, Entscheidungen, Diagnosen und SDK-Kompatibilitätsprojektionen
-- wiederverwendbare generische Beschreibungen für Identität, Route, Command,
-  Event, Aktivierung und Ergebnisse
+- wiederverwendbare generische Deskriptoren für Identität, Route, Command, Event, Aktivierung und Ergebnisse
 
 Plugins besitzen Transportfakten und Seiteneffekte:
 
-- Webhook-/Socket-/Request-Authentizität
-- Plattform-Identitätsextraktion und API-Lookups
+- Authentizität von Webhook, Socket und Request
+- Extraktion von Plattformidentitäten und API-Lookups
 - channelspezifische Policy-Defaults
-- Pairing-Challenge-Zustellung, Antworten, Acks, Reaktionen, Tippen, Medien,
-  Verlauf, Einrichtung, Doctor, Status, Logs und nutzerorientierte Texte
+- Zustellung von Pairing-Challenges, Antworten, Acks, Reaktionen, Typing, Medien, Verlauf, Einrichtung, Doctor, Status, Logs und nutzerseitige Texte
 
-Core muss channel-agnostisch bleiben: kein Discord, Slack, Telegram, Matrix,
-Room, Guild, Space, API-Client oder Plugin-spezifischer Default in
-`src/channels/message-access`.
+Core muss channel-agnostisch bleiben: kein Discord, Slack, Telegram, Matrix, Room, Guild, Space, API-Client oder Plugin-spezifischer Default in `src/channels/message-access`.
 
 ## Akzeptanzregel
 
@@ -210,104 +173,63 @@ compatibility-only helper SDK/core shim only; never bundled hot paths
 
 Stoppen und neu entwerfen, wenn:
 
-- Produktions-LOC von Plugins steigen
+- die Plugin-Produktions-LOC steigt
 - Tests schneller wachsen, als Produktion schrumpft
-- ein gebündelter Hot Path ein DTO zurückgibt, das nur
-  `ResolvedChannelMessageIngress` umbenennt
-- ein Core-Helfer eine Channel-ID, ein Plattformobjekt, einen API-Client oder
-  einen channelspezifischen Default benötigt
+- ein gebündelter Hot Path ein DTO zurückgibt, das nur `ResolvedChannelMessageIngress` umbenennt
+- ein Core-Helfer eine Channel-ID, ein Plattformobjekt, einen API-Client oder einen channelspezifischen Default benötigt
 
 ## Arbeitspakete
 
 1. Das Budget einfrieren.
-   LOC in den PR aufnehmen, Deprecated-Ingress-Lint grün halten und Vorher-/Nachher-
-   LOC in Bereinigungs-Commits einschließen.
+   LOC im PR festhalten, Deprecated-Ingress-Lint grün halten und Vorher-/Nachher-LOC in Bereinigungs-Commits aufnehmen.
 
-2. Dünne DTO-Nahtstellen löschen.
-   Plugin-lokale Wrapper-Rückgaben durch direkte Verwendung von
-   `ResolvedChannelMessageIngress`, `senderAccess`, `commandAccess`, `routeAccess`
-   oder `ingress` ersetzen. Mit QQBot, Telegram, Slack, Discord, Signal, Feishu,
-   Matrix, iMessage und Tlon beginnen. Wrapper-Form-Tests löschen; Verhaltenstests
-   behalten.
+2. Dünne DTO-Übergänge löschen.
+   Plugin-lokale Wrapper-Rückgaben direkt durch `ResolvedChannelMessageIngress`, `senderAccess`, `commandAccess`, `routeAccess` oder `ingress` ersetzen. Mit QQBot, Telegram, Slack, Discord, Signal, Feishu, Matrix, iMessage und Tlon beginnen. Wrapper-Form-Tests löschen; Verhaltenstests beibehalten.
 
-3. Ergebnis-Klassifizierung nur mit Löschungen hinzufügen.
-   Ein generischer Klassifizierer kann `dispatch`, `pairing-required`,
-   `skip-activation`, `drop-command`, `drop-route`, `drop-sender` und
-   `drop-ingress` bereitstellen. Er muss aus dem Entscheidungsgraphen abgeleitet
-   werden, nicht aus Reason-Strings, und im selben Patch mindestens drei Plugins
-   migrieren.
+3. Ergebnisklassifikation nur mit Löschungen hinzufügen.
+   Ein generischer Klassifikator kann `dispatch`, `pairing-required`, `skip-activation`, `drop-command`, `drop-route`, `drop-sender` und `drop-ingress` bereitstellen. Er muss aus dem Entscheidungsgraphen abgeleitet werden, nicht aus Reason-Strings, und mindestens drei Plugins im selben Patch migrieren.
 
-4. Routenbeschreibungs-Builder nur mit Löschungen hinzufügen.
-   Generische Helfer für Routenziel und Routensender sind nur akzeptabel, wenn sie
-   routenlastige Plugins sofort verkleinern: Google Chat, IRC, Microsoft Teams,
-   Nextcloud Talk, Mattermost, Slack, Zalo und Zalo Personal.
+4. Routendeskriptor-Builder nur mit Löschungen hinzufügen.
+   Generische Helfer für Routenziel und Routensender sind nur akzeptabel, wenn sie routenlastige Plugins sofort verkleinern: Google Chat, IRC, Microsoft Teams, Nextcloud Talk, Mattermost, Slack, Zalo und Zalo Personal.
 
 5. Command-/Event-Presets nur mit Löschungen hinzufügen.
-   Text-Command-, Native-Command-, Callback- und Origin-Subject-Formen
-   zentralisieren. Command-Consumer müssen standardmäßig nicht autorisiert sein,
-   wenn kein Command-Gate lief; Events dürfen kein Pairing starten.
+   Formen für Text-Command, Native-Command, Callback und Origin-Subject zentralisieren. Command-Nutzer müssen standardmäßig auf nicht autorisiert fallen, wenn kein Command-Gate ausgeführt wurde; Events dürfen kein Pairing starten.
 
-6. Identitäts-Presets nur hinzufügen, wo sie Boilerplate entfernen.
-   Helfer für stabile ID, stabile ID plus Aliase, Telefon/E.164 und mehrere
-   Identifikatoren sind zulässig, wenn Rohwerte nur in Adapter-Eingaben eingehen
-   und der redigierte Zustand opake IDs/Zählungen behält.
+6. Identitäts-Presets nur dort hinzufügen, wo sie Boilerplate entfernen.
+   Helfer für stabile ID, stabile ID plus Aliasse, phone/e164 und mehrere Identifier sind erlaubt, wenn Rohwerte nur in Adapter-Eingaben gelangen und der redigierte Zustand opake IDs/Zählwerte behält.
 
-7. Autorisierten Turn-Aufbau teilen.
-   Außerhalb des Ingress-Kernels wiederholtes Routen-/Session-/Envelope-/Context-/
-   Reply-Gerüst aus QA Channel, IRC, Nextcloud Talk, Zalo und Zalo Personal
-   entfernen. Core darf Routen-/Session-/Envelope-/Dispatch-Sequenzierung besitzen;
-   Plugins behalten Zustellung und channelspezifischen Kontext.
+7. Autorisierten Turn-Zusammenbau teilen.
+   Außerhalb des Ingress-Kernels wiederholten Routen-/Session-/Envelope-/Context-/Reply-Gerüstcode aus QA Channel, IRC, Nextcloud Talk, Zalo und Zalo Personal entfernen. Core kann Routen-/Session-/Envelope-/Dispatch-Sequenzierung besitzen; Plugins behalten Zustellung und channelspezifischen Kontext.
 
 8. Kompatibilität isolieren.
-   Veraltete SDK-Helfer bleiben quellkompatibel, aber gebündelte Hot Paths dürfen
-   keine veralteten Ingress- oder Command-Auth-Fassaden importieren.
-   Kompatibilitätstests sollten gefälschte Drittanbieter-Plugins verwenden, nicht
-   Interna gebündelter Plugins.
+   Veraltete SDK-Helfer bleiben quellkompatibel, aber gebündelte Hot Paths dürfen keine veralteten Ingress- oder Command-Auth-Fassaden importieren. Kompatibilitätstests sollten gefälschte Drittanbieter-Plugins verwenden, keine Interna gebündelter Plugins.
 
 9. Core neu packen.
-   Nach der Wrapper-Löschung Einmal-Module zusammenlegen, ungenutzte Exporte
-   entfernen, Kompatibilitätsprojektion aus Hot Paths verschieben und fokussierte
-   Tests für Identität, Route, Command/Event, Aktivierung, Zugriffsgruppen und
-   Kompatibilitäts-Shims behalten.
+   Nach dem Löschen von Wrappern Einmalmodule zusammenführen, ungenutzte Exporte entfernen, Kompatibilitätsprojektion aus Hot Paths herausverschieben und fokussierte Tests für Identität, Route, Command/Event, Aktivierung, Zugriffsgruppen und Kompatibilitäts-Shims behalten.
 
 ## Löschwellen
 
-In dieser Reihenfolge ausführen. Jede Welle muss die Produktions-LOC gebündelter
-Plugins senken.
+Diese in Reihenfolge ausführen. Jede Welle muss die LOC gebündelter Produktion senken.
 
-1. Wrapper-Kollaps, erwartetes Plugin-Delta: -400 bis -600.
-   Plugin-lokale `resolveXAccess`-, `resolveXCommandAccess`- und
-   `accessFromIngress`-Ergebnistypen durch direkte Zugriffe auf
-   `ResolvedChannelMessageIngress` ersetzen. Erste Ziele: Discord-DM-Command-Auth,
-   Feishu-Policy, Matrix-Zugriffsstatus, Telegram-Ingress, Signal-Zugriffs-Policy,
-   QQBot-SDK-Adapter.
+1. Wrapper zusammenführen, erwartetes Plugin-Delta: -400 bis -600.
+   Plugin-lokale `resolveXAccess`-, `resolveXCommandAccess`- und `accessFromIngress`-Ergebnistypen durch direkte Lesezugriffe aus `ResolvedChannelMessageIngress` ersetzen. Erste Ziele: Discord-DM-Command-Auth, Feishu-Policy, Matrix-Zugriffszustand, Telegram-Ingress, Signal-Zugriffs-Policy, QQBot-SDK-Adapter.
 
-2. Geteilte Ergebnishelfer, erwartetes Plugin-Delta: -200 bis -350.
-   Einen generischen Klassifizierer nur hinzufügen, wenn er wiederholte
-   `shouldBlockControlCommand`-, Pairing-, Aktivierungsskip-, Routenblock- und
-   Senderblock-Leitern über mindestens drei Plugins hinweg löscht.
+2. Gemeinsame Ergebnishelfer, erwartetes Plugin-Delta: -200 bis -350.
+   Einen generischen Klassifikator nur hinzufügen, wenn er wiederholte `shouldBlockControlCommand`-, Pairing-, Aktivierungs-Skip-, Routenblock- und Senderblock-Verzweigungen über mindestens drei Plugins hinweg löscht.
 
-3. Routenbeschreibungs-Builder, erwartetes Plugin-Delta: -200 bis -350.
-   Wiederholten Aufbau von Routenziel- und Routensenderbeschreibungen in
-   Core-Helfer verschieben. Erste Ziele: Google Chat, IRC, Microsoft Teams,
-   Nextcloud Talk, Mattermost, Slack, Zalo, Zalo Personal.
+3. Routendeskriptor-Builder, erwartetes Plugin-Delta: -200 bis -350.
+   Wiederholten Zusammenbau von Routenziel- und Routensender-Deskriptoren in Core-Helfer verschieben. Erste Ziele: Google Chat, IRC, Microsoft Teams, Nextcloud Talk, Mattermost, Slack, Zalo, Zalo Personal.
 
-4. Geteilter Turn-Aufbau, erwartetes Plugin-Delta: -250 bis -450.
-   Gemeinsame Routen-/Session-/Envelope-/Dispatch-Sequenzierung für einfache
-   Inbound-Plugins verwenden. Erste Ziele: QA Channel, IRC, Nextcloud Talk, Zalo,
-   Zalo Personal.
+4. Turn-Zusammenbau teilen, erwartetes Plugin-Delta: -250 bis -450.
+   Gemeinsame Routen-/Session-/Envelope-/Dispatch-Sequenzierung für einfache eingehende Plugins verwenden. Erste Ziele: QA Channel, IRC, Nextcloud Talk, Zalo, Zalo Personal.
 
 5. Core neu packen, erwartetes Core-Delta: -300 bis -700.
-   Nachdem Plugins Runtime-Projektionen direkt konsumieren, Einmal-Module löschen,
-   winzige Dateien zurück in `runtime.ts` oder fokussierte Geschwisterdateien
-   mergen und SDK-Kompatibilitätsdateien getrennt von gebündelten Hot Paths halten.
+   Nachdem Plugins Laufzeitprojektionen direkt nutzen, Einmalmodule löschen, kleine Dateien wieder in `runtime.ts` oder fokussierte Geschwisterdateien zusammenführen und SDK-Kompatibilitätsdateien von gebündelten Hot Paths getrennt halten.
 
-6. Testbereinigung, erwartetes Test-Delta: -300 bis -600.
-   Tests löschen, die nur entfernte Wrapper-Formen prüfen. Verhaltenstests für
-   Command-Ablehnung, Gruppen-Fallback, Origin-Subject-Abgleich,
-   Aktivierungsskip, Zugriffsgruppen, Pairing und Redaction behalten.
+6. Tests ausdünnen, erwartetes Test-Delta: -300 bis -600.
+   Tests löschen, die nur entfernte Wrapper-Formen prüfen. Verhaltenstests für Command-Ablehnung, Gruppen-Fallback, Origin-Subject-Abgleich, Aktivierungs-Skip, Zugriffsgruppen, Pairing und Redaktion beibehalten.
 
-Erwartete Mindestform für die Landung nach diesen Wellen:
+Erwartete Mindestform fürs Landing nach diesen Wellen:
 
 ```text
 plugin production     <= -1,500
@@ -316,12 +238,12 @@ tests                 <= +500
 total                 <= +2,000
 ```
 
-## Nicht Verschieben
+## Nicht verschieben
 
-Verschieben Sie keine Plattform-Konfigurationsstandardwerte, Setup-UX, doctor/fix-Texte, API-Lookups,
-Slack-Prüfungen auf owner-presence, Matrix-Alias-/Verifizierungshandling, Telegram-
+Verschieben Sie keine Plattform-Konfigurationsvorgaben, Setup-UX, doctor/fix-Texte, API-Lookups,
+Slack-Prüfungen auf Owner-Präsenz, Matrix-Alias-/Verifizierungsbehandlung, Telegram-
 Callback-Parsing, Befehlssyntax-Parsing, native Befehlsregistrierung, Reaktions-
-Payload-Parsing, Kopplungsantworten, Befehlsantworten, Acks, Typing, Medien, Verlauf
+Payload-Parsing, Pairing-Antworten, Befehlsantworten, Acks, Typing, Medien, Verlauf
 oder Logs.
 
 ## Verifizierung
@@ -338,24 +260,24 @@ pnpm check:docs
 git diff --check
 ```
 
-Verwenden Sie Testbox für breite changed gates/full-suite-Nachweise, sobald der LOC-Trend
-innerhalb des Budgets liegt.
+Verwenden Sie Testbox für breite Changed-Gates/Full-Suite-Nachweise, sobald der LOC-Trend
+im Budget liegt.
 
-Jedes Arbeitspaket erfasst:
+Jedes Arbeitspaket dokumentiert:
 
-- LOC vor/nachher nach Kategorie
+- LOC vor/nach nach Kategorie
 - gelöschte Plugin-Wrapper
-- neue Core-Hilfs-LOC, falls vorhanden
+- neue Core-Helper-LOC, falls vorhanden
 - ausgeführte gezielte Tests
 - verbleibende Hotspot-Liste
 
-## Exit-Kriterien
+## Abnahmekriterien
 
-- gebündelte Produktionsimporte verwenden keine veralteten channel-access- oder command-auth-Fassaden
+- gebündelte Produktions-Imports verwenden keine veralteten channel-access- oder command-auth-Fassaden
 - Kompatibilitätscode ist auf SDK-/Core-Schnittstellen isoliert
-- gebündelte Plugins nutzen ingress projections oder generische Ergebnisse direkt
-- Plugin-Produktions-LOC sind netto mindestens 1.500 negativ gegenüber `origin/main`
-- Core-Produktions-LOC sind <= +1.500, oder jeder Überschuss wird ausgeglichen, während die Gesamtsumme
-  <= +2.000 bleibt
-- repräsentative Tests decken Redaction, Route, Befehl/Ereignis, Aktivierung,
-  access-group und channelspezifisches Fallback-Verhalten ab
+- gebündelte Plugins konsumieren Ingress-Projektionen oder generische Ergebnisse direkt
+- Plugin-Produktions-LOC sind gegenüber `origin/main` netto mindestens 1.500 negativ
+- Core-Produktions-LOC sind `<= +1,500`, oder jeder Überschuss wird ausgeglichen, während die Summe
+  `<= +2,000` bleibt
+- repräsentative Tests decken Redaction, Route, Befehl/Event, Aktivierung,
+  Access Group und channelspezifisches Fallback-Verhalten ab

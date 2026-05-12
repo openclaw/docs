@@ -1,244 +1,183 @@
 ---
+doc-schema-version: 1
 read_when:
-    - Vuoi capire quali strumenti offre OpenClaw
-    - Devi configurare, consentire o negare gli strumenti
+    - Vuoi capire quali strumenti mette a disposizione OpenClaw
     - Stai scegliendo tra strumenti integrati, Skills e plugin
-summary: 'Panoramica degli strumenti e dei plugin di OpenClaw: cosa può fare l''agente e come estenderlo'
-title: Strumenti e Plugin
+    - Ti serve il punto di ingresso corretto della documentazione per le policy degli strumenti, l'automazione o il coordinamento degli agenti
+summary: 'Panoramica di strumenti, Skills e plugin di OpenClaw: cosa possono chiamare gli agenti e come estenderli'
+title: Panoramica
 x-i18n:
-    generated_at: "2026-05-11T20:38:21Z"
+    generated_at: "2026-05-12T01:00:26Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b12b2d605c8fccb0de378f8a63fb92b8c3bad8abd3edf10bb79632d6ef6089fd
+    source_hash: 94424b04a520009d40d851e46f7ea0e4e914ff39b7d79958194bb123a6ec0b7b
     source_path: tools/index.md
     workflow: 16
 ---
 
-Tutto ciò che l'agente fa oltre a generare testo avviene tramite **strumenti**.
-Gli strumenti sono il modo in cui l'agente legge file, esegue comandi, esplora il web, invia
-messaggi e interagisce con i dispositivi.
+Usa questa pagina per scegliere la superficie Capabilities corretta. Gli **strumenti** sono
+azioni richiamabili, le **Skills** insegnano agli agenti come lavorare e i **Plugin** aggiungono
+capacità di runtime come strumenti, provider, canali, hook e Skills confezionate.
 
-## Strumenti, Skills e plugin
+Questa è una pagina di panoramica e indirizzamento. Per criteri esaustivi sugli strumenti, valori predefiniti,
+appartenenza ai gruppi, restrizioni dei provider e campi di configurazione, usa
+[Strumenti e provider personalizzati](/it/gateway/config-tools).
 
-OpenClaw ha tre livelli che lavorano insieme:
+## Inizia da qui
+
+Per la maggior parte degli agenti, inizia con le categorie di strumenti integrate, poi modifica i criteri
+solo quando l'agente deve vedere meno strumenti o necessita di accesso esplicito all'host.
+
+| Se devi...                                  | Usa prima questo                              | Poi leggi                                                               |
+| ------------------------------------------- | -------------------------------------------- | ----------------------------------------------------------------------- |
+| Consentire a un agente di agire con capacità esistenti | [Strumenti integrati](#built-in-tool-categories) | [Categorie di strumenti](#built-in-tool-categories)                     |
+| Controllare cosa può chiamare un agente     | [Criteri degli strumenti](#configure-access-and-approvals) | [Strumenti e provider personalizzati](/it/gateway/config-tools)            |
+| Insegnare un workflow a un agente           | [Skills](#choose-tools-skills-or-plugins)    | [Skills](/it/tools/skills) e [Creazione di Skills](/it/tools/creating-skills) |
+| Aggiungere una nuova integrazione o superficie di runtime | [Plugin](#extend-capabilities)               | [Plugin](/it/tools/plugin) e [Creare Plugin](/it/plugins/building-plugins)    |
+| Eseguire lavoro più tardi o in background   | [Automazione](/it/automation)                   | [Panoramica dell'automazione](/it/automation)                              |
+| Coordinare più agenti o harness             | [Sotto-agenti](/it/tools/subagents)             | [Agenti ACP](/it/tools/acp-agents) e [Invio agente](/it/tools/agent-send)     |
+| Cercare in un ampio catalogo di strumenti PI | [Ricerca strumenti](/it/tools/tool-search)      | [Ricerca strumenti](/it/tools/tool-search)                                 |
+
+## Scegliere strumenti, Skills o Plugin
 
 <Steps>
-  <Step title="Gli strumenti sono ciò che l'agente chiama">
-    Uno strumento è una funzione tipizzata che l'agente può invocare (ad es. `exec`, `browser`,
-    `web_search`, `message`). OpenClaw include un insieme di **strumenti integrati** e
-    i plugin possono registrarne altri.
+  <Step title="Usa uno strumento quando l'agente deve agire">
+    Uno strumento è una funzione tipizzata che l'agente può chiamare, come `exec`, `browser`,
+    `web_search`, `message` o `image_generate`. Usa gli strumenti quando l'agente
+    deve leggere dati, modificare file, inviare messaggi, chiamare un provider o operare
+    un altro sistema. Gli strumenti visibili vengono inviati al modello come definizioni
+    di funzione strutturate.
 
-    L'agente vede gli strumenti come definizioni di funzioni strutturate inviate all'API del modello.
-
-  </Step>
-
-  <Step title="Le Skills insegnano all'agente quando e come">
-    Una skill è un file markdown (`SKILL.md`) iniettato nel prompt di sistema.
-    Le Skills forniscono all'agente contesto, vincoli e indicazioni passo passo per
-    usare gli strumenti in modo efficace. Le Skills risiedono nel tuo workspace, in cartelle condivise,
-    oppure sono incluse nei plugin.
-
-    [Riferimento Skills](/it/tools/skills) | [Creare Skills](/it/tools/creating-skills)
+    Il modello vede solo gli strumenti che superano profilo attivo, criteri allow/deny,
+    restrizioni dei provider, stato della sandbox, autorizzazioni del canale e
+    disponibilità dei Plugin.
 
   </Step>
 
-  <Step title="I plugin confezionano tutto insieme">
-    Un plugin è un pacchetto che può registrare qualsiasi combinazione di funzionalità:
-    canali, provider di modelli, strumenti, Skills, parlato, trascrizione in tempo reale,
-    voce in tempo reale, comprensione dei media, generazione di immagini, generazione di video,
-    recupero web, ricerca web e altro. Alcuni plugin sono **core** (distribuiti con
-    OpenClaw), altri sono **esterni** (pubblicati su npm dalla community).
+  <Step title="Usa una Skill quando l'agente ha bisogno di istruzioni">
+    Una Skill è un pacchetto di istruzioni `SKILL.md` caricato nel prompt dell'agente. Usa una
+    Skill quando l'agente ha già gli strumenti necessari, ma ha bisogno di un
+    workflow ripetibile, una rubric di revisione, una sequenza di comandi o un vincolo operativo.
 
-    [Installa e configura i plugin](/it/tools/plugin) | [Crea il tuo](/it/plugins/building-plugins)
+    Le Skills possono trovarsi in un workspace, in una directory di Skills condivisa, nella root
+    di Skills gestita da OpenClaw o in un pacchetto Plugin.
+
+    [Skills](/it/tools/skills) | [Creazione di Skills](/it/tools/creating-skills) | [Configurazione Skills](/it/tools/skills-config)
+
+  </Step>
+
+  <Step title="Usa un Plugin quando OpenClaw ha bisogno di una nuova capacità">
+    Un Plugin può aggiungere strumenti, Skills, canali, provider di modelli, sintesi vocale, voce
+    realtime, generazione multimediale, ricerca web, recupero web, hook e altre capacità
+    di runtime. Usa un Plugin quando la capacità include codice, credenziali,
+    hook del ciclo di vita, metadati del manifest o packaging installabile. I
+    Plugin esistenti possono essere installati da ClawHub, npm, git, directory locali o
+    archivi.
+
+    [Installa e configura Plugin](/it/tools/plugin) | [Crea Plugin](/it/plugins/building-plugins) | [Plugin SDK](/it/plugins/sdk-overview)
 
   </Step>
 </Steps>
 
-## Strumenti integrati
+## Categorie di strumenti integrate
 
-Questi strumenti sono inclusi in OpenClaw e sono disponibili senza installare alcun plugin:
+La tabella elenca strumenti rappresentativi così puoi riconoscere la superficie. Non è
+il riferimento completo dei criteri. Per gruppi, valori predefiniti e semantica allow/deny
+esatti, usa [Strumenti e provider personalizzati](/it/gateway/config-tools).
 
-| Strumento                                  | Cosa fa                                                               | Pagina                                                       |
-| ------------------------------------------ | --------------------------------------------------------------------- | ------------------------------------------------------------ |
-| `exec` / `process`                         | Esegue comandi shell, gestisce processi in background                 | [Exec](/it/tools/exec), [Approvazioni Exec](/it/tools/exec-approvals) |
-| `code_execution`                           | Esegue analisi Python remote in sandbox                               | [Esecuzione di codice](/it/tools/code-execution)                |
-| `browser`                                  | Controlla un browser Chromium (naviga, clicca, acquisisce screenshot) | [Browser](/it/tools/browser)                                    |
-| `web_search` / `x_search` / `web_fetch`    | Cerca nel web, cerca post su X, recupera contenuti di pagine          | [Web](/it/tools/web), [Recupero Web](/it/tools/web-fetch)          |
-| `read` / `write` / `edit`                  | I/O di file nel workspace                                             |                                                              |
-| `apply_patch`                              | Patch di file multi-hunk                                              | [Applica Patch](/it/tools/apply-patch)                          |
-| `message`                                  | Invia messaggi su tutti i canali                                      | [Invio agente](/it/tools/agent-send)                            |
-| `nodes`                                    | Scopre e indirizza dispositivi associati                              |                                                              |
-| `cron` / `gateway`                         | Gestisce job pianificati; ispeziona, applica patch, riavvia o aggiorna il gateway |                                                              |
-| `image` / `image_generate`                 | Analizza o genera immagini                                            | [Generazione di immagini](/it/tools/image-generation)           |
-| `music_generate`                           | Genera tracce musicali                                                | [Generazione musicale](/it/tools/music-generation)              |
-| `video_generate`                           | Genera video                                                          | [Generazione video](/it/tools/video-generation)                 |
-| `tts`                                      | Conversione text-to-speech una tantum                                 | [TTS](/it/tools/tts)                                            |
-| `sessions_*` / `subagents` / `agents_list` | Gestione delle sessioni, stato e orchestrazione di sotto-agenti       | [Sotto-agenti](/it/tools/subagents)                             |
-| `session_status`                           | Lettura leggera in stile `/status` e override del modello di sessione | [Strumenti di sessione](/it/concepts/session-tool)              |
-
-Per il lavoro sulle immagini, usa `image` per l'analisi e `image_generate` per la generazione o la modifica. Se punti a `openai/*`, `google/*`, `fal/*` o a un altro provider di immagini non predefinito, configura prima l'autenticazione/la chiave API di quel provider.
-
-Per il lavoro sulla musica, usa `music_generate`. Se punti a `google/*`, `minimax/*` o a un altro provider musicale non predefinito, configura prima l'autenticazione/la chiave API di quel provider.
-
-Per il lavoro sui video, usa `video_generate`. Se punti a `qwen/*` o a un altro provider video non predefinito, configura prima l'autenticazione/la chiave API di quel provider.
-
-Per la generazione audio guidata da workflow, usa `music_generate` quando un plugin come
-ComfyUI lo registra. Questo è separato da `tts`, che è text-to-speech.
-
-`session_status` è lo strumento leggero di stato/lettura nel gruppo delle sessioni.
-Risponde a domande in stile `/status` sulla sessione corrente e può
-facoltativamente impostare un override del modello per sessione; `model=default` cancella tale
-override. Come `/status`, può completare retroattivamente contatori token/cache sparsi e
-l'etichetta del modello runtime attivo dall'ultima voce di utilizzo del transcript.
-
-`gateway` è lo strumento runtime riservato al proprietario per le operazioni sul gateway:
-
-- `config.schema.lookup` per un sottoalbero di configurazione limitato a un percorso prima delle modifiche
-- `config.get` per lo snapshot della configurazione corrente + hash
-- `config.patch` per aggiornamenti parziali della configurazione con riavvio
-- `config.apply` solo per la sostituzione completa della configurazione
-- `update.run` per auto-aggiornamento esplicito + riavvio
-
-Per modifiche parziali, preferisci `config.schema.lookup` e poi `config.patch`. Usa
-`config.apply` solo quando intendi sostituire l'intera configurazione.
-Per documentazione più ampia sulla configurazione, leggi [Configurazione](/it/gateway/configuration) e
-[Riferimento configurazione](/it/gateway/configuration-reference).
-Lo strumento rifiuta inoltre di modificare `tools.exec.ask` o `tools.exec.security`;
-gli alias legacy `tools.bash.*` vengono normalizzati agli stessi percorsi exec protetti.
-
-### Strumenti forniti dai plugin
-
-I plugin possono registrare strumenti aggiuntivi. Alcuni esempi:
-
-- [Canvas](/it/plugins/reference/canvas) — plugin sperimentale incluso per il controllo di node Canvas e il rendering A2UI
-- [Diff](/it/tools/diffs) — visualizzatore e renderer di diff
-- [Attività LLM](/it/tools/llm-task) — passaggio LLM solo JSON per output strutturato
-- [Lobster](/it/tools/lobster) — runtime di workflow tipizzato con approvazioni riprendibili
-- [Generazione musicale](/it/tools/music-generation) — strumento `music_generate` condiviso con provider supportati da workflow
-- [OpenProse](/it/prose) — orchestrazione di workflow markdown-first
-- [Tokenjuice](/it/tools/tokenjuice) — compatta risultati rumorosi degli strumenti `exec` e `bash`
-
-Gli strumenti dei plugin sono comunque definiti con `api.registerTool(...)` e dichiarati
-nell'elenco `contracts.tools` del manifest del plugin. OpenClaw acquisisce il descrittore
-dello strumento validato durante la discovery e lo memorizza nella cache per sorgente del plugin e contratto, così
-la pianificazione successiva degli strumenti può evitare di caricare il runtime del plugin. L'esecuzione dello strumento carica comunque
-il plugin proprietario e chiama l'implementazione registrata live.
-
-[Ricerca strumenti](/it/tools/tool-search) è la superficie compatta
-per cataloghi di grandi dimensioni. Invece di inserire nel prompt ogni schema di strumento OpenClaw, MCP o client,
-OpenClaw può fornire al modello un runtime Node isolato
-con `openclaw.tools.search`, `openclaw.tools.describe` e
-`openclaw.tools.call`. Le chiamate tornano comunque attraverso il Gateway, quindi policy degli strumenti,
-approvazioni, hook e log di sessione restano autorevoli.
-
-## Configurazione degli strumenti
-
-### Liste di autorizzazione e negazione
-
-Controlla quali strumenti l'agente può chiamare tramite `tools.allow` / `tools.deny` nella
-configurazione. La negazione prevale sempre sull'autorizzazione.
-
-```json5
-{
-  tools: {
-    allow: ["group:fs", "browser", "web_search"],
-    deny: ["exec"],
-  },
-}
-```
-
-OpenClaw fallisce in modo chiuso quando una allowlist esplicita non risolve alcuno strumento chiamabile.
-Ad esempio, `tools.allow: ["query_db"]` funziona solo se un plugin caricato registra effettivamente
-`query_db`. Se nessuno strumento integrato, plugin o MCP incluso corrisponde alla
-allowlist, l'esecuzione si interrompe prima della chiamata al modello invece di continuare come
-esecuzione solo testuale che potrebbe allucinare risultati degli strumenti.
-
-### Profili degli strumenti
-
-`tools.profile` imposta una allowlist di base prima dell'applicazione di `allow`/`deny`.
-Override per agente: `agents.list[].tools.profile`.
-
-| Profilo     | Cosa include                                                                                                                                      |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `full`      | Tutti gli strumenti core e opzionali dei plugin; baseline senza restrizioni per accesso più ampio a comando/controllo                             |
-| `coding`    | `group:fs`, `group:runtime`, `group:web`, `group:sessions`, `group:memory`, `cron`, `image`, `image_generate`, `music_generate`, `video_generate` |
-| `messaging` | `group:messaging`, `sessions_list`, `sessions_history`, `sessions_send`, `session_status`                                                         |
-| `minimal`   | Solo `session_status`                                                                                                                             |
+| Categoria              | Usa quando l'agente deve...                                                 | Strumenti rappresentativi                                             | Leggi dopo                                                             |
+| ---------------------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Runtime                | Eseguire comandi, gestire processi o usare analisi Python supportata da provider | `exec`, `process`, `code_execution`                                  | [Exec](/it/tools/exec), [Esecuzione di codice](/it/tools/code-execution)     |
+| File                   | Leggere e modificare file del workspace                                      | `read`, `write`, `edit`, `apply_patch`                               | [Applica patch](/it/tools/apply-patch)                                    |
+| Web                    | Cercare nel web, cercare post X o recuperare contenuti di pagina leggibili   | `web_search`, `x_search`, `web_fetch`                                | [Strumenti web](/it/tools/web), [Recupero web](/it/tools/web-fetch)          |
+| Browser                | Operare una sessione browser                                                 | `browser`                                                            | [Browser](/it/tools/browser)                                              |
+| Messaggistica e canali | Inviare risposte o azioni di canale                                          | `message`                                                            | [Invio agente](/it/tools/agent-send)                                      |
+| Sessioni e agenti      | Ispezionare sessioni, delegare lavoro, guidare un'altra esecuzione o riportare lo stato | `sessions_*`, `subagents`, `agents_list`, `session_status`           | [Sotto-agenti](/it/tools/subagents), [Strumento sessione](/it/concepts/session-tool) |
+| Automazione            | Pianificare lavoro o rispondere a eventi in background                       | `cron`, `heartbeat_respond`                                          | [Automazione](/it/automation)                                             |
+| Gateway e nodi         | Ispezionare lo stato del Gateway o dispositivi target associati              | `gateway`, `nodes`                                                   | [Configurazione Gateway](/it/gateway/configuration), [Nodi](/it/nodes)       |
+| Media                  | Analizzare, generare o parlare media                                         | `image`, `image_generate`, `music_generate`, `video_generate`, `tts` | [Panoramica media](/it/tools/media-overview)                              |
+| Grandi cataloghi PI    | Cercare e chiamare molti strumenti idonei senza inviare ogni schema al modello | `tool_search_code`, `tool_search`, `tool_describe`                   | [Ricerca strumenti](/it/tools/tool-search)                                |
 
 <Note>
-`tools.profile: "messaging"` è intenzionalmente ristretto per agenti focalizzati sui canali.
-Esclude strumenti più ampi di comando/controllo come filesystem, runtime,
-browser, canvas, nodi, cron e controllo del gateway. Usa `tools.profile: "full"`
-come baseline senza restrizioni per accesso più ampio a comando/controllo, poi riduci
-l'accesso con `tools.allow` / `tools.deny` quando necessario.
+Ricerca strumenti è una superficie sperimentale per agenti PI. Le esecuzioni con harness Codex usano
+la modalità codice nativa di Codex, la ricerca strumenti nativa, strumenti dinamici differiti e chiamate
+di strumenti annidate invece di `tools.toolSearch`.
 </Note>
 
-`coding` include strumenti web leggeri (`web_search`, `web_fetch`, `x_search`)
-ma non lo strumento completo di controllo del browser. L'automazione del browser può guidare
-sessioni reali e profili autenticati, quindi aggiungila esplicitamente con
-`tools.alsoAllow: ["browser"]` oppure con un
-`agents.list[].tools.alsoAllow: ["browser"]` per agente.
+## Strumenti forniti dai Plugin
 
-<Note>
-Configurare `tools.exec` o `tools.fs` sotto un profilo restrittivo (`messaging`, `minimal`) non amplia implicitamente la allowlist del profilo. Aggiungi voci esplicite `tools.alsoAllow` (ad esempio `["exec", "process"]` per exec, oppure `["read", "write", "edit"]` per fs) quando vuoi che un profilo restrittivo usi quelle sezioni configurate. OpenClaw registra un avviso di avvio quando una sezione di configurazione è presente senza una concessione `alsoAllow` corrispondente.
-</Note>
+I Plugin possono registrare strumenti aggiuntivi. Gli autori di Plugin cablano gli strumenti tramite
+`api.registerTool(...)` e `contracts.tools` del manifest; usa
+[Plugin SDK](/it/plugins/sdk-overview) e [Manifest Plugin](/it/plugins/manifest)
+per i dettagli dei contratti.
 
-I profili `coding` e `messaging` autorizzano anche gli strumenti MCP bundle configurati
-sotto la chiave plugin `bundle-mcp`. Aggiungi `tools.deny: ["bundle-mcp"]` quando
-vuoi che un profilo mantenga i suoi normali strumenti integrati ma nasconda tutti gli strumenti MCP configurati.
-Il profilo `minimal` non include strumenti MCP bundle.
+Gli strumenti comuni forniti dai Plugin includono:
 
-Esempio (superficie strumenti più ampia per impostazione predefinita):
+- [Diff](/it/tools/diffs) per il rendering di diff di file e markdown
+- [Task LLM](/it/tools/llm-task) per passaggi di workflow solo JSON
+- [Lobster](/it/tools/lobster) per workflow tipizzati con approvazioni riprendibili
+- [Tokenjuice](/it/tools/tokenjuice) per compattare output rumoroso degli strumenti `exec` e `bash`
+- [Ricerca strumenti](/it/tools/tool-search) per scoprire e chiamare grandi cataloghi di strumenti
+  senza mettere ogni schema nel prompt
+- [Canvas](/it/plugins/reference/canvas) per il controllo di Canvas Node e il rendering
+  A2UI
 
-```json5
-{
-  tools: {
-    profile: "full",
-  },
-}
-```
+## Configurare accesso e approvazioni
 
-### Gruppi di strumenti
+I criteri degli strumenti vengono applicati prima della chiamata al modello. Se i criteri rimuovono uno strumento, il
+modello non riceve lo schema di quello strumento per il turno. Un'esecuzione può perdere strumenti
+a causa della configurazione globale, della configurazione per agente, dei criteri di canale, delle restrizioni dei provider,
+delle regole della sandbox, del gating riservato al proprietario o della disponibilità dei Plugin.
 
-Usa le scorciatoie `group:*` nelle liste di autorizzazione/negazione:
+- [Strumenti e provider personalizzati](/it/gateway/config-tools) documenta profili degli strumenti,
+  elenchi allow/deny, restrizioni specifiche dei provider, rilevamento dei loop e
+  impostazioni degli strumenti supportati dai provider.
+- [Approvazioni exec](/it/tools/exec-approvals) documenta i criteri di approvazione dei comandi host.
+- [Exec elevato](/it/tools/elevated) documenta l'esecuzione controllata fuori dalla
+  sandbox.
+- [Sandbox vs criteri degli strumenti vs elevato](/it/gateway/sandbox-vs-tool-policy-vs-elevated) spiega quale livello controlla l'accesso a file e processi.
+- [Sandbox per agente e restrizioni degli strumenti](/it/tools/multi-agent-sandbox-tools)
+  documenta le restrizioni specifiche degli agenti per le esecuzioni delegate.
 
-| Gruppo             | Strumenti                                                                                                 |
-| ------------------ | --------------------------------------------------------------------------------------------------------- |
-| `group:runtime`    | exec, process, code_execution (`bash` è accettato come alias per `exec`)                                  |
-| `group:fs`         | read, write, edit, apply_patch                                                                            |
-| `group:sessions`   | sessions_list, sessions_history, sessions_send, sessions_spawn, sessions_yield, subagents, session_status |
-| `group:memory`     | memory_search, memory_get                                                                                 |
-| `group:web`        | web_search, x_search, web_fetch                                                                           |
-| `group:ui`         | browser, canvas quando il Plugin Canvas in bundle è abilitato                                             |
-| `group:automation` | heartbeat_respond, cron, gateway                                                                          |
-| `group:messaging`  | message                                                                                                   |
-| `group:nodes`      | nodes                                                                                                     |
-| `group:agents`     | agents_list, update_plan                                                                                  |
-| `group:media`      | image, image_generate, music_generate, video_generate, tts                                                |
-| `group:openclaw`   | Tutti gli strumenti OpenClaw integrati (esclude gli strumenti Plugin)                                     |
+## Estendere le capacità
 
-`sessions_history` restituisce una vista di richiamo limitata e filtrata per sicurezza. Rimuove
-i tag di ragionamento, l’impalcatura `<relevant-memories>`, i payload XML
-di chiamata strumento in testo normale (inclusi `<tool_call>...</tool_call>`,
-`<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`,
-`<function_calls>...</function_calls>` e i blocchi di chiamata strumento troncati),
-l’impalcatura di chiamata strumento declassata, i token di controllo del modello
-ASCII/a larghezza intera trapelati e l’XML di chiamata strumento MiniMax non valido
-dal testo dell’assistente, quindi applica redazione/troncamento e possibili segnaposto
-per righe sovradimensionate invece di comportarsi come un dump grezzo della trascrizione.
+Scegli il percorso di estensione in base al lavoro che OpenClaw deve svolgere:
 
-### Restrizioni specifiche del provider
+- Installa o gestisci un Plugin esistente con [Plugin](/it/tools/plugin).
+- Crea una nuova integrazione, provider, canale, strumento o hook con
+  [Crea Plugin](/it/plugins/building-plugins).
+- Aggiungi o regola istruzioni riutilizzabili per agenti con [Skills](/it/tools/skills) e
+  [Creazione di Skills](/it/tools/creating-skills).
+- Confeziona materiale di workflow riutilizzabile con
+  [Laboratorio Skills](/it/plugins/skill-workshop) quando il workflow appartiene a un
+  bundle di Skills distribuito da Plugin.
+- Usa [Plugin SDK](/it/plugins/sdk-overview) e [Manifest Plugin](/it/plugins/manifest) quando hai bisogno di contratti di implementazione.
 
-Usa `tools.byProvider` per limitare gli strumenti per provider specifici senza
-modificare le impostazioni predefinite globali:
+## Risolvere problemi di strumenti mancanti
 
-```json5
-{
-  tools: {
-    profile: "coding",
-    byProvider: {
-      "google-antigravity": { profile: "minimal" },
-    },
-  },
-}
-```
+Se il modello non riesce a vedere o chiamare uno strumento, inizia dai criteri effettivi per il
+turno corrente:
+
+1. Controlla il profilo attivo, `tools.allow` e `tools.deny` in
+   [Strumenti e provider personalizzati](/it/gateway/config-tools).
+2. Controlla le restrizioni specifiche dei provider in
+   [Strumenti e provider personalizzati](/it/gateway/config-tools) e conferma che il
+   [provider del modello](/it/concepts/model-providers) selezionato supporti la forma dello strumento.
+3. Controlla autorizzazioni del canale, stato della sandbox e accesso elevato con
+   [Sandbox vs criteri degli strumenti vs elevato](/it/gateway/sandbox-vs-tool-policy-vs-elevated) e [Exec elevato](/it/tools/elevated).
+4. Controlla se il Plugin proprietario è installato e abilitato in
+   [Plugin](/it/tools/plugin).
+5. Per le esecuzioni delegate, controlla le restrizioni per agente in
+   [Sandbox per agente e restrizioni degli strumenti](/it/tools/multi-agent-sandbox-tools).
+6. Per grandi cataloghi PI, conferma se l'esecuzione usa esposizione diretta degli strumenti o
+   [Ricerca strumenti](/it/tools/tool-search).
+
+## Correlati
+
+- [Automazione](/it/automation) per cron, task, Heartbeat, commitment, hook, standing order e Task Flow
+- [Agenti](/it/concepts/agent) per il modello agente, sessioni, memoria e coordinamento multi-agente
+- [Strumenti e provider personalizzati](/it/gateway/config-tools) per il riferimento canonico dei criteri degli strumenti
+- [Plugin](/it/tools/plugin) per installazione e gestione dei Plugin
+- [Plugin SDK](/it/plugins/sdk-overview) per il riferimento degli autori di Plugin
+- [Skills](/it/tools/skills) per ordine di caricamento, gating e configurazione delle Skill
+- [Ricerca strumenti](/it/tools/tool-search) per la scoperta compatta di cataloghi di strumenti PI

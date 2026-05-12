@@ -1,57 +1,57 @@
 ---
 read_when:
     - Autonome agentworkflows instellen die zonder prompts per taak worden uitgevoerd
-    - Bepalen wat de agent zelfstandig kan doen versus waarvoor menselijke goedkeuring nodig is
-    - Agents met meerdere programma's structureren met duidelijke grenzen en escalatieregels
+    - Definiëren wat de agent zelfstandig kan doen versus waarvoor menselijke goedkeuring nodig is
+    - Multi-programma-agents structureren met duidelijke grenzen en escalatieregels
 summary: Permanente operationele bevoegdheid definiëren voor autonome agentprogramma's
 title: Vaste instructies
 x-i18n:
-    generated_at: "2026-05-10T19:20:55Z"
+    generated_at: "2026-05-12T00:56:13Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3c78a723c296e1b695fd0fa7b0c3dbc3572fcfc1f49d6fadcab7a5a7a44c4b8d
+    source_hash: 3a51baa7aca31cb34b682983374d4d551ed6ab57ae54a5c63e7d044bffeef756
     source_path: automation/standing-orders.md
     workflow: 16
 ---
 
-Standing orders verlenen je agent **permanente operationele bevoegdheid** voor gedefinieerde programma's. In plaats van elke keer afzonderlijke taakinstructies te geven, definieer je programma's met een duidelijke scope, triggers en escalatieregels - en de agent voert autonoom uit binnen die grenzen.
+Vaste opdrachten geven je agent **permanente operationele bevoegdheid** voor gedefinieerde programma's. In plaats van telkens afzonderlijke taakinstructies te geven, definieer je programma's met een duidelijke scope, triggers en escalatieregels - en de agent voert autonoom uit binnen die grenzen.
 
-Dit is het verschil tussen je assistent elke vrijdag vertellen "verzend het wekelijkse rapport" en vaste bevoegdheid verlenen: "Jij bent verantwoordelijk voor het wekelijkse rapport. Stel het elke vrijdag samen, verzend het en escaleer alleen als iets er verkeerd uitziet."
+Dit is het verschil tussen je assistent elke vrijdag vertellen "verstuur het wekelijkse rapport" en vaste bevoegdheid geven: "Jij beheert het wekelijkse rapport. Stel het elke vrijdag samen, verstuur het, en escaleer alleen als er iets verkeerd lijkt."
 
-## Waarom standing orders
+## Waarom vaste opdrachten
 
-**Zonder standing orders:**
+**Zonder vaste opdrachten:**
 
 - Je moet de agent voor elke taak prompten
 - De agent blijft inactief tussen verzoeken
 - Routinematig werk wordt vergeten of vertraagd
 - Jij wordt de bottleneck
 
-**Met standing orders:**
+**Met vaste opdrachten:**
 
 - De agent voert autonoom uit binnen gedefinieerde grenzen
-- Routinematig werk gebeurt volgens planning zonder prompting
+- Routinematig werk gebeurt volgens planning zonder prompts
 - Je wordt alleen betrokken bij uitzonderingen en goedkeuringen
-- De agent benut inactieve tijd productief
+- De agent vult inactieve tijd productief in
 
 ## Hoe ze werken
 
-Standing orders worden gedefinieerd in de bestanden van je [agentwerkruimte](/nl/concepts/agent-workspace). De aanbevolen aanpak is om ze direct op te nemen in `AGENTS.md` (dat elke sessie automatisch wordt geïnjecteerd), zodat de agent ze altijd in context heeft. Voor grotere configuraties kun je ze ook in een speciaal bestand plaatsen, zoals `standing-orders.md`, en daar vanuit `AGENTS.md` naar verwijzen.
+Vaste opdrachten worden gedefinieerd in de bestanden van je [agentwerkruimte](/nl/concepts/agent-workspace). De aanbevolen aanpak is om ze direct in `AGENTS.md` op te nemen (dit wordt elke sessie automatisch geïnjecteerd), zodat de agent ze altijd in context heeft. Voor grotere configuraties kun je ze ook in een apart bestand plaatsen, zoals `standing-orders.md`, en daarnaar verwijzen vanuit `AGENTS.md`.
 
 Elk programma specificeert:
 
-1. **Scope** - wat de agent mag doen
+1. **Scope** - wat de agent bevoegd is te doen
 2. **Triggers** - wanneer uit te voeren (planning, gebeurtenis of voorwaarde)
-3. **Goedkeuringspoorten** - wat menselijke goedkeuring vereist voordat er wordt gehandeld
+3. **Goedkeuringspoorten** - waarvoor menselijke goedkeuring nodig is vóór actie
 4. **Escalatieregels** - wanneer te stoppen en om hulp te vragen
 
 De agent laadt deze instructies elke sessie via de bootstrapbestanden van de werkruimte (zie [Agentwerkruimte](/nl/concepts/agent-workspace) voor de volledige lijst met automatisch geïnjecteerde bestanden) en voert ze uit, gecombineerd met [Cron-taken](/nl/automation/cron-jobs) voor tijdgebaseerde handhaving.
 
 <Tip>
-Zet standing orders in `AGENTS.md` om te garanderen dat ze elke sessie worden geladen. De werkruimte-bootstrap injecteert automatisch `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` en `MEMORY.md` - maar geen willekeurige bestanden in submappen.
+Zet vaste opdrachten in `AGENTS.md` om te garanderen dat ze elke sessie worden geladen. De werkruimte-bootstrap injecteert automatisch `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` en `MEMORY.md` - maar geen willekeurige bestanden in submappen.
 </Tip>
 
-## Anatomie van een standing order
+## Anatomie van een vaste opdracht
 
 ```markdown
 ## Program: Weekly Status Report
@@ -76,9 +76,9 @@ Zet standing orders in `AGENTS.md` om te garanderen dat ze elke sessie worden ge
 - Do not skip delivery if metrics look bad - report accurately
 ```
 
-## Standing orders plus Cron-taken
+## Vaste opdrachten plus Cron-taken
 
-Standing orders definiëren **wat** de agent mag doen. [Cron-taken](/nl/automation/cron-jobs) definiëren **wanneer** het gebeurt. Ze werken samen:
+Vaste opdrachten definiëren **wat** de agent bevoegd is te doen. [Cron-taken](/nl/automation/cron-jobs) definiëren **wanneer** het gebeurt. Ze werken samen:
 
 ```
 Standing Order: "You own the daily inbox triage"
@@ -88,7 +88,7 @@ Cron Job (8 AM daily): "Execute inbox triage per standing orders"
 Agent: Reads standing orders → executes steps → reports results
 ```
 
-De prompt voor de Cron-taak moet naar de standing order verwijzen in plaats van deze te dupliceren:
+De prompt van de Cron-taak moet naar de vaste opdracht verwijzen in plaats van die te dupliceren:
 
 ```bash
 openclaw cron add \
@@ -127,7 +127,7 @@ openclaw cron add \
 - Focus on value to audience, not self-promotion
 ```
 
-### Voorbeeld 2: financiële operaties (gebeurtenisgestuurd)
+### Voorbeeld 2: financiële operatie (gebeurtenisgestuurd)
 
 ```markdown
 ## Program: Financial Processing
@@ -181,11 +181,11 @@ openclaw cron add \
 
 ## Patroon uitvoeren-verifiëren-rapporteren
 
-Standing orders werken het best in combinatie met strikte uitvoeringsdiscipline. Elke taak in een standing order moet deze lus volgen:
+Vaste opdrachten werken het best wanneer ze worden gecombineerd met strikte uitvoeringsdiscipline. Elke taak in een vaste opdracht moet deze lus volgen:
 
-1. **Uitvoeren** - Doe het daadwerkelijke werk (niet alleen de instructie bevestigen)
-2. **Verifiëren** - Bevestig dat het resultaat correct is (bestand bestaat, bericht afgeleverd, gegevens geparseerd)
-3. **Rapporteren** - Vertel de eigenaar wat er is gedaan en wat is geverifieerd
+1. **Uitvoeren** - Doe het daadwerkelijke werk (bevestig de instructie niet alleen)
+2. **Verifiëren** - Bevestig dat het resultaat correct is (bestand bestaat, bericht afgeleverd, gegevens geparsed)
+3. **Rapporteren** - Vertel de eigenaar wat is gedaan en wat is geverifieerd
 
 ```markdown
 ### Execution rules
@@ -198,11 +198,11 @@ Standing orders werken het best in combinatie met strikte uitvoeringsdiscipline.
 - Never retry indefinitely - 3 attempts max, then escalate.
 ```
 
-Dit patroon voorkomt de meest voorkomende faalmodus van agents: een taak bevestigen zonder deze af te ronden.
+Dit patroon voorkomt de meest voorkomende faalmodus van agents: een taak bevestigen zonder deze te voltooien.
 
 ## Architectuur met meerdere programma's
 
-Voor agents die meerdere aandachtsgebieden beheren, organiseer je standing orders als afzonderlijke programma's met duidelijke grenzen:
+Voor agents die meerdere aandachtsgebieden beheren, organiseer je vaste opdrachten als afzonderlijke programma's met duidelijke grenzen:
 
 ```markdown
 ## Program 1: [Domain A] (Weekly)
@@ -233,25 +233,25 @@ Elk programma moet hebben:
 
 ### Doen
 
-- Begin met smalle bevoegdheid en breid uit naarmate vertrouwen groeit
-- Definieer expliciete goedkeuringspoorten voor risicovolle acties
-- Neem secties "Wat NIET te doen" op - grenzen zijn net zo belangrijk als machtigingen
+- Begin met beperkte bevoegdheid en breid uit naarmate het vertrouwen groeit
+- Definieer expliciete goedkeuringspoorten voor acties met hoog risico
+- Neem secties "Wat NIET te doen" op - grenzen zijn net zo belangrijk als toestemmingen
 - Combineer met Cron-taken voor betrouwbare tijdgebaseerde uitvoering
-- Bekijk agentlogs wekelijks om te verifiëren dat standing orders worden gevolgd
-- Werk standing orders bij naarmate je behoeften veranderen - het zijn levende documenten
+- Controleer agentlogs wekelijks om te verifiëren dat vaste opdrachten worden gevolgd
+- Werk vaste opdrachten bij naarmate je behoeften veranderen - het zijn levende documenten
 
 ### Vermijden
 
-- Brede bevoegdheid geven op dag één ("doe wat jij denkt dat het beste is")
+- Op dag één brede bevoegdheid geven ("doe wat jij het beste vindt")
 - Escalatieregels overslaan - elk programma heeft een clausule nodig voor "wanneer stoppen en vragen"
 - Aannemen dat de agent mondelinge instructies onthoudt - zet alles in het bestand
-- Aandachtsgebieden mengen in één programma - afzonderlijke programma's voor afzonderlijke domeinen
-- Vergeten af te dwingen met Cron-taken - standing orders zonder triggers worden suggesties
+- Aandachtsgebieden mengen in één programma - gebruik afzonderlijke programma's voor afzonderlijke domeinen
+- Vergeten af te dwingen met Cron-taken - vaste opdrachten zonder triggers worden suggesties
 
 ## Gerelateerd
 
-- [Automatisering en taken](/nl/automation): alle automatiseringsmechanismen in één oogopslag.
-- [Cron-taken](/nl/automation/cron-jobs): planningshandhaving voor standing orders.
-- [Hooks](/nl/automation/hooks): gebeurtenisgestuurde scripts voor levenscyclusgebeurtenissen van agents.
+- [Automatisering](/nl/automation): alle automatiseringsmechanismen in één overzicht.
+- [Cron-taken](/nl/automation/cron-jobs): planningshandhaving voor vaste opdrachten.
+- [Hooks](/nl/automation/hooks): gebeurtenisgestuurde scripts voor lifecyclegebeurtenissen van agents.
 - [Webhooks](/nl/automation/cron-jobs#webhooks): inkomende HTTP-gebeurtenistriggers.
-- [Agentwerkruimte](/nl/concepts/agent-workspace): waar standing orders leven, inclusief de volledige lijst met automatisch geïnjecteerde bootstrapbestanden (`AGENTS.md`, `SOUL.md`, enz.).
+- [Agentwerkruimte](/nl/concepts/agent-workspace): waar vaste opdrachten staan, inclusief de volledige lijst met automatisch geïnjecteerde bootstrapbestanden (`AGENTS.md`, `SOUL.md`, enz.).

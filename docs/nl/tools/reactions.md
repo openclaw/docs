@@ -1,19 +1,19 @@
 ---
 read_when:
-    - Werken aan reacties in elk kanaal
-    - Begrijpen hoe emoji-reacties per platform verschillen
-summary: Semantiek van de reactietool voor alle ondersteunde kanalen
+    - Werken met reacties in elk kanaal
+    - Inzicht in hoe emoji-reacties verschillen tussen platforms
+summary: Semantiek van reactietools in alle ondersteunde kanalen
 title: Reacties
 x-i18n:
-    generated_at: "2026-05-03T21:38:32Z"
+    generated_at: "2026-05-12T01:00:17Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 99008cdaf1fa7462bbe72066be7c404880df237a79d3deba01bffe00083c1e34
+    source_hash: 835c2a580f7f3e098ee956274de24191587929bfea7405a022cd68b35710c455
     source_path: tools/reactions.md
     workflow: 16
 ---
 
-De agent kan emoji-reacties op berichten toevoegen en verwijderen met de `message`-tool met de actie `react`. Reactiegedrag verschilt per kanaal en transport.
+De agent kan emoji-reacties toevoegen aan en verwijderen van berichten met de `message`-tool met de actie `react`. Het gedrag van reacties verschilt per kanaal en transport.
 
 ## Hoe het werkt
 
@@ -27,38 +27,40 @@ De agent kan emoji-reacties op berichten toevoegen en verwijderen met de `messag
 
 - `emoji` is vereist bij het toevoegen van een reactie.
 - Stel `emoji` in op een lege tekenreeks (`""`) om de reactie(s) van de bot te verwijderen.
-- Stel `remove: true` in om een specifieke emoji te verwijderen (vereist niet-lege `emoji`).
-- Op kanalen die statusreacties ondersteunen, laat `trackToolCalls: true` op een reactie de runtime dat bericht met reactie gebruiken voor volgende reacties op toolvoortgang tijdens dezelfde beurt.
+- Stel `remove: true` in om een specifieke emoji te verwijderen (vereist een niet-lege `emoji`).
+- Op kanalen die statusreacties ondersteunen, kan `trackToolCalls: true` op een
+  reactie de runtime dat bericht met reactie laten gebruiken voor daaropvolgende
+  voortgangsreacties van tools tijdens dezelfde beurt.
 
 ## Kanaalgedrag
 
 <AccordionGroup>
   <Accordion title="Discord en Slack">
-    - Lege `emoji` verwijdert alle reacties van de bot op het bericht.
+    - Een lege `emoji` verwijdert alle reacties van de bot op het bericht.
     - `remove: true` verwijdert alleen de opgegeven emoji.
 
   </Accordion>
 
   <Accordion title="Google Chat">
-    - Lege `emoji` verwijdert de reacties van de app op het bericht.
+    - Een lege `emoji` verwijdert de reacties van de app op het bericht.
     - `remove: true` verwijdert alleen de opgegeven emoji.
 
   </Accordion>
 
   <Accordion title="Telegram">
-    - Lege `emoji` verwijdert de reacties van de bot.
+    - Een lege `emoji` verwijdert de reacties van de bot.
     - `remove: true` verwijdert ook reacties, maar vereist nog steeds een niet-lege `emoji` voor toolvalidatie.
 
   </Accordion>
 
   <Accordion title="WhatsApp">
-    - Lege `emoji` verwijdert de botreactie.
+    - Een lege `emoji` verwijdert de botreactie.
     - `remove: true` wordt intern toegewezen aan een lege emoji (vereist nog steeds `emoji` in de toolaanroep).
 
   </Accordion>
 
   <Accordion title="Zalo Personal (zalouser)">
-    - Vereist niet-lege `emoji`.
+    - Vereist een niet-lege `emoji`.
     - `remove: true` verwijdert die specifieke emoji-reactie.
 
   </Accordion>
@@ -70,14 +72,20 @@ De agent kan emoji-reacties op berichten toevoegen en verwijderen met de `messag
   </Accordion>
 
   <Accordion title="Signal">
-    - Meldingen voor inkomende reacties worden beheerd door `channels.signal.reactionNotifications`: `"off"` schakelt ze uit, `"own"` (standaard) verzendt events wanneer gebruikers op botberichten reageren, en `"all"` verzendt events voor alle reacties.
+    - Meldingen voor inkomende reacties worden beheerd door `channels.signal.reactionNotifications`: `"off"` schakelt ze uit, `"own"` (standaard) geeft gebeurtenissen uit wanneer gebruikers reageren op botberichten, en `"all"` geeft gebeurtenissen uit voor alle reacties.
+
+  </Accordion>
+
+  <Accordion title="iMessage">
+    - Uitgaande reacties zijn iMessage-tapbacks (`love`, `like`, `dislike`, `laugh`, `emphasize` en `question`).
+    - Meldingen voor inkomende tapbacks worden beheerd door `channels.imessage.reactionNotifications`: `"off"` schakelt ze uit, `"own"` (standaard) geeft gebeurtenissen uit wanneer gebruikers reageren op berichten die door de bot zijn geschreven, en `"all"` geeft gebeurtenissen uit voor alle tapbacks van geautoriseerde afzenders.
 
   </Accordion>
 </AccordionGroup>
 
 ## Reactieniveau
 
-De per-kanaalconfiguratie `reactionLevel` bepaalt hoe breed de agent reacties gebruikt. Waarden zijn meestal `off`, `ack`, `minimal` of `extensive`.
+De per-kanaalconfiguratie `reactionLevel` bepaalt hoe breed de agent reacties gebruikt. Waarden zijn doorgaans `off`, `ack`, `minimal` of `extensive`.
 
 - [Telegram reactionLevel](/nl/channels/telegram#reaction-notifications) — `channels.telegram.reactionLevel`
 - [WhatsApp reactionLevel](/nl/channels/whatsapp#reaction-level) — `channels.whatsapp.reactionLevel`

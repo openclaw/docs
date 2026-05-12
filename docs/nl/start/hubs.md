@@ -1,13 +1,13 @@
 ---
 read_when:
     - Je wilt een volledig overzicht van de documentatie
-summary: Hubs die naar elk OpenClaw-document verwijzen
+summary: Hubs die naar elke OpenClaw-documentatiepagina verwijzen
 title: Documentatiehubs
 x-i18n:
-    generated_at: "2026-05-11T20:49:57Z"
+    generated_at: "2026-05-12T00:59:19Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fdf4128ddb05bb009faec0a21d45933ffb0a3abf5e5ba8dbe1b9710c8eee3bde
+    source_hash: f4675773105bbff55e1f38c8449d688dcefc6ad70d9f5e572193f1e0c638e243
     source_path: start/hubs.md
     workflow: 16
 ---
@@ -16,7 +16,7 @@ x-i18n:
 Als je nieuw bent met OpenClaw, begin dan met [Aan de slag](/nl/start/getting-started).
 </Note>
 
-Gebruik deze hubs om elke pagina te vinden, inclusief verdiepende artikelen en referentiedocumentatie die niet in de linkernavigatie staat.
+Gebruik deze hubs om elke pagina te vinden, inclusief verdiepingen en referentiedocumentatie die niet in de linkernavigatie verschijnen.
 
 ## Begin hier
 
@@ -24,10 +24,10 @@ Gebruik deze hubs om elke pagina te vinden, inclusief verdiepende artikelen en r
 - [Aan de slag](/nl/start/getting-started)
 - [Onboarding](/nl/start/onboarding)
 - [Onboarding (CLI)](/nl/start/wizard)
-- [Installatie](/nl/start/setup)
+- [Configuratie](/nl/start/setup)
 - [Dashboard (lokale Gateway)](http://127.0.0.1:18789/)
-- [Help](/nl/help)
-- [Documentatiemap](/nl/start/docs-directory)
+- [Hulp](/nl/help)
+- [Docs-directory](/nl/start/docs-directory)
 - [Configuratie](/nl/gateway/configuration)
 - [Configuratievoorbeelden](/nl/gateway/configuration-examples)
 - [OpenClaw-assistent](/nl/start/openclaw)
@@ -46,23 +46,23 @@ Gebruik deze hubs om elke pagina te vinden, inclusief verdiepende artikelen en r
 - [Architectuur](/nl/concepts/architecture)
 - [Functies](/nl/concepts/features)
 - [Netwerkhub](/nl/network)
-- [Agentruntime](/nl/concepts/agent)
-- [Agentwerkruimte](/nl/concepts/agent-workspace)
+- [Agent-runtime](/nl/concepts/agent)
+- [Agent-werkruimte](/nl/concepts/agent-workspace)
 - [Geheugen](/nl/concepts/memory)
-- [Agentloop](/nl/concepts/agent-loop)
-- [Streaming + opdelen in chunks](/nl/concepts/streaming)
-- [Multi-agentrouting](/nl/concepts/multi-agent)
+- [Agent-loop](/nl/concepts/agent-loop)
+- [Streaming + chunking](/nl/concepts/streaming)
+- [Multi-agent-routering](/nl/concepts/multi-agent)
 - [Compaction](/nl/concepts/compaction)
 - [Sessies](/nl/concepts/session)
-- [Sessieopschoning](/nl/concepts/session-pruning)
+- [Sessiesnoei](/nl/concepts/session-pruning)
 - [Sessietools](/nl/concepts/session-tool)
 - [Wachtrij](/nl/concepts/queue)
-- [Slash-opdrachten](/nl/tools/slash-commands)
+- [Slash-commando's](/nl/tools/slash-commands)
 - [RPC-adapters](/nl/reference/rpc)
 - [TypeBox-schema's](/nl/concepts/typebox)
 - [Tijdzoneafhandeling](/nl/concepts/timezone)
 - [Aanwezigheid](/nl/concepts/presence)
-- [Discovery + transports](/nl/gateway/discovery)
+- [Detectie + transports](/nl/gateway/discovery)
 - [Bonjour](/nl/gateway/bonjour)
 - [Kanaalroutering](/nl/channels/channel-routing)
 - [Groepen](/nl/channels/groups)
@@ -70,7 +70,7 @@ Gebruik deze hubs om elke pagina te vinden, inclusief verdiepende artikelen en r
 - [Model-failover](/nl/concepts/model-failover)
 - [OAuth](/nl/concepts/oauth)
 
-## Providers + ingress
+## Providers + inkomend verkeer
 
 - [Chatkanalenhub](/nl/channels)
 - [Modelprovidershub](/nl/providers/models)
@@ -92,7 +92,7 @@ Gebruik deze hubs om elke pagina te vinden, inclusief verdiepende artikelen en r
 - [Gateway-runbook](/nl/gateway)
 - [Netwerkmodel](/nl/network#core-model)
 - [Gateway-koppeling](/nl/gateway/pairing)
-- [Gateway-vergrendeling](/nl/gateway/gateway-lock)
+- [Gateway-lock](/nl/gateway/gateway-lock)
 - [Achtergrondproces](/nl/gateway/background-process)
 - [Gezondheid](/nl/gateway/health)
 - [Heartbeat](/nl/gateway/heartbeat)
@@ -100,9 +100,9 @@ Gebruik deze hubs om elke pagina te vinden, inclusief verdiepende artikelen en r
 - [Logging](/nl/gateway/logging)
 - [Sandboxing](/nl/gateway/sandboxing)
 - [Dashboard](/nl/web/dashboard)
-- [Besturings-UI](/nl/web/control-ui)
+- [Bedienings-UI](/nl/web/control-ui)
 - [Externe toegang](/nl/gateway/remote)
-- [Externe Gateway-README](/nl/gateway/remote-gateway-readme)
+- [Externe Gateway README](/nl/gateway/remote-gateway-readme)
 - [Tailscale](/nl/gateway/tailscale)
 - [Beveiliging](/nl/gateway/security)
 - [Probleemoplossing](/nl/gateway/troubleshooting)
@@ -116,29 +116,29 @@ Gebruik deze hubs om elke pagina te vinden, inclusief verdiepende artikelen en r
 - [PDF-tool](/nl/tools/pdf)
 - [Verhoogde modus](/nl/tools/elevated)
 - [Cron-taken](/nl/automation/cron-jobs)
-- [Automatisering en taken](/nl/automation)
-- [Thinking + uitgebreid](/nl/tools/thinking)
+- [Automatisering](/nl/automation)
+- [Denken + uitgebreid](/nl/tools/thinking)
 - [Modellen](/nl/concepts/models)
-- [Subagenten](/nl/tools/subagents)
-- [Agent send-CLI](/nl/tools/agent-send)
+- [Subagents](/nl/tools/subagents)
+- [Agent-send CLI](/nl/tools/agent-send)
 - [Terminal-UI](/nl/web/tui)
 - [Browserbesturing](/nl/tools/browser)
 - [Browser (Linux-probleemoplossing)](/nl/tools/browser-linux-troubleshooting)
-- [Peilingen](/nl/cli/message)
+- [Polls](/nl/cli/message)
 
-## Nodes, media, stem
+## Nodes, media, spraak
 
 - [Nodes-overzicht](/nl/nodes)
 - [Camera](/nl/nodes/camera)
 - [Afbeeldingen](/nl/nodes/images)
 - [Audio](/nl/nodes/audio)
-- [Locatieopdracht](/nl/nodes/location-command)
+- [Locatiecommando](/nl/nodes/location-command)
 - [Voice wake](/nl/nodes/voicewake)
 - [Praatmodus](/nl/nodes/talk)
 
-## Platformen
+## Platforms
 
-- [Platformenoverzicht](/nl/platforms)
+- [Platformoverzicht](/nl/platforms)
 - [macOS](/nl/platforms/macos)
 - [iOS](/nl/platforms/ios)
 - [Android](/nl/platforms/android)
@@ -146,12 +146,12 @@ Gebruik deze hubs om elke pagina te vinden, inclusief verdiepende artikelen en r
 - [Linux](/nl/platforms/linux)
 - [Weboppervlakken](/nl/web)
 
-## macOS-begeleidende app (geavanceerd)
+## macOS-companion-app (geavanceerd)
 
-- [macOS-ontwikkelinstallatie](/nl/platforms/mac/dev-setup)
+- [macOS-devconfiguratie](/nl/platforms/mac/dev-setup)
 - [macOS-menubalk](/nl/platforms/mac/menu-bar)
 - [macOS voice wake](/nl/platforms/mac/voicewake)
-- [macOS-stemoverlay](/nl/platforms/mac/voice-overlay)
+- [macOS-spraakoverlay](/nl/platforms/mac/voice-overlay)
 - [macOS WebChat](/nl/platforms/mac/webchat)
 - [macOS Canvas](/nl/platforms/mac/canvas)
 - [macOS-childproces](/nl/platforms/mac/child-process)
@@ -161,7 +161,7 @@ Gebruik deze hubs om elke pagina te vinden, inclusief verdiepende artikelen en r
 - [macOS-machtigingen](/nl/platforms/mac/permissions)
 - [macOS extern](/nl/platforms/mac/remote)
 - [macOS-ondertekening](/nl/platforms/mac/signing)
-- [macOS-Gateway (launchd)](/nl/platforms/mac/bundled-gateway)
+- [macOS Gateway (launchd)](/nl/platforms/mac/bundled-gateway)
 - [macOS XPC](/nl/platforms/mac/xpc)
 - [macOS Skills](/nl/platforms/mac/skills)
 - [macOS Peekaboo](/nl/platforms/mac/peekaboo)
@@ -172,11 +172,11 @@ Gebruik deze hubs om elke pagina te vinden, inclusief verdiepende artikelen en r
 - [Plugins bouwen](/nl/plugins/building-plugins)
 - [Plugin-hooks](/nl/plugins/hooks)
 - [Plugin-manifest](/nl/plugins/manifest)
-- [Agenttools](/nl/plugins/building-plugins#registering-agent-tools)
+- [Agent-tools](/nl/plugins/building-plugins#registering-agent-tools)
 - [Plugin-bundels](/nl/plugins/bundles)
 - [ClawHub](/nl/clawhub)
-- [Capability-cookbook](/nl/plugins/adding-capabilities)
-- [Plugin voor spraakoproepen](/nl/plugins/voice-call)
+- [Capability-kookboek](/nl/plugins/adding-capabilities)
+- [Voice call-plugin](/nl/plugins/voice-call)
 - [Zalo-gebruikersplugin](/nl/plugins/zalouser)
 
 ## Werkruimte + sjablonen

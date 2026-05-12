@@ -1,25 +1,23 @@
 ---
 read_when:
-    - Onderzoeken waarom de refactor van de kanaalingang te veel code heeft toegevoegd
-    - Beleid voor routes, commando's, gebeurtenissen, activering of toegangsgroepen verplaatsen van gebundelde Plugins naar de kern
-    - Controleren of een helper voor kanaalingress daadwerkelijk gebundelde Plugin-code verwijdert
+    - Onderzoeken waarom de refactoring van inkomende kanaalverwerking te veel code heeft toegevoegd
+    - Het verplaatsen van route-, commando-, gebeurtenis-, activerings- of toegangsgroepbeleid van gebundelde Plugins naar de kern
+    - Controleren of een helper voor inkomend kanaalverkeer daadwerkelijk gebundelde Plugin-code verwijdert
 sidebarTitle: Ingress core deletion
-summary: Plan waarbij verwijderen vooropstaat voor het verplaatsen van herhaalde lijmcode voor kanaalingress naar de kern.
+summary: Plan met verwijdering als uitgangspunt om herhaalde lijmcode voor kanaalbinnenkomst naar de kern te verplaatsen.
 title: Plan voor het verwijderen van de ingress-kern
 x-i18n:
-    generated_at: "2026-05-11T20:48:08Z"
+    generated_at: "2026-05-12T00:59:28Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 71afcf5d4f58c57ecfe7b388325279700a723ec1fcd926f644095106b662c3d0
+    source_hash: 1fdf1e7c9636d02c48c4b5d2b4a51470317dd64e2270c7fae779777c0d787afc
     source_path: refactor/ingress-core.md
     workflow: 16
 ---
 
-# Verwijderingsplan voor ingress-core
+# Verwijderingsplan voor de ingress-kern
 
-De ingress-refactor is niet gezond zolang deze duizenden netto regels toevoegt. Core-
-centralisatie telt alleen wanneer gebundelde pluginproductiecode kleiner wordt en
-oude SDK-compatibiliteit voor derden wordt geïsoleerd in SDK/core-shims.
+De ingress-refactor is niet gezond zolang die duizenden netto regels toevoegt. Kerncentralisatie telt alleen wanneer productiecode van gebundelde plugins kleiner wordt en oude SDK-compatibiliteit voor derden wordt afgezonderd in SDK-/kern-shims.
 
 Gewenste runtime-vorm:
 
@@ -36,14 +34,11 @@ old third-party helper
   -> old return shape preserved
 ```
 
-Gebundelde plugins mogen ingress niet terugvertalen naar lokale `AccessResult`,
-`GroupAccessDecision`, `CommandAuthDecision`, `DmCommandAccess` of
-`{ allowed, reasonCode }`-vormen, tenzij dat type een openbare plugin-API is.
+Gebundelde plugins mogen ingress niet terugvertalen naar lokale `AccessResult`-, `GroupAccessDecision`-, `CommandAuthDecision`-, `DmCommandAccess`- of `{ allowed, reasonCode }`-vormen, tenzij dat type openbare plugin-API is.
 
 ## Budget
 
-Gemeten ten opzichte van de PR merge-base met `origin/main`, inclusief niet-getrackte
-bestanden.
+Gemeten tegen de PR-merge-base met `origin/main`, inclusief niet-gevolgde bestanden.
 
 ```text
 merge-base            1671e7532adb
@@ -68,7 +63,7 @@ core production       <= +1,200
 total                 <= 0
 ```
 
-Minimaal resterende opschoning:
+Minimale resterende opschoning:
 
 ```text
 plugin production     needs 260 more net deleted lines
@@ -76,9 +71,7 @@ total                 needs 775 more net deleted lines
 core production       still +1,876 over standalone budget, unless paid down by plugin deletion
 ```
 
-Verwijdering van alleen commentaar telt niet als opschoning. De vorige budgetronde was
-te royaal omdat die herstelde verklarende QQBot-commentaren meenam; dit
-document volgt alleen verplaatsing van uitvoerbare code, docs en testcode.
+Verwijdering van alleen opmerkingen telt niet als opschoning. De vorige budgetronde was te ruimhartig omdat die herstelde verklarende QQBot-opmerkingen meenam; dit document volgt alleen verplaatsing van uitvoerbare code, documentatiecode en testcode.
 
 Meet opnieuw na elke opschoningsgolf:
 
@@ -91,8 +84,7 @@ pnpm lint:extensions:no-deprecated-channel-access
 
 ## Diagnose
 
-De eerste ronde voegde de gedeelde ingress-kernel toe en liet daarna te veel plugin-lokale
-autorisatie ernaast staan:
+De eerste ronde voegde de gedeelde ingress-kernel toe en liet daarna te veel plugin-lokale autorisatie ernaast staan:
 
 ```text
 platform facts
@@ -101,15 +93,13 @@ platform facts
   -> plugin-local if/else ladder
 ```
 
-Dat dupliceert het model. Core-productie groeide met ongeveer 3.376 regels, terwijl
-gebundelde pluginproductie 1.240 regels kleiner is. Dat is beter dan de eerste
-ronde, maar het valt niet binnen het minimumbudget. De oplossing blijft eerst verwijderen:
+Dat dupliceert het model. De kernproductie groeide met ongeveer 3.376 regels, terwijl de productiecode van gebundelde plugins 1.240 regels kleiner is. Dat is beter dan de eerste ronde, maar het valt niet binnen het minimumbudget. De oplossing blijft verwijdering eerst:
 
 - verwijder plugin-DTO's die alleen ingress-velden hernoemen
-- verwijder tests die alleen wrapper-vorm controleren
-- voeg core-helpers alleen toe wanneer dezelfde patch gebundelde plugincode verwijdert
-- houd oude SDK-compatibiliteit alleen in SDK/core-shims
-- pak core opnieuw in nadat wrapperverwijdering de stabiele vorm blootlegt
+- verwijder tests die alleen wrapper-vorm bevestigen
+- voeg alleen kernhelpers toe wanneer dezelfde patch gebundelde plugin-code verwijdert
+- houd oude SDK-compatibiliteit alleen in SDK-/kern-shims
+- pak de kern opnieuw in nadat wrapper-verwijdering de stabiele vorm blootlegt
 
 ## Hotspots
 
@@ -134,66 +124,45 @@ extensions/qqbot/src/engine/commands/slash-command-handler.ts +20
 extensions/telegram/src/bot-handlers.runtime.ts            +19
 ```
 
-De branch valt nog niet binnen het minimumbudget. Het resterende review-relevante
-werk moet herhaalde autorisatiestromen, turn-scaffolding of wrappertests verwijderen
-voordat er nog een core-abstractie wordt toegevoegd.
+De branch valt nog niet binnen het minimumbudget. Het resterende review-relevante werk moet herhaalde autorisatiestromen, turn-scaffolding of wrappertests verwijderen voordat er nog een kernabstractie wordt toegevoegd.
 
-## Huidige Codelezing
+## Huidige codelezing
 
-De gezonde core-seam bestaat al in `src/channels/message-access/runtime.ts`:
-die beheert identiteitsadapters, effectieve allowlists, reads uit de pairing-store,
-routedescriptors, command-/eventpresets, toegangsgroepen en de uiteindelijk opgeloste
-`ResolvedChannelMessageIngress`-projectie.
+De gezonde kernnaad bestaat al in `src/channels/message-access/runtime.ts`: die is eigenaar van identity-adapters, effectieve allowlists, pairing-store-reads, routebeschrijvers, command-/event-presets, access groups en de uiteindelijke opgeloste `ResolvedChannelMessageIngress`-projectie.
 
-De resterende groei bestaat vooral uit pluginlijm bovenop die seam:
+De resterende groei is vooral plugin-lijm boven op die naad:
 
-- `extensions/telegram/src/ingress.ts` verpakt core-beslissingen in Telegram-specifieke
-  command-/eventhelpers, waarna callsites nog steeds vooraf berekende genormaliseerde
-  allowlists en ownerlijsten doorgeven.
-- `extensions/discord/src/monitor/dm-command-auth.ts`,
-  `extensions/feishu/src/policy.ts`, `extensions/googlechat/src/monitor-access.ts`
-  en `extensions/matrix/src/matrix/monitor/access-state.ts` behouden nog steeds
-  lokale beleids-DTO's of verouderde beslissingsnamen naast ingress.
-- `extensions/signal/src/monitor/access-policy.ts` houdt Signal-
-  identiteitsnormalisatie en pairing-antwoorden terecht lokaal, maar heeft nog steeds een wrapper-
-  seam die moet samenvallen met direct ingress-gebruik.
-- `extensions/nextcloud-talk/src/inbound.ts`, `extensions/irc/src/inbound.ts`,
-  `extensions/qa-channel/src/inbound.ts`, `extensions/zalo/src/monitor.ts` en
-  `extensions/zalouser/src/monitor.ts` herhalen nog steeds route-/envelope-/turn-
-  assemblage die naar gedeelde turn-helpers buiten de ingress-kernel kan verhuizen.
+- `extensions/telegram/src/ingress.ts` wikkelt kernbeslissingen in Telegram-specifieke command-/eventhelpers, waarna callsites nog steeds vooraf berekende genormaliseerde allowlists en eigenaarslijsten doorgeven.
+- `extensions/discord/src/monitor/dm-command-auth.ts`, `extensions/feishu/src/policy.ts`, `extensions/googlechat/src/monitor-access.ts` en `extensions/matrix/src/matrix/monitor/access-state.ts` houden nog steeds lokale policy-DTO's of legacy beslissingsnamen naast ingress.
+- `extensions/signal/src/monitor/access-policy.ts` houdt Signal-identiteitsnormalisatie en pairing-antwoorden terecht lokaal, maar heeft nog steeds een wrapper-naad die moet instorten tot directe ingress-consumptie.
+- `extensions/nextcloud-talk/src/inbound.ts`, `extensions/irc/src/inbound.ts`, `extensions/qa-channel/src/inbound.ts`, `extensions/zalo/src/monitor.ts` en `extensions/zalouser/src/monitor.ts` herhalen nog steeds route-/envelope-/turn-assemblage die naar gedeelde turnhelpers buiten de ingress-kernel kan verhuizen.
 
-Conclusie: meer code naar core verplaatsen is alleen nuttig als het deze
-pluginwrapperlagen in dezelfde patch verwijdert. Nog een abstractie toevoegen terwijl
-wrapperreturns blijven bestaan herhaalt de fout.
+Conclusie: meer code naar de kern verplaatsen is alleen nuttig als het in dezelfde patch deze plugin-wrapperlagen verwijdert. Nog een abstractie toevoegen terwijl wrapper-returns blijven bestaan, herhaalt de fout.
 
 ## Grens
 
-Core beheert generiek beleid:
+De kern is eigenaar van generiek beleid:
 
 - allowlist-normalisatie en matching
-- uitbreiding en diagnostiek van toegangsgroepen
-- DM-allowlistreads uit de pairing-store
-- route-, afzender-, command-, event- en activatiepoorten
-- admission-mapping: dispatch, drop, skip, observe, pairing
-- geredigeerde state, beslissingen, diagnostiek en SDK-compatibiliteitsprojecties
-- herbruikbare generieke descriptors voor identiteit, route, command, event, activatie
-  en uitkomsten
+- uitbreiding en diagnostiek van access groups
+- DM-allowlist-reads uit de pairing-store
+- route-, sender-, command-, event- en activation-gates
+- toelatingsmapping: dispatch, drop, skip, observe, pairing
+- geredigeerde status, beslissingen, diagnostiek en SDK-compatibiliteitsprojecties
+- herbruikbare generieke beschrijvers voor identity, route, command, event, activation en outcomes
 
-Plugins beheren transportfeiten en bijwerkingen:
+Plugins zijn eigenaar van transportfeiten en neveneffecten:
 
 - authenticiteit van webhook/socket/request
 - platformidentiteitsextractie en API-lookups
 - kanaalspecifieke beleidsstandaarden
-- levering van pairing-challenges, antwoorden, acks, reacties, typen, media, historie,
-  setup, doctor, status, logs en gebruikersgerichte tekst
+- levering van pairing-uitdagingen, antwoorden, acks, reacties, typen, media, geschiedenis, setup, doctor, status, logs en gebruikersgerichte tekst
 
-Core moet kanaalonafhankelijk blijven: geen Discord, Slack, Telegram, Matrix, room,
-guild, space, API-client of pluginspecifieke standaard in
-`src/channels/message-access`.
+De kern moet kanaalagnostisch blijven: geen Discord, Slack, Telegram, Matrix, room, guild, space, API-client of plugin-specifieke standaard in `src/channels/message-access`.
 
 ## Acceptatieregel
 
-Elke nieuwe core-helper moet direct gebundelde pluginproductiecode verwijderen.
+Elke nieuwe kernhelper moet onmiddellijk productiecode van gebundelde plugins verwijderen.
 
 ```text
 one bundled caller        reject; keep plugin-local
@@ -204,95 +173,61 @@ compatibility-only helper SDK/core shim only; never bundled hot paths
 
 Stop en ontwerp opnieuw als:
 
-- pluginproductie-LOC toeneemt
+- productie-LOC van plugins toeneemt
 - tests sneller groeien dan productie krimpt
 - een gebundeld hot path een DTO retourneert die alleen `ResolvedChannelMessageIngress` hernoemt
-- een core-helper een channel-id, platformobject, API-client of
-  kanaalspecifieke standaard nodig heeft
+- een kernhelper een channel-id, platformobject, API-client of kanaalspecifieke standaard nodig heeft
 
 ## Werkpakketten
 
 1. Bevries het budget.
-   Zet LOC in de PR, houd deprecated-ingress-lint groen en neem before/after-
-   LOC op in opschoningscommits.
+   Zet LOC in de PR, houd deprecated-ingress-lint groen en neem voor/na-LOC op in opschoningscommits.
 
-2. Verwijder dunne DTO-seams.
-   Vervang plugin-lokale wrapperreturns door `ResolvedChannelMessageIngress`,
-   `senderAccess`, `commandAccess`, `routeAccess` of `ingress` direct. Begin
-   met QQBot, Telegram, Slack, Discord, Signal, Feishu, Matrix, iMessage en
-   Tlon. Verwijder wrapper-vormtests; behoud gedragstests.
+2. Verwijder dunne DTO-naden.
+   Vervang plugin-lokale wrapper-returns door direct gebruik van `ResolvedChannelMessageIngress`, `senderAccess`, `commandAccess`, `routeAccess` of `ingress`. Begin met QQBot, Telegram, Slack, Discord, Signal, Feishu, Matrix, iMessage en Tlon. Verwijder wrapper-vormtests; behoud gedragstests.
 
-3. Voeg uitkomstclassificatie alleen toe met verwijderingen.
-   Een generieke classifier mag `dispatch`, `pairing-required`,
-   `skip-activation`, `drop-command`, `drop-route`, `drop-sender` en
-   `drop-ingress` blootleggen. Die moet afleiden uit de beslissingsgrafiek, niet uit reason strings,
-   en minstens drie plugins migreren in dezelfde patch.
+3. Voeg outcome-classificatie alleen toe met verwijderingen.
+   Een generieke classifier mag `dispatch`, `pairing-required`, `skip-activation`, `drop-command`, `drop-route`, `drop-sender` en `drop-ingress` blootleggen. Die moet afgeleid zijn van de beslissingsgrafiek, niet van redenstrings, en in dezelfde patch minstens drie plugins migreren.
 
-4. Voeg routedescriptor-builders alleen toe met verwijderingen.
-   Generieke helpers voor routetarget en routeafzender zijn alleen acceptabel als ze
-   route-zware plugins direct verkleinen: Google Chat, IRC, Microsoft Teams,
-   Nextcloud Talk, Mattermost, Slack, Zalo en Zalo Personal.
+4. Voeg routebeschrijver-builders alleen toe met verwijderingen.
+   Generieke helpers voor routedoel en routesender zijn alleen acceptabel als ze route-zware plugins onmiddellijk verkleinen: Google Chat, IRC, Microsoft Teams, Nextcloud Talk, Mattermost, Slack, Zalo en Zalo Personal.
 
-5. Voeg command-/eventpresets alleen toe met verwijderingen.
-   Centraliseer tekst-command-, native-command-, callback- en origin-subject-vormen.
-   Command-consumers moeten standaard unauthorized zijn wanneer geen command-gate heeft gedraaid;
-   events mogen pairing niet starten.
+5. Voeg command-/event-presets alleen toe met verwijderingen.
+   Centraliseer text-command-, native-command-, callback- en origin-subject-vormen. Command-consumenten moeten standaard naar unauthorized gaan wanneer er geen command-gate is uitgevoerd; events mogen geen pairing starten.
 
-6. Voeg identiteitspresets alleen toe waar ze boilerplate verwijderen.
-   Helpers voor stable-id, stable-id-plus-aliases, phone/e164 en multi-identifier
-   zijn toegestaan wanneer ruwe waarden alleen adapterinput binnenkomen en geredigeerde state
-   ondoorzichtige id's/aantallen behoudt.
+6. Voeg identity-presets alleen toe waar ze boilerplate verwijderen.
+   Stable-id-, stable-id-plus-aliases-, phone/e164- en multi-identifier-helpers zijn toegestaan wanneer ruwe waarden alleen adapterinvoer binnenkomen en geredigeerde status ondoorzichtige id's/aantallen behoudt.
 
 7. Deel geautoriseerde turn-assemblage.
-   Verwijder buiten de ingress-kernel herhaalde route-/session-/envelope-/reply-
-   scaffolding uit QA Channel, IRC, Nextcloud Talk, Zalo en Zalo Personal.
-   Core mag route-/session-/envelope-/dispatch-sequencing beheren; plugins behouden
-   levering en kanaalspecifieke context.
+   Verwijder buiten de ingress-kernel herhaalde route-/session-/envelope-/context-/reply-scaffolding uit QA Channel, IRC, Nextcloud Talk, Zalo en Zalo Personal. De kern mag route-/session-/envelope-/dispatch-volgorde bezitten; plugins behouden levering en kanaalspecifieke context.
 
-8. Isoleer compatibiliteit.
-   Verouderde SDK-helpers blijven broncompatibel, maar gebundelde hot paths mogen geen
-   verouderde ingress- of command-auth-facades importeren. Compatibiliteitstests moeten
-   nepplugins van derden gebruiken, geen internals van gebundelde plugins.
+8. Zet compatibiliteit in quarantaine.
+   Verouderde SDK-helpers blijven broncompatibel, maar gebundelde hot paths mogen geen verouderde ingress- of command-auth-facades importeren. Compatibiliteitstests moeten nepplugins van derden gebruiken, geen internals van gebundelde plugins.
 
-9. Pak core opnieuw in.
-   Na wrapperverwijdering: vouw eenmalig gebruikte modules samen, verwijder ongebruikte exports, verplaats
-   compatibiliteitsprojectie uit hot paths en behoud gerichte tests voor identiteit,
-   route, command/event, activatie, toegangsgroepen en compatibiliteitsshims.
+9. Pak de kern opnieuw in.
+   Na wrapper-verwijdering: klap modules met één gebruik in, verwijder ongebruikte exports, verplaats compatibiliteitsprojectie uit hot paths en behoud gerichte tests voor identity, route, command/event, activation, access groups en compatibiliteitsshims.
 
 ## Verwijderingsgolven
 
-Voer deze op volgorde uit. Elke golf moet gebundelde productie-LOC verlagen.
+Voer deze op volgorde uit. Elke golf moet productie-LOC van gebundelde plugins verlagen.
 
-1. Wrappercollapse, verwachte plugindelta: -400 tot -600.
-   Vervang plugin-lokale `resolveXAccess`, `resolveXCommandAccess` en
-   `accessFromIngress`-resultaattypen door directe reads uit
-   `ResolvedChannelMessageIngress`. Eerste doelen: Discord DM command auth,
-   Feishu policy, Matrix access state, Telegram ingress, Signal access policy,
-   QQBot SDK adapter.
+1. Wrapper-collapse, verwachte plugin-delta: -400 tot -600.
+   Vervang plugin-lokale `resolveXAccess`-, `resolveXCommandAccess`- en `accessFromIngress`-resultaattypen door directe reads uit `ResolvedChannelMessageIngress`. Eerste doelen: Discord DM command auth, Feishu policy, Matrix access state, Telegram ingress, Signal access policy, QQBot SDK-adapter.
 
-2. Gedeelde uitkomsthelpers, verwachte plugindelta: -200 tot -350.
-   Voeg één generieke classifier alleen toe als die herhaalde
-   `shouldBlockControlCommand`-, pairing-, activatie-skip-, route-block- en sender-
-   block-ladders over minstens drie plugins verwijdert.
+2. Gedeelde outcome-helpers, verwachte plugin-delta: -200 tot -350.
+   Voeg één generieke classifier alleen toe als die herhaalde `shouldBlockControlCommand`-, pairing-, activation-skip-, route-block- en sender-block-ladders verwijdert uit minstens drie plugins.
 
-3. Routedescriptor-builders, verwachte plugindelta: -200 tot -350.
-   Verplaats herhaalde assemblage van routetarget- en routeafzenderdescriptors naar core-
-   helpers. Eerste doelen: Google Chat, IRC, Microsoft Teams, Nextcloud Talk,
-   Mattermost, Slack, Zalo, Zalo Personal.
+3. Routebeschrijver-builders, verwachte plugin-delta: -200 tot -350.
+   Verplaats herhaalde assemblage van routedoel- en routesenderbeschrijvers naar kernhelpers. Eerste doelen: Google Chat, IRC, Microsoft Teams, Nextcloud Talk, Mattermost, Slack, Zalo, Zalo Personal.
 
-4. Delen van turn-assemblage, verwachte plugindelta: -250 tot -450.
-   Gebruik gemeenschappelijke route-/session-/envelope-/dispatch-sequencing voor eenvoudige inbound-
-   plugins. Eerste doelen: QA Channel, IRC, Nextcloud Talk, Zalo, Zalo Personal.
+4. Delen van turn-assemblage, verwachte plugin-delta: -250 tot -450.
+   Gebruik gemeenschappelijke route-/session-/envelope-/dispatch-volgorde voor eenvoudige inkomende plugins. Eerste doelen: QA Channel, IRC, Nextcloud Talk, Zalo, Zalo Personal.
 
-5. Core opnieuw inpakken, verwachte coredelta: -300 tot -700.
-   Nadat plugins runtimeprojecties direct gebruiken, verwijder eenmalig gebruikte modules,
-   merge kleine bestanden terug in `runtime.ts` of gerichte siblings en houd SDK-
-   compatibiliteitsbestanden gescheiden van gebundelde hot paths.
+5. Kern opnieuw inpakken, verwachte kern-delta: -300 tot -700.
+   Nadat plugins runtime-projecties direct consumeren: verwijder modules met één gebruik, voeg kleine bestanden terug samen in `runtime.ts` of gerichte buren, en houd SDK-compatibiliteitsbestanden gescheiden van gebundelde hot paths.
 
-6. Testsnoei, verwachte testdelta: -300 tot -600.
-   Verwijder tests die alleen verwijderde wrapper-vormen controleren. Behoud gedragstests voor
-   command-weigering, groepsfallback, origin-subject-matching, activatie-skip,
-   toegangsgroepen, pairing en redactie.
+6. Testopschoning, verwachte test-delta: -300 tot -600.
+   Verwijder tests die alleen verwijderde wrapper-vormen bevestigen. Behoud gedragstests voor command denial, group fallback, origin-subject matching, activation skip, access groups, pairing en redactie.
 
 Verwachte minimale landingsvorm na deze golven:
 
@@ -305,15 +240,15 @@ total                 <= +2,000
 
 ## Niet Verplaatsen
 
-Verplaats geen standaardwaarden voor platformconfiguratie, setup-UX, doctor/fix-tekst, API-lookups,
-Slack-eigenaar-aanwezigheidscontroles, Matrix-alias-/verificatieafhandeling, Telegram
-callback-parsing, commandosyntaxisparsing, native command-registratie, reaction
-payload-parsing, koppelingsantwoorden, commandoantwoorden, bevestigingen, typen, media, geschiedenis,
+Verplaats geen platformconfiguratiestandaarden, installatie-UX, doctor/fix-tekst, API-lookups,
+Slack-eigenaarsaanwezigheidscontroles, Matrix-alias-/verificatieafhandeling, Telegram
+callback-parsing, syntaxisparsing van opdrachten, native opdrachtregistratie, parsing van
+reactiepayloads, koppelingsantwoorden, opdrachtantwoorden, bevestigingen, typen, media, geschiedenis
 of logs.
 
 ## Verificatie
 
-Gerichte lokale iteratie:
+Gerichte lokale loop:
 
 ```sh
 pnpm lint:extensions:no-deprecated-channel-access
@@ -325,24 +260,24 @@ pnpm check:docs
 git diff --check
 ```
 
-Gebruik Testbox voor brede wijzigingsgates/volledige-suite-bewijs zodra de LOC-trend
-binnen het budget valt.
+Gebruik Testbox voor brede gewijzigde gates/full-suitebewijs zodra de LOC-trend
+binnen budget is.
 
 Elk werkpakket legt vast:
 
-- LOC voor/na per categorie
-- verwijderde plugin-wrappers
-- nieuwe LOC voor core-helpers, indien van toepassing
+- LOC vóór/na per categorie
+- verwijderde Plugin-wrappers
+- nieuwe kernhelper-LOC, indien aanwezig
 - uitgevoerde gerichte tests
-- resterende hotspotlijst
+- resterende lijst met hotspots
 
 ## Exitcriteria
 
-- gebundelde productie-imports hebben geen deprecated channel-access- of command-auth-facades
-- compatibiliteitscode is geisoleerd tot SDK/core-seams
-- gebundelde plugins consumeren ingress-projecties of generieke uitkomsten direct
-- productie-LOC van plugins is minstens 1.500 netto negatief ten opzichte van `origin/main`
-- productie-LOC van core is <= +1.500, of elke overschrijding wordt gecompenseerd terwijl het totaal
-  <= +2.000 blijft
-- representatieve tests dekken redactie, route, commando/event, activatie,
-  access-group en kanaalspecifiek fallback-gedrag
+- gebundelde productie-imports gebruiken geen verouderde channel-access- of command-auth-facades
+- compatibiliteitscode is geïsoleerd tot SDK-/kernnaden
+- gebundelde Plugins consumeren ingress-projecties of generieke uitkomsten rechtstreeks
+- Plugin-productie-LOC is netto ten minste 1.500 lager ten opzichte van `origin/main`
+- kernproductie-LOC is `<= +1,500`, of elke overschrijding wordt gecompenseerd terwijl het totaal
+  `<= +2,000` blijft
+- representatieve tests dekken redactie, route, opdracht/event, activatie,
+  toegangsgroep en kanaalspecifiek fallbackgedrag

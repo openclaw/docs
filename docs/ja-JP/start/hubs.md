@@ -1,22 +1,22 @@
 ---
 read_when:
-    - ドキュメントの完全なマップが必要です
-summary: すべての OpenClaw ドキュメントへリンクするハブ
+    - ドキュメント全体の完全なマップが必要です
+summary: すべての OpenClaw ドキュメントにリンクするハブ
 title: ドキュメントハブ
 x-i18n:
-    generated_at: "2026-05-10T19:52:47Z"
+    generated_at: "2026-05-12T00:59:21Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fdf4128ddb05bb009faec0a21d45933ffb0a3abf5e5ba8dbe1b9710c8eee3bde
+    source_hash: f4675773105bbff55e1f38c8449d688dcefc6ad70d9f5e572193f1e0c638e243
     source_path: start/hubs.md
     workflow: 16
 ---
 
 <Note>
-OpenClaw を初めて使う場合は、[はじめに](/ja-JP/start/getting-started)から始めてください。
+OpenClaw が初めての場合は、[はじめに](/ja-JP/start/getting-started)から始めてください。
 </Note>
 
-左ナビゲーションに表示されない詳細解説やリファレンスドキュメントを含め、すべてのページを見つけるにはこれらのハブを使用してください。
+左側のナビゲーションに表示されない詳細解説やリファレンスドキュメントを含め、すべてのページを見つけるには、これらのハブを使用します。
 
 ## ここから開始
 
@@ -32,7 +32,7 @@ OpenClaw を初めて使う場合は、[はじめに](/ja-JP/start/getting-start
 - [設定例](/ja-JP/gateway/configuration-examples)
 - [OpenClaw アシスタント](/ja-JP/start/openclaw)
 - [ショーケース](/ja-JP/start/showcase)
-- [ロア](/ja-JP/start/lore)
+- [Lore](/ja-JP/start/lore)
 
 ## インストール + 更新
 
@@ -41,7 +41,7 @@ OpenClaw を初めて使う場合は、[はじめに](/ja-JP/start/getting-start
 - [更新 / ロールバック](/ja-JP/install/updating)
 - [Bun ワークフロー (実験的)](/ja-JP/install/bun)
 
-## 中核概念
+## コア概念
 
 - [アーキテクチャ](/ja-JP/concepts/architecture)
 - [機能](/ja-JP/concepts/features)
@@ -50,11 +50,11 @@ OpenClaw を初めて使う場合は、[はじめに](/ja-JP/start/getting-start
 - [エージェントワークスペース](/ja-JP/concepts/agent-workspace)
 - [メモリ](/ja-JP/concepts/memory)
 - [エージェントループ](/ja-JP/concepts/agent-loop)
-- [ストリーミング + チャンキング](/ja-JP/concepts/streaming)
+- [ストリーミング + チャンク化](/ja-JP/concepts/streaming)
 - [マルチエージェントルーティング](/ja-JP/concepts/multi-agent)
 - [Compaction](/ja-JP/concepts/compaction)
 - [セッション](/ja-JP/concepts/session)
-- [セッションのプルーニング](/ja-JP/concepts/session-pruning)
+- [セッションの枝刈り](/ja-JP/concepts/session-pruning)
 - [セッションツール](/ja-JP/concepts/session-tool)
 - [キュー](/ja-JP/concepts/queue)
 - [スラッシュコマンド](/ja-JP/tools/slash-commands)
@@ -70,7 +70,7 @@ OpenClaw を初めて使う場合は、[はじめに](/ja-JP/start/getting-start
 - [モデルフェイルオーバー](/ja-JP/concepts/model-failover)
 - [OAuth](/ja-JP/concepts/oauth)
 
-## プロバイダー + 受信
+## プロバイダー + イングレス
 
 - [チャットチャネルハブ](/ja-JP/channels)
 - [モデルプロバイダーハブ](/ja-JP/providers/models)
@@ -84,7 +84,7 @@ OpenClaw を初めて使う場合は、[はじめに](/ja-JP/start/getting-start
 - [iMessage](/ja-JP/channels/imessage)
 - [位置情報の解析](/ja-JP/channels/location)
 - [WebChat](/ja-JP/web/webchat)
-- [Webhooks](/ja-JP/automation/cron-jobs#webhooks)
+- [Webhook](/ja-JP/automation/cron-jobs#webhooks)
 - [Gmail Pub/Sub](/ja-JP/automation/cron-jobs#gmail-pubsub-integration)
 
 ## Gateway + 運用
@@ -116,7 +116,7 @@ OpenClaw を初めて使う場合は、[はじめに](/ja-JP/start/getting-start
 - [PDF ツール](/ja-JP/tools/pdf)
 - [昇格モード](/ja-JP/tools/elevated)
 - [Cron ジョブ](/ja-JP/automation/cron-jobs)
-- [自動化とタスク](/ja-JP/automation)
+- [自動化](/ja-JP/automation)
 - [思考 + 詳細出力](/ja-JP/tools/thinking)
 - [モデル](/ja-JP/concepts/models)
 - [サブエージェント](/ja-JP/tools/subagents)
@@ -131,7 +131,7 @@ OpenClaw を初めて使う場合は、[はじめに](/ja-JP/start/getting-start
 - [Node 概要](/ja-JP/nodes)
 - [カメラ](/ja-JP/nodes/camera)
 - [画像](/ja-JP/nodes/images)
-- [オーディオ](/ja-JP/nodes/audio)
+- [音声](/ja-JP/nodes/audio)
 - [位置情報コマンド](/ja-JP/nodes/location-command)
 - [音声ウェイク](/ja-JP/nodes/voicewake)
 - [トークモード](/ja-JP/nodes/talk)
@@ -163,21 +163,21 @@ OpenClaw を初めて使う場合は、[はじめに](/ja-JP/start/getting-start
 - [macOS 署名](/ja-JP/platforms/mac/signing)
 - [macOS Gateway (launchd)](/ja-JP/platforms/mac/bundled-gateway)
 - [macOS XPC](/ja-JP/platforms/mac/xpc)
-- [macOS skills](/ja-JP/platforms/mac/skills)
+- [macOS Skills](/ja-JP/platforms/mac/skills)
 - [macOS Peekaboo](/ja-JP/platforms/mac/peekaboo)
 
-## Plugins
+## Plugin
 
-- [Plugins 概要](/ja-JP/tools/plugin)
-- [Plugins の構築](/ja-JP/plugins/building-plugins)
+- [Plugin 概要](/ja-JP/tools/plugin)
+- [Plugin の構築](/ja-JP/plugins/building-plugins)
 - [Plugin フック](/ja-JP/plugins/hooks)
 - [Plugin マニフェスト](/ja-JP/plugins/manifest)
 - [エージェントツール](/ja-JP/plugins/building-plugins#registering-agent-tools)
 - [Plugin バンドル](/ja-JP/plugins/bundles)
 - [ClawHub](/ja-JP/clawhub)
 - [ケイパビリティクックブック](/ja-JP/plugins/adding-capabilities)
-- [音声通話 plugin](/ja-JP/plugins/voice-call)
-- [Zalo ユーザー plugin](/ja-JP/plugins/zalouser)
+- [音声通話 Plugin](/ja-JP/plugins/voice-call)
+- [Zalo ユーザー Plugin](/ja-JP/plugins/zalouser)
 
 ## ワークスペース + テンプレート
 

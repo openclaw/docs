@@ -1,41 +1,41 @@
 ---
 read_when:
     - iMessage-ondersteuning instellen
-    - Foutopsporing voor verzenden/ontvangen via iMessage
-summary: Systeemeigen iMessage-ondersteuning via imsg (JSON-RPC via stdio), met private API-acties voor antwoorden, tapbacks, effecten, bijlagen en groepsbeheer. Aanbevolen voor nieuwe OpenClaw iMessage-configuraties wanneer aan de hostvereisten wordt voldaan.
+    - Foutopsporing bij verzenden/ontvangen via iMessage
+summary: Systeemeigen iMessage-ondersteuning via imsg (JSON-RPC via stdio), met private API-acties voor antwoorden, tapbacks, effecten, bijlagen en groepsbeheer. Bij voorkeur voor nieuwe OpenClaw iMessage-installaties wanneer de hostvereisten passend zijn.
 title: iMessage
 x-i18n:
-    generated_at: "2026-05-11T20:20:37Z"
+    generated_at: "2026-05-12T00:56:00Z"
     model: gpt-5.5
     provider: openai
-    source_hash: cbce499e35c3dac12e6bb3f157d624a02a9bc8c26356f3decdfe62c85db6ee15
+    source_hash: 56b0c284a5105bf9c2863f46731fb61628e264ce35c316014f25f15907142430
     source_path: channels/imessage.md
     workflow: 16
 ---
 
 <Note>
-Gebruik voor OpenClaw iMessage-implementaties `imsg` op een ingelogde macOS Messages-host. Als je Gateway op Linux of Windows draait, wijs `channels.imessage.cliPath` dan naar een SSH-wrapper die `imsg` op de Mac uitvoert.
+Gebruik voor OpenClaw iMessage-implementaties `imsg` op een macOS Messages-host waarop is ingelogd. Als je Gateway op Linux of Windows draait, wijs `channels.imessage.cliPath` dan naar een SSH-wrapper die `imsg` op de Mac uitvoert.
 
-**Inhalen na Gateway-downtime is opt-in.** Wanneer dit is ingeschakeld (`channels.imessage.catchup.enabled: true`), speelt de gateway inkomende berichten opnieuw af die in `chat.db` terechtkwamen terwijl deze offline was (crash, herstart, Mac-slaapstand) bij de volgende start. Standaard uitgeschakeld — zie [Inhalen na gateway-downtime](#catching-up-after-gateway-downtime). Sluit [openclaw#78649](https://github.com/openclaw/openclaw/issues/78649).
+**Inhalen na Gateway-downtime is opt-in.** Wanneer dit is ingeschakeld (`channels.imessage.catchup.enabled: true`), speelt de gateway inkomende berichten opnieuw af die in `chat.db` zijn aangekomen terwijl deze offline was (crash, herstart, Mac in sluimerstand) bij de volgende start. Standaard uitgeschakeld — zie [Inhalen na gateway-downtime](#catching-up-after-gateway-downtime). Sluit [openclaw#78649](https://github.com/openclaw/openclaw/issues/78649).
 </Note>
 
 <Warning>
-BlueBubbles-ondersteuning is verwijderd. Migreer `channels.bluebubbles`-configuraties naar `channels.imessage`; OpenClaw ondersteunt iMessage alleen via `imsg`. Begin met [Verwijdering van BlueBubbles en het imsg iMessage-pad](/nl/announcements/bluebubbles-imessage) voor de korte aankondiging, of [Afkomstig van BlueBubbles](/nl/channels/imessage-from-bluebubbles) voor de volledige migratietabel.
+BlueBubbles-ondersteuning is verwijderd. Migreer `channels.bluebubbles`-configuraties naar `channels.imessage`; OpenClaw ondersteunt iMessage alleen via `imsg`. Begin met [Verwijdering van BlueBubbles en het imsg iMessage-pad](/nl/announcements/bluebubbles-imessage) voor de korte aankondiging, of [Overstappen vanaf BlueBubbles](/nl/channels/imessage-from-bluebubbles) voor de volledige migratietabel.
 </Warning>
 
-Status: native externe CLI-integratie. Gateway start `imsg rpc` en communiceert via JSON-RPC op stdio (geen aparte daemon/poort). Geavanceerde acties vereisen `imsg launch` en een succesvolle private API-probe.
+Status: native externe CLI-integratie. Gateway start `imsg rpc` en communiceert via JSON-RPC op stdio (geen aparte daemon/poort). Geavanceerde acties vereisen `imsg launch` en een geslaagde private API-probe.
 
 <CardGroup cols={3}>
-  <Card title="Private API-acties" icon="wand-sparkles" href="#private-api-actions">
+  <Card title="Private API actions" icon="wand-sparkles" href="#private-api-actions">
     Antwoorden, tapbacks, effecten, bijlagen en groepsbeheer.
   </Card>
-  <Card title="Koppelen" icon="link" href="/nl/channels/pairing">
+  <Card title="Pairing" icon="link" href="/nl/channels/pairing">
     iMessage-DM's gebruiken standaard de koppelingsmodus.
   </Card>
-  <Card title="Mac op afstand" icon="terminal" href="#remote-mac-over-ssh">
+  <Card title="Remote Mac" icon="terminal" href="#remote-mac-over-ssh">
     Gebruik een SSH-wrapper wanneer de Gateway niet op de Messages-Mac draait.
   </Card>
-  <Card title="Configuratiereferentie" icon="settings" href="/nl/gateway/config-channels#imessage">
+  <Card title="Configuration reference" icon="settings" href="/nl/gateway/config-channels#imessage">
     Volledige referentie voor iMessage-velden.
   </Card>
 </CardGroup>
@@ -43,9 +43,9 @@ Status: native externe CLI-integratie. Gateway start `imsg rpc` en communiceert 
 ## Snelle installatie
 
 <Tabs>
-  <Tab title="Lokale Mac (snelste pad)">
+  <Tab title="Local Mac (fast path)">
     <Steps>
-      <Step title="imsg installeren en verifiëren">
+      <Step title="Install and verify imsg">
 
 ```bash
 brew install steipete/tap/imsg
@@ -56,7 +56,7 @@ openclaw channels status --probe
 
       </Step>
 
-      <Step title="OpenClaw configureren">
+      <Step title="Configure OpenClaw">
 
 ```json5
 {
@@ -72,7 +72,7 @@ openclaw channels status --probe
 
       </Step>
 
-      <Step title="Gateway starten">
+      <Step title="Start gateway">
 
 ```bash
 openclaw gateway
@@ -80,7 +80,7 @@ openclaw gateway
 
       </Step>
 
-      <Step title="Eerste DM-koppeling goedkeuren (standaard dmPolicy)">
+      <Step title="Approve first DM pairing (default dmPolicy)">
 
 ```bash
 openclaw pairing list imessage
@@ -93,8 +93,8 @@ openclaw pairing approve imessage <CODE>
 
   </Tab>
 
-  <Tab title="Mac op afstand via SSH">
-    OpenClaw vereist alleen een stdio-compatibele `cliPath`, dus je kunt `cliPath` naar een wrapperscript wijzen dat via SSH verbinding maakt met een externe Mac en `imsg` uitvoert.
+  <Tab title="Remote Mac over SSH">
+    OpenClaw vereist alleen een stdio-compatibel `cliPath`, dus je kunt `cliPath` naar een wrapperscript wijzen dat via SSH verbinding maakt met een externe Mac en `imsg` uitvoert.
 
 ```bash
 #!/usr/bin/env bash
@@ -120,9 +120,9 @@ exec ssh -T gateway-host imsg "$@"
 }
 ```
 
-    Als `remoteHost` niet is ingesteld, probeert OpenClaw dit automatisch te detecteren door het SSH-wrapperscript te parsen.
+    Als `remoteHost` niet is ingesteld, probeert OpenClaw dit automatisch te detecteren door het SSH-wrapperscript te parseren.
     `remoteHost` moet `host` of `user@host` zijn (geen spaties of SSH-opties).
-    OpenClaw gebruikt strikte host-key-controle voor SCP, dus de host-key van de relayhost moet al bestaan in `~/.ssh/known_hosts`.
+    OpenClaw gebruikt strikte host-key-controle voor SCP, dus de relay-hostsleutel moet al bestaan in `~/.ssh/known_hosts`.
     Bijlagepaden worden gevalideerd tegen toegestane roots (`attachmentRoots` / `remoteAttachmentRoots`).
 
   </Tab>
@@ -130,13 +130,13 @@ exec ssh -T gateway-host imsg "$@"
 
 ## Vereisten en machtigingen (macOS)
 
-- Messages moet ingelogd zijn op de Mac waarop `imsg` draait.
-- Full Disk Access is vereist voor de procescontext waarin OpenClaw/`imsg` draait (toegang tot Messages-DB).
-- Automatiseringsmachtiging is vereist om berichten via Messages.app te verzenden.
-- Voor geavanceerde acties (react / edit / unsend / threaded reply / effects / group ops) moet System Integrity Protection zijn uitgeschakeld — zie [De private API van imsg inschakelen](#enabling-the-imsg-private-api) hieronder. Basisfunctionaliteit voor het verzenden/ontvangen van tekst en media werkt zonder dit.
+- Messages moet zijn ingelogd op de Mac waarop `imsg` draait.
+- Full Disk Access is vereist voor de procescontext waarin OpenClaw/`imsg` draait (toegang tot de Messages-database).
+- Automation-machtiging is vereist om berichten via Messages.app te verzenden.
+- Voor geavanceerde acties (react / edit / unsend / threaded reply / effects / group ops) moet System Integrity Protection zijn uitgeschakeld — zie [De imsg private API inschakelen](#enabling-the-imsg-private-api) hieronder. Basis verzenden/ontvangen van tekst en media werkt zonder dit.
 
 <Tip>
-Machtigingen worden per procescontext verleend. Als gateway headless draait (LaunchAgent/SSH), voer dan een eenmalige interactieve opdracht uit in diezelfde context om prompts te activeren:
+Machtigingen worden per procescontext verleend. Als Gateway headless draait (LaunchAgent/SSH), voer dan een eenmalige interactieve opdracht uit in diezelfde context om prompts te activeren:
 
 ```bash
 imsg chats --limit 1
@@ -146,23 +146,23 @@ imsg send <handle> "test"
 
 </Tip>
 
-## De private API van imsg inschakelen
+## De imsg private API inschakelen
 
 `imsg` wordt geleverd in twee operationele modi:
 
-- **Basismodus** (standaard, geen SIP-wijzigingen nodig): uitgaande tekst en media via `send`, inkomende watch/history, chatlijst. Dit is wat je direct krijgt na een verse `brew install steipete/tap/imsg` plus de standaard macOS-machtigingen hierboven.
-- **Private API-modus**: `imsg` injecteert een helper-dylib in `Messages.app` om interne `IMCore`-functies aan te roepen. Dit ontgrendelt `react`, `edit`, `unsend`, `reply` (threaded), `sendWithEffect`, `renameGroup`, `setGroupIcon`, `addParticipant`, `removeParticipant`, `leaveGroup`, plus typing indicators en read receipts.
+- **Basismodus** (standaard, geen SIP-wijzigingen nodig): uitgaande tekst en media via `send`, inkomende watch/history, chatlijst. Dit is wat je standaard krijgt met een nieuwe `brew install steipete/tap/imsg` plus de standaard macOS-machtigingen hierboven.
+- **Private API-modus**: `imsg` injecteert een helper-dylib in `Messages.app` om interne `IMCore`-functies aan te roepen. Dit ontgrendelt `react`, `edit`, `unsend`, `reply` (met threads), `sendWithEffect`, `renameGroup`, `setGroupIcon`, `addParticipant`, `removeParticipant`, `leaveGroup`, plus typindicatoren en leesbevestigingen.
 
-Om toegang te krijgen tot het oppervlak voor geavanceerde acties dat deze kanaalpagina documenteert, heb je Private API-modus nodig. De `imsg` README is expliciet over de vereiste:
+Om het geavanceerde actieoppervlak te bereiken dat deze kanaalpagina documenteert, heb je de Private API-modus nodig. De `imsg` README is expliciet over de vereiste:
 
-> Geavanceerde functies zoals `read`, `typing`, `launch`, bridge-backed rich send, berichtmutatie en chatbeheer zijn opt-in. Ze vereisen dat SIP is uitgeschakeld en dat een helper-dylib in `Messages.app` wordt geïnjecteerd. `imsg launch` weigert te injecteren wanneer SIP is ingeschakeld.
+> Geavanceerde functies zoals `read`, `typing`, `launch`, bridge-ondersteund rich send, berichtmutatie en chatbeheer zijn opt-in. Ze vereisen dat SIP is uitgeschakeld en dat een helper-dylib in `Messages.app` wordt geïnjecteerd. `imsg launch` weigert te injecteren wanneer SIP is ingeschakeld.
 
-De helper-injectietechniek gebruikt de eigen dylib van `imsg` om private Messages-API's te bereiken. Er is geen server van derden of BlueBubbles-runtime in het OpenClaw iMessage-pad.
+De helper-injectietechniek gebruikt de eigen dylib van `imsg` om private API's van Messages te bereiken. Er is geen server van derden of BlueBubbles-runtime in het OpenClaw iMessage-pad.
 
 <Warning>
-**SIP uitschakelen is een echte beveiligingsafweging.** SIP is een van de kernbeschermingen van macOS tegen het uitvoeren van aangepaste systeemcode; het systeembreed uitschakelen opent extra aanvalsvlak en bijwerkingen. Met name **het uitschakelen van SIP op Apple Silicon Macs schakelt ook de mogelijkheid uit om iOS-apps op je Mac te installeren en uit te voeren**.
+**SIP uitschakelen is een echte beveiligingsafweging.** SIP is een van de kernbeveiligingen van macOS tegen het uitvoeren van gewijzigde systeemcode; het systeembreed uitschakelen opent extra aanvalsoppervlak en neveneffecten. Met name **het uitschakelen van SIP op Apple Silicon-Macs schakelt ook de mogelijkheid uit om iOS-apps op je Mac te installeren en uit te voeren**.
 
-Behandel dit als een bewuste operationele keuze, niet als standaard. Als je dreigingsmodel niet kan tolereren dat SIP uitstaat, is gebundelde iMessage beperkt tot basismodus — alleen tekst en media verzenden/ontvangen, geen reacties / edit / unsend / effecten / group ops.
+Beschouw dit als een bewuste operationele keuze, niet als een standaardinstelling. Als je dreigingsmodel niet kan tolereren dat SIP uitstaat, is gebundelde iMessage beperkt tot basismodus — alleen tekst en media verzenden/ontvangen, geen reacties / edit / unsend / effecten / groepsbewerkingen.
 </Warning>
 
 ### Installatie
@@ -177,13 +177,13 @@ Behandel dit als een bewuste operationele keuze, niet als standaard. Als je drei
 
    De uitvoer van `imsg status --json` rapporteert `bridge_version`, `rpc_methods` en per methode `selectors`, zodat je kunt zien wat de huidige build ondersteunt voordat je begint.
 
-2. **Schakel System Integrity Protection uit.** Dit is macOS-versiespecifiek omdat de onderliggende Apple-vereiste afhangt van het OS en de hardware:
+2. **Schakel System Integrity Protection uit.** Dit is macOS-versiespecifiek omdat de onderliggende Apple-vereiste afhangt van het besturingssysteem en de hardware:
    - **macOS 10.13–10.15 (Sierra–Catalina):** schakel Library Validation uit via Terminal, herstart naar Recovery Mode, voer `csrutil disable` uit, herstart.
    - **macOS 11+ (Big Sur en later), Intel:** Recovery Mode (of Internet Recovery), `csrutil disable`, herstart.
-   - **macOS 11+, Apple Silicon:** opstartprocedure met de aan/uit-knop om Recovery te openen; houd op recente macOS-versies de **Left Shift**-toets ingedrukt wanneer je op Continue klikt, daarna `csrutil disable`. Virtual-machine-installaties volgen een aparte flow — maak eerst een VM-snapshot.
-   - **macOS 26 / Tahoe:** library-validation-beleid en private-entitlement-controles van `imagent` zijn verder aangescherpt; `imsg` heeft mogelijk een bijgewerkte build nodig om bij te blijven. Als `imsg launch`-injectie of specifieke `selectors` na een grote macOS-upgrade false beginnen terug te geven, controleer dan de releaseopmerkingen van `imsg` voordat je aanneemt dat de SIP-stap is geslaagd.
+   - **macOS 11+, Apple Silicon:** opstartvolgorde met de aan/uit-knop om Recovery te openen; houd op recente macOS-versies de **Left Shift**-toets ingedrukt wanneer je op Continue klikt, daarna `csrutil disable`. Virtual-machine-setups volgen een aparte flow — maak eerst een VM-snapshot.
+   - **macOS 26 / Tahoe:** library-validation-beleid en private-entitlement-controles van `imagent` zijn verder aangescherpt; `imsg` heeft mogelijk een bijgewerkte build nodig om bij te blijven. Als `imsg launch`-injectie of specifieke `selectors` na een grote macOS-upgrade false beginnen terug te geven, controleer dan de release notes van `imsg` voordat je aanneemt dat de SIP-stap is geslaagd.
 
-   Volg de Recovery-mode-flow van Apple voor je Mac om SIP uit te schakelen voordat je `imsg launch` uitvoert.
+   Volg Apple's Recovery-mode-flow voor je Mac om SIP uit te schakelen voordat je `imsg launch` uitvoert.
 
 3. **Injecteer de helper.** Met SIP uitgeschakeld en Messages.app ingelogd:
 
@@ -199,22 +199,22 @@ Behandel dit als een bewuste operationele keuze, niet als standaard. Als je drei
    openclaw channels status --probe
    ```
 
-   De iMessage-vermelding moet `works` rapporteren, en `imsg status --json | jq '.selectors'` moet `retractMessagePart: true` tonen plus de edit / typing / read selectors die je macOS-build blootlegt. De per-methode-gating van de OpenClaw-Plugin in `actions.ts` adverteert alleen acties waarvan de onderliggende selector `true` is, dus het actieoppervlak dat je in de toollijst van de agent ziet, weerspiegelt wat de bridge daadwerkelijk op deze host kan doen.
+   De iMessage-vermelding moet `works` rapporteren, en `imsg status --json | jq '.selectors'` moet `retractMessagePart: true` tonen plus alle edit / typing / read-selectors die je macOS-build beschikbaar stelt. De per-methode-gating van de OpenClaw-plugin in `actions.ts` adverteert alleen acties waarvan de onderliggende selector `true` is, dus het actieoppervlak dat je in de toollijst van de agent ziet, weerspiegelt wat de bridge op deze host daadwerkelijk kan doen.
 
-Als `openclaw channels status --probe` het kanaal als `works` rapporteert maar specifieke acties tijdens dispatch "iMessage `<action>` requires the imsg private API bridge" gooien, voer dan `imsg launch` opnieuw uit — de helper kan wegvallen (herstart van Messages.app, OS-update, enz.) en de gecachte status `available: true` blijft acties adverteren totdat de volgende probe wordt vernieuwd.
+Als `openclaw channels status --probe` het kanaal als `works` rapporteert maar specifieke acties tijdens dispatch "iMessage `<action>` requires the imsg private API bridge" gooien, voer dan `imsg launch` opnieuw uit — de helper kan wegvallen (Messages.app-herstart, OS-update, enz.) en de gecachte status `available: true` blijft acties adverteren totdat de volgende probe wordt vernieuwd.
 
 ### Wanneer je SIP niet kunt uitschakelen
 
 Als SIP uitgeschakeld niet acceptabel is voor je dreigingsmodel:
 
-- `imsg` valt terug op basismodus — alleen tekst + media + ontvangen.
-- De OpenClaw-Plugin adverteert nog steeds tekst/media verzenden en inkomende monitoring; hij verbergt alleen `react`, `edit`, `unsend`, `reply`, `sendWithEffect` en group ops uit het actieoppervlak (volgens de per-methode-capability-gate).
-- Je kunt een aparte niet-Apple-Silicon Mac (of een toegewezen bot-Mac) met SIP uit gebruiken voor de iMessage-workload, terwijl je SIP ingeschakeld houdt op je primaire apparaten. Zie [Toegewezen bot-macOS-gebruiker (aparte iMessage-identiteit)](#deployment-patterns) hieronder.
+- `imsg` valt terug naar basismodus — alleen tekst + media + ontvangen.
+- De OpenClaw-plugin adverteert nog steeds verzenden van tekst/media en inkomende monitoring; hij verbergt alleen `react`, `edit`, `unsend`, `reply`, `sendWithEffect` en groepsbewerkingen uit het actieoppervlak (volgens de per-methode-capability-gate).
+- Je kunt een aparte niet-Apple-Silicon-Mac (of een speciale bot-Mac) met SIP uit gebruiken voor de iMessage-workload, terwijl SIP ingeschakeld blijft op je primaire apparaten. Zie [Speciale bot-macOS-gebruiker (aparte iMessage-identiteit)](#deployment-patterns) hieronder.
 
 ## Toegangscontrole en routering
 
 <Tabs>
-  <Tab title="DM-beleid">
+  <Tab title="DM policy">
     `channels.imessage.dmPolicy` beheert directe berichten:
 
     - `pairing` (standaard)
@@ -224,11 +224,11 @@ Als SIP uitgeschakeld niet acceptabel is voor je dreigingsmodel:
 
     Allowlist-veld: `channels.imessage.allowFrom`.
 
-    Allowlist-vermeldingen kunnen handles, statische afzender-toegangsgroepen (`accessGroup:<name>`) of chatdoelen (`chat_id:*`, `chat_guid:*`, `chat_identifier:*`) zijn.
+    Allowlist-vermeldingen kunnen handles zijn, statische afzender-toegangsgroepen (`accessGroup:<name>`) of chatdoelen (`chat_id:*`, `chat_guid:*`, `chat_identifier:*`).
 
   </Tab>
 
-  <Tab title="Groepsbeleid + vermeldingen">
+  <Tab title="Group policy + mentions">
     `channels.imessage.groupPolicy` beheert groepsafhandeling:
 
     - `allowlist` (standaard wanneer geconfigureerd)
@@ -239,18 +239,18 @@ Als SIP uitgeschakeld niet acceptabel is voor je dreigingsmodel:
 
     `groupAllowFrom`-vermeldingen kunnen ook verwijzen naar statische afzender-toegangsgroepen (`accessGroup:<name>`).
 
-    Runtime-fallback: als `groupAllowFrom` niet is ingesteld, vallen controles voor iMessage-groepsafzenders terug op `allowFrom` wanneer beschikbaar.
+    Runtime-fallback: als `groupAllowFrom` niet is ingesteld, vallen iMessage-controles voor groepsafzenders terug op `allowFrom` wanneer beschikbaar.
     Runtime-opmerking: als `channels.imessage` volledig ontbreekt, valt runtime terug op `groupPolicy="allowlist"` en logt een waarschuwing (zelfs als `channels.defaults.groupPolicy` is ingesteld).
 
     <Warning>
     Groepsroutering heeft **twee** allowlist-gates die direct na elkaar draaien, en beide moeten slagen:
 
-    1. **Afzender-/chatdoel-allowlist** (`channels.imessage.groupAllowFrom`) — handle, `chat_guid`, `chat_identifier` of `chat_id`.
-    2. **Groepsregister** (`channels.imessage.groups`) — met `groupPolicy: "allowlist"` vereist deze gate ofwel een wildcardvermelding `groups: { "*": { ... } }` (stelt `allowAll = true` in), of een expliciete per-`chat_id`-vermelding onder `groups`.
+    1. **Allowlist voor afzender / chatdoel** (`channels.imessage.groupAllowFrom`) — handle, `chat_guid`, `chat_identifier` of `chat_id`.
+    2. **Groepsregister** (`channels.imessage.groups`) — met `groupPolicy: "allowlist"` vereist deze gate ofwel een wildcard-vermelding `groups: { "*": { ... } }` (stelt `allowAll = true` in), of een expliciete vermelding per `chat_id` onder `groups`.
 
-    Als gate 2 niets bevat, wordt elk groepsbericht geweigerd. De Plugin geeft twee signalen op `warn`-niveau op het standaard logniveau:
+    Als gate 2 niets bevat, wordt elk groepsbericht genegeerd. De Plugin zendt twee signalen op `warn`-niveau uit op het standaard logniveau:
 
-    - eenmalig per account bij het opstarten: `imessage: groupPolicy="allowlist" but channels.imessage.groups is empty for account "<id>"`
+    - eenmalig per account bij opstarten: `imessage: groupPolicy="allowlist" but channels.imessage.groups is empty for account "<id>"`
     - eenmalig per `chat_id` tijdens runtime: `imessage: dropping group message from chat_id=<id> ...`
 
     DM's blijven werken omdat ze een ander codepad gebruiken.
@@ -269,7 +269,7 @@ Als SIP uitgeschakeld niet acceptabel is voor je dreigingsmodel:
     }
     ```
 
-    Als die `warn`-regels in het Gateway-log verschijnen, wordt gate 2 geblokkeerd — voeg het `groups`-blok toe.
+    Als die `warn`-regels in het Gateway-log verschijnen, valt gate 2 weg — voeg het `groups`-blok toe.
     </Warning>
 
     Vermeld gating voor groepen:
@@ -278,14 +278,14 @@ Als SIP uitgeschakeld niet acceptabel is voor je dreigingsmodel:
     - vermeldingsdetectie gebruikt regex-patronen (`agents.list[].groupChat.mentionPatterns`, fallback `messages.groupChat.mentionPatterns`)
     - zonder geconfigureerde patronen kan vermeldingsgating niet worden afgedwongen
 
-    Controlecommando's van geautoriseerde afzenders kunnen vermeldingsgating in groepen omzeilen.
+    Besturingsopdrachten van geautoriseerde afzenders kunnen vermeldingsgating in groepen omzeilen.
 
-    `systemPrompt` per groep:
+    Per-groep `systemPrompt`:
 
-    Elke entry onder `channels.imessage.groups.*` accepteert een optionele `systemPrompt`-string. De waarde wordt in de systeemprompt van de agent geinjecteerd bij elke beurt die een bericht in die groep verwerkt. De resolutie volgt dezelfde logica als de promptresolutie per groep die wordt gebruikt door `channels.whatsapp.groups`:
+    Elke vermelding onder `channels.imessage.groups.*` accepteert een optionele `systemPrompt`-tekenreeks. De waarde wordt in de systeemprompt van de agent ingevoegd bij elke beurt die een bericht in die groep afhandelt. Resolutie weerspiegelt de per-groep promptresolutie die door `channels.whatsapp.groups` wordt gebruikt:
 
-    1. **Groepsspecifieke systeemprompt** (`groups["<chat_id>"].systemPrompt`): gebruikt wanneer de specifieke groepsentry in de map bestaat **en** de sleutel `systemPrompt` is gedefinieerd. Als `systemPrompt` een lege string (`""`) is, wordt de wildcard onderdrukt en wordt er geen systeemprompt op die groep toegepast.
-    2. **Wildcard-systeemprompt voor groepen** (`groups["*"].systemPrompt`): gebruikt wanneer de specifieke groepsentry volledig ontbreekt in de map, of wanneer deze bestaat maar geen sleutel `systemPrompt` definieert.
+    1. **Groepsspecifieke systeemprompt** (`groups["<chat_id>"].systemPrompt`): gebruikt wanneer de specifieke groepsvermelding in de map bestaat **en** de sleutel `systemPrompt` ervan is gedefinieerd. Als `systemPrompt` een lege tekenreeks (`""`) is, wordt de wildcard onderdrukt en wordt er geen systeemprompt op die groep toegepast.
+    2. **Groepswildcard-systeemprompt** (`groups["*"].systemPrompt`): gebruikt wanneer de specifieke groepsvermelding volledig ontbreekt in de map, of wanneer deze bestaat maar geen sleutel `systemPrompt` definieert.
 
     ```json5
     {
@@ -309,41 +309,41 @@ Als SIP uitgeschakeld niet acceptabel is voor je dreigingsmodel:
     }
     ```
 
-    Prompts per groep gelden alleen voor groepsberichten — directe berichten in dit kanaal worden niet beinvloed.
+    Per-groep prompts zijn alleen van toepassing op groepsberichten — directe berichten in dit kanaal worden niet beinvloed.
 
   </Tab>
 
   <Tab title="Sessies en deterministische antwoorden">
     - DM's gebruiken directe routering; groepen gebruiken groepsroutering.
-    - Met de standaardinstelling `session.dmScope=main` worden iMessage-DM's samengevoegd in de hoofdsessie van de agent.
+    - Met standaard `session.dmScope=main` vallen iMessage-DM's samen in de hoofdsessie van de agent.
     - Groepssessies zijn geisoleerd (`agent:<agentId>:imessage:group:<chat_id>`).
     - Antwoorden worden terug naar iMessage gerouteerd met metadata van het oorspronkelijke kanaal/doel.
 
-    Groepsachtig threadgedrag:
+    Groepachtig threadgedrag:
 
     Sommige iMessage-threads met meerdere deelnemers kunnen binnenkomen met `is_group=false`.
-    Als die `chat_id` expliciet is geconfigureerd onder `channels.imessage.groups`, behandelt OpenClaw deze als groepsverkeer (groepsgating + isolatie van groepssessies).
+    Als die `chat_id` expliciet is geconfigureerd onder `channels.imessage.groups`, behandelt OpenClaw dit als groepsverkeer (groepsgating + isolatie van groepssessies).
 
   </Tab>
 </Tabs>
 
-## ACP-gesprekskoppelingen
+## ACP-gespreksbindingen
 
-Legacy iMessage-chats kunnen ook aan ACP-sessies worden gekoppeld.
+Verouderde iMessage-chats kunnen ook aan ACP-sessies worden gebonden.
 
 Snelle operatorflow:
 
 - Voer `/acp spawn codex --bind here` uit binnen de DM of toegestane groepschat.
-- Toekomstige berichten in hetzelfde iMessage-gesprek worden naar de gespawnde ACP-sessie gerouteerd.
-- `/new` en `/reset` resetten dezelfde gekoppelde ACP-sessie op zijn plek.
-- `/acp close` sluit de ACP-sessie en verwijdert de koppeling.
+- Toekomstige berichten in hetzelfde iMessage-gesprek routeren naar de voortgebrachte ACP-sessie.
+- `/new` en `/reset` resetten dezelfde gebonden ACP-sessie op zijn plek.
+- `/acp close` sluit de ACP-sessie en verwijdert de binding.
 
-Geconfigureerde permanente koppelingen worden ondersteund via top-level `bindings[]`-entries met `type: "acp"` en `match.channel: "imessage"`.
+Geconfigureerde persistente bindingen worden ondersteund via top-level `bindings[]`-vermeldingen met `type: "acp"` en `match.channel: "imessage"`.
 
-`match.peer.id` kan het volgende gebruiken:
+`match.peer.id` kan gebruiken:
 
 - genormaliseerde DM-handle zoals `+15555550123` of `user@example.com`
-- `chat_id:<id>` (aanbevolen voor stabiele groepskoppelingen)
+- `chat_id:<id>` (aanbevolen voor stabiele groepsbindingen)
 - `chat_guid:<guid>`
 - `chat_identifier:<identifier>`
 
@@ -377,28 +377,28 @@ Voorbeeld:
 }
 ```
 
-Zie [ACP-agenten](/nl/tools/acp-agents) voor gedeeld ACP-koppelingsgedrag.
+Zie [ACP-agenten](/nl/tools/acp-agents) voor gedeeld ACP-bindingsgedrag.
 
-## Implementatiepatronen
+## Deploymentpatronen
 
 <AccordionGroup>
-  <Accordion title="Toegewijde botgebruiker op macOS (aparte iMessage-identiteit)">
+  <Accordion title="Toegewijde botgebruiker voor macOS (aparte iMessage-identiteit)">
     Gebruik een toegewijde Apple ID en macOS-gebruiker zodat botverkeer is geisoleerd van je persoonlijke Messages-profiel.
 
     Typische flow:
 
-    1. Maak een toegewijde macOS-gebruiker aan of log daarop in.
-    2. Log in die gebruiker in bij Messages met de Apple ID van de bot.
+    1. Maak een toegewijde macOS-gebruiker aan of meld je daarin aan.
+    2. Meld je in die gebruiker aan bij Messages met de Apple ID van de bot.
     3. Installeer `imsg` in die gebruiker.
     4. Maak een SSH-wrapper zodat OpenClaw `imsg` in de context van die gebruiker kan uitvoeren.
     5. Wijs `channels.imessage.accounts.<id>.cliPath` en `.dbPath` naar dat gebruikersprofiel.
 
-    De eerste uitvoering kan GUI-goedkeuringen vereisen (Automation + Full Disk Access) in die botgebruikerssessie.
+    De eerste run kan GUI-goedkeuringen vereisen (Automation + Full Disk Access) in die botgebruikerssessie.
 
   </Accordion>
 
   <Accordion title="Externe Mac via Tailscale (voorbeeld)">
-    Veelvoorkomende topologie:
+    Gebruikelijke topologie:
 
     - Gateway draait op Linux/VM
     - iMessage + `imsg` draait op een Mac in je tailnet
@@ -427,14 +427,14 @@ Zie [ACP-agenten](/nl/tools/acp-agents) voor gedeeld ACP-koppelingsgedrag.
     ```
 
     Gebruik SSH-sleutels zodat zowel SSH als SCP niet-interactief zijn.
-    Zorg eerst dat de hostsleutel wordt vertrouwd (bijvoorbeeld `ssh bot@mac-mini.tailnet-1234.ts.net`) zodat `known_hosts` wordt gevuld.
+    Zorg dat de hostsleutel eerst wordt vertrouwd (bijvoorbeeld `ssh bot@mac-mini.tailnet-1234.ts.net`) zodat `known_hosts` wordt gevuld.
 
   </Accordion>
 
   <Accordion title="Multi-accountpatroon">
     iMessage ondersteunt configuratie per account onder `channels.imessage.accounts`.
 
-    Elk account kan velden overschrijven zoals `cliPath`, `dbPath`, `allowFrom`, `groupPolicy`, `mediaMaxMb`, geschiedenisinstellingen en allowlists voor bijlageroots.
+    Elk account kan velden overschrijven zoals `cliPath`, `dbPath`, `allowFrom`, `groupPolicy`, `mediaMaxMb`, geschiedenisinstellingen en allowlists voor bijlage-roots.
 
   </Accordion>
 </AccordionGroup>
@@ -443,7 +443,7 @@ Zie [ACP-agenten](/nl/tools/acp-agents) voor gedeeld ACP-koppelingsgedrag.
 
 <AccordionGroup>
   <Accordion title="Bijlagen en media">
-    - verwerking van binnenkomende bijlagen staat **standaard uit** — stel `channels.imessage.includeAttachments: true` in om foto's, spraakmemo's, video's en andere bijlagen naar de agent door te sturen. Als dit is uitgeschakeld, worden iMessages die alleen uit bijlagen bestaan verwijderd voordat ze de agent bereiken en produceren ze mogelijk helemaal geen logregel `Inbound message`.
+    - inkomende bijlage-ingestie staat **standaard uit** — stel `channels.imessage.includeAttachments: true` in om foto's, spraakmemo's, video en andere bijlagen naar de agent door te sturen. Als dit is uitgeschakeld, worden iMessages die alleen uit bijlagen bestaan verwijderd voordat ze de agent bereiken en produceren ze mogelijk helemaal geen logregel `Inbound message`.
     - externe bijlagepaden kunnen via SCP worden opgehaald wanneer `remoteHost` is ingesteld
     - bijlagepaden moeten overeenkomen met toegestane roots:
       - `channels.imessage.attachmentRoots` (lokaal)
@@ -458,12 +458,12 @@ Zie [ACP-agenten](/nl/tools/acp-agents) voor gedeeld ACP-koppelingsgedrag.
     - tekstchunklimiet: `channels.imessage.textChunkLimit` (standaard 4000)
     - chunkmodus: `channels.imessage.chunkMode`
       - `length` (standaard)
-      - `newline` (splitsen met alinea's eerst)
+      - `newline` (alinea-eerst splitsen)
 
   </Accordion>
 
   <Accordion title="Adresseringsindelingen">
-    Aanbevolen expliciete doelen:
+    Voorkeursdoelen met expliciete notatie:
 
     - `chat_id:123` (aanbevolen voor stabiele routering)
     - `chat_guid:...`
@@ -484,7 +484,7 @@ Zie [ACP-agenten](/nl/tools/acp-agents) voor gedeeld ACP-koppelingsgedrag.
 
 ## Private API-acties
 
-Wanneer `imsg launch` draait en `openclaw channels status --probe` `privateApi.available: true` rapporteert, kan de berichttool naast normale tekstverzending ook iMessage-native acties gebruiken.
+Wanneer `imsg launch` draait en `openclaw channels status --probe` `privateApi.available: true` rapporteert, kan de berichttool iMessage-native acties gebruiken naast normale tekstverzendingen.
 
 ```json5
 {
@@ -510,28 +510,28 @@ Wanneer `imsg launch` draait en `openclaw channels status --probe` `privateApi.a
 
 <AccordionGroup>
   <Accordion title="Beschikbare acties">
-    - **react**: Voeg iMessage-tapbacks toe of verwijder ze (`messageId`, `emoji`, `remove`). Ondersteunde tapbacks mappen naar love, like, dislike, laugh, emphasize en question.
-    - **reply**: Verstuur een threaded antwoord naar een bestaand bericht (`messageId`, `text` of `message`, plus `chatGuid`, `chatId`, `chatIdentifier` of `to`).
-    - **sendWithEffect**: Verstuur tekst met een iMessage-effect (`text` of `message`, `effect` of `effectId`).
-    - **edit**: Bewerk een verzonden bericht op ondersteunde macOS/private API-versies (`messageId`, `text` of `newText`).
-    - **unsend**: Trek een verzonden bericht in op ondersteunde macOS/private API-versies (`messageId`).
-    - **upload-file**: Verstuur media/bestanden (`buffer` als base64 of een gehydrateerde `media`/`path`/`filePath`, `filename`, optioneel `asVoice`). Legacy-alias: `sendAttachment`.
+    - **react**: Voeg iMessage-tapbacks toe of verwijder ze (`messageId`, `emoji`, `remove`). Ondersteunde tapbacks worden gekoppeld aan love, like, dislike, laugh, emphasize en question.
+    - **reply**: Stuur een threaded antwoord naar een bestaand bericht (`messageId`, `text` of `message`, plus `chatGuid`, `chatId`, `chatIdentifier` of `to`).
+    - **sendWithEffect**: Stuur tekst met een iMessage-effect (`text` of `message`, `effect` of `effectId`).
+    - **edit**: Bewerk een verzonden bericht op ondersteunde macOS-/Private API-versies (`messageId`, `text` of `newText`).
+    - **unsend**: Trek een verzonden bericht in op ondersteunde macOS-/Private API-versies (`messageId`).
+    - **upload-file**: Stuur media/bestanden (`buffer` als base64 of een gehydrateerde `media`/`path`/`filePath`, `filename`, optioneel `asVoice`). Verouderde alias: `sendAttachment`.
     - **renameGroup**, **setGroupIcon**, **addParticipant**, **removeParticipant**, **leaveGroup**: Beheer groepschats wanneer het huidige doel een groepsgesprek is.
 
   </Accordion>
 
   <Accordion title="Bericht-ID's">
-    Binnenkomende iMessage-context bevat zowel korte `MessageSid`-waarden als volledige bericht-GUID's wanneer beschikbaar. Korte ID's zijn beperkt tot de recente in-memory antwoordcache en worden voor gebruik gecontroleerd tegen de huidige chat. Als een korte ID is verlopen of bij een andere chat hoort, probeer het opnieuw met de volledige `MessageSidFull`.
+    Inkomende iMessage-context bevat zowel korte `MessageSid`-waarden als volledige bericht-GUID's wanneer beschikbaar. Korte ID's zijn beperkt tot de recente in-memory antwoordcache en worden voor gebruik gecontroleerd tegen de huidige chat. Als een korte ID is verlopen of bij een andere chat hoort, probeer het opnieuw met de volledige `MessageSidFull`.
 
   </Accordion>
 
-  <Accordion title="Capabiliteitsdetectie">
-    OpenClaw verbergt private API-acties alleen wanneer de gecachete probestatus zegt dat de bridge niet beschikbaar is. Als de status onbekend is, blijven acties zichtbaar en voeren dispatches lui probes uit zodat de eerste actie kan slagen na `imsg launch` zonder afzonderlijke handmatige statusverversing.
+  <Accordion title="Capability-detectie">
+    OpenClaw verbergt Private API-acties alleen wanneer de gecachete probestatus zegt dat de bridge niet beschikbaar is. Als de status onbekend is, blijven acties zichtbaar en voeren dispatches probes lazy uit, zodat de eerste actie kan slagen na `imsg launch` zonder aparte handmatige statusverversing.
 
   </Accordion>
 
-  <Accordion title="Leesbewijzen en typen">
-    Wanneer de private API-bridge actief is, worden geaccepteerde binnenkomende chats als gelezen gemarkeerd voordat ze worden gedispatcht en wordt een typballon aan de afzender getoond terwijl de agent genereert. Schakel leesmarkering uit met:
+  <Accordion title="Leesbevestigingen en typen">
+    Wanneer de Private API-bridge actief is, worden geaccepteerde inkomende chats als gelezen gemarkeerd voor dispatch en wordt er een typballon aan de afzender getoond terwijl de agent genereert. Schakel leesmarkering uit met:
 
     ```json5
     {
@@ -543,14 +543,27 @@ Wanneer `imsg launch` draait en `openclaw channels status --probe` `privateApi.a
     }
     ```
 
-    Oudere `imsg`-builds van voor de capabiliteitslijst per methode schakelen typen/lezen stilletjes uit; OpenClaw logt een eenmalige waarschuwing per herstart zodat het ontbrekende leesbewijs verklaarbaar is.
+    Oudere `imsg`-builds van voor de capabilitylijst per methode schakelen typen/lezen stilzwijgend uit; OpenClaw logt een eenmalige waarschuwing per herstart zodat de ontbrekende ontvangstbevestiging te herleiden is.
+
+  </Accordion>
+
+  <Accordion title="Inkomende tapbacks">
+    OpenClaw abonneert zich op iMessage-tapbacks en routeert geaccepteerde reacties als systeemgebeurtenissen in plaats van normale berichttekst, zodat een tapback van een gebruiker geen gewone antwoordlus activeert.
+
+    Notificatiemodus wordt geregeld door `channels.imessage.reactionNotifications`:
+
+    - `"own"` (standaard): meld alleen wanneer gebruikers reageren op berichten die door de bot zijn geschreven.
+    - `"all"`: meld alle inkomende tapbacks van geautoriseerde afzenders.
+    - `"off"`: negeer inkomende tapbacks.
+
+    Overschrijvingen per account gebruiken `channels.imessage.accounts.<id>.reactionNotifications`.
 
   </Accordion>
 </AccordionGroup>
 
-## Configuratiewrites
+## Config writes
 
-iMessage staat standaard door het kanaal geinitieerde configuratiewrites toe (voor `/config set|unset` wanneer `commands.config: true`).
+iMessage staat kanaal-geinitieerde configuratieschrijfacties standaard toe (voor `/config set|unset` wanneer `commands.config: true`).
 
 Uitschakelen:
 
@@ -566,29 +579,29 @@ Uitschakelen:
 
 <a id="coalescing-split-send-dms-command--url-in-one-composition"></a>
 
-## Gesplitst verzonden DM's samenvoegen (commando + URL in een compositie)
+## Split-send-DM's samenvoegen (opdracht + URL in een compositie)
 
-Wanneer een gebruiker een commando en een URL samen typt — bijvoorbeeld `Dump https://example.com/article` — splitst Apple's Messages-app de verzending in **twee afzonderlijke `chat.db`-rijen**:
+Wanneer een gebruiker een opdracht en een URL samen typt — bijvoorbeeld `Dump https://example.com/article` — splitst Apple's Messages-app de verzending in **twee afzonderlijke `chat.db`-rijen**:
 
 1. Een tekstbericht (`"Dump"`).
 2. Een URL-previewballon (`"https://..."`) met OG-previewafbeeldingen als bijlagen.
 
-De twee rijen komen op de meeste setups ongeveer 0,8-2,0 s na elkaar aan bij OpenClaw. Zonder samenvoegen ontvangt de agent alleen het commando in beurt 1, antwoordt (vaak "stuur me de URL") en ziet de URL pas in beurt 2 — op dat moment is de commandocontext al verloren. Dit is Apple's verzendpipeline, niet iets dat OpenClaw of `imsg` introduceert.
+De twee rijen komen op de meeste setups ~0,8-2,0 s na elkaar binnen bij OpenClaw. Zonder samenvoegen ontvangt de agent de opdracht alleen in beurt 1, antwoordt (vaak "stuur me de URL") en ziet de URL pas in beurt 2 — waarna de opdrachtcontext al verloren is. Dit is Apple's verzendpipeline, niet iets dat OpenClaw of `imsg` introduceert.
 
-`channels.imessage.coalesceSameSenderDms` laat een DM opeenvolgende rijen van dezelfde afzender samenvoegen tot een enkele agentbeurt. Groepschats blijven per bericht dispatchen zodat de beurtstructuur met meerdere gebruikers behouden blijft.
+`channels.imessage.coalesceSameSenderDms` meldt een DM aan voor het samenvoegen van opeenvolgende rijen van dezelfde afzender tot één agentbeurt. Groepschats blijven per bericht dispatchen zodat de beurtstructuur met meerdere gebruikers behouden blijft.
 
 <Tabs>
   <Tab title="Wanneer inschakelen">
-    Schakel dit in wanneer:
+    Schakel in wanneer:
 
-    - Je Skills levert die `command + payload` in een bericht verwachten (dump, paste, save, queue, enz.).
-    - Je gebruikers URL's, afbeeldingen of lange inhoud naast commando's plakken.
+    - Je Skills levert die `command + payload` in één bericht verwachten (dump, paste, save, queue, enz.).
+    - Je gebruikers URL's, afbeeldingen of lange content naast opdrachten plakken.
     - Je de extra DM-beurtlatentie kunt accepteren (zie hieronder).
 
-    Laat dit uitgeschakeld wanneer:
+    Laat uitgeschakeld wanneer:
 
-    - Je minimale commandolatentie nodig hebt voor DM-triggers van een woord.
-    - Al je flows eenmalige commando's zonder payload-follow-ups zijn.
+    - Je minimale opdrachtlatentie nodig hebt voor DM-triggers van één woord.
+    - Al je flows eenmalige opdrachten zijn zonder payload-vervolgen.
 
   </Tab>
   <Tab title="Inschakelen">
@@ -602,7 +615,7 @@ De twee rijen komen op de meeste setups ongeveer 0,8-2,0 s na elkaar aan bij Ope
     }
     ```
 
-    Met de vlag ingeschakeld en zonder expliciete `messages.inbound.byChannel.imessage` wordt het debounce-venster verbreed naar **2500 ms** (de verouderde standaard is 0 ms — geen debouncing). Het bredere venster is vereist omdat Apples split-send-cadans van 0,8-2,0 s niet in een strakkere standaard past.
+    Met de vlag aan en zonder expliciete `messages.inbound.byChannel.imessage` wordt het debounce-venster verbreed naar **2500 ms** (de legacy-standaard is 0 ms — geen debouncing). Het bredere venster is vereist omdat Apple's split-send-cadans van 0,8-2,0 s niet in een strakkere standaard past.
 
     Om het venster zelf af te stemmen:
 
@@ -623,31 +636,31 @@ De twee rijen komen op de meeste setups ongeveer 0,8-2,0 s na elkaar aan bij Ope
 
   </Tab>
   <Tab title="Afwegingen">
-    - **Toegevoegde latentie voor DM-berichten.** Met de vlag ingeschakeld wacht elke DM (inclusief zelfstandige besturingsopdrachten en opvolgingen met één tekstbericht) maximaal het debounce-venster voordat deze wordt verzonden, voor het geval er een payload-rij aankomt. Groepchatberichten blijven direct verzonden worden.
-    - **Samengevoegde uitvoer is begrensd.** Samengevoegde tekst is begrensd op 4000 tekens met een expliciete markering `…[truncated]`; bijlagen zijn begrensd op 20; bronitems zijn begrensd op 10 (eerste-plus-laatste worden daarna behouden). Elke bron-GUID wordt bijgehouden in `coalescedMessageGuids` voor downstream telemetrie.
-    - **Alleen DM.** Groepchats vallen terug op verzending per bericht, zodat de bot responsief blijft wanneer meerdere mensen typen.
-    - **Opt-in, per kanaal.** Andere kanalen (Telegram, WhatsApp, Slack, …) worden niet beïnvloed. Verouderde BlueBubbles-configuraties die `channels.bluebubbles.coalesceSameSenderDms` instellen, moeten die waarde migreren naar `channels.imessage.coalesceSameSenderDms`.
+    - **Extra latentie voor DM-berichten.** Met de vlag aan wacht elke DM (inclusief zelfstandige besturingsopdrachten en single-text vervolgen) maximaal tot het debounce-venster voordat deze wordt gedispatcht, voor het geval er een payload-rij aankomt. Groepschatberichten blijven direct dispatchen.
+    - **Samengevoegde uitvoer is begrensd.** Samengevoegde tekst is begrensd op 4000 tekens met een expliciete `…[truncated]`-markering; bijlagen zijn begrensd op 20; bronitems zijn begrensd op 10 (eerste-plus-laatste worden daarboven behouden). Elke bron-GUID wordt bijgehouden in `coalescedMessageGuids` voor downstream-telemetrie.
+    - **Alleen DM.** Groepschats vallen terug naar dispatch per bericht zodat de bot responsief blijft wanneer meerdere mensen typen.
+    - **Opt-in, per kanaal.** Andere kanalen (Telegram, WhatsApp, Slack, …) worden niet beïnvloed. Legacy BlueBubbles-configuraties die `channels.bluebubbles.coalesceSameSenderDms` instellen, moeten die waarde migreren naar `channels.imessage.coalesceSameSenderDms`.
 
   </Tab>
 </Tabs>
 
 ### Scenario's en wat de agent ziet
 
-| Gebruiker stelt op                                                 | `chat.db` produceert  | Vlag uit (standaard)                    | Vlag aan + venster van 2500 ms                                          |
+| Gebruiker stelt op                                                | `chat.db` produceert  | Vlag uit (standaard)                    | Vlag aan + venster van 2500 ms                                          |
 | ------------------------------------------------------------------ | --------------------- | --------------------------------------- | ----------------------------------------------------------------------- |
 | `Dump https://example.com` (één verzending)                        | 2 rijen ~1 s uit elkaar | Twee agentbeurten: alleen "Dump", daarna URL | Eén beurt: samengevoegde tekst `Dump https://example.com`               |
-| `Save this 📎image.jpg caption` (bijlage + tekst)                  | 2 rijen               | Twee beurten (bijlage verwijderd bij samenvoeging) | Eén beurt: tekst + afbeelding behouden                                  |
-| `/status` (zelfstandige opdracht)                                  | 1 rij                 | Directe verzending                      | **Wacht maximaal venster, verzend daarna**                              |
-| Alleen geplakte URL                                                | 1 rij                 | Directe verzending                      | Directe verzending (slechts één item in bucket)                         |
-| Tekst + URL verzonden als twee bewuste afzonderlijke berichten, minuten uit elkaar | 2 rijen buiten venster | Twee beurten                            | Twee beurten (venster verloopt ertussen)                                |
-| Snelle stroom (>10 kleine DM's binnen venster)                     | N rijen               | N beurten                               | Eén beurt, begrensde uitvoer (eerste + laatste, tekst-/bijlagelimieten toegepast) |
-| Twee mensen typen in een groepchat                                 | N rijen van M afzenders | M+ beurten (één per afzenderbucket)     | M+ beurten — groepchats worden niet samengevoegd                        |
+| `Save this 📎image.jpg caption` (bijlage + tekst)                  | 2 rijen               | Twee beurten (bijlage weggevallen bij samenvoeging) | Eén beurt: tekst + afbeelding behouden                                  |
+| `/status` (zelfstandige opdracht)                                  | 1 rij                 | Directe dispatch                        | **Wacht maximaal tot venster, dispatch dan**                            |
+| Alleen URL geplakt                                                 | 1 rij                 | Directe dispatch                        | Directe dispatch (slechts één item in bucket)                           |
+| Tekst + URL verzonden als twee opzettelijk afzonderlijke berichten, minuten uit elkaar | 2 rijen buiten venster | Twee beurten                            | Twee beurten (venster verloopt ertussen)                                |
+| Snelle flood (>10 kleine DM's binnen venster)                      | N rijen               | N beurten                               | Eén beurt, begrensde uitvoer (eerste + laatste, tekst-/bijlagelimieten toegepast) |
+| Twee mensen typen in een groepschat                                | N rijen van M afzenders | M+ beurten (één per afzender-bucket)    | M+ beurten — groepschats worden niet samengevoegd                       |
 
-## Inhalen na downtime van de Gateway
+## Inhalen na Gateway-downtime
 
-Wanneer de Gateway offline is (crash, herstart, Mac-sluimerstand, machine uit), hervat `imsg watch` vanaf de huidige `chat.db`-status zodra de Gateway weer beschikbaar is — alles wat tijdens het gat is aangekomen, wordt standaard nooit gezien. Inhalen speelt die berichten opnieuw af bij de volgende start, zodat de agent geen inkomend verkeer stilletjes mist.
+Wanneer de Gateway offline is (crash, herstart, Mac-slaapstand, machine uit), hervat `imsg watch` vanuit de huidige `chat.db`-status zodra de Gateway weer opkomt — alles wat tijdens het gat is aangekomen, wordt standaard nooit gezien. Catchup speelt die berichten opnieuw af bij de volgende startup zodat de agent geen inbound verkeer stilzwijgend mist.
 
-Inhalen is **standaard uitgeschakeld**. Schakel het per kanaal in:
+Catchup is **standaard uitgeschakeld**. Schakel het per kanaal in:
 
 ```ts
 channels: {
@@ -665,13 +678,13 @@ channels: {
 
 ### Hoe het draait
 
-Eén pass per start van `monitorIMessageProvider`, in de volgorde `imsg launch` gereed → `watch.subscribe` → `performIMessageCatchup` → live verzendlus. Inhalen zelf gebruikt `chats.list` + per-chat `messages.history` tegen dezelfde JSON-RPC-client die door `imsg watch` wordt gebruikt. Alles wat tijdens de inhaalpass aankomt, loopt normaal via live verzending; de bestaande inbound-dedupe-cache absorbeert eventuele overlap met opnieuw afgespeelde rijen.
+Eén passage per `monitorIMessageProvider`-startup, gesequenced als `imsg launch` klaar → `watch.subscribe` → `performIMessageCatchup` → live dispatch-loop. Catchup zelf gebruikt `chats.list` + per-chat `messages.history` tegen dezelfde JSON-RPC-client die door `imsg watch` wordt gebruikt. Alles wat tijdens de catchup-passage aankomt, loopt normaal door live dispatch; de bestaande inbound-dedupe-cache absorbeert eventuele overlap met opnieuw afgespeelde rijen.
 
-Elke opnieuw afgespeelde rij wordt door het live verzendpad geleid (`evaluateIMessageInbound` + `dispatchInboundMessage`), zodat allowlists, groepsbeleid, debouncer, echo-cache en leesbevestigingen identiek werken voor opnieuw afgespeelde en live berichten.
+Elke opnieuw afgespeelde rij wordt door het live dispatch-pad gevoerd (`evaluateIMessageInbound` + `dispatchInboundMessage`), zodat allowlists, groepsbeleid, debouncer, echo-cache en leesbewijzen zich identiek gedragen bij opnieuw afgespeelde en live berichten.
 
 ### Cursor- en retrysemantiek
 
-Inhalen bewaart een cursor per account op `<openclawStateDir>/imessage/catchup/<account>__<hash>.json` (de OpenClaw-statusmap is standaard `~/.openclaw`, te overschrijven met `OPENCLAW_STATE_DIR`):
+Catchup bewaart een cursor per account op `<openclawStateDir>/imessage/catchup/<account>__<hash>.json` (de OpenClaw-statusmap is standaard `~/.openclaw`, te overschrijven met `OPENCLAW_STATE_DIR`):
 
 ```json
 {
@@ -682,11 +695,11 @@ Inhalen bewaart een cursor per account op `<openclawStateDir>/imessage/catchup/<
 }
 ```
 
-- De cursor schuift op na elke succesvolle verzending en blijft staan wanneer de verzending van een rij een fout gooit — de volgende start probeert dezelfde rij opnieuw vanaf de vastgehouden cursor.
-- Na `maxFailureRetries` opeenvolgende fouten voor dezelfde `guid` logt inhalen een `warn` en schuift de cursor geforceerd voorbij het vastgelopen bericht, zodat volgende starts voortgang kunnen maken.
-- GUID's die al zijn opgegeven, worden bij latere runs bij het zien overgeslagen (geen verzendpoging) en meegeteld onder `skippedGivenUp` in de runsamenvatting.
+- De cursor gaat vooruit bij elke succesvolle dispatch en blijft staan wanneer de dispatch van een rij een fout gooit — de volgende startup probeert dezelfde rij opnieuw vanaf de vastgehouden cursor.
+- Na `maxFailureRetries` opeenvolgende throws tegen dezelfde `guid` logt catchup een `warn` en dwingt de cursor voorbij het vastgelopen bericht, zodat latere startups voortgang kunnen boeken.
+- GUID's die al zijn opgegeven, worden bij zicht overgeslagen (geen dispatchpoging) bij latere runs en meegeteld onder `skippedGivenUp` in de runsamenvatting.
 
-### Voor operators zichtbare signalen
+### Operator-zichtbare signalen
 
 ```
 imessage catchup: replayed=N skippedFromMe=… skippedGivenUp=… failed=… givenUp=… fetchedCount=…
@@ -694,14 +707,14 @@ imessage catchup: giving up on guid=<guid> after <N> failures; advancing cursor 
 imessage catchup: fetched <X> rows across chats, capped to perRunLimit=<Y>
 ```
 
-Een regel `WARN ... capped to perRunLimit` betekent dat één start de volledige backlog niet heeft leeggemaakt. Verhoog `perRunLimit` (max. 500) als je gaten regelmatig groter zijn dan de standaardpass van 50 rijen.
+Een regel `WARN ... capped to perRunLimit` betekent dat één startup niet de volledige backlog heeft leeggemaakt. Verhoog `perRunLimit` (max 500) als je gaten regelmatig de standaardpassage van 50 rijen overschrijden.
 
 ### Wanneer je het uit laat
 
-- Gateway draait continu met watchdog-autoherstart en gaten zijn altijd < een paar seconden — de standaard uitgeschakelde stand is prima.
-- DM-volume is laag en gemiste berichten zouden het agentgedrag niet wijzigen — het initiële venster `firstRunLookbackMinutes` kan verrassende oude context verzenden bij de eerste inschakeling.
+- Gateway draait continu met watchdog-autoherstart en gaten zijn altijd < enkele seconden — de standaard uit-instelling is prima.
+- DM-volume is laag en gemiste berichten zouden het agentgedrag niet veranderen — het initiële venster `firstRunLookbackMinutes` kan bij de eerste inschakeling verrassende oude context dispatchen.
 
-Wanneer je inhalen inschakelt, kijkt de eerste start zonder cursor alleen `firstRunLookbackMinutes` terug (standaard 30 min), niet het volledige venster `maxAgeMinutes` — dit voorkomt het opnieuw afspelen van een lange geschiedenis aan berichten van vóór inschakeling.
+Wanneer je catchup inschakelt, kijkt de eerste startup zonder cursor slechts `firstRunLookbackMinutes` terug (standaard 30 min), niet het volledige `maxAgeMinutes`-venster — dit voorkomt het opnieuw afspelen van een lange geschiedenis van berichten van vóór inschakeling.
 
 ## Probleemoplossing
 
@@ -715,12 +728,12 @@ Wanneer je inhalen inschakelt, kijkt de eerste start zonder cursor alleen `first
     openclaw channels status --probe
     ```
 
-    Als de probe meldt dat RPC niet wordt ondersteund, werk `imsg` bij. Als private API-acties niet beschikbaar zijn, voer `imsg launch` uit in de ingelogde macOS-gebruikerssessie en voer de probe opnieuw uit. Als de Gateway niet op macOS draait, gebruik dan in plaats van het standaard lokale `imsg`-pad de configuratie Remote Mac over SSH hierboven.
+    Als probe meldt dat RPC niet wordt ondersteund, werk `imsg` bij. Als privé-API-acties niet beschikbaar zijn, voer `imsg launch` uit in de ingelogde macOS-gebruikerssessie en probe opnieuw. Als de Gateway niet op macOS draait, gebruik dan de Remote Mac over SSH-setup hierboven in plaats van het standaard lokale `imsg`-pad.
 
   </Accordion>
 
   <Accordion title="Gateway draait niet op macOS">
-    Het standaard `cliPath: "imsg"` moet draaien op de Mac die bij Berichten is ingelogd. Stel op Linux of Windows `channels.imessage.cliPath` in op een wrapperscript dat via SSH naar die Mac gaat en `imsg "$@"` uitvoert.
+    De standaard `cliPath: "imsg"` moet draaien op de Mac die bij Berichten is ingelogd. Stel op Linux of Windows `channels.imessage.cliPath` in op een wrapperscript dat via SSH naar die Mac gaat en `imsg "$@"` uitvoert.
 
 ```bash
 #!/usr/bin/env bash
@@ -765,7 +778,7 @@ openclaw channels status --probe --channel imessage
 
   </Accordion>
 
-  <Accordion title="macOS-permissieprompts zijn gemist">
+  <Accordion title="macOS-toestemmingsprompts zijn gemist">
     Voer opnieuw uit in een interactieve GUI-terminal in dezelfde gebruikers-/sessiecontext en keur prompts goed:
 
     ```bash
@@ -773,23 +786,23 @@ openclaw channels status --probe --channel imessage
     imsg send <handle> "test"
     ```
 
-    Bevestig dat Volledige schijftoegang + Automatisering zijn toegekend voor de procescontext die OpenClaw/`imsg` uitvoert.
+    Bevestig dat Full Disk Access + Automation zijn toegekend voor de procescontext die OpenClaw/`imsg` uitvoert.
 
   </Accordion>
 </AccordionGroup>
 
-## Verwijzingen naar configuratiereferentie
+## Configuratiereferentieverwijzingen
 
 - [Configuratiereferentie - iMessage](/nl/gateway/config-channels#imessage)
 - [Gateway-configuratie](/nl/gateway/configuration)
-- [Koppelen](/nl/channels/pairing)
+- [Koppeling](/nl/channels/pairing)
 
 ## Gerelateerd
 
 - [Kanalenoverzicht](/nl/channels) — alle ondersteunde kanalen
-- [Verwijdering van BlueBubbles en het imsg iMessage-pad](/nl/announcements/bluebubbles-imessage) — aankondiging en migratiesamenvatting
-- [Afkomstig van BlueBubbles](/nl/channels/imessage-from-bluebubbles) — configuratievertaaltabel en stapsgewijze overgang
-- [Koppelen](/nl/channels/pairing) — DM-authenticatie en koppelingsflow
-- [Groepen](/nl/channels/groups) — groepchatgedrag en vermeldingsafscherming
+- [BlueBubbles-verwijdering en het imsg iMessage-pad](/nl/announcements/bluebubbles-imessage) — aankondiging en migratiesamenvatting
+- [Overstappen vanaf BlueBubbles](/nl/channels/imessage-from-bluebubbles) — configuratievertalingstabel en stapsgewijze overgang
+- [Koppeling](/nl/channels/pairing) — DM-authenticatie en koppelingsflow
+- [Groepen](/nl/channels/groups) — groepschatgedrag en vermeldingsgating
 - [Kanaalroutering](/nl/channels/channel-routing) — sessieroutering voor berichten
 - [Beveiliging](/nl/gateway/security) — toegangsmodel en hardening

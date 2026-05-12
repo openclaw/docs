@@ -2,17 +2,17 @@
 summary: เปลี่ยนเส้นทางไปยัง /automation
 title: Cron เทียบกับ Heartbeat
 x-i18n:
-    generated_at: "2026-04-30T09:34:39Z"
+    generated_at: "2026-05-12T00:55:53Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 4a4951f926f9050a9bd33b338cf4cd1869d73b9c3e7222349ea8265b959f41b4
+    source_hash: a93d407245c1dcf2632198c5f1c53406e6b8fc419250ff9901d55e59716c7f0d
     source_path: automation/cron-vs-heartbeat.md
     workflow: 16
 ---
 
-คู่มือการตัดสินใจสำหรับ Cron เทียบกับ Heartbeat อยู่ใน [ระบบอัตโนมัติและงาน](/th/automation)
+คู่มือช่วยตัดสินใจสำหรับ Cron กับ Heartbeat อยู่ภายใต้[ระบบอัตโนมัติ](/th/automation)
 
 ## ที่เกี่ยวข้อง
 
-- [งานที่กำหนดเวลาไว้](/th/automation/cron-jobs)
+- [งานตามกำหนดเวลา](/th/automation/cron-jobs)
 - [งานเบื้องหลัง](/th/automation/tasks)
