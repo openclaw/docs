@@ -1,0 +1,88 @@
+---
+read_when:
+    - Connexion à ClawHub
+    - Utilisation de la CLI ClawHub
+    - Débogage des erreurs 401
+summary: Connexion à ClawHub, jetons d’API, connexion à la CLI, stockage des jetons et révocation.
+x-i18n:
+    generated_at: "2026-05-12T04:09:22Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 261f5a93200db8415e3bc8f35251c3486110ce8e076c482e846ad11f2ccd517f
+    source_path: clawhub/auth.md
+    workflow: 16
+---
+
+# Authentification
+
+ClawHub utilise GitHub pour la connexion web. La CLI utilise les jetons d’API ClawHub créés
+au moyen de ce compte connecté.
+
+## Connexion web
+
+Utilisez GitHub pour vous connecter sur [clawhub.ai](https://clawhub.ai).
+
+Les comptes supprimés, bannis ou désactivés ne peuvent pas effectuer la connexion ClawHub normale.
+Si la connexion vous ramène à un état déconnecté, votre compte n’est peut-être pas en règle.
+
+## Connexion à la CLI
+
+Le flux de connexion CLI par défaut ouvre votre navigateur :
+
+```bash
+clawhub login
+clawhub whoami
+```
+
+Ce qui se passe :
+
+1. La CLI démarre un serveur de rappel temporaire sur `127.0.0.1`.
+2. Votre navigateur ouvre la page de connexion ClawHub.
+3. Après la connexion GitHub, ClawHub crée un jeton d’API.
+4. Le navigateur redirige vers le rappel local.
+5. La CLI stocke le jeton dans votre fichier de configuration ClawHub.
+
+Si votre navigateur ne peut pas atteindre le rappel local à cause de règles de pare-feu, de VPN ou
+de proxy, utilisez le flux de jeton sans interface graphique.
+
+## Connexion sans interface graphique
+
+Créez un jeton dans l’interface web de ClawHub, puis transmettez-le à la CLI :
+
+```bash
+clawhub login --token clh_...
+```
+
+Utilisez ce flux pour les serveurs, les tâches CI ou les environnements limités au terminal.
+
+Pour les shells distants où vous pouvez ouvrir un navigateur ailleurs, exécutez :
+
+```bash
+clawhub login --device
+```
+
+La CLI affiche un code à usage unique et attend pendant que vous l’autorisez sur
+`https://clawhub.ai/cli/device`.
+
+## Stockage des jetons
+
+Chemins de configuration par défaut :
+
+- macOS : `~/Library/Application Support/clawhub/config.json`
+- Linux/XDG : `$XDG_CONFIG_HOME/clawhub/config.json` ou `~/.config/clawhub/config.json`
+- Windows : `%APPDATA%\\clawhub\\config.json`
+
+Remplacez le chemin avec :
+
+```bash
+export CLAWHUB_CONFIG_PATH=/path/to/config.json
+```
+
+## Révocation
+
+Vous pouvez révoquer les jetons d’API dans l’interface web de ClawHub.
+
+Les jetons révoqués, invalides ou manquants renvoient `401 Unauthorized`. Connectez-vous à nouveau
+avec `clawhub login` ou fournissez un nouveau jeton avec `clawhub login --token`.
+
+Les comptes supprimés, bannis ou désactivés ne peuvent pas continuer à utiliser les jetons d’API existants.

@@ -1,0 +1,89 @@
+---
+read_when:
+    - Fazer login no ClawHub
+    - Usando a CLI do ClawHub
+    - Depurando erros 401
+summary: Login no ClawHub, tokens de API, login na CLI, armazenamento de tokens e revogação.
+x-i18n:
+    generated_at: "2026-05-12T04:09:32Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 261f5a93200db8415e3bc8f35251c3486110ce8e076c482e846ad11f2ccd517f
+    source_path: clawhub/auth.md
+    workflow: 16
+---
+
+# Autenticação
+
+ClawHub usa GitHub para login na web. A CLI usa tokens de API do ClawHub criados
+por meio dessa conta autenticada.
+
+## Login na web
+
+Use GitHub para fazer login em [clawhub.ai](https://clawhub.ai).
+
+Contas excluídas, banidas ou desabilitadas não podem concluir o login normal no ClawHub.
+Se o login retornar você para um estado desconectado, sua conta pode não estar em boa
+situação.
+
+## Login na CLI
+
+O fluxo padrão de login da CLI abre seu navegador:
+
+```bash
+clawhub login
+clawhub whoami
+```
+
+O que acontece:
+
+1. A CLI inicia um servidor de callback temporário em `127.0.0.1`.
+2. Seu navegador abre a página de login do ClawHub.
+3. Após o login com GitHub, ClawHub cria um token de API.
+4. O navegador redireciona de volta para o callback local.
+5. A CLI armazena o token no seu arquivo de configuração do ClawHub.
+
+Se seu navegador não conseguir acessar o callback local por causa de regras de firewall,
+VPN ou proxy, use o fluxo de token sem interface gráfica.
+
+## Login sem interface gráfica
+
+Crie um token na interface web do ClawHub e passe-o para a CLI:
+
+```bash
+clawhub login --token clh_...
+```
+
+Use este fluxo para servidores, tarefas de CI ou ambientes apenas com terminal.
+
+Para shells remotos em que você pode abrir um navegador em outro lugar, execute:
+
+```bash
+clawhub login --device
+```
+
+A CLI imprime um código de uso único e aguarda enquanto você o autoriza em
+`https://clawhub.ai/cli/device`.
+
+## Armazenamento de tokens
+
+Caminhos de configuração padrão:
+
+- macOS: `~/Library/Application Support/clawhub/config.json`
+- Linux/XDG: `$XDG_CONFIG_HOME/clawhub/config.json` ou `~/.config/clawhub/config.json`
+- Windows: `%APPDATA%\\clawhub\\config.json`
+
+Substitua o caminho com:
+
+```bash
+export CLAWHUB_CONFIG_PATH=/path/to/config.json
+```
+
+## Revogação
+
+Você pode revogar tokens de API na interface web do ClawHub.
+
+Tokens revogados, inválidos ou ausentes retornam `401 Unauthorized`. Faça login novamente
+com `clawhub login` ou forneça um token novo com `clawhub login --token`.
+
+Contas excluídas, banidas ou desabilitadas não podem continuar usando tokens de API existentes.
