@@ -5,41 +5,41 @@ read_when:
 summary: OpenClaw uitvoeren met vLLM (OpenAI-compatibele lokale server)
 title: vLLM
 x-i18n:
-    generated_at: "2026-04-29T23:14:09Z"
+    generated_at: "2026-05-13T05:34:00Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b638341b5138d085ed3fa781300216d5bae58b9d7e3a9edfe6cbdcdbc379c2ce
+    source_hash: 3b58fc0694fa9629ae87b6958d1ab39e484d468e6f92346f39f55316dbc09a04
     source_path: providers/vllm.md
     workflow: 16
 ---
 
-vLLM kan open-source (en sommige aangepaste) modellen aanbieden via een **OpenAI-compatibele** HTTP-API. OpenClaw maakt verbinding met vLLM via de `openai-completions`-API.
+vLLM kan open-source- en sommige aangepaste modellen aanbieden via een **OpenAI-compatibele** HTTP-API. OpenClaw maakt verbinding met vLLM via de `openai-completions`-API.
 
-OpenClaw kan beschikbare modellen ook **automatisch ontdekken** vanuit vLLM wanneer je je hiervoor aanmeldt met `VLLM_API_KEY` (elke waarde werkt als je server geen auth afdwingt) en je geen expliciete `models.providers.vllm`-vermelding definieert.
+OpenClaw kan ook beschikbare modellen van vLLM **automatisch ontdekken** wanneer je je aanmeldt met `VLLM_API_KEY` (elke waarde werkt als je server geen auth afdwingt). Gebruik `vllm/*` in `agents.defaults.models` om ontdekking dynamisch te houden wanneer je ook een aangepaste vLLM-basis-URL configureert.
 
 OpenClaw behandelt `vllm` als een lokale OpenAI-compatibele provider die
-gestreamde gebruiksadministratie ondersteunt, zodat status-/contexttokentellingen kunnen worden bijgewerkt vanuit
-`stream_options.include_usage`-antwoorden.
+gestreamde gebruiksboekhouding ondersteunt, zodat tokenaantallen voor status/context kunnen worden bijgewerkt vanuit
+`stream_options.include_usage`-responses.
 
 | Eigenschap       | Waarde                                   |
 | ---------------- | ---------------------------------------- |
 | Provider-ID      | `vllm`                                   |
 | API              | `openai-completions` (OpenAI-compatibel) |
-| Auth             | omgevingsvariabele `VLLM_API_KEY`        |
-| Standaardbasis-URL | `http://127.0.0.1:8000/v1`             |
+| Auth             | `VLLM_API_KEY`-omgevingsvariabele        |
+| Standaard basis-URL | `http://127.0.0.1:8000/v1`            |
 
 ## Aan de slag
 
 <Steps>
-  <Step title="Start vLLM met een OpenAI-compatibele server">
-    Je basis-URL moet `/v1`-eindpunten aanbieden (bijv. `/v1/models`, `/v1/chat/completions`). vLLM draait vaak op:
+  <Step title="Start vLLM with an OpenAI-compatible server">
+    Je basis-URL moet `/v1`-eindpunten beschikbaar maken (bijv. `/v1/models`, `/v1/chat/completions`). vLLM draait meestal op:
 
     ```
     http://127.0.0.1:8000/v1
     ```
 
   </Step>
-  <Step title="Stel de omgevingsvariabele voor de API-sleutel in">
+  <Step title="Set the API key environment variable">
     Elke waarde werkt als je server geen auth afdwingt:
 
     ```bash
@@ -47,7 +47,7 @@ gestreamde gebruiksadministratie ondersteunt, zodat status-/contexttokentellinge
     ```
 
   </Step>
-  <Step title="Selecteer een model">
+  <Step title="Select a model">
     Vervang dit door een van je vLLM-model-ID's:
 
     ```json5
@@ -61,25 +61,25 @@ gestreamde gebruiksadministratie ondersteunt, zodat status-/contexttokentellinge
     ```
 
   </Step>
-  <Step title="Controleer of het model beschikbaar is">
+  <Step title="Verify the model is available">
     ```bash
     openclaw models list --provider vllm
     ```
   </Step>
 </Steps>
 
-## Modeldetectie (impliciete provider)
+## Modelontdekking (impliciete provider)
 
-Wanneer `VLLM_API_KEY` is ingesteld (of er een auth-profiel bestaat) en je **geen** `models.providers.vllm` definieert, vraagt OpenClaw het volgende op:
+Wanneer `VLLM_API_KEY` is ingesteld (of er een auth-profiel bestaat) en je **geen** `models.providers.vllm` definieert, bevraagt OpenClaw:
 
 ```
 GET http://127.0.0.1:8000/v1/models
 ```
 
-en zet het de geretourneerde ID's om naar modelvermeldingen.
+en zet de geretourneerde ID's om in modelvermeldingen.
 
 <Note>
-Als je `models.providers.vllm` expliciet instelt, wordt automatische detectie overgeslagen en moet je modellen handmatig definiëren.
+Als je `models.providers.vllm` expliciet instelt, gebruikt OpenClaw standaard je gedeclareerde modellen. Voeg `"vllm/*": {}` toe aan `agents.defaults.models` wanneer je wilt dat OpenClaw het `/models`-eindpunt van die geconfigureerde provider bevraagt en alle geadverteerde vLLM-modellen opneemt.
 </Note>
 
 ## Expliciete configuratie (handmatige modellen)
@@ -89,7 +89,7 @@ Gebruik expliciete configuratie wanneer:
 - vLLM op een andere host of poort draait
 - Je `contextWindow`- of `maxTokens`-waarden wilt vastzetten
 - Je server een echte API-sleutel vereist (of je headers wilt beheren)
-- Je verbinding maakt met een vertrouwd local loopback-, LAN- of Tailscale-vLLM-eindpunt
+- Je verbinding maakt met een vertrouwd loopback-, LAN- of Tailscale-vLLM-eindpunt
 
 ```json5
 {
@@ -118,28 +118,42 @@ Gebruik expliciete configuratie wanneer:
 }
 ```
 
+Om deze provider dynamisch te houden zonder elk model handmatig te vermelden, voeg je een provider-wildcard toe aan de zichtbare modelcatalogus:
+
+```json5
+{
+  agents: {
+    defaults: {
+      models: {
+        "vllm/*": {},
+      },
+    },
+  },
+}
+```
+
 ## Geavanceerde configuratie
 
 <AccordionGroup>
-  <Accordion title="Proxy-achtig gedrag">
+  <Accordion title="Proxy-style behavior">
     vLLM wordt behandeld als een proxy-achtige OpenAI-compatibele `/v1`-backend, niet als een native
     OpenAI-eindpunt. Dit betekent:
 
     | Gedrag | Toegepast? |
     |----------|----------|
-    | Native OpenAI-aanvraagvorming | Nee |
+    | Native OpenAI-requestvorming | Nee |
     | `service_tier` | Niet verzonden |
     | Responses `store` | Niet verzonden |
     | Prompt-cachehints | Niet verzonden |
-    | OpenAI-vorming van reasoning-compatibele payload | Niet toegepast |
+    | OpenAI-reasoning-compatibele payloadvorming | Niet toegepast |
     | Verborgen OpenClaw-attributieheaders | Niet geïnjecteerd op aangepaste basis-URL's |
 
   </Accordion>
 
-  <Accordion title="Qwen-denkbesturing">
+  <Accordion title="Qwen thinking controls">
     Voor Qwen-modellen die via vLLM worden aangeboden, stel je
     `params.qwenThinkingFormat: "chat-template"` in op de modelvermelding wanneer de
-    server Qwen chat-template-kwargs verwacht. OpenClaw wijst `/think off` toe aan:
+    server Qwen-chat-template-kwargs verwacht. OpenClaw wijst `/think off` toe aan:
 
     ```json
     {
@@ -150,17 +164,17 @@ Gebruik expliciete configuratie wanneer:
     }
     ```
 
-    Niet-`off` denkniveaus verzenden `enable_thinking: true`. Als je eindpunt
-    in plaats daarvan DashScope-achtige top-level-vlaggen verwacht, gebruik dan
+    Niet-`off`-denkniveaus verzenden `enable_thinking: true`. Als je eindpunt
+    in plaats daarvan DashScope-achtige flags op topniveau verwacht, gebruik dan
     `params.qwenThinkingFormat: "top-level"` om `enable_thinking` in de
     requestroot te verzenden. Snake-case `params.qwen_thinking_format` wordt ook geaccepteerd.
 
   </Accordion>
 
-  <Accordion title="Nemotron 3-denkbesturing">
+  <Accordion title="Nemotron 3 thinking controls">
     vLLM/Nemotron 3 kan chat-template-kwargs gebruiken om te bepalen of reasoning wordt
     geretourneerd als verborgen reasoning of als zichtbare antwoordtekst. Wanneer een OpenClaw-sessie
-    `vllm/nemotron-3-*` gebruikt met denken uit, verzendt de meegeleverde vLLM-Plugin:
+    `vllm/nemotron-3-*` gebruikt met denken uit, verzendt de gebundelde vLLM-Plugin:
 
     ```json
     {
@@ -173,7 +187,7 @@ Gebruik expliciete configuratie wanneer:
 
     Om deze waarden aan te passen, stel je `chat_template_kwargs` in onder de modelparams.
     Als je ook `params.extra_body.chat_template_kwargs` instelt, heeft die waarde
-    uiteindelijke voorrang omdat `extra_body` de laatste override voor de requestbody is.
+    uiteindelijke voorrang omdat `extra_body` de laatste override van de request-body is.
 
     ```json5
     {
@@ -196,21 +210,21 @@ Gebruik expliciete configuratie wanneer:
 
   </Accordion>
 
-  <Accordion title="Qwen-toolaanroepen verschijnen als tekst">
-    Zorg er eerst voor dat vLLM is gestart met de juiste tool-call-parser en chat-
-    template voor het model. vLLM documenteert bijvoorbeeld `hermes` voor Qwen2.5-
+  <Accordion title="Qwen tool calls appear as text">
+    Controleer eerst of vLLM is gestart met de juiste tool-callparser en chat-template
+    voor het model. vLLM documenteert bijvoorbeeld `hermes` voor Qwen2.5-
     modellen en `qwen3_xml` voor Qwen3-Coder-modellen.
 
     Symptomen:
 
     - Skills of tools worden nooit uitgevoerd
-    - de assistent drukt ruwe JSON/XML af, zoals `{"name":"read","arguments":...}`
+    - de assistent print ruwe JSON/XML zoals `{"name":"read","arguments":...}`
     - vLLM retourneert een lege `tool_calls`-array wanneer OpenClaw
       `tool_choice: "auto"` verzendt
 
-    Sommige Qwen/vLLM-combinaties retourneren gestructureerde toolaanroepen alleen wanneer de
-    aanvraag `tool_choice: "required"` gebruikt. Forceer voor die modelvermeldingen het
-    OpenAI-compatibele aanvraagveld met `params.extra_body`:
+    Sommige Qwen/vLLM-combinaties retourneren alleen gestructureerde tool calls wanneer de
+    request `tool_choice: "required"` gebruikt. Forceer voor die modelvermeldingen het
+    OpenAI-compatibele requestveld met `params.extra_body`:
 
     ```json5
     {
@@ -236,22 +250,22 @@ Gebruik expliciete configuratie wanneer:
     openclaw models list --provider vllm
     ```
 
-    Je kunt dezelfde override toepassen via de CLI:
+    Je kunt dezelfde override toepassen vanuit de CLI:
 
     ```bash
     openclaw config set agents.defaults.models '{"vllm/Qwen-Qwen2.5-Coder-32B-Instruct":{"params":{"extra_body":{"tool_choice":"required"}}}}' --strict-json --merge
     ```
 
-    Dit is een opt-in compatibiliteitsoplossing. Hierdoor vereist elke modelbeurt met
-    tools een toolaanroep, dus gebruik dit alleen voor een specifieke lokale modelvermelding
+    Dit is een opt-in compatibiliteitsworkaround. Hierdoor vereist elke modelbeurt met
+    tools een tool call, dus gebruik dit alleen voor een speciale lokale modelvermelding
     waarbij dat gedrag acceptabel is. Gebruik dit niet als globale standaard voor alle
-    vLLM-modellen, en gebruik geen proxy die willekeurige
-    assistenttekst blind omzet in uitvoerbare toolaanroepen.
+    vLLM-modellen en gebruik geen proxy die willekeurige
+    assistenttekst blind omzet in uitvoerbare tool calls.
 
   </Accordion>
 
-  <Accordion title="Aangepaste basis-URL">
-    Als je vLLM-server op een niet-standaardhost of -poort draait, stel dan `baseUrl` in de expliciete providerconfiguratie in:
+  <Accordion title="Custom base URL">
+    Als je vLLM-server op een niet-standaard host of poort draait, stel je `baseUrl` in de expliciete providerconfiguratie in:
 
     ```json5
     {
@@ -285,9 +299,9 @@ Gebruik expliciete configuratie wanneer:
 ## Probleemoplossing
 
 <AccordionGroup>
-  <Accordion title="Trage eerste reactie of time-out van externe server">
-    Stel voor grote lokale modellen, externe LAN-hosts of tailnet-koppelingen een
-    providergebonden requesttime-out in:
+  <Accordion title="Slow first response or remote server timeout">
+    Stel voor grote lokale modellen, externe LAN-hosts of tailnet-links een
+    requesttimeout met providerscope in:
 
     ```json5
     {
@@ -306,14 +320,14 @@ Gebruik expliciete configuratie wanneer:
     }
     ```
 
-    `timeoutSeconds` is alleen van toepassing op HTTP-aanvragen voor vLLM-modellen, inclusief
+    `timeoutSeconds` is alleen van toepassing op HTTP-requests voor vLLM-modellen, inclusief
     het opzetten van de verbinding, responseheaders, bodystreaming en de totale
-    guarded-fetch-afbreking. Geef hier de voorkeur aan voordat je
-    `agents.defaults.timeoutSeconds` verhoogt, dat de volledige agentrun beheert.
+    bewaakte-fetch-afbreking. Geef hier de voorkeur aan voordat je
+    `agents.defaults.timeoutSeconds` verhoogt, dat de hele agentrun beheert.
 
   </Accordion>
 
-  <Accordion title="Server niet bereikbaar">
+  <Accordion title="Server not reachable">
     Controleer of de vLLM-server draait en toegankelijk is:
 
     ```bash
@@ -321,15 +335,15 @@ Gebruik expliciete configuratie wanneer:
     ```
 
     Als je een verbindingsfout ziet, controleer dan de host, poort en of vLLM is gestart met de OpenAI-compatibele servermodus.
-    Voor expliciete local loopback-, LAN- of Tailscale-eindpunten stel je ook
+    Voor expliciete loopback-, LAN- of Tailscale-eindpunten stel je ook
     `models.providers.vllm.request.allowPrivateNetwork: true` in; provider-
-    aanvragen blokkeren standaard URL's op privénetwerken, tenzij de provider
+    requests blokkeren standaard private-netwerk-URL's tenzij de provider
     expliciet wordt vertrouwd.
 
   </Accordion>
 
-  <Accordion title="Auth-fouten bij aanvragen">
-    Als aanvragen mislukken met auth-fouten, stel dan een echte `VLLM_API_KEY` in die overeenkomt met je serverconfiguratie, of configureer de provider expliciet onder `models.providers.vllm`.
+  <Accordion title="Auth errors on requests">
+    Als requests mislukken met auth-fouten, stel dan een echte `VLLM_API_KEY` in die overeenkomt met je serverconfiguratie, of configureer de provider expliciet onder `models.providers.vllm`.
 
     <Tip>
     Als je vLLM-server geen auth afdwingt, werkt elke niet-lege waarde voor `VLLM_API_KEY` als opt-in-signaal voor OpenClaw.
@@ -337,19 +351,19 @@ Gebruik expliciete configuratie wanneer:
 
   </Accordion>
 
-  <Accordion title="Geen modellen ontdekt">
-    Automatische detectie vereist dat `VLLM_API_KEY` is ingesteld **en** dat er geen expliciete `models.providers.vllm`-configuratievermelding is. Als je de provider handmatig hebt gedefinieerd, slaat OpenClaw detectie over en gebruikt het alleen je gedeclareerde modellen.
+  <Accordion title="No models discovered">
+    Automatische ontdekking vereist dat `VLLM_API_KEY` is ingesteld. Als je `models.providers.vllm` hebt gedefinieerd, gebruikt OpenClaw alleen je gedeclareerde modellen tenzij `agents.defaults.models` `"vllm/*": {}` bevat.
   </Accordion>
 
-  <Accordion title="Tools worden als ruwe tekst weergegeven">
-    Als een Qwen-model JSON/XML-toolsyntaxis afdrukt in plaats van een Skill uit te voeren,
+  <Accordion title="Tools render as raw text">
+    Als een Qwen-model JSON/XML-toolsyntaxis print in plaats van een Skill uit te voeren,
     controleer dan de Qwen-richtlijnen in Geavanceerde configuratie hierboven. De gebruikelijke oplossing is:
 
     - start vLLM met de juiste parser/template voor dat model
     - bevestig de exacte model-id met `openclaw models list --provider vllm`
-    - voeg alleen een specifieke per-model-override `params.extra_body.tool_choice: "required"` toe
-      als `tool_choice: "auto"` nog steeds lege of tekst-only
-      toolaanroepen retourneert
+    - voeg alleen een speciale per-model-override `params.extra_body.tool_choice: "required"`
+      toe als `tool_choice: "auto"` nog steeds lege of tekst-only
+      tool calls retourneert
 
   </Accordion>
 </AccordionGroup>
@@ -361,16 +375,16 @@ Meer hulp: [Probleemoplossing](/nl/help/troubleshooting) en [FAQ](/nl/help/faq).
 ## Gerelateerd
 
 <CardGroup cols={2}>
-  <Card title="Modelselectie" href="/nl/concepts/model-providers" icon="layers">
+  <Card title="Model selection" href="/nl/concepts/model-providers" icon="layers">
     Providers, modelrefs en failovergedrag kiezen.
   </Card>
   <Card title="OpenAI" href="/nl/providers/openai" icon="bolt">
     Native OpenAI-provider en OpenAI-compatibel routegedrag.
   </Card>
-  <Card title="OAuth en auth" href="/nl/gateway/authentication" icon="key">
+  <Card title="OAuth and auth" href="/nl/gateway/authentication" icon="key">
     Auth-details en regels voor hergebruik van referenties.
   </Card>
-  <Card title="Probleemoplossing" href="/nl/help/troubleshooting" icon="wrench">
+  <Card title="Troubleshooting" href="/nl/help/troubleshooting" icon="wrench">
     Veelvoorkomende problemen en hoe je ze oplost.
   </Card>
 </CardGroup>

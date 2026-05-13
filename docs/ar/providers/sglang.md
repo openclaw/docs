@@ -1,59 +1,59 @@
 ---
 read_when:
-    - تريد تشغيل OpenClaw مع خادم SGLang محلي
+    - تريد تشغيل OpenClaw باستخدام خادم SGLang محلي
     - تريد نقاط نهاية /v1 متوافقة مع OpenAI باستخدام نماذجك الخاصة
 summary: تشغيل OpenClaw باستخدام SGLang (خادم مستضاف ذاتيًا متوافق مع OpenAI)
 title: SGLang
 x-i18n:
-    generated_at: "2026-05-06T08:11:12Z"
+    generated_at: "2026-05-13T05:34:07Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3e65e38868e061e03d15348725971880ca503dc61a7425c1fbdc718fd684728f
+    source_hash: bd1a5954e3994e3640ee17c62acedc314716c3ed5e52528da436c36c077ebead
     source_path: providers/sglang.md
     workflow: 16
 ---
 
-يقدّم SGLang نماذج مفتوحة الأوزان عبر واجهة HTTP API متوافقة مع OpenAI. يتصل OpenClaw بـ SGLang باستخدام عائلة المزوّد `openai-completions` مع الاكتشاف التلقائي للنماذج المتاحة.
+توفّر SGLang النماذج مفتوحة الأوزان عبر واجهة API HTTP متوافقة مع OpenAI. يتصل OpenClaw بـ SGLang باستخدام عائلة المزوّد `openai-completions` مع الاكتشاف التلقائي للنماذج المتاحة.
 
 | الخاصية                  | القيمة                                                        |
 | ------------------------- | ------------------------------------------------------------ |
 | معرّف المزوّد               | `sglang`                                                     |
 | Plugin                    | مضمّن، `enabledByDefault: true`                            |
 | متغيّر بيئة المصادقة              | `SGLANG_API_KEY` (أي قيمة غير فارغة إذا لم تكن لدى الخادم مصادقة) |
-| علم التهيئة           | `--auth-choice sglang`                                       |
-| API                       | متوافق مع OpenAI (`openai-completions`)                     |
+| علم التهيئة الأولية           | `--auth-choice sglang`                                       |
+| API                       | متوافقة مع OpenAI (`openai-completions`)                     |
 | عنوان URL الأساسي الافتراضي          | `http://127.0.0.1:30000/v1`                                  |
-| عنصر نائب للنموذج الافتراضي | `sglang/Qwen/Qwen3-8B`                                       |
+| العنصر النائب الافتراضي للنموذج | `sglang/Qwen/Qwen3-8B`                                       |
 | استخدام البث           | نعم (`supportsStreamingUsage: true`)                         |
-| التسعير                   | معلّم كخارجي مجاني (`modelPricing.external: false`)        |
+| التسعير                   | موسوم كخارجي مجاني (`modelPricing.external: false`)        |
 
-يقوم OpenClaw أيضًا **باكتشاف** النماذج المتاحة تلقائيًا من SGLang عند الاشتراك باستخدام `SGLANG_API_KEY` وعدم تعريف إدخال `models.providers.sglang` صريح — راجع [اكتشاف النموذج (مزوّد ضمني)](#model-discovery-implicit-provider) أدناه.
+يقوم OpenClaw أيضًا **بالاكتشاف التلقائي** للنماذج المتاحة من SGLang عندما تختار ذلك باستخدام `SGLANG_API_KEY`. استخدم `sglang/*` في `agents.defaults.models` لإبقاء الاكتشاف ديناميكيًا عندما تضبط أيضًا عنوان URL أساسيًا مخصصًا لـ SGLang. راجع [اكتشاف النموذج (مزوّد ضمني)](#model-discovery-implicit-provider) أدناه.
 
 ## البدء
 
 <Steps>
-  <Step title="بدء SGLang">
-    شغّل SGLang باستخدام خادم متوافق مع OpenAI. يجب أن يكشف عنوان URL الأساسي
-    نقاط نهاية `/v1` (على سبيل المثال `/v1/models` و`/v1/chat/completions`). يعمل SGLang
-    غالبًا على:
+  <Step title="ابدأ SGLang">
+    شغّل SGLang مع خادم متوافق مع OpenAI. يجب أن يوفّر عنوان URL الأساسي لديك
+    نقاط نهاية `/v1` (على سبيل المثال `/v1/models` و`/v1/chat/completions`). تعمل SGLang
+    عادةً على:
 
     - `http://127.0.0.1:30000/v1`
 
   </Step>
-  <Step title="تعيين مفتاح API">
-    تعمل أي قيمة إذا لم تتم تهيئة المصادقة على الخادم لديك:
+  <Step title="عيّن مفتاح API">
+    تعمل أي قيمة إذا لم تكن المصادقة مضبوطة على خادمك:
 
     ```bash
     export SGLANG_API_KEY="sglang-local"
     ```
 
   </Step>
-  <Step title="تشغيل التهيئة أو تعيين نموذج مباشرة">
+  <Step title="شغّل التهيئة الأولية أو عيّن نموذجًا مباشرة">
     ```bash
     openclaw onboard
     ```
 
-    أو قم بتهيئة النموذج يدويًا:
+    أو اضبط النموذج يدويًا:
 
     ```json5
     {
@@ -70,7 +70,7 @@ x-i18n:
 
 ## اكتشاف النموذج (مزوّد ضمني)
 
-عند تعيين `SGLANG_API_KEY` (أو وجود ملف مصادقة) و**عدم**
+عند تعيين `SGLANG_API_KEY` (أو وجود ملف تعريف مصادقة) و**عدم**
 تعريف `models.providers.sglang`، سيستعلم OpenClaw عن:
 
 - `GET http://127.0.0.1:30000/v1/models`
@@ -78,15 +78,17 @@ x-i18n:
 ويحوّل المعرّفات المُعادة إلى إدخالات نماذج.
 
 <Note>
-إذا عيّنت `models.providers.sglang` صراحةً، فسيتم تخطي الاكتشاف التلقائي و
-يجب عليك تعريف النماذج يدويًا.
+إذا عيّنت `models.providers.sglang` صراحةً، يستخدم OpenClaw النماذج التي أعلنتها
+افتراضيًا. أضف `"sglang/*": {}` إلى `agents.defaults.models` عندما تريد
+أن يستعلم OpenClaw عن نقطة نهاية `/models` لذلك المزوّد المضبوط وأن يضمّن
+كل نماذج SGLang المُعلن عنها.
 </Note>
 
-## التهيئة الصريحة (النماذج اليدوية)
+## الضبط الصريح (نماذج يدوية)
 
-استخدم التهيئة الصريحة عندما:
+استخدم الضبط الصريح عندما:
 
-- يعمل SGLang على مضيف/منفذ مختلف.
+- تعمل SGLang على مضيف/منفذ مختلف.
 - تريد تثبيت قيم `contextWindow`/`maxTokens`.
 - يتطلب خادمك مفتاح API حقيقيًا (أو تريد التحكم في الرؤوس).
 
@@ -115,26 +117,26 @@ x-i18n:
 }
 ```
 
-## التهيئة المتقدمة
+## الضبط المتقدم
 
 <AccordionGroup>
-  <Accordion title="سلوك نمط الوكيل">
-    يُعامل SGLang كواجهة خلفية `/v1` متوافقة مع OpenAI وبنمط الوكيل، وليس كنقطة نهاية
-    OpenAI أصلية.
+  <Accordion title="سلوك بنمط الوكيل">
+    تُعامل SGLang كواجهة خلفية `/v1` متوافقة مع OpenAI بنمط الوكيل، وليست
+    نقطة نهاية OpenAI أصلية.
 
     | السلوك | SGLang |
     |----------|--------|
-    | تشكيل طلبات OpenAI فقط | لا يُطبّق |
-    | تلميحات `service_tier` و`store` في Responses وذاكرة التخزين المؤقت للمطالبة | لا تُرسل |
-    | تشكيل الحمولة المتوافق مع الاستدلال | لا يُطبّق |
-    | رؤوس الإسناد المخفية (`originator` و`version` و`User-Agent`) | لا تُحقن في عناوين URL أساسية مخصصة لـ SGLang |
+    | تشكيل الطلبات الخاص بـ OpenAI فقط | غير مطبّق |
+    | `service_tier`، و`store` في Responses، وتلميحات ذاكرة التخزين المؤقت للمطالبات | لا تُرسل |
+    | تشكيل حمولة توافق الاستدلال | غير مطبّق |
+    | رؤوس الإسناد المخفية (`originator`، `version`، `User-Agent`) | لا تُحقن في عناوين URL الأساسية المخصصة لـ SGLang |
 
   </Accordion>
 
   <Accordion title="استكشاف الأخطاء وإصلاحها">
-    **الخادم غير قابل للوصول**
+    **يتعذر الوصول إلى الخادم**
 
-    تحقّق من أن الخادم يعمل ويستجيب:
+    تحقق من أن الخادم يعمل ويستجيب:
 
     ```bash
     curl http://127.0.0.1:30000/v1/models
@@ -143,12 +145,12 @@ x-i18n:
     **أخطاء المصادقة**
 
     إذا فشلت الطلبات بسبب أخطاء مصادقة، فعيّن `SGLANG_API_KEY` حقيقيًا يطابق
-    تهيئة خادمك، أو قم بتهيئة المزوّد صراحةً ضمن
+    ضبط خادمك، أو اضبط المزوّد صراحةً ضمن
     `models.providers.sglang`.
 
     <Tip>
-    إذا كنت تشغّل SGLang من دون مصادقة، فإن أي قيمة غير فارغة لـ
-    `SGLANG_API_KEY` تكفي للاشتراك في اكتشاف النماذج.
+    إذا شغّلت SGLang دون مصادقة، فإن أي قيمة غير فارغة لـ
+    `SGLANG_API_KEY` تكفي لاختيار اكتشاف النماذج.
     </Tip>
 
   </Accordion>
@@ -158,9 +160,9 @@ x-i18n:
 
 <CardGroup cols={2}>
   <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
-    اختيار المزوّدين ومراجع النماذج وسلوك تجاوز الفشل.
+    اختيار المزوّدين، ومراجع النماذج، وسلوك تجاوز الفشل.
   </Card>
-  <Card title="مرجع التهيئة" href="/ar/gateway/configuration-reference" icon="gear">
-    مخطط التهيئة الكامل بما في ذلك إدخالات المزوّدين.
+  <Card title="مرجع الضبط" href="/ar/gateway/configuration-reference" icon="gear">
+    مخطط الضبط الكامل بما في ذلك إدخالات المزوّدين.
   </Card>
 </CardGroup>

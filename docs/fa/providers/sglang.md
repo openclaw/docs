@@ -1,41 +1,41 @@
 ---
 read_when:
     - می‌خواهید OpenClaw را با یک سرور محلی SGLang اجرا کنید
-    - شما نقاط پایانی سازگار با OpenAI در /v1 را برای مدل‌های خودتان می‌خواهید
+    - می‌خواهید نقاط پایانی /v1 سازگار با OpenAI را با مدل‌های خودتان داشته باشید
 summary: اجرای OpenClaw با SGLang (سرور خودمیزبان سازگار با OpenAI)
 title: SGLang
 x-i18n:
-    generated_at: "2026-05-06T09:39:46Z"
+    generated_at: "2026-05-13T05:34:07Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3e65e38868e061e03d15348725971880ca503dc61a7425c1fbdc718fd684728f
+    source_hash: bd1a5954e3994e3640ee17c62acedc314716c3ed5e52528da436c36c077ebead
     source_path: providers/sglang.md
     workflow: 16
 ---
 
-SGLang مدل‌های open-weight را از طریق یک HTTP API سازگار با OpenAI ارائه می‌کند. OpenClaw با استفاده از خانواده ارائه‌دهنده `openai-completions` و با کشف خودکار مدل‌های در دسترس به SGLang متصل می‌شود.
+SGLang مدل‌های open-weight را از طریق یک API HTTP سازگار با OpenAI ارائه می‌کند. OpenClaw با استفاده از خانوادهٔ ارائه‌دهندهٔ `openai-completions` و با کشف خودکار مدل‌های موجود به SGLang متصل می‌شود.
 
-| ویژگی                    | مقدار                                                        |
+| ویژگی                    | مقدار                                                       |
 | ------------------------- | ------------------------------------------------------------ |
-| شناسه ارائه‌دهنده         | `sglang`                                                     |
-| Plugin                    | باندل‌شده، `enabledByDefault: true`                          |
+| شناسهٔ ارائه‌دهنده        | `sglang`                                                     |
+| Plugin                    | همراه، `enabledByDefault: true`                              |
 | متغیر محیطی احراز هویت    | `SGLANG_API_KEY` (اگر سرور احراز هویت ندارد، هر مقدار غیرخالی) |
 | پرچم راه‌اندازی اولیه     | `--auth-choice sglang`                                       |
-| API                       | سازگار با OpenAI (`openai-completions`)                      |
-| URL پایه پیش‌فرض          | `http://127.0.0.1:30000/v1`                                  |
+| API                       | سازگار با OpenAI (`openai-completions`)                     |
+| URL پایهٔ پیش‌فرض         | `http://127.0.0.1:30000/v1`                                  |
 | جای‌نگهدار مدل پیش‌فرض    | `sglang/Qwen/Qwen3-8B`                                       |
-| کاربرد پخش جریانی         | بله (`supportsStreamingUsage: true`)                         |
-| قیمت‌گذاری                | به‌عنوان external-free علامت‌گذاری شده (`modelPricing.external: false`) |
+| مصرف Streaming            | بله (`supportsStreamingUsage: true`)                         |
+| قیمت‌گذاری                | به‌عنوان external-free علامت‌گذاری شده است (`modelPricing.external: false`) |
 
-OpenClaw همچنین وقتی با `SGLANG_API_KEY` فعال‌سازی می‌کنید و ورودی صریح `models.providers.sglang` تعریف نکرده‌اید، مدل‌های در دسترس را از SGLang **به‌طور خودکار کشف می‌کند** — پایین‌تر [کشف مدل (ارائه‌دهنده ضمنی)](#model-discovery-implicit-provider) را ببینید.
+OpenClaw همچنین وقتی با `SGLANG_API_KEY` اعلام آمادگی می‌کنید، مدل‌های موجود را از SGLang **به‌صورت خودکار کشف می‌کند**. وقتی یک URL پایهٔ سفارشی برای SGLang نیز پیکربندی می‌کنید، از `sglang/*` در `agents.defaults.models` استفاده کنید تا کشف مدل پویا بماند. بخش [کشف مدل (ارائه‌دهندهٔ ضمنی)](#model-discovery-implicit-provider) را در پایین ببینید.
 
-## شروع به کار
+## شروع کار
 
 <Steps>
   <Step title="SGLang را شروع کنید">
-    SGLang را با یک سرور سازگار با OpenAI اجرا کنید. URL پایه شما باید endpointهای
-    `/v1` را در دسترس بگذارد (برای مثال `/v1/models`، `/v1/chat/completions`). SGLang
-    معمولا روی این نشانی اجرا می‌شود:
+    SGLang را با یک سرور سازگار با OpenAI اجرا کنید. URL پایهٔ شما باید نقاط پایانی
+    `/v1` را در دسترس قرار دهد (برای مثال `/v1/models` و `/v1/chat/completions`). SGLang
+    معمولاً روی این نشانی اجرا می‌شود:
 
     - `http://127.0.0.1:30000/v1`
 
@@ -48,7 +48,7 @@ OpenClaw همچنین وقتی با `SGLANG_API_KEY` فعال‌سازی می‌
     ```
 
   </Step>
-  <Step title="راه‌اندازی اولیه را اجرا کنید یا مستقیما یک مدل تنظیم کنید">
+  <Step title="راه‌اندازی اولیه را اجرا کنید یا مستقیماً یک مدل تنظیم کنید">
     ```bash
     openclaw onboard
     ```
@@ -68,27 +68,29 @@ OpenClaw همچنین وقتی با `SGLANG_API_KEY` فعال‌سازی می‌
   </Step>
 </Steps>
 
-## کشف مدل (ارائه‌دهنده ضمنی)
+## کشف مدل (ارائه‌دهندهٔ ضمنی)
 
 وقتی `SGLANG_API_KEY` تنظیم شده باشد (یا یک پروفایل احراز هویت وجود داشته باشد) و شما
-`models.providers.sglang` را **تعریف نکرده باشید**، OpenClaw این درخواست را می‌فرستد:
+`models.providers.sglang` را تعریف **نکرده باشید**، OpenClaw این مورد را پرس‌وجو می‌کند:
 
 - `GET http://127.0.0.1:30000/v1/models`
 
-و شناسه‌های برگشتی را به ورودی‌های مدل تبدیل می‌کند.
+و شناسه‌های بازگردانده‌شده را به ورودی‌های مدل تبدیل می‌کند.
 
 <Note>
-اگر `models.providers.sglang` را صراحتا تنظیم کنید، کشف خودکار نادیده گرفته می‌شود و
-باید مدل‌ها را به‌صورت دستی تعریف کنید.
+اگر `models.providers.sglang` را صراحتاً تنظیم کنید، OpenClaw به‌صورت پیش‌فرض از مدل‌های
+اعلام‌شدهٔ شما استفاده می‌کند. وقتی می‌خواهید OpenClaw نقطهٔ پایانی `/models` همان
+ارائه‌دهندهٔ پیکربندی‌شده را پرس‌وجو کند و همهٔ مدل‌های اعلام‌شدهٔ SGLang را شامل شود،
+`"sglang/*": {}` را به `agents.defaults.models` اضافه کنید.
 </Note>
 
 ## پیکربندی صریح (مدل‌های دستی)
 
-وقتی از پیکربندی صریح استفاده کنید که:
+در این موارد از پیکربندی صریح استفاده کنید:
 
 - SGLang روی میزبان/درگاه متفاوتی اجرا می‌شود.
 - می‌خواهید مقادیر `contextWindow`/`maxTokens` را ثابت کنید.
-- سرور شما به یک کلید API واقعی نیاز دارد (یا می‌خواهید headerها را کنترل کنید).
+- سرور شما به یک کلید API واقعی نیاز دارد (یا می‌خواهید سرآیندها را کنترل کنید).
 
 ```json5
 {
@@ -118,23 +120,23 @@ OpenClaw همچنین وقتی با `SGLANG_API_KEY` فعال‌سازی می‌
 ## پیکربندی پیشرفته
 
 <AccordionGroup>
-  <Accordion title="رفتار به سبک پروکسی">
-    SGLang به‌عنوان یک backend سازگار با OpenAI و به سبک پروکسی برای `/v1` در نظر گرفته می‌شود، نه یک
-    endpoint بومی OpenAI.
+  <Accordion title="رفتار سبک پروکسی">
+    SGLang به‌عنوان یک backend سازگار با OpenAI و سبک پروکسی برای `/v1` در نظر گرفته می‌شود، نه یک
+    نقطهٔ پایانی بومی OpenAI.
 
     | رفتار | SGLang |
     |----------|--------|
-    | شکل‌دهی درخواست مخصوص OpenAI | اعمال نمی‌شود |
-    | `service_tier`، `store` در Responses، راهنمایی‌های prompt-cache | ارسال نمی‌شود |
+    | شکل‌دهی درخواست فقط مخصوص OpenAI | اعمال نمی‌شود |
+    | `service_tier`، Responses `store`، راهنمایی‌های prompt-cache | ارسال نمی‌شود |
     | شکل‌دهی payload سازگار با reasoning | اعمال نمی‌شود |
-    | headerهای attribution پنهان (`originator`، `version`، `User-Agent`) | روی URLهای پایه سفارشی SGLang تزریق نمی‌شود |
+    | سرآیندهای انتساب پنهان (`originator`، `version`، `User-Agent`) | روی URLهای پایهٔ سفارشی SGLang تزریق نمی‌شود |
 
   </Accordion>
 
   <Accordion title="عیب‌یابی">
     **سرور در دسترس نیست**
 
-    بررسی کنید سرور در حال اجرا است و پاسخ می‌دهد:
+    بررسی کنید سرور در حال اجراست و پاسخ می‌دهد:
 
     ```bash
     curl http://127.0.0.1:30000/v1/models
@@ -142,13 +144,13 @@ OpenClaw همچنین وقتی با `SGLANG_API_KEY` فعال‌سازی می‌
 
     **خطاهای احراز هویت**
 
-    اگر درخواست‌ها با خطاهای احراز هویت شکست می‌خورند، یک `SGLANG_API_KEY` واقعی تنظیم کنید که با
-    پیکربندی سرور شما مطابقت داشته باشد، یا ارائه‌دهنده را به‌صورت صریح زیر
+    اگر درخواست‌ها با خطاهای احراز هویت ناموفق می‌شوند، یک `SGLANG_API_KEY` واقعی تنظیم کنید که با
+    پیکربندی سرور شما مطابقت داشته باشد، یا ارائه‌دهنده را صراحتاً زیر
     `models.providers.sglang` پیکربندی کنید.
 
     <Tip>
     اگر SGLang را بدون احراز هویت اجرا می‌کنید، هر مقدار غیرخالی برای
-    `SGLANG_API_KEY` برای فعال‌سازی کشف مدل کافی است.
+    `SGLANG_API_KEY` برای اعلام آمادگی جهت کشف مدل کافی است.
     </Tip>
 
   </Accordion>
@@ -158,9 +160,9 @@ OpenClaw همچنین وقتی با `SGLANG_API_KEY` فعال‌سازی می‌
 
 <CardGroup cols={2}>
   <Card title="انتخاب مدل" href="/fa/concepts/model-providers" icon="layers">
-    انتخاب ارائه‌دهندگان، ارجاع‌های مدل، و رفتار failover.
+    انتخاب ارائه‌دهنده‌ها، ارجاع‌های مدل، و رفتار failover.
   </Card>
   <Card title="مرجع پیکربندی" href="/fa/gateway/configuration-reference" icon="gear">
-    schema کامل پیکربندی شامل ورودی‌های ارائه‌دهنده.
+    طرح‌وارهٔ کامل پیکربندی شامل ورودی‌های ارائه‌دهنده.
   </Card>
 </CardGroup>
