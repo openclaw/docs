@@ -98,6 +98,7 @@ Stores your API token + cached registry URL.
 ### `search <query...>`
 
 - Calls `/api/v1/search?q=...`.
+- Output includes the skill slug, owner handle, display name, and relevance score.
 - Search favors exact slug/name token matches before download popularity. A standalone slug token such as `map` matches `personal-map` more strongly than the substring inside `amap`.
 - Downloads are a small popularity prior, not a guarantee of top placement.
 - If a skill should appear but does not, run `clawhub inspect <slug>` while logged in to check owner-visible moderation diagnostics before renaming metadata.
@@ -545,7 +546,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/ae2ffd25b5421ddc8bfa2450ee389c9aef9bb0ab/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/6c15a481d042807254bd9ba52c779e176f21fe05/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:

@@ -100,7 +100,13 @@ Response:
       "displayName": "GifGrep",
       "summary": "…",
       "version": "1.2.3",
-      "updatedAt": 1730000000000
+      "updatedAt": 1730000000000,
+      "ownerHandle": "openclaw",
+      "owner": {
+        "handle": "openclaw",
+        "displayName": "OpenClaw",
+        "image": "https://example.com/avatar.png"
+      }
     }
   ]
 }
