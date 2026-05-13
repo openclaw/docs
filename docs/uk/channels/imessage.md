@@ -1,41 +1,41 @@
 ---
 read_when:
     - Налаштування підтримки iMessage
-    - Налагодження надсилання/отримання iMessage
-summary: Нативна підтримка iMessage через imsg (JSON-RPC через stdio), із діями приватного API для відповідей, реакцій, ефектів, вкладень і керування групами. Рекомендовано для нових налаштувань OpenClaw iMessage, коли вимоги до хоста виконуються.
+    - Налагодження надсилання/отримання в iMessage
+summary: Нативна підтримка iMessage через imsg (JSON-RPC через stdio), з діями приватного API для відповідей, реакцій Tapback, ефектів, вкладень і керування групами. Рекомендовано для нових налаштувань OpenClaw iMessage, коли вимоги до хоста виконуються.
 title: iMessage
 x-i18n:
-    generated_at: "2026-05-12T00:56:08Z"
+    generated_at: "2026-05-13T02:51:14Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 56b0c284a5105bf9c2863f46731fb61628e264ce35c316014f25f15907142430
+    source_hash: 8125beab13c067e287f4cc041b65632989b8aaadce9b3719cc5e7312a0927aeb
     source_path: channels/imessage.md
     workflow: 16
 ---
 
 <Note>
-Для розгортань OpenClaw iMessage використовуйте `imsg` на хості macOS Messages, де виконано вхід. Якщо ваш Gateway працює на Linux або Windows, вкажіть у `channels.imessage.cliPath` SSH-обгортку, яка запускає `imsg` на Mac.
+Для розгортань OpenClaw iMessage використовуйте `imsg` на хості macOS Messages із виконаним входом. Якщо ваш Gateway працює на Linux або Windows, вкажіть `channels.imessage.cliPath` на SSH-обгортку, яка запускає `imsg` на Mac.
 
-**Наздоганяння після простою Gateway вмикається явно.** Коли його ввімкнено (`channels.imessage.catchup.enabled: true`), Gateway під час наступного запуску повторно відтворює вхідні повідомлення, що потрапили до `chat.db`, доки він був офлайн (збій, перезапуск, сон Mac). За замовчуванням вимкнено — див. [Наздоганяння після простою Gateway](#catching-up-after-gateway-downtime). Закриває [openclaw#78649](https://github.com/openclaw/openclaw/issues/78649).
+**Надолуження після простою Gateway вмикається явно.** Коли ввімкнено (`channels.imessage.catchup.enabled: true`), gateway під час наступного запуску відтворює вхідні повідомлення, що потрапили до `chat.db`, поки він був офлайн (збій, перезапуск, сон Mac). Типово вимкнено — див. [Надолуження після простою gateway](#catching-up-after-gateway-downtime). Закриває [openclaw#78649](https://github.com/openclaw/openclaw/issues/78649).
 </Note>
 
 <Warning>
-Підтримку BlueBubbles видалено. Мігруйте конфігурації `channels.bluebubbles` до `channels.imessage`; OpenClaw підтримує iMessage лише через `imsg`. Почніть із [Видалення BlueBubbles і шлях imsg для iMessage](/uk/announcements/bluebubbles-imessage) для короткого оголошення або [Перехід із BlueBubbles](/uk/channels/imessage-from-bluebubbles) для повної таблиці міграції.
+Підтримку BlueBubbles було вилучено. Перенесіть конфігурації `channels.bluebubbles` до `channels.imessage`; OpenClaw підтримує iMessage лише через `imsg`. Почніть із [Вилучення BlueBubbles і шлях imsg для iMessage](/uk/announcements/bluebubbles-imessage) для короткого оголошення або [Перехід із BlueBubbles](/uk/channels/imessage-from-bluebubbles) для повної таблиці міграції.
 </Warning>
 
 Стан: нативна інтеграція із зовнішнім CLI. Gateway запускає `imsg rpc` і взаємодіє через JSON-RPC у stdio (без окремого демона/порту). Розширені дії потребують `imsg launch` і успішної перевірки приватного API.
 
 <CardGroup cols={3}>
-  <Card title="Private API actions" icon="wand-sparkles" href="#private-api-actions">
+  <Card title="Дії приватного API" icon="wand-sparkles" href="#private-api-actions">
     Відповіді, tapback-реакції, ефекти, вкладення та керування групами.
   </Card>
-  <Card title="Pairing" icon="link" href="/uk/channels/pairing">
-    Особисті повідомлення iMessage за замовчуванням використовують режим сполучення.
+  <Card title="Сполучення" icon="link" href="/uk/channels/pairing">
+    Особисті повідомлення iMessage типово використовують режим сполучення.
   </Card>
-  <Card title="Remote Mac" icon="terminal" href="#remote-mac-over-ssh">
-    Використовуйте SSH-обгортку, коли Gateway не працює на Mac із Messages.
+  <Card title="Віддалений Mac" icon="terminal" href="#remote-mac-over-ssh">
+    Використовуйте SSH-обгортку, коли Gateway не запущено на Mac із Messages.
   </Card>
-  <Card title="Configuration reference" icon="settings" href="/uk/gateway/config-channels#imessage">
+  <Card title="Довідник конфігурації" icon="settings" href="/uk/gateway/config-channels#imessage">
     Повний довідник полів iMessage.
   </Card>
 </CardGroup>
@@ -43,9 +43,9 @@ x-i18n:
 ## Швидке налаштування
 
 <Tabs>
-  <Tab title="Local Mac (fast path)">
+  <Tab title="Локальний Mac (швидкий шлях)">
     <Steps>
-      <Step title="Install and verify imsg">
+      <Step title="Установіть і перевірте imsg">
 
 ```bash
 brew install steipete/tap/imsg
@@ -56,7 +56,7 @@ openclaw channels status --probe
 
       </Step>
 
-      <Step title="Configure OpenClaw">
+      <Step title="Налаштуйте OpenClaw">
 
 ```json5
 {
@@ -72,7 +72,7 @@ openclaw channels status --probe
 
       </Step>
 
-      <Step title="Start gateway">
+      <Step title="Запустіть gateway">
 
 ```bash
 openclaw gateway
@@ -80,21 +80,21 @@ openclaw gateway
 
       </Step>
 
-      <Step title="Approve first DM pairing (default dmPolicy)">
+      <Step title="Підтвердьте перше сполучення DM (типовий dmPolicy)">
 
 ```bash
 openclaw pairing list imessage
 openclaw pairing approve imessage <CODE>
 ```
 
-        Запити сполучення спливають через 1 годину.
+        Запити на сполучення спливають через 1 годину.
       </Step>
     </Steps>
 
   </Tab>
 
-  <Tab title="Remote Mac over SSH">
-    OpenClaw потребує лише сумісний зі stdio `cliPath`, тож ви можете вказати в `cliPath` сценарій-обгортку, який підключається через SSH до віддаленого Mac і запускає `imsg`.
+  <Tab title="Віддалений Mac через SSH">
+    OpenClaw потребує лише сумісного зі stdio `cliPath`, тож можна вказати `cliPath` на скрипт-обгортку, який підключається SSH до віддаленого Mac і запускає `imsg`.
 
 ```bash
 #!/usr/bin/env bash
@@ -120,23 +120,23 @@ exec ssh -T gateway-host imsg "$@"
 }
 ```
 
-    Якщо `remoteHost` не встановлено, OpenClaw намагається автоматично визначити його, розібравши SSH-сценарій обгортки.
-    `remoteHost` має бути `host` або `user@host` (без пробілів чи параметрів SSH).
+    Якщо `remoteHost` не задано, OpenClaw намагається автоматично визначити його, розбираючи SSH-скрипт-обгортку.
+    `remoteHost` має бути `host` або `user@host` (без пробілів чи SSH-параметрів).
     OpenClaw використовує сувору перевірку ключа хоста для SCP, тому ключ хоста ретранслятора вже має існувати в `~/.ssh/known_hosts`.
-    Шляхи вкладень перевіряються за дозволеними коренями (`attachmentRoots` / `remoteAttachmentRoots`).
+    Шляхи вкладень перевіряються відносно дозволених коренів (`attachmentRoots` / `remoteAttachmentRoots`).
 
   </Tab>
 </Tabs>
 
 ## Вимоги та дозволи (macOS)
 
-- На Mac, де запущено `imsg`, має бути виконано вхід у Messages.
-- Для контексту процесу, що запускає OpenClaw/`imsg`, потрібен Full Disk Access (доступ до БД Messages).
-- Для надсилання повідомлень через Messages.app потрібен дозвіл Automation.
-- Для розширених дій (реакція / редагування / скасування надсилання / відповідь у гілці / ефекти / групові операції) потрібно вимкнути System Integrity Protection — див. [Увімкнення приватного API imsg](#enabling-the-imsg-private-api) нижче. Базове надсилання й отримання тексту та медіа працює без цього.
+- На Mac, де запускається `imsg`, має бути виконано вхід у Messages.
+- Для контексту процесу, що запускає OpenClaw/`imsg`, потрібен повний доступ до диска (доступ до БД Messages).
+- Для надсилання повідомлень через Messages.app потрібен дозвіл на автоматизацію.
+- Для розширених дій (реакція / редагування / скасування надсилання / відповідь у треді / ефекти / групові операції) потрібно вимкнути System Integrity Protection — див. [Увімкнення приватного API imsg](#enabling-the-imsg-private-api) нижче. Базове надсилання й отримання тексту та медіа працює без цього.
 
 <Tip>
-Дозволи надаються для кожного контексту процесу. Якщо Gateway працює без графічного інтерфейсу (LaunchAgent/SSH), виконайте одноразову інтерактивну команду в тому самому контексті, щоб викликати запити дозволів:
+Дозволи надаються для кожного контексту процесу. Якщо gateway працює без інтерфейсу (LaunchAgent/SSH), виконайте одноразову інтерактивну команду в тому самому контексті, щоб викликати запити дозволів:
 
 ```bash
 imsg chats --limit 1
@@ -150,24 +150,24 @@ imsg send <handle> "test"
 
 `imsg` постачається у двох робочих режимах:
 
-- **Базовий режим** (за замовчуванням, зміни SIP не потрібні): вихідний текст і медіа через `send`, вхідне спостереження/історія, список чатів. Саме це ви отримуєте одразу після свіжого `brew install steipete/tap/imsg` плюс стандартні дозволи macOS, наведені вище.
-- **Режим приватного API**: `imsg` інʼєктує допоміжну dylib у `Messages.app`, щоб викликати внутрішні функції `IMCore`. Це відкриває `react`, `edit`, `unsend`, `reply` (у гілці), `sendWithEffect`, `renameGroup`, `setGroupIcon`, `addParticipant`, `removeParticipant`, `leaveGroup`, а також індикатори набору тексту й підтвердження прочитання.
+- **Базовий режим** (типовий, зміни SIP не потрібні): вихідні текст і медіа через `send`, вхідне спостереження/історія, список чатів. Це те, що ви отримуєте одразу після свіжого `brew install steipete/tap/imsg` плюс стандартні дозволи macOS, наведені вище.
+- **Режим приватного API**: `imsg` інжектує допоміжну dylib у `Messages.app`, щоб викликати внутрішні функції `IMCore`. Саме це розблоковує `react`, `edit`, `unsend`, `reply` (у треді), `sendWithEffect`, `renameGroup`, `setGroupIcon`, `addParticipant`, `removeParticipant`, `leaveGroup`, а також індикатори введення та сповіщення про прочитання.
 
-Щоб отримати поверхню розширених дій, яку документує ця сторінка каналу, потрібен режим приватного API. README `imsg` прямо зазначає цю вимогу:
+Щоб отримати поверхню розширених дій, описану на цій сторінці каналу, потрібен режим приватного API. README `imsg` прямо вказує на цю вимогу:
 
-> Розширені функції, як-от `read`, `typing`, `launch`, розширене надсилання через bridge, зміна повідомлень і керування чатами, вмикаються явно. Вони потребують вимкненого SIP та інʼєкції допоміжної dylib у `Messages.app`. `imsg launch` відмовляється виконувати інʼєкцію, коли SIP увімкнено.
+> Розширені можливості, як-от `read`, `typing`, `launch`, розширене надсилання через міст, зміна повідомлень і керування чатами, вмикаються явно. Вони потребують вимкненого SIP і допоміжної dylib, інжектованої в `Messages.app`. `imsg launch` відмовляється виконувати інжекцію, коли SIP увімкнено.
 
-Техніка інʼєкції допоміжного компонента використовує власну dylib `imsg`, щоб отримати доступ до приватних API Messages. У шляху OpenClaw iMessage немає стороннього сервера або середовища виконання BlueBubbles.
+Техніка інжекції helper використовує власну dylib `imsg`, щоб отримати доступ до приватних API Messages. У шляху OpenClaw iMessage немає стороннього сервера чи середовища виконання BlueBubbles.
 
 <Warning>
-**Вимкнення SIP — це реальний компроміс безпеки.** SIP є одним з основних механізмів захисту macOS від виконання зміненого системного коду; його вимкнення на рівні всієї системи відкриває додаткову поверхню атаки й побічні ефекти. Зокрема, **вимкнення SIP на Mac з Apple Silicon також вимикає можливість встановлювати й запускати iOS-застосунки на вашому Mac**.
+**Вимкнення SIP є реальним компромісом безпеки.** SIP є одним із ключових захистів macOS від запуску зміненого системного коду; його загальносистемне вимкнення відкриває додаткову площу атаки та побічні ефекти. Зокрема, **вимкнення SIP на Mac з Apple Silicon також вимикає можливість установлювати й запускати iOS-застосунки на вашому Mac**.
 
-Сприймайте це як свідомий операційний вибір, а не як стандарт. Якщо ваша модель загроз не допускає вимкненого SIP, вбудований iMessage обмежується базовим режимом — лише надсилання й отримання тексту та медіа, без реакцій / редагування / скасування надсилання / ефектів / групових операцій.
+Ставтеся до цього як до свідомого операційного вибору, а не як до типового режиму. Якщо ваша модель загроз не допускає вимкнення SIP, вбудований iMessage обмежується базовим режимом — лише надсилання й отримання тексту та медіа, без реакцій / редагування / скасування надсилання / ефектів / групових операцій.
 </Warning>
 
 ### Налаштування
 
-1. **Встановіть (або оновіть) `imsg`** на Mac, де працює Messages.app:
+1. **Установіть (або оновіть) `imsg`** на Mac, де працює Messages.app:
 
    ```bash
    brew install steipete/tap/imsg
@@ -177,85 +177,85 @@ imsg send <handle> "test"
 
    Вивід `imsg status --json` повідомляє `bridge_version`, `rpc_methods` і `selectors` для кожного методу, щоб ви могли побачити, що підтримує поточна збірка, перш ніж почати.
 
-2. **Вимкніть System Integrity Protection.** Це залежить від версії macOS, оскільки базова вимога Apple залежить від ОС і апаратного забезпечення:
+2. **Вимкніть System Integrity Protection.** Це залежить від версії macOS, бо базова вимога Apple залежить від ОС і обладнання:
    - **macOS 10.13–10.15 (Sierra–Catalina):** вимкніть Library Validation через Terminal, перезавантажтеся в Recovery Mode, виконайте `csrutil disable`, перезапустіть.
    - **macOS 11+ (Big Sur і новіші), Intel:** Recovery Mode (або Internet Recovery), `csrutil disable`, перезапустіть.
-   - **macOS 11+, Apple Silicon:** послідовність запуску з кнопкою живлення для входу в Recovery; у нещодавніх версіях macOS утримуйте клавішу **Left Shift**, коли натискаєте Continue, потім `csrutil disable`. Налаштування віртуальних машин мають окремий процес — спершу зробіть знімок VM.
-   - **macOS 26 / Tahoe:** політики library-validation і перевірки приватних entitlements `imagent` стали ще суворішими; `imsg` може потребувати оновленої збірки, щоб не відставати. Якщо інʼєкція `imsg launch` або конкретні `selectors` починають повертати false після великого оновлення macOS, перевірте нотатки до випуску `imsg`, перш ніж припускати, що крок із SIP виконано успішно.
+   - **macOS 11+, Apple Silicon:** послідовність запуску з кнопкою живлення для входу в Recovery; у новіших версіях macOS утримуйте клавішу **Left Shift**, коли натискаєте Continue, потім `csrutil disable`. Налаштування віртуальних машин мають окремий процес — спочатку зробіть знімок VM.
+   - **macOS 26 / Tahoe:** політики library-validation і перевірки приватних entitlement для `imagent` стали ще суворішими; `imsg` може потребувати оновленої збірки, щоб не відставати. Якщо інжекція `imsg launch` або конкретні `selectors` починають повертати false після великого оновлення macOS, перевірте примітки до випуску `imsg`, перш ніж вважати, що крок SIP успішно виконано.
 
-   Дотримуйтеся процесу Apple Recovery Mode для вашого Mac, щоб вимкнути SIP перед запуском `imsg launch`.
+   Дотримуйтеся процесу Apple Recovery-mode для вашого Mac, щоб вимкнути SIP перед запуском `imsg launch`.
 
-3. **Інʼєктуйте допоміжний компонент.** Коли SIP вимкнено й у Messages.app виконано вхід:
+3. **Інжектуйте helper.** Коли SIP вимкнено і в Messages.app виконано вхід:
 
    ```bash
    imsg launch
    ```
 
-   `imsg launch` відмовляється виконувати інʼєкцію, якщо SIP усе ще ввімкнено, тож це також слугує підтвердженням, що крок 2 спрацював.
+   `imsg launch` відмовляється виконувати інжекцію, коли SIP досі увімкнено, тож це також слугує підтвердженням, що крок 2 спрацював.
 
-4. **Перевірте bridge з OpenClaw:**
+4. **Перевірте міст з OpenClaw:**
 
    ```bash
    openclaw channels status --probe
    ```
 
-   Запис iMessage має повідомити `works`, а `imsg status --json | jq '.selectors'` має показати `retractMessagePart: true` плюс ті селектори редагування / набору тексту / прочитання, які надає ваша збірка macOS. Перевірка для кожного методу в Plugin OpenClaw у `actions.ts` рекламує лише дії, чий базовий селектор має значення `true`, тому поверхня дій, яку ви бачите у списку інструментів агента, відображає те, що bridge справді може виконати на цьому хості.
+   Запис iMessage має повідомляти `works`, а `imsg status --json | jq '.selectors'` має показувати `retractMessagePart: true` плюс ті селектори редагування / введення / прочитання, які надає ваша збірка macOS. Поштучне gating методів у Plugin OpenClaw в `actions.ts` рекламує лише дії, базовий селектор яких дорівнює `true`, тож поверхня дій, яку ви бачите в списку інструментів агента, відображає те, що міст реально може виконати на цьому хості.
 
-Якщо `openclaw channels status --probe` повідомляє, що канал має стан `works`, але конкретні дії під час диспетчеризації викидають "iMessage `<action>` requires the imsg private API bridge", запустіть `imsg launch` знову — допоміжний компонент може відʼєднатися (перезапуск Messages.app, оновлення ОС тощо), а кешований стан `available: true` продовжить рекламувати дії, доки наступна перевірка не оновить його.
+Якщо `openclaw channels status --probe` повідомляє, що канал має стан `works`, але конкретні дії під час dispatch викидають "iMessage `<action>` requires the imsg private API bridge", запустіть `imsg launch` ще раз — helper може зникнути (перезапуск Messages.app, оновлення ОС тощо), а кешований статус `available: true` продовжуватиме рекламувати дії до наступного оновлення probe.
 
 ### Коли ви не можете вимкнути SIP
 
-Якщо вимкнення SIP неприйнятне для вашої моделі загроз:
+Якщо вимкнений SIP неприйнятний для вашої моделі загроз:
 
 - `imsg` повертається до базового режиму — лише текст + медіа + отримання.
-- Plugin OpenClaw і надалі рекламує надсилання тексту/медіа та моніторинг вхідних повідомлень; він просто приховує `react`, `edit`, `unsend`, `reply`, `sendWithEffect` і групові операції з поверхні дій (відповідно до перевірки можливостей для кожного методу).
-- Ви можете запустити окремий Mac не з Apple Silicon (або виділений бот-Mac) із вимкненим SIP для навантаження iMessage, залишивши SIP увімкненим на основних пристроях. Див. [Виділений користувач-бот macOS (окрема ідентичність iMessage)](#deployment-patterns) нижче.
+- Plugin OpenClaw усе ще рекламує надсилання тексту/медіа та моніторинг вхідних повідомлень; він просто приховує `react`, `edit`, `unsend`, `reply`, `sendWithEffect` і групові операції з поверхні дій (відповідно до gate можливостей для кожного методу).
+- Ви можете запустити окремий Mac без Apple Silicon (або виділений bot Mac) з вимкненим SIP для навантаження iMessage, залишивши SIP увімкненим на основних пристроях. Див. [Виділений користувач macOS для бота (окрема ідентичність iMessage)](#deployment-patterns) нижче.
 
 ## Контроль доступу та маршрутизація
 
 <Tabs>
-  <Tab title="DM policy">
+  <Tab title="Політика DM">
     `channels.imessage.dmPolicy` керує особистими повідомленнями:
 
-    - `pairing` (за замовчуванням)
+    - `pairing` (типово)
     - `allowlist`
     - `open` (потребує, щоб `allowFrom` містив `"*"`)
     - `disabled`
 
-    Поле списку дозволів: `channels.imessage.allowFrom`.
+    Поле списку дозволених: `channels.imessage.allowFrom`.
 
-    Записи списку дозволів можуть бути хендлами, статичними групами доступу відправників (`accessGroup:<name>`) або цілями чатів (`chat_id:*`, `chat_guid:*`, `chat_identifier:*`).
+    Записи списку дозволених мають ідентифікувати відправників: handles або статичні групи доступу відправників (`accessGroup:<name>`). Використовуйте `channels.imessage.groupAllowFrom` для цілей чату, як-от `chat_id:*`, `chat_guid:*` або `chat_identifier:*`; використовуйте `channels.imessage.groups` для числових ключів реєстру `chat_id`.
 
   </Tab>
 
-  <Tab title="Group policy + mentions">
+  <Tab title="Групова політика + згадки">
     `channels.imessage.groupPolicy` керує обробкою груп:
 
-    - `allowlist` (за замовчуванням, коли налаштовано)
+    - `allowlist` (типово, коли налаштовано)
     - `open`
     - `disabled`
 
-    Список дозволів відправників груп: `channels.imessage.groupAllowFrom`.
+    Список дозволених відправників групи: `channels.imessage.groupAllowFrom`.
 
     Записи `groupAllowFrom` також можуть посилатися на статичні групи доступу відправників (`accessGroup:<name>`).
 
-    Резервна поведінка під час виконання: якщо `groupAllowFrom` не задано, перевірки відправників груп iMessage повертаються до `allowFrom`, коли він доступний.
-    Примітка щодо виконання: якщо `channels.imessage` повністю відсутній, виконання повертається до `groupPolicy="allowlist"` і записує попередження в журнал (навіть якщо `channels.defaults.groupPolicy` встановлено).
+    Резервний варіант під час виконання: якщо `groupAllowFrom` не задано, перевірки відправників груп iMessage використовують `allowFrom`; задайте `groupAllowFrom`, коли правила допуску для DM і груп мають відрізнятися.
+    Примітка щодо виконання: якщо `channels.imessage` повністю відсутній, runtime повертається до `groupPolicy="allowlist"` і записує попередження в журнал (навіть якщо `channels.defaults.groupPolicy` задано).
 
     <Warning>
-    Маршрутизація груп має **два** шлюзи списку дозволів, які виконуються послідовно, і обидва мають пройти:
+    Маршрутизація груп має **два** gate списку дозволених, що виконуються один за одним, і обидва мають пройти:
 
-    1. **Список дозволів відправників / цілей чатів** (`channels.imessage.groupAllowFrom`) — хендл, `chat_guid`, `chat_identifier` або `chat_id`.
-    2. **Реєстр груп** (`channels.imessage.groups`) — з `groupPolicy: "allowlist"` цей шлюз потребує або wildcard-запису `groups: { "*": { ... } }` (встановлює `allowAll = true`), або явного запису для кожного `chat_id` у `groups`.
+    1. **Список дозволених відправників / цілей чату** (`channels.imessage.groupAllowFrom`) — handle, `chat_guid`, `chat_identifier` або `chat_id`.
+    2. **Реєстр груп** (`channels.imessage.groups`) — з `groupPolicy: "allowlist"` цей gate потребує або wildcard-запису `groups: { "*": { ... } }` (встановлює `allowAll = true`), або явного запису для конкретного `chat_id` у `groups`.
 
-    Якщо в шлюзі 2 нічого немає, кожне групове повідомлення відкидається. Plugin виводить два сигнали рівня `warn` на стандартному рівні журналювання:
+    Якщо gate 2 порожній, кожне групове повідомлення відкидається. Plugin видає два сигнали рівня `warn` на типовому рівні журналювання:
 
     - одноразово для кожного облікового запису під час запуску: `imessage: groupPolicy="allowlist" but channels.imessage.groups is empty for account "<id>"`
     - одноразово для кожного `chat_id` під час виконання: `imessage: dropping group message from chat_id=<id> ...`
 
-    Особисті повідомлення продовжують працювати, оскільки вони проходять іншим шляхом коду.
+    DM продовжують працювати, бо вони йдуть іншим шляхом коду.
 
-    Мінімальна конфігурація, щоб групи продовжували працювати з `groupPolicy: "allowlist"`:
+    Мінімальна конфігурація, щоб групи продовжували проходити з `groupPolicy: "allowlist"`:
 
     ```json5
     {
@@ -269,23 +269,23 @@ imsg send <handle> "test"
     }
     ```
 
-    If those `warn` lines appear in the gateway log, gate 2 is dropping — add the `groups` block.
+    Якщо ці рядки `warn` з’являються в журналі gateway, шлюз 2 відкидає повідомлення — додайте блок `groups`.
     </Warning>
 
-    Mention gating for groups:
+    Обмеження згадками для груп:
 
-    - iMessage has no native mention metadata
-    - mention detection uses regex patterns (`agents.list[].groupChat.mentionPatterns`, fallback `messages.groupChat.mentionPatterns`)
-    - with no configured patterns, mention gating cannot be enforced
+    - iMessage не має власних метаданих згадок
+    - виявлення згадок використовує regex-шаблони (`agents.list[].groupChat.mentionPatterns`, резервний варіант `messages.groupChat.mentionPatterns`)
+    - без налаштованих шаблонів обмеження згадками неможливо примусово застосувати
 
-    Control commands from authorized senders can bypass mention gating in groups.
+    Керівні команди від авторизованих відправників можуть обходити обмеження згадками в групах.
 
-    Per-group `systemPrompt`:
+    `systemPrompt` для окремої групи:
 
-    Each entry under `channels.imessage.groups.*` accepts an optional `systemPrompt` string. The value is injected into the agent's system prompt on every turn that handles a message in that group. Resolution mirrors the per-group prompt resolution used by `channels.whatsapp.groups`:
+    Кожен запис у `channels.imessage.groups.*` приймає необов’язковий рядок `systemPrompt`. Значення вставляється в системний промпт агента на кожному ході, який обробляє повідомлення в цій групі. Визначення повторює визначення промпта для окремої групи, яке використовує `channels.whatsapp.groups`:
 
-    1. **Group-specific system prompt** (`groups["<chat_id>"].systemPrompt`): used when the specific group entry exists in the map **and** its `systemPrompt` key is defined. If `systemPrompt` is an empty string (`""`) the wildcard is suppressed and no system prompt is applied to that group.
-    2. **Group wildcard system prompt** (`groups["*"].systemPrompt`): used when the specific group entry is absent from the map entirely, or when it exists but defines no `systemPrompt` key.
+    1. **Системний промпт конкретної групи** (`groups["<chat_id>"].systemPrompt`): використовується, коли конкретний запис групи існує в мапі **і** його ключ `systemPrompt` визначено. Якщо `systemPrompt` є порожнім рядком (`""`), wildcard пригнічується, і до цієї групи не застосовується жоден системний промпт.
+    2. **Wildcard системного промпта групи** (`groups["*"].systemPrompt`): використовується, коли конкретного запису групи взагалі немає в мапі або коли він існує, але не визначає ключ `systemPrompt`.
 
     ```json5
     {
@@ -309,45 +309,45 @@ imsg send <handle> "test"
     }
     ```
 
-    Per-group prompts only apply to group messages — direct messages in this channel are unaffected.
+    Промпти для окремих груп застосовуються лише до групових повідомлень — прямі повідомлення в цьому каналі не змінюються.
 
   </Tab>
 
-  <Tab title="Sessions and deterministic replies">
-    - DMs use direct routing; groups use group routing.
-    - With default `session.dmScope=main`, iMessage DMs collapse into the agent main session.
-    - Group sessions are isolated (`agent:<agentId>:imessage:group:<chat_id>`).
-    - Replies route back to iMessage using originating channel/target metadata.
+  <Tab title="Сесії та детерміновані відповіді">
+    - DM використовують пряме маршрутизування; групи використовують групове маршрутизування.
+    - Із типовим `session.dmScope=main` DM iMessage згортаються в основну сесію агента.
+    - Групові сесії ізольовані (`agent:<agentId>:imessage:group:<chat_id>`).
+    - Відповіді маршрутизуються назад до iMessage за допомогою метаданих початкового каналу/цілі.
 
-    Group-ish thread behavior:
+    Поведінка потоків, схожих на групові:
 
-    Some multi-participant iMessage threads can arrive with `is_group=false`.
-    If that `chat_id` is explicitly configured under `channels.imessage.groups`, OpenClaw treats it as group traffic (group gating + group session isolation).
+    Деякі потоки iMessage з кількома учасниками можуть надходити з `is_group=false`.
+    Якщо цей `chat_id` явно налаштовано в `channels.imessage.groups`, OpenClaw обробляє його як груповий трафік (групові обмеження + ізоляція групової сесії).
 
   </Tab>
 </Tabs>
 
-## ACP conversation bindings
+## Прив’язки розмов ACP
 
-Legacy iMessage chats can also be bound to ACP sessions.
+Застарілі чати iMessage також можна прив’язувати до сесій ACP.
 
-Fast operator flow:
+Швидкий операторський процес:
 
-- Run `/acp spawn codex --bind here` inside the DM or allowed group chat.
-- Future messages in that same iMessage conversation route to the spawned ACP session.
-- `/new` and `/reset` reset the same bound ACP session in place.
-- `/acp close` closes the ACP session and removes the binding.
+- Запустіть `/acp spawn codex --bind here` у DM або дозволеному груповому чаті.
+- Майбутні повідомлення в тій самій розмові iMessage маршрутизуватимуться до створеної сесії ACP.
+- `/new` і `/reset` скидають ту саму прив’язану сесію ACP на місці.
+- `/acp close` закриває сесію ACP і видаляє прив’язку.
 
-Configured persistent bindings are supported through top-level `bindings[]` entries with `type: "acp"` and `match.channel: "imessage"`.
+Налаштовані постійні прив’язки підтримуються через записи верхнього рівня `bindings[]` з `type: "acp"` і `match.channel: "imessage"`.
 
-`match.peer.id` can use:
+`match.peer.id` може використовувати:
 
-- normalized DM handle such as `+15555550123` or `user@example.com`
-- `chat_id:<id>` (recommended for stable group bindings)
+- нормалізований ідентифікатор DM, наприклад `+15555550123` або `user@example.com`
+- `chat_id:<id>` (рекомендовано для стабільних групових прив’язок)
 - `chat_guid:<guid>`
 - `chat_identifier:<identifier>`
 
-Example:
+Приклад:
 
 ```json5
 {
@@ -377,35 +377,35 @@ Example:
 }
 ```
 
-See [ACP Agents](/uk/tools/acp-agents) for shared ACP binding behavior.
+Див. [Агенти ACP](/uk/tools/acp-agents) щодо спільної поведінки прив’язок ACP.
 
-## Deployment patterns
+## Шаблони розгортання
 
 <AccordionGroup>
-  <Accordion title="Dedicated bot macOS user (separate iMessage identity)">
-    Use a dedicated Apple ID and macOS user so bot traffic is isolated from your personal Messages profile.
+  <Accordion title="Виділений користувач macOS для бота (окрема ідентичність iMessage)">
+    Використовуйте виділений Apple ID і користувача macOS, щоб трафік бота був ізольований від вашого особистого профілю Messages.
 
-    Typical flow:
+    Типовий процес:
 
-    1. Create/sign in a dedicated macOS user.
-    2. Sign into Messages with the bot Apple ID in that user.
-    3. Install `imsg` in that user.
-    4. Create SSH wrapper so OpenClaw can run `imsg` in that user context.
-    5. Point `channels.imessage.accounts.<id>.cliPath` and `.dbPath` to that user profile.
+    1. Створіть/увійдіть у виділеного користувача macOS.
+    2. Увійдіть у Messages з Apple ID бота в цьому користувачі.
+    3. Установіть `imsg` у цьому користувачі.
+    4. Створіть SSH-обгортку, щоб OpenClaw міг запускати `imsg` у контексті цього користувача.
+    5. Спрямуйте `channels.imessage.accounts.<id>.cliPath` і `.dbPath` на профіль цього користувача.
 
-    First run may require GUI approvals (Automation + Full Disk Access) in that bot user session.
+    Перший запуск може вимагати схвалень у GUI (Automation + Full Disk Access) у сесії цього користувача бота.
 
   </Accordion>
 
-  <Accordion title="Remote Mac over Tailscale (example)">
-    Common topology:
+  <Accordion title="Віддалений Mac через Tailscale (приклад)">
+    Поширена топологія:
 
-    - gateway runs on Linux/VM
-    - iMessage + `imsg` runs on a Mac in your tailnet
-    - `cliPath` wrapper uses SSH to run `imsg`
-    - `remoteHost` enables SCP attachment fetches
+    - gateway працює на Linux/VM
+    - iMessage + `imsg` працює на Mac у вашій tailnet
+    - обгортка `cliPath` використовує SSH для запуску `imsg`
+    - `remoteHost` вмикає отримання вкладень через SCP
 
-    Example:
+    Приклад:
 
     ```json5
     {
@@ -426,50 +426,50 @@ See [ACP Agents](/uk/tools/acp-agents) for shared ACP binding behavior.
     exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
     ```
 
-    Use SSH keys so both SSH and SCP are non-interactive.
-    Ensure the host key is trusted first (for example `ssh bot@mac-mini.tailnet-1234.ts.net`) so `known_hosts` is populated.
+    Використовуйте SSH-ключі, щоб і SSH, і SCP були неінтерактивними.
+    Спочатку переконайтеся, що ключ хоста довірений (наприклад, `ssh bot@mac-mini.tailnet-1234.ts.net`), щоб `known_hosts` було заповнено.
 
   </Accordion>
 
-  <Accordion title="Multi-account pattern">
-    iMessage supports per-account config under `channels.imessage.accounts`.
+  <Accordion title="Шаблон з кількома обліковими записами">
+    iMessage підтримує налаштування для окремих облікових записів у `channels.imessage.accounts`.
 
-    Each account can override fields such as `cliPath`, `dbPath`, `allowFrom`, `groupPolicy`, `mediaMaxMb`, history settings, and attachment root allowlists.
+    Кожен обліковий запис може перевизначати поля, як-от `cliPath`, `dbPath`, `allowFrom`, `groupPolicy`, `mediaMaxMb`, налаштування історії та allowlist коренів вкладень.
 
   </Accordion>
 </AccordionGroup>
 
-## Media, chunking, and delivery targets
+## Медіа, розбиття на частини та цілі доставлення
 
 <AccordionGroup>
-  <Accordion title="Attachments and media">
-    - inbound attachment ingestion is **off by default** — set `channels.imessage.includeAttachments: true` to forward photos, voice memos, video, and other attachments to the agent. With it disabled, attachment-only iMessages are dropped before reaching the agent and may produce no `Inbound message` log line at all.
-    - remote attachment paths can be fetched via SCP when `remoteHost` is set
-    - attachment paths must match allowed roots:
-      - `channels.imessage.attachmentRoots` (local)
-      - `channels.imessage.remoteAttachmentRoots` (remote SCP mode)
-      - default root pattern: `/Users/*/Library/Messages/Attachments`
-    - SCP uses strict host-key checking (`StrictHostKeyChecking=yes`)
-    - outbound media size uses `channels.imessage.mediaMaxMb` (default 16 MB)
+  <Accordion title="Вкладення та медіа">
+    - приймання вхідних вкладень **вимкнене за замовчуванням** — задайте `channels.imessage.includeAttachments: true`, щоб пересилати фото, голосові нотатки, відео та інші вкладення агенту. Коли це вимкнено, iMessage лише з вкладеннями відкидаються до потрапляння до агента й можуть узагалі не створювати рядок журналу `Inbound message`.
+    - віддалені шляхи вкладень можна отримувати через SCP, коли встановлено `remoteHost`
+    - шляхи вкладень мають відповідати дозволеним кореням:
+      - `channels.imessage.attachmentRoots` (локально)
+      - `channels.imessage.remoteAttachmentRoots` (режим віддаленого SCP)
+      - типовий шаблон кореня: `/Users/*/Library/Messages/Attachments`
+    - SCP використовує сувору перевірку ключа хоста (`StrictHostKeyChecking=yes`)
+    - розмір вихідних медіа використовує `channels.imessage.mediaMaxMb` (типово 16 MB)
 
   </Accordion>
 
-  <Accordion title="Outbound chunking">
-    - text chunk limit: `channels.imessage.textChunkLimit` (default 4000)
-    - chunk mode: `channels.imessage.chunkMode`
-      - `length` (default)
-      - `newline` (paragraph-first splitting)
+  <Accordion title="Розбиття вихідних повідомлень на частини">
+    - ліміт частини тексту: `channels.imessage.textChunkLimit` (типово 4000)
+    - режим розбиття: `channels.imessage.chunkMode`
+      - `length` (типово)
+      - `newline` (розділення спочатку за абзацами)
 
   </Accordion>
 
-  <Accordion title="Addressing formats">
-    Preferred explicit targets:
+  <Accordion title="Формати адресування">
+    Бажані явні цілі:
 
-    - `chat_id:123` (recommended for stable routing)
+    - `chat_id:123` (рекомендовано для стабільного маршрутизування)
     - `chat_guid:...`
     - `chat_identifier:...`
 
-    Handle targets are also supported:
+    Цілі-ідентифікатори також підтримуються:
 
     - `imessage:+1555...`
     - `sms:+1555...`
@@ -482,9 +482,9 @@ See [ACP Agents](/uk/tools/acp-agents) for shared ACP binding behavior.
   </Accordion>
 </AccordionGroup>
 
-## Private API actions
+## Дії Private API
 
-When `imsg launch` is running and `openclaw channels status --probe` reports `privateApi.available: true`, the message tool can use iMessage-native actions in addition to normal text sends.
+Коли `imsg launch` запущено, а `openclaw channels status --probe` повідомляє `privateApi.available: true`, інструмент повідомлень може використовувати нативні для iMessage дії на додачу до звичайного надсилання тексту.
 
 ```json5
 {
@@ -509,29 +509,29 @@ When `imsg launch` is running and `openclaw channels status --probe` reports `pr
 ```
 
 <AccordionGroup>
-  <Accordion title="Available actions">
-    - **react**: Add/remove iMessage tapbacks (`messageId`, `emoji`, `remove`). Supported tapbacks map to love, like, dislike, laugh, emphasize, and question.
-    - **reply**: Send a threaded reply to an existing message (`messageId`, `text` or `message`, plus `chatGuid`, `chatId`, `chatIdentifier`, or `to`).
-    - **sendWithEffect**: Send text with an iMessage effect (`text` or `message`, `effect` or `effectId`).
-    - **edit**: Edit a sent message on supported macOS/private API versions (`messageId`, `text` or `newText`).
-    - **unsend**: Retract a sent message on supported macOS/private API versions (`messageId`).
-    - **upload-file**: Send media/files (`buffer` as base64 or a hydrated `media`/`path`/`filePath`, `filename`, optional `asVoice`). Legacy alias: `sendAttachment`.
-    - **renameGroup**, **setGroupIcon**, **addParticipant**, **removeParticipant**, **leaveGroup**: Manage group chats when the current target is a group conversation.
+  <Accordion title="Доступні дії">
+    - **react**: додати/видалити tapback iMessage (`messageId`, `emoji`, `remove`). Підтримувані tapback відповідають love, like, dislike, laugh, emphasize і question.
+    - **reply**: надіслати відповідь у потоці на наявне повідомлення (`messageId`, `text` або `message`, плюс `chatGuid`, `chatId`, `chatIdentifier` або `to`).
+    - **sendWithEffect**: надіслати текст з ефектом iMessage (`text` або `message`, `effect` або `effectId`).
+    - **edit**: редагувати надіслане повідомлення на підтримуваних версіях macOS/Private API (`messageId`, `text` або `newText`).
+    - **unsend**: відкликати надіслане повідомлення на підтримуваних версіях macOS/Private API (`messageId`).
+    - **upload-file**: надіслати медіа/файли (`buffer` як base64 або гідратований `media`/`path`/`filePath`, `filename`, необов’язково `asVoice`). Застарілий псевдонім: `sendAttachment`.
+    - **renameGroup**, **setGroupIcon**, **addParticipant**, **removeParticipant**, **leaveGroup**: керувати груповими чатами, коли поточна ціль є груповою розмовою.
 
   </Accordion>
 
-  <Accordion title="Message IDs">
-    Inbound iMessage context includes both short `MessageSid` values and full message GUIDs when available. Short IDs are scoped to the recent in-memory reply cache and are checked against the current chat before use. If a short ID has expired or belongs to another chat, retry with the full `MessageSidFull`.
+  <Accordion title="ID повідомлень">
+    Контекст вхідного iMessage містить і короткі значення `MessageSid`, і повні GUID повідомлень, коли вони доступні. Короткі ID обмежені нещодавнім кешем відповідей у пам’яті та перевіряються щодо поточного чату перед використанням. Якщо короткий ID застарів або належить іншому чату, повторіть спробу з повним `MessageSidFull`.
 
   </Accordion>
 
-  <Accordion title="Capability detection">
-    OpenClaw hides private API actions only when the cached probe status says the bridge is unavailable. If the status is unknown, actions remain visible and dispatch probes lazily so the first action can succeed after `imsg launch` without a separate manual status refresh.
+  <Accordion title="Виявлення можливостей">
+    OpenClaw приховує дії Private API лише тоді, коли кешований стан перевірки вказує, що міст недоступний. Якщо стан невідомий, дії залишаються видимими, а dispatch запускає перевірки ліниво, щоб перша дія могла успішно виконатися після `imsg launch` без окремого ручного оновлення стану.
 
   </Accordion>
 
-  <Accordion title="Read receipts and typing">
-    When the private API bridge is up, accepted inbound chats are marked read before dispatch and a typing bubble is shown to the sender while the agent generates. Disable read-marking with:
+  <Accordion title="Сповіщення про прочитання та індикатор набору">
+    Коли міст Private API працює, прийняті вхідні чати позначаються прочитаними перед dispatch, а відправнику показується індикатор набору, поки агент генерує відповідь. Вимкніть позначення прочитання за допомогою:
 
     ```json5
     {
@@ -543,29 +543,29 @@ When `imsg launch` is running and `openclaw channels status --probe` reports `pr
     }
     ```
 
-    Older `imsg` builds that pre-date the per-method capability list will gate off typing/read silently; OpenClaw logs a one-time warning per restart so the missing receipt is attributable.
+    Старіші збірки `imsg`, які передують списку можливостей для окремих методів, тихо вимикатимуть індикатор набору/прочитання; OpenClaw записує одноразове попередження за перезапуск, щоб відсутність підтвердження прочитання можна було пояснити.
 
   </Accordion>
 
-  <Accordion title="Inbound tapbacks">
-    OpenClaw subscribes to iMessage tapbacks and routes accepted reactions as system events instead of normal message text, so a user tapback does not trigger an ordinary reply loop.
+  <Accordion title="Вхідні tapback">
+    OpenClaw підписується на tapback iMessage і маршрутизує прийняті реакції як системні події замість звичайного тексту повідомлення, тому tapback користувача не запускає звичайний цикл відповідей.
 
-    Notification mode is controlled by `channels.imessage.reactionNotifications`:
+    Режим сповіщень контролюється `channels.imessage.reactionNotifications`:
 
-    - `"own"` (default): notify only when users react to bot-authored messages.
-    - `"all"`: notify for all inbound tapbacks from authorized senders.
-    - `"off"`: ignore inbound tapbacks.
+    - `"own"` (типово): сповіщати лише коли користувачі реагують на повідомлення, створені ботом.
+    - `"all"`: сповіщати про всі вхідні tapback від авторизованих відправників.
+    - `"off"`: ігнорувати вхідні tapback.
 
-    Per-account overrides use `channels.imessage.accounts.<id>.reactionNotifications`.
+    Перевизначення для окремих облікових записів використовують `channels.imessage.accounts.<id>.reactionNotifications`.
 
   </Accordion>
 </AccordionGroup>
 
-## Config writes
+## Записи конфігурації
 
-iMessage allows channel-initiated config writes by default (for `/config set|unset` when `commands.config: true`).
+iMessage за замовчуванням дозволяє ініційовані каналом записи конфігурації (для `/config set|unset`, коли `commands.config: true`).
 
-Disable:
+Вимкнути:
 
 ```json5
 {
@@ -579,32 +579,32 @@ Disable:
 
 <a id="coalescing-split-send-dms-command--url-in-one-composition"></a>
 
-## Coalescing split-send DMs (command + URL in one composition)
+## Об’єднання розділених DM (команда + URL в одній композиції)
 
-When a user types a command and a URL together — e.g. `Dump https://example.com/article` — Apple's Messages app splits the send into **two separate `chat.db` rows**:
+Коли користувач вводить команду й URL разом — наприклад, `Dump https://example.com/article` — застосунок Messages від Apple розділяє надсилання на **два окремі рядки `chat.db`**:
 
-1. A text message (`"Dump"`).
-2. A URL-preview balloon (`"https://..."`) with OG-preview images as attachments.
+1. Текстове повідомлення (`"Dump"`).
+2. Кулька попереднього перегляду URL (`"https://..."`) із зображеннями OG-preview як вкладеннями.
 
-The two rows arrive at OpenClaw ~0.8-2.0 s apart on most setups. Without coalescing, the agent receives the command alone on turn 1, replies (often "send me the URL"), and only sees the URL on turn 2 — at which point the command context is already lost. This is Apple's send pipeline, not anything OpenClaw or `imsg` introduces.
+Два рядки надходять до OpenClaw з інтервалом приблизно 0,8-2,0 с у більшості налаштувань. Без об’єднання агент отримує саму команду на кроці 1, відповідає (часто «надішліть мені URL») і бачить URL лише на кроці 2 — коли контекст команди вже втрачено. Це конвеєр надсилання Apple, а не щось, що додають OpenClaw або `imsg`.
 
-`channels.imessage.coalesceSameSenderDms` вмикає для особистого повідомлення об’єднання послідовних рядків від того самого відправника в один хід агента. Групові чати й далі надсилаються по одному повідомленню, щоб зберегти структуру ходів із кількома користувачами.
+`channels.imessage.coalesceSameSenderDms` вмикає для DM об’єднання послідовних рядків від того самого відправника в один крок агента. Групові чати й далі надсилаються повідомлення за повідомленням, щоб зберегти структуру кроків із кількома користувачами.
 
 <Tabs>
-  <Tab title="Коли вмикати">
+  <Tab title="When to enable">
     Увімкніть, коли:
 
     - Ви постачаєте Skills, які очікують `command + payload` в одному повідомленні (dump, paste, save, queue тощо).
-    - Ваші користувачі вставляють URL-адреси, зображення або довгий вміст разом із командами.
-    - Ви можете прийняти додаткову затримку ходу особистого повідомлення (див. нижче).
+    - Ваші користувачі вставляють URL, зображення або довгий вміст разом із командами.
+    - Ви можете прийняти додану затримку кроку DM (див. нижче).
 
     Залиште вимкненим, коли:
 
-    - Вам потрібна мінімальна затримка команди для однословних тригерів особистих повідомлень.
-    - Усі ваші сценарії — це одноразові команди без подальших payload-повідомлень.
+    - Вам потрібна мінімальна затримка команди для однословних тригерів DM.
+    - Усі ваші потоки — це одноразові команди без подальших payload.
 
   </Tab>
-  <Tab title="Увімкнення">
+  <Tab title="Enabling">
     ```json5
     {
       channels: {
@@ -615,7 +615,7 @@ The two rows arrive at OpenClaw ~0.8-2.0 s apart on most setups. Without coalesc
     }
     ```
 
-    Коли прапорець увімкнено й немає явного `messages.inbound.byChannel.imessage`, вікно debounce розширюється до **2500 ms** (застаріле типове значення — 0 ms, тобто без debounce). Ширше вікно потрібне, бо частота розділеного надсилання Apple у 0.8-2.0 s не вкладається у вужче типове значення.
+    Коли прапорець увімкнено і немає явного `messages.inbound.byChannel.imessage`, вікно debounce розширюється до **2500 мс** (застаріле значення за замовчуванням — 0 мс, тобто без debouncing). Ширше вікно потрібне, бо ритм розділеного надсилання Apple у 0,8-2,0 с не вкладається в тісніше значення за замовчуванням.
 
     Щоб налаштувати вікно самостійно:
 
@@ -635,32 +635,32 @@ The two rows arrive at OpenClaw ~0.8-2.0 s apart on most setups. Without coalesc
     ```
 
   </Tab>
-  <Tab title="Компроміси">
-    - **Додаткова затримка для особистих повідомлень.** Коли прапорець увімкнено, кожне особисте повідомлення (зокрема автономні керівні команди та одиночні текстові продовження) очікує до завершення вікна debounce перед надсиланням, на випадок якщо надходить рядок із payload. Повідомлення групового чату надсилаються миттєво.
-    - **Об’єднаний вивід обмежено.** Об’єднаний текст обмежено 4000 символами з явним маркером `…[truncated]`; вкладення — 20; записи джерел — 10 (понад це зберігаються перший і найновіший). Кожен GUID джерела відстежується в `coalescedMessageGuids` для подальшої телеметрії.
-    - **Лише особисті повідомлення.** Групові чати переходять до надсилання по одному повідомленню, тож бот залишається чутливим, коли пише кілька людей.
-    - **Добровільне ввімкнення, окремо для каналу.** Інші канали (Telegram, WhatsApp, Slack, …) не змінюються. Застарілі конфігурації BlueBubbles, які встановлюють `channels.bluebubbles.coalesceSameSenderDms`, мають перенести це значення в `channels.imessage.coalesceSameSenderDms`.
+  <Tab title="Trade-offs">
+    - **Додана затримка для повідомлень DM.** Коли прапорець увімкнено, кожне DM (включно з окремими керівними командами й одиничними текстовими продовженнями) очікує до завершення вікна debounce перед надсиланням, на випадок якщо надходить рядок payload. Повідомлення групових чатів зберігають миттєве надсилання.
+    - **Об’єднаний вивід має межі.** Об’єднаний текст обмежується 4000 символами з явним маркером `…[truncated]`; вкладення обмежені 20; записи джерел — 10 (після цього зберігаються перший і найновіші). Кожен GUID джерела відстежується в `coalescedMessageGuids` для подальшої телеметрії.
+    - **Лише DM.** Групові чати проходять до надсилання повідомлення за повідомленням, щоб бот залишався чутливим, коли кілька людей друкують одночасно.
+    - **Опційно, для окремого каналу.** Інші канали (Telegram, WhatsApp, Slack, …) не зачіпаються. Застарілі конфігурації BlueBubbles, які встановлюють `channels.bluebubbles.coalesceSameSenderDms`, мають перенести це значення до `channels.imessage.coalesceSameSenderDms`.
 
   </Tab>
 </Tabs>
 
-### Сценарії й те, що бачить агент
+### Сценарії та що бачить агент
 
-| Користувач створює                                                | `chat.db` створює     | Прапорець вимкнено (типово)             | Прапорець увімкнено + вікно 2500 ms                                      |
-| ------------------------------------------------------------------ | --------------------- | --------------------------------------- | ------------------------------------------------------------------------ |
-| `Dump https://example.com` (одне надсилання)                       | 2 рядки з інтервалом ~1 s | Два ходи агента: лише "Dump", потім URL | Один хід: об’єднаний текст `Dump https://example.com`                    |
-| `Save this 📎image.jpg caption` (вкладення + текст)                | 2 рядки               | Два ходи (вкладення відкидається під час об’єднання) | Один хід: текст + зображення збережено                                   |
-| `/status` (автономна команда)                                      | 1 рядок               | Миттєве надсилання                      | **Очікування до завершення вікна, потім надсилання**                    |
+| Користувач створює                                                 | `chat.db` створює     | Прапорець вимкнено (за замовчуванням)   | Прапорець увімкнено + вікно 2500 мс                                      |
+| ------------------------------------------------------------------ | --------------------- | --------------------------------------- | ----------------------------------------------------------------------- |
+| `Dump https://example.com` (одне надсилання)                       | 2 рядки з інтервалом ~1 с | Два кроки агента: лише "Dump", потім URL | Один крок: об’єднаний текст `Dump https://example.com`                  |
+| `Save this 📎image.jpg caption` (вкладення + текст)                | 2 рядки               | Два кроки (вкладення скинуто під час об’єднання) | Один крок: текст + зображення збережено                                  |
+| `/status` (окрема команда)                                         | 1 рядок               | Миттєве надсилання                      | **Очікування до завершення вікна, потім надсилання**                    |
 | URL вставлено окремо                                               | 1 рядок               | Миттєве надсилання                      | Миттєве надсилання (лише один запис у bucket)                            |
-| Текст + URL надіслано як два навмисно окремі повідомлення з інтервалом у хвилини | 2 рядки поза вікном   | Два ходи                                | Два ходи (вікно завершується між ними)                                   |
-| Швидкий потік (>10 малих особистих повідомлень у межах вікна)      | N рядків              | N ходів                                 | Один хід, обмежений вивід (перший + найновіший, застосовано ліміти тексту/вкладень) |
-| Двоє людей пишуть у груповому чаті                                 | N рядків від M відправників | M+ ходів (по одному для кожного bucket відправника) | M+ ходів — групові чати не об’єднуються                                  |
+| Текст + URL надіслано як два навмисно окремі повідомлення з різницею в хвилини | 2 рядки поза вікном | Два кроки                               | Два кроки (вікно спливає між ними)                                      |
+| Швидкий потік (>10 малих DM у межах вікна)                         | N рядків              | N кроків                                | Один крок, обмежений вивід (перший + найновіші, застосовано обмеження тексту/вкладень) |
+| Двоє людей друкують у груповому чаті                               | N рядків від M відправників | M+ кроків (по одному на bucket відправника) | M+ кроків — групові чати не об’єднуються                                |
 
-## Наздоганяння після простою Gateway
+## Надолуження після простою Gateway
 
-Коли Gateway офлайн (збій, перезапуск, сон Mac, вимкнена машина), `imsg watch` відновлюється з поточного стану `chat.db`, щойно Gateway знову запускається — усе, що надійшло під час проміжку, типово ніколи не буде побачено. Catchup повторно відтворює ці повідомлення під час наступного запуску, щоб агент мовчки не пропускав вхідний трафік.
+Коли Gateway офлайн (збій, перезапуск, сон Mac, вимкнена машина), `imsg watch` після повернення Gateway відновлюється з поточного стану `chat.db` — усе, що надійшло під час прогалини, за замовчуванням ніколи не буде побачено. Catchup відтворює ці повідомлення під час наступного запуску, щоб агент не пропускав вхідний трафік мовчки.
 
-Catchup **вимкнено типово**. Увімкніть його для кожного каналу:
+Catchup **вимкнено за замовчуванням**. Увімкніть його для окремого каналу:
 
 ```ts
 channels: {
@@ -678,13 +678,13 @@ channels: {
 
 ### Як це виконується
 
-Один прохід на кожен запуск `monitorIMessageProvider`, у послідовності: готовність `imsg launch` → `watch.subscribe` → `performIMessageCatchup` → цикл live-надсилання. Сам Catchup використовує `chats.list` + `messages.history` для кожного чату через той самий JSON-RPC клієнт, який використовує `imsg watch`. Усе, що надходить під час проходу Catchup, проходить через live-надсилання звичайним чином; наявний кеш inbound-dedupe поглинає будь-яке перекриття з повторно відтвореними рядками.
+Один прохід на кожен запуск `monitorIMessageProvider`, послідовність така: готовність `imsg launch` → `watch.subscribe` → `performIMessageCatchup` → цикл live-надсилання. Сам Catchup використовує `chats.list` + `messages.history` для кожного чату через той самий JSON-RPC-клієнт, який використовує `imsg watch`. Усе, що надходить під час проходу Catchup, проходить через live-надсилання у звичайному режимі; наявний кеш inbound-dedupe поглинає будь-яке перекриття з відтвореними рядками.
 
-Кожен повторно відтворений рядок подається через live-шлях надсилання (`evaluateIMessageInbound` + `dispatchInboundMessage`), тому allowlist-и, політика груп, debouncer, echo cache і сповіщення про прочитання поводяться однаково для повторно відтворених і live-повідомлень.
+Кожен відтворений рядок подається через live-шлях надсилання (`evaluateIMessageInbound` + `dispatchInboundMessage`), тож allowlist, політика груп, debouncer, echo cache і сповіщення про прочитання поводяться однаково для відтворених і live-повідомлень.
 
 ### Семантика курсора й повторів
 
-Catchup зберігає курсор для кожного облікового запису в `<openclawStateDir>/imessage/catchup/<account>__<hash>.json` (типовий каталог стану OpenClaw — `~/.openclaw`, його можна перевизначити через `OPENCLAW_STATE_DIR`):
+Catchup зберігає курсор для кожного облікового запису в `<openclawStateDir>/imessage/catchup/<account>__<hash>.json` (каталог стану OpenClaw за замовчуванням — `~/.openclaw`, можна перевизначити через `OPENCLAW_STATE_DIR`):
 
 ```json
 {
@@ -695,11 +695,11 @@ Catchup зберігає курсор для кожного облікового
 }
 ```
 
-- Курсор просувається після кожного успішного надсилання й утримується, коли надсилання рядка кидає помилку — наступний запуск повторює той самий рядок з утриманого курсора.
-- Після `maxFailureRetries` послідовних кидань помилки для того самого `guid` Catchup записує `warn` і примусово просуває курсор за проблемне повідомлення, щоб наступні запуски могли рухатися далі.
-- GUID-и, щодо яких уже припинено спроби, пропускаються під час виявлення (без спроби надсилання) у подальших запусках і рахуються в `skippedGivenUp` у підсумку запуску.
+- Курсор просувається після кожного успішного надсилання й утримується, коли надсилання рядка кидає помилку — наступний запуск повторює той самий рядок із утриманого курсора.
+- Після `maxFailureRetries` послідовних помилок для того самого `guid`, Catchup записує `warn` і примусово просуває курсор повз застрягле повідомлення, щоб подальші запуски могли рухатися далі.
+- GUID, щодо яких уже відмовилися, пропускаються відразу (без спроби надсилання) у подальших запусках і враховуються в `skippedGivenUp` у підсумку запуску.
 
-### Видимі оператору сигнали
+### Сигнали, видимі оператору
 
 ```
 imessage catchup: replayed=N skippedFromMe=… skippedGivenUp=… failed=… givenUp=… fetchedCount=…
@@ -707,19 +707,19 @@ imessage catchup: giving up on guid=<guid> after <N> failures; advancing cursor 
 imessage catchup: fetched <X> rows across chats, capped to perRunLimit=<Y>
 ```
 
-Рядок `WARN ... capped to perRunLimit` означає, що один запуск не вичерпав увесь backlog. Збільште `perRunLimit` (макс. 500), якщо ваші проміжки регулярно перевищують типовий прохід у 50 рядків.
+Рядок `WARN ... capped to perRunLimit` означає, що один запуск не вичерпав увесь backlog. Збільште `perRunLimit` (макс. 500), якщо ваші прогалини регулярно перевищують стандартний прохід у 50 рядків.
 
-### Коли залишати вимкненим
+### Коли залишити вимкненим
 
-- Gateway працює безперервно з watchdog-автоперезапуском, а проміжки завжди < кількох секунд — типове вимкнення підходить.
-- Обсяг особистих повідомлень низький, а пропущені повідомлення не змінять поведінку агента — початкове вікно `firstRunLookbackMinutes` може надіслати несподіваний старий контекст під час першого ввімкнення.
+- Gateway працює безперервно з автоматичним перезапуском через watchdog, а прогалини завжди < кількох секунд — стандартне вимкнене значення підходить.
+- Обсяг DM низький, і пропущені повідомлення не змінять поведінку агента — початкове вікно `firstRunLookbackMinutes` може надіслати неочікуваний старий контекст під час першого ввімкнення.
 
-Коли ви вмикаєте Catchup, перший запуск без курсора дивиться назад лише на `firstRunLookbackMinutes` (типово 30 min), а не на повне вікно `maxAgeMinutes` — це запобігає повторному відтворенню довгої історії повідомлень, що передували ввімкненню.
+Коли ви вмикаєте Catchup, перший запуск без курсора дивиться назад лише на `firstRunLookbackMinutes` (30 хв за замовчуванням), а не на повне вікно `maxAgeMinutes` — це запобігає відтворенню довгої історії повідомлень, що передували ввімкненню.
 
 ## Усунення несправностей
 
 <AccordionGroup>
-  <Accordion title="imsg не знайдено або RPC не підтримується">
+  <Accordion title="imsg not found or RPC unsupported">
     Перевірте бінарний файл і підтримку RPC:
 
     ```bash
@@ -728,19 +728,19 @@ imessage catchup: fetched <X> rows across chats, capped to perRunLimit=<Y>
     openclaw channels status --probe
     ```
 
-    Якщо probe повідомляє, що RPC не підтримується, оновіть `imsg`. Якщо дії private API недоступні, запустіть `imsg launch` у сеансі користувача macOS, який увійшов у систему, і повторіть probe. Якщо Gateway не запущено на macOS, використайте налаштування віддаленого Mac через SSH вище замість типового локального шляху `imsg`.
+    Якщо probe повідомляє, що RPC не підтримується, оновіть `imsg`. Якщо дії приватного API недоступні, запустіть `imsg launch` у сеансі користувача macOS, який увійшов у систему, і знову виконайте probe. Якщо Gateway не працює на macOS, використайте налаштування віддаленого Mac через SSH вище замість стандартного локального шляху `imsg`.
 
   </Accordion>
 
-  <Accordion title="Gateway не запущено на macOS">
-    Типовий `cliPath: "imsg"` має виконуватися на Mac, де виконано вхід у Messages. На Linux або Windows встановіть `channels.imessage.cliPath` на wrapper-скрипт, який підключається до цього Mac через SSH і запускає `imsg "$@"`.
+  <Accordion title="Gateway is not running on macOS">
+    Стандартний `cliPath: "imsg"` має виконуватися на Mac, який увійшов у Messages. На Linux або Windows встановіть `channels.imessage.cliPath` на wrapper-скрипт, який підключається до цього Mac через SSH і запускає `imsg "$@"`.
 
 ```bash
 #!/usr/bin/env bash
 exec ssh -T messages-mac imsg "$@"
 ```
 
-    Потім запустіть:
+    Потім виконайте:
 
 ```bash
 openclaw channels status --probe --channel imessage
@@ -748,7 +748,7 @@ openclaw channels status --probe --channel imessage
 
   </Accordion>
 
-  <Accordion title="Особисті повідомлення ігноруються">
+  <Accordion title="DMs are ignored">
     Перевірте:
 
     - `channels.imessage.dmPolicy`
@@ -757,7 +757,7 @@ openclaw channels status --probe --channel imessage
 
   </Accordion>
 
-  <Accordion title="Групові повідомлення ігноруються">
+  <Accordion title="Group messages are ignored">
     Перевірте:
 
     - `channels.imessage.groupPolicy`
@@ -767,18 +767,18 @@ openclaw channels status --probe --channel imessage
 
   </Accordion>
 
-  <Accordion title="Віддалені вкладення не працюють">
+  <Accordion title="Remote attachments fail">
     Перевірте:
 
     - `channels.imessage.remoteHost`
     - `channels.imessage.remoteAttachmentRoots`
-    - автентифікацію ключем SSH/SCP з хоста Gateway
+    - автентифікацію SSH/SCP-ключем із хоста Gateway
     - наявність ключа хоста в `~/.ssh/known_hosts` на хості Gateway
     - доступність віддаленого шляху для читання на Mac, де працює Messages
 
   </Accordion>
 
-  <Accordion title="Запити дозволів macOS було пропущено">
+  <Accordion title="macOS permission prompts were missed">
     Повторно запустіть в інтерактивному GUI-терміналі в тому самому контексті користувача/сеансу й підтвердьте запити:
 
     ```bash
@@ -786,7 +786,7 @@ openclaw channels status --probe --channel imessage
     imsg send <handle> "test"
     ```
 
-    Переконайтеся, що Full Disk Access + Automation надані для контексту процесу, який запускає OpenClaw/`imsg`.
+    Підтвердьте, що Full Disk Access + Automation надано для контексту процесу, який запускає OpenClaw/`imsg`.
 
   </Accordion>
 </AccordionGroup>
@@ -800,9 +800,9 @@ openclaw channels status --probe --channel imessage
 ## Пов’язане
 
 - [Огляд каналів](/uk/channels) — усі підтримувані канали
-- [Видалення BlueBubbles і шлях imsg iMessage](/uk/announcements/bluebubbles-imessage) — оголошення та підсумок міграції
-- [Перехід із BlueBubbles](/uk/channels/imessage-from-bluebubbles) — таблиця перекладу конфігурації та покрокове переключення
-- [Pairing](/uk/channels/pairing) — автентифікація особистих повідомлень і потік pairing
-- [Групи](/uk/channels/groups) — поведінка групового чату й gating за згадками
+- [Вилучення BlueBubbles і шлях imsg iMessage](/uk/announcements/bluebubbles-imessage) — оголошення й підсумок міграції
+- [Перехід із BlueBubbles](/uk/channels/imessage-from-bluebubbles) — таблиця перекладу конфігурації та покрокове перемикання
+- [Pairing](/uk/channels/pairing) — автентифікація DM і потік pairing
+- [Групи](/uk/channels/groups) — поведінка групових чатів і gating згадок
 - [Маршрутизація каналів](/uk/channels/channel-routing) — маршрутизація сеансів для повідомлень
-- [Безпека](/uk/gateway/security) — модель доступу та посилення захисту
+- [Безпека](/uk/gateway/security) — модель доступу й зміцнення

@@ -2,40 +2,40 @@
 read_when:
     - iMessage desteğini ayarlama
     - iMessage gönderme/alma hata ayıklaması
-summary: imsg aracılığıyla yerel iMessage desteği (stdio üzerinden JSON-RPC); yanıtlar, tapback'ler, efektler, ekler ve grup yönetimi için özel API eylemleriyle. Ana makine gereksinimleri uygun olduğunda yeni OpenClaw iMessage kurulumları için tercih edilir.
+summary: Ana makine gereksinimleri uygun olduğunda yeni OpenClaw iMessage kurulumları için tercih edilen seçenek olan imsg (stdio üzerinden JSON-RPC) aracılığıyla yerel iMessage desteği; yanıtlar, dokunma tepkileri, efektler, ekler ve grup yönetimi için özel API eylemleriyle.
 title: iMessage
 x-i18n:
-    generated_at: "2026-05-12T00:56:06Z"
+    generated_at: "2026-05-13T02:51:05Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 56b0c284a5105bf9c2863f46731fb61628e264ce35c316014f25f15907142430
+    source_hash: 8125beab13c067e287f4cc041b65632989b8aaadce9b3719cc5e7312a0927aeb
     source_path: channels/imessage.md
     workflow: 16
 ---
 
 <Note>
-OpenClaw iMessage dağıtımları için, oturum açılmış bir macOS Messages konağında `imsg` kullanın. Gateway'iniz Linux veya Windows üzerinde çalışıyorsa `channels.imessage.cliPath` değerini Mac üzerinde `imsg` çalıştıran bir SSH sarmalayıcısına yönlendirin.
+OpenClaw iMessage dağıtımları için, oturum açılmış bir macOS Messages ana makinesinde `imsg` kullanın. Gateway Linux veya Windows üzerinde çalışıyorsa, `channels.imessage.cliPath` değerini Mac üzerinde `imsg` çalıştıran bir SSH sarmalayıcısına yönlendirin.
 
-**Gateway kesinti telafisi isteğe bağlıdır.** Etkinleştirildiğinde (`channels.imessage.catchup.enabled: true`), gateway bir sonraki başlatmada çevrimdışıyken (çökme, yeniden başlatma, Mac uyku modu) `chat.db` içine düşen gelen iletileri yeniden oynatır. Varsayılan olarak devre dışıdır — bkz. [Gateway kesintisinden sonra telafi](#catching-up-after-gateway-downtime). [openclaw#78649](https://github.com/openclaw/openclaw/issues/78649) kapatır.
+**Gateway kesinti yakalaması isteğe bağlıdır.** Etkinleştirildiğinde (`channels.imessage.catchup.enabled: true`), gateway çevrimdışıyken (çökme, yeniden başlatma, Mac uyku modu) `chat.db` içine düşen gelen iletileri bir sonraki başlangıçta yeniden oynatır. Varsayılan olarak devre dışıdır — bkz. [Gateway kesintisinden sonra yakalama](#catching-up-after-gateway-downtime). [openclaw#78649](https://github.com/openclaw/openclaw/issues/78649) kapatır.
 </Note>
 
 <Warning>
-BlueBubbles desteği kaldırıldı. `channels.bluebubbles` yapılandırmalarını `channels.imessage` öğesine taşıyın; OpenClaw iMessage'ı yalnızca `imsg` üzerinden destekler. Kısa duyuru için [BlueBubbles kaldırılması ve imsg iMessage yolu](/tr/announcements/bluebubbles-imessage) ile veya tam geçiş tablosu için [BlueBubbles'tan geliyorsanız](/tr/channels/imessage-from-bluebubbles) ile başlayın.
+BlueBubbles desteği kaldırıldı. `channels.bluebubbles` yapılandırmalarını `channels.imessage` yapılandırmalarına taşıyın; OpenClaw iMessage desteğini yalnızca `imsg` üzerinden sağlar. Kısa duyuru için [BlueBubbles kaldırma ve imsg iMessage yolu](/tr/announcements/bluebubbles-imessage) ile veya tam geçiş tablosu için [BlueBubbles'tan gelenler](/tr/channels/imessage-from-bluebubbles) ile başlayın.
 </Warning>
 
-Durum: yerel harici CLI entegrasyonu. Gateway, `imsg rpc` başlatır ve stdio üzerinde JSON-RPC ile iletişim kurar (ayrı daemon/port yok). Gelişmiş eylemler `imsg launch` ve başarılı bir özel API yoklaması gerektirir.
+Durum: yerel harici CLI entegrasyonu. Gateway `imsg rpc` sürecini başlatır ve stdio üzerinden JSON-RPC ile iletişim kurar (ayrı daemon/port yoktur). Gelişmiş eylemler `imsg launch` ve başarılı bir özel API yoklaması gerektirir.
 
 <CardGroup cols={3}>
-  <Card title="Private API actions" icon="wand-sparkles" href="#private-api-actions">
+  <Card title="Özel API eylemleri" icon="wand-sparkles" href="#private-api-actions">
     Yanıtlar, tapback'ler, efektler, ekler ve grup yönetimi.
   </Card>
-  <Card title="Pairing" icon="link" href="/tr/channels/pairing">
+  <Card title="Eşleştirme" icon="link" href="/tr/channels/pairing">
     iMessage DM'leri varsayılan olarak eşleştirme modunu kullanır.
   </Card>
-  <Card title="Remote Mac" icon="terminal" href="#remote-mac-over-ssh">
+  <Card title="Uzak Mac" icon="terminal" href="#remote-mac-over-ssh">
     Gateway Messages Mac üzerinde çalışmıyorsa bir SSH sarmalayıcısı kullanın.
   </Card>
-  <Card title="Configuration reference" icon="settings" href="/tr/gateway/config-channels#imessage">
+  <Card title="Yapılandırma başvurusu" icon="settings" href="/tr/gateway/config-channels#imessage">
     Tam iMessage alan başvurusu.
   </Card>
 </CardGroup>
@@ -43,9 +43,9 @@ Durum: yerel harici CLI entegrasyonu. Gateway, `imsg rpc` başlatır ve stdio ü
 ## Hızlı kurulum
 
 <Tabs>
-  <Tab title="Local Mac (fast path)">
+  <Tab title="Yerel Mac (hızlı yol)">
     <Steps>
-      <Step title="Install and verify imsg">
+      <Step title="imsg kurun ve doğrulayın">
 
 ```bash
 brew install steipete/tap/imsg
@@ -56,7 +56,7 @@ openclaw channels status --probe
 
       </Step>
 
-      <Step title="Configure OpenClaw">
+      <Step title="OpenClaw'ı yapılandırın">
 
 ```json5
 {
@@ -72,7 +72,7 @@ openclaw channels status --probe
 
       </Step>
 
-      <Step title="Start gateway">
+      <Step title="Gateway'i başlatın">
 
 ```bash
 openclaw gateway
@@ -80,28 +80,28 @@ openclaw gateway
 
       </Step>
 
-      <Step title="Approve first DM pairing (default dmPolicy)">
+      <Step title="İlk DM eşleştirmesini onaylayın (varsayılan dmPolicy)">
 
 ```bash
 openclaw pairing list imessage
 openclaw pairing approve imessage <CODE>
 ```
 
-        Eşleştirme isteklerinin süresi 1 saat sonra dolar.
+        Eşleştirme istekleri 1 saat sonra sona erer.
       </Step>
     </Steps>
 
   </Tab>
 
-  <Tab title="Remote Mac over SSH">
-    OpenClaw yalnızca stdio uyumlu bir `cliPath` gerektirir; bu nedenle `cliPath` değerini uzak bir Mac'e SSH yapan ve `imsg` çalıştıran bir sarmalayıcı betiğine yönlendirebilirsiniz.
+  <Tab title="SSH üzerinden uzak Mac">
+    OpenClaw yalnızca stdio uyumlu bir `cliPath` gerektirir, bu yüzden `cliPath` değerini uzak bir Mac'e SSH yapan ve `imsg` çalıştıran bir sarmalayıcı betiğine yönlendirebilirsiniz.
 
 ```bash
 #!/usr/bin/env bash
 exec ssh -T gateway-host imsg "$@"
 ```
 
-    Ekler etkin olduğunda önerilen yapılandırma:
+    Ekler etkinleştirildiğinde önerilen yapılandırma:
 
 ```json5
 {
@@ -120,20 +120,20 @@ exec ssh -T gateway-host imsg "$@"
 }
 ```
 
-    `remoteHost` ayarlanmazsa OpenClaw bunu SSH sarmalayıcı betiğini ayrıştırarak otomatik algılamaya çalışır.
-    `remoteHost`, `host` veya `user@host` olmalıdır (boşluk veya SSH seçenekleri yok).
-    OpenClaw, SCP için katı konak anahtarı denetimi kullanır; bu nedenle aktarma konağı anahtarı `~/.ssh/known_hosts` içinde zaten mevcut olmalıdır.
-    Ek yolları izin verilen köklere (`attachmentRoots` / `remoteAttachmentRoots`) göre doğrulanır.
+    `remoteHost` ayarlanmadıysa, OpenClaw SSH sarmalayıcı betiğini ayrıştırarak bunu otomatik algılamaya çalışır.
+    `remoteHost`, `host` veya `user@host` olmalıdır (boşluk veya SSH seçeneği yok).
+    OpenClaw SCP için katı ana makine anahtarı denetimi kullanır; bu yüzden aktarma ana makinesi anahtarı `~/.ssh/known_hosts` içinde zaten bulunmalıdır.
+    Ek yolları izin verilen köklere göre doğrulanır (`attachmentRoots` / `remoteAttachmentRoots`).
 
   </Tab>
 </Tabs>
 
 ## Gereksinimler ve izinler (macOS)
 
-- Messages, `imsg` çalıştıran Mac'te oturum açmış olmalıdır.
-- OpenClaw/`imsg` çalıştıran süreç bağlamı için Tam Disk Erişimi gerekir (Messages DB erişimi).
-- Messages.app üzerinden ileti göndermek için Otomasyon izni gerekir.
-- Gelişmiş eylemler için (tepki / düzenleme / göndermeyi geri alma / iş parçacıklı yanıt / efektler / grup işlemleri), System Integrity Protection devre dışı bırakılmalıdır — aşağıdaki [imsg özel API'sini etkinleştirme](#enabling-the-imsg-private-api) bölümüne bakın. Temel metin ve medya gönderme/alma onsuz çalışır.
+- `imsg` çalıştıran Mac üzerinde Messages oturumu açık olmalıdır.
+- OpenClaw/`imsg` çalıştıran süreç bağlamı için Full Disk Access gerekir (Messages DB erişimi).
+- Messages.app üzerinden ileti göndermek için Automation izni gerekir.
+- Gelişmiş eylemler (tepki / düzenleme / göndermeyi geri alma / iş parçacıklı yanıt / efektler / grup işlemleri) için System Integrity Protection devre dışı olmalıdır — aşağıdaki [imsg özel API'sini etkinleştirme](#enabling-the-imsg-private-api) bölümüne bakın. Temel metin ve medya gönderme/alma onsuz çalışır.
 
 <Tip>
 İzinler süreç bağlamı başına verilir. Gateway başsız çalışıyorsa (LaunchAgent/SSH), istemleri tetiklemek için aynı bağlamda tek seferlik etkileşimli bir komut çalıştırın:
@@ -148,26 +148,26 @@ imsg send <handle> "test"
 
 ## imsg özel API'sini etkinleştirme
 
-`imsg` iki çalışma moduyla gelir:
+`imsg` iki işletim moduyla gelir:
 
-- **Temel mod** (varsayılan, SIP değişikliği gerekmez): `send` üzerinden giden metin ve medya, gelen izleme/geçmiş, sohbet listesi. Yeni bir `brew install steipete/tap/imsg` kurulumundan ve yukarıdaki standart macOS izinlerinden sonra kutudan çıktığı haliyle elde ettiğiniz budur.
-- **Özel API modu**: `imsg`, dahili `IMCore` işlevlerini çağırmak için `Messages.app` içine bir yardımcı dylib enjekte eder. `react`, `edit`, `unsend`, `reply` (iş parçacıklı), `sendWithEffect`, `renameGroup`, `setGroupIcon`, `addParticipant`, `removeParticipant`, `leaveGroup`, ayrıca yazıyor göstergeleri ve okundu bilgilerini açan budur.
+- **Temel mod** (varsayılan, SIP değişikliği gerekmez): `send` üzerinden giden metin ve medya, gelen izleme/geçmiş, sohbet listesi. Yeni bir `brew install steipete/tap/imsg` ve yukarıdaki standart macOS izinleriyle kutudan çıktığı gibi elde ettiğiniz budur.
+- **Özel API modu**: `imsg`, dahili `IMCore` işlevlerini çağırmak için `Messages.app` içine bir yardımcı dylib enjekte eder. Bu, `react`, `edit`, `unsend`, `reply` (iş parçacıklı), `sendWithEffect`, `renameGroup`, `setGroupIcon`, `addParticipant`, `removeParticipant`, `leaveGroup` ve ayrıca yazıyor göstergeleri ile okundu bilgilerini açar.
 
-Bu kanal sayfasının belgelediği gelişmiş eylem yüzeyine ulaşmak için Özel API modu gerekir. `imsg` README gereksinim konusunda açıktır:
+Bu kanal sayfasının belgelediği gelişmiş eylem yüzeyine ulaşmak için Özel API modu gerekir. `imsg` README gereksinim konusunda nettir:
 
-> `read`, `typing`, `launch`, köprü destekli zengin gönderim, ileti mutasyonu ve sohbet yönetimi gibi gelişmiş özellikler isteğe bağlıdır. SIP'in devre dışı bırakılmasını ve `Messages.app` içine bir yardımcı dylib enjekte edilmesini gerektirir. `imsg launch`, SIP etkinken enjekte etmeyi reddeder.
+> `read`, `typing`, `launch`, köprü destekli zengin gönderim, ileti mutasyonu ve sohbet yönetimi gibi gelişmiş özellikler isteğe bağlıdır. SIP'nin devre dışı olmasını ve `Messages.app` içine bir yardımcı dylib enjekte edilmesini gerektirirler. SIP etkinken `imsg launch` enjeksiyonu reddeder.
 
-Yardımcı enjeksiyon tekniği, Messages özel API'lerine ulaşmak için `imsg`'in kendi dylib'ini kullanır. OpenClaw iMessage yolunda üçüncü taraf sunucu veya BlueBubbles çalışma zamanı yoktur.
+Yardımcı enjeksiyon tekniği, Messages özel API'lerine ulaşmak için `imsg`'nin kendi dylib'ini kullanır. OpenClaw iMessage yolunda üçüncü taraf sunucu veya BlueBubbles runtime yoktur.
 
 <Warning>
-**SIP'i devre dışı bırakmak gerçek bir güvenlik ödünleşimidir.** SIP, macOS'in değiştirilmiş sistem kodunu çalıştırmaya karşı temel korumalarından biridir; sistem genelinde kapatılması ek saldırı yüzeyi ve yan etkiler açar. Özellikle, **Apple Silicon Mac'lerde SIP'i devre dışı bırakmak, Mac'inize iOS uygulamaları yükleme ve çalıştırma yeteneğini de devre dışı bırakır**.
+**SIP'yi devre dışı bırakmak gerçek bir güvenlik ödünüdür.** SIP, macOS'in değiştirilmiş sistem kodu çalıştırmaya karşı temel korumalarından biridir; sistem genelinde kapatmak ek saldırı yüzeyi ve yan etkiler açar. Özellikle, **Apple Silicon Mac'lerde SIP'yi devre dışı bırakmak, Mac'inize iOS uygulamaları kurma ve çalıştırma yeteneğini de devre dışı bırakır**.
 
-Bunu varsayılan değil, bilinçli bir operasyonel seçim olarak ele alın. Tehdit modeliniz SIP'in kapalı olmasını kaldıramıyorsa paketlenen iMessage temel modla sınırlıdır — yalnızca metin ve medya gönderme/alma, tepki / düzenleme / göndermeyi geri alma / efektler / grup işlemleri yok.
+Bunu varsayılan değil, bilinçli bir operasyonel tercih olarak ele alın. Tehdit modeliniz SIP'nin kapalı olmasını tolere edemiyorsa, paketlenmiş iMessage temel modla sınırlıdır — yalnızca metin ve medya gönderme/alma, tepki / düzenleme / göndermeyi geri alma / efektler / grup işlemleri yoktur.
 </Warning>
 
 ### Kurulum
 
-1. Messages.app çalıştıran Mac'te **`imsg` kurun (veya yükseltin)**:
+1. Messages.app çalıştıran Mac üzerinde **`imsg` kurun (veya yükseltin)**:
 
    ```bash
    brew install steipete/tap/imsg
@@ -175,23 +175,23 @@ Bunu varsayılan değil, bilinçli bir operasyonel seçim olarak ele alın. Tehd
    imsg status --json
    ```
 
-   `imsg status --json` çıktısı `bridge_version`, `rpc_methods` ve yöntem başına `selectors` bildirir; böylece başlamadan önce mevcut derlemenin neyi desteklediğini görebilirsiniz.
+   `imsg status --json` çıktısı `bridge_version`, `rpc_methods` ve yöntem başına `selectors` bildirir; böylece başlamadan önce geçerli derlemenin neyi desteklediğini görebilirsiniz.
 
-2. **System Integrity Protection'ı devre dışı bırakın.** Bu macOS sürümüne özgüdür çünkü temeldeki Apple gereksinimi işletim sistemine ve donanıma bağlıdır:
-   - **macOS 10.13–10.15 (Sierra–Catalina):** Terminal üzerinden Library Validation'ı devre dışı bırakın, Recovery Mode'a yeniden başlatın, `csrutil disable` çalıştırın, yeniden başlatın.
+2. **System Integrity Protection'ı devre dışı bırakın.** Bu macOS sürümüne özeldir, çünkü alttaki Apple gereksinimi işletim sistemine ve donanıma bağlıdır:
+   - **macOS 10.13-10.15 (Sierra-Catalina):** Terminal üzerinden Library Validation'ı devre dışı bırakın, Recovery Mode'a yeniden başlatın, `csrutil disable` çalıştırın, yeniden başlatın.
    - **macOS 11+ (Big Sur ve sonrası), Intel:** Recovery Mode (veya Internet Recovery), `csrutil disable`, yeniden başlatın.
-   - **macOS 11+, Apple Silicon:** Recovery'ye girmek için güç düğmesi başlatma dizisi; güncel macOS sürümlerinde Continue'a tıklarken **Sol Shift** tuşunu basılı tutun, sonra `csrutil disable`. Sanal makine kurulumları ayrı bir akış izler — önce bir VM anlık görüntüsü alın.
-   - **macOS 26 / Tahoe:** library-validation ilkeleri ve `imagent` özel yetki denetimleri daha da sıkılaştı; `imsg` yetişmek için güncellenmiş bir derlemeye ihtiyaç duyabilir. Büyük bir macOS yükseltmesinden sonra `imsg launch` enjeksiyonu veya belirli `selectors` false döndürmeye başlarsa SIP adımının başarılı olduğunu varsaymadan önce `imsg` sürüm notlarını kontrol edin.
+   - **macOS 11+, Apple Silicon:** Recovery'ye girmek için güç düğmesi başlangıç dizisi; son macOS sürümlerinde Continue'a tıklarken **Left Shift** tuşunu basılı tutun, ardından `csrutil disable`. Sanal makine kurulumları ayrı bir akış izler — önce bir VM anlık görüntüsü alın.
+   - **macOS 26 / Tahoe:** library-validation ilkeleri ve `imagent` özel yetki denetimleri daha da sıkılaştı; `imsg` güncel kalmak için güncellenmiş bir derleme gerektirebilir. Büyük bir macOS yükseltmesinden sonra `imsg launch` enjeksiyonu veya belirli `selectors` false döndürmeye başlarsa, SIP adımının başarılı olduğunu varsaymadan önce `imsg` sürüm notlarını kontrol edin.
 
-   `imsg launch` çalıştırmadan önce SIP'i devre dışı bırakmak için Mac'inize yönelik Apple Recovery-mode akışını izleyin.
+   `imsg launch` çalıştırmadan önce SIP'yi devre dışı bırakmak için Mac'inize yönelik Apple Recovery-mode akışını izleyin.
 
-3. **Yardımcıyı enjekte edin.** SIP devre dışıyken ve Messages.app oturum açmışken:
+3. **Yardımcıyı enjekte edin.** SIP devre dışıyken ve Messages.app oturumu açıkken:
 
    ```bash
    imsg launch
    ```
 
-   `imsg launch`, SIP hâlâ etkinken enjekte etmeyi reddeder; bu nedenle bu, 2. adımın tutunduğunu doğrulama işlevi de görür.
+   SIP hâlâ etkinken `imsg launch` enjeksiyonu reddeder; bu yüzden bu, 2. adımın uygulandığına dair bir onay işlevi de görür.
 
 4. **Köprüyü OpenClaw'dan doğrulayın:**
 
@@ -199,63 +199,63 @@ Bunu varsayılan değil, bilinçli bir operasyonel seçim olarak ele alın. Tehd
    openclaw channels status --probe
    ```
 
-   iMessage girdisi `works` bildirmeli ve `imsg status --json | jq '.selectors'`, `retractMessagePart: true` ile birlikte macOS derlemenizin sunduğu düzenleme / yazıyor / okundu selector'larını göstermelidir. OpenClaw Plugin içinde `actions.ts` dosyasındaki yöntem başına geçitleme yalnızca altında yatan selector'ı `true` olan eylemleri duyurur; bu nedenle ajanın araç listesinde gördüğünüz eylem yüzeyi köprünün bu konakta gerçekten yapabildiklerini yansıtır.
+   iMessage girdisi `works` bildirmelidir ve `imsg status --json | jq '.selectors'` çıktısı `retractMessagePart: true` ile macOS derlemenizin sunduğu düzenleme / yazıyor / okundu seçicilerini göstermelidir. `actions.ts` içindeki OpenClaw Plugin yöntem başına kapılama yalnızca alttaki seçicisi `true` olan eylemleri duyurur; bu yüzden aracın araç listesinde gördüğünüz eylem yüzeyi, köprünün bu ana makinede gerçekten yapabildiklerini yansıtır.
 
-`openclaw channels status --probe` kanalı `works` olarak bildiriyor ama belirli eylemler gönderim sırasında "iMessage `<action>` requires the imsg private API bridge" hatası veriyorsa `imsg launch` komutunu yeniden çalıştırın — yardımcı devreden çıkabilir (Messages.app yeniden başlatma, OS güncellemesi vb.) ve önbelleğe alınmış `available: true` durumu, sonraki yoklama yenileyene kadar eylemleri duyurmaya devam eder.
+`openclaw channels status --probe` kanalı `works` olarak bildiriyor ancak belirli eylemler gönderim sırasında "iMessage `<action>` requires the imsg private API bridge" hatası atıyorsa, `imsg launch` komutunu yeniden çalıştırın — yardımcı devreden çıkabilir (Messages.app yeniden başlatma, işletim sistemi güncellemesi vb.) ve önbelleğe alınmış `available: true` durumu, bir sonraki yoklama yenileyene kadar eylemleri duyurmaya devam eder.
 
-### SIP'i devre dışı bırakamadığınızda
+### SIP'yi devre dışı bırakamadığınızda
 
-SIP'in devre dışı bırakılması tehdit modeliniz için kabul edilebilir değilse:
+SIP'nin devre dışı olması tehdit modeliniz için kabul edilebilir değilse:
 
 - `imsg` temel moda geri döner — yalnızca metin + medya + alma.
-- OpenClaw Plugin metin/medya gönderimini ve gelen izlemeyi hâlâ duyurur; yalnızca `react`, `edit`, `unsend`, `reply`, `sendWithEffect` ve grup işlemlerini eylem yüzeyinden gizler (yöntem başına yetenek geçidine göre).
-- Birincil cihazlarınızda SIP'i etkin tutarken iMessage iş yükü için SIP kapalı ayrı bir Apple Silicon olmayan Mac (veya ayrılmış bot Mac) çalıştırabilirsiniz. Aşağıdaki [Ayrılmış bot macOS kullanıcısı (ayrı iMessage kimliği)](#deployment-patterns) bölümüne bakın.
+- OpenClaw Plugin metin/medya gönderimini ve gelen izlemeyi hâlâ duyurur; yalnızca `react`, `edit`, `unsend`, `reply`, `sendWithEffect` ve grup işlemlerini eylem yüzeyinden gizler (yöntem başına yetenek kapısına göre).
+- Birincil cihazlarınızda SIP'yi etkin tutarken, iMessage iş yükü için SIP kapalı ayrı bir Apple Silicon olmayan Mac (veya ayrılmış bot Mac) çalıştırabilirsiniz. Aşağıdaki [Ayrılmış bot macOS kullanıcısı (ayrı iMessage kimliği)](#deployment-patterns) bölümüne bakın.
 
 ## Erişim denetimi ve yönlendirme
 
 <Tabs>
-  <Tab title="DM policy">
+  <Tab title="DM ilkesi">
     `channels.imessage.dmPolicy` doğrudan iletileri denetler:
 
     - `pairing` (varsayılan)
     - `allowlist`
-    - `open` (`allowFrom` öğesinin `"*"` içermesini gerektirir)
+    - `open` (`allowFrom` içinde `"*"` bulunmasını gerektirir)
     - `disabled`
 
     İzin listesi alanı: `channels.imessage.allowFrom`.
 
-    İzin listesi girdileri handle'lar, statik gönderici erişim grupları (`accessGroup:<name>`) veya sohbet hedefleri (`chat_id:*`, `chat_guid:*`, `chat_identifier:*`) olabilir.
+    İzin listesi girdileri gönderenleri tanımlamalıdır: tanıtıcılar veya statik gönderen erişim grupları (`accessGroup:<name>`). `chat_id:*`, `chat_guid:*` veya `chat_identifier:*` gibi sohbet hedefleri için `channels.imessage.groupAllowFrom` kullanın; sayısal `chat_id` kayıt anahtarları için `channels.imessage.groups` kullanın.
 
   </Tab>
 
-  <Tab title="Group policy + mentions">
+  <Tab title="Grup ilkesi + bahsetmeler">
     `channels.imessage.groupPolicy` grup işlemeyi denetler:
 
     - `allowlist` (yapılandırıldığında varsayılan)
     - `open`
     - `disabled`
 
-    Grup gönderici izin listesi: `channels.imessage.groupAllowFrom`.
+    Grup gönderen izin listesi: `channels.imessage.groupAllowFrom`.
 
-    `groupAllowFrom` girdileri statik gönderici erişim gruplarına da başvurabilir (`accessGroup:<name>`).
+    `groupAllowFrom` girdileri statik gönderen erişim gruplarına da başvurabilir (`accessGroup:<name>`).
 
-    Çalışma zamanı geri dönüşü: `groupAllowFrom` ayarlanmamışsa iMessage grup gönderici denetimleri, kullanılabiliyorsa `allowFrom` öğesine geri döner.
-    Çalışma zamanı notu: `channels.imessage` tamamen eksikse çalışma zamanı `groupPolicy="allowlist"` değerine geri döner ve bir uyarı kaydeder (`channels.defaults.groupPolicy` ayarlanmış olsa bile).
+    Runtime yedeği: `groupAllowFrom` ayarlanmamışsa, iMessage grup gönderen denetimleri `allowFrom` kullanır; DM ve grup kabulü farklı olmalıysa `groupAllowFrom` ayarlayın.
+    Runtime notu: `channels.imessage` tamamen eksikse, runtime `groupPolicy="allowlist"` değerine geri döner ve bir uyarı günlüğe yazar (`channels.defaults.groupPolicy` ayarlanmış olsa bile).
 
     <Warning>
-    Grup yönlendirmesinde arka arkaya çalışan **iki** izin listesi geçidi vardır ve ikisi de geçmelidir:
+    Grup yönlendirmede arka arkaya çalışan **iki** izin listesi kapısı vardır ve ikisi de geçmelidir:
 
-    1. **Gönderici / sohbet hedefi izin listesi** (`channels.imessage.groupAllowFrom`) — handle, `chat_guid`, `chat_identifier` veya `chat_id`.
-    2. **Grup kayıt defteri** (`channels.imessage.groups`) — `groupPolicy: "allowlist"` ile bu geçit ya `groups: { "*": { ... } }` joker girdisi (`allowAll = true` ayarlar) ya da `groups` altında açık bir `chat_id` girdisi gerektirir.
+    1. **Gönderen / sohbet hedefi izin listesi** (`channels.imessage.groupAllowFrom`) — tanıtıcı, `chat_guid`, `chat_identifier` veya `chat_id`.
+    2. **Grup kayıt defteri** (`channels.imessage.groups`) — `groupPolicy: "allowlist"` ile bu kapı ya bir `groups: { "*": { ... } }` joker girdisi (`allowAll = true` ayarlar) ya da `groups` altında açık bir `chat_id` başına girdi gerektirir.
 
-    2. geçitte hiçbir şey yoksa her grup iletisi düşürülür. Plugin, varsayılan günlük düzeyinde iki `warn` düzeyinde sinyal yayar:
+    2. kapıda hiçbir şey yoksa, her grup iletisi düşürülür. Plugin varsayılan günlük düzeyinde iki `warn` düzeyi sinyal yayar:
 
     - başlangıçta hesap başına tek seferlik: `imessage: groupPolicy="allowlist" but channels.imessage.groups is empty for account "<id>"`
-    - çalışma zamanında `chat_id` başına tek seferlik: `imessage: dropping group message from chat_id=<id> ...`
+    - runtime sırasında `chat_id` başına tek seferlik: `imessage: dropping group message from chat_id=<id> ...`
 
     DM'ler farklı bir kod yolunu kullandıkları için çalışmaya devam eder.
 
-    `groupPolicy: "allowlist"` altında grupların akmasını sağlamak için minimum yapılandırma:
+    `groupPolicy: "allowlist"` altında grupların akmaya devam etmesi için minimum yapılandırma:
 
     ```json5
     {
@@ -269,23 +269,23 @@ SIP'in devre dışı bırakılması tehdit modeliniz için kabul edilebilir değ
     }
     ```
 
-    Bu `warn` satırları Gateway günlüğünde görünüyorsa gate 2 düşüyordur; `groups` bloğunu ekleyin.
+    Bu `warn` satırları Gateway günlüğünde görünürse 2. geçit iletiyi düşürüyor demektir — `groups` bloğunu ekleyin.
     </Warning>
 
-    Gruplar için bahsetme geçitlemesinden söz edin:
+    Gruplar için bahsetme kapılaması:
 
     - iMessage yerel bahsetme meta verisine sahip değildir
-    - bahsetme algılama regex desenlerini kullanır (`agents.list[].groupChat.mentionPatterns`, yedek `messages.groupChat.mentionPatterns`)
-    - yapılandırılmış desen yoksa bahsetme geçitlemesi uygulanamaz
+    - bahsetme algılama regex desenlerini kullanır (`agents.list[].groupChat.mentionPatterns`, geri dönüş `messages.groupChat.mentionPatterns`)
+    - yapılandırılmış desen yoksa bahsetme kapılaması zorlanamaz
 
-    Yetkili gönderenlerden gelen denetim komutları, gruplarda bahsetme geçitlemesini atlayabilir.
+    Yetkili göndericilerden gelen denetim komutları gruplarda bahsetme kapılamasını atlayabilir.
 
     Grup başına `systemPrompt`:
 
-    `channels.imessage.groups.*` altındaki her giriş isteğe bağlı bir `systemPrompt` dizesi kabul eder. Değer, o gruptaki bir iletiyi işleyen her turda ajanın sistem istemine enjekte edilir. Çözümleme, `channels.whatsapp.groups` tarafından kullanılan grup başına istem çözümlemesini yansıtır:
+    `channels.imessage.groups.*` altındaki her girdi isteğe bağlı bir `systemPrompt` dizesi kabul eder. Değer, o gruptaki bir iletiyi işleyen her turda aracının sistem istemine enjekte edilir. Çözümleme, `channels.whatsapp.groups` tarafından kullanılan grup başına istem çözümlemesini yansıtır:
 
-    1. **Gruba özgü sistem istemi** (`groups["<chat_id>"].systemPrompt`): belirli grup girişi haritada mevcut olduğunda **ve** `systemPrompt` anahtarı tanımlı olduğunda kullanılır. `systemPrompt` boş bir dizeyse (`""`) joker bastırılır ve o gruba hiçbir sistem istemi uygulanmaz.
-    2. **Grup joker sistem istemi** (`groups["*"].systemPrompt`): belirli grup girişi haritada tamamen yoksa veya mevcut olup `systemPrompt` anahtarı tanımlamıyorsa kullanılır.
+    1. **Gruba özel sistem istemi** (`groups["<chat_id>"].systemPrompt`): belirli grup girdisi eşlemde mevcut olduğunda **ve** `systemPrompt` anahtarı tanımlı olduğunda kullanılır. `systemPrompt` boş bir dizeyse (`""`) joker bastırılır ve o gruba hiçbir sistem istemi uygulanmaz.
+    2. **Grup joker sistem istemi** (`groups["*"].systemPrompt`): belirli grup girdisi eşlemde tamamen yoksa veya mevcut olup `systemPrompt` anahtarı tanımlamıyorsa kullanılır.
 
     ```json5
     {
@@ -309,20 +309,20 @@ SIP'in devre dışı bırakılması tehdit modeliniz için kabul edilebilir değ
     }
     ```
 
-    Grup başına istemler yalnızca grup iletilerine uygulanır; bu kanaldaki doğrudan iletiler etkilenmez.
+    Grup başına istemler yalnızca grup iletilerine uygulanır — bu kanaldaki doğrudan iletiler etkilenmez.
 
   </Tab>
 
-  <Tab title="Sessions and deterministic replies">
+  <Tab title="Oturumlar ve deterministik yanıtlar">
     - DM'ler doğrudan yönlendirme kullanır; gruplar grup yönlendirmesi kullanır.
-    - Varsayılan `session.dmScope=main` ile iMessage DM'leri ajanın ana oturumunda birleşir.
-    - Grup oturumları yalıtılmıştır (`agent:<agentId>:imessage:group:<chat_id>`).
-    - Yanıtlar, kaynak kanal/hedef meta verisi kullanılarak iMessage'a geri yönlendirilir.
+    - Varsayılan `session.dmScope=main` ile iMessage DM'leri aracı ana oturumunda birleştirilir.
+    - Grup oturumları yalıtılır (`agent:<agentId>:imessage:group:<chat_id>`).
+    - Yanıtlar, kaynak kanal/hedef meta verileri kullanılarak iMessage'a geri yönlendirilir.
 
-    Grup benzeri iş parçacığı davranışı:
+    Grup benzeri ileti dizisi davranışı:
 
-    Bazı çok katılımcılı iMessage iş parçacıkları `is_group=false` ile gelebilir.
-    Bu `chat_id`, `channels.imessage.groups` altında açıkça yapılandırılmışsa OpenClaw bunu grup trafiği olarak ele alır (grup geçitlemesi + grup oturumu yalıtımı).
+    Bazı çok katılımcılı iMessage ileti dizileri `is_group=false` ile gelebilir.
+    Bu `chat_id`, `channels.imessage.groups` altında açıkça yapılandırılmışsa OpenClaw bunu grup trafiği olarak ele alır (grup kapılaması + grup oturumu yalıtımı).
 
   </Tab>
 </Tabs>
@@ -333,16 +333,16 @@ Eski iMessage sohbetleri ACP oturumlarına da bağlanabilir.
 
 Hızlı operatör akışı:
 
-- DM veya izin verilen grup sohbeti içinde `/acp spawn codex --bind here` komutunu çalıştırın.
-- Aynı iMessage konuşmasındaki gelecekteki iletiler oluşturulan ACP oturumuna yönlendirilir.
-- `/new` ve `/reset` aynı bağlı ACP oturumunu yerinde sıfırlar.
-- `/acp close` ACP oturumunu kapatır ve bağlamayı kaldırır.
+- DM veya izin verilen grup sohbetinin içinde `/acp spawn codex --bind here` komutunu çalıştırın.
+- Aynı iMessage konuşmasındaki gelecekteki iletiler, oluşturulan ACP oturumuna yönlendirilir.
+- `/new` ve `/reset`, aynı bağlı ACP oturumunu yerinde sıfırlar.
+- `/acp close`, ACP oturumunu kapatır ve bağlamayı kaldırır.
 
-Yapılandırılmış kalıcı bağlamalar, `type: "acp"` ve `match.channel: "imessage"` içeren üst düzey `bindings[]` girişleriyle desteklenir.
+Yapılandırılmış kalıcı bağlamalar, `type: "acp"` ve `match.channel: "imessage"` içeren üst düzey `bindings[]` girdileri aracılığıyla desteklenir.
 
 `match.peer.id` şunları kullanabilir:
 
-- `+15555550123` veya `user@example.com` gibi normalleştirilmiş DM tanıtıcısı
+- `+15555550123` veya `user@example.com` gibi normalize edilmiş DM tanıtıcısı
 - `chat_id:<id>` (kararlı grup bağlamaları için önerilir)
 - `chat_guid:<guid>`
 - `chat_identifier:<identifier>`
@@ -377,33 +377,33 @@ Yapılandırılmış kalıcı bağlamalar, `type: "acp"` ve `match.channel: "ime
 }
 ```
 
-Paylaşılan ACP bağlama davranışı için [ACP Ajanları](/tr/tools/acp-agents) bölümüne bakın.
+Paylaşılan ACP bağlama davranışı için [ACP Aracıları](/tr/tools/acp-agents) bölümüne bakın.
 
 ## Dağıtım desenleri
 
 <AccordionGroup>
-  <Accordion title="Dedicated bot macOS user (separate iMessage identity)">
-    Bot trafiğinin kişisel Messages profilinizden yalıtılması için özel bir Apple ID ve macOS kullanıcısı kullanın.
+  <Accordion title="Ayrılmış bot macOS kullanıcısı (ayrı iMessage kimliği)">
+    Bot trafiğinin kişisel Messages profilinizden yalıtılması için ayrılmış bir Apple ID ve macOS kullanıcısı kullanın.
 
     Tipik akış:
 
-    1. Özel bir macOS kullanıcısı oluşturun/oturum açın.
-    2. Bu kullanıcıda bot Apple ID'siyle Messages'a giriş yapın.
-    3. Bu kullanıcıda `imsg` yükleyin.
+    1. Ayrılmış bir macOS kullanıcısı oluşturun/oturum açın.
+    2. Bu kullanıcıda bot Apple ID'siyle Messages'da oturum açın.
+    3. Bu kullanıcıya `imsg` kurun.
     4. OpenClaw'ın `imsg` komutunu bu kullanıcı bağlamında çalıştırabilmesi için SSH sarmalayıcısı oluşturun.
     5. `channels.imessage.accounts.<id>.cliPath` ve `.dbPath` değerlerini bu kullanıcı profiline yönlendirin.
 
-    İlk çalıştırma, bot kullanıcı oturumunda GUI onayları (Automation + Full Disk Access) gerektirebilir.
+    İlk çalıştırma, bu bot kullanıcı oturumunda GUI onayları (Automation + Full Disk Access) gerektirebilir.
 
   </Accordion>
 
-  <Accordion title="Remote Mac over Tailscale (example)">
+  <Accordion title="Tailscale üzerinden uzak Mac (örnek)">
     Yaygın topoloji:
 
     - Gateway Linux/VM üzerinde çalışır
-    - iMessage + `imsg` tailnet'inizdeki bir Mac üzerinde çalışır
+    - iMessage + `imsg`, tailnet'inizdeki bir Mac üzerinde çalışır
     - `cliPath` sarmalayıcısı `imsg` çalıştırmak için SSH kullanır
-    - `remoteHost` SCP ek getirmelerini etkinleştirir
+    - `remoteHost`, SCP ek getirmelerini etkinleştirir
 
     Örnek:
 
@@ -427,11 +427,11 @@ Paylaşılan ACP bağlama davranışı için [ACP Ajanları](/tr/tools/acp-agent
     ```
 
     Hem SSH hem de SCP'nin etkileşimsiz olması için SSH anahtarları kullanın.
-    `known_hosts` doldurulması için önce ana bilgisayar anahtarının güvenilir olduğundan emin olun (örneğin `ssh bot@mac-mini.tailnet-1234.ts.net`).
+    `known_hosts` doldurulsun diye önce ana makine anahtarının güvenilir olduğundan emin olun (örneğin `ssh bot@mac-mini.tailnet-1234.ts.net`).
 
   </Accordion>
 
-  <Accordion title="Multi-account pattern">
+  <Accordion title="Çok hesaplı desen">
     iMessage, `channels.imessage.accounts` altında hesap başına yapılandırmayı destekler.
 
     Her hesap `cliPath`, `dbPath`, `allowFrom`, `groupPolicy`, `mediaMaxMb`, geçmiş ayarları ve ek kök izin listeleri gibi alanları geçersiz kılabilir.
@@ -439,22 +439,22 @@ Paylaşılan ACP bağlama davranışı için [ACP Ajanları](/tr/tools/acp-agent
   </Accordion>
 </AccordionGroup>
 
-## Medya, parçalama ve teslim hedefleri
+## Medya, parçalara ayırma ve teslim hedefleri
 
 <AccordionGroup>
-  <Accordion title="Attachments and media">
-    - gelen ek alımı **varsayılan olarak kapalıdır**; fotoğrafları, sesli notları, videoları ve diğer ekleri ajana iletmek için `channels.imessage.includeAttachments: true` ayarlayın. Devre dışıyken, yalnızca ek içeren iMessage'lar ajana ulaşmadan önce düşürülür ve hiç `Inbound message` günlük satırı üretmeyebilir.
-    - `remoteHost` ayarlandığında uzak ek yolları SCP üzerinden getirilebilir
+  <Accordion title="Ekler ve medya">
+    - gelen ek alımı **varsayılan olarak kapalıdır** — fotoğrafları, sesli notları, videoyu ve diğer ekleri aracıya iletmek için `channels.imessage.includeAttachments: true` ayarlayın. Bu devre dışıyken, yalnızca ek içeren iMessage iletileri aracıya ulaşmadan önce düşürülür ve hiç `Inbound message` günlük satırı üretmeyebilir.
+    - `remoteHost` ayarlandığında uzak ek yolları SCP aracılığıyla getirilebilir
     - ek yolları izin verilen köklerle eşleşmelidir:
       - `channels.imessage.attachmentRoots` (yerel)
       - `channels.imessage.remoteAttachmentRoots` (uzak SCP modu)
       - varsayılan kök deseni: `/Users/*/Library/Messages/Attachments`
-    - SCP katı ana bilgisayar anahtarı denetimi kullanır (`StrictHostKeyChecking=yes`)
+    - SCP sıkı ana makine anahtarı denetimi kullanır (`StrictHostKeyChecking=yes`)
     - giden medya boyutu `channels.imessage.mediaMaxMb` kullanır (varsayılan 16 MB)
 
   </Accordion>
 
-  <Accordion title="Outbound chunking">
+  <Accordion title="Giden parçalara ayırma">
     - metin parça sınırı: `channels.imessage.textChunkLimit` (varsayılan 4000)
     - parça modu: `channels.imessage.chunkMode`
       - `length` (varsayılan)
@@ -462,7 +462,7 @@ Paylaşılan ACP bağlama davranışı için [ACP Ajanları](/tr/tools/acp-agent
 
   </Accordion>
 
-  <Accordion title="Addressing formats">
+  <Accordion title="Adresleme biçimleri">
     Tercih edilen açık hedefler:
 
     - `chat_id:123` (kararlı yönlendirme için önerilir)
@@ -484,7 +484,7 @@ Paylaşılan ACP bağlama davranışı için [ACP Ajanları](/tr/tools/acp-agent
 
 ## Özel API eylemleri
 
-`imsg launch` çalışıyorken ve `openclaw channels status --probe` `privateApi.available: true` bildiriyorken, ileti aracı normal metin göndermelerine ek olarak iMessage yerel eylemlerini kullanabilir.
+`imsg launch` çalışırken ve `openclaw channels status --probe` `privateApi.available: true` bildirirken, ileti aracı normal metin gönderimlerine ek olarak iMessage yerel eylemlerini kullanabilir.
 
 ```json5
 {
@@ -509,29 +509,29 @@ Paylaşılan ACP bağlama davranışı için [ACP Ajanları](/tr/tools/acp-agent
 ```
 
 <AccordionGroup>
-  <Accordion title="Available actions">
-    - **react**: iMessage tapback'leri ekle/kaldır (`messageId`, `emoji`, `remove`). Desteklenen tapback'ler sevgi, beğeni, beğenmeme, gülme, vurgulama ve soru ile eşleşir.
-    - **reply**: Mevcut bir iletiye iş parçacıklı yanıt gönder (`messageId`, `text` veya `message`, ayrıca `chatGuid`, `chatId`, `chatIdentifier` veya `to`).
-    - **sendWithEffect**: Bir iMessage efektiyle metin gönder (`text` veya `message`, `effect` veya `effectId`).
-    - **edit**: Desteklenen macOS/özel API sürümlerinde gönderilmiş bir iletiyi düzenle (`messageId`, `text` veya `newText`).
-    - **unsend**: Desteklenen macOS/özel API sürümlerinde gönderilmiş bir iletiyi geri çek (`messageId`).
-    - **upload-file**: Medya/dosya gönder (`buffer` base64 olarak veya doldurulmuş `media`/`path`/`filePath`, `filename`, isteğe bağlı `asVoice`). Eski takma ad: `sendAttachment`.
-    - **renameGroup**, **setGroupIcon**, **addParticipant**, **removeParticipant**, **leaveGroup**: Geçerli hedef bir grup konuşması olduğunda grup sohbetlerini yönet.
+  <Accordion title="Kullanılabilir eylemler">
+    - **react**: iMessage tapback'lerini ekleyin/kaldırın (`messageId`, `emoji`, `remove`). Desteklenen tapback'ler sevgi, beğenme, beğenmeme, gülme, vurgulama ve soru anlamlarına eşlenir.
+    - **reply**: Mevcut bir iletiye ileti dizili yanıt gönderin (`messageId`, `text` veya `message`, ayrıca `chatGuid`, `chatId`, `chatIdentifier` veya `to`).
+    - **sendWithEffect**: Bir iMessage efektiyle metin gönderin (`text` veya `message`, `effect` veya `effectId`).
+    - **edit**: Desteklenen macOS/özel API sürümlerinde gönderilmiş bir iletiyi düzenleyin (`messageId`, `text` veya `newText`).
+    - **unsend**: Desteklenen macOS/özel API sürümlerinde gönderilmiş bir iletiyi geri çekin (`messageId`).
+    - **upload-file**: Medya/dosya gönderin (`buffer` base64 olarak veya hidrasyon yapılmış `media`/`path`/`filePath`, `filename`, isteğe bağlı `asVoice`). Eski takma ad: `sendAttachment`.
+    - **renameGroup**, **setGroupIcon**, **addParticipant**, **removeParticipant**, **leaveGroup**: Geçerli hedef bir grup konuşması olduğunda grup sohbetlerini yönetin.
 
   </Accordion>
 
-  <Accordion title="Message IDs">
-    Gelen iMessage bağlamı, kullanılabilir olduğunda hem kısa `MessageSid` değerlerini hem de tam ileti GUID'lerini içerir. Kısa ID'ler son bellek içi yanıt önbelleğiyle sınırlıdır ve kullanımdan önce geçerli sohbete göre denetlenir. Kısa bir ID'nin süresi dolmuşsa veya başka bir sohbete aitse tam `MessageSidFull` ile yeniden deneyin.
+  <Accordion title="İleti kimlikleri">
+    Gelen iMessage bağlamı, kullanılabilir olduğunda hem kısa `MessageSid` değerlerini hem de tam ileti GUID'lerini içerir. Kısa kimlikler, son bellek içi yanıt önbelleğiyle sınırlıdır ve kullanılmadan önce geçerli sohbete göre denetlenir. Kısa kimliğin süresi dolmuşsa veya başka bir sohbete aitse tam `MessageSidFull` ile yeniden deneyin.
 
   </Accordion>
 
-  <Accordion title="Capability detection">
-    OpenClaw, özel API eylemlerini yalnızca önbelleğe alınmış probe durumu köprünün kullanılamadığını söylediğinde gizler. Durum bilinmiyorsa eylemler görünür kalır ve gönderim probe'ları tembel olarak çalıştırır; böylece ilk eylem, ayrı bir manuel durum yenilemesi olmadan `imsg launch` sonrasında başarılı olabilir.
+  <Accordion title="Yetenek algılama">
+    OpenClaw, özel API eylemlerini yalnızca önbelleğe alınmış yoklama durumu köprünün kullanılamaz olduğunu söylediğinde gizler. Durum bilinmiyorsa eylemler görünür kalır ve gönderim yoklamaları tembel olarak yapar; böylece ilk eylem, ayrı bir manuel durum yenilemesi olmadan `imsg launch` sonrasında başarılı olabilir.
 
   </Accordion>
 
-  <Accordion title="Read receipts and typing">
-    Özel API köprüsü çalışıyorken kabul edilen gelen sohbetler gönderimden önce okundu olarak işaretlenir ve ajan üretim yaparken gönderene yazıyor balonu gösterilir. Okundu işaretlemeyi şununla devre dışı bırakın:
+  <Accordion title="Okundu bilgileri ve yazıyor göstergesi">
+    Özel API köprüsü çalışır durumdayken, kabul edilen gelen sohbetler gönderimden önce okundu olarak işaretlenir ve aracı üretirken göndericiye bir yazıyor balonu gösterilir. Okundu işaretlemeyi şununla devre dışı bırakın:
 
     ```json5
     {
@@ -543,29 +543,29 @@ Paylaşılan ACP bağlama davranışı için [ACP Ajanları](/tr/tools/acp-agent
     }
     ```
 
-    Yöntem başına yetenek listesinden önceki eski `imsg` derlemeleri yazma/okundu bilgisini sessizce geçitleyecektir; OpenClaw, eksik bildirimin ilişkilendirilebilmesi için yeniden başlatma başına bir kez uyarı günlüğe yazar.
+    Yöntem başına yetenek listesinden önceki eski `imsg` derlemeleri yazıyor/okundu işlevlerini sessizce kapılayacaktır; OpenClaw eksik okundu bilgisinin nedeni anlaşılabilsin diye yeniden başlatma başına tek seferlik bir uyarı günlüğe yazar.
 
   </Accordion>
 
-  <Accordion title="Inbound tapbacks">
-    OpenClaw iMessage tapback'lerine abone olur ve kabul edilen tepkileri normal ileti metni yerine sistem olayları olarak yönlendirir; böylece bir kullanıcı tapback'i sıradan bir yanıt döngüsünü tetiklemez.
+  <Accordion title="Gelen tapback'ler">
+    OpenClaw, iMessage tapback'lerine abone olur ve kabul edilen tepkileri normal ileti metni yerine sistem olayları olarak yönlendirir; böylece kullanıcı tapback'i sıradan bir yanıt döngüsünü tetiklemez.
 
     Bildirim modu `channels.imessage.reactionNotifications` tarafından denetlenir:
 
-    - `"own"` (varsayılan): yalnızca kullanıcılar bot tarafından yazılmış iletilere tepki verdiğinde bildir.
-    - `"all"`: yetkili gönderenlerden gelen tüm tapback'ler için bildir.
-    - `"off"`: gelen tapback'leri yok say.
+    - `"own"` (varsayılan): yalnızca kullanıcılar bot tarafından yazılan iletilere tepki verdiğinde bildir.
+    - `"all"`: yetkili göndericilerden gelen tüm tapback'ler için bildir.
+    - `"off"`: gelen tapback'leri yoksay.
 
     Hesap başına geçersiz kılmalar `channels.imessage.accounts.<id>.reactionNotifications` kullanır.
 
   </Accordion>
 </AccordionGroup>
 
-## Yapılandırma yazmaları
+## Yapılandırma yazımları
 
-iMessage, kanal tarafından başlatılan yapılandırma yazmalarına varsayılan olarak izin verir (`commands.config: true` olduğunda `/config set|unset` için).
+iMessage, varsayılan olarak kanal tarafından başlatılan yapılandırma yazımlarına izin verir (`commands.config: true` olduğunda `/config set|unset` için).
 
-Devre dışı bırakın:
+Devre dışı bırakma:
 
 ```json5
 {
@@ -581,27 +581,27 @@ Devre dışı bırakın:
 
 ## Bölünmüş gönderilen DM'leri birleştirme (tek kompozisyonda komut + URL)
 
-Bir kullanıcı bir komutu ve URL'yi birlikte yazdığında, örn. `Dump https://example.com/article`, Apple'ın Messages uygulaması gönderimi **iki ayrı `chat.db` satırına** böler:
+Bir kullanıcı bir komutu ve URL'yi birlikte yazdığında — örn. `Dump https://example.com/article` — Apple'ın Messages uygulaması gönderimi **iki ayrı `chat.db` satırına** böler:
 
 1. Bir metin iletisi (`"Dump"`).
-2. OG önizleme görüntülerini ek olarak içeren bir URL önizleme balonu (`"https://..."`).
+2. Ek olarak OG önizleme görselleri içeren bir URL önizleme balonu (`"https://..."`).
 
-İki satır çoğu kurulumda OpenClaw'a yaklaşık 0,8-2,0 sn arayla ulaşır. Birleştirme olmadan ajan 1. turda yalnızca komutu alır, yanıt verir (çoğu zaman "URL'yi bana gönder") ve URL'yi ancak 2. turda görür; bu noktada komut bağlamı zaten kaybolmuştur. Bu Apple'ın gönderim hattıdır; OpenClaw veya `imsg` tarafından eklenen bir şey değildir.
+İki satır çoğu kurulumda OpenClaw'a ~0.8-2.0 sn arayla ulaşır. Birleştirme olmadan agent 1. turda komutu tek başına alır, yanıt verir (sık sık "bana URL'yi gönder" der) ve URL'yi ancak 2. turda görür; o noktada komut bağlamı zaten kaybolmuştur. Bu, OpenClaw veya `imsg` tarafından eklenen bir şey değil, Apple'ın gönderme pipeline'ıdır.
 
-`channels.imessage.coalesceSameSenderDms`, bir DM'yi ardışık aynı gönderen satırlarını tek bir ajan turunda birleştirmeye dahil eder. Grup sohbetleri çok kullanıcılı tur yapısı korunsun diye mesaj başına dağıtmaya devam eder.
+`channels.imessage.coalesceSameSenderDms`, bir DM'i aynı gönderenden art arda gelen satırları tek bir agent turunda birleştirecek şekilde etkinleştirir. Grup sohbetleri, çok kullanıcılı tur yapısının korunması için mesaj başına iletilmeye devam eder.
 
 <Tabs>
   <Tab title="Ne zaman etkinleştirilmeli">
     Şu durumlarda etkinleştirin:
 
-    - Tek mesajda `command + payload` bekleyen beceriler gönderiyorsanız (dump, paste, save, queue vb.).
-    - Kullanıcılarınız komutlarla birlikte URL, görsel veya uzun içerik yapıştırıyorsa.
+    - Tek mesajda `command + payload` bekleyen Skills gönderiyorsanız (dump, paste, save, queue vb.).
+    - Kullanıcılarınız komutların yanında URL'ler, görseller veya uzun içerikler yapıştırıyorsa.
     - Eklenen DM tur gecikmesini kabul edebiliyorsanız (aşağıya bakın).
 
     Şu durumlarda devre dışı bırakın:
 
-    - Tek sözcüklü DM tetikleyicileri için en düşük komut gecikmesine ihtiyacınız varsa.
-    - Tüm akışlarınız yük devamı olmayan tek seferlik komutlarsa.
+    - Tek kelimelik DM tetikleyicileri için minimum komut gecikmesine ihtiyacınız varsa.
+    - Tüm akışlarınız payload takipleri olmayan tek seferlik komutlarsa.
 
   </Tab>
   <Tab title="Etkinleştirme">
@@ -615,7 +615,7 @@ Bir kullanıcı bir komutu ve URL'yi birlikte yazdığında, örn. `Dump https:/
     }
     ```
 
-    Bayrak açıkken ve açık bir `messages.inbound.byChannel.imessage` yokken, debounce penceresi **2500 ms**'ye genişler (eski varsayılan 0 ms'dir — debounce yok). Daha geniş pencere gereklidir çünkü Apple'ın 0.8-2.0 sn'lik bölünmüş gönderim temposu daha dar bir varsayılana sığmaz.
+    Bayrak açıkken ve açık bir `messages.inbound.byChannel.imessage` yokken debounce penceresi **2500 ms**'ye genişler (eski varsayılan 0 ms'dir; debounce yoktur). Daha geniş pencere gereklidir çünkü Apple'ın 0.8-2.0 sn'lik bölünmüş gönderim ritmi daha dar bir varsayılana sığmaz.
 
     Pencereyi kendiniz ayarlamak için:
 
@@ -636,31 +636,31 @@ Bir kullanıcı bir komutu ve URL'yi birlikte yazdığında, örn. `Dump https:/
 
   </Tab>
   <Tab title="Ödünleşimler">
-    - **DM mesajları için ek gecikme.** Bayrak açıkken her DM (bağımsız denetim komutları ve tek metinli takip mesajları dahil), bir yük satırı geliyor olabilir diye dağıtılmadan önce debounce penceresi kadar bekler. Grup sohbeti mesajları anında dağıtımı korur.
-    - **Birleştirilmiş çıktı sınırlıdır.** Birleştirilmiş metin, açık bir `…[truncated]` işaretiyle 4000 karakterde sınırlanır; ekler 20 ile sınırlanır; kaynak girdileri 10 ile sınırlanır (bunun ötesinde ilk artı en son korunur). Aşağı akış telemetrisi için her kaynak GUID'si `coalescedMessageGuids` içinde izlenir.
-    - **Yalnızca DM.** Grup sohbetleri mesaj başına dağıtıma düşer; böylece birden fazla kişi yazarken bot yanıt vermeye devam eder.
-    - **Kanal başına opt-in.** Diğer kanallar (Telegram, WhatsApp, Slack, …) etkilenmez. `channels.bluebubbles.coalesceSameSenderDms` ayarlayan eski BlueBubbles yapılandırmaları bu değeri `channels.imessage.coalesceSameSenderDms` değerine taşımalıdır.
+    - **DM mesajları için ek gecikme.** Bayrak açıkken her DM (bağımsız denetim komutları ve tek metinli takipler dahil), payload satırı gelme olasılığına karşı gönderilmeden önce debounce penceresine kadar bekler. Grup sohbeti mesajları anında gönderilmeyi korur.
+    - **Birleştirilmiş çıktı sınırlıdır.** Birleştirilmiş metin açık bir `…[truncated]` işaretçisiyle 4000 karakterde sınırlandırılır; ekler 20'de; kaynak girdileri 10'da sınırlandırılır (bunun ötesinde ilk artı en son korunur). Her kaynak GUID'i, aşağı akış telemetrisi için `coalescedMessageGuids` içinde izlenir.
+    - **Yalnızca DM.** Grup sohbetleri mesaj başına göndermeye düşer, böylece birden fazla kişi yazarken bot yanıt vermeye devam eder.
+    - **Etkinleştirmeli, kanal başına.** Diğer kanallar (Telegram, WhatsApp, Slack, …) etkilenmez. `channels.bluebubbles.coalesceSameSenderDms` ayarlayan eski BlueBubbles yapılandırmaları bu değeri `channels.imessage.coalesceSameSenderDms` konumuna taşımalıdır.
 
   </Tab>
 </Tabs>
 
-### Senaryolar ve ajanın gördükleri
+### Senaryolar ve agent'ın gördükleri
 
-| Kullanıcının oluşturduğu                                           | `chat.db` üretir      | Bayrak kapalı (varsayılan)              | Bayrak açık + 2500 ms pencere                                           |
-| ------------------------------------------------------------------ | --------------------- | --------------------------------------- | ----------------------------------------------------------------------- |
-| `Dump https://example.com` (tek gönderim)                          | ~1 sn arayla 2 satır  | İki ajan turu: yalnızca "Dump", sonra URL | Tek tur: birleştirilmiş metin `Dump https://example.com`                |
-| `Save this 📎image.jpg caption` (ek + metin)                       | 2 satır               | İki tur (ek birleştirmede düşer)        | Tek tur: metin + görsel korunur                                         |
-| `/status` (bağımsız komut)                                         | 1 satır               | Anında dağıtım                          | **Pencere kadar bekle, sonra dağıt**                                    |
-| Tek başına yapıştırılan URL                                        | 1 satır               | Anında dağıtım                          | Anında dağıtım (kovada yalnızca bir girdi)                              |
-| Metin + URL, dakikalar arayla kasıtlı iki ayrı mesaj olarak gönderildi | Pencere dışında 2 satır | İki tur                               | İki tur (pencere aralarında sona erer)                                  |
-| Hızlı akış (pencere içinde >10 küçük DM)                           | N satır               | N tur                                   | Tek tur, sınırlı çıktı (ilk + en son, metin/ek sınırları uygulanır)     |
-| Bir grup sohbetinde iki kişi yazıyor                               | M gönderenden N satır | M+ tur (gönderen kovası başına bir)     | M+ tur — grup sohbetleri birleştirilmez                                 |
+| Kullanıcının oluşturduğu                                             | `chat.db` üretir      | Bayrak kapalı (varsayılan)              | Bayrak açık + 2500 ms pencere                                           |
+| -------------------------------------------------------------------- | --------------------- | --------------------------------------- | ----------------------------------------------------------------------- |
+| `Dump https://example.com` (tek gönderim)                            | ~1 sn arayla 2 satır  | İki agent turu: yalnızca "Dump", sonra URL | Tek tur: birleştirilmiş metin `Dump https://example.com`                |
+| `Save this 📎image.jpg caption` (ek + metin)                         | 2 satır               | İki tur (ek birleştirmede düşer)        | Tek tur: metin + görsel korunur                                         |
+| `/status` (bağımsız komut)                                           | 1 satır               | Anında gönderim                         | **Pencereye kadar bekle, sonra gönder**                                 |
+| Tek başına yapıştırılmış URL                                         | 1 satır               | Anında gönderim                         | Anında gönderim (kovada yalnızca bir girdi)                             |
+| Metin + URL, dakikalar arayla iki kasıtlı ayrı mesaj olarak gönderildi | Pencere dışında 2 satır | İki tur                               | İki tur (pencere aralarında sona erer)                                  |
+| Hızlı yoğun akış (pencere içinde >10 küçük DM)                       | N satır               | N tur                                   | Tek tur, sınırlı çıktı (ilk + en son, metin/ek sınırları uygulanır)     |
+| Grup sohbetinde iki kişi yazıyor                                     | M gönderenden N satır | M+ tur (gönderen kovası başına bir)     | M+ tur; grup sohbetleri birleştirilmez                                  |
 
-## Gateway kesintisinden sonra yetişme
+## Gateway kapalı kaldıktan sonra arayı kapatma
 
-Gateway çevrimdışıyken (çökme, yeniden başlatma, Mac uykusu, makinenin kapalı olması), `imsg watch` Gateway tekrar çalıştığında geçerli `chat.db` durumundan sürdürür — boşluk sırasında gelen hiçbir şey varsayılan olarak görülmez. Yetişme, bir sonraki başlangıçta bu mesajları yeniden oynatır; böylece ajan gelen trafiği sessizce kaçırmaz.
+Gateway çevrimdışıyken (çökme, yeniden başlatma, Mac uykusu, makinenin kapalı olması), Gateway tekrar ayağa kalktığında `imsg watch` mevcut `chat.db` durumundan devam eder; boşluk sırasında gelen her şey varsayılan olarak asla görülmez. Catchup, bu mesajları bir sonraki başlangıçta yeniden oynatır, böylece agent gelen trafiği sessizce kaçırmaz.
 
-Yetişme **varsayılan olarak devre dışıdır**. Kanal başına etkinleştirin:
+Catchup **varsayılan olarak devre dışıdır**. Kanal başına etkinleştirin:
 
 ```ts
 channels: {
@@ -678,13 +678,13 @@ channels: {
 
 ### Nasıl çalışır
 
-Her `monitorIMessageProvider` başlangıcı için bir geçiş yapılır ve sıra şöyledir: `imsg launch` hazır → `watch.subscribe` → `performIMessageCatchup` → canlı dağıtım döngüsü. Yetişmenin kendisi, `imsg watch` tarafından kullanılan aynı JSON-RPC istemcisine karşı `chats.list` + sohbet başına `messages.history` kullanır. Yetişme geçişi sırasında gelen her şey normal şekilde canlı dağıtımdan geçer; mevcut gelen yineleme önleme önbelleği, yeniden oynatılan satırlarla herhangi bir çakışmayı emer.
+`monitorIMessageProvider` başlangıcı başına bir geçiş, `imsg launch` hazır → `watch.subscribe` → `performIMessageCatchup` → canlı gönderim döngüsü sırasıyla yürütülür. Catchup'ın kendisi, `imsg watch` tarafından kullanılan aynı JSON-RPC istemcisine karşı `chats.list` + sohbet başına `messages.history` kullanır. Catchup geçişi sırasında gelen her şey normal şekilde canlı gönderimden akar; mevcut gelen-dedupe önbelleği, yeniden oynatılan satırlarla olan tüm çakışmaları emer.
 
-Yeniden oynatılan her satır canlı dağıtım yolundan (`evaluateIMessageInbound` + `dispatchInboundMessage`) geçirilir; bu nedenle izin listeleri, grup politikası, debouncer, echo cache ve okundu bilgileri yeniden oynatılan ve canlı mesajlarda aynı davranır.
+Yeniden oynatılan her satır canlı gönderim yolundan (`evaluateIMessageInbound` + `dispatchInboundMessage`) geçirilir; bu nedenle allowlist'ler, grup ilkesi, debouncer, echo önbelleği ve okundu bilgileri yeniden oynatılan ve canlı mesajlarda aynı davranır.
 
 ### İmleç ve yeniden deneme semantiği
 
-Yetişme, `<openclawStateDir>/imessage/catchup/<account>__<hash>.json` konumunda hesap başına bir imleç tutar (OpenClaw durum dizini varsayılan olarak `~/.openclaw` olur, `OPENCLAW_STATE_DIR` ile geçersiz kılınabilir):
+Catchup, `<openclawStateDir>/imessage/catchup/<account>__<hash>.json` konumunda hesap başına bir imleç tutar (OpenClaw durum dizini varsayılan olarak `~/.openclaw` olur, `OPENCLAW_STATE_DIR` ile değiştirilebilir):
 
 ```json
 {
@@ -695,11 +695,11 @@ Yetişme, `<openclawStateDir>/imessage/catchup/<account>__<hash>.json` konumunda
 }
 ```
 
-- İmleç her başarılı dağıtımda ilerler ve bir satırın dağıtımı hata fırlattığında tutulur — sonraki başlangıç aynı satırı tutulan imleçten yeniden dener.
-- Aynı `guid` için art arda `maxFailureRetries` hata fırlatıldıktan sonra yetişme bir `warn` kaydeder ve sonraki başlangıçların ilerleyebilmesi için imleci sıkışmış mesajın ötesine zorla ilerletir.
-- Daha önce vazgeçilmiş guid'ler sonraki çalıştırmalarda görüldüğünde atlanır (dağıtım denemesi yapılmaz) ve çalıştırma özetinde `skippedGivenUp` altında sayılır.
+- İmleç her başarılı gönderimde ilerler ve bir satırın gönderimi hata fırlattığında tutulur; bir sonraki başlangıç aynı satırı tutulan imleçten yeniden dener.
+- Aynı `guid` için `maxFailureRetries` ardışık hata fırlatmasından sonra catchup bir `warn` kaydeder ve sonraki başlangıçların ilerleyebilmesi için imleci takılmış mesajın ötesine zorla ilerletir.
+- Zaten vazgeçilmiş guid'ler sonraki çalıştırmalarda görüldüğünde atlanır (gönderim denemesi yapılmaz) ve çalışma özetinde `skippedGivenUp` altında sayılır.
 
-### Operatörün görebileceği sinyaller
+### Operatöre görünen sinyaller
 
 ```
 imessage catchup: replayed=N skippedFromMe=… skippedGivenUp=… failed=… givenUp=… fetchedCount=…
@@ -707,20 +707,20 @@ imessage catchup: giving up on guid=<guid> after <N> failures; advancing cursor 
 imessage catchup: fetched <X> rows across chats, capped to perRunLimit=<Y>
 ```
 
-Bir `WARN ... capped to perRunLimit` satırı, tek bir başlangıcın tüm birikmiş işi boşaltmadığı anlamına gelir. Boşluklarınız düzenli olarak varsayılan 50 satırlık geçişi aşıyorsa `perRunLimit` değerini yükseltin (en fazla 500).
+Bir `WARN ... capped to perRunLimit` satırı, tek bir başlangıcın tüm birikmiş işi boşaltmadığı anlamına gelir. Boşluklarınız düzenli olarak varsayılan 50 satırlık geçişi aşıyorsa `perRunLimit` değerini artırın (maks. 500).
 
-### Ne zaman kapalı bırakmalı
+### Ne zaman kapalı bırakılmalı
 
-- Gateway, watchdog otomatik yeniden başlatmasıyla sürekli çalışıyorsa ve boşluklar her zaman birkaç saniyeden kısaysa — varsayılan kapalı durum uygundur.
-- DM hacmi düşükse ve kaçırılan mesajlar ajan davranışını değiştirmeyecekse — `firstRunLookbackMinutes` ilk penceresi, ilk etkinleştirmede şaşırtıcı eski bağlamı dağıtabilir.
+- Gateway watchdog otomatik yeniden başlatma ile sürekli çalışıyorsa ve boşluklar her zaman birkaç saniyeden kısaysa; kapalı varsayılanı uygundur.
+- DM hacmi düşükse ve kaçırılan mesajlar agent davranışını değiştirmeyecekse; `firstRunLookbackMinutes` başlangıç penceresi ilk etkinleştirmede beklenmedik eski bağlamı gönderebilir.
 
-Yetişmeyi açtığınızda, imleç olmayan ilk başlangıç tam `maxAgeMinutes` penceresine değil, yalnızca `firstRunLookbackMinutes` değerine (varsayılan 30 dk) geri bakar — bu, etkinleştirme öncesi uzun bir geçmişin yeniden oynatılmasını önler.
+Catchup'ı açtığınızda, imleç olmayan ilk başlangıç yalnızca `firstRunLookbackMinutes` kadar geriye bakar (varsayılan 30 dk), tam `maxAgeMinutes` penceresine değil; bu, etkinleştirme öncesi mesajların uzun bir geçmişini yeniden oynatmayı önler.
 
 ## Sorun giderme
 
 <AccordionGroup>
   <Accordion title="imsg bulunamadı veya RPC desteklenmiyor">
-    İkiliyi ve RPC desteğini doğrulayın:
+    İkili dosyayı ve RPC desteğini doğrulayın:
 
     ```bash
     imsg rpc --help
@@ -728,19 +728,19 @@ Yetişmeyi açtığınızda, imleç olmayan ilk başlangıç tam `maxAgeMinutes`
     openclaw channels status --probe
     ```
 
-    Probe, RPC'nin desteklenmediğini bildirirse `imsg` öğesini güncelleyin. Özel API eylemleri kullanılamıyorsa oturum açmış macOS kullanıcı oturumunda `imsg launch` çalıştırın ve yeniden probe yapın. Gateway macOS üzerinde çalışmıyorsa varsayılan yerel `imsg` yolu yerine yukarıdaki SSH üzerinden Uzak Mac kurulumunu kullanın.
+    Probe RPC'nin desteklenmediğini bildirirse `imsg`'yi güncelleyin. Özel API eylemleri kullanılamıyorsa oturum açmış macOS kullanıcı oturumunda `imsg launch` çalıştırın ve yeniden probe edin. Gateway macOS üzerinde çalışmıyorsa varsayılan yerel `imsg` yolu yerine yukarıdaki SSH üzerinden Uzak Mac kurulumunu kullanın.
 
   </Accordion>
 
   <Accordion title="Gateway macOS üzerinde çalışmıyor">
-    Varsayılan `cliPath: "imsg"`, Mesajlar'a giriş yapılmış Mac üzerinde çalışmalıdır. Linux veya Windows üzerinde, `channels.imessage.cliPath` değerini bu Mac'e SSH yapan ve `imsg "$@"` çalıştıran bir sarmalayıcı betiğe ayarlayın.
+    Varsayılan `cliPath: "imsg"`, Messages'ta oturum açılmış Mac üzerinde çalışmalıdır. Linux veya Windows üzerinde `channels.imessage.cliPath` değerini o Mac'e SSH yapan ve `imsg "$@"` çalıştıran bir sarmalayıcı betiğe ayarlayın.
 
 ```bash
 #!/usr/bin/env bash
 exec ssh -T messages-mac imsg "$@"
 ```
 
-    Ardından şunu çalıştırın:
+    Sonra şunu çalıştırın:
 
 ```bash
 openclaw channels status --probe --channel imessage
@@ -749,7 +749,7 @@ openclaw channels status --probe --channel imessage
   </Accordion>
 
   <Accordion title="DM'ler yok sayılıyor">
-    Şunları kontrol edin:
+    Kontrol edin:
 
     - `channels.imessage.dmPolicy`
     - `channels.imessage.allowFrom`
@@ -758,23 +758,23 @@ openclaw channels status --probe --channel imessage
   </Accordion>
 
   <Accordion title="Grup mesajları yok sayılıyor">
-    Şunları kontrol edin:
+    Kontrol edin:
 
     - `channels.imessage.groupPolicy`
     - `channels.imessage.groupAllowFrom`
-    - `channels.imessage.groups` izin listesi davranışı
-    - bahsetme deseni yapılandırması (`agents.list[].groupChat.mentionPatterns`)
+    - `channels.imessage.groups` allowlist davranışı
+    - bahsetme kalıbı yapılandırması (`agents.list[].groupChat.mentionPatterns`)
 
   </Accordion>
 
   <Accordion title="Uzak ekler başarısız oluyor">
-    Şunları kontrol edin:
+    Kontrol edin:
 
     - `channels.imessage.remoteHost`
     - `channels.imessage.remoteAttachmentRoots`
     - Gateway ana makinesinden SSH/SCP anahtar kimlik doğrulaması
-    - ana makine anahtarının Gateway ana makinesinde `~/.ssh/known_hosts` içinde bulunması
-    - Mesajlar'ı çalıştıran Mac üzerindeki uzak yolun okunabilirliği
+    - Gateway ana makinesinde `~/.ssh/known_hosts` içinde host anahtarının bulunması
+    - Messages çalıştıran Mac üzerinde uzak yolun okunabilirliği
 
   </Accordion>
 
@@ -786,23 +786,23 @@ openclaw channels status --probe --channel imessage
     imsg send <handle> "test"
     ```
 
-    OpenClaw/`imsg` çalıştıran süreç bağlamı için Tam Disk Erişimi + Otomasyon izinlerinin verildiğini doğrulayın.
+    OpenClaw/`imsg` çalıştıran işlem bağlamı için Full Disk Access + Automation izinlerinin verildiğini doğrulayın.
 
   </Accordion>
 </AccordionGroup>
 
-## Yapılandırma başvurusu işaretçileri
+## Yapılandırma referansı işaretçileri
 
-- [Yapılandırma başvurusu - iMessage](/tr/gateway/config-channels#imessage)
+- [Yapılandırma referansı - iMessage](/tr/gateway/config-channels#imessage)
 - [Gateway yapılandırması](/tr/gateway/configuration)
 - [Eşleştirme](/tr/channels/pairing)
 
 ## İlgili
 
 - [Kanallara Genel Bakış](/tr/channels) — desteklenen tüm kanallar
-- [BlueBubbles kaldırılması ve imsg iMessage yolu](/tr/announcements/bluebubbles-imessage) — duyuru ve geçiş özeti
-- [BlueBubbles'tan geçiş](/tr/channels/imessage-from-bluebubbles) — yapılandırma çeviri tablosu ve adım adım geçiş
+- [BlueBubbles'ın kaldırılması ve imsg iMessage yolu](/tr/announcements/bluebubbles-imessage) — duyuru ve geçiş özeti
+- [BlueBubbles'tan geliyorsanız](/tr/channels/imessage-from-bluebubbles) — yapılandırma çeviri tablosu ve adım adım geçiş
 - [Eşleştirme](/tr/channels/pairing) — DM kimlik doğrulaması ve eşleştirme akışı
-- [Gruplar](/tr/channels/groups) — grup sohbeti davranışı ve bahsetme kapısı
-- [Kanal Yönlendirme](/tr/channels/channel-routing) — mesajlar için oturum yönlendirmesi
+- [Gruplar](/tr/channels/groups) — grup sohbeti davranışı ve bahsetme geçidi
+- [Kanal Yönlendirme](/tr/channels/channel-routing) — mesajlar için oturum yönlendirme
 - [Güvenlik](/tr/gateway/security) — erişim modeli ve sağlamlaştırma
