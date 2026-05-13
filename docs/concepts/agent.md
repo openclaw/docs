@@ -75,13 +75,12 @@ delivery are OpenClaw-owned layers on top of that core.
 
 ## Sessions
 
-Session rows and transcript events are stored in SQLite at:
+Session transcripts are stored as JSONL at:
 
-- `~/.openclaw/state/openclaw.sqlite`
-- `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`
+- `~/.openclaw/agents/<agentId>/sessions/<SessionId>.jsonl`
 
 The session ID is stable and chosen by OpenClaw.
-Legacy session folders and JSONL files are only imported by doctor.
+Legacy session folders from other tools are not read.
 
 ## Steering while streaming
 
