@@ -542,6 +542,19 @@ two-party event loops that do not go through the shared channel-turn kernel.
   <Accordion title="api.runtime.channel">
     Channel-specific runtime helpers (available when a channel plugin is loaded).
 
+    `api.runtime.channel.media` is the preferred surface for channel media downloads and storage:
+
+    ```typescript
+    const saved = await api.runtime.channel.media.saveRemoteMedia({
+      url,
+      subdir: "inbound",
+      maxBytes,
+      filePathHint: fileName,
+    });
+    ```
+
+    Use `saveRemoteMedia(...)` when a remote URL should become OpenClaw media. Use `saveResponseMedia(...)` when the plugin already fetched a `Response` with plugin-owned auth, redirect, or allowlist handling. Use `readRemoteMediaBuffer(...)` only when the plugin needs raw bytes for inspection, transforms, decryption, or reupload. `fetchRemoteMedia(...)` remains a deprecated compatibility alias for `readRemoteMediaBuffer(...)`.
+
     `api.runtime.channel.mentions` is the shared inbound mention-policy surface for bundled channel plugins that use runtime injection:
 
     ```typescript
