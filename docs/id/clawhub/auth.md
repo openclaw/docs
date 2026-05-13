@@ -1,0 +1,89 @@
+---
+read_when:
+    - Masuk ke ClawHub
+    - Menggunakan ClawHub CLI
+    - Men-debug kesalahan 401
+summary: Masuk ClawHub, token API, log masuk CLI, penyimpanan token, dan pencabutan.
+x-i18n:
+    generated_at: "2026-05-13T04:17:59Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 261f5a93200db8415e3bc8f35251c3486110ce8e076c482e846ad11f2ccd517f
+    source_path: clawhub/auth.md
+    workflow: 16
+---
+
+# Autentikasi
+
+ClawHub menggunakan GitHub untuk masuk lewat web. CLI menggunakan token API ClawHub yang dibuat
+melalui akun yang sudah masuk tersebut.
+
+## Masuk lewat web
+
+Gunakan GitHub untuk masuk di [clawhub.ai](https://clawhub.ai).
+
+Akun yang dihapus, diblokir, atau dinonaktifkan tidak dapat menyelesaikan proses masuk ClawHub normal.
+Jika proses masuk mengembalikan Anda ke keadaan belum masuk, akun Anda mungkin tidak dalam status
+yang baik.
+
+## Login CLI
+
+Alur login CLI default membuka browser Anda:
+
+```bash
+clawhub login
+clawhub whoami
+```
+
+Yang terjadi:
+
+1. CLI memulai server callback sementara di `127.0.0.1`.
+2. Browser Anda membuka halaman masuk ClawHub.
+3. Setelah masuk dengan GitHub, ClawHub membuat token API.
+4. Browser mengalihkan kembali ke callback lokal.
+5. CLI menyimpan token di file konfigurasi ClawHub Anda.
+
+Jika browser Anda tidak dapat menjangkau callback lokal karena aturan firewall, VPN, atau
+proxy, gunakan alur token tanpa antarmuka.
+
+## Login tanpa antarmuka
+
+Buat token di UI web ClawHub, lalu berikan ke CLI:
+
+```bash
+clawhub login --token clh_...
+```
+
+Gunakan alur ini untuk server, pekerjaan CI, atau lingkungan yang hanya memiliki terminal.
+
+Untuk shell jarak jauh tempat Anda dapat membuka browser di tempat lain, jalankan:
+
+```bash
+clawhub login --device
+```
+
+CLI mencetak kode sekali pakai dan menunggu saat Anda mengotorisasinya di
+`https://clawhub.ai/cli/device`.
+
+## Penyimpanan token
+
+Jalur konfigurasi default:
+
+- macOS: `~/Library/Application Support/clawhub/config.json`
+- Linux/XDG: `$XDG_CONFIG_HOME/clawhub/config.json` atau `~/.config/clawhub/config.json`
+- Windows: `%APPDATA%\\clawhub\\config.json`
+
+Timpa jalur dengan:
+
+```bash
+export CLAWHUB_CONFIG_PATH=/path/to/config.json
+```
+
+## Pencabutan
+
+Anda dapat mencabut token API di UI web ClawHub.
+
+Token yang dicabut, tidak valid, atau hilang mengembalikan `401 Unauthorized`. Masuk lagi
+dengan `clawhub login` atau berikan token baru dengan `clawhub login --token`.
+
+Akun yang dihapus, diblokir, atau dinonaktifkan tidak dapat terus menggunakan token API yang ada.
