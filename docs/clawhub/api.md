@@ -67,6 +67,13 @@ Client handling:
 - Otherwise use `RateLimit-Reset` or derive delay from `X-RateLimit-Reset`.
 - Add jitter to retries.
 
+## Errors
+
+- v1 errors are plain text (`text/plain; charset=utf-8`), including `400`,
+  `401`, `403`, `404`, `429`, and blocked-download responses.
+- Unknown query parameters are ignored for compatibility.
+- Known query parameters with invalid values return `400`.
+
 ## Endpoints
 
 Public read:
@@ -76,6 +83,7 @@ Public read:
   - Legacy alias: `nonSuspicious=true`
 - `GET /api/v1/skills?limit=&cursor=&sort=`
   - `sort`: `updated` (default), `createdAt` (`newest`), `downloads`, `stars` (`rating`), `installsCurrent` (`installs`), `installsAllTime`, `trending`
+  - Invalid `sort` values return `400`
   - `cursor` applies to non-`trending` sorts
   - Optional filter: `nonSuspiciousOnly=true`
   - Legacy alias: `nonSuspicious=true`

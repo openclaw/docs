@@ -77,6 +77,15 @@ IP source:
 - ClawHub uses trusted forwarding headers to identify client IPs at the edge.
 - If no trusted client IP is available, anonymous download requests use an endpoint-scoped fallback bucket instead of one global `ip:unknown` bucket. Anonymous read/write requests still use the shared unknown bucket so missing-IP routing remains visible and conservative.
 
+## Error responses
+
+Public v1 error responses are plain text with `content-type: text/plain; charset=utf-8`.
+This includes validation failures (`400`), missing public resources (`404`), auth and
+permission failures (`401`/`403`), rate limits (`429`), and blocked downloads. Clients
+should read the response body as a human-readable string. Unknown query parameters are
+ignored for compatibility, but recognized query parameters with invalid values return
+`400`.
+
 ## Public endpoints (no auth)
 
 ### `GET /api/v1/search`
@@ -136,6 +145,8 @@ Query params:
 - `sort` (optional): `updated` (default), `createdAt` (alias: `newest`), `downloads`, `stars` (alias: `rating`), `installsCurrent` (alias: `installs`), `installsAllTime`, `trending`
 - `nonSuspiciousOnly` (optional): `true` to hide suspicious (`flagged.suspicious`) skills
 - `nonSuspicious` (optional): legacy alias for `nonSuspiciousOnly`
+
+Invalid `sort` values return `400`.
 
 Notes:
 
@@ -401,6 +412,9 @@ Query params:
 
 Notes:
 
+- Invalid values for `family`, `channel`, `isOfficial`, `executesCode`,
+  `featured`, `highlightedOnly`, `artifactKind`, or boolean capability shorthands
+  return `400`. Unknown query parameters are ignored.
 - `GET /api/v1/code-plugins` and `GET /api/v1/bundle-plugins` remain fixed-family aliases.
 - Skill entries stay backed by the skill registry and can still be published only through `POST /api/v1/skills`.
 - `POST /api/v1/packages` is still only for code-plugin and bundle-plugin releases.
@@ -431,6 +445,9 @@ Query params:
 
 Notes:
 
+- Invalid values for `family`, `channel`, `isOfficial`, `executesCode`,
+  `featured`, `highlightedOnly`, `artifactKind`, or boolean capability shorthands
+  return `400`. Unknown query parameters are ignored.
 - Anonymous callers only see public package channels.
 - Authenticated callers can search private packages for publishers they belong to.
 - `channel=private` only returns packages the authenticated caller can read.
