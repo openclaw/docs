@@ -4,6 +4,11 @@ import path from "node:path";
 
 const root = process.cwd();
 const site = path.join(root, "dist", "docs-site");
+const expectedOrigin = (process.env.DOCS_SITE_CANONICAL_ORIGIN
+  ?? (process.env.DOCS_SITE_CNAME ? `https://${process.env.DOCS_SITE_CNAME}` : "https://documentation.openclaw.ai"))
+  .replace(/\/$/, "");
+const previewOrigin = (process.env.DOCS_SITE_CNAME ? `https://${process.env.DOCS_SITE_CNAME}` : "https://documentation.openclaw.ai")
+  .replace(/\/$/, "");
 const required = [
   "index.html",
   "tools/reactions/index.html",
@@ -47,14 +52,30 @@ for (const rel of ["llms-full.txt", ".well-known/llms-full.txt"]) {
 const llms = fs.readFileSync(path.join(site, "llms.txt"), "utf8");
 if (/llms-full\.txt/.test(llms)) throw new Error("llms.txt: should not advertise llms-full.txt");
 if (!/Accept: text\/markdown|\.md/.test(llms)) throw new Error("llms.txt: should advertise page-level Markdown");
+if (!llms.includes(`${expectedOrigin}/start/getting-started.md`) || !llms.includes(`${expectedOrigin}/sitemap.xml`)) {
+  throw new Error(`llms.txt: expected canonical origin ${expectedOrigin}`);
+}
+if (previewOrigin !== expectedOrigin && llms.includes(previewOrigin)) {
+  throw new Error(`llms.txt: preview origin ${previewOrigin} should not be advertised`);
+}
 const wellKnownLlms = fs.readFileSync(path.join(site, ".well-known/llms.txt"), "utf8");
 if (wellKnownLlms !== llms) throw new Error(".well-known/llms.txt: does not match root llms.txt");
 const robots = fs.readFileSync(path.join(site, "robots.txt"), "utf8");
-if (!/Sitemap: https:\/\/documentation\.openclaw\.ai\/sitemap\.xml/.test(robots)) {
-  throw new Error("robots.txt: sitemap directive missing");
+if (!robots.includes(`Sitemap: ${expectedOrigin}/sitemap.xml`)) {
+  throw new Error(`robots.txt: sitemap directive missing canonical origin ${expectedOrigin}`);
 }
-if (!/Disallow: \/llms-full\.txt/.test(robots) || !/LLMS: https:\/\/documentation\.openclaw\.ai\/llms\.txt/.test(robots)) {
+if (!/Disallow: \/llms-full\.txt/.test(robots) || !robots.includes(`LLMS: ${expectedOrigin}/llms.txt`)) {
   throw new Error("robots.txt: LLM directives missing");
+}
+if (previewOrigin !== expectedOrigin && robots.includes(previewOrigin)) {
+  throw new Error(`robots.txt: preview origin ${previewOrigin} should not be advertised`);
+}
+const sitemap = fs.readFileSync(path.join(site, "sitemap.xml"), "utf8");
+if (!sitemap.includes(`<loc>${expectedOrigin}/`)) {
+  throw new Error(`sitemap.xml: expected canonical origin ${expectedOrigin}`);
+}
+if (previewOrigin !== expectedOrigin && sitemap.includes(previewOrigin)) {
+  throw new Error(`sitemap.xml: preview origin ${previewOrigin} should not be advertised`);
 }
 const zhReactions = fs.readFileSync(path.join(site, "zh-CN/tools/reactions/index.html"), "utf8");
 if (!/href="(?:\/docs)?\/zh-CN\/tools\/reactions"/.test(zhReactions)) {
@@ -71,6 +92,15 @@ if (!/<section class="nav-section"><h2>Overview<\/h2>/.test(itChannels)) {
   throw new Error("it channels: localized sidebar is missing");
 }
 const index = fs.readFileSync(path.join(site, "index.html"), "utf8");
+if (!index.includes(`<link rel="canonical" href="${expectedOrigin}/">`)) {
+  throw new Error(`index: canonical link should use ${expectedOrigin}`);
+}
+if (!index.includes(`<meta property="og:url" content="${expectedOrigin}/">`)) {
+  throw new Error(`index: og:url should use ${expectedOrigin}`);
+}
+if (previewOrigin !== expectedOrigin && /<link rel="canonical"[^>]+documentation\.openclaw\.ai/.test(index)) {
+  throw new Error(`index: canonical link should not use preview origin ${previewOrigin}`);
+}
 if (!/data-language-picker/.test(index) || !/class="language-option active"[^>]*aria-selected="true"/.test(index)) {
   throw new Error("index: custom language picker is missing active state");
 }
