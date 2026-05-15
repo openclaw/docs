@@ -132,6 +132,19 @@ if (process.env.DOCS_SITE_CNAME) {
   }
 }
 const siteJs = fs.readFileSync(path.join(site, "assets/docs-site.js"), "utf8");
+const siteCss = fs.readFileSync(path.join(site, "assets/docs-site.css"), "utf8");
+if (/\.oc-card:first-child\{border-color:var\(--brand\)/.test(siteCss)) {
+  throw new Error("assets: first card is hard-highlighted");
+}
+if (!/--code:#fff4eb;--code-text:#2d241f;--code-border:#e8d5c8/.test(siteCss)) {
+  throw new Error("assets: light code theme is not skinned");
+}
+if (!/\.doc pre \.tok-comment\{color:var\(--tok-comment\)\}/.test(siteCss)) {
+  throw new Error("assets: syntax token colors are not theme-variable based");
+}
+if (!/\.sidebar\{[^}]*padding:0 6px 36px 0;[^}]*scrollbar-gutter:stable/.test(siteCss)) {
+  throw new Error("assets: sidebar scroll-end padding is missing");
+}
 if (!/function syncSidebar/.test(siteJs) || !/async function navigateTo/.test(siteJs)) {
   throw new Error("assets: docs PJAX navigation is missing");
 }
