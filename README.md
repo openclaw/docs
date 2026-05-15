@@ -36,7 +36,8 @@ Source of truth lives in [`openclaw/openclaw`](https://github.com/openclaw/openc
 - `npm run docs:build` renders the mirrored Mintlify-flavored docs into `dist/docs-site`.
 - `npm run docs:build:cloudflare` is the legacy Worker Static Assets fallback build.
 - `npm run docs:build:r2` renders the full unpruned site and prepares `dist/docs-r2-manifest.json` for R2 upload.
-- `npm run docs:r2:upload` uploads only changed R2 objects by comparing against the remote manifest.
+- `npm run docs:r2:upload` uploads only changed R2 objects, reports cache hits/misses, and refuses to turn a broken remote manifest read into a full-tree reupload.
+- Manual R2 refreshes revalidate objects before upload; unchanged objects remain cache hits. `R2_UPLOAD_PUT_ALL=1` is the emergency escape hatch for intentionally rewriting every object.
 - `npm run docs:smoke` checks representative English and locale pages plus the Pagefind search bundle.
 - `npm run docs:check` runs both steps.
 - The generated site includes the language picker and static full-text search via Pagefind.

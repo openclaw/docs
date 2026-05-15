@@ -64,6 +64,7 @@ function entryFor(key, file, sourceKey) {
     sourceKey,
     file: toKey(path.relative(root, file)),
     size: data.byteLength,
+    md5: crypto.createHash("md5").update(data).digest("hex"),
     sha256: crypto.createHash("sha256").update(data).digest("hex"),
     contentType: contentTypeFor(key),
     cacheControl: cacheControlFor(key),
