@@ -8,6 +8,7 @@ const bucket = process.env.CLOUDFLARE_R2_BUCKET || "openclaw-docs";
 const manifestPath = path.join(root, "dist", "docs-r2-manifest.json");
 const remoteManifestKey = ".openclaw-docs-r2-manifest.json";
 const concurrency = Number.parseInt(process.env.R2_UPLOAD_CONCURRENCY || "8", 10);
+const refreshConcurrency = Number.parseInt(process.env.R2_REFRESH_CONCURRENCY || String(Math.min(concurrency, 16)), 10);
 const accountId = process.env.CLOUDFLARE_ACCOUNT_ID || process.env.OPENCLAW_CLOUDFLARE_ACCOUNT_ID || process.env.OPENCLAW_R2_ACCOUNT_ID;
 const endpoint = process.env.OPENCLAW_R2_S3_ENDPOINT || (accountId ? `https://${accountId}.r2.cloudflarestorage.com` : "");
 const accessKeyId = process.env.OPENCLAW_R2_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID;
@@ -22,6 +23,7 @@ const dryRun = process.env.R2_UPLOAD_DRY_RUN === "1";
 const remoteManifestPath = process.env.R2_UPLOAD_REMOTE_MANIFEST_PATH || "";
 
 if (!Number.isFinite(concurrency) || concurrency < 1) throw new Error("R2_UPLOAD_CONCURRENCY must be a positive integer");
+if (!Number.isFinite(refreshConcurrency) || refreshConcurrency < 1) throw new Error("R2_REFRESH_CONCURRENCY must be a positive integer");
 if (!fs.existsSync(manifestPath)) throw new Error("dist/docs-r2-manifest.json does not exist; run docs:build:r2 first");
 if (!dryRun && !endpoint) throw new Error("OPENCLAW_R2_S3_ENDPOINT or CLOUDFLARE_ACCOUNT_ID is required");
 if (!dryRun && !accessKeyId) throw new Error("OPENCLAW_R2_ACCESS_KEY_ID or AWS_ACCESS_KEY_ID is required");
@@ -103,7 +105,7 @@ async function planWithRemoteHeads(entries, remoteEntriesByKey) {
   const results = new Array(entries.length);
   let next = 0;
   let done = 0;
-  const workers = Array.from({ length: Math.min(concurrency, entries.length) }, async () => {
+  const workers = Array.from({ length: Math.min(refreshConcurrency, entries.length) }, async () => {
     while (next < entries.length) {
       const index = next++;
       const entry = entries[index];
