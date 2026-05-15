@@ -1744,6 +1744,7 @@
                   "reference/rpc",
                   "concepts/openclaw-sdk",
                   "reference/openclaw-sdk-api-design",
+                  "reference/code-mode",
                   "reference/device-models"
                 ]
               },
@@ -3267,6 +3268,7 @@
                   "zh-TW/reference/rpc",
                   "zh-TW/concepts/openclaw-sdk",
                   "zh-TW/reference/openclaw-sdk-api-design",
+                  "zh-TW/reference/code-mode",
                   "zh-TW/reference/device-models"
                 ]
               },
@@ -4177,6 +4179,7 @@
                   "ja-JP/reference/rpc",
                   "ja-JP/concepts/openclaw-sdk",
                   "ja-JP/reference/openclaw-sdk-api-design",
+                  "ja-JP/reference/code-mode",
                   "ja-JP/reference/device-models"
                 ]
               },
@@ -5087,6 +5090,7 @@
                   "es/reference/rpc",
                   "es/concepts/openclaw-sdk",
                   "es/reference/openclaw-sdk-api-design",
+                  "es/reference/code-mode",
                   "es/reference/device-models"
                 ]
               },
@@ -5997,6 +6001,7 @@
                   "pt-BR/reference/rpc",
                   "pt-BR/concepts/openclaw-sdk",
                   "pt-BR/reference/openclaw-sdk-api-design",
+                  "pt-BR/reference/code-mode",
                   "pt-BR/reference/device-models"
                 ]
               },
@@ -6907,6 +6912,7 @@
                   "ko/reference/rpc",
                   "ko/concepts/openclaw-sdk",
                   "ko/reference/openclaw-sdk-api-design",
+                  "ko/reference/code-mode",
                   "ko/reference/device-models"
                 ]
               },
@@ -7817,6 +7823,7 @@
                   "de/reference/rpc",
                   "de/concepts/openclaw-sdk",
                   "de/reference/openclaw-sdk-api-design",
+                  "de/reference/code-mode",
                   "de/reference/device-models"
                 ]
               },
@@ -8727,6 +8734,7 @@
                   "fr/reference/rpc",
                   "fr/concepts/openclaw-sdk",
                   "fr/reference/openclaw-sdk-api-design",
+                  "fr/reference/code-mode",
                   "fr/reference/device-models"
                 ]
               },
@@ -9637,6 +9645,7 @@
                   "ar/reference/rpc",
                   "ar/concepts/openclaw-sdk",
                   "ar/reference/openclaw-sdk-api-design",
+                  "ar/reference/code-mode",
                   "ar/reference/device-models"
                 ]
               },
@@ -10547,6 +10556,7 @@
                   "it/reference/rpc",
                   "it/concepts/openclaw-sdk",
                   "it/reference/openclaw-sdk-api-design",
+                  "it/reference/code-mode",
                   "it/reference/device-models"
                 ]
               },
@@ -11457,6 +11467,7 @@
                   "vi/reference/rpc",
                   "vi/concepts/openclaw-sdk",
                   "vi/reference/openclaw-sdk-api-design",
+                  "vi/reference/code-mode",
                   "vi/reference/device-models"
                 ]
               },
@@ -12367,6 +12378,7 @@
                   "nl/reference/rpc",
                   "nl/concepts/openclaw-sdk",
                   "nl/reference/openclaw-sdk-api-design",
+                  "nl/reference/code-mode",
                   "nl/reference/device-models"
                 ]
               },
@@ -13277,6 +13289,7 @@
                   "tr/reference/rpc",
                   "tr/concepts/openclaw-sdk",
                   "tr/reference/openclaw-sdk-api-design",
+                  "tr/reference/code-mode",
                   "tr/reference/device-models"
                 ]
               },
@@ -14187,6 +14200,7 @@
                   "uk/reference/rpc",
                   "uk/concepts/openclaw-sdk",
                   "uk/reference/openclaw-sdk-api-design",
+                  "uk/reference/code-mode",
                   "uk/reference/device-models"
                 ]
               },
@@ -15097,6 +15111,7 @@
                   "id/reference/rpc",
                   "id/concepts/openclaw-sdk",
                   "id/reference/openclaw-sdk-api-design",
+                  "id/reference/code-mode",
                   "id/reference/device-models"
                 ]
               },
@@ -16007,6 +16022,7 @@
                   "pl/reference/rpc",
                   "pl/concepts/openclaw-sdk",
                   "pl/reference/openclaw-sdk-api-design",
+                  "pl/reference/code-mode",
                   "pl/reference/device-models"
                 ]
               },
