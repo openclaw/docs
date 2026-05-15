@@ -136,8 +136,11 @@ const siteCss = fs.readFileSync(path.join(site, "assets/docs-site.css"), "utf8")
 if (/\.oc-card:first-child\{border-color:var\(--brand\)/.test(siteCss)) {
   throw new Error("assets: first card is hard-highlighted");
 }
-if (!/--code:#fff4eb;--code-text:#2d241f;--code-border:#e8d5c8/.test(siteCss)) {
+if (!/--code:#f7f4f0;--code-inline:#f3efea;--code-block:#fffefa;--code-text:#2d2926;--code-border:#ddd6ce;--code-shadow:none/.test(siteCss)) {
   throw new Error("assets: light code theme is not skinned");
+}
+if (/\.toc a:first-of-type/.test(siteCss)) {
+  throw new Error("assets: first table-of-contents item is hard-highlighted");
 }
 if (!/\.doc pre \.tok-comment\{color:var\(--tok-comment\)\}/.test(siteCss)) {
   throw new Error("assets: syntax token colors are not theme-variable based");
