@@ -110,9 +110,7 @@ async function planWithRemoteHeads(entries, remoteEntriesByKey) {
       const index = next++;
       const entry = entries[index];
       const remote = remoteEntriesByKey.get(entry.key);
-      const head = await headObject(entry);
-      const reason = diffHeadEntry(head, remote, entry);
-      results[index] = { entry, hitSource: reason ? "" : head.source, reason };
+      results[index] = await planEntryWithRemoteHead(entry, remote);
       done++;
       if (done % 1000 === 0 || done === entries.length) console.log(`r2 full refresh scan: ${done}/${entries.length}`);
     }
@@ -130,6 +128,23 @@ async function planWithRemoteHeads(entries, remoteEntriesByKey) {
     }
   }
   return { changed, stats };
+}
+
+async function planEntryWithRemoteHead(entry, remote) {
+  try {
+    const head = await headObject(entry);
+    const reason = diffHeadEntry(head, remote, entry);
+    return { entry, hitSource: reason ? "" : head.source, reason };
+  } catch (error) {
+    const manifestReason = diffManifestEntry(remote, entry);
+    const message = error instanceof Error ? error.message : String(error);
+    console.warn(`r2 full refresh warning: HEAD failed for ${entry.key}; falling back to manifest comparison: ${message}`);
+    return {
+      entry,
+      hitSource: manifestReason ? "" : "manifest_after_head_error",
+      reason: manifestReason ? `${manifestReason}_after_head_error` : "",
+    };
+  }
 }
 
 function diffManifestEntry(remote, entry) {

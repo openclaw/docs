@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
     inputs:
       force_upload:
-        description: "Revalidate every R2 object before upload; unchanged objects remain cache hits."
+        description: "Audit R2 objects before upload; unchanged objects remain cache hits."
         required: false
         type: boolean
         default: false
