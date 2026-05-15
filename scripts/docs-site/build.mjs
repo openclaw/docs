@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { execFile, execFileSync } from "node:child_process";
@@ -538,13 +539,9 @@ function checkRsvg() {
 }
 
 function buildAssetVersion() {
-  const fromEnv = process.env.GITHUB_SHA || process.env.DOCS_SITE_ASSET_VERSION;
+  const fromEnv = process.env.DOCS_SITE_ASSET_VERSION;
   if (fromEnv) return fromEnv.slice(0, 12);
-  try {
-    return execFileSync("git", ["rev-parse", "--short=12", "HEAD"], { encoding: "utf8" }).trim();
-  } catch {
-    return "dev";
-  }
+  return crypto.createHash("sha256").update(siteCss()).update("\0").update(siteJs()).digest("hex").slice(0, 12);
 }
 
 function writeStaticAssets() {

@@ -138,7 +138,6 @@ const meta = {
   filesConsidered: files.length,
   skippedLarge,
   skippedBudget,
-  generatedAt: new Date().toISOString(),
 };
 fs.writeFileSync(metaPath, `${JSON.stringify(meta, null, 2)}\n`, "utf8");
 console.log(`indexed ${recordCount} source files from ${files.length} files (${Math.round(bytes / 1024)} KiB)`);
@@ -229,7 +228,7 @@ function readJson(file) {
 
 function writeEmptyIndex(reason) {
   fs.writeFileSync(outPath, "", "utf8");
-  fs.writeFileSync(metaPath, `${JSON.stringify({ records: 0, reason, generatedAt: new Date().toISOString() }, null, 2)}\n`, "utf8");
+  fs.writeFileSync(metaPath, `${JSON.stringify({ records: 0, reason }, null, 2)}\n`, "utf8");
   console.warn(`source index skipped: ${reason}`);
 }
 
