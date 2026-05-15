@@ -26,14 +26,7 @@ export function createMarkdownRenderer() {
     linkify: true,
     typographer: false,
     highlight: highlightCode
-  }).use(anchor, {
-    permalink: anchor.permalink.linkInsideHeader({
-      symbol: "#",
-      class: "anchor",
-      placement: "before",
-      ariaHidden: true
-    })
-  });
+  }).use(anchor);
 }
 
 function highlightCode(code, rawLang = "") {

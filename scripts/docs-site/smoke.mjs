@@ -182,6 +182,17 @@ const platformsIndex = fs.readFileSync(path.join(site, "platforms/index.html"), 
 if (/VPS &amp;amp; hosting/.test(platformsIndex)) {
   throw new Error("platforms index: TOC double-escaped ampersand");
 }
+const toolsIndex = fs.readFileSync(path.join(site, "tools/index.html"), "utf8");
+if (/class="anchor"/.test(toolsIndex)) {
+  throw new Error("tools index: visible heading permalink anchors should not be rendered");
+}
+if (!/<h2 id="[^"]*choose-tools[^"]*"[^>]*>Choose tools, skills, or plugins<\/h2>/.test(toolsIndex)) {
+  throw new Error("tools index: heading ids should remain without visible # anchors");
+}
+if (/\.oc-step:before\{[^}]*background:var\(--brand\)/.test(siteCss)
+  || !/\.oc-step:before\{[^}]*background:color-mix\(in srgb,var\(--line-strong\) 78%,var\(--paper\) 22%\)/.test(siteCss)) {
+  throw new Error("assets: step badges should use neutral timeline styling");
+}
 const dateTime = fs.readFileSync(path.join(site, "date-time/index.html"), "utf8");
 if (/Current Date &amp;amp; Time/.test(dateTime)) {
   throw new Error("date-time: TOC double-escaped ampersand");
