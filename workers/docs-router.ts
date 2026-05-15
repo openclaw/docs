@@ -265,6 +265,9 @@ function browserCacheControlFor(pathname: string): string {
   if (isHtmlPath(pathname)) {
     return "public, max-age=60, stale-while-revalidate=60";
   }
+  if (isShellAssetPath(pathname)) {
+    return "public, max-age=60, stale-while-revalidate=300";
+  }
   if (isMutableStaticPath(pathname)) {
     return "public, max-age=300, stale-while-revalidate=300";
   }
@@ -275,6 +278,9 @@ function edgeCacheControlFor(pathname: string): string {
   if (isHtmlPath(pathname)) {
     return "public, s-maxage=60, stale-while-revalidate=60";
   }
+  if (isShellAssetPath(pathname)) {
+    return "public, s-maxage=3600, stale-while-revalidate=86400";
+  }
   if (isMutableStaticPath(pathname)) {
     return "public, s-maxage=3600, stale-while-revalidate=86400";
   }
@@ -282,11 +288,16 @@ function edgeCacheControlFor(pathname: string): string {
 }
 
 function isMutableStaticPath(pathname: string): boolean {
-  return pathname.endsWith(".md")
+  return isShellAssetPath(pathname)
+    || pathname.endsWith(".md")
     || pathname.endsWith(".txt")
     || pathname.endsWith(".xml")
     || pathname.endsWith(".json")
     || pathname.endsWith(".jsonl");
+}
+
+function isShellAssetPath(pathname: string): boolean {
+  return pathname === "/assets/docs-site.css" || pathname === "/assets/docs-site.js";
 }
 
 function isHtmlPath(pathname: string): boolean {

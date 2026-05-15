@@ -155,6 +155,8 @@ jobs:
               await assertText("/.well-known/llms.txt", /## Documentation Index/);
               await assertText("/sitemap.xml", /<urlset/);
               await assertHeader("/sitemap.xml", "cache-control", /max-age=300/, /immutable/);
+              await assertHeader("/assets/docs-site.css", "cache-control", /max-age=60/, /immutable/);
+              await assertHeader("/assets/docs-site.css", "cloudflare-cdn-cache-control", /s-maxage=3600/, /immutable/);
               await assertStatus("/llms-full.txt", 410);
               await assertStatus("/.well-known/llms-full.txt", 410);
               process.exit(0);
