@@ -151,6 +151,21 @@ if (!/\.doc pre \.tok-comment\{color:var\(--tok-comment\)\}/.test(siteCss)) {
 if (!/\.sidebar\{[^}]*padding:0 6px 36px 0;[^}]*scrollbar-gutter:stable/.test(siteCss)) {
   throw new Error("assets: sidebar scroll-end padding is missing");
 }
+if (!/\.header-row,\.tabs\{max-width:1780px;margin:0 auto\}/.test(siteCss)
+  || !/\.doc-shell\{max-width:1780px;margin:0 auto\}/.test(siteCss)
+  || !/\.doc-shell\{display:grid;grid-template-columns:340px minmax\(0,1fr\);gap:72px;padding:38px 56px 90px\}/.test(siteCss)) {
+  throw new Error("assets: docs shell geometry does not match the wide reference layout");
+}
+if (!/body\{[^}]*font:14px\/1\.72/.test(siteCss)
+  || !/\.tab-link\{[^}]*font-size:14px/.test(siteCss)
+  || !/\.article h1\{font:740 28px\/1\.12/.test(siteCss)
+  || !/\.doc\{font-size:14px\}/.test(siteCss)) {
+  throw new Error("assets: docs type scale drifted from the reference skin");
+}
+if (!/--bg:#0d0b0b;--paper:#111010;--paper-2:#151211;[^}]*--soft:#241915/.test(siteCss)
+  || !/\.nav-link\.active\{background:var\(--soft\);color:var\(--brand\);font-weight:730\}/.test(siteCss)) {
+  throw new Error("assets: dark sidebar surface is not reference-aligned");
+}
 if (!/function syncSidebar/.test(siteJs) || !/async function navigateTo/.test(siteJs)) {
   throw new Error("assets: docs PJAX navigation is missing");
 }
