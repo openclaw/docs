@@ -70,6 +70,12 @@ function rebuildEnglishSearch() {
 
 function writeStaticAssetHeaders() {
   fs.writeFileSync(path.join(site, "_headers"), [
+    "/assets/docs-site.css",
+    "  Cache-Control: public, max-age=60, s-maxage=3600, stale-while-revalidate=86400",
+    "",
+    "/assets/docs-site.js",
+    "  Cache-Control: public, max-age=60, s-maxage=3600, stale-while-revalidate=86400",
+    "",
     "/assets/*",
     "  Cache-Control: public, max-age=31536000, immutable",
     "",

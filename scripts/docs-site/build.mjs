@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { execFile, execFileSync } from "node:child_process";
@@ -28,8 +27,7 @@ const ogImagePath = "/og-card.png";
 const renderedPageOgCards = new Set();
 const rsvgAvailable = checkRsvg();
 const chatApiUrl = process.env.DOCS_SITE_CHAT_API_URL ?? "/ask-molty/api/chat";
-const assetVersion = buildAssetVersion();
-
+const shellAssetVersion = process.env.DOCS_SITE_SHELL_ASSET_VERSION ?? "9e2fc4e1b67b";
 fs.rmSync(outDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
 fs.mkdirSync(outDir, { recursive: true });
 
@@ -238,7 +236,7 @@ ${chatWidget()}
 }
 
 function assetUrl(file) {
-  return `${publicPath(file)}?v=${encodeURIComponent(assetVersion)}`;
+  return `${publicPath(file)}?v=${encodeURIComponent(shellAssetVersion)}`;
 }
 
 function siteHeader(page, nav, activeTab) {
@@ -536,12 +534,6 @@ function checkRsvg() {
   } catch {
     return false;
   }
-}
-
-function buildAssetVersion() {
-  const fromEnv = process.env.DOCS_SITE_ASSET_VERSION;
-  if (fromEnv) return fromEnv.slice(0, 12);
-  return crypto.createHash("sha256").update(siteCss()).update("\0").update(siteJs()).digest("hex").slice(0, 12);
 }
 
 function writeStaticAssets() {

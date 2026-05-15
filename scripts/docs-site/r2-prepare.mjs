@@ -98,6 +98,9 @@ function contentTypeFor(key) {
 
 function cacheControlFor(key) {
   if (key === "CNAME") return "public, max-age=300, s-maxage=300";
+  if (key === "assets/docs-site.css" || key === "assets/docs-site.js") {
+    return "public, max-age=60, s-maxage=3600, stale-while-revalidate=86400";
+  }
   if (key.endsWith(".html") || !path.extname(key)) {
     return "public, max-age=60, s-maxage=86400, stale-while-revalidate=604800";
   }
