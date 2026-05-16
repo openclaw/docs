@@ -1147,6 +1147,7 @@
                   "start/bootstrapping",
                   "concepts/experimental-features",
                   "concepts/qa-e2e-automation",
+                  "concepts/personal-agent-benchmark-pack",
                   "concepts/qa-matrix"
                 ]
               },
@@ -2705,6 +2706,7 @@
                   "zh-TW/start/bootstrapping",
                   "zh-TW/concepts/experimental-features",
                   "zh-TW/concepts/qa-e2e-automation",
+                  "zh-TW/concepts/personal-agent-benchmark-pack",
                   "zh-TW/concepts/qa-matrix"
                 ]
               },
@@ -3617,6 +3619,7 @@
                   "ja-JP/start/bootstrapping",
                   "ja-JP/concepts/experimental-features",
                   "ja-JP/concepts/qa-e2e-automation",
+                  "ja-JP/concepts/personal-agent-benchmark-pack",
                   "ja-JP/concepts/qa-matrix"
                 ]
               },
@@ -4529,6 +4532,7 @@
                   "es/start/bootstrapping",
                   "es/concepts/experimental-features",
                   "es/concepts/qa-e2e-automation",
+                  "es/concepts/personal-agent-benchmark-pack",
                   "es/concepts/qa-matrix"
                 ]
               },
@@ -5441,6 +5445,7 @@
                   "pt-BR/start/bootstrapping",
                   "pt-BR/concepts/experimental-features",
                   "pt-BR/concepts/qa-e2e-automation",
+                  "pt-BR/concepts/personal-agent-benchmark-pack",
                   "pt-BR/concepts/qa-matrix"
                 ]
               },
@@ -6353,6 +6358,7 @@
                   "ko/start/bootstrapping",
                   "ko/concepts/experimental-features",
                   "ko/concepts/qa-e2e-automation",
+                  "ko/concepts/personal-agent-benchmark-pack",
                   "ko/concepts/qa-matrix"
                 ]
               },
@@ -7265,6 +7271,7 @@
                   "de/start/bootstrapping",
                   "de/concepts/experimental-features",
                   "de/concepts/qa-e2e-automation",
+                  "de/concepts/personal-agent-benchmark-pack",
                   "de/concepts/qa-matrix"
                 ]
               },
@@ -8177,6 +8184,7 @@
                   "fr/start/bootstrapping",
                   "fr/concepts/experimental-features",
                   "fr/concepts/qa-e2e-automation",
+                  "fr/concepts/personal-agent-benchmark-pack",
                   "fr/concepts/qa-matrix"
                 ]
               },
@@ -9089,6 +9097,7 @@
                   "ar/start/bootstrapping",
                   "ar/concepts/experimental-features",
                   "ar/concepts/qa-e2e-automation",
+                  "ar/concepts/personal-agent-benchmark-pack",
                   "ar/concepts/qa-matrix"
                 ]
               },
@@ -10001,6 +10010,7 @@
                   "it/start/bootstrapping",
                   "it/concepts/experimental-features",
                   "it/concepts/qa-e2e-automation",
+                  "it/concepts/personal-agent-benchmark-pack",
                   "it/concepts/qa-matrix"
                 ]
               },
@@ -10913,6 +10923,7 @@
                   "vi/start/bootstrapping",
                   "vi/concepts/experimental-features",
                   "vi/concepts/qa-e2e-automation",
+                  "vi/concepts/personal-agent-benchmark-pack",
                   "vi/concepts/qa-matrix"
                 ]
               },
@@ -11825,6 +11836,7 @@
                   "nl/start/bootstrapping",
                   "nl/concepts/experimental-features",
                   "nl/concepts/qa-e2e-automation",
+                  "nl/concepts/personal-agent-benchmark-pack",
                   "nl/concepts/qa-matrix"
                 ]
               },
@@ -12737,6 +12749,7 @@
                   "tr/start/bootstrapping",
                   "tr/concepts/experimental-features",
                   "tr/concepts/qa-e2e-automation",
+                  "tr/concepts/personal-agent-benchmark-pack",
                   "tr/concepts/qa-matrix"
                 ]
               },
@@ -13649,6 +13662,7 @@
                   "uk/start/bootstrapping",
                   "uk/concepts/experimental-features",
                   "uk/concepts/qa-e2e-automation",
+                  "uk/concepts/personal-agent-benchmark-pack",
                   "uk/concepts/qa-matrix"
                 ]
               },
@@ -14561,6 +14575,7 @@
                   "id/start/bootstrapping",
                   "id/concepts/experimental-features",
                   "id/concepts/qa-e2e-automation",
+                  "id/concepts/personal-agent-benchmark-pack",
                   "id/concepts/qa-matrix"
                 ]
               },
@@ -15473,6 +15488,7 @@
                   "pl/start/bootstrapping",
                   "pl/concepts/experimental-features",
                   "pl/concepts/qa-e2e-automation",
+                  "pl/concepts/personal-agent-benchmark-pack",
                   "pl/concepts/qa-matrix"
                 ]
               },
