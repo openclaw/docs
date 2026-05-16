@@ -41,7 +41,7 @@ Source of truth lives in [`openclaw/openclaw`](https://github.com/openclaw/openc
 - `npm run docs:smoke` checks representative English and locale pages plus the Pagefind search bundle.
 - `npm run docs:check` runs both steps.
 - The generated site includes the language picker and static full-text search via Pagefind.
-- Cloudflare deploys `workers/docs-router.ts`, which serves slashless page URLs and English markdown responses for `.md` paths or `Accept: text/markdown` from the R2 bucket binding.
+- Cloudflare deploys `workers/docs-router.ts`, which serves slashless page URLs and English markdown responses for `.md` paths or `Accept: text/markdown` from the R2 bucket.
 - Cloudflare hosting details and limitations are documented in `CLOUDFLARE.md`.
 
 ## Secrets
@@ -49,5 +49,4 @@ Source of truth lives in [`openclaw/openclaw`](https://github.com/openclaw/openc
 - `OPENCLAW_DOCS_SYNC_TOKEN` lives in `openclaw/openclaw` and lets the source repo push into this repo.
 - `OPENCLAW_DOCS_I18N_OPENAI_API_KEY` lives in this repo and powers locale translation refreshes.
 - `CLOUDFLARE_API_TOKEN` lives in this repo and deploys the `documentation.openclaw.ai` router.
-- `OPENCLAW_R2_ACCESS_KEY_ID` and `OPENCLAW_R2_SECRET_ACCESS_KEY` live in this repo and upload docs objects to R2.
-- The live router reads through the Worker `DOCS_BUCKET` R2 binding and does not need R2 S3 secrets at runtime.
+- R2 upload and router-secret sync derive `OPENCLAW_R2_ACCESS_KEY_ID` and `OPENCLAW_R2_SECRET_ACCESS_KEY` from `CLOUDFLARE_API_TOKEN` during CI, so token rotation does not require separately rotating derived R2 secrets.

@@ -31,7 +31,7 @@ Production is cut over to R2-backed storage with a small Worker router in front:
 
 - Worker: `openclaw-docs-router`
 - Route: `documentation.openclaw.ai/*`
-- Router storage: native Worker R2 binding to bucket `openclaw-docs`
+- Router storage: signed R2 S3 reads from bucket `openclaw-docs`
 - Header: `X-OpenClaw-Docs-Origin: cloudflare-r2`
 - Cache-Control follows the same policy as the R2 manifest.
 
@@ -68,19 +68,18 @@ R2 must be enabled for the account before bucket creation works.
 Required R2 S3 upload credentials:
 
 - `CLOUDFLARE_ACCOUNT_ID`
-- `OPENCLAW_R2_ACCESS_KEY_ID`
-- `OPENCLAW_R2_SECRET_ACCESS_KEY`
+- `CLOUDFLARE_API_TOKEN`
 
-The Worker router does not use S3 access keys at runtime. `wrangler.toml` binds the `openclaw-docs` bucket as `DOCS_BUCKET`, so the Worker deploy path only needs permission to deploy the Worker and attach the R2 binding. Do not commit the account id or upload credentials to this repository.
+The Worker router uses the same private account id value through the `OPENCLAW_R2_ACCOUNT_ID` Worker secret. The Pages workflow derives the R2 S3 keypair from `CLOUDFLARE_API_TOKEN` and writes those values to Worker secrets during rotation deploys. Do not commit the account id or credentials to this repository.
 
 For Cloudflare R2 API tokens, the access key id is the account-token id returned by:
 
 ```sh
 curl -H "Authorization: Bearer $OPENCLAW_CLOUDFLARE_API_TOKEN" \
-  "https://api.cloudflare.com/client/v4/accounts/$OPENCLAW_CLOUDFLARE_ACCOUNT_ID/tokens/verify"
+  "https://api.cloudflare.com/client/v4/user/tokens/verify"
 ```
 
-The secret access key is the SHA-256 hex digest of the R2 token value. These are stored locally in `~/.profile` and should be added to GitHub Actions secrets before enabling the R2 workflow in CI.
+The secret access key is the SHA-256 hex digest of the R2 token value. CI derives both values from `CLOUDFLARE_API_TOKEN` at runtime instead of storing separate derived GitHub secrets.
 
 ## Deploy Flow
 
@@ -96,7 +95,8 @@ Production router deploy:
 1. `.github/workflows/pages.yml`
 2. Pushes validate the Worker bundle with `wrangler deploy --dry-run`.
 3. Manual dispatch with `deploy_worker=true` runs `npx wrangler@4.88.0 deploy --config wrangler.toml`.
-4. `docs-live-smoke.yml`
+4. Manual dispatch with `sync_secrets=true` refreshes Worker R2 secrets before deploying.
+5. `docs-live-smoke.yml`
 
 Local R2 build:
 
@@ -108,10 +108,13 @@ Local R2 upload:
 
 ```sh
 source ~/.profile
+OPENCLAW_R2_ACCESS_KEY_ID="$(curl -fsS -H "Authorization: Bearer $OPENCLAW_CLOUDFLARE_API_TOKEN" \
+  "https://api.cloudflare.com/client/v4/user/tokens/verify" \
+  | node -e 'const fs = require("node:fs"); const data = JSON.parse(fs.readFileSync(0, "utf8")); if (!data.success || !data.result?.id) process.exit(1); process.stdout.write(data.result.id);')"
 CLOUDFLARE_ACCOUNT_ID="$CLOUDFLARE_ACCOUNT_ID" \
 CLOUDFLARE_R2_BUCKET=openclaw-docs \
 OPENCLAW_R2_ACCESS_KEY_ID="$OPENCLAW_R2_ACCESS_KEY_ID" \
-OPENCLAW_R2_SECRET_ACCESS_KEY="$OPENCLAW_R2_SECRET_ACCESS_KEY" \
+OPENCLAW_R2_SECRET_ACCESS_KEY="$(printf '%s' "$OPENCLAW_CLOUDFLARE_API_TOKEN" | shasum -a 256 | awk '{print $1}')" \
 R2_UPLOAD_CONCURRENCY=64 \
 npm run docs:r2:upload
 ```
@@ -158,9 +161,9 @@ After router deploy, verify repeated requests show `X-OpenClaw-Docs-Cache: MISS`
 ## Cutover Checklist
 
 1. Confirm R2 is enabled on the Services@openclaw.org account.
-2. Confirm the GitHub R2 upload secrets are present:
-   - `OPENCLAW_R2_ACCESS_KEY_ID`
-   - `OPENCLAW_R2_SECRET_ACCESS_KEY`
+2. Confirm the GitHub Cloudflare secrets are present:
+   - `CLOUDFLARE_ACCOUNT_ID`
+   - `CLOUDFLARE_API_TOKEN`
 3. Confirm the bucket exists:
 
    ```sh
@@ -171,7 +174,7 @@ After router deploy, verify repeated requests show `X-OpenClaw-Docs-Cache: MISS`
    ```
 
 4. Run the manual `R2 Pages` workflow, or run the local upload command above.
-5. Deploy `openclaw-docs-router` from the manual Pages workflow.
+5. Deploy `openclaw-docs-router` from the manual Pages workflow. Use `sync_secrets=true` only when rotating the Worker R2 secrets; normal router deploys reuse the existing Worker secrets.
 6. Live-test the URLs below.
 
 Pure R2 follow-up, blocked on `Zone: Rulesets: Edit`:

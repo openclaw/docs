@@ -159,14 +159,37 @@ jobs:
             echo "stale=false" >> "${GITHUB_OUTPUT}"
           fi
 
+      - name: Derive R2 credentials
+        if: steps.current-main.outputs.stale != 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          : "${CLOUDFLARE_API_TOKEN:?CLOUDFLARE_API_TOKEN is required}"
+          verify_response="$(curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "https://api.cloudflare.com/client/v4/user/tokens/verify")"
+          VERIFY_RESPONSE="${verify_response}" node - <<'NODE'
+          const crypto = require("node:crypto");
+          const fs = require("node:fs");
+
+          const token = process.env.CLOUDFLARE_API_TOKEN;
+          const response = JSON.parse(process.env.VERIFY_RESPONSE || "{}");
+          const accessKeyId = response?.result?.id;
+          if (!response?.success || !accessKeyId) {
+            throw new Error("Cloudflare token verify response did not include a token id");
+          }
+          const secretAccessKey = crypto.createHash("sha256").update(token).digest("hex");
+          console.log(`::add-mask::${accessKeyId}`);
+          console.log(`::add-mask::${secretAccessKey}`);
+          fs.appendFileSync(process.env.GITHUB_ENV, `OPENCLAW_R2_ACCESS_KEY_ID=${accessKeyId}\n`);
+          fs.appendFileSync(process.env.GITHUB_ENV, `OPENCLAW_R2_SECRET_ACCESS_KEY=${secretAccessKey}\n`);
+          NODE
+
       - name: Upload changed R2 objects
         id: upload-r2
         if: steps.current-main.outputs.stale != 'true'
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_R2_BUCKET: openclaw-docs
-          OPENCLAW_R2_ACCESS_KEY_ID: ${{ secrets.OPENCLAW_R2_ACCESS_KEY_ID }}
-          OPENCLAW_R2_SECRET_ACCESS_KEY: ${{ secrets.OPENCLAW_R2_SECRET_ACCESS_KEY }}
           R2_DELETE_BUCKET_ORPHANS: ${{ github.event_name == 'workflow_dispatch' && inputs.delete_bucket_orphans == true && '1' || '0' }}
           R2_REFRESH_CONCURRENCY: 32
           R2_UPLOAD_CONCURRENCY: 64

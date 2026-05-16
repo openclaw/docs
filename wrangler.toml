@@ -5,6 +5,6 @@ routes = [
   { pattern = "documentation.openclaw.ai/*", zone_name = "openclaw.ai" }
 ]
 
-[[r2_buckets]]
-binding = "DOCS_BUCKET"
-bucket_name = "openclaw-docs"
+[vars]
+CLOUDFLARE_R2_BUCKET = "openclaw-docs"
+OPENCLAW_R2_REGION = "auto"
