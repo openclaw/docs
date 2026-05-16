@@ -52,8 +52,38 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `sha=${data.sha}\n`);
           NODE
 
-      - name: Check out OpenClaw source
+      - name: Check live llms-full route
         if: steps.current-main.outputs.stale != 'true'
+        id: live-route
+        env:
+          BASE_URL: https://documentation.openclaw.ai
+          GITHUB_SHA: ${{ github.sha }}
+        run: |
+          node - <<'NODE'
+          import fs from "node:fs";
+
+          const baseUrl = process.env.BASE_URL;
+          const sha = process.env.GITHUB_SHA;
+          const url = new URL("/llms-full.txt", baseUrl);
+          url.searchParams.set("_openclaw_llms_full_route_probe", sha);
+          const response = await fetch(url, {
+            headers: {
+              "cache-control": "no-cache",
+              pragma: "no-cache",
+            },
+          });
+          if (response.status === 410) {
+            console.log("::notice::Live Worker still returns 410 for /llms-full.txt; skipping corpus generation until the router is redeployed.");
+            console.log("available=false");
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, "available=false\n");
+          } else {
+            console.log(`live llms-full route probe: HTTP ${response.status}`);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, "available=true\n");
+          }
+          NODE
+
+      - name: Check out OpenClaw source
+        if: steps.current-main.outputs.stale != 'true' && steps.live-route.outputs.available != 'false'
         uses: actions/checkout@v6
         with:
           repository: ${{ steps.source-meta.outputs.repository }}
@@ -62,18 +92,18 @@ jobs:
           fetch-depth: 1
 
       - name: Set up Node
-        if: steps.current-main.outputs.stale != 'true'
+        if: steps.current-main.outputs.stale != 'true' && steps.live-route.outputs.available != 'false'
         uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
 
       - name: Install
-        if: steps.current-main.outputs.stale != 'true'
+        if: steps.current-main.outputs.stale != 'true' && steps.live-route.outputs.available != 'false'
         run: npm ci
 
       - name: Generate llms-full corpus
-        if: steps.current-main.outputs.stale != 'true'
+        if: steps.current-main.outputs.stale != 'true' && steps.live-route.outputs.available != 'false'
         env:
           DOCS_SOURCE_REPO_DIR: source
           DOCS_SOURCE_REPO_URL: https://github.com/${{ steps.source-meta.outputs.repository }}
@@ -81,7 +111,7 @@ jobs:
         run: npm run docs:llms-full
 
       - name: Smoke generated corpus
-        if: steps.current-main.outputs.stale != 'true'
+        if: steps.current-main.outputs.stale != 'true' && steps.live-route.outputs.available != 'false'
         run: |
           set -euo pipefail
           test -s dist/docs-llms-full/llms-full.txt
@@ -91,7 +121,7 @@ jobs:
           grep -q '^# ' dist/docs-llms-full/llms-full.txt
 
       - name: Re-check current docs main before upload
-        if: steps.current-main.outputs.stale != 'true'
+        if: steps.current-main.outputs.stale != 'true' && steps.live-route.outputs.available != 'false'
         id: current-main-before-upload
         run: |
           set -euo pipefail
@@ -105,7 +135,7 @@ jobs:
           fi
 
       - name: Upload llms-full corpus
-        if: steps.current-main.outputs.stale != 'true' && steps.current-main-before-upload.outputs.stale != 'true'
+        if: steps.current-main.outputs.stale != 'true' && steps.live-route.outputs.available != 'false' && steps.current-main-before-upload.outputs.stale != 'true'
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_R2_BUCKET: openclaw-docs
@@ -115,7 +145,7 @@ jobs:
         run: npm run docs:llms-full:upload
 
       - name: Smoke live corpus
-        if: steps.current-main.outputs.stale != 'true' && steps.current-main-before-upload.outputs.stale != 'true'
+        if: steps.current-main.outputs.stale != 'true' && steps.live-route.outputs.available != 'false' && steps.current-main-before-upload.outputs.stale != 'true'
         env:
           BASE_URL: https://documentation.openclaw.ai
           GITHUB_SHA: ${{ github.sha }}

@@ -17,6 +17,7 @@ const region = process.env.OPENCLAW_R2_REGION || "auto";
 const service = "s3";
 const retryAttempts = Number.parseInt(process.env.R2_UPLOAD_RETRIES || "5", 10);
 const deleteOrphans = process.env.R2_DELETE_ORPHANS !== "0";
+const deleteBucketOrphans = process.env.R2_DELETE_BUCKET_ORPHANS !== "0";
 const fullRefresh = process.env.R2_UPLOAD_FORCE === "1" || process.env.R2_UPLOAD_FULL_REFRESH === "1";
 const putAll = process.env.R2_UPLOAD_PUT_ALL === "1";
 const dryRun = process.env.R2_UPLOAD_DRY_RUN === "1";
@@ -50,7 +51,9 @@ localKeys.add(remoteManifestKey);
 const plan = await createUploadPlan(scopedEntries, remoteEntries);
 const changed = plan.changed;
 const manifestDeletedKeys = partialUpload ? [] : Array.from(remoteEntries.keys()).filter((key) => !localKeys.has(key) && !protectedKeys.has(key));
-const orphanedKeys = !partialUpload && deleteOrphans && !dryRun ? (await listBucketKeys()).filter((key) => !localKeys.has(key) && !protectedKeys.has(key)) : [];
+const orphanedKeys = !partialUpload && deleteOrphans && deleteBucketOrphans && !dryRun
+  ? (await listBucketKeys()).filter((key) => !localKeys.has(key) && !protectedKeys.has(key))
+  : [];
 const deleted = Array.from(new Set([...manifestDeletedKeys, ...orphanedKeys])).sort().map((key) => ({ key }));
 const uploadManifest = writeUploadManifest(manifest, remoteManifest, scopedEntries);
 
@@ -58,7 +61,7 @@ console.log(formatRemoteManifestStatus(remoteManifest));
 console.log(`r2 upload scope: ${uploadScope} (${scopedEntries.length}/${manifest.entries.length} manifest entries, partial=${partialUpload})`);
 console.log(formatCacheStats(plan.stats));
 console.log(
-  `r2 upload plan: ${changed.length}/${scopedEntries.length} changed objects, ${deleted.length} deleted objects (${manifestDeletedKeys.length} from manifest, ${orphanedKeys.length} orphaned, fullRefresh=${fullRefresh}, putAll=${putAll}, dryRun=${dryRun}) for ${bucket}`,
+  `r2 upload plan: ${changed.length}/${scopedEntries.length} changed objects, ${deleted.length} deleted objects (${manifestDeletedKeys.length} from manifest, ${orphanedKeys.length} bucket-orphaned, fullRefresh=${fullRefresh}, putAll=${putAll}, dryRun=${dryRun}, bucketOrphanSweep=${deleteBucketOrphans}) for ${bucket}`,
 );
 await uploadEntries(changed);
 await deleteEntries(deleted);
@@ -71,6 +74,7 @@ await putObject({
   cacheControl: "private, max-age=0, no-store",
 });
 writeGithubSummary(plan.stats, deleted);
+writeGithubOutput(plan.stats, changed, deleted);
 console.log(`r2 upload ok: ${changed.length} changed objects, ${deleted.length} deleted objects plus ${remoteManifestKey}`);
 
 function filterEntriesByScope(entries, scope) {
@@ -304,6 +308,18 @@ function writeGithubSummary(stats, deleted) {
     "",
   ];
   fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${lines.join("\n")}\n`);
+}
+
+function writeGithubOutput(stats, changed, deleted) {
+  if (!process.env.GITHUB_OUTPUT) return;
+  const lines = [
+    `changed=${changed.length}`,
+    `deleted=${deleted.length}`,
+    `hits=${stats.hits}`,
+    `misses=${stats.misses}`,
+    `total=${stats.total}`,
+  ];
+  fs.appendFileSync(process.env.GITHUB_OUTPUT, `${lines.join("\n")}\n`);
 }
 
 async function listBucketKeys() {
