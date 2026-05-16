@@ -25,17 +25,6 @@ export default {
       });
     }
 
-    if (isFullLlmsPath(url.pathname)) {
-      return new Response(request.method === "HEAD" ? null : "OpenClaw does not publish a full-site LLM corpus. Use /llms.txt and page-level Markdown instead.\n", {
-        status: 410,
-        headers: {
-          "Cache-Control": "public, max-age=300",
-          "Content-Type": "text/plain; charset=utf-8",
-          "X-OpenClaw-Docs-Origin": "worker",
-        },
-      });
-    }
-
     if (url.pathname.endsWith(".md")) {
       return markdownResponse(env, ctx, request, url.pathname);
     }
@@ -291,11 +280,6 @@ function isMutableStaticPath(pathname: string): boolean {
 
 function isHtmlPath(pathname: string): boolean {
   return pathname.endsWith(".html") || !/\.[^/]+$/.test(pathname);
-}
-
-function isFullLlmsPath(pathname: string): boolean {
-  const clean = pathname.replace(/\/+$/, "");
-  return clean === "/llms-full.txt" || clean === "/.well-known/llms-full.txt";
 }
 
 function appendVary(current: string | null, value: string): string {

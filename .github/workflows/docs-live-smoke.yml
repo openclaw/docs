@@ -117,16 +117,6 @@ jobs:
             if (!pattern.test(text)) throw new Error(`${path}: expected marker missing`);
             console.log(`${path}: ok (${contentType})`);
           };
-          const assertStatus = async (path, status) => {
-            const response = await fetch(new URL(path, baseUrl), {
-              headers: {
-                "cache-control": "no-cache",
-                pragma: "no-cache",
-              },
-            });
-            if (response.status !== status) throw new Error(`${path}: expected HTTP ${status}, got ${response.status}`);
-            console.log(`${path}: ok (HTTP ${status})`);
-          };
           const assertHeader = async (path, name, required, forbidden) => {
             const response = await fetch(new URL(path, baseUrl), {
               method: "HEAD",
@@ -155,8 +145,6 @@ jobs:
               await assertText("/.well-known/llms.txt", /## Documentation Index/);
               await assertText("/sitemap.xml", /<urlset/);
               await assertHeader("/sitemap.xml", "cache-control", /max-age=300/, /immutable/);
-              await assertStatus("/llms-full.txt", 410);
-              await assertStatus("/.well-known/llms-full.txt", 410);
               process.exit(0);
             } catch (error) {
               lastError = error;

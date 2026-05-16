@@ -5,8 +5,8 @@ import path from "node:path";
 
 const root = process.cwd();
 const bucket = process.env.CLOUDFLARE_R2_BUCKET || "openclaw-docs";
-const manifestPath = path.join(root, "dist", "docs-r2-manifest.json");
-const remoteManifestKey = ".openclaw-docs-r2-manifest.json";
+const manifestPath = resolvePath(process.env.R2_UPLOAD_MANIFEST_PATH || "dist/docs-r2-manifest.json");
+const remoteManifestKey = process.env.R2_UPLOAD_REMOTE_MANIFEST_KEY || ".openclaw-docs-r2-manifest.json";
 const concurrency = Number.parseInt(process.env.R2_UPLOAD_CONCURRENCY || "8", 10);
 const accountId = process.env.CLOUDFLARE_ACCOUNT_ID || process.env.OPENCLAW_CLOUDFLARE_ACCOUNT_ID || process.env.OPENCLAW_R2_ACCOUNT_ID;
 const endpoint = process.env.OPENCLAW_R2_S3_ENDPOINT || (accountId ? `https://${accountId}.r2.cloudflarestorage.com` : "");
@@ -17,9 +17,14 @@ const service = "s3";
 const retryAttempts = Number.parseInt(process.env.R2_UPLOAD_RETRIES || "5", 10);
 const deleteOrphans = process.env.R2_DELETE_ORPHANS !== "0";
 const forceUpload = process.env.R2_UPLOAD_FORCE === "1";
+const protectedKeys = new Set([
+  "llms-full.txt",
+  ".well-known/llms-full.txt",
+  ".openclaw-docs-llms-full-manifest.json",
+]);
 
 if (!Number.isFinite(concurrency) || concurrency < 1) throw new Error("R2_UPLOAD_CONCURRENCY must be a positive integer");
-if (!fs.existsSync(manifestPath)) throw new Error("dist/docs-r2-manifest.json does not exist; run docs:build:r2 first");
+if (!fs.existsSync(manifestPath)) throw new Error(`${path.relative(root, manifestPath) || manifestPath} does not exist; run the matching build step first`);
 if (!endpoint) throw new Error("OPENCLAW_R2_S3_ENDPOINT or CLOUDFLARE_ACCOUNT_ID is required");
 if (!accessKeyId) throw new Error("OPENCLAW_R2_ACCESS_KEY_ID or AWS_ACCESS_KEY_ID is required");
 if (!secretAccessKey) throw new Error("OPENCLAW_R2_SECRET_ACCESS_KEY or AWS_SECRET_ACCESS_KEY is required");
@@ -38,8 +43,8 @@ const changed = forceUpload
       || remote.contentType !== entry.contentType
       || remote.cacheControl !== entry.cacheControl;
   });
-const manifestDeletedKeys = Array.from(remoteEntries.keys()).filter((key) => !localKeys.has(key));
-const orphanedKeys = deleteOrphans ? (await listBucketKeys()).filter((key) => !localKeys.has(key)) : [];
+const manifestDeletedKeys = Array.from(remoteEntries.keys()).filter((key) => !localKeys.has(key) && !protectedKeys.has(key));
+const orphanedKeys = deleteOrphans ? (await listBucketKeys()).filter((key) => !localKeys.has(key) && !protectedKeys.has(key)) : [];
 const deleted = Array.from(new Set([...manifestDeletedKeys, ...orphanedKeys])).sort().map((key) => ({ key }));
 
 console.log(
@@ -250,4 +255,8 @@ function normalizeHeader(value) {
 
 function sha256Hex(value) {
   return crypto.createHash("sha256").update(value).digest("hex");
+}
+
+function resolvePath(value) {
+  return path.isAbsolute(value) ? value : path.join(root, value);
 }

@@ -9,6 +9,7 @@ const expectedOrigin = (process.env.DOCS_SITE_CANONICAL_ORIGIN
   .replace(/\/$/, "");
 const previewOrigin = (process.env.DOCS_SITE_CNAME ? `https://${process.env.DOCS_SITE_CNAME}` : "https://documentation.openclaw.ai")
   .replace(/\/$/, "");
+const llmsFullAvailable = process.env.DOCS_SITE_LLMS_FULL_AVAILABLE === "1";
 const required = [
   "index.html",
   "tools/reactions/index.html",
@@ -50,7 +51,8 @@ for (const rel of ["llms-full.txt", ".well-known/llms-full.txt"]) {
   if (fs.existsSync(path.join(site, rel))) throw new Error(`${rel}: full-site LLM corpus should not be emitted`);
 }
 const llms = fs.readFileSync(path.join(site, "llms.txt"), "utf8");
-if (/llms-full\.txt/.test(llms)) throw new Error("llms.txt: should not advertise llms-full.txt");
+if (llmsFullAvailable && !/llms-full\.txt/.test(llms)) throw new Error("llms.txt: should advertise llms-full.txt");
+if (!llmsFullAvailable && /llms-full\.txt/.test(llms)) throw new Error("llms.txt: should not advertise unavailable llms-full.txt");
 if (!/Accept: text\/markdown|\.md/.test(llms)) throw new Error("llms.txt: should advertise page-level Markdown");
 if (!llms.includes(`${expectedOrigin}/start/getting-started.md`) || !llms.includes(`${expectedOrigin}/sitemap.xml`)) {
   throw new Error(`llms.txt: expected canonical origin ${expectedOrigin}`);
@@ -64,8 +66,14 @@ const robots = fs.readFileSync(path.join(site, "robots.txt"), "utf8");
 if (!robots.includes(`Sitemap: ${expectedOrigin}/sitemap.xml`)) {
   throw new Error(`robots.txt: sitemap directive missing canonical origin ${expectedOrigin}`);
 }
-if (!/Disallow: \/llms-full\.txt/.test(robots) || !robots.includes(`LLMS: ${expectedOrigin}/llms.txt`)) {
+if (/Disallow: \/(?:\.well-known\/)?llms-full\.txt/.test(robots) || !robots.includes(`LLMS: ${expectedOrigin}/llms.txt`)) {
   throw new Error("robots.txt: LLM directives missing");
+}
+if (llmsFullAvailable && !robots.includes(`LLMS-Full: ${expectedOrigin}/llms-full.txt`)) {
+  throw new Error("robots.txt: LLMS-Full directive missing");
+}
+if (!llmsFullAvailable && /LLMS-Full:/u.test(robots)) {
+  throw new Error("robots.txt: should not advertise unavailable llms-full.txt");
 }
 if (previewOrigin !== expectedOrigin && robots.includes(previewOrigin)) {
   throw new Error(`robots.txt: preview origin ${previewOrigin} should not be advertised`);
