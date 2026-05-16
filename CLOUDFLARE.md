@@ -93,8 +93,10 @@ Production docs object deploy:
 Production router deploy:
 
 1. `.github/workflows/pages.yml`
-2. `npx wrangler@4.88.0 deploy --config wrangler.toml`
-3. `docs-live-smoke.yml`
+2. Pushes validate the Worker bundle with `wrangler deploy --dry-run`.
+3. Manual dispatch with `deploy_worker=true` runs `npx wrangler@4.88.0 deploy --config wrangler.toml`.
+4. Manual dispatch with `sync_secrets=true` refreshes Worker R2 secrets before deploying.
+5. `docs-live-smoke.yml`
 
 Local R2 build:
 
@@ -169,7 +171,7 @@ After router deploy, verify repeated requests show `X-OpenClaw-Docs-Cache: MISS`
    ```
 
 4. Run the manual `R2 Pages` workflow, or run the local upload command above.
-5. Deploy `openclaw-docs-router`; the Pages workflow syncs the R2 S3 credentials into Worker secrets before deploy.
+5. Deploy `openclaw-docs-router` from the manual Pages workflow. Use `sync_secrets=true` only when rotating the Worker R2 secrets; normal router deploys reuse the existing Worker secrets.
 6. Live-test the URLs below.
 
 Pure R2 follow-up, blocked on `Zone: Rulesets: Edit`:
