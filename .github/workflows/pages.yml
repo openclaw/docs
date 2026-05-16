@@ -16,11 +16,6 @@ on:
         required: false
         type: boolean
         default: true
-      sync_secrets:
-        description: "Refresh Worker R2 secrets before deploying."
-        required: false
-        type: boolean
-        default: false
 
 permissions:
   actions: write
@@ -53,21 +48,6 @@ jobs:
 
       - name: Validate Worker bundle
         run: npx wrangler@4.88.0 deploy --dry-run --config wrangler.toml
-
-      - name: Sync R2 router secrets
-        if: github.event_name == 'workflow_dispatch' && inputs.sync_secrets == true
-        env:
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          OPENCLAW_R2_ACCESS_KEY_ID: ${{ secrets.OPENCLAW_R2_ACCESS_KEY_ID }}
-          OPENCLAW_R2_SECRET_ACCESS_KEY: ${{ secrets.OPENCLAW_R2_SECRET_ACCESS_KEY }}
-        run: |
-          : "${CLOUDFLARE_ACCOUNT_ID:?CLOUDFLARE_ACCOUNT_ID is required}"
-          : "${OPENCLAW_R2_ACCESS_KEY_ID:?OPENCLAW_R2_ACCESS_KEY_ID is required}"
-          : "${OPENCLAW_R2_SECRET_ACCESS_KEY:?OPENCLAW_R2_SECRET_ACCESS_KEY is required}"
-          printf '%s' "${CLOUDFLARE_ACCOUNT_ID}" | npx wrangler@4.88.0 secret put OPENCLAW_R2_ACCOUNT_ID --config wrangler.toml
-          printf '%s' "${OPENCLAW_R2_ACCESS_KEY_ID}" | npx wrangler@4.88.0 secret put OPENCLAW_R2_ACCESS_KEY_ID --config wrangler.toml
-          printf '%s' "${OPENCLAW_R2_SECRET_ACCESS_KEY}" | npx wrangler@4.88.0 secret put OPENCLAW_R2_SECRET_ACCESS_KEY --config wrangler.toml
 
       - name: Deploy to Cloudflare
         if: github.event_name == 'workflow_dispatch' && inputs.deploy_worker == true

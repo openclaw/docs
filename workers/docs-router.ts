@@ -1,14 +1,8 @@
 interface Env {
-  CLOUDFLARE_R2_BUCKET?: string;
-  OPENCLAW_R2_ACCOUNT_ID?: string;
-  OPENCLAW_R2_ACCESS_KEY_ID?: string;
-  OPENCLAW_R2_REGION?: string;
-  OPENCLAW_R2_SECRET_ACCESS_KEY?: string;
+  DOCS_BUCKET?: R2Bucket;
 }
 
 const markdownAcceptTypes = new Set(["text/markdown", "text/x-markdown", "application/markdown"]);
-const defaultR2Bucket = "openclaw-docs";
-const defaultR2Region = "auto";
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -97,7 +91,7 @@ async function assetResponse(env: Env, ctx: ExecutionContext, request: Request, 
   }
 
   const key = r2ObjectKey(pathname);
-  const response = await signedR2Fetch(env, request.method, key);
+  const response = await r2Fetch(env, request.method, key);
   if (response.status === 404) {
     return new Response(request.method === "HEAD" ? null : "Not found\n", {
       status: 404,
@@ -135,6 +129,34 @@ async function assetResponse(env: Env, ctx: ExecutionContext, request: Request, 
   return finalResponse;
 }
 
+async function r2Fetch(env: Env, method: string, key: string): Promise<Response> {
+  const bucket = env.DOCS_BUCKET;
+  if (!bucket) {
+    return new Response("DOCS_BUCKET binding is required\n", {
+      status: 500,
+      headers: { "Content-Type": "text/plain; charset=utf-8" },
+    });
+  }
+  const object = method === "HEAD" ? await bucket.head(key) : await bucket.get(key);
+  if (!object) {
+    return new Response(method === "HEAD" ? null : "Not found\n", {
+      status: 404,
+      headers: { "Content-Type": "text/plain; charset=utf-8" },
+    });
+  }
+  const headers = new Headers();
+  object.writeHttpMetadata(headers);
+  if (object.httpEtag) headers.set("ETag", object.httpEtag);
+  if (object.size !== undefined) headers.set("Content-Length", String(object.size));
+  for (const [name, value] of Object.entries(object.customMetadata ?? {})) {
+    headers.set(`x-amz-meta-${name}`, value);
+  }
+  return new Response(method === "HEAD" ? null : (object as R2ObjectBody).body, {
+    headers,
+    status: 200,
+  });
+}
+
 function r2ObjectKey(pathname: string): string {
   const key = pathname.replace(/^\/+/, "");
   try {
@@ -142,78 +164,6 @@ function r2ObjectKey(pathname: string): string {
   } catch {
     return key;
   }
-}
-
-async function signedR2Fetch(env: Env, method: string, key: string): Promise<Response> {
-  const accountId = requiredEnv(env.OPENCLAW_R2_ACCOUNT_ID, "OPENCLAW_R2_ACCOUNT_ID");
-  const accessKeyId = requiredEnv(env.OPENCLAW_R2_ACCESS_KEY_ID, "OPENCLAW_R2_ACCESS_KEY_ID");
-  const secretAccessKey = requiredEnv(env.OPENCLAW_R2_SECRET_ACCESS_KEY, "OPENCLAW_R2_SECRET_ACCESS_KEY");
-  const bucket = env.CLOUDFLARE_R2_BUCKET || defaultR2Bucket;
-  const region = env.OPENCLAW_R2_REGION || defaultR2Region;
-  const service = "s3";
-  const url = new URL(`https://${accountId}.r2.cloudflarestorage.com/${bucket}/${encodeS3Key(key)}`);
-  const now = new Date();
-  const amzDate = now.toISOString().replace(/[:-]|\.\d{3}/g, "");
-  const date = amzDate.slice(0, 8);
-  const headers: Record<string, string> = {
-    host: url.host,
-    "x-amz-content-sha256": "UNSIGNED-PAYLOAD",
-    "x-amz-date": amzDate,
-  };
-  const signedHeaders = Object.keys(headers).sort();
-  const canonicalHeaders = signedHeaders.map((name) => `${name}:${normalizeHeader(headers[name] ?? "")}\n`).join("");
-  const canonicalRequest = [
-    method,
-    url.pathname,
-    "",
-    canonicalHeaders,
-    signedHeaders.join(";"),
-    headers["x-amz-content-sha256"],
-  ].join("\n");
-  const scope = `${date}/${region}/${service}/aws4_request`;
-  const stringToSign = [
-    "AWS4-HMAC-SHA256",
-    amzDate,
-    scope,
-    await sha256Hex(canonicalRequest),
-  ].join("\n");
-  const signingKey = await hmac(await hmac(await hmac(await hmac(`AWS4${secretAccessKey}`, date), region), service), "aws4_request");
-  const signature = hex(await hmac(signingKey, stringToSign));
-  const authorization = `AWS4-HMAC-SHA256 Credential=${accessKeyId}/${scope}, SignedHeaders=${signedHeaders.join(";")}, Signature=${signature}`;
-  return fetch(url.toString(), {
-    headers: {
-      ...headers,
-      authorization,
-    },
-    method,
-  });
-}
-
-function requiredEnv(value: string | undefined, name: string): string {
-  if (!value) throw new Error(`${name} is required`);
-  return value;
-}
-
-function encodeS3Key(key: string): string {
-  return key.split("/").map((segment) => encodeURIComponent(segment)).join("/");
-}
-
-function normalizeHeader(value: string): string {
-  return value.trim().replace(/\s+/g, " ");
-}
-
-async function sha256Hex(value: string): Promise<string> {
-  return hex(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value)));
-}
-
-async function hmac(key: string | ArrayBuffer, value: string): Promise<ArrayBuffer> {
-  const rawKey = typeof key === "string" ? new TextEncoder().encode(key) : key;
-  const cryptoKey = await crypto.subtle.importKey("raw", rawKey, { hash: "SHA-256", name: "HMAC" }, false, ["sign"]);
-  return crypto.subtle.sign("HMAC", cryptoKey, new TextEncoder().encode(value));
-}
-
-function hex(buffer: ArrayBuffer): string {
-  return Array.from(new Uint8Array(buffer), (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
 function cacheRequest(request: Request, pathname: string): Request {

@@ -31,7 +31,7 @@ Production is cut over to R2-backed storage with a small Worker router in front:
 
 - Worker: `openclaw-docs-router`
 - Route: `documentation.openclaw.ai/*`
-- Router storage: signed R2 S3 reads from bucket `openclaw-docs`
+- Router storage: native Worker R2 binding to bucket `openclaw-docs`
 - Header: `X-OpenClaw-Docs-Origin: cloudflare-r2`
 - Cache-Control follows the same policy as the R2 manifest.
 
@@ -57,6 +57,7 @@ Cloudflare account:
 Required Cloudflare API token scopes for bucket/domain/DNS setup:
 
 - `Account: R2 Storage: Edit`
+- `Account: Workers Scripts: Edit`
 - `Zone: DNS: Edit`
 - `Zone: Cache Rules: Edit` or `Zone: Rulesets: Edit`
 - `Zone: Zone Settings: Edit`
@@ -70,7 +71,7 @@ Required R2 S3 upload credentials:
 - `OPENCLAW_R2_ACCESS_KEY_ID`
 - `OPENCLAW_R2_SECRET_ACCESS_KEY`
 
-The Worker router uses the same private account id value through the `OPENCLAW_R2_ACCOUNT_ID` Worker secret. The Pages workflow writes the R2 credentials to Worker secrets before deployment, so the Worker deploy token does not need `Account: R2 Storage: Read`. Do not commit the account id or credentials to this repository.
+The Worker router does not use S3 access keys at runtime. `wrangler.toml` binds the `openclaw-docs` bucket as `DOCS_BUCKET`, so the Worker deploy path only needs permission to deploy the Worker and attach the R2 binding. Do not commit the account id or upload credentials to this repository.
 
 For Cloudflare R2 API tokens, the access key id is the account-token id returned by:
 
@@ -95,8 +96,7 @@ Production router deploy:
 1. `.github/workflows/pages.yml`
 2. Pushes validate the Worker bundle with `wrangler deploy --dry-run`.
 3. Manual dispatch with `deploy_worker=true` runs `npx wrangler@4.88.0 deploy --config wrangler.toml`.
-4. Manual dispatch with `sync_secrets=true` refreshes Worker R2 secrets before deploying.
-5. `docs-live-smoke.yml`
+4. `docs-live-smoke.yml`
 
 Local R2 build:
 
@@ -171,7 +171,7 @@ After router deploy, verify repeated requests show `X-OpenClaw-Docs-Cache: MISS`
    ```
 
 4. Run the manual `R2 Pages` workflow, or run the local upload command above.
-5. Deploy `openclaw-docs-router` from the manual Pages workflow. Use `sync_secrets=true` only when rotating the Worker R2 secrets; normal router deploys reuse the existing Worker secrets.
+5. Deploy `openclaw-docs-router` from the manual Pages workflow.
 6. Live-test the URLs below.
 
 Pure R2 follow-up, blocked on `Zone: Rulesets: Edit`:
