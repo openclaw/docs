@@ -652,7 +652,9 @@ function writeStaticAssets() {
   const mermaidEntry = path.join(mermaidDist, "mermaid.esm.min.mjs");
   if (fs.existsSync(mermaidEntry)) {
     fs.copyFileSync(mermaidEntry, path.join(assetsDir, "mermaid.esm.min.mjs"));
-    copyDir(path.join(mermaidDist, "chunks", "mermaid.esm.min"), path.join(assetsDir, "chunks", "mermaid.esm.min"));
+    copyDir(path.join(mermaidDist, "chunks", "mermaid.esm.min"), path.join(assetsDir, "chunks", "mermaid.esm.min"), {
+      filter: (source) => !source.endsWith(".map"),
+    });
   }
   fs.writeFileSync(path.join(outDir, ".nojekyll"), "", "utf8");
   for (const file of ["og-card.png", "og-card.svg"]) {
@@ -673,9 +675,9 @@ function copyPublicFiles() {
   }
 }
 
-function copyDir(source, dest) {
+function copyDir(source, dest, options = {}) {
   if (!fs.existsSync(source)) return;
-  fs.cpSync(source, dest, { recursive: true });
+  fs.cpSync(source, dest, { recursive: true, filter: options.filter });
 }
 
 function activeTabTitle(nav, slug) {

@@ -82,7 +82,8 @@ function contentTypeFor(key) {
     case ".ico": return "image/x-icon";
     case ".jpeg":
     case ".jpg": return "image/jpeg";
-    case ".js": return "text/javascript; charset=utf-8";
+    case ".js":
+    case ".mjs": return "text/javascript; charset=utf-8";
     case ".json": return "application/json; charset=utf-8";
     case ".jsonl": return "application/x-ndjson; charset=utf-8";
     case ".md": return "text/markdown; charset=utf-8";
