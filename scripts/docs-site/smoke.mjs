@@ -207,6 +207,7 @@ for (const marker of [
   'class="oc-callout oc-callout-tip"',
   'class="oc-callout oc-callout-info"',
   'class="oc-callout oc-callout-warning"',
+  'class="oc-card-grid oc-card-cols-3"',
   'class="oc-card"',
   'class="oc-code-group"',
   'class="oc-step"',
@@ -214,6 +215,7 @@ for (const marker of [
   'class="oc-accordion"',
   'class="oc-param"',
   'class="oc-frame"',
+  'class="oc-tooltip"',
 ]) {
   if (!elementsIndex.includes(marker)) throw new Error(`__elements: missing fixture marker ${marker}`);
 }

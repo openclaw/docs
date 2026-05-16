@@ -2,10 +2,9 @@ import MarkdownIt from "markdown-it";
 import anchor from "markdown-it-anchor";
 
 const markerPrefix = "OPENCLAW_DOCS_MARKER";
+const inlineMarkerPrefix = "OPENCLAW_DOCS_INLINE";
 const knownBlocks = new Map([
   ["AccordionGroup", ["accordion-group", ""]],
-  ["Columns", ["card-grid", ""]],
-  ["CardGroup", ["card-grid", ""]],
   ["Steps", ["steps", ""]],
   ["Tabs", ["tabs", ""]],
   ["CodeGroup", ["code-group", ""]]
@@ -127,6 +126,10 @@ function preprocess(input) {
   out = out.replace(/<Card\b([^>]*)\/>/g, (_, attrs) => `${marker("cardSelf", attrs)}\n`);
   out = out.replace(/<Card\b([^>]*)>/g, (_, attrs) => `\n${marker("cardOpen", attrs)}\n`);
   out = out.replace(/<\/Card>/g, `\n${marker("cardClose")}\n`);
+  out = out.replace(/<CardGroup\b([^>]*)>/g, (_, attrs) => `\n${marker("blockOpen", cardGridClass(attrs))}\n`);
+  out = out.replace(/<\/CardGroup>/g, `\n${marker("blockClose", "card-grid")}\n`);
+  out = out.replace(/<Columns\b([^>]*)>/g, (_, attrs) => `\n${marker("blockOpen", cardGridClass(attrs))}\n`);
+  out = out.replace(/<\/Columns>/g, `\n${marker("blockClose", "card-grid")}\n`);
 
   out = out.replace(/<Step\b([^>]*)>/g, (_, attrs) => `\n${marker("stepOpen", attrs)}\n`);
   out = out.replace(/<\/Step>/g, `\n${marker("stepClose")}\n`);
@@ -138,6 +141,8 @@ function preprocess(input) {
   out = out.replace(/<\/Frame>/g, `\n${marker("frameClose")}\n`);
   out = out.replace(/<ParamField\b([^>]*)>/g, (_, attrs) => `\n${marker("paramOpen", attrs)}\n`);
   out = out.replace(/<\/ParamField>/g, `\n${marker("paramClose")}\n`);
+  out = out.replace(/<Tooltip\b([^>]*)>/g, (_, attrs) => inlineMarker("tooltipOpen", attrs));
+  out = out.replace(/<\/Tooltip>/g, inlineMarker("tooltipClose"));
 
   for (const [name, [kind]] of knownBlocks) {
     out = out.replace(new RegExp(`<${name}\\b[^>]*>`, "g"), `\n${marker("blockOpen", kind)}\n`);
@@ -154,11 +159,17 @@ function preprocess(input) {
 }
 
 function postprocess(html) {
-  return html.replace(new RegExp(`<p>${markerPrefix}:([^<]+)</p>`, "g"), (_, payload) => expandMarker(payload));
+  return html
+    .replace(new RegExp(`<p>${markerPrefix}:([^<]+)</p>`, "g"), (_, payload) => expandMarker(payload))
+    .replace(new RegExp(`${inlineMarkerPrefix}:([^<\\s]+)`, "g"), (_, payload) => expandInlineMarker(payload));
 }
 
 function marker(kind, payload = "") {
   return `${markerPrefix}:${kind}:${Buffer.from(payload, "utf8").toString("base64url")}`;
+}
+
+function inlineMarker(kind, payload = "") {
+  return `${inlineMarkerPrefix}:${kind}:${Buffer.from(payload, "utf8").toString("base64url")}`;
 }
 
 function expandMarker(payload) {
@@ -192,6 +203,18 @@ function expandMarker(payload) {
   return "";
 }
 
+function expandInlineMarker(payload) {
+  const [kind, encoded = ""] = payload.split(":");
+  const value = Buffer.from(encoded, "base64url").toString("utf8");
+  if (kind === "tooltipOpen") {
+    const attrs = parseAttrs(value);
+    const tip = attrs.tip ?? attrs.title ?? "";
+    return `<span class="oc-tooltip" tabindex="0"${tip ? ` data-tip="${escapeAttr(tip)}"` : ""}>`;
+  }
+  if (kind === "tooltipClose") return "</span>";
+  return "";
+}
+
 function cardHtml(rawAttrs, selfClosing) {
   const attrs = parseAttrs(rawAttrs);
   const href = attrs.href ?? "#";
@@ -215,6 +238,12 @@ function iconSvg(name) {
   };
   const path = paths[slug(name)] ?? `<rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8 12h8M12 8v8"/>`;
   return `<svg class="oc-card-icon" viewBox="0 0 24 24" aria-hidden="true">${path}</svg>`;
+}
+
+function cardGridClass(rawAttrs) {
+  const attrs = parseAttrs(rawAttrs);
+  const cols = Math.max(1, Math.min(4, Number.parseInt(attrs.cols ?? "", 10) || 2));
+  return `card-grid oc-card-cols-${cols}`;
 }
 
 function dedentComponentChildren(markdown) {

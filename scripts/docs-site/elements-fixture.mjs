@@ -9,7 +9,7 @@ This hidden page exercises the docs shell renderer. It is not linked from naviga
 
 ## Text and inline code
 
-OpenClaw docs use compact developer prose with **strong emphasis**, [inline links](/start/getting-started), and inline code such as \`openclaw onboard\`, \`channels.telegram.enabled\`, and \`OPENCLAW_HOME\`.
+OpenClaw docs use compact developer prose with **strong emphasis**, [inline links](/start/getting-started), inline code such as \`openclaw onboard\`, and <Tooltip tip="JSON5 supports comments and trailing commas">**tooltip text**</Tooltip>.
 
 > Blockquotes should stay quiet and readable without becoming callout boxes.
 
@@ -64,7 +64,7 @@ curl -fsSL https://documentation.openclaw.ai/llms.txt
 
 ## Cards
 
-<CardGroup cols={2}>
+<CardGroup cols={3}>
   <Card title="Get started" href="/start/getting-started" icon="rocket">
     Install OpenClaw, run onboarding, and send the first message.
   </Card>
@@ -76,6 +76,12 @@ curl -fsSL https://documentation.openclaw.ai/llms.txt
   </Card>
   <Card title="Plugin SDK" href="/plugins/sdk" icon="book">
     Build plugin surfaces using the public SDK contracts.
+  </Card>
+  <Card title="Configuration" href="/gateway/configuration" icon="settings">
+    Review production defaults and channel-specific overrides.
+  </Card>
+  <Card title="Remote access" href="/gateway/remote" icon="globe">
+    Expose the Gateway safely when a channel needs inbound webhooks.
   </Card>
 </CardGroup>
 
