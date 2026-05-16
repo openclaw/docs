@@ -79,7 +79,7 @@ curl -H "Authorization: Bearer $OPENCLAW_CLOUDFLARE_API_TOKEN" \
   "https://api.cloudflare.com/client/v4/user/tokens/verify"
 ```
 
-The secret access key is the SHA-256 hex digest of the R2 token value. CI derives both values from `CLOUDFLARE_API_TOKEN` at runtime when that token verifies, and falls back to `OPENCLAW_R2_ACCESS_KEY_ID` / `OPENCLAW_R2_SECRET_ACCESS_KEY` if those upload credentials are rotated directly.
+CI first mints short-lived R2 credentials from `CLOUDFLARE_API_TOKEN` and signs uploads with the returned session token. If temporary credential minting is unavailable, it falls back to the R2 token's direct S3 credential form: the access key id is the token id, and the secret access key is the SHA-256 hex digest of the token value. If the Cloudflare token cannot be verified, CI falls back to `OPENCLAW_R2_ACCESS_KEY_ID` / `OPENCLAW_R2_SECRET_ACCESS_KEY` if those upload credentials are rotated directly.
 
 ## Deploy Flow
 

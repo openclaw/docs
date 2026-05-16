@@ -78,8 +78,7 @@ jobs:
               git fetch --quiet --no-tags --depth=1 origin "${BEFORE_SHA}" || true
               changed="$(git diff --name-only "${BEFORE_SHA}" "${AFTER_SHA}" || git diff-tree --no-commit-id --name-only -r "${AFTER_SHA}")"
               printf '%s\n' "${changed}" | sed '/^$/d' > /tmp/openclaw-docs-changed.txt
-              if ! grep -Eq '^(docs/|\.openclaw-sync/source\.json|scripts/docs-site/|Makefile|package\.json|package-lock\.json)$|^(scripts/docs-site/)' /tmp/openclaw-docs-changed.txt \
-                && ! grep -Ev '^(\.github/workflows/(pages|r2-pages)\.yml|workers/.*|wrangler\.toml|README\.md|CLOUDFLARE\.md)$' /tmp/openclaw-docs-changed.txt >/tmp/openclaw-docs-artifact.txt; then
+              if ! grep -Ev '^(\.github/workflows/(pages|r2-pages)\.yml|workers/.*|wrangler\.toml|README\.md|CLOUDFLARE\.md|scripts/docs-site/r2-upload\.mjs)$' /tmp/openclaw-docs-changed.txt >/tmp/openclaw-docs-artifact.txt; then
                 scope="none"
               elif ! grep -Eq '^(docs/|\.openclaw-sync/source\.json)' /tmp/openclaw-docs-changed.txt \
                 && grep -Eq '^(Makefile|package\.json|package-lock\.json|scripts/docs-site/|\.github/workflows/r2-pages\.yml|README\.md|CLOUDFLARE\.md)$|^(scripts/docs-site/)' /tmp/openclaw-docs-changed.txt; then
@@ -169,9 +168,11 @@ jobs:
       - name: Resolve R2 credentials
         if: steps.artifact-scope.outputs.scope != 'none' && steps.current-main.outputs.stale != 'true'
         env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           STORED_R2_ACCESS_KEY_ID: ${{ secrets.OPENCLAW_R2_ACCESS_KEY_ID }}
           STORED_R2_SECRET_ACCESS_KEY: ${{ secrets.OPENCLAW_R2_SECRET_ACCESS_KEY }}
+          STORED_R2_SESSION_TOKEN: ${{ secrets.OPENCLAW_R2_SESSION_TOKEN }}
         run: |
           set -euo pipefail
           if [ -n "${CLOUDFLARE_API_TOKEN:-}" ] \
@@ -186,11 +187,53 @@ jobs:
           if (!response?.success || !accessKeyId) {
             throw new Error("Cloudflare token verify response did not include a token id");
           }
-          const secretAccessKey = crypto.createHash("sha256").update(token).digest("hex");
-          console.log(`::add-mask::${accessKeyId}`);
-          console.log(`::add-mask::${secretAccessKey}`);
-          fs.appendFileSync(process.env.GITHUB_ENV, `OPENCLAW_R2_ACCESS_KEY_ID=${accessKeyId}\n`);
-          fs.appendFileSync(process.env.GITHUB_ENV, `OPENCLAW_R2_SECRET_ACCESS_KEY=${secretAccessKey}\n`);
+          async function main() {
+            const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
+            const bucket = "openclaw-docs";
+            if (accountId) {
+              try {
+                const temporary = await fetch(`https://api.cloudflare.com/client/v4/accounts/${accountId}/r2/temp-access-credentials`, {
+                  body: JSON.stringify({
+                    bucket,
+                    parentAccessKeyId: accessKeyId,
+                    permission: "object-read-write",
+                    ttlSeconds: 3600,
+                  }),
+                  headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                  },
+                  method: "POST",
+                });
+                if (temporary.ok) {
+                  const data = await temporary.json();
+                  const result = data?.result;
+                  if (data?.success && result?.accessKeyId && result?.secretAccessKey && result?.sessionToken) {
+                    console.log(`::add-mask::${result.accessKeyId}`);
+                    console.log(`::add-mask::${result.secretAccessKey}`);
+                    console.log(`::add-mask::${result.sessionToken}`);
+                    fs.appendFileSync(process.env.GITHUB_ENV, `OPENCLAW_R2_ACCESS_KEY_ID=${result.accessKeyId}\n`);
+                    fs.appendFileSync(process.env.GITHUB_ENV, `OPENCLAW_R2_SECRET_ACCESS_KEY=${result.secretAccessKey}\n`);
+                    fs.appendFileSync(process.env.GITHUB_ENV, `OPENCLAW_R2_SESSION_TOKEN=${result.sessionToken}\n`);
+                    return;
+                  }
+                }
+                console.log(`::warning::Temporary R2 credential mint failed with status ${temporary.status}; falling back to direct token-derived credentials.`);
+              } catch (error) {
+                console.log(`::warning::Temporary R2 credential mint failed; falling back to direct token-derived credentials.`);
+              }
+            }
+
+            const secretAccessKey = crypto.createHash("sha256").update(token).digest("hex");
+            console.log(`::add-mask::${accessKeyId}`);
+            console.log(`::add-mask::${secretAccessKey}`);
+            fs.appendFileSync(process.env.GITHUB_ENV, `OPENCLAW_R2_ACCESS_KEY_ID=${accessKeyId}\n`);
+            fs.appendFileSync(process.env.GITHUB_ENV, `OPENCLAW_R2_SECRET_ACCESS_KEY=${secretAccessKey}\n`);
+          }
+          main().catch((error) => {
+            console.error(error);
+            process.exit(1);
+          });
           NODE
             exit 0
           fi
@@ -202,9 +245,15 @@ jobs:
           if [ -n "${STORED_R2_ACCESS_KEY_ID:-}" ] && [ -n "${STORED_R2_SECRET_ACCESS_KEY:-}" ]; then
             printf '::add-mask::%s\n' "${STORED_R2_ACCESS_KEY_ID}"
             printf '::add-mask::%s\n' "${STORED_R2_SECRET_ACCESS_KEY}"
+            if [ -n "${STORED_R2_SESSION_TOKEN:-}" ]; then
+              printf '::add-mask::%s\n' "${STORED_R2_SESSION_TOKEN}"
+            fi
             {
               printf 'OPENCLAW_R2_ACCESS_KEY_ID=%s\n' "${STORED_R2_ACCESS_KEY_ID}"
               printf 'OPENCLAW_R2_SECRET_ACCESS_KEY=%s\n' "${STORED_R2_SECRET_ACCESS_KEY}"
+              if [ -n "${STORED_R2_SESSION_TOKEN:-}" ]; then
+                printf 'OPENCLAW_R2_SESSION_TOKEN=%s\n' "${STORED_R2_SESSION_TOKEN}"
+              fi
             } >> "${GITHUB_ENV}"
             exit 0
           fi

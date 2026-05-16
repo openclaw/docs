@@ -13,6 +13,7 @@ const accountId = process.env.CLOUDFLARE_ACCOUNT_ID || process.env.OPENCLAW_CLOU
 const endpoint = process.env.OPENCLAW_R2_S3_ENDPOINT || (accountId ? `https://${accountId}.r2.cloudflarestorage.com` : "");
 const accessKeyId = process.env.OPENCLAW_R2_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID;
 const secretAccessKey = process.env.OPENCLAW_R2_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY;
+const sessionToken = process.env.OPENCLAW_R2_SESSION_TOKEN || process.env.AWS_SESSION_TOKEN;
 const region = process.env.OPENCLAW_R2_REGION || "auto";
 const service = "s3";
 const retryAttempts = Number.parseInt(process.env.R2_UPLOAD_RETRIES || "5", 10);
@@ -430,6 +431,7 @@ async function signedFetch(method, key, body, headers = {}, query = {}) {
     "x-amz-date": amzDate,
     ...Object.fromEntries(Object.entries(headers).map(([name, value]) => [name.toLowerCase(), String(value)])),
   };
+  if (sessionToken) normalizedHeaders["x-amz-security-token"] = sessionToken;
   const signedHeaders = Object.keys(normalizedHeaders).sort();
   const canonicalHeaders = signedHeaders.map((name) => `${name}:${normalizeHeader(normalizedHeaders[name])}\n`).join("");
   const canonicalRequest = [
