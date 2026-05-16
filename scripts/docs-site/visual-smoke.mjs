@@ -78,17 +78,22 @@ async function checkDesktop() {
     const pre = getComputedStyle(document.querySelector(".oc-code pre"));
     const step = getComputedStyle(document.querySelector(".oc-step:last-child"));
     const paramType = getComputedStyle(document.querySelector(".oc-param-type"));
+    const lineRects = [...document.querySelectorAll(".oc-code.has-line-numbers .code-line")]
+      .slice(0, 3)
+      .map((line) => line.getBoundingClientRect());
     return {
       codeBg: code.backgroundColor,
       codePadding: pre.paddingTop,
       stepBorderImage: step.borderImageSource,
       paramTypeColor: paramType.color,
+      codeLineGap: lineRects.length > 1 ? lineRects[1].top - lineRects[0].bottom : 0,
     };
   });
   if (componentSkin.codeBg !== "rgb(16, 16, 16)"
     || parseFloat(componentSkin.codePadding) > 14
     || !componentSkin.stepBorderImage.includes("linear-gradient")
-    || componentSkin.paramTypeColor === "rgb(129, 122, 118)") {
+    || componentSkin.paramTypeColor === "rgb(129, 122, 118)"
+    || componentSkin.codeLineGap > 3) {
     throw new Error(`desktop component skin failed: ${JSON.stringify(componentSkin)}`);
   }
   await page.goto(`${base}/`, { waitUntil: "networkidle" });

@@ -174,7 +174,7 @@ function renderCodeLines(code, lang, options) {
     ].filter(Boolean).join(" ");
     const content = line ? highlightCode(line, lang) : " ";
     return `<span class="${classes}" data-line="${number}">${content}</span>`;
-  }).join("\n");
+  }).join("");
 }
 
 function highlightCode(code, rawLang = "") {

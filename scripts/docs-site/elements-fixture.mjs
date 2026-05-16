@@ -71,27 +71,51 @@ Use updates for recent behavior changes that matter to returning readers.
 
 ## Code
 
-\`\`\`ts scripts/docs-site/example.ts lines {2} focus=2-3
-export function startGateway() {
-  return "openclaw gateway restart";
+\`\`\`ts scripts/docs-site/example.ts lines {4,10} focus=3-11
+type GatewayMode = "local" | "remote";
+
+export async function restartGateway(mode: GatewayMode) {
+  const command = mode === "remote"
+    ? "openclaw gateway restart --remote"
+    : "openclaw gateway restart";
+
+  const result = await run(command, { timeoutMs: 30_000 });
+  if (!result.ok) throw new Error(result.stderr);
+
+  return {
+    mode,
+    status: "restarted",
+    checkedAt: new Date().toISOString(),
+  };
 }
 \`\`\`
 
 <CodeGroup>
 
-\`\`\`sh Terminal
+\`\`\`sh scripts/setup-openclaw.sh
+#!/usr/bin/env bash
+set -euo pipefail
+
 openclaw status --deep
 openclaw gateway restart
-curl -fsSL https://documentation.openclaw.ai/llms.txt
+
+curl -fsSL https://documentation.openclaw.ai/llms.txt \\
+  | sed -n '1,16p'
 \`\`\`
 
-\`\`\`json openclaw.json
+\`\`\`json5 openclaw.json5
 {
+  // Keep the docs fixture close to real Gateway config.
   "channels": {
     "telegram": {
       "enabled": true,
-      "groupPolicy": "allowlist"
+      "groupPolicy": "allowlist",
+      "requireMention": true,
     }
+  },
+  "gateway": {
+    "publicBaseUrl": "https://gateway.example.com",
+    "heartbeatSeconds": 30,
   }
 }
 \`\`\`
