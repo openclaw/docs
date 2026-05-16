@@ -1,8 +1,71 @@
 import MarkdownIt from "markdown-it";
 import anchor from "markdown-it-anchor";
+import hljs from "highlight.js/lib/core";
+import bash from "highlight.js/lib/languages/bash";
+import css from "highlight.js/lib/languages/css";
+import diff from "highlight.js/lib/languages/diff";
+import dockerfile from "highlight.js/lib/languages/dockerfile";
+import go from "highlight.js/lib/languages/go";
+import http from "highlight.js/lib/languages/http";
+import ini from "highlight.js/lib/languages/ini";
+import java from "highlight.js/lib/languages/java";
+import javascript from "highlight.js/lib/languages/javascript";
+import json from "highlight.js/lib/languages/json";
+import markdown from "highlight.js/lib/languages/markdown";
+import powershell from "highlight.js/lib/languages/powershell";
+import python from "highlight.js/lib/languages/python";
+import rust from "highlight.js/lib/languages/rust";
+import shell from "highlight.js/lib/languages/shell";
+import sql from "highlight.js/lib/languages/sql";
+import typescript from "highlight.js/lib/languages/typescript";
+import xml from "highlight.js/lib/languages/xml";
+import yaml from "highlight.js/lib/languages/yaml";
 
 const markerPrefix = "OPENCLAW_DOCS_MARKER";
 const inlineMarkerPrefix = "OPENCLAW_DOCS_INLINE";
+const languages = {
+  bash,
+  css,
+  diff,
+  dockerfile,
+  go,
+  http,
+  ini,
+  java,
+  javascript,
+  json,
+  markdown,
+  powershell,
+  python,
+  rust,
+  shell,
+  sql,
+  typescript,
+  xml,
+  yaml,
+};
+for (const [name, language] of Object.entries(languages)) hljs.registerLanguage(name, language);
+const languageAliases = new Map([
+  ["sh", "bash"],
+  ["zsh", "bash"],
+  ["console", "bash"],
+  ["terminal", "bash"],
+  ["ps1", "powershell"],
+  ["pwsh", "powershell"],
+  ["js", "javascript"],
+  ["jsx", "javascript"],
+  ["mjs", "javascript"],
+  ["cjs", "javascript"],
+  ["ts", "typescript"],
+  ["tsx", "typescript"],
+  ["jsonc", "json"],
+  ["json5", "javascript"],
+  ["yml", "yaml"],
+  ["html", "xml"],
+  ["md", "markdown"],
+  ["text", "plaintext"],
+  ["txt", "plaintext"],
+]);
 const knownBlocks = new Map([
   ["AccordionGroup", ["accordion-group", ""]],
   ["Steps", ["steps", ""]],
@@ -35,6 +98,7 @@ export function createMarkdownRenderer() {
 function renderFence(tokens, idx) {
   const token = tokens[idx];
   const { lang, label, lines, highlight, focus, wrap, expandable } = parseCodeInfo(token.info);
+  if (lang === "mermaid") return mermaidHtml(token.content);
   const highlighted = renderCodeLines(token.content, lang, { highlight, focus });
   const className = lang ? ` class="language-${escapeAttr(lang)}"` : "";
   const dataLabel = label || lang || "Code";
@@ -115,13 +179,11 @@ function renderCodeLines(code, lang, options) {
 
 function highlightCode(code, rawLang = "") {
   const lang = normalizeLang(rawLang);
-  if (isShell(lang, code)) return highlightWith(code, shellToken, shellTokenClass);
-  if (["json", "jsonc"].includes(lang)) return highlightWith(code, jsonToken, jsonTokenClass);
-  if (["js", "javascript", "jsx", "mjs", "cjs", "ts", "typescript", "tsx", "json5"].includes(lang)) {
-    return highlightWith(code, jsToken, jsTokenClass);
+  const language = languageAliases.get(lang) ?? lang;
+  if (!language || language === "plaintext") return escapeHtml(code);
+  if (hljs.getLanguage(language)) {
+    return hljs.highlight(code, { language, ignoreIllegals: true }).value;
   }
-  if (["yaml", "yml"].includes(lang)) return highlightWith(code, yamlToken, yamlTokenClass);
-  if (["toml", "ini", "env"].includes(lang)) return highlightWith(code, configToken, configTokenClass);
   return escapeHtml(code);
 }
 
@@ -129,74 +191,9 @@ function normalizeLang(rawLang) {
   return String(rawLang).trim().split(/\s+/)[0]?.toLowerCase().replace(/^language-/, "") ?? "";
 }
 
-function isShell(lang, code) {
-  return ["bash", "sh", "shell", "zsh", "console", "terminal", "text"].includes(lang)
-    || (!lang && /(^|\n)\s*(?:[$#]\s*)?(?:npm|pnpm|bun|npx|openclaw|git|curl|brew|docker|node)\b/.test(code));
-}
-
-function highlightWith(code, tokenPattern, tokenClass) {
-  let out = "";
-  let last = 0;
-  tokenPattern.lastIndex = 0;
-  for (const match of code.matchAll(tokenPattern)) {
-    out += escapeHtml(code.slice(last, match.index));
-    const className = tokenClass(match[0], match, code);
-    out += className
-      ? `<span class="${className}">${escapeHtml(match[0])}</span>`
-      : escapeHtml(match[0]);
-    last = match.index + match[0].length;
-  }
-  return out + escapeHtml(code.slice(last));
-}
-
-const shellToken = /(?<!\S)#[^\n]*|"(?:\\.|[^"])*"|'(?:\\.|[^'])*'|\$[A-Za-z_][A-Za-z0-9_]*|--?[A-Za-z0-9][A-Za-z0-9_-]*(?:=[^\s]+)?|\b(?:bun|brew|cat|cd|cp|curl|docker|export|git|grep|mkdir|mv|node|npm|npx|openclaw|pnpm|rg|rm|sudo)\b/g;
-const jsonToken = /"(?:\\.|[^"])*"(?=\s*:)|"(?:\\.|[^"])*"|\b(?:true|false|null)\b|-?\b\d+(?:\.\d+)?\b|[{}[\],:]/g;
-const jsToken = /\/\/[^\n]*|\/\*[\s\S]*?\*\/|"(?:\\.|[^"])*"|'(?:\\.|[^'])*'|`(?:\\.|[^`])*`|\b[A-Za-z_$][\w$-]*(?=\s*:)|\b(?:await|break|case|catch|class|const|continue|default|else|export|false|finally|for|from|function|if|import|let|new|null|return|throw|true|try|type|undefined|while)\b|-?\b\d+(?:\.\d+)?\b|[{}[\],:]/g;
-const yamlToken = /#[^\n]*|^\s*[-\w".'/]+\s*:|"(?:\\.|[^"])*"|'(?:\\.|[^'])*'|\b(?:true|false|null)\b|-?\b\d+(?:\.\d+)?\b/gm;
-const configToken = /#[^\n]*|^\s*[-\w".'/]+\s*=|"(?:\\.|[^"])*"|'(?:\\.|[^'])*'|\b(?:true|false|null)\b|-?\b\d+(?:\.\d+)?\b/gm;
-
-function shellTokenClass(token, match, code) {
-  const before = code[match.index - 1] ?? "\n";
-  const after = code[match.index + token.length] ?? "\n";
-  if (token.startsWith("#")) return "tok-comment";
-  if (token.startsWith("\"") || token.startsWith("'")) return "tok-string";
-  if (token.startsWith("$")) return "tok-var";
-  if (token.startsWith("-")) return /\s/.test(before) ? "tok-option" : "";
-  if (!/[\s|&;(]/.test(before) || /[@.:/#-]/.test(after)) return "";
-  return "tok-command";
-}
-
-function jsonTokenClass(token) {
-  if (token.startsWith("\"")) return token.endsWith(":") ? "tok-key" : "tok-string";
-  if (/^(?:true|false|null)$/.test(token)) return "tok-literal";
-  if (/^-?\d/.test(token)) return "tok-number";
-  return "tok-punct";
-}
-
-function jsTokenClass(token, match, code) {
-  if (token.startsWith("//") || token.startsWith("/*")) return "tok-comment";
-  if (/^["'`]/.test(token)) return "tok-string";
-  if (/^(?:true|false|null|undefined)$/.test(token)) return "tok-literal";
-  if (/^[A-Za-z_$][\w$-]*$/.test(token) && /^\s*:/.test(code.slice(match.index + token.length))) return "tok-key";
-  if (/^-?\d/.test(token)) return "tok-number";
-  if (/^[{}[\],:]$/.test(token)) return "tok-punct";
-  return "tok-keyword";
-}
-
-function yamlTokenClass(token) {
-  if (token.trimStart().startsWith("#")) return "tok-comment";
-  if (token.trimEnd().endsWith(":")) return "tok-key";
-  if (/^["']/.test(token.trim())) return "tok-string";
-  if (/^(?:true|false|null)$/.test(token.trim())) return "tok-literal";
-  return "tok-number";
-}
-
-function configTokenClass(token) {
-  if (token.trimStart().startsWith("#")) return "tok-comment";
-  if (token.trimEnd().endsWith("=")) return "tok-key";
-  if (/^["']/.test(token.trim())) return "tok-string";
-  if (/^(?:true|false|null)$/.test(token.trim())) return "tok-literal";
-  return "tok-number";
+function mermaidHtml(source) {
+  const diagram = String(source).trim();
+  return `<figure class="oc-mermaid" data-mermaid="${escapeAttr(diagram)}"><pre><code>${escapeHtml(diagram)}</code></pre></figure>`;
 }
 
 export function renderMdxish(markdown, md) {
@@ -208,6 +205,7 @@ function preprocess(input) {
   let out = input.replace(/\r\n/g, "\n");
   out = out.replace(/^import\s+.+?;?\s*$/gm, "");
   out = out.replace(/<br\s*\/?>/gi, "\n");
+  out = out.replace(/<Mermaid\b[^>]*>([\s\S]*?)<\/Mermaid>/g, (_, body) => `\n${marker("mermaidBlock", body)}\n`);
 
   out = out.replace(/<Card\b([^>]*)\/>/g, (_, attrs) => `${marker("cardSelf", attrs)}\n`);
   out = out.replace(/<Card\b([^>]*)>/g, (_, attrs) => `\n${marker("cardOpen", attrs)}\n`);
@@ -231,8 +229,6 @@ function preprocess(input) {
   out = out.replace(/<\/Panel>/g, `\n${marker("panelClose")}\n`);
   out = out.replace(/<Prompt\b([^>]*)>/g, (_, attrs) => `\n${marker("promptOpen", attrs)}\n`);
   out = out.replace(/<\/Prompt>/g, `\n${marker("promptClose")}\n`);
-  out = out.replace(/<Mermaid\b([^>]*)>/g, (_, attrs) => `\n${marker("mermaidOpen", attrs)}\n`);
-  out = out.replace(/<\/Mermaid>/g, `\n${marker("mermaidClose")}\n`);
   out = out.replace(/<ParamField\b([^>]*)>/g, (_, attrs) => `\n${marker("paramOpen", attrs)}\n`);
   out = out.replace(/<\/ParamField>/g, `\n${marker("paramClose")}\n`);
   out = out.replace(/<(?:Field|Property|ResponseField)\b([^>]*)>/g, (_, attrs) => `\n${marker("paramOpen", attrs)}\n`);
@@ -302,8 +298,7 @@ function expandMarker(payload) {
     return `<section class="oc-prompt"><header><strong>${escapeHtml(title)}</strong><button type="button" data-prompt-copy aria-label="Copy prompt">Copy</button></header>`;
   }
   if (kind === "promptClose") return "</section>";
-  if (kind === "mermaidOpen") return `<pre class="oc-mermaid"><code>`;
-  if (kind === "mermaidClose") return "</code></pre>";
+  if (kind === "mermaidBlock") return mermaidHtml(value);
   if (kind === "frameOpen") {
     const caption = parseAttrs(value).caption;
     return `<figure class="oc-frame">${caption ? `<figcaption>${escapeHtml(caption)}</figcaption>` : ""}`;

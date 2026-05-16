@@ -110,9 +110,9 @@ if (!/Português \(BR\)/.test(index)) {
 if (!/data-docs-chat/.test(index) || !/OPENCLAW_DOCS_CHAT_API/.test(index)) {
   throw new Error("index: docs chat widget was not rendered");
 }
-if (!/class="tok-key">channels<\/span>/.test(index)
-  || !/class="tok-string">&quot;\+15555550123&quot;<\/span>/.test(index)
-  || !/class="tok-literal">true<\/span>/.test(index)) {
+if (!/class="hljs-attr">channels<\/span>/.test(index)
+  || !/class="hljs-string">&quot;\+15555550123&quot;<\/span>/.test(index)
+  || !/class="hljs-literal">true<\/span>/.test(index)) {
   throw new Error("index: json5 config example was not syntax-highlighted");
 }
 const modelsMarkdown = fs.readFileSync(path.join(site, "concepts/models.md"), "utf8");
@@ -145,8 +145,13 @@ if (!/--code:#f7f4f0;--code-inline:#f3efea;--code-block:#fffefa;--code-text:#2d2
 if (/\.toc a:first-of-type/.test(siteCss)) {
   throw new Error("assets: first table-of-contents item is hard-highlighted");
 }
-if (!/\.doc pre \.tok-comment\{color:var\(--tok-comment\)\}/.test(siteCss)) {
+if (!/\.doc pre \.tok-comment,\.doc pre \.hljs-comment/.test(siteCss)
+  || !/\.doc pre \.tok-key,\.doc pre \.hljs-attr/.test(siteCss)) {
   throw new Error("assets: syntax token colors are not theme-variable based");
+}
+if (!fs.existsSync(path.join(site, "assets/mermaid.esm.min.mjs"))
+  || !fs.existsSync(path.join(site, "assets/chunks/mermaid.esm.min"))) {
+  throw new Error("assets: Mermaid runtime was not copied");
 }
 if (!/\.sidebar\{[^}]*padding:0 6px 36px 0;[^}]*scrollbar-gutter:stable/.test(siteCss)) {
   throw new Error("assets: sidebar scroll-end padding is missing");
@@ -195,6 +200,9 @@ if (!/<h2 id="[^"]*choose-tools[^"]*"[^>]*>Choose tools, skills, or plugins<\/h2
 if (/\.oc-step:before\{[^}]*background:var\(--brand\)/.test(siteCss)
   || !/\.oc-step:before\{[^}]*background:color-mix\(in srgb,var\(--line-strong\) 78%,var\(--paper\) 22%\)/.test(siteCss)) {
   throw new Error("assets: step badges should use neutral timeline styling");
+}
+if (!/\.oc-step:last-child\{[^}]*border-image:linear-gradient\(to bottom,var\(--line\)/.test(siteCss)) {
+  throw new Error("assets: final step rail should fade out");
 }
 if (!/\.oc-callout\{[^}]*--callout-accent:var\(--brand\)[^}]*border-left:3px solid var\(--callout-accent\)/.test(siteCss)
   || !/\.oc-callout-warning\{--callout-accent:#d97706\}/.test(siteCss)

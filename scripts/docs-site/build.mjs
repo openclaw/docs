@@ -647,6 +647,12 @@ function writeStaticAssets() {
   fs.mkdirSync(assetsDir, { recursive: true });
   fs.writeFileSync(path.join(assetsDir, "docs-site.css"), siteCss(), "utf8");
   fs.writeFileSync(path.join(assetsDir, "docs-site.js"), siteJs(), "utf8");
+  const mermaidDist = path.join(root, "node_modules", "mermaid", "dist");
+  const mermaidEntry = path.join(mermaidDist, "mermaid.esm.min.mjs");
+  if (fs.existsSync(mermaidEntry)) {
+    fs.copyFileSync(mermaidEntry, path.join(assetsDir, "mermaid.esm.min.mjs"));
+    copyDir(path.join(mermaidDist, "chunks", "mermaid.esm.min"), path.join(assetsDir, "chunks", "mermaid.esm.min"));
+  }
   fs.writeFileSync(path.join(outDir, ".nojekyll"), "", "utf8");
   for (const file of ["og-card.png", "og-card.svg"]) {
     const source = path.join(siteAssetsDir, file);

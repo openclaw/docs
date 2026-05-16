@@ -72,6 +72,25 @@ async function checkDesktop() {
   await expectVisible(page, ".oc-prompt [data-prompt-copy]", "prompt copy");
   await expectVisible(page, ".oc-tile-group .oc-tile", "tiles");
   await expectVisible(page, ".oc-mermaid", "mermaid block");
+  await page.locator(".oc-mermaid.is-rendered svg").first().waitFor({ state: "visible", timeout: 10000 });
+  const componentSkin = await page.evaluate(() => {
+    const code = getComputedStyle(document.querySelector(".oc-code"));
+    const pre = getComputedStyle(document.querySelector(".oc-code pre"));
+    const step = getComputedStyle(document.querySelector(".oc-step:last-child"));
+    const paramType = getComputedStyle(document.querySelector(".oc-param-type"));
+    return {
+      codeBg: code.backgroundColor,
+      codePadding: pre.paddingTop,
+      stepBorderImage: step.borderImageSource,
+      paramTypeColor: paramType.color,
+    };
+  });
+  if (componentSkin.codeBg !== "rgb(16, 16, 16)"
+    || parseFloat(componentSkin.codePadding) > 14
+    || !componentSkin.stepBorderImage.includes("linear-gradient")
+    || componentSkin.paramTypeColor === "rgb(129, 122, 118)") {
+    throw new Error(`desktop component skin failed: ${JSON.stringify(componentSkin)}`);
+  }
   await page.goto(`${base}/`, { waitUntil: "networkidle" });
   await expectVisible(page, ".page-tools [data-copy-page]", "copy page tool");
   await expectVisible(page, ".page-feedback [data-feedback-value='yes']", "page feedback");
@@ -136,7 +155,7 @@ async function expectVisible(page, selector, label) {
 
 function contentType(file) {
   if (file.endsWith(".html")) return "text/html; charset=utf-8";
-  if (file.endsWith(".js")) return "text/javascript; charset=utf-8";
+  if (file.endsWith(".js") || file.endsWith(".mjs")) return "text/javascript; charset=utf-8";
   if (file.endsWith(".css")) return "text/css; charset=utf-8";
   if (file.endsWith(".svg")) return "image/svg+xml";
   if (file.endsWith(".png")) return "image/png";

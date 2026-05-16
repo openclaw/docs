@@ -13,8 +13,10 @@
   },
   "devDependencies": {
     "gray-matter": "4.0.3",
+    "highlight.js": "11.11.1",
     "markdown-it": "14.1.1",
     "markdown-it-anchor": "9.2.0",
+    "mermaid": "11.15.0",
     "pagefind": "1.5.2",
     "playwright": "^1.60.0"
   }
