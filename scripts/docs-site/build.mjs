@@ -23,6 +23,7 @@ const legacyBasePath = normalizeBasePath(process.env.DOCS_SITE_LEGACY_BASE_PATH 
 const canonicalOrigin = (process.env.DOCS_SITE_CANONICAL_ORIGIN
   ?? (process.env.DOCS_SITE_CNAME ? `https://${process.env.DOCS_SITE_CNAME}` : "https://documentation.openclaw.ai"))
   .replace(/\/$/, "");
+const llmsFullAvailable = process.env.DOCS_SITE_LLMS_FULL_AVAILABLE === "1";
 const ogImagePath = "/og-card.png";
 const renderedPageOgCards = new Set();
 const rsvgAvailable = checkRsvg();
@@ -338,7 +339,7 @@ function writeLlmsIndex() {
     "",
     config.description ?? "OpenClaw documentation.",
     "",
-    "> Use this file as a lightweight map of the OpenClaw documentation. Fetch individual pages as Markdown with `.md` URLs or `Accept: text/markdown`; OpenClaw does not publish a full-site LLM corpus.",
+    "> Use this file as a lightweight map of the OpenClaw documentation. Fetch individual pages as Markdown with `.md` URLs or `Accept: text/markdown`.",
     "",
     "## Agent Resources",
     "",
@@ -349,6 +350,9 @@ function writeLlmsIndex() {
     "## Documentation Index",
     "",
   ];
+  if (llmsFullAvailable) {
+    lines.splice(8, 0, `- [Full documentation corpus](${origin}/llms-full.txt): Nightly full-site Markdown corpus for LLM context.`);
+  }
   for (const page of englishDocsPages()) {
     const summary = page.summary ? `: ${stripMdxForLlms(page.summary).replace(/\s+/g, " ").trim()}` : "";
     lines.push(`- [${page.title}](${origin}${pageRoute(page)})${summary}`);
@@ -376,25 +380,24 @@ function writeRobotsTxt() {
   const lines = [
     "# OpenClaw documentation crawler policy",
     "# Human docs are HTML. Agent-optimized docs are available as Markdown via .md URLs or Accept: text/markdown.",
-    "# No full-site LLM corpus is published; use /llms.txt as the index and fetch only the pages you need.",
+    llmsFullAvailable
+      ? "# Agent-optimized docs are available through /llms.txt, page-level Markdown, and the nightly /llms-full.txt corpus."
+      : "# Agent-optimized docs are available through /llms.txt and page-level Markdown.",
     "",
     "User-agent: *",
     "Allow: /",
     "Disallow: /ask-molty/api/",
-    "Disallow: /llms-full.txt",
-    "Disallow: /.well-known/llms-full.txt",
     "",
   ];
   for (const agent of botAgents) {
     lines.push(`User-agent: ${agent}`);
     lines.push("Allow: /");
     lines.push("Disallow: /ask-molty/api/");
-    lines.push("Disallow: /llms-full.txt");
-    lines.push("Disallow: /.well-known/llms-full.txt");
     lines.push("");
   }
   lines.push(`Sitemap: ${origin}/sitemap.xml`);
   lines.push(`LLMS: ${origin}/llms.txt`);
+  if (llmsFullAvailable) lines.push(`LLMS-Full: ${origin}/llms-full.txt`);
   lines.push("");
   fs.writeFileSync(path.join(outDir, "robots.txt"), lines.join("\n"), "utf8");
 }

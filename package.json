@@ -6,9 +6,11 @@
     "docs:build": "node scripts/docs-site/build.mjs && node scripts/docs-site/source-index.mjs && pagefind --site dist/docs-site --output-path dist/docs-site/pagefind && node scripts/docs-site/pagefind-normalize.mjs",
     "docs:build:cloudflare": "npm run docs:build && node scripts/docs-site/cloudflare-prune.mjs",
     "docs:build:r2": "npm run docs:build && node scripts/docs-site/r2-prepare.mjs",
+    "docs:llms-full": "node scripts/docs-site/llms-full.mjs",
+    "docs:llms-full:upload": "R2_UPLOAD_MANIFEST_PATH=dist/docs-llms-full-manifest.json R2_UPLOAD_REMOTE_MANIFEST_KEY=.openclaw-docs-llms-full-manifest.json R2_DELETE_ORPHANS=0 node scripts/docs-site/r2-upload.mjs",
     "docs:r2:upload": "node scripts/docs-site/r2-upload.mjs",
     "docs:smoke": "node scripts/docs-site/smoke.mjs",
-    "docs:check": "npm run docs:build && npm run docs:smoke"
+    "docs:check": "npm run docs:build && npm run docs:smoke && node --check scripts/docs-site/llms-full.mjs"
   },
   "devDependencies": {
     "gray-matter": "4.0.3",

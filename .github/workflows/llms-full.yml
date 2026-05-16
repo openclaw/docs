@@ -1,0 +1,162 @@
+name: LLMs Full Corpus
+
+on:
+  schedule:
+    - cron: "17 9 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: llms-full-corpus
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    name: Generate and upload llms-full.txt
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      DOCS_SITE_CANONICAL_ORIGIN: https://docs.openclaw.ai
+      DOCS_SITE_CNAME: documentation.openclaw.ai
+    environment:
+      name: cloudflare
+      url: https://documentation.openclaw.ai/llms-full.txt
+    steps:
+      - name: Check out
+        uses: actions/checkout@v6
+
+      - name: Check current docs main
+        id: current-main
+        run: |
+          set -euo pipefail
+          git fetch --quiet origin main
+          latest="$(git rev-parse refs/remotes/origin/main)"
+          if [ "${GITHUB_SHA}" != "${latest}" ]; then
+            echo "stale=true" >> "${GITHUB_OUTPUT}"
+            echo "::notice::Docs main moved to ${latest}; skipping stale llms-full upload for ${GITHUB_SHA}."
+          else
+            echo "stale=false" >> "${GITHUB_OUTPUT}"
+          fi
+
+      - name: Read source metadata
+        if: steps.current-main.outputs.stale != 'true'
+        id: source-meta
+        run: |
+          node - <<'NODE'
+          const fs = require("node:fs");
+          const data = JSON.parse(fs.readFileSync(".openclaw-sync/source.json", "utf8"));
+          if (!data.repository || !data.sha) throw new Error("invalid .openclaw-sync/source.json");
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `repository=${data.repository}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `sha=${data.sha}\n`);
+          NODE
+
+      - name: Check out OpenClaw source
+        if: steps.current-main.outputs.stale != 'true'
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ steps.source-meta.outputs.repository }}
+          ref: ${{ steps.source-meta.outputs.sha }}
+          path: source
+          fetch-depth: 1
+
+      - name: Set up Node
+        if: steps.current-main.outputs.stale != 'true'
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install
+        if: steps.current-main.outputs.stale != 'true'
+        run: npm ci
+
+      - name: Generate llms-full corpus
+        if: steps.current-main.outputs.stale != 'true'
+        env:
+          DOCS_SOURCE_REPO_DIR: source
+          DOCS_SOURCE_REPO_URL: https://github.com/${{ steps.source-meta.outputs.repository }}
+          DOCS_SOURCE_SHA: ${{ steps.source-meta.outputs.sha }}
+        run: npm run docs:llms-full
+
+      - name: Smoke generated corpus
+        if: steps.current-main.outputs.stale != 'true'
+        run: |
+          set -euo pipefail
+          test -s dist/docs-llms-full/llms-full.txt
+          test -s dist/docs-llms-full/.well-known/llms-full.txt
+          cmp dist/docs-llms-full/llms-full.txt dist/docs-llms-full/.well-known/llms-full.txt
+          grep -q '^Source: https://docs.openclaw.ai/' dist/docs-llms-full/llms-full.txt
+          grep -q '^# ' dist/docs-llms-full/llms-full.txt
+
+      - name: Re-check current docs main before upload
+        if: steps.current-main.outputs.stale != 'true'
+        id: current-main-before-upload
+        run: |
+          set -euo pipefail
+          git fetch --quiet origin main
+          latest="$(git rev-parse refs/remotes/origin/main)"
+          if [ "${GITHUB_SHA}" != "${latest}" ]; then
+            echo "stale=true" >> "${GITHUB_OUTPUT}"
+            echo "::notice::Docs main moved to ${latest}; skipping stale llms-full upload for ${GITHUB_SHA}."
+          else
+            echo "stale=false" >> "${GITHUB_OUTPUT}"
+          fi
+
+      - name: Upload llms-full corpus
+        if: steps.current-main.outputs.stale != 'true' && steps.current-main-before-upload.outputs.stale != 'true'
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_R2_BUCKET: openclaw-docs
+          OPENCLAW_R2_ACCESS_KEY_ID: ${{ secrets.OPENCLAW_R2_ACCESS_KEY_ID }}
+          OPENCLAW_R2_SECRET_ACCESS_KEY: ${{ secrets.OPENCLAW_R2_SECRET_ACCESS_KEY }}
+          R2_UPLOAD_CONCURRENCY: 4
+        run: npm run docs:llms-full:upload
+
+      - name: Smoke live corpus
+        if: steps.current-main.outputs.stale != 'true' && steps.current-main-before-upload.outputs.stale != 'true'
+        env:
+          BASE_URL: https://documentation.openclaw.ai
+          GITHUB_SHA: ${{ github.sha }}
+        run: |
+          node - <<'NODE'
+          const baseUrl = process.env.BASE_URL;
+          const sha = process.env.GITHUB_SHA;
+          const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+          const assertCorpus = async (path) => {
+            const url = new URL(path, baseUrl);
+            url.searchParams.set("_openclaw_llms_full_smoke", sha);
+            const response = await fetch(url, {
+              headers: {
+                "cache-control": "no-cache",
+                pragma: "no-cache",
+              },
+            });
+            if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
+            const contentType = response.headers.get("content-type") ?? "";
+            if (!contentType.includes("text/plain")) {
+              throw new Error(`${path}: expected text/plain, got ${contentType}`);
+            }
+            const text = await response.text();
+            if (!/^# /m.test(text)) throw new Error(`${path}: missing heading marker`);
+            if (!/^Source: https:\/\/docs\.openclaw\.ai\//m.test(text)) {
+              throw new Error(`${path}: missing canonical Source marker`);
+            }
+            console.log(`${path}: ok (${text.length} bytes)`);
+          };
+          const deadline = Date.now() + 10 * 60 * 1000;
+          let lastError;
+          for (let attempt = 1; Date.now() < deadline; attempt += 1) {
+            try {
+              await assertCorpus("/llms-full.txt");
+              await assertCorpus("/.well-known/llms-full.txt");
+              process.exit(0);
+            } catch (error) {
+              lastError = error;
+              console.log(`Attempt ${attempt} failed: ${error.message}`);
+              await sleep(Math.min(10_000 * attempt, 60_000));
+            }
+          }
+          throw lastError ?? new Error("llms-full live smoke timed out.");
+          NODE
