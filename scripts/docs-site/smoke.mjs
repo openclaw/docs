@@ -193,6 +193,43 @@ if (/\.oc-step:before\{[^}]*background:var\(--brand\)/.test(siteCss)
   || !/\.oc-step:before\{[^}]*background:color-mix\(in srgb,var\(--line-strong\) 78%,var\(--paper\) 22%\)/.test(siteCss)) {
   throw new Error("assets: step badges should use neutral timeline styling");
 }
+if (!/\.oc-callout\{[^}]*--callout-accent:var\(--brand\)[^}]*border-left:3px solid var\(--callout-accent\)/.test(siteCss)
+  || !/\.oc-callout-warning\{--callout-accent:#d97706\}/.test(siteCss)
+  || !/\.oc-callout-check\{--callout-accent:#48b49a\}/.test(siteCss)) {
+  throw new Error("assets: callout tones should use reference-aligned component skin");
+}
+const elementsIndexPath = path.join(site, "__elements/index.html");
+if (!fs.existsSync(elementsIndexPath)) {
+  throw new Error("__elements: hidden component fixture page is missing");
+}
+const elementsIndex = fs.readFileSync(elementsIndexPath, "utf8");
+for (const marker of [
+  'class="oc-callout oc-callout-tip"',
+  'class="oc-callout oc-callout-info"',
+  'class="oc-callout oc-callout-warning"',
+  'class="oc-card"',
+  'class="oc-code-group"',
+  'class="oc-step"',
+  'class="oc-tab"',
+  'class="oc-accordion"',
+  'class="oc-param"',
+  'class="oc-frame"',
+]) {
+  if (!elementsIndex.includes(marker)) throw new Error(`__elements: missing fixture marker ${marker}`);
+}
+if (!/<meta name="robots" content="noindex,nofollow">/.test(elementsIndex)) {
+  throw new Error("__elements: hidden component fixture should be noindex");
+}
+if (/data-pagefind-body/.test(elementsIndex) || !/data-pagefind-ignore/.test(elementsIndex)) {
+  throw new Error("__elements: hidden component fixture should be excluded from Pagefind");
+}
+if (/data-docs-chat/.test(elementsIndex)) {
+  throw new Error("__elements: hidden component fixture should not be obscured by docs chat");
+}
+if (/\/__elements/.test(fs.readFileSync(path.join(site, "sitemap.xml"), "utf8"))
+  || /\/__elements/.test(fs.readFileSync(path.join(site, "llms.txt"), "utf8"))) {
+  throw new Error("__elements: hidden component fixture leaked into public indexes");
+}
 const dateTime = fs.readFileSync(path.join(site, "date-time/index.html"), "utf8");
 if (/Current Date &amp;amp; Time/.test(dateTime)) {
   throw new Error("date-time: TOC double-escaped ampersand");
@@ -208,4 +245,4 @@ const showcase = fs.readFileSync(path.join(site, "start/showcase/index.html"), "
 if (!/href="https:\/\/www\.youtube\.com\/watch\?v=SaWSPZoPX34"/.test(showcase)) {
   throw new Error("showcase: external card href was not rendered");
 }
-console.log(`docs site smoke ok: ${required.length} checks`);
+console.log("docs site smoke ok: shell, routing, skin, and hidden fixture checks passed");

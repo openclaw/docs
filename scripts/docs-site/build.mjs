@@ -10,6 +10,7 @@ import matter from "gray-matter";
 import { ignoredDocDirs, ignoredDocFiles, localeLabels, mintlifyLocaleToDir, rtlLocales } from "./config.mjs";
 import { siteCss, siteJs } from "./assets.mjs";
 import { createMarkdownRenderer, renderMdxish } from "./mdx-ish.mjs";
+import { elementsFixture } from "./elements-fixture.mjs";
 import { renderPageOgSvg } from "./og-card-template.mjs";
 
 const root = process.cwd();
@@ -32,7 +33,7 @@ fs.rmSync(outDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100
 fs.mkdirSync(outDir, { recursive: true });
 
 const locales = buildLocales(config);
-const pages = collectPages(locales);
+const pages = [...collectPages(locales), elementsFixturePage()];
 const pageByKey = new Map(pages.map((page) => [pageKey(page.locale, page.slug), page]));
 const navByLocale = new Map(locales.map((locale) => [locale.code, buildNav(locale)]));
 const localeFlags = {
@@ -111,6 +112,23 @@ function collectPages(localeList) {
     }
   }
   return result;
+}
+
+function elementsFixturePage() {
+  const parsed = matter(elementsFixture);
+  return {
+    locale: "en",
+    dir: "",
+    slug: "__elements",
+    file: path.join(siteAssetsDir, "elements-fixture.mjs"),
+    rel: "__elements.md",
+    raw: elementsFixture,
+    title: parsed.data.title || "Docs elements",
+    summary: parsed.data.summary ?? "",
+    readWhen: [],
+    body: parsed.content,
+    hidden: true
+  };
 }
 
 function walkDocs(dir) {
@@ -192,6 +210,7 @@ function layout({ page, nav, activeTab, html, toc, prev, next }) {
 <meta name="description" content="${escapeAttr(description)}">
 <title>${escapeHtml(title)}</title>
 ${canonicalUrl ? `<link rel="canonical" href="${escapeAttr(canonicalUrl)}">` : ""}
+${page.hidden ? '<meta name="robots" content="noindex,nofollow">' : ""}
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="${escapeAttr(config.name)}">
 <meta property="og:title" content="${escapeAttr(ogTitle)}">
@@ -222,14 +241,14 @@ ${sidebar(page, nav, activeTab)}
 <p class="article-kicker">${escapeHtml(groupForPage(nav, page.slug) ?? activeTab)}</p>
 <h1>${escapeHtml(page.title)}</h1>
 </header>
-<div class="doc" data-pagefind-body>${html}</div>
+<div class="doc"${page.hidden ? ' data-pagefind-ignore' : ' data-pagefind-body'}>${html}</div>
 ${pager(prev, next)}
 </article>
 ${tocHtml(toc)}
 </main>
 </div>
 ${searchModal()}
-${chatWidget()}
+${page.hidden ? "" : chatWidget()}
 <script type="module" src="${assetUrl("/assets/docs-site.js")}"></script>
 </body>
 </html>`;
@@ -380,6 +399,7 @@ function writeRobotsTxt() {
     "",
     "User-agent: *",
     "Allow: /",
+    "Disallow: /__elements",
     "Disallow: /ask-molty/api/",
     "Disallow: /llms-full.txt",
     "Disallow: /.well-known/llms-full.txt",
@@ -388,6 +408,7 @@ function writeRobotsTxt() {
   for (const agent of botAgents) {
     lines.push(`User-agent: ${agent}`);
     lines.push("Allow: /");
+    lines.push("Disallow: /__elements");
     lines.push("Disallow: /ask-molty/api/");
     lines.push("Disallow: /llms-full.txt");
     lines.push("Disallow: /.well-known/llms-full.txt");
@@ -401,7 +422,7 @@ function writeRobotsTxt() {
 
 function writeSitemap() {
   const origin = docsOrigin();
-  const urls = [...new Set(pages.map((page) => `${origin}${pageRoute(page)}`))]
+  const urls = [...new Set(pages.filter((page) => !page.hidden).map((page) => `${origin}${pageRoute(page)}`))]
     .sort((a, b) => a.localeCompare(b));
   const xml = [
     '<?xml version="1.0" encoding="UTF-8"?>',
@@ -415,7 +436,7 @@ function writeSitemap() {
 
 function englishDocsPages() {
   return pages
-    .filter((page) => page.locale === "en" && !localeLabels[page.rel.split("/")[0]])
+    .filter((page) => !page.hidden && page.locale === "en" && !localeLabels[page.rel.split("/")[0]])
     .sort((a, b) => a.slug.localeCompare(b.slug));
 }
 

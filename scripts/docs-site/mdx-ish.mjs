@@ -8,8 +8,7 @@ const knownBlocks = new Map([
   ["CardGroup", ["card-grid", ""]],
   ["Steps", ["steps", ""]],
   ["Tabs", ["tabs", ""]],
-  ["CodeGroup", ["code-group", ""]],
-  ["Frame", ["frame", ""]]
+  ["CodeGroup", ["code-group", ""]]
 ]);
 const callouts = new Map([
   ["Note", "Note"],
@@ -135,6 +134,8 @@ function preprocess(input) {
   out = out.replace(/<\/Tab>/g, `\n${marker("tabClose")}\n`);
   out = out.replace(/<Accordion\b([^>]*)>/g, (_, attrs) => `\n${marker("accordionOpen", attrs)}\n`);
   out = out.replace(/<\/Accordion>/g, `\n${marker("accordionClose")}\n`);
+  out = out.replace(/<Frame\b([^>]*)>/g, (_, attrs) => `\n${marker("frameOpen", attrs)}\n`);
+  out = out.replace(/<\/Frame>/g, `\n${marker("frameClose")}\n`);
   out = out.replace(/<ParamField\b([^>]*)>/g, (_, attrs) => `\n${marker("paramOpen", attrs)}\n`);
   out = out.replace(/<\/ParamField>/g, `\n${marker("paramClose")}\n`);
 
@@ -176,6 +177,11 @@ function expandMarker(payload) {
   if (kind === "tabClose") return "</section>";
   if (kind === "accordionOpen") return `<details class="oc-accordion"><summary>${escapeHtml(parseAttrs(value).title ?? "Details")}</summary>`;
   if (kind === "accordionClose") return "</details>";
+  if (kind === "frameOpen") {
+    const caption = parseAttrs(value).caption;
+    return `<figure class="oc-frame">${caption ? `<figcaption>${escapeHtml(caption)}</figcaption>` : ""}`;
+  }
+  if (kind === "frameClose") return "</figure>";
   if (kind === "paramOpen") {
     const attrs = parseAttrs(value);
     const required = attrs.required !== undefined ? `<span class="oc-param-required">required</span>` : "";
