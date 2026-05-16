@@ -2,7 +2,7 @@ name: LLMs Full Corpus
 
 on:
   schedule:
-    - cron: "17 9 * * *"
+    - cron: "17 9 */3 * *"
   workflow_dispatch:
 
 permissions:
