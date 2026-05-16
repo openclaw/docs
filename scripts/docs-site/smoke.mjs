@@ -10,23 +10,32 @@ const expectedOrigin = (process.env.DOCS_SITE_CANONICAL_ORIGIN
 const previewOrigin = (process.env.DOCS_SITE_CNAME ? `https://${process.env.DOCS_SITE_CNAME}` : "https://documentation.openclaw.ai")
   .replace(/\/$/, "");
 const llmsFullAvailable = process.env.DOCS_SITE_LLMS_FULL_AVAILABLE === "1";
+const artifactMode = process.env.DOCS_SITE_ARTIFACT_MODE ?? "full";
+const shellOnly = artifactMode === "shell";
+if (!["full", "shell"].includes(artifactMode)) {
+  throw new Error(`DOCS_SITE_ARTIFACT_MODE must be full or shell, got ${artifactMode}`);
+}
 const required = [
   "index.html",
   "tools/reactions/index.html",
   "it/channels/index.html",
   "zh-CN/tools/reactions/index.html",
-  "concepts/models.md",
-  "llm.txt",
-  "llms.txt",
-  ".well-known/llms.txt",
-  "robots.txt",
-  "sitemap.xml",
   "de/tools/reactions/index.html",
   "de/gateway/heartbeat/index.html",
-  "pagefind/pagefind.js",
   "assets/docs-site.css",
   "assets/docs-site.js"
 ];
+if (!shellOnly) {
+  required.push(
+    "concepts/models.md",
+    "llm.txt",
+    "llms.txt",
+    ".well-known/llms.txt",
+    "robots.txt",
+    "sitemap.xml",
+    "pagefind/pagefind.js",
+  );
+}
 const poison = [
   /\banalysis\s+to=functions\./iu,
   /\b(?:commentary|final)\s+to=functions\./iu,
@@ -47,43 +56,45 @@ for (const rel of required) {
     if (pattern.test(html)) throw new Error(`${rel}: poison matched ${pattern}`);
   }
 }
-for (const rel of ["llms-full.txt", ".well-known/llms-full.txt"]) {
-  if (fs.existsSync(path.join(site, rel))) throw new Error(`${rel}: full-site LLM corpus should not be emitted`);
-}
-const llms = fs.readFileSync(path.join(site, "llms.txt"), "utf8");
-if (llmsFullAvailable && !/llms-full\.txt/.test(llms)) throw new Error("llms.txt: should advertise llms-full.txt");
-if (!llmsFullAvailable && /llms-full\.txt/.test(llms)) throw new Error("llms.txt: should not advertise unavailable llms-full.txt");
-if (!/Accept: text\/markdown|\.md/.test(llms)) throw new Error("llms.txt: should advertise page-level Markdown");
-if (!llms.includes(`${expectedOrigin}/start/getting-started.md`) || !llms.includes(`${expectedOrigin}/sitemap.xml`)) {
-  throw new Error(`llms.txt: expected canonical origin ${expectedOrigin}`);
-}
-if (previewOrigin !== expectedOrigin && llms.includes(previewOrigin)) {
-  throw new Error(`llms.txt: preview origin ${previewOrigin} should not be advertised`);
-}
-const wellKnownLlms = fs.readFileSync(path.join(site, ".well-known/llms.txt"), "utf8");
-if (wellKnownLlms !== llms) throw new Error(".well-known/llms.txt: does not match root llms.txt");
-const robots = fs.readFileSync(path.join(site, "robots.txt"), "utf8");
-if (!robots.includes(`Sitemap: ${expectedOrigin}/sitemap.xml`)) {
-  throw new Error(`robots.txt: sitemap directive missing canonical origin ${expectedOrigin}`);
-}
-if (/Disallow: \/(?:\.well-known\/)?llms-full\.txt/.test(robots) || !robots.includes(`LLMS: ${expectedOrigin}/llms.txt`)) {
-  throw new Error("robots.txt: LLM directives missing");
-}
-if (llmsFullAvailable && !robots.includes(`LLMS-Full: ${expectedOrigin}/llms-full.txt`)) {
-  throw new Error("robots.txt: LLMS-Full directive missing");
-}
-if (!llmsFullAvailable && /LLMS-Full:/u.test(robots)) {
-  throw new Error("robots.txt: should not advertise unavailable llms-full.txt");
-}
-if (previewOrigin !== expectedOrigin && robots.includes(previewOrigin)) {
-  throw new Error(`robots.txt: preview origin ${previewOrigin} should not be advertised`);
-}
-const sitemap = fs.readFileSync(path.join(site, "sitemap.xml"), "utf8");
-if (!sitemap.includes(`<loc>${expectedOrigin}/`)) {
-  throw new Error(`sitemap.xml: expected canonical origin ${expectedOrigin}`);
-}
-if (previewOrigin !== expectedOrigin && sitemap.includes(previewOrigin)) {
-  throw new Error(`sitemap.xml: preview origin ${previewOrigin} should not be advertised`);
+if (!shellOnly) {
+  for (const rel of ["llms-full.txt", ".well-known/llms-full.txt"]) {
+    if (fs.existsSync(path.join(site, rel))) throw new Error(`${rel}: full-site LLM corpus should not be emitted`);
+  }
+  const llms = fs.readFileSync(path.join(site, "llms.txt"), "utf8");
+  if (llmsFullAvailable && !/llms-full\.txt/.test(llms)) throw new Error("llms.txt: should advertise llms-full.txt");
+  if (!llmsFullAvailable && /llms-full\.txt/.test(llms)) throw new Error("llms.txt: should not advertise unavailable llms-full.txt");
+  if (!/Accept: text\/markdown|\.md/.test(llms)) throw new Error("llms.txt: should advertise page-level Markdown");
+  if (!llms.includes(`${expectedOrigin}/start/getting-started.md`) || !llms.includes(`${expectedOrigin}/sitemap.xml`)) {
+    throw new Error(`llms.txt: expected canonical origin ${expectedOrigin}`);
+  }
+  if (previewOrigin !== expectedOrigin && llms.includes(previewOrigin)) {
+    throw new Error(`llms.txt: preview origin ${previewOrigin} should not be advertised`);
+  }
+  const wellKnownLlms = fs.readFileSync(path.join(site, ".well-known/llms.txt"), "utf8");
+  if (wellKnownLlms !== llms) throw new Error(".well-known/llms.txt: does not match root llms.txt");
+  const robots = fs.readFileSync(path.join(site, "robots.txt"), "utf8");
+  if (!robots.includes(`Sitemap: ${expectedOrigin}/sitemap.xml`)) {
+    throw new Error(`robots.txt: sitemap directive missing canonical origin ${expectedOrigin}`);
+  }
+  if (/Disallow: \/(?:\.well-known\/)?llms-full\.txt/.test(robots) || !robots.includes(`LLMS: ${expectedOrigin}/llms.txt`)) {
+    throw new Error("robots.txt: LLM directives missing");
+  }
+  if (llmsFullAvailable && !robots.includes(`LLMS-Full: ${expectedOrigin}/llms-full.txt`)) {
+    throw new Error("robots.txt: LLMS-Full directive missing");
+  }
+  if (!llmsFullAvailable && /LLMS-Full:/u.test(robots)) {
+    throw new Error("robots.txt: should not advertise unavailable llms-full.txt");
+  }
+  if (previewOrigin !== expectedOrigin && robots.includes(previewOrigin)) {
+    throw new Error(`robots.txt: preview origin ${previewOrigin} should not be advertised`);
+  }
+  const sitemap = fs.readFileSync(path.join(site, "sitemap.xml"), "utf8");
+  if (!sitemap.includes(`<loc>${expectedOrigin}/`)) {
+    throw new Error(`sitemap.xml: expected canonical origin ${expectedOrigin}`);
+  }
+  if (previewOrigin !== expectedOrigin && sitemap.includes(previewOrigin)) {
+    throw new Error(`sitemap.xml: preview origin ${previewOrigin} should not be advertised`);
+  }
 }
 const zhReactions = fs.readFileSync(path.join(site, "zh-CN/tools/reactions/index.html"), "utf8");
 if (!/href="(?:\/docs)?\/zh-CN\/tools\/reactions"/.test(zhReactions)) {
@@ -123,9 +134,11 @@ if (!/class="hljs-attr">channels<\/span>/.test(index)
   || !/class="hljs-literal">true<\/span>/.test(index)) {
   throw new Error("index: json5 config example was not syntax-highlighted");
 }
-const modelsMarkdown = fs.readFileSync(path.join(site, "concepts/models.md"), "utf8");
-if (!/^---\nsummary: /m.test(modelsMarkdown) || !/title: "Models CLI"/m.test(modelsMarkdown)) {
-  throw new Error("concepts/models.md: source markdown was not emitted");
+if (!shellOnly) {
+  const modelsMarkdown = fs.readFileSync(path.join(site, "concepts/models.md"), "utf8");
+  if (!/^---\nsummary: /m.test(modelsMarkdown) || !/title: "Models CLI"/m.test(modelsMarkdown)) {
+    throw new Error("concepts/models.md: source markdown was not emitted");
+  }
 }
 if (process.env.DOCS_SITE_BASE_PATH && (/src="\/assets\//.test(index) || /href="\/assets\//.test(index))) {
   throw new Error("index: absolute asset paths were not base-path rewritten");
@@ -278,9 +291,11 @@ if (/data-pagefind-body/.test(elementsIndex) || !/data-pagefind-ignore/.test(ele
 if (/data-docs-chat/.test(elementsIndex)) {
   throw new Error("__elements: hidden component fixture should not be obscured by docs chat");
 }
-if (/\/__elements/.test(fs.readFileSync(path.join(site, "sitemap.xml"), "utf8"))
-  || /\/__elements/.test(fs.readFileSync(path.join(site, "llms.txt"), "utf8"))) {
-  throw new Error("__elements: hidden component fixture leaked into public indexes");
+if (!shellOnly) {
+  if (/\/__elements/.test(fs.readFileSync(path.join(site, "sitemap.xml"), "utf8"))
+    || /\/__elements/.test(fs.readFileSync(path.join(site, "llms.txt"), "utf8"))) {
+    throw new Error("__elements: hidden component fixture leaked into public indexes");
+  }
 }
 const dateTime = fs.readFileSync(path.join(site, "date-time/index.html"), "utf8");
 if (/Current Date &amp;amp; Time/.test(dateTime)) {
@@ -297,4 +312,4 @@ const showcase = fs.readFileSync(path.join(site, "start/showcase/index.html"), "
 if (!/href="https:\/\/www\.youtube\.com\/watch\?v=SaWSPZoPX34"/.test(showcase)) {
   throw new Error("showcase: external card href was not rendered");
 }
-console.log("docs site smoke ok: shell, routing, skin, and hidden fixture checks passed");
+console.log(`docs site smoke ok: shell, routing, skin, and hidden fixture checks passed (${artifactMode})`);

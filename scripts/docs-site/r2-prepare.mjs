@@ -59,6 +59,7 @@ function copyTree(from, to) {
 
 function entryFor(key, file, sourceKey) {
   const data = fs.readFileSync(file);
+  const metadataKey = sourceKey.endsWith("/index.html") ? sourceKey : key;
   return {
     key,
     sourceKey,
@@ -66,8 +67,8 @@ function entryFor(key, file, sourceKey) {
     size: data.byteLength,
     md5: crypto.createHash("md5").update(data).digest("hex"),
     sha256: crypto.createHash("sha256").update(data).digest("hex"),
-    contentType: contentTypeFor(key),
-    cacheControl: cacheControlFor(key),
+    contentType: contentTypeFor(metadataKey),
+    cacheControl: cacheControlFor(metadataKey),
   };
 }
 

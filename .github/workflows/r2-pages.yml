@@ -14,6 +14,15 @@ on:
       - "CLOUDFLARE.md"
   workflow_dispatch:
     inputs:
+      artifact_scope:
+        description: "Artifact scope to build and upload."
+        required: false
+        type: choice
+        default: auto
+        options:
+          - auto
+          - full
+          - shell
       force_upload:
         description: "Audit R2 objects before upload; unchanged objects remain cache hits."
         required: false
@@ -43,7 +52,44 @@ jobs:
       - name: Check out
         uses: actions/checkout@v6
 
+      - name: Classify artifact scope
+        id: artifact-scope
+        env:
+          AFTER_SHA: ${{ github.sha }}
+          BEFORE_SHA: ${{ github.event.before || '' }}
+          EVENT_NAME: ${{ github.event_name }}
+          REQUESTED_SCOPE: ${{ inputs.artifact_scope || 'auto' }}
+        run: |
+          set -euo pipefail
+
+          scope="${REQUESTED_SCOPE}"
+          if [ -z "${scope}" ]; then scope="auto"; fi
+          case "${scope}" in
+            auto|full|shell) ;;
+            *) echo "Invalid artifact scope: ${scope}" >&2; exit 1 ;;
+          esac
+
+          if [ "${scope}" = "auto" ]; then
+            scope="full"
+            if [ "${EVENT_NAME}" = "push" ] && [ -n "${BEFORE_SHA}" ] && ! printf '%s' "${BEFORE_SHA}" | grep -Eq '^0+$'; then
+              git fetch --quiet --no-tags --depth=1 origin "${BEFORE_SHA}" || true
+              changed="$(git diff --name-only "${BEFORE_SHA}" "${AFTER_SHA}" || git diff-tree --no-commit-id --name-only -r "${AFTER_SHA}")"
+              printf '%s\n' "${changed}" | sed '/^$/d' > /tmp/openclaw-docs-changed.txt
+              if ! grep -Eq '^(docs/|\.openclaw-sync/source\.json)' /tmp/openclaw-docs-changed.txt \
+                && grep -Eq '^(Makefile|package\.json|package-lock\.json|scripts/docs-site/|\.github/workflows/r2-pages\.yml|README\.md|CLOUDFLARE\.md)$|^(scripts/docs-site/)' /tmp/openclaw-docs-changed.txt; then
+                if ! grep -Ev '^(Makefile|package\.json|package-lock\.json|scripts/docs-site/|\.github/workflows/r2-pages\.yml|README\.md|CLOUDFLARE\.md)' /tmp/openclaw-docs-changed.txt >/tmp/openclaw-docs-nonshell.txt; then
+                  scope="shell"
+                fi
+              fi
+            fi
+          fi
+
+          echo "scope=${scope}" >> "${GITHUB_OUTPUT}"
+          echo "partial=$([ "${scope}" = "shell" ] && echo 1 || echo 0)" >> "${GITHUB_OUTPUT}"
+          echo "Artifact scope: ${scope}"
+
       - name: Read source metadata
+        if: steps.artifact-scope.outputs.scope == 'full'
         id: source-meta
         run: |
           node - <<'NODE'
@@ -55,6 +101,7 @@ jobs:
           NODE
 
       - name: Check out OpenClaw source
+        if: steps.artifact-scope.outputs.scope == 'full'
         uses: actions/checkout@v6
         with:
           repository: ${{ steps.source-meta.outputs.repository }}
@@ -79,10 +126,20 @@ jobs:
           DOCS_SOURCE_REPO_DIR: source
           DOCS_SOURCE_REPO_URL: https://github.com/${{ steps.source-meta.outputs.repository }}
           DOCS_SOURCE_SHA: ${{ steps.source-meta.outputs.sha }}
-        run: npm run docs:build:r2
+        run: |
+          if [ "${{ steps.artifact-scope.outputs.scope }}" = "shell" ]; then
+            npm run docs:build:r2:shell
+          else
+            npm run docs:build:r2
+          fi
 
       - name: Smoke generated site
-        run: npm run docs:smoke
+        run: |
+          if [ "${{ steps.artifact-scope.outputs.scope }}" = "shell" ]; then
+            npm run docs:smoke:shell
+          else
+            npm run docs:smoke
+          fi
 
       - name: Check current docs main
         id: current-main
@@ -106,7 +163,9 @@ jobs:
           OPENCLAW_R2_SECRET_ACCESS_KEY: ${{ secrets.OPENCLAW_R2_SECRET_ACCESS_KEY }}
           R2_REFRESH_CONCURRENCY: 32
           R2_UPLOAD_CONCURRENCY: 64
+          R2_UPLOAD_PARTIAL: ${{ steps.artifact-scope.outputs.partial }}
           R2_UPLOAD_FORCE: ${{ github.event_name == 'workflow_dispatch' && inputs.force_upload == true && '1' || '0' }}
+          R2_UPLOAD_SCOPE: ${{ steps.artifact-scope.outputs.scope == 'shell' && 'shell' || 'all' }}
         run: npm run docs:r2:upload
 
       - name: Dispatch live smoke

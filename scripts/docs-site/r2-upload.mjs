@@ -21,6 +21,8 @@ const fullRefresh = process.env.R2_UPLOAD_FORCE === "1" || process.env.R2_UPLOAD
 const putAll = process.env.R2_UPLOAD_PUT_ALL === "1";
 const dryRun = process.env.R2_UPLOAD_DRY_RUN === "1";
 const remoteManifestPath = process.env.R2_UPLOAD_REMOTE_MANIFEST_PATH || "";
+const uploadScope = process.env.R2_UPLOAD_SCOPE || "all";
+const partialUpload = process.env.R2_UPLOAD_PARTIAL === "1" || uploadScope !== "all";
 const protectedKeys = new Set([
   "llms-full.txt",
   ".well-known/llms-full.txt",
@@ -36,33 +38,84 @@ if (!dryRun && !secretAccessKey) throw new Error("OPENCLAW_R2_SECRET_ACCESS_KEY 
 
 const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
 if (!Array.isArray(manifest.entries)) throw new Error("dist/docs-r2-manifest.json must contain an entries array");
+const scopedEntries = filterEntriesByScope(manifest.entries, uploadScope);
 const remoteManifest = await getRemoteManifest();
+if (partialUpload && !dryRun && remoteManifest.status !== "hit" && process.env.R2_UPLOAD_ALLOW_PARTIAL_WITHOUT_REMOTE !== "1") {
+  throw new Error("Partial R2 upload requires an existing remote manifest; run a full upload first or set R2_UPLOAD_ALLOW_PARTIAL_WITHOUT_REMOTE=1");
+}
 const remoteEntries = new Map((remoteManifest?.entries || []).map((entry) => [entry.key, entry]));
-const localKeys = new Set(manifest.entries.map((entry) => entry.key));
+const localKeys = new Set(partialUpload ? remoteEntries.keys() : scopedEntries.map((entry) => entry.key));
+for (const entry of scopedEntries) localKeys.add(entry.key);
 localKeys.add(remoteManifestKey);
-const plan = await createUploadPlan(manifest.entries, remoteEntries);
+const plan = await createUploadPlan(scopedEntries, remoteEntries);
 const changed = plan.changed;
-const manifestDeletedKeys = Array.from(remoteEntries.keys()).filter((key) => !localKeys.has(key) && !protectedKeys.has(key));
-const orphanedKeys = deleteOrphans && !dryRun ? (await listBucketKeys()).filter((key) => !localKeys.has(key) && !protectedKeys.has(key)) : [];
+const manifestDeletedKeys = partialUpload ? [] : Array.from(remoteEntries.keys()).filter((key) => !localKeys.has(key) && !protectedKeys.has(key));
+const orphanedKeys = !partialUpload && deleteOrphans && !dryRun ? (await listBucketKeys()).filter((key) => !localKeys.has(key) && !protectedKeys.has(key)) : [];
 const deleted = Array.from(new Set([...manifestDeletedKeys, ...orphanedKeys])).sort().map((key) => ({ key }));
+const uploadManifest = writeUploadManifest(manifest, remoteManifest, scopedEntries);
 
 console.log(formatRemoteManifestStatus(remoteManifest));
+console.log(`r2 upload scope: ${uploadScope} (${scopedEntries.length}/${manifest.entries.length} manifest entries, partial=${partialUpload})`);
 console.log(formatCacheStats(plan.stats));
 console.log(
-  `r2 upload plan: ${changed.length}/${manifest.entries.length} changed objects, ${deleted.length} deleted objects (${manifestDeletedKeys.length} from manifest, ${orphanedKeys.length} orphaned, fullRefresh=${fullRefresh}, putAll=${putAll}, dryRun=${dryRun}) for ${bucket}`,
+  `r2 upload plan: ${changed.length}/${scopedEntries.length} changed objects, ${deleted.length} deleted objects (${manifestDeletedKeys.length} from manifest, ${orphanedKeys.length} orphaned, fullRefresh=${fullRefresh}, putAll=${putAll}, dryRun=${dryRun}) for ${bucket}`,
 );
 await uploadEntries(changed);
 await deleteEntries(deleted);
-const manifestSha256 = sha256Hex(fs.readFileSync(manifestPath));
+const manifestSha256 = sha256Hex(fs.readFileSync(uploadManifest.path));
 await putObject({
   key: remoteManifestKey,
-  file: manifestPath,
+  file: uploadManifest.path,
   sha256: manifestSha256,
   contentType: "application/json; charset=utf-8",
   cacheControl: "private, max-age=0, no-store",
 });
 writeGithubSummary(plan.stats, deleted);
 console.log(`r2 upload ok: ${changed.length} changed objects, ${deleted.length} deleted objects plus ${remoteManifestKey}`);
+
+function filterEntriesByScope(entries, scope) {
+  switch (scope) {
+    case "all":
+      return entries;
+    case "shell":
+      return entries.filter((entry) => isShellScopedEntry(entry));
+    default:
+      throw new Error(`R2_UPLOAD_SCOPE must be all or shell, got ${scope}`);
+  }
+}
+
+function isShellScopedEntry(entry) {
+  const key = entry.key;
+  if (key === "CNAME") return true;
+  if (key.startsWith("assets/")) return true;
+  if (key.startsWith("og/") || key === "og-card.png") return true;
+  return entry.contentType === "text/html; charset=utf-8" || key.endsWith(".html");
+}
+
+function writeUploadManifest(localManifest, currentRemoteManifest, entries) {
+  if (!partialUpload) return { path: manifestPath };
+
+  const merged = new Map((currentRemoteManifest?.entries || []).map((entry) => [entry.key, entry]));
+  for (const entry of entries) merged.set(entry.key, entry);
+  merged.set(remoteManifestKey, {
+    cacheControl: "private, max-age=0, no-store",
+    contentType: "application/json; charset=utf-8",
+    key: remoteManifestKey,
+    sourceKey: remoteManifestKey,
+  });
+  const mergedEntries = Array.from(merged.values())
+    .filter((entry) => entry.key !== remoteManifestKey)
+    .sort((a, b) => a.key.localeCompare(b.key));
+  const mergedManifest = {
+    ...localManifest,
+    generatedAt: currentRemoteManifest?.generatedAt ?? localManifest.generatedAt,
+    entries: mergedEntries,
+    objectCount: mergedEntries.length,
+  };
+  const outputPath = path.join(root, "dist", `docs-r2-manifest.${uploadScope}.merged.json`);
+  fs.writeFileSync(outputPath, `${JSON.stringify(mergedManifest, null, 2)}\n`, "utf8");
+  return { path: outputPath };
+}
 
 async function getRemoteManifest() {
   if (remoteManifestPath) {

@@ -30,6 +30,11 @@ const renderedPageOgCards = new Set();
 const rsvgAvailable = checkRsvg();
 const chatApiUrl = process.env.DOCS_SITE_CHAT_API_URL ?? "/ask-molty/api/chat";
 const shellAssetVersion = process.env.DOCS_SITE_SHELL_ASSET_VERSION ?? "9e2fc4e1b67b";
+const artifactMode = process.env.DOCS_SITE_ARTIFACT_MODE ?? "full";
+const shellOnly = artifactMode === "shell";
+if (!["full", "shell"].includes(artifactMode)) {
+  throw new Error(`DOCS_SITE_ARTIFACT_MODE must be full or shell, got ${artifactMode}`);
+}
 fs.rmSync(outDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
 fs.mkdirSync(outDir, { recursive: true });
 
@@ -65,12 +70,14 @@ const localePickerLabels = {
 copyPublicFiles();
 await renderPageOgCards();
 for (const page of pages) writePage(page);
-writeLlmsIndex();
-writeRobotsTxt();
-writeSitemap();
+if (!shellOnly) {
+  writeLlmsIndex();
+  writeRobotsTxt();
+  writeSitemap();
+}
 writeRedirects();
 writeStaticAssets();
-console.log(`built ${pages.length} pages in ${path.relative(root, outDir)}`);
+console.log(`built ${pages.length} pages in ${path.relative(root, outDir)} (${artifactMode})`);
 
 function buildLocales(docsConfig) {
   const ordered = [];
@@ -203,6 +210,7 @@ function writePage(page) {
   const outPath = path.join(outDir, pageRoute(page).replace(/^\//, ""), "index.html");
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
   fs.writeFileSync(outPath, layout({ page, nav, activeTab, html, toc, prev, next }), "utf8");
+  if (shellOnly) return;
   const mdPath = path.join(outDir, pageMarkdownRoute(page).replace(/^\//, ""));
   fs.mkdirSync(path.dirname(mdPath), { recursive: true });
   fs.writeFileSync(mdPath, page.raw, "utf8");
