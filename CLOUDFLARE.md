@@ -31,7 +31,7 @@ Production is cut over to R2-backed storage with a small Worker router in front:
 
 - Worker: `openclaw-docs-router`
 - Route: `documentation.openclaw.ai/*`
-- Router storage: signed R2 S3 reads from bucket `openclaw-docs`
+- Router storage: native `DOCS_BUCKET` R2 binding to bucket `openclaw-docs`
 - Header: `X-OpenClaw-Docs-Origin: cloudflare-r2`
 - Cache-Control follows the same policy as the R2 manifest.
 
@@ -65,12 +65,12 @@ Required Cloudflare API token scopes for bucket/domain/DNS setup:
 
 R2 must be enabled for the account before bucket creation works.
 
-Required R2 S3 upload credentials:
+Required R2 upload credentials:
 
 - `CLOUDFLARE_ACCOUNT_ID`
 - `CLOUDFLARE_API_TOKEN`
 
-The Worker router uses the same private account id value through the `OPENCLAW_R2_ACCOUNT_ID` Worker secret. The Pages workflow derives the R2 S3 keypair from `CLOUDFLARE_API_TOKEN` and writes those values to Worker secrets during rotation deploys. Do not commit the account id or credentials to this repository.
+The Worker router reads through the `DOCS_BUCKET` R2 binding declared in `wrangler.toml`; it does not need R2 S3 secrets. Do not commit the account id or credentials to this repository.
 
 For Cloudflare R2 API tokens, the access key id is the account-token id returned by:
 
@@ -79,7 +79,7 @@ curl -H "Authorization: Bearer $OPENCLAW_CLOUDFLARE_API_TOKEN" \
   "https://api.cloudflare.com/client/v4/user/tokens/verify"
 ```
 
-The secret access key is the SHA-256 hex digest of the R2 token value. CI derives both values from `CLOUDFLARE_API_TOKEN` at runtime instead of storing separate derived GitHub secrets.
+The secret access key is the SHA-256 hex digest of the R2 token value. CI derives both values from `CLOUDFLARE_API_TOKEN` at runtime when that token verifies, and falls back to `OPENCLAW_R2_ACCESS_KEY_ID` / `OPENCLAW_R2_SECRET_ACCESS_KEY` if those upload credentials are rotated directly.
 
 ## Deploy Flow
 
@@ -95,8 +95,7 @@ Production router deploy:
 1. `.github/workflows/pages.yml`
 2. Pushes validate the Worker bundle with `wrangler deploy --dry-run`.
 3. Manual dispatch with `deploy_worker=true` runs `npx wrangler@4.88.0 deploy --config wrangler.toml`.
-4. Manual dispatch with `sync_secrets=true` refreshes Worker R2 secrets before deploying.
-5. `docs-live-smoke.yml`
+4. `docs-live-smoke.yml`
 
 Local R2 build:
 
@@ -127,7 +126,7 @@ The generated R2 manifest uploads both canonical files and slashless aliases:
 - `/concepts/models.md` serves markdown from object key `concepts/models.md`.
 - `/docs/platforms/digitalocean` serves the compatibility redirect HTML.
 
-The Worker router preserves `Accept: text/markdown` negotiation and root `/` behavior while reading objects from R2 with signed S3 requests. Pure R2 custom-domain serving still needs Cloudflare URL rewrite/redirect rules.
+The Worker router preserves `Accept: text/markdown` negotiation and root `/` behavior while reading objects from R2 through the bucket binding. Pure R2 custom-domain serving still needs Cloudflare URL rewrite/redirect rules.
 
 ## Cache Policy
 
@@ -174,7 +173,7 @@ After router deploy, verify repeated requests show `X-OpenClaw-Docs-Cache: MISS`
    ```
 
 4. Run the manual `R2 Pages` workflow, or run the local upload command above.
-5. Deploy `openclaw-docs-router` from the manual Pages workflow. Use `sync_secrets=true` only when rotating the Worker R2 secrets; normal router deploys reuse the existing Worker secrets.
+5. Deploy `openclaw-docs-router` from the manual Pages workflow.
 6. Live-test the URLs below.
 
 Pure R2 follow-up, blocked on `Zone: Rulesets: Edit`:

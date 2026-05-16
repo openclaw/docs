@@ -10,8 +10,6 @@ on:
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/r2-pages.yml"
-      - "README.md"
-      - "CLOUDFLARE.md"
   workflow_dispatch:
     inputs:
       artifact_scope:
@@ -80,7 +78,10 @@ jobs:
               git fetch --quiet --no-tags --depth=1 origin "${BEFORE_SHA}" || true
               changed="$(git diff --name-only "${BEFORE_SHA}" "${AFTER_SHA}" || git diff-tree --no-commit-id --name-only -r "${AFTER_SHA}")"
               printf '%s\n' "${changed}" | sed '/^$/d' > /tmp/openclaw-docs-changed.txt
-              if ! grep -Eq '^(docs/|\.openclaw-sync/source\.json)' /tmp/openclaw-docs-changed.txt \
+              if ! grep -Eq '^(docs/|\.openclaw-sync/source\.json|scripts/docs-site/|Makefile|package\.json|package-lock\.json)$|^(scripts/docs-site/)' /tmp/openclaw-docs-changed.txt \
+                && ! grep -Ev '^(\.github/workflows/(pages|r2-pages)\.yml|workers/.*|wrangler\.toml|README\.md|CLOUDFLARE\.md)$' /tmp/openclaw-docs-changed.txt >/tmp/openclaw-docs-artifact.txt; then
+                scope="none"
+              elif ! grep -Eq '^(docs/|\.openclaw-sync/source\.json)' /tmp/openclaw-docs-changed.txt \
                 && grep -Eq '^(Makefile|package\.json|package-lock\.json|scripts/docs-site/|\.github/workflows/r2-pages\.yml|README\.md|CLOUDFLARE\.md)$|^(scripts/docs-site/)' /tmp/openclaw-docs-changed.txt; then
                 if ! grep -Ev '^(Makefile|package\.json|package-lock\.json|scripts/docs-site/|\.github/workflows/r2-pages\.yml|README\.md|CLOUDFLARE\.md)' /tmp/openclaw-docs-changed.txt >/tmp/openclaw-docs-nonshell.txt; then
                   scope="shell"
@@ -115,18 +116,22 @@ jobs:
           fetch-depth: 1
 
       - name: Set up Node
+        if: steps.artifact-scope.outputs.scope != 'none'
         uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
 
       - name: Install
+        if: steps.artifact-scope.outputs.scope != 'none'
         run: npm ci
 
       - name: Install librsvg2-bin
+        if: steps.artifact-scope.outputs.scope != 'none'
         run: sudo apt-get update && sudo apt-get install -y librsvg2-bin
 
       - name: Build R2 artifact
+        if: steps.artifact-scope.outputs.scope != 'none'
         env:
           DOCS_SOURCE_REPO_DIR: source
           DOCS_SOURCE_REPO_URL: https://github.com/${{ steps.source-meta.outputs.repository }}
@@ -139,6 +144,7 @@ jobs:
           fi
 
       - name: Smoke generated site
+        if: steps.artifact-scope.outputs.scope != 'none'
         run: |
           if [ "${{ steps.artifact-scope.outputs.scope }}" = "shell" ]; then
             npm run docs:smoke:shell
@@ -147,6 +153,7 @@ jobs:
           fi
 
       - name: Check current docs main
+        if: steps.artifact-scope.outputs.scope != 'none'
         id: current-main
         run: |
           set -euo pipefail
@@ -159,15 +166,17 @@ jobs:
             echo "stale=false" >> "${GITHUB_OUTPUT}"
           fi
 
-      - name: Derive R2 credentials
-        if: steps.current-main.outputs.stale != 'true'
+      - name: Resolve R2 credentials
+        if: steps.artifact-scope.outputs.scope != 'none' && steps.current-main.outputs.stale != 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          STORED_R2_ACCESS_KEY_ID: ${{ secrets.OPENCLAW_R2_ACCESS_KEY_ID }}
+          STORED_R2_SECRET_ACCESS_KEY: ${{ secrets.OPENCLAW_R2_SECRET_ACCESS_KEY }}
         run: |
           set -euo pipefail
-          : "${CLOUDFLARE_API_TOKEN:?CLOUDFLARE_API_TOKEN is required}"
-          verify_response="$(curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "https://api.cloudflare.com/client/v4/user/tokens/verify")"
-          VERIFY_RESPONSE="${verify_response}" node - <<'NODE'
+          if [ -n "${CLOUDFLARE_API_TOKEN:-}" ] \
+            && verify_response="$(curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "https://api.cloudflare.com/client/v4/user/tokens/verify")"; then
+            VERIFY_RESPONSE="${verify_response}" node - <<'NODE'
           const crypto = require("node:crypto");
           const fs = require("node:fs");
 
@@ -183,10 +192,29 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_ENV, `OPENCLAW_R2_ACCESS_KEY_ID=${accessKeyId}\n`);
           fs.appendFileSync(process.env.GITHUB_ENV, `OPENCLAW_R2_SECRET_ACCESS_KEY=${secretAccessKey}\n`);
           NODE
+            exit 0
+          fi
+
+          if [ -n "${CLOUDFLARE_API_TOKEN:-}" ]; then
+            echo "::warning::CLOUDFLARE_API_TOKEN could not be verified; falling back to OPENCLAW_R2_* secrets if present."
+          fi
+
+          if [ -n "${STORED_R2_ACCESS_KEY_ID:-}" ] && [ -n "${STORED_R2_SECRET_ACCESS_KEY:-}" ]; then
+            printf '::add-mask::%s\n' "${STORED_R2_ACCESS_KEY_ID}"
+            printf '::add-mask::%s\n' "${STORED_R2_SECRET_ACCESS_KEY}"
+            {
+              printf 'OPENCLAW_R2_ACCESS_KEY_ID=%s\n' "${STORED_R2_ACCESS_KEY_ID}"
+              printf 'OPENCLAW_R2_SECRET_ACCESS_KEY=%s\n' "${STORED_R2_SECRET_ACCESS_KEY}"
+            } >> "${GITHUB_ENV}"
+            exit 0
+          fi
+
+          echo "CLOUDFLARE_API_TOKEN or OPENCLAW_R2_* upload credentials are required" >&2
+          exit 1
 
       - name: Upload changed R2 objects
         id: upload-r2
-        if: steps.current-main.outputs.stale != 'true'
+        if: steps.artifact-scope.outputs.scope != 'none' && steps.current-main.outputs.stale != 'true'
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_R2_BUCKET: openclaw-docs
@@ -199,7 +227,7 @@ jobs:
         run: npm run docs:r2:upload
 
       - name: Dispatch live smoke
-        if: steps.current-main.outputs.stale != 'true' && (steps.upload-r2.outputs.changed != '0' || steps.upload-r2.outputs.deleted != '0')
+        if: steps.artifact-scope.outputs.scope != 'none' && steps.current-main.outputs.stale != 'true' && (steps.upload-r2.outputs.changed != '0' || steps.upload-r2.outputs.deleted != '0')
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run docs-live-smoke.yml --ref main

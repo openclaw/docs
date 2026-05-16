@@ -16,11 +16,6 @@ on:
         required: false
         type: boolean
         default: true
-      sync_secrets:
-        description: "Refresh Worker R2 secrets before deploying."
-        required: false
-        type: boolean
-        default: false
 
 permissions:
   actions: write
@@ -53,44 +48,6 @@ jobs:
 
       - name: Validate Worker bundle
         run: npx wrangler@4.88.0 deploy --dry-run --config wrangler.toml
-
-      - name: Derive R2 credentials
-        if: github.event_name == 'workflow_dispatch' && inputs.sync_secrets == true
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: |
-          set -euo pipefail
-          : "${CLOUDFLARE_API_TOKEN:?CLOUDFLARE_API_TOKEN is required}"
-          verify_response="$(curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "https://api.cloudflare.com/client/v4/user/tokens/verify")"
-          VERIFY_RESPONSE="${verify_response}" node - <<'NODE'
-          const crypto = require("node:crypto");
-          const fs = require("node:fs");
-
-          const token = process.env.CLOUDFLARE_API_TOKEN;
-          const response = JSON.parse(process.env.VERIFY_RESPONSE || "{}");
-          const accessKeyId = response?.result?.id;
-          if (!response?.success || !accessKeyId) {
-            throw new Error("Cloudflare token verify response did not include a token id");
-          }
-          const secretAccessKey = crypto.createHash("sha256").update(token).digest("hex");
-          console.log(`::add-mask::${accessKeyId}`);
-          console.log(`::add-mask::${secretAccessKey}`);
-          fs.appendFileSync(process.env.GITHUB_ENV, `OPENCLAW_R2_ACCESS_KEY_ID=${accessKeyId}\n`);
-          fs.appendFileSync(process.env.GITHUB_ENV, `OPENCLAW_R2_SECRET_ACCESS_KEY=${secretAccessKey}\n`);
-          NODE
-
-      - name: Sync R2 router secrets
-        if: github.event_name == 'workflow_dispatch' && inputs.sync_secrets == true
-        env:
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: |
-          : "${CLOUDFLARE_ACCOUNT_ID:?CLOUDFLARE_ACCOUNT_ID is required}"
-          : "${OPENCLAW_R2_ACCESS_KEY_ID:?OPENCLAW_R2_ACCESS_KEY_ID is required}"
-          : "${OPENCLAW_R2_SECRET_ACCESS_KEY:?OPENCLAW_R2_SECRET_ACCESS_KEY is required}"
-          printf '%s' "${CLOUDFLARE_ACCOUNT_ID}" | npx wrangler@4.88.0 secret put OPENCLAW_R2_ACCOUNT_ID --config wrangler.toml
-          printf '%s' "${OPENCLAW_R2_ACCESS_KEY_ID}" | npx wrangler@4.88.0 secret put OPENCLAW_R2_ACCESS_KEY_ID --config wrangler.toml
-          printf '%s' "${OPENCLAW_R2_SECRET_ACCESS_KEY}" | npx wrangler@4.88.0 secret put OPENCLAW_R2_SECRET_ACCESS_KEY --config wrangler.toml
 
       - name: Deploy to Cloudflare
         if: github.event_name == 'workflow_dispatch' && inputs.deploy_worker == true
