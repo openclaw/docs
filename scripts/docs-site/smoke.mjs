@@ -175,8 +175,11 @@ if (/data-locale/.test(siteJs)) {
 if (!/function initChat/.test(siteJs) || !/data-chat-form/.test(siteJs)) {
   throw new Error("assets: docs chat behavior is missing");
 }
-if (!/function runSearch/.test(siteJs) || !/setTimeout\(\(\)=>runSearch\(q,id\),140\)/.test(siteJs)) {
+if (!/function runSearch/.test(siteJs) || !/setTimeout\(\(\)=>runSearch\(expandSearchQuery\(q\),id\),140\)/.test(siteJs)) {
   throw new Error("assets: search input is not debounced");
+}
+if (!/const searchAliases=/.test(siteJs) || !/data-search-suggestion/.test(index)) {
+  throw new Error("assets: search aliases and suggestions are missing");
 }
 const platformsIndex = fs.readFileSync(path.join(site, "platforms/index.html"), "utf8");
 if (/VPS &amp;amp; hosting/.test(platformsIndex)) {
@@ -218,12 +221,28 @@ for (const marker of [
   'class="oc-frame"',
   'class="oc-tooltip"',
   'class="oc-param-default"',
+  'class="oc-badge oc-badge-orange"',
+  'class="oc-panel"',
+  'class="oc-prompt"',
+  'class="oc-tile-group"',
+  'class="oc-tile"',
+  'class="oc-mermaid"',
+  'data-code-copy',
+  'class="code-line is-highlighted"',
+  'data-prompt-copy',
+  'Shared snippet',
   '<kbd>',
 ]) {
   if (!elementsIndex.includes(marker)) throw new Error(`__elements: missing fixture marker ${marker}`);
 }
-if (!/function initCodeGroups/.test(siteJs) || !/className="oc-code-tab"/.test(siteJs)) {
+if (!/class="breadcrumbs"/.test(index) || !/data-copy-page/.test(index) || !/class="page-feedback"/.test(index)) {
+  throw new Error("index: page reader affordances are missing");
+}
+if (!/function initCodeGroups/.test(siteJs) || !/className="oc-code-tab"/.test(siteJs) || !/preferredCodeTab/.test(siteJs)) {
   throw new Error("assets: code group tabs are missing");
+}
+if (!/function handleDocsControlClick/.test(siteJs) || !/async function copyText/.test(siteJs)) {
+  throw new Error("assets: copy and feedback controls are missing");
 }
 if (!/<meta name="robots" content="noindex,nofollow">/.test(elementsIndex)) {
   throw new Error("__elements: hidden component fixture should be noindex");

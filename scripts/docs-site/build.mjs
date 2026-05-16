@@ -181,7 +181,7 @@ function writePage(page) {
   const activeTab = activeTabTitle(nav, page.slug);
   const prev = activeIndex > 0 ? flat[activeIndex - 1] : null;
   const next = activeIndex >= 0 && activeIndex < flat.length - 1 ? flat[activeIndex + 1] : null;
-  const html = rewriteInternalUrls(renderMdxish(page.body, md), page.locale);
+  const html = rewriteInternalUrls(renderMdxish(expandSnippets(page.body, page.file), md), page.locale);
   const toc = tableOfContents(html);
   const outPath = path.join(outDir, pageRoute(page).replace(/^\//, ""), "index.html");
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
@@ -238,10 +238,13 @@ ${sidebar(page, nav, activeTab)}
 <main class="main" id="main">
 <article class="article">
 <header class="article-header">
+${breadcrumbs(page, nav)}
 <p class="article-kicker">${escapeHtml(groupForPage(nav, page.slug) ?? activeTab)}</p>
 <h1>${escapeHtml(page.title)}</h1>
+${page.hidden ? "" : pageTools(page)}
 </header>
 <div class="doc"${page.hidden ? ' data-pagefind-ignore' : ' data-pagefind-body'}>${html}</div>
+${page.hidden ? "" : pageFeedback()}
 ${pager(prev, next)}
 </article>
 ${tocHtml(toc)}
@@ -305,6 +308,25 @@ function topLink(label, href, iconName) {
   return `<a href="${escapeAttr(href)}">${icon(iconName)}<span>${escapeHtml(label)}</span></a>`;
 }
 
+function breadcrumbs(page, nav) {
+  if (page.hidden) return "";
+  const activeTab = activeTabTitle(nav, page.slug);
+  const group = groupForPage(nav, page.slug);
+  const parts = [activeTab, group, page.title].filter(Boolean);
+  return parts.length > 1
+    ? `<nav class="breadcrumbs" aria-label="Breadcrumb">${parts.map((part, index) => {
+      const last = index === parts.length - 1;
+      return last ? `<span aria-current="page">${escapeHtml(part)}</span>` : `<span>${escapeHtml(part)}</span>`;
+    }).join("<span aria-hidden=\"true\">/</span>")}</nav>`
+    : "";
+}
+
+function pageTools(page) {
+  const canonicalUrl = `${docsOrigin()}${pageRoute(page)}`;
+  const editUrl = `https://github.com/openclaw/openclaw/edit/main/docs/${page.rel}`;
+  return `<div class="page-tools" data-page-tools data-page-url="${escapeAttr(canonicalUrl)}"><button type="button" data-copy-page>Copy page</button><a href="${escapeAttr(editUrl)}">Edit source</a></div>`;
+}
+
 function icon(name) {
   const attrs = `class="icon icon-${escapeAttr(name)}" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false"`;
   if (name === "github") return `<svg ${attrs} fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.42-4.04-1.42-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.08 1.84 2.82 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.66-.3-5.46-1.33-5.46-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.8 5.62-5.47 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.69.83.57A12 12 0 0 0 12 .5Z"/></svg>`;
@@ -346,8 +368,12 @@ function pager(prev, next) {
   return `<nav class="page-nav">${prev ? `<a href="${pageUrl(prev)}"><small>Previous</small>${escapeHtml(prev.title)}</a>` : "<span></span>"}${next ? `<a class="next" href="${pageUrl(next)}"><small>Next</small>${escapeHtml(next.title)}</a>` : ""}</nav>`;
 }
 
+function pageFeedback() {
+  return `<section class="page-feedback" aria-label="Page feedback"><span>Was this useful?</span><button type="button" data-feedback-value="yes">Yes</button><button type="button" data-feedback-value="no">No</button><output data-feedback-result></output></section>`;
+}
+
 function searchModal() {
-  return `<div class="search-modal"><div class="search-panel"><div class="search-head"><input data-search-input placeholder="Search docs"><button data-search-close>Close</button></div><div class="search-results" data-search-results></div></div></div>`;
+  return `<div class="search-modal"><div class="search-panel"><div class="search-head"><input data-search-input placeholder="Search commands, channels, config..."><button data-search-close>Close</button></div><div class="search-hints" aria-label="Search shortcuts"><button type="button" data-search-suggestion="install">install</button><button type="button" data-search-suggestion="telegram">telegram</button><button type="button" data-search-suggestion="gateway">gateway</button><button type="button" data-search-suggestion="plugins">plugins</button></div><div class="search-results" data-search-results></div></div></div>`;
 }
 
 function writeLlmsIndex() {
@@ -494,6 +520,25 @@ function componentLabel(name, attrs) {
   const parsed = Object.fromEntries([...String(attrs).matchAll(/([A-Za-z0-9_-]+)=(?:"([^"]*)"|'([^']*)')/g)].map((match) => [match[1], match[2] ?? match[3] ?? ""]));
   const label = parsed.title ?? parsed.name ?? parsed.href ?? "";
   return label ? `\n${label}\n` : `\n${name}\n`;
+}
+
+function expandSnippets(input, sourceFile, seen = new Set()) {
+  return input.replace(/<Snippet\b([^>]*)\/>/g, (_, rawAttrs) => {
+    const attrs = parseSimpleAttrs(rawAttrs);
+    const ref = attrs.file ?? attrs.src;
+    if (!ref) return "";
+    const target = path.resolve(path.dirname(sourceFile), ref);
+    if (!target.startsWith(root) || seen.has(target) || !fs.existsSync(target)) return "";
+    const nextSeen = new Set(seen);
+    nextSeen.add(target);
+    const parsed = matter(fs.readFileSync(target, "utf8"));
+    return `\n${expandSnippets(parsed.content, target, nextSeen).trim()}\n`;
+  });
+}
+
+function parseSimpleAttrs(rawAttrs) {
+  return Object.fromEntries([...String(rawAttrs).matchAll(/([A-Za-z0-9_-]+)=(?:"([^"]*)"|'([^']*)'|\{([^}]*)\}|([^\s>]+))/g)]
+    .map((match) => [match[1], match[2] ?? match[3] ?? match[4] ?? match[5] ?? ""]));
 }
 
 async function renderPageOgCards() {

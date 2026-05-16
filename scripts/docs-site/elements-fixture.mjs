@@ -11,6 +11,8 @@ This hidden page exercises the docs shell renderer. It is not linked from naviga
 
 OpenClaw docs use compact developer prose with **strong emphasis**, [inline links](/start/getting-started), inline code such as \`openclaw onboard\`, and <Tooltip tip="JSON5 supports comments and trailing commas">**tooltip text**</Tooltip>.
 
+Feature labels stay inline: <Badge color="orange">Beta</Badge> <Badge color="green">Stable</Badge>
+
 > Blockquotes should stay quiet and readable without becoming callout boxes.
 
 ### Heading level three
@@ -56,9 +58,17 @@ Use check callouts to confirm a successful state after setup.
 Use say callouts for exact text a reader can send to an agent or channel.
 </Say>
 
+<Banner>
+Use banners for short page-level state such as beta guidance, migration notices, or temporary service notes.
+</Banner>
+
+<Update>
+Use updates for recent behavior changes that matter to returning readers.
+</Update>
+
 ## Code
 
-\`\`\`ts scripts/docs-site/example.ts
+\`\`\`ts scripts/docs-site/example.ts lines {2} focus=2-3
 export function startGateway() {
   return "openclaw gateway restart";
 }
@@ -84,6 +94,10 @@ curl -fsSL https://documentation.openclaw.ai/llms.txt
 \`\`\`
 
 </CodeGroup>
+
+<Prompt title="Agent prompt">
+Summarize the active OpenClaw Gateway health and include the exact command that proves it.
+</Prompt>
 
 ## Cards
 
@@ -118,6 +132,23 @@ curl -fsSL https://documentation.openclaw.ai/llms.txt
     Keep adjacent cards aligned when content lengths differ.
   </Card>
 </Columns>
+
+## Tiles and panels
+
+<Snippet file="./snippet-fixture.md" />
+
+<TileGroup>
+  <Tile title="Release notes" href="/releases" icon="book">
+    Compact routing links should work without becoming another full card grid.
+  </Tile>
+  <Tile title="Gateway ops" href="/gateway" icon="terminal">
+    Tiles are useful for dense secondary navigation.
+  </Tile>
+</TileGroup>
+
+<Panel title="Reusable guidance">
+Panels hold short reusable docs fragments without looking like alerts.
+</Panel>
 
 ## Steps
 
@@ -158,6 +189,9 @@ curl -fsSL https://documentation.openclaw.ai/llms.txt
   <Accordion title="What should be visible?">
     Accordion summaries should be scannable, and their body text should not look like nested cards.
   </Accordion>
+  <Expandable title="What can be expanded?">
+    Expandables use the same quiet disclosure treatment as accordions.
+  </Expandable>
   <Accordion title="What should stay quiet?">
     Long reference details should remain readable without stealing attention from the surrounding page.
   </Accordion>
@@ -176,6 +210,24 @@ Controls whether group messages need to mention the agent before a reply is cons
 <ParamField path="channels.telegram.accounts" type="record">
 Defines multiple Telegram account profiles for the same Gateway.
 </ParamField>
+
+<Property name="session.status" type="enum" default="idle">
+Property blocks share the parameter renderer for config, response, and schema details.
+</Property>
+
+<ResponseField name="ok" type="boolean" required>
+Response fields use the same dense reference layout.
+</ResponseField>
+
+## Diagram
+
+<Mermaid>
+sequenceDiagram
+  participant User
+  participant Gateway
+  User->>Gateway: openclaw status
+  Gateway-->>User: healthy
+</Mermaid>
 
 ## Frame
 
