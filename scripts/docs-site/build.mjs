@@ -10,6 +10,7 @@ import matter from "gray-matter";
 import { ignoredDocDirs, ignoredDocFiles, localeLabels, mintlifyLocaleToDir, rtlLocales } from "./config.mjs";
 import { siteCss, siteJs } from "./assets.mjs";
 import { createMarkdownRenderer, renderMdxish } from "./mdx-ish.mjs";
+import { elementsFixture } from "./elements-fixture.mjs";
 import { renderPageOgSvg } from "./og-card-template.mjs";
 
 const root = process.cwd();
@@ -33,7 +34,7 @@ fs.rmSync(outDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100
 fs.mkdirSync(outDir, { recursive: true });
 
 const locales = buildLocales(config);
-const pages = collectPages(locales);
+const pages = [...collectPages(locales), elementsFixturePage()];
 const pageByKey = new Map(pages.map((page) => [pageKey(page.locale, page.slug), page]));
 const navByLocale = new Map(locales.map((locale) => [locale.code, buildNav(locale)]));
 const localeFlags = {
@@ -107,11 +108,44 @@ function collectPages(localeList) {
         title,
         summary: parsed.data.summary ?? "",
         readWhen: parsed.data.read_when ?? [],
-        body: parsed.content
+        body: parsed.content,
+        meta: {
+          status: parsed.data.status ?? firstStatusLine(parsed.content),
+          appliesTo: parsed.data.applies_to ?? parsed.data.appliesTo,
+          since: parsed.data.since,
+          updated: parsed.data.updated ?? parsed.data.last_updated,
+          deprecated: parsed.data.deprecated,
+          beta: parsed.data.beta,
+        }
       });
     }
   }
   return result;
+}
+
+function elementsFixturePage() {
+  const parsed = matter(elementsFixture);
+  return {
+    locale: "en",
+    dir: "",
+    slug: "__elements",
+    file: path.join(siteAssetsDir, "elements-fixture.mjs"),
+    rel: "__elements.md",
+    raw: elementsFixture,
+    title: parsed.data.title || "Docs elements",
+    summary: parsed.data.summary ?? "",
+    readWhen: [],
+    body: parsed.content,
+    meta: {
+      status: parsed.data.status,
+      appliesTo: parsed.data.applies_to ?? parsed.data.appliesTo,
+      since: parsed.data.since,
+      updated: parsed.data.updated ?? parsed.data.last_updated,
+      deprecated: parsed.data.deprecated,
+      beta: parsed.data.beta,
+    },
+    hidden: true
+  };
 }
 
 function walkDocs(dir) {
@@ -164,7 +198,7 @@ function writePage(page) {
   const activeTab = activeTabTitle(nav, page.slug);
   const prev = activeIndex > 0 ? flat[activeIndex - 1] : null;
   const next = activeIndex >= 0 && activeIndex < flat.length - 1 ? flat[activeIndex + 1] : null;
-  const html = rewriteInternalUrls(renderMdxish(page.body, md), page.locale);
+  const html = rewriteInternalUrls(renderMdxish(expandSnippets(page.body, page.file), md), page.locale);
   const toc = tableOfContents(html);
   const outPath = path.join(outDir, pageRoute(page).replace(/^\//, ""), "index.html");
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
@@ -193,6 +227,7 @@ function layout({ page, nav, activeTab, html, toc, prev, next }) {
 <meta name="description" content="${escapeAttr(description)}">
 <title>${escapeHtml(title)}</title>
 ${canonicalUrl ? `<link rel="canonical" href="${escapeAttr(canonicalUrl)}">` : ""}
+${page.hidden ? '<meta name="robots" content="noindex,nofollow">' : ""}
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="${escapeAttr(config.name)}">
 <meta property="og:title" content="${escapeAttr(ogTitle)}">
@@ -220,17 +255,21 @@ ${sidebar(page, nav, activeTab)}
 <main class="main" id="main">
 <article class="article">
 <header class="article-header">
+${breadcrumbs(page, nav)}
 <p class="article-kicker">${escapeHtml(groupForPage(nav, page.slug) ?? activeTab)}</p>
 <h1>${escapeHtml(page.title)}</h1>
+${pageStatus(page)}
+${page.hidden ? "" : pageTools(page)}
 </header>
-<div class="doc" data-pagefind-body>${html}</div>
+<div class="doc"${page.hidden ? ' data-pagefind-ignore' : ' data-pagefind-body'}>${html}</div>
+${page.hidden ? "" : pageFeedback()}
 ${pager(prev, next)}
 </article>
 ${tocHtml(toc)}
 </main>
 </div>
 ${searchModal()}
-${chatWidget()}
+${page.hidden ? "" : chatWidget()}
 <script type="module" src="${assetUrl("/assets/docs-site.js")}"></script>
 </body>
 </html>`;
@@ -260,6 +299,7 @@ function siteHeader(page, nav, activeTab) {
 function sidebar(page, nav, activeTab) {
   const groups = (nav.find((tab) => tab.title === activeTab) ?? nav[0])?.groups ?? [];
   return `<aside class="sidebar">
+<button class="sidebar-close" type="button" data-nav-close aria-label="Close menu">Close</button>
 <nav>${groups.map((group) => navGroupHtml(page, group)).join("")}</nav>
 </aside>`;
 }
@@ -285,6 +325,48 @@ function localeDisplayName(code) {
 
 function topLink(label, href, iconName) {
   return `<a href="${escapeAttr(href)}">${icon(iconName)}<span>${escapeHtml(label)}</span></a>`;
+}
+
+function firstStatusLine(content) {
+  const match = String(content).match(/^(?:\*\*)?Status(?:\*\*)?:\s*(.+)$/im);
+  return match?.[1]?.replace(/\s+/g, " ").trim();
+}
+
+function breadcrumbs(page, nav) {
+  if (page.hidden) return "";
+  const activeTab = activeTabTitle(nav, page.slug);
+  const group = groupForPage(nav, page.slug);
+  const parts = [activeTab, group, page.title].filter(Boolean);
+  return parts.length > 1
+    ? `<nav class="breadcrumbs" aria-label="Breadcrumb">${parts.map((part, index) => {
+      const last = index === parts.length - 1;
+      return last ? `<span aria-current="page">${escapeHtml(part)}</span>` : `<span>${escapeHtml(part)}</span>`;
+    }).join("<span aria-hidden=\"true\">/</span>")}</nav>`
+    : "";
+}
+
+function pageTools(page) {
+  const canonicalUrl = `${docsOrigin()}${pageRoute(page)}`;
+  const editUrl = `https://github.com/openclaw/openclaw/edit/main/docs/${page.rel}`;
+  return `<div class="page-tools" data-page-tools data-page-url="${escapeAttr(canonicalUrl)}"><button type="button" data-copy-page>Copy page</button><a href="${escapeAttr(editUrl)}">Edit source</a></div>`;
+}
+
+function pageStatus(page) {
+  const meta = page.meta ?? {};
+  const badges = [];
+  if (truthy(meta.beta)) badges.push(["Beta", "beta"]);
+  if (truthy(meta.deprecated)) badges.push(["Deprecated", "deprecated"]);
+  if (meta.status) badges.push([`Status: ${meta.status}`, "status"]);
+  if (meta.appliesTo) badges.push([`Applies to: ${meta.appliesTo}`, "applies"]);
+  if (meta.since) badges.push([`Since ${meta.since}`, "since"]);
+  if (meta.updated) badges.push([`Updated ${meta.updated}`, "updated"]);
+  return badges.length
+    ? `<div class="page-status">${badges.map(([label, kind]) => `<span class="page-status-badge page-status-${kind}">${escapeHtml(label)}</span>`).join("")}</div>`
+    : "";
+}
+
+function truthy(value) {
+  return value === true || value === "true" || value === "yes" || value === 1 || value === "1";
 }
 
 function icon(name) {
@@ -328,8 +410,12 @@ function pager(prev, next) {
   return `<nav class="page-nav">${prev ? `<a href="${pageUrl(prev)}"><small>Previous</small>${escapeHtml(prev.title)}</a>` : "<span></span>"}${next ? `<a class="next" href="${pageUrl(next)}"><small>Next</small>${escapeHtml(next.title)}</a>` : ""}</nav>`;
 }
 
+function pageFeedback() {
+  return `<section class="page-feedback" aria-label="Page feedback"><span>Was this useful?</span><button type="button" data-feedback-value="yes">Yes</button><button type="button" data-feedback-value="no">No</button><output data-feedback-result></output></section>`;
+}
+
 function searchModal() {
-  return `<div class="search-modal"><div class="search-panel"><div class="search-head"><input data-search-input placeholder="Search docs"><button data-search-close>Close</button></div><div class="search-results" data-search-results></div></div></div>`;
+  return `<div class="search-modal"><div class="search-panel"><div class="search-head"><input data-search-input placeholder="Search commands, channels, config..."><button data-search-close>Close</button></div><div class="search-hints" aria-label="Search shortcuts"><button type="button" data-search-suggestion="install">install</button><button type="button" data-search-suggestion="telegram">telegram</button><button type="button" data-search-suggestion="gateway">gateway</button><button type="button" data-search-suggestion="plugins">plugins</button></div><div class="search-results" data-search-results></div></div></div>`;
 }
 
 function writeLlmsIndex() {
@@ -386,12 +472,14 @@ function writeRobotsTxt() {
     "",
     "User-agent: *",
     "Allow: /",
+    "Disallow: /__elements",
     "Disallow: /ask-molty/api/",
     "",
   ];
   for (const agent of botAgents) {
     lines.push(`User-agent: ${agent}`);
     lines.push("Allow: /");
+    lines.push("Disallow: /__elements");
     lines.push("Disallow: /ask-molty/api/");
     lines.push("");
   }
@@ -404,7 +492,7 @@ function writeRobotsTxt() {
 
 function writeSitemap() {
   const origin = docsOrigin();
-  const urls = [...new Set(pages.map((page) => `${origin}${pageRoute(page)}`))]
+  const urls = [...new Set(pages.filter((page) => !page.hidden).map((page) => `${origin}${pageRoute(page)}`))]
     .sort((a, b) => a.localeCompare(b));
   const xml = [
     '<?xml version="1.0" encoding="UTF-8"?>',
@@ -418,7 +506,7 @@ function writeSitemap() {
 
 function englishDocsPages() {
   return pages
-    .filter((page) => page.locale === "en" && !localeLabels[page.rel.split("/")[0]])
+    .filter((page) => !page.hidden && page.locale === "en" && !localeLabels[page.rel.split("/")[0]])
     .sort((a, b) => a.slug.localeCompare(b.slug));
 }
 
@@ -476,6 +564,25 @@ function componentLabel(name, attrs) {
   const parsed = Object.fromEntries([...String(attrs).matchAll(/([A-Za-z0-9_-]+)=(?:"([^"]*)"|'([^']*)')/g)].map((match) => [match[1], match[2] ?? match[3] ?? ""]));
   const label = parsed.title ?? parsed.name ?? parsed.href ?? "";
   return label ? `\n${label}\n` : `\n${name}\n`;
+}
+
+function expandSnippets(input, sourceFile, seen = new Set()) {
+  return input.replace(/<Snippet\b([^>]*)\/>/g, (_, rawAttrs) => {
+    const attrs = parseSimpleAttrs(rawAttrs);
+    const ref = attrs.file ?? attrs.src;
+    if (!ref) return "";
+    const target = path.resolve(path.dirname(sourceFile), ref);
+    if (!target.startsWith(root) || seen.has(target) || !fs.existsSync(target)) return "";
+    const nextSeen = new Set(seen);
+    nextSeen.add(target);
+    const parsed = matter(fs.readFileSync(target, "utf8"));
+    return `\n${expandSnippets(parsed.content, target, nextSeen).trim()}\n`;
+  });
+}
+
+function parseSimpleAttrs(rawAttrs) {
+  return Object.fromEntries([...String(rawAttrs).matchAll(/([A-Za-z0-9_-]+)=(?:"([^"]*)"|'([^']*)'|\{([^}]*)\}|([^\s>]+))/g)]
+    .map((match) => [match[1], match[2] ?? match[3] ?? match[4] ?? match[5] ?? ""]));
 }
 
 async function renderPageOgCards() {
@@ -544,6 +651,14 @@ function writeStaticAssets() {
   fs.mkdirSync(assetsDir, { recursive: true });
   fs.writeFileSync(path.join(assetsDir, "docs-site.css"), siteCss(), "utf8");
   fs.writeFileSync(path.join(assetsDir, "docs-site.js"), siteJs(), "utf8");
+  const mermaidDist = path.join(root, "node_modules", "mermaid", "dist");
+  const mermaidEntry = path.join(mermaidDist, "mermaid.esm.min.mjs");
+  if (fs.existsSync(mermaidEntry)) {
+    fs.copyFileSync(mermaidEntry, path.join(assetsDir, "mermaid.esm.min.mjs"));
+    copyDir(path.join(mermaidDist, "chunks", "mermaid.esm.min"), path.join(assetsDir, "chunks", "mermaid.esm.min"), {
+      filter: (source) => !source.endsWith(".map"),
+    });
+  }
   fs.writeFileSync(path.join(outDir, ".nojekyll"), "", "utf8");
   for (const file of ["og-card.png", "og-card.svg"]) {
     const source = path.join(siteAssetsDir, file);
@@ -563,9 +678,9 @@ function copyPublicFiles() {
   }
 }
 
-function copyDir(source, dest) {
+function copyDir(source, dest, options = {}) {
   if (!fs.existsSync(source)) return;
-  fs.cpSync(source, dest, { recursive: true });
+  fs.cpSync(source, dest, { recursive: true, filter: options.filter });
 }
 
 function activeTabTitle(nav, slug) {

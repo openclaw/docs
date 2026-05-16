@@ -1,15 +1,77 @@
 import MarkdownIt from "markdown-it";
 import anchor from "markdown-it-anchor";
+import hljs from "highlight.js/lib/core";
+import bash from "highlight.js/lib/languages/bash";
+import css from "highlight.js/lib/languages/css";
+import diff from "highlight.js/lib/languages/diff";
+import dockerfile from "highlight.js/lib/languages/dockerfile";
+import go from "highlight.js/lib/languages/go";
+import http from "highlight.js/lib/languages/http";
+import ini from "highlight.js/lib/languages/ini";
+import java from "highlight.js/lib/languages/java";
+import javascript from "highlight.js/lib/languages/javascript";
+import json from "highlight.js/lib/languages/json";
+import markdown from "highlight.js/lib/languages/markdown";
+import powershell from "highlight.js/lib/languages/powershell";
+import python from "highlight.js/lib/languages/python";
+import rust from "highlight.js/lib/languages/rust";
+import shell from "highlight.js/lib/languages/shell";
+import sql from "highlight.js/lib/languages/sql";
+import typescript from "highlight.js/lib/languages/typescript";
+import xml from "highlight.js/lib/languages/xml";
+import yaml from "highlight.js/lib/languages/yaml";
 
 const markerPrefix = "OPENCLAW_DOCS_MARKER";
+const inlineMarkerPrefix = "OPENCLAW_DOCS_INLINE";
+const languages = {
+  bash,
+  css,
+  diff,
+  dockerfile,
+  go,
+  http,
+  ini,
+  java,
+  javascript,
+  json,
+  markdown,
+  powershell,
+  python,
+  rust,
+  shell,
+  sql,
+  typescript,
+  xml,
+  yaml,
+};
+for (const [name, language] of Object.entries(languages)) hljs.registerLanguage(name, language);
+const languageAliases = new Map([
+  ["sh", "bash"],
+  ["zsh", "bash"],
+  ["console", "bash"],
+  ["terminal", "bash"],
+  ["ps1", "powershell"],
+  ["pwsh", "powershell"],
+  ["js", "javascript"],
+  ["jsx", "javascript"],
+  ["mjs", "javascript"],
+  ["cjs", "javascript"],
+  ["ts", "typescript"],
+  ["tsx", "typescript"],
+  ["jsonc", "json"],
+  ["json5", "javascript"],
+  ["yml", "yaml"],
+  ["html", "xml"],
+  ["md", "markdown"],
+  ["text", "plaintext"],
+  ["txt", "plaintext"],
+]);
 const knownBlocks = new Map([
   ["AccordionGroup", ["accordion-group", ""]],
-  ["Columns", ["card-grid", ""]],
-  ["CardGroup", ["card-grid", ""]],
   ["Steps", ["steps", ""]],
   ["Tabs", ["tabs", ""]],
   ["CodeGroup", ["code-group", ""]],
-  ["Frame", ["frame", ""]]
+  ["TileGroup", ["tile-group", ""]]
 ]);
 const callouts = new Map([
   ["Note", "Note"],
@@ -17,27 +79,111 @@ const callouts = new Map([
   ["Tip", "Tip"],
   ["Info", "Info"],
   ["Check", "Check"],
-  ["Say", "Say"]
+  ["Say", "Say"],
+  ["Banner", "Banner"],
+  ["Update", "Update"]
 ]);
 
 export function createMarkdownRenderer() {
-  return new MarkdownIt({
+  const md = new MarkdownIt({
     html: true,
     linkify: true,
     typographer: false,
     highlight: highlightCode
   }).use(anchor);
+  md.renderer.rules.fence = renderFence;
+  return md;
+}
+
+function renderFence(tokens, idx) {
+  const token = tokens[idx];
+  const { lang, label, lines, highlight, focus, wrap, expandable } = parseCodeInfo(token.info);
+  if (lang === "mermaid") return mermaidHtml(token.content);
+  const highlighted = renderCodeLines(token.content, lang, { highlight, focus });
+  const className = lang ? ` class="language-${escapeAttr(lang)}"` : "";
+  const dataLabel = label || lang || "Code";
+  const classes = [
+    "oc-code",
+    lines ? "has-line-numbers" : "",
+    wrap ? "is-wrapped" : "",
+    expandable ? "is-expandable" : "",
+  ].filter(Boolean).join(" ");
+  return `<figure class="${classes}" data-code-label="${escapeAttr(dataLabel)}"><figcaption><span>${escapeHtml(dataLabel)}</span><button type="button" data-code-copy aria-label="Copy code">Copy</button></figcaption><pre><code${className}>${highlighted}</code></pre></figure>`;
+}
+
+function parseCodeInfo(rawInfo = "") {
+  const info = String(rawInfo).trim();
+  const base = { lang: "", label: "", lines: false, highlight: new Set(), focus: new Set(), wrap: false, expandable: false };
+  if (!info) return base;
+  const parts = info.match(/"[^"]*"|'[^']*'|\S+/g) ?? [];
+  base.lang = normalizeLang(parts.shift() ?? "");
+  const labelParts = [];
+  for (const rawPart of parts) {
+    const part = rawPart.replace(/^["']|["']$/g, "");
+    if (["lines", "lineNumbers", "numbers"].includes(part)) {
+      base.lines = true;
+    } else if (part === "wrap") {
+      base.wrap = true;
+    } else if (part === "expand" || part === "expandable") {
+      base.expandable = true;
+    } else if (/^\{[^}]+\}$/.test(part)) {
+      base.highlight = parseLineSet(part.slice(1, -1));
+    } else if (part.startsWith("highlight=")) {
+      base.highlight = parseLineSet(part.slice("highlight=".length));
+    } else if (part.startsWith("focus=")) {
+      base.focus = parseLineSet(part.slice("focus=".length));
+    } else if (part.startsWith("title=") || part.startsWith("filename=") || part.startsWith("label=")) {
+      labelParts.push(part.replace(/^[^=]+=/, ""));
+    } else {
+      labelParts.push(part);
+    }
+  }
+  base.label = labelParts.join(" ").trim();
+  return base;
+}
+
+function parseLineSet(raw) {
+  const set = new Set();
+  for (const piece of String(raw).replace(/[[\]"]/g, "").split(",")) {
+    const trimmed = piece.trim();
+    if (!trimmed) continue;
+    const range = trimmed.match(/^(\d+)-(\d+)$/);
+    if (range) {
+      const start = Number(range[1]);
+      const end = Number(range[2]);
+      for (let i = Math.min(start, end); i <= Math.max(start, end); i++) set.add(i);
+    } else {
+      const line = Number(trimmed);
+      if (Number.isFinite(line) && line > 0) set.add(line);
+    }
+  }
+  return set;
+}
+
+function renderCodeLines(code, lang, options) {
+  const rawLines = String(code).replace(/\n$/, "").split("\n");
+  const focusActive = options.focus.size > 0;
+  return rawLines.map((line, index) => {
+    const number = index + 1;
+    const classes = [
+      "code-line",
+      line.startsWith("+") ? "is-added" : "",
+      line.startsWith("-") ? "is-removed" : "",
+      options.highlight.has(number) ? "is-highlighted" : "",
+      focusActive && !options.focus.has(number) ? "is-dimmed" : "",
+    ].filter(Boolean).join(" ");
+    const content = line ? highlightCode(line, lang) : " ";
+    return `<span class="${classes}" data-line="${number}">${content}</span>`;
+  }).join("");
 }
 
 function highlightCode(code, rawLang = "") {
   const lang = normalizeLang(rawLang);
-  if (isShell(lang, code)) return highlightWith(code, shellToken, shellTokenClass);
-  if (["json", "jsonc"].includes(lang)) return highlightWith(code, jsonToken, jsonTokenClass);
-  if (["js", "javascript", "jsx", "mjs", "cjs", "ts", "typescript", "tsx", "json5"].includes(lang)) {
-    return highlightWith(code, jsToken, jsTokenClass);
+  const language = languageAliases.get(lang) ?? lang;
+  if (!language || language === "plaintext") return escapeHtml(code);
+  if (hljs.getLanguage(language)) {
+    return hljs.highlight(code, { language, ignoreIllegals: true }).value;
   }
-  if (["yaml", "yml"].includes(lang)) return highlightWith(code, yamlToken, yamlTokenClass);
-  if (["toml", "ini", "env"].includes(lang)) return highlightWith(code, configToken, configTokenClass);
   return escapeHtml(code);
 }
 
@@ -45,74 +191,9 @@ function normalizeLang(rawLang) {
   return String(rawLang).trim().split(/\s+/)[0]?.toLowerCase().replace(/^language-/, "") ?? "";
 }
 
-function isShell(lang, code) {
-  return ["bash", "sh", "shell", "zsh", "console", "terminal", "text"].includes(lang)
-    || (!lang && /(^|\n)\s*(?:[$#]\s*)?(?:npm|pnpm|bun|npx|openclaw|git|curl|brew|docker|node)\b/.test(code));
-}
-
-function highlightWith(code, tokenPattern, tokenClass) {
-  let out = "";
-  let last = 0;
-  tokenPattern.lastIndex = 0;
-  for (const match of code.matchAll(tokenPattern)) {
-    out += escapeHtml(code.slice(last, match.index));
-    const className = tokenClass(match[0], match, code);
-    out += className
-      ? `<span class="${className}">${escapeHtml(match[0])}</span>`
-      : escapeHtml(match[0]);
-    last = match.index + match[0].length;
-  }
-  return out + escapeHtml(code.slice(last));
-}
-
-const shellToken = /(?<!\S)#[^\n]*|"(?:\\.|[^"])*"|'(?:\\.|[^'])*'|\$[A-Za-z_][A-Za-z0-9_]*|--?[A-Za-z0-9][A-Za-z0-9_-]*(?:=[^\s]+)?|\b(?:bun|brew|cat|cd|cp|curl|docker|export|git|grep|mkdir|mv|node|npm|npx|openclaw|pnpm|rg|rm|sudo)\b/g;
-const jsonToken = /"(?:\\.|[^"])*"(?=\s*:)|"(?:\\.|[^"])*"|\b(?:true|false|null)\b|-?\b\d+(?:\.\d+)?\b|[{}[\],:]/g;
-const jsToken = /\/\/[^\n]*|\/\*[\s\S]*?\*\/|"(?:\\.|[^"])*"|'(?:\\.|[^'])*'|`(?:\\.|[^`])*`|\b[A-Za-z_$][\w$-]*(?=\s*:)|\b(?:await|break|case|catch|class|const|continue|default|else|export|false|finally|for|from|function|if|import|let|new|null|return|throw|true|try|type|undefined|while)\b|-?\b\d+(?:\.\d+)?\b|[{}[\],:]/g;
-const yamlToken = /#[^\n]*|^\s*[-\w".'/]+\s*:|"(?:\\.|[^"])*"|'(?:\\.|[^'])*'|\b(?:true|false|null)\b|-?\b\d+(?:\.\d+)?\b/gm;
-const configToken = /#[^\n]*|^\s*[-\w".'/]+\s*=|"(?:\\.|[^"])*"|'(?:\\.|[^'])*'|\b(?:true|false|null)\b|-?\b\d+(?:\.\d+)?\b/gm;
-
-function shellTokenClass(token, match, code) {
-  const before = code[match.index - 1] ?? "\n";
-  const after = code[match.index + token.length] ?? "\n";
-  if (token.startsWith("#")) return "tok-comment";
-  if (token.startsWith("\"") || token.startsWith("'")) return "tok-string";
-  if (token.startsWith("$")) return "tok-var";
-  if (token.startsWith("-")) return /\s/.test(before) ? "tok-option" : "";
-  if (!/[\s|&;(]/.test(before) || /[@.:/#-]/.test(after)) return "";
-  return "tok-command";
-}
-
-function jsonTokenClass(token) {
-  if (token.startsWith("\"")) return token.endsWith(":") ? "tok-key" : "tok-string";
-  if (/^(?:true|false|null)$/.test(token)) return "tok-literal";
-  if (/^-?\d/.test(token)) return "tok-number";
-  return "tok-punct";
-}
-
-function jsTokenClass(token, match, code) {
-  if (token.startsWith("//") || token.startsWith("/*")) return "tok-comment";
-  if (/^["'`]/.test(token)) return "tok-string";
-  if (/^(?:true|false|null|undefined)$/.test(token)) return "tok-literal";
-  if (/^[A-Za-z_$][\w$-]*$/.test(token) && /^\s*:/.test(code.slice(match.index + token.length))) return "tok-key";
-  if (/^-?\d/.test(token)) return "tok-number";
-  if (/^[{}[\],:]$/.test(token)) return "tok-punct";
-  return "tok-keyword";
-}
-
-function yamlTokenClass(token) {
-  if (token.trimStart().startsWith("#")) return "tok-comment";
-  if (token.trimEnd().endsWith(":")) return "tok-key";
-  if (/^["']/.test(token.trim())) return "tok-string";
-  if (/^(?:true|false|null)$/.test(token.trim())) return "tok-literal";
-  return "tok-number";
-}
-
-function configTokenClass(token) {
-  if (token.trimStart().startsWith("#")) return "tok-comment";
-  if (token.trimEnd().endsWith("=")) return "tok-key";
-  if (/^["']/.test(token.trim())) return "tok-string";
-  if (/^(?:true|false|null)$/.test(token.trim())) return "tok-literal";
-  return "tok-number";
+function mermaidHtml(source) {
+  const diagram = String(source).trim();
+  return `<figure class="oc-mermaid" data-mermaid="${escapeAttr(diagram)}"><pre><code>${escapeHtml(diagram)}</code></pre></figure>`;
 }
 
 export function renderMdxish(markdown, md) {
@@ -124,10 +205,15 @@ function preprocess(input) {
   let out = input.replace(/\r\n/g, "\n");
   out = out.replace(/^import\s+.+?;?\s*$/gm, "");
   out = out.replace(/<br\s*\/?>/gi, "\n");
+  out = out.replace(/<Mermaid\b[^>]*>([\s\S]*?)<\/Mermaid>/g, (_, body) => `\n${marker("mermaidBlock", body)}\n`);
 
   out = out.replace(/<Card\b([^>]*)\/>/g, (_, attrs) => `${marker("cardSelf", attrs)}\n`);
   out = out.replace(/<Card\b([^>]*)>/g, (_, attrs) => `\n${marker("cardOpen", attrs)}\n`);
   out = out.replace(/<\/Card>/g, `\n${marker("cardClose")}\n`);
+  out = out.replace(/<CardGroup\b([^>]*)>/g, (_, attrs) => `\n${marker("blockOpen", cardGridClass(attrs))}\n`);
+  out = out.replace(/<\/CardGroup>/g, `\n${marker("blockClose", "card-grid")}\n`);
+  out = out.replace(/<Columns\b([^>]*)>/g, (_, attrs) => `\n${marker("blockOpen", cardGridClass(attrs))}\n`);
+  out = out.replace(/<\/Columns>/g, `\n${marker("blockClose", "card-grid")}\n`);
 
   out = out.replace(/<Step\b([^>]*)>/g, (_, attrs) => `\n${marker("stepOpen", attrs)}\n`);
   out = out.replace(/<\/Step>/g, `\n${marker("stepClose")}\n`);
@@ -135,8 +221,26 @@ function preprocess(input) {
   out = out.replace(/<\/Tab>/g, `\n${marker("tabClose")}\n`);
   out = out.replace(/<Accordion\b([^>]*)>/g, (_, attrs) => `\n${marker("accordionOpen", attrs)}\n`);
   out = out.replace(/<\/Accordion>/g, `\n${marker("accordionClose")}\n`);
+  out = out.replace(/<Expandable\b([^>]*)>/g, (_, attrs) => `\n${marker("accordionOpen", attrs)}\n`);
+  out = out.replace(/<\/Expandable>/g, `\n${marker("accordionClose")}\n`);
+  out = out.replace(/<Frame\b([^>]*)>/g, (_, attrs) => `\n${marker("frameOpen", attrs)}\n`);
+  out = out.replace(/<\/Frame>/g, `\n${marker("frameClose")}\n`);
+  out = out.replace(/<Panel\b([^>]*)>/g, (_, attrs) => `\n${marker("panelOpen", attrs)}\n`);
+  out = out.replace(/<\/Panel>/g, `\n${marker("panelClose")}\n`);
+  out = out.replace(/<Prompt\b([^>]*)>/g, (_, attrs) => `\n${marker("promptOpen", attrs)}\n`);
+  out = out.replace(/<\/Prompt>/g, `\n${marker("promptClose")}\n`);
   out = out.replace(/<ParamField\b([^>]*)>/g, (_, attrs) => `\n${marker("paramOpen", attrs)}\n`);
   out = out.replace(/<\/ParamField>/g, `\n${marker("paramClose")}\n`);
+  out = out.replace(/<(?:Field|Property|ResponseField)\b([^>]*)>/g, (_, attrs) => `\n${marker("paramOpen", attrs)}\n`);
+  out = out.replace(/<\/(?:Field|Property|ResponseField)>/g, `\n${marker("paramClose")}\n`);
+  out = out.replace(/<Tile\b([^>]*)\/>/g, (_, attrs) => `${marker("tileSelf", attrs)}\n`);
+  out = out.replace(/<Tile\b([^>]*)>/g, (_, attrs) => `\n${marker("tileOpen", attrs)}\n`);
+  out = out.replace(/<\/Tile>/g, `\n${marker("tileClose")}\n`);
+  out = out.replace(/<Badge\b([^>]*)\/>/g, (_, attrs) => inlineMarker("badgeSelf", attrs));
+  out = out.replace(/<Badge\b([^>]*)>/g, (_, attrs) => inlineMarker("badgeOpen", attrs));
+  out = out.replace(/<\/Badge>/g, inlineMarker("badgeClose"));
+  out = out.replace(/<Tooltip\b([^>]*)>/g, (_, attrs) => inlineMarker("tooltipOpen", attrs));
+  out = out.replace(/<\/Tooltip>/g, inlineMarker("tooltipClose"));
 
   for (const [name, [kind]] of knownBlocks) {
     out = out.replace(new RegExp(`<${name}\\b[^>]*>`, "g"), `\n${marker("blockOpen", kind)}\n`);
@@ -153,11 +257,17 @@ function preprocess(input) {
 }
 
 function postprocess(html) {
-  return html.replace(new RegExp(`<p>${markerPrefix}:([^<]+)</p>`, "g"), (_, payload) => expandMarker(payload));
+  return html
+    .replace(new RegExp(`<p>${markerPrefix}:([^<]+)</p>`, "g"), (_, payload) => expandMarker(payload))
+    .replace(new RegExp(`${inlineMarkerPrefix}:([A-Za-z0-9]+):([A-Za-z0-9_-]*):`, "g"), (_, kind, encoded) => expandInlineMarker(`${kind}:${encoded}`));
 }
 
 function marker(kind, payload = "") {
   return `${markerPrefix}:${kind}:${Buffer.from(payload, "utf8").toString("base64url")}`;
+}
+
+function inlineMarker(kind, payload = "") {
+  return `${inlineMarkerPrefix}:${kind}:${Buffer.from(payload, "utf8").toString("base64url")}:`;
 }
 
 function expandMarker(payload) {
@@ -176,13 +286,56 @@ function expandMarker(payload) {
   if (kind === "tabClose") return "</section>";
   if (kind === "accordionOpen") return `<details class="oc-accordion"><summary>${escapeHtml(parseAttrs(value).title ?? "Details")}</summary>`;
   if (kind === "accordionClose") return "</details>";
+  if (kind === "panelOpen") {
+    const attrs = parseAttrs(value);
+    const title = attrs.title ? `<strong>${escapeHtml(attrs.title)}</strong>` : "";
+    return `<section class="oc-panel">${title}`;
+  }
+  if (kind === "panelClose") return "</section>";
+  if (kind === "promptOpen") {
+    const attrs = parseAttrs(value);
+    const title = attrs.title ?? "Prompt";
+    return `<section class="oc-prompt"><header><strong>${escapeHtml(title)}</strong><button type="button" data-prompt-copy aria-label="Copy prompt">Copy</button></header>`;
+  }
+  if (kind === "promptClose") return "</section>";
+  if (kind === "mermaidBlock") return mermaidHtml(value);
+  if (kind === "frameOpen") {
+    const caption = parseAttrs(value).caption;
+    return `<figure class="oc-frame">${caption ? `<figcaption>${escapeHtml(caption)}</figcaption>` : ""}`;
+  }
+  if (kind === "frameClose") return "</figure>";
   if (kind === "paramOpen") {
     const attrs = parseAttrs(value);
     const required = attrs.required !== undefined ? `<span class="oc-param-required">required</span>` : "";
     const type = attrs.type ? `<span class="oc-param-type">${escapeHtml(attrs.type)}</span>` : "";
-    return `<section class="oc-param"><header><code>${escapeHtml(attrs.path ?? attrs.name ?? "param")}</code>${type}${required}</header>`;
+    const defaultValue = attrs.default ? `<span class="oc-param-default">default: ${escapeHtml(attrs.default)}</span>` : "";
+    return `<section class="oc-param"><header><code>${escapeHtml(attrs.path ?? attrs.name ?? "param")}</code>${type}${defaultValue}${required}</header>`;
   }
   if (kind === "paramClose") return "</section>";
+  if (kind === "tileSelf") return tileHtml(value, true);
+  if (kind === "tileOpen") return tileHtml(value, false);
+  if (kind === "tileClose") return "</div></a>";
+  return "";
+}
+
+function expandInlineMarker(payload) {
+  const [kind, encoded = ""] = payload.split(":");
+  const value = Buffer.from(encoded, "base64url").toString("utf8");
+  if (kind === "tooltipOpen") {
+    const attrs = parseAttrs(value);
+    const tip = attrs.tip ?? attrs.title ?? "";
+    return `<span class="oc-tooltip" tabindex="0"${tip ? ` data-tip="${escapeAttr(tip)}"` : ""}>`;
+  }
+  if (kind === "tooltipClose") return "</span>";
+  if (kind === "badgeSelf") {
+    const attrs = parseAttrs(value);
+    return `<span class="oc-badge oc-badge-${slug(attrs.color ?? attrs.variant ?? "default")}">${escapeHtml(attrs.text ?? attrs.label ?? attrs.children ?? "Badge")}</span>`;
+  }
+  if (kind === "badgeOpen") {
+    const attrs = parseAttrs(value);
+    return `<span class="oc-badge oc-badge-${slug(attrs.color ?? attrs.variant ?? "default")}">`;
+  }
+  if (kind === "badgeClose") return "</span>";
   return "";
 }
 
@@ -193,6 +346,15 @@ function cardHtml(rawAttrs, selfClosing) {
   const icon = attrs.icon ? iconSvg(attrs.icon) : "";
   const end = selfClosing ? "</div></a>" : "";
   return `<a class="oc-card" href="${escapeAttr(href)}">${icon}<div><strong>${escapeHtml(title)}</strong>${end}`;
+}
+
+function tileHtml(rawAttrs, selfClosing) {
+  const attrs = parseAttrs(rawAttrs);
+  const href = attrs.href ?? "#";
+  const title = attrs.title ?? attrs.name ?? "Open";
+  const icon = attrs.icon ? iconSvg(attrs.icon) : "";
+  const end = selfClosing ? "</div></a>" : "";
+  return `<a class="oc-tile" href="${escapeAttr(href)}">${icon}<div><strong>${escapeHtml(title)}</strong>${end}`;
 }
 
 function iconSvg(name) {
@@ -209,6 +371,12 @@ function iconSvg(name) {
   };
   const path = paths[slug(name)] ?? `<rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8 12h8M12 8v8"/>`;
   return `<svg class="oc-card-icon" viewBox="0 0 24 24" aria-hidden="true">${path}</svg>`;
+}
+
+function cardGridClass(rawAttrs) {
+  const attrs = parseAttrs(rawAttrs);
+  const cols = Math.max(1, Math.min(4, Number.parseInt(attrs.cols ?? "", 10) || 2));
+  return `card-grid oc-card-cols-${cols}`;
 }
 
 function dedentComponentChildren(markdown) {

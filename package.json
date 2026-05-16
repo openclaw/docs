@@ -10,12 +10,16 @@
     "docs:llms-full:upload": "R2_UPLOAD_MANIFEST_PATH=dist/docs-llms-full-manifest.json R2_UPLOAD_REMOTE_MANIFEST_KEY=.openclaw-docs-llms-full-manifest.json R2_DELETE_ORPHANS=0 node scripts/docs-site/r2-upload.mjs",
     "docs:r2:upload": "node scripts/docs-site/r2-upload.mjs",
     "docs:smoke": "node scripts/docs-site/smoke.mjs",
-    "docs:check": "npm run docs:build && npm run docs:smoke && node --check scripts/docs-site/llms-full.mjs"
+    "docs:visual": "node scripts/docs-site/visual-smoke.mjs",
+    "docs:check": "npm run docs:build && npm run docs:smoke && npm run docs:visual && node --check scripts/docs-site/llms-full.mjs"
   },
   "devDependencies": {
     "gray-matter": "4.0.3",
+    "highlight.js": "11.11.1",
     "markdown-it": "14.1.1",
     "markdown-it-anchor": "9.2.0",
-    "pagefind": "1.5.2"
+    "mermaid": "11.15.0",
+    "pagefind": "1.5.2",
+    "playwright": "^1.60.0"
   }
 }

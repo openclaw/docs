@@ -118,9 +118,9 @@ if (!/Português \(BR\)/.test(index)) {
 if (!/data-docs-chat/.test(index) || !/OPENCLAW_DOCS_CHAT_API/.test(index)) {
   throw new Error("index: docs chat widget was not rendered");
 }
-if (!/class="tok-key">channels<\/span>/.test(index)
-  || !/class="tok-string">&quot;\+15555550123&quot;<\/span>/.test(index)
-  || !/class="tok-literal">true<\/span>/.test(index)) {
+if (!/class="hljs-attr">channels<\/span>/.test(index)
+  || !/class="hljs-string">&quot;\+15555550123&quot;<\/span>/.test(index)
+  || !/class="hljs-literal">true<\/span>/.test(index)) {
   throw new Error("index: json5 config example was not syntax-highlighted");
 }
 const modelsMarkdown = fs.readFileSync(path.join(site, "concepts/models.md"), "utf8");
@@ -153,8 +153,13 @@ if (!/--code:#f7f4f0;--code-inline:#f3efea;--code-block:#fffefa;--code-text:#2d2
 if (/\.toc a:first-of-type/.test(siteCss)) {
   throw new Error("assets: first table-of-contents item is hard-highlighted");
 }
-if (!/\.doc pre \.tok-comment\{color:var\(--tok-comment\)\}/.test(siteCss)) {
+if (!/\.doc pre \.tok-comment,\.doc pre \.hljs-comment/.test(siteCss)
+  || !/\.doc pre \.tok-key,\.doc pre \.hljs-attr/.test(siteCss)) {
   throw new Error("assets: syntax token colors are not theme-variable based");
+}
+if (!fs.existsSync(path.join(site, "assets/mermaid.esm.min.mjs"))
+  || !fs.existsSync(path.join(site, "assets/chunks/mermaid.esm.min"))) {
+  throw new Error("assets: Mermaid runtime was not copied");
 }
 if (!/\.sidebar\{[^}]*padding:0 6px 36px 0;[^}]*scrollbar-gutter:stable/.test(siteCss)) {
   throw new Error("assets: sidebar scroll-end padding is missing");
@@ -177,14 +182,20 @@ if (!/--bg:#0d0b0b;--paper:#111010;--paper-2:#151211;[^}]*--soft:#241915/.test(s
 if (!/function syncSidebar/.test(siteJs) || !/async function navigateTo/.test(siteJs)) {
   throw new Error("assets: docs PJAX navigation is missing");
 }
+if (!/function setNavOpen/.test(siteJs) || !/body\.nav-open:before/.test(siteCss) || !/data-nav-close/.test(index)) {
+  throw new Error("assets: mobile navigation drawer state is missing");
+}
 if (/data-locale/.test(siteJs)) {
   throw new Error("assets: stale native language select handler is still present");
 }
 if (!/function initChat/.test(siteJs) || !/data-chat-form/.test(siteJs)) {
   throw new Error("assets: docs chat behavior is missing");
 }
-if (!/function runSearch/.test(siteJs) || !/setTimeout\(\(\)=>runSearch\(q,id\),140\)/.test(siteJs)) {
+if (!/function runSearch/.test(siteJs) || !/setTimeout\(\(\)=>runSearch\(expandSearchQuery\(q\),id\),140\)/.test(siteJs)) {
   throw new Error("assets: search input is not debounced");
+}
+if (!/const searchAliases=/.test(siteJs) || !/data-search-suggestion/.test(index)) {
+  throw new Error("assets: search aliases and suggestions are missing");
 }
 const platformsIndex = fs.readFileSync(path.join(site, "platforms/index.html"), "utf8");
 if (/VPS &amp;amp; hosting/.test(platformsIndex)) {
@@ -201,6 +212,76 @@ if (/\.oc-step:before\{[^}]*background:var\(--brand\)/.test(siteCss)
   || !/\.oc-step:before\{[^}]*background:color-mix\(in srgb,var\(--line-strong\) 78%,var\(--paper\) 22%\)/.test(siteCss)) {
   throw new Error("assets: step badges should use neutral timeline styling");
 }
+if (!/\.oc-step:last-child\{[^}]*border-image:linear-gradient\(to bottom,var\(--line\)/.test(siteCss)) {
+  throw new Error("assets: final step rail should fade out");
+}
+if (!/\.oc-callout\{[^}]*--callout-accent:var\(--brand\)[^}]*border-left:3px solid var\(--callout-accent\)/.test(siteCss)
+  || !/\.oc-callout-warning\{--callout-accent:#d97706\}/.test(siteCss)
+  || !/\.oc-callout-check\{--callout-accent:#48b49a\}/.test(siteCss)) {
+  throw new Error("assets: callout tones should use reference-aligned component skin");
+}
+const elementsIndexPath = path.join(site, "__elements/index.html");
+if (!fs.existsSync(elementsIndexPath)) {
+  throw new Error("__elements: hidden component fixture page is missing");
+}
+const elementsIndex = fs.readFileSync(elementsIndexPath, "utf8");
+for (const marker of [
+  'class="oc-callout oc-callout-tip"',
+  'class="oc-callout oc-callout-info"',
+  'class="oc-callout oc-callout-warning"',
+  'class="oc-card-grid oc-card-cols-3"',
+  'class="oc-card"',
+  'class="oc-code"',
+  'class="oc-code-group"',
+  'scripts/setup-openclaw.sh',
+  'openclaw.json5',
+  'class="hljs-comment"',
+  'class="oc-step"',
+  'class="oc-tab"',
+  'class="oc-accordion"',
+  'class="oc-param"',
+  'class="oc-frame"',
+  'class="oc-tooltip"',
+  'class="oc-param-default"',
+  'class="page-status-badge page-status-beta"',
+  'Status: visual fixture',
+  'Applies to: docs shell',
+  'class="oc-badge oc-badge-orange"',
+  'class="oc-panel"',
+  'class="oc-prompt"',
+  'class="oc-tile-group"',
+  'class="oc-tile"',
+  'class="oc-mermaid"',
+  'data-code-copy',
+  'class="code-line is-highlighted"',
+  'data-prompt-copy',
+  'Shared snippet',
+  '<kbd>',
+]) {
+  if (!elementsIndex.includes(marker)) throw new Error(`__elements: missing fixture marker ${marker}`);
+}
+if (!/class="breadcrumbs"/.test(index) || !/data-copy-page/.test(index) || !/class="page-feedback"/.test(index)) {
+  throw new Error("index: page reader affordances are missing");
+}
+if (!/function initCodeGroups/.test(siteJs) || !/className="oc-code-tab"/.test(siteJs) || !/preferredCodeTab/.test(siteJs)) {
+  throw new Error("assets: code group tabs are missing");
+}
+if (!/function handleDocsControlClick/.test(siteJs) || !/async function copyText/.test(siteJs)) {
+  throw new Error("assets: copy and feedback controls are missing");
+}
+if (!/<meta name="robots" content="noindex,nofollow">/.test(elementsIndex)) {
+  throw new Error("__elements: hidden component fixture should be noindex");
+}
+if (/data-pagefind-body/.test(elementsIndex) || !/data-pagefind-ignore/.test(elementsIndex)) {
+  throw new Error("__elements: hidden component fixture should be excluded from Pagefind");
+}
+if (/data-docs-chat/.test(elementsIndex)) {
+  throw new Error("__elements: hidden component fixture should not be obscured by docs chat");
+}
+if (/\/__elements/.test(fs.readFileSync(path.join(site, "sitemap.xml"), "utf8"))
+  || /\/__elements/.test(fs.readFileSync(path.join(site, "llms.txt"), "utf8"))) {
+  throw new Error("__elements: hidden component fixture leaked into public indexes");
+}
 const dateTime = fs.readFileSync(path.join(site, "date-time/index.html"), "utf8");
 if (/Current Date &amp;amp; Time/.test(dateTime)) {
   throw new Error("date-time: TOC double-escaped ampersand");
@@ -216,4 +297,4 @@ const showcase = fs.readFileSync(path.join(site, "start/showcase/index.html"), "
 if (!/href="https:\/\/www\.youtube\.com\/watch\?v=SaWSPZoPX34"/.test(showcase)) {
   throw new Error("showcase: external card href was not rendered");
 }
-console.log(`docs site smoke ok: ${required.length} checks`);
+console.log("docs site smoke ok: shell, routing, skin, and hidden fixture checks passed");
