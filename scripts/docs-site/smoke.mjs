@@ -174,6 +174,9 @@ if (!/--bg:#0d0b0b;--paper:#111010;--paper-2:#151211;[^}]*--soft:#241915/.test(s
 if (!/function syncSidebar/.test(siteJs) || !/async function navigateTo/.test(siteJs)) {
   throw new Error("assets: docs PJAX navigation is missing");
 }
+if (!/function setNavOpen/.test(siteJs) || !/body\.nav-open:before/.test(siteCss) || !/data-nav-close/.test(index)) {
+  throw new Error("assets: mobile navigation drawer state is missing");
+}
 if (/data-locale/.test(siteJs)) {
   throw new Error("assets: stale native language select handler is still present");
 }

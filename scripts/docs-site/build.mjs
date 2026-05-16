@@ -298,6 +298,7 @@ function siteHeader(page, nav, activeTab) {
 function sidebar(page, nav, activeTab) {
   const groups = (nav.find((tab) => tab.title === activeTab) ?? nav[0])?.groups ?? [];
   return `<aside class="sidebar">
+<button class="sidebar-close" type="button" data-nav-close aria-label="Close menu">Close</button>
 <nav>${groups.map((group) => navGroupHtml(page, group)).join("")}</nav>
 </aside>`;
 }

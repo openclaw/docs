@@ -121,6 +121,37 @@ async function checkMobile() {
   if (geometry.menuThemeOverlap || !geometry.searchInViewport || !geometry.codeInViewport || geometry.stepInset < 0) {
     throw new Error(`mobile visual geometry failed: ${JSON.stringify(geometry)}`);
   }
+  await page.click("[data-nav-toggle]");
+  await page.locator(".sidebar.open").waitFor({ state: "visible" });
+  await page.waitForFunction(() => Math.abs(document.querySelector(".sidebar")?.getBoundingClientRect().left ?? -999) < 1);
+  await page.screenshot({ path: path.join(artifacts, "elements-mobile-menu.png"), fullPage: false });
+  const menu = await page.evaluate(() => {
+    const sidebar = document.querySelector(".sidebar")?.getBoundingClientRect();
+    const close = document.querySelector("[data-nav-close]")?.getBoundingClientRect();
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const closeStyle = getComputedStyle(document.querySelector("[data-nav-close]"));
+    return {
+      bodyOpen: document.body.classList.contains("nav-open"),
+      ariaExpanded: toggle?.getAttribute("aria-expanded"),
+      sidebarLeft: sidebar?.left,
+      sidebarRight: sidebar?.right,
+      sidebarWidth: sidebar?.width,
+      closeVisible: closeStyle.display !== "none" && close && close.height >= 36,
+      viewport: innerWidth,
+    };
+  });
+  if (!menu.bodyOpen || menu.ariaExpanded !== "true" || menu.sidebarLeft !== 0 || menu.sidebarRight > menu.viewport - 8 || menu.sidebarWidth > 380 || !menu.closeVisible) {
+    throw new Error(`mobile menu drawer failed: ${JSON.stringify(menu)}`);
+  }
+  await page.keyboard.press("Escape");
+  const closed = await page.evaluate(() => ({
+    bodyOpen: document.body.classList.contains("nav-open"),
+    sidebarOpen: document.querySelector(".sidebar")?.classList.contains("open"),
+    ariaExpanded: document.querySelector("[data-nav-toggle]")?.getAttribute("aria-expanded"),
+  }));
+  if (closed.bodyOpen || closed.sidebarOpen || closed.ariaExpanded !== "false") {
+    throw new Error(`mobile menu did not close on Escape: ${JSON.stringify(closed)}`);
+  }
   await page.close();
 }
 
