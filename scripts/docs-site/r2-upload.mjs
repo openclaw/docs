@@ -120,10 +120,11 @@ function writeUploadManifest(localManifest, currentRemoteManifest, entries) {
 async function getRemoteManifest() {
   if (remoteManifestPath) {
     const file = path.isAbsolute(remoteManifestPath) ? remoteManifestPath : path.join(root, remoteManifestPath);
+    const parsed = JSON.parse(fs.readFileSync(file, "utf8"));
     return {
-      source: "file",
+      ...parsed,
+      manifestSource: "file",
       status: "hit",
-      ...(JSON.parse(fs.readFileSync(file, "utf8"))),
     };
   }
   if (dryRun) return { entries: [], source: "dry-run", status: "missing" };
@@ -132,7 +133,7 @@ async function getRemoteManifest() {
   if (!response.ok) throw new Error(`GET manifest failed: ${response.status} ${await response.text()}`);
   const text = await response.text();
   try {
-    return { source: "r2", status: "hit", ...JSON.parse(text) };
+    return { ...JSON.parse(text), manifestSource: "r2", status: "hit" };
   } catch (error) {
     throw new Error(`GET manifest returned invalid JSON; refusing to reupload the full docs tree: ${error.message}`);
   }
@@ -267,7 +268,7 @@ function increment(map, key) {
 
 function formatRemoteManifestStatus(remoteManifest) {
   const count = Array.isArray(remoteManifest.entries) ? remoteManifest.entries.length : 0;
-  return `r2 remote manifest: ${remoteManifest.status || "unknown"} from ${remoteManifest.source || "unknown"} (${count} entries)`;
+  return `r2 remote manifest: ${remoteManifest.status || "unknown"} from ${remoteManifest.manifestSource || remoteManifest.source || "unknown"} (${count} entries)`;
 }
 
 function formatCacheStats(stats) {
