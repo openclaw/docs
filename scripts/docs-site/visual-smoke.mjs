@@ -65,6 +65,7 @@ async function checkDesktop() {
   }
 
   await expectVisible(page, ".oc-code [data-code-copy]", "code copy button");
+  await expectVisible(page, ".page-status .page-status-beta", "page status badge");
   await expectVisible(page, ".oc-code.has-line-numbers .code-line.is-highlighted", "line-highlighted code");
   await expectVisible(page, ".oc-badge.oc-badge-orange", "badge");
   await expectVisible(page, ".oc-panel", "panel");

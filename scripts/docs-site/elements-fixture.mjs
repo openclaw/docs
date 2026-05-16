@@ -1,6 +1,9 @@
 export const elementsFixture = `---
 title: "Docs elements"
 summary: "Hidden fixture page for docs shell visual QA."
+status: "visual fixture"
+applies_to: "docs shell"
+beta: true
 ---
 
 # Docs elements

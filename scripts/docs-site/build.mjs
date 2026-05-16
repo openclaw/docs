@@ -107,7 +107,15 @@ function collectPages(localeList) {
         title,
         summary: parsed.data.summary ?? "",
         readWhen: parsed.data.read_when ?? [],
-        body: parsed.content
+        body: parsed.content,
+        meta: {
+          status: parsed.data.status ?? firstStatusLine(parsed.content),
+          appliesTo: parsed.data.applies_to ?? parsed.data.appliesTo,
+          since: parsed.data.since,
+          updated: parsed.data.updated ?? parsed.data.last_updated,
+          deprecated: parsed.data.deprecated,
+          beta: parsed.data.beta,
+        }
       });
     }
   }
@@ -127,6 +135,14 @@ function elementsFixturePage() {
     summary: parsed.data.summary ?? "",
     readWhen: [],
     body: parsed.content,
+    meta: {
+      status: parsed.data.status,
+      appliesTo: parsed.data.applies_to ?? parsed.data.appliesTo,
+      since: parsed.data.since,
+      updated: parsed.data.updated ?? parsed.data.last_updated,
+      deprecated: parsed.data.deprecated,
+      beta: parsed.data.beta,
+    },
     hidden: true
   };
 }
@@ -241,6 +257,7 @@ ${sidebar(page, nav, activeTab)}
 ${breadcrumbs(page, nav)}
 <p class="article-kicker">${escapeHtml(groupForPage(nav, page.slug) ?? activeTab)}</p>
 <h1>${escapeHtml(page.title)}</h1>
+${pageStatus(page)}
 ${page.hidden ? "" : pageTools(page)}
 </header>
 <div class="doc"${page.hidden ? ' data-pagefind-ignore' : ' data-pagefind-body'}>${html}</div>
@@ -308,6 +325,11 @@ function topLink(label, href, iconName) {
   return `<a href="${escapeAttr(href)}">${icon(iconName)}<span>${escapeHtml(label)}</span></a>`;
 }
 
+function firstStatusLine(content) {
+  const match = String(content).match(/^(?:\*\*)?Status(?:\*\*)?:\s*(.+)$/im);
+  return match?.[1]?.replace(/\s+/g, " ").trim();
+}
+
 function breadcrumbs(page, nav) {
   if (page.hidden) return "";
   const activeTab = activeTabTitle(nav, page.slug);
@@ -325,6 +347,24 @@ function pageTools(page) {
   const canonicalUrl = `${docsOrigin()}${pageRoute(page)}`;
   const editUrl = `https://github.com/openclaw/openclaw/edit/main/docs/${page.rel}`;
   return `<div class="page-tools" data-page-tools data-page-url="${escapeAttr(canonicalUrl)}"><button type="button" data-copy-page>Copy page</button><a href="${escapeAttr(editUrl)}">Edit source</a></div>`;
+}
+
+function pageStatus(page) {
+  const meta = page.meta ?? {};
+  const badges = [];
+  if (truthy(meta.beta)) badges.push(["Beta", "beta"]);
+  if (truthy(meta.deprecated)) badges.push(["Deprecated", "deprecated"]);
+  if (meta.status) badges.push([`Status: ${meta.status}`, "status"]);
+  if (meta.appliesTo) badges.push([`Applies to: ${meta.appliesTo}`, "applies"]);
+  if (meta.since) badges.push([`Since ${meta.since}`, "since"]);
+  if (meta.updated) badges.push([`Updated ${meta.updated}`, "updated"]);
+  return badges.length
+    ? `<div class="page-status">${badges.map(([label, kind]) => `<span class="page-status-badge page-status-${kind}">${escapeHtml(label)}</span>`).join("")}</div>`
+    : "";
+}
+
+function truthy(value) {
+  return value === true || value === "true" || value === "yes" || value === 1 || value === "1";
 }
 
 function icon(name) {
