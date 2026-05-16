@@ -19,12 +19,31 @@ const callouts = new Map([
 ]);
 
 export function createMarkdownRenderer() {
-  return new MarkdownIt({
+  const md = new MarkdownIt({
     html: true,
     linkify: true,
     typographer: false,
     highlight: highlightCode
   }).use(anchor);
+  md.renderer.rules.fence = renderFence;
+  return md;
+}
+
+function renderFence(tokens, idx) {
+  const token = tokens[idx];
+  const { lang, label } = parseCodeInfo(token.info);
+  const highlighted = highlightCode(token.content, lang);
+  const className = lang ? ` class="language-${escapeAttr(lang)}"` : "";
+  const caption = label ? `<figcaption>${escapeHtml(label)}</figcaption>` : "";
+  const dataLabel = label || lang || "Code";
+  return `<figure class="oc-code" data-code-label="${escapeAttr(dataLabel)}">${caption}<pre><code${className}>${highlighted}</code></pre></figure>`;
+}
+
+function parseCodeInfo(rawInfo = "") {
+  const info = String(rawInfo).trim();
+  if (!info) return { lang: "", label: "" };
+  const [lang = "", ...rest] = info.split(/\s+/);
+  return { lang: normalizeLang(lang), label: rest.join(" ").trim() };
 }
 
 function highlightCode(code, rawLang = "") {
@@ -197,7 +216,8 @@ function expandMarker(payload) {
     const attrs = parseAttrs(value);
     const required = attrs.required !== undefined ? `<span class="oc-param-required">required</span>` : "";
     const type = attrs.type ? `<span class="oc-param-type">${escapeHtml(attrs.type)}</span>` : "";
-    return `<section class="oc-param"><header><code>${escapeHtml(attrs.path ?? attrs.name ?? "param")}</code>${type}${required}</header>`;
+    const defaultValue = attrs.default ? `<span class="oc-param-default">default: ${escapeHtml(attrs.default)}</span>` : "";
+    return `<section class="oc-param"><header><code>${escapeHtml(attrs.path ?? attrs.name ?? "param")}</code>${type}${defaultValue}${required}</header>`;
   }
   if (kind === "paramClose") return "</section>";
   return "";

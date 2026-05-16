@@ -13,6 +13,23 @@ OpenClaw docs use compact developer prose with **strong emphasis**, [inline link
 
 > Blockquotes should stay quiet and readable without becoming callout boxes.
 
+### Heading level three
+
+Use h3 sections for local structure inside a major task.
+
+#### Heading level four
+
+Use h4 sections sparingly for small reference clusters.
+
+- Unordered lists should stay compact.
+- List items can include \`inline code\`, **strong text**, and links.
+  - Nested items should not collide with surrounding rhythm.
+
+1. Ordered lists should keep readable spacing.
+2. They should not look like step components.
+
+Keyboard hints such as <kbd>⌘</kbd><kbd>K</kbd> should render as small controls.
+
 ## Callouts
 
 <Tip>
@@ -41,15 +58,21 @@ Use say callouts for exact text a reader can send to an agent or channel.
 
 ## Code
 
+\`\`\`ts scripts/docs-site/example.ts
+export function startGateway() {
+  return "openclaw gateway restart";
+}
+\`\`\`
+
 <CodeGroup>
 
-\`\`\`sh
+\`\`\`sh Terminal
 openclaw status --deep
 openclaw gateway restart
 curl -fsSL https://documentation.openclaw.ai/llms.txt
 \`\`\`
 
-\`\`\`json
+\`\`\`json openclaw.json
 {
   "channels": {
     "telegram": {
@@ -144,6 +167,10 @@ curl -fsSL https://documentation.openclaw.ai/llms.txt
 
 <ParamField path="channels.telegram.groupPolicy" type="string" required>
 Controls whether Telegram groups use allowlists, denylists, or open access.
+</ParamField>
+
+<ParamField path="channels.telegram.requireMention" type="boolean" default="true">
+Controls whether group messages need to mention the agent before a reply is considered.
 </ParamField>
 
 <ParamField path="channels.telegram.accounts" type="record">

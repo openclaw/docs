@@ -209,6 +209,7 @@ for (const marker of [
   'class="oc-callout oc-callout-warning"',
   'class="oc-card-grid oc-card-cols-3"',
   'class="oc-card"',
+  'class="oc-code"',
   'class="oc-code-group"',
   'class="oc-step"',
   'class="oc-tab"',
@@ -216,8 +217,13 @@ for (const marker of [
   'class="oc-param"',
   'class="oc-frame"',
   'class="oc-tooltip"',
+  'class="oc-param-default"',
+  '<kbd>',
 ]) {
   if (!elementsIndex.includes(marker)) throw new Error(`__elements: missing fixture marker ${marker}`);
+}
+if (!/function initCodeGroups/.test(siteJs) || !/className="oc-code-tab"/.test(siteJs)) {
+  throw new Error("assets: code group tabs are missing");
 }
 if (!/<meta name="robots" content="noindex,nofollow">/.test(elementsIndex)) {
   throw new Error("__elements: hidden component fixture should be noindex");
