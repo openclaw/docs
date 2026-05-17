@@ -175,24 +175,6 @@ jobs:
           STORED_R2_SESSION_TOKEN: ${{ secrets.OPENCLAW_R2_SESSION_TOKEN }}
         run: |
           set -euo pipefail
-
-          if [ -n "${STORED_R2_ACCESS_KEY_ID:-}" ] && [ -n "${STORED_R2_SECRET_ACCESS_KEY:-}" ]; then
-            printf '::add-mask::%s\n' "${STORED_R2_ACCESS_KEY_ID}"
-            printf '::add-mask::%s\n' "${STORED_R2_SECRET_ACCESS_KEY}"
-            if [ -n "${STORED_R2_SESSION_TOKEN:-}" ]; then
-              printf '::add-mask::%s\n' "${STORED_R2_SESSION_TOKEN}"
-            fi
-            {
-              printf 'OPENCLAW_R2_ACCESS_KEY_ID=%s\n' "${STORED_R2_ACCESS_KEY_ID}"
-              printf 'OPENCLAW_R2_SECRET_ACCESS_KEY=%s\n' "${STORED_R2_SECRET_ACCESS_KEY}"
-              if [ -n "${STORED_R2_SESSION_TOKEN:-}" ]; then
-                printf 'OPENCLAW_R2_SESSION_TOKEN=%s\n' "${STORED_R2_SESSION_TOKEN}"
-              fi
-            } >> "${GITHUB_ENV}"
-            echo "::notice::Using stored OPENCLAW_R2_* upload credentials."
-            exit 0
-          fi
-
           verify_response=""
           if [ -n "${CLOUDFLARE_API_TOKEN:-}" ] && [ -n "${CLOUDFLARE_ACCOUNT_ID:-}" ]; then
             verify_response="$(curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/tokens/verify" || true)"
@@ -264,6 +246,22 @@ jobs:
 
           if [ -n "${CLOUDFLARE_API_TOKEN:-}" ]; then
             echo "::warning::CLOUDFLARE_API_TOKEN could not be verified; falling back to OPENCLAW_R2_* secrets if present."
+          fi
+
+          if [ -n "${STORED_R2_ACCESS_KEY_ID:-}" ] && [ -n "${STORED_R2_SECRET_ACCESS_KEY:-}" ]; then
+            printf '::add-mask::%s\n' "${STORED_R2_ACCESS_KEY_ID}"
+            printf '::add-mask::%s\n' "${STORED_R2_SECRET_ACCESS_KEY}"
+            if [ -n "${STORED_R2_SESSION_TOKEN:-}" ]; then
+              printf '::add-mask::%s\n' "${STORED_R2_SESSION_TOKEN}"
+            fi
+            {
+              printf 'OPENCLAW_R2_ACCESS_KEY_ID=%s\n' "${STORED_R2_ACCESS_KEY_ID}"
+              printf 'OPENCLAW_R2_SECRET_ACCESS_KEY=%s\n' "${STORED_R2_SECRET_ACCESS_KEY}"
+              if [ -n "${STORED_R2_SESSION_TOKEN:-}" ]; then
+                printf 'OPENCLAW_R2_SESSION_TOKEN=%s\n' "${STORED_R2_SESSION_TOKEN}"
+              fi
+            } >> "${GITHUB_ENV}"
+            exit 0
           fi
 
           echo "CLOUDFLARE_API_TOKEN or OPENCLAW_R2_* upload credentials are required" >&2

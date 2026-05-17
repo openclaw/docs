@@ -49,4 +49,4 @@ Source of truth lives in [`openclaw/openclaw`](https://github.com/openclaw/openc
 - `OPENCLAW_DOCS_SYNC_TOKEN` lives in `openclaw/openclaw` and lets the source repo push into this repo.
 - `OPENCLAW_DOCS_I18N_OPENAI_API_KEY` lives in this repo and powers locale translation refreshes.
 - `CLOUDFLARE_API_TOKEN` lives in this repo and deploys the `documentation.openclaw.ai` router.
-- R2 uploads prefer dedicated `OPENCLAW_R2_ACCESS_KEY_ID` / `OPENCLAW_R2_SECRET_ACCESS_KEY` credentials. If those are absent, CI verifies `CLOUDFLARE_API_TOKEN`, tries temporary R2 credentials, and falls back to the token-derived direct S3 credential form.
+- R2 uploads verify `CLOUDFLARE_API_TOKEN`, try temporary R2 credentials, and normally fall back to the token-derived direct S3 credential form. `OPENCLAW_R2_ACCESS_KEY_ID` / `OPENCLAW_R2_SECRET_ACCESS_KEY` are only fallback upload credentials when the Cloudflare token cannot be verified.
