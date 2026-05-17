@@ -29,7 +29,7 @@ const ogImagePath = "/og-card.png";
 const renderedPageOgCards = new Set();
 const rsvgAvailable = checkRsvg();
 const chatApiUrl = process.env.DOCS_SITE_CHAT_API_URL ?? "/ask-molty/api/chat";
-const shellAssetVersion = process.env.DOCS_SITE_SHELL_ASSET_VERSION ?? "9e2fc4e1b67b";
+const shellAssetVersion = process.env.DOCS_SITE_SHELL_ASSET_VERSION ?? "1a6ba0ba4e52";
 const artifactMode = process.env.DOCS_SITE_ARTIFACT_MODE ?? "full";
 const shellOnly = artifactMode === "shell";
 if (!["full", "shell"].includes(artifactMode)) {

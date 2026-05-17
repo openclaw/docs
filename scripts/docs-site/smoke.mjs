@@ -143,10 +143,10 @@ if (!shellOnly) {
 if (process.env.DOCS_SITE_BASE_PATH && (/src="\/assets\//.test(index) || /href="\/assets\//.test(index))) {
   throw new Error("index: absolute asset paths were not base-path rewritten");
 }
-if (!process.env.DOCS_SITE_BASE_PATH && !/href="\/assets\/docs-site\.css\?v=9e2fc4e1b67b"/.test(index)) {
+if (!process.env.DOCS_SITE_BASE_PATH && !/href="\/assets\/docs-site\.css\?v=1a6ba0ba4e52"/.test(index)) {
   throw new Error("index: custom-domain build did not emit root asset paths");
 }
-if (!/src="\/assets\/docs-site\.js\?v=9e2fc4e1b67b"/.test(index)) {
+if (!/src="\/assets\/docs-site\.js\?v=1a6ba0ba4e52"/.test(index)) {
   throw new Error("index: docs shell asset version is not stable");
 }
 if (process.env.DOCS_SITE_CNAME) {
