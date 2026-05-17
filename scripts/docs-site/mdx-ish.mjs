@@ -108,7 +108,7 @@ function renderFence(tokens, idx) {
     wrap ? "is-wrapped" : "",
     expandable ? "is-expandable" : "",
   ].filter(Boolean).join(" ");
-  return `<figure class="${classes}" data-code-label="${escapeAttr(dataLabel)}"><figcaption><span>${escapeHtml(dataLabel)}</span><button type="button" data-code-copy aria-label="Copy code">Copy</button></figcaption><pre><code${className}>${highlighted}</code></pre></figure>`;
+  return `<figure class="${classes}" data-code-label="${escapeAttr(dataLabel)}"><figcaption><span class="oc-code-label">${escapeHtml(dataLabel)}</span><button type="button" data-code-copy data-copy-label="Copy code" aria-label="Copy code"><span class="oc-visually-hidden">Copy code</span></button></figcaption><pre><code${className}>${highlighted}</code></pre></figure>`;
 }
 
 function parseCodeInfo(rawInfo = "") {

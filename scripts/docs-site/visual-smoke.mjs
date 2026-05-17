@@ -35,6 +35,7 @@ const browser = await chromium.launch({ headless: true });
 
 try {
   await checkDesktop();
+  await checkAmbientCodePage();
   await checkMobile();
   await checkLightMode();
   console.log(`docs visual smoke ok: screenshots in ${path.relative(root, artifacts)}`);
@@ -156,6 +157,62 @@ async function checkMobile() {
   }));
   if (closed.bodyOpen || closed.sidebarOpen || closed.ariaExpanded !== "false") {
     throw new Error(`mobile menu did not close on Escape: ${JSON.stringify(closed)}`);
+  }
+  await page.close();
+}
+
+async function checkAmbientCodePage() {
+  const page = await browser.newPage({ viewport: { width: 1496, height: 760 } });
+  await page.goto(`${base}/channels/ambient-room-events`, { waitUntil: "networkidle" });
+  await page.locator(".oc-code").first().scrollIntoViewIfNeeded();
+  await page.screenshot({ path: path.join(artifacts, "ambient-code-dark.png"), fullPage: false });
+  const code = await page.evaluate(() => {
+    const figure = document.querySelector(".oc-code");
+    const button = figure?.querySelector("[data-code-copy]");
+    const label = figure?.querySelector(".oc-code-label");
+    const attr = figure?.querySelector(".hljs-attr");
+    const string = figure?.querySelector(".hljs-string");
+    const lines = [...figure?.querySelectorAll(".code-line") ?? []].slice(0, 5);
+    const rects = lines.map((line) => line.getBoundingClientRect());
+    const buttonStyle = button ? getComputedStyle(button) : null;
+    const labelStyle = label ? getComputedStyle(label) : null;
+    return {
+      lineCount: figure?.querySelectorAll(".code-line").length ?? 0,
+      lineDisplay: lines.map((line) => getComputedStyle(line).display),
+      lineWhiteSpace: lines.map((line) => getComputedStyle(line).whiteSpace),
+      linesStacked: rects.every((rect, index) => index === 0 || rect.top > rects[index - 1].top),
+      attrColor: attr ? getComputedStyle(attr).color : "",
+      stringColor: string ? getComputedStyle(string).color : "",
+      buttonWidth: button ? button.getBoundingClientRect().width : 0,
+      buttonText: button?.textContent?.trim(),
+      buttonColor: buttonStyle?.color,
+      labelTransform: labelStyle?.textTransform,
+    };
+  });
+  if (code.lineCount < 9
+    || !code.lineDisplay.every((display) => display === "block")
+    || !code.lineWhiteSpace.every((space) => space === "pre")
+    || !code.linesStacked
+    || code.attrColor === code.stringColor
+    || code.buttonWidth > 34
+    || code.buttonText !== "Copy code"
+    || code.labelTransform !== "uppercase") {
+    throw new Error(`ambient code block visual failed: ${JSON.stringify(code)}`);
+  }
+  await page.evaluate(() => {
+    window.__ocClipboardWrites = [];
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText: async (text) => window.__ocClipboardWrites.push(text) },
+    });
+  });
+  await page.click(".oc-code [data-code-copy]");
+  const copied = await page.evaluate(() => ({
+    state: document.querySelector(".oc-code [data-code-copy]")?.dataset.copyState,
+    text: window.__ocClipboardWrites?.[0] ?? "",
+  }));
+  if (copied.state !== "copied" || !copied.text.includes('unmentionedInbound: "room_event"')) {
+    throw new Error(`ambient code copy state failed: ${JSON.stringify(copied)}`);
   }
   await page.close();
 }

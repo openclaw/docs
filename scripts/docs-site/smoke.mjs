@@ -282,6 +282,23 @@ if (!/function initCodeGroups/.test(siteJs) || !/className="oc-code-tab"/.test(s
 if (!/function handleDocsControlClick/.test(siteJs) || !/async function copyText/.test(siteJs)) {
   throw new Error("assets: copy and feedback controls are missing");
 }
+if (!/function showCopyFeedback/.test(siteJs) || !/data-copy-label="Copy code"/.test(elementsIndex)) {
+  throw new Error("assets: code copy controls should use stateful icon feedback");
+}
+if (!/\.oc-code figcaption button:before/.test(siteCss)
+  || !/\.oc-code figcaption button\[data-copy-state="copied"\]:before/.test(siteCss)
+  || !/\.oc-code figcaption \.oc-code-label/.test(siteCss)) {
+  throw new Error("assets: code copy button icon skin is missing");
+}
+const ambient = fs.readFileSync(path.join(site, "channels/ambient-room-events/index.html"), "utf8");
+if (!/<figure class="oc-code" data-code-label="json5">/.test(ambient)
+  || !/class="language-json5"/.test(ambient)
+  || !/class="hljs-attr">unmentionedInbound<\/span>/.test(ambient)
+  || !/class="hljs-string">&quot;room_event&quot;<\/span>/.test(ambient)
+  || !/<span class="code-line" data-line="9">/.test(ambient)
+  || !/data-code-copy/.test(ambient)) {
+  throw new Error("ambient room events: json5 code block should keep lines, highlight tokens, and copy control");
+}
 if (!/<meta name="robots" content="noindex,nofollow">/.test(elementsIndex)) {
   throw new Error("__elements: hidden component fixture should be noindex");
 }
