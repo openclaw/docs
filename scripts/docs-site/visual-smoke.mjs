@@ -100,6 +100,24 @@ async function checkDesktop() {
   await page.goto(`${base}/`, { waitUntil: "networkidle" });
   await expectVisible(page, ".page-tools [data-copy-page]", "copy page tool");
   await expectVisible(page, ".page-feedback [data-feedback-value='yes']", "page feedback");
+  const chatLauncher = await page.evaluate(() => {
+    const button = document.querySelector(".docs-chat-launcher");
+    const style = getComputedStyle(button);
+    const parseColor = (value) => {
+      const srgb = value.match(/color\(srgb\s+([0-9.]+)\s+([0-9.]+)\s+([0-9.]+)/);
+      if (srgb) return srgb.slice(1, 4).map((part) => Number(part) * 255);
+      return value.match(/\d+/g)?.slice(0, 3).map(Number) ?? [255, 255, 255];
+    };
+    const bg = parseColor(style.backgroundColor);
+    return {
+      bg: style.backgroundColor,
+      brightness: Math.round((bg[0] * 299 + bg[1] * 587 + bg[2] * 114) / 1000),
+      color: style.color,
+    };
+  });
+  if (chatLauncher.brightness > 80 || chatLauncher.color === "rgb(13, 11, 11)") {
+    throw new Error(`dark chat launcher too bright: ${JSON.stringify(chatLauncher)}`);
+  }
   await page.close();
 }
 
