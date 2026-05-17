@@ -175,8 +175,14 @@ jobs:
           STORED_R2_SESSION_TOKEN: ${{ secrets.OPENCLAW_R2_SESSION_TOKEN }}
         run: |
           set -euo pipefail
-          if [ -n "${CLOUDFLARE_API_TOKEN:-}" ] \
-            && verify_response="$(curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "https://api.cloudflare.com/client/v4/user/tokens/verify")"; then
+          verify_response=""
+          if [ -n "${CLOUDFLARE_API_TOKEN:-}" ] && [ -n "${CLOUDFLARE_ACCOUNT_ID:-}" ]; then
+            verify_response="$(curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/tokens/verify" || true)"
+          fi
+          if [ -z "${verify_response}" ] && [ -n "${CLOUDFLARE_API_TOKEN:-}" ]; then
+            verify_response="$(curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" "https://api.cloudflare.com/client/v4/user/tokens/verify" || true)"
+          fi
+          if [ -n "${verify_response}" ]; then
             VERIFY_RESPONSE="${verify_response}" node - <<'NODE'
           const crypto = require("node:crypto");
           const fs = require("node:fs");
