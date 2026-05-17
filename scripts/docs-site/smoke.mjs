@@ -143,10 +143,10 @@ if (!shellOnly) {
 if (process.env.DOCS_SITE_BASE_PATH && (/src="\/assets\//.test(index) || /href="\/assets\//.test(index))) {
   throw new Error("index: absolute asset paths were not base-path rewritten");
 }
-if (!process.env.DOCS_SITE_BASE_PATH && !/href="\/assets\/docs-site\.css\?v=69d3be340d5c"/.test(index)) {
+if (!process.env.DOCS_SITE_BASE_PATH && !/href="\/assets\/docs-site\.css\?v=7829238e80f3"/.test(index)) {
   throw new Error("index: custom-domain build did not emit root asset paths");
 }
-if (!/src="\/assets\/docs-site\.js\?v=69d3be340d5c"/.test(index)) {
+if (!/src="\/assets\/docs-site\.js\?v=7829238e80f3"/.test(index)) {
   throw new Error("index: docs shell asset version is not stable");
 }
 if (process.env.DOCS_SITE_CNAME) {
@@ -286,7 +286,9 @@ if (!/function showCopyFeedback/.test(siteJs) || !/data-copy-label="Copy code"/.
   throw new Error("assets: code copy controls should use stateful icon feedback");
 }
 if (!/\.oc-code figcaption button:before/.test(siteCss)
+  || !/\.oc-code figcaption button:after/.test(siteCss)
   || !/\.oc-code figcaption button\[data-copy-state="copied"\]:before/.test(siteCss)
+  || !/\.oc-code figcaption button\[data-copy-state="copied"\]:after/.test(siteCss)
   || !/\.oc-code figcaption \.oc-code-label/.test(siteCss)) {
   throw new Error("assets: code copy button icon skin is missing");
 }

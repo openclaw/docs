@@ -192,8 +192,29 @@ async function checkAmbientCodePage() {
     const string = figure?.querySelector(".hljs-string");
     const lines = [...figure?.querySelectorAll(".code-line") ?? []].slice(0, 5);
     const rects = lines.map((line) => line.getBoundingClientRect());
+    const buttonRect = button?.getBoundingClientRect();
     const buttonStyle = button ? getComputedStyle(button) : null;
+    const buttonBefore = button ? getComputedStyle(button, "::before") : null;
+    const buttonAfter = button ? getComputedStyle(button, "::after") : null;
     const labelStyle = label ? getComputedStyle(label) : null;
+    const iconLeft = buttonBefore && buttonAfter
+      ? Math.min(parseFloat(buttonBefore.left), parseFloat(buttonAfter.left))
+      : 0;
+    const iconTop = buttonBefore && buttonAfter
+      ? Math.min(parseFloat(buttonBefore.top), parseFloat(buttonAfter.top))
+      : 0;
+    const iconRight = buttonBefore && buttonAfter
+      ? Math.max(
+        parseFloat(buttonBefore.left) + parseFloat(buttonBefore.width),
+        parseFloat(buttonAfter.left) + parseFloat(buttonAfter.width),
+      )
+      : 0;
+    const iconBottom = buttonBefore && buttonAfter
+      ? Math.max(
+        parseFloat(buttonBefore.top) + parseFloat(buttonBefore.height),
+        parseFloat(buttonAfter.top) + parseFloat(buttonAfter.height),
+      )
+      : 0;
     return {
       lineCount: figure?.querySelectorAll(".code-line").length ?? 0,
       lineDisplay: lines.map((line) => getComputedStyle(line).display),
@@ -201,9 +222,12 @@ async function checkAmbientCodePage() {
       linesStacked: rects.every((rect, index) => index === 0 || rect.top > rects[index - 1].top),
       attrColor: attr ? getComputedStyle(attr).color : "",
       stringColor: string ? getComputedStyle(string).color : "",
-      buttonWidth: button ? button.getBoundingClientRect().width : 0,
+      buttonWidth: buttonRect?.width ?? 0,
+      buttonHeight: buttonRect?.height ?? 0,
       buttonText: button?.textContent?.trim(),
       buttonColor: buttonStyle?.color,
+      iconInsetX: Math.round(Math.abs(iconLeft - ((buttonRect?.width ?? 0) - iconRight))),
+      iconInsetY: Math.round(Math.abs(iconTop - ((buttonRect?.height ?? 0) - iconBottom))),
       labelTransform: labelStyle?.textTransform,
     };
   });
@@ -212,7 +236,11 @@ async function checkAmbientCodePage() {
     || !code.lineWhiteSpace.every((space) => space === "pre")
     || !code.linesStacked
     || code.attrColor === code.stringColor
+    || code.buttonWidth < 30
     || code.buttonWidth > 34
+    || code.buttonHeight < 28
+    || code.iconInsetX > 2
+    || code.iconInsetY > 2
     || code.buttonText !== "Copy code"
     || code.labelTransform !== "uppercase") {
     throw new Error(`ambient code block visual failed: ${JSON.stringify(code)}`);
