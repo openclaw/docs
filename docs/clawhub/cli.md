@@ -446,6 +446,17 @@ Example:
 clawhub package migration-status @openclaw/example-plugin
 ```
 
+### `publisher create <handle>`
+
+- Creates an org publisher owned by the authenticated user.
+- The handle is normalized to lowercase and may be passed with or without `@`.
+- Newly created org publishers are not trusted/official by default.
+- Fails if the handle is already used by an existing publisher, user, or reserved route.
+
+```bash
+clawhub publisher create opik --display-name "Opik"
+```
+
 ### `package publish <source>`
 
 - Publishes a code plugin or bundle plugin via `POST /api/v1/packages`.
@@ -546,7 +557,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/b8efe83d1b7d21f7f38c6437cd40bdc311332fcc/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/0b888a2d13711c0bab5ac8709507c2e9d5c90448/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
