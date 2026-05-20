@@ -1722,6 +1722,7 @@
                     "pages": [
                       "cli/plugins",
                       "cli/path",
+                      "cli/policy",
                       "cli/skills"
                     ]
                   },
@@ -3250,6 +3251,7 @@
                     "pages": [
                       "zh-TW/cli/plugins",
                       "zh-TW/cli/path",
+                      "zh-TW/cli/policy",
                       "zh-TW/cli/skills"
                     ]
                   },
@@ -4165,6 +4167,7 @@
                     "pages": [
                       "ja-JP/cli/plugins",
                       "ja-JP/cli/path",
+                      "ja-JP/cli/policy",
                       "ja-JP/cli/skills"
                     ]
                   },
@@ -5080,6 +5083,7 @@
                     "pages": [
                       "es/cli/plugins",
                       "es/cli/path",
+                      "es/cli/policy",
                       "es/cli/skills"
                     ]
                   },
@@ -5995,6 +5999,7 @@
                     "pages": [
                       "pt-BR/cli/plugins",
                       "pt-BR/cli/path",
+                      "pt-BR/cli/policy",
                       "pt-BR/cli/skills"
                     ]
                   },
@@ -6910,6 +6915,7 @@
                     "pages": [
                       "ko/cli/plugins",
                       "ko/cli/path",
+                      "ko/cli/policy",
                       "ko/cli/skills"
                     ]
                   },
@@ -7825,6 +7831,7 @@
                     "pages": [
                       "de/cli/plugins",
                       "de/cli/path",
+                      "de/cli/policy",
                       "de/cli/skills"
                     ]
                   },
@@ -8740,6 +8747,7 @@
                     "pages": [
                       "fr/cli/plugins",
                       "fr/cli/path",
+                      "fr/cli/policy",
                       "fr/cli/skills"
                     ]
                   },
@@ -9655,6 +9663,7 @@
                     "pages": [
                       "ar/cli/plugins",
                       "ar/cli/path",
+                      "ar/cli/policy",
                       "ar/cli/skills"
                     ]
                   },
@@ -10570,6 +10579,7 @@
                     "pages": [
                       "it/cli/plugins",
                       "it/cli/path",
+                      "it/cli/policy",
                       "it/cli/skills"
                     ]
                   },
@@ -11485,6 +11495,7 @@
                     "pages": [
                       "vi/cli/plugins",
                       "vi/cli/path",
+                      "vi/cli/policy",
                       "vi/cli/skills"
                     ]
                   },
@@ -12400,6 +12411,7 @@
                     "pages": [
                       "nl/cli/plugins",
                       "nl/cli/path",
+                      "nl/cli/policy",
                       "nl/cli/skills"
                     ]
                   },
@@ -13315,6 +13327,7 @@
                     "pages": [
                       "tr/cli/plugins",
                       "tr/cli/path",
+                      "tr/cli/policy",
                       "tr/cli/skills"
                     ]
                   },
@@ -14230,6 +14243,7 @@
                     "pages": [
                       "uk/cli/plugins",
                       "uk/cli/path",
+                      "uk/cli/policy",
                       "uk/cli/skills"
                     ]
                   },
@@ -15145,6 +15159,7 @@
                     "pages": [
                       "id/cli/plugins",
                       "id/cli/path",
+                      "id/cli/policy",
                       "id/cli/skills"
                     ]
                   },
@@ -16060,6 +16075,7 @@
                     "pages": [
                       "pl/cli/plugins",
                       "pl/cli/path",
+                      "pl/cli/policy",
                       "pl/cli/skills"
                     ]
                   },
