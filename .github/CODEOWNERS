@@ -1,0 +1,16 @@
+# Protect ownership and automation rules.
+/.github/CODEOWNERS @openclaw/openclaw-secops
+/.github/dependabot.yml @openclaw/openclaw-secops
+/.github/workflows/ @openclaw/openclaw-secops
+/.agents/skills/ @openclaw/openclaw-secops
+/.crabbox.yaml @openclaw/openclaw-secops
+/SECURITY.md @openclaw/openclaw-secops
+
+# Docs publish and translation workflow surfaces.
+/AGENTS.md @openclaw/openclaw-secops
+/CLAUDE.md @openclaw/openclaw-secops
+/package.json @openclaw/openclaw-secops
+/package-lock.json @openclaw/openclaw-secops
+/scripts/docs-site/ @openclaw/openclaw-secops
+/docs/.i18n/ @openclaw/openclaw-secops
+/.openclaw-sync/ @openclaw/openclaw-secops
