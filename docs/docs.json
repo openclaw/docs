@@ -1464,7 +1464,8 @@
                   "platforms/linux",
                   "platforms/windows",
                   "platforms/android",
-                  "platforms/ios"
+                  "platforms/ios",
+                  "platforms/easyrunner"
                 ]
               },
               {
@@ -3004,7 +3005,8 @@
                   "zh-TW/platforms/linux",
                   "zh-TW/platforms/windows",
                   "zh-TW/platforms/android",
-                  "zh-TW/platforms/ios"
+                  "zh-TW/platforms/ios",
+                  "zh-TW/platforms/easyrunner"
                 ]
               },
               {
@@ -3921,7 +3923,8 @@
                   "ja-JP/platforms/linux",
                   "ja-JP/platforms/windows",
                   "ja-JP/platforms/android",
-                  "ja-JP/platforms/ios"
+                  "ja-JP/platforms/ios",
+                  "ja-JP/platforms/easyrunner"
                 ]
               },
               {
@@ -4838,7 +4841,8 @@
                   "es/platforms/linux",
                   "es/platforms/windows",
                   "es/platforms/android",
-                  "es/platforms/ios"
+                  "es/platforms/ios",
+                  "es/platforms/easyrunner"
                 ]
               },
               {
@@ -5755,7 +5759,8 @@
                   "pt-BR/platforms/linux",
                   "pt-BR/platforms/windows",
                   "pt-BR/platforms/android",
-                  "pt-BR/platforms/ios"
+                  "pt-BR/platforms/ios",
+                  "pt-BR/platforms/easyrunner"
                 ]
               },
               {
@@ -6672,7 +6677,8 @@
                   "ko/platforms/linux",
                   "ko/platforms/windows",
                   "ko/platforms/android",
-                  "ko/platforms/ios"
+                  "ko/platforms/ios",
+                  "ko/platforms/easyrunner"
                 ]
               },
               {
@@ -7589,7 +7595,8 @@
                   "de/platforms/linux",
                   "de/platforms/windows",
                   "de/platforms/android",
-                  "de/platforms/ios"
+                  "de/platforms/ios",
+                  "de/platforms/easyrunner"
                 ]
               },
               {
@@ -8506,7 +8513,8 @@
                   "fr/platforms/linux",
                   "fr/platforms/windows",
                   "fr/platforms/android",
-                  "fr/platforms/ios"
+                  "fr/platforms/ios",
+                  "fr/platforms/easyrunner"
                 ]
               },
               {
@@ -9423,7 +9431,8 @@
                   "ar/platforms/linux",
                   "ar/platforms/windows",
                   "ar/platforms/android",
-                  "ar/platforms/ios"
+                  "ar/platforms/ios",
+                  "ar/platforms/easyrunner"
                 ]
               },
               {
@@ -10340,7 +10349,8 @@
                   "it/platforms/linux",
                   "it/platforms/windows",
                   "it/platforms/android",
-                  "it/platforms/ios"
+                  "it/platforms/ios",
+                  "it/platforms/easyrunner"
                 ]
               },
               {
@@ -11257,7 +11267,8 @@
                   "vi/platforms/linux",
                   "vi/platforms/windows",
                   "vi/platforms/android",
-                  "vi/platforms/ios"
+                  "vi/platforms/ios",
+                  "vi/platforms/easyrunner"
                 ]
               },
               {
@@ -12174,7 +12185,8 @@
                   "nl/platforms/linux",
                   "nl/platforms/windows",
                   "nl/platforms/android",
-                  "nl/platforms/ios"
+                  "nl/platforms/ios",
+                  "nl/platforms/easyrunner"
                 ]
               },
               {
@@ -13091,7 +13103,8 @@
                   "tr/platforms/linux",
                   "tr/platforms/windows",
                   "tr/platforms/android",
-                  "tr/platforms/ios"
+                  "tr/platforms/ios",
+                  "tr/platforms/easyrunner"
                 ]
               },
               {
@@ -14008,7 +14021,8 @@
                   "uk/platforms/linux",
                   "uk/platforms/windows",
                   "uk/platforms/android",
-                  "uk/platforms/ios"
+                  "uk/platforms/ios",
+                  "uk/platforms/easyrunner"
                 ]
               },
               {
@@ -14925,7 +14939,8 @@
                   "id/platforms/linux",
                   "id/platforms/windows",
                   "id/platforms/android",
-                  "id/platforms/ios"
+                  "id/platforms/ios",
+                  "id/platforms/easyrunner"
                 ]
               },
               {
@@ -15842,7 +15857,8 @@
                   "pl/platforms/linux",
                   "pl/platforms/windows",
                   "pl/platforms/android",
-                  "pl/platforms/ios"
+                  "pl/platforms/ios",
+                  "pl/platforms/easyrunner"
                 ]
               },
               {
