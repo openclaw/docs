@@ -226,10 +226,14 @@
     },
     {
       "source": "/glm",
-      "destination": "/providers/glm"
+      "destination": "/providers/zai"
     },
     {
       "source": "/zai",
+      "destination": "/providers/zai"
+    },
+    {
+      "source": "/providers/glm",
       "destination": "/providers/zai"
     },
     {
@@ -1048,7 +1052,8 @@
                   "install/oracle",
                   "install/railway",
                   "install/raspberry-pi",
-                  "install/render"
+                  "install/render",
+                  "install/upstash"
                 ]
               },
               {
@@ -1408,7 +1413,6 @@
                   "providers/fal",
                   "providers/fireworks",
                   "providers/github-copilot",
-                  "providers/glm",
                   "providers/google",
                   "providers/gradium",
                   "providers/groq",
@@ -1556,6 +1560,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "gateway/security/index",
+                      "gateway/security/exposure-runbook",
                       "gateway/security/secure-file-operations",
                       "gateway/security/audit-checks",
                       "gateway/operator-scopes",
@@ -2211,7 +2216,6 @@
                   "zh-CN/providers/claude-max-api-proxy",
                   "zh-CN/providers/deepgram",
                   "zh-CN/providers/github-copilot",
-                  "zh-CN/providers/glm",
                   "zh-CN/providers/moonshot",
                   "zh-CN/providers/minimax",
                   "zh-CN/providers/opencode",
@@ -2610,7 +2614,8 @@
                   "zh-TW/install/oracle",
                   "zh-TW/install/railway",
                   "zh-TW/install/raspberry-pi",
-                  "zh-TW/install/render"
+                  "zh-TW/install/render",
+                  "zh-TW/install/upstash"
                 ]
               },
               {
@@ -2937,7 +2942,6 @@
                   "zh-TW/providers/fal",
                   "zh-TW/providers/fireworks",
                   "zh-TW/providers/github-copilot",
-                  "zh-TW/providers/glm",
                   "zh-TW/providers/google",
                   "zh-TW/providers/gradium",
                   "zh-TW/providers/groq",
@@ -3085,6 +3089,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "zh-TW/gateway/security/index",
+                      "zh-TW/gateway/security/exposure-runbook",
                       "zh-TW/gateway/security/secure-file-operations",
                       "zh-TW/gateway/security/audit-checks",
                       "zh-TW/gateway/operator-scopes",
@@ -3526,7 +3531,8 @@
                   "ja-JP/install/oracle",
                   "ja-JP/install/railway",
                   "ja-JP/install/raspberry-pi",
-                  "ja-JP/install/render"
+                  "ja-JP/install/render",
+                  "ja-JP/install/upstash"
                 ]
               },
               {
@@ -3853,7 +3859,6 @@
                   "ja-JP/providers/fal",
                   "ja-JP/providers/fireworks",
                   "ja-JP/providers/github-copilot",
-                  "ja-JP/providers/glm",
                   "ja-JP/providers/google",
                   "ja-JP/providers/gradium",
                   "ja-JP/providers/groq",
@@ -4001,6 +4006,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "ja-JP/gateway/security/index",
+                      "ja-JP/gateway/security/exposure-runbook",
                       "ja-JP/gateway/security/secure-file-operations",
                       "ja-JP/gateway/security/audit-checks",
                       "ja-JP/gateway/operator-scopes",
@@ -4442,7 +4448,8 @@
                   "es/install/oracle",
                   "es/install/railway",
                   "es/install/raspberry-pi",
-                  "es/install/render"
+                  "es/install/render",
+                  "es/install/upstash"
                 ]
               },
               {
@@ -4769,7 +4776,6 @@
                   "es/providers/fal",
                   "es/providers/fireworks",
                   "es/providers/github-copilot",
-                  "es/providers/glm",
                   "es/providers/google",
                   "es/providers/gradium",
                   "es/providers/groq",
@@ -4917,6 +4923,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "es/gateway/security/index",
+                      "es/gateway/security/exposure-runbook",
                       "es/gateway/security/secure-file-operations",
                       "es/gateway/security/audit-checks",
                       "es/gateway/operator-scopes",
@@ -5358,7 +5365,8 @@
                   "pt-BR/install/oracle",
                   "pt-BR/install/railway",
                   "pt-BR/install/raspberry-pi",
-                  "pt-BR/install/render"
+                  "pt-BR/install/render",
+                  "pt-BR/install/upstash"
                 ]
               },
               {
@@ -5685,7 +5693,6 @@
                   "pt-BR/providers/fal",
                   "pt-BR/providers/fireworks",
                   "pt-BR/providers/github-copilot",
-                  "pt-BR/providers/glm",
                   "pt-BR/providers/google",
                   "pt-BR/providers/gradium",
                   "pt-BR/providers/groq",
@@ -5833,6 +5840,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "pt-BR/gateway/security/index",
+                      "pt-BR/gateway/security/exposure-runbook",
                       "pt-BR/gateway/security/secure-file-operations",
                       "pt-BR/gateway/security/audit-checks",
                       "pt-BR/gateway/operator-scopes",
@@ -6274,7 +6282,8 @@
                   "ko/install/oracle",
                   "ko/install/railway",
                   "ko/install/raspberry-pi",
-                  "ko/install/render"
+                  "ko/install/render",
+                  "ko/install/upstash"
                 ]
               },
               {
@@ -6601,7 +6610,6 @@
                   "ko/providers/fal",
                   "ko/providers/fireworks",
                   "ko/providers/github-copilot",
-                  "ko/providers/glm",
                   "ko/providers/google",
                   "ko/providers/gradium",
                   "ko/providers/groq",
@@ -6749,6 +6757,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "ko/gateway/security/index",
+                      "ko/gateway/security/exposure-runbook",
                       "ko/gateway/security/secure-file-operations",
                       "ko/gateway/security/audit-checks",
                       "ko/gateway/operator-scopes",
@@ -7190,7 +7199,8 @@
                   "de/install/oracle",
                   "de/install/railway",
                   "de/install/raspberry-pi",
-                  "de/install/render"
+                  "de/install/render",
+                  "de/install/upstash"
                 ]
               },
               {
@@ -7517,7 +7527,6 @@
                   "de/providers/fal",
                   "de/providers/fireworks",
                   "de/providers/github-copilot",
-                  "de/providers/glm",
                   "de/providers/google",
                   "de/providers/gradium",
                   "de/providers/groq",
@@ -7665,6 +7674,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "de/gateway/security/index",
+                      "de/gateway/security/exposure-runbook",
                       "de/gateway/security/secure-file-operations",
                       "de/gateway/security/audit-checks",
                       "de/gateway/operator-scopes",
@@ -8106,7 +8116,8 @@
                   "fr/install/oracle",
                   "fr/install/railway",
                   "fr/install/raspberry-pi",
-                  "fr/install/render"
+                  "fr/install/render",
+                  "fr/install/upstash"
                 ]
               },
               {
@@ -8433,7 +8444,6 @@
                   "fr/providers/fal",
                   "fr/providers/fireworks",
                   "fr/providers/github-copilot",
-                  "fr/providers/glm",
                   "fr/providers/google",
                   "fr/providers/gradium",
                   "fr/providers/groq",
@@ -8581,6 +8591,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "fr/gateway/security/index",
+                      "fr/gateway/security/exposure-runbook",
                       "fr/gateway/security/secure-file-operations",
                       "fr/gateway/security/audit-checks",
                       "fr/gateway/operator-scopes",
@@ -9022,7 +9033,8 @@
                   "ar/install/oracle",
                   "ar/install/railway",
                   "ar/install/raspberry-pi",
-                  "ar/install/render"
+                  "ar/install/render",
+                  "ar/install/upstash"
                 ]
               },
               {
@@ -9349,7 +9361,6 @@
                   "ar/providers/fal",
                   "ar/providers/fireworks",
                   "ar/providers/github-copilot",
-                  "ar/providers/glm",
                   "ar/providers/google",
                   "ar/providers/gradium",
                   "ar/providers/groq",
@@ -9497,6 +9508,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "ar/gateway/security/index",
+                      "ar/gateway/security/exposure-runbook",
                       "ar/gateway/security/secure-file-operations",
                       "ar/gateway/security/audit-checks",
                       "ar/gateway/operator-scopes",
@@ -9938,7 +9950,8 @@
                   "it/install/oracle",
                   "it/install/railway",
                   "it/install/raspberry-pi",
-                  "it/install/render"
+                  "it/install/render",
+                  "it/install/upstash"
                 ]
               },
               {
@@ -10265,7 +10278,6 @@
                   "it/providers/fal",
                   "it/providers/fireworks",
                   "it/providers/github-copilot",
-                  "it/providers/glm",
                   "it/providers/google",
                   "it/providers/gradium",
                   "it/providers/groq",
@@ -10413,6 +10425,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "it/gateway/security/index",
+                      "it/gateway/security/exposure-runbook",
                       "it/gateway/security/secure-file-operations",
                       "it/gateway/security/audit-checks",
                       "it/gateway/operator-scopes",
@@ -10854,7 +10867,8 @@
                   "vi/install/oracle",
                   "vi/install/railway",
                   "vi/install/raspberry-pi",
-                  "vi/install/render"
+                  "vi/install/render",
+                  "vi/install/upstash"
                 ]
               },
               {
@@ -11181,7 +11195,6 @@
                   "vi/providers/fal",
                   "vi/providers/fireworks",
                   "vi/providers/github-copilot",
-                  "vi/providers/glm",
                   "vi/providers/google",
                   "vi/providers/gradium",
                   "vi/providers/groq",
@@ -11329,6 +11342,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "vi/gateway/security/index",
+                      "vi/gateway/security/exposure-runbook",
                       "vi/gateway/security/secure-file-operations",
                       "vi/gateway/security/audit-checks",
                       "vi/gateway/operator-scopes",
@@ -11770,7 +11784,8 @@
                   "nl/install/oracle",
                   "nl/install/railway",
                   "nl/install/raspberry-pi",
-                  "nl/install/render"
+                  "nl/install/render",
+                  "nl/install/upstash"
                 ]
               },
               {
@@ -12097,7 +12112,6 @@
                   "nl/providers/fal",
                   "nl/providers/fireworks",
                   "nl/providers/github-copilot",
-                  "nl/providers/glm",
                   "nl/providers/google",
                   "nl/providers/gradium",
                   "nl/providers/groq",
@@ -12245,6 +12259,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "nl/gateway/security/index",
+                      "nl/gateway/security/exposure-runbook",
                       "nl/gateway/security/secure-file-operations",
                       "nl/gateway/security/audit-checks",
                       "nl/gateway/operator-scopes",
@@ -12686,7 +12701,8 @@
                   "tr/install/oracle",
                   "tr/install/railway",
                   "tr/install/raspberry-pi",
-                  "tr/install/render"
+                  "tr/install/render",
+                  "tr/install/upstash"
                 ]
               },
               {
@@ -13013,7 +13029,6 @@
                   "tr/providers/fal",
                   "tr/providers/fireworks",
                   "tr/providers/github-copilot",
-                  "tr/providers/glm",
                   "tr/providers/google",
                   "tr/providers/gradium",
                   "tr/providers/groq",
@@ -13161,6 +13176,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "tr/gateway/security/index",
+                      "tr/gateway/security/exposure-runbook",
                       "tr/gateway/security/secure-file-operations",
                       "tr/gateway/security/audit-checks",
                       "tr/gateway/operator-scopes",
@@ -13602,7 +13618,8 @@
                   "uk/install/oracle",
                   "uk/install/railway",
                   "uk/install/raspberry-pi",
-                  "uk/install/render"
+                  "uk/install/render",
+                  "uk/install/upstash"
                 ]
               },
               {
@@ -13929,7 +13946,6 @@
                   "uk/providers/fal",
                   "uk/providers/fireworks",
                   "uk/providers/github-copilot",
-                  "uk/providers/glm",
                   "uk/providers/google",
                   "uk/providers/gradium",
                   "uk/providers/groq",
@@ -14077,6 +14093,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "uk/gateway/security/index",
+                      "uk/gateway/security/exposure-runbook",
                       "uk/gateway/security/secure-file-operations",
                       "uk/gateway/security/audit-checks",
                       "uk/gateway/operator-scopes",
@@ -14518,7 +14535,8 @@
                   "id/install/oracle",
                   "id/install/railway",
                   "id/install/raspberry-pi",
-                  "id/install/render"
+                  "id/install/render",
+                  "id/install/upstash"
                 ]
               },
               {
@@ -14845,7 +14863,6 @@
                   "id/providers/fal",
                   "id/providers/fireworks",
                   "id/providers/github-copilot",
-                  "id/providers/glm",
                   "id/providers/google",
                   "id/providers/gradium",
                   "id/providers/groq",
@@ -14993,6 +15010,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "id/gateway/security/index",
+                      "id/gateway/security/exposure-runbook",
                       "id/gateway/security/secure-file-operations",
                       "id/gateway/security/audit-checks",
                       "id/gateway/operator-scopes",
@@ -15434,7 +15452,8 @@
                   "pl/install/oracle",
                   "pl/install/railway",
                   "pl/install/raspberry-pi",
-                  "pl/install/render"
+                  "pl/install/render",
+                  "pl/install/upstash"
                 ]
               },
               {
@@ -15761,7 +15780,6 @@
                   "pl/providers/fal",
                   "pl/providers/fireworks",
                   "pl/providers/github-copilot",
-                  "pl/providers/glm",
                   "pl/providers/google",
                   "pl/providers/gradium",
                   "pl/providers/groq",
@@ -15909,6 +15927,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "pl/gateway/security/index",
+                      "pl/gateway/security/exposure-runbook",
                       "pl/gateway/security/secure-file-operations",
                       "pl/gateway/security/audit-checks",
                       "pl/gateway/operator-scopes",
