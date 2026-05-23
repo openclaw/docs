@@ -146,6 +146,7 @@ if (!/data-chat-copy/.test(index)
   || !/\.docs-chat-form\{[^}]*max-width:100%;overflow:hidden/.test(chatCss)
   || !/\.docs-chat-form textarea:focus\{[^}]*inset 0 0 0 4px/.test(chatCss)
   || !/\.docs-chat-form button\{position:absolute;right:34px;bottom:34px/.test(chatCss)
+  || !/\.docs-chat-auth\{[^}]*padding:22px 22px 16px/.test(chatCss)
   || !/\.docs-chat-attach/.test(chatCss)
   || !/translateX\(0\)/.test(chatCss)) {
   throw new Error("index: docs chat sidebar controls are missing");
