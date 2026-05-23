@@ -10,6 +10,7 @@ if (!apiToken) {
 const docsHost = `docs.${zoneName}`;
 const legacyHost = `documentation.${zoneName}`;
 const mintlifyHost = `mintlify.${zoneName}`;
+const mintlifyOriginHost = `mintlify-origin.${zoneName}`;
 const docsRouterScript = "openclaw-docs-router";
 const chatProxyScript = "openclaw-docs-chat-proxy";
 
@@ -26,17 +27,26 @@ await upsertDns(zone.id, {
 });
 await upsertDns(zone.id, {
   name: mintlifyHost,
+  type: "A",
+  content: "192.0.2.1",
+  proxied: true,
+  ttl: 1,
+  comment: "OpenClaw Mintlify backup docs proxy",
+});
+await upsertDns(zone.id, {
+  name: mintlifyOriginHost,
   type: "CNAME",
   content: "cname.mintlify.builders",
   proxied: false,
   ttl: 1,
-  comment: "OpenClaw Mintlify backup docs",
+  comment: "OpenClaw Mintlify backup origin",
 });
 
 await upsertRoute(zone.id, `${docsHost}/ask-molty/*`, chatProxyScript);
 await upsertRoute(zone.id, `${legacyHost}/ask-molty/*`, chatProxyScript);
 await upsertRoute(zone.id, `${docsHost}/*`, docsRouterScript);
 await upsertRoute(zone.id, `${legacyHost}/*`, docsRouterScript);
+await upsertRoute(zone.id, `${mintlifyHost}/*`, docsRouterScript);
 
 console.log(dryRun ? "dry-run complete" : "cutover complete");
 
