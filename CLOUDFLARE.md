@@ -10,7 +10,8 @@ Vincent's design is the desired steady state:
 - `docs.openclaw.ai` is served from R2 through Cloudflare's CDN, not through a Worker on normal page traffic.
 - `docs.openclaw.ai/ask-molty/*` stays on the separate Ask Molty Worker.
 - `documentation.openclaw.ai` is legacy and redirects to `docs.openclaw.ai`.
-- `mintlify.openclaw.ai` is the old Mintlify backup hostname.
+- `docs2.openclaw.ai` is the old Mintlify backup hostname.
+- `mintlify.openclaw.ai` redirects to `docs2.openclaw.ai`.
 - The docs site stays static/CDN-first, with full locale HTML, locale markdown, Pagefind search, and source indexes.
 
 The repo-side pieces are in place:
@@ -208,6 +209,7 @@ curl -I https://docs.openclaw.ai/.well-known/llms-full.txt
 curl -I https://docs.openclaw.ai/assets/docs-site.css
 curl -i https://docs.openclaw.ai/ask-molty/api/session
 curl -I https://documentation.openclaw.ai/start/getting-started
+curl -I https://docs2.openclaw.ai/
 curl -I https://mintlify.openclaw.ai/
 ```
 

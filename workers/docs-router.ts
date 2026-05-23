@@ -5,9 +5,8 @@ interface Env {
 const markdownAcceptTypes = new Set(["text/markdown", "text/x-markdown", "application/markdown"]);
 const canonicalHost = "docs.openclaw.ai";
 const legacyHosts = new Set(["documentation.openclaw.ai"]);
-const mintlifyBackupHost = "mintlify.openclaw.ai";
-const mintlifyConfiguredHost = "docs.openclaw.ai";
-const mintlifyResolveHost = "mintlify-origin.openclaw.ai";
+const mintlifyRedirectHosts = new Set(["mintlify.openclaw.ai"]);
+const mintlifyBackupHost = "docs2.openclaw.ai";
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -22,8 +21,9 @@ export default {
       return Response.redirect(url.toString(), 308);
     }
 
-    if (url.hostname === mintlifyBackupHost) {
-      return mintlifyBackupResponse(request, url);
+    if (mintlifyRedirectHosts.has(url.hostname)) {
+      url.hostname = mintlifyBackupHost;
+      return Response.redirect(url.toString(), 308);
     }
 
     if (request.method !== "GET" && request.method !== "HEAD") {
@@ -53,34 +53,6 @@ export default {
     return assetResponse(env, ctx, request, r2AssetPath(url.pathname));
   },
 };
-
-async function mintlifyBackupResponse(request: Request, url: URL): Promise<Response> {
-  const originUrl = new URL(request.url);
-  originUrl.hostname = mintlifyConfiguredHost;
-  const headers = new Headers(request.headers);
-  headers.set("Host", mintlifyConfiguredHost);
-  headers.set("X-Forwarded-Host", mintlifyBackupHost);
-  const response = await fetch(new Request(originUrl, {
-    body: request.body,
-    headers,
-    method: request.method,
-    redirect: "manual",
-  }), {
-    cf: { resolveOverride: mintlifyResolveHost },
-  });
-  const responseHeaders = new Headers(response.headers);
-  const location = responseHeaders.get("Location");
-  if (location) {
-    responseHeaders.set("Location", location.replaceAll(`https://${mintlifyConfiguredHost}`, `https://${url.hostname}`));
-  }
-  responseHeaders.set("X-OpenClaw-Docs-Origin", "mintlify-backup");
-  responseHeaders.delete("Content-Length");
-  return new Response(request.method === "HEAD" ? null : response.body, {
-    status: response.status,
-    statusText: response.statusText,
-    headers: responseHeaders,
-  });
-}
 
 function prefersMarkdown(request: Request): boolean {
   const accept = request.headers.get("Accept") ?? "";

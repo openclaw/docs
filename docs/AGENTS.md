@@ -5,7 +5,7 @@ This directory owns docs authoring, generated-site link rules, and docs i18n pol
 ## Docs Rules
 
 - Docs are hosted on the generated R2 site (`https://docs.openclaw.ai`).
-- The old Mintlify site lives at `https://mintlify.openclaw.ai` for backup.
+- The old Mintlify site lives at `https://docs2.openclaw.ai` for backup.
 - Internal doc links in `docs/**/*.md` must stay root-relative with no `.md` or `.mdx` suffix (example: `[Config](/gateway/configuration)`).
 - Section cross-references should use anchors on root-relative paths (example: `[Hooks](/gateway/configuration-reference#hooks)`).
 - Doc headings should avoid em dashes and apostrophes because anchor generation is brittle there.

@@ -8,11 +8,12 @@ if (!apiToken) {
 }
 
 const docsHost = `docs.${zoneName}`;
+const mintlifyHost = `docs2.${zoneName}`;
 const legacyHost = `documentation.${zoneName}`;
-const mintlifyHost = `mintlify.${zoneName}`;
-const mintlifyOriginHost = `mintlify-origin.${zoneName}`;
+const mintlifyRedirectHost = `mintlify.${zoneName}`;
 const docsRouterScript = "openclaw-docs-router";
 const chatProxyScript = "openclaw-docs-chat-proxy";
+const mintlifyVerificationTxt = "8fe00d8a-316a-4a67-bfc4-b91dcc1ddc6f";
 
 const zone = await findZone(zoneName);
 console.log(`zone:${zone.name}`);
@@ -26,27 +27,27 @@ await upsertDns(zone.id, {
   comment: "OpenClaw generated docs router",
 });
 await upsertDns(zone.id, {
-  name: mintlifyHost,
-  type: "A",
-  content: "192.0.2.1",
-  proxied: true,
+  name: `_cf-custom-hostname.${mintlifyHost}`,
+  type: "TXT",
+  content: mintlifyVerificationTxt,
+  proxied: false,
   ttl: 1,
-  comment: "OpenClaw Mintlify backup docs proxy",
+  comment: "OpenClaw Mintlify custom hostname verification",
 });
 await upsertDns(zone.id, {
-  name: mintlifyOriginHost,
+  name: mintlifyHost,
   type: "CNAME",
   content: "cname.mintlify.builders",
   proxied: false,
   ttl: 1,
-  comment: "OpenClaw Mintlify backup origin",
+  comment: "OpenClaw Mintlify backup docs",
 });
 
 await upsertRoute(zone.id, `${docsHost}/ask-molty/*`, chatProxyScript);
 await upsertRoute(zone.id, `${legacyHost}/ask-molty/*`, chatProxyScript);
 await upsertRoute(zone.id, `${docsHost}/*`, docsRouterScript);
 await upsertRoute(zone.id, `${legacyHost}/*`, docsRouterScript);
-await upsertRoute(zone.id, `${mintlifyHost}/*`, docsRouterScript);
+await upsertRoute(zone.id, `${mintlifyRedirectHost}/*`, docsRouterScript);
 
 console.log(dryRun ? "dry-run complete" : "cutover complete");
 
