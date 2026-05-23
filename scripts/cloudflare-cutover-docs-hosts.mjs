@@ -28,6 +28,14 @@ await upsertDns(zone.id, {
   comment: "OpenClaw generated docs router",
 });
 await upsertDns(zone.id, {
+  name: legacyHost,
+  type: "A",
+  content: "192.0.2.1",
+  proxied: true,
+  ttl: 1,
+  comment: "OpenClaw legacy docs redirect",
+});
+await upsertDns(zone.id, {
   name: `_cf-custom-hostname.${mintlifyHost}`,
   type: "TXT",
   content: mintlifyVerificationTxt,
