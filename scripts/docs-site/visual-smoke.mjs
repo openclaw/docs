@@ -100,6 +100,26 @@ async function checkDesktop() {
   await page.goto(`${base}/`, { waitUntil: "networkidle" });
   await expectVisible(page, ".page-tools [data-copy-page]", "copy page tool");
   await expectVisible(page, ".page-feedback [data-feedback-value='yes']", "page feedback");
+  const searchShortcut = await page.evaluate(() => {
+    const key = document.querySelector(".search-shortcut");
+    const style = key ? getComputedStyle(key) : null;
+    const rect = key?.getBoundingClientRect();
+    return {
+      display: style?.display,
+      width: rect?.width,
+      height: rect?.height,
+      borderRadius: style?.borderRadius,
+      borderColor: style?.borderColor,
+      fontSize: style?.fontSize,
+    };
+  });
+  if (searchShortcut.display !== "grid"
+    || searchShortcut.width < 42
+    || searchShortcut.height < 26
+    || parseFloat(searchShortcut.borderRadius ?? "0") < 8
+    || parseFloat(searchShortcut.fontSize ?? "0") < 12) {
+    throw new Error(`search shortcut keycap failed: ${JSON.stringify(searchShortcut)}`);
+  }
   const chatLauncher = await page.evaluate(() => {
     const button = document.querySelector(".docs-chat-launcher");
     const style = getComputedStyle(button);
