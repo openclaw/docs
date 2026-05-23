@@ -17,6 +17,7 @@
     "docs:check": "npm run docs:build && npm run docs:smoke && npm run docs:visual && node --check scripts/docs-site/llms-full.mjs"
   },
   "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
     "gray-matter": "4.0.3",
     "highlight.js": "11.11.1",
     "markdown-it": "14.1.1",
