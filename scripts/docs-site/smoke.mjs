@@ -328,7 +328,7 @@ if (!/url=\/(?:docs\/)?install\/digitalocean/.test(fs.readFileSync(legacyDigital
   throw new Error("legacy DigitalOcean redirect: wrong destination");
 }
 const showcase = fs.readFileSync(path.join(site, "start/showcase/index.html"), "utf8");
-if (!/href="https:\/\/www\.youtube\.com\/watch\?v=SaWSPZoPX34"/.test(showcase)) {
+if (!/href="https:\/\/x\.com\/i\/status\/2010878524543131691"/.test(showcase)) {
   throw new Error("showcase: external card href was not rendered");
 }
 console.log(`docs site smoke ok: shell, routing, skin, and hidden fixture checks passed (${artifactMode})`);
