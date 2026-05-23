@@ -9,7 +9,7 @@ if (!apiToken) {
 
 const docsHost = `docs.${zoneName}`;
 const mintlifyHost = `docs2.${zoneName}`;
-const mintlifyOriginHost = `mintlify-origin.${zoneName}`;
+const staleMintlifyOriginHost = `mintlify-origin.${zoneName}`;
 const legacyHost = `documentation.${zoneName}`;
 const mintlifyRedirectHost = `mintlify.${zoneName}`;
 const docsRouterScript = "openclaw-docs-router";
@@ -36,18 +36,19 @@ await upsertDns(zone.id, {
   comment: "OpenClaw Mintlify custom hostname verification",
 });
 await upsertDns(zone.id, {
-  name: mintlifyOriginHost,
+  name: mintlifyHost,
   type: "CNAME",
   content: "cname.mintlify.builders",
   proxied: false,
   ttl: 1,
-  comment: "OpenClaw Mintlify backup origin",
+  comment: "OpenClaw Mintlify backup docs",
 });
+await deleteDnsRecords(zone.id, staleMintlifyOriginHost);
 
 await upsertRoute(zone.id, `${docsHost}/ask-molty/*`, chatProxyScript);
 await upsertRoute(zone.id, `${legacyHost}/ask-molty/*`, chatProxyScript);
 await upsertRoute(zone.id, `${docsHost}/*`, docsRouterScript);
-await upsertRoute(zone.id, `${mintlifyHost}/*`, docsRouterScript);
+await deleteRoute(zone.id, `${mintlifyHost}/*`);
 await upsertRoute(zone.id, `${legacyHost}/*`, docsRouterScript);
 await upsertRoute(zone.id, `${mintlifyRedirectHost}/*`, docsRouterScript);
 
@@ -88,6 +89,19 @@ async function upsertDns(zoneId, desired) {
   console.log(`dns:created:${desired.name}:${desired.type}`);
 }
 
+async function deleteDnsRecords(zoneId, name) {
+  const existing = await cloudflare(`/zones/${zoneId}/dns_records?name=${encodeURIComponent(name)}&per_page=100`);
+  const records = existing.result ?? [];
+  if (records.length === 0) {
+    console.log(`dns:absent:${name}`);
+    return;
+  }
+  for (const record of records) {
+    await mutate(`/zones/${zoneId}/dns_records/${record.id}`, { method: "DELETE" });
+    console.log(`dns:deleted:${record.name}:${record.type}`);
+  }
+}
+
 async function upsertRoute(zoneId, pattern, script) {
   const existing = await cloudflare(`/zones/${zoneId}/workers/routes?per_page=100`);
   const routes = existing.result ?? [];
@@ -110,6 +124,18 @@ async function upsertRoute(zoneId, pattern, script) {
     body,
   });
   console.log(`route:created:${pattern}`);
+}
+
+async function deleteRoute(zoneId, pattern) {
+  const existing = await cloudflare(`/zones/${zoneId}/workers/routes?per_page=100`);
+  const routes = existing.result ?? [];
+  const match = routes.find((route) => route.pattern === pattern);
+  if (!match) {
+    console.log(`route:absent:${pattern}`);
+    return;
+  }
+  await mutate(`/zones/${zoneId}/workers/routes/${match.id}`, { method: "DELETE" });
+  console.log(`route:deleted:${pattern}`);
 }
 
 async function mutate(path, init) {
