@@ -144,6 +144,7 @@ if (!/data-chat-copy/.test(index)
   || !/\.docs-chat-log\{[^}]*overflow-x:hidden/.test(chatCss)
   || !/\.docs-chat-message\{[^}]*overflow-wrap:anywhere/.test(chatCss)
   || !/\.docs-chat-form\{[^}]*max-width:100%;overflow:hidden/.test(chatCss)
+  || !/\.docs-chat:not\(\[data-chat-auth-state="ready"\]\) \.docs-chat-form\{display:none/.test(chatCss)
   || !/\.docs-chat-form textarea:focus\{[^}]*inset 0 0 0 4px/.test(chatCss)
   || !/\.docs-chat-form button\{position:absolute;right:34px;bottom:34px/.test(chatCss)
   || !/\.docs-chat-auth\{[^}]*padding:22px 22px 16px/.test(chatCss)
@@ -225,7 +226,11 @@ if (!/function setNavOpen/.test(siteJs) || !/body\.nav-open:before/.test(siteCss
 if (/data-locale/.test(siteJs)) {
   throw new Error("assets: stale native language select handler is still present");
 }
-if (!/function initChat/.test(siteJs) || !/data-chat-form/.test(siteJs)) {
+if (!/function initChat/.test(siteJs)
+  || !/data-chat-form/.test(siteJs)
+  || !/chat\.dataset\.chatAuthState=state/.test(siteJs)
+  || !/form\.inert=!ready/.test(siteJs)
+  || !/input\.readOnly=!ready/.test(siteJs)) {
   throw new Error("assets: docs chat behavior is missing");
 }
 if (!/function runSearch/.test(siteJs) || !/setTimeout\(\(\)=>runSearch\(expandSearchQuery\(q\),id\),140\)/.test(siteJs)) {
