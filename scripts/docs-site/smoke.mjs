@@ -117,6 +117,20 @@ if (!index.includes(`<link rel="canonical" href="${expectedOrigin}/">`)) {
 if (!index.includes(`<meta property="og:url" content="${expectedOrigin}/">`)) {
   throw new Error(`index: og:url should use ${expectedOrigin}`);
 }
+const gettingStarted = fs.readFileSync(path.join(site, "start/getting-started/index.html"), "utf8");
+const gettingStartedOgImage = `${expectedOrigin}/og/start/getting-started.png`;
+if (!fs.existsSync(path.join(site, "og/start/getting-started.png"))) {
+  throw new Error("start/getting-started: per-page og image was not generated");
+}
+if (!gettingStarted.includes(`<meta property="og:image" content="${gettingStartedOgImage}">`)) {
+  throw new Error("start/getting-started: og:image does not use the per-page card");
+}
+if (!gettingStarted.includes(`<meta name="twitter:image" content="${gettingStartedOgImage}">`)) {
+  throw new Error("start/getting-started: twitter:image does not use the per-page card");
+}
+if (gettingStarted.includes(`${expectedOrigin}/og-card.png`)) {
+  throw new Error("start/getting-started: metadata fell back to the generic og-card.png");
+}
 if (previewOrigin !== expectedOrigin && /<link rel="canonical"[^>]+documentation\.openclaw\.ai/.test(index)) {
   throw new Error(`index: canonical link should not use preview origin ${previewOrigin}`);
 }

@@ -2,10 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
-import { execFile, execFileSync } from "node:child_process";
-import { promisify } from "node:util";
-
-const execFileAsync = promisify(execFile);
+import { Worker } from "node:worker_threads";
 import matter from "gray-matter";
 
 import { ignoredDocDirs, ignoredDocFiles, localeLabels, mintlifyLocaleToDir, rtlLocales } from "./config.mjs";
@@ -28,7 +25,6 @@ const canonicalOrigin = (process.env.DOCS_SITE_CANONICAL_ORIGIN
 const llmsFullAvailable = process.env.DOCS_SITE_LLMS_FULL_AVAILABLE === "1";
 const ogImagePath = "/og-card.png";
 const renderedPageOgCards = new Set();
-const rsvgAvailable = checkRsvg();
 const chatApiUrl = process.env.DOCS_SITE_CHAT_API_URL ?? "/ask-molty/api/chat";
 const shellCss = siteCss();
 const shellJs = siteJs();
@@ -610,10 +606,6 @@ function parseSimpleAttrs(rawAttrs) {
 }
 
 async function renderPageOgCards() {
-  if (!rsvgAvailable) {
-    console.warn("rsvg-convert unavailable; skipping per-page OG cards (using base og-card.png)");
-    return;
-  }
   const enNav = navByLocale.get("en") ?? [];
   const navSlugs = collectNavSlugs(enNav);
   const ogDir = path.join(outDir, "og");
@@ -624,6 +616,7 @@ async function renderPageOgCards() {
   const concurrency = Math.max(2, Math.min(8, Number(process.env.DOCS_SITE_OG_CONCURRENCY) || 6));
   let cursor = 0;
   let count = 0;
+  const failures = [];
   await Promise.all(Array.from({ length: concurrency }, async () => {
     while (cursor < targets.length) {
       const page = targets[cursor++];
@@ -632,20 +625,44 @@ async function renderPageOgCards() {
       const outFile = path.join(ogDir, `${page.slug}.png`);
       fs.mkdirSync(path.dirname(outFile), { recursive: true });
       try {
-        const child = execFile("rsvg-convert", ["-w", "1200", "-h", "630", "-o", outFile]);
-        child.stdin.end(svg);
-        await new Promise((resolve, reject) => {
-          child.on("error", reject);
-          child.on("close", (code) => code === 0 ? resolve() : reject(new Error(`rsvg-convert exit ${code}`)));
-        });
+        fs.writeFileSync(outFile, await renderOgPng(svg));
         renderedPageOgCards.add(page.slug);
         count++;
       } catch (err) {
-        console.warn(`og card render failed for ${page.slug}: ${err.message}`);
+        failures.push(`${page.slug}: ${err.message}`);
       }
     }
   }));
+  if (failures.length) {
+    const details = failures.slice(0, 5).join("; ");
+    throw new Error(`failed to render ${failures.length}/${targets.length} per-page og cards: ${details}`);
+  }
   console.log(`rendered ${count}/${targets.length} per-page og cards in ${Date.now() - start}ms`);
+}
+
+function renderOgPng(svg) {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(new URL("./og-render-worker.mjs", import.meta.url), {
+      workerData: { svg },
+    });
+    let settled = false;
+    worker.on("message", (message) => {
+      if (settled) return;
+      settled = true;
+      if (message?.error) reject(new Error(message.error));
+      else resolve(Buffer.from(message.png));
+    });
+    worker.on("error", (err) => {
+      if (settled) return;
+      settled = true;
+      reject(err);
+    });
+    worker.on("exit", (code) => {
+      if (settled || code === 0) return;
+      settled = true;
+      reject(new Error(`og render worker exit ${code}`));
+    });
+  });
 }
 
 function collectNavSlugs(nav) {
@@ -659,15 +676,6 @@ function collectNavSlugs(nav) {
     }
   }
   return slugs;
-}
-
-function checkRsvg() {
-  try {
-    execFileSync("rsvg-convert", ["--version"], { stdio: "ignore" });
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 function writeStaticAssets() {
