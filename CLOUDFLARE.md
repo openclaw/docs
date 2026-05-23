@@ -1,14 +1,16 @@
 # Cloudflare Hosting
 
-Internal notes for `https://documentation.openclaw.ai`.
+Internal notes for `https://docs.openclaw.ai`.
 
 ## Target Design
 
 Vincent's design is the desired steady state:
 
 - Cloudflare R2 bucket `openclaw-docs` stores the full generated docs site.
-- `documentation.openclaw.ai` is served from R2 through Cloudflare's CDN, not through a Worker on normal page traffic.
-- `documentation.openclaw.ai/ask-molty/*` stays on the separate Ask Molty Worker.
+- `docs.openclaw.ai` is served from R2 through Cloudflare's CDN, not through a Worker on normal page traffic.
+- `docs.openclaw.ai/ask-molty/*` stays on the separate Ask Molty Worker.
+- `documentation.openclaw.ai` is legacy and redirects to `docs.openclaw.ai`.
+- `mintlify.openclaw.ai` is the old Mintlify backup hostname.
 - The docs site stays static/CDN-first, with full locale HTML, locale markdown, Pagefind search, and source indexes.
 
 The repo-side pieces are in place:
@@ -30,7 +32,7 @@ The repo-side pieces are in place:
 Production is cut over to R2-backed storage with a small Worker router in front:
 
 - Worker: `openclaw-docs-router`
-- Route: `documentation.openclaw.ai/*`
+- Routes: `docs.openclaw.ai/*`, `documentation.openclaw.ai/*`
 - Router storage: native `DOCS_BUCKET` R2 binding to bucket `openclaw-docs`
 - Header: `X-OpenClaw-Docs-Origin: cloudflare-r2`
 - Cache-Control follows the same policy as the R2 manifest.
@@ -183,7 +185,7 @@ Pure R2 follow-up, blocked on `Zone: Rulesets: Edit`:
    - non-root trailing-slash docs paths redirect to slashless paths.
    - cache rules match the policy above.
    - `/ask-molty/*` remains routed to `openclaw-docs-chat-proxy`.
-2. Remove the `documentation.openclaw.ai/*` route from `openclaw-docs-router`.
+2. Remove the `docs.openclaw.ai/*` and `documentation.openclaw.ai/*` routes from `openclaw-docs-router`.
 3. Purge Cloudflare cache.
 4. Live-test the URLs below.
 
@@ -192,19 +194,21 @@ Pure R2 follow-up, blocked on `Zone: Rulesets: Edit`:
 Use these after every deploy:
 
 ```sh
-curl -I https://documentation.openclaw.ai/
+curl -I https://docs.openclaw.ai/
+curl -I https://docs.openclaw.ai/start/getting-started
+curl -I https://docs.openclaw.ai/concepts/models
+curl -I https://docs.openclaw.ai/concepts/models.md
+curl -I https://docs.openclaw.ai/docs/platforms/digitalocean
+curl -I https://docs.openclaw.ai/llms.txt
+curl -I https://docs.openclaw.ai/.well-known/llms.txt
+curl -I https://docs.openclaw.ai/robots.txt
+curl -I https://docs.openclaw.ai/sitemap.xml
+curl -I https://docs.openclaw.ai/llms-full.txt
+curl -I https://docs.openclaw.ai/.well-known/llms-full.txt
+curl -I https://docs.openclaw.ai/assets/docs-site.css
+curl -i https://docs.openclaw.ai/ask-molty/api/session
 curl -I https://documentation.openclaw.ai/start/getting-started
-curl -I https://documentation.openclaw.ai/concepts/models
-curl -I https://documentation.openclaw.ai/concepts/models.md
-curl -I https://documentation.openclaw.ai/docs/platforms/digitalocean
-curl -I https://documentation.openclaw.ai/llms.txt
-curl -I https://documentation.openclaw.ai/.well-known/llms.txt
-curl -I https://documentation.openclaw.ai/robots.txt
-curl -I https://documentation.openclaw.ai/sitemap.xml
-curl -I https://documentation.openclaw.ai/llms-full.txt
-curl -I https://documentation.openclaw.ai/.well-known/llms-full.txt
-curl -I https://documentation.openclaw.ai/assets/docs-site.css
-curl -i https://documentation.openclaw.ai/ask-molty/api/session
+curl -I https://mintlify.openclaw.ai/
 ```
 
 Expected after R2 cutover:
@@ -230,7 +234,7 @@ Expected before R2 cutover:
 
 If R2 cutover misbehaves:
 
-1. Re-add the `documentation.openclaw.ai/*` route to `openclaw-docs-router`.
+1. Re-add the `docs.openclaw.ai/*` and `documentation.openclaw.ai/*` routes to `openclaw-docs-router`.
 2. Re-run `.github/workflows/pages.yml` or deploy locally:
 
    ```sh

@@ -2,6 +2,7 @@ name = "openclaw-docs-router"
 main = "workers/docs-router.ts"
 compatibility_date = "2026-05-06"
 routes = [
+  { pattern = "docs.openclaw.ai/*", zone_name = "openclaw.ai" },
   { pattern = "documentation.openclaw.ai/*", zone_name = "openclaw.ai" }
 ]
 

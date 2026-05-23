@@ -55,7 +55,7 @@ ${defs()}
 
   <g transform="translate(${PAD_X} ${FOOTER_TOP})">
     <rect width="10" height="10" rx="2" fill="#ff5a36"/>
-    <text x="22" y="9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="20" font-weight="600" fill="#ffffff">documentation.openclaw.ai</text>
+    <text x="22" y="9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="20" font-weight="600" fill="#ffffff">docs.openclaw.ai</text>
     <text x="22" y="40" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" font-weight="500" fill="#7b7472">Self-hosted gateway · AI coding agents from any chat</text>
   </g>
 

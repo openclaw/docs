@@ -47,10 +47,10 @@ jobs:
     timeout-minutes: 60
     env:
       DOCS_SITE_CANONICAL_ORIGIN: https://docs.openclaw.ai
-      DOCS_SITE_CNAME: documentation.openclaw.ai
+      DOCS_SITE_CNAME: docs.openclaw.ai
     environment:
       name: cloudflare
-      url: https://documentation.openclaw.ai
+      url: https://docs.openclaw.ai
     steps:
       - name: Check out
         uses: actions/checkout@v6

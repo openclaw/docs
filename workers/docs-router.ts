@@ -3,12 +3,19 @@ interface Env {
 }
 
 const markdownAcceptTypes = new Set(["text/markdown", "text/x-markdown", "application/markdown"]);
+const canonicalHost = "docs.openclaw.ai";
+const legacyHosts = new Set(["documentation.openclaw.ai"]);
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
     if (url.protocol === "http:") {
       url.protocol = "https:";
+      return Response.redirect(url.toString(), 308);
+    }
+
+    if (legacyHosts.has(url.hostname)) {
+      url.hostname = canonicalHost;
       return Response.redirect(url.toString(), 308);
     }
 

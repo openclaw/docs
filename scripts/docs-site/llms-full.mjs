@@ -13,7 +13,7 @@ const docsDir = path.join(sourceRoot, "docs");
 const outputDir = path.join(root, "dist", "docs-llms-full");
 const manifestPath = path.join(root, "dist", "docs-llms-full-manifest.json");
 const canonicalOrigin = (process.env.DOCS_SITE_CANONICAL_ORIGIN
-  ?? (process.env.DOCS_SITE_CNAME ? `https://${process.env.DOCS_SITE_CNAME}` : "https://documentation.openclaw.ai"))
+  ?? (process.env.DOCS_SITE_CNAME ? `https://${process.env.DOCS_SITE_CNAME}` : "https://docs.openclaw.ai"))
   .replace(/\/$/, "");
 if (!fs.existsSync(docsDir)) throw new Error(`missing docs source directory: ${path.relative(root, docsDir) || docsDir}`);
 
@@ -138,7 +138,7 @@ function componentLabel(name, attrs) {
 }
 
 function docsOrigin() {
-  return (canonicalOrigin || "https://documentation.openclaw.ai").replace(/\/$/, "");
+  return (canonicalOrigin || "https://docs.openclaw.ai").replace(/\/$/, "");
 }
 
 function pageRoute(page) {

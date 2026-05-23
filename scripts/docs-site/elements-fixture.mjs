@@ -99,7 +99,7 @@ set -euo pipefail
 openclaw status --deep
 openclaw gateway restart
 
-curl -fsSL https://documentation.openclaw.ai/llms.txt \\
+curl -fsSL https://docs.openclaw.ai/llms.txt \\
   | sed -n '1,16p'
 \`\`\`
 

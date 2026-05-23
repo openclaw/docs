@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "workers/**"
+      - "scripts/cloudflare-cutover-docs-hosts.mjs"
       - ".github/workflows/pages.yml"
       - "wrangler.toml"
       - "CLOUDFLARE.md"
@@ -16,6 +17,11 @@ on:
         required: false
         type: boolean
         default: true
+      cutover_docs_hosts:
+        description: "Move docs.openclaw.ai to the generated docs router and mintlify.openclaw.ai to Mintlify."
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   actions: write
@@ -32,7 +38,7 @@ jobs:
     timeout-minutes: 15
     environment:
       name: cloudflare
-      url: https://documentation.openclaw.ai
+      url: https://docs.openclaw.ai
     steps:
       - name: Check out
         uses: actions/checkout@v6
@@ -59,8 +65,14 @@ jobs:
             --tag "${GITHUB_SHA::12}" \
             --message "openclaw/docs ${GITHUB_SHA}"
 
+      - name: Cut over docs hostnames
+        if: github.event_name == 'workflow_dispatch' && inputs.cutover_docs_hosts == true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: node scripts/cloudflare-cutover-docs-hosts.mjs
+
       - name: Dispatch live smoke
-        if: github.event_name == 'workflow_dispatch' && inputs.deploy_worker == true
+        if: github.event_name == 'workflow_dispatch' && (inputs.deploy_worker == true || inputs.cutover_docs_hosts == true)
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run docs-live-smoke.yml --ref main

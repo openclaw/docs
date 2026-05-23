@@ -22,7 +22,7 @@ const md = createMarkdownRenderer();
 const basePath = normalizeBasePath(process.env.DOCS_SITE_BASE_PATH ?? "");
 const legacyBasePath = normalizeBasePath(process.env.DOCS_SITE_LEGACY_BASE_PATH ?? "/docs");
 const canonicalOrigin = (process.env.DOCS_SITE_CANONICAL_ORIGIN
-  ?? (process.env.DOCS_SITE_CNAME ? `https://${process.env.DOCS_SITE_CNAME}` : "https://documentation.openclaw.ai"))
+  ?? (process.env.DOCS_SITE_CNAME ? `https://${process.env.DOCS_SITE_CNAME}` : "https://docs.openclaw.ai"))
   .replace(/\/$/, "");
 const llmsFullAvailable = process.env.DOCS_SITE_LLMS_FULL_AVAILABLE === "1";
 const ogImagePath = "/og-card.png";
@@ -519,7 +519,7 @@ function englishDocsPages() {
 }
 
 function docsOrigin() {
-  return (canonicalOrigin || "https://documentation.openclaw.ai").replace(/\/$/, "");
+  return (canonicalOrigin || "https://docs.openclaw.ai").replace(/\/$/, "");
 }
 
 function chatWidget() {

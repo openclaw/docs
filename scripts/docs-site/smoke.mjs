@@ -5,9 +5,9 @@ import path from "node:path";
 const root = process.cwd();
 const site = path.join(root, "dist", "docs-site");
 const expectedOrigin = (process.env.DOCS_SITE_CANONICAL_ORIGIN
-  ?? (process.env.DOCS_SITE_CNAME ? `https://${process.env.DOCS_SITE_CNAME}` : "https://documentation.openclaw.ai"))
+  ?? (process.env.DOCS_SITE_CNAME ? `https://${process.env.DOCS_SITE_CNAME}` : "https://docs.openclaw.ai"))
   .replace(/\/$/, "");
-const previewOrigin = (process.env.DOCS_SITE_CNAME ? `https://${process.env.DOCS_SITE_CNAME}` : "https://documentation.openclaw.ai")
+const previewOrigin = (process.env.DOCS_SITE_CNAME ? `https://${process.env.DOCS_SITE_CNAME}` : "https://docs.openclaw.ai")
   .replace(/\/$/, "");
 const llmsFullAvailable = process.env.DOCS_SITE_LLMS_FULL_AVAILABLE === "1";
 const artifactMode = process.env.DOCS_SITE_ARTIFACT_MODE ?? "full";
