@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
+import { createHash } from "node:crypto";
 import { execFile, execFileSync } from "node:child_process";
 import { promisify } from "node:util";
 
@@ -29,7 +30,15 @@ const ogImagePath = "/og-card.png";
 const renderedPageOgCards = new Set();
 const rsvgAvailable = checkRsvg();
 const chatApiUrl = process.env.DOCS_SITE_CHAT_API_URL ?? "/ask-molty/api/chat";
-const shellAssetVersion = process.env.DOCS_SITE_SHELL_ASSET_VERSION ?? "7829238e80f3";
+const shellCss = siteCss();
+const shellJs = siteJs();
+const defaultShellAssetVersion = createHash("sha256")
+  .update(shellCss)
+  .update("\0")
+  .update(shellJs)
+  .digest("hex")
+  .slice(0, 12);
+const shellAssetVersion = process.env.DOCS_SITE_SHELL_ASSET_VERSION ?? defaultShellAssetVersion;
 const artifactMode = process.env.DOCS_SITE_ARTIFACT_MODE ?? "full";
 const shellOnly = artifactMode === "shell";
 if (!["full", "shell"].includes(artifactMode)) {
@@ -657,8 +666,8 @@ function checkRsvg() {
 function writeStaticAssets() {
   const assetsDir = path.join(outDir, "assets");
   fs.mkdirSync(assetsDir, { recursive: true });
-  fs.writeFileSync(path.join(assetsDir, "docs-site.css"), siteCss(), "utf8");
-  fs.writeFileSync(path.join(assetsDir, "docs-site.js"), siteJs(), "utf8");
+  fs.writeFileSync(path.join(assetsDir, "docs-site.css"), shellCss, "utf8");
+  fs.writeFileSync(path.join(assetsDir, "docs-site.js"), shellJs, "utf8");
   const mermaidDist = path.join(root, "node_modules", "mermaid", "dist");
   const mermaidEntry = path.join(mermaidDist, "mermaid.esm.min.mjs");
   if (fs.existsSync(mermaidEntry)) {

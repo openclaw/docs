@@ -143,11 +143,13 @@ if (!shellOnly) {
 if (process.env.DOCS_SITE_BASE_PATH && (/src="\/assets\//.test(index) || /href="\/assets\//.test(index))) {
   throw new Error("index: absolute asset paths were not base-path rewritten");
 }
-if (!process.env.DOCS_SITE_BASE_PATH && !/href="\/assets\/docs-site\.css\?v=7829238e80f3"/.test(index)) {
+const cssVersion = index.match(/href="[^"]*\/assets\/docs-site\.css\?v=([a-f0-9]{12})"/)?.[1];
+const jsVersion = index.match(/src="[^"]*\/assets\/docs-site\.js\?v=([a-f0-9]{12})"/)?.[1];
+if (!process.env.DOCS_SITE_BASE_PATH && !cssVersion) {
   throw new Error("index: custom-domain build did not emit root asset paths");
 }
-if (!/src="\/assets\/docs-site\.js\?v=7829238e80f3"/.test(index)) {
-  throw new Error("index: docs shell asset version is not stable");
+if (!jsVersion || cssVersion !== jsVersion) {
+  throw new Error("index: docs shell assets do not share a content version");
 }
 if (process.env.DOCS_SITE_CNAME) {
   const cnamePath = path.join(site, "CNAME");
