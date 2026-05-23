@@ -129,7 +129,13 @@ if (!/Português \(BR\)/.test(index)) {
 if (!/data-docs-chat/.test(index) || !/OPENCLAW_DOCS_CHAT_API/.test(index)) {
   throw new Error("index: docs chat widget was not rendered");
 }
-if (!/data-chat-copy/.test(index) || !/data-chat-retry/.test(index) || !/docs-chat-panel\{position:absolute;inset:0/.test(fs.readFileSync(path.join(site, "assets/docs-site.css"), "utf8"))) {
+const chatCss = fs.readFileSync(path.join(site, "assets/docs-site.css"), "utf8");
+if (!/data-chat-copy/.test(index)
+  || !/data-chat-retry/.test(index)
+  || !/data-chat-maximize/.test(index)
+  || !/body\.docs-chat-open/.test(chatCss)
+  || !/\.docs-chat\.expanded/.test(chatCss)
+  || !/translateX\(0\)/.test(chatCss)) {
   throw new Error("index: docs chat sidebar controls are missing");
 }
 if (!/class="hljs-attr">channels<\/span>/.test(index)
