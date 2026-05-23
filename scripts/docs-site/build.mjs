@@ -395,7 +395,11 @@ function icon(name) {
     "package": '<path d="m21 8-9-5-9 5 9 5 9-5Z"/><path d="m3 8 9 5 9-5"/><path d="M12 22V13"/><path d="m3 8v8l9 6 9-6V8"/>',
     "moon": '<path d="M20.9 13.5a8.5 8.5 0 0 1-10.4-10.4 8.5 8.5 0 1 0 10.4 10.4Z"/>',
     "chevron-down": '<path d="m6 9 6 6 6-6"/>',
-  };
+    "copy": '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+    "refresh-cw": '<path d="M21 12a9 9 0 0 1-15.1 6.64"/><path d="M3 12A9 9 0 0 1 18.1 5.36"/><path d="M21 3v6h-6"/><path d="M3 21v-6h6"/>',
+    "send": '<path d="m22 2-7 20-4-9-9-4 20-7Z"/><path d="M22 2 11 13"/>',
+    "trash": '<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="m19 6-1 14H6L5 6"/><path d="M10 11v5"/><path d="M14 11v5"/>',
+    };
   return `<svg ${attrs} fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${paths[name] ?? ""}</svg>`;
 }
 
@@ -536,12 +540,12 @@ function chatWidget() {
   return `<section class="docs-chat" data-docs-chat aria-label="OpenClaw docs assistant">
 <button class="docs-chat-launcher" type="button" data-chat-toggle aria-expanded="false" aria-controls="docs-chat-panel"><span aria-hidden="true">*</span><span>Ask Molty</span></button>
 <div class="docs-chat-panel" id="docs-chat-panel" role="dialog" aria-modal="false" aria-labelledby="docs-chat-title">
-<header class="docs-chat-head"><div><p>Docs agent</p><h2 id="docs-chat-title">Ask OpenClaw</h2></div><div class="docs-chat-actions"><button class="docs-chat-clear" type="button" data-chat-clear aria-label="Clear conversation" hidden>Clear</button><button type="button" data-chat-close aria-label="Close docs assistant">x</button></div></header>
+<header class="docs-chat-head"><div><p>Assistant</p><h2 id="docs-chat-title">Ask OpenClaw</h2></div><div class="docs-chat-actions"><button class="docs-chat-icon docs-chat-copy" type="button" data-chat-copy aria-label="Copy conversation">${icon("copy")}</button><button class="docs-chat-icon docs-chat-retry" type="button" data-chat-retry aria-label="Reload last answer" disabled>${icon("refresh-cw")}</button><button class="docs-chat-icon docs-chat-clear" type="button" data-chat-clear aria-label="Clear conversation" hidden>${icon("trash")}</button><button class="docs-chat-icon docs-chat-close" type="button" data-chat-close aria-label="Close docs assistant">x</button></div></header>
 <div class="docs-chat-auth" data-chat-auth hidden></div>
 <div class="docs-chat-log" data-chat-log aria-live="polite">
 <div class="docs-chat-message assistant"><p>Ask about install, channels, gateway config, or plugin APIs.</p></div>
 </div>
-<form class="docs-chat-form" data-chat-form><textarea data-chat-input rows="2" maxlength="2000" placeholder="How do I connect Telegram?"></textarea><button type="submit" data-chat-submit>Ask</button></form>
+<form class="docs-chat-form" data-chat-form><textarea data-chat-input rows="2" maxlength="2000" placeholder="Ask a question..."></textarea><button type="submit" data-chat-submit aria-label="Send">${icon("send")}</button></form>
 </div>
 </section>`;
 }

@@ -120,23 +120,40 @@ async function checkDesktop() {
     || parseFloat(searchShortcut.fontSize ?? "0") < 12) {
     throw new Error(`search shortcut keycap failed: ${JSON.stringify(searchShortcut)}`);
   }
-  const chatLauncher = await page.evaluate(() => {
-    const button = document.querySelector(".docs-chat-launcher");
-    const style = getComputedStyle(button);
-    const parseColor = (value) => {
-      const srgb = value.match(/color\(srgb\s+([0-9.]+)\s+([0-9.]+)\s+([0-9.]+)/);
-      if (srgb) return srgb.slice(1, 4).map((part) => Number(part) * 255);
-      return value.match(/\d+/g)?.slice(0, 3).map(Number) ?? [255, 255, 255];
-    };
-    const bg = parseColor(style.backgroundColor);
+  const chatSidebar = await page.evaluate(() => {
+    const chat = document.querySelector(".docs-chat");
+    const panel = document.querySelector(".docs-chat-panel");
+    const copy = document.querySelector("[data-chat-copy]");
+    const retry = document.querySelector("[data-chat-retry]");
+    const chatRect = chat?.getBoundingClientRect();
+    const panelRect = panel?.getBoundingClientRect();
+    const panelStyle = panel ? getComputedStyle(panel) : null;
+    const copyRect = copy?.getBoundingClientRect();
+    const retryRect = retry?.getBoundingClientRect();
     return {
-      bg: style.backgroundColor,
-      brightness: Math.round((bg[0] * 299 + bg[1] * 587 + bg[2] * 114) / 1000),
-      color: style.color,
+      open: chat?.classList.contains("open"),
+      panelDisplay: panelStyle?.display,
+      panelRight: panelRect ? Math.round(innerWidth - panelRect.right) : null,
+      panelTop: panelRect?.top,
+      panelHeight: panelRect?.height,
+      panelWidth: panelRect?.width,
+      chatWidth: chatRect?.width,
+      copySize: copyRect ? [copyRect.width, copyRect.height] : null,
+      retrySize: retryRect ? [retryRect.width, retryRect.height] : null,
+      retryDisabled: retry?.hasAttribute("disabled"),
     };
   });
-  if (chatLauncher.brightness > 80 || chatLauncher.color === "rgb(13, 11, 11)") {
-    throw new Error(`dark chat launcher too bright: ${JSON.stringify(chatLauncher)}`);
+  if (!chatSidebar.open
+    || chatSidebar.panelDisplay !== "grid"
+    || chatSidebar.panelRight !== 0
+    || chatSidebar.panelTop !== 0
+    || chatSidebar.panelHeight < 900
+    || chatSidebar.panelWidth < 340
+    || chatSidebar.chatWidth < 340
+    || chatSidebar.copySize?.[0] < 32
+    || chatSidebar.retrySize?.[0] < 32
+    || !chatSidebar.retryDisabled) {
+    throw new Error(`desktop chat sidebar failed: ${JSON.stringify(chatSidebar)}`);
   }
   await page.close();
 }
