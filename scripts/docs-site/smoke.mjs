@@ -133,8 +133,14 @@ const chatCss = fs.readFileSync(path.join(site, "assets/docs-site.css"), "utf8")
 if (!/data-chat-copy/.test(index)
   || !/data-chat-retry/.test(index)
   || !/data-chat-maximize/.test(index)
+  || !/docs-chat-empty/.test(index)
+  || !/Responses are generated using AI/.test(index)
+  || !/data-chat-copy[^>]+hidden/.test(index)
+  || !/data-chat-retry[^>]+hidden/.test(index)
   || !/body\.docs-chat-open/.test(chatCss)
   || !/\.docs-chat\.expanded/.test(chatCss)
+  || !/\.docs-chat-form button\{position:absolute;right:34px;bottom:34px/.test(chatCss)
+  || !/\.docs-chat-attach/.test(chatCss)
   || !/translateX\(0\)/.test(chatCss)) {
   throw new Error("index: docs chat sidebar controls are missing");
 }
