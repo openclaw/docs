@@ -68,7 +68,6 @@ jobs:
       - name: Cut over docs hostnames
         if: github.event_name == 'workflow_dispatch' && inputs.cutover_docs_hosts == true
         env:
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: node scripts/cloudflare-cutover-docs-hosts.mjs
 

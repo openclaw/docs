@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 const apiToken = process.env.CLOUDFLARE_API_TOKEN;
-const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
 const zoneName = process.env.CLOUDFLARE_ZONE_NAME ?? "openclaw.ai";
 const dryRun = process.argv.includes("--dry-run");
 
@@ -10,12 +9,12 @@ if (!apiToken) {
 
 const docsHost = `docs.${zoneName}`;
 const mintlifyHost = `docs2.${zoneName}`;
+const mintlifyOriginHost = `mintlify-origin.${zoneName}`;
 const legacyHost = `documentation.${zoneName}`;
 const mintlifyRedirectHost = `mintlify.${zoneName}`;
 const docsRouterScript = "openclaw-docs-router";
 const chatProxyScript = "openclaw-docs-chat-proxy";
 const mintlifyVerificationTxt = "8fe00d8a-316a-4a67-bfc4-b91dcc1ddc6f";
-const docsBucket = "openclaw-docs";
 
 const zone = await findZone(zoneName);
 console.log(`zone:${zone.name}`);
@@ -36,19 +35,19 @@ await upsertDns(zone.id, {
   ttl: 1,
   comment: "OpenClaw Mintlify custom hostname verification",
 });
-await deleteR2CustomDomain(mintlifyHost);
 await upsertDns(zone.id, {
-  name: mintlifyHost,
+  name: mintlifyOriginHost,
   type: "CNAME",
   content: "cname.mintlify.builders",
   proxied: false,
   ttl: 1,
-  comment: "OpenClaw Mintlify backup docs",
+  comment: "OpenClaw Mintlify backup origin",
 });
 
 await upsertRoute(zone.id, `${docsHost}/ask-molty/*`, chatProxyScript);
 await upsertRoute(zone.id, `${legacyHost}/ask-molty/*`, chatProxyScript);
 await upsertRoute(zone.id, `${docsHost}/*`, docsRouterScript);
+await upsertRoute(zone.id, `${mintlifyHost}/*`, docsRouterScript);
 await upsertRoute(zone.id, `${legacyHost}/*`, docsRouterScript);
 await upsertRoute(zone.id, `${mintlifyRedirectHost}/*`, docsRouterScript);
 
@@ -59,21 +58,6 @@ async function findZone(name) {
   const zone = data.result?.find((entry) => entry.name === name);
   if (!zone) throw new Error(`active zone not found: ${name}`);
   return zone;
-}
-
-async function deleteR2CustomDomain(domain) {
-  if (!accountId) throw new Error("CLOUDFLARE_ACCOUNT_ID is required to detach the old docs2 R2 custom domain");
-  const path = `/accounts/${accountId}/r2/buckets/${encodeURIComponent(docsBucket)}/domains/custom/${encodeURIComponent(domain)}`;
-  try {
-    await mutate(path, { method: "DELETE" });
-    console.log(`r2-custom-domain:deleted:${domain}`);
-  } catch (error) {
-    if (error instanceof Error && /10007|not found/i.test(error.message)) {
-      console.log(`r2-custom-domain:absent:${domain}`);
-      return;
-    }
-    throw error;
-  }
 }
 
 async function upsertDns(zoneId, desired) {
