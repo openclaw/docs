@@ -141,6 +141,8 @@ if (!/data-chat-copy/.test(index)
   || !/\.docs-chat\.expanded/.test(chatCss)
   || !/\.docs-chat-panel>\*\{min-width:0;max-width:100%/.test(chatCss)
   || !/\.docs-chat-actions\{[^}]*gap:6px/.test(chatCss)
+  || !/\.docs-chat-copy\[data-copy-state\] \.icon\{display:none/.test(chatCss)
+  || !/\.docs-chat-copy\[data-copy-state="copied"\]:before\{content:"✓"/.test(chatCss)
   || !/\.docs-chat-log\{[^}]*overflow-x:hidden/.test(chatCss)
   || !/\.docs-chat-message\{[^}]*overflow-wrap:anywhere/.test(chatCss)
   || !/\.docs-chat-form\{[^}]*max-width:100%;overflow:hidden/.test(chatCss)
@@ -310,6 +312,9 @@ if (!/function initCodeGroups/.test(siteJs) || !/className="oc-code-tab"/.test(s
 }
 if (!/function handleDocsControlClick/.test(siteJs) || !/async function copyText/.test(siteJs)) {
   throw new Error("assets: copy and feedback controls are missing");
+}
+if (!/Nothing to copy/.test(siteJs) || !/data-chat-copy/.test(siteJs)) {
+  throw new Error("assets: chat copy feedback is missing");
 }
 if (!/function showCopyFeedback/.test(siteJs) || !/data-copy-label="Copy code"/.test(elementsIndex)) {
   throw new Error("assets: code copy controls should use stateful icon feedback");
