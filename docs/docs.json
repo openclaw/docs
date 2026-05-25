@@ -1248,6 +1248,7 @@
                   "plugins/sdk-provider-plugins",
                   "plugins/cli-backend-plugins",
                   "plugins/hooks",
+                  "plugins/plugin-permission-requests",
                   "plugins/adding-capabilities"
                 ]
               },
@@ -2823,6 +2824,7 @@
                   "zh-TW/plugins/sdk-provider-plugins",
                   "zh-TW/plugins/cli-backend-plugins",
                   "zh-TW/plugins/hooks",
+                  "zh-TW/plugins/plugin-permission-requests",
                   "zh-TW/plugins/adding-capabilities"
                 ]
               },
@@ -3742,6 +3744,7 @@
                   "ja-JP/plugins/sdk-provider-plugins",
                   "ja-JP/plugins/cli-backend-plugins",
                   "ja-JP/plugins/hooks",
+                  "ja-JP/plugins/plugin-permission-requests",
                   "ja-JP/plugins/adding-capabilities"
                 ]
               },
@@ -4661,6 +4664,7 @@
                   "es/plugins/sdk-provider-plugins",
                   "es/plugins/cli-backend-plugins",
                   "es/plugins/hooks",
+                  "es/plugins/plugin-permission-requests",
                   "es/plugins/adding-capabilities"
                 ]
               },
@@ -5580,6 +5584,7 @@
                   "pt-BR/plugins/sdk-provider-plugins",
                   "pt-BR/plugins/cli-backend-plugins",
                   "pt-BR/plugins/hooks",
+                  "pt-BR/plugins/plugin-permission-requests",
                   "pt-BR/plugins/adding-capabilities"
                 ]
               },
@@ -6499,6 +6504,7 @@
                   "ko/plugins/sdk-provider-plugins",
                   "ko/plugins/cli-backend-plugins",
                   "ko/plugins/hooks",
+                  "ko/plugins/plugin-permission-requests",
                   "ko/plugins/adding-capabilities"
                 ]
               },
@@ -7418,6 +7424,7 @@
                   "de/plugins/sdk-provider-plugins",
                   "de/plugins/cli-backend-plugins",
                   "de/plugins/hooks",
+                  "de/plugins/plugin-permission-requests",
                   "de/plugins/adding-capabilities"
                 ]
               },
@@ -8337,6 +8344,7 @@
                   "fr/plugins/sdk-provider-plugins",
                   "fr/plugins/cli-backend-plugins",
                   "fr/plugins/hooks",
+                  "fr/plugins/plugin-permission-requests",
                   "fr/plugins/adding-capabilities"
                 ]
               },
@@ -9256,6 +9264,7 @@
                   "ar/plugins/sdk-provider-plugins",
                   "ar/plugins/cli-backend-plugins",
                   "ar/plugins/hooks",
+                  "ar/plugins/plugin-permission-requests",
                   "ar/plugins/adding-capabilities"
                 ]
               },
@@ -10175,6 +10184,7 @@
                   "it/plugins/sdk-provider-plugins",
                   "it/plugins/cli-backend-plugins",
                   "it/plugins/hooks",
+                  "it/plugins/plugin-permission-requests",
                   "it/plugins/adding-capabilities"
                 ]
               },
@@ -11094,6 +11104,7 @@
                   "vi/plugins/sdk-provider-plugins",
                   "vi/plugins/cli-backend-plugins",
                   "vi/plugins/hooks",
+                  "vi/plugins/plugin-permission-requests",
                   "vi/plugins/adding-capabilities"
                 ]
               },
@@ -12013,6 +12024,7 @@
                   "nl/plugins/sdk-provider-plugins",
                   "nl/plugins/cli-backend-plugins",
                   "nl/plugins/hooks",
+                  "nl/plugins/plugin-permission-requests",
                   "nl/plugins/adding-capabilities"
                 ]
               },
@@ -12932,6 +12944,7 @@
                   "tr/plugins/sdk-provider-plugins",
                   "tr/plugins/cli-backend-plugins",
                   "tr/plugins/hooks",
+                  "tr/plugins/plugin-permission-requests",
                   "tr/plugins/adding-capabilities"
                 ]
               },
@@ -13851,6 +13864,7 @@
                   "uk/plugins/sdk-provider-plugins",
                   "uk/plugins/cli-backend-plugins",
                   "uk/plugins/hooks",
+                  "uk/plugins/plugin-permission-requests",
                   "uk/plugins/adding-capabilities"
                 ]
               },
@@ -14770,6 +14784,7 @@
                   "id/plugins/sdk-provider-plugins",
                   "id/plugins/cli-backend-plugins",
                   "id/plugins/hooks",
+                  "id/plugins/plugin-permission-requests",
                   "id/plugins/adding-capabilities"
                 ]
               },
@@ -15689,6 +15704,7 @@
                   "pl/plugins/sdk-provider-plugins",
                   "pl/plugins/cli-backend-plugins",
                   "pl/plugins/hooks",
+                  "pl/plugins/plugin-permission-requests",
                   "pl/plugins/adding-capabilities"
                 ]
               },
