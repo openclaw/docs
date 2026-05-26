@@ -256,6 +256,11 @@ sequenceDiagram
   Gateway-->>User: healthy
 </Mermaid>
 
+\`\`\`mermaid
+flowchart LR
+  A["Ready<br>state"] --> B["Rendered"]
+\`\`\`
+
 <Mermaid>
 flowchart LR
   Broken -->

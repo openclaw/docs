@@ -310,6 +310,8 @@ for (const marker of [
   'class="oc-tile-group"',
   'class="oc-tile"',
   'class="oc-mermaid"',
+  'Ready&lt;br&gt;state',
+  'Broken --&gt;',
   'data-code-copy',
   'class="code-line is-highlighted"',
   'data-prompt-copy',
