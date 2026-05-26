@@ -256,6 +256,11 @@ sequenceDiagram
   Gateway-->>User: healthy
 </Mermaid>
 
+<Mermaid>
+flowchart LR
+  Broken -->
+</Mermaid>
+
 ## Frame
 
 <Frame caption="OpenClaw docs frame">

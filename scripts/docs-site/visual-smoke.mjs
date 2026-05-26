@@ -74,6 +74,15 @@ async function checkDesktop() {
   await expectVisible(page, ".oc-tile-group .oc-tile", "tiles");
   await expectVisible(page, ".oc-mermaid", "mermaid block");
   await page.locator(".oc-mermaid.is-rendered svg").first().waitFor({ state: "visible", timeout: 10000 });
+  await page.locator(".oc-mermaid.is-error pre code").first().waitFor({ state: "visible", timeout: 10000 });
+  const mermaidErrorLeak = await page.evaluate(() => ({
+    bodyText: document.body.innerText.includes("Syntax error in text"),
+    leakedSvg: [...document.querySelectorAll("svg")]
+      .some((svg) => !svg.closest("[data-mermaid]") && svg.textContent?.includes("Syntax error in text")),
+  }));
+  if (mermaidErrorLeak.bodyText || mermaidErrorLeak.leakedSvg) {
+    throw new Error(`mermaid error artifact leaked into shell: ${JSON.stringify(mermaidErrorLeak)}`);
+  }
   const componentSkin = await page.evaluate(() => {
     const code = getComputedStyle(document.querySelector(".oc-code"));
     const pre = getComputedStyle(document.querySelector(".oc-code pre"));
