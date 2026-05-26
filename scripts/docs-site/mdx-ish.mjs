@@ -204,8 +204,8 @@ export function renderMdxish(markdown, md) {
 function preprocess(input) {
   let out = input.replace(/\r\n/g, "\n");
   out = out.replace(/^import\s+.+?;?\s*$/gm, "");
-  out = out.replace(/<br\s*\/?>/gi, "\n");
   out = out.replace(/<Mermaid\b[^>]*>([\s\S]*?)<\/Mermaid>/g, (_, body) => `\n${marker("mermaidBlock", body)}\n`);
+  out = replaceBreaksOutsideFences(out);
 
   out = out.replace(/<Card\b([^>]*)\/>/g, (_, attrs) => `${marker("cardSelf", attrs)}\n`);
   out = out.replace(/<Card\b([^>]*)>/g, (_, attrs) => `\n${marker("cardOpen", attrs)}\n`);
@@ -254,6 +254,23 @@ function preprocess(input) {
   out = out.replace(/<([A-Z][A-Za-z0-9_.-]*)([^>]*)>/g, (_, name, attrs) => escapeHtml(`<${name}${attrs}>`));
   out = out.replace(/<\/([A-Z][A-Za-z0-9_.-]*)>/g, (_, name) => escapeHtml(`</${name}>`));
   return dedentComponentChildren(out);
+}
+
+function replaceBreaksOutsideFences(input) {
+  const lines = input.split("\n");
+  let fence = null;
+  return lines.map((line) => {
+    const marker = line.match(/^ {0,3}(`{3,}|~{3,})/)?.[1];
+    if (marker) {
+      if (!fence) {
+        fence = { char: marker[0], length: marker.length };
+      } else if (marker[0] === fence.char && marker.length >= fence.length) {
+        fence = null;
+      }
+      return line;
+    }
+    return fence ? line : line.replace(/<br\s*\/?>/gi, "\n");
+  }).join("\n");
 }
 
 function postprocess(html) {
