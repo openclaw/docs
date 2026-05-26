@@ -34,6 +34,7 @@ if (!shellOnly) {
     "robots.txt",
     "sitemap.xml",
     "pagefind/pagefind.js",
+    "docs-search.json",
   );
 }
 const poison = [
@@ -94,6 +95,15 @@ if (!shellOnly) {
   }
   if (previewOrigin !== expectedOrigin && sitemap.includes(previewOrigin)) {
     throw new Error(`sitemap.xml: preview origin ${previewOrigin} should not be advertised`);
+  }
+}
+if (!shellOnly) {
+  const searchIndex = JSON.parse(fs.readFileSync(path.join(site, "docs-search.json"), "utf8"));
+  if (!Array.isArray(searchIndex.entries) || searchIndex.entries.length < 100) {
+    throw new Error("docs-search.json: search index is missing entries");
+  }
+  if (!searchIndex.entries.some((entry) => entry.title === "Getting started" && entry.url === "/start/getting-started")) {
+    throw new Error("docs-search.json: expected getting started entry missing");
   }
 }
 const zhReactions = fs.readFileSync(path.join(site, "zh-CN/tools/reactions/index.html"), "utf8");

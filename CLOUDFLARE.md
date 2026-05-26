@@ -12,7 +12,7 @@ Vincent's design is the desired steady state:
 - `documentation.openclaw.ai` is legacy and redirects to `docs.openclaw.ai`.
 - `docs2.openclaw.ai` is the old Mintlify backup hostname.
 - `mintlify.openclaw.ai` redirects to `docs2.openclaw.ai`.
-- The docs site stays static/CDN-first, with full locale HTML, locale markdown, Pagefind search, and source indexes.
+- The docs site stays static/CDN-first, with full locale HTML, locale markdown, Pagefind search, the `/api/search` CLI endpoint, and source indexes.
 
 The repo-side pieces are in place:
 
@@ -43,6 +43,7 @@ Why a Worker still exists:
 - R2 object storage does not serve `/` as `/index.html` without router logic.
 - R2 object storage does not redirect non-root trailing slash docs paths to slashless paths.
 - R2 object storage cannot negotiate markdown from `Accept: text/markdown` without router logic.
+- The CLI search endpoint `/api/search` reads `docs-search.json` from R2 and needs Worker logic.
 - The available Cloudflare auth can manage R2, DNS, custom domains, and Worker routes, but not zone Rulesets/Page Rules. Dashboard-session replay via `mcporter chrome-devtools` also returned Cloudflare API auth error `10000` for `/rulesets`.
 
 The pure Vincent target remains possible after a Cloudflare token/session with `Zone: Rulesets: Edit` is available. Until then, the Worker is the compatibility layer and R2 is the storage/source of truth.
@@ -204,6 +205,7 @@ curl -I https://docs.openclaw.ai/llms.txt
 curl -I https://docs.openclaw.ai/.well-known/llms.txt
 curl -I https://docs.openclaw.ai/robots.txt
 curl -I https://docs.openclaw.ai/sitemap.xml
+curl -sS 'https://docs.openclaw.ai/api/search?q=heartbeat'
 curl -I https://docs.openclaw.ai/llms-full.txt
 curl -I https://docs.openclaw.ai/.well-known/llms-full.txt
 curl -I https://docs.openclaw.ai/assets/docs-site.css
@@ -220,6 +222,7 @@ Expected after R2 cutover:
 - `/llms.txt` and `/.well-known/llms.txt` return the lightweight docs index.
 - `/robots.txt` returns `200 text/plain`.
 - `/sitemap.xml` returns `200 application/xml` with mutable cache headers, not `immutable`.
+- `/api/search?q=heartbeat` returns JSON search results from `X-OpenClaw-Docs-Origin: cloudflare-r2`.
 - `/llms-full.txt` and `/.well-known/llms-full.txt` return `200 text/plain` after the scheduled `LLMs Full Corpus` workflow has uploaded the nightly corpus.
 - docs responses include `X-OpenClaw-Docs-Origin: cloudflare-r2`.
 - repeated router requests become `X-OpenClaw-Docs-Cache: HIT`.

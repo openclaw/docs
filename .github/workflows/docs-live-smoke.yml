@@ -118,6 +118,58 @@ jobs:
             if (!pattern.test(text)) throw new Error(`${path}: expected marker missing`);
             console.log(`${path}: ok (${contentType})`);
           };
+          const assertSearch = async () => {
+            const url = new URL("/api/search", baseUrl);
+            url.searchParams.set("q", "heartbeat");
+            url.searchParams.set("_openclaw_smoke", process.env.GITHUB_SHA);
+            const response = await fetch(url, {
+              headers: {
+                accept: "application/json",
+                "cache-control": "no-cache",
+                pragma: "no-cache",
+              },
+            });
+            if (!response.ok) throw new Error(`/api/search: HTTP ${response.status}`);
+            const contentType = response.headers.get("content-type") ?? "";
+            if (!contentType.includes("application/json")) {
+              throw new Error(`/api/search: expected JSON content-type, got ${contentType}`);
+            }
+            const payload = await response.json();
+            if (!Array.isArray(payload.results) || payload.results.length === 0) {
+              throw new Error("/api/search: no heartbeat results");
+            }
+            if (!payload.results.some((entry) => /heartbeat/i.test(`${entry.title} ${entry.snippet ?? ""}`))) {
+              throw new Error("/api/search: heartbeat marker missing from results");
+            }
+            console.log("/api/search: ok");
+          };
+          const assertLegacyMcpSearch = async () => {
+            const response = await fetch(new URL("/mcp", baseUrl), {
+              method: "POST",
+              headers: {
+                accept: "application/json",
+                "cache-control": "no-cache",
+                "content-type": "application/json",
+                pragma: "no-cache",
+              },
+              body: JSON.stringify({
+                jsonrpc: "2.0",
+                id: 1,
+                method: "tools/call",
+                params: {
+                  name: "search_open_claw",
+                  arguments: { query: "heartbeat" },
+                },
+              }),
+            });
+            if (!response.ok) throw new Error(`/mcp: HTTP ${response.status}`);
+            const payload = await response.json();
+            const text = payload?.result?.content?.[0]?.text ?? "";
+            if (!/Title: .+heartbeat|Content: .+heartbeat/i.test(text)) {
+              throw new Error("/mcp: heartbeat marker missing from legacy MCP output");
+            }
+            console.log("/mcp: ok");
+          };
           const assertHeader = async (path, name, required, forbidden) => {
             const response = await fetch(new URL(path, baseUrl), {
               method: "HEAD",
@@ -145,6 +197,8 @@ jobs:
               await assertText("/llms.txt", /## Documentation Index/);
               await assertText("/.well-known/llms.txt", /## Documentation Index/);
               await assertText("/sitemap.xml", /<urlset/);
+              await assertSearch();
+              await assertLegacyMcpSearch();
               await assertHeader("/sitemap.xml", "cache-control", /max-age=300/, /immutable/);
               await assertHeader("/assets/docs-site.css", "cache-control", /max-age=60/, /immutable/);
               await assertHeader("/assets/docs-site.css", "cloudflare-cdn-cache-control", /s-maxage=3600/, /immutable/);
