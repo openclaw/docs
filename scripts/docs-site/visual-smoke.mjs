@@ -74,6 +74,10 @@ async function checkDesktop() {
   await expectVisible(page, ".oc-tile-group .oc-tile", "tiles");
   await expectVisible(page, ".oc-mermaid", "mermaid block");
   await page.locator(".oc-mermaid.is-rendered svg").first().waitFor({ state: "visible", timeout: 10000 });
+  await page.waitForFunction(() =>
+    [...document.querySelectorAll(".oc-mermaid.is-rendered")]
+      .some((block) => block.getAttribute("data-mermaid")?.includes("<br>") && block.querySelector("svg"))
+  );
   await page.locator(".oc-mermaid.is-error pre code").first().waitFor({ state: "visible", timeout: 10000 });
   const mermaidErrorLeak = await page.evaluate(() => ({
     bodyText: document.body.innerText.includes("Syntax error in text"),
