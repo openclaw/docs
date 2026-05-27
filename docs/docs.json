@@ -61,16 +61,32 @@
       "destination": "/channels/matrix-migration"
     },
     {
+      "source": "/mcp",
+      "destination": "/cli/mcp"
+    },
+    {
       "source": "/help/gpt54-codex-agentic-parity",
-      "destination": "/help/gpt55-codex-agentic-parity"
+      "destination": "/agent-runtime-architecture"
     },
     {
       "source": "/help/gpt54-codex-agentic-parity-maintainers",
-      "destination": "/help/gpt55-codex-agentic-parity-maintainers"
+      "destination": "/agent-runtime-architecture"
     },
     {
-      "source": "/mcp",
-      "destination": "/cli/mcp"
+      "source": "/help/gpt55-codex-agentic-parity",
+      "destination": "/agent-runtime-architecture"
+    },
+    {
+      "source": "/help/gpt55-codex-agentic-parity-maintainers",
+      "destination": "/agent-runtime-architecture"
+    },
+    {
+      "source": "/pi",
+      "destination": "/agent-runtime-architecture"
+    },
+    {
+      "source": "/pi-dev",
+      "destination": "/openclaw-agent-runtime"
     },
     {
       "source": "/providers/modelstudio",
@@ -1060,7 +1076,7 @@
                 "group": "Advanced setup",
                 "pages": [
                   "start/setup",
-                  "pi-dev"
+                  "openclaw-agent-runtime"
                 ]
               }
             ]
@@ -1825,7 +1841,7 @@
               {
                 "group": "Technical reference",
                 "pages": [
-                  "pi",
+                  "agent-runtime-architecture",
                   "reference/wizard",
                   "reference/token-use",
                   "reference/secretref-credential-surface",
@@ -1845,9 +1861,7 @@
                   "concepts/markdown-formatting",
                   "concepts/typing-indicators",
                   "concepts/usage-tracking",
-                  "concepts/timezone",
-                  "help/gpt55-codex-agentic-parity",
-                  "help/gpt55-codex-agentic-parity-maintainers"
+                  "concepts/timezone"
                 ]
               },
               {
@@ -2636,7 +2650,7 @@
                 "group": "Advanced setup",
                 "pages": [
                   "zh-TW/start/setup",
-                  "zh-TW/pi-dev"
+                  "zh-TW/openclaw-agent-runtime"
                 ]
               }
             ]
@@ -3368,7 +3382,7 @@
               {
                 "group": "Technical reference",
                 "pages": [
-                  "zh-TW/pi",
+                  "zh-TW/agent-runtime-architecture",
                   "zh-TW/reference/wizard",
                   "zh-TW/reference/token-use",
                   "zh-TW/reference/secretref-credential-surface",
@@ -3388,9 +3402,7 @@
                   "zh-TW/concepts/markdown-formatting",
                   "zh-TW/concepts/typing-indicators",
                   "zh-TW/concepts/usage-tracking",
-                  "zh-TW/concepts/timezone",
-                  "zh-TW/help/gpt55-codex-agentic-parity",
-                  "zh-TW/help/gpt55-codex-agentic-parity-maintainers"
+                  "zh-TW/concepts/timezone"
                 ]
               },
               {
@@ -3556,7 +3568,7 @@
                 "group": "Advanced setup",
                 "pages": [
                   "ja-JP/start/setup",
-                  "ja-JP/pi-dev"
+                  "ja-JP/openclaw-agent-runtime"
                 ]
               }
             ]
@@ -4288,7 +4300,7 @@
               {
                 "group": "Technical reference",
                 "pages": [
-                  "ja-JP/pi",
+                  "ja-JP/agent-runtime-architecture",
                   "ja-JP/reference/wizard",
                   "ja-JP/reference/token-use",
                   "ja-JP/reference/secretref-credential-surface",
@@ -4308,9 +4320,7 @@
                   "ja-JP/concepts/markdown-formatting",
                   "ja-JP/concepts/typing-indicators",
                   "ja-JP/concepts/usage-tracking",
-                  "ja-JP/concepts/timezone",
-                  "ja-JP/help/gpt55-codex-agentic-parity",
-                  "ja-JP/help/gpt55-codex-agentic-parity-maintainers"
+                  "ja-JP/concepts/timezone"
                 ]
               },
               {
@@ -4476,7 +4486,7 @@
                 "group": "Advanced setup",
                 "pages": [
                   "es/start/setup",
-                  "es/pi-dev"
+                  "es/openclaw-agent-runtime"
                 ]
               }
             ]
@@ -5208,7 +5218,7 @@
               {
                 "group": "Technical reference",
                 "pages": [
-                  "es/pi",
+                  "es/agent-runtime-architecture",
                   "es/reference/wizard",
                   "es/reference/token-use",
                   "es/reference/secretref-credential-surface",
@@ -5228,9 +5238,7 @@
                   "es/concepts/markdown-formatting",
                   "es/concepts/typing-indicators",
                   "es/concepts/usage-tracking",
-                  "es/concepts/timezone",
-                  "es/help/gpt55-codex-agentic-parity",
-                  "es/help/gpt55-codex-agentic-parity-maintainers"
+                  "es/concepts/timezone"
                 ]
               },
               {
@@ -5396,7 +5404,7 @@
                 "group": "Advanced setup",
                 "pages": [
                   "pt-BR/start/setup",
-                  "pt-BR/pi-dev"
+                  "pt-BR/openclaw-agent-runtime"
                 ]
               }
             ]
@@ -6128,7 +6136,7 @@
               {
                 "group": "Technical reference",
                 "pages": [
-                  "pt-BR/pi",
+                  "pt-BR/agent-runtime-architecture",
                   "pt-BR/reference/wizard",
                   "pt-BR/reference/token-use",
                   "pt-BR/reference/secretref-credential-surface",
@@ -6148,9 +6156,7 @@
                   "pt-BR/concepts/markdown-formatting",
                   "pt-BR/concepts/typing-indicators",
                   "pt-BR/concepts/usage-tracking",
-                  "pt-BR/concepts/timezone",
-                  "pt-BR/help/gpt55-codex-agentic-parity",
-                  "pt-BR/help/gpt55-codex-agentic-parity-maintainers"
+                  "pt-BR/concepts/timezone"
                 ]
               },
               {
@@ -6316,7 +6322,7 @@
                 "group": "Advanced setup",
                 "pages": [
                   "ko/start/setup",
-                  "ko/pi-dev"
+                  "ko/openclaw-agent-runtime"
                 ]
               }
             ]
@@ -7048,7 +7054,7 @@
               {
                 "group": "Technical reference",
                 "pages": [
-                  "ko/pi",
+                  "ko/agent-runtime-architecture",
                   "ko/reference/wizard",
                   "ko/reference/token-use",
                   "ko/reference/secretref-credential-surface",
@@ -7068,9 +7074,7 @@
                   "ko/concepts/markdown-formatting",
                   "ko/concepts/typing-indicators",
                   "ko/concepts/usage-tracking",
-                  "ko/concepts/timezone",
-                  "ko/help/gpt55-codex-agentic-parity",
-                  "ko/help/gpt55-codex-agentic-parity-maintainers"
+                  "ko/concepts/timezone"
                 ]
               },
               {
@@ -7236,7 +7240,7 @@
                 "group": "Advanced setup",
                 "pages": [
                   "de/start/setup",
-                  "de/pi-dev"
+                  "de/openclaw-agent-runtime"
                 ]
               }
             ]
@@ -7968,7 +7972,7 @@
               {
                 "group": "Technical reference",
                 "pages": [
-                  "de/pi",
+                  "de/agent-runtime-architecture",
                   "de/reference/wizard",
                   "de/reference/token-use",
                   "de/reference/secretref-credential-surface",
@@ -7988,9 +7992,7 @@
                   "de/concepts/markdown-formatting",
                   "de/concepts/typing-indicators",
                   "de/concepts/usage-tracking",
-                  "de/concepts/timezone",
-                  "de/help/gpt55-codex-agentic-parity",
-                  "de/help/gpt55-codex-agentic-parity-maintainers"
+                  "de/concepts/timezone"
                 ]
               },
               {
@@ -8156,7 +8158,7 @@
                 "group": "Advanced setup",
                 "pages": [
                   "fr/start/setup",
-                  "fr/pi-dev"
+                  "fr/openclaw-agent-runtime"
                 ]
               }
             ]
@@ -8888,7 +8890,7 @@
               {
                 "group": "Technical reference",
                 "pages": [
-                  "fr/pi",
+                  "fr/agent-runtime-architecture",
                   "fr/reference/wizard",
                   "fr/reference/token-use",
                   "fr/reference/secretref-credential-surface",
@@ -8908,9 +8910,7 @@
                   "fr/concepts/markdown-formatting",
                   "fr/concepts/typing-indicators",
                   "fr/concepts/usage-tracking",
-                  "fr/concepts/timezone",
-                  "fr/help/gpt55-codex-agentic-parity",
-                  "fr/help/gpt55-codex-agentic-parity-maintainers"
+                  "fr/concepts/timezone"
                 ]
               },
               {
@@ -9076,7 +9076,7 @@
                 "group": "Advanced setup",
                 "pages": [
                   "ar/start/setup",
-                  "ar/pi-dev"
+                  "ar/openclaw-agent-runtime"
                 ]
               }
             ]
@@ -9808,7 +9808,7 @@
               {
                 "group": "Technical reference",
                 "pages": [
-                  "ar/pi",
+                  "ar/agent-runtime-architecture",
                   "ar/reference/wizard",
                   "ar/reference/token-use",
                   "ar/reference/secretref-credential-surface",
@@ -9828,9 +9828,7 @@
                   "ar/concepts/markdown-formatting",
                   "ar/concepts/typing-indicators",
                   "ar/concepts/usage-tracking",
-                  "ar/concepts/timezone",
-                  "ar/help/gpt55-codex-agentic-parity",
-                  "ar/help/gpt55-codex-agentic-parity-maintainers"
+                  "ar/concepts/timezone"
                 ]
               },
               {
@@ -9996,7 +9994,7 @@
                 "group": "Advanced setup",
                 "pages": [
                   "it/start/setup",
-                  "it/pi-dev"
+                  "it/openclaw-agent-runtime"
                 ]
               }
             ]
@@ -10728,7 +10726,7 @@
               {
                 "group": "Technical reference",
                 "pages": [
-                  "it/pi",
+                  "it/agent-runtime-architecture",
                   "it/reference/wizard",
                   "it/reference/token-use",
                   "it/reference/secretref-credential-surface",
@@ -10748,9 +10746,7 @@
                   "it/concepts/markdown-formatting",
                   "it/concepts/typing-indicators",
                   "it/concepts/usage-tracking",
-                  "it/concepts/timezone",
-                  "it/help/gpt55-codex-agentic-parity",
-                  "it/help/gpt55-codex-agentic-parity-maintainers"
+                  "it/concepts/timezone"
                 ]
               },
               {
@@ -10916,7 +10912,7 @@
                 "group": "Advanced setup",
                 "pages": [
                   "vi/start/setup",
-                  "vi/pi-dev"
+                  "vi/openclaw-agent-runtime"
                 ]
               }
             ]
@@ -11648,7 +11644,7 @@
               {
                 "group": "Technical reference",
                 "pages": [
-                  "vi/pi",
+                  "vi/agent-runtime-architecture",
                   "vi/reference/wizard",
                   "vi/reference/token-use",
                   "vi/reference/secretref-credential-surface",
@@ -11668,9 +11664,7 @@
                   "vi/concepts/markdown-formatting",
                   "vi/concepts/typing-indicators",
                   "vi/concepts/usage-tracking",
-                  "vi/concepts/timezone",
-                  "vi/help/gpt55-codex-agentic-parity",
-                  "vi/help/gpt55-codex-agentic-parity-maintainers"
+                  "vi/concepts/timezone"
                 ]
               },
               {
@@ -11836,7 +11830,7 @@
                 "group": "Advanced setup",
                 "pages": [
                   "nl/start/setup",
-                  "nl/pi-dev"
+                  "nl/openclaw-agent-runtime"
                 ]
               }
             ]
@@ -12568,7 +12562,7 @@
               {
                 "group": "Technical reference",
                 "pages": [
-                  "nl/pi",
+                  "nl/agent-runtime-architecture",
                   "nl/reference/wizard",
                   "nl/reference/token-use",
                   "nl/reference/secretref-credential-surface",
@@ -12588,9 +12582,7 @@
                   "nl/concepts/markdown-formatting",
                   "nl/concepts/typing-indicators",
                   "nl/concepts/usage-tracking",
-                  "nl/concepts/timezone",
-                  "nl/help/gpt55-codex-agentic-parity",
-                  "nl/help/gpt55-codex-agentic-parity-maintainers"
+                  "nl/concepts/timezone"
                 ]
               },
               {
@@ -12756,7 +12748,7 @@
                 "group": "Advanced setup",
                 "pages": [
                   "tr/start/setup",
-                  "tr/pi-dev"
+                  "tr/openclaw-agent-runtime"
                 ]
               }
             ]
@@ -13488,7 +13480,7 @@
               {
                 "group": "Technical reference",
                 "pages": [
-                  "tr/pi",
+                  "tr/agent-runtime-architecture",
                   "tr/reference/wizard",
                   "tr/reference/token-use",
                   "tr/reference/secretref-credential-surface",
@@ -13508,9 +13500,7 @@
                   "tr/concepts/markdown-formatting",
                   "tr/concepts/typing-indicators",
                   "tr/concepts/usage-tracking",
-                  "tr/concepts/timezone",
-                  "tr/help/gpt55-codex-agentic-parity",
-                  "tr/help/gpt55-codex-agentic-parity-maintainers"
+                  "tr/concepts/timezone"
                 ]
               },
               {
@@ -13676,7 +13666,7 @@
                 "group": "Advanced setup",
                 "pages": [
                   "uk/start/setup",
-                  "uk/pi-dev"
+                  "uk/openclaw-agent-runtime"
                 ]
               }
             ]
@@ -14408,7 +14398,7 @@
               {
                 "group": "Technical reference",
                 "pages": [
-                  "uk/pi",
+                  "uk/agent-runtime-architecture",
                   "uk/reference/wizard",
                   "uk/reference/token-use",
                   "uk/reference/secretref-credential-surface",
@@ -14428,9 +14418,7 @@
                   "uk/concepts/markdown-formatting",
                   "uk/concepts/typing-indicators",
                   "uk/concepts/usage-tracking",
-                  "uk/concepts/timezone",
-                  "uk/help/gpt55-codex-agentic-parity",
-                  "uk/help/gpt55-codex-agentic-parity-maintainers"
+                  "uk/concepts/timezone"
                 ]
               },
               {
@@ -14596,7 +14584,7 @@
                 "group": "Advanced setup",
                 "pages": [
                   "id/start/setup",
-                  "id/pi-dev"
+                  "id/openclaw-agent-runtime"
                 ]
               }
             ]
@@ -15328,7 +15316,7 @@
               {
                 "group": "Technical reference",
                 "pages": [
-                  "id/pi",
+                  "id/agent-runtime-architecture",
                   "id/reference/wizard",
                   "id/reference/token-use",
                   "id/reference/secretref-credential-surface",
@@ -15348,9 +15336,7 @@
                   "id/concepts/markdown-formatting",
                   "id/concepts/typing-indicators",
                   "id/concepts/usage-tracking",
-                  "id/concepts/timezone",
-                  "id/help/gpt55-codex-agentic-parity",
-                  "id/help/gpt55-codex-agentic-parity-maintainers"
+                  "id/concepts/timezone"
                 ]
               },
               {
@@ -15516,7 +15502,7 @@
                 "group": "Advanced setup",
                 "pages": [
                   "pl/start/setup",
-                  "pl/pi-dev"
+                  "pl/openclaw-agent-runtime"
                 ]
               }
             ]
@@ -16248,7 +16234,7 @@
               {
                 "group": "Technical reference",
                 "pages": [
-                  "pl/pi",
+                  "pl/agent-runtime-architecture",
                   "pl/reference/wizard",
                   "pl/reference/token-use",
                   "pl/reference/secretref-credential-surface",
@@ -16268,9 +16254,7 @@
                   "pl/concepts/markdown-formatting",
                   "pl/concepts/typing-indicators",
                   "pl/concepts/usage-tracking",
-                  "pl/concepts/timezone",
-                  "pl/help/gpt55-codex-agentic-parity",
-                  "pl/help/gpt55-codex-agentic-parity-maintainers"
+                  "pl/concepts/timezone"
                 ]
               },
               {
