@@ -374,11 +374,21 @@ if (elementsIndex.includes('href="http://SKILL.md"')) {
 if (!/class="breadcrumbs"/.test(index) || !/data-copy-page/.test(index) || !/class="page-feedback"/.test(index)) {
   throw new Error("index: page reader affordances are missing");
 }
+if (!/data-page-markdown-url="\/index\.md"/.test(index)
+  || !/data-page-markdown-url="\/start\/getting-started\.md"/.test(gettingStarted)) {
+  throw new Error("page tools: Copy page should target generated Markdown routes");
+}
 if (!/function initCodeGroups/.test(siteJs) || !/className="oc-code-tab"/.test(siteJs) || !/preferredCodeTab/.test(siteJs)) {
   throw new Error("assets: code group tabs are missing");
 }
 if (!/function handleDocsControlClick/.test(siteJs) || !/async function copyText/.test(siteJs)) {
   throw new Error("assets: copy and feedback controls are missing");
+}
+if (!/async function copyPageMarkdown/.test(siteJs)
+  || !/function markdownBodyForCopy/.test(siteJs)
+  || !/fetch\(markdownUrl,\{credentials:"same-origin",headers:\{"Accept":"text\/markdown"\}\}\)/.test(siteJs)
+  || /dataset\.pageUrl\|\|location\.href/.test(siteJs)) {
+  throw new Error("assets: Copy page should fetch Markdown content instead of copying the URL");
 }
 if (!/Nothing to copy/.test(siteJs) || !/data-chat-copy/.test(siteJs)) {
   throw new Error("assets: chat copy feedback is missing");

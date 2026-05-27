@@ -360,8 +360,9 @@ function breadcrumbs(page, nav) {
 
 function pageTools(page) {
   const canonicalUrl = `${docsOrigin()}${pageRoute(page)}`;
+  const markdownUrl = publicPath(pageMarkdownRoute(page));
   const editUrl = `https://github.com/openclaw/openclaw/edit/main/docs/${page.rel}`;
-  return `<div class="page-tools" data-page-tools data-page-url="${escapeAttr(canonicalUrl)}"><button type="button" data-copy-page>Copy page</button><a href="${escapeAttr(editUrl)}">Edit source</a></div>`;
+  return `<div class="page-tools" data-page-tools data-page-url="${escapeAttr(canonicalUrl)}" data-page-markdown-url="${escapeAttr(markdownUrl)}"><button type="button" data-copy-page>Copy page</button><a href="${escapeAttr(editUrl)}">Edit source</a></div>`;
 }
 
 function pageStatus(page) {
