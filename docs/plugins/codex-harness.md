@@ -734,14 +734,21 @@ that any custom `appServer.command`, `url`, `authToken`, or headers are valid.
 headers, and that the remote app-server speaks the same Codex app-server
 protocol version.
 
+**Native shell or patch tools are blocked with `Native hook relay unavailable`:**
+the Codex thread is still trying to use a native hook relay id that OpenClaw no
+longer has registered. This is a native Codex hook transport problem, not an ACP
+backend, provider, GitHub, or shell-command failure. Start a fresh session in
+the affected chat with `/new` or `/reset`, then retry a harmless command. If the
+same fresh session still fails, restart the Codex app-server or OpenClaw Gateway
+so native hook registrations are recreated.
+
 **A non-Codex model uses the built-in harness:** that is expected unless
 provider or model runtime policy routes it to another harness. Plain non-OpenAI
 provider refs stay on their normal provider path in `auto` mode.
 
 **Computer Use is installed but tools do not run:** check
 `/codex computer-use status` from a fresh session. If a tool reports
-`Native hook relay unavailable`, use `/new` or `/reset`; if it persists, restart
-the gateway to clear stale native hook registrations. See
+`Native hook relay unavailable`, use the native hook relay recovery above. See
 [Codex Computer Use](/plugins/codex-computer-use#troubleshooting).
 
 ## Related

@@ -834,6 +834,13 @@ permission modes, see
 | ACP session stalls indefinitely after completing work                       | Harness process finished but ACP session did not report completion.                                                    | Update OpenClaw; current acpx cleanup reaps OpenClaw-owned stale wrapper and adapter processes on close and Gateway startup.                                             |
 | Harness sees `<<<BEGIN_OPENCLAW_INTERNAL_CONTEXT>>>`                        | Internal event envelope leaked across the ACP boundary.                                                                | Update OpenClaw and rerun the completion flow; external harnesses should receive plain completion prompts only.                                                          |
 
+<Note>
+`Command blocked by PreToolUse hook: Native hook relay unavailable` belongs to
+the native Codex hook relay, not ACP/acpx. In a bound Codex chat, start a fresh
+session with `/new` or `/reset`; if it persists, restart the Codex app-server or
+OpenClaw Gateway. See [Codex harness troubleshooting](/plugins/codex-harness#troubleshooting).
+</Note>
+
 ## Related
 
 - [ACP agents - setup](/tools/acp-agents-setup)
