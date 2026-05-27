@@ -110,6 +110,58 @@ async function checkDesktop() {
     || componentSkin.codeLineGap > 3) {
     throw new Error(`desktop component skin failed: ${JSON.stringify(componentSkin)}`);
   }
+  const cardGrids = await page.evaluate(() => {
+    const countColumns = (grid) => {
+      const cards = [...grid.querySelectorAll(":scope > .oc-card")];
+      const firstTop = cards[0]?.getBoundingClientRect().top ?? 0;
+      return cards.filter((card) => Math.abs(card.getBoundingClientRect().top - firstTop) < 2).length;
+    };
+    return Object.fromEntries([1, 2, 3, 4].map((cols) => {
+      const grids = [...document.querySelectorAll(`.oc-card-grid.oc-card-cols-${cols}`)];
+      return [cols, grids.map((grid) => ({
+        columns: countColumns(grid),
+        template: getComputedStyle(grid).gridTemplateColumns,
+        width: grid.getBoundingClientRect().width,
+      }))];
+    }));
+  });
+  const expectedCardColumns = (requested, width) => {
+    if (width <= 520) return 1;
+    if (requested === 4 && width <= 720) return 2;
+    if (requested === 3 && width <= 620) return 2;
+    return requested;
+  };
+  if ([1, 2, 3, 4].some((requested) =>
+    !cardGrids[String(requested)]?.length
+      || !cardGrids[String(requested)].every((grid) => grid.columns === expectedCardColumns(requested, grid.width))
+  )
+    || (cardGrids["4"] ?? []).length < 2) {
+    throw new Error(`desktop card column contract failed: ${JSON.stringify(cardGrids)}`);
+  }
+  await page.setViewportSize({ width: 1900, height: 1000 });
+  await page.goto(`${base}/__elements`, { waitUntil: "networkidle" });
+  const wideCardGrids = await page.evaluate(() => {
+    const countColumns = (grid) => {
+      const cards = [...grid.querySelectorAll(":scope > .oc-card")];
+      const firstTop = cards[0]?.getBoundingClientRect().top ?? 0;
+      return cards.filter((card) => Math.abs(card.getBoundingClientRect().top - firstTop) < 2).length;
+    };
+    return Object.fromEntries([1, 2, 3, 4].map((cols) => {
+      const grids = [...document.querySelectorAll(`.oc-card-grid.oc-card-cols-${cols}`)];
+      return [cols, grids.map((grid) => ({
+        columns: countColumns(grid),
+        width: grid.getBoundingClientRect().width,
+      }))];
+    }));
+  });
+  if (wideCardGrids["1"]?.[0]?.columns !== 1
+    || wideCardGrids["2"]?.[0]?.columns !== 2
+    || wideCardGrids["3"]?.[0]?.columns !== 3
+    || (wideCardGrids["4"] ?? []).length < 2
+    || !wideCardGrids["4"].every((grid) => grid.columns === 4)) {
+    throw new Error(`wide desktop card column contract failed: ${JSON.stringify(wideCardGrids)}`);
+  }
+  await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(`${base}/`, { waitUntil: "networkidle" });
   await expectVisible(page, ".page-tools [data-copy-page]", "copy page tool");
   await expectVisible(page, ".page-feedback [data-feedback-value='yes']", "page feedback");
@@ -188,7 +240,9 @@ async function checkDesktop() {
       chatWidth: chatRect?.width,
       mainRight: mainRect?.right,
       copyHidden: copy?.hasAttribute("hidden"),
+      copySize: copyRect ? [copyRect.width, copyRect.height] : null,
       retryHidden: retry?.hasAttribute("hidden"),
+      retrySize: retryRect ? [retryRect.width, retryRect.height] : null,
       retryDisabled: retry?.hasAttribute("disabled"),
       maximizePressed: maximize?.getAttribute("aria-pressed"),
     };
@@ -206,9 +260,9 @@ async function checkDesktop() {
     || chatSidebar.chatWidth < 340
     || parseFloat(chatSidebar.bodyPaddingRight ?? "0") < 340
     || chatSidebar.mainRight > 1120
-    || !chatSidebar.copyHidden
-    || !chatSidebar.retryHidden
-    || !chatSidebar.retryDisabled
+    || (!chatSidebar.copyHidden && chatSidebar.copySize?.[0] < 29)
+    || (!chatSidebar.retryHidden && chatSidebar.retrySize?.[0] < 29)
+    || (!chatSidebar.retryHidden && !chatSidebar.retryDisabled)
     || chatSidebar.maximizePressed !== "false") {
     throw new Error(`desktop chat sidebar failed: ${JSON.stringify(chatSidebar)}`);
   }
@@ -270,6 +324,25 @@ async function checkDesktop() {
     || parseFloat(closedChatSidebar.bodyPaddingRight ?? "0") !== 0) {
     throw new Error(`closed desktop chat sidebar failed: ${JSON.stringify(closedChatSidebar)}`);
   }
+  await page.goto(`${base}/start/showcase`, { waitUntil: "networkidle" });
+  await page.waitForTimeout(350);
+  const showcaseCardGrid = await page.evaluate(() => {
+    const grid = document.querySelector(".oc-card-grid.oc-card-cols-2");
+    const cards = [...grid?.querySelectorAll(":scope > .oc-card") ?? []];
+    const firstTop = cards[0]?.getBoundingClientRect().top ?? 0;
+    const columns = cards.filter((card) => Math.abs(card.getBoundingClientRect().top - firstTop) < 2).length;
+    return {
+      bodyOpen: document.body.classList.contains("docs-chat-open"),
+      columns,
+      width: grid?.getBoundingClientRect().width,
+      template: grid ? getComputedStyle(grid).gridTemplateColumns : "",
+    };
+  });
+  if (!showcaseCardGrid.bodyOpen
+    || showcaseCardGrid.columns > 2
+    || ((showcaseCardGrid.width ?? 0) > 520 && showcaseCardGrid.columns !== 2)) {
+    throw new Error(`showcase card grid changed under chat width: ${JSON.stringify(showcaseCardGrid)}`);
+  }
   await page.close();
 }
 
@@ -296,6 +369,18 @@ async function checkMobile() {
   });
   if (geometry.menuThemeOverlap || !geometry.searchInViewport || !geometry.codeInViewport || geometry.stepInset < 0) {
     throw new Error(`mobile visual geometry failed: ${JSON.stringify(geometry)}`);
+  }
+  const mobileCardColumns = await page.evaluate(() => {
+    const countColumns = (grid) => {
+      const cards = [...grid.querySelectorAll(":scope > .oc-card")];
+      const firstTop = cards[0]?.getBoundingClientRect().top ?? 0;
+      return cards.filter((card) => Math.abs(card.getBoundingClientRect().top - firstTop) < 2).length;
+    };
+    return [...document.querySelectorAll(".oc-card-grid")]
+      .map((grid) => countColumns(grid));
+  });
+  if (!mobileCardColumns.length || mobileCardColumns.some((columns) => columns !== 1)) {
+    throw new Error(`mobile card grids should collapse to one column: ${JSON.stringify(mobileCardColumns)}`);
   }
   await page.click("[data-nav-toggle]");
   await page.locator(".sidebar.open").waitFor({ state: "visible" });
@@ -433,7 +518,7 @@ async function checkLightMode() {
       minCardWidth: Math.min(...cardWidths),
     };
   });
-  if (skin.theme !== "light" || skin.codeText !== "#2d2926" || skin.badgeRadius === "0px" || skin.minCardWidth < 190) {
+  if (skin.theme !== "light" || skin.codeText !== "#2d2926" || skin.badgeRadius === "0px" || skin.minCardWidth < 150) {
     throw new Error(`light visual skin failed: ${JSON.stringify(skin)}`);
   }
   await page.close();

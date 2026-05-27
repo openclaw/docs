@@ -306,10 +306,17 @@ if (!/\.oc-table-wrap\{[^}]*overflow:auto/.test(siteCss)
   || !/\.oc-cta-link\{[^}]*transition:background \.16s ease,border-color \.16s ease,color \.16s ease,filter \.16s ease/.test(siteCss)
   || !/\.oc-cta-link:hover\{filter:brightness\(1\.04\)\}\.oc-cta-link-primary:hover\{background:color-mix\(in srgb,var\(--brand\) 86%,white 14%\);border-color:color-mix\(in srgb,var\(--brand\) 86%,white 14%\);color:#1b0d08\}\.oc-cta-link-secondary:hover\{background:color-mix\(in srgb,var\(--soft\) 62%,var\(--paper\) 38%\);border-color:color-mix\(in srgb,var\(--brand\) 44%,var\(--line-strong\)\);color:var\(--ink\)\}/.test(siteCss)
   || !/\.oc-tooltip\[data-tip\]:hover:after,\.oc-tooltip\[data-tip\]:focus:after\{[^}]*background:var\(--tooltip-bg\);color:var\(--tooltip-text\)/.test(siteCss)
-  || !/\.oc-card-grid,\.oc-card-group\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/.test(siteCss)
-  || !/\.oc-card-grid\.oc-card-cols-3\{grid-template-columns:repeat\(3,minmax\(0,1fr\)\)\}/.test(siteCss)
   || !/\.oc-pullquote\{[^}]*border-left:3px solid var\(--brand\)/.test(siteCss)) {
   throw new Error("assets: editorial components should keep the docs publishing skin");
+}
+if (!/\.doc\{container-type:inline-size\}/.test(siteCss)
+  || !/\.oc-card-grid,\.oc-card-group\{--oc-card-columns:2;display:grid;grid-template-columns:repeat\(var\(--oc-card-columns\),minmax\(0,1fr\)\)/.test(siteCss)
+  || !/\.oc-card-grid\.oc-card-cols-1,\.oc-card-group\.oc-card-cols-1\{--oc-card-columns:1\}/.test(siteCss)
+  || !/\.oc-card-grid\.oc-card-cols-2,\.oc-card-group\.oc-card-cols-2\{--oc-card-columns:2\}/.test(siteCss)
+  || !/\.oc-card-grid\.oc-card-cols-3,\.oc-card-group\.oc-card-cols-3\{--oc-card-columns:3\}/.test(siteCss)
+  || !/\.oc-card-grid\.oc-card-cols-4,\.oc-card-group\.oc-card-cols-4\{--oc-card-columns:4\}/.test(siteCss)
+  || !/@container \(max-width:520px\)\{\.oc-card-grid,\.oc-card-group\{--oc-card-columns:1\}\}/.test(siteCss)) {
+  throw new Error("assets: card column classes should use explicit column counts with responsive collapse");
 }
 const elementsIndexPath = path.join(site, "__elements/index.html");
 if (!fs.existsSync(elementsIndexPath)) {
@@ -320,7 +327,10 @@ for (const marker of [
   'class="oc-callout oc-callout-tip"',
   'class="oc-callout oc-callout-info"',
   'class="oc-callout oc-callout-warning"',
+  'class="oc-card-grid oc-card-cols-1"',
+  'class="oc-card-grid oc-card-cols-2"',
   'class="oc-card-grid oc-card-cols-3"',
+  'class="oc-card-grid oc-card-cols-4"',
   'class="oc-card"',
   'class="oc-code"',
   'class="oc-code-group"',
@@ -370,6 +380,9 @@ for (const marker of [
 }
 if (elementsIndex.includes('href="http://SKILL.md"')) {
   throw new Error("__elements: card body should not autolink SKILL.md inside the card anchor");
+}
+if ((elementsIndex.match(/class="oc-card-grid oc-card-cols-4"/g) ?? []).length < 2) {
+  throw new Error("__elements: CardGroup and Columns should both preserve explicit cols attrs");
 }
 if (!/class="breadcrumbs"/.test(index) || !/data-copy-page/.test(index) || !/class="page-feedback"/.test(index)) {
   throw new Error("index: page reader affordances are missing");
