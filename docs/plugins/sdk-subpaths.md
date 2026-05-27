@@ -132,7 +132,7 @@ migration window, keep repo/bundled plugins on `channel-inbound` and
 `channel-outbound`, then remove the compatibility subpaths in the next major
 SDK cleanup. This applies to the old channel message/runtime, channel
 streaming, direct-DM access, inbound helper splinter, reply-options,
-pairing-path, and runtime `channel.turn.*` families.
+and pairing-path families.
 
   <Accordion title="Provider subpaths">
     | Subpath | Key exports |
