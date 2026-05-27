@@ -138,6 +138,8 @@ separate `clawhub` CLI for publish/sync workflows. Full guide:
 | Update all workspace-installed skills  | `openclaw skills update --all`                         |
 | Update a single shared managed skill   | `openclaw skills update <skill-slug> --global`         |
 | Update all shared managed/local skills | `openclaw skills update --all --global`                |
+| Verify a ClawHub skill                 | `openclaw skills verify <skill-slug>`                  |
+| Print the generated Skill Card         | `openclaw skills verify <skill-slug> --card`           |
 | Sync (scan + publish updates)          | `clawhub sync --all`                                   |
 
 Native `openclaw skills install` installs into the active workspace
@@ -158,6 +160,15 @@ override the inferred slug. `--version` applies only to ClawHub installs. Skill
 installs do not support npm package specs or zip/archive paths. `openclaw skills
 update` updates ClawHub-tracked installs only; reinstall Git or local sources to
 refresh them.
+
+Use `openclaw skills verify <slug>` to ask ClawHub for the skill's
+`clawhub.skill.verify.v1` trust envelope. Output is JSON by default; use
+`--card` to print the generated Skill Card Markdown. Installed ClawHub skills
+verify against the version and registry recorded in `.clawhub/origin.json`;
+`--version` and `--tag` override only the version selector. The command exits
+non-zero when ClawHub marks verification as failed. A generated `skill-card.md`
+may be present in installed bundles, but OpenClaw treats it as ClawHub-provided
+metadata and does not use it as local model instructions or a local hash gate.
 
 Gateway clients that need private, non-ClawHub delivery can stage a zip skill
 archive with `skills.upload.begin`, `skills.upload.chunk`, and
