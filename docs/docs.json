@@ -1801,8 +1801,8 @@
                   "plugins/architecture-internals",
                   "plugins/sdk-migration",
                   "plugins/compatibility",
-                  "plugins/sdk-channel-message",
-                  "plugins/sdk-channel-turn",
+                  "plugins/sdk-channel-outbound",
+                  "plugins/sdk-channel-inbound",
                   "plugins/sdk-channel-ingress",
                   "plugins/message-presentation"
                 ]
@@ -3343,8 +3343,8 @@
                   "zh-TW/plugins/architecture-internals",
                   "zh-TW/plugins/sdk-migration",
                   "zh-TW/plugins/compatibility",
-                  "zh-TW/plugins/sdk-channel-message",
-                  "zh-TW/plugins/sdk-channel-turn",
+                  "zh-TW/plugins/sdk-channel-outbound",
+                  "zh-TW/plugins/sdk-channel-inbound",
                   "zh-TW/plugins/sdk-channel-ingress",
                   "zh-TW/plugins/message-presentation"
                 ]
@@ -4262,8 +4262,8 @@
                   "ja-JP/plugins/architecture-internals",
                   "ja-JP/plugins/sdk-migration",
                   "ja-JP/plugins/compatibility",
-                  "ja-JP/plugins/sdk-channel-message",
-                  "ja-JP/plugins/sdk-channel-turn",
+                  "ja-JP/plugins/sdk-channel-outbound",
+                  "ja-JP/plugins/sdk-channel-inbound",
                   "ja-JP/plugins/sdk-channel-ingress",
                   "ja-JP/plugins/message-presentation"
                 ]
@@ -5181,8 +5181,8 @@
                   "es/plugins/architecture-internals",
                   "es/plugins/sdk-migration",
                   "es/plugins/compatibility",
-                  "es/plugins/sdk-channel-message",
-                  "es/plugins/sdk-channel-turn",
+                  "es/plugins/sdk-channel-outbound",
+                  "es/plugins/sdk-channel-inbound",
                   "es/plugins/sdk-channel-ingress",
                   "es/plugins/message-presentation"
                 ]
@@ -6100,8 +6100,8 @@
                   "pt-BR/plugins/architecture-internals",
                   "pt-BR/plugins/sdk-migration",
                   "pt-BR/plugins/compatibility",
-                  "pt-BR/plugins/sdk-channel-message",
-                  "pt-BR/plugins/sdk-channel-turn",
+                  "pt-BR/plugins/sdk-channel-outbound",
+                  "pt-BR/plugins/sdk-channel-inbound",
                   "pt-BR/plugins/sdk-channel-ingress",
                   "pt-BR/plugins/message-presentation"
                 ]
@@ -7019,8 +7019,8 @@
                   "ko/plugins/architecture-internals",
                   "ko/plugins/sdk-migration",
                   "ko/plugins/compatibility",
-                  "ko/plugins/sdk-channel-message",
-                  "ko/plugins/sdk-channel-turn",
+                  "ko/plugins/sdk-channel-outbound",
+                  "ko/plugins/sdk-channel-inbound",
                   "ko/plugins/sdk-channel-ingress",
                   "ko/plugins/message-presentation"
                 ]
@@ -7938,8 +7938,8 @@
                   "de/plugins/architecture-internals",
                   "de/plugins/sdk-migration",
                   "de/plugins/compatibility",
-                  "de/plugins/sdk-channel-message",
-                  "de/plugins/sdk-channel-turn",
+                  "de/plugins/sdk-channel-outbound",
+                  "de/plugins/sdk-channel-inbound",
                   "de/plugins/sdk-channel-ingress",
                   "de/plugins/message-presentation"
                 ]
@@ -8857,8 +8857,8 @@
                   "fr/plugins/architecture-internals",
                   "fr/plugins/sdk-migration",
                   "fr/plugins/compatibility",
-                  "fr/plugins/sdk-channel-message",
-                  "fr/plugins/sdk-channel-turn",
+                  "fr/plugins/sdk-channel-outbound",
+                  "fr/plugins/sdk-channel-inbound",
                   "fr/plugins/sdk-channel-ingress",
                   "fr/plugins/message-presentation"
                 ]
@@ -9776,8 +9776,8 @@
                   "ar/plugins/architecture-internals",
                   "ar/plugins/sdk-migration",
                   "ar/plugins/compatibility",
-                  "ar/plugins/sdk-channel-message",
-                  "ar/plugins/sdk-channel-turn",
+                  "ar/plugins/sdk-channel-outbound",
+                  "ar/plugins/sdk-channel-inbound",
                   "ar/plugins/sdk-channel-ingress",
                   "ar/plugins/message-presentation"
                 ]
@@ -10695,8 +10695,8 @@
                   "it/plugins/architecture-internals",
                   "it/plugins/sdk-migration",
                   "it/plugins/compatibility",
-                  "it/plugins/sdk-channel-message",
-                  "it/plugins/sdk-channel-turn",
+                  "it/plugins/sdk-channel-outbound",
+                  "it/plugins/sdk-channel-inbound",
                   "it/plugins/sdk-channel-ingress",
                   "it/plugins/message-presentation"
                 ]
@@ -11614,8 +11614,8 @@
                   "vi/plugins/architecture-internals",
                   "vi/plugins/sdk-migration",
                   "vi/plugins/compatibility",
-                  "vi/plugins/sdk-channel-message",
-                  "vi/plugins/sdk-channel-turn",
+                  "vi/plugins/sdk-channel-outbound",
+                  "vi/plugins/sdk-channel-inbound",
                   "vi/plugins/sdk-channel-ingress",
                   "vi/plugins/message-presentation"
                 ]
@@ -12533,8 +12533,8 @@
                   "nl/plugins/architecture-internals",
                   "nl/plugins/sdk-migration",
                   "nl/plugins/compatibility",
-                  "nl/plugins/sdk-channel-message",
-                  "nl/plugins/sdk-channel-turn",
+                  "nl/plugins/sdk-channel-outbound",
+                  "nl/plugins/sdk-channel-inbound",
                   "nl/plugins/sdk-channel-ingress",
                   "nl/plugins/message-presentation"
                 ]
@@ -13452,8 +13452,8 @@
                   "tr/plugins/architecture-internals",
                   "tr/plugins/sdk-migration",
                   "tr/plugins/compatibility",
-                  "tr/plugins/sdk-channel-message",
-                  "tr/plugins/sdk-channel-turn",
+                  "tr/plugins/sdk-channel-outbound",
+                  "tr/plugins/sdk-channel-inbound",
                   "tr/plugins/sdk-channel-ingress",
                   "tr/plugins/message-presentation"
                 ]
@@ -14371,8 +14371,8 @@
                   "uk/plugins/architecture-internals",
                   "uk/plugins/sdk-migration",
                   "uk/plugins/compatibility",
-                  "uk/plugins/sdk-channel-message",
-                  "uk/plugins/sdk-channel-turn",
+                  "uk/plugins/sdk-channel-outbound",
+                  "uk/plugins/sdk-channel-inbound",
                   "uk/plugins/sdk-channel-ingress",
                   "uk/plugins/message-presentation"
                 ]
@@ -15290,8 +15290,8 @@
                   "id/plugins/architecture-internals",
                   "id/plugins/sdk-migration",
                   "id/plugins/compatibility",
-                  "id/plugins/sdk-channel-message",
-                  "id/plugins/sdk-channel-turn",
+                  "id/plugins/sdk-channel-outbound",
+                  "id/plugins/sdk-channel-inbound",
                   "id/plugins/sdk-channel-ingress",
                   "id/plugins/message-presentation"
                 ]
@@ -16209,8 +16209,8 @@
                   "pl/plugins/architecture-internals",
                   "pl/plugins/sdk-migration",
                   "pl/plugins/compatibility",
-                  "pl/plugins/sdk-channel-message",
-                  "pl/plugins/sdk-channel-turn",
+                  "pl/plugins/sdk-channel-outbound",
+                  "pl/plugins/sdk-channel-inbound",
                   "pl/plugins/sdk-channel-ingress",
                   "pl/plugins/message-presentation"
                 ]
