@@ -276,10 +276,13 @@ if (/VPS &amp;amp; hosting/.test(platformsIndex)) {
 }
 const toolsIndex = fs.readFileSync(path.join(site, "tools/index.html"), "utf8");
 if (/class="anchor"/.test(toolsIndex)) {
-  throw new Error("tools index: visible heading permalink anchors should not be rendered");
+  throw new Error("tools index: legacy visible heading permalink anchors should not be rendered");
 }
-if (!/<h2 id="[^"]*choose-tools[^"]*"[^>]*>Choose tools, skills, or plugins<\/h2>/.test(toolsIndex)) {
-  throw new Error("tools index: heading ids should remain without visible # anchors");
+if (!/<h2 id="([^"]*choose-tools[^"]*)"[^>]*>Choose tools, skills, or plugins<button type="button" class="heading-anchor" data-heading-anchor="\1" data-copy-label="Copy link to section" aria-label="Copy link to section">[\s\S]*lucide-link[\s\S]*lucide-check[\s\S]*<\/button><\/h2>/.test(toolsIndex)) {
+  throw new Error("tools index: heading ids should render copy-link buttons");
+}
+if (/<aside class="toc"[\s\S]*Copy link to section/.test(toolsIndex)) {
+  throw new Error("tools index: heading copy controls should not pollute the table of contents");
 }
 if (/\.oc-step:before\{[^}]*background:var\(--brand\)/.test(siteCss)
   || !/\.oc-step:before\{[^}]*background:color-mix\(in srgb,var\(--line-strong\) 78%,var\(--paper\) 22%\)/.test(siteCss)) {
@@ -363,6 +366,7 @@ for (const marker of [
   'data-code-copy',
   'class="code-line is-highlighted"',
   'data-prompt-copy',
+  'data-heading-anchor',
   'Shared snippet',
   '<kbd>',
 ]) {
@@ -380,11 +384,17 @@ if (!/function initCodeGroups/.test(siteJs) || !/className="oc-code-tab"/.test(s
 if (!/function handleDocsControlClick/.test(siteJs) || !/async function copyText/.test(siteJs)) {
   throw new Error("assets: copy and feedback controls are missing");
 }
-if (!/Nothing to copy/.test(siteJs) || !/data-chat-copy/.test(siteJs)) {
+if (!/Nothing to copy/.test(siteJs) || !/data-chat-copy/.test(siteJs) || !/data-heading-anchor/.test(siteJs)) {
   throw new Error("assets: chat copy feedback is missing");
 }
 if (!/function showCopyFeedback/.test(siteJs) || !/data-copy-label="Copy code"/.test(elementsIndex)) {
   throw new Error("assets: code copy controls should use stateful icon feedback");
+}
+if (!/\.heading-anchor\{[^}]*opacity:0/.test(siteCss)
+  || !/\.heading-anchor:focus-visible/.test(siteCss)
+  || !/\.heading-anchor \.heading-anchor-icon/.test(siteCss)
+  || !/\.heading-anchor\[data-copy-state="copied"\] \.heading-anchor-check/.test(siteCss)) {
+  throw new Error("assets: heading copy anchor skin is missing");
 }
 if (!/\.oc-code figcaption button:before/.test(siteCss)
   || !/\.oc-code figcaption button:after/.test(siteCss)
