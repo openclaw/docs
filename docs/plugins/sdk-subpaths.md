@@ -126,6 +126,14 @@ by package contract guardrails.
     | `plugin-sdk/channel-secret-runtime` | Narrow secret-contract helpers such as `collectSimpleChannelFieldAssignments`, `getChannelSurface`, `pushAssignment`, and secret target types |
   </Accordion>
 
+Deprecated channel helper families stay available only for published-plugin
+compatibility. The removal plan is: keep them through the external plugin
+migration window, keep repo/bundled plugins on `channel-inbound` and
+`channel-outbound`, then remove the compatibility subpaths in the next major
+SDK cleanup. This applies to the old channel message/runtime, channel
+streaming, direct-DM access, inbound helper splinter, reply-options,
+pairing-path, and runtime `channel.turn.*` families.
+
   <Accordion title="Provider subpaths">
     | Subpath | Key exports |
     | --- | --- |

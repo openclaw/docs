@@ -10,3 +10,7 @@ This page moved to [Channel outbound API](/plugins/sdk-channel-outbound).
 subpaths for older plugins. New channel plugins should use
 `openclaw/plugin-sdk/channel-outbound` for message lifecycle, receipt, durable
 send, and live preview helpers.
+
+Removal plan: keep these aliases through the external plugin migration window,
+then remove them in the next major SDK cleanup after callers have moved to
+`channel-outbound`.
