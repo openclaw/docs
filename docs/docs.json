@@ -1581,6 +1581,7 @@
                       "gateway/security/index",
                       "gateway/security/exposure-runbook",
                       "gateway/security/secure-file-operations",
+                      "gateway/security/shrinkwrap",
                       "gateway/security/audit-checks",
                       "gateway/operator-scopes",
                       "gateway/sandboxing",
@@ -1876,6 +1877,7 @@
                 "pages": [
                   "reference/RELEASING",
                   "reference/full-release-validation",
+                  "reference/release-performance-sweep",
                   "reference/test",
                   "ci",
                   "help/scripts"
@@ -3122,6 +3124,7 @@
                       "zh-TW/gateway/security/index",
                       "zh-TW/gateway/security/exposure-runbook",
                       "zh-TW/gateway/security/secure-file-operations",
+                      "zh-TW/gateway/security/shrinkwrap",
                       "zh-TW/gateway/security/audit-checks",
                       "zh-TW/gateway/operator-scopes",
                       "zh-TW/gateway/sandboxing",
@@ -3417,6 +3420,7 @@
                 "pages": [
                   "zh-TW/reference/RELEASING",
                   "zh-TW/reference/full-release-validation",
+                  "zh-TW/reference/release-performance-sweep",
                   "zh-TW/reference/test",
                   "zh-TW/ci",
                   "zh-TW/help/scripts"
@@ -4040,6 +4044,7 @@
                       "ja-JP/gateway/security/index",
                       "ja-JP/gateway/security/exposure-runbook",
                       "ja-JP/gateway/security/secure-file-operations",
+                      "ja-JP/gateway/security/shrinkwrap",
                       "ja-JP/gateway/security/audit-checks",
                       "ja-JP/gateway/operator-scopes",
                       "ja-JP/gateway/sandboxing",
@@ -4335,6 +4340,7 @@
                 "pages": [
                   "ja-JP/reference/RELEASING",
                   "ja-JP/reference/full-release-validation",
+                  "ja-JP/reference/release-performance-sweep",
                   "ja-JP/reference/test",
                   "ja-JP/ci",
                   "ja-JP/help/scripts"
@@ -4958,6 +4964,7 @@
                       "es/gateway/security/index",
                       "es/gateway/security/exposure-runbook",
                       "es/gateway/security/secure-file-operations",
+                      "es/gateway/security/shrinkwrap",
                       "es/gateway/security/audit-checks",
                       "es/gateway/operator-scopes",
                       "es/gateway/sandboxing",
@@ -5253,6 +5260,7 @@
                 "pages": [
                   "es/reference/RELEASING",
                   "es/reference/full-release-validation",
+                  "es/reference/release-performance-sweep",
                   "es/reference/test",
                   "es/ci",
                   "es/help/scripts"
@@ -5876,6 +5884,7 @@
                       "pt-BR/gateway/security/index",
                       "pt-BR/gateway/security/exposure-runbook",
                       "pt-BR/gateway/security/secure-file-operations",
+                      "pt-BR/gateway/security/shrinkwrap",
                       "pt-BR/gateway/security/audit-checks",
                       "pt-BR/gateway/operator-scopes",
                       "pt-BR/gateway/sandboxing",
@@ -6171,6 +6180,7 @@
                 "pages": [
                   "pt-BR/reference/RELEASING",
                   "pt-BR/reference/full-release-validation",
+                  "pt-BR/reference/release-performance-sweep",
                   "pt-BR/reference/test",
                   "pt-BR/ci",
                   "pt-BR/help/scripts"
@@ -6794,6 +6804,7 @@
                       "ko/gateway/security/index",
                       "ko/gateway/security/exposure-runbook",
                       "ko/gateway/security/secure-file-operations",
+                      "ko/gateway/security/shrinkwrap",
                       "ko/gateway/security/audit-checks",
                       "ko/gateway/operator-scopes",
                       "ko/gateway/sandboxing",
@@ -7089,6 +7100,7 @@
                 "pages": [
                   "ko/reference/RELEASING",
                   "ko/reference/full-release-validation",
+                  "ko/reference/release-performance-sweep",
                   "ko/reference/test",
                   "ko/ci",
                   "ko/help/scripts"
@@ -7712,6 +7724,7 @@
                       "de/gateway/security/index",
                       "de/gateway/security/exposure-runbook",
                       "de/gateway/security/secure-file-operations",
+                      "de/gateway/security/shrinkwrap",
                       "de/gateway/security/audit-checks",
                       "de/gateway/operator-scopes",
                       "de/gateway/sandboxing",
@@ -8007,6 +8020,7 @@
                 "pages": [
                   "de/reference/RELEASING",
                   "de/reference/full-release-validation",
+                  "de/reference/release-performance-sweep",
                   "de/reference/test",
                   "de/ci",
                   "de/help/scripts"
@@ -8630,6 +8644,7 @@
                       "fr/gateway/security/index",
                       "fr/gateway/security/exposure-runbook",
                       "fr/gateway/security/secure-file-operations",
+                      "fr/gateway/security/shrinkwrap",
                       "fr/gateway/security/audit-checks",
                       "fr/gateway/operator-scopes",
                       "fr/gateway/sandboxing",
@@ -8925,6 +8940,7 @@
                 "pages": [
                   "fr/reference/RELEASING",
                   "fr/reference/full-release-validation",
+                  "fr/reference/release-performance-sweep",
                   "fr/reference/test",
                   "fr/ci",
                   "fr/help/scripts"
@@ -9548,6 +9564,7 @@
                       "ar/gateway/security/index",
                       "ar/gateway/security/exposure-runbook",
                       "ar/gateway/security/secure-file-operations",
+                      "ar/gateway/security/shrinkwrap",
                       "ar/gateway/security/audit-checks",
                       "ar/gateway/operator-scopes",
                       "ar/gateway/sandboxing",
@@ -9843,6 +9860,7 @@
                 "pages": [
                   "ar/reference/RELEASING",
                   "ar/reference/full-release-validation",
+                  "ar/reference/release-performance-sweep",
                   "ar/reference/test",
                   "ar/ci",
                   "ar/help/scripts"
@@ -10466,6 +10484,7 @@
                       "it/gateway/security/index",
                       "it/gateway/security/exposure-runbook",
                       "it/gateway/security/secure-file-operations",
+                      "it/gateway/security/shrinkwrap",
                       "it/gateway/security/audit-checks",
                       "it/gateway/operator-scopes",
                       "it/gateway/sandboxing",
@@ -10761,6 +10780,7 @@
                 "pages": [
                   "it/reference/RELEASING",
                   "it/reference/full-release-validation",
+                  "it/reference/release-performance-sweep",
                   "it/reference/test",
                   "it/ci",
                   "it/help/scripts"
@@ -11384,6 +11404,7 @@
                       "vi/gateway/security/index",
                       "vi/gateway/security/exposure-runbook",
                       "vi/gateway/security/secure-file-operations",
+                      "vi/gateway/security/shrinkwrap",
                       "vi/gateway/security/audit-checks",
                       "vi/gateway/operator-scopes",
                       "vi/gateway/sandboxing",
@@ -11679,6 +11700,7 @@
                 "pages": [
                   "vi/reference/RELEASING",
                   "vi/reference/full-release-validation",
+                  "vi/reference/release-performance-sweep",
                   "vi/reference/test",
                   "vi/ci",
                   "vi/help/scripts"
@@ -12302,6 +12324,7 @@
                       "nl/gateway/security/index",
                       "nl/gateway/security/exposure-runbook",
                       "nl/gateway/security/secure-file-operations",
+                      "nl/gateway/security/shrinkwrap",
                       "nl/gateway/security/audit-checks",
                       "nl/gateway/operator-scopes",
                       "nl/gateway/sandboxing",
@@ -12597,6 +12620,7 @@
                 "pages": [
                   "nl/reference/RELEASING",
                   "nl/reference/full-release-validation",
+                  "nl/reference/release-performance-sweep",
                   "nl/reference/test",
                   "nl/ci",
                   "nl/help/scripts"
@@ -13220,6 +13244,7 @@
                       "tr/gateway/security/index",
                       "tr/gateway/security/exposure-runbook",
                       "tr/gateway/security/secure-file-operations",
+                      "tr/gateway/security/shrinkwrap",
                       "tr/gateway/security/audit-checks",
                       "tr/gateway/operator-scopes",
                       "tr/gateway/sandboxing",
@@ -13515,6 +13540,7 @@
                 "pages": [
                   "tr/reference/RELEASING",
                   "tr/reference/full-release-validation",
+                  "tr/reference/release-performance-sweep",
                   "tr/reference/test",
                   "tr/ci",
                   "tr/help/scripts"
@@ -14138,6 +14164,7 @@
                       "uk/gateway/security/index",
                       "uk/gateway/security/exposure-runbook",
                       "uk/gateway/security/secure-file-operations",
+                      "uk/gateway/security/shrinkwrap",
                       "uk/gateway/security/audit-checks",
                       "uk/gateway/operator-scopes",
                       "uk/gateway/sandboxing",
@@ -14433,6 +14460,7 @@
                 "pages": [
                   "uk/reference/RELEASING",
                   "uk/reference/full-release-validation",
+                  "uk/reference/release-performance-sweep",
                   "uk/reference/test",
                   "uk/ci",
                   "uk/help/scripts"
@@ -15056,6 +15084,7 @@
                       "id/gateway/security/index",
                       "id/gateway/security/exposure-runbook",
                       "id/gateway/security/secure-file-operations",
+                      "id/gateway/security/shrinkwrap",
                       "id/gateway/security/audit-checks",
                       "id/gateway/operator-scopes",
                       "id/gateway/sandboxing",
@@ -15351,6 +15380,7 @@
                 "pages": [
                   "id/reference/RELEASING",
                   "id/reference/full-release-validation",
+                  "id/reference/release-performance-sweep",
                   "id/reference/test",
                   "id/ci",
                   "id/help/scripts"
@@ -15974,6 +16004,7 @@
                       "pl/gateway/security/index",
                       "pl/gateway/security/exposure-runbook",
                       "pl/gateway/security/secure-file-operations",
+                      "pl/gateway/security/shrinkwrap",
                       "pl/gateway/security/audit-checks",
                       "pl/gateway/operator-scopes",
                       "pl/gateway/sandboxing",
@@ -16269,6 +16300,7 @@
                 "pages": [
                   "pl/reference/RELEASING",
                   "pl/reference/full-release-validation",
+                  "pl/reference/release-performance-sweep",
                   "pl/reference/test",
                   "pl/ci",
                   "pl/help/scripts"
