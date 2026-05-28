@@ -371,12 +371,39 @@ for (const marker of [
 if (elementsIndex.includes('href="http://SKILL.md"')) {
   throw new Error("__elements: card body should not autolink SKILL.md inside the card anchor");
 }
-if (!/class="breadcrumbs"/.test(index) || !/data-copy-page/.test(index) || !/class="page-feedback"/.test(index)) {
+if (!/class="article-meta-row"/.test(index)
+  || !/class="breadcrumbs"/.test(index)
+  || !/data-copy-page/.test(index)
+  || !/class="page-feedback"/.test(index)) {
   throw new Error("index: page reader affordances are missing");
 }
 if (!/data-page-markdown-url="\/index\.md"/.test(index)
   || !/data-page-markdown-url="\/start\/getting-started\.md"/.test(gettingStarted)) {
   throw new Error("page tools: Copy page should target generated Markdown routes");
+}
+if (!/class="page-actions"/.test(index)
+  || !/class="page-actions-primary" data-copy-page/.test(index)
+  || !/class="page-actions-more"/.test(index)
+  || !/class="page-actions-chevron"/.test(index)
+  || !/class="page-actions-menu"/.test(index)
+  || !/View as Markdown/.test(index)
+  || !/target="_blank" rel="noreferrer"/.test(index)
+  || !/Open in ChatGPT/.test(index)
+  || !/Open in Claude/.test(index)
+  || !/Open in Perplexity/.test(index)
+  || !/https:\/\/chatgpt\.com\/\?hints=search&amp;q=Read%20from%20https%3A%2F%2Fdocs\.openclaw\.ai%2F%20so%20I%20can%20ask%20questions%20about%20it\./.test(index)
+  || !/https:\/\/claude\.ai\/new\?q=Read%20from%20https%3A%2F%2Fdocs\.openclaw\.ai%2F\.md%20so%20I%20can%20ask%20questions%20about%20it\./.test(index)
+  || !/https:\/\/www\.perplexity\.ai\/search\/new\?q=Read%20from%20https%3A%2F%2Fdocs\.openclaw\.ai%2F\.md%20so%20I%20can%20ask%20questions%20about%20it\./.test(index)) {
+  throw new Error("page tools: AI action menu links are missing");
+}
+if ((index.match(/class="page-action" href="[^"]+" target="_blank" rel="noreferrer"/g) ?? []).length < 4) {
+  throw new Error("page tools: dropdown links should open in a new tab");
+}
+if (!/class="page-feedback-links" aria-label="Page source and issue"/.test(index)
+  || !/Edit source/.test(index)
+  || !/Raise issue/.test(index)
+  || !/https:\/\/github\.com\/openclaw\/openclaw\/issues\/new\?title=Issue%20on%20docs&amp;body=Path%3A%20%2F/.test(index)) {
+  throw new Error("page feedback: footer source and issue actions are missing");
 }
 if (!/function initCodeGroups/.test(siteJs) || !/className="oc-code-tab"/.test(siteJs) || !/preferredCodeTab/.test(siteJs)) {
   throw new Error("assets: code group tabs are missing");
@@ -386,6 +413,11 @@ if (!/function handleDocsControlClick/.test(siteJs) || !/async function copyText
 }
 if (!/async function copyPageMarkdown/.test(siteJs)
   || !/function markdownBodyForCopy/.test(siteJs)
+  || !/function setCopyFeedback/.test(siteJs)
+  || !/Copying\.\.\./.test(siteJs)
+  || !/document\.execCommand\("copy"\)/.test(siteJs)
+  || !/\.page-actions-more\[open\]/.test(siteJs)
+  || !/menu\.removeAttribute\("open"\)/.test(siteJs)
   || !/fetch\(markdownUrl,\{credentials:"same-origin",headers:\{"Accept":"text\/markdown"\}\}\)/.test(siteJs)
   || /dataset\.pageUrl\|\|location\.href/.test(siteJs)) {
   throw new Error("assets: Copy page should fetch Markdown content instead of copying the URL");
@@ -402,6 +434,18 @@ if (!/\.oc-code figcaption button:before/.test(siteCss)
   || !/\.oc-code figcaption button\[data-copy-state="copied"\]:after/.test(siteCss)
   || !/\.oc-code figcaption \.oc-code-label/.test(siteCss)) {
   throw new Error("assets: code copy button icon skin is missing");
+}
+if (!/\.article-meta-row\{display:flex;align-items:center;justify-content:space-between/.test(siteCss)
+  || !/\.page-actions\{display:inline-flex;align-items:stretch;position:relative\}/.test(siteCss)
+  || !/\.page-actions-primary\{display:inline-flex;align-items:center;gap:7px/.test(siteCss)
+  || !/\.page-actions-more summary\{display:grid;place-items:center;width:34px/.test(siteCss)
+  || !/\.page-actions-more \.page-actions-menu\{left:auto;right:0\}/.test(siteCss)) {
+  throw new Error("assets: page action trigger should use the split pill button skin");
+}
+if (!/\.page-actions-primary:hover,\.page-actions-more\[open\] summary,\.page-actions-more summary:hover\{border-color:var\(--brand\);color:var\(--ink\)\}/.test(siteCss)
+  || !/\.page-action-external\{justify-self:end;color:var\(--muted\)/.test(siteCss)
+  || !/\.page-feedback-links\{display:flex;align-items:center;gap:9px;margin-left:auto\}/.test(siteCss)) {
+  throw new Error("assets: page action hover, external marker, and footer link skin are missing");
 }
 const ambient = fs.readFileSync(path.join(site, "channels/ambient-room-events/index.html"), "utf8");
 if (!/<figure class="oc-code" data-code-label="json5">/.test(ambient)
