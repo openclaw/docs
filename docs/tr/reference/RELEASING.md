@@ -175,7 +175,7 @@ Validation` üzerinden ya da `main`/sürüm iş akışı ref’inden tetiklenmel
   - kararlı npm sürümleri varsayılan olarak `beta` kullanır
   - kararlı npm yayımlaması, iş akışı girdisi üzerinden açıkça `latest` hedefleyebilir
   - token tabanlı npm dist-tag mutasyonu artık güvenlik nedeniyle
-    `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml`
+    `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml`
     içinde yer alır; çünkü genel repo OIDC-only yayımlamayı korurken `npm dist-tag add` hâlâ `NPM_TOKEN` gerektirir
   - genel `macOS Release` yalnızca doğrulama içindir; bir etiket yalnızca bir sürüm dalında bulunuyor ancak iş akışı `main` üzerinden tetikleniyorsa
     `public_release_branch=release/YYYY.M.D` ayarlayın
@@ -569,7 +569,7 @@ Kararlı bir npm sürümü çıkarırken:
 6. Aynı `tag`, aynı `npm_dist_tag` ve kaydedilmiş `preflight_run_id` ile
    `OpenClaw Release Publish` çalıştırın; OpenClaw npm paketini yükseltmeden önce dışsallaştırılmış Plugin'leri npm ve ClawHub'a yayımlar
 7. Sürüm `beta` üzerinde yayımlandıysa, bu kararlı sürümü `beta` etiketinden `latest` etiketine yükseltmek için özel
-   `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml`
+   `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml`
    iş akışını kullanın
 8. Sürüm bilinçli olarak doğrudan `latest` etiketine yayımlandıysa ve `beta` aynı kararlı derlemeyi hemen izlemeliyse, her iki dist-tag'i de kararlı sürüme yönlendirmek için aynı özel iş akışını kullanın veya zamanlanmış kendi kendini iyileştiren senkronizasyonunun `beta` etiketini daha sonra taşımasına izin verin
 

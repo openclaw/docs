@@ -163,7 +163,7 @@ OpenClawには3つの公開リリースレーンがあります:
   - 実際の npm publish は、成功した preflight run と同じ `main` または `release/YYYY.M.D` branch から dispatch する必要がある
   - stable npm releases はデフォルトで `beta` になる
   - stable npm publish は workflow input によって明示的に `latest` を target にできる
-  - token-based npm dist-tag mutation は現在、security のために `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml` にある。`npm dist-tag add` は引き続き `NPM_TOKEN` を必要とする一方、public repo は OIDC-only publish を保つためである
+  - token-based npm dist-tag mutation は現在、security のために `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml` にある。`npm dist-tag add` は引き続き `NPM_TOKEN` を必要とする一方、public repo は OIDC-only publish を保つためである
   - public `macOS Release` は validation-only である。tag が release branch 上にのみ存在し、workflow が `main` から dispatch される場合は、`public_release_branch=release/YYYY.M.D` を設定する
   - 実際の private mac publish には、成功した private mac `preflight_run_id` と `validate_run_id` が必要である
   - 実際の publish paths は、準備済み artifacts を再ビルドするのではなく promote する
@@ -416,7 +416,7 @@ gh workflow run openclaw-release-publish.yml \
 4. 意図的に決定論的な通常のテストグラフのみが必要な場合は、代わりにリリース ref で手動 `CI` ワークフローを実行します
 5. 成功した `preflight_run_id` を保存します
 6. 同じ `tag`、同じ `npm_dist_tag`、保存済みの `preflight_run_id` で `OpenClaw Release Publish` を実行します。これは、OpenClaw npm パッケージをプロモートする前に、外部化された Plugin を npm と ClawHub に公開します
-7. リリースが `beta` に着地した場合は、非公開の `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml` ワークフローを使用して、その安定版を `beta` から `latest` にプロモートします
+7. リリースが `beta` に着地した場合は、非公開の `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml` ワークフローを使用して、その安定版を `beta` から `latest` にプロモートします
 8. リリースを意図的に直接 `latest` に公開し、`beta` も同じ安定版ビルドをすぐに追従させる必要がある場合は、同じ非公開ワークフローを使用して両方の dist-tag を安定版に向けるか、そのスケジュール済み自己修復同期が後で `beta` を移動するのを待ちます
 
 dist-tag の変更は、引き続き `NPM_TOKEN` が必要なため、セキュリティ上の理由から非公開 repo にあります。一方、公開 repo では OIDC のみの公開を維持します。

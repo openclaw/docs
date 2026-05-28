@@ -246,7 +246,7 @@ Validation` หรือจาก workflow ref `main`/release เพื่อใ
   - รีลีส npm แบบ stable ตั้งค่าเริ่มต้นเป็น `beta`
   - การเผยแพร่ npm แบบ stable สามารถ target `latest` ได้อย่างชัดเจนผ่าน workflow input
   - การเปลี่ยน npm dist-tag แบบใช้ token ตอนนี้อยู่ใน
-    `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml`
+    `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml`
     เพื่อความปลอดภัย เพราะ `npm dist-tag add` ยังต้องใช้ `NPM_TOKEN` ขณะที่ repo public
     คงการเผยแพร่แบบ OIDC-only ไว้
   - `macOS Release` แบบ public เป็น validation-only; เมื่อแท็กอยู่เฉพาะบน
@@ -620,7 +620,7 @@ gh workflow run openclaw-release-publish.yml \
 4. หากคุณตั้งใจต้องการเฉพาะกราฟการทดสอบปกติแบบกำหนดแน่นอน ให้เรียกใช้เวิร์กโฟลว์ `CI` แบบแมนนวลบน release ref แทน
 5. บันทึก `preflight_run_id` ที่สำเร็จ
 6. เรียกใช้ `OpenClaw Release Publish` ด้วย `tag` เดียวกัน, `npm_dist_tag` เดียวกัน และ `preflight_run_id` ที่บันทึกไว้; เวิร์กโฟลว์จะเผยแพร่ Plugin ที่แยกออกไปยัง npm และ ClawHub ก่อนเลื่อนสถานะแพ็กเกจ npm ของ OpenClaw
-7. หากรีลีสลงที่ `beta` ให้ใช้เวิร์กโฟลว์ส่วนตัว `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml` เพื่อเลื่อนสถานะเวอร์ชันเสถียรนั้นจาก `beta` ไปยัง `latest`
+7. หากรีลีสลงที่ `beta` ให้ใช้เวิร์กโฟลว์ส่วนตัว `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml` เพื่อเลื่อนสถานะเวอร์ชันเสถียรนั้นจาก `beta` ไปยัง `latest`
 8. หากรีลีสตั้งใจเผยแพร่โดยตรงไปยัง `latest` และ `beta` ควรตามบิลด์เสถียรเดียวกันทันที ให้ใช้เวิร์กโฟลว์ส่วนตัวเดียวกันนั้นเพื่อชี้ dist-tag ทั้งสองไปยังเวอร์ชันเสถียร หรือให้การซิงก์ self-healing ตามกำหนดการของเวิร์กโฟลว์ย้าย `beta` ภายหลัง
 
 การเปลี่ยนแปลง dist-tag อยู่ใน repo ส่วนตัวเพื่อความปลอดภัย เพราะยังต้องใช้ `NPM_TOKEN` ขณะที่ repo สาธารณะคงการเผยแพร่แบบ OIDC-only ไว้

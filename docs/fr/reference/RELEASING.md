@@ -259,7 +259,7 @@ Validation` ou depuis la référence de workflow `main`/release afin que la logi
   - les publications npm stables ciblent `beta` par défaut
   - une publication npm stable peut cibler explicitement `latest` via l’entrée du workflow
   - la mutation de dist-tag npm basée sur token réside désormais dans
-    `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml`
+    `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml`
     pour des raisons de sécurité, car `npm dist-tag add` a toujours besoin de `NPM_TOKEN` tandis que le
     dépôt public conserve une publication uniquement OIDC
   - la publication publique `macOS Release` est uniquement une validation ; lorsqu’un tag n’existe que sur une
@@ -637,7 +637,7 @@ Lors de la préparation d’une publication npm stable :
 4. Si vous n’avez intentionnellement besoin que du graphe de tests normal déterministe, exécutez plutôt le workflow manuel `CI` sur la ref de publication
 5. Enregistrez le `preflight_run_id` réussi
 6. Exécutez `OpenClaw Release Publish` avec le même `tag`, le même `npm_dist_tag` et le `preflight_run_id` enregistré ; il publie les plugins externalisés vers npm et ClawHub avant de promouvoir le package npm OpenClaw
-7. Si la publication a atterri sur `beta`, utilisez le workflow privé `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml` pour promouvoir cette version stable de `beta` vers `latest`
+7. Si la publication a atterri sur `beta`, utilisez le workflow privé `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml` pour promouvoir cette version stable de `beta` vers `latest`
 8. Si la publication a intentionnellement été faite directement vers `latest` et que `beta` doit suivre immédiatement le même build stable, utilisez ce même workflow privé pour faire pointer les deux dist-tags vers la version stable, ou laissez sa synchronisation d’auto-réparation planifiée déplacer `beta` plus tard
 
 La mutation des dist-tags vit dans le dépôt privé pour des raisons de sécurité, car elle nécessite toujours `NPM_TOKEN`, tandis que le dépôt public conserve une publication uniquement OIDC.

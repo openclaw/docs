@@ -263,7 +263,7 @@ Validation` або з workflow ref `main`/release, щоб логіка workflow 
   - stable npm releases типово використовують `beta`
   - stable npm publish може явно націлюватися на `latest` через workflow input
   - token-based мутація npm dist-tag тепер живе в
-    `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml`
+    `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml`
     для безпеки, тому що `npm dist-tag add` досі потребує `NPM_TOKEN`, тоді як
     публічний repo зберігає publish лише через OIDC
   - публічний `macOS Release` є validation-only; коли тег існує лише на
@@ -651,7 +651,7 @@ gh workflow run openclaw-release-publish.yml \
 4. Якщо навмисно потрібен лише детермінований звичайний граф тестів, натомість запустіть ручний workflow `CI` на релізному ref
 5. Збережіть успішний `preflight_run_id`
 6. Запустіть `OpenClaw Release Publish` з тим самим `tag`, тим самим `npm_dist_tag` і збереженим `preflight_run_id`; він публікує екстерналізовані Plugin до npm і ClawHub перед просуванням npm-пакета OpenClaw
-7. Якщо реліз потрапив на `beta`, використовуйте приватний workflow `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml`, щоб просунути цю стабільну версію з `beta` до `latest`
+7. Якщо реліз потрапив на `beta`, використовуйте приватний workflow `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml`, щоб просунути цю стабільну версію з `beta` до `latest`
 8. Якщо реліз навмисно опубліковано безпосередньо до `latest` і `beta` має негайно вказувати на ту саму стабільну збірку, використовуйте той самий приватний workflow, щоб спрямувати обидва dist-tags на стабільну версію, або дозвольте його запланованій self-healing синхронізації пізніше перемістити `beta`
 
 Мутація dist-tag живе в приватному репозиторії з міркувань безпеки, бо вона все ще потребує `NPM_TOKEN`, тоді як публічний репозиторій зберігає публікацію лише через OIDC.

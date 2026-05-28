@@ -265,7 +265,7 @@ Validation` albo z referencji workflow `main`/release, aby logika workflow i
   - stabilne wydania npm domyślnie trafiają na `beta`
   - stabilna publikacja npm może jawnie celować w `latest` przez wejście workflow
   - mutacja dist-tag npm oparta na tokenie znajduje się teraz w
-    `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml`
+    `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml`
     ze względów bezpieczeństwa, ponieważ `npm dist-tag add` nadal wymaga `NPM_TOKEN`, podczas gdy
     publiczne repo zachowuje publikację wyłącznie OIDC
   - publiczne `macOS Release` służy tylko do walidacji; gdy tag istnieje tylko na
@@ -611,7 +611,7 @@ Podczas przygotowywania stabilnego wydania npm:
    i zapisanym `preflight_run_id`; publikuje zewnętrzne pluginy do npm
    i ClawHub przed promowaniem pakietu npm OpenClaw
 7. Jeśli wydanie trafiło na `beta`, użyj prywatnego workflow
-   `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml`,
+   `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml`,
    aby wypromować tę stabilną wersję z `beta` do `latest`
 8. Jeśli wydanie celowo opublikowano bezpośrednio do `latest`, a `beta`
    powinna natychmiast wskazywać tę samą stabilną kompilację, użyj tego samego prywatnego

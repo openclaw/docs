@@ -264,7 +264,7 @@ Validation` oder über die `main`-/Release-Workflow-Ref dispatcht werden, damit 
   - Stabile npm-Releases verwenden standardmäßig `beta`
   - Stabile npm-Publishs können über Workflow-Eingabe explizit `latest` anvisieren
   - Tokenbasierte npm-dist-tag-Mutation liegt jetzt in
-    `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml`
+    `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml`
     aus Sicherheitsgründen, weil `npm dist-tag add` weiterhin `NPM_TOKEN` benötigt, während das
     öffentliche Repo bei OIDC-only-Publish bleibt
   - Öffentliches `macOS Release` ist validierungsrein; wenn ein Tag nur auf einem
@@ -732,7 +732,7 @@ Wenn Sie ein stabiles npm-Release erstellen:
    externalisierte Plugins in npm und ClawHub, bevor das OpenClaw-npm-Paket
    promoted wird
 7. Wenn das Release auf `beta` gelandet ist, verwenden Sie den privaten
-   `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml`-
+   `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml`-
    Workflow, um diese stabile Version von `beta` nach `latest` zu promoten
 8. Wenn das Release bewusst direkt nach `latest` veröffentlicht wurde und
    `beta` sofort demselben stabilen Build folgen soll, verwenden Sie denselben

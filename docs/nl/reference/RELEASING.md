@@ -262,7 +262,7 @@ Validation` of vanuit de `main`/release-workflowref, zodat workflowlogica en
   - stabiele npm-releases gebruiken standaard `beta`
   - stabiele npm-publicatie kan expliciet op `latest` mikken via workflowinput
   - tokengebaseerde npm dist-tag-mutatie leeft nu in
-    `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml`
+    `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml`
     voor beveiliging, omdat `npm dist-tag add` nog steeds `NPM_TOKEN` nodig heeft terwijl de
     publieke repo OIDC-only publicatie behoudt
   - publieke `macOS Release` is alleen validatie; wanneer een tag alleen op een
@@ -724,7 +724,7 @@ Bij het maken van een stabiele npm-release:
    en de opgeslagen `preflight_run_id`; deze publiceert geëxternaliseerde Plugins naar npm
    en ClawHub voordat het OpenClaw-npm-pakket wordt gepromoveerd
 7. Als de release op `beta` is geland, gebruikt u de private
-   `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml`-
+   `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml`-
    workflow om die stabiele versie van `beta` naar `latest` te promoveren
 8. Als de release bewust rechtstreeks naar `latest` is gepubliceerd en `beta`
    onmiddellijk dezelfde stabiele build moet volgen, gebruikt u dezelfde private

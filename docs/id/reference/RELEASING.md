@@ -260,7 +260,7 @@ Validation` atau dari ref workflow `main`/rilis agar logika workflow dan
   - rilis npm stabil default ke `beta`
   - publish npm stabil dapat menargetkan `latest` secara eksplisit melalui input workflow
   - mutasi dist-tag npm berbasis token sekarang berada di
-    `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml`
+    `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml`
     demi keamanan, karena `npm dist-tag add` masih memerlukan `NPM_TOKEN` sementara
     repo publik tetap menggunakan publish hanya OIDC
   - `macOS Release` publik hanya untuk validasi; ketika tag hanya berada di
@@ -640,7 +640,7 @@ Saat memotong rilis npm stabil:
 4. Jika Anda sengaja hanya memerlukan graf pengujian normal yang deterministik, jalankan workflow manual `CI` pada ref rilis sebagai gantinya
 5. Simpan `preflight_run_id` yang berhasil
 6. Jalankan `OpenClaw Release Publish` dengan `tag` yang sama, `npm_dist_tag` yang sama, dan `preflight_run_id` yang disimpan; ini menerbitkan Plugin yang dieksternalkan ke npm dan ClawHub sebelum mempromosikan paket npm OpenClaw
-7. Jika rilis mendarat di `beta`, gunakan workflow privat `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml` untuk mempromosikan versi stabil itu dari `beta` ke `latest`
+7. Jika rilis mendarat di `beta`, gunakan workflow privat `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml` untuk mempromosikan versi stabil itu dari `beta` ke `latest`
 8. Jika rilis sengaja diterbitkan langsung ke `latest` dan `beta` harus segera mengikuti build stabil yang sama, gunakan workflow privat yang sama untuk mengarahkan kedua dist-tag ke versi stabil, atau biarkan sinkronisasi pemulihan mandiri terjadwalnya memindahkan `beta` nanti
 
 Mutasi dist-tag berada di repo privat untuk keamanan karena masih memerlukan `NPM_TOKEN`, sementara repo publik mempertahankan penerbitan khusus OIDC.

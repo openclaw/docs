@@ -179,7 +179,7 @@ Validation` o desde la referencia de workflow `main`/release para que la lógica
   - las versiones npm estables predeterminan a `beta`
   - la publicación npm estable puede apuntar explícitamente a `latest` mediante input del workflow
   - la mutación de dist-tag de npm basada en token ahora vive en
-    `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml`
+    `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml`
     por seguridad, porque `npm dist-tag add` sigue necesitando `NPM_TOKEN`, mientras que el repositorio público conserva publicación solo con OIDC
   - `macOS Release` público es solo de validación; cuando una etiqueta existe solo en una rama de versión pero el workflow se lanza desde `main`, establece `public_release_branch=release/YYYY.M.D`
   - la publicación privada real de mac debe pasar `preflight_run_id` y `validate_run_id` privados de mac exitosos
@@ -605,7 +605,7 @@ Al preparar un lanzamiento npm estable:
    y el `preflight_run_id` guardado; publica plugins externalizados en npm
    y ClawHub antes de promover el paquete npm de OpenClaw
 7. Si el lanzamiento aterrizó en `beta`, usa el flujo de trabajo privado
-   `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml`
+   `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml`
    para promover esa versión estable de `beta` a `latest`
 8. Si el lanzamiento se publicó intencionalmente directamente en `latest` y `beta`
    debe seguir inmediatamente la misma compilación estable, usa ese mismo flujo de trabajo privado

@@ -256,7 +256,7 @@ Validation` hoặc từ workflow ref `main`/release để logic workflow và
   - phát hành npm ổn định mặc định là `beta`
   - publish npm ổn định có thể nhắm rõ `latest` thông qua input workflow
   - thay đổi npm dist-tag dựa trên token hiện nằm trong
-    `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml`
+    `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml`
     vì lý do bảo mật, vì `npm dist-tag add` vẫn cần `NPM_TOKEN` trong khi
     repo công khai giữ publish chỉ dùng OIDC
   - `macOS Release` công khai chỉ dành cho xác thực; khi một thẻ chỉ tồn tại trên
@@ -634,7 +634,7 @@ Khi tạo một bản phát hành npm ổn định:
 4. Nếu bạn cố ý chỉ cần đồ thị kiểm thử thông thường xác định, hãy chạy workflow `CI` thủ công trên ref phát hành
 5. Lưu `preflight_run_id` thành công
 6. Chạy `OpenClaw Release Publish` với cùng `tag`, cùng `npm_dist_tag` và `preflight_run_id` đã lưu; nó phát hành các Plugin đã tách ra bên ngoài lên npm và ClawHub trước khi quảng bá gói npm OpenClaw
-7. Nếu bản phát hành được đưa lên `beta`, dùng workflow riêng tư `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml` để quảng bá phiên bản ổn định đó từ `beta` lên `latest`
+7. Nếu bản phát hành được đưa lên `beta`, dùng workflow riêng tư `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml` để quảng bá phiên bản ổn định đó từ `beta` lên `latest`
 8. Nếu bản phát hành cố ý được phát hành trực tiếp lên `latest` và `beta` phải theo cùng bản dựng ổn định ngay lập tức, dùng cùng workflow riêng tư đó để trỏ cả hai dist-tag vào phiên bản ổn định, hoặc để đồng bộ tự phục hồi theo lịch của nó chuyển `beta` sau
 
 Thao tác thay đổi dist-tag nằm trong repo riêng tư vì lý do bảo mật vì nó vẫn cần `NPM_TOKEN`, trong khi repo công khai giữ phát hành chỉ dùng OIDC.

@@ -251,7 +251,7 @@ x-i18n:
   - تستهدف إصدارات npm المستقرة `beta` افتراضيًا
   - يمكن لنشر npm المستقر استهداف `latest` صراحة عبر مُدخل سير العمل
   - بات تعديل dist-tag الخاص بـ npm المستند إلى الرمز المميز موجودًا الآن في
-    `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml`
+    `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml`
     للأمان، لأن `npm dist-tag add` لا يزال يحتاج إلى `NPM_TOKEN` بينما يحافظ
     المستودع العام على النشر عبر OIDC فقط
   - إصدار `macOS Release` العام للتحقق فقط؛ عندما يوجد وسم فقط على فرع إصدار
@@ -648,7 +648,7 @@ gh workflow run openclaw-release-publish.yml \
 5. احفظ `preflight_run_id` الناجح
 6. شغّل `OpenClaw Release Publish` باستخدام `tag` نفسه و`npm_dist_tag` نفسه و`preflight_run_id` المحفوظ؛ ينشر Plugins الخارجية إلى npm وClawHub قبل ترقية حزمة OpenClaw على npm
 7. إذا وصل الإصدار إلى `beta`، فاستخدم سير العمل الخاص
-   `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml`
+   `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml`
    لترقية ذلك الإصدار المستقر من `beta` إلى `latest`
 8. إذا نُشر الإصدار عمدا مباشرة إلى `latest` ويجب أن يتبع `beta` البناء المستقر نفسه فورا، فاستخدم سير العمل الخاص نفسه لتوجيه وسمي التوزيع إلى الإصدار المستقر، أو اترك مزامنة الإصلاح الذاتي المجدولة تنقل `beta` لاحقا
 

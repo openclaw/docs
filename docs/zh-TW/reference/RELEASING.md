@@ -139,7 +139,7 @@ OpenClaw 有三個公開發布通道：
   - 真正的 npm 發布必須從與成功預檢執行相同的 `main` 或 `release/YYYY.M.D` 分支派發
   - 穩定版 npm 發行預設為 `beta`
   - 穩定版 npm 發布可透過工作流程輸入明確目標為 `latest`
-  - 基於 token 的 npm dist-tag 變更現在位於 `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml` 以提高安全性，因為 `npm dist-tag add` 仍需要 `NPM_TOKEN`，而公開 repo 維持僅 OIDC 發布
+  - 基於 token 的 npm dist-tag 變更現在位於 `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml` 以提高安全性，因為 `npm dist-tag add` 仍需要 `NPM_TOKEN`，而公開 repo 維持僅 OIDC 發布
   - 公開 `macOS Release` 僅供驗證；當標籤只存在於發行分支但工作流程從 `main` 派發時，設定 `public_release_branch=release/YYYY.M.D`
   - 真正的私有 mac 發布必須通過成功的私有 mac `preflight_run_id` 與 `validate_run_id`
   - 真正發布路徑會提升已準備好的成品，而不是再次重建它們
@@ -438,7 +438,7 @@ gh workflow run openclaw-release-publish.yml \
 6. 使用相同 `tag`、相同 `npm_dist_tag` 與已儲存的 `preflight_run_id` 執行
    `OpenClaw Release Publish`；它會先將外部化 Plugin 發布到 npm 和 ClawHub，再提升 OpenClaw npm 套件
 7. 如果發行落在 `beta`，請使用私有
-   `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml`
+   `openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml`
    workflow，將該穩定版本從 `beta` 提升到 `latest`
 8. 如果發行是刻意直接發布到 `latest`，且 `beta` 應立即跟隨同一個穩定建置，請使用同一個私有
    workflow，將兩個 dist-tags 都指向該穩定版本；或讓其排程自我修復同步稍後移動 `beta`
