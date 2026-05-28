@@ -538,7 +538,7 @@ function chatWidget() {
   if (!chatApiUrl) return "";
   return `<section class="docs-chat" data-docs-chat aria-label="OpenClaw docs assistant">
 <button class="docs-chat-launcher" type="button" data-chat-toggle aria-expanded="false" aria-controls="docs-chat-panel"><span aria-hidden="true">*</span><span>Ask Molty</span></button>
-<div class="docs-chat-panel" id="docs-chat-panel" role="dialog" aria-modal="false" aria-labelledby="docs-chat-title">
+<div class="docs-chat-panel" id="docs-chat-panel" data-chat-panel role="dialog" aria-modal="false" aria-labelledby="docs-chat-title" aria-hidden="true" inert>
 <header class="docs-chat-head"><div class="docs-chat-title"><span class="docs-chat-mark" aria-hidden="true">${icon("sparkles")}</span><h2 id="docs-chat-title">Assistant</h2></div><div class="docs-chat-actions"><button class="docs-chat-icon docs-chat-maximize" type="button" data-chat-maximize aria-label="Maximize docs assistant" aria-pressed="false">${icon("maximize-2")}</button><button class="docs-chat-icon docs-chat-copy" type="button" data-chat-copy aria-label="Copy conversation" hidden>${icon("copy")}</button><button class="docs-chat-icon docs-chat-retry" type="button" data-chat-retry aria-label="Reload last answer" hidden disabled>${icon("refresh-cw")}</button><button class="docs-chat-icon docs-chat-clear" type="button" data-chat-clear aria-label="Clear conversation" hidden>${icon("trash")}</button><button class="docs-chat-icon docs-chat-close" type="button" data-chat-close aria-label="Close docs assistant">x</button></div></header>
 <div class="docs-chat-auth" data-chat-auth hidden></div>
 <div class="docs-chat-log" data-chat-log aria-live="polite">

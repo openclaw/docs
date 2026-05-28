@@ -134,6 +134,33 @@ async function checkDesktop() {
     throw new Error(`search shortcut keycap failed: ${JSON.stringify(searchShortcut)}`);
   }
   await page.waitForTimeout(350);
+  const initialChatSidebar = await page.evaluate(() => {
+    const chat = document.querySelector(".docs-chat");
+    const panel = document.querySelector(".docs-chat-panel");
+    const panelStyle = panel ? getComputedStyle(panel) : null;
+    return {
+      open: chat?.classList.contains("open"),
+      bodyOpen: document.body.classList.contains("docs-chat-open"),
+      panelDisplay: panelStyle?.display,
+      panelOpacity: panelStyle?.opacity,
+      panelTransform: panelStyle?.transform,
+      panelInert: panel?.hasAttribute("inert"),
+      panelAriaHidden: panel?.getAttribute("aria-hidden"),
+      bodyPaddingRight: getComputedStyle(document.body).paddingRight,
+    };
+  });
+  if (initialChatSidebar.open
+    || initialChatSidebar.bodyOpen
+    || initialChatSidebar.panelDisplay !== "grid"
+    || initialChatSidebar.panelOpacity !== "0"
+    || initialChatSidebar.panelTransform === "none"
+    || !initialChatSidebar.panelInert
+    || initialChatSidebar.panelAriaHidden !== "true"
+    || parseFloat(initialChatSidebar.bodyPaddingRight ?? "0") !== 0) {
+    throw new Error(`initial desktop chat sidebar should be closed: ${JSON.stringify(initialChatSidebar)}`);
+  }
+  await page.click("[data-chat-toggle]");
+  await page.waitForTimeout(350);
   const chatSidebar = await page.evaluate(() => {
     const chat = document.querySelector(".docs-chat");
     const panel = document.querySelector(".docs-chat-panel");
@@ -145,8 +172,6 @@ async function checkDesktop() {
     const panelRect = panel?.getBoundingClientRect();
     const mainRect = main?.getBoundingClientRect();
     const panelStyle = panel ? getComputedStyle(panel) : null;
-    const copyRect = copy?.getBoundingClientRect();
-    const retryRect = retry?.getBoundingClientRect();
     return {
       open: chat?.classList.contains("open"),
       bodyOpen: document.body.classList.contains("docs-chat-open"),
@@ -158,10 +183,12 @@ async function checkDesktop() {
       panelTop: panelRect?.top,
       panelHeight: panelRect?.height,
       panelWidth: panelRect?.width,
+      panelInert: panel?.hasAttribute("inert"),
+      panelAriaHidden: panel?.getAttribute("aria-hidden"),
       chatWidth: chatRect?.width,
       mainRight: mainRect?.right,
-      copySize: copyRect ? [copyRect.width, copyRect.height] : null,
-      retrySize: retryRect ? [retryRect.width, retryRect.height] : null,
+      copyHidden: copy?.hasAttribute("hidden"),
+      retryHidden: retry?.hasAttribute("hidden"),
       retryDisabled: retry?.hasAttribute("disabled"),
       maximizePressed: maximize?.getAttribute("aria-pressed"),
     };
@@ -174,11 +201,13 @@ async function checkDesktop() {
     || chatSidebar.panelTop !== 0
     || chatSidebar.panelHeight < 900
     || chatSidebar.panelWidth < 340
+    || chatSidebar.panelInert
+    || chatSidebar.panelAriaHidden !== "false"
     || chatSidebar.chatWidth < 340
     || parseFloat(chatSidebar.bodyPaddingRight ?? "0") < 340
     || chatSidebar.mainRight > 1120
-    || chatSidebar.copySize?.[0] < 32
-    || chatSidebar.retrySize?.[0] < 32
+    || !chatSidebar.copyHidden
+    || !chatSidebar.retryHidden
     || !chatSidebar.retryDisabled
     || chatSidebar.maximizePressed !== "false") {
     throw new Error(`desktop chat sidebar failed: ${JSON.stringify(chatSidebar)}`);

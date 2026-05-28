@@ -255,9 +255,14 @@ if (/data-locale/.test(siteJs)) {
 if (!/function initChat/.test(siteJs)
   || !/data-chat-form/.test(siteJs)
   || !/chat\.dataset\.chatAuthState=state/.test(siteJs)
+  || !/panel\?\.toggleAttribute\("inert",!open\)/.test(siteJs)
+  || !/panel\?\.setAttribute\("aria-hidden",String\(!open\)\)/.test(siteJs)
   || !/form\.inert=!ready/.test(siteJs)
   || !/input\.readOnly=!ready/.test(siteJs)) {
   throw new Error("assets: docs chat behavior is missing");
+}
+if (/matchMedia\("\(min-width:1121px\)"\)\.matches\)setOpen\(true\)/.test(siteJs)) {
+  throw new Error("assets: docs chat must stay closed until Ask Molty is pressed");
 }
 if (!/function runSearch/.test(siteJs) || !/setTimeout\(\(\)=>runSearch\(expandSearchQuery\(q\),id\),140\)/.test(siteJs)) {
   throw new Error("assets: search input is not debounced");
