@@ -1,3 +1,5 @@
+![OpenClaw Docs banner](docs/assets/readme-banner.jpg)
+
 # openclaw-docs
 
 Mirror repo for the published OpenClaw docs site.
