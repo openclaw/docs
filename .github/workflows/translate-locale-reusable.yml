@@ -396,7 +396,7 @@ jobs:
 
       - name: Upload locale artifact
         if: steps.stale.outputs.skip != 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: i18n-${{ inputs.locale_slug }}-${{ inputs.source_sha }}
           path: .openclaw-sync/artifacts/${{ inputs.locale_slug }}
