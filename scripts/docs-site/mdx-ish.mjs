@@ -71,7 +71,9 @@ const knownBlocks = new Map([
   ["Steps", ["steps", ""]],
   ["Tabs", ["tabs", ""]],
   ["CodeGroup", ["code-group", ""]],
-  ["TileGroup", ["tile-group", ""]]
+  ["TileGroup", ["tile-group", ""]],
+  ["CTAGroup", ["cta-grid", ""]],
+  ["StatGrid", ["stat-grid", ""]]
 ]);
 const callouts = new Map([
   ["Note", "Note"],
@@ -205,15 +207,29 @@ function preprocess(input) {
   let out = input.replace(/\r\n/g, "\n");
   out = out.replace(/^import\s+.+?;?\s*$/gm, "");
   out = out.replace(/<Mermaid\b[^>]*>([\s\S]*?)<\/Mermaid>/g, (_, body) => `\n${marker("mermaidBlock", body)}\n`);
+  out = out.replace(/<Chart\b([^>]*)\/>/g, (_, attrs) => `\n${marker("chart", JSON.stringify({ attrs, body: "" }))}\n`);
+  out = out.replace(/<Chart\b([^>]*)>([\s\S]*?)<\/Chart>/g, (_, attrs, body) => `\n${marker("chart", JSON.stringify({ attrs, body }))}\n`);
   out = replaceBreaksOutsideFences(out);
 
   out = out.replace(/<Card\b([^>]*)\/>/g, (_, attrs) => `${marker("cardSelf", attrs)}\n`);
   out = out.replace(/<Card\b([^>]*)>/g, (_, attrs) => `\n${marker("cardOpen", attrs)}\n`);
   out = out.replace(/<\/Card>/g, `\n${marker("cardClose")}\n`);
+  out = out.replace(/<CTA\b([^>]*)>/g, (_, attrs) => `\n${marker("ctaOpen", attrs)}\n`);
+  out = out.replace(/<\/CTA>/g, `\n${marker("ctaClose")}\n`);
+  out = out.replace(/<CTACard\b([^>]*)\/>/g, (_, attrs) => `${marker("ctaCardSelf", attrs)}\n`);
+  out = out.replace(/<CTACard\b([^>]*)>/g, (_, attrs) => `\n${marker("ctaCardOpen", attrs)}\n`);
+  out = out.replace(/<\/CTACard>/g, `\n${marker("ctaCardClose")}\n`);
   out = out.replace(/<CardGroup\b([^>]*)>/g, (_, attrs) => `\n${marker("blockOpen", cardGridClass(attrs))}\n`);
   out = out.replace(/<\/CardGroup>/g, `\n${marker("blockClose", "card-grid")}\n`);
   out = out.replace(/<Columns\b([^>]*)>/g, (_, attrs) => `\n${marker("blockOpen", cardGridClass(attrs))}\n`);
   out = out.replace(/<\/Columns>/g, `\n${marker("blockClose", "card-grid")}\n`);
+  out = out.replace(/<Lead\b[^>]*>/g, `\n${marker("leadOpen")}\n`);
+  out = out.replace(/<\/Lead>/g, `\n${marker("leadClose")}\n`);
+  out = out.replace(/<PullQuote\b([^>]*)>/g, (_, attrs) => `\n${marker("pullQuoteOpen", attrs)}\n`);
+  out = out.replace(/<\/PullQuote>/g, `\n${marker("pullQuoteClose")}\n`);
+  out = out.replace(/<Stat\b([^>]*)\/>/g, (_, attrs) => `${marker("statSelf", attrs)}\n`);
+  out = out.replace(/<Stat\b([^>]*)>/g, (_, attrs) => `\n${marker("statOpen", attrs)}\n`);
+  out = out.replace(/<\/Stat>/g, `\n${marker("statClose")}\n`);
 
   out = out.replace(/<Step\b([^>]*)>/g, (_, attrs) => `\n${marker("stepOpen", attrs)}\n`);
   out = out.replace(/<\/Step>/g, `\n${marker("stepClose")}\n`);
@@ -274,8 +290,14 @@ function replaceBreaksOutsideFences(input) {
 }
 
 function postprocess(html) {
+  const state = {
+    cta: [],
+    ctaCard: [],
+    pullQuote: []
+  };
   return html
-    .replace(new RegExp(`<p>${markerPrefix}:([^<]+)</p>`, "g"), (_, payload) => expandMarker(payload))
+    .replace(new RegExp(`<p>${markerPrefix}:([^<]+)</p>`, "g"), (_, payload) => expandMarker(payload, state))
+    .replace(/<table>([\s\S]*?)<\/table>/g, `<div class="oc-table-wrap"><table class="oc-table">$1</table></div>`)
     .replace(new RegExp(`${inlineMarkerPrefix}:([A-Za-z0-9]+):([A-Za-z0-9_-]*):`, "g"), (_, kind, encoded) => expandInlineMarker(`${kind}:${encoded}`));
 }
 
@@ -287,16 +309,52 @@ function inlineMarker(kind, payload = "") {
   return `${inlineMarkerPrefix}:${kind}:${Buffer.from(payload, "utf8").toString("base64url")}:`;
 }
 
-function expandMarker(payload) {
+function expandMarker(payload, state = {}) {
   const [kind, encoded = ""] = payload.split(":");
   const value = Buffer.from(encoded, "base64url").toString("utf8");
   if (kind === "blockOpen") return `<div class="oc-${escapeAttr(value)}">`;
   if (kind === "blockClose") return "</div>";
   if (kind === "calloutOpen") return `<aside class="oc-callout oc-callout-${slug(value)}"><strong>${escapeHtml(value)}</strong>`;
   if (kind === "calloutClose") return "</aside>";
+  if (kind === "chart") return chartHtml(value);
   if (kind === "cardSelf") return cardHtml(value, true);
   if (kind === "cardOpen") return cardHtml(value, false);
   if (kind === "cardClose") return "</div></a>";
+  if (kind === "ctaOpen") {
+    const attrs = parseAttrs(value);
+    state.cta?.push(attrs);
+    const tone = slug(attrs.tone ?? attrs.variant ?? "default");
+    const eyebrow = attrs.eyebrow ? `<span>${escapeHtml(attrs.eyebrow)}</span>` : "";
+    return `<section class="oc-cta oc-cta-${tone}"><div class="oc-cta-copy">${eyebrow}<strong>${escapeHtml(attrs.title ?? "Next step")}</strong>`;
+  }
+  if (kind === "ctaClose") {
+    const attrs = state.cta?.pop() ?? {};
+    return `</div>${ctaActions(attrs)}</section>`;
+  }
+  if (kind === "ctaCardSelf") return ctaCardHtml(value, true);
+  if (kind === "ctaCardOpen") {
+    const attrs = parseAttrs(value);
+    state.ctaCard?.push(attrs);
+    return ctaCardHtml(value, false);
+  }
+  if (kind === "ctaCardClose") {
+    const attrs = state.ctaCard?.pop() ?? {};
+    return `${ctaActions(attrs, "card")}</div></a>`;
+  }
+  if (kind === "leadOpen") return `<div class="oc-lead">`;
+  if (kind === "leadClose") return "</div>";
+  if (kind === "pullQuoteOpen") {
+    const attrs = parseAttrs(value);
+    state.pullQuote?.push(attrs);
+    return `<figure class="oc-pullquote"><blockquote>`;
+  }
+  if (kind === "pullQuoteClose") {
+    const attrs = state.pullQuote?.pop() ?? {};
+    return `</blockquote>${attrs.cite ? `<figcaption>${escapeHtml(attrs.cite)}</figcaption>` : ""}</figure>`;
+  }
+  if (kind === "statSelf") return statHtml(value, true);
+  if (kind === "statOpen") return statHtml(value, false);
+  if (kind === "statClose") return "</div></section>";
   if (kind === "stepOpen") return `<li class="oc-step"><h3>${escapeHtml(parseAttrs(value).title ?? "Step")}</h3>`;
   if (kind === "stepClose") return "</li>";
   if (kind === "tabOpen") return `<section class="oc-tab"><h3>${escapeHtml(parseAttrs(value).title ?? "Tab")}</h3>`;
@@ -363,6 +421,148 @@ function cardHtml(rawAttrs, selfClosing) {
   const icon = attrs.icon ? iconSvg(attrs.icon) : "";
   const end = selfClosing ? "</div></a>" : "";
   return `<a class="oc-card" href="${escapeAttr(href)}">${icon}<div><strong>${escapeHtml(title)}</strong>${end}`;
+}
+
+function ctaCardHtml(rawAttrs, selfClosing) {
+  const attrs = parseAttrs(rawAttrs);
+  const href = attrs.href ?? "#";
+  const title = attrs.title ?? attrs.name ?? "Open";
+  const tone = slug(attrs.tone ?? attrs.variant ?? "default");
+  const icon = attrs.icon ? iconSvg(attrs.icon) : "";
+  const end = selfClosing ? `${ctaActions(attrs, "card")}</div></a>` : "";
+  return `<a class="oc-cta-card oc-cta-card-${tone}" href="${escapeAttr(href)}">${icon}<div><strong>${escapeHtml(title)}</strong>${attrs.kicker ? `<span class="oc-cta-kicker">${escapeHtml(attrs.kicker)}</span>` : ""}${end}`;
+}
+
+function ctaActions(attrs, context = "block") {
+  const primaryHref = attrs.href ?? attrs.primaryHref;
+  const primaryLabel = attrs.label ?? attrs.primaryLabel ?? (primaryHref ? "Open" : "");
+  const secondaryHref = attrs.secondaryHref;
+  const secondaryLabel = attrs.secondaryLabel ?? (secondaryHref ? "Details" : "");
+  const nested = context === "card";
+  const links = [
+    primaryHref && primaryLabel ? ctaLink(primaryHref, primaryLabel, "primary", nested) : "",
+    secondaryHref && secondaryLabel ? ctaLink(secondaryHref, secondaryLabel, "secondary", nested) : ""
+  ].filter(Boolean).join("");
+  if (!links) return "";
+  return `<div class="oc-cta-actions oc-cta-actions-${escapeAttr(context)}">${links}</div>`;
+}
+
+function ctaLink(href, label, variant, nested = false) {
+  const className = `oc-cta-link oc-cta-link-${escapeAttr(variant)}`;
+  return nested
+    ? `<span class="${className}" data-href="${escapeAttr(href)}">${escapeHtml(label)}</span>`
+    : `<a class="${className}" href="${escapeAttr(href)}">${escapeHtml(label)}</a>`;
+}
+
+function statHtml(rawAttrs, selfClosing) {
+  const attrs = parseAttrs(rawAttrs);
+  const value = attrs.value ?? attrs.number ?? "0";
+  const label = attrs.label ?? attrs.title ?? "Metric";
+  const delta = attrs.delta ? `<span class="oc-stat-delta">${escapeHtml(attrs.delta)}</span>` : "";
+  const end = selfClosing ? "</div></section>" : "";
+  return `<section class="oc-stat"><strong>${escapeHtml(value)}</strong><span>${escapeHtml(label)}</span>${delta}<div>${end}`;
+}
+
+function chartHtml(rawPayload) {
+  const payload = parseJsonPayload(rawPayload);
+  const attrs = parseAttrs(payload.attrs ?? "");
+  const points = chartPoints(attrs, payload.body ?? "");
+  const title = attrs.title ?? "Chart";
+  const type = slug(attrs.type ?? "bar");
+  const unit = attrs.unit ?? "";
+  const max = Math.max(...points.map((point) => point.value), 1);
+  const rows = points.map((point) => chartDataRow(point, unit)).join("");
+  const chartBody = type === "donut"
+    ? donutChart(points, unit)
+    : type === "line" || type === "area"
+      ? lineChart(points, max, unit, { area: type === "area" })
+      : barChart(points, max, unit);
+  return `<figure class="oc-chart oc-chart-${escapeAttr(type)}"><figcaption><strong>${escapeHtml(title)}</strong>${attrs.subtitle ? `<span>${escapeHtml(attrs.subtitle)}</span>` : ""}</figcaption>${chartBody}<div class="oc-chart-data" role="table" aria-label="${escapeAttr(`${title} data`)}">${rows}</div></figure>`;
+}
+
+function parseJsonPayload(value) {
+  try {
+    return JSON.parse(value);
+  } catch {
+    return { attrs: value, body: "" };
+  }
+}
+
+function chartPoints(attrs, body) {
+  const labels = splitList(attrs.labels ?? attrs.x ?? "");
+  const values = splitList(attrs.values ?? attrs.y ?? "").map(toNumber);
+  const fromAttrs = labels.map((label, index) => ({ label, value: values[index] })).filter((point) => Number.isFinite(point.value));
+  if (fromAttrs.length) return fromAttrs;
+  const rows = String(body).trim().split(/\n+/).map((line) => line.trim()).filter(Boolean);
+  const parsed = rows.map((line) => {
+    const clean = line.replace(/^[-*]\s+/, "");
+    const parts = clean.includes("|") ? clean.split("|") : clean.split(",");
+    return { label: parts[0]?.trim() ?? "", value: toNumber(parts[1]) };
+  }).filter((point) => point.label && Number.isFinite(point.value));
+  return parsed.length ? parsed : [{ label: "Value", value: 1 }];
+}
+
+function splitList(value) {
+  return String(value).split(",").map((item) => item.trim()).filter(Boolean);
+}
+
+function toNumber(value) {
+  const normalized = String(value ?? "").replace(/[%,$]/g, "").trim();
+  const number = Number.parseFloat(normalized);
+  return Number.isFinite(number) ? number : Number.NaN;
+}
+
+function barChart(points, max, unit) {
+  return `<div class="oc-chart-bars">${points.map((point) => {
+    const pct = Math.max(3, Math.round((point.value / max) * 100));
+    const tip = chartTip(point, unit);
+    return `<div class="oc-chart-row"><span>${escapeHtml(point.label)}</span><div class="oc-chart-track"><i class="oc-chart-mark" tabindex="0" style="--oc-chart-value:${pct}%" data-tip="${escapeAttr(tip)}" aria-label="${escapeAttr(tip)}"></i></div><strong>${escapeHtml(formatChartValue(point.value, unit))}</strong></div>`;
+  }).join("")}</div>`;
+}
+
+function lineChart(points, max, unit, options = {}) {
+  const width = 640;
+  const height = 220;
+  const padX = 32;
+  const padY = 24;
+  const step = points.length > 1 ? (width - padX * 2) / (points.length - 1) : 0;
+  const coords = points.map((point, index) => {
+    const x = padX + step * index;
+    const y = height - padY - (point.value / max) * (height - padY * 2);
+    return { ...point, x, y };
+  });
+  const polyline = coords.map((point) => `${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(" ");
+  const areaPoints = `${padX},${height - padY} ${polyline} ${width - padX},${height - padY}`;
+  const aria = points.map((point) => `${point.label}: ${formatChartValue(point.value, unit)}`).join(", ");
+  const area = options.area ? `<polygon class="oc-chart-area-fill" points="${escapeAttr(areaPoints)}"/>` : "";
+  return `<div class="oc-chart-line-wrap"><svg class="oc-chart-line-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeAttr(aria)}"><path class="oc-chart-gridline" d="M${padX} ${height - padY}H${width - padX}"/>${area}<polyline points="${escapeAttr(polyline)}"/><g>${coords.map((point) => `<circle tabindex="0" cx="${point.x.toFixed(1)}" cy="${point.y.toFixed(1)}" r="4" aria-label="${escapeAttr(chartTip(point, unit))}"><title>${escapeHtml(chartTip(point, unit))}</title></circle>`).join("")}</g></svg><div class="oc-chart-axis">${points.map((point) => `<span>${escapeHtml(point.label)}</span>`).join("")}</div></div>`;
+}
+
+function donutChart(points, unit) {
+  const total = points.reduce((sum, point) => sum + Math.max(point.value, 0), 0) || 1;
+  const colors = ["var(--brand)", "#48b49a", "#7aa7ff", "#c084fc", "#d97706", "#f472b6"];
+  let offset = 0;
+  const segments = points.map((point, index) => {
+    const pct = Math.max(0, (point.value / total) * 100);
+    const segment = `<circle class="oc-chart-donut-segment" pathLength="100" cx="110" cy="110" r="72" style="--oc-chart-offset:${offset.toFixed(3)};--oc-chart-share:${pct.toFixed(3)};--oc-chart-tone:${colors[index % colors.length]}" tabindex="0" aria-label="${escapeAttr(chartTip(point, unit))}"><title>${escapeHtml(chartTip(point, unit))}</title></circle>`;
+    offset += pct;
+    return segment;
+  }).join("");
+  const legend = points.map((point, index) => `<span class="oc-chart-donut-key" style="--oc-chart-tone:${colors[index % colors.length]}" tabindex="0" data-tip="${escapeAttr(chartTip(point, unit))}"><i></i><span>${escapeHtml(point.label)}</span><strong>${escapeHtml(formatChartValue(point.value, unit))}</strong></span>`).join("");
+  return `<div class="oc-chart-donut-wrap"><svg class="oc-chart-donut-svg" viewBox="0 0 220 220" role="img" aria-label="${escapeAttr(points.map((point) => chartTip(point, unit)).join(", "))}"><circle class="oc-chart-donut-bg" cx="110" cy="110" r="72"/><g transform="rotate(-90 110 110)">${segments}</g><text x="110" y="106" text-anchor="middle">${escapeHtml(formatChartValue(total, unit))}</text><text x="110" y="126" text-anchor="middle">total</text></svg><div class="oc-chart-donut-legend">${legend}</div></div>`;
+}
+
+function chartDataRow(point, unit) {
+  return `<span role="row"><span role="cell">${escapeHtml(point.label)}</span><span role="cell">${escapeHtml(formatChartValue(point.value, unit))}</span></span>`;
+}
+
+function chartTip(point, unit) {
+  return `${point.label}: ${formatChartValue(point.value, unit)}`;
+}
+
+function formatChartValue(value, unit) {
+  const rounded = Number.isInteger(value) ? String(value) : value.toFixed(1);
+  return `${rounded}${unit}`;
 }
 
 function tileHtml(rawAttrs, selfClosing) {

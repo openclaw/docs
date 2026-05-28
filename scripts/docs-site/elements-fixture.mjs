@@ -177,6 +177,55 @@ Summarize the active OpenClaw Gateway health and include the exact command that 
 Panels hold short reusable docs fragments without looking like alerts.
 </Panel>
 
+## Editorial elements
+
+<Lead>
+Use lead text for blog posts, release writeups, and opinionated setup guides where the opening paragraph needs more presence than normal body copy.
+</Lead>
+
+<PullQuote cite="OpenClaw docs editorial rule">
+Show the operational consequence, not just the feature name.
+</PullQuote>
+
+<StatGrid>
+  <Stat value="4m" label="median setup check" delta="-32%">
+    Good for lightweight outcome summaries inside a post.
+  </Stat>
+  <Stat value="19" label="localized docs trees" />
+  <Stat value="0" label="indexed hidden fixtures" delta="expected" />
+</StatGrid>
+
+<Chart type="bar" title="Docs reader paths" subtitle="example fixture" unit="%">
+Install,42
+Channels,28
+Models,18
+Plugins,12
+</Chart>
+
+<Chart type="line" title="Beta adoption" subtitle="illustrative weekly trend" labels="Mon,Tue,Wed,Thu,Fri" values="12,18,24,31,39" unit="%" />
+
+<Chart type="area" title="Docs deploy volume" subtitle="example weekly count" labels="Mon,Tue,Wed,Thu,Fri" values="16,24,22,37,48" />
+
+<Chart type="donut" title="Support mix" subtitle="example issue categories">
+Install,31
+Gateway,27
+Channels,24
+Providers,18
+</Chart>
+
+<CTA title="Build the next plugin guide" eyebrow="Authoring flow" href="/plugins/sdk" label="Open SDK docs" secondaryHref="/tools/skills" secondaryLabel="Review skills">
+Use a CTA when a long-form article has one obvious next action. Keep it specific.
+</CTA>
+
+<CTAGroup>
+  <CTACard title="Release post template" href="/releases" label="Read notes" icon="book" kicker="Blog pattern">
+    CTA cards work for related posts, migration paths, and follow-up reading.
+  </CTACard>
+  <CTACard title="Gateway checklist" href="/gateway/configuration" label="Open checklist" icon="terminal" kicker="Ops pattern">
+    Keep action cards denser than product marketing cards.
+  </CTACard>
+</CTAGroup>
+
 ## Steps
 
 <Steps>
