@@ -175,9 +175,27 @@ function normalizeSlug(value) {
 }
 
 function firstHeading(markdown) {
-  return markdown.match(/^#\s+(.+)$/m)?.[1]?.replace(/<[^>]+>/g, "").trim();
+  const heading = markdown.match(/^#\s+(.+)$/m)?.[1];
+  return heading === undefined ? undefined : textFromHtml(heading).trim();
 }
 
 function titleize(value) {
   return value.replaceAll("-", " ").replace(/\b\w/g, (m) => m.toUpperCase());
+}
+
+function textFromHtml(value) {
+  let text = "";
+  let inTag = false;
+  for (const char of String(value)) {
+    if (char === "<") {
+      inTag = true;
+      continue;
+    }
+    if (char === ">") {
+      inTag = false;
+      continue;
+    }
+    if (!inTag) text += char;
+  }
+  return text;
 }

@@ -809,7 +809,8 @@ function htmlLang(locale) {
 }
 
 function firstHeading(markdown) {
-  return markdown.match(/^#\s+(.+)$/m)?.[1]?.replace(/<[^>]+>/g, "").trim();
+  const heading = markdown.match(/^#\s+(.+)$/m)?.[1];
+  return heading === undefined ? undefined : textFromHtml(heading).trim();
 }
 
 function titleize(value) {
@@ -817,7 +818,24 @@ function titleize(value) {
 }
 
 function stripTags(value) {
-  return value.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+  return textFromHtml(value).replace(/\s+/g, " ").trim();
+}
+
+function textFromHtml(value) {
+  let text = "";
+  let inTag = false;
+  for (const char of String(value)) {
+    if (char === "<") {
+      inTag = true;
+      continue;
+    }
+    if (char === ">") {
+      inTag = false;
+      continue;
+    }
+    if (!inTag) text += char;
+  }
+  return text;
 }
 
 function decodeHtmlEntities(value) {
