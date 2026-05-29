@@ -536,7 +536,11 @@ Related: [/concepts/oauth](/concepts/oauth) (OAuth flows, token storage, multi-a
   <Accordion title="OAuth vs API key - what is the difference?">
     OpenClaw supports both:
 
-    - **OAuth** often leverages subscription access (where applicable).
+    - **OAuth / CLI login** often leverages subscription access where the
+      provider supports it. For Anthropic, OpenClaw's Claude CLI backend uses
+      Claude Code `claude -p`; Anthropic currently treats that as Agent
+      SDK/programmatic usage, with a separate monthly Agent SDK credit starting
+      June 15, 2026.
     - **API keys** use pay-per-token billing.
 
     The wizard explicitly supports Anthropic Claude CLI, OpenAI Codex OAuth, and API keys.
