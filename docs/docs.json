@@ -1349,6 +1349,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "tools/agent-send",
+                  "tools/goal",
                   "tools/steer",
                   "tools/subagents",
                   "tools/acp-agents",
@@ -2926,6 +2927,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "zh-TW/tools/agent-send",
+                  "zh-TW/tools/goal",
                   "zh-TW/tools/steer",
                   "zh-TW/tools/subagents",
                   "zh-TW/tools/acp-agents",
@@ -3847,6 +3849,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "ja-JP/tools/agent-send",
+                  "ja-JP/tools/goal",
                   "ja-JP/tools/steer",
                   "ja-JP/tools/subagents",
                   "ja-JP/tools/acp-agents",
@@ -4768,6 +4771,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "es/tools/agent-send",
+                  "es/tools/goal",
                   "es/tools/steer",
                   "es/tools/subagents",
                   "es/tools/acp-agents",
@@ -5689,6 +5693,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "pt-BR/tools/agent-send",
+                  "pt-BR/tools/goal",
                   "pt-BR/tools/steer",
                   "pt-BR/tools/subagents",
                   "pt-BR/tools/acp-agents",
@@ -6610,6 +6615,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "ko/tools/agent-send",
+                  "ko/tools/goal",
                   "ko/tools/steer",
                   "ko/tools/subagents",
                   "ko/tools/acp-agents",
@@ -7531,6 +7537,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "de/tools/agent-send",
+                  "de/tools/goal",
                   "de/tools/steer",
                   "de/tools/subagents",
                   "de/tools/acp-agents",
@@ -8452,6 +8459,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "fr/tools/agent-send",
+                  "fr/tools/goal",
                   "fr/tools/steer",
                   "fr/tools/subagents",
                   "fr/tools/acp-agents",
@@ -9373,6 +9381,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "ar/tools/agent-send",
+                  "ar/tools/goal",
                   "ar/tools/steer",
                   "ar/tools/subagents",
                   "ar/tools/acp-agents",
@@ -10294,6 +10303,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "it/tools/agent-send",
+                  "it/tools/goal",
                   "it/tools/steer",
                   "it/tools/subagents",
                   "it/tools/acp-agents",
@@ -11215,6 +11225,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "vi/tools/agent-send",
+                  "vi/tools/goal",
                   "vi/tools/steer",
                   "vi/tools/subagents",
                   "vi/tools/acp-agents",
@@ -12136,6 +12147,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "nl/tools/agent-send",
+                  "nl/tools/goal",
                   "nl/tools/steer",
                   "nl/tools/subagents",
                   "nl/tools/acp-agents",
@@ -13057,6 +13069,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "tr/tools/agent-send",
+                  "tr/tools/goal",
                   "tr/tools/steer",
                   "tr/tools/subagents",
                   "tr/tools/acp-agents",
@@ -13978,6 +13991,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "uk/tools/agent-send",
+                  "uk/tools/goal",
                   "uk/tools/steer",
                   "uk/tools/subagents",
                   "uk/tools/acp-agents",
@@ -14899,6 +14913,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "id/tools/agent-send",
+                  "id/tools/goal",
                   "id/tools/steer",
                   "id/tools/subagents",
                   "id/tools/acp-agents",
@@ -15820,6 +15835,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "pl/tools/agent-send",
+                  "pl/tools/goal",
                   "pl/tools/steer",
                   "pl/tools/subagents",
                   "pl/tools/acp-agents",
