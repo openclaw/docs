@@ -1251,7 +1251,6 @@
                   "plugins/memory-wiki",
                   "plugins/memory-lancedb",
                   "plugins/oc-path",
-                  "plugins/skill-workshop",
                   "plugins/zalouser"
                 ]
               },
@@ -2833,7 +2832,6 @@
                   "zh-TW/plugins/memory-wiki",
                   "zh-TW/plugins/memory-lancedb",
                   "zh-TW/plugins/oc-path",
-                  "zh-TW/plugins/skill-workshop",
                   "zh-TW/plugins/zalouser"
                 ]
               },
@@ -3759,7 +3757,6 @@
                   "ja-JP/plugins/memory-wiki",
                   "ja-JP/plugins/memory-lancedb",
                   "ja-JP/plugins/oc-path",
-                  "ja-JP/plugins/skill-workshop",
                   "ja-JP/plugins/zalouser"
                 ]
               },
@@ -4685,7 +4682,6 @@
                   "es/plugins/memory-wiki",
                   "es/plugins/memory-lancedb",
                   "es/plugins/oc-path",
-                  "es/plugins/skill-workshop",
                   "es/plugins/zalouser"
                 ]
               },
@@ -5611,7 +5607,6 @@
                   "pt-BR/plugins/memory-wiki",
                   "pt-BR/plugins/memory-lancedb",
                   "pt-BR/plugins/oc-path",
-                  "pt-BR/plugins/skill-workshop",
                   "pt-BR/plugins/zalouser"
                 ]
               },
@@ -6537,7 +6532,6 @@
                   "ko/plugins/memory-wiki",
                   "ko/plugins/memory-lancedb",
                   "ko/plugins/oc-path",
-                  "ko/plugins/skill-workshop",
                   "ko/plugins/zalouser"
                 ]
               },
@@ -7463,7 +7457,6 @@
                   "de/plugins/memory-wiki",
                   "de/plugins/memory-lancedb",
                   "de/plugins/oc-path",
-                  "de/plugins/skill-workshop",
                   "de/plugins/zalouser"
                 ]
               },
@@ -8389,7 +8382,6 @@
                   "fr/plugins/memory-wiki",
                   "fr/plugins/memory-lancedb",
                   "fr/plugins/oc-path",
-                  "fr/plugins/skill-workshop",
                   "fr/plugins/zalouser"
                 ]
               },
@@ -9315,7 +9307,6 @@
                   "ar/plugins/memory-wiki",
                   "ar/plugins/memory-lancedb",
                   "ar/plugins/oc-path",
-                  "ar/plugins/skill-workshop",
                   "ar/plugins/zalouser"
                 ]
               },
@@ -10241,7 +10232,6 @@
                   "it/plugins/memory-wiki",
                   "it/plugins/memory-lancedb",
                   "it/plugins/oc-path",
-                  "it/plugins/skill-workshop",
                   "it/plugins/zalouser"
                 ]
               },
@@ -11167,7 +11157,6 @@
                   "vi/plugins/memory-wiki",
                   "vi/plugins/memory-lancedb",
                   "vi/plugins/oc-path",
-                  "vi/plugins/skill-workshop",
                   "vi/plugins/zalouser"
                 ]
               },
@@ -12093,7 +12082,6 @@
                   "nl/plugins/memory-wiki",
                   "nl/plugins/memory-lancedb",
                   "nl/plugins/oc-path",
-                  "nl/plugins/skill-workshop",
                   "nl/plugins/zalouser"
                 ]
               },
@@ -13019,7 +13007,6 @@
                   "tr/plugins/memory-wiki",
                   "tr/plugins/memory-lancedb",
                   "tr/plugins/oc-path",
-                  "tr/plugins/skill-workshop",
                   "tr/plugins/zalouser"
                 ]
               },
@@ -13945,7 +13932,6 @@
                   "uk/plugins/memory-wiki",
                   "uk/plugins/memory-lancedb",
                   "uk/plugins/oc-path",
-                  "uk/plugins/skill-workshop",
                   "uk/plugins/zalouser"
                 ]
               },
@@ -14871,7 +14857,6 @@
                   "id/plugins/memory-wiki",
                   "id/plugins/memory-lancedb",
                   "id/plugins/oc-path",
-                  "id/plugins/skill-workshop",
                   "id/plugins/zalouser"
                 ]
               },
@@ -15797,7 +15782,6 @@
                   "pl/plugins/memory-wiki",
                   "pl/plugins/memory-lancedb",
                   "pl/plugins/oc-path",
-                  "pl/plugins/skill-workshop",
                   "pl/plugins/zalouser"
                 ]
               },
