@@ -411,15 +411,7 @@ async function assetResponse(env: Env, ctx: ExecutionContext, request: Request, 
   const key = r2ObjectKey(pathname);
   const response = await r2Fetch(env, request.method, key);
   if (response.status === 404) {
-    return new Response(request.method === "HEAD" ? null : "Not found\n", {
-      status: 404,
-      headers: {
-        "Cache-Control": "public, max-age=60",
-        "Content-Type": "text/plain; charset=utf-8",
-        "X-OpenClaw-Docs-Cache": "MISS",
-        "X-OpenClaw-Docs-Origin": "cloudflare-r2",
-      },
-    });
+    return isHtmlPath(pathname) ? docsNotFoundResponse(request, pathname) : plainNotFoundResponse(request);
   }
   const responseHeaders = new Headers(response.headers);
   responseHeaders.set("X-OpenClaw-Docs-Origin", "cloudflare-r2");
@@ -445,6 +437,236 @@ async function assetResponse(env: Env, ctx: ExecutionContext, request: Request, 
     ctx.waitUntil(cache.put(cacheKey, cacheResponse));
   }
   return finalResponse;
+}
+
+function docsNotFoundResponse(request: Request, pathname: string): Response {
+  return new Response(request.method === "HEAD" ? null : docsNotFoundHtml(pathname), {
+    status: 404,
+    headers: {
+      "Cache-Control": "public, max-age=60",
+      "Content-Type": "text/html; charset=utf-8",
+      "X-OpenClaw-Docs-Cache": "MISS",
+      "X-OpenClaw-Docs-Origin": "cloudflare-r2",
+    },
+  });
+}
+
+function plainNotFoundResponse(request: Request): Response {
+  return new Response(request.method === "HEAD" ? null : "Not found\n", {
+    status: 404,
+    headers: {
+      "Cache-Control": "public, max-age=60",
+      "Content-Type": "text/plain; charset=utf-8",
+      "X-OpenClaw-Docs-Cache": "MISS",
+      "X-OpenClaw-Docs-Origin": "cloudflare-r2",
+    },
+  });
+}
+
+function docsNotFoundHtml(pathname: string): string {
+  const missingPath = escapeHtml(pathname);
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Page not found - OpenClaw Docs</title>
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #090b0f;
+  --panel: #11151d;
+  --panel-strong: #171d27;
+  --text: #f7f2ea;
+  --muted: #a9b2c0;
+  --line: #273141;
+  --accent: #ff5a36;
+  --accent-2: #5fd4c8;
+  --shadow: rgba(0, 0, 0, .38);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(145deg, #090b0f 0%, #10141d 52%, #161216 100%);
+  background-size: 56px 56px, 56px 56px, auto;
+  color: var(--text);
+  font: 16px/1.55 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+main {
+  width: min(960px, calc(100vw - 32px));
+  display: grid;
+  gap: 24px;
+  grid-template-columns: minmax(0, 1.2fr) minmax(260px, .8fr);
+  align-items: stretch;
+}
+.hero, .panel {
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--panel) 92%, transparent);
+  box-shadow: 0 24px 80px var(--shadow);
+}
+.hero {
+  padding: clamp(28px, 5vw, 56px);
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 5px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+}
+.brand {
+  display: inline-flex;
+  gap: 12px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+.brand img { width: 32px; height: 32px; }
+h1 {
+  margin: 42px 0 12px;
+  max-width: 12ch;
+  font-size: 7rem;
+  line-height: .86;
+  letter-spacing: 0;
+}
+p { margin: 0; color: var(--muted); max-width: 56ch; }
+.path {
+  margin-top: 26px;
+  display: inline-flex;
+  max-width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  background: #0a0d12;
+  color: #d9e0ea;
+  font: 13px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  overflow-wrap: anywhere;
+}
+.actions {
+  margin-top: 28px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+.button {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  background: var(--panel-strong);
+  font-weight: 700;
+}
+.button.primary {
+  border-color: color-mix(in srgb, var(--accent) 60%, var(--line));
+  background: var(--accent);
+  color: #1d0903;
+}
+.button:hover { border-color: var(--accent-2); }
+.panel {
+  padding: 24px;
+  display: grid;
+  align-content: center;
+  gap: 14px;
+}
+.status {
+  display: grid;
+  gap: 10px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  background: #0b0f15;
+  font: 13px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+.status div {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+}
+.status span:first-child { color: var(--muted); }
+.status span:last-child { color: var(--accent-2); }
+.links {
+  display: grid;
+  gap: 8px;
+}
+.links a {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  color: #e9edf3;
+}
+.links a:hover { color: var(--accent-2); }
+@media (max-width: 760px) {
+  body { place-items: start center; padding: 18px 0; }
+  main { grid-template-columns: 1fr; }
+  h1 { max-width: none; font-size: 4rem; }
+}
+</style>
+</head>
+<body>
+<main>
+  <section class="hero" aria-labelledby="missing-title">
+    <a class="brand" href="/"><img src="/assets/pixel-lobster.svg" alt="">OpenClaw Docs</a>
+    <h1 id="missing-title">Page lost in transit.</h1>
+    <p>The docs router is online, but this exact page is not in the current published bundle.</p>
+    <div class="path">${missingPath}</div>
+    <div class="actions">
+      <a class="button primary" href="/">Open docs home</a>
+      <a class="button" href="/providers">Browse providers</a>
+      <a class="button" href="/help/faq">Get help</a>
+    </div>
+  </section>
+  <aside class="panel" aria-label="Useful routes">
+    <div class="status">
+      <div><span>status</span><span>404</span></div>
+      <div><span>origin</span><span>cloudflare-r2</span></div>
+      <div><span>next</span><span>pick a route</span></div>
+    </div>
+    <nav class="links" aria-label="Popular docs sections">
+      <a href="/install"><span>Install</span><span>/install</span></a>
+      <a href="/concepts/model-providers"><span>Model providers</span><span>/concepts/model-providers</span></a>
+      <a href="/plugins"><span>Plugins</span><span>/plugins</span></a>
+      <a href="/tools"><span>Tools</span><span>/tools</span></a>
+    </nav>
+  </aside>
+</main>
+</body>
+</html>`;
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (char) => {
+    switch (char) {
+      case "&":
+        return "&amp;";
+      case "<":
+        return "&lt;";
+      case ">":
+        return "&gt;";
+      case '"':
+        return "&quot;";
+      default:
+        return "&#39;";
+    }
+  });
 }
 
 function r2ObjectKey(pathname: string): string {
