@@ -208,6 +208,11 @@ if (process.env.DOCS_SITE_CNAME) {
 }
 const siteJs = fs.readFileSync(path.join(site, "assets/docs-site.js"), "utf8");
 const siteCss = fs.readFileSync(path.join(site, "assets/docs-site.css"), "utf8");
+if (!/theme-toggle-icon-dark/.test(index)
+  || !/theme-toggle-icon-light/.test(index)
+  || !/:root\[data-theme="dark"\] \.theme-toggle-icon-dark,:root\[data-theme="light"\] \.theme-toggle-icon-light\{display:grid\}/.test(siteCss)) {
+  throw new Error("assets: theme toggle icon must follow the active color theme");
+}
 if (/\.oc-card:first-child\{border-color:var\(--brand\)/.test(siteCss)) {
   throw new Error("assets: first card is hard-highlighted");
 }
