@@ -37,6 +37,14 @@ const defaultShellAssetVersion = createHash("sha256")
 const shellAssetVersion = process.env.DOCS_SITE_SHELL_ASSET_VERSION ?? defaultShellAssetVersion;
 const artifactMode = process.env.DOCS_SITE_ARTIFACT_MODE ?? "full";
 const shellOnly = artifactMode === "shell";
+const previewPagesPerGroup = parseOptionalPositiveInt(
+  process.env.DOCS_SITE_PREVIEW_PAGES_PER_GROUP,
+  "DOCS_SITE_PREVIEW_PAGES_PER_GROUP",
+);
+const previewMaxPages = parseOptionalPositiveInt(process.env.DOCS_SITE_PREVIEW_MAX_PAGES, "DOCS_SITE_PREVIEW_MAX_PAGES");
+const previewLocale = process.env.DOCS_SITE_PREVIEW_LOCALE;
+const previewMode = Boolean(previewPagesPerGroup || previewMaxPages || previewLocale);
+const includeElementsFixture = !previewMode || process.env.DOCS_SITE_PREVIEW_INCLUDE_FIXTURE === "1";
 if (!["full", "shell"].includes(artifactMode)) {
   throw new Error(`DOCS_SITE_ARTIFACT_MODE must be full or shell, got ${artifactMode}`);
 }
@@ -44,9 +52,20 @@ fs.rmSync(outDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100
 fs.mkdirSync(outDir, { recursive: true });
 
 const locales = buildLocales(config);
-const pages = [...collectPages(locales), elementsFixturePage()];
-const pageByKey = new Map(pages.map((page) => [pageKey(page.locale, page.slug), page]));
-const navByLocale = new Map(locales.map((locale) => [locale.code, buildNav(locale)]));
+const allPages = [...collectPages(locales), ...(includeElementsFixture ? [elementsFixturePage()] : [])];
+let pages = allPages;
+let pageByKey = new Map(pages.map((page) => [pageKey(page.locale, page.slug), page]));
+let navByLocale = new Map(locales.map((locale) => [locale.code, buildNav(locale)]));
+if (previewMode) {
+  const previewKeys = collectPreviewPageKeys(navByLocale, {
+    locale: previewLocale,
+    maxPages: previewMaxPages,
+    pagesPerGroup: previewPagesPerGroup || 1,
+  });
+  pages = allPages.filter((page) => page.hidden || previewKeys.has(pageKey(page.locale, page.slug)));
+  pageByKey = new Map(pages.map((page) => [pageKey(page.locale, page.slug), page]));
+  navByLocale = new Map(locales.map((locale) => [locale.code, buildNav(locale)]));
+}
 const localeFlags = {
   en: "🇺🇸",
   "zh-CN": "🇨🇳",
@@ -73,16 +92,19 @@ const localePickerLabels = {
 };
 
 copyPublicFiles();
-await renderPageOgCards();
+if (!shellOnly) await renderPageOgCards();
 for (const page of pages) writePage(page);
 if (!shellOnly) {
   writeLlmsIndex();
   writeRobotsTxt();
   writeSitemap();
 }
-writeRedirects();
+if (!previewMode) writeRedirects();
 writeStaticAssets();
-console.log(`built ${pages.length} pages in ${path.relative(root, outDir)} (${artifactMode})`);
+const previewLabel = previewMode
+  ? `, preview ${previewPagesPerGroup || 1}/group${previewMaxPages ? ` max ${previewMaxPages}` : ""}${previewLocale ? ` ${previewLocale}` : ""}`
+  : "";
+console.log(`built ${pages.length} pages in ${path.relative(root, outDir)} (${artifactMode}${previewLabel})`);
 
 function buildLocales(docsConfig) {
   const ordered = [];
@@ -97,6 +119,15 @@ function buildLocales(docsConfig) {
     }
   }
   return ordered.filter((locale) => locale.root || fs.existsSync(path.join(docsDir, locale.code)));
+}
+
+function parseOptionalPositiveInt(value, name) {
+  if (value === undefined || value === "") return 0;
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isInteger(parsed) || parsed < 1 || String(parsed) !== String(value).trim()) {
+    throw new Error(`${name} must be a positive integer`);
+  }
+  return parsed;
 }
 
 function collectPages(localeList) {
@@ -182,6 +213,22 @@ function buildNav(locale) {
 function navGroup(locale, group) {
   const pages = flattenPages(locale, group.pages ?? []);
   return pages.length ? { title: group.group ?? "Docs", pages } : null;
+}
+
+function collectPreviewPageKeys(navByLocale, { locale, maxPages, pagesPerGroup }) {
+  const keys = new Set();
+  for (const [navLocale, nav] of navByLocale) {
+    if (locale && navLocale !== locale) continue;
+    for (const tab of nav) {
+      for (const group of tab.groups) {
+        for (const page of flattenNavEntries(group.pages).slice(0, pagesPerGroup)) {
+          keys.add(pageKey(page.locale, page.slug));
+          if (maxPages && keys.size >= maxPages) return keys;
+        }
+      }
+    }
+  }
+  return keys;
 }
 
 function flattenPages(locale, entries) {
@@ -729,8 +776,12 @@ function groupForPage(nav, slug) {
   }
 }
 
+function flattenNavEntries(entries) {
+  return entries.flatMap((entry) => entry.group ? flattenNavEntries(entry.pages) : [entry]);
+}
+
 function flattenNav(nav) {
-  return nav.flatMap((tab) => tab.groups.flatMap((group) => group.pages.flatMap((entry) => entry.group ? entry.pages : [entry])));
+  return nav.flatMap((tab) => tab.groups.flatMap((group) => flattenNavEntries(group.pages)));
 }
 
 function firstPage(tab) {
