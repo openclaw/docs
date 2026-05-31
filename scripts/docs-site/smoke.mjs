@@ -23,7 +23,9 @@ const required = [
   "de/tools/reactions/index.html",
   "de/gateway/heartbeat/index.html",
   "assets/docs-site.css",
-  "assets/docs-site.js"
+  "assets/docs-site.js",
+  "assets/molty-avatar.png",
+  "assets/molty-avatar-hover.gif"
 ];
 if (!shellOnly) {
   required.push(
@@ -150,19 +152,27 @@ if (!/data-language-picker/.test(index) || !/class="language-option active"[^>]*
 if (!/Português \(BR\)/.test(index)) {
   throw new Error("index: language picker labels were not rendered");
 }
-if (!/data-docs-chat/.test(index) || !/OPENCLAW_DOCS_CHAT_API/.test(index)) {
+if (
+  !/data-docs-chat/.test(index) ||
+  !/OPENCLAW_DOCS_CHAT_API/.test(index) ||
+  !/molty-avatar\.png/.test(index) ||
+  !/molty-avatar-hover\.gif/.test(index) ||
+  !/<h2 id="docs-chat-title">Molty<\/h2>/.test(index)
+) {
   throw new Error("index: docs chat widget was not rendered");
 }
 const chatCss = fs.readFileSync(path.join(site, "assets/docs-site.css"), "utf8");
 if (!/data-chat-copy/.test(index)
   || !/data-chat-retry/.test(index)
   || !/data-chat-maximize/.test(index)
+  || !/data-chat-minimize/.test(index)
   || !/docs-chat-empty/.test(index)
   || !/Responses are generated using AI/.test(index)
   || !/data-chat-copy[^>]+hidden/.test(index)
   || !/data-chat-retry[^>]+hidden/.test(index)
-  || !/body\.docs-chat-open/.test(chatCss)
   || !/\.docs-chat\.expanded/.test(chatCss)
+  || !/\.docs-chat\{[^}]*height:min\(680px/.test(chatCss)
+  || !/\.docs-chat-panel\{[^}]*border-radius:16px/.test(chatCss)
   || !/\.docs-chat-panel>\*\{min-width:0;max-width:100%/.test(chatCss)
   || !/\.docs-chat-actions\{[^}]*gap:6px/.test(chatCss)
   || !/\.docs-chat-copy\[data-copy-state\] \.icon\{display:none/.test(chatCss)
@@ -173,10 +183,12 @@ if (!/data-chat-copy/.test(index)
   || !/\.docs-chat:not\(\[data-chat-auth-state="ready"\]\) \.docs-chat-form\{display:none/.test(chatCss)
   || !/\.docs-chat-form textarea:focus\{[^}]*inset 0 0 0 4px/.test(chatCss)
   || !/\.docs-chat-form button\{position:absolute;right:34px;bottom:34px/.test(chatCss)
-  || !/\.docs-chat-auth\{[^}]*padding:22px 22px 16px/.test(chatCss)
+  || !/\.docs-chat-auth\{[^}]*grid-row:4;align-self:end/.test(chatCss)
+  || !/\.docs-chat-github-icon\{[^}]*fill:currentColor/.test(chatCss)
+  || !/\.docs-chat-avatar\{[^}]*border-radius:999px/.test(chatCss)
   || !/\.docs-chat-attach/.test(chatCss)
-  || !/translateX\(0\)/.test(chatCss)) {
-  throw new Error("index: docs chat sidebar controls are missing");
+  || !/translateY\(10px\) scale\(\.985\)/.test(chatCss)) {
+  throw new Error("index: floating docs chat controls are missing");
 }
 if (!/class="hljs-attr">channels<\/span>/.test(index)
   || !/class="hljs-string">&quot;\+15555550123&quot;<\/span>/.test(index)

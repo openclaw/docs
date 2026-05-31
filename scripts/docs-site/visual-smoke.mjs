@@ -186,34 +186,34 @@ async function checkDesktop() {
     throw new Error(`search shortcut keycap failed: ${JSON.stringify(searchShortcut)}`);
   }
   await page.waitForTimeout(350);
-  const initialChatSidebar = await page.evaluate(() => {
+  const initialFloatingChat = await page.evaluate(() => {
     const chat = document.querySelector(".docs-chat");
     const panel = document.querySelector(".docs-chat-panel");
+    const main = document.querySelector(".main");
     const panelStyle = panel ? getComputedStyle(panel) : null;
     return {
       open: chat?.classList.contains("open"),
-      bodyOpen: document.body.classList.contains("docs-chat-open"),
       panelDisplay: panelStyle?.display,
       panelOpacity: panelStyle?.opacity,
       panelTransform: panelStyle?.transform,
       panelInert: panel?.hasAttribute("inert"),
       panelAriaHidden: panel?.getAttribute("aria-hidden"),
       bodyPaddingRight: getComputedStyle(document.body).paddingRight,
+      mainRight: main?.getBoundingClientRect().right,
     };
   });
-  if (initialChatSidebar.open
-    || initialChatSidebar.bodyOpen
-    || initialChatSidebar.panelDisplay !== "grid"
-    || initialChatSidebar.panelOpacity !== "0"
-    || initialChatSidebar.panelTransform === "none"
-    || !initialChatSidebar.panelInert
-    || initialChatSidebar.panelAriaHidden !== "true"
-    || parseFloat(initialChatSidebar.bodyPaddingRight ?? "0") !== 0) {
-    throw new Error(`initial desktop chat sidebar should be closed: ${JSON.stringify(initialChatSidebar)}`);
+  if (initialFloatingChat.open
+    || initialFloatingChat.panelDisplay !== "grid"
+    || initialFloatingChat.panelOpacity !== "0"
+    || initialFloatingChat.panelTransform === "none"
+    || !initialFloatingChat.panelInert
+    || initialFloatingChat.panelAriaHidden !== "true"
+    || parseFloat(initialFloatingChat.bodyPaddingRight ?? "0") !== 0) {
+    throw new Error(`initial floating chat should be minimized: ${JSON.stringify(initialFloatingChat)}`);
   }
   await page.click("[data-chat-toggle]");
   await page.waitForTimeout(350);
-  const chatSidebar = await page.evaluate(() => {
+  const floatingChat = await page.evaluate(() => {
     const chat = document.querySelector(".docs-chat");
     const panel = document.querySelector(".docs-chat-panel");
     const main = document.querySelector(".main");
@@ -226,13 +226,12 @@ async function checkDesktop() {
     const panelStyle = panel ? getComputedStyle(panel) : null;
     return {
       open: chat?.classList.contains("open"),
-      bodyOpen: document.body.classList.contains("docs-chat-open"),
       bodyPaddingRight: getComputedStyle(document.body).paddingRight,
       panelDisplay: panelStyle?.display,
       panelOpacity: panelStyle?.opacity,
       panelTransform: panelStyle?.transform,
       panelRight: panelRect ? Math.round(innerWidth - panelRect.right) : null,
-      panelTop: panelRect?.top,
+      panelBottom: panelRect ? Math.round(innerHeight - panelRect.bottom) : null,
       panelHeight: panelRect?.height,
       panelWidth: panelRect?.width,
       panelInert: panel?.hasAttribute("inert"),
@@ -240,35 +239,34 @@ async function checkDesktop() {
       chatWidth: chatRect?.width,
       mainRight: mainRect?.right,
       copyHidden: copy?.hasAttribute("hidden"),
-      copySize: copyRect ? [copyRect.width, copyRect.height] : null,
       retryHidden: retry?.hasAttribute("hidden"),
-      retrySize: retryRect ? [retryRect.width, retryRect.height] : null,
       retryDisabled: retry?.hasAttribute("disabled"),
       maximizePressed: maximize?.getAttribute("aria-pressed"),
     };
   });
-  if (!chatSidebar.open
-    || !chatSidebar.bodyOpen
-    || chatSidebar.panelDisplay !== "grid"
-    || chatSidebar.panelOpacity !== "1"
-    || chatSidebar.panelRight !== 0
-    || chatSidebar.panelTop !== 0
-    || chatSidebar.panelHeight < 900
-    || chatSidebar.panelWidth < 340
-    || chatSidebar.panelInert
-    || chatSidebar.panelAriaHidden !== "false"
-    || chatSidebar.chatWidth < 340
-    || parseFloat(chatSidebar.bodyPaddingRight ?? "0") < 340
-    || chatSidebar.mainRight > 1120
-    || (!chatSidebar.copyHidden && chatSidebar.copySize?.[0] < 29)
-    || (!chatSidebar.retryHidden && chatSidebar.retrySize?.[0] < 29)
-    || (!chatSidebar.retryHidden && !chatSidebar.retryDisabled)
-    || chatSidebar.maximizePressed !== "false") {
-    throw new Error(`desktop chat sidebar failed: ${JSON.stringify(chatSidebar)}`);
+  if (!floatingChat.open
+    || floatingChat.panelDisplay !== "grid"
+    || floatingChat.panelOpacity !== "1"
+    || floatingChat.panelRight !== 18
+    || floatingChat.panelBottom !== 18
+    || floatingChat.panelHeight < 640
+    || floatingChat.panelHeight > 680
+    || floatingChat.panelWidth < 400
+    || floatingChat.panelWidth > 420
+    || floatingChat.panelInert
+    || floatingChat.panelAriaHidden !== "false"
+    || floatingChat.chatWidth < 400
+    || parseFloat(floatingChat.bodyPaddingRight ?? "0") !== 0
+    || floatingChat.mainRight !== initialFloatingChat.mainRight
+    || !floatingChat.copyHidden
+    || !floatingChat.retryHidden
+    || !floatingChat.retryDisabled
+    || floatingChat.maximizePressed !== "false") {
+    throw new Error(`floating desktop chat failed: ${JSON.stringify(floatingChat)}`);
   }
   await page.click("[data-chat-maximize]");
   await page.waitForTimeout(350);
-  const expandedChatSidebar = await page.evaluate(() => {
+  const expandedFloatingChat = await page.evaluate(() => {
     const chat = document.querySelector(".docs-chat");
     const panel = document.querySelector(".docs-chat-panel");
     const main = document.querySelector(".main");
@@ -278,51 +276,49 @@ async function checkDesktop() {
     const mainRect = main?.getBoundingClientRect();
     return {
       expanded: chat?.classList.contains("expanded"),
-      bodyExpanded: document.body.classList.contains("docs-chat-expanded"),
       chatWidth: chatRect?.width,
+      panelHeight: panelRect?.height,
       panelWidth: panelRect?.width,
       panelRight: panelRect ? Math.round(innerWidth - panelRect.right) : null,
+      panelBottom: panelRect ? Math.round(innerHeight - panelRect.bottom) : null,
       mainRight: mainRect?.right,
       bodyPaddingRight: getComputedStyle(document.body).paddingRight,
       maximizePressed: maximize?.getAttribute("aria-pressed"),
       maximizeLabel: maximize?.getAttribute("aria-label"),
     };
   });
-  if (!expandedChatSidebar.expanded
-    || !expandedChatSidebar.bodyExpanded
-    || expandedChatSidebar.chatWidth < 680
-    || expandedChatSidebar.panelWidth < 680
-    || expandedChatSidebar.panelRight !== 0
-    || parseFloat(expandedChatSidebar.bodyPaddingRight ?? "0") < 680
-    || expandedChatSidebar.mainRight > 760
-    || expandedChatSidebar.maximizePressed !== "true"
-    || expandedChatSidebar.maximizeLabel !== "Restore docs assistant width") {
-    throw new Error(`expanded desktop chat sidebar failed: ${JSON.stringify(expandedChatSidebar)}`);
+  if (!expandedFloatingChat.expanded
+    || expandedFloatingChat.chatWidth < 720
+    || expandedFloatingChat.panelWidth < 720
+    || expandedFloatingChat.panelHeight < 820
+    || expandedFloatingChat.panelRight !== 18
+    || expandedFloatingChat.panelBottom !== 18
+    || parseFloat(expandedFloatingChat.bodyPaddingRight ?? "0") !== 0
+    || expandedFloatingChat.mainRight !== initialFloatingChat.mainRight
+    || expandedFloatingChat.maximizePressed !== "true"
+    || expandedFloatingChat.maximizeLabel !== "Restore docs assistant size") {
+    throw new Error(`expanded floating desktop chat failed: ${JSON.stringify(expandedFloatingChat)}`);
   }
-  await page.click("[data-chat-close]");
+  await page.click("[data-chat-minimize]");
   await page.waitForTimeout(350);
-  const closedChatSidebar = await page.evaluate(() => {
+  const minimizedFloatingChat = await page.evaluate(() => {
     const chat = document.querySelector(".docs-chat");
     const panel = document.querySelector(".docs-chat-panel");
     const panelStyle = panel ? getComputedStyle(panel) : null;
     return {
       open: chat?.classList.contains("open"),
-      bodyOpen: document.body.classList.contains("docs-chat-open"),
-      bodyExpanded: document.body.classList.contains("docs-chat-expanded"),
       panelDisplay: panelStyle?.display,
       panelOpacity: panelStyle?.opacity,
       panelTransform: panelStyle?.transform,
       bodyPaddingRight: getComputedStyle(document.body).paddingRight,
     };
   });
-  if (closedChatSidebar.open
-    || closedChatSidebar.bodyOpen
-    || closedChatSidebar.bodyExpanded
-    || closedChatSidebar.panelDisplay !== "grid"
-    || closedChatSidebar.panelOpacity !== "0"
-    || closedChatSidebar.panelTransform === "none"
-    || parseFloat(closedChatSidebar.bodyPaddingRight ?? "0") !== 0) {
-    throw new Error(`closed desktop chat sidebar failed: ${JSON.stringify(closedChatSidebar)}`);
+  if (minimizedFloatingChat.open
+    || minimizedFloatingChat.panelDisplay !== "grid"
+    || minimizedFloatingChat.panelOpacity !== "0"
+    || minimizedFloatingChat.panelTransform === "none"
+    || parseFloat(minimizedFloatingChat.bodyPaddingRight ?? "0") !== 0) {
+    throw new Error(`minimized floating desktop chat failed: ${JSON.stringify(minimizedFloatingChat)}`);
   }
   await page.goto(`${base}/start/showcase`, { waitUntil: "networkidle" });
   await page.waitForTimeout(350);
@@ -332,16 +328,18 @@ async function checkDesktop() {
     const firstTop = cards[0]?.getBoundingClientRect().top ?? 0;
     const columns = cards.filter((card) => Math.abs(card.getBoundingClientRect().top - firstTop) < 2).length;
     return {
-      bodyOpen: document.body.classList.contains("docs-chat-open"),
+      exists: Boolean(grid),
+      cardCount: cards.length,
       columns,
       width: grid?.getBoundingClientRect().width,
       template: grid ? getComputedStyle(grid).gridTemplateColumns : "",
     };
   });
-  if (!showcaseCardGrid.bodyOpen
+  if (!showcaseCardGrid.exists
+    || showcaseCardGrid.cardCount === 0
     || showcaseCardGrid.columns > 2
     || ((showcaseCardGrid.width ?? 0) > 520 && showcaseCardGrid.columns !== 2)) {
-    throw new Error(`showcase card grid changed under chat width: ${JSON.stringify(showcaseCardGrid)}`);
+    throw new Error(`showcase card grid columns failed: ${JSON.stringify(showcaseCardGrid)}`);
   }
   await page.close();
 }
