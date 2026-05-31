@@ -393,6 +393,8 @@ function icon(name) {
     "chevron-down": '<path d="m6 9 6 6 6-6"/>',
     "copy": '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
     "maximize-2": '<path d="M15 3h6v6"/><path d="m21 3-7 7"/><path d="M9 21H3v-6"/><path d="m3 21 7-7"/>',
+    "minimize-2": '<path d="m14 10 7-7"/><path d="M20 10h-6V4"/><path d="m3 21 7-7"/><path d="M4 14h6v6"/>',
+    "minus": '<path d="M5 12h14"/>',
     "refresh-cw": '<path d="M21 12a9 9 0 0 1-15.1 6.64"/><path d="M3 12A9 9 0 0 1 18.1 5.36"/><path d="M21 3v6h-6"/><path d="M3 21v-6h6"/>',
     "sparkles": '<path d="m12 3-1.6 4.4L6 9l4.4 1.6L12 15l1.6-4.4L18 9l-4.4-1.6L12 3Z"/><path d="m19 14-.8 2.2L16 17l2.2.8L19 20l.8-2.2L22 17l-2.2-.8L19 14Z"/><path d="m5 4-.7 1.8L2.5 6.5l1.8.7L5 9l.7-1.8 1.8-.7-1.8-.7L5 4Z"/>',
     "send": '<path d="m22 2-7 20-4-9-9-4 20-7Z"/><path d="M22 2 11 13"/>',
@@ -537,9 +539,9 @@ function docsOrigin() {
 function chatWidget() {
   if (!chatApiUrl) return "";
   return `<section class="docs-chat" data-docs-chat aria-label="OpenClaw docs assistant">
-<button class="docs-chat-launcher" type="button" data-chat-toggle aria-expanded="false" aria-controls="docs-chat-panel"><span aria-hidden="true">*</span><span>Ask Molty</span></button>
+<button class="docs-chat-launcher" type="button" data-chat-toggle aria-expanded="false" aria-controls="docs-chat-panel"><img class="docs-chat-avatar" src="${publicPath("/assets/molty-avatar.png")}" data-static-src="${publicPath("/assets/molty-avatar.png")}" data-hover-src="${publicPath("/assets/molty-avatar-hover.gif")}" alt=""><span>Ask Molty</span></button>
 <div class="docs-chat-panel" id="docs-chat-panel" data-chat-panel role="dialog" aria-modal="false" aria-labelledby="docs-chat-title" aria-hidden="true" inert>
-<header class="docs-chat-head"><div class="docs-chat-title"><span class="docs-chat-mark" aria-hidden="true">${icon("sparkles")}</span><h2 id="docs-chat-title">Assistant</h2></div><div class="docs-chat-actions"><button class="docs-chat-icon docs-chat-maximize" type="button" data-chat-maximize aria-label="Maximize docs assistant" aria-pressed="false">${icon("maximize-2")}</button><button class="docs-chat-icon docs-chat-copy" type="button" data-chat-copy aria-label="Copy conversation" hidden>${icon("copy")}</button><button class="docs-chat-icon docs-chat-retry" type="button" data-chat-retry aria-label="Reload last answer" hidden disabled>${icon("refresh-cw")}</button><button class="docs-chat-icon docs-chat-clear" type="button" data-chat-clear aria-label="Clear conversation" hidden>${icon("trash")}</button><button class="docs-chat-icon docs-chat-close" type="button" data-chat-close aria-label="Close docs assistant">x</button></div></header>
+<header class="docs-chat-head"><div class="docs-chat-title"><img class="docs-chat-avatar" src="${publicPath("/assets/molty-avatar.png")}" data-static-src="${publicPath("/assets/molty-avatar.png")}" data-hover-src="${publicPath("/assets/molty-avatar-hover.gif")}" alt=""><h2 id="docs-chat-title">Molty</h2></div><div class="docs-chat-actions"><button class="docs-chat-icon docs-chat-maximize" type="button" data-chat-maximize aria-label="Maximize docs assistant" aria-pressed="false">${icon("maximize-2")}</button><button class="docs-chat-icon docs-chat-copy" type="button" data-chat-copy aria-label="Copy conversation" hidden>${icon("copy")}</button><button class="docs-chat-icon docs-chat-retry" type="button" data-chat-retry aria-label="Reload last answer" hidden disabled>${icon("refresh-cw")}</button><button class="docs-chat-icon docs-chat-clear" type="button" data-chat-clear aria-label="Clear conversation" hidden>${icon("trash")}</button><button class="docs-chat-icon docs-chat-minimize" type="button" data-chat-minimize aria-label="Minimize docs assistant">${icon("minus")}</button></div></header>
 <div class="docs-chat-auth" data-chat-auth hidden></div>
 <div class="docs-chat-log" data-chat-log aria-live="polite">
 <div class="docs-chat-empty">Responses are generated using AI and may contain mistakes.</div>
