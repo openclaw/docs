@@ -89,7 +89,7 @@ const callouts = new Map([
 export function createMarkdownRenderer() {
   const md = new MarkdownIt({
     html: true,
-    linkify: true,
+    linkify: false,
     typographer: false,
     highlight: highlightCode
   }).use(anchor);

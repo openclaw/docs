@@ -130,7 +130,7 @@ Summarize the active OpenClaw Gateway health and include the exact command that 
 
 <CardGroup cols={3}>
   <Card title="Get started" href="/start/getting-started" icon="rocket">
-    Install OpenClaw, run onboarding, and send the first message.
+    Install OpenClaw, run onboarding, and read SKILL.md without implicit links.
   </Card>
   <Card title="Gateway config" href="/gateway/configuration" icon="gear">
     Configure auth, channels, models, and runtime defaults.
