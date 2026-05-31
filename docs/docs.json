@@ -1755,7 +1755,8 @@
                       "cli/plugins",
                       "cli/path",
                       "cli/policy",
-                      "cli/skills"
+                      "cli/skills",
+                      "cli/workboard"
                     ]
                   },
                   {
@@ -3305,7 +3306,8 @@
                       "zh-TW/cli/plugins",
                       "zh-TW/cli/path",
                       "zh-TW/cli/policy",
-                      "zh-TW/cli/skills"
+                      "zh-TW/cli/skills",
+                      "zh-TW/cli/workboard"
                     ]
                   },
                   {
@@ -4232,7 +4234,8 @@
                       "ja-JP/cli/plugins",
                       "ja-JP/cli/path",
                       "ja-JP/cli/policy",
-                      "ja-JP/cli/skills"
+                      "ja-JP/cli/skills",
+                      "ja-JP/cli/workboard"
                     ]
                   },
                   {
@@ -5159,7 +5162,8 @@
                       "es/cli/plugins",
                       "es/cli/path",
                       "es/cli/policy",
-                      "es/cli/skills"
+                      "es/cli/skills",
+                      "es/cli/workboard"
                     ]
                   },
                   {
@@ -6086,7 +6090,8 @@
                       "pt-BR/cli/plugins",
                       "pt-BR/cli/path",
                       "pt-BR/cli/policy",
-                      "pt-BR/cli/skills"
+                      "pt-BR/cli/skills",
+                      "pt-BR/cli/workboard"
                     ]
                   },
                   {
@@ -7013,7 +7018,8 @@
                       "ko/cli/plugins",
                       "ko/cli/path",
                       "ko/cli/policy",
-                      "ko/cli/skills"
+                      "ko/cli/skills",
+                      "ko/cli/workboard"
                     ]
                   },
                   {
@@ -7940,7 +7946,8 @@
                       "de/cli/plugins",
                       "de/cli/path",
                       "de/cli/policy",
-                      "de/cli/skills"
+                      "de/cli/skills",
+                      "de/cli/workboard"
                     ]
                   },
                   {
@@ -8867,7 +8874,8 @@
                       "fr/cli/plugins",
                       "fr/cli/path",
                       "fr/cli/policy",
-                      "fr/cli/skills"
+                      "fr/cli/skills",
+                      "fr/cli/workboard"
                     ]
                   },
                   {
@@ -9794,7 +9802,8 @@
                       "ar/cli/plugins",
                       "ar/cli/path",
                       "ar/cli/policy",
-                      "ar/cli/skills"
+                      "ar/cli/skills",
+                      "ar/cli/workboard"
                     ]
                   },
                   {
@@ -10721,7 +10730,8 @@
                       "it/cli/plugins",
                       "it/cli/path",
                       "it/cli/policy",
-                      "it/cli/skills"
+                      "it/cli/skills",
+                      "it/cli/workboard"
                     ]
                   },
                   {
@@ -11648,7 +11658,8 @@
                       "vi/cli/plugins",
                       "vi/cli/path",
                       "vi/cli/policy",
-                      "vi/cli/skills"
+                      "vi/cli/skills",
+                      "vi/cli/workboard"
                     ]
                   },
                   {
@@ -12575,7 +12586,8 @@
                       "nl/cli/plugins",
                       "nl/cli/path",
                       "nl/cli/policy",
-                      "nl/cli/skills"
+                      "nl/cli/skills",
+                      "nl/cli/workboard"
                     ]
                   },
                   {
@@ -13502,7 +13514,8 @@
                       "tr/cli/plugins",
                       "tr/cli/path",
                       "tr/cli/policy",
-                      "tr/cli/skills"
+                      "tr/cli/skills",
+                      "tr/cli/workboard"
                     ]
                   },
                   {
@@ -14429,7 +14442,8 @@
                       "uk/cli/plugins",
                       "uk/cli/path",
                       "uk/cli/policy",
-                      "uk/cli/skills"
+                      "uk/cli/skills",
+                      "uk/cli/workboard"
                     ]
                   },
                   {
@@ -15356,7 +15370,8 @@
                       "id/cli/plugins",
                       "id/cli/path",
                       "id/cli/policy",
-                      "id/cli/skills"
+                      "id/cli/skills",
+                      "id/cli/workboard"
                     ]
                   },
                   {
@@ -16283,7 +16298,8 @@
                       "pl/cli/plugins",
                       "pl/cli/path",
                       "pl/cli/policy",
-                      "pl/cli/skills"
+                      "pl/cli/skills",
+                      "pl/cli/workboard"
                     ]
                   },
                   {
