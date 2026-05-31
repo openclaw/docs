@@ -89,6 +89,11 @@ Stores your API token + cached registry URL.
 
 - Verifies the stored token via `/api/v1/whoami`.
 
+### `token`
+
+- Prints the stored API token to stdout.
+- Useful for piping a local login token into CI secret setup commands.
+
 ### `star <slug>` / `unstar <slug>`
 
 - Adds/removes a skill from your highlights.
@@ -187,7 +192,7 @@ clawhub skill publish ./my-skill --version 1.0.0
 #### GitHub Actions
 
 ClawHub ships an official reusable workflow at
-[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/6fc5bb7cd80f8efc020bfc787b0b2ad2de017147/.github/workflows/skill-publish.yml)
+[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/9aaab158cbbe43e56b70ef6740fe27b2c47c4d1b/.github/workflows/skill-publish.yml)
 for skill repos and catalog repos.
 
 Typical catalog setup:
@@ -589,7 +594,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/6fc5bb7cd80f8efc020bfc787b0b2ad2de017147/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/9aaab158cbbe43e56b70ef6740fe27b2c47c4d1b/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
