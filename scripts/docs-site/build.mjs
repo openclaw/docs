@@ -348,13 +348,18 @@ function firstStatusLine(content) {
 function breadcrumbs(page, nav) {
   if (page.hidden) return "";
   const activeTab = activeTabTitle(nav, page.slug);
+  const activeTabEntry = nav.find((tab) => tab.title === activeTab);
+  const activeTabPage = activeTabEntry ? firstPage(activeTabEntry) : null;
   const group = groupForPage(nav, page.slug);
-  const parts = [activeTab, group, page.title].filter(Boolean);
+  const parts = [
+    activeTab && activeTabPage
+      ? `<a href="${escapeAttr(pageUrl(activeTabPage))}">${escapeHtml(activeTab)}</a>`
+      : activeTab ? `<span>${escapeHtml(activeTab)}</span>` : "",
+    group ? `<span>${escapeHtml(group)}</span>` : "",
+    `<span aria-current="page">${escapeHtml(page.title)}</span>`,
+  ].filter(Boolean);
   return parts.length > 1
-    ? `<nav class="breadcrumbs" aria-label="Breadcrumb">${parts.map((part, index) => {
-      const last = index === parts.length - 1;
-      return last ? `<span aria-current="page">${escapeHtml(part)}</span>` : `<span>${escapeHtml(part)}</span>`;
-    }).join("<span aria-hidden=\"true\">/</span>")}</nav>`
+    ? `<nav class="breadcrumbs" aria-label="Breadcrumb">${parts.join("<span aria-hidden=\"true\">/</span>")}</nav>`
     : "";
 }
 
