@@ -106,11 +106,10 @@ Env var equivalents:
 
 ## Exec shell snapshots
 
-`OPENCLAW_EXEC_SHELL_SNAPSHOT=1` is an opt-in gateway exec optimization for bash and zsh. Set it in the Gateway
-process environment; per-call `exec.env` values cannot enable it or redirect its cache directory. When enabled,
-OpenClaw captures sourceable aliases/functions and a small safe environment set from shell startup files into
-`$OPENCLAW_STATE_DIR/cache/shell-snapshots/`, then sources that snapshot before each `exec` command. Secret-looking
-variables are excluded from the snapshot. Sandbox and node exec do not use it.
+On non-Windows Gateway hosts, bash and zsh `exec` commands use a startup snapshot by default.
+Set `OPENCLAW_EXEC_SHELL_SNAPSHOT=0` in the Gateway process environment to disable this path.
+Values `false`, `no`, and `off` also disable it. Per-call `exec.env` values cannot toggle
+snapshots or redirect the snapshot cache.
 
 ## Runtime-injected env vars
 
