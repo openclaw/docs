@@ -8,6 +8,7 @@ import matter from "gray-matter";
 import { ignoredDocDirs, ignoredDocFiles, localeLabels, mintlifyLocaleToDir, rtlLocales } from "./config.mjs";
 import { siteCss, siteJs } from "./assets.mjs";
 import { createMarkdownRenderer, renderMdxish } from "./mdx-ish.mjs";
+import { editSourceUrlForPage, frontmatterSourcePath, readSourceMetadata } from "./edit-source.mjs";
 import { elementsFixture } from "./elements-fixture.mjs";
 import { renderPageOgSvg } from "./og-card-template.mjs";
 
@@ -16,6 +17,7 @@ const docsDir = path.join(root, "docs");
 const siteAssetsDir = path.join(root, "scripts", "docs-site");
 const outDir = path.join(root, "dist", "docs-site");
 const config = JSON.parse(fs.readFileSync(path.join(docsDir, "docs.json"), "utf8"));
+const sourceMetadata = readSourceMetadata(root);
 const md = createMarkdownRenderer();
 const basePath = normalizeBasePath(process.env.DOCS_SITE_BASE_PATH ?? "");
 const legacyBasePath = normalizeBasePath(process.env.DOCS_SITE_LEGACY_BASE_PATH ?? "/docs");
@@ -53,6 +55,7 @@ fs.mkdirSync(outDir, { recursive: true });
 
 const locales = buildLocales(config);
 const allPages = [...collectPages(locales), ...(includeElementsFixture ? [elementsFixturePage()] : [])];
+const allPageByKey = new Map(allPages.map((page) => [pageKey(page.locale, page.slug), page]));
 let pages = allPages;
 let pageByKey = new Map(pages.map((page) => [pageKey(page.locale, page.slug), page]));
 let navByLocale = new Map(locales.map((locale) => [locale.code, buildNav(locale)]));
@@ -92,7 +95,7 @@ const localePickerLabels = {
 };
 
 copyPublicFiles();
-if (!shellOnly) await renderPageOgCards();
+if (!previewMode) await renderPageOgCards();
 for (const page of pages) writePage(page);
 if (!shellOnly) {
   writeLlmsIndex();
@@ -147,6 +150,7 @@ function collectPages(localeList) {
         slug,
         file,
         rel,
+        sourcePath: frontmatterSourcePath(parsed.data),
         raw,
         title,
         summary: parsed.data.summary ?? "",
@@ -368,7 +372,10 @@ function languagePicker(page) {
   const current = locales.find((locale) => locale.code === page.locale) ?? locales[0];
   const currentLabel = localeDisplayName(current.code);
   const currentFlag = localeFlag(current.code);
-  const options = locales.map((locale) => {
+  const pickerLocales = previewMode
+    ? locales.filter((locale) => locale.code === page.locale || pageByKey.has(pageKey(locale.code, page.slug)))
+    : locales;
+  const options = pickerLocales.map((locale) => {
     const active = locale.code === page.locale;
     return `<a class="language-option${active ? " active" : ""}" role="option" aria-selected="${active ? "true" : "false"}" href="${escapeAttr(localeUrlForSlug(locale.code, page.slug))}" data-locale-option><span class="locale-flag" aria-hidden="true">${escapeHtml(localeFlag(locale.code))}</span><span class="language-name">${escapeHtml(localeDisplayName(locale.code))}</span><span class="language-check" aria-hidden="true">✓</span></a>`;
   }).join("");
@@ -407,8 +414,9 @@ function breadcrumbs(page, nav) {
 
 function pageTools(page) {
   const canonicalUrl = `${docsOrigin()}${pageRoute(page)}`;
-  const editUrl = `https://github.com/openclaw/openclaw/edit/main/docs/${page.rel}`;
-  return `<div class="page-tools" data-page-tools data-page-url="${escapeAttr(canonicalUrl)}"><button type="button" data-copy-page>Copy page</button><a href="${escapeAttr(editUrl)}">Edit source</a></div>`;
+  const editUrl = editSourceUrlForPage(page, sourceMetadata);
+  const editLink = editUrl ? `<a href="${escapeAttr(editUrl)}">Edit source</a>` : "";
+  return `<div class="page-tools" data-page-tools data-page-url="${escapeAttr(canonicalUrl)}"><button type="button" data-copy-page>Copy page</button>${editLink}</div>`;
 }
 
 function pageStatus(page) {
@@ -795,6 +803,10 @@ function localeUrlForSlug(locale, slug) {
   return pageByKey.has(pageKey(locale, slug)) ? pageUrl(pageByKey.get(pageKey(locale, slug))) : publicPath(locale === "en" ? "/" : `/${locale}/`);
 }
 
+function internalPageUrl(page) {
+  return pageByKey.has(pageKey(page.locale, page.slug)) ? pageUrl(page) : `${docsOrigin()}${pageRoute(page)}`;
+}
+
 function pageUrl(page) {
   return publicPath(pageRoute(page));
 }
@@ -817,12 +829,14 @@ function rewriteInternalUrls(html, locale) {
     }
     const segments = target.replace(/\/$/, "").split("/");
     const maybeLocale = segments[0];
-    if (pageByKey.has(pageKey(maybeLocale, normalizeSlug(segments.slice(1).join("/") || "index")))) {
-      return `${attr}="${pageUrl(pageByKey.get(pageKey(maybeLocale, normalizeSlug(segments.slice(1).join("/") || "index"))))}${suffix}"`;
+    const localizedSlug = normalizeSlug(segments.slice(1).join("/") || "index");
+    const localizedPage = allPageByKey.get(pageKey(maybeLocale, localizedSlug));
+    if (localizedPage) {
+      return `${attr}="${internalPageUrl(localizedPage)}${suffix}"`;
     }
     const slug = normalizeSlug(target.replace(/\/$/, ""));
-    const page = pageByKey.get(pageKey(locale, slug)) ?? pageByKey.get(pageKey("en", slug));
-    return page ? `${attr}="${pageUrl(page)}${suffix}"` : `${attr}="${publicPath(`/${target}`)}${suffix}"`;
+    const page = allPageByKey.get(pageKey(locale, slug)) ?? allPageByKey.get(pageKey("en", slug));
+    return page ? `${attr}="${internalPageUrl(page)}${suffix}"` : `${attr}="${publicPath(`/${target}`)}${suffix}"`;
   });
 }
 
