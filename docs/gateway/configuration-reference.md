@@ -317,7 +317,9 @@ conversation bindings, or any non-Codex harness.
   Default: `true` for explicit entries.
 - `plugins.entries.codex.config.codexPlugins.plugins.<key>.marketplaceName`:
   stable marketplace identity. V1 supports `"openai-curated"`,
-  `"openai-bundled"`, and `"openai-primary-runtime"`.
+  `"openai-bundled"`, and `"openai-primary-runtime"`. See
+  [Native Codex plugins](/plugins/codex-native-plugins#manual-first-party-marketplace-entries)
+  for manual bundled and primary-runtime examples.
 - `plugins.entries.codex.config.codexPlugins.plugins.<key>.pluginName`: stable
   Codex plugin identity from migration, for example `"google-calendar"`.
 - `plugins.entries.codex.config.codexPlugins.plugins.<key>.allow_destructive_actions`:
