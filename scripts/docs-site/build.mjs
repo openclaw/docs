@@ -302,7 +302,7 @@ function siteHeader(page, nav, activeTab) {
 <div class="header-row">
 <div class="header-left"><a class="brand" href="${pageUrl(pageByKey.get(pageKey(page.locale, "index")) ?? page)}"><img src="${publicPath("/assets/pixel-lobster.svg")}" alt=""></a>${languagePicker(page)}</div>
 <button class="search-button" type="button" data-search-open>${icon("search")}<span class="search-label">Search...</span><span class="search-shortcut">⌘K</span></button>
-<nav class="header-links">${topLink("GitHub", "https://github.com/openclaw/openclaw", "github")}${topLink("Releases", "https://github.com/openclaw/openclaw/releases", "package")}${topLink("Discord", "https://discord.com/invite/clawd", "discord")}<button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme">${icon("moon")}</button></nav>
+<nav class="header-links">${topLink("GitHub", "https://github.com/openclaw/openclaw", "github")}${topLink("Releases", "https://github.com/openclaw/openclaw/releases", "package")}${topLink("Discord", "https://discord.com/invite/clawd", "discord")}<button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme"><span class="theme-toggle-icon theme-toggle-icon-dark">${icon("moon")}</span><span class="theme-toggle-icon theme-toggle-icon-light">${icon("sun")}</span></button></nav>
 <button class="nav-toggle" type="button" data-nav-toggle>Menu</button>
 </div>
 <nav class="tabs">${tabs}<span class="tab-underline" aria-hidden="true"></span></nav>
@@ -389,7 +389,8 @@ function icon(name) {
   const paths = {
     "search": '<path d="m21 21-4.35-4.35"/><circle cx="11" cy="11" r="7"/>',
     "package": '<path d="m21 8-9-5-9 5 9 5 9-5Z"/><path d="m3 8 9 5 9-5"/><path d="M12 22V13"/><path d="m3 8v8l9 6 9-6V8"/>',
-    "moon": '<path d="M20.9 13.5a8.5 8.5 0 0 1-10.4-10.4 8.5 8.5 0 1 0 10.4 10.4Z"/>',
+    "moon": '<path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/>',
+    "sun": '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
     "chevron-down": '<path d="m6 9 6 6 6-6"/>',
     "copy": '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
     "maximize-2": '<path d="M15 3h6v6"/><path d="m21 3-7 7"/><path d="M9 21H3v-6"/><path d="m3 21 7-7"/>',
