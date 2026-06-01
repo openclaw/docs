@@ -225,6 +225,11 @@ if (process.env.DOCS_SITE_CNAME) {
 }
 const siteJs = fs.readFileSync(path.join(site, "assets/docs-site.js"), "utf8");
 const siteCss = fs.readFileSync(path.join(site, "assets/docs-site.css"), "utf8");
+try {
+  new Function(siteJs);
+} catch (err) {
+  throw new Error(`assets: generated docs-site.js has invalid syntax: ${err.message}`);
+}
 if (!/theme-toggle-icon-dark/.test(index)
   || !/theme-toggle-icon-light/.test(index)
   || !/:root\[data-theme="dark"\] \.theme-toggle-icon-dark,:root\[data-theme="light"\] \.theme-toggle-icon-light\{display:grid\}/.test(siteCss)) {
@@ -434,7 +439,7 @@ if (!/class="page-actions"/.test(index)
   || !/Open in ChatGPT/.test(index)
   || !/Open in Claude/.test(index)
   || !/Open in Perplexity/.test(index)
-  || !/https:\/\/chatgpt\.com\/\?hints=search&amp;q=Read%20from%20https%3A%2F%2Fdocs\.openclaw\.ai%2F%20so%20I%20can%20ask%20questions%20about%20it\./.test(index)
+  || !/https:\/\/chatgpt\.com\/\?hints=search&amp;q=Read%20from%20https%3A%2F%2Fdocs\.openclaw\.ai%2Findex\.md%20so%20I%20can%20ask%20questions%20about%20it\./.test(index)
   || !/https:\/\/claude\.ai\/new\?q=Read%20from%20https%3A%2F%2Fdocs\.openclaw\.ai%2Findex\.md%20so%20I%20can%20ask%20questions%20about%20it\./.test(index)
   || !/https:\/\/www\.perplexity\.ai\/search\/new\?q=Read%20from%20https%3A%2F%2Fdocs\.openclaw\.ai%2Findex\.md%20so%20I%20can%20ask%20questions%20about%20it\./.test(index)) {
   throw new Error("page tools: AI action menu links are missing");
@@ -487,14 +492,14 @@ if (!/\.oc-code figcaption button:before/.test(siteCss)
 }
 if (!/\.article-meta-row\{display:flex;align-items:center;justify-content:space-between/.test(siteCss)
   || !/\.page-actions\{display:inline-flex;align-items:stretch;position:relative\}/.test(siteCss)
-  || !/\.page-actions-primary\{display:inline-flex;align-items:center;gap:7px/.test(siteCss)
-  || !/\.page-actions-more summary\{display:grid;place-items:center;width:34px/.test(siteCss)
-  || !/\.page-actions-more \.page-actions-menu\{position:absolute;top:calc\(100% \+ 8px\);left:auto;right:0/.test(siteCss)
-  || !/\.page-action\{display:grid;grid-template-columns:18px minmax\(0,1fr\) auto/.test(siteCss)) {
+  || !/\.page-tools \.page-actions-primary\{display:inline-flex;align-items:center;gap:7px/.test(siteCss)
+  || !/\.page-tools \.page-actions-more summary\{display:grid;place-items:center;width:34px/.test(siteCss)
+  || !/\.page-tools \.page-actions-more \.page-actions-menu\{position:absolute;top:calc\(100% \+ 8px\);left:auto;right:0/.test(siteCss)
+  || !/\.page-tools \.page-action\{display:grid;grid-template-columns:18px minmax\(0,1fr\) auto/.test(siteCss)) {
   throw new Error("assets: page action trigger should use the split pill button skin");
 }
-if (!/\.page-actions-primary:hover,\.page-actions-more\[open\] summary,\.page-actions-more summary:hover\{border-color:var\(--brand\);color:var\(--ink\)\}/.test(siteCss)
-  || !/\.page-action-external\{justify-self:end;color:var\(--muted\)/.test(siteCss)
+if (!/\.page-tools \.page-actions-primary:hover,\.page-tools \.page-actions-more\[open\] summary,\.page-tools \.page-actions-more summary:hover\{border-color:var\(--brand\);color:var\(--ink\)\}/.test(siteCss)
+  || !/\.page-tools \.page-action-external\{justify-self:end;color:var\(--muted\)/.test(siteCss)
   || !/\.page-feedback-links\{display:flex;align-items:center;gap:9px;margin-left:auto\}/.test(siteCss)) {
   throw new Error("assets: page action hover, external marker, and footer link skin are missing");
 }
