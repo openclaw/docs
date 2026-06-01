@@ -93,8 +93,31 @@ export function createMarkdownRenderer() {
     typographer: false,
     highlight: highlightCode
   }).use(anchor);
+  const renderHeadingClose = md.renderer.rules.heading_close ?? renderToken;
+  md.renderer.rules.heading_close = (tokens, idx, options, env, self) => {
+    const headingOpen = tokens[idx - 2];
+    const id = headingOpen?.type === "heading_open" ? headingOpen.attrGet("id") : "";
+    const copyAnchor = id ? headingAnchorButton(id) : "";
+    return `${copyAnchor}${renderHeadingClose(tokens, idx, options, env, self)}`;
+  };
   md.renderer.rules.fence = renderFence;
   return md;
+}
+
+function renderToken(tokens, idx, options, _env, self) {
+  return self.renderToken(tokens, idx, options);
+}
+
+function headingAnchorButton(id) {
+  return `<button type="button" class="heading-anchor" data-heading-anchor="${escapeAttr(id)}" data-copy-label="Copy link to section" aria-label="Copy link to section">${headingLinkIcon()}${headingCheckIcon()}</button>`;
+}
+
+function headingLinkIcon() {
+  return `<svg xmlns="http://www.w3.org/2000/svg" class="heading-anchor-icon heading-anchor-link lucide lucide-link-icon lucide-link" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`;
+}
+
+function headingCheckIcon() {
+  return `<svg xmlns="http://www.w3.org/2000/svg" class="heading-anchor-icon heading-anchor-check lucide lucide-check-icon lucide-check" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg>`;
 }
 
 function renderFence(tokens, idx) {
