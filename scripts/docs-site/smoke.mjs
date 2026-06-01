@@ -1,9 +1,15 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
+import matter from "gray-matter";
+
+import { localeLabels } from "./config.mjs";
+import { editSourceUrlForPage, frontmatterSourcePath, readSourceMetadata } from "./edit-source.mjs";
 
 const root = process.cwd();
 const site = path.join(root, "dist", "docs-site");
+const docsDir = path.join(root, "docs");
+const sourceMetadata = readSourceMetadata(root);
 const expectedOrigin = (process.env.DOCS_SITE_CANONICAL_ORIGIN
   ?? (process.env.DOCS_SITE_CNAME ? `https://${process.env.DOCS_SITE_CNAME}` : "https://docs.openclaw.ai"))
   .replace(/\/$/, "");
@@ -220,6 +226,11 @@ if (process.env.DOCS_SITE_CNAME) {
 }
 const siteJs = fs.readFileSync(path.join(site, "assets/docs-site.js"), "utf8");
 const siteCss = fs.readFileSync(path.join(site, "assets/docs-site.css"), "utf8");
+if (!/theme-toggle-icon-dark/.test(index)
+  || !/theme-toggle-icon-light/.test(index)
+  || !/:root\[data-theme="dark"\] \.theme-toggle-icon-dark,:root\[data-theme="light"\] \.theme-toggle-icon-light\{display:grid\}/.test(siteCss)) {
+  throw new Error("assets: theme toggle icon must follow the active color theme");
+}
 if (/\.oc-card:first-child\{border-color:var\(--brand\)/.test(siteCss)) {
   throw new Error("assets: first card is hard-highlighted");
 }
@@ -399,6 +410,7 @@ if ((elementsIndex.match(/class="oc-card-grid oc-card-cols-4"/g) ?? []).length <
 if (!/class="breadcrumbs"/.test(index) || !/data-copy-page/.test(index) || !/class="page-feedback"/.test(index)) {
   throw new Error("index: page reader affordances are missing");
 }
+assertEditSourceLinks();
 if (!/function initCodeGroups/.test(siteJs) || !/className="oc-code-tab"/.test(siteJs) || !/preferredCodeTab/.test(siteJs)) {
   throw new Error("assets: code group tabs are missing");
 }
@@ -458,3 +470,103 @@ if (!/href="https:\/\/x\.com\/i\/status\/2010878524543131691"/.test(showcase)) {
   throw new Error("showcase: external card href was not rendered");
 }
 console.log(`docs site smoke ok: shell, routing, skin, and hidden fixture checks passed (${artifactMode})`);
+
+function assertEditSourceLinks() {
+  const htmlFiles = walkHtml(site);
+  let checked = 0;
+  let missingEdit = 0;
+  for (const file of htmlFiles) {
+    const rel = path.relative(site, file).replaceAll(path.sep, "/");
+    const html = fs.readFileSync(file, "utf8");
+    if (rel === "__elements/index.html") {
+      if (/data-page-tools|Edit source/.test(html)) {
+        throw new Error("__elements: hidden component fixture should not expose page tools");
+      }
+      continue;
+    }
+
+    const tools = html.match(/<div class="page-tools"[\s\S]*?<\/div>/u)?.[0];
+    if (!tools) continue;
+    checked += 1;
+
+    const page = pageForRenderedHtml(rel);
+    if (!page) {
+      if (/Edit source/.test(tools)) throw new Error(`${rel}: edit source link has no canonical source page`);
+      missingEdit += 1;
+      continue;
+    }
+
+    const expected = editSourceUrlForPage(page, sourceMetadata);
+    const actual = tools.match(/<a href="([^"]+)">Edit source<\/a>/u)?.[1] ?? "";
+    if (!expected) {
+      if (actual) throw new Error(`${rel}: unexpected edit source link ${actual}`);
+      missingEdit += 1;
+      continue;
+    }
+    if (actual !== expected) {
+      throw new Error(`${rel}: edit source link ${actual || "(missing)"} should be ${expected}`);
+    }
+  }
+
+  if (checked < 100) {
+    throw new Error(`edit source audit: expected many rendered page tools, checked ${checked}`);
+  }
+
+  assertEditSourceSample("clawhub/index.html", "https://github.com/openclaw/clawhub/edit/main/docs/clawhub.md");
+  assertEditSourceSample("clawhub/publishing/index.html", "https://github.com/openclaw/clawhub/edit/main/docs/publishing.md");
+  assertEditSourceSample("ar/clawhub/publishing/index.html", "https://github.com/openclaw/clawhub/edit/main/docs/publishing.md");
+  assertEditSourceSample("de/channels/index.html", "https://github.com/openclaw/openclaw/edit/main/docs/channels/index.md");
+  if (missingEdit > 0) {
+    console.log(`edit source audit: ${missingEdit} page tool(s) intentionally have no edit source link`);
+  }
+}
+
+function assertEditSourceSample(rel, expected) {
+  const file = path.join(site, rel);
+  if (!fs.existsSync(file)) {
+    throw new Error(`edit source audit: missing sample ${rel}`);
+  }
+  const html = fs.readFileSync(file, "utf8");
+  if (!html.includes(`href="${expected}"`)) {
+    throw new Error(`${rel}: expected edit source link ${expected}`);
+  }
+}
+
+function pageForRenderedHtml(htmlRel) {
+  const segments = htmlRel.split("/");
+  if (segments.at(-1) !== "index.html") return null;
+  segments.pop();
+
+  const locale = localeLabels[segments[0]] ? segments.shift() : "en";
+  const route = segments.join("/");
+  const base = locale === "en" ? docsDir : path.join(docsDir, locale);
+  const sourceFile = findSourcePageFile(base, route);
+  if (!sourceFile) return null;
+
+  const raw = fs.readFileSync(sourceFile, "utf8");
+  const parsed = matter(raw);
+  return {
+    rel: path.relative(base, sourceFile).replaceAll(path.sep, "/"),
+    sourcePath: frontmatterSourcePath(parsed.data),
+  };
+}
+
+function findSourcePageFile(base, route) {
+  const candidates = route
+    ? [`${route}/index.md`, `${route}/index.mdx`, `${route}.md`, `${route}.mdx`]
+    : ["index.md", "index.mdx"];
+  for (const candidate of candidates) {
+    const file = path.join(base, candidate);
+    if (fs.existsSync(file)) return file;
+  }
+  return "";
+}
+
+function walkHtml(dir) {
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) return walkHtml(full);
+    return entry.isFile() && entry.name.endsWith(".html") ? [full] : [];
+  });
+}
