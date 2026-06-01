@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
 import matter from "gray-matter";
 
 import { localeLabels } from "./config.mjs";
@@ -225,6 +226,12 @@ if (process.env.DOCS_SITE_CNAME) {
 }
 const siteJs = fs.readFileSync(path.join(site, "assets/docs-site.js"), "utf8");
 const siteCss = fs.readFileSync(path.join(site, "assets/docs-site.css"), "utf8");
+try {
+  execFileSync(process.execPath, ["--check", path.join(site, "assets/docs-site.js")], { stdio: "pipe" });
+} catch (err) {
+  const detail = String(err.stderr || err.message || "").trim();
+  throw new Error(`assets: docs-site.js has a syntax error and would break every interactive control\n${detail}`);
+}
 if (!/theme-toggle-icon-dark/.test(index)
   || !/theme-toggle-icon-light/.test(index)
   || !/:root\[data-theme="dark"\] \.theme-toggle-icon-dark,:root\[data-theme="light"\] \.theme-toggle-icon-light\{display:grid\}/.test(siteCss)) {
