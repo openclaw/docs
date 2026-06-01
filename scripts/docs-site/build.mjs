@@ -39,6 +39,14 @@ const defaultShellAssetVersion = createHash("sha256")
 const shellAssetVersion = process.env.DOCS_SITE_SHELL_ASSET_VERSION ?? defaultShellAssetVersion;
 const artifactMode = process.env.DOCS_SITE_ARTIFACT_MODE ?? "full";
 const shellOnly = artifactMode === "shell";
+const previewPagesPerGroup = parseOptionalPositiveInt(
+  process.env.DOCS_SITE_PREVIEW_PAGES_PER_GROUP,
+  "DOCS_SITE_PREVIEW_PAGES_PER_GROUP",
+);
+const previewMaxPages = parseOptionalPositiveInt(process.env.DOCS_SITE_PREVIEW_MAX_PAGES, "DOCS_SITE_PREVIEW_MAX_PAGES");
+const previewLocale = process.env.DOCS_SITE_PREVIEW_LOCALE;
+const previewMode = Boolean(previewPagesPerGroup || previewMaxPages || previewLocale);
+const includeElementsFixture = !previewMode || process.env.DOCS_SITE_PREVIEW_INCLUDE_FIXTURE === "1";
 if (!["full", "shell"].includes(artifactMode)) {
   throw new Error(`DOCS_SITE_ARTIFACT_MODE must be full or shell, got ${artifactMode}`);
 }
@@ -46,9 +54,21 @@ fs.rmSync(outDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100
 fs.mkdirSync(outDir, { recursive: true });
 
 const locales = buildLocales(config);
-const pages = [...collectPages(locales), elementsFixturePage()];
-const pageByKey = new Map(pages.map((page) => [pageKey(page.locale, page.slug), page]));
-const navByLocale = new Map(locales.map((locale) => [locale.code, buildNav(locale)]));
+const allPages = [...collectPages(locales), ...(includeElementsFixture ? [elementsFixturePage()] : [])];
+const allPageByKey = new Map(allPages.map((page) => [pageKey(page.locale, page.slug), page]));
+let pages = allPages;
+let pageByKey = new Map(pages.map((page) => [pageKey(page.locale, page.slug), page]));
+let navByLocale = new Map(locales.map((locale) => [locale.code, buildNav(locale)]));
+if (previewMode) {
+  const previewKeys = collectPreviewPageKeys(navByLocale, {
+    locale: previewLocale,
+    maxPages: previewMaxPages,
+    pagesPerGroup: previewPagesPerGroup || 1,
+  });
+  pages = allPages.filter((page) => page.hidden || previewKeys.has(pageKey(page.locale, page.slug)));
+  pageByKey = new Map(pages.map((page) => [pageKey(page.locale, page.slug), page]));
+  navByLocale = new Map(locales.map((locale) => [locale.code, buildNav(locale)]));
+}
 const localeFlags = {
   en: "🇺🇸",
   "zh-CN": "🇨🇳",
@@ -75,16 +95,19 @@ const localePickerLabels = {
 };
 
 copyPublicFiles();
-await renderPageOgCards();
+if (!previewMode) await renderPageOgCards();
 for (const page of pages) writePage(page);
 if (!shellOnly) {
   writeLlmsIndex();
   writeRobotsTxt();
   writeSitemap();
 }
-writeRedirects();
+if (!previewMode) writeRedirects();
 writeStaticAssets();
-console.log(`built ${pages.length} pages in ${path.relative(root, outDir)} (${artifactMode})`);
+const previewLabel = previewMode
+  ? `, preview ${previewPagesPerGroup || 1}/group${previewMaxPages ? ` max ${previewMaxPages}` : ""}${previewLocale ? ` ${previewLocale}` : ""}`
+  : "";
+console.log(`built ${pages.length} pages in ${path.relative(root, outDir)} (${artifactMode}${previewLabel})`);
 
 function buildLocales(docsConfig) {
   const ordered = [];
@@ -99,6 +122,15 @@ function buildLocales(docsConfig) {
     }
   }
   return ordered.filter((locale) => locale.root || fs.existsSync(path.join(docsDir, locale.code)));
+}
+
+function parseOptionalPositiveInt(value, name) {
+  if (value === undefined || value === "") return 0;
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isInteger(parsed) || parsed < 1 || String(parsed) !== String(value).trim()) {
+    throw new Error(`${name} must be a positive integer`);
+  }
+  return parsed;
 }
 
 function collectPages(localeList) {
@@ -185,6 +217,22 @@ function buildNav(locale) {
 function navGroup(locale, group) {
   const pages = flattenPages(locale, group.pages ?? []);
   return pages.length ? { title: group.group ?? "Docs", pages } : null;
+}
+
+function collectPreviewPageKeys(navByLocale, { locale, maxPages, pagesPerGroup }) {
+  const keys = new Set();
+  for (const [navLocale, nav] of navByLocale) {
+    if (locale && navLocale !== locale) continue;
+    for (const tab of nav) {
+      for (const group of tab.groups) {
+        for (const page of flattenNavEntries(group.pages).slice(0, pagesPerGroup)) {
+          keys.add(pageKey(page.locale, page.slug));
+          if (maxPages && keys.size >= maxPages) return keys;
+        }
+      }
+    }
+  }
+  return keys;
 }
 
 function flattenPages(locale, entries) {
@@ -324,7 +372,10 @@ function languagePicker(page) {
   const current = locales.find((locale) => locale.code === page.locale) ?? locales[0];
   const currentLabel = localeDisplayName(current.code);
   const currentFlag = localeFlag(current.code);
-  const options = locales.map((locale) => {
+  const pickerLocales = previewMode
+    ? locales.filter((locale) => locale.code === page.locale || pageByKey.has(pageKey(locale.code, page.slug)))
+    : locales;
+  const options = pickerLocales.map((locale) => {
     const active = locale.code === page.locale;
     return `<a class="language-option${active ? " active" : ""}" role="option" aria-selected="${active ? "true" : "false"}" href="${escapeAttr(localeUrlForSlug(locale.code, page.slug))}" data-locale-option><span class="locale-flag" aria-hidden="true">${escapeHtml(localeFlag(locale.code))}</span><span class="language-name">${escapeHtml(localeDisplayName(locale.code))}</span><span class="language-check" aria-hidden="true">✓</span></a>`;
   }).join("");
@@ -753,8 +804,12 @@ function groupForPage(nav, slug) {
   }
 }
 
+function flattenNavEntries(entries) {
+  return entries.flatMap((entry) => entry.group ? flattenNavEntries(entry.pages) : [entry]);
+}
+
 function flattenNav(nav) {
-  return nav.flatMap((tab) => tab.groups.flatMap((group) => group.pages.flatMap((entry) => entry.group ? entry.pages : [entry])));
+  return nav.flatMap((tab) => tab.groups.flatMap((group) => flattenNavEntries(group.pages)));
 }
 
 function firstPage(tab) {
@@ -766,6 +821,10 @@ function firstPage(tab) {
 
 function localeUrlForSlug(locale, slug) {
   return pageByKey.has(pageKey(locale, slug)) ? pageUrl(pageByKey.get(pageKey(locale, slug))) : publicPath(locale === "en" ? "/" : `/${locale}/`);
+}
+
+function internalPageUrl(page) {
+  return pageByKey.has(pageKey(page.locale, page.slug)) ? pageUrl(page) : `${docsOrigin()}${pageRoute(page)}`;
 }
 
 function pageUrl(page) {
@@ -790,12 +849,14 @@ function rewriteInternalUrls(html, locale) {
     }
     const segments = target.replace(/\/$/, "").split("/");
     const maybeLocale = segments[0];
-    if (pageByKey.has(pageKey(maybeLocale, normalizeSlug(segments.slice(1).join("/") || "index")))) {
-      return `${attr}="${pageUrl(pageByKey.get(pageKey(maybeLocale, normalizeSlug(segments.slice(1).join("/") || "index"))))}${suffix}"`;
+    const localizedSlug = normalizeSlug(segments.slice(1).join("/") || "index");
+    const localizedPage = allPageByKey.get(pageKey(maybeLocale, localizedSlug));
+    if (localizedPage) {
+      return `${attr}="${internalPageUrl(localizedPage)}${suffix}"`;
     }
     const slug = normalizeSlug(target.replace(/\/$/, ""));
-    const page = pageByKey.get(pageKey(locale, slug)) ?? pageByKey.get(pageKey("en", slug));
-    return page ? `${attr}="${pageUrl(page)}${suffix}"` : `${attr}="${publicPath(`/${target}`)}${suffix}"`;
+    const page = allPageByKey.get(pageKey(locale, slug)) ?? allPageByKey.get(pageKey("en", slug));
+    return page ? `${attr}="${internalPageUrl(page)}${suffix}"` : `${attr}="${publicPath(`/${target}`)}${suffix}"`;
   });
 }
 

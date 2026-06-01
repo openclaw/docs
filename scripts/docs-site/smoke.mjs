@@ -494,6 +494,7 @@ const showcase = fs.readFileSync(path.join(site, "start/showcase/index.html"), "
 if (!/href="https:\/\/x\.com\/i\/status\/2010878524543131691"/.test(showcase)) {
   throw new Error("showcase: external card href was not rendered");
 }
+assertEditSourceLinks();
 console.log(`docs site smoke ok: shell, routing, skin, and hidden fixture checks passed (${artifactMode})`);
 
 function assertEditSourceLinks() {

@@ -4,13 +4,16 @@ DOCS_HOST ?= 127.0.0.1
 DOCS_PORT ?= 4173
 DOCS_URL := http://$(DOCS_HOST):$(DOCS_PORT)
 
-.PHONY: docs-build docs-build-shell docs-smoke docs-smoke-shell docs-check docs-check-shell docs-serve docs-elements docs-elements-open docs-health
+.PHONY: docs-build docs-build-shell docs-build-preview docs-smoke docs-smoke-shell docs-check docs-check-shell docs-serve docs-elements docs-elements-open docs-health
 
 docs-build:
 	npm run docs:build:r2
 
 docs-build-shell:
 	npm run docs:build:r2:shell
+
+docs-build-preview:
+	npm run docs:build:preview
 
 docs-smoke:
 	npm run docs:smoke
