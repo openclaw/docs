@@ -1,0 +1,65 @@
+name: Docs Code CI
+
+on:
+  pull_request:
+    paths:
+      - ".github/actionlint.yaml"
+      - ".github/workflows/docs-code-ci.yml"
+      - ".openclaw-sync/check-docs-mdx.mjs"
+      - ".openclaw-sync/lib/**"
+      - "Makefile"
+      - "package.json"
+      - "package-lock.json"
+      - "scripts/cloudflare-cutover-docs-hosts.mjs"
+      - "scripts/docs-site/**"
+      - "workers/**"
+      - "wrangler.toml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-code-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate docs code
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out
+        uses: actions/checkout@v6
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y librsvg2-bin
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Syntax check scripts
+        run: |
+          find scripts .openclaw-sync -name '*.mjs' -print0 \
+            | xargs -0 -n 1 node --check
+
+      - name: Validate Worker bundle
+        run: npx wrangler@4.88.0 deploy --dry-run --config wrangler.toml
+
+      - name: Build shell artifact
+        run: npm run docs:build:r2:shell
+
+      - name: Smoke shell artifact
+        run: npm run docs:smoke:shell
+
+      - name: Visual smoke
+        run: npm run docs:visual
