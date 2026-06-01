@@ -1,9 +1,15 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
+import matter from "gray-matter";
+
+import { localeLabels } from "./config.mjs";
+import { editSourceUrlForPage, frontmatterSourcePath, readSourceMetadata } from "./edit-source.mjs";
 
 const root = process.cwd();
 const site = path.join(root, "dist", "docs-site");
+const docsDir = path.join(root, "docs");
+const sourceMetadata = readSourceMetadata(root);
 const expectedOrigin = (process.env.DOCS_SITE_CANONICAL_ORIGIN
   ?? (process.env.DOCS_SITE_CNAME ? `https://${process.env.DOCS_SITE_CNAME}` : "https://docs.openclaw.ai"))
   .replace(/\/$/, "");
@@ -23,7 +29,8 @@ const required = [
   "de/tools/reactions/index.html",
   "de/gateway/heartbeat/index.html",
   "assets/docs-site.css",
-  "assets/docs-site.js"
+  "assets/docs-site.js",
+  "assets/pixel-lobster.svg"
 ];
 if (!shellOnly) {
   required.push(
@@ -150,19 +157,27 @@ if (!/data-language-picker/.test(index) || !/class="language-option active"[^>]*
 if (!/Português \(BR\)/.test(index)) {
   throw new Error("index: language picker labels were not rendered");
 }
-if (!/data-docs-chat/.test(index) || !/OPENCLAW_DOCS_CHAT_API/.test(index)) {
+if (
+  !/data-docs-chat/.test(index) ||
+  !/OPENCLAW_DOCS_CHAT_API/.test(index) ||
+  !/data-static-src="\/assets\/(?:molty-avatar\.png|pixel-lobster\.svg)"/.test(index) ||
+  !/data-hover-src="\/assets\/(?:molty-avatar-hover\.gif|pixel-lobster\.svg)"/.test(index) ||
+  !/<h2 id="docs-chat-title">Molty<\/h2>/.test(index)
+) {
   throw new Error("index: docs chat widget was not rendered");
 }
 const chatCss = fs.readFileSync(path.join(site, "assets/docs-site.css"), "utf8");
 if (!/data-chat-copy/.test(index)
   || !/data-chat-retry/.test(index)
   || !/data-chat-maximize/.test(index)
+  || !/data-chat-minimize/.test(index)
   || !/docs-chat-empty/.test(index)
   || !/Responses are generated using AI/.test(index)
   || !/data-chat-copy[^>]+hidden/.test(index)
   || !/data-chat-retry[^>]+hidden/.test(index)
-  || !/body\.docs-chat-open/.test(chatCss)
   || !/\.docs-chat\.expanded/.test(chatCss)
+  || !/\.docs-chat\{[^}]*height:min\(680px/.test(chatCss)
+  || !/\.docs-chat-panel\{[^}]*border-radius:16px/.test(chatCss)
   || !/\.docs-chat-panel>\*\{min-width:0;max-width:100%/.test(chatCss)
   || !/\.docs-chat-actions\{[^}]*gap:6px/.test(chatCss)
   || !/\.docs-chat-copy\[data-copy-state\] \.icon\{display:none/.test(chatCss)
@@ -173,10 +188,12 @@ if (!/data-chat-copy/.test(index)
   || !/\.docs-chat:not\(\[data-chat-auth-state="ready"\]\) \.docs-chat-form\{display:none/.test(chatCss)
   || !/\.docs-chat-form textarea:focus\{[^}]*inset 0 0 0 4px/.test(chatCss)
   || !/\.docs-chat-form button\{position:absolute;right:34px;bottom:34px/.test(chatCss)
-  || !/\.docs-chat-auth\{[^}]*padding:22px 22px 16px/.test(chatCss)
+  || !/\.docs-chat-auth\{[^}]*grid-row:4;align-self:end/.test(chatCss)
+  || !/\.docs-chat-github-icon\{[^}]*fill:currentColor/.test(chatCss)
+  || !/\.docs-chat-avatar\{[^}]*border-radius:999px/.test(chatCss)
   || !/\.docs-chat-attach/.test(chatCss)
-  || !/translateX\(0\)/.test(chatCss)) {
-  throw new Error("index: docs chat sidebar controls are missing");
+  || !/translateY\(10px\) scale\(\.985\)/.test(chatCss)) {
+  throw new Error("index: floating docs chat controls are missing");
 }
 if (!/class="hljs-attr">channels<\/span>/.test(index)
   || !/class="hljs-string">&quot;\+15555550123&quot;<\/span>/.test(index)
@@ -208,6 +225,11 @@ if (process.env.DOCS_SITE_CNAME) {
 }
 const siteJs = fs.readFileSync(path.join(site, "assets/docs-site.js"), "utf8");
 const siteCss = fs.readFileSync(path.join(site, "assets/docs-site.css"), "utf8");
+if (!/theme-toggle-icon-dark/.test(index)
+  || !/theme-toggle-icon-light/.test(index)
+  || !/:root\[data-theme="dark"\] \.theme-toggle-icon-dark,:root\[data-theme="light"\] \.theme-toggle-icon-light\{display:grid\}/.test(siteCss)) {
+  throw new Error("assets: theme toggle icon must follow the active color theme");
+}
 if (/\.oc-card:first-child\{border-color:var\(--brand\)/.test(siteCss)) {
   throw new Error("assets: first card is hard-highlighted");
 }
@@ -276,10 +298,13 @@ if (/VPS &amp;amp; hosting/.test(platformsIndex)) {
 }
 const toolsIndex = fs.readFileSync(path.join(site, "tools/index.html"), "utf8");
 if (/class="anchor"/.test(toolsIndex)) {
-  throw new Error("tools index: visible heading permalink anchors should not be rendered");
+  throw new Error("tools index: legacy visible heading permalink anchors should not be rendered");
 }
-if (!/<h2 id="[^"]*choose-tools[^"]*"[^>]*>Choose tools, skills, or plugins<\/h2>/.test(toolsIndex)) {
-  throw new Error("tools index: heading ids should remain without visible # anchors");
+if (!/<h2 id="([^"]*choose-tools[^"]*)"[^>]*>Choose tools, skills, or plugins<button type="button" class="heading-anchor" data-heading-anchor="\1" data-copy-label="Copy link to section" aria-label="Copy link to section">[\s\S]*lucide-link[\s\S]*lucide-check[\s\S]*<\/button><\/h2>/.test(toolsIndex)) {
+  throw new Error("tools index: heading ids should render copy-link buttons");
+}
+if (/<aside class="toc"[\s\S]*Copy link to section/.test(toolsIndex)) {
+  throw new Error("tools index: heading copy controls should not pollute the table of contents");
 }
 if (/\.oc-step:before\{[^}]*background:var\(--brand\)/.test(siteCss)
   || !/\.oc-step:before\{[^}]*background:color-mix\(in srgb,var\(--line-strong\) 78%,var\(--paper\) 22%\)/.test(siteCss)) {
@@ -306,10 +331,17 @@ if (!/\.oc-table-wrap\{[^}]*overflow:auto/.test(siteCss)
   || !/\.oc-cta-link\{[^}]*transition:background \.16s ease,border-color \.16s ease,color \.16s ease,filter \.16s ease/.test(siteCss)
   || !/\.oc-cta-link:hover\{filter:brightness\(1\.04\)\}\.oc-cta-link-primary:hover\{background:color-mix\(in srgb,var\(--brand\) 86%,white 14%\);border-color:color-mix\(in srgb,var\(--brand\) 86%,white 14%\);color:#1b0d08\}\.oc-cta-link-secondary:hover\{background:color-mix\(in srgb,var\(--soft\) 62%,var\(--paper\) 38%\);border-color:color-mix\(in srgb,var\(--brand\) 44%,var\(--line-strong\)\);color:var\(--ink\)\}/.test(siteCss)
   || !/\.oc-tooltip\[data-tip\]:hover:after,\.oc-tooltip\[data-tip\]:focus:after\{[^}]*background:var\(--tooltip-bg\);color:var\(--tooltip-text\)/.test(siteCss)
-  || !/\.oc-card-grid,\.oc-card-group\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/.test(siteCss)
-  || !/\.oc-card-grid\.oc-card-cols-3\{grid-template-columns:repeat\(3,minmax\(0,1fr\)\)\}/.test(siteCss)
   || !/\.oc-pullquote\{[^}]*border-left:3px solid var\(--brand\)/.test(siteCss)) {
   throw new Error("assets: editorial components should keep the docs publishing skin");
+}
+if (!/\.doc\{container-type:inline-size\}/.test(siteCss)
+  || !/\.oc-card-grid,\.oc-card-group\{--oc-card-columns:2;display:grid;grid-template-columns:repeat\(var\(--oc-card-columns\),minmax\(0,1fr\)\)/.test(siteCss)
+  || !/\.oc-card-grid\.oc-card-cols-1,\.oc-card-group\.oc-card-cols-1\{--oc-card-columns:1\}/.test(siteCss)
+  || !/\.oc-card-grid\.oc-card-cols-2,\.oc-card-group\.oc-card-cols-2\{--oc-card-columns:2\}/.test(siteCss)
+  || !/\.oc-card-grid\.oc-card-cols-3,\.oc-card-group\.oc-card-cols-3\{--oc-card-columns:3\}/.test(siteCss)
+  || !/\.oc-card-grid\.oc-card-cols-4,\.oc-card-group\.oc-card-cols-4\{--oc-card-columns:4\}/.test(siteCss)
+  || !/@container \(max-width:520px\)\{\.oc-card-grid,\.oc-card-group\{--oc-card-columns:1\}\}/.test(siteCss)) {
+  throw new Error("assets: card column classes should use explicit column counts with responsive collapse");
 }
 const elementsIndexPath = path.join(site, "__elements/index.html");
 if (!fs.existsSync(elementsIndexPath)) {
@@ -320,7 +352,10 @@ for (const marker of [
   'class="oc-callout oc-callout-tip"',
   'class="oc-callout oc-callout-info"',
   'class="oc-callout oc-callout-warning"',
+  'class="oc-card-grid oc-card-cols-1"',
+  'class="oc-card-grid oc-card-cols-2"',
   'class="oc-card-grid oc-card-cols-3"',
+  'class="oc-card-grid oc-card-cols-4"',
   'class="oc-card"',
   'class="oc-code"',
   'class="oc-code-group"',
@@ -363,6 +398,7 @@ for (const marker of [
   'data-code-copy',
   'class="code-line is-highlighted"',
   'data-prompt-copy',
+  'data-heading-anchor',
   'Shared snippet',
   '<kbd>',
 ]) {
@@ -370,6 +406,9 @@ for (const marker of [
 }
 if (elementsIndex.includes('href="http://SKILL.md"')) {
   throw new Error("__elements: card body should not autolink SKILL.md inside the card anchor");
+}
+if ((elementsIndex.match(/class="oc-card-grid oc-card-cols-4"/g) ?? []).length < 2) {
+  throw new Error("__elements: CardGroup and Columns should both preserve explicit cols attrs");
 }
 if (!/class="article-meta-row"/.test(index)
   || !/class="breadcrumbs"/.test(index)
@@ -380,6 +419,10 @@ if (!/class="article-meta-row"/.test(index)
 if (!/data-page-markdown-url="\/index\.md"/.test(index)
   || !/data-page-markdown-url="\/start\/getting-started\.md"/.test(gettingStarted)) {
   throw new Error("page tools: Copy page should target generated Markdown routes");
+}
+if (!/<script type="application\/json" data-page-markdown>/.test(index)
+  || />"---\\n/.test(index)) {
+  throw new Error("page tools: Copy page should embed frontmatter-free Markdown for synchronous clipboard writes");
 }
 if (!/class="page-actions"/.test(index)
   || !/class="page-actions-primary" data-copy-page/.test(index)
@@ -392,8 +435,8 @@ if (!/class="page-actions"/.test(index)
   || !/Open in Claude/.test(index)
   || !/Open in Perplexity/.test(index)
   || !/https:\/\/chatgpt\.com\/\?hints=search&amp;q=Read%20from%20https%3A%2F%2Fdocs\.openclaw\.ai%2F%20so%20I%20can%20ask%20questions%20about%20it\./.test(index)
-  || !/https:\/\/claude\.ai\/new\?q=Read%20from%20https%3A%2F%2Fdocs\.openclaw\.ai%2F\.md%20so%20I%20can%20ask%20questions%20about%20it\./.test(index)
-  || !/https:\/\/www\.perplexity\.ai\/search\/new\?q=Read%20from%20https%3A%2F%2Fdocs\.openclaw\.ai%2F\.md%20so%20I%20can%20ask%20questions%20about%20it\./.test(index)) {
+  || !/https:\/\/claude\.ai\/new\?q=Read%20from%20https%3A%2F%2Fdocs\.openclaw\.ai%2Findex\.md%20so%20I%20can%20ask%20questions%20about%20it\./.test(index)
+  || !/https:\/\/www\.perplexity\.ai\/search\/new\?q=Read%20from%20https%3A%2F%2Fdocs\.openclaw\.ai%2Findex\.md%20so%20I%20can%20ask%20questions%20about%20it\./.test(index)) {
   throw new Error("page tools: AI action menu links are missing");
 }
 if ((index.match(/class="page-action" href="[^"]+" target="_blank" rel="noreferrer"/g) ?? []).length < 4) {
@@ -405,28 +448,35 @@ if (!/class="page-feedback-links" aria-label="Page source and issue"/.test(index
   || !/https:\/\/github\.com\/openclaw\/openclaw\/issues\/new\?title=Issue%20on%20docs&amp;body=Path%3A%20%2F/.test(index)) {
   throw new Error("page feedback: footer source and issue actions are missing");
 }
+assertEditSourceLinks();
 if (!/function initCodeGroups/.test(siteJs) || !/className="oc-code-tab"/.test(siteJs) || !/preferredCodeTab/.test(siteJs)) {
   throw new Error("assets: code group tabs are missing");
 }
 if (!/function handleDocsControlClick/.test(siteJs) || !/async function copyText/.test(siteJs)) {
   throw new Error("assets: copy and feedback controls are missing");
 }
-if (!/async function copyPageMarkdown/.test(siteJs)
-  || !/function markdownBodyForCopy/.test(siteJs)
+if (!/function copyPageMarkdown/.test(siteJs)
+  || !/function pageMarkdownForCopy/.test(siteJs)
   || !/function setCopyFeedback/.test(siteJs)
-  || !/Copying\.\.\./.test(siteJs)
   || !/document\.execCommand\("copy"\)/.test(siteJs)
   || !/\.page-actions-more\[open\]/.test(siteJs)
   || !/menu\.removeAttribute\("open"\)/.test(siteJs)
-  || !/fetch\(markdownUrl,\{credentials:"same-origin",headers:\{"Accept":"text\/markdown"\}\}\)/.test(siteJs)
+  || /fetch\(markdownUrl/.test(siteJs)
   || /dataset\.pageUrl\|\|location\.href/.test(siteJs)) {
-  throw new Error("assets: Copy page should fetch Markdown content instead of copying the URL");
+  throw new Error("assets: Copy page should copy embedded Markdown content instead of copying the URL");
 }
-if (!/Nothing to copy/.test(siteJs) || !/data-chat-copy/.test(siteJs)) {
+if (!/Nothing to copy/.test(siteJs) || !/data-chat-copy/.test(siteJs) || !/data-heading-anchor/.test(siteJs)) {
   throw new Error("assets: chat copy feedback is missing");
 }
 if (!/function showCopyFeedback/.test(siteJs) || !/data-copy-label="Copy code"/.test(elementsIndex)) {
   throw new Error("assets: code copy controls should use stateful icon feedback");
+}
+if (!/\.heading-anchor\{[^}]*opacity:0/.test(siteCss)
+  || !/\.doc :is\(h1,h2,h3,h4,h5,h6\):hover \.heading-anchor/.test(siteCss)
+  || !/\.heading-anchor:focus-visible/.test(siteCss)
+  || !/\.heading-anchor \.heading-anchor-icon/.test(siteCss)
+  || !/\.heading-anchor\[data-copy-state="copied"\] \.heading-anchor-check/.test(siteCss)) {
+  throw new Error("assets: heading copy anchor skin is missing");
 }
 if (!/\.oc-code figcaption button:before/.test(siteCss)
   || !/\.oc-code figcaption button:after/.test(siteCss)
@@ -486,4 +536,106 @@ const showcase = fs.readFileSync(path.join(site, "start/showcase/index.html"), "
 if (!/href="https:\/\/x\.com\/i\/status\/2010878524543131691"/.test(showcase)) {
   throw new Error("showcase: external card href was not rendered");
 }
+assertEditSourceLinks();
 console.log(`docs site smoke ok: shell, routing, skin, and hidden fixture checks passed (${artifactMode})`);
+
+function assertEditSourceLinks() {
+  const htmlFiles = walkHtml(site);
+  let checked = 0;
+  let missingEdit = 0;
+  for (const file of htmlFiles) {
+    const rel = path.relative(site, file).replaceAll(path.sep, "/");
+    const html = fs.readFileSync(file, "utf8");
+    if (rel === "__elements/index.html") {
+      if (/data-page-tools|Edit source/.test(html)) {
+        throw new Error("__elements: hidden component fixture should not expose page tools");
+      }
+      continue;
+    }
+
+    const tools = html.match(/<div class="page-tools"[\s\S]*?<\/div>/u)?.[0];
+    if (!tools) continue;
+    checked += 1;
+    const editSurface = html.match(/<nav class="page-feedback-links"[\s\S]*?<\/nav>/u)?.[0] ?? "";
+
+    const page = pageForRenderedHtml(rel);
+    if (!page) {
+      if (/Edit source/.test(editSurface)) throw new Error(`${rel}: edit source link has no canonical source page`);
+      missingEdit += 1;
+      continue;
+    }
+
+    const expected = editSourceUrlForPage(page, sourceMetadata);
+    const actual = editSurface.match(/<a href="([^"]+)">Edit source<\/a>/u)?.[1] ?? "";
+    if (!expected) {
+      if (actual) throw new Error(`${rel}: unexpected edit source link ${actual}`);
+      missingEdit += 1;
+      continue;
+    }
+    if (actual !== expected) {
+      throw new Error(`${rel}: edit source link ${actual || "(missing)"} should be ${expected}`);
+    }
+  }
+
+  if (checked < 100) {
+    throw new Error(`edit source audit: expected many rendered page tools, checked ${checked}`);
+  }
+
+  assertEditSourceSample("clawhub/index.html", "https://github.com/openclaw/clawhub/edit/main/docs/clawhub.md");
+  assertEditSourceSample("clawhub/publishing/index.html", "https://github.com/openclaw/clawhub/edit/main/docs/publishing.md");
+  assertEditSourceSample("ar/clawhub/publishing/index.html", "https://github.com/openclaw/clawhub/edit/main/docs/publishing.md");
+  assertEditSourceSample("de/channels/index.html", "https://github.com/openclaw/openclaw/edit/main/docs/channels/index.md");
+  if (missingEdit > 0) {
+    console.log(`edit source audit: ${missingEdit} page tool(s) intentionally have no edit source link`);
+  }
+}
+
+function assertEditSourceSample(rel, expected) {
+  const file = path.join(site, rel);
+  if (!fs.existsSync(file)) {
+    throw new Error(`edit source audit: missing sample ${rel}`);
+  }
+  const html = fs.readFileSync(file, "utf8");
+  if (!html.includes(`href="${expected}"`)) {
+    throw new Error(`${rel}: expected edit source link ${expected}`);
+  }
+}
+
+function pageForRenderedHtml(htmlRel) {
+  const segments = htmlRel.split("/");
+  if (segments.at(-1) !== "index.html") return null;
+  segments.pop();
+
+  const locale = localeLabels[segments[0]] ? segments.shift() : "en";
+  const route = segments.join("/");
+  const base = locale === "en" ? docsDir : path.join(docsDir, locale);
+  const sourceFile = findSourcePageFile(base, route);
+  if (!sourceFile) return null;
+
+  const raw = fs.readFileSync(sourceFile, "utf8");
+  const parsed = matter(raw);
+  return {
+    rel: path.relative(base, sourceFile).replaceAll(path.sep, "/"),
+    sourcePath: frontmatterSourcePath(parsed.data),
+  };
+}
+
+function findSourcePageFile(base, route) {
+  const candidates = route
+    ? [`${route}/index.md`, `${route}/index.mdx`, `${route}.md`, `${route}.mdx`]
+    : ["index.md", "index.mdx"];
+  for (const candidate of candidates) {
+    const file = path.join(base, candidate);
+    if (fs.existsSync(file)) return file;
+  }
+  return "";
+}
+
+function walkHtml(dir) {
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) return walkHtml(full);
+    return entry.isFile() && entry.name.endsWith(".html") ? [full] : [];
+  });
+}

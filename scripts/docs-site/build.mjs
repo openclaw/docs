@@ -8,6 +8,7 @@ import matter from "gray-matter";
 import { ignoredDocDirs, ignoredDocFiles, localeLabels, mintlifyLocaleToDir, rtlLocales } from "./config.mjs";
 import { siteCss, siteJs } from "./assets.mjs";
 import { createMarkdownRenderer, renderMdxish } from "./mdx-ish.mjs";
+import { editSourceUrlForPage, frontmatterSourcePath, readSourceMetadata } from "./edit-source.mjs";
 import { elementsFixture } from "./elements-fixture.mjs";
 import { renderPageOgSvg } from "./og-card-template.mjs";
 
@@ -16,6 +17,7 @@ const docsDir = path.join(root, "docs");
 const siteAssetsDir = path.join(root, "scripts", "docs-site");
 const outDir = path.join(root, "dist", "docs-site");
 const config = JSON.parse(fs.readFileSync(path.join(docsDir, "docs.json"), "utf8"));
+const sourceMetadata = readSourceMetadata(root);
 const md = createMarkdownRenderer();
 const basePath = normalizeBasePath(process.env.DOCS_SITE_BASE_PATH ?? "");
 const legacyBasePath = normalizeBasePath(process.env.DOCS_SITE_LEGACY_BASE_PATH ?? "/docs");
@@ -37,6 +39,14 @@ const defaultShellAssetVersion = createHash("sha256")
 const shellAssetVersion = process.env.DOCS_SITE_SHELL_ASSET_VERSION ?? defaultShellAssetVersion;
 const artifactMode = process.env.DOCS_SITE_ARTIFACT_MODE ?? "full";
 const shellOnly = artifactMode === "shell";
+const previewPagesPerGroup = parseOptionalPositiveInt(
+  process.env.DOCS_SITE_PREVIEW_PAGES_PER_GROUP,
+  "DOCS_SITE_PREVIEW_PAGES_PER_GROUP",
+);
+const previewMaxPages = parseOptionalPositiveInt(process.env.DOCS_SITE_PREVIEW_MAX_PAGES, "DOCS_SITE_PREVIEW_MAX_PAGES");
+const previewLocale = process.env.DOCS_SITE_PREVIEW_LOCALE;
+const previewMode = Boolean(previewPagesPerGroup || previewMaxPages || previewLocale);
+const includeElementsFixture = !previewMode || process.env.DOCS_SITE_PREVIEW_INCLUDE_FIXTURE === "1";
 if (!["full", "shell"].includes(artifactMode)) {
   throw new Error(`DOCS_SITE_ARTIFACT_MODE must be full or shell, got ${artifactMode}`);
 }
@@ -44,9 +54,21 @@ fs.rmSync(outDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100
 fs.mkdirSync(outDir, { recursive: true });
 
 const locales = buildLocales(config);
-const pages = [...collectPages(locales), elementsFixturePage()];
-const pageByKey = new Map(pages.map((page) => [pageKey(page.locale, page.slug), page]));
-const navByLocale = new Map(locales.map((locale) => [locale.code, buildNav(locale)]));
+const allPages = [...collectPages(locales), ...(includeElementsFixture ? [elementsFixturePage()] : [])];
+const allPageByKey = new Map(allPages.map((page) => [pageKey(page.locale, page.slug), page]));
+let pages = allPages;
+let pageByKey = new Map(pages.map((page) => [pageKey(page.locale, page.slug), page]));
+let navByLocale = new Map(locales.map((locale) => [locale.code, buildNav(locale)]));
+if (previewMode) {
+  const previewKeys = collectPreviewPageKeys(navByLocale, {
+    locale: previewLocale,
+    maxPages: previewMaxPages,
+    pagesPerGroup: previewPagesPerGroup || 1,
+  });
+  pages = allPages.filter((page) => page.hidden || previewKeys.has(pageKey(page.locale, page.slug)));
+  pageByKey = new Map(pages.map((page) => [pageKey(page.locale, page.slug), page]));
+  navByLocale = new Map(locales.map((locale) => [locale.code, buildNav(locale)]));
+}
 const localeFlags = {
   en: "🇺🇸",
   "zh-CN": "🇨🇳",
@@ -73,16 +95,19 @@ const localePickerLabels = {
 };
 
 copyPublicFiles();
-await renderPageOgCards();
+if (!previewMode) await renderPageOgCards();
 for (const page of pages) writePage(page);
 if (!shellOnly) {
   writeLlmsIndex();
   writeRobotsTxt();
   writeSitemap();
 }
-writeRedirects();
+if (!previewMode) writeRedirects();
 writeStaticAssets();
-console.log(`built ${pages.length} pages in ${path.relative(root, outDir)} (${artifactMode})`);
+const previewLabel = previewMode
+  ? `, preview ${previewPagesPerGroup || 1}/group${previewMaxPages ? ` max ${previewMaxPages}` : ""}${previewLocale ? ` ${previewLocale}` : ""}`
+  : "";
+console.log(`built ${pages.length} pages in ${path.relative(root, outDir)} (${artifactMode}${previewLabel})`);
 
 function buildLocales(docsConfig) {
   const ordered = [];
@@ -97,6 +122,15 @@ function buildLocales(docsConfig) {
     }
   }
   return ordered.filter((locale) => locale.root || fs.existsSync(path.join(docsDir, locale.code)));
+}
+
+function parseOptionalPositiveInt(value, name) {
+  if (value === undefined || value === "") return 0;
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isInteger(parsed) || parsed < 1 || String(parsed) !== String(value).trim()) {
+    throw new Error(`${name} must be a positive integer`);
+  }
+  return parsed;
 }
 
 function collectPages(localeList) {
@@ -116,6 +150,7 @@ function collectPages(localeList) {
         slug,
         file,
         rel,
+        sourcePath: frontmatterSourcePath(parsed.data),
         raw,
         title,
         summary: parsed.data.summary ?? "",
@@ -182,6 +217,22 @@ function buildNav(locale) {
 function navGroup(locale, group) {
   const pages = flattenPages(locale, group.pages ?? []);
   return pages.length ? { title: group.group ?? "Docs", pages } : null;
+}
+
+function collectPreviewPageKeys(navByLocale, { locale, maxPages, pagesPerGroup }) {
+  const keys = new Set();
+  for (const [navLocale, nav] of navByLocale) {
+    if (locale && navLocale !== locale) continue;
+    for (const tab of nav) {
+      for (const group of tab.groups) {
+        for (const page of flattenNavEntries(group.pages).slice(0, pagesPerGroup)) {
+          keys.add(pageKey(page.locale, page.slug));
+          if (maxPages && keys.size >= maxPages) return keys;
+        }
+      }
+    }
+  }
+  return keys;
 }
 
 function flattenPages(locale, entries) {
@@ -269,6 +320,7 @@ ${sidebar(page, nav, activeTab)}
 <article class="article">
 <header class="article-header">
 ${articleMeta(page, nav)}
+${page.hidden ? "" : pageMarkdownScript(page)}
 <p class="article-kicker">${escapeHtml(groupForPage(nav, page.slug) ?? activeTab)}</p>
 <h1>${escapeHtml(page.title)}</h1>
 ${pageStatus(page)}
@@ -301,7 +353,7 @@ function siteHeader(page, nav, activeTab) {
 <div class="header-row">
 <div class="header-left"><a class="brand" href="${pageUrl(pageByKey.get(pageKey(page.locale, "index")) ?? page)}"><img src="${publicPath("/assets/pixel-lobster.svg")}" alt=""></a>${languagePicker(page)}</div>
 <button class="search-button" type="button" data-search-open>${icon("search")}<span class="search-label">Search...</span><span class="search-shortcut">⌘K</span></button>
-<nav class="header-links">${topLink("GitHub", "https://github.com/openclaw/openclaw", "github")}${topLink("Releases", "https://github.com/openclaw/openclaw/releases", "package")}${topLink("Discord", "https://discord.com/invite/clawd", "discord")}<button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme">${icon("moon")}</button></nav>
+<nav class="header-links">${topLink("GitHub", "https://github.com/openclaw/openclaw", "github")}${topLink("Releases", "https://github.com/openclaw/openclaw/releases", "package")}${topLink("Discord", "https://discord.com/invite/clawd", "discord")}<button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme"><span class="theme-toggle-icon theme-toggle-icon-dark">${icon("moon")}</span><span class="theme-toggle-icon theme-toggle-icon-light">${icon("sun")}</span></button></nav>
 <button class="nav-toggle" type="button" data-nav-toggle>Menu</button>
 </div>
 <nav class="tabs">${tabs}<span class="tab-underline" aria-hidden="true"></span></nav>
@@ -320,7 +372,10 @@ function languagePicker(page) {
   const current = locales.find((locale) => locale.code === page.locale) ?? locales[0];
   const currentLabel = localeDisplayName(current.code);
   const currentFlag = localeFlag(current.code);
-  const options = locales.map((locale) => {
+  const pickerLocales = previewMode
+    ? locales.filter((locale) => locale.code === page.locale || pageByKey.has(pageKey(locale.code, page.slug)))
+    : locales;
+  const options = pickerLocales.map((locale) => {
     const active = locale.code === page.locale;
     return `<a class="language-option${active ? " active" : ""}" role="option" aria-selected="${active ? "true" : "false"}" href="${escapeAttr(localeUrlForSlug(locale.code, page.slug))}" data-locale-option><span class="locale-flag" aria-hidden="true">${escapeHtml(localeFlag(locale.code))}</span><span class="language-name">${escapeHtml(localeDisplayName(locale.code))}</span><span class="language-check" aria-hidden="true">✓</span></a>`;
   }).join("");
@@ -353,13 +408,18 @@ function articleMeta(page, nav) {
 function breadcrumbs(page, nav) {
   if (page.hidden) return "";
   const activeTab = activeTabTitle(nav, page.slug);
+  const activeTabEntry = nav.find((tab) => tab.title === activeTab);
+  const activeTabPage = activeTabEntry ? firstPage(activeTabEntry) : null;
   const group = groupForPage(nav, page.slug);
-  const parts = [activeTab, group, page.title].filter(Boolean);
+  const parts = [
+    activeTab && activeTabPage
+      ? `<a href="${escapeAttr(pageUrl(activeTabPage))}">${escapeHtml(activeTab)}</a>`
+      : activeTab ? `<span>${escapeHtml(activeTab)}</span>` : "",
+    group ? `<span>${escapeHtml(group)}</span>` : "",
+    `<span aria-current="page">${escapeHtml(page.title)}</span>`,
+  ].filter(Boolean);
   return parts.length > 1
-    ? `<nav class="breadcrumbs" aria-label="Breadcrumb">${parts.map((part, index) => {
-      const last = index === parts.length - 1;
-      return last ? `<span aria-current="page">${escapeHtml(part)}</span>` : `<span>${escapeHtml(part)}</span>`;
-    }).join("<span aria-hidden=\"true\">/</span>")}</nav>`
+    ? `<nav class="breadcrumbs" aria-label="Breadcrumb">${parts.join("<span aria-hidden=\"true\">/</span>")}</nav>`
     : "";
 }
 
@@ -379,6 +439,17 @@ function pageActionLink(title, description, href, iconName) {
 function assistantUrl(baseUrl, extraQuery, prompt) {
   const query = [extraQuery, `q=${encodeURIComponent(prompt)}`].filter(Boolean).join("&");
   return `${baseUrl}?${query}`;
+}
+
+function pageMarkdownScript(page) {
+  return `<script type="application/json" data-page-markdown>${jsonScript(markdownBodyForCopy(page.raw))}</script>`;
+}
+
+function markdownBodyForCopy(markdown) {
+  const text = String(markdown || "");
+  const frontmatter = /^\uFEFF?---\r?\n([\s\S]*?)\r?\n---\r?\n?/.exec(text);
+  if (!frontmatter || !/(^|\n)[A-Za-z0-9_-]+:\s*/.test(frontmatter[1])) return text;
+  return text.slice(frontmatter[0].length).replace(/^\s*\n/, "");
 }
 
 function pageStatus(page) {
@@ -410,13 +481,16 @@ function icon(name) {
   const paths = {
     "search": '<path d="m21 21-4.35-4.35"/><circle cx="11" cy="11" r="7"/>',
     "package": '<path d="m21 8-9-5-9 5 9 5 9-5Z"/><path d="m3 8 9 5 9-5"/><path d="M12 22V13"/><path d="m3 8v8l9 6 9-6V8"/>',
-    "moon": '<path d="M20.9 13.5a8.5 8.5 0 0 1-10.4-10.4 8.5 8.5 0 1 0 10.4 10.4Z"/>',
+    "moon": '<path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/>',
+    "sun": '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
     "chevron-down": '<path d="m6 9 6 6 6-6"/>',
     "copy": '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
     "file-text": '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/>',
     "message-circle": '<path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5Z"/>',
     "bot": '<path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M9 13v2"/><path d="M15 13v2"/><path d="M9 18h6"/>',
     "maximize-2": '<path d="M15 3h6v6"/><path d="m21 3-7 7"/><path d="M9 21H3v-6"/><path d="m3 21 7-7"/>',
+    "minimize-2": '<path d="m14 10 7-7"/><path d="M20 10h-6V4"/><path d="m3 21 7-7"/><path d="M4 14h6v6"/>',
+    "minus": '<path d="M5 12h14"/>',
     "refresh-cw": '<path d="M21 12a9 9 0 0 1-15.1 6.64"/><path d="M3 12A9 9 0 0 1 18.1 5.36"/><path d="M21 3v6h-6"/><path d="M3 21v-6h6"/>',
     "sparkles": '<path d="m12 3-1.6 4.4L6 9l4.4 1.6L12 15l1.6-4.4L18 9l-4.4-1.6L12 3Z"/><path d="m19 14-.8 2.2L16 17l2.2.8L19 20l.8-2.2L22 17l-2.2-.8L19 14Z"/><path d="m5 4-.7 1.8L2.5 6.5l1.8.7L5 9l.7-1.8 1.8-.7-1.8-.7L5 4Z"/>',
     "send": '<path d="m22 2-7 20-4-9-9-4 20-7Z"/><path d="M22 2 11 13"/>',
@@ -455,8 +529,9 @@ function pager(prev, next) {
 }
 
 function pageFeedback(page) {
-  const editUrl = `https://github.com/openclaw/openclaw/edit/main/docs/${page.rel}`;
-  return `<section class="page-feedback" aria-label="Page feedback"><span>Was this useful?</span><button type="button" data-feedback-value="yes">Yes</button><button type="button" data-feedback-value="no">No</button><output data-feedback-result></output><nav class="page-feedback-links" aria-label="Page source and issue"><a href="${escapeAttr(editUrl)}">Edit source</a><a href="${escapeAttr(raiseIssueUrl(page))}">Raise issue</a></nav></section>`;
+  const editUrl = editSourceUrlForPage(page, sourceMetadata);
+  const editLink = editUrl ? `<a href="${escapeAttr(editUrl)}">Edit source</a>` : "";
+  return `<section class="page-feedback" aria-label="Page feedback"><span>Was this useful?</span><button type="button" data-feedback-value="yes">Yes</button><button type="button" data-feedback-value="no">No</button><output data-feedback-result></output><nav class="page-feedback-links" aria-label="Page source and issue">${editLink}<a href="${escapeAttr(raiseIssueUrl(page))}">Raise issue</a></nav></section>`;
 }
 
 function raiseIssueUrl(page) {
@@ -565,12 +640,23 @@ function docsOrigin() {
   return (canonicalOrigin || "https://docs.openclaw.ai").replace(/\/$/, "");
 }
 
+function chatAvatarAssets() {
+  const staticPath = fs.existsSync(path.join(docsDir, "assets", "molty-avatar.png"))
+    ? "/assets/molty-avatar.png"
+    : "/assets/pixel-lobster.svg";
+  const hoverPath = fs.existsSync(path.join(docsDir, "assets", "molty-avatar-hover.gif"))
+    ? "/assets/molty-avatar-hover.gif"
+    : staticPath;
+  return { staticPath: publicPath(staticPath), hoverPath: publicPath(hoverPath) };
+}
+
 function chatWidget() {
   if (!chatApiUrl) return "";
+  const avatar = chatAvatarAssets();
   return `<section class="docs-chat" data-docs-chat aria-label="OpenClaw docs assistant">
-<button class="docs-chat-launcher" type="button" data-chat-toggle aria-expanded="false" aria-controls="docs-chat-panel"><span aria-hidden="true">*</span><span>Ask Molty</span></button>
+<button class="docs-chat-launcher" type="button" data-chat-toggle aria-expanded="false" aria-controls="docs-chat-panel"><img class="docs-chat-avatar" src="${avatar.staticPath}" data-static-src="${avatar.staticPath}" data-hover-src="${avatar.hoverPath}" alt=""><span>Ask Molty</span></button>
 <div class="docs-chat-panel" id="docs-chat-panel" data-chat-panel role="dialog" aria-modal="false" aria-labelledby="docs-chat-title" aria-hidden="true" inert>
-<header class="docs-chat-head"><div class="docs-chat-title"><span class="docs-chat-mark" aria-hidden="true">${icon("sparkles")}</span><h2 id="docs-chat-title">Assistant</h2></div><div class="docs-chat-actions"><button class="docs-chat-icon docs-chat-maximize" type="button" data-chat-maximize aria-label="Maximize docs assistant" aria-pressed="false">${icon("maximize-2")}</button><button class="docs-chat-icon docs-chat-copy" type="button" data-chat-copy aria-label="Copy conversation" hidden>${icon("copy")}</button><button class="docs-chat-icon docs-chat-retry" type="button" data-chat-retry aria-label="Reload last answer" hidden disabled>${icon("refresh-cw")}</button><button class="docs-chat-icon docs-chat-clear" type="button" data-chat-clear aria-label="Clear conversation" hidden>${icon("trash")}</button><button class="docs-chat-icon docs-chat-close" type="button" data-chat-close aria-label="Close docs assistant">x</button></div></header>
+<header class="docs-chat-head"><div class="docs-chat-title"><img class="docs-chat-avatar" src="${avatar.staticPath}" data-static-src="${avatar.staticPath}" data-hover-src="${avatar.hoverPath}" alt=""><h2 id="docs-chat-title">Molty</h2></div><div class="docs-chat-actions"><button class="docs-chat-icon docs-chat-maximize" type="button" data-chat-maximize aria-label="Maximize docs assistant" aria-pressed="false">${icon("maximize-2")}</button><button class="docs-chat-icon docs-chat-copy" type="button" data-chat-copy aria-label="Copy conversation" hidden>${icon("copy")}</button><button class="docs-chat-icon docs-chat-retry" type="button" data-chat-retry aria-label="Reload last answer" hidden disabled>${icon("refresh-cw")}</button><button class="docs-chat-icon docs-chat-clear" type="button" data-chat-clear aria-label="Clear conversation" hidden>${icon("trash")}</button><button class="docs-chat-icon docs-chat-minimize" type="button" data-chat-minimize aria-label="Minimize docs assistant">${icon("minus")}</button></div></header>
 <div class="docs-chat-auth" data-chat-auth hidden></div>
 <div class="docs-chat-log" data-chat-log aria-live="polite">
 <div class="docs-chat-empty">Responses are generated using AI and may contain mistakes.</div>
@@ -760,8 +846,12 @@ function groupForPage(nav, slug) {
   }
 }
 
+function flattenNavEntries(entries) {
+  return entries.flatMap((entry) => entry.group ? flattenNavEntries(entry.pages) : [entry]);
+}
+
 function flattenNav(nav) {
-  return nav.flatMap((tab) => tab.groups.flatMap((group) => group.pages.flatMap((entry) => entry.group ? entry.pages : [entry])));
+  return nav.flatMap((tab) => tab.groups.flatMap((group) => flattenNavEntries(group.pages)));
 }
 
 function firstPage(tab) {
@@ -773,6 +863,10 @@ function firstPage(tab) {
 
 function localeUrlForSlug(locale, slug) {
   return pageByKey.has(pageKey(locale, slug)) ? pageUrl(pageByKey.get(pageKey(locale, slug))) : publicPath(locale === "en" ? "/" : `/${locale}/`);
+}
+
+function internalPageUrl(page) {
+  return pageByKey.has(pageKey(page.locale, page.slug)) ? pageUrl(page) : `${docsOrigin()}${pageRoute(page)}`;
 }
 
 function pageUrl(page) {
@@ -797,12 +891,14 @@ function rewriteInternalUrls(html, locale) {
     }
     const segments = target.replace(/\/$/, "").split("/");
     const maybeLocale = segments[0];
-    if (pageByKey.has(pageKey(maybeLocale, normalizeSlug(segments.slice(1).join("/") || "index")))) {
-      return `${attr}="${pageUrl(pageByKey.get(pageKey(maybeLocale, normalizeSlug(segments.slice(1).join("/") || "index"))))}${suffix}"`;
+    const localizedSlug = normalizeSlug(segments.slice(1).join("/") || "index");
+    const localizedPage = allPageByKey.get(pageKey(maybeLocale, localizedSlug));
+    if (localizedPage) {
+      return `${attr}="${internalPageUrl(localizedPage)}${suffix}"`;
     }
     const slug = normalizeSlug(target.replace(/\/$/, ""));
-    const page = pageByKey.get(pageKey(locale, slug)) ?? pageByKey.get(pageKey("en", slug));
-    return page ? `${attr}="${pageUrl(page)}${suffix}"` : `${attr}="${publicPath(`/${target}`)}${suffix}"`;
+    const page = allPageByKey.get(pageKey(locale, slug)) ?? allPageByKey.get(pageKey("en", slug));
+    return page ? `${attr}="${internalPageUrl(page)}${suffix}"` : `${attr}="${publicPath(`/${target}`)}${suffix}"`;
   });
 }
 
@@ -892,4 +988,11 @@ function escapeAttr(value) {
 
 function escapeXml(value) {
   return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&apos;");
+}
+
+function jsonScript(value) {
+  return JSON.stringify(value)
+    .replaceAll("<", "\\u003c")
+    .replaceAll(">", "\\u003e")
+    .replaceAll("&", "\\u0026");
 }

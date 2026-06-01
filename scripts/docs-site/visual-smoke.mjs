@@ -110,6 +110,58 @@ async function checkDesktop() {
     || componentSkin.codeLineGap > 3) {
     throw new Error(`desktop component skin failed: ${JSON.stringify(componentSkin)}`);
   }
+  const cardGrids = await page.evaluate(() => {
+    const countColumns = (grid) => {
+      const cards = [...grid.querySelectorAll(":scope > .oc-card")];
+      const firstTop = cards[0]?.getBoundingClientRect().top ?? 0;
+      return cards.filter((card) => Math.abs(card.getBoundingClientRect().top - firstTop) < 2).length;
+    };
+    return Object.fromEntries([1, 2, 3, 4].map((cols) => {
+      const grids = [...document.querySelectorAll(`.oc-card-grid.oc-card-cols-${cols}`)];
+      return [cols, grids.map((grid) => ({
+        columns: countColumns(grid),
+        template: getComputedStyle(grid).gridTemplateColumns,
+        width: grid.getBoundingClientRect().width,
+      }))];
+    }));
+  });
+  const expectedCardColumns = (requested, width) => {
+    if (width <= 520) return 1;
+    if (requested === 4 && width <= 720) return 2;
+    if (requested === 3 && width <= 620) return 2;
+    return requested;
+  };
+  if ([1, 2, 3, 4].some((requested) =>
+    !cardGrids[String(requested)]?.length
+      || !cardGrids[String(requested)].every((grid) => grid.columns === expectedCardColumns(requested, grid.width))
+  )
+    || (cardGrids["4"] ?? []).length < 2) {
+    throw new Error(`desktop card column contract failed: ${JSON.stringify(cardGrids)}`);
+  }
+  await page.setViewportSize({ width: 1900, height: 1000 });
+  await page.goto(`${base}/__elements`, { waitUntil: "networkidle" });
+  const wideCardGrids = await page.evaluate(() => {
+    const countColumns = (grid) => {
+      const cards = [...grid.querySelectorAll(":scope > .oc-card")];
+      const firstTop = cards[0]?.getBoundingClientRect().top ?? 0;
+      return cards.filter((card) => Math.abs(card.getBoundingClientRect().top - firstTop) < 2).length;
+    };
+    return Object.fromEntries([1, 2, 3, 4].map((cols) => {
+      const grids = [...document.querySelectorAll(`.oc-card-grid.oc-card-cols-${cols}`)];
+      return [cols, grids.map((grid) => ({
+        columns: countColumns(grid),
+        width: grid.getBoundingClientRect().width,
+      }))];
+    }));
+  });
+  if (wideCardGrids["1"]?.[0]?.columns !== 1
+    || wideCardGrids["2"]?.[0]?.columns !== 2
+    || wideCardGrids["3"]?.[0]?.columns !== 3
+    || (wideCardGrids["4"] ?? []).length < 2
+    || !wideCardGrids["4"].every((grid) => grid.columns === 4)) {
+    throw new Error(`wide desktop card column contract failed: ${JSON.stringify(wideCardGrids)}`);
+  }
+  await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(`${base}/`, { waitUntil: "networkidle" });
   await expectVisible(page, ".page-tools [data-copy-page]", "copy page tool");
   await expectVisible(page, ".page-feedback [data-feedback-value='yes']", "page feedback");
@@ -134,34 +186,34 @@ async function checkDesktop() {
     throw new Error(`search shortcut keycap failed: ${JSON.stringify(searchShortcut)}`);
   }
   await page.waitForTimeout(350);
-  const initialChatSidebar = await page.evaluate(() => {
+  const initialFloatingChat = await page.evaluate(() => {
     const chat = document.querySelector(".docs-chat");
     const panel = document.querySelector(".docs-chat-panel");
+    const main = document.querySelector(".main");
     const panelStyle = panel ? getComputedStyle(panel) : null;
     return {
       open: chat?.classList.contains("open"),
-      bodyOpen: document.body.classList.contains("docs-chat-open"),
       panelDisplay: panelStyle?.display,
       panelOpacity: panelStyle?.opacity,
       panelTransform: panelStyle?.transform,
       panelInert: panel?.hasAttribute("inert"),
       panelAriaHidden: panel?.getAttribute("aria-hidden"),
       bodyPaddingRight: getComputedStyle(document.body).paddingRight,
+      mainRight: main?.getBoundingClientRect().right,
     };
   });
-  if (initialChatSidebar.open
-    || initialChatSidebar.bodyOpen
-    || initialChatSidebar.panelDisplay !== "grid"
-    || initialChatSidebar.panelOpacity !== "0"
-    || initialChatSidebar.panelTransform === "none"
-    || !initialChatSidebar.panelInert
-    || initialChatSidebar.panelAriaHidden !== "true"
-    || parseFloat(initialChatSidebar.bodyPaddingRight ?? "0") !== 0) {
-    throw new Error(`initial desktop chat sidebar should be closed: ${JSON.stringify(initialChatSidebar)}`);
+  if (initialFloatingChat.open
+    || initialFloatingChat.panelDisplay !== "grid"
+    || initialFloatingChat.panelOpacity !== "0"
+    || initialFloatingChat.panelTransform === "none"
+    || !initialFloatingChat.panelInert
+    || initialFloatingChat.panelAriaHidden !== "true"
+    || parseFloat(initialFloatingChat.bodyPaddingRight ?? "0") !== 0) {
+    throw new Error(`initial floating chat should be minimized: ${JSON.stringify(initialFloatingChat)}`);
   }
   await page.click("[data-chat-toggle]");
   await page.waitForTimeout(350);
-  const chatSidebar = await page.evaluate(() => {
+  const floatingChat = await page.evaluate(() => {
     const chat = document.querySelector(".docs-chat");
     const panel = document.querySelector(".docs-chat-panel");
     const main = document.querySelector(".main");
@@ -174,13 +226,12 @@ async function checkDesktop() {
     const panelStyle = panel ? getComputedStyle(panel) : null;
     return {
       open: chat?.classList.contains("open"),
-      bodyOpen: document.body.classList.contains("docs-chat-open"),
       bodyPaddingRight: getComputedStyle(document.body).paddingRight,
       panelDisplay: panelStyle?.display,
       panelOpacity: panelStyle?.opacity,
       panelTransform: panelStyle?.transform,
       panelRight: panelRect ? Math.round(innerWidth - panelRect.right) : null,
-      panelTop: panelRect?.top,
+      panelBottom: panelRect ? Math.round(innerHeight - panelRect.bottom) : null,
       panelHeight: panelRect?.height,
       panelWidth: panelRect?.width,
       panelInert: panel?.hasAttribute("inert"),
@@ -193,28 +244,29 @@ async function checkDesktop() {
       maximizePressed: maximize?.getAttribute("aria-pressed"),
     };
   });
-  if (!chatSidebar.open
-    || !chatSidebar.bodyOpen
-    || chatSidebar.panelDisplay !== "grid"
-    || chatSidebar.panelOpacity !== "1"
-    || chatSidebar.panelRight !== 0
-    || chatSidebar.panelTop !== 0
-    || chatSidebar.panelHeight < 900
-    || chatSidebar.panelWidth < 340
-    || chatSidebar.panelInert
-    || chatSidebar.panelAriaHidden !== "false"
-    || chatSidebar.chatWidth < 340
-    || parseFloat(chatSidebar.bodyPaddingRight ?? "0") < 340
-    || chatSidebar.mainRight > 1120
-    || !chatSidebar.copyHidden
-    || !chatSidebar.retryHidden
-    || !chatSidebar.retryDisabled
-    || chatSidebar.maximizePressed !== "false") {
-    throw new Error(`desktop chat sidebar failed: ${JSON.stringify(chatSidebar)}`);
+  if (!floatingChat.open
+    || floatingChat.panelDisplay !== "grid"
+    || floatingChat.panelOpacity !== "1"
+    || floatingChat.panelRight !== 18
+    || floatingChat.panelBottom !== 18
+    || floatingChat.panelHeight < 640
+    || floatingChat.panelHeight > 680
+    || floatingChat.panelWidth < 400
+    || floatingChat.panelWidth > 420
+    || floatingChat.panelInert
+    || floatingChat.panelAriaHidden !== "false"
+    || floatingChat.chatWidth < 400
+    || parseFloat(floatingChat.bodyPaddingRight ?? "0") !== 0
+    || floatingChat.mainRight !== initialFloatingChat.mainRight
+    || !floatingChat.copyHidden
+    || !floatingChat.retryHidden
+    || !floatingChat.retryDisabled
+    || floatingChat.maximizePressed !== "false") {
+    throw new Error(`floating desktop chat failed: ${JSON.stringify(floatingChat)}`);
   }
   await page.click("[data-chat-maximize]");
   await page.waitForTimeout(350);
-  const expandedChatSidebar = await page.evaluate(() => {
+  const expandedFloatingChat = await page.evaluate(() => {
     const chat = document.querySelector(".docs-chat");
     const panel = document.querySelector(".docs-chat-panel");
     const main = document.querySelector(".main");
@@ -224,51 +276,70 @@ async function checkDesktop() {
     const mainRect = main?.getBoundingClientRect();
     return {
       expanded: chat?.classList.contains("expanded"),
-      bodyExpanded: document.body.classList.contains("docs-chat-expanded"),
       chatWidth: chatRect?.width,
+      panelHeight: panelRect?.height,
       panelWidth: panelRect?.width,
       panelRight: panelRect ? Math.round(innerWidth - panelRect.right) : null,
+      panelBottom: panelRect ? Math.round(innerHeight - panelRect.bottom) : null,
       mainRight: mainRect?.right,
       bodyPaddingRight: getComputedStyle(document.body).paddingRight,
       maximizePressed: maximize?.getAttribute("aria-pressed"),
       maximizeLabel: maximize?.getAttribute("aria-label"),
     };
   });
-  if (!expandedChatSidebar.expanded
-    || !expandedChatSidebar.bodyExpanded
-    || expandedChatSidebar.chatWidth < 680
-    || expandedChatSidebar.panelWidth < 680
-    || expandedChatSidebar.panelRight !== 0
-    || parseFloat(expandedChatSidebar.bodyPaddingRight ?? "0") < 680
-    || expandedChatSidebar.mainRight > 760
-    || expandedChatSidebar.maximizePressed !== "true"
-    || expandedChatSidebar.maximizeLabel !== "Restore docs assistant width") {
-    throw new Error(`expanded desktop chat sidebar failed: ${JSON.stringify(expandedChatSidebar)}`);
+  if (!expandedFloatingChat.expanded
+    || expandedFloatingChat.chatWidth < 720
+    || expandedFloatingChat.panelWidth < 720
+    || expandedFloatingChat.panelHeight < 820
+    || expandedFloatingChat.panelRight !== 18
+    || expandedFloatingChat.panelBottom !== 18
+    || parseFloat(expandedFloatingChat.bodyPaddingRight ?? "0") !== 0
+    || expandedFloatingChat.mainRight !== initialFloatingChat.mainRight
+    || expandedFloatingChat.maximizePressed !== "true"
+    || expandedFloatingChat.maximizeLabel !== "Restore docs assistant size") {
+    throw new Error(`expanded floating desktop chat failed: ${JSON.stringify(expandedFloatingChat)}`);
   }
-  await page.click("[data-chat-close]");
+  await page.click("[data-chat-minimize]");
   await page.waitForTimeout(350);
-  const closedChatSidebar = await page.evaluate(() => {
+  const minimizedFloatingChat = await page.evaluate(() => {
     const chat = document.querySelector(".docs-chat");
     const panel = document.querySelector(".docs-chat-panel");
     const panelStyle = panel ? getComputedStyle(panel) : null;
     return {
       open: chat?.classList.contains("open"),
-      bodyOpen: document.body.classList.contains("docs-chat-open"),
-      bodyExpanded: document.body.classList.contains("docs-chat-expanded"),
       panelDisplay: panelStyle?.display,
       panelOpacity: panelStyle?.opacity,
       panelTransform: panelStyle?.transform,
       bodyPaddingRight: getComputedStyle(document.body).paddingRight,
     };
   });
-  if (closedChatSidebar.open
-    || closedChatSidebar.bodyOpen
-    || closedChatSidebar.bodyExpanded
-    || closedChatSidebar.panelDisplay !== "grid"
-    || closedChatSidebar.panelOpacity !== "0"
-    || closedChatSidebar.panelTransform === "none"
-    || parseFloat(closedChatSidebar.bodyPaddingRight ?? "0") !== 0) {
-    throw new Error(`closed desktop chat sidebar failed: ${JSON.stringify(closedChatSidebar)}`);
+  if (minimizedFloatingChat.open
+    || minimizedFloatingChat.panelDisplay !== "grid"
+    || minimizedFloatingChat.panelOpacity !== "0"
+    || minimizedFloatingChat.panelTransform === "none"
+    || parseFloat(minimizedFloatingChat.bodyPaddingRight ?? "0") !== 0) {
+    throw new Error(`minimized floating desktop chat failed: ${JSON.stringify(minimizedFloatingChat)}`);
+  }
+  await page.goto(`${base}/start/showcase`, { waitUntil: "networkidle" });
+  await page.waitForTimeout(350);
+  const showcaseCardGrid = await page.evaluate(() => {
+    const grid = document.querySelector(".oc-card-grid.oc-card-cols-2");
+    const cards = [...grid?.querySelectorAll(":scope > .oc-card") ?? []];
+    const firstTop = cards[0]?.getBoundingClientRect().top ?? 0;
+    const columns = cards.filter((card) => Math.abs(card.getBoundingClientRect().top - firstTop) < 2).length;
+    return {
+      exists: Boolean(grid),
+      cardCount: cards.length,
+      columns,
+      width: grid?.getBoundingClientRect().width,
+      template: grid ? getComputedStyle(grid).gridTemplateColumns : "",
+    };
+  });
+  if (!showcaseCardGrid.exists
+    || showcaseCardGrid.cardCount === 0
+    || showcaseCardGrid.columns > 2
+    || ((showcaseCardGrid.width ?? 0) > 520 && showcaseCardGrid.columns !== 2)) {
+    throw new Error(`showcase card grid columns failed: ${JSON.stringify(showcaseCardGrid)}`);
   }
   await page.close();
 }
@@ -296,6 +367,18 @@ async function checkMobile() {
   });
   if (geometry.menuThemeOverlap || !geometry.searchInViewport || !geometry.codeInViewport || geometry.stepInset < 0) {
     throw new Error(`mobile visual geometry failed: ${JSON.stringify(geometry)}`);
+  }
+  const mobileCardColumns = await page.evaluate(() => {
+    const countColumns = (grid) => {
+      const cards = [...grid.querySelectorAll(":scope > .oc-card")];
+      const firstTop = cards[0]?.getBoundingClientRect().top ?? 0;
+      return cards.filter((card) => Math.abs(card.getBoundingClientRect().top - firstTop) < 2).length;
+    };
+    return [...document.querySelectorAll(".oc-card-grid")]
+      .map((grid) => countColumns(grid));
+  });
+  if (!mobileCardColumns.length || mobileCardColumns.some((columns) => columns !== 1)) {
+    throw new Error(`mobile card grids should collapse to one column: ${JSON.stringify(mobileCardColumns)}`);
   }
   await page.click("[data-nav-toggle]");
   await page.locator(".sidebar.open").waitFor({ state: "visible" });
@@ -433,7 +516,7 @@ async function checkLightMode() {
       minCardWidth: Math.min(...cardWidths),
     };
   });
-  if (skin.theme !== "light" || skin.codeText !== "#2d2926" || skin.badgeRadius === "0px" || skin.minCardWidth < 190) {
+  if (skin.theme !== "light" || skin.codeText !== "#2d2926" || skin.badgeRadius === "0px" || skin.minCardWidth < 150) {
     throw new Error(`light visual skin failed: ${JSON.stringify(skin)}`);
   }
   await page.close();

@@ -149,6 +149,42 @@ Summarize the active OpenClaw Gateway health and include the exact command that 
   </Card>
 </CardGroup>
 
+<CardGroup cols={1}>
+  <Card title="Single column" href="/help/troubleshooting" icon="terminal">
+    One-column cards should stay intentionally narrow rather than joining an auto-fit row.
+  </Card>
+</CardGroup>
+
+<CardGroup cols={2}>
+  <Card title="Two-column A" href="/start/showcase" icon="layout-dashboard">
+    Mirrors the showcase contract that should not grow into three columns.
+  </Card>
+  <Card title="Two-column B" href="/start/showcase" icon="layout-dashboard">
+    Keeps paired decision cards aligned on desktop.
+  </Card>
+  <Card title="Two-column C" href="/start/showcase" icon="layout-dashboard">
+    Wraps to the next row without changing the requested column count.
+  </Card>
+  <Card title="Two-column D" href="/start/showcase" icon="layout-dashboard">
+    Gives visual smoke enough items to count row geometry.
+  </Card>
+</CardGroup>
+
+<CardGroup cols={4}>
+  <Card title="Four-column A" href="/plugins" icon="sparkles">
+    Compact card.
+  </Card>
+  <Card title="Four-column B" href="/plugins" icon="sparkles">
+    Compact card.
+  </Card>
+  <Card title="Four-column C" href="/plugins" icon="sparkles">
+    Compact card.
+  </Card>
+  <Card title="Four-column D" href="/plugins" icon="sparkles">
+    Compact card.
+  </Card>
+</CardGroup>
+
 ## Columns
 
 <Columns>
@@ -157,6 +193,21 @@ Summarize the active OpenClaw Gateway health and include the exact command that 
   </Card>
   <Card title="Model guide" href="/models" icon="sparkles">
     Keep adjacent cards aligned when content lengths differ.
+  </Card>
+</Columns>
+
+<Columns cols={4}>
+  <Card title="Column A" href="/models" icon="settings">
+    Honors explicit Columns attrs too.
+  </Card>
+  <Card title="Column B" href="/models" icon="settings">
+    Honors explicit Columns attrs too.
+  </Card>
+  <Card title="Column C" href="/models" icon="settings">
+    Honors explicit Columns attrs too.
+  </Card>
+  <Card title="Column D" href="/models" icon="settings">
+    Honors explicit Columns attrs too.
   </Card>
 </Columns>
 
