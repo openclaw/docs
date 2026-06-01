@@ -30,8 +30,7 @@ const required = [
   "de/gateway/heartbeat/index.html",
   "assets/docs-site.css",
   "assets/docs-site.js",
-  "assets/molty-avatar.png",
-  "assets/molty-avatar-hover.gif"
+  "assets/pixel-lobster.svg"
 ];
 if (!shellOnly) {
   required.push(
@@ -161,8 +160,8 @@ if (!/Português \(BR\)/.test(index)) {
 if (
   !/data-docs-chat/.test(index) ||
   !/OPENCLAW_DOCS_CHAT_API/.test(index) ||
-  !/molty-avatar\.png/.test(index) ||
-  !/molty-avatar-hover\.gif/.test(index) ||
+  !/data-static-src="\/assets\/(?:molty-avatar\.png|pixel-lobster\.svg)"/.test(index) ||
+  !/data-hover-src="\/assets\/(?:molty-avatar-hover\.gif|pixel-lobster\.svg)"/.test(index) ||
   !/<h2 id="docs-chat-title">Molty<\/h2>/.test(index)
 ) {
   throw new Error("index: docs chat widget was not rendered");
