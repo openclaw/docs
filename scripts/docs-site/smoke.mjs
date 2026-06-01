@@ -509,6 +509,13 @@ if (!/function initCodeGroups/.test(siteJs) || !/className="oc-code-tab"/.test(s
 if (!/function handleDocsControlClick/.test(siteJs) || !/async function copyText/.test(siteJs)) {
   throw new Error("assets: copy and feedback controls are missing");
 }
+if (!/data-feedback-repo="openclaw\/openclaw"/.test(index)
+  || !/data-feedback-issue-link/.test(index)
+  || !/function initPageFeedback/.test(siteJs)
+  || !/openclaw\.docs\.feedback/.test(siteJs)
+  || !/github\.com\/"\+feedbackRepo/.test(siteJs)) {
+  throw new Error("assets: useful feedback composer is missing");
+}
 if (!/function toggleCodeExpand/.test(siteJs)
   || !/data-code-expand/.test(siteJs)
   || !/is-expanded/.test(siteJs)
