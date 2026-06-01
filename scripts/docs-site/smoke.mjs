@@ -252,8 +252,13 @@ if (!fs.existsSync(path.join(site, "assets/mermaid.esm.min.mjs"))
   || !fs.existsSync(path.join(site, "assets/chunks/mermaid.esm.min"))) {
   throw new Error("assets: Mermaid runtime was not copied");
 }
-if (!/\.sidebar\{[^}]*padding:0 6px 36px 0;[^}]*scrollbar-gutter:stable/.test(siteCss)) {
+if (!/\.sidebar\{[^}]*padding:0 6px 64px 0;[^}]*scrollbar-gutter:stable/.test(siteCss)) {
   throw new Error("assets: sidebar scroll-end padding is missing");
+}
+if (!/\.sidebar\{[^}]*scrollbar-width:thin;[^}]*scrollbar-color:/.test(siteCss)
+  || !/\.sidebar\.has-overflow\{[^}]*mask-image:linear-gradient/.test(siteCss)
+  || !/\.sidebar\.can-scroll-down\{--sidebar-fade-bottom:30px\}/.test(siteCss)) {
+  throw new Error("assets: sidebar overflow affordance is missing");
 }
 if (!/\.header-row,\.tabs\{max-width:1780px;margin:0 auto\}/.test(siteCss)
   || !/\.doc-shell\{max-width:1780px;margin:0 auto\}/.test(siteCss)
@@ -272,6 +277,12 @@ if (!/--bg:#0d0b0b;--paper:#111010;--paper-2:#151211;[^}]*--soft:#241915/.test(s
 }
 if (!/function syncSidebar/.test(siteJs) || !/async function navigateTo/.test(siteJs)) {
   throw new Error("assets: docs PJAX navigation is missing");
+}
+if (!/function scrollActiveNavLink/.test(siteJs)
+  || !/active\.offsetTop-sidebar\.clientHeight\/2\+active\.offsetHeight\/2/.test(siteJs)
+  || !/Math\.max\(0,Math\.min\(max,target\)\)/.test(siteJs)
+  || !/scrollActiveNavLink\(\)/.test(siteJs.match(/function syncSidebar[^]+?function setNavOpen/)?.[0] ?? "")) {
+  throw new Error("assets: active sidebar link is not centered in view");
 }
 if (!/function setNavOpen/.test(siteJs) || !/body\.nav-open:before/.test(siteCss) || !/data-nav-close/.test(index)) {
   throw new Error("assets: mobile navigation drawer state is missing");
