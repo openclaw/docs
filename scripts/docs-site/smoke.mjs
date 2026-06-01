@@ -200,11 +200,9 @@ if (!/class="hljs-attr">channels<\/span>/.test(index)
   || !/class="hljs-literal">true<\/span>/.test(index)) {
   throw new Error("index: json5 config example was not syntax-highlighted");
 }
-if (!shellOnly) {
-  const modelsMarkdown = fs.readFileSync(path.join(site, "concepts/models.md"), "utf8");
-  if (!/^---\nsummary: /m.test(modelsMarkdown) || !/title: "Models CLI"/m.test(modelsMarkdown)) {
-    throw new Error("concepts/models.md: source markdown was not emitted");
-  }
+const modelsMarkdown = fs.readFileSync(path.join(site, "concepts/models.md"), "utf8");
+if (!/^---\nsummary: /m.test(modelsMarkdown) || !/title: "Models CLI"/m.test(modelsMarkdown)) {
+  throw new Error("concepts/models.md: source markdown was not emitted");
 }
 if (process.env.DOCS_SITE_BASE_PATH && (/src="\/assets\//.test(index) || /href="\/assets\//.test(index))) {
   throw new Error("index: absolute asset paths were not base-path rewritten");
@@ -425,6 +423,14 @@ if (!/data-page-markdown-url="\/index\.md"/.test(index)
   || !/data-page-markdown-url="\/start\/getting-started\.md"/.test(gettingStarted)) {
   throw new Error("page tools: Copy page should target generated Markdown routes");
 }
+if (!fs.existsSync(path.join(site, "index.md"))
+  || !fs.existsSync(path.join(site, "start/getting-started.md"))) {
+  throw new Error("page tools: advertised Markdown action routes must exist in this artifact");
+}
+const rootMarkdownPrompt = encodeURIComponent(`Read from ${expectedOrigin}/index.md so I can ask questions about it.`);
+const chatgptAction = `https://chatgpt.com/?hints=search&amp;q=${rootMarkdownPrompt}`;
+const claudeAction = `https://claude.ai/new?q=${rootMarkdownPrompt}`;
+const perplexityAction = `https://www.perplexity.ai/search/new?q=${rootMarkdownPrompt}`;
 if (!/<script type="application\/json" data-page-markdown>/.test(index)
   || />"---\\n/.test(index)) {
   throw new Error("page tools: Copy page should embed frontmatter-free Markdown for synchronous clipboard writes");
@@ -439,9 +445,9 @@ if (!/class="page-actions"/.test(index)
   || !/Open in ChatGPT/.test(index)
   || !/Open in Claude/.test(index)
   || !/Open in Perplexity/.test(index)
-  || !/https:\/\/chatgpt\.com\/\?hints=search&amp;q=Read%20from%20https%3A%2F%2Fdocs\.openclaw\.ai%2Findex\.md%20so%20I%20can%20ask%20questions%20about%20it\./.test(index)
-  || !/https:\/\/claude\.ai\/new\?q=Read%20from%20https%3A%2F%2Fdocs\.openclaw\.ai%2Findex\.md%20so%20I%20can%20ask%20questions%20about%20it\./.test(index)
-  || !/https:\/\/www\.perplexity\.ai\/search\/new\?q=Read%20from%20https%3A%2F%2Fdocs\.openclaw\.ai%2Findex\.md%20so%20I%20can%20ask%20questions%20about%20it\./.test(index)) {
+  || !index.includes(chatgptAction)
+  || !index.includes(claudeAction)
+  || !index.includes(perplexityAction)) {
   throw new Error("page tools: AI action menu links are missing");
 }
 if ((index.match(/class="page-action" href="[^"]+" target="_blank" rel="noreferrer"/g) ?? []).length < 4) {
