@@ -5,6 +5,7 @@
   "scripts": {
     "docs:build": "node scripts/docs-site/build.mjs && node scripts/docs-site/search-index.mjs && node scripts/docs-site/source-index.mjs && pagefind --site dist/docs-site --output-path dist/docs-site/pagefind && node scripts/docs-site/pagefind-normalize.mjs",
     "docs:build:shell": "DOCS_SITE_ARTIFACT_MODE=shell node scripts/docs-site/build.mjs",
+    "docs:build:preview": "DOCS_SITE_ARTIFACT_MODE=shell DOCS_SITE_PREVIEW_LOCALE=en DOCS_SITE_PREVIEW_PAGES_PER_GROUP=2 DOCS_SITE_PREVIEW_MAX_PAGES=30 node scripts/docs-site/build.mjs",
     "docs:build:cloudflare": "npm run docs:build && node scripts/docs-site/cloudflare-prune.mjs",
     "docs:build:r2": "npm run docs:build && node scripts/docs-site/r2-prepare.mjs",
     "docs:build:r2:shell": "npm run docs:build:shell && node scripts/docs-site/r2-prepare.mjs",
