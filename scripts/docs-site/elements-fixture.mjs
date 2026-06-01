@@ -90,6 +90,33 @@ export async function restartGateway(mode: GatewayMode) {
 }
 \`\`\`
 
+\`\`\`bash expandable
+openclaw status --deep
+openclaw gateway inspect --json
+openclaw channels list
+openclaw channels test telegram
+openclaw channels test slack
+openclaw models list
+openclaw models test openai
+openclaw models test anthropic
+openclaw plugins list
+openclaw plugins doctor
+openclaw skills list
+openclaw skills validate
+openclaw config get gateway.publicBaseUrl
+openclaw config get gateway.heartbeatSeconds
+openclaw config get channels.telegram.enabled
+openclaw config get channels.telegram.groupPolicy
+openclaw config get channels.slack.enabled
+openclaw config get channels.slack.socketMode
+openclaw logs tail gateway
+openclaw logs tail channels
+openclaw gateway restart
+openclaw gateway health
+openclaw gateway doctor
+openclaw status --deep
+\`\`\`
+
 <CodeGroup>
 
 \`\`\`sh scripts/setup-openclaw.sh
