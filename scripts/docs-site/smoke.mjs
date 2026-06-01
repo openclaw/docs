@@ -489,7 +489,8 @@ if (!/\.article-meta-row\{display:flex;align-items:center;justify-content:space-
   || !/\.page-actions\{display:inline-flex;align-items:stretch;position:relative\}/.test(siteCss)
   || !/\.page-actions-primary\{display:inline-flex;align-items:center;gap:7px/.test(siteCss)
   || !/\.page-actions-more summary\{display:grid;place-items:center;width:34px/.test(siteCss)
-  || !/\.page-actions-more \.page-actions-menu\{left:auto;right:0\}/.test(siteCss)) {
+  || !/\.page-actions-more \.page-actions-menu\{position:absolute;top:calc\(100% \+ 8px\);left:auto;right:0/.test(siteCss)
+  || !/\.page-action\{display:grid;grid-template-columns:18px minmax\(0,1fr\) auto/.test(siteCss)) {
   throw new Error("assets: page action trigger should use the split pill button skin");
 }
 if (!/\.page-actions-primary:hover,\.page-actions-more\[open\] summary,\.page-actions-more summary:hover\{border-color:var\(--brand\);color:var\(--ink\)\}/.test(siteCss)
