@@ -94,6 +94,7 @@ function isShellScopedEntry(entry) {
   if (key === "CNAME") return true;
   if (key.startsWith("assets/")) return true;
   if (key.startsWith("og/") || key === "og-card.png") return true;
+  if (key.endsWith(".md")) return true;
   return entry.contentType === "text/html; charset=utf-8" || key.endsWith(".html");
 }
 

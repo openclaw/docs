@@ -500,7 +500,8 @@ if (!/\.article-meta-row\{display:flex;align-items:center;justify-content:space-
   || !/\.page-actions\{display:inline-flex;align-items:stretch;position:relative\}/.test(siteCss)
   || !/\.page-tools \.page-actions-primary\{display:inline-flex;align-items:center;gap:7px/.test(siteCss)
   || !/\.page-tools \.page-actions-more summary\{display:grid;place-items:center;width:34px/.test(siteCss)
-  || !/\.page-tools \.page-actions-more \.page-actions-menu\{position:absolute;top:calc\(100% \+ 8px\);left:auto;right:0/.test(siteCss)
+  || !/\.page-tools \.page-actions-more \.page-actions-menu\{position:absolute;top:calc\(100% \+ 8px\);left:auto;right:0;z-index:40;display:none/.test(siteCss)
+  || !/\.page-tools \.page-actions-more\[open\] \.page-actions-menu\{display:grid\}/.test(siteCss)
   || !/\.page-tools \.page-action\{display:grid;grid-template-columns:18px minmax\(0,1fr\) auto/.test(siteCss)) {
   throw new Error("assets: page action trigger should use the split pill button skin");
 }
