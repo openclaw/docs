@@ -518,7 +518,7 @@ function tableOfContents(html) {
 
 function tocHtml(items) {
   if (!items.length) return "";
-  return `<aside class="toc"><h2>On this page</h2>${items.map((item) => `<a class="toc-l${item.level}" href="#${escapeAttr(item.id)}">${escapeHtml(item.title)}</a>`).join("")}</aside>`;
+  return `<details class="toc" aria-label="On this page" open><summary><span>On this page</span></summary><h2>On this page</h2><nav>${items.map((item) => `<a class="toc-l${item.level}" href="#${escapeAttr(item.id)}">${escapeHtml(item.title)}</a>`).join("")}</nav></details>`;
 }
 
 function pager(prev, next) {

@@ -284,6 +284,19 @@ if (!/function scrollActiveNavLink/.test(siteJs)
   || !/scrollActiveNavLink\(\)/.test(siteJs.match(/function syncSidebar[^]+?function setNavOpen/)?.[0] ?? "")) {
   throw new Error("assets: active sidebar link is not centered in view");
 }
+if (!/function syncStickyHeaderOffset/.test(siteJs)
+  || !/function syncTocDisclosure/.test(siteJs)
+  || !/syncStickyHeaderOffset\(\);syncTocDisclosure\(\);initChat\(\);initCodeGroups\(\)/.test(siteJs)) {
+  throw new Error("assets: compact page orientation should refresh across PJAX navigation");
+}
+if (!/\.toc\{position:fixed;left:24px;top:calc\(var\(--sticky-header-h\) \+ 8px\);z-index:60/.test(siteCss)
+  || !/\.toc\.is-visible,\.toc\[open\]\{opacity:1;visibility:visible;pointer-events:auto;transform:none\}/.test(siteCss)
+  || !/\.toc summary\{display:flex;align-items:center;gap:8px/.test(siteCss)
+  || !/\.toc nav\{position:absolute;left:0;top:calc\(100% \+ 8px\);display:none/.test(siteCss)
+  || !/Math\.max\(scrollY,document\.scrollingElement\?\.scrollTop\|\|0\)>8/.test(siteJs)
+  || !/\.toc\[open\] nav\{display:grid;gap:2px\}/.test(siteCss)) {
+  throw new Error("assets: compact table of contents dropdown is missing for mid-width pages");
+}
 if (!/function setNavOpen/.test(siteJs) || !/body\.nav-open:before/.test(siteCss) || !/data-nav-close/.test(index)) {
   throw new Error("assets: mobile navigation drawer state is missing");
 }
