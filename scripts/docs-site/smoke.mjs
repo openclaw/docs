@@ -200,11 +200,9 @@ if (!/class="hljs-attr">channels<\/span>/.test(index)
   || !/class="hljs-literal">true<\/span>/.test(index)) {
   throw new Error("index: json5 config example was not syntax-highlighted");
 }
-if (!shellOnly) {
-  const modelsMarkdown = fs.readFileSync(path.join(site, "concepts/models.md"), "utf8");
-  if (!/^---\nsummary: /m.test(modelsMarkdown) || !/title: "Models CLI"/m.test(modelsMarkdown)) {
-    throw new Error("concepts/models.md: source markdown was not emitted");
-  }
+const modelsMarkdown = fs.readFileSync(path.join(site, "concepts/models.md"), "utf8");
+if (!/^---\nsummary: /m.test(modelsMarkdown) || !/title: "Models CLI"/m.test(modelsMarkdown)) {
+  throw new Error("concepts/models.md: source markdown was not emitted");
 }
 if (process.env.DOCS_SITE_BASE_PATH && (/src="\/assets\//.test(index) || /href="\/assets\//.test(index))) {
   throw new Error("index: absolute asset paths were not base-path rewritten");
@@ -225,6 +223,11 @@ if (process.env.DOCS_SITE_CNAME) {
 }
 const siteJs = fs.readFileSync(path.join(site, "assets/docs-site.js"), "utf8");
 const siteCss = fs.readFileSync(path.join(site, "assets/docs-site.css"), "utf8");
+try {
+  new Function(siteJs);
+} catch (err) {
+  throw new Error(`assets: generated docs-site.js has invalid syntax: ${err.message}`);
+}
 if (!/theme-toggle-icon-dark/.test(index)
   || !/theme-toggle-icon-light/.test(index)
   || !/:root\[data-theme="dark"\] \.theme-toggle-icon-dark,:root\[data-theme="light"\] \.theme-toggle-icon-light\{display:grid\}/.test(siteCss)) {
@@ -410,16 +413,51 @@ if (elementsIndex.includes('href="http://SKILL.md"')) {
 if ((elementsIndex.match(/class="oc-card-grid oc-card-cols-4"/g) ?? []).length < 2) {
   throw new Error("__elements: CardGroup and Columns should both preserve explicit cols attrs");
 }
-if (!/class="breadcrumbs"/.test(index) || !/data-copy-page/.test(index) || !/class="page-feedback"/.test(index)) {
+if (!/class="article-meta-row"/.test(index)
+  || !/class="breadcrumbs"/.test(index)
+  || !/data-copy-page/.test(index)
+  || !/class="page-feedback"/.test(index)) {
   throw new Error("index: page reader affordances are missing");
 }
 if (!/data-page-markdown-url="\/index\.md"/.test(index)
   || !/data-page-markdown-url="\/start\/getting-started\.md"/.test(gettingStarted)) {
   throw new Error("page tools: Copy page should target generated Markdown routes");
 }
+if (!fs.existsSync(path.join(site, "index.md"))
+  || !fs.existsSync(path.join(site, "start/getting-started.md"))) {
+  throw new Error("page tools: advertised Markdown action routes must exist in this artifact");
+}
+const rootMarkdownPrompt = encodeURIComponent(`Read from ${expectedOrigin}/index.md so I can ask questions about it.`);
+const chatgptAction = `https://chatgpt.com/?hints=search&amp;q=${rootMarkdownPrompt}`;
+const claudeAction = `https://claude.ai/new?q=${rootMarkdownPrompt}`;
+const perplexityAction = `https://www.perplexity.ai/search/new?q=${rootMarkdownPrompt}`;
 if (!/<script type="application\/json" data-page-markdown>/.test(index)
   || />"---\\n/.test(index)) {
   throw new Error("page tools: Copy page should embed frontmatter-free Markdown for synchronous clipboard writes");
+}
+if (!/class="page-actions"/.test(index)
+  || !/class="page-actions-primary" data-copy-page/.test(index)
+  || !/class="page-actions-more"/.test(index)
+  || !/class="page-actions-chevron"/.test(index)
+  || !/class="page-actions-menu"/.test(index)
+  || !/View as Markdown/.test(index)
+  || !/target="_blank" rel="noreferrer"/.test(index)
+  || !/Open in ChatGPT/.test(index)
+  || !/Open in Claude/.test(index)
+  || !/Open in Perplexity/.test(index)
+  || !index.includes(chatgptAction)
+  || !index.includes(claudeAction)
+  || !index.includes(perplexityAction)) {
+  throw new Error("page tools: AI action menu links are missing");
+}
+if ((index.match(/class="page-action" href="[^"]+" target="_blank" rel="noreferrer"/g) ?? []).length < 4) {
+  throw new Error("page tools: dropdown links should open in a new tab");
+}
+if (!/class="page-feedback-links" aria-label="Page source and issue"/.test(index)
+  || !/Edit source/.test(index)
+  || !/Raise issue/.test(index)
+  || !/https:\/\/github\.com\/openclaw\/openclaw\/issues\/new\?title=Issue%20on%20docs&amp;body=Path%3A%20%2F/.test(index)) {
+  throw new Error("page feedback: footer source and issue actions are missing");
 }
 assertEditSourceLinks();
 if (!/function initCodeGroups/.test(siteJs) || !/className="oc-code-tab"/.test(siteJs) || !/preferredCodeTab/.test(siteJs)) {
@@ -430,6 +468,10 @@ if (!/function handleDocsControlClick/.test(siteJs) || !/async function copyText
 }
 if (!/function copyPageMarkdown/.test(siteJs)
   || !/function pageMarkdownForCopy/.test(siteJs)
+  || !/function setCopyFeedback/.test(siteJs)
+  || !/document\.execCommand\("copy"\)/.test(siteJs)
+  || !/\.page-actions-more\[open\]/.test(siteJs)
+  || !/menu\.removeAttribute\("open"\)/.test(siteJs)
   || /fetch\(markdownUrl/.test(siteJs)
   || /dataset\.pageUrl\|\|location\.href/.test(siteJs)) {
   throw new Error("assets: Copy page should copy embedded Markdown content instead of copying the URL");
@@ -453,6 +495,20 @@ if (!/\.oc-code figcaption button:before/.test(siteCss)
   || !/\.oc-code figcaption button\[data-copy-state="copied"\]:after/.test(siteCss)
   || !/\.oc-code figcaption \.oc-code-label/.test(siteCss)) {
   throw new Error("assets: code copy button icon skin is missing");
+}
+if (!/\.article-meta-row\{display:flex;align-items:center;justify-content:space-between/.test(siteCss)
+  || !/\.page-actions\{display:inline-flex;align-items:stretch;position:relative\}/.test(siteCss)
+  || !/\.page-tools \.page-actions-primary\{display:inline-flex;align-items:center;gap:7px/.test(siteCss)
+  || !/\.page-tools \.page-actions-more summary\{display:grid;place-items:center;width:34px/.test(siteCss)
+  || !/\.page-tools \.page-actions-more \.page-actions-menu\{position:absolute;top:calc\(100% \+ 8px\);left:auto;right:0;z-index:40;display:none/.test(siteCss)
+  || !/\.page-tools \.page-actions-more\[open\] \.page-actions-menu\{display:grid\}/.test(siteCss)
+  || !/\.page-tools \.page-action\{display:grid;grid-template-columns:18px minmax\(0,1fr\) auto/.test(siteCss)) {
+  throw new Error("assets: page action trigger should use the split pill button skin");
+}
+if (!/\.page-tools \.page-actions-primary:hover,\.page-tools \.page-actions-more\[open\] summary,\.page-tools \.page-actions-more summary:hover\{border-color:var\(--brand\);color:var\(--ink\)\}/.test(siteCss)
+  || !/\.page-tools \.page-action-external\{justify-self:end;color:var\(--muted\)/.test(siteCss)
+  || !/\.page-feedback-links\{display:flex;align-items:center;gap:9px;margin-left:auto\}/.test(siteCss)) {
+  throw new Error("assets: page action hover, external marker, and footer link skin are missing");
 }
 const ambient = fs.readFileSync(path.join(site, "channels/ambient-room-events/index.html"), "utf8");
 if (!/<figure class="oc-code" data-code-label="json5">/.test(ambient)
@@ -513,16 +569,17 @@ function assertEditSourceLinks() {
     const tools = html.match(/<div class="page-tools"[\s\S]*?<\/div>/u)?.[0];
     if (!tools) continue;
     checked += 1;
+    const editSurface = html.match(/<nav class="page-feedback-links"[\s\S]*?<\/nav>/u)?.[0] ?? "";
 
     const page = pageForRenderedHtml(rel);
     if (!page) {
-      if (/Edit source/.test(tools)) throw new Error(`${rel}: edit source link has no canonical source page`);
+      if (/Edit source/.test(editSurface)) throw new Error(`${rel}: edit source link has no canonical source page`);
       missingEdit += 1;
       continue;
     }
 
     const expected = editSourceUrlForPage(page, sourceMetadata);
-    const actual = tools.match(/<a href="([^"]+)">Edit source<\/a>/u)?.[1] ?? "";
+    const actual = editSurface.match(/<a href="([^"]+)">Edit source<\/a>/u)?.[1] ?? "";
     if (!expected) {
       if (actual) throw new Error(`${rel}: unexpected edit source link ${actual}`);
       missingEdit += 1;
