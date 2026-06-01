@@ -30,8 +30,7 @@ const required = [
   "de/gateway/heartbeat/index.html",
   "assets/docs-site.css",
   "assets/docs-site.js",
-  "assets/molty-avatar.png",
-  "assets/molty-avatar-hover.gif"
+  "assets/pixel-lobster.svg"
 ];
 if (!shellOnly) {
   required.push(
@@ -161,8 +160,8 @@ if (!/Português \(BR\)/.test(index)) {
 if (
   !/data-docs-chat/.test(index) ||
   !/OPENCLAW_DOCS_CHAT_API/.test(index) ||
-  !/molty-avatar\.png/.test(index) ||
-  !/molty-avatar-hover\.gif/.test(index) ||
+  !/data-static-src="\/assets\/(?:molty-avatar\.png|pixel-lobster\.svg)"/.test(index) ||
+  !/data-hover-src="\/assets\/(?:molty-avatar-hover\.gif|pixel-lobster\.svg)"/.test(index) ||
   !/<h2 id="docs-chat-title">Molty<\/h2>/.test(index)
 ) {
   throw new Error("index: docs chat widget was not rendered");
@@ -414,12 +413,26 @@ if ((elementsIndex.match(/class="oc-card-grid oc-card-cols-4"/g) ?? []).length <
 if (!/class="breadcrumbs"/.test(index) || !/data-copy-page/.test(index) || !/class="page-feedback"/.test(index)) {
   throw new Error("index: page reader affordances are missing");
 }
+if (!/data-page-markdown-url="\/index\.md"/.test(index)
+  || !/data-page-markdown-url="\/start\/getting-started\.md"/.test(gettingStarted)) {
+  throw new Error("page tools: Copy page should target generated Markdown routes");
+}
+if (!/<script type="application\/json" data-page-markdown>/.test(index)
+  || />"---\\n/.test(index)) {
+  throw new Error("page tools: Copy page should embed frontmatter-free Markdown for synchronous clipboard writes");
+}
 assertEditSourceLinks();
 if (!/function initCodeGroups/.test(siteJs) || !/className="oc-code-tab"/.test(siteJs) || !/preferredCodeTab/.test(siteJs)) {
   throw new Error("assets: code group tabs are missing");
 }
 if (!/function handleDocsControlClick/.test(siteJs) || !/async function copyText/.test(siteJs)) {
   throw new Error("assets: copy and feedback controls are missing");
+}
+if (!/function copyPageMarkdown/.test(siteJs)
+  || !/function pageMarkdownForCopy/.test(siteJs)
+  || /fetch\(markdownUrl/.test(siteJs)
+  || /dataset\.pageUrl\|\|location\.href/.test(siteJs)) {
+  throw new Error("assets: Copy page should copy embedded Markdown content instead of copying the URL");
 }
 if (!/Nothing to copy/.test(siteJs) || !/data-chat-copy/.test(siteJs) || !/data-heading-anchor/.test(siteJs)) {
   throw new Error("assets: chat copy feedback is missing");

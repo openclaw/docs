@@ -323,7 +323,7 @@ ${breadcrumbs(page, nav)}
 <p class="article-kicker">${escapeHtml(groupForPage(nav, page.slug) ?? activeTab)}</p>
 <h1>${escapeHtml(page.title)}</h1>
 ${pageStatus(page)}
-${page.hidden ? "" : pageTools(page)}
+${page.hidden ? "" : `${pageTools(page)}${pageMarkdownScript(page)}`}
 </header>
 <div class="doc"${page.hidden ? ' data-pagefind-ignore' : ' data-pagefind-body'}>${html}</div>
 ${page.hidden ? "" : pageFeedback()}
@@ -419,9 +419,21 @@ function breadcrumbs(page, nav) {
 
 function pageTools(page) {
   const canonicalUrl = `${docsOrigin()}${pageRoute(page)}`;
+  const markdownUrl = publicPath(pageMarkdownRoute(page));
   const editUrl = editSourceUrlForPage(page, sourceMetadata);
   const editLink = editUrl ? `<a href="${escapeAttr(editUrl)}">Edit source</a>` : "";
-  return `<div class="page-tools" data-page-tools data-page-url="${escapeAttr(canonicalUrl)}"><button type="button" data-copy-page>Copy page</button>${editLink}</div>`;
+  return `<div class="page-tools" data-page-tools data-page-url="${escapeAttr(canonicalUrl)}" data-page-markdown-url="${escapeAttr(markdownUrl)}"><button type="button" data-copy-page>Copy page</button>${editLink}</div>`;
+}
+
+function pageMarkdownScript(page) {
+  return `<script type="application/json" data-page-markdown>${jsonScript(markdownBodyForCopy(page.raw))}</script>`;
+}
+
+function markdownBodyForCopy(markdown) {
+  const text = String(markdown || "");
+  const frontmatter = /^\uFEFF?---\r?\n([\s\S]*?)\r?\n---\r?\n?/.exec(text);
+  if (!frontmatter || !/(^|\n)[A-Za-z0-9_-]+:\s*/.test(frontmatter[1])) return text;
+  return text.slice(frontmatter[0].length).replace(/^\s*\n/, "");
 }
 
 function pageStatus(page) {
@@ -597,12 +609,23 @@ function docsOrigin() {
   return (canonicalOrigin || "https://docs.openclaw.ai").replace(/\/$/, "");
 }
 
+function chatAvatarAssets() {
+  const staticPath = fs.existsSync(path.join(docsDir, "assets", "molty-avatar.png"))
+    ? "/assets/molty-avatar.png"
+    : "/assets/pixel-lobster.svg";
+  const hoverPath = fs.existsSync(path.join(docsDir, "assets", "molty-avatar-hover.gif"))
+    ? "/assets/molty-avatar-hover.gif"
+    : staticPath;
+  return { staticPath: publicPath(staticPath), hoverPath: publicPath(hoverPath) };
+}
+
 function chatWidget() {
   if (!chatApiUrl) return "";
+  const avatar = chatAvatarAssets();
   return `<section class="docs-chat" data-docs-chat aria-label="OpenClaw docs assistant">
-<button class="docs-chat-launcher" type="button" data-chat-toggle aria-expanded="false" aria-controls="docs-chat-panel"><img class="docs-chat-avatar" src="${publicPath("/assets/molty-avatar.png")}" data-static-src="${publicPath("/assets/molty-avatar.png")}" data-hover-src="${publicPath("/assets/molty-avatar-hover.gif")}" alt=""><span>Ask Molty</span></button>
+<button class="docs-chat-launcher" type="button" data-chat-toggle aria-expanded="false" aria-controls="docs-chat-panel"><img class="docs-chat-avatar" src="${avatar.staticPath}" data-static-src="${avatar.staticPath}" data-hover-src="${avatar.hoverPath}" alt=""><span>Ask Molty</span></button>
 <div class="docs-chat-panel" id="docs-chat-panel" data-chat-panel role="dialog" aria-modal="false" aria-labelledby="docs-chat-title" aria-hidden="true" inert>
-<header class="docs-chat-head"><div class="docs-chat-title"><img class="docs-chat-avatar" src="${publicPath("/assets/molty-avatar.png")}" data-static-src="${publicPath("/assets/molty-avatar.png")}" data-hover-src="${publicPath("/assets/molty-avatar-hover.gif")}" alt=""><h2 id="docs-chat-title">Molty</h2></div><div class="docs-chat-actions"><button class="docs-chat-icon docs-chat-maximize" type="button" data-chat-maximize aria-label="Maximize docs assistant" aria-pressed="false">${icon("maximize-2")}</button><button class="docs-chat-icon docs-chat-copy" type="button" data-chat-copy aria-label="Copy conversation" hidden>${icon("copy")}</button><button class="docs-chat-icon docs-chat-retry" type="button" data-chat-retry aria-label="Reload last answer" hidden disabled>${icon("refresh-cw")}</button><button class="docs-chat-icon docs-chat-clear" type="button" data-chat-clear aria-label="Clear conversation" hidden>${icon("trash")}</button><button class="docs-chat-icon docs-chat-minimize" type="button" data-chat-minimize aria-label="Minimize docs assistant">${icon("minus")}</button></div></header>
+<header class="docs-chat-head"><div class="docs-chat-title"><img class="docs-chat-avatar" src="${avatar.staticPath}" data-static-src="${avatar.staticPath}" data-hover-src="${avatar.hoverPath}" alt=""><h2 id="docs-chat-title">Molty</h2></div><div class="docs-chat-actions"><button class="docs-chat-icon docs-chat-maximize" type="button" data-chat-maximize aria-label="Maximize docs assistant" aria-pressed="false">${icon("maximize-2")}</button><button class="docs-chat-icon docs-chat-copy" type="button" data-chat-copy aria-label="Copy conversation" hidden>${icon("copy")}</button><button class="docs-chat-icon docs-chat-retry" type="button" data-chat-retry aria-label="Reload last answer" hidden disabled>${icon("refresh-cw")}</button><button class="docs-chat-icon docs-chat-clear" type="button" data-chat-clear aria-label="Clear conversation" hidden>${icon("trash")}</button><button class="docs-chat-icon docs-chat-minimize" type="button" data-chat-minimize aria-label="Minimize docs assistant">${icon("minus")}</button></div></header>
 <div class="docs-chat-auth" data-chat-auth hidden></div>
 <div class="docs-chat-log" data-chat-log aria-live="polite">
 <div class="docs-chat-empty">Responses are generated using AI and may contain mistakes.</div>
@@ -934,4 +957,11 @@ function escapeAttr(value) {
 
 function escapeXml(value) {
   return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&apos;");
+}
+
+function jsonScript(value) {
+  return JSON.stringify(value)
+    .replaceAll("<", "\\u003c")
+    .replaceAll(">", "\\u003e")
+    .replaceAll("&", "\\u0026");
 }
