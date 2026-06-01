@@ -8,6 +8,7 @@ import matter from "gray-matter";
 import { ignoredDocDirs, ignoredDocFiles, localeLabels, mintlifyLocaleToDir, rtlLocales } from "./config.mjs";
 import { siteCss, siteJs } from "./assets.mjs";
 import { createMarkdownRenderer, renderMdxish } from "./mdx-ish.mjs";
+import { editSourceUrlForPage, frontmatterSourcePath, readSourceMetadata } from "./edit-source.mjs";
 import { elementsFixture } from "./elements-fixture.mjs";
 import { renderPageOgSvg } from "./og-card-template.mjs";
 
@@ -16,6 +17,7 @@ const docsDir = path.join(root, "docs");
 const siteAssetsDir = path.join(root, "scripts", "docs-site");
 const outDir = path.join(root, "dist", "docs-site");
 const config = JSON.parse(fs.readFileSync(path.join(docsDir, "docs.json"), "utf8"));
+const sourceMetadata = readSourceMetadata(root);
 const md = createMarkdownRenderer();
 const basePath = normalizeBasePath(process.env.DOCS_SITE_BASE_PATH ?? "");
 const legacyBasePath = normalizeBasePath(process.env.DOCS_SITE_LEGACY_BASE_PATH ?? "/docs");
@@ -116,6 +118,7 @@ function collectPages(localeList) {
         slug,
         file,
         rel,
+        sourcePath: frontmatterSourcePath(parsed.data),
         raw,
         title,
         summary: parsed.data.summary ?? "",
@@ -365,8 +368,9 @@ function breadcrumbs(page, nav) {
 
 function pageTools(page) {
   const canonicalUrl = `${docsOrigin()}${pageRoute(page)}`;
-  const editUrl = `https://github.com/openclaw/openclaw/edit/main/docs/${page.rel}`;
-  return `<div class="page-tools" data-page-tools data-page-url="${escapeAttr(canonicalUrl)}"><button type="button" data-copy-page>Copy page</button><a href="${escapeAttr(editUrl)}">Edit source</a></div>`;
+  const editUrl = editSourceUrlForPage(page, sourceMetadata);
+  const editLink = editUrl ? `<a href="${escapeAttr(editUrl)}">Edit source</a>` : "";
+  return `<div class="page-tools" data-page-tools data-page-url="${escapeAttr(canonicalUrl)}"><button type="button" data-copy-page>Copy page</button>${editLink}</div>`;
 }
 
 function pageStatus(page) {
