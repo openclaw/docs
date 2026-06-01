@@ -415,6 +415,7 @@ if (!/function showCopyFeedback/.test(siteJs) || !/data-copy-label="Copy code"/.
   throw new Error("assets: code copy controls should use stateful icon feedback");
 }
 if (!/\.heading-anchor\{[^}]*opacity:0/.test(siteCss)
+  || !/\.doc :is\(h1,h2,h3,h4,h5,h6\):hover \.heading-anchor/.test(siteCss)
   || !/\.heading-anchor:focus-visible/.test(siteCss)
   || !/\.heading-anchor \.heading-anchor-icon/.test(siteCss)
   || !/\.heading-anchor\[data-copy-state="copied"\] \.heading-anchor-check/.test(siteCss)) {
