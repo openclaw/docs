@@ -35,6 +35,7 @@ const browser = await chromium.launch({ headless: true });
 
 try {
   await checkDesktop();
+  await checkTocScrollspy();
   await checkAmbientCodePage();
   await checkMobile();
   await checkLightMode();
@@ -374,6 +375,60 @@ async function checkDesktop() {
     throw new Error(`showcase card grid columns failed: ${JSON.stringify(showcaseCardGrid)}`);
   }
   await page.close();
+}
+
+async function checkTocScrollspy() {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await page.goto(`${base}/channels/discord`, { waitUntil: "networkidle" });
+  await page.locator(".toc a").first().waitFor({ state: "visible" });
+  const initial = await page.evaluate(() => ({
+    active: [...document.querySelectorAll(".toc a.active")].map((link) => link.hash),
+    tocCount: document.querySelectorAll(".toc a").length,
+  }));
+  if (initial.tocCount < 4 || initial.active.length !== 1) {
+    throw new Error(`toc initial active state failed: ${JSON.stringify(initial)}`);
+  }
+
+  const scrolled = await scrollToTocItem(page, 4);
+  if (!scrolled || scrolled.activeHash !== scrolled.expectedHash || scrolled.scrollY < 700) {
+    throw new Error(`toc scrollspy failed on long page: ${JSON.stringify(scrolled)}`);
+  }
+
+  await page.click('a.nav-link[href$="/channels/telegram"]');
+  await page.waitForURL("**/channels/telegram");
+  await page.locator(".toc a").first().waitFor({ state: "visible" });
+  const afterPjax = await scrollToTocItem(page, 2);
+  if (!afterPjax
+    || afterPjax.pathname !== "/channels/telegram"
+    || afterPjax.activeHash !== afterPjax.expectedHash
+    || afterPjax.activeCount !== 1) {
+    throw new Error(`toc scrollspy failed after PJAX navigation: ${JSON.stringify(afterPjax)}`);
+  }
+  await page.close();
+}
+
+async function scrollToTocItem(page, index) {
+  const expected = await page.evaluate((targetIndex) => {
+    const links = [...document.querySelectorAll(".toc a")];
+    const items = links
+      .map((link) => ({ hash: link.hash, id: decodeURIComponent(link.hash.slice(1)) }))
+      .filter((item) => item.id && document.getElementById(item.id));
+    const item = items[Math.min(targetIndex, items.length - 1)];
+    document.getElementById(item?.id)?.scrollIntoView();
+    return item?.hash ?? null;
+  }, index);
+  if (!expected) return null;
+  await page.waitForFunction((hash) => [...document.querySelectorAll(".toc a.active")].some((link) => link.hash === hash), expected);
+  return page.evaluate((expectedHash) => {
+    const active = [...document.querySelectorAll(".toc a.active")];
+    return {
+      expectedHash,
+      activeHash: active[0]?.hash ?? null,
+      activeCount: active.length,
+      pathname: location.pathname,
+      scrollY,
+    };
+  }, expected);
 }
 
 async function checkMobile() {
