@@ -204,20 +204,47 @@ async function checkDesktop() {
     const rect = key?.getBoundingClientRect();
     return {
       display: style?.display,
+      text: key?.textContent?.trim(),
+      hasCommandIcon: Boolean(key?.querySelector(".icon-command")),
       width: rect?.width,
       height: rect?.height,
       borderRadius: style?.borderRadius,
-      borderColor: style?.borderColor,
+      backgroundColor: style?.backgroundColor,
       fontSize: style?.fontSize,
     };
   });
-  if (searchShortcut.display !== "grid"
-    || searchShortcut.width < 42
-    || searchShortcut.height < 26
-    || parseFloat(searchShortcut.borderRadius ?? "0") < 8
-    || parseFloat(searchShortcut.fontSize ?? "0") < 12) {
-    throw new Error(`search shortcut keycap failed: ${JSON.stringify(searchShortcut)}`);
+  if (searchShortcut.text !== "K"
+    || !searchShortcut.hasCommandIcon
+    || searchShortcut.width > 32
+    || searchShortcut.height > 18
+    || parseFloat(searchShortcut.borderRadius ?? "0") !== 0
+    || searchShortcut.backgroundColor !== "rgba(0, 0, 0, 0)") {
+    throw new Error(`search shortcut inline hint failed: ${JSON.stringify(searchShortcut)}`);
   }
+  await page.keyboard.press(process.platform === "darwin" ? "Meta+K" : "Control+K");
+  const searchOpen = await page.evaluate(() => ({
+    open: document.querySelector(".search-modal")?.classList.contains("open"),
+    focused: document.activeElement?.matches("[data-search-input]"),
+  }));
+  if (!searchOpen.open || !searchOpen.focused) {
+    throw new Error(`search shortcut did not open and focus input: ${JSON.stringify(searchOpen)}`);
+  }
+  await page.keyboard.press("Escape");
+  await page.evaluate(() => {
+    const textarea = document.createElement("textarea");
+    textarea.dataset.shortcutSmoke = "true";
+    document.body.append(textarea);
+    textarea.focus();
+  });
+  await page.keyboard.press(process.platform === "darwin" ? "Meta+K" : "Control+K");
+  const editableShortcut = await page.evaluate(() => ({
+    open: document.querySelector(".search-modal")?.classList.contains("open"),
+    focused: document.activeElement?.matches("[data-shortcut-smoke]"),
+  }));
+  if (editableShortcut.open || !editableShortcut.focused) {
+    throw new Error(`search shortcut hijacked editable target: ${JSON.stringify(editableShortcut)}`);
+  }
+  await page.evaluate(() => document.querySelector("[data-shortcut-smoke]")?.remove());
   await page.waitForTimeout(350);
   const initialFloatingChat = await page.evaluate(() => {
     const chat = document.querySelector(".docs-chat");

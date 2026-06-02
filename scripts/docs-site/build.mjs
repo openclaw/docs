@@ -15,6 +15,7 @@ import { renderPageOgSvg } from "./og-card-template.mjs";
 const root = process.cwd();
 const docsDir = path.join(root, "docs");
 const siteAssetsDir = path.join(root, "scripts", "docs-site");
+const shellPublicAssetsDir = path.join(siteAssetsDir, "assets");
 const outDir = path.join(root, "dist", "docs-site");
 const config = JSON.parse(fs.readFileSync(path.join(docsDir, "docs.json"), "utf8"));
 const sourceMetadata = readSourceMetadata(root);
@@ -325,6 +326,7 @@ ${page.hidden ? "" : pageMarkdownScript(page)}
 <h1>${escapeHtml(page.title)}</h1>
 ${pageStatus(page)}
 </header>
+${pageSearchMetadata(page, nav)}
 <div class="doc"${page.hidden ? ' data-pagefind-ignore' : ' data-pagefind-body'}>${html}</div>
 ${page.hidden ? "" : pageFeedback(page)}
 ${pager(prev, next)}
@@ -352,7 +354,7 @@ function siteHeader(page, nav, activeTab) {
   return `<header class="site-header">
 <div class="header-row">
 <div class="header-left"><a class="brand" href="${pageUrl(pageByKey.get(pageKey(page.locale, "index")) ?? page)}"><img src="${publicPath("/assets/pixel-lobster.svg")}" alt=""></a>${languagePicker(page)}</div>
-<button class="search-button" type="button" data-search-open>${icon("search")}<span class="search-label">Search...</span><span class="search-shortcut">⌘K</span></button>
+<button class="search-button" type="button" data-search-open>${icon("search")}<span class="search-label">Search...</span><span class="search-shortcut" aria-hidden="true">${icon("command")}<span>K</span></span></button>
 <nav class="header-links">${topLink("GitHub", "https://github.com/openclaw/openclaw", "github")}${topLink("Releases", "https://github.com/openclaw/openclaw/releases", "package")}${topLink("Discord", "https://discord.com/invite/clawd", "discord")}<button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme"><span class="theme-toggle-icon theme-toggle-icon-dark">${icon("moon")}</span><span class="theme-toggle-icon theme-toggle-icon-light">${icon("sun")}</span></button></nav>
 <button class="nav-toggle" type="button" data-nav-toggle>Menu</button>
 </div>
@@ -403,6 +405,16 @@ function articleMeta(page, nav) {
   const crumbTrail = breadcrumbs(page, nav);
   const tools = page.hidden ? "" : pageTools(page);
   return crumbTrail || tools ? `<div class="article-meta-row">${crumbTrail}${tools}</div>` : "";
+}
+
+function pageSearchMetadata(page, nav) {
+  if (page.hidden) return "";
+  const category = activeTabTitle(nav, page.slug);
+  const section = groupForPage(nav, page.slug);
+  return [
+    category ? `<span hidden data-pagefind-meta="category">${escapeHtml(category)}</span>` : "",
+    section ? `<span hidden data-pagefind-meta="section">${escapeHtml(section)}</span>` : "",
+  ].filter(Boolean).join("");
 }
 
 function breadcrumbs(page, nav) {
@@ -479,6 +491,9 @@ function icon(name) {
   if (name === "perplexity") return `<svg class="icon icon-perplexity" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 34 38" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.12114 0.0400391L15.919 9.98864V9.98636V0.062995H18.0209V10.0332L28.8671 0.0400391V11.3829H33.3202V27.744H28.8808V37.8442L18.0209 28.303V37.9538H15.919V28.4604L5.13338 37.96V27.744H0.680176V11.3829H5.12114V0.0400391ZM14.3344 13.4592H2.78208V25.6677H5.13074V21.8167L14.3344 13.4592ZM7.23518 22.7379V33.3271L15.919 25.6786V14.8506L7.23518 22.7379ZM18.0814 25.5775V14.8404L26.7677 22.7282V27.744H26.7789V33.219L18.0814 25.5775ZM28.8808 25.6677H31.2183V13.4592H19.752L28.8808 21.7302V25.6677ZM26.7652 11.3829V4.81584L19.6374 11.3829H26.7652ZM14.3507 11.3829H7.22306V4.81584L14.3507 11.3829Z"/></svg>`;
   const paths = {
     "search": '<path d="m21 21-4.35-4.35"/><circle cx="11" cy="11" r="7"/>',
+    "command": '<path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3"/>',
+    "corner-down-left": '<path d="M20 4v7a4 4 0 0 1-4 4H4"/><path d="m9 10-5 5 5 5"/>',
+    "x": '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
     "package": '<path d="m21 8-9-5-9 5 9 5 9-5Z"/><path d="m3 8 9 5 9-5"/><path d="M12 22V13"/><path d="m3 8v8l9 6 9-6V8"/>',
     "moon": '<path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/>',
     "sun": '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
@@ -542,7 +557,17 @@ function raiseIssueUrl(page) {
 }
 
 function searchModal() {
-  return `<div class="search-modal"><div class="search-panel"><div class="search-head"><input data-search-input placeholder="Search commands, channels, config..."><button data-search-close>Close</button></div><div class="search-hints" aria-label="Search shortcuts"><button type="button" data-search-suggestion="install">install</button><button type="button" data-search-suggestion="telegram">telegram</button><button type="button" data-search-suggestion="gateway">gateway</button><button type="button" data-search-suggestion="plugins">plugins</button></div><div class="search-results" data-search-results></div></div></div>`;
+  const avatar = chatAvatarAssets();
+  const suggestions = [
+    "Install OpenClaw",
+    "Set up Telegram",
+    "Fix Gateway",
+    "Build a plugin",
+  ];
+  const molty = chatApiUrl
+    ? `<button class="search-molty" type="button" data-search-molty><img src="${avatar.staticPath}" alt=""><span><span data-search-molty-prefix>Ask Molty</span> <strong data-search-molty-term hidden></strong></span><span class="search-molty-shortcut" aria-hidden="true">${icon("command")}${icon("corner-down-left")}</span></button>`
+    : "";
+  return `<div class="search-modal"><div class="search-panel" role="dialog" aria-modal="true" aria-label="Search documentation"><div class="search-head"><input data-search-input placeholder="Search commands, channels, config..." aria-label="Search documentation"><button class="search-close" type="button" data-search-clear aria-label="Clear search">${icon("x")}</button></div><div class="search-hints" aria-label="Search suggestions">${suggestions.map(label => `<button type="button" data-search-suggestion="${escapeAttr(label)}">${escapeHtml(label)}</button>`).join("")}</div><div class="search-results" data-search-results role="listbox" aria-label="Search results"></div>${molty}</div></div>`;
 }
 
 function writeLlmsIndex() {
@@ -642,10 +667,14 @@ function docsOrigin() {
 }
 
 function chatAvatarAssets() {
-  const staticPath = fs.existsSync(path.join(docsDir, "assets", "molty-avatar.png"))
+  const staticPath = fs.existsSync(path.join(shellPublicAssetsDir, "molty-avatar.png"))
+    ? "/assets/molty-avatar.png"
+    : fs.existsSync(path.join(docsDir, "assets", "molty-avatar.png"))
     ? "/assets/molty-avatar.png"
     : "/assets/pixel-lobster.svg";
-  const hoverPath = fs.existsSync(path.join(docsDir, "assets", "molty-avatar-hover.gif"))
+  const hoverPath = fs.existsSync(path.join(shellPublicAssetsDir, "molty-avatar-hover.gif"))
+    ? "/assets/molty-avatar-hover.gif"
+    : fs.existsSync(path.join(docsDir, "assets", "molty-avatar-hover.gif"))
     ? "/assets/molty-avatar-hover.gif"
     : staticPath;
   return { staticPath: publicPath(staticPath), hoverPath: publicPath(hoverPath) };
@@ -799,6 +828,7 @@ function collectNavSlugs(nav) {
 function writeStaticAssets() {
   const assetsDir = path.join(outDir, "assets");
   fs.mkdirSync(assetsDir, { recursive: true });
+  copyDir(shellPublicAssetsDir, assetsDir);
   fs.writeFileSync(path.join(assetsDir, "docs-site.css"), shellCss, "utf8");
   fs.writeFileSync(path.join(assetsDir, "docs-site.js"), shellJs, "utf8");
   const mermaidDist = path.join(root, "node_modules", "mermaid", "dist");
