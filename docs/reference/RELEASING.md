@@ -243,8 +243,10 @@ vYYYY.M.D-beta.N` from the matching `release/YYYY.M.D` branch. The helper runs
   signed Windows Hub installers from the companion repo, verifies their
   Authenticode signatures on a Windows runner, writes a SHA-256 manifest, and
   uploads the installers plus manifest onto the canonical OpenClaw GitHub
-  release. Website download links should target the OpenClaw release assets, not
-  only the companion repo release page.
+  release. Website download links should target exact OpenClaw release asset
+  URLs for the current stable release, or `releases/latest/download/...` only
+  after verifying GitHub's latest redirect points at that same release; do not
+  link only to the companion repo release page.
 - Release checks now run in a separate manual workflow:
   `OpenClaw Release Checks`
 - `OpenClaw Release Checks` also runs the QA Lab mock parity lane plus the fast
