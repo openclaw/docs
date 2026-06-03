@@ -500,7 +500,7 @@ if (!/\.oc-code figcaption button:before/.test(siteCss)
 }
 if (!/\.article-meta-row\{display:flex;align-items:center;justify-content:space-between/.test(siteCss)
   || !/\.page-actions\{display:inline-flex;align-items:stretch;position:relative\}/.test(siteCss)
-  || !/\.page-tools \.page-actions-primary\{display:inline-flex;align-items:center;gap:7px/.test(siteCss)
+  || !/\.page-tools \.page-actions-primary\{display:inline-flex;align-items:center;gap:7px;white-space:nowrap/.test(siteCss)
   || !/\.page-tools \.page-actions-more summary\{display:grid;place-items:center;width:34px/.test(siteCss)
   || !/\.page-tools \.page-actions-more \.page-actions-menu\{position:absolute;top:calc\(100% \+ 8px\);left:auto;right:0;z-index:40;display:none/.test(siteCss)
   || !/\.page-tools \.page-actions-more\[open\] \.page-actions-menu\{display:grid\}/.test(siteCss)
@@ -511,6 +511,10 @@ if (!/\.page-tools \.page-actions-primary:hover,\.page-tools \.page-actions-more
   || !/\.page-tools \.page-action-external\{justify-self:end;color:var\(--muted\)/.test(siteCss)
   || !/\.page-feedback-links\{display:flex;align-items:center;gap:9px;margin-left:auto\}/.test(siteCss)) {
   throw new Error("assets: page action hover, external marker, and footer link skin are missing");
+}
+if (!/\.oc-step \.oc-code\{max-width:100%;margin:14px 0 18px\}/.test(siteCss)
+  || !/\.oc-step \.oc-code:last-child\{margin-bottom:0\}/.test(siteCss)) {
+  throw new Error("assets: step code blocks should leave room before following text");
 }
 const ambient = fs.readFileSync(path.join(site, "channels/ambient-room-events/index.html"), "utf8");
 if (!/<figure class="oc-code" data-code-label="json5">/.test(ambient)

@@ -110,6 +110,19 @@ async function checkDesktop() {
     || componentSkin.codeLineGap > 3) {
     throw new Error(`desktop component skin failed: ${JSON.stringify(componentSkin)}`);
   }
+  const stepCodeSpacing = await page.evaluate(() => {
+    const code = document.querySelector(".oc-step .oc-code");
+    const next = code?.nextElementSibling;
+    const codeRect = code?.getBoundingClientRect();
+    const nextRect = next?.getBoundingClientRect();
+    return {
+      nextTag: next?.tagName,
+      gap: codeRect && nextRect ? Math.round(nextRect.top - codeRect.bottom) : null,
+    };
+  });
+  if (stepCodeSpacing.nextTag !== "P" || (stepCodeSpacing.gap ?? 0) < 14) {
+    throw new Error(`step code block spacing failed: ${JSON.stringify(stepCodeSpacing)}`);
+  }
   const cardGrids = await page.evaluate(() => {
     const countColumns = (grid) => {
       const cards = [...grid.querySelectorAll(":scope > .oc-card")];
@@ -164,6 +177,25 @@ async function checkDesktop() {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(`${base}/`, { waitUntil: "networkidle" });
   await expectVisible(page, ".page-tools [data-copy-page]", "copy page tool");
+  const pageActionPrimary = await page.evaluate(() => {
+    const control = document.querySelector(".page-actions-primary");
+    const label = control?.querySelector("[data-copy-feedback]");
+    const controlRect = control?.getBoundingClientRect();
+    const labelRect = label?.getBoundingClientRect();
+    const iconRect = control?.querySelector(".icon")?.getBoundingClientRect();
+    const style = control ? getComputedStyle(control) : null;
+    return {
+      whiteSpace: style?.whiteSpace,
+      controlHeight: controlRect?.height,
+      labelHeight: labelRect?.height,
+      sameLine: iconRect && labelRect ? Math.abs(iconRect.top - labelRect.top) < 4 : false,
+    };
+  });
+  if (pageActionPrimary.whiteSpace !== "nowrap"
+    || (pageActionPrimary.labelHeight ?? 0) > (pageActionPrimary.controlHeight ?? 0)
+    || !pageActionPrimary.sameLine) {
+    throw new Error(`page action primary wrapping failed: ${JSON.stringify(pageActionPrimary)}`);
+  }
   await expectVisible(page, ".page-feedback [data-feedback-value='yes']", "page feedback");
   const searchShortcut = await page.evaluate(() => {
     const key = document.querySelector(".search-shortcut");
