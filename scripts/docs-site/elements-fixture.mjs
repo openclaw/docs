@@ -286,6 +286,8 @@ Use a CTA when a long-form article has one obvious next action. Keep it specific
     \`\`\`sh
     curl -fsSL https://openclaw.ai/install.sh | bash
     \`\`\`
+
+    Continue with the next command only after the installer exits cleanly.
   </Step>
   <Step title="Run onboarding">
     Pair a channel and choose a model provider.
