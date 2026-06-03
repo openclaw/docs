@@ -387,7 +387,8 @@ and troubleshooting see the main [FAQ](/help/faq).
     - Add that directory to your user PATH (no `\bin` suffix needed on Windows; on most systems it is `%AppData%\npm`).
     - Close and reopen PowerShell after updating PATH.
 
-    If you want the smoothest Windows setup, use **WSL2** instead of native Windows.
+    For desktop setup, use the native **Windows Hub** app. For terminal-only
+    setup, the PowerShell installer and WSL2 Gateway paths are both supported.
     Docs: [Windows](/platforms/windows).
 
   </Accordion>
