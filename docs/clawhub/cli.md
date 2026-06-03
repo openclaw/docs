@@ -192,7 +192,7 @@ clawhub skill publish ./my-skill --version 1.0.0
 #### GitHub Actions
 
 ClawHub ships an official reusable workflow at
-[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/953358a32278059f09554a814d00561663e0a4e2/.github/workflows/skill-publish.yml)
+[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/858a121d3365b0808b8fe526326b71db8eb9d06f/.github/workflows/skill-publish.yml)
 for skill repos and catalog repos.
 
 Typical catalog setup:
@@ -594,7 +594,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/953358a32278059f09554a814d00561663e0a4e2/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/858a121d3365b0808b8fe526326b71db8eb9d06f/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
