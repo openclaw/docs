@@ -31,7 +31,7 @@ jobs:
       cancel-in-progress: false
     steps:
       - name: Checkout publish repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.0.2
         with:
           ref: ${{ inputs.publish_ref }}
           fetch-depth: 0
@@ -76,7 +76,7 @@ jobs:
 
       - name: Checkout source repo
         if: steps.stale.outputs.skip != 'true'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.0.2
         with:
           repository: ${{ steps.meta.outputs.repository }}
           ref: ${{ steps.meta.outputs.sha }}

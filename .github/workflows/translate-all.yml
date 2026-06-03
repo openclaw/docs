@@ -89,7 +89,7 @@ jobs:
       source_sha: ${{ steps.prepare.outputs.source_sha }}
     steps:
       - name: Check out
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
 
@@ -298,7 +298,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out latest main
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
 

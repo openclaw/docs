@@ -55,7 +55,7 @@ jobs:
       url: https://docs.openclaw.ai
     steps:
       - name: Check out
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.0.2
 
       - name: Classify artifact scope
         id: artifact-scope
@@ -117,7 +117,7 @@ jobs:
 
       - name: Check out OpenClaw source
         if: steps.artifact-scope.outputs.scope == 'full'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.0.2
         with:
           repository: ${{ steps.source-meta.outputs.repository }}
           ref: ${{ steps.source-meta.outputs.sha }}
