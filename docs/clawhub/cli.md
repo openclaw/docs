@@ -189,10 +189,28 @@ Stores your API token + cached registry URL.
 clawhub skill publish ./my-skill --version 1.0.0
 ```
 
+### `scan [path]`
+
+- Requires `clawhub login`.
+- Runs ClawHub ClawScan through `POST /api/v1/skills/-/scan`, then polls until the scan is terminal.
+- Local path scans are always ephemeral. They upload the local skill bundle for scanning, print the security report, and never create or update a published skill/version.
+- Published scans require ownership or publisher management access. Moderators/admins can use the same backend through `clawhub-mod`.
+- `--update` is valid only with `--slug`; it writes successful published scan results back to the selected version.
+- `--output <file.zip>` downloads the full report archive with `manifest.json`, `clawscan.json`, `skillspector.json`, `static-analysis.json`, `virustotal.json`, and `README.md`.
+- `--json` prints the full poll response for automation.
+
+```bash
+clawhub scan ./my-skill
+clawhub scan ./my-skill --output report.zip
+clawhub scan --slug gifgrep
+clawhub scan --slug gifgrep --version 1.2.3
+clawhub scan --slug gifgrep --update --output report.zip
+```
+
 #### GitHub Actions
 
 ClawHub ships an official reusable workflow at
-[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/162528abe4eac6ed258b1b91a91a8825bfff2424/.github/workflows/skill-publish.yml)
+[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/e8cfbddf17a678b4a36be3dae2e2dfe8c041bced/.github/workflows/skill-publish.yml)
 for skill repos and catalog repos.
 
 Typical catalog setup:
@@ -594,7 +612,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/162528abe4eac6ed258b1b91a91a8825bfff2424/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/e8cfbddf17a678b4a36be3dae2e2dfe8c041bced/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
