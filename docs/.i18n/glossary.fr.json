@@ -218,5 +218,31 @@
     "target": "Canaux",
     "ignore_case": true,
     "whole_word": true
+  },
+  {
+    "source": "Agent runtimes",
+    "target": "Environnements d'exécution des agents",
+    "ignore_case": true
+  },
+  {
+    "source": "Talk mode",
+    "target": "Mode vocal",
+    "ignore_case": true
+  },
+  {
+    "source": "Capability Cookbook",
+    "target": "Recueil de capacités",
+    "ignore_case": true
+  },
+  {
+    "source": "Steering queue",
+    "target": "File de pilotage",
+    "ignore_case": true
+  },
+  {
+    "source": "Steer",
+    "target": "Piloter",
+    "ignore_case": true,
+    "whole_word": true
   }
 ]
