@@ -1347,6 +1347,7 @@
                       "tools/kimi-search",
                       "tools/minimax-search",
                       "tools/ollama-search",
+                      "tools/parallel-search",
                       "tools/perplexity-search",
                       "tools/searxng-search",
                       "tools/tavily"
@@ -2931,6 +2932,7 @@
                       "zh-TW/tools/kimi-search",
                       "zh-TW/tools/minimax-search",
                       "zh-TW/tools/ollama-search",
+                      "zh-TW/tools/parallel-search",
                       "zh-TW/tools/perplexity-search",
                       "zh-TW/tools/searxng-search",
                       "zh-TW/tools/tavily"
@@ -3859,6 +3861,7 @@
                       "ja-JP/tools/kimi-search",
                       "ja-JP/tools/minimax-search",
                       "ja-JP/tools/ollama-search",
+                      "ja-JP/tools/parallel-search",
                       "ja-JP/tools/perplexity-search",
                       "ja-JP/tools/searxng-search",
                       "ja-JP/tools/tavily"
@@ -4787,6 +4790,7 @@
                       "es/tools/kimi-search",
                       "es/tools/minimax-search",
                       "es/tools/ollama-search",
+                      "es/tools/parallel-search",
                       "es/tools/perplexity-search",
                       "es/tools/searxng-search",
                       "es/tools/tavily"
@@ -5715,6 +5719,7 @@
                       "pt-BR/tools/kimi-search",
                       "pt-BR/tools/minimax-search",
                       "pt-BR/tools/ollama-search",
+                      "pt-BR/tools/parallel-search",
                       "pt-BR/tools/perplexity-search",
                       "pt-BR/tools/searxng-search",
                       "pt-BR/tools/tavily"
@@ -6643,6 +6648,7 @@
                       "ko/tools/kimi-search",
                       "ko/tools/minimax-search",
                       "ko/tools/ollama-search",
+                      "ko/tools/parallel-search",
                       "ko/tools/perplexity-search",
                       "ko/tools/searxng-search",
                       "ko/tools/tavily"
@@ -7571,6 +7577,7 @@
                       "de/tools/kimi-search",
                       "de/tools/minimax-search",
                       "de/tools/ollama-search",
+                      "de/tools/parallel-search",
                       "de/tools/perplexity-search",
                       "de/tools/searxng-search",
                       "de/tools/tavily"
@@ -8499,6 +8506,7 @@
                       "fr/tools/kimi-search",
                       "fr/tools/minimax-search",
                       "fr/tools/ollama-search",
+                      "fr/tools/parallel-search",
                       "fr/tools/perplexity-search",
                       "fr/tools/searxng-search",
                       "fr/tools/tavily"
@@ -9427,6 +9435,7 @@
                       "ar/tools/kimi-search",
                       "ar/tools/minimax-search",
                       "ar/tools/ollama-search",
+                      "ar/tools/parallel-search",
                       "ar/tools/perplexity-search",
                       "ar/tools/searxng-search",
                       "ar/tools/tavily"
@@ -10355,6 +10364,7 @@
                       "it/tools/kimi-search",
                       "it/tools/minimax-search",
                       "it/tools/ollama-search",
+                      "it/tools/parallel-search",
                       "it/tools/perplexity-search",
                       "it/tools/searxng-search",
                       "it/tools/tavily"
@@ -11283,6 +11293,7 @@
                       "vi/tools/kimi-search",
                       "vi/tools/minimax-search",
                       "vi/tools/ollama-search",
+                      "vi/tools/parallel-search",
                       "vi/tools/perplexity-search",
                       "vi/tools/searxng-search",
                       "vi/tools/tavily"
@@ -12211,6 +12222,7 @@
                       "nl/tools/kimi-search",
                       "nl/tools/minimax-search",
                       "nl/tools/ollama-search",
+                      "nl/tools/parallel-search",
                       "nl/tools/perplexity-search",
                       "nl/tools/searxng-search",
                       "nl/tools/tavily"
@@ -13139,6 +13151,7 @@
                       "tr/tools/kimi-search",
                       "tr/tools/minimax-search",
                       "tr/tools/ollama-search",
+                      "tr/tools/parallel-search",
                       "tr/tools/perplexity-search",
                       "tr/tools/searxng-search",
                       "tr/tools/tavily"
@@ -14067,6 +14080,7 @@
                       "uk/tools/kimi-search",
                       "uk/tools/minimax-search",
                       "uk/tools/ollama-search",
+                      "uk/tools/parallel-search",
                       "uk/tools/perplexity-search",
                       "uk/tools/searxng-search",
                       "uk/tools/tavily"
@@ -14995,6 +15009,7 @@
                       "id/tools/kimi-search",
                       "id/tools/minimax-search",
                       "id/tools/ollama-search",
+                      "id/tools/parallel-search",
                       "id/tools/perplexity-search",
                       "id/tools/searxng-search",
                       "id/tools/tavily"
@@ -15923,6 +15938,7 @@
                       "pl/tools/kimi-search",
                       "pl/tools/minimax-search",
                       "pl/tools/ollama-search",
+                      "pl/tools/parallel-search",
                       "pl/tools/perplexity-search",
                       "pl/tools/searxng-search",
                       "pl/tools/tavily"
