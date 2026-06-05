@@ -210,7 +210,7 @@ clawhub scan --slug gifgrep --update --output report.zip
 #### GitHub Actions
 
 ClawHub ships an official reusable workflow at
-[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/59667cc1a5418d46c6c3c7d3a751c62e272fc8dd/.github/workflows/skill-publish.yml)
+[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/1a968d824377717deef87246063244be528929f7/.github/workflows/skill-publish.yml)
 for skill repos and catalog repos.
 
 Typical catalog setup:
@@ -612,7 +612,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/59667cc1a5418d46c6c3c7d3a751c62e272fc8dd/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/1a968d824377717deef87246063244be528929f7/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
