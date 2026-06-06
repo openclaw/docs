@@ -401,6 +401,7 @@ for (const marker of [
   'class="oc-card-grid oc-card-cols-4"',
   'class="oc-card"',
   'class="oc-code"',
+  'class="oc-code is-expandable"',
   'class="oc-code-group"',
   'scripts/setup-openclaw.sh',
   'openclaw.json5',
@@ -439,6 +440,8 @@ for (const marker of [
   'Ready&lt;br&gt;state',
   'Broken --&gt;',
   'data-code-copy',
+  'data-code-expand',
+  'Show more',
   'class="code-line is-highlighted"',
   'data-prompt-copy',
   'data-heading-anchor',
@@ -506,6 +509,12 @@ if (!/function initCodeGroups/.test(siteJs) || !/className="oc-code-tab"/.test(s
 if (!/function handleDocsControlClick/.test(siteJs) || !/async function copyText/.test(siteJs)) {
   throw new Error("assets: copy and feedback controls are missing");
 }
+if (!/function toggleCodeExpand/.test(siteJs)
+  || !/data-code-expand/.test(siteJs)
+  || !/is-expanded/.test(siteJs)
+  || !/Show less/.test(siteJs)) {
+  throw new Error("assets: expandable code controls are missing");
+}
 if (!/function copyPageMarkdown/.test(siteJs)
   || !/function pageMarkdownForCopy/.test(siteJs)
   || !/function setCopyFeedback/.test(siteJs)
@@ -549,6 +558,12 @@ if (!/\.page-tools \.page-actions-primary:hover,\.page-tools \.page-actions-more
   || !/\.page-tools \.page-action-external\{justify-self:end;color:var\(--muted\)/.test(siteCss)
   || !/\.page-feedback-links\{display:flex;align-items:center;gap:9px;margin-left:auto\}/.test(siteCss)) {
   throw new Error("assets: page action hover, external marker, and footer link skin are missing");
+}
+if (!/\.doc \.oc-code\.is-expandable\{position:relative\}/.test(siteCss)
+  || !/\.doc \.oc-code\.is-expandable\.is-expanded pre\{max-height:none\}/.test(siteCss)
+  || !/\.doc \.oc-code\.is-expandable:not\(\.is-expanded\):after\{[^}]*linear-gradient\(180deg,transparent,var\(--code-block\)\)/.test(siteCss)
+  || !/\.oc-code-expand\{[^}]*border-top:1px solid var\(--code-border\)/.test(siteCss)) {
+  throw new Error("assets: expandable code affordance skin is missing");
 }
 if (!/\.oc-step \.oc-code\{max-width:100%;margin:14px 0 18px\}/.test(siteCss)
   || !/\.oc-step \.oc-code:last-child\{margin-bottom:0\}/.test(siteCss)) {
