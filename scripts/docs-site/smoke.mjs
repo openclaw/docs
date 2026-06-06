@@ -244,6 +244,9 @@ if (!/--code:#f7f4f0;--code-inline:#f3efea;--code-block:#fffefa;--code-text:#2d2
 if (/\.toc a:first-of-type/.test(siteCss)) {
   throw new Error("assets: first table-of-contents item is hard-highlighted");
 }
+if (!/\.toc summary\{display:none\}/.test(siteCss)) {
+  throw new Error("assets: desktop table of contents summary must stay hidden");
+}
 if (!/\.doc pre \.tok-comment,\.doc pre \.hljs-comment/.test(siteCss)
   || !/\.doc pre \.tok-key,\.doc pre \.hljs-attr/.test(siteCss)) {
   throw new Error("assets: syntax token colors are not theme-variable based");
@@ -289,10 +292,10 @@ if (!/function syncStickyHeaderOffset/.test(siteJs)
   || !/syncStickyHeaderOffset\(\);\s*syncTocDisclosure\(\);\s*initChat\(\);\s*initCodeGroups\(\)/.test(siteJs)) {
   throw new Error("assets: compact page orientation should refresh across PJAX navigation");
 }
-if (!/\.toc\{position:fixed;left:24px;top:calc\(var\(--sticky-header-h\) \+ 8px\);z-index:60/.test(siteCss)
+if (!/\.toc\{position:fixed;left:calc\(24px \+ 220px \+ 34px\);top:calc\(var\(--sticky-header-h\) \+ 8px\);z-index:60/.test(siteCss)
   || !/\.toc\.is-visible,\.toc\[open\]\{opacity:1;visibility:visible;pointer-events:auto;transform:none\}/.test(siteCss)
   || !/\.toc summary\{display:flex;align-items:center;gap:8px/.test(siteCss)
-  || !/\.toc nav\{position:absolute;left:0;top:calc\(100% \+ 8px\);display:none/.test(siteCss)
+  || !/\.toc nav\{position:absolute;left:0;top:calc\(100% \+ 8px\);display:none;width:min\(340px,calc\(100vw - 302px\)\)/.test(siteCss)
   || !/Math\.max\(scrollY,document\.scrollingElement\?\.scrollTop\|\|0\)>8/.test(siteJs)
   || !/\.toc\[open\] nav\{display:grid;gap:2px\}/.test(siteCss)) {
   throw new Error("assets: compact table of contents dropdown is missing for mid-width pages");
