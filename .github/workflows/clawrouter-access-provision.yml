@@ -1,0 +1,35 @@
+name: ClawRouter Access Provision
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  provision:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out ClawRouter
+        uses: actions/checkout@v6
+        with:
+          repository: openclaw/clawrouter
+          ref: main
+          path: clawrouter
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Provision ClawRouter Cloudflare Access
+        working-directory: clawrouter
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLAWROUTER_ACCESS_DOMAIN: clawrouter.openclaw.ai
+          CLAWROUTER_ACCESS_ALLOWED_DOMAINS: openclaw.ai
+          CLAWROUTER_ACCESS_ADMIN_EMAILS: vincentkoc@ieee.org
+          CLAWROUTER_ACCESS_DEFAULT_TENANT: openclaw
+        run: node scripts/provision-access.mjs
