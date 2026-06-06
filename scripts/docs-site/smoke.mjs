@@ -128,12 +128,27 @@ if (!/class="tab-link active" href="(?:\/docs)?\/it\/channels"/.test(itChannels)
 if (!/<section class="nav-section"><h2>Overview<\/h2>/.test(itChannels)) {
   throw new Error("it channels: localized sidebar is missing");
 }
+if (!itChannels.includes(`<link rel="alternate" hreflang="it" href="${expectedOrigin}/it/channels">`)) {
+  throw new Error("it channels: self-referential hreflang alternate is missing");
+}
+if (!itChannels.includes(`<link rel="alternate" hreflang="en" href="${expectedOrigin}/channels">`)) {
+  throw new Error("it channels: hreflang alternate back to English is missing");
+}
+if (!itChannels.includes(`<link rel="alternate" hreflang="x-default" href="${expectedOrigin}/channels">`)) {
+  throw new Error("it channels: x-default hreflang alternate is missing");
+}
 const index = fs.readFileSync(path.join(site, "index.html"), "utf8");
 if (!index.includes(`<link rel="canonical" href="${expectedOrigin}/">`)) {
   throw new Error(`index: canonical link should use ${expectedOrigin}`);
 }
 if (!index.includes(`<meta property="og:url" content="${expectedOrigin}/">`)) {
   throw new Error(`index: og:url should use ${expectedOrigin}`);
+}
+if (!index.includes(`<link rel="alternate" hreflang="en" href="${expectedOrigin}/">`)) {
+  throw new Error("index: self-referential hreflang alternate is missing");
+}
+if (!index.includes(`<link rel="alternate" hreflang="x-default" href="${expectedOrigin}/">`)) {
+  throw new Error("index: x-default hreflang alternate is missing");
 }
 const gettingStarted = fs.readFileSync(path.join(site, "start/getting-started/index.html"), "utf8");
 const gettingStartedOgImage = `${expectedOrigin}/og/start/getting-started.png`;
