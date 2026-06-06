@@ -286,7 +286,7 @@ if (!/function scrollActiveNavLink/.test(siteJs)
 }
 if (!/function syncStickyHeaderOffset/.test(siteJs)
   || !/function syncTocDisclosure/.test(siteJs)
-  || !/syncStickyHeaderOffset\(\);syncTocDisclosure\(\);initChat\(\);initCodeGroups\(\)/.test(siteJs)) {
+  || !/syncStickyHeaderOffset\(\);\s*syncTocDisclosure\(\);\s*initChat\(\);\s*initCodeGroups\(\)/.test(siteJs)) {
   throw new Error("assets: compact page orientation should refresh across PJAX navigation");
 }
 if (!/\.toc\{position:fixed;left:24px;top:calc\(var\(--sticky-header-h\) \+ 8px\);z-index:60/.test(siteCss)
