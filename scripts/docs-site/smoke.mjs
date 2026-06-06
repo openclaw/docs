@@ -300,6 +300,15 @@ if (!/\.toc\{position:fixed;left:calc\(24px \+ 220px \+ 34px\);top:calc\(var\(--
   || !/\.toc\[open\] nav\{display:grid;gap:2px\}/.test(siteCss)) {
   throw new Error("assets: compact table of contents dropdown is missing for mid-width pages");
 }
+if (!/let tocObserver=null/.test(siteJs)
+  || !/function initTocScrollspy/.test(siteJs)
+  || !/new IntersectionObserver/.test(siteJs)
+  || !/rootMargin:"-120px 0px -70% 0px"/.test(siteJs)
+  || !/scroller\.scrollTop\+innerHeight>=scroller\.scrollHeight-2/.test(siteJs)
+  || !/scrollTarget\(url\.hash\);initTocScrollspy\(\)/.test(siteJs)
+  || !/scrollActiveNavLink\(\);\s*initTocScrollspy\(\);\s*document\.addEventListener\("click"/.test(siteJs)) {
+  throw new Error("assets: table-of-contents scrollspy is missing");
+}
 if (!/function setNavOpen/.test(siteJs) || !/body\.nav-open:before/.test(siteCss) || !/data-nav-close/.test(index)) {
   throw new Error("assets: mobile navigation drawer state is missing");
 }
