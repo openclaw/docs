@@ -24,6 +24,7 @@ const legacyBasePath = normalizeBasePath(process.env.DOCS_SITE_LEGACY_BASE_PATH 
 const canonicalOrigin = (process.env.DOCS_SITE_CANONICAL_ORIGIN
   ?? (process.env.DOCS_SITE_CNAME ? `https://${process.env.DOCS_SITE_CNAME}` : "https://docs.openclaw.ai"))
   .replace(/\/$/, "");
+const feedbackIssueRepository = normalizeRepository(process.env.DOCS_FEEDBACK_ISSUE_REPO ?? "openclaw/openclaw");
 const llmsFullAvailable = process.env.DOCS_SITE_LLMS_FULL_AVAILABLE === "1";
 const ogImagePath = "/og-card.png";
 const renderedPageOgCards = new Set();
@@ -529,13 +530,15 @@ function pager(prev, next) {
 function pageFeedback(page) {
   const editUrl = editSourceUrlForPage(page, sourceMetadata);
   const editLink = editUrl ? `<a href="${escapeAttr(editUrl)}">Edit source</a>` : "";
-  return `<section class="page-feedback" aria-label="Page feedback"><span>Was this useful?</span><button type="button" data-feedback-value="yes">Yes</button><button type="button" data-feedback-value="no">No</button><output data-feedback-result></output><nav class="page-feedback-links" aria-label="Page source and issue">${editLink}<a href="${escapeAttr(raiseIssueUrl(page))}">Raise issue</a></nav></section>`;
+  const pagePath = pageRoute(page);
+  const canonicalUrl = `${docsOrigin()}${pagePath}`;
+  return `<section class="page-feedback" aria-label="Page feedback" data-feedback-path="${escapeAttr(pagePath)}" data-feedback-url="${escapeAttr(canonicalUrl)}" data-feedback-repo="${escapeAttr(feedbackIssueRepository)}"><div class="page-feedback-prompt"><span>Was this useful?</span><button type="button" data-feedback-value="yes" aria-pressed="false">Yes</button><button type="button" data-feedback-value="no" aria-pressed="false">No</button><output data-feedback-result></output></div><nav class="page-feedback-links" aria-label="Page source and issue">${editLink}<a href="${escapeAttr(raiseIssueUrl(page))}">Raise issue</a></nav><div class="page-feedback-composer" data-feedback-composer hidden><textarea data-feedback-detail rows="3" placeholder="What were you looking for?" aria-label="What was missing?"></textarea><a class="page-feedback-submit" data-feedback-issue-link target="_blank" rel="noopener noreferrer">${icon("github")}<span>Open issue</span></a></div></section>`;
 }
 
 function raiseIssueUrl(page) {
   const title = encodeURIComponent("Issue on docs");
   const body = encodeURIComponent(`Path: ${pageRoute(page)}`);
-  return `https://github.com/openclaw/openclaw/issues/new?title=${title}&body=${body}`;
+  return `https://github.com/${feedbackIssueRepository}/issues/new?title=${title}&body=${body}`;
 }
 
 function searchModal() {
@@ -927,6 +930,11 @@ function publicPath(value) {
 function normalizeBasePath(value) {
   if (!value || value === "/") return "";
   return `/${value.replace(/^\/+|\/+$/g, "")}`;
+}
+
+function normalizeRepository(value) {
+  const repo = String(value).trim();
+  return /^[^/\s]+\/[^/\s]+$/.test(repo) ? repo : "openclaw/openclaw";
 }
 
 function htmlLang(locale) {
