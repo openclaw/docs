@@ -244,6 +244,9 @@ if (!/--code:#f7f4f0;--code-inline:#f3efea;--code-block:#fffefa;--code-text:#2d2
 if (/\.toc a:first-of-type/.test(siteCss)) {
   throw new Error("assets: first table-of-contents item is hard-highlighted");
 }
+if (!/\.toc summary\{display:none\}/.test(siteCss)) {
+  throw new Error("assets: desktop table of contents summary must stay hidden");
+}
 if (!/\.doc pre \.tok-comment,\.doc pre \.hljs-comment/.test(siteCss)
   || !/\.doc pre \.tok-key,\.doc pre \.hljs-attr/.test(siteCss)) {
   throw new Error("assets: syntax token colors are not theme-variable based");
@@ -283,6 +286,19 @@ if (!/function scrollActiveNavLink/.test(siteJs)
   || !/Math\.max\(0,Math\.min\(max,target\)\)/.test(siteJs)
   || !/scrollActiveNavLink\(\)/.test(siteJs.match(/function syncSidebar[^]+?function setNavOpen/)?.[0] ?? "")) {
   throw new Error("assets: active sidebar link is not centered in view");
+}
+if (!/function syncStickyHeaderOffset/.test(siteJs)
+  || !/function syncTocDisclosure/.test(siteJs)
+  || !/syncStickyHeaderOffset\(\);\s*syncTocDisclosure\(\);\s*initChat\(\);\s*initCodeGroups\(\)/.test(siteJs)) {
+  throw new Error("assets: compact page orientation should refresh across PJAX navigation");
+}
+if (!/\.toc\{position:fixed;left:calc\(24px \+ 220px \+ 34px\);top:calc\(var\(--sticky-header-h\) \+ 8px\);z-index:60/.test(siteCss)
+  || !/\.toc\.is-visible,\.toc\[open\]\{opacity:1;visibility:visible;pointer-events:auto;transform:none\}/.test(siteCss)
+  || !/\.toc summary\{display:flex;align-items:center;gap:8px/.test(siteCss)
+  || !/\.toc nav\{position:absolute;left:0;top:calc\(100% \+ 8px\);display:none;width:min\(340px,calc\(100vw - 302px\)\)/.test(siteCss)
+  || !/Math\.max\(scrollY,document\.scrollingElement\?\.scrollTop\|\|0\)>8/.test(siteJs)
+  || !/\.toc\[open\] nav\{display:grid;gap:2px\}/.test(siteCss)) {
+  throw new Error("assets: compact table of contents dropdown is missing for mid-width pages");
 }
 if (!/function setNavOpen/.test(siteJs) || !/body\.nav-open:before/.test(siteCss) || !/data-nav-close/.test(index)) {
   throw new Error("assets: mobile navigation drawer state is missing");
@@ -338,7 +354,7 @@ if (!/\.oc-callout\{[^}]*--callout-accent:var\(--brand\)[^}]*border-left:3px sol
 if (!/\.oc-table-wrap\{[^}]*max-width:100%;overflow:auto/.test(siteCss)
   || !/\.doc code\{overflow-wrap:anywhere;word-break:break-word\}/.test(siteCss)
   || !/@media\(max-width:820px\)[\s\S]*?\.doc \.oc-table\{min-width:0;table-layout:fixed\}/.test(siteCss)
-  || !/:root\{--tooltip-bg:#f4f1ef;--tooltip-text:#171514;--tooltip-border:#f4f1ef\}/.test(siteCss)
+  || !/:root\{--tooltip-bg:#f4f1ef;--tooltip-text:#171514;--tooltip-border:#f4f1ef[^}]*\}/.test(siteCss)
   || !/:root\[data-theme="light"\]\{--tooltip-bg:#171514;--tooltip-text:#fffdfa;--tooltip-border:#171514\}/.test(siteCss)
   || !/\.oc-chart\{[^}]*border:1px solid var\(--line-strong\)/.test(siteCss)
   || !/\.oc-chart-mark\[data-tip\]:hover:after/.test(siteCss)

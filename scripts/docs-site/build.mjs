@@ -412,13 +412,13 @@ function breadcrumbs(page, nav) {
   const group = groupForPage(nav, page.slug);
   const parts = [
     activeTab && activeTabPage
-      ? `<a href="${escapeAttr(pageUrl(activeTabPage))}">${escapeHtml(activeTab)}</a>`
-      : activeTab ? `<span>${escapeHtml(activeTab)}</span>` : "",
-    group ? `<span>${escapeHtml(group)}</span>` : "",
-    `<span aria-current="page">${escapeHtml(page.title)}</span>`,
+      ? { className: "breadcrumb-tab", html: `<a href="${escapeAttr(pageUrl(activeTabPage))}">${escapeHtml(activeTab)}</a>` }
+      : activeTab ? { className: "breadcrumb-tab", html: `<span>${escapeHtml(activeTab)}</span>` } : null,
+    group ? { className: "breadcrumb-group", html: `<span>${escapeHtml(group)}</span>` } : null,
+    { className: "breadcrumb-page", html: `<span aria-current="page">${escapeHtml(page.title)}</span>` },
   ].filter(Boolean);
   return parts.length > 1
-    ? `<nav class="breadcrumbs" aria-label="Breadcrumb">${parts.join("<span aria-hidden=\"true\">/</span>")}</nav>`
+    ? `<nav class="breadcrumbs" aria-label="Breadcrumb">${parts.map((part, index) => `<span class="breadcrumb-part ${part.className}">${index ? '<span class="breadcrumb-separator" aria-hidden="true">/</span>' : ""}${part.html}</span>`).join("")}</nav>`
     : "";
 }
 
@@ -518,7 +518,7 @@ function tableOfContents(html) {
 
 function tocHtml(items) {
   if (!items.length) return "";
-  return `<aside class="toc"><h2>On this page</h2>${items.map((item) => `<a class="toc-l${item.level}" href="#${escapeAttr(item.id)}">${escapeHtml(item.title)}</a>`).join("")}</aside>`;
+  return `<details class="toc" aria-label="On this page" open><summary><span>On this page</span></summary><h2>On this page</h2><nav>${items.map((item) => `<a class="toc-l${item.level}" href="#${escapeAttr(item.id)}">${escapeHtml(item.title)}</a>`).join("")}</nav></details>`;
 }
 
 function pager(prev, next) {
