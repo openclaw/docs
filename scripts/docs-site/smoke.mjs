@@ -161,11 +161,15 @@ if (!/Português \(BR\)/.test(index)) {
 if (
   !/data-docs-chat/.test(index) ||
   !/OPENCLAW_DOCS_CHAT_API/.test(index) ||
-  !/data-static-src="\/assets\/(?:molty-avatar\.png|pixel-lobster\.svg)"/.test(index) ||
-  !/data-hover-src="\/assets\/(?:molty-avatar-hover\.gif|pixel-lobster\.svg)"/.test(index) ||
+  !/data-static-src="\/assets\/molty-avatar\.png"/.test(index) ||
+  !/data-hover-src="\/assets\/molty-avatar-hover\.gif"/.test(index) ||
   !/<h2 id="docs-chat-title">Molty<\/h2>/.test(index)
 ) {
   throw new Error("index: docs chat widget was not rendered");
+}
+if (!fs.existsSync(path.join(site, "assets/molty-avatar.png"))
+  || !fs.existsSync(path.join(site, "assets/molty-avatar-hover.gif"))) {
+  throw new Error("assets: Molty avatar assets were not copied");
 }
 const chatCss = fs.readFileSync(path.join(site, "assets/docs-site.css"), "utf8");
 if (!/data-chat-copy/.test(index)
@@ -327,7 +331,10 @@ if (!/function initChat/.test(siteJs)
 if (/matchMedia\("\(min-width:1121px\)"\)\.matches\)setOpen\(true\)/.test(siteJs)) {
   throw new Error("assets: docs chat must stay closed until Ask Molty is pressed");
 }
-if (!/function runSearch/.test(siteJs) || !/setTimeout\(\(\)=>runSearch\(expandSearchQuery\(q\),id\),140\)/.test(siteJs)) {
+if (!/function runSearch/.test(siteJs)
+  || !/function scheduleSearch\(immediate=false\)/.test(siteJs)
+  || !/input\?\.addEventListener\("input",\(\)=>scheduleSearch\(false\)\)/.test(siteJs)
+  || !/setTimeout\(run,240\)/.test(siteJs)) {
   throw new Error("assets: search input is not debounced");
 }
 if (!/const searchAliases=/.test(siteJs) || !/data-search-suggestion/.test(index)) {
