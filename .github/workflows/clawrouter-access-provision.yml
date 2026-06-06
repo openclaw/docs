@@ -11,25 +11,143 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Check out ClawRouter
-        uses: actions/checkout@v6
-        with:
-          repository: openclaw/clawrouter
-          ref: main
-          path: clawrouter
-
       - name: Set up Node
         uses: actions/setup-node@v6
         with:
           node-version: 24
 
       - name: Provision ClawRouter Cloudflare Access
-        working-directory: clawrouter
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLAWROUTER_ACCESS_DOMAIN: clawrouter.openclaw.ai
-          CLAWROUTER_ACCESS_ALLOWED_DOMAINS: openclaw.ai
-          CLAWROUTER_ACCESS_ADMIN_EMAILS: vincentkoc@ieee.org
-          CLAWROUTER_ACCESS_DEFAULT_TENANT: openclaw
-        run: node scripts/provision-access.mjs
+        run: |
+          node --input-type=module <<'NODE'
+          const accountId = required("CLOUDFLARE_ACCOUNT_ID");
+          const token = required("CLOUDFLARE_API_TOKEN");
+          const host = "clawrouter.openclaw.ai";
+          const appName = "ClawRouter Console";
+          const policyName = "ClawRouter Console Users";
+          const destinations = [
+            "/dashboard",
+            "/playground",
+            "/admin",
+            "/account",
+            "/routes",
+            "/console",
+            "/v1/session",
+            "/v1/me",
+            "/v1/usage",
+            "/v1/admin/*",
+            "/api/session",
+            "/api/me",
+            "/api/usage",
+            "/api/admin/*",
+          ].map((path) => `${host}${path}`);
+          const appPayload = {
+            name: appName,
+            type: "self_hosted",
+            domain: destinations[0],
+            destinations: destinations.map((uri) => ({ type: "public", uri })),
+            session_duration: "24h",
+            app_launcher_visible: false,
+            auto_redirect_to_identity: false,
+          };
+          const policyPayload = {
+            name: policyName,
+            decision: "allow",
+            precedence: 1,
+            include: [
+              { email: { email: "vincentkoc@ieee.org" } },
+              { email_domain: { domain: "openclaw.ai" } },
+            ],
+          };
+
+          const organization = await request("GET", `/accounts/${accountId}/access/organizations`);
+          const teamDomain = accessTeamDomain(organization);
+          if (!teamDomain) throw new Error("could not resolve Access team domain");
+
+          const apps = asArray(await request("GET", `/accounts/${accountId}/access/apps?per_page=100`));
+          let app = apps.find((item) => item.name === appName)
+            || apps.find((item) => destinationUris(item).some((uri) => destinations.includes(uri)))
+            || null;
+          let created = false;
+          let updated = false;
+          let policies = [];
+          if (app) {
+            policies = asArray(await request("GET", `/accounts/${accountId}/access/apps/${app.id}/policies?per_page=100`));
+            const extra = policies.filter((policy) => policy.name !== policyName);
+            if (extra.length) {
+              throw new Error(`Access app has unmanaged policies: ${extra.map((policy) => policy.name).join(", ")}`);
+            }
+            app = await request("PUT", `/accounts/${accountId}/access/apps/${app.id}`, { ...appPayload, id: app.id });
+            updated = true;
+          } else {
+            app = await request("POST", `/accounts/${accountId}/access/apps`, appPayload);
+            created = true;
+          }
+
+          const existingPolicy = policies.find((policy) => policy.name === policyName);
+          if (existingPolicy) {
+            await request("PUT", `/accounts/${accountId}/access/apps/${app.id}/policies/${existingPolicy.id}`, { ...policyPayload, id: existingPolicy.id });
+            updated = true;
+          } else {
+            await request("POST", `/accounts/${accountId}/access/apps/${app.id}/policies`, policyPayload);
+            created = true;
+          }
+
+          const aud = app.aud || app.aud_tag || app.audience_tag || "";
+          if (!aud) throw new Error("Access app did not return an audience tag");
+
+          console.log("Cloudflare Access plan:");
+          console.log(`host=${host}`);
+          console.log(`destinations=${destinations.join(",")}`);
+          console.log(`app=${app.name} (${app.id})`);
+          console.log(`policy=${policyPayload.name} decision=${policyPayload.decision}`);
+          console.log(`created=${created}`);
+          console.log(`updated=${updated}`);
+          console.log(`teamDomain=${teamDomain}`);
+          console.log(`aud=${aud}`);
+          console.log("");
+          console.log("Deploy vars:");
+          console.log(`CLAWROUTER_ACCESS_TEAM_DOMAIN=${teamDomain}`);
+          console.log(`CLAWROUTER_ACCESS_AUD=${aud}`);
+          console.log("CLAWROUTER_ACCESS_DEFAULT_TENANT=openclaw");
+          console.log("CLAWROUTER_ACCESS_ADMIN_EMAILS=vincentkoc@ieee.org");
+
+          function required(name) {
+            const value = process.env[name]?.trim();
+            if (!value) throw new Error(`${name} is required`);
+            return value;
+          }
+          async function request(method, path, body) {
+            const response = await fetch(`https://api.cloudflare.com/client/v4${path}`, {
+              method,
+              headers: {
+                authorization: `Bearer ${token}`,
+                "content-type": "application/json",
+              },
+              body: body ? JSON.stringify(body) : undefined,
+            });
+            const json = await response.json().catch(() => ({}));
+            if (!response.ok || json.success === false) {
+              const details = asArray(json.errors).map((error) => `${error.code ?? "error"} ${error.message ?? ""}`.trim()).join("; ");
+              throw new Error(`Cloudflare API ${method} ${path} failed (${response.status})${details ? `: ${details}` : ""}`);
+            }
+            return json.result;
+          }
+          function asArray(value) {
+            if (Array.isArray(value)) return value;
+            if (Array.isArray(value?.result)) return value.result;
+            return [];
+          }
+          function destinationUris(app) {
+            const destinations = asArray(app?.destinations).map((destination) => destination?.uri).filter(Boolean);
+            return destinations.length ? destinations : asArray(app?.self_hosted_domains);
+          }
+          function accessTeamDomain(organization) {
+            const org = Array.isArray(organization) ? organization[0] : organization;
+            const raw = org?.auth_domain || org?.team_domain || org?.login_domain || org?.name || "";
+            const value = String(raw).trim().replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+            return value ? (value.includes(".") ? value : `${value}.cloudflareaccess.com`) : "";
+          }
+          NODE
