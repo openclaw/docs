@@ -443,6 +443,41 @@ async function checkMobile() {
   if (closed.bodyOpen || closed.sidebarOpen || closed.ariaExpanded !== "false") {
     throw new Error(`mobile menu did not close on Escape: ${JSON.stringify(closed)}`);
   }
+  await page.goto(`${base}/channels/discord`, { waitUntil: "networkidle" });
+  await page.screenshot({ path: path.join(artifacts, "discord-mobile-dark.png"), fullPage: true });
+  const discordOverflow = await page.evaluate(() => {
+    const viewport = innerWidth;
+    const longCode = [...document.querySelectorAll(".doc code")]
+      .find((node) => node.textContent?.includes("voice.realtime.providers.openai.interruptResponseOnInputAudio"));
+    const longCodeRects = [...longCode?.getClientRects() ?? []]
+      .map((rect) => ({ left: rect.left, right: rect.right }));
+    const escaping = [...document.querySelectorAll(".oc-table-wrap,.oc-code,.doc pre")]
+      .map((node) => {
+        const rect = node.getBoundingClientRect();
+        return {
+          className: node.className,
+          tagName: node.tagName,
+          left: rect.left,
+          right: rect.right,
+        };
+      })
+      .filter((rect) => rect.left < -1 || rect.right > viewport + 1);
+    return {
+      viewport,
+      documentWidth: document.documentElement.scrollWidth,
+      bodyWidth: document.body.scrollWidth,
+      longCodeFound: Boolean(longCode),
+      longCodeFits: longCodeRects.length > 0 && longCodeRects.every((rect) => rect.left >= -1 && rect.right <= viewport + 1),
+      escaping,
+    };
+  });
+  if (discordOverflow.documentWidth > discordOverflow.viewport + 1
+    || discordOverflow.bodyWidth > discordOverflow.viewport + 1
+    || !discordOverflow.longCodeFound
+    || !discordOverflow.longCodeFits
+    || discordOverflow.escaping.length) {
+    throw new Error(`discord mobile overflow failed: ${JSON.stringify(discordOverflow)}`);
+  }
   await page.close();
 }
 

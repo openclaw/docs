@@ -335,7 +335,9 @@ if (!/\.oc-callout\{[^}]*--callout-accent:var\(--brand\)[^}]*border-left:3px sol
   || !/\.oc-callout-check\{--callout-accent:#48b49a\}/.test(siteCss)) {
   throw new Error("assets: callout tones should use reference-aligned component skin");
 }
-if (!/\.oc-table-wrap\{[^}]*overflow:auto/.test(siteCss)
+if (!/\.oc-table-wrap\{[^}]*max-width:100%;overflow:auto/.test(siteCss)
+  || !/\.doc code\{overflow-wrap:anywhere;word-break:break-word\}/.test(siteCss)
+  || !/@media\(max-width:820px\)[\s\S]*?\.doc \.oc-table\{min-width:0;table-layout:fixed\}/.test(siteCss)
   || !/:root\{--tooltip-bg:#f4f1ef;--tooltip-text:#171514;--tooltip-border:#f4f1ef\}/.test(siteCss)
   || !/:root\[data-theme="light"\]\{--tooltip-bg:#171514;--tooltip-text:#fffdfa;--tooltip-border:#171514\}/.test(siteCss)
   || !/\.oc-chart\{[^}]*border:1px solid var\(--line-strong\)/.test(siteCss)
