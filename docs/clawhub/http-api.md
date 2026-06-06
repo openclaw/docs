@@ -373,10 +373,8 @@ Notes:
 
 Authenticated submit endpoint for new ClawScan jobs.
 
-Local upload scans use `multipart/form-data`:
-
-- `payload`: JSON string, usually `{ "source": { "kind": "upload" }, "update": false }`
-- `files`: repeated local skill files
+Local upload scans are no longer supported. Requests using
+`multipart/form-data` or `{ "source": { "kind": "upload" } }` return `410`.
 
 Published scans use JSON:
 
@@ -389,12 +387,10 @@ Published scans use JSON:
 
 Notes:
 
-- Local upload scans require auth but are ephemeral. They never mutate public skill, version, moderation, or trust state.
 - Scan request payloads and downloadable reports expire from the scan-request store after the retention window.
-- Local upload scans reject `update: true`.
 - Published scans require owner/publisher management access, or platform moderator/admin authority.
 - Published scans write back only when `update: true` and the scan completes successfully.
-- Response is `202` with `{ "ok": true, "scanId": "...", "jobId": "...", "status": "queued", "sourceKind": "upload|published", "update": false, "queue": { "queuedAhead": 0, "queuedAheadIsEstimate": false, "position": 1, "running": 0, "runningIsEstimate": false, "note": "Scans are asynchronous and may take time to complete." } }`.
+- Response is `202` with `{ "ok": true, "scanId": "...", "jobId": "...", "status": "queued", "sourceKind": "published", "update": false, "queue": { "queuedAhead": 0, "queuedAheadIsEstimate": false, "position": 1, "running": 0, "runningIsEstimate": false, "note": "Scans are asynchronous and may take time to complete." } }`.
 - Scan jobs are asynchronous. Manual scan requests are prioritized ahead of normal publish/backfill work, but completion still depends on worker availability.
 
 ### `GET /api/v1/skills/-/scan/{scanId}`
@@ -412,6 +408,15 @@ Authenticated report archive endpoint.
 
 - Requires a succeeded scan; non-terminal scans return `409`.
 - Returns a ZIP with `manifest.json`, `clawscan.json`, `skillspector.json`, `static-analysis.json`, `virustotal.json`, and `README.md`.
+
+### `GET /api/v1/skills/-/scan/download/{name}?version=<version>&kind=skill|plugin`
+
+Authenticated stored report archive endpoint for submitted versions.
+
+- Requires owner/publisher management access to the skill or plugin, or platform moderator/admin authority.
+- Returns stored scan results for the exact submitted version, including blocked or hidden versions.
+- `kind` defaults to `skill`; use `kind=plugin` for plugin/package scans.
+- Returns the same ZIP shape as scan-request downloads.
 
 ### `POST /api/v1/skills/-/scan/batch`
 
