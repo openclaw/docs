@@ -292,7 +292,7 @@ function layout({ page, nav, activeTab, html, toc, prev, next }) {
 <meta name="description" content="${escapeAttr(description)}">
 <title>${escapeHtml(title)}</title>
 ${canonicalUrl ? `<link rel="canonical" href="${escapeAttr(canonicalUrl)}">` : ""}
-${page.hidden ? '<meta name="robots" content="noindex,nofollow">' : ""}
+${hreflangLinks(page)}${page.hidden ? '<meta name="robots" content="noindex,nofollow">' : ""}
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="${escapeAttr(config.name)}">
 <meta property="og:title" content="${escapeAttr(ogTitle)}">
@@ -907,6 +907,28 @@ function pageUrl(page) {
 function pageRoute(page) {
   const prefix = page.locale === "en" ? "" : `/${page.locale}`;
   return page.slug === "index" ? (prefix || "/") : `${prefix}/${page.slug}`;
+}
+
+function hreflangLinks(page) {
+  // hreflang alternates require absolute URLs; skip when no canonical origin is set
+  // or when the page is excluded from indexing.
+  if (!canonicalOrigin || page.hidden) return "";
+  // Collect every locale that publishes this same slug, using the current page for
+  // its own locale and skipping any locale variant that is itself hidden.
+  const variants = [];
+  for (const locale of locales) {
+    const variant = locale.code === page.locale ? page : allPageByKey.get(pageKey(locale.code, page.slug));
+    if (variant && !variant.hidden) variants.push(variant);
+  }
+  // Nothing to cross-link if the page exists in only one locale.
+  if (variants.length < 2) return "";
+  const links = variants.map(
+    (variant) => `<link rel="alternate" hreflang="${escapeAttr(htmlLang(variant.locale))}" href="${escapeAttr(`${canonicalOrigin}${pageRoute(variant)}`)}">`,
+  );
+  // x-default points at the English variant when available, otherwise the current page.
+  const defaultPage = variants.find((variant) => variant.locale === "en") ?? page;
+  links.push(`<link rel="alternate" hreflang="x-default" href="${escapeAttr(`${canonicalOrigin}${pageRoute(defaultPage)}`)}">`);
+  return `${links.join("\n")}\n`;
 }
 
 function pageMarkdownRoute(page) {
