@@ -222,6 +222,10 @@ async function checkDesktop() {
     throw new Error(`search shortcut inline hint failed: ${JSON.stringify(searchShortcut)}`);
   }
   await page.keyboard.press(process.platform === "darwin" ? "Meta+K" : "Control+K");
+  await page.waitForFunction(() =>
+    document.querySelector(".search-modal")?.classList.contains("open")
+      && document.activeElement?.matches("[data-search-input]")
+  );
   const searchOpen = await page.evaluate(() => ({
     open: document.querySelector(".search-modal")?.classList.contains("open"),
     focused: document.activeElement?.matches("[data-search-input]"),
