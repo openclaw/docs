@@ -1265,6 +1265,7 @@
                   "plugins/admin-http-rpc",
                   "plugins/voice-call",
                   "plugins/memory-wiki",
+                  "plugins/llama-cpp",
                   "plugins/memory-lancedb",
                   "plugins/oc-path",
                   "plugins/zalouser"
@@ -2849,6 +2850,7 @@
                   "zh-TW/plugins/admin-http-rpc",
                   "zh-TW/plugins/voice-call",
                   "zh-TW/plugins/memory-wiki",
+                  "zh-TW/plugins/llama-cpp",
                   "zh-TW/plugins/memory-lancedb",
                   "zh-TW/plugins/oc-path",
                   "zh-TW/plugins/zalouser"
@@ -3777,6 +3779,7 @@
                   "ja-JP/plugins/admin-http-rpc",
                   "ja-JP/plugins/voice-call",
                   "ja-JP/plugins/memory-wiki",
+                  "ja-JP/plugins/llama-cpp",
                   "ja-JP/plugins/memory-lancedb",
                   "ja-JP/plugins/oc-path",
                   "ja-JP/plugins/zalouser"
@@ -4705,6 +4708,7 @@
                   "es/plugins/admin-http-rpc",
                   "es/plugins/voice-call",
                   "es/plugins/memory-wiki",
+                  "es/plugins/llama-cpp",
                   "es/plugins/memory-lancedb",
                   "es/plugins/oc-path",
                   "es/plugins/zalouser"
@@ -5633,6 +5637,7 @@
                   "pt-BR/plugins/admin-http-rpc",
                   "pt-BR/plugins/voice-call",
                   "pt-BR/plugins/memory-wiki",
+                  "pt-BR/plugins/llama-cpp",
                   "pt-BR/plugins/memory-lancedb",
                   "pt-BR/plugins/oc-path",
                   "pt-BR/plugins/zalouser"
@@ -6561,6 +6566,7 @@
                   "ko/plugins/admin-http-rpc",
                   "ko/plugins/voice-call",
                   "ko/plugins/memory-wiki",
+                  "ko/plugins/llama-cpp",
                   "ko/plugins/memory-lancedb",
                   "ko/plugins/oc-path",
                   "ko/plugins/zalouser"
@@ -7489,6 +7495,7 @@
                   "de/plugins/admin-http-rpc",
                   "de/plugins/voice-call",
                   "de/plugins/memory-wiki",
+                  "de/plugins/llama-cpp",
                   "de/plugins/memory-lancedb",
                   "de/plugins/oc-path",
                   "de/plugins/zalouser"
@@ -8417,6 +8424,7 @@
                   "fr/plugins/admin-http-rpc",
                   "fr/plugins/voice-call",
                   "fr/plugins/memory-wiki",
+                  "fr/plugins/llama-cpp",
                   "fr/plugins/memory-lancedb",
                   "fr/plugins/oc-path",
                   "fr/plugins/zalouser"
@@ -9345,6 +9353,7 @@
                   "ar/plugins/admin-http-rpc",
                   "ar/plugins/voice-call",
                   "ar/plugins/memory-wiki",
+                  "ar/plugins/llama-cpp",
                   "ar/plugins/memory-lancedb",
                   "ar/plugins/oc-path",
                   "ar/plugins/zalouser"
@@ -10273,6 +10282,7 @@
                   "it/plugins/admin-http-rpc",
                   "it/plugins/voice-call",
                   "it/plugins/memory-wiki",
+                  "it/plugins/llama-cpp",
                   "it/plugins/memory-lancedb",
                   "it/plugins/oc-path",
                   "it/plugins/zalouser"
@@ -11201,6 +11211,7 @@
                   "vi/plugins/admin-http-rpc",
                   "vi/plugins/voice-call",
                   "vi/plugins/memory-wiki",
+                  "vi/plugins/llama-cpp",
                   "vi/plugins/memory-lancedb",
                   "vi/plugins/oc-path",
                   "vi/plugins/zalouser"
@@ -12129,6 +12140,7 @@
                   "nl/plugins/admin-http-rpc",
                   "nl/plugins/voice-call",
                   "nl/plugins/memory-wiki",
+                  "nl/plugins/llama-cpp",
                   "nl/plugins/memory-lancedb",
                   "nl/plugins/oc-path",
                   "nl/plugins/zalouser"
@@ -13057,6 +13069,7 @@
                   "tr/plugins/admin-http-rpc",
                   "tr/plugins/voice-call",
                   "tr/plugins/memory-wiki",
+                  "tr/plugins/llama-cpp",
                   "tr/plugins/memory-lancedb",
                   "tr/plugins/oc-path",
                   "tr/plugins/zalouser"
@@ -13985,6 +13998,7 @@
                   "uk/plugins/admin-http-rpc",
                   "uk/plugins/voice-call",
                   "uk/plugins/memory-wiki",
+                  "uk/plugins/llama-cpp",
                   "uk/plugins/memory-lancedb",
                   "uk/plugins/oc-path",
                   "uk/plugins/zalouser"
@@ -14913,6 +14927,7 @@
                   "id/plugins/admin-http-rpc",
                   "id/plugins/voice-call",
                   "id/plugins/memory-wiki",
+                  "id/plugins/llama-cpp",
                   "id/plugins/memory-lancedb",
                   "id/plugins/oc-path",
                   "id/plugins/zalouser"
@@ -15841,6 +15856,7 @@
                   "pl/plugins/admin-http-rpc",
                   "pl/plugins/voice-call",
                   "pl/plugins/memory-wiki",
+                  "pl/plugins/llama-cpp",
                   "pl/plugins/memory-lancedb",
                   "pl/plugins/oc-path",
                   "pl/plugins/zalouser"
