@@ -1794,8 +1794,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "reference/rpc",
-                  "concepts/openclaw-sdk",
-                  "reference/openclaw-sdk-api-design",
+                  "gateway/external-apps",
                   "reference/code-mode",
                   "reference/device-models"
                 ]
@@ -3346,8 +3345,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "zh-TW/reference/rpc",
-                  "zh-TW/concepts/openclaw-sdk",
-                  "zh-TW/reference/openclaw-sdk-api-design",
+                  "zh-TW/gateway/external-apps",
                   "zh-TW/reference/code-mode",
                   "zh-TW/reference/device-models"
                 ]
@@ -4275,8 +4273,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "ja-JP/reference/rpc",
-                  "ja-JP/concepts/openclaw-sdk",
-                  "ja-JP/reference/openclaw-sdk-api-design",
+                  "ja-JP/gateway/external-apps",
                   "ja-JP/reference/code-mode",
                   "ja-JP/reference/device-models"
                 ]
@@ -5204,8 +5201,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "es/reference/rpc",
-                  "es/concepts/openclaw-sdk",
-                  "es/reference/openclaw-sdk-api-design",
+                  "es/gateway/external-apps",
                   "es/reference/code-mode",
                   "es/reference/device-models"
                 ]
@@ -6133,8 +6129,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "pt-BR/reference/rpc",
-                  "pt-BR/concepts/openclaw-sdk",
-                  "pt-BR/reference/openclaw-sdk-api-design",
+                  "pt-BR/gateway/external-apps",
                   "pt-BR/reference/code-mode",
                   "pt-BR/reference/device-models"
                 ]
@@ -7062,8 +7057,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "ko/reference/rpc",
-                  "ko/concepts/openclaw-sdk",
-                  "ko/reference/openclaw-sdk-api-design",
+                  "ko/gateway/external-apps",
                   "ko/reference/code-mode",
                   "ko/reference/device-models"
                 ]
@@ -7991,8 +7985,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "de/reference/rpc",
-                  "de/concepts/openclaw-sdk",
-                  "de/reference/openclaw-sdk-api-design",
+                  "de/gateway/external-apps",
                   "de/reference/code-mode",
                   "de/reference/device-models"
                 ]
@@ -8920,8 +8913,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "fr/reference/rpc",
-                  "fr/concepts/openclaw-sdk",
-                  "fr/reference/openclaw-sdk-api-design",
+                  "fr/gateway/external-apps",
                   "fr/reference/code-mode",
                   "fr/reference/device-models"
                 ]
@@ -9849,8 +9841,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "ar/reference/rpc",
-                  "ar/concepts/openclaw-sdk",
-                  "ar/reference/openclaw-sdk-api-design",
+                  "ar/gateway/external-apps",
                   "ar/reference/code-mode",
                   "ar/reference/device-models"
                 ]
@@ -10778,8 +10769,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "it/reference/rpc",
-                  "it/concepts/openclaw-sdk",
-                  "it/reference/openclaw-sdk-api-design",
+                  "it/gateway/external-apps",
                   "it/reference/code-mode",
                   "it/reference/device-models"
                 ]
@@ -11707,8 +11697,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "vi/reference/rpc",
-                  "vi/concepts/openclaw-sdk",
-                  "vi/reference/openclaw-sdk-api-design",
+                  "vi/gateway/external-apps",
                   "vi/reference/code-mode",
                   "vi/reference/device-models"
                 ]
@@ -12636,8 +12625,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "nl/reference/rpc",
-                  "nl/concepts/openclaw-sdk",
-                  "nl/reference/openclaw-sdk-api-design",
+                  "nl/gateway/external-apps",
                   "nl/reference/code-mode",
                   "nl/reference/device-models"
                 ]
@@ -13565,8 +13553,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "tr/reference/rpc",
-                  "tr/concepts/openclaw-sdk",
-                  "tr/reference/openclaw-sdk-api-design",
+                  "tr/gateway/external-apps",
                   "tr/reference/code-mode",
                   "tr/reference/device-models"
                 ]
@@ -14494,8 +14481,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "uk/reference/rpc",
-                  "uk/concepts/openclaw-sdk",
-                  "uk/reference/openclaw-sdk-api-design",
+                  "uk/gateway/external-apps",
                   "uk/reference/code-mode",
                   "uk/reference/device-models"
                 ]
@@ -15423,8 +15409,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "id/reference/rpc",
-                  "id/concepts/openclaw-sdk",
-                  "id/reference/openclaw-sdk-api-design",
+                  "id/gateway/external-apps",
                   "id/reference/code-mode",
                   "id/reference/device-models"
                 ]
@@ -16352,8 +16337,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "pl/reference/rpc",
-                  "pl/concepts/openclaw-sdk",
-                  "pl/reference/openclaw-sdk-api-design",
+                  "pl/gateway/external-apps",
                   "pl/reference/code-mode",
                   "pl/reference/device-models"
                 ]
