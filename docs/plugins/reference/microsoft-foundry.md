@@ -72,7 +72,7 @@ name in the request `model` field:
     defaults: {
       imageGenerationModel: {
         primary: "microsoft-foundry/<deployment-name>",
-        timeoutMs: 600_000,
+        timeoutMs: 600000,
       },
     },
   },
