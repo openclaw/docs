@@ -90,7 +90,7 @@ Public pages show scan summaries when available. Content that is held, hidden,
 or blocked may disappear from public search and install flows while remaining
 visible to the owner for diagnostics.
 
-See [Security Audits](/clawhub/security-audits),
+See [Security](/clawhub/security), [Security Audits](/clawhub/security-audits),
 [Moderation and Account Safety](/clawhub/moderation), and
 [Acceptable usage](/clawhub/acceptable-usage).
 

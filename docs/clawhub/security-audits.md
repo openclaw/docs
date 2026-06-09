@@ -18,8 +18,8 @@ credentials, code, or external services.
 Audits are strong safety signals, but they are not a guarantee that a release is
 risk-free. Always use judgment before granting sensitive access.
 
-See also [Acceptable usage](/clawhub/acceptable-usage) and
-[Moderation and Account Safety](/clawhub/moderation).
+See also [Security](/clawhub/security), [Acceptable usage](/clawhub/acceptable-usage),
+and [Moderation and Account Safety](/clawhub/moderation).
 
 ## What to check before installing
 

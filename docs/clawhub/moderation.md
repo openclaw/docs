@@ -19,7 +19,8 @@ This page covers moderation and account standing. For audit labels such as
 `Pass`, `Review`, `Warn`, `Malicious`, and risk level, see
 [Security Audits](/clawhub/security-audits).
 
-See also [Acceptable usage](/clawhub/acceptable-usage).
+See also [Security](/clawhub/security) and
+[Acceptable usage](/clawhub/acceptable-usage).
 
 ## Reports
 

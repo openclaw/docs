@@ -144,6 +144,7 @@ remaining visible to their owner in `/dashboard`.
 
 Signed-in users can report skills and packages. Moderators can review reports,
 hide or restore content, and ban abusive accounts. See
+[Security](/clawhub/security),
 [Security Audits](/clawhub/security-audits),
 [Moderation and Account Safety](/clawhub/moderation), and
 [Acceptable usage](/clawhub/acceptable-usage) for policy and enforcement details.
