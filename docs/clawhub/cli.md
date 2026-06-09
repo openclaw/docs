@@ -223,7 +223,7 @@ clawhub scan download @scope/demo --version 2.0.0 --kind plugin --output report.
 #### GitHub Actions
 
 ClawHub ships an official reusable workflow at
-[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/0ead9a60cf2991051289ed9fb4823bb257326a70/.github/workflows/skill-publish.yml)
+[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/be70ae5e9f9c56caa7282b14ff7c2e221087c676/.github/workflows/skill-publish.yml)
 for skill repos and catalog repos.
 
 Typical catalog setup:
@@ -402,6 +402,28 @@ Examples:
 ```bash
 clawhub package verify ./example-plugin-1.2.3.tgz --package @openclaw/example-plugin --version 1.2.3
 clawhub package verify ./example-plugin-1.2.3.tgz --sha256 <hex>
+```
+
+### `package validate <source>`
+
+- Runs the ClawHub CLI's bundled Plugin Inspector against a local plugin package
+  folder.
+- Defaults to offline/static validation, without locating or importing a local
+  OpenClaw checkout.
+- Hard compatibility errors exit non-zero. Warning-only findings are printed but
+  exit zero.
+- Flags:
+  - `--out <dir>`: write Plugin Inspector reports to this directory.
+  - `--openclaw <path>`: inspect against an explicit local OpenClaw checkout.
+  - `--runtime`: enable runtime capture; imports plugin code.
+  - `--allow-execute`: allow runtime capture in an isolated workspace.
+  - `--no-mock-sdk`: disable mocked OpenClaw SDK during runtime capture.
+  - `--json`: machine-readable output.
+
+Example:
+
+```bash
+clawhub package validate ./example-plugin
 ```
 
 ### `package delete <name>`
@@ -625,7 +647,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/0ead9a60cf2991051289ed9fb4823bb257326a70/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/be70ae5e9f9c56caa7282b14ff7c2e221087c676/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
