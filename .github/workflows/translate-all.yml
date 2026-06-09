@@ -326,8 +326,11 @@ jobs:
               | node -e 'const fs = require("node:fs"); const data = JSON.parse(fs.readFileSync(0, "utf8")); process.stdout.write(data.sha || "");'
           )"
           if [ "${current_source_sha}" != "${SOURCE_SHA}" ]; then
-            echo "stale=true" >> "${GITHUB_OUTPUT}"
-            echo "changed_count=0" >> "${GITHUB_OUTPUT}"
+            {
+              echo "stale=true"
+              echo "changed_count=0"
+              echo "incomplete_count=0"
+            } >> "${GITHUB_OUTPUT}"
             {
               echo "### Translation finalizer skipped"
               echo
@@ -418,6 +421,11 @@ jobs:
           with out.open("a", encoding="utf-8") as fh:
             fh.write("stale=false\n")
             fh.write(f"changed_count={len(status)}\n")
+            fh.write(f"incomplete_count={len(missing_or_failed)}\n")
+
+          incomplete_path = Path(".openclaw-sync/i18n-incomplete-locales.txt")
+          incomplete_path.parent.mkdir(exist_ok=True)
+          incomplete_path.write_text("\n".join(missing_or_failed) + ("\n" if missing_or_failed else ""), encoding="utf-8")
 
           summary = Path(os.environ["GITHUB_STEP_SUMMARY"])
           with summary.open("a", encoding="utf-8") as fh:
@@ -509,3 +517,13 @@ jobs:
         run: |
           set -euo pipefail
           gh workflow run pages.yml --ref main
+
+      - name: Fail incomplete translation run
+        if: steps.apply.outputs.stale != 'true' && steps.apply.outputs.incomplete_count != '0'
+        run: |
+          {
+            echo "Translation finished with missing or failed locales."
+            echo "Successful locale artifacts were applied before this failure when available."
+            cat .openclaw-sync/i18n-incomplete-locales.txt
+          } >&2
+          exit 1
