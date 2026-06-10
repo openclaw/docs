@@ -223,7 +223,7 @@ clawhub scan download @scope/demo --version 2.0.0 --kind plugin --output report.
 #### GitHub Actions
 
 ClawHub ships an official reusable workflow at
-[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/0724abccbc57124ccf2c7fbc149b3e64dd73b061/.github/workflows/skill-publish.yml)
+[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/27faf50992694ef8628e4f06087ea470f1ebd4ea/.github/workflows/skill-publish.yml)
 for skill repos and catalog repos.
 
 Typical catalog setup:
@@ -425,6 +425,9 @@ Example:
 ```bash
 clawhub package validate ./example-plugin
 ```
+
+If validation reports a package, manifest, SDK import, or artifact finding, see
+[Plugin validation fixes](/clawhub/plugin-validation-fixes), then rerun the command.
 
 ### `package delete <name>`
 
@@ -643,11 +646,13 @@ Notes:
   more detailed compatibility metadata.
 - If you are using an older `clawhub` CLI release, upgrade before publishing so
   the local preflight checks run before upload.
+- If validation reports a remediation code, see
+  [Plugin validation fixes](/clawhub/plugin-validation-fixes).
 
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/0724abccbc57124ccf2c7fbc149b3e64dd73b061/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/27faf50992694ef8628e4f06087ea470f1ebd4ea/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
