@@ -138,10 +138,6 @@ jobs:
       dry_run: true
 ```
 
-When you are signed in, `sync` may also send a minimal install snapshot for
-aggregate install counts. See [Telemetry](/clawhub/telemetry) for what is reported
-and how to opt out.
-
 ## Inspect before installing
 
 Before installing, use the ClawHub web page or CLI detail commands to inspect
