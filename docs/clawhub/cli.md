@@ -225,7 +225,7 @@ clawhub scan download @scope/demo --version 2.0.0 --kind plugin --output report.
 #### GitHub Actions
 
 ClawHub ships an official reusable workflow at
-[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/7166883d7d552e20e0a2b0bbcdf712de44b5e5f4/.github/workflows/skill-publish.yml)
+[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/2c9aa36dcb422042e2512c1feb1d08c866524677/.github/workflows/skill-publish.yml)
 for skill repos and catalog repos.
 
 Typical catalog setup:
@@ -654,7 +654,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/7166883d7d552e20e0a2b0bbcdf712de44b5e5f4/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/2c9aa36dcb422042e2512c1feb1d08c866524677/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
