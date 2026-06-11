@@ -225,7 +225,7 @@ clawhub scan download @scope/demo --version 2.0.0 --kind plugin --output report.
 #### GitHub Actions
 
 ClawHub ships an official reusable workflow at
-[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/2c9aa36dcb422042e2512c1feb1d08c866524677/.github/workflows/skill-publish.yml)
+[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/9a0671034c79369145859e32f862382e540c3f30/.github/workflows/skill-publish.yml)
 for skill repos and catalog repos.
 
 Typical catalog setup:
@@ -654,7 +654,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/2c9aa36dcb422042e2512c1feb1d08c866524677/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/9a0671034c79369145859e32f862382e540c3f30/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
@@ -699,6 +699,64 @@ Notes:
 - Trusted publishing without a secret only works on `workflow_dispatch`; tag pushes still need `clawhub_token`.
 - Keep `clawhub_token` available for first publish, untrusted packages, or break-glass publishes.
 - The workflow uploads the JSON result as an artifact and exposes it as workflow outputs.
+
+### `package trusted-publisher get <name>`
+
+- Shows the GitHub Actions trusted publisher config for a package.
+- Use this after setting config to confirm the repository, workflow filename,
+  and optional environment pin.
+- Flags:
+  - `--json`: machine-readable output.
+
+Example:
+
+```bash
+clawhub package trusted-publisher get @openclaw/example-plugin
+```
+
+### `package trusted-publisher set <name>`
+
+- Attaches or replaces GitHub Actions trusted publisher config for an existing
+  package.
+- The package must be created first through normal manual or token-authenticated
+  `clawhub package publish`.
+- After config is set, future supported GitHub Actions publishes can use
+  OIDC/trusted publishing without a long-lived ClawHub token.
+- `--repository <repo>` must be `owner/repo`.
+- `--workflow-filename <file>` must match the workflow file name in
+  `.github/workflows/`.
+- `--environment <name>` is optional. When configured, the GitHub Actions
+  environment in the OIDC claim must match exactly.
+- Flags:
+  - `--repository <repo>`: GitHub repository, for example `openclaw/example-plugin`.
+  - `--workflow-filename <file>`: workflow file name, for example `package-publish.yml`.
+  - `--environment <name>`: optional exact-match GitHub Actions environment.
+  - `--json`: machine-readable output.
+
+Example:
+
+```bash
+clawhub package trusted-publisher set @openclaw/example-plugin \
+  --repository openclaw/example-plugin \
+  --workflow-filename package-publish.yml \
+  --environment release
+```
+
+### `package trusted-publisher delete <name>`
+
+- Removes trusted publisher config from a package.
+- Use this as rollback if the workflow, repository, or environment pin needs to
+  be disabled or re-created.
+- Future real publishes must use normal authenticated publishing until config is
+  set again.
+- Flags:
+  - `--json`: machine-readable output.
+
+Example:
+
+```bash
+clawhub package trusted-publisher delete @openclaw/example-plugin
+```
 
 ### `sync`
 
