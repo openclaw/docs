@@ -196,7 +196,7 @@ clawhub skill publish ./my-skill --version 1.0.0
 - Requires `clawhub login`.
 - Runs ClawHub ClawScan through `POST /api/v1/skills/-/scan`, then polls until the scan is terminal.
 - Scans are asynchronous and may take time to complete. While queued, the terminal spinner shows the current prioritized scan position and how many scans are ahead.
-- Published scans require ownership or publisher management access. Moderators/admins can use the same backend through `clawhub-mod`.
+- Published scans require ownership or publisher management access. Moderators/admins can use the same backend through `clawhub-admin`.
 - `--update` is valid only with `--slug`; it writes successful published scan results back to the selected version.
 - `--output <file.zip>` downloads the full report archive with `manifest.json`, `clawscan.json`, `skillspector.json`, `static-analysis.json`, `virustotal.json`, and `README.md`.
 - `--json` prints the full poll response for automation.
@@ -225,7 +225,7 @@ clawhub scan download @scope/demo --version 2.0.0 --kind plugin --output report.
 #### GitHub Actions
 
 ClawHub ships an official reusable workflow at
-[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/9a0671034c79369145859e32f862382e540c3f30/.github/workflows/skill-publish.yml)
+[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/3b53ddbdbe7dc4a0c636d1dbf1d269915ea0ef09/.github/workflows/skill-publish.yml)
 for skill repos and catalog repos.
 
 Typical catalog setup:
@@ -654,7 +654,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/9a0671034c79369145859e32f862382e540c3f30/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/3b53ddbdbe7dc4a0c636d1dbf1d269915ea0ef09/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
