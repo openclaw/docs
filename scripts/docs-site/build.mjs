@@ -26,12 +26,39 @@ const canonicalOrigin = (process.env.DOCS_SITE_CANONICAL_ORIGIN
   ?? (process.env.DOCS_SITE_CNAME ? `https://${process.env.DOCS_SITE_CNAME}` : "https://docs.openclaw.ai"))
   .replace(/\/$/, "");
 const feedbackIssueRepository = normalizeRepository(process.env.DOCS_FEEDBACK_ISSUE_REPO ?? "openclaw/openclaw");
+const sourceRepositoryUrl = normalizeRepositoryUrl(
+  process.env.DOCS_SOURCE_REPO_URL ?? sourceMetadata.repository ?? "https://github.com/openclaw/openclaw",
+);
 const llmsFullAvailable = process.env.DOCS_SITE_LLMS_FULL_AVAILABLE === "1";
-const ogImagePath = "/og-card.png";
+const faviconPath = config.favicon ?? config.logo?.dark ?? config.logo?.light ?? "/assets/pixel-lobster.svg";
+const logoPath = config.logo?.dark ?? config.logo?.light ?? config.favicon ?? "/assets/pixel-lobster.svg";
+const ogImagePath = config.og?.image ?? "/og-card.png";
+const siteName = config.name || "OpenClaw";
+const siteDescription = config.description || `${siteName} documentation.`;
+const siteThemeColor = config.colors?.primary ?? "#FF5A36";
+const siteChatName = config.chat?.name ?? "Molty";
+const siteChatLabel = config.chat?.label ?? `${siteName} docs assistant`;
+const siteChatButtonLabel = config.chat?.buttonLabel ?? `Ask ${siteChatName}`;
+const siteSearchPlaceholder = config.search?.placeholder ?? "Search commands, channels, config...";
+const siteSearchSuggestions = Array.isArray(config.search?.suggestions)
+  ? config.search.suggestions
+  : ["Install OpenClaw", "Set up Telegram", "Fix Gateway", "Build a plugin"];
+const defaultSiteHeaderLinks = [
+  { label: "GitHub", href: "https://github.com/openclaw/openclaw", icon: "github" },
+  { label: "Releases", href: "https://github.com/openclaw/openclaw/releases", icon: "package" },
+  { label: "Discord", href: "https://discord.com/invite/clawd", icon: "discord" },
+];
+const siteHeaderLinks = Array.isArray(config.navbar?.links)
+  ? config.navbar.links
+  : Array.isArray(config.headerLinks) ? config.headerLinks : defaultSiteHeaderLinks;
 const renderedPageOgCards = new Set();
 const chatApiUrl = process.env.DOCS_SITE_CHAT_API_URL ?? "/ask-molty/api/chat";
 const shellCss = siteCss();
-const shellJs = siteJs();
+const shellJs = siteJs({
+  assistantName: siteChatName,
+  authUrl: process.env.DOCS_SITE_CHAT_AUTH_URL ?? config.chat?.authUrl,
+  repositoryUrl: sourceRepositoryUrl,
+});
 const defaultShellAssetVersion = createHash("sha256")
   .update(shellCss)
   .update("\0")
@@ -263,7 +290,7 @@ function writePage(page) {
   const activeTab = activeTabTitle(nav, page.slug);
   const prev = activeIndex > 0 ? flat[activeIndex - 1] : null;
   const next = activeIndex >= 0 && activeIndex < flat.length - 1 ? flat[activeIndex + 1] : null;
-  const html = rewriteInternalUrls(renderMdxish(expandSnippets(page.body, page.file), md), page.locale);
+  const html = rewriteInternalUrls(renderMdxish(expandSnippets(page.body, page.file), md), page);
   const toc = tableOfContents(html);
   const outPath = path.join(outDir, pageRoute(page).replace(/^\//, ""), "index.html");
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
@@ -308,8 +335,8 @@ ${canonicalUrl ? `<meta property="og:url" content="${escapeAttr(canonicalUrl)}">
 <meta name="twitter:description" content="${escapeAttr(description)}">
 <meta name="twitter:image" content="${escapeAttr(ogImageUrl)}">
 <meta name="twitter:image:alt" content="${escapeAttr(`${config.name} — ${description}`)}">
-<meta name="theme-color" content="#FF5A36">
-<link rel="icon" href="${publicPath("/assets/pixel-lobster.svg")}">
+<meta name="theme-color" content="${escapeAttr(siteThemeColor)}">
+<link rel="icon" href="${publicPath(faviconPath)}">
 <link rel="stylesheet" href="${assetUrl("/assets/docs-site.css")}">
 <script>window.OPENCLAW_DOCS_BASE=${JSON.stringify(basePath)};window.OPENCLAW_DOCS_CHAT_API=${JSON.stringify(chatApiUrl)};document.documentElement.dataset.theme=localStorage.getItem("theme")||"dark"</script>
 </head>
@@ -353,9 +380,9 @@ function siteHeader(page, nav, activeTab) {
   }).join("");
   return `<header class="site-header">
 <div class="header-row">
-<div class="header-left"><a class="brand" href="${pageUrl(pageByKey.get(pageKey(page.locale, "index")) ?? page)}"><img src="${publicPath("/assets/pixel-lobster.svg")}" alt=""></a>${languagePicker(page)}</div>
+<div class="header-left"><a class="brand" href="${pageUrl(pageByKey.get(pageKey(page.locale, "index")) ?? page)}"><img src="${publicPath(logoPath)}" alt=""></a>${languagePicker(page)}</div>
 <button class="search-button" type="button" data-search-open>${icon("search")}<span class="search-label">Search...</span><span class="search-shortcut" aria-hidden="true">${icon("command")}<span>K</span></span></button>
-<nav class="header-links">${topLink("GitHub", "https://github.com/openclaw/openclaw", "github")}${topLink("Releases", "https://github.com/openclaw/openclaw/releases", "package")}${topLink("Discord", "https://discord.com/invite/clawd", "discord")}<button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme"><span class="theme-toggle-icon theme-toggle-icon-dark">${icon("moon")}</span><span class="theme-toggle-icon theme-toggle-icon-light">${icon("sun")}</span></button></nav>
+<nav class="header-links">${siteHeaderLinks.map((link) => topLink(link.label, link.href, link.icon ?? "external-link")).join("")}<button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme"><span class="theme-toggle-icon theme-toggle-icon-dark">${icon("moon")}</span><span class="theme-toggle-icon theme-toggle-icon-light">${icon("sun")}</span></button></nav>
 <button class="nav-toggle" type="button" data-nav-toggle>Menu</button>
 </div>
 <nav class="tabs">${tabs}<span class="tab-underline" aria-hidden="true"></span></nav>
@@ -393,6 +420,7 @@ function localeDisplayName(code) {
 }
 
 function topLink(label, href, iconName) {
+  if (!label || !href) return "";
   return `<a href="${escapeAttr(href)}">${icon(iconName)}<span>${escapeHtml(label)}</span></a>`;
 }
 
@@ -500,6 +528,8 @@ function icon(name) {
     "chevron-down": '<path d="m6 9 6 6 6-6"/>',
     "copy": '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
     "file-text": '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/>',
+    "external-link": '<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
+    "globe": '<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 0 20"/><path d="M12 2a15.3 15.3 0 0 0 0 20"/>',
     "message-circle": '<path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5Z"/>',
     "bot": '<path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M9 13v2"/><path d="M15 13v2"/><path d="M9 18h6"/>',
     "maximize-2": '<path d="M15 3h6v6"/><path d="m21 3-7 7"/><path d="M9 21H3v-6"/><path d="m3 21 7-7"/>',
@@ -558,30 +588,28 @@ function raiseIssueUrl(page) {
 
 function searchModal() {
   const avatar = chatAvatarAssets();
-  const suggestions = [
-    "Install OpenClaw",
-    "Set up Telegram",
-    "Fix Gateway",
-    "Build a plugin",
-  ];
   const molty = chatApiUrl
-    ? `<button class="search-molty" type="button" data-search-molty><img src="${avatar.staticPath}" alt=""><span><span data-search-molty-prefix>Ask Molty</span> <strong data-search-molty-term hidden></strong></span><span class="search-molty-shortcut" aria-hidden="true">${icon("command")}${icon("corner-down-left")}</span></button>`
+    ? `<button class="search-molty" type="button" data-search-molty><img src="${avatar.staticPath}" alt=""><span><span data-search-molty-prefix>${escapeHtml(siteChatButtonLabel)}</span> <strong data-search-molty-term hidden></strong></span><span class="search-molty-shortcut" aria-hidden="true">${icon("command")}${icon("corner-down-left")}</span></button>`
     : "";
-  return `<div class="search-modal"><div class="search-panel" role="dialog" aria-modal="true" aria-label="Search documentation"><div class="search-head"><input data-search-input placeholder="Search commands, channels, config..." aria-label="Search documentation"><button class="search-close" type="button" data-search-clear aria-label="Clear search">${icon("x")}</button></div><div class="search-hints" aria-label="Search suggestions">${suggestions.map(label => `<button type="button" data-search-suggestion="${escapeAttr(label)}">${escapeHtml(label)}</button>`).join("")}</div><div class="search-results" data-search-results role="listbox" aria-label="Search results"></div>${molty}</div></div>`;
+  return `<div class="search-modal"><div class="search-panel" role="dialog" aria-modal="true" aria-label="Search documentation"><div class="search-head"><input data-search-input placeholder="${escapeAttr(siteSearchPlaceholder)}" aria-label="Search documentation"><button class="search-close" type="button" data-search-clear aria-label="Clear search">${icon("x")}</button></div><div class="search-hints" aria-label="Search suggestions">${siteSearchSuggestions.map(label => `<button type="button" data-search-suggestion="${escapeAttr(label)}">${escapeHtml(label)}</button>`).join("")}</div><div class="search-results" data-search-results role="listbox" aria-label="Search results"></div>${molty}</div></div>`;
 }
 
 function writeLlmsIndex() {
   const origin = docsOrigin();
+  const markdownExample = pageForDocPath("start/getting-started", "en") ?? englishDocsPages()[0];
+  const markdownExampleUrl = markdownExample
+    ? `${origin}${pageMarkdownRoute(markdownExample)}`
+    : `${origin}/index.md`;
   const lines = [
-    `# ${config.name}`,
+    `# ${siteName}`,
     "",
-    config.description ?? "OpenClaw documentation.",
+    siteDescription,
     "",
-    "> Use this file as a lightweight map of the OpenClaw documentation. Fetch individual pages as Markdown with `.md` URLs or `Accept: text/markdown`.",
+    `> Use this file as a lightweight map of the ${siteName} documentation. Fetch individual pages as Markdown with \`.md\` URLs or \`Accept: text/markdown\`.`,
     "",
     "## Agent Resources",
     "",
-    `- [Markdown page export](${origin}/start/getting-started.md): Append \`.md\` to any docs page URL for clean Markdown.`,
+    `- [Markdown page export](${markdownExampleUrl}): Append \`.md\` to any docs page URL for clean Markdown.`,
     `- [Sitemap](${origin}/sitemap.xml): Search crawler URL index.`,
     `- [Robots policy](${origin}/robots.txt): Bot and crawler policy.`,
     "",
@@ -616,7 +644,7 @@ function writeRobotsTxt() {
     "Google-Extended",
   ];
   const lines = [
-    "# OpenClaw documentation crawler policy",
+    `# ${siteName} documentation crawler policy`,
     "# Human docs are HTML. Agent-optimized docs are available as Markdown via .md URLs or Accept: text/markdown.",
     llmsFullAvailable
       ? "# Agent-optimized docs are available through /llms.txt, page-level Markdown, and the nightly /llms-full.txt corpus."
@@ -683,10 +711,10 @@ function chatAvatarAssets() {
 function chatWidget() {
   if (!chatApiUrl) return "";
   const avatar = chatAvatarAssets();
-  return `<section class="docs-chat" data-docs-chat aria-label="OpenClaw docs assistant">
-<button class="docs-chat-launcher" type="button" data-chat-toggle aria-expanded="false" aria-controls="docs-chat-panel"><img class="docs-chat-avatar" src="${avatar.staticPath}" data-static-src="${avatar.staticPath}" data-hover-src="${avatar.hoverPath}" alt=""><span>Ask Molty</span></button>
+  return `<section class="docs-chat" data-docs-chat aria-label="${escapeAttr(siteChatLabel)}">
+<button class="docs-chat-launcher" type="button" data-chat-toggle aria-expanded="false" aria-controls="docs-chat-panel"><img class="docs-chat-avatar" src="${avatar.staticPath}" data-static-src="${avatar.staticPath}" data-hover-src="${avatar.hoverPath}" alt=""><span>${escapeHtml(siteChatButtonLabel)}</span></button>
 <div class="docs-chat-panel" id="docs-chat-panel" data-chat-panel role="dialog" aria-modal="false" aria-labelledby="docs-chat-title" aria-hidden="true" inert>
-<header class="docs-chat-head"><div class="docs-chat-title"><img class="docs-chat-avatar" src="${avatar.staticPath}" data-static-src="${avatar.staticPath}" data-hover-src="${avatar.hoverPath}" alt=""><h2 id="docs-chat-title">Molty</h2></div><div class="docs-chat-actions"><button class="docs-chat-icon docs-chat-maximize" type="button" data-chat-maximize aria-label="Maximize docs assistant" aria-pressed="false">${icon("maximize-2")}</button><button class="docs-chat-icon docs-chat-copy" type="button" data-chat-copy aria-label="Copy conversation" hidden>${icon("copy")}</button><button class="docs-chat-icon docs-chat-retry" type="button" data-chat-retry aria-label="Reload last answer" hidden disabled>${icon("refresh-cw")}</button><button class="docs-chat-icon docs-chat-clear" type="button" data-chat-clear aria-label="Clear conversation" hidden>${icon("trash")}</button><button class="docs-chat-icon docs-chat-minimize" type="button" data-chat-minimize aria-label="Minimize docs assistant">${icon("minus")}</button></div></header>
+<header class="docs-chat-head"><div class="docs-chat-title"><img class="docs-chat-avatar" src="${avatar.staticPath}" data-static-src="${avatar.staticPath}" data-hover-src="${avatar.hoverPath}" alt=""><h2 id="docs-chat-title">${escapeHtml(siteChatName)}</h2></div><div class="docs-chat-actions"><button class="docs-chat-icon docs-chat-maximize" type="button" data-chat-maximize aria-label="Maximize docs assistant" aria-pressed="false">${icon("maximize-2")}</button><button class="docs-chat-icon docs-chat-copy" type="button" data-chat-copy aria-label="Copy conversation" hidden>${icon("copy")}</button><button class="docs-chat-icon docs-chat-retry" type="button" data-chat-retry aria-label="Reload last answer" hidden disabled>${icon("refresh-cw")}</button><button class="docs-chat-icon docs-chat-clear" type="button" data-chat-clear aria-label="Clear conversation" hidden>${icon("trash")}</button><button class="docs-chat-icon docs-chat-minimize" type="button" data-chat-minimize aria-label="Minimize docs assistant">${icon("minus")}</button></div></header>
 <div class="docs-chat-auth" data-chat-auth hidden></div>
 <div class="docs-chat-log" data-chat-log aria-live="polite">
 <div class="docs-chat-empty">Responses are generated using AI and may contain mistakes.</div>
@@ -768,7 +796,14 @@ async function renderPageOgCards() {
     while (cursor < targets.length) {
       const page = targets[cursor++];
       const kicker = groupForPage(enNav, page.slug) ?? activeTabTitle(enNav, page.slug) ?? config.name;
-      const svg = renderPageOgSvg({ title: page.title, kicker, summary: page.summary });
+      const svg = renderPageOgSvg({
+        title: page.title,
+        kicker,
+        summary: page.summary,
+        siteName,
+        origin: docsOrigin(),
+        repository: sourceMetadata.repository ?? feedbackIssueRepository,
+      });
       const outFile = path.join(ogDir, `${page.slug}.png`);
       fs.mkdirSync(path.dirname(outFile), { recursive: true });
       try {
@@ -936,23 +971,81 @@ function pageMarkdownRoute(page) {
   return page.slug === "index" ? `${prefix || ""}/index.md` : `${prefix}/${page.slug}.md`;
 }
 
-function rewriteInternalUrls(html, locale) {
-  return html.replace(/\b(href|src)="\/([^"#?]*)([#?][^"]*)?"/g, (match, attr, target, suffix = "") => {
-    if (attr === "src") return `${attr}="${publicPath(`/${target}`)}${suffix}"`;
-    if (!target || target.startsWith("assets/") || target.startsWith("pagefind/")) {
-      return `${attr}="${publicPath(`/${target}`)}${suffix}"`;
-    }
-    const segments = target.replace(/\/$/, "").split("/");
-    const maybeLocale = segments[0];
-    const localizedSlug = normalizeSlug(segments.slice(1).join("/") || "index");
-    const localizedPage = allPageByKey.get(pageKey(maybeLocale, localizedSlug));
-    if (localizedPage) {
-      return `${attr}="${internalPageUrl(localizedPage)}${suffix}"`;
-    }
-    const slug = normalizeSlug(target.replace(/\/$/, ""));
-    const page = allPageByKey.get(pageKey(locale, slug)) ?? allPageByKey.get(pageKey("en", slug));
-    return page ? `${attr}="${internalPageUrl(page)}${suffix}"` : `${attr}="${publicPath(`/${target}`)}${suffix}"`;
+function rewriteInternalUrls(html, page) {
+  return html.replace(/\b(href|src)="([^"]*)"/g, (match, attr, value) => {
+    const rewritten = rewriteUrl(attr, value, page);
+    return rewritten === value ? match : `${attr}="${escapeAttr(rewritten)}"`;
   });
+}
+
+function rewriteUrl(attr, value, page) {
+  if (shouldSkipUrl(value)) return value;
+  const { pathname, suffix } = splitUrl(value);
+  if (!pathname) return value;
+
+  if (attr === "src") {
+    if (pathname.startsWith("/")) return `${publicPath(pathname)}${suffix}`;
+    return `${publicPath(`/${resolveDocsRelativePath(page.rel, pathname)}`)}${suffix}`;
+  }
+
+  if (pathname.startsWith("/")) return rewriteRootHref(pathname, suffix, page.locale);
+  return rewriteRelativeHref(pathname, suffix, page);
+}
+
+function shouldSkipUrl(value) {
+  return (
+    !value || value.startsWith("#") || value.startsWith("//") || /^[a-z][a-z0-9+.-]*:/iu.test(value)
+  );
+}
+
+function splitUrl(value) {
+  const match = String(value).match(/^([^?#]*)([?#].*)?$/u);
+  return { pathname: match?.[1] ?? value, suffix: match?.[2] ?? "" };
+}
+
+function rewriteRootHref(pathname, suffix, locale) {
+  const target = pathname.replace(/^\/+/, "");
+  if (!target || target.startsWith("assets/") || target.startsWith("pagefind/")) {
+    return `${publicPath(pathname)}${suffix}`;
+  }
+  const targetPage = pageForDocPath(target, locale);
+  return targetPage ? `${internalPageUrl(targetPage)}${suffix}` : `${pathname}${suffix}`;
+}
+
+function rewriteRelativeHref(pathname, suffix, page) {
+  const resolved = resolveDocsRelativePath(page.rel, pathname);
+  const targetPage = pageForDocPath(resolved, page.locale);
+  if (targetPage) return `${internalPageUrl(targetPage)}${suffix}`;
+  if (resolved.startsWith("../")) {
+    return `${sourceFileUrl(resolveRepositoryRelativePath(page.rel, pathname))}${suffix}`;
+  }
+  return `${publicPath(`/${resolved}`)}${suffix}`;
+}
+
+function pageForDocPath(target, locale) {
+  const clean = target.replace(/\/$/, "").replace(/\.(md|mdx)$/iu, "");
+  const segments = clean.split("/");
+  const maybeLocale = segments[0];
+  const localizedSlug = normalizeSlug(segments.slice(1).join("/") || "index");
+  const localizedPage = allPageByKey.get(pageKey(maybeLocale, localizedSlug));
+  if (localizedPage) return localizedPage;
+  const slug = normalizeSlug(clean);
+  return allPageByKey.get(pageKey(locale, slug)) ?? allPageByKey.get(pageKey("en", slug));
+}
+
+function resolveDocsRelativePath(sourceRel, target) {
+  const sourceDir = path.posix.dirname(sourceRel);
+  const base = sourceDir === "." ? "" : sourceDir;
+  return path.posix.normalize(path.posix.join(base, target));
+}
+
+function resolveRepositoryRelativePath(sourceRel, target) {
+  const sourceDir = path.posix.dirname(`docs/${sourceRel}`);
+  return path.posix.normalize(path.posix.join(sourceDir, target)).replace(/^(\.\.\/)+/u, "");
+}
+
+function sourceFileUrl(sourcePath) {
+  return `${sourceRepositoryUrl}/blob/main/${encodePath(sourcePath)}`;
 }
 
 function pageKey(locale, slug) {
@@ -987,6 +1080,17 @@ function normalizeBasePath(value) {
 function normalizeRepository(value) {
   const repo = String(value).trim();
   return /^[^/\s]+\/[^/\s]+$/.test(repo) ? repo : "openclaw/openclaw";
+}
+
+function normalizeRepositoryUrl(value) {
+  const raw = String(value || "").trim().replace(/\.git$/u, "").replace(/\/$/u, "");
+  if (/^https:\/\/github\.com\/[^/\s]+\/[^/\s]+$/u.test(raw)) return raw;
+  if (/^[^/\s]+\/[^/\s]+$/u.test(raw)) return `https://github.com/${raw}`;
+  return "https://github.com/openclaw/openclaw";
+}
+
+function encodePath(value) {
+  return String(value).split("/").map(encodeURIComponent).join("/");
 }
 
 function htmlLang(locale) {
