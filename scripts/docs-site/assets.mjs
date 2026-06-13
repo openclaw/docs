@@ -33,7 +33,7 @@ export function siteCss() {
 }
 
 export function siteJs(options = {}) {
-  const authUrl = JSON.stringify(options.authUrl ?? "https://hub.openclaw.ai/docs/auth");
+  const authUrl = JSON.stringify(options.authUrl ?? "https://clawhub.ai/auth/docs");
   const assistantName = JSON.stringify(options.assistantName ?? "OpenClaw");
   return `
 const root=document.documentElement;const saved=localStorage.getItem("theme");root.dataset.theme=saved||"dark";

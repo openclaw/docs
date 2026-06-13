@@ -336,6 +336,7 @@ if (/data-locale/.test(siteJs)) {
 }
 if (!/function initChat/.test(siteJs)
   || !/data-chat-form/.test(siteJs)
+  || !/new URL\("https:\/\/clawhub\.ai\/auth\/docs"\)/.test(siteJs)
   || !/chat\.dataset\.chatAuthState=state/.test(siteJs)
   || !/function chatFailureMessage/.test(siteJs)
   || !/serverError=msg\.toLowerCase\(\)\.startsWith\("docs agent returned 5"\)/.test(siteJs)
@@ -346,6 +347,9 @@ if (!/function initChat/.test(siteJs)
   || !/form\.inert=!ready/.test(siteJs)
   || !/input\.readOnly=!ready/.test(siteJs)) {
   throw new Error("assets: docs chat behavior is missing");
+}
+if (/hub\.openclaw\.ai\/docs\/auth/.test(siteJs)) {
+  throw new Error("assets: docs chat still uses the retired ClawHub auth URL");
 }
 if (/matchMedia\("\(min-width:1121px\)"\)\.matches\)setOpen\(true\)/.test(siteJs)) {
   throw new Error("assets: docs chat must stay closed until Ask Molty is pressed");
