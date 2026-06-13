@@ -225,7 +225,7 @@ clawhub scan download @scope/demo --version 2.0.0 --kind plugin --output report.
 #### GitHub Actions
 
 ClawHub ships an official reusable workflow at
-[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/73c32d6296a100f5e45e38f4611aad62e66b48ab/.github/workflows/skill-publish.yml)
+[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/4b3c2bb63020d6d71e6f51e65e1cca2422dcb283/.github/workflows/skill-publish.yml)
 for skill repos and catalog repos.
 
 Typical catalog setup:
@@ -654,7 +654,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/73c32d6296a100f5e45e38f4611aad62e66b48ab/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/4b3c2bb63020d6d71e6f51e65e1cca2422dcb283/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
@@ -727,6 +727,11 @@ clawhub package trusted-publisher get @openclaw/example-plugin
   `.github/workflows/`.
 - `--environment <name>` is optional. When configured, the GitHub Actions
   environment in the OIDC claim must match exactly.
+- ClawHub verifies the configured GitHub repository when this command runs.
+  Public repositories can be verified through public GitHub metadata. Private
+  repositories require ClawHub to have GitHub access to that repository, for
+  example through a future ClawHub GitHub App installation or another authorized
+  GitHub integration.
 - Flags:
   - `--repository <repo>`: GitHub repository, for example `openclaw/example-plugin`.
   - `--workflow-filename <file>`: workflow file name, for example `package-publish.yml`.
