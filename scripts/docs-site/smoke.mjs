@@ -336,7 +336,7 @@ if (/data-locale/.test(siteJs)) {
 }
 if (!/function initChat/.test(siteJs)
   || !/data-chat-form/.test(siteJs)
-  || !/new URL\("https:\/\/clawhub\.ai\/auth\/docs"\)/.test(siteJs)
+  || !/new URL\("https:\/\/clawhub\.ai\/auth\/docs",location\.href\)/.test(siteJs)
   || !/chat\.dataset\.chatAuthState=state/.test(siteJs)
   || !/function chatFailureMessage/.test(siteJs)
   || !/serverError=msg\.toLowerCase\(\)\.startsWith\("docs agent returned 5"\)/.test(siteJs)
