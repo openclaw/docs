@@ -11,7 +11,7 @@ Source of truth lives in [`openclaw/openclaw`](https://github.com/openclaw/openc
 1. English docs are authored in `openclaw/openclaw`.
 2. `openclaw/openclaw/.github/workflows/docs-sync-publish.yml` mirrors the docs tree into this repo.
 3. This repo stores the published docs tree plus generated locale output.
-4. `openclaw/docs/.github/workflows/translate-all.yml` debounces docs changes, runs locale translation in parallel, and commits one aggregate locale refresh.
+4. `openclaw/docs/.github/workflows/translate-incremental.yml` debounces normal docs changes, while `translate-all.yml` handles full reconciliation for glossary changes, weekly schedule, release dispatch, or manual dispatch.
 5. `.github/workflows/r2-pages.yml` builds the full unpruned static site and uploads changed objects to Cloudflare R2.
 6. `.github/workflows/pages.yml` deploys the small Cloudflare Worker router that preserves clean URLs and markdown negotiation while reading docs from R2.
 
@@ -24,6 +24,7 @@ Source of truth lives in [`openclaw/openclaw`](https://github.com/openclaw/openc
 - If files changed, only the pending files are translated.
 - The workflow retries transient model-format failures.
 - Locale outputs are uploaded as artifacts first, then committed together by the finalizer.
+- Incremental and full translation use separate concurrency lanes, so small docs edits do not cancel weekly or glossary-triggered full reconciliation.
 - The weekly scheduled run uses full reconciliation mode to repair missed or flaky locale updates.
 
 ## Editing rules

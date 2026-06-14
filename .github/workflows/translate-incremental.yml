@@ -1,34 +1,30 @@
-name: Translate Full
+name: Translate Incremental
 
 on:
   push:
     branches:
       - main
     paths:
-      - "docs/.i18n/glossary.*.json"
-  repository_dispatch:
-    types:
-      - translate-all-release
-      - translate-ar-release
-      - translate-de-release
-      - translate-es-release
-      - translate-fa-release
-      - translate-fr-release
-      - translate-id-release
-      - translate-it-release
-      - translate-ja-jp-release
-      - translate-ko-release
-      - translate-nl-release
-      - translate-pl-release
-      - translate-pt-br-release
-      - translate-th-release
-      - translate-tr-release
-      - translate-uk-release
-      - translate-vi-release
-      - translate-zh-cn-release
-      - translate-zh-tw-release
-  schedule:
-    - cron: "17 3 * * 0"
+      - "docs/**"
+      - "!docs/ar/**"
+      - "!docs/de/**"
+      - "!docs/es/**"
+      - "!docs/fa/**"
+      - "!docs/fr/**"
+      - "!docs/id/**"
+      - "!docs/it/**"
+      - "!docs/ja-JP/**"
+      - "!docs/ko/**"
+      - "!docs/nl/**"
+      - "!docs/pl/**"
+      - "!docs/pt-BR/**"
+      - "!docs/th/**"
+      - "!docs/tr/**"
+      - "!docs/uk/**"
+      - "!docs/vi/**"
+      - "!docs/zh-CN/**"
+      - "!docs/zh-TW/**"
+      - "!docs/.i18n/**"
   workflow_dispatch:
     inputs:
       cooldown_seconds:
@@ -42,7 +38,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: docs-i18n-full
+  group: docs-i18n-incremental
   cancel-in-progress: true
 
 jobs:
@@ -65,17 +61,18 @@ jobs:
         id: prepare
         env:
           EVENT_NAME: ${{ github.event_name }}
-          REQUESTED_COOLDOWN_SECONDS: ${{ inputs.cooldown_seconds || github.event.client_payload.cooldown_seconds || '' }}
+          BEFORE_SHA: ${{ github.event.before || '' }}
+          REQUESTED_COOLDOWN_SECONDS: ${{ inputs.cooldown_seconds || '' }}
           DEFAULT_COOLDOWN_SECONDS: ${{ vars.OPENCLAW_DOCS_TRANSLATION_COOLDOWN_SECONDS || '3600' }}
           DEFAULT_MAX_WAIT_SECONDS: ${{ vars.OPENCLAW_DOCS_TRANSLATION_MAX_WAIT_SECONDS || vars.OPENCLAW_DOCS_TRANSLATION_COOLDOWN_SECONDS || '3600' }}
         run: |
           set -euo pipefail
 
-          mode="full"
+          mode="incremental"
           cooldown="${REQUESTED_COOLDOWN_SECONDS}"
           if [ -z "${cooldown}" ]; then
             case "${EVENT_NAME}" in
-              push|repository_dispatch) cooldown="${DEFAULT_COOLDOWN_SECONDS}" ;;
+              push) cooldown="${DEFAULT_COOLDOWN_SECONDS}" ;;
               *) cooldown="0" ;;
             esac
           fi
@@ -134,22 +131,51 @@ jobs:
             fi
           done
 
+          should_translate="true"
+          if [ "${EVENT_NAME}" = "push" ] && [ -n "${BEFORE_SHA}" ]; then
+            changed_paths="$(git diff --name-only "${BEFORE_SHA}" "${publish_ref}" || true)"
+            if printf '%s\n' "${changed_paths}" | grep -Eq '^docs/\.i18n/glossary\..*\.json$'; then
+              echo "Glossary changed; full lane owns this translation."
+              should_translate="false"
+            elif ! printf '%s\n' "${changed_paths}" | node -e '
+              const fs = require("node:fs");
+              const locales = new Set([
+                "ar", "de", "es", "fa", "fr", "id", "it", "ja-JP", "ko", "nl",
+                "pl", "pt-BR", "th", "tr", "uk", "vi", "zh-CN", "zh-TW",
+              ]);
+              const paths = fs.readFileSync(0, "utf8").split(/\r?\n/).filter(Boolean);
+              const hasTranslatable = paths.some((path) => {
+                if (!path.startsWith("docs/")) return false;
+                const rel = path.slice("docs/".length);
+                const first = rel.split("/", 1)[0];
+                if (locales.has(first)) return false;
+                if (rel.startsWith(".generated/") || rel.startsWith(".i18n/")) return false;
+                return /\.(md|mdx)$/i.test(rel);
+              });
+              process.exit(hasTranslatable ? 0 : 1);
+            '
+            then
+              echo "No translatable docs changed after cooldown; skipping translation matrix."
+              should_translate="false"
+            fi
+          fi
+
           {
             echo "mode=${mode}"
             echo "publish_ref=${publish_ref}"
-            echo "should_translate=true"
+            echo "should_translate=${should_translate}"
             echo "source_repository=${source_repository}"
             echo "source_sha=${source_sha}"
           } >> "${GITHUB_OUTPUT}"
 
           {
-            echo "### Translate Full"
+            echo "### Translate Incremental"
             echo
             echo "- mode: \`${mode}\`"
             echo "- publish ref: \`${publish_ref}\`"
             echo "- source: \`${source_repository}@${source_sha}\`"
             echo "- cooldown seconds: \`${cooldown}\`"
-            echo "- should translate: \`true\`"
+            echo "- should translate: \`${should_translate}\`"
           } >> "${GITHUB_STEP_SUMMARY}"
 
   translate:
