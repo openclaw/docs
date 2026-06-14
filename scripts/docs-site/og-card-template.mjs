@@ -14,12 +14,10 @@ const KICKER_BASELINE_Y = 192;
 const TITLE_BLOCK_TOP = 218;
 const FOOTER_TOP = 524;
 
-export function renderPageOgSvg({ title, kicker, summary, siteName = "OpenClaw", origin = "https://docs.openclaw.ai", repository = "openclaw/openclaw" }) {
+export function renderPageOgSvg({ title, kicker, summary }) {
   const safeTitle = (title || "Documentation").trim();
-  const safeKicker = (kicker || siteName).trim();
+  const safeKicker = (kicker || "OpenClaw").trim();
   const safeSummary = (summary || "").trim();
-  const safeHost = displayHost(origin);
-  const safeRepository = String(repository || "openclaw/openclaw").replace(/^https:\/\/github\.com\//u, "");
 
   const titleFit = fitText(safeTitle, TITLE_SIZES, TITLE_MAX_WIDTH, TITLE_MAX_LINES, GLYPH_RATIO_TITLE);
   const titleLetterSpacing = titleFit.size >= 88 ? -2.5 : titleFit.size >= 70 ? -2 : -1.4;
@@ -32,7 +30,7 @@ export function renderPageOgSvg({ title, kicker, summary, siteName = "OpenClaw",
     : { lines: [], size: SUMMARY_SIZE };
   const summaryBlockTop = titleBlockBottom + 22;
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="${escapeXml(`${safeTitle} — ${siteName} documentation`)}">
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="${escapeXml(`${safeTitle} — OpenClaw documentation`)}">
 ${defs()}
   <rect width="1200" height="630" fill="url(#bg)"/>
   <rect width="1200" height="630" fill="url(#dots)"/>
@@ -42,7 +40,7 @@ ${defs()}
 
   <g transform="translate(${PAD_X} 78)">
     <rect width="22" height="22" rx="4" fill="#ff5a36"/>
-    <text x="36" y="17" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="18" font-weight="700" fill="#ffd9cc" letter-spacing="0.18em">${escapeXml(safeHost.toUpperCase())}</text>
+    <text x="36" y="17" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="18" font-weight="700" fill="#ffd9cc" letter-spacing="0.18em">DOCS.OPENCLAW.AI</text>
   </g>
 
   <g transform="translate(940 56)">
@@ -57,24 +55,15 @@ ${defs()}
 
   <g transform="translate(${PAD_X} ${FOOTER_TOP})">
     <rect width="10" height="10" rx="2" fill="#ff5a36"/>
-    <text x="22" y="9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="20" font-weight="600" fill="#ffffff">${escapeXml(safeHost)}</text>
-    <text x="22" y="40" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" font-weight="500" fill="#7b7472">${escapeXml(siteName)} documentation</text>
+    <text x="22" y="9" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="20" font-weight="600" fill="#ffffff">docs.openclaw.ai</text>
+    <text x="22" y="40" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" font-weight="500" fill="#7b7472">Self-hosted gateway · AI coding agents from any chat</text>
   </g>
 
   <g transform="translate(960 ${FOOTER_TOP})" opacity="0.85">
     <text font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" font-weight="600" fill="#ff8a5f" letter-spacing="0.18em">v1 · MIT</text>
-    <text y="28" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" font-weight="500" fill="#7b7472">github.com/${escapeXml(safeRepository)}</text>
+    <text y="28" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" font-weight="500" fill="#7b7472">github.com/openclaw/openclaw</text>
   </g>
 </svg>`;
-}
-
-function displayHost(origin) {
-  try {
-    const url = new URL(origin);
-    return `${url.host}${url.pathname === "/" ? "" : url.pathname.replace(/\/$/u, "")}`;
-  } catch {
-    return String(origin || "docs.openclaw.ai").replace(/^https?:\/\//u, "").replace(/\/$/u, "");
-  }
 }
 
 function baselineY(blockTop, size, lineIndex) {
