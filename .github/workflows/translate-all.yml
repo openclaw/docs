@@ -153,13 +153,14 @@ jobs:
           } >> "${GITHUB_STEP_SUMMARY}"
 
   translate:
-    name: Translate ${{ matrix.locale }}
+    name: Translate ${{ matrix.locale.locale }} shard ${{ matrix.shard_index }}/8
     needs: prepare
     if: needs.prepare.outputs.should_translate == 'true'
     strategy:
       fail-fast: false
+      max-parallel: 54
       matrix:
-        include:
+        locale:
           - locale: zh-CN
             locale_slug: zh-cn
           - locale: zh-TW
@@ -196,13 +197,25 @@ jobs:
             locale_slug: pl
           - locale: th
             locale_slug: th
+        shard_index:
+          - 0
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
     uses: ./.github/workflows/translate-locale-reusable.yml
     with:
-      locale: ${{ matrix.locale }}
-      locale_slug: ${{ matrix.locale_slug }}
+      locale: ${{ matrix.locale.locale }}
+      locale_slug: ${{ matrix.locale.locale_slug }}
       publish_ref: ${{ needs.prepare.outputs.publish_ref }}
       source_sha: ${{ needs.prepare.outputs.source_sha }}
       mode: ${{ needs.prepare.outputs.mode }}
+      shard_index: ${{ matrix.shard_index }}
+      shard_total: "8"
+      worker_parallel: "2"
     secrets: inherit
 
   finalize:
@@ -215,3 +228,4 @@ jobs:
     with:
       source_sha: ${{ needs.prepare.outputs.source_sha }}
       mode: ${{ needs.prepare.outputs.mode }}
+      shard_total: "8"

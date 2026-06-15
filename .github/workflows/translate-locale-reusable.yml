@@ -18,16 +18,25 @@ on:
       mode:
         required: true
         type: string
+      shard_index:
+        required: true
+        type: string
+      shard_total:
+        required: true
+        type: string
+      worker_parallel:
+        required: true
+        type: string
 
 permissions:
   contents: read
 
 jobs:
   translate:
-    name: Translate ${{ inputs.locale }}
+    name: Translate ${{ inputs.locale }} shard ${{ inputs.shard_index }}/${{ inputs.shard_total }}
     runs-on: ubuntu-latest
     concurrency:
-      group: translate-${{ inputs.locale_slug }}
+      group: translate-${{ inputs.locale_slug }}-s${{ inputs.shard_index }}of${{ inputs.shard_total }}
       cancel-in-progress: false
     steps:
       - name: Checkout publish repo
@@ -119,6 +128,8 @@ jobs:
           LOCALE: ${{ inputs.locale }}
           LOCALE_SLUG: ${{ inputs.locale_slug }}
           MODE: ${{ inputs.mode }}
+          SHARD_INDEX: ${{ inputs.shard_index }}
+          SHARD_TOTAL: ${{ inputs.shard_total }}
         run: |
           python - <<'PY'
           import hashlib
@@ -143,7 +154,16 @@ jobs:
           }
           locale = os.environ["LOCALE"]
           mode = os.environ["MODE"]
-          pending_path = Path(".openclaw-sync") / f"docs-i18n-{os.environ['LOCALE_SLUG']}.txt"
+          try:
+            shard_index = int(os.environ["SHARD_INDEX"])
+            shard_total = int(os.environ["SHARD_TOTAL"])
+          except ValueError as exc:
+            raise SystemExit(f"invalid shard inputs: {exc}")
+          if shard_total < 1:
+            raise SystemExit(f"invalid shard_total: {shard_total}")
+          if shard_index < 0 or shard_index >= shard_total:
+            raise SystemExit(f"invalid shard_index {shard_index} for shard_total {shard_total}")
+          pending_path = Path(".openclaw-sync") / f"docs-i18n-{os.environ['LOCALE_SLUG']}-s{shard_index}of{shard_total}.txt"
 
           def stored_source_hash(path: Path) -> str:
             if not path.exists():
@@ -175,12 +195,23 @@ jobs:
             if mode == "full" or stored_source_hash(locale_path) != source_hash:
               pending_files.append(str(path.resolve()))
 
+          pending_files = sorted(pending_files)
+          shard_files = [
+            file
+            for index, file in enumerate(pending_files)
+            if index % shard_total == shard_index
+          ]
+
           pending_path.parent.mkdir(exist_ok=True)
-          pending_path.write_text("\n".join(pending_files) + ("\n" if pending_files else ""))
-          print(f"all_docs={len(all_files)} pending_docs={len(pending_files)}")
+          pending_path.write_text("\n".join(shard_files) + ("\n" if shard_files else ""))
+          print(
+            f"all_docs={len(all_files)} total_pending_docs={len(pending_files)} "
+            f"shard={shard_index}/{shard_total} shard_pending_docs={len(shard_files)}"
+          )
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
             fh.write(f"all_count={len(all_files)}\n")
-            fh.write(f"pending_count={len(pending_files)}\n")
+            fh.write(f"total_pending_count={len(pending_files)}\n")
+            fh.write(f"pending_count={len(shard_files)}\n")
           PY
 
       - name: Translate changed docs into locale
@@ -194,8 +225,9 @@ jobs:
           OPENCLAW_DOCS_I18N_PROVIDER: openai
           OPENCLAW_DOCS_I18N_MODEL: gpt-5.5
           OPENCLAW_DOCS_I18N_PROMPT_TIMEOUT: 10m
+          WORKER_PARALLEL: ${{ inputs.worker_parallel }}
         run: |
-          pending_file=".openclaw-sync/docs-i18n-${LOCALE_SLUG}.txt"
+          pending_file=".openclaw-sync/docs-i18n-${LOCALE_SLUG}-s${{ inputs.shard_index }}of${{ inputs.shard_total }}.txt"
           if [ ! -s "${pending_file}" ]; then
             echo "No docs files found."
             exit 0
@@ -215,7 +247,7 @@ jobs:
                 --mode doc \
                 --thinking xhigh \
                 --allow-partial \
-                --parallel 8 \
+                --parallel "${WORKER_PARALLEL}" \
                 "${DOC_FILES[@]}"
             ); then
               exit 0
@@ -307,7 +339,11 @@ jobs:
           LOCALE_SLUG: ${{ inputs.locale_slug }}
           SOURCE_SHA: ${{ steps.meta.outputs.sha }}
           MODE: ${{ inputs.mode }}
+          SHARD_INDEX: ${{ inputs.shard_index }}
+          SHARD_TOTAL: ${{ inputs.shard_total }}
+          WORKER_PARALLEL: ${{ inputs.worker_parallel }}
           PENDING_COUNT: ${{ steps.pending.outputs.pending_count || '0' }}
+          TOTAL_PENDING_COUNT: ${{ steps.pending.outputs.total_pending_count || '0' }}
           ALL_COUNT: ${{ steps.pending.outputs.all_count || '0' }}
           TRANSLATE_OUTCOME: ${{ steps.translate_docs.outcome || 'skipped' }}
           MDX_CHECK_OUTCOME: ${{ steps.mdx_check.outcome || 'skipped' }}
@@ -317,7 +353,8 @@ jobs:
         run: |
           set -euo pipefail
 
-          artifact_dir=".openclaw-sync/artifacts/${LOCALE_SLUG}"
+          shard_id="s${SHARD_INDEX}of${SHARD_TOTAL}"
+          artifact_dir=".openclaw-sync/artifacts/${LOCALE_SLUG}-${shard_id}"
           payload_dir="${artifact_dir}/payload"
           mkdir -p "${payload_dir}"
 
@@ -339,10 +376,53 @@ jobs:
             : > "${artifact_dir}/changed-files.txt"
             : > "${artifact_dir}/deleted-files.txt"
           else
-            git diff --name-only --diff-filter=ACMRT -- "docs/${LOCALE}" "docs/.i18n/${LOCALE}.tm.jsonl" > "${artifact_dir}/changed-files.txt"
-            git ls-files --others --exclude-standard -- "docs/${LOCALE}" "docs/.i18n/${LOCALE}.tm.jsonl" >> "${artifact_dir}/changed-files.txt"
-            sort -u "${artifact_dir}/changed-files.txt" -o "${artifact_dir}/changed-files.txt"
-            git diff --name-only --diff-filter=D -- "docs/${LOCALE}" "docs/.i18n/${LOCALE}.tm.jsonl" > "${artifact_dir}/deleted-files.txt"
+            git diff --name-only --diff-filter=ACMRT -- "docs/${LOCALE}" "docs/.i18n/${LOCALE}.tm.jsonl" > "${artifact_dir}/all-changed-files.txt"
+            git ls-files --others --exclude-standard -- "docs/${LOCALE}" "docs/.i18n/${LOCALE}.tm.jsonl" >> "${artifact_dir}/all-changed-files.txt"
+            sort -u "${artifact_dir}/all-changed-files.txt" -o "${artifact_dir}/all-changed-files.txt"
+            git diff --name-only --diff-filter=D -- "docs/${LOCALE}" "docs/.i18n/${LOCALE}.tm.jsonl" > "${artifact_dir}/all-deleted-files.txt"
+            export ARTIFACT_DIR="${artifact_dir}"
+
+            python - <<'PY'
+            import os
+            from pathlib import Path
+
+            docs_root = Path(os.environ["GITHUB_WORKSPACE"]) / "docs"
+            locale = os.environ["LOCALE"]
+            shard_index = int(os.environ["SHARD_INDEX"])
+            shard_total = int(os.environ["SHARD_TOTAL"])
+            pending_file = Path(".openclaw-sync") / f"docs-i18n-{os.environ['LOCALE_SLUG']}-s{os.environ['SHARD_INDEX']}of{os.environ['SHARD_TOTAL']}.txt"
+            allowed = set()
+            if pending_file.exists():
+              for line in pending_file.read_text().splitlines():
+                if not line.strip():
+                  continue
+                source = Path(line.strip())
+                rel = source.relative_to(docs_root).as_posix()
+                allowed.add(f"docs/{locale}/{rel}")
+            if shard_total == 1:
+              allowed.add(f"docs/.i18n/{locale}.tm.jsonl")
+
+            changed_path = Path(os.environ["ARTIFACT_DIR"]) / "all-changed-files.txt"
+            deleted_path = Path(os.environ["ARTIFACT_DIR"]) / "all-deleted-files.txt"
+            changed_out_path = Path(os.environ["ARTIFACT_DIR"]) / "changed-files.txt"
+            deleted_out_path = Path(os.environ["ARTIFACT_DIR"]) / "deleted-files.txt"
+            changed = [
+              line.strip()
+              for line in changed_path.read_text().splitlines()
+              if line.strip() in allowed
+            ]
+            deleted = [line.strip() for line in deleted_path.read_text().splitlines() if line.strip()]
+            if shard_total == 1:
+              shard_deleted = deleted
+            else:
+              shard_deleted = [
+                line
+                for index, line in enumerate(sorted(line for line in deleted if not line.startswith("docs/.i18n/")))
+                if index % shard_total == shard_index
+              ]
+            changed_out_path.write_text("\n".join(changed) + ("\n" if changed else ""))
+            deleted_out_path.write_text("\n".join(shard_deleted) + ("\n" if shard_deleted else ""))
+            PY
           fi
 
           while IFS= read -r file; do
@@ -357,7 +437,8 @@ jobs:
           import os
           from pathlib import Path
 
-          artifact_dir = Path(".openclaw-sync/artifacts") / os.environ["LOCALE_SLUG"]
+          shard_id = f"s{os.environ['SHARD_INDEX']}of{os.environ['SHARD_TOTAL']}"
+          artifact_dir = Path(".openclaw-sync/artifacts") / f"{os.environ['LOCALE_SLUG']}-{shard_id}"
           changed = [line for line in (artifact_dir / "changed-files.txt").read_text().splitlines() if line.strip()]
           deleted = [line for line in (artifact_dir / "deleted-files.txt").read_text().splitlines() if line.strip()]
           metadata = {
@@ -365,7 +446,11 @@ jobs:
               "locale_slug": os.environ["LOCALE_SLUG"],
               "source_sha": os.environ["SOURCE_SHA"],
               "mode": os.environ["MODE"],
+              "shard_index": int(os.environ["SHARD_INDEX"]),
+              "shard_total": int(os.environ["SHARD_TOTAL"]),
+              "worker_parallel": int(os.environ["WORKER_PARALLEL"]),
               "pending_count": int(os.environ["PENDING_COUNT"]),
+              "total_pending_count": int(os.environ["TOTAL_PENDING_COUNT"]),
               "all_count": int(os.environ["ALL_COUNT"]),
               "changed_count": len(changed),
               "deleted_count": len(deleted),
@@ -384,6 +469,6 @@ jobs:
         if: steps.stale.outputs.skip != 'true'
         uses: actions/upload-artifact@v7
         with:
-          name: i18n-${{ inputs.locale_slug }}-${{ inputs.source_sha }}
-          path: .openclaw-sync/artifacts/${{ inputs.locale_slug }}
+          name: i18n-${{ inputs.locale_slug }}-s${{ inputs.shard_index }}of${{ inputs.shard_total }}-${{ inputs.source_sha }}
+          path: .openclaw-sync/artifacts/${{ inputs.locale_slug }}-s${{ inputs.shard_index }}of${{ inputs.shard_total }}
           retention-days: 7

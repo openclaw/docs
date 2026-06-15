@@ -229,6 +229,9 @@ jobs:
       publish_ref: ${{ needs.prepare.outputs.publish_ref }}
       source_sha: ${{ needs.prepare.outputs.source_sha }}
       mode: ${{ needs.prepare.outputs.mode }}
+      shard_index: "0"
+      shard_total: "1"
+      worker_parallel: "8"
     secrets: inherit
 
   finalize:
@@ -241,3 +244,4 @@ jobs:
     with:
       source_sha: ${{ needs.prepare.outputs.source_sha }}
       mode: ${{ needs.prepare.outputs.mode }}
+      shard_total: "1"

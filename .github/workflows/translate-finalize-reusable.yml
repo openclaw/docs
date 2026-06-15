@@ -9,6 +9,9 @@ on:
       mode:
         required: true
         type: string
+      shard_total:
+        required: true
+        type: string
 
 permissions:
   actions: write
@@ -40,6 +43,7 @@ jobs:
         env:
           SOURCE_SHA: ${{ inputs.source_sha }}
           MODE: ${{ inputs.mode }}
+          SHARD_TOTAL: ${{ inputs.shard_total }}
           EXPECTED_LOCALES: zh-cn=zh-CN zh-tw=zh-TW ja-jp=ja-JP es=es pt-br=pt-BR ko=ko de=de fr=fr ar=ar it=it vi=vi nl=nl fa=fa tr=tr uk=uk id=id pl=pl th=th
         run: |
           set -euo pipefail
@@ -66,6 +70,9 @@ jobs:
           source_current = current_source_sha == source_sha
           expected_pairs = os.environ["EXPECTED_LOCALES"].split()
           expected = dict(pair.split("=", 1) for pair in expected_pairs)
+          expected_shard_total = int(os.environ["SHARD_TOTAL"])
+          if expected_shard_total < 1:
+            raise SystemExit(f"invalid shard_total: {expected_shard_total}")
           root = Path(".openclaw-sync/i18n-artifacts")
           source_hash_re = re.compile(r'^x-i18n:\n(?:[ \t]+.*\n)*?[ \t]+source_hash: ([0-9a-f]{64})$', re.M)
 
@@ -78,6 +85,11 @@ jobs:
           skipped_stale_deletes = []
           skipped_stale_tm = []
           seen = set()
+
+          def artifact_label(locale: str, shard_index: int) -> str:
+            if expected_shard_total == 1:
+              return locale
+            return f"{locale} shard {shard_index}/{expected_shard_total}"
 
           def read_lines(path: Path) -> list[str]:
             if not path.exists():
@@ -148,14 +160,26 @@ jobs:
               if slug not in expected or expected[slug] != locale:
                 invalid.append(f"{artifact.name}: unexpected locale {locale!r}/{slug!r}")
                 continue
+              try:
+                shard_index = int(metadata.get("shard_index", 0))
+                artifact_shard_total = int(metadata.get("shard_total", 1))
+              except (TypeError, ValueError):
+                invalid.append(f"{artifact.name}: invalid shard metadata")
+                continue
+              if artifact_shard_total != expected_shard_total:
+                invalid.append(f"{artifact.name}: shard_total {artifact_shard_total} did not match expected {expected_shard_total}")
+                continue
+              if shard_index < 0 or shard_index >= expected_shard_total:
+                invalid.append(f"{artifact.name}: invalid shard_index {shard_index}")
+                continue
               if metadata.get("source_sha") != source_sha:
-                stale.append(f"{locale}: {metadata.get('source_sha')}")
+                stale.append(f"{artifact_label(locale, shard_index)}: {metadata.get('source_sha')}")
                 continue
 
-              seen.add(slug)
+              seen.add((slug, shard_index))
               failed_reason = metadata.get("failed_reason") or ""
               if failed_reason:
-                failed.append(f"{locale}: {failed_reason}")
+                failed.append(f"{artifact_label(locale, shard_index)}: {failed_reason}")
                 continue
 
               changed = read_lines(artifact / "changed-files.txt")
@@ -191,14 +215,19 @@ jobs:
                 applied_any = True
 
               if applied_any:
-                applied.append(locale)
+                applied.append(artifact_label(locale, shard_index))
               elif changed or deleted:
-                no_changes.append(f"{locale} (all stale)")
+                no_changes.append(f"{artifact_label(locale, shard_index)} (all stale)")
               else:
-                no_changes.append(locale)
+                no_changes.append(artifact_label(locale, shard_index))
 
-          missing = [expected[slug] for slug in expected if slug not in seen]
-          missing_or_failed = missing + failed
+          missing = [
+            artifact_label(expected[slug], shard_index)
+            for slug in expected
+            for shard_index in range(expected_shard_total)
+            if (slug, shard_index) not in seen
+          ]
+          missing_or_failed = missing + failed + invalid
           status = subprocess.run(
               ["git", "status", "--porcelain", "--untracked-files=all", "--", "docs"],
               check=True,
@@ -221,15 +250,16 @@ jobs:
           with summary.open("a", encoding="utf-8") as fh:
             fh.write("### Translation finalizer\n\n")
             fh.write(f"- mode: `{os.environ['MODE']}`\n")
+            fh.write(f"- shard total: `{expected_shard_total}`\n")
             fh.write(f"- artifact source: `{source_sha}`\n")
             fh.write(f"- current source: `{current_source_sha}`\n")
             fh.write(f"- changed paths: `{len(status)}`\n")
             if applied:
-              fh.write(f"- applied locales: {', '.join(applied)}\n")
+              fh.write(f"- applied artifacts: {', '.join(applied)}\n")
             if no_changes:
-              fh.write(f"- locales with no changes: {', '.join(no_changes)}\n")
+              fh.write(f"- artifacts with no changes: {', '.join(no_changes)}\n")
             if missing_or_failed:
-              fh.write(f"- missing or failed locales: {', '.join(missing_or_failed)}\n")
+              fh.write(f"- missing or failed artifacts: {', '.join(missing_or_failed)}\n")
             if stale:
               fh.write(f"- stale artifacts ignored: {', '.join(stale)}\n")
             if skipped_stale_pages:
@@ -331,8 +361,8 @@ jobs:
         if: steps.apply.outputs.stale != 'true' && steps.apply.outputs.incomplete_count != '0'
         run: |
           {
-            echo "Translation finished with missing or failed locales."
-            echo "Successful locale artifacts were applied before this failure when available."
+            echo "Translation finished with missing or failed locale artifacts."
+            echo "Successful locale shard artifacts were applied before this failure when available."
             cat .openclaw-sync/i18n-incomplete-locales.txt
           } >&2
           exit 1
