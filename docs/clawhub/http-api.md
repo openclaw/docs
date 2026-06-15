@@ -616,6 +616,7 @@ Query params:
 - `cursor` (optional): pagination cursor
 - `isOfficial` (optional): `true` or `false`
 - `executesCode` (optional): `true` or `false`
+- `sort` (optional): `recommended` (default), `installs`, `updated`, `downloads`
 - `capabilityTag` (optional): capability filter for plugin packages
 - `category` (optional): plugin category filter. Current values:
   `channels`, `mcp-tooling`, `data`, `security`, `observability`,

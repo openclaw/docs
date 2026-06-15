@@ -98,6 +98,9 @@ Public read:
 - `GET /api/v1/skills/{slug}/file?path=&version=&tag=`
 - `GET /api/v1/resolve?slug=&hash=`
 - `GET /api/v1/download?slug=&version=&tag=`
+- `GET /api/v1/plugins?limit=&cursor=&sort=`
+  - `sort`: `recommended` (default), `installs`, `updated`, `downloads`
+- `GET /api/v1/plugins/search?q=...`
 - `GET /api/v1/packages/{name}/versions/{version}/artifact`
 - `GET /api/v1/packages/{name}/versions/{version}/security`
 - `GET /api/v1/packages/{name}/versions/{version}/artifact/download`
