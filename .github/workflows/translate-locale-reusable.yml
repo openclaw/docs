@@ -55,23 +55,9 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `sha=${data.sha}\n`);
           NODE
 
-      - name: Skip stale queued source
+      - name: Allow requested source
         id: stale
-        env:
-          SOURCE_SHA: ${{ steps.meta.outputs.sha }}
         run: |
-          set -euo pipefail
-          git fetch origin main:refs/remotes/origin/main
-          remote_source_sha="$(
-            git show refs/remotes/origin/main:.openclaw-sync/source.json 2>/dev/null \
-              | node -e 'const fs = require("node:fs"); try { const data = JSON.parse(fs.readFileSync(0, "utf8")); if (data.sha) process.stdout.write(data.sha); } catch {}' \
-              || true
-          )"
-          if [ -n "$remote_source_sha" ] && [ "$remote_source_sha" != "$SOURCE_SHA" ]; then
-            echo "Skipping stale queued translation for ${SOURCE_SHA}; origin/main mirrors ${remote_source_sha}."
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
           echo "skip=false" >> "$GITHUB_OUTPUT"
 
       - name: Checkout source repo

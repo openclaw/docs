@@ -7,6 +7,7 @@ Internal note for the docs publish pipeline. This file is under `docs/.i18n`, wh
 - English docs deploy quickly after every source docs sync.
 - Locale translation does not run for every hot `main` commit.
 - Translation work is debounced so a burst of docs commits becomes one translation wave.
+- Incremental translation and full reconciliation use separate concurrency lanes.
 - Locale jobs translate only pages whose source hash changed since the last successful locale output.
 - Successful locale outputs are committed together, even if one or more locale jobs fail.
 - A weekly reconciliation reruns every locale/page path to repair missed or flaky translations.
@@ -15,25 +16,34 @@ Internal note for the docs publish pipeline. This file is under `docs/.i18n`, wh
 
 1. `openclaw/openclaw` syncs English docs into `openclaw/docs`.
 2. GitHub Pages deploys English/source changes immediately from the sync commit.
-3. `Translate All` is triggered by the sync commit, release dispatch, manual dispatch, or weekly schedule.
-4. The coordinator waits a cooldown window before starting translation.
-5. After the cooldown, the coordinator reads the current `origin/main` source metadata.
-6. If a newer docs sync arrived during cooldown, the coordinator uses the newer source state.
-7. Per-locale translation jobs run in parallel with `fail-fast: false`.
-8. Each locale job uploads an artifact for the requested source SHA.
-9. The finalizer downloads available artifacts, ignores stale or failed payloads, and pushes one aggregate i18n commit.
-10. After the aggregate commit lands, the finalizer dispatches the Pages deploy once.
-11. The Pages workflow dispatches live smoke after deployment.
+3. `Translate Incremental` is triggered by normal source docs changes.
+4. `Translate Full` is triggered by glossary changes, release dispatch, manual dispatch, or weekly schedule.
+5. The selected coordinator waits a cooldown window before starting translation.
+6. After the cooldown, the coordinator reads the current `origin/main` source metadata.
+7. If a newer docs sync arrived during cooldown, the coordinator uses the newer source state.
+8. Per-locale translation jobs run in parallel with `fail-fast: false`.
+9. Each locale job uploads an artifact for the requested source SHA.
+10. The shared finalizer downloads available artifacts and pushes one aggregate i18n commit.
+11. After the aggregate commit lands, the finalizer dispatches the Pages deploy once.
+12. The Pages workflow dispatches live smoke after deployment.
 
 ## Debounce policy
 
-The coordinator waits 1 hour after a docs sync or release dispatch, then re-reads `origin/main`.
+The active coordinator waits 1 hour after a docs sync or release dispatch, then re-reads `origin/main`.
 
 The default cooldown is controlled by the publish repo variable `OPENCLAW_DOCS_TRANSLATION_COOLDOWN_SECONDS`, which defaults to `3600`. Repository dispatch callers may override it with `client_payload.cooldown_seconds`, and manual runs may set `cooldown_seconds`.
 
 If `.openclaw-sync/source.json` changed during the wait, it waits again from the newer state. If `main` keeps moving, the wait is capped by `OPENCLAW_DOCS_TRANSLATION_MAX_WAIT_SECONDS`, which defaults to the cooldown value. The newest observed state is translated after the cap.
 
 Manual and weekly runs do not wait by default.
+
+## Concurrency lanes
+
+Full reconciliation uses the `docs-i18n-full` concurrency group and cancels older full runs. Full mode covers weekly reconciliation, glossary changes, release dispatch, and manual full runs.
+
+Incremental translation uses the `docs-i18n-incremental` concurrency group and cancels older incremental runs. It does not cancel full reconciliation.
+
+The finalizer uses the shared `docs-i18n-finalize` concurrency group with `cancel-in-progress: false`, so aggregate pushes are serialized across both lanes.
 
 ## Incremental translation
 
@@ -48,6 +58,8 @@ Normal runs translate only:
 Internal files under `docs/.i18n/**` are not translation inputs. Push-triggered runs that only change internal i18n files skip before the locale matrix.
 
 If a locale job fails, its artifact is marked failed and carries no payload. The finalizer still commits successful locales. The failed locale remains stale and is picked up by the next incremental run because its source hashes still do not match.
+
+If a run finishes after the source SHA has moved, the finalizer no longer drops the whole artifact set. It applies localized pages whose `x-i18n.source_hash` still matches the current English source file, skips stale pages, applies deletes only when the current English source is also gone, and skips translation memory updates from stale runs.
 
 ## Artifact contract
 
@@ -67,7 +79,7 @@ payload/docs/<locale>/**
 payload/docs/.i18n/<locale>.tm.jsonl
 ```
 
-`metadata.json` includes the locale, locale slug, source SHA, pending count, changed count, and any failure reason. The finalizer rejects artifacts whose `source_sha` does not match the current `.openclaw-sync/source.json`.
+`metadata.json` includes the locale, locale slug, source SHA, pending count, changed count, and any failure reason. The finalizer rejects artifacts with the wrong requested `source_sha`; if the requested source is no longer current, it falls back to per-page freshness checks.
 
 The source repo release workflow dispatches one `translate-all-release` event. The coordinator still accepts old per-locale release events for compatibility, but those are only a fallback.
 
@@ -81,7 +93,7 @@ Commit message:
 chore(i18n): refresh translations
 ```
 
-The commit may contain a partial locale set. The job summary lists applied locales, locales with no changes, missing or failed locales, stale artifacts, and invalid artifacts.
+The commit may contain a partial locale set. The job summary lists applied locales, locales with no changes, missing or failed locales, stale artifacts, skipped stale pages, skipped stale deletes, skipped stale translation memory, and invalid artifacts.
 
 ## Weekly reconciliation
 
