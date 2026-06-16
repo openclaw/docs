@@ -387,47 +387,47 @@ jobs:
             git diff --name-only --diff-filter=D -- "docs/${LOCALE}" "docs/.i18n/${LOCALE}.tm.jsonl" > "${artifact_dir}/all-deleted-files.txt"
             export ARTIFACT_DIR="${artifact_dir}"
 
-            python - <<'PY'
-            import os
-            from pathlib import Path
+          python - <<'PY'
+          import os
+          from pathlib import Path
 
-            docs_root = Path(os.environ["GITHUB_WORKSPACE"]) / "docs"
-            locale = os.environ["LOCALE"]
-            shard_index = int(os.environ["SHARD_INDEX"])
-            shard_total = int(os.environ["SHARD_TOTAL"])
-            pending_file = Path(".openclaw-sync") / f"docs-i18n-{os.environ['LOCALE_SLUG']}-s{os.environ['SHARD_INDEX']}of{os.environ['SHARD_TOTAL']}.txt"
-            allowed = set()
-            if pending_file.exists():
-              for line in pending_file.read_text().splitlines():
-                if not line.strip():
-                  continue
-                source = Path(line.strip())
-                rel = source.relative_to(docs_root).as_posix()
-                allowed.add(f"docs/{locale}/{rel}")
-            if shard_total == 1:
-              allowed.add(f"docs/.i18n/{locale}.tm.jsonl")
+          docs_root = Path(os.environ["GITHUB_WORKSPACE"]) / "docs"
+          locale = os.environ["LOCALE"]
+          shard_index = int(os.environ["SHARD_INDEX"])
+          shard_total = int(os.environ["SHARD_TOTAL"])
+          pending_file = Path(".openclaw-sync") / f"docs-i18n-{os.environ['LOCALE_SLUG']}-s{os.environ['SHARD_INDEX']}of{os.environ['SHARD_TOTAL']}.txt"
+          allowed = set()
+          if pending_file.exists():
+            for line in pending_file.read_text().splitlines():
+              if not line.strip():
+                continue
+              source = Path(line.strip())
+              rel = source.relative_to(docs_root).as_posix()
+              allowed.add(f"docs/{locale}/{rel}")
+          if shard_total == 1:
+            allowed.add(f"docs/.i18n/{locale}.tm.jsonl")
 
-            changed_path = Path(os.environ["ARTIFACT_DIR"]) / "all-changed-files.txt"
-            deleted_path = Path(os.environ["ARTIFACT_DIR"]) / "all-deleted-files.txt"
-            changed_out_path = Path(os.environ["ARTIFACT_DIR"]) / "changed-files.txt"
-            deleted_out_path = Path(os.environ["ARTIFACT_DIR"]) / "deleted-files.txt"
-            changed = [
-              line.strip()
-              for line in changed_path.read_text().splitlines()
-              if line.strip() in allowed
+          changed_path = Path(os.environ["ARTIFACT_DIR"]) / "all-changed-files.txt"
+          deleted_path = Path(os.environ["ARTIFACT_DIR"]) / "all-deleted-files.txt"
+          changed_out_path = Path(os.environ["ARTIFACT_DIR"]) / "changed-files.txt"
+          deleted_out_path = Path(os.environ["ARTIFACT_DIR"]) / "deleted-files.txt"
+          changed = [
+            line.strip()
+            for line in changed_path.read_text().splitlines()
+            if line.strip() in allowed
+          ]
+          deleted = [line.strip() for line in deleted_path.read_text().splitlines() if line.strip()]
+          if shard_total == 1:
+            shard_deleted = deleted
+          else:
+            shard_deleted = [
+              line
+              for index, line in enumerate(sorted(line for line in deleted if not line.startswith("docs/.i18n/")))
+              if index % shard_total == shard_index
             ]
-            deleted = [line.strip() for line in deleted_path.read_text().splitlines() if line.strip()]
-            if shard_total == 1:
-              shard_deleted = deleted
-            else:
-              shard_deleted = [
-                line
-                for index, line in enumerate(sorted(line for line in deleted if not line.startswith("docs/.i18n/")))
-                if index % shard_total == shard_index
-              ]
-            changed_out_path.write_text("\n".join(changed) + ("\n" if changed else ""))
-            deleted_out_path.write_text("\n".join(shard_deleted) + ("\n" if shard_deleted else ""))
-            PY
+          changed_out_path.write_text("\n".join(changed) + ("\n" if changed else ""))
+          deleted_out_path.write_text("\n".join(shard_deleted) + ("\n" if shard_deleted else ""))
+          PY
           fi
 
           while IFS= read -r file; do

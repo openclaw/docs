@@ -158,7 +158,8 @@ jobs:
     if: needs.prepare.outputs.should_translate == 'true'
     strategy:
       fail-fast: false
-      max-parallel: 54
+      # Keep Codex API fan-out below the 108-worker peak that made failures expensive.
+      max-parallel: 12
       matrix:
         locale:
           - locale: zh-CN
