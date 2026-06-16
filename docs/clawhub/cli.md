@@ -225,7 +225,7 @@ clawhub scan download @scope/demo --version 2.0.0 --kind plugin --output report.
 #### GitHub Actions
 
 ClawHub ships an official reusable workflow at
-[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/89bb8fe93864c52aec9abf85268d27794f02afa3/.github/workflows/skill-publish.yml)
+[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/f366269519b86b95851527bb3272518e045ea2f9/.github/workflows/skill-publish.yml)
 for skill repos and catalog repos.
 
 Typical catalog setup:
@@ -264,16 +264,21 @@ Notes:
 
 ### `delete <slug>`
 
-- Soft-delete a skill (owner, moderator, or admin).
+- Without `--version`, soft-delete a skill (owner, moderator, or admin).
 - Calls `DELETE /api/v1/skills/{slug}`.
 - Owner-initiated soft deletes reserve the slug for 30 days; the command prints the expiry time.
-- `--reason <text>` records a moderation note on the skill and audit log.
+- `--version <version>` permanently deletes one owned non-latest version through a fail-closed,
+  version-specific route.
+  Deleted versions cannot be restored or republished. Publish a replacement before deleting the
+  current latest version. Platform staff do not bypass ownership for this version-only flow.
+- `--reason <text>` records a moderation note on a whole-skill soft-delete and audit log.
 - `--note <text>` is an alias for `--reason`.
 - `--yes` skips confirmation.
 
 ### `undelete <slug>`
 
 - Restore a hidden skill (owner, moderator, or admin).
+- There is no version undelete; permanently deleted versions cannot be restored.
 - Calls `POST /api/v1/skills/{slug}/undelete`.
 - `--reason <text>` records a moderation note on the skill and audit log.
 - `--note <text>` is an alias for `--reason`.
@@ -433,10 +438,16 @@ If validation reports a package, manifest, SDK import, or artifact finding, see
 
 ### `package delete <name>`
 
-- Soft-deletes a package and all releases.
-- Requires the package owner, an org publisher owner/admin, platform moderator,
-  or platform admin.
+- Without `--version`, soft-deletes a package and all releases.
+- `--version <version>` permanently deletes one owned non-latest release through a fail-closed,
+  version-specific route.
+  Deleted versions cannot be restored or republished. Publish a replacement before deleting the
+  current latest version. This version-only flow requires the package owner or an org publisher
+  admin; platform staff do not bypass package ownership.
+- Whole-package soft-delete requires the package owner, an org publisher owner/admin, platform
+  moderator, or platform admin.
 - Flags:
+  - `--version <version>`: permanently delete one non-latest version.
   - `--yes`: skip confirmation.
   - `--json`: machine-readable output.
 
@@ -444,11 +455,13 @@ Example:
 
 ```bash
 clawhub package delete @openclaw/example-plugin --yes
+clawhub package delete @openclaw/example-plugin --version 1.2.3 --yes
 ```
 
 ### `package undelete <name>`
 
 - Restores a soft-deleted package and releases.
+- There is no version undelete; permanently deleted versions cannot be restored.
 - Requires the package owner, an org publisher owner/admin, platform moderator,
   or platform admin.
 - Calls `POST /api/v1/packages/{name}/undelete`.
@@ -654,7 +667,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/89bb8fe93864c52aec9abf85268d27794f02afa3/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/f366269519b86b95851527bb3272518e045ea2f9/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
