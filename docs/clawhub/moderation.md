@@ -20,7 +20,8 @@ This page covers moderation and account standing. For audit labels such as
 [Security Audits](/clawhub/security-audits).
 
 See also [Security](/clawhub/security) and
-[Acceptable usage](/clawhub/acceptable-usage).
+[Acceptable usage](/clawhub/acceptable-usage). For copyright or other content
+rights concerns, use [Content Rights Requests](/clawhub/content-rights).
 
 ## Reports
 
