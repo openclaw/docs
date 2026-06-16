@@ -15,16 +15,15 @@ Internal note for the docs publish pipeline. This file is under `docs/.i18n`, wh
 
 1. `openclaw/openclaw` syncs English docs into `openclaw/docs`.
 2. GitHub Pages deploys English/source changes immediately from the sync commit.
-3. `Translate Incremental` is triggered by normal source docs changes.
-4. `Translate Full` is triggered by glossary changes, release dispatch, manual dispatch, or weekly schedule.
-5. The selected coordinator waits a cooldown window before starting translation.
-6. After the cooldown, the coordinator reads the current `origin/main` source metadata.
-7. If a newer docs sync arrived during cooldown, the coordinator uses the newer source state.
-8. Incremental translation runs one job per locale; full translation runs 14 shards per locale.
-9. Each locale job or shard uploads an artifact for the requested source SHA.
-10. The finalizer downloads available artifacts, ignores stale or failed payloads, and pushes one aggregate i18n commit.
-11. After the aggregate commit lands, the finalizer dispatches the Pages deploy once.
-12. The Pages workflow dispatches live smoke after deployment.
+3. `Translate All` is triggered by the sync commit, release dispatch, manual dispatch, or weekly schedule.
+4. The coordinator waits a cooldown window before starting translation.
+5. After the cooldown, the coordinator reads the current `origin/main` source metadata.
+6. If a newer docs sync arrived during cooldown, the coordinator uses the newer source state.
+7. Per-locale translation jobs run in parallel with `fail-fast: false`.
+8. Each locale job uploads an artifact for the requested source SHA.
+9. The finalizer downloads available artifacts, ignores stale or failed payloads, and pushes one aggregate i18n commit.
+10. After the aggregate commit lands, the finalizer dispatches the Pages deploy once.
+11. The Pages workflow dispatches live smoke after deployment.
 
 ## Debounce policy
 
@@ -50,17 +49,13 @@ Internal files under `docs/.i18n/**` are not translation inputs. Push-triggered 
 
 If a locale job fails, its artifact is marked failed and carries no payload. The finalizer still commits successful locales. The failed locale remains stale and is picked up by the next incremental run because its source hashes still do not match.
 
-Full translation forces every source page into the pending list and splits the sorted file list across 14 shards per locale. With 18 locales, the full matrix has 252 jobs and stays below GitHub Actions' 256 matrix-combination limit.
-
 ## Artifact contract
 
-Each locale job or shard uploads one artifact named with locale, shard, and source SHA:
+Each locale job uploads one artifact named with locale and source SHA:
 
 ```text
-i18n-zh-cn-s0of14-<source-sha>
+i18n-zh-cn-<source-sha>
 ```
-
-Incremental runs use `s0of1`.
 
 Artifact contents:
 
@@ -72,7 +67,7 @@ payload/docs/<locale>/**
 payload/docs/.i18n/<locale>.tm.jsonl
 ```
 
-`metadata.json` includes the locale, locale slug, source SHA, shard index, shard total, pending count, changed count, and any failure reason. The finalizer rejects artifacts whose `source_sha` does not match the current `.openclaw-sync/source.json`.
+`metadata.json` includes the locale, locale slug, source SHA, pending count, changed count, and any failure reason. The finalizer rejects artifacts whose `source_sha` does not match the current `.openclaw-sync/source.json`.
 
 The source repo release workflow dispatches one `translate-all-release` event. The coordinator still accepts old per-locale release events for compatibility, but those are only a fallback.
 
