@@ -691,7 +691,7 @@ function chatWidget() {
 <div class="docs-chat-log" data-chat-log aria-live="polite">
 <div class="docs-chat-empty">Responses are generated using AI and may contain mistakes.</div>
 </div>
-<form class="docs-chat-form" data-chat-form><textarea data-chat-input rows="2" maxlength="2000" placeholder="Ask a question..."></textarea><span class="docs-chat-attach" aria-hidden="true">${icon("paperclip")}</span><button type="submit" data-chat-submit aria-label="Send">${icon("send")}</button></form>
+<form class="docs-chat-form" data-chat-form><textarea data-chat-input rows="2" maxlength="2000" placeholder="Ask a question..."></textarea><button type="submit" data-chat-submit aria-label="Send">${icon("send")}</button></form>
 </div>
 </section>`;
 }
