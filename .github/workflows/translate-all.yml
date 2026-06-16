@@ -153,7 +153,7 @@ jobs:
           } >> "${GITHUB_STEP_SUMMARY}"
 
   translate:
-    name: Translate ${{ matrix.locale.locale }} shard ${{ matrix.shard_index }}/16
+    name: Translate ${{ matrix.locale.locale }} shard ${{ matrix.shard_index }}/14
     needs: prepare
     if: needs.prepare.outputs.should_translate == 'true'
     strategy:
@@ -212,8 +212,6 @@ jobs:
           - 11
           - 12
           - 13
-          - 14
-          - 15
     uses: ./.github/workflows/translate-locale-reusable.yml
     with:
       locale: ${{ matrix.locale.locale }}
@@ -222,7 +220,7 @@ jobs:
       source_sha: ${{ needs.prepare.outputs.source_sha }}
       mode: ${{ needs.prepare.outputs.mode }}
       shard_index: ${{ matrix.shard_index }}
-      shard_total: "16"
+      shard_total: "14"
       worker_parallel: "2"
       thinking_effort: "medium"
     secrets: inherit
@@ -237,4 +235,4 @@ jobs:
     with:
       source_sha: ${{ needs.prepare.outputs.source_sha }}
       mode: ${{ needs.prepare.outputs.mode }}
-      shard_total: "16"
+      shard_total: "14"
