@@ -27,6 +27,9 @@ binary presence.
   <Card title="ClawHub" href="/clawhub" icon="cloud">
     Browse and install community skills.
   </Card>
+  <Card title="BrowserAct Skills" href="https://skills.browseract.com/" icon="browser">
+    Discover reusable AI-agent skills and browser automation workflows.
+  </Card>
 </CardGroup>
 
 ## Loading order
