@@ -27,6 +27,9 @@ on:
       worker_parallel:
         required: true
         type: string
+      thinking_effort:
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -226,6 +229,7 @@ jobs:
           OPENCLAW_DOCS_I18N_MODEL: gpt-5.5
           OPENCLAW_DOCS_I18N_PROMPT_TIMEOUT: 10m
           WORKER_PARALLEL: ${{ inputs.worker_parallel }}
+          THINKING_EFFORT: ${{ inputs.thinking_effort }}
         run: |
           pending_file=".openclaw-sync/docs-i18n-${LOCALE_SLUG}-s${{ inputs.shard_index }}of${{ inputs.shard_total }}.txt"
           if [ ! -s "${pending_file}" ]; then
@@ -245,7 +249,7 @@ jobs:
                 --lang "${LOCALE}" \
                 --src en \
                 --mode doc \
-                --thinking xhigh \
+                --thinking "${THINKING_EFFORT}" \
                 --allow-partial \
                 --parallel "${WORKER_PARALLEL}" \
                 "${DOC_FILES[@]}"
@@ -342,6 +346,7 @@ jobs:
           SHARD_INDEX: ${{ inputs.shard_index }}
           SHARD_TOTAL: ${{ inputs.shard_total }}
           WORKER_PARALLEL: ${{ inputs.worker_parallel }}
+          THINKING_EFFORT: ${{ inputs.thinking_effort }}
           PENDING_COUNT: ${{ steps.pending.outputs.pending_count || '0' }}
           TOTAL_PENDING_COUNT: ${{ steps.pending.outputs.total_pending_count || '0' }}
           ALL_COUNT: ${{ steps.pending.outputs.all_count || '0' }}
@@ -449,6 +454,7 @@ jobs:
               "shard_index": int(os.environ["SHARD_INDEX"]),
               "shard_total": int(os.environ["SHARD_TOTAL"]),
               "worker_parallel": int(os.environ["WORKER_PARALLEL"]),
+              "thinking_effort": os.environ["THINKING_EFFORT"],
               "pending_count": int(os.environ["PENDING_COUNT"]),
               "total_pending_count": int(os.environ["TOTAL_PENDING_COUNT"]),
               "all_count": int(os.environ["ALL_COUNT"]),

@@ -232,6 +232,7 @@ jobs:
       shard_index: "0"
       shard_total: "1"
       worker_parallel: "8"
+      thinking_effort: "medium"
     secrets: inherit
 
   finalize:
