@@ -1,0 +1,139 @@
+name: Translate Shell Check Reusable
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Check workflow shell blocks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v6
+
+      - name: Check bash syntax in translation workflows
+        run: |
+          set -euo pipefail
+
+          python - <<'PY'
+          import re
+          from pathlib import Path
+
+          github_expression = re.compile(r"\$\{\{.*?\}\}")
+          workflow_paths = sorted(Path(".github/workflows").glob("translate-*.yml"))
+          out_dir = Path(".openclaw-sync/workflow-shell-check")
+          out_dir.mkdir(parents=True, exist_ok=True)
+
+          scripts = []
+          for workflow_path in workflow_paths:
+            lines = workflow_path.read_text(encoding="utf-8").splitlines()
+            index = 0
+            script_index = 0
+            while index < len(lines):
+              line = lines[index]
+              if line.strip() != "run: |":
+                index += 1
+                continue
+
+              base_indent = len(line) - len(line.lstrip(" "))
+              block_start = index + 1
+              block_end = block_start
+              while block_end < len(lines):
+                candidate = lines[block_end]
+                if candidate.strip() and len(candidate) - len(candidate.lstrip(" ")) <= base_indent:
+                  break
+                block_end += 1
+
+              content_indent = None
+              for candidate in lines[block_start:block_end]:
+                if candidate.strip():
+                  content_indent = len(candidate) - len(candidate.lstrip(" "))
+                  break
+              if content_indent is None:
+                index = block_end
+                continue
+
+              script_lines = []
+              for candidate in lines[block_start:block_end]:
+                if not candidate.strip():
+                  script_lines.append("")
+                else:
+                  if candidate.startswith(" " * content_indent):
+                    script_line = candidate[content_indent:]
+                  else:
+                    script_line = candidate.lstrip(" ")
+                  # GitHub expressions are interpolated before the shell runs; mask them so this preflight
+                  # stays focused on shell structure issues such as unterminated heredocs.
+                  script_lines.append(github_expression.sub("__GITHUB_EXPR__", script_line))
+
+              script_index += 1
+              script_path = out_dir / f"{workflow_path.name}.{script_index}.sh"
+              script_path.write_text("\n".join(script_lines) + "\n", encoding="utf-8")
+              scripts.append(script_path)
+              index = block_end
+
+          for script_path in scripts:
+            print(script_path)
+          PY
+
+          while IFS= read -r script; do
+            [ -n "${script}" ] || continue
+            bash -n "${script}"
+          done < <(find .openclaw-sync/workflow-shell-check -type f -name '*.sh' | sort)
+
+      - name: Check translation workflow budgets
+        run: |
+          set -euo pipefail
+
+          python - <<'PY'
+          import re
+          from pathlib import Path
+
+          text = Path(".github/workflows/translate-all.yml").read_text(encoding="utf-8")
+
+          def scalar_after(pattern: str, label: str) -> int:
+            match = re.search(pattern, text, re.M)
+            if not match:
+              raise SystemExit(f"missing {label}")
+            return int(match.group(1))
+
+          max_parallel = scalar_after(r"^\s*max-parallel:\s*([0-9]+)\s*$", "full max-parallel")
+          shard_total = scalar_after(r'^\s*shard_total:\s*"([0-9]+)"\s*$', "full shard_total")
+          worker_parallel = scalar_after(r'^\s*worker_parallel:\s*"([0-9]+)"\s*$', "full worker_parallel")
+
+          locale_block = re.search(r"(?ms)^\s*locale:\n(?P<body>.*?)(?=^\s*shard_index:)", text)
+          if not locale_block:
+            raise SystemExit("missing full locale matrix")
+          locale_count = len(re.findall(r"^\s*-\s+locale:\s+\S+\s*$", locale_block.group("body"), re.M))
+          if locale_count == 0:
+            raise SystemExit("full locale matrix is empty")
+
+          shard_block = re.search(r"(?ms)^\s*shard_index:\n(?P<body>.*?)(?=^\s*uses:)", text)
+          if not shard_block:
+            raise SystemExit("missing full shard_index matrix")
+          shard_indexes = [int(value) for value in re.findall(r"^\s*-\s+([0-9]+)\s*$", shard_block.group("body"), re.M)]
+          expected_indexes = list(range(shard_total))
+          if shard_indexes != expected_indexes:
+            raise SystemExit(f"full shard_index matrix {shard_indexes} does not match shard_total {shard_total}")
+
+          matrix_jobs = locale_count * shard_total
+          if matrix_jobs > 256:
+            raise SystemExit(f"full translation matrix has {matrix_jobs} jobs; GitHub Actions limit is 256")
+
+          active_workers = max_parallel * worker_parallel
+          # Keep the budget explicit so a fan-out increase is an intentional workflow change, not an accident.
+          max_active_workers = 24
+          if active_workers > max_active_workers:
+            raise SystemExit(
+              f"full translation peak workers {active_workers} exceeds budget {max_active_workers} "
+              f"({max_parallel} max-parallel * {worker_parallel} workers)"
+            )
+
+          print(
+            f"full translation budget ok: locales={locale_count} shards={shard_total} "
+            f"matrix_jobs={matrix_jobs} peak_workers={active_workers}"
+          )
+          PY

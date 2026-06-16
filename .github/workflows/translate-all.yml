@@ -46,8 +46,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  validate-workflow-shell:
+    name: Validate workflow shell blocks
+    uses: ./.github/workflows/translate-shell-check-reusable.yml
+
   prepare:
     name: Debounce and pick source
+    needs: validate-workflow-shell
     runs-on: ubuntu-latest
     outputs:
       mode: ${{ steps.prepare.outputs.mode }}
@@ -158,7 +163,8 @@ jobs:
     if: needs.prepare.outputs.should_translate == 'true'
     strategy:
       fail-fast: false
-      max-parallel: 54
+      # Keep Codex API fan-out below the 108-worker peak that made failures expensive.
+      max-parallel: 12
       matrix:
         locale:
           - locale: zh-CN

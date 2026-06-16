@@ -42,8 +42,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  validate-workflow-shell:
+    name: Validate workflow shell blocks
+    uses: ./.github/workflows/translate-shell-check-reusable.yml
+
   prepare:
     name: Debounce and pick source
+    needs: validate-workflow-shell
     runs-on: ubuntu-latest
     outputs:
       mode: ${{ steps.prepare.outputs.mode }}
