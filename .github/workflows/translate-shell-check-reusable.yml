@@ -83,3 +83,57 @@ jobs:
             [ -n "${script}" ] || continue
             bash -n "${script}"
           done < <(find .openclaw-sync/workflow-shell-check -type f -name '*.sh' | sort)
+
+      - name: Check translation workflow budgets
+        run: |
+          set -euo pipefail
+
+          python - <<'PY'
+          import re
+          from pathlib import Path
+
+          text = Path(".github/workflows/translate-all.yml").read_text(encoding="utf-8")
+
+          def scalar_after(pattern: str, label: str) -> int:
+            match = re.search(pattern, text, re.M)
+            if not match:
+              raise SystemExit(f"missing {label}")
+            return int(match.group(1))
+
+          max_parallel = scalar_after(r"^\s*max-parallel:\s*([0-9]+)\s*$", "full max-parallel")
+          shard_total = scalar_after(r'^\s*shard_total:\s*"([0-9]+)"\s*$', "full shard_total")
+          worker_parallel = scalar_after(r'^\s*worker_parallel:\s*"([0-9]+)"\s*$', "full worker_parallel")
+
+          locale_block = re.search(r"(?ms)^\s*locale:\n(?P<body>.*?)(?=^\s*shard_index:)", text)
+          if not locale_block:
+            raise SystemExit("missing full locale matrix")
+          locale_count = len(re.findall(r"^\s*-\s+locale:\s+\S+\s*$", locale_block.group("body"), re.M))
+          if locale_count == 0:
+            raise SystemExit("full locale matrix is empty")
+
+          shard_block = re.search(r"(?ms)^\s*shard_index:\n(?P<body>.*?)(?=^\s*uses:)", text)
+          if not shard_block:
+            raise SystemExit("missing full shard_index matrix")
+          shard_indexes = [int(value) for value in re.findall(r"^\s*-\s+([0-9]+)\s*$", shard_block.group("body"), re.M)]
+          expected_indexes = list(range(shard_total))
+          if shard_indexes != expected_indexes:
+            raise SystemExit(f"full shard_index matrix {shard_indexes} does not match shard_total {shard_total}")
+
+          matrix_jobs = locale_count * shard_total
+          if matrix_jobs > 256:
+            raise SystemExit(f"full translation matrix has {matrix_jobs} jobs; GitHub Actions limit is 256")
+
+          active_workers = max_parallel * worker_parallel
+          # Keep the budget explicit so a fan-out increase is an intentional workflow change, not an accident.
+          max_active_workers = 24
+          if active_workers > max_active_workers:
+            raise SystemExit(
+              f"full translation peak workers {active_workers} exceeds budget {max_active_workers} "
+              f"({max_parallel} max-parallel * {worker_parallel} workers)"
+            )
+
+          print(
+            f"full translation budget ok: locales={locale_count} shards={shard_total} "
+            f"matrix_jobs={matrix_jobs} peak_workers={active_workers}"
+          )
+          PY
