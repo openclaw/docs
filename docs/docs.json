@@ -1405,7 +1405,8 @@
                 "pages": [
                   "clawhub/api",
                   "clawhub/http-api",
-                  "clawhub/acceptable-usage"
+                  "clawhub/acceptable-usage",
+                  "clawhub/content-rights"
                 ]
               }
             ]
