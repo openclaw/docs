@@ -1,0 +1,85 @@
+name: Translate Shell Check Reusable
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Check workflow shell blocks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v6
+
+      - name: Check bash syntax in translation workflows
+        run: |
+          set -euo pipefail
+
+          python - <<'PY'
+          import re
+          from pathlib import Path
+
+          github_expression = re.compile(r"\$\{\{.*?\}\}")
+          workflow_paths = sorted(Path(".github/workflows").glob("translate-*.yml"))
+          out_dir = Path(".openclaw-sync/workflow-shell-check")
+          out_dir.mkdir(parents=True, exist_ok=True)
+
+          scripts = []
+          for workflow_path in workflow_paths:
+            lines = workflow_path.read_text(encoding="utf-8").splitlines()
+            index = 0
+            script_index = 0
+            while index < len(lines):
+              line = lines[index]
+              if line.strip() != "run: |":
+                index += 1
+                continue
+
+              base_indent = len(line) - len(line.lstrip(" "))
+              block_start = index + 1
+              block_end = block_start
+              while block_end < len(lines):
+                candidate = lines[block_end]
+                if candidate.strip() and len(candidate) - len(candidate.lstrip(" ")) <= base_indent:
+                  break
+                block_end += 1
+
+              content_indent = None
+              for candidate in lines[block_start:block_end]:
+                if candidate.strip():
+                  content_indent = len(candidate) - len(candidate.lstrip(" "))
+                  break
+              if content_indent is None:
+                index = block_end
+                continue
+
+              script_lines = []
+              for candidate in lines[block_start:block_end]:
+                if not candidate.strip():
+                  script_lines.append("")
+                else:
+                  if candidate.startswith(" " * content_indent):
+                    script_line = candidate[content_indent:]
+                  else:
+                    script_line = candidate.lstrip(" ")
+                  # GitHub expressions are interpolated before the shell runs; mask them so this preflight
+                  # stays focused on shell structure issues such as unterminated heredocs.
+                  script_lines.append(github_expression.sub("__GITHUB_EXPR__", script_line))
+
+              script_index += 1
+              script_path = out_dir / f"{workflow_path.name}.{script_index}.sh"
+              script_path.write_text("\n".join(script_lines) + "\n", encoding="utf-8")
+              scripts.append(script_path)
+              index = block_end
+
+          for script_path in scripts:
+            print(script_path)
+          PY
+
+          while IFS= read -r script; do
+            [ -n "${script}" ] || continue
+            bash -n "${script}"
+          done < <(find .openclaw-sync/workflow-shell-check -type f -name '*.sh' | sort)
