@@ -2,10 +2,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
-import matter from "gray-matter";
 
 import { localeLabels } from "./config.mjs";
 import { editSourceUrlForPage, frontmatterSourcePath, readSourceMetadata } from "./edit-source.mjs";
+import { parseFrontmatter } from "./frontmatter.mjs";
 
 const root = process.cwd();
 const site = path.join(root, "dist", "docs-site");
@@ -733,7 +733,7 @@ function pageForRenderedHtml(htmlRel) {
   if (!sourceFile) return null;
 
   const raw = fs.readFileSync(sourceFile, "utf8");
-  const parsed = matter(raw);
+  const parsed = parseFrontmatter(raw);
   return {
     rel: path.relative(base, sourceFile).replaceAll(path.sep, "/"),
     sourcePath: frontmatterSourcePath(parsed.data),
