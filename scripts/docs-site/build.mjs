@@ -3,13 +3,13 @@ import fs from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
 import { Worker } from "node:worker_threads";
-import matter from "gray-matter";
 
 import { ignoredDocDirs, ignoredDocFiles, localeLabels, mintlifyLocaleToDir, rtlLocales } from "./config.mjs";
 import { siteCss, siteJs } from "./assets.mjs";
 import { createMarkdownRenderer, renderMdxish } from "./mdx-ish.mjs";
 import { editSourceUrlForPage, frontmatterSourcePath, readSourceMetadata } from "./edit-source.mjs";
 import { elementsFixture } from "./elements-fixture.mjs";
+import { parseFrontmatter } from "./frontmatter.mjs";
 import { renderPageOgSvg } from "./og-card-template.mjs";
 
 const root = process.cwd();
@@ -143,7 +143,7 @@ function collectPages(localeList) {
       const rel = path.relative(base, file).replaceAll(path.sep, "/");
       if (ignoredDocFiles.has(rel) || rel.endsWith("/AGENTS.md")) continue;
       const raw = fs.readFileSync(file, "utf8");
-      const parsed = matter(raw);
+      const parsed = parseFrontmatter(raw);
       const slug = fileSlug(rel);
       const title = parsed.data.title || firstHeading(parsed.content) || titleize(path.basename(slug));
       result.push({
@@ -173,7 +173,7 @@ function collectPages(localeList) {
 }
 
 function elementsFixturePage() {
-  const parsed = matter(elementsFixture);
+  const parsed = parseFrontmatter(elementsFixture);
   return {
     locale: "en",
     dir: "",
@@ -742,7 +742,7 @@ function expandSnippets(input, sourceFile, seen = new Set()) {
     if (!target.startsWith(root) || seen.has(target) || !fs.existsSync(target)) return "";
     const nextSeen = new Set(seen);
     nextSeen.add(target);
-    const parsed = matter(fs.readFileSync(target, "utf8"));
+    const parsed = parseFrontmatter(fs.readFileSync(target, "utf8"));
     return `\n${expandSnippets(parsed.content, target, nextSeen).trim()}\n`;
   });
 }

@@ -52,6 +52,9 @@ jobs:
           find scripts .openclaw-sync -name '*.mjs' -print0 \
             | xargs -0 -n 1 node --check
 
+      - name: Test docs helpers
+        run: npm test
+
       - name: Validate Worker bundle
         run: npx wrangler@4.88.0 deploy --dry-run --config wrangler.toml
 

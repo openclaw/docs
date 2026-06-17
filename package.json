@@ -15,16 +15,17 @@
     "docs:smoke": "node scripts/docs-site/smoke.mjs",
     "docs:smoke:shell": "DOCS_SITE_ARTIFACT_MODE=shell node scripts/docs-site/smoke.mjs",
     "docs:visual": "node scripts/docs-site/visual-smoke.mjs",
-    "docs:check": "npm run docs:build && npm run docs:smoke && npm run docs:visual && node --check scripts/docs-site/llms-full.mjs"
+    "docs:check": "npm run docs:build && npm run docs:smoke && npm run docs:visual && node --check scripts/docs-site/llms-full.mjs",
+    "test": "node --test scripts/docs-site/frontmatter.test.mjs"
   },
   "devDependencies": {
     "@resvg/resvg-js": "^2.6.2",
-    "gray-matter": "4.0.3",
     "highlight.js": "11.11.1",
     "markdown-it": "14.2.0",
     "markdown-it-anchor": "9.2.0",
     "mermaid": "11.15.0",
     "pagefind": "1.5.2",
-    "playwright": "^1.60.0"
+    "playwright": "^1.60.0",
+    "yaml": "2.9.0"
   }
 }
