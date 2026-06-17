@@ -95,34 +95,6 @@ const localeFlags = {
 const localePickerLabels = {
   "pt-BR": "Português (BR)"
 };
-const previewLocalePickerCodes = [
-  "en",
-  "pt-BR",
-  "es",
-  "fr",
-  "de",
-  "ja-JP",
-  "ko",
-  "zh-CN",
-  "it",
-  "ar",
-  "zh-TW",
-  "vi",
-  "nl",
-  "tr",
-  "uk",
-  "id",
-  "pl",
-  "fa",
-  "th",
-  "es-MX"
-];
-const previewLocalePickerLabels = {
-  "es-MX": "Español (MX)"
-};
-const previewLocalePickerFlags = {
-  "es-MX": "🇲🇽"
-};
 
 copyPublicFiles();
 if (!previewMode) await renderPageOgCards();
@@ -402,7 +374,9 @@ function languagePicker(page) {
   const current = locales.find((locale) => locale.code === page.locale) ?? locales[0];
   const currentLabel = localeDisplayName(current.code);
   const currentFlag = localeFlag(current.code);
-  const pickerLocales = languagePickerLocales(page);
+  const pickerLocales = previewMode
+    ? locales.filter((locale) => locale.code === page.locale || pageByKey.has(pageKey(locale.code, page.slug)))
+    : locales;
   const options = pickerLocales.map((locale) => {
     const active = locale.code === page.locale;
     return `<a class="language-option${active ? " active" : ""}" role="option" aria-selected="${active ? "true" : "false"}" href="${escapeAttr(localeUrlForSlug(locale.code, page.slug))}" data-locale-option><span class="locale-flag" aria-hidden="true">${escapeHtml(localeFlag(locale.code))}</span><span class="language-name">${escapeHtml(localeDisplayName(locale.code))}</span><span class="language-check" aria-hidden="true">✓</span></a>`;
@@ -410,19 +384,12 @@ function languagePicker(page) {
   return `<div class="language-picker" data-language-picker><button class="language-trigger" type="button" data-language-trigger aria-haspopup="listbox" aria-expanded="false"><span class="locale-flag" aria-hidden="true">${escapeHtml(currentFlag)}</span><span class="language-current">${escapeHtml(currentLabel)}</span><span class="language-chevron" aria-hidden="true">${icon("chevron-down")}</span></button><div class="language-menu" role="listbox" aria-label="Language">${options}</div></div>`;
 }
 
-function languagePickerLocales(page) {
-  if (!previewMode) return locales;
-  const byCode = new Map(locales.map((locale) => [locale.code, locale]));
-  const codes = [...new Set([page.locale, ...previewLocalePickerCodes])].slice(0, previewLocalePickerCodes.length);
-  return codes.map((code) => byCode.get(code) ?? { code, source: locales[0]?.source, root: code === "en" });
-}
-
 function localeFlag(code) {
-  return previewLocalePickerFlags[code] ?? localeFlags[code] ?? "🌐";
+  return localeFlags[code] ?? "🌐";
 }
 
 function localeDisplayName(code) {
-  return previewLocalePickerLabels[code] ?? localePickerLabels[code] ?? localeLabels[code] ?? code;
+  return localePickerLabels[code] ?? localeLabels[code] ?? code;
 }
 
 function topLink(label, href, iconName) {

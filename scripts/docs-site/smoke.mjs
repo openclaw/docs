@@ -243,6 +243,10 @@ if (process.env.DOCS_SITE_CNAME) {
 }
 const siteJs = fs.readFileSync(path.join(site, "assets/docs-site.js"), "utf8");
 const siteCss = fs.readFileSync(path.join(site, "assets/docs-site.css"), "utf8");
+if (!/\.language-menu\{top:calc\(100% \+ 8px\);width:min\(270px,calc\(100vw - 32px\)\);max-height:min\(62vh,430px\)/.test(siteCss)
+  || !/\.language-menu::-webkit-scrollbar-track\{background:transparent\}/.test(siteCss)) {
+  throw new Error("assets: compact language picker is missing");
+}
 try {
   execFileSync(process.execPath, ["--check", path.join(site, "assets/docs-site.js")], { stdio: "pipe" });
 } catch (err) {
