@@ -387,7 +387,7 @@ async function checkDesktop() {
     || parseFloat(expandedFloatingChat.bodyPaddingRight ?? "0") !== 0
     || expandedFloatingChat.mainRight !== initialFloatingChat.mainRight
     || expandedFloatingChat.maximizePressed !== "true"
-    || expandedFloatingChat.maximizeLabel !== "Restore docs assistant size") {
+    || expandedFloatingChat.maximizeLabel !== "Shrink") {
     throw new Error(`expanded floating desktop chat failed: ${JSON.stringify(expandedFloatingChat)}`);
   }
   await page.click("[data-chat-minimize]");
