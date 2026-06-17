@@ -79,6 +79,33 @@ async function checkDesktop() {
     [...document.querySelectorAll(".oc-mermaid.is-rendered")]
       .some((block) => block.getAttribute("data-mermaid")?.includes("<br>") && block.querySelector("svg"))
   );
+  await page.locator("[data-mermaid-expand]").first().click();
+  await page.locator("[data-mermaid-overlay].open").waitFor({ state: "visible" });
+  await page.keyboard.press("Tab");
+  const mermaidOverlayFocus = await page.evaluate(() => ({
+    activeInOverlay: Boolean(document.querySelector("[data-mermaid-overlay].open")?.contains(document.activeElement)),
+    bodyLocked: document.body.classList.contains("has-mermaid-overlay"),
+  }));
+  if (!mermaidOverlayFocus.activeInOverlay || !mermaidOverlayFocus.bodyLocked) {
+    throw new Error(`mermaid overlay focus trap failed: ${JSON.stringify(mermaidOverlayFocus)}`);
+  }
+  await page.evaluate(() => history.pushState({ docs: true }, "", "/"));
+  await page.goBack();
+  await page.locator("[data-mermaid-overlay].open").waitFor({ state: "hidden" });
+  await page.locator("[data-mermaid-expand]").first().click();
+  await page.locator("[data-mermaid-overlay].open").waitFor({ state: "visible" });
+  await page.keyboard.press("Meta+K");
+  if (await page.locator(".search-modal.open").count()) {
+    throw new Error("mermaid overlay allowed the search shortcut");
+  }
+  await page.keyboard.press("Escape");
+  const mermaidOverlayClose = await page.evaluate(() => ({
+    overlayOpen: Boolean(document.querySelector("[data-mermaid-overlay].open")),
+    bodyLocked: document.body.classList.contains("has-mermaid-overlay"),
+  }));
+  if (mermaidOverlayClose.overlayOpen || mermaidOverlayClose.bodyLocked) {
+    throw new Error(`mermaid overlay did not close on Escape: ${JSON.stringify(mermaidOverlayClose)}`);
+  }
   await page.locator(".oc-mermaid.is-error pre code").first().waitFor({ state: "visible", timeout: 10000 });
   const mermaidErrorLeak = await page.evaluate(() => ({
     bodyText: document.body.innerText.includes("Syntax error in text"),
