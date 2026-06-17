@@ -44,6 +44,13 @@ export function siteCss() {
 .oc-mermaid-overlay-canvas svg{display:block;width:max-content;min-width:min(1040px,100%);max-width:none;height:auto;margin:auto}
 .oc-mermaid-overlay-canvas pre{margin:0;white-space:pre;min-width:max-content}
 .has-mermaid-overlay{overflow:hidden}
+.language-menu{top:calc(100% + 8px);width:min(270px,calc(100vw - 32px));max-height:min(62vh,430px);padding:6px;border-radius:16px;scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--brand) 58%,transparent) transparent;box-shadow:0 22px 70px rgba(0,0,0,.48),inset 0 1px 0 rgba(255,255,255,.03)}
+.language-menu::-webkit-scrollbar{width:8px}
+.language-menu::-webkit-scrollbar-track{background:transparent}
+.language-menu::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--brand) 58%,transparent);border:2px solid transparent;border-radius:999px;background-clip:content-box}
+.language-option{grid-template-columns:24px minmax(0,1fr) 18px;gap:8px;padding:8px 10px;border-radius:10px;font-size:15px;line-height:1.15}
+.language-check{font-size:16px}
+@media(max-width:820px){.language-menu{width:min(300px,calc(100vw - 28px));max-height:min(62vh,430px)}}
 `;
 }
 
