@@ -211,9 +211,11 @@ if (!/data-chat-copy/.test(index)
   || !/\.docs-chat-auth\{[^}]*grid-row:4;align-self:end/.test(chatCss)
   || !/\.docs-chat-github-icon\{[^}]*fill:currentColor/.test(chatCss)
   || !/\.docs-chat-avatar\{[^}]*border-radius:999px/.test(chatCss)
-  || !/\.docs-chat-attach/.test(chatCss)
   || !/translateY\(10px\) scale\(\.985\)/.test(chatCss)) {
   throw new Error("index: floating docs chat controls are missing");
+}
+if (/docs-chat-attach/.test(index) || /\.docs-chat-attach/.test(chatCss)) {
+  throw new Error("index: docs chat attachment affordance should not be rendered");
 }
 if (!/class="hljs-attr">channels<\/span>/.test(index)
   || !/class="hljs-string">&quot;\+15555550123&quot;<\/span>/.test(index)
