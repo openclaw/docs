@@ -25,7 +25,7 @@ jobs:
       url: https://docs.openclaw.ai/llms-full.txt
     steps:
       - name: Check out
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.0.3
 
       - name: Check current docs main
         id: current-main
@@ -84,7 +84,7 @@ jobs:
 
       - name: Check out OpenClaw source
         if: steps.current-main.outputs.stale != 'true' && steps.live-route.outputs.available != 'false'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.0.3
         with:
           repository: ${{ steps.source-meta.outputs.repository }}
           ref: ${{ steps.source-meta.outputs.sha }}

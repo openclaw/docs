@@ -26,7 +26,7 @@ jobs:
       cancel-in-progress: false
     steps:
       - name: Check out latest main
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.0.3
         with:
           fetch-depth: 0
 
