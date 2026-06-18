@@ -18,6 +18,15 @@ OpenClaw can use **Firecrawl** in three ways:
 It is a hosted extraction/search service that supports bot circumvention and caching,
 which helps with JS-heavy sites or pages that block plain HTTP fetches.
 
+## Install plugin
+
+Install the official plugin, then restart Gateway:
+
+```bash
+openclaw plugins install @openclaw/firecrawl-plugin
+openclaw gateway restart
+```
+
 ## Keyless web_fetch and API keys
 
 The explicitly selected hosted Firecrawl `web_fetch` fallback supports starter
@@ -54,7 +63,7 @@ or configure it when you need higher limits. Firecrawl `web_search` and
 
 Notes:
 
-- Choosing Firecrawl in onboarding or `openclaw configure --section web` enables the bundled Firecrawl plugin automatically.
+- Choosing Firecrawl in onboarding or `openclaw configure --section web` enables the installed Firecrawl plugin automatically.
 - `web_search` with Firecrawl supports `query` and `count`.
 - For Firecrawl-specific controls like `sources`, `categories`, or result scraping, use `firecrawl_search`.
 - `baseUrl` defaults to hosted Firecrawl at `https://api.firecrawl.dev`. Self-hosted overrides are allowed only for private/internal endpoints; HTTP is accepted only for those private targets.
@@ -157,7 +166,7 @@ than basic-only scraping.
 
 The selection knob is `tools.web.fetch.provider`. If you omit it, OpenClaw
 auto-detects the first ready web-fetch provider from available credentials.
-Today the bundled provider is Firecrawl.
+The official Firecrawl plugin provides that fallback.
 
 ## Related
 

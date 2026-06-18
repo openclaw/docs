@@ -153,8 +153,11 @@ Current runtime behavior:
 - If `provider` is omitted, OpenClaw auto-detects the first ready web-fetch
   provider from configured credentials. Non-sandboxed `web_fetch` can use
   installed plugins that declare `contracts.webFetchProviders` and register a
-  matching provider at runtime. Today the bundled provider is Firecrawl.
-- Sandboxed `web_fetch` calls stay limited to bundled providers.
+  matching provider at runtime. The official Firecrawl plugin provides this
+  fallback.
+- Sandboxed `web_fetch` calls allow bundled providers plus installed providers
+  whose official npm or ClawHub provenance is verified. Today that permits the
+  official Firecrawl plugin; third-party external fetch plugins stay excluded.
 - If Readability is disabled, `web_fetch` skips straight to the selected
   provider fallback. If no provider is available, it fails closed.
 
