@@ -161,6 +161,10 @@ jobs:
             npm run docs:smoke
           fi
 
+      - name: Visual smoke generated site
+        if: steps.artifact-scope.outputs.scope != 'none'
+        run: npm run docs:visual
+
       - name: Check current docs main
         if: steps.artifact-scope.outputs.scope != 'none' || steps.artifact-scope.outputs.deploy_worker == '1'
         id: current-main

@@ -278,6 +278,7 @@ function layout({ page, nav, activeTab, html, toc, prev, next }) {
   const dir = rtlLocales.has(page.locale) ? "rtl" : "ltr";
   const title = `${page.title} - ${config.name}`;
   const description = page.summary || config.description || "";
+  const homePage = page.slug === "index" && !page.hidden;
   const ogTitle = page.slug === "index" ? config.name : `${page.title} · ${config.name}`;
   const canonicalUrl = canonicalOrigin ? `${canonicalOrigin}${pageRoute(page)}` : "";
   const pageOgPath = page.locale === "en" && renderedPageOgCards.has(page.slug)
@@ -313,9 +314,9 @@ ${canonicalUrl ? `<meta property="og:url" content="${escapeAttr(canonicalUrl)}">
 <link rel="stylesheet" href="${assetUrl("/assets/docs-site.css")}">
 <script>window.OPENCLAW_DOCS_BASE=${JSON.stringify(basePath)};window.OPENCLAW_DOCS_CHAT_API=${JSON.stringify(chatApiUrl)};document.documentElement.dataset.theme=localStorage.getItem("theme")||"dark"</script>
 </head>
-<body>
+<body${homePage ? ' class="docs-home-page"' : ""}>
 ${siteHeader(page, nav, activeTab)}
-<div class="doc-shell">
+${homePage ? homePageShell({ page, nav, html }) : `<div class="doc-shell">
 ${sidebar(page, nav, activeTab)}
 <main class="main" id="main">
 <article class="article">
@@ -333,12 +334,22 @@ ${pager(prev, next)}
 </article>
 ${tocHtml(toc)}
 </main>
-</div>
+</div>`}
 ${searchModal()}
 ${page.hidden ? "" : chatWidget()}
 <script type="module" src="${assetUrl("/assets/docs-site.js")}"></script>
 </body>
 </html>`;
+}
+
+function homePageShell({ page, nav, html }) {
+  return `<main class="main home-main" id="main">
+<article class="article home-article">
+${pageMarkdownScript(page)}
+${pageSearchMetadata(page, nav)}
+<div class="doc home-doc" data-pagefind-body>${html}</div>
+</article>
+</main>`;
 }
 
 function assetUrl(file) {

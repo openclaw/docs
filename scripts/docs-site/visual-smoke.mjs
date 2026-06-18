@@ -65,6 +65,8 @@ async function checkDesktop() {
   if (overlap.headerTop !== 0 || !overlap.sidebarClear || !overlap.tocClear) {
     throw new Error(`desktop sticky shell overlap: ${JSON.stringify(overlap)}`);
   }
+  await checkHomeDesktop(page);
+  await page.goto(`${base}/__elements`, { waitUntil: "networkidle" });
 
   await expectVisible(page, ".oc-code [data-code-copy]", "code copy button");
   await expectVisible(page, ".page-status .page-status-beta", "page status badge");
@@ -203,7 +205,7 @@ async function checkDesktop() {
     throw new Error(`wide desktop card column contract failed: ${JSON.stringify(wideCardGrids)}`);
   }
   await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.goto(`${base}/`, { waitUntil: "networkidle" });
+  await page.goto(`${base}/start/getting-started`, { waitUntil: "networkidle" });
   await expectVisible(page, ".page-tools [data-copy-page]", "copy page tool");
   const pageActionPrimary = await page.evaluate(() => {
     const control = document.querySelector(".page-actions-primary");
@@ -489,6 +491,39 @@ async function scrollToTocItem(page, index) {
   }, expected);
 }
 
+async function checkHomeDesktop(page) {
+  await page.goto(`${base}/`, { waitUntil: "networkidle" });
+  await page.screenshot({ path: path.join(artifacts, "home-desktop-dark.png"), fullPage: true });
+  const home = await page.evaluate(() => {
+    const hero = document.querySelector(".home-hero")?.getBoundingClientRect();
+    const cta = document.querySelector(".home-button-primary")?.getBoundingClientRect();
+    const sidebar = document.querySelector(".sidebar");
+    const toc = document.querySelector(".toc");
+    const launcher = document.querySelector("[data-chat-toggle]")?.getBoundingClientRect();
+    return {
+      bodyClass: document.body.className,
+      documentWidth: document.documentElement.scrollWidth,
+      viewport: innerWidth,
+      heroTop: hero?.top,
+      heroHeight: hero?.height,
+      ctaVisible: cta ? cta.top >= 0 && cta.bottom <= innerHeight : false,
+      noSidebar: !sidebar,
+      noToc: !toc,
+      launcherVisible: launcher ? launcher.left >= 0 && launcher.right <= innerWidth : false,
+    };
+  });
+  if (home.bodyClass !== "docs-home-page"
+    || home.documentWidth > home.viewport + 1
+    || !home.noSidebar
+    || !home.noToc
+    || !home.ctaVisible
+    || !home.launcherVisible
+    || (home.heroTop ?? -1) < 0
+    || (home.heroHeight ?? 0) < 320) {
+    throw new Error(`desktop home shell failed: ${JSON.stringify(home)}`);
+  }
+}
+
 async function checkMobile() {
   const page = await browser.newPage({ viewport: { width: 390, height: 980 }, isMobile: true });
   await page.goto(`${base}/__elements`, { waitUntil: "networkidle" });
@@ -591,7 +626,77 @@ async function checkMobile() {
     || discordOverflow.escaping.length) {
     throw new Error(`discord mobile overflow failed: ${JSON.stringify(discordOverflow)}`);
   }
+  await checkRealMobileShell(page, "/");
+  await checkRealMobileShell(page, "/tools/web");
   await page.close();
+}
+
+async function checkRealMobileShell(page, route) {
+  await page.goto(`${base}${route}`, { waitUntil: "networkidle" });
+  await page.waitForTimeout(250);
+  const shell = await page.evaluate(() => {
+    const language = document.querySelector("[data-language-trigger]")?.getBoundingClientRect();
+    const launcher = document.querySelector("[data-chat-toggle]")?.getBoundingClientRect();
+    const header = document.querySelector(".site-header")?.getBoundingClientRect();
+    const hero = document.querySelector(".home-hero")?.getBoundingClientRect();
+    const cta = document.querySelector(".home-button-primary")?.getBoundingClientRect();
+    const search = document.querySelector("[data-search-open]")?.getBoundingClientRect();
+    const main = document.querySelector(".main")?.getBoundingClientRect();
+    const docShell = document.querySelector(".doc-shell");
+    const docShellPaddingBottom = docShell ? parseFloat(getComputedStyle(docShell).paddingBottom) : 0;
+    const homePage = document.body.classList.contains("docs-home-page");
+    const sidebar = document.querySelector(".sidebar");
+    const toc = document.querySelector(".toc");
+    const overlaps = (left, right) => left && right
+      ? !(left.right <= right.left || right.right <= left.left || left.bottom <= right.top || right.bottom <= left.top)
+      : false;
+    const rects = [...document.querySelectorAll(".site-header,.main,.article,.doc,.page-tools,.docs-chat-launcher")]
+      .map((node) => {
+        const rect = node.getBoundingClientRect();
+        return { className: node.className, left: rect.left, right: rect.right };
+      })
+      .filter((rect) => rect.left < -1 || rect.right > innerWidth + 1);
+    return {
+      viewport: innerWidth,
+      documentWidth: document.documentElement.scrollWidth,
+      bodyWidth: document.body.scrollWidth,
+      headerTop: header?.top,
+      searchInViewport: search ? search.left >= 0 && search.right <= innerWidth : false,
+      languageWidth: language?.width,
+      languageInViewport: language ? language.left >= 0 && language.right <= innerWidth : false,
+      launcherWidth: launcher?.width ?? (homePage ? 0 : undefined),
+      launcherHeight: launcher?.height ?? (homePage ? 0 : undefined),
+      launcherInViewport: homePage || (launcher ? launcher.left >= 0 && launcher.right <= innerWidth && launcher.top >= 0 && launcher.bottom <= innerHeight : false),
+      mainInViewport: main ? main.left >= 0 && main.right <= innerWidth + 1 : false,
+      docShellPaddingBottom,
+      homePage,
+      homeHeroVisible: homePage ? Boolean(hero && hero.top >= header.bottom - 1 && hero.bottom > header.bottom + 160) : true,
+      homeCtaVisible: homePage ? Boolean(cta && cta.top >= 0 && cta.bottom <= innerHeight) : true,
+      homeNoSidebar: homePage ? !sidebar : true,
+      homeNoToc: homePage ? !toc : true,
+      launcherOverlapsCta: homePage ? overlaps(launcher, cta) : false,
+      escaping: rects,
+    };
+  });
+  if (shell.documentWidth > shell.viewport + 1
+    || shell.bodyWidth > shell.viewport + 1
+    || shell.headerTop !== 0
+    || !shell.searchInViewport
+    || !shell.languageInViewport
+    || (shell.languageWidth ?? 999) > 52
+    || !shell.launcherInViewport
+    || (shell.launcherWidth ?? 999) > 52
+    || (shell.launcherHeight ?? 999) > 52
+    || !shell.mainInViewport
+    || (!shell.homePage && shell.docShellPaddingBottom < 96)
+    || !shell.homeHeroVisible
+    || !shell.homeCtaVisible
+    || !shell.homeNoSidebar
+    || !shell.homeNoToc
+    || shell.launcherOverlapsCta
+    || shell.escaping.length) {
+    throw new Error(`real mobile shell failed for ${route}: ${JSON.stringify(shell)}`);
+  }
 }
 
 async function checkAmbientCodePage() {

@@ -222,13 +222,17 @@ if (!/data-chat-copy/.test(index)
 if (/docs-chat-attach/.test(index) || /\.docs-chat-attach/.test(chatCss)) {
   throw new Error("index: docs chat attachment affordance should not be rendered");
 }
-if (!/class="hljs-attr">channels<\/span>/.test(index)
-  || !/class="hljs-string">&quot;\+15555550123&quot;<\/span>/.test(index)
-  || !/class="hljs-literal">true<\/span>/.test(index)) {
-  throw new Error("index: json5 config example was not syntax-highlighted");
+if (!/<body class="docs-home-page">/.test(index)
+  || !/class="home-hero"/.test(index)
+  || !/class="home-button home-button-primary" href="\/start\/getting-started"/.test(index)
+  || !/class="home-button" href="\/web\/control-ui"/.test(index)
+  || !/class="home-button" href="\/channels"/.test(index)
+  || /class="toc"/.test(index)
+  || /class="sidebar"/.test(index)) {
+  throw new Error("index: home shell was not rendered");
 }
 const modelsMarkdown = fs.readFileSync(path.join(site, "concepts/models.md"), "utf8");
-if (!/^---\nsummary: /m.test(modelsMarkdown) || !/title: "Models CLI"/m.test(modelsMarkdown)) {
+if (!/^---\r?\nsummary: /m.test(modelsMarkdown) || !/title: "Models CLI"/m.test(modelsMarkdown)) {
   throw new Error("concepts/models.md: source markdown was not emitted");
 }
 if (process.env.DOCS_SITE_BASE_PATH && (/src="\/assets\//.test(index) || /href="\/assets\//.test(index))) {
@@ -339,7 +343,7 @@ if (!/let tocObserver=null/.test(siteJs)
   || !/scrollActiveNavLink\(\);\s*initTocScrollspy\(\);\s*document\.addEventListener\("click"/.test(siteJs)) {
   throw new Error("assets: table-of-contents scrollspy is missing");
 }
-if (!/function setNavOpen/.test(siteJs) || !/body\.nav-open:before/.test(siteCss) || !/data-nav-close/.test(index)) {
+if (!/function setNavOpen/.test(siteJs) || !/body\.nav-open:before/.test(siteCss) || !/data-nav-close/.test(gettingStarted)) {
   throw new Error("assets: mobile navigation drawer state is missing");
 }
 if (/data-locale/.test(siteJs)) {
@@ -497,13 +501,13 @@ if (elementsIndex.includes('href="http://SKILL.md"')) {
 if ((elementsIndex.match(/class="oc-card-grid oc-card-cols-4"/g) ?? []).length < 2) {
   throw new Error("__elements: CardGroup and Columns should both preserve explicit cols attrs");
 }
-if (!/class="article-meta-row"/.test(index)
-  || !/class="breadcrumbs"/.test(index)
-  || !/data-copy-page/.test(index)
-  || !/class="page-feedback"/.test(index)) {
-  throw new Error("index: page reader affordances are missing");
+if (!/class="article-meta-row"/.test(gettingStarted)
+  || !/class="breadcrumbs"/.test(gettingStarted)
+  || !/data-copy-page/.test(gettingStarted)
+  || !/class="page-feedback"/.test(gettingStarted)) {
+  throw new Error("article page reader affordances are missing");
 }
-if (!/data-page-markdown-url="\/index\.md"/.test(index)
+if (!/<script type="application\/json" data-page-markdown>/.test(index)
   || !/data-page-markdown-url="\/start\/getting-started\.md"/.test(gettingStarted)) {
   throw new Error("page tools: Copy page should target generated Markdown routes");
 }
@@ -511,36 +515,36 @@ if (!fs.existsSync(path.join(site, "index.md"))
   || !fs.existsSync(path.join(site, "start/getting-started.md"))) {
   throw new Error("page tools: advertised Markdown action routes must exist in this artifact");
 }
-const rootMarkdownPrompt = encodeURIComponent(`Read from ${expectedOrigin}/index.md so I can ask questions about it.`);
+const rootMarkdownPrompt = encodeURIComponent(`Read from ${expectedOrigin}/start/getting-started.md so I can ask questions about it.`);
 const chatgptAction = `https://chatgpt.com/?hints=search&amp;q=${rootMarkdownPrompt}`;
 const claudeAction = `https://claude.ai/new?q=${rootMarkdownPrompt}`;
 const perplexityAction = `https://www.perplexity.ai/search/new?q=${rootMarkdownPrompt}`;
-if (!/<script type="application\/json" data-page-markdown>/.test(index)
-  || />"---\\n/.test(index)) {
+if (!/<script type="application\/json" data-page-markdown>/.test(gettingStarted)
+  || />"---\\n/.test(gettingStarted)) {
   throw new Error("page tools: Copy page should embed frontmatter-free Markdown for synchronous clipboard writes");
 }
-if (!/class="page-actions"/.test(index)
-  || !/class="page-actions-primary" data-copy-page/.test(index)
-  || !/class="page-actions-more"/.test(index)
-  || !/class="page-actions-chevron"/.test(index)
-  || !/class="page-actions-menu"/.test(index)
-  || !/View as Markdown/.test(index)
-  || !/target="_blank" rel="noreferrer"/.test(index)
-  || !/Open in ChatGPT/.test(index)
-  || !/Open in Claude/.test(index)
-  || !/Open in Perplexity/.test(index)
-  || !index.includes(chatgptAction)
-  || !index.includes(claudeAction)
-  || !index.includes(perplexityAction)) {
+if (!/class="page-actions"/.test(gettingStarted)
+  || !/class="page-actions-primary" data-copy-page/.test(gettingStarted)
+  || !/class="page-actions-more"/.test(gettingStarted)
+  || !/class="page-actions-chevron"/.test(gettingStarted)
+  || !/class="page-actions-menu"/.test(gettingStarted)
+  || !/View as Markdown/.test(gettingStarted)
+  || !/target="_blank" rel="noreferrer"/.test(gettingStarted)
+  || !/Open in ChatGPT/.test(gettingStarted)
+  || !/Open in Claude/.test(gettingStarted)
+  || !/Open in Perplexity/.test(gettingStarted)
+  || !gettingStarted.includes(chatgptAction)
+  || !gettingStarted.includes(claudeAction)
+  || !gettingStarted.includes(perplexityAction)) {
   throw new Error("page tools: AI action menu links are missing");
 }
-if ((index.match(/class="page-action" href="[^"]+" target="_blank" rel="noreferrer"/g) ?? []).length < 4) {
+if ((gettingStarted.match(/class="page-action" href="[^"]+" target="_blank" rel="noreferrer"/g) ?? []).length < 4) {
   throw new Error("page tools: dropdown links should open in a new tab");
 }
-if (!/class="page-feedback-links" aria-label="Page source and issue"/.test(index)
-  || !/Edit source/.test(index)
-  || !/Raise issue/.test(index)
-  || !/https:\/\/github\.com\/openclaw\/openclaw\/issues\/new\?title=Issue%20on%20docs&amp;body=Path%3A%20%2F/.test(index)) {
+if (!/class="page-feedback-links" aria-label="Page source and issue"/.test(gettingStarted)
+  || !/Edit source/.test(gettingStarted)
+  || !/Raise issue/.test(gettingStarted)
+  || !/https:\/\/github\.com\/openclaw\/openclaw\/issues\/new\?title=Issue%20on%20docs&amp;body=Path%3A%20%2Fstart%2Fgetting-started/.test(gettingStarted)) {
   throw new Error("page feedback: footer source and issue actions are missing");
 }
 assertEditSourceLinks();
@@ -550,8 +554,8 @@ if (!/function initCodeGroups/.test(siteJs) || !/className="oc-code-tab"/.test(s
 if (!/function handleDocsControlClick/.test(siteJs) || !/async function copyText/.test(siteJs)) {
   throw new Error("assets: copy and feedback controls are missing");
 }
-if (!/data-feedback-repo="openclaw\/openclaw"/.test(index)
-  || !/data-feedback-issue-link/.test(index)
+if (!/data-feedback-repo="openclaw\/openclaw"/.test(gettingStarted)
+  || !/data-feedback-issue-link/.test(gettingStarted)
   || !/function initPageFeedback/.test(siteJs)
   || !/openclaw\.docs\.feedback/.test(siteJs)
   || !/github\.com\/"\+feedbackRepo/.test(siteJs)) {
