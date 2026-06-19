@@ -317,6 +317,10 @@
       "destination": "/channels/zalo"
     },
     {
+      "source": "/channels/openclaw-zaloclawbot",
+      "destination": "/channels/zaloclawbot"
+    },
+    {
       "source": "/providers/whatsapp",
       "destination": "/channels/whatsapp"
     },
@@ -1146,6 +1150,7 @@
                   "channels/feishu",
                   "channels/yuanbao",
                   "channels/zalo",
+                  "channels/zaloclawbot",
                   "channels/zalouser"
                 ]
               },
@@ -2733,6 +2738,7 @@
                   "zh-TW/channels/feishu",
                   "zh-TW/channels/yuanbao",
                   "zh-TW/channels/zalo",
+                  "zh-TW/channels/zaloclawbot",
                   "zh-TW/channels/zalouser"
                 ]
               },
@@ -3663,6 +3669,7 @@
                   "ja-JP/channels/feishu",
                   "ja-JP/channels/yuanbao",
                   "ja-JP/channels/zalo",
+                  "ja-JP/channels/zaloclawbot",
                   "ja-JP/channels/zalouser"
                 ]
               },
@@ -4593,6 +4600,7 @@
                   "es/channels/feishu",
                   "es/channels/yuanbao",
                   "es/channels/zalo",
+                  "es/channels/zaloclawbot",
                   "es/channels/zalouser"
                 ]
               },
@@ -5523,6 +5531,7 @@
                   "pt-BR/channels/feishu",
                   "pt-BR/channels/yuanbao",
                   "pt-BR/channels/zalo",
+                  "pt-BR/channels/zaloclawbot",
                   "pt-BR/channels/zalouser"
                 ]
               },
@@ -6453,6 +6462,7 @@
                   "ko/channels/feishu",
                   "ko/channels/yuanbao",
                   "ko/channels/zalo",
+                  "ko/channels/zaloclawbot",
                   "ko/channels/zalouser"
                 ]
               },
@@ -7383,6 +7393,7 @@
                   "de/channels/feishu",
                   "de/channels/yuanbao",
                   "de/channels/zalo",
+                  "de/channels/zaloclawbot",
                   "de/channels/zalouser"
                 ]
               },
@@ -8313,6 +8324,7 @@
                   "fr/channels/feishu",
                   "fr/channels/yuanbao",
                   "fr/channels/zalo",
+                  "fr/channels/zaloclawbot",
                   "fr/channels/zalouser"
                 ]
               },
@@ -9243,6 +9255,7 @@
                   "ar/channels/feishu",
                   "ar/channels/yuanbao",
                   "ar/channels/zalo",
+                  "ar/channels/zaloclawbot",
                   "ar/channels/zalouser"
                 ]
               },
@@ -10173,6 +10186,7 @@
                   "it/channels/feishu",
                   "it/channels/yuanbao",
                   "it/channels/zalo",
+                  "it/channels/zaloclawbot",
                   "it/channels/zalouser"
                 ]
               },
@@ -11103,6 +11117,7 @@
                   "vi/channels/feishu",
                   "vi/channels/yuanbao",
                   "vi/channels/zalo",
+                  "vi/channels/zaloclawbot",
                   "vi/channels/zalouser"
                 ]
               },
@@ -12033,6 +12048,7 @@
                   "nl/channels/feishu",
                   "nl/channels/yuanbao",
                   "nl/channels/zalo",
+                  "nl/channels/zaloclawbot",
                   "nl/channels/zalouser"
                 ]
               },
@@ -12963,6 +12979,7 @@
                   "tr/channels/feishu",
                   "tr/channels/yuanbao",
                   "tr/channels/zalo",
+                  "tr/channels/zaloclawbot",
                   "tr/channels/zalouser"
                 ]
               },
@@ -13893,6 +13910,7 @@
                   "uk/channels/feishu",
                   "uk/channels/yuanbao",
                   "uk/channels/zalo",
+                  "uk/channels/zaloclawbot",
                   "uk/channels/zalouser"
                 ]
               },
@@ -14823,6 +14841,7 @@
                   "id/channels/feishu",
                   "id/channels/yuanbao",
                   "id/channels/zalo",
+                  "id/channels/zaloclawbot",
                   "id/channels/zalouser"
                 ]
               },
@@ -15753,6 +15772,7 @@
                   "pl/channels/feishu",
                   "pl/channels/yuanbao",
                   "pl/channels/zalo",
+                  "pl/channels/zaloclawbot",
                   "pl/channels/zalouser"
                 ]
               },
