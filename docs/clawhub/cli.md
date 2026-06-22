@@ -113,7 +113,7 @@ Stores your API token + cached registry URL.
 - Lists newest skills via `/api/v1/skills?limit=...&sort=createdAt` (sorted by `createdAt` desc).
 - Flags:
   - `--limit <n>` (1-200, default: 25)
-  - `--sort newest|updated|rating|installs|installsAllTime|trending` (default: newest)
+  - `--sort newest|updated|rating|downloads|trending` (default: newest). Legacy install sort aliases still work for compatibility.
   - `--json` (machine-readable output)
 - Output: `<slug>  v<version>  <age>  <summary>` (summary truncated to 50 chars).
 
@@ -244,7 +244,7 @@ clawhub scan download @scope/demo --version 2.0.0 --kind plugin --output report.
 #### GitHub Actions
 
 ClawHub ships an official reusable workflow at
-[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/a86c48ce3b180ada146bf58b144354ea5f5f9569/.github/workflows/skill-publish.yml)
+[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/c70755d25d5a61c6c35dff2bc09e975de5b10b3c/.github/workflows/skill-publish.yml)
 for skill repos and catalog repos.
 
 Typical catalog setup:
@@ -686,7 +686,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/a86c48ce3b180ada146bf58b144354ea5f5f9569/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/c70755d25d5a61c6c35dff2bc09e975de5b10b3c/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
