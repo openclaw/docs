@@ -1136,6 +1136,7 @@
                   "channels/mattermost",
                   "channels/nextcloud-talk",
                   "channels/nostr",
+                  "channels/raft",
                   "channels/tlon",
                   "channels/synology-chat",
                   "channels/twitch"
@@ -2724,6 +2725,7 @@
                   "zh-TW/channels/mattermost",
                   "zh-TW/channels/nextcloud-talk",
                   "zh-TW/channels/nostr",
+                  "zh-TW/channels/raft",
                   "zh-TW/channels/tlon",
                   "zh-TW/channels/synology-chat",
                   "zh-TW/channels/twitch"
@@ -3655,6 +3657,7 @@
                   "ja-JP/channels/mattermost",
                   "ja-JP/channels/nextcloud-talk",
                   "ja-JP/channels/nostr",
+                  "ja-JP/channels/raft",
                   "ja-JP/channels/tlon",
                   "ja-JP/channels/synology-chat",
                   "ja-JP/channels/twitch"
@@ -4586,6 +4589,7 @@
                   "es/channels/mattermost",
                   "es/channels/nextcloud-talk",
                   "es/channels/nostr",
+                  "es/channels/raft",
                   "es/channels/tlon",
                   "es/channels/synology-chat",
                   "es/channels/twitch"
@@ -5517,6 +5521,7 @@
                   "pt-BR/channels/mattermost",
                   "pt-BR/channels/nextcloud-talk",
                   "pt-BR/channels/nostr",
+                  "pt-BR/channels/raft",
                   "pt-BR/channels/tlon",
                   "pt-BR/channels/synology-chat",
                   "pt-BR/channels/twitch"
@@ -6448,6 +6453,7 @@
                   "ko/channels/mattermost",
                   "ko/channels/nextcloud-talk",
                   "ko/channels/nostr",
+                  "ko/channels/raft",
                   "ko/channels/tlon",
                   "ko/channels/synology-chat",
                   "ko/channels/twitch"
@@ -7379,6 +7385,7 @@
                   "de/channels/mattermost",
                   "de/channels/nextcloud-talk",
                   "de/channels/nostr",
+                  "de/channels/raft",
                   "de/channels/tlon",
                   "de/channels/synology-chat",
                   "de/channels/twitch"
@@ -8310,6 +8317,7 @@
                   "fr/channels/mattermost",
                   "fr/channels/nextcloud-talk",
                   "fr/channels/nostr",
+                  "fr/channels/raft",
                   "fr/channels/tlon",
                   "fr/channels/synology-chat",
                   "fr/channels/twitch"
@@ -9241,6 +9249,7 @@
                   "ar/channels/mattermost",
                   "ar/channels/nextcloud-talk",
                   "ar/channels/nostr",
+                  "ar/channels/raft",
                   "ar/channels/tlon",
                   "ar/channels/synology-chat",
                   "ar/channels/twitch"
@@ -10172,6 +10181,7 @@
                   "it/channels/mattermost",
                   "it/channels/nextcloud-talk",
                   "it/channels/nostr",
+                  "it/channels/raft",
                   "it/channels/tlon",
                   "it/channels/synology-chat",
                   "it/channels/twitch"
@@ -11103,6 +11113,7 @@
                   "vi/channels/mattermost",
                   "vi/channels/nextcloud-talk",
                   "vi/channels/nostr",
+                  "vi/channels/raft",
                   "vi/channels/tlon",
                   "vi/channels/synology-chat",
                   "vi/channels/twitch"
@@ -12034,6 +12045,7 @@
                   "nl/channels/mattermost",
                   "nl/channels/nextcloud-talk",
                   "nl/channels/nostr",
+                  "nl/channels/raft",
                   "nl/channels/tlon",
                   "nl/channels/synology-chat",
                   "nl/channels/twitch"
@@ -12965,6 +12977,7 @@
                   "tr/channels/mattermost",
                   "tr/channels/nextcloud-talk",
                   "tr/channels/nostr",
+                  "tr/channels/raft",
                   "tr/channels/tlon",
                   "tr/channels/synology-chat",
                   "tr/channels/twitch"
@@ -13896,6 +13909,7 @@
                   "uk/channels/mattermost",
                   "uk/channels/nextcloud-talk",
                   "uk/channels/nostr",
+                  "uk/channels/raft",
                   "uk/channels/tlon",
                   "uk/channels/synology-chat",
                   "uk/channels/twitch"
@@ -14827,6 +14841,7 @@
                   "id/channels/mattermost",
                   "id/channels/nextcloud-talk",
                   "id/channels/nostr",
+                  "id/channels/raft",
                   "id/channels/tlon",
                   "id/channels/synology-chat",
                   "id/channels/twitch"
@@ -15758,6 +15773,7 @@
                   "pl/channels/mattermost",
                   "pl/channels/nextcloud-talk",
                   "pl/channels/nostr",
+                  "pl/channels/raft",
                   "pl/channels/tlon",
                   "pl/channels/synology-chat",
                   "pl/channels/twitch"
