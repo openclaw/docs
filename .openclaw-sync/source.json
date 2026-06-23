@@ -1,15 +1,15 @@
 {
   "repository": "openclaw/openclaw",
-  "sha": "a84d3b6853d07111399d32d1ae14d4e15056aea4",
+  "sha": "b71ddbf1b4fd371f2bede0d3e7054048f77b100f",
   "sources": {
     "openclaw": {
       "repository": "openclaw/openclaw",
-      "sha": "a84d3b6853d07111399d32d1ae14d4e15056aea4"
+      "sha": "b71ddbf1b4fd371f2bede0d3e7054048f77b100f"
     },
     "clawhub": {
       "repository": "openclaw/clawhub",
       "sha": "bbe887faacd7d09591bec5ae3a00bdf819b52118"
     }
   },
-  "syncedAt": "2026-06-23T02:19:05.251Z"
+  "syncedAt": "2026-06-23T02:26:41.480Z"
 }
