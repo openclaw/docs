@@ -383,6 +383,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Updating](/install/updating), [Update](/cli/update), [Troubleshooting](/gateway/troubleshooting)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Gateway runtime - M4 Stable - 13 areas">
@@ -525,6 +526,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Protocol](/gateway/protocol), [Architecture](/concepts/architecture)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Agent Runtime - M3 Beta - 9 areas">
@@ -627,6 +629,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Sandbox Vs Tool Policy Vs Elevated](/gateway/sandbox-vs-tool-policy-vs-elevated), [Agent Loop](/concepts/agent-loop), [Subagents](/tools/subagents)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Session, memory, and context engine - M3 Beta - 9 areas">
@@ -729,6 +732,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Session Management Compaction](/reference/session-management-compaction), [Transcript Hygiene](/reference/transcript-hygiene)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Channel framework - M3 Beta - 8 areas">
@@ -821,6 +825,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Health](/gateway/health), [Configuration Reference](/gateway/configuration-reference), [Troubleshooting](/channels/troubleshooting), [Discord](/channels/discord)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Observability - M3 Beta - 5 areas">
@@ -883,6 +888,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Opentelemetry](/gateway/opentelemetry), [Prometheus](/gateway/prometheus), [Diagnostics](/gateway/diagnostics), [Protocol](/gateway/protocol)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Gateway Web App - M3 Beta - 6 areas">
@@ -955,6 +961,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Control Ui](/web/control-ui), [Health](/gateway/health), [Protocol](/gateway/protocol), [Dashboard](/web/dashboard)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Plugins - M3 Beta - 9 areas">
@@ -1057,6 +1064,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Sdk Testing](/plugins/sdk-testing), [Sdk Setup](/plugins/sdk-setup), [Codex Harness](/plugins/codex-harness)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Security, auth, pairing, and secrets - M3 Beta - 6 areas">
@@ -1129,6 +1137,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Authentication](/gateway/authentication), [Models](/cli/models), [Openai](/providers/openai), [Oauth](/concepts/oauth), [Secrets](/gateway/secrets), [Secrets](/cli/secrets), [Secretref Credential Surface](/reference/secretref-credential-surface), [Audit Checks](/gateway/security/audit-checks)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Automation: cron, hooks, tasks, polling - M3 Beta - 6 areas">
@@ -1201,6 +1210,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Poll](/automation/poll), [Message](/cli/message), [Telegram](/channels/telegram), [Msteams](/channels/msteams), [Background Process](/gateway/background-process)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Media understanding and media generation - M2 Alpha - 6 areas">
@@ -1273,6 +1283,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Image Generation](/tools/image-generation), [Media Overview](/tools/media-overview), [Skills](/tools/skills), [Music Generation](/tools/music-generation), [Video Generation](/tools/video-generation)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Voice and realtime talk - M2 Alpha - 6 areas">
@@ -1345,6 +1356,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Control Ui](/web/control-ui), [Voice Overlay](/platforms/mac/voice-overlay), [Talk](/nodes/talk)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="TUI - M2 Alpha - 5 areas">
@@ -1407,6 +1419,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Tui](/web/tui), [Qr](/cli/qr), [Logs](/cli/logs), [Completion](/cli/completion)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="ClawHub - M2 Alpha - 4 areas">
@@ -1459,6 +1472,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Plugin](/tools/plugin), [Plugins](/cli/plugins), [Skills](/cli/skills), [Skills](/tools/skills), [Protocol](/gateway/protocol), [Bundles](/plugins/bundles), [Dependency Resolution](/plugins/dependency-resolution)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="OpenClaw App SDK - M2 Alpha - 6 areas">
@@ -1531,6 +1545,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Openclaw Sdk Api Design](/gateway/external-apps), [Typebox](/concepts/typebox), [Protocol](/gateway/protocol)</div>
       </div>
     </div>
+
   </Accordion>
 
 </AccordionGroup>
@@ -1598,6 +1613,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Vps](/vps), [Docker](/install/docker), [Hetzner](/install/hetzner), [Digitalocean](/install/digitalocean), [Kubernetes](/install/kubernetes), [Podman](/install/podman)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="macOS Gateway host - M4 Stable - 7 areas">
@@ -1680,6 +1696,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Multiple Gateways](/gateway/multiple-gateways), [Index](/gateway/index), [Gateway](/cli/gateway)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Docker and Podman hosting - M3 Beta - 4 areas">
@@ -1732,6 +1749,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Docker](/install/docker), [Docker Vm Runtime](/install/docker-vm-runtime)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Windows via WSL2 - M3 Beta - 6 areas">
@@ -1804,6 +1822,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Browser Wsl2 Windows Remote Cdp Troubleshooting](/tools/browser-wsl2-windows-remote-cdp-troubleshooting), [Browser](/tools/browser), [Control Ui](/web/control-ui)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Raspberry Pi and small Linux devices - M3 Beta - 4 areas">
@@ -1856,6 +1875,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Raspberry Pi](/install/raspberry-pi), [Linux](/platforms/linux), [Health](/gateway/health), [Diagnostics](/gateway/diagnostics)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="macOS companion app - M3 Beta - 8 areas">
@@ -1948,6 +1968,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Webchat](/platforms/mac/webchat), [Remote](/gateway/remote), [Remote](/platforms/mac/remote)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Android app - M2 Alpha - 7 areas">
@@ -2030,6 +2051,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Android](/platforms/android), [Troubleshooting](/nodes/troubleshooting), [Protocol](/gateway/protocol)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Native Windows - M2 Alpha - 4 areas">
@@ -2082,6 +2104,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Updating](/install/updating), [Ci](/ci)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Kubernetes hosting - M2 Alpha - 4 areas">
@@ -2134,6 +2157,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Kubernetes](/install/kubernetes), [Index](/gateway/index)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="iOS app - M1 Experimental - 8 areas">
@@ -2226,6 +2250,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Ios](/platforms/ios), [Talk](/nodes/talk)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Nix install path - M1 Experimental - 5 areas">
@@ -2288,6 +2313,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Nix](/install/nix), [Setup](/cli/setup), [Doctor](/cli/doctor), [Update](/cli/update)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="watchOS companion surfaces - M1 Experimental - 5 areas">
@@ -2350,6 +2376,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Ios](/platforms/ios)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Linux companion app - M0 Planned - 5 areas">
@@ -2412,6 +2439,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Linux](/platforms/linux), [Openclaw](/start/openclaw), [Doctor](/gateway/doctor)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Native Windows companion app - M0 Planned - 5 areas">
@@ -2474,6 +2502,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Windows](/platforms/windows), [Index](/nodes/index), [Exec](/tools/exec), [Exec Approvals](/tools/exec-approvals), [Index](/gateway/security/index)</div>
       </div>
     </div>
+
   </Accordion>
 
 </AccordionGroup>
@@ -2551,6 +2580,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Discord](/channels/discord), [Openai](/providers/openai), [Elevenlabs](/providers/elevenlabs), [Qa E2e Automation](/concepts/qa-e2e-automation), [Config Channels](/gateway/config-channels)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Telegram - M3 Beta - 5 areas">
@@ -2613,6 +2643,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Telegram](/channels/telegram), [Exec Approvals](/tools/exec-approvals), [Reactions](/tools/reactions)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Slack - M3 Beta - 5 areas">
@@ -2675,6 +2706,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Slack](/channels/slack), [Slash Commands](/tools/slash-commands), [Exec Approvals](/tools/exec-approvals)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="iMessage and BlueBubbles - M3 Beta - 5 areas">
@@ -2737,6 +2769,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Imessage](/channels/imessage)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="WhatsApp - M3 Beta - 5 areas">
@@ -2799,6 +2832,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Whatsapp](/channels/whatsapp)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Matrix - M2 Alpha - 6 areas">
@@ -2871,6 +2905,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Matrix](/channels/matrix), [Matrix Migration](/channels/matrix-migration)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Google Chat - M2 Alpha - 5 areas">
@@ -2933,6 +2968,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Googlechat](/channels/googlechat), [Message](/cli/message), [Media Understanding](/nodes/media-understanding), [Secretref Credential Surface](/reference/secretref-credential-surface), [Reactions](/tools/reactions), [Slash Commands](/tools/slash-commands), [Config Agents](/gateway/config-agents), [Message Lifecycle Refactor](/concepts/message-lifecycle-refactor)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Microsoft Teams - M2 Alpha - 5 areas">
@@ -2995,6 +3031,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Msteams](/channels/msteams), [Exec Approvals Advanced](/tools/exec-approvals-advanced)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Signal - M2 Alpha - 5 areas">
@@ -3057,6 +3094,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Signal](/channels/signal)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Feishu, QQ Bot, WeChat, Yuanbao, Zalo, Zalo Personal, regional channels - M2 Alpha - 4 areas">
@@ -3109,6 +3147,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">No linked docs</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Mattermost, LINE, IRC, Nextcloud Talk, Nostr, Twitch, Tlon, Synology Chat - M2 Alpha - 4 areas">
@@ -3161,6 +3200,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">No linked docs</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Voice Call channel - M1 Experimental - 5 areas">
@@ -3223,6 +3263,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Voice Call](/plugins/voice-call)</div>
       </div>
     </div>
+
   </Accordion>
 
 </AccordionGroup>
@@ -3270,6 +3311,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Sandboxing](/gateway/sandboxing), [Sandbox Vs Tool Policy Vs Elevated](/gateway/sandbox-vs-tool-policy-vs-elevated), [Multi Agent Sandbox Tools](/tools/multi-agent-sandbox-tools), [Codex Harness Reference](/plugins/codex-harness-reference), [Config Tools](/gateway/config-tools)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="OpenAI and Codex provider path - M3 Beta - 5 areas">
@@ -3332,6 +3374,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Openai](/providers/openai), [Discord](/channels/discord), [Voice Call](/plugins/voice-call)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Web search tools - M3 Beta - 4 areas">
@@ -3384,6 +3427,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Config Tools](/gateway/config-tools), [Web Fetch](/tools/web-fetch), [Web](/tools/web), [Faq](/help/faq)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Anthropic provider path - M3 Beta - 5 areas">
@@ -3446,6 +3490,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Anthropic](/providers/anthropic), [Config Agents](/gateway/config-agents)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Google provider path - M3 Beta - 5 areas">
@@ -3508,6 +3553,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Prompt Caching](/reference/prompt-caching), [Google](/providers/google), [Model Providers](/concepts/model-providers), [Token Use](/reference/token-use)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="OpenRouter provider path - M3 Beta - 4 areas">
@@ -3560,6 +3606,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Openrouter](/providers/openrouter), [Image Generation](/tools/image-generation), [Music Generation](/tools/music-generation), [Media Overview](/tools/media-overview), [Video Generation](/tools/video-generation), [Tts](/tools/tts)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Image, video, and music generation tools - M2 Alpha - 5 areas">
@@ -3622,6 +3669,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Music Generation](/tools/music-generation)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Local model providers: Ollama, vLLM, SGLang, LM Studio - M2 Alpha - 5 areas">
@@ -3684,6 +3732,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Index](/gateway/security/index), [Config Tools](/gateway/config-tools), [Local Models](/gateway/local-models)</div>
       </div>
     </div>
+
   </Accordion>
 
   <Accordion title="Long-tail hosted providers - M2 Alpha - 3 areas">
@@ -3726,6 +3775,7 @@ A surface is a product area such as Gateway runtime, Discord, or the macOS app. 
         <div className="maturity-category-docs">[Index](/providers/index), [Model Providers](/concepts/model-providers), [Manifest](/plugins/manifest), [Testing Live](/help/testing-live), [Models](/cli/models)</div>
       </div>
     </div>
+
   </Accordion>
 
 </AccordionGroup>

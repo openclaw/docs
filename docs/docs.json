@@ -69,6 +69,14 @@
       "destination": "/gateway/external-apps"
     },
     {
+      "source": "/reference/maturity-scorecard",
+      "destination": "/maturity/scorecard"
+    },
+    {
+      "source": "/reference/maturity-taxonomy",
+      "destination": "/maturity/taxonomy"
+    },
+    {
       "source": "/mcp",
       "destination": "/cli/mcp"
     },
@@ -1701,18 +1709,6 @@
             ]
           },
           {
-            "tab": "Maturity",
-            "groups": [
-              {
-                "group": "Maturity docs",
-                "pages": [
-                  "maturity/scorecard",
-                  "maturity/taxonomy"
-                ]
-              }
-            ]
-          },
-          {
             "tab": "Reference",
             "groups": [
               {
@@ -1920,6 +1916,8 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "maturity/scorecard",
+                  "maturity/taxonomy",
                   "reference/RELEASING",
                   "reference/full-release-validation",
                   "reference/release-performance-sweep",
@@ -3268,18 +3266,6 @@
             ]
           },
           {
-            "tab": "Maturity",
-            "groups": [
-              {
-                "group": "Maturity docs",
-                "pages": [
-                  "zh-TW/maturity/scorecard",
-                  "zh-TW/maturity/taxonomy"
-                ]
-              }
-            ]
-          },
-          {
             "tab": "Reference",
             "groups": [
               {
@@ -3487,6 +3473,8 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "zh-TW/maturity/scorecard",
+                  "zh-TW/maturity/taxonomy",
                   "zh-TW/reference/RELEASING",
                   "zh-TW/reference/full-release-validation",
                   "zh-TW/reference/release-performance-sweep",
@@ -4212,18 +4200,6 @@
             ]
           },
           {
-            "tab": "Maturity",
-            "groups": [
-              {
-                "group": "Maturity docs",
-                "pages": [
-                  "ja-JP/maturity/scorecard",
-                  "ja-JP/maturity/taxonomy"
-                ]
-              }
-            ]
-          },
-          {
             "tab": "Reference",
             "groups": [
               {
@@ -4431,6 +4407,8 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "ja-JP/maturity/scorecard",
+                  "ja-JP/maturity/taxonomy",
                   "ja-JP/reference/RELEASING",
                   "ja-JP/reference/full-release-validation",
                   "ja-JP/reference/release-performance-sweep",
@@ -5156,18 +5134,6 @@
             ]
           },
           {
-            "tab": "Maturity",
-            "groups": [
-              {
-                "group": "Maturity docs",
-                "pages": [
-                  "es/maturity/scorecard",
-                  "es/maturity/taxonomy"
-                ]
-              }
-            ]
-          },
-          {
             "tab": "Reference",
             "groups": [
               {
@@ -5375,6 +5341,8 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "es/maturity/scorecard",
+                  "es/maturity/taxonomy",
                   "es/reference/RELEASING",
                   "es/reference/full-release-validation",
                   "es/reference/release-performance-sweep",
@@ -6100,18 +6068,6 @@
             ]
           },
           {
-            "tab": "Maturity",
-            "groups": [
-              {
-                "group": "Maturity docs",
-                "pages": [
-                  "pt-BR/maturity/scorecard",
-                  "pt-BR/maturity/taxonomy"
-                ]
-              }
-            ]
-          },
-          {
             "tab": "Reference",
             "groups": [
               {
@@ -6319,6 +6275,8 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "pt-BR/maturity/scorecard",
+                  "pt-BR/maturity/taxonomy",
                   "pt-BR/reference/RELEASING",
                   "pt-BR/reference/full-release-validation",
                   "pt-BR/reference/release-performance-sweep",
@@ -7044,18 +7002,6 @@
             ]
           },
           {
-            "tab": "Maturity",
-            "groups": [
-              {
-                "group": "Maturity docs",
-                "pages": [
-                  "ko/maturity/scorecard",
-                  "ko/maturity/taxonomy"
-                ]
-              }
-            ]
-          },
-          {
             "tab": "Reference",
             "groups": [
               {
@@ -7263,6 +7209,8 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "ko/maturity/scorecard",
+                  "ko/maturity/taxonomy",
                   "ko/reference/RELEASING",
                   "ko/reference/full-release-validation",
                   "ko/reference/release-performance-sweep",
@@ -7988,18 +7936,6 @@
             ]
           },
           {
-            "tab": "Maturity",
-            "groups": [
-              {
-                "group": "Maturity docs",
-                "pages": [
-                  "de/maturity/scorecard",
-                  "de/maturity/taxonomy"
-                ]
-              }
-            ]
-          },
-          {
             "tab": "Reference",
             "groups": [
               {
@@ -8207,6 +8143,8 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "de/maturity/scorecard",
+                  "de/maturity/taxonomy",
                   "de/reference/RELEASING",
                   "de/reference/full-release-validation",
                   "de/reference/release-performance-sweep",
@@ -8932,18 +8870,6 @@
             ]
           },
           {
-            "tab": "Maturity",
-            "groups": [
-              {
-                "group": "Maturity docs",
-                "pages": [
-                  "fr/maturity/scorecard",
-                  "fr/maturity/taxonomy"
-                ]
-              }
-            ]
-          },
-          {
             "tab": "Reference",
             "groups": [
               {
@@ -9151,6 +9077,8 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "fr/maturity/scorecard",
+                  "fr/maturity/taxonomy",
                   "fr/reference/RELEASING",
                   "fr/reference/full-release-validation",
                   "fr/reference/release-performance-sweep",
@@ -9876,18 +9804,6 @@
             ]
           },
           {
-            "tab": "Maturity",
-            "groups": [
-              {
-                "group": "Maturity docs",
-                "pages": [
-                  "ar/maturity/scorecard",
-                  "ar/maturity/taxonomy"
-                ]
-              }
-            ]
-          },
-          {
             "tab": "Reference",
             "groups": [
               {
@@ -10095,6 +10011,8 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "ar/maturity/scorecard",
+                  "ar/maturity/taxonomy",
                   "ar/reference/RELEASING",
                   "ar/reference/full-release-validation",
                   "ar/reference/release-performance-sweep",
@@ -10820,18 +10738,6 @@
             ]
           },
           {
-            "tab": "Maturity",
-            "groups": [
-              {
-                "group": "Maturity docs",
-                "pages": [
-                  "it/maturity/scorecard",
-                  "it/maturity/taxonomy"
-                ]
-              }
-            ]
-          },
-          {
             "tab": "Reference",
             "groups": [
               {
@@ -11039,6 +10945,8 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "it/maturity/scorecard",
+                  "it/maturity/taxonomy",
                   "it/reference/RELEASING",
                   "it/reference/full-release-validation",
                   "it/reference/release-performance-sweep",
@@ -11764,18 +11672,6 @@
             ]
           },
           {
-            "tab": "Maturity",
-            "groups": [
-              {
-                "group": "Maturity docs",
-                "pages": [
-                  "vi/maturity/scorecard",
-                  "vi/maturity/taxonomy"
-                ]
-              }
-            ]
-          },
-          {
             "tab": "Reference",
             "groups": [
               {
@@ -11983,6 +11879,8 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "vi/maturity/scorecard",
+                  "vi/maturity/taxonomy",
                   "vi/reference/RELEASING",
                   "vi/reference/full-release-validation",
                   "vi/reference/release-performance-sweep",
@@ -12708,18 +12606,6 @@
             ]
           },
           {
-            "tab": "Maturity",
-            "groups": [
-              {
-                "group": "Maturity docs",
-                "pages": [
-                  "nl/maturity/scorecard",
-                  "nl/maturity/taxonomy"
-                ]
-              }
-            ]
-          },
-          {
             "tab": "Reference",
             "groups": [
               {
@@ -12927,6 +12813,8 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "nl/maturity/scorecard",
+                  "nl/maturity/taxonomy",
                   "nl/reference/RELEASING",
                   "nl/reference/full-release-validation",
                   "nl/reference/release-performance-sweep",
@@ -13652,18 +13540,6 @@
             ]
           },
           {
-            "tab": "Maturity",
-            "groups": [
-              {
-                "group": "Maturity docs",
-                "pages": [
-                  "tr/maturity/scorecard",
-                  "tr/maturity/taxonomy"
-                ]
-              }
-            ]
-          },
-          {
             "tab": "Reference",
             "groups": [
               {
@@ -13871,6 +13747,8 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "tr/maturity/scorecard",
+                  "tr/maturity/taxonomy",
                   "tr/reference/RELEASING",
                   "tr/reference/full-release-validation",
                   "tr/reference/release-performance-sweep",
@@ -14596,18 +14474,6 @@
             ]
           },
           {
-            "tab": "Maturity",
-            "groups": [
-              {
-                "group": "Maturity docs",
-                "pages": [
-                  "uk/maturity/scorecard",
-                  "uk/maturity/taxonomy"
-                ]
-              }
-            ]
-          },
-          {
             "tab": "Reference",
             "groups": [
               {
@@ -14815,6 +14681,8 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "uk/maturity/scorecard",
+                  "uk/maturity/taxonomy",
                   "uk/reference/RELEASING",
                   "uk/reference/full-release-validation",
                   "uk/reference/release-performance-sweep",
@@ -15540,18 +15408,6 @@
             ]
           },
           {
-            "tab": "Maturity",
-            "groups": [
-              {
-                "group": "Maturity docs",
-                "pages": [
-                  "id/maturity/scorecard",
-                  "id/maturity/taxonomy"
-                ]
-              }
-            ]
-          },
-          {
             "tab": "Reference",
             "groups": [
               {
@@ -15759,6 +15615,8 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "id/maturity/scorecard",
+                  "id/maturity/taxonomy",
                   "id/reference/RELEASING",
                   "id/reference/full-release-validation",
                   "id/reference/release-performance-sweep",
@@ -16484,18 +16342,6 @@
             ]
           },
           {
-            "tab": "Maturity",
-            "groups": [
-              {
-                "group": "Maturity docs",
-                "pages": [
-                  "pl/maturity/scorecard",
-                  "pl/maturity/taxonomy"
-                ]
-              }
-            ]
-          },
-          {
             "tab": "Reference",
             "groups": [
               {
@@ -16703,6 +16549,8 @@
               {
                 "group": "Release and CI",
                 "pages": [
+                  "pl/maturity/scorecard",
+                  "pl/maturity/taxonomy",
                   "pl/reference/RELEASING",
                   "pl/reference/full-release-validation",
                   "pl/reference/release-performance-sweep",
