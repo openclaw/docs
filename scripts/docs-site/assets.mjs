@@ -1,3 +1,7 @@
+import fs from "node:fs";
+
+const maturityCss = fs.readFileSync(new URL("./maturity.css", import.meta.url), "utf8");
+
 export function siteCss() {
   return `
 :root{--bg:#0d0b0b;--paper:#111010;--paper-2:#151211;--ink:#f4f1ef;--text:#aaa19d;--muted:#817a76;--line:#201d1c;--line-strong:#2c2826;--soft:#241915;--brand:#ff8a5f;--brand-2:#d15035;--code:#111010;--code-inline:#1b1a1a;--code-block:#101010;--code-text:#eee7e2;--code-border:#262322;--code-shadow:0 18px 56px rgba(0,0,0,.30);--tok-comment:#7d8580;--tok-command:#ff9b72;--tok-option:#79c0ff;--tok-string:#a5d6ff;--tok-literal:#d2a8ff;--tok-key:#ffa657;--tok-number:#79c0ff;--tok-punct:#8b949e;--shadow:0 20px 70px rgba(0,0,0,.34);color-scheme:dark}
@@ -55,6 +59,7 @@ export function siteCss() {
 .docs-chat-head{overflow:visible}
 .docs-chat-actions{position:relative;z-index:3}
 .docs-chat-icon:is(:hover,:focus-visible):not(:disabled):after{content:attr(aria-label);position:absolute;top:calc(100% + 8px);right:0;z-index:80;width:max-content;max-width:min(240px,calc(100vw - 40px));padding:7px 9px;border:1px solid var(--tooltip-border);border-radius:7px;background:var(--tooltip-bg);color:var(--tooltip-text);font:760 12px/1.25 ui-sans-serif,system-ui,sans-serif;box-shadow:var(--shadow);pointer-events:none;white-space:nowrap}
+${maturityCss}
 `;
 }
 

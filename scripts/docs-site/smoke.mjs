@@ -250,6 +250,23 @@ if (process.env.DOCS_SITE_CNAME) {
 }
 const siteJs = fs.readFileSync(path.join(site, "assets/docs-site.js"), "utf8");
 const siteCss = fs.readFileSync(path.join(site, "assets/docs-site.css"), "utf8");
+const maturityScorecard = fs.readFileSync(path.join(site, "maturity/scorecard/index.html"), "utf8");
+const maturityTaxonomy = fs.readFileSync(path.join(site, "maturity/taxonomy/index.html"), "utf8");
+if (!maturityScorecard.includes('class="maturity-summary-grid"')
+  || !maturityScorecard.includes('class="maturity-surface-table"')
+  || !maturityTaxonomy.includes('class="maturity-level-list"')
+  || !maturityTaxonomy.includes("<summary>CLI - M4 Stable - 7 areas</summary>")
+  || !maturityTaxonomy.includes('<div class="maturity-category-docs"><a href="/install">Index</a>')
+  || /<div class="maturity-category-docs">[^<]*\[Index\]\(\/install\/index\)/.test(maturityTaxonomy)
+  || /<(?:a|div|span)[^>]*\/>/.test(maturityScorecard)
+  || /<(?:a|div|span)[^>]*\/>/.test(maturityTaxonomy)
+  || /<(?:div|span|a)[^>]+className="maturity-/.test(maturityScorecard)
+  || /<(?:div|span)[^>]+style=\{\{/.test(maturityScorecard)
+  || !/\.maturity-hero\s*\{/.test(siteCss)
+  || !/\.maturity-level-pill\s*\{/.test(siteCss)
+  || !/\.maturity-surface-table\s*\{/.test(siteCss)) {
+  throw new Error("maturity docs: authored structure or shell styles are missing");
+}
 if (!/\.language-menu\{top:calc\(100% \+ 8px\);width:min\(270px,calc\(100vw - 32px\)\);max-height:min\(62vh,430px\)/.test(siteCss)
   || !/\.language-menu::-webkit-scrollbar-track\{background:transparent\}/.test(siteCss)) {
   throw new Error("assets: compact language picker is missing");
