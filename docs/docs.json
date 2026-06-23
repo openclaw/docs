@@ -1701,6 +1701,18 @@
             ]
           },
           {
+            "tab": "Maturity",
+            "groups": [
+              {
+                "group": "Maturity docs",
+                "pages": [
+                  "maturity/scorecard",
+                  "maturity/taxonomy"
+                ]
+              }
+            ]
+          },
+          {
             "tab": "Reference",
             "groups": [
               {
@@ -3256,6 +3268,18 @@
             ]
           },
           {
+            "tab": "Maturity",
+            "groups": [
+              {
+                "group": "Maturity docs",
+                "pages": [
+                  "zh-TW/maturity/scorecard",
+                  "zh-TW/maturity/taxonomy"
+                ]
+              }
+            ]
+          },
+          {
             "tab": "Reference",
             "groups": [
               {
@@ -4183,6 +4207,18 @@
                   "ja-JP/web/dashboard",
                   "ja-JP/web/webchat",
                   "ja-JP/web/tui"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Maturity",
+            "groups": [
+              {
+                "group": "Maturity docs",
+                "pages": [
+                  "ja-JP/maturity/scorecard",
+                  "ja-JP/maturity/taxonomy"
                 ]
               }
             ]
@@ -5120,6 +5156,18 @@
             ]
           },
           {
+            "tab": "Maturity",
+            "groups": [
+              {
+                "group": "Maturity docs",
+                "pages": [
+                  "es/maturity/scorecard",
+                  "es/maturity/taxonomy"
+                ]
+              }
+            ]
+          },
+          {
             "tab": "Reference",
             "groups": [
               {
@@ -6047,6 +6095,18 @@
                   "pt-BR/web/dashboard",
                   "pt-BR/web/webchat",
                   "pt-BR/web/tui"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Maturity",
+            "groups": [
+              {
+                "group": "Maturity docs",
+                "pages": [
+                  "pt-BR/maturity/scorecard",
+                  "pt-BR/maturity/taxonomy"
                 ]
               }
             ]
@@ -6984,6 +7044,18 @@
             ]
           },
           {
+            "tab": "Maturity",
+            "groups": [
+              {
+                "group": "Maturity docs",
+                "pages": [
+                  "ko/maturity/scorecard",
+                  "ko/maturity/taxonomy"
+                ]
+              }
+            ]
+          },
+          {
             "tab": "Reference",
             "groups": [
               {
@@ -7911,6 +7983,18 @@
                   "de/web/dashboard",
                   "de/web/webchat",
                   "de/web/tui"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Maturity",
+            "groups": [
+              {
+                "group": "Maturity docs",
+                "pages": [
+                  "de/maturity/scorecard",
+                  "de/maturity/taxonomy"
                 ]
               }
             ]
@@ -8848,6 +8932,18 @@
             ]
           },
           {
+            "tab": "Maturity",
+            "groups": [
+              {
+                "group": "Maturity docs",
+                "pages": [
+                  "fr/maturity/scorecard",
+                  "fr/maturity/taxonomy"
+                ]
+              }
+            ]
+          },
+          {
             "tab": "Reference",
             "groups": [
               {
@@ -9775,6 +9871,18 @@
                   "ar/web/dashboard",
                   "ar/web/webchat",
                   "ar/web/tui"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Maturity",
+            "groups": [
+              {
+                "group": "Maturity docs",
+                "pages": [
+                  "ar/maturity/scorecard",
+                  "ar/maturity/taxonomy"
                 ]
               }
             ]
@@ -10712,6 +10820,18 @@
             ]
           },
           {
+            "tab": "Maturity",
+            "groups": [
+              {
+                "group": "Maturity docs",
+                "pages": [
+                  "it/maturity/scorecard",
+                  "it/maturity/taxonomy"
+                ]
+              }
+            ]
+          },
+          {
             "tab": "Reference",
             "groups": [
               {
@@ -11639,6 +11759,18 @@
                   "vi/web/dashboard",
                   "vi/web/webchat",
                   "vi/web/tui"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Maturity",
+            "groups": [
+              {
+                "group": "Maturity docs",
+                "pages": [
+                  "vi/maturity/scorecard",
+                  "vi/maturity/taxonomy"
                 ]
               }
             ]
@@ -12576,6 +12708,18 @@
             ]
           },
           {
+            "tab": "Maturity",
+            "groups": [
+              {
+                "group": "Maturity docs",
+                "pages": [
+                  "nl/maturity/scorecard",
+                  "nl/maturity/taxonomy"
+                ]
+              }
+            ]
+          },
+          {
             "tab": "Reference",
             "groups": [
               {
@@ -13503,6 +13647,18 @@
                   "tr/web/dashboard",
                   "tr/web/webchat",
                   "tr/web/tui"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Maturity",
+            "groups": [
+              {
+                "group": "Maturity docs",
+                "pages": [
+                  "tr/maturity/scorecard",
+                  "tr/maturity/taxonomy"
                 ]
               }
             ]
@@ -14440,6 +14596,18 @@
             ]
           },
           {
+            "tab": "Maturity",
+            "groups": [
+              {
+                "group": "Maturity docs",
+                "pages": [
+                  "uk/maturity/scorecard",
+                  "uk/maturity/taxonomy"
+                ]
+              }
+            ]
+          },
+          {
             "tab": "Reference",
             "groups": [
               {
@@ -15372,6 +15540,18 @@
             ]
           },
           {
+            "tab": "Maturity",
+            "groups": [
+              {
+                "group": "Maturity docs",
+                "pages": [
+                  "id/maturity/scorecard",
+                  "id/maturity/taxonomy"
+                ]
+              }
+            ]
+          },
+          {
             "tab": "Reference",
             "groups": [
               {
@@ -16299,6 +16479,18 @@
                   "pl/web/dashboard",
                   "pl/web/webchat",
                   "pl/web/tui"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Maturity",
+            "groups": [
+              {
+                "group": "Maturity docs",
+                "pages": [
+                  "pl/maturity/scorecard",
+                  "pl/maturity/taxonomy"
                 ]
               }
             ]
