@@ -319,10 +319,48 @@ function postprocess(html) {
     ctaCard: [],
     pullQuote: []
   };
-  return html
+  return normalizeHtmlAttributes(html)
+    .replace(/(<div class="maturity-category-docs">)([\s\S]*?)(<\/div>)/g, (_, open, body, close) => `${open}${normalizeEmbeddedMarkdownLinks(body)}${close}`)
     .replace(new RegExp(`<p>${markerPrefix}:([^<]+)</p>`, "g"), (_, payload) => expandMarker(payload, state))
     .replace(/<table>([\s\S]*?)<\/table>/g, `<div class="oc-table-wrap"><table class="oc-table">$1</table></div>`)
     .replace(new RegExp(`${inlineMarkerPrefix}:([A-Za-z0-9]+):([A-Za-z0-9_-]*):`, "g"), (_, kind, encoded) => expandInlineMarker(`${kind}:${encoded}`));
+}
+
+function normalizeHtmlAttributes(html) {
+  return normalizeSelfClosingHtml(html)
+    .replace(/\bclassName=(["'])(.*?)\1/g, 'class="$2"')
+    .replace(/\bstyle=\{\{([\s\S]*?)\}\}/g, (_, body) => {
+      const style = styleObjectToCss(body);
+      return style ? `style="${escapeAttr(style)}"` : "";
+    });
+}
+
+const htmlVoidElements = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"]);
+
+function normalizeSelfClosingHtml(html) {
+  return html.replace(/<([a-z][a-z0-9-]*)([^>]*)\s*\/>/gi, (match, tag, attrs) => {
+    if (htmlVoidElements.has(tag.toLowerCase())) return match;
+    return `<${tag}${attrs}></${tag}>`;
+  });
+}
+
+function styleObjectToCss(body) {
+  const declarations = [];
+  const pairPattern = /(["']?)(--?[A-Za-z0-9_-]+|[A-Za-z_$][A-Za-z0-9_$-]*)\1\s*:\s*(?:"([^"]*)"|'([^']*)'|([^,]+))/g;
+  for (const match of body.matchAll(pairPattern)) {
+    const key = match[2].startsWith("--")
+      ? match[2]
+      : match[2].replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+    const value = (match[3] ?? match[4] ?? match[5] ?? "").trim();
+    if (value) declarations.push(`${key}: ${value}`);
+  }
+  return declarations.join("; ");
+}
+
+function normalizeEmbeddedMarkdownLinks(body) {
+  return body.replace(/\[([^\]]+)\]\(((?:\/|https?:\/\/)[^)\s]+)\)/g, (_, label, href) => (
+    `<a href="${escapeAttr(href)}">${escapeHtml(label)}</a>`
+  ));
 }
 
 function marker(kind, payload = "") {
