@@ -210,6 +210,31 @@ same automatic patch-version behavior.
 Set `dry_run: true` to preview without a token. Real publishes require the
 `clawhub_token` secret.
 
+### `sync`
+
+- Scans the current workdir, the configured skills directory, and any
+  `--root <dir>` folders for local skill folders containing `SKILL.md` or
+  `skill.md`.
+- Compares each local skill fingerprint with ClawHub and publishes only new or
+  changed skills.
+- New skills publish as `1.0.0`; changed skills publish the next patch version
+  by default. Use `--bump minor|major` for update batches that should move by a
+  larger semver step.
+- `--dry-run` shows the publish plan without uploading; `--json` prints a
+  machine-readable plan.
+- `--all` publishes every new or changed skill without prompting. Without
+  `--all`, interactive terminals let you select the skills to publish.
+- `--owner <handle>` publishes under an org/user publisher handle when the
+  actor has publisher access.
+- `sync` is one-way publish only. It does not install, update, download, or
+  report install/download telemetry.
+
+```bash
+clawhub sync --all --dry-run
+clawhub sync --all
+clawhub sync --root ./skills --owner openclaw --bump minor
+```
+
 ### `scan --slug <slug>`
 
 - Requires `clawhub login`.
@@ -244,7 +269,7 @@ clawhub scan download @scope/demo --version 2.0.0 --kind plugin --output report.
 #### GitHub Actions
 
 ClawHub ships an official reusable workflow at
-[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/37eac63dc8b483f1fee856771cfc28c780d8d0c5/.github/workflows/skill-publish.yml)
+[`/.github/workflows/skill-publish.yml`](https://github.com/openclaw/clawhub/blob/bbe887faacd7d09591bec5ae3a00bdf819b52118/.github/workflows/skill-publish.yml)
 for skill repos and catalog repos.
 
 Typical catalog setup:
@@ -686,7 +711,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/37eac63dc8b483f1fee856771cfc28c780d8d0c5/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/bbe887faacd7d09591bec5ae3a00bdf819b52118/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
