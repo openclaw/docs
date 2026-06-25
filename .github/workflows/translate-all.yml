@@ -113,6 +113,21 @@ jobs:
             fi
           }
 
+          sleep_with_heartbeat() {
+            remaining="$1"
+            while [ "${remaining}" -gt 0 ]; do
+              chunk="${remaining}"
+              if [ "${chunk}" -gt 60 ]; then
+                chunk="60"
+              fi
+              sleep "${chunk}"
+              remaining=$((remaining - chunk))
+              if [ "${remaining}" -gt 0 ]; then
+                echo "Still debouncing docs main; ${remaining}s remaining."
+              fi
+            done
+          }
+
           elapsed=0
           while :; do
             read_main_state
@@ -124,7 +139,7 @@ jobs:
             fi
 
             echo "Waiting ${cooldown}s for docs main to settle at ${before_ref} (${before_source})."
-            sleep "${cooldown}"
+            sleep_with_heartbeat "${cooldown}"
             elapsed=$((elapsed + cooldown))
 
             read_main_state
