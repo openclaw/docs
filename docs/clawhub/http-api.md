@@ -39,14 +39,17 @@ Enforcement model:
 
 Headers:
 
-- Legacy compatibility: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`
-- Standardized: `RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset`
+- Legacy compatibility: `X-RateLimit-Limit`, `X-RateLimit-Reset`
+- Standardized: `RateLimit-Limit`, `RateLimit-Reset`
+- On `429`: `X-RateLimit-Remaining: 0` and `RateLimit-Remaining: 0`
 - On `429`: `Retry-After`
 
 Header semantics:
 
 - `X-RateLimit-Reset`: absolute Unix epoch seconds
 - `RateLimit-Reset`: seconds until reset (delay)
+- `X-RateLimit-Remaining` / `RateLimit-Remaining`: exact remaining budget when present.
+  Sharded successful requests omit this header instead of returning an approximate global value.
 - `Retry-After`: seconds to wait before retry (delay) on `429`
 
 Example `429` response:
@@ -73,9 +76,13 @@ Client guidance:
 
 IP source:
 
-- Uses `cf-connecting-ip` (Cloudflare) for client IP by default.
+- Uses trusted client IP headers, including `cf-connecting-ip`, only when the
+  deployment explicitly enables trusted forwarded headers.
 - ClawHub uses trusted forwarding headers to identify client IPs at the edge.
-- If no trusted client IP is available, anonymous download requests use an endpoint-scoped fallback bucket instead of one global `ip:unknown` bucket. Anonymous read/write requests still use the shared unknown bucket so missing-IP routing remains visible and conservative.
+- If no trusted client IP is available, anonymous requests use fallback buckets
+  scoped only by rate-limit kind. These fallback buckets do not include
+  caller-supplied paths, slugs, package names, versions, query strings, or other
+  artifact parameters.
 
 ## Error responses
 
@@ -541,7 +548,7 @@ Query params:
 - `family` (optional): `skill`, `code-plugin`, or `bundle-plugin`
 - `channel` (optional): `official`, `community`, or `private`
 - `isOfficial` (optional): `true` or `false`
-- `sort` (optional): `updated` (default), `recommended`, `downloads`, legacy alias `installs`
+- `sort` (optional): `updated` (default), `recommended`, `trending`, `downloads`, legacy alias `installs`
 - `category` (optional): plugin category filter. Supported only when the
   request is scoped to plugin packages (`/api/v1/plugins`,
   `/api/v1/code-plugins`, `/api/v1/bundle-plugins`, or package endpoints with
@@ -591,7 +598,7 @@ Query params:
 - `limit` (optional): integer (1-100)
 - `cursor` (optional): pagination cursor
 - `isOfficial` (optional): `true` or `false`
-- `sort` (optional): `recommended` (default), `downloads`, `updated`, legacy alias `installs`
+- `sort` (optional): `recommended` (default), `trending`, `downloads`, `updated`, legacy alias `installs`
 - `category` (optional): plugin category filter. Current values:
   `channels`, `models`, `memory`, `context`, `voice`, `media`, `web`,
   `tools`, `runtime`, `gateway`, `security`, `other`.
@@ -601,6 +608,10 @@ Legacy v1 filter aliases remain accepted on read endpoints:
 - `mcp-tooling`, `data`, and `automation` resolve to `tools`.
 - `observability` and `deployment` resolve to `gateway`.
 - `dev-tools` resolves to `runtime`.
+
+`trending` is a seven-day install/download leaderboard and does not use all-time totals.
+On the unified `/api/v1/packages` endpoint it is plugin-only; use
+`/api/v1/skills?sort=trending` for the skill catalog.
 
 Legacy aliases are not accepted as stored or author-declared category values.
 
