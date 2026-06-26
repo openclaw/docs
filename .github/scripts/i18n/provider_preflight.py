@@ -89,7 +89,7 @@ def openai_probe_request(model: str, api_key: str, timeout_seconds: int) -> ApiR
         {
             "model": model,
             "input": "Reply with ok.",
-            "max_output_tokens": 8,
+            "max_output_tokens": 16,
             "store": False,
         }
     ).encode("utf-8")
