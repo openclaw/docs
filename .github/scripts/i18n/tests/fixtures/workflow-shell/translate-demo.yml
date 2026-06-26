@@ -1,0 +1,13 @@
+name: Translate Demo
+
+on:
+  workflow_call:
+
+jobs:
+  demo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Valid shell
+        run: |
+          set -euo pipefail
+          echo "${{ github.sha }}"
