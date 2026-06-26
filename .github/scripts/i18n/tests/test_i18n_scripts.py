@@ -12,6 +12,7 @@ import tempfile
 import unittest
 from contextlib import contextmanager
 from pathlib import Path
+from unittest.mock import patch
 
 
 SCRIPT_DIR = Path(__file__).resolve().parents[1]
@@ -217,6 +218,27 @@ class I18NScriptTests(unittest.TestCase):
             provider_preflight.classify_response(429, '{"error":{"code":"insufficient_quota"}}'),
         )
         self.assertEqual((True, "ok", "provider preflight ok"), provider_preflight.classify_response(200, "{}"))
+
+    def test_provider_preflight_probe_uses_responses_api_minimum_output_budget(self) -> None:
+        class FakeResponse:
+            status = 200
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc_value, traceback):
+                return False
+
+            def read(self) -> bytes:
+                return b"{}"
+
+        with patch.object(provider_preflight.urllib.request, "urlopen", return_value=FakeResponse()) as urlopen:
+            response = provider_preflight.openai_probe_request("gpt-5.5", "test-key", 30)
+
+        request = urlopen.call_args.args[0]
+        payload = json.loads(request.data)
+        self.assertEqual(200, response.status_code)
+        self.assertGreaterEqual(payload["max_output_tokens"], 16)
 
     def test_read_source_metadata_validates_requested_sha_and_outputs_fields(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
