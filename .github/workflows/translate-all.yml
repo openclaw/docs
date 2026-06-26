@@ -1,32 +1,6 @@
 name: Translate Full
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "docs/.i18n/glossary.*.json"
-  repository_dispatch:
-    types:
-      - translate-all-release
-      - translate-ar-release
-      - translate-de-release
-      - translate-es-release
-      - translate-fa-release
-      - translate-fr-release
-      - translate-id-release
-      - translate-it-release
-      - translate-ja-jp-release
-      - translate-ko-release
-      - translate-nl-release
-      - translate-pl-release
-      - translate-pt-br-release
-      - translate-th-release
-      - translate-tr-release
-      - translate-uk-release
-      - translate-vi-release
-      - translate-zh-cn-release
-      - translate-zh-tw-release
   schedule:
     - cron: "17 3 * * 0"
   workflow_dispatch:
@@ -36,6 +10,31 @@ on:
         required: true
         default: "0"
         type: string
+      target_locale:
+        description: Locale slug to rerun, or all.
+        required: true
+        default: "all"
+        type: choice
+        options:
+          - all
+          - zh-cn
+          - zh-tw
+          - ja-jp
+          - es
+          - pt-br
+          - ko
+          - de
+          - fr
+          - ar
+          - it
+          - vi
+          - nl
+          - fa
+          - tr
+          - uk
+          - id
+          - pl
+          - th
 
 permissions:
   actions: write
@@ -43,7 +42,7 @@ permissions:
 
 concurrency:
   group: docs-i18n-full
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   validate-workflow-shell:
@@ -70,7 +69,7 @@ jobs:
         id: prepare
         env:
           EVENT_NAME: ${{ github.event_name }}
-          REQUESTED_COOLDOWN_SECONDS: ${{ inputs.cooldown_seconds || github.event.client_payload.cooldown_seconds || '' }}
+          REQUESTED_COOLDOWN_SECONDS: ${{ inputs.cooldown_seconds || '' }}
           DEFAULT_COOLDOWN_SECONDS: ${{ vars.OPENCLAW_DOCS_TRANSLATION_COOLDOWN_SECONDS || '3600' }}
           DEFAULT_MAX_WAIT_SECONDS: ${{ vars.OPENCLAW_DOCS_TRANSLATION_MAX_WAIT_SECONDS || vars.OPENCLAW_DOCS_TRANSLATION_COOLDOWN_SECONDS || '3600' }}
         run: |
@@ -78,88 +77,327 @@ jobs:
 
           python .github/scripts/i18n/prepare.py --mode full --title "Translate Full"
 
-  translate:
-    name: Translate ${{ matrix.locale.locale }} shard ${{ matrix.shard_index }}/14
+  plan:
+    name: Plan full locale batches
     needs: prepare
     if: needs.prepare.outputs.should_translate == 'true'
-    strategy:
-      fail-fast: false
-      # Keep Codex API fan-out below the 108-worker peak that made failures expensive.
-      max-parallel: 12
-      matrix:
-        locale:
-          - locale: zh-CN
-            locale_slug: zh-cn
-          - locale: zh-TW
-            locale_slug: zh-tw
-          - locale: ja-JP
-            locale_slug: ja-jp
-          - locale: es
-            locale_slug: es
-          - locale: pt-BR
-            locale_slug: pt-br
-          - locale: ko
-            locale_slug: ko
-          - locale: de
-            locale_slug: de
-          - locale: fr
-            locale_slug: fr
-          - locale: ar
-            locale_slug: ar
-          - locale: it
-            locale_slug: it
-          - locale: vi
-            locale_slug: vi
-          - locale: nl
-            locale_slug: nl
-          - locale: fa
-            locale_slug: fa
-          - locale: tr
-            locale_slug: tr
-          - locale: uk
-            locale_slug: uk
-          - locale: id
-            locale_slug: id
-          - locale: pl
-            locale_slug: pl
-          - locale: th
-            locale_slug: th
-        shard_index:
-          - 0
-          - 1
-          - 2
-          - 3
-          - 4
-          - 5
-          - 6
-          - 7
-          - 8
-          - 9
-          - 10
-          - 11
-          - 12
-          - 13
+    runs-on: ubuntu-latest
+    outputs:
+      locale_count: ${{ steps.plan.outputs.locale_count }}
+      canary_locale: ${{ steps.plan.outputs.canary_locale }}
+      canary_locale_slug: ${{ steps.plan.outputs.canary_locale_slug }}
+      selected_locales: ${{ steps.plan.outputs.selected_locales }}
+      batch_1_count: ${{ steps.plan.outputs.batch_1_count }}
+      batch_1: ${{ steps.plan.outputs.batch_1 }}
+      batch_2_count: ${{ steps.plan.outputs.batch_2_count }}
+      batch_2: ${{ steps.plan.outputs.batch_2 }}
+      batch_3_count: ${{ steps.plan.outputs.batch_3_count }}
+      batch_3: ${{ steps.plan.outputs.batch_3 }}
+      batch_4_count: ${{ steps.plan.outputs.batch_4_count }}
+      batch_4: ${{ steps.plan.outputs.batch_4 }}
+      batch_5_count: ${{ steps.plan.outputs.batch_5_count }}
+      batch_5: ${{ steps.plan.outputs.batch_5 }}
+      batch_6_count: ${{ steps.plan.outputs.batch_6_count }}
+      batch_6: ${{ steps.plan.outputs.batch_6 }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@v6
+
+      - name: Build full locale plan
+        id: plan
+        env:
+          TARGET_LOCALE: ${{ inputs.target_locale || 'all' }}
+        run: |
+          set -euo pipefail
+
+          python .github/scripts/i18n/plan_full.py --batch-size 3
+
+  provider-preflight:
+    name: Check translation provider
+    needs:
+      - prepare
+      - plan
+    if: needs.prepare.outputs.should_translate == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v6
+
+      - name: Validate OpenAI key and model
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENCLAW_DOCS_I18N_OPENAI_API_KEY }}
+          OPENCLAW_DOCS_I18N_PROVIDER: openai
+          OPENCLAW_DOCS_I18N_MODEL: gpt-5.5
+        run: |
+          set -euo pipefail
+
+          python .github/scripts/i18n/provider_preflight.py
+
+  translate-canary:
+    name: Canary ${{ needs.plan.outputs.canary_locale }}
+    needs:
+      - prepare
+      - plan
+      - provider-preflight
+    if: needs.prepare.outputs.should_translate == 'true'
     uses: ./.github/workflows/translate-locale-reusable.yml
     with:
-      locale: ${{ matrix.locale.locale }}
-      locale_slug: ${{ matrix.locale.locale_slug }}
+      locale: ${{ needs.plan.outputs.canary_locale }}
+      locale_slug: ${{ needs.plan.outputs.canary_locale_slug }}
       publish_ref: ${{ needs.prepare.outputs.publish_ref }}
       source_sha: ${{ needs.prepare.outputs.source_sha }}
       mode: ${{ needs.prepare.outputs.mode }}
-      shard_index: ${{ matrix.shard_index }}
-      shard_total: "14"
-      worker_parallel: "2"
+      shard_index: "0"
+      shard_total: "1"
+      worker_parallel: "3"
       thinking_effort: "medium"
+      pending_limit: "1"
+      artifact_prefix: i18n-canary
+      artifact_role: canary
+      commit_locale: false
     secrets: inherit
 
-  finalize:
-    name: Commit successful locale artifacts
+  translate-batch-1:
+    name: Full batch 1
     needs:
       - prepare
-      - translate
-    if: always() && needs.prepare.result == 'success' && needs.prepare.outputs.should_translate == 'true'
-    uses: ./.github/workflows/translate-finalize-reusable.yml
+      - plan
+      - translate-canary
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && needs.plan.outputs.batch_1_count != '0'
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix: ${{ fromJSON(needs.plan.outputs.batch_1) }}
+    uses: ./.github/workflows/translate-locale-reusable.yml
     with:
+      locale: ${{ matrix.locale }}
+      locale_slug: ${{ matrix.locale_slug }}
+      publish_ref: ${{ needs.prepare.outputs.publish_ref }}
       source_sha: ${{ needs.prepare.outputs.source_sha }}
       mode: ${{ needs.prepare.outputs.mode }}
-      shard_total: "14"
+      shard_index: "0"
+      shard_total: "1"
+      worker_parallel: "3"
+      thinking_effort: "medium"
+      pending_limit: "0"
+      artifact_prefix: i18n
+      artifact_role: locale
+      commit_locale: true
+    secrets: inherit
+
+  translate-batch-2:
+    name: Full batch 2
+    needs:
+      - prepare
+      - plan
+      - translate-canary
+      - translate-batch-1
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && needs.plan.outputs.batch_2_count != '0'
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix: ${{ fromJSON(needs.plan.outputs.batch_2) }}
+    uses: ./.github/workflows/translate-locale-reusable.yml
+    with:
+      locale: ${{ matrix.locale }}
+      locale_slug: ${{ matrix.locale_slug }}
+      publish_ref: ${{ needs.prepare.outputs.publish_ref }}
+      source_sha: ${{ needs.prepare.outputs.source_sha }}
+      mode: ${{ needs.prepare.outputs.mode }}
+      shard_index: "0"
+      shard_total: "1"
+      worker_parallel: "3"
+      thinking_effort: "medium"
+      pending_limit: "0"
+      artifact_prefix: i18n
+      artifact_role: locale
+      commit_locale: true
+    secrets: inherit
+
+  translate-batch-3:
+    name: Full batch 3
+    needs:
+      - prepare
+      - plan
+      - translate-canary
+      - translate-batch-2
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && needs.plan.outputs.batch_3_count != '0'
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix: ${{ fromJSON(needs.plan.outputs.batch_3) }}
+    uses: ./.github/workflows/translate-locale-reusable.yml
+    with:
+      locale: ${{ matrix.locale }}
+      locale_slug: ${{ matrix.locale_slug }}
+      publish_ref: ${{ needs.prepare.outputs.publish_ref }}
+      source_sha: ${{ needs.prepare.outputs.source_sha }}
+      mode: ${{ needs.prepare.outputs.mode }}
+      shard_index: "0"
+      shard_total: "1"
+      worker_parallel: "3"
+      thinking_effort: "medium"
+      pending_limit: "0"
+      artifact_prefix: i18n
+      artifact_role: locale
+      commit_locale: true
+    secrets: inherit
+
+  translate-batch-4:
+    name: Full batch 4
+    needs:
+      - prepare
+      - plan
+      - translate-canary
+      - translate-batch-3
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && needs.plan.outputs.batch_4_count != '0'
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix: ${{ fromJSON(needs.plan.outputs.batch_4) }}
+    uses: ./.github/workflows/translate-locale-reusable.yml
+    with:
+      locale: ${{ matrix.locale }}
+      locale_slug: ${{ matrix.locale_slug }}
+      publish_ref: ${{ needs.prepare.outputs.publish_ref }}
+      source_sha: ${{ needs.prepare.outputs.source_sha }}
+      mode: ${{ needs.prepare.outputs.mode }}
+      shard_index: "0"
+      shard_total: "1"
+      worker_parallel: "3"
+      thinking_effort: "medium"
+      pending_limit: "0"
+      artifact_prefix: i18n
+      artifact_role: locale
+      commit_locale: true
+    secrets: inherit
+
+  translate-batch-5:
+    name: Full batch 5
+    needs:
+      - prepare
+      - plan
+      - translate-canary
+      - translate-batch-4
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && needs.plan.outputs.batch_5_count != '0'
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix: ${{ fromJSON(needs.plan.outputs.batch_5) }}
+    uses: ./.github/workflows/translate-locale-reusable.yml
+    with:
+      locale: ${{ matrix.locale }}
+      locale_slug: ${{ matrix.locale_slug }}
+      publish_ref: ${{ needs.prepare.outputs.publish_ref }}
+      source_sha: ${{ needs.prepare.outputs.source_sha }}
+      mode: ${{ needs.prepare.outputs.mode }}
+      shard_index: "0"
+      shard_total: "1"
+      worker_parallel: "3"
+      thinking_effort: "medium"
+      pending_limit: "0"
+      artifact_prefix: i18n
+      artifact_role: locale
+      commit_locale: true
+    secrets: inherit
+
+  translate-batch-6:
+    name: Full batch 6
+    needs:
+      - prepare
+      - plan
+      - translate-canary
+      - translate-batch-5
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && needs.plan.outputs.batch_6_count != '0'
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix: ${{ fromJSON(needs.plan.outputs.batch_6) }}
+    uses: ./.github/workflows/translate-locale-reusable.yml
+    with:
+      locale: ${{ matrix.locale }}
+      locale_slug: ${{ matrix.locale_slug }}
+      publish_ref: ${{ needs.prepare.outputs.publish_ref }}
+      source_sha: ${{ needs.prepare.outputs.source_sha }}
+      mode: ${{ needs.prepare.outputs.mode }}
+      shard_index: "0"
+      shard_total: "1"
+      worker_parallel: "3"
+      thinking_effort: "medium"
+      pending_limit: "0"
+      artifact_prefix: i18n
+      artifact_role: locale
+      commit_locale: true
+    secrets: inherit
+
+  full-status:
+    name: Report full translation status
+    needs:
+      - prepare
+      - plan
+      - provider-preflight
+      - translate-canary
+      - translate-batch-1
+      - translate-batch-2
+      - translate-batch-3
+      - translate-batch-4
+      - translate-batch-5
+      - translate-batch-6
+    if: always() && needs.prepare.outputs.should_translate == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v6
+
+      - name: Download full locale artifacts
+        continue-on-error: true
+        uses: actions/download-artifact@v8
+        with:
+          pattern: i18n-*-${{ needs.prepare.outputs.source_sha }}
+          path: .openclaw-sync/i18n-artifacts
+
+      - name: Summarize full run
+        env:
+          SELECTED_LOCALES: ${{ needs.plan.outputs.selected_locales }}
+          LOCALE_COUNT: ${{ needs.plan.outputs.locale_count }}
+          PROVIDER_RESULT: ${{ needs.provider-preflight.result }}
+          CANARY_RESULT: ${{ needs.translate-canary.result }}
+          BATCH_1_RESULT: ${{ needs.translate-batch-1.result }}
+          BATCH_2_RESULT: ${{ needs.translate-batch-2.result }}
+          BATCH_3_RESULT: ${{ needs.translate-batch-3.result }}
+          BATCH_4_RESULT: ${{ needs.translate-batch-4.result }}
+          BATCH_5_RESULT: ${{ needs.translate-batch-5.result }}
+          BATCH_6_RESULT: ${{ needs.translate-batch-6.result }}
+        run: |
+          set -euo pipefail
+
+          {
+            echo "### Translate Full status"
+            echo
+            echo "- selected locales: \`${SELECTED_LOCALES}\`"
+            echo "- locale count: \`${LOCALE_COUNT}\`"
+            echo "- provider preflight: \`${PROVIDER_RESULT}\`"
+            echo "- canary: \`${CANARY_RESULT}\`"
+            echo "- batch 1: \`${BATCH_1_RESULT}\`"
+            echo "- batch 2: \`${BATCH_2_RESULT}\`"
+            echo "- batch 3: \`${BATCH_3_RESULT}\`"
+            echo "- batch 4: \`${BATCH_4_RESULT}\`"
+            echo "- batch 5: \`${BATCH_5_RESULT}\`"
+            echo "- batch 6: \`${BATCH_6_RESULT}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          python .github/scripts/i18n/summarize_full.py \
+            --selected-locales "${SELECTED_LOCALES}" \
+            --provider-result "${PROVIDER_RESULT}" \
+            --canary-result "${CANARY_RESULT}"
+
+          for result in "${PROVIDER_RESULT}" "${CANARY_RESULT}" "${BATCH_1_RESULT}" "${BATCH_2_RESULT}" "${BATCH_3_RESULT}" "${BATCH_4_RESULT}" "${BATCH_5_RESULT}" "${BATCH_6_RESULT}"; do
+            case "${result}" in
+              success|skipped)
+                ;;
+              *)
+                echo "Translate Full completed with failed or cancelled work: ${result}" >&2
+                exit 1
+                ;;
+            esac
+          done

@@ -77,7 +77,9 @@ jobs:
 
   translate:
     name: Translate ${{ matrix.locale }}
-    needs: prepare
+    needs:
+      - prepare
+      - provider-preflight
     if: needs.prepare.outputs.should_translate == 'true'
     strategy:
       fail-fast: false
@@ -130,14 +132,38 @@ jobs:
       shard_total: "1"
       worker_parallel: "8"
       thinking_effort: "medium"
+      pending_limit: "0"
+      artifact_prefix: i18n
+      artifact_role: locale
+      commit_locale: false
     secrets: inherit
+
+  provider-preflight:
+    name: Check translation provider
+    needs: prepare
+    if: needs.prepare.outputs.should_translate == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v6
+
+      - name: Validate OpenAI key and model
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENCLAW_DOCS_I18N_OPENAI_API_KEY }}
+          OPENCLAW_DOCS_I18N_PROVIDER: openai
+          OPENCLAW_DOCS_I18N_MODEL: gpt-5.5
+        run: |
+          set -euo pipefail
+
+          python .github/scripts/i18n/provider_preflight.py
 
   finalize:
     name: Commit successful locale artifacts
     needs:
       - prepare
+      - provider-preflight
       - translate
-    if: always() && needs.prepare.result == 'success' && needs.prepare.outputs.should_translate == 'true'
+    if: always() && needs.prepare.result == 'success' && needs.provider-preflight.result == 'success' && needs.prepare.outputs.should_translate == 'true'
     uses: ./.github/workflows/translate-finalize-reusable.yml
     with:
       source_sha: ${{ needs.prepare.outputs.source_sha }}

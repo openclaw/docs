@@ -36,6 +36,9 @@ package_artifact = load_module("package_artifact")
 apply_artifacts = load_module("apply_artifacts")
 read_source_metadata = load_module("read_source_metadata")
 prune_stale_locale_pages = load_module("prune_stale_locale_pages")
+plan_full = load_module("plan_full")
+provider_preflight = load_module("provider_preflight")
+summarize_full = load_module("summarize_full")
 
 
 @contextmanager
@@ -120,10 +123,11 @@ class I18NScriptTests(unittest.TestCase):
             stdout=subprocess.PIPE,
         ).stdout.splitlines()
         changed_paths = changed + untracked
+        allowed_docs_paths = {"docs/.i18n/translation-workflow.md"}
         generated_docs = [
             path
             for path in changed_paths
-            if path.startswith("docs/")
+            if (path.startswith("docs/") and path not in allowed_docs_paths)
             or path == "docs/docs.json"
             or (
                 path.startswith(".openclaw-sync/")
@@ -144,19 +148,37 @@ class I18NScriptTests(unittest.TestCase):
             self.assertIn('echo "__GITHUB_EXPR__"', scripts[0].read_text(encoding="utf-8"))
             workflow_shell_check.check_bash_syntax(scripts)
 
-    def test_budget_check_accepts_current_full_matrix_and_rejects_worker_over_budget(self) -> None:
+    def test_budget_check_accepts_current_full_batches_and_rejects_worker_over_budget(self) -> None:
         budget = budget_check.validate_budget(REPO_ROOT / ".github/workflows/translate-all.yml")
-        self.assertEqual(18, budget.locale_count)
-        self.assertEqual(14, budget.shard_total)
-        self.assertEqual(252, budget.matrix_jobs)
-        self.assertEqual(24, budget.active_workers)
+        self.assertEqual(6, budget.batch_count)
+        self.assertEqual(3, budget.max_batch_parallel)
+        self.assertEqual(3, budget.worker_parallel)
+        self.assertEqual(9, budget.active_workers)
+        self.assertFalse(budget.cancel_in_progress)
 
         with tempfile.TemporaryDirectory() as tmp:
             workflow = Path(tmp) / "translate-all.yml"
             text = (REPO_ROOT / ".github/workflows/translate-all.yml").read_text(encoding="utf-8")
-            workflow.write_text(text.replace("max-parallel: 12", "max-parallel: 13"), encoding="utf-8")
+            workflow.write_text(text.replace('worker_parallel: "3"', 'worker_parallel: "5"'), encoding="utf-8")
             with self.assertRaises(SystemExit):
                 budget_check.validate_budget(workflow)
+
+    def test_full_workflow_keeps_only_weekly_and_manual_triggers(self) -> None:
+        text = (REPO_ROOT / ".github/workflows/translate-all.yml").read_text(encoding="utf-8")
+        self.assertNotIn("repository_dispatch:", text)
+        self.assertNotIn('"docs/.i18n/glossary.*.json"', text)
+        self.assertIn("schedule:", text)
+        self.assertIn("workflow_dispatch:", text)
+        self.assertIn("target_locale:", text)
+        self.assertIn("cancel-in-progress: false", text)
+
+    def test_full_workflow_gates_batches_after_canary(self) -> None:
+        text = (REPO_ROOT / ".github/workflows/translate-all.yml").read_text(encoding="utf-8")
+        for index in range(1, 7):
+            self.assertIn(f"translate-batch-{index}:", text)
+            self.assertIn("needs.translate-canary.result == 'success'", text)
+        self.assertIn("provider-preflight:", text)
+        self.assertIn("Translate Full completed with failed or cancelled work", text)
 
     def test_prepare_path_selection_matches_incremental_rules(self) -> None:
         self.assertTrue(prepare.is_translatable_doc_path("docs/guide/setup.mdx"))
@@ -166,7 +188,35 @@ class I18NScriptTests(unittest.TestCase):
         self.assertFalse(prepare.is_translatable_doc_path("docs/.generated/api.md"))
         self.assertEqual("3600", prepare.default_cooldown("incremental", "push", "", "3600"))
         self.assertEqual("0", prepare.default_cooldown("incremental", "workflow_dispatch", "", "3600"))
-        self.assertEqual("3600", prepare.default_cooldown("full", "repository_dispatch", "", "3600"))
+        self.assertEqual("0", prepare.default_cooldown("full", "schedule", "", "3600"))
+        self.assertFalse(prepare.incremental_should_translate_paths(["docs/.i18n/glossary.fr.json"]))
+        self.assertTrue(prepare.incremental_should_translate_paths(["docs/.i18n/glossary.fr.json", "docs/guide/setup.mdx"]))
+
+    def test_full_plan_all_uses_canary_and_small_batches(self) -> None:
+        result = plan_full.plan_full("all", 3)
+        self.assertEqual("zh-CN", result["canary"]["locale"])
+        self.assertEqual(6, len(result["batches"]))
+        self.assertLessEqual(max(len(batch) for batch in result["batches"]), 3)
+        self.assertEqual(18, sum(len(batch) for batch in result["batches"]))
+
+    def test_full_plan_manual_single_locale_only_selects_target(self) -> None:
+        result = plan_full.plan_full("fr", 3)
+        self.assertEqual({"locale": "fr", "locale_slug": "fr"}, result["canary"])
+        self.assertEqual([[{"locale": "fr", "locale_slug": "fr"}]], result["batches"])
+        with self.assertRaises(SystemExit):
+            plan_full.plan_full("xx", 3)
+
+    def test_provider_preflight_classifies_key_model_and_quota_failures(self) -> None:
+        self.assertEqual((False, "invalid_key", "OpenAI rejected the translation API key"), provider_preflight.classify_response(401, "{}"))
+        self.assertEqual(
+            (False, "model_access_denied", "OpenAI denied access to the requested translation model"),
+            provider_preflight.classify_response(403, "{}"),
+        )
+        self.assertEqual(
+            (False, "quota_exhausted", "OpenAI reported insufficient quota for the translation key"),
+            provider_preflight.classify_response(429, '{"error":{"code":"insufficient_quota"}}'),
+        )
+        self.assertEqual((True, "ok", "provider preflight ok"), provider_preflight.classify_response(200, "{}"))
 
     def test_read_source_metadata_validates_requested_sha_and_outputs_fields(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -238,6 +288,25 @@ class I18NScriptTests(unittest.TestCase):
             self.assertEqual(2, result.all_count)
             self.assertEqual(1, result.total_pending_count)
             self.assertTrue(result.shard_files[0].as_posix().endswith("/docs/guide/setup.mdx"))
+
+    def test_pending_manifest_canary_limit_keeps_total_count_but_limits_sample(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            shutil.copytree(FIXTURES / "pending-docs" / "docs", tmp_path / "docs")
+
+            result = pending.build_pending_manifest(
+                docs_root=tmp_path / "docs",
+                openclaw_sync_dir=tmp_path / ".openclaw-sync",
+                locale="fr",
+                locale_slug="fr",
+                mode="full",
+                shard_index=0,
+                shard_total=1,
+                pending_limit=1,
+            )
+
+            self.assertEqual(2, result.total_pending_count)
+            self.assertEqual(1, result.pending_count)
 
     def test_package_artifact_keeps_only_allowed_changed_paths_and_payload(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -321,6 +390,69 @@ class I18NScriptTests(unittest.TestCase):
             self.assertEqual("translation failed", metadata["failed_reason"])
             self.assertEqual("", (artifact / "changed-files.txt").read_text(encoding="utf-8"))
             self.assertEqual("", (artifact / "deleted-files.txt").read_text(encoding="utf-8"))
+
+    def test_package_artifact_failure_writes_visible_github_status(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            init_repo(repo)
+            (repo / ".openclaw-sync").mkdir()
+            (repo / "docs").mkdir()
+            (repo / "docs/index.md").write_text("# Index\n", encoding="utf-8")
+            run_git(repo, "add", ".")
+            run_git(repo, "commit", "-m", "initial")
+            output = repo / "github-output.txt"
+
+            with chdir(repo), env(
+                {
+                    "GITHUB_WORKSPACE": str(repo),
+                    "GITHUB_OUTPUT": str(output),
+                    "LOCALE": "fr",
+                    "LOCALE_SLUG": "fr",
+                    "SOURCE_SHA": "source-a",
+                    "MODE": "incremental",
+                    "SHARD_INDEX": "0",
+                    "SHARD_TOTAL": "1",
+                    "WORKER_PARALLEL": "8",
+                    "THINKING_EFFORT": "medium",
+                    "PENDING_COUNT": "1",
+                    "TOTAL_PENDING_COUNT": "1",
+                    "ALL_COUNT": "1",
+                    "TRANSLATE_OUTCOME": "failure",
+                    "MDX_CHECK_OUTCOME": "skipped",
+                    "MDX_REPAIR_OUTCOME": "skipped",
+                    "MDX_SCOPE_OUTCOME": "skipped",
+                    "MDX_RECHECK_OUTCOME": "skipped",
+                }
+            ):
+                package_artifact.package_artifact(repo, Path(".openclaw-sync"))
+
+            self.assertIn("failed=true", output.read_text(encoding="utf-8"))
+            self.assertIn("failed_reason=translation failed", output.read_text(encoding="utf-8"))
+
+    def test_full_summary_ignores_canary_as_locale_success_and_reports_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            artifacts = Path(tmp)
+            self._write_artifact(
+                artifacts,
+                "canary",
+                metadata={
+                    "artifact_role": "canary",
+                    "failed_reason": "",
+                    "locale": "fr",
+                    "locale_slug": "fr",
+                    "mode": "full",
+                    "shard_index": 0,
+                    "shard_total": 1,
+                    "source_sha": "source-a",
+                    "changed_count": 1,
+                    "deleted_count": 0,
+                },
+            )
+
+            summary = summarize_full.summarize_full(["fr"], artifacts, "success", "success")
+
+            self.assertEqual([], summary.successful)
+            self.assertEqual(["fr: no artifact"], summary.skipped)
 
     def test_apply_artifacts_applies_normal_fixture(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
