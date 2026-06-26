@@ -25,11 +25,13 @@ on:
           - ko
           - de
           - fr
+          - hi
           - ar
           - it
           - vi
           - nl
           - fa
+          - ru
           - tr
           - uk
           - id
@@ -110,7 +112,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          python .github/scripts/i18n/plan_full.py --batch-size 3
+          python .github/scripts/i18n/plan_full.py --batch-size 4
 
   provider-preflight:
     name: Check translation provider

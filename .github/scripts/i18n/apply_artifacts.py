@@ -41,7 +41,7 @@ from pathlib import Path
 
 DEFAULT_EXPECTED_LOCALES = (
     "zh-cn=zh-CN zh-tw=zh-TW ja-jp=ja-JP es=es pt-br=pt-BR ko=ko de=de fr=fr "
-    "ar=ar it=it vi=vi nl=nl fa=fa tr=tr uk=uk id=id pl=pl th=th"
+    "hi=hi ar=ar it=it vi=vi nl=nl fa=fa ru=ru tr=tr uk=uk id=id pl=pl th=th"
 )
 SOURCE_HASH_RE = re.compile(r"^x-i18n:\n(?:[ \t]+.*\n)*?[ \t]+source_hash: ([0-9a-f]{64})$", re.M)
 

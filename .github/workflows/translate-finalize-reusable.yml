@@ -44,7 +44,7 @@ jobs:
           SOURCE_SHA: ${{ inputs.source_sha }}
           MODE: ${{ inputs.mode }}
           SHARD_TOTAL: ${{ inputs.shard_total }}
-          EXPECTED_LOCALES: zh-cn=zh-CN zh-tw=zh-TW ja-jp=ja-JP es=es pt-br=pt-BR ko=ko de=de fr=fr ar=ar it=it vi=vi nl=nl fa=fa tr=tr uk=uk id=id pl=pl th=th
+          EXPECTED_LOCALES: zh-cn=zh-CN zh-tw=zh-TW ja-jp=ja-JP es=es pt-br=pt-BR ko=ko de=de fr=fr hi=hi ar=ar it=it vi=vi nl=nl fa=fa ru=ru tr=tr uk=uk id=id pl=pl th=th
         run: |
           set -euo pipefail
           python .github/scripts/i18n/apply_artifacts.py \

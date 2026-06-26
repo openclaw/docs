@@ -8,7 +8,7 @@ Definition:
 
 Parameters:
   --target-locale: Locale slug/name to rerun, or all. Default: TARGET_LOCALE/all.
-  --batch-size: Maximum locales per follow-up batch. Default: 3.
+  --batch-size: Maximum locales per follow-up batch. Default: 4.
 
 Outputs:
   GITHUB_OUTPUT receives locale_count, canary_locale, canary_locale_slug,
@@ -31,7 +31,7 @@ from pathlib import Path
 
 
 MAX_BATCHES = 6
-DEFAULT_BATCH_SIZE = 3
+DEFAULT_BATCH_SIZE = 4
 LOCALES: tuple[tuple[str, str], ...] = (
     ("zh-CN", "zh-cn"),
     ("zh-TW", "zh-tw"),
@@ -41,11 +41,13 @@ LOCALES: tuple[tuple[str, str], ...] = (
     ("ko", "ko"),
     ("de", "de"),
     ("fr", "fr"),
+    ("hi", "hi"),
     ("ar", "ar"),
     ("it", "it"),
     ("vi", "vi"),
     ("nl", "nl"),
     ("fa", "fa"),
+    ("ru", "ru"),
     ("tr", "tr"),
     ("uk", "uk"),
     ("id", "id"),

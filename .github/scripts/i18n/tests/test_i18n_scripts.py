@@ -194,11 +194,11 @@ class I18NScriptTests(unittest.TestCase):
         self.assertTrue(prepare.incremental_should_translate_paths(["docs/.i18n/glossary.fr.json", "docs/guide/setup.mdx"]))
 
     def test_full_plan_all_uses_canary_and_small_batches(self) -> None:
-        result = plan_full.plan_full("all", 3)
+        result = plan_full.plan_full("all", 4)
         self.assertEqual("zh-CN", result["canary"]["locale"])
-        self.assertEqual(6, len(result["batches"]))
-        self.assertLessEqual(max(len(batch) for batch in result["batches"]), 3)
-        self.assertEqual(18, sum(len(batch) for batch in result["batches"]))
+        self.assertEqual(5, len(result["batches"]))
+        self.assertLessEqual(max(len(batch) for batch in result["batches"]), 4)
+        self.assertEqual(20, sum(len(batch) for batch in result["batches"]))
 
     def test_full_plan_manual_single_locale_only_selects_target(self) -> None:
         result = plan_full.plan_full("fr", 3)
