@@ -22,7 +22,7 @@ Outputs:
 
 Examples:
   EVENT_NAME=workflow_dispatch python .github/scripts/i18n/prepare.py --mode incremental --title "Translate Incremental"
-  EVENT_NAME=repository_dispatch python .github/scripts/i18n/prepare.py --mode full --title "Translate Full"
+  EVENT_NAME=workflow_dispatch python .github/scripts/i18n/prepare.py --mode full --title "Translate Full"
 """
 
 from __future__ import annotations
@@ -106,6 +106,18 @@ def is_translatable_doc_path(path: str) -> bool:
     return rel.lower().endswith((".md", ".mdx"))
 
 
+def incremental_should_translate_paths(changed_paths: list[str]) -> bool:
+    has_glossary_change = any(re.match(r"^docs/\.i18n/glossary\..*\.json$", path) for path in changed_paths)
+    has_translatable_docs = any(is_translatable_doc_path(path) for path in changed_paths)
+    if not has_translatable_docs:
+        if has_glossary_change:
+            print("Glossary-only change; weekly or manual full reconciliation will pick it up.")
+            return False
+        print("No translatable docs changed after cooldown; skipping translation matrix.")
+        return False
+    return True
+
+
 def incremental_should_translate(before_sha: str, publish_ref: str) -> bool:
     diff = subprocess.run(
         ["git", "diff", "--name-only", before_sha, publish_ref],
@@ -114,13 +126,7 @@ def incremental_should_translate(before_sha: str, publish_ref: str) -> bool:
         stderr=subprocess.DEVNULL,
     )
     changed_paths = [line.strip() for line in diff.stdout.splitlines() if line.strip()]
-    if any(re.match(r"^docs/\.i18n/glossary\..*\.json$", path) for path in changed_paths):
-        print("Glossary changed; full lane owns this translation.")
-        return False
-    if not any(is_translatable_doc_path(path) for path in changed_paths):
-        print("No translatable docs changed after cooldown; skipping translation matrix.")
-        return False
-    return True
+    return incremental_should_translate_paths(changed_paths)
 
 
 def append_github_output(values: dict[str, str]) -> None:
@@ -149,8 +155,6 @@ def default_cooldown(mode: str, event_name: str, requested: str, default: str) -
     if requested:
         return requested
     if mode == "incremental" and event_name == "push":
-        return default
-    if mode == "full" and event_name in {"push", "repository_dispatch"}:
         return default
     return "0"
 
@@ -228,7 +232,7 @@ def parse_args() -> argparse.Namespace:
 
 Examples:
   EVENT_NAME=workflow_dispatch python .github/scripts/i18n/prepare.py --mode incremental --title "Translate Incremental"
-  EVENT_NAME=repository_dispatch python .github/scripts/i18n/prepare.py --mode full --title "Translate Full"
+  EVENT_NAME=workflow_dispatch python .github/scripts/i18n/prepare.py --mode full --title "Translate Full"
 """,
     )
     parser.add_argument("--mode", choices=["incremental", "full"], required=True)

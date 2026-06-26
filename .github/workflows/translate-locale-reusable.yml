@@ -30,14 +30,29 @@ on:
       thinking_effort:
         required: true
         type: string
-
-permissions:
-  contents: read
+      pending_limit:
+        required: false
+        default: "0"
+        type: string
+      artifact_prefix:
+        required: false
+        default: i18n
+        type: string
+      artifact_role:
+        required: false
+        default: locale
+        type: string
+      commit_locale:
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   translate:
     name: Translate ${{ inputs.locale }} shard ${{ inputs.shard_index }}/${{ inputs.shard_total }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     concurrency:
       group: translate-${{ inputs.locale_slug }}-s${{ inputs.shard_index }}of${{ inputs.shard_total }}
       cancel-in-progress: false
@@ -47,6 +62,7 @@ jobs:
         with:
           ref: ${{ inputs.publish_ref }}
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Read source metadata
         id: meta
@@ -101,6 +117,7 @@ jobs:
           MODE: ${{ inputs.mode }}
           SHARD_INDEX: ${{ inputs.shard_index }}
           SHARD_TOTAL: ${{ inputs.shard_total }}
+          PENDING_LIMIT: ${{ inputs.pending_limit }}
         run: |
           python .github/scripts/i18n/build_pending_manifest.py
 
@@ -224,6 +241,7 @@ jobs:
             --json-out ".openclaw-sync/mdx/${LOCALE}.json"
 
       - name: Prepare locale artifact
+        id: package
         if: steps.stale.outputs.skip != 'true'
         env:
           LOCALE: ${{ inputs.locale }}
@@ -242,6 +260,7 @@ jobs:
           MDX_REPAIR_OUTCOME: ${{ steps.mdx_repair.outcome || 'skipped' }}
           MDX_SCOPE_OUTCOME: ${{ steps.mdx_scope.outcome || 'skipped' }}
           MDX_RECHECK_OUTCOME: ${{ steps.mdx_recheck.outcome || 'skipped' }}
+          ARTIFACT_ROLE: ${{ inputs.artifact_role }}
         run: |
           set -euo pipefail
 
@@ -251,6 +270,105 @@ jobs:
         if: steps.stale.outputs.skip != 'true'
         uses: actions/upload-artifact@v7
         with:
-          name: i18n-${{ inputs.locale_slug }}-s${{ inputs.shard_index }}of${{ inputs.shard_total }}-${{ inputs.source_sha }}
+          name: ${{ inputs.artifact_prefix }}-${{ inputs.locale_slug }}-s${{ inputs.shard_index }}of${{ inputs.shard_total }}-${{ inputs.source_sha }}
           path: .openclaw-sync/artifacts/${{ inputs.locale_slug }}-s${{ inputs.shard_index }}of${{ inputs.shard_total }}
           retention-days: 7
+
+      - name: Fail failed locale artifact
+        if: steps.stale.outputs.skip != 'true' && steps.package.outputs.failed == 'true'
+        env:
+          FAILED_REASON: ${{ steps.package.outputs.failed_reason }}
+        run: |
+          {
+            echo "Locale artifact records a failed translation."
+            echo "Failure: ${FAILED_REASON}"
+            echo "The artifact was uploaded before failing this job so the status and artifact contract stay aligned."
+          } >&2
+          exit 1
+
+  commit-locale:
+    name: Commit ${{ inputs.locale }} artifact
+    needs: translate
+    if: inputs.commit_locale && needs.translate.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: write
+    concurrency:
+      group: docs-i18n-finalize
+      cancel-in-progress: false
+    steps:
+      - name: Check out latest main
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Download locale artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ inputs.artifact_prefix }}-${{ inputs.locale_slug }}-s${{ inputs.shard_index }}of${{ inputs.shard_total }}-${{ inputs.source_sha }}
+          path: .openclaw-sync/i18n-artifacts/${{ inputs.locale_slug }}-s${{ inputs.shard_index }}of${{ inputs.shard_total }}
+
+      - name: Apply locale artifact
+        id: apply
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          MODE: ${{ inputs.mode }}
+          SHARD_TOTAL: ${{ inputs.shard_total }}
+          EXPECTED_LOCALES: ${{ inputs.locale_slug }}=${{ inputs.locale }}
+        run: |
+          set -euo pipefail
+
+          python .github/scripts/i18n/apply_artifacts.py \
+            --source-sha "${SOURCE_SHA}" \
+            --mode "${MODE}" \
+            --shard-total "${SHARD_TOTAL}" \
+            --expected-locales "${EXPECTED_LOCALES}"
+
+      - name: Set up Node for locale validation
+        if: steps.apply.outputs.changed_count != '0'
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install docs dependencies
+        if: steps.apply.outputs.changed_count != '0'
+        run: npm ci
+
+      - name: Install validation system dependencies
+        if: steps.apply.outputs.changed_count != '0'
+        run: sudo apt-get update && sudo apt-get install -y librsvg2-bin
+
+      - name: Check docs before locale commit
+        if: steps.apply.outputs.changed_count != '0'
+        run: npm run docs:check
+
+      - name: Commit locale refresh
+        id: locale_commit
+        if: steps.apply.outputs.changed_count != '0'
+        env:
+          BASE_SOURCE_SHA: ${{ steps.apply.outputs.base_source_sha }}
+          LOCALE: ${{ inputs.locale }}
+        run: |
+          set -euo pipefail
+
+          python .github/scripts/i18n/commit_locale_artifact.py
+
+      - name: Dispatch locale docs deploy
+        if: steps.locale_commit.outputs.committed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          gh workflow run pages.yml --ref main
+
+      - name: Fail incomplete locale artifact
+        if: steps.apply.outputs.incomplete_count != '0'
+        run: |
+          {
+            echo "Locale finalizer found missing or failed artifact data."
+            cat .openclaw-sync/i18n-incomplete-locales.txt
+          } >&2
+          exit 1

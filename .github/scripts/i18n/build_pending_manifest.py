@@ -12,7 +12,8 @@ Parameters:
   --openclaw-sync-dir: State/output directory. Default: .openclaw-sync.
 
 Environment:
-  LOCALE, LOCALE_SLUG, MODE, SHARD_INDEX, SHARD_TOTAL, and GITHUB_OUTPUT.
+  LOCALE, LOCALE_SLUG, MODE, SHARD_INDEX, SHARD_TOTAL, optional
+  PENDING_LIMIT, and GITHUB_OUTPUT.
 
 Outputs:
   Writes docs-i18n-<locale_slug>-s<index>of<total>.txt under --openclaw-sync-dir.
@@ -73,6 +74,16 @@ def validate_shard(index_value: str, total_value: str) -> tuple[int, int]:
     return shard_index, shard_total
 
 
+def validate_pending_limit(value: str) -> int:
+    try:
+        limit = int(value or "0")
+    except ValueError as exc:
+        raise SystemExit(f"invalid PENDING_LIMIT: {value}") from exc
+    if limit < 0:
+        raise SystemExit(f"invalid PENDING_LIMIT: {limit}")
+    return limit
+
+
 def build_pending_manifest(
     docs_root: Path,
     openclaw_sync_dir: Path,
@@ -81,6 +92,7 @@ def build_pending_manifest(
     mode: str,
     shard_index: int,
     shard_total: int,
+    pending_limit: int = 0,
 ) -> PendingResult:
     locale_dirs = {path.name for path in docs_root.iterdir() if is_locale_dir(path)}
     pending_path = openclaw_sync_dir / f"docs-i18n-{locale_slug}-s{shard_index}of{shard_total}.txt"
@@ -105,6 +117,10 @@ def build_pending_manifest(
 
     pending_files = sorted(pending_files)
     shard_files = [file for index, file in enumerate(pending_files) if index % shard_total == shard_index]
+    if pending_limit:
+        # Full canary intentionally translates a tiny deterministic sample; the
+        # follow-up locale batch still runs the complete manifest after the gate.
+        shard_files = shard_files[:pending_limit]
 
     pending_path.parent.mkdir(parents=True, exist_ok=True)
     pending_path.write_text("\n".join(str(file) for file in shard_files) + ("\n" if shard_files else ""), encoding="utf-8")
@@ -140,7 +156,7 @@ def parse_args() -> argparse.Namespace:
 
 Examples:
   LOCALE=fr LOCALE_SLUG=fr MODE=incremental SHARD_INDEX=0 SHARD_TOTAL=1 python .github/scripts/i18n/build_pending_manifest.py
-  LOCALE=zh-CN LOCALE_SLUG=zh-cn MODE=full SHARD_INDEX=1 SHARD_TOTAL=4 python .github/scripts/i18n/build_pending_manifest.py
+  LOCALE=zh-CN LOCALE_SLUG=zh-cn MODE=full SHARD_INDEX=1 SHARD_TOTAL=4 PENDING_LIMIT=1 python .github/scripts/i18n/build_pending_manifest.py
 """,
     )
     parser.add_argument("--docs-root", default="docs", type=Path)
@@ -151,6 +167,7 @@ Examples:
 def main() -> None:
     args = parse_args()
     shard_index, shard_total = validate_shard(os.environ["SHARD_INDEX"], os.environ["SHARD_TOTAL"])
+    pending_limit = validate_pending_limit(os.environ.get("PENDING_LIMIT", "0"))
     result = build_pending_manifest(
         docs_root=args.docs_root,
         openclaw_sync_dir=args.openclaw_sync_dir,
@@ -159,6 +176,7 @@ def main() -> None:
         mode=os.environ["MODE"],
         shard_index=shard_index,
         shard_total=shard_total,
+        pending_limit=pending_limit,
     )
     append_output(result)
 

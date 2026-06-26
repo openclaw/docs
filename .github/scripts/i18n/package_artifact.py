@@ -14,12 +14,14 @@ Parameters:
 Environment:
   LOCALE, LOCALE_SLUG, SOURCE_SHA, MODE, SHARD_INDEX, SHARD_TOTAL,
   WORKER_PARALLEL, THINKING_EFFORT, PENDING_COUNT, TOTAL_PENDING_COUNT,
-  ALL_COUNT, TRANSLATE_OUTCOME, MDX_CHECK_OUTCOME, MDX_REPAIR_OUTCOME,
-  MDX_SCOPE_OUTCOME, and MDX_RECHECK_OUTCOME.
+  ALL_COUNT, optional ARTIFACT_ROLE, TRANSLATE_OUTCOME, MDX_CHECK_OUTCOME,
+  MDX_REPAIR_OUTCOME, MDX_SCOPE_OUTCOME, and MDX_RECHECK_OUTCOME.
 
 Outputs:
   Writes .openclaw-sync/artifacts/<locale_slug>-s<index>of<total>/ with
   changed-files.txt, deleted-files.txt, payload/, and metadata.json.
+  GITHUB_OUTPUT receives failed, failed_reason, changed_count, and deleted_count.
+  GITHUB_STEP_SUMMARY receives a concise per-locale artifact status.
 
 Examples:
   LOCALE=fr LOCALE_SLUG=fr SOURCE_SHA=abc MODE=incremental SHARD_INDEX=0 SHARD_TOTAL=1 python .github/scripts/i18n/package_artifact.py
@@ -87,6 +89,35 @@ def write_lines(path: Path, lines: list[str]) -> None:
     path.write_text("\n".join(lines) + ("\n" if lines else ""), encoding="utf-8")
 
 
+def append_outputs(metadata: dict[str, object]) -> None:
+    output = os.environ.get("GITHUB_OUTPUT")
+    if not output:
+        return
+    failed_reason = str(metadata.get("failed_reason") or "")
+    with Path(output).open("a", encoding="utf-8") as fh:
+        fh.write(f"failed={'true' if failed_reason else 'false'}\n")
+        fh.write(f"failed_reason={failed_reason}\n")
+        fh.write(f"changed_count={metadata.get('changed_count', 0)}\n")
+        fh.write(f"deleted_count={metadata.get('deleted_count', 0)}\n")
+
+
+def append_summary(metadata: dict[str, object]) -> None:
+    summary = os.environ.get("GITHUB_STEP_SUMMARY")
+    if not summary:
+        return
+    with Path(summary).open("a", encoding="utf-8") as fh:
+        fh.write("### Locale artifact\n\n")
+        fh.write(f"- locale: `{metadata['locale']}`\n")
+        fh.write(f"- mode: `{metadata['mode']}`\n")
+        fh.write(f"- shard: `{metadata['shard_index']}/{metadata['shard_total']}`\n")
+        fh.write(f"- pending docs: `{metadata['pending_count']}`\n")
+        fh.write(f"- changed files: `{metadata['changed_count']}`\n")
+        fh.write(f"- deleted files: `{metadata['deleted_count']}`\n")
+        failed_reason = str(metadata.get("failed_reason") or "")
+        if failed_reason:
+            fh.write(f"- failure: `{failed_reason}`\n")
+
+
 def package_artifact(workspace: Path, openclaw_sync_dir: Path) -> dict[str, object]:
     locale = os.environ["LOCALE"]
     locale_slug = os.environ["LOCALE_SLUG"]
@@ -139,6 +170,7 @@ def package_artifact(workspace: Path, openclaw_sync_dir: Path) -> dict[str, obje
         "locale_slug": locale_slug,
         "source_sha": os.environ["SOURCE_SHA"],
         "mode": os.environ["MODE"],
+        "artifact_role": os.environ.get("ARTIFACT_ROLE", "locale"),
         "shard_index": shard_index,
         "shard_total": shard_total,
         "worker_parallel": env_int("WORKER_PARALLEL"),
@@ -156,6 +188,8 @@ def package_artifact(workspace: Path, openclaw_sync_dir: Path) -> dict[str, obje
         "failed_reason": failed_reason,
     }
     (artifact_dir / "metadata.json").write_text(json.dumps(metadata, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    append_outputs(metadata)
+    append_summary(metadata)
     print(json.dumps(metadata, indent=2, sort_keys=True))
     return metadata
 
@@ -165,7 +199,7 @@ def parse_args() -> argparse.Namespace:
         description="Package one locale shard artifact for the translation finalizer.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""Outputs:
-  Writes changed/deleted lists, payload files, and metadata.json under .openclaw-sync/artifacts.
+  Writes changed/deleted lists, payload files, metadata.json, and GitHub output status.
 
 Examples:
   LOCALE=fr LOCALE_SLUG=fr SOURCE_SHA=abc MODE=incremental SHARD_INDEX=0 SHARD_TOTAL=1 python .github/scripts/i18n/package_artifact.py
