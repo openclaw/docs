@@ -33,7 +33,7 @@ Internal note for the docs publish pipeline. This file is under `docs/.i18n`, wh
 
 Top-level full workflow concurrency is serialized with `cancel-in-progress: false`. A new full run waits for a running full run instead of cancelling it.
 
-Manual `target_locale` accepts `all` or one locale slug such as `fr`, `ja-jp`, or `zh-cn`. A single-locale rerun uses that locale for the canary sample, then schedules only that locale in the first full batch.
+Manual `target_locale` accepts `all` or one locale slug such as `fr`, `ja-jp`, or `zh-cn`. A single-locale rerun uses that locale for the canary sample, then schedules only that locale in the first full batch. Manual `canary_only=true` runs only the canary translation, R2 upload, and live smoke without starting follow-up full batches.
 
 ## Debounce Policy
 
@@ -70,7 +70,7 @@ provider/key preflight
   -> status summary
 ```
 
-The canary is a deterministic one-document sample from the first selected locale. It uploads a `canary` artifact, applies it through the same artifact validation path as locale commits, and runs the aggregate docs check without committing or publishing. If it fails translation or validation, later batches are skipped. If it succeeds, the selected locales, including the canary locale, run in normal full batches. If a later locale fails, already successful locales remain committed and published, and the failed locale can be rerun manually.
+The canary is a deterministic one-document sample from the first selected locale. It prefers `channels/line.md` because that page is easy to inspect on the live site and exercises fixed glossary terms such as `LINE`; if that page is not pending, it falls back to the smallest pending source page. The canary uploads a `canary` artifact, applies it through the same artifact validation path as locale commits, runs the aggregate docs check, commits that one-page locale refresh when there is a git diff, then dispatches and waits for an R2 Pages full upload. The R2 deploy is required even when the canary page already matches `main`, because `main` can be current while R2 is stale. After upload, the canary live-smokes `https://docs.openclaw.ai/<locale>/channels/line` and requires the page `<h1>` to be `LINE`. Canary artifacts include only the sampled locale page and that locale translation memory; unrelated pruned locale pages are not published by the probe. Before writing `main`, canary commits are guarded again against the downloaded artifact contract so only the sampled page and translation memory can be committed. If it fails translation, validation, commit, R2 upload, or live smoke, later batches are skipped. If it succeeds, the selected locales, including the canary locale, run in normal full batches unless `canary_only=true` was requested. If a later locale fails, already successful locales remain committed and published, and the failed locale can be rerun manually.
 
 ## Artifact Contract
 
@@ -95,11 +95,11 @@ payload/docs/.i18n/<locale>.tm.jsonl
 
 ## Commit And Deploy Policy
 
-Full locale jobs are the commit and publish unit. After a locale succeeds, a separate write-permission commit job downloads that locale artifact, applies it to latest `main`, runs `npm run docs:check`, commits only `docs/<locale>/**` and `docs/.i18n/<locale>.tm.jsonl`, pushes with rebase/retry under the shared locale finalizer concurrency, and dispatches `pages.yml`.
+Full locale jobs are the commit and publish unit. After a locale succeeds, a separate write-permission commit job downloads that locale artifact, applies it to latest `main`, runs `npm run docs:check`, commits only `docs/<locale>/**` and `docs/.i18n/<locale>.tm.jsonl`, pushes with rebase/retry under the shared locale finalizer concurrency, and dispatches `r2-pages.yml` with a full upload. The dispatch step waits for the R2 Pages run and fails if the upload fails. If an artifact applied changes but the locale commit did not land, the finalizer fails instead of reporting an unpublished refresh as successful.
 
 Artifact application is intentionally conservative when source metadata has moved. The apply step uses latest `main`, copies only payload pages whose embedded `x-i18n.source_hash` still matches the current source page, and skips stale translation memory. If `main` moves again between apply/validation and push, the commit script skips that locale commit so the next manual or weekly run can re-evaluate from the new base.
 
-Incremental translation keeps the aggregate finalizer. The finalizer downloads available artifacts, applies valid successful payloads, rejects stale or failed artifacts, runs `npm run docs:check`, pushes one aggregate i18n commit, dispatches `pages.yml`, and fails when required locale artifacts are missing or failed.
+Incremental translation keeps the aggregate finalizer. The finalizer downloads available artifacts, applies valid successful payloads, rejects stale or failed artifacts, runs `npm run docs:check`, pushes one aggregate i18n commit, dispatches and waits for `r2-pages.yml` with a full upload, and fails when required locale artifacts are missing or failed.
 
 ## Automatic Verification
 
@@ -132,7 +132,7 @@ Before merging workflow recovery changes:
 1. Trigger `Translate Full` with a deliberately invalid translation key in a test context and confirm the provider preflight fails before locale jobs start.
 2. Trigger or simulate a canary failure and confirm follow-up full batches are skipped.
 3. Trigger `Translate Full` with `target_locale=fr` and confirm only `fr` runs.
-4. Trigger a small manual full run and confirm a successful locale commits independently and dispatches `pages.yml`.
+4. Trigger a manual `canary_only=true` run and confirm the canary waits for `r2-pages.yml` and live-smokes the LINE page.
 5. Observe or simulate a later locale failure and confirm earlier successful locale commits remain published.
 6. Rerun only the failed locale with `target_locale=<slug>` and confirm it commits independently.
 7. Confirm release events do not start `Translate Full`.

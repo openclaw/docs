@@ -13,7 +13,7 @@ Parameters:
 
 Environment:
   LOCALE, LOCALE_SLUG, MODE, SHARD_INDEX, SHARD_TOTAL, optional
-  PENDING_LIMIT, and GITHUB_OUTPUT.
+  PENDING_LIMIT, CANARY_SOURCE_PATH, and GITHUB_OUTPUT.
 
 Outputs:
   Writes docs-i18n-<locale_slug>-s<index>of<total>.txt under --openclaw-sync-dir.
@@ -93,6 +93,7 @@ def build_pending_manifest(
     shard_index: int,
     shard_total: int,
     pending_limit: int = 0,
+    canary_source_path: str = "",
 ) -> PendingResult:
     locale_dirs = {path.name for path in docs_root.iterdir() if is_locale_dir(path)}
     pending_path = openclaw_sync_dir / f"docs-i18n-{locale_slug}-s{shard_index}of{shard_total}.txt"
@@ -118,9 +119,15 @@ def build_pending_manifest(
     pending_files = sorted(pending_files)
     shard_files = [file for index, file in enumerate(pending_files) if index % shard_total == shard_index]
     if pending_limit:
-        # Full canary intentionally translates a tiny deterministic sample; the
-        # follow-up locale batch still runs the complete manifest after the gate.
-        shard_files = shard_files[:pending_limit]
+        canary_source = (docs_root / canary_source_path).resolve() if canary_source_path else None
+        if canary_source in shard_files:
+            # Prefer a user-visible page with known glossary coverage so the
+            # canary proves both translation and the deployed page content.
+            shard_files = [canary_source]
+        else:
+            # Full canary publishes a real one-page probe before expensive batches,
+            # so choose the smallest deterministic sample to cap token and review cost.
+            shard_files = sorted(shard_files, key=lambda file: (file.stat().st_size, file.as_posix()))[:pending_limit]
 
     pending_path.parent.mkdir(parents=True, exist_ok=True)
     pending_path.write_text("\n".join(str(file) for file in shard_files) + ("\n" if shard_files else ""), encoding="utf-8")
@@ -156,7 +163,7 @@ def parse_args() -> argparse.Namespace:
 
 Examples:
   LOCALE=fr LOCALE_SLUG=fr MODE=incremental SHARD_INDEX=0 SHARD_TOTAL=1 python .github/scripts/i18n/build_pending_manifest.py
-  LOCALE=zh-CN LOCALE_SLUG=zh-cn MODE=full SHARD_INDEX=1 SHARD_TOTAL=4 PENDING_LIMIT=1 python .github/scripts/i18n/build_pending_manifest.py
+  LOCALE=zh-CN LOCALE_SLUG=zh-cn MODE=full SHARD_INDEX=0 SHARD_TOTAL=1 PENDING_LIMIT=1 CANARY_SOURCE_PATH=channels/line.md python .github/scripts/i18n/build_pending_manifest.py
 """,
     )
     parser.add_argument("--docs-root", default="docs", type=Path)
@@ -177,6 +184,7 @@ def main() -> None:
         shard_index=shard_index,
         shard_total=shard_total,
         pending_limit=pending_limit,
+        canary_source_path=os.environ.get("CANARY_SOURCE_PATH", ""),
     )
     append_output(result)
 
