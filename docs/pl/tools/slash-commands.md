@@ -43,6 +43,7 @@ Gdy konwersacja jest powiązana z sesją ACP, zwykły tekst trafia do harnessu A
     - W wiadomościach **zawierających tylko dyrektywy** (wiadomość składa się wyłącznie z dyrektyw) są one utrwalane w sesji i zwracają potwierdzenie.
     - W **zwykłych wiadomościach czatu** z innym tekstem działają jako wskazówki inline i **nie** utrwalają ustawień sesji.
     - Dyrektywy mają zastosowanie tylko do **autoryzowanych nadawców**. Jeśli ustawiono `commands.allowFrom`, jest to jedyna używana lista dozwolonych nadawców; w przeciwnym razie autoryzacja pochodzi z list dozwolonych nadawców/parowania kanału oraz `commands.useAccessGroups`. Nieautoryzowani nadawcy widzą dyrektywy traktowane jak zwykły tekst.
+
   </Accordion>
 </AccordionGroup>
 

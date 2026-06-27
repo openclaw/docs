@@ -359,11 +359,13 @@ metadata:
     - 規格可以包含 `os: ["darwin"|"linux"|"win32"]` 以依平台篩選。
     - Node 安裝會遵循 `openclaw.json` 中的 `skills.install.nodeManager`（預設：npm；選項：npm / pnpm / yarn / bun）。這只會影響技能安裝；閘道執行階段仍應是 Node。
     - 閘道安裝程式偏好順序：Homebrew → uv → 已設定的 node 管理器 → go → download。
+
   </Accordion>
   <Accordion title="各安裝程式詳細資訊">
     - **Homebrew：** OpenClaw 不會自動安裝 Homebrew，也不會將 brew formula 轉換成系統套件命令。在沒有 `brew` 的 Linux 容器中，只支援 brew 的安裝程式會被隱藏；請使用自訂映像檔或手動安裝依賴項。
     - **Go：** 如果缺少 `go` 且 `brew` 可用，閘道會先透過 Homebrew 安裝 Go，並將 `GOBIN` 設為 Homebrew 的 `bin`。
     - **Download：** `url`（必填）、`archive`（`tar.gz` | `tar.bz2` | `zip`）、`extract`（預設：偵測到封存檔時自動）、`stripComponents`、`targetDir`（預設：`~/.openclaw/tools/<skillKey>`）。
+
   </Accordion>
   <Accordion title="沙箱注意事項">
     `requires.bins` 會在技能載入時於**主機**上檢查。如果代理在沙箱中執行，該二進位檔也必須存在於**容器內**。請透過 `agents.defaults.sandbox.docker.setupCommand` 或自訂映像檔安裝。`setupCommand` 會在容器建立後執行一次，且需要網路外連、可寫入的 root FS，以及沙箱中的 root 使用者。

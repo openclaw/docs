@@ -80,6 +80,7 @@ x-i18n:
     - [Signal](/ko/channels/signal): 선택적 `signal-cli` 설치 + 계정 구성
     - [iMessage](/ko/channels/imessage): `imsg` CLI 경로 + Messages DB 접근. Gateway가 Mac 외부에서 실행될 때는 SSH 래퍼를 사용하세요.
     - DM 보안: 기본값은 페어링입니다. 첫 DM은 코드를 보냅니다. `openclaw pairing approve <channel> <code>`로 승인하거나 허용 목록을 사용하세요.
+
   </Step>
   <Step title="Daemon install">
     - macOS: LaunchAgent

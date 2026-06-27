@@ -41,6 +41,7 @@ Wenn eine Unterhaltung an eine ACP-Sitzung gebunden ist, wird normaler Text an d
     - In **nur aus Direktiven bestehenden** Nachrichten (die Nachricht enthält nur Direktiven) werden sie in der Sitzung gespeichert und mit einer Bestätigung beantwortet.
     - In **normalen Chat**-Nachrichten mit anderem Text wirken sie als Inline-Hinweise und speichern Sitzungseinstellungen **nicht** dauerhaft.
     - Direktiven gelten nur für **autorisierte Absender**. Wenn `commands.allowFrom` gesetzt ist, ist dies die einzige verwendete Allowlist; andernfalls ergibt sich die Autorisierung aus Kanal-Allowlists/Kopplung plus `commands.useAccessGroups`. Bei nicht autorisierten Absendern werden Direktiven als normaler Text behandelt.
+
   </Accordion>
 </AccordionGroup>
 

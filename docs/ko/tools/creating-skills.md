@@ -238,6 +238,7 @@ openclaw skills workshop apply <proposal-id>
   - **안전을 우선하세요** — 스킬이 `exec`를 사용한다면 프롬프트가 신뢰할 수 없는 입력에서 임의 명령 주입을 허용하지 않도록 하세요.
   - **로컬에서 테스트하세요** — 공유하기 전에 `openclaw agent --message "..."`를 사용하세요.
   - **ClawHub를 사용하세요** — 처음부터 만들기 전에 [clawhub.ai](https://clawhub.ai)에서 커뮤니티 Skills를 찾아보세요.
+
 </Tip>
 
 ## 관련 항목

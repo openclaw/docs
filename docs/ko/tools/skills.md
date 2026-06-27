@@ -97,6 +97,7 @@ Skill **위치**(우선순위)와 skill **표시 여부**(어떤 에이전트가
     - 해당 에이전트에 Skills를 노출하지 않으려면 `agents.list[].skills: []`를 설정합니다.
     - 비어 있지 않은 `agents.list[].skills` 목록은 **최종** 집합입니다. 기본값과 병합되지 않습니다.
     - 유효 허용 목록은 프롬프트 빌드, 슬래시 명령 발견, sandbox 동기화, skill 스냅샷 전반에 적용됩니다.
+
   </Accordion>
 </AccordionGroup>
 
