@@ -225,6 +225,7 @@ class I18NScriptTests(unittest.TestCase):
         r2_pages = (REPO_ROOT / ".github/workflows/r2-pages.yml").read_text(encoding="utf-8")
         self.assertIn("- locale", r2_pages)
         self.assertIn("- page", r2_pages)
+        self.assertRegex(r2_pages, r"group: r2-pages\s+cancel-in-progress: false")
         self.assertIn("Refresh scoped docs content from main", r2_pages)
         self.assertIn("SCOPED_CONTENT_SHA: ${{ steps.scoped-content.outputs.content_sha || '' }}", r2_pages)
         self.assertIn("R2_UPLOAD_SCOPE: ${{ steps.artifact-scope.outputs.upload_scope }}", r2_pages)
