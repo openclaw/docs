@@ -1,27 +1,28 @@
 ---
 read_when:
     - Chcesz wybrać dostawcę modelu
-    - Potrzebujesz krótkiego przeglądu obsługiwanych backendów LLM
+    - Potrzebujesz szybkiego przeglądu obsługiwanych backendów LLM
 summary: Dostawcy modeli (LLM) obsługiwani przez OpenClaw
 title: Katalog dostawców
 x-i18n:
-    generated_at: "2026-05-06T09:27:21Z"
+    generated_at: "2026-06-27T18:12:44Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cfc3a15880a5e1881c1a58c60c9ad7e5624350a8db848d03c7cef6ee18c14b81
+    source_hash: a340f6a48f6f1d50116316f9679b009365cd617b3453ebd9b2b31e70f6b94c31
     source_path: providers/index.md
     workflow: 16
 ---
 
 OpenClaw może używać wielu dostawców LLM. Wybierz dostawcę, uwierzytelnij się, a następnie ustaw
-model domyślny jako `provider/model`.
+domyślny model jako `provider/model`.
 
 Szukasz dokumentacji kanałów czatu (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/itp.)? Zobacz [Kanały](/pl/channels).
 
 ## Szybki start
 
 1. Uwierzytelnij się u dostawcy (zwykle przez `openclaw onboard`).
-2. Ustaw model domyślny:
+2. Ustaw domyślny model:
 
 ```json5
 {
@@ -40,27 +41,31 @@ Szukasz dokumentacji kanałów czatu (WhatsApp/Telegram/Discord/Slack/Mattermost
 - [BytePlus (międzynarodowy)](/pl/concepts/model-providers#byteplus-international)
 - [Cerebras](/pl/providers/cerebras)
 - [Chutes](/pl/providers/chutes)
+- [Cohere](/pl/providers/cohere)
 - [Cloudflare AI Gateway](/pl/providers/cloudflare-ai-gateway)
 - [ComfyUI](/pl/providers/comfy)
 - [DeepSeek](/pl/providers/deepseek)
+- [ds4 (lokalny DeepSeek V4)](/pl/providers/ds4)
 - [ElevenLabs](/pl/providers/elevenlabs)
 - [fal](/pl/providers/fal)
 - [Fireworks](/pl/providers/fireworks)
 - [GitHub Copilot](/pl/providers/github-copilot)
-- [modele GLM](/pl/providers/glm)
+- [GMI Cloud](/pl/providers/gmi)
 - [Google (Gemini)](/pl/providers/google)
 - [Gradium](/pl/providers/gradium)
-- [Groq (wnioskowanie LPU)](/pl/providers/groq)
-- [Hugging Face (wnioskowanie)](/pl/providers/huggingface)
+- [Groq (inferencja LPU)](/pl/providers/groq)
+- [Hugging Face (inferencja)](/pl/providers/huggingface)
 - [inferrs (modele lokalne)](/pl/providers/inferrs)
 - [Kilocode](/pl/providers/kilocode)
-- [LiteLLM (ujednolicony gateway)](/pl/providers/litellm)
+- [LiteLLM (zunifikowany Gateway)](/pl/providers/litellm)
 - [LM Studio (modele lokalne)](/pl/providers/lmstudio)
 - [MiniMax](/pl/providers/minimax)
 - [Mistral](/pl/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/pl/providers/moonshot)
 - [NVIDIA](/pl/providers/nvidia)
+- [NovitaAI](/pl/providers/novita)
 - [Ollama (chmura + modele lokalne)](/pl/providers/ollama)
+- [Ollama Cloud](/pl/providers/ollama-cloud)
 - [OpenAI (API + Codex)](/pl/providers/openai)
 - [OpenCode](/pl/providers/opencode)
 - [OpenCode Go](/pl/providers/opencode-go)
@@ -68,6 +73,7 @@ Szukasz dokumentacji kanałów czatu (WhatsApp/Telegram/Discord/Slack/Mattermost
 - [Perplexity (wyszukiwanie w sieci)](/pl/providers/perplexity-provider)
 - [Qianfan](/pl/providers/qianfan)
 - [Qwen Cloud](/pl/providers/qwen)
+- [Qwen OAuth / Portal](/pl/providers/qwen-oauth)
 - [Runway](/pl/providers/runway)
 - [SenseAudio](/pl/providers/senseaudio)
 - [SGLang (modele lokalne)](/pl/providers/sglang)
@@ -75,18 +81,18 @@ Szukasz dokumentacji kanałów czatu (WhatsApp/Telegram/Discord/Slack/Mattermost
 - [Synthetic](/pl/providers/synthetic)
 - [Tencent Cloud (TokenHub)](/pl/providers/tencent)
 - [Together AI](/pl/providers/together)
-- [Venice (Venice AI, skoncentrowany na prywatności)](/pl/providers/venice)
+- [Venice (Venice AI, ukierunkowany na prywatność)](/pl/providers/venice)
 - [Vercel AI Gateway](/pl/providers/vercel-ai-gateway)
 - [vLLM (modele lokalne)](/pl/providers/vllm)
 - [Volcengine (Doubao)](/pl/providers/volcengine)
 - [Vydra](/pl/providers/vydra)
 - [xAI](/pl/providers/xai)
 - [Xiaomi](/pl/providers/xiaomi)
-- [Z.AI](/pl/providers/zai)
+- [Z.AI (GLM)](/pl/providers/zai)
 
 ## Wspólne strony przeglądowe
 
-- [Dodatkowe warianty w pakiecie](/pl/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy i Gemini CLI OAuth
+- [Dodatkowe dołączone warianty](/pl/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy i Gemini CLI OAuth
 - [Generowanie obrazów](/pl/tools/image-generation) - Wspólne narzędzie `image_generate`, wybór dostawcy i przełączanie awaryjne
 - [Generowanie muzyki](/pl/tools/music-generation) - Wspólne narzędzie `music_generate`, wybór dostawcy i przełączanie awaryjne
 - [Generowanie wideo](/pl/tools/video-generation) - Wspólne narzędzie `video_generate`, wybór dostawcy i przełączanie awaryjne
@@ -102,7 +108,7 @@ Szukasz dokumentacji kanałów czatu (WhatsApp/Telegram/Discord/Slack/Mattermost
 
 ## Narzędzia społeczności
 
-- [Claude Max API Proxy](/pl/providers/claude-max-api-proxy) - Proxy społeczności dla danych uwierzytelniających subskrypcji Claude (przed użyciem sprawdź zasady/warunki Anthropic)
+- [Claude Max API Proxy](/pl/providers/claude-max-api-proxy) - Społecznościowy proxy dla danych uwierzytelniających subskrypcji Claude (przed użyciem sprawdź zasady/warunki Anthropic)
 
-Pełny katalog dostawców (xAI, Groq, Mistral itd.) i konfigurację zaawansowaną
+Pełny katalog dostawców (xAI, Groq, Mistral itp.) i zaawansowaną konfigurację
 znajdziesz w [Dostawcy modeli](/pl/concepts/model-providers).

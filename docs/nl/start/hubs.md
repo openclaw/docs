@@ -1,13 +1,14 @@
 ---
 read_when:
-    - Je wilt een volledig overzicht van de documentatie
-summary: Hubs die naar elke OpenClaw-documentatiepagina verwijzen
+    - U wilt een volledig overzicht van de documentatie
+summary: Hubs die naar elk OpenClaw-document linken
 title: Documentatiehubs
 x-i18n:
-    generated_at: "2026-05-12T00:59:19Z"
+    generated_at: "2026-06-27T18:22:08Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f4675773105bbff55e1f38c8449d688dcefc6ad70d9f5e572193f1e0c638e243
+    source_hash: d7d3f089e2caea1e1487c7c0375c62dfb007db05827a77d4e5616839023b9457
     source_path: start/hubs.md
     workflow: 16
 ---
@@ -24,10 +25,10 @@ Gebruik deze hubs om elke pagina te vinden, inclusief verdiepingen en referentie
 - [Aan de slag](/nl/start/getting-started)
 - [Onboarding](/nl/start/onboarding)
 - [Onboarding (CLI)](/nl/start/wizard)
-- [Configuratie](/nl/start/setup)
+- [Installatie](/nl/start/setup)
 - [Dashboard (lokale Gateway)](http://127.0.0.1:18789/)
-- [Hulp](/nl/help)
-- [Docs-directory](/nl/start/docs-directory)
+- [Help](/nl/help)
+- [Documentatiemap](/nl/start/docs-directory)
 - [Configuratie](/nl/gateway/configuration)
 - [Configuratievoorbeelden](/nl/gateway/configuration-examples)
 - [OpenClaw-assistent](/nl/start/openclaw)
@@ -38,7 +39,7 @@ Gebruik deze hubs om elke pagina te vinden, inclusief verdiepingen en referentie
 
 - [Docker](/nl/install/docker)
 - [Nix](/nl/install/nix)
-- [Bijwerken / rollback](/nl/install/updating)
+- [Bijwerken / terugdraaien](/nl/install/updating)
 - [Bun-workflow (experimenteel)](/nl/install/bun)
 
 ## Kernconcepten
@@ -51,10 +52,10 @@ Gebruik deze hubs om elke pagina te vinden, inclusief verdiepingen en referentie
 - [Geheugen](/nl/concepts/memory)
 - [Agent-loop](/nl/concepts/agent-loop)
 - [Streaming + chunking](/nl/concepts/streaming)
-- [Multi-agent-routering](/nl/concepts/multi-agent)
+- [Multi-agentroutering](/nl/concepts/multi-agent)
 - [Compaction](/nl/concepts/compaction)
 - [Sessies](/nl/concepts/session)
-- [Sessiesnoei](/nl/concepts/session-pruning)
+- [Sessies opschonen](/nl/concepts/session-pruning)
 - [Sessietools](/nl/concepts/session-tool)
 - [Wachtrij](/nl/concepts/queue)
 - [Slash-commando's](/nl/tools/slash-commands)
@@ -70,7 +71,7 @@ Gebruik deze hubs om elke pagina te vinden, inclusief verdiepingen en referentie
 - [Model-failover](/nl/concepts/model-failover)
 - [OAuth](/nl/concepts/oauth)
 
-## Providers + inkomend verkeer
+## Providers + ingress
 
 - [Chatkanalenhub](/nl/channels)
 - [Modelprovidershub](/nl/providers/models)
@@ -92,7 +93,7 @@ Gebruik deze hubs om elke pagina te vinden, inclusief verdiepingen en referentie
 - [Gateway-runbook](/nl/gateway)
 - [Netwerkmodel](/nl/network#core-model)
 - [Gateway-koppeling](/nl/gateway/pairing)
-- [Gateway-lock](/nl/gateway/gateway-lock)
+- [Gateway-vergrendeling](/nl/gateway/gateway-lock)
 - [Achtergrondproces](/nl/gateway/background-process)
 - [Gezondheid](/nl/gateway/health)
 - [Heartbeat](/nl/gateway/heartbeat)
@@ -100,7 +101,7 @@ Gebruik deze hubs om elke pagina te vinden, inclusief verdiepingen en referentie
 - [Logging](/nl/gateway/logging)
 - [Sandboxing](/nl/gateway/sandboxing)
 - [Dashboard](/nl/web/dashboard)
-- [Bedienings-UI](/nl/web/control-ui)
+- [Control UI](/nl/web/control-ui)
 - [Externe toegang](/nl/gateway/remote)
 - [Externe Gateway README](/nl/gateway/remote-gateway-readme)
 - [Tailscale](/nl/gateway/tailscale)
@@ -117,14 +118,14 @@ Gebruik deze hubs om elke pagina te vinden, inclusief verdiepingen en referentie
 - [Verhoogde modus](/nl/tools/elevated)
 - [Cron-taken](/nl/automation/cron-jobs)
 - [Automatisering](/nl/automation)
-- [Denken + uitgebreid](/nl/tools/thinking)
+- [Thinking + uitgebreid](/nl/tools/thinking)
 - [Modellen](/nl/concepts/models)
 - [Subagents](/nl/tools/subagents)
-- [Agent-send CLI](/nl/tools/agent-send)
-- [Terminal-UI](/nl/web/tui)
+- [Agent send CLI](/nl/tools/agent-send)
+- [Terminal UI](/nl/web/tui)
 - [Browserbesturing](/nl/tools/browser)
 - [Browser (Linux-probleemoplossing)](/nl/tools/browser-linux-troubleshooting)
-- [Polls](/nl/cli/message)
+- [Peilingen](/nl/cli/message)
 
 ## Nodes, media, spraak
 
@@ -142,13 +143,13 @@ Gebruik deze hubs om elke pagina te vinden, inclusief verdiepingen en referentie
 - [macOS](/nl/platforms/macos)
 - [iOS](/nl/platforms/ios)
 - [Android](/nl/platforms/android)
-- [Windows (WSL2)](/nl/platforms/windows)
+- [Windows-hub](/nl/platforms/windows)
 - [Linux](/nl/platforms/linux)
 - [Weboppervlakken](/nl/web)
 
-## macOS-companion-app (geavanceerd)
+## macOS companion-app (geavanceerd)
 
-- [macOS-devconfiguratie](/nl/platforms/mac/dev-setup)
+- [macOS dev-installatie](/nl/platforms/mac/dev-setup)
 - [macOS-menubalk](/nl/platforms/mac/menu-bar)
 - [macOS voice wake](/nl/platforms/mac/voicewake)
 - [macOS-spraakoverlay](/nl/platforms/mac/voice-overlay)
@@ -176,22 +177,22 @@ Gebruik deze hubs om elke pagina te vinden, inclusief verdiepingen en referentie
 - [Plugin-bundels](/nl/plugins/bundles)
 - [ClawHub](/nl/clawhub)
 - [Capability-kookboek](/nl/plugins/adding-capabilities)
-- [Voice call-plugin](/nl/plugins/voice-call)
+- [Plugin voor spraakoproepen](/nl/plugins/voice-call)
 - [Zalo-gebruikersplugin](/nl/plugins/zalouser)
 
-## Werkruimte + sjablonen
+## Werkruimte + templates
 
 - [Skills](/nl/tools/skills)
 - [ClawHub](/nl/clawhub)
 - [Skills-configuratie](/nl/tools/skills-config)
 - [Standaard-AGENTS](/nl/reference/AGENTS.default)
-- [Sjablonen: AGENTS](/nl/reference/templates/AGENTS)
-- [Sjablonen: BOOTSTRAP](/nl/reference/templates/BOOTSTRAP)
-- [Sjablonen: HEARTBEAT](/nl/reference/templates/HEARTBEAT)
-- [Sjablonen: IDENTITY](/nl/reference/templates/IDENTITY)
-- [Sjablonen: SOUL](/nl/reference/templates/SOUL)
-- [Sjablonen: TOOLS](/nl/reference/templates/TOOLS)
-- [Sjablonen: USER](/nl/reference/templates/USER)
+- [Templates: AGENTS](/nl/reference/templates/AGENTS)
+- [Templates: BOOTSTRAP](/nl/reference/templates/BOOTSTRAP)
+- [Templates: HEARTBEAT](/nl/reference/templates/HEARTBEAT)
+- [Templates: IDENTITY](/nl/reference/templates/IDENTITY)
+- [Templates: SOUL](/nl/reference/templates/SOUL)
+- [Templates: TOOLS](/nl/reference/templates/TOOLS)
+- [Templates: USER](/nl/reference/templates/USER)
 
 ## Project
 

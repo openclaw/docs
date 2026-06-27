@@ -1,29 +1,30 @@
 ---
 read_when:
     - Mac-Debug-Builds erstellen oder signieren
-summary: Signierschritte für macOS-Debug-Builds, die von Paketierungsskripten generiert werden
+summary: Signierschritte für macOS-Debug-Builds, die von Paketierungsskripten erzeugt werden
 title: macOS-Signierung
 x-i18n:
-    generated_at: "2026-05-07T13:21:45Z"
+    generated_at: "2026-06-27T17:43:32Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 58a4edd3d0df0d06c6e60251345a8e4a658bc4a3fceb4c01a21a9e98aeabfb6f
+    source_hash: df4ee44b6bdf09a24e0d05ed4354e2cb573372d12a667b4fcdfd7d6f88291082
     source_path: platforms/mac/signing.md
     workflow: 16
 ---
 
 # Mac-Signierung (Debug-Builds)
 
-Diese App wird normalerweise mit [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) gebaut. Das Skript:
+Diese App wird normalerweise mit [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) gebaut. Das Skript führt jetzt Folgendes aus:
 
-- setzt einen stabilen Debug-Bundle-Identifier: `ai.openclaw.mac.debug`
+- legt eine stabile Debug-Bundle-ID fest: `ai.openclaw.mac.debug`
 - schreibt die Info.plist mit dieser Bundle-ID (überschreibbar über `BUNDLE_ID=...`)
-- ruft [`scripts/codesign-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/codesign-mac-app.sh) auf, um die Haupt-Binärdatei und das App-Bundle zu signieren, damit macOS jeden Rebuild als dasselbe signierte Bundle behandelt und TCC-Berechtigungen beibehält (Benachrichtigungen, Bedienungshilfen, Bildschirmaufnahme, Mikrofon, Sprachausgabe). Verwenden Sie für stabile Berechtigungen eine echte Signaturidentität; Ad-hoc ist optional und fragil (siehe [macOS-Berechtigungen](/de/platforms/mac/permissions)).
-- verwendet standardmäßig `CODESIGN_TIMESTAMP=auto`; dies aktiviert vertrauenswürdige Zeitstempel für Developer-ID-Signaturen. Setzen Sie `CODESIGN_TIMESTAMP=off`, um die Zeitstempelung zu überspringen (Offline-Debug-Builds).
-- fügt Build-Metadaten in die Info.plist ein: `OpenClawBuildTimestamp` (UTC) und `OpenClawGitCommit` (kurzer Hash), damit der Info-Bereich Build, Git sowie Debug-/Release-Kanal anzeigen kann.
-- **Die Paketierung verwendet standardmäßig Node 24**: Das Skript führt TS-Builds und den Control-UI-Build aus. Node 22 LTS, derzeit `22.16+`, wird aus Kompatibilitätsgründen weiterhin unterstützt.
-- liest `SIGN_IDENTITY` aus der Umgebung. Fügen Sie `export SIGN_IDENTITY="Apple Development: Your Name (TEAMID)"` (oder Ihr Developer-ID-Application-Zertifikat) zu Ihrer Shell-rc hinzu, um immer mit Ihrem Zertifikat zu signieren. Ad-hoc-Signierung erfordert explizite Zustimmung über `ALLOW_ADHOC_SIGNING=1` oder `SIGN_IDENTITY="-"` (für Berechtigungstests nicht empfohlen).
-- führt nach der Signierung ein Team-ID-Audit aus und schlägt fehl, wenn eine Mach-O-Datei im App-Bundle mit einer anderen Team ID signiert ist. Setzen Sie `SKIP_TEAM_ID_CHECK=1`, um dies zu umgehen.
+- ruft [`scripts/codesign-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/codesign-mac-app.sh) auf, um das Haupt-Binary und das App-Bundle zu signieren, damit macOS jeden Neubuild als dasselbe signierte Bundle behandelt und TCC-Berechtigungen beibehält (Benachrichtigungen, Bedienungshilfen, Bildschirmaufnahme, Mikrofon, Sprachausgabe). Für stabile Berechtigungen verwenden Sie eine echte Signieridentität; Ad-hoc ist Opt-in und fragil (siehe [macOS-Berechtigungen](/de/platforms/mac/permissions)).
+- verwendet standardmäßig `CODESIGN_TIMESTAMP=auto`; dies aktiviert vertrauenswürdige Zeitstempel für Developer-ID-Signaturen. Setzen Sie `CODESIGN_TIMESTAMP=off`, um Zeitstempel zu überspringen (Offline-Debug-Builds).
+- fügt Build-Metadaten in die Info.plist ein: `OpenClawBuildTimestamp` (UTC) und `OpenClawGitCommit` (kurzer Hash), damit der Über-Dialog Build, Git und Debug-/Release-Kanal anzeigen kann.
+- **Packaging verwendet standardmäßig Node 24**: Das Skript führt TS-Builds und den Build der Control UI aus. Node 22 LTS, derzeit `22.19+`, wird aus Kompatibilitätsgründen weiterhin unterstützt.
+- liest `SIGN_IDENTITY` aus der Umgebung. Fügen Sie `export SIGN_IDENTITY="Apple Development: Your Name (TEAMID)"` (oder Ihr Developer ID Application-Zertifikat) zu Ihrer Shell-RC hinzu, um immer mit Ihrem Zertifikat zu signieren. Ad-hoc-Signierung erfordert explizites Opt-in über `ALLOW_ADHOC_SIGNING=1` oder `SIGN_IDENTITY="-"` (für Berechtigungstests nicht empfohlen).
+- führt nach dem Signieren ein Team-ID-Audit aus und schlägt fehl, wenn ein Mach-O innerhalb des App-Bundles von einer anderen Team-ID signiert wurde. Setzen Sie `SKIP_TEAM_ID_CHECK=1`, um dies zu umgehen.
 
 ## Verwendung
 
@@ -38,22 +39,22 @@ DISABLE_LIBRARY_VALIDATION=1 scripts/package-mac-app.sh   # dev-only Sparkle Tea
 
 ### Hinweis zur Ad-hoc-Signierung
 
-Beim Signieren mit `SIGN_IDENTITY="-"` (ad-hoc) deaktiviert das Skript automatisch die **Hardened Runtime** (`--options runtime`). Dies ist erforderlich, um Abstürze zu verhindern, wenn die App versucht, eingebettete Frameworks (wie Sparkle) zu laden, die nicht dieselbe Team ID verwenden. Ad-hoc-Signaturen unterbrechen außerdem die Persistenz von TCC-Berechtigungen; Wiederherstellungsschritte finden Sie unter [macOS-Berechtigungen](/de/platforms/mac/permissions).
+Beim Signieren mit `SIGN_IDENTITY="-"` (Ad-hoc) deaktiviert das Skript automatisch die **Hardened Runtime** (`--options runtime`). Dies ist notwendig, um Abstürze zu verhindern, wenn die App versucht, eingebettete Frameworks (wie Sparkle) zu laden, die nicht dieselbe Team-ID haben. Ad-hoc-Signaturen beeinträchtigen außerdem die Persistenz von TCC-Berechtigungen; Wiederherstellungsschritte finden Sie unter [macOS-Berechtigungen](/de/platforms/mac/permissions).
 
-## Build-Metadaten für „Info“
+## Build-Metadaten für „Über“
 
 `package-mac-app.sh` versieht das Bundle mit:
 
-- `OpenClawBuildTimestamp`: ISO8601-UTC zum Paketierungszeitpunkt
+- `OpenClawBuildTimestamp`: ISO 8601 UTC zum Paketierungszeitpunkt
 - `OpenClawGitCommit`: kurzer Git-Hash (oder `unknown`, falls nicht verfügbar)
 
-Der Info-Tab liest diese Schlüssel, um Version, Build-Datum, Git-Commit und ob es sich um einen Debug-Build handelt (über `#if DEBUG`) anzuzeigen. Führen Sie den Packager nach Codeänderungen aus, um diese Werte zu aktualisieren.
+Der Über-Tab liest diese Schlüssel, um Version, Build-Datum, Git-Commit und ob es sich um einen Debug-Build handelt (über `#if DEBUG`) anzuzeigen. Führen Sie den Packager nach Codeänderungen aus, um diese Werte zu aktualisieren.
 
 ## Warum
 
-TCC-Berechtigungen sind an den Bundle-Identifier _und_ die Codesignatur gebunden. Nicht signierte Debug-Builds mit wechselnden UUIDs führten dazu, dass macOS Berechtigungen nach jedem Rebuild vergaß. Das Signieren der Binärdateien (standardmäßig ad-hoc) und das Beibehalten einer festen Bundle-ID/eines festen Pfads (`dist/OpenClaw.app`) bewahrt die Berechtigungen zwischen Builds und entspricht damit dem VibeTunnel-Ansatz.
+TCC-Berechtigungen sind an die Bundle-ID _und_ die Codesignatur gebunden. Nicht signierte Debug-Builds mit wechselnden UUIDs führten dazu, dass macOS Berechtigungen nach jedem Neubuild vergaß. Das Signieren der Binaries (standardmäßig Ad-hoc) und das Beibehalten einer festen Bundle-ID/eines festen Pfads (`dist/OpenClaw.app`) erhält die Berechtigungen zwischen Builds, entsprechend dem VibeTunnel-Ansatz.
 
-## Verwandt
+## Verwandte Themen
 
 - [macOS-App](/de/platforms/macos)
 - [macOS-Berechtigungen](/de/platforms/mac/permissions)

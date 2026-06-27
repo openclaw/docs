@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Bạn đang cài đặt, cấu hình hoặc rà soát Plugin feishu
-summary: Thêm bề mặt kênh Feishu để gửi và nhận tin nhắn OpenClaw.
+    - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin feishu
+summary: Plugin kênh Feishu/Lark của OpenClaw cho trò chuyện và công cụ nơi làm việc (do cộng đồng bảo trì bởi @m1heng).
 title: Plugin Feishu
 x-i18n:
-    generated_at: "2026-05-03T10:41:22Z"
+    generated_at: "2026-06-27T17:52:14Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cb9fa20533e6ad7f65ffbb3050166637bea8e8ab867dd3894ad90a77999ba9b8
+    source_hash: d55792e08be92877a8b86548b725b59aee149b352bba8a5e51ed590a59e0dbc9
     source_path: plugins/reference/feishu.md
     workflow: 16
 ---
 
 # Plugin Feishu
 
-Thêm bề mặt kênh Feishu để gửi và nhận tin nhắn OpenClaw.
+Plugin kênh Feishu/Lark của OpenClaw cho cuộc trò chuyện và công cụ nơi làm việc (do cộng đồng bảo trì bởi @m1heng).
 
 ## Phân phối
 
@@ -23,7 +24,7 @@ Thêm bề mặt kênh Feishu để gửi và nhận tin nhắn OpenClaw.
 
 ## Bề mặt
 
-channels: feishu; contracts: tools; Skills
+kênh: feishu; hợp đồng: công cụ; kỹ năng
 
 ## Tài liệu liên quan
 

@@ -1,25 +1,26 @@
 ---
 read_when:
     - Ви встановлюєте, налаштовуєте або проводите аудит Plugin searxng
-summary: Додає підтримку провайдера вебпошуку.
+summary: Додає підтримку постачальника вебпошуку.
 title: Plugin SearXNG
 x-i18n:
-    generated_at: "2026-05-02T15:21:25Z"
+    generated_at: "2026-06-27T18:01:37Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 10b4111629b0ec9b86a98513dff46ee08f64d767d103be572849788a57d494c9
+    source_hash: 96d320ccd6ec69e380edfcfa33b498569058be6953257b5770cd4eea95cb401a
     source_path: plugins/reference/searxng.md
     workflow: 16
 ---
 
-# Plugin SearXNG
+# SearXNG plugin
 
-Додає підтримку провайдерів вебпошуку.
+Додає підтримку провайдера вебпошуку.
 
 ## Розповсюдження
 
 - Пакет: `@openclaw/searxng-plugin`
-- Маршрут встановлення: включено в OpenClaw
+- Шлях встановлення: npm; ClawHub: `clawhub:@openclaw/searxng-plugin`
 
 ## Поверхня
 

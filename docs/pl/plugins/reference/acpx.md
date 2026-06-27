@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz Plugin acpx
-summary: Wbudowany backend środowiska uruchomieniowego ACP z zarządzaniem sesją i transportem po stronie Plugin.
-title: Plugin ACPx
+    - Instalujesz, konfigurujesz lub audytujesz plugin acpx
+summary: Backend środowiska uruchomieniowego ACP OpenClaw z zarządzaniem sesją i transportem po stronie Pluginu.
+title: Wtyczka ACPx
 x-i18n:
-    generated_at: "2026-05-03T09:50:30Z"
+    generated_at: "2026-06-27T17:57:46Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 232154c08280d11f330dd0928fe4f546416116439c0bd3760bbae26d86c6599b
+    source_hash: 71e6762b6049c5eca3fa560f2d8d13a2538c2e913f9dbd9f0e2bb6b5aef160e4
     source_path: plugins/reference/acpx.md
     workflow: 16
 ---
 
-# ACPx Plugin
+# Plugin ACPx
 
-Wbudowane zaplecze środowiska uruchomieniowego ACP z zarządzaniem sesją i transportem po stronie Plugin.
+Backend środowiska uruchomieniowego ACP OpenClaw z zarządzaniem sesją i transportem po stronie Plugin.
 
 ## Dystrybucja
 

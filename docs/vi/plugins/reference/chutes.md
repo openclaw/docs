@@ -4,10 +4,11 @@ read_when:
 summary: Thêm hỗ trợ nhà cung cấp mô hình Chutes cho OpenClaw.
 title: Plugin Chutes
 x-i18n:
-    generated_at: "2026-05-02T20:49:16Z"
+    generated_at: "2026-06-27T17:51:00Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ac38d5125f8f79ef9b8f57e2781b3947df354987b5c8ae46891bfdd47fea0a9a
+    source_hash: 63f5196b0202e47ea95c3dd226546ff3e09083632e58ca780c608f53c2ba85af
     source_path: plugins/reference/chutes.md
     workflow: 16
 ---
@@ -19,9 +20,9 @@ Thêm hỗ trợ nhà cung cấp mô hình Chutes cho OpenClaw.
 ## Phân phối
 
 - Gói: `@openclaw/chutes-provider`
-- Cách cài đặt: được bao gồm trong OpenClaw
+- Cách cài đặt: npm; ClawHub: `clawhub:@openclaw/chutes-provider`
 
-## Bề mặt
+## Giao diện
 
 providers: chutes
 

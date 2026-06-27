@@ -1,20 +1,21 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin line هستید
-summary: رابط کانال LINE را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
+    - شما در حال نصب، پیکربندی یا ممیزی Plugin مربوط به LINE هستید.
+summary: Plugin کانال LINE در OpenClaw برای گفت‌وگوهای LINE Bot API.
 title: Plugin LINE
 x-i18n:
-    generated_at: "2026-05-03T11:42:37Z"
+    generated_at: "2026-06-27T18:26:45Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 307e6e08345161bc53fe5a04cc9d0a3fabbc9ff01e9ebcae98a39899288ef4d4
+    source_hash: d561055be3fde476a78bf123f4025ca61e670b005d0b2d63e5b54318975c2fd9
     source_path: plugins/reference/line.md
     workflow: 16
 ---
 
 # Plugin LINE
 
-سطح کانال LINE را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
+Plugin کانال LINE در OpenClaw برای گفت‌وگوهای LINE Bot API.
 
 ## توزیع
 
@@ -23,7 +24,7 @@ x-i18n:
 
 ## سطح
 
-channels: line
+کانال‌ها: line
 
 ## مستندات مرتبط
 

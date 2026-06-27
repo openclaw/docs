@@ -5,15 +5,16 @@ read_when:
 summary: Configuração do Cloudflare AI Gateway (autenticação + seleção de modelo)
 title: Gateway de IA da Cloudflare
 x-i18n:
-    generated_at: "2026-04-30T10:04:11Z"
+    generated_at: "2026-06-27T18:02:35Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c7c567076a5b3fea0f09f44d772c0858aed2a4813f91f1cc9f87b0da39c2e5db
+    source_hash: 05678faa049349c610a9c7ea9d23958bf51927453cf6987fef397cd273f6556b
     source_path: providers/cloudflare-ai-gateway.md
     workflow: 16
 ---
 
-Cloudflare AI Gateway fica na frente das APIs dos provedores e permite adicionar análises, cache e controles. Para a Anthropic, o OpenClaw usa a API Anthropic Messages por meio do endpoint do seu Gateway.
+O Cloudflare AI Gateway fica na frente das APIs de provedores e permite adicionar análises, cache e controles. Para Anthropic, o OpenClaw usa a API Anthropic Messages por meio do endpoint do Gateway.
 
 | Propriedade   | Valor                                                                                    |
 | ------------- | ---------------------------------------------------------------------------------------- |
@@ -26,26 +27,35 @@ Cloudflare AI Gateway fica na frente das APIs dos provedores e permite adicionar
 Para modelos Anthropic roteados pelo Cloudflare AI Gateway, use sua **chave de API da Anthropic** como a chave do provedor.
 </Note>
 
-Quando o raciocínio está ativado para modelos Anthropic Messages, o OpenClaw remove turnos finais
-de pré-preenchimento do assistente antes de enviar a carga útil pelo Cloudflare AI Gateway.
-A Anthropic rejeita o pré-preenchimento de respostas com raciocínio estendido, enquanto o pré-preenchimento
-comum sem raciocínio permanece disponível.
+Quando o pensamento está habilitado para modelos Anthropic Messages, o OpenClaw remove turnos finais
+de preenchimento prévio do assistente antes de enviar a carga pelo Cloudflare AI Gateway.
+A Anthropic rejeita o preenchimento prévio de respostas com pensamento estendido, enquanto o preenchimento prévio
+comum sem pensamento continua disponível.
+
+## Instalar Plugin
+
+Instale o Plugin oficial e reinicie o Gateway:
+
+```bash
+openclaw plugins install @openclaw/cloudflare-ai-gateway-provider
+openclaw gateway restart
+```
 
 ## Primeiros passos
 
 <Steps>
-  <Step title="Defina a chave de API do provedor e os detalhes do Gateway">
+  <Step title="Set the provider API key and Gateway details">
     Execute a integração inicial e escolha a opção de autenticação do Cloudflare AI Gateway:
 
     ```bash
     openclaw onboard --auth-choice cloudflare-ai-gateway-api-key
     ```
 
-    Isso solicita seu ID da conta, ID do Gateway e chave de API.
+    Isso solicita o ID da sua conta, o ID do gateway e a chave de API.
 
   </Step>
-  <Step title="Defina um modelo padrão">
-    Adicione o modelo à configuração do OpenClaw:
+  <Step title="Set a default model">
+    Adicione o modelo à sua configuração do OpenClaw:
 
     ```json5
     {
@@ -58,7 +68,7 @@ comum sem raciocínio permanece disponível.
     ```
 
   </Step>
-  <Step title="Verifique se o modelo está disponível">
+  <Step title="Verify the model is available">
     ```bash
     openclaw models list --provider cloudflare-ai-gateway
     ```
@@ -67,7 +77,7 @@ comum sem raciocínio permanece disponível.
 
 ## Exemplo não interativo
 
-Para configurações com script ou CI, passe todos os valores na linha de comando:
+Para configurações com scripts ou CI, passe todos os valores na linha de comando:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -81,8 +91,8 @@ openclaw onboard --non-interactive \
 ## Configuração avançada
 
 <AccordionGroup>
-  <Accordion title="Gateways autenticados">
-    Se você habilitou a autenticação do Gateway no Cloudflare, adicione o cabeçalho `cf-aig-authorization`. Isso é **além da** sua chave de API do provedor.
+  <Accordion title="Authenticated gateways">
+    Se você habilitou a autenticação do Gateway na Cloudflare, adicione o cabeçalho `cf-aig-authorization`. Isso é **além da** sua chave de API do provedor.
 
     ```json5
     {
@@ -104,11 +114,11 @@ openclaw onboard --non-interactive \
 
   </Accordion>
 
-  <Accordion title="Observação sobre o ambiente">
-    Se o Gateway for executado como um daemon (launchd/systemd), garanta que `CLOUDFLARE_AI_GATEWAY_API_KEY` esteja disponível para esse processo.
+  <Accordion title="Environment note">
+    Se o Gateway for executado como daemon (launchd/systemd), confirme que `CLOUDFLARE_AI_GATEWAY_API_KEY` esteja disponível para esse processo.
 
     <Warning>
-    Uma chave presente apenas em `~/.profile` não ajudará um daemon launchd/systemd, a menos que esse ambiente também seja importado ali. Defina a chave em `~/.openclaw/.env` ou via `env.shellEnv` para garantir que o processo do Gateway possa lê-la.
+    Uma chave exportada apenas em um shell interativo não ajudará um daemon launchd/systemd, a menos que esse ambiente também seja importado nele. Defina a chave em `~/.openclaw/.env` ou via `env.shellEnv` para garantir que o processo do gateway consiga lê-la.
     </Warning>
 
   </Accordion>
@@ -117,10 +127,10 @@ openclaw onboard --non-interactive \
 ## Relacionado
 
 <CardGroup cols={2}>
-  <Card title="Seleção de modelo" href="/pt-BR/concepts/model-providers" icon="layers">
-    Escolha de provedores, referências de modelo e comportamento de failover.
+  <Card title="Model selection" href="/pt-BR/concepts/model-providers" icon="layers">
+    Escolha de provedores, refs de modelo e comportamento de failover.
   </Card>
-  <Card title="Solução de problemas" href="/pt-BR/help/troubleshooting" icon="wrench">
+  <Card title="Troubleshooting" href="/pt-BR/help/troubleshooting" icon="wrench">
     Solução de problemas geral e perguntas frequentes.
   </Card>
 </CardGroup>

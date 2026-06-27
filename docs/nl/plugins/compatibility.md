@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Je onderhoudt een OpenClaw Plugin
+    - Je onderhoudt een OpenClaw-Plugin
     - Je ziet een waarschuwing over Plugin-compatibiliteit
-    - Je plant een Plugin-SDK- of manifestmigratie
+    - Je plant een Plugin SDK- of manifestmigratie
 summary: Plugin-compatibiliteitscontracten, deprecatiemetadata en migratieverwachtingen
 title: Plugin-compatibiliteit
 x-i18n:
-    generated_at: "2026-05-11T20:39:48Z"
+    generated_at: "2026-06-27T17:53:15Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1afd37697f55721ca8419256a6e8187c398d4b20fb11a65776b755050dd5368b
+    source_hash: 2e17881c393e3649cb6accb13996d83a855f434735da2e84738f823ac4eba0f5
     source_path: plugins/compatibility.md
     workflow: 16
 ---
 
-OpenClaw houdt oudere Plugin-contracten bedraad via benoemde compatibiliteitsadapters voordat ze worden verwijderd. Dit beschermt bestaande gebundelde en externe plugins terwijl de SDK-, manifest-, setup-, configuratie- en agent-runtimecontracten evolueren.
+OpenClaw houdt oudere Plugin-contracten aangesloten via benoemde compatibiliteitsadapters voordat ze worden verwijderd. Dit beschermt bestaande gebundelde en externe plugins terwijl de contracten voor SDK, manifest, setup, configuratie en agent-runtime zich ontwikkelen.
 
 ## Compatibiliteitsregister
 
@@ -25,24 +26,24 @@ Elke record heeft:
 
 - een stabiele compatibiliteitscode
 - status: `active`, `deprecated`, `removal-pending` of `removed`
-- eigenaar: SDK, configuratie, setup, kanaal, provider, Plugin-uitvoering, agent-runtime
-  of core
+- eigenaar: SDK, configuratie, setup, kanaal, provider, Plugin-uitvoering, agent-runtime,
+  of kern
 - introductie- en afschrijvingsdatums waar van toepassing
 - vervangingsrichtlijnen
-- docs, diagnoses en tests die het oude en nieuwe gedrag dekken
+- docs, diagnostiek en tests die het oude en nieuwe gedrag afdekken
 
-Het register is de bron voor maintainerplanning en toekomstige plugin-inspectorcontroles. Als Plugin-gericht gedrag verandert, voeg dan de compatibiliteitsrecord toe of werk deze bij in dezelfde wijziging die de adapter toevoegt.
+Het register is de bron voor beheerderplanning en toekomstige Plugin-inspectorcontroles. Als Plugin-gericht gedrag verandert, voeg dan de compatibiliteitsrecord toe of werk deze bij in dezelfde wijziging die de adapter toevoegt.
 
-Compatibiliteit voor doctor-herstel en migratie wordt apart bijgehouden op
-`src/commands/doctor/shared/deprecation-compat.ts`. Die records dekken oude configuratievormen, install-ledgerindelingen en herstel-shims die mogelijk beschikbaar moeten blijven nadat het runtime-compatibiliteitspad is verwijderd.
+Doctor-reparatie- en migratiecompatibiliteit wordt afzonderlijk bijgehouden op
+`src/commands/doctor/shared/deprecation-compat.ts`. Die records dekken oude configuratievormen, install-ledgerindelingen en reparatieshims die mogelijk beschikbaar moeten blijven nadat het runtime-compatibiliteitspad is verwijderd.
 
-Release-sweeps moeten beide registers controleren. Verwijder geen doctor-migratie alleen omdat de bijbehorende runtime- of configuratiecompatibiliteitsrecord is verlopen; verifieer eerst dat er geen ondersteund upgradepad is dat de reparatie nog nodig heeft. Valideer ook elke vervangingsannotatie opnieuw tijdens releaseplanning, omdat Plugin-eigenaarschap en configuratievoetafdruk kunnen veranderen wanneer providers en kanalen uit core worden verplaatst.
+Release-sweeps moeten beide registers controleren. Verwijder een doctor-migratie niet alleen omdat de overeenkomende runtime- of configuratiecompatibiliteitsrecord is verlopen; controleer eerst of er geen ondersteund upgradepad is dat de reparatie nog nodig heeft. Valideer ook elke vervangingsannotatie opnieuw tijdens releaseplanning, omdat Plugin-eigenaarschap en configuratievoetafdruk kunnen veranderen wanneer providers en kanalen uit de kern worden verplaatst.
 
 ## Plugin-inspectorpakket
 
-De Plugin-inspector moet buiten de core OpenClaw-repo leven als een apart pakket/repository, ondersteund door de geversioneerde compatibiliteits- en manifestcontracten.
+De Plugin-inspector moet buiten de kernrepo van OpenClaw leven als een afzonderlijk pakket/repository, ondersteund door de geversioneerde compatibiliteits- en manifestcontracten.
 
-De CLI op dag één moet zijn:
+De CLI op dag een moet zijn:
 
 ```sh
 openclaw-plugin-inspector ./my-plugin
@@ -52,15 +53,15 @@ Deze moet het volgende uitvoeren:
 
 - manifest-/schemavalidatie
 - de contractcompatibiliteitsversie die wordt gecontroleerd
-- controles van installatie-/bronmetadata
-- cold-path importcontroles
-- waarschuwingen voor afschrijving en compatibiliteit
+- install-/bronmetadatacontroles
+- importcontroles voor koude paden
+- afschrijvings- en compatibiliteitswaarschuwingen
 
-Gebruik `--json` voor stabiele, machineleesbare uitvoer in CI-annotaties. OpenClaw core moet contracten en fixtures blootstellen die de inspector kan gebruiken, maar mag de inspector-binary niet publiceren vanuit het hoofdpackage `openclaw`.
+Gebruik `--json` voor stabiele machineleesbare uitvoer in CI-annotaties. De OpenClaw-kern moet contracten en fixtures beschikbaar stellen die de inspector kan gebruiken, maar mag de inspector-binary niet publiceren vanuit het hoofdpackage `openclaw`.
 
-### Acceptatielane voor maintainers
+### Acceptatietraject voor beheerders
 
-Gebruik Crabbox-ondersteunde Blacksmith Testbox voor de acceptatielane voor installeerbare pakketten bij het valideren van de externe inspector tegen OpenClaw Plugin-pakketten. Voer dit uit vanuit een schone OpenClaw-checkout nadat het pakket is gebouwd:
+Gebruik Crabbox-ondersteunde Blacksmith Testbox voor het acceptatietraject voor installeerbare packages bij het valideren van de externe inspector tegen OpenClaw-Plugin-packages. Voer dit uit vanuit een schone OpenClaw-checkout nadat het package is gebouwd:
 
 ```sh
 pnpm crabbox:run -- --provider blacksmith-testbox --timing-json --shell -- "pnpm install && pnpm build && npm exec --yes @openclaw/plugin-inspector@0.1.0 -- ./extensions/telegram --json"
@@ -68,70 +69,108 @@ pnpm crabbox:run -- --provider blacksmith-testbox --timing-json --shell -- "npm 
 pnpm crabbox:run -- --provider blacksmith-testbox --timing-json --shell -- "npm exec --yes @openclaw/plugin-inspector@0.1.0 -- <clawhub-plugin-dir> --json"
 ```
 
-Houd deze lane opt-in voor maintainers, omdat deze een extern npm-pakket installeert en Plugin-pakketten kan inspecteren die buiten de repo zijn gekloond. De lokale repo-guards dekken de SDK-exportmap, compatibiliteitsregistermetadata, afbouw van verouderde SDK-imports en importgrenzen van gebundelde extensies; Testbox-inspectorbewijs dekt het pakket zoals externe Plugin-auteurs het gebruiken.
+Houd dit traject opt-in voor beheerders, omdat het een extern npm-package installeert en Plugin-packages kan inspecteren die buiten de repo zijn gekloond. De lokale repo-guards dekken de SDK-exportmap, metadata van het compatibiliteitsregister, afbouw van verouderde SDK-imports en importgrenzen van gebundelde extensies; Testbox-inspectorbewijs dekt het package zoals externe Plugin-auteurs het gebruiken.
 
 ## Afschrijvingsbeleid
 
 OpenClaw mag een gedocumenteerd Plugin-contract niet verwijderen in dezelfde release waarin de vervanging wordt geïntroduceerd.
 
-De migratiereeks is:
+De migratievolgorde is:
 
 1. Voeg het nieuwe contract toe.
-2. Houd het oude gedrag bedraad via een benoemde compatibiliteitsadapter.
-3. Geef diagnoses of waarschuwingen wanneer Plugin-auteurs kunnen handelen.
+2. Houd het oude gedrag aangesloten via een benoemde compatibiliteitsadapter.
+3. Geef diagnostiek of waarschuwingen wanneer Plugin-auteurs actie kunnen ondernemen.
 4. Documenteer de vervanging en tijdlijn.
 5. Test zowel oude als nieuwe paden.
-6. Wacht gedurende het aangekondigde migratievenster.
+6. Wacht gedurende de aangekondigde migratieperiode.
 7. Verwijder alleen met expliciete goedkeuring voor een breaking release.
 
-Verouderde records moeten een startdatum voor waarschuwingen, vervanging, docs-link en definitieve verwijderingsdatum bevatten, niet meer dan drie maanden nadat de waarschuwing start. Voeg geen verouderd compatibiliteitspad toe met een open verwijderingsvenster, tenzij maintainers expliciet besluiten dat het permanente compatibiliteit is en het in plaats daarvan als `active` markeren.
+Verouderde records moeten een startdatum voor waarschuwingen, vervanging, docs-link en definitieve verwijderdatum bevatten, niet meer dan drie maanden nadat de waarschuwing begint. Voeg geen verouderd compatibiliteitspad toe met een open verwijderingsperiode, tenzij beheerders expliciet besluiten dat het permanente compatibiliteit is en het in plaats daarvan als `active` markeren.
 
 ## Huidige compatibiliteitsgebieden
 
 Huidige compatibiliteitsrecords omvatten:
 
-- legacy brede SDK-imports zoals `openclaw/plugin-sdk/compat`
-- legacy hook-only Plugin-vormen en `before_agent_start`
-- legacy `activate(api)` Plugin-entrypoints terwijl plugins migreren naar
+- oude brede SDK-imports zoals `openclaw/plugin-sdk/compat`
+- oude hook-only Plugin-vormen en `before_agent_start`
+- oude namen voor cleanup-hooks `api.on("deactivate", ...)` terwijl plugins migreren naar
+  `gateway_stop`
+- oude Plugin-entrypoints `activate(api)` terwijl plugins migreren naar
   `register(api)`
-- legacy SDK-aliassen zoals `openclaw/extension-api`,
+- oude SDK-aliassen zoals `openclaw/extension-api`,
   `openclaw/plugin-sdk/channel-runtime`, `openclaw/plugin-sdk/command-auth`
   status builders, `openclaw/plugin-sdk/test-utils` (vervangen door gerichte
-  `openclaw/plugin-sdk/*` test-subpaden), en de type-aliassen `ClawdbotConfig` /
+  `openclaw/plugin-sdk/*`-testsubpaden), en de type-aliassen `ClawdbotConfig` /
   `OpenClawSchemaType`
-- allowlist- en enablementgedrag voor gebundelde plugins
-- legacy provider-/kanaal-env-var-manifestmetadata
-- legacy provider-Plugin-hooks en type-aliassen terwijl providers overgaan naar
+- allowlist- en inschakelgedrag voor gebundelde plugins
+- oude manifestmetadata voor provider-/kanaal-env-vars
+- oude provider-Plugin-hooks en type-aliassen terwijl providers overstappen naar
   expliciete catalogus-, auth-, thinking-, replay- en transporthooks
-- legacy runtime-aliassen zoals `api.runtime.taskFlow`,
+- oude runtime-aliassen zoals `api.runtime.taskFlow`,
   `api.runtime.subagent.getSession`, `api.runtime.stt`, en verouderde
   `api.runtime.config.loadConfig()` / `api.runtime.config.writeConfigFile(...)`
-- legacy gesplitste registratie voor memory-plugins terwijl memory-plugins migreren naar
+- WhatsApp `WebInboundMessage` vlakke callbackvelden zoals `body`, `chatId`,
+  `reply(...)`, en `mediaPath` terwijl callbackconsumenten migreren naar de geneste
+  `WebInboundCallbackMessage`-contexten `event`, `payload`, `quote`, `group`, en
+  `platform`
+- WhatsApp `WebInboundMessage` admission-velden op topniveau zoals `from`,
+  `conversationId`, `accountId`, `accessControlPassed`, en `chatType` terwijl
+  callbackconsumenten migreren naar de `admission`-envelope
+- oude gesplitste registratie van geheugenplugins terwijl geheugenplugins overstappen naar
   `registerMemoryCapability`
-- legacy kanaal-SDK-helpers voor native berichtschema’s, mention gating,
-  inbound envelope-formattering en nesting van approval capabilities
-- legacy kanaalroute-key en comparable-target helper-aliassen terwijl plugins
-  migreren naar `openclaw/plugin-sdk/channel-route`
-- activation hints die worden vervangen door eigenaarschap van manifest contributions
-- `setup-api` runtime-fallback terwijl setup-descriptors worden verplaatst naar koude
-  `setup.requiresRuntime: false` metadata
-- provider-`discovery` hooks terwijl providercatalogushooks migreren naar
+- oude geheugenspecifieke registratie van embeddingproviders terwijl embeddingproviders overstappen naar `api.registerEmbeddingProvider(...)` en
+  `contracts.embeddingProviders`
+- oude SDK-helpers voor kanalen voor native berichtschema's, mention gating,
+  inbound envelope-formattering en nesting van approval-capabilities
+- oude kanaalroutesleutel- en comparable-target-helperaliassen terwijl plugins overstappen naar `openclaw/plugin-sdk/channel-route`
+- activatiehints die worden vervangen door eigenaarschap van manifestbijdragen
+- `setup-api` runtime-fallback terwijl setup-descriptors overstappen naar koude
+  `setup.requiresRuntime: false`-metadata
+- provider-`discovery`-hooks terwijl providercatalogushooks overstappen naar
   `catalog.run(...)`
-- kanaalmetadata `showConfigured` / `showInSetup` terwijl kanaalpakketten migreren
-  naar `openclaw.channel.exposure`
-- legacy runtime-policy configuratiesleutels terwijl doctor operators migreert naar
+- kanaalmetadata `showConfigured` / `showInSetup` terwijl kanaalpackages overstappen naar `openclaw.channel.exposure`
+- oude runtime-policy-configuratiesleutels terwijl doctor operators migreert naar
   `agentRuntime`
-- gegenereerde metadatafallback voor gebundelde kanaalconfiguratie terwijl registry-first
-  `channelConfigs` metadata landt
-- persistente env-flags voor uitschakeling van het Plugin-register en installatiemigratie terwijl
+- gegenereerde fallback voor gebundelde kanaalconfiguratiemetadata terwijl registry-first
+  `channelConfigs`-metadata landt
+- gepersisteerde env-flags voor uitschakelen van het Plugin-register en install-migratie terwijl
   reparatiestromen operators migreren naar `openclaw plugins registry --refresh` en
   `openclaw doctor --fix`
-- legacy Plugin-beheerde configuratiepaden voor web search, web fetch en x_search terwijl
+- oude Plugin-eigen configuratiepaden voor web search, web fetch en x_search terwijl
   doctor ze migreert naar `plugins.entries.<plugin>.config`
-- legacy `plugins.installs` authored config en aliasen voor laadpaden van gebundelde plugins
-  terwijl installatiemetadata naar de door state beheerde Plugin-ledger wordt verplaatst
+- oude door `plugins.installs` geschreven configuratie en aliassen voor laadpaden van gebundelde plugins terwijl installatiemetadata naar de state-managed Plugin-ledger verhuist
 
-Nieuwe Plugin-code moet de vervanging gebruiken die in het register en in de specifieke migratiegids staat. Bestaande plugins kunnen een compatibiliteitspad blijven gebruiken totdat de docs, diagnoses en release notes een verwijderingsvenster aankondigen.
+Nieuwe Plugin-code moet de vervanging gebruiken die in het register en in de specifieke migratiegids staat. Bestaande plugins kunnen een compatibiliteitspad blijven gebruiken totdat de docs, diagnostiek en release notes een verwijderingsperiode aankondigen.
+
+### Vlakke Aliassen Voor WhatsApp Inbound Callback
+
+WhatsApp-runtimecallbacks leveren `WebInboundMessage`: de canonieke geneste contexten `event`, `payload`, `quote`, `group` en `platform` plus verouderde vlakke aliassen voor de uitgeleverde callbackvelden. Nieuwe callbackcode moet de geneste contexten lezen. Code die schone geneste callbackberichten construeert, kan `WebInboundCallbackMessage` gebruiken; compatibiliteitslisteners die nog oude vlakke test- of Plugin-berichten injecteren, moeten `LegacyFlatWebInboundMessage` of
+`WebInboundMessageInput` gebruiken.
+
+De vlakke aliassen blijven beschikbaar tot **2026-08-30**. Die verwijderingsperiode geldt alleen voor toegang via vlakke aliassen; de geneste callbackvorm is het canonieke runtimecontract. De TypeScript-`@deprecated`-annotaties op elke vlakke alias noemen de exacte geneste vervanging. Veelvoorkomende voorbeelden:
+
+- `id`, `timestamp`, en `isBatched` verplaatsen naar `event`.
+- `body`, `mediaPath`, `mediaType`, `mediaFileName`, `mediaUrl`, `location`, en
+  `untrustedStructuredContext` verplaatsen naar `payload`.
+- `to`, `chatId`, sender/self-velden, `sendComposing`, `reply(...)`, en
+  `sendMedia(...)` verplaatsen naar `platform`.
+- `replyTo*`-velden verplaatsen naar `quote`, en velden voor groepsonderwerp/deelnemer/vermelding verplaatsen naar `group`.
+
+`payload.untrustedStructuredContext` wordt geëxtraheerd uit inbound providerpayloads. Plugins moeten de `label`, `source` en `type` inspecteren voordat ze de
+`payload` als gezaghebbend behandelen.
+
+### WhatsApp Inbound Admission-Velden
+
+Geaccepteerde WhatsApp-callbackberichten dragen nu `admission`, een publiek-veilige envelope voor de access-controlbeslissing die het bericht toeliet. Nieuwe callbackcode moet admission-feiten lezen uit `msg.admission` in plaats van uit de oudere admission-velden op topniveau.
+
+De velden op topniveau blijven beschikbaar tot **2026-08-30**. De TypeScript-`@deprecated`-annotaties noemen elke vervanging:
+
+- `from` en `conversationId` verplaatsen naar `admission.conversation.id`.
+- `accountId` verplaatst naar `admission.accountId`.
+- `accessControlPassed` is een afgeleide compatibiliteitsweergave van
+  `admission.ingress.decision === "allow"`; op berichten die al
+  `admission` bevatten, herschrijft het schrijven van de oude boolean de ingress-grafiek niet.
+- `chatType` verplaatst naar `admission.conversation.kind`.
 
 ## Release notes
 

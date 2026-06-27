@@ -1,13 +1,14 @@
 ---
 read_when:
     - Je wilt een volledige lijst van wat OpenClaw ondersteunt
-summary: OpenClaw-mogelijkheden voor kanalen, routering, media en UX.
+summary: OpenClaw-mogelijkheden voor verschillende kanalen, routering, media en UX.
 title: Functies
 x-i18n:
-    generated_at: "2026-05-10T19:31:25Z"
+    generated_at: "2026-06-27T17:26:10Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: eb2e4973ad7f986034e125cd84d9d3f8542ea4821bde28fce2df3fb78c06c34f
+    source_hash: b69cead6fc3c6af91e95f8080d9ca409f24c314cf97f707b67d8fdeb84cf92fa
     source_path: concepts/features.md
     workflow: 16
 ---
@@ -22,16 +23,16 @@ x-i18n:
     Meegeleverde plugins voegen Matrix, Nextcloud Talk, Nostr, Twitch, Zalo en meer toe zonder aparte installaties in normale huidige releases.
   </Card>
   <Card title="Routering" icon="route" href="/nl/concepts/multi-agent">
-    Multi-agent-routering met geïsoleerde sessies.
+    Multi-agentroutering met geïsoleerde sessies.
   </Card>
   <Card title="Media" icon="image" href="/nl/nodes/images">
-    Afbeeldingen, audio, video, documenten en het genereren van afbeeldingen/video.
+    Afbeeldingen, audio, video, documenten en afbeelding-/videogeneratie.
   </Card>
-  <Card title="Apps en UI" icon="monitor" href="/nl/web/control-ui">
-    Web Control UI en de bijbehorende macOS-app.
+  <Card title="Apps en UI" icon="monitor" href="/nl/platforms">
+    Windows Hub, Web Control UI, macOS-app en mobiele nodes.
   </Card>
   <Card title="Mobiele nodes" icon="smartphone" href="/nl/nodes">
-    iOS- en Android-nodes met koppeling, spraak/chat en uitgebreide apparaatopdrachten.
+    iOS- en Android-nodes met koppeling, spraak/chat en rijke apparaatopdrachten.
   </Card>
 </Columns>
 
@@ -41,19 +42,19 @@ x-i18n:
 
 - Ingebouwde kanalen omvatten Discord, Google Chat, iMessage, IRC, Signal, Slack, Telegram, WebChat en WhatsApp
 - Meegeleverde Plugin-kanalen omvatten Feishu, LINE, Matrix, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Synology Chat, Tlon, Twitch, Zalo en Zalo Personal
-- Optionele apart geïnstalleerde kanaalplugins omvatten Voice Call en pakketten van derden zoals WeChat
-- Kanaalplugins van derden kunnen de Gateway verder uitbreiden, bijvoorbeeld met WeChat
-- Ondersteuning voor groepschats met activatie op basis van vermeldingen
+- Optionele, afzonderlijk geïnstalleerde kanaalplugins omvatten Voice Call en pakketten van derden, zoals WeChat
+- Kanaalplugins van derden kunnen de Gateway verder uitbreiden, zoals WeChat
+- Ondersteuning voor groepschats met activering op basis van vermeldingen
 - DM-veiligheid met allowlists en koppeling
 
 **Agent:**
 
 - Ingebouwde agentruntime met toolstreaming
-- Multi-agent-routering met geïsoleerde sessies per werkruimte of afzender
+- Multi-agentroutering met geïsoleerde sessies per werkruimte of afzender
 - Sessies: directe chats worden samengevoegd in gedeelde `main`; groepen zijn geïsoleerd
 - Streaming en chunking voor lange antwoorden
 
-**Auth en providers:**
+**Authenticatie en providers:**
 
 - Meer dan 35 modelproviders (Anthropic, OpenAI, Google en meer)
 - Abonnementsauthenticatie via OAuth (bijv. OpenAI Codex)
@@ -62,21 +63,21 @@ x-i18n:
 **Media:**
 
 - Afbeeldingen, audio, video en documenten in en uit
-- Gedeelde capability-oppervlakken voor het genereren van afbeeldingen en video
-- Transcriptie van spraakberichten
+- Gedeelde mogelijkheden voor afbeeldingsgeneratie en videogeneratie
+- Transcriptie van spraaknotities
 - Tekst-naar-spraak met meerdere providers
 
 **Apps en interfaces:**
 
 - WebChat en browser-Control UI
-- macOS-menubalk-app
+- Begeleidende macOS-menubalk-app
 - iOS-node met koppeling, Canvas, camera, schermopname, locatie en spraak
 - Android-node met koppeling, chat, spraak, Canvas, camera en apparaatopdrachten
 
 **Tools en automatisering:**
 
 - Browserautomatisering, exec, sandboxing
-- Webzoekopdrachten (Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG, Tavily)
+- Webzoekopdracht (Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG, Tavily)
 - Cron-taken en Heartbeat-planning
 - Skills, plugins en workflowpijplijnen (Lobster)
 
@@ -84,7 +85,7 @@ x-i18n:
 
 <CardGroup cols={2}>
   <Card title="Experimentele functies" href="/nl/concepts/experimental-features" icon="flask">
-    Opt-in functies die nog niet naar het standaardoppervlak zijn verzonden.
+    Opt-infuncties die nog niet naar het standaardoppervlak zijn verzonden.
   </Card>
   <Card title="Agentruntime" href="/nl/concepts/agent" icon="robot">
     Agentruntimemodel en hoe runs worden verzonden.

@@ -1,30 +1,32 @@
 ---
 read_when:
-    - Chcesz dostawcę wyszukiwania w sieci, który nie wymaga klucza API
-    - Chcesz używać DuckDuckGo do web_search
-    - Potrzebujesz zapasowego mechanizmu wyszukiwania niewymagającego konfiguracji
-summary: Wyszukiwarka internetowa DuckDuckGo -- zapasowy dostawca niewymagający klucza (eksperymentalny, oparty na HTML)
+    - Potrzebujesz dostawcy wyszukiwania w sieci, który nie wymaga klucza API
+    - Chcesz użyć DuckDuckGo do web_search
+    - Chcesz jawnie wybranego dostawcy wyszukiwania bez klucza
+summary: Wyszukiwanie internetowe DuckDuckGo -- dostawca bez klucza (eksperymentalny, oparty na HTML)
 title: Wyszukiwanie DuckDuckGo
 x-i18n:
-    generated_at: "2026-05-06T09:32:04Z"
+    generated_at: "2026-06-27T18:25:41Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 89c23535730dc272b88e22d1dbeef61abd55a7968d9e57bdce20594df8a2c0f2
+    source_hash: c042a3cd4fa6f37cb42b88930b5fe0122a561a810e275f26d9c1eb56502495a7
     source_path: tools/duckduckgo-search.md
     workflow: 16
 ---
 
-OpenClaw obsługuje DuckDuckGo jako dostawcę `web_search` **bez klucza**. Nie jest wymagany klucz API ani konto.
+OpenClaw obsługuje DuckDuckGo jako dostawcę `web_search` **bez klucza**. Klucz API
+ani konto nie są wymagane.
 
 <Warning>
   DuckDuckGo to **eksperymentalna, nieoficjalna** integracja, która pobiera wyniki
-  ze stron wyszukiwania DuckDuckGo bez JavaScriptu - nie z oficjalnego API. Należy
-  spodziewać się sporadycznych awarii z powodu stron z wyzwaniami dla botów lub zmian HTML.
+  ze stron wyszukiwania DuckDuckGo bez JavaScriptu - nie z oficjalnego API. Spodziewaj się
+  sporadycznych awarii przez strony z wyzwaniami dla botów lub zmiany HTML.
 </Warning>
 
 ## Konfiguracja
 
-Nie potrzeba klucza API - wystarczy ustawić DuckDuckGo jako dostawcę:
+Klucz API nie jest potrzebny - po prostu ustaw DuckDuckGo jako swojego dostawcę:
 
 <Steps>
   <Step title="Skonfiguruj">
@@ -49,7 +51,7 @@ Nie potrzeba klucza API - wystarczy ustawić DuckDuckGo jako dostawcę:
 }
 ```
 
-Opcjonalne ustawienia na poziomie Plugin dla regionu i SafeSearch:
+Opcjonalne ustawienia na poziomie pluginu dla regionu i SafeSearch:
 
 ```json5
 {
@@ -86,30 +88,29 @@ Kod regionu DuckDuckGo (np. `us-en`, `uk-en`, `de-de`).
 Poziom SafeSearch.
 </ParamField>
 
-Region i SafeSearch można też ustawić w konfiguracji Plugin (patrz wyżej) - parametry
-narzędzia zastępują wartości konfiguracji dla pojedynczego zapytania.
+Region i SafeSearch można też ustawić w konfiguracji pluginu (patrz wyżej) - parametry
+narzędzia zastępują wartości konfiguracji dla danego zapytania.
 
 ## Uwagi
 
-- **Brak klucza API** - działa od razu, bez konfiguracji
-- **Eksperymentalne** - zbiera wyniki ze stron wyszukiwania DuckDuckGo w formacie HTML
-  bez JavaScriptu, a nie z oficjalnego API ani SDK
+- **Brak klucza API** - działa po wybraniu DuckDuckGo jako dostawcy `web_search`
+- **Eksperymentalne** - zbiera wyniki ze stron wyszukiwania HTML DuckDuckGo bez JavaScriptu,
+  a nie z oficjalnego API ani SDK
 - **Ryzyko wyzwań dla botów** - DuckDuckGo może wyświetlać CAPTCHA lub blokować żądania
   przy intensywnym albo zautomatyzowanym użyciu
-- **Parsowanie HTML** - wyniki zależą od struktury strony, która może się zmienić bez
+- **Parsowanie HTML** - wyniki zależą od struktury strony, która może zmienić się bez
   powiadomienia
-- **Kolejność automatycznego wykrywania** - DuckDuckGo jest pierwszą zapasową opcją bez klucza
-  (kolejność 100) w automatycznym wykrywaniu. Dostawcy oparci na API ze skonfigurowanymi kluczami są uruchamiani
-  jako pierwsi, potem Ollama Web Search (kolejność 110), następnie SearXNG (kolejność 200)
-- **SafeSearch domyślnie ma poziom moderate**, gdy nie jest skonfigurowany
+- **Jawny wybór** - OpenClaw nie wybiera DuckDuckGo automatycznie,
+  gdy nie skonfigurowano dostawcy opartego na API
+- **SafeSearch domyślnie ma poziom moderate**, gdy nie jest skonfigurowane
 
 <Tip>
-  Do zastosowań produkcyjnych rozważ [Brave Search](/pl/tools/brave-search) (dostępny darmowy poziom)
-  albo innego dostawcę opartego na API.
+  Do użytku produkcyjnego rozważ [Brave Search](/pl/tools/brave-search) (dostępny
+  bezpłatny poziom) albo innego dostawcę opartego na API.
 </Tip>
 
 ## Powiązane
 
 - [Omówienie Web Search](/pl/tools/web) -- wszyscy dostawcy i automatyczne wykrywanie
-- [Brave Search](/pl/tools/brave-search) -- uporządkowane wyniki z darmowym poziomem
+- [Brave Search](/pl/tools/brave-search) -- uporządkowane wyniki z bezpłatnym poziomem
 - [Exa Search](/pl/tools/exa-search) -- wyszukiwanie neuronowe z wyodrębnianiem treści

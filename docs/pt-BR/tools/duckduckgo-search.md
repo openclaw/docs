@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Você quer um provedor de pesquisa na web que não exige chave de API
-    - Você quer usar o DuckDuckGo para web_search
-    - Você precisa de uma alternativa de busca sem configuração
-summary: Pesquisa na web do DuckDuckGo -- provedor de fallback sem chave (experimental, baseado em HTML)
-title: Pesquisa no DuckDuckGo
+    - Você quer um provedor de pesquisa na Web que não exija chave de API
+    - Você quer usar DuckDuckGo para web_search
+    - Você quer um provedor de pesquisa sem chave selecionado explicitamente
+summary: Pesquisa web DuckDuckGo -- provedor sem chave (experimental, baseado em HTML)
+title: Pesquisa DuckDuckGo
 x-i18n:
-    generated_at: "2026-05-06T09:15:55Z"
+    generated_at: "2026-06-27T18:14:35Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 89c23535730dc272b88e22d1dbeef61abd55a7968d9e57bdce20594df8a2c0f2
+    source_hash: c042a3cd4fa6f37cb42b88930b5fe0122a561a810e275f26d9c1eb56502495a7
     source_path: tools/duckduckgo-search.md
     workflow: 16
 ---
 
-OpenClaw é compatível com DuckDuckGo como provedor `web_search` **sem chave**. Nenhuma chave de API ou conta é necessária.
+OpenClaw oferece suporte ao DuckDuckGo como provedor `web_search` **sem chave**. Nenhuma chave de API ou conta é necessária.
 
 <Warning>
-  DuckDuckGo é uma integração **experimental e não oficial** que extrai resultados
+  DuckDuckGo é uma integração **experimental e não oficial** que obtém resultados
   das páginas de busca sem JavaScript do DuckDuckGo, não de uma API oficial. Espere
   quebras ocasionais causadas por páginas de desafio contra bots ou alterações de HTML.
 </Warning>
 
 ## Configuração
 
-Nenhuma chave de API é necessária; basta definir DuckDuckGo como seu provedor:
+Nenhuma chave de API necessária; basta definir o DuckDuckGo como seu provedor:
 
 <Steps>
   <Step title="Configurar">
@@ -49,7 +50,7 @@ Nenhuma chave de API é necessária; basta definir DuckDuckGo como seu provedor:
 }
 ```
 
-Configurações opcionais no nível do plugin para região e SafeSearch:
+Configurações opcionais no nível do Plugin para região e SafeSearch:
 
 ```json5
 {
@@ -86,22 +87,22 @@ Código de região do DuckDuckGo (por exemplo, `us-en`, `uk-en`, `de-de`).
 Nível do SafeSearch.
 </ParamField>
 
-Região e SafeSearch também podem ser definidos na configuração do plugin (veja acima);
-os parâmetros da ferramenta substituem os valores de configuração por consulta.
+Região e SafeSearch também podem ser definidos na configuração do Plugin (veja acima); os
+parâmetros da ferramenta substituem os valores de configuração por consulta.
 
 ## Observações
 
-- **Nenhuma chave de API**: funciona imediatamente, sem nenhuma configuração
+- **Nenhuma chave de API**: funciona depois que você seleciona o DuckDuckGo como seu provedor
+  `web_search`
 - **Experimental**: coleta resultados das páginas de busca HTML sem JavaScript
   do DuckDuckGo, não de uma API ou SDK oficial
-- **Risco de desafio contra bots**: o DuckDuckGo pode servir CAPTCHAs ou bloquear
-  solicitações sob uso intenso ou automatizado
+- **Risco de desafio contra bots**: o DuckDuckGo pode servir CAPTCHAs ou bloquear solicitações
+  sob uso intenso ou automatizado
 - **Análise de HTML**: os resultados dependem da estrutura da página, que pode mudar sem
   aviso
-- **Ordem de detecção automática**: DuckDuckGo é a primeira alternativa sem chave
-  (ordem 100) na detecção automática. Provedores baseados em API com chaves configuradas executam
-  primeiro, depois Ollama Web Search (ordem 110) e, em seguida, SearXNG (ordem 200)
-- **SafeSearch usa moderate por padrão** quando não configurado
+- **Seleção explícita**: o OpenClaw não escolhe o DuckDuckGo automaticamente
+  quando nenhum provedor baseado em API está configurado
+- **SafeSearch usa moderado por padrão** quando não configurado
 
 <Tip>
   Para uso em produção, considere [Brave Search](/pt-BR/tools/brave-search) (camada gratuita
@@ -110,6 +111,6 @@ os parâmetros da ferramenta substituem os valores de configuração por consult
 
 ## Relacionados
 
-- [Visão geral da Web Search](/pt-BR/tools/web) -- todos os provedores e detecção automática
+- [Visão geral do Web Search](/pt-BR/tools/web) -- todos os provedores e detecção automática
 - [Brave Search](/pt-BR/tools/brave-search) -- resultados estruturados com camada gratuita
 - [Exa Search](/pt-BR/tools/exa-search) -- busca neural com extração de conteúdo

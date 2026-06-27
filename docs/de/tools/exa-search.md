@@ -2,32 +2,41 @@
 read_when:
     - Sie möchten Exa für web_search verwenden
     - Sie benötigen einen EXA_API_KEY
-    - Sie möchten neuronale Suche oder Inhaltsextraktion nutzen
-summary: Exa AI-Suche -- neuronale Suche und Stichwortsuche mit Inhaltsextraktion
+    - Sie möchten neuronale Suche oder Inhaltsextraktion
+summary: Exa-AI-Suche -- neuronale Suche und Schlüsselwortsuche mit Inhaltsextraktion
 title: Exa-Suche
 x-i18n:
-    generated_at: "2026-05-02T06:47:15Z"
+    generated_at: "2026-06-27T18:17:09Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d2ddf83c5130208eadc78eccb10aebf67af11b05690d75a817d6999f79be5fc3
+    source_hash: ffbf61b6cb7768898842e27805acc34334544b327d010246da12513218aa465f
     source_path: tools/exa-search.md
     workflow: 16
 ---
 
 OpenClaw unterstützt [Exa AI](https://exa.ai/) als `web_search`-Provider. Exa
 bietet neuronale, schlüsselwortbasierte und hybride Suchmodi mit integrierter
-Inhaltsextraktion (Hervorhebungen, Text, Zusammenfassungen).
+Inhaltsextraktion (Highlights, Text, Zusammenfassungen).
 
-## API-Schlüssel erhalten
+## Plugin installieren
+
+Installieren Sie das offizielle Plugin und starten Sie dann Gateway neu:
+
+```bash
+openclaw plugins install @openclaw/exa-plugin
+openclaw gateway restart
+```
+
+## API-Schlüssel abrufen
 
 <Steps>
-  <Step title="Create an account">
-    Registrieren Sie sich unter [exa.ai](https://exa.ai/) und generieren Sie
-    einen API-Schlüssel in Ihrem Dashboard.
+  <Step title="Konto erstellen">
+    Registrieren Sie sich unter [exa.ai](https://exa.ai/) und generieren Sie einen API-Schlüssel in Ihrem
+    Dashboard.
   </Step>
-  <Step title="Store the key">
-    Legen Sie `EXA_API_KEY` in der Gateway-Umgebung fest, oder konfigurieren Sie
-    ihn über:
+  <Step title="Schlüssel speichern">
+    Legen Sie `EXA_API_KEY` in der Gateway-Umgebung fest oder konfigurieren Sie ihn über:
 
     ```bash
     openclaw configure --section web
@@ -62,17 +71,16 @@ Inhaltsextraktion (Hervorhebungen, Text, Zusammenfassungen).
 }
 ```
 
-**Alternative per Umgebung:** Legen Sie `EXA_API_KEY` in der Gateway-Umgebung fest.
+**Alternative über Umgebung:** Legen Sie `EXA_API_KEY` in der Gateway-Umgebung fest.
 Bei einer Gateway-Installation tragen Sie ihn in `~/.openclaw/.env` ein.
 
-## Basis-URL überschreiben
+## Base-URL überschreiben
 
 Legen Sie `plugins.entries.exa.config.webSearch.baseUrl` fest, wenn Exa-Suchanfragen
-über einen kompatiblen Proxy oder einen alternativen Exa-Endpunkt laufen sollen.
-OpenClaw normalisiert reine Hosts, indem `https://` vorangestellt wird, und hängt
-`/search` an, sofern der Pfad nicht bereits dort endet. Der aufgelöste Endpunkt
-wird in den Such-Cache-Schlüssel aufgenommen, sodass Ergebnisse von verschiedenen
-Exa-Endpunkten nicht gemeinsam genutzt werden.
+über einen kompatiblen Proxy oder einen alternativen Exa-Endpunkt laufen sollen. OpenClaw
+normalisiert reine Hosts, indem `https://` vorangestellt wird, und hängt `/search` an, sofern der
+Pfad dort nicht bereits endet. Der aufgelöste Endpunkt wird in den Suchcache-Schlüssel
+aufgenommen, sodass Ergebnisse verschiedener Exa-Endpunkte nicht geteilt werden.
 
 ## Tool-Parameter
 
@@ -101,13 +109,13 @@ Ergebnisse vor diesem Datum (`YYYY-MM-DD`).
 </ParamField>
 
 <ParamField path="contents" type="object">
-Optionen zur Inhaltsextraktion (siehe unten).
+Optionen für die Inhaltsextraktion (siehe unten).
 </ParamField>
 
 ### Inhaltsextraktion
 
-Exa kann extrahierte Inhalte zusammen mit Suchergebnissen zurückgeben. Übergeben
-Sie ein `contents`-Objekt, um dies zu aktivieren:
+Exa kann extrahierte Inhalte zusammen mit Suchergebnissen zurückgeben. Übergeben Sie ein `contents`-
+Objekt, um dies zu aktivieren:
 
 ```javascript
 await web_search({
@@ -121,11 +129,11 @@ await web_search({
 });
 ```
 
-| contents-Option | Typ                                                                   | Beschreibung                         |
-| --------------- | --------------------------------------------------------------------- | ------------------------------------ |
-| `text`          | `boolean \| { maxCharacters }`                                        | Vollständigen Seitentext extrahieren |
-| `highlights`    | `boolean \| { maxCharacters, query, numSentences, highlightsPerUrl }` | Schlüsselsätze extrahieren           |
-| `summary`       | `boolean \| { query }`                                                | KI-generierte Zusammenfassung        |
+| Inhaltsoption | Typ                                                                   | Beschreibung                         |
+| -------------- | --------------------------------------------------------------------- | ------------------------------------ |
+| `text`         | `boolean \| { maxCharacters }`                                        | Vollständigen Seitentext extrahieren |
+| `highlights`   | `boolean \| { maxCharacters, query, numSentences, highlightsPerUrl }` | Schlüsselsätze extrahieren           |
+| `summary`      | `boolean \| { query }`                                                | KI-generierte Zusammenfassung        |
 
 ### Suchmodi
 
@@ -133,30 +141,29 @@ await web_search({
 | ---------------- | ------------------------------------------------- |
 | `auto`           | Exa wählt den besten Modus aus (Standard)         |
 | `neural`         | Semantische/bedeutungsbasierte Suche              |
-| `fast`           | Schnelle Schlüsselwortsuche                       |
+| `fast`           | Schnelle schlüsselwortbasierte Suche              |
 | `deep`           | Gründliche Tiefensuche                            |
 | `deep-reasoning` | Tiefensuche mit Reasoning                         |
 | `instant`        | Schnellste Ergebnisse                             |
 
 ## Hinweise
 
-- Wenn keine `contents`-Option angegeben wird, verwendet Exa standardmäßig
-  `{ highlights: true }`, sodass Ergebnisse Auszüge aus Schlüsselsätzen enthalten
-- Ergebnisse behalten `highlightScores`- und `summary`-Felder aus der Exa API-
-  Antwort bei, sofern verfügbar
-- Ergebnisbeschreibungen werden zuerst aus Hervorhebungen, dann aus der
-  Zusammenfassung und danach aus dem vollständigen Text ermittelt, je nachdem,
-  was verfügbar ist
-- `freshness` und `date_after`/`date_before` können nicht kombiniert werden;
-  verwenden Sie einen Zeitfiltermodus
-- Pro Anfrage können bis zu 100 Ergebnisse zurückgegeben werden (abhängig von
-  den Limits des Exa-Suchtyps)
-- Ergebnisse werden standardmäßig 15 Minuten zwischengespeichert (konfigurierbar
-  über `cacheTtlMinutes`)
+- Wenn keine `contents`-Option angegeben ist, verwendet Exa standardmäßig `{ highlights: true }`,
+  sodass Ergebnisse Auszüge mit Schlüsselsätzen enthalten
+- Ergebnisse behalten die Felder `highlightScores` und `summary` aus der Exa-API-
+  Antwort bei, wenn sie verfügbar sind
+- Ergebnisbeschreibungen werden zuerst aus Highlights, dann aus der Zusammenfassung und dann aus
+  dem vollständigen Text aufgelöst – je nachdem, was verfügbar ist
+- `freshness` und `date_after`/`date_before` können nicht kombiniert werden – verwenden Sie einen
+  Zeitfiltermodus
+- Pro Anfrage können bis zu 100 Ergebnisse zurückgegeben werden (abhängig von den Exa-Suchtyp-
+  Limits)
+- Ergebnisse werden standardmäßig 15 Minuten lang zwischengespeichert (konfigurierbar über
+  `cacheTtlMinutes`)
 - Exa ist eine offizielle API-Integration mit strukturierten JSON-Antworten
 
-## Siehe auch
+## Verwandte Themen
 
-- [Websuche-Übersicht](/de/tools/web) -- alle Provider und automatische Erkennung
+- [Übersicht zur Websuche](/de/tools/web) -- alle Provider und automatische Erkennung
 - [Brave Search](/de/tools/brave-search) -- strukturierte Ergebnisse mit Länder-/Sprachfiltern
 - [Perplexity Search](/de/tools/perplexity-search) -- strukturierte Ergebnisse mit Domain-Filterung

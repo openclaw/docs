@@ -1,23 +1,24 @@
 ---
 read_when:
-    - Chcesz korzystać z CLI memory-wiki
+    - Chcesz użyć CLI memory-wiki
     - Dokumentujesz lub zmieniasz `openclaw wiki`
-summary: Dokumentacja referencyjna CLI dla `openclaw wiki` (status skarbca memory-wiki, wyszukiwanie, kompilowanie, lintowanie, stosowanie, most oraz pomocniki Obsidian)
+summary: Dokumentacja referencyjna CLI dla `openclaw wiki` (status magazynu memory-wiki, wyszukiwanie, kompilowanie, lintowanie, stosowanie, bridge oraz narzędzia pomocnicze Obsidian)
 title: Wiki
 x-i18n:
-    generated_at: "2026-04-30T09:46:09Z"
+    generated_at: "2026-06-27T17:24:39Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 67fe56c9bff7b24570f890733314857dd261fca8233051681a83c171656ff27d
+    source_hash: c6679a5aad41a19dbcad6075c190c3eb533e3ba13a6d5018d56988a23b2d9023
     source_path: cli/wiki.md
     workflow: 16
 ---
 
 # `openclaw wiki`
 
-Sprawdzaj i utrzymuj sejf `memory-wiki`.
+Inspekcja i utrzymanie skarbca `memory-wiki`.
 
-Dostarczane przez dołączony Plugin `memory-wiki`.
+Dostarczane przez dołączony plugin `memory-wiki`.
 
 Powiązane:
 
@@ -27,12 +28,12 @@ Powiązane:
 
 ## Do czego służy
 
-Używaj `openclaw wiki`, gdy potrzebujesz skompilowanego sejfu wiedzy z:
+Użyj `openclaw wiki`, gdy potrzebujesz skompilowanego skarbca wiedzy z:
 
 - natywnym dla wiki wyszukiwaniem i odczytem stron
 - syntezami bogatymi w pochodzenie informacji
-- raportami sprzeczności i świeżości
-- importami pomostowymi z aktywnego pluginu pamięci
+- raportami sprzeczności i aktualności
+- importami pomostowymi z pluginu aktywnej pamięci
 - opcjonalnymi pomocnikami CLI Obsidian
 
 ## Typowe polecenia
@@ -42,6 +43,7 @@ openclaw wiki status
 openclaw wiki doctor
 openclaw wiki init
 openclaw wiki ingest ./notes/alpha.md
+openclaw wiki okf import ./knowledge-catalog/okf/bundles/ga4
 openclaw wiki compile
 openclaw wiki lint
 openclaw wiki search "alpha"
@@ -71,60 +73,84 @@ openclaw wiki obsidian daily
 
 ### `wiki status`
 
-Sprawdza bieżący tryb sejfu, stan oraz dostępność CLI Obsidian.
+Sprawdź bieżący tryb skarbca, jego stan oraz dostępność CLI Obsidian.
 
-Użyj tego najpierw, gdy nie masz pewności, czy sejf jest zainicjowany, tryb pomostu
+Użyj tego najpierw, gdy nie masz pewności, czy skarbiec jest zainicjowany, tryb pomostowy
 działa poprawnie albo integracja z Obsidian jest dostępna.
 
-Gdy tryb pomostu jest aktywny i skonfigurowany do odczytu artefaktów pamięci, to polecenie
-odpytuje działający Gateway, dzięki czemu widzi ten sam kontekst aktywnego pluginu pamięci co
+Gdy tryb pomostowy jest aktywny i skonfigurowany do odczytu artefaktów pamięci, to polecenie
+odpytuje działający Gateway, dzięki czemu widzi ten sam kontekst pluginu aktywnej pamięci co
 pamięć agenta/środowiska uruchomieniowego.
 
 ### `wiki doctor`
 
-Uruchamia kontrole stanu wiki i ujawnia problemy z konfiguracją lub sejfem.
+Uruchom kontrole stanu wiki i pokaż problemy z konfiguracją lub skarbcem.
 
-Gdy tryb pomostu jest aktywny i skonfigurowany do odczytu artefaktów pamięci, to polecenie
+Gdy tryb pomostowy jest aktywny i skonfigurowany do odczytu artefaktów pamięci, to polecenie
 odpytuje działający Gateway przed zbudowaniem raportu. Wyłączone importy pomostowe
 oraz konfiguracje pomostu, które nie odczytują artefaktów pamięci, pozostają lokalne/offline.
 
 Typowe problemy obejmują:
 
-- tryb pomostu włączony bez publicznych artefaktów pamięci
-- nieprawidłowy lub brakujący układ sejfu
+- tryb pomostowy włączony bez publicznych artefaktów pamięci
+- nieprawidłowy lub brakujący układ skarbca
 - brak zewnętrznego CLI Obsidian, gdy oczekiwany jest tryb Obsidian
 
 ### `wiki init`
 
-Tworzy układ sejfu wiki i strony startowe.
+Utwórz układ skarbca wiki i strony startowe.
 
-Inicjuje strukturę główną, w tym indeksy najwyższego poziomu oraz katalogi
+Inicjuje to strukturę główną, w tym indeksy najwyższego poziomu i katalogi
 pamięci podręcznej.
 
 ### `wiki ingest <path-or-url>`
 
-Importuje treść do warstwy źródłowej wiki.
+Zaimportuj treść do warstwy źródłowej wiki.
 
 Uwagi:
 
-- import z URL jest kontrolowany przez `ingest.allowUrlIngest`
-- zaimportowane strony źródłowe zachowują pochodzenie informacji we frontmatter
-- automatyczna kompilacja może zostać uruchomiona po imporcie, gdy jest włączona
+- pobieranie z URL jest kontrolowane przez `ingest.allowUrlIngest`
+- zaimportowane strony źródłowe zachowują pochodzenie informacji we frontmatterze
+- automatyczna kompilacja może uruchomić się po pobraniu, gdy jest włączona
+
+### `wiki okf import <path>`
+
+Zaimportuj rozpakowany pakiet Open Knowledge Format do stron pojęć wiki.
+
+Importer odczytuje każdy niezarezerwowany dokument pojęcia `.md` w drzewie katalogów OKF,
+wymaga niepustego pola `type` i traktuje nieznane wartości `type` OKF jako pojęcia ogólne.
+Zarezerwowane pliki OKF `index.md` i `log.md` nie są importowane jako pojęcia.
+
+Zaimportowane strony są spłaszczane pod `concepts/`, dzięki czemu istniejące przepływy
+kompilacji, wyszukiwania, pobierania, podsumowań i dashboardów wiki widzą je od razu.
+Oryginalny identyfikator pojęcia OKF, `type`, `resource`, `tags`, znacznik czasu, ścieżka
+źródłowa i pełny frontmatter są zachowywane we frontmatterze strony. Wewnętrzne linki
+Markdown OKF są przepisywane na wygenerowane strony wiki; uszkodzone lub zewnętrzne linki
+pozostają bez zmian.
+
+Przykłady:
+
+```bash
+openclaw wiki okf import ./bundles/ga4
+openclaw wiki okf import ./bundles/ga4 --json
+openclaw wiki search "BigQuery Table" --mode source-evidence --json
+openclaw wiki get <path-from-json-result>
+```
 
 ### `wiki compile`
 
-Przebudowuje indeksy, bloki powiązane, pulpity i skompilowane streszczenia.
+Odbuduj indeksy, powiązane bloki, dashboardy i skompilowane podsumowania.
 
-Zapisuje stabilne artefakty przeznaczone dla maszyn w:
+Zapisuje to stabilne artefakty przeznaczone dla maszyn pod:
 
 - `.openclaw-wiki/cache/agent-digest.json`
 - `.openclaw-wiki/cache/claims.jsonl`
 
-Jeśli `render.createDashboards` jest włączone, kompilacja odświeża również strony raportów.
+Jeśli `render.createDashboards` jest włączone, kompilacja odświeża także strony raportów.
 
 ### `wiki lint`
 
-Sprawdza sejf i raportuje:
+Sprawdź skarbiec i zgłoś:
 
 - problemy strukturalne
 - luki w pochodzeniu informacji
@@ -137,7 +163,7 @@ Uruchom to po istotnych aktualizacjach wiki.
 
 ### `wiki search <query>`
 
-Przeszukuje treść wiki.
+Przeszukaj treść wiki.
 
 Zachowanie zależy od konfiguracji:
 
@@ -146,15 +172,15 @@ Zachowanie zależy od konfiguracji:
 - `--mode`: `auto`, `find-person`, `route-question`, `source-evidence` albo
   `raw-claim`
 
-Używaj `wiki search`, gdy potrzebujesz rankingu specyficznego dla wiki lub szczegółów pochodzenia informacji.
-Dla jednego szerokiego współdzielonego przywołania preferuj `openclaw memory search`, gdy
-aktywny plugin pamięci udostępnia współdzielone wyszukiwanie.
+Użyj `wiki search`, gdy potrzebujesz rankingu specyficznego dla wiki lub szczegółów
+pochodzenia informacji. Do jednego szerokiego przebiegu wspólnego przypominania preferuj
+`openclaw memory search`, gdy plugin aktywnej pamięci udostępnia wspólne wyszukiwanie.
 
 Tryby wyszukiwania pomagają agentowi wybrać właściwą powierzchnię:
 
-- `find-person`: aliasy, identyfikatory, profile społecznościowe, kanoniczne ID i strony osób
-- `route-question`: wskazówki „kogo zapytać”/„najlepsze zastosowanie” oraz kontekst relacji
-- `source-evidence`: strony źródłowe i ustrukturyzowane pola dowodów
+- `find-person`: aliasy, identyfikatory, konta społecznościowe, kanoniczne identyfikatory i strony osób
+- `route-question`: wskazówki ask-for/best-used-for oraz kontekst relacji
+- `source-evidence`: strony źródłowe i ustrukturyzowane pola dowodowe
 - `raw-claim`: ustrukturyzowany tekst tezy z metadanymi tezy/dowodów
 
 Przykłady:
@@ -166,14 +192,14 @@ openclaw wiki search "maintainer-whois" --mode source-evidence
 openclaw wiki search "strong route Teams" --mode raw-claim --json
 ```
 
-Dane wyjściowe tekstowe zawierają wiersze `Claim:` i `Evidence:`, gdy wynik pasuje do
-ustrukturyzowanej tezy. Dane wyjściowe JSON dodatkowo ujawniają `matchedClaimId`,
+Wyjście tekstowe zawiera wiersze `Claim:` i `Evidence:`, gdy wynik pasuje do
+ustrukturyzowanej tezy. Wyjście JSON dodatkowo udostępnia `matchedClaimId`,
 `matchedClaimStatus`, `matchedClaimConfidence`, `evidenceKinds` oraz
-`evidenceSourceIds` do dalszej analizy po stronie agenta.
+`evidenceSourceIds` na potrzeby szczegółowej analizy po stronie agenta.
 
 ### `wiki get <lookup>`
 
-Odczytuje stronę wiki według identyfikatora lub ścieżki względnej.
+Odczytaj stronę wiki według identyfikatora lub ścieżki względnej.
 
 Przykłady:
 
@@ -184,43 +210,43 @@ openclaw wiki get syntheses/alpha-summary.md --from 1 --lines 80
 
 ### `wiki apply`
 
-Stosuje wąskie mutacje bez swobodnej chirurgii stron.
+Zastosuj wąskie mutacje bez swobodnego chirurgicznego edytowania strony.
 
 Obsługiwane przepływy obejmują:
 
 - utworzenie/aktualizację strony syntezy
 - aktualizację metadanych strony
-- dołączenie identyfikatorów źródeł
-- dodanie pytań
-- dodanie sprzeczności
+- dołączanie identyfikatorów źródeł
+- dodawanie pytań
+- dodawanie sprzeczności
 - aktualizację pewności/statusu
 - zapis ustrukturyzowanych tez
 
-To polecenie istnieje po to, aby wiki mogła bezpiecznie ewoluować bez ręcznej edycji
+To polecenie istnieje po to, aby wiki mogła bezpiecznie ewoluować bez ręcznego edytowania
 zarządzanych bloków.
 
 ### `wiki bridge import`
 
-Importuje publiczne artefakty pamięci z aktywnego pluginu pamięci do stron źródłowych
+Zaimportuj publiczne artefakty pamięci z pluginu aktywnej pamięci do stron źródłowych
 wspieranych przez pomost.
 
-Używaj tego w trybie `bridge`, gdy chcesz pobrać najnowsze wyeksportowane artefakty pamięci
-do sejfu wiki.
+Użyj tego w trybie `bridge`, gdy chcesz pobrać najnowsze wyeksportowane artefakty pamięci
+do skarbca wiki.
 
-Dla aktywnych odczytów artefaktów pomostowych CLI kieruje import przez RPC Gateway,
-aby import używał kontekstu pluginu pamięci środowiska uruchomieniowego. Jeśli importy pomostowe są
-wyłączone albo odczyty artefaktów są wyłączone, polecenie zachowuje lokalne/offline
+Przy aktywnych odczytach artefaktów pomostu CLI kieruje import przez RPC Gateway,
+tak aby import używał kontekstu pluginu pamięci środowiska uruchomieniowego. Jeśli importy
+pomostowe są wyłączone albo odczyty artefaktów są wyłączone, polecenie zachowuje lokalne/offline
 zachowanie zerowego importu.
 
 ### `wiki unsafe-local import`
 
-Importuje z jawnie skonfigurowanych ścieżek lokalnych w trybie `unsafe-local`.
+Importuj z jawnie skonfigurowanych ścieżek lokalnych w trybie `unsafe-local`.
 
-Jest to celowo eksperymentalne i przeznaczone wyłącznie dla tej samej maszyny.
+Jest to celowo eksperymentalne i przeznaczone tylko dla tej samej maszyny.
 
 ### `wiki obsidian ...`
 
-Polecenia pomocnicze Obsidian dla sejfów działających w trybie przyjaznym dla Obsidian.
+Polecenia pomocnicze Obsidian dla skarbców działających w trybie przyjaznym dla Obsidian.
 
 Podpolecenia:
 
@@ -230,17 +256,20 @@ Podpolecenia:
 - `command`
 - `daily`
 
-Wymagają oficjalnego CLI `obsidian` w `PATH`, gdy
+Wymagają one oficjalnego CLI `obsidian` w `PATH`, gdy
 `obsidian.useOfficialCli` jest włączone.
 
 ## Praktyczne wskazówki użycia
 
-- Używaj `wiki search` + `wiki get`, gdy znaczenie mają pochodzenie informacji i tożsamość strony.
-- Używaj `wiki apply` zamiast ręcznej edycji zarządzanych sekcji generowanych.
-- Używaj `wiki lint` przed zaufaniem treści sprzecznej lub o niskiej pewności.
-- Używaj `wiki compile` po masowych importach lub zmianach źródeł, gdy chcesz natychmiast uzyskać świeże
-  pulpity i skompilowane streszczenia.
-- Używaj `wiki bridge import`, gdy tryb pomostu zależy od nowo wyeksportowanych artefaktów pamięci.
+- Użyj `wiki search` + `wiki get`, gdy znaczenie mają pochodzenie informacji i tożsamość strony.
+- Użyj `wiki apply` zamiast ręcznego edytowania zarządzanych wygenerowanych sekcji.
+- Użyj `wiki lint` przed zaufaniem treściom sprzecznym lub o niskiej pewności.
+- Użyj `wiki compile` po importach masowych lub zmianach źródeł, gdy od razu potrzebujesz świeżych
+  dashboardów i skompilowanych podsumowań.
+- Użyj `wiki okf import`, gdy katalog danych, eksport dokumentacji lub potok wzbogacania agenta
+  już emituje pakiety Markdown OKF.
+- Użyj `wiki bridge import`, gdy tryb pomostowy zależy od nowo wyeksportowanych artefaktów
+  pamięci.
 
 ## Powiązania z konfiguracją
 

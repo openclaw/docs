@@ -1,13 +1,14 @@
 ---
 read_when:
     - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin perplexity
-summary: Thêm hỗ trợ cho nhà cung cấp tìm kiếm web.
+summary: Thêm hỗ trợ nhà cung cấp tìm kiếm web.
 title: Plugin Perplexity
 x-i18n:
-    generated_at: "2026-05-02T20:53:45Z"
+    generated_at: "2026-06-27T17:54:47Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 86183b8201e7c6869eeeada3efcb15fd67c3d958fd5a50a56922bb0a61c5c74d
+    source_hash: c649c4dc4df04ca668e924e2644af970d75eab404b8f57579e509aa061994ffe
     source_path: plugins/reference/perplexity.md
     workflow: 16
 ---
@@ -19,11 +20,11 @@ Thêm hỗ trợ nhà cung cấp tìm kiếm web.
 ## Phân phối
 
 - Gói: `@openclaw/perplexity-plugin`
-- Tuyến cài đặt: được bao gồm trong OpenClaw
+- Tuyến cài đặt: npm; ClawHub: `clawhub:@openclaw/perplexity-plugin`
 
-## Giao diện
+## Bề mặt
 
-contracts: webSearchProviders
+hợp đồng: webSearchProviders
 
 ## Tài liệu liên quan
 

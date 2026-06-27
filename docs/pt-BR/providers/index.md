@@ -1,22 +1,23 @@
 ---
 read_when:
-    - Você quer escolher um provedor de modelos
-    - Você precisa de uma visão geral rápida dos backends de LLM com suporte
-summary: Provedores de modelos (LLMs) compatíveis com o OpenClaw
+    - Você quer escolher um provedor de modelo
+    - Você precisa de uma visão geral rápida dos backends de LLM compatíveis
+summary: Provedores de modelo (LLMs) compatíveis com OpenClaw
 title: Diretório de provedores
 x-i18n:
-    generated_at: "2026-05-06T09:10:59Z"
+    generated_at: "2026-06-27T18:04:10Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cfc3a15880a5e1881c1a58c60c9ad7e5624350a8db848d03c7cef6ee18c14b81
+    source_hash: a340f6a48f6f1d50116316f9679b009365cd617b3453ebd9b2b31e70f6b94c31
     source_path: providers/index.md
     workflow: 16
 ---
 
-OpenClaw pode usar muitos provedores de LLM. Escolha um provedor, autentique-se e defina o
+OpenClaw pode usar muitos provedores de LLM. Escolha um provedor, autentique-se e então defina o
 modelo padrão como `provider/model`.
 
-Procurando documentação de canais de chat (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/etc.)? Consulte [Canais](/pt-BR/channels).
+Procurando a documentação de canais de chat (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/etc.)? Consulte [Canais](/pt-BR/channels).
 
 ## Início rápido
 
@@ -37,21 +38,23 @@ Procurando documentação de canais de chat (WhatsApp/Telegram/Discord/Slack/Mat
 - [Anthropic (API + Claude CLI)](/pt-BR/providers/anthropic)
 - [Arcee AI (modelos Trinity)](/pt-BR/providers/arcee)
 - [Azure Speech](/pt-BR/providers/azure-speech)
-- [BytePlus (Internacional)](/pt-BR/concepts/model-providers#byteplus-international)
+- [BytePlus (internacional)](/pt-BR/concepts/model-providers#byteplus-international)
 - [Cerebras](/pt-BR/providers/cerebras)
 - [Chutes](/pt-BR/providers/chutes)
+- [Cohere](/pt-BR/providers/cohere)
 - [Cloudflare AI Gateway](/pt-BR/providers/cloudflare-ai-gateway)
 - [ComfyUI](/pt-BR/providers/comfy)
 - [DeepSeek](/pt-BR/providers/deepseek)
+- [ds4 (DeepSeek V4 local)](/pt-BR/providers/ds4)
 - [ElevenLabs](/pt-BR/providers/elevenlabs)
 - [fal](/pt-BR/providers/fal)
 - [Fireworks](/pt-BR/providers/fireworks)
 - [GitHub Copilot](/pt-BR/providers/github-copilot)
-- [modelos GLM](/pt-BR/providers/glm)
+- [GMI Cloud](/pt-BR/providers/gmi)
 - [Google (Gemini)](/pt-BR/providers/google)
 - [Gradium](/pt-BR/providers/gradium)
 - [Groq (inferência LPU)](/pt-BR/providers/groq)
-- [Hugging Face (Inferência)](/pt-BR/providers/huggingface)
+- [Hugging Face (inferência)](/pt-BR/providers/huggingface)
 - [inferrs (modelos locais)](/pt-BR/providers/inferrs)
 - [Kilocode](/pt-BR/providers/kilocode)
 - [LiteLLM (gateway unificado)](/pt-BR/providers/litellm)
@@ -60,14 +63,17 @@ Procurando documentação de canais de chat (WhatsApp/Telegram/Discord/Slack/Mat
 - [Mistral](/pt-BR/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/pt-BR/providers/moonshot)
 - [NVIDIA](/pt-BR/providers/nvidia)
+- [NovitaAI](/pt-BR/providers/novita)
 - [Ollama (nuvem + modelos locais)](/pt-BR/providers/ollama)
+- [Ollama Cloud](/pt-BR/providers/ollama-cloud)
 - [OpenAI (API + Codex)](/pt-BR/providers/openai)
 - [OpenCode](/pt-BR/providers/opencode)
 - [OpenCode Go](/pt-BR/providers/opencode-go)
 - [OpenRouter](/pt-BR/providers/openrouter)
-- [Perplexity (pesquisa na web)](/pt-BR/providers/perplexity-provider)
+- [Perplexity (busca na web)](/pt-BR/providers/perplexity-provider)
 - [Qianfan](/pt-BR/providers/qianfan)
 - [Qwen Cloud](/pt-BR/providers/qwen)
+- [Qwen OAuth / Portal](/pt-BR/providers/qwen-oauth)
 - [Runway](/pt-BR/providers/runway)
 - [SenseAudio](/pt-BR/providers/senseaudio)
 - [SGLang (modelos locais)](/pt-BR/providers/sglang)
@@ -82,7 +88,7 @@ Procurando documentação de canais de chat (WhatsApp/Telegram/Discord/Slack/Mat
 - [Vydra](/pt-BR/providers/vydra)
 - [xAI](/pt-BR/providers/xai)
 - [Xiaomi](/pt-BR/providers/xiaomi)
-- [Z.AI](/pt-BR/providers/zai)
+- [Z.AI (GLM)](/pt-BR/providers/zai)
 
 ## Páginas de visão geral compartilhadas
 
@@ -102,7 +108,7 @@ Procurando documentação de canais de chat (WhatsApp/Telegram/Discord/Slack/Mat
 
 ## Ferramentas da comunidade
 
-- [Claude Max API Proxy](/pt-BR/providers/claude-max-api-proxy) - Proxy da comunidade para credenciais de assinatura Claude (verifique a política/os termos da Anthropic antes de usar)
+- [Claude Max API Proxy](/pt-BR/providers/claude-max-api-proxy) - Proxy da comunidade para credenciais de assinatura do Claude (verifique a política/os termos da Anthropic antes de usar)
 
 Para o catálogo completo de provedores (xAI, Groq, Mistral, etc.) e configuração avançada,
 consulte [Provedores de modelos](/pt-BR/concepts/model-providers).

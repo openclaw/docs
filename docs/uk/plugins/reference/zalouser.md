@@ -1,31 +1,32 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або проводите аудит Plugin zalouser
-summary: Додає поверхню каналу Zalo Personal для надсилання й отримання повідомлень OpenClaw.
-title: Zalo Personal Plugin
+    - Ви встановлюєте, налаштовуєте або перевіряєте plugin zalouser
+summary: Plugin особистого облікового запису Zalo для OpenClaw через нативну інтеграцію zca-js.
+title: Plugin Zalo Personal
 x-i18n:
-    generated_at: "2026-05-03T02:51:13Z"
+    generated_at: "2026-06-27T18:03:20Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 16ed8b255fd10e2a21bc9d9665c1eb26440929e5a46fe2f9dbfae929a25417a0
+    source_hash: c03db694c940cb1fb20f4a2f73512c9d3cf3c79e910cc6a0dd4aa38bd4465ed5
     source_path: plugins/reference/zalouser.md
     workflow: 16
 ---
 
-# Plugin Zalo Personal
+# Zalo Personal Plugin
 
-Додає поверхню каналу Zalo Personal для надсилання й отримання повідомлень OpenClaw.
+OpenClaw Plugin для особистого облікового запису Zalo через нативну інтеграцію zca-js.
 
-## Поширення
+## Розповсюдження
 
 - Пакет: `@openclaw/zalouser`
 - Маршрут встановлення: npm; ClawHub
 
-## Поверхня
+## Інтерфейс
 
-channels: zalouser; contracts: tools
+канали: zalouser; контракти: tools
 
-## Пов’язані документи
+## Пов’язана документація
 
 - [zalouser](/uk/channels/zalouser)
 - [zalouser](/uk/plugins/zalouser)

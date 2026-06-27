@@ -1,36 +1,40 @@
 ---
 read_when:
-    - Modifica del comportamento o dei valori predefiniti delle parole di attivazione vocale
-    - Aggiunta di nuove piattaforme Node che richiedono la sincronizzazione della parola di attivazione
-summary: Parole di attivazione vocale globali (gestite dal Gateway) e come si sincronizzano tra i nodi
+    - Modifica del comportamento o delle impostazioni predefinite delle parole di attivazione vocali
+    - Aggiungere nuove piattaforme Node che richiedono la sincronizzazione della wake word
+summary: Parole di attivazione vocali globali (di proprietà del Gateway) e come si sincronizzano tra i nodi
 title: Attivazione vocale
 x-i18n:
-    generated_at: "2026-05-06T08:58:45Z"
+    generated_at: "2026-06-27T17:43:05Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a284cbe3e12784a8d7a3eab6ba8ae230123557bca7593c956111199b94b91b73
+    source_hash: 3c57955e8061eca2f9fec83500e829f183cd3ef9f794bf385823a28f9c89b0a4
     source_path: nodes/voicewake.md
     workflow: 16
 ---
 
 OpenClaw tratta le **parole di attivazione come un unico elenco globale** gestito dal **Gateway**.
 
-- Non esistono **parole di attivazione personalizzate per nodo**.
+- Non ci sono **parole di attivazione personalizzate per nodo**.
 - **Qualsiasi interfaccia utente di nodo/app può modificare** l'elenco; le modifiche vengono mantenute dal Gateway e trasmesse a tutti.
-- macOS e iOS mantengono toggle locali per **abilitare/disabilitare Voice Wake** (UX locale + autorizzazioni diverse).
-- Android attualmente mantiene Voice Wake disattivato e usa un flusso microfono manuale nella scheda Voce.
+- macOS e iOS mantengono toggle locali per **abilitare/disabilitare Voice Wake** (UX locale + permessi differiscono).
+- Android attualmente mantiene Voice Wake disattivato e usa un flusso manuale del microfono nella scheda Voce.
 
 ## Archiviazione (host Gateway)
 
-Le parole di attivazione sono archiviate sulla macchina del gateway in:
+Le parole di attivazione e le regole di routing sono archiviate nel database di stato del gateway:
 
-- `~/.openclaw/settings/voicewake.json`
+- `~/.openclaw/state/openclaw.sqlite`
 
-Forma:
+Le tabelle attive sono:
 
-```json
-{ "triggers": ["openclaw", "claude", "computer"], "updatedAtMs": 1730000000000 }
-```
+- `voicewake_triggers`
+- `voicewake_routing_config`
+- `voicewake_routing_routes`
+
+I file legacy `settings/voicewake.json` e `settings/voicewake-routing.json` sono
+solo input di migrazione per doctor; il runtime legge e scrive le tabelle SQLite.
 
 ## Protocollo
 
@@ -41,8 +45,8 @@ Forma:
 
 Note:
 
-- I trigger vengono normalizzati (spazi rimossi, valori vuoti scartati). Gli elenchi vuoti ripristinano i valori predefiniti.
-- Per sicurezza vengono applicati limiti (numero/lunghezza massimi).
+- I trigger vengono normalizzati (spazi iniziali/finali rimossi, valori vuoti eliminati). Gli elenchi vuoti tornano ai valori predefiniti.
+- I limiti vengono applicati per sicurezza (limiti di numero/lunghezza).
 
 ### Metodi di routing (trigger → destinazione)
 
@@ -86,15 +90,15 @@ Chi lo riceve:
 ### Nodo iOS
 
 - Usa l'elenco globale per il rilevamento dei trigger di `VoiceWakeManager`.
-- La modifica delle parole di attivazione nelle Impostazioni chiama `voicewake.set` (tramite il WS del Gateway) e mantiene reattivo anche il rilevamento locale delle parole di attivazione.
+- La modifica delle parole di attivazione nelle Impostazioni chiama `voicewake.set` (tramite Gateway WS) e mantiene anche reattivo il rilevamento locale delle parole di attivazione.
 
 ### Nodo Android
 
 - Voice Wake è attualmente disabilitato nel runtime/nelle Impostazioni di Android.
-- La voce Android usa l'acquisizione microfono manuale nella scheda Voce invece dei trigger con parole di attivazione.
+- La voce su Android usa l'acquisizione manuale del microfono nella scheda Voce invece dei trigger con parole di attivazione.
 
 ## Correlati
 
-- [Modalità Talk](/it/nodes/talk)
+- [Modalità conversazione](/it/nodes/talk)
 - [Audio e note vocali](/it/nodes/audio)
 - [Comprensione dei media](/it/nodes/media-understanding)

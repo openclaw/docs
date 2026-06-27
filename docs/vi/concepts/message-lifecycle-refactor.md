@@ -1,48 +1,42 @@
 ---
 read_when:
     - Tái cấu trúc hành vi gửi hoặc nhận của kênh
-    - Thay đổi lượt kênh, điều phối phản hồi, hàng đợi gửi đi, phát trực tuyến bản xem trước, hoặc API thông điệp SDK Plugin
-    - Thiết kế một Plugin kênh mới cần tính năng gửi bền bỉ, biên nhận, bản xem trước, chỉnh sửa hoặc thử lại
-summary: Kế hoạch thiết kế cho vòng đời nhận, gửi, xem trước, chỉnh sửa và truyền phát thông điệp bền vững hợp nhất
-title: Tái cấu trúc vòng đời tin nhắn
+    - Thay đổi kênh gửi đến, điều phối phản hồi, hàng đợi gửi đi, phát trực tuyến bản xem trước, hoặc API thông điệp của plugin SDK
+    - Thiết kế một Plugin kênh mới cần gửi bền vững, biên nhận, bản xem trước, chỉnh sửa hoặc thử lại
+summary: Kế hoạch thiết kế cho vòng đời hợp nhất, bền vững của việc nhận, gửi, xem trước, chỉnh sửa và truyền phát tin nhắn
+title: Tái cấu trúc vòng đời thông điệp
 x-i18n:
-    generated_at: "2026-05-10T19:30:52Z"
+    generated_at: "2026-06-27T17:24:03Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b2e136f1be0f7c1952731b464c3732c68c14a31e672ce628af8182a3f666c914
+    source_hash: 09afead1194a62453342af6feac20fbed24a7761db07a80234333b65947798bb
     source_path: concepts/message-lifecycle-refactor.md
     workflow: 16
 ---
 
-Trang này là thiết kế mục tiêu để thay thế các helper rải rác về lượt kênh, điều phối phản hồi,
-phát trực tuyến bản xem trước, và phân phối đi bằng một vòng đời thông điệp bền vững
-duy nhất.
+Trang này là thiết kế mục tiêu để thay thế các helper rải rác cho inbound của kênh, dispatch phản hồi, phát trực tuyến preview và phân phối outbound bằng một vòng đời message bền vững duy nhất.
 
-Phiên bản ngắn gọn:
+Phiên bản ngắn:
 
-- Các primitive cốt lõi nên là **nhận** và **gửi**, không phải **phản hồi**.
-- Một phản hồi chỉ là một quan hệ trên một thông điệp đi.
-- Một lượt là tiện ích xử lý đầu vào, không phải chủ sở hữu của việc phân phối.
-- Việc gửi phải dựa trên ngữ cảnh: `begin`, render, xem trước hoặc phát trực tuyến, gửi cuối cùng,
-  commit, fail.
-- Việc nhận cũng phải dựa trên ngữ cảnh: chuẩn hóa, khử trùng lặp, định tuyến, ghi nhận,
-  điều phối, ack nền tảng, fail.
-- SDK Plugin công khai nên thu gọn thành một bề mặt thông điệp kênh nhỏ duy nhất.
+- Các primitive cốt lõi nên là **nhận** và **gửi**, không phải **trả lời**.
+- Một phản hồi chỉ là một quan hệ trên một message outbound.
+- Một turn là tiện ích xử lý inbound, không phải chủ sở hữu của việc phân phối.
+- Việc gửi phải dựa trên ngữ cảnh: `begin`, render, preview hoặc stream, gửi cuối cùng, commit, fail.
+- Việc nhận cũng phải dựa trên ngữ cảnh: normalize, dedupe, route, record, dispatch, platform ack, fail.
+- SDK Plugin công khai nên thu gọn thành một bề mặt channel-outbound nhỏ.
 
 ## Vấn đề
 
-Ngăn xếp kênh hiện tại phát triển từ nhiều nhu cầu cục bộ hợp lệ:
+Stack kênh hiện tại phát triển từ một số nhu cầu cục bộ hợp lệ:
 
-- Adapter đầu vào đơn giản dùng `runtime.channel.turn.run`.
-- Adapter phong phú dùng `runtime.channel.turn.runPrepared`.
-- Helper cũ dùng `dispatchInboundReplyWithBase`,
-  `recordInboundSessionAndDispatchReply`, helper payload phản hồi, chia đoạn phản hồi,
-  tham chiếu phản hồi, và helper runtime đầu ra.
-- Phát trực tuyến bản xem trước nằm trong các bộ điều phối riêng theo kênh.
+- Các adapter inbound đơn giản dùng `runtime.channel.inbound.run`.
+- Các adapter phong phú dùng `runtime.channel.inbound.runPreparedReply`.
+- Các helper cũ dùng `dispatchInboundReplyWithBase`, `recordInboundSessionAndDispatchReply`, helper payload phản hồi, chia chunk phản hồi, tham chiếu phản hồi và helper runtime outbound.
+- Phát trực tuyến preview nằm trong các dispatcher riêng theo kênh.
 - Độ bền của phân phối cuối cùng đang được bổ sung quanh các đường dẫn payload phản hồi hiện có.
 
-Hình dạng đó sửa các lỗi cục bộ, nhưng nó khiến OpenClaw có quá nhiều
-khái niệm công khai và quá nhiều nơi mà ngữ nghĩa phân phối có thể lệch nhau.
+Hình dạng đó sửa được lỗi cục bộ, nhưng khiến OpenClaw có quá nhiều khái niệm công khai và quá nhiều nơi mà ngữ nghĩa phân phối có thể lệch nhau.
 
 Vấn đề độ tin cậy làm lộ điều này là:
 
@@ -53,77 +47,57 @@ Telegram polling update acked
   -> final response is lost
 ```
 
-Bất biến mục tiêu rộng hơn Telegram: một khi core quyết định rằng một
-thông điệp đi hiển thị nên tồn tại, ý định đó phải bền vững trước khi lệnh
-gửi đến nền tảng được thử, và biên nhận nền tảng phải được commit sau khi thành công.
-Điều đó mang lại cho OpenClaw khả năng khôi phục at-least-once. Hành vi exactly-once chỉ tồn tại
-cho các adapter có thể chứng minh tính bất biến gốc hoặc đối chiếu một lần thử
-không rõ kết quả sau khi gửi với trạng thái nền tảng trước khi phát lại.
+Invariant mục tiêu rộng hơn Telegram: một khi core quyết định rằng một message outbound hiển thị nên tồn tại, intent phải bền vững trước khi thử gửi qua nền tảng, và receipt của nền tảng phải được commit sau khi thành công. Điều đó cho OpenClaw khả năng khôi phục at-least-once. Hành vi exactly-once chỉ tồn tại với các adapter có thể chứng minh idempotency gốc hoặc đối chiếu một lần thử unknown-after-send với trạng thái nền tảng trước khi phát lại.
 
-Đó là trạng thái cuối của lần tái cấu trúc này, không phải mô tả của mọi đường dẫn hiện tại.
-Trong quá trình di chuyển, các helper đầu ra hiện có vẫn có thể rơi về
-gửi trực tiếp khi ghi hàng đợi theo best-effort thất bại. Việc tái cấu trúc chỉ hoàn tất
-khi các lần gửi cuối bền vững fail closed hoặc chọn không tham gia một cách rõ ràng bằng một
-chính sách không bền vững đã được tài liệu hóa.
+Đó là trạng thái cuối của refactor này, không phải mô tả của mọi đường dẫn hiện tại. Trong quá trình migration, các helper outbound hiện có vẫn có thể rơi về gửi trực tiếp khi ghi hàng đợi best-effort thất bại. Refactor chỉ hoàn tất khi các lần gửi cuối cùng bền vững fail closed hoặc opt out rõ ràng bằng một chính sách không bền vững được ghi tài liệu.
 
 ## Mục tiêu
 
-- Một vòng đời core duy nhất cho mọi đường dẫn nhận và gửi thông điệp kênh.
-- Gửi cuối bền vững theo mặc định trong vòng đời thông điệp mới sau khi một adapter
-  khai báo hành vi an toàn để phát lại.
-- Ngữ nghĩa xem trước, chỉnh sửa, phát trực tuyến, hoàn tất, thử lại, khôi phục và biên nhận
-  được chia sẻ.
+- Một vòng đời core cho mọi đường dẫn nhận và gửi message của kênh.
+- Gửi cuối cùng bền vững theo mặc định trong vòng đời message mới sau khi adapter khai báo hành vi an toàn để phát lại.
+- Ngữ nghĩa preview, edit, stream, finalization, retry, recovery và receipt dùng chung.
 - Một bề mặt SDK Plugin nhỏ mà Plugin bên thứ ba có thể học và duy trì.
-- Tương thích cho các caller `channel.turn` hiện có trong quá trình di chuyển.
+- Tương thích cho các caller tương thích phản hồi inbound hiện có trong quá trình migration.
 - Điểm mở rộng rõ ràng cho năng lực kênh mới.
 - Không có nhánh riêng theo nền tảng trong core.
-- Không có thông điệp kênh delta token. Phát trực tuyến kênh vẫn là xem trước thông điệp,
-  chỉnh sửa, nối thêm, hoặc phân phối khối đã hoàn tất.
-- Metadata có cấu trúc có nguồn gốc từ OpenClaw cho đầu ra vận hành/hệ thống để các lỗi
-  Gateway hiển thị không nhập lại các phòng dùng bot chung như prompt mới.
+- Không có message kênh dạng token-delta. Streaming của kênh vẫn là preview message, edit, append hoặc phân phối block đã hoàn tất.
+- Metadata có cấu trúc do OpenClaw khởi tạo cho output vận hành/hệ thống để các lỗi Gateway hiển thị không đi lại vào các phòng dùng bot chung như prompt mới.
 
 ## Không phải mục tiêu
 
-- Không xóa `runtime.channel.turn.*` trong giai đoạn đầu.
-- Không ép mọi kênh vào cùng một hành vi vận chuyển gốc.
-- Không dạy core về chủ đề Telegram, luồng gốc Slack, redaction Matrix,
-  thẻ Feishu, giọng nói QQ, hoặc hoạt động Teams.
-- Không xuất bản mọi helper di chuyển nội bộ như API SDK ổn định.
+- Không ép mọi kênh hiện có dùng phân phối message bền vững trong giai đoạn đầu.
+- Không ép mọi kênh vào cùng một hành vi transport gốc.
+- Không dạy core về chủ đề Telegram, stream gốc của Slack, redaction của Matrix, thẻ Feishu, giọng nói QQ hoặc activity của Teams.
+- Không công bố tất cả helper migration nội bộ như API SDK ổn định.
 - Không để retry phát lại các thao tác nền tảng không idempotent đã hoàn tất.
 
 ## Mô hình tham chiếu
 
-Vercel Chat có một mô hình tinh thần công khai tốt:
+Vercel Chat có một mô hình tư duy công khai tốt:
 
 - `Chat`
 - `Thread`
 - `Channel`
 - `Message`
-- các phương thức adapter như `postMessage`, `editMessage`, `deleteMessage`,
-  `stream`, `startTyping`, và truy xuất lịch sử
-- một adapter trạng thái cho khử trùng lặp, khóa, hàng đợi và lưu bền vững
+- các phương thức adapter như `postMessage`, `editMessage`, `deleteMessage`, `stream`, `startTyping` và fetch lịch sử
+- một state adapter cho dedupe, lock, hàng đợi và persistence
 
 OpenClaw nên mượn từ vựng, không sao chép bề mặt.
 
 Những gì OpenClaw cần ngoài mô hình đó:
 
-- Ý định gửi đi bền vững trước các lệnh gọi vận chuyển trực tiếp.
+- Intent gửi outbound bền vững trước các lệnh gọi transport trực tiếp.
 - Ngữ cảnh gửi rõ ràng với begin, commit và fail.
 - Ngữ cảnh nhận biết chính sách ack của nền tảng.
-- Biên nhận tồn tại qua khởi động lại và có thể thúc đẩy chỉnh sửa, xóa, khôi phục và
-  triệt tiêu trùng lặp.
-- SDK công khai nhỏ hơn. Plugin được đóng gói có thể dùng helper runtime nội bộ, nhưng
-  Plugin bên thứ ba nên thấy một API thông điệp nhất quán duy nhất.
-- Hành vi riêng theo agent: phiên, bản ghi hội thoại, phát trực tuyến khối, tiến trình công cụ,
-  phê duyệt, chỉ thị media, phản hồi im lặng và lịch sử nhắc đến nhóm.
+- Receipt sống sót qua restart và có thể dẫn dắt edit, delete, recovery và triệt tiêu trùng lặp.
+- SDK công khai nhỏ hơn. Plugin đi kèm có thể dùng helper runtime nội bộ, nhưng Plugin bên thứ ba nên thấy một API message nhất quán.
+- Hành vi riêng theo agent: session, transcript, block streaming, tiến độ tool, phê duyệt, chỉ thị media, phản hồi im lặng và lịch sử mention trong nhóm.
 
-Các promise kiểu `thread.post()` là chưa đủ cho OpenClaw. Chúng che giấu
-ranh giới giao dịch quyết định một lần gửi có thể khôi phục hay không.
+Các promise kiểu `thread.post()` là chưa đủ cho OpenClaw. Chúng che giấu ranh giới transaction quyết định liệu một lần gửi có thể khôi phục hay không.
 
 ## Mô hình core
 
-Miền mới nên nằm dưới một namespace core nội bộ như
-`src/channels/message/*`.
+Domain mới nên nằm dưới một namespace core nội bộ như `src/channels/message/*`.
 
 Nó có bốn khái niệm:
 
@@ -134,20 +108,19 @@ core.messages.live(...)
 core.messages.state(...)
 ```
 
-`receive` sở hữu vòng đời đầu vào.
+`receive` sở hữu vòng đời inbound.
 
-`send` sở hữu vòng đời đầu ra.
+`send` sở hữu vòng đời outbound.
 
-`live` sở hữu trạng thái xem trước, chỉnh sửa, tiến trình và phát trực tuyến.
+`live` sở hữu preview, edit, tiến độ và trạng thái stream.
 
-`state` sở hữu lưu trữ ý định bền vững, biên nhận, idempotency, khôi phục, khóa và
-khử trùng lặp.
+`state` sở hữu lưu trữ intent bền vững, receipt, idempotency, recovery, lock và dedupe.
 
-## Thuật ngữ thông điệp
+## Thuật ngữ message
 
-### Thông điệp
+### Message
 
-Một thông điệp đã chuẩn hóa là trung lập với nền tảng:
+Một message đã normalize là trung lập với nền tảng:
 
 ```typescript
 type ChannelMessage = {
@@ -166,9 +139,9 @@ type ChannelMessage = {
 };
 ```
 
-### Đích
+### Target
 
-Đích mô tả nơi thông điệp tồn tại:
+Target mô tả nơi message tồn tại:
 
 ```typescript
 type MessageTarget = {
@@ -182,9 +155,9 @@ type MessageTarget = {
 };
 ```
 
-### Quan hệ
+### Relation
 
-Phản hồi là một quan hệ, không phải gốc API:
+Reply là một quan hệ, không phải gốc API:
 
 ```typescript
 type MessageRelation =
@@ -220,15 +193,11 @@ type MessageRelation =
     };
 ```
 
-Điều này cho phép cùng một đường gửi xử lý phản hồi thông thường, thông báo Cron, prompt
-phê duyệt, hoàn tất tác vụ, lần gửi bằng message-tool, lần gửi từ CLI hoặc Control UI, kết quả subagent,
-và lần gửi tự động hóa.
+Điều này cho phép cùng một đường dẫn gửi xử lý phản hồi thông thường, thông báo Cron, prompt phê duyệt, hoàn tất tác vụ, gửi qua message-tool, gửi từ CLI hoặc Control UI, kết quả subagent và gửi tự động hóa.
 
-### Nguồn gốc
+### Origin
 
-Nguồn gốc mô tả ai đã tạo một thông điệp và OpenClaw nên xử lý echo của
-thông điệp đó như thế nào. Nó tách biệt với quan hệ: một thông điệp có thể là phản hồi cho người dùng
-và vẫn là đầu ra vận hành có nguồn gốc từ OpenClaw.
+Origin mô tả ai đã tạo ra message và OpenClaw nên xử lý echo của message đó như thế nào. Nó tách biệt với relation: một message có thể là phản hồi cho người dùng và vẫn là output vận hành do OpenClaw khởi tạo.
 
 ```typescript
 type MessageOrigin =
@@ -244,17 +213,13 @@ type MessageOrigin =
     };
 ```
 
-Core sở hữu ý nghĩa của đầu ra có nguồn gốc từ OpenClaw. Kênh sở hữu cách
-nguồn gốc đó được mã hóa vào vận chuyển của chúng.
+Core sở hữu ý nghĩa của output do OpenClaw khởi tạo. Kênh sở hữu cách origin đó được mã hóa vào transport của chúng.
 
-Trường hợp bắt buộc đầu tiên là đầu ra lỗi Gateway. Con người vẫn nên thấy
-các thông điệp như "Agent failed before reply" hoặc "Missing API key", nhưng đầu ra vận hành
-OpenClaw đã được gắn thẻ không được chấp nhận làm đầu vào do bot tạo trong các phòng dùng chung
-khi `allowBots` được bật.
+Trường hợp sử dụng bắt buộc đầu tiên là output lỗi Gateway. Con người vẫn nên thấy các message như "Agent failed before reply" hoặc "Missing API key", nhưng output vận hành OpenClaw đã được gắn thẻ không được chấp nhận làm input do bot viết trong các phòng chung khi `allowBots` được bật.
 
-### Biên nhận
+### Receipt
 
-Biên nhận là thực thể hạng nhất:
+Receipt là đối tượng hạng nhất:
 
 ```typescript
 type MessageReceipt = {
@@ -283,17 +248,13 @@ type MessageReceiptPart = {
 };
 ```
 
-Biên nhận là cầu nối từ ý định bền vững đến chỉnh sửa, xóa, hoàn tất bản xem trước,
-triệt tiêu trùng lặp và khôi phục trong tương lai.
+Receipt là cầu nối từ intent bền vững đến edit, delete, finalization preview, triệt tiêu trùng lặp và recovery trong tương lai.
 
-Một biên nhận có thể mô tả một thông điệp nền tảng hoặc một lần phân phối nhiều phần. Văn bản chia đoạn,
-media cộng văn bản, giọng nói cộng văn bản và fallback thẻ phải bảo toàn mọi
-id nền tảng trong khi vẫn phơi bày một id chính cho luồng và chỉnh sửa sau này.
+Một receipt có thể mô tả một message nền tảng hoặc một lần phân phối nhiều phần. Text được chia chunk, media kèm text, voice kèm text và fallback thẻ phải giữ lại tất cả id nền tảng trong khi vẫn phơi bày một id chính cho threading và các lần edit sau.
 
 ## Ngữ cảnh nhận
 
-Việc nhận không nên là một lời gọi helper trần. Core cần một ngữ cảnh biết
-khử trùng lặp, định tuyến, ghi phiên và chính sách ack nền tảng.
+Việc nhận không nên là một lệnh gọi helper trần. Core cần một ngữ cảnh biết dedupe, routing, ghi session và chính sách ack của nền tảng.
 
 ```typescript
 type MessageReceiveContext = {
@@ -331,22 +292,16 @@ platform event
   -> ack platform when policy allows
 ```
 
-Ack không phải một thứ duy nhất. Hợp đồng nhận phải giữ các tín hiệu này tách biệt:
+Ack không phải một thứ duy nhất. Contract nhận phải giữ các tín hiệu này tách biệt:
 
-- **Ack vận chuyển:** báo cho webhook hoặc socket nền tảng rằng OpenClaw đã chấp nhận
-  envelope sự kiện. Một số nền tảng yêu cầu điều này trước khi điều phối.
-- **Ack offset polling:** tiến con trỏ để cùng một sự kiện không được lấy lại.
-  Việc này không được vượt qua công việc không thể khôi phục.
-- **Ack bản ghi đầu vào:** xác nhận OpenClaw đã lưu bền vững đủ metadata đầu vào để
-  khử trùng lặp và định tuyến một lần phân phối lại.
-- **Biên nhận hiển thị cho người dùng:** hành vi đọc/trạng thái/đang nhập tùy chọn; không bao giờ là
-  ranh giới độ bền.
+- **Transport ack:** báo cho webhook hoặc socket của nền tảng rằng OpenClaw đã chấp nhận event envelope. Một số nền tảng yêu cầu điều này trước dispatch.
+- **Polling offset ack:** đẩy cursor tiến lên để event đó không bị fetch lại. Việc này không được tiến qua phần việc không thể khôi phục.
+- **Inbound record ack:** xác nhận OpenClaw đã lưu đủ metadata inbound để dedupe và route một lần redelivery.
+- **User-visible receipt:** hành vi đọc/trạng thái/typing tùy chọn; không bao giờ là ranh giới độ bền.
 
-`ReceiveAckPolicy` chỉ kiểm soát xác nhận vận chuyển hoặc polling. Nó không được
-dùng lại cho biên nhận đã đọc hoặc phản ứng trạng thái.
+`ReceiveAckPolicy` chỉ kiểm soát acknowledgement transport hoặc polling. Không được tái sử dụng nó cho read receipt hoặc status reaction.
 
-Trước khi cấp quyền bot, nhận phải áp dụng chính sách echo OpenClaw dùng chung
-khi kênh có thể giải mã metadata nguồn gốc thông điệp:
+Trước khi ủy quyền bot, receive phải áp dụng chính sách echo OpenClaw dùng chung khi kênh có thể decode metadata origin của message:
 
 ```typescript
 function shouldDropOpenClawEcho(params: {
@@ -364,9 +319,7 @@ function shouldDropOpenClawEcho(params: {
 }
 ```
 
-Việc loại bỏ này dựa trên thẻ, không dựa trên văn bản. Một thông điệp trong phòng do bot tạo với
-cùng văn bản lỗi Gateway hiển thị nhưng không có metadata nguồn gốc OpenClaw vẫn
-đi qua cấp quyền `allowBots` bình thường.
+Việc drop này dựa trên thẻ, không dựa trên văn bản. Một message trong phòng do bot viết có cùng văn bản lỗi Gateway hiển thị nhưng không có metadata origin OpenClaw vẫn đi qua ủy quyền `allowBots` thông thường.
 
 Chính sách ack là rõ ràng:
 
@@ -378,15 +331,7 @@ type ReceiveAckPolicy =
   | { kind: "manual" };
 ```
 
-Telegram polling hiện dùng chính sách ack của receive-context cho watermark khởi động lại
-được lưu bền vững. Bộ theo dõi vẫn quan sát cập nhật grammY khi chúng đi vào
-chuỗi middleware, nhưng OpenClaw chỉ lưu bền vững id cập nhật đã hoàn tất an toàn sau
-khi điều phối thành công, để các cập nhật thất bại hoặc thấp hơn đang chờ có thể phát lại sau
-khởi động lại. Offset lấy `getUpdates` upstream của Telegram vẫn do
-thư viện polling kiểm soát, nên phần cắt sâu còn lại là một nguồn polling hoàn toàn bền vững
-nếu chúng ta cần phân phối lại ở cấp nền tảng ngoài watermark khởi động lại của OpenClaw.
-Các nền tảng Webhook có thể cần ack HTTP tức thì, nhưng chúng vẫn cần
-khử trùng lặp đầu vào và ý định gửi đi bền vững vì webhook có thể phân phối lại.
+Telegram polling hiện dùng chính sách ack của receive-context cho watermark restart đã lưu. Tracker vẫn quan sát các update grammY khi chúng đi vào chuỗi middleware, nhưng OpenClaw chỉ lưu id update đã hoàn tất an toàn sau khi dispatch thành công, để các update thất bại hoặc pending thấp hơn có thể phát lại sau restart. Offset fetch `getUpdates` upstream của Telegram vẫn do thư viện polling kiểm soát, nên phần cắt sâu còn lại là một nguồn polling hoàn toàn bền vững nếu chúng ta cần redelivery cấp nền tảng vượt ngoài watermark restart của OpenClaw. Các nền tảng webhook có thể cần HTTP ack tức thì, nhưng chúng vẫn cần dedupe inbound và intent gửi outbound bền vững vì webhook có thể redeliver.
 
 ## Ngữ cảnh gửi
 
@@ -415,7 +360,7 @@ type MessageSendContext = {
 };
 ```
 
-Điều phối ưu tiên:
+Điều phối được ưu tiên:
 
 ```typescript
 await core.messages.withSendContext(message, async (ctx) => {
@@ -429,7 +374,7 @@ await core.messages.withSendContext(message, async (ctx) => {
 });
 ```
 
-Helper mở rộng thành:
+Trình trợ giúp mở rộng thành:
 
 ```text
 begin durable intent
@@ -443,20 +388,20 @@ begin durable intent
   -> fail durable intent on classified failure
 ```
 
-Intent phải tồn tại trước I/O transport. Một lần khởi động lại sau khi begin nhưng trước
-commit có thể khôi phục được.
+Ý định phải tồn tại trước I/O truyền tải. Có thể khôi phục sau khi khởi động lại sau bước bắt đầu nhưng trước
+bước commit.
 
-Ranh giới nguy hiểm là sau khi nền tảng báo thành công và trước khi commit receipt. Nếu một
-process chết ở đó, OpenClaw không thể biết message trên nền tảng có tồn tại hay không
-trừ khi adapter cung cấp idempotency gốc hoặc một đường dẫn đối soát receipt.
-Các lần thử đó phải tiếp tục trong `unknown_after_send`, không được phát lại mù quáng. Các channel
-không có đối soát chỉ có thể chọn phát lại at-least-once nếu duplicate visible
-messages là một đánh đổi chấp nhận được và đã được ghi tài liệu cho channel và quan hệ đó.
-Bridge đối soát SDK hiện tại yêu cầu adapter khai báo
-`reconcileUnknownSend`, rồi yêu cầu `durableFinal.reconcileUnknownSend`
+Ranh giới nguy hiểm nằm sau khi nền tảng thành công và trước khi commit biên nhận. Nếu một
+tiến trình chết ở đó, OpenClaw không thể biết thông điệp nền tảng có tồn tại hay không
+trừ khi bộ điều hợp cung cấp tính lũy đẳng gốc hoặc một đường dẫn đối soát biên nhận.
+Những lần thử đó phải tiếp tục trong `unknown_after_send`, không được phát lại một cách mù quáng. Các kênh
+không có đối soát chỉ có thể chọn phát lại ít nhất một lần nếu thông điệp hiển thị bị trùng lặp
+là một đánh đổi chấp nhận được và được ghi tài liệu cho kênh và quan hệ đó.
+Cầu nối đối soát SDK hiện tại yêu cầu bộ điều hợp khai báo
+`reconcileUnknownSend`, sau đó yêu cầu `durableFinal.reconcileUnknownSend`
 phân loại một mục không xác định là `sent`, `not_sent`, hoặc `unresolved`; chỉ `not_sent`
-cho phép phát lại, và các mục unresolved vẫn ở trạng thái terminal hoặc chỉ thử lại
-bước kiểm tra đối soát.
+cho phép phát lại, còn các mục chưa được giải quyết vẫn ở trạng thái kết thúc hoặc chỉ thử lại
+kiểm tra đối soát.
 
 Chính sách độ bền phải tường minh:
 
@@ -464,29 +409,29 @@ Chính sách độ bền phải tường minh:
 type MessageDurabilityPolicy = "required" | "best_effort" | "disabled";
 ```
 
-`required` nghĩa là core phải fail closed khi không thể ghi durable intent.
-`best_effort` có thể tiếp tục khi persistence không khả dụng. `disabled` giữ
-hành vi gửi trực tiếp cũ. Trong quá trình migration, các wrapper legacy và helper
-tương thích công khai mặc định là `disabled`; chúng không được suy ra `required` từ
-việc một channel có generic outbound adapter.
+`required` nghĩa là lõi phải fail closed khi không thể ghi ý định bền vững.
+`best_effort` có thể tiếp tục khi không có khả năng lưu bền vững. `disabled` giữ
+hành vi gửi trực tiếp cũ. Trong quá trình di trú, các wrapper cũ và trình trợ giúp
+tương thích công khai mặc định là `disabled`; chúng không được suy luận `required` từ
+việc một kênh có bộ điều hợp gửi đi chung.
 
-Send context cũng sở hữu các hiệu ứng sau gửi cục bộ của channel. Một migration không an toàn
-nếu durable delivery bỏ qua hành vi cục bộ trước đây được gắn vào
-đường dẫn gửi trực tiếp của channel. Ví dụ gồm cache chặn self-echo,
-marker tham gia thread, anchor edit gốc, render model-signature,
-và guard chống duplicate đặc thù theo nền tảng. Các hiệu ứng đó phải chuyển vào
-send adapter, render adapter, hoặc một send-context hook có tên trước khi
-channel đó có thể bật durable generic final delivery.
+Ngữ cảnh gửi cũng sở hữu các hiệu ứng sau gửi cục bộ của kênh. Một quá trình di trú sẽ không an toàn
+nếu phân phối bền vững bỏ qua hành vi cục bộ trước đây được gắn vào
+đường dẫn gửi trực tiếp của kênh. Ví dụ gồm cache chặn tự echo,
+dấu tham gia luồng, neo chỉnh sửa gốc, render chữ ký mô hình,
+và bộ chống trùng lặp riêng theo nền tảng. Những hiệu ứng đó phải được chuyển vào
+bộ điều hợp gửi, bộ điều hợp render, hoặc một hook ngữ cảnh gửi có tên trước khi
+kênh đó có thể bật phân phối cuối chung bền vững.
 
-Send helper phải trả receipt ngược về đến caller của chúng. Durable
-wrapper không được nuốt message id hoặc thay kết quả delivery của channel bằng
-`undefined`; buffered dispatcher dùng các id đó cho thread anchor, các edit sau này,
-preview finalization, và duplicate suppression.
+Trình trợ giúp gửi phải trả về biên nhận xuyên suốt về caller của chúng. Các
+wrapper bền vững không được nuốt id thông điệp hoặc thay kết quả phân phối của kênh bằng
+`undefined`; các dispatcher có bộ đệm dùng những id đó cho neo luồng, các chỉnh sửa sau,
+hoàn tất preview, và chặn trùng lặp.
 
-Fallback send hoạt động trên batch, không phải payload đơn. Silent-reply rewrite,
-media fallback, card fallback, và chunk projection đều có thể tạo ra nhiều hơn
-một deliverable message, vì vậy một send context phải delivery toàn bộ
-batch đã project hoặc ghi tài liệu tường minh lý do chỉ một payload là hợp lệ.
+Gửi fallback hoạt động trên batch, không phải payload đơn lẻ. Viết lại trả lời im lặng,
+fallback media, fallback thẻ, và chiếu chunk đều có thể tạo ra nhiều hơn
+một thông điệp có thể phân phối, nên ngữ cảnh gửi phải phân phối toàn bộ
+batch đã chiếu hoặc ghi tài liệu tường minh vì sao chỉ một payload là hợp lệ.
 
 ```typescript
 type RenderedMessageBatch = {
@@ -503,16 +448,16 @@ type RenderedMessageUnit = {
 };
 ```
 
-Khi fallback như vậy là durable, toàn bộ batch đã project phải được biểu diễn bằng
-một durable send intent hoặc một atomic batch plan khác. Ghi từng payload
-một là chưa đủ: crash giữa các payload có thể để lại một fallback hiển thị một phần
-mà không có durable record cho các payload còn lại. Recovery phải biết
-những unit nào đã có receipt và hoặc chỉ phát lại các unit còn thiếu hoặc đánh dấu
-batch là `unknown_after_send` cho đến khi adapter đối soát nó.
+Khi một fallback như vậy là bền vững, toàn bộ batch đã chiếu phải được biểu diễn bằng
+một ý định gửi bền vững hoặc một kế hoạch batch nguyên tử khác. Ghi từng payload
+một là chưa đủ: sự cố giữa các payload có thể để lại một fallback hiển thị một phần
+mà không có bản ghi bền vững cho các payload còn lại. Quá trình khôi phục phải biết
+những unit nào đã có biên nhận và chỉ phát lại các unit còn thiếu hoặc đánh dấu
+batch là `unknown_after_send` cho đến khi bộ điều hợp đối soát nó.
 
 ## Ngữ cảnh trực tiếp
 
-Hành vi preview, edit, progress, và stream nên là một lifecycle opt-in duy nhất.
+Hành vi preview, chỉnh sửa, tiến độ và stream nên là một vòng đời opt-in duy nhất.
 
 ```typescript
 type MessageLiveAdapter = {
@@ -535,7 +480,7 @@ type MessageLiveAdapter = {
 };
 ```
 
-Live state đủ bền để khôi phục hoặc chặn duplicate:
+Trạng thái trực tiếp đủ bền vững để khôi phục hoặc chặn trùng lặp:
 
 ```typescript
 type LiveMessageState = {
@@ -550,23 +495,23 @@ type LiveMessageState = {
 
 Điều này nên bao phủ hành vi hiện tại:
 
-- Telegram gửi kèm edit preview, với final mới sau khi preview quá tuổi stale.
-- Discord gửi kèm edit preview, cancel khi có media/error/explicit reply.
-- Slack native stream hoặc draft preview tùy theo hình dạng thread.
-- Mattermost draft post finalization.
-- Matrix draft event finalization hoặc redaction khi không khớp.
-- Teams native progress stream.
+- Telegram gửi cộng với preview chỉnh sửa, với bản cuối mới sau khi preview quá cũ.
+- Discord gửi cộng với preview chỉnh sửa, hủy khi có media/lỗi/trả lời tường minh.
+- Slack stream gốc hoặc preview nháp tùy theo hình dạng luồng.
+- Hoàn tất bài đăng nháp Mattermost.
+- Hoàn tất sự kiện nháp Matrix hoặc biên tập xóa khi không khớp.
+- Stream tiến độ gốc của Teams.
 - QQ Bot stream hoặc fallback tích lũy.
 
-## Bề mặt adapter
+## Bề mặt bộ điều hợp
 
-Mục tiêu SDK công khai nên là một subpath:
+Đích SDK công khai nên là một subpath duy nhất:
 
 ```typescript
-import { defineChannelMessageAdapter } from "openclaw/plugin-sdk/channel-message";
+import { defineChannelMessageAdapter } from "openclaw/plugin-sdk/channel-outbound";
 ```
 
-Hình dạng mục tiêu:
+Hình dạng đích:
 
 ```typescript
 type ChannelMessageAdapter = {
@@ -579,7 +524,7 @@ type ChannelMessageAdapter = {
 };
 ```
 
-Send adapter:
+Bộ điều hợp gửi:
 
 ```typescript
 type MessageSendAdapter = {
@@ -597,7 +542,7 @@ type MessageSendAdapter = {
 };
 ```
 
-Receive adapter:
+Bộ điều hợp nhận:
 
 ```typescript
 type MessageReceiveAdapter<TRaw = unknown> = {
@@ -608,12 +553,12 @@ type MessageReceiveAdapter<TRaw = unknown> = {
 };
 ```
 
-Trước preflight authorization, core phải chạy predicate echo dùng chung của OpenClaw
-bất cứ khi nào `origin.decode` trả về metadata có nguồn gốc OpenClaw. Receive adapter
-cung cấp các fact của nền tảng như tác giả bot và hình dạng room; core sở hữu quyết định
-drop và thứ tự để channel không triển khai lại bộ lọc text.
+Trước khi ủy quyền preflight, lõi phải chạy vị từ echo dùng chung của OpenClaw
+bất cứ khi nào `origin.decode` trả về metadata nguồn gốc OpenClaw. Bộ điều hợp nhận
+cung cấp các dữ kiện nền tảng như tác giả bot và hình dạng phòng; lõi sở hữu quyết định
+loại bỏ và thứ tự để các kênh không triển khai lại bộ lọc văn bản.
 
-Origin adapter:
+Bộ điều hợp nguồn gốc:
 
 ```typescript
 type MessageOriginAdapter<TRaw = unknown, TNative = unknown> = {
@@ -622,13 +567,13 @@ type MessageOriginAdapter<TRaw = unknown, TNative = unknown> = {
 };
 ```
 
-Core đặt `MessageOrigin`. Channel chỉ dịch nó sang và từ metadata
-transport gốc. Slack ánh xạ phần này sang `chat.postMessage({ metadata })` và
-`message.metadata` inbound; Matrix có thể ánh xạ nó sang nội dung event bổ sung; các channel
-không có metadata gốc có thể dùng receipt/outbound registry khi đó là
+Lõi đặt `MessageOrigin`. Các kênh chỉ dịch nó sang và từ metadata
+truyền tải gốc. Slack ánh xạ điều này tới `chat.postMessage({ metadata })` và
+`message.metadata` đầu vào; Matrix có thể ánh xạ nó tới nội dung sự kiện bổ sung; các kênh
+không có metadata gốc có thể dùng registry biên nhận/gửi đi khi đó là
 xấp xỉ tốt nhất hiện có.
 
-Capabilities:
+Khả năng:
 
 ```typescript
 type MessageCapabilities = {
@@ -659,7 +604,7 @@ type MessageCapabilities = {
 
 ## Thu gọn SDK công khai
 
-Bề mặt công khai mới nên hấp thụ hoặc deprecate các vùng khái niệm này:
+Bề mặt công khai mới nên hấp thụ hoặc ngừng khuyến nghị các vùng khái niệm này:
 
 - `reply-runtime`
 - `reply-dispatch-runtime`
@@ -669,29 +614,29 @@ Bề mặt công khai mới nên hấp thụ hoặc deprecate các vùng khái n
 - `inbound-reply-dispatch`
 - `channel-reply-pipeline`
 - hầu hết các cách dùng công khai của `outbound-runtime`
-- các helper lifecycle draft stream ad hoc
+- các trình trợ giúp vòng đời stream nháp ad hoc
 
 Các subpath tương thích có thể vẫn tồn tại dưới dạng wrapper, nhưng Plugin bên thứ ba mới
-không nên cần đến chúng.
+không nên cần chúng.
 
-Bundled Plugin có thể giữ import helper nội bộ thông qua các reserved runtime
-subpath trong khi migration. Tài liệu công khai nên hướng tác giả Plugin đến
-`plugin-sdk/channel-message` sau khi nó tồn tại.
+Plugin đi kèm có thể giữ các import trình trợ giúp nội bộ thông qua các subpath runtime
+dành riêng trong khi di trú. Tài liệu công khai nên hướng tác giả Plugin tới
+`plugin-sdk/channel-outbound` khi nó tồn tại.
 
-## Quan hệ với channel turn
+## Quan hệ với đầu vào kênh
 
-`runtime.channel.turn.*` nên được giữ trong quá trình migration.
+`runtime.channel.inbound.*` là cầu nối runtime trong quá trình di trú.
 
-Nó nên trở thành một adapter tương thích:
+Nó nên trở thành một bộ điều hợp tương thích:
 
 ```text
-channel.turn.run
+channel.inbound.run
   -> messages.receive context
   -> session dispatch
   -> messages.send context for visible output
 ```
 
-`channel.turn.runPrepared` ban đầu cũng nên được giữ lại:
+`channel.inbound.runPreparedReply` ban đầu cũng nên được giữ lại:
 
 ```text
 channel-owned dispatcher
@@ -700,89 +645,87 @@ channel-owned dispatcher
   -> messages.send for final delivery
 ```
 
-Sau khi tất cả bundled Plugin và các đường dẫn tương thích bên thứ ba đã biết được bridge,
-`channel.turn` có thể bị deprecate. Không nên xóa nó cho đến khi có
-đường dẫn migration SDK đã publish và contract test chứng minh Plugin cũ vẫn hoạt động
-hoặc fail với lỗi phiên bản rõ ràng.
+Bề mặt runtime `channel.turn` cũ đã bị gỡ bỏ. Caller runtime dùng
+`channel.inbound.*`; tài liệu kênh và subpath SDK dùng danh từ inbound/message.
 
-## Lan can tương thích
+## Rào chắn tương thích
 
-Trong quá trình migration, generic durable delivery là opt-in cho mọi channel có
-delivery callback hiện tại có side effect ngoài "send this payload".
+Trong quá trình di trú, phân phối bền vững chung là opt-in cho mọi kênh mà
+callback phân phối hiện có có hiệu ứng phụ ngoài "gửi payload này".
 
-Các entry point legacy mặc định là non-durable:
+Các điểm vào cũ mặc định là không bền vững:
 
-- `channel.turn.run` và `dispatchAssembledChannelTurn` dùng
-  delivery callback của channel trừ khi channel đó cung cấp tường minh một đối tượng
-  durable policy/options đã audit.
-- `channel.turn.runPrepared` vẫn do channel sở hữu cho đến khi prepared dispatcher
-  gọi send context một cách tường minh.
-- Các helper tương thích công khai như `recordInboundSessionAndDispatchReply`,
-  `dispatchInboundReplyWithBase`, và direct-DM helper không bao giờ chèn generic
-  durable delivery trước callback `deliver` hoặc `reply` do caller cung cấp.
+- `channel.inbound.run` và `dispatchChannelInboundReply` dùng callback
+  phân phối của kênh trừ khi kênh đó cung cấp tường minh một đối tượng
+  chính sách/tùy chọn bền vững đã được kiểm tra.
+- `channel.inbound.runPreparedReply` vẫn do kênh sở hữu cho đến khi dispatcher đã chuẩn bị
+  gọi tường minh ngữ cảnh gửi.
+- Các trình trợ giúp tương thích công khai như `recordInboundSessionAndDispatchReply`,
+  `dispatchInboundReplyWithBase`, và trình trợ giúp direct-DM không bao giờ chèn
+  phân phối bền vững chung trước callback `deliver` hoặc `reply` do caller cung cấp.
 
-Đối với các loại migration bridge, `durable: undefined` nghĩa là "không durable". Đường dẫn
-durable chỉ được bật bằng một giá trị policy/options tường minh. `durable:
-false` có thể vẫn là cách viết tương thích, nhưng implementation không nên
-yêu cầu mọi channel chưa migrate phải thêm nó.
+Đối với các kiểu cầu nối di trú, `durable: undefined` nghĩa là "không bền vững". Đường dẫn
+bền vững chỉ được bật bằng một giá trị chính sách/tùy chọn tường minh. `durable:
+false` có thể vẫn là cách viết tương thích, nhưng phần triển khai không nên
+yêu cầu mọi kênh chưa di trú phải thêm nó.
 
-Mã bridge hiện tại phải giữ quyết định durability tường minh:
+Mã cầu nối hiện tại phải giữ quyết định độ bền ở dạng tường minh:
 
-- Việc phân phối kết quả cuối bền vững trả về một trạng thái phân biệt. `handled_visible` và
-  `handled_no_send` là trạng thái kết thúc; `unsupported` và `not_applicable` có thể
-  quay về cơ chế phân phối do kênh sở hữu; `failed` truyền tiếp lỗi gửi.
-- Việc phân phối kết quả cuối bền vững dạng chung được kiểm soát bằng các năng lực adapter như
+- Phân phối cuối cùng bền vững trả về một trạng thái phân biệt. `handled_visible` và
+  `handled_no_send` là trạng thái kết thúc; `unsupported` và `not_applicable` có thể quay
+  về phân phối do kênh sở hữu; `failed` lan truyền lỗi gửi.
+- Phân phối cuối cùng bền vững tổng quát được kiểm soát bởi các khả năng của adapter như
   phân phối im lặng, bảo toàn đích trả lời, bảo toàn trích dẫn gốc, và
-  hook gửi tin nhắn. Khi thiếu tương đương hành vi, nên chọn phân phối do kênh sở hữu,
-  không phải một lần gửi chung làm thay đổi hành vi người dùng nhìn thấy.
-- Các lần gửi bền vững dựa trên hàng đợi để lộ một tham chiếu ý định phân phối. Các trường phiên
-  `pendingFinalDelivery*` hiện có có thể mang id ý định trong
-  giai đoạn chuyển đổi; trạng thái cuối là một kho `MessageSendIntent` thay vì
-  văn bản trả lời bị đóng băng cộng với các trường ngữ cảnh tùy biến.
+  hook gửi tin nhắn. Khi thiếu tương đương, hãy chọn phân phối do kênh sở hữu,
+  không phải một lệnh gửi tổng quát làm thay đổi hành vi hiển thị với người dùng.
+- Các lệnh gửi bền vững dựa trên hàng đợi cung cấp một tham chiếu ý định phân phối. Các
+  trường phiên `pendingFinalDelivery*` hiện có có thể mang id ý định trong quá trình
+  chuyển tiếp; trạng thái cuối là một kho `MessageSendIntent` thay vì văn bản
+  trả lời bị đóng băng cộng với các trường ngữ cảnh tùy tiện.
 
-Không bật đường dẫn bền vững dạng chung cho một kênh cho đến khi tất cả điều sau
+Không bật đường dẫn bền vững tổng quát cho một kênh cho đến khi tất cả điều sau
 đều đúng:
 
-- Adapter gửi dạng chung thực thi cùng hành vi kết xuất và vận chuyển như
+- Adapter gửi tổng quát thực thi cùng hành vi kết xuất và truyền tải như
   đường dẫn trực tiếp cũ.
-- Các tác dụng phụ cục bộ sau khi gửi được bảo toàn thông qua ngữ cảnh gửi.
+- Các hiệu ứng phụ cục bộ sau khi gửi được bảo toàn thông qua ngữ cảnh gửi.
 - Adapter trả về biên nhận hoặc kết quả phân phối với tất cả id tin nhắn của nền tảng.
-- Các đường dẫn dispatcher đã chuẩn bị hoặc gọi ngữ cảnh gửi mới hoặc vẫn được ghi tài liệu
+- Các đường dẫn dispatcher đã chuẩn bị hoặc gọi ngữ cảnh gửi mới, hoặc vẫn được ghi tài liệu
   là nằm ngoài bảo đảm bền vững.
 - Phân phối dự phòng xử lý mọi payload đã chiếu, không chỉ payload đầu tiên.
 - Phân phối dự phòng bền vững ghi lại toàn bộ mảng payload đã chiếu như một
-  ý định có thể phát lại hoặc kế hoạch lô.
+  ý định có thể phát lại hoặc kế hoạch lô duy nhất.
 
-Các nguy cơ di trú cụ thể cần bảo toàn:
+Các rủi ro di trú cụ thể cần bảo toàn:
 
-- Phân phối của bộ giám sát iMessage ghi lại tin nhắn đã gửi vào một bộ nhớ đệm echo sau một
-  lần gửi thành công. Các lần gửi kết quả cuối bền vững vẫn phải điền bộ nhớ đệm đó, nếu không
-  OpenClaw có thể nhập lại chính các trả lời cuối của nó như tin nhắn người dùng gửi vào.
-- Tlon thêm chữ ký mô hình tùy chọn và ghi lại các luồng đã tham gia
-  sau các trả lời nhóm. Phân phối bền vững dạng chung không được bỏ qua các hiệu ứng đó;
-  hoặc chuyển chúng vào adapter kết xuất/gửi/hoàn tất của Tlon hoặc giữ Tlon trên
+- Phân phối của trình giám sát iMessage ghi lại tin nhắn đã gửi trong bộ đệm echo sau một
+  lần gửi thành công. Các lệnh gửi cuối cùng bền vững vẫn phải điền bộ đệm đó, nếu không
+  OpenClaw có thể nạp lại các phản hồi cuối cùng của chính nó như tin nhắn người dùng gửi đến.
+- Tlon thêm một chữ ký mô hình tùy chọn và ghi lại các luồng đã tham gia
+  sau phản hồi nhóm. Phân phối bền vững tổng quát không được bỏ qua các hiệu ứng đó;
+  hoặc chuyển chúng vào adapter kết xuất/gửi/hoàn tất của Tlon, hoặc giữ Tlon trên
   đường dẫn do kênh sở hữu.
-- Discord và các dispatcher đã chuẩn bị khác đã sở hữu hành vi phân phối trực tiếp và xem trước.
-  Chúng không được bao phủ bởi bảo đảm bền vững của lượt đã lắp ráp cho đến khi
-  các dispatcher đã chuẩn bị của chúng định tuyến rõ ràng kết quả cuối qua ngữ cảnh gửi.
+- Discord và các dispatcher đã chuẩn bị khác đã sở hữu hành vi phân phối trực tiếp và
+  xem trước. Chúng không được bao phủ bởi bảo đảm bền vững của lượt đã lắp ráp cho đến khi
+  dispatcher đã chuẩn bị của chúng định tuyến rõ ràng các phản hồi cuối qua ngữ cảnh gửi.
 - Phân phối dự phòng im lặng của Telegram phải phân phối toàn bộ mảng payload đã chiếu.
   Một lối tắt một payload có thể làm rơi các payload dự phòng bổ sung sau
   khi chiếu.
-- LINE, Zalo, Nostr, và các đường dẫn đã lắp ráp/helper hiện có khác có thể
-  có xử lý reply-token, proxy media, bộ nhớ đệm tin nhắn đã gửi, dọn dẹp loading/status,
-  hoặc đích chỉ-callback. Chúng vẫn ở trên phân phối do kênh sở hữu cho đến khi
-  các ngữ nghĩa đó được biểu diễn bởi adapter gửi và được kiểm chứng bằng kiểm thử.
-- Các helper DM trực tiếp có thể có một callback trả lời là đích vận chuyển đúng duy nhất.
-  Đầu ra dạng chung không được đoán từ `OriginatingTo` hoặc `To` rồi bỏ qua
+- LINE, Zalo, Nostr, và các đường dẫn đã lắp ráp/trợ giúp hiện có khác có thể
+  có xử lý mã thông báo trả lời, proxy media, bộ đệm tin nhắn đã gửi, dọn dẹp tải/trạng thái,
+  hoặc đích chỉ callback. Chúng vẫn ở phân phối do kênh sở hữu cho đến khi
+  các ngữ nghĩa đó được biểu diễn bởi adapter gửi và được xác minh bằng kiểm thử.
+- Các trình trợ giúp Direct-DM có thể có một callback trả lời là đích truyền tải
+  đúng duy nhất. Đầu ra tổng quát không được đoán từ `OriginatingTo` hoặc `To` và bỏ qua
   callback đó.
-- Đầu ra lỗi của OpenClaw gateway phải vẫn hiển thị với con người, nhưng các echo trong phòng
-  do bot tạo và đã gắn thẻ phải bị loại bỏ trước bước ủy quyền `allowBots`.
-  Các kênh không được triển khai việc này bằng bộ lọc tiền tố văn bản hiển thị, ngoại trừ như một
+- Đầu ra lỗi Gateway của OpenClaw phải vẫn hiển thị với con người, nhưng các echo phòng
+  do bot tạo đã gắn thẻ phải bị loại bỏ trước khi ủy quyền `allowBots`.
+  Kênh không được triển khai điều này bằng bộ lọc tiền tố văn bản hiển thị, ngoại trừ như một
   biện pháp chặn khẩn cấp ngắn hạn; hợp đồng bền vững là siêu dữ liệu nguồn gốc có cấu trúc.
 
 ## Lưu trữ nội bộ
 
-Hàng đợi bền vững nên lưu các ý định gửi tin nhắn, không phải payload trả lời.
+Hàng đợi bền vững nên lưu ý định gửi tin nhắn, không phải payload trả lời.
 
 ```typescript
 type DurableSendIntent = {
@@ -824,12 +767,12 @@ load pending or sending intents
   -> commit receipt, mark unknown_after_send, or schedule retry
 ```
 
-Hàng đợi nên giữ đủ danh tính để phát lại qua cùng tài khoản,
+Hàng đợi nên giữ đủ định danh để phát lại qua cùng tài khoản,
 luồng, đích, chính sách định dạng, và quy tắc media sau khi khởi động lại.
 
 ## Lớp lỗi
 
-Adapter kênh phân loại lỗi vận chuyển thành các danh mục đóng:
+Adapter kênh phân loại lỗi truyền tải vào các danh mục đóng:
 
 ```typescript
 type DeliveryFailureKind =
@@ -850,285 +793,282 @@ Chính sách lõi:
 - Không thử lại `invalid_payload` trừ khi có dự phòng kết xuất.
 - Không thử lại `auth` hoặc `permission` cho đến khi cấu hình thay đổi.
 - Với `not_found`, cho phép hoàn tất trực tiếp quay về từ chỉnh sửa sang gửi mới khi
-  kênh khai báo rằng việc đó an toàn.
+  kênh tuyên bố điều đó là an toàn.
 - Với `conflict`, dùng quy tắc biên nhận/idempotency để quyết định liệu tin nhắn
   đã tồn tại hay chưa.
 - Bất kỳ lỗi nào sau khi adapter có thể đã hoàn tất I/O nền tảng nhưng trước khi commit
-  biên nhận đều trở thành `unknown_after_send` trừ khi adapter có thể chứng minh thao tác
+  biên nhận sẽ trở thành `unknown_after_send` trừ khi adapter có thể chứng minh thao tác
   nền tảng đã không xảy ra.
 
 ## Ánh xạ kênh
 
-| Kênh            | Di chuyển mục tiêu                                                                                                                                                                                                                                                                                                                                                     |
-| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Telegram        | Nhận chính sách ack cộng với các lần gửi cuối bền vững. Bộ chuyển tiếp trực tiếp sở hữu việc gửi cộng với bản xem trước chỉnh sửa, gửi cuối bản xem trước cũ, chủ đề, bỏ qua bản xem trước trích dẫn-trả lời, phương án dự phòng cho phương tiện, và xử lý retry-after.                                                                                                  |
-| Discord         | Bộ chuyển tiếp gửi bọc việc phân phối payload bền vững hiện có. Bộ chuyển tiếp trực tiếp sở hữu chỉnh sửa nháp, nháp tiến trình, hủy bản xem trước phương tiện/lỗi, bảo toàn mục tiêu trả lời, và biên nhận mã định danh tin nhắn. Kiểm tra các tiếng vọng lỗi Gateway do bot tạo trong phòng dùng chung; dùng registry gửi đi hoặc tương đương gốc khác nếu Discord không thể mang siêu dữ liệu nguồn trên tin nhắn thông thường. |
-| Slack           | Bộ chuyển tiếp gửi xử lý các bài đăng chat thông thường. Bộ chuyển tiếp trực tiếp chọn luồng gốc khi hình dạng chuỗi hỗ trợ, nếu không thì dùng bản xem trước nháp. Biên nhận bảo toàn dấu thời gian chuỗi. Bộ chuyển tiếp nguồn ánh xạ lỗi Gateway của OpenClaw sang `chat.postMessage.metadata` của Slack và loại bỏ các tiếng vọng phòng bot đã gắn thẻ trước khi ủy quyền `allowBots`.                                  |
-| WhatsApp        | Bộ chuyển tiếp gửi sở hữu gửi văn bản/phương tiện với các ý định gửi cuối bền vững. Bộ chuyển tiếp nhận xử lý nhắc đến nhóm và danh tính người gửi. Trực tiếp có thể tiếp tục vắng mặt cho đến khi WhatsApp có phương thức truyền tải có thể chỉnh sửa.                                                                                                                |
-| Matrix          | Bộ chuyển tiếp trực tiếp sở hữu chỉnh sửa sự kiện nháp, hoàn tất, biên tập xóa, ràng buộc phương tiện được mã hóa, và phương án dự phòng khi mục tiêu trả lời không khớp. Bộ chuyển tiếp nhận sở hữu việc bổ sung dữ liệu sự kiện được mã hóa và khử trùng lặp. Bộ chuyển tiếp nguồn nên mã hóa nguồn lỗi Gateway của OpenClaw vào nội dung sự kiện Matrix và loại bỏ tiếng vọng phòng bot đã cấu hình trước khi xử lý `allowBots`. |
-| Mattermost      | Bộ chuyển tiếp trực tiếp sở hữu một bài đăng nháp, gập tiến trình/công cụ, hoàn tất tại chỗ, và phương án dự phòng gửi mới.                                                                                                                                                                                                                                            |
-| Microsoft Teams | Bộ chuyển tiếp trực tiếp sở hữu tiến trình gốc và hành vi luồng khối. Bộ chuyển tiếp gửi sở hữu hoạt động và biên nhận tệp đính kèm/thẻ.                                                                                                                                                                                                                               |
-| Feishu          | Bộ chuyển tiếp hiển thị sở hữu hiển thị văn bản/thẻ/thô. Bộ chuyển tiếp trực tiếp sở hữu thẻ phát trực tuyến và chặn trùng lặp phần cuối. Bộ chuyển tiếp gửi sở hữu bình luận, phiên chủ đề, phương tiện, và chặn giọng nói.                                                                                                                                          |
-| QQ Bot          | Bộ chuyển tiếp trực tiếp sở hữu phát trực tuyến C2C, thời gian chờ bộ tích lũy, và gửi cuối dự phòng. Bộ chuyển tiếp hiển thị sở hữu thẻ phương tiện và văn bản-dưới-dạng-giọng-nói.                                                                                                                                                                                  |
-| Signal          | Bộ chuyển tiếp nhận cộng với gửi đơn giản. Không có bộ chuyển tiếp trực tiếp trừ khi signal-cli thêm hỗ trợ chỉnh sửa đáng tin cậy.                                                                                                                                                                                                                                     |
-| iMessage        | Bộ chuyển tiếp nhận cộng với gửi đơn giản. Gửi iMessage phải bảo toàn việc điền echo-cache của trình giám sát trước khi các lần gửi cuối bền vững có thể bỏ qua phân phối qua trình giám sát.                                                                                                                                                                          |
-| Google Chat     | Bộ chuyển tiếp nhận cộng với gửi đơn giản với quan hệ chuỗi được ánh xạ sang không gian và mã định danh chuỗi. Kiểm tra hành vi phòng `allowBots=true` đối với các tiếng vọng lỗi Gateway OpenClaw đã gắn thẻ.                                                                                                                                                         |
-| LINE            | Bộ chuyển tiếp nhận cộng với gửi đơn giản với các ràng buộc reply-token được mô hình hóa như năng lực mục tiêu/quan hệ.                                                                                                                                                                                                                                                |
-| Nextcloud Talk  | Cầu nối nhận SDK cộng với bộ chuyển tiếp gửi.                                                                                                                                                                                                                                                                                                                          |
-| IRC             | Bộ chuyển tiếp nhận cộng với gửi đơn giản, không có biên nhận chỉnh sửa bền vững.                                                                                                                                                                                                                                                                                       |
-| Nostr           | Bộ chuyển tiếp nhận cộng với gửi cho DM được mã hóa; biên nhận là mã định danh sự kiện.                                                                                                                                                                                                                                                                                 |
-| QA Channel      | Bộ chuyển tiếp kiểm thử hợp đồng cho hành vi nhận, gửi, trực tiếp, thử lại, và khôi phục.                                                                                                                                                                                                                                                                               |
-| Synology Chat   | Bộ chuyển tiếp nhận cộng với gửi đơn giản.                                                                                                                                                                                                                                                                                                                             |
-| Tlon            | Bộ chuyển tiếp gửi phải bảo toàn hiển thị chữ ký mô hình và theo dõi chuỗi đã tham gia trước khi phân phối cuối bền vững chung được bật.                                                                                                                                                                                                                                |
-| Twitch          | Bộ chuyển tiếp nhận cộng với gửi đơn giản với phân loại giới hạn tốc độ.                                                                                                                                                                                                                                                                                                |
-| Zalo            | Bộ chuyển tiếp nhận cộng với gửi đơn giản.                                                                                                                                                                                                                                                                                                                             |
-| Zalo Personal   | Bộ chuyển tiếp nhận cộng với gửi đơn giản.                                                                                                                                                                                                                                                                                                                             |
+| Kênh            | Mục tiêu di chuyển                                                                                                                                                                                                                                                                                                                                 |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Telegram        | Nhận chính sách xác nhận cùng với các lượt gửi cuối bền vững. Bộ điều hợp trực tiếp sở hữu việc gửi cùng với chỉnh sửa bản xem trước, gửi cuối cho bản xem trước cũ, chủ đề, bỏ qua bản xem trước trả lời trích dẫn, phương án dự phòng cho phương tiện, và xử lý retry-after.                                                                    |
+| Discord         | Bộ điều hợp gửi bọc việc phân phối payload bền vững hiện có. Bộ điều hợp trực tiếp sở hữu chỉnh sửa bản nháp, bản nháp tiến trình, hủy bản xem trước phương tiện/lỗi, bảo toàn đích trả lời, và biên nhận id tin nhắn. Kiểm tra các echo lỗi gateway do bot tạo trong phòng dùng chung; dùng sổ đăng ký gửi ra hoặc tương đương native khác nếu Discord không thể mang siêu dữ liệu nguồn gốc trên tin nhắn thông thường. |
+| Slack           | Bộ điều hợp gửi xử lý các bài đăng trò chuyện thông thường. Bộ điều hợp trực tiếp chọn luồng native khi hình dạng thread hỗ trợ, nếu không thì dùng bản xem trước nháp. Biên nhận bảo toàn dấu thời gian thread. Bộ điều hợp nguồn gốc ánh xạ lỗi gateway của OpenClaw sang Slack `chat.postMessage.metadata` và loại bỏ các echo phòng bot được gắn thẻ trước khi ủy quyền `allowBots`. |
+| WhatsApp        | Bộ điều hợp gửi sở hữu việc gửi văn bản/phương tiện với các ý định cuối bền vững. Bộ điều hợp nhận xử lý nhắc đến nhóm và danh tính người gửi. Trực tiếp có thể tiếp tục vắng mặt cho đến khi WhatsApp có transport có thể chỉnh sửa.                                                                                                           |
+| Matrix          | Bộ điều hợp trực tiếp sở hữu chỉnh sửa sự kiện nháp, hoàn tất, biên tập lại, ràng buộc phương tiện được mã hóa, và phương án dự phòng khi đích trả lời không khớp. Bộ điều hợp nhận sở hữu nạp sự kiện được mã hóa và khử trùng lặp. Bộ điều hợp nguồn gốc nên mã hóa nguồn gốc lỗi gateway của OpenClaw vào nội dung sự kiện Matrix và loại bỏ các echo phòng bot đã cấu hình trước khi xử lý `allowBots`. |
+| Mattermost      | Bộ điều hợp trực tiếp sở hữu một bài đăng nháp, gộp tiến trình/công cụ, hoàn tất tại chỗ, và phương án dự phòng gửi mới.                                                                                                                                                                                                                           |
+| Microsoft Teams | Bộ điều hợp trực tiếp sở hữu tiến trình native và hành vi luồng khối. Bộ điều hợp gửi sở hữu các hoạt động và biên nhận tệp đính kèm/thẻ.                                                                                                                                                                                                           |
+| Feishu          | Bộ điều hợp kết xuất sở hữu kết xuất văn bản/thẻ/thô. Bộ điều hợp trực tiếp sở hữu thẻ phát trực tuyến và chặn bản cuối trùng lặp. Bộ điều hợp gửi sở hữu bình luận, phiên chủ đề, phương tiện, và chặn giọng nói.                                                                                                                                  |
+| QQ Bot          | Bộ điều hợp trực tiếp sở hữu phát trực tuyến C2C, thời gian chờ của bộ tích lũy, và gửi cuối dự phòng. Bộ điều hợp kết xuất sở hữu thẻ phương tiện và văn bản-dưới-dạng-giọng-nói.                                                                                                                                                                  |
+| Signal          | Bộ điều hợp nhận đơn giản cùng với bộ điều hợp gửi. Không có bộ điều hợp trực tiếp trừ khi signal-cli bổ sung hỗ trợ chỉnh sửa đáng tin cậy.                                                                                                                                                                                                         |
+| iMessage        | Bộ điều hợp nhận đơn giản cùng với bộ điều hợp gửi. Việc gửi iMessage phải bảo toàn việc điền echo-cache của bộ giám sát trước khi các bản cuối bền vững có thể bỏ qua phân phối qua bộ giám sát.                                                                                                                                                  |
+| Google Chat     | Bộ điều hợp nhận đơn giản cùng với bộ điều hợp gửi, trong đó quan hệ thread được ánh xạ sang spaces và id thread. Kiểm tra hành vi phòng `allowBots=true` đối với các echo lỗi gateway OpenClaw được gắn thẻ.                                                                                                                                       |
+| LINE            | Bộ điều hợp nhận đơn giản cùng với bộ điều hợp gửi, trong đó các ràng buộc reply-token được mô hình hóa như năng lực đích/quan hệ.                                                                                                                                                                                                                  |
+| Nextcloud Talk  | Cầu nhận SDK cùng với bộ điều hợp gửi.                                                                                                                                                                                                                                                                                                             |
+| IRC             | Bộ điều hợp nhận đơn giản cùng với bộ điều hợp gửi, không có biên nhận chỉnh sửa bền vững.                                                                                                                                                                                                                                                         |
+| Nostr           | Bộ điều hợp nhận cùng với bộ điều hợp gửi cho DM được mã hóa; biên nhận là id sự kiện.                                                                                                                                                                                                                                                             |
+| QA Channel      | Bộ điều hợp kiểm thử hợp đồng cho hành vi nhận, gửi, trực tiếp, thử lại, và khôi phục.                                                                                                                                                                                                                                                             |
+| Synology Chat   | Bộ điều hợp nhận đơn giản cùng với bộ điều hợp gửi.                                                                                                                                                                                                                                                                                                |
+| Tlon            | Bộ điều hợp gửi phải bảo toàn kết xuất chữ ký mô hình và theo dõi thread đã tham gia trước khi bật phân phối cuối bền vững chung.                                                                                                                                                                                                                  |
+| Twitch          | Bộ điều hợp nhận đơn giản cùng với bộ điều hợp gửi có phân loại giới hạn tốc độ.                                                                                                                                                                                                                                                                   |
+| Zalo            | Bộ điều hợp nhận đơn giản cùng với bộ điều hợp gửi.                                                                                                                                                                                                                                                                                                |
+| Zalo Personal   | Bộ điều hợp nhận đơn giản cùng với bộ điều hợp gửi.                                                                                                                                                                                                                                                                                                |
 
 ## Kế hoạch di chuyển
 
 ### Giai đoạn 1: Miền tin nhắn nội bộ
 
-- Thêm các kiểu `src/channels/message/*` cho tin nhắn, mục tiêu, quan hệ,
-  nguồn, biên nhận, năng lực, ý định bền vững, ngữ cảnh nhận, ngữ cảnh gửi,
+- Thêm các kiểu `src/channels/message/*` cho tin nhắn, đích, quan hệ,
+  nguồn gốc, biên nhận, năng lực, ý định bền vững, ngữ cảnh nhận, ngữ cảnh gửi,
   ngữ cảnh trực tiếp, và lớp lỗi.
-- Thêm `origin?: MessageOrigin` vào kiểu payload cầu nối di chuyển được dùng bởi
-  phân phối trả lời hiện tại, rồi chuyển trường đó sang `ChannelMessage` và các
-  kiểu tin nhắn đã hiển thị khi tái cấu trúc thay thế payload trả lời.
-- Giữ phần này nội bộ cho đến khi các bộ chuyển tiếp và kiểm thử chứng minh được hình dạng.
+- Thêm `origin?: MessageOrigin` vào kiểu payload cầu di chuyển được dùng bởi
+  phân phối trả lời hiện tại, sau đó chuyển trường đó sang `ChannelMessage` và các
+  kiểu tin nhắn đã kết xuất khi quá trình tái cấu trúc thay thế payload trả lời.
+- Giữ phần này ở nội bộ cho đến khi các bộ điều hợp và kiểm thử chứng minh được hình dạng.
 - Thêm kiểm thử đơn vị thuần cho chuyển đổi trạng thái và tuần tự hóa.
 
 ### Giai đoạn 2: Lõi gửi bền vững
 
-- Chuyển hàng đợi gửi đi hiện có từ độ bền payload trả lời sang các ý định
+- Chuyển hàng đợi gửi ra hiện có từ độ bền payload trả lời sang các ý định
   gửi tin nhắn bền vững.
-- Cho phép một ý định gửi bền vững mang mảng payload đã chiếu hoặc kế hoạch lô,
+- Cho phép một ý định gửi bền vững mang một mảng payload đã chiếu hoặc kế hoạch batch,
   không chỉ một payload trả lời.
 - Bảo toàn hành vi khôi phục hàng đợi hiện tại thông qua chuyển đổi tương thích.
-- Làm cho `deliverOutboundPayloads` gọi `messages.send`.
-- Đặt độ bền gửi cuối làm mặc định và đóng khi thất bại nếu không thể ghi ý định bền vững
-  trong vòng đời tin nhắn mới, sau khi bộ chuyển tiếp khai báo an toàn phát lại.
-  Các đường dẫn tương thích channel-turn và SDK hiện có vẫn mặc định gửi trực tiếp trong giai đoạn này.
-- Ghi biên nhận một cách nhất quán.
-- Trả biên nhận và kết quả phân phối về bên gọi dispatcher ban đầu thay vì coi gửi bền vững
-  là một tác dụng phụ cuối cùng.
-- Duy trì nguồn tin nhắn qua các ý định gửi bền vững để khôi phục, phát lại, và
-  gửi theo khối vẫn bảo toàn nguồn gốc vận hành OpenClaw.
+- Khiến `deliverOutboundPayloads` gọi `messages.send`.
+- Đặt độ bền gửi cuối làm mặc định và đóng khi lỗi nếu không thể ghi ý định bền vững
+  trong vòng đời tin nhắn mới, sau khi bộ điều hợp khai báo an toàn phát lại.
+  Các đường dẫn runner gửi đến hiện có và tương thích SDK vẫn mặc định gửi trực tiếp
+  trong giai đoạn này.
+- Ghi biên nhận nhất quán.
+- Trả biên nhận và kết quả phân phối cho caller dispatcher ban đầu thay vì coi
+  gửi bền vững là tác dụng phụ kết thúc.
+- Lưu nguồn gốc tin nhắn qua các ý định gửi bền vững để khôi phục, phát lại, và
+  gửi theo khúc giữ được xuất xứ vận hành của OpenClaw.
 
-### Giai đoạn 3: Cầu nối lượt kênh
+### Giai đoạn 3: Cầu gửi đến của kênh
 
-- Triển khai lại `channel.turn.run` và `dispatchAssembledChannelTurn` trên nền
+- Triển khai lại `channel.inbound.run` và `dispatchChannelInboundReply` trên nền
   `messages.receive` và `messages.send`.
 - Giữ ổn định các kiểu fact hiện tại.
-- Giữ hành vi cũ theo mặc định. Một kênh assembled-turn chỉ trở nên bền vững
-  khi bộ chuyển tiếp của nó chọn tham gia rõ ràng với chính sách độ bền an toàn phát lại.
+- Giữ hành vi legacy theo mặc định. Một kênh assembled-turn chỉ trở nên bền vững
+  khi bộ điều hợp của nó chọn tham gia rõ ràng bằng chính sách độ bền an toàn phát lại.
 - Giữ `durable: false` làm lối thoát tương thích cho các đường dẫn hoàn tất
-  chỉnh sửa gốc và chưa thể phát lại an toàn, nhưng không dựa vào các dấu `false`
+  chỉnh sửa native và chưa thể phát lại an toàn, nhưng không dựa vào các dấu `false`
   để bảo vệ các kênh chưa di chuyển.
-- Chỉ mặc định độ bền assembled-turn trong vòng đời tin nhắn mới, sau khi
-  ánh xạ kênh chứng minh đường dẫn gửi chung bảo toàn ngữ nghĩa phân phối kênh cũ.
+- Chỉ mặc định độ bền assembled-turn trong vòng đời tin nhắn mới, sau khi ánh xạ
+  kênh chứng minh đường gửi chung bảo toàn ngữ nghĩa phân phối cũ của kênh.
 
-### Giai đoạn 4: Cầu nối dispatcher đã chuẩn bị
+### Giai đoạn 4: Cầu dispatcher đã chuẩn bị
 
-- Thay `deliverDurableInboundReplyPayload` bằng một cầu nối ngữ cảnh gửi.
+- Thay `deliverDurableInboundReplyPayload` bằng cầu nối ngữ cảnh gửi.
 - Giữ helper cũ dưới dạng wrapper.
 - Chuyển Telegram, WhatsApp, Slack, Signal, iMessage và Discord trước vì
   chúng đã có công việc final bền vững hoặc đường gửi đơn giản hơn.
-- Xem mọi dispatcher đã chuẩn bị là chưa được bao phủ cho đến khi nó chọn tham
-  gia rõ ràng vào ngữ cảnh gửi. Tài liệu và mục changelog phải nói "lượt kênh
-  đã được lắp ráp" hoặc nêu tên các đường dẫn kênh đã di chuyển thay vì tuyên
-  bố tất cả phản hồi cuối tự động.
-- Giữ `recordInboundSessionAndDispatchReply`, các helper direct-DM và những
-  helper tương thích công khai tương tự bảo toàn hành vi. Chúng có thể phơi bày
-  một tùy chọn tham gia ngữ cảnh gửi rõ ràng sau này, nhưng không được tự động
-  thử giao phát bền vững chung trước callback giao phát do caller sở hữu.
+- Xem mọi dispatcher đã chuẩn bị là chưa được bao phủ cho đến khi nó chọn tham gia rõ ràng vào
+  ngữ cảnh gửi. Tài liệu và mục changelog phải nói "các lượt kênh đã được lắp ráp"
+  hoặc nêu tên các đường kênh đã di trú, thay vì tuyên bố tất cả
+  phản hồi final tự động.
+- Giữ `recordInboundSessionAndDispatchReply`, các helper DM trực tiếp và các
+  helper tương thích công khai tương tự sao cho bảo toàn hành vi. Sau này chúng có thể
+  phơi bày lựa chọn tham gia ngữ cảnh gửi rõ ràng, nhưng không được tự động thử
+  phân phối bền vững chung trước callback phân phối do caller sở hữu.
 
 ### Giai đoạn 5: Vòng đời live hợp nhất
 
 - Xây dựng `messages.live` với hai adapter chứng minh:
-  - Telegram cho gửi cộng chỉnh sửa cộng gửi final đã cũ.
-  - Matrix cho hoàn tất bản nháp cộng fallback xóa.
-- Sau đó di chuyển Discord, Slack, Mattermost, Teams, QQ Bot và Feishu.
-- Chỉ xóa mã hoàn tất bản xem trước trùng lặp sau khi mỗi kênh có
+  - Telegram cho gửi cộng sửa cộng gửi final lỗi thời.
+  - Matrix cho hoàn tất bản nháp final cộng fallback biên tập lại.
+- Sau đó di trú Discord, Slack, Mattermost, Teams, QQ Bot và Feishu.
+- Chỉ xóa mã hoàn tất preview bị trùng lặp sau khi mỗi kênh có
   kiểm thử tương đương.
 
 ### Giai đoạn 6: SDK công khai
 
-- Thêm `openclaw/plugin-sdk/channel-message`.
-- Tài liệu hóa nó là API Plugin kênh được ưu tiên.
-- Cập nhật package exports, inventory entrypoint, baseline API đã sinh và
+- Thêm `openclaw/plugin-sdk/channel-outbound`.
+- Ghi tài liệu nó là API Plugin kênh được ưu tiên.
+- Cập nhật package exports, inventory entrypoint, baseline API được tạo và
   tài liệu SDK Plugin.
-- Bao gồm `MessageOrigin`, các hook mã hóa/giải mã origin và predicate chung
-  `shouldDropOpenClawEcho` trong bề mặt SDK channel-message.
-- Giữ các wrapper tương thích cho subpath cũ.
-- Đánh dấu các helper SDK có tên reply là đã ngừng khuyến nghị trong tài liệu
-  sau khi các Plugin đi kèm được di chuyển.
+- Bao gồm `MessageOrigin`, các hook encode/decode nguồn gốc và predicate dùng chung
+  `shouldDropOpenClawEcho` trong bề mặt SDK channel-outbound.
+- Giữ wrapper tương thích cho các subpath cũ.
+- Đánh dấu các helper SDK mang tên reply là đã lỗi thời trong tài liệu sau khi các Plugin
+  đóng gói được di trú.
 
-### Giai đoạn 7: Tất cả bên gửi
+### Giai đoạn 7: Tất cả bộ gửi
 
-Chuyển tất cả producer outbound không phải reply sang `messages.send`:
+Chuyển mọi producer outbound không phải reply sang `messages.send`:
 
-- thông báo cron và heartbeat
+- thông báo Cron và Heartbeat
 - hoàn tất tác vụ
 - kết quả hook
 - lời nhắc phê duyệt và kết quả phê duyệt
-- gửi bằng công cụ tin nhắn
+- lượt gửi của công cụ tin nhắn
 - thông báo hoàn tất subagent
-- gửi rõ ràng từ CLI hoặc Control UI
-- đường tự động hóa/phát rộng
+- lượt gửi CLI hoặc Control UI rõ ràng
+- đường tự động hóa/phát sóng
 
-Đây là nơi mô hình không còn là "agent replies" mà trở thành "OpenClaw gửi
+Đây là nơi mô hình ngừng là "phản hồi của agent" và trở thành "OpenClaw gửi
 tin nhắn".
 
-### Giai đoạn 8: Ngừng khuyến nghị Turn
+### Giai đoạn 8: Xóa tương thích mang tên turn
 
-- Giữ `channel.turn` dưới dạng wrapper trong ít nhất một cửa sổ tương thích.
-- Công bố ghi chú di chuyển.
-- Chạy kiểm thử tương thích SDK Plugin với import cũ.
-- Chỉ xóa hoặc ẩn các helper nội bộ cũ sau khi không Plugin đi kèm nào cần
-  chúng và hợp đồng bên thứ ba đã có thay thế ổn định.
+- Giữ các wrapper mang tên inbound/message làm cửa sổ tương thích.
+- Xuất bản ghi chú di trú.
+- Chạy kiểm thử tương thích SDK Plugin với các import cũ.
+- Chỉ xóa hoặc ẩn helper nội bộ cũ sau khi không Plugin đóng gói nào còn cần chúng
+  và hợp đồng bên thứ ba đã có phần thay thế ổn định.
 
 ## Kế hoạch kiểm thử
 
 Kiểm thử đơn vị:
 
-- Tuần tự hóa và khôi phục ý định gửi bền vững.
-- Tái sử dụng khóa idempotency và triệt tiêu bản trùng lặp.
-- Commit receipt và bỏ qua replay.
-- Khôi phục `unknown_after_send`, có đối soát trước replay khi adapter hỗ trợ
-  đối soát.
+- Tuần tự hóa và khôi phục intent gửi bền vững.
+- Tái sử dụng khóa idempotency và triệt tiêu trùng lặp.
+- Commit receipt và bỏ qua phát lại.
+- Khôi phục `unknown_after_send` có đối chiếu trước khi phát lại khi adapter
+  hỗ trợ đối chiếu.
 - Chính sách phân loại lỗi.
-- Trình tự chính sách ack khi nhận.
-- Ánh xạ quan hệ cho gửi reply, followup, system và broadcast.
-- Factory origin lỗi Gateway và predicate `shouldDropOpenClawEcho`.
-- Bảo toàn origin qua chuẩn hóa payload, chia chunk, tuần tự hóa hàng đợi bền
-  vững và khôi phục.
+- Trình tự chính sách ack nhận.
+- Ánh xạ quan hệ cho lượt gửi reply, followup, system và broadcast.
+- Factory nguồn gốc lỗi Gateway và predicate `shouldDropOpenClawEcho`.
+- Bảo toàn nguồn gốc qua chuẩn hóa payload, chia chunk, tuần tự hóa hàng đợi bền vững
+  và khôi phục.
 
 Kiểm thử tích hợp:
 
-- Adapter đơn giản `channel.turn.run` vẫn ghi lại và gửi.
-- Giao phát assembled-turn kế thừa không trở thành bền vững trừ khi kênh chọn
-  tham gia rõ ràng.
-- Cầu nối `channel.turn.runPrepared` vẫn ghi lại và hoàn tất.
-- Các helper tương thích công khai mặc định gọi callback giao phát do caller sở
-  hữu và không generic-send trước các callback đó.
-- Giao phát fallback bền vững replay toàn bộ mảng payload đã chiếu sau khi
-  khởi động lại và không thể để các payload sau đó chưa được ghi lại sau một
-  crash sớm.
-- Giao phát assembled-turn bền vững trả về id tin nhắn nền tảng cho dispatcher
-  được đệm.
-- Hook giao phát tùy chỉnh vẫn trả về id tin nhắn nền tảng khi giao phát bền
-  vững bị tắt hoặc không khả dụng.
-- Reply cuối sống sót qua khởi động lại giữa lúc assistant hoàn tất và lúc gửi
-  lên nền tảng.
-- Bản nháp xem trước hoàn tất tại chỗ khi được cho phép.
-- Bản nháp xem trước bị hủy hoặc bị xóa khi media/lỗi/không khớp reply-target
-  yêu cầu giao phát bình thường.
-- Streaming block và streaming xem trước không cùng giao phát một văn bản.
-- Media được stream sớm không bị lặp trong giao phát cuối.
+- Adapter đơn giản `channel.inbound.run` vẫn ghi lại và gửi.
+- Phân phối sự kiện đã lắp ráp cũ không trở thành bền vững trừ khi kênh
+  chọn tham gia rõ ràng.
+- Cầu nối `channel.inbound.runPreparedReply` vẫn ghi lại và hoàn tất.
+- Helper tương thích công khai mặc định gọi callback phân phối do caller sở hữu
+  và không generic-send trước các callback đó.
+- Phân phối fallback bền vững phát lại toàn bộ mảng payload đã chiếu sau khi
+  khởi động lại và không thể để các payload sau chưa được ghi lại sau sự cố sớm.
+- Phân phối sự kiện đã lắp ráp bền vững trả về id tin nhắn nền tảng cho dispatcher
+  đã buffer.
+- Hook phân phối tùy chỉnh vẫn trả về id tin nhắn nền tảng khi phân phối bền vững
+  bị tắt hoặc không khả dụng.
+- Reply final tồn tại qua lần khởi động lại giữa lúc assistant hoàn tất và gửi nền tảng.
+- Bản nháp preview hoàn tất tại chỗ khi được phép.
+- Bản nháp preview bị hủy hoặc biên tập lại khi media/lỗi/đích reply không khớp
+  yêu cầu phân phối bình thường.
+- Streaming khối và streaming preview không cùng phân phối một văn bản.
+- Media được stream sớm không bị nhân đôi trong phân phối final.
 
 Kiểm thử kênh:
 
-- Reply topic Telegram với ack polling bị trì hoãn cho đến watermark completed
-  an toàn của ngữ cảnh nhận.
-- Khôi phục polling Telegram cho các update đã chấp nhận nhưng chưa giao phát
-  được bao phủ bởi mô hình offset safe-completed đã lưu.
-- Bản xem trước Telegram đã cũ gửi final mới và dọn dẹp bản xem trước.
-- Fallback im lặng Telegram gửi mọi payload fallback đã chiếu.
-- Độ bền fallback im lặng Telegram ghi lại toàn bộ mảng fallback đã chiếu một
-  cách nguyên tử, không phải một ý định bền vững single-payload cho mỗi vòng
-  lặp.
-- Discord hủy bản xem trước khi có media/lỗi/reply rõ ràng.
-- Final của dispatcher đã chuẩn bị trong Discord định tuyến qua ngữ cảnh gửi
-  trước khi tài liệu hoặc changelog tuyên bố độ bền final-reply của Discord.
-- Gửi final bền vững của iMessage điền cache echo sent-message của monitor.
-- Các đường giao phát kế thừa LINE, Zalo và Nostr không bị bỏ qua bởi gửi bền
-  vững chung cho đến khi tồn tại kiểm thử tương đương adapter của chúng.
-- Giao phát callback Direct-DM/Nostr vẫn có thẩm quyền trừ khi được di chuyển
-  rõ ràng sang một message target hoàn chỉnh và adapter gửi an toàn khi replay.
-- Tin nhắn lỗi Gateway OpenClaw được gắn thẻ của Slack vẫn hiển thị outbound,
-  echo phòng bot được gắn thẻ bị loại trước `allowBots`, và tin nhắn bot không
-  gắn thẻ có cùng văn bản hiển thị vẫn đi theo ủy quyền bot bình thường.
-- Fallback stream native Slack sang bản xem trước nháp trong DM cấp cao nhất.
-- Hoàn tất bản xem trước Matrix và fallback xóa.
-- Echo phòng gateway-failure OpenClaw được gắn thẻ của Matrix từ tài khoản bot
-  đã cấu hình bị loại trước xử lý `allowBots`.
-- Kiểm toán cascade gateway-failure trong phòng chung của Discord và Google
-  Chat bao phủ các chế độ `allowBots` trước khi tuyên bố bảo vệ chung ở đó.
+- Reply chủ đề Telegram với ack polling bị trì hoãn đến watermark hoàn tất an toàn
+  của ngữ cảnh nhận.
+- Khôi phục polling Telegram cho cập nhật đã chấp nhận nhưng chưa phân phối, được bao phủ bởi
+  mô hình offset hoàn tất an toàn đã lưu bền vững.
+- Preview lỗi thời của Telegram gửi final mới và dọn dẹp preview.
+- Fallback im lặng của Telegram gửi mọi payload fallback đã chiếu.
+- Độ bền fallback im lặng của Telegram ghi lại toàn bộ mảng fallback đã chiếu
+  một cách nguyên tử, không phải một intent bền vững đơn payload cho mỗi vòng lặp.
+- Hủy preview Discord khi có media/lỗi/reply rõ ràng.
+- Final của dispatcher đã chuẩn bị trong Discord đi qua ngữ cảnh gửi trước khi tài liệu
+  hoặc changelog tuyên bố độ bền final-reply của Discord.
+- Lượt gửi final bền vững iMessage điền cache echo tin nhắn đã gửi của monitor.
+- Các đường phân phối cũ của LINE, Zalo và Nostr không bị bỏ qua bởi
+  lượt gửi bền vững chung cho đến khi kiểm thử tương đương adapter của chúng tồn tại.
+- Phân phối callback Direct-DM/Nostr vẫn là nguồn thẩm quyền trừ khi được di trú rõ ràng
+  sang đích tin nhắn hoàn chỉnh và adapter gửi an toàn khi phát lại.
+- Tin nhắn lỗi Gateway OpenClaw được gắn tag của Slack vẫn hiển thị outbound, echo phòng bot
+  được gắn tag bị loại trước `allowBots`, và tin nhắn bot không gắn tag có cùng
+  văn bản hiển thị vẫn theo ủy quyền bot bình thường.
+- Fallback stream gốc của Slack sang preview bản nháp trong DM cấp cao nhất.
+- Hoàn tất preview Matrix và fallback biên tập lại.
+- Echo phòng lỗi Gateway OpenClaw được gắn tag của Matrix từ tài khoản bot đã cấu hình
+  bị loại trước xử lý `allowBots`.
+- Audit chuỗi lỗi Gateway trong phòng chung của Discord và Google Chat bao phủ
+  các chế độ `allowBots` trước khi tuyên bố bảo vệ chung ở đó.
 - Hoàn tất bản nháp Mattermost và fallback gửi mới.
-- Hoàn tất tiến trình native Teams.
+- Hoàn tất tiến trình gốc Teams.
 - Triệt tiêu final trùng lặp Feishu.
-- Fallback timeout accumulator QQ Bot.
-- Gửi final bền vững Tlon bảo toàn render model-signature và theo dõi thread đã
-  tham gia.
-- Gửi final bền vững đơn giản cho WhatsApp, Signal, iMessage, Google Chat,
-  LINE, IRC, Nostr, Nextcloud Talk, Synology Chat, Tlon, Twitch, Zalo và Zalo
-  Personal.
+- Fallback timeout bộ tích lũy QQ Bot.
+- Lượt gửi final bền vững Tlon bảo toàn render chữ ký mô hình và theo dõi thread
+  đã tham gia.
+- Lượt gửi final bền vững đơn giản của WhatsApp, Signal, iMessage, Google Chat, LINE, IRC, Nostr, Nextcloud Talk,
+  Synology Chat, Tlon, Twitch, Zalo và Zalo Personal.
 
 Xác thực:
 
-- Các file Vitest được nhắm mục tiêu trong quá trình phát triển.
+- Các tệp Vitest có mục tiêu trong quá trình phát triển.
 - `pnpm check:changed` trong Testbox cho toàn bộ bề mặt đã thay đổi.
-- `pnpm check` rộng hơn trong Testbox trước khi landing toàn bộ refactor hoặc
-  sau các thay đổi SDK/export công khai.
-- Smoke live hoặc qa-channel cho ít nhất một kênh có khả năng chỉnh sửa và một
+- `pnpm check` rộng hơn trong Testbox trước khi landing toàn bộ refactor hoặc sau
+  thay đổi SDK/export công khai.
+- Smoke live hoặc qa-channel cho ít nhất một kênh có khả năng sửa và một
   kênh chỉ gửi đơn giản trước khi xóa wrapper tương thích.
 
 ## Câu hỏi mở
 
-- Liệu Telegram cuối cùng có nên thay runner source grammY bằng một nguồn
-  polling hoàn toàn bền vững có thể kiểm soát giao phát lại ở cấp nền tảng,
-  không chỉ watermark khởi động lại đã lưu của OpenClaw hay không.
-- Liệu trạng thái live preview bền vững nên được lưu trong cùng bản ghi hàng
-  đợi với ý định gửi cuối hay trong một kho live-state song song.
-- Wrapper tương thích sẽ còn được tài liệu hóa bao lâu sau khi
-  `plugin-sdk/channel-message` được phát hành.
-- Liệu Plugin bên thứ ba nên triển khai receive adapter trực tiếp hay chỉ cung
-  cấp hook normalize/send/live thông qua `defineChannelMessageAdapter`.
-- Những trường receipt nào an toàn để phơi bày trong SDK công khai so với trạng
-  thái runtime nội bộ.
-- Liệu các hiệu ứng phụ như cache self-echo và marker participated-thread nên
-  được mô hình hóa là hook send-context, bước finalize do adapter sở hữu, hay
+- Liệu Telegram cuối cùng có nên thay nguồn runner grammY bằng một
+  nguồn polling hoàn toàn bền vững có thể kiểm soát phân phối lại ở cấp nền tảng, không
+  chỉ watermark khởi động lại đã lưu bền vững của OpenClaw.
+- Liệu trạng thái preview live bền vững nên được lưu trong cùng bản ghi hàng đợi
+  với intent gửi final hay trong một kho trạng thái live ngang hàng.
+- Wrapper tương thích còn được ghi tài liệu trong bao lâu sau khi
+  `plugin-sdk/channel-outbound` được phát hành.
+- Liệu Plugin bên thứ ba nên triển khai adapter nhận trực tiếp hay chỉ
+  cung cấp hook normalize/send/live thông qua `defineChannelMessageAdapter`.
+- Trường receipt nào an toàn để phơi bày trong SDK công khai so với trạng thái runtime
+  nội bộ.
+- Liệu các side effect như cache self-echo và marker thread đã tham gia
+  nên được mô hình hóa thành hook ngữ cảnh gửi, bước finalize do adapter sở hữu, hay
   subscriber receipt.
-- Kênh nào có metadata origin native, kênh nào cần registry outbound đã lưu, và
-  kênh nào không thể cung cấp triệt tiêu echo cross-bot đáng tin cậy.
+- Kênh nào có metadata nguồn gốc gốc, kênh nào cần registry outbound được lưu bền vững,
+  và kênh nào không thể cung cấp triệt tiêu echo liên bot đáng tin cậy.
 
 ## Tiêu chí chấp nhận
 
-- Mọi kênh tin nhắn đi kèm gửi đầu ra hiển thị cuối cùng qua `messages.send`.
-- Mọi kênh tin nhắn inbound đi vào qua `messages.receive` hoặc wrapper tương
-  thích được tài liệu hóa.
+- Mọi kênh tin nhắn đóng gói gửi đầu ra final hiển thị thông qua
+  `messages.send`.
+- Mọi kênh tin nhắn inbound đi vào thông qua `messages.receive` hoặc một
+  wrapper tương thích đã ghi tài liệu.
 - Mọi kênh preview/edit/stream dùng `messages.live` cho trạng thái bản nháp và
   hoàn tất.
-- `channel.turn` chỉ là wrapper.
-- Các helper SDK có tên reply là export tương thích, không phải đường được
-  khuyến nghị.
-- Khôi phục bền vững có thể replay các lượt gửi final đang chờ sau khi khởi
-  động lại mà không làm mất phản hồi cuối hoặc nhân đôi các lượt gửi đã commit;
-  các lượt gửi có kết quả nền tảng không xác định được đối soát trước khi replay
-  hoặc được tài liệu hóa là at-least-once cho adapter đó.
-- Gửi final bền vững fail closed khi không thể ghi ý định bền vững, trừ khi
-  caller đã chọn rõ ràng một chế độ không bền vững được tài liệu hóa.
-- Các helper tương thích channel-turn và SDK kế thừa mặc định giao phát trực
-  tiếp do kênh sở hữu; gửi bền vững chung chỉ là tùy chọn tham gia rõ ràng.
-- Receipt bảo toàn tất cả id tin nhắn nền tảng cho giao phát nhiều phần và một
+- `channel.inbound` chỉ là một wrapper.
+- Helper SDK mang tên reply là export tương thích, không phải đường được khuyến nghị.
+- Khôi phục bền vững có thể phát lại lượt gửi final đang chờ sau khi khởi động lại mà không làm mất
+  phản hồi final hoặc nhân đôi lượt gửi đã commit; lượt gửi có
+  kết quả nền tảng không xác định được đối chiếu trước khi phát lại hoặc được ghi tài liệu là
+  ít-nhất-một-lần cho adapter đó.
+- Lượt gửi final bền vững fail closed khi intent bền vững không thể được ghi,
+  trừ khi caller chọn rõ ràng một chế độ không bền vững đã ghi tài liệu.
+- Helper tương thích SDK cũ mặc định dùng phân phối trực tiếp
+  do kênh sở hữu; lượt gửi bền vững chung chỉ là lựa chọn tham gia rõ ràng.
+- Receipt bảo toàn mọi id tin nhắn nền tảng cho phân phối nhiều phần và một
   id chính để tiện threading/edit.
-- Wrapper bền vững bảo toàn các hiệu ứng phụ cục bộ của kênh trước khi thay thế
-  callback giao phát trực tiếp.
-- Dispatcher đã chuẩn bị không được tính là bền vững cho đến khi đường giao
-  phát cuối của chúng sử dụng rõ ràng ngữ cảnh gửi.
-- Giao phát fallback xử lý mọi payload đã chiếu.
-- Giao phát fallback bền vững ghi lại mọi payload đã chiếu trong một ý định
-  hoặc kế hoạch batch có thể replay.
-- Đầu ra lỗi Gateway bắt nguồn từ OpenClaw hiển thị với con người nhưng echo
-  phòng do bot viết được gắn thẻ bị loại trước ủy quyền bot trên các kênh tuyên
-  bố hỗ trợ hợp đồng origin.
+- Wrapper bền vững bảo toàn side effect cục bộ của kênh trước khi thay thế callback
+  phân phối trực tiếp.
+- Dispatcher đã chuẩn bị không được tính là bền vững cho đến khi đường phân phối final
+  của chúng dùng rõ ràng ngữ cảnh gửi.
+- Phân phối fallback xử lý mọi payload đã chiếu.
+- Phân phối fallback bền vững ghi lại mọi payload đã chiếu trong một intent
+  hoặc kế hoạch batch có thể phát lại.
+- Đầu ra lỗi Gateway có nguồn gốc từ OpenClaw hiển thị cho con người nhưng echo phòng
+  do bot viết và được gắn tag bị loại trước ủy quyền bot trên các kênh
+  khai báo hỗ trợ hợp đồng nguồn gốc.
 - Tài liệu giải thích gửi, nhận, live, trạng thái, receipt, quan hệ, chính sách
-  lỗi, di chuyển và phạm vi kiểm thử.
+  lỗi, di trú và phạm vi kiểm thử.
 
 ## Liên quan
 
 - [Tin nhắn](/vi/concepts/messages)
-- [Streaming và chunking](/vi/concepts/streaming)
+- [Streaming và chia chunk](/vi/concepts/streaming)
 - [Bản nháp tiến trình](/vi/concepts/progress-drafts)
-- [Chính sách retry](/vi/concepts/retry)
-- [Kernel lượt kênh](/vi/plugins/sdk-channel-turn)
+- [Chính sách thử lại](/vi/concepts/retry)
+- [API inbound của kênh](/vi/plugins/sdk-channel-inbound)

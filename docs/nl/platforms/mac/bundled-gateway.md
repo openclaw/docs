@@ -1,35 +1,36 @@
 ---
 read_when:
     - OpenClaw.app verpakken
-    - Debuggen van de macOS Gateway-launchd-service
-    - De Gateway-CLI installeren voor macOS
+    - Foutopsporing van de macOS Gateway-launchd-service
+    - De Gateway-CLI voor macOS installeren
 summary: Gateway-runtime op macOS (externe launchd-service)
 title: Gateway op macOS
 x-i18n:
-    generated_at: "2026-05-07T13:22:22Z"
+    generated_at: "2026-06-27T17:47:58Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: caf129918c46f8f54026e9db04e8ad5a033148899d3029fe1a362bb14c7f25f8
+    source_hash: 76c55e3d24e5bc743233e11be4897f4f2a865c97f2e0d795a472caeb6d097d34
     source_path: platforms/mac/bundled-gateway.md
     workflow: 16
 ---
 
-OpenClaw.app bundelt Node/Bun of de Gateway-runtime niet langer mee. De macOS-app
+OpenClaw.app bundelt Node/Bun of de Gateway-runtime niet meer. De macOS-app
 verwacht een **externe** installatie van de `openclaw` CLI, start de Gateway niet als
-childproces en beheert een launchd-service per gebruiker om de Gateway
-actief te houden (of koppelt met een bestaande lokale Gateway als er al een draait).
+child process en beheert een launchd-service per gebruiker om de Gateway
+actief te houden (of maakt verbinding met een bestaande lokale Gateway als er al een draait).
 
 ## Installeer de CLI (vereist voor lokale modus)
 
-Node 24 is de standaardruntime op de Mac. Node 22 LTS, momenteel `22.16+`, werkt nog steeds voor compatibiliteit. Installeer daarna `openclaw` globaal:
+Node 24 is de standaardruntime op de Mac. Node 22 LTS, momenteel `22.19+`, werkt nog steeds voor compatibiliteit. Installeer daarna `openclaw` globaal:
 
 ```bash
 npm install -g openclaw@<version>
 ```
 
-De knop **CLI installeren** in de macOS-app voert dezelfde globale installatiestroom uit die de app
-intern gebruikt: eerst wordt npm geprobeerd, daarna pnpm, daarna bun als dat de enige
-gedetecteerde pakketbeheerder is. Node blijft de aanbevolen Gateway-runtime.
+De knop **CLI installeren** van de macOS-app voert dezelfde globale installatiestroom uit die de app
+intern gebruikt: eerst npm, daarna pnpm, daarna bun als dat de enige
+gedetecteerde package manager is. Node blijft de aanbevolen Gateway-runtime.
 
 ## Launchd (Gateway als LaunchAgent)
 
@@ -44,26 +45,27 @@ Plist-locatie (per gebruiker):
 
 Beheerder:
 
-- De macOS-app is eigenaar van installatie/update van de LaunchAgent in lokale modus.
+- De macOS-app beheert installatie/update van LaunchAgent in lokale modus.
 - De CLI kan deze ook installeren: `openclaw gateway install`.
 
 Gedrag:
 
 - "OpenClaw actief" schakelt de LaunchAgent in/uit.
 - Het afsluiten van de app stopt de gateway **niet** (launchd houdt deze actief).
-- Als er al een Gateway draait op de geconfigureerde poort, koppelt de app ermee
-  in plaats van een nieuwe te starten.
+- Als er al een Gateway draait op de geconfigureerde poort, maakt de app daar
+  verbinding mee in plaats van een nieuwe te starten.
 
 Logging:
 
-- launchd stdout/err: `/tmp/openclaw/openclaw-gateway.log`
+- launchd stdout: `~/Library/Logs/openclaw/gateway.log` (profielen gebruiken `gateway-<profile>.log`)
+- launchd stderr: onderdrukt
 
 ## Versiecompatibiliteit
 
 De macOS-app controleert de gatewayversie ten opzichte van de eigen versie. Als ze
 incompatibel zijn, werk dan de globale CLI bij zodat deze overeenkomt met de appversie.
 
-## Smoke-check
+## Smokecheck
 
 ```bash
 openclaw --version

@@ -1,32 +1,33 @@
 ---
 read_when:
-    - Vuoi rimuovere il servizio Gateway e/o lo stato locale
-    - Vuoi prima una prova a secco
-summary: Riferimento CLI per `openclaw uninstall` (rimuovi il servizio Gateway e i dati locali)
-title: Disinstalla
+    - Vuoi rimuovere il servizio gateway e/o lo stato locale
+    - Vuoi prima un'esecuzione di prova
+summary: Riferimento CLI per `openclaw uninstall` (rimuovi il servizio Gateway + i dati locali)
+title: Disinstallazione
 x-i18n:
-    generated_at: "2026-04-24T08:35:37Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T17:22:50Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b774fc006e989068b9126aff2a72888fd808a2e0e3d5ea8b57e6ab9d9f1b63ee
+    source_hash: f90fa8cf513e2e8cd422c3b8a880e7fd20fb71131a3ec88260e765daa2ace543
     source_path: cli/uninstall.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw uninstall`
 
-Disinstalla il servizio Gateway + i dati locali (la CLI resta).
+Disinstalla il servizio Gateway + i dati locali (la CLI rimane).
 
 Opzioni:
 
 - `--service`: rimuove il servizio Gateway
 - `--state`: rimuove stato e configurazione
-- `--workspace`: rimuove le directory dello spazio di lavoro
+- `--workspace`: rimuove le directory di workspace
 - `--app`: rimuove l'app macOS
-- `--all`: rimuove servizio, stato, spazio di lavoro e app
-- `--yes`: salta i prompt di conferma
-- `--non-interactive`: disattiva i prompt; richiede `--yes`
-- `--dry-run`: stampa le azioni senza rimuovere i file
+- `--all`: rimuove servizio, stato, workspace e app
+- `--yes`: salta le richieste di conferma
+- `--non-interactive`: disabilita le richieste; richiede `--yes`
+- `--dry-run`: stampa le azioni senza rimuovere file
 
 Esempi:
 
@@ -41,8 +42,9 @@ openclaw uninstall --dry-run
 
 Note:
 
-- Esegui prima `openclaw backup create` se vuoi un'istantanea ripristinabile prima di rimuovere stato o spazi di lavoro.
-- `--all` è l'abbreviazione per rimuovere insieme servizio, stato, spazio di lavoro e app.
+- Esegui prima `openclaw backup create` se vuoi uno snapshot ripristinabile prima di rimuovere stato o workspace.
+- `--state` preserva le directory di workspace configurate, a meno che non sia selezionato anche `--workspace`.
+- `--all` è un'abbreviazione per rimuovere insieme servizio, stato, workspace e app.
 - `--non-interactive` richiede `--yes`.
 
 ## Correlati

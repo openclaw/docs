@@ -1,30 +1,40 @@
 ---
 read_when:
-    - 你需要 Gradium 來進行文字轉語音
-    - 你需要設定 Gradium API 金鑰、語音或指令權杖
+    - 你想要使用 Gradium 進行文字轉語音
+    - 你需要 Gradium API 金鑰、語音或指令權杖設定
 summary: 在 OpenClaw 中使用 Gradium 文字轉語音
 title: Gradium
 x-i18n:
-    generated_at: "2026-05-10T19:48:35Z"
+    generated_at: "2026-06-27T19:54:45Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5c79da6ec63532061a8112965a679f1113bbefcc91ee00def8153dd39b5b5e58
+    source_hash: 5178bfaf5087e18d5d71f46d04b16d52e0e132257b9ef772b7869ac11b49a0da
     source_path: providers/gradium.md
     workflow: 16
 ---
 
-[Gradium](https://gradium.ai) 是 OpenClaw 內建的文字轉語音提供者。此 Plugin 可產生一般音訊回覆（WAV）、相容語音訊息的 Opus 輸出，以及用於電話介面的 8 kHz u-law 音訊。
+[Gradium](https://gradium.ai) 是 OpenClaw 的文字轉語音供應商。此外掛可以產生一般音訊回覆 (WAV)、與語音備忘相容的 Opus 輸出，以及用於電話介面的 8 kHz u-law 音訊。
 
 | 屬性          | 值                                   |
 | ------------- | ------------------------------------ |
-| 提供者 ID     | `gradium`                            |
-| 驗證          | `GRADIUM_API_KEY` 或 config `apiKey` |
+| 供應商 ID     | `gradium`                            |
+| 身分驗證      | `GRADIUM_API_KEY` 或設定 `apiKey`    |
 | 基底 URL      | `https://api.gradium.ai`（預設）     |
 | 預設語音      | `Emma` (`YTpq7expH9539ERJ`)          |
 
+## 安裝外掛
+
+安裝官方外掛，然後重新啟動閘道：
+
+```bash
+openclaw plugins install @openclaw/gradium-speech
+openclaw gateway restart
+```
+
 ## 設定
 
-建立 Gradium API 金鑰，然後透過環境變數或 config 金鑰將它提供給 OpenClaw。
+建立 Gradium API 金鑰，然後透過環境變數或設定鍵將它提供給 OpenClaw。
 
 <Tabs>
   <Tab title="環境變數">
@@ -33,7 +43,7 @@ x-i18n:
     ```
   </Tab>
 
-  <Tab title="Config 金鑰">
+  <Tab title="設定鍵">
     ```json5
     {
       messages: {
@@ -52,9 +62,9 @@ x-i18n:
   </Tab>
 </Tabs>
 
-此 Plugin 會先檢查已解析的 `apiKey`，再回退使用 `GRADIUM_API_KEY` 環境變數。
+此外掛會先檢查解析後的 `apiKey`，並在沒有時退回使用 `GRADIUM_API_KEY` 環境變數。
 
-## Config
+## 設定
 
 ```json5
 {
@@ -64,7 +74,7 @@ x-i18n:
       provider: "gradium",
       providers: {
         gradium: {
-          voiceId: "YTpq7expH9539ERJ",
+          speakerVoiceId: "YTpq7expH9539ERJ",
           // apiKey: "${GRADIUM_API_KEY}",
           // baseUrl: "https://api.gradium.ai",
         },
@@ -74,13 +84,13 @@ x-i18n:
 }
 ```
 
-| 金鑰                                     | 類型   | 說明                                                                                          |
-| ---------------------------------------- | ------ | --------------------------------------------------------------------------------------------- |
-| `messages.tts.providers.gradium.apiKey`  | string | 已解析的 API 金鑰。支援 `${ENV}` 與 secret refs。                                             |
-| `messages.tts.providers.gradium.baseUrl` | string | 覆寫 API 來源。會移除結尾斜線。預設為 `https://api.gradium.ai`。                              |
-| `messages.tts.providers.gradium.voiceId` | string | 沒有 directive 覆寫時使用的預設語音 ID。                                                      |
+| 鍵                                              | 類型   | 說明                                                                                          |
+| ----------------------------------------------- | ------ | --------------------------------------------------------------------------------------------- |
+| `messages.tts.providers.gradium.apiKey`         | string | 解析後的 API 金鑰。支援 `${ENV}` 和密鑰參照。                                                 |
+| `messages.tts.providers.gradium.baseUrl`        | string | 覆寫 API 來源。會移除尾端斜線。預設為 `https://api.gradium.ai`。                              |
+| `messages.tts.providers.gradium.speakerVoiceId` | string | 沒有指令覆寫時使用的預設語音 ID。                                                            |
 
-輸出的音訊格式會由 runtime 根據目標介面自動選取，無法從 `openclaw.json` 設定。請參閱下方的[輸出](#output)。
+輸出音訊格式會由執行階段根據目標介面自動選擇，無法從 `openclaw.json` 設定。請參閱下方的[輸出](#output)。
 
 ## 語音
 
@@ -96,9 +106,9 @@ x-i18n:
 
 預設語音：Emma。
 
-### 每則訊息的語音覆寫
+### 逐則訊息覆寫語音
 
-當使用中的語音政策允許語音覆寫時，你可以使用 directive token 在行內切換語音。以下全部都會解析為相同的 `voiceId` 覆寫：
+當啟用中的語音政策允許語音覆寫時，你可以使用指令權杖在行內切換語音。對於供應商原生語音 ID，請使用 `speakerVoiceId`。
 
 ```text
 /voice:LFZvm12tW_z0xfGo
@@ -108,23 +118,23 @@ x-i18n:
 /gradiumvoice:LFZvm12tW_z0xfGo
 ```
 
-如果語音政策停用語音覆寫，directive 會被消耗但會被忽略。
+如果語音政策停用語音覆寫，指令會被消耗但忽略。
 
 ## 輸出
 
-runtime 會從目標介面選擇輸出格式。此提供者目前不會合成其他格式。
+執行階段會依目標介面選擇輸出格式。供應商目前不會合成其他格式。
 
-| 目標     | 格式        | 副檔名  | 取樣率     | 語音相容旗標 |
-| -------- | ----------- | ------- | ---------- | ------------ |
-| 標準音訊 | `wav`       | `.wav`  | 提供者     | 否           |
-| 語音訊息 | `opus`      | `.opus` | 提供者     | 是           |
-| 電話     | `ulaw_8000` | n/a     | 8 kHz      | n/a          |
+| 目標           | 格式        | 檔案副檔名 | 取樣率 | 語音相容旗標 |
+| -------------- | ----------- | ---------- | ------ | ------------ |
+| 標準音訊       | `wav`       | `.wav`     | 供應商 | 否           |
+| 語音備忘       | `opus`      | `.opus`    | 供應商 | 是           |
+| 電話           | `ulaw_8000` | 不適用     | 8 kHz  | 不適用       |
 
-## 自動選取順序
+## 自動選擇順序
 
-在已設定的 TTS 提供者中，Gradium 的自動選取順序為 `30`。若要了解在未固定 `messages.tts.provider` 時 OpenClaw 如何選擇使用中的提供者，請參閱[文字轉語音](/zh-TW/tools/tts)。
+在已設定的 TTS 供應商中，Gradium 的自動選擇順序是 `30`。若要了解當 `messages.tts.provider` 未固定時 OpenClaw 如何選擇啟用中的供應商，請參閱[文字轉語音](/zh-TW/tools/tts)。
 
 ## 相關
 
 - [文字轉語音](/zh-TW/tools/tts)
-- [媒體概覽](/zh-TW/tools/media-overview)
+- [媒體概觀](/zh-TW/tools/media-overview)

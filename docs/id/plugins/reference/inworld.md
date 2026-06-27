@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Anda sedang menginstal, mengonfigurasi, atau mengaudit Plugin inworld
-summary: Streaming teks-ke-ucapan Inworld (MP3, OGG_OPUS, PCM telefoni).
+    - Anda sedang memasang, mengonfigurasi, atau mengaudit Plugin inworld
+summary: Teks-ke-ucapan streaming Inworld (MP3, OGG_OPUS, PCM telephony).
 title: Plugin Inworld
 x-i18n:
-    generated_at: "2026-05-02T20:53:17Z"
+    generated_at: "2026-06-27T17:54:29Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1ad17b02d9c3adb00baf596dbecf5d59f5910688dac76675050e7d0687f09e0c
+    source_hash: 02d912c51460e181e100bc227575cafd1ab3c49494057d2df1e26571000020a8
     source_path: plugins/reference/inworld.md
     workflow: 16
 ---
 
 # Plugin Inworld
 
-Text-to-speech streaming Inworld (MP3, OGG_OPUS, telefoni PCM).
+Text-to-speech streaming Inworld (MP3, OGG_OPUS, PCM telephony).
 
 ## Distribusi
 
 - Paket: `@openclaw/inworld-speech`
-- Jalur instalasi: disertakan dalam OpenClaw
+- Rute instalasi: npm; ClawHub: `clawhub:@openclaw/inworld-speech`
 
 ## Permukaan
 
-contracts: speechProviders
+kontrak: speechProviders
 
-## Dokumen terkait
+## Dokumentasi terkait
 
 - [inworld](/id/providers/inworld)

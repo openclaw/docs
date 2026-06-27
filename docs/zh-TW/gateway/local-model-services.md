@@ -1,40 +1,40 @@
 ---
 read_when:
-    - 你希望 OpenClaw 只有在選取其模型時才啟動本機模型伺服器
+    - 你希望 OpenClaw 只有在其模型被選取時才啟動本機模型伺服器
     - 你執行 ds4、inferrs、vLLM、llama.cpp、MLX，或其他與 OpenAI 相容的本機伺服器
-    - 你需要控制本機提供者的冷啟動、就緒狀態與閒置關閉
-summary: 在 OpenClaw 模型請求之前視需要啟動本機模型伺服器
+    - 你需要控制本機提供者的冷啟動、就緒狀態和閒置關閉
+summary: 在 OpenClaw 模型請求前按需啟動本機模型伺服器
 title: 本機模型服務
 x-i18n:
-    generated_at: "2026-05-10T19:35:53Z"
+    generated_at: "2026-06-27T19:19:03Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b900146c5831c784b5da66666322ed0f5d3457ccd741556f418cd197749b87b1
+    source_hash: 399648e32dd51faba7687a26de75ef349f1197269b5cca03d34552f0cd9cce28
     source_path: gateway/local-model-services.md
     workflow: 16
 ---
 
-`models.providers.<id>.localService` 讓 OpenClaw 可依需求啟動由 provider 擁有的本機
-模型伺服器。這是 provider 層級的設定：當選定的模型
-屬於該 provider 時，OpenClaw 會探測服務，如果端點已停機就啟動程序，
-等待就緒，然後送出模型請求。
+`models.providers.<id>.localService` 可讓 OpenClaw 依需求啟動由提供者擁有的本機
+模型伺服器。這是提供者層級的設定：當選取的模型屬於該提供者時，
+OpenClaw 會探測服務，若端點未啟動則啟動程序，等待就緒，然後送出模型請求。
 
-可將它用於整天保持執行成本很高的本機伺服器，或用於
-只要選擇模型就應足以啟動後端的手動設定。
+適用於整天常駐成本很高的本機伺服器，或是只要選取模型就應足以啟動後端的
+手動設定。
 
 ## 運作方式
 
-1. 模型請求會解析到已設定的 provider。
-2. 如果該 provider 有 `localService`，OpenClaw 會探測 `healthUrl`。
+1. 模型請求解析到已設定的提供者。
+2. 如果該提供者有 `localService`，OpenClaw 會探測 `healthUrl`。
 3. 如果探測成功，OpenClaw 會使用現有伺服器。
 4. 如果探測失敗，OpenClaw 會以 `args` 啟動 `command`。
 5. OpenClaw 會輪詢就緒狀態，直到 `readyTimeoutMs` 到期。
-6. 模型請求會透過一般的 provider 傳輸送出。
-7. 如果 OpenClaw 啟動了該程序，且 `idleStopMs` 為正數，程序會在最後一個
-   進行中的請求閒置達該時間後停止。
+6. 模型請求會透過一般提供者傳輸送出。
+7. 如果程序是由 OpenClaw 啟動，且 `idleStopMs` 為正數，最後一個進行中的請求
+   閒置達到該時間後，程序就會停止。
 
-OpenClaw 不會為此安裝 launchd、systemd、Docker 或 daemon。
-伺服器是第一個需要它的 OpenClaw 程序的子程序。
+OpenClaw 不會為此安裝 launchd、systemd、Docker 或 daemon。該伺服器是第一個需要它的
+OpenClaw 程序的子程序。
 
 ## 設定形狀
 
@@ -75,23 +75,20 @@ OpenClaw 不會為此安裝 launchd、systemd、Docker 或 daemon。
 
 ## 欄位
 
-- `command`：絕對可執行檔路徑。不使用 shell 查找。
-- `args`：程序引數。不會套用 shell 展開、管線、glob 或引號
-  規則。
+- `command`：絕對可執行檔路徑。不會使用 shell 查找。
+- `args`：程序引數。不會套用 shell 展開、pipe、glob 或引號規則。
 - `cwd`：程序的選用工作目錄。
-- `env`：選用環境變數，會覆蓋合併到 OpenClaw 程序
-  環境之上。
-- `healthUrl`：就緒 URL。如果省略，OpenClaw 會將 `/models` 附加到
-  `baseUrl`，因此 `http://127.0.0.1:8000/v1` 會變成
+- `env`：選用環境變數，會覆蓋合併到 OpenClaw 程序環境。
+- `healthUrl`：就緒 URL。如果省略，OpenClaw 會在 `baseUrl` 後附加 `/models`，
+  因此 `http://127.0.0.1:8000/v1` 會變成
   `http://127.0.0.1:8000/v1/models`。
 - `readyTimeoutMs`：啟動就緒期限。預設值：`120000`。
-- `idleStopMs`：OpenClaw 啟動程序的閒置關閉延遲。`0` 或
-  省略會讓程序保持存活，直到 OpenClaw 結束。
+- `idleStopMs`：OpenClaw 啟動程序的閒置關閉延遲。`0` 或省略會讓程序保持執行，直到 OpenClaw 結束。
 
 ## Inferrs 範例
 
-Inferrs 是自訂的 OpenAI 相容 `/v1` 後端，因此相同的本機服務
-API 可搭配 `inferrs` provider 項目使用。
+Inferrs 是自訂的與 OpenAI 相容 `/v1` 後端，因此相同的本機服務
+API 可搭配 `inferrs` 提供者項目使用。
 
 ```json5
 {
@@ -148,6 +145,9 @@ API 可搭配 `inferrs` provider 項目使用。
 
 ## ds4 範例
 
+如需完整設定、context 大小調整指引與驗證命令，請參閱
+[ds4](/zh-TW/providers/ds4)。
+
 ```json5
 {
   models: {
@@ -158,18 +158,20 @@ API 可搭配 `inferrs` provider 項目使用。
         api: "openai-completions",
         timeoutSeconds: 300,
         localService: {
-          command: "/Users/you/Projects/oss/ds4/ds4-server",
+          command: "<DS4_DIR>/ds4-server",
           args: [
             "--model",
-            "/Users/you/Projects/oss/ds4/ds4flash.gguf",
+            "<DS4_DIR>/ds4flash.gguf",
             "--host",
             "127.0.0.1",
             "--port",
             "18000",
             "--ctx",
-            "393216",
+            "32768",
+            "--tokens",
+            "128",
           ],
-          cwd: "/Users/you/Projects/oss/ds4",
+          cwd: "<DS4_DIR>",
           healthUrl: "http://127.0.0.1:18000/v1/models",
           readyTimeoutMs: 300000,
           idleStopMs: 0,
@@ -183,23 +185,21 @@ API 可搭配 `inferrs` provider 項目使用。
 
 ## 操作注意事項
 
-- 一個 OpenClaw 程序會管理它啟動的子程序。另一個看到相同 health URL
-  已經在線的 OpenClaw 程序，會重用它而不接管它。
-- 啟動會依 provider 命令與引數集序列化，因此並行
-  請求不會為相同設定產生重複伺服器。
-- 作用中的串流回應會持有租約；閒置關閉會等到回應
-  body 處理完成。
-- 在較慢的本機 provider 上使用 `timeoutSeconds`，讓冷啟動和長時間生成
-  不會觸發預設模型請求逾時。
+- 一個 OpenClaw 程序會管理它啟動的子程序。另一個 OpenClaw 程序
+  如果看到相同的健康檢查 URL 已經在線上，會重用它，但不會接管它。
+- 啟動會依每組提供者命令與引數序列化，因此並行請求不會針對相同設定產生重複伺服器。
+- 作用中的串流回應會持有 lease；閒置關閉會等到回應主體處理完成。
+- 對緩慢的本機提供者使用 `timeoutSeconds`，避免冷啟動和長時間生成
+  觸發預設模型請求逾時。
 - 如果你的伺服器在 `/v1/models` 以外的位置公開就緒狀態，請使用明確的 `healthUrl`。
 
 ## 相關
 
 <CardGroup cols={2}>
   <Card title="本機模型" href="/zh-TW/gateway/local-models" icon="server">
-    本機模型設定、provider 選擇與安全指引。
+    本機模型設定、提供者選擇與安全指引。
   </Card>
   <Card title="Inferrs" href="/zh-TW/providers/inferrs" icon="cpu">
-    透過 inferrs OpenAI 相容本機伺服器執行 OpenClaw。
+    透過 inferrs 與 OpenAI 相容的本機伺服器執行 OpenClaw。
   </Card>
 </CardGroup>

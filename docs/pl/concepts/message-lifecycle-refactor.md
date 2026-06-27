@@ -1,41 +1,47 @@
 ---
 read_when:
-    - Refaktoryzacja zachowania kanału przy wysyłaniu lub odbieraniu
-    - Zmiana tury kanału, wysyłania odpowiedzi, kolejki wychodzącej, strumieniowania podglądu lub interfejsów API wiadomości SDK Plugin
-    - Projektowanie nowego Plugin dla kanału, który wymaga trwałego wysyłania, potwierdzeń odbioru, podglądów, edycji lub ponawiania prób
-summary: Plan projektowy ujednoliconego, trwałego cyklu życia odbierania, wysyłania, podglądu, edycji i strumieniowania wiadomości
+    - Refaktoryzacja zachowania wysyłania lub odbierania w kanale
+    - Zmiana ruchu przychodzącego kanału, wysyłania odpowiedzi, kolejki wychodzącej, strumieniowania podglądu lub interfejsów API wiadomości SDK Plugin
+    - Projektowanie nowego Plugin dla kanału, który wymaga trwałych wysyłek, potwierdzeń odbioru, podglądów, edycji lub ponownych prób
+summary: Plan projektu ujednoliconego trwałego cyklu życia odbierania, wysyłania, podglądu, edycji i strumieniowania wiadomości
 title: Refaktoryzacja cyklu życia wiadomości
 x-i18n:
-    generated_at: "2026-05-10T19:32:17Z"
+    generated_at: "2026-06-27T17:27:27Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b2e136f1be0f7c1952731b464c3732c68c14a31e672ce628af8182a3f666c914
+    source_hash: 09afead1194a62453342af6feac20fbed24a7761db07a80234333b65947798bb
     source_path: concepts/message-lifecycle-refactor.md
     workflow: 16
 ---
 
-Ta strona opisuje docelowy projekt zastąpienia rozproszonych pomocników obsługujących tury kanałów, wysyłkę odpowiedzi, strumieniowanie podglądu i dostarczanie wychodzące jednym trwałym cyklem życia wiadomości.
+Ta strona opisuje docelowy projekt zastąpienia rozproszonych helperów kanałów do przyjmowania wiadomości, wysyłania odpowiedzi, strumieniowania podglądu i dostarczania wychodzącego jedną trwałą ścieżką cyklu życia wiadomości.
 
-Krótko:
+Wersja skrócona:
 
-- Podstawowymi prymitywami rdzenia powinny być **receive** i **send**, a nie **reply**.
+- Podstawowymi prymitywami rdzenia powinny być **receive** i **send**, nie **reply**.
 - Odpowiedź jest tylko relacją na wiadomości wychodzącej.
-- Tura jest udogodnieniem przetwarzania przychodzącego, a nie właścicielem dostarczania.
-- Wysyłanie musi być oparte na kontekście: `begin`, renderowanie, podgląd lub strumień, końcowe wysłanie, zatwierdzenie, niepowodzenie.
-- Odbieranie także musi być oparte na kontekście: normalizacja, deduplikacja, trasowanie, zapis, wysyłka, potwierdzenie platformy, niepowodzenie.
-- Publiczny plugin SDK powinien zostać zredukowany do jednej małej powierzchni wiadomości kanału.
+- Tura jest ułatwieniem przetwarzania przychodzącego, a nie właścicielem dostarczania.
+- Wysyłanie musi być oparte na kontekście: `begin`, renderowanie, podgląd lub strumień, wysłanie końcowe,
+  zatwierdzenie, niepowodzenie.
+- Odbieranie także musi być oparte na kontekście: normalizacja, deduplikacja, trasowanie, zapis,
+  dispatch, potwierdzenie platformy, niepowodzenie.
+- Publiczny Plugin SDK powinien zostać sprowadzony do jednej małej powierzchni wychodzącej kanału.
 
 ## Problemy
 
 Obecny stos kanałów wyrósł z kilku uzasadnionych lokalnych potrzeb:
 
-- Proste adaptery przychodzące używają `runtime.channel.turn.run`.
-- Bogate adaptery używają `runtime.channel.turn.runPrepared`.
-- Starsze pomocniki używają `dispatchInboundReplyWithBase`, `recordInboundSessionAndDispatchReply`, pomocników ładunków odpowiedzi, dzielenia odpowiedzi na fragmenty, referencji odpowiedzi i pomocników środowiska uruchomieniowego dla wiadomości wychodzących.
-- Strumieniowanie podglądu znajduje się w dispatcherach specyficznych dla kanału.
-- Trwałość końcowego dostarczenia jest dodawana wokół istniejących ścieżek ładunków odpowiedzi.
+- Proste adaptery przychodzące używają `runtime.channel.inbound.run`.
+- Bogate adaptery używają `runtime.channel.inbound.runPreparedReply`.
+- Starsze helpery używają `dispatchInboundReplyWithBase`,
+  `recordInboundSessionAndDispatchReply`, helperów payloadów odpowiedzi, dzielenia odpowiedzi na fragmenty,
+  referencji odpowiedzi i helperów runtime dla wiadomości wychodzących.
+- Strumieniowanie podglądu żyje w dispatcherach specyficznych dla kanałów.
+- Trwałość końcowego dostarczania jest dodawana wokół istniejących ścieżek payloadów odpowiedzi.
 
-Taki kształt naprawia lokalne błędy, ale zostawia OpenClaw ze zbyt wieloma publicznymi pojęciami i zbyt wieloma miejscami, w których semantyka dostarczania może się rozjechać.
+Taki kształt naprawia lokalne błędy, ale zostawia OpenClaw ze zbyt wieloma publicznymi
+pojęciami i zbyt wieloma miejscami, w których semantyka dostarczania może się rozjechać.
 
 Problem niezawodności, który to ujawnił, wygląda tak:
 
@@ -46,28 +52,41 @@ Telegram polling update acked
   -> final response is lost
 ```
 
-Docelowy niezmiennik jest szerszy niż Telegram: gdy rdzeń zdecyduje, że widoczna wiadomość wychodząca powinna istnieć, intencja musi być trwała, zanim zostanie podjęta próba wysłania przez platformę, a potwierdzenie platformy musi zostać zatwierdzone po sukcesie. Daje to OpenClaw odzyskiwanie typu co najmniej raz. Zachowanie dokładnie raz istnieje tylko dla adapterów, które potrafią wykazać natywną idempotentność albo uzgodnić próbę o nieznanym wyniku po wysłaniu ze stanem platformy przed ponownym odtworzeniem.
+Docelowy niezmiennik jest szerszy niż Telegram: gdy rdzeń zdecyduje, że widoczna
+wiadomość wychodząca powinna istnieć, zamiar musi być trwały przed próbą wysłania
+na platformę, a potwierdzenie platformy musi zostać zatwierdzone po sukcesie.
+Daje to OpenClaw odzyskiwanie typu co najmniej raz. Zachowanie dokładnie raz istnieje tylko
+dla adapterów, które mogą udowodnić natywną idempotencję albo uzgodnić próbę o nieznanym wyniku po wysłaniu
+ze stanem platformy przed ponownym odtworzeniem.
 
-To jest stan końcowy tej refaktoryzacji, a nie opis każdej obecnej ścieżki. Podczas migracji istniejące pomocniki wiadomości wychodzących nadal mogą przechodzić do bezpośredniego wysłania, gdy zapisy do kolejki w trybie best effort zawiodą. Refaktoryzacja jest kompletna dopiero wtedy, gdy trwałe końcowe wysłania kończą się zamkniętym niepowodzeniem albo jawnie rezygnują z trwałości za pomocą udokumentowanej polityki nietrwałej.
+To jest stan końcowy tej refaktoryzacji, a nie opis każdej obecnej
+ścieżki. Podczas migracji istniejące helpery wychodzące nadal mogą przechodzić do
+bezpośredniego wysłania, gdy zapisy do kolejki best-effort zawiodą. Refaktoryzacja jest kompletna tylko
+wtedy, gdy trwałe wysyłki końcowe zamykają się błędem albo jawnie rezygnują z trwałości z udokumentowaną
+polityką nietrwałą.
 
 ## Cele
 
-- Jeden cykl życia rdzenia dla wszystkich ścieżek odbioru i wysyłania wiadomości kanału.
-- Domyślnie trwałe końcowe wysłania w nowym cyklu życia wiadomości po tym, jak adapter zadeklaruje zachowanie bezpieczne do odtwarzania.
+- Jeden rdzeniowy cykl życia dla wszystkich ścieżek odbierania i wysyłania wiadomości kanałów.
+- Domyślnie trwałe wysyłki końcowe w nowym cyklu życia wiadomości po tym, jak adapter
+  zadeklaruje zachowanie bezpieczne do ponownego odtworzenia.
 - Wspólna semantyka podglądu, edycji, strumienia, finalizacji, ponawiania, odzyskiwania i potwierdzeń.
-- Mała powierzchnia plugin SDK, której zewnętrzne pluginy mogą się nauczyć i którą mogą utrzymywać.
-- Kompatybilność dla istniejących wywołań `channel.turn` podczas migracji.
+- Mała powierzchnia Plugin SDK, której zewnętrzne Pluginy mogą się nauczyć i którą mogą utrzymywać.
+- Zgodność dla istniejących wywołań zgodności odpowiedzi przychodzących podczas migracji.
 - Jasne punkty rozszerzeń dla nowych możliwości kanałów.
 - Brak gałęzi specyficznych dla platformy w rdzeniu.
-- Brak komunikatów kanału typu delta tokenów. Strumieniowanie kanału pozostaje podglądem wiadomości, edycją, dopisywaniem lub dostarczeniem ukończonego bloku.
-- Strukturalne metadane pochodzenia OpenClaw dla wyjścia operacyjnego/systemowego, tak aby widoczne awarie Gateway nie wracały do współdzielonych pokoi z włączonymi botami jako nowe prompty.
+- Brak komunikatów kanału z deltami tokenów. Strumieniowanie kanału pozostaje podglądem wiadomości,
+  edycją, dopisywaniem albo dostarczaniem ukończonego bloku.
+- Strukturalne metadane pochodzenia OpenClaw dla danych wyjściowych operacyjnych/systemowych, aby widoczne
+  awarie Gateway nie wracały do współdzielonych pokojów z włączonym botem jako nowe prompty.
 
-## Poza zakresem
+## Poza celami
 
-- Nie usuwać `runtime.channel.turn.*` w pierwszej fazie.
-- Nie wymuszać na każdym kanale takiego samego natywnego zachowania transportu.
-- Nie uczyć rdzenia tematów Telegram, natywnych strumieni Slack, redakcji Matrix, kart Feishu, głosu QQ ani aktywności Teams.
-- Nie publikować wszystkich wewnętrznych pomocników migracji jako stabilnego API SDK.
+- Nie wymuszać w pierwszej fazie trwałego dostarczania wiadomości na każdym istniejącym kanale.
+- Nie wymuszać na każdym kanale tego samego natywnego zachowania transportu.
+- Nie uczyć rdzenia tematów Telegram, natywnych strumieni Slack, redakcji Matrix,
+  kart Feishu, głosu QQ ani aktywności Teams.
+- Nie publikować wszystkich wewnętrznych helperów migracyjnych jako stabilnego API SDK.
 - Nie sprawiać, aby ponowienia odtwarzały ukończone, nieidempotentne operacje platformy.
 
 ## Model referencyjny
@@ -78,25 +97,31 @@ Vercel Chat ma dobry publiczny model mentalny:
 - `Thread`
 - `Channel`
 - `Message`
-- metody adaptera, takie jak `postMessage`, `editMessage`, `deleteMessage`, `stream`, `startTyping` i pobieranie historii
+- metody adaptera, takie jak `postMessage`, `editMessage`, `deleteMessage`,
+  `stream`, `startTyping` i pobieranie historii
 - adapter stanu dla deduplikacji, blokad, kolejek i trwałości
 
 OpenClaw powinien zapożyczyć słownictwo, a nie kopiować powierzchnię.
 
-To, czego OpenClaw potrzebuje ponad ten model:
+Czego OpenClaw potrzebuje ponad ten model:
 
-- Trwałe intencje wysyłania wychodzącego przed bezpośrednimi wywołaniami transportu.
-- Jawne konteksty wysyłania z rozpoczęciem, zatwierdzeniem i niepowodzeniem.
-- Konteksty odbioru, które znają politykę potwierdzeń platformy.
-- Potwierdzenia, które przetrwają restart i mogą sterować edycjami, usunięciami, odzyskiwaniem i tłumieniem duplikatów.
-- Mniejszy publiczny SDK. Wbudowane pluginy mogą używać wewnętrznych pomocników środowiska uruchomieniowego, ale zewnętrzne pluginy powinny widzieć jedno spójne API wiadomości.
-- Zachowanie specyficzne dla agentów: sesje, transkrypty, strumieniowanie bloków, postęp narzędzi, zatwierdzenia, dyrektywy mediów, ciche odpowiedzi i historia wzmianek grupowych.
+- Trwałych zamiarów wysłania wychodzącego przed bezpośrednimi wywołaniami transportu.
+- Jawnych kontekstów wysyłania z rozpoczęciem, zatwierdzeniem i niepowodzeniem.
+- Kontekstów odbierania, które znają politykę potwierdzania platformy.
+- Potwierdzeń, które przetrwają restart i mogą sterować edycjami, usuwaniem, odzyskiwaniem i
+  tłumieniem duplikatów.
+- Mniejszego publicznego SDK. Dołączone Pluginy mogą używać wewnętrznych helperów runtime, ale
+  zewnętrzne Pluginy powinny widzieć jedno spójne API wiadomości.
+- Zachowania specyficznego dla agentów: sesji, transkryptów, strumieniowania bloków, postępu narzędzi,
+  zatwierdzeń, dyrektyw mediów, cichych odpowiedzi i historii wzmianek w grupach.
 
-Obietnice w stylu `thread.post()` nie wystarczą dla OpenClaw. Ukrywają granicę transakcji, która decyduje, czy wysyłanie da się odzyskać.
+Obietnice w stylu `thread.post()` nie wystarczają OpenClaw. Ukrywają
+granicę transakcji, która decyduje, czy wysyłkę można odzyskać.
 
 ## Model rdzenia
 
-Nowa domena powinna znajdować się w wewnętrznej przestrzeni nazw rdzenia, takiej jak `src/channels/message/*`.
+Nowa domena powinna żyć pod wewnętrzną przestrzenią nazw rdzenia, taką jak
+`src/channels/message/*`.
 
 Ma cztery pojęcia:
 
@@ -113,7 +138,8 @@ core.messages.state(...)
 
 `live` jest właścicielem podglądu, edycji, postępu i stanu strumienia.
 
-`state` jest właścicielem trwałego przechowywania intencji, potwierdzeń, idempotentności, odzyskiwania, blokad i deduplikacji.
+`state` jest właścicielem trwałego przechowywania zamiarów, potwierdzeń, idempotencji, odzyskiwania, blokad i
+deduplikacji.
 
 ## Terminy wiadomości
 
@@ -192,11 +218,15 @@ type MessageRelation =
     };
 ```
 
-Pozwala to tej samej ścieżce wysyłania obsługiwać zwykłe odpowiedzi, powiadomienia Cron, prompty zatwierdzeń, ukończenia zadań, wysyłki narzędzia wiadomości, wysyłki z CLI lub Control UI, wyniki subagentów i wysyłki automatyzacji.
+Dzięki temu ta sama ścieżka wysyłania obsługuje zwykłe odpowiedzi, powiadomienia Cron, prompty
+zatwierdzeń, ukończenia zadań, wysyłki narzędzi wiadomości, wysyłki CLI lub Control UI, wyniki podagentów
+i wysyłki automatyzacji.
 
 ### Pochodzenie
 
-Pochodzenie opisuje, kto wytworzył wiadomość i jak OpenClaw powinien traktować echa tej wiadomości. Jest oddzielone od relacji: wiadomość może być odpowiedzią do użytkownika i nadal być wyjściem operacyjnym pochodzącym z OpenClaw.
+Pochodzenie opisuje, kto wytworzył wiadomość i jak OpenClaw powinien traktować echa tej
+wiadomości. Jest oddzielne od relacji: wiadomość może być odpowiedzią do użytkownika
+i nadal być operacyjnym wyjściem pochodzącym z OpenClaw.
 
 ```typescript
 type MessageOrigin =
@@ -212,9 +242,13 @@ type MessageOrigin =
     };
 ```
 
-Rdzeń posiada znaczenie wyjścia pochodzącego z OpenClaw. Kanały posiadają sposób kodowania tego pochodzenia w swoim transporcie.
+Rdzeń jest właścicielem znaczenia danych wyjściowych pochodzących z OpenClaw. Kanały są właścicielami tego,
+jak to pochodzenie jest kodowane w ich transporcie.
 
-Pierwszym wymaganym użyciem jest wyjście awarii Gateway. Ludzie nadal powinni widzieć wiadomości takie jak „Agent failed before reply” lub „Missing API key”, ale oznaczone wyjście operacyjne OpenClaw nie może być przyjmowane jako wejście autorstwa bota we współdzielonych pokojach, gdy `allowBots` jest włączone.
+Pierwszym wymaganym zastosowaniem są dane wyjściowe awarii Gateway. Ludzie nadal powinni widzieć
+wiadomości takie jak „Agent failed before reply” albo „Missing API key”, ale oznaczone
+operacyjne dane wyjściowe OpenClaw nie mogą być akceptowane jako wejście autorstwa bota we współdzielonych
+pokojach, gdy `allowBots` jest włączone.
 
 ### Potwierdzenie
 
@@ -247,13 +281,17 @@ type MessageReceiptPart = {
 };
 ```
 
-Potwierdzenia są pomostem od trwałej intencji do przyszłej edycji, usunięcia, finalizacji podglądu, tłumienia duplikatów i odzyskiwania.
+Potwierdzenia są mostem od trwałego zamiaru do przyszłej edycji, usunięcia, finalizacji podglądu,
+tłumienia duplikatów i odzyskiwania.
 
-Potwierdzenie może opisywać jedną wiadomość platformy albo dostarczenie wieloczęściowe. Tekst podzielony na fragmenty, media plus tekst, głos plus tekst i awaryjne wersje kart muszą zachować wszystkie identyfikatory platformy, a jednocześnie ujawniać identyfikator główny do wątkowania i późniejszych edycji.
+Potwierdzenie może opisywać jedną wiadomość platformy albo dostarczenie wieloczęściowe. Podzielony na fragmenty
+tekst, media plus tekst, głos plus tekst i fallbacki kart muszą zachować wszystkie
+identyfikatory platformy, nadal udostępniając identyfikator główny dla wątkowania i późniejszych edycji.
 
-## Kontekst odbioru
+## Kontekst odbierania
 
-Odbieranie nie powinno być gołym wywołaniem pomocnika. Rdzeń potrzebuje kontekstu, który zna deduplikację, trasowanie, zapis sesji i politykę potwierdzeń platformy.
+Odbieranie nie powinno być gołym wywołaniem helpera. Rdzeń potrzebuje kontekstu, który zna
+deduplikację, trasowanie, zapis sesji i politykę potwierdzania platformy.
 
 ```typescript
 type MessageReceiveContext = {
@@ -275,7 +313,7 @@ type MessageReceiveContext = {
 };
 ```
 
-Przepływ odbioru:
+Przepływ odbierania:
 
 ```text
 platform event
@@ -291,16 +329,22 @@ platform event
   -> ack platform when policy allows
 ```
 
-Potwierdzenie nie jest jedną rzeczą. Kontrakt odbioru musi rozdzielać te sygnały:
+Potwierdzenie nie jest jedną rzeczą. Kontrakt odbierania musi trzymać te sygnały oddzielnie:
 
-- **Potwierdzenie transportu:** informuje Webhook lub gniazdo platformy, że OpenClaw przyjął kopertę zdarzenia. Niektóre platformy wymagają tego przed wysyłką.
-- **Potwierdzenie offsetu odpytywania:** przesuwa kursor, aby to samo zdarzenie nie zostało pobrane ponownie. Nie może ono przesunąć się poza pracę, której nie da się odzyskać.
-- **Potwierdzenie zapisu przychodzącego:** potwierdza, że OpenClaw utrwalił wystarczająco dużo metadanych przychodzących, aby zdeduplikować i trasować ponowne dostarczenie.
-- **Widoczne dla użytkownika potwierdzenie odbioru:** opcjonalne zachowanie odczytu/statusu/pisania; nigdy nie jest granicą trwałości.
+- **Potwierdzenie transportu:** mówi Webhookowi lub socketowi platformy, że OpenClaw zaakceptował
+  kopertę zdarzenia. Niektóre platformy wymagają tego przed dispatch.
+- **Potwierdzenie offsetu odpytywania:** przesuwa kursor, aby to samo zdarzenie nie zostało pobrane
+  ponownie. Nie może to przesuwać się poza pracę, której nie da się odzyskać.
+- **Potwierdzenie rekordu przychodzącego:** potwierdza, że OpenClaw utrwalił wystarczająco dużo metadanych przychodzących, aby
+  zdeduplikować i przekierować ponowne dostarczenie.
+- **Potwierdzenie widoczne dla użytkownika:** opcjonalne zachowanie odczytu/statusu/pisania; nigdy
+  granica trwałości.
 
-`ReceiveAckPolicy` kontroluje tylko potwierdzenie transportu lub odpytywania. Nie wolno jej ponownie używać do potwierdzeń odczytu ani reakcji statusu.
+`ReceiveAckPolicy` kontroluje tylko potwierdzenie transportu lub odpytywania. Nie wolno go
+używać ponownie dla potwierdzeń odczytu ani reakcji statusu.
 
-Przed autoryzacją bota odbiór musi zastosować współdzieloną politykę echa OpenClaw, gdy kanał potrafi dekodować metadane pochodzenia wiadomości:
+Przed autoryzacją bota odbieranie musi zastosować wspólną politykę echa OpenClaw,
+gdy kanał potrafi zdekodować metadane pochodzenia wiadomości:
 
 ```typescript
 function shouldDropOpenClawEcho(params: {
@@ -318,9 +362,11 @@ function shouldDropOpenClawEcho(params: {
 }
 ```
 
-To odrzucenie jest oparte na znaczniku, a nie na tekście. Wiadomość w pokoju autorstwa bota z tym samym widocznym tekstem awarii Gateway, ale bez metadanych pochodzenia OpenClaw, nadal przechodzi przez normalną autoryzację `allowBots`.
+To odrzucenie jest oparte na tagu, nie na tekście. Wiadomość w pokoju autorstwa bota z tym samym
+widocznym tekstem awarii Gateway, ale bez metadanych pochodzenia OpenClaw, nadal
+przechodzi przez normalną autoryzację `allowBots`.
 
-Polityka potwierdzeń jest jawna:
+Polityka potwierdzania jest jawna:
 
 ```typescript
 type ReceiveAckPolicy =
@@ -330,11 +376,19 @@ type ReceiveAckPolicy =
   | { kind: "manual" };
 ```
 
-Odpytywanie Telegram używa teraz polityki potwierdzeń kontekstu odbioru dla swojego utrwalonego znaku wodnego restartu. Tracker nadal obserwuje aktualizacje grammY, gdy wchodzą do łańcucha middleware, ale OpenClaw utrwala tylko bezpieczny ukończony identyfikator aktualizacji po udanej wysyłce, pozostawiając nieudane lub niższe oczekujące aktualizacje możliwe do odtworzenia po restarcie. Offset pobierania upstream `getUpdates` Telegram nadal jest kontrolowany przez bibliotekę odpytywania, więc pozostałym głębszym krokiem jest w pełni trwałe źródło odpytywania, jeśli potrzebujemy redelivery na poziomie platformy poza znakiem wodnym restartu OpenClaw. Platformy Webhook mogą wymagać natychmiastowego potwierdzenia HTTP, ale nadal potrzebują deduplikacji przychodzącej i trwałych intencji wysyłania wychodzącego, ponieważ Webhooki mogą dostarczać ponownie.
+Telegram polling używa teraz polityki potwierdzania kontekstu odbierania dla utrwalonego
+znacznika restartu. Tracker nadal obserwuje aktualizacje grammY, gdy wchodzą do
+łańcucha middleware, ale OpenClaw utrwala tylko bezpieczny ukończony identyfikator aktualizacji po
+udanym dispatch, pozostawiając nieudane lub niższe oczekujące aktualizacje możliwe do ponownego odtworzenia po
+restarcie. Upstreamowy offset pobierania `getUpdates` Telegram nadal jest kontrolowany przez
+bibliotekę odpytywania, więc pozostałym głębszym krokiem jest w pełni trwałe źródło odpytywania,
+jeśli potrzebujemy redelivery na poziomie platformy poza znacznikiem restartu OpenClaw. Platformy Webhook
+mogą wymagać natychmiastowego potwierdzenia HTTP, ale nadal potrzebują deduplikacji przychodzącej i trwałych zamiarów
+wysyłki wychodzącej, ponieważ Webhooki mogą dostarczać ponownie.
 
 ## Kontekst wysyłania
 
-Wysyłanie także jest oparte na kontekście:
+Wysyłanie również opiera się na kontekście:
 
 ```typescript
 type MessageSendContext = {
@@ -387,15 +441,15 @@ begin durable intent
   -> fail durable intent on classified failure
 ```
 
-Zamiar musi istnieć przed operacjami wejścia/wyjścia transportu. Ponowne uruchomienie po rozpoczęciu, ale przed
+Intencja musi istnieć przed wejściem/wyjściem transportu. Ponowne uruchomienie po rozpoczęciu, ale przed
 zatwierdzeniem, jest możliwe do odzyskania.
 
 Niebezpieczna granica znajduje się po sukcesie platformy i przed zatwierdzeniem potwierdzenia. Jeśli
-proces zakończy się w tym miejscu, OpenClaw nie może wiedzieć, czy komunikat platformy istnieje,
-chyba że adapter zapewnia natywną idempotencję albo ścieżkę uzgadniania potwierdzeń.
-Takie próby muszą wznawiać się w `unknown_after_send`, a nie ślepo odtwarzać wysyłkę. Kanały
+proces wtedy zakończy działanie, OpenClaw nie może wiedzieć, czy wiadomość platformy istnieje,
+chyba że adapter udostępnia natywną idempotencję albo ścieżkę uzgadniania potwierdzeń.
+Takie próby muszą zostać wznowione w `unknown_after_send`, a nie ślepo odtworzone. Kanały
 bez uzgadniania mogą wybrać ponowienie co najmniej raz tylko wtedy, gdy zduplikowane widoczne
-komunikaty są akceptowalnym, udokumentowanym kompromisem dla tego kanału i relacji.
+wiadomości są akceptowalnym, udokumentowanym kompromisem dla tego kanału i relacji.
 Obecny most uzgadniania SDK wymaga, aby adapter zadeklarował
 `reconcileUnknownSend`, a następnie prosi `durableFinal.reconcileUnknownSend` o
 sklasyfikowanie nieznanego wpisu jako `sent`, `not_sent` albo `unresolved`; tylko `not_sent`
@@ -408,29 +462,29 @@ Polityka trwałości musi być jawna:
 type MessageDurabilityPolicy = "required" | "best_effort" | "disabled";
 ```
 
-`required` oznacza, że rdzeń musi zakończyć się błędem w trybie zamkniętym, gdy nie może zapisać trwałego zamiaru.
+`required` oznacza, że core musi zakończyć się zamknięciem, gdy nie może zapisać trwałej intencji.
 `best_effort` może przejść dalej, gdy trwałość jest niedostępna. `disabled` zachowuje
-stare zachowanie bezpośredniej wysyłki. Podczas migracji starsze opakowania i publiczne
-pomocniki zgodności domyślnie używają `disabled`; nie mogą wnioskować `required`
-z faktu, że kanał ma generyczny adapter wychodzący.
+stare zachowanie bezpośredniego wysyłania. Podczas migracji starsze opakowania i publiczne
+pomocniki zgodności domyślnie używają `disabled`; nie mogą wnioskować `required` z
+faktu, że kanał ma ogólny adapter wychodzący.
 
-Konteksty wysyłki są też właścicielami lokalnych dla kanału efektów po wysyłce. Migracja nie jest bezpieczna,
-jeśli trwałe dostarczanie omija lokalne zachowanie, które wcześniej było przypięte do
-bezpośredniej ścieżki wysyłki kanału. Przykłady obejmują pamięci podręczne tłumienia własnego echa,
-znaczniki uczestnictwa w wątku, natywne kotwice edycji, renderowanie sygnatur modelu
-oraz specyficzne dla platformy zabezpieczenia przed duplikatami. Te efekty muszą albo zostać przeniesione do
-adaptera wysyłki, adaptera renderowania albo nazwanego haka kontekstu wysyłki, zanim ten
-kanał będzie mógł włączyć trwałe generyczne dostarczanie końcowe.
+Konteksty wysyłania są też właścicielem lokalnych dla kanału efektów po wysłaniu. Migracja nie jest bezpieczna,
+jeśli trwałe dostarczanie omija lokalne zachowanie, które wcześniej było podłączone do
+bezpośredniej ścieżki wysyłania kanału. Przykłady obejmują pamięci podręczne tłumienia własnego echa,
+znaczniki uczestnictwa w wątku, natywne kotwice edycji, renderowanie sygnatury modelu
+oraz specyficzne dla platformy zabezpieczenia przed duplikatami. Te efekty muszą zostać przeniesione do
+adaptera wysyłania, adaptera renderowania albo nazwanego haka kontekstu wysyłania, zanim
+ten kanał będzie mógł włączyć trwałe ogólne końcowe dostarczanie.
 
-Pomocniki wysyłki muszą zwracać potwierdzenia aż do swojego wywołującego. Trwałe
-opakowania nie mogą połykać identyfikatorów komunikatów ani zastępować wyniku dostarczenia kanału
+Pomocniki wysyłania muszą zwracać potwierdzenia aż do swojego wywołującego. Trwałe
+opakowania nie mogą połykać identyfikatorów wiadomości ani zastępować wyniku dostarczenia kanału
 wartością `undefined`; buforowane dyspozytory używają tych identyfikatorów do kotwic wątków, późniejszych edycji,
 finalizacji podglądu i tłumienia duplikatów.
 
-Wysyłki awaryjne działają na partiach, nie na pojedynczych ładunkach. Przepisywanie cichych odpowiedzi,
-awaryjna obsługa mediów, awaryjna obsługa kart i projekcja fragmentów mogą łącznie wytworzyć więcej niż
-jeden komunikat do dostarczenia, więc kontekst wysyłki musi albo dostarczyć całą
-rzutowaną partię, albo jawnie udokumentować, dlaczego prawidłowy jest tylko jeden ładunek.
+Wysyłki awaryjne działają na partiach, nie na pojedynczych ładunkach. Przepisania cichej odpowiedzi,
+awaryjne użycie mediów, awaryjne użycie kart i projekcja fragmentów mogą wygenerować więcej niż
+jedną dostarczalną wiadomość, więc kontekst wysyłania musi albo dostarczyć całą
+zaprojektowaną partię, albo jawnie udokumentować, dlaczego tylko jeden ładunek jest prawidłowy.
 
 ```typescript
 type RenderedMessageBatch = {
@@ -447,16 +501,16 @@ type RenderedMessageUnit = {
 };
 ```
 
-Gdy taki mechanizm awaryjny jest trwały, cała rzutowana partia musi być reprezentowana przez
-jeden trwały zamiar wysyłki albo inny atomowy plan partii. Rejestrowanie każdego ładunku
-pojedynczo nie wystarcza: awaria między ładunkami może pozostawić częściowy widoczny
+Gdy takie awaryjne działanie jest trwałe, cała zaprojektowana partia musi być reprezentowana przez
+jedną trwałą intencję wysłania albo inny atomowy plan partii. Rejestrowanie każdego ładunku
+po kolei nie wystarcza: awaria między ładunkami może pozostawić częściowo widoczny
 wariant awaryjny bez trwałego rekordu dla pozostałych ładunków. Odzyskiwanie musi wiedzieć,
-które jednostki mają już potwierdzenia, i albo odtworzyć tylko brakujące jednostki, albo oznaczyć
+które jednostki mają już potwierdzenia, i albo ponowić tylko brakujące jednostki, albo oznaczyć
 partię jako `unknown_after_send`, dopóki adapter jej nie uzgodni.
 
 ## Kontekst na żywo
 
-Zachowanie podglądu, edycji, postępu i strumienia powinno być jednym cyklem życia włączanym świadomie.
+Zachowanie podglądu, edycji, postępu i strumienia powinno być jednym cyklem życia włączanym opcjonalnie.
 
 ```typescript
 type MessageLiveAdapter = {
@@ -479,7 +533,7 @@ type MessageLiveAdapter = {
 };
 ```
 
-Stan na żywo jest wystarczająco trwały, aby odzyskać go albo tłumić duplikaty:
+Stan na żywo jest wystarczająco trwały, aby odzyskać działanie albo tłumić duplikaty:
 
 ```typescript
 type LiveMessageState = {
@@ -494,20 +548,20 @@ type LiveMessageState = {
 
 Powinno to obejmować obecne zachowanie:
 
-- Telegram wysyła i edytuje podgląd, ze świeżą finalną wersją po przekroczeniu wieku nieświeżego podglądu.
-- Discord wysyła i edytuje podgląd, anuluje przy mediach, błędzie albo jawnej odpowiedzi.
-- Slack używa natywnego strumienia albo roboczego podglądu zależnie od kształtu wątku.
-- Mattermost finalizuje roboczy post.
-- Matrix finalizuje robocze zdarzenie albo redaguje je przy niezgodności.
-- Teams używa natywnego strumienia postępu.
-- QQ Bot używa strumienia albo zgromadzonego wariantu awaryjnego.
+- Wysyłanie Telegram plus podgląd przez edycję, ze świeżą wersją końcową po osiągnięciu wieku nieświeżego podglądu.
+- Wysyłanie Discord plus podgląd przez edycję, anulowanie przy mediach/błędzie/jawnej odpowiedzi.
+- Natywny strumień Slack albo roboczy podgląd zależnie od kształtu wątku.
+- Finalizacja roboczego posta Mattermost.
+- Finalizacja roboczego zdarzenia Matrix albo redakcja przy niezgodności.
+- Natywny strumień postępu Teams.
+- Strumień QQ Bot albo skumulowany wariant awaryjny.
 
 ## Powierzchnia adaptera
 
-Publiczny cel SDK powinien być jedną podścieżką:
+Publicznym celem SDK powinna być jedna podścieżka:
 
 ```typescript
-import { defineChannelMessageAdapter } from "openclaw/plugin-sdk/channel-message";
+import { defineChannelMessageAdapter } from "openclaw/plugin-sdk/channel-outbound";
 ```
 
 Docelowy kształt:
@@ -523,7 +577,7 @@ type ChannelMessageAdapter = {
 };
 ```
 
-Adapter wysyłki:
+Adapter wysyłania:
 
 ```typescript
 type MessageSendAdapter = {
@@ -541,7 +595,7 @@ type MessageSendAdapter = {
 };
 ```
 
-Adapter odbioru:
+Adapter odbierania:
 
 ```typescript
 type MessageReceiveAdapter<TRaw = unknown> = {
@@ -552,10 +606,10 @@ type MessageReceiveAdapter<TRaw = unknown> = {
 };
 ```
 
-Przed autoryzacją wstępną rdzeń musi uruchomić wspólny predykat echa OpenClaw
-zawsze, gdy `origin.decode` zwraca metadane pochodzące z OpenClaw. Adapter odbioru
-dostarcza fakty platformy, takie jak autor bota i kształt pokoju; rdzeń jest właścicielem decyzji
-o odrzuceniu i kolejności, aby kanały nie implementowały ponownie filtrów tekstowych.
+Przed autoryzacją preflight core musi uruchomić współdzielony predykat echa OpenClaw
+zawsze, gdy `origin.decode` zwraca metadane pochodzenia OpenClaw. Adapter odbierania
+dostarcza fakty platformy, takie jak autor bota i kształt pokoju; core jest właścicielem decyzji
+o odrzuceniu i kolejności, aby kanały nie implementowały ponownie filtrów tekstu.
 
 Adapter pochodzenia:
 
@@ -566,7 +620,7 @@ type MessageOriginAdapter<TRaw = unknown, TNative = unknown> = {
 };
 ```
 
-Rdzeń ustawia `MessageOrigin`. Kanały tylko tłumaczą go do i z natywnych
+Core ustawia `MessageOrigin`. Kanały tylko tłumaczą go do i z natywnych
 metadanych transportu. Slack mapuje to na `chat.postMessage({ metadata })` oraz
 przychodzące `message.metadata`; Matrix może mapować to na dodatkową treść zdarzenia; kanały
 bez natywnych metadanych mogą użyć rejestru potwierdzeń/wychodzącego, gdy jest to
@@ -601,9 +655,9 @@ type MessageCapabilities = {
 };
 ```
 
-## Redukcja publicznego SDK
+## Ograniczenie publicznego SDK
 
-Nowa publiczna powierzchnia powinna wchłonąć albo oznaczyć jako przestarzałe te obszary koncepcyjne:
+Nowa publiczna powierzchnia powinna wchłonąć albo wycofać te obszary koncepcyjne:
 
 - `reply-runtime`
 - `reply-dispatch-runtime`
@@ -619,23 +673,23 @@ Podścieżki zgodności mogą pozostać jako opakowania, ale nowe Pluginy firm t
 nie powinny ich potrzebować.
 
 Dołączone Pluginy mogą zachować wewnętrzne importy pomocników przez zarezerwowane podścieżki
-runtime podczas migracji. Publiczna dokumentacja powinna kierować autorów Pluginów do
-`plugin-sdk/channel-message`, gdy już istnieje.
+runtime podczas migracji. Publiczne dokumenty powinny kierować autorów Pluginów do
+`plugin-sdk/channel-outbound`, gdy już będzie istnieć.
 
-## Relacja z turą kanału
+## Relacja z częścią przychodzącą kanału
 
-`runtime.channel.turn.*` powinno pozostać podczas migracji.
+`runtime.channel.inbound.*` jest mostem runtime podczas migracji.
 
-Powinno stać się adapterem zgodności:
+Powinien stać się adapterem zgodności:
 
 ```text
-channel.turn.run
+channel.inbound.run
   -> messages.receive context
   -> session dispatch
   -> messages.send context for visible output
 ```
 
-`channel.turn.runPrepared` również powinno początkowo pozostać:
+`channel.inbound.runPreparedReply` również powinien początkowo pozostać:
 
 ```text
 channel-owned dispatcher
@@ -644,98 +698,94 @@ channel-owned dispatcher
   -> messages.send for final delivery
 ```
 
-Po zmostkowaniu wszystkich dołączonych Pluginów i znanych ścieżek zgodności firm trzecich
-`channel.turn` może zostać oznaczone jako przestarzałe. Nie powinno zostać usunięte, dopóki nie istnieje
-opublikowana ścieżka migracji SDK i testy kontraktowe dowodzące, że stare Pluginy nadal działają
-albo kończą się jasnym błędem wersji.
+Stara powierzchnia runtime `channel.turn` została usunięta. Wywołujący runtime używają
+`channel.inbound.*`; dokumenty kanałów i podścieżki SDK używają rzeczowników związanych z wejściem/wiadomościami.
 
-## Zabezpieczenia zgodności
+## Ograniczenia zgodności
 
-Podczas migracji generyczne trwałe dostarczanie jest włączane świadomie dla każdego kanału, którego
+Podczas migracji ogólne trwałe dostarczanie jest opcjonalne dla każdego kanału, którego
 istniejące wywołanie zwrotne dostarczania ma efekty uboczne wykraczające poza „wyślij ten ładunek”.
 
-Starsze punkty wejścia są domyślnie nietrwałe:
+Starsze punkty wejścia domyślnie nie są trwałe:
 
-- `channel.turn.run` i `dispatchAssembledChannelTurn` używają wywołania zwrotnego
-  dostarczania kanału, chyba że ten kanał jawnie dostarcza audytowany obiekt trwałej
-  polityki/opcji.
-- `channel.turn.runPrepared` pozostaje własnością kanału, dopóki przygotowany dyspozytor
-  jawnie nie wywoła kontekstu wysyłki.
+- `channel.inbound.run` i `dispatchChannelInboundReply` używają wywołania zwrotnego
+  dostarczania kanału, chyba że ten kanał jawnie dostarcza audytowany obiekt
+  polityki/opcji trwałości.
+- `channel.inbound.runPreparedReply` pozostaje własnością kanału, dopóki przygotowany dyspozytor
+  jawnie nie wywoła kontekstu wysyłania.
 - Publiczne pomocniki zgodności, takie jak `recordInboundSessionAndDispatchReply`,
-  `dispatchInboundReplyWithBase` oraz pomocniki bezpośrednich DM, nigdy nie wstrzykują generycznego
+  `dispatchInboundReplyWithBase` oraz pomocniki bezpośrednich DM, nigdy nie wstrzykują ogólnego
   trwałego dostarczania przed dostarczonym przez wywołującego wywołaniem zwrotnym `deliver` albo `reply`.
 
-Dla typów mostów migracyjnych `durable: undefined` oznacza „nietrwałe”. Ścieżka
+Dla typów mostu migracji `durable: undefined` oznacza „nietrwałe”. Ścieżka
 trwała jest włączana tylko przez jawną wartość polityki/opcji. `durable:
-false` może pozostać jako zapis zgodności, ale implementacja nie powinna
-wymagać, aby każdy niezmodernizowany kanał go dodawał.
+false` może pozostać jako pisownia zgodności, ale implementacja nie powinna
+wymagać, aby każdy niezmutowany kanał ją dodawał.
 
-Obecny kod mostu musi utrzymywać decyzję o trwałości jako jawną:
+Obecny kod mostu musi zachować jawną decyzję o trwałości:
 
-- Trwałe dostarczanie końcowe zwraca rozróżnialny status. `handled_visible` i
-  `handled_no_send` są terminalne; `unsupported` i `not_applicable` mogą
-  wrócić do dostarczania obsługiwanego przez kanał; `failed` propaguje błąd
-  wysyłania.
-- Ogólne trwałe dostarczanie końcowe jest ograniczane możliwościami adaptera,
-  takimi jak ciche dostarczanie, zachowanie celu odpowiedzi, zachowanie
-  natywnego cytatu oraz haki wysyłania wiadomości. Brak równoważności powinien
-  wybierać dostarczanie obsługiwane przez kanał, a nie ogólne wysłanie, które
-  zmienia zachowanie widoczne dla użytkownika.
-- Trwałe wysyłki oparte na kolejce ujawniają referencję intencji dostarczenia.
+- Trwałe dostarczanie końcowe zwraca dyskryminowany status. `handled_visible` i
+  `handled_no_send` są końcowe; `unsupported` i `not_applicable` mogą przejść
+  do dostarczania należącego do kanału; `failed` propaguje niepowodzenie wysyłki.
+- Ogólne trwałe dostarczanie końcowe jest bramkowane przez możliwości adaptera,
+  takie jak ciche dostarczanie, zachowanie celu odpowiedzi, zachowanie natywnego
+  cytatu oraz haki wysyłania wiadomości. Brak parytetu powinien wybierać
+  dostarczanie należące do kanału, a nie ogólną wysyłkę zmieniającą zachowanie
+  widoczne dla użytkownika.
+- Trwałe wysyłki oparte na kolejce ujawniają odwołanie do intencji dostarczenia.
   Istniejące pola sesji `pendingFinalDelivery*` mogą przenosić identyfikator
   intencji w trakcie przejścia; stanem docelowym jest magazyn `MessageSendIntent`
   zamiast zamrożonego tekstu odpowiedzi oraz doraźnych pól kontekstu.
 
 Nie włączaj ogólnej trwałej ścieżki dla kanału, dopóki wszystkie poniższe
-warunki nie będą spełnione:
+warunki nie będą prawdziwe:
 
-- Ogólny adapter wysyłania wykonuje to samo renderowanie i zachowanie transportu
-  co stara ścieżka bezpośrednia.
-- Lokalne skutki uboczne po wysłaniu są zachowane przez kontekst wysyłania.
+- Adapter ogólnej wysyłki wykonuje takie samo renderowanie i zachowanie transportu
+  jak stara ścieżka bezpośrednia.
+- Lokalne skutki uboczne po wysyłce są zachowane przez kontekst wysyłki.
 - Adapter zwraca potwierdzenia lub wyniki dostarczenia ze wszystkimi
   identyfikatorami wiadomości platformy.
-- Przygotowane ścieżki dyspozytora albo wywołują nowy kontekst wysyłania, albo
+- Przygotowane ścieżki dyspozytorów albo wywołują nowy kontekst wysyłki, albo
   pozostają udokumentowane jako poza trwałą gwarancją.
-- Dostarczanie awaryjne obsługuje każdy przewidywany ładunek, a nie tylko
-  pierwszy.
-- Trwałe dostarczanie awaryjne zapisuje całą tablicę przewidywanych ładunków
-  jako jedną odtwarzalną intencję lub plan wsadowy.
+- Dostarczanie zapasowe obsługuje każdy projektowany ładunek, nie tylko pierwszy.
+- Trwałe dostarczanie zapasowe zapisuje całą projektowaną tablicę ładunków jako
+  jedną odtwarzalną intencję lub plan partii.
 
 Konkretne zagrożenia migracji, które trzeba zachować:
 
-- Dostarczanie monitora iMessage zapisuje wysłane wiadomości w pamięci
-  podręcznej echa po pomyślnym wysłaniu. Trwałe wysyłki końcowe nadal muszą
-  wypełniać tę pamięć podręczną, w przeciwnym razie OpenClaw może ponownie
-  wchłonąć własne końcowe odpowiedzi jako przychodzące wiadomości użytkownika.
-- Tlon dodaje opcjonalny podpis modelu i zapisuje wątki, w których uczestniczył,
-  po odpowiedziach grupowych. Ogólne trwałe dostarczanie nie może pomijać tych
-  efektów; należy przenieść je do adapterów renderowania/wysyłania/finalizacji
-  Tlon albo pozostawić Tlon na ścieżce obsługiwanej przez kanał.
-- Discord i inne przygotowane dyspozytory już posiadają własne dostarczanie
-  bezpośrednie i zachowanie podglądu. Nie obejmuje ich trwała gwarancja
-  złożonej tury, dopóki ich przygotowane dyspozytory jawnie nie przekierują
-  wiadomości końcowych przez kontekst wysyłania.
-- Ciche dostarczanie awaryjne Telegram musi dostarczyć pełną tablicę
-  przewidywanych ładunków. Skrót dla pojedynczego ładunku może porzucić
-  dodatkowe ładunki awaryjne po projekcji.
+- Dostarczanie monitora iMessage zapisuje wysłane wiadomości w pamięci podręcznej
+  echa po udanej wysyłce. Trwałe wysyłki końcowe nadal muszą wypełniać tę pamięć
+  podręczną, inaczej OpenClaw może ponownie pobrać własne końcowe odpowiedzi jako
+  przychodzące wiadomości użytkownika.
+- Tlon dołącza opcjonalny podpis modelu i zapisuje wątki z udziałem po
+  odpowiedziach grupowych. Ogólne trwałe dostarczanie nie może omijać tych efektów;
+  przenieś je do adapterów renderowania/wysyłki/finalizacji Tlon albo pozostaw
+  Tlon na ścieżce należącej do kanału.
+- Discord i inne przygotowane dyspozytory już odpowiadają za bezpośrednie
+  dostarczanie i zachowanie podglądu. Nie są objęte trwałą gwarancją złożonej
+  tury, dopóki ich przygotowane dyspozytory nie skierują końcowych odpowiedzi
+  jawnie przez kontekst wysyłki.
+- Ciche dostarczanie zapasowe Telegram musi dostarczyć pełną projektowaną tablicę
+  ładunków. Skrót obsługujący pojedynczy ładunek może porzucić dodatkowe ładunki
+  zapasowe po projekcji.
 - LINE, Zalo, Nostr i inne istniejące ścieżki złożone/pomocnicze mogą mieć
-  obsługę tokenów odpowiedzi, pośredniczenie mediów, pamięci podręczne
-  wysłanych wiadomości, czyszczenie ładowania/statusu albo cele wyłącznie
-  zwrotne. Pozostają na dostarczaniu obsługiwanym przez kanał, dopóki te
-  semantyki nie zostaną reprezentowane przez adapter wysyłania i zweryfikowane
+  obsługę tokenów odpowiedzi, pośredniczenie multimediów, pamięci podręczne
+  wysłanych wiadomości, czyszczenie ładowania/statusu lub cele wyłącznie
+  callbackowe. Pozostają przy dostarczaniu należącym do kanału, dopóki ta
+  semantyka nie zostanie reprezentowana przez adapter wysyłki i zweryfikowana
   testami.
-- Pomocniki Direct-DM mogą mieć callback odpowiedzi, który jest jedynym
-  poprawnym celem transportu. Ogólne wychodzące wysyłanie nie może zgadywać na
+- Pomocniki bezpośrednich DM mogą mieć callback odpowiedzi, który jest jedynym
+  poprawnym celem transportu. Ogólna wysyłka wychodząca nie może zgadywać na
   podstawie `OriginatingTo` lub `To` i pomijać tego callbacku.
-- Dane wyjściowe awarii OpenClaw Gateway muszą pozostać widoczne dla ludzi, ale
-  oznaczone echa pokojów utworzone przez boty muszą być odrzucane przed
-  autoryzacją `allowBots`. Kanały nie mogą implementować tego za pomocą filtrów
-  prefiksów widocznego tekstu, z wyjątkiem krótkotrwałego awaryjnego obejścia;
-  trwały kontrakt to ustrukturyzowane metadane pochodzenia.
+- Dane wyjściowe niepowodzeń OpenClaw Gateway muszą pozostać widoczne dla ludzi,
+  ale oznaczone echa pokojów autorstwa botów muszą zostać odrzucone przed
+  autoryzacją `allowBots`. Kanały nie mogą implementować tego przez filtry
+  prefiksów widocznego tekstu, poza krótkim awaryjnym obejściem; trwały kontrakt
+  to ustrukturyzowane metadane pochodzenia.
 
-## Pamięć wewnętrzna
+## Wewnętrzna pamięć masowa
 
-Trwała kolejka powinna przechowywać intencje wysłania wiadomości, a nie ładunki
+Trwała kolejka powinna przechowywać intencje wysyłki wiadomości, a nie ładunki
 odpowiedzi.
 
 ```typescript
@@ -778,12 +828,13 @@ load pending or sending intents
   -> commit receipt, mark unknown_after_send, or schedule retry
 ```
 
-Kolejka powinna przechowywać wystarczającą tożsamość, aby po restarcie odtworzyć
-wysyłkę przez to samo konto, wątek, cel, politykę formatowania i reguły mediów.
+Kolejka powinna zachowywać wystarczającą tożsamość, aby po ponownym uruchomieniu
+odtworzyć wysyłkę przez to samo konto, wątek, cel, zasady formatowania i reguły
+multimediów.
 
-## Klasy awarii
+## Klasy niepowodzeń
 
-Adaptery kanałów klasyfikują awarie transportu do zamkniętych kategorii:
+Adaptery kanałów klasyfikują niepowodzenia transportu w zamknięte kategorie:
 
 ```typescript
 type DeliveryFailureKind =
@@ -801,295 +852,310 @@ type DeliveryFailureKind =
 Polityka rdzenia:
 
 - Ponawiaj `transient` i `rate_limit`.
-- Nie ponawiaj `invalid_payload`, chyba że istnieje awaryjne renderowanie.
+- Nie ponawiaj `invalid_payload`, chyba że istnieje zapasowe renderowanie.
 - Nie ponawiaj `auth` ani `permission`, dopóki konfiguracja się nie zmieni.
 - Dla `not_found` pozwól finalizacji na żywo przejść awaryjnie z edycji do
-  świeżego wysłania, gdy kanał deklaruje, że jest to bezpieczne.
+  świeżej wysyłki, gdy kanał deklaruje to jako bezpieczne.
 - Dla `conflict` użyj reguł potwierdzeń/idempotencji, aby zdecydować, czy
   wiadomość już istnieje.
-- Każdy błąd po tym, jak adapter mógł zakończyć operacje I/O platformy, ale
-  przed zatwierdzeniem potwierdzenia, staje się `unknown_after_send`, chyba że
-  adapter potrafi udowodnić, że operacja platformy nie nastąpiła.
+- Każdy błąd po tym, jak adapter mógł ukończyć I/O platformy, ale przed
+  zatwierdzeniem potwierdzenia, staje się `unknown_after_send`, chyba że adapter
+  może dowieść, że operacja platformy się nie wydarzyła.
 
 ## Mapowanie kanałów
 
-| Kanał           | Docelowa migracja                                                                                                                                                                                                                                                                                                                                               |
-| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Telegram        | Zasada potwierdzania odbioru oraz trwałe wysyłki finalne. Adapter live odpowiada za wysyłanie oraz podgląd edycji, finalne wysłanie nieaktualnego podglądu, tematy, pomijanie podglądu odpowiedzi z cytatem, awaryjną obsługę mediów i obsługę retry-after.                                                                                                                                                                   |
-| Discord         | Adapter wysyłania opakowuje istniejące trwałe dostarczanie ładunku. Adapter live odpowiada za edycję szkicu, szkic postępu, anulowanie podglądu mediów/błędów, zachowanie celu odpowiedzi i potwierdzenia identyfikatorów wiadomości. Przeprowadź audyt tworzonych przez bota ech awarii Gateway w pokojach współdzielonych; użyj rejestru wychodzącego lub innego natywnego odpowiednika, jeśli Discord nie może przenosić metadanych pochodzenia w zwykłych wiadomościach. |
-| Slack           | Adapter wysyłania obsługuje zwykłe posty czatu. Adapter live wybiera natywny strumień, gdy kształt wątku go obsługuje, w przeciwnym razie podgląd szkicu. Potwierdzenia zachowują znaczniki czasu wątku. Adapter pochodzenia mapuje awarie OpenClaw Gateway na Slack `chat.postMessage.metadata` i odrzuca oznaczone echa pokoju bota przed autoryzacją `allowBots`.                                  |
-| WhatsApp        | Adapter wysyłania odpowiada za wysyłanie tekstu/mediów z trwałymi intencjami finalnymi. Adapter odbioru obsługuje wzmianki w grupie i tożsamość nadawcy. Adapter live może pozostać nieobecny, dopóki WhatsApp nie będzie mieć edytowalnego transportu.                                                                                                                                                                        |
-| Matrix          | Adapter live odpowiada za edycje zdarzeń szkicu, finalizację, redakcję, ograniczenia zaszyfrowanych mediów i awaryjną obsługę niezgodności celu odpowiedzi. Adapter odbioru odpowiada za uzupełnianie zaszyfrowanych zdarzeń i deduplikację. Adapter pochodzenia powinien kodować pochodzenie awarii OpenClaw Gateway w treści zdarzenia Matrix i odrzucać echa pokoju skonfigurowanego bota przed obsługą `allowBots`.              |
-| Mattermost      | Adapter live odpowiada za jeden post szkicu, zwijanie postępu/narzędzi, finalizację w miejscu i awaryjne świeże wysłanie.                                                                                                                                                                                                                                                       |
-| Microsoft Teams | Adapter live odpowiada za natywny postęp i zachowanie strumienia bloków. Adapter wysyłania odpowiada za aktywności i potwierdzenia załączników/kart.                                                                                                                                                                                                                                        |
-| Feishu          | Adapter renderowania odpowiada za renderowanie tekstu/kart/surowej treści. Adapter live odpowiada za karty strumieniowe i tłumienie duplikatów finalnych. Adapter wysyłania odpowiada za komentarze, sesje tematów, media i tłumienie głosu.                                                                                                                                                                      |
-| QQ Bot          | Adapter live odpowiada za strumieniowanie C2C, limit czasu akumulatora i awaryjne wysłanie finalne. Adapter renderowania odpowiada za tagi mediów i tekst jako głos.                                                                                                                                                                                                                               |
-| Signal          | Prosty odbiór oraz adapter wysyłania. Brak adaptera live, chyba że signal-cli doda niezawodną obsługę edycji.                                                                                                                                                                                                                                                                |
-| iMessage        | Prosty odbiór oraz adapter wysyłania. Wysyłanie iMessage musi zachować wypełnianie pamięci podręcznej ech monitora, zanim trwałe finalne wysyłki będą mogły ominąć dostarczanie przez monitor.                                                                                                                                                                                                                 |
-| Google Chat     | Prosty odbiór oraz adapter wysyłania z relacją wątku mapowaną na przestrzenie i identyfikatory wątków. Przeprowadź audyt zachowania pokoju `allowBots=true` dla oznaczonych ech awarii OpenClaw Gateway.                                                                                                                                                                                        |
-| LINE            | Prosty odbiór oraz adapter wysyłania z ograniczeniami tokena odpowiedzi modelowanymi jako możliwość celu/relacji.                                                                                                                                                                                                                                                           |
-| Nextcloud Talk  | Most odbioru SDK oraz adapter wysyłania.                                                                                                                                                                                                                                                                                                                          |
-| IRC             | Prosty odbiór oraz adapter wysyłania, bez trwałych potwierdzeń edycji.                                                                                                                                                                                                                                                                                                    |
-| Nostr           | Adapter odbioru oraz wysyłania dla zaszyfrowanych DM; potwierdzenia są identyfikatorami zdarzeń.                                                                                                                                                                                                                                                                                           |
-| QA Channel      | Adapter testu kontraktowego dla zachowania odbioru, wysyłania, live, ponawiania i odzyskiwania.                                                                                                                                                                                                                                                                                   |
-| Synology Chat   | Prosty odbiór oraz adapter wysyłania.                                                                                                                                                                                                                                                                                                                              |
-| Tlon            | Adapter wysyłania musi zachować renderowanie podpisu modelu i śledzenie wątków z udziałem użytkownika, zanim zostanie włączone ogólne trwałe dostarczanie finalne.                                                                                                                                                                                                                        |
-| Twitch          | Prosty odbiór oraz adapter wysyłania z klasyfikacją limitów szybkości.                                                                                                                                                                                                                                                                                               |
-| Zalo            | Prosty odbiór oraz adapter wysyłania.                                                                                                                                                                                                                                                                                                                              |
-| Zalo Personal   | Prosty odbiór oraz adapter wysyłania.                                                                                                                                                                                                                                                                                                                              |
+| Kanał           | Docelowa migracja                                                                                                                                                                                                                                                                                                                                                      |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Telegram        | Odbieranie polityki potwierdzeń oraz trwałe wysyłki końcowe. Adapter na żywo odpowiada za wysyłanie oraz podgląd edycji, końcową wysyłkę nieaktualnego podglądu, tematy, pomijanie podglądu odpowiedzi z cytatem, awaryjną obsługę mediów i obsługę ponowienia po czasie.                                                                                              |
+| Discord         | Adapter wysyłania opakowuje istniejące trwałe dostarczanie payloadu. Adapter na żywo odpowiada za edycję wersji roboczej, wersję roboczą postępu, anulowanie podglądu mediów/błędów, zachowanie celu odpowiedzi i potwierdzenia identyfikatorów wiadomości. Skontroluj echa awarii Gateway autorstwa botów we współdzielonych pokojach; użyj rejestru wychodzącego albo innego natywnego odpowiednika, jeśli Discord nie może przenosić metadanych pochodzenia w zwykłych wiadomościach. |
+| Slack           | Adapter wysyłania obsługuje zwykłe posty czatu. Adapter na żywo wybiera natywny strumień, gdy kształt wątku go obsługuje, w przeciwnym razie podgląd wersji roboczej. Potwierdzenia zachowują znaczniki czasu wątku. Adapter pochodzenia mapuje awarie Gateway OpenClaw na Slack `chat.postMessage.metadata` i usuwa oznaczone echa z pokojów botów przed autoryzacją `allowBots`. |
+| WhatsApp        | Adapter wysyłania odpowiada za wysyłanie tekstu/mediów z trwałymi intencjami końcowymi. Adapter odbierania obsługuje wzmianki w grupach i tożsamość nadawcy. Warstwa na żywo może pozostać nieobecna, dopóki WhatsApp nie ma edytowalnego transportu.                                                                                                                  |
+| Matrix          | Adapter na żywo odpowiada za edycje zdarzeń roboczych, finalizację, redakcję, ograniczenia szyfrowanych mediów i awaryjną obsługę niezgodności celu odpowiedzi. Adapter odbierania odpowiada za hydratację zaszyfrowanych zdarzeń i deduplikację. Adapter pochodzenia powinien zakodować pochodzenie awarii Gateway OpenClaw w treści zdarzenia Matrix i usuwać echa skonfigurowanych botów w pokojach przed obsługą `allowBots`. |
+| Mattermost      | Adapter na żywo odpowiada za jeden post roboczy, składanie postępu/narzędzi, finalizację w miejscu i awaryjną świeżą wysyłkę.                                                                                                                                                                                                                                           |
+| Microsoft Teams | Adapter na żywo odpowiada za natywny postęp i zachowanie strumienia bloków. Adapter wysyłania odpowiada za działania oraz potwierdzenia załączników/kart.                                                                                                                                                                                                               |
+| Feishu          | Adapter renderowania odpowiada za renderowanie tekstu/kart/surowych treści. Adapter na żywo odpowiada za karty strumieniowe i tłumienie zduplikowanej finalizacji. Adapter wysyłania odpowiada za komentarze, sesje tematów, media i tłumienie głosu.                                                                                                                 |
+| QQ Bot          | Adapter na żywo odpowiada za strumieniowanie C2C, limit czasu akumulatora i awaryjną wysyłkę końcową. Adapter renderowania odpowiada za tagi mediów i tekst jako głos.                                                                                                                                                                                                 |
+| Signal          | Prosty adapter odbierania i wysyłania. Brak adaptera na żywo, chyba że signal-cli doda niezawodną obsługę edycji.                                                                                                                                                                                                                                                      |
+| iMessage        | Prosty adapter odbierania i wysyłania. Wysyłanie iMessage musi zachować zapełnianie pamięci podręcznej ech monitora, zanim trwałe finalizacje będą mogły ominąć dostarczanie przez monitor.                                                                                                                                                                           |
+| Google Chat     | Prosty adapter odbierania i wysyłania z relacją wątku mapowaną na przestrzenie i identyfikatory wątków. Skontroluj zachowanie pokoju `allowBots=true` pod kątem oznaczonych ech awarii Gateway OpenClaw.                                                                                                                                                                |
+| LINE            | Prosty adapter odbierania i wysyłania z ograniczeniami tokenów odpowiedzi modelowanymi jako funkcja celu/relacji.                                                                                                                                                                                                                                                       |
+| Nextcloud Talk  | Most odbierania SDK oraz adapter wysyłania.                                                                                                                                                                                                                                                                                                                            |
+| IRC             | Prosty adapter odbierania i wysyłania, bez trwałych potwierdzeń edycji.                                                                                                                                                                                                                                                                                                 |
+| Nostr           | Adapter odbierania i wysyłania dla szyfrowanych wiadomości prywatnych; potwierdzeniami są identyfikatory zdarzeń.                                                                                                                                                                                                                                                       |
+| Kanał QA        | Adapter testów kontraktowych dla zachowania odbierania, wysyłania, pracy na żywo, ponawiania i odzyskiwania.                                                                                                                                                                                                                                                           |
+| Synology Chat   | Prosty adapter odbierania i wysyłania.                                                                                                                                                                                                                                                                                                                                 |
+| Tlon            | Adapter wysyłania musi zachować renderowanie sygnatury modelu i śledzenie wątków z udziałem użytkownika, zanim zostanie włączone ogólne trwałe dostarczanie końcowe.                                                                                                                                                                                                  |
+| Twitch          | Prosty adapter odbierania i wysyłania z klasyfikacją limitów szybkości.                                                                                                                                                                                                                                                                                                 |
+| Zalo            | Prosty adapter odbierania i wysyłania.                                                                                                                                                                                                                                                                                                                                 |
+| Zalo Personal   | Prosty adapter odbierania i wysyłania.                                                                                                                                                                                                                                                                                                                                 |
 
 ## Plan migracji
 
 ### Faza 1: Wewnętrzna domena wiadomości
 
 - Dodaj typy `src/channels/message/*` dla wiadomości, celów, relacji,
-  pochodzeń, potwierdzeń, możliwości, trwałych intencji, kontekstu odbioru, kontekstu wysyłania, kontekstu live i klas awarii.
-- Dodaj `origin?: MessageOrigin` do typu ładunku mostu migracji używanego przez
-  bieżące dostarczanie odpowiedzi, a następnie przenieś to pole do `ChannelMessage` i typów renderowanych wiadomości, gdy refaktoryzacja zastąpi ładunki odpowiedzi.
+  źródeł pochodzenia, potwierdzeń, funkcji, trwałych intencji, kontekstu
+  odbierania, kontekstu wysyłania, kontekstu pracy na żywo i klas awarii.
+- Dodaj `origin?: MessageOrigin` do typu payloadu mostu migracji używanego przez
+  bieżące dostarczanie odpowiedzi, a następnie przenieś to pole do `ChannelMessage` i typów
+  renderowanych wiadomości, gdy refaktoryzacja zastąpi payloady odpowiedzi.
 - Utrzymaj to jako wewnętrzne, dopóki adaptery i testy nie potwierdzą kształtu.
-- Dodaj czyste testy jednostkowe dla przejść stanu i serializacji.
+- Dodaj czyste testy jednostkowe przejść stanów i serializacji.
 
 ### Faza 2: Rdzeń trwałego wysyłania
 
-- Przenieś istniejącą kolejkę wychodzącą z trwałości ładunków odpowiedzi do trwałych
+- Przenieś istniejącą kolejkę wychodzącą z trwałości payloadów odpowiedzi do trwałych
   intencji wysyłania wiadomości.
-- Pozwól, aby trwała intencja wysyłania przenosiła przewidywaną tablicę ładunków lub plan wsadowy, a nie tylko jeden ładunek odpowiedzi.
+- Pozwól trwałej intencji wysyłania przenosić projektowaną tablicę payloadów lub plan wsadowy, a nie
+  tylko jeden payload odpowiedzi.
 - Zachowaj bieżące zachowanie odzyskiwania kolejki przez konwersję zgodności.
 - Spraw, aby `deliverOutboundPayloads` wywoływało `messages.send`.
-- Uczyń trwałość finalnego wysłania domyślną i kończ niepowodzeniem w sposób zamknięty, gdy trwała intencja nie może zostać zapisana w nowym cyklu życia wiadomości, po zadeklarowaniu przez adapter bezpieczeństwa odtwarzania. Istniejące ścieżki zgodności channel-turn i SDK pozostają w tej fazie domyślnie bezpośrednim wysyłaniem.
-- Rejestruj potwierdzenia spójnie.
-- Zwracaj potwierdzenia i wyniki dostarczania do pierwotnego wywołującego dyspozytora zamiast traktować trwałe wysyłanie jako końcowy efekt uboczny.
-- Utrwal pochodzenie wiadomości przez trwałe intencje wysyłania, aby odzyskiwanie, odtwarzanie i wysyłki dzielone na fragmenty zachowywały operacyjne pochodzenie OpenClaw.
+- Uczyń trwałość wysyłki końcowej domyślną i zamykaj z błędem, gdy trwała intencja
+  nie może zostać zapisana w nowym cyklu życia wiadomości, po tym jak adapter zadeklaruje
+  bezpieczeństwo odtwarzania. Istniejący runner przychodzący i ścieżki zgodności SDK pozostają
+  domyślnie bezpośrednim wysyłaniem w tej fazie.
+- Zapisuj potwierdzenia spójnie.
+- Zwracaj potwierdzenia i wyniki dostarczenia do pierwotnego wywołującego dyspozytora zamiast
+  traktować trwałe wysyłanie jako końcowy efekt uboczny.
+- Utrwalaj pochodzenie wiadomości przez trwałe intencje wysyłania, aby odzyskiwanie, odtwarzanie i
+  wysyłki dzielone na części zachowywały operacyjną proweniencję OpenClaw.
 
-### Faza 3: Most tury kanału
+### Faza 3: Most przychodzący kanału
 
-- Ponownie zaimplementuj `channel.turn.run` i `dispatchAssembledChannelTurn` na podstawie
+- Zaimplementuj ponownie `channel.inbound.run` i `dispatchChannelInboundReply` na bazie
   `messages.receive` i `messages.send`.
-- Utrzymaj bieżące typy faktów jako stabilne.
-- Domyślnie zachowaj starsze zachowanie. Kanał assembled-turn staje się trwały
-  tylko wtedy, gdy jego adapter jawnie zgłosi zgodę z zasadą trwałości bezpieczną do odtwarzania.
-- Utrzymaj `durable: false` jako luk zgodności dla ścieżek, które finalizują
-  natywne edycje i nie mogą jeszcze bezpiecznie odtwarzać, ale nie polegaj na znacznikach `false`, aby chronić niezmodernizowane kanały.
-- Domyślnie włączaj trwałość assembled-turn tylko w nowym cyklu życia wiadomości, po
-  tym jak mapowanie kanału udowodni, że ogólna ścieżka wysyłania zachowuje dawną semantykę dostarczania kanału.
+- Utrzymaj stabilność bieżących typów faktów.
+- Domyślnie zachowaj dotychczasowe zachowanie. Kanał złożonego przebiegu staje się trwały
+  tylko wtedy, gdy jego adapter jawnie włączy się z polityką trwałości bezpieczną dla odtwarzania.
+- Zachowaj `durable: false` jako awaryjną ścieżkę zgodności dla ścieżek, które finalizują
+  natywne edycje i nie mogą jeszcze bezpiecznie odtwarzać, ale nie polegaj na znacznikach `false`
+  do ochrony niezmodernizowanych kanałów.
+- Domyślnie włączaj trwałość złożonego przebiegu tylko w nowym cyklu życia wiadomości, po tym jak
+  mapowanie kanału potwierdzi, że ogólna ścieżka wysyłania zachowuje stare semantyki
+  dostarczania kanału.
 
 ### Faza 4: Most przygotowanego dyspozytora
 
-- Zastąp `deliverDurableInboundReplyPayload` mostem kontekstu wysyłania.
+- Zastąp `deliverDurableInboundReplyPayload` mostkiem kontekstu wysyłania.
 - Zachowaj stary helper jako wrapper.
-- Najpierw przenieś Telegram, WhatsApp, Slack, Signal, iMessage i Discord, ponieważ
-  mają już prace nad trwałym finałem lub prostsze ścieżki wysyłania.
-- Traktuj każdy przygotowany dyspozytor jako niepokryty, dopóki jawnie nie
-  włączy się w kontekst wysyłania. Dokumentacja i wpisy w changelogu muszą mówić
-  „złożone tury kanału” albo wskazywać zmigrowane ścieżki kanałów, zamiast
-  twierdzić, że obejmują wszystkie automatyczne odpowiedzi końcowe.
-- Zachowaj niezmienione zachowanie publicznych helperów zgodności, takich jak
-  `recordInboundSessionAndDispatchReply`, helpery bezpośrednich DM i podobne.
-  Mogą później ujawnić jawne włączenie kontekstu wysyłania, ale nie mogą
-  automatycznie próbować generycznego trwałego dostarczania przed callbackiem
+- Najpierw przenieś Telegram, WhatsApp, Slack, Signal, iMessage i Discord,
+  ponieważ mają już prace nad trwałym finałem albo prostsze ścieżki wysyłania.
+- Traktuj każdy przygotowany dispatcher jako niepokryty, dopóki jawnie nie
+  włączy się w kontekst wysyłania. Dokumentacja i wpisy changeloga muszą mówić
+  „złożone tury kanału” albo wskazywać nazwy zmigrowanych ścieżek kanałów,
+  zamiast twierdzić, że obejmuje to wszystkie automatyczne odpowiedzi końcowe.
+- Zachowaj zgodność zachowania `recordInboundSessionAndDispatchReply`, helperów
+  bezpośrednich DM i podobnych publicznych helperów kompatybilności. Mogą
+  później udostępnić jawne włączenie kontekstu wysyłania, ale nie mogą
+  automatycznie próbować ogólnego trwałego dostarczania przed callbackiem
   dostarczania należącym do wywołującego.
 
 ### Faza 5: Ujednolicony cykl życia live
 
 - Zbuduj `messages.live` z dwoma adapterami dowodowymi:
-  - Telegram dla wysyłania, edycji oraz wysłania nieaktualnego finału.
-  - Matrix dla finalizacji szkicu oraz awaryjnego redagowania.
+  - Telegram dla wysyłania, edycji i nieaktualnego wysłania końcowego.
+  - Matrix dla finalizacji szkicu i awaryjnego redagowania.
 - Następnie zmigruj Discord, Slack, Mattermost, Teams, QQ Bot i Feishu.
-- Usuń zduplikowany kod finalizacji podglądu dopiero po tym, jak każdy kanał
-  będzie miał testy parytetu.
+- Usuń zduplikowany kod finalizacji podglądu dopiero wtedy, gdy każdy kanał ma
+  testy parytetu.
 
 ### Faza 6: Publiczny SDK
 
-- Dodaj `openclaw/plugin-sdk/channel-message`.
-- Udokumentuj go jako preferowane API pluginu kanału.
-- Zaktualizuj eksporty pakietu, inwentarz punktów wejścia, generowane bazowe
-  stany API oraz dokumentację SDK pluginów.
-- Uwzględnij `MessageOrigin`, hooki kodowania/dekodowania pochodzenia oraz
+- Dodaj `openclaw/plugin-sdk/channel-outbound`.
+- Udokumentuj go jako preferowane API Pluginu kanału.
+- Zaktualizuj eksporty pakietu, inwentarz punktów wejścia, wygenerowane bazowe
+  stany API oraz dokumentację SDK Pluginu.
+- Uwzględnij `MessageOrigin`, hooki kodowania/dekodowania origin oraz
   współdzielony predykat `shouldDropOpenClawEcho` w powierzchni SDK
-  channel-message.
-- Zachowaj wrappery zgodności dla starych podścieżek.
-- Oznacz helpery SDK z nazwami odpowiedzi jako przestarzałe w dokumentacji po
-  zmigrowaniu dołączonych pluginów.
+  channel-outbound.
+- Zachowaj wrappery kompatybilności dla starych podścieżek.
+- Oznacz helpery SDK nazwane odpowiedziami jako przestarzałe w dokumentacji po
+  zmigrowaniu dołączonych Pluginów.
 
 ### Faza 7: Wszyscy nadawcy
 
-Przenieś wszystkich producentów wychodzących innych niż odpowiedzi na `messages.send`:
+Przenieś wszystkich producentów wychodzących niebędących odpowiedziami na
+`messages.send`:
 
-- powiadomienia cron i Heartbeat
+- powiadomienia cron i heartbeat
 - ukończenia zadań
 - wyniki hooków
-- monity o zatwierdzenie i wyniki zatwierdzeń
+- prompty zatwierdzeń i wyniki zatwierdzeń
 - wysyłki narzędzia wiadomości
-- ogłoszenia ukończenia subagenta
-- jawne wysyłki CLI lub interfejsu Control UI
-- ścieżki automatyzacji/broadcast
+- ogłoszenia ukończenia subagentów
+- jawne wysyłki CLI lub Control UI
+- ścieżki automatyzacji/broadcastu
 
-To jest moment, w którym model przestaje być „odpowiedziami agenta”, a staje się
-„OpenClaw wysyła wiadomości”.
+To jest miejsce, w którym model przestaje być „odpowiedziami agenta”, a staje
+się „OpenClaw wysyła wiadomości”.
 
-### Faza 8: Wycofanie tury
+### Faza 8: Usunięcie kompatybilności nazwanej turami
 
-- Zachowaj `channel.turn` jako wrapper przez co najmniej jedno okno zgodności.
+- Zachowaj wrappery nazwane inbound/message jako okno kompatybilności.
 - Opublikuj notatki migracyjne.
-- Uruchom testy zgodności SDK pluginów ze starymi importami.
-- Usuń lub ukryj stare helpery wewnętrzne dopiero wtedy, gdy nie będzie ich
-  potrzebował żaden dołączony plugin, a kontrakty zewnętrzne będą miały stabilny
+- Uruchom testy kompatybilności SDK Pluginu względem starych importów.
+- Usuń albo ukryj stare wewnętrzne helpery dopiero wtedy, gdy żaden dołączony
+  Plugin ich nie potrzebuje, a kontrakty zewnętrznych dostawców mają stabilny
   zamiennik.
 
 ## Plan testów
 
 Testy jednostkowe:
 
-- Serializacja i odzyskiwanie zamiaru trwałego wysyłania.
+- Serializacja i odzyskiwanie trwałej intencji wysyłania.
 - Ponowne użycie klucza idempotencji i tłumienie duplikatów.
-- Zapis potwierdzenia odbioru i pomijanie przy odtwarzaniu.
-- Odzyskiwanie `unknown_after_send`, które uzgadnia stan przed odtworzeniem, gdy
-  adapter obsługuje uzgadnianie.
+- Zapis potwierdzenia i pomijanie przy ponownym odtworzeniu.
+- Odzyskiwanie `unknown_after_send`, które uzgadnia stan przed ponownym
+  odtworzeniem, gdy adapter obsługuje uzgadnianie.
 - Polityka klasyfikacji awarii.
-- Sekwencjonowanie polityki potwierdzeń odbioru.
-- Mapowanie relacji dla wysyłek typu odpowiedź, kontynuacja, system i broadcast.
-- Fabryka pochodzenia awarii Gateway oraz predykat `shouldDropOpenClawEcho`.
-- Zachowanie pochodzenia przez normalizację ładunku, chunking, serializację
-  trwałej kolejki i odzyskiwanie.
+- Sekwencjonowanie polityki potwierdzania odbioru.
+- Mapowanie relacji dla wysyłek typu reply, followup, system i broadcast.
+- Fabryka origin dla awarii Gateway i predykat `shouldDropOpenClawEcho`.
+- Zachowanie origin przez normalizację payloadu, dzielenie na fragmenty,
+  serializację trwałej kolejki i odzyskiwanie.
 
 Testy integracyjne:
 
-- Prosty adapter `channel.turn.run` nadal zapisuje i wysyła.
-- Starsze dostarczanie złożonych tur nie staje się trwałe, chyba że kanał jawnie
-  się na to zdecyduje.
-- Most `channel.turn.runPrepared` nadal zapisuje i finalizuje.
-- Publiczne helpery zgodności domyślnie wywołują callbacki dostarczania należące
-  do wywołującego i nie wykonują generycznego wysyłania przed tymi callbackami.
-- Awaryjne trwałe dostarczanie po restarcie odtwarza całą tablicę
-  projektowanych ładunków i nie może pozostawić późniejszych ładunków
-  niezapisanych po wczesnej awarii.
-- Trwałe dostarczanie złożonej tury zwraca identyfikatory wiadomości platformy
-  do buforowanego dyspozytora.
+- Prosty adapter `channel.inbound.run` nadal rejestruje i wysyła.
+- Dostarczanie starszego typu assembled-event nie staje się trwałe, chyba że
+  kanał jawnie je włączy.
+- Mostek `channel.inbound.runPreparedReply` nadal rejestruje i finalizuje.
+- Publiczne helpery kompatybilności domyślnie wywołują callbacki dostarczania
+  należące do wywołującego i nie wykonują ogólnego wysłania przed tymi
+  callbackami.
+- Trwałe dostarczanie awaryjne odtwarza całą projektowaną tablicę payloadów po
+  restarcie i nie może pozostawić późniejszych payloadów niezarejestrowanych po
+  wczesnej awarii.
+- Trwałe dostarczanie assembled-event zwraca identyfikatory wiadomości platformy
+  do buforowanego dispatchera.
 - Niestandardowe hooki dostarczania nadal zwracają identyfikatory wiadomości
-  platformy, gdy trwałe dostarczanie jest wyłączone lub niedostępne.
-- Odpowiedź końcowa przetrwa restart między ukończeniem pracy asystenta a
-  wysłaniem na platformę.
+  platformy, gdy trwałe dostarczanie jest wyłączone albo niedostępne.
+- Odpowiedź końcowa przetrwa restart między ukończeniem asystenta a wysłaniem
+  na platformę.
 - Szkic podglądu finalizuje się w miejscu, gdy jest to dozwolone.
-- Szkic podglądu jest anulowany lub redagowany, gdy media/błąd/niezgodność celu
-  odpowiedzi wymagają zwykłego dostarczenia.
-- Strumieniowanie blokowe i strumieniowanie podglądu nie dostarczają tego samego
-  tekstu jednocześnie.
-- Media przesłane strumieniowo wcześnie nie są duplikowane w końcowym
-  dostarczeniu.
+- Szkic podglądu jest anulowany albo redagowany, gdy media, błąd lub
+  niedopasowanie celu odpowiedzi wymaga zwykłego dostarczania.
+- Strumieniowanie blokowe i strumieniowanie podglądu nie dostarczają oba tego
+  samego tekstu.
+- Media strumieniowane wcześnie nie są duplikowane w dostarczeniu końcowym.
 
 Testy kanałów:
 
-- Odpowiedź w temacie Telegram z potwierdzeniem odpytywania opóźnionym do
-  bezpiecznego ukończonego znacznika kontekstu odbioru.
-- Odzyskiwanie odpytywania Telegram dla aktualizacji zaakceptowanych, ale
-  niedostarczonych, pokryte utrwalonym modelem bezpiecznie ukończonego offsetu.
+- Odpowiedź w temacie Telegram z potwierdzeniem pollingu opóźnionym do
+  bezpiecznego ukończonego znaku wodnego kontekstu odbioru.
+- Odzyskiwanie pollingu Telegram dla aktualizacji zaakceptowanych, ale
+  niedostarczonych, pokryte przez utrwalony model bezpiecznego ukończonego
+  offsetu.
 - Nieaktualny podgląd Telegram wysyła świeży finał i czyści podgląd.
-- Cichy fallback Telegram wysyła każdy projektowany ładunek fallbacku.
-- Trwałość cichego fallbacku Telegram zapisuje pełną projektowaną tablicę
-  fallbacku atomowo, a nie jeden trwały zamiar pojedynczego ładunku na iterację
-  pętli.
-- Anulowanie podglądu Discord przy mediach/błędzie/jawnej odpowiedzi.
-- Finały przygotowanego dyspozytora Discord przechodzą przez kontekst wysyłania,
-  zanim dokumentacja lub changelog stwierdzą trwałość końcowych odpowiedzi
-  Discord.
-- Trwałe wysyłki końcowe iMessage wypełniają cache echa wysłanych wiadomości
+- Ciche dostarczanie awaryjne Telegram wysyła każdy projektowany payload
+  awaryjny.
+- Trwałość cichego dostarczania awaryjnego Telegram rejestruje pełną projektowaną
+  tablicę awaryjną atomowo, a nie jedną trwałą intencję jednopayloadową na
+  iterację pętli.
+- Anulowanie podglądu Discord przy mediach, błędzie albo jawnej odpowiedzi.
+- Finały przygotowanego dispatchera Discord przechodzą przez kontekst wysyłania,
+  zanim dokumentacja albo changelog zaczną twierdzić, że Discord ma trwałość
+  odpowiedzi końcowych.
+- Trwałe wysyłki końcowe iMessage zasilają cache echa wysłanych wiadomości
   monitora.
-- Starsze ścieżki dostarczania LINE, Zalo i Nostr nie są omijane przez
-  generyczne trwałe wysyłanie, dopóki nie istnieją testy parytetu ich adapterów.
-- Dostarczanie callbackiem Direct-DM/Nostr pozostaje autorytatywne, chyba że
-  zostanie jawnie zmigrowane do kompletnego celu wiadomości i adaptera wysyłania
-  bezpiecznego do odtwarzania.
-- Oznaczone wiadomości awarii Gateway OpenClaw w Slack pozostają widoczne
-  wychodząco, oznaczone echa bot-room są odrzucane przed `allowBots`, a
-  nieoznaczone wiadomości botów z tym samym widocznym tekstem nadal przechodzą
-  normalną autoryzację botów.
-- Natywny fallback strumienia Slack do podglądu szkicu w DM najwyższego poziomu.
+- Starsze ścieżki dostarczania LINE, Zalo i Nostr nie są omijane przez ogólne
+  trwałe wysyłanie, dopóki nie istnieją ich testy parytetu adaptera.
+- Dostarczanie callbackowe Direct-DM/Nostr pozostaje autorytatywne, chyba że
+  zostanie jawnie zmigrowane do kompletnego celu wiadomości i odpornego na
+  odtwarzanie adaptera wysyłania.
+- Oznaczone wiadomości Slack o awarii OpenClaw Gateway pozostają widoczne na
+  wyjściu, oznaczone echa botów w pokoju są odrzucane przed `allowBots`, a
+  nieoznaczone wiadomości botów z tym samym widocznym tekstem nadal podlegają
+  normalnej autoryzacji botów.
+- Natywna awaria strumienia Slack do podglądu szkicu w DM najwyższego poziomu.
 - Finalizacja podglądu Matrix i awaryjne redagowanie.
-- Oznaczone echa awarii Gateway OpenClaw w pokoju Matrix z skonfigurowanych
-  kont botów są odrzucane przed obsługą `allowBots`.
-- Audyty kaskady awarii Gateway we współdzielonym pokoju Discord i Google Chat
-  obejmują tryby `allowBots` przed deklarowaniem tam generycznej ochrony.
-- Finalizacja szkicu Mattermost i fallback świeżego wysłania.
+- Oznaczone echa awarii OpenClaw Gateway w pokojach Matrix z kont botów
+  skonfigurowanych są odrzucane przed obsługą `allowBots`.
+- Audyty kaskady awarii Gateway we współdzielonych pokojach Discord i Google
+  Chat obejmują tryby `allowBots` przed deklarowaniem ogólnej ochrony w tych
+  miejscach.
+- Finalizacja szkicu Mattermost i awaryjne świeże wysłanie.
 - Finalizacja natywnego postępu Teams.
-- Tłumienie zduplikowanego finału Feishu.
-- Fallback limitu czasu akumulatora QQ Bot.
-- Trwałe wysyłki końcowe Tlon zachowują renderowanie sygnatury modelu i
-  śledzenie wątków z udziałem.
+- Tłumienie duplikatu finału Feishu.
+- Awaryjne zachowanie po czasie oczekiwania akumulatora QQ Bot.
+- Trwałe wysyłki końcowe Tlon zachowują renderowanie podpisu modelu i śledzenie
+  wątków z udziałem.
 - Proste trwałe wysyłki końcowe WhatsApp, Signal, iMessage, Google Chat, LINE,
   IRC, Nostr, Nextcloud Talk, Synology Chat, Tlon, Twitch, Zalo i Zalo Personal.
 
 Walidacja:
 
-- Ukierunkowane pliki Vitest podczas developmentu.
+- Docelowe pliki Vitest podczas developmentu.
 - `pnpm check:changed` w Testbox dla pełnej zmienionej powierzchni.
-- Szersze `pnpm check` w Testbox przed wylądowaniem kompletnej refaktoryzacji
-  lub po zmianach publicznego SDK/eksportów.
-- Live lub qa-channel smoke dla co najmniej jednego kanału obsługującego edycję
-  i jednego prostego kanału tylko do wysyłania przed usunięciem wrapperów
-  zgodności.
+- Szersze `pnpm check` w Testbox przed lądowaniem pełnego refaktoru albo po
+  zmianach publicznego SDK/eksportu.
+- Live albo qa-channel smoke dla co najmniej jednego kanału zdolnego do edycji i
+  jednego prostego kanału wyłącznie wysyłającego przed usunięciem wrapperów
+  kompatybilności.
 
 ## Otwarte pytania
 
-- Czy Telegram powinien docelowo zastąpić źródło runnera grammY w pełni trwałym
-  źródłem odpytywania, które może kontrolować ponowne dostarczanie na poziomie
-  platformy, a nie tylko utrwalony znacznik restartu OpenClaw.
+- Czy Telegram powinien ostatecznie zastąpić źródło runnera grammY w pełni
+  trwałym źródłem pollingu, które może kontrolować ponowne dostarczanie na
+  poziomie platformy, a nie tylko utrwalony znak wodny restartu OpenClaw.
 - Czy trwały stan podglądu live powinien być przechowywany w tym samym rekordzie
-  kolejki co zamiar końcowej wysyłki, czy w siostrzanym magazynie stanu live.
-- Jak długo wrappery zgodności pozostaną udokumentowane po wydaniu
-  `plugin-sdk/channel-message`.
-- Czy zewnętrzne pluginy powinny implementować adaptery odbioru bezpośrednio,
+  kolejki co intencja wysłania końcowego, czy w siostrzanym magazynie stanu
+  live.
+- Jak długo wrappery kompatybilności pozostają udokumentowane po wydaniu
+  `plugin-sdk/channel-outbound`.
+- Czy zewnętrzne Pluginy powinny implementować adaptery odbioru bezpośrednio,
   czy tylko udostępniać hooki normalize/send/live przez
   `defineChannelMessageAdapter`.
-- Które pola potwierdzeń odbioru można bezpiecznie ujawnić w publicznym SDK, a
-  które są wewnętrznym stanem runtime.
+- Które pola potwierdzeń można bezpiecznie wystawić w publicznym SDK, a które
+  należą do wewnętrznego stanu runtime.
 - Czy efekty uboczne, takie jak cache self-echo i znaczniki wątków z udziałem,
   powinny być modelowane jako hooki kontekstu wysyłania, kroki finalizacji
-  należące do adaptera czy subskrybenci potwierdzeń odbioru.
-- Które kanały mają natywne metadane pochodzenia, które potrzebują utrwalonych
-  rejestrów wychodzących, a które nie mogą zaoferować niezawodnego tłumienia
-  echa między botami.
+  należące do adaptera, czy subskrybenci potwierdzeń.
+- Które kanały mają natywne metadane origin, które potrzebują utrwalonych
+  rejestrów wychodzących, a które nie mogą zapewnić niezawodnego tłumienia echa
+  między botami.
 
 ## Kryteria akceptacji
 
 - Każdy dołączony kanał wiadomości wysyła końcowe widoczne wyjście przez
   `messages.send`.
-- Każdy przychodzący kanał wiadomości wchodzi przez `messages.receive` albo
-  udokumentowany wrapper zgodności.
-- Każdy kanał podglądu/edycji/strumieniowania używa `messages.live` do stanu
-  szkicu i finalizacji.
-- `channel.turn` jest wyłącznie wrapperem.
-- Helpery SDK z nazwami odpowiedzi są eksportami zgodności, a nie zalecaną
-  ścieżką.
+- Każdy kanał wiadomości inbound wchodzi przez `messages.receive` albo
+  udokumentowany wrapper kompatybilności.
+- Każdy kanał podglądu/edycji/strumienia używa `messages.live` do stanu szkicu i
+  finalizacji.
+- `channel.inbound` jest tylko wrapperem.
+- Helpery SDK nazwane odpowiedziami są eksportami kompatybilności, a nie
+  zalecaną ścieżką.
 - Trwałe odzyskiwanie może odtworzyć oczekujące wysyłki końcowe po restarcie bez
   utraty odpowiedzi końcowej ani duplikowania już zapisanych wysyłek; wysyłki,
-  których wynik platformowy jest nieznany, są uzgadniane przed odtworzeniem albo
-  udokumentowane jako at-least-once dla tego adaptera.
-- Trwałe wysyłki końcowe kończą się bezpieczną porażką, gdy nie można zapisać
-  trwałego zamiaru, chyba że wywołujący jawnie wybrał udokumentowany tryb
+  których wynik platformowy jest nieznany, są uzgadniane przed ponownym
+  odtworzeniem albo udokumentowane jako co najmniej raz dla tego adaptera.
+- Trwałe wysyłki końcowe zamykają się niepowodzeniem, gdy nie można zapisać
+  trwałej intencji, chyba że wywołujący jawnie wybrał udokumentowany tryb
   nietrwały.
-- Starsze helpery zgodności channel-turn i SDK domyślnie korzystają z
-  bezpośredniego dostarczania należącego do kanału; generyczne trwałe wysyłanie
-  jest wyłącznie jawnym opt-in.
-- Potwierdzenia odbioru zachowują wszystkie identyfikatory wiadomości platformy
-  dla dostarczeń wieloczęściowych oraz identyfikator główny dla wygody
+- Starsze helpery kompatybilności SDK domyślnie używają bezpośredniego
+  dostarczania należącego do kanału; ogólne trwałe wysyłanie jest tylko jawnym
+  włączeniem.
+- Potwierdzenia zachowują wszystkie identyfikatory wiadomości platformy dla
+  dostarczeń wieloczęściowych oraz identyfikator główny dla wygody
   wątkowania/edycji.
-- Trwałe wrappery zachowują lokalne dla kanału efekty uboczne przed zastąpieniem
+- Trwałe wrappery zachowują lokalne efekty uboczne kanału przed zastąpieniem
   bezpośrednich callbacków dostarczania.
-- Przygotowane dyspozytory nie są liczone jako trwałe, dopóki ich końcowa
+- Przygotowane dispatchery nie są liczone jako trwałe, dopóki ich końcowa
   ścieżka dostarczania jawnie nie użyje kontekstu wysyłania.
-- Dostarczanie fallbacku obsługuje każdy projektowany ładunek.
-- Trwałe dostarczanie fallbacku zapisuje każdy projektowany ładunek w jednym
-  odtwarzalnym zamiarze albo planie batch.
+- Dostarczanie awaryjne obsługuje każdy projektowany payload.
+- Trwałe dostarczanie awaryjne rejestruje każdy projektowany payload w jednej
+  odtwarzalnej intencji albo planie wsadowym.
 - Wyjście awarii Gateway pochodzące z OpenClaw jest widoczne dla ludzi, ale
-  oznaczone echa pokojowe napisane przez boty są odrzucane przed autoryzacją
-  botów na kanałach, które deklarują obsługę kontraktu pochodzenia.
-- Dokumentacja wyjaśnia wysyłanie, odbieranie, live, stan, potwierdzenia
-  odbioru, relacje, politykę awarii, migrację i pokrycie testami.
+  oznaczone echa pokojów autorstwa botów są odrzucane przed autoryzacją botów na
+  kanałach, które deklarują obsługę kontraktu origin.
+- Dokumentacja wyjaśnia wysyłanie, odbieranie, live, stan, potwierdzenia,
+  relacje, politykę awarii, migrację i pokrycie testami.
 
 ## Powiązane
 
 - [Wiadomości](/pl/concepts/messages)
-- [Strumieniowanie i chunking](/pl/concepts/streaming)
+- [Strumieniowanie i dzielenie na fragmenty](/pl/concepts/streaming)
 - [Szkice postępu](/pl/concepts/progress-drafts)
 - [Polityka ponawiania](/pl/concepts/retry)
-- [Jądro tury kanału](/pl/plugins/sdk-channel-turn)
+- [API inbound kanału](/pl/plugins/sdk-channel-inbound)

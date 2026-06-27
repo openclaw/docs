@@ -1,32 +1,33 @@
 ---
 read_when:
-    - Você quer remover o serviço do gateway e/ou o estado local
-    - Você quer primeiro um dry-run
-summary: Referência da CLI para `openclaw uninstall` (remover serviço do gateway + dados locais)
+    - Você quer remover o serviço Gateway e/ou o estado local
+    - Você quer primeiro uma simulação
+summary: Referência da CLI para `openclaw uninstall` (remover serviço Gateway + dados locais)
 title: Desinstalar
 x-i18n:
-    generated_at: "2026-04-24T05:46:59Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T17:22:25Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b774fc006e989068b9126aff2a72888fd808a2e0e3d5ea8b57e6ab9d9f1b63ee
+    source_hash: f90fa8cf513e2e8cd422c3b8a880e7fd20fb71131a3ec88260e765daa2ace543
     source_path: cli/uninstall.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw uninstall`
 
-Desinstala o serviço do gateway + dados locais (a CLI permanece).
+Desinstale o serviço de Gateway + dados locais (a CLI permanece).
 
 Opções:
 
-- `--service`: remove o serviço do gateway
-- `--state`: remove o estado e a configuração
-- `--workspace`: remove diretórios de workspace
-- `--app`: remove o app do macOS
-- `--all`: remove serviço, estado, workspace e app
+- `--service`: remove o serviço de Gateway
+- `--state`: remove estado e configuração
+- `--workspace`: remove diretórios de espaço de trabalho
+- `--app`: remove o aplicativo do macOS
+- `--all`: remove serviço, estado, espaço de trabalho e aplicativo
 - `--yes`: ignora prompts de confirmação
-- `--non-interactive`: desabilita prompts; requer `--yes`
-- `--dry-run`: imprime as ações sem remover arquivos
+- `--non-interactive`: desativa prompts; exige `--yes`
+- `--dry-run`: imprime ações sem remover arquivos
 
 Exemplos:
 
@@ -39,11 +40,12 @@ openclaw uninstall --all --yes
 openclaw uninstall --dry-run
 ```
 
-Observações:
+Notas:
 
-- Execute `openclaw backup create` primeiro se quiser um snapshot restaurável antes de remover o estado ou workspaces.
-- `--all` é um atalho para remover serviço, estado, workspace e app juntos.
-- `--non-interactive` requer `--yes`.
+- Execute `openclaw backup create` primeiro se quiser um snapshot restaurável antes de remover estado ou espaços de trabalho.
+- `--state` preserva os diretórios de espaço de trabalho configurados, a menos que `--workspace` também esteja selecionado.
+- `--all` é um atalho para remover serviço, estado, espaço de trabalho e aplicativo juntos.
+- `--non-interactive` exige `--yes`.
 
 ## Relacionado
 

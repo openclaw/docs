@@ -3,18 +3,19 @@ read_when:
     - เรียนรู้วิธีกำหนดค่า OpenClaw
     - กำลังมองหาตัวอย่างการกำหนดค่า
     - การตั้งค่า OpenClaw เป็นครั้งแรก
-summary: ตัวอย่างการกำหนดค่าที่ถูกต้องตามสคีมาสำหรับการตั้งค่า OpenClaw ทั่วไป
+summary: ตัวอย่างการกำหนดค่าที่ถูกต้องตามสคีมาสำหรับการตั้งค่า OpenClaw ที่พบบ่อย
 title: ตัวอย่างการกำหนดค่า
 x-i18n:
-    generated_at: "2026-05-11T20:30:04Z"
+    generated_at: "2026-06-27T17:32:21Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e077b2fe83b1c6e4ffd2ff0029fe3b754c7dc5dced06f134ddf18e9ed6a11fd2
+    source_hash: 945f4cd8571814597ec0188853e91c6483a0d8b09bd0ca7dcfb79eb877607ce2
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-ตัวอย่างด้านล่างสอดคล้องกับสคีมาการกำหนดค่าปัจจุบัน สำหรับเอกสารอ้างอิงฉบับครบถ้วนและหมายเหตุรายฟิลด์ โปรดดู [การกำหนดค่า](/th/gateway/configuration)
+ตัวอย่างด้านล่างสอดคล้องกับสคีมาการกำหนดค่าปัจจุบัน สำหรับข้อมูลอ้างอิงทั้งหมดและหมายเหตุรายฟิลด์ โปรดดู [การกำหนดค่า](/th/gateway/configuration)
 
 ## เริ่มต้นอย่างรวดเร็ว
 
@@ -27,9 +28,9 @@ x-i18n:
 }
 ```
 
-บันทึกไปที่ `~/.openclaw/openclaw.json` แล้วคุณจะสามารถส่งข้อความส่วนตัวถึงบอตจากหมายเลขนั้นได้
+บันทึกไปยัง `~/.openclaw/openclaw.json` แล้วคุณสามารถส่งข้อความส่วนตัวถึงบอตจากหมายเลขนั้นได้
 
-### ตัวอย่างเริ่มต้นที่แนะนำ
+### ค่าเริ่มต้นที่แนะนำ
 
 ```json5
 {
@@ -58,7 +59,8 @@ x-i18n:
   messages: {
     visibleReplies: "automatic",
     groupChat: {
-      visibleReplies: "message_tool", // default; use "automatic" for legacy room replies
+      visibleReplies: "message_tool", // opt-in; visible output requires message(action=send)
+      unmentionedInbound: "room_event",
     },
   },
 }
@@ -66,7 +68,7 @@ x-i18n:
 
 ## ตัวอย่างแบบขยาย (ตัวเลือกหลัก)
 
-> JSON5 ช่วยให้คุณใช้ความคิดเห็นและคอมมาต่อท้ายได้ JSON ปกติก็ใช้ได้เช่นกัน.
+> JSON5 ช่วยให้คุณใช้ความคิดเห็นและจุลภาคต่อท้ายได้ JSON ปกติก็ใช้ได้เช่นกัน
 
 ```json5
 {
@@ -88,12 +90,11 @@ x-i18n:
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
       "anthropic:work": { provider: "anthropic", mode: "api_key" },
       "openai:default": { provider: "openai", mode: "api_key" },
-      "openai-codex:personal": { provider: "openai-codex", mode: "oauth" },
+      "openai:personal": { provider: "openai", mode: "oauth" },
     },
     order: {
       anthropic: ["anthropic:default", "anthropic:work"],
-      openai: ["openai:default"],
-      "openai-codex": ["openai-codex:personal"],
+      openai: ["openai:personal", "openai:default"],
     },
   },
 
@@ -117,21 +118,22 @@ x-i18n:
     ackReactionScope: "group-mentions",
     groupChat: {
       historyLimit: 50,
-      visibleReplies: "message_tool", // normal final replies stay private in groups/channels
+      visibleReplies: "message_tool", // opt in for shared rooms with tool-reliable models
+      unmentionedInbound: "room_event",
     },
     queue: {
-      mode: "steer",
+      mode: "followup",
       debounceMs: 500,
       cap: 20,
       drop: "summarize",
       byChannel: {
-        whatsapp: "steer",
-        telegram: "steer",
-        discord: "steer",
-        slack: "steer",
-        signal: "steer",
-        imessage: "steer",
-        webchat: "steer",
+        whatsapp: "followup",
+        telegram: "followup",
+        discord: "collect",
+        slack: "collect",
+        signal: "followup",
+        imessage: "followup",
+        webchat: "followup",
       },
     },
   },
@@ -390,7 +392,7 @@ x-i18n:
   cron: {
     enabled: true,
     store: "~/.openclaw/cron/cron.json",
-    maxConcurrentRuns: 2, // cron dispatch + isolated cron agent-turn execution
+    maxConcurrentRuns: 8, // default; cron dispatch + isolated cron agent-turn execution
     sessionRetention: "24h",
     runLog: {
       maxBytes: "2mb",
@@ -480,9 +482,9 @@ x-i18n:
 }
 ```
 
-### รีโป skill พี่น้องที่เป็น symlink
+### คลัง Skill พี่น้องที่เชื่อมด้วย symlink
 
-ใช้ส่วนนี้เมื่อรูท skill ในตัวมี symlink ไปยังรีโปพี่น้อง เช่น
+ใช้สิ่งนี้เมื่อรูท Skill ในตัวมี symlink ไปยังคลังพี่น้อง เช่น
 `~/.agents/skills/manager -> ~/Projects/manager/skills`
 
 ```json5
@@ -496,13 +498,15 @@ x-i18n:
 }
 ```
 
-- `extraDirs` สแกนรีโปพี่น้องเป็นรูท skill แบบระบุชัดเจน
-- `allowSymlinkTargets` อนุญาตให้โฟลเดอร์ skill ที่เป็น symlink แก้ไปยัง
-  รูทเป้าหมายจริงที่เชื่อถือได้นั้น โดยไม่อนุญาตให้ symlink หลุดออกไปที่ใดก็ได้
+- `extraDirs` สแกนคลังพี่น้องเป็นรูท Skill ที่ระบุอย่างชัดเจน
+- `allowSymlinkTargets` ทำให้โฟลเดอร์ Skill ที่เชื่อมด้วย symlink resolve ไปยังรูทเป้าหมายจริงที่เชื่อถือได้
+  โดยไม่อนุญาตให้ symlink หลุดออกไปยังตำแหน่งอื่นโดยพลการ
+- หากต้องการให้ Skill Workshop เขียนผ่านเป้าหมาย symlink ที่เชื่อถือได้นั้นได้เช่นกัน
+  ให้ตั้งค่า `skills.workshop.allowSymlinkTargetWrites: true`
 
-## รูปแบบที่พบบ่อย
+## รูปแบบทั่วไป
 
-### baseline ของ skill ที่ใช้ร่วมกันพร้อม override หนึ่งรายการ
+### baseline ของ Skill ที่ใช้ร่วมกันพร้อม override หนึ่งรายการ
 
 ```json5
 {
@@ -519,9 +523,9 @@ x-i18n:
 }
 ```
 
-- `agents.defaults.skills` คือ baseline ที่ใช้ร่วมกัน
-- `agents.list[].skills` แทนที่ baseline นั้นสำหรับเอเจนต์หนึ่งตัว
-- ใช้ `skills: []` เมื่อเอเจนต์ไม่ควรเห็น skills ใดเลย
+- `agents.defaults.skills` คือค่าพื้นฐานที่ใช้ร่วมกัน
+- `agents.list[].skills` จะแทนที่ค่าพื้นฐานนั้นสำหรับเอเจนต์หนึ่งตัว
+- ใช้ `skills: []` เมื่อเอเจนต์ไม่ควรเห็น Skills ใด ๆ
 
 ### การตั้งค่าหลายแพลตฟอร์ม
 
@@ -544,9 +548,11 @@ x-i18n:
 }
 ```
 
-### การอนุมัติอัตโนมัติสำหรับเครือข่าย Node ที่เชื่อถือได้
+### การอนุมัติอัตโนมัติสำหรับเครือข่ายโหนดที่เชื่อถือได้
 
-ให้การจับคู่อุปกรณ์เป็นแบบทำด้วยตนเอง เว้นแต่คุณควบคุมเส้นทางเครือข่ายนั้นอยู่ สำหรับห้องปฏิบัติการเฉพาะหรือซับเน็ต tailnet คุณสามารถเลือกใช้การอนุมัติอุปกรณ์ Node อัตโนมัติในครั้งแรกด้วย CIDR หรือ IP ที่แน่นอนได้:
+ให้การจับคู่อุปกรณ์เป็นแบบทำด้วยตนเองไว้ เว้นแต่คุณจะควบคุมเส้นทางเครือข่ายได้ สำหรับแล็บเฉพาะ
+หรือซับเน็ต tailnet คุณสามารถเลือกเปิดใช้การอนุมัติอัตโนมัติสำหรับอุปกรณ์โหนดครั้งแรก
+ด้วย CIDR หรือ IP ที่ระบุแน่นอนได้:
 
 ```json5
 {
@@ -560,11 +566,13 @@ x-i18n:
 }
 ```
 
-ค่านี้ยังคงปิดอยู่เมื่อไม่ได้ตั้งค่า ใช้เฉพาะกับการจับคู่ `role: node` ใหม่ที่ไม่ได้ร้องขอ scope ใดๆ ไคลเอนต์ operator/browser รวมถึงการอัปเกรด role, scope, metadata หรือ public-key ยังคงต้องได้รับการอนุมัติด้วยตนเอง
+ค่านี้ยังคงปิดอยู่เมื่อไม่ได้ตั้งค่า ใช้กับการจับคู่ `role: node` ใหม่เท่านั้นที่
+ไม่ได้ขอขอบเขตสิทธิ์ใด ๆ ไคลเอนต์ของผู้ปฏิบัติงาน/เบราว์เซอร์ รวมถึงการอัปเกรดบทบาท ขอบเขตสิทธิ์ เมตาดาต้า หรือ
+คีย์สาธารณะยังคงต้องได้รับการอนุมัติด้วยตนเอง
 
-### โหมด DM ที่ปลอดภัย (กล่องขาเข้าที่ใช้ร่วมกัน / DM แบบหลายผู้ใช้)
+### โหมด DM ที่ปลอดภัย (กล่องข้อความร่วม / DM หลายผู้ใช้)
 
-หากมีมากกว่าหนึ่งคนที่สามารถ DM บอทของคุณได้ (มีหลายรายการใน `allowFrom`, มีการอนุมัติการจับคู่สำหรับหลายคน หรือ `dmPolicy: "open"`) ให้เปิดใช้ **โหมด DM ที่ปลอดภัย** เพื่อให้ DM จากผู้ส่งคนละรายไม่ใช้บริบทร่วมกันเป็นค่าเริ่มต้น:
+หากมีมากกว่าหนึ่งคนที่สามารถ DM บอตของคุณได้ (มีหลายรายการใน `allowFrom`, มีการอนุมัติการจับคู่สำหรับหลายคน หรือ `dmPolicy: "open"`), ให้เปิดใช้ **โหมด DM ที่ปลอดภัย** เพื่อให้ DM จากผู้ส่งต่างกันไม่ใช้บริบทร่วมกันโดยค่าเริ่มต้น:
 
 ```json5
 {
@@ -588,10 +596,10 @@ x-i18n:
 }
 ```
 
-สำหรับ Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC การอนุญาตผู้ส่งจะอิง ID เป็นหลักโดยค่าเริ่มต้น
-เปิดใช้การจับคู่ชื่อ/อีเมล/ชื่อเล่นที่เปลี่ยนแปลงได้โดยตรงด้วย `dangerouslyAllowNameMatching: true` ของแต่ละช่องทาง เฉพาะเมื่อคุณยอมรับความเสี่ยงนั้นอย่างชัดเจนเท่านั้น
+สำหรับ Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC การอนุญาตผู้ส่งจะยึด ID เป็นหลักโดยค่าเริ่มต้น
+เปิดใช้การจับคู่ชื่อ/อีเมล/ชื่อเล่นที่เปลี่ยนแปลงได้โดยตรงด้วย `dangerouslyAllowNameMatching: true` ของแต่ละช่องทางเฉพาะเมื่อคุณยอมรับความเสี่ยงนั้นอย่างชัดเจนเท่านั้น
 
-### คีย์ Anthropic API + ตัวสำรอง MiniMax
+### คีย์ Anthropic API + MiniMax สำรอง
 
 ```json5
 {
@@ -627,7 +635,7 @@ x-i18n:
 }
 ```
 
-### บอทสำหรับงาน (การเข้าถึงแบบจำกัด)
+### บอตสำหรับงาน (การเข้าถึงแบบจำกัด)
 
 ```json5
 {
@@ -659,7 +667,7 @@ x-i18n:
 }
 ```
 
-### โมเดลภายในเครื่องเท่านั้น
+### ใช้เฉพาะโมเดลในเครื่อง
 
 ```json5
 {
@@ -695,10 +703,10 @@ x-i18n:
 
 ## เคล็ดลับ
 
-- หากคุณตั้งค่า `dmPolicy: "open"` รายการ `allowFrom` ที่ตรงกันต้องมี `"*"` รวมอยู่ด้วย
+- หากคุณตั้งค่า `dmPolicy: "open"` รายการ `allowFrom` ที่ตรงกันต้องมี `"*"`
 - ID ของผู้ให้บริการแตกต่างกัน (หมายเลขโทรศัพท์, ID ผู้ใช้, ID ช่องทาง) ใช้เอกสารของผู้ให้บริการเพื่อยืนยันรูปแบบ
-- ส่วนเพิ่มเติมที่สามารถเพิ่มภายหลัง: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`
-- ดู [ผู้ให้บริการ](/th/providers) และ [การแก้ไขปัญหา](/th/gateway/troubleshooting) สำหรับหมายเหตุการตั้งค่าเชิงลึกเพิ่มเติม
+- ส่วนที่เลือกเพิ่มภายหลังได้: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`
+- ดู [ผู้ให้บริการ](/th/providers) และ [การแก้ไขปัญหา](/th/gateway/troubleshooting) สำหรับบันทึกการตั้งค่าเชิงลึกเพิ่มเติม
 
 ## ที่เกี่ยวข้อง
 

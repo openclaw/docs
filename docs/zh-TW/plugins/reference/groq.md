@@ -1,29 +1,30 @@
 ---
 read_when:
-    - 您正在安裝、設定或稽核 groq Plugin
-summary: 為 OpenClaw 新增 Groq 模型供應商支援。
-title: Groq Plugin
+    - 你正在安裝、設定或稽核 groq 外掛
+summary: 為 OpenClaw 新增 Groq 模型提供者支援。
+title: Groq 外掛
 x-i18n:
-    generated_at: "2026-05-02T20:57:06Z"
+    generated_at: "2026-06-27T19:43:38Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 570a15776efbe94b41518ca9c5fac1559c49be0d8f6c5bd71fdcd0841a0626e9
+    source_hash: 41bae84645b09b5185d62530788a17be0338e93e6f29b9cca11438b69932bbc5
     source_path: plugins/reference/groq.md
     workflow: 16
 ---
 
-# Groq Plugin
+# Groq 外掛
 
 為 OpenClaw 新增 Groq 模型提供者支援。
 
 ## 發行
 
 - 套件：`@openclaw/groq-provider`
-- 安裝路徑：包含於 OpenClaw
+- 安裝路徑：npm；ClawHub：`clawhub:@openclaw/groq-provider`
 
 ## 介面
 
-providers: groq; contracts: mediaUnderstandingProviders
+providers：groq；contracts：mediaUnderstandingProviders
 
 ## 相關文件
 

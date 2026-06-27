@@ -1,20 +1,21 @@
 ---
 read_when:
-    - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin ของ zalo
-summary: เพิ่มส่วนติดต่อของช่องทาง Zalo สำหรับการส่งและรับข้อความ OpenClaw
+    - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin zalo
+summary: OpenClaw Plugin ช่องทาง Zalo สำหรับแชตบอตและ Webhook
 title: Plugin Zalo
 x-i18n:
-    generated_at: "2026-05-03T10:18:09Z"
+    generated_at: "2026-06-27T18:06:07Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2914ba7fec4427c6a8a322ea1d9308d9e37a81b5ff51a89b06227e5ecfcef6f2
+    source_hash: ff9da1e1591eaad36db74a27f817dd9dac8791af2d5030fcd3419ee50d2ed4aa
     source_path: plugins/reference/zalo.md
     workflow: 16
 ---
 
 # Plugin Zalo
 
-เพิ่มพื้นผิวช่องทาง Zalo สำหรับส่งและรับข้อความ OpenClaw
+Plugin ช่องทาง Zalo ของ OpenClaw สำหรับการแชตผ่านบอตและ Webhook
 
 ## การเผยแพร่
 
@@ -23,7 +24,7 @@ x-i18n:
 
 ## พื้นผิว
 
-ช่องทาง: zalo
+channels: zalo
 
 ## เอกสารที่เกี่ยวข้อง
 

@@ -1,25 +1,26 @@
 ---
 read_when:
-    - Implementare le approvazioni per l'associazione dei Node senza interfaccia utente macOS
-    - Aggiunta di flussi CLI per l'approvazione dei nodi remoti
-    - Estensione del protocollo Gateway con la gestione dei Node
-summary: Abbinamento dei Node di proprietà del Gateway (Opzione B) per iOS e altri Node remoti
+    - Implementazione delle approvazioni di associazione dei nodi senza UI macOS
+    - Aggiunta di flussi CLI per approvare nodi remoti
+    - Estensione del protocollo Gateway con la gestione dei nodi
+summary: Associazione dei nodi gestita dal Gateway (opzione B) per iOS e altri nodi remoti
 title: Abbinamento gestito dal Gateway
 x-i18n:
-    generated_at: "2026-05-06T08:52:31Z"
+    generated_at: "2026-06-27T17:34:12Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 75713e04e37dcbae151d170e2eb459d0e9b9a799c64a10db731b61d7b53998b4
+    source_hash: aefddafaef419fc59b04ee17dae8ef21685b4f514f4286530bf07362663a8996
     source_path: gateway/pairing.md
     workflow: 16
 ---
 
-Nel pairing gestito dal Gateway, il **Gateway** è la fonte di verità per stabilire quali nodi
+Nell'associazione di proprietà del Gateway, il **Gateway** è la fonte di verità per stabilire quali nodi
 sono autorizzati a unirsi. Le UI (app macOS, client futuri) sono solo frontend che
 approvano o rifiutano le richieste in sospeso.
 
-**Importante:** i nodi WS usano il **pairing del dispositivo** (ruolo `node`) durante `connect`.
-`node.pair.*` è un archivio di pairing separato e **non** controlla l'handshake WS.
+**Importante:** i nodi WS usano l'**associazione del dispositivo** (ruolo `node`) durante `connect`.
+`node.pair.*` è un archivio di associazione separato e **non** controlla l'handshake WS.
 Solo i client che chiamano esplicitamente `node.pair.*` usano questo flusso.
 
 ## Concetti
@@ -27,15 +28,15 @@ Solo i client che chiamano esplicitamente `node.pair.*` usano questo flusso.
 - **Richiesta in sospeso**: un nodo ha chiesto di unirsi; richiede approvazione.
 - **Nodo associato**: nodo approvato con un token di autenticazione emesso.
 - **Trasporto**: l'endpoint WS del Gateway inoltra le richieste ma non decide
-  l'appartenenza. (Il supporto legacy del bridge TCP è stato rimosso.)
+  l'appartenenza. (Il supporto al bridge TCP legacy è stato rimosso.)
 
-## Come funziona il pairing
+## Come funziona l'associazione
 
-1. Un nodo si connette al WS del Gateway e richiede il pairing.
+1. Un nodo si connette al WS del Gateway e richiede l'associazione.
 2. Il Gateway archivia una **richiesta in sospeso** ed emette `node.pair.requested`.
 3. Approvi o rifiuti la richiesta (CLI o UI).
-4. All'approvazione, il Gateway emette un **nuovo token** (i token vengono ruotati al nuovo pairing).
-5. Il nodo si riconnette usando il token ed è ora "associato".
+4. All'approvazione, il Gateway emette un **nuovo token** (i token vengono ruotati alla riassociazione).
+5. Il nodo si riconnette usando il token e ora è "associato".
 
 Le richieste in sospeso scadono automaticamente dopo **5 minuti**.
 
@@ -52,7 +53,7 @@ openclaw nodes rename --node <id|name|ip> --name "Living Room iPad"
 
 `nodes status` mostra i nodi associati/connessi e le loro capacità.
 
-## Superficie API (protocollo del Gateway)
+## Superficie API (protocollo Gateway)
 
 Eventi:
 
@@ -61,79 +62,86 @@ Eventi:
 
 Metodi:
 
-- `node.pair.request` - crea o riusa una richiesta in sospeso.
+- `node.pair.request` - crea o riutilizza una richiesta in sospeso.
 - `node.pair.list` - elenca nodi in sospeso + associati (`operator.pairing`).
 - `node.pair.approve` - approva una richiesta in sospeso (emette token).
 - `node.pair.reject` - rifiuta una richiesta in sospeso.
-- `node.pair.remove` - rimuove una voce obsoleta di nodo associato.
+- `node.pair.remove` - rimuove un nodo associato. Per le associazioni basate su dispositivo,
+  revoca il ruolo `node` del dispositivo: modifica `devices/paired.json` e
+  invalida/disconnette le sessioni con ruolo nodo di quel dispositivo. Un dispositivo a **ruoli misti**
+  (ad es. contiene anche `operator`) mantiene la sua riga e perde solo il ruolo `node`;
+  una riga di dispositivo solo nodo viene eliminata. Rimuove anche ogni voce di associazione nodo legacy
+  di proprietà del gateway corrispondente. Authz: `operator.pairing` può rimuovere
+  righe nodo non operatore; un chiamante con token dispositivo che revoca il proprio ruolo nodo su
+  un dispositivo a ruoli misti richiede inoltre `operator.admin`.
 - `node.pair.verify` - verifica `{ nodeId, token }`.
 
 Note:
 
-- `node.pair.request` è idempotente per nodo: le chiamate ripetute restituiscono la stessa
+- `node.pair.request` è idempotente per nodo: chiamate ripetute restituiscono la stessa
   richiesta in sospeso.
-- Le richieste ripetute per lo stesso nodo in sospeso aggiornano anche i metadati del nodo
-  archiviati e l'ultima istantanea dichiarata dei comandi in allowlist per la visibilità dell'operatore.
+- Le richieste ripetute per lo stesso nodo in sospeso aggiornano anche i metadati del nodo archiviati
+  e l'ultimo snapshot dei comandi dichiarati in allowlist per la visibilità dell'operatore.
 - L'approvazione genera **sempre** un token nuovo; nessun token viene mai restituito da
   `node.pair.request`.
-- I livelli degli ambiti operatore e i controlli al momento dell'approvazione sono riassunti in
+- I livelli di ambito dell'operatore e i controlli al momento dell'approvazione sono riassunti in
   [Ambiti operatore](/it/gateway/operator-scopes).
-- Le richieste possono includere `silent: true` come suggerimento per flussi di approvazione automatica.
+- Le richieste possono includere `silent: true` come suggerimento per i flussi di approvazione automatica.
 - `node.pair.approve` usa i comandi dichiarati della richiesta in sospeso per applicare
-  ambiti di approvazione aggiuntivi:
+  ambiti di approvazione extra:
   - richiesta senza comandi: `operator.pairing`
   - richiesta di comando non exec: `operator.pairing` + `operator.write`
   - richiesta `system.run` / `system.run.prepare` / `system.which`:
     `operator.pairing` + `operator.admin`
 
 <Warning>
-Il pairing dei nodi è un flusso di fiducia e identità più emissione di token. **Non** vincola la superficie live dei comandi del nodo per nodo.
+L'associazione dei nodi è un flusso di fiducia e identità più emissione di token. **Non** vincola la superficie di comandi live del nodo per nodo.
 
-- I comandi live del nodo derivano da ciò che il nodo dichiara alla connessione dopo l'applicazione della policy globale del Gateway per i comandi del nodo (`gateway.nodes.allowCommands` e `denyCommands`).
-- La policy per consentire e chiedere `system.run` per singolo nodo vive sul nodo in `exec.approvals.node.*`, non nel record di pairing.
+- I comandi live del nodo provengono da ciò che il nodo dichiara alla connessione dopo l'applicazione della policy globale dei comandi nodo del gateway (`gateway.nodes.allowCommands` e `denyCommands`).
+- La policy per consentire e chiedere `system.run` per nodo risiede sul nodo in `exec.approvals.node.*`, non nel record di associazione.
 
 </Warning>
 
-## Controllo dei comandi Node (2026.3.31+)
+## Controllo dei comandi nodo (2026.3.31+)
 
 <Warning>
-**Modifica incompatibile:** a partire da `2026.3.31`, i comandi del nodo sono disabilitati finché il pairing del nodo non viene approvato. Il solo pairing del dispositivo non è più sufficiente per esporre i comandi del nodo dichiarati.
+**Modifica incompatibile:** a partire da `2026.3.31`, i comandi nodo sono disabilitati finché l'associazione del nodo non viene approvata. La sola associazione del dispositivo non è più sufficiente per esporre i comandi nodo dichiarati.
 </Warning>
 
-Quando un nodo si connette per la prima volta, il pairing viene richiesto automaticamente. Finché la richiesta di pairing non viene approvata, tutti i comandi del nodo in sospeso provenienti da quel nodo vengono filtrati e non verranno eseguiti. Una volta stabilita la fiducia tramite approvazione del pairing, i comandi dichiarati del nodo diventano disponibili in base alla normale policy dei comandi.
+Quando un nodo si connette per la prima volta, l'associazione viene richiesta automaticamente. Finché la richiesta di associazione non viene approvata, tutti i comandi nodo in sospeso provenienti da quel nodo vengono filtrati e non verranno eseguiti. Una volta stabilita la fiducia tramite l'approvazione dell'associazione, i comandi dichiarati del nodo diventano disponibili soggetti alla normale policy dei comandi.
 
 Questo significa:
 
-- I nodi che in precedenza si affidavano al solo pairing del dispositivo per esporre comandi devono ora completare il pairing del nodo.
-- I comandi accodati prima dell'approvazione del pairing vengono eliminati, non rinviati.
+- I nodi che in precedenza si basavano solo sull'associazione del dispositivo per esporre i comandi ora devono completare l'associazione del nodo.
+- I comandi accodati prima dell'approvazione dell'associazione vengono scartati, non posticipati.
 
-## Confini di fiducia degli eventi Node (2026.3.31+)
+## Confini di fiducia degli eventi nodo (2026.3.31+)
 
 <Warning>
-**Modifica incompatibile:** le esecuzioni originate dal nodo ora restano su una superficie attendibile ridotta.
+**Modifica incompatibile:** le esecuzioni originate dai nodi ora restano su una superficie fidata ridotta.
 </Warning>
 
-I riepiloghi originati dal nodo e gli eventi di sessione correlati sono limitati alla superficie attendibile prevista. I flussi guidati da notifiche o attivati dal nodo che in precedenza dipendevano da un accesso più ampio agli strumenti dell'host o della sessione potrebbero richiedere adeguamenti. Questo rafforzamento garantisce che gli eventi del nodo non possano scalare ad accesso agli strumenti a livello host oltre quanto consentito dal confine di fiducia del nodo.
+I riepiloghi originati dai nodi e gli eventi di sessione correlati sono limitati alla superficie fidata prevista. I flussi guidati da notifiche o attivati da nodi che in precedenza si basavano su un accesso più ampio agli strumenti dell'host o della sessione potrebbero richiedere modifiche. Questo rafforzamento garantisce che gli eventi nodo non possano scalare verso accessi agli strumenti a livello host oltre quanto consentito dal confine di fiducia del nodo.
 
-Gli aggiornamenti durevoli della presenza del nodo seguono lo stesso confine di identità. L'evento `node.presence.alive` viene
-accettato solo da sessioni di dispositivi nodo autenticati e aggiorna i metadati di pairing solo quando
+Gli aggiornamenti durevoli della presenza dei nodi seguono lo stesso confine di identità. L'evento `node.presence.alive` è
+accettato solo da sessioni di dispositivi nodo autenticati e aggiorna i metadati di associazione solo quando
 l'identità dispositivo/nodo è già associata. I valori `client.id` autodichiarati non sono sufficienti per scrivere
-lo stato dell'ultima visualizzazione.
+lo stato dell'ultimo accesso.
 
 ## Approvazione automatica (app macOS)
 
-L'app macOS può facoltativamente tentare una **approvazione silenziosa** quando:
+L'app macOS può facoltativamente tentare un'**approvazione silenziosa** quando:
 
-- la richiesta è contrassegnata con `silent`, e
+- la richiesta è contrassegnata come `silent`, e
 - l'app può verificare una connessione SSH all'host gateway usando lo stesso utente.
 
-Se l'approvazione silenziosa non riesce, torna al normale prompt "Approva/Rifiuta".
+Se l'approvazione silenziosa fallisce, torna al normale prompt "Approva/Rifiuta".
 
-## Approvazione automatica dei dispositivi con CIDR attendibili
+## Approvazione automatica dei dispositivi tramite CIDR fidati
 
-Il pairing dei dispositivi WS per `role: node` resta manuale per impostazione predefinita. Per le reti
-di nodi private in cui il Gateway considera già attendibile il percorso di rete, gli operatori possono
-aderire con CIDR espliciti o IP esatti:
+L'associazione dei dispositivi WS per `role: node` resta manuale per impostazione predefinita. Per reti
+di nodi private in cui il Gateway considera già fidato il percorso di rete, gli operatori possono
+attivarla con CIDR espliciti o IP esatti:
 
 ```json5
 {
@@ -149,48 +157,47 @@ aderire con CIDR espliciti o IP esatti:
 
 Confine di sicurezza:
 
-- Disabilitato quando `gateway.nodes.pairing.autoApproveCidrs` non è impostato.
-- Non esiste una modalità di approvazione automatica indiscriminata per LAN o rete privata.
-- È idoneo solo il pairing di un dispositivo `role: node` nuovo senza ambiti richiesti.
+- Disabilitata quando `gateway.nodes.pairing.autoApproveCidrs` non è impostato.
+- Non esiste alcuna modalità di approvazione automatica generale per LAN o reti private.
+- È idonea solo una nuova associazione di dispositivo `role: node` senza ambiti richiesti.
 - I client operatore, browser, Control UI e WebChat restano manuali.
-- Gli upgrade di ruolo, ambito, metadati e chiave pubblica restano manuali.
-- I percorsi con intestazione trusted-proxy su local loopback dello stesso host non sono idonei perché quel
+- Aggiornamenti di ruolo, ambito, metadati e chiave pubblica restano manuali.
+- I percorsi con header trusted-proxy di local loopback sullo stesso host non sono idonei perché quel
   percorso può essere falsificato da chiamanti locali.
 
-## Approvazione automatica degli upgrade dei metadati
+## Approvazione automatica degli aggiornamenti dei metadati
 
-Quando un dispositivo già associato si riconnette con sole modifiche ai metadati non sensibili
-(per esempio, nome visualizzato o suggerimenti sulla piattaforma client), OpenClaw tratta
-questo come un `metadata-upgrade`. L'approvazione automatica silenziosa è ristretta: si applica solo
-alle riconnessioni locali attendibili non browser che hanno già dimostrato il possesso di credenziali locali
-o condivise, incluse le riconnessioni di app native sullo stesso host dopo modifiche dei metadati della
-versione del sistema operativo. I client browser/Control UI e i client remoti continuano a
-usare il flusso esplicito di nuova approvazione. Gli upgrade di ambito (da lettura a scrittura/admin) e
-le modifiche della chiave pubblica **non** sono idonei per l'approvazione automatica dei metadata-upgrade -
-restano richieste esplicite di nuova approvazione.
+Quando un dispositivo già associato si riconnette con sole modifiche a metadati non sensibili
+(ad esempio, nome visualizzato o suggerimenti sulla piattaforma client), OpenClaw lo tratta
+come un `metadata-upgrade`. L'approvazione automatica silenziosa è ristretta: si applica solo
+alle riconnessioni locali fidate non browser che hanno già dimostrato il possesso di credenziali locali
+o condivise, incluse le riconnessioni di app native sullo stesso host dopo modifiche ai metadati della
+versione del sistema operativo. I client browser/Control UI e i client remoti usano ancora
+il flusso esplicito di riapprovazione. Gli upgrade di ambito (da lettura a scrittura/admin) e
+le modifiche alla chiave pubblica **non** sono idonei per l'approvazione automatica del metadata-upgrade -
+restano richieste esplicite di riapprovazione.
 
-## Helper per pairing QR
+## Helper per associazione QR
 
-`/pair qr` rende il payload di pairing come contenuto multimediale strutturato affinché i client mobili e
+`/pair qr` rende il payload di associazione come media strutturato affinché i client mobili e
 browser possano scansionarlo direttamente.
 
-L'eliminazione di un dispositivo elimina anche eventuali richieste di pairing in sospeso obsolete per quell'
+L'eliminazione di un dispositivo ripulisce anche eventuali richieste di associazione in sospeso obsolete per quell'
 ID dispositivo, quindi `nodes pending` non mostra righe orfane dopo una revoca.
 
-## Località e intestazioni inoltrate
+## Località e header inoltrati
 
-Il pairing del Gateway tratta una connessione come loopback solo quando sia il socket grezzo
-sia qualsiasi evidenza di proxy upstream concordano. Se una richiesta arriva su loopback ma
-contiene intestazioni `X-Forwarded-For` / `X-Forwarded-Host` / `X-Forwarded-Proto`
-che puntano a un'origine non locale, tale evidenza da intestazioni inoltrate invalida
-l'affermazione di località loopback. Il percorso di pairing richiede quindi approvazione esplicita
-invece di trattare silenziosamente la richiesta come una connessione dallo stesso host. Vedi
-[Autenticazione proxy attendibile](/it/gateway/trusted-proxy-auth) per la regola equivalente sull'
-autenticazione operatore.
+L'associazione del Gateway considera una connessione come loopback solo quando sia il socket grezzo
+sia qualsiasi prova del proxy upstream concordano. Se una richiesta arriva su loopback ma
+trasporta evidenze negli header `Forwarded`, qualsiasi `X-Forwarded-*` o `X-Real-IP`, tali
+evidenze degli header inoltrati squalificano la dichiarazione di località loopback. Il percorso di associazione
+richiede quindi approvazione esplicita invece di trattare silenziosamente la richiesta come
+una connessione dallo stesso host. Consulta [Trusted Proxy Auth](/it/gateway/trusted-proxy-auth) per
+la regola equivalente sull'autenticazione operatore.
 
 ## Archiviazione (locale, privata)
 
-Lo stato di pairing è archiviato sotto la directory di stato del Gateway (predefinita `~/.openclaw`):
+Lo stato di associazione è archiviato nella directory di stato del Gateway (predefinita `~/.openclaw`):
 
 - `~/.openclaw/nodes/paired.json`
 - `~/.openclaw/nodes/pending.json`
@@ -200,16 +207,16 @@ Se sovrascrivi `OPENCLAW_STATE_DIR`, la cartella `nodes/` si sposta con essa.
 Note di sicurezza:
 
 - I token sono segreti; tratta `paired.json` come sensibile.
-- La rotazione di un token richiede una nuova approvazione (o l'eliminazione della voce del nodo).
+- La rotazione di un token richiede riapprovazione (o l'eliminazione della voce del nodo).
 
 ## Comportamento del trasporto
 
 - Il trasporto è **stateless**; non archivia l'appartenenza.
-- Se il Gateway è offline o il pairing è disabilitato, i nodi non possono associarsi.
-- Se il Gateway è in modalità remota, il pairing avviene comunque nell'archivio del Gateway remoto.
+- Se il Gateway è offline o l'associazione è disabilitata, i nodi non possono associarsi.
+- Se il Gateway è in modalità remota, l'associazione avviene comunque rispetto all'archivio del Gateway remoto.
 
 ## Correlati
 
-- [Pairing dei canali](/it/channels/pairing)
+- [Associazione canale](/it/channels/pairing)
 - [Nodi](/it/nodes)
 - [CLI dispositivi](/it/cli/devices)

@@ -1,29 +1,30 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin openai
-summary: เพิ่มการรองรับผู้ให้บริการโมเดล OpenAI และ OpenAI Codex ให้กับ OpenClaw.
-title: Plugin ของ OpenAI
+summary: เพิ่มการรองรับผู้ให้บริการโมเดล OpenAI ให้กับ OpenClaw
+title: Plugin OpenAI
 x-i18n:
-    generated_at: "2026-05-02T20:55:01Z"
+    generated_at: "2026-06-27T18:04:17Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6e6dad420e5879697dda03f866b7c0ef15b020b2c06da6b60293d3914d850969
+    source_hash: c8fa47c22cb54090493f3cbacc461344242e078716760289c0dd4fd0ae8c0085
     source_path: plugins/reference/openai.md
     workflow: 16
 ---
 
-# OpenAI Plugin
+# Plugin OpenAI
 
-เพิ่มการรองรับผู้ให้บริการโมเดล OpenAI และ OpenAI Codex ให้กับ OpenClaw
+เพิ่มการรองรับผู้ให้บริการโมเดล OpenAI ให้กับ OpenClaw
 
 ## การจัดจำหน่าย
 
 - แพ็กเกจ: `@openclaw/openai-provider`
 - เส้นทางการติดตั้ง: รวมอยู่ใน OpenClaw
 
-## พื้นผิวการใช้งาน
+## พื้นผิว
 
-providers: openai, openai-codex; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders
+providers: openai; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders
 
 ## เอกสารที่เกี่ยวข้อง
 

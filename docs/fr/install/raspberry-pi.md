@@ -2,38 +2,39 @@
 read_when:
     - Configurer OpenClaw sur un Raspberry Pi
     - Exécuter OpenClaw sur des appareils ARM
-    - Créer une IA personnelle peu coûteuse et toujours active
-summary: Héberger OpenClaw sur un Raspberry Pi pour un auto-hébergement permanent
+    - Construire une IA personnelle économique et toujours active
+summary: Hébergez OpenClaw sur un Raspberry Pi pour un auto-hébergement toujours actif
 title: Raspberry Pi
 x-i18n:
-    generated_at: "2026-05-06T07:29:32Z"
+    generated_at: "2026-06-27T17:40:11Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 96df076c2707b0b27751d452f15fad774356a86e96d10bce998581235776c4bc
+    source_hash: 9cd90b4cc70c8fe7eab2a0abadc0e2969c7dc1c09657a0819bc004280ec32ba3
     source_path: install/raspberry-pi.md
     workflow: 16
 ---
 
-Exécutez un Gateway OpenClaw persistant, toujours actif, sur un Raspberry Pi. Comme le Pi n’est que le Gateway (les modèles s’exécutent dans le cloud via API), même un Pi modeste gère très bien la charge de travail — le coût matériel typique est de **35 à 80 $ une seule fois**, sans frais mensuels.
+Exécutez un Gateway OpenClaw persistant et toujours actif sur un Raspberry Pi. Comme le Pi n’est que le Gateway (les modèles s’exécutent dans le cloud via API), même un Pi modeste gère bien la charge de travail — le coût matériel typique est de **35 à 80 $ en une seule fois**, sans frais mensuels.
 
 ## Compatibilité matérielle
 
-| Modèle de Pi | RAM    | Fonctionne ? | Remarques                             |
-| ------------ | ------ | ------------ | ------------------------------------- |
-| Pi 5         | 4/8 Go | Idéal        | Le plus rapide, recommandé.           |
-| Pi 4         | 4 Go   | Bon          | Le meilleur choix pour la plupart des utilisateurs. |
-| Pi 4         | 2 Go   | OK           | Ajoutez du swap.                      |
-| Pi 4         | 1 Go   | Limité       | Possible avec du swap, configuration minimale. |
-| Pi 3B+       | 1 Go   | Lent         | Fonctionne, mais manque de réactivité. |
-| Pi Zero 2 W  | 512 Mo | Non          | Non recommandé.                       |
+| Modèle de Pi | RAM    | Fonctionne ? | Notes                                      |
+| ------------ | ------ | ------------ | ------------------------------------------ |
+| Pi 5         | 4/8 Go | Meilleur     | Le plus rapide, recommandé.                |
+| Pi 4         | 4 Go   | Bon          | Meilleur compromis pour la plupart des utilisateurs. |
+| Pi 4         | 2 Go   | OK           | Ajoutez de la swap.                        |
+| Pi 4         | 1 Go   | Limité       | Possible avec swap, configuration minimale. |
+| Pi 3B+       | 1 Go   | Lent         | Fonctionne, mais manque de réactivité.     |
+| Pi Zero 2 W  | 512 Mo | Non          | Non recommandé.                            |
 
-**Minimum :** 1 Go de RAM, 1 cœur, 500 Mo de disque libre, OS 64 bits.
+**Minimum :** 1 Go de RAM, 1 cœur, 500 Mo d’espace disque libre, OS 64 bits.
 **Recommandé :** 2 Go+ de RAM, carte SD 16 Go+ (ou SSD USB), Ethernet.
 
 ## Prérequis
 
 - Raspberry Pi 4 ou 5 avec 2 Go+ de RAM (4 Go recommandés)
-- Carte MicroSD (16 Go+) ou SSD USB (meilleures performances)
+- Carte microSD (16 Go+) ou SSD USB (meilleures performances)
 - Alimentation officielle Pi
 - Connexion réseau (Ethernet ou WiFi)
 - Raspberry Pi OS 64 bits (requis -- n’utilisez pas la version 32 bits)
@@ -52,7 +53,7 @@ Exécutez un Gateway OpenClaw persistant, toujours actif, sur un Raspberry Pi. C
        - Activer SSH
        - Définir le nom d’utilisateur et le mot de passe
        - Configurer le WiFi (si vous n’utilisez pas Ethernet)
-    4. Flashez votre carte SD ou votre lecteur USB, insérez-le, puis démarrez le Pi.
+    4. Flashez votre carte SD ou votre disque USB, insérez-le, puis démarrez le Pi.
 
   </Step>
 
@@ -81,7 +82,7 @@ Exécutez un Gateway OpenClaw persistant, toujours actif, sur un Raspberry Pi. C
     ```
   </Step>
 
-  <Step title="Ajouter du swap (important pour 2 Go ou moins)">
+  <Step title="Ajouter de la swap (important pour 2 Go ou moins)">
     ```bash
     sudo fallocate -l 2G /swapfile
     sudo chmod 600 /swapfile
@@ -102,12 +103,12 @@ Exécutez un Gateway OpenClaw persistant, toujours actif, sur un Raspberry Pi. C
     ```
   </Step>
 
-  <Step title="Exécuter l’assistant d’intégration">
+  <Step title="Lancer l’intégration">
     ```bash
     openclaw onboard --install-daemon
     ```
 
-    Suivez l’assistant. Les clés API sont recommandées plutôt qu’OAuth pour les appareils sans écran. Telegram est le canal le plus simple pour commencer.
+    Suivez l’assistant. Les clés API sont recommandées plutôt que OAuth pour les appareils sans écran. Telegram est le canal le plus simple pour commencer.
 
   </Step>
 
@@ -120,7 +121,7 @@ Exécutez un Gateway OpenClaw persistant, toujours actif, sur un Raspberry Pi. C
   </Step>
 
   <Step title="Accéder à l’interface de contrôle">
-    Sur votre ordinateur, récupérez une URL de tableau de bord depuis le Pi :
+    Sur votre ordinateur, obtenez une URL de tableau de bord depuis le Pi :
 
     ```bash
     ssh user@gateway-host 'openclaw dashboard --no-open'
@@ -132,14 +133,14 @@ Exécutez un Gateway OpenClaw persistant, toujours actif, sur un Raspberry Pi. C
     ssh -N -L 18789:127.0.0.1:18789 user@gateway-host
     ```
 
-    Ouvrez l’URL affichée dans votre navigateur local. Pour un accès distant toujours disponible, consultez [l’intégration Tailscale](/fr/gateway/tailscale).
+    Ouvrez l’URL affichée dans votre navigateur local. Pour un accès distant toujours actif, consultez [l’intégration Tailscale](/fr/gateway/tailscale).
 
   </Step>
 </Steps>
 
 ## Conseils de performance
 
-**Utilisez un SSD USB** -- Les cartes SD sont lentes et s’usent. Un SSD USB améliore considérablement les performances. Consultez le [guide de démarrage USB pour Pi](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#usb-mass-storage-boot).
+**Utilisez un SSD USB** -- Les cartes SD sont lentes et s’usent. Un SSD USB améliore nettement les performances. Consultez le [guide de démarrage USB du Pi](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#usb-mass-storage-boot).
 
 **Activez le cache de compilation des modules** -- Accélère les invocations répétées de la CLI sur les hôtes Pi moins puissants :
 
@@ -152,7 +153,9 @@ EOF
 source ~/.bashrc
 ```
 
-**Réduisez l’utilisation de la mémoire** -- Pour les configurations sans écran, libérez de la mémoire GPU et désactivez les services inutilisés :
+`OPENCLAW_NO_RESPAWN=1` conserve les redémarrages courants du Gateway dans le même processus, ce qui évite des transferts de processus supplémentaires et simplifie le suivi du PID sur les petits hôtes.
+
+**Réduisez l’utilisation de la mémoire** -- Pour les configurations sans écran, libérez la mémoire GPU et désactivez les services inutilisés :
 
 ```bash
 echo 'gpu_mem=16' | sudo tee -a /boot/config.txt
@@ -174,11 +177,11 @@ RestartSec=2
 TimeoutStartSec=90
 ```
 
-Puis `systemctl --user daemon-reload && systemctl --user restart openclaw-gateway.service`. Sur un Pi sans écran, activez aussi le lingering une fois afin que le service utilisateur survive à la déconnexion : `sudo loginctl enable-linger "$(whoami)"`.
+Exécutez ensuite `systemctl --user daemon-reload && systemctl --user restart openclaw-gateway.service`. Sur un Pi sans écran, activez aussi lingering une fois afin que le service utilisateur survive à la déconnexion : `sudo loginctl enable-linger "$(whoami)"`.
 
 ## Configuration de modèle recommandée
 
-Comme le Pi exécute uniquement le Gateway, utilisez des modèles API hébergés dans le cloud :
+Comme le Pi n’exécute que le Gateway, utilisez des modèles API hébergés dans le cloud :
 
 ```json
 {
@@ -193,15 +196,15 @@ Comme le Pi exécute uniquement le Gateway, utilisez des modèles API hébergés
 }
 ```
 
-N’exécutez pas de LLM local sur un Pi — même les petits modèles sont trop lents pour être utiles. Laissez Claude ou GPT effectuer le travail de modèle.
+N’exécutez pas de LLM locaux sur un Pi — même les petits modèles sont trop lents pour être utiles. Laissez Claude ou GPT effectuer le travail de modèle.
 
 ## Notes sur les binaires ARM
 
-La plupart des fonctionnalités d’OpenClaw fonctionnent sur ARM64 sans changement (Node.js, Telegram, WhatsApp/Baileys, Chromium). Les binaires qui manquent parfois de builds ARM sont généralement des outils CLI Go/Rust facultatifs fournis par les Skills. Vérifiez la page de publication d’un binaire manquant pour les artefacts `linux-arm64` / `aarch64` avant de revenir à une compilation depuis les sources.
+La plupart des fonctionnalités OpenClaw fonctionnent sur ARM64 sans modification (Node.js, Telegram, WhatsApp/Baileys, Chromium). Les binaires qui manquent parfois de builds ARM sont généralement des outils CLI Go/Rust facultatifs fournis par les Skills. Vérifiez la page de publication d’un binaire manquant pour des artefacts `linux-arm64` / `aarch64` avant de vous rabattre sur une compilation depuis la source.
 
 ## Persistance et sauvegardes
 
-L’état d’OpenClaw se trouve sous :
+L’état OpenClaw se trouve sous :
 
 - `~/.openclaw/` — `openclaw.json`, `auth-profiles.json` par agent, état des canaux/fournisseurs, sessions.
 - `~/.openclaw/workspace/` — espace de travail de l’agent (SOUL.md, mémoire, artefacts).
@@ -212,17 +215,17 @@ Ces données survivent aux redémarrages. Créez un instantané portable avec :
 openclaw backup create
 ```
 
-Si vous les conservez sur un SSD, les performances et la longévité s’améliorent par rapport à la carte SD.
+Si vous les conservez sur un SSD, les performances comme la longévité s’améliorent par rapport à une carte SD.
 
 ## Dépannage
 
-**Mémoire insuffisante** -- Vérifiez que le swap est actif avec `free -h`. Désactivez les services inutilisés (`sudo systemctl disable cups bluetooth avahi-daemon`). Utilisez uniquement des modèles basés sur API.
+**Mémoire insuffisante** -- Vérifiez que la swap est active avec `free -h`. Désactivez les services inutilisés (`sudo systemctl disable cups bluetooth avahi-daemon`). Utilisez uniquement des modèles basés sur API.
 
-**Performances lentes** -- Utilisez un SSD USB au lieu d’une carte SD. Vérifiez l’étranglement CPU avec `vcgencmd get_throttled` (devrait renvoyer `0x0`).
+**Performances lentes** -- Utilisez un SSD USB au lieu d’une carte SD. Vérifiez l’étranglement CPU avec `vcgencmd get_throttled` (devrait retourner `0x0`).
 
-**Le service ne démarre pas** -- Consultez les journaux avec `journalctl --user -u openclaw-gateway.service --no-pager -n 100` et exécutez `openclaw doctor --non-interactive`. Si c’est un Pi sans écran, vérifiez aussi que le lingering est activé : `sudo loginctl enable-linger "$(whoami)"`.
+**Le service ne démarre pas** -- Consultez les journaux avec `journalctl --user -u openclaw-gateway.service --no-pager -n 100` et exécutez `openclaw doctor --non-interactive`. S’il s’agit d’un Pi sans écran, vérifiez aussi que lingering est activé : `sudo loginctl enable-linger "$(whoami)"`.
 
-**Problèmes de binaires ARM** -- Si un skill échoue avec "exec format error", vérifiez si le binaire dispose d’un build ARM64. Vérifiez l’architecture avec `uname -m` (devrait afficher `aarch64`).
+**Problèmes de binaires ARM** -- Si un Skill échoue avec « exec format error », vérifiez si le binaire dispose d’un build ARM64. Vérifiez l’architecture avec `uname -m` (devrait afficher `aarch64`).
 
 **Coupures WiFi** -- Désactivez la gestion de l’alimentation WiFi : `sudo iwconfig wlan0 power off`.
 
@@ -232,7 +235,7 @@ Si vous les conservez sur un SSD, les performances et la longévité s’amélio
 - [Configuration du Gateway](/fr/gateway/configuration) -- toutes les options de configuration
 - [Mise à jour](/fr/install/updating) -- gardez OpenClaw à jour
 
-## Associé
+## Liens associés
 
 - [Vue d’ensemble de l’installation](/fr/install)
 - [Serveur Linux](/fr/vps)

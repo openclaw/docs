@@ -1,27 +1,28 @@
 ---
 read_when:
-    - 你正在安裝、設定或稽核 stepfun Plugin
+    - 你正在安裝、設定或稽核 stepfun 外掛
 summary: 為 OpenClaw 新增 StepFun、StepFun Plan 模型供應商支援。
-title: StepFun Plugin
+title: StepFun 外掛
 x-i18n:
-    generated_at: "2026-05-02T21:00:05Z"
+    generated_at: "2026-06-27T19:46:20Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 178d5a4c968281e854ca5623ae100b8c51e3c48c3839879352a5988edd9b9653
+    source_hash: 02e2b7fbfb03a348a8a5d368e6fd039cf834ab7d2a9bf82f79729f360660b5de
     source_path: plugins/reference/stepfun.md
     workflow: 16
 ---
 
-# StepFun Plugin
+# StepFun 外掛
 
-為 OpenClaw 新增 StepFun、StepFun Plan 模型提供者支援。
+新增 StepFun、StepFun Plan 模型提供者支援到 OpenClaw。
 
 ## 發佈
 
 - 套件：`@openclaw/stepfun-provider`
-- 安裝路徑：包含於 OpenClaw
+- 安裝路徑：npm；ClawHub：`clawhub:@openclaw/stepfun-provider`
 
-## 介面
+## 公開介面
 
 providers: stepfun, stepfun-plan
 

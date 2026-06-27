@@ -1,24 +1,25 @@
 ---
 read_when:
-    - คุณต้องใช้ลายเซ็นชนิดที่แน่นอนของ definePluginEntry หรือ defineChannelPluginEntry
-    - คุณต้องการทำความเข้าใจโหมดการลงทะเบียน (เต็มรูปแบบ เทียบกับ การตั้งค่า เทียบกับเมทาดาทาของ CLI)
-    - คุณกำลังค้นหาตัวเลือกจุดเริ่มต้นการทำงาน
+    - คุณต้องมีลายเซ็นชนิดข้อมูลที่แน่นอนของ defineToolPlugin, definePluginEntry หรือ defineChannelPluginEntry
+    - คุณต้องการทำความเข้าใจโหมดการลงทะเบียน (full เทียบกับ setup เทียบกับข้อมูลเมตาของ CLI)
+    - คุณกำลังค้นหาตัวเลือกจุดเริ่มต้น
 sidebarTitle: Entry Points
-summary: เอกสารอ้างอิงสำหรับ definePluginEntry, defineChannelPluginEntry และ defineSetupPluginEntry
-title: จุดเริ่มต้นของ Plugin
+summary: เอกสารอ้างอิงสำหรับ defineToolPlugin, definePluginEntry, defineChannelPluginEntry และ defineSetupPluginEntry
+title: จุดเข้าใช้งานของ Plugin
 x-i18n:
-    generated_at: "2026-05-07T13:23:59Z"
+    generated_at: "2026-06-27T18:07:01Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2fecc65b8f196f3b40daee2e6087759b8786b033e1cd0c3d3b5695c9f8a3f66a
+    source_hash: 49c024020202b754bde9bfa3f2a880332f1a5b4b19b397e59ae83c2673871211
     source_path: plugins/sdk-entrypoints.md
     workflow: 16
 ---
 
-ทุก Plugin ส่งออกออบเจ็กต์รายการเริ่มต้นแบบดีฟอลต์หนึ่งตัว SDK มีตัวช่วยสามตัวสำหรับ
+Plugin ทุกตัวส่งออกออบเจ็กต์ entry เริ่มต้น SDK มีตัวช่วยสำหรับ
 สร้างออบเจ็กต์เหล่านี้
 
-สำหรับ Plugin ที่ติดตั้งแล้ว `package.json` ควรชี้การโหลดรันไทม์ไปยัง
+สำหรับ Plugin ที่ติดตั้งแล้ว `package.json` ควรชี้การโหลด runtime ไปยัง
 JavaScript ที่ build แล้วเมื่อมี:
 
 ```json
@@ -32,30 +33,76 @@ JavaScript ที่ build แล้วเมื่อมี:
 }
 ```
 
-`extensions` และ `setupEntry` ยังคงเป็นรายการเริ่มต้นซอร์สที่ใช้ได้สำหรับการพัฒนาใน workspace และการ checkout จาก git `runtimeExtensions` และ `runtimeSetupEntry` เป็นตัวเลือกที่แนะนำ
-เมื่อ OpenClaw โหลดแพ็กเกจที่ติดตั้งแล้ว และช่วยให้แพ็กเกจ npm ไม่ต้องคอมไพล์
-TypeScript ขณะรันไทม์ จำเป็นต้องระบุรายการเริ่มต้นรันไทม์อย่างชัดเจน: `runtimeSetupEntry`
-ต้องมี `setupEntry` และ artifact ของ `runtimeExtensions` หรือ `runtimeSetupEntry`
-ที่หายไปจะทำให้การติดตั้ง/การค้นพบล้มเหลว แทนที่จะ fallback กลับไปยังซอร์สแบบเงียบ ๆ หาก
-แพ็กเกจที่ติดตั้งแล้วประกาศเฉพาะรายการเริ่มต้นซอร์ส TypeScript OpenClaw จะใช้
-peer `dist/*.js` ที่ build แล้วและตรงกันเมื่อมีอยู่ จากนั้นจึง fallback ไปยังซอร์ส
-TypeScript
+`extensions` และ `setupEntry` ยังคงเป็น source entry ที่ใช้ได้สำหรับการพัฒนา
+ใน workspace และ git checkout ส่วน `runtimeExtensions` และ `runtimeSetupEntry`
+เป็นตัวเลือกที่แนะนำเมื่อ OpenClaw โหลดแพ็กเกจที่ติดตั้งแล้ว และช่วยให้แพ็กเกจ npm
+หลีกเลี่ยงการ compile TypeScript ตอน runtime ได้ ต้องระบุ runtime entries
+อย่างชัดเจน: `runtimeSetupEntry` ต้องมี `setupEntry` และ artifact ของ
+`runtimeExtensions` หรือ `runtimeSetupEntry` ที่หายไปจะทำให้ install/discovery
+ล้มเหลวแทนที่จะ fallback ไปยัง source อย่างเงียบๆ หากแพ็กเกจที่ติดตั้งแล้ว
+ประกาศเฉพาะ TypeScript source entry, OpenClaw จะใช้ peer `dist/*.js`
+ที่ build แล้วซึ่งตรงกันเมื่อมีอยู่ จากนั้นจึง fallback ไปยัง TypeScript source
 
-เส้นทางรายการเริ่มต้นทั้งหมดต้องอยู่ภายในไดเรกทอรีแพ็กเกจ Plugin รายการเริ่มต้นรันไทม์
-และ peer JavaScript ที่ build แล้วซึ่งอนุมานได้ ไม่ได้ทำให้เส้นทางซอร์ส `extensions` หรือ
+เส้นทาง entry ทั้งหมดต้องอยู่ภายในไดเรกทอรีแพ็กเกจของ Plugin เท่านั้น Runtime entries
+และ inferred built JavaScript peers ไม่ทำให้ source path ของ `extensions` หรือ
 `setupEntry` ที่หลุดออกนอกแพ็กเกจกลายเป็นเส้นทางที่ใช้ได้
 
 <Tip>
-  **กำลังมองหาคู่มือแบบ walkthrough ใช่ไหม?** ดู [Plugin ช่องทาง](/th/plugins/sdk-channel-plugins)
-  หรือ [Plugin ผู้ให้บริการ](/th/plugins/sdk-provider-plugins) สำหรับคำแนะนำทีละขั้นตอน
+  **กำลังมองหาคู่มือแบบ walkthrough อยู่หรือไม่** ดู [Tool Plugins](/th/plugins/tool-plugins),
+  [Channel Plugins](/th/plugins/sdk-channel-plugins), หรือ
+  [Provider Plugins](/th/plugins/sdk-provider-plugins) สำหรับคู่มือแบบทีละขั้นตอน
 </Tip>
+
+## `defineToolPlugin`
+
+**Import:** `openclaw/plugin-sdk/tool-plugin`
+
+สำหรับ Plugin แบบง่ายที่เพิ่มเฉพาะเครื่องมือของ agent เท่านั้น `defineToolPlugin` ช่วยให้
+source สำหรับเขียนมีขนาดเล็ก, infer ประเภท config และพารามิเตอร์เครื่องมือจาก schema ของ TypeBox,
+ห่อ return value ธรรมดาให้อยู่ในรูปแบบ tool-result ของ OpenClaw, และ
+เปิดเผย metadata แบบ static ที่ `openclaw plugins build` เขียนลงใน manifest ของ Plugin
+
+```typescript
+import { Type } from "typebox";
+import { defineToolPlugin } from "openclaw/plugin-sdk/tool-plugin";
+
+export default defineToolPlugin({
+  id: "stock-quotes",
+  name: "Stock Quotes",
+  description: "Fetch stock quotes.",
+  configSchema: Type.Object({
+    apiKey: Type.Optional(Type.String({ description: "API key." })),
+  }),
+  tools: (tool) => [
+    tool({
+      name: "quote",
+      label: "Quote",
+      description: "Fetch a quote.",
+      parameters: Type.Object({
+        symbol: Type.String({ description: "Ticker symbol." }),
+      }),
+      execute: async ({ symbol }, config) => ({ symbol, hasKey: Boolean(config.apiKey) }),
+    }),
+  ],
+});
+```
+
+- `configSchema` เป็นตัวเลือก หากละไว้ OpenClaw จะใช้ schema วัตถุว่างแบบเข้มงวด
+  และ manifest ที่สร้างขึ้นจะยังรวม `configSchema`
+- `execute` ส่งคืน string ธรรมดาหรือค่าที่ serialize เป็น JSON ได้ ตัวช่วยจะห่อ
+  ค่านั้นเป็นผลลัพธ์เครื่องมือแบบ text พร้อม `details`
+- ชื่อเครื่องมือเป็นแบบ static `openclaw plugins build` derive `contracts.tools`
+  จากเครื่องมือที่ประกาศไว้ ดังนั้นผู้เขียนไม่ต้องทำชื่อซ้ำด้วยตนเอง
+- การโหลด runtime ยังคงเข้มงวด Plugin ที่ติดตั้งแล้วยังต้องมี
+  `openclaw.plugin.json` และ `package.json` `openclaw.extensions`; OpenClaw
+  จะไม่ execute โค้ด Plugin เพื่อ infer ข้อมูล manifest ที่ขาดหายไป
 
 ## `definePluginEntry`
 
-**นำเข้า:** `openclaw/plugin-sdk/plugin-entry`
+**Import:** `openclaw/plugin-sdk/plugin-entry`
 
-สำหรับ Plugin ผู้ให้บริการ, Plugin เครื่องมือ, Plugin hook และสิ่งใดก็ตามที่ **ไม่ใช่**
-ช่องทางการส่งข้อความ
+สำหรับ provider plugins, tool plugins ขั้นสูง, hook plugins, และทุกอย่างที่
+**ไม่ใช่** ช่องทางส่งข้อความ
 
 ```typescript
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -75,28 +122,28 @@ export default definePluginEntry({
 });
 ```
 
-| ฟิลด์          | ประเภท                                                           | จำเป็น | ดีฟอลต์              |
-| -------------- | ---------------------------------------------------------------- | ------ | -------------------- |
-| `id`           | `string`                                                         | ใช่    | -                    |
-| `name`         | `string`                                                         | ใช่    | -                    |
-| `description`  | `string`                                                         | ใช่    | -                    |
-| `kind`         | `string`                                                         | ไม่ใช่ | -                    |
-| `configSchema` | `OpenClawPluginConfigSchema \| () => OpenClawPluginConfigSchema` | ไม่ใช่ | สคีมาออบเจ็กต์ว่าง |
-| `register`     | `(api: OpenClawPluginApi) => void`                               | ใช่    | -                    |
+| ฟิลด์          | ประเภท                                                           | จำเป็น | ค่าเริ่มต้น          |
+| -------------- | ---------------------------------------------------------------- | ------ | ------------------- |
+| `id`           | `string`                                                         | ใช่    | -                   |
+| `name`         | `string`                                                         | ใช่    | -                   |
+| `description`  | `string`                                                         | ใช่    | -                   |
+| `kind`         | `string`                                                         | ไม่    | -                   |
+| `configSchema` | `OpenClawPluginConfigSchema \| () => OpenClawPluginConfigSchema` | ไม่    | Schema วัตถุว่าง |
+| `register`     | `(api: OpenClawPluginApi) => void`                               | ใช่    | -                   |
 
 - `id` ต้องตรงกับ manifest `openclaw.plugin.json` ของคุณ
-- `kind` ใช้สำหรับสล็อตแบบ exclusive: `"memory"` หรือ `"context-engine"`
-- `configSchema` สามารถเป็นฟังก์ชันสำหรับการประเมินแบบ lazy ได้
-- OpenClaw จะแก้ resolve และ memoize สคีมานั้นเมื่อเข้าถึงครั้งแรก ดังนั้นตัวสร้างสคีมาที่มีค่าใช้จ่ายสูง
-  จะรันเพียงครั้งเดียว
+- `kind` ใช้สำหรับช่องแบบ exclusive: `"memory"` หรือ `"context-engine"`
+- `configSchema` เป็น function ได้เพื่อการประเมินแบบ lazy
+- OpenClaw resolve และ memoize schema นั้นในการเข้าถึงครั้งแรก ดังนั้นตัวสร้าง schema
+  ที่มีค่าใช้จ่ายสูงจะทำงานเพียงครั้งเดียว
 
 ## `defineChannelPluginEntry`
 
-**นำเข้า:** `openclaw/plugin-sdk/channel-core`
+**Import:** `openclaw/plugin-sdk/channel-core`
 
-ห่อ `definePluginEntry` ด้วยการ wiring เฉพาะช่องทาง เรียก
-`api.registerChannel({ plugin })` โดยอัตโนมัติ เปิดเผย seam เมทาดาทา CLI สำหรับ root-help แบบไม่บังคับ
-และ gate `registerFull` ตามโหมดการลงทะเบียน
+ห่อ `definePluginEntry` พร้อม wiring เฉพาะ channel เรียก
+`api.registerChannel({ plugin })` โดยอัตโนมัติ, เปิดเผย seam ของ metadata CLI
+สำหรับ root-help ที่เป็นตัวเลือก, และ gate `registerFull` ตามโหมดการลงทะเบียน
 
 ```typescript
 import { defineChannelPluginEntry } from "openclaw/plugin-sdk/channel-core";
@@ -116,53 +163,53 @@ export default defineChannelPluginEntry({
 });
 ```
 
-| ฟิลด์                | ประเภท                                                           | จำเป็น | ดีฟอลต์              |
-| -------------------- | ---------------------------------------------------------------- | ------ | -------------------- |
-| `id`                 | `string`                                                         | ใช่    | -                    |
-| `name`               | `string`                                                         | ใช่    | -                    |
-| `description`        | `string`                                                         | ใช่    | -                    |
-| `plugin`             | `ChannelPlugin`                                                  | ใช่    | -                    |
-| `configSchema`       | `OpenClawPluginConfigSchema \| () => OpenClawPluginConfigSchema` | ไม่ใช่ | สคีมาออบเจ็กต์ว่าง |
-| `setRuntime`         | `(runtime: PluginRuntime) => void`                               | ไม่ใช่ | -                    |
-| `registerCliMetadata` | `(api: OpenClawPluginApi) => void`                              | ไม่ใช่ | -                    |
-| `registerFull`       | `(api: OpenClawPluginApi) => void`                               | ไม่ใช่ | -                    |
+| ฟิลด์                | ประเภท                                                           | จำเป็น | ค่าเริ่มต้น          |
+| -------------------- | ---------------------------------------------------------------- | ------ | ------------------- |
+| `id`                 | `string`                                                         | ใช่    | -                   |
+| `name`               | `string`                                                         | ใช่    | -                   |
+| `description`        | `string`                                                         | ใช่    | -                   |
+| `plugin`             | `ChannelPlugin`                                                  | ใช่    | -                   |
+| `configSchema`       | `OpenClawPluginConfigSchema \| () => OpenClawPluginConfigSchema` | ไม่    | Schema วัตถุว่าง |
+| `setRuntime`         | `(runtime: PluginRuntime) => void`                               | ไม่    | -                   |
+| `registerCliMetadata` | `(api: OpenClawPluginApi) => void`                              | ไม่    | -                   |
+| `registerFull`       | `(api: OpenClawPluginApi) => void`                               | ไม่    | -                   |
 
-- `setRuntime` จะถูกเรียกระหว่างการลงทะเบียน เพื่อให้คุณเก็บการอ้างอิงรันไทม์ได้
-  (โดยทั่วไปผ่าน `createPluginRuntimeStore`) ระบบจะข้ามขั้นตอนนี้ระหว่างการจับข้อมูลเมทาดาทา CLI
+- `setRuntime` ถูกเรียกระหว่างการลงทะเบียน เพื่อให้คุณเก็บ reference ของ runtime ได้
+  (โดยทั่วไปผ่าน `createPluginRuntimeStore`) และจะถูกข้ามระหว่างการ capture metadata ของ CLI
 - `registerCliMetadata` ทำงานระหว่าง `api.registrationMode === "cli-metadata"`,
   `api.registrationMode === "discovery"`, และ
   `api.registrationMode === "full"`
-  ใช้เป็นตำแหน่ง canonical สำหรับ descriptor CLI ที่ช่องทางเป็นเจ้าของ เพื่อให้ help ของ root
-  ไม่กระตุ้นการทำงาน, snapshot การค้นพบมีเมทาดาทาคำสั่งแบบคงที่ และ
-  การลงทะเบียนคำสั่ง CLI ปกติยังคงเข้ากันได้กับการโหลด Plugin แบบเต็ม
-- การลงทะเบียนเพื่อค้นพบเป็นแบบไม่กระตุ้นการทำงาน ไม่ใช่แบบไม่ import เลย OpenClaw อาจ
-  ประเมินรายการเริ่มต้น Plugin ที่เชื่อถือแล้วและโมดูล Plugin ช่องทางเพื่อสร้าง
-  snapshot ดังนั้นให้ top-level import ไม่มี side effect และวาง socket,
-  client, worker และ service ไว้หลังเส้นทางเฉพาะ `"full"` เท่านั้น
-- `registerFull` จะรันเฉพาะเมื่อ `api.registrationMode === "full"` เท่านั้น ระบบจะข้าม
+  ใช้เป็นตำแหน่ง canonical สำหรับ CLI descriptors ที่ channel เป็นเจ้าของ เพื่อให้ root help
+  ไม่กระตุ้นการเปิดใช้งาน, discovery snapshots รวม metadata คำสั่งแบบ static, และ
+  การลงทะเบียนคำสั่ง CLI ปกติยังเข้ากันได้กับการโหลด Plugin แบบเต็ม
+- การลงทะเบียน discovery เป็นแบบไม่กระตุ้นการเปิดใช้งาน ไม่ใช่แบบไม่ import OpenClaw อาจ
+  ประเมิน entry ของ Plugin ที่เชื่อถือได้และโมดูล channel plugin เพื่อสร้าง
+  snapshot ดังนั้นควรรักษา top-level imports ให้ไม่มี side effect และวาง sockets,
+  clients, workers, และ services ไว้หลัง path ที่ใช้เฉพาะ `"full"`
+- `registerFull` ทำงานเฉพาะเมื่อ `api.registrationMode === "full"` และจะถูกข้าม
   ระหว่างการโหลดแบบ setup-only
-- เช่นเดียวกับ `definePluginEntry`, `configSchema` สามารถเป็น factory แบบ lazy และ OpenClaw
-  จะ memoize สคีมาที่ resolve แล้วเมื่อเข้าถึงครั้งแรก
-- สำหรับคำสั่ง CLI ระดับ root ที่ Plugin เป็นเจ้าของ แนะนำให้ใช้ `api.registerCli(..., { descriptors: [...] })`
-  เมื่อคุณต้องการให้คำสั่งยังโหลดแบบ lazy ได้โดยไม่หายไปจาก
-  parse tree ของ CLI ระดับ root สำหรับคำสั่งฟีเจอร์แบบ paired-node แนะนำให้ใช้
-  `api.registerNodeCliFeature(...)` เพื่อให้คำสั่งไปอยู่ใต้ `openclaw nodes`
-  สำหรับคำสั่ง Plugin แบบซ้อนอื่น ๆ ให้เพิ่ม `parentPath` และลงทะเบียนคำสั่งบน
+- เช่นเดียวกับ `definePluginEntry`, `configSchema` เป็น lazy factory ได้ และ OpenClaw
+  memoize schema ที่ resolve แล้วในการเข้าถึงครั้งแรก
+- สำหรับคำสั่ง root CLI ที่ Plugin เป็นเจ้าของ ให้เลือกใช้ `api.registerCli(..., { descriptors: [...] })`
+  เมื่อคุณต้องการให้คำสั่งยังคง lazy-loaded โดยไม่หายไปจาก
+  parse tree ของ root CLI สำหรับคำสั่ง feature แบบ paired-node ให้เลือกใช้
+  `api.registerNodeCliFeature(...)` เพื่อให้คำสั่งไปอยู่ภายใต้ `openclaw nodes`
+  สำหรับคำสั่ง Plugin แบบซ้อนอื่นๆ ให้เพิ่ม `parentPath` และลงทะเบียนคำสั่งบน
   ออบเจ็กต์ `program` ที่ส่งให้ registrar; OpenClaw จะ resolve ไปยัง
-  คำสั่งแม่ก่อนเรียก Plugin สำหรับ Plugin ช่องทาง แนะนำให้
-  ลงทะเบียน descriptor เหล่านั้นจาก `registerCliMetadata(...)` และให้
-  `registerFull(...)` เน้นงานเฉพาะรันไทม์
-- หาก `registerFull(...)` ลงทะเบียนเมธอด RPC ของ Gateway ด้วย ให้เก็บเมธอดเหล่านั้นไว้บน
-  prefix เฉพาะ Plugin namespace ผู้ดูแลระบบหลักที่สงวนไว้ (`config.*`,
-  `exec.approvals.*`, `wizard.*`, `update.*`) จะถูกบังคับเป็น
+  parent command ก่อนเรียก Plugin สำหรับ channel plugins ให้เลือก
+  ลงทะเบียน descriptors เหล่านั้นจาก `registerCliMetadata(...)` และให้
+  `registerFull(...)` มุ่งเน้นงานเฉพาะ runtime
+- หาก `registerFull(...)` ลงทะเบียนเมธอด RPC ของ Gateway ด้วย ให้เก็บไว้บน
+  prefix เฉพาะ Plugin namespace สำหรับ core admin ที่สงวนไว้ (`config.*`,
+  `exec.approvals.*`, `wizard.*`, `update.*`) จะถูก coerce เป็น
   `operator.admin` เสมอ
 
 ## `defineSetupPluginEntry`
 
-**นำเข้า:** `openclaw/plugin-sdk/channel-core`
+**Import:** `openclaw/plugin-sdk/channel-core`
 
 สำหรับไฟล์ `setup-entry.ts` แบบ lightweight ส่งคืนเพียง `{ plugin }` โดยไม่มี
-การ wiring รันไทม์หรือ CLI
+runtime หรือ CLI wiring
 
 ```typescript
 import { defineSetupPluginEntry } from "openclaw/plugin-sdk/channel-core";
@@ -170,25 +217,27 @@ import { defineSetupPluginEntry } from "openclaw/plugin-sdk/channel-core";
 export default defineSetupPluginEntry(myChannelPlugin);
 ```
 
-OpenClaw โหลดรายการนี้แทนรายการแบบเต็มเมื่อช่องทางถูกปิดใช้งาน,
-ยังไม่ได้กำหนดค่า หรือเมื่อเปิดใช้งานการโหลดแบบ deferred ดู
-[การตั้งค่าและการกำหนดค่า](/th/plugins/sdk-setup#setup-entry) เพื่อดูว่าสิ่งนี้สำคัญเมื่อใด
+OpenClaw โหลดสิ่งนี้แทน entry แบบเต็มเมื่อ channel ถูกปิดใช้งาน,
+ยังไม่ได้กำหนดค่า, หรือเมื่อเปิดใช้งาน deferred loading ดู
+[Setup and Config](/th/plugins/sdk-setup#setup-entry) เพื่อดูว่าเรื่องนี้สำคัญเมื่อใด
 
-ในทางปฏิบัติ ให้จับคู่ `defineSetupPluginEntry(...)` กับตระกูลตัวช่วย setup แบบแคบ:
+ในทางปฏิบัติ ให้จับคู่ `defineSetupPluginEntry(...)` กับกลุ่มตัวช่วย setup
+แบบแคบ:
 
-- `openclaw/plugin-sdk/setup-runtime` สำหรับตัวช่วย setup ที่ปลอดภัยสำหรับรันไทม์ เช่น
-  adapter patch setup ที่ปลอดภัยต่อการ import, เอาต์พุต lookup-note,
-  `promptResolvedAllowFrom`, `splitSetupEntries` และ proxy setup แบบ delegated
-- `openclaw/plugin-sdk/channel-setup` สำหรับ surface setup ของ optional-install
-- `openclaw/plugin-sdk/setup-tools` สำหรับตัวช่วย CLI/archive/docs ของ setup/install
+- `openclaw/plugin-sdk/setup-runtime` สำหรับตัวช่วย setup ที่ปลอดภัยสำหรับ runtime เช่น
+  `createSetupTranslator`, setup patch adapters ที่ import-safe, output แบบ lookup-note,
+  `promptResolvedAllowFrom`, `splitSetupEntries`, และ delegated setup proxies
+- `openclaw/plugin-sdk/channel-setup` สำหรับพื้นผิว setup ของ optional-install
+- `openclaw/plugin-sdk/setup-tools` สำหรับตัวช่วย CLI/archive/docs ด้าน setup/install
 
-เก็บ SDK ที่หนัก, การลงทะเบียน CLI และ service รันไทม์อายุยาวไว้ในรายการเริ่มต้นแบบเต็ม
+เก็บ SDK หนักๆ, การลงทะเบียน CLI, และบริการ runtime ที่มีอายุยาวไว้ใน entry
+แบบเต็ม
 
-ช่องทาง workspace ที่ bundled และแยก surface setup กับรันไทม์สามารถใช้
+Workspace channels ที่ bundle มาด้วยซึ่งแยกพื้นผิว setup และ runtime สามารถใช้
 `defineBundledChannelSetupEntry(...)` จาก
-`openclaw/plugin-sdk/channel-entry-contract` แทนได้ contract นั้นทำให้
-รายการ setup เก็บ export ของ plugin/secrets ที่ปลอดภัยสำหรับ setup ขณะยังเปิดเผย
-runtime setter ได้:
+`openclaw/plugin-sdk/channel-entry-contract` แทนได้ contract นั้นช่วยให้
+setup entry เก็บ exports ของ plugin/secrets ที่ setup-safe ได้ ขณะยังเปิดเผย
+runtime setter:
 
 ```typescript
 import { defineBundledChannelSetupEntry } from "openclaw/plugin-sdk/channel-entry-contract";
@@ -203,26 +252,37 @@ export default defineBundledChannelSetupEntry({
     specifier: "./runtime-api.js",
     exportName: "setMyChannelRuntime",
   },
+  registerSetupRuntime(api) {
+    api.registerHttpRoute({
+      path: "/my-channel/events",
+      auth: "plugin",
+      handler: async (req, res) => {
+        /* setup-safe route */
+      },
+    });
+  },
 });
 ```
 
-ใช้ contract แบบ bundled นั้นเฉพาะเมื่อ flow setup ต้องการ runtime setter แบบ lightweight
-ก่อนที่รายการเริ่มต้นช่องทางแบบเต็มจะโหลดจริง ๆ
+ใช้ bundled contract นั้นเฉพาะเมื่อ flow ของ setup ต้องการ runtime
+setter แบบ lightweight หรือพื้นผิว Gateway ที่ setup-safe ก่อนที่ channel entry แบบเต็มจะโหลดจริงๆ
+`registerSetupRuntime` ทำงานเฉพาะสำหรับการโหลด `"setup-runtime"` เท่านั้น; จำกัดไว้ที่
+route หรือ method เฉพาะ config ที่ต้องมีอยู่ก่อนการเปิดใช้งานแบบเต็มที่ defer ไว้
 
 ## โหมดการลงทะเบียน
 
 `api.registrationMode` บอก Plugin ของคุณว่าถูกโหลดอย่างไร:
 
-| โหมด              | เมื่อใด                         | สิ่งที่ต้องลงทะเบียน                                                                                                        |
-| ----------------- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `"full"`          | การเริ่มต้น Gateway ตามปกติ     | ทุกอย่าง                                                                                                                     |
-| `"discovery"`     | การค้นพบ capability แบบอ่านอย่างเดียว | การลงทะเบียนช่องทางพร้อม descriptor CLI แบบคงที่; โค้ดรายการเริ่มต้นอาจโหลดได้ แต่ให้ข้าม socket, worker, client และ service |
-| `"setup-only"`    | ช่องทางที่ปิดใช้งาน/ยังไม่ได้กำหนดค่า | การลงทะเบียนช่องทางเท่านั้น                                                                                                  |
-| `"setup-runtime"` | flow setup ที่มีรันไทม์พร้อมใช้งาน | การลงทะเบียนช่องทางพร้อมเฉพาะรันไทม์แบบ lightweight ที่จำเป็นก่อนรายการเริ่มต้นแบบเต็มจะโหลด                                |
-| `"cli-metadata"`  | การจับข้อมูล help ระดับ root / เมทาดาทา CLI | descriptor CLI เท่านั้น                                                                                                      |
+| โหมด              | เมื่อใด                              | สิ่งที่ต้องลงทะเบียน                                                                                                        |
+| ----------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `"full"`          | การเริ่มต้น Gateway ตามปกติ            | ทุกอย่าง                                                                                                              |
+| `"discovery"`     | การค้นหาความสามารถแบบอ่านอย่างเดียว    | การลงทะเบียนช่องทางพร้อมตัวอธิบาย CLI แบบคงที่; โค้ดจุดเข้าอาจโหลดได้ แต่ให้ข้ามซ็อกเก็ต, เวิร์กเกอร์, ไคลเอนต์ และบริการ |
+| `"setup-only"`    | ช่องทางที่ปิดใช้งาน/ยังไม่ได้กำหนดค่า     | การลงทะเบียนช่องทางเท่านั้น                                                                                               |
+| `"setup-runtime"` | โฟลว์การตั้งค่าที่มีรันไทม์พร้อมใช้งาน | การลงทะเบียนช่องทางพร้อมเฉพาะรันไทม์ขนาดเบาที่จำเป็นก่อนโหลดจุดเข้าแบบเต็ม                               |
+| `"cli-metadata"`  | การจับข้อมูลวิธีใช้รูท / เมทาดาทา CLI  | ตัวอธิบาย CLI เท่านั้น                                                                                                    |
 
 `defineChannelPluginEntry` จัดการการแยกนี้โดยอัตโนมัติ หากคุณใช้
-`definePluginEntry` โดยตรงสำหรับช่องทาง ให้ตรวจสอบโหมดด้วยตัวเอง:
+`definePluginEntry` โดยตรงสำหรับช่องทาง ให้ตรวจสอบโหมดเอง:
 
 ```typescript
 register(api) {
@@ -243,39 +303,39 @@ register(api) {
 }
 ```
 
-โหมด discovery สร้าง snapshot registry แบบไม่กระตุ้นการทำงาน แต่อาจยังประเมิน
-รายการเริ่มต้น Plugin และออบเจ็กต์ Plugin ช่องทาง เพื่อให้ OpenClaw ลงทะเบียน capability
-ของช่องทางและ descriptor CLI แบบคงที่ได้ ให้มองการประเมินโมดูลใน discovery ว่า
-เชื่อถือได้แต่ควร lightweight: ห้ามมี network client, subprocess, listener, การเชื่อมต่อ
-ฐานข้อมูล, background worker, การอ่าน credential หรือ side effect รันไทม์สดอื่น ๆ
-ที่ top level
+โหมด Discovery สร้างสแนปช็อตรีจิสทรีที่ไม่ทำให้เกิดการเปิดใช้งาน โดยยังอาจประเมิน
+จุดเข้า Plugin และออบเจกต์ Plugin ของช่องทาง เพื่อให้ OpenClaw สามารถลงทะเบียน
+ความสามารถของช่องทางและตัวอธิบาย CLI แบบคงที่ได้ ให้ถือว่าการประเมินโมดูลใน Discovery
+เชื่อถือได้แต่ต้องเบา: ไม่มีไคลเอนต์เครือข่าย, โพรเซสย่อย, ตัวรับฟัง, การเชื่อมต่อฐานข้อมูล,
+เวิร์กเกอร์เบื้องหลัง, การอ่านข้อมูลรับรอง หรือผลข้างเคียงอื่นของรันไทม์จริงที่ระดับบนสุด
 
-ให้มอง `"setup-runtime"` เป็นช่วงเวลาที่ surface เริ่มต้นแบบ setup-only ต้อง
-มีอยู่โดยไม่กลับเข้าไปในรันไทม์ช่องทาง bundled แบบเต็ม สิ่งที่เหมาะคือ
-การลงทะเบียนช่องทาง, route HTTP ที่ปลอดภัยสำหรับ setup, เมธอด Gateway ที่ปลอดภัยสำหรับ setup และ
-ตัวช่วย setup แบบ delegated ส่วน background service ที่หนัก, registrar CLI และ
-bootstrap SDK ของ provider/client ยังคงควรอยู่ใน `"full"`
+ให้ถือว่า `"setup-runtime"` เป็นช่วงเวลาที่พื้นผิวการเริ่มต้นแบบตั้งค่าเท่านั้นต้อง
+มีอยู่ได้โดยไม่ย้อนเข้าไปยังรันไทม์ช่องทางแบบบันเดิลเต็มอีกครั้ง สิ่งที่เหมาะสมคือ
+การลงทะเบียนช่องทาง, เส้นทาง HTTP ที่ปลอดภัยสำหรับการตั้งค่า, เมธอด Gateway ที่ปลอดภัยสำหรับการตั้งค่า และ
+ตัวช่วยตั้งค่าที่มอบหมายต่อไป ส่วนบริการเบื้องหลังขนาดใหญ่, ตัวลงทะเบียน CLI และ
+การบูตสแตรป SDK ของผู้ให้บริการ/ไคลเอนต์ยังคงอยู่ใน `"full"`
 
-สำหรับ registrar CLI โดยเฉพาะ:
+สำหรับตัวลงทะเบียน CLI โดยเฉพาะ:
 
-- ใช้ `descriptors` เมื่อ registrar เป็นเจ้าของคำสั่งรากอย่างน้อยหนึ่งคำสั่ง และคุณ
-  ต้องการให้ OpenClaw โหลดโมดูล CLI จริงแบบ lazy-load เมื่อเรียกใช้ครั้งแรก
-- ตรวจสอบให้แน่ใจว่า descriptor เหล่านั้นครอบคลุมรากคำสั่งระดับบนสุดทุกคำสั่งที่
-  registrar เปิดเผย
-- จำกัดชื่อคำสั่งของ descriptor ให้ใช้ได้เฉพาะตัวอักษร ตัวเลข ยัติภังค์ และขีดล่าง
-  โดยขึ้นต้นด้วยตัวอักษรหรือตัวเลข OpenClaw จะปฏิเสธชื่อ descriptor ที่อยู่นอก
-  รูปแบบนั้น และจะลบลำดับควบคุมเทอร์มินัลออกจากคำอธิบายก่อนแสดงความช่วยเหลือ
+- ใช้ `descriptors` เมื่อตัวลงทะเบียนเป็นเจ้าของคำสั่งรูทหนึ่งรายการขึ้นไป และคุณ
+  ต้องการให้ OpenClaw โหลดโมดูล CLI จริงแบบ lazy-load เมื่อถูกเรียกใช้ครั้งแรก
+- ตรวจสอบให้แน่ใจว่าตัวอธิบายเหล่านั้นครอบคลุมรูทคำสั่งระดับบนสุดทุกตัวที่
+  ตัวลงทะเบียนเปิดเผย
+- จำกัดชื่อคำสั่งของตัวอธิบายให้มีเฉพาะตัวอักษร, ตัวเลข, ยัติภังค์ และขีดล่าง
+  โดยขึ้นต้นด้วยตัวอักษรหรือตัวเลข; OpenClaw จะปฏิเสธชื่อตัวอธิบายที่อยู่นอก
+  รูปแบบนั้น และจะตัดลำดับควบคุมเทอร์มินัลออกจากคำอธิบายก่อน
+  แสดงวิธีใช้
 - ใช้ `commands` เพียงอย่างเดียวเฉพาะกับเส้นทางความเข้ากันได้แบบ eager เท่านั้น
 
 ## รูปแบบ Plugin
 
-OpenClaw จัดประเภท Plugin ที่โหลดแล้วตามพฤติกรรมการลงทะเบียน:
+OpenClaw จำแนก Plugin ที่โหลดแล้วตามพฤติกรรมการลงทะเบียน:
 
-| รูปแบบ                | คำอธิบาย                                           |
+| รูปแบบ                 | คำอธิบาย                                        |
 | --------------------- | -------------------------------------------------- |
-| **plain-capability**  | ประเภทความสามารถเดียว (เช่น เฉพาะผู้ให้บริการ)    |
-| **hybrid-capability** | ความสามารถหลายประเภท (เช่น ผู้ให้บริการ + เสียงพูด) |
-| **hook-only**         | มีเฉพาะ hook ไม่มีความสามารถ                       |
+| **plain-capability**  | ประเภทความสามารถเดียว (เช่น เฉพาะผู้ให้บริการ)           |
+| **hybrid-capability** | หลายประเภทความสามารถ (เช่น ผู้ให้บริการ + เสียงพูด) |
+| **hook-only**         | เฉพาะ hooks ไม่มีความสามารถ                        |
 | **non-capability**    | เครื่องมือ/คำสั่ง/บริการ แต่ไม่มีความสามารถ        |
 
 ใช้ `openclaw plugins inspect <id>` เพื่อดูรูปแบบของ Plugin
@@ -283,7 +343,7 @@ OpenClaw จัดประเภท Plugin ที่โหลดแล้วต
 ## ที่เกี่ยวข้อง
 
 - [ภาพรวม SDK](/th/plugins/sdk-overview) - API การลงทะเบียนและข้อมูลอ้างอิง subpath
-- [ตัวช่วย Runtime](/th/plugins/sdk-runtime) - `api.runtime` และ `createPluginRuntimeStore`
+- [ตัวช่วยรันไทม์](/th/plugins/sdk-runtime) - `api.runtime` และ `createPluginRuntimeStore`
 - [การตั้งค่าและ Config](/th/plugins/sdk-setup) - manifest, จุดเข้าการตั้งค่า, การโหลดแบบเลื่อนเวลา
-- [Channel Plugins](/th/plugins/sdk-channel-plugins) - การสร้างออบเจ็กต์ `ChannelPlugin`
-- [Provider Plugins](/th/plugins/sdk-provider-plugins) - การลงทะเบียนผู้ให้บริการและ hook
+- [Plugin ช่องทาง](/th/plugins/sdk-channel-plugins) - การสร้างออบเจกต์ `ChannelPlugin`
+- [Plugin ผู้ให้บริการ](/th/plugins/sdk-provider-plugins) - การลงทะเบียนผู้ให้บริการและ hooks

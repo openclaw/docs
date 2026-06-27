@@ -1,13 +1,14 @@
 ---
 read_when: You are managing sandbox runtimes or debugging sandbox/tool-policy behavior.
 status: active
-summary: Gestisci gli ambienti di esecuzione sandbox e ispeziona il criterio sandbox effettivo
-title: CLI dell'ambiente isolato
+summary: Gestisci i runtime sandbox e ispeziona la policy sandbox effettiva
+title: CLI sandbox
 x-i18n:
-    generated_at: "2026-05-03T21:29:20Z"
+    generated_at: "2026-06-27T17:21:37Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c50b97c35ba8cd79416de6a167a7cbc313d063b320db7deafd42f7a570e507ac
+    source_hash: eeba1a5530bb946b334cfe399b7a0c862694ae47c55b2341d7146333e112602a
     source_path: cli/sandbox.md
     workflow: 16
 ---
@@ -16,25 +17,25 @@ Gestisci i runtime sandbox per l'esecuzione isolata degli agenti.
 
 ## Panoramica
 
-OpenClaw può eseguire gli agenti in runtime sandbox isolati per sicurezza. I comandi `sandbox` ti aiutano a ispezionare e ricreare questi runtime dopo aggiornamenti o modifiche alla configurazione.
+OpenClaw può eseguire agenti in runtime sandbox isolati per sicurezza. I comandi `sandbox` ti aiutano a ispezionare e ricreare questi runtime dopo aggiornamenti o modifiche di configurazione.
 
 Oggi questo di solito significa:
 
-- container sandbox Docker
-- runtime sandbox SSH quando `agents.defaults.sandbox.backend = "ssh"`
-- runtime sandbox OpenShell quando `agents.defaults.sandbox.backend = "openshell"`
+- Container sandbox Docker
+- Runtime sandbox SSH quando `agents.defaults.sandbox.backend = "ssh"`
+- Runtime sandbox OpenShell quando `agents.defaults.sandbox.backend = "openshell"`
 
-Per `ssh` e OpenShell `remote`, la ricreazione conta più che con Docker:
+Per `ssh` e OpenShell `remote`, la ricreazione è più importante che con Docker:
 
-- la workspace remota è canonica dopo il seed iniziale
-- `openclaw sandbox recreate` elimina quella workspace remota canonica per l'ambito selezionato
-- l'uso successivo la sottopone di nuovo a seed dalla workspace locale corrente
+- l'area di lavoro remota è canonica dopo il seed iniziale
+- `openclaw sandbox recreate` elimina quell'area di lavoro remota canonica per l'ambito selezionato
+- l'uso successivo la inizializza di nuovo dall'area di lavoro locale corrente
 
 ## Comandi
 
 ### `openclaw sandbox explain`
 
-Ispeziona la modalità, l'ambito, l'accesso alla workspace, la policy degli strumenti sandbox e i gate elevati **effettivi** (con percorsi delle chiavi di configurazione per la correzione).
+Ispeziona la modalità, l'ambito e l'accesso all'area di lavoro sandbox **effettivi**, la policy degli strumenti sandbox e i gate elevati (con percorsi delle chiavi di configurazione per la correzione).
 
 ```bash
 openclaw sandbox explain
@@ -45,7 +46,7 @@ openclaw sandbox explain --json
 
 ### `openclaw sandbox list`
 
-Elenca tutti i runtime sandbox con il loro stato e la loro configurazione.
+Elenca tutti i runtime sandbox con il relativo stato e la configurazione.
 
 ```bash
 openclaw sandbox list
@@ -111,7 +112,7 @@ openclaw sandbox recreate --all
 openclaw sandbox recreate --all
 ```
 
-### Dopo la modifica della destinazione SSH o del materiale di autenticazione SSH
+### Dopo la modifica del target SSH o del materiale di autenticazione SSH
 
 ```bash
 # Edit config:
@@ -124,10 +125,10 @@ openclaw sandbox recreate --all
 openclaw sandbox recreate --all
 ```
 
-Per il backend `ssh` core, la ricreazione elimina la radice della workspace remota per ambito
-sulla destinazione SSH. L'esecuzione successiva la sottopone di nuovo a seed dalla workspace locale.
+Per il backend `ssh` core, la ricreazione elimina la radice dell'area di lavoro remota per ambito
+sul target SSH. L'esecuzione successiva la inizializza di nuovo dall'area di lavoro locale.
 
-### Dopo la modifica di origine, policy o modalità OpenShell
+### Dopo la modifica della sorgente, della policy o della modalità OpenShell
 
 ```bash
 # Edit config:
@@ -139,8 +140,8 @@ sulla destinazione SSH. L'esecuzione successiva la sottopone di nuovo a seed dal
 openclaw sandbox recreate --all
 ```
 
-Per la modalità OpenShell `remote`, la ricreazione elimina la workspace remota canonica
-per quell'ambito. L'esecuzione successiva la sottopone di nuovo a seed dalla workspace locale.
+Per la modalità OpenShell `remote`, la ricreazione elimina l'area di lavoro remota canonica
+per quell'ambito. L'esecuzione successiva la inizializza di nuovo dall'area di lavoro locale.
 
 ### Dopo la modifica di setupCommand
 
@@ -162,23 +163,23 @@ openclaw sandbox recreate --agent alfred
 Quando aggiorni la configurazione sandbox:
 
 - I runtime esistenti continuano a funzionare con le vecchie impostazioni.
-- I runtime vengono rimossi solo dopo 24 ore di inattività.
-- Gli agenti usati regolarmente mantengono attivi i vecchi runtime a tempo indeterminato.
+- I runtime vengono eliminati solo dopo 24 ore di inattività.
+- Gli agenti usati regolarmente mantengono vivi i vecchi runtime a tempo indefinito.
 
-Usa `openclaw sandbox recreate` per forzare la rimozione dei vecchi runtime. Vengono ricreati automaticamente con le impostazioni correnti quando sono nuovamente necessari.
+Usa `openclaw sandbox recreate` per forzare la rimozione dei vecchi runtime. Verranno ricreati automaticamente con le impostazioni correnti quando saranno di nuovo necessari.
 
 <Tip>
-Preferisci `openclaw sandbox recreate` alla pulizia manuale specifica del backend. Usa il registro dei runtime del Gateway ed evita incongruenze quando cambiano le chiavi di ambito o sessione.
+Preferisci `openclaw sandbox recreate` alla pulizia manuale specifica del backend. Usa il registro dei runtime del Gateway ed evita disallineamenti quando cambiano l'ambito o le chiavi di sessione.
 </Tip>
 
 ## Migrazione del registro
 
-OpenClaw archivia i metadati dei runtime sandbox come uno shard JSON per ogni voce di container/browser nella directory dello stato sandbox. Le installazioni meno recenti potrebbero avere ancora file legacy monolitici:
+OpenClaw archivia i metadati dei runtime sandbox nel database di stato SQLite condiviso. Le installazioni più vecchie potrebbero avere ancora file di registro sandbox legacy:
 
 - `~/.openclaw/sandbox/containers.json`
 - `~/.openclaw/sandbox/browsers.json`
 
-Le normali letture dei runtime sandbox non riscrivono quei file. Esegui `openclaw doctor --fix` per migrare le voci legacy valide nelle directory del registro partizionato in shard. I file legacy non validi vengono messi in quarantena, così un vecchio registro difettoso non può nascondere le voci di runtime correnti.
+Alcuni aggiornamenti potrebbero anche avere uno shard JSON per container/browser sotto `~/.openclaw/sandbox/containers/` o `~/.openclaw/sandbox/browsers/`. Le normali letture dei runtime sandbox non riscrivono queste sorgenti legacy. Esegui `openclaw doctor --fix` per migrare le voci legacy valide in SQLite. I file legacy non validi vengono messi in quarantena, così un vecchio registro difettoso non può nascondere le voci di runtime correnti.
 
 ## Configurazione
 
@@ -211,5 +212,5 @@ Le impostazioni sandbox si trovano in `~/.openclaw/openclaw.json` sotto `agents.
 
 - [Riferimento CLI](/it/cli)
 - [Sandboxing](/it/gateway/sandboxing)
-- [Workspace dell'agente](/it/concepts/agent-workspace)
+- [Area di lavoro dell'agente](/it/concepts/agent-workspace)
 - [Doctor](/it/gateway/doctor): controlla la configurazione sandbox.

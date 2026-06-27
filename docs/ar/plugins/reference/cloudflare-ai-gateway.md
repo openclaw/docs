@@ -1,25 +1,26 @@
 ---
 read_when:
-    - أنت تقوم بتثبيت Plugin cloudflare-ai-gateway أو تهيئته أو تدقيقه
-summary: يضيف دعم موفر نماذج Cloudflare AI Gateway إلى OpenClaw.
+    - أنت تثبّت أو تهيّئ أو تراجع Plugin cloudflare-ai-gateway
+summary: يضيف دعم موفّر نماذج Cloudflare AI Gateway إلى OpenClaw.
 title: Plugin Cloudflare AI Gateway
 x-i18n:
-    generated_at: "2026-05-02T20:54:27Z"
+    generated_at: "2026-06-27T18:11:04Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b1f5af167e64bbc0b79eb201f1da94004b63ca67ade8eba262492f12778b0502
+    source_hash: 3b0fc9623f61ca9541402a381521442c30207743fa774923b3340f8af298bfd3
     source_path: plugins/reference/cloudflare-ai-gateway.md
     workflow: 16
 ---
 
-# Plugin Cloudflare AI Gateway
+# Cloudflare AI Gateway Plugin
 
-يضيف دعم موفّر نماذج Cloudflare AI Gateway إلى OpenClaw.
+يضيف دعم مزود نماذج Cloudflare AI Gateway إلى OpenClaw.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/cloudflare-ai-gateway-provider`
-- مسار التثبيت: مضمّن في OpenClaw
+- مسار التثبيت: npm؛ ClawHub: `clawhub:@openclaw/cloudflare-ai-gateway-provider`
 
 ## الواجهة
 

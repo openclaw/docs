@@ -2,43 +2,44 @@
 read_when:
     - Je wilt begrijpen hoe OpenClaw modelcontext samenstelt
     - Je schakelt tussen de verouderde engine en een Plugin-engine
-    - Je bouwt een Plugin voor een contextengine
+    - Je bouwt een Plugin voor de context-engine
 sidebarTitle: Context engine
-summary: 'Context-engine: inplugbare contextopbouw, Compaction en levenscyclus van subagents'
-title: Contextengine
+summary: 'Context-engine: plug-inbare contextassemblage, Compaction en levenscyclus van subagent'
+title: Context-engine
 x-i18n:
-    generated_at: "2026-05-06T09:07:22Z"
+    generated_at: "2026-06-27T17:25:39Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 0c33c94971751d92a2ce695db545a0c0abb7adcbe1820383b83f4201fa7e628d
+    source_hash: 124b6daf52f3d58f756352e2e169697541a8b6e67aecaa5a219bed15bda801cd
     source_path: concepts/context-engine.md
     workflow: 16
 ---
 
-Een **context-engine** bepaalt hoe OpenClaw modelcontext opbouwt voor elke uitvoering: welke berichten worden opgenomen, hoe oudere geschiedenis wordt samengevat en hoe context over subagent-grenzen heen wordt beheerd.
+Een **context-engine** bepaalt hoe OpenClaw modelcontext voor elke run opbouwt: welke berichten moeten worden opgenomen, hoe oudere geschiedenis moet worden samengevat en hoe context over subagent-grenzen heen moet worden beheerd.
 
-OpenClaw wordt geleverd met een ingebouwde `legacy`-engine en gebruikt die standaard - de meeste gebruikers hoeven dit nooit te wijzigen. Installeer en selecteer alleen een Plugin-engine wanneer je ander assemblage-, compaction- of cross-session recall-gedrag wilt.
+OpenClaw wordt geleverd met een ingebouwde `legacy`-engine en gebruikt deze standaard - de meeste gebruikers hoeven dit nooit te wijzigen. Installeer en selecteer alleen een Plugin-engine wanneer u ander assemblage-, Compaction- of cross-session recall-gedrag wilt.
 
 ## Snel aan de slag
 
 <Steps>
-  <Step title="Check which engine is active">
+  <Step title="Controleer welke engine actief is">
     ```bash
     openclaw doctor
     # or inspect config directly:
     cat ~/.openclaw/openclaw.json | jq '.plugins.slots.contextEngine'
     ```
   </Step>
-  <Step title="Install a plugin engine">
-    Context-engine-plugins worden net als elke andere OpenClaw-plugin geinstalleerd.
+  <Step title="Installeer een Plugin-engine">
+    Context-engineplugins worden geïnstalleerd zoals elke andere OpenClaw-Plugin.
 
     <Tabs>
-      <Tab title="From npm">
+      <Tab title="Van npm">
         ```bash
         openclaw plugins install @martian-engineering/lossless-claw
         ```
       </Tab>
-      <Tab title="From a local path">
+      <Tab title="Van een lokaal pad">
         ```bash
         openclaw plugins install -l ./my-context-engine
         ```
@@ -46,7 +47,7 @@ OpenClaw wordt geleverd met een ingebouwde `legacy`-engine en gebruikt die stand
     </Tabs>
 
   </Step>
-  <Step title="Enable and select the engine">
+  <Step title="Schakel de engine in en selecteer deze">
     ```json5
     // openclaw.json
     {
@@ -64,66 +65,66 @@ OpenClaw wordt geleverd met een ingebouwde `legacy`-engine en gebruikt die stand
     }
     ```
 
-    Herstart de gateway na installatie en configuratie.
+    Herstart de Gateway na installatie en configuratie.
 
   </Step>
-  <Step title="Switch back to legacy (optional)">
-    Stel `contextEngine` in op `"legacy"` (of verwijder de sleutel helemaal - `"legacy"` is de standaard).
+  <Step title="Schakel terug naar legacy (optioneel)">
+    Stel `contextEngine` in op `"legacy"` (of verwijder de sleutel helemaal - `"legacy"` is de standaardwaarde).
   </Step>
 </Steps>
 
 ## Hoe het werkt
 
-Telkens wanneer OpenClaw een modelprompt uitvoert, neemt de context-engine deel op vier lifecycle-punten:
+Telkens wanneer OpenClaw een modelprompt uitvoert, neemt de context-engine deel op vier momenten in de levenscyclus:
 
 <AccordionGroup>
-  <Accordion title="1. Ingest">
-    Aangeroepen wanneer een nieuw bericht aan de sessie wordt toegevoegd. De engine kan het bericht opslaan of indexeren in zijn eigen datastore.
+  <Accordion title="1. Inname">
+    Wordt aangeroepen wanneer een nieuw bericht aan de sessie wordt toegevoegd. De engine kan het bericht opslaan of indexeren in zijn eigen datastore.
   </Accordion>
-  <Accordion title="2. Assemble">
-    Aangeroepen voor elke modeluitvoering. De engine retourneert een geordende set berichten (en een optionele `systemPromptAddition`) die binnen het tokenbudget past.
+  <Accordion title="2. Assembleren">
+    Wordt aangeroepen vóór elke modelrun. De engine retourneert een geordende set berichten (en een optionele `systemPromptAddition`) die binnen het tokenbudget passen.
   </Accordion>
   <Accordion title="3. Compact">
-    Aangeroepen wanneer het contextvenster vol is, of wanneer de gebruiker `/compact` uitvoert. De engine vat oudere geschiedenis samen om ruimte vrij te maken.
+    Wordt aangeroepen wanneer het contextvenster vol is, of wanneer de gebruiker `/compact` uitvoert. De engine vat oudere geschiedenis samen om ruimte vrij te maken.
   </Accordion>
-  <Accordion title="4. After turn">
-    Aangeroepen nadat een uitvoering is voltooid. De engine kan status bewaren, achtergrond-compaction activeren of indexen bijwerken.
+  <Accordion title="4. Na beurt">
+    Wordt aangeroepen nadat een run is voltooid. De engine kan status bewaren, achtergrond-Compaction activeren of indexen bijwerken.
   </Accordion>
 </AccordionGroup>
 
-Voor de gebundelde niet-ACP Codex-harness past OpenClaw dezelfde lifecycle toe door geassembleerde context te projecteren naar Codex-ontwikkelaarsinstructies en de prompt van de huidige beurt. Codex blijft eigenaar van zijn native threadgeschiedenis en native compactor.
+Voor de gebundelde niet-ACP Codex-harness past OpenClaw dezelfde levenscyclus toe door geassembleerde context te projecteren naar Codex-ontwikkelaarsinstructies en de prompt van de huidige beurt. Codex blijft eigenaar van zijn eigen native threadgeschiedenis en native compactor.
 
-### Subagent-lifecycle (optioneel)
+### Subagent-levenscyclus (optioneel)
 
-OpenClaw roept twee optionele subagent-lifecyclehooks aan:
+OpenClaw roept twee optionele lifecycle-hooks voor subagents aan:
 
 <ParamField path="prepareSubagentSpawn" type="method">
-  Bereid gedeelde contextstatus voor voordat een child-uitvoering start. De hook ontvangt parent/child-sessiesleutels, `contextMode` (`isolated` of `fork`), beschikbare transcript-id's/-bestanden en optionele TTL. Als deze een rollback-handle retourneert, roept OpenClaw die aan wanneer spawning mislukt nadat voorbereiding is geslaagd.
+  Bereid gedeelde contextstatus voor voordat een child-run start. De hook ontvangt parent/child-sessiesleutels, `contextMode` (`isolated` of `fork`), beschikbare transcript-id's/bestanden en optionele TTL. Als deze een rollback-handle retourneert, roept OpenClaw deze aan wanneer spawn mislukt nadat de voorbereiding is geslaagd. Native subagent-spawns die `lightContext` aanvragen en worden opgelost naar `contextMode="isolated"` slaan deze hook bewust over, zodat de child start vanuit de lichtgewicht bootstrapcontext zonder door de context-engine beheerde pre-spawnstatus.
 </ParamField>
 <ParamField path="onSubagentEnded" type="method">
   Ruim op wanneer een subagent-sessie is voltooid of wordt opgeschoond.
 </ParamField>
 
-### Systeemprompttoevoeging
+### System-prompttoevoeging
 
-De methode `assemble` kan een `systemPromptAddition`-string retourneren. OpenClaw voegt deze vooraan toe aan de systeemprompt voor de uitvoering. Hierdoor kunnen engines dynamische recall-begeleiding, retrieval-instructies of contextbewuste hints injecteren zonder statische workspace-bestanden te vereisen.
+De methode `assemble` kan een `systemPromptAddition`-string retourneren. OpenClaw voegt deze vóór de system-prompt voor de run toe. Hierdoor kunnen engines dynamische recall-richtlijnen, retrieval-instructies of contextbewuste hints injecteren zonder statische workspacebestanden te vereisen.
 
 ## De legacy-engine
 
 De ingebouwde `legacy`-engine behoudt het oorspronkelijke gedrag van OpenClaw:
 
-- **Ingest**: no-op (de sessiemanager handelt berichtpersistentie rechtstreeks af).
-- **Assemble**: pass-through (de bestaande sanitize -> validate -> limit-pipeline in de runtime handelt contextassemblage af).
-- **Compact**: delegeert naar de ingebouwde summarization compaction, die een enkele samenvatting van oudere berichten maakt en recente berichten intact houdt.
-- **After turn**: no-op.
+- **Inname**: no-op (de sessiemanager handelt berichtpersistentie rechtstreeks af).
+- **Assembleren**: pass-through (de bestaande sanitize → validate → limit-pijplijn in de runtime handelt contextassemblage af).
+- **Compact**: delegeert naar de ingebouwde samenvattings-Compaction, die één samenvatting van oudere berichten maakt en recente berichten intact houdt.
+- **Na beurt**: no-op.
 
-De legacy-engine registreert geen tools en levert geen `systemPromptAddition`.
+De legacy-engine registreert geen tools en biedt geen `systemPromptAddition`.
 
-Wanneer er geen `plugins.slots.contextEngine` is ingesteld (of deze is ingesteld op `"legacy"`), wordt deze engine automatisch gebruikt.
+Wanneer geen `plugins.slots.contextEngine` is ingesteld (of deze is ingesteld op `"legacy"`), wordt deze engine automatisch gebruikt.
 
 ## Plugin-engines
 
-Een Plugin kan een context-engine registreren met de plugin-API:
+Een Plugin kan een context-engine registreren met de Plugin-API:
 
 ```ts
 import { buildMemorySystemPromptAddition } from "openclaw/plugin-sdk/core";
@@ -161,9 +162,11 @@ export default function register(api) {
 }
 ```
 
-De factory `ctx` bevat optionele waarden voor `config`, `agentDir` en `workspaceDir`, zodat plugins per-agent- of per-workspace-status kunnen initialiseren voordat de eerste lifecycle-hook wordt uitgevoerd.
+De factory `ctx` bevat optionele waarden `config`, `agentDir` en `workspaceDir`,
+zodat plugins per-agent- of per-workspace-status kunnen initialiseren voordat de
+eerste lifecycle-hook wordt uitgevoerd.
 
-Schakel die vervolgens in de configuratie in:
+Schakel deze vervolgens in de configuratie in:
 
 ```json5
 {
@@ -184,51 +187,126 @@ Schakel die vervolgens in de configuratie in:
 
 Vereiste leden:
 
-| Lid                | Soort    | Doel                                                     |
-| ------------------ | -------- | -------------------------------------------------------- |
-| `info`             | Property | Engine-id, naam, versie en of deze compaction bezit      |
-| `ingest(params)`   | Method   | Een enkel bericht opslaan                                |
-| `assemble(params)` | Method   | Context bouwen voor een modeluitvoering (retourneert `AssembleResult`) |
-| `compact(params)`  | Method   | Context samenvatten/verkleinen                           |
+| Lid                | Soort      | Doel                                                             |
+| ------------------ | ---------- | ---------------------------------------------------------------- |
+| `info`             | Eigenschap | Engine-id, naam, versie en of deze eigenaar is van Compaction    |
+| `ingest(params)`   | Methode    | Eén bericht opslaan                                              |
+| `assemble(params)` | Methode    | Context bouwen voor een modelrun (retourneert `AssembleResult`) |
+| `compact(params)`  | Methode    | Context samenvatten/reduceren                                    |
 
 `assemble` retourneert een `AssembleResult` met:
 
 <ParamField path="messages" type="Message[]" required>
-  De geordende berichten om naar het model te sturen.
+  De geordende berichten die naar het model worden gestuurd.
 </ParamField>
 <ParamField path="estimatedTokens" type="number" required>
-  De schatting van de engine van het totale aantal tokens in de geassembleerde context. OpenClaw gebruikt dit voor beslissingen over compaction-drempels en diagnostische rapportage.
+  De schatting van de engine van het totale aantal tokens in de geassembleerde context. OpenClaw gebruikt dit voor beslissingen over Compaction-drempels en diagnostische rapportage.
 </ParamField>
 <ParamField path="systemPromptAddition" type="string">
-  Vooraf toegevoegd aan de systeemprompt.
+  Wordt vóór de system-prompt toegevoegd.
 </ParamField>
 <ParamField path="promptAuthority" type='"assembled" | "preassembly_may_overflow"'>
-  Bepaalt welke tokenschatting de runner gebruikt voor preventieve overflow-prechecks. Standaard `"assembled"`, wat betekent dat alleen de schatting van de geassembleerde prompt wordt gecontroleerd - geschikt voor engines die een venstergebonden, zelfstandige context retourneren. Stel alleen in op `"preassembly_may_overflow"` wanneer je geassembleerde weergave overflow-risico in het onderliggende transcript kan verbergen; de runner neemt dan het maximum van de geassembleerde schatting en de pre-assembly (niet-venstergebonden) sessiegeschiedenisschatting bij het bepalen of preventief moet worden gecompact. Hoe dan ook zijn de berichten die je retourneert nog steeds wat het model ziet - `promptAuthority` beinvloedt alleen de precheck.
+  Bepaalt welke tokenschatting de runner gebruikt voor preventieve overflow-
+  prechecks. De standaardwaarde is `"assembled"`, wat betekent dat alleen de
+  schatting van de geassembleerde prompt wordt gecontroleerd - geschikt voor
+  engines die een venstergebonden, op zichzelf staande context retourneren.
+  Stel alleen in op `"preassembly_may_overflow"` wanneer uw geassembleerde
+  weergave overflow-risico in het onderliggende transcript kan verbergen; de
+  runner neemt dan het maximum van de geassembleerde schatting en de
+  pre-assembly (niet-venstergebonden) sessiegeschiedenisschatting bij de
+  beslissing of preventieve Compaction moet worden uitgevoerd. Hoe dan ook zijn
+  de berichten die u retourneert nog steeds wat het model ziet - `promptAuthority`
+  beïnvloedt alleen de precheck.
 </ParamField>
 
-`compact` retourneert een `CompactResult`. Wanneer compaction het actieve transcript roteert, identificeren `result.sessionId` en `result.sessionFile` de opvolgende sessie die de volgende retry of beurt moet gebruiken.
+`compact` retourneert een `CompactResult`. Wanneer Compaction het actieve
+transcript roteert, identificeren `result.sessionId` en `result.sessionFile` de opvolgende
+sessie die de volgende retry of beurt moet gebruiken.
 
 Optionele leden:
 
-| Lid                            | Soort  | Doel                                                                                                            |
-| ------------------------------ | ------ | --------------------------------------------------------------------------------------------------------------- |
-| `bootstrap(params)`            | Method | Engine-status voor een sessie initialiseren. Eenmaal aangeroepen wanneer de engine voor het eerst een sessie ziet (bijv. geschiedenis importeren). |
-| `ingestBatch(params)`          | Method | Een voltooide beurt als batch opnemen. Aangeroepen nadat een uitvoering is voltooid, met alle berichten uit die beurt tegelijk. |
-| `afterTurn(params)`            | Method | Lifecycle-werk na de uitvoering (status bewaren, achtergrond-compaction activeren).                             |
-| `prepareSubagentSpawn(params)` | Method | Gedeelde status instellen voor een child-sessie voordat die start.                                              |
-| `onSubagentEnded(params)`      | Method | Opruimen nadat een subagent eindigt.                                                                            |
-| `dispose()`                    | Method | Resources vrijgeven. Aangeroepen tijdens gateway-shutdown of het herladen van een Plugin - niet per sessie.     |
+| Lid                            | Soort   | Doel                                                                                                                  |
+| ------------------------------ | ------- | --------------------------------------------------------------------------------------------------------------------- |
+| `bootstrap(params)`            | Methode | Initialiseer engine-status voor een sessie. Wordt één keer aangeroepen wanneer de engine voor het eerst een sessie ziet (bijv. geschiedenis importeren). |
+| `ingestBatch(params)`          | Methode | Neem een voltooide beurt als batch in. Wordt aangeroepen nadat een run is voltooid, met alle berichten van die beurt tegelijk. |
+| `afterTurn(params)`            | Methode | Lifecycle-werk na de run (status bewaren, achtergrond-Compaction activeren).                                           |
+| `prepareSubagentSpawn(params)` | Methode | Gedeelde status instellen voor een child-sessie voordat deze start.                                                    |
+| `onSubagentEnded(params)`      | Methode | Opruimen nadat een subagent eindigt.                                                                                  |
+| `dispose()`                    | Methode | Resources vrijgeven. Wordt aangeroepen tijdens Gateway-shutdown of Plugin-reload - niet per sessie.                   |
+
+### Runtime-instellingen
+
+Lifecycle-hooks die binnen OpenClaw worden uitgevoerd, ontvangen een optioneel
+`runtimeSettings`-object. Het is een versioned, read-only interne
+producer/consumer-API-surface: OpenClaw produceert het voor de geselecteerde context-
+engine, en de context-engine consumeert het binnen lifecycle-hooks. Het wordt niet
+rechtstreeks aan gebruikers weergegeven en maakt geen dedicated rapportagesurface.
+
+- `schemaVersion`: momenteel `1`
+- `runtime`: OpenClaw-host, runtime-modus (`normal`, `fallback` of
+  `degraded`) en optionele harness-/runtime-id's
+- `contextEngineSelection`: geselecteerde context-engine-id en selectiebron
+- `executionHost`: host-id en label voor de surface die de hook aanroept
+- `model`: aangevraagd model, opgelost model, provider en optionele modelfamilie
+- `limits`: prompt-tokenbudget en max uitvoertokens wanneer bekend
+- `diagnostics`: gesloten fallback- en degraded-redencodes wanneer bekend
+
+Velden die onbekend kunnen zijn, worden weergegeven als `null`; discriminatorvelden zoals
+runtime-modus en selectiebron blijven niet-nullable. Oudere engines blijven
+compatibel: als een strikte legacy-engine `runtimeSettings` afwijst als onbekende
+eigenschap, probeert OpenClaw de lifecycle-aanroep opnieuw zonder deze, in plaats van
+de engine in quarantaine te plaatsen.
+
+### Hostvereisten
+
+Context-engines kunnen hostcapaciteitsvereisten declareren op `info.hostRequirements`.
+OpenClaw controleert deze vereisten voordat de operatie wordt gestart en faalt gesloten
+met een beschrijvende fout wanneer de geselecteerde runtime er niet aan kan voldoen.
+
+Voor agent-runs declareert u `assemble-before-prompt` wanneer de engine de
+daadwerkelijke modelprompt moet controleren via `assemble()`:
+
+```ts
+info: {
+  id: "my-context-engine",
+  name: "My Context Engine",
+  hostRequirements: {
+    "agent-run": {
+      requiredCapabilities: ["assemble-before-prompt"],
+      unsupportedMessage:
+        "Use the native Codex or OpenClaw embedded runtime, or select the legacy context engine.",
+    },
+  },
+}
+```
+
+Native Codex- en OpenClaw embedded agent-runs voldoen aan `assemble-before-prompt`.
+Generieke CLI-backends doen dat niet, dus engines die dit vereisen worden afgewezen voordat het
+CLI-proces start.
+
+### Foutisolatie
+
+OpenClaw isoleert de geselecteerde Plugin-engine van het core-antwoordpad. Als een
+niet-legacy-engine ontbreekt, faalt bij contractvalidatie, een fout gooit tijdens factory-
+creatie of een fout gooit vanuit een lifecycle-methode, plaatst OpenClaw die engine
+voor het huidige Gateway-proces in quarantaine en degradeert context-enginewerk naar de
+ingebouwde `legacy`-engine. De fout wordt gelogd met de mislukte operatie, zodat de
+operator de Plugin kan repareren, bijwerken of uitschakelen zonder dat de agent stilvalt.
+
+Hostvereistefouten zijn anders: wanneer een engine verklaart dat een runtime
+een vereiste capability mist, faalt OpenClaw gesloten voordat de run wordt gestart. Dat
+beschermt engines die state zouden beschadigen als ze in een niet-ondersteunde host draaiden.
 
 ### ownsCompaction
 
-`ownsCompaction` bepaalt of Pi's ingebouwde auto-compaction binnen de poging ingeschakeld blijft voor de uitvoering:
+`ownsCompaction` bepaalt of de ingebouwde auto-compaction binnen een poging van de OpenClaw-runtime ingeschakeld blijft voor de run:
 
 <AccordionGroup>
   <Accordion title="ownsCompaction: true">
-    De engine bezit compaction-gedrag. OpenClaw schakelt Pi's ingebouwde auto-compaction uit voor die uitvoering, en de `compact()`-implementatie van de engine is verantwoordelijk voor `/compact`, overflow-recovery-compaction en elke proactieve compaction die de engine in `afterTurn()` wil uitvoeren. OpenClaw kan de overflow-beveiliging voor de prompt nog steeds uitvoeren; wanneer die voorspelt dat het volledige transcript zal overlopen, roept het recovery-pad de `compact()` van de actieve engine aan voordat een nieuwe prompt wordt ingediend.
+    De engine beheert het compaction-gedrag. OpenClaw schakelt de ingebouwde auto-compaction van de OpenClaw-runtime uit voor die run, en de `compact()`-implementatie van de engine is verantwoordelijk voor `/compact`, compaction voor overflow-herstel en elke proactieve compaction die de engine in `afterTurn()` wil uitvoeren. OpenClaw kan de pre-prompt-overflowbeveiliging nog steeds uitvoeren; wanneer die voorspelt dat het volledige transcript zal overlopen, roept het herstelpad de `compact()` van de actieve engine aan voordat nog een prompt wordt ingediend.
   </Accordion>
-  <Accordion title="ownsCompaction: false or unset">
-    Pi's ingebouwde auto-compaction kan nog steeds worden uitgevoerd tijdens promptuitvoering, maar de methode `compact()` van de actieve engine wordt nog steeds aangeroepen voor `/compact` en overflow-recovery.
+  <Accordion title="ownsCompaction: false of niet ingesteld">
+    De ingebouwde auto-compaction van de OpenClaw-runtime kan nog steeds worden uitgevoerd tijdens promptuitvoering, maar de `compact()`-methode van de actieve engine wordt nog steeds aangeroepen voor `/compact` en overflow-herstel.
   </Accordion>
 </AccordionGroup>
 
@@ -239,15 +317,15 @@ Optionele leden:
 Dat betekent dat er twee geldige Plugin-patronen zijn:
 
 <Tabs>
-  <Tab title="Owning mode">
+  <Tab title="Beheermodus">
     Implementeer je eigen compaction-algoritme en stel `ownsCompaction: true` in.
   </Tab>
-  <Tab title="Delegating mode">
-    Stel `ownsCompaction: false` in en laat `compact()` `delegateCompactionToRuntime(...)` uit `openclaw/plugin-sdk/core` aanroepen om OpenClaw's ingebouwde compaction-gedrag te gebruiken.
+  <Tab title="Delegeermodus">
+    Stel `ownsCompaction: false` in en laat `compact()` `delegateCompactionToRuntime(...)` uit `openclaw/plugin-sdk/core` aanroepen om het ingebouwde compaction-gedrag van OpenClaw te gebruiken.
   </Tab>
 </Tabs>
 
-Een no-op `compact()` is onveilig voor een actieve niet-eigenaar-engine, omdat deze het normale `/compact`- en overflow-recovery-compaction-pad voor die engineslot uitschakelt.
+Een no-op `compact()` is onveilig voor een actieve niet-beherende engine, omdat dit het normale `/compact`- en overflow-herstelcompaction-pad voor die engine-slot uitschakelt.
 
 ## Configuratiereferentie
 
@@ -264,38 +342,38 @@ Een no-op `compact()` is onveilig voor een actieve niet-eigenaar-engine, omdat d
 ```
 
 <Note>
-De slot is exclusief tijdens runtime - er wordt slechts een geregistreerde context-engine opgelost voor een gegeven uitvoering of compaction-bewerking. Andere ingeschakelde `kind: "context-engine"`-plugins kunnen nog steeds laden en hun registratiecode uitvoeren; `plugins.slots.contextEngine` selecteert alleen welke geregistreerde engine-id OpenClaw oplost wanneer het een context-engine nodig heeft.
+De slot is exclusief tijdens runtime - er wordt slechts één geregistreerde context-engine opgelost voor een gegeven run of compaction-bewerking. Andere ingeschakelde `kind: "context-engine"`-plugins kunnen nog steeds laden en hun registratiecode uitvoeren; `plugins.slots.contextEngine` selecteert alleen welke geregistreerde engine-id OpenClaw oplost wanneer het een context-engine nodig heeft.
 </Note>
 
 <Note>
-**Plugin verwijderen:** wanneer je de Plugin verwijdert die momenteel is geselecteerd als `plugins.slots.contextEngine`, zet OpenClaw de slot terug naar de standaard (`legacy`). Hetzelfde resetgedrag geldt voor `plugins.slots.memory`. Er is geen handmatige configuratiewijziging vereist.
+**Plugin verwijderen:** wanneer je de Plugin verwijdert die momenteel als `plugins.slots.contextEngine` is geselecteerd, zet OpenClaw de slot terug naar de standaardwaarde (`legacy`). Hetzelfde resetgedrag geldt voor `plugins.slots.memory`. Er is geen handmatige configbewerking vereist.
 </Note>
 
-## Relatie tot compaction en geheugen
+## Relatie tot compaction en memory
 
 <AccordionGroup>
   <Accordion title="Compaction">
-    Compaction is één verantwoordelijkheid van de context-engine. De legacy-engine delegeert aan de ingebouwde samenvatting van OpenClaw. Plugin-engines kunnen elke compaction-strategie implementeren (DAG-samenvattingen, vectorretrieval, enz.).
+    Compaction is één verantwoordelijkheid van de context-engine. De legacy-engine delegeert naar de ingebouwde samenvatting van OpenClaw. Plugin-engines kunnen elke compaction-strategie implementeren (DAG-samenvattingen, vectorretrieval, enzovoort).
   </Accordion>
-  <Accordion title="Geheugenplugins">
-    Geheugenplugins (`plugins.slots.memory`) staan los van context-engines. Geheugenplugins bieden zoeken/retrieval; context-engines bepalen wat het model ziet. Ze kunnen samenwerken - een context-engine kan gegevens van geheugenplugins gebruiken tijdens de assemblage. Plugin-engines die het actieve-geheugenpromptpad willen gebruiken, moeten bij voorkeur `buildMemorySystemPromptAddition(...)` uit `openclaw/plugin-sdk/core` gebruiken, waarmee de actieve-geheugenpromptsecties worden omgezet in een kant-en-klare `systemPromptAddition` die vooraan kan worden toegevoegd. Als een engine meer controle op lager niveau nodig heeft, kan deze nog steeds ruwe regels ophalen uit `openclaw/plugin-sdk/memory-host-core` via `buildActiveMemoryPromptSection(...)`.
+  <Accordion title="Memory-plugins">
+    Memory-plugins (`plugins.slots.memory`) staan los van context-engines. Memory-plugins bieden zoeken/retrieval; context-engines bepalen wat het model ziet. Ze kunnen samenwerken - een context-engine kan memory-plugingegevens gebruiken tijdens assemblage. Plugin-engines die het actieve memory-promptpad willen gebruiken, moeten bij voorkeur `buildMemorySystemPromptAddition(...)` uit `openclaw/plugin-sdk/core` gebruiken, dat de actieve memory-promptsecties omzet in een kant-en-klare `systemPromptAddition` om vooraan toe te voegen. Als een engine controle op lager niveau nodig heeft, kan die nog steeds ruwe regels uit `openclaw/plugin-sdk/memory-host-core` ophalen via `buildActiveMemoryPromptSection(...)`.
   </Accordion>
   <Accordion title="Sessiesnoei">
-    Het in het geheugen inkorten van oude toolresultaten blijft altijd draaien, ongeacht welke context-engine actief is.
+    Het in-memory inkorten van oude toolresultaten wordt nog steeds uitgevoerd, ongeacht welke context-engine actief is.
   </Accordion>
 </AccordionGroup>
 
 ## Tips
 
 - Gebruik `openclaw doctor` om te controleren of je engine correct wordt geladen.
-- Als je van engine wisselt, gaan bestaande sessies door met hun huidige geschiedenis. De nieuwe engine neemt toekomstige runs over.
-- Enginefouten worden gelogd en weergegeven in diagnostics. Als een plugin-engine niet kan worden geregistreerd of de geselecteerde engine-id niet kan worden opgelost, valt OpenClaw niet automatisch terug; runs mislukken totdat je de plugin repareert of `plugins.slots.contextEngine` terugzet naar `"legacy"`.
-- Gebruik voor ontwikkeling `openclaw plugins install -l ./my-engine` om een lokale pluginmap te koppelen zonder te kopiëren.
+- Als je van engine wisselt, gaan bestaande sessies verder met hun huidige geschiedenis. De nieuwe engine neemt toekomstige runs over.
+- Enginefouten worden gelogd en de geselecteerde Plugin-engine wordt voor het huidige Gateway-proces in quarantaine geplaatst. OpenClaw valt terug op `legacy` voor gebruikersbeurten, zodat antwoorden kunnen doorgaan, maar je moet de kapotte Plugin nog steeds repareren, bijwerken, uitschakelen of verwijderen.
+- Gebruik voor ontwikkeling `openclaw plugins install -l ./my-engine` om een lokale Plugin-map te linken zonder te kopiëren.
 
 ## Gerelateerd
 
 - [Compaction](/nl/concepts/compaction) - lange gesprekken samenvatten
 - [Context](/nl/concepts/context) - hoe context wordt opgebouwd voor agentbeurten
-- [Plugin-architectuur](/nl/plugins/architecture) - context-engineplugins registreren
-- [Pluginmanifest](/nl/plugins/manifest) - velden van het pluginmanifest
-- [Plugins](/nl/tools/plugin) - pluginoverzicht
+- [Plugin Architecture](/nl/plugins/architecture) - context-engine-plugins registreren
+- [Plugin manifest](/nl/plugins/manifest) - Plugin-manifestvelden
+- [Plugins](/nl/tools/plugin) - Plugin-overzicht

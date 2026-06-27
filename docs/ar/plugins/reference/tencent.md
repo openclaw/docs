@@ -1,30 +1,31 @@
 ---
 read_when:
-    - أنت تقوم بتثبيت Plugin tencent أو تكوينه أو تدقيقه
+    - أنت تثبّت Plugin tencent أو تكوّنه أو تدقّقه
 summary: يضيف دعم موفّر نماذج Tencent TokenHub إلى OpenClaw.
 title: Plugin Tencent
 x-i18n:
-    generated_at: "2026-05-02T21:00:05Z"
+    generated_at: "2026-06-27T18:15:51Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e443bd632f1390894d3a1327af016ac2e42e8d21b9b1baf26e0fdf2e08baea79
+    source_hash: bf977c889dd59aff6f106fd14c19d23f28464622047a37c292f5f7ef1a6b0551
     source_path: plugins/reference/tencent.md
     workflow: 16
 ---
 
 # Plugin Tencent
 
-يضيف دعم موفر نماذج Tencent TokenHub إلى OpenClaw.
+يضيف دعم مزود نماذج Tencent TokenHub إلى OpenClaw.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/tencent-provider`
-- مسار التثبيت: مضمّن في OpenClaw
+- مسار التثبيت: npm؛ ClawHub: `clawhub:@openclaw/tencent-provider`
 
-## الواجهة
+## السطح
 
 providers: tencent-tokenhub
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
 - [tencent](/ar/providers/tencent)

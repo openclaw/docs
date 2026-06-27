@@ -4,22 +4,23 @@ read_when:
     - Bạn cần thiết lập Webhook LINE + thông tin xác thực
     - Bạn muốn các tùy chọn tin nhắn dành riêng cho LINE
 summary: Thiết lập, cấu hình và cách sử dụng Plugin LINE Messaging API
-title: DÒNG
+title: LINE
 x-i18n:
-    generated_at: "2026-05-10T19:22:06Z"
+    generated_at: "2026-06-27T17:10:51Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7a11edbadda1ec99452eadc19a4557bb594f8b69ebb92314e2c3a0be325ab89d
+    source_hash: c27572d1db71d1f46b4e6ee68aa03bdbec8f90ed7fb0884f0185ea4aa877468a
     source_path: channels/line.md
     workflow: 16
 ---
 
-LINE kết nối với OpenClaw qua LINE Messaging API. Plugin chạy như một trình nhận Webhook
-trên Gateway và sử dụng channel access token + channel secret của bạn để
+LINE kết nối với OpenClaw qua LINE Messaging API. Plugin chạy như một bộ nhận Webhook
+trên Gateway và dùng channel access token + channel secret của bạn để
 xác thực.
 
-Trạng thái: Plugin có thể tải xuống. Tin nhắn trực tiếp, trò chuyện nhóm, phương tiện, vị trí, Flex
-messages, template messages và quick replies được hỗ trợ. Reactions và threads
+Trạng thái: Plugin có thể tải xuống. Tin nhắn trực tiếp, trò chuyện nhóm, phương tiện, vị trí, tin nhắn Flex,
+tin nhắn mẫu và trả lời nhanh được hỗ trợ. Phản ứng và luồng
 không được hỗ trợ.
 
 ## Cài đặt
@@ -30,7 +31,7 @@ Cài đặt LINE trước khi cấu hình kênh:
 openclaw plugins install @openclaw/line
 ```
 
-Bản checkout cục bộ (khi chạy từ một git repo):
+Checkout cục bộ (khi chạy từ repo git):
 
 ```bash
 openclaw plugins install ./path/to/local/line-plugin
@@ -40,7 +41,7 @@ openclaw plugins install ./path/to/local/line-plugin
 
 1. Tạo tài khoản LINE Developers và mở Console:
    [https://developers.line.biz/console/](https://developers.line.biz/console/)
-2. Tạo (hoặc chọn) một Provider và thêm một kênh **Messaging API**.
+2. Tạo (hoặc chọn) một Provider và thêm một kênh **API nhắn tin**.
 3. Sao chép **Channel access token** và **Channel secret** từ phần cài đặt kênh.
 4. Bật **Use webhook** trong phần cài đặt Messaging API.
 5. Đặt URL Webhook thành endpoint Gateway của bạn (bắt buộc HTTPS):
@@ -49,14 +50,16 @@ openclaw plugins install ./path/to/local/line-plugin
 https://gateway-host/line/webhook
 ```
 
-Gateway phản hồi xác minh Webhook của LINE (GET) và các sự kiện đến (POST).
-Nếu bạn cần một đường dẫn tùy chỉnh, hãy đặt `channels.line.webhookPath` hoặc
-`channels.line.accounts.<id>.webhookPath` và cập nhật URL tương ứng.
+Gateway phản hồi xác minh Webhook của LINE (GET) và xác nhận các sự kiện inbound đã ký
+(POST) ngay sau khi xác thực chữ ký và payload; quá trình xử lý của agent
+tiếp tục bất đồng bộ.
+Nếu bạn cần đường dẫn tùy chỉnh, hãy đặt `channels.line.webhookPath` hoặc
+`channels.line.accounts.<id>.webhookPath` rồi cập nhật URL tương ứng.
 
-Lưu ý bảo mật:
+Ghi chú bảo mật:
 
-- Xác minh chữ ký LINE phụ thuộc vào body (HMAC trên raw body), nên OpenClaw áp dụng giới hạn body tiền xác thực nghiêm ngặt và timeout trước khi xác minh.
-- OpenClaw xử lý sự kiện Webhook từ byte request raw đã được xác minh. Các giá trị `req.body` đã bị middleware upstream biến đổi sẽ bị bỏ qua để bảo đảm an toàn tính toàn vẹn chữ ký.
+- Việc xác minh chữ ký LINE phụ thuộc vào body (HMAC trên body thô), vì vậy OpenClaw áp dụng giới hạn body trước xác thực và thời gian chờ nghiêm ngặt trước khi xác minh.
+- OpenClaw xử lý sự kiện Webhook từ các byte yêu cầu thô đã được xác minh. Các giá trị `req.body` đã bị middleware phía upstream biến đổi sẽ bị bỏ qua để bảo đảm toàn vẹn chữ ký.
 
 ## Cấu hình
 
@@ -109,7 +112,7 @@ Tệp token/secret:
 }
 ```
 
-`tokenFile` và `secretFile` phải trỏ đến các tệp thông thường. Symlink bị từ chối.
+`tokenFile` và `secretFile` phải trỏ tới tệp thông thường. Symlink bị từ chối.
 
 Nhiều tài khoản:
 
@@ -131,7 +134,7 @@ Nhiều tài khoản:
 
 ## Kiểm soát truy cập
 
-Tin nhắn trực tiếp mặc định dùng ghép đôi. Người gửi không xác định nhận được mã ghép đôi và
+Tin nhắn trực tiếp mặc định dùng ghép nối. Người gửi chưa biết sẽ nhận được mã ghép nối và
 tin nhắn của họ bị bỏ qua cho đến khi được phê duyệt.
 
 ```bash
@@ -145,9 +148,9 @@ Danh sách cho phép và chính sách:
 - `channels.line.allowFrom`: ID người dùng LINE được cho phép cho DM; `dmPolicy: "open"` yêu cầu `["*"]`
 - `channels.line.groupPolicy`: `allowlist | open | disabled`
 - `channels.line.groupAllowFrom`: ID người dùng LINE được cho phép cho nhóm
-- Ghi đè theo nhóm: `channels.line.groups.<groupId>.allowFrom`
-- Nhóm truy cập người gửi tĩnh có thể được tham chiếu từ `allowFrom`, `groupAllowFrom` và `allowFrom` theo nhóm bằng `accessGroup:<name>`.
-- Lưu ý runtime: nếu `channels.line` hoàn toàn bị thiếu, runtime sẽ quay về `groupPolicy="allowlist"` cho kiểm tra nhóm (ngay cả khi `channels.defaults.groupPolicy` được đặt).
+- Ghi đè theo từng nhóm: `channels.line.groups.<groupId>.allowFrom`
+- Có thể tham chiếu nhóm truy cập người gửi tĩnh từ `allowFrom`, `groupAllowFrom` và `allowFrom` theo từng nhóm bằng `accessGroup:<name>`.
+- Ghi chú runtime: nếu `channels.line` hoàn toàn thiếu, runtime sẽ fallback về `groupPolicy="allowlist"` cho kiểm tra nhóm (ngay cả khi `channels.defaults.groupPolicy` được đặt).
 
 ID LINE phân biệt chữ hoa chữ thường. ID hợp lệ có dạng:
 
@@ -158,19 +161,18 @@ ID LINE phân biệt chữ hoa chữ thường. ID hợp lệ có dạng:
 ## Hành vi tin nhắn
 
 - Văn bản được chia thành các đoạn 5000 ký tự.
-- Định dạng Markdown bị loại bỏ; code block và bảng được chuyển đổi thành Flex
-  cards khi có thể.
-- Phản hồi streaming được đệm; LINE nhận các đoạn hoàn chỉnh kèm hoạt ảnh tải
+- Định dạng Markdown bị loại bỏ; khối mã và bảng được chuyển thành thẻ Flex
+  khi có thể.
+- Phản hồi streaming được đệm; LINE nhận các đoạn đầy đủ kèm hoạt ảnh tải
   trong khi agent làm việc.
 - Tải xuống phương tiện bị giới hạn bởi `channels.line.mediaMaxMb` (mặc định 10).
-- Phương tiện đến được lưu trong `~/.openclaw/media/inbound/` trước khi được truyền
-  cho agent, khớp với kho phương tiện dùng chung được các Plugin kênh
-  tích hợp khác sử dụng.
+- Phương tiện inbound được lưu dưới `~/.openclaw/media/inbound/` trước khi được chuyển
+  cho agent, khớp với kho phương tiện dùng chung được các Plugin kênh tích hợp khác
+  sử dụng.
 
 ## Dữ liệu kênh (tin nhắn phong phú)
 
-Dùng `channelData.line` để gửi quick replies, vị trí, Flex cards hoặc template
-messages.
+Dùng `channelData.line` để gửi trả lời nhanh, vị trí, thẻ Flex hoặc tin nhắn mẫu.
 
 ```json5
 {
@@ -203,7 +205,7 @@ messages.
 }
 ```
 
-Plugin LINE cũng cung cấp lệnh `/card` cho các preset Flex message:
+Plugin LINE cũng cung cấp lệnh `/card` cho các preset tin nhắn Flex:
 
 ```
 /card info "Welcome" "Thanks for joining!"
@@ -211,38 +213,38 @@ Plugin LINE cũng cung cấp lệnh `/card` cho các preset Flex message:
 
 ## Hỗ trợ ACP
 
-LINE hỗ trợ liên kết hội thoại ACP (Agent Communication Protocol):
+LINE hỗ trợ ràng buộc cuộc trò chuyện ACP (Agent Communication Protocol):
 
-- `/acp spawn <agent> --bind here` liên kết cuộc trò chuyện LINE hiện tại với một phiên ACP mà không tạo thread con.
-- Các liên kết ACP đã cấu hình và phiên ACP đang hoạt động được liên kết với hội thoại hoạt động trên LINE giống như các kênh hội thoại khác.
+- `/acp spawn <agent> --bind here` ràng buộc cuộc trò chuyện LINE hiện tại với một phiên ACP mà không tạo luồng con.
+- Các ràng buộc ACP đã cấu hình và phiên ACP đang hoạt động được ràng buộc với cuộc trò chuyện hoạt động trên LINE giống các kênh hội thoại khác.
 
-Xem [ACP agents](/vi/tools/acp-agents) để biết chi tiết.
+Xem [agent ACP](/vi/tools/acp-agents) để biết chi tiết.
 
-## Phương tiện gửi đi
+## Phương tiện outbound
 
-Plugin LINE hỗ trợ gửi hình ảnh, video và tệp âm thanh thông qua công cụ tin nhắn agent. Phương tiện được gửi qua đường dẫn phân phối riêng của LINE với xử lý xem trước và theo dõi phù hợp:
+Plugin LINE hỗ trợ gửi hình ảnh, video và tệp âm thanh qua công cụ tin nhắn của agent. Phương tiện được gửi qua đường dẫn phân phối riêng cho LINE với xử lý bản xem trước và theo dõi phù hợp:
 
-- **Hình ảnh**: gửi dưới dạng tin nhắn hình ảnh LINE với tạo bản xem trước tự động.
-- **Video**: gửi với xử lý bản xem trước và content-type rõ ràng.
-- **Âm thanh**: gửi dưới dạng tin nhắn âm thanh LINE.
+- **Hình ảnh**: được gửi dưới dạng tin nhắn hình ảnh LINE với tạo bản xem trước tự động.
+- **Video**: được gửi với xử lý bản xem trước và content-type rõ ràng.
+- **Âm thanh**: được gửi dưới dạng tin nhắn âm thanh LINE.
 
-URL phương tiện gửi đi phải là URL HTTPS công khai. OpenClaw xác thực hostname đích trước khi chuyển URL cho LINE và từ chối các mục tiêu local loopback, link-local và mạng riêng.
+URL phương tiện outbound phải là URL HTTPS công khai. OpenClaw xác thực hostname đích trước khi chuyển URL cho LINE và từ chối các đích loopback, link-local và mạng riêng.
 
-Lượt gửi phương tiện chung quay về tuyến chỉ hình ảnh hiện có khi không có đường dẫn riêng cho LINE.
+Gửi phương tiện chung sẽ fallback về tuyến chỉ hình ảnh hiện có khi không có đường dẫn riêng cho LINE.
 
 ## Khắc phục sự cố
 
-- **Xác minh Webhook thất bại:** bảo đảm URL Webhook là HTTPS và
+- **Xác minh Webhook không thành công:** đảm bảo URL Webhook là HTTPS và
   `channelSecret` khớp với console LINE.
-- **Không có sự kiện đến:** xác nhận đường dẫn Webhook khớp với `channels.line.webhookPath`
+- **Không có sự kiện inbound:** xác nhận đường dẫn Webhook khớp với `channels.line.webhookPath`
   và Gateway có thể được LINE truy cập.
 - **Lỗi tải xuống phương tiện:** tăng `channels.line.mediaMaxMb` nếu phương tiện vượt quá
   giới hạn mặc định.
 
 ## Liên quan
 
-- [Tổng quan về kênh](/vi/channels) — tất cả các kênh được hỗ trợ
-- [Ghép đôi](/vi/channels/pairing) — xác thực DM và luồng ghép đôi
-- [Nhóm](/vi/channels/groups) — hành vi trò chuyện nhóm và cổng mention
+- [Tổng quan về kênh](/vi/channels) — tất cả kênh được hỗ trợ
+- [Ghép nối](/vi/channels/pairing) — xác thực DM và luồng ghép nối
+- [Nhóm](/vi/channels/groups) — hành vi trò chuyện nhóm và kiểm soát nhắc đến
 - [Định tuyến kênh](/vi/channels/channel-routing) — định tuyến phiên cho tin nhắn
 - [Bảo mật](/vi/gateway/security) — mô hình truy cập và gia cố

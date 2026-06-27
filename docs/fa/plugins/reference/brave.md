@@ -1,20 +1,21 @@
 ---
 read_when:
-    - در حال نصب، پیکربندی یا ممیزی Plugin brave هستید
-summary: پشتیبانی از ارائه‌دهندهٔ جست‌وجوی وب را اضافه می‌کند.
+    - شما در حال نصب، پیکربندی یا ممیزی Plugin brave هستید
+summary: Plugin ارائه‌دهنده Brave Search برای جست‌وجوی وب در OpenClaw.
 title: Plugin Brave
 x-i18n:
-    generated_at: "2026-05-03T11:41:07Z"
+    generated_at: "2026-06-27T18:23:47Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b26d45080e2db635e9b07e1c6b674061c2b82549edc4d8d88e6f4f68bc9d43df
+    source_hash: 265b0efa840eb3ebc7bfc1cc47b703737bbd76050ac95e79825728030a166d37
     source_path: plugins/reference/brave.md
     workflow: 16
 ---
 
 # Plugin Brave
 
-پشتیبانی از ارائه‌دهندهٔ جستجوی وب را اضافه می‌کند.
+Plugin ارائه‌دهنده Brave Search در OpenClaw برای جست‌وجوی وب.
 
 ## توزیع
 

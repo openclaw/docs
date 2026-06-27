@@ -1,26 +1,26 @@
 ---
 read_when:
-    - Je wilt een webzoekprovider waarvoor geen API-sleutel nodig is
+    - Je wilt een webzoekprovider die geen API-sleutel vereist
     - Je wilt DuckDuckGo gebruiken voor web_search
-    - Je hebt een zoekfallback zonder configuratie nodig
-summary: DuckDuckGo-webzoekfunctie -- fallbackprovider zonder sleutel (experimenteel, op HTML gebaseerd)
+    - Je wilt een expliciet geselecteerde zoekprovider zonder sleutel
+summary: DuckDuckGo-webzoekopdracht -- provider zonder sleutel (experimenteel, HTML-gebaseerd)
 title: DuckDuckGo-zoekopdracht
 x-i18n:
-    generated_at: "2026-05-06T09:35:06Z"
+    generated_at: "2026-06-27T18:25:04Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 89c23535730dc272b88e22d1dbeef61abd55a7968d9e57bdce20594df8a2c0f2
+    source_hash: c042a3cd4fa6f37cb42b88930b5fe0122a561a810e275f26d9c1eb56502495a7
     source_path: tools/duckduckgo-search.md
     workflow: 16
 ---
 
-OpenClaw ondersteunt DuckDuckGo als **sleutelloze** `web_search`-provider. Er is geen API-
-sleutel of account vereist.
+OpenClaw ondersteunt DuckDuckGo als **sleutelvrije** `web_search`-provider. Er is geen API-sleutel of account vereist.
 
 <Warning>
-  DuckDuckGo is een **experimentele, onofficiële** integratie die resultaten ophaalt
-  uit DuckDuckGo's zoekpagina's zonder JavaScript - geen officiële API. Houd rekening met
-  incidentele uitval door bot-challengepagina's of HTML-wijzigingen.
+  DuckDuckGo is een **experimentele, onofficiële** integratie die resultaten
+  ophaalt uit de niet-JavaScript-zoekpagina's van DuckDuckGo - geen officiële API. Houd
+  rekening met incidentele defecten door bot-challengepagina's of HTML-wijzigingen.
 </Warning>
 
 ## Installatie
@@ -28,7 +28,7 @@ sleutel of account vereist.
 Geen API-sleutel nodig - stel DuckDuckGo gewoon in als je provider:
 
 <Steps>
-  <Step title="Configureren">
+  <Step title="Configure">
     ```bash
     openclaw configure --section web
     # Select "duckduckgo" as the provider
@@ -72,11 +72,11 @@ Optionele instellingen op Plugin-niveau voor regio en SafeSearch:
 ## Toolparameters
 
 <ParamField path="query" type="string" required>
-Zoekquery.
+Zoekopdracht.
 </ParamField>
 
 <ParamField path="count" type="number" default="5">
-Te retourneren resultaten (1-10).
+Aantal resultaten om terug te geven (1-10).
 </ParamField>
 
 <ParamField path="region" type="string">
@@ -87,30 +87,23 @@ DuckDuckGo-regiocode (bijv. `us-en`, `uk-en`, `de-de`).
 SafeSearch-niveau.
 </ParamField>
 
-Regio en SafeSearch kunnen ook worden ingesteld in de Plugin-configuratie (zie hierboven) - tool
-parameters overschrijven configuratiewaarden per query.
+Regio en SafeSearch kunnen ook worden ingesteld in de Plugin-configuratie (zie hierboven) - toolparameters overschrijven configuratiewaarden per zoekopdracht.
 
 ## Opmerkingen
 
-- **Geen API-sleutel** - werkt direct, zonder configuratie
-- **Experimenteel** - verzamelt resultaten uit DuckDuckGo's HTML-zoekpagina's zonder JavaScript,
-  niet uit een officiële API of SDK
-- **Risico op bot-challenges** - DuckDuckGo kan CAPTCHA's tonen of verzoeken blokkeren
-  bij intensief of geautomatiseerd gebruik
-- **HTML-parsing** - resultaten hangen af van de paginstructuur, die zonder
-  kennisgeving kan wijzigen
-- **Volgorde voor automatische detectie** - DuckDuckGo is de eerste sleutelloze fallback
-  (volgorde 100) bij automatische detectie. API-gebaseerde providers met geconfigureerde sleutels worden
-  eerst uitgevoerd, daarna Ollama Web Search (volgorde 110), daarna SearXNG (volgorde 200)
-- **SafeSearch staat standaard op moderate** wanneer dit niet is geconfigureerd
+- **Geen API-sleutel** - werkt nadat je DuckDuckGo als je `web_search`-provider hebt geselecteerd
+- **Experimenteel** - verzamelt resultaten uit de niet-JavaScript-HTML-zoekpagina's van DuckDuckGo, niet uit een officiële API of SDK
+- **Risico op bot-challenges** - DuckDuckGo kan CAPTCHA's tonen of verzoeken blokkeren bij intensief of geautomatiseerd gebruik
+- **HTML-parsing** - resultaten zijn afhankelijk van de paginastructuur, die zonder kennisgeving kan wijzigen
+- **Expliciete selectie** - OpenClaw kiest DuckDuckGo niet automatisch wanneer er geen API-ondersteunde provider is geconfigureerd
+- **SafeSearch is standaard moderate** wanneer dit niet is geconfigureerd
 
 <Tip>
-  Overweeg voor productiegebruik [Brave Search](/nl/tools/brave-search) (gratis laag
-  beschikbaar) of een andere API-gebaseerde provider.
+  Overweeg voor productiegebruik [Brave Search](/nl/tools/brave-search) (gratis niveau beschikbaar) of een andere API-ondersteunde provider.
 </Tip>
 
 ## Gerelateerd
 
 - [Overzicht van Web Search](/nl/tools/web) -- alle providers en automatische detectie
-- [Brave Search](/nl/tools/brave-search) -- gestructureerde resultaten met gratis laag
-- [Exa Search](/nl/tools/exa-search) -- neurale zoekfunctie met contentextractie
+- [Brave Search](/nl/tools/brave-search) -- gestructureerde resultaten met gratis niveau
+- [Exa Search](/nl/tools/exa-search) -- neurale zoekfunctie met inhoudsextractie

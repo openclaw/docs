@@ -4,10 +4,11 @@ read_when:
 summary: Ajoute la surface de canal Mattermost pour envoyer et recevoir des messages OpenClaw.
 title: Plugin Mattermost
 x-i18n:
-    generated_at: "2026-05-03T07:13:47Z"
+    generated_at: "2026-06-27T17:55:20Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 53b202de33507d8d747cad4e424f6ee7f90dac4dfbded566eb45772f118956db
+    source_hash: 7a05711dbd897c71a19537dc7a2461be3c1c7aa37aa25f3fa0135848644040b4
     source_path: plugins/reference/mattermost.md
     workflow: 16
 ---
@@ -18,8 +19,8 @@ Ajoute la surface de canal Mattermost pour l’envoi et la réception de message
 
 ## Distribution
 
-- Paquet : `@openclaw/mattermost`
-- Voie d’installation : inclus dans OpenClaw
+- Package : `@openclaw/mattermost`
+- Chemin d’installation : npm ; ClawHub : `clawhub:@openclaw/mattermost`
 
 ## Surface
 

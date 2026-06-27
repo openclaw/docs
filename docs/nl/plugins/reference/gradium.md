@@ -1,13 +1,14 @@
 ---
 read_when:
-    - U installeert, configureert of controleert de gradium-Plugin
+    - Je installeert, configureert of controleert de gradium-plugin
 summary: Voegt ondersteuning voor tekst-naar-spraakproviders toe.
-title: Gradium Plugin
+title: Gradium-Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:51:32Z"
+    generated_at: "2026-06-27T18:01:13Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b3b783c4a93c3ef0eda61b4d007d4aebea805b977484db44e62e3b718ca7dd09
+    source_hash: 4ae70f3e901d44c238d6e1abcec13f67c0d19df6f82d92e365c3ddf0355ea23d
     source_path: plugins/reference/gradium.md
     workflow: 16
 ---
@@ -19,12 +20,12 @@ Voegt ondersteuning voor tekst-naar-spraakproviders toe.
 ## Distributie
 
 - Pakket: `@openclaw/gradium-speech`
-- Installatieroute: inbegrepen in OpenClaw
+- Installatieroute: npm; ClawHub: `clawhub:@openclaw/gradium-speech`
 
 ## Interface
 
 contracten: speechProviders
 
-## Gerelateerde docs
+## Gerelateerde documentatie
 
 - [gradium](/nl/providers/gradium)

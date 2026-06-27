@@ -1,49 +1,61 @@
 ---
 read_when:
     - Anda ingin menggunakan Cloudflare AI Gateway dengan OpenClaw
-    - Anda memerlukan ID akun, ID Gateway, atau variabel lingkungan kunci API
+    - Anda memerlukan ID akun, ID Gateway, atau variabel env kunci API
 summary: Penyiapan Cloudflare AI Gateway (autentikasi + pemilihan model)
-title: Cloudflare AI Gateway
+title: Gateway AI Cloudflare
 x-i18n:
-    generated_at: "2026-04-30T10:06:32Z"
+    generated_at: "2026-06-27T18:03:11Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c7c567076a5b3fea0f09f44d772c0858aed2a4813f91f1cc9f87b0da39c2e5db
+    source_hash: 05678faa049349c610a9c7ea9d23958bf51927453cf6987fef397cd273f6556b
     source_path: providers/cloudflare-ai-gateway.md
     workflow: 16
 ---
 
-Cloudflare AI Gateway berada di depan API penyedia dan memungkinkan Anda menambahkan analitik, caching, dan kontrol. Untuk Anthropic, OpenClaw menggunakan Anthropic Messages API melalui endpoint Gateway Anda.
+Cloudflare AI Gateway berada di depan API penyedia dan memungkinkan Anda menambahkan analitik, caching, dan kontrol. Untuk Anthropic, OpenClaw menggunakan Anthropic Messages API melalui titik akhir Gateway Anda.
 
 | Properti      | Nilai                                                                                    |
 | ------------- | ---------------------------------------------------------------------------------------- |
 | Penyedia      | `cloudflare-ai-gateway`                                                                  |
 | URL Dasar     | `https://gateway.ai.cloudflare.com/v1/<account_id>/<gateway_id>/anthropic`               |
-| Model default | `cloudflare-ai-gateway/claude-sonnet-4-6`                                                |
+| Model bawaan  | `cloudflare-ai-gateway/claude-sonnet-4-6`                                                |
 | Kunci API     | `CLOUDFLARE_AI_GATEWAY_API_KEY` (kunci API penyedia Anda untuk permintaan melalui Gateway) |
 
 <Note>
 Untuk model Anthropic yang dirutekan melalui Cloudflare AI Gateway, gunakan **kunci API Anthropic** Anda sebagai kunci penyedia.
 </Note>
 
-Saat thinking diaktifkan untuk model Anthropic Messages, OpenClaw menghapus giliran prefill asisten di akhir sebelum mengirim payload melalui Cloudflare AI Gateway.
-Anthropic menolak prefilling respons dengan extended thinking, sementara prefill non-thinking biasa tetap tersedia.
+Saat thinking diaktifkan untuk model Anthropic Messages, OpenClaw menghapus giliran
+pengisian awal asisten di akhir sebelum mengirim payload melalui Cloudflare AI Gateway.
+Anthropic menolak pengisian awal respons dengan extended thinking, sementara pengisian awal
+non-thinking biasa tetap tersedia.
+
+## Instal Plugin
+
+Instal Plugin resmi, lalu mulai ulang Gateway:
+
+```bash
+openclaw plugins install @openclaw/cloudflare-ai-gateway-provider
+openclaw gateway restart
+```
 
 ## Memulai
 
 <Steps>
-  <Step title="Set the provider API key and Gateway details">
-    Jalankan onboarding dan pilih opsi auth Cloudflare AI Gateway:
+  <Step title="Atur kunci API penyedia dan detail Gateway">
+    Jalankan onboarding dan pilih opsi autentikasi Cloudflare AI Gateway:
 
     ```bash
     openclaw onboard --auth-choice cloudflare-ai-gateway-api-key
     ```
 
-    Ini meminta ID akun, ID gateway, dan kunci API Anda.
+    Ini akan meminta ID akun, ID Gateway, dan kunci API Anda.
 
   </Step>
-  <Step title="Set a default model">
-    Tambahkan model ke config OpenClaw Anda:
+  <Step title="Atur model bawaan">
+    Tambahkan model ke konfigurasi OpenClaw Anda:
 
     ```json5
     {
@@ -56,7 +68,7 @@ Anthropic menolak prefilling respons dengan extended thinking, sementara prefill
     ```
 
   </Step>
-  <Step title="Verify the model is available">
+  <Step title="Verifikasi bahwa model tersedia">
     ```bash
     openclaw models list --provider cloudflare-ai-gateway
     ```
@@ -65,7 +77,7 @@ Anthropic menolak prefilling respons dengan extended thinking, sementara prefill
 
 ## Contoh non-interaktif
 
-Untuk penyiapan skrip atau CI, teruskan semua nilai di baris perintah:
+Untuk penyiapan berbasis skrip atau CI, berikan semua nilai pada baris perintah:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -79,8 +91,8 @@ openclaw onboard --non-interactive \
 ## Konfigurasi lanjutan
 
 <AccordionGroup>
-  <Accordion title="Authenticated gateways">
-    Jika Anda mengaktifkan autentikasi Gateway di Cloudflare, tambahkan header `cf-aig-authorization`. Ini **sebagai tambahan dari** kunci API penyedia Anda.
+  <Accordion title="Gateway terautentikasi">
+    Jika Anda mengaktifkan autentikasi Gateway di Cloudflare, tambahkan header `cf-aig-authorization`. Ini **sebagai tambahan untuk** kunci API penyedia Anda.
 
     ```json5
     {
@@ -97,16 +109,16 @@ openclaw onboard --non-interactive \
     ```
 
     <Tip>
-    Header `cf-aig-authorization` mengautentikasi dengan Cloudflare Gateway itu sendiri, sementara kunci API penyedia (misalnya, kunci Anthropic Anda) mengautentikasi dengan penyedia upstream.
+    Header `cf-aig-authorization` mengautentikasi ke Cloudflare Gateway itu sendiri, sedangkan kunci API penyedia (misalnya, kunci Anthropic Anda) mengautentikasi ke penyedia upstream.
     </Tip>
 
   </Accordion>
 
-  <Accordion title="Environment note">
+  <Accordion title="Catatan lingkungan">
     Jika Gateway berjalan sebagai daemon (launchd/systemd), pastikan `CLOUDFLARE_AI_GATEWAY_API_KEY` tersedia untuk proses tersebut.
 
     <Warning>
-    Kunci yang hanya berada di `~/.profile` tidak akan membantu daemon launchd/systemd kecuali environment tersebut juga diimpor ke sana. Tetapkan kunci di `~/.openclaw/.env` atau melalui `env.shellEnv` untuk memastikan proses gateway dapat membacanya.
+    Kunci yang diekspor hanya di shell interaktif tidak akan membantu daemon launchd/systemd kecuali lingkungan tersebut juga diimpor ke sana. Atur kunci di `~/.openclaw/.env` atau melalui `env.shellEnv` untuk memastikan proses Gateway dapat membacanya.
     </Warning>
 
   </Accordion>
@@ -115,10 +127,10 @@ openclaw onboard --non-interactive \
 ## Terkait
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/id/concepts/model-providers" icon="layers">
+  <Card title="Pemilihan model" href="/id/concepts/model-providers" icon="layers">
     Memilih penyedia, referensi model, dan perilaku failover.
   </Card>
-  <Card title="Troubleshooting" href="/id/help/troubleshooting" icon="wrench">
+  <Card title="Pemecahan masalah" href="/id/help/troubleshooting" icon="wrench">
     Pemecahan masalah umum dan FAQ.
   </Card>
 </CardGroup>

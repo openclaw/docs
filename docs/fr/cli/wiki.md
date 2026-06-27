@@ -2,13 +2,14 @@
 read_when:
     - Vous souhaitez utiliser la CLI memory-wiki
     - Vous documentez ou modifiez `openclaw wiki`
-summary: Référence CLI pour `openclaw wiki` (état, recherche, compilation, lint, application, bridge et assistants Obsidian du coffre memory-wiki)
+summary: Référence CLI pour `openclaw wiki` (état du coffre memory-wiki, recherche, compilation, lint, application, bridge et assistants Obsidian)
 title: Wiki
 x-i18n:
-    generated_at: "2026-04-30T07:20:33Z"
+    generated_at: "2026-06-27T17:22:30Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 67fe56c9bff7b24570f890733314857dd261fca8233051681a83c171656ff27d
+    source_hash: c6679a5aad41a19dbcad6075c190c3eb533e3ba13a6d5018d56988a23b2d9023
     source_path: cli/wiki.md
     workflow: 16
 ---
@@ -23,17 +24,17 @@ Liés :
 
 - [Plugin Memory Wiki](/fr/plugins/memory-wiki)
 - [Vue d’ensemble de la mémoire](/fr/concepts/memory)
-- [CLI : mémoire](/fr/cli/memory)
+- [CLI : memory](/fr/cli/memory)
 
 ## À quoi cela sert
 
 Utilisez `openclaw wiki` lorsque vous voulez un coffre de connaissances compilé avec :
 
-- une recherche native wiki et la lecture de pages
-- des synthèses riches en provenance
-- des rapports de contradictions et de fraîcheur
-- des importations de pont depuis le Plugin de mémoire active
-- des assistants CLI Obsidian facultatifs
+- recherche native de wiki et lecture de pages
+- synthèses riches en provenance
+- rapports de contradiction et de fraîcheur
+- imports de pont depuis le Plugin de mémoire active
+- assistants CLI Obsidian facultatifs
 
 ## Commandes courantes
 
@@ -42,6 +43,7 @@ openclaw wiki status
 openclaw wiki doctor
 openclaw wiki init
 openclaw wiki ingest ./notes/alpha.md
+openclaw wiki okf import ./knowledge-catalog/okf/bundles/ga4
 openclaw wiki compile
 openclaw wiki lint
 openclaw wiki search "alpha"
@@ -71,27 +73,27 @@ openclaw wiki obsidian daily
 
 ### `wiki status`
 
-Inspecter le mode actuel du coffre, son état et la disponibilité de la CLI Obsidian.
+Inspecter le mode actuel du coffre, son état de santé et la disponibilité de la CLI Obsidian.
 
-Utilisez d’abord cette commande lorsque vous ne savez pas si le coffre est initialisé, si le mode pont
+Utilisez cette commande en premier lorsque vous ne savez pas si le coffre est initialisé, si le mode pont
 est sain ou si l’intégration Obsidian est disponible.
 
 Lorsque le mode pont est actif et configuré pour lire les artefacts de mémoire, cette commande
-interroge le Gateway en cours d’exécution afin de voir le même contexte de Plugin de mémoire active que
+interroge le Gateway en cours d’exécution afin de voir le même contexte du Plugin de mémoire active que
 la mémoire agent/runtime.
 
 ### `wiki doctor`
 
-Exécuter les contrôles d’état du wiki et signaler les problèmes de configuration ou de coffre.
+Exécuter les vérifications de santé du wiki et faire apparaître les problèmes de configuration ou de coffre.
 
 Lorsque le mode pont est actif et configuré pour lire les artefacts de mémoire, cette commande
-interroge le Gateway en cours d’exécution avant de créer le rapport. Les importations de pont désactivées
-et les configurations de pont qui ne lisent pas les artefacts de mémoire restent locales/hors ligne.
+interroge le Gateway en cours d’exécution avant de construire le rapport. Les imports de pont désactivés
+et les configurations de pont qui ne lisent pas les artefacts de mémoire restent locaux/hors ligne.
 
 Les problèmes typiques incluent :
 
 - mode pont activé sans artefacts de mémoire publics
-- disposition de coffre invalide ou manquante
+- disposition du coffre invalide ou manquante
 - CLI Obsidian externe manquante lorsque le mode Obsidian est attendu
 
 ### `wiki init`
@@ -108,30 +110,55 @@ Importer du contenu dans la couche source du wiki.
 Notes :
 
 - l’ingestion d’URL est contrôlée par `ingest.allowUrlIngest`
-- les pages sources importées conservent leur provenance dans le frontmatter
-- la compilation automatique peut s’exécuter après l’ingestion lorsqu’elle est activée
+- les pages source importées conservent la provenance dans le frontmatter
+- l’auto-compilation peut s’exécuter après l’ingestion lorsqu’elle est activée
+
+### `wiki okf import <path>`
+
+Importer un bundle Open Knowledge Format décompressé dans les pages de concepts du wiki.
+
+L’importateur lit chaque document de concept `.md` non réservé dans l’arborescence
+OKF, exige un champ `type` non vide et traite les valeurs OKF `type` inconnues
+comme des concepts génériques. Les fichiers OKF réservés `index.md` et `log.md`
+ne sont pas importés comme concepts.
+
+Les pages importées sont aplaties sous `concepts/` afin que les flux existants de compilation,
+recherche, lecture, résumé et tableau de bord du wiki les voient immédiatement. L’ID de concept OKF
+d’origine, `type`, `resource`, `tags`, l’horodatage, le chemin source et le frontmatter
+complet sont conservés dans le frontmatter de la page. Les liens Markdown OKF internes
+sont réécrits vers les pages wiki générées ; les liens cassés ou externes restent
+inchangés.
+
+Exemples :
+
+```bash
+openclaw wiki okf import ./bundles/ga4
+openclaw wiki okf import ./bundles/ga4 --json
+openclaw wiki search "BigQuery Table" --mode source-evidence --json
+openclaw wiki get <path-from-json-result>
+```
 
 ### `wiki compile`
 
-Reconstruire les index, les blocs liés, les tableaux de bord et les condensés compilés.
+Reconstruire les index, les blocs associés, les tableaux de bord et les résumés compilés.
 
 Cela écrit des artefacts stables destinés aux machines sous :
 
 - `.openclaw-wiki/cache/agent-digest.json`
 - `.openclaw-wiki/cache/claims.jsonl`
 
-Si `render.createDashboards` est activé, la compilation actualise aussi les pages de rapport.
+Si `render.createDashboards` est activé, la compilation actualise également les pages de rapport.
 
 ### `wiki lint`
 
-Analyser le coffre et signaler :
+Vérifier le coffre et signaler :
 
-- les problèmes structurels
-- les lacunes de provenance
-- les contradictions
-- les questions ouvertes
-- les pages/revendications à faible confiance
-- les pages/revendications obsolètes
+- problèmes structurels
+- lacunes de provenance
+- contradictions
+- questions ouvertes
+- pages/revendications à faible confiance
+- pages/revendications obsolètes
 
 Exécutez cette commande après des mises à jour significatives du wiki.
 
@@ -147,14 +174,14 @@ Le comportement dépend de la configuration :
   `raw-claim`
 
 Utilisez `wiki search` lorsque vous voulez un classement propre au wiki ou des détails de provenance.
-Pour un rappel partagé large en une seule passe, préférez `openclaw memory search` lorsque le
+Pour une seule passe large de rappel partagé, préférez `openclaw memory search` lorsque le
 Plugin de mémoire active expose la recherche partagée.
 
 Les modes de recherche aident l’agent à choisir la bonne surface :
 
-- `find-person` : alias, identifiants, réseaux sociaux, ID canoniques et pages de personnes
-- `route-question` : indications ask-for/best-used-for et contexte relationnel
-- `source-evidence` : pages sources et champs de preuve structurés
+- `find-person` : alias, handles, réseaux sociaux, ID canoniques et pages de personnes
+- `route-question` : indices ask-for/best-used-for et contexte relationnel
+- `source-evidence` : pages source et champs de preuves structurées
 - `raw-claim` : texte de revendication structuré avec métadonnées de revendication/preuve
 
 Exemples :
@@ -166,7 +193,7 @@ openclaw wiki search "maintainer-whois" --mode source-evidence
 openclaw wiki search "strong route Teams" --mode raw-claim --json
 ```
 
-La sortie texte inclut des lignes `Claim:` et `Evidence:` lorsqu’un résultat correspond à une
+La sortie texte inclut les lignes `Claim:` et `Evidence:` lorsqu’un résultat correspond à une
 revendication structurée. La sortie JSON expose en plus `matchedClaimId`,
 `matchedClaimStatus`, `matchedClaimConfidence`, `evidenceKinds` et
 `evidenceSourceIds` pour l’exploration côté agent.
@@ -184,13 +211,13 @@ openclaw wiki get syntheses/alpha-summary.md --from 1 --lines 80
 
 ### `wiki apply`
 
-Appliquer des mutations ciblées sans chirurgie libre de page.
+Appliquer des mutations ciblées sans chirurgie de page libre.
 
 Les flux pris en charge incluent :
 
 - créer/mettre à jour une page de synthèse
 - mettre à jour les métadonnées de page
-- attacher des ID sources
+- attacher des ID de source
 - ajouter des questions
 - ajouter des contradictions
 - mettre à jour la confiance/le statut
@@ -201,22 +228,22 @@ les blocs gérés.
 
 ### `wiki bridge import`
 
-Importer les artefacts de mémoire publics du Plugin de mémoire active dans des pages sources
-adossées au pont.
+Importer des artefacts de mémoire publics depuis le Plugin de mémoire active vers des
+pages source adossées au pont.
 
-Utilisez cette commande en mode `bridge` lorsque vous voulez importer dans le coffre wiki les derniers artefacts
-de mémoire exportés.
+Utilisez cette commande en mode `bridge` lorsque vous voulez que les derniers artefacts de mémoire exportés
+soient importés dans le coffre wiki.
 
-Pour les lectures actives d’artefacts de pont, la CLI achemine l’importation via le RPC du Gateway
-afin que l’importation utilise le contexte runtime du Plugin de mémoire. Si les importations de pont sont
-désactivées ou si les lectures d’artefacts sont coupées, la commande conserve le comportement local/hors ligne
-sans importation.
+Pour les lectures actives d’artefacts de pont, la CLI achemine l’import via Gateway RPC
+afin que l’import utilise le contexte runtime du Plugin de mémoire. Si les imports de pont sont
+désactivés ou si les lectures d’artefacts sont désactivées, la commande conserve le comportement local/hors ligne
+à zéro import.
 
 ### `wiki unsafe-local import`
 
 Importer depuis des chemins locaux explicitement configurés en mode `unsafe-local`.
 
-C’est volontairement expérimental et limité à la même machine.
+Ceci est intentionnellement expérimental et limité à la même machine.
 
 ### `wiki obsidian ...`
 
@@ -230,19 +257,22 @@ Sous-commandes :
 - `command`
 - `daily`
 
-Elles nécessitent la CLI officielle `obsidian` sur le `PATH` lorsque
+Elles nécessitent la CLI officielle `obsidian` sur `PATH` lorsque
 `obsidian.useOfficialCli` est activé.
 
-## Conseils d’utilisation pratiques
+## Conseils d’utilisation pratique
 
-- Utilisez `wiki search` + `wiki get` lorsque la provenance et l’identité des pages sont importantes.
-- Utilisez `wiki apply` plutôt que de modifier à la main les sections générées gérées.
+- Utilisez `wiki search` + `wiki get` lorsque la provenance et l’identité des pages comptent.
+- Utilisez `wiki apply` au lieu de modifier manuellement les sections générées gérées.
 - Utilisez `wiki lint` avant de faire confiance à du contenu contradictoire ou à faible confiance.
-- Utilisez `wiki compile` après des importations en bloc ou des changements de sources lorsque vous voulez immédiatement
-  des tableaux de bord et des condensés compilés à jour.
-- Utilisez `wiki bridge import` lorsque le mode pont dépend d’artefacts de mémoire nouvellement exportés.
+- Utilisez `wiki compile` après des imports en masse ou des changements de source lorsque vous voulez immédiatement des
+  tableaux de bord et des résumés compilés à jour.
+- Utilisez `wiki okf import` lorsqu’un catalogue de données, un export de documentation ou un pipeline
+  d’enrichissement d’agent émet déjà des bundles Markdown OKF.
+- Utilisez `wiki bridge import` lorsque le mode pont dépend d’artefacts de mémoire
+  nouvellement exportés.
 
-## Liens avec la configuration
+## Liens de configuration
 
 Le comportement de `openclaw wiki` est façonné par :
 
@@ -256,7 +286,7 @@ Le comportement de `openclaw wiki` est façonné par :
 
 Consultez [Plugin Memory Wiki](/fr/plugins/memory-wiki) pour le modèle de configuration complet.
 
-## Lié
+## Liés
 
 - [Référence CLI](/fr/cli)
-- [Wiki mémoire](/fr/plugins/memory-wiki)
+- [Wiki de mémoire](/fr/plugins/memory-wiki)

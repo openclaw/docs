@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das Sprachanruf-Plugin
-summary: Fügt vom Agenten aufrufbare Tools hinzu.
+    - Sie installieren, konfigurieren oder prüfen das Sprachanruf-Plugin
+summary: OpenClaw-Sprachanruf-Plugin für Telefonanrufe mit Twilio, Telnyx und Plivo.
 title: Sprachanruf-Plugin
 x-i18n:
-    generated_at: "2026-05-03T06:42:56Z"
+    generated_at: "2026-06-27T17:57:21Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4d91fe5d8c24761a7e8a57452c3826640a65301e18af88819188f8244515e36c
+    source_hash: b0e298a2d8701d6fd531b761f8c14477b8c37a376af43127aa67c2fa6ff1b02d
     source_path: plugins/reference/voice-call.md
     workflow: 16
 ---
 
 # Voice Call-Plugin
 
-Fügt vom Agenten aufrufbare Tools hinzu.
+OpenClaw Voice-Call-Plugin für Telefonanrufe über Twilio, Telnyx und Plivo.
 
 ## Distribution
 
@@ -23,7 +24,7 @@ Fügt vom Agenten aufrufbare Tools hinzu.
 
 ## Oberfläche
 
-contracts: tools
+Verträge: Tools; Skills
 
 ## Zugehörige Dokumentation
 

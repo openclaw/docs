@@ -1,13 +1,14 @@
 ---
 read_when:
-    - أنت تثبّت Plugin fal أو تهيّئه أو تدقّقه
-summary: يضيف دعم مزود نماذج fal إلى OpenClaw.
+    - أنت تثبّت أو تهيّئ أو تدقّق Plugin fal
+summary: يضيف دعم موفر نماذج fal إلى OpenClaw.
 title: Plugin fal
 x-i18n:
-    generated_at: "2026-05-02T20:55:32Z"
+    generated_at: "2026-06-27T18:12:16Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a7401899ad52835dbea562e6481787b15e92f2d7967c99e89fd249a53e4dcd25
+    source_hash: f62d6a642a6edaa581fb23fa27dade77486c827d460f19aa23750959f5aa6f1c
     source_path: plugins/reference/fal.md
     workflow: 16
 ---
@@ -19,12 +20,12 @@ x-i18n:
 ## التوزيع
 
 - الحزمة: `@openclaw/fal-provider`
-- مسار التثبيت: مضمّن في OpenClaw
+- مسار التثبيت: مضمن في OpenClaw
 
-## الواجهة
+## السطح
 
-الموفّرون: fal؛ العقود: imageGenerationProviders, videoGenerationProviders
+الموفّرون: fal؛ العقود: imageGenerationProviders, musicGenerationProviders, videoGenerationProviders
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
 - [fal](/ar/providers/fal)

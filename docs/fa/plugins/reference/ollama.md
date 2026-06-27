@@ -1,30 +1,32 @@
 ---
 read_when:
-    - در حال نصب، پیکربندی یا ممیزی Plugin ollama هستید
-summary: پشتیبانی از ارائه‌دهندهٔ مدل Ollama را به OpenClaw اضافه می‌کند.
-title: Plugin Ollama
+    - شما در حال نصب، پیکربندی یا ممیزی plugin ollama هستید
+summary: پشتیبانی از ارائه‌دهنده مدل Ollama و Ollama Cloud را به OpenClaw اضافه می‌کند.
+title: Plugin اولاما
 x-i18n:
-    generated_at: "2026-05-02T20:56:01Z"
+    generated_at: "2026-06-27T18:27:52Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3257b3086e28e62c0c9bdc4ff22bd8c7a6ea6bec0ed018e5a93e811ba0353a23
+    source_hash: 25f12b28696c80f0d15069b6c8b0b4c84d54bf5119208dd80eafd230b6d8f314
     source_path: plugins/reference/ollama.md
     workflow: 16
 ---
 
 # Plugin Ollama
 
-پشتیبانی از ارائه‌دهندهٔ مدل Ollama را به OpenClaw اضافه می‌کند.
+پشتیبانی از ارائه‌دهنده مدل Ollama و Ollama Cloud را به OpenClaw اضافه می‌کند.
 
 ## توزیع
 
 - بسته: `@openclaw/ollama-provider`
-- مسیر نصب: همراه OpenClaw ارائه شده است
+- مسیر نصب: در OpenClaw گنجانده شده است
 
 ## سطح
 
-providers: ollama; contracts: memoryEmbeddingProviders, webSearchProviders
+ارائه‌دهنده‌ها: ollama، ollama-cloud؛ قراردادها: memoryEmbeddingProviders، webSearchProviders
 
 ## مستندات مرتبط
 
 - [ollama](/fa/providers/ollama)
+- [ollama-cloud](/fa/providers/ollama-cloud)

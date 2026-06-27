@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Sie möchten einen LLM-Schritt in Arbeitsabläufen, der ausschließlich JSON ausgibt
-    - Sie benötigen schema-validierte LLM-Ausgaben für die Automatisierung
-summary: JSON-only-LLM-Aufgaben für Workflows (optionales Plugin-Tool)
+    - Sie möchten einen reinen JSON-LLM-Schritt innerhalb von Workflows.
+    - Sie benötigen schemavalidierte LLM-Ausgabe für Automatisierung
+summary: Nur-JSON-LLM-Aufgaben für Workflows (optionales Plugin-Tool)
 title: LLM-Aufgabe
 x-i18n:
-    generated_at: "2026-05-07T13:26:11Z"
+    generated_at: "2026-06-27T18:19:30Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4f5efe399165e31a7f5966b93c2f83bced4fd96b7f04f5156412fd321bf5f403
+    source_hash: ab83202bd0954a948c933c80de17385eb385573b8e3974dba41ff876f91c3ddb
     source_path: tools/llm-task.md
     workflow: 16
 ---
@@ -43,7 +44,7 @@ ohne für jeden Workflow eigenen OpenClaw-Code zu schreiben.
 }
 ```
 
-Verwenden Sie `tools.allow` nur, wenn Sie den restriktiven Allowlist-Modus möchten.
+Verwenden Sie `tools.allow` nur, wenn Sie den restriktiven Allowlist-Modus nutzen möchten.
 
 ## Konfiguration (optional)
 
@@ -54,10 +55,10 @@ Verwenden Sie `tools.allow` nur, wenn Sie den restriktiven Allowlist-Modus möch
       "llm-task": {
         "enabled": true,
         "config": {
-          "defaultProvider": "openai-codex",
+          "defaultProvider": "openai",
           "defaultModel": "gpt-5.5",
           "defaultAuthProfileId": "main",
-          "allowedModels": ["openai/gpt-5.4"],
+          "allowedModels": ["openai/gpt-5.5"],
           "maxTokens": 800,
           "timeoutMs": 30000
         }
@@ -67,7 +68,7 @@ Verwenden Sie `tools.allow` nur, wenn Sie den restriktiven Allowlist-Modus möch
 }
 ```
 
-`allowedModels` ist eine Allowlist von `provider/model`-Strings. Wenn sie festgelegt ist, wird jede Anfrage
+`allowedModels` ist eine Allowlist von `provider/model`-Strings. Wenn sie gesetzt ist, wird jede Anfrage
 außerhalb der Liste abgelehnt.
 
 ## Tool-Parameter
@@ -83,7 +84,7 @@ außerhalb der Liste abgelehnt.
 - `maxTokens` (Zahl, optional)
 - `timeoutMs` (Zahl, optional)
 
-`thinking` akzeptiert die standardmäßigen OpenClaw-Reasoning-Voreinstellungen, etwa `low` oder `medium`.
+`thinking` akzeptiert die standardmäßigen OpenClaw-Reasoning-Voreinstellungen, wie `low` oder `medium`.
 
 ## Ausgabe
 
@@ -94,7 +95,7 @@ Gibt `details.json` zurück, das das geparste JSON enthält (und gegen
 
 ### Wichtige Einschränkung
 
-Das folgende Beispiel setzt voraus, dass die **eigenständige Lobster CLI** in einer Umgebung ausgeführt wird, in der `openclaw.invoke` bereits den korrekten Gateway-URL-/Auth-Kontext hat.
+Das folgende Beispiel setzt voraus, dass die **eigenständige Lobster-CLI** in einer Umgebung läuft, in der `openclaw.invoke` bereits den richtigen Gateway-URL-/Auth-Kontext hat.
 
 Für den gebündelten **eingebetteten** Lobster-Runner innerhalb von OpenClaw ist dieses verschachtelte CLI-Muster **derzeit nicht zuverlässig**:
 
@@ -107,7 +108,7 @@ Bis eingebettetes Lobster eine unterstützte Bridge für diesen Ablauf hat, bevo
 - direkte `llm-task`-Tool-Aufrufe außerhalb von Lobster oder
 - Lobster-Schritte, die nicht auf verschachtelte `openclaw.invoke`-Aufrufe angewiesen sind.
 
-Beispiel für eigenständige Lobster CLI:
+Beispiel für die eigenständige Lobster-CLI:
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{
@@ -131,13 +132,13 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 
 ## Sicherheitshinweise
 
-- Das Tool ist **ausschließlich JSON** und weist das Modell an, nur JSON auszugeben (keine
-  Code-Fences, keine Kommentare).
-- Dem Modell werden für diesen Lauf keine Tools bereitgestellt.
+- Das Tool ist **nur JSON** und weist das Modell an, nur JSON auszugeben (keine
+  Code-Fences, kein Kommentar).
+- Für diesen Durchlauf werden dem Modell keine Tools bereitgestellt.
 - Behandeln Sie die Ausgabe als nicht vertrauenswürdig, sofern Sie sie nicht mit `schema` validieren.
-- Platzieren Sie Genehmigungen vor jedem Schritt mit Seiteneffekten (senden, posten, ausführen).
+- Platzieren Sie Genehmigungen vor jedem Schritt mit Seiteneffekten (Senden, Posten, Ausführen).
 
-## Siehe auch
+## Verwandte Themen
 
 - [Thinking-Stufen](/de/tools/thinking)
 - [Sub-Agents](/de/tools/subagents)

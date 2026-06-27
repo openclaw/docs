@@ -1,38 +1,44 @@
 ---
 read_when:
-    - Bạn muốn dùng môi trường sandbox do đám mây quản lý thay vì Docker cục bộ
+    - Bạn muốn các sandbox được quản lý trên đám mây thay vì Docker cục bộ
     - Bạn đang thiết lập Plugin OpenShell
-    - Bạn cần chọn giữa chế độ phản chiếu và chế độ không gian làm việc từ xa
+    - Bạn cần chọn giữa chế độ không gian làm việc mirror và remote
 summary: Sử dụng OpenShell làm backend sandbox được quản lý cho các tác nhân OpenClaw
 title: OpenShell
 x-i18n:
-    generated_at: "2026-04-29T22:45:19Z"
+    generated_at: "2026-06-27T17:31:11Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 694a0a145802f4b624af01b58cbb5886bab7426fb9a90f216480141082089144
+    source_hash: d278f7550a3178c30a1b42f80495c55bb9827f7785ce9c4d1ee4a57adb3a5e4b
     source_path: gateway/openshell.md
     workflow: 16
 ---
 
-OpenShell là một backend sandbox được quản lý cho OpenClaw. Thay vì chạy Docker
-containers cục bộ, OpenClaw ủy quyền vòng đời sandbox cho CLI `openshell`,
-CLI này cung cấp môi trường từ xa với cơ chế thực thi lệnh dựa trên SSH.
+OpenShell là backend sandbox được quản lý cho OpenClaw. Thay vì chạy Docker
+container cục bộ, OpenClaw ủy quyền vòng đời sandbox cho CLI `openshell`,
+công cụ này cấp phát môi trường từ xa với thực thi lệnh dựa trên SSH.
 
 Plugin OpenShell tái sử dụng cùng transport SSH lõi và cầu nối hệ thống tệp từ xa
-như [backend SSH](/vi/gateway/sandboxing#ssh-backend) chung. Plugin này bổ sung
-vòng đời riêng cho OpenShell (`sandbox create/get/delete`, `sandbox ssh-config`)
-và chế độ không gian làm việc `mirror` tùy chọn.
+như [backend SSH](/vi/gateway/sandboxing#ssh-backend) chung. Nó bổ sung vòng đời
+riêng cho OpenShell (`sandbox create/get/delete`, `sandbox ssh-config`)
+và chế độ workspace `mirror` tùy chọn.
 
 ## Điều kiện tiên quyết
 
-- CLI `openshell` đã được cài đặt và nằm trong `PATH` (hoặc đặt đường dẫn tùy chỉnh qua
+- Đã cài đặt Plugin OpenShell (`openclaw plugins install @openclaw/openshell-sandbox`)
+- Đã cài đặt CLI `openshell` và có trong `PATH` (hoặc đặt đường dẫn tùy chỉnh qua
   `plugins.entries.openshell.config.command`)
-- Tài khoản OpenShell có quyền truy cập sandbox
-- OpenClaw Gateway đang chạy trên máy chủ
+- Một tài khoản OpenShell có quyền truy cập sandbox
+- OpenClaw Gateway đang chạy trên host
 
 ## Bắt đầu nhanh
 
-1. Bật plugin và đặt backend sandbox:
+1. Cài đặt và bật Plugin, sau đó đặt backend sandbox:
+
+```bash
+openclaw plugins install @openclaw/openshell-sandbox
+```
 
 ```json5
 {
@@ -70,20 +76,20 @@ openclaw sandbox list
 openclaw sandbox explain
 ```
 
-## Chế độ không gian làm việc
+## Chế độ workspace
 
-Đây là quyết định quan trọng nhất khi dùng OpenShell.
+Đây là quyết định quan trọng nhất khi sử dụng OpenShell.
 
 ### `mirror`
 
-Dùng `plugins.entries.openshell.config.mode: "mirror"` khi bạn muốn **không gian làm việc
-cục bộ vẫn là nguồn chính thống**.
+Dùng `plugins.entries.openshell.config.mode: "mirror"` khi bạn muốn **workspace cục bộ
+vẫn là nguồn chuẩn**.
 
 Hành vi:
 
-- Trước `exec`, OpenClaw đồng bộ không gian làm việc cục bộ vào sandbox OpenShell.
-- Sau `exec`, OpenClaw đồng bộ không gian làm việc từ xa trở lại không gian làm việc cục bộ.
-- Công cụ tệp vẫn hoạt động qua cầu nối sandbox, nhưng không gian làm việc cục bộ
+- Trước `exec`, OpenClaw đồng bộ workspace cục bộ vào sandbox OpenShell.
+- Sau `exec`, OpenClaw đồng bộ workspace từ xa trở lại workspace cục bộ.
+- Các công cụ tệp vẫn hoạt động qua cầu nối sandbox, nhưng workspace cục bộ
   vẫn là nguồn sự thật giữa các lượt.
 
 Phù hợp nhất cho:
@@ -91,52 +97,52 @@ Phù hợp nhất cho:
 - Bạn chỉnh sửa tệp cục bộ bên ngoài OpenClaw và muốn các thay đổi đó tự động hiển thị trong
   sandbox.
 - Bạn muốn sandbox OpenShell hoạt động giống backend Docker nhất có thể.
-- Bạn muốn không gian làm việc trên máy chủ phản ánh các lần ghi của sandbox sau mỗi lượt exec.
+- Bạn muốn workspace trên host phản ánh các ghi từ sandbox sau mỗi lượt exec.
 
-Đánh đổi: tốn thêm chi phí đồng bộ trước và sau mỗi lần exec.
+Đánh đổi: thêm chi phí đồng bộ trước và sau mỗi exec.
 
 ### `remote`
 
 Dùng `plugins.entries.openshell.config.mode: "remote"` khi bạn muốn
-**không gian làm việc OpenShell trở thành nguồn chính thống**.
+**workspace OpenShell trở thành nguồn chuẩn**.
 
 Hành vi:
 
-- Khi sandbox được tạo lần đầu, OpenClaw seed không gian làm việc từ xa từ
-  không gian làm việc cục bộ một lần.
+- Khi sandbox được tạo lần đầu, OpenClaw gieo workspace từ xa từ
+  workspace cục bộ một lần.
 - Sau đó, `exec`, `read`, `write`, `edit`, và `apply_patch` hoạt động
-  trực tiếp trên không gian làm việc OpenShell từ xa.
-- OpenClaw **không** đồng bộ các thay đổi từ xa trở lại không gian làm việc cục bộ.
-- Việc đọc media trong lúc tạo prompt vẫn hoạt động vì các công cụ tệp và media đọc qua
+  trực tiếp trên workspace OpenShell từ xa.
+- OpenClaw **không** đồng bộ các thay đổi từ xa trở lại workspace cục bộ.
+- Các lượt đọc media tại thời điểm prompt vẫn hoạt động vì công cụ tệp và media đọc qua
   cầu nối sandbox.
 
 Phù hợp nhất cho:
 
-- Sandbox nên tồn tại chủ yếu ở phía từ xa.
+- Sandbox chủ yếu nên sống ở phía từ xa.
 - Bạn muốn giảm chi phí đồng bộ theo từng lượt.
-- Bạn không muốn các chỉnh sửa cục bộ trên máy chủ âm thầm ghi đè trạng thái sandbox từ xa.
+- Bạn không muốn các chỉnh sửa cục bộ trên host âm thầm ghi đè trạng thái sandbox từ xa.
 
 <Warning>
-Nếu bạn chỉnh sửa tệp trên máy chủ bên ngoài OpenClaw sau lần seed ban đầu, sandbox từ xa **không** thấy các thay đổi đó. Dùng `openclaw sandbox recreate` để seed lại.
+Nếu bạn chỉnh sửa tệp trên host bên ngoài OpenClaw sau lần gieo ban đầu, sandbox từ xa **không** thấy các thay đổi đó. Dùng `openclaw sandbox recreate` để gieo lại.
 </Warning>
 
 ### Chọn chế độ
 
 |                          | `mirror`                   | `remote`                  |
 | ------------------------ | -------------------------- | ------------------------- |
-| **Không gian làm việc chính thống** | Máy chủ cục bộ             | OpenShell từ xa           |
-| **Hướng đồng bộ**        | Hai chiều (mỗi lần exec)   | Seed một lần              |
-| **Chi phí theo lượt**    | Cao hơn (tải lên + tải xuống) | Thấp hơn (thao tác trực tiếp từ xa) |
-| **Chỉnh sửa cục bộ có hiển thị không?** | Có, ở lần exec tiếp theo | Không, cho đến khi recreate |
-| **Phù hợp nhất cho**     | Quy trình phát triển       | Agent chạy dài hạn, CI    |
+| **Workspace chuẩn**      | Host cục bộ                | OpenShell từ xa           |
+| **Hướng đồng bộ**        | Hai chiều (mỗi exec)       | Gieo một lần              |
+| **Chi phí mỗi lượt**     | Cao hơn (tải lên + tải xuống) | Thấp hơn (thao tác trực tiếp từ xa) |
+| **Chỉnh sửa cục bộ hiển thị?** | Có, ở exec tiếp theo       | Không, cho đến khi recreate |
+| **Phù hợp nhất cho**     | Quy trình phát triển       | Agent chạy lâu, CI        |
 
 ## Tham chiếu cấu hình
 
-Tất cả cấu hình OpenShell nằm dưới `plugins.entries.openshell.config`:
+Toàn bộ cấu hình OpenShell nằm dưới `plugins.entries.openshell.config`:
 
 | Khóa                      | Kiểu                     | Mặc định      | Mô tả                                                  |
 | ------------------------- | ------------------------ | ------------- | ------------------------------------------------------ |
-| `mode`                    | `"mirror"` hoặc `"remote"` | `"mirror"`  | Chế độ đồng bộ không gian làm việc                     |
+| `mode`                    | `"mirror"` hoặc `"remote"` | `"mirror"`    | Chế độ đồng bộ workspace                               |
 | `command`                 | `string`                 | `"openshell"` | Đường dẫn hoặc tên của CLI `openshell`                 |
 | `from`                    | `string`                 | `"openclaw"`  | Nguồn sandbox cho lần tạo đầu tiên                     |
 | `gateway`                 | `string`                 | —             | Tên Gateway OpenShell (`--gateway`)                    |
@@ -144,9 +150,9 @@ Tất cả cấu hình OpenShell nằm dưới `plugins.entries.openshell.config
 | `policy`                  | `string`                 | —             | ID policy OpenShell để tạo sandbox                     |
 | `providers`               | `string[]`               | `[]`          | Tên provider cần gắn khi sandbox được tạo              |
 | `gpu`                     | `boolean`                | `false`       | Yêu cầu tài nguyên GPU                                 |
-| `autoProviders`           | `boolean`                | `true`        | Truyền `--auto-providers` trong lúc tạo sandbox        |
-| `remoteWorkspaceDir`      | `string`                 | `"/sandbox"`  | Không gian làm việc chính có thể ghi bên trong sandbox |
-| `remoteAgentWorkspaceDir` | `string`                 | `"/agent"`    | Đường dẫn mount không gian làm việc của agent (cho quyền truy cập chỉ đọc) |
+| `autoProviders`           | `boolean`                | `true`        | Truyền `--auto-providers` trong khi tạo sandbox        |
+| `remoteWorkspaceDir`      | `string`                 | `"/sandbox"`  | Workspace chính có thể ghi bên trong sandbox           |
+| `remoteAgentWorkspaceDir` | `string`                 | `"/agent"`    | Đường dẫn mount workspace agent (cho quyền truy cập chỉ đọc) |
 | `timeoutSeconds`          | `number`                 | `120`         | Thời gian chờ cho các thao tác CLI `openshell`         |
 
 Các thiết lập cấp sandbox (`mode`, `scope`, `workspaceAccess`) được cấu hình dưới
@@ -155,7 +161,7 @@ Các thiết lập cấp sandbox (`mode`, `scope`, `workspaceAccess`) được c
 
 ## Ví dụ
 
-### Thiết lập remote tối thiểu
+### Thiết lập remote tối giản
 
 ```json5
 {
@@ -254,22 +260,22 @@ Các thiết lập cấp sandbox (`mode`, `scope`, `workspaceAccess`) được c
 Sandbox OpenShell được quản lý qua CLI sandbox thông thường:
 
 ```bash
-# List all sandbox runtimes (Docker + OpenShell)
+# Liệt kê toàn bộ runtime sandbox (Docker + OpenShell)
 openclaw sandbox list
 
-# Inspect effective policy
+# Kiểm tra policy có hiệu lực
 openclaw sandbox explain
 
-# Recreate (deletes remote workspace, re-seeds on next use)
+# Tạo lại (xóa workspace từ xa, gieo lại ở lần dùng tiếp theo)
 openclaw sandbox recreate --all
 ```
 
-Với chế độ `remote`, **recreate đặc biệt quan trọng**: thao tác này xóa không gian làm việc
-từ xa chính thống cho phạm vi đó. Lần dùng tiếp theo seed một không gian làm việc từ xa mới từ
-không gian làm việc cục bộ.
+Với chế độ `remote`, **recreate đặc biệt quan trọng**: nó xóa workspace từ xa chuẩn
+cho phạm vi đó. Lần dùng tiếp theo sẽ gieo một workspace từ xa mới từ
+workspace cục bộ.
 
 Với chế độ `mirror`, recreate chủ yếu đặt lại môi trường thực thi từ xa vì
-không gian làm việc cục bộ vẫn là nguồn chính thống.
+workspace cục bộ vẫn là nguồn chuẩn.
 
 ### Khi nào cần recreate
 
@@ -286,27 +292,27 @@ openclaw sandbox recreate --all
 
 ## Gia cố bảo mật
 
-OpenShell ghim fd gốc của không gian làm việc và kiểm tra lại danh tính sandbox trước mỗi lần
-đọc, nên việc tráo symlink hoặc mount lại không gian làm việc không thể chuyển hướng lượt đọc ra ngoài
-không gian làm việc từ xa dự kiến.
+OpenShell ghim fd gốc workspace và kiểm tra lại danh tính sandbox trước mỗi lần
+đọc, vì vậy việc tráo symlink hoặc remount workspace không thể chuyển hướng lượt đọc ra ngoài
+workspace từ xa dự kiến.
 
 ## Giới hạn hiện tại
 
 - Trình duyệt sandbox không được hỗ trợ trên backend OpenShell.
 - `sandbox.docker.binds` không áp dụng cho OpenShell.
-- Các núm chỉnh runtime riêng cho Docker dưới `sandbox.docker.*` chỉ áp dụng cho backend Docker.
+- Các núm runtime riêng cho Docker dưới `sandbox.docker.*` chỉ áp dụng cho backend Docker.
 
 ## Cách hoạt động
 
 1. OpenClaw gọi `openshell sandbox create` (với các cờ `--from`, `--gateway`,
    `--policy`, `--providers`, `--gpu` như đã cấu hình).
-2. OpenClaw gọi `openshell sandbox ssh-config <name>` để lấy thông tin kết nối SSH
+2. OpenClaw gọi `openshell sandbox ssh-config <name>` để lấy chi tiết kết nối SSH
    cho sandbox.
-3. Lõi ghi cấu hình SSH vào một tệp tạm và mở phiên SSH bằng cùng cầu nối hệ thống tệp từ xa
+3. Lõi ghi cấu hình SSH vào tệp tạm và mở phiên SSH bằng cùng cầu nối hệ thống tệp từ xa
    như backend SSH chung.
-4. Ở chế độ `mirror`: đồng bộ cục bộ lên từ xa trước exec, chạy, rồi đồng bộ lại sau exec.
-5. Ở chế độ `remote`: seed một lần khi tạo, rồi thao tác trực tiếp trên không gian làm việc
-   từ xa.
+4. Ở chế độ `mirror`: đồng bộ cục bộ lên từ xa trước exec, chạy, rồi đồng bộ trở lại sau exec.
+5. Ở chế độ `remote`: gieo một lần khi tạo, sau đó thao tác trực tiếp trên
+   workspace từ xa.
 
 ## Liên quan
 

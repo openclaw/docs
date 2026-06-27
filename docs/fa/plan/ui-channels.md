@@ -1,64 +1,66 @@
 ---
 read_when:
-    - بازآرایی رابط کاربری پیام کانال، بارهای داده‌ای تعاملی، یا رندرکننده‌های بومی کانال
-    - تغییر قابلیت‌های ابزار پیام، راهنمایی‌های تحویل، یا نشانگرهای میان‌زمینه‌ای
-    - اشکال‌زدایی گسترش واردسازی Discord Carbon یا تنبل‌بودن زمان اجرای Plugin کانال
+    - بازآرایی رابط کاربری پیام کانال، بارهای داده تعاملی، یا رندرکننده‌های بومی کانال
+    - تغییر قابلیت‌های ابزار پیام، راهنماهای تحویل، یا نشانگرهای میان‌بافتی
+    - اشکال‌زدایی fanout ایمپورت Carbon در Discord یا تنبلی زمان اجرای Plugin کانال
 summary: ارائهٔ معنایی پیام را از رندرکننده‌های رابط کاربری بومی کانال جدا کنید.
-title: طرح بازآرایی نمایش کانال
+title: برنامه بازآرایی ارائه کانال
 x-i18n:
-    generated_at: "2026-04-29T23:10:11Z"
+    generated_at: "2026-06-27T18:05:39Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5608e7806a2a20e73ee82f1b1f0fcbbb4c865232df984d3d98b91e5b721998f5
+    source_hash: 6b0f0c4f64e0c503209ac0a5b763b1b5483bf8d55a28ceacffbbcd1337d4371e
     source_path: plan/ui-channels.md
     workflow: 16
 ---
 
 ## وضعیت
 
-برای عامل مشترک، CLI، قابلیت Plugin، و سطوح تحویل خروجی پیاده‌سازی شده است:
+برای عامل مشترک، CLI، قابلیت Plugin و سطوح تحویل خروجی پیاده‌سازی شده است:
 
 - `ReplyPayload.presentation` رابط کاربری معنایی پیام را حمل می‌کند.
 - `ReplyPayload.delivery.pin` درخواست‌های سنجاق‌کردن پیام ارسال‌شده را حمل می‌کند.
-- کنش‌های پیام مشترک به‌جای `components`، `blocks`، `buttons` یا `card` بومی ارائه‌دهنده، `presentation`، `delivery` و `pin` را ارائه می‌کنند.
-- هسته، ارائه را از طریق قابلیت‌های خروجی اعلام‌شده توسط Plugin رندر می‌کند یا به‌صورت خودکار تنزل می‌دهد.
-- رندرکننده‌های Discord، Slack، Telegram، Mattermost، MS Teams و Feishu قرارداد عمومی را مصرف می‌کنند.
+- کنش‌های مشترک پیام به‌جای `components`،‏ `blocks`،‏ `buttons` یا `card` بومی ارائه‌دهنده، `presentation`،‏ `delivery` و `pin` را آشکار می‌کنند.
+- هسته ارائه را از طریق قابلیت‌های خروجی اعلام‌شده توسط Plugin رندر می‌کند یا به‌صورت خودکار تنزل می‌دهد.
+- رندرکننده‌های Discord، Slack، Telegram، Mattermost، Microsoft Teams و Feishu قرارداد عمومی را مصرف می‌کنند.
 - کد صفحه کنترل کانال Discord دیگر کانتینرهای رابط کاربری مبتنی بر Carbon را import نمی‌کند.
 
 مستندات مرجع اکنون در [ارائه پیام](/fa/plugins/message-presentation) قرار دارند.
-این طرح را به‌عنوان زمینه تاریخی پیاده‌سازی نگه دارید؛ برای تغییرات قرارداد، رندرکننده یا رفتار fallback، راهنمای مرجع را به‌روزرسانی کنید.
+این طرح را به‌عنوان زمینه تاریخی پیاده‌سازی نگه دارید؛ برای تغییرات قرارداد،
+رندرکننده یا رفتار جایگزین، راهنمای مرجع را به‌روزرسانی کنید.
 
 ## مسئله
 
 رابط کاربری کانال در حال حاضر میان چند سطح ناسازگار تقسیم شده است:
 
-- هسته از طریق `buildCrossContextComponents` مالک یک hook رندرکننده میان‌بافتی با شکل Discord است.
-- `channel.ts` مربوط به Discord می‌تواند رابط کاربری بومی Carbon را از طریق `DiscordUiContainer` import کند، که وابستگی‌های رابط کاربری زمان اجرا را وارد صفحه کنترل Plugin کانال می‌کند.
-- عامل و CLI راه‌های خروج اضطراری payload بومی مانند `components` در Discord، `blocks` در Slack، `buttons` در Telegram یا Mattermost، و `card` در Teams یا Feishu را ارائه می‌کنند.
-- `ReplyPayload.channelData` هم نکته‌های transport و هم envelopeهای رابط کاربری بومی را حمل می‌کند.
-- مدل عمومی `interactive` وجود دارد، اما از layoutهای غنی‌تری که هم‌اکنون توسط Discord، Slack، Teams، Feishu، LINE، Telegram و Mattermost استفاده می‌شوند محدودتر است.
+- هسته از طریق `buildCrossContextComponents` مالک یک hook رندرکننده میان‌زمینه‌ای با شکل Discord است.
+- `channel.ts` مربوط به Discord می‌تواند از طریق `DiscordUiContainer` رابط کاربری بومی Carbon را import کند، که وابستگی‌های رابط کاربری زمان اجرا را وارد صفحه کنترل Plugin کانال می‌کند.
+- عامل و CLI راه‌های فرار payload بومی مانند `components` در Discord،‏ `blocks` در Slack،‏ `buttons` در Telegram یا Mattermost، و `card` در Microsoft Teams یا Feishu را آشکار می‌کنند.
+- `ReplyPayload.channelData` هم راهنمایی‌های انتقال و هم پوشش‌های رابط کاربری بومی را حمل می‌کند.
+- مدل عمومی `interactive` وجود دارد، اما از چیدمان‌های غنی‌تری که هم‌اکنون توسط Discord، Slack، Microsoft Teams، Feishu، LINE، Telegram و Mattermost استفاده می‌شوند محدودتر است.
 
-این موضوع باعث می‌شود هسته از شکل‌های رابط کاربری بومی آگاه باشد، تنبلی زمان اجرای Plugin را تضعیف می‌کند، و به عامل‌ها راه‌های بیش‌ازحد وابسته به ارائه‌دهنده می‌دهد تا یک intent پیام واحد را بیان کنند.
+این وضعیت باعث می‌شود هسته از شکل‌های رابط کاربری بومی آگاه باشد، تنبلی زمان اجرای Plugin را تضعیف می‌کند، و به عامل‌ها راه‌های بیش از حد ارائه‌دهنده‌محور برای بیان نیت یکسان پیام می‌دهد.
 
 ## اهداف
 
-- هسته بهترین ارائه معنایی را برای یک پیام، براساس قابلیت‌های اعلام‌شده، انتخاب می‌کند.
-- افزونه‌ها قابلیت‌ها را اعلام می‌کنند و ارائه معنایی را به payloadهای transport بومی رندر می‌کنند.
+- هسته بهترین ارائه معنایی را برای یک پیام بر اساس قابلیت‌های اعلام‌شده تصمیم‌گیری می‌کند.
+- افزونه‌ها قابلیت‌ها را اعلام می‌کنند و ارائه معنایی را به payloadهای انتقال بومی رندر می‌کنند.
 - رابط کاربری کنترل وب از رابط کاربری بومی چت جدا می‌ماند.
-- payloadهای کانال بومی از طریق سطح پیام عامل مشترک یا CLI در معرض قرار نمی‌گیرند.
-- ویژگی‌های پشتیبانی‌نشده ارائه به‌صورت خودکار به بهترین نمایش متنی تنزل می‌کنند.
-- رفتار تحویل مانند سنجاق‌کردن یک پیام ارسال‌شده، metadata عمومی تحویل است، نه ارائه.
+- payloadهای بومی کانال از طریق سطح پیام مشترک عامل یا CLI آشکار نمی‌شوند.
+- ویژگی‌های ارائه پشتیبانی‌نشده به‌صورت خودکار به بهترین نمایش متنی تنزل می‌یابند.
+- رفتار تحویل مانند سنجاق‌کردن یک پیام ارسال‌شده، فراداده عمومی تحویل است، نه ارائه.
 
 ## غیرهدف‌ها
 
 - هیچ shim سازگاری عقب‌رو برای `buildCrossContextComponents` وجود ندارد.
-- هیچ راه خروج اضطراری بومی عمومی برای `components`، `blocks`، `buttons` یا `card` وجود ندارد.
-- هیچ import از کتابخانه‌های رابط کاربری بومی کانال در هسته وجود ندارد.
-- هیچ seam مخصوص ارائه‌دهنده در SDK برای کانال‌های bundled وجود ندارد.
+- هیچ راه فرار بومی عمومی برای `components`،‏ `blocks`،‏ `buttons` یا `card` وجود ندارد.
+- هیچ import هسته‌ای از کتابخانه‌های رابط کاربری بومی کانال وجود ندارد.
+- هیچ سطح SDK ویژه ارائه‌دهنده برای کانال‌های بسته‌بندی‌شده وجود ندارد.
 
 ## مدل هدف
 
-یک فیلد `presentation` متعلق به هسته به `ReplyPayload` اضافه کنید.
+یک فیلد `presentation` تحت مالکیت هسته به `ReplyPayload` اضافه کنید.
 
 ```ts
 type MessagePresentationTone = "neutral" | "info" | "success" | "warning" | "danger";
@@ -89,17 +91,20 @@ type MessagePresentationOption = {
 };
 ```
 
-`interactive` در طول مهاجرت به زیرمجموعه‌ای از `presentation` تبدیل می‌شود:
+`interactive` هنگام مهاجرت به زیرمجموعه‌ای از `presentation` تبدیل می‌شود:
 
-- بلوک متنی `interactive` به `presentation.blocks[].type = "text"` نگاشت می‌شود.
+- بلوک متن `interactive` به `presentation.blocks[].type = "text"` نگاشت می‌شود.
 - بلوک دکمه‌های `interactive` به `presentation.blocks[].type = "buttons"` نگاشت می‌شود.
 - بلوک انتخاب `interactive` به `presentation.blocks[].type = "select"` نگاشت می‌شود.
 
-schemaهای عامل خارجی و CLI اکنون از `presentation` استفاده می‌کنند؛ `interactive` به‌عنوان parser/helper رندر legacy داخلی برای تولیدکنندگان پاسخ موجود باقی می‌ماند.
+schemaهای عامل خارجی و CLI اکنون از `presentation` استفاده می‌کنند؛ `interactive` به‌عنوان یک کمک‌گیرنده parser/rendering قدیمی داخلی برای تولیدکنندگان پاسخ موجود باقی می‌ماند.
+API عمومی روبه‌روی تولیدکننده، `interactive` را منسوخ‌شده تلقی می‌کند. پشتیبانی زمان اجرا
+باقی می‌ماند تا کمک‌گیرنده‌های تأیید موجود و Pluginهای قدیمی‌تر همچنان کار کنند،
+در حالی که کد جدید `presentation` منتشر می‌کند.
 
-## metadata تحویل
+## فراداده تحویل
 
-یک فیلد `delivery` متعلق به هسته برای رفتار ارسال که رابط کاربری نیست اضافه کنید.
+یک فیلد `delivery` تحت مالکیت هسته برای رفتار ارسال که رابط کاربری نیست اضافه کنید.
 
 ```ts
 type ReplyPayloadDelivery = {
@@ -117,14 +122,14 @@ type ReplyPayloadDelivery = {
 
 - `delivery.pin = true` یعنی نخستین پیام با تحویل موفق سنجاق شود.
 - مقدار پیش‌فرض `notify` برابر `false` است.
-- مقدار پیش‌فرض `required` برابر `false` است؛ کانال‌های پشتیبانی‌نشده یا شکست در سنجاق‌کردن با ادامه تحویل به‌صورت خودکار تنزل می‌کنند.
-- کنش‌های پیام دستی `pin`، `unpin` و `list-pins` برای پیام‌های موجود باقی می‌مانند.
+- مقدار پیش‌فرض `required` برابر `false` است؛ کانال‌های پشتیبانی‌نشده یا شکست در سنجاق‌کردن با ادامه تحویل به‌صورت خودکار تنزل می‌یابند.
+- کنش‌های پیام دستی `pin`،‏ `unpin` و `list-pins` برای پیام‌های موجود باقی می‌مانند.
 
-binding فعلی topic در Telegram ACP باید از `channelData.telegram.pin = true` به `delivery.pin = true` منتقل شود.
+اتصال topic فعلی ACP در Telegram باید از `channelData.telegram.pin = true` به `delivery.pin = true` منتقل شود.
 
 ## قرارداد قابلیت زمان اجرا
 
-hookهای رندر ارائه و تحویل را به adapter خروجی زمان اجرا اضافه کنید، نه به Plugin کانال صفحه کنترل.
+hookهای رندر ارائه و تحویل را به سازگارگر خروجی زمان اجرا اضافه کنید، نه به Plugin کانال صفحه کنترل.
 
 ```ts
 type ChannelPresentationCapabilities = {
@@ -134,6 +139,29 @@ type ChannelPresentationCapabilities = {
   context?: boolean;
   divider?: boolean;
   tones?: MessagePresentationTone[];
+  limits?: {
+    actions?: {
+      maxActions?: number;
+      maxActionsPerRow?: number;
+      maxRows?: number;
+      maxLabelLength?: number;
+      maxValueBytes?: number;
+      supportsStyles?: boolean;
+      supportsDisabled?: boolean;
+      supportsLayoutHints?: boolean;
+    };
+    selects?: {
+      maxOptions?: number;
+      maxLabelLength?: number;
+      maxValueBytes?: number;
+    };
+    text?: {
+      maxLength?: number;
+      encoding?: "characters" | "utf8-bytes" | "utf16-units";
+      markdownDialect?: "plain" | "markdown" | "html" | "slack-mrkdwn" | "discord-markdown";
+      supportsEdit?: boolean;
+    };
+  };
 };
 
 type ChannelDeliveryCapabilities = {
@@ -164,19 +192,19 @@ type ChannelOutboundAdapter = {
 
 رفتار هسته:
 
-- کانال هدف و adapter زمان اجرا را resolve کند.
-- قابلیت‌های ارائه را درخواست کند.
-- بلوک‌های پشتیبانی‌نشده را پیش از رندر تنزل دهد.
-- `renderPresentation` را فراخوانی کند.
-- اگر رندرکننده‌ای وجود ندارد، ارائه را به fallback متنی تبدیل کند.
-- پس از ارسال موفق، وقتی `delivery.pin` درخواست شده و پشتیبانی می‌شود، `pinDeliveredMessage` را فراخوانی کند.
+- کانال هدف و سازگارگر زمان اجرا را resolve کنید.
+- قابلیت‌های ارائه را درخواست کنید.
+- پیش از رندر، بلوک‌های پشتیبانی‌نشده را تنزل دهید و محدودیت‌های عمومی قابلیت را اعمال کنید.
+- `renderPresentation` را فراخوانی کنید.
+- اگر رندرکننده‌ای وجود ندارد، ارائه را به متن جایگزین تبدیل کنید.
+- پس از ارسال موفق، وقتی `delivery.pin` درخواست شده و پشتیبانی می‌شود، `pinDeliveredMessage` را فراخوانی کنید.
 
 ## نگاشت کانال
 
 Discord:
 
-- `presentation` را در ماژول‌های فقط زمان اجرا به components v2 و کانتینرهای Carbon رندر کنید.
-- helperهای رنگ accent را در ماژول‌های سبک نگه دارید.
+- `presentation` را به components v2 و کانتینرهای Carbon در ماژول‌های فقط زمان اجرا رندر کنید.
+- کمک‌گیرنده‌های رنگ accent را در ماژول‌های سبک نگه دارید.
 - importهای `DiscordUiContainer` را از کد صفحه کنترل Plugin کانال حذف کنید.
 
 Slack:
@@ -186,76 +214,76 @@ Slack:
 
 Telegram:
 
-- متن، context و dividerها را به‌صورت متن رندر کنید.
-- کنش‌ها و select را وقتی برای سطح هدف پیکربندی و مجاز شده‌اند، به‌صورت صفحه‌کلیدهای inline رندر کنید.
-- وقتی دکمه‌های inline غیرفعال هستند، از fallback متنی استفاده کنید.
-- سنجاق‌کردن topic در ACP را به `delivery.pin` منتقل کنید.
+- متن، زمینه و جداکننده‌ها را به‌صورت متن رندر کنید.
+- وقتی برای سطح هدف پیکربندی و مجاز شده باشد، کنش‌ها و انتخاب را به‌صورت صفحه‌کلیدهای inline رندر کنید.
+- وقتی دکمه‌های inline غیرفعال هستند، از متن جایگزین استفاده کنید.
+- سنجاق‌کردن topic مربوط به ACP را به `delivery.pin` منتقل کنید.
 
 Mattermost:
 
-- کنش‌ها را در جایی که پیکربندی شده‌اند به‌صورت دکمه‌های تعاملی رندر کنید.
-- سایر بلوک‌ها را به‌صورت fallback متنی رندر کنید.
+- کنش‌ها را در صورت پیکربندی، به‌صورت دکمه‌های تعاملی رندر کنید.
+- بلوک‌های دیگر را به‌صورت متن جایگزین رندر کنید.
 
-MS Teams:
+Microsoft Teams:
 
 - `presentation` را به Adaptive Cards رندر کنید.
 - کنش‌های دستی pin/unpin/list-pins را نگه دارید.
-- در صورت قابل‌اعتمادبودن پشتیبانی Graph برای گفت‌وگوی هدف، در صورت نیاز `pinDeliveredMessage` را پیاده‌سازی کنید.
+- اگر پشتیبانی Graph برای گفت‌وگوی هدف قابل اتکا است، به‌صورت اختیاری `pinDeliveredMessage` را پیاده‌سازی کنید.
 
 Feishu:
 
 - `presentation` را به کارت‌های تعاملی رندر کنید.
 - کنش‌های دستی pin/unpin/list-pins را نگه دارید.
-- اگر رفتار API قابل‌اعتماد است، در صورت نیاز `pinDeliveredMessage` را برای سنجاق‌کردن پیام ارسال‌شده پیاده‌سازی کنید.
+- اگر رفتار API قابل اتکا است، به‌صورت اختیاری `pinDeliveredMessage` را برای سنجاق‌کردن پیام ارسال‌شده پیاده‌سازی کنید.
 
 LINE:
 
-- `presentation` را در صورت امکان به پیام‌های Flex یا template رندر کنید.
-- برای بلوک‌های پشتیبانی‌نشده به متن fallback کنید.
+- در صورت امکان، `presentation` را به پیام‌های Flex یا template رندر کنید.
+- برای بلوک‌های پشتیبانی‌نشده به متن بازگردید.
 - payloadهای رابط کاربری LINE را از `channelData` حذف کنید.
 
 کانال‌های ساده یا محدود:
 
 - ارائه را با قالب‌بندی محافظه‌کارانه به متن تبدیل کنید.
 
-## مراحل refactor
+## مراحل بازآرایی
 
-1. fix انتشار Discord را دوباره اعمال کنید که `ui-colors.ts` را از رابط کاربری مبتنی بر Carbon جدا می‌کند و `DiscordUiContainer` را از `extensions/discord/src/channel.ts` حذف می‌کند.
-2. `presentation` و `delivery` را به `ReplyPayload`، نرمال‌سازی payload خروجی، خلاصه‌های تحویل، و payloadهای hook اضافه کنید.
-3. schema و helperهای parser مربوط به `MessagePresentation` را در یک subpath محدود SDK/runtime اضافه کنید.
-4. قابلیت‌های پیام `buttons`، `cards`، `components` و `blocks` را با قابلیت‌های ارائه معنایی جایگزین کنید.
-5. hookهای adapter خروجی زمان اجرا را برای رندر ارائه و سنجاق‌کردن تحویل اضافه کنید.
-6. ساخت component میان‌بافتی را با `buildCrossContextPresentation` جایگزین کنید.
-7. `src/infra/outbound/channel-adapters.ts` را حذف کنید و `buildCrossContextComponents` را از نوع‌های Plugin کانال بردارید.
-8. `maybeApplyCrossContextMarker` را تغییر دهید تا به‌جای پارامترهای بومی، `presentation` را attach کند.
-9. مسیرهای ارسال plugin-dispatch را به‌روزرسانی کنید تا فقط ارائه معنایی و metadata تحویل را مصرف کنند.
-10. پارامترهای payload بومی عامل و CLI را حذف کنید: `components`، `blocks`، `buttons` و `card`.
-11. helperهای SDK را که schemaهای ابزار پیام بومی می‌سازند حذف کنید و آن‌ها را با helperهای schema ارائه جایگزین کنید.
-12. envelopeهای رابط کاربری/بومی را از `channelData` حذف کنید؛ تا زمانی که هر فیلد باقی‌مانده بررسی شود، فقط metadata مربوط به transport را نگه دارید.
-13. رندرکننده‌های Discord، Slack، Telegram، Mattermost، MS Teams، Feishu و LINE را مهاجرت دهید.
-14. مستندات CLI پیام، صفحه‌های کانال، Plugin SDK و cookbook قابلیت را به‌روزرسانی کنید.
-15. برای Discord و entrypointهای کانال‌های تحت‌تأثیر، profiling مربوط به fanout import را اجرا کنید.
+1. اصلاح انتشار Discord را دوباره اعمال کنید که `ui-colors.ts` را از رابط کاربری مبتنی بر Carbon جدا می‌کند و `DiscordUiContainer` را از `extensions/discord/src/channel.ts` حذف می‌کند.
+2. `presentation` و `delivery` را به `ReplyPayload`، عادی‌سازی payload خروجی، خلاصه‌های تحویل و payloadهای hook اضافه کنید.
+3. schema و کمک‌گیرنده‌های parser مربوط به `MessagePresentation` را در یک زیرمسیر محدود SDK/زمان اجرا اضافه کنید.
+4. قابلیت‌های پیام `buttons`،‏ `cards`،‏ `components` و `blocks` را با قابلیت‌های ارائه معنایی جایگزین کنید.
+5. hookهای سازگارگر خروجی زمان اجرا را برای رندر ارائه و سنجاق‌کردن تحویل اضافه کنید.
+6. ساخت مؤلفه میان‌زمینه‌ای را با `buildCrossContextPresentation` جایگزین کنید.
+7. `src/infra/outbound/channel-adapters.ts` را حذف کنید و `buildCrossContextComponents` را از types مربوط به Plugin کانال بردارید.
+8. `maybeApplyCrossContextMarker` را تغییر دهید تا به‌جای پارامترهای بومی، `presentation` را الصاق کند.
+9. مسیرهای ارسال plugin-dispatch را به‌روزرسانی کنید تا فقط ارائه معنایی و فراداده تحویل را مصرف کنند.
+10. پارامترهای payload بومی عامل و CLI را حذف کنید: `components`،‏ `blocks`،‏ `buttons` و `card`.
+11. کمک‌گیرنده‌های SDK را که schemaهای ابزار پیام بومی می‌سازند حذف کنید و آن‌ها را با کمک‌گیرنده‌های schema ارائه جایگزین کنید.
+12. پوشش‌های رابط کاربری/بومی را از `channelData` حذف کنید؛ فقط فراداده انتقال را تا زمان بازبینی هر فیلد باقی‌مانده نگه دارید.
+13. رندرکننده‌های Discord، Slack، Telegram، Mattermost، Microsoft Teams، Feishu و LINE را مهاجرت دهید.
+14. مستندات CLI پیام، صفحه‌های کانال، SDK مربوط به Plugin و cookbook قابلیت را به‌روزرسانی کنید.
+15. برای Discord و entrypointهای کانال تحت تأثیر، پروفایل‌گیری fanout مربوط به import را اجرا کنید.
 
-مراحل 1 تا 11 و 13 تا 14 در این refactor برای قراردادهای عامل مشترک، CLI، قابلیت Plugin و adapter خروجی پیاده‌سازی شده‌اند. مرحله 12 همچنان یک pass پاک‌سازی داخلی عمیق‌تر برای envelopeهای transport خصوصی ارائه‌دهنده در `channelData` باقی می‌ماند. مرحله 15 اگر فراتر از gate نوع/تست، عددهای کمی fanout import بخواهیم، به‌عنوان اعتبارسنجی بعدی باقی می‌ماند.
+مراحل 1 تا 11 و 13 تا 14 در این بازآرایی برای عامل مشترک، CLI، قابلیت Plugin و قراردادهای سازگارگر خروجی پیاده‌سازی شده‌اند. مرحله 12 همچنان یک گذر پاک‌سازی داخلی عمیق‌تر برای پوشش‌های انتقال `channelData` خصوصی ارائه‌دهنده باقی می‌ماند. مرحله 15 اگر بخواهیم فراتر از gate نوع/تست، عددهای کمّی import-fanout داشته باشیم، اعتبارسنجی پیگیری محسوب می‌شود.
 
 ## تست‌ها
 
 اضافه یا به‌روزرسانی کنید:
 
-- تست‌های نرمال‌سازی ارائه.
+- تست‌های عادی‌سازی ارائه.
 - تست‌های تنزل خودکار ارائه برای بلوک‌های پشتیبانی‌نشده.
-- تست‌های marker میان‌بافتی برای مسیرهای plugin dispatch و تحویل هسته.
-- تست‌های ماتریس رندر کانال برای Discord، Slack، Telegram، Mattermost، MS Teams، Feishu، LINE و fallback متنی.
+- تست‌های نشانگر میان‌زمینه‌ای برای plugin dispatch و مسیرهای تحویل هسته.
+- تست‌های ماتریس رندر کانال برای Discord، Slack، Telegram، Mattermost، Microsoft Teams، Feishu، LINE و متن جایگزین.
 - تست‌های schema ابزار پیام که ثابت می‌کنند فیلدهای بومی حذف شده‌اند.
 - تست‌های CLI که ثابت می‌کنند flagهای بومی حذف شده‌اند.
-- regression مربوط به تنبلی import در entrypoint Discord که Carbon را پوشش می‌دهد.
-- تست‌های سنجاق‌کردن تحویل که Telegram و fallback عمومی را پوشش می‌دهند.
+- رگرسیون تنبلی import مربوط به entrypoint در Discord که Carbon را پوشش می‌دهد.
+- تست‌های سنجاق‌کردن تحویل که Telegram و جایگزین عمومی را پوشش می‌دهند.
 
 ## پرسش‌های باز
 
-- آیا `delivery.pin` باید در گذر نخست برای Discord، Slack، MS Teams و Feishu پیاده‌سازی شود، یا ابتدا فقط برای Telegram؟
-- آیا `delivery` در نهایت باید فیلدهای موجود مانند `replyToId`، `replyToCurrent`، `silent` و `audioAsVoice` را هم جذب کند، یا روی رفتارهای پس از ارسال متمرکز بماند؟
-- آیا ارائه باید مستقیما از تصویرها یا ارجاع‌های فایل پشتیبانی کند، یا رسانه فعلا باید جدا از layout رابط کاربری باقی بماند؟
+- آیا `delivery.pin` باید در گذر اول برای Discord، Slack، Microsoft Teams و Feishu پیاده‌سازی شود، یا ابتدا فقط Telegram؟
+- آیا `delivery` در نهایت باید فیلدهای موجود مانند `replyToId`،‏ `replyToCurrent`،‏ `silent` و `audioAsVoice` را جذب کند، یا روی رفتارهای پس از ارسال متمرکز بماند؟
+- آیا ارائه باید مستقیماً از تصویرها یا ارجاع‌های فایل پشتیبانی کند، یا فعلاً رسانه باید جدا از چیدمان رابط کاربری باقی بماند؟
 
 ## مرتبط
 

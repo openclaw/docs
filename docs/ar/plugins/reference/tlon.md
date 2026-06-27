@@ -1,20 +1,21 @@
 ---
 read_when:
-    - تقوم بتثبيت Plugin tlon أو تكوينه أو تدقيقه
-summary: يضيف واجهة قناة Tlon لإرسال رسائل OpenClaw واستقبالها.
-title: Tlon Plugin
+    - أنت تقوم بتثبيت Plugin tlon أو تهيئته أو تدقيقه.
+summary: Plugin قناة OpenClaw Tlon/Urbit لسير عمل الدردشة.
+title: Plugin Tlon
 x-i18n:
-    generated_at: "2026-05-03T07:38:12Z"
+    generated_at: "2026-06-27T18:15:55Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 636c7fc3ae8f8f35337d2fe279f1752226ff7ee017442372878448a82f99ecce
+    source_hash: 6fd1dcc934734599c0b671f0a9659dc5cc6e4ff907e3e14f9ff3ba5ec86aa0cc
     source_path: plugins/reference/tlon.md
     workflow: 16
 ---
 
 # Plugin Tlon
 
-يضيف سطح قناة Tlon لإرسال رسائل OpenClaw واستقبالها.
+Plugin قناة OpenClaw Tlon/Urbit لسير عمل الدردشة.
 
 ## التوزيع
 
@@ -23,7 +24,7 @@ x-i18n:
 
 ## السطح
 
-القنوات: tlon؛ العقود: الأدوات؛ Skills
+القنوات: tlon؛ Skills
 
 ## الوثائق ذات الصلة
 

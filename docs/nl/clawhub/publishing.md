@@ -1,95 +1,151 @@
 ---
 read_when:
-    - Een skill of plugin publiceren
+    - Een Skill of Plugin publiceren
     - Fouten met eigenaar- of pakketbereik debuggen
     - Publicatie-UI, CLI of backendgedrag toevoegen
-summary: Hoe publiceren via ClawHub werkt voor Skills, Plugins, eigenaren, scopes, releases en review.
+summary: Hoe ClawHub-publicatie werkt voor Skills, Plugins, eigenaren, scopes, releases en beoordeling.
 x-i18n:
-    generated_at: "2026-05-11T20:24:37Z"
+    generated_at: "2026-06-27T17:17:00Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 566c37b7845159ad100837e34bed7c60411bba6a0b3436ab899fe5e345237727
+    source_hash: 5c0270c0bc3316d970feddfc689c1125e1c90a62beeb40d8098dc6a6752cfa70
     source_path: clawhub/publishing.md
     workflow: 16
 ---
 
 # Publiceren
 
-Publiceren op ClawHub is eigenaarsgebonden: elke publicatie richt zich op een publisher, en de
-server bepaalt of de aangemelde gebruiker daar mag publiceren.
+Publiceren stuurt een skillmap of pluginpackage naar ClawHub onder de eigenaar die je
+kiest. ClawHub controleert of je token voor die eigenaar mag publiceren, valideert de
+metadata, naam, versie, bestanden en broninformatie, slaat daarna de release op
+en start geautomatiseerde beveiligingscontroles.
 
-## Eigenaren
-
-Een eigenaar is een ClawHub-publisherhandle, zoals `@alice` of `@openclaw`.
-Persoonlijke eigenaren worden voor gebruikers aangemaakt. Organisatie-eigenaren kunnen meerdere leden hebben.
-
-Wanneer je publiceert, gebruik je je persoonlijke eigenaar of kies je een organisatie-eigenaar
-waarvoor je publishertoegang hebt.
+Als validatie mislukt, wordt er niets gepubliceerd. Nieuwe releases kunnen ook buiten
+normale installatie- en downloadoppervlakken blijven totdat de review is afgerond.
 
 ## Skills
 
-Skills worden gepubliceerd vanuit een skillmap. De openbare pagina is:
+Het eenvoudigste publicatiepad is de CLI. Meld je aan en publiceer daarna een lokale skillmap:
 
-```text
-https://clawhub.ai/<owner>/<slug>
+```bash
+clawhub login
+clawhub skill publish ./my-skill \
+  --slug my-skill \
+  --name "My Skill" \
+  --owner <owner>
 ```
 
-Voorbeeld:
+Gebruik `--owner <handle>` wanneer je publiceert naar een organisatie-eigenaar. Laat dit weg om te publiceren als
+de geauthenticeerde gebruiker. Publiceren slaat ongewijzigde inhoud over. Een nieuwe skill begint
+bij `1.0.0`, en latere wijzigingen publiceren automatisch de volgende patchversie. Geef
+`--version` alleen door wanneer je een expliciete versie nodig hebt.
 
-```text
-https://clawhub.ai/alice/review-helper
+Gebruik voor catalogusrepositories de herbruikbare
+[`skill-publish.yml`-workflow](https://github.com/openclaw/clawhub/blob/main/.github/workflows/skill-publish.yml) van ClawHub.
+Deze roept `skill publish` aan voor elke directe skillmap onder `root` (standaard:
+`skills`), of alleen de map die als `skill_path` is opgegeven.
+
+```yaml
+jobs:
+  publish:
+    uses: openclaw/clawhub/.github/workflows/skill-publish.yml@main
+    with:
+      owner: <owner>
+      dry_run: false
+    secrets:
+      clawhub_token: ${{ secrets.CLAWHUB_TOKEN }}
 ```
 
-De publicatieaanvraag bevat de geselecteerde eigenaar, slug, versie, changelog en
-bestanden. De server controleert of de actor als die eigenaar mag publiceren voordat de
-release wordt aangemaakt.
-
-Als je een bestaande skill naar een andere eigenaar wilt verplaatsen terwijl je een nieuwe versie publiceert, kies je
-de nieuwe eigenaar en bevestig je de eigendomsoverdracht expliciet. Geef in de CLI/API de
-doeleigenaar plus de migratie-opt-in door:
-
-```sh
-clawhub skill publish ./review-helper --owner openclaw --migrate-owner --version 1.2.0
-```
-
-Migratie van een skill-eigenaar vereist beheerders- of eigenaarstoegang bij zowel de huidige eigenaar
-als de bestemmingseigenaar. De skill, versiegeschiedenis, statistieken,
-opmerkingen, forks, aliassen en audittrail blijven behouden; oude eigenaar-URL's blijven werken via het
-alias-/redirectpad.
+Gebruik `dry_run: true` om nieuwe en gewijzigde Skills te bekijken zonder te publiceren.
 
 ## Plugins
 
-Plugins gebruiken npm-achtige pakketnamen. Scoped pakketnamen bevatten de eigenaar in
+Plugins gebruiken package-namen in npm-stijl. Scoped package-namen bevatten de eigenaar in
 het eerste deel van de naam:
 
 ```text
 @owner/package-name
 ```
 
-De scope moet overeenkomen met de geselecteerde publicatie-eigenaar. Als je pakket
-`@openclaw/dronzer` heet, kan het alleen als `@openclaw` worden gepubliceerd. Als je publiceert als
-`@vintageayu`, hernoem het pakket dan naar `@vintageayu/dronzer`.
+De scope moet overeenkomen met de geselecteerde publicatie-eigenaar. Als je package
+`@openclaw/dronzer` heet, kan het alleen worden gepubliceerd als `@openclaw`. Als je publiceert als
+`@vintageayu`, hernoem het package dan naar `@vintageayu/dronzer`.
 
-Dit voorkomt dat een pakket een organisatienamespace claimt waarover de publisher
+Dit voorkomt dat een package een organisatienamespace claimt waarover de uitgever
 geen controle heeft.
 
-## Releaseproces
+Als je de rechtmatige eigenaar bent van een organisatie, merk, package-scope, eigenaarshandle of
+namespace die al is geclaimd of gereserveerd op ClawHub, open dan een
+[Org-/namespaceclaim-issue](https://github.com/openclaw/clawhub/issues/new?template=org-namespace-claim.yml)
+met openbaar, niet-gevoelig bewijs. Zie
+[Organisatie- en namespaceclaims](/nl/clawhub/namespace-claims) voor wat je moet opnemen en wat je
+buiten openbare issues moet houden.
 
-1. De UI, CLI of GitHub-workflow verzamelt pakketmetadata en bestanden.
-2. De publicatieaanvraag wordt naar ClawHub verzonden met de geselecteerde eigenaar.
-3. De server valideert eigenaarsrechten, pakketscope, pakketnaam, versie,
-   bestandslimieten en bronmetadata.
-4. ClawHub slaat de release op en start geautomatiseerde beveiligingscontroles.
-5. Nieuwe releases worden verborgen voor normale installatie-/downloadoppervlakken totdat beoordeling
-   en verificatie zijn afgerond.
+### Voordat je een Plugin publiceert
 
-Als validatie mislukt, wordt de release niet aangemaakt.
+- Kies een eigenaar die overeenkomt met de package-scope.
+- Voeg `openclaw.plugin.json` toe. Codeplugins hebben ook `package.json` nodig met
+  `openclaw.compat.pluginApi` en `openclaw.build.openclawVersion`.
+- Voeg `icon` toe aan `openclaw.plugin.json` met
+  een willekeurige HTTPS-afbeeldings-URL om een aangepast pluginkaartpictogram te tonen.
+- Voeg de bronrepository en exacte commitmetadata toe, of gebruik de CLI vanuit een
+  checkout met GitHub-backend zodat deze ze kan detecteren.
+- Voer `clawhub package validate <source>` uit voordat je publiceert. Zie voor package-,
+  manifest-, SDK-import- of artifactbevindingen
+  [Oplossingen voor Plugin-validatie](/nl/clawhub/plugin-validation-fixes).
+- Voer `clawhub package publish <source> --dry-run` uit voordat je een release maakt.
+- Verwacht dat nieuwe releases buiten openbare installatieoppervlakken blijven totdat geautomatiseerde
+  beveiligingscontroles en verificatie zijn afgerond.
+
+### Trusted publishing voor packages
+
+Trusted publishing voor packages is een setup in twee stappen:
+
+1. Publiceer het package één keer via normale handmatige of tokengeauthenticeerde
+   `clawhub package publish`. Hiermee wordt de packageregel gemaakt en worden de
+   packagemanagers vastgesteld die de trusted publisher-configuratie kunnen wijzigen.
+2. Een packagemanager stelt de trusted publisher-configuratie voor GitHub Actions in:
+
+```bash
+clawhub package trusted-publisher set @owner/package-name \
+  --repository owner/repo \
+  --workflow-filename package-publish.yml
+```
+
+Nadat de configuratie is ingesteld, kunnen toekomstige ondersteunde GitHub Actions-publicaties
+OIDC/trusted publishing gebruiken zonder een langlevend ClawHub-token in de
+repository op te slaan. De geconfigureerde repository en workflowbestandsnaam moeten overeenkomen met de
+GitHub Actions OIDC-claim. Als je ook `--environment <name>` doorgeeft, moet de GitHub
+Actions-omgevingsclaim exact overeenkomen met die naam.
+
+ClawHub verifieert de geconfigureerde GitHub-repository wanneer de trusted publisher-configuratie
+wordt ingesteld. Openbare repositories kunnen worden geverifieerd via openbare GitHub-metadata.
+Privérepositories vereisen dat ClawHub GitHub-toegang heeft tot die repository,
+bijvoorbeeld via een toekomstige installatie van de ClawHub GitHub App of een andere
+geautoriseerde GitHub-integratie.
+
+De huidige herbruikbare package-publicatieworkflow ondersteunt secretless trusted
+publishing voor `workflow_dispatch`-publicaties wanneer `id-token: write`
+beschikbaar is. Echte tag-push-publicaties hebben nog steeds `clawhub_token` nodig, dus houd
+`CLAWHUB_TOKEN` beschikbaar voor tagreleases, eerste publicaties, onvertrouwde packages
+of noodpublicaties.
+
+Inspecteer of verwijder de configuratie met:
+
+```bash
+clawhub package trusted-publisher get @owner/package-name
+clawhub package trusted-publisher delete @owner/package-name
+```
+
+Het verwijderen van de trusted publisher-configuratie is het rollbackpad. Het schakelt het minten van toekomstige
+trusted publish-tokens uit totdat een packagemanager de configuratie opnieuw instelt.
 
 ## FAQ
 
-### Pakketscope moet overeenkomen met geselecteerde eigenaar
+### Package-scope moet overeenkomen met geselecteerde eigenaar
 
-Als de pakketscope en geselecteerde eigenaar niet overeenkomen, wijst ClawHub de
+Als de package-scope en geselecteerde eigenaar niet overeenkomen, wijst ClawHub de
 publicatie af:
 
 ```text
@@ -97,20 +153,26 @@ Package scope "@openclaw" must match selected owner "@vintageayu".
 Publish as "@openclaw" or rename this package to "@vintageayu/dronzer".
 ```
 
-Om dit op te lossen, kies je de eigenaar die door de pakketscope wordt genoemd, of hernoem je het
-pakket zodat de scope overeenkomt met de eigenaar waaronder je mag publiceren.
+Om dit op te lossen, kies je de eigenaar die door de package-scope wordt genoemd, of hernoem je het
+package zodat de scope overeenkomt met de eigenaar waarmee je mag publiceren.
 
-Als de pakketnaam al de juiste scope heeft maar het pakket eigendom is van de
-verkeerde publisher, draag dan in plaats daarvan het eigendom over:
+Als de package-naam al de juiste scope heeft maar het package eigendom is van de
+verkeerde uitgever, draag dan in plaats daarvan het eigendom over:
 
 ```sh
 clawhub package transfer @opik/opik-openclaw --to opik
 ```
 
-Gebruik pakket- of skilloverdracht alleen wanneer je beheerdersrechten hebt bij zowel de
-huidige eigenaar als de bestemmingspublisher. Met pakketoverdracht kun je niet
-publiceren in een scope die je niet kunt beheren.
+Gebruik package- of skilloverdracht alleen wanneer je beheerderstoegang hebt tot zowel de
+huidige eigenaar als de doeluitgever. Package-overdracht laat je niet
+publiceren naar een scope die je niet kunt beheren.
 
-Dit beschermt organisatienamespaces. Een pakket met de naam `@openclaw/dronzer` claimt de
-`@openclaw`-namespace, dus alleen publishers met toegang tot de `@openclaw`-eigenaar
+Als je geen toegang hebt tot de huidige eigenaar maar gelooft dat jouw organisatie, project of
+merk de rechtmatige namespace-eigenaar is, open dan een
+[Org-/namespaceclaim-issue](https://github.com/openclaw/clawhub/issues/new?template=org-namespace-claim.yml)
+met openbaar, niet-gevoelig bewijs voor review door medewerkers. Zie
+[Organisatie- en namespaceclaims](/nl/clawhub/namespace-claims) voordat je dit indient.
+
+Dit beschermt organisatienamespaces. Een package met de naam `@openclaw/dronzer` claimt de
+`@openclaw`-namespace, dus alleen uitgevers met toegang tot de `@openclaw`-eigenaar
 kunnen het publiceren.

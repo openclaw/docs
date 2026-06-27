@@ -1,21 +1,22 @@
 ---
 read_when:
     - macOS 앱 기능 구현하기
-    - macOS에서 Gateway 수명 주기 또는 Node 브리징 변경
-summary: OpenClaw macOS 컴패니언 앱 (메뉴 막대 + Gateway 브로커)
+    - macOS에서 Gateway 수명 주기 또는 노드 브리징 변경하기
+summary: OpenClaw macOS 컴패니언 앱(메뉴 막대 + Gateway 브로커)
 title: macOS 앱
 x-i18n:
-    generated_at: "2026-05-06T06:34:02Z"
+    generated_at: "2026-06-27T17:41:24Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cc67a88303073bb771fcec09e7366f710a6bd5500f584f8782232deaa69e599d
+    source_hash: 4e637a1ae5ca66dfb6255fb6a233436ae0cf04b972f96446e8dc3d703486c9fa
     source_path: platforms/macos.md
     workflow: 16
 ---
 
-macOS 앱은 OpenClaw의 **메뉴 막대 보조 앱**입니다. 권한을 소유하고,
-Gateway를 로컬에서 관리/연결하며(launchd 또는 수동), macOS 기능을 Node로
-에이전트에 노출합니다.
+macOS 앱은 OpenClaw의 **메뉴 막대 컴패니언**입니다. 권한을 소유하고,
+로컬에서 Gateway를 관리하거나 연결하며(launchd 또는 수동), macOS
+기능을 에이전트에 Node로 노출합니다.
 
 ## 수행하는 작업
 
@@ -30,19 +31,18 @@ Gateway를 로컬에서 관리/연결하며(launchd 또는 수동), macOS 기능
 
 ## 로컬 모드와 원격 모드
 
-- **로컬**(기본값): 실행 중인 로컬 Gateway가 있으면 앱이 여기에 연결합니다.
+- **로컬**(기본값): 앱은 실행 중인 로컬 Gateway가 있으면 연결합니다.
   없으면 `openclaw gateway install`을 통해 launchd 서비스를 활성화합니다.
-- **원격**: 앱이 SSH/Tailscale을 통해 Gateway에 연결하며 로컬 프로세스는 절대 시작하지
-  않습니다.
-  앱은 원격 Gateway가 이 Mac에 접근할 수 있도록 로컬 **Node 호스트 서비스**를 시작합니다.
+- **원격**: 앱은 SSH/Tailscale을 통해 Gateway에 연결하며 로컬 프로세스를 시작하지 않습니다.
+  앱은 원격 Gateway가 이 Mac에 도달할 수 있도록 로컬 **Node 호스트 서비스**를 시작합니다.
   앱은 Gateway를 자식 프로세스로 생성하지 않습니다.
   이제 Gateway 검색은 원시 tailnet IP보다 Tailscale MagicDNS 이름을 우선하므로,
-  tailnet IP가 변경될 때 Mac 앱이 더 안정적으로 복구됩니다.
+  tailnet IP가 변경되어도 Mac 앱이 더 안정적으로 복구됩니다.
 
 ## Launchd 제어
 
-앱은 `ai.openclaw.gateway`라는 레이블의 사용자별 LaunchAgent를 관리합니다
-(`--profile`/`OPENCLAW_PROFILE` 사용 시 `ai.openclaw.<profile>`; 레거시 `com.openclaw.*`는 여전히 언로드됩니다).
+앱은 `ai.openclaw.gateway`라는 레이블의 사용자별 LaunchAgent를 관리합니다.
+(또는 `--profile`/`OPENCLAW_PROFILE`을 사용할 때는 `ai.openclaw.<profile>`; 레거시 `com.openclaw.*`도 여전히 unload됩니다.)
 
 ```bash
 launchctl kickstart -k gui/$UID/ai.openclaw.gateway
@@ -51,23 +51,25 @@ launchctl bootout gui/$UID/ai.openclaw.gateway
 
 명명된 프로필을 실행할 때는 레이블을 `ai.openclaw.<profile>`로 바꾸세요.
 
-LaunchAgent가 설치되어 있지 않으면 앱에서 활성화하거나
+LaunchAgent가 설치되어 있지 않다면 앱에서 활성화하거나
 `openclaw gateway install`을 실행하세요.
+
+Gateway가 몇 분에서 몇 시간 동안 반복해서 사라졌다가 Control UI를 건드리거나 호스트에 SSH로 접속할 때만 재개된다면, [Gateway 문제 해결](/ko/gateway/troubleshooting#macos-gateway-silently-stops-responding-then-resumes-when-you-touch-the-dashboard)의 macOS 유지 관리 절전 / `ENETDOWN` 크래시 및 launchd의 재시작 보호 게이트 문제 해결 참고 사항을 확인하세요.
 
 ## Node 기능(mac)
 
-macOS 앱은 자신을 Node로 표시합니다. 일반적인 명령은 다음과 같습니다.
+macOS 앱은 자신을 Node로 표시합니다. 일반적인 명령:
 
 - Canvas: `canvas.present`, `canvas.navigate`, `canvas.eval`, `canvas.snapshot`, `canvas.a2ui.*`
 - Camera: `camera.snap`, `camera.clip`
 - Screen: `screen.snapshot`, `screen.record`
 - System: `system.run`, `system.notify`
 
-Node는 에이전트가 허용된 작업을 판단할 수 있도록 `permissions` 맵을 보고합니다.
+Node는 에이전트가 허용되는 작업을 결정할 수 있도록 `permissions` 맵을 보고합니다.
 
 Node 서비스 + 앱 IPC:
 
-- 헤드리스 Node 호스트 서비스가 실행 중일 때(원격 모드), 이 서비스는 Gateway WS에 Node로 연결합니다.
+- 헤드리스 Node 호스트 서비스가 실행 중이면(원격 모드), Gateway WS에 Node로 연결합니다.
 - `system.run`은 로컬 Unix 소켓을 통해 macOS 앱(UI/TCC 컨텍스트)에서 실행되며, 프롬프트와 출력은 앱 안에 유지됩니다.
 
 다이어그램(SCI):
@@ -81,14 +83,14 @@ Gateway -> Node Service (WS)
 
 ## 실행 승인(system.run)
 
-`system.run`은 macOS 앱의 **실행 승인**(설정 → 실행 승인)으로 제어됩니다.
-보안 + 확인 요청 + 허용 목록은 Mac의 다음 위치에 로컬로 저장됩니다.
+`system.run`은 macOS 앱의 **실행 승인**(Settings → Exec approvals)으로 제어됩니다.
+보안 + 질문 + 허용 목록은 Mac의 다음 위치에 로컬로 저장됩니다.
 
 ```
 ~/.openclaw/exec-approvals.json
 ```
 
-예시:
+예:
 
 ```json
 {
@@ -109,12 +111,12 @@ Gateway -> Node Service (WS)
 
 참고:
 
-- `allowlist` 항목은 확인된 바이너리 경로에 대한 glob 패턴이거나, PATH로 호출되는 명령의 순수 명령 이름입니다.
-- 셸 제어나 확장 구문(`&&`, `||`, `;`, `|`, `` ` ``, `$`, `<`, `>`, `(`, `)`)이 포함된 원시 셸 명령 텍스트는 허용 목록 누락으로 처리되며 명시적 승인이 필요합니다(또는 셸 바이너리를 허용 목록에 추가해야 합니다).
+- `allowlist` 항목은 확인된 바이너리 경로의 glob 패턴이거나, PATH로 호출되는 명령의 단순 명령 이름입니다.
+- 셸 제어 또는 확장 구문(`&&`, `||`, `;`, `|`, `` ` ``, `$`, `<`, `>`, `(`, `)`)이 포함된 원시 셸 명령 텍스트는 허용 목록 미스로 처리되며 명시적 승인이 필요합니다(또는 셸 바이너리를 허용 목록에 추가해야 합니다).
 - 프롬프트에서 "항상 허용"을 선택하면 해당 명령이 허용 목록에 추가됩니다.
-- `system.run` 환경 오버라이드는 필터링된 뒤(`PATH`, `DYLD_*`, `LD_*`, `NODE_OPTIONS`, `PYTHON*`, `PERL*`, `RUBYOPT`, `SHELLOPTS`, `PS4` 제거) 앱의 환경과 병합됩니다.
-- 셸 래퍼(`bash|sh|zsh ... -c/-lc`)의 경우 요청 범위 환경 오버라이드는 작은 명시적 허용 목록(`TERM`, `LANG`, `LC_*`, `COLORTERM`, `NO_COLOR`, `FORCE_COLOR`)으로 축소됩니다.
-- 허용 목록 모드에서 항상 허용 결정의 경우, 알려진 디스패치 래퍼(`env`, `nice`, `nohup`, `stdbuf`, `timeout`)는 래퍼 경로 대신 내부 실행 파일 경로를 저장합니다. 안전하게 언래핑할 수 없으면 허용 목록 항목이 자동으로 저장되지 않습니다.
+- `system.run` 환경 재정의는 필터링됩니다(`PATH`, `DYLD_*`, `LD_*`, `BASHOPTS`, `FPATH`, `KSH_ENV`, `NODE_OPTIONS`, `NODE_REDIRECT_WARNINGS`, `NODE_REPL_EXTERNAL_MODULE`, `NODE_REPL_HISTORY`, `NODE_V8_COVERAGE`, `PYTHON*`, `PERL*`, `RUBYOPT`, `SHELLOPTS`, `PS4`, `TCLLIBPATH` 제거). 그런 다음 앱의 환경과 병합됩니다.
+- 셸 래퍼(`bash|sh|zsh ... -c/-lc`)의 경우, 요청 범위 환경 재정의는 작은 명시적 허용 목록(`TERM`, `LANG`, `LC_*`, `COLORTERM`, `NO_COLOR`, `FORCE_COLOR`)으로 축소됩니다.
+- 허용 목록 모드의 항상 허용 결정에서는 알려진 디스패치 래퍼(`env`, `flock`, `nice`, `nohup`, `stdbuf`, `timeout`)에 대해 래퍼 경로 대신 내부 실행 파일 경로를 저장합니다. 안전하게 래핑을 해제할 수 없으면 허용 목록 항목은 자동으로 저장되지 않습니다.
 
 ## 딥 링크
 
@@ -131,30 +133,29 @@ __OC_I18N_900004__
 - `thinking`(선택 사항)
 - `deliver` / `to` / `channel`(선택 사항)
 - `timeoutSeconds`(선택 사항)
-- `key`(선택 사항 무인 모드 키)
+- `key`(선택 사항인 무인 모드 키)
 
 안전:
 
 - `key`가 없으면 앱이 확인을 요청합니다.
 - `key`가 없으면 앱은 확인 프롬프트에 짧은 메시지 제한을 적용하고 `deliver` / `to` / `channel`을 무시합니다.
-- 유효한 `key`가 있으면 실행은 무인으로 진행됩니다(개인 자동화를 위한 용도).
+- 유효한 `key`가 있으면 실행은 무인으로 진행됩니다(개인 자동화용).
 
 ## 온보딩 흐름(일반)
 
 1. **OpenClaw.app**을 설치하고 실행합니다.
-2. 권한 체크리스트(TCC 프롬프트)를 완료합니다.
+2. 권한 체크리스트를 완료합니다(TCC 프롬프트).
 3. **로컬** 모드가 활성화되어 있고 Gateway가 실행 중인지 확인합니다.
-4. 터미널 접근을 원하면 CLI를 설치합니다.
+4. 터미널 접근이 필요하면 CLI를 설치합니다.
 
 ## 상태 디렉터리 배치(macOS)
 
-OpenClaw 상태 디렉터리를 iCloud나 다른 클라우드 동기화 폴더에 두지 마세요.
-동기화 기반 경로는 지연 시간을 추가하고 세션과 자격 증명에서 파일 잠금/동기화 경합을
-간헐적으로 일으킬 수 있습니다.
+OpenClaw 상태 디렉터리를 iCloud 또는 다른 클라우드 동기화 폴더에 두지 마세요.
+동기화 기반 경로는 세션과 자격 증명에 지연 시간을 추가하고 때때로 파일 잠금/동기화 경합을 일으킬 수 있습니다.
 
 다음과 같은 로컬 비동기화 상태 경로를 권장합니다.
 __OC_I18N_900005__
-`openclaw doctor`가 다음 위치 아래에서 상태를 감지하면:
+`openclaw doctor`가 다음 위치 아래의 상태를 감지하면:
 
 - `~/Library/Mobile Documents/com~apple~CloudDocs/...`
 - `~/Library/CloudStorage/...`
@@ -169,50 +170,51 @@ __OC_I18N_900005__
 
 ## Gateway 연결 디버그(macOS CLI)
 
-앱을 실행하지 않고도 macOS 앱이 사용하는 것과 동일한 Gateway WebSocket 핸드셰이크와 검색
+앱을 실행하지 않고 macOS 앱이 사용하는 것과 동일한 Gateway WebSocket 핸드셰이크와 검색
 로직을 실행하려면 디버그 CLI를 사용하세요.
 __OC_I18N_900006__
 연결 옵션:
 
 - `--url <ws://host:port>`: 구성 재정의
-- `--mode <local|remote>`: 구성에서 해석(기본값: 구성 또는 로컬)
+- `--mode <local|remote>`: 구성에서 확인(기본값: 구성 또는 local)
 - `--probe`: 새 상태 프로브 강제 실행
-- `--timeout <ms>`: 요청 제한 시간(기본값: `15000`)
-- `--json`: 비교를 위한 구조화된 출력
+- `--timeout <ms>`: 요청 타임아웃(기본값: `15000`)
+- `--json`: diff를 위한 구조화된 출력
 
 검색 옵션:
 
-- `--include-local`: "로컬"로 필터링될 Gateway 포함
+- `--include-local`: "local"로 필터링될 Gateway 포함
 - `--timeout <ms>`: 전체 검색 창(기본값: `2000`)
-- `--json`: 비교를 위한 구조화된 출력
+- `--json`: diff를 위한 구조화된 출력
 
 <Tip>
-macOS 앱의 검색 파이프라인(`local.`과 구성된 광역 도메인, 광역 및 Tailscale Serve 폴백 포함)이 Node CLI의 `dns-sd` 기반 검색과 다른지 확인하려면 `openclaw gateway discover --json`과 비교하세요.
+`openclaw gateway discover --json`과 비교하여 macOS 앱의 검색 파이프라인(`local.` 및 구성된 광역 도메인, 광역 및 Tailscale Serve 폴백 포함)이 Node CLI의 `dns-sd` 기반 검색과 다른지 확인하세요.
 </Tip>
 
 ## 원격 연결 배관(SSH 터널)
 
-macOS 앱이 **원격** 모드로 실행되면 로컬 UI 구성 요소가 원격 Gateway와 마치 localhost에 있는 것처럼
-통신할 수 있도록 SSH 터널을 엽니다.
+macOS 앱이 **원격** 모드에서 실행될 때, 로컬 UI
+구성 요소가 원격 Gateway를 localhost에 있는 것처럼 통신할 수 있도록 SSH 터널을 엽니다.
 
 ### 제어 터널(Gateway WebSocket 포트)
 
-- **목적:** 상태 확인, 상태, Web Chat, 구성 및 기타 제어 플레인 호출.
+- **목적:** 상태 확인, 상태, Web Chat, 구성 및 기타 제어 평면 호출.
 - **로컬 포트:** Gateway 포트(기본값 `18789`), 항상 안정적입니다.
-- **원격 포트:** 원격 호스트의 동일한 Gateway 포트.
-- **동작:** 임의의 로컬 포트가 없으며, 앱은 기존의 정상 터널을 재사용하거나
+- **원격 포트:** 원격 호스트의 동일한 Gateway 포트입니다.
+- **동작:** 무작위 로컬 포트를 사용하지 않습니다. 앱은 기존의 정상 터널을 재사용하거나
   필요하면 다시 시작합니다.
 - **SSH 형태:** BatchMode +
-  ExitOnForwardFailure + keepalive 옵션과 함께 `ssh -N -L <local>:127.0.0.1:<remote>`.
-- **IP 보고:** SSH 터널은 루프백을 사용하므로 Gateway는 Node
-  IP를 `127.0.0.1`로 봅니다. 실제 클라이언트 IP가 표시되도록 하려면 **Direct (ws/wss)** 전송을 사용하세요([macOS 원격 접근](/ko/platforms/mac/remote) 참고).
+  ExitOnForwardFailure + keepalive 옵션을 사용하는 `ssh -N -L <local>:127.0.0.1:<remote>`.
+- **IP 보고:** SSH 터널은 loopback을 사용하므로 Gateway는 Node
+  IP를 `127.0.0.1`로 봅니다. 실제 클라이언트
+  IP가 표시되게 하려면 **Direct (ws/wss)** 전송을 사용하세요([macOS 원격 접근](/ko/platforms/mac/remote) 참고).
 
-설정 단계는 [macOS 원격 접근](/ko/platforms/mac/remote)을 참고하세요. 프로토콜
-세부 정보는 [Gateway 프로토콜](/ko/gateway/protocol)을 참고하세요.
+설정 단계는 [macOS 원격 접근](/ko/platforms/mac/remote)을 참조하세요. 프로토콜
+세부 정보는 [Gateway 프로토콜](/ko/gateway/protocol)을 참조하세요.
 
 ## 관련 문서
 
-- [Gateway runbook](/ko/gateway)
-- [Gateway (macOS)](/ko/platforms/mac/bundled-gateway)
+- [Gateway 런북](/ko/gateway)
+- [Gateway(macOS)](/ko/platforms/mac/bundled-gateway)
 - [macOS 권한](/ko/platforms/mac/permissions)
 - [Canvas](/ko/platforms/mac/canvas)

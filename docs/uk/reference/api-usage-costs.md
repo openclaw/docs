@@ -1,62 +1,70 @@
 ---
 read_when:
     - Ви хочете зрозуміти, які функції можуть викликати платні API
-    - Потрібно проводити аудит ключів, витрат і видимості використання
-    - Ви пояснюєте звітування про витрати в /status або /usage
-summary: Аудит того, що може витрачати кошти, які ключі використовуються та як переглядати використання
+    - Вам потрібно перевіряти ключі, витрати та видимість використання
+    - Ви пояснюєте звітування про витрати для /status або /usage
+summary: Аудит того, що може витрачати гроші, які ключі використовуються та як переглядати використання
 title: Використання API та витрати
 x-i18n:
-    generated_at: "2026-05-06T05:01:11Z"
+    generated_at: "2026-06-27T18:16:27Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c8e6f9f8248ddb4241d00191aa231f1d72a2128a7995b4ed0ec0e18a7ed6dd69
+    source_hash: 473028747c3e8eab60667106d22616aa185f867d01238b856f4235faad957a9e
     source_path: reference/api-usage-costs.md
     workflow: 16
 ---
 
-Цей документ перелічує **функції, які можуть викликати API-ключі**, і те, де відображаються їхні витрати. Він зосереджується на
-функціях OpenClaw, які можуть генерувати використання провайдера або платні API-виклики.
+Цей документ перелічує **функції, які можуть викликати ключі API**, і де відображаються їхні витрати. Він зосереджений на
+функціях OpenClaw, які можуть генерувати використання постачальників або платні виклики API.
 
 ## Де відображаються витрати (чат + CLI)
 
-**Знімок вартості за сесію**
+**Знімок вартості за сеанс**
 
-- `/status` показує поточну модель сесії, використання контексту та токени останньої відповіді.
-- Якщо модель використовує **автентифікацію API-ключем**, `/status` також показує **орієнтовну вартість** останньої відповіді.
-- Якщо live-метадані сесії неповні, `/status` може відновити лічильники токенів/кешу
-  і мітку активної runtime-моделі з останнього запису використання в транскрипті.
-  Наявні ненульові live-значення все ще мають пріоритет, а підсумки транскрипта
-  розміру prompt можуть переважати, коли збережені підсумки відсутні або менші.
+- `/status` показує поточну модель сеансу, використання контексту та токени останньої відповіді.
+- Якщо OpenClaw має метадані використання та локальні ціни для активної моделі,
+  `/status` також показує **орієнтовну вартість** останньої відповіді. Це може включати
+  явно оцінені постачальники без ключів API, як-от моделі Bedrock `aws-sdk`.
+- Якщо живі метадані сеансу неповні, `/status` може відновити лічильники
+  токенів/кешу та мітку активної runtime-моделі з останнього запису використання
+  в транскрипті. Наявні ненульові живі значення все одно мають пріоритет, а
+  підсумки транскрипту розміру prompt можуть переважити, коли збережені підсумки
+  відсутні або менші.
 
-**Футер вартості для кожного повідомлення**
+**Нижній колонтитул вартості за повідомлення**
 
-- `/usage full` додає футер використання до кожної відповіді, включно з **орієнтовною вартістю** (лише API-ключ).
-- `/usage tokens` показує лише токени; OAuth/token у стилі підписки та CLI-потоки приховують вартість у доларах.
-- Примітка щодо Gemini CLI: коли CLI повертає JSON-вивід, OpenClaw читає використання зі
-  `stats`, нормалізує `stats.cached` у `cacheRead` і за потреби виводить вхідні токени
-  з `stats.input_tokens - stats.cached`.
+- `/usage full` додає нижній колонтитул використання до кожної відповіді, зокрема **орієнтовну вартість**,
+  коли локальні ціни налаштовані для активної моделі й метадані використання
+  доступні.
+- `/usage tokens` показує лише токени; потоки OAuth/токенів і CLI у стилі підписки
+  все одно показують лише токени, якщо цей runtime не надає сумісні метадані використання
+  й не налаштовано явну локальну ціну.
+- Примітка щодо Gemini CLI: стандартний вивід `stream-json` і застарілі перевизначення JSON
+  обидва зчитують використання зі `stats`, нормалізують `stats.cached` у `cacheRead` і
+  за потреби виводять вхідні токени з `stats.input_tokens - stats.cached`.
 
 Примітка щодо Anthropic: співробітники Anthropic повідомили нам, що використання Claude CLI у стилі OpenClaw
-знову дозволене, тому OpenClaw розглядає повторне використання Claude CLI і використання `claude -p` як
-санкціоновані для цієї інтеграції, якщо Anthropic не опублікує нову політику.
-Anthropic досі не надає оцінку вартості в доларах для кожного повідомлення, яку OpenClaw може
+знову дозволене, тому OpenClaw вважає повторне використання Claude CLI і використання `claude -p`
+санкціонованими для цієї інтеграції, якщо Anthropic не опублікує нову політику.
+Anthropic досі не надає оцінку в доларах за повідомлення, яку OpenClaw може
 показати в `/usage full`.
 
-**Вікна використання CLI (квоти провайдерів)**
+**Вікна використання CLI (квоти постачальників)**
 
-- `openclaw status --usage` і `openclaw channels list` показують **вікна використання** провайдера
-  (знімки квот, а не вартість окремих повідомлень).
-- Людський вивід нормалізується до `X% left` для різних провайдерів.
-- Поточні провайдери вікон використання: Anthropic, GitHub Copilot, Gemini CLI,
+- `openclaw status --usage` і `openclaw channels list` показують **вікна використання** постачальників
+  (знімки квот, а не витрати за повідомлення).
+- Людиночитний вивід нормалізовано до `X% left` для всіх постачальників.
+- Поточні постачальники вікон використання: Anthropic, GitHub Copilot, Gemini CLI,
   OpenAI Codex, MiniMax, Xiaomi і z.ai.
 - Примітка щодо MiniMax: його сирі поля `usage_percent` / `usagePercent` означають залишок
-  квоти, тому OpenClaw інвертує їх перед показом. Поля на основі кількості все одно мають
-  пріоритет, коли вони присутні. Якщо провайдер повертає `model_remains`, OpenClaw надає перевагу
-  запису чат-моделі, за потреби виводить мітку вікна з часових позначок і
+  квоти, тому OpenClaw інвертує їх перед відображенням. Поля на основі лічильників усе одно
+  мають пріоритет, коли присутні. Якщо постачальник повертає `model_remains`, OpenClaw надає перевагу
+  запису моделі чату, за потреби виводить мітку вікна з часових позначок і
   включає назву моделі в мітку плану.
-- Автентифікація використання для цих вікон квот надходить із provider-specific hooks, коли
-  вони доступні; інакше OpenClaw повертається до відповідних OAuth/API-key
-  облікових даних із профілів автентифікації, env або config.
+- Авторизація використання для цих вікон квот надходить із хуків, специфічних для постачальника, коли
+  доступно; інакше OpenClaw повертається до відповідних облікових даних OAuth/ключів API
+  з профілів авторизації, env або конфігурації.
 
 Див. [Використання токенів і витрати](/uk/reference/token-use) для деталей і прикладів.
 
@@ -64,30 +72,30 @@ Anthropic досі не надає оцінку вартості в долара
 
 OpenClaw може отримувати облікові дані з:
 
-- **Профілів автентифікації** (для кожного агента, зберігаються в `auth-profiles.json`).
+- **Профілів авторизації** (для кожного агента, зберігаються в `auth-profiles.json`).
 - **Змінних середовища** (наприклад, `OPENAI_API_KEY`, `BRAVE_API_KEY`, `FIRECRAWL_API_KEY`).
-- **Config** (`models.providers.*.apiKey`, `plugins.entries.*.config.webSearch.apiKey`,
+- **Конфігурації** (`models.providers.*.apiKey`, `plugins.entries.*.config.webSearch.apiKey`,
   `plugins.entries.firecrawl.config.webFetch.apiKey`, `memorySearch.*`,
   `talk.providers.*.apiKey`).
 - **Skills** (`skills.entries.<name>.apiKey`), які можуть експортувати ключі в env процесу skill.
 
 ## Функції, які можуть витрачати ключі
 
-### 1) Основні відповіді моделі (чат + tools)
+### 1) Основні відповіді моделі (чат + інструменти)
 
-Кожна відповідь або виклик tool використовує **поточного провайдера моделі** (OpenAI, Anthropic тощо). Це
-основне джерело використання і витрат.
+Кожна відповідь або виклик інструмента використовує **поточного постачальника моделі** (OpenAI, Anthropic тощо). Це
+основне джерело використання та витрат.
 
-Сюди також входять hosted providers у стилі підписки, які все ще виставляють рахунки поза
-локальним UI OpenClaw, як-от **OpenAI Codex**, **Alibaba Cloud Model Studio
+Це також включає розміщених постачальників у стилі підписки, які все одно виставляють рахунки поза
+локальним інтерфейсом OpenClaw, як-от **OpenAI Codex**, **Alibaba Cloud Model Studio
 Coding Plan**, **MiniMax Coding Plan**, **Z.AI / GLM Coding Plan** і
-шлях входу Anthropic OpenClaw Claude з увімкненим **Extra Usage**.
+шлях входу Claude від Anthropic в OpenClaw з увімкненим **Extra Usage**.
 
-Див. [Моделі](/uk/providers/models) щодо config ціноутворення і [Використання токенів і витрати](/uk/reference/token-use) щодо відображення.
+Див. [Моделі](/uk/providers/models) для конфігурації цін і [Використання токенів і витрати](/uk/reference/token-use) для відображення.
 
 ### 2) Розуміння медіа (аудіо/зображення/відео)
 
-Вхідні медіа можуть узагальнюватися/транскрибуватися до виконання відповіді. Це використовує API моделей/провайдерів.
+Вхідні медіа можуть бути підсумовані/транскрибовані перед виконанням відповіді. Це використовує API моделей/постачальників.
 
 - Аудіо: OpenAI / Groq / Deepgram / DeepInfra / Google / Mistral.
 - Зображення: OpenAI / OpenRouter / Anthropic / DeepInfra / Google / MiniMax / Moonshot / Qwen / Z.AI.
@@ -97,95 +105,96 @@ Coding Plan**, **MiniMax Coding Plan**, **Z.AI / GLM Coding Plan** і
 
 ### 3) Генерація зображень і відео
 
-Спільні можливості генерації також можуть витрачати ключі провайдерів:
+Спільні можливості генерації також можуть витрачати ключі постачальників:
 
 - Генерація зображень: OpenAI / Google / DeepInfra / fal / MiniMax
 - Генерація відео: DeepInfra / Qwen
 
-Генерація зображень може вивести provider default з підтримкою автентифікації, коли
+Генерація зображень може вивести стандартного постачальника з підтримкою авторизації, коли
 `agents.defaults.imageGenerationModel` не встановлено. Генерація відео наразі
-вимагає явного `agents.defaults.videoGenerationModel`, наприклад
+потребує явного `agents.defaults.videoGenerationModel`, як-от
 `qwen/wan2.6-t2v`.
 
 Див. [Генерація зображень](/uk/tools/image-generation), [Qwen Cloud](/uk/providers/qwen)
 і [Моделі](/uk/concepts/models).
 
-### 4) Memory embeddings + семантичний пошук
+### 4) Ембедінги пам’яті + семантичний пошук
 
-Семантичний пошук у пам’яті використовує **embedding APIs**, коли налаштований для віддалених провайдерів:
+Семантичний пошук у пам’яті використовує **API ембедінгів**, коли налаштований для віддалених постачальників:
 
-- `memorySearch.provider = "openai"` → OpenAI embeddings
-- `memorySearch.provider = "gemini"` → Gemini embeddings
-- `memorySearch.provider = "voyage"` → Voyage embeddings
-- `memorySearch.provider = "mistral"` → Mistral embeddings
-- `memorySearch.provider = "deepinfra"` → DeepInfra embeddings
-- `memorySearch.provider = "lmstudio"` → LM Studio embeddings (локальні/самостійно розміщені)
-- `memorySearch.provider = "ollama"` → Ollama embeddings (локальні/самостійно розміщені; зазвичай без billing hosted API)
-- Необов’язковий fallback до віддаленого провайдера, якщо локальні embeddings не спрацьовують
+- `memorySearch.provider = "openai"` → ембедінги OpenAI
+- `memorySearch.provider = "gemini"` → ембедінги Gemini
+- `memorySearch.provider = "voyage"` → ембедінги Voyage
+- `memorySearch.provider = "mistral"` → ембедінги Mistral
+- `memorySearch.provider = "deepinfra"` → ембедінги DeepInfra
+- `memorySearch.provider = "lmstudio"` → ембедінги LM Studio (локально/самостійно розміщено)
+- `memorySearch.provider = "ollama"` → ембедінги Ollama (локально/самостійно розміщено; зазвичай без рахунків за розміщений API)
+- Необов’язковий fallback до віддаленого постачальника, якщо локальні ембедінги не спрацюють
 
 Ви можете залишити це локальним за допомогою `memorySearch.provider = "local"` (без використання API).
 
 Див. [Пам’ять](/uk/concepts/memory).
 
-### 5) Tool вебпошуку
+### 5) Інструмент вебпошуку
 
-`web_search` може спричиняти плату за використання залежно від вашого провайдера:
+`web_search` може спричиняти плату за використання залежно від вашого постачальника:
 
 - **Brave Search API**: `BRAVE_API_KEY` або `plugins.entries.brave.config.webSearch.apiKey`
 - **Exa**: `EXA_API_KEY` або `plugins.entries.exa.config.webSearch.apiKey`
 - **Firecrawl**: `FIRECRAWL_API_KEY` або `plugins.entries.firecrawl.config.webSearch.apiKey`
 - **Gemini (Google Search)**: `GEMINI_API_KEY` або `plugins.entries.google.config.webSearch.apiKey`
-- **Grok (xAI)**: `XAI_API_KEY` або `plugins.entries.xai.config.webSearch.apiKey`
+- **Grok (xAI)**: профіль OAuth xAI, `XAI_API_KEY` або `plugins.entries.xai.config.webSearch.apiKey`
 - **Kimi (Moonshot)**: `KIMI_API_KEY`, `MOONSHOT_API_KEY` або `plugins.entries.moonshot.config.webSearch.apiKey`
 - **MiniMax Search**: `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY`, `MINIMAX_API_KEY` або `plugins.entries.minimax.config.webSearch.apiKey`
-- **Ollama Web Search**: без ключа для доступного локального хоста Ollama з виконаним входом; прямий пошук `https://ollama.com` використовує `OLLAMA_API_KEY`, а захищені автентифікацією хости можуть повторно використовувати звичайну bearer auth провайдера Ollama
+- **Ollama Web Search**: без ключа для доступного локального хоста Ollama з виконаним входом; прямий пошук `https://ollama.com` використовує `OLLAMA_API_KEY`, а захищені авторизацією хости можуть повторно використовувати звичайну bearer-авторизацію постачальника Ollama
 - **Perplexity Search API**: `PERPLEXITY_API_KEY`, `OPENROUTER_API_KEY` або `plugins.entries.perplexity.config.webSearch.apiKey`
 - **Tavily**: `TAVILY_API_KEY` або `plugins.entries.tavily.config.webSearch.apiKey`
-- **DuckDuckGo**: fallback без ключа (без API billing, але неофіційний і на основі HTML)
-- **SearXNG**: `SEARXNG_BASE_URL` або `plugins.entries.searxng.config.webSearch.baseUrl` (без ключа/самостійно розміщений; без billing hosted API)
+- **DuckDuckGo**: постачальник без ключа, коли явно вибраний (без рахунків за API, але неофіційний і на основі HTML)
+- **SearXNG**: `SEARXNG_BASE_URL` або `plugins.entries.searxng.config.webSearch.baseUrl` (без ключа/самостійно розміщено; без рахунків за розміщений API)
 
-Застарілі шляхи провайдера `tools.web.search.*` усе ще завантажуються через тимчасовий compatibility shim, але вони більше не є рекомендованою поверхнею config.
+Застарілі шляхи постачальників `tools.web.search.*` досі завантажуються через тимчасовий shim сумісності, але вони більше не є рекомендованою поверхнею конфігурації.
 
-**Безкоштовний кредит Brave Search:** Кожен план Brave включає \$5/місяць відновлюваного
-безкоштовного кредиту. План Search коштує \$5 за 1 000 запитів, тож кредит покриває
-1 000 запитів/місяць без плати. Встановіть ліміт використання в панелі Brave,
-щоб уникнути неочікуваних стягнень.
+**Безкоштовний кредит Brave Search:** Кожен план Brave включає \$5/місяць поновлюваного
+безкоштовного кредиту. План Search коштує \$5 за 1 000 запитів, тому кредит покриває
+1 000 запитів/місяць безкоштовно. Установіть свій ліміт використання на панелі Brave,
+щоб уникнути неочікуваних списань.
 
-Див. [Веб-tools](/uk/tools/web).
+Див. [Вебінструменти](/uk/tools/web).
 
-### 5) Tool веботримання (Firecrawl)
+### 5) Інструмент веботримання (Firecrawl)
 
-`web_fetch` може викликати **Firecrawl**, коли присутній API-ключ:
+`web_fetch` може викликати **Firecrawl** зі стартовим доступом без ключа. Додайте ключ API
+для вищих лімітів:
 
 - `FIRECRAWL_API_KEY` або `plugins.entries.firecrawl.config.webFetch.apiKey`
 
-Якщо Firecrawl не налаштований, tool повертається до прямого fetch плюс bundled `web-readability` plugin (без платного API). Вимкніть `plugins.entries.web-readability.enabled`, щоб пропустити локальне вилучення Readability.
+Якщо Firecrawl не налаштовано, інструмент повертається до прямого отримання плюс вбудований plugin `web-readability` (без платного API). Вимкніть `plugins.entries.web-readability.enabled`, щоб пропустити локальне витягнення Readability.
 
-Див. [Веб-tools](/uk/tools/web).
+Див. [Вебінструменти](/uk/tools/web).
 
-### 6) Знімки використання провайдерів (status/health)
+### 6) Знімки використання постачальників (статус/стан)
 
-Деякі команди status викликають **endpoints використання провайдера**, щоб показати вікна квот або стан автентифікації.
-Зазвичай це низькооб’ємні виклики, але вони все одно звертаються до API провайдерів:
+Деякі команди статусу викликають **кінцеві точки використання постачальників**, щоб показати вікна квот або стан авторизації.
+Зазвичай це низькооб’ємні виклики, але вони все одно звертаються до API постачальників:
 
 - `openclaw status --usage`
 - `openclaw models status --json`
 
-Див. [Models CLI](/uk/cli/models).
+Див. [CLI моделей](/uk/cli/models).
 
-### 7) Узагальнення запобіжника Compaction
+### 7) Захисне підсумовування Compaction
 
-Запобіжник compaction може узагальнювати історію сесії за допомогою **поточної моделі**, що
-викликає API провайдера під час роботи.
+Захист Compaction може підсумовувати історію сеансу за допомогою **поточної моделі**, що
+викликає API постачальників під час виконання.
 
-Див. [Керування сесіями + compaction](/uk/reference/session-management-compaction).
+Див. [Керування сеансом + Compaction](/uk/reference/session-management-compaction).
 
-### 8) Сканування / probe моделей
+### 8) Сканування / перевірка моделі
 
-`openclaw models scan` може probe моделі OpenRouter і використовує `OPENROUTER_API_KEY`, коли
-probing увімкнено.
+`openclaw models scan` може перевіряти моделі OpenRouter і використовує `OPENROUTER_API_KEY`, коли
+перевірку ввімкнено.
 
-Див. [Models CLI](/uk/cli/models).
+Див. [CLI моделей](/uk/cli/models).
 
 ### 9) Talk (мовлення)
 
@@ -198,7 +207,7 @@ probing увімкнено.
 ### 10) Skills (сторонні API)
 
 Skills можуть зберігати `apiKey` у `skills.entries.<name>.apiKey`. Якщо skill використовує цей ключ для зовнішніх
-API, це може спричинити витрати відповідно до провайдера skill.
+API, це може спричиняти витрати відповідно до постачальника skill.
 
 Див. [Skills](/uk/tools/skills).
 

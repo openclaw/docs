@@ -3,33 +3,34 @@ read_when:
     - Đóng gói OpenClaw.app
     - Gỡ lỗi dịch vụ launchd Gateway trên macOS
     - Cài đặt CLI Gateway cho macOS
-summary: Môi trường chạy Gateway trên macOS (dịch vụ launchd bên ngoài)
+summary: Thời gian chạy Gateway trên macOS (dịch vụ launchd bên ngoài)
 title: Gateway trên macOS
 x-i18n:
-    generated_at: "2026-05-07T13:21:19Z"
+    generated_at: "2026-06-27T17:41:56Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: caf129918c46f8f54026e9db04e8ad5a033148899d3029fe1a362bb14c7f25f8
+    source_hash: 76c55e3d24e5bc743233e11be4897f4f2a865c97f2e0d795a472caeb6d097d34
     source_path: platforms/mac/bundled-gateway.md
     workflow: 16
 ---
 
 OpenClaw.app không còn đóng gói kèm Node/Bun hoặc runtime Gateway. Ứng dụng macOS
-yêu cầu cài đặt CLI `openclaw` **bên ngoài**, không khởi chạy Gateway dưới dạng
-tiến trình con, và quản lý một dịch vụ launchd theo từng người dùng để giữ Gateway
-đang chạy (hoặc gắn vào một Gateway cục bộ hiện có nếu đã có Gateway đang chạy).
+mong đợi một bản cài đặt CLI `openclaw` **bên ngoài**, không khởi chạy Gateway dưới dạng
+tiến trình con và quản lý một dịch vụ launchd theo từng người dùng để giữ Gateway
+luôn chạy (hoặc gắn vào một Gateway cục bộ hiện có nếu đã có Gateway đang chạy).
 
 ## Cài đặt CLI (bắt buộc cho chế độ cục bộ)
 
-Node 24 là runtime mặc định trên Mac. Node 22 LTS, hiện là `22.16+`, vẫn hoạt động để tương thích. Sau đó cài đặt `openclaw` toàn cục:
+Node 24 là runtime mặc định trên Mac. Node 22 LTS, hiện là `22.19+`, vẫn hoạt động để tương thích. Sau đó cài đặt `openclaw` toàn cục:
 
 ```bash
 npm install -g openclaw@<version>
 ```
 
 Nút **Cài đặt CLI** của ứng dụng macOS chạy cùng luồng cài đặt toàn cục mà ứng dụng
-dùng nội bộ: ưu tiên npm trước, sau đó pnpm, rồi bun nếu đó là trình quản lý gói
-duy nhất được phát hiện. Node vẫn là runtime Gateway được khuyến nghị.
+dùng nội bộ: ưu tiên npm trước, rồi pnpm, rồi bun nếu đó là trình quản lý gói duy nhất
+được phát hiện. Node vẫn là runtime Gateway được khuyến nghị.
 
 ## Launchd (Gateway dưới dạng LaunchAgent)
 
@@ -49,21 +50,22 @@ Trình quản lý:
 
 Hành vi:
 
-- "OpenClaw Active" bật/tắt LaunchAgent.
-- Thoát ứng dụng **không** dừng gateway (launchd giữ nó hoạt động).
+- "OpenClaw đang hoạt động" bật/tắt LaunchAgent.
+- Thoát ứng dụng **không** dừng Gateway (launchd giữ nó luôn chạy).
 - Nếu một Gateway đã chạy trên cổng đã cấu hình, ứng dụng sẽ gắn vào
   Gateway đó thay vì khởi động một Gateway mới.
 
-Ghi nhật ký:
+Ghi log:
 
-- stdout/err của launchd: `/tmp/openclaw/openclaw-gateway.log`
+- stdout của launchd: `~/Library/Logs/openclaw/gateway.log` (các hồ sơ dùng `gateway-<profile>.log`)
+- stderr của launchd: bị tắt
 
 ## Tương thích phiên bản
 
-Ứng dụng macOS kiểm tra phiên bản gateway so với phiên bản của chính nó. Nếu chúng
+Ứng dụng macOS kiểm tra phiên bản Gateway so với phiên bản của chính nó. Nếu chúng
 không tương thích, hãy cập nhật CLI toàn cục để khớp với phiên bản ứng dụng.
 
-## Kiểm tra smoke
+## Kiểm tra nhanh
 
 ```bash
 openclaw --version
@@ -81,5 +83,5 @@ openclaw gateway call health --url ws://127.0.0.1:18999 --timeout 3000
 
 ## Liên quan
 
-- [ứng dụng macOS](/vi/platforms/macos)
+- [Ứng dụng macOS](/vi/platforms/macos)
 - [Runbook Gateway](/vi/gateway)

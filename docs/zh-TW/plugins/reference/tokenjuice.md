@@ -1,25 +1,26 @@
 ---
 read_when:
-    - 你正在安裝、設定或稽核 tokenjuice Plugin
-summary: 使用 tokenjuice reducers 壓縮 exec 與 bash 工具結果。
-title: Tokenjuice Plugin
+    - 你正在安裝、設定或稽核 tokenjuice 外掛
+summary: 使用 tokenjuice 縮減器壓縮 exec 與 bash 工具結果。
+title: Tokenjuice 外掛
 x-i18n:
-    generated_at: "2026-05-02T21:00:37Z"
+    generated_at: "2026-06-27T19:46:49Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2a6e6194d80faf6d261200f3b1b2e4c92d238b901efc4acd7ccdfee065b5f07b
+    source_hash: a51416caa94a17799e3a55c1d3b88bf2c026fd003317b86d7926cf11b9b81fab
     source_path: plugins/reference/tokenjuice.md
     workflow: 16
 ---
 
-# Tokenjuice Plugin
+# Tokenjuice 外掛
 
-使用 tokenjuice reducer 壓縮 exec 和 bash 工具結果。
+使用 tokenjuice reducers 壓縮 exec 和 bash 工具結果。
 
-## 發佈
+## 發行
 
 - 套件：`@openclaw/tokenjuice`
-- 安裝路徑：包含於 OpenClaw
+- 安裝路由：npm；ClawHub：`clawhub:@openclaw/tokenjuice`
 
 ## 介面
 

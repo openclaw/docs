@@ -1,19 +1,21 @@
 ---
 read_when:
-    - Je wilt Together AI met OpenClaw gebruiken
-    - Je hebt de API-sleutelomgevingsvariabele of de CLI-authenticatiekeuze nodig
-summary: Together AI instellen (authenticatie + modelselectie)
+    - Je wilt Together AI gebruiken met OpenClaw
+    - Je hebt de omgevingsvariabele voor de API-sleutel of de CLI-authenticatiekeuze nodig
+summary: Together AI-installatie (authenticatie + modelselectie)
 title: Together AI
 x-i18n:
-    generated_at: "2026-04-29T23:13:48Z"
+    generated_at: "2026-06-27T18:15:29Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a7713c0b1e64014bbdd87a120de0a950b583afd1481338f2c6cccfb2b7da76e7
+    source_hash: a1f803ae88828a775d93dcf8b0b62e70b1dbd0cf963639121e2995fabfcd280b
     source_path: providers/together.md
     workflow: 16
 ---
 
-[Together AI](https://together.ai) biedt toegang tot toonaangevende open-sourcemodellen, waaronder Llama, DeepSeek, Kimi en meer, via een uniforme API.
+[Together AI](https://together.ai) biedt toegang tot toonaangevende open-source
+modellen, waaronder Llama, DeepSeek, Kimi en meer, via een uniforme API.
 
 | Eigenschap | Waarde                        |
 | ---------- | ----------------------------- |
@@ -25,21 +27,23 @@ x-i18n:
 ## Aan de slag
 
 <Steps>
-  <Step title="Haal een API-sleutel op">
+  <Step title="Get an API key">
     Maak een API-sleutel aan op
     [api.together.ai/settings/api-keys](https://api.together.ai/settings/api-keys).
   </Step>
-  <Step title="Voer onboarding uit">
+  <Step title="Run onboarding">
     ```bash
     openclaw onboard --auth-choice together-api-key
     ```
   </Step>
-  <Step title="Stel een standaardmodel in">
+  <Step title="Set a default model">
     ```json5
     {
       agents: {
         defaults: {
-          model: { primary: "together/moonshotai/Kimi-K2.5" },
+          model: {
+            primary: "together/meta-llama/Llama-3.3-70B-Instruct-Turbo",
+          },
         },
       },
     }
@@ -57,35 +61,34 @@ openclaw onboard --non-interactive \
 ```
 
 <Note>
-De onboarding-preset stelt `together/moonshotai/Kimi-K2.5` in als het standaardmodel.
+De onboarding-preset stelt
+`together/meta-llama/Llama-3.3-70B-Instruct-Turbo` in als het standaardmodel.
 </Note>
 
 ## Ingebouwde catalogus
 
-OpenClaw levert deze gebundelde Together-catalogus mee:
+OpenClaw levert deze gebundelde Together-catalogus:
 
-| Modelref                                                     | Naam                                   | Invoer      | Context    | Opmerkingen                         |
-| ------------------------------------------------------------ | -------------------------------------- | ----------- | ---------- | ----------------------------------- |
-| `together/moonshotai/Kimi-K2.5`                              | Kimi K2.5                              | tekst, beeld | 262,144    | Standaardmodel; reasoning ingeschakeld |
-| `together/zai-org/GLM-4.7`                                   | GLM 4.7 Fp8                            | tekst       | 202,752    | Tekstmodel voor algemeen gebruik    |
-| `together/meta-llama/Llama-3.3-70B-Instruct-Turbo`           | Llama 3.3 70B Instruct Turbo           | tekst       | 131,072    | Snel instructiemodel                |
-| `together/meta-llama/Llama-4-Scout-17B-16E-Instruct`         | Llama 4 Scout 17B 16E Instruct         | tekst, beeld | 10,000,000 | Multimodaal                         |
-| `together/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8` | Llama 4 Maverick 17B 128E Instruct FP8 | tekst, beeld | 20,000,000 | Multimodaal                         |
-| `together/deepseek-ai/DeepSeek-V3.1`                         | DeepSeek V3.1                          | tekst       | 131,072    | Algemeen tekstmodel                 |
-| `together/deepseek-ai/DeepSeek-R1`                           | DeepSeek R1                            | tekst       | 131,072    | Reasoning-model                     |
-| `together/moonshotai/Kimi-K2-Instruct-0905`                  | Kimi K2-Instruct 0905                  | tekst       | 262,144    | Secundair Kimi-tekstmodel           |
+| Modelreferentie                                    | Naam                         | Invoer             | Context | Opmerkingen          |
+| -------------------------------------------------- | ---------------------------- | ------------------ | ------- | -------------------- |
+| `together/meta-llama/Llama-3.3-70B-Instruct-Turbo` | Llama 3.3 70B Instruct Turbo | tekst              | 131,072 | Standaardmodel       |
+| `together/moonshotai/Kimi-K2.6`                    | Kimi K2.6 FP4                | tekst, afbeelding  | 262,144 | Kimi-redeneermodel   |
+| `together/deepseek-ai/DeepSeek-V4-Pro`             | DeepSeek V4 Pro              | tekst              | 512,000 | Redenerend tekstmodel |
+| `together/Qwen/Qwen2.5-7B-Instruct-Turbo`          | Qwen2.5 7B Instruct Turbo    | tekst              | 32,768  | Snel tekstmodel      |
+| `together/zai-org/GLM-5.1`                         | GLM 5.1 FP4                  | tekst              | 202,752 | Redenerend tekstmodel |
 
-## Video genereren
+## Videogeneratie
 
-De gebundelde `together`-Plugin registreert ook video genereren via de gedeelde tool `video_generate`.
+De gebundelde `together` Plugin registreert ook videogeneratie via de
+gedeelde `video_generate`-tool.
 
-| Eigenschap            | Waarde                                |
-| --------------------- | ------------------------------------- |
-| Standaardvideomodel   | `together/Wan-AI/Wan2.2-T2V-A14B`     |
-| Modi                  | tekst-naar-video, enkele afbeeldingsreferentie |
-| Ondersteunde parameters | `aspectRatio`, `resolution`         |
+| Eigenschap              | Waarde                                                                      |
+| ----------------------- | --------------------------------------------------------------------------- |
+| Standaard videomodel    | `together/Wan-AI/Wan2.2-T2V-A14B`                                           |
+| Modi                    | tekst-naar-video; alleen referentie met één afbeelding met `Wan-AI/Wan2.2-I2V-A14B` |
+| Ondersteunde parameters | `aspectRatio`, `resolution`                                                 |
 
-Om Together als standaardvideoprovider te gebruiken:
+Om Together als standaard videoprovider te gebruiken:
 
 ```json5
 {
@@ -100,25 +103,29 @@ Om Together als standaardvideoprovider te gebruiken:
 ```
 
 <Tip>
-Zie [Video genereren](/nl/tools/video-generation) voor de gedeelde toolparameters, providerselectie en failovergedrag.
+Zie [Videogeneratie](/nl/tools/video-generation) voor de gedeelde toolparameters,
+providerselectie en failovergedrag.
 </Tip>
 
 <AccordionGroup>
-  <Accordion title="Omgevingsnotitie">
+  <Accordion title="Environment note">
     Als de Gateway als daemon draait (launchd/systemd), zorg er dan voor dat
     `TOGETHER_API_KEY` beschikbaar is voor dat proces (bijvoorbeeld in
     `~/.openclaw/.env` of via `env.shellEnv`).
 
     <Warning>
-    Sleutels die alleen in je interactieve shell zijn ingesteld, zijn niet zichtbaar voor daemon-beheerde gatewayprocessen. Gebruik `~/.openclaw/.env` of `env.shellEnv`-configuratie voor blijvende beschikbaarheid.
+    Sleutels die alleen in je interactieve shell zijn ingesteld, zijn niet zichtbaar voor door daemons beheerde
+    gatewayprocessen. Gebruik `~/.openclaw/.env` of `env.shellEnv`-configuratie voor
+    blijvende beschikbaarheid.
     </Warning>
 
   </Accordion>
 
-  <Accordion title="Probleemoplossing">
+  <Accordion title="Troubleshooting">
     - Controleer of je sleutel werkt: `openclaw models list --provider together`
-    - Als modellen niet verschijnen, controleer dan of de API-sleutel in de juiste omgeving voor je Gateway-proces is ingesteld.
-    - Modelrefs gebruiken de vorm `together/<model-id>`.
+    - Als modellen niet verschijnen, controleer dan of de API-sleutel in de juiste
+      omgeving voor je Gateway-proces is ingesteld.
+    - Modelreferenties gebruiken de vorm `together/<model-id>`.
 
   </Accordion>
 </AccordionGroup>
@@ -126,14 +133,14 @@ Zie [Video genereren](/nl/tools/video-generation) voor de gedeelde toolparameter
 ## Gerelateerd
 
 <CardGroup cols={2}>
-  <Card title="Modelselectie" href="/nl/concepts/model-providers" icon="layers">
-    Providerregels, modelrefs en failovergedrag.
+  <Card title="Model selection" href="/nl/concepts/model-providers" icon="layers">
+    Providerregels, modelreferenties en failovergedrag.
   </Card>
-  <Card title="Video genereren" href="/nl/tools/video-generation" icon="video">
-    Gedeelde parameters voor de tool voor video genereren en providerselectie.
+  <Card title="Video generation" href="/nl/tools/video-generation" icon="video">
+    Gedeelde toolparameters voor videogeneratie en providerselectie.
   </Card>
-  <Card title="Configuratiereferentie" href="/nl/gateway/configuration-reference" icon="gear">
-    Volledig configuratieschema inclusief providerinstellingen.
+  <Card title="Configuration reference" href="/nl/gateway/configuration-reference" icon="gear">
+    Volledig configuratieschema, inclusief providerinstellingen.
   </Card>
   <Card title="Together AI" href="https://together.ai" icon="arrow-up-right-from-square">
     Together AI-dashboard, API-documentatie en prijzen.

@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das zalo-Plugin
-summary: Fügt die Zalo-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
+    - Sie installieren, konfigurieren oder überprüfen das zalo Plugin
+summary: OpenClaw-Zalo-Kanal-Plugin für Bot- und Webhook-Chats.
 title: Zalo-Plugin
 x-i18n:
-    generated_at: "2026-05-03T06:43:01Z"
+    generated_at: "2026-06-27T17:57:45Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2914ba7fec4427c6a8a322ea1d9308d9e37a81b5ff51a89b06227e5ecfcef6f2
+    source_hash: ff9da1e1591eaad36db74a27f817dd9dac8791af2d5030fcd3419ee50d2ed4aa
     source_path: plugins/reference/zalo.md
     workflow: 16
 ---
 
-# Zalo Plugin
+# Zalo-Plugin
 
-Fügt die Zalo-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
+OpenClaw Zalo-Channel-Plugin für Bot- und Webhook-Chats.
 
-## Bereitstellung
+## Distribution
 
 - Paket: `@openclaw/zalo`
 - Installationsweg: npm; ClawHub
 
 ## Oberfläche
 
-channels: zalo
+Channels: zalo
 
-## Weiterführende Dokumentation
+## Verwandte Dokumentation
 
 - [zalo](/de/channels/zalo)

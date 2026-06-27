@@ -1,31 +1,32 @@
 ---
 read_when:
-    - Dodawanie lub modyfikowanie przechwytywania obrazu z kamery w węzłach iOS/Android albo na macOS
-    - Rozszerzanie dostępnych dla agenta przepływów pracy plików tymczasowych MEDIA
+    - Dodawanie lub modyfikowanie przechwytywania obrazu z kamery na węzłach iOS/Android lub macOS
+    - Rozszerzanie przepływów pracy tymczasowych plików MEDIA dostępnych dla agenta
 summary: 'Przechwytywanie obrazu z kamery (węzły iOS/Android + aplikacja macOS) do użytku przez agenta: zdjęcia (jpg) i krótkie klipy wideo (mp4)'
 title: Przechwytywanie obrazu z kamery
 x-i18n:
-    generated_at: "2026-05-06T09:20:08Z"
+    generated_at: "2026-06-27T17:44:55Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 226b9f44e8d56b9b366d679c6c2f974c714afc4cb962afddba89d17dcdfc09eb
+    source_hash: 8cb02b1e0e5d68e537dc699bcabacfb48b7beaf07459bf47800810a721191795
     source_path: nodes/camera.md
     workflow: 16
 ---
 
-OpenClaw obsługuje **przechwytywanie obrazu z kamery** w przepływach pracy agentów:
+OpenClaw obsługuje **przechwytywanie z kamery** dla przepływów pracy agentów:
 
-- **Node iOS** (sparowany przez Gateway): przechwyć **zdjęcie** (`jpg`) lub **krótki klip wideo** (`mp4`, z opcjonalnym dźwiękiem) przez `node.invoke`.
-- **Node Android** (sparowany przez Gateway): przechwyć **zdjęcie** (`jpg`) lub **krótki klip wideo** (`mp4`, z opcjonalnym dźwiękiem) przez `node.invoke`.
-- **Aplikacja macOS** (Node przez Gateway): przechwyć **zdjęcie** (`jpg`) lub **krótki klip wideo** (`mp4`, z opcjonalnym dźwiękiem) przez `node.invoke`.
+- **węzeł iOS** (sparowany przez Gateway): przechwyć **zdjęcie** (`jpg`) lub **krótki klip wideo** (`mp4`, opcjonalnie z dźwiękiem) przez `node.invoke`.
+- **węzeł Android** (sparowany przez Gateway): przechwyć **zdjęcie** (`jpg`) lub **krótki klip wideo** (`mp4`, opcjonalnie z dźwiękiem) przez `node.invoke`.
+- **aplikacja macOS** (węzeł przez Gateway): przechwyć **zdjęcie** (`jpg`) lub **krótki klip wideo** (`mp4`, opcjonalnie z dźwiękiem) przez `node.invoke`.
 
-Cały dostęp do kamery jest chroniony przez **ustawienia kontrolowane przez użytkownika**.
+Cały dostęp do kamery jest ograniczony przez **ustawienia kontrolowane przez użytkownika**.
 
-## Node iOS
+## węzeł iOS
 
 ### Ustawienie użytkownika (domyślnie włączone)
 
-- Karta Ustawienia iOS → **Kamera** → **Zezwalaj na kamerę** (`camera.enabled`)
+- Karta ustawień iOS → **Camera** → **Allow Camera** (`camera.enabled`)
   - Domyślnie: **włączone** (brakujący klucz jest traktowany jako włączony).
   - Gdy wyłączone: polecenia `camera.*` zwracają `CAMERA_DISABLED`.
 
@@ -38,42 +39,42 @@ Cały dostęp do kamery jest chroniony przez **ustawienia kontrolowane przez uż
 - `camera.snap`
   - Parametry:
     - `facing`: `front|back` (domyślnie: `front`)
-    - `maxWidth`: liczba (opcjonalnie; domyślnie `1600` w Node iOS)
+    - `maxWidth`: liczba (opcjonalnie; domyślnie `1600` w węźle iOS)
     - `quality`: `0..1` (opcjonalnie; domyślnie `0.9`)
     - `format`: obecnie `jpg`
     - `delayMs`: liczba (opcjonalnie; domyślnie `0`)
-    - `deviceId`: string (opcjonalnie; z `camera.list`)
+    - `deviceId`: ciąg znaków (opcjonalnie; z `camera.list`)
   - Ładunek odpowiedzi:
     - `format: "jpg"`
     - `base64: "<...>"`
     - `width`, `height`
-  - Ochrona ładunku: zdjęcia są ponownie kompresowane, aby utrzymać ładunek base64 poniżej 5 MB.
+  - Ograniczenie ładunku: zdjęcia są ponownie kompresowane, aby utrzymać ładunek base64 poniżej 5 MB.
 
 - `camera.clip`
   - Parametry:
     - `facing`: `front|back` (domyślnie: `front`)
-    - `durationMs`: liczba (domyślnie `3000`, ograniczona do maksymalnie `60000`)
-    - `includeAudio`: boolean (domyślnie `true`)
+    - `durationMs`: liczba (domyślnie `3000`, ograniczana do maksymalnie `60000`)
+    - `includeAudio`: wartość logiczna (domyślnie `true`)
     - `format`: obecnie `mp4`
-    - `deviceId`: string (opcjonalnie; z `camera.list`)
+    - `deviceId`: ciąg znaków (opcjonalnie; z `camera.list`)
   - Ładunek odpowiedzi:
     - `format: "mp4"`
     - `base64: "<...>"`
     - `durationMs`
     - `hasAudio`
 
-### Wymóg pracy na pierwszym planie
+### Wymóg pierwszego planu
 
-Podobnie jak `canvas.*`, Node iOS zezwala na polecenia `camera.*` tylko na **pierwszym planie**. Wywołania w tle zwracają `NODE_BACKGROUND_UNAVAILABLE`.
+Podobnie jak `canvas.*`, węzeł iOS zezwala na polecenia `camera.*` tylko na **pierwszym planie**. Wywołania w tle zwracają `NODE_BACKGROUND_UNAVAILABLE`.
 
-### Pomocnik CLI (pliki tymczasowe + MEDIA)
+### Pomocnik CLI
 
-Najprostszy sposób uzyskania załączników to użycie pomocnika CLI, który zapisuje zdekodowane multimedia do pliku tymczasowego i wypisuje `MEDIA:<path>`.
+Najłatwiejszym sposobem uzyskania plików multimedialnych jest pomocnik CLI, który zapisuje zdekodowane media do pliku tymczasowego i wypisuje zapisaną ścieżkę.
 
 Przykłady:
 
 ```bash
-openclaw nodes camera snap --node <id>               # domyślnie: przód + tył (2 wiersze MEDIA)
+openclaw nodes camera snap --node <id>               # default: both front + back (2 MEDIA lines)
 openclaw nodes camera snap --node <id> --facing front
 openclaw nodes camera clip --node <id> --duration 3000
 openclaw nodes camera clip --node <id> --no-audio
@@ -84,87 +85,87 @@ Uwagi:
 - `nodes camera snap` domyślnie używa **obu** kierunków, aby dać agentowi oba widoki.
 - Pliki wyjściowe są tymczasowe (w katalogu tymczasowym systemu operacyjnego), chyba że zbudujesz własny wrapper.
 
-## Node Android
+## węzeł Android
 
-### Ustawienie użytkownika Androida (domyślnie włączone)
+### Ustawienie użytkownika Android (domyślnie włączone)
 
-- Arkusz Ustawienia Androida → **Kamera** → **Zezwalaj na kamerę** (`camera.enabled`)
+- Arkusz ustawień Android → **Camera** → **Allow Camera** (`camera.enabled`)
   - Domyślnie: **włączone** (brakujący klucz jest traktowany jako włączony).
   - Gdy wyłączone: polecenia `camera.*` zwracają `CAMERA_DISABLED`.
 
 ### Uprawnienia
 
-- Android wymaga uprawnień czasu wykonywania:
+- Android wymaga uprawnień w czasie działania:
   - `CAMERA` dla `camera.snap` i `camera.clip`.
   - `RECORD_AUDIO` dla `camera.clip`, gdy `includeAudio=true`.
 
 Jeśli brakuje uprawnień, aplikacja wyświetli monit, gdy będzie to możliwe; jeśli zostaną odrzucone, żądania `camera.*` zakończą się błędem
 `*_PERMISSION_REQUIRED`.
 
-### Wymóg pracy na pierwszym planie w Androidzie
+### Wymóg pierwszego planu Android
 
-Podobnie jak `canvas.*`, Node Android zezwala na polecenia `camera.*` tylko na **pierwszym planie**. Wywołania w tle zwracają `NODE_BACKGROUND_UNAVAILABLE`.
+Podobnie jak `canvas.*`, węzeł Android zezwala na polecenia `camera.*` tylko na **pierwszym planie**. Wywołania w tle zwracają `NODE_BACKGROUND_UNAVAILABLE`.
 
-### Polecenia Androida (przez Gateway `node.invoke`)
+### Polecenia Android (przez Gateway `node.invoke`)
 
 - `camera.list`
   - Ładunek odpowiedzi:
     - `devices`: tablica `{ id, name, position, deviceType }`
 
-### Ochrona ładunku
+### Ograniczenie ładunku
 
 Zdjęcia są ponownie kompresowane, aby utrzymać ładunek base64 poniżej 5 MB.
 
-## Aplikacja macOS
+## aplikacja macOS
 
 ### Ustawienie użytkownika (domyślnie wyłączone)
 
 Aplikacja towarzysząca macOS udostępnia pole wyboru:
 
-- **Ustawienia → Ogólne → Zezwalaj na kamerę** (`openclaw.cameraEnabled`)
+- **Settings → General → Allow Camera** (`openclaw.cameraEnabled`)
   - Domyślnie: **wyłączone**
-  - Gdy wyłączone: żądania kamery zwracają „Kamera wyłączona przez użytkownika”.
+  - Gdy wyłączone: żądania kamery zwracają „Camera disabled by user”.
 
-### Pomocnik CLI (wywołanie Node)
+### Pomocnik CLI (wywołanie węzła)
 
-Użyj głównego CLI `openclaw`, aby wywołać polecenia kamery w Node macOS.
+Użyj głównego CLI `openclaw`, aby wywołać polecenia kamery w węźle macOS.
 
 Przykłady:
 
 ```bash
-openclaw nodes camera list --node <id>            # wyświetl identyfikatory kamer
-openclaw nodes camera snap --node <id>            # wypisuje MEDIA:<path>
+openclaw nodes camera list --node <id>            # list camera ids
+openclaw nodes camera snap --node <id>            # prints saved path
 openclaw nodes camera snap --node <id> --max-width 1280
 openclaw nodes camera snap --node <id> --delay-ms 2000
 openclaw nodes camera snap --node <id> --device-id <id>
-openclaw nodes camera clip --node <id> --duration 10s          # wypisuje MEDIA:<path>
-openclaw nodes camera clip --node <id> --duration-ms 3000      # wypisuje MEDIA:<path> (starsza flaga)
+openclaw nodes camera clip --node <id> --duration 10s          # prints saved path
+openclaw nodes camera clip --node <id> --duration-ms 3000      # prints saved path (legacy flag)
 openclaw nodes camera clip --node <id> --device-id <id>
 openclaw nodes camera clip --node <id> --no-audio
 ```
 
 Uwagi:
 
-- `openclaw nodes camera snap` domyślnie używa `maxWidth=1600`, chyba że zostanie nadpisane.
-- W macOS `camera.snap` czeka `delayMs` (domyślnie 2000 ms) po rozgrzaniu i ustabilizowaniu ekspozycji przed przechwyceniem.
+- `openclaw nodes camera snap` domyślnie używa `maxWidth=1600`, chyba że zostanie to nadpisane.
+- W macOS `camera.snap` czeka przez `delayMs` (domyślnie 2000 ms) po rozgrzaniu/ustabilizowaniu ekspozycji przed przechwyceniem.
 - Ładunki zdjęć są ponownie kompresowane, aby utrzymać base64 poniżej 5 MB.
 
 ## Bezpieczeństwo i praktyczne limity
 
-- Dostęp do kamery i mikrofonu wywołuje zwykłe monity o uprawnienia systemu operacyjnego (i wymaga ciągów opisu użycia w Info.plist).
-- Klipy wideo są ograniczone (obecnie `<= 60s`), aby uniknąć zbyt dużych ładunków Node (narzut base64 + limity wiadomości).
+- Dostęp do kamery i mikrofonu uruchamia zwykłe monity o uprawnienia systemu operacyjnego (i wymaga ciągów użycia w Info.plist).
+- Klipy wideo są ograniczane (obecnie `<= 60s`), aby uniknąć zbyt dużych ładunków węzła (narzut base64 + limity wiadomości).
 
-## Wideo ekranu macOS (poziom systemu operacyjnego)
+## Wideo ekranu macOS (na poziomie systemu operacyjnego)
 
-Do wideo _ekranu_ (nie z kamery) użyj aplikacji towarzyszącej macOS:
+Dla wideo _ekranu_ (nie kamery) użyj aplikacji towarzyszącej macOS:
 
 ```bash
-openclaw nodes screen record --node <id> --duration 10s --fps 15   # wypisuje MEDIA:<path>
+openclaw nodes screen record --node <id> --duration 10s --fps 15   # prints saved path
 ```
 
 Uwagi:
 
-- Wymaga uprawnienia macOS **Nagrywanie ekranu** (TCC).
+- Wymaga uprawnienia macOS **Screen Recording** (TCC).
 
 ## Powiązane
 

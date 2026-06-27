@@ -1,25 +1,28 @@
 ---
 read_when:
     - Mencari dukungan OS atau jalur instalasi
-    - Menentukan tempat menjalankan Gateway
+    - Memutuskan di mana menjalankan Gateway
 summary: Ikhtisar dukungan platform (Gateway + aplikasi pendamping)
 title: Platform
 x-i18n:
-    generated_at: "2026-05-06T09:19:35Z"
+    generated_at: "2026-06-27T17:41:53Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: dd1fbd1af8b03a12014d91b2f300fb8ec65b9c42c38ada2b9ca089181140a75c
+    source_hash: 4d6edfaf9c4b1f1bc824d4bddf8263244902676dd5df98da556a8a5f35afe566
     source_path: platforms/index.md
     workflow: 16
 ---
 
-OpenClaw inti ditulis dalam TypeScript. **Node adalah runtime yang direkomendasikan**.
+OpenClaw core ditulis dalam TypeScript. **Node adalah runtime yang direkomendasikan**.
 Bun tidak direkomendasikan untuk Gateway — ada masalah yang diketahui dengan kanal WhatsApp dan
 Telegram; lihat [Bun (eksperimental)](/id/install/bun) untuk detail.
 
-Aplikasi pendamping tersedia untuk macOS (aplikasi bilah menu) dan node seluler (iOS/Android). Aplikasi pendamping Windows dan
-Linux direncanakan, tetapi Gateway sudah didukung sepenuhnya saat ini.
-Aplikasi pendamping native untuk Windows juga direncanakan; Gateway direkomendasikan melalui WSL2.
+Aplikasi pendamping tersedia untuk Windows Hub, macOS (aplikasi bilah menu), dan node seluler
+(iOS/Android). Aplikasi pendamping Linux direncanakan, tetapi Gateway sudah didukung sepenuhnya
+saat ini. Di Windows, pilih Windows Hub untuk aplikasi desktop, instalasi PowerShell native
+untuk penggunaan yang berfokus pada terminal, atau WSL2 untuk runtime Gateway yang paling
+kompatibel dengan Linux.
 
 ## Pilih OS Anda
 
@@ -35,12 +38,14 @@ Aplikasi pendamping native untuk Windows juga direncanakan; Gateway direkomendas
 - Fly.io: [Fly.io](/id/install/fly)
 - Hetzner (Docker): [Hetzner](/id/install/hetzner)
 - GCP (Compute Engine): [GCP](/id/install/gcp)
-- Azure (Linux VM): [Azure](/id/install/azure)
-- exe.dev (VM + proxy HTTPS): [exe.dev](/id/install/exe-dev)
+- Azure (VM Linux): [Azure](/id/install/azure)
+- exe.dev (VM + proksi HTTPS): [exe.dev](/id/install/exe-dev)
+- EasyRunner (Podman + Caddy): [EasyRunner](/id/platforms/easyrunner)
 
 ## Tautan umum
 
 - Panduan instalasi: [Memulai](/id/start/getting-started)
+- Windows Hub: [Windows](/id/platforms/windows)
 - Runbook Gateway: [Gateway](/id/gateway)
 - Konfigurasi Gateway: [Konfigurasi](/id/gateway/configuration)
 - Status layanan: `openclaw gateway status`
@@ -58,10 +63,11 @@ Target layanan bergantung pada OS:
 
 - macOS: LaunchAgent (`ai.openclaw.gateway` atau `ai.openclaw.<profile>`; legacy `com.openclaw.*`)
 - Linux/WSL2: layanan pengguna systemd (`openclaw-gateway[-<profile>].service`)
-- Windows native: Scheduled Task (`OpenClaw Gateway` atau `OpenClaw Gateway (<profile>)`), dengan fallback item login folder Startup per pengguna jika pembuatan tugas ditolak
+- Windows native: Scheduled Task (`OpenClaw Gateway` atau `OpenClaw Gateway (<profile>)`), dengan fallback item login folder Startup per pengguna jika pembuatan task ditolak
 
 ## Terkait
 
 - [Ikhtisar instalasi](/id/install)
+- [Windows Hub](/id/platforms/windows)
 - [Aplikasi macOS](/id/platforms/macos)
 - [Aplikasi iOS](/id/platforms/ios)

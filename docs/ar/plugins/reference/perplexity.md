@@ -1,30 +1,31 @@
 ---
 read_when:
-    - أنت بصدد تثبيت Plugin perplexity أو تكوينه أو تدقيقه
-summary: يضيف دعم موفّر البحث على الويب.
-title: Plugin Perplexity
+    - أنت تثبّت Plugin perplexity أو تكوّنه أو تدقّقه
+summary: يضيف دعم موفّر بحث الويب.
+title: Plugin بيربليكسيتي
 x-i18n:
-    generated_at: "2026-05-02T20:58:40Z"
+    generated_at: "2026-06-27T18:14:39Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 86183b8201e7c6869eeeada3efcb15fd67c3d958fd5a50a56922bb0a61c5c74d
+    source_hash: c649c4dc4df04ca668e924e2644af970d75eab404b8f57579e509aa061994ffe
     source_path: plugins/reference/perplexity.md
     workflow: 16
 ---
 
 # Plugin Perplexity
 
-يضيف دعم مزوّد البحث على الويب.
+يضيف دعم موفّر بحث الويب.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/perplexity-plugin`
-- مسار التثبيت: مضمن في OpenClaw
+- مسار التثبيت: npm؛ ClawHub: `clawhub:@openclaw/perplexity-plugin`
 
-## الواجهة
+## السطح
 
 العقود: webSearchProviders
 
-## مستندات ذات صلة
+## المستندات ذات الصلة
 
 - [perplexity](/ar/tools/perplexity-search)

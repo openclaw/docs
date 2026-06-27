@@ -2,24 +2,25 @@
 read_when:
     - شما در حال نصب، پیکربندی یا ممیزی Plugin deepseek هستید
 summary: پشتیبانی از ارائه‌دهندهٔ مدل DeepSeek را به OpenClaw اضافه می‌کند.
-title: Plugin DeepSeek
+title: Plugin دیپ‌سیک
 x-i18n:
-    generated_at: "2026-05-02T20:52:23Z"
+    generated_at: "2026-06-27T18:24:46Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4fbe0244121aa3f13c07d5859fbb2f2c613fb389212d4d5fae23e9a4606eb909
+    source_hash: c391a9d87d4de66f279f0b851868857b1a57e328feede3f5833e5e323ea5e281
     source_path: plugins/reference/deepseek.md
     workflow: 16
 ---
 
-# Plugin دیپ‌سیک
+# Plugin DeepSeek
 
 پشتیبانی از ارائه‌دهندهٔ مدل DeepSeek را به OpenClaw اضافه می‌کند.
 
 ## توزیع
 
 - بسته: `@openclaw/deepseek-provider`
-- مسیر نصب: در OpenClaw گنجانده شده است
+- مسیر نصب: npm؛ ClawHub: `clawhub:@openclaw/deepseek-provider`
 
 ## سطح
 

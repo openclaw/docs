@@ -1,43 +1,44 @@
 ---
 read_when:
-    - Sie möchten schnell auf wichtige Dokumentationsseiten zugreifen
-summary: Kuratierte Links zu den am häufigsten genutzten OpenClaw-Dokumentationsseiten.
+    - Sie möchten schnellen Zugriff auf wichtige Dokumentationsseiten
+summary: Kuratierte Links zu den meistgenutzten OpenClaw-Dokumentationen.
 title: Dokumentationsverzeichnis
 x-i18n:
-    generated_at: "2026-05-10T19:52:15Z"
+    generated_at: "2026-06-27T18:14:10Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ddd6903aeb87e36db977b2cef62bd80e84fc67633ca00beb3365ced1f5abdd99
+    source_hash: f7d45effe4df50fb544e9f6fd2fcd87f4ed674eba0042eace757dbfcad93d07a
     source_path: start/docs-directory.md
     workflow: 16
 ---
 
 <Note>
 Diese Seite ist ein kuratierter Index. Wenn Sie neu sind, beginnen Sie mit [Erste Schritte](/de/start/getting-started).
-Eine vollständige Übersicht der Dokumentation finden Sie unter [Dokumentations-Hubs](/de/start/hubs).
+Eine vollständige Übersicht der Dokumentation finden Sie unter [Docs-Hubs](/de/start/hubs).
 </Note>
 
-## Hier starten
+## Hier beginnen
 
-- [Dokumentations-Hubs (alle Seiten verlinkt)](/de/start/hubs)
+- [Docs-Hubs (alle Seiten verlinkt)](/de/start/hubs)
 - [Hilfe](/de/help)
 - [Konfiguration](/de/gateway/configuration)
 - [Konfigurationsbeispiele](/de/gateway/configuration-examples)
 - [Slash-Befehle](/de/tools/slash-commands)
 - [Multi-Agent-Routing](/de/concepts/multi-agent)
 - [Aktualisierung und Rollback](/de/install/updating)
-- [Kopplung (DM und Nodes)](/de/channels/pairing)
+- [Koppeln (DM und Knoten)](/de/channels/pairing)
 - [Nix-Modus](/de/install/nix)
-- [OpenClaw-Assistent einrichten](/de/start/openclaw)
+- [Einrichtung des OpenClaw-Assistenten](/de/start/openclaw)
 - [Skills](/de/tools/skills)
 - [Skills-Konfiguration](/de/tools/skills-config)
 - [Workspace-Vorlagen](/de/reference/templates/AGENTS)
 - [RPC-Adapter](/de/reference/rpc)
 - [Gateway-Runbook](/de/gateway)
-- [Nodes (iOS und Android)](/de/nodes)
+- [Knoten (iOS und Android)](/de/nodes)
 - [Web-Oberflächen (Control UI)](/de/web)
-- [Discovery und Transporte](/de/gateway/discovery)
-- [Remote-Zugriff](/de/gateway/remote)
+- [Erkennung und Transporte](/de/gateway/discovery)
+- [Remotezugriff](/de/gateway/remote)
 
 ## Provider und UX
 
@@ -53,12 +54,12 @@ Eine vollständige Übersicht der Dokumentation finden Sie unter [Dokumentations
 - [Medienbilder](/de/nodes/images)
 - [Medienaudio](/de/nodes/audio)
 
-## Begleit-Apps
+## Companion-Apps
 
 - [macOS-App](/de/platforms/macos)
 - [iOS-App](/de/platforms/ios)
 - [Android-App](/de/platforms/android)
-- [Windows (WSL2)](/de/platforms/windows)
+- [Windows Hub](/de/platforms/windows)
 - [Linux-App](/de/platforms/linux)
 
 ## Betrieb und Sicherheit
@@ -70,7 +71,7 @@ Eine vollständige Übersicht der Dokumentation finden Sie unter [Dokumentations
 - [Sicherheit](/de/gateway/security)
 - [Fehlerbehebung](/de/gateway/troubleshooting)
 
-## Verwandte Themen
+## Verwandt
 
 - [Erste Schritte](/de/start/getting-started)
-- [Dokumentations-Hubs](/de/start/hubs)
+- [Docs-Hubs](/de/start/hubs)

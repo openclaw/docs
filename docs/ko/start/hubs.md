@@ -1,13 +1,14 @@
 ---
 read_when:
-    - 문서의 전체 구조를 완전히 파악하고 싶습니다
+    - 문서의 전체 지도를 원합니다
 summary: 모든 OpenClaw 문서로 연결되는 허브
 title: 문서 허브
 x-i18n:
-    generated_at: "2026-05-12T00:59:27Z"
+    generated_at: "2026-06-27T18:10:52Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f4675773105bbff55e1f38c8449d688dcefc6ad70d9f5e572193f1e0c638e243
+    source_hash: d7d3f089e2caea1e1487c7c0375c62dfb007db05827a77d4e5616839023b9457
     source_path: start/hubs.md
     workflow: 16
 ---
@@ -16,7 +17,7 @@ x-i18n:
 OpenClaw를 처음 사용하는 경우 [시작하기](/ko/start/getting-started)부터 시작하세요.
 </Note>
 
-왼쪽 탐색 메뉴에 표시되지 않는 심층 설명과 참조 문서를 포함해 모든 페이지를 찾으려면 이 허브들을 사용하세요.
+왼쪽 탐색에 표시되지 않는 심층 설명과 참조 문서를 포함해 모든 페이지를 찾으려면 이 허브들을 사용하세요.
 
 ## 여기서 시작
 
@@ -32,14 +33,14 @@ OpenClaw를 처음 사용하는 경우 [시작하기](/ko/start/getting-started)
 - [구성 예시](/ko/gateway/configuration-examples)
 - [OpenClaw 어시스턴트](/ko/start/openclaw)
 - [쇼케이스](/ko/start/showcase)
-- [Lore](/ko/start/lore)
+- [배경 이야기](/ko/start/lore)
 
 ## 설치 + 업데이트
 
 - [Docker](/ko/install/docker)
 - [Nix](/ko/install/nix)
 - [업데이트 / 롤백](/ko/install/updating)
-- [Bun 워크플로(실험적)](/ko/install/bun)
+- [Bun 워크플로 (실험적)](/ko/install/bun)
 
 ## 핵심 개념
 
@@ -54,7 +55,7 @@ OpenClaw를 처음 사용하는 경우 [시작하기](/ko/start/getting-started)
 - [멀티 에이전트 라우팅](/ko/concepts/multi-agent)
 - [Compaction](/ko/concepts/compaction)
 - [세션](/ko/concepts/session)
-- [세션 정리](/ko/concepts/session-pruning)
+- [세션 가지치기](/ko/concepts/session-pruning)
 - [세션 도구](/ko/concepts/session-tool)
 - [큐](/ko/concepts/queue)
 - [슬래시 명령](/ko/tools/slash-commands)
@@ -62,7 +63,7 @@ OpenClaw를 처음 사용하는 경우 [시작하기](/ko/start/getting-started)
 - [TypeBox 스키마](/ko/concepts/typebox)
 - [시간대 처리](/ko/concepts/timezone)
 - [프레즌스](/ko/concepts/presence)
-- [탐색 + 전송](/ko/gateway/discovery)
+- [검색 + 전송](/ko/gateway/discovery)
 - [Bonjour](/ko/gateway/bonjour)
 - [채널 라우팅](/ko/channels/channel-routing)
 - [그룹](/ko/channels/groups)
@@ -84,7 +85,7 @@ OpenClaw를 처음 사용하는 경우 [시작하기](/ko/start/getting-started)
 - [iMessage](/ko/channels/imessage)
 - [위치 파싱](/ko/channels/location)
 - [WebChat](/ko/web/webchat)
-- [Webhooks](/ko/automation/cron-jobs#webhooks)
+- [Webhook](/ko/automation/cron-jobs#webhooks)
 - [Gmail Pub/Sub](/ko/automation/cron-jobs#gmail-pubsub-integration)
 
 ## Gateway + 운영
@@ -114,7 +115,7 @@ OpenClaw를 처음 사용하는 경우 [시작하기](/ko/start/getting-started)
 - [CLI 참조](/ko/cli)
 - [Exec 도구](/ko/tools/exec)
 - [PDF 도구](/ko/tools/pdf)
-- [권한 상승 모드](/ko/tools/elevated)
+- [상승 모드](/ko/tools/elevated)
 - [Cron 작업](/ko/automation/cron-jobs)
 - [자동화](/ko/automation)
 - [사고 + 상세 출력](/ko/tools/thinking)
@@ -142,7 +143,7 @@ OpenClaw를 처음 사용하는 경우 [시작하기](/ko/start/getting-started)
 - [macOS](/ko/platforms/macos)
 - [iOS](/ko/platforms/ios)
 - [Android](/ko/platforms/android)
-- [Windows (WSL2)](/ko/platforms/windows)
+- [Windows 허브](/ko/platforms/windows)
 - [Linux](/ko/platforms/linux)
 - [웹 표면](/ko/web)
 
@@ -201,7 +202,7 @@ OpenClaw를 처음 사용하는 경우 [시작하기](/ko/start/getting-started)
 
 - [테스트](/ko/reference/test)
 - [릴리스 정책](/ko/reference/RELEASING)
-- [기기 모델](/ko/reference/device-models)
+- [장치 모델](/ko/reference/device-models)
 
 ## 관련 항목
 

@@ -1,47 +1,54 @@
 ---
 read_when:
     - Bạn muốn dùng các mô hình Z.AI / GLM trong OpenClaw
-    - Bạn cần thiết lập ZAI_API_KEY đơn giản
-summary: Sử dụng Z.AI (mô hình GLM) với OpenClaw
+    - Bạn cần một thiết lập ZAI_API_KEY đơn giản
+summary: Sử dụng Z.AI (các mô hình GLM) với OpenClaw
 title: Z.AI
 x-i18n:
-    generated_at: "2026-05-02T10:52:00Z"
+    generated_at: "2026-06-27T18:07:21Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 423fc2bc27c62352d9d9acd13c70aa2bc3804112dab25aa46505e844cb166c93
+    source_hash: a40675d3db518c090828bcc46c3bca348d1bed1027ba6b80228aa27773efd10f
     source_path: providers/zai.md
     workflow: 16
 ---
 
-Z.AI là nền tảng API cho các mô hình **GLM**. Nền tảng này cung cấp các REST API cho GLM và dùng khóa API
-để xác thực. Tạo khóa API của bạn trong bảng điều khiển Z.AI. OpenClaw dùng nhà cung cấp `zai`
-với khóa API Z.AI.
+Z.AI là nền tảng API cho các mô hình **GLM**. Nền tảng này cung cấp REST API cho GLM và
+sử dụng khóa API để xác thực. Tạo khóa API của bạn trong bảng điều khiển Z.AI.
+OpenClaw sử dụng nhà cung cấp `zai` với khóa API Z.AI.
 
-- Nhà cung cấp: `zai`
-- Xác thực: `ZAI_API_KEY`
-- API: Z.AI Chat Completions (xác thực Bearer)
+| Thuộc tính | Giá trị                                      |
+| ---------- | ------------------------------------------- |
+| Nhà cung cấp | `zai`                                      |
+| Gói        | `@openclaw/zai-provider`                    |
+| Xác thực   | `ZAI_API_KEY` (bí danh cũ: `Z_AI_API_KEY`)  |
+| API        | Z.AI Chat Completions (xác thực Bearer)     |
+
+## Mô hình GLM
+
+GLM là một họ mô hình, không phải một nhà cung cấp riêng. Trong OpenClaw, các mô hình GLM sử dụng
+ref như `zai/glm-5.2`: nhà cung cấp `zai`, id mô hình `glm-5.2`.
 
 ## Bắt đầu
 
+Trước tiên, cài đặt Plugin nhà cung cấp:
+
+```bash
+openclaw plugins install @openclaw/zai-provider
+```
+
 <Tabs>
-  <Tab title="Tự động phát hiện endpoint">
-    **Phù hợp nhất cho:** hầu hết người dùng. OpenClaw phát hiện endpoint Z.AI phù hợp từ khóa và tự động áp dụng base URL chính xác.
+  <Tab title="Auto-detect endpoint">
+    **Phù hợp nhất cho:** hầu hết người dùng. OpenClaw thăm dò các endpoint Z.AI được hỗ trợ bằng khóa API của bạn và tự động áp dụng URL cơ sở chính xác.
 
     <Steps>
-      <Step title="Chạy thiết lập ban đầu">
+      <Step title="Run onboarding">
         ```bash
         openclaw onboard --auth-choice zai-api-key
         ```
       </Step>
-      <Step title="Đặt mô hình mặc định">
-        ```json5
-        {
-          env: { ZAI_API_KEY: "sk-..." },
-          agents: { defaults: { model: { primary: "zai/glm-5.1" } } },
-        }
-        ```
-      </Step>
-      <Step title="Xác minh mô hình có trong danh sách">
+      <Step title="Verify the model is listed">
         ```bash
         openclaw models list --all --provider zai
         ```
@@ -50,11 +57,11 @@ với khóa API Z.AI.
 
   </Tab>
 
-  <Tab title="Endpoint khu vực rõ ràng">
-    **Phù hợp nhất cho:** người dùng muốn buộc dùng một Coding Plan cụ thể hoặc bề mặt API chung.
+  <Tab title="Explicit regional endpoint">
+    **Phù hợp nhất cho:** người dùng muốn buộc dùng một Coding Plan hoặc bề mặt API chung cụ thể.
 
     <Steps>
-      <Step title="Chọn đúng lựa chọn thiết lập ban đầu">
+      <Step title="Pick the right onboarding choice">
         ```bash
         # Coding Plan Global (recommended for Coding Plan users)
         openclaw onboard --auth-choice zai-coding-global
@@ -69,15 +76,7 @@ với khóa API Z.AI.
         openclaw onboard --auth-choice zai-cn
         ```
       </Step>
-      <Step title="Đặt mô hình mặc định">
-        ```json5
-        {
-          env: { ZAI_API_KEY: "sk-..." },
-          agents: { defaults: { model: { primary: "zai/glm-5.1" } } },
-        }
-        ```
-      </Step>
-      <Step title="Xác minh mô hình có trong danh sách">
+      <Step title="Verify the model is listed">
         ```bash
         openclaw models list --all --provider zai
         ```
@@ -87,9 +86,32 @@ với khóa API Z.AI.
   </Tab>
 </Tabs>
 
+## Ví dụ cấu hình
+
+<Tip>
+`zai-api-key` cho phép OpenClaw phát hiện endpoint Z.AI phù hợp từ khóa và
+tự động áp dụng URL cơ sở chính xác. Dùng các lựa chọn khu vực tường minh khi
+bạn muốn buộc dùng một Coding Plan hoặc bề mặt API chung cụ thể.
+</Tip>
+
+```json5
+{
+  env: { ZAI_API_KEY: "sk-..." },
+  models: {
+    providers: {
+      zai: {
+        // GLM-5.2 uses the Coding Plan endpoint.
+        baseUrl: "https://api.z.ai/api/coding/paas/v4",
+      },
+    },
+  },
+  agents: { defaults: { model: { primary: "zai/glm-5.2" } } },
+}
+```
+
 ## Danh mục tích hợp sẵn
 
-OpenClaw cung cấp danh mục nhà cung cấp `zai` đi kèm trong manifest Plugin, vì vậy thao tác
+Plugin nhà cung cấp `zai` đưa danh mục của nó vào manifest Plugin, nên thao tác
 liệt kê chỉ đọc có thể hiển thị các hàng GLM đã biết mà không cần tải runtime của nhà cung cấp:
 
 ```bash
@@ -98,37 +120,51 @@ openclaw models list --all --provider zai
 
 Danh mục dựa trên manifest hiện bao gồm:
 
-| Tham chiếu mô hình   | Ghi chú          |
-| -------------------- | ---------------- |
-| `zai/glm-5.1`        | Mô hình mặc định |
-| `zai/glm-5`          |                  |
-| `zai/glm-5-turbo`    |                  |
-| `zai/glm-5v-turbo`   |                  |
-| `zai/glm-4.7`        |                  |
-| `zai/glm-4.7-flash`  |                  |
-| `zai/glm-4.7-flashx` |                  |
-| `zai/glm-4.6`        |                  |
-| `zai/glm-4.6v`       |                  |
-| `zai/glm-4.5`        |                  |
-| `zai/glm-4.5-air`    |                  |
-| `zai/glm-4.5-flash`  |                  |
-| `zai/glm-4.5v`       |                  |
+| Ref mô hình         | Ghi chú                         |
+| ------------------- | ------------------------------- |
+| `zai/glm-5.2`       | Mặc định Coding Plan; ngữ cảnh 1M |
+| `zai/glm-5.1`       | Mặc định API chung              |
+| `zai/glm-5`         |                                 |
+| `zai/glm-5-turbo`   |                                 |
+| `zai/glm-5v-turbo`  |                                 |
+| `zai/glm-4.7`       |                                 |
+| `zai/glm-4.7-flash` |                                 |
+| `zai/glm-4.7-flashx` |                                |
+| `zai/glm-4.6`       |                                 |
+| `zai/glm-4.6v`      |                                 |
+| `zai/glm-4.5`       |                                 |
+| `zai/glm-4.5-air`   |                                 |
+| `zai/glm-4.5-flash` |                                 |
+| `zai/glm-4.5v`      |                                 |
 
 <Tip>
-Các mô hình GLM có sẵn dưới dạng `zai/<model>` (ví dụ: `zai/glm-5`). Tham chiếu mô hình đi kèm mặc định là `zai/glm-5.1`.
+Các mô hình GLM có sẵn dưới dạng `zai/<model>` (ví dụ: `zai/glm-5`).
 </Tip>
+
+<Tip>
+GLM-5.2 hỗ trợ các mức thinking `off`, `low`, `high` và `max`. OpenClaw ánh xạ
+`low` và `high` sang mức nỗ lực suy luận cao của Z.AI, và `max` sang mức nỗ lực tối đa.
+</Tip>
+
+<Note>
+Thiết lập Coding Plan mặc định là `zai/glm-5.2`; thiết lập API chung giữ
+`zai/glm-5.1`. Tự động phát hiện endpoint sẽ quay về `glm-5.1` hoặc `glm-4.7`
+khi gói đã chọn không cung cấp GLM-5.2. Phiên bản và khả năng cung cấp của GLM
+có thể thay đổi; chạy `openclaw models list --all --provider zai` để xem danh mục
+mà phiên bản đã cài đặt của bạn biết.
+</Note>
 
 ## Cấu hình nâng cao
 
 <AccordionGroup>
-  <Accordion title="Phân giải chuyển tiếp các mô hình GLM-5 chưa biết">
-    Các id `glm-5*` chưa biết vẫn được phân giải chuyển tiếp trên đường dẫn nhà cung cấp đi kèm bằng cách
-    tổng hợp metadata do nhà cung cấp sở hữu từ mẫu `glm-4.7` khi id
-    khớp với dạng họ GLM-5 hiện tại.
+  <Accordion title="Forward-resolving unknown GLM-5 models">
+    Các id `glm-5*` chưa biết vẫn được phân giải xuôi trên đường dẫn nhà cung cấp bằng cách
+    tổng hợp siêu dữ liệu do nhà cung cấp sở hữu từ mẫu `glm-4.7` khi id
+    khớp với hình dạng họ GLM-5 hiện tại.
   </Accordion>
 
-  <Accordion title="Truyền phát lệnh gọi công cụ">
-    `tool_stream` được bật theo mặc định cho truyền phát lệnh gọi công cụ của Z.AI. Để tắt tính năng này:
+  <Accordion title="Tool-call streaming">
+    `tool_stream` được bật theo mặc định cho streaming lệnh gọi công cụ của Z.AI. Để tắt:
 
     ```json5
     {
@@ -146,21 +182,20 @@ Các mô hình GLM có sẵn dưới dạng `zai/<model>` (ví dụ: `zai/glm-5`
 
   </Accordion>
 
-  <Accordion title="Thinking và thinking được giữ lại">
+  <Accordion title="Thinking and preserved thinking">
     Thinking của Z.AI tuân theo các điều khiển `/think` của OpenClaw. Khi tắt thinking,
-    OpenClaw gửi `thinking: { type: "disabled" }` để tránh phản hồi
+    OpenClaw gửi `thinking: { type: "disabled" }` để tránh các phản hồi
     dùng ngân sách đầu ra cho `reasoning_content` trước phần văn bản hiển thị.
 
-    Thinking được giữ lại là tùy chọn bật vì Z.AI yêu cầu phát lại toàn bộ
-    `reasoning_content` lịch sử, làm tăng số token của prompt. Bật theo
-    từng mô hình:
+    Preserved thinking là tùy chọn bật thủ công vì Z.AI yêu cầu phát lại toàn bộ
+    `reasoning_content` lịch sử, làm tăng token lời nhắc. Bật theo từng mô hình:
 
     ```json5
     {
       agents: {
         defaults: {
           models: {
-            "zai/glm-5.1": {
+            "zai/glm-5.2": {
               params: { preserveThinking: true },
             },
           },
@@ -171,29 +206,30 @@ Các mô hình GLM có sẵn dưới dạng `zai/<model>` (ví dụ: `zai/glm-5`
 
     Khi được bật và thinking đang bật, OpenClaw gửi
     `thinking: { type: "enabled", clear_thinking: false }` và phát lại
-    `reasoning_content` trước đó cho cùng transcript tương thích với OpenAI.
+    `reasoning_content` trước đó cho cùng bản ghi tương thích OpenAI.
 
-    Người dùng nâng cao vẫn có thể ghi đè payload chính xác của nhà cung cấp bằng
+    Người dùng nâng cao vẫn có thể ghi đè chính xác payload của nhà cung cấp bằng
     `params.extra_body.thinking`.
 
   </Accordion>
 
-  <Accordion title="Hiểu hình ảnh">
-    Plugin Z.AI đi kèm đăng ký khả năng hiểu hình ảnh.
+  <Accordion title="Image understanding">
+    Plugin Z.AI đăng ký khả năng hiểu hình ảnh.
 
     | Thuộc tính    | Giá trị     |
     | ------------- | ----------- |
     | Mô hình       | `glm-4.6v`  |
 
-    Khả năng hiểu hình ảnh được tự động phân giải từ xác thực Z.AI đã cấu hình, không
+    Khả năng hiểu hình ảnh được tự động phân giải từ xác thực Z.AI đã cấu hình — không
     cần cấu hình bổ sung.
 
   </Accordion>
 
-  <Accordion title="Chi tiết xác thực">
-    - Z.AI dùng xác thực Bearer với khóa API của bạn.
-    - Lựa chọn thiết lập ban đầu `zai-api-key` tự động phát hiện endpoint Z.AI phù hợp từ tiền tố khóa.
-    - Dùng các lựa chọn khu vực rõ ràng (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) khi bạn muốn buộc dùng một bề mặt API cụ thể.
+  <Accordion title="Auth details">
+    - Z.AI sử dụng xác thực Bearer với khóa API của bạn.
+    - Lựa chọn onboarding `zai-api-key` tự động phát hiện endpoint Z.AI phù hợp bằng cách thăm dò các endpoint được hỗ trợ bằng khóa của bạn.
+    - Dùng các lựa chọn khu vực tường minh (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) khi bạn muốn buộc dùng một bề mặt API cụ thể.
+    - Biến môi trường cũ `Z_AI_API_KEY` vẫn được chấp nhận; OpenClaw sao chép nó sang `ZAI_API_KEY` khi khởi động nếu `ZAI_API_KEY` chưa được đặt.
 
   </Accordion>
 </AccordionGroup>
@@ -201,10 +237,10 @@ Các mô hình GLM có sẵn dưới dạng `zai/<model>` (ví dụ: `zai/glm-5`
 ## Liên quan
 
 <CardGroup cols={2}>
-  <Card title="Họ mô hình GLM" href="/vi/providers/glm" icon="microchip">
-    Tổng quan về họ mô hình GLM.
+  <Card title="Model selection" href="/vi/concepts/model-providers" icon="layers">
+    Chọn nhà cung cấp, ref mô hình và hành vi chuyển đổi dự phòng.
   </Card>
-  <Card title="Chọn mô hình" href="/vi/concepts/model-providers" icon="layers">
-    Chọn nhà cung cấp, tham chiếu mô hình và hành vi chuyển đổi dự phòng.
+  <Card title="Configuration reference" href="/vi/gateway/configuration-reference" icon="gear">
+    Schema cấu hình OpenClaw đầy đủ, bao gồm cài đặt nhà cung cấp và mô hình.
   </Card>
 </CardGroup>

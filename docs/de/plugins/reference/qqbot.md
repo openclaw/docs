@@ -1,29 +1,30 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder auditieren das qqbot-Plugin
-summary: Fügt die QQ Bot-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
+    - Sie installieren, konfigurieren oder prüfen das qqbot-Plugin
+summary: OpenClaw QQ-Bot-Kanal-Plugin für Gruppen- und Direktnachrichten-Workflows.
 title: QQ-Bot-Plugin
 x-i18n:
-    generated_at: "2026-05-03T06:42:38Z"
+    generated_at: "2026-06-27T17:56:21Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 988c342ef1cabeda5e3ede7ea598e3a96945bf814f9f823f17e1c357bfe3bf9c
+    source_hash: 10e67c8c8bd01a2fcd3ca55c32f6941cd52551ad241cb16a2ea38c62d80cfeb9
     source_path: plugins/reference/qqbot.md
     workflow: 16
 ---
 
-# QQ Bot Plugin
+# QQ Bot-Plugin
 
-Fügt die QQ Bot-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
+OpenClaw QQ Bot-Kanal-Plugin für Gruppen- und Direktnachrichten-Workflows.
 
 ## Distribution
 
 - Paket: `@openclaw/qqbot`
 - Installationsweg: npm; ClawHub
 
-## Oberfläche
+## Schnittstelle
 
-Kanäle: qqbot; Contracts: tools; Skills
+Kanäle: qqbot; Verträge: tools; Skills
 
 ## Zugehörige Dokumentation
 

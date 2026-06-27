@@ -1,32 +1,41 @@
 ---
 read_when:
-    - U wilt OpenClaw van een machine verwijderen
+    - Je wilt OpenClaw van een machine verwijderen
     - De Gateway-service draait nog na de-installatie
-summary: OpenClaw volledig verwijderen (CLI, service, status, werkruimte)
-title: De-installeren
+summary: OpenClaw volledig verwijderen (CLI, service, staat, werkruimte)
+title: Verwijderen
 x-i18n:
-    generated_at: "2026-04-29T22:56:16Z"
+    generated_at: "2026-06-27T17:43:56Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6d73bc46f4878510706132e5c6cfec3c27cdb55578ed059dc12a785712616d75
+    source_hash: 0f63bde2769b3d35d928aed1668121086a2952338f2634d45d55da8cc637025b
     source_path: install/uninstall.md
     workflow: 16
 ---
 
-Twee paden:
+Twee routes:
 
-- **Eenvoudig pad** als `openclaw` nog is geïnstalleerd.
+- **Eenvoudige route** als `openclaw` nog is geïnstalleerd.
 - **Handmatige serviceverwijdering** als de CLI weg is maar de service nog draait.
 
-## Eenvoudig pad (CLI nog geïnstalleerd)
+## Eenvoudige route (CLI nog geïnstalleerd)
 
-Aanbevolen: gebruik het ingebouwde verwijderprogramma:
+Aanbevolen: gebruik het ingebouwde de-installatieprogramma:
 
 ```bash
 openclaw uninstall
 ```
 
-Niet-interactief (automatisering / npx):
+Bij gebruik van de CLI blijven geconfigureerde werkruimtemappen behouden wanneer statusgegevens worden verwijderd, tenzij je ook `--workspace` selecteert.
+
+Bekijk vooraf wat wordt verwijderd (veilig):
+
+```bash
+openclaw uninstall --dry-run --all
+```
+
+Niet-interactief (automatisering / npx). Gebruik dit voorzichtig en alleen nadat je de bereiken hebt bevestigd:
 
 ```bash
 openclaw uninstall --all --yes --non-interactive
@@ -47,13 +56,14 @@ openclaw gateway stop
 openclaw gateway uninstall
 ```
 
-3. Verwijder status + configuratie:
+3. Verwijder statusgegevens + configuratie:
 
 ```bash
 rm -rf "${OPENCLAW_STATE_DIR:-$HOME/.openclaw}"
 ```
 
 Als je `OPENCLAW_CONFIG_PATH` hebt ingesteld op een aangepaste locatie buiten de statusmap, verwijder dat bestand dan ook.
+Als je een werkruimte binnen de statusmap wilt behouden, zoals `~/.openclaw/workspace`, verplaats die dan voordat je `rm -rf` uitvoert of verwijder de inhoud van de statusmap selectief.
 
 4. Verwijder je werkruimte (optioneel, verwijdert agentbestanden):
 
@@ -77,8 +87,8 @@ rm -rf /Applications/OpenClaw.app
 
 Opmerkingen:
 
-- Als je profielen hebt gebruikt (`--profile` / `OPENCLAW_PROFILE`), herhaal stap 3 voor elke statusmap (standaardwaarden zijn `~/.openclaw-<profile>`).
-- In externe modus staat de statusmap op de **Gateway-host**, dus voer stap 1-4 daar ook uit.
+- Als je profielen (`--profile` / `OPENCLAW_PROFILE`) hebt gebruikt, herhaal stap 3 dan voor elke statusmap (standaardwaarden zijn `~/.openclaw-<profile>`).
+- In externe modus staat de statusmap op de **Gateway-host**, dus voer stappen 1-4 daar ook uit.
 
 ## Handmatige serviceverwijdering (CLI niet geïnstalleerd)
 
@@ -105,32 +115,36 @@ rm -f ~/.config/systemd/user/openclaw-gateway.service
 systemctl --user daemon-reload
 ```
 
-### Windows (Scheduled Task)
+### Windows (geplande taak)
 
 De standaardtaaknaam is `OpenClaw Gateway` (of `OpenClaw Gateway (<profile>)`).
-Het taakscript staat onder je statusmap.
+Het taakscript staat onder je statusmap als `gateway.cmd`; huidige installaties kunnen
+ook een vensterloze `gateway.vbs`-launcher aanmaken die door Taakplanner wordt uitgevoerd in plaats
+van `gateway.cmd` rechtstreeks te openen.
 
 ```powershell
 schtasks /Delete /F /TN "OpenClaw Gateway"
-Remove-Item -Force "$env:USERPROFILE\.openclaw\gateway.cmd"
+Remove-Item -Force "$env:USERPROFILE\.openclaw\gateway.cmd" -ErrorAction SilentlyContinue
+Remove-Item -Force "$env:USERPROFILE\.openclaw\gateway.vbs" -ErrorAction SilentlyContinue
 ```
 
-Als je een profiel hebt gebruikt, verwijder dan de bijbehorende taaknaam en `~\.openclaw-<profile>\gateway.cmd`.
+Als je een profiel hebt gebruikt, verwijder dan de overeenkomende taaknaam en de `gateway.cmd`- /
+`gateway.vbs`-bestanden onder `~\.openclaw-<profile>`.
 
-## Normale installatie versus source-checkout
+## Normale installatie versus bron-checkout
 
 ### Normale installatie (install.sh / npm / pnpm / bun)
 
 Als je `https://openclaw.ai/install.sh` of `install.ps1` hebt gebruikt, is de CLI geïnstalleerd met `npm install -g openclaw@latest`.
 Verwijder deze met `npm rm -g openclaw` (of `pnpm remove -g` / `bun remove -g` als je op die manier hebt geïnstalleerd).
 
-### Source-checkout (git clone)
+### Bron-checkout (git clone)
 
 Als je vanuit een repo-checkout draait (`git clone` + `openclaw ...` / `bun run openclaw ...`):
 
-1. Verwijder de Gateway-service **voordat** je de repo verwijdert (gebruik het eenvoudige pad hierboven of handmatige serviceverwijdering).
+1. Verwijder de Gateway-service **voordat** je de repo verwijdert (gebruik de eenvoudige route hierboven of handmatige serviceverwijdering).
 2. Verwijder de repo-map.
-3. Verwijder status + werkruimte zoals hierboven getoond.
+3. Verwijder statusgegevens + werkruimte zoals hierboven getoond.
 
 ## Gerelateerd
 

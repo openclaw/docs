@@ -1,13 +1,14 @@
 ---
 read_when:
     - Sie möchten eine vollständige Übersicht der Dokumentation
-summary: Hubs mit Links zu allen OpenClaw-Dokumenten
-title: Dokumentations-Hubs
+summary: Hubs, die auf jede OpenClaw-Dokumentation verlinken
+title: Docs-Hubs
 x-i18n:
-    generated_at: "2026-05-12T00:59:36Z"
+    generated_at: "2026-06-27T18:14:09Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f4675773105bbff55e1f38c8449d688dcefc6ad70d9f5e572193f1e0c638e243
+    source_hash: d7d3f089e2caea1e1487c7c0375c62dfb007db05827a77d4e5616839023b9457
     source_path: start/hubs.md
     workflow: 16
 ---
@@ -16,16 +17,16 @@ x-i18n:
 Wenn Sie neu bei OpenClaw sind, beginnen Sie mit [Erste Schritte](/de/start/getting-started).
 </Note>
 
-Nutzen Sie diese Hubs, um jede Seite zu finden, einschließlich Vertiefungen und Referenzdokumentation, die nicht in der linken Navigation erscheinen.
+Nutzen Sie diese Hubs, um jede Seite zu entdecken, einschließlich ausführlicher Vertiefungen und Referenzdokumentation, die nicht in der linken Navigation erscheinen.
 
-## Hier beginnen
+## Hier starten
 
 - [Index](/de)
 - [Erste Schritte](/de/start/getting-started)
 - [Onboarding](/de/start/onboarding)
 - [Onboarding (CLI)](/de/start/wizard)
 - [Einrichtung](/de/start/setup)
-- [Dashboard (lokales Gateway)](http://127.0.0.1:18789/)
+- [Dashboard (lokaler Gateway)](http://127.0.0.1:18789/)
 - [Hilfe](/de/help)
 - [Dokumentationsverzeichnis](/de/start/docs-directory)
 - [Konfiguration](/de/gateway/configuration)
@@ -41,28 +42,28 @@ Nutzen Sie diese Hubs, um jede Seite zu finden, einschließlich Vertiefungen und
 - [Aktualisierung / Rollback](/de/install/updating)
 - [Bun-Workflow (experimentell)](/de/install/bun)
 
-## Grundkonzepte
+## Kernkonzepte
 
 - [Architektur](/de/concepts/architecture)
 - [Funktionen](/de/concepts/features)
 - [Netzwerk-Hub](/de/network)
 - [Agent-Laufzeit](/de/concepts/agent)
 - [Agent-Arbeitsbereich](/de/concepts/agent-workspace)
-- [Speicher](/de/concepts/memory)
-- [Agent-Schleife](/de/concepts/agent-loop)
+- [Memory](/de/concepts/memory)
+- [Agent-Loop](/de/concepts/agent-loop)
 - [Streaming + Chunking](/de/concepts/streaming)
 - [Multi-Agent-Routing](/de/concepts/multi-agent)
 - [Compaction](/de/concepts/compaction)
 - [Sitzungen](/de/concepts/session)
 - [Sitzungsbereinigung](/de/concepts/session-pruning)
-- [Sitzungswerkzeuge](/de/concepts/session-tool)
+- [Sitzungstools](/de/concepts/session-tool)
 - [Warteschlange](/de/concepts/queue)
 - [Slash-Befehle](/de/tools/slash-commands)
 - [RPC-Adapter](/de/reference/rpc)
 - [TypeBox-Schemas](/de/concepts/typebox)
 - [Zeitzonenbehandlung](/de/concepts/timezone)
 - [Präsenz](/de/concepts/presence)
-- [Discovery + Transporte](/de/gateway/discovery)
+- [Erkennung + Transporte](/de/gateway/discovery)
 - [Bonjour](/de/gateway/bonjour)
 - [Kanal-Routing](/de/channels/channel-routing)
 - [Gruppen](/de/channels/groups)
@@ -70,10 +71,10 @@ Nutzen Sie diese Hubs, um jede Seite zu finden, einschließlich Vertiefungen und
 - [Modell-Failover](/de/concepts/model-failover)
 - [OAuth](/de/concepts/oauth)
 
-## Provider + Eingang
+## Provider + Ingress
 
-- [Hub für Chat-Kanäle](/de/channels)
-- [Hub für Modell-Provider](/de/providers/models)
+- [Chatkanäle-Hub](/de/channels)
+- [Modell-Provider-Hub](/de/providers/models)
 - [WhatsApp](/de/channels/whatsapp)
 - [Telegram](/de/channels/telegram)
 - [Slack](/de/channels/slack)
@@ -82,7 +83,7 @@ Nutzen Sie diese Hubs, um jede Seite zu finden, einschließlich Vertiefungen und
 - [Signal](/de/channels/signal)
 - [QQ Bot](/de/channels/qqbot)
 - [iMessage](/de/channels/imessage)
-- [Standortanalyse](/de/channels/location)
+- [Standortauswertung](/de/channels/location)
 - [WebChat](/de/web/webchat)
 - [Webhooks](/de/automation/cron-jobs#webhooks)
 - [Gmail Pub/Sub](/de/automation/cron-jobs#gmail-pubsub-integration)
@@ -94,7 +95,7 @@ Nutzen Sie diese Hubs, um jede Seite zu finden, einschließlich Vertiefungen und
 - [Gateway-Kopplung](/de/gateway/pairing)
 - [Gateway-Sperre](/de/gateway/gateway-lock)
 - [Hintergrundprozess](/de/gateway/background-process)
-- [Zustand](/de/gateway/health)
+- [Status](/de/gateway/health)
 - [Heartbeat](/de/gateway/heartbeat)
 - [Doctor](/de/gateway/doctor)
 - [Protokollierung](/de/gateway/logging)
@@ -107,20 +108,20 @@ Nutzen Sie diese Hubs, um jede Seite zu finden, einschließlich Vertiefungen und
 - [Sicherheit](/de/gateway/security)
 - [Fehlerbehebung](/de/gateway/troubleshooting)
 
-## Werkzeuge + Automatisierung
+## Tools + Automatisierung
 
-- [Werkzeugoberfläche](/de/tools)
+- [Tool-Oberfläche](/de/tools)
 - [OpenProse](/de/prose)
 - [CLI-Referenz](/de/cli)
-- [Exec-Werkzeug](/de/tools/exec)
-- [PDF-Werkzeug](/de/tools/pdf)
+- [Exec-Tool](/de/tools/exec)
+- [PDF-Tool](/de/tools/pdf)
 - [Erhöhter Modus](/de/tools/elevated)
 - [Cron-Jobs](/de/automation/cron-jobs)
 - [Automatisierung](/de/automation)
 - [Denken + ausführlich](/de/tools/thinking)
 - [Modelle](/de/concepts/models)
-- [Sub-Agenten](/de/tools/subagents)
-- [Agent-Send-CLI](/de/tools/agent-send)
+- [Sub-Agents](/de/tools/subagents)
+- [CLI zum Senden an Agents](/de/tools/agent-send)
 - [Terminal-UI](/de/web/tui)
 - [Browser-Steuerung](/de/tools/browser)
 - [Browser (Linux-Fehlerbehebung)](/de/tools/browser-linux-troubleshooting)
@@ -142,7 +143,7 @@ Nutzen Sie diese Hubs, um jede Seite zu finden, einschließlich Vertiefungen und
 - [macOS](/de/platforms/macos)
 - [iOS](/de/platforms/ios)
 - [Android](/de/platforms/android)
-- [Windows (WSL2)](/de/platforms/windows)
+- [Windows-Hub](/de/platforms/windows)
 - [Linux](/de/platforms/linux)
 - [Web-Oberflächen](/de/web)
 
@@ -155,7 +156,7 @@ Nutzen Sie diese Hubs, um jede Seite zu finden, einschließlich Vertiefungen und
 - [macOS-WebChat](/de/platforms/mac/webchat)
 - [macOS-Canvas](/de/platforms/mac/canvas)
 - [macOS-Kindprozess](/de/platforms/mac/child-process)
-- [macOS-Zustand](/de/platforms/mac/health)
+- [macOS-Status](/de/platforms/mac/health)
 - [macOS-Symbol](/de/platforms/mac/icon)
 - [macOS-Protokollierung](/de/platforms/mac/logging)
 - [macOS-Berechtigungen](/de/platforms/mac/permissions)
@@ -172,7 +173,7 @@ Nutzen Sie diese Hubs, um jede Seite zu finden, einschließlich Vertiefungen und
 - [Plugins erstellen](/de/plugins/building-plugins)
 - [Plugin-Hooks](/de/plugins/hooks)
 - [Plugin-Manifest](/de/plugins/manifest)
-- [Agent-Werkzeuge](/de/plugins/building-plugins#registering-agent-tools)
+- [Agent-Tools](/de/plugins/building-plugins#registering-agent-tools)
 - [Plugin-Bundles](/de/plugins/bundles)
 - [ClawHub](/de/clawhub)
 - [Capability-Cookbook](/de/plugins/adding-capabilities)
@@ -195,7 +196,7 @@ Nutzen Sie diese Hubs, um jede Seite zu finden, einschließlich Vertiefungen und
 
 ## Projekt
 
-- [Danksagungen](/de/reference/credits)
+- [Credits](/de/reference/credits)
 
 ## Tests + Release
 

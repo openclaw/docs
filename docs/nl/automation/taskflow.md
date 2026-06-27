@@ -1,42 +1,43 @@
 ---
 read_when:
-    - Je wilt begrijpen hoe Task Flow zich verhoudt tot achtergrondtaken
-    - Je komt TaskFlow of openclaw tasks flow tegen in releaseopmerkingen of documentatie
-    - Je wilt de persistente stroomstatus inspecteren of beheren
-summary: Task Flow-floworkestratielaag boven achtergrondtaken
+    - U wilt begrijpen hoe Taakstroom zich verhoudt tot achtergrondtaken
+    - Je komt Task Flow of openclaw tasks flow tegen in release-opmerkingen of documentatie
+    - Je wilt duurzame flowstatus inspecteren of beheren
+summary: Taakstroom-orkestratielaag boven achtergrondtaken
 title: Taakstroom
 x-i18n:
-    generated_at: "2026-05-10T19:21:02Z"
+    generated_at: "2026-06-27T17:09:07Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 135227b250840cd579f10a8ab4211e9319c447bb4d6df25907738ea138fc2d2a
+    source_hash: e4f5ff3c9a68eb0408a180bc947a03b410568d7914cb1c1d7f31d6013e036096
     source_path: automation/taskflow.md
     workflow: 16
 ---
 
-Task Flow is de flow-orchestratiesubstraatlaag die boven [achtergrondtaken](/nl/automation/tasks) ligt. Het beheert duurzame meerstapsflows met hun eigen status, revisietracking en synchronisatiesemantiek, terwijl afzonderlijke taken de eenheid van losgekoppeld werk blijven.
+Task Flow is het orkestratiesubstraat voor flows dat boven [achtergrondtaken](/nl/automation/tasks) ligt. Het beheert duurzame meerstapsflows met hun eigen status, revisietracking en synchronisatiesemantiek, terwijl afzonderlijke taken de eenheid van losgekoppeld werk blijven.
 
-## Wanneer u Task Flow gebruikt
+## Wanneer Task Flow gebruiken
 
-Gebruik Task Flow wanneer werk meerdere opeenvolgende of vertakkende stappen omvat en u duurzame voortgangstracking nodig hebt over gateway-herstarts heen. Voor enkele achtergrondbewerkingen is een gewone [taak](/nl/automation/tasks) voldoende.
+Gebruik Task Flow wanneer werk meerdere opeenvolgende of vertakkende stappen omvat en je duurzame voortgangstracking over gateway-herstarts heen nodig hebt. Voor afzonderlijke achtergrondbewerkingen is een gewone [taak](/nl/automation/tasks) voldoende.
 
-| Scenario                                | Gebruik                    |
-| --------------------------------------- | -------------------------- |
-| Enkele achtergrondtaak                   | Gewone taak                |
-| Meerstapspijplijn (A dan B dan C)        | Task Flow (beheerd)        |
-| Extern aangemaakte taken observeren      | Task Flow (gespiegeld)     |
-| Eenmalige herinnering                    | Cron-taak                  |
+| Scenario                                      | Gebruik                 |
+| --------------------------------------------- | ----------------------- |
+| Afzonderlijke achtergrondtaak                 | Gewone taak             |
+| Meerstapspijplijn (A, dan B, dan C)           | Task Flow (beheerd)     |
+| Extern gemaakte taken observeren              | Task Flow (gespiegeld)  |
+| Eenmalige herinnering                         | Cron-taak               |
 
 ## Betrouwbaar patroon voor geplande workflows
 
-Behandel voor terugkerende workflows, zoals marktinformatiebriefings, de planning, orchestratie en betrouwbaarheidscontroles als afzonderlijke lagen:
+Behandel voor terugkerende workflows, zoals briefings over marktinformatie, de planning, orkestratie en betrouwbaarheidscontroles als afzonderlijke lagen:
 
 1. Gebruik [Geplande taken](/nl/automation/cron-jobs) voor timing.
 2. Gebruik een persistente cron-sessie wanneer de workflow moet voortbouwen op eerdere context.
 3. Gebruik [Lobster](/nl/tools/lobster) voor deterministische stappen, goedkeuringspoorten en hervattingstokens.
-4. Gebruik Task Flow om de meerstapsrun te volgen over child-taken, wachttijden, retries en gateway-herstarts heen.
+4. Gebruik Task Flow om de meerstapsuitvoering te volgen over onderliggende taken, wachttijden, retries en gateway-herstarts heen.
 
-Voorbeeld van cron-vorm:
+Voorbeeld van een cron-vorm:
 
 ```bash
 openclaw cron add \
@@ -50,7 +51,7 @@ openclaw cron add \
   --to "channel:C1234567890"
 ```
 
-Gebruik `session:<id>` in plaats van `isolated` wanneer de terugkerende workflow bewuste geschiedenis, samenvattingen van eerdere runs of vaste context nodig heeft. Gebruik `isolated` wanneer elke run vers moet beginnen en alle vereiste status expliciet in de workflow staat.
+Gebruik `session:<id>` in plaats van `isolated` wanneer de terugkerende workflow bewuste geschiedenis, samenvattingen van eerdere uitvoeringen of vaste context nodig heeft. Gebruik `isolated` wanneer elke uitvoering schoon moet starten en alle vereiste status expliciet in de workflow staat.
 
 Plaats binnen de workflow betrouwbaarheidscontroles vóór de LLM-samenvattingsstap:
 
@@ -77,11 +78,11 @@ steps:
 
 Aanbevolen preflight-controles:
 
-- Beschikbaarheid van de browser en profielkeuze, bijvoorbeeld `openclaw` voor beheerde status of `user` wanneer een aangemelde Chrome-sessie vereist is. Zie [Browser](/nl/tools/browser).
+- Beschikbaarheid van de browser en profielkeuze, bijvoorbeeld `openclaw` voor beheerde status of `user` wanneer een ingelogde Chrome-sessie vereist is. Zie [Browser](/nl/tools/browser).
 - API-referenties en quota voor elke bron.
 - Netwerkbereikbaarheid voor vereiste endpoints.
 - Vereiste tools ingeschakeld voor de agent, zoals `lobster`, `browser` en `llm-task`.
-- Foutbestemming geconfigureerd voor cron zodat preflight-fouten zichtbaar zijn. Zie [Geplande taken](/nl/automation/cron-jobs#delivery-and-output).
+- Faalbestemming geconfigureerd voor cron zodat preflight-fouten zichtbaar zijn. Zie [Geplande taken](/nl/automation/cron-jobs#delivery-and-output).
 
 Aanbevolen velden voor dataherkomst voor elk verzameld item:
 
@@ -95,17 +96,17 @@ Aanbevolen velden voor dataherkomst voor elk verzameld item:
 }
 ```
 
-Laat de workflow verouderde items weigeren of markeren vóór de samenvatting. De LLM-stap mag alleen gestructureerde JSON ontvangen en moet worden gevraagd om `sourceUrl`, `retrievedAt` en `asOf` in de output te behouden. Gebruik [LLM-taak](/nl/tools/llm-task) wanneer u een schemagevalideerde modelstap binnen de workflow nodig hebt.
+Laat de workflow verouderde items weigeren of markeren vóór de samenvatting. De LLM-stap mag alleen gestructureerde JSON ontvangen en moet worden gevraagd om `sourceUrl`, `retrievedAt` en `asOf` in de uitvoer te behouden. Gebruik [LLM-taak](/nl/tools/llm-task) wanneer je een schemagevalideerde modelstap binnen de workflow nodig hebt.
 
-Voor herbruikbare team- of communityworkflows verpakt u de CLI, `.lobster`-bestanden en eventuele setupnotities als een skill of plugin en publiceert u die via [ClawHub](/nl/clawhub). Bewaar workflowspecifieke guardrails in dat pakket, tenzij de plugin-API een benodigde generieke capability mist.
+Verpak voor herbruikbare team- of communityworkflows de CLI, `.lobster`-bestanden en eventuele installatienotities als een skill of Plugin en publiceer deze via [ClawHub](/nl/clawhub). Houd workflowspecifieke guardrails in dat pakket, tenzij de Plugin-API een benodigde generieke capability mist.
 
 ## Synchronisatiemodi
 
 ### Beheerde modus
 
-Taakflow beheert de levenscyclus van begin tot eind. Het maakt taken aan als flowstappen, stuurt ze naar voltooiing en werkt de flowstatus automatisch bij.
+Task Flow bezit de lifecycle end-to-end. Het maakt taken als flowstappen, stuurt ze naar voltooiing en werkt de flowstatus automatisch bij.
 
-Voorbeeld: een wekelijkse rapportageflow die (1) gegevens verzamelt, (2) het rapport genereert en (3) het aflevert. Taakflow maakt elke stap aan als achtergrondtaak, wacht op voltooiing en gaat daarna door naar de volgende stap.
+Voorbeeld: een wekelijkse rapportflow die (1) data verzamelt, (2) het rapport genereert en (3) het bezorgt. Task Flow maakt elke stap als achtergrondtaak, wacht op voltooiing en gaat dan door naar de volgende stap.
 
 ```
 Flow: weekly-report
@@ -116,20 +117,20 @@ Flow: weekly-report
 
 ### Gespiegelde modus
 
-Taakflow observeert extern aangemaakte taken en houdt de flowstatus synchroon zonder eigenaar te worden van het aanmaken van taken. Dit is nuttig wanneer taken afkomstig zijn van cronjobs, CLI-opdrachten of andere bronnen en je een eenduidig overzicht wilt van hun voortgang als flow.
+Task Flow observeert extern gemaakte taken en houdt de flowstatus gesynchroniseerd zonder eigenaar te worden van het maken van taken. Dit is nuttig wanneer taken afkomstig zijn van cron-jobs, CLI-opdrachten of andere bronnen en je één uniform overzicht van hun voortgang als flow wilt.
 
-Voorbeeld: drie onafhankelijke cronjobs die samen een routine voor "morning ops" vormen. Een gespiegelde flow volgt hun gezamenlijke voortgang zonder te bepalen wanneer of hoe ze worden uitgevoerd.
+Voorbeeld: drie onafhankelijke cron-jobs die samen een "morning ops"-routine vormen. Een gespiegelde flow volgt hun gezamenlijke voortgang zonder te bepalen wanneer of hoe ze worden uitgevoerd.
 
 ## Duurzame status en revisietracking
 
-Elke flow bewaart zijn eigen status en houdt revisies bij, zodat voortgang gateway-herstarts overleeft. Revisietracking maakt conflictdetectie mogelijk wanneer meerdere bronnen dezelfde flow gelijktijdig proberen voort te zetten.
-Het flowregister gebruikt SQLite met begrensd onderhoud van het write-ahead-logboek, inclusief
-periodieke checkpoints en checkpoints bij afsluiten, zodat langlopende gateways geen
+Elke flow bewaart zijn eigen status persistent en houdt revisies bij, zodat voortgang gateway-herstarts overleeft. Revisietracking maakt conflictdetectie mogelijk wanneer meerdere bronnen tegelijk dezelfde flow proberen vooruit te zetten.
+Het flowregister gebruikt SQLite met begrensd onderhoud van de write-ahead-log, inclusief
+periodieke checkpoints en checkpoints bij afsluiten, zodat lang draaiende gateways geen
 onbegrensde `registry.sqlite-wal`-sidecarbestanden behouden.
 
-## Annuleringsgedrag
+## Annuleergedrag
 
-`openclaw tasks flow cancel` stelt een blijvende annuleringsintentie in op de flow. Actieve taken binnen de flow worden geannuleerd en er worden geen nieuwe stappen gestart. De annuleringsintentie blijft behouden na herstarts, zodat een geannuleerde flow geannuleerd blijft, zelfs als de gateway herstart voordat alle onderliggende taken zijn beëindigd.
+`openclaw tasks flow cancel` zet een blijvende annuleerintentie op de flow. Actieve taken binnen de flow worden geannuleerd en er worden geen nieuwe stappen gestart. De annuleerintentie blijft behouden over herstarts heen, zodat een geannuleerde flow geannuleerd blijft, zelfs als de gateway herstart voordat alle onderliggende taken zijn beëindigd.
 
 ## CLI-opdrachten
 
@@ -144,19 +145,19 @@ openclaw tasks flow show <lookup>
 openclaw tasks flow cancel <lookup>
 ```
 
-| Opdracht                          | Beschrijving                                      |
-| --------------------------------- | ------------------------------------------------- |
+| Opdracht                          | Beschrijving                                         |
+| --------------------------------- | ---------------------------------------------------- |
 | `openclaw tasks flow list`        | Toont gevolgde flows met status en synchronisatiemodus |
-| `openclaw tasks flow show <id>`   | Inspecteer één flow op flow-id of opzoeksleutel   |
-| `openclaw tasks flow cancel <id>` | Annuleer een actieve flow en de actieve taken ervan |
+| `openclaw tasks flow show <id>`   | Inspecteer één flow op flow-id of lookup-sleutel     |
+| `openclaw tasks flow cancel <id>` | Annuleer een actieve flow en de actieve taken ervan  |
 
 ## Hoe flows zich verhouden tot taken
 
-Flows coördineren taken, ze vervangen ze niet. Eén flow kan gedurende zijn levensduur meerdere achtergrondtaken aansturen. Gebruik `openclaw tasks` om afzonderlijke taakrecords te inspecteren en `openclaw tasks flow` om de orkestrerende flow te inspecteren.
+Flows coördineren taken, ze vervangen ze niet. Een enkele flow kan gedurende zijn levensduur meerdere achtergrondtaken aansturen. Gebruik `openclaw tasks` om afzonderlijke taakrecords te inspecteren en `openclaw tasks flow` om de orkestrerende flow te inspecteren.
 
 ## Gerelateerd
 
-- [Achtergrondtaken](/nl/automation/tasks) — het losgekoppelde werklogboek dat flows coördineren
-- [CLI: taken](/nl/cli/tasks) — CLI-opdrachtenreferentie voor `openclaw tasks flow`
-- [Automatiseringsoverzicht](/nl/automation) — alle automatiseringsmechanismen in één oogopslag
-- [Cronjobs](/nl/automation/cron-jobs) — geplande jobs die flows kunnen voeden
+- [Achtergrondtaken](/nl/automation/tasks) — het losgekoppelde werkregister dat flows coördineren
+- [CLI: taken](/nl/cli/tasks) — CLI-opdrachtreferentie voor `openclaw tasks flow`
+- [Overzicht van automatisering](/nl/automation) — alle automatiseringsmechanismen in één oogopslag
+- [Cron-jobs](/nl/automation/cron-jobs) — geplande taken die flows kunnen voeden

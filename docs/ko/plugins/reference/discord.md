@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Discord Plugin을 설치, 구성 또는 감사하는 중입니다
-summary: OpenClaw 메시지를 보내고 받을 수 있는 Discord 채널 인터페이스를 추가합니다.
+    - Discord Plugin을 설치, 구성 또는 감사하고 있습니다
+summary: 채널, DM, 명령어 및 앱 이벤트를 위한 OpenClaw Discord 채널 Plugin.
 title: Discord Plugin
 x-i18n:
-    generated_at: "2026-05-03T06:20:30Z"
+    generated_at: "2026-06-27T17:50:41Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c0af255dc0e58e91c1f0ebcc5bca46e1e8e80f415ed3f5a9840bb31f717c9703
+    source_hash: 9e3305f8ad8eb84fd350bdfa0983b4fd8f848e0697ecf3e779e31cd6cb44dbf5
     source_path: plugins/reference/discord.md
     workflow: 16
 ---
 
 # Discord Plugin
 
-OpenClaw 메시지를 보내고 받기 위한 Discord 채널 인터페이스를 추가합니다.
+채널, DM, 명령, 앱 이벤트를 위한 OpenClaw Discord 채널 Plugin입니다.
 
 ## 배포
 
 - 패키지: `@openclaw/discord`
 - 설치 경로: npm; ClawHub
 
-## 인터페이스
+## 표면
 
-channels: discord
+채널: discord; 계약: transcriptSourceProviders; Skills
 
 ## 관련 문서
 
-- [Discord](/ko/channels/discord)
+- [discord](/ko/channels/discord)

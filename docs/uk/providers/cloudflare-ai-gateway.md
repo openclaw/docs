@@ -1,50 +1,60 @@
 ---
 read_when:
     - Ви хочете використовувати Cloudflare AI Gateway з OpenClaw
-    - Вам потрібен ID облікового запису, ID Gateway або змінна середовища ключа API
+    - Вам потрібні ID облікового запису, ID Gateway або змінна середовища ключа API
 summary: Налаштування Cloudflare AI Gateway (автентифікація + вибір моделі)
-title: Cloudflare AI gateway
+title: Cloudflare AI Gateway
 x-i18n:
-    generated_at: "2026-04-27T20:43:53Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T18:09:57Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c7c567076a5b3fea0f09f44d772c0858aed2a4813f91f1cc9f87b0da39c2e5db
+    source_hash: 05678faa049349c610a9c7ea9d23958bf51927453cf6987fef397cd273f6556b
     source_path: providers/cloudflare-ai-gateway.md
-    workflow: 15
+    workflow: 16
 ---
 
-Cloudflare AI Gateway розташовується перед API постачальників і дає змогу додавати аналітику, кешування та елементи керування. Для Anthropic OpenClaw використовує Anthropic Messages API через вашу кінцеву точку Gateway.
+Cloudflare AI Gateway розташовується перед API постачальників і дає змогу додавати аналітику, кешування та засоби керування. Для Anthropic OpenClaw використовує Anthropic Messages API через вашу кінцеву точку Gateway.
 
-| Властивість   | Значення                                                                                |
-| ------------- | --------------------------------------------------------------------------------------- |
-| Постачальник  | `cloudflare-ai-gateway`                                                                 |
-| Базова URL    | `https://gateway.ai.cloudflare.com/v1/<account_id>/<gateway_id>/anthropic`              |
-| Модель за замовчуванням | `cloudflare-ai-gateway/claude-sonnet-4-6`                                   |
-| Ключ API      | `CLOUDFLARE_AI_GATEWAY_API_KEY` (ваш ключ API постачальника для запитів через Gateway) |
+| Властивість        | Значення                                                                                 |
+| ------------------ | ---------------------------------------------------------------------------------------- |
+| Постачальник       | `cloudflare-ai-gateway`                                                                  |
+| Базова URL-адреса  | `https://gateway.ai.cloudflare.com/v1/<account_id>/<gateway_id>/anthropic`               |
+| Стандартна модель  | `cloudflare-ai-gateway/claude-sonnet-4-6`                                                |
+| API-ключ           | `CLOUDFLARE_AI_GATEWAY_API_KEY` (ваш API-ключ постачальника для запитів через Gateway)   |
 
 <Note>
-Для моделей Anthropic, маршрутизованих через Cloudflare AI Gateway, використовуйте ваш **ключ API Anthropic** як ключ постачальника.
+Для моделей Anthropic, маршрутизованих через Cloudflare AI Gateway, використовуйте свій **API-ключ Anthropic** як ключ постачальника.
 </Note>
 
-Коли для моделей Anthropic Messages увімкнено thinking, OpenClaw видаляє кінцеві
-попередньо заповнені ходи assistant перед надсиланням корисного навантаження через Cloudflare AI Gateway.
-Anthropic відхиляє попереднє заповнення відповіді з extended thinking, тоді як звичайне
-попереднє заповнення без thinking залишається доступним.
+Коли для моделей Anthropic Messages увімкнено мислення, OpenClaw прибирає кінцеві
+попередньо заповнені ходи асистента перед надсиланням корисного навантаження через Cloudflare AI Gateway.
+Anthropic відхиляє попереднє заповнення відповіді з розширеним мисленням, тоді як звичайне
+попереднє заповнення без мислення залишається доступним.
+
+## Встановлення plugin
+
+Встановіть офіційний plugin, а потім перезапустіть Gateway:
+
+```bash
+openclaw plugins install @openclaw/cloudflare-ai-gateway-provider
+openclaw gateway restart
+```
 
 ## Початок роботи
 
 <Steps>
-  <Step title="Задайте ключ API постачальника та дані Gateway">
-    Запустіть онбординг і виберіть варіант автентифікації Cloudflare AI Gateway:
+  <Step title="Задайте API-ключ постачальника та дані Gateway">
+    Запустіть початкове налаштування й виберіть параметр автентифікації Cloudflare AI Gateway:
 
     ```bash
     openclaw onboard --auth-choice cloudflare-ai-gateway-api-key
     ```
 
-    Буде запропоновано ввести ID вашого облікового запису, ID Gateway і ключ API.
+    Буде запропоновано ввести ID облікового запису, ID gateway та API-ключ.
 
   </Step>
-  <Step title="Задайте модель за замовчуванням">
+  <Step title="Задайте стандартну модель">
     Додайте модель до конфігурації OpenClaw:
 
     ```json5
@@ -82,7 +92,7 @@ openclaw onboard --non-interactive \
 
 <AccordionGroup>
   <Accordion title="Автентифіковані gateway">
-    Якщо ви ввімкнули автентифікацію Gateway у Cloudflare, додайте заголовок `cf-aig-authorization`. Це **додатково до** вашого ключа API постачальника.
+    Якщо ви ввімкнули автентифікацію Gateway у Cloudflare, додайте заголовок `cf-aig-authorization`. Це **додатково до** вашого API-ключа постачальника.
 
     ```json5
     {
@@ -99,16 +109,16 @@ openclaw onboard --non-interactive \
     ```
 
     <Tip>
-    Заголовок `cf-aig-authorization` виконує автентифікацію із самим Cloudflare Gateway, тоді як ключ API постачальника (наприклад, ваш ключ Anthropic) виконує автентифікацію у висхідного постачальника.
+    Заголовок `cf-aig-authorization` автентифікує запит у самому Cloudflare Gateway, тоді як API-ключ постачальника (наприклад, ваш ключ Anthropic) автентифікує його у вхідного постачальника.
     </Tip>
 
   </Accordion>
 
   <Accordion title="Примітка щодо середовища">
-    Якщо Gateway працює як демон (launchd/systemd), переконайтеся, що `CLOUDFLARE_AI_GATEWAY_API_KEY` доступний для цього процесу.
+    Якщо Gateway працює як демон (launchd/systemd), переконайтеся, що `CLOUDFLARE_AI_GATEWAY_API_KEY` доступний цьому процесу.
 
     <Warning>
-    Ключ, який зберігається лише в `~/.profile`, не допоможе демону launchd/systemd, якщо це середовище також не імпортовано туди. Задайте ключ у `~/.openclaw/.env` або через `env.shellEnv`, щоб процес gateway міг його прочитати.
+    Ключ, експортований лише в інтерактивній оболонці, не допоможе демону launchd/systemd, якщо це середовище також не імпортовано туди. Задайте ключ у `~/.openclaw/.env` або через `env.shellEnv`, щоб процес gateway міг його прочитати.
     </Warning>
 
   </Accordion>
@@ -118,9 +128,9 @@ openclaw onboard --non-interactive \
 
 <CardGroup cols={2}>
   <Card title="Вибір моделі" href="/uk/concepts/model-providers" icon="layers">
-    Вибір постачальників, посилань на моделі та поведінки перемикання при збої.
+    Вибір постачальників, посилань на моделі та поведінки перемикання в разі відмови.
   </Card>
   <Card title="Усунення несправностей" href="/uk/help/troubleshooting" icon="wrench">
-    Загальне усунення несправностей і поширені запитання.
+    Загальне усунення несправностей і FAQ.
   </Card>
 </CardGroup>

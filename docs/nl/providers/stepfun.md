@@ -1,72 +1,82 @@
 ---
 read_when:
     - Je wilt StepFun-modellen in OpenClaw
-    - Je hebt hulp nodig bij het instellen van StepFun
-summary: StepFun-modellen gebruiken met OpenClaw
+    - Je hebt hulp nodig bij de configuratie van StepFun
+summary: Gebruik StepFun-modellen met OpenClaw
 title: StepFun
 x-i18n:
-    generated_at: "2026-04-29T23:13:24Z"
+    generated_at: "2026-06-27T18:14:58Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c9d43f6e8cda9703a0b9b82d079b282ed5c955676b99b946529582af230d8d10
+    source_hash: 08c5d684382ae98a981f6f441f7eb49c01342598952bcf16dc251d0bdfb526ca
     source_path: providers/stepfun.md
     workflow: 16
 ---
 
-OpenClaw bevat een gebundelde StepFun-provider-Plugin met twee provider-id's:
+De StepFun-provider-Plugin ondersteunt twee provider-id's:
 
-- `stepfun` voor het standaardendpoint
-- `stepfun-plan` voor het Step Plan-endpoint
+- `stepfun` voor het standaardeindpunt
+- `stepfun-plan` voor het Step Plan-eindpunt
 
 <Warning>
-Standard en Step Plan zijn **afzonderlijke providers** met verschillende endpoints en modelverwijzingsvoorvoegsels (`stepfun/...` versus `stepfun-plan/...`). Gebruik een China-sleutel met de `.com`-endpoints en een globale sleutel met de `.ai`-endpoints.
+Standaard en Step Plan zijn **afzonderlijke providers** met verschillende eindpunten en modelref-voorvoegsels (`stepfun/...` tegenover `stepfun-plan/...`). Gebruik een China-sleutel met de `.com`-eindpunten en een globale sleutel met de `.ai`-eindpunten.
 </Warning>
 
-## Overzicht van regio's en endpoints
+## Plugin installeren
 
-| Endpoint  | China (`.com`)                         | Globaal (`.ai`)                       |
-| --------- | -------------------------------------- | ------------------------------------- |
-| Standard  | `https://api.stepfun.com/v1`           | `https://api.stepfun.ai/v1`           |
+Installeer de officiële Plugin en start daarna Gateway opnieuw:
+
+```bash
+openclaw plugins install @openclaw/stepfun-provider
+openclaw gateway restart
+```
+
+## Overzicht van regio's en eindpunten
+
+| Eindpunt  | China (`.com`)                         | Globaal (`.ai`)                      |
+| --------- | -------------------------------------- | ------------------------------------ |
+| Standaard | `https://api.stepfun.com/v1`           | `https://api.stepfun.ai/v1`          |
 | Step Plan | `https://api.stepfun.com/step_plan/v1` | `https://api.stepfun.ai/step_plan/v1` |
 
-Auth-omgevingsvariabele: `STEPFUN_API_KEY`
+Auth-env-var: `STEPFUN_API_KEY`
 
 ## Ingebouwde catalogus
 
-Standard (`stepfun`):
+Standaard (`stepfun`):
 
-| Modelverwijzing         | Context | Maximale uitvoer | Opmerkingen            |
-| ------------------------ | ------- | ---------------- | ---------------------- |
-| `stepfun/step-3.5-flash` | 262,144 | 65,536           | Standaardmodel voor Standard |
+| Modelref                 | Context | Max. uitvoer | Opmerkingen       |
+| ------------------------ | ------- | ------------ | ----------------- |
+| `stepfun/step-3.5-flash` | 262,144 | 65,536       | Standaardmodel    |
 
 Step Plan (`stepfun-plan`):
 
-| Modelverwijzing                   | Context | Maximale uitvoer | Opmerkingen                    |
-| ---------------------------------- | ------- | ---------------- | ------------------------------ |
-| `stepfun-plan/step-3.5-flash`      | 262,144 | 65,536           | Standaardmodel voor Step Plan  |
-| `stepfun-plan/step-3.5-flash-2603` | 262,144 | 65,536           | Extra model voor Step Plan     |
+| Modelref                           | Context | Max. uitvoer | Opmerkingen                 |
+| ---------------------------------- | ------- | ------------ | --------------------------- |
+| `stepfun-plan/step-3.5-flash`      | 262,144 | 65,536       | Standaard Step Plan-model   |
+| `stepfun-plan/step-3.5-flash-2603` | 262,144 | 65,536       | Aanvullend Step Plan-model  |
 
 ## Aan de slag
 
-Kies je provideroppervlak en volg de installatiestappen.
+Kies je provider-oppervlak en volg de installatiestappen.
 
 <Tabs>
-  <Tab title="Standard">
-    **Meest geschikt voor:** algemeen gebruik via het standaardendpoint van StepFun.
+  <Tab title="Standaard">
+    **Het beste voor:** algemeen gebruik via het standaard StepFun-eindpunt.
 
     <Steps>
-      <Step title="Kies je endpointregio">
-        | Auth-keuze                      | Endpoint                         | Regio         |
+      <Step title="Kies je eindpuntregio">
+        | Auth-keuze                      | Eindpunt                         | Regio         |
         | -------------------------------- | -------------------------------- | ------------- |
         | `stepfun-standard-api-key-intl`  | `https://api.stepfun.ai/v1`     | Internationaal |
         | `stepfun-standard-api-key-cn`    | `https://api.stepfun.com/v1`    | China         |
       </Step>
-      <Step title="Voer onboarding uit">
+      <Step title="Onboarding uitvoeren">
         ```bash
         openclaw onboard --auth-choice stepfun-standard-api-key-intl
         ```
 
-        Of voor het China-endpoint:
+        Of voor het China-eindpunt:
 
         ```bash
         openclaw onboard --auth-choice stepfun-standard-api-key-cn
@@ -78,35 +88,35 @@ Kies je provideroppervlak en volg de installatiestappen.
           --stepfun-api-key "$STEPFUN_API_KEY"
         ```
       </Step>
-      <Step title="Controleer of modellen beschikbaar zijn">
+      <Step title="Controleren of modellen beschikbaar zijn">
         ```bash
         openclaw models list --provider stepfun
         ```
       </Step>
     </Steps>
 
-    ### Modelverwijzingen
+    ### Modelrefs
 
     - Standaardmodel: `stepfun/step-3.5-flash`
 
   </Tab>
 
   <Tab title="Step Plan">
-    **Meest geschikt voor:** reasoning-endpoint van Step Plan.
+    **Het beste voor:** Step Plan-redeneereindpunt.
 
     <Steps>
-      <Step title="Kies je endpointregio">
-        | Auth-keuze                  | Endpoint                                | Regio         |
+      <Step title="Kies je eindpuntregio">
+        | Auth-keuze                  | Eindpunt                                | Regio         |
         | ---------------------------- | --------------------------------------- | ------------- |
         | `stepfun-plan-api-key-intl`  | `https://api.stepfun.ai/step_plan/v1`  | Internationaal |
         | `stepfun-plan-api-key-cn`    | `https://api.stepfun.com/step_plan/v1` | China         |
       </Step>
-      <Step title="Voer onboarding uit">
+      <Step title="Onboarding uitvoeren">
         ```bash
         openclaw onboard --auth-choice stepfun-plan-api-key-intl
         ```
 
-        Of voor het China-endpoint:
+        Of voor het China-eindpunt:
 
         ```bash
         openclaw onboard --auth-choice stepfun-plan-api-key-cn
@@ -118,14 +128,14 @@ Kies je provideroppervlak en volg de installatiestappen.
           --stepfun-api-key "$STEPFUN_API_KEY"
         ```
       </Step>
-      <Step title="Controleer of modellen beschikbaar zijn">
+      <Step title="Controleren of modellen beschikbaar zijn">
         ```bash
         openclaw models list --provider stepfun-plan
         ```
       </Step>
     </Steps>
 
-    ### Modelverwijzingen
+    ### Modelrefs
 
     - Standaardmodel: `stepfun-plan/step-3.5-flash`
     - Alternatief model: `stepfun-plan/step-3.5-flash-2603`
@@ -136,7 +146,7 @@ Kies je provideroppervlak en volg de installatiestappen.
 ## Geavanceerde configuratie
 
 <AccordionGroup>
-  <Accordion title="Volledige configuratie: Standard-provider">
+  <Accordion title="Volledige configuratie: standaardprovider">
     ```json5
     {
       env: { STEPFUN_API_KEY: "your-key" },
@@ -206,9 +216,9 @@ Kies je provideroppervlak en volg de installatiestappen.
   </Accordion>
 
   <Accordion title="Opmerkingen">
-    - De provider is gebundeld met OpenClaw, dus er is geen afzonderlijke installatiestap voor de Plugin.
+    - De provider is een officieel extern pakket; installeer het vóór de installatie.
     - `step-3.5-flash-2603` wordt momenteel alleen beschikbaar gemaakt op `stepfun-plan`.
-    - Eén auth-flow schrijft regiogekoppelde profielen voor zowel `stepfun` als `stepfun-plan`, zodat beide oppervlakken samen kunnen worden ontdekt.
+    - Eén auth-flow schrijft regio-gematchte profielen voor zowel `stepfun` als `stepfun-plan`, zodat beide oppervlakken samen kunnen worden ontdekt.
     - Gebruik `openclaw models list` en `openclaw models set <provider/model>` om modellen te inspecteren of te wisselen.
 
   </Accordion>
@@ -222,7 +232,7 @@ Zie [Modelproviders](/nl/concepts/model-providers) voor het bredere providerover
 
 <CardGroup cols={2}>
   <Card title="Modelselectie" href="/nl/concepts/model-providers" icon="layers">
-    Overzicht van alle providers, modelverwijzingen en failovergedrag.
+    Overzicht van alle providers, modelrefs en failover-gedrag.
   </Card>
   <Card title="Configuratiereferentie" href="/nl/gateway/configuration-reference" icon="gear">
     Volledig configuratieschema voor providers, modellen en plugins.
@@ -230,7 +240,7 @@ Zie [Modelproviders](/nl/concepts/model-providers) voor het bredere providerover
   <Card title="Modelselectie" href="/nl/concepts/models" icon="brain">
     Modellen kiezen en configureren.
   </Card>
-  <Card title="StepFun Platform" href="https://platform.stepfun.com" icon="globe">
-    Beheer en documentatie voor StepFun API-sleutels.
+  <Card title="StepFun-platform" href="https://platform.stepfun.com" icon="globe">
+    StepFun API-sleutelbeheer en documentatie.
   </Card>
 </CardGroup>

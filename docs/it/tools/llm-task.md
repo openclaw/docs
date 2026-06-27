@@ -1,27 +1,28 @@
 ---
 read_when:
     - Vuoi un passaggio LLM solo JSON all'interno dei flussi di lavoro
-    - Hai bisogno di output di LLM convalidato tramite schema per l'automazione
-summary: Attività LLM solo JSON per flussi di lavoro (strumento plugin opzionale)
+    - Ti serve un output LLM convalidato tramite schema per l'automazione
+summary: Attività LLM solo JSON per workflow (strumento Plugin opzionale)
 title: Attività LLM
 x-i18n:
-    generated_at: "2026-05-07T13:26:37Z"
+    generated_at: "2026-06-27T18:21:45Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4f5efe399165e31a7f5966b93c2f83bced4fd96b7f04f5156412fd321bf5f403
+    source_hash: ab83202bd0954a948c933c80de17385eb385573b8e3974dba41ff876f91c3ddb
     source_path: tools/llm-task.md
     workflow: 16
 ---
 
-`llm-task` è uno **strumento Plugin opzionale** che esegue un'attività LLM solo JSON e
-restituisce un output strutturato (facoltativamente validato rispetto a JSON Schema).
+`llm-task` è uno **strumento plugin opzionale** che esegue un'attività LLM solo JSON e
+restituisce output strutturato (facoltativamente convalidato rispetto a JSON Schema).
 
 È ideale per motori di workflow come Lobster: puoi aggiungere un singolo passaggio LLM
 senza scrivere codice OpenClaw personalizzato per ogni workflow.
 
-## Abilita il Plugin
+## Abilitare il plugin
 
-1. Abilita il Plugin:
+1. Abilita il plugin:
 
 ```json
 {
@@ -54,10 +55,10 @@ Usa `tools.allow` solo quando vuoi la modalità allowlist restrittiva.
       "llm-task": {
         "enabled": true,
         "config": {
-          "defaultProvider": "openai-codex",
+          "defaultProvider": "openai",
           "defaultModel": "gpt-5.5",
           "defaultAuthProfileId": "main",
-          "allowedModels": ["openai/gpt-5.4"],
+          "allowedModels": ["openai/gpt-5.5"],
           "maxTokens": 800,
           "timeoutMs": 30000
         }
@@ -83,28 +84,28 @@ fuori dall'elenco viene rifiutata.
 - `maxTokens` (numero, opzionale)
 - `timeoutMs` (numero, opzionale)
 
-`thinking` accetta i preset di ragionamento standard di OpenClaw, come `low` o `medium`.
+`thinking` accetta i preset di ragionamento OpenClaw standard, come `low` o `medium`.
 
-## Risultato
+## Output
 
-Restituisce `details.json` contenente il JSON analizzato (e lo valida rispetto a
+Restituisce `details.json` contenente il JSON analizzato (e lo convalida rispetto a
 `schema` quando fornito).
 
 ## Esempio: passaggio di workflow Lobster
 
 ### Limitazione importante
 
-L'esempio seguente presume che la **CLI Lobster standalone** sia in esecuzione in un ambiente in cui `openclaw.invoke` ha già l'URL del Gateway e il contesto di autenticazione corretti.
+L'esempio seguente presuppone che la **CLI Lobster standalone** sia in esecuzione in un ambiente in cui `openclaw.invoke` ha già l'URL del gateway e il contesto di autenticazione corretti.
 
-Per il runner Lobster **incorporato** incluso in OpenClaw, questo pattern di CLI annidata **non è attualmente affidabile**:
+Per il runner Lobster **embedded** incluso in OpenClaw, questo pattern CLI annidato **non è attualmente affidabile**:
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{ ... }'
 ```
 
-Finché Lobster incorporato non avrà un bridge supportato per questo flusso, preferisci una delle seguenti opzioni:
+Finché Lobster embedded non avrà un bridge supportato per questo flusso, preferisci:
 
-- chiamate dirette allo strumento `llm-task` fuori da Lobster, oppure
+- chiamate dirette allo strumento `llm-task` al di fuori di Lobster, oppure
 - passaggi Lobster che non dipendono da chiamate `openclaw.invoke` annidate.
 
 Esempio di CLI Lobster standalone:
@@ -131,14 +132,14 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 
 ## Note sulla sicurezza
 
-- Lo strumento è **solo JSON** e istruisce il modello a produrre solo JSON (nessun
-  blocco di codice, nessun commento).
+- Lo strumento è **solo JSON** e istruisce il modello a produrre solo JSON (senza
+  blocchi di codice, senza commenti).
 - Nessuno strumento viene esposto al modello per questa esecuzione.
-- Tratta l'output come non attendibile, a meno che tu non lo validi con `schema`.
-- Inserisci le approvazioni prima di qualsiasi passaggio con effetti collaterali (send, post, exec).
+- Considera l'output non attendibile a meno che tu non lo convalidi con `schema`.
+- Inserisci approvazioni prima di qualsiasi passaggio con effetti collaterali (send, post, exec).
 
 ## Correlati
 
 - [Livelli di ragionamento](/it/tools/thinking)
-- [Sub-agenti](/it/tools/subagents)
+- [Sub-agent](/it/tools/subagents)
 - [Comandi slash](/it/tools/slash-commands)

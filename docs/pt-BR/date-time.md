@@ -2,29 +2,30 @@
 read_when:
     - Você está alterando como os carimbos de data/hora são exibidos para o modelo ou para os usuários
     - Você está depurando a formatação de horário em mensagens ou na saída do prompt do sistema
-summary: Tratamento de data e hora em envelopes, instruções, ferramentas e conectores
+summary: Tratamento de data e hora em envelopes, prompts, ferramentas e conectores
 title: Data e hora
 x-i18n:
-    generated_at: "2026-05-06T05:53:50Z"
+    generated_at: "2026-06-27T17:28:13Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5f695a5009c949cc24689bfb8950d96cf72f0b2a1472efe88923182527b56b74
+    source_hash: d40e8626269d26a14506a178080b353529080b6ee5ce523c3281521f1a34bf90
     source_path: date-time.md
     workflow: 16
 ---
 
-OpenClaw usa por padrão **horário local do host para carimbos de data/hora de transporte** e **fuso horário do usuário apenas no prompt do sistema**.
-Os carimbos de data/hora do provedor são preservados para que as ferramentas mantenham sua semântica nativa (o horário atual está disponível via `session_status`).
+O OpenClaw usa por padrão **horário local do host para timestamps de transporte** e **fuso horário do usuário somente no prompt do sistema**.
+Os timestamps do provedor são preservados para que as ferramentas mantenham sua semântica nativa (a hora atual está disponível via `session_status`).
 
-## Envelopes de mensagens (local por padrão)
+## Envelopes de mensagem (local por padrão)
 
-Mensagens recebidas são envolvidas com um carimbo de data/hora (precisão de minuto):
+Mensagens recebidas são encapsuladas com um timestamp (precisão de segundos):
 
 ```
-[Provider ... 2026-01-05 16:26 PST] message text
+[Provider ... Mon 2026-01-05 16:26:34 PST] message text
 ```
 
-Esse carimbo de data/hora do envelope é **local do host por padrão**, independentemente do fuso horário do provedor.
+Esse timestamp do envelope é **local do host por padrão**, independentemente do fuso horário do provedor.
 
 Você pode substituir esse comportamento:
 
@@ -44,7 +45,7 @@ Você pode substituir esse comportamento:
 - `envelopeTimezone: "local"` usa o fuso horário do host.
 - `envelopeTimezone: "user"` usa `agents.defaults.userTimezone` (recorre ao fuso horário do host).
 - Use um fuso horário IANA explícito (por exemplo, `"America/Chicago"`) para uma zona fixa.
-- `envelopeTimestamp: "off"` remove carimbos de data/hora absolutos dos cabeçalhos de envelope.
+- `envelopeTimestamp: "off"` remove timestamps absolutos dos cabeçalhos de envelope, dos prefixos diretos de prompt do agente e dos prefixos incorporados de entrada do modelo.
 - `envelopeElapsed: "off"` remove sufixos de tempo decorrido (o estilo `+2m`).
 
 ### Exemplos
@@ -52,19 +53,19 @@ Você pode substituir esse comportamento:
 **Local (padrão):**
 
 ```
-[WhatsApp +1555 2026-01-18 00:19 PST] hello
+[WhatsApp +1555 Sun 2026-01-18 00:19:42 PST] hello
 ```
 
 **Fuso horário do usuário:**
 
 ```
-[WhatsApp +1555 2026-01-18 00:19 CST] hello
+[WhatsApp +1555 Sun 2026-01-18 00:19:42 CST] hello
 ```
 
-**Tempo decorrido habilitado:**
+**Tempo decorrido ativado:**
 
 ```
-[WhatsApp +1555 +30s 2026-01-18T05:19Z] follow-up
+[WhatsApp +1555 +30s Sun 2026-01-18T05:19:00Z] follow-up
 ```
 
 ## Prompt do sistema: data e hora atuais
@@ -77,19 +78,19 @@ para manter o cache de prompt estável:
 Time zone: America/Chicago
 ```
 
-Quando o agente precisar do horário atual, use a ferramenta `session_status`; o cartão de status
-inclui uma linha de carimbo de data/hora.
+Quando o agente precisar da hora atual, use a ferramenta `session_status`; o cartão de
+status inclui uma linha de timestamp.
 
-## Linhas de eventos do sistema (locais por padrão)
+## Linhas de evento do sistema (local por padrão)
 
-Eventos do sistema enfileirados inseridos no contexto do agente recebem um prefixo com um carimbo de data/hora usando a
-mesma seleção de fuso horário dos envelopes de mensagens (padrão: local do host).
+Eventos do sistema enfileirados inseridos no contexto do agente recebem um prefixo com timestamp usando a
+mesma seleção de fuso horário dos envelopes de mensagem (padrão: local do host).
 
 ```
 System: [2026-01-12 12:19:17 PST] Model switched.
 ```
 
-### Configurar fuso horário + formato do usuário
+### Configurar fuso horário do usuário + formato
 
 ```json5
 {
@@ -105,28 +106,28 @@ System: [2026-01-12 12:19:17 PST] Model switched.
 - `userTimezone` define o **fuso horário local do usuário** para o contexto do prompt.
 - `timeFormat` controla a **exibição em 12h/24h** no prompt. `auto` segue as preferências do SO.
 
-## Detecção de formato de hora (automática)
+## Detecção de formato de hora (auto)
 
 Quando `timeFormat: "auto"`, o OpenClaw inspeciona a preferência do SO (macOS/Windows)
-e recorre à formatação de localidade. O valor detectado é **armazenado em cache por processo**
+e recorre à formatação de localidade. O valor detectado fica **em cache por processo**
 para evitar chamadas repetidas ao sistema.
 
 ## Payloads de ferramentas + conectores (hora bruta do provedor + campos normalizados)
 
-Ferramentas de canal retornam **carimbos de data/hora nativos do provedor** e adicionam campos normalizados para consistência:
+Ferramentas de canal retornam **timestamps nativos do provedor** e adicionam campos normalizados para consistência:
 
 - `timestampMs`: milissegundos desde a época Unix (UTC)
 - `timestampUtc`: string UTC ISO 8601
 
 Campos brutos do provedor são preservados para que nada seja perdido.
 
-- Slack: strings semelhantes à época Unix da API
-- Discord: carimbos de data/hora ISO em UTC
-- Telegram/WhatsApp: carimbos de data/hora numéricos/ISO específicos do provedor
+- Slack: strings semelhantes a época Unix da API
+- Discord: timestamps ISO UTC
+- Telegram/WhatsApp: timestamps numéricos/ISO específicos do provedor
 
 Se precisar do horário local, converta-o downstream usando o fuso horário conhecido.
 
-## Documentos relacionados
+## Documentação relacionada
 
 - [Prompt do sistema](/pt-BR/concepts/system-prompt)
 - [Fusos horários](/pt-BR/concepts/timezone)

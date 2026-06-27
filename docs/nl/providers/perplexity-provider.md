@@ -1,36 +1,46 @@
 ---
 read_when:
     - Je wilt Perplexity configureren als webzoekprovider
-    - Je hebt de Perplexity-API-sleutel of de OpenRouter-proxyconfiguratie nodig
-summary: Instelling van de Perplexity-webzoekprovider (API-sleutel, zoekmodi, filtering)
+    - Je hebt de Perplexity API-sleutel of de OpenRouter-proxyconfiguratie nodig
+summary: Perplexity webzoekprovider instellen (API-sleutel, zoekmodi, filtering)
 title: Perplexity
 x-i18n:
-    generated_at: "2026-04-29T23:12:29Z"
+    generated_at: "2026-06-27T18:14:29Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 36475ba0d6ab7d569f83b7f6fdc13c5dbe6b12ca5acab44e8d213da23d04a795
+    source_hash: 3be6f5066ba180a63ea8b374f641613c815be0f84ee1d3577feea04e31ab4694
     source_path: providers/perplexity-provider.md
     workflow: 16
 ---
 
-De Perplexity Plugin biedt webzoekmogelijkheden via de Perplexity
+De Perplexity-plugin biedt mogelijkheden voor zoeken op het web via de Perplexity
 Search API of Perplexity Sonar via OpenRouter.
 
 <Note>
-Deze pagina is de configuratie van de Perplexity-**provider**. Zie [Perplexity-tool](/nl/tools/perplexity-search) voor de Perplexity-**tool** (hoe de agent die gebruikt).
+Deze pagina beschrijft de configuratie van de Perplexity-**provider**. Zie [Perplexity-tool](/nl/tools/perplexity-search) voor de Perplexity-**tool** (hoe de agent die gebruikt).
 </Note>
 
-| Eigenschap  | Waarde                                                                 |
+| Eigenschap | Waarde |
 | ----------- | ---------------------------------------------------------------------- |
-| Type        | Webzoekprovider (geen modelprovider)                                   |
-| Auth        | `PERPLEXITY_API_KEY` (direct) of `OPENROUTER_API_KEY` (via OpenRouter) |
-| Config-pad  | `plugins.entries.perplexity.config.webSearch.apiKey`                   |
+| Type | Provider voor zoeken op het web (geen modelprovider) |
+| Auth | `PERPLEXITY_API_KEY` (direct) of `OPENROUTER_API_KEY` (via OpenRouter) |
+| Configuratiepad | `plugins.entries.perplexity.config.webSearch.apiKey` |
+
+## Plugin installeren
+
+Installeer de officiële Plugin en herstart daarna Gateway:
+
+```bash
+openclaw plugins install @openclaw/perplexity-plugin
+openclaw gateway restart
+```
 
 ## Aan de slag
 
 <Steps>
-  <Step title="Stel de API-sleutel in">
-    Voer de interactieve configuratiestroom voor webzoeken uit:
+  <Step title="De API-sleutel instellen">
+    Voer de interactieve configuratiestroom voor zoeken op het web uit:
 
     ```bash
     openclaw configure --section web
@@ -43,50 +53,50 @@ Deze pagina is de configuratie van de Perplexity-**provider**. Zie [Perplexity-t
     ```
 
   </Step>
-  <Step title="Begin met zoeken">
-    De agent gebruikt Perplexity automatisch voor webzoekopdrachten zodra de sleutel is
+  <Step title="Beginnen met zoeken">
+    De agent gebruikt Perplexity automatisch voor zoekopdrachten op het web zodra de sleutel is
     geconfigureerd. Er zijn geen extra stappen vereist.
   </Step>
 </Steps>
 
 ## Zoekmodi
 
-De Plugin selecteert automatisch het transport op basis van het API-sleutelvoorvoegsel:
+De plugin selecteert automatisch het transport op basis van het API-sleutelvoorvoegsel:
 
 <Tabs>
   <Tab title="Native Perplexity API (pplx-)">
     Wanneer je sleutel begint met `pplx-`, gebruikt OpenClaw de native Perplexity Search
-    API. Dit transport retourneert gestructureerde resultaten en ondersteunt domein-,
-    taal- en datumfilters (zie de filteropties hieronder).
+    API. Dit transport retourneert gestructureerde resultaten en ondersteunt domein-, taal-
+    en datumfilters (zie de filteropties hieronder).
   </Tab>
   <Tab title="OpenRouter / Sonar (sk-or-)">
-    Wanneer je sleutel begint met `sk-or-`, routeert OpenClaw via OpenRouter met het
-    Perplexity Sonar-model. Dit transport retourneert door AI samengestelde antwoorden met
+    Wanneer je sleutel begint met `sk-or-`, routeert OpenClaw via OpenRouter met
+    het Perplexity Sonar-model. Dit transport retourneert door AI samengestelde antwoorden met
     citaties.
   </Tab>
 </Tabs>
 
-| Sleutelvoorvoegsel | Transport                    | Functies                                         |
-| ------------------ | ---------------------------- | ------------------------------------------------ |
-| `pplx-`            | Native Perplexity Search API | Gestructureerde resultaten, domein-/taal-/datumfilters |
-| `sk-or-`           | OpenRouter (Sonar)           | Door AI samengestelde antwoorden met citaties    |
+| Sleutelvoorvoegsel | Transport | Functies |
+| ---------- | ---------------------------- | ------------------------------------------------ |
+| `pplx-` | Native Perplexity Search API | Gestructureerde resultaten, domein-/taal-/datumfilters |
+| `sk-or-` | OpenRouter (Sonar) | Door AI samengestelde antwoorden met citaties |
 
-## Native API-filtering
+## Filteren met de native API
 
 <Note>
 Filteropties zijn alleen beschikbaar wanneer je de native Perplexity API gebruikt
 (`pplx-`-sleutel). OpenRouter/Sonar-zoekopdrachten ondersteunen deze parameters niet.
 </Note>
 
-Wanneer je de native Perplexity API gebruikt, ondersteunen zoekopdrachten de volgende filters:
+Bij gebruik van de native Perplexity API ondersteunen zoekopdrachten de volgende filters:
 
-| Filter         | Beschrijving                           | Voorbeeld                           |
+| Filter | Beschrijving | Voorbeeld |
 | -------------- | -------------------------------------- | ----------------------------------- |
-| Land           | 2-letterige landcode                   | `us`, `de`, `jp`                    |
-| Taal           | ISO 639-1-taalcode                     | `en`, `fr`, `zh`                    |
-| Datumbereik    | Recentheidsvenster                     | `day`, `week`, `month`, `year`      |
-| Domeinfilters  | Allowlist of denylist (max. 20 domeinen) | `example.com`                       |
-| Contentbudget  | Tokenlimieten per respons / per pagina | `max_tokens`, `max_tokens_per_page` |
+| Land | Landcode van 2 letters | `us`, `de`, `jp` |
+| Taal | ISO 639-1-taalcode | `en`, `fr`, `zh` |
+| Datumbereik | Recency-venster | `day`, `week`, `month`, `year` |
+| Domeinfilters | Toestemmingslijst of blokkeerlijst (max. 20 domeinen) | `example.com` |
+| Contentbudget | Tokenlimieten per antwoord / per pagina | `max_tokens`, `max_tokens_per_page` |
 
 ## Geavanceerde configuratie
 
@@ -96,21 +106,21 @@ Wanneer je de native Perplexity API gebruikt, ondersteunen zoekopdrachten de vol
     `PERPLEXITY_API_KEY` beschikbaar is voor dat proces.
 
     <Warning>
-    Een sleutel die alleen in `~/.profile` is ingesteld, is niet zichtbaar voor een launchd/systemd-
-    daemon tenzij die omgeving expliciet wordt geïmporteerd. Stel de sleutel in
-    `~/.openclaw/.env` in of via `env.shellEnv` om ervoor te zorgen dat het gatewayproces deze kan
-    lezen.
+    Een sleutel die alleen in een interactieve shell is geëxporteerd, is niet zichtbaar voor een
+    launchd/systemd-daemon tenzij die omgeving expliciet wordt geïmporteerd. Stel
+    de sleutel in `~/.openclaw/.env` of via `env.shellEnv` in om ervoor te zorgen dat het gateway-
+    proces deze kan lezen.
     </Warning>
 
   </Accordion>
 
-  <Accordion title="OpenRouter-proxyconfiguratie">
+  <Accordion title="OpenRouter-proxy instellen">
     Als je Perplexity-zoekopdrachten liever via OpenRouter routeert, stel dan een
     `OPENROUTER_API_KEY` (voorvoegsel `sk-or-`) in in plaats van een native Perplexity-sleutel.
     OpenClaw detecteert het voorvoegsel en schakelt automatisch over naar het Sonar-transport.
 
     <Tip>
-    Het OpenRouter-transport is handig als je al een OpenRouter-account hebt
+    Het OpenRouter-transport is nuttig als je al een OpenRouter-account hebt
     en geconsolideerde facturering voor meerdere providers wilt.
     </Tip>
 
@@ -124,6 +134,6 @@ Wanneer je de native Perplexity API gebruikt, ondersteunen zoekopdrachten de vol
     Hoe de agent Perplexity-zoekopdrachten aanroept en resultaten interpreteert.
   </Card>
   <Card title="Configuratiereferentie" href="/nl/gateway/configuration-reference" icon="gear">
-    Volledige configuratiereferentie inclusief Plugin-vermeldingen.
+    Volledige configuratiereferentie inclusief pluginvermeldingen.
   </Card>
 </CardGroup>

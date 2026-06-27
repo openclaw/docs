@@ -1,25 +1,26 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або проводите аудит Plugin diagnostics-otel
-summary: Експортер OpenTelemetry для діагностики OpenClaw.
-title: Plugin діагностики OpenTelemetry
+    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin diagnostics-otel
+summary: Експортер OpenTelemetry діагностики OpenClaw для метрик, трасувань і журналів.
+title: Діагностичний Plugin OpenTelemetry
 x-i18n:
-    generated_at: "2026-05-03T02:48:52Z"
+    generated_at: "2026-06-27T17:57:53Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ef589f6f406c4e1ef18667969a59169389f0e74253ceaad061eff6c6eb3d8b31
+    source_hash: 1fdbe6d3e52856e0db8e472aa2607622c60d3f0cadd5db0ae1eac5eedb2d4591
     source_path: plugins/reference/diagnostics-otel.md
     workflow: 16
 ---
 
 # Діагностичний Plugin OpenTelemetry
 
-Експортер OpenTelemetry для діагностики OpenClaw.
+Діагностичний експортер OpenTelemetry для OpenClaw для метрик, трасувань і журналів.
 
-## Розповсюдження
+## Дистрибуція
 
 - Пакет: `@openclaw/diagnostics-otel`
-- Шлях встановлення: npm; ClawHub: `clawhub:@openclaw/diagnostics-otel`
+- Маршрут встановлення: npm; ClawHub: `clawhub:@openclaw/diagnostics-otel`
 
 ## Поверхня
 

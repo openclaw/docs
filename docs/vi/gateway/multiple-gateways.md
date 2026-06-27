@@ -1,37 +1,38 @@
 ---
 read_when:
-    - Chạy nhiều Gateway trên cùng một máy
-    - Bạn cần cấu hình/trạng thái/cổng tách biệt cho từng Gateway
+    - Chạy nhiều hơn một Gateway trên cùng một máy
+    - Bạn cần cấu hình/trạng thái/cổng tách biệt cho mỗi Gateway
 summary: Chạy nhiều OpenClaw Gateway trên một máy chủ (cô lập, cổng và hồ sơ)
 title: Nhiều Gateway
 x-i18n:
-    generated_at: "2026-04-29T22:44:28Z"
+    generated_at: "2026-06-27T17:30:48Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 655f9ea5100813d5836f24eb47a5646443f83d70953efa64122633a5a1341002
+    source_hash: d6f6df481f6ba36749770199ef6eaf94eed33af2bed38d35a31f77b9dbba1913
     source_path: gateway/multiple-gateways.md
     workflow: 16
 ---
 
-Most setups should use one Gateway because a single Gateway can handle multiple messaging connections and agents. If you need stronger isolation or redundancy (e.g., a rescue bot), run separate Gateways with isolated profiles/ports.
+Hầu hết thiết lập nên dùng một Gateway vì một Gateway duy nhất có thể xử lý nhiều kết nối nhắn tin và agent. Nếu bạn cần mức cô lập hoặc dự phòng mạnh hơn (ví dụ: bot cứu hộ), hãy chạy các Gateway riêng với hồ sơ/cổng được cô lập.
 
-## Best recommended setup
+## Thiết lập được khuyến nghị tốt nhất
 
-For most users, the simplest rescue-bot setup is:
+Với hầu hết người dùng, thiết lập bot cứu hộ đơn giản nhất là:
 
-- keep the main bot on the default profile
-- run the rescue bot on `--profile rescue`
-- use a completely separate Telegram bot for the rescue account
-- keep the rescue bot on a different base port such as `19789`
+- giữ bot chính trên hồ sơ mặc định
+- chạy bot cứu hộ trên `--profile rescue`
+- dùng một bot Telegram hoàn toàn riêng cho tài khoản cứu hộ
+- giữ bot cứu hộ trên một cổng cơ sở khác, chẳng hạn `19789`
 
-This keeps the rescue bot isolated from the main bot so it can debug or apply
-config changes if the primary bot is down. Leave at least 20 ports between
-base ports so the derived browser/canvas/CDP ports never collide.
+Cách này giữ bot cứu hộ tách biệt với bot chính để nó có thể gỡ lỗi hoặc áp dụng
+thay đổi cấu hình nếu bot chính bị ngừng hoạt động. Chừa ít nhất 20 cổng giữa
+các cổng cơ sở để các cổng trình duyệt/canvas/CDP dẫn xuất không bao giờ xung đột.
 
-## Rescue-Bot Quickstart
+## Khởi động nhanh bot cứu hộ
 
-Use this as the default path unless you have a strong reason to do something
-else:
+Dùng đây làm lộ trình mặc định trừ khi bạn có lý do mạnh để làm theo cách
+khác:
 
 ```bash
 # Rescue bot (separate Telegram bot, separate profile, port 19789)
@@ -39,56 +40,56 @@ openclaw --profile rescue onboard
 openclaw --profile rescue gateway install --port 19789
 ```
 
-If your main bot is already running, that is usually all you need.
+Nếu bot chính của bạn đã chạy, thông thường đó là tất cả những gì bạn cần.
 
-During `openclaw --profile rescue onboard`:
+Trong khi chạy `openclaw --profile rescue onboard`:
 
-- use the separate Telegram bot token
-- keep the `rescue` profile
-- use a base port at least 20 higher than the main bot
-- accept the default rescue workspace unless you already manage one yourself
+- dùng token bot Telegram riêng
+- giữ hồ sơ `rescue`
+- dùng cổng cơ sở cao hơn bot chính ít nhất 20 cổng
+- chấp nhận không gian làm việc cứu hộ mặc định trừ khi bạn đã tự quản lý một không gian
 
-If onboarding already installed the rescue service for you, the final
-`gateway install` is not needed.
+Nếu quá trình onboarding đã cài đặt dịch vụ cứu hộ cho bạn, lệnh
+`gateway install` cuối cùng là không cần thiết.
 
-## Why this works
+## Vì sao cách này hoạt động
 
-The rescue bot stays independent because it has its own:
+Bot cứu hộ vẫn độc lập vì nó có riêng:
 
-- profile/config
-- state directory
-- workspace
-- base port (plus derived ports)
-- Telegram bot token
+- hồ sơ/cấu hình
+- thư mục trạng thái
+- không gian làm việc
+- cổng cơ sở (cộng với các cổng dẫn xuất)
+- token bot Telegram
 
-For most setups, use a completely separate Telegram bot for the rescue profile:
+Với hầu hết thiết lập, hãy dùng một bot Telegram hoàn toàn riêng cho hồ sơ cứu hộ:
 
-- easy to keep operator-only
-- separate bot token and identity
-- independent from the main bot's channel/app install
-- simple DM-based recovery path when the main bot is broken
+- dễ giữ ở chế độ chỉ dành cho người vận hành
+- token và danh tính bot riêng
+- độc lập với kênh/bản cài đặt ứng dụng của bot chính
+- đường khôi phục qua DM đơn giản khi bot chính bị hỏng
 
-## What `--profile rescue onboard` Changes
+## `--profile rescue onboard` thay đổi gì
 
-`openclaw --profile rescue onboard` uses the normal onboarding flow, but it
-writes everything into a separate profile.
+`openclaw --profile rescue onboard` dùng luồng onboarding bình thường, nhưng
+ghi mọi thứ vào một hồ sơ riêng.
 
-In practice, that means the rescue bot gets its own:
+Trên thực tế, điều đó nghĩa là bot cứu hộ có riêng:
 
-- config file
-- state directory
-- workspace (by default `~/.openclaw/workspace-rescue`)
-- managed service name
+- tệp cấu hình
+- thư mục trạng thái
+- không gian làm việc (mặc định là `~/.openclaw/workspace-rescue`)
+- tên dịch vụ được quản lý
 
-The prompts are otherwise the same as normal onboarding.
+Các lời nhắc còn lại giống onboarding bình thường.
 
-## General multi-gateway setup
+## Thiết lập nhiều Gateway tổng quát
 
-The rescue-bot layout above is the easiest default, but the same isolation
-pattern works for any pair or group of Gateways on one host.
+Bố cục bot cứu hộ ở trên là mặc định dễ nhất, nhưng cùng mẫu cô lập đó
+hoạt động cho bất kỳ cặp hoặc nhóm Gateway nào trên một máy chủ.
 
-For a more general setup, give each extra Gateway its own named profile and its
-own base port:
+Với thiết lập tổng quát hơn, hãy cấp cho mỗi Gateway bổ sung một hồ sơ có tên riêng và
+cổng cơ sở riêng:
 
 ```bash
 # main (default profile)
@@ -100,7 +101,7 @@ openclaw --profile ops setup
 openclaw --profile ops gateway --port 19789
 ```
 
-If you want both Gateways to use named profiles, that also works:
+Nếu bạn muốn cả hai Gateway đều dùng hồ sơ có tên, cách đó cũng hoạt động:
 
 ```bash
 openclaw --profile main setup
@@ -110,47 +111,47 @@ openclaw --profile ops setup
 openclaw --profile ops gateway --port 19789
 ```
 
-Services follow the same pattern:
+Dịch vụ tuân theo cùng mẫu:
 
 ```bash
 openclaw gateway install
 openclaw --profile ops gateway install --port 19789
 ```
 
-Use the rescue-bot quickstart when you want a fallback operator lane. Use the
-general profile pattern when you want multiple long-lived Gateways for
-different channels, tenants, workspaces, or operational roles.
+Dùng khởi động nhanh bot cứu hộ khi bạn muốn một làn dự phòng cho người vận hành. Dùng
+mẫu hồ sơ tổng quát khi bạn muốn nhiều Gateway tồn tại lâu dài cho
+các kênh, tenant, không gian làm việc hoặc vai trò vận hành khác nhau.
 
-## Isolation checklist
+## Danh sách kiểm tra cô lập
 
-Keep these unique per Gateway instance:
+Giữ các mục này là duy nhất cho mỗi phiên bản Gateway:
 
-- `OPENCLAW_CONFIG_PATH` — per-instance config file
-- `OPENCLAW_STATE_DIR` — per-instance sessions, creds, caches
-- `agents.defaults.workspace` — per-instance workspace root
-- `gateway.port` (or `--port`) — unique per instance
-- derived browser/canvas/CDP ports
+- `OPENCLAW_CONFIG_PATH` — tệp cấu hình theo từng phiên bản
+- `OPENCLAW_STATE_DIR` — phiên, thông tin xác thực, bộ nhớ đệm theo từng phiên bản
+- `agents.defaults.workspace` — thư mục gốc không gian làm việc theo từng phiên bản
+- `gateway.port` (hoặc `--port`) — duy nhất cho mỗi phiên bản
+- các cổng trình duyệt/canvas/CDP dẫn xuất
 
-If these are shared, you will hit config races and port conflicts.
+Nếu các mục này được dùng chung, bạn sẽ gặp tranh chấp cấu hình và xung đột cổng.
 
-## Port mapping (derived)
+## Ánh xạ cổng (dẫn xuất)
 
-Base port = `gateway.port` (or `OPENCLAW_GATEWAY_PORT` / `--port`).
+Cổng cơ sở = `gateway.port` (hoặc `OPENCLAW_GATEWAY_PORT` / `--port`).
 
-- browser control service port = base + 2 (loopback only)
-- canvas host is served on the Gateway HTTP server (same port as `gateway.port`)
-- Browser profile CDP ports auto-allocate from `browser.controlPort + 9 .. + 108`
+- cổng dịch vụ điều khiển trình duyệt = cơ sở + 2 (chỉ loopback)
+- máy chủ canvas được phục vụ trên máy chủ HTTP của Gateway (cùng cổng với `gateway.port`)
+- Các cổng CDP của hồ sơ trình duyệt tự động cấp phát từ `browser.controlPort + 9 .. + 108`
 
-If you override any of these in config or env, you must keep them unique per instance.
+Nếu bạn ghi đè bất kỳ mục nào trong cấu hình hoặc biến môi trường, bạn phải giữ chúng duy nhất theo từng phiên bản.
 
-## Browser/CDP notes (common footgun)
+## Ghi chú Browser/CDP (lỗi dễ mắc phổ biến)
 
-- Do **not** pin `browser.cdpUrl` to the same values on multiple instances.
-- Each instance needs its own browser control port and CDP range (derived from its gateway port).
-- If you need explicit CDP ports, set `browser.profiles.<name>.cdpPort` per instance.
-- Remote Chrome: use `browser.profiles.<name>.cdpUrl` (per profile, per instance).
+- **Không** ghim `browser.cdpUrl` vào cùng giá trị trên nhiều phiên bản.
+- Mỗi phiên bản cần cổng điều khiển trình duyệt và dải CDP riêng (dẫn xuất từ cổng Gateway của nó).
+- Nếu bạn cần cổng CDP rõ ràng, hãy đặt `browser.profiles.<name>.cdpPort` theo từng phiên bản.
+- Chrome từ xa: dùng `browser.profiles.<name>.cdpUrl` (theo hồ sơ, theo phiên bản).
 
-## Manual env example
+## Ví dụ biến môi trường thủ công
 
 ```bash
 OPENCLAW_CONFIG_PATH=~/.openclaw/main.json \
@@ -162,7 +163,7 @@ OPENCLAW_STATE_DIR=~/.openclaw-rescue \
 openclaw gateway --port 19789
 ```
 
-## Quick checks
+## Kiểm tra nhanh
 
 ```bash
 openclaw gateway status --deep
@@ -173,13 +174,13 @@ openclaw --profile rescue status
 openclaw --profile rescue browser status
 ```
 
-Interpretation:
+Diễn giải:
 
-- `gateway status --deep` helps catch stale launchd/systemd/schtasks services from older installs.
-- `gateway probe` warning text such as `multiple reachable gateways detected` is expected only when you intentionally run more than one isolated gateway.
+- `gateway status --deep` giúp phát hiện các dịch vụ launchd/systemd/schtasks lỗi thời từ các bản cài đặt cũ.
+- Văn bản cảnh báo của `gateway probe` như `multiple reachable gateway identities detected` chỉ được mong đợi khi bạn cố ý chạy nhiều hơn một gateway được cô lập, hoặc khi OpenClaw không thể chứng minh các mục tiêu probe truy cập được là cùng một gateway. Một đường hầm SSH, URL proxy hoặc URL từ xa được cấu hình trỏ tới cùng gateway là một gateway với nhiều phương thức truyền tải, ngay cả khi các cổng truyền tải khác nhau.
 
-## Related
+## Liên quan
 
-- [Gateway runbook](/vi/gateway)
-- [Gateway lock](/vi/gateway/gateway-lock)
-- [Configuration](/vi/gateway/configuration)
+- [Sổ tay vận hành Gateway](/vi/gateway)
+- [Khóa Gateway](/vi/gateway/gateway-lock)
+- [Cấu hình](/vi/gateway/configuration)

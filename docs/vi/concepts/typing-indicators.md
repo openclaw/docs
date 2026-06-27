@@ -1,49 +1,52 @@
 ---
 read_when:
-    - Thay đổi hành vi hoặc giá trị mặc định của chỉ báo đang nhập
-summary: Khi OpenClaw hiển thị chỉ báo đang nhập và cách điều chỉnh chúng
+    - Thay đổi hành vi hoặc mặc định của chỉ báo đang nhập
+summary: Khi OpenClaw hiển thị chỉ báo đang nhập và cách tinh chỉnh chúng
 title: Chỉ báo đang nhập
 x-i18n:
-    generated_at: "2026-05-10T19:32:39Z"
+    generated_at: "2026-06-27T17:26:55Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e26b4008f165527098ffcbf9c39ee7179149063842cc5c6aacb5b7c606eedc26
+    source_hash: fa76889d0f6262f1092abefee02aee8fe944651dc89d3a697ccc86e16558ed60
     source_path: concepts/typing-indicators.md
     workflow: 16
 ---
 
-Chỉ báo đang nhập được gửi tới kênh chat trong khi một lần chạy đang hoạt động. Dùng
-`agents.defaults.typingMode` để kiểm soát **khi nào** bắt đầu hiển thị đang nhập và `typingIntervalSeconds`
+Các chỉ báo đang nhập được gửi đến kênh trò chuyện trong khi một lượt chạy đang hoạt động. Dùng
+`agents.defaults.typingMode` để kiểm soát **khi nào** việc đang nhập bắt đầu và `typingIntervalSeconds`
 để kiểm soát **tần suất** làm mới.
 
 ## Mặc định
 
 Khi `agents.defaults.typingMode` **chưa được đặt**, OpenClaw giữ hành vi cũ:
 
-- **Chat trực tiếp**: bắt đầu hiển thị đang nhập ngay khi vòng lặp mô hình bắt đầu.
-- **Chat nhóm có nhắc đến**: bắt đầu hiển thị đang nhập ngay lập tức.
-- **Chat nhóm không có nhắc đến**: chỉ bắt đầu hiển thị đang nhập khi văn bản tin nhắn bắt đầu streaming.
-- **Lần chạy Heartbeat**: bắt đầu hiển thị đang nhập khi lần chạy Heartbeat bắt đầu nếu
-  đích Heartbeat đã phân giải là một chat hỗ trợ hiển thị đang nhập và tính năng đang nhập không bị tắt.
+- **Trò chuyện trực tiếp**: trạng thái đang nhập bắt đầu ngay khi vòng lặp mô hình bắt đầu.
+- **Trò chuyện nhóm có nhắc đến**: trạng thái đang nhập bắt đầu ngay lập tức.
+- **Trò chuyện nhóm không có nhắc đến**: trạng thái đang nhập bắt đầu khi lượt chạy được chấp nhận có
+  hoạt động hiển thị với người dùng, chẳng hạn như hoạt động thực thi bộ khung hoặc văn bản tin nhắn.
+- **Lượt chạy Heartbeat**: trạng thái đang nhập bắt đầu khi lượt chạy heartbeat bắt đầu nếu
+  đích heartbeat đã phân giải là một cuộc trò chuyện có hỗ trợ đang nhập và trạng thái đang nhập không bị tắt.
 
 ## Chế độ
 
-Đặt `agents.defaults.typingMode` thành một trong các giá trị sau:
+Đặt `agents.defaults.typingMode` thành một trong các giá trị:
 
 - `never` - không bao giờ có chỉ báo đang nhập.
-- `instant` - bắt đầu hiển thị đang nhập **ngay khi vòng lặp mô hình bắt đầu**, ngay cả khi lần chạy
-  sau đó chỉ trả về token trả lời im lặng.
-- `thinking` - bắt đầu hiển thị đang nhập ở **delta suy luận đầu tiên** (yêu cầu
-  `reasoningLevel: "stream"` cho lần chạy).
-- `message` - bắt đầu hiển thị đang nhập ở **delta văn bản không im lặng đầu tiên** (bỏ qua
-  token im lặng `NO_REPLY`).
+- `instant` - bắt đầu đang nhập **ngay khi vòng lặp mô hình bắt đầu**, ngay cả khi lượt chạy
+  sau đó chỉ trả về token phản hồi im lặng.
+- `thinking` - bắt đầu đang nhập ở **delta suy luận đầu tiên** hoặc khi có
+  thực thi bộ khung đang hoạt động sau khi lượt được chấp nhận.
+- `message` - bắt đầu đang nhập ở **hoạt động phản hồi hiển thị với người dùng đầu tiên**, chẳng hạn như
+  thực thi bộ khung đang hoạt động hoặc một delta văn bản không im lặng. Các token phản hồi im lặng như
+  `NO_REPLY` không được tính là hoạt động văn bản.
 
-Thứ tự "kích hoạt sớm đến mức nào":
-`never` → `message` → `thinking` → `instant`
+Thứ tự về "mức độ kích hoạt sớm":
+`never` → `message`/`thinking` → `instant`
 
 ## Cấu hình
 
-Đặt mặc định ở cấp tác tử:
+Đặt mặc định cấp tác nhân:
 
 ```json5
 {
@@ -56,7 +59,7 @@ Thứ tự "kích hoạt sớm đến mức nào":
 }
 ```
 
-Ghi đè chế độ hoặc nhịp theo từng phiên:
+Ghi đè chế độ hoặc nhịp độ theo từng phiên:
 
 ```json5
 {
@@ -69,17 +72,16 @@ Ghi đè chế độ hoặc nhịp theo từng phiên:
 
 ## Ghi chú
 
-- Chế độ `message` sẽ không hiển thị đang nhập cho các trả lời chỉ im lặng khi toàn bộ
-  payload là token im lặng chính xác (ví dụ `NO_REPLY` / `no_reply`,
-  được khớp không phân biệt chữ hoa chữ thường).
-- `thinking` chỉ kích hoạt nếu lần chạy stream suy luận (`reasoningLevel: "stream"`).
-  Nếu mô hình không phát ra delta suy luận, hiển thị đang nhập sẽ không bắt đầu.
-- Hiển thị đang nhập của Heartbeat là tín hiệu hoạt động cho đích phân phối đã phân giải. Nó
-  bắt đầu khi lần chạy Heartbeat bắt đầu thay vì theo thời điểm stream của `message` hoặc `thinking`.
-  Đặt `typingMode: "never"` để tắt tính năng này.
-- Heartbeat không hiển thị đang nhập khi `target: "none"`, khi không thể
-  phân giải đích, khi phân phối chat bị tắt cho Heartbeat, hoặc khi
-  kênh không hỗ trợ hiển thị đang nhập.
+- Chế độ `message` không bắt đầu từ các token phản hồi im lặng, nhưng thực thi đang hoạt động
+  vẫn có thể hiển thị trạng thái đang nhập trước khi có bất kỳ văn bản trợ lý nào.
+- `thinking` vẫn phản ứng với suy luận được truyền trực tuyến (`reasoningLevel: "stream"`),
+  và cũng có thể bắt đầu từ thực thi đang hoạt động trước khi các delta suy luận đến.
+- Trạng thái đang nhập của Heartbeat là tín hiệu còn hoạt động cho đích phân phối đã phân giải. Nó
+  bắt đầu khi lượt chạy heartbeat bắt đầu thay vì tuân theo thời điểm luồng `message` hoặc `thinking`.
+  Đặt `typingMode: "never"` để tắt.
+- Heartbeat không hiển thị trạng thái đang nhập khi `target: "none"`, khi không thể phân giải
+  đích, khi phân phối trò chuyện bị tắt cho heartbeat, hoặc khi
+  kênh không hỗ trợ trạng thái đang nhập.
 - `typingIntervalSeconds` kiểm soát **nhịp làm mới**, không phải thời điểm bắt đầu.
   Mặc định là 6 giây.
 
@@ -87,9 +89,9 @@ Ghi đè chế độ hoặc nhịp theo từng phiên:
 
 <CardGroup cols={2}>
   <Card title="Hiện diện" href="/vi/concepts/presence" icon="signal">
-    Cách Gateway theo dõi các client đã kết nối và hiển thị chúng trong tab Instances của macOS.
+    Cách Gateway theo dõi các máy khách đã kết nối và hiển thị chúng trong tab Phiên bản trên macOS.
   </Card>
-  <Card title="Streaming và chia khúc" href="/vi/concepts/streaming" icon="bars-staggered">
-    Hành vi streaming gửi ra, ranh giới khúc và phân phối theo từng kênh.
+  <Card title="Truyền trực tuyến và chia đoạn" href="/vi/concepts/streaming" icon="bars-staggered">
+    Hành vi truyền trực tuyến gửi đi, ranh giới đoạn và phân phối theo từng kênh.
   </Card>
 </CardGroup>

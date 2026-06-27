@@ -1,20 +1,21 @@
 ---
 read_when:
-    - أنت تثبّت أو تهيّئ أو تراجع Plugin matrix
-summary: يضيف واجهة قناة Matrix لإرسال رسائل OpenClaw واستقبالها.
+    - أنت تثبّت Plugin ماتريكس أو تهيئه أو تدقّقه
+summary: Plugin قناة Matrix في OpenClaw للغرف والرسائل المباشرة.
 title: Plugin Matrix
 x-i18n:
-    generated_at: "2026-05-10T19:52:24Z"
+    generated_at: "2026-06-27T18:13:30Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3c135053034d7d8c79c30316c788270278c00b72c1e0674dcbcc2215f1e23add
+    source_hash: 10497c79a626ea4c49dac80f2b87a3f8756880ed3ec8b8c4566a4bfe2a011a0c
     source_path: plugins/reference/matrix.md
     workflow: 16
 ---
 
-# Matrix Plugin
+# Plugin Matrix
 
-يضيف سطح قناة Matrix لإرسال رسائل OpenClaw واستقبالها.
+Plugin قناة Matrix في OpenClaw للغرف والرسائل المباشرة.
 
 ## التوزيع
 
@@ -25,6 +26,6 @@ x-i18n:
 
 القنوات: matrix
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
 - [matrix](/ar/channels/matrix)

@@ -1,45 +1,48 @@
 ---
 read_when:
-    - Verhalten oder Standardeinstellungen der Tippanzeige ändern
-summary: Wann OpenClaw Schreibindikatoren anzeigt und wie Sie sie anpassen
-title: Schreibindikatoren
+    - Verhalten oder Standardwerte der Tippanzeige ändern
+summary: Wann OpenClaw Tippindikatoren anzeigt und wie Sie sie anpassen
+title: Tippindikatoren
 x-i18n:
-    generated_at: "2026-05-10T19:33:26Z"
+    generated_at: "2026-06-27T17:27:10Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e26b4008f165527098ffcbf9c39ee7179149063842cc5c6aacb5b7c606eedc26
+    source_hash: fa76889d0f6262f1092abefee02aee8fe944651dc89d3a697ccc86e16558ed60
     source_path: concepts/typing-indicators.md
     workflow: 16
 ---
 
-Tippindikatoren werden an den Chat-Kanal gesendet, während ein Lauf aktiv ist. Verwenden Sie
-`agents.defaults.typingMode`, um zu steuern, **wann** Tippen beginnt, und `typingIntervalSeconds`,
+Tippanzeigen werden an den Chat-Kanal gesendet, während eine Ausführung aktiv ist. Verwenden Sie
+`agents.defaults.typingMode`, um zu steuern, **wann** das Tippen beginnt, und `typingIntervalSeconds`,
 um zu steuern, **wie oft** es aktualisiert wird.
 
 ## Standardwerte
 
-Wenn `agents.defaults.typingMode` **nicht gesetzt** ist, behält OpenClaw das bisherige Verhalten bei:
+Wenn `agents.defaults.typingMode` **nicht gesetzt** ist, behält OpenClaw das Legacy-Verhalten bei:
 
-- **Direktchats**: Tippen beginnt sofort, sobald die Modellschleife startet.
-- **Gruppenchats mit Erwähnung**: Tippen beginnt sofort.
-- **Gruppenchats ohne Erwähnung**: Tippen beginnt erst, wenn Nachrichtentext zu streamen beginnt.
-- **Heartbeat-Läufe**: Tippen beginnt, wenn der Heartbeat-Lauf startet, sofern das
+- **Direktchats**: Das Tippen beginnt sofort, sobald die Modellschleife startet.
+- **Gruppenchats mit einer Erwähnung**: Das Tippen beginnt sofort.
+- **Gruppenchats ohne Erwähnung**: Das Tippen beginnt, wenn die zugelassene Ausführung
+  für Benutzer sichtbare Aktivität hat, etwa Harness-Ausführungsaktivität oder Nachrichtentext.
+- **Heartbeat-Ausführungen**: Das Tippen beginnt, wenn die Heartbeat-Ausführung startet, sofern das
   aufgelöste Heartbeat-Ziel ein tippfähiger Chat ist und Tippen nicht deaktiviert ist.
 
 ## Modi
 
 Setzen Sie `agents.defaults.typingMode` auf einen der folgenden Werte:
 
-- `never` - niemals ein Tippindikator.
-- `instant` - Tippen beginnt **sobald die Modellschleife startet**, auch wenn der Lauf
-  später nur das Token für stille Antworten zurückgibt.
-- `thinking` - Tippen beginnt beim **ersten Reasoning-Delta** (erfordert
-  `reasoningLevel: "stream"` für den Lauf).
-- `message` - Tippen beginnt beim **ersten nicht stillen Text-Delta** (ignoriert
-  das stille Token `NO_REPLY`).
+- `never` - niemals eine Tippanzeige.
+- `instant` - Tippen starten, **sobald die Modellschleife beginnt**, selbst wenn die Ausführung
+  später nur das stille Antwort-Token zurückgibt.
+- `thinking` - Tippen beim **ersten Reasoning-Delta** oder bei aktiver
+  Harness-Ausführung starten, nachdem der Turn akzeptiert wurde.
+- `message` - Tippen bei der **ersten für Benutzer sichtbaren Antwortaktivität** starten, etwa
+  bei aktiver Harness-Ausführung oder einem nicht stillen Text-Delta. Stille Antwort-Token wie
+  `NO_REPLY` zählen nicht als Textaktivität.
 
-Reihenfolge nach „wie früh es ausgelöst wird“:
-`never` → `message` → `thinking` → `instant`
+Reihenfolge, „wie früh es ausgelöst wird“:
+`never` → `message`/`thinking` → `instant`
 
 ## Konfiguration
 
@@ -56,7 +59,7 @@ Legen Sie den Standardwert auf Agent-Ebene fest:
 }
 ```
 
-Überschreiben Sie Modus oder Takt pro Sitzung:
+Überschreiben Sie Modus oder Taktung pro Sitzung:
 
 ```json5
 {
@@ -69,27 +72,26 @@ Legen Sie den Standardwert auf Agent-Ebene fest:
 
 ## Hinweise
 
-- Der Modus `message` zeigt kein Tippen für ausschließlich stille Antworten an, wenn die gesamte
-  Nutzlast exakt dem stillen Token entspricht (zum Beispiel `NO_REPLY` / `no_reply`,
-  ohne Beachtung der Groß-/Kleinschreibung abgeglichen).
-- `thinking` wird nur ausgelöst, wenn der Lauf Reasoning streamt (`reasoningLevel: "stream"`).
-  Wenn das Modell keine Reasoning-Deltas ausgibt, beginnt Tippen nicht.
+- Der Modus `message` startet nicht durch stille Antwort-Token, aber aktive Ausführung
+  kann weiterhin Tippen anzeigen, bevor Assistant-Text verfügbar ist.
+- `thinking` reagiert weiterhin auf gestreamtes Reasoning (`reasoningLevel: "stream"`),
+  und es kann auch durch aktive Ausführung starten, bevor Reasoning-Deltas eintreffen.
 - Heartbeat-Tippen ist ein Liveness-Signal für das aufgelöste Zustellziel. Es
-  beginnt beim Start des Heartbeat-Laufs, statt dem Stream-Timing von `message` oder `thinking`
+  startet beim Start der Heartbeat-Ausführung, statt dem Stream-Timing von `message` oder `thinking`
   zu folgen. Setzen Sie `typingMode: "never"`, um es zu deaktivieren.
 - Heartbeats zeigen kein Tippen an, wenn `target: "none"` gesetzt ist, wenn das Ziel nicht
   aufgelöst werden kann, wenn die Chat-Zustellung für den Heartbeat deaktiviert ist oder wenn der
   Kanal Tippen nicht unterstützt.
-- `typingIntervalSeconds` steuert den **Aktualisierungstakt**, nicht die Startzeit.
-  Der Standardwert beträgt 6 Sekunden.
+- `typingIntervalSeconds` steuert die **Aktualisierungstaktung**, nicht die Startzeit.
+  Der Standardwert ist 6 Sekunden.
 
 ## Verwandte Themen
 
 <CardGroup cols={2}>
-  <Card title="Präsenz" href="/de/concepts/presence" icon="signal">
-    Wie der Gateway verbundene Clients verfolgt und sie im Tab „Instanzen“ von macOS sichtbar macht.
+  <Card title="Presence" href="/de/concepts/presence" icon="signal">
+    Wie der Gateway verbundene Clients verfolgt und sie im macOS-Tab „Instances“ anzeigt.
   </Card>
-  <Card title="Streaming und Chunking" href="/de/concepts/streaming" icon="bars-staggered">
-    Verhalten beim ausgehenden Streaming, Chunk-Grenzen und kanalspezifische Zustellung.
+  <Card title="Streaming and chunking" href="/de/concepts/streaming" icon="bars-staggered">
+    Ausgehendes Streaming-Verhalten, Chunk-Grenzen und kanalspezifische Zustellung.
   </Card>
 </CardGroup>

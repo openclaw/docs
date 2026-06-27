@@ -1,29 +1,30 @@
 ---
 read_when:
-    - Bạn đang cài đặt, cấu hình hoặc rà soát Plugin Discord
-summary: Thêm giao diện kênh Discord để gửi và nhận tin nhắn OpenClaw.
+    - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin Discord
+summary: Plugin kênh Discord của OpenClaw cho các kênh, tin nhắn trực tiếp, lệnh và sự kiện ứng dụng.
 title: Plugin Discord
 x-i18n:
-    generated_at: "2026-05-03T10:41:28Z"
+    generated_at: "2026-06-27T17:51:56Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c0af255dc0e58e91c1f0ebcc5bca46e1e8e80f415ed3f5a9840bb31f717c9703
+    source_hash: 9e3305f8ad8eb84fd350bdfa0983b4fd8f848e0697ecf3e779e31cd6cb44dbf5
     source_path: plugins/reference/discord.md
     workflow: 16
 ---
 
 # Plugin Discord
 
-Thêm bề mặt kênh Discord để gửi và nhận tin nhắn OpenClaw.
+Plugin kênh Discord của OpenClaw cho kênh, DM, lệnh và sự kiện ứng dụng.
 
 ## Phân phối
 
 - Gói: `@openclaw/discord`
-- Cách cài đặt: npm; ClawHub
+- Tuyến cài đặt: npm; ClawHub
 
 ## Bề mặt
 
-channels: discord
+kênh: discord; hợp đồng: transcriptSourceProviders; Skills
 
 ## Tài liệu liên quan
 

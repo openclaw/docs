@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Aggiunta o modifica delle migrazioni di doctor
+    - Aggiungere o modificare migrazioni doctor
     - Introduzione di modifiche incompatibili alla configurazione
 sidebarTitle: Doctor
 summary: 'Comando doctor: controlli di integrità, migrazioni della configurazione e passaggi di riparazione'
-title: Diagnostica
+title: Doctor
 x-i18n:
-    generated_at: "2026-05-12T08:45:43Z"
+    generated_at: "2026-06-27T17:31:41Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 53d67fcc5ab4a356747bc4f4af0c5d42cbdae0c89a41616aaded7589e408a017
+    source_hash: fdb5e3fb437a8678c427dee698a0ea6004b22b71c6e38cc6f75ba674fa4fcc5e
     source_path: gateway/doctor.md
     workflow: 16
 ---
 
-`openclaw doctor` è lo strumento di riparazione e migrazione per OpenClaw. Corregge configurazioni/stati obsoleti, verifica lo stato di salute e fornisce passaggi di riparazione attuabili.
+`openclaw doctor` è lo strumento di riparazione + migrazione per OpenClaw. Corregge configurazioni/stato obsoleti, controlla l'integrità e fornisce passaggi di riparazione attuabili.
 
 ## Avvio rapido
 
@@ -30,23 +31,34 @@ openclaw doctor
     openclaw doctor --yes
     ```
 
-    Accetta i valori predefiniti senza richieste interattive (inclusi passaggi di riparazione per riavvio/servizio/sandbox quando applicabili).
+    Accetta i valori predefiniti senza chiedere conferma (inclusi i passaggi di riavvio/servizio/riparazione sandbox quando applicabili).
 
   </Tab>
-  <Tab title="--repair">
+  <Tab title="--fix">
     ```bash
-    openclaw doctor --repair
+    openclaw doctor --fix
     ```
 
-    Applica le riparazioni consigliate senza richieste interattive (riparazioni + riavvii dove sicuro).
+    Applica le riparazioni consigliate senza chiedere conferma (riparazioni + riavvii quando sicuro).
 
   </Tab>
-  <Tab title="--repair --force">
+  <Tab title="--lint">
     ```bash
-    openclaw doctor --repair --force
+    openclaw doctor --lint
+    openclaw doctor --lint --json
     ```
 
-    Applica anche riparazioni aggressive (sovrascrive configurazioni supervisor personalizzate).
+    Esegui controlli di integrità strutturati per CI o automazione di preflight. Questa modalità è
+    di sola lettura: non chiede conferme, non ripara, non migra la configurazione, non riavvia servizi e non
+    modifica lo stato.
+
+  </Tab>
+  <Tab title="--fix --force">
+    ```bash
+    openclaw doctor --fix --force
+    ```
+
+    Applica anche riparazioni aggressive (sovrascrive le configurazioni supervisor personalizzate).
 
   </Tab>
   <Tab title="--non-interactive">
@@ -54,7 +66,7 @@ openclaw doctor
     openclaw doctor --non-interactive
     ```
 
-    Esegue senza richieste interattive e applica solo migrazioni sicure (normalizzazione della configurazione + spostamenti dello stato su disco). Salta azioni di riavvio/servizio/sandbox che richiedono conferma umana. Le migrazioni dello stato legacy vengono eseguite automaticamente quando rilevate.
+    Esegui senza prompt e applica solo migrazioni sicure (normalizzazione della configurazione + spostamenti dello stato su disco). Salta le azioni di riavvio/servizio/sandbox che richiedono conferma umana. Le migrazioni dello stato legacy vengono eseguite automaticamente quando rilevate.
 
   </Tab>
   <Tab title="--deep">
@@ -62,138 +74,187 @@ openclaw doctor
     openclaw doctor --deep
     ```
 
-    Analizza i servizi di sistema alla ricerca di installazioni Gateway aggiuntive (launchd/systemd/schtasks).
+    Scansiona i servizi di sistema per installazioni Gateway aggiuntive (launchd/systemd/schtasks).
 
   </Tab>
 </Tabs>
 
-Se vuoi esaminare le modifiche prima della scrittura, apri prima il file di configurazione:
+Se vuoi esaminare le modifiche prima di scrivere, apri prima il file di configurazione:
 
 ```bash
 cat ~/.openclaw/openclaw.json
 ```
 
+## Modalità lint di sola lettura
+
+`openclaw doctor --lint` è l'equivalente orientato all'automazione di
+`openclaw doctor --fix`. Entrambi usano i controlli di integrità di doctor, ma il loro approccio è
+diverso:
+
+| Modalità                 | Prompt    | Scrive configurazione/stato | Output                         | Usalo per                         |
+| ------------------------ | --------- | --------------------------- | ------------------------------ | --------------------------------- |
+| `openclaw doctor`        | sì        | no                          | report di integrità amichevole | una persona che controlla lo stato |
+| `openclaw doctor --fix`  | a volte   | sì, con policy di riparazione | log di riparazione amichevole | applicare riparazioni approvate    |
+| `openclaw doctor --lint` | no        | no                          | risultati strutturati          | CI, preflight e gate di revisione  |
+
+I controlli di integrità modernizzati possono fornire un'implementazione `repair()` opzionale.
+`doctor --fix` applica tali riparazioni quando esistono e continua a usare il
+flusso di riparazione doctor esistente per i controlli che non sono ancora migrati.
+Il contratto di riparazione strutturato separa inoltre la segnalazione delle riparazioni dal rilevamento:
+`detect()` segnala i risultati correnti, mentre `repair()` può segnalare modifiche,
+diff di configurazione/file ed effetti collaterali non su file. Questo mantiene aperto il percorso di migrazione
+per futuri output `doctor --fix --dry-run` e diff senza fare in modo che i controlli lint
+pianifichino mutazioni.
+
+Esempi:
+
+```bash
+openclaw doctor --lint
+openclaw doctor --lint --severity-min warning
+openclaw doctor --lint --json
+openclaw doctor --lint --all
+openclaw doctor --lint --only core/doctor/gateway-config --json
+```
+
+L'output JSON include:
+
+- `ok`: se un risultato visibile ha raggiunto la soglia di gravità selezionata
+- `checksRun`: numero di controlli di integrità eseguiti
+- `checksSkipped`: controlli saltati dal profilo selezionato, `--only` o `--skip`
+- `findings`: diagnostica strutturata con `checkId`, `severity`, `message` e
+  `path`, `line`, `column`, `ocPath` e `fixHint` opzionali
+
+Codici di uscita:
+
+- `0`: nessun risultato pari o superiore alla soglia selezionata
+- `1`: uno o più risultati hanno raggiunto la soglia selezionata
+- `2`: errore di comando/runtime prima che i risultati lint potessero essere emessi
+
+Usa `--severity-min info|warning|error` per controllare sia cosa viene stampato sia cosa
+causa un'uscita lint diversa da zero. Usa `--all` per eseguire l'inventario lint completo,
+inclusi controlli più approfonditi opt-in esclusi dal set di automazione predefinito. Usa `--only <id>` per gate di preflight mirati e
+`--skip <id>` per escludere temporaneamente un controllo rumoroso mantenendo attivo il resto
+dell'esecuzione lint.
+Le opzioni di output lint come `--json`, `--severity-min`, `--all`, `--only` e
+`--skip` devono essere abbinate a `--lint`; le normali esecuzioni doctor e di riparazione le rifiutano.
+
 ## Cosa fa (riepilogo)
 
 <AccordionGroup>
-  <Accordion title="Salute, UI e aggiornamenti">
-    - Aggiornamento preliminare opzionale per installazioni git (solo interattivo).
-    - Controllo di aggiornamento del protocollo UI (ricompila Control UI quando lo schema del protocollo è più recente).
-    - Controllo di salute + richiesta di riavvio.
-    - Riepilogo dello stato Skills (idonee/mancanti/bloccate) e stato dei plugin.
+  <Accordion title="Integrità, UI e aggiornamenti">
+    - Aggiornamento preflight opzionale per installazioni git (solo interattivo).
+    - Controllo di freschezza del protocollo UI (ricompila la UI di controllo quando lo schema del protocollo è più recente).
+    - Controllo di integrità + prompt di riavvio.
+    - Riepilogo dello stato Skills (idonee/mancanti/bloccate) e stato dei Plugin.
 
   </Accordion>
   <Accordion title="Configurazione e migrazioni">
     - Normalizzazione della configurazione per valori legacy.
     - Migrazione della configurazione Talk dai campi flat legacy `talk.*` a `talk.provider` + `talk.providers.<provider>`.
-    - Controlli di migrazione del browser per configurazioni legacy dell'estensione Chrome e prontezza Chrome MCP.
-    - Avvisi sugli override del provider OpenCode (`models.providers.opencode` / `models.providers.opencode-go`).
-    - Avvisi di shadowing OAuth Codex (`models.providers.openai-codex`).
-    - Controllo dei prerequisiti TLS OAuth per profili OpenAI Codex OAuth.
-    - Avvisi allowlist Plugin/strumenti quando `plugins.allow` è restrittivo ma la policy degli strumenti richiede ancora wildcard o strumenti di proprietà del plugin.
-    - Migrazione dello stato legacy su disco (sessions/dir agent/WhatsApp auth).
-    - Migrazione delle chiavi legacy del contratto manifest del plugin (`speechProviders`, `realtimeTranscriptionProviders`, `realtimeVoiceProviders`, `mediaUnderstandingProviders`, `imageGenerationProviders`, `videoGenerationProviders`, `webFetchProviders`, `webSearchProviders` → `contracts`).
-    - Migrazione dello store Cron legacy (`jobId`, `schedule.cron`, campi delivery/payload di primo livello, payload `provider`, job fallback Webhook semplici `notify: true`).
-    - Pulizia della runtime-policy legacy dell'intero agente; la runtime policy provider/modello è il selettore di route attivo.
-    - Pulizia della configurazione plugin obsoleta quando i plugin sono abilitati; quando `plugins.enabled=false`, i riferimenti plugin obsoleti sono trattati come configurazione di contenimento inerte e vengono preservati.
+    - Controlli di migrazione browser per configurazioni legacy dell'estensione Chrome e prontezza Chrome MCP.
+    - Avvisi di override del provider OpenCode (`models.providers.opencode` / `models.providers.opencode-go`).
+    - Migrazione provider/profilo legacy OpenAI Codex (`openai-codex` → `openai`) e avvisi di shadowing per `models.providers.openai-codex` obsoleti.
+    - Controllo dei prerequisiti OAuth TLS per i profili OAuth OpenAI Codex.
+    - Avvisi sull'allowlist Plugin/tool quando `plugins.allow` è restrittivo ma la policy dei tool richiede ancora wildcard o tool di proprietà del Plugin.
+    - Migrazione dello stato legacy su disco (sessions/agent dir/auth WhatsApp).
+    - Migrazione delle chiavi legacy del contratto manifest Plugin (`speechProviders`, `realtimeTranscriptionProviders`, `realtimeVoiceProviders`, `mediaUnderstandingProviders`, `imageGenerationProviders`, `videoGenerationProviders`, `webFetchProviders`, `webSearchProviders` → `contracts`).
+    - Migrazione dello store cron legacy (`jobId`, `schedule.cron`, campi delivery/payload di primo livello, `provider` del payload, job di fallback webhook `notify: true`).
+    - Pulizia legacy della runtime-policy dell'intero agente; la runtime policy provider/model è il selettore di route attivo.
+    - Pulizia della configurazione Plugin obsoleta quando i Plugin sono abilitati; quando `plugins.enabled=false`, i riferimenti Plugin obsoleti sono trattati come configurazione di contenimento inerte e vengono preservati.
 
   </Accordion>
   <Accordion title="Stato e integrità">
     - Ispezione dei file di lock delle sessioni e pulizia dei lock obsoleti.
-    - Riparazione delle trascrizioni di sessione per rami di riscrittura prompt duplicati creati dalle build 2026.4.24 interessate.
-    - Rilevamento tombstone per recupero da riavvio di subagent bloccati, con supporto `--fix` per cancellare flag di recupero interrotto obsoleti in modo che l'avvio non continui a trattare il figlio come restart-aborted.
-    - Controlli di integrità dello stato e dei permessi (sessioni, trascrizioni, dir stato).
-    - Controlli dei permessi del file di configurazione (chmod 600) durante l'esecuzione locale.
-    - Salute auth dei modelli: controlla la scadenza OAuth, può aggiornare token in scadenza e segnala stati di cooldown/disabilitazione dei profili auth.
-    - Rilevamento di dir workspace aggiuntive (`~/openclaw`).
+    - Riparazione delle trascrizioni di sessione per rami di prompt-rewrite duplicati creati dalle build 2026.4.24 interessate.
+    - Rilevamento di tombstone di restart-recovery per subagent bloccati, con supporto `--fix` per cancellare flag di recovery abortiti obsoleti in modo che l'avvio non continui a trattare il figlio come restart-aborted.
+    - Controlli di integrità e permessi dello stato (sessioni, trascrizioni, directory di stato).
+    - Controlli dei permessi del file di configurazione (chmod 600) quando eseguito localmente.
+    - Integrità auth del modello: controlla la scadenza OAuth, può aggiornare token in scadenza e segnala stati cooldown/disabilitati del profilo auth.
 
   </Accordion>
   <Accordion title="Gateway, servizi e supervisor">
     - Riparazione dell'immagine sandbox quando il sandboxing è abilitato.
-    - Migrazione dei servizi legacy e rilevamento Gateway aggiuntivo.
+    - Migrazione dei servizi legacy e rilevamento di Gateway aggiuntivi.
     - Migrazione dello stato legacy del canale Matrix (in modalità `--fix` / `--repair`).
-    - Controlli runtime Gateway (servizio installato ma non in esecuzione; etichetta launchd in cache).
+    - Controlli runtime Gateway (servizio installato ma non in esecuzione; etichetta launchd memorizzata nella cache).
     - Avvisi sullo stato dei canali (sondati dal Gateway in esecuzione).
-    - I controlli dei permessi specifici del canale vivono sotto `openclaw channels capabilities`; ad esempio, i permessi dei canali vocali Discord vengono verificati con `openclaw channels capabilities --channel discord --target channel:<channel-id>`.
-    - Controlli di reattività WhatsApp per salute degradata dell'event loop Gateway con client TUI locali ancora in esecuzione; `--fix` arresta solo client TUI locali verificati.
-    - Riparazione delle route Codex per riferimenti modello legacy `openai-codex/*` nei modelli primari, fallback, override heartbeat/subagent/compaction, hook, override modello di canale e pin route di sessione; `--fix` li riscrive in `openai/*`, rimuove pin runtime obsoleti di sessione/intero agente e lascia i riferimenti agente OpenAI canonici sull'harness Codex predefinito.
+    - I controlli dei permessi specifici del canale si trovano in `openclaw channels capabilities`; per esempio, i permessi dei canali vocali Discord vengono verificati con `openclaw channels capabilities --channel discord --target channel:<channel-id>`.
+    - Controlli di reattività WhatsApp per integrità degradata dell'event loop del Gateway con client TUI locali ancora in esecuzione; `--fix` arresta solo i client TUI locali verificati.
+    - Riparazione delle route Codex per riferimenti modello legacy `openai-codex/*` nei modelli primari, fallback, modelli di generazione immagini/video, override heartbeat/subagent/compaction, hook, override dei modelli di canale e pin delle route di sessione; `--fix` li riscrive in `openai/*`, migra profili/ordine auth `openai-codex:*` a `openai:*`, rimuove pin runtime obsoleti di sessione/intero agente e lascia i riferimenti agente OpenAI canonici sull'harness Codex predefinito.
     - Audit della configurazione supervisor (launchd/systemd/schtasks) con riparazione opzionale.
     - Pulizia dell'ambiente proxy incorporato per servizi Gateway che hanno catturato valori shell `HTTP_PROXY` / `HTTPS_PROXY` / `NO_PROXY` durante installazione o aggiornamento.
     - Controlli delle best practice runtime Gateway (Node vs Bun, percorsi dei version-manager).
-    - Diagnostica delle collisioni di porta Gateway (predefinita `18789`).
+    - Diagnostica delle collisioni della porta Gateway (predefinita `18789`).
 
   </Accordion>
   <Accordion title="Auth, sicurezza e pairing">
     - Avvisi di sicurezza per policy DM aperte.
-    - Controlli auth Gateway per la modalità token locale (offre la generazione di token quando non esiste alcuna sorgente token; non sovrascrive configurazioni token SecretRef).
-    - Rilevamento di problemi di associazione dispositivo (richieste di prima associazione in sospeso, upgrade ruolo/scope in sospeso, deriva della cache token dispositivo locale obsoleta e deriva auth dei record associati).
+    - Controlli auth Gateway per la modalità token locale (offre la generazione del token quando non esiste alcuna sorgente token; non sovrascrive configurazioni SecretRef del token).
+    - Rilevamento di problemi di pairing del dispositivo (richieste di primo pairing in sospeso, upgrade di ruolo/ambito in sospeso, drift della cache locale device-token obsoleta e drift auth dei record associati).
 
   </Accordion>
   <Accordion title="Workspace e shell">
     - Controllo systemd linger su Linux.
-    - Controllo dimensione del file bootstrap workspace (avvisi di troncamento/quasi limite per file di contesto).
-    - Controllo prontezza Skills per l'agente predefinito; segnala Skills consentite con binari, env, config o requisiti OS mancanti, e `--fix` può disabilitare Skills non disponibili in `skills.entries`.
-    - Controllo stato completamento shell e installazione/upgrade automatici.
-    - Controllo prontezza provider embedding per ricerca memoria (modello locale, chiave API remota o binario QMD).
-    - Controlli installazione da sorgente (mancata corrispondenza workspace pnpm, asset UI mancanti, binario tsx mancante).
+    - Controllo delle dimensioni del file di bootstrap del workspace (avvisi di troncamento/quasi limite per file di contesto).
+    - Controllo di prontezza Skills per l'agente predefinito; segnala skill consentite con binari, env, configurazione o requisiti OS mancanti, e `--fix` può disabilitare skill non disponibili in `skills.entries`.
+    - Controllo dello stato del completamento shell e installazione/aggiornamento automatici.
+    - Controllo di prontezza del provider di embedding per ricerca in memoria (modello locale, chiave API remota o binario QMD).
+    - Controlli di installazione da sorgente (mismatch del workspace pnpm, asset UI mancanti, binario tsx mancante).
     - Scrive configurazione aggiornata + metadati wizard.
 
   </Accordion>
 </AccordionGroup>
 
-## Backfill e reset UI Dreams
+## Backfill e reset della UI Dreams
 
-La scena Dreams di Control UI include azioni **Backfill**, **Reset** e **Clear Grounded** per il workflow di Dreaming grounded. Queste azioni usano metodi RPC in stile Gateway doctor, ma **non** fanno parte della riparazione/migrazione CLI `openclaw doctor`.
+La scena Dreams della UI di controllo include azioni **Backfill**, **Reset** e **Clear Grounded** per il workflow di dreaming grounded. Queste azioni usano metodi RPC in stile Gateway doctor, ma **non** fanno parte della riparazione/migrazione CLI di `openclaw doctor`.
 
 Cosa fanno:
 
-- **Backfill** analizza i file storici `memory/YYYY-MM-DD.md` nel workspace attivo, esegue il passaggio diario REM grounded e scrive voci di backfill reversibili in `DREAMS.md`.
-- **Reset** rimuove solo quelle voci diario di backfill marcate da `DREAMS.md`.
-- **Clear Grounded** rimuove solo voci short-term staged esclusivamente grounded che provengono da replay storico e non hanno ancora accumulato richiamo live o supporto giornaliero.
+- **Backfill** scansiona i file storici `memory/YYYY-MM-DD.md` nel workspace attivo, esegue il pass del diario REM grounded e scrive voci di backfill reversibili in `DREAMS.md`.
+- **Reset** rimuove solo quelle voci di diario di backfill marcate da `DREAMS.md`.
+- **Clear Grounded** rimuove solo le voci a breve termine staged esclusivamente grounded che provengono dal replay storico e non hanno ancora accumulato richiamo live o supporto giornaliero.
 
 Cosa **non** fanno da sole:
 
 - non modificano `MEMORY.md`
 - non eseguono migrazioni doctor complete
-- non eseguono automaticamente lo stage dei candidati grounded nello store di promozione short-term live a meno che tu non esegua prima esplicitamente il percorso CLI staged
+- non inseriscono automaticamente candidati grounded nello store live di promozione a breve termine a meno che tu non esegua prima esplicitamente il percorso CLI staged
 
-Se vuoi che il replay storico grounded influenzi la normale lane di promozione profonda, usa invece il flusso CLI:
+Se vuoi che il replay storico grounded influenzi la normale corsia di promozione profonda, usa invece il flusso CLI:
 
 ```bash
 openclaw memory rem-backfill --path ./memory --stage-short-term
 ```
 
-Questo esegue lo stage dei candidati durevoli grounded nello store Dreaming short-term mantenendo `DREAMS.md` come superficie di revisione.
+Questo inserisce candidati durevoli grounded nello store di dreaming a breve termine mantenendo `DREAMS.md` come superficie di revisione.
 
-## Comportamento dettagliato e motivazione
+## Comportamento dettagliato e logica
 
 <AccordionGroup>
   <Accordion title="0. Aggiornamento opzionale (installazioni git)">
-    Se questo è un checkout git e doctor è in esecuzione in modalità interattiva, offre di aggiornare (fetch/rebase/build) prima di eseguire doctor.
+    Se si tratta di un checkout git e doctor viene eseguito in modo interattivo, propone l'aggiornamento (fetch/rebase/build) prima di eseguire doctor.
   </Accordion>
   <Accordion title="1. Normalizzazione della configurazione">
-    Se la configurazione contiene forme di valori legacy (ad esempio `messages.ackReaction` senza un override specifico del canale), doctor le normalizza nello schema corrente.
+    Se la configurazione contiene forme di valori legacy (per esempio `messages.ackReaction` senza un override specifico per canale), doctor le normalizza nello schema corrente.
 
-    Questo include i campi flat Talk legacy. La configurazione pubblica corrente di Talk speech è `talk.provider` + `talk.providers.<provider>`, e la configurazione voce realtime è `talk.realtime.*`. Doctor riscrive le vecchie forme `talk.voiceId` / `talk.voiceAliases` / `talk.modelId` / `talk.outputFormat` / `talk.apiKey` nella mappa provider, e riscrive i selettori realtime legacy di primo livello (`talk.mode`, `talk.transport`, `talk.brain`, `talk.model`, `talk.voice`) in `talk.realtime`.
+    Questo include i campi flat legacy di Talk. La configurazione speech pubblica corrente di Talk è `talk.provider` + `talk.providers.<provider>`, e la configurazione voice realtime è `talk.realtime.*`. Doctor riscrive le vecchie forme `talk.voiceId` / `talk.voiceAliases` / `talk.modelId` / `talk.outputFormat` / `talk.apiKey` nella mappa provider, e riscrive i selettori realtime legacy di primo livello (`talk.mode`, `talk.transport`, `talk.brain`, `talk.model`, `talk.voice`) in `talk.realtime`.
 
     Doctor avvisa anche quando `plugins.allow` non è vuoto e la policy degli strumenti usa
-    wildcard o voci strumento di proprietà del plugin. `tools.allow: ["*"]` corrisponde solo agli strumenti
-    dei plugin che vengono effettivamente caricati; non aggira la allowlist esclusiva dei plugin.
-    Doctor scrive `plugins.bundledDiscovery: "compat"` per configurazioni allowlist legacy
-    migrate per preservare il comportamento esistente dei provider bundled, e
-    poi punta all'impostazione più rigorosa `"allowlist"`.
+    voci wildcard o strumenti di proprietà dei plugin. `tools.allow: ["*"]` corrisponde solo agli strumenti
+    dei plugin che vengono effettivamente caricati; non aggira l'allowlist esclusiva dei plugin.
 
   </Accordion>
-  <Accordion title="2. Migrazioni di chiavi di configurazione legacy">
-    Quando la configurazione contiene chiavi deprecate, gli altri comandi rifiutano di eseguirsi e chiedono di eseguire `openclaw doctor`.
+  <Accordion title="2. Migrazioni delle chiavi di configurazione legacy">
+    Quando la configurazione contiene chiavi deprecate, gli altri comandi si rifiutano di eseguire e chiedono di eseguire `openclaw doctor`.
 
     Doctor:
 
-    - Spiegherà quali chiavi legacy sono state trovate.
-    - Mostrerà la migrazione applicata.
-    - Riscriverà `~/.openclaw/openclaw.json` con lo schema aggiornato.
+    - Spiega quali chiavi legacy sono state trovate.
+    - Mostra la migrazione applicata.
+    - Riscrive `~/.openclaw/openclaw.json` con lo schema aggiornato.
 
-    L'avvio di Gateway rifiuta formati di configurazione legacy e chiede di eseguire `openclaw doctor --fix`; non riscrive `openclaw.json` all'avvio. Anche le migrazioni dello store dei job Cron sono gestite da `openclaw doctor --fix`.
+    L'avvio del Gateway rifiuta i formati di configurazione legacy e chiede di eseguire `openclaw doctor --fix`; non riscrive `openclaw.json` all'avvio. Anche le migrazioni dell'archivio dei job Cron sono gestite da `openclaw doctor --fix`.
 
     Migrazioni correnti:
 
@@ -202,16 +263,17 @@ Questo esegue lo stage dei candidati durevoli grounded nello store Dreaming shor
     - `routing.groupChat.historyLimit` → `messages.groupChat.historyLimit`
     - `routing.groupChat.mentionPatterns` → `messages.groupChat.mentionPatterns`
     - `channels.telegram.requireMention` → `channels.telegram.groups."*".requireMention`
-    - configurazioni dei canali configurati senza criterio di risposta visibile → `messages.groupChat.visibleReplies: "message_tool"`
+    - rimuovi `channels.webchat` e `gateway.webchat` ritirati
     - `routing.queue` → `messages.queue`
-    - `routing.bindings` → `bindings` di livello superiore
+    - `routing.bindings` → `bindings` di primo livello
     - `routing.agents`/`routing.defaultAgentId` → `agents.list` + `agents.list[].default`
-    - `talk.voiceId`/`talk.voiceAliases`/`talk.modelId`/`talk.outputFormat`/`talk.apiKey` legacy → `talk.provider` + `talk.providers.<provider>`
-    - selettori Talk realtime legacy di livello superiore (`talk.mode`/`talk.transport`/`talk.brain`/`talk.model`/`talk.voice`) + `talk.provider`/`talk.providers` → `talk.realtime`
+    - legacy `talk.voiceId`/`talk.voiceAliases`/`talk.modelId`/`talk.outputFormat`/`talk.apiKey` → `talk.provider` + `talk.providers.<provider>`
+    - selettori Talk realtime legacy di primo livello (`talk.mode`/`talk.transport`/`talk.brain`/`talk.model`/`talk.voice`) + `talk.provider`/`talk.providers` → `talk.realtime`
     - `routing.agentToAgent` → `tools.agentToAgent`
     - `routing.transcribeAudio` → `tools.media.audio.models`
     - `messages.tts.<provider>` (`openai`/`elevenlabs`/`microsoft`/`edge`) → `messages.tts.providers.<provider>`
     - `messages.tts.provider: "edge"` e `messages.tts.providers.edge` → `messages.tts.provider: "microsoft"` e `messages.tts.providers.microsoft`
+    - campi di selezione dello speaker TTS (`voice`/`voiceName`/`voiceId`) → `speakerVoice`/`speakerVoiceId`
     - `channels.discord.voice.tts.<provider>` (`openai`/`elevenlabs`/`microsoft`/`edge`) → `channels.discord.voice.tts.providers.<provider>`
     - `channels.discord.accounts.<id>.voice.tts.<provider>` (`openai`/`elevenlabs`/`microsoft`/`edge`) → `channels.discord.accounts.<id>.voice.tts.providers.<provider>`
     - `plugins.entries.voice-call.config.tts.<provider>` (`openai`/`elevenlabs`/`microsoft`/`edge`) → `plugins.entries.voice-call.config.tts.providers.<provider>`
@@ -221,178 +283,183 @@ Questo esegue lo stage dei candidati durevoli grounded nello store Dreaming shor
     - `plugins.entries.voice-call.config.streaming.sttProvider` → `plugins.entries.voice-call.config.streaming.provider`
     - `plugins.entries.voice-call.config.streaming.openaiApiKey|sttModel|silenceDurationMs|vadThreshold` → `plugins.entries.voice-call.config.streaming.providers.openai.*`
     - `bindings[].match.accountID` → `bindings[].match.accountId`
-    - Per i canali con `accounts` denominati ma valori di canale di livello superiore per account singolo ancora presenti, sposta quei valori con ambito account nell’account promosso scelto per quel canale (`accounts.default` per la maggior parte dei canali; Matrix può conservare una destinazione denominata/predefinita corrispondente già esistente)
+    - Per i canali con `accounts` nominati ma con valori di canale di primo livello per account singolo ancora presenti, sposta quei valori con ambito account nell'account promosso scelto per quel canale (`accounts.default` per la maggior parte dei canali; Matrix può preservare una destinazione nominata/predefinita esistente corrispondente)
     - `identity` → `agents.list[].identity`
     - `agent.*` → `agents.defaults` + `tools.*` (tools/elevated/exec/sandbox/subagents)
     - `agent.model`/`allowedModels`/`modelAliases`/`modelFallbacks`/`imageModelFallbacks` → `agents.defaults.models` + `agents.defaults.model.primary/fallbacks` + `agents.defaults.imageModel.primary/fallbacks`
-    - rimuovi `agents.defaults.llm`; usa `models.providers.<id>.timeoutSeconds` per i timeout di provider/modelli lenti
+    - rimuovi `agents.defaults.llm`; usa `models.providers.<id>.timeoutSeconds` per timeout lenti di provider/modello e mantieni il timeout dell'agente/esecuzione sopra quel valore quando l'intera esecuzione deve durare più a lungo
     - `browser.ssrfPolicy.allowPrivateNetwork` → `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork`
     - `browser.profiles.*.driver: "extension"` → `"existing-session"`
-    - rimuovi `browser.relayBindHost` (impostazione legacy del relay dell’estensione)
-    - `models.providers.*.api: "openai"` legacy → `"openai-completions"` (l’avvio del Gateway salta anche i provider il cui `api` è impostato su un valore enum futuro o sconosciuto invece di fallire in modo chiuso)
-    - rimuovi `plugins.entries.codex.config.codexDynamicToolsProfile`; il server dell’app Codex mantiene sempre nativi gli strumenti workspace nativi di Codex
+    - rimuovi `browser.relayBindHost` (impostazione legacy del relay dell'estensione)
+    - legacy `models.providers.*.api: "openai"` → `"openai-completions"` (l'avvio del Gateway salta anche i provider il cui `api` è impostato su un valore enum futuro o sconosciuto invece di fallire in modo chiuso)
+    - rimuovi `plugins.entries.codex.config.codexDynamicToolsProfile`; l'app-server Codex mantiene sempre nativi gli strumenti workspace nativi di Codex
 
-    Gli avvisi di doctor includono anche indicazioni sull’account predefinito per i canali multi-account:
+    Gli avvisi di Doctor includono anche indicazioni sull'account predefinito per i canali multi-account:
 
-    - Se due o più voci `channels.<channel>.accounts` sono configurate senza `channels.<channel>.defaultAccount` o `accounts.default`, doctor avvisa che il routing di fallback può scegliere un account imprevisto.
+    - Se sono configurate due o più voci `channels.<channel>.accounts` senza `channels.<channel>.defaultAccount` o `accounts.default`, doctor avvisa che il routing di fallback può scegliere un account inatteso.
     - Se `channels.<channel>.defaultAccount` è impostato su un ID account sconosciuto, doctor avvisa ed elenca gli ID account configurati.
 
   </Accordion>
-  <Accordion title="2b. Override dei provider OpenCode">
-    Se hai aggiunto manualmente `models.providers.opencode`, `opencode-zen` o `opencode-go`, questo sostituisce il catalogo OpenCode integrato da `@earendil-works/pi-ai`. Ciò può forzare i modelli sull’API sbagliata o azzerare i costi. Doctor avvisa così puoi rimuovere l’override e ripristinare il routing API per modello + i costi.
+  <Accordion title="2b. Override del provider OpenCode">
+    Se hai aggiunto manualmente `models.providers.opencode`, `opencode-zen` o `opencode-go`, questo sovrascrive il catalogo OpenCode integrato da `openclaw/plugin-sdk/llm`. Ciò può forzare i modelli sull'API sbagliata o azzerare i costi. Doctor avvisa così puoi rimuovere l'override e ripristinare routing API + costi per modello.
   </Accordion>
-  <Accordion title="2c. Migrazione del browser e preparazione a Chrome MCP">
-    Se la configurazione del browser punta ancora al percorso rimosso dell’estensione Chrome, doctor la normalizza al modello attuale di collegamento Chrome MCP locale all’host:
+  <Accordion title="2c. Migrazione del browser e preparazione per Chrome MCP">
+    Se la configurazione del browser punta ancora al percorso dell'estensione Chrome rimossa, doctor la normalizza al modello di attach Chrome MCP host-local corrente:
 
     - `browser.profiles.*.driver: "extension"` diventa `"existing-session"`
     - `browser.relayBindHost` viene rimosso
 
-    Doctor verifica anche il percorso Chrome MCP locale all’host quando usi `defaultProfile: "user"` o un profilo `existing-session` configurato:
+    Doctor controlla anche il percorso Chrome MCP host-local quando usi `defaultProfile: "user"` o un profilo `existing-session` configurato:
 
-    - controlla se Google Chrome è installato sullo stesso host per i profili di connessione automatica predefiniti
-    - controlla la versione di Chrome rilevata e avvisa quando è inferiore a Chrome 144
-    - ti ricorda di abilitare il debug remoto nella pagina di ispezione del browser (per esempio `chrome://inspect/#remote-debugging`, `brave://inspect/#remote-debugging` o `edge://inspect/#remote-debugging`)
+    - verifica se Google Chrome è installato sullo stesso host per i profili di connessione automatica predefiniti
+    - verifica la versione di Chrome rilevata e avvisa quando è inferiore a Chrome 144
+    - ricorda di abilitare il debug remoto nella pagina di ispezione del browser (per esempio `chrome://inspect/#remote-debugging`, `brave://inspect/#remote-debugging` o `edge://inspect/#remote-debugging`)
 
-    Doctor non può abilitare per te l’impostazione lato Chrome. Chrome MCP locale all’host richiede comunque:
+    Doctor non può abilitare l'impostazione lato Chrome al posto tuo. Chrome MCP host-local richiede comunque:
 
-    - un browser basato su Chromium 144+ sull’host del gateway/node
+    - un browser basato su Chromium 144+ sull'host gateway/node
     - il browser in esecuzione localmente
     - debug remoto abilitato in quel browser
-    - approvazione del primo prompt di consenso al collegamento nel browser
+    - approvazione della prima richiesta di consenso all'attach nel browser
 
-    La preparazione qui riguarda solo i prerequisiti di collegamento locale. Existing-session mantiene gli attuali limiti di route di Chrome MCP; route avanzate come `responsebody`, esportazione PDF, intercettazione dei download e azioni batch richiedono ancora un browser gestito o un profilo CDP raw.
+    La preparazione qui riguarda solo i prerequisiti di attach locale. Existing-session mantiene gli attuali limiti di route di Chrome MCP; route avanzate come `responsebody`, esportazione PDF, intercettazione dei download e azioni batch richiedono ancora un browser gestito o un profilo CDP raw.
 
     Questo controllo **non** si applica a Docker, sandbox, remote-browser o altri flussi headless. Questi continuano a usare CDP raw.
 
   </Accordion>
-  <Accordion title="2d. Prerequisiti OAuth TLS">
-    Quando è configurato un profilo OAuth OpenAI Codex, doctor interroga l’endpoint di autorizzazione OpenAI per verificare che lo stack TLS locale Node/OpenSSL possa convalidare la catena di certificati. Se la verifica fallisce con un errore di certificato (per esempio `UNABLE_TO_GET_ISSUER_CERT_LOCALLY`, certificato scaduto o certificato autofirmato), doctor stampa indicazioni di correzione specifiche per la piattaforma. Su macOS con un Node Homebrew, la correzione di solito è `brew postinstall ca-certificates`. Con `--deep`, la verifica viene eseguita anche se il gateway è integro.
+  <Accordion title="2d. Prerequisiti TLS OAuth">
+    Quando è configurato un profilo OAuth OpenAI Codex, doctor sonda l'endpoint di autorizzazione OpenAI per verificare che lo stack TLS Node/OpenSSL locale possa convalidare la catena di certificati. Se la sonda fallisce con un errore di certificato (per esempio `UNABLE_TO_GET_ISSUER_CERT_LOCALLY`, certificato scaduto o certificato autofirmato), doctor stampa indicazioni di correzione specifiche per piattaforma. Su macOS con un Node Homebrew, la correzione di solito è `brew postinstall ca-certificates`. Con `--deep`, la sonda viene eseguita anche se il gateway è sano.
   </Accordion>
-  <Accordion title="2e. Override dei provider OAuth Codex">
-    Se in precedenza hai aggiunto impostazioni legacy di trasporto OpenAI in `models.providers.openai-codex`, queste possono oscurare il percorso del provider OAuth Codex integrato che le versioni più recenti usano automaticamente. Doctor avvisa quando rileva quelle vecchie impostazioni di trasporto insieme a Codex OAuth, così puoi rimuovere o riscrivere l’override di trasporto obsoleto e recuperare il comportamento integrato di routing/fallback. Proxy personalizzati e override solo degli header sono ancora supportati e non attivano questo avviso.
+  <Accordion title="2e. Override del provider OAuth Codex">
+    Se in precedenza hai aggiunto impostazioni di trasporto OpenAI legacy sotto `models.providers.openai-codex`, possono oscurare il percorso del provider OAuth Codex integrato che le versioni più recenti usano automaticamente. Doctor avvisa quando vede quelle vecchie impostazioni di trasporto insieme a OAuth Codex, così puoi rimuovere o riscrivere l'override di trasporto obsoleto e recuperare il comportamento integrato di routing/fallback. Proxy personalizzati e override solo-header sono ancora supportati e non attivano questo avviso.
   </Accordion>
   <Accordion title="2f. Riparazione delle route Codex">
-    Doctor controlla la presenza di riferimenti modello legacy `openai-codex/*`. Il routing dell’harness Codex nativo usa riferimenti modello canonici `openai/*`; i turni degli agenti OpenAI passano attraverso l’harness del server dell’app Codex invece del percorso OpenAI di OpenClaw PI.
+    Doctor controlla i riferimenti modello legacy `openai-codex/*`. Il routing nativo dell'harness Codex usa riferimenti modello canonici `openai/*`; i turni dell'agente OpenAI passano attraverso l'harness app-server Codex invece del percorso provider OpenAI di OpenClaw.
 
-    In modalità `--fix` / `--repair`, doctor riscrive i riferimenti interessati dell’agente predefinito e dei singoli agenti, inclusi modelli primari, fallback, override heartbeat/subagent/compaction, hook, override dei modelli di canale e stato di route persistente obsoleto delle sessioni:
+    In modalità `--fix` / `--repair`, doctor riscrive i riferimenti interessati dell'agente predefinito e dei singoli agenti, inclusi modelli primari, fallback, modelli di generazione immagini/video, override heartbeat/subagent/compaction, hook, override dei modelli di canale e stato di route sessione persistito obsoleto:
 
     - `openai-codex/gpt-*` diventa `openai/gpt-*`.
-    - L’intento Codex passa a voci `agentRuntime.id: "codex"` con ambito provider/modello per i riferimenti modello degli agenti riparati, così i profili auth `openai-codex:...` possono ancora essere selezionati dopo che il riferimento modello diventa `openai/*`.
-    - La configurazione runtime obsoleta dell’intero agente e i pin runtime persistenti delle sessioni vengono rimossi perché la selezione runtime ha ambito provider/modello.
-    - La policy runtime provider/modello esistente viene conservata, a meno che il riferimento modello legacy riparato non richieda il routing Codex per mantenere il vecchio percorso auth.
-    - Gli elenchi di fallback dei modelli esistenti vengono conservati con le rispettive voci legacy riscritte; le impostazioni per modello copiate si spostano dalla chiave legacy alla chiave canonica `openai/*`.
-    - `modelProvider`/`providerOverride`, `model`/`modelOverride`, avvisi di fallback e pin dei profili auth persistenti delle sessioni vengono riparati in tutti gli store sessione agente scoperti.
-    - `/codex ...` significa "controlla o associa una conversazione Codex nativa dalla chat."
-    - `/acp ...` o `runtime: "acp"` significa "usa l’adapter ACP/acpx esterno."
+    - L'intento Codex passa a voci `agentRuntime.id: "codex"` con ambito provider/modello per i riferimenti modello agente riparati.
+    - La configurazione runtime obsoleta dell'intero agente e i pin runtime della sessione persistita vengono rimossi perché la selezione runtime ha ambito provider/modello.
+    - La policy runtime provider/modello esistente viene preservata a meno che il riferimento modello legacy riparato non richieda routing Codex per mantenere il vecchio percorso di autenticazione.
+    - Gli elenchi di fallback modello esistenti vengono preservati con le voci legacy riscritte; le impostazioni per modello copiate passano dalla chiave legacy alla chiave canonica `openai/*`.
+    - `modelProvider`/`providerOverride`, `model`/`modelOverride`, avvisi di fallback e pin del profilo di autenticazione delle sessioni persistite vengono riparati in tutti gli store di sessione agente scoperti.
+    - `/codex ...` significa "controllare o associare una conversazione Codex nativa dalla chat."
+    - `/acp ...` o `runtime: "acp"` significa "usare l'adapter ACP/acpx esterno."
 
   </Accordion>
   <Accordion title="2g. Pulizia delle route di sessione">
-    Doctor analizza anche gli store sessione agente scoperti alla ricerca di stato di route auto-creato obsoleto dopo che sposti i modelli configurati o il runtime da una route posseduta da un Plugin, come Codex.
+    Doctor scansiona anche gli store di sessione agente scoperti alla ricerca di stato di route auto-creato obsoleto dopo che sposti i modelli configurati o il runtime lontano da una route di proprietà di un plugin come Codex.
 
-    `openclaw doctor --fix` può cancellare stato obsoleto auto-creato come pin modello `modelOverrideSource: "auto"`, metadati modello runtime, ID harness fissati, associazioni sessione CLI e override automatici dei profili auth quando la relativa route proprietaria non è più configurata. Le scelte esplicite dell’utente o dei modelli sessione legacy vengono segnalate per revisione manuale e lasciate intatte; cambiale con `/model ...`, `/new` oppure reimposta la sessione quando quella route non è più desiderata.
+    `openclaw doctor --fix` può cancellare stato obsoleto auto-creato come pin modello `modelOverrideSource: "auto"`, metadati runtime modello, ID harness fissati, associazioni sessione CLI e override automatici del profilo di autenticazione quando la loro route proprietaria non è più configurata. Le scelte esplicite dell'utente o legacy del modello di sessione vengono segnalate per revisione manuale e lasciate intatte; cambiale con `/model ...`, `/new` oppure reimposta la sessione quando quella route non è più prevista.
 
   </Accordion>
-  <Accordion title="3. Migrazioni dello stato legacy (layout del disco)">
-    Doctor può migrare i layout su disco più vecchi nella struttura attuale:
+  <Accordion title="3. Migrazioni dello stato legacy (layout su disco)">
+    Doctor può migrare layout su disco più vecchi nella struttura corrente:
 
     - Store sessioni + trascrizioni:
       - da `~/.openclaw/sessions/` a `~/.openclaw/agents/<agentId>/sessions/`
     - Directory agente:
       - da `~/.openclaw/agent/` a `~/.openclaw/agents/<agentId>/agent/`
     - Stato auth WhatsApp (Baileys):
-      - da `~/.openclaw/credentials/*.json` legacy (eccetto `oauth.json`)
+      - da legacy `~/.openclaw/credentials/*.json` (tranne `oauth.json`)
       - a `~/.openclaw/credentials/whatsapp/<accountId>/...` (ID account predefinito: `default`)
 
-    Queste migrazioni sono best-effort e idempotenti; doctor emetterà avvisi quando lascia eventuali cartelle legacy come backup. Anche Gateway/CLI migra automaticamente all’avvio le sessioni legacy + la directory agente, così cronologia/auth/modelli arrivano nel percorso per agente senza un’esecuzione manuale di doctor. L’autenticazione WhatsApp viene intenzionalmente migrata solo tramite `openclaw doctor`. La normalizzazione provider/mappa provider di Talk ora confronta per uguaglianza strutturale, quindi differenze solo nell’ordine delle chiavi non attivano più modifiche no-op ripetute con `doctor --fix`.
+    Queste migrazioni sono best-effort e idempotenti; doctor emetterà avvisi quando lascia cartelle legacy come backup. Anche Gateway/CLI migra automaticamente all'avvio le sessioni legacy + la directory agente, così cronologia/auth/modelli finiscono nel percorso per agente senza un'esecuzione manuale di doctor. L'autenticazione WhatsApp viene intenzionalmente migrata solo tramite `openclaw doctor`. La normalizzazione provider/mappa-provider di Talk ora confronta per uguaglianza strutturale, quindi le differenze solo nell'ordine delle chiavi non attivano più modifiche no-op ripetute di `doctor --fix`.
 
   </Accordion>
   <Accordion title="3a. Migrazioni dei manifest Plugin legacy">
-    Doctor analizza tutti i manifest Plugin installati alla ricerca di chiavi capability deprecate di livello superiore (`speechProviders`, `realtimeTranscriptionProviders`, `realtimeVoiceProviders`, `mediaUnderstandingProviders`, `imageGenerationProviders`, `videoGenerationProviders`, `webFetchProviders`, `webSearchProviders`). Quando le trova, offre di spostarle nell’oggetto `contracts` e riscrivere il file manifest sul posto. Questa migrazione è idempotente; se la chiave `contracts` ha già gli stessi valori, la chiave legacy viene rimossa senza duplicare i dati.
+    Doctor analizza tutti i manifest dei Plugin installati alla ricerca di chiavi di capability di primo livello deprecate (`speechProviders`, `realtimeTranscriptionProviders`, `realtimeVoiceProviders`, `mediaUnderstandingProviders`, `imageGenerationProviders`, `videoGenerationProviders`, `webFetchProviders`, `webSearchProviders`). Quando le trova, propone di spostarle nell'oggetto `contracts` e di riscrivere il file manifest sul posto. Questa migrazione è idempotente; se la chiave `contracts` contiene già gli stessi valori, la chiave legacy viene rimossa senza duplicare i dati.
   </Accordion>
-  <Accordion title="3b. Migrazioni dello store cron legacy">
-    Doctor controlla anche lo store dei job cron (`~/.openclaw/cron/jobs.json` per impostazione predefinita, oppure `cron.store` quando è sovrascritto) alla ricerca di vecchie forme di job che lo scheduler accetta ancora per compatibilità.
+  <Accordion title="3b. Migrazioni dell'archivio Cron legacy">
+    Doctor controlla anche l'archivio dei job Cron (`~/.openclaw/cron/jobs.json` per impostazione predefinita, oppure `cron.store` quando viene sovrascritto) alla ricerca di vecchie forme di job che lo scheduler accetta ancora per compatibilità.
 
-    Le pulizie cron attuali includono:
+    Le pulizie Cron attuali includono:
 
     - `jobId` → `id`
     - `schedule.cron` → `schedule.expr`
-    - campi del payload di primo livello (`message`, `model`, `thinking`, ...) → `payload`
+    - campi payload di primo livello (`message`, `model`, `thinking`, ...) → `payload`
     - campi di consegna di primo livello (`deliver`, `channel`, `to`, `provider`, ...) → `delivery`
     - alias di consegna `provider` del payload → `delivery.channel` esplicito
-    - processi di fallback Webhook legacy semplici con `notify: true` → `delivery.mode="webhook"` esplicito con `delivery.to=cron.webhook`
+    - job legacy di fallback Webhook con `notify: true` → consegna Webhook esplicita da `cron.webhook` quando impostato; i job di annuncio mantengono la consegna chat e ricevono `delivery.completionDestination`. Quando `cron.webhook` non è impostato, il marker inerte di primo livello `notify` viene rimosso per i job senza destinazione (la consegna esistente, incluso l'annuncio, viene preservata), poiché la consegna runtime non lo legge mai
 
-    Doctor migra automaticamente solo i processi `notify: true` quando può farlo senza cambiare il comportamento. Se un processo combina il fallback notify legacy con una modalità di consegna non Webhook esistente, doctor emette un avviso e lascia quel processo alla revisione manuale.
+    Il Gateway sanifica anche le righe Cron malformate al momento del caricamento, così i job validi continuano a essere eseguiti. Le righe grezze malformate vengono copiate in `jobs-quarantine.json` accanto all'archivio attivo prima di essere rimosse da `jobs.json`; doctor segnala le righe in quarantena così puoi esaminarle o ripararle manualmente.
 
-    Su Linux, doctor emette anche un avviso quando la crontab dell'utente invoca ancora il legacy `~/.openclaw/bin/ensure-whatsapp.sh`. Questo script locale dell'host non è mantenuto dall'OpenClaw attuale e può scrivere falsi messaggi `Gateway inactive` in `~/.openclaw/logs/whatsapp-health.log` quando cron non riesce a raggiungere il bus utente systemd. Rimuovi la voce crontab obsoleta con `crontab -e`; usa `openclaw channels status --probe`, `openclaw doctor` e `openclaw gateway status` per i controlli di integrità attuali.
+    L'avvio del Gateway normalizza la proiezione runtime e ignora il marker di primo livello `notify`, ma lascia la configurazione Cron persistita per la riparazione da parte di doctor. Quando `cron.webhook` non è impostato, doctor rimuove il marker inerte per i job senza destinazione di migrazione (`delivery.mode` assente/none, una destinazione Webhook inutilizzabile o una consegna annuncio/chat esistente), lasciando intatta la consegna esistente, così le esecuzioni ripetute di `doctor --fix` non avvisano più sullo stesso job. Se `cron.webhook` è impostato ma non è un URL HTTP(S) valido, doctor continua ad avvisare e lascia il marker così puoi correggere l'URL.
+
+    Su Linux, doctor avvisa anche quando il crontab dell'utente invoca ancora il legacy `~/.openclaw/bin/ensure-whatsapp.sh`. Questo script locale dell'host non è mantenuto dall'OpenClaw attuale e può scrivere falsi messaggi `Gateway inactive` in `~/.openclaw/logs/whatsapp-health.log` quando Cron non riesce a raggiungere il bus utente systemd. Rimuovi la voce obsoleta del crontab con `crontab -e`; usa `openclaw channels status --probe`, `openclaw doctor` e `openclaw gateway status` per i controlli di integrità attuali.
 
   </Accordion>
-  <Accordion title="3c. Pulizia dei blocchi di sessione">
-    Doctor analizza ogni directory di sessione degli agenti alla ricerca di file write-lock obsoleti — file rimasti quando una sessione è terminata in modo anomalo. Per ogni file di lock trovato segnala: il percorso, il PID, se il PID è ancora attivo, l'età del lock e se è considerato obsoleto (PID morto, più vecchio di 30 minuti, o un PID attivo per cui si può dimostrare che appartiene a un processo non OpenClaw). In modalità `--fix` / `--repair` rimuove automaticamente i file di lock obsoleti; altrimenti stampa una nota e ti indica di rieseguirlo con `--fix`.
+  <Accordion title="3c. Pulizia dei lock di sessione">
+    Doctor analizza ogni directory di sessione degli agenti alla ricerca di file write-lock obsoleti — file lasciati quando una sessione è terminata in modo anomalo. Per ogni file di lock trovato segnala: il percorso, il PID, se il PID è ancora attivo, l'età del lock e se è considerato obsoleto (PID morto, metadati del proprietario malformati, più vecchio di 30 minuti o un PID attivo che può essere provato appartenere a un processo non OpenClaw). In modalità `--fix` / `--repair` rimuove automaticamente i lock con proprietari morti, orfani, riciclati, malformati-vecchi o non OpenClaw. I vecchi lock ancora di proprietà di un processo OpenClaw attivo vengono segnalati ma lasciati al loro posto, così doctor non interrompe uno scrittore di transcript attivo.
   </Accordion>
-  <Accordion title="3d. Riparazione dei rami del transcript di sessione">
-    Doctor analizza i file JSONL delle sessioni degli agenti alla ricerca della forma di ramo duplicata creata dal bug di riscrittura del prompt transcript del 2026.4.24: un turno utente abbandonato con contesto runtime interno di OpenClaw più un sibling attivo contenente lo stesso prompt utente visibile. In modalità `--fix` / `--repair`, doctor esegue il backup di ogni file interessato accanto all'originale e riscrive il transcript sul ramo attivo, così la cronologia del Gateway e i lettori di memoria non vedono più turni duplicati.
+  <Accordion title="3d. Riparazione dei rami dei transcript di sessione">
+    Doctor analizza i file JSONL delle sessioni degli agenti alla ricerca della forma di ramo duplicata creata dal bug di riscrittura dei transcript dei prompt del 2026.4.24: un turno utente abbandonato con contesto runtime interno OpenClaw più un sibling attivo contenente lo stesso prompt utente visibile. In modalità `--fix` / `--repair`, doctor esegue il backup di ogni file interessato accanto all'originale e riscrive il transcript sul ramo attivo, così la cronologia del Gateway e i lettori di memoria non vedono più turni duplicati.
   </Accordion>
-  <Accordion title="4. Controlli di integrità dello stato (persistenza delle sessioni, instradamento e sicurezza)">
-    La directory di stato è il centro operativo. Se scompare, perdi sessioni, credenziali, log e configurazione (a meno che tu non abbia backup altrove).
+  <Accordion title="4. Controlli di integrità dello stato (persistenza delle sessioni, routing e sicurezza)">
+    La directory di stato è il tronco encefalico operativo. Se scompare, perdi sessioni, credenziali, log e configurazione (a meno che tu non abbia backup altrove).
 
     Doctor controlla:
 
     - **Directory di stato mancante**: avvisa di una perdita di stato catastrofica, chiede di ricreare la directory e ricorda che non può recuperare i dati mancanti.
-    - **Permessi della directory di stato**: verifica la scrivibilità; offre di riparare i permessi (ed emette un suggerimento `chown` quando rileva una discrepanza di proprietario/gruppo).
-    - **Directory di stato sincronizzata sul cloud macOS**: avvisa quando lo stato si risolve sotto iCloud Drive (`~/Library/Mobile Documents/com~apple~CloudDocs/...`) o `~/Library/CloudStorage/...` perché i percorsi basati sulla sincronizzazione possono causare I/O più lento e race di lock/sincronizzazione.
-    - **Directory di stato Linux su SD o eMMC**: avvisa quando lo stato si risolve in una sorgente di mount `mmcblk*`, perché l'I/O casuale basato su SD o eMMC può essere più lento e usurarsi più rapidamente con le scritture di sessioni e credenziali.
-    - **Directory delle sessioni mancanti**: `sessions/` e la directory dello store delle sessioni sono obbligatorie per persistere la cronologia ed evitare crash `ENOENT`.
-    - **Disallineamento del transcript**: avvisa quando le voci di sessione recenti hanno file transcript mancanti.
+    - **Permessi della directory di stato**: verifica la scrivibilità; offre di riparare i permessi (ed emette un suggerimento `chown` quando viene rilevata una mancata corrispondenza proprietario/gruppo).
+    - **Directory di stato macOS sincronizzata con cloud**: avvisa quando lo stato si risolve sotto iCloud Drive (`~/Library/Mobile Documents/com~apple~CloudDocs/...`) o `~/Library/CloudStorage/...`, perché i percorsi basati su sincronizzazione possono causare I/O più lento e race di lock/sincronizzazione.
+    - **Directory di stato Linux su SD o eMMC**: avvisa quando lo stato si risolve in una sorgente di mount `mmcblk*`, perché l'I/O casuale basato su SD o eMMC può essere più lento e usurarsi più rapidamente durante le scritture di sessioni e credenziali.
+    - **Directory di stato volatile Linux**: avvisa quando lo stato si risolve in `tmpfs` o `ramfs`, perché sessioni, credenziali, configurazione e stato SQLite con i relativi sidecar WAL/journal scompariranno al riavvio. I mount Docker `overlay` non vengono intenzionalmente segnalati perché i loro layer scrivibili persistono attraverso i riavvii dell'host finché il container rimane.
+    - **Directory di sessione mancanti**: `sessions/` e la directory dell'archivio sessioni sono necessarie per persistere la cronologia ed evitare crash `ENOENT`.
+    - **Mancata corrispondenza del transcript**: avvisa quando le voci di sessione recenti hanno file transcript mancanti.
     - **Sessione principale "JSONL a 1 riga"**: segnala quando il transcript principale ha una sola riga (la cronologia non si sta accumulando).
-    - **Più directory di stato**: avvisa quando esistono più cartelle `~/.openclaw` in directory home diverse o quando `OPENCLAW_STATE_DIR` punta altrove (la cronologia può dividersi tra installazioni).
-    - **Promemoria modalità remota**: se `gateway.mode=remote`, doctor ricorda di eseguirlo sull'host remoto (lo stato vive lì).
-    - **Permessi del file di configurazione**: avvisa se `~/.openclaw/openclaw.json` è leggibile da gruppo/mondo e offre di restringere a `600`.
+    - **Directory di stato multiple**: avvisa quando esistono più cartelle `~/.openclaw` tra directory home diverse o quando `OPENCLAW_STATE_DIR` punta altrove (la cronologia può dividersi tra installazioni).
+    - **Promemoria modalità remota**: se `gateway.mode=remote`, doctor ricorda di eseguirlo sull'host remoto (lo stato si trova lì).
+    - **Permessi del file di configurazione**: avvisa se `~/.openclaw/openclaw.json` è leggibile da gruppo/mondo e offre di restringerlo a `600`.
 
   </Accordion>
-  <Accordion title="5. Integrità autenticazione modello (scadenza OAuth)">
-    Doctor ispeziona i profili OAuth nell'auth store, avvisa quando i token stanno per scadere o sono scaduti e può aggiornarli quando è sicuro. Se il profilo OAuth/token di Anthropic è obsoleto, suggerisce una chiave API Anthropic o il percorso setup-token di Anthropic. Le richieste di refresh compaiono solo quando l'esecuzione è interattiva (TTY); `--non-interactive` salta i tentativi di refresh.
+  <Accordion title="5. Integrità autenticazione modelli (scadenza OAuth)">
+    Doctor ispeziona i profili OAuth nell'archivio di autenticazione, avvisa quando i token stanno per scadere o sono scaduti e può aggiornarli quando è sicuro. Se il profilo OAuth/token Anthropic è obsoleto, suggerisce una chiave API Anthropic o il percorso setup-token Anthropic. Le richieste di refresh compaiono solo quando viene eseguito in modo interattivo (TTY); `--non-interactive` salta i tentativi di refresh.
 
-    Quando un refresh OAuth fallisce in modo permanente (per esempio `refresh_token_reused`, `invalid_grant`, o un provider indica di effettuare di nuovo l'accesso), doctor segnala che è necessaria una nuova autenticazione e stampa il comando esatto `openclaw models auth login --provider ...` da eseguire.
+    Quando un refresh OAuth fallisce in modo permanente (per esempio `refresh_token_reused`, `invalid_grant` o un provider che ti dice di accedere di nuovo), doctor segnala che è necessaria una nuova autenticazione e stampa il comando esatto `openclaw models auth login --provider ...` da eseguire.
 
-    Doctor segnala anche i profili auth temporaneamente inutilizzabili a causa di:
+    Doctor segnala anche i profili di autenticazione temporaneamente inutilizzabili a causa di:
 
     - cooldown brevi (limiti di frequenza/timeout/errori di autenticazione)
     - disabilitazioni più lunghe (errori di fatturazione/credito)
 
+    I profili OAuth Codex legacy i cui token risiedono nel Portachiavi macOS (onboarding più vecchio prima del layout sidecar basato su file) vengono riparati solo da doctor. Esegui `openclaw doctor --fix` una volta da un terminale interattivo per migrare i token legacy basati su Portachiavi inline in `auth-profiles.json`; dopo, i turni incorporati (Telegram, Cron, dispatch di sub-agent) li risolvono come profili OAuth OpenAI canonici.
+
   </Accordion>
-  <Accordion title="6. Validazione del modello degli hook">
-    Se `hooks.gmail.model` è impostato, doctor valida il riferimento al modello rispetto al catalogo e all'allowlist e avvisa quando non si risolve o non è consentito.
+  <Accordion title="6. Validazione del modello hooks">
+    Se `hooks.gmail.model` è impostato, doctor valida il riferimento del modello rispetto al catalogo e alla allowlist e avvisa quando non si risolve o non è consentito.
   </Accordion>
   <Accordion title="7. Riparazione dell'immagine sandbox">
-    Quando il sandboxing è abilitato, doctor controlla le immagini Docker e offre di crearle o passare a nomi legacy se l'immagine attuale manca.
+    Quando il sandboxing è abilitato, doctor controlla le immagini Docker e offre di creare o passare a nomi legacy se l'immagine attuale manca.
   </Accordion>
-  <Accordion title="7b. Pulizia installazione Plugin">
-    Doctor rimuove lo stato di staging delle dipendenze dei Plugin legacy generato da OpenClaw in modalità `openclaw doctor --fix` / `openclaw doctor --repair`. Questo copre radici di dipendenze generate obsolete, vecchie directory install-stage, detriti locali dei pacchetti da codice precedente di riparazione delle dipendenze dei bundled Plugin, e copie npm gestite orfane o recuperate di Plugin `@openclaw/*` bundled che possono oscurare il manifest bundled attuale. Doctor ricollega anche il pacchetto host `openclaw` nei Plugin npm gestiti che dichiarano `peerDependencies.openclaw`, così gli import runtime locali al pacchetto come `openclaw/plugin-sdk/*` continuano a risolversi dopo aggiornamenti o riparazioni npm.
+  <Accordion title="7b. Pulizia dell'installazione dei Plugin">
+    Doctor rimuove lo stato legacy di staging delle dipendenze dei Plugin generato da OpenClaw in modalità `openclaw doctor --fix` / `openclaw doctor --repair`. Questo copre root di dipendenze generate obsolete, vecchie directory install-stage, residui locali del package dal precedente codice di riparazione delle dipendenze dei Plugin in bundle, e copie npm gestite orfane o recuperate di Plugin `@openclaw/*` in bundle che possono oscurare il manifest in bundle attuale. Doctor ricollega anche il package host `openclaw` nei Plugin npm gestiti che dichiarano `peerDependencies.openclaw`, così gli import runtime locali del package come `openclaw/plugin-sdk/*` continuano a risolversi dopo aggiornamenti o riparazioni npm.
 
-    Doctor può anche reinstallare Plugin scaricabili mancanti quando la configurazione li riferimento ma il registro locale dei Plugin non li trova. Gli esempi includono `plugins.entries` materiali, impostazioni configurate di canale/provider/ricerca e runtime degli agenti configurati. Durante gli aggiornamenti di pacchetto, doctor evita di eseguire la riparazione dei Plugin tramite package manager mentre il pacchetto core viene sostituito; esegui di nuovo `openclaw doctor --fix` dopo l'aggiornamento se un Plugin configurato necessita ancora di recupero. L'avvio del Gateway e il ricaricamento della configurazione non eseguono package manager; le installazioni dei Plugin restano lavoro esplicito di doctor/install/update.
+    Doctor può anche reinstallare Plugin scaricabili mancanti quando la configurazione li referenzia ma il registro Plugin locale non riesce a trovarli. Esempi includono `plugins.entries` materiali, impostazioni configurate di canale/provider/ricerca e runtime agente configurati. Durante gli aggiornamenti del package, doctor evita di eseguire la riparazione dei Plugin tramite package manager mentre il package core viene sostituito; esegui di nuovo `openclaw doctor --fix` dopo l'aggiornamento se un Plugin configurato necessita ancora di recupero. L'avvio del Gateway e il ricaricamento della configurazione non eseguono package manager; le installazioni dei Plugin restano lavoro esplicito di doctor/install/update.
 
   </Accordion>
-  <Accordion title="8. Migrazioni del servizio Gateway e suggerimenti di pulizia">
-    Doctor rileva servizi Gateway legacy (launchd/systemd/schtasks) e offre di rimuoverli e installare il servizio OpenClaw usando la porta Gateway attuale. Può anche cercare servizi aggiuntivi simili a Gateway e stampare suggerimenti di pulizia. I servizi Gateway OpenClaw con nome profilo sono considerati di prima classe e non vengono segnalati come "extra".
+  <Accordion title="8. Migrazioni dei servizi Gateway e suggerimenti di pulizia">
+    Doctor rileva servizi Gateway legacy (launchd/systemd/schtasks) e offre di rimuoverli e installare il servizio OpenClaw usando la porta Gateway attuale. Può anche cercare servizi aggiuntivi simili a Gateway e stampare suggerimenti di pulizia. I servizi Gateway OpenClaw con nome profilo sono considerati di prima classe e non vengono segnalati come "extra."
 
-    Su Linux, se il servizio Gateway a livello utente manca ma esiste un servizio Gateway OpenClaw a livello sistema, doctor non installa automaticamente un secondo servizio a livello utente. Ispeziona con `openclaw gateway status --deep` o `openclaw doctor --deep`, quindi rimuovi il duplicato o imposta `OPENCLAW_SERVICE_REPAIR_POLICY=external` quando un supervisore di sistema possiede il ciclo di vita del Gateway.
+    Su Linux, se il servizio Gateway a livello utente manca ma esiste un servizio Gateway OpenClaw a livello di sistema, doctor non installa automaticamente un secondo servizio a livello utente. Ispeziona con `openclaw gateway status --deep` o `openclaw doctor --deep`, quindi rimuovi il duplicato o imposta `OPENCLAW_SERVICE_REPAIR_POLICY=external` quando un supervisore di sistema possiede il ciclo di vita del Gateway.
 
   </Accordion>
   <Accordion title="8b. Migrazione Matrix all'avvio">
-    Quando un account di canale Matrix ha una migrazione di stato legacy in sospeso o azionabile, doctor (in modalità `--fix` / `--repair`) crea uno snapshot pre-migrazione e poi esegue i passaggi di migrazione best-effort: migrazione dello stato Matrix legacy e preparazione dello stato cifrato legacy. Entrambi i passaggi non sono fatali; gli errori vengono registrati e l'avvio continua. In modalità sola lettura (`openclaw doctor` senza `--fix`) questo controllo viene saltato interamente.
+    Quando un account di canale Matrix ha una migrazione di stato legacy in sospeso o azionabile, doctor (in modalità `--fix` / `--repair`) crea uno snapshot pre-migrazione e poi esegue i passaggi di migrazione best-effort: migrazione dello stato Matrix legacy e preparazione dello stato cifrato legacy. Entrambi i passaggi non sono fatali; gli errori vengono registrati e l'avvio continua. In modalità sola lettura (`openclaw doctor` senza `--fix`) questo controllo viene saltato completamente.
   </Accordion>
-  <Accordion title="8c. Associazione dei dispositivi e deriva dell'autenticazione">
-    Doctor ora ispeziona lo stato di associazione dei dispositivi come parte del normale controllo di integrità.
+  <Accordion title="8c. Associazione dispositivo e deriva dell'autenticazione">
+    Doctor ora ispeziona lo stato di associazione dei dispositivi come parte del normale passaggio di integrità.
 
     Cosa segnala:
 
     - richieste di prima associazione in sospeso
     - upgrade di ruolo in sospeso per dispositivi già associati
     - upgrade di ambito in sospeso per dispositivi già associati
-    - riparazioni di mismatch della chiave pubblica in cui l'id del dispositivo corrisponde ancora ma l'identità del dispositivo non corrisponde più al record approvato
+    - riparazioni di mancata corrispondenza della chiave pubblica in cui l'id dispositivo corrisponde ancora ma l'identità del dispositivo non corrisponde più al record approvato
     - record associati privi di un token attivo per un ruolo approvato
-    - token associati i cui ambiti derivano al di fuori della baseline di associazione approvata
-    - voci locali nella cache dei token dispositivo per la macchina attuale che precedono una rotazione del token lato Gateway o trasportano metadati di ambito obsoleti
+    - token associati i cui ambiti derivano fuori dalla baseline di associazione approvata
+    - voci di token dispositivo memorizzate nella cache locale per la macchina attuale che precedono una rotazione token lato Gateway o contengono metadati di ambito obsoleti
 
     Doctor non approva automaticamente le richieste di associazione né ruota automaticamente i token dispositivo. Stampa invece i passaggi successivi esatti:
 
@@ -401,118 +468,118 @@ Questo esegue lo stage dei candidati durevoli grounded nello store Dreaming shor
     - ruota un token nuovo con `openclaw devices rotate --device <deviceId> --role <role>`
     - rimuovi e riapprova un record obsoleto con `openclaw devices remove <deviceId>`
 
-    Questo chiude il comune buco "già associato ma ricevo ancora richiesta di associazione": doctor ora distingue la prima associazione dagli upgrade di ruolo/ambito in sospeso e dalla deriva di token/identità dispositivo obsoleti.
+    Questo chiude la falla comune "già associato ma ricevo ancora pairing richiesto": doctor ora distingue il primo pairing dagli upgrade di ruolo/ambito in sospeso e dalla deriva di token/identità dispositivo obsoleti.
 
   </Accordion>
   <Accordion title="9. Avvisi di sicurezza">
-    Doctor emette avvisi quando un provider è aperto ai DM senza allowlist, o quando una policy è configurata in modo pericoloso.
+    Doctor emette avvisi quando un provider è aperto ai DM senza una allowlist, o quando una policy è configurata in modo pericoloso.
   </Accordion>
   <Accordion title="10. systemd linger (Linux)">
-    Se viene eseguito come servizio utente systemd, doctor assicura che il lingering sia abilitato così il Gateway resta attivo dopo il logout.
+    Se eseguito come servizio utente systemd, doctor assicura che il lingering sia abilitato così il gateway resta attivo dopo il logout.
   </Accordion>
-  <Accordion title="11. Stato del workspace (Skills, Plugin e directory legacy)">
+  <Accordion title="11. Stato del workspace (Skills, plugin e TaskFlow)">
     Doctor stampa un riepilogo dello stato del workspace per l'agente predefinito:
 
-    - **Stato Skills**: conta Skills idonee, con requisiti mancanti e bloccate dall'allowlist.
-    - **Directory workspace legacy**: avvisa quando `~/openclaw` o altre directory workspace legacy esistono insieme al workspace attuale.
-    - **Stato Plugin**: conta Plugin abilitati/disabilitati/con errore; elenca gli ID dei Plugin per eventuali errori; segnala le capacità dei Plugin del bundle.
-    - **Avvisi di compatibilità Plugin**: segnala i Plugin che hanno problemi di compatibilità con il runtime attuale.
-    - **Diagnostica Plugin**: espone eventuali avvisi o errori in fase di caricamento emessi dal registro dei Plugin.
+    - **Stato Skills**: conta le skill idonee, con requisiti mancanti e bloccate dalla allowlist.
+    - **Stato Plugin**: conta i plugin abilitati/disabilitati/in errore; elenca gli ID dei plugin per eventuali errori; segnala le capability dei plugin del bundle.
+    - **Avvisi di compatibilità dei plugin**: segnala i plugin che hanno problemi di compatibilità con il runtime corrente.
+    - **Diagnostica dei plugin**: espone eventuali avvisi o errori in fase di caricamento emessi dal registry dei plugin.
+    - **Ripristino TaskFlow**: espone TaskFlow gestiti sospetti che richiedono ispezione manuale o annullamento.
 
   </Accordion>
-  <Accordion title="11b. Dimensione del file bootstrap">
-    Doctor controlla se i file bootstrap del workspace (per esempio `AGENTS.md`, `CLAUDE.md` o altri file di contesto iniettati) sono vicini o superiori al budget di caratteri configurato. Segnala per ogni file i conteggi di caratteri grezzi rispetto a quelli iniettati, la percentuale di troncamento, la causa del troncamento (`max/file` o `max/total`) e i caratteri iniettati totali come frazione del budget totale. Quando i file vengono troncati o sono vicini al limite, doctor stampa suggerimenti per regolare `agents.defaults.bootstrapMaxChars` e `agents.defaults.bootstrapTotalMaxChars`.
+  <Accordion title="11b. Dimensione del file di bootstrap">
+    Doctor controlla se i file di bootstrap del workspace (per esempio `AGENTS.md`, `CLAUDE.md` o altri file di contesto iniettati) sono vicini o oltre il budget di caratteri configurato. Riporta per ogni file i conteggi dei caratteri grezzi rispetto a quelli iniettati, la percentuale di troncamento, la causa del troncamento (`max/file` o `max/total`) e i caratteri iniettati totali come frazione del budget totale. Quando i file sono troncati o vicini al limite, doctor stampa suggerimenti per regolare `agents.defaults.bootstrapMaxChars` e `agents.defaults.bootstrapTotalMaxChars`.
   </Accordion>
-  <Accordion title="11d. Pulizia dei Plugin canale obsoleti">
-    Quando `openclaw doctor --fix` rimuove un Plugin canale mancante, rimuove anche la configurazione sospesa con ambito canale che faceva riferimento a quel Plugin: voci `channels.<id>`, target Heartbeat che nominavano il canale e override `agents.*.models["<channel>/*"]`. Questo previene loop di avvio del Gateway in cui il runtime del canale è scomparso ma la configurazione chiede ancora al gateway di collegarsi a esso.
+  <Accordion title="11d. Pulizia dei plugin di canale obsoleti">
+    Quando `openclaw doctor --fix` rimuove un plugin di canale mancante, rimuove anche la configurazione pendente con ambito canale che faceva riferimento a quel plugin: voci `channels.<id>`, destinazioni heartbeat che nominavano il canale e override `agents.*.models["<channel>/*"]`. Questo evita cicli di avvio del Gateway in cui il runtime del canale non c'è più ma la configurazione chiede ancora al gateway di associarsi a esso.
   </Accordion>
   <Accordion title="11c. Completamento shell">
-    Doctor controlla se il completamento con tab è installato per la shell attuale (zsh, bash, fish o PowerShell):
+    Doctor controlla se il completamento con tab è installato per la shell corrente (zsh, bash, fish o PowerShell):
 
     - Se il profilo shell usa un pattern di completamento dinamico lento (`source <(openclaw completion ...)`), doctor lo aggiorna alla variante più veloce con file in cache.
     - Se il completamento è configurato nel profilo ma il file di cache manca, doctor rigenera automaticamente la cache.
-    - Se non è configurato alcun completamento, doctor chiede di installarlo (solo in modalità interattiva; saltato con `--non-interactive`).
+    - Se non è configurato alcun completamento, doctor chiede di installarlo (solo modalità interattiva; saltato con `--non-interactive`).
 
     Esegui `openclaw completion --write-state` per rigenerare manualmente la cache.
 
   </Accordion>
-  <Accordion title="12. Controlli di autenticazione Gateway (token locale)">
-    Doctor controlla la preparazione dell'autenticazione con token del Gateway locale.
+  <Accordion title="12. Controlli auth Gateway (token locale)">
+    Doctor controlla la prontezza dell'autenticazione con token del gateway locale.
 
-    - Se la modalità token richiede un token e non esiste alcuna sorgente token, doctor propone di generarne uno.
-    - Se `gateway.auth.token` è gestito tramite SecretRef ma non disponibile, doctor avvisa e non lo sovrascrive con testo in chiaro.
-    - `openclaw doctor --generate-gateway-token` forza la generazione solo quando non è configurato alcun token SecretRef.
+    - Se la modalità token richiede un token e non esiste alcuna origine token, doctor offre di generarne uno.
+    - Se `gateway.auth.token` è gestito da SecretRef ma non disponibile, doctor avvisa e non lo sovrascrive con testo in chiaro.
+    - `openclaw doctor --generate-gateway-token` forza la generazione solo quando non è configurato alcun SecretRef token.
 
   </Accordion>
   <Accordion title="12b. Riparazioni di sola lettura consapevoli di SecretRef">
-    Alcuni flussi di riparazione devono ispezionare le credenziali configurate senza indebolire il comportamento runtime fail-fast.
+    Alcuni flussi di riparazione devono ispezionare le credenziali configurate senza indebolire il comportamento fail-fast del runtime.
 
-    - `openclaw doctor --fix` ora usa lo stesso modello di riepilogo SecretRef di sola lettura dei comandi della famiglia status per riparazioni mirate della configurazione.
-    - Esempio: la riparazione di Telegram `allowFrom` / `groupAllowFrom` `@username` prova a usare le credenziali del bot configurate quando disponibili.
-    - Se il token del bot Telegram è configurato tramite SecretRef ma non disponibile nel percorso del comando corrente, doctor segnala che la credenziale è configurata-ma-non-disponibile e salta la risoluzione automatica invece di arrestarsi in modo anomalo o indicare erroneamente il token come mancante.
+    - `openclaw doctor --fix` ora usa lo stesso modello di riepilogo SecretRef di sola lettura dei comandi della famiglia status per riparazioni di configurazione mirate.
+    - Esempio: la riparazione di `allowFrom` / `groupAllowFrom` `@username` di Telegram prova a usare le credenziali bot configurate quando disponibili.
+    - Se il token del bot Telegram è configurato tramite SecretRef ma non disponibile nel percorso del comando corrente, doctor segnala che la credenziale è configurata-ma-non-disponibile e salta l'auto-risoluzione invece di andare in crash o segnalare erroneamente il token come mancante.
 
   </Accordion>
-  <Accordion title="13. Controllo di integrità Gateway + riavvio">
-    Doctor esegue un controllo di integrità e propone di riavviare il Gateway quando sembra non integro.
+  <Accordion title="13. Controllo salute Gateway + riavvio">
+    Doctor esegue un controllo di salute e offre di riavviare il gateway quando sembra non essere sano.
   </Accordion>
-  <Accordion title="13b. Preparazione della ricerca in memoria">
+  <Accordion title="13b. Prontezza della ricerca in memoria">
     Doctor controlla se il provider di embedding per la ricerca in memoria configurato è pronto per l'agente predefinito. Il comportamento dipende dal backend e dal provider configurati:
 
-    - **Backend QMD**: verifica se il binario `qmd` è disponibile e avviabile. In caso contrario, stampa indicazioni di correzione che includono il pacchetto npm e un'opzione per il percorso manuale del binario.
-    - **Provider locale esplicito**: controlla la presenza di un file modello locale o di un URL di modello remoto/scaricabile riconosciuto. Se manca, suggerisce di passare a un provider remoto.
-    - **Provider remoto esplicito** (`openai`, `voyage`, ecc.): verifica che una chiave API sia presente nell'ambiente o nell'archivio di autenticazione. Stampa suggerimenti di correzione attuabili se manca.
-    - **Provider automatico**: controlla prima la disponibilità del modello locale, poi prova ogni provider remoto nell'ordine di selezione automatica.
+    - **Backend QMD**: verifica se il binario `qmd` è disponibile e avviabile. In caso contrario, stampa indicazioni di correzione che includono il pacchetto npm e un'opzione di percorso binario manuale.
+    - **Provider locale esplicito**: controlla la presenza di un file modello locale o di un URL modello remoto/scaricabile riconosciuto. Se manca, suggerisce di passare a un provider remoto.
+    - **Provider remoto esplicito** (`openai`, `voyage`, ecc.): verifica che una chiave API sia presente nell'ambiente o nello store auth. Stampa suggerimenti di correzione azionabili se manca.
+    - **Provider auto legacy**: tratta `memorySearch.provider: "auto"` come OpenAI, controlla la prontezza OpenAI e `doctor --fix` lo riscrive in `provider: "openai"`.
 
-    Quando è disponibile un risultato di probe del Gateway in cache (il Gateway era integro al momento del controllo), doctor confronta il suo risultato con la configurazione visibile dalla CLI e segnala eventuali discrepanze. Doctor non avvia un nuovo ping degli embedding nel percorso predefinito; usa il comando di stato memoria approfondito quando vuoi un controllo live del provider.
+    Quando è disponibile un risultato di probe del gateway in cache (il gateway era sano al momento del controllo), doctor incrocia il suo risultato con la configurazione visibile dalla CLI e nota eventuali discrepanze. Doctor non avvia un nuovo ping di embedding nel percorso predefinito; usa il comando di stato memoria profondo quando vuoi un controllo live del provider.
 
-    Usa `openclaw memory status --deep` per verificare la preparazione degli embedding a runtime.
+    Usa `openclaw memory status --deep` per verificare la prontezza degli embedding a runtime.
 
   </Accordion>
   <Accordion title="14. Avvisi sullo stato dei canali">
-    Se il Gateway è integro, doctor esegue un probe dello stato dei canali e segnala avvisi con correzioni suggerite.
+    Se il gateway è sano, doctor esegue un probe dello stato dei canali e segnala avvisi con correzioni suggerite.
   </Accordion>
-  <Accordion title="15. Audit + riparazione della configurazione del supervisore">
-    Doctor controlla la configurazione del supervisore installato (launchd/systemd/schtasks) per valori predefiniti mancanti o obsoleti (ad es. dipendenze systemd da network-online e ritardo di riavvio). Quando trova una mancata corrispondenza, consiglia un aggiornamento e può riscrivere il file di servizio/task ai valori predefiniti correnti.
+  <Accordion title="15. Audit + riparazione della configurazione supervisor">
+    Doctor controlla la configurazione supervisor installata (launchd/systemd/schtasks) per default mancanti o obsoleti (ad esempio dipendenze systemd network-online e ritardo di riavvio). Quando trova una discrepanza, consiglia un aggiornamento e può riscrivere il file di servizio/task ai default correnti.
 
     Note:
 
-    - `openclaw doctor` chiede conferma prima di riscrivere la configurazione del supervisore.
-    - `openclaw doctor --yes` accetta le richieste di riparazione predefinite.
-    - `openclaw doctor --repair` applica le correzioni consigliate senza richieste.
-    - `openclaw doctor --repair --force` sovrascrive le configurazioni personalizzate del supervisore.
-    - `OPENCLAW_SERVICE_REPAIR_POLICY=external` mantiene doctor in sola lettura per il ciclo di vita del servizio Gateway. Segnala comunque l'integrità del servizio ed esegue riparazioni non relative al servizio, ma salta installazione/avvio/riavvio/bootstrap del servizio, riscritture della configurazione del supervisore e pulizia dei servizi legacy perché un supervisore esterno possiede quel ciclo di vita.
-    - Su Linux, doctor non riscrive i metadati di comando/entrypoint mentre l'unità systemd Gateway corrispondente è attiva. Inoltre ignora le unità extra inattive non legacy simili al Gateway durante la scansione dei servizi duplicati, così i file di servizio companion non generano rumore di pulizia.
-    - Se l'autenticazione con token richiede un token e `gateway.auth.token` è gestito tramite SecretRef, l'installazione/riparazione del servizio doctor valida il SecretRef ma non persiste i valori del token in testo in chiaro risolti nei metadati dell'ambiente del servizio supervisore.
-    - Doctor rileva valori di ambiente del servizio gestiti con `.env`/SecretRef che installazioni LaunchAgent, systemd o Windows Scheduled Task precedenti incorporavano inline e riscrive i metadati del servizio affinché quei valori vengano caricati dalla sorgente runtime invece che dalla definizione del supervisore.
-    - Doctor rileva quando il comando del servizio imposta ancora un vecchio `--port` dopo modifiche a `gateway.port` e riscrive i metadati del servizio alla porta corrente.
-    - Se l'autenticazione con token richiede un token e il SecretRef del token configurato non è risolto, doctor blocca il percorso di installazione/riparazione con indicazioni attuabili.
+    - `openclaw doctor` chiede conferma prima di riscrivere la configurazione supervisor.
+    - `openclaw doctor --yes` accetta i prompt di riparazione predefiniti.
+    - `openclaw doctor --fix` applica le correzioni consigliate senza prompt (`--repair` è un alias).
+    - `openclaw doctor --fix --force` sovrascrive le configurazioni supervisor personalizzate.
+    - `OPENCLAW_SERVICE_REPAIR_POLICY=external` mantiene doctor in sola lettura per il ciclo di vita del servizio gateway. Segnala comunque la salute del servizio ed esegue riparazioni non di servizio, ma salta installazione/avvio/riavvio/bootstrap del servizio, riscritture della configurazione supervisor e pulizia dei servizi legacy perché un supervisor esterno possiede quel ciclo di vita.
+    - Su Linux, doctor non riscrive i metadati di comando/entrypoint mentre l'unità systemd gateway corrispondente è attiva. Ignora anche unità extra inattive non legacy simili a gateway durante la scansione dei servizi duplicati, così i file di servizio companion non creano rumore di pulizia.
+    - Se l'autenticazione token richiede un token e `gateway.auth.token` è gestito da SecretRef, l'installazione/riparazione del servizio doctor valida il SecretRef ma non persiste valori token in testo in chiaro risolti nei metadati dell'ambiente del servizio supervisor.
+    - Doctor rileva valori di ambiente del servizio gestiti e supportati da `.env`/SecretRef che installazioni LaunchAgent, systemd o Windows Scheduled Task più vecchie avevano incorporato inline, e riscrive i metadati del servizio così quei valori vengono caricati dall'origine runtime invece che dalla definizione supervisor.
+    - Doctor rileva quando il comando del servizio fissa ancora una vecchia `--port` dopo modifiche a `gateway.port` e riscrive i metadati del servizio alla porta corrente.
+    - Se l'autenticazione token richiede un token e il SecretRef token configurato non è risolto, doctor blocca il percorso di installazione/riparazione con indicazioni azionabili.
     - Se sia `gateway.auth.token` sia `gateway.auth.password` sono configurati e `gateway.auth.mode` non è impostato, doctor blocca installazione/riparazione finché la modalità non viene impostata esplicitamente.
-    - Per le unità user-systemd Linux, i controlli di drift dei token di doctor ora includono sia le sorgenti `Environment=` sia `EnvironmentFile=` quando confrontano i metadati di autenticazione del servizio.
-    - Le riparazioni del servizio doctor rifiutano di riscrivere, arrestare o riavviare un servizio Gateway da un binario OpenClaw precedente quando la configurazione è stata scritta l'ultima volta da una versione più recente. Vedi [Risoluzione dei problemi del Gateway](/it/gateway/troubleshooting#split-brain-installs-and-newer-config-guard).
+    - Per le unità user-systemd Linux, i controlli di deriva token di doctor ora includono sia le origini `Environment=` sia `EnvironmentFile=` quando confrontano i metadati auth del servizio.
+    - Le riparazioni del servizio doctor rifiutano di riscrivere, fermare o riavviare un servizio gateway da un binario OpenClaw più vecchio quando la configurazione è stata scritta l'ultima volta da una versione più nuova. Vedi [Risoluzione problemi Gateway](/it/gateway/troubleshooting#split-brain-installs-and-newer-config-guard).
     - Puoi sempre forzare una riscrittura completa tramite `openclaw gateway install --force`.
 
   </Accordion>
-  <Accordion title="16. Diagnostica runtime + porta del Gateway">
-    Doctor ispeziona il runtime del servizio (PID, ultimo stato di uscita) e avvisa quando il servizio è installato ma non effettivamente in esecuzione. Controlla inoltre collisioni di porta sulla porta del Gateway (predefinita `18789`) e segnala le cause probabili (Gateway già in esecuzione, tunnel SSH).
+  <Accordion title="16. Diagnostica runtime Gateway + porta">
+    Doctor ispeziona il runtime del servizio (PID, ultimo stato di uscita) e avvisa quando il servizio è installato ma non è effettivamente in esecuzione. Controlla anche collisioni di porta sulla porta del gateway (default `18789`) e segnala cause probabili (gateway già in esecuzione, tunnel SSH).
   </Accordion>
-  <Accordion title="17. Best practice runtime del Gateway">
-    Doctor avvisa quando il servizio Gateway viene eseguito su Bun o su un percorso Node gestito da un version manager (`nvm`, `fnm`, `volta`, `asdf`, ecc.). I canali WhatsApp + Telegram richiedono Node, e i percorsi dei version manager possono interrompersi dopo gli aggiornamenti perché il servizio non carica l'inizializzazione della shell. Doctor propone di migrare a un'installazione Node di sistema quando disponibile (Homebrew/apt/choco).
+  <Accordion title="17. Best practice runtime Gateway">
+    Doctor avvisa quando il servizio gateway gira su Bun o su un percorso Node gestito da versione (`nvm`, `fnm`, `volta`, `asdf`, ecc.). I canali WhatsApp + Telegram richiedono Node, e i percorsi dei version manager possono rompersi dopo gli upgrade perché il servizio non carica l'inizializzazione della shell. Doctor offre di migrare a un'installazione Node di sistema quando disponibile (Homebrew/apt/choco).
 
-    I LaunchAgent macOS appena installati o riparati usano un PATH di sistema canonico (`/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin`) invece di copiare il PATH della shell interattiva, così i binari di sistema gestiti da Homebrew rimangono disponibili mentre Volta, asdf, fnm, pnpm e altre directory dei version manager non cambiano quale Node viene risolto dai processi figlio. I servizi Linux mantengono ancora radici di ambiente esplicite (`NVM_DIR`, `FNM_DIR`, `VOLTA_HOME`, `ASDF_DATA_DIR`, `BUN_INSTALL`, `PNPM_HOME`) e directory user-bin stabili, ma le directory di fallback dei version manager dedotte vengono scritte nel PATH del servizio solo quando tali directory esistono su disco.
+    I macOS LaunchAgent appena installati o riparati usano un PATH di sistema canonico (`/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin`) invece di copiare il PATH della shell interattiva, così i binari di sistema gestiti da Homebrew restano disponibili mentre Volta, asdf, fnm, pnpm e altre directory dei version manager non cambiano quale Node viene risolto dai processi figli. I servizi Linux mantengono ancora root di ambiente esplicite (`NVM_DIR`, `FNM_DIR`, `VOLTA_HOME`, `ASDF_DATA_DIR`, `BUN_INSTALL`, `PNPM_HOME`) e directory user-bin stabili, ma le directory fallback dei version manager indovinate vengono scritte nel PATH del servizio solo quando tali directory esistono su disco.
 
   </Accordion>
-  <Accordion title="18. Scrittura della configurazione + metadati della procedura guidata">
-    Doctor persiste eventuali modifiche alla configurazione e marca i metadati della procedura guidata per registrare l'esecuzione di doctor.
+  <Accordion title="18. Scrittura configurazione + metadati wizard">
+    Doctor persiste eventuali modifiche di configurazione e marca i metadati wizard per registrare l'esecuzione di doctor.
   </Accordion>
-  <Accordion title="19. Suggerimenti per l'area di lavoro (backup + sistema di memoria)">
-    Doctor suggerisce un sistema di memoria per l'area di lavoro quando manca e stampa un suggerimento di backup se l'area di lavoro non è già sotto git.
+  <Accordion title="19. Suggerimenti workspace (backup + sistema di memoria)">
+    Doctor suggerisce un sistema di memoria del workspace quando manca e stampa un suggerimento di backup se il workspace non è già sotto git.
 
-    Vedi [/concepts/agent-workspace](/it/concepts/agent-workspace) per una guida completa alla struttura dell'area di lavoro e al backup git (GitHub o GitLab privato consigliato).
+    Vedi [/concepts/agent-workspace](/it/concepts/agent-workspace) per una guida completa alla struttura del workspace e al backup git (GitHub o GitLab privato consigliato).
 
   </Accordion>
 </AccordionGroup>
 
 ## Correlati
 
-- [Runbook del Gateway](/it/gateway)
-- [Risoluzione dei problemi del Gateway](/it/gateway/troubleshooting)
+- [Runbook Gateway](/it/gateway)
+- [Risoluzione problemi Gateway](/it/gateway/troubleshooting)

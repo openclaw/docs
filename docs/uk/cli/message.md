@@ -2,13 +2,14 @@
 read_when:
     - Додавання або змінення дій CLI для повідомлень
     - Зміна поведінки вихідного каналу
-summary: Довідка CLI для `openclaw message` (надсилання + дії каналу)
+summary: Довідник CLI для `openclaw message` (send + дії каналу)
 title: Повідомлення
 x-i18n:
-    generated_at: "2026-05-11T20:28:23Z"
+    generated_at: "2026-06-27T17:21:12Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 12ae0e32e86a87076e795cbb18e34d9a37797323f805f4edbd4351e73dbdac46
+    source_hash: 4a8a716435313efa41a13ee5c6392eb2e4cfca2ede3e4690b157d26d077f7d56
     source_path: cli/message.md
     workflow: 16
 ---
@@ -16,7 +17,7 @@ x-i18n:
 # `openclaw message`
 
 Єдина вихідна команда для надсилання повідомлень і дій каналів
-(Discord/Google Chat/iMessage/Matrix/Mattermost (plugin)/Microsoft Teams/Signal/Slack/Telegram/WhatsApp).
+(Discord/Google Chat/iMessage/Matrix/Mattermost (плагін)/Microsoft Teams/Signal/Slack/Telegram/WhatsApp).
 
 ## Використання
 
@@ -28,62 +29,62 @@ openclaw message <subcommand> [flags]
 
 - `--channel` обов’язковий, якщо налаштовано більше ніж один канал.
 - Якщо налаштовано рівно один канал, він стає типовим.
-- Значення: `discord|googlechat|imessage|matrix|mattermost|msteams|signal|slack|telegram|whatsapp` (Mattermost потребує plugin)
-- `openclaw message` зіставляє вибраний канал із його власницьким plugin, коли присутній `--channel` або ціль із префіксом каналу; інакше завантажує налаштовані plugins каналів для визначення типового каналу.
+- Значення: `discord|googlechat|imessage|matrix|mattermost|msteams|signal|slack|telegram|whatsapp` (Mattermost потребує плагін)
+- `openclaw message` зіставляє вибраний канал із його плагіном-власником, коли наявний `--channel` або ціль із префіксом каналу; інакше завантажує налаштовані плагіни каналів для визначення типового каналу.
 
 Формати цілі (`--target`):
 
-- WhatsApp: E.164, JID групи або JID WhatsApp Channel/Newsletter (`...@newsletter`)
-- Telegram: id чату, `@username` або ціль теми форуму (`-1001234567890:topic:42`, або `--thread-id 42`)
-- Discord: `channel:<id>` або `user:<id>` (або згадка `<@id>`; необроблені числові id вважаються каналами)
+- WhatsApp: E.164, груповий JID або JID каналу/розсилки WhatsApp (`...@newsletter`)
+- Telegram: ідентифікатор чату, `@username` або ціль теми форуму (`-1001234567890:topic:42` або `--thread-id 42`)
+- Discord: `channel:<id>` або `user:<id>` (або згадка `<@id>`; необроблені числові ідентифікатори трактуються як канали)
 - Google Chat: `spaces/<spaceId>` або `users/<userId>`
-- Slack: `channel:<id>` або `user:<id>` (необроблений id каналу приймається)
-- Mattermost (plugin): `channel:<id>`, `user:<id>` або `@username` (id без префікса вважаються каналами)
+- Slack: `channel:<id>` або `user:<id>` (необроблений ідентифікатор каналу приймається)
+- Mattermost (плагін): `channel:<id>`, `user:<id>` або `@username` (ідентифікатори без префікса трактуються як канали)
 - Signal: `+E.164`, `group:<id>`, `signal:+E.164`, `signal:group:<id>` або `username:<name>`/`u:<name>`
 - iMessage: дескриптор, `chat_id:<id>`, `chat_guid:<guid>` або `chat_identifier:<id>`
 - Matrix: `@user:server`, `!room:server` або `#alias:server`
-- Microsoft Teams: id розмови (`19:...@thread.tacv2`) або `conversation:<id>` чи `user:<aad-object-id>`
+- Microsoft Teams: ідентифікатор розмови (`19:...@thread.tacv2`) або `conversation:<id>` чи `user:<aad-object-id>`
 
 Пошук за назвою:
 
-- Для підтримуваних провайдерів (Discord/Slack тощо) назви каналів на кшталт `Help` або `#help` визначаються через кеш каталогу.
-- Якщо в кеші немає збігу, OpenClaw спробує виконати живий пошук у каталозі, коли провайдер це підтримує.
+- Для підтримуваних провайдерів (Discord/Slack тощо) назви каналів на кшталт `Help` або `#help` зіставляються через кеш каталогу.
+- У разі промаху кешу OpenClaw спробує виконати оперативний пошук у каталозі, якщо провайдер це підтримує.
 
 ## Поширені прапорці
 
 - `--channel <name>`
 - `--account <id>`
 - `--target <dest>` (цільовий канал або користувач для send/poll/read тощо)
-- `--targets <name>` (повторюється; лише broadcast)
+- `--targets <name>` (повторюється; лише трансляція)
 - `--json`
 - `--dry-run`
 - `--verbose`
 
 ## Поведінка SecretRef
 
-- `openclaw message` визначає підтримувані SecretRefs каналів перед запуском вибраної дії.
-- Визначення за можливості обмежується активною ціллю дії:
-  - у межах каналу, коли задано `--channel` (або виведено з цілей із префіксом, як-от `discord:...`)
-  - у межах облікового запису, коли задано `--account` (глобальні параметри каналу + поверхні вибраного облікового запису)
-  - коли `--account` пропущено, OpenClaw не примушує область SecretRef облікового запису `default`
-- Невизначені SecretRefs у непов’язаних каналах не блокують цільову дію повідомлення.
-- Якщо SecretRef вибраного каналу/облікового запису не визначено, команда завершується закритою відмовою для цієї дії.
+- `openclaw message` зіставляє підтримувані SecretRefs каналів перед виконанням вибраної дії.
+- Зіставлення за можливості обмежується активною ціллю дії:
+  - у межах каналу, коли встановлено `--channel` (або визначено з префіксних цілей на кшталт `discord:...`)
+  - у межах облікового запису, коли встановлено `--account` (глобальні параметри каналу + поверхні вибраного облікового запису)
+  - коли `--account` пропущено, OpenClaw не примусово застосовує область SecretRef облікового запису `default`
+- Нерозв’язані SecretRefs у непов’язаних каналах не блокують цільову дію повідомлення.
+- Якщо SecretRef вибраного каналу/облікового запису не розв’язано, команда завершується закрито для цієї дії.
 
 ## Дії
 
-### Ядро
+### Основне
 
 - `send`
-  - Канали: WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (plugin)/Signal/iMessage/Matrix/Microsoft Teams
+  - Канали: WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (плагін)/Signal/iMessage/Matrix/Microsoft Teams
   - Обов’язково: `--target`, а також `--message`, `--media` або `--presentation`
   - Необов’язково: `--media`, `--presentation`, `--delivery`, `--pin`, `--reply-to`, `--thread-id`, `--gif-playback`, `--force-document`, `--silent`
-  - Спільні payload презентацій: `--presentation` надсилає семантичні блоки (`text`, `context`, `divider`, `buttons`, `select`), які ядро відтворює через оголошені можливості вибраного каналу. Див. [Презентація повідомлень](/uk/plugins/message-presentation).
-  - Загальні параметри доставки: `--delivery` приймає підказки доставки, як-от `{ "pin": true }`; `--pin` є скороченням для закріпленої доставки, коли канал це підтримує.
-  - Лише Telegram: `--force-document` (надсилати зображення, GIF і відео як документи, щоб уникнути стиснення Telegram)
-  - Лише Telegram: `--thread-id` (id теми форуму)
-  - Лише Slack: `--thread-id` (позначка часу гілки; `--reply-to` використовує те саме поле)
+  - Спільні презентаційні корисні навантаження: `--presentation` надсилає семантичні блоки (`text`, `context`, `divider`, `buttons`, `select`), які ядро відтворює через оголошені можливості вибраного каналу. Див. [Презентація повідомлень](/uk/plugins/message-presentation).
+  - Загальні параметри доставки: `--delivery` приймає підказки доставки, як-от `{ "pin": true }`; `--pin` є скороченням для закріпленої доставки, якщо канал це підтримує.
+  - Telegram + WhatsApp: `--force-document` (надсилати зображення, GIF-файли й відео як документи, щоб уникнути стиснення каналом)
+  - Лише Telegram: `--thread-id` (ідентифікатор теми форуму)
+  - Лише Slack: `--thread-id` (мітка часу треду; `--reply-to` використовує те саме поле)
   - Telegram + Discord: `--silent`
-  - Лише WhatsApp: `--gif-playback`; WhatsApp Channels/Newsletters адресуються за допомогою їхнього нативного JID `@newsletter`.
+  - Лише WhatsApp: `--gif-playback`; канали/розсилки WhatsApp адресуються їхнім нативним JID `@newsletter`.
 
 - `poll`
   - Канали: WhatsApp/Telegram/Discord/Matrix/Microsoft Teams
@@ -93,12 +94,13 @@ openclaw message <subcommand> [flags]
   - Лише Telegram: `--poll-duration-seconds` (5-600), `--silent`, `--poll-anonymous` / `--poll-public`, `--thread-id`
 
 - `react`
-  - Канали: Discord/Google Chat/Slack/Telegram/WhatsApp/Signal/Matrix
+  - Канали: Discord/Google Chat/Matrix/Nextcloud Talk/Signal/Slack/Telegram/WhatsApp
   - Обов’язково: `--message-id`, `--target`
   - Необов’язково: `--emoji`, `--remove`, `--participant`, `--from-me`, `--target-author`, `--target-author-uuid`
   - Примітка: `--remove` потребує `--emoji` (пропустіть `--emoji`, щоб очистити власні реакції там, де це підтримується; див. /tools/reactions)
   - Лише WhatsApp: `--participant`, `--from-me`
-  - Реакції груп Signal: потрібен `--target-author` або `--target-author-uuid`
+  - Реакції груп Signal: потрібно `--target-author` або `--target-author-uuid`
+  - Nextcloud Talk: лише додавання реакцій; `--remove` відхиляється з чіткою помилкою (див. /tools/reactions)
 
 - `reactions`
   - Канали: Discord/Google Chat/Slack/Matrix
@@ -109,7 +111,7 @@ openclaw message <subcommand> [flags]
   - Канали: Discord/Slack/Matrix
   - Обов’язково: `--target`
   - Необов’язково: `--limit`, `--message-id`, `--before`, `--after`
-  - Лише Slack: `--message-id` читає конкретну позначку часу повідомлення Slack; поєднайте з `--thread-id`, щоб прочитати точну відповідь у гілці.
+  - Лише Slack: `--message-id` читає конкретну мітку часу повідомлення Slack; поєднайте з `--thread-id`, щоб прочитати точну відповідь у треді.
   - Лише Discord: `--around`
 
 - `edit`
@@ -131,18 +133,18 @@ openclaw message <subcommand> [flags]
 - `permissions`
   - Канали: Discord/Matrix
   - Обов’язково: `--target`
-  - Лише Matrix: доступно, коли шифрування Matrix увімкнено, а дії верифікації дозволені
+  - Лише Matrix: доступно, коли ввімкнено шифрування Matrix і дозволено дії перевірки
 
 - `search`
   - Канали: Discord
   - Обов’язково: `--guild-id`, `--query`
   - Необов’язково: `--channel-id`, `--channel-ids` (повторюється), `--author-id`, `--author-ids` (повторюється), `--limit`
 
-### Гілки
+### Треди
 
 - `thread create`
   - Канали: Discord
-  - Обов’язково: `--thread-name`, `--target` (id каналу)
+  - Обов’язково: `--thread-name`, `--target` (ідентифікатор каналу)
   - Необов’язково: `--message-id`, `--message`, `--auto-archive-min`
 
 - `thread list`
@@ -152,7 +154,7 @@ openclaw message <subcommand> [flags]
 
 - `thread reply`
   - Канали: Discord
-  - Обов’язково: `--target` (id гілки), `--message`
+  - Обов’язково: `--target` (ідентифікатор треду), `--message`
   - Необов’язково: `--media`, `--reply-to`
 
 ### Емодзі
@@ -177,7 +179,7 @@ openclaw message <subcommand> [flags]
   - Канали: Discord
   - Обов’язково: `--guild-id`, `--sticker-name`, `--sticker-desc`, `--sticker-tags`, `--media`
 
-### Ролі / Канали / Учасники / Голос
+### Ролі / канали / учасники / голосові канали
 
 - `role info` (Discord): `--guild-id`
 - `role add` / `role remove` (Discord): `--guild-id`, `--user-id`, `--role-id`
@@ -190,21 +192,21 @@ openclaw message <subcommand> [flags]
 
 - `event list` (Discord): `--guild-id`
 - `event create` (Discord): `--guild-id`, `--event-name`, `--start-time`
-  - Необов’язково: `--end-time`, `--desc`, `--channel-id`, `--location`, `--event-type`
+  - Необов'язково: `--end-time`, `--desc`, `--channel-id`, `--location`, `--event-type`
 
 ### Модерація (Discord)
 
-- `timeout`: `--guild-id`, `--user-id` (необов’язково `--duration-min` або `--until`; пропустіть обидва, щоб зняти timeout)
+- `timeout`: `--guild-id`, `--user-id` (необов'язково `--duration-min` або `--until`; пропустіть обидва, щоб скасувати timeout)
 - `kick`: `--guild-id`, `--user-id` (+ `--reason`)
 - `ban`: `--guild-id`, `--user-id` (+ `--delete-days`, `--reason`)
   - `timeout` також підтримує `--reason`
 
-### Broadcast
+### Трансляція
 
 - `broadcast`
   - Канали: будь-який налаштований канал; використовуйте `--channel all`, щоб націлитися на всіх провайдерів
-  - Обов’язково: `--targets <target...>`
-  - Необов’язково: `--message`, `--media`, `--dry-run`
+  - Обов'язково: `--targets <target...>`
+  - Необов'язково: `--message`, `--media`, `--dry-run`
 
 ## Приклади
 
@@ -223,9 +225,9 @@ openclaw message send --channel discord \
   --presentation '{"blocks":[{"type":"buttons","buttons":[{"label":"Approve","value":"approve","style":"success"},{"label":"Decline","value":"decline","style":"danger"}]}]}'
 ```
 
-Ядро відтворює той самий payload `presentation` у компоненти Discord, блоки Slack, вбудовані кнопки Telegram, props Mattermost або картки Teams/Feishu залежно від можливостей каналу. Повний контракт і правила fallback див. у [Презентація повідомлень](/uk/plugins/message-presentation).
+Ядро відтворює те саме навантаження `presentation` у компоненти Discord, блоки Slack, вбудовані кнопки Telegram, властивості Mattermost або картки Teams/Feishu залежно від можливостей каналу. Повний контракт і правила резервного варіанта див. у [Представлення повідомлень](/uk/plugins/message-presentation).
 
-Надіслати багатший payload презентації:
+Надіслати багатше навантаження представлення:
 
 ```bash
 openclaw message send --channel googlechat --target spaces/AAA... \
@@ -243,7 +245,7 @@ openclaw message poll --channel discord \
   --poll-multi --poll-duration-hours 48
 ```
 
-Створити опитування Telegram (автоматично закрити за 2 хвилини):
+Створити опитування Telegram (автоматичне закриття через 2 хвилини):
 
 ```
 openclaw message poll --channel telegram \
@@ -253,7 +255,7 @@ openclaw message poll --channel telegram \
   --poll-duration-seconds 120 --silent
 ```
 
-Надіслати proactive-повідомлення Teams:
+Надіслати проактивне повідомлення Teams:
 
 ```
 openclaw message send --channel msteams \
@@ -269,14 +271,14 @@ openclaw message poll --channel msteams \
   --poll-option Pizza --poll-option Sushi
 ```
 
-Відреагувати у Slack:
+Додати реакцію в Slack:
 
 ```
 openclaw message react --channel slack \
   --target C123 --message-id 456 --emoji "✅"
 ```
 
-Відреагувати в групі Signal:
+Додати реакцію в групі Signal:
 
 ```
 openclaw message react --channel signal \
@@ -284,14 +286,25 @@ openclaw message react --channel signal \
   --emoji "✅" --target-author-uuid 123e4567-e89b-12d3-a456-426614174000
 ```
 
-Надіслати вбудовані кнопки Telegram через загальну презентацію:
+Надіслати вбудовані кнопки Telegram через загальне представлення:
 
 ```
 openclaw message send --channel telegram --target @mychat --message "Choose:" \
   --presentation '{"blocks":[{"type":"buttons","buttons":[{"label":"Yes","value":"cmd:yes"},{"label":"No","value":"cmd:no"}]}]}'
 ```
 
-Надіслати картку Teams через загальну презентацію:
+Надіслати кнопку Telegram Mini App через загальне представлення:
+
+```
+openclaw message send --channel telegram --target 123456789 --message "Open app:" \
+  --presentation '{"blocks":[{"type":"buttons","buttons":[{"label":"Launch","webApp":{"url":"https://example.com/app"}}]}]}'
+```
+
+Кнопки вебзастосунку Telegram підтримуються лише в приватних чатах між користувачем і
+ботом. Старіші JSON-навантаження з `web_app` усе ще обробляються, але `webApp` є
+канонічним полем представлення.
+
+Надіслати картку Teams через загальне представлення:
 
 ```bash
 openclaw message send --channel msteams \
@@ -299,14 +312,14 @@ openclaw message send --channel msteams \
   --presentation '{"title":"Status update","blocks":[{"type":"text","text":"Build completed"}]}'
 ```
 
-Надіслати зображення Telegram як документ, щоб уникнути стиснення:
+Надіслати зображення Telegram або WhatsApp як документ, щоб уникнути стиснення:
 
 ```bash
 openclaw message send --channel telegram --target @mychat \
   --media ./diagram.png --force-document
 ```
 
-## Пов’язано
+## Пов'язане
 
 - [Довідник CLI](/uk/cli)
 - [Надсилання агентом](/uk/tools/agent-send)

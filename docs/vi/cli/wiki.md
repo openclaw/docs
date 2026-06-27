@@ -1,47 +1,49 @@
 ---
 read_when:
-    - Bạn muốn sử dụng CLI memory-wiki
-    - Bạn đang ghi tài liệu hoặc thay đổi `openclaw wiki`
-summary: Tham chiếu CLI cho `openclaw wiki` (trạng thái kho memory-wiki, tìm kiếm, biên dịch, lint, áp dụng, bridge và các trình hỗ trợ Obsidian)
+    - Bạn muốn dùng CLI memory-wiki
+    - Bạn đang lập tài liệu hoặc thay đổi `openclaw wiki`
+summary: Tài liệu tham khảo CLI cho `openclaw wiki` (trạng thái kho lưu trữ memory-wiki, search, compile, lint, apply, bridge và các trình trợ giúp Obsidian)
 title: Wiki
 x-i18n:
-    generated_at: "2026-04-29T22:35:27Z"
+    generated_at: "2026-06-27T17:21:41Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 67fe56c9bff7b24570f890733314857dd261fca8233051681a83c171656ff27d
+    source_hash: c6679a5aad41a19dbcad6075c190c3eb533e3ba13a6d5018d56988a23b2d9023
     source_path: cli/wiki.md
     workflow: 16
 ---
 
 # `openclaw wiki`
 
-Kiểm tra và duy trì kho `memory-wiki`.
+Kiểm tra và bảo trì kho `memory-wiki`.
 
 Được cung cấp bởi Plugin `memory-wiki` đi kèm.
 
 Liên quan:
 
-- [Plugin wiki bộ nhớ](/vi/plugins/memory-wiki)
+- [Plugin Memory Wiki](/vi/plugins/memory-wiki)
 - [Tổng quan về bộ nhớ](/vi/concepts/memory)
 - [CLI: bộ nhớ](/vi/cli/memory)
 
 ## Dùng để làm gì
 
-Dùng `openclaw wiki` khi bạn muốn có một kho tri thức đã biên soạn với:
+Dùng `openclaw wiki` khi bạn muốn có một kho tri thức đã biên dịch với:
 
-- tìm kiếm và đọc trang theo kiểu wiki
-- các bản tổng hợp giàu nguồn gốc
-- báo cáo về mâu thuẫn và độ mới
+- tìm kiếm và đọc trang theo kiểu wiki gốc
+- các bản tổng hợp giàu thông tin nguồn gốc
+- báo cáo mâu thuẫn và độ mới
 - nhập cầu nối từ Plugin bộ nhớ đang hoạt động
-- các trình trợ giúp CLI Obsidian tùy chọn
+- các trình trợ giúp Obsidian CLI tùy chọn
 
-## Các lệnh phổ biến
+## Các lệnh thường dùng
 
 ```bash
 openclaw wiki status
 openclaw wiki doctor
 openclaw wiki init
 openclaw wiki ingest ./notes/alpha.md
+openclaw wiki okf import ./knowledge-catalog/okf/bundles/ga4
 openclaw wiki compile
 openclaw wiki lint
 openclaw wiki search "alpha"
@@ -71,28 +73,28 @@ openclaw wiki obsidian daily
 
 ### `wiki status`
 
-Kiểm tra chế độ kho hiện tại, tình trạng và khả năng sử dụng CLI Obsidian.
+Kiểm tra chế độ kho hiện tại, tình trạng và khả năng dùng Obsidian CLI.
 
-Dùng lệnh này trước khi bạn không chắc kho đã được khởi tạo hay chưa, chế độ cầu nối
-có khỏe mạnh không, hoặc tích hợp Obsidian có sẵn không.
+Dùng lệnh này trước khi bạn không chắc kho đã được khởi tạo chưa, chế độ cầu nối
+có đang ổn không, hoặc tích hợp Obsidian có sẵn không.
 
-Khi chế độ cầu nối đang hoạt động và được cấu hình để đọc các tạo tác bộ nhớ, lệnh này
+Khi chế độ cầu nối đang hoạt động và được cấu hình để đọc hiện vật bộ nhớ, lệnh này
 truy vấn Gateway đang chạy để thấy cùng ngữ cảnh Plugin bộ nhớ đang hoạt động như
-bộ nhớ của tác nhân/thời gian chạy.
+bộ nhớ của agent/runtime.
 
 ### `wiki doctor`
 
 Chạy kiểm tra tình trạng wiki và hiển thị các vấn đề về cấu hình hoặc kho.
 
-Khi chế độ cầu nối đang hoạt động và được cấu hình để đọc các tạo tác bộ nhớ, lệnh này
-truy vấn Gateway đang chạy trước khi xây dựng báo cáo. Các lượt nhập cầu nối bị tắt
-và cấu hình cầu nối không đọc tạo tác bộ nhớ vẫn ở chế độ cục bộ/ngoại tuyến.
+Khi chế độ cầu nối đang hoạt động và được cấu hình để đọc hiện vật bộ nhớ, lệnh này
+truy vấn Gateway đang chạy trước khi tạo báo cáo. Các lượt nhập cầu nối bị tắt
+và cấu hình cầu nối không đọc hiện vật bộ nhớ vẫn chạy cục bộ/ngoại tuyến.
 
 Các vấn đề thường gặp gồm:
 
-- chế độ cầu nối được bật khi không có tạo tác bộ nhớ công khai
+- chế độ cầu nối được bật mà không có hiện vật bộ nhớ công khai
 - bố cục kho không hợp lệ hoặc bị thiếu
-- thiếu CLI Obsidian bên ngoài khi cần chế độ Obsidian
+- thiếu Obsidian CLI bên ngoài khi kỳ vọng chế độ Obsidian
 
 ### `wiki init`
 
@@ -103,37 +105,62 @@ bộ nhớ đệm.
 
 ### `wiki ingest <path-or-url>`
 
-Nhập nội dung vào tầng nguồn của wiki.
+Nhập nội dung vào lớp nguồn của wiki.
 
 Ghi chú:
 
 - nhập URL được kiểm soát bởi `ingest.allowUrlIngest`
-- các trang nguồn đã nhập giữ nguồn gốc trong frontmatter
+- các trang nguồn đã nhập giữ thông tin nguồn gốc trong frontmatter
 - tự động biên dịch có thể chạy sau khi nhập nếu được bật
+
+### `wiki okf import <path>`
+
+Nhập một gói Open Knowledge Format đã giải nén vào các trang khái niệm wiki.
+
+Bộ nhập đọc mọi tài liệu khái niệm `.md` không dành riêng trong cây thư mục OKF,
+yêu cầu trường `type` không rỗng, và xử lý các giá trị OKF `type` không xác định
+như khái niệm chung. Các tệp OKF dành riêng `index.md` và `log.md` không được
+nhập dưới dạng khái niệm.
+
+Các trang đã nhập được làm phẳng dưới `concepts/` để các luồng biên dịch,
+tìm kiếm, lấy, tóm tắt và bảng điều khiển wiki hiện có thấy chúng ngay lập tức.
+ID khái niệm OKF gốc, `type`, `resource`, `tags`, dấu thời gian, đường dẫn nguồn
+và toàn bộ frontmatter được giữ trong frontmatter của trang. Các liên kết markdown
+OKF nội bộ được viết lại sang các trang wiki đã tạo; liên kết hỏng hoặc bên ngoài
+được giữ nguyên.
+
+Ví dụ:
+
+```bash
+openclaw wiki okf import ./bundles/ga4
+openclaw wiki okf import ./bundles/ga4 --json
+openclaw wiki search "BigQuery Table" --mode source-evidence --json
+openclaw wiki get <path-from-json-result>
+```
 
 ### `wiki compile`
 
-Xây dựng lại chỉ mục, khối liên quan, bảng điều khiển và bản tóm tắt đã biên soạn.
+Xây dựng lại chỉ mục, khối liên quan, bảng điều khiển và các bản tóm tắt đã biên dịch.
 
-Lệnh này ghi các tạo tác ổn định dành cho máy dưới:
+Lệnh này ghi các hiện vật ổn định dành cho máy dưới:
 
 - `.openclaw-wiki/cache/agent-digest.json`
 - `.openclaw-wiki/cache/claims.jsonl`
 
-Nếu `render.createDashboards` được bật, quá trình biên dịch cũng làm mới các trang báo cáo.
+Nếu `render.createDashboards` được bật, biên dịch cũng làm mới các trang báo cáo.
 
 ### `wiki lint`
 
 Lint kho và báo cáo:
 
 - vấn đề cấu trúc
-- thiếu nguồn gốc
+- thiếu sót về nguồn gốc
 - mâu thuẫn
 - câu hỏi mở
 - trang/tuyên bố có độ tin cậy thấp
-- trang/tuyên bố đã cũ
+- trang/tuyên bố lỗi thời
 
-Chạy lệnh này sau các cập nhật wiki có ý nghĩa.
+Chạy lệnh này sau các cập nhật wiki đáng kể.
 
 ### `wiki search <query>`
 
@@ -146,16 +173,16 @@ Hành vi phụ thuộc vào cấu hình:
 - `--mode`: `auto`, `find-person`, `route-question`, `source-evidence`, hoặc
   `raw-claim`
 
-Dùng `wiki search` khi bạn muốn xếp hạng dành riêng cho wiki hoặc chi tiết nguồn gốc.
-Đối với một lượt truy hồi chia sẻ rộng, ưu tiên `openclaw memory search` khi
-Plugin bộ nhớ đang hoạt động cung cấp tìm kiếm chia sẻ.
+Dùng `wiki search` khi bạn muốn xếp hạng riêng cho wiki hoặc chi tiết nguồn gốc.
+Để thực hiện một lượt nhớ lại dùng chung rộng, hãy ưu tiên `openclaw memory search`
+khi Plugin bộ nhớ đang hoạt động cung cấp tìm kiếm dùng chung.
 
-Các chế độ tìm kiếm giúp tác nhân chọn đúng bề mặt:
+Các chế độ tìm kiếm giúp agent chọn đúng bề mặt:
 
-- `find-person`: bí danh, định danh người dùng, mạng xã hội, ID chuẩn và trang cá nhân
-- `route-question`: gợi ý nên hỏi ai/phù hợp nhất để làm gì và ngữ cảnh quan hệ
+- `find-person`: bí danh, handle, mạng xã hội, ID chuẩn và trang người
+- `route-question`: gợi ý hỏi ai/phù hợp nhất để dùng vào việc gì và ngữ cảnh quan hệ
 - `source-evidence`: trang nguồn và trường bằng chứng có cấu trúc
-- `raw-claim`: văn bản tuyên bố có cấu trúc cùng siêu dữ liệu tuyên bố/bằng chứng
+- `raw-claim`: văn bản tuyên bố có cấu trúc với siêu dữ liệu tuyên bố/bằng chứng
 
 Ví dụ:
 
@@ -167,13 +194,13 @@ openclaw wiki search "strong route Teams" --mode raw-claim --json
 ```
 
 Đầu ra văn bản bao gồm các dòng `Claim:` và `Evidence:` khi một kết quả khớp với
-một tuyên bố có cấu trúc. Đầu ra JSON cũng hiển thị `matchedClaimId`,
+tuyên bố có cấu trúc. Đầu ra JSON cũng hiển thị `matchedClaimId`,
 `matchedClaimStatus`, `matchedClaimConfidence`, `evidenceKinds`, và
-`evidenceSourceIds` để tác nhân đào sâu thêm.
+`evidenceSourceIds` để agent đào sâu ở phía agent.
 
 ### `wiki get <lookup>`
 
-Đọc một trang wiki theo id hoặc đường dẫn tương đối.
+Đọc một trang wiki theo ID hoặc đường dẫn tương đối.
 
 Ví dụ:
 
@@ -184,39 +211,38 @@ openclaw wiki get syntheses/alpha-summary.md --from 1 --lines 80
 
 ### `wiki apply`
 
-Áp dụng các thay đổi hẹp mà không phẫu thuật trang tự do.
+Áp dụng các thay đổi hẹp mà không chỉnh sửa trang tự do.
 
 Các luồng được hỗ trợ gồm:
 
 - tạo/cập nhật một trang tổng hợp
 - cập nhật siêu dữ liệu trang
-- đính kèm id nguồn
+- đính kèm ID nguồn
 - thêm câu hỏi
 - thêm mâu thuẫn
 - cập nhật độ tin cậy/trạng thái
-- ghi các tuyên bố có cấu trúc
+- ghi tuyên bố có cấu trúc
 
 Lệnh này tồn tại để wiki có thể phát triển an toàn mà không cần chỉnh sửa thủ công
 các khối được quản lý.
 
 ### `wiki bridge import`
 
-Nhập tạo tác bộ nhớ công khai từ Plugin bộ nhớ đang hoạt động vào các trang nguồn
-được cầu nối hỗ trợ.
+Nhập hiện vật bộ nhớ công khai từ Plugin bộ nhớ đang hoạt động vào các trang nguồn
+dựa trên cầu nối.
 
-Dùng lệnh này trong chế độ `bridge` khi bạn muốn kéo các tạo tác bộ nhớ đã xuất mới nhất
-vào kho wiki.
+Dùng lệnh này trong chế độ `bridge` khi bạn muốn kéo các hiện vật bộ nhớ mới nhất
+đã xuất vào kho wiki.
 
-Đối với các lượt đọc tạo tác cầu nối đang hoạt động, CLI định tuyến quá trình nhập qua Gateway RPC
-để lượt nhập dùng ngữ cảnh Plugin bộ nhớ thời gian chạy. Nếu lượt nhập cầu nối
-bị tắt hoặc lượt đọc tạo tác bị tắt, lệnh giữ hành vi cục bộ/ngoại tuyến
-không nhập.
+Đối với các lượt đọc hiện vật cầu nối đang hoạt động, CLI định tuyến lượt nhập qua Gateway RPC
+để lượt nhập dùng ngữ cảnh Plugin bộ nhớ runtime. Nếu các lượt nhập cầu nối bị tắt
+hoặc lượt đọc hiện vật bị tắt, lệnh giữ hành vi không nhập cục bộ/ngoại tuyến.
 
 ### `wiki unsafe-local import`
 
 Nhập từ các đường dẫn cục bộ được cấu hình rõ ràng trong chế độ `unsafe-local`.
 
-Tính năng này chủ ý là thử nghiệm và chỉ dùng trên cùng máy.
+Điều này được chủ ý đặt là thử nghiệm và chỉ trên cùng máy.
 
 ### `wiki obsidian ...`
 
@@ -235,12 +261,14 @@ Các lệnh này yêu cầu CLI `obsidian` chính thức trên `PATH` khi
 
 ## Hướng dẫn sử dụng thực tế
 
-- Dùng `wiki search` + `wiki get` khi nguồn gốc và danh tính trang quan trọng.
+- Dùng `wiki search` + `wiki get` khi nguồn gốc và định danh trang quan trọng.
 - Dùng `wiki apply` thay vì chỉnh sửa thủ công các phần được tạo và quản lý.
-- Dùng `wiki lint` trước khi tin vào nội dung mâu thuẫn hoặc có độ tin cậy thấp.
+- Dùng `wiki lint` trước khi tin nội dung mâu thuẫn hoặc có độ tin cậy thấp.
 - Dùng `wiki compile` sau các lượt nhập hàng loạt hoặc thay đổi nguồn khi bạn muốn
-  bảng điều khiển và bản tóm tắt đã biên soạn được làm mới ngay.
-- Dùng `wiki bridge import` khi chế độ cầu nối phụ thuộc vào các tạo tác bộ nhớ
+  bảng điều khiển và bản tóm tắt đã biên dịch mới ngay lập tức.
+- Dùng `wiki okf import` khi danh mục dữ liệu, bản xuất tài liệu hoặc pipeline
+  làm giàu của agent đã phát ra các gói markdown OKF.
+- Dùng `wiki bridge import` khi chế độ cầu nối phụ thuộc vào hiện vật bộ nhớ
   mới được xuất.
 
 ## Liên kết cấu hình
@@ -255,9 +283,9 @@ Hành vi của `openclaw wiki` được định hình bởi:
 - `plugins.entries.memory-wiki.config.render.*`
 - `plugins.entries.memory-wiki.config.context.includeCompiledDigestPrompt`
 
-Xem [Plugin wiki bộ nhớ](/vi/plugins/memory-wiki) để biết đầy đủ mô hình cấu hình.
+Xem [Plugin Memory Wiki](/vi/plugins/memory-wiki) để biết đầy đủ mô hình cấu hình.
 
 ## Liên quan
 
 - [Tham chiếu CLI](/vi/cli)
-- [Wiki bộ nhớ](/vi/plugins/memory-wiki)
+- [Memory wiki](/vi/plugins/memory-wiki)

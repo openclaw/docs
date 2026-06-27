@@ -1,15 +1,16 @@
 ---
 read_when:
-    - Anda ingin membaca atau menulis nilai akhir di dalam file ruang kerja dari terminal
-    - Anda menulis skrip terhadap status ruang kerja dan menginginkan skema pengalamatan yang stabil serta tidak bergantung pada jenis
-    - Anda sedang mendiagnosis jalur `oc://` (validasi sintaksnya, lihat ke mana jalur itu mengarah)
-summary: Referensi CLI untuk `openclaw path` (periksa dan edit file ruang kerja melalui skema pengalamatan `oc://`)
+    - Anda ingin membaca atau menulis simpul daun di dalam file ruang kerja dari terminal
+    - Anda membuat skrip terhadap status workspace dan menginginkan skema pengalamatan yang stabil serta tidak bergantung pada jenis
+    - Anda sedang men-debug jalur `oc://` (validasi sintaksnya, lihat ke mana itu di-resolve)
+summary: Referensi CLI untuk `openclaw path` (memeriksa dan mengedit file workspace melalui skema pengalamatan `oc://`)
 title: Jalur
 x-i18n:
-    generated_at: "2026-05-10T19:29:17Z"
+    generated_at: "2026-06-27T17:20:27Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d0b965b791fa658dd04015bb7b5c8c458f6527092473c61cd701eff24a5770fe
+    source_hash: 88e560c19cf34851b0237986e15b48ad7d0e32699e2c12c559dfeecf6fcf761b
     source_path: cli/path.md
     workflow: 16
 ---
@@ -17,10 +18,11 @@ x-i18n:
 # `openclaw path`
 
 Akses shell yang disediakan Plugin ke substrat pengalamatan `oc://`: satu
-skema path yang dikirim berdasarkan jenis untuk memeriksa dan mengedit file
-workspace yang dapat dialamatkan (markdown, jsonc, jsonl). Self-hoster, penulis
-Plugin, dan ekstensi editor menggunakannya untuk membaca, menemukan, atau
-memperbarui lokasi sempit tanpa membuat parser per file sendiri.
+skema path berbasis jenis untuk memeriksa dan mengedit file ruang kerja yang
+dapat dialamati (markdown, jsonc, jsonl, yaml/yml/lobster). Pengelola
+self-hosting, penulis Plugin, dan ekstensi editor menggunakannya untuk membaca,
+menemukan, atau memperbarui lokasi sempit tanpa membuat parser per jenis file
+secara manual.
 
 CLI mencerminkan verba publik substrat:
 
@@ -40,36 +42,37 @@ openclaw plugins enable oc-path
 ## Mengapa menggunakannya
 
 State OpenClaw tersebar di markdown yang diedit manusia, konfigurasi JSONC
-berkomentar, dan log JSONL append-only. Skrip shell, hook, dan agen sering
-memerlukan satu nilai kecil dari file-file tersebut: kunci frontmatter, setelan
-Plugin, field rekaman log, atau item bullet di bawah bagian bernama.
+berkomentar, log JSONL append-only, dan file workflow/spesifikasi YAML. Skrip
+shell, hook, dan agen sering membutuhkan satu nilai kecil dari file tersebut:
+kunci frontmatter, pengaturan Plugin, field rekaman log, langkah YAML, atau
+item bullet di bawah section bernama.
 
-`openclaw path` memberi pemanggil tersebut alamat stabil alih-alih grep, regex,
-atau parser sekali pakai untuk setiap jenis file. Path `oc://` yang sama dapat
-divalidasi, di-resolve, dicari, dijalankan dry-run, dan ditulis dari terminal,
-yang membuat otomatisasi sempit lebih mudah ditinjau dan lebih aman diputar
-ulang. Ini sangat berguna ketika Anda ingin memperbarui satu leaf sambil
-mempertahankan komentar, akhir baris, dan pemformatan sekitar dari sisa file.
+`openclaw path` memberi pemanggil tersebut alamat stabil alih-alih `grep`,
+regex, atau parser sekali pakai untuk setiap jenis file. Path `oc://` yang sama
+dapat divalidasi, di-resolve, dicari, disimulasikan, dan ditulis dari terminal,
+sehingga automasi sempit lebih mudah ditinjau dan lebih aman diulang. Ini
+sangat berguna ketika Anda ingin memperbarui satu leaf sambil mempertahankan
+komentar, akhiran baris, dan pemformatan sekitar dari sisa file.
 
-Gunakan saat hal yang Anda inginkan memiliki alamat logis, tetapi bentuk file
+Gunakan ketika hal yang Anda inginkan memiliki alamat logis, tetapi bentuk file
 fisiknya bervariasi:
 
-- Hook ingin membaca satu setelan dari JSONC berkomentar tanpa kehilangan
-  komentar saat menulis nilainya kembali.
-- Skrip pemeliharaan ingin menemukan setiap field event yang cocok dalam log
-  JSONL tanpa memuat seluruh log ke parser kustom.
-- Ekstensi editor ingin melompat ke bagian markdown atau item bullet berdasarkan
-  slug, lalu merender baris persis yang di-resolve.
-- Agen ingin menjalankan dry-run edit workspace kecil sebelum menerapkannya,
-  dengan byte yang berubah terlihat dalam tinjauan.
+- Sebuah hook ingin membaca satu pengaturan dari JSONC berkomentar tanpa
+  kehilangan komentar saat menulis nilainya kembali.
+- Skrip pemeliharaan ingin menemukan setiap field peristiwa yang cocok dalam log
+  JSONL tanpa memuat seluruh log ke parser khusus.
+- Ekstensi editor ingin melompat ke section markdown atau item bullet
+  berdasarkan slug, lalu merender baris persis yang di-resolve.
+- Agen ingin menyimulasikan edit ruang kerja kecil sebelum menerapkannya, dengan
+  byte yang berubah terlihat dalam tinjauan.
 
 Anda mungkin tidak memerlukan `openclaw path` untuk edit seluruh file biasa,
 migrasi konfigurasi kaya, atau penulisan khusus memori. Itu sebaiknya
 menggunakan perintah atau Plugin pemilik. `path` ditujukan untuk operasi file
-kecil yang dapat dialamatkan, ketika perintah terminal yang dapat diulang lebih
-jelas daripada parser khusus lain.
+kecil yang dapat dialamati ketika perintah terminal yang dapat diulang lebih
+jelas daripada parser kustom lainnya.
 
-## Cara menggunakannya
+## Cara penggunaannya
 
 Baca satu nilai dari file konfigurasi yang diedit manusia:
 
@@ -89,7 +92,7 @@ Temukan rekaman yang cocok dalam log JSONL append-only:
 openclaw path find 'oc://session.jsonl/[event=tool_call]/name'
 ```
 
-Alamatkan instruksi dalam markdown berdasarkan bagian dan item, bukan nomor
+Alamatkan instruksi dalam markdown berdasarkan section dan item, bukan nomor
 baris:
 
 ```bash
@@ -102,25 +105,26 @@ Validasi path di CI atau skrip preflight sebelum skrip membaca atau menulis:
 openclaw path validate 'oc://AGENTS.md/tools/$last/risk'
 ```
 
-Perintah-perintah tersebut dimaksudkan agar dapat disalin ke skrip shell.
-Gunakan `--json` saat pemanggil memerlukan output terstruktur dan `--human`
-saat seseorang sedang memeriksa hasilnya.
+Perintah tersebut dimaksudkan agar dapat disalin ke skrip shell. Gunakan
+`--json` ketika pemanggil membutuhkan output terstruktur dan `--human` ketika
+seseorang sedang memeriksa hasilnya.
 
 ## Cara kerjanya
 
 `openclaw path` melakukan empat hal:
 
-1. Mengurai alamat `oc://` menjadi slot: file, bagian, item, field, dan
-   sesi opsional.
+1. Mengurai alamat `oc://` menjadi slot: file, section, item, field, dan
+   session opsional.
 2. Memilih adapter jenis file dari ekstensi target (`.md`, `.jsonc`,
-   `.jsonl`, dan alias terkait).
-3. Me-resolve slot terhadap AST jenis file tersebut: heading/item markdown,
-   kunci objek/indeks array JSONC, atau rekaman baris JSONL.
+   `.jsonl`, `.yaml`, `.yml`, `.lobster`, dan alias terkait).
+3. Meresolusi slot terhadap AST jenis file tersebut: heading/item markdown,
+   kunci objek/indeks array JSONC, rekaman baris JSONL, atau node map/sequence
+   YAML.
 4. Untuk `set`, menghasilkan byte yang diedit melalui adapter yang sama agar
-   bagian file yang tidak disentuh mempertahankan komentar, akhir baris, dan
-   pemformatan terdekat di tempat yang didukung jenis tersebut.
+   bagian file yang tidak disentuh tetap mempertahankan komentar, akhiran baris,
+   dan pemformatan di sekitarnya jika jenis file mendukungnya.
 
-`resolve` dan `set` memerlukan satu target konkret. `find` adalah verba
+`resolve` dan `set` memerlukan satu target konkret. `find` adalah kata kerja
 eksploratif: ia memperluas wildcard, union, predikat, dan ordinal menjadi
 kecocokan konkret yang dapat Anda periksa sebelum memilih satu untuk ditulis.
 
@@ -128,21 +132,22 @@ kecocokan konkret yang dapat Anda periksa sebelum memilih satu untuk ditulis.
 
 | Subperintah             | Tujuan                                                                       |
 | ----------------------- | ---------------------------------------------------------------------------- |
-| `resolve <oc-path>`     | Cetak kecocokan konkret pada path (atau "tidak ditemukan").                  |
-| `find <pattern>`        | Enumerasi kecocokan untuk path wildcard / union / predikat.                  |
-| `set <oc-path> <value>` | Tulis leaf atau target penyisipan pada path konkret. Mendukung `--dry-run`.  |
-| `validate <oc-path>`    | Hanya mengurai; cetak uraian struktural (file / bagian / item / field).      |
+| `resolve <oc-path>`     | Mencetak kecocokan konkret pada path (atau "tidak ditemukan").               |
+| `find <pattern>`        | Mengenumerasi kecocokan untuk path wildcard / union / predikat.              |
+| `set <oc-path> <value>` | Menulis leaf atau target penyisipan pada path konkret. Mendukung `--dry-run`. |
+| `validate <oc-path>`    | Hanya mengurai; mencetak uraian struktural (file / section / item / field).  |
 | `emit <file>`           | Round-trip file melalui `parseXxx` + `emitXxx` (diagnostik fidelitas byte).  |
 
 ## Flag global
 
-| Flag            | Tujuan                                                                 |
-| --------------- | ---------------------------------------------------------------------- |
-| `--cwd <dir>`   | Resolve slot file terhadap direktori ini (default: `process.cwd()`).   |
-| `--file <path>` | Timpa path hasil resolve slot file (akses absolut).                    |
-| `--json`        | Paksa output JSON (default saat stdout bukan TTY).                     |
-| `--human`       | Paksa output manusia (default saat stdout adalah TTY).                 |
-| `--dry-run`     | (hanya pada `set`) cetak byte yang akan ditulis tanpa menulis.         |
+| Flag            | Tujuan                                                                   |
+| --------------- | ------------------------------------------------------------------------ |
+| `--cwd <dir>`   | Meresolusi slot file terhadap direktori ini (default: `process.cwd()`).  |
+| `--file <path>` | Menimpa path hasil resolusi slot file (akses absolut).                   |
+| `--json`        | Memaksa output JSON (default saat stdout bukan TTY).                     |
+| `--human`       | Memaksa output manusiawi (default saat stdout adalah TTY).               |
+| `--dry-run`     | (hanya pada `set`) mencetak byte yang akan ditulis tanpa menulis.        |
+| `--diff`        | (dengan `set --dry-run`) mencetak diff terpadu alih-alih byte lengkap.   |
 
 ## Sintaks `oc://`
 
@@ -151,69 +156,76 @@ oc://FILE/SECTION/ITEM/FIELD?session=SCOPE
 ```
 
 Aturan slot: `field` memerlukan `item`, dan `item` memerlukan `section`. Di
-semua empat slot:
+keempat slot:
 
-- **Segmen yang dikutip** — `"a/b.c"` tetap bertahan melewati pemisah `/` dan
-  `.`. Konten bersifat byte-literal; `"` dan `\` tidak diizinkan di dalam
-  kutipan. Slot file juga peka kutipan: `oc://"skills/email-drafter"/Tools/$last`
+- **Segmen berkutip** — `"a/b.c"` tetap melewati pemisah `/` dan `.`.
+  Konten bersifat byte-literal; `"` dan `\` tidak diizinkan di dalam kutip.
+  Slot file juga sadar kutip: `oc://"skills/email-drafter"/Tools/$last`
   memperlakukan `skills/email-drafter` sebagai satu path file.
 - **Predikat** — `[k=v]`, `[k!=v]`, `[k<v]`, `[k<=v]`, `[k>v]`,
-  `[k>=v]`. Operasi numerik mengharuskan kedua sisi dapat dikonversi menjadi
-  angka hingga.
+  `[k>=v]`. Operasi numerik mengharuskan kedua sisi dapat dikonversi menjadi angka finite.
 - **Union** — `{a,b,c}` cocok dengan salah satu alternatif.
 - **Wildcard** — `*` (satu sub-segmen) dan `**` (nol-atau-lebih,
   rekursif). `find` menerima ini; `resolve` dan `set` menolaknya karena
   ambigu.
-- **Posisional** — `$last` di-resolve ke indeks terakhir / kunci terakhir
-  yang dideklarasikan.
-- **Ordinal** — `#N` untuk kecocokan ke-N berdasarkan urutan dokumen.
+- **Posisional** — `$first` / `$last` meresolusi ke indeks pertama / terakhir atau
+  kunci yang dideklarasikan.
+- **Ordinal** — `#N` untuk kecocokan ke-N menurut urutan dokumen.
 - **Penanda penyisipan** — `+`, `+key`, `+nnn` untuk penyisipan berkunci /
   berindeks (gunakan dengan `set`).
-- **Cakupan sesi** — `?session=cron-daily` dll. Ortogonal terhadap
-  penyarangan slot. Nilai sesi bersifat mentah, tidak di-decode persen; tidak
-  boleh berisi karakter kontrol atau pemisah query yang dicadangkan (`?`, `&`,
-  `%`).
+- **Cakupan session** — `?session=cron-daily` dll. Ortogonal terhadap
+  penyarangan slot. Nilai session bersifat mentah, tidak di-decode persen; nilainya tidak boleh berisi
+  karakter kontrol atau delimiter query yang dicadangkan (`?`, `&`, `%`).
 
-Karakter yang dicadangkan (`?`, `&`, `%`) di luar segmen yang dikutip,
-predikat, atau union ditolak. Karakter kontrol (U+0000-U+001F, U+007F)
-ditolak di mana pun, termasuk nilai query `session`.
+Karakter yang dicadangkan (`?`, `&`, `%`) di luar segmen berkutip, predikat,
+atau union ditolak. Karakter kontrol (U+0000-U+001F, U+007F) ditolak
+di mana pun, termasuk nilai query `session`.
 
 `formatOcPath(parseOcPath(path)) === path` dijamin untuk path kanonis.
-Parameter query nonkanonis diabaikan kecuali nilai `session=` nonkosong pertama.
+Parameter query non-kanonis diabaikan kecuali nilai `session=` pertama yang
+tidak kosong.
 
 ## Pengalamatan berdasarkan jenis file
 
-| Jenis      | Model pengalamatan                                                                       |
-| ---------- | ---------------------------------------------------------------------------------------- |
-| Markdown   | Bagian H2 berdasarkan slug, item bullet berdasarkan slug atau `#N`, frontmatter via `[frontmatter]`. |
-| JSONC/JSON | Kunci objek dan indeks array; titik memisahkan sub-segmen bertingkat kecuali dikutip.     |
-| JSONL      | Alamat baris tingkat atas (`L1`, `L2`, `$last`), lalu penurunan gaya JSONC di dalam baris. |
+| Jenis             | Model pengalamatan                                                                                  |
+| ----------------- | --------------------------------------------------------------------------------------------------- |
+| Markdown          | Section H2 berdasarkan slug, item bullet berdasarkan slug atau `#N`, frontmatter melalui `[frontmatter]`. |
+| JSONC/JSON        | Kunci objek dan indeks array; titik memisahkan sub-segmen bertingkat kecuali dikutip.               |
+| JSONL             | Alamat baris tingkat atas (`L1`, `L2`, `$first`, `$last`), lalu penurunan gaya JSONC di dalam baris. |
+| YAML/YML/.lobster | Kunci map dan indeks sequence; komentar dan gaya flow ditangani oleh API dokumen YAML.              |
 
 `resolve` mengembalikan kecocokan terstruktur: `root`, `node`, `leaf`, atau
-`insertion-point`, dengan nomor baris berbasis 1. Nilai leaf ditampilkan sebagai
-teks plus `leafType` sehingga penulis Plugin dapat merender pratinjau tanpa
-bergantung pada bentuk AST per jenis.
+`insertion-point`, dengan nomor baris berbasis 1. Nilai leaf ditampilkan sebagai teks
+plus `leafType` agar penulis plugin dapat merender pratinjau tanpa bergantung pada
+bentuk AST per jenis.
 
 ## Kontrak mutasi
 
 `set` menulis satu target konkret:
 
-- Nilai frontmatter markdown dan field item `- key: value` adalah leaf string.
-  Penyisipan markdown menambahkan bagian, kunci frontmatter, atau item bagian
-  dan merender bentuk markdown kanonis untuk file yang berubah.
-- Penulisan leaf JSONC mengonversi nilai string ke tipe leaf yang ada
-  (`string`, `number` hingga, `true`/`false`, atau `null`). Penyisipan objek dan
-  array JSONC mengurai `<value>` sebagai JSON dan menggunakan jalur edit
-  `jsonc-parser` untuk penulisan leaf biasa, sambil mempertahankan komentar dan
-  pemformatan terdekat.
-- Penulisan leaf JSONL mengonversi seperti JSONC di dalam baris. Penggantian
-  dan append seluruh baris mengurai `<value>` sebagai JSON. JSONL yang dirender
-  mempertahankan konvensi akhir baris dominan file, LF/CRLF.
+- Nilai frontmatter Markdown dan field item `- key: value` adalah leaf string.
+  Penyisipan Markdown menambahkan section, kunci frontmatter, atau item section dan
+  merender bentuk markdown kanonis untuk file yang berubah.
+- Penulisan leaf JSONC mengonversi nilai string ke jenis leaf yang ada
+  (`string`, `number` finite, `true`/`false`, atau `null`). Gunakan `--value-json`
+  saat penggantian leaf JSONC/JSON/JSONL harus mengurai `<value>` sebagai JSON dan
+  dapat mengubah bentuk, seperti mengganti shorthand SecretRef string dengan
+  objek. Penyisipan objek dan array JSONC mengurai `<value>` sebagai JSON dan menggunakan
+  jalur edit `jsonc-parser` untuk penulisan leaf biasa, mempertahankan komentar dan
+  pemformatan di sekitarnya.
+- Penulisan leaf JSONL mengonversi seperti JSONC di dalam satu baris. Penggantian
+  seluruh baris dan append mengurai `<value>` sebagai JSON. JSONL yang dirender mempertahankan
+  konvensi akhiran baris LF/CRLF dominan file.
+- Penulisan leaf YAML mengonversi ke jenis scalar yang ada (`string`, `number`
+  finite, `true`/`false`, atau `null`). Penyisipan YAML menggunakan API dokumen
+  paket `yaml` yang dibundel untuk pembaruan map/sequence. Dokumen YAML yang
+  rusak dengan error parser ditolak sebelum mutasi dengan `parse-error`.
 
-Gunakan `--dry-run` sebelum penulisan yang terlihat pengguna ketika byte persis
-penting. Substrat mempertahankan output identik byte untuk round-trip
-parse/emit, tetapi mutasi dapat mengkanoniskan wilayah yang diedit atau file
-tergantung jenisnya.
+Gunakan `--dry-run` sebelum penulisan yang terlihat pengguna saat byte persisnya penting. Substrat
+mempertahankan output identik byte untuk round-trip parse/emit, tetapi
+mutasi dapat mengkanoniskan wilayah atau file yang diedit tergantung jenisnya.
+Tambahkan `--diff` saat Anda menginginkan pratinjau sebagai patch sebelum/sesudah yang terfokus
+alih-alih file lengkap yang dirender.
 
 ## Contoh
 
@@ -230,6 +242,9 @@ openclaw path find 'oc://session.jsonl/*/event' --file ./logs/session.jsonl
 # Dry-run a write
 openclaw path set 'oc://gateway.jsonc/version' '2.0' --dry-run
 
+# Dry-run a write as a unified diff
+openclaw path set 'oc://gateway.jsonc/version' '2.0' --dry-run --diff
+
 # Apply the write
 openclaw path set 'oc://gateway.jsonc/version' '2.0'
 
@@ -242,6 +257,12 @@ Contoh tata bahasa lainnya:
 ```bash
 # Quote keys containing / or .
 openclaw path resolve 'oc://config.jsonc/agents.defaults.models/"anthropic/claude-opus-4-7"/alias'
+
+# Deep JSON/JSONC paths can use slash segments; they normalize to dotted subsegments
+openclaw path set 'oc://openclaw.json/agents/list/0/tools/exec/security' 'allowlist' --dry-run
+
+# Replace a JSONC leaf with a parsed object
+openclaw path set 'oc://openclaw.json/gateway/auth/token' '{"source":"file","provider":"secrets","id":"/test"}' --value-json --dry-run
 
 # Predicate search over JSONC children
 openclaw path find 'oc://config.jsonc/plugins/[enabled=true]/id'
@@ -258,6 +279,12 @@ openclaw path set 'oc://session.jsonl/+' '{"event":"checkpoint","ok":true}' --fi
 # Resolve the last JSONL value line
 openclaw path resolve 'oc://session.jsonl/$last/event' --file ./logs/session.jsonl
 
+# Resolve a YAML workflow step
+openclaw path resolve 'oc://workflow.yaml/steps/0/id'
+
+# Update a YAML scalar
+openclaw path set 'oc://workflow.yaml/steps/$last/id' 'classify-renamed' --dry-run
+
 # Address markdown frontmatter
 openclaw path resolve 'oc://AGENTS.md/[frontmatter]/name'
 
@@ -273,9 +300,7 @@ openclaw path validate 'oc://AGENTS.md/Tools/$last/risk?session=cron-daily'
 
 ## Resep berdasarkan jenis file
 
-Lima verba yang sama bekerja lintas jenis; skema pengalamatan dikirim
-berdasarkan ekstensi file. Contoh di bawah menggunakan fixture dari deskripsi
-PR.
+Lima verba yang sama bekerja di berbagai jenis; skema pengalamatan melakukan dispatch berdasarkan ekstensi file. Contoh di bawah menggunakan fixture dari deskripsi PR.
 
 ### Markdown
 
@@ -306,10 +331,7 @@ $ openclaw path find 'oc://x.md/tools/*' --file frontmatter.md --human
   oc://x.md/tools/send-email   →  node @ L11 [md-item]
 ```
 
-Predikat `[frontmatter]` mengalamatkan blok frontmatter YAML; `tools`
-mencocokkan heading `## Tools` melalui slug, dan leaf item mempertahankan bentuk
-slug-nya bahkan ketika sumber menggunakan underscore (`send_email` →
-`send-email`).
+Predikat `[frontmatter]` mengalamatkan blok frontmatter YAML; `tools` mencocokkan heading `## Tools` melalui slug, dan leaf item mempertahankan bentuk slug-nya meskipun sumber memakai garis bawah (`send_email` → `send-email`).
 
 ### JSONC
 
@@ -337,8 +359,7 @@ $ openclaw path set 'oc://config.jsonc/plugins/slack/enabled' 'true' --file conf
 }
 ```
 
-Pengeditan JSONC melewati `jsonc-parser`, sehingga komentar dan spasi kosong tetap bertahan setelah
-`set`. Jalankan dengan `--dry-run` terlebih dahulu untuk memeriksa byte sebelum melakukan commit.
+Edit JSONC melewati `jsonc-parser`, sehingga komentar dan whitespace tetap bertahan setelah `set`. Jalankan dengan `--dry-run` lebih dulu untuk memeriksa byte sebelum melakukan commit.
 
 ### JSONL
 
@@ -357,16 +378,41 @@ $ openclaw path resolve 'oc://session.jsonl/L2/ts' --file session.jsonl --human
 leaf @ L2: "2" (number)
 ```
 
-Setiap baris adalah sebuah rekaman. Alamatkan berdasarkan predikat (`[event=action]`) saat Anda tidak
-mengetahui nomor baris, atau berdasarkan segmen `LN` kanonis saat Anda mengetahuinya.
+Setiap baris adalah sebuah record. Alamatkan dengan predikat (`[event=action]`) saat Anda tidak mengetahui nomor barisnya, atau dengan segmen kanonis `LN` saat Anda mengetahuinya.
+
+### YAML
+
+```text
+# workflow.yaml
+name: inbox-triage
+steps:
+  - id: fetch
+    command: gmail.search
+  - id: classify
+    command: openclaw.invoke
+```
+
+```bash
+$ openclaw path resolve 'oc://workflow.yaml/steps/0/id' --file workflow.yaml --human
+leaf @ L3: "fetch" (string)
+
+$ openclaw path set 'oc://workflow.yaml/steps/$last/id' 'classify-renamed' --file workflow.yaml --dry-run
+--dry-run: would write 99 bytes to /…/workflow.yaml
+name: inbox-triage
+steps:
+  - id: fetch
+    command: gmail.search
+  - id: classify-renamed
+    command: openclaw.invoke
+```
+
+YAML menggunakan API `Document` dari paket `yaml`, bukan parser buatan sendiri, sehingga round-trip parse/emit biasa mempertahankan komentar dan bentuk penulisan sementara path yang di-resolve menggunakan model map-key / sequence-index yang sama seperti JSONC. Adapter yang sama menangani file `.yaml`, `.yml`, dan `.lobster`.
 
 ## Referensi subperintah
 
 ### `resolve <oc-path>`
 
-Baca satu daun atau simpul. Wildcard ditolak — gunakan `find` untuk itu.
-Keluar dengan `0` pada kecocokan, `1` pada kegagalan bersih, `2` pada kesalahan penguraian atau
-pola yang ditolak.
+Baca satu leaf atau node. Wildcard ditolak — gunakan `find` untuk itu. Keluar dengan `0` pada kecocokan, `1` pada miss yang bersih, `2` pada error parse atau pola yang ditolak.
 
 ```bash
 openclaw path resolve 'oc://AGENTS.md/tools/gh/risk' --human
@@ -375,10 +421,7 @@ openclaw path resolve 'oc://gateway.jsonc/server/port' --json
 
 ### `find <pattern>`
 
-Enumerasikan setiap kecocokan untuk pola wildcard / predikat / gabungan. Keluar dengan `0`
-jika ada setidaknya satu kecocokan, `1` jika nol. Wildcard slot berkas ditolak dengan
-`OC_PATH_FILE_WILDCARD_UNSUPPORTED` — berikan berkas konkret (globbing multi-berkas
-adalah fitur lanjutan).
+Enumerasi setiap kecocokan untuk pola wildcard / predikat / union. Keluar dengan `0` jika ada setidaknya satu kecocokan, `1` jika nol. Wildcard slot file ditolak dengan `OC_PATH_FILE_WILDCARD_UNSUPPORTED` — berikan file konkret (globbing multi-file adalah fitur lanjutan).
 
 ```bash
 openclaw path find 'oc://AGENTS.md/tools/**/risk'
@@ -388,24 +431,20 @@ openclaw path find 'oc://config.jsonc/plugins/{github,slack}/enabled'
 
 ### `set <oc-path> <value>`
 
-Tulis sebuah daun. Pasangkan dengan `--dry-run` untuk meninjau byte yang akan
-ditulis tanpa menyentuh berkas. Keluar dengan `0` pada penulisan yang berhasil, `1` jika
-substrat menolak (misalnya, penjaga sentinel terkena), `2` pada kesalahan penguraian.
+Tulis sebuah leaf. Pasangkan dengan `--dry-run` untuk meninjau byte yang akan ditulis tanpa menyentuh file. Tambahkan `--diff` untuk pratinjau unified diff. Keluar dengan `0` pada penulisan yang berhasil, `1` jika substrate menolak (misalnya, sentinel guard terkena), `2` pada error parse.
 
 ```bash
 openclaw path set 'oc://gateway.jsonc/version' '2.0' --dry-run
+openclaw path set 'oc://gateway.jsonc/version' '2.0' --dry-run --diff
 openclaw path set 'oc://gateway.jsonc/version' '2.0'
 openclaw path set 'oc://AGENTS.md/Tools/+gh/risk' 'low'
 ```
 
-Marker penyisipan `+key` membuat child bernama jika belum ada;
-`+nnn` dan `+` polos masing-masing berfungsi untuk penyisipan berindeks dan penyisipan append.
+Marker penyisipan `+key` membuat child bernama jika belum ada; `+nnn` dan `+` polos masing-masing berfungsi untuk penyisipan berindeks dan append.
 
 ### `validate <oc-path>`
 
-Pemeriksaan hanya parse. Tidak ada akses filesystem. Berguna ketika Anda ingin mengonfirmasi bahwa path
-template berbentuk benar sebelum mengganti variabel, atau ketika Anda menginginkan
-penguraian struktural untuk debugging:
+Pemeriksaan parse saja. Tidak ada akses filesystem. Berguna saat Anda ingin memastikan path template sudah berbentuk benar sebelum mengganti variabel, atau saat Anda menginginkan uraian struktural untuk debugging:
 
 ```bash
 $ openclaw path validate 'oc://AGENTS.md/tools/gh' --human
@@ -415,15 +454,11 @@ valid: oc://AGENTS.md/tools/gh
   item:    gh
 ```
 
-Keluar dengan `0` saat valid, `1` saat tidak valid (dengan `code` dan
-`message` terstruktur), `2` pada kesalahan argumen.
+Keluar dengan `0` saat valid, `1` saat tidak valid (dengan `code` dan `message` terstruktur), `2` pada error argumen.
 
 ### `emit <file>`
 
-Melakukan round-trip file melalui parser dan emitter per jenis. Keluaran seharusnya
-identik byte demi byte dengan masukan pada file yang valid — perbedaan menunjukkan
-bug parser atau sentinel yang terpicu. Berguna untuk debugging perilaku substrate pada
-masukan dunia nyata.
+Round-trip file melalui parser dan emitter per jenis. Output seharusnya identik byte demi byte dengan input pada file yang sehat — perbedaan menunjukkan bug parser atau sentinel yang terkena. Berguna untuk debugging perilaku substrate pada input dunia nyata.
 
 ```bash
 openclaw path emit ./AGENTS.md
@@ -435,27 +470,18 @@ openclaw path emit ./gateway.jsonc --json
 | Kode | Makna                                                                      |
 | ---- | -------------------------------------------------------------------------- |
 | `0`  | Berhasil. (`resolve` / `find`: setidaknya satu kecocokan. `set`: penulisan berhasil.) |
-| `1`  | Tidak ada kecocokan, atau `set` ditolak oleh substrate (tidak ada kesalahan tingkat sistem). |
-| `2`  | Kesalahan argumen atau parse.                                              |
+| `1`  | Tidak ada kecocokan, atau `set` ditolak oleh substrate (tanpa error tingkat sistem). |
+| `2`  | Error argumen atau parse.                                                  |
 
 ## Mode keluaran
 
-`openclaw path` peka terhadap TTY: keluaran yang dapat dibaca manusia di terminal, JSON ketika
-stdout disalurkan atau dialihkan. `--json` dan `--human` menggantikan
-deteksi otomatis.
+`openclaw path` sadar TTY: output yang dapat dibaca manusia di terminal, JSON saat stdout di-pipe atau dialihkan. `--json` dan `--human` menimpa deteksi otomatis.
 
 ## Catatan
 
-- `set` menulis byte melalui path emit milik substrate, yang menerapkan
-  penjaga sentinel redaksi secara otomatis. Leaf yang membawa
-  `__OPENCLAW_REDACTED__` (verbatim atau sebagai substring) ditolak pada waktu tulis.
-- Parsing JSONC dan pengeditan leaf menggunakan dependensi `jsonc-parser`
-  lokal Plugin, sehingga komentar dan pemformatan dipertahankan pada penulisan leaf
-  biasa alih-alih melalui path parser/render ulang buatan sendiri.
-- `path` tidak mengetahui LKG. Jika file dilacak oleh LKG, panggilan
-  observe berikutnya memutuskan apakah akan mempromosikan / memulihkan. `set --batch` untuk
-  multi-set atomik melalui siklus hidup promosi/pemulihan LKG direncanakan
-  bersama substrate pemulihan LKG.
+- `set` menulis byte melalui path emit substrate, yang menerapkan guard sentinel redaksi secara otomatis. Leaf yang membawa `__OPENCLAW_REDACTED__` (verbatim atau sebagai substring) ditolak pada waktu tulis.
+- Parsing JSONC dan edit leaf menggunakan dependensi `jsonc-parser` lokal Plugin, sehingga komentar dan pemformatan dipertahankan pada penulisan leaf biasa alih-alih melewati path parser/render ulang buatan sendiri.
+- `path` tidak mengetahui LKG. Jika file dilacak LKG, panggilan observe berikutnya memutuskan apakah akan promote / recover. `set --batch` untuk multi-set atomik melalui siklus hidup promote/recover LKG direncanakan bersama substrate pemulihan LKG.
 
 ## Terkait
 

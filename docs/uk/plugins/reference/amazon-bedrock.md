@@ -1,29 +1,30 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або проводите аудит Plugin amazon-bedrock
-summary: Додає підтримку провайдера моделей Amazon Bedrock до OpenClaw.
+    - Ви встановлюєте, налаштовуєте або перевіряєте плагін amazon-bedrock
+summary: Plugin провайдера Amazon Bedrock для OpenClaw з виявленням моделей, векторними представленнями та підтримкою захисних обмежень.
 title: Plugin Amazon Bedrock
 x-i18n:
-    generated_at: "2026-05-02T15:15:38Z"
+    generated_at: "2026-06-27T17:56:33Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 001ec686133a9f6b17c8074bf6710c11ad92679d7badb08a8bef51272c40308d
+    source_hash: bf39e0d58332cd057e8f050dc1a8742c219b62182381a7f47856e3a657b80f03
     source_path: plugins/reference/amazon-bedrock.md
     workflow: 16
 ---
 
-# Amazon Bedrock Plugin
+# Plugin Amazon Bedrock
 
-Додає підтримку постачальника моделей Amazon Bedrock до OpenClaw.
+Plugin провайдера OpenClaw Amazon Bedrock із виявленням моделей, embeddings і підтримкою guardrails.
 
-## Поширення
+## Дистрибуція
 
 - Пакет: `@openclaw/amazon-bedrock-provider`
-- Спосіб встановлення: включено в OpenClaw
+- Маршрут встановлення: npm; ClawHub
 
-## Інтерфейс
+## Поверхня
 
-постачальники: amazon-bedrock; контракти: memoryEmbeddingProviders
+providers: amazon-bedrock; contracts: memoryEmbeddingProviders
 
 ## Пов’язана документація
 

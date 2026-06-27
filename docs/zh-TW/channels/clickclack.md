@@ -2,24 +2,25 @@
 read_when:
     - 將 OpenClaw 連接到 ClickClack 工作區
     - 測試 ClickClack 機器人身分
-summary: ClickClack bot-token 頻道設定與目標語法
-title: 喀噠喀噠
+summary: ClickClack 機器人權杖頻道設定與目標語法
+title: ClickClack
 x-i18n:
-    generated_at: "2026-05-10T19:20:57Z"
+    generated_at: "2026-06-27T18:54:38Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8d4860b5f0a40d38af99bec0b8187f723a30c9b4b78d2d1de50ba8a97954baeb
+    source_hash: 17d5dd79c29122916474a54069306e8e040a68c15c46bd217391bc97dd5d5bb5
     source_path: channels/clickclack.md
     workflow: 16
 ---
 
-ClickClack 透過第一級 ClickClack 機器人權杖，將 OpenClaw 連接到自行託管的 ClickClack 工作區。
+ClickClack 透過第一級 ClickClack bot 權杖，將 OpenClaw 連接到自架的 ClickClack 工作區。
 
-當你想讓 OpenClaw 代理程式以 ClickClack 機器人使用者的身分出現時，請使用此功能。ClickClack 支援獨立服務機器人與使用者擁有的機器人；使用者擁有的機器人會保留 `owner_user_id`，且只會取得你授予的權杖範圍。
+當你希望 OpenClaw 代理以 ClickClack bot 使用者身分出現時，請使用此功能。ClickClack 支援獨立服務 bot 與使用者擁有的 bot；使用者擁有的 bot 會保留 `owner_user_id`，並且只取得你授予的權杖範圍。
 
 ## 快速設定
 
-在 ClickClack 中建立機器人權杖：
+在 ClickClack 中建立 bot 權杖：
 
 ```bash
 clickclack admin bot create \
@@ -30,7 +31,7 @@ clickclack admin bot create \
   --plain
 ```
 
-若是使用者擁有的機器人，請加入 `--owner <user_id>`。
+若要建立使用者擁有的 bot，請加上 `--owner <user_id>`。
 
 設定 OpenClaw：
 
@@ -66,9 +67,17 @@ export CLICKCLACK_BOT_TOKEN="ccb_..."
 openclaw gateway
 ```
 
-## 多個機器人
+如果 `plugins.allow` 是非空的限制清單，在頻道設定中明確選取
+ClickClack，或執行 `openclaw plugins enable clickclack`，
+會將 `clickclack` 附加到該清單。入門安裝會使用相同的
+明確選取行為。這些路徑不會覆寫 `plugins.deny` 或
+全域 `plugins.enabled: false` 設定。直接執行
+`openclaw plugins install @openclaw/clickclack` 會遵循一般
+外掛安裝政策，並且也會將 ClickClack 記錄到既有的允許清單中。
 
-每個帳號都會開啟自己的 ClickClack 即時連線，並使用自己的機器人權杖。
+## 多個 bot
+
+每個帳戶都會開啟自己的 ClickClack 即時連線，並使用自己的 bot 權杖。
 
 ```json5
 {
@@ -107,17 +116,16 @@ openclaw gateway
 }
 ```
 
-`replyMode: "model"` 會直接使用 `api.runtime.llm.complete` 來產生簡短的機器人回覆。
-當帳號設定了 `agentId` 時，OpenClaw 需要明確的
-`plugins.entries.clickclack.llm.allowAgentIdOverride` 信任位元，讓 Plugin
-可以為該機器人代理程式執行 completions。如果你只使用預設
-代理程式路由，請將其保持關閉。
+`replyMode: "model"` 會直接使用 `api.runtime.llm.complete` 產生簡短 bot 回覆。
+當帳戶設定 `agentId` 時，OpenClaw 會要求明確的
+`plugins.entries.clickclack.llm.allowAgentIdOverride` 信任位元，讓外掛
+可以為該 bot 代理執行補全。如果你只使用預設代理路由，請保持關閉。
 
 ## 目標
 
-- `channel:<name-or-id>` 會傳送到工作區頻道。未加前綴的目標預設為 `channel:`。
-- `dm:<user_id>` 會建立或重複使用與該使用者的直接對話。
-- `thread:<message_id>` 會在現有討論串中回覆。
+- `channel:<name-or-id>` 傳送到工作區頻道。未加前綴的目標預設為 `channel:`。
+- `dm:<user_id>` 建立或重用與該使用者的直接對話。
+- `thread:<message_id>` 在既有討論串中回覆。
 
 範例：
 
@@ -135,11 +143,11 @@ ClickClack 權杖範圍由 ClickClack API 強制執行。
 - `bot:write`：包含 `bot:read`，再加上頻道訊息、討論串回覆、DM 與上傳。
 - `bot:admin`：包含 `bot:write`，再加上頻道建立。
 
-OpenClaw 在一般代理程式聊天中只需要 `bot:write`。
+OpenClaw 在一般代理聊天中只需要 `bot:write`。
 
 ## 疑難排解
 
 - `ClickClack is not configured`：設定 `channels.clickclack.token` 或 `CLICKCLACK_BOT_TOKEN`。
 - `workspace not found`：將 `workspace` 設為 ClickClack 傳回的工作區 ID 或 slug。
-- 沒有收到傳入回覆：確認權杖具備即時讀取存取權，且機器人沒有回覆自己的訊息。
-- 頻道傳送失敗：確認機器人是該工作區的成員，且具備 `bot:write`。
+- 沒有收到傳入回覆：確認權杖具有即時讀取存取權，且 bot 沒有回覆自己的訊息。
+- 頻道傳送失敗：確認 bot 是工作區成員，且具有 `bot:write`。

@@ -1,22 +1,23 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das feishu-Plugin
-summary: Fügt die Feishu-Channel-Oberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
+    - Sie installieren, konfigurieren oder prüfen das feishu-Plugin
+summary: OpenClaw Feishu/Lark-Kanal-Plugin für Chats und Workplace-Tools (Community-gepflegt von @m1heng).
 title: Feishu-Plugin
 x-i18n:
-    generated_at: "2026-05-03T06:41:28Z"
+    generated_at: "2026-06-27T17:53:41Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cb9fa20533e6ad7f65ffbb3050166637bea8e8ab867dd3894ad90a77999ba9b8
+    source_hash: d55792e08be92877a8b86548b725b59aee149b352bba8a5e51ed590a59e0dbc9
     source_path: plugins/reference/feishu.md
     workflow: 16
 ---
 
 # Feishu-Plugin
 
-Fügt die Feishu-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
+OpenClaw Feishu/Lark-Kanal-Plugin für Chats und Arbeitsplatz-Tools (von der Community gepflegt durch @m1heng).
 
-## Verteilung
+## Distribution
 
 - Paket: `@openclaw/feishu`
 - Installationsweg: npm; ClawHub
@@ -25,6 +26,6 @@ Fügt die Feishu-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrich
 
 Kanäle: feishu; Verträge: Tools; Skills
 
-## Verwandte Dokumentation
+## Zugehörige Dokumentation
 
 - [feishu](/de/channels/feishu)

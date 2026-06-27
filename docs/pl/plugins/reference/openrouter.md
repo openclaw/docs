@@ -4,10 +4,11 @@ read_when:
 summary: Dodaje obsługę dostawcy modeli OpenRouter do OpenClaw.
 title: Plugin OpenRouter
 x-i18n:
-    generated_at: "2026-05-02T20:54:31Z"
+    generated_at: "2026-06-27T18:02:47Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: aaf502d9e577fffa1fa5a02808b789cac8e8b51a12ff5323aacf2ab9ef5402fe
+    source_hash: 3d23878973853230ff2621d9ea75b6fd3536366fa8520139d5424a4d261bc44a
     source_path: plugins/reference/openrouter.md
     workflow: 16
 ---
@@ -23,7 +24,7 @@ Dodaje obsługę dostawcy modeli OpenRouter do OpenClaw.
 
 ## Powierzchnia
 
-providers: openrouter; contracts: imageGenerationProviders, mediaUnderstandingProviders, speechProviders, videoGenerationProviders
+providers: openrouter; contracts: imageGenerationProviders, mediaUnderstandingProviders, musicGenerationProviders, speechProviders, videoGenerationProviders
 
 ## Powiązana dokumentacja
 

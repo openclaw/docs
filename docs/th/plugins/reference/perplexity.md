@@ -1,25 +1,26 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin perplexity
-summary: เพิ่มการรองรับผู้ให้บริการค้นหาเว็บ.
+summary: เพิ่มการรองรับผู้ให้บริการค้นหาเว็บ
 title: Plugin Perplexity
 x-i18n:
-    generated_at: "2026-05-02T20:55:33Z"
+    generated_at: "2026-06-27T18:04:21Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 86183b8201e7c6869eeeada3efcb15fd67c3d958fd5a50a56922bb0a61c5c74d
+    source_hash: c649c4dc4df04ca668e924e2644af970d75eab404b8f57579e509aa061994ffe
     source_path: plugins/reference/perplexity.md
     workflow: 16
 ---
 
-# Perplexity Plugin
+# Plugin Perplexity
 
 เพิ่มการรองรับผู้ให้บริการค้นหาเว็บ
 
-## การจัดจำหน่าย
+## การแจกจ่าย
 
 - แพ็กเกจ: `@openclaw/perplexity-plugin`
-- เส้นทางการติดตั้ง: รวมอยู่ใน OpenClaw
+- เส้นทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/perplexity-plugin`
 
 ## พื้นผิว
 

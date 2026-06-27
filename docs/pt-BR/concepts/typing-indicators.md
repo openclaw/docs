@@ -4,10 +4,11 @@ read_when:
 summary: Quando o OpenClaw mostra indicadores de digitação e como ajustá-los
 title: Indicadores de digitação
 x-i18n:
-    generated_at: "2026-05-10T19:32:31Z"
+    generated_at: "2026-06-27T17:27:49Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e26b4008f165527098ffcbf9c39ee7179149063842cc5c6aacb5b7c606eedc26
+    source_hash: fa76889d0f6262f1092abefee02aee8fe944651dc89d3a697ccc86e16558ed60
     source_path: concepts/typing-indicators.md
     workflow: 16
 ---
@@ -22,24 +23,26 @@ Quando `agents.defaults.typingMode` **não está definido**, o OpenClaw mantém 
 
 - **Chats diretos**: a digitação começa imediatamente assim que o loop do modelo começa.
 - **Chats em grupo com uma menção**: a digitação começa imediatamente.
-- **Chats em grupo sem uma menção**: a digitação começa somente quando o texto da mensagem começa a ser transmitido.
+- **Chats em grupo sem uma menção**: a digitação começa quando a execução admitida tem
+  atividade visível para o usuário, como atividade de execução do ambiente ou texto de mensagem.
 - **Execuções de Heartbeat**: a digitação começa quando a execução de Heartbeat começa se o
-  destino de Heartbeat resolvido for um chat compatível com digitação e a digitação não estiver desabilitada.
+  destino de Heartbeat resolvido for um chat compatível com digitação e a digitação não estiver desativada.
 
 ## Modos
 
 Defina `agents.defaults.typingMode` como um destes:
 
 - `never` - nenhum indicador de digitação, nunca.
-- `instant` - inicia a digitação **assim que o loop do modelo começa**, mesmo que a execução
+- `instant` - começa a digitar **assim que o loop do modelo começa**, mesmo que a execução
   depois retorne apenas o token de resposta silenciosa.
-- `thinking` - inicia a digitação no **primeiro delta de raciocínio** (requer
-  `reasoningLevel: "stream"` para a execução).
-- `message` - inicia a digitação no **primeiro delta de texto não silencioso** (ignora
-  o token silencioso `NO_REPLY`).
+- `thinking` - começa a digitar no **primeiro delta de raciocínio** ou na execução ativa
+  do ambiente depois que o turno é aceito.
+- `message` - começa a digitar na **primeira atividade de resposta visível para o usuário**, como
+  execução ativa do ambiente ou um delta de texto não silencioso. Tokens de resposta silenciosa como
+  `NO_REPLY` não contam como atividade de texto.
 
 Ordem de "quão cedo é acionado":
-`never` → `message` → `thinking` → `instant`
+`never` → `message`/`thinking` → `instant`
 
 ## Configuração
 
@@ -69,16 +72,15 @@ Substitua o modo ou a cadência por sessão:
 
 ## Observações
 
-- O modo `message` não mostra digitação para respostas somente silenciosas quando todo o
-  payload é exatamente o token silencioso (por exemplo `NO_REPLY` / `no_reply`,
-  correspondido sem diferenciar maiúsculas de minúsculas).
-- `thinking` só é acionado se a execução transmitir raciocínio (`reasoningLevel: "stream"`).
-  Se o modelo não emitir deltas de raciocínio, a digitação não começará.
+- O modo `message` não começa a partir de tokens de resposta silenciosa, mas a execução ativa
+  ainda pode mostrar digitação antes que qualquer texto do assistente esteja disponível.
+- `thinking` ainda reage ao raciocínio transmitido em streaming (`reasoningLevel: "stream"`),
+  e também pode começar a partir da execução ativa antes que os deltas de raciocínio cheguem.
 - A digitação de Heartbeat é um sinal de vivacidade para o destino de entrega resolvido. Ela
-  começa no início da execução de Heartbeat, em vez de seguir o tempo de stream de `message` ou `thinking`.
-  Defina `typingMode: "never"` para desabilitá-la.
+  começa no início da execução de Heartbeat em vez de seguir o tempo do fluxo de `message` ou `thinking`.
+  Defina `typingMode: "never"` para desativá-la.
 - Heartbeats não mostram digitação quando `target: "none"`, quando o destino não pode
-  ser resolvido, quando a entrega por chat está desabilitada para o Heartbeat ou quando o
+  ser resolvido, quando a entrega de chat está desativada para o Heartbeat ou quando o
   canal não oferece suporte a digitação.
 - `typingIntervalSeconds` controla a **cadência de atualização**, não o horário de início.
   O padrão é 6 segundos.
@@ -86,10 +88,10 @@ Substitua o modo ou a cadência por sessão:
 ## Relacionados
 
 <CardGroup cols={2}>
-  <Card title="Presence" href="/pt-BR/concepts/presence" icon="signal">
-    Como o Gateway rastreia clientes conectados e os exibe na aba Instances do macOS.
+  <Card title="Presença" href="/pt-BR/concepts/presence" icon="signal">
+    Como o Gateway rastreia clientes conectados e os expõe na aba Instâncias do macOS.
   </Card>
-  <Card title="Streaming and chunking" href="/pt-BR/concepts/streaming" icon="bars-staggered">
-    Comportamento de streaming de saída, limites de chunks e entrega específica por canal.
+  <Card title="Streaming e fragmentação" href="/pt-BR/concepts/streaming" icon="bars-staggered">
+    Comportamento de streaming de saída, limites de fragmentos e entrega específica por canal.
   </Card>
 </CardGroup>

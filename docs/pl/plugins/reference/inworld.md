@@ -1,27 +1,28 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz plugin inworld
-summary: Strumieniowa synteza mowy Inworld (MP3, OGG_OPUS, PCM dla telefonii).
+    - Instalujesz, konfigurujesz lub audytujesz Plugin inworld
+summary: Strumieniowe przetwarzanie tekstu na mowę Inworld (MP3, OGG_OPUS, telefonia PCM).
 title: Plugin Inworld
 x-i18n:
-    generated_at: "2026-05-02T20:52:38Z"
+    generated_at: "2026-06-27T18:01:22Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1ad17b02d9c3adb00baf596dbecf5d59f5910688dac76675050e7d0687f09e0c
+    source_hash: 02d912c51460e181e100bc227575cafd1ab3c49494057d2df1e26571000020a8
     source_path: plugins/reference/inworld.md
     workflow: 16
 ---
 
 # Plugin Inworld
 
-Streamingowa synteza mowy Inworld (MP3, OGG_OPUS, telefoniczny PCM).
+Strumieniowe przetwarzanie tekstu na mowę Inworld (MP3, OGG_OPUS, PCM telephony).
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/inworld-speech`
-- Ścieżka instalacji: dołączony do OpenClaw
+- Ścieżka instalacji: npm; ClawHub: `clawhub:@openclaw/inworld-speech`
 
-## Interfejs
+## Powierzchnia
 
 kontrakty: speechProviders
 

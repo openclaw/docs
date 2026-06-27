@@ -1,13 +1,14 @@
 ---
 read_when:
-    - Stai installando, configurando o eseguendo un audit del Plugin exa
-summary: Aggiunge il supporto per i provider di ricerca web.
+    - Stai installando, configurando o verificando il Plugin exa
+summary: Aggiunge il supporto per il provider di ricerca web.
 title: Plugin Exa
 x-i18n:
-    generated_at: "2026-05-02T20:52:51Z"
+    generated_at: "2026-06-27T17:55:56Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e8cde3e0199d84893e63becdd7a32fbec25d8e90f52ee604dcba78f5a5980f61
+    source_hash: 6170d70f03913f87b62f7a85647b4748032b7d01c56e909826e10e261e58160f
     source_path: plugins/reference/exa.md
     workflow: 16
 ---
@@ -19,9 +20,9 @@ Aggiunge il supporto per i provider di ricerca web.
 ## Distribuzione
 
 - Pacchetto: `@openclaw/exa-plugin`
-- Percorso di installazione: incluso in OpenClaw
+- Percorso di installazione: npm; ClawHub: `clawhub:@openclaw/exa-plugin`
 
-## Interfaccia
+## Superficie
 
 contratti: webSearchProviders
 

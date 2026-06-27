@@ -1,22 +1,23 @@
 ---
 read_when:
     - Anda ingin mengedit persetujuan exec dari CLI
-    - Anda perlu mengelola allowlist di host gateway atau Node
+    - Anda perlu mengelola daftar izin pada host Gateway atau Node
 summary: Referensi CLI untuk `openclaw approvals` dan `openclaw exec-policy`
 title: Persetujuan
 x-i18n:
-    generated_at: "2026-04-24T09:00:43Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T17:17:32Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7403f0e35616db5baf3d1564c8c405b3883fc3e5032da9c6a19a32dba8c5fb7d
+    source_hash: e5521622ee48237d3cc9feaa54906d026dfb15da4c9b9b17655cd59b35cae19d
     source_path: cli/approvals.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw approvals`
 
-Kelola persetujuan exec untuk **host lokal**, **host gateway**, atau **host Node**.
-Secara default, perintah menargetkan file persetujuan lokal di disk. Gunakan `--gateway` untuk menargetkan gateway, atau `--node` untuk menargetkan Node tertentu.
+Kelola persetujuan exec untuk **host lokal**, **host Gateway**, atau **host Node**.
+Secara default, perintah menargetkan file persetujuan lokal di disk. Gunakan `--gateway` untuk menargetkan Gateway, atau `--node` untuk menargetkan Node tertentu.
 
 Alias: `openclaw exec-approvals`
 
@@ -27,14 +28,14 @@ Terkait:
 
 ## `openclaw exec-policy`
 
-`openclaw exec-policy` adalah perintah kemudahan lokal untuk menjaga
-konfigurasi `tools.exec.*` yang diminta dan file persetujuan host lokal tetap selaras dalam satu langkah.
+`openclaw exec-policy` adalah perintah kemudahan lokal untuk menjaga konfigurasi
+`tools.exec.*` yang diminta dan file persetujuan host lokal tetap selaras dalam satu langkah.
 
 Gunakan saat Anda ingin:
 
 - memeriksa kebijakan lokal yang diminta, file persetujuan host, dan penggabungan efektif
-- menerapkan preset lokal seperti YOLO atau deny-all
-- menyinkronkan `tools.exec.*` lokal dan `~/.openclaw/exec-approvals.json` lokal
+- menerapkan preset lokal seperti YOLO atau tolak-semua
+- menyinkronkan `tools.exec.*` lokal dan file persetujuan host lokal
 
 Contoh:
 
@@ -56,10 +57,10 @@ Mode output:
 Cakupan saat ini:
 
 - `exec-policy` **hanya lokal**
-- ini memperbarui file konfigurasi lokal dan file persetujuan lokal secara bersamaan
-- ini **tidak** mendorong kebijakan ke host gateway atau host Node
-- `--host node` ditolak dalam perintah ini karena persetujuan exec Node diambil dari Node saat runtime dan harus dikelola melalui perintah persetujuan bertarget Node
-- `openclaw exec-policy show` menandai cakupan `host=node` sebagai dikelola Node saat runtime alih-alih menurunkan kebijakan efektif dari file persetujuan lokal
+- perintah ini memperbarui file konfigurasi lokal dan file persetujuan lokal secara bersamaan
+- perintah ini **tidak** mendorong kebijakan ke host Gateway atau host Node
+- `--host node` ditolak dalam perintah ini karena persetujuan exec Node diambil dari Node saat runtime dan harus dikelola melalui perintah persetujuan yang menargetkan Node
+- `openclaw exec-policy show` menandai cakupan `host=node` sebagai dikelola Node saat runtime, bukan menurunkan kebijakan efektif dari file persetujuan lokal
 
 Jika Anda perlu mengedit persetujuan host jarak jauh secara langsung, tetap gunakan `openclaw approvals set --gateway`
 atau `openclaw approvals set --node <id|name|ip>`.
@@ -72,35 +73,35 @@ openclaw approvals get --node <id|name|ip>
 openclaw approvals get --gateway
 ```
 
-`openclaw approvals get` sekarang menampilkan kebijakan exec efektif untuk target lokal, gateway, dan Node:
+`openclaw approvals get` kini menampilkan kebijakan exec efektif untuk target lokal, Gateway, dan Node:
 
 - kebijakan `tools.exec` yang diminta
 - kebijakan file persetujuan host
-- hasil efektif setelah aturan prioritas diterapkan
+- hasil efektif setelah aturan presedensi diterapkan
 
-Prioritas ini disengaja:
+Presedensi ini disengaja:
 
 - file persetujuan host adalah sumber kebenaran yang dapat ditegakkan
 - kebijakan `tools.exec` yang diminta dapat mempersempit atau memperluas maksud, tetapi hasil efektif tetap diturunkan dari aturan host
-- `--node` menggabungkan file persetujuan host Node dengan kebijakan `tools.exec` gateway, karena keduanya tetap berlaku saat runtime
-- jika konfigurasi gateway tidak tersedia, CLI fallback ke snapshot persetujuan Node dan mencatat bahwa kebijakan runtime final tidak dapat dihitung
+- `--node` menggabungkan file persetujuan host Node dengan kebijakan `tools.exec` Gateway, karena keduanya tetap berlaku saat runtime
+- jika konfigurasi Gateway tidak tersedia, CLI kembali ke snapshot persetujuan Node dan mencatat bahwa kebijakan runtime akhir tidak dapat dihitung
 
 ## Ganti persetujuan dari file
 
 ```bash
 openclaw approvals set --file ./exec-approvals.json
 openclaw approvals set --stdin <<'EOF'
-{ version: 1, defaults: { security: "full", ask: "off" } }
+{ version: 1, defaults: { security: "full", ask: "off", askFallback: "full" } }
 EOF
 openclaw approvals set --node <id|name|ip> --file ./exec-approvals.json
 openclaw approvals set --gateway --file ./exec-approvals.json
 ```
 
-`set` menerima JSON5, bukan hanya JSON ketat. Gunakan `--file` atau `--stdin`, jangan keduanya.
+`set` menerima JSON5, bukan hanya JSON ketat. Gunakan salah satu dari `--file` atau `--stdin`, bukan keduanya.
 
-## Contoh "Never prompt" / YOLO
+## Contoh "Jangan pernah minta konfirmasi" / YOLO
 
-Untuk host yang seharusnya tidak pernah berhenti pada persetujuan exec, atur default persetujuan host ke `full` + `off`:
+Untuk host yang tidak boleh pernah berhenti pada persetujuan exec, atur default persetujuan host ke `full` + `off`:
 
 ```bash
 openclaw approvals set --stdin <<'EOF'
@@ -140,23 +141,24 @@ openclaw config set tools.exec.ask off
 
 Mengapa `tools.exec.host=gateway` dalam contoh ini:
 
-- `host=auto` tetap berarti "sandbox jika tersedia, jika tidak gateway".
+- `host=auto` tetap berarti "sandbox jika tersedia, jika tidak Gateway".
 - YOLO berkaitan dengan persetujuan, bukan perutean.
-- Jika Anda ingin host exec bahkan saat sandbox dikonfigurasi, buat pilihan host eksplisit dengan `gateway` atau `/exec host=gateway`.
+- Jika Anda menginginkan exec host bahkan ketika sandbox dikonfigurasi, buat pilihan host eksplisit dengan `gateway` atau `/exec host=gateway`.
 
-Ini cocok dengan perilaku YOLO default host saat ini. Perketat jika Anda menginginkan persetujuan.
+`askFallback` yang dihilangkan default-nya adalah `deny`. Atur `askFallback: "full"`
+secara eksplisit saat memutakhirkan host tanpa UI yang harus mempertahankan perilaku tanpa permintaan konfirmasi.
 
-Shortcut lokal:
+Pintasan lokal:
 
 ```bash
 openclaw exec-policy preset yolo
 ```
 
-Shortcut lokal itu memperbarui konfigurasi `tools.exec.*` lokal yang diminta dan
-default persetujuan lokal secara bersamaan. Maksudnya setara dengan penyiapan manual
-dua langkah di atas, tetapi hanya untuk mesin lokal.
+Pintasan lokal itu memperbarui konfigurasi `tools.exec.*` lokal yang diminta dan default
+persetujuan lokal secara bersamaan. Maksudnya setara dengan penyiapan manual dua langkah
+di atas, tetapi hanya untuk mesin lokal.
 
-## Pembantu allowlist
+## Pembantu daftar izinkan
 
 ```bash
 openclaw approvals allowlist add "~/Projects/**/bin/rg"
@@ -177,7 +179,7 @@ openclaw approvals allowlist remove "~/Projects/**/bin/rg"
 Catatan penargetan:
 
 - tanpa flag target berarti file persetujuan lokal di disk
-- `--gateway` menargetkan file persetujuan host gateway
+- `--gateway` menargetkan file persetujuan host Gateway
 - `--node` menargetkan satu host Node setelah menyelesaikan id, nama, IP, atau prefiks id
 
 `allowlist add|remove` juga mendukung:
@@ -186,10 +188,12 @@ Catatan penargetan:
 
 ## Catatan
 
-- `--node` menggunakan resolver yang sama seperti `openclaw nodes` (id, nama, ip, atau prefiks id).
-- `--agent` default ke `"*"`, yang berlaku untuk semua agen.
+- `--node` menggunakan resolver yang sama dengan `openclaw nodes` (id, nama, ip, atau prefiks id).
+- `--agent` default ke `"*"`, yang berlaku untuk semua agent.
 - Host Node harus mengiklankan `system.execApprovals.get/set` (aplikasi macOS atau host Node headless).
-- File persetujuan disimpan per host di `~/.openclaw/exec-approvals.json`.
+- File persetujuan disimpan per host di direktori state OpenClaw
+  (`$OPENCLAW_STATE_DIR/exec-approvals.json`, atau
+  `~/.openclaw/exec-approvals.json` saat variabel tidak disetel).
 
 ## Terkait
 

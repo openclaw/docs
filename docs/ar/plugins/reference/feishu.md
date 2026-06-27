@@ -1,20 +1,21 @@
 ---
 read_when:
-    - أنت تثبّت Plugin feishu أو تهيّئه أو تراجعه
-summary: يضيف واجهة قناة Feishu لإرسال رسائل OpenClaw واستقبالها.
+    - أنت تثبّت Plugin feishu أو تهيّئه أو تراجعه.
+summary: مكوّن إضافي لقناة Feishu/Lark في OpenClaw للمحادثات وأدوات مكان العمل (يصونه المجتمع بواسطة @m1heng).
 title: Plugin Feishu
 x-i18n:
-    generated_at: "2026-05-03T07:36:44Z"
+    generated_at: "2026-06-27T18:12:19Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cb9fa20533e6ad7f65ffbb3050166637bea8e8ab867dd3894ad90a77999ba9b8
+    source_hash: d55792e08be92877a8b86548b725b59aee149b352bba8a5e51ed590a59e0dbc9
     source_path: plugins/reference/feishu.md
     workflow: 16
 ---
 
 # Plugin Feishu
 
-يضيف سطح قناة Feishu لإرسال رسائل OpenClaw واستقبالها.
+Plugin قناة Feishu/Lark في OpenClaw للمحادثات وأدوات مكان العمل (يصونه المجتمع بواسطة @m1heng).
 
 ## التوزيع
 
@@ -23,7 +24,7 @@ x-i18n:
 
 ## السطح
 
-القنوات: feishu؛ العقود: tools؛ Skills
+القنوات: feishu؛ العقود: الأدوات؛ المهارات
 
 ## المستندات ذات الصلة
 

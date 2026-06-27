@@ -1,22 +1,23 @@
 ---
 read_when:
     - Leren hoe u OpenClaw configureert
-    - Op zoek naar configuratievoorbeelden
+    - Zoeken naar configuratievoorbeelden
     - OpenClaw voor het eerst instellen
-summary: Schema-getrouwe configuratievoorbeelden voor veelvoorkomende OpenClaw-opstellingen
+summary: Schema-nauwkeurige configuratievoorbeelden voor veelvoorkomende OpenClaw-installaties
 title: Configuratievoorbeelden
 x-i18n:
-    generated_at: "2026-05-11T20:29:59Z"
+    generated_at: "2026-06-27T17:32:06Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e077b2fe83b1c6e4ffd2ff0029fe3b754c7dc5dced06f134ddf18e9ed6a11fd2
+    source_hash: 945f4cd8571814597ec0188853e91c6483a0d8b09bd0ca7dcfb79eb877607ce2
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
 Voorbeelden hieronder zijn afgestemd op het huidige configuratieschema. Zie [Configuratie](/nl/gateway/configuration) voor de volledige referentie en opmerkingen per veld.
 
-## Snel starten
+## Snelstart
 
 ### Absoluut minimum
 
@@ -58,7 +59,8 @@ Sla dit op in `~/.openclaw/openclaw.json` en je kunt de bot vanaf dat nummer een
   messages: {
     visibleReplies: "automatic",
     groupChat: {
-      visibleReplies: "message_tool", // default; use "automatic" for legacy room replies
+      visibleReplies: "message_tool", // opt-in; visible output requires message(action=send)
+      unmentionedInbound: "room_event",
     },
   },
 }
@@ -88,12 +90,11 @@ Sla dit op in `~/.openclaw/openclaw.json` en je kunt de bot vanaf dat nummer een
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
       "anthropic:work": { provider: "anthropic", mode: "api_key" },
       "openai:default": { provider: "openai", mode: "api_key" },
-      "openai-codex:personal": { provider: "openai-codex", mode: "oauth" },
+      "openai:personal": { provider: "openai", mode: "oauth" },
     },
     order: {
       anthropic: ["anthropic:default", "anthropic:work"],
-      openai: ["openai:default"],
-      "openai-codex": ["openai-codex:personal"],
+      openai: ["openai:personal", "openai:default"],
     },
   },
 
@@ -117,21 +118,22 @@ Sla dit op in `~/.openclaw/openclaw.json` en je kunt de bot vanaf dat nummer een
     ackReactionScope: "group-mentions",
     groupChat: {
       historyLimit: 50,
-      visibleReplies: "message_tool", // normal final replies stay private in groups/channels
+      visibleReplies: "message_tool", // opt in for shared rooms with tool-reliable models
+      unmentionedInbound: "room_event",
     },
     queue: {
-      mode: "steer",
+      mode: "followup",
       debounceMs: 500,
       cap: 20,
       drop: "summarize",
       byChannel: {
-        whatsapp: "steer",
-        telegram: "steer",
-        discord: "steer",
-        slack: "steer",
-        signal: "steer",
-        imessage: "steer",
-        webchat: "steer",
+        whatsapp: "followup",
+        telegram: "followup",
+        discord: "collect",
+        slack: "collect",
+        signal: "followup",
+        imessage: "followup",
+        webchat: "followup",
       },
     },
   },
@@ -390,7 +392,7 @@ Sla dit op in `~/.openclaw/openclaw.json` en je kunt de bot vanaf dat nummer een
   cron: {
     enabled: true,
     store: "~/.openclaw/cron/cron.json",
-    maxConcurrentRuns: 2, // cron dispatch + isolated cron agent-turn execution
+    maxConcurrentRuns: 8, // default; cron dispatch + isolated cron agent-turn execution
     sessionRetention: "24h",
     runLog: {
       maxBytes: "2mb",
@@ -480,9 +482,9 @@ Sla dit op in `~/.openclaw/openclaw.json` en je kunt de bot vanaf dat nummer een
 }
 ```
 
-### Via symbolische link gekoppelde sibling-repository voor Skills
+### Gesymlinkte naastgelegen skill-repo
 
-Gebruik dit wanneer een ingebouwde root voor Skills een symbolische link bevat naar een sibling-repository, bijvoorbeeld `~/.agents/skills/manager -> ~/Projects/manager/skills`.
+Gebruik dit wanneer een ingebouwde skill-root een symlink naar een naastgelegen repo bevat, bijvoorbeeld `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ```json5
 {
@@ -495,12 +497,13 @@ Gebruik dit wanneer een ingebouwde root voor Skills een symbolische link bevat n
 }
 ```
 
-- `extraDirs` scant de sibling-repository als een expliciete root voor Skills.
-- Met `allowSymlinkTargets` kunnen via symbolische links gekoppelde Skill-mappen worden omgezet naar die vertrouwde echte doelroot, zonder willekeurige ontsnappingen via symbolische links toe te staan.
+- `extraDirs` scant de naastgelegen repo als een expliciete skill-root.
+- Met `allowSymlinkTargets` kunnen gesymlinkte skill-mappen worden omgezet naar die vertrouwde echte doelroot, zonder willekeurige symlink-escapes toe te staan.
+- Stel `skills.workshop.allowSymlinkTargetWrites: true` in om Skill Workshop schrijftoegang te laten toepassen via hetzelfde vertrouwde symlink-doel.
 
 ## Veelvoorkomende patronen
 
-### Gedeelde Skill-baseline met één override
+### Gedeelde skill-basislijn met één override
 
 ```json5
 {
@@ -517,11 +520,11 @@ Gebruik dit wanneer een ingebouwde root voor Skills een symbolische link bevat n
 }
 ```
 
-- `agents.defaults.skills` is de gedeelde baseline.
-- `agents.list[].skills` vervangt die baseline voor één agent.
+- `agents.defaults.skills` is de gedeelde basislijn.
+- `agents.list[].skills` vervangt die basislijn voor één agent.
 - Gebruik `skills: []` wanneer een agent geen Skills mag zien.
 
-### Multi-platformconfiguratie
+### Installatie voor meerdere platforms
 
 ```json5
 {
@@ -542,11 +545,11 @@ Gebruik dit wanneer een ingebouwde root voor Skills een symbolische link bevat n
 }
 ```
 
-### Automatische goedkeuring voor vertrouwd Node-netwerk
+### Automatische goedkeuring voor vertrouwd nodenetwerk
 
-Houd apparaatkoppeling handmatig, tenzij je het netwerkpad beheert. Voor een speciaal
-lab of tailnet-subnet kun je je aanmelden voor automatische goedkeuring
-van Node-apparaten bij eerste gebruik met exacte CIDR's of IP's:
+Houd apparaatkoppeling handmatig, tenzij je het netwerkpad beheert. Voor een dedicated
+lab- of tailnet-subnet kun je je aanmelden voor automatische goedkeuring van nieuwe node-apparaten
+met exacte CIDR's of IP's:
 
 ```json5
 {
@@ -560,13 +563,13 @@ van Node-apparaten bij eerste gebruik met exacte CIDR's of IP's:
 }
 ```
 
-Dit blijft uitgeschakeld wanneer het niet is ingesteld. Het is alleen van toepassing op nieuwe `role: node`-koppelingen zonder
+Dit blijft uitgeschakeld wanneer het niet is ingesteld. Het geldt alleen voor nieuwe `role: node`-koppelingen zonder
 aangevraagde scopes. Operator-/browserclients en upgrades van rol, scope, metadata of
 public key vereisen nog steeds handmatige goedkeuring.
 
-### Veilige DM-modus (gedeelde inbox / DM's voor meerdere gebruikers)
+### Veilige DM-modus (gedeelde inbox / DM's met meerdere gebruikers)
 
-Als meer dan één persoon je bot kan DM'en (meerdere vermeldingen in `allowFrom`, koppelingsgoedkeuringen voor meerdere personen of `dmPolicy: "open"`), schakel dan **veilige DM-modus** in zodat DM's van verschillende afzenders standaard niet één context delen:
+Als meer dan één persoon je bot kan DM'en (meerdere vermeldingen in `allowFrom`, koppelingsgoedkeuringen voor meerdere personen, of `dmPolicy: "open"`), schakel dan **veilige DM-modus** in zodat DM's van verschillende afzenders standaard niet één context delen:
 
 ```json5
 {
@@ -590,8 +593,8 @@ Als meer dan één persoon je bot kan DM'en (meerdere vermeldingen in `allowFrom
 }
 ```
 
-Voor Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC is afzenderautorisatie standaard ID-first.
-Schakel directe matching op veranderbare naam/e-mail/nick alleen in met `dangerouslyAllowNameMatching: true` van elk kanaal als je dat risico expliciet accepteert.
+Voor Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC is afzenderautorisatie standaard eerst op ID gebaseerd.
+Schakel directe, wijzigbare naam-/e-mail-/nickmatching met de `dangerouslyAllowNameMatching: true` van elk kanaal alleen in als je dat risico expliciet accepteert.
 
 ### Anthropic API-sleutel + MiniMax-fallback
 
@@ -698,9 +701,9 @@ Schakel directe matching op veranderbare naam/e-mail/nick alleen in met `dangero
 ## Tips
 
 - Als je `dmPolicy: "open"` instelt, moet de bijbehorende `allowFrom`-lijst `"*"` bevatten.
-- Provider-ID's verschillen (telefoonnummers, gebruikers-ID's, kanaal-ID's). Gebruik de providerdocumentatie om het formaat te bevestigen.
+- Provider-ID's verschillen (telefoonnummers, gebruikers-ID's, kanaal-ID's). Gebruik de providerdocumentatie om de indeling te bevestigen.
 - Optionele secties om later toe te voegen: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
-- Zie [Providers](/nl/providers) en [Probleemoplossing](/nl/gateway/troubleshooting) voor uitgebreidere installatie-informatie.
+- Zie [Providers](/nl/providers) en [Probleemoplossing](/nl/gateway/troubleshooting) voor uitgebreidere installatienotities.
 
 ## Gerelateerd
 

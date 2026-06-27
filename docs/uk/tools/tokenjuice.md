@@ -1,46 +1,47 @@
 ---
 read_when:
     - Ви хочете коротші результати інструментів `exec` або `bash` в OpenClaw
-    - Ви хочете ввімкнути вбудований Plugin tokenjuice
-    - Вам потрібно зрозуміти, що змінює tokenjuice і що він залишає в сирому вигляді
-summary: Компактування шумних результатів інструментів exec і bash за допомогою необов’язкового вбудованого Plugin-а
+    - Ви хочете встановити або ввімкнути Plugin Tokenjuice
+    - Потрібно розуміти, що tokenjuice змінює, а що залишає необробленим
+summary: Стискайте зашумлені результати інструментів exec і bash за допомогою необов’язкового Plugin Tokenjuice
 title: Tokenjuice
 x-i18n:
-    generated_at: "2026-04-24T19:53:59Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T18:29:30Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 04328cc7a13ccd64f8309ddff867ae893387f93c26641dfa1a4013a4c3063962
+    source_hash: 183ab08d2a1150b446245514423b893cff9a85581980c15600cc16aec10eeae7
     source_path: tools/tokenjuice.md
-    workflow: 15
+    workflow: 16
 ---
 
-`tokenjuice` — це необов’язковий вбудований Plugin, який виконує Compaction шумних результатів інструментів `exec` і `bash`
-після того, як команда вже була виконана.
+`tokenjuice` — це необов’язковий зовнішній plugin, який стискає шумні результати інструментів `exec` і `bash` після того, як команда вже виконалася.
 
-Він змінює повернений `tool_result`, а не саму команду. Tokenjuice не
-переписує shell-ввід, не перезапускає команди й не змінює коди виходу.
+Він змінює повернений `tool_result`, а не саму команду. Tokenjuice не переписує введення shell, не запускає команди повторно й не змінює коди завершення.
 
-Наразі це застосовується до вбудованих запусків PI та динамічних інструментів OpenClaw у harness app-server Codex. Tokenjuice підключається до middleware результатів інструментів OpenClaw і
-обрізає вивід перед тим, як він повертається в активний сеанс harness-а.
+Наразі це застосовується до вбудованих запусків OpenClaw і динамічних інструментів OpenClaw в обв’язці app-server Codex. Tokenjuice підключається до проміжного ПЗ результатів інструментів OpenClaw і скорочує вивід перед тим, як він повертається в активний сеанс обв’язки.
 
-## Увімкнення Plugin-а
+## Увімкнення plugin
 
-Швидкий шлях:
+Установіть один раз:
+
+```bash
+openclaw plugins install clawhub:@openclaw/tokenjuice
+```
+
+Потім увімкніть його:
 
 ```bash
 openclaw config set plugins.entries.tokenjuice.enabled true
 ```
 
-Еквівалент:
+Еквівалентно:
 
 ```bash
 openclaw plugins enable tokenjuice
 ```
 
-OpenClaw уже постачається з цим Plugin-ом. Окремого кроку `plugins install`
-або `tokenjuice install openclaw` немає.
-
-Якщо вам зручніше редагувати config напряму:
+Якщо ви віддаєте перевагу прямому редагуванню конфігурації:
 
 ```json5
 {
@@ -56,19 +57,19 @@ OpenClaw уже постачається з цим Plugin-ом. Окремого
 
 ## Що змінює tokenjuice
 
-- Виконує Compaction шумних результатів `exec` і `bash` перед тим, як вони повертаються в сеанс.
-- Залишає оригінальне виконання команди без змін.
-- Зберігає точне читання вмісту файлів та інші команди, які tokenjuice має залишати сирими.
-- Залишається opt-in: вимкніть Plugin, якщо хочете дослівний вивід усюди.
+- Стискає шумні результати `exec` і `bash`, перш ніж вони передаються назад у сеанс.
+- Залишає початкове виконання команди без змін.
+- Зберігає точні читання вмісту файлів та інші команди, які tokenjuice має залишати необробленими.
+- Залишається opt-in: вимкніть plugin, якщо хочете всюди отримувати дослівний вивід.
 
-## Як перевірити, що він працює
+## Перевірка роботи
 
-1. Увімкніть Plugin.
+1. Увімкніть plugin.
 2. Запустіть сеанс, який може викликати `exec`.
 3. Виконайте шумну команду, наприклад `git status`.
-4. Переконайтеся, що повернений результат інструмента коротший і більш структурований, ніж сирий shell-вивід.
+4. Перевірте, що повернений результат інструмента коротший і структурованіший за необроблений вивід shell.
 
-## Вимкнення Plugin-а
+## Вимкнення plugin
 
 ```bash
 openclaw config set plugins.entries.tokenjuice.enabled false
@@ -82,6 +83,6 @@ openclaw plugins disable tokenjuice
 
 ## Пов’язане
 
-- [Exec tool](/uk/tools/exec)
-- [Thinking levels](/uk/tools/thinking)
-- [Context engine](/uk/concepts/context-engine)
+- [Інструмент Exec](/uk/tools/exec)
+- [Рівні мислення](/uk/tools/thinking)
+- [Рушій контексту](/uk/concepts/context-engine)

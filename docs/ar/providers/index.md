@@ -1,27 +1,28 @@
 ---
 read_when:
     - تريد اختيار مزوّد نموذج
-    - تحتاج إلى نظرة عامة سريعة على الخدمات الخلفية المدعومة للنماذج اللغوية الكبيرة
-summary: موفرو النماذج (نماذج اللغة الكبيرة) الذين يدعمهم OpenClaw
+    - تحتاج إلى نظرة عامة سريعة على واجهات LLM الخلفية المدعومة
+summary: موفرو النماذج (LLMs) المدعومون من OpenClaw
 title: دليل المزوّدين
 x-i18n:
-    generated_at: "2026-05-06T08:10:29Z"
+    generated_at: "2026-06-27T18:25:16Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cfc3a15880a5e1881c1a58c60c9ad7e5624350a8db848d03c7cef6ee18c14b81
+    source_hash: a340f6a48f6f1d50116316f9679b009365cd617b3453ebd9b2b31e70f6b94c31
     source_path: providers/index.md
     workflow: 16
 ---
 
-يمكن لـ OpenClaw استخدام العديد من موفري LLM. اختر موفرًا، وصادق، ثم عيّن
+OpenClaw يمكنه استخدام العديد من مزوّدي LLM. اختر مزوّدًا، ثم صادِق، ثم اضبط
 النموذج الافتراضي بصيغة `provider/model`.
 
-تبحث عن وثائق قنوات الدردشة (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/إلخ)؟ راجع [القنوات](/ar/channels).
+هل تبحث عن وثائق قنوات الدردشة (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/وغيرها)؟ راجع [القنوات](/ar/channels).
 
 ## البدء السريع
 
-1. صادق مع الموفر (عادةً عبر `openclaw onboard`).
-2. عيّن النموذج الافتراضي:
+1. صادِق مع المزوّد (عادة عبر `openclaw onboard`).
+2. اضبط النموذج الافتراضي:
 
 ```json5
 {
@@ -29,7 +30,7 @@ x-i18n:
 }
 ```
 
-## وثائق الموفرين
+## وثائق المزوّدين
 
 - [Alibaba Model Studio](/ar/providers/alibaba)
 - [Amazon Bedrock](/ar/providers/bedrock)
@@ -37,30 +38,34 @@ x-i18n:
 - [Anthropic (API + Claude CLI)](/ar/providers/anthropic)
 - [Arcee AI (نماذج Trinity)](/ar/providers/arcee)
 - [Azure Speech](/ar/providers/azure-speech)
-- [BytePlus (الدولي)](/ar/concepts/model-providers#byteplus-international)
+- [BytePlus (دولي)](/ar/concepts/model-providers#byteplus-international)
 - [Cerebras](/ar/providers/cerebras)
 - [Chutes](/ar/providers/chutes)
+- [Cohere](/ar/providers/cohere)
 - [Cloudflare AI Gateway](/ar/providers/cloudflare-ai-gateway)
 - [ComfyUI](/ar/providers/comfy)
 - [DeepSeek](/ar/providers/deepseek)
+- [ds4 (DeepSeek V4 محلي)](/ar/providers/ds4)
 - [ElevenLabs](/ar/providers/elevenlabs)
 - [fal](/ar/providers/fal)
 - [Fireworks](/ar/providers/fireworks)
 - [GitHub Copilot](/ar/providers/github-copilot)
-- [نماذج GLM](/ar/providers/glm)
+- [GMI Cloud](/ar/providers/gmi)
 - [Google (Gemini)](/ar/providers/google)
 - [Gradium](/ar/providers/gradium)
 - [Groq (استدلال LPU)](/ar/providers/groq)
 - [Hugging Face (الاستدلال)](/ar/providers/huggingface)
-- [inferrs (النماذج المحلية)](/ar/providers/inferrs)
+- [inferrs (نماذج محلية)](/ar/providers/inferrs)
 - [Kilocode](/ar/providers/kilocode)
-- [LiteLLM (Gateway موحد)](/ar/providers/litellm)
-- [LM Studio (النماذج المحلية)](/ar/providers/lmstudio)
+- [LiteLLM (Gateway موحّد)](/ar/providers/litellm)
+- [LM Studio (نماذج محلية)](/ar/providers/lmstudio)
 - [MiniMax](/ar/providers/minimax)
 - [Mistral](/ar/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/ar/providers/moonshot)
 - [NVIDIA](/ar/providers/nvidia)
-- [Ollama (النماذج السحابية + المحلية)](/ar/providers/ollama)
+- [NovitaAI](/ar/providers/novita)
+- [Ollama (نماذج سحابية + محلية)](/ar/providers/ollama)
+- [Ollama Cloud](/ar/providers/ollama-cloud)
 - [OpenAI (API + Codex)](/ar/providers/openai)
 - [OpenCode](/ar/providers/opencode)
 - [OpenCode Go](/ar/providers/opencode-go)
@@ -68,32 +73,33 @@ x-i18n:
 - [Perplexity (بحث الويب)](/ar/providers/perplexity-provider)
 - [Qianfan](/ar/providers/qianfan)
 - [Qwen Cloud](/ar/providers/qwen)
+- [Qwen OAuth / Portal](/ar/providers/qwen-oauth)
 - [Runway](/ar/providers/runway)
 - [SenseAudio](/ar/providers/senseaudio)
-- [SGLang (النماذج المحلية)](/ar/providers/sglang)
+- [SGLang (نماذج محلية)](/ar/providers/sglang)
 - [StepFun](/ar/providers/stepfun)
 - [Synthetic](/ar/providers/synthetic)
 - [Tencent Cloud (TokenHub)](/ar/providers/tencent)
 - [Together AI](/ar/providers/together)
-- [Venice (Venice AI، يركز على الخصوصية)](/ar/providers/venice)
+- [Venice (Venice AI، يركّز على الخصوصية)](/ar/providers/venice)
 - [Vercel AI Gateway](/ar/providers/vercel-ai-gateway)
-- [vLLM (النماذج المحلية)](/ar/providers/vllm)
+- [vLLM (نماذج محلية)](/ar/providers/vllm)
 - [Volcengine (Doubao)](/ar/providers/volcengine)
 - [Vydra](/ar/providers/vydra)
 - [xAI](/ar/providers/xai)
 - [Xiaomi](/ar/providers/xiaomi)
-- [Z.AI](/ar/providers/zai)
+- [Z.AI (GLM)](/ar/providers/zai)
 
-## صفحات النظرة العامة المشتركة
+## صفحات نظرة عامة مشتركة
 
-- [المتغيرات الإضافية المضمّنة](/ar/providers/models#additional-bundled-provider-variants) - Anthropic Vertex وCopilot Proxy وGemini CLI OAuth
-- [إنشاء الصور](/ar/tools/image-generation) - أداة `image_generate` المشتركة، واختيار الموفر، والتجاوز عند الفشل
-- [إنشاء الموسيقى](/ar/tools/music-generation) - أداة `music_generate` المشتركة، واختيار الموفر، والتجاوز عند الفشل
-- [إنشاء الفيديو](/ar/tools/video-generation) - أداة `video_generate` المشتركة، واختيار الموفر، والتجاوز عند الفشل
+- [تنويعات إضافية مضمّنة](/ar/providers/models#additional-bundled-provider-variants) - Anthropic Vertex وCopilot Proxy وGemini CLI OAuth
+- [توليد الصور](/ar/tools/image-generation) - أداة `image_generate` المشتركة، واختيار المزوّد، والتحويل عند الفشل
+- [توليد الموسيقى](/ar/tools/music-generation) - أداة `music_generate` المشتركة، واختيار المزوّد، والتحويل عند الفشل
+- [توليد الفيديو](/ar/tools/video-generation) - أداة `video_generate` المشتركة، واختيار المزوّد، والتحويل عند الفشل
 
-## موفرو النسخ الصوتي
+## مزوّدو النسخ
 
-- [Deepgram (النسخ الصوتي)](/ar/providers/deepgram)
+- [Deepgram (نسخ صوتي)](/ar/providers/deepgram)
 - [ElevenLabs](/ar/providers/elevenlabs#speech-to-text)
 - [Mistral](/ar/providers/mistral#audio-transcription-voxtral)
 - [OpenAI](/ar/providers/openai#speech-to-text)
@@ -102,7 +108,7 @@ x-i18n:
 
 ## أدوات المجتمع
 
-- [Claude Max API Proxy](/ar/providers/claude-max-api-proxy) - وسيط مجتمعي لبيانات اعتماد اشتراك Claude (تحقق من سياسة/شروط Anthropic قبل الاستخدام)
+- [Claude Max API Proxy](/ar/providers/claude-max-api-proxy) - وكيل مجتمعي لبيانات اعتماد اشتراك Claude (تحقّق من سياسة/شروط Anthropic قبل الاستخدام)
 
-للاطلاع على كتالوج الموفرين الكامل (xAI وGroq وMistral وغيرها) والتهيئة المتقدمة،
-راجع [موفري النماذج](/ar/concepts/model-providers).
+للاطلاع على كتالوج المزوّدين الكامل (xAI وGroq وMistral وغيرها) والإعدادات المتقدمة،
+راجع [مزوّدي النماذج](/ar/concepts/model-providers).

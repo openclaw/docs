@@ -1,30 +1,31 @@
 ---
 read_when:
-    - أنت بصدد تثبيت Plugin synology-chat أو تهيئته أو تدقيقه
-summary: يضيف واجهة قناة Synology Chat لإرسال رسائل OpenClaw وتلقيها.
+    - أنت تثبّت أو تهيّئ أو تراجع Plugin synology-chat
+summary: المكوّن الإضافي Plugin لقناة Synology Chat لقنوات OpenClaw والرسائل المباشرة.
 title: Plugin Synology Chat
 x-i18n:
-    generated_at: "2026-05-03T07:38:07Z"
+    generated_at: "2026-06-27T18:15:46Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 545eb93ad56c25e1261a0840747a494915a04773636fc14424d9e83395b4f663
+    source_hash: 13caa3939ae9abbf11f95a0578e9fcf79f280c54953bcde76a28383afa43c404
     source_path: plugins/reference/synology-chat.md
     workflow: 16
 ---
 
 # Plugin Synology Chat
 
-يضيف واجهة قناة Synology Chat لإرسال رسائل OpenClaw واستقبالها.
+Plugin قناة Synology Chat لقنوات OpenClaw والرسائل المباشرة.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/synology-chat`
 - مسار التثبيت: npm؛ ClawHub
 
-## الواجهة
+## السطح
 
-channels: synology-chat
+القنوات: synology-chat
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
 - [synology-chat](/ar/channels/synology-chat)

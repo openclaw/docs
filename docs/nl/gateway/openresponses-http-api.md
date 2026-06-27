@@ -1,40 +1,42 @@
 ---
 read_when:
-    - Clients integreren die de OpenResponses API ondersteunen
-    - Je wilt op items gebaseerde invoer, aanroepen van clienttools of SSE-gebeurtenissen
-summary: Stel vanuit de Gateway een OpenResponses-compatibel HTTP-eindpunt /v1/responses beschikbaar
-title: OpenResponses-API
+    - Clients integreren die de OpenResponses API spreken
+    - Je wilt invoer op basis van items, clienttoolaanroepen of SSE-gebeurtenissen
+summary: Stel een met OpenResponses compatibel HTTP-eindpunt /v1/responses beschikbaar vanuit de Gateway
+title: OpenResponses API
 x-i18n:
-    generated_at: "2026-05-06T09:14:51Z"
+    generated_at: "2026-06-27T17:35:18Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 69d46dc448a8856a6f3213f2fbfdba000a342ec4dcf258435b7029102cfb8119
+    source_hash: fbc41a14f5c585a0fb0aae96fb3d2376f94cdb77f41bcd7cc5e7998a27673c44
     source_path: gateway/openresponses-http-api.md
     workflow: 16
 ---
 
-OpenClaw's Gateway kan een OpenResponses-compatibel `POST /v1/responses`-endpoint aanbieden.
+OpenClaw's Gateway kan een OpenResponses-compatibel `POST /v1/responses`-eindpunt aanbieden.
 
-Dit endpoint is **standaard uitgeschakeld**. Schakel het eerst in de configuratie in.
+Dit eindpunt is **standaard uitgeschakeld**. Schakel het eerst in de configuratie in.
 
 - `POST /v1/responses`
 - Dezelfde poort als de Gateway (WS + HTTP-multiplex): `http://<gateway-host>:<port>/v1/responses`
 
-Onder de motorkap worden verzoeken uitgevoerd als een normale Gateway-agentrun (hetzelfde codepad als
-`openclaw agent`), zodat routing/machtigingen/configuratie overeenkomen met je Gateway.
+Onder de motorkap worden verzoeken uitgevoerd als een normale Gateway-agentrun (dezelfde codepath als
+`openclaw agent`), dus routing/machtigingen/configuratie komen overeen met je Gateway.
 
 ## Authenticatie, beveiliging en routing
 
 Operationeel gedrag komt overeen met [OpenAI Chat Completions](/nl/gateway/openai-http-api):
 
-- gebruik het overeenkomende HTTP-authenticatiepad van de Gateway:
-  - authenticatie met gedeeld geheim (`gateway.auth.mode="token"` of `"password"`): `Authorization: Bearer <token-or-password>`
-  - authenticatie met vertrouwde proxy (`gateway.auth.mode="trusted-proxy"`): identiteitsbewuste proxyheaders van een geconfigureerde vertrouwde proxybron; same-host loopback-proxy's vereisen expliciet `gateway.auth.trustedProxy.allowLoopback = true`
-  - open authenticatie voor private ingress (`gateway.auth.mode="none"`): geen auth-header
-- behandel het endpoint als volledige operator-toegang voor de gateway-instantie
-- negeer voor authenticatiemodi met gedeeld geheim (`token` en `password`) smallere bearer-opgegeven `x-openclaw-scopes`-waarden en herstel de normale volledige operator-standaarden
-- respecteer voor vertrouwde HTTP-modi met identiteit (bijvoorbeeld authenticatie met vertrouwde proxy of `gateway.auth.mode="none"`) `x-openclaw-scopes` wanneer aanwezig en val anders terug op de normale standaardset operatorscopes
-- selecteer agents met `model: "openclaw"`, `model: "openclaw/default"`, `model: "openclaw/<agentId>"`, of `x-openclaw-agent-id`
+- gebruik het overeenkomende Gateway HTTP-authenticatiepad:
+  - shared-secret-authenticatie (`gateway.auth.mode="token"` of `"password"`): `Authorization: Bearer <token-or-password>`
+  - trusted-proxy-authenticatie (`gateway.auth.mode="trusted-proxy"`): identiteitsbewuste proxyheaders van een geconfigureerde vertrouwde proxybron; same-host loopback-proxy's vereisen expliciet `gateway.auth.trustedProxy.allowLoopback = true`
+  - trusted-proxy lokale directe fallback: same-host aanroepers zonder `Forwarded`-, `X-Forwarded-*`- of `X-Real-IP`-headers kunnen `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` gebruiken
+  - private-ingress open authenticatie (`gateway.auth.mode="none"`): geen auth-header
+- behandel het eindpunt als volledige operatortoegang voor de gateway-instantie
+- negeer voor shared-secret-authenticatiemodi (`token` en `password`) smallere bearer-gedeclareerde `x-openclaw-scopes`-waarden en herstel de normale volledige operatorstandaarden
+- respecteer voor vertrouwde identiteitsdragende HTTP-modi (bijvoorbeeld trusted-proxy-authenticatie of `gateway.auth.mode="none"`) `x-openclaw-scopes` wanneer aanwezig en val anders terug op de normale standaardset operatorscopes
+- selecteer agents met `model: "openclaw"`, `model: "openclaw/default"`, `model: "openclaw/<agentId>"` of `x-openclaw-agent-id`
 - gebruik `x-openclaw-model` wanneer je het backendmodel van de geselecteerde agent wilt overschrijven
 - gebruik `x-openclaw-session-key` voor expliciete sessierouting
 - gebruik `x-openclaw-message-channel` wanneer je een niet-standaard synthetische ingress-kanaalcontext wilt
@@ -42,18 +44,18 @@ Operationeel gedrag komt overeen met [OpenAI Chat Completions](/nl/gateway/opena
 Auth-matrix:
 
 - `gateway.auth.mode="token"` of `"password"` + `Authorization: Bearer ...`
-  - bewijst bezit van het gedeelde gateway-operatorgeheim
+  - bewijst bezit van het gedeelde operatorgeheim van de gateway
   - negeert smallere `x-openclaw-scopes`
   - herstelt de volledige standaardset operatorscopes:
     `operator.admin`, `operator.approvals`, `operator.pairing`,
     `operator.read`, `operator.talk.secrets`, `operator.write`
-  - behandelt chatbeurten op dit endpoint als beurten van eigenaar-afzender
-- vertrouwde HTTP-modi met identiteit (bijvoorbeeld authenticatie met vertrouwde proxy, of `gateway.auth.mode="none"` op private ingress)
+  - behandelt chatbeurten op dit eindpunt als beurten van de eigenaar-afzender
+- vertrouwde identiteitsdragende HTTP-modi (bijvoorbeeld trusted-proxy-authenticatie, of `gateway.auth.mode="none"` op private ingress)
   - respecteren `x-openclaw-scopes` wanneer de header aanwezig is
-  - vallen terug op de normale standaardset operatorscopes wanneer de header afwezig is
-  - verliezen alleen eigenaarsemantiek wanneer de aanroeper scopes expliciet beperkt en `operator.admin` weglaat
+  - vallen terug op de normale standaardset operatorscopes wanneer de header ontbreekt
+  - verliezen alleen eigenaarssemantiek wanneer de aanroeper scopes expliciet vernauwt en `operator.admin` weglaat
 
-Schakel dit endpoint in of uit met `gateway.http.endpoints.responses.enabled`.
+Schakel dit eindpunt in of uit met `gateway.http.endpoints.responses.enabled`.
 
 Hetzelfde compatibiliteitsoppervlak bevat ook:
 
@@ -62,25 +64,27 @@ Hetzelfde compatibiliteitsoppervlak bevat ook:
 - `POST /v1/embeddings`
 - `POST /v1/chat/completions`
 
-Zie [OpenAI Chat Completions](/nl/gateway/openai-http-api#agent-first-model-contract) en [Modellijst en agentrouting](/nl/gateway/openai-http-api#model-list-and-agent-routing) voor de canonieke uitleg over hoe agentdoelmodellen, `openclaw/default`, embeddings-doorvoer en overschrijvingen van backendmodellen samenhangen.
+Zie voor de canonieke uitleg over hoe agentgerichte modellen, `openclaw/default`, embeddings-pass-through en backendmodeloverschrijvingen samenhangen [OpenAI Chat Completions](/nl/gateway/openai-http-api#agent-first-model-contract) en [Modellijst en agentrouting](/nl/gateway/openai-http-api#model-list-and-agent-routing).
 
-## Sessiebegedrag
+## Sessgedrag
 
-Standaard is het endpoint **statusloos per verzoek** (bij elke aanroep wordt een nieuwe sessiesleutel gegenereerd).
+Standaard is het eindpunt **stateless per verzoek** (bij elke aanroep wordt een nieuwe sessiesleutel gegenereerd).
 
-Als het verzoek een OpenResponses-`user`-string bevat, leidt de Gateway daaruit een stabiele sessiesleutel af,
+Als het verzoek een OpenResponses-`user`-tekenreeks bevat, leidt de Gateway daaruit een stabiele sessiesleutel af,
 zodat herhaalde aanroepen een agentsessie kunnen delen.
 
 ## Verzoekvorm (ondersteund)
 
 Het verzoek volgt de OpenResponses-API met itemgebaseerde invoer. Huidige ondersteuning:
 
-- `input`: string of array van itemobjecten.
+- `input`: tekenreeks of array van itemobjecten.
 - `instructions`: samengevoegd in de systeemprompt.
-- `tools`: clienttooldefinities (function tools).
-- `tool_choice`: filtert of vereist clienttools.
+- `tools`: clienttooldefinities (functietools).
+- `tool_choice`: `"auto"`, `"none"`, `"required"` of `{ "type": "function", "name": "..." }` om clienttools te filteren of te vereisen.
 - `stream`: schakelt SSE-streaming in.
 - `max_output_tokens`: best-effort uitvoerlimiet (providerafhankelijk).
+- `temperature`: best-effort samplingtemperatuur doorgestuurd naar de provider. Genegeerd door de op ChatGPT gebaseerde Codex Responses-backend, die vaste server-side sampling gebruikt.
+- `top_p`: best-effort nucleus-sampling doorgestuurd naar de provider. Dezelfde Codex Responses-kanttekening als bij `temperature`.
 - `user`: stabiele sessierouting.
 
 Geaccepteerd maar **momenteel genegeerd**:
@@ -103,9 +107,9 @@ Rollen: `system`, `developer`, `user`, `assistant`.
 
 - `system` en `developer` worden toegevoegd aan de systeemprompt.
 - Het meest recente `user`- of `function_call_output`-item wordt het "huidige bericht."
-- Eerdere user-/assistant-berichten worden als geschiedenis opgenomen voor context.
+- Eerdere gebruikers-/assistentberichten worden als geschiedenis opgenomen voor context.
 
-### `function_call_output` (beurtgebaseerde tools)
+### `function_call_output` (turn-based tools)
 
 Stuur toolresultaten terug naar het model:
 
@@ -119,14 +123,16 @@ Stuur toolresultaten terug naar het model:
 
 ### `reasoning` en `item_reference`
 
-Geaccepteerd voor schemacompatibiliteit, maar genegeerd bij het bouwen van de prompt.
+Geaccepteerd voor schemacompatibiliteit maar genegeerd bij het opbouwen van de prompt.
 
-## Tools (clientzijdige functietools)
+## Tools (client-side functietools)
 
-Lever tools aan met `tools: [{ type: "function", function: { name, description?, parameters? } }]`.
+Lever tools aan met `tools: [{ type: "function", name, description?, parameters? }]`.
 
 Als de agent besluit een tool aan te roepen, retourneert de response een `function_call`-uitvoeritem.
-Daarna stuur je een vervolgverzoek met `function_call_output` om de beurt voort te zetten.
+Je stuurt daarna een vervolgverzoek met `function_call_output` om de beurt voort te zetten.
+
+Voor `tool_choice: "required"` en functie-vastgezette `tool_choice` vernauwt het eindpunt de blootgestelde set clientfunctietools, instrueert het de runtime om een clienttool aan te roepen voordat er wordt geantwoord, en wijst het de beurt af als deze geen overeenkomende gestructureerde clienttoolaanroep bevat. Dit contract geldt voor de door de aanroeper aangeleverde HTTP-`tools`-lijst, niet voor elke interne OpenClaw-agenttool. Niet-streaming verzoeken retourneren `502` met een `api_error`; streamingverzoeken zenden een `response.failed`-event uit. Dit komt overeen met het `/v1/chat/completions`-contract.
 
 ## Afbeeldingen (`input_image`)
 
@@ -166,36 +172,36 @@ Maximale grootte (huidig): 5MB.
 Huidig gedrag:
 
 - Bestandsinhoud wordt gedecodeerd en toegevoegd aan de **systeemprompt**, niet aan het gebruikersbericht,
-  zodat deze vluchtig blijft (niet opgeslagen in de sessiegeschiedenis).
+  zodat deze vluchtig blijft (niet persistent in de sessiegeschiedenis).
 - Gedecodeerde bestandstekst wordt verpakt als **niet-vertrouwde externe inhoud** voordat deze wordt toegevoegd,
   zodat bestandsbytes als data worden behandeld, niet als vertrouwde instructies.
-- Het geinjecteerde blok gebruikt expliciete grensmarkeringen zoals
+- Het geïnjecteerde blok gebruikt expliciete grensmarkeringen zoals
   `<<<EXTERNAL_UNTRUSTED_CONTENT id="...">>>` /
   `<<<END_EXTERNAL_UNTRUSTED_CONTENT id="...">>>` en bevat een
   `Source: External`-metadataregel.
-- Dit bestandsinvoerpad laat de lange `SECURITY NOTICE:`-banner bewust weg om
+- Dit bestandsinvoerpad laat bewust de lange `SECURITY NOTICE:`-banner weg om
   promptbudget te behouden; de grensmarkeringen en metadata blijven wel aanwezig.
-- PDF's worden eerst geparsed op tekst. Als er weinig tekst wordt gevonden, worden de eerste pagina's
-  gerasterd naar afbeeldingen en doorgegeven aan het model, en gebruikt het geinjecteerde bestandsblok
+- PDF's worden eerst op tekst geparsed. Als er weinig tekst wordt gevonden, worden de eerste pagina's
+  gerasterd naar afbeeldingen en aan het model doorgegeven, en gebruikt het geïnjecteerde bestandsblok
   de placeholder `[PDF content rendered to images]`.
 
-PDF-parsing wordt geleverd door de gebundelde `document-extract`-Plugin, die de
-Node-vriendelijke legacybuild van `pdfjs-dist` gebruikt (geen worker). De moderne PDF.js-build
-verwacht browserworkers/DOM-globals, dus die wordt niet gebruikt in de Gateway.
+PDF-parsing wordt geleverd door de gebundelde `document-extract`-Plugin, die
+`clawpdf` en de meegeleverde PDFium WebAssembly-runtime gebruikt voor tekstextractie en
+paginaweergave.
 
-Standaarden voor URL-fetch:
+Standaarden voor URL-ophalen:
 
 - `files.allowUrl`: `true`
 - `images.allowUrl`: `true`
-- `maxUrlParts`: `8` (totaal aantal URL-gebaseerde `input_file` + `input_image`-delen per verzoek)
+- `maxUrlParts`: `8` (totaal aantal URL-gebaseerde `input_file` + `input_image`-onderdelen per verzoek)
 - Verzoeken worden bewaakt (DNS-resolutie, blokkering van private IP's, redirectlimieten, time-outs).
-- Optionele allowlists voor hostnamen worden per invoertype ondersteund (`files.urlAllowlist`, `images.urlAllowlist`).
+- Optionele hostnaam-allowlists worden per invoertype ondersteund (`files.urlAllowlist`, `images.urlAllowlist`).
   - Exacte host: `"cdn.example.com"`
-  - Wildcard-subdomeinen: `"*.assets.example.com"` (komt niet overeen met apex)
-  - Lege of weggelaten allowlists betekenen geen allowlistbeperking voor hostnamen.
-- Stel `files.allowUrl: false` en/of `images.allowUrl: false` in om URL-gebaseerde fetches volledig uit te schakelen.
+  - Wildcard-subdomeinen: `"*.assets.example.com"` (matcht de apex niet)
+  - Lege of weggelaten allowlists betekenen geen hostnaam-allowlistbeperking.
+- Stel `files.allowUrl: false` en/of `images.allowUrl: false` in om URL-gebaseerd ophalen volledig uit te schakelen.
 
-## Limieten voor bestanden + afbeeldingen (config)
+## Limieten voor bestanden + afbeeldingen (configuratie)
 
 Standaarden kunnen worden aangepast onder `gateway.http.endpoints.responses`:
 
@@ -265,13 +271,13 @@ Standaarden wanneer weggelaten:
 - `images.maxBytes`: 10MB
 - `images.maxRedirects`: 3
 - `images.timeoutMs`: 10s
-- HEIC/HEIF-`input_image`-bronnen worden geaccepteerd en genormaliseerd naar JPEG voordat ze aan de provider worden geleverd.
+- HEIC/HEIF-`input_image`-bronnen worden geaccepteerd wanneer een systeemconverter beschikbaar is en worden genormaliseerd naar JPEG voordat ze aan de provider worden geleverd. Ondersteunde converters zijn macOS `sips`, ImageMagick, GraphicsMagick of ffmpeg.
 
 Beveiligingsopmerking:
 
-- URL-allowlists worden afgedwongen voor fetch en bij redirect-hops.
+- URL-allowlists worden afgedwongen vóór het ophalen en bij redirect-hops.
 - Het allowlisten van een hostnaam omzeilt blokkering van private/interne IP's niet.
-- Pas voor gateways die aan internet zijn blootgesteld netwerk-egresscontroles toe naast app-level beveiligingen.
+- Pas voor internetblootgestelde gateways netwerk-egresscontroles toe naast app-niveau bewaking.
   Zie [Beveiliging](/nl/gateway/security).
 
 ## Streaming (SSE)
@@ -297,8 +303,8 @@ Eventtypen die momenteel worden uitgezonden:
 
 ## Gebruik
 
-`usage` wordt ingevuld wanneer de onderliggende provider tokentellingen rapporteert.
-OpenClaw normaliseert veelvoorkomende OpenAI-stijl aliassen voordat die tellers
+`usage` wordt gevuld wanneer de onderliggende provider tokenaantallen rapporteert.
+OpenClaw normaliseert veelvoorkomende OpenAI-achtige aliassen voordat die tellers
 downstream status-/sessieoppervlakken bereiken, waaronder `input_tokens` / `output_tokens`
 en `prompt_tokens` / `completion_tokens`.
 
@@ -312,8 +318,8 @@ Fouten gebruiken een JSON-object zoals:
 
 Veelvoorkomende gevallen:
 
-- `401` ontbrekende/ongeldige auth
-- `400` ongeldige requestbody
+- `401` ontbrekende/ongeldige authenticatie
+- `400` ongeldige request body
 - `405` verkeerde methode
 
 ## Voorbeelden
@@ -347,5 +353,5 @@ curl -N http://127.0.0.1:18789/v1/responses \
 
 ## Gerelateerd
 
-- [OpenAI-chatcompletions](/nl/gateway/openai-http-api)
+- [OpenAI-chatvoltooiingen](/nl/gateway/openai-http-api)
 - [OpenAI](/nl/providers/openai)

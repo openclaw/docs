@@ -1,32 +1,33 @@
 ---
 read_when:
     - به‌روزرسانی طرح‌واره‌های پروتکل یا تولید کد
-summary: طرح‌واره‌های TypeBox به‌عنوان تنها منبع حقیقت برای پروتکل Gateway
+summary: طرح‌واره‌های TypeBox به‌عنوان تنها منبع حقیقت برای پروتکل gateway
 title: TypeBox
 x-i18n:
-    generated_at: "2026-05-11T20:32:20Z"
+    generated_at: "2026-06-27T17:38:31Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ecc9a69ac6d4ac101a4a6f34e44acfbe952dce0f90d178d4f8559191fb92c3b4
+    source_hash: f2f3da11e9dcf3250fd77e0c43f4ed918551a536d93fa71bce95eaf3d7539f6d
     source_path: concepts/typebox.md
     workflow: 16
 ---
 
-TypeBox یک کتابخانهٔ schema با رویکرد TypeScript-first است. ما از آن برای تعریف **پروتکل WebSocket Gateway** (handshake، request/response، رویدادهای سرور) استفاده می‌کنیم. این schemaها **اعتبارسنجی runtime**، **خروجی JSON Schema**، و **تولید کد Swift** برای اپلیکیشن macOS را هدایت می‌کنند. یک منبع حقیقت؛ هر چیز دیگر تولید می‌شود.
+TypeBox یک کتابخانهٔ schema با رویکرد TypeScript-first است. ما از آن برای تعریف **پروتکل WebSocket مربوط به Gateway** استفاده می‌کنیم (handshake، request/response، server events). این schemaها **اعتبارسنجی زمان اجرا**، **خروجی JSON Schema**، و **تولید کد Swift** برای برنامهٔ macOS را هدایت می‌کنند. یک منبع حقیقت؛ بقیهٔ چیزها تولید می‌شوند.
 
-اگر زمینهٔ سطح‌بالاتر پروتکل را می‌خواهید، از
+اگر زمینهٔ سطح بالاتر پروتکل را می‌خواهید، از
 [معماری Gateway](/fa/concepts/architecture) شروع کنید.
 
 ## مدل ذهنی (۳۰ ثانیه)
 
 هر پیام Gateway WS یکی از سه frame است:
 
-- **Request**: `{ type: "req", id, method, params }`
-- **Response**: `{ type: "res", id, ok, payload | error }`
-- **Event**: `{ type: "event", event, payload, seq?, stateVersion? }`
+- **درخواست**: `{ type: "req", id, method, params }`
+- **پاسخ**: `{ type: "res", id, ok, payload | error }`
+- **رویداد**: `{ type: "event", event, payload, seq?, stateVersion? }`
 
-اولین frame **باید** یک request از نوع `connect` باشد. پس از آن، کلاینت‌ها می‌توانند
-methodها را فراخوانی کنند (مثلاً `health`، `send`، `chat.send`) و در رویدادها subscribe شوند (مثلاً
+نخستین frame **باید** یک درخواست `connect` باشد. پس از آن، clientها می‌توانند
+methodها را فراخوانی کنند (برای نمونه `health`، `send`، `chat.send`) و در رویدادها مشترک شوند (برای نمونه
 `presence`، `tick`، `agent`).
 
 جریان اتصال (حداقلی):
@@ -40,28 +41,28 @@ Client                    Gateway
   |<---- res:health ----------|
 ```
 
-methodها + رویدادهای رایج:
+methodها و eventهای رایج:
 
-| دسته‌بندی | نمونه‌ها                                                   | نکات                              |
+| دسته | نمونه‌ها | یادداشت‌ها |
 | ---------- | ---------------------------------------------------------- | ---------------------------------- |
-| Core       | `connect`, `health`, `status`                              | `connect` باید اولین باشد          |
+| هسته | `connect`, `health`, `status` | `connect` باید اولین مورد باشد |
 | پیام‌رسانی | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail` | side-effectها به `idempotencyKey` نیاز دارند |
-| Chat       | `chat.history`, `chat.send`, `chat.abort`                  | WebChat از این‌ها استفاده می‌کند  |
-| Sessionها  | `sessions.list`, `sessions.patch`, `sessions.delete`       | مدیریت session                    |
-| Automation | `wake`, `cron.list`, `cron.run`, `cron.runs`               | کنترل wake + cron                 |
-| Nodeها     | `node.list`, `node.invoke`, `node.pair.*`                  | Gateway WS + کنش‌های node         |
-| رویدادها  | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown`  | push سرور                         |
+| چت | `chat.history`, `chat.send`, `chat.abort` | WebChat از این‌ها استفاده می‌کند |
+| نشست‌ها | `sessions.list`, `sessions.patch`, `sessions.delete` | مدیریت نشست |
+| خودکارسازی | `wake`, `cron.list`, `cron.run`, `cron.runs` | کنترل wake + cron |
+| Nodeها | `node.list`, `node.invoke`, `node.pair.*` | Gateway WS + کنش‌های node |
+| رویدادها | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown` | ارسال از سمت server |
 
-فهرست **discovery** تبلیغ‌شدهٔ معتبر در
+فهرست معتبر **کشف** تبلیغ‌شده در
 `src/gateway/server-methods-list.ts` (`listGatewayMethods`, `GATEWAY_EVENTS`) قرار دارد.
 
-## محل schemaها
+## محل قرارگیری schemaها
 
-- منبع: `src/gateway/protocol/schema.ts`
-- اعتبارسنج‌های runtime (AJV): `src/gateway/protocol/index.ts`
-- رجیستری قابلیت/feature discovery تبلیغ‌شده: `src/gateway/server-methods-list.ts`
-- handshake سرور + dispatch متدها: `src/gateway/server.impl.ts`
-- کلاینت Node: `src/gateway/client.ts`
+- منبع: `packages/gateway-protocol/src/schema.ts`
+- اعتبارسنج‌های زمان اجرا (AJV): `packages/gateway-protocol/src/index.ts`
+- رجیستری feature/discovery تبلیغ‌شده: `src/gateway/server-methods-list.ts`
+- handshake سرور + dispatch متد: `src/gateway/server.impl.ts`
+- client مربوط به Node: `src/gateway/client.ts`
 - JSON Schema تولیدشده: `dist/protocol.schema.json`
 - مدل‌های Swift تولیدشده: `apps/macos/Sources/OpenClawProtocol/GatewayModels.swift`
 
@@ -70,24 +71,25 @@ methodها + رویدادهای رایج:
 - `pnpm protocol:gen`
   - JSON Schema (draft-07) را در `dist/protocol.schema.json` می‌نویسد
 - `pnpm protocol:gen:swift`
-  - مدل‌های Swift gateway را تولید می‌کند
+  - مدل‌های Swift مربوط به gateway را تولید می‌کند
 - `pnpm protocol:check`
-  - هر دو generator را اجرا می‌کند و بررسی می‌کند که خروجی commit شده باشد
+  - هر دو generator را اجرا می‌کند و بررسی می‌کند خروجی commit شده باشد
 
-## نحوهٔ استفاده از schemaها در runtime
+## نحوهٔ استفاده از schemaها در زمان اجرا
 
 - **سمت سرور**: هر frame ورودی با AJV اعتبارسنجی می‌شود. handshake فقط
-  request از نوع `connect` را می‌پذیرد که params آن با `ConnectParams` منطبق باشد.
-- **سمت کلاینت**: کلاینت JS پیش از استفاده از frameهای event و response آن‌ها را اعتبارسنجی می‌کند.
-- **Feature discovery**: Gateway فهرست محافظه‌کارانهٔ `features.methods`
+  درخواست `connect`ای را می‌پذیرد که params آن با `ConnectParams` سازگار باشد.
+- **سمت client**: client جاوااسکریپت frameهای event و response را پیش از
+  استفاده اعتبارسنجی می‌کند.
+- **کشف feature**: Gateway یک فهرست محافظه‌کارانهٔ `features.methods`
   و `features.events` را در `hello-ok` از `listGatewayMethods()` و
   `GATEWAY_EVENTS` ارسال می‌کند.
-- این فهرست discovery یک dump تولیدشده از همهٔ helperهای قابل‌فراخوانی در
+- آن فهرست کشف، dump تولیدشده از همهٔ helperهای قابل فراخوانی در
   `coreGatewayHandlers` نیست؛ برخی helper RPCها در
-  `src/gateway/server-methods/*.ts` پیاده‌سازی شده‌اند بدون اینکه در فهرست feature تبلیغ‌شده
-  شمارش شوند.
+  `src/gateway/server-methods/*.ts` پیاده‌سازی شده‌اند، بدون اینکه در فهرست feature تبلیغ‌شده
+  enumerate شده باشند.
 
-## frameهای نمونه
+## نمونه frameها
 
 Connect (اولین پیام):
 
@@ -111,7 +113,7 @@ Connect (اولین پیام):
 }
 ```
 
-response از نوع Hello-ok:
+پاسخ Hello-ok:
 
 ```json
 {
@@ -134,7 +136,7 @@ response از نوع Hello-ok:
 }
 ```
 
-Request + response:
+درخواست + پاسخ:
 
 ```json
 { "type": "req", "id": "r1", "method": "health" }
@@ -144,13 +146,13 @@ Request + response:
 { "type": "res", "id": "r1", "ok": true, "payload": { "ok": true } }
 ```
 
-Event:
+رویداد:
 
 ```json
 { "type": "event", "event": "tick", "payload": { "ts": 1730000000 }, "seq": 12 }
 ```
 
-## کلاینت حداقلی (Node.js)
+## client حداقلی (Node.js)
 
 کوچک‌ترین جریان مفید: connect + health.
 
@@ -192,13 +194,13 @@ ws.on("message", (data) => {
 });
 ```
 
-## مثال کامل: افزودن یک method به‌صورت end-to-end
+## مثال کارشده: افزودن یک method به‌صورت end-to-end
 
-نمونه: یک request جدید به نام `system.echo` اضافه کنید که `{ ok: true, text }` برمی‌گرداند.
+مثال: افزودن یک درخواست جدید `system.echo` که `{ ok: true, text }` را برمی‌گرداند.
 
 1. **Schema (منبع حقیقت)**
 
-به `src/gateway/protocol/schema.ts` اضافه کنید:
+به `packages/gateway-protocol/src/schema.ts` اضافه کنید:
 
 ```ts
 export const SystemEchoParamsSchema = Type.Object(
@@ -226,7 +228,7 @@ export type SystemEchoResult = Static<typeof SystemEchoResultSchema>;
 
 2. **اعتبارسنجی**
 
-در `src/gateway/protocol/index.ts`، یک validator از AJV export کنید:
+در `packages/gateway-protocol/src/index.ts`، یک اعتبارسنج AJV را export کنید:
 
 ```ts
 export const validateSystemEchoParams = ajv.compile<SystemEchoParams>(SystemEchoParamsSchema);
@@ -249,11 +251,11 @@ export const systemHandlers: GatewayRequestHandlers = {
 سپس `"system.echo"` را به ورودی `listGatewayMethods` در
 `src/gateway/server-methods-list.ts` اضافه کنید.
 
-اگر method توسط کلاینت‌های operator یا node قابل‌فراخوانی است، آن را در
-`src/gateway/method-scopes.ts` نیز طبقه‌بندی کنید تا scope enforcement و تبلیغ feature در `hello-ok`
-هم‌راستا بمانند.
+اگر method توسط operator یا node clientها قابل فراخوانی است، آن را در
+`src/gateway/method-scopes.ts` نیز دسته‌بندی کنید تا اعمال scope و تبلیغ feature
+در `hello-ok` هم‌راستا بمانند.
 
-4. **تولید دوباره**
+4. **تولید مجدد**
 
 ```bash
 pnpm protocol:check
@@ -265,45 +267,46 @@ pnpm protocol:check
 
 ## رفتار تولید کد Swift
 
-generator مربوط به Swift این موارد را تولید می‌کند:
+generator مربوط به Swift این موارد را emit می‌کند:
 
-- enum به نام `GatewayFrame` با caseهای `req`، `res`، `event`، و `unknown`
-- structها/enumهای payload با type قوی
+- enum مربوط به `GatewayFrame` با caseهای `req`، `res`، `event`، و `unknown`
+- structها/enumهای payload با typeهای قوی
 - مقدارهای `ErrorCode`، `GATEWAY_PROTOCOL_VERSION`، و `GATEWAY_MIN_PROTOCOL_VERSION`
 
-نوع‌های ناشناختهٔ frame به‌عنوان payload خام برای سازگاری رو به جلو حفظ می‌شوند.
+نوع‌های ناشناختهٔ frame برای سازگاری رو به جلو به‌صورت raw payload حفظ می‌شوند.
 
 ## نسخه‌بندی + سازگاری
 
-- `PROTOCOL_VERSION` در `src/gateway/protocol/version.ts` قرار دارد.
-- کلاینت‌ها `minProtocol` + `maxProtocol` را ارسال می‌کنند؛ سرور rangeهایی را که
-  پروتکل فعلی آن را شامل نمی‌شوند رد می‌کند.
-- مدل‌های Swift نوع‌های ناشناختهٔ frame را نگه می‌دارند تا کلاینت‌های قدیمی‌تر نشکنند.
+- `PROTOCOL_VERSION` در `packages/gateway-protocol/src/version.ts` قرار دارد.
+- clientها `minProtocol` + `maxProtocol` را ارسال می‌کنند؛ سرور rangeهایی را که
+  پروتکل فعلی آن را شامل نشوند رد می‌کند.
+- مدل‌های Swift نوع‌های ناشناختهٔ frame را نگه می‌دارند تا clientهای قدیمی‌تر دچار شکست نشوند.
 
 ## الگوها و قراردادهای schema
 
 - بیشتر objectها برای payloadهای سخت‌گیرانه از `additionalProperties: false` استفاده می‌کنند.
-- `NonEmptyString` پیش‌فرض برای IDها و نام‌های method/event است.
+- `NonEmptyString` مقدار پیش‌فرض برای IDها و نام‌های method/event است.
 - `GatewayFrame` سطح بالا از یک **discriminator** روی `type` استفاده می‌کند.
-- methodهایی که side effect دارند معمولاً به یک `idempotencyKey` در params نیاز دارند
-  (نمونه: `send`، `poll`، `agent`، `chat.send`).
-- `agent` مقدار اختیاری `internalEvents` را برای context orchestration تولیدشده در runtime می‌پذیرد
-  (برای مثال تحویل تکمیل task مربوط به subagent/cron)؛ با این مورد به‌عنوان سطح API داخلی رفتار کنید.
+- methodهایی که side effect دارند معمولاً در params به `idempotencyKey` نیاز دارند
+  (مثال: `send`، `poll`، `agent`، `chat.send`).
+- `agent` برای زمینهٔ orchestration تولیدشده در زمان اجرا، `internalEvents` اختیاری را می‌پذیرد
+  (برای نمونه handoff تکمیل subagent/cron task)؛ این را به‌عنوان سطح API داخلی در نظر بگیرید.
 
 ## JSON زندهٔ schema
 
-JSON Schema تولیدشده در repo در `dist/protocol.schema.json` قرار دارد. فایل raw منتشرشده معمولاً در این نشانی در دسترس است:
+JSON Schema تولیدشده در repo در `dist/protocol.schema.json` قرار دارد. فایل raw منتشرشده
+معمولاً در این نشانی در دسترس است:
 
 - [https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json](https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json)
 
-## وقتی schemaها را تغییر می‌دهید
+## هنگام تغییر schemaها
 
 1. schemaهای TypeBox را به‌روزرسانی کنید.
 2. method/event را در `src/gateway/server-methods-list.ts` ثبت کنید.
-3. وقتی RPC جدید به طبقه‌بندی scope مربوط به operator یا
+3. وقتی RPC جدید به دسته‌بندی scope مربوط به operator یا
    node نیاز دارد، `src/gateway/method-scopes.ts` را به‌روزرسانی کنید.
 4. `pnpm protocol:check` را اجرا کنید.
-5. schema و مدل‌های Swift تولیدشده را commit کنید.
+5. schema تولیدشده + مدل‌های Swift را commit کنید.
 
 ## مرتبط
 

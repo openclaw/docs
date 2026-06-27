@@ -1,30 +1,32 @@
 ---
 read_when:
-    - 你正在安裝、設定或稽核 qwen Plugin
-summary: 為 OpenClaw 新增對 Qwen、Qwen Cloud、Model Studio 和 DashScope 模型提供者的支援。
-title: Qwen Plugin
+    - 你正在安裝、設定或稽核 qwen 外掛
+summary: 為 OpenClaw 新增 Qwen、Qwen Cloud、Model Studio、DashScope、Qwen Oauth、Qwen Portal、Qwen CLI 模型供應商支援。
+title: Qwen 外掛
 x-i18n:
-    generated_at: "2026-05-02T20:59:34Z"
+    generated_at: "2026-06-27T19:45:53Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 47e72a024e652f78584765a563bbdf725e3fd40a07c0e2ebf331a1858387b68d
+    source_hash: 3be7c8f459e2ec3b5c5c13f5c67382cc84b568c3aeedeaedceab9259b29886f1
     source_path: plugins/reference/qwen.md
     workflow: 16
 ---
 
-# Qwen Plugin
+# Qwen 外掛
 
-為 OpenClaw 新增 Qwen、Qwen Cloud、Model Studio、DashScope 模型提供者支援。
+為 OpenClaw 新增 Qwen、Qwen Cloud、Model Studio、DashScope、Qwen Oauth、Qwen Portal、Qwen 命令列介面模型供應商支援。
 
-## 發行
+## 發佈
 
 - 套件：`@openclaw/qwen-provider`
-- 安裝路徑：包含於 OpenClaw
+- 安裝路徑：npm；ClawHub：`clawhub:@openclaw/qwen-provider`
 
 ## 介面
 
-providers: qwen, qwencloud, modelstudio, dashscope; contracts: mediaUnderstandingProviders, videoGenerationProviders
+providers: qwen, qwencloud, modelstudio, dashscope, qwen-oauth, qwen-portal, qwen-cli; contracts: mediaUnderstandingProviders, videoGenerationProviders
 
 ## 相關文件
 
 - [qwen](/zh-TW/providers/qwen)
+- [qwen-oauth](/zh-TW/providers/qwen-oauth)

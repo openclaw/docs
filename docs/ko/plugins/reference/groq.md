@@ -1,13 +1,14 @@
 ---
 read_when:
-    - groq Plugin을 설치, 구성 또는 점검하고 있습니다
+    - groq Plugin을 설치, 구성 또는 감사하는 중입니다.
 summary: OpenClaw에 Groq 모델 제공자 지원을 추가합니다.
 title: Groq Plugin
 x-i18n:
-    generated_at: "2026-05-02T21:03:41Z"
+    generated_at: "2026-06-27T17:51:21Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 570a15776efbe94b41518ca9c5fac1559c49be0d8f6c5bd71fdcd0841a0626e9
+    source_hash: 41bae84645b09b5185d62530788a17be0338e93e6f29b9cca11438b69932bbc5
     source_path: plugins/reference/groq.md
     workflow: 16
 ---
@@ -19,7 +20,7 @@ OpenClaw에 Groq 모델 제공자 지원을 추가합니다.
 ## 배포
 
 - 패키지: `@openclaw/groq-provider`
-- 설치 경로: OpenClaw에 포함됨
+- 설치 경로: npm; ClawHub: `clawhub:@openclaw/groq-provider`
 
 ## 표면
 

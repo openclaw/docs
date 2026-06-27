@@ -2,65 +2,68 @@
 read_when:
     - Anda ingin memahami cara kerja memory_search
     - Anda ingin memilih penyedia embedding
-    - Anda ingin menyesuaikan kualitas pencarian
-summary: Cara pencarian memori menemukan catatan relevan menggunakan embedding dan pengambilan hibrida
+    - Anda ingin menyetel kualitas pencarian
+summary: Cara pencarian memori menemukan catatan yang relevan menggunakan embedding dan pengambilan hibrida
 title: Pencarian memori
 x-i18n:
-    generated_at: "2026-05-02T09:18:14Z"
+    generated_at: "2026-06-27T17:24:37Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2a71fb0809d5c70689e8046f854e4b4b4e79f45769ac2964e40a762ebb4e91a8
+    source_hash: b0bcb8cf400100ba8b6ddbb46bdf8b2a89a8bc32a550ee6df47c874e7e9e0879
     source_path: concepts/memory-search.md
     workflow: 16
 ---
 
-`memory_search` menemukan catatan yang relevan dari file memori Anda, meskipun
-susunan katanya berbeda dari teks asli. Cara kerjanya adalah dengan mengindeks memori ke dalam
+`memory_search` menemukan catatan yang relevan dari file memori Anda, bahkan ketika
+susunan katanya berbeda dari teks asli. Ini bekerja dengan mengindeks memori menjadi
 potongan kecil dan mencarinya menggunakan embedding, kata kunci, atau keduanya.
 
 ## Mulai cepat
 
-Jika Anda memiliki langganan GitHub Copilot, atau kunci API OpenAI, Gemini, Voyage, atau Mistral
-yang dikonfigurasi, pencarian memori bekerja secara otomatis. Untuk menetapkan penyedia
-secara eksplisit:
+Pencarian memori menggunakan embedding OpenAI secara default. Untuk menggunakan
+backend embedding lain, tetapkan penyedia secara eksplisit:
 
 ```json5
 {
   agents: {
     defaults: {
       memorySearch: {
-        provider: "openai", // or "gemini", "local", "ollama", etc.
+        provider: "openai", // or "gemini", "local", "ollama", "openai-compatible", etc.
       },
     },
   },
 }
 ```
 
-Untuk penyiapan multi-endpoint, `provider` juga dapat berupa entri kustom
-`models.providers.<id>`, seperti `ollama-5080`, ketika penyedia tersebut menetapkan
-`api: "ollama"` atau pemilik adapter embedding lainnya.
+Untuk penyiapan multi-endpoint dengan penyedia khusus memori, `provider` juga dapat
+berupa entri `models.providers.<id>` kustom, seperti `ollama-5080`, ketika
+penyedia tersebut menetapkan `api: "ollama"` atau pemilik adaptor embedding memori lain.
 
-Untuk embedding lokal tanpa kunci API, tetapkan `provider: "local"`. Checkout sumber
+Untuk embedding lokal tanpa kunci API, instal
+`@openclaw/llama-cpp-provider` dan tetapkan `provider: "local"`. Checkout sumber
 mungkin masih memerlukan persetujuan build native: `pnpm approve-builds` lalu
 `pnpm rebuild node-llama-cpp`.
 
 Beberapa endpoint embedding yang kompatibel dengan OpenAI memerlukan label asimetris seperti
 `input_type: "query"` untuk pencarian dan `input_type: "document"` atau `"passage"`
 untuk potongan yang diindeks. Konfigurasikan dengan `memorySearch.queryInputType` dan
-`memorySearch.documentInputType`; lihat [referensi konfigurasi Memori](/id/reference/memory-config#provider-specific-config).
+`memorySearch.documentInputType`; lihat [Referensi konfigurasi memori](/id/reference/memory-config#provider-specific-config).
 
 ## Penyedia yang didukung
 
-| Penyedia       | ID               | Perlu kunci API | Catatan                                                |
-| -------------- | ---------------- | --------------- | ------------------------------------------------------ |
-| Bedrock        | `bedrock`        | Tidak           | Terdeteksi otomatis ketika rantai kredensial AWS berhasil diselesaikan |
-| Gemini         | `gemini`         | Ya              | Mendukung pengindeksan gambar/audio                   |
-| GitHub Copilot | `github-copilot` | Tidak           | Terdeteksi otomatis, menggunakan langganan Copilot     |
-| Lokal          | `local`          | Tidak           | Model GGUF, unduhan ~0,6 GB                            |
-| Mistral        | `mistral`        | Ya              | Terdeteksi otomatis                                    |
-| Ollama         | `ollama`         | Tidak           | Lokal, harus ditetapkan secara eksplisit               |
-| OpenAI         | `openai`         | Ya              | Terdeteksi otomatis, cepat                             |
-| Voyage         | `voyage`         | Ya              | Terdeteksi otomatis                                    |
+| Penyedia          | ID                  | Memerlukan kunci API | Catatan                         |
+| ----------------- | ------------------- | ------------- | ----------------------------- |
+| Bedrock           | `bedrock`           | Tidak            | Menggunakan rantai kredensial AWS     |
+| DeepInfra         | `deepinfra`         | Ya           | Default: `BAAI/bge-m3`        |
+| Gemini            | `gemini`            | Ya           | Mendukung pengindeksan gambar/audio |
+| GitHub Copilot    | `github-copilot`    | Tidak            | Menggunakan langganan Copilot     |
+| Lokal             | `local`             | Tidak            | Model GGUF, unduhan ~0,6 GB  |
+| Mistral           | `mistral`           | Ya           |                               |
+| Ollama            | `ollama`            | Tidak            | Lokal/self-hosted             |
+| OpenAI            | `openai`            | Ya           | Default                       |
+| Kompatibel dengan OpenAI | `openai-compatible` | Biasanya       | `/v1/embeddings` generik      |
+| Voyage            | `voyage`            | Ya           |                               |
 
 ## Cara kerja pencarian
 
@@ -78,36 +81,43 @@ flowchart LR
 ```
 
 - **Pencarian vektor** menemukan catatan dengan makna serupa ("gateway host" cocok dengan
-  "mesin yang menjalankan OpenClaw").
-- **Pencarian kata kunci BM25** menemukan kecocokan persis (ID, string kesalahan, kunci
+  "the machine running OpenClaw").
+- **Pencarian kata kunci BM25** menemukan kecocokan persis (ID, string error, kunci
   konfigurasi).
 
-Jika hanya satu jalur yang tersedia (tanpa embedding atau tanpa FTS), jalur lainnya berjalan sendiri.
+Jika hanya satu jalur yang tersedia, jalur lainnya berjalan sendiri. Mode khusus FTS saja
+(`provider: "none"`) dan pemilihan penyedia otomatis/default tetap dapat menggunakan
+pemeringkatan leksikal ketika embedding tidak tersedia.
 
-Ketika embedding tidak tersedia, OpenClaw tetap menggunakan pemeringkatan leksikal atas hasil FTS, bukan kembali hanya ke pengurutan kecocokan persis mentah. Mode terdegradasi itu meningkatkan peringkat potongan dengan cakupan istilah kueri yang lebih kuat dan jalur file yang relevan, sehingga recall tetap berguna bahkan tanpa `sqlite-vec` atau penyedia embedding.
+Penyedia embedding non-lokal yang eksplisit berbeda. Jika Anda menetapkan
+`memorySearch.provider` ke penyedia konkret yang didukung remote dan penyedia tersebut
+tidak tersedia saat runtime, `memory_search` melaporkan memori sebagai tidak tersedia alih-alih
+diam-diam menggunakan hasil FTS saja. Ini membuat penyedia semantik yang dikonfigurasi tetapi rusak
+tetap terlihat. Tetapkan `provider: "none"` untuk recall FTS saja secara sengaja, atau perbaiki
+konfigurasi penyedia/autentikasi untuk memulihkan pemeringkatan semantik.
 
 ## Meningkatkan kualitas pencarian
 
-Dua fitur opsional membantu ketika Anda memiliki riwayat catatan yang besar:
+Dua fitur opsional membantu saat Anda memiliki riwayat catatan yang besar:
 
 ### Peluruhan temporal
 
-Catatan lama secara bertahap kehilangan bobot peringkat sehingga informasi terbaru muncul terlebih dahulu.
-Dengan half-life default 30 hari, catatan dari bulan lalu memiliki skor 50% dari
-bobot aslinya. File evergreen seperti `MEMORY.md` tidak pernah diluruhkan.
+Catatan lama secara bertahap kehilangan bobot peringkat sehingga informasi terbaru muncul lebih dulu.
+Dengan half-life default 30 hari, catatan dari bulan lalu mendapat skor 50% dari
+bobot aslinya. File yang selalu relevan seperti `MEMORY.md` tidak pernah diluruhkan.
 
 <Tip>
-Aktifkan peluruhan temporal jika agen Anda memiliki catatan harian selama berbulan-bulan dan informasi usang
-terus mengungguli konteks terbaru.
+Aktifkan peluruhan temporal jika agen Anda memiliki catatan harian selama berbulan-bulan dan informasi
+usang terus mengungguli konteks terbaru.
 </Tip>
 
-### MMR (keberagaman)
+### MMR (keragaman)
 
-Mengurangi hasil yang redundan. Jika lima catatan semuanya menyebut konfigurasi router yang sama, MMR
-memastikan hasil teratas mencakup topik berbeda, bukan berulang.
+Mengurangi hasil yang berulang. Jika lima catatan semuanya menyebut konfigurasi router yang sama, MMR
+memastikan hasil teratas mencakup topik yang berbeda, bukan pengulangan.
 
 <Tip>
-Aktifkan MMR jika `memory_search` terus mengembalikan cuplikan yang nyaris duplikat dari
+Aktifkan MMR jika `memory_search` terus mengembalikan cuplikan yang hampir duplikat dari
 catatan harian yang berbeda.
 </Tip>
 
@@ -132,14 +142,13 @@ catatan harian yang berbeda.
 
 ## Memori multimodal
 
-Dengan Gemini Embedding 2, Anda dapat mengindeks file gambar dan audio berdampingan dengan
-Markdown. Kueri pencarian tetap berupa teks, tetapi akan dicocokkan dengan konten visual dan audio.
-Lihat [referensi konfigurasi Memori](/id/reference/memory-config) untuk
-penyiapan.
+Dengan Gemini Embedding 2, Anda dapat mengindeks gambar dan file audio bersama
+Markdown. Kueri pencarian tetap berupa teks, tetapi cocok dengan konten visual dan audio.
+Lihat [Referensi konfigurasi memori](/id/reference/memory-config) untuk penyiapan.
 
 ## Pencarian memori sesi
 
-Anda dapat secara opsional mengindeks transkrip sesi agar `memory_search` dapat mengingat
+Anda dapat secara opsional mengindeks transkrip sesi sehingga `memory_search` dapat mengingat
 percakapan sebelumnya. Ini bersifat opt-in melalui
 `memorySearch.experimental.sessionMemory`. Lihat
 [referensi konfigurasi](/id/reference/memory-config) untuk detail.
@@ -152,22 +161,22 @@ percakapan sebelumnya. Ini bersifat opt-in melalui
 **Hanya kecocokan kata kunci?** Penyedia embedding Anda mungkin belum dikonfigurasi. Periksa
 `openclaw memory status --deep`.
 
-**Embedding lokal timeout?** `ollama`, `lmstudio`, dan `local` menggunakan timeout batch
-inline yang lebih panjang secara default. Jika host memang lambat, tetapkan
+**Embedding lokal timeout?** `ollama`, `lmstudio`, dan `local` menggunakan timeout batch inline
+yang lebih panjang secara default. Jika host memang lambat, tetapkan
 `agents.defaults.memorySearch.sync.embeddingBatchTimeoutSeconds` dan jalankan ulang
 `openclaw memory index --force`.
 
 **Teks CJK tidak ditemukan?** Bangun ulang indeks FTS dengan
 `openclaw memory index --force`.
 
-## Bacaan lebih lanjut
+## Bacaan lanjutan
 
 - [Active Memory](/id/concepts/active-memory) -- memori sub-agen untuk sesi chat interaktif
 - [Memori](/id/concepts/memory) -- tata letak file, backend, alat
-- [referensi konfigurasi Memori](/id/reference/memory-config) -- semua opsi konfigurasi
+- [Referensi konfigurasi memori](/id/reference/memory-config) -- semua kenop konfigurasi
 
 ## Terkait
 
-- [Ikhtisar memori](/id/concepts/memory)
+- [Ringkasan memori](/id/concepts/memory)
 - [Active Memory](/id/concepts/active-memory)
 - [Mesin memori bawaan](/id/concepts/memory-builtin)

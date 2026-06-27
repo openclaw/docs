@@ -1,32 +1,30 @@
 ---
 read_when:
-    - Testowanie przepływów wdrażania lub konfiguracji z użyciem lokalnie spakowanego pluginu
+    - Testowanie przepływów wdrażania lub konfiguracji na lokalnie spakowanym Plugin
     - Weryfikowanie pakietu Plugin przed jego opublikowaniem
-    - Zastępowanie automatycznej instalacji pluginu artefaktem testowym
+    - Zastępowanie automatycznej instalacji Plugin artefaktem testowym
 sidebarTitle: Install overrides
-summary: Testuj nadpisania spakowanych Plugin przy użyciu przepływów instalacji podczas konfiguracji
+summary: Testuj nadpisania spakowanych Pluginów z przepływami instalacji podczas konfiguracji
 title: Nadpisania instalacji Plugin
 x-i18n:
-    generated_at: "2026-05-10T19:46:01Z"
+    generated_at: "2026-06-27T17:53:50Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f0fca17c1c78b11a87a1ec265510d9bc5aa9826822f4888e37ff1b3f3803598e
+    source_hash: 9ac3d8074f0455a3287c22447d134bebf57805bc06302652172eb5f87e47e548
     source_path: plugins/install-overrides.md
     workflow: 16
 ---
 
-Nadpisania instalacji Plugin pozwalają opiekunom testować instalacje Plugin wykonywane podczas konfiguracji względem
-określonego pakietu npm albo lokalnego archiwum tarball utworzonego przez npm-pack. Są przeznaczone wyłącznie do walidacji E2E i pakietów. Zwykli użytkownicy powinni instalować Plugin za pomocą
-[`openclaw plugins install`](/pl/cli/plugins).
+Nadpisania instalacji Plugin pozwalają maintainerom testować instalacje Plugin podczas konfiguracji względem określonego pakietu npm lub lokalnego tarballa utworzonego przez `npm pack`. Są przeznaczone wyłącznie do E2E i walidacji pakietów. Zwykli użytkownicy powinni instalować Pluginy za pomocą [`openclaw plugins install`](/pl/cli/plugins).
 
 <Warning>
-Nadpisania wykonują kod Plugin ze wskazanego przez Ciebie źródła. Używaj ich tylko w
-izolowanym katalogu stanu albo na jednorazowej maszynie testowej.
+Nadpisania wykonują kod Plugin ze wskazanego źródła. Używaj ich tylko w izolowanym katalogu stanu lub na jednorazowej maszynie testowej.
 </Warning>
 
 ## Środowisko
 
-Nadpisania są wyłączone, chyba że ustawione są obie zmienne:
+Nadpisania są wyłączone, chyba że ustawiono obie zmienne:
 
 ```bash
 export OPENCLAW_ALLOW_PLUGIN_INSTALL_OVERRIDES=1
@@ -36,34 +34,26 @@ export OPENCLAW_PLUGIN_INSTALL_OVERRIDES='{
 }'
 ```
 
-Mapa nadpisań to JSON z kluczami według identyfikatora Plugin. Wartości obsługują:
+Mapa nadpisań to JSON indeksowany identyfikatorem Plugin. Wartości obsługują:
 
 - `npm:<registry-spec>` dla pakietów z rejestru oraz dokładnych wersji lub tagów
-- `npm-pack:<path.tgz>` dla lokalnych archiwów tarball utworzonych przez `npm pack`
+- `npm-pack:<path.tgz>` dla lokalnych tarballi utworzonych przez `npm pack`
 
 Względne ścieżki `npm-pack:` są rozwiązywane względem bieżącego katalogu roboczego.
 
 ## Zachowanie
 
-Gdy przepływ wykonywany podczas konfiguracji żąda instalacji Plugin, którego identyfikator występuje w mapie,
-OpenClaw używa źródła z nadpisania zamiast katalogu, pakietu wbudowanego lub domyślnego
-źródła npm. Dotyczy to onboardingu i innych przepływów, które używają współdzielonego
-instalatora Plugin działającego podczas konfiguracji.
+Gdy przepływ uruchamiany podczas konfiguracji prosi o instalację Plugin, którego identyfikator występuje w mapie, OpenClaw używa źródła nadpisania zamiast źródła z katalogu, wbudowanego lub domyślnego źródła npm. Dotyczy to onboardingu i innych przepływów, które używają współdzielonego instalatora Plugin uruchamianego podczas konfiguracji.
 
-Nadpisania nadal wymuszają oczekiwany identyfikator Plugin. Archiwum tarball przypisane do `codex`
-musi zainstalować Plugin, którego identyfikator w manifeście to `codex`.
+Nadpisania nadal egzekwują oczekiwany identyfikator Plugin. Tarball zmapowany na `codex` musi zainstalować Plugin, którego identyfikator w manifeście to `codex`.
 
-Nadpisania nie dziedziczą oficjalnego statusu zaufanego źródła. Nawet gdy wpis katalogu
-zwykle reprezentuje pakiet należący do OpenClaw, nadpisanie jest traktowane jako
-dane testowe dostarczone przez operatora.
+Nadpisania nie dziedziczą oficjalnego statusu zaufanego źródła. Nawet gdy wpis w katalogu zwykle reprezentuje pakiet należący do OpenClaw, nadpisanie jest traktowane jako dane testowe dostarczone przez operatora.
 
-Pliki `.env` w obszarze roboczym nie mogą włączać nadpisań instalacji. Ustaw te zmienne w
-zaufanej powłoce, zadaniu CI albo zdalnym poleceniu testowym, które uruchamia OpenClaw.
+Pliki `.env` w przestrzeni roboczej nie mogą włączać nadpisań instalacji. Ustaw te zmienne w zaufanej powłoce, zadaniu CI lub zdalnym poleceniu testowym, które uruchamia OpenClaw.
 
 ## E2E pakietu
 
-Użyj izolowanego katalogu stanu, aby instalacje pakietów i rekordy instalacji nie
-dotykały Twojego zwykłego stanu OpenClaw:
+Użyj izolowanego katalogu stanu, aby instalacje pakietów i rekordy instalacji nie dotykały zwykłego stanu OpenClaw:
 
 ```bash
 npm pack extensions/codex --pack-destination /tmp
@@ -77,10 +67,8 @@ pnpm openclaw onboard --mode local
 Zweryfikuj zainstalowany pakiet w katalogu stanu:
 
 ```bash
-find "$OPENCLAW_STATE_DIR/npm/node_modules" -maxdepth 3 -name package.json -print
-grep -R '"@openclaw/codex"' "$OPENCLAW_STATE_DIR/npm/package-lock.json"
+find "$OPENCLAW_STATE_DIR/npm/projects" -path '*/node_modules/@openclaw/codex/package.json' -print
+grep -R '"@openclaw/codex"' "$OPENCLAW_STATE_DIR/npm/projects"/*/package-lock.json
 ```
 
-Dla E2E z aktywnym dostawcą pobierz rzeczywisty klucz API z zaufanej powłoki albo sekretu CI
-przed uruchomieniem polecenia testowego. Nie wypisuj kluczy; raportuj tylko źródło i
-to, czy klucz był obecny.
+W przypadku E2E z dostawcą live pobierz prawdziwy klucz API z zaufanej powłoki lub sekretu CI przed uruchomieniem polecenia testowego. Nie drukuj kluczy; raportuj tylko źródło oraz to, czy klucz był obecny.

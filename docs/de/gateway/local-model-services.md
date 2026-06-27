@@ -1,25 +1,26 @@
 ---
 read_when:
-    - Sie möchten, dass OpenClaw einen lokalen Modellserver nur dann startet, wenn dessen Modell ausgewählt ist.
+    - Sie möchten, dass OpenClaw einen lokalen Modellserver nur dann startet, wenn das zugehörige Modell ausgewählt ist.
     - Sie betreiben ds4, inferrs, vLLM, llama.cpp, MLX oder einen anderen OpenAI-kompatiblen lokalen Server
     - Sie müssen Kaltstart, Bereitschaft und Leerlaufabschaltung für lokale Provider steuern
 summary: Lokale Modellserver bei Bedarf vor OpenClaw-Modellanfragen starten
 title: Lokale Modelldienste
 x-i18n:
-    generated_at: "2026-05-10T19:36:27Z"
+    generated_at: "2026-06-27T17:30:54Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b900146c5831c784b5da66666322ed0f5d3457ccd741556f418cd197749b87b1
+    source_hash: 399648e32dd51faba7687a26de75ef349f1197269b5cca03d34552f0cd9cce28
     source_path: gateway/local-model-services.md
     workflow: 16
 ---
 
-`models.providers.<id>.localService` ermöglicht OpenClaw, bei Bedarf einen Provider-eigenen lokalen
-Modellserver zu starten. Es handelt sich um eine Konfiguration auf Provider-Ebene: Wenn das ausgewählte Modell
+`models.providers.<id>.localService` ermöglicht OpenClaw, bei Bedarf einen provider-eigenen lokalen
+Modellserver zu starten. Es handelt sich um Konfiguration auf Provider-Ebene: Wenn das ausgewählte Modell
 zu diesem Provider gehört, prüft OpenClaw den Dienst, startet den Prozess, falls der
-Endpoint nicht erreichbar ist, wartet auf die Bereitschaft und sendet dann die Modellanfrage.
+Endpunkt nicht erreichbar ist, wartet auf Betriebsbereitschaft und sendet dann die Modellanfrage.
 
-Verwenden Sie dies für lokale Server, deren dauerhafter Betrieb den ganzen Tag über teuer ist, oder für
+Verwenden Sie dies für lokale Server, deren dauerhafter Betrieb den ganzen Tag über zu aufwendig wäre, oder für
 manuelle Setups, bei denen die Modellauswahl ausreichen soll, um das Backend zu starten.
 
 ## Funktionsweise
@@ -28,15 +29,15 @@ manuelle Setups, bei denen die Modellauswahl ausreichen soll, um das Backend zu 
 2. Wenn dieser Provider `localService` hat, prüft OpenClaw `healthUrl`.
 3. Wenn die Prüfung erfolgreich ist, verwendet OpenClaw den vorhandenen Server.
 4. Wenn die Prüfung fehlschlägt, startet OpenClaw `command` mit `args`.
-5. OpenClaw fragt die Bereitschaft ab, bis `readyTimeoutMs` abläuft.
+5. OpenClaw fragt die Betriebsbereitschaft ab, bis `readyTimeoutMs` abläuft.
 6. Die Modellanfrage wird über den normalen Provider-Transport gesendet.
 7. Wenn OpenClaw den Prozess gestartet hat und `idleStopMs` positiv ist, wird der Prozess
-   beendet, nachdem die letzte laufende Anfrage für diesen Zeitraum inaktiv war.
+   gestoppt, nachdem die letzte laufende Anfrage so lange inaktiv war.
 
-OpenClaw installiert hierfür kein launchd, systemd, Docker oder einen Daemon. Der
+OpenClaw installiert dafür kein launchd, systemd, Docker oder einen Daemon. Der
 Server ist ein Kindprozess des OpenClaw-Prozesses, der ihn zuerst benötigt hat.
 
-## Konfigurationsstruktur
+## Konfigurationsform
 
 ```json5
 {
@@ -76,22 +77,22 @@ Server ist ein Kindprozess des OpenClaw-Prozesses, der ihn zuerst benötigt hat.
 ## Felder
 
 - `command`: absoluter Pfad zur ausführbaren Datei. Shell-Suche wird nicht verwendet.
-- `args`: Prozessargumente. Es werden keine Shell-Erweiterung, Pipes, Globbing- oder Quoting-
-  Regeln angewendet.
+- `args`: Prozessargumente. Es werden keine Shell-Erweiterung, Pipes, Globbing oder
+  Maskierungsregeln angewendet.
 - `cwd`: optionales Arbeitsverzeichnis für den Prozess.
 - `env`: optionale Umgebungsvariablen, die über die Umgebung des OpenClaw-Prozesses
   gelegt werden.
-- `healthUrl`: Bereitschafts-URL. Wenn weggelassen, hängt OpenClaw `/models` an
+- `healthUrl`: URL für die Betriebsbereitschaft. Wenn ausgelassen, hängt OpenClaw `/models` an
   `baseUrl` an, sodass aus `http://127.0.0.1:8000/v1`
   `http://127.0.0.1:8000/v1/models` wird.
-- `readyTimeoutMs`: Frist für die Startbereitschaft. Standard: `120000`.
-- `idleStopMs`: Verzögerung für das Herunterfahren bei Inaktivität für von OpenClaw gestartete Prozesse. `0` oder
-  Weglassen hält den Prozess am Leben, bis OpenClaw beendet wird.
+- `readyTimeoutMs`: Frist für die Betriebsbereitschaft beim Start. Standard: `120000`.
+- `idleStopMs`: Verzögerung für das Beenden von durch OpenClaw gestarteten Prozessen im Leerlauf. `0` oder
+  Auslassen hält den Prozess am Leben, bis OpenClaw beendet wird.
 
 ## Inferrs-Beispiel
 
-Inferrs ist ein benutzerdefiniertes OpenAI-kompatibles `/v1`-Backend, daher funktioniert dieselbe lokale Dienst-
-API mit dem `inferrs`-Provider-Eintrag.
+Inferrs ist ein benutzerdefiniertes OpenAI-kompatibles `/v1`-Backend, daher funktioniert dieselbe lokale Dienst-API
+mit dem Provider-Eintrag `inferrs`.
 
 ```json5
 {
@@ -144,10 +145,13 @@ API mit dem `inferrs`-Provider-Eintrag.
 }
 ```
 
-Ersetzen Sie `command` durch das Ergebnis von `which inferrs` auf der Maschine, auf der
+Ersetzen Sie `command` durch das Ergebnis von `which inferrs` auf dem Rechner, auf dem
 OpenClaw ausgeführt wird.
 
 ## ds4-Beispiel
+
+Das vollständige Setup, Hinweise zur Kontextgröße und Prüfungsbefehle finden Sie unter
+[ds4](/de/providers/ds4).
 
 ```json5
 {
@@ -159,18 +163,20 @@ OpenClaw ausgeführt wird.
         api: "openai-completions",
         timeoutSeconds: 300,
         localService: {
-          command: "/Users/you/Projects/oss/ds4/ds4-server",
+          command: "<DS4_DIR>/ds4-server",
           args: [
             "--model",
-            "/Users/you/Projects/oss/ds4/ds4flash.gguf",
+            "<DS4_DIR>/ds4flash.gguf",
             "--host",
             "127.0.0.1",
             "--port",
             "18000",
             "--ctx",
-            "393216",
+            "32768",
+            "--tokens",
+            "128",
           ],
-          cwd: "/Users/you/Projects/oss/ds4",
+          cwd: "<DS4_DIR>",
           healthUrl: "http://127.0.0.1:18000/v1/models",
           readyTimeoutMs: 300000,
           idleStopMs: 0,
@@ -184,22 +190,22 @@ OpenClaw ausgeführt wird.
 
 ## Betriebshinweise
 
-- Ein OpenClaw-Prozess verwaltet den von ihm gestarteten Kindprozess. Ein anderer OpenClaw-Prozess,
+- Ein OpenClaw-Prozess verwaltet den Kindprozess, den er gestartet hat. Ein anderer OpenClaw-Prozess,
   der dieselbe Health-URL bereits aktiv sieht, verwendet sie wieder, ohne sie zu übernehmen.
-- Der Start wird pro Provider-Befehl und Argumentgruppe serialisiert, sodass gleichzeitige
+- Der Start wird pro Provider-Befehl und Argumentmenge serialisiert, sodass gleichzeitige
   Anfragen keine doppelten Server für dieselbe Konfiguration erzeugen.
-- Aktive Streaming-Antworten halten eine Lease; das Herunterfahren bei Inaktivität wartet, bis die Verarbeitung des
-  Antwort-Bodys abgeschlossen ist.
+- Aktive Streaming-Antworten halten eine Lease; das Beenden im Leerlauf wartet, bis die Verarbeitung
+  des Antworttexts abgeschlossen ist.
 - Verwenden Sie `timeoutSeconds` bei langsamen lokalen Providern, damit Kaltstarts und lange Generierungen
-  nicht das Standard-Timeout für Modellanfragen erreichen.
-- Verwenden Sie eine explizite `healthUrl`, wenn Ihr Server die Bereitschaft an einer anderen Stelle als
-  `/v1/models` bereitstellt.
+  nicht in das standardmäßige Zeitlimit für Modellanfragen laufen.
+- Verwenden Sie eine explizite `healthUrl`, wenn Ihr Server die Betriebsbereitschaft an einer anderen Stelle
+  als `/v1/models` bereitstellt.
 
-## Verwandte Themen
+## Verwandt
 
 <CardGroup cols={2}>
-  <Card title="Lokale Modelle" href="/de/gateway/local-models" icon="server">
-    Einrichtung lokaler Modelle, Provider-Auswahl und Sicherheitsleitfaden.
+  <Card title="Local models" href="/de/gateway/local-models" icon="server">
+    Einrichtung lokaler Modelle, Provider-Auswahl und Sicherheitshinweise.
   </Card>
   <Card title="Inferrs" href="/de/providers/inferrs" icon="cpu">
     Führen Sie OpenClaw über den inferrs OpenAI-kompatiblen lokalen Server aus.

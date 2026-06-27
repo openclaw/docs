@@ -1,23 +1,24 @@
 ---
 read_when:
-    - Chcesz używać Gemini do web_search
+    - Chcesz użyć Gemini do web_search
     - Potrzebujesz GEMINI_API_KEY lub models.providers.google.apiKey
-    - Chcesz korzystać z ugruntowania w Google Search
-summary: Wyszukiwanie Gemini w internecie z ugruntowaniem za pomocą Google Search
+    - Chcesz ugruntowania w Google Search
+summary: Wyszukiwanie w sieci Gemini z ugruntowaniem Google Search
 title: Wyszukiwanie Gemini
 x-i18n:
-    generated_at: "2026-05-02T10:04:33Z"
+    generated_at: "2026-06-27T18:27:37Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 015d77fef123b1fd99d43eb6472bb8c672585328e17735d1fa0ead387cd2066a
+    source_hash: 8bbebd5689daaa63c817ff17eac70e197999a3e1ecbb198249eb567e5ba0fc5f
     source_path: tools/gemini-search.md
     workflow: 16
 ---
 
 OpenClaw obsługuje modele Gemini z wbudowanym
-[Google Search grounding](https://ai.google.dev/gemini-api/docs/grounding),
-które zwraca syntetyzowane przez AI odpowiedzi oparte na bieżących wynikach Google Search z
-cytowaniami.
+[ugruntowaniem Google Search](https://ai.google.dev/gemini-api/docs/grounding),
+które zwraca odpowiedzi syntetyzowane przez AI, oparte na aktualnych wynikach
+Google Search z cytowaniami.
 
 ## Uzyskaj klucz API
 
@@ -64,24 +65,24 @@ cytowaniami.
 }
 ```
 
-**Priorytet danych uwierzytelniających:** wyszukiwanie w sieci Gemini najpierw używa
+**Pierwszeństwo poświadczeń:** wyszukiwanie w sieci Gemini używa najpierw
 `plugins.entries.google.config.webSearch.apiKey`, następnie `GEMINI_API_KEY`,
-a potem `models.providers.google.apiKey`. W przypadku bazowych adresów URL dedykowane
-`plugins.entries.google.config.webSearch.baseUrl` ma pierwszeństwo przed
-`models.providers.google.baseUrl`.
+a potem `models.providers.google.apiKey`. W przypadku bazowych adresów URL
+dedykowane `plugins.entries.google.config.webSearch.baseUrl` ma pierwszeństwo
+przed `models.providers.google.baseUrl`.
 
 W instalacji Gateway umieść klucze środowiskowe w `~/.openclaw/.env`.
 
 ## Jak to działa
 
 W przeciwieństwie do tradycyjnych dostawców wyszukiwania, którzy zwracają listę linków i fragmentów,
-Gemini używa Google Search grounding do generowania syntetyzowanych przez AI odpowiedzi z
-cytowaniami w treści. Wyniki zawierają zarówno zsyntetyzowaną odpowiedź, jak i źródłowe
+Gemini używa ugruntowania Google Search do tworzenia odpowiedzi syntetyzowanych przez AI
+z cytowaniami w treści. Wyniki obejmują zarówno zsyntetyzowaną odpowiedź, jak i źródłowe
 adresy URL.
 
-- Adresy URL cytowań z Gemini grounding są automatycznie rozwiązywane z adresów przekierowań Google
-  na bezpośrednie adresy URL.
-- Rozwiązywanie przekierowań używa ścieżki ochrony przed SSRF (HEAD + kontrole przekierowań +
+- Adresy URL cytowań z ugruntowania Gemini są automatycznie rozwiązywane z adresów
+  przekierowań Google na bezpośrednie adresy URL.
+- Rozwiązywanie przekierowań używa ścieżki ochrony SSRF (HEAD + sprawdzanie przekierowań +
   walidacja http/https) przed zwróceniem końcowego adresu URL cytowania.
 - Rozwiązywanie przekierowań używa rygorystycznych domyślnych ustawień SSRF, więc przekierowania do
   prywatnych/wewnętrznych celów są blokowane.
@@ -90,31 +91,33 @@ adresy URL.
 
 Wyszukiwanie Gemini obsługuje `query`, `freshness`, `date_after` i `date_before`.
 
-`count` jest akceptowane dla zgodności ze wspólnym `web_search`, ale Gemini grounding
-nadal zwraca jedną zsyntetyzowaną odpowiedź z cytowaniami zamiast listy N wyników.
+`count` jest akceptowane dla zgodności ze wspólnym `web_search`, ale ugruntowanie Gemini
+nadal zwraca jedną zsyntetyzowaną odpowiedź z cytowaniami, a nie listę
+N wyników.
 
 `freshness` akceptuje `day`, `week`, `month`, `year` oraz wspólne skróty
-`pd`, `pw`, `pm` i `py`. OpenClaw konwertuje te wartości lub jawny zakres
-`date_after`/`date_before` na `timeRangeFilter` w Gemini Google Search grounding.
+`pd`, `pw`, `pm` i `py`. `day`/`pd` dodaje do zapytania Gemini instrukcję aktualności
+zamiast sztywnego zakresu 24 godzin. `week`, `month`, `year` oraz jawne zakresy
+`date_after`/`date_before` ustawiają `timeRangeFilter` ugruntowania Gemini Google Search.
 `country`, `language` i `domain_filter` nie są obsługiwane.
 
 ## Wybór modelu
 
-Domyślny model to `gemini-2.5-flash` (szybki i opłacalny). Dowolny model Gemini,
-który obsługuje grounding, może być użyty przez
+Domyślnym modelem jest `gemini-2.5-flash` (szybki i opłacalny). Dowolny model Gemini,
+który obsługuje ugruntowanie, może być używany przez
 `plugins.entries.google.config.webSearch.model`.
 
 ## Nadpisania bazowego adresu URL
 
 Ustaw `plugins.entries.google.config.webSearch.baseUrl`, gdy wyszukiwanie w sieci Gemini
 musi przechodzić przez proxy operatora lub niestandardowy punkt końcowy zgodny z Gemini. Jeśli
-ta wartość nie jest ustawiona, wyszukiwanie w sieci Gemini ponownie używa `models.providers.google.baseUrl`. Zwykła
+ta wartość nie jest ustawiona, wyszukiwanie w sieci Gemini używa ponownie `models.providers.google.baseUrl`. Zwykła
 wartość `https://generativelanguage.googleapis.com` jest normalizowana do
 `https://generativelanguage.googleapis.com/v1beta`; niestandardowe ścieżki proxy są zachowywane
-zgodnie z podaną wartością po usunięciu końcowych ukośników.
+w podanej postaci po przycięciu końcowych ukośników.
 
 ## Powiązane
 
-- [Omówienie Web Search](/pl/tools/web) -- wszyscy dostawcy i automatyczne wykrywanie
+- [Omówienie wyszukiwania w sieci](/pl/tools/web) -- wszyscy dostawcy i automatyczne wykrywanie
 - [Brave Search](/pl/tools/brave-search) -- ustrukturyzowane wyniki z fragmentami
-- [Perplexity Search](/pl/tools/perplexity-search) -- ustrukturyzowane wyniki + ekstrakcja treści
+- [Perplexity Search](/pl/tools/perplexity-search) -- ustrukturyzowane wyniki + wyodrębnianie treści

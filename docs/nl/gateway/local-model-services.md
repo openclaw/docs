@@ -1,35 +1,41 @@
 ---
 read_when:
-    - Je wilt dat OpenClaw alleen een lokale modelserver start wanneer het bijbehorende model is geselecteerd
+    - U wilt dat OpenClaw alleen een lokale modelserver start wanneer het bijbehorende model is geselecteerd
     - Je draait ds4, inferrs, vLLM, llama.cpp, MLX of een andere OpenAI-compatibele lokale server
-    - Je moet de koude start, gereedheid en het afsluiten bij inactiviteit voor lokale providers beheren
-summary: Start lokale modelservers op aanvraag vóór OpenClaw-modelaanvragen
+    - Je moet cold start, gereedheid en afsluiten bij inactiviteit voor lokale providers beheren
+summary: Start lokale modelservers op aanvraag vóór modelverzoeken van OpenClaw
 title: Lokale modelservices
 x-i18n:
-    generated_at: "2026-05-10T19:37:10Z"
+    generated_at: "2026-06-27T17:34:21Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b900146c5831c784b5da66666322ed0f5d3457ccd741556f418cd197749b87b1
+    source_hash: 399648e32dd51faba7687a26de75ef349f1197269b5cca03d34552f0cd9cce28
     source_path: gateway/local-model-services.md
     workflow: 16
 ---
 
-`models.providers.<id>.localService` laat OpenClaw op aanvraag een door de provider beheerde lokale modelserver starten. Dit is configuratie op providerniveau: wanneer het geselecteerde model bij die provider hoort, controleert OpenClaw de service, start het proces als het endpoint niet beschikbaar is, wacht tot de service gereed is en verstuurt daarna de modelaanvraag.
+`models.providers.<id>.localService` laat OpenClaw op aanvraag een lokale
+modelserver starten die eigendom is van de provider. Het is configuratie op providerniveau: wanneer het geselecteerde model
+bij die provider hoort, peilt OpenClaw de service, start het proces als het
+endpoint offline is, wacht op gereedheid en verzendt daarna het modelverzoek.
 
-Gebruik dit voor lokale servers die te kostbaar zijn om de hele dag actief te houden, of voor handmatige setups waarbij modelselectie voldoende moet zijn om de backend op te starten.
+Gebruik dit voor lokale servers die duur zijn om de hele dag actief te houden, of voor
+handmatige setups waarbij modelselectie genoeg moet zijn om de backend op te starten.
 
 ## Hoe het werkt
 
-1. Een modelaanvraag wordt herleid tot een geconfigureerde provider.
-2. Als die provider `localService` heeft, controleert OpenClaw `healthUrl`.
-3. Als de controle slaagt, gebruikt OpenClaw de bestaande server.
-4. Als de controle mislukt, start OpenClaw `command` met `args`.
-5. OpenClaw controleert de gereedheid totdat `readyTimeoutMs` verloopt.
-6. De modelaanvraag wordt via het normale providertransport verstuurd.
+1. Een modelverzoek wordt omgezet naar een geconfigureerde provider.
+2. Als die provider `localService` heeft, peilt OpenClaw `healthUrl`.
+3. Als de peiling slaagt, gebruikt OpenClaw de bestaande server.
+4. Als de peiling mislukt, start OpenClaw `command` met `args`.
+5. OpenClaw peilt gereedheid totdat `readyTimeoutMs` verloopt.
+6. Het modelverzoek wordt verzonden via het normale providertransport.
 7. Als OpenClaw het proces heeft gestart en `idleStopMs` positief is, wordt het proces
-   gestopt nadat de laatste lopende aanvraag zo lang inactief is geweest.
+   gestopt nadat het laatste lopende verzoek zo lang inactief is geweest.
 
-OpenClaw installeert hiervoor geen launchd, systemd, Docker of daemon. De server is een childproces van het OpenClaw-proces dat de server als eerste nodig had.
+OpenClaw installeert hiervoor geen launchd, systemd, Docker of daemon. De
+server is een childproces van het OpenClaw-proces dat deze als eerste nodig had.
 
 ## Configuratievorm
 
@@ -71,19 +77,22 @@ OpenClaw installeert hiervoor geen launchd, systemd, Docker of daemon. De server
 ## Velden
 
 - `command`: absoluut pad naar het uitvoerbare bestand. Shell-lookup wordt niet gebruikt.
-- `args`: procesargumenten. Er worden geen shell-expansie, pipes, globbing of quotingregels toegepast.
-- `cwd`: optionele werkdirectory voor het proces.
-- `env`: optionele omgevingsvariabelen die over de omgeving van het OpenClaw-proces worden samengevoegd.
+- `args`: procesargumenten. Er worden geen shell-expansie, pipes, globbing of regels
+  voor aanhalingstekens toegepast.
+- `cwd`: optionele werkmap voor het proces.
+- `env`: optionele omgevingsvariabelen die over de omgeving van het OpenClaw-proces
+  worden samengevoegd.
 - `healthUrl`: gereedheids-URL. Als deze wordt weggelaten, voegt OpenClaw `/models` toe aan
-  `baseUrl`, zodat `http://127.0.0.1:8000/v1` verandert in
-  `http://127.0.0.1:8000/v1/models`.
-- `readyTimeoutMs`: deadline voor gereedheid bij opstarten. Standaard: `120000`.
+  `baseUrl`, zodat `http://127.0.0.1:8000/v1`
+  `http://127.0.0.1:8000/v1/models` wordt.
+- `readyTimeoutMs`: deadline voor opstartgereedheid. Standaard: `120000`.
 - `idleStopMs`: vertraging voor afsluiten bij inactiviteit voor door OpenClaw gestarte processen. `0` of
-  weglaten houdt het proces actief totdat OpenClaw afsluit.
+  weggelaten houdt het proces actief totdat OpenClaw afsluit.
 
 ## Inferrs-voorbeeld
 
-Inferrs is een aangepaste OpenAI-compatibele `/v1`-backend, dus dezelfde lokale service-API werkt met de providervermelding `inferrs`.
+Inferrs is een aangepaste OpenAI-compatibele `/v1`-backend, dus dezelfde lokale service-API
+werkt met de providervermelding `inferrs`.
 
 ```json5
 {
@@ -136,9 +145,13 @@ Inferrs is een aangepaste OpenAI-compatibele `/v1`-backend, dus dezelfde lokale 
 }
 ```
 
-Vervang `command` door het resultaat van `which inferrs` op de machine waarop OpenClaw draait.
+Vervang `command` door het resultaat van `which inferrs` op de machine waarop
+OpenClaw draait.
 
 ## ds4-voorbeeld
+
+Zie voor de volledige setup, richtlijnen voor contextgrootte en verificatieopdrachten
+[ds4](/nl/providers/ds4).
 
 ```json5
 {
@@ -150,18 +163,20 @@ Vervang `command` door het resultaat van `which inferrs` op de machine waarop Op
         api: "openai-completions",
         timeoutSeconds: 300,
         localService: {
-          command: "/Users/you/Projects/oss/ds4/ds4-server",
+          command: "<DS4_DIR>/ds4-server",
           args: [
             "--model",
-            "/Users/you/Projects/oss/ds4/ds4flash.gguf",
+            "<DS4_DIR>/ds4flash.gguf",
             "--host",
             "127.0.0.1",
             "--port",
             "18000",
             "--ctx",
-            "393216",
+            "32768",
+            "--tokens",
+            "128",
           ],
-          cwd: "/Users/you/Projects/oss/ds4",
+          cwd: "<DS4_DIR>",
           healthUrl: "http://127.0.0.1:18000/v1/models",
           readyTimeoutMs: 300000,
           idleStopMs: 0,
@@ -176,23 +191,23 @@ Vervang `command` door het resultaat van `which inferrs` op de machine waarop Op
 ## Operationele opmerkingen
 
 - Eén OpenClaw-proces beheert het childproces dat het heeft gestart. Een ander OpenClaw-proces
-  dat dezelfde health-URL al actief ziet, hergebruikt die zonder het proces over te nemen.
+  dat dezelfde health-URL al live ziet, hergebruikt deze zonder het proces over te nemen.
 - Opstarten wordt per provideropdracht en argumentenset geserialiseerd, zodat gelijktijdige
-  aanvragen geen dubbele servers voor dezelfde configuratie starten.
-- Actieve streamingresponses houden een lease vast; afsluiten bij inactiviteit wacht totdat de verwerking
-  van de responsebody is voltooid.
-- Gebruik `timeoutSeconds` bij trage lokale providers, zodat koude starts en lange generaties
-  niet tegen de standaardtime-out voor modelaanvragen aanlopen.
-- Gebruik een expliciete `healthUrl` als je server gereedheid ergens anders aanbiedt dan
-  `/v1/models`.
+  verzoeken geen dubbele servers voor dezelfde configuratie starten.
+- Actieve streamingantwoorden houden een lease vast; afsluiten bij inactiviteit wacht totdat de afhandeling
+  van de antwoordbody is voltooid.
+- Gebruik `timeoutSeconds` op trage lokale providers, zodat cold starts en lange generaties
+  niet tegen de standaardtime-out voor modelverzoeken aanlopen.
+- Gebruik een expliciete `healthUrl` als je server gereedheid ergens anders aanbiedt
+  dan `/v1/models`.
 
 ## Gerelateerd
 
 <CardGroup cols={2}>
-  <Card title="Lokale modellen" href="/nl/gateway/local-models" icon="server">
+  <Card title="Local models" href="/nl/gateway/local-models" icon="server">
     Setup van lokale modellen, providerkeuzes en veiligheidsrichtlijnen.
   </Card>
   <Card title="Inferrs" href="/nl/providers/inferrs" icon="cpu">
-    Voer OpenClaw uit via de OpenAI-compatibele lokale server van inferrs.
+    Voer OpenClaw uit via de inferrs OpenAI-compatibele lokale server.
   </Card>
 </CardGroup>

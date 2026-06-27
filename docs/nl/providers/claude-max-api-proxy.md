@@ -1,54 +1,55 @@
 ---
 read_when:
-    - Je wilt een Claude Max-abonnement gebruiken met OpenAI-compatibele tools
-    - Je wilt een lokale API-server die de Claude Code CLI verpakt
-    - U wilt op abonnement gebaseerde toegang tot Anthropic vergelijken met toegang op basis van API-sleutels
-summary: Communityproxy om de inloggegevens van een Claude-abonnement beschikbaar te stellen als OpenAI-compatibel eindpunt
+    - Je wilt het Claude Max-abonnement gebruiken met OpenAI-compatibele tools
+    - Je wilt een lokale API-server die Claude Code CLI verpakt
+    - Je wilt toegang tot Anthropic op basis van abonnementen versus op basis van API-sleutels evalueren
+summary: Communityproxy om Claude-abonnementsreferenties bloot te stellen als OpenAI-compatibel eindpunt
 title: Claude Max API-proxy
 x-i18n:
-    generated_at: "2026-04-29T23:09:12Z"
+    generated_at: "2026-06-27T18:11:04Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 06c685c2f42f462a319ef404e4980f769e00654afb9637d873b98144e6a41c87
+    source_hash: 24bd2b4b56e4b8829e67f248d0e0a6bad53ccbd9ce98ee288bfa4de93508ef27
     source_path: providers/claude-max-api-proxy.md
     workflow: 16
 ---
 
-**claude-max-api-proxy** is een communitytool die je Claude Max/Pro-abonnement beschikbaar maakt als een OpenAI-compatibel API-eindpunt. Hierdoor kun je je abonnement gebruiken met elke tool die de OpenAI API-indeling ondersteunt.
+**claude-max-api-proxy** is een communitytool die je Claude Max/Pro-abonnement beschikbaar maakt als een OpenAI-compatibel API-eindpunt. Zo kun je je abonnement gebruiken met elke tool die de OpenAI API-indeling ondersteunt.
 
 <Warning>
-Dit pad is alleen bedoeld voor technische compatibiliteit. Anthropic heeft in het verleden sommige abonnementsgebruik
-buiten Claude Code geblokkeerd. Je moet zelf beslissen of je het wilt gebruiken
-en Anthropic's huidige voorwaarden controleren voordat je erop vertrouwt.
+Dit pad is alleen bedoeld voor technische compatibiliteit. Anthropic heeft in het verleden bepaald abonnementsgebruik buiten Claude Code geblokkeerd. Je moet zelf beslissen of je het gebruikt en de huidige factureringsregels van Anthropic controleren voordat je erop vertrouwt.
+
+De huidige supportdocumentatie van Anthropic zegt dat `claude -p` Agent SDK-/programmatisch gebruik is. Vanaf 15 juni 2026 gebruikt `claude -p`-gebruik binnen een abonnementsplan eerst een afzonderlijk maandelijks Agent SDK-tegoed, en daarna gebruikstegoeden tegen standaard API-tarieven als gebruikstegoeden zijn ingeschakeld.
 </Warning>
 
 ## Waarom dit gebruiken?
 
-| Benadering             | Kosten                                                     | Beste voor                                |
-| ---------------------- | ---------------------------------------------------------- | ----------------------------------------- |
-| Anthropic API          | Betalen per token (~$15/M invoer, $75/M uitvoer voor Opus) | Productie-apps, hoog volume               |
-| Claude Max-abonnement  | $200/maand vast tarief                                     | Persoonlijk gebruik, ontwikkeling, onbeperkt gebruik |
+| Aanpak                    | Kostenroute                                      | Geschikt voor                              |
+| ------------------------- | ----------------------------------------------- | ------------------------------------------ |
+| Anthropic API             | Betalen per token via Claude Console of cloud   | Productie-apps, gedeelde automatisering, volume |
+| Claude-abonnementsproxy   | Claude Code / `claude -p`-plan en tegoedregels  | Persoonlijke experimenten met compatibele tools |
 
-Als je een Claude Max-abonnement hebt en dit met OpenAI-compatibele tools wilt gebruiken, kan deze proxy de kosten voor sommige workflows verlagen. API-sleutels blijven het duidelijkere beleidspad voor productiegebruik.
+Als je een Claude Max- of Pro-abonnement hebt en dit wilt gebruiken met OpenAI-compatibele tools, kan deze proxy bij sommige persoonlijke workflows passen. Het is geen onbeperkt pad met vast tarief. API-sleutels blijven het duidelijkere beleids- en factureringspad voor productiegebruik.
 
 ## Hoe het werkt
 
 ```
-Your App → claude-max-api-proxy → Claude Code CLI → Anthropic (via subscription)
-     (OpenAI format)              (converts format)      (uses your login)
+Your App → claude-max-api-proxy → Claude Code CLI / claude -p → Anthropic
+     (OpenAI format)              (converts format)          (uses your login)
 ```
 
 De proxy:
 
-1. Accepteert aanvragen in OpenAI-indeling op `http://localhost:3456/v1/chat/completions`
+1. Accepteert verzoeken in OpenAI-indeling op `http://localhost:3456/v1/chat/completions`
 2. Zet ze om naar Claude Code CLI-opdrachten
-3. Geeft reacties terug in OpenAI-indeling (streaming ondersteund)
+3. Retourneert antwoorden in OpenAI-indeling (streaming ondersteund)
 
 ## Aan de slag
 
 <Steps>
-  <Step title="Installeer de proxy">
-    Vereist Node.js 20+ en Claude Code CLI.
+  <Step title="Install the proxy">
+    Vereist Node.js 22+ en Claude Code CLI.
 
     ```bash
     npm install -g claude-max-api-proxy
@@ -58,13 +59,13 @@ De proxy:
     ```
 
   </Step>
-  <Step title="Start de server">
+  <Step title="Start the server">
     ```bash
     claude-max-api
     # Server runs at http://localhost:3456
     ```
   </Step>
-  <Step title="Test de proxy">
+  <Step title="Test the proxy">
     ```bash
     # Health check
     curl http://localhost:3456/health
@@ -82,8 +83,8 @@ De proxy:
     ```
 
   </Step>
-  <Step title="Configureer OpenClaw">
-    Wijs OpenClaw naar de proxy als aangepast OpenAI-compatibel eindpunt:
+  <Step title="Configure OpenClaw">
+    Richt OpenClaw op de proxy als een aangepast OpenAI-compatibel eindpunt:
 
     ```json5
     {
@@ -104,28 +105,25 @@ De proxy:
 
 ## Ingebouwde catalogus
 
-| Model-ID          | Koppelt aan     |
-| ----------------- | --------------- |
-| `claude-opus-4`   | Claude Opus 4   |
-| `claude-sonnet-4` | Claude Sonnet 4 |
-| `claude-haiku-4`  | Claude Haiku 4  |
+| Model-ID          | Komt overeen met |
+| ----------------- | ---------------- |
+| `claude-opus-4`   | Claude Opus 4    |
+| `claude-sonnet-4` | Claude Sonnet 4  |
+| `claude-haiku-4`  | Claude Haiku 4   |
 
 ## Geavanceerde configuratie
 
 <AccordionGroup>
-  <Accordion title="Opmerkingen voor proxy-achtige OpenAI-compatibiliteit">
-    Dit pad gebruikt dezelfde proxy-achtige OpenAI-compatibele route als andere aangepaste
-    `/v1`-backends:
+  <Accordion title="Proxy-style OpenAI-compatible notes">
+    Dit pad gebruikt dezelfde proxy-achtige OpenAI-compatibele route als andere aangepaste `/v1`-backends:
 
-    - Native aanvraagvorming die alleen voor OpenAI geldt, is niet van toepassing
-    - Geen `service_tier`, geen Responses `store`, geen prompt-cache-hints en geen
-      payloadvorming voor OpenAI-redeneercompatibiliteit
-    - Verborgen OpenClaw-attributieheaders (`originator`, `version`, `User-Agent`)
-      worden niet geïnjecteerd op de proxy-URL
+    - Native verzoekvorming die alleen voor OpenAI geldt, is niet van toepassing
+    - Geen `service_tier`, geen Responses `store`, geen prompt-cache-hints en geen OpenAI reasoning-compat payloadvorming
+    - Verborgen OpenClaw-attributieheaders (`originator`, `version`, `User-Agent`) worden niet geïnjecteerd op de proxy-URL
 
   </Accordion>
 
-  <Accordion title="Automatisch starten op macOS met LaunchAgent">
+  <Accordion title="Auto-start on macOS with LaunchAgent">
     Maak een LaunchAgent om de proxy automatisch uit te voeren:
 
     ```bash
@@ -160,36 +158,31 @@ De proxy:
   </Accordion>
 </AccordionGroup>
 
-## Links
-
-- **npm:** [https://www.npmjs.com/package/claude-max-api-proxy](https://www.npmjs.com/package/claude-max-api-proxy)
-- **GitHub:** [https://github.com/atalovesyou/claude-max-api-proxy](https://github.com/atalovesyou/claude-max-api-proxy)
-- **Issues:** [https://github.com/atalovesyou/claude-max-api-proxy/issues](https://github.com/atalovesyou/claude-max-api-proxy/issues)
-
 ## Opmerkingen
 
 - Dit is een **communitytool**, niet officieel ondersteund door Anthropic of OpenClaw
-- Vereist een actief Claude Max/Pro-abonnement met geauthenticeerde Claude Code CLI
-- De proxy draait lokaal en verzendt geen gegevens naar servers van derden
-- Streamingreacties worden volledig ondersteund
+- Vereist een actief Claude Max/Pro-abonnement waarbij Claude Code CLI is geauthenticeerd
+- Neemt het facturerings-, gebruikstegoed- en rate-limit-gedrag van Claude Code `claude -p` over
+- De proxy draait lokaal en stuurt geen gegevens naar servers van derden
+- Streamingantwoorden worden volledig ondersteund
 
 <Note>
-Voor native Anthropic-integratie met Claude CLI of API-sleutels, zie [Anthropic-provider](/nl/providers/anthropic). Voor OpenAI/Codex-abonnementen, zie [OpenAI-provider](/nl/providers/openai).
+Zie [Anthropic-provider](/nl/providers/anthropic) voor native Anthropic-integratie met Claude CLI of API-sleutels. Zie [OpenAI-provider](/nl/providers/openai) voor OpenAI/Codex-abonnementen.
 </Note>
 
 ## Gerelateerd
 
 <CardGroup cols={2}>
-  <Card title="Anthropic-provider" href="/nl/providers/anthropic" icon="bolt">
+  <Card title="Anthropic provider" href="/nl/providers/anthropic" icon="bolt">
     Native OpenClaw-integratie met Claude CLI of API-sleutels.
   </Card>
-  <Card title="OpenAI-provider" href="/nl/providers/openai" icon="robot">
+  <Card title="OpenAI provider" href="/nl/providers/openai" icon="robot">
     Voor OpenAI/Codex-abonnementen.
   </Card>
-  <Card title="Modelselectie" href="/nl/concepts/model-providers" icon="layers">
-    Overzicht van alle providers, modelverwijzingen en failovergedrag.
+  <Card title="Model selection" href="/nl/concepts/model-providers" icon="layers">
+    Overzicht van alle providers, modelrefs en failover-gedrag.
   </Card>
-  <Card title="Configuratie" href="/nl/gateway/configuration" icon="gear">
+  <Card title="Configuration" href="/nl/gateway/configuration" icon="gear">
     Volledige configuratiereferentie.
   </Card>
 </CardGroup>

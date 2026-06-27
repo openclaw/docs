@@ -1,14 +1,15 @@
 ---
 read_when:
     - Sie möchten Perplexity Search für die Websuche verwenden
-    - Sie müssen PERPLEXITY_API_KEY oder OPENROUTER_API_KEY eingerichtet haben
+    - Sie müssen PERPLEXITY_API_KEY oder OPENROUTER_API_KEY einrichten
 summary: Perplexity Search API und Sonar/OpenRouter-Kompatibilität für web_search
 title: Perplexity-Suche
 x-i18n:
-    generated_at: "2026-05-06T07:07:00Z"
+    generated_at: "2026-06-27T18:20:41Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 113abafae66acd8aaa0302b687ba13347eb44a81a4217b61bb68f07d8a119cb0
+    source_hash: 6ef003238bc38dd3d92b98654598cba05fb1c324d8ca766a683cf1defe5bd435
     source_path: tools/perplexity-search.md
     workflow: 16
 ---
@@ -16,10 +17,19 @@ x-i18n:
 OpenClaw unterstützt die Perplexity Search API als `web_search`-Provider.
 Sie gibt strukturierte Ergebnisse mit den Feldern `title`, `url` und `snippet` zurück.
 
-Aus Kompatibilitätsgründen unterstützt OpenClaw außerdem ältere Setups mit Perplexity Sonar/OpenRouter.
+Aus Kompatibilitätsgründen unterstützt OpenClaw auch ältere Perplexity-Sonar-/OpenRouter-Setups.
 Wenn Sie `OPENROUTER_API_KEY`, einen `sk-or-...`-Schlüssel in `plugins.entries.perplexity.config.webSearch.apiKey` verwenden oder `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` setzen, wechselt der Provider zum Chat-Completions-Pfad und gibt KI-generierte Antworten mit Zitaten statt strukturierter Search-API-Ergebnisse zurück.
 
-## Einen Perplexity-API-Schlüssel erhalten
+## Plugin installieren
+
+Installieren Sie das offizielle Plugin und starten Sie anschließend Gateway neu:
+
+```bash
+openclaw plugins install @openclaw/perplexity-plugin
+openclaw gateway restart
+```
+
+## Perplexity-API-Schlüssel erhalten
 
 1. Erstellen Sie ein Perplexity-Konto unter [perplexity.ai/settings/api](https://www.perplexity.ai/settings/api)
 2. Generieren Sie im Dashboard einen API-Schlüssel
@@ -27,7 +37,7 @@ Wenn Sie `OPENROUTER_API_KEY`, einen `sk-or-...`-Schlüssel in `plugins.entries.
 
 ## OpenRouter-Kompatibilität
 
-Wenn Sie bereits OpenRouter für Perplexity Sonar verwendet haben, behalten Sie `provider: "perplexity"` bei und setzen Sie `OPENROUTER_API_KEY` in der Gateway-Umgebung, oder speichern Sie einen `sk-or-...`-Schlüssel in `plugins.entries.perplexity.config.webSearch.apiKey`.
+Wenn Sie OpenRouter bereits für Perplexity Sonar verwendet haben, behalten Sie `provider: "perplexity"` bei und setzen Sie `OPENROUTER_API_KEY` in der Gateway-Umgebung, oder speichern Sie einen `sk-or-...`-Schlüssel in `plugins.entries.perplexity.config.webSearch.apiKey`.
 
 Optionale Kompatibilitätssteuerungen:
 
@@ -90,15 +100,15 @@ Optionale Kompatibilitätssteuerungen:
 
 ## Wo der Schlüssel gesetzt wird
 
-**Über die Konfiguration:** Führen Sie `openclaw configure --section web` aus. Der Schlüssel wird in
+**Über die Konfiguration:** Führen Sie `openclaw configure --section web` aus. Dadurch wird der Schlüssel in
 `~/.openclaw/openclaw.json` unter `plugins.entries.perplexity.config.webSearch.apiKey` gespeichert.
 Dieses Feld akzeptiert auch SecretRef-Objekte.
 
 **Über die Umgebung:** Setzen Sie `PERPLEXITY_API_KEY` oder `OPENROUTER_API_KEY`
-in der Prozessumgebung des Gateway. Bei einer Gateway-Installation legen Sie den Wert in
-`~/.openclaw/.env` (oder Ihrer Dienstumgebung) ab. Siehe [Umgebungsvariablen](/de/help/faq#env-vars-and-env-loading).
+in der Prozessumgebung von Gateway. Bei einer Gateway-Installation tragen Sie ihn in
+`~/.openclaw/.env` (oder in Ihrer Dienstumgebung) ein. Siehe [Umgebungsvariablen](/de/help/faq#env-vars-and-env-loading).
 
-Wenn `provider: "perplexity"` konfiguriert ist und die Perplexity-Schlüssel-SecretRef nicht aufgelöst werden kann und kein Env-Fallback vorhanden ist, schlägt Start/Neuladen schnell fehl.
+Wenn `provider: "perplexity"` konfiguriert ist und der SecretRef für den Perplexity-Schlüssel ohne Umgebungs-Fallback nicht aufgelöst werden kann, schlägt Start/Neuladen sofort fehl.
 
 ## Tool-Parameter
 
@@ -113,7 +123,7 @@ Anzahl der zurückzugebenden Ergebnisse (1-10).
 </ParamField>
 
 <ParamField path="country" type="string">
-2-stelliger ISO-Ländercode (z. B. `US`, `DE`).
+ISO-Ländercode mit 2 Buchstaben (z. B. `US`, `DE`).
 </ParamField>
 
 <ParamField path="language" type="string">
@@ -144,10 +154,10 @@ Gesamtes Inhaltsbudget (max. 1000000).
 Token-Limit pro Seite.
 </ParamField>
 
-Für den älteren Sonar-/OpenRouter-Kompatibilitätspfad:
+Für den Legacy-Sonar-/OpenRouter-Kompatibilitätspfad:
 
 - `query`, `count` und `freshness` werden akzeptiert
-- `count` dient dort nur der Kompatibilität; die Antwort ist weiterhin eine einzige synthetisierte
+- `count` dient dort nur der Kompatibilität; die Antwort ist weiterhin eine einzelne synthetisierte
   Antwort mit Zitaten statt einer Liste mit N Ergebnissen
 - Filter, die nur für die Search API gelten, wie `country`, `language`, `date_after`,
   `date_before`, `domain_filter`, `max_tokens` und `max_tokens_per_page`,
@@ -204,24 +214,24 @@ await web_search({
 
 ## Hinweise
 
-- Die Perplexity Search API gibt strukturierte Websuche-Ergebnisse zurück (`title`, `url`, `snippet`)
-- OpenRouter oder explizite Werte für `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` schalten Perplexity aus Kompatibilitätsgründen zurück auf Sonar-Chat-Completions
-- Sonar-/OpenRouter-Kompatibilität gibt eine synthetisierte Antwort mit Zitaten zurück, keine strukturierten Ergebniszeilen
-- Ergebnisse werden standardmäßig 15 Minuten lang zwischengespeichert (konfigurierbar über `cacheTtlMinutes`)
+- Die Perplexity Search API gibt strukturierte Websuchergebnisse zurück (`title`, `url`, `snippet`)
+- OpenRouter oder explizites `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` schaltet Perplexity aus Kompatibilitätsgründen zurück auf Sonar-Chat-Completions
+- Die Sonar-/OpenRouter-Kompatibilität gibt eine einzelne synthetisierte Antwort mit Zitaten zurück, keine strukturierten Ergebniszeilen
+- Ergebnisse werden standardmäßig 15 Minuten zwischengespeichert (konfigurierbar über `cacheTtlMinutes`)
 
 ## Verwandt
 
 <CardGroup cols={2}>
-  <Card title="Websuche-Überblick" href="/de/tools/web" icon="globe">
+  <Card title="Web search overview" href="/de/tools/web" icon="globe">
     Alle Provider und Regeln zur automatischen Erkennung.
   </Card>
-  <Card title="Brave-Suche" href="/de/tools/brave-search" icon="shield">
+  <Card title="Brave search" href="/de/tools/brave-search" icon="shield">
     Strukturierte Ergebnisse mit Länder- und Sprachfiltern.
   </Card>
-  <Card title="Exa-Suche" href="/de/tools/exa-search" icon="magnifying-glass">
-    Neurale Suche mit Inhaltsextraktion.
+  <Card title="Exa search" href="/de/tools/exa-search" icon="magnifying-glass">
+    Neuronale Suche mit Inhaltsextraktion.
   </Card>
-  <Card title="Perplexity-Search-API-Dokumentation" href="https://docs.perplexity.ai/docs/search/quickstart" icon="arrow-up-right-from-square">
-    Offizielle Schnellstartanleitung und Referenz zur Perplexity Search API.
+  <Card title="Perplexity Search API docs" href="https://docs.perplexity.ai/docs/search/quickstart" icon="arrow-up-right-from-square">
+    Offizieller Perplexity-Search-API-Schnellstart und Referenz.
   </Card>
 </CardGroup>

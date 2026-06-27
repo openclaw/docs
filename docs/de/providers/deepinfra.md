@@ -5,16 +5,25 @@ read_when:
 summary: Nutzen Sie die einheitliche API von DeepInfra, um in OpenClaw auf die beliebtesten Open-Source- und Frontier-Modelle zuzugreifen
 title: DeepInfra
 x-i18n:
-    generated_at: "2026-05-06T07:00:31Z"
+    generated_at: "2026-06-27T18:03:12Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5e68c3f764ac91548c2ced0b650e582f6d315ad7f154d19a00f299a3737494cd
+    source_hash: 059a556c24d2de2c8c5290b54c78fbc7451dc534238bfc4c725dcfbbd9a2d17f
     source_path: providers/deepinfra.md
     workflow: 16
 ---
 
-DeepInfra stellt eine **einheitliche API** bereit, die Anfragen an die beliebtesten Open-Source- und Frontier-Modelle hinter einem einzigen
-Endpunkt und API-Schlüssel weiterleitet. Sie ist OpenAI-kompatibel, sodass die meisten OpenAI-SDKs funktionieren, indem die Basis-URL geändert wird.
+DeepInfra stellt eine **einheitliche API** bereit, die Anfragen an die beliebtesten Open-Source- und Frontier-Modelle hinter einem einzigen Endpoint und API-Schlüssel weiterleitet. Sie ist OpenAI-kompatibel, daher funktionieren die meisten OpenAI-SDKs durch Umstellen der Basis-URL.
+
+## Plugin installieren
+
+Installieren Sie das offizielle Plugin und starten Sie dann Gateway neu:
+
+```bash
+openclaw plugins install @openclaw/deepinfra-provider
+openclaw gateway restart
+```
 
 ## API-Schlüssel abrufen
 
@@ -41,7 +50,7 @@ export DEEPINFRA_API_KEY="<your-deepinfra-api-key>" # pragma: allowlist secret
   env: { DEEPINFRA_API_KEY: "<your-deepinfra-api-key>" }, // pragma: allowlist secret
   agents: {
     defaults: {
-      model: { primary: "deepinfra/deepseek-ai/DeepSeek-V3.2" },
+      model: { primary: "deepinfra/deepseek-ai/DeepSeek-V4-Flash" },
     },
   },
 }
@@ -49,21 +58,24 @@ export DEEPINFRA_API_KEY="<your-deepinfra-api-key>" # pragma: allowlist secret
 
 ## Unterstützte OpenClaw-Oberflächen
 
-Das gebündelte Plugin registriert alle DeepInfra-Oberflächen, die den aktuellen
-OpenClaw-Provider-Verträgen entsprechen:
+Das Plugin registriert alle DeepInfra-Oberflächen, die den aktuellen
+OpenClaw-Provider-Verträgen entsprechen. Chat, Bilderzeugung und Videoerzeugung
+aktualisieren ihre Modellkataloge live aus `/v1/openai/models?sort_by=openclaw&filter=with_meta`,
+wenn `DEEPINFRA_API_KEY` konfiguriert ist; die anderen Oberflächen verwenden die unten aufgeführten kuratierten
+statischen Standardwerte.
 
-| Oberfläche               | Standardmodell                    | OpenClaw-Konfiguration/-Tool                         |
-| ------------------------ | ---------------------------------- | -------------------------------------------------------- |
-| Chat / Modell-Provider   | `deepseek-ai/DeepSeek-V3.2`        | `agents.defaults.model`                                  |
-| Bilderzeugung/-bearbeitung | `black-forest-labs/FLUX-1-schnell` | `image_generate`, `agents.defaults.imageGenerationModel` |
-| Medienverständnis        | `moonshotai/Kimi-K2.5` for images  | Eingehendes Bildverständnis                              |
-| Speech-to-Text           | `openai/whisper-large-v3-turbo`    | Eingehende Audiotranskription                            |
-| Text-to-Speech           | `hexgrad/Kokoro-82M`               | `messages.tts.provider: "deepinfra"`                     |
-| Videogenerierung         | `Pixverse/Pixverse-T2V`            | `video_generate`, `agents.defaults.videoGenerationModel` |
-| Memory-Einbettungen      | `BAAI/bge-m3`                      | `agents.defaults.memorySearch.provider: "deepinfra"`     |
+| Oberfläche               | Standardmodell                                                                                           | OpenClaw-Konfiguration/-Tool                            |
+| ------------------------ | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| Chat / Modell-Provider   | erster mit Chat getaggter Eintrag aus dem Live-Katalog (Manifest-Fallback `deepseek-ai/DeepSeek-V4-Flash`) | `agents.defaults.model`                                  |
+| Bilderzeugung/-bearbeitung | erster mit `image-gen` getaggter Eintrag aus dem Live-Katalog (statischer Fallback `black-forest-labs/FLUX-1-schnell`) | `image_generate`, `agents.defaults.imageGenerationModel` |
+| Medienverständnis        | `moonshotai/Kimi-K2.5` für Bilder                                                                        | Verständnis eingehender Bilder                           |
+| Speech-to-Text           | `openai/whisper-large-v3-turbo`                                                                          | Transkription eingehender Audiodaten                     |
+| Text-to-Speech           | `hexgrad/Kokoro-82M`                                                                                     | `messages.tts.provider: "deepinfra"`                     |
+| Videoerzeugung           | erster mit `video-gen` getaggter Eintrag aus dem Live-Katalog (statischer Fallback `Pixverse/Pixverse-T2V`) | `video_generate`, `agents.defaults.videoGenerationModel` |
+| Memory Embeddings        | `BAAI/bge-m3`                                                                                            | `agents.defaults.memorySearch.provider: "deepinfra"`     |
 
 DeepInfra stellt außerdem Reranking, Klassifizierung, Objekterkennung und andere
-native Modelltypen bereit. OpenClaw verfügt derzeit nicht über erstklassige Provider-Verträge
+native Modelltypen bereit. OpenClaw hat derzeit keine erstklassigen Provider-Verträge
 für diese Kategorien, daher registriert dieses Plugin sie noch nicht.
 
 ## Verfügbare Modelle
@@ -74,21 +86,23 @@ OpenClaw erkennt verfügbare DeepInfra-Modelle beim Start dynamisch. Verwenden S
 Jedes auf [DeepInfra.com](https://deepinfra.com/) verfügbare Modell kann mit dem Präfix `deepinfra/` verwendet werden:
 
 ```
-deepinfra/MiniMaxAI/MiniMax-M2.5
+deepinfra/deepseek-ai/DeepSeek-V4-Flash
 deepinfra/deepseek-ai/DeepSeek-V3.2
+deepinfra/MiniMaxAI/MiniMax-M2.5
 deepinfra/moonshotai/Kimi-K2.5
+deepinfra/nvidia/NVIDIA-Nemotron-3-Super-120B-A12B
 deepinfra/zai-org/GLM-5.1
 ...and many more
 ```
 
 ## Hinweise
 
-- Modellreferenzen sind `deepinfra/<provider>/<model>` (z. B. `deepinfra/Qwen/Qwen3-Max`).
-- Standardmodell: `deepinfra/deepseek-ai/DeepSeek-V3.2`
+- Modellreferenzen haben das Format `deepinfra/<provider>/<model>` (z. B. `deepinfra/Qwen/Qwen3-Max`).
+- Standardmodell: `deepinfra/deepseek-ai/DeepSeek-V4-Flash`
 - Basis-URL: `https://api.deepinfra.com/v1/openai`
-- Native Videogenerierung verwendet `https://api.deepinfra.com/v1/inference/<model>`.
+- Native Videoerzeugung verwendet `https://api.deepinfra.com/v1/inference/<model>`.
 
-## Verwandte Themen
+## Verwandt
 
 - [Modell-Provider](/de/concepts/model-providers)
 - [Alle Provider](/de/providers/index)

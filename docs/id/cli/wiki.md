@@ -2,13 +2,14 @@
 read_when:
     - Anda ingin menggunakan CLI memory-wiki
     - Anda sedang mendokumentasikan atau mengubah `openclaw wiki`
-summary: Referensi CLI untuk `openclaw wiki` (status vault memory-wiki, search, compile, lint, apply, bridge, dan helper Obsidian)
+summary: Referensi CLI untuk `openclaw wiki` (status vault memory-wiki, pencarian, kompilasi, lint, penerapan, bridge, dan pembantu Obsidian)
 title: Wiki
 x-i18n:
-    generated_at: "2026-04-30T09:42:10Z"
+    generated_at: "2026-06-27T17:22:15Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 67fe56c9bff7b24570f890733314857dd261fca8233051681a83c171656ff27d
+    source_hash: c6679a5aad41a19dbcad6075c190c3eb533e3ba13a6d5018d56988a23b2d9023
     source_path: cli/wiki.md
     workflow: 16
 ---
@@ -17,22 +18,22 @@ x-i18n:
 
 Periksa dan pelihara vault `memory-wiki`.
 
-Disediakan oleh Plugin `memory-wiki` bawaan.
+Disediakan oleh plugin `memory-wiki` bawaan.
 
 Terkait:
 
 - [Plugin Memory Wiki](/id/plugins/memory-wiki)
 - [Ikhtisar Memori](/id/concepts/memory)
-- [CLI: memory](/id/cli/memory)
+- [CLI: memori](/id/cli/memory)
 
-## Untuk apa ini digunakan
+## Untuk apa ini
 
-Gunakan `openclaw wiki` saat Anda menginginkan vault pengetahuan terkompilasi dengan:
+Gunakan `openclaw wiki` ketika Anda menginginkan vault pengetahuan terkompilasi dengan:
 
-- pencarian native wiki dan pembacaan halaman
-- sintesis kaya provenance
-- laporan kontradiksi dan kesegaran
-- impor bridge dari Plugin active memory
+- pencarian dan pembacaan halaman yang native wiki
+- sintesis yang kaya asal-usul
+- laporan kontradiksi dan kebaruan
+- impor bridge dari plugin memori aktif
 - helper CLI Obsidian opsional
 
 ## Perintah umum
@@ -42,6 +43,7 @@ openclaw wiki status
 openclaw wiki doctor
 openclaw wiki init
 openclaw wiki ingest ./notes/alpha.md
+openclaw wiki okf import ./knowledge-catalog/okf/bundles/ga4
 openclaw wiki compile
 openclaw wiki lint
 openclaw wiki search "alpha"
@@ -73,11 +75,11 @@ openclaw wiki obsidian daily
 
 Periksa mode vault saat ini, kesehatan, dan ketersediaan CLI Obsidian.
 
-Gunakan ini terlebih dahulu saat Anda tidak yakin apakah vault sudah diinisialisasi, mode bridge
+Gunakan ini terlebih dahulu ketika Anda tidak yakin apakah vault sudah diinisialisasi, mode bridge
 sehat, atau integrasi Obsidian tersedia.
 
 Saat mode bridge aktif dan dikonfigurasi untuk membaca artefak memori, perintah ini
-mengkueri Gateway yang sedang berjalan sehingga melihat konteks Plugin active memory yang sama dengan
+mengkueri Gateway yang sedang berjalan sehingga melihat konteks plugin memori aktif yang sama dengan
 memori agen/runtime.
 
 ### `wiki doctor`
@@ -108,12 +110,37 @@ Impor konten ke lapisan sumber wiki.
 Catatan:
 
 - ingest URL dikendalikan oleh `ingest.allowUrlIngest`
-- halaman sumber yang diimpor mempertahankan provenance di frontmatter
+- halaman sumber yang diimpor mempertahankan asal-usul di frontmatter
 - kompilasi otomatis dapat berjalan setelah ingest saat diaktifkan
+
+### `wiki okf import <path>`
+
+Impor bundle Open Knowledge Format yang sudah diekstrak ke halaman konsep wiki.
+
+Pengimpor membaca setiap dokumen konsep `.md` non-reserved di pohon direktori
+OKF, mewajibkan field `type` yang tidak kosong, dan memperlakukan nilai `type`
+OKF yang tidak dikenal sebagai konsep generik. File OKF reserved `index.md` dan `log.md`
+tidak diimpor sebagai konsep.
+
+Halaman yang diimpor diratakan di bawah `concepts/` sehingga alur compile,
+search, get, digest, dan dashboard wiki yang ada langsung melihatnya. ID konsep OKF
+asli, `type`, `resource`, `tags`, timestamp, path sumber, dan frontmatter lengkap
+dipertahankan dalam frontmatter halaman. Tautan markdown OKF internal
+ditulis ulang ke halaman wiki yang dihasilkan; tautan rusak atau eksternal dibiarkan
+tidak berubah.
+
+Contoh:
+
+```bash
+openclaw wiki okf import ./bundles/ga4
+openclaw wiki okf import ./bundles/ga4 --json
+openclaw wiki search "BigQuery Table" --mode source-evidence --json
+openclaw wiki get <path-from-json-result>
+```
 
 ### `wiki compile`
 
-Bangun ulang indeks, blok terkait, dashboard, dan digest terkompilasi.
+Bangun ulang indeks, blok terkait, dashboard, dan ringkasan terkompilasi.
 
 Ini menulis artefak stabil yang menghadap mesin di bawah:
 
@@ -127,11 +154,11 @@ Jika `render.createDashboards` diaktifkan, compile juga menyegarkan halaman lapo
 Lint vault dan laporkan:
 
 - masalah struktural
-- celah provenance
+- celah asal-usul
 - kontradiksi
 - pertanyaan terbuka
-- halaman/claim berkeyakinan rendah
-- halaman/claim usang
+- halaman/klaim dengan kepercayaan rendah
+- halaman/klaim usang
 
 Jalankan ini setelah pembaruan wiki yang bermakna.
 
@@ -146,16 +173,16 @@ Perilaku bergantung pada konfigurasi:
 - `--mode`: `auto`, `find-person`, `route-question`, `source-evidence`, atau
   `raw-claim`
 
-Gunakan `wiki search` saat Anda menginginkan peringkat khusus wiki atau detail provenance.
-Untuk satu pass recall bersama yang luas, pilih `openclaw memory search` saat
-Plugin active memory mengekspos pencarian bersama.
+Gunakan `wiki search` ketika Anda menginginkan peringkat khusus wiki atau detail asal-usul.
+Untuk satu lintasan recall bersama yang luas, pilih `openclaw memory search` ketika
+plugin memori aktif mengekspos pencarian bersama.
 
 Mode pencarian membantu agen memilih permukaan yang tepat:
 
 - `find-person`: alias, handle, sosial, ID kanonis, dan halaman orang
 - `route-question`: petunjuk ask-for/best-used-for dan konteks hubungan
-- `source-evidence`: halaman sumber dan bidang bukti terstruktur
-- `raw-claim`: teks claim terstruktur dengan metadata claim/bukti
+- `source-evidence`: halaman sumber dan field bukti terstruktur
+- `raw-claim`: teks klaim terstruktur dengan metadata klaim/bukti
 
 Contoh:
 
@@ -167,7 +194,7 @@ openclaw wiki search "strong route Teams" --mode raw-claim --json
 ```
 
 Output teks menyertakan baris `Claim:` dan `Evidence:` saat hasil cocok dengan
-claim terstruktur. Output JSON juga mengekspos `matchedClaimId`,
+klaim terstruktur. Output JSON juga mengekspos `matchedClaimId`,
 `matchedClaimStatus`, `matchedClaimConfidence`, `evidenceKinds`, dan
 `evidenceSourceIds` untuk drilldown sisi agen.
 
@@ -184,7 +211,7 @@ openclaw wiki get syntheses/alpha-summary.md --from 1 --lines 80
 
 ### `wiki apply`
 
-Terapkan mutasi sempit tanpa operasi halaman freeform.
+Terapkan mutasi sempit tanpa pembedahan halaman freeform.
 
 Alur yang didukung meliputi:
 
@@ -193,21 +220,21 @@ Alur yang didukung meliputi:
 - melampirkan id sumber
 - menambahkan pertanyaan
 - menambahkan kontradiksi
-- memperbarui keyakinan/status
-- menulis claim terstruktur
+- memperbarui kepercayaan/status
+- menulis klaim terstruktur
 
-Perintah ini ada agar wiki dapat berkembang dengan aman tanpa mengedit blok
-terkelola secara manual.
+Perintah ini ada agar wiki dapat berkembang dengan aman tanpa mengedit blok terkelola
+secara manual.
 
 ### `wiki bridge import`
 
-Impor artefak memori publik dari Plugin active memory ke halaman sumber yang didukung bridge.
+Impor artefak memori publik dari plugin memori aktif ke halaman sumber yang didukung bridge.
 
-Gunakan ini dalam mode `bridge` saat Anda menginginkan artefak memori ekspor terbaru
+Gunakan ini dalam mode `bridge` ketika Anda ingin artefak memori terbaru yang diekspor
 ditarik ke dalam vault wiki.
 
-Untuk pembacaan artefak bridge aktif, CLI merutekan impor melalui Gateway RPC
-sehingga impor menggunakan konteks Plugin memori runtime. Jika impor bridge
+Untuk pembacaan artefak bridge aktif, CLI merutekan impor melalui RPC Gateway
+sehingga impor menggunakan konteks plugin memori runtime. Jika impor bridge
 dinonaktifkan atau pembacaan artefak dimatikan, perintah mempertahankan perilaku
 zero-import lokal/offline.
 
@@ -229,17 +256,19 @@ Subperintah:
 - `command`
 - `daily`
 
-Ini memerlukan CLI resmi `obsidian` pada `PATH` saat
+Ini memerlukan CLI resmi `obsidian` di `PATH` saat
 `obsidian.useOfficialCli` diaktifkan.
 
 ## Panduan penggunaan praktis
 
-- Gunakan `wiki search` + `wiki get` saat provenance dan identitas halaman penting.
-- Gunakan `wiki apply` alih-alih mengedit bagian terkelola yang dihasilkan secara manual.
-- Gunakan `wiki lint` sebelum mempercayai konten kontradiktif atau berkeyakinan rendah.
-- Gunakan `wiki compile` setelah impor massal atau perubahan sumber saat Anda menginginkan
-  dashboard dan digest terkompilasi yang segar segera.
-- Gunakan `wiki bridge import` saat mode bridge bergantung pada artefak memori
+- Gunakan `wiki search` + `wiki get` ketika asal-usul dan identitas halaman penting.
+- Gunakan `wiki apply` alih-alih mengedit langsung bagian terkelola yang dihasilkan.
+- Gunakan `wiki lint` sebelum mempercayai konten yang kontradiktif atau berkepercayaan rendah.
+- Gunakan `wiki compile` setelah impor massal atau perubahan sumber ketika Anda menginginkan
+  dashboard dan ringkasan terkompilasi yang segar segera.
+- Gunakan `wiki okf import` ketika katalog data, ekspor dokumentasi, atau pipeline
+  pengayaan agen sudah menghasilkan bundle markdown OKF.
+- Gunakan `wiki bridge import` ketika mode bridge bergantung pada artefak memori
   yang baru diekspor.
 
 ## Kaitan konfigurasi

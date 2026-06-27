@@ -1,25 +1,26 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin clickclack
-summary: เพิ่มอินเทอร์เฟซช่องทาง Clickclack สำหรับส่งและรับข้อความ OpenClaw.
+summary: เพิ่มพื้นผิวช่องทาง Clickclack สำหรับการส่งและรับข้อความ OpenClaw
 title: Plugin Clickclack
 x-i18n:
-    generated_at: "2026-05-10T19:49:02Z"
+    generated_at: "2026-06-27T18:00:24Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 45ce98f1dcbc5d6369489c862704bcd714419aa7e41e33850d3776119822c02e
+    source_hash: d939f5291de0510eaac361732f93fb79cac94656ac56a653f3c9e97394c6a9ae
     source_path: plugins/reference/clickclack.md
     workflow: 16
 ---
 
 # Plugin Clickclack
 
-เพิ่มพื้นผิวช่องทาง Clickclack สำหรับการส่งและรับข้อความ OpenClaw
+เพิ่มพื้นผิวช่องทาง Clickclack สำหรับส่งและรับข้อความ OpenClaw
 
-## การเผยแพร่
+## การจัดจำหน่าย
 
 - แพ็กเกจ: `@openclaw/clickclack`
-- เส้นทางการติดตั้ง: รวมอยู่ใน OpenClaw
+- เส้นทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/clickclack`
 
 ## พื้นผิว
 

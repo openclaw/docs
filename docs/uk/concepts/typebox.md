@@ -4,28 +4,32 @@ read_when:
 summary: Схеми TypeBox як єдине джерело істини для протоколу Gateway
 title: TypeBox
 x-i18n:
-    generated_at: "2026-05-11T20:34:50Z"
+    generated_at: "2026-06-27T17:29:33Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ecc9a69ac6d4ac101a4a6f34e44acfbe952dce0f90d178d4f8559191fb92c3b4
+    source_hash: f2f3da11e9dcf3250fd77e0c43f4ed918551a536d93fa71bce95eaf3d7539f6d
     source_path: concepts/typebox.md
     workflow: 16
 ---
 
-TypeBox — це schema-бібліотека, орієнтована на TypeScript. Ми використовуємо її для визначення **WebSocket-протоколу Gateway** (рукостискання, запит/відповідь, серверні події). Ці схеми керують **runtime-валідацією**, **експортом JSON Schema** і **генерацією коду Swift** для застосунку macOS. Одне джерело істини; усе інше генерується.
+TypeBox — це schema-бібліотека, орієнтована на TypeScript. Ми використовуємо її для визначення **Gateway
+WebSocket protocol** (handshake, request/response, server events). Ці схеми
+керують **runtime validation**, **JSON Schema export** і **Swift codegen** для
+macOS app. Одне джерело істини; усе інше генерується.
 
-Якщо вам потрібен високорівневий контекст протоколу, почніть з
+Якщо вам потрібен контекст протоколу вищого рівня, почніть із
 [архітектури Gateway](/uk/concepts/architecture).
 
 ## Ментальна модель (30 секунд)
 
-Кожне WS-повідомлення Gateway є одним із трьох фреймів:
+Кожне повідомлення Gateway WS є одним із трьох фреймів:
 
 - **Запит**: `{ type: "req", id, method, params }`
 - **Відповідь**: `{ type: "res", id, ok, payload | error }`
 - **Подія**: `{ type: "event", event, payload, seq?, stateVersion? }`
 
-Перший фрейм **обов’язково** має бути запитом `connect`. Після цього клієнти можуть викликати
+Перший фрейм **обов'язково** має бути запитом `connect`. Після цього клієнти можуть викликати
 методи (наприклад, `health`, `send`, `chat.send`) і підписуватися на події (наприклад,
 `presence`, `tick`, `agent`).
 
@@ -40,52 +44,52 @@ Client                    Gateway
   |<---- res:health ----------|
 ```
 
-Поширені методи й події:
+Поширені методи + події:
 
-| Категорія  | Приклади                                                   | Примітки                          |
-| ---------- | ---------------------------------------------------------- | --------------------------------- |
-| Ядро       | `connect`, `health`, `status`                              | `connect` має бути першим         |
-| Обмін повідомленнями | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail` | побічні ефекти потребують `idempotencyKey` |
-| Чат        | `chat.history`, `chat.send`, `chat.abort`                  | WebChat використовує їх           |
-| Сеанси     | `sessions.list`, `sessions.patch`, `sessions.delete`       | адміністрування сеансів           |
-| Автоматизація | `wake`, `cron.list`, `cron.run`, `cron.runs`               | керування wake + cron             |
-| Вузли      | `node.list`, `node.invoke`, `node.pair.*`                  | Gateway WS + дії вузлів           |
-| Події      | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown`  | server push                       |
+| Категорія | Приклади                                                   | Примітки                           |
+| ---------- | ---------------------------------------------------------- | ---------------------------------- |
+| Ядро       | `connect`, `health`, `status`                              | `connect` має бути першим          |
+| Повідомлення | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail` | side-effects потребують `idempotencyKey` |
+| Чат        | `chat.history`, `chat.send`, `chat.abort`                  | WebChat використовує їх            |
+| Сесії      | `sessions.list`, `sessions.patch`, `sessions.delete`       | адміністрування сесій              |
+| Автоматизація | `wake`, `cron.list`, `cron.run`, `cron.runs`               | керування wake + cron              |
+| Вузли      | `node.list`, `node.invoke`, `node.pair.*`                  | Gateway WS + дії вузлів            |
+| Події      | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown`  | server push                        |
 
 Авторитетний рекламований інвентар **discovery** міститься в
 `src/gateway/server-methods-list.ts` (`listGatewayMethods`, `GATEWAY_EVENTS`).
 
 ## Де містяться схеми
 
-- Джерело: `src/gateway/protocol/schema.ts`
-- Runtime-валідатори (AJV): `src/gateway/protocol/index.ts`
-- Рекламований реєстр функцій/discovery: `src/gateway/server-methods-list.ts`
-- Серверне рукостискання + диспетчеризація методів: `src/gateway/server.impl.ts`
-- Клієнт Node: `src/gateway/client.ts`
+- Джерело: `packages/gateway-protocol/src/schema.ts`
+- Runtime validators (AJV): `packages/gateway-protocol/src/index.ts`
+- Реєстр рекламованих функцій/discovery: `src/gateway/server-methods-list.ts`
+- Server handshake + method dispatch: `src/gateway/server.impl.ts`
+- Node client: `src/gateway/client.ts`
 - Згенерована JSON Schema: `dist/protocol.schema.json`
-- Згенеровані моделі Swift: `apps/macos/Sources/OpenClawProtocol/GatewayModels.swift`
+- Згенеровані Swift models: `apps/macos/Sources/OpenClawProtocol/GatewayModels.swift`
 
 ## Поточний pipeline
 
 - `pnpm protocol:gen`
   - записує JSON Schema (draft-07) у `dist/protocol.schema.json`
 - `pnpm protocol:gen:swift`
-  - генерує моделі Gateway для Swift
+  - генерує Swift gateway models
 - `pnpm protocol:check`
-  - запускає обидва генератори й перевіряє, що результат закомічено
+  - запускає обидва генератори й перевіряє, що output закомічено
 
 ## Як схеми використовуються під час виконання
 
-- **На боці сервера**: кожен вхідний фрейм валідується через AJV. Рукостискання приймає лише
+- **На боці сервера**: кожен вхідний фрейм перевіряється через AJV. Handshake приймає лише
   запит `connect`, params якого відповідають `ConnectParams`.
-- **На боці клієнта**: JS-клієнт валідує фрейми подій і відповідей перед
-  використанням.
+- **На боці клієнта**: JS client перевіряє фрейми подій і відповідей перед
+  їх використанням.
 - **Feature discovery**: Gateway надсилає консервативний список `features.methods`
   і `features.events` у `hello-ok` з `listGatewayMethods()` і
   `GATEWAY_EVENTS`.
 - Цей список discovery не є згенерованим дампом кожного callable helper у
-  `coreGatewayHandlers`; деякі допоміжні RPC реалізовані в
-  `src/gateway/server-methods/*.ts` без переліку в рекламованому
+  `coreGatewayHandlers`; деякі helper RPC реалізовано в
+  `src/gateway/server-methods/*.ts` без перелічення в рекламованому
   списку функцій.
 
 ## Приклади фреймів
@@ -112,7 +116,7 @@ Connect (перше повідомлення):
 }
 ```
 
-Відповідь hello-ok:
+Відповідь Hello-ok:
 
 ```json
 {
@@ -193,13 +197,13 @@ ws.on("message", (data) => {
 });
 ```
 
-## Практичний приклад: додати метод end-to-end
+## Робочий приклад: додати метод від початку до кінця
 
-Приклад: додати новий запит `system.echo`, який повертає `{ ok: true, text }`.
+Приклад: додайте новий запит `system.echo`, який повертає `{ ok: true, text }`.
 
 1. **Схема (джерело істини)**
 
-Додайте до `src/gateway/protocol/schema.ts`:
+Додайте до `packages/gateway-protocol/src/schema.ts`:
 
 ```ts
 export const SystemEchoParamsSchema = Type.Object(
@@ -227,7 +231,7 @@ export type SystemEchoResult = Static<typeof SystemEchoResultSchema>;
 
 2. **Валідація**
 
-У `src/gateway/protocol/index.ts` експортуйте AJV-валідатор:
+У `packages/gateway-protocol/src/index.ts` експортуйте AJV validator:
 
 ```ts
 export const validateSystemEchoParams = ajv.compile<SystemEchoParams>(SystemEchoParamsSchema);
@@ -246,15 +250,15 @@ export const systemHandlers: GatewayRequestHandlers = {
 };
 ```
 
-Зареєструйте його в `src/gateway/server-methods.ts` (уже об’єднує `systemHandlers`),
-потім додайте `"system.echo"` до вхідних даних `listGatewayMethods` у
+Зареєструйте його в `src/gateway/server-methods.ts` (він уже об'єднує `systemHandlers`),
+потім додайте `"system.echo"` до input `listGatewayMethods` у
 `src/gateway/server-methods-list.ts`.
 
-Якщо метод може викликатися клієнтами оператора або вузла, також класифікуйте його в
-`src/gateway/method-scopes.ts`, щоб примусове застосування scope і рекламування функцій
-у `hello-ok` залишалися узгодженими.
+Якщо метод може викликатися клієнтами operator або node, також класифікуйте його в
+`src/gateway/method-scopes.ts`, щоб scope enforcement і рекламування функцій `hello-ok`
+залишалися узгодженими.
 
-4. **Регенерація**
+4. **Перегенеруйте**
 
 ```bash
 pnpm protocol:check
@@ -262,52 +266,52 @@ pnpm protocol:check
 
 5. **Тести + документація**
 
-Додайте серверний тест у `src/gateway/server.*.test.ts` і згадайте метод у документації.
+Додайте server test у `src/gateway/server.*.test.ts` і зазначте метод у документації.
 
-## Поведінка генерації коду Swift
+## Поведінка Swift codegen
 
-Генератор Swift створює:
+Swift generator створює:
 
 - enum `GatewayFrame` з cases `req`, `res`, `event` і `unknown`
-- строго типізовані structs/enums для payload
-- значення `ErrorCode`, `GATEWAY_PROTOCOL_VERSION` і `GATEWAY_MIN_PROTOCOL_VERSION`
+- Суворо типізовані payload structs/enums
+- Значення `ErrorCode`, `GATEWAY_PROTOCOL_VERSION` і `GATEWAY_MIN_PROTOCOL_VERSION`
 
 Невідомі типи фреймів зберігаються як raw payloads для forward compatibility.
 
 ## Версіонування + сумісність
 
-- `PROTOCOL_VERSION` міститься в `src/gateway/protocol/version.ts`.
+- `PROTOCOL_VERSION` міститься в `packages/gateway-protocol/src/version.ts`.
 - Клієнти надсилають `minProtocol` + `maxProtocol`; сервер відхиляє діапазони, які
-  не містять його поточного протоколу.
-- Моделі Swift зберігають невідомі типи фреймів, щоб не ламати старіші клієнти.
+  не включають його поточний протокол.
+- Swift models зберігають невідомі типи фреймів, щоб не ламати старіші клієнти.
 
-## Патерни та домовленості схем
+## Патерни й домовленості схем
 
-- Більшість об’єктів використовують `additionalProperties: false` для строгих payload.
-- `NonEmptyString` є типовим варіантом для ID та назв методів/подій.
+- Більшість об'єктів використовують `additionalProperties: false` для strict payloads.
+- `NonEmptyString` є типовим значенням для IDs і назв method/event.
 - Верхньорівневий `GatewayFrame` використовує **discriminator** на `type`.
-- Методи з побічними ефектами зазвичай потребують `idempotencyKey` у params
+- Методи з side effects зазвичай потребують `idempotencyKey` у params
   (приклад: `send`, `poll`, `agent`, `chat.send`).
-- `agent` приймає опційний `internalEvents` для runtime-згенерованого контексту оркестрації
-  (наприклад, передавання завершення завдання subagent/cron); розглядайте це як внутрішню API-поверхню.
+- `agent` приймає необов'язкові `internalEvents` для згенерованого під час виконання orchestration context
+  (наприклад, subagent/cron task completion handoff); розглядайте це як внутрішню API surface.
 
-## Live JSON схеми
+## Live schema JSON
 
-Згенерована JSON Schema є в репозиторії за адресою `dist/protocol.schema.json`. Опублікований
-raw-файл зазвичай доступний за адресою:
+Згенерована JSON Schema міститься в репозиторії за адресою `dist/protocol.schema.json`. Опублікований
+raw file зазвичай доступний за адресою:
 
 - [https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json](https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json)
 
 ## Коли ви змінюєте схеми
 
-1. Оновіть схеми TypeBox.
-2. Зареєструйте метод/подію в `src/gateway/server-methods-list.ts`.
-3. Оновіть `src/gateway/method-scopes.ts`, коли новий RPC потребує класифікації scope оператора або
-   вузла.
+1. Оновіть TypeBox schemas.
+2. Зареєструйте method/event у `src/gateway/server-methods-list.ts`.
+3. Оновіть `src/gateway/method-scopes.ts`, коли новий RPC потребує класифікації scope для operator або
+   node.
 4. Запустіть `pnpm protocol:check`.
-5. Закомітьте регенеровану схему + моделі Swift.
+5. Закомітьте перегенеровану schema + Swift models.
 
-## Пов’язане
+## Пов'язане
 
 - [Протокол rich output](/uk/reference/rich-output-protocol)
-- [Адаптери RPC](/uk/reference/rpc)
+- [RPC adapters](/uk/reference/rpc)

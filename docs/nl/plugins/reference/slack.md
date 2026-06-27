@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de Slack Plugin
-summary: Voegt de Slack-kanaalinterface toe voor het verzenden en ontvangen van OpenClaw-berichten.
-title: Slack-plugin
+    - Je installeert, configureert of controleert de slack-plugin
+summary: OpenClaw Slack-kanaalplugin voor kanalen, DM's, opdrachten en app-gebeurtenissen.
+title: Slack-Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:55:26Z"
+    generated_at: "2026-06-27T18:03:59Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 53e79f0d6a243a560fdc145b80cc1a2b986ce114fad7c9bb4f1008dc14e3ab24
+    source_hash: 602ccb21ce084219d922860d186664bbb098fd034117893dc7359d79495bedd6
     source_path: plugins/reference/slack.md
     workflow: 16
 ---
 
-# Slack Plugin
+# Slack-Plugin
 
-Voegt het Slack-kanaaloppervlak toe voor het verzenden en ontvangen van OpenClaw-berichten.
+OpenClaw Slack-kanaalplugin voor kanalen, DM's, commando's en app-gebeurtenissen.
 
 ## Distributie
 
 - Pakket: `@openclaw/slack`
-- Installatieroute: inbegrepen in OpenClaw
+- Installatieroute: npm; ClawHub
 
 ## Oppervlak
 
-channels: slack
+kanalen: slack; Skills
 
-## Gerelateerde documentatie
+## Gerelateerde docs
 
-- [Slack](/nl/channels/slack)
+- [slack](/nl/channels/slack)

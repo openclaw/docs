@@ -1,13 +1,14 @@
 ---
 read_when:
-    - می‌خواهید نقشه‌ای کامل از مستندات داشته باشید
+    - شما یک نقشهٔ کامل از مستندات می‌خواهید
 summary: هاب‌هایی که به همهٔ مستندات OpenClaw پیوند می‌دهند
 title: هاب‌های مستندات
 x-i18n:
-    generated_at: "2026-05-12T01:01:02Z"
+    generated_at: "2026-06-27T18:53:23Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f4675773105bbff55e1f38c8449d688dcefc6ad70d9f5e572193f1e0c638e243
+    source_hash: d7d3f089e2caea1e1487c7c0375c62dfb007db05827a77d4e5616839023b9457
     source_path: start/hubs.md
     workflow: 16
 ---
@@ -16,14 +17,14 @@ x-i18n:
 اگر با OpenClaw تازه آشنا شده‌اید، از [شروع به کار](/fa/start/getting-started) شروع کنید.
 </Note>
 
-از این مرکزها برای کشف همه صفحه‌ها استفاده کنید، از جمله بررسی‌های عمیق و مستندات مرجع که در ناوبری سمت چپ نمایش داده نمی‌شوند.
+از این مراکز برای پیدا کردن همه صفحه‌ها استفاده کنید، از جمله بررسی‌های عمیق و مستندات مرجعی که در ناوبری سمت چپ نمایش داده نمی‌شوند.
 
 ## از اینجا شروع کنید
 
 - [فهرست](/fa)
 - [شروع به کار](/fa/start/getting-started)
-- [راه‌اندازی اولیه](/fa/start/onboarding)
-- [راه‌اندازی اولیه (CLI)](/fa/start/wizard)
+- [آنبوردینگ](/fa/start/onboarding)
+- [آنبوردینگ (CLI)](/fa/start/wizard)
 - [راه‌اندازی](/fa/start/setup)
 - [داشبورد (Gateway محلی)](http://127.0.0.1:18789/)
 - [راهنما](/fa/help)
@@ -31,8 +32,8 @@ x-i18n:
 - [پیکربندی](/fa/gateway/configuration)
 - [نمونه‌های پیکربندی](/fa/gateway/configuration-examples)
 - [دستیار OpenClaw](/fa/start/openclaw)
-- [ویترین](/fa/start/showcase)
-- [پیشینه](/fa/start/lore)
+- [نمایش نمونه‌ها](/fa/start/showcase)
+- [داستان‌پردازی](/fa/start/lore)
 
 ## نصب + به‌روزرسانی‌ها
 
@@ -44,13 +45,13 @@ x-i18n:
 ## مفاهیم اصلی
 
 - [معماری](/fa/concepts/architecture)
-- [قابلیت‌ها](/fa/concepts/features)
+- [ویژگی‌ها](/fa/concepts/features)
 - [مرکز شبکه](/fa/network)
-- [زمان اجرای عامل](/fa/concepts/agent)
+- [زمان‌اجرای عامل](/fa/concepts/agent)
 - [فضای کاری عامل](/fa/concepts/agent-workspace)
 - [حافظه](/fa/concepts/memory)
 - [حلقه عامل](/fa/concepts/agent-loop)
-- [جریان‌دهی + قطعه‌بندی](/fa/concepts/streaming)
+- [استریمینگ + تکه‌بندی](/fa/concepts/streaming)
 - [مسیریابی چندعاملی](/fa/concepts/multi-agent)
 - [Compaction](/fa/concepts/compaction)
 - [نشست‌ها](/fa/concepts/session)
@@ -62,12 +63,12 @@ x-i18n:
 - [طرحواره‌های TypeBox](/fa/concepts/typebox)
 - [مدیریت منطقه زمانی](/fa/concepts/timezone)
 - [حضور](/fa/concepts/presence)
-- [کشف + انتقال‌ها](/fa/gateway/discovery)
+- [کشف + ترنسپورت‌ها](/fa/gateway/discovery)
 - [Bonjour](/fa/gateway/bonjour)
 - [مسیریابی کانال](/fa/channels/channel-routing)
 - [گروه‌ها](/fa/channels/groups)
 - [پیام‌های گروهی](/fa/channels/group-messages)
-- [جایگزینی مدل در خرابی](/fa/concepts/model-failover)
+- [جابجایی مدل هنگام خرابی](/fa/concepts/model-failover)
 - [OAuth](/fa/concepts/oauth)
 
 ## ارائه‌دهندگان + ورودی
@@ -82,7 +83,7 @@ x-i18n:
 - [Signal](/fa/channels/signal)
 - [QQ Bot](/fa/channels/qqbot)
 - [iMessage](/fa/channels/imessage)
-- [تحلیل مکان](/fa/channels/location)
+- [تجزیه مکان](/fa/channels/location)
 - [WebChat](/fa/web/webchat)
 - [Webhookها](/fa/automation/cron-jobs#webhooks)
 - [Gmail Pub/Sub](/fa/automation/cron-jobs#gmail-pubsub-integration)
@@ -97,17 +98,17 @@ x-i18n:
 - [سلامت](/fa/gateway/health)
 - [Heartbeat](/fa/gateway/heartbeat)
 - [Doctor](/fa/gateway/doctor)
-- [ثبت گزارش](/fa/gateway/logging)
-- [سندباکسینگ](/fa/gateway/sandboxing)
+- [ثبت لاگ](/fa/gateway/logging)
+- [سندباکس‌سازی](/fa/gateway/sandboxing)
 - [داشبورد](/fa/web/dashboard)
 - [رابط کاربری کنترل](/fa/web/control-ui)
-- [دسترسی راه دور](/fa/gateway/remote)
-- [README Gateway راه دور](/fa/gateway/remote-gateway-readme)
+- [دسترسی راه‌دور](/fa/gateway/remote)
+- [README Gateway راه‌دور](/fa/gateway/remote-gateway-readme)
 - [Tailscale](/fa/gateway/tailscale)
 - [امنیت](/fa/gateway/security)
 - [عیب‌یابی](/fa/gateway/troubleshooting)
 
-## ابزارها + خودکارسازی
+## ابزارها + اتوماسیون
 
 - [سطح ابزارها](/fa/tools)
 - [OpenProse](/fa/prose)
@@ -116,7 +117,7 @@ x-i18n:
 - [ابزار PDF](/fa/tools/pdf)
 - [حالت ارتقایافته](/fa/tools/elevated)
 - [کارهای Cron](/fa/automation/cron-jobs)
-- [خودکارسازی](/fa/automation)
+- [اتوماسیون](/fa/automation)
 - [تفکر + پرجزئیات](/fa/tools/thinking)
 - [مدل‌ها](/fa/concepts/models)
 - [زیرعامل‌ها](/fa/tools/subagents)
@@ -142,11 +143,11 @@ x-i18n:
 - [macOS](/fa/platforms/macos)
 - [iOS](/fa/platforms/ios)
 - [Android](/fa/platforms/android)
-- [Windows (WSL2)](/fa/platforms/windows)
+- [مرکز Windows](/fa/platforms/windows)
 - [Linux](/fa/platforms/linux)
-- [سطوح وب](/fa/web)
+- [سطح‌های وب](/fa/web)
 
-## اپ همراه macOS (پیشرفته)
+## برنامه همراه macOS (پیشرفته)
 
 - [راه‌اندازی توسعه macOS](/fa/platforms/mac/dev-setup)
 - [نوار منوی macOS](/fa/platforms/mac/menu-bar)
@@ -157,9 +158,9 @@ x-i18n:
 - [فرایند فرزند macOS](/fa/platforms/mac/child-process)
 - [سلامت macOS](/fa/platforms/mac/health)
 - [آیکن macOS](/fa/platforms/mac/icon)
-- [ثبت گزارش macOS](/fa/platforms/mac/logging)
+- [ثبت لاگ macOS](/fa/platforms/mac/logging)
 - [مجوزهای macOS](/fa/platforms/mac/permissions)
-- [راه دور macOS](/fa/platforms/mac/remote)
+- [راه‌دور macOS](/fa/platforms/mac/remote)
 - [امضای macOS](/fa/platforms/mac/signing)
 - [Gateway در macOS (launchd)](/fa/platforms/mac/bundled-gateway)
 - [XPC در macOS](/fa/platforms/mac/xpc)
@@ -179,27 +180,27 @@ x-i18n:
 - [Plugin تماس صوتی](/fa/plugins/voice-call)
 - [Plugin کاربر Zalo](/fa/plugins/zalouser)
 
-## فضای کاری + قالب‌ها
+## فضای کاری + الگوها
 
 - [Skills](/fa/tools/skills)
 - [ClawHub](/fa/clawhub)
 - [پیکربندی Skills](/fa/tools/skills-config)
 - [AGENTS پیش‌فرض](/fa/reference/AGENTS.default)
-- [قالب‌ها: AGENTS](/fa/reference/templates/AGENTS)
-- [قالب‌ها: BOOTSTRAP](/fa/reference/templates/BOOTSTRAP)
-- [قالب‌ها: HEARTBEAT](/fa/reference/templates/HEARTBEAT)
-- [قالب‌ها: IDENTITY](/fa/reference/templates/IDENTITY)
-- [قالب‌ها: SOUL](/fa/reference/templates/SOUL)
-- [قالب‌ها: TOOLS](/fa/reference/templates/TOOLS)
-- [قالب‌ها: USER](/fa/reference/templates/USER)
+- [الگوها: AGENTS](/fa/reference/templates/AGENTS)
+- [الگوها: BOOTSTRAP](/fa/reference/templates/BOOTSTRAP)
+- [الگوها: HEARTBEAT](/fa/reference/templates/HEARTBEAT)
+- [الگوها: IDENTITY](/fa/reference/templates/IDENTITY)
+- [الگوها: SOUL](/fa/reference/templates/SOUL)
+- [الگوها: TOOLS](/fa/reference/templates/TOOLS)
+- [الگوها: USER](/fa/reference/templates/USER)
 
 ## پروژه
 
 - [اعتبارها](/fa/reference/credits)
 
-## آزمایش + انتشار
+## آزمون + انتشار
 
-- [آزمایش](/fa/reference/test)
+- [آزمون](/fa/reference/test)
 - [سیاست انتشار](/fa/reference/RELEASING)
 - [مدل‌های دستگاه](/fa/reference/device-models)
 

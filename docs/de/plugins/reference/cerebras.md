@@ -1,13 +1,14 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das cerebras-Plugin
+    - Sie installieren, konfigurieren oder auditieren das cerebras-Plugin
 summary: Fügt OpenClaw Unterstützung für den Cerebras-Modell-Provider hinzu.
 title: Cerebras-Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:53:02Z"
+    generated_at: "2026-06-27T17:52:09Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7553ad4a35054942d2f2b734fed4f751765a235194300b7962f9ccd72b20d594
+    source_hash: 272a592b6099b7dc30c48e40e004ca01c1113a1fcf65917ac6266987a63ec01f
     source_path: plugins/reference/cerebras.md
     workflow: 16
 ---
@@ -19,7 +20,7 @@ Fügt OpenClaw Unterstützung für den Cerebras-Modell-Provider hinzu.
 ## Distribution
 
 - Paket: `@openclaw/cerebras-provider`
-- Installationspfad: in OpenClaw enthalten
+- Installationsweg: npm; ClawHub: `clawhub:@openclaw/cerebras-provider`
 
 ## Oberfläche
 

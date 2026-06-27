@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Stai installando, configurando o verificando il Plugin acpx
-summary: Componente di esecuzione ACP incorporato con gestione della sessione e del trasporto di proprietà del Plugin.
+    - Stai installando, configurando o verificando il plugin acpx
+summary: Backend di runtime ACP di OpenClaw con gestione della sessione e del trasporto di proprietà del plugin.
 title: Plugin ACPx
 x-i18n:
-    generated_at: "2026-05-03T21:39:44Z"
+    generated_at: "2026-06-27T17:53:30Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 232154c08280d11f330dd0928fe4f546416116439c0bd3760bbae26d86c6599b
+    source_hash: 71e6762b6049c5eca3fa560f2d8d13a2538c2e913f9dbd9f0e2bb6b5aef160e4
     source_path: plugins/reference/acpx.md
     workflow: 16
 ---
 
 # Plugin ACPx
 
-Backend runtime ACP incorporato con gestione della sessione e del trasporto di proprietà del plugin.
+Backend runtime ACP di OpenClaw con gestione di sessione e trasporto di proprietà del Plugin.
 
 ## Distribuzione
 
@@ -23,7 +24,7 @@ Backend runtime ACP incorporato con gestione della sessione e del trasporto di p
 
 ## Superficie
 
-skills
+Skills
 
 ## Documentazione correlata
 

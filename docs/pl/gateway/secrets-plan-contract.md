@@ -2,21 +2,22 @@
 read_when:
     - Generowanie lub przeglądanie planów `openclaw secrets apply`
     - Debugowanie błędów `Invalid plan target path`
-    - Zrozumienie zachowania walidacji typu celu i ścieżki
-summary: 'Kontrakt dla planów `secrets apply`: walidacja celu, dopasowanie ścieżek i zakres celu `auth-profiles.json`'
-title: Kontrakt planu apply sekretów
+    - Zrozumienie typu docelowego i zachowania walidacji ścieżki
+summary: 'Kontrakt dla planów `secrets apply`: walidacja celu, dopasowywanie ścieżek i zakres celu `auth-profiles.json`'
+title: Kontrakt planu stosowania sekretów
 x-i18n:
-    generated_at: "2026-04-24T09:12:11Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T17:37:39Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 80214353a1368b249784aa084c714e043c2d515706357d4ba1f111a3c68d1a84
+    source_hash: 03f0ca9b433553a2f6d86d01b8c227a24b6f53ef7034a94bd648fbf04c81f13e
     source_path: gateway/secrets-plan-contract.md
-    workflow: 15
+    workflow: 16
 ---
 
-Ta strona definiuje ścisły kontrakt wymuszany przez `openclaw secrets apply`.
+Ta strona definiuje ścisły kontrakt egzekwowany przez `openclaw secrets apply`.
 
-Jeśli cel nie pasuje do tych reguł, apply kończy się błędem przed modyfikacją konfiguracji.
+Jeśli cel nie spełnia tych reguł, apply kończy się niepowodzeniem przed zmodyfikowaniem konfiguracji.
 
 ## Kształt pliku planu
 
@@ -45,40 +46,83 @@ Jeśli cel nie pasuje do tych reguł, apply kończy się błędem przed modyfika
 }
 ```
 
-## Obsługiwany zakres celu
+## Upserty i usunięcia providerów
+
+Plany mogą także zawierać dwa opcjonalne pola najwyższego poziomu, które modyfikują mapę
+`secrets.providers` razem z zapisami dla poszczególnych celów:
+
+- `providerUpserts` — obiekt indeksowany aliasem providera. Każda wartość jest
+  definicją providera (ten sam kształt, który jest akceptowany pod
+  `secrets.providers.<alias>` w `openclaw.json`, np. provider `exec` lub `file`).
+- `providerDeletes` — tablica aliasów providerów do usunięcia.
+
+`providerUpserts` uruchamia się przed `targets`, więc `target.ref.provider` może
+odwoływać się do aliasu providera wprowadzanego przez ten sam plan w
+`providerUpserts`. Bez tego plany odwołujące się do aliasu, który nie jest jeszcze
+skonfigurowany w `openclaw.json`, kończą się błędem `provider "<alias>" is not
+configured`.
+
+```json5
+{
+  version: 1,
+  protocolVersion: 1,
+  providerUpserts: {
+    onepassword_anthropic: {
+      source: "exec",
+      command: "/usr/bin/op",
+      args: ["read", "op://Vault/Anthropic/credential"],
+    },
+  },
+  providerDeletes: ["legacy_unused_alias"],
+  targets: [
+    {
+      type: "models.providers.apiKey",
+      path: "models.providers.anthropic.apiKey",
+      pathSegments: ["models", "providers", "anthropic", "apiKey"],
+      providerId: "anthropic",
+      ref: { source: "exec", provider: "onepassword_anthropic", id: "credential" },
+    },
+  ],
+}
+```
+
+Providery exec wprowadzone przez `providerUpserts` nadal podlegają regułom zgody na exec w [Zachowanie zgody dla providera exec](#exec-provider-consent-behavior):
+plany zawierające providery exec wymagają `--allow-exec` w trybie zapisu.
+
+## Obsługiwany zakres celów
 
 Cele planu są akceptowane dla obsługiwanych ścieżek poświadczeń w:
 
 - [Powierzchnia poświadczeń SecretRef](/pl/reference/secretref-credential-surface)
 
-## Zachowanie typu celu
+## Zachowanie typów celów
 
 Reguła ogólna:
 
-- `target.type` musi być rozpoznawany i musi pasować do znormalizowanego kształtu `target.path`.
+- `target.type` musi być rozpoznany i musi odpowiadać znormalizowanemu kształtowi `target.path`.
 
-Aliasy zgodności są nadal akceptowane dla istniejących planów:
+Aliasy zgodności nadal są akceptowane dla istniejących planów:
 
 - `models.providers.apiKey`
 - `skills.entries.apiKey`
 - `channels.googlechat.serviceAccount`
 
-## Reguły walidacji ścieżki
+## Reguły walidacji ścieżek
 
-Każdy cel jest walidowany z użyciem wszystkich poniższych reguł:
+Każdy cel jest walidowany według wszystkich poniższych reguł:
 
-- `type` musi być rozpoznawanym typem celu.
-- `path` musi być niepustą ścieżką dot.
-- `pathSegments` można pominąć. Jeśli są podane, muszą normalizować się dokładnie do tej samej ścieżki co `path`.
+- `type` musi być rozpoznanym typem celu.
+- `path` musi być niepustą ścieżką kropkową.
+- `pathSegments` można pominąć. Jeśli zostanie podane, musi normalizować się dokładnie do tej samej ścieżki co `path`.
 - Zabronione segmenty są odrzucane: `__proto__`, `prototype`, `constructor`.
 - Znormalizowana ścieżka musi pasować do zarejestrowanego kształtu ścieżki dla typu celu.
-- Jeśli ustawiono `providerId` albo `accountId`, musi pasować do identyfikatora zakodowanego w ścieżce.
+- Jeśli ustawiono `providerId` lub `accountId`, musi ono pasować do identyfikatora zakodowanego w ścieżce.
 - Cele `auth-profiles.json` wymagają `agentId`.
-- Przy tworzeniu nowego mapowania `auth-profiles.json` uwzględnij `authProfileProvider`.
+- Podczas tworzenia nowego mapowania `auth-profiles.json` uwzględnij `authProfileProvider`.
 
-## Zachowanie przy błędzie
+## Zachowanie przy niepowodzeniu
 
-Jeśli cel nie przejdzie walidacji, apply kończy się błędem podobnym do:
+Jeśli walidacja celu zakończy się niepowodzeniem, apply kończy działanie z błędem takim jak:
 
 ```text
 Invalid plan target path for models.providers.apiKey: models.providers.openai.baseUrl
@@ -88,34 +132,34 @@ Dla nieprawidłowego planu nie są zatwierdzane żadne zapisy.
 
 ## Zachowanie zgody dla providera exec
 
-- `--dry-run` domyślnie pomija kontrole SecretRef exec.
-- Plany zawierające SecretRef/providerów exec są odrzucane w trybie zapisu, chyba że ustawiono `--allow-exec`.
-- Przy walidacji/stosowaniu planów zawierających exec przekaż `--allow-exec` zarówno w poleceniach dry-run, jak i zapisu.
+- `--dry-run` domyślnie pomija kontrole exec SecretRef.
+- Plany zawierające SecretRef/providery exec są odrzucane w trybie zapisu, chyba że ustawiono `--allow-exec`.
+- Podczas walidowania/stosowania planów zawierających exec przekaż `--allow-exec` zarówno w poleceniach dry-run, jak i zapisu.
 
-## Uwagi o runtime i zakresie audytu
+## Uwagi dotyczące zakresu runtime i audytu
 
-- Wpisy `auth-profiles.json` zawierające tylko ref (`keyRef`/`tokenRef`) są uwzględniane przy rozwiązywaniu runtime i w zakresie audytu.
+- Wpisy `auth-profiles.json` zawierające tylko referencje (`keyRef`/`tokenRef`) są uwzględniane w rozwiązywaniu runtime i pokryciu audytu.
 - `secrets apply` zapisuje obsługiwane cele `openclaw.json`, obsługiwane cele `auth-profiles.json` oraz opcjonalne cele scrub.
 
 ## Kontrole operatora
 
 ```bash
-# Zweryfikuj plan bez zapisów
+# Validate plan without writes
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run
 
-# Następnie zastosuj go naprawdę
+# Then apply for real
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json
 
-# Dla planów zawierających exec jawnie wyraź zgodę w obu trybach
+# For exec-containing plans, opt in explicitly in both modes
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run --allow-exec
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --allow-exec
 ```
 
-Jeśli apply kończy się błędem z komunikatem o nieprawidłowej ścieżce celu, wygeneruj plan ponownie przez `openclaw secrets configure` albo popraw ścieżkę celu do jednego z obsługiwanych kształtów podanych powyżej.
+Jeśli apply zakończy się niepowodzeniem z komunikatem o nieprawidłowej ścieżce celu, wygeneruj plan ponownie za pomocą `openclaw secrets configure` albo popraw ścieżkę celu do obsługiwanego kształtu opisanego powyżej.
 
-## Powiązane dokumenty
+## Powiązana dokumentacja
 
 - [Zarządzanie sekretami](/pl/gateway/secrets)
 - [CLI `secrets`](/pl/cli/secrets)
 - [Powierzchnia poświadczeń SecretRef](/pl/reference/secretref-credential-surface)
-- [Dokumentacja konfiguracji](/pl/gateway/configuration-reference)
+- [Informacje o konfiguracji](/pl/gateway/configuration-reference)

@@ -1,30 +1,31 @@
 ---
 read_when:
-    - U installeert, configureert of controleert de amazon-bedrock-Plugin
-summary: Voegt ondersteuning voor de Amazon Bedrock-modelprovider toe aan OpenClaw.
-title: Amazon Bedrock-Plugin
+    - Je installeert, configureert of controleert de amazon-bedrock-Plugin
+summary: OpenClaw Amazon Bedrock-provider-Plugin met modeldetectie, embeddings en guardrail-ondersteuning.
+title: Amazon Bedrock-plugin
 x-i18n:
-    generated_at: "2026-05-02T20:47:48Z"
+    generated_at: "2026-06-27T17:58:15Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 001ec686133a9f6b17c8074bf6710c11ad92679d7badb08a8bef51272c40308d
+    source_hash: bf39e0d58332cd057e8f050dc1a8742c219b62182381a7f47856e3a657b80f03
     source_path: plugins/reference/amazon-bedrock.md
     workflow: 16
 ---
 
-# Amazon Bedrock-Plugin
+# Amazon Bedrock-plugin
 
-Voegt ondersteuning voor de Amazon Bedrock-modelprovider toe aan OpenClaw.
+OpenClaw Amazon Bedrock-providerplugin met modeldetectie, embeddings en guardrail-ondersteuning.
 
 ## Distributie
 
 - Pakket: `@openclaw/amazon-bedrock-provider`
-- Installatieroute: opgenomen in OpenClaw
+- Installatieroute: npm; ClawHub
 
-## Interface
+## Oppervlak
 
 providers: amazon-bedrock; contracts: memoryEmbeddingProviders
 
-## Gerelateerde docs
+## Gerelateerde documentatie
 
 - [amazon-bedrock](/nl/providers/bedrock)

@@ -1,126 +1,211 @@
 ---
 read_when:
     - Cài đặt OpenClaw trên Windows
-    - Lựa chọn giữa Windows gốc và WSL2
-    - Đang tìm trạng thái của ứng dụng đồng hành trên Windows
-summary: 'Hỗ trợ Windows: các lộ trình cài đặt trực tiếp và qua WSL2, tiến trình nền và những điểm cần lưu ý hiện tại'
+    - Chọn giữa Windows Hub, Windows gốc và WSL2
+    - Thiết lập ứng dụng đồng hành trên Windows hoặc chế độ node Windows
+summary: 'Hỗ trợ Windows: Windows Hub, CLI và Gateway gốc, thiết lập gateway WSL2, chế độ node và xử lý sự cố'
 title: Windows
 x-i18n:
-    generated_at: "2026-05-05T06:18:08Z"
+    generated_at: "2026-06-27T17:43:03Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: adf885747e3a897cb4ee57f6494805468d38c4595c0ab7582b063153a1134d18
+    source_hash: e7c7bde33f27bce6c1136ccf688547ee82750d317a997c4a45b354c52ae1b690
     source_path: platforms/windows.md
     workflow: 16
 ---
 
-OpenClaw hỗ trợ cả **Windows gốc** và **WSL2**. WSL2 là hướng ổn định hơn và được khuyến nghị để có trải nghiệm đầy đủ — CLI, Gateway và công cụ chạy bên trong Linux với khả năng tương thích đầy đủ. Windows gốc dùng được cho CLI lõi và Gateway, với một số lưu ý bên dưới.
+OpenClaw cung cấp một ứng dụng đồng hành **Windows Hub** gốc cùng với hỗ trợ CLI trên Windows.
+Dùng Windows Hub khi bạn muốn một ứng dụng máy tính để bàn có thiết lập, trạng thái khay hệ thống, chat,
+chẩn đoán Command Center và các khả năng Node Windows. Dùng trình cài đặt PowerShell
+khi bạn muốn CLI/Gateway trực tiếp. Dùng WSL2 khi bạn muốn môi trường chạy Gateway
+tương thích với Linux nhất.
 
-Ứng dụng đồng hành Windows gốc đang được lên kế hoạch.
+## Khuyến nghị: Windows Hub
 
-## WSL2 (khuyến nghị)
+Windows Hub là ứng dụng đồng hành WinUI gốc cho Windows 10 20H2+ và Windows 11. Ứng dụng cài đặt không cần quyền quản trị viên và được phát hành với các trình cài đặt
+x64 và ARM64 đã ký trên các bản phát hành OpenClaw.
 
-- [Bắt đầu](/vi/start/getting-started) (dùng bên trong WSL)
-- [Cài đặt & cập nhật](/vi/install/updating)
-- Hướng dẫn WSL2 chính thức (Microsoft): [https://learn.microsoft.com/windows/wsl/install](https://learn.microsoft.com/windows/wsl/install)
+Tải trình cài đặt ổn định mới nhất từ [trang bản phát hành OpenClaw](https://github.com/openclaw/openclaw/releases):
 
-## Trạng thái Windows gốc
+- [OpenClawCompanion-Setup-x64.exe](https://github.com/openclaw/openclaw/releases/download/v2026.6.5/OpenClawCompanion-Setup-x64.exe)
+- [OpenClawCompanion-Setup-arm64.exe](https://github.com/openclaw/openclaw/releases/download/v2026.6.5/OpenClawCompanion-Setup-arm64.exe)
+- [Tổng kiểm tra](https://github.com/openclaw/openclaw/releases/download/v2026.6.5/OpenClawCompanion-SHA256SUMS.txt)
 
-Các luồng CLI Windows gốc đang được cải thiện, nhưng WSL2 vẫn là hướng được khuyến nghị.
+Nếu một liên kết tải xuống ở trên trả về 404, hãy truy cập [trang bản phát hành](https://github.com/openclaw/openclaw/releases) và tìm các tài sản `OpenClawCompanion-Setup-*` trong bản phát hành mới nhất.
 
-Những gì hoạt động tốt trên Windows gốc hiện nay:
+Sau khi cài đặt, khởi chạy **OpenClaw Companion** từ menu Start hoặc khay hệ thống.
+Trình cài đặt cũng thêm lối tắt cho Thiết lập Gateway, Chat, Cài đặt,
+Kiểm tra cập nhật và gỡ cài đặt.
 
-- trình cài đặt website qua `install.ps1`
-- dùng CLI cục bộ như `openclaw --version`, `openclaw doctor` và `openclaw plugins list --json`
-- kiểm thử smoke local-agent/provider nhúng như:
+### Windows Hub bao gồm những gì
+
+- trạng thái khay hệ thống và khởi chạy khi đăng nhập
+- thiết lập lần chạy đầu cho Gateway WSL cục bộ do ứng dụng sở hữu
+- cài đặt kết nối cho Gateway cục bộ, từ xa và qua đường hầm SSH
+- cửa sổ chat gốc cùng quyền truy cập vào Control UI trên trình duyệt
+- chẩn đoán Command Center cho phiên, mức sử dụng, kênh, Node, ghép nối và
+  lệnh sửa chữa
+- chế độ Node Windows cho canvas, màn hình, camera, thông báo,
+  trạng thái thiết bị, chuyển văn bản thành giọng nói, chuyển giọng nói thành văn bản và `system.run` có kiểm soát do agent điều khiển
+- chế độ máy chủ MCP cục bộ cho các client MCP như Claude Desktop, Claude Code và
+  Cursor
+
+### Lần khởi chạy đầu tiên
+
+Ở lần khởi chạy đầu tiên, Windows Hub mở phần thiết lập khi không có Gateway đã lưu nào dùng được.
+Đường dẫn nhanh nhất là **Thiết lập cục bộ**, thao tác này cấp phát một distro WSL
+`OpenClawGateway` do ứng dụng sở hữu, cài Gateway bên trong đó và ghép nối ứng dụng.
+Việc này không xuất hay sửa đổi distro Ubuntu hiện có của bạn.
+
+Chọn **Thiết lập nâng cao** hoặc mở tab Kết nối khi bạn đã có
+Gateway. Bạn có thể kết nối tới:
+
+- một Gateway cục bộ trên PC này
+- một Gateway WSL trên PC này
+- một Gateway từ xa bằng URL và token hoặc mã thiết lập
+- một Gateway được truy cập qua đường hầm SSH
+
+Khi thiết lập hoàn tất, biểu tượng khay chuyển sang màu xanh lá. Mở **Command Center** từ
+khay để xác nhận kết nối, ghép nối, trạng thái Node và sức khỏe kênh.
+
+## Chế độ Node Windows
+
+Windows Hub có thể đăng ký như một Node OpenClaw hạng nhất. Sau đó agent có thể dùng
+các khả năng gốc Windows đã khai báo thông qua Gateway.
+
+Các lệnh thường dùng gồm:
+
+- `canvas.present`, `canvas.hide`, `canvas.navigate`, `canvas.eval`,
+  `canvas.snapshot`
+- `screen.snapshot` và, khi chọn tham gia rõ ràng, `screen.record`
+- `camera.list` và, khi chọn tham gia rõ ràng, `camera.snap`, `camera.clip`
+- `system.notify`, `system.run`, `system.run.prepare`, `system.which`
+- `location.get`, `device.info`, `device.status`
+- `stt.transcribe`, `tts.speak`
+
+Chế độ Node yêu cầu ghép nối Gateway. Nếu ứng dụng hiển thị yêu cầu ghép nối, hãy phê duyệt
+yêu cầu đó từ máy chủ Gateway:
 
 ```powershell
-openclaw agent --local --agent main --thinking low -m "Reply with exactly WINDOWS-HATCH-OK."
+openclaw devices list
+openclaw devices approve <request-id>
+openclaw nodes status
 ```
 
-Các lưu ý hiện tại:
+Gateway chỉ chuyển tiếp những lệnh mà Node khai báo và chính sách máy chủ
+cho phép. Các lệnh nhạy cảm về quyền riêng tư như `screen.record`, `camera.snap` và
+`camera.clip` yêu cầu chọn tham gia `gateway.nodes.allowCommands` rõ ràng.
 
-- `openclaw onboard --non-interactive` vẫn yêu cầu gateway cục bộ có thể kết nối được, trừ khi bạn truyền `--skip-health`
-- `openclaw onboard --non-interactive --install-daemon` và `openclaw gateway install` thử Windows Scheduled Tasks trước
-- nếu việc tạo Scheduled Task bị từ chối, OpenClaw chuyển sang mục đăng nhập trong thư mục Startup theo từng người dùng và khởi động gateway ngay lập tức
-- nếu chính `schtasks` bị kẹt hoặc ngừng phản hồi, OpenClaw hiện hủy nhanh hướng đó và chuyển sang dự phòng thay vì treo mãi
-- Scheduled Tasks vẫn được ưu tiên khi khả dụng vì cung cấp trạng thái giám sát tốt hơn
+## Chế độ MCP cục bộ
 
-Nếu bạn chỉ muốn CLI gốc, không cài đặt dịch vụ gateway, hãy dùng một trong các lệnh này:
+Windows Hub có thể phơi bày cùng registry khả năng gốc Windows dưới dạng máy chủ
+MCP cục bộ trên loopback. Điều này hữu ích khi bạn muốn các client MCP cục bộ điều khiển
+các khả năng Windows mà không cần Gateway OpenClaw đang chạy.
+
+Bật tính năng này trong Cài đặt Windows Hub dưới mục nhà phát triển/nâng cao. Ứng dụng
+hiển thị endpoint loopback và bearer token sau khi máy chủ được bật.
+
+Ma trận chế độ:
+
+| Chế độ Node | Máy chủ MCP | Hành vi                            |
+| --------- | ---------- | ---------------------------------- |
+| tắt       | tắt        | Ứng dụng máy tính để bàn chỉ dành cho operator |
+| bật       | tắt        | Node Windows đã kết nối Gateway    |
+| tắt       | bật        | Chỉ máy chủ MCP cục bộ             |
+| bật       | bật        | Node Gateway cùng máy chủ MCP cục bộ |
+
+## CLI và Gateway gốc trên Windows
+
+Để dùng ưu tiên terminal, cài OpenClaw từ PowerShell:
 
 ```powershell
-openclaw onboard --non-interactive --skip-health
-openclaw gateway run
+iwr -useb https://openclaw.ai/install.ps1 | iex
 ```
 
-Nếu bạn muốn khởi động được quản lý trên Windows gốc:
+Xác minh:
+
+```powershell
+openclaw --version
+openclaw doctor
+openclaw gateway status --json
+```
+
+Các luồng CLI và Gateway gốc trên Windows được hỗ trợ và tiếp tục được cải thiện.
+Khởi động được quản lý dùng Windows Scheduled Tasks khi có sẵn. Task giữ script
+`gateway.cmd` dễ đọc trong thư mục trạng thái OpenClaw, nhưng khởi chạy nó qua
+wrapper WScript `gateway.vbs` được tạo để Gateway nền không mở
+cửa sổ console hiển thị. Nếu việc tạo task bị từ chối, OpenClaw dự phòng sang một
+mục đăng nhập thư mục Startup theo từng người dùng.
+
+Để cài đặt dịch vụ Gateway:
 
 ```powershell
 openclaw gateway install
 openclaw gateway status --json
 ```
 
-Nếu việc tạo Scheduled Task bị chặn, chế độ dịch vụ dự phòng vẫn tự khởi động sau khi đăng nhập thông qua thư mục Startup của người dùng hiện tại.
+Nếu bạn chỉ muốn dùng CLI mà không có dịch vụ Gateway được quản lý:
 
-## Gateway
-
-- [Runbook Gateway](/vi/gateway)
-- [Cấu hình](/vi/gateway/configuration)
-
-## Cài đặt dịch vụ Gateway (CLI)
-
-Bên trong WSL2:
-
-```
-openclaw onboard --install-daemon
+```powershell
+openclaw onboard --non-interactive --skip-health
+openclaw gateway run
 ```
 
-Hoặc:
+## Gateway WSL2
 
-```
-openclaw gateway install
-```
+WSL2 vẫn là môi trường chạy Gateway tương thích với Linux nhất trên Windows. Windows Hub
+có thể thiết lập một Gateway WSL do ứng dụng sở hữu cho bạn, hoặc bạn có thể cài đặt thủ công bên trong
+distro của riêng mình.
 
-Hoặc:
+Thiết lập thủ công:
 
-```
-openclaw configure
-```
-
-Chọn **Dịch vụ Gateway** khi được nhắc.
-
-Sửa chữa/di chuyển:
-
-```
-openclaw doctor
+```powershell
+wsl --install
+# Or pick a distro explicitly:
+wsl --list --online
+wsl --install -d Ubuntu-24.04
 ```
 
-## Gateway tự khởi động trước khi đăng nhập Windows
+Bật systemd bên trong WSL:
 
-Với các thiết lập không màn hình, hãy đảm bảo toàn bộ chuỗi khởi động chạy ngay cả khi không có ai đăng nhập vào Windows.
+```bash
+sudo tee /etc/wsl.conf >/dev/null <<'EOF'
+[boot]
+systemd=true
+EOF
+```
 
-### 1) Giữ dịch vụ người dùng chạy mà không cần đăng nhập
+Khởi động lại WSL từ PowerShell:
+
+```powershell
+wsl --shutdown
+```
+
+Sau đó cài OpenClaw bên trong WSL bằng hướng dẫn nhanh Linux:
+
+```bash
+curl -fsSL https://openclaw.ai/install.sh | bash
+openclaw gateway status
+```
+
+## Tự động khởi động Gateway trước khi đăng nhập Windows
+
+Với các thiết lập WSL không giao diện, hãy đảm bảo toàn bộ chuỗi khởi động chạy ngay cả khi không ai đăng nhập
+vào Windows.
 
 Bên trong WSL:
 
 ```bash
+sudo apt-get install -y dbus-x11
 sudo loginctl enable-linger "$(whoami)"
-```
-
-### 2) Cài đặt dịch vụ người dùng Gateway OpenClaw
-
-Bên trong WSL:
-
-```bash
 openclaw gateway install
 ```
-
-### 3) Tự động khởi động WSL khi Windows khởi động
 
 Trong PowerShell với quyền Administrator:
 
 ```powershell
-schtasks /create /tn "WSL Boot" /tr "wsl.exe -d Ubuntu --exec /bin/true" /sc onstart /ru SYSTEM
+schtasks /create /tn "WSL Boot" /tr "wsl.exe -d Ubuntu --exec dbus-launch true" /sc onstart /ru "$env:USERNAME"
 ```
 
 Thay `Ubuntu` bằng tên distro của bạn từ:
@@ -129,20 +214,25 @@ Thay `Ubuntu` bằng tên distro của bạn từ:
 wsl --list --verbose
 ```
 
-### Xác minh chuỗi khởi động
+> **Lưu ý:** Hai thay đổi so với các công thức cũ:
+>
+> - **`dbus-launch true` thay vì `/bin/true`** — Trên WSL ≥ 2.6.1.0, một hồi quy ([microsoft/WSL #13416](https://github.com/microsoft/WSL/issues/13416)) khiến distro tự dừng khi nhàn rỗi sau 15–20 giây kể từ lúc client cuối cùng thoát, ngay cả khi linger đã bật. `dbus-launch true` giữ một tiến trình con của init còn sống như một cách khắc phục tạm thời ([thảo luận cộng đồng, microsoft/WSL #9245](https://github.com/microsoft/WSL/discussions/9245)).
+> - **`/ru "$env:USERNAME"` thay vì `/ru SYSTEM`** — Các distro WSL theo từng người dùng (thiết lập mặc định) không hiển thị với tài khoản SYSTEM; task có vẻ chạy nhưng distro không bao giờ được khởi động. Chạy bằng tài khoản của chính bạn tránh được việc này. Windows sẽ nhắc nhập mật khẩu của bạn khi task được tạo.
 
-Sau khi khởi động lại (trước khi đăng nhập Windows), kiểm tra từ WSL:
+Sau khi khởi động lại, xác minh từ WSL:
 
 ```bash
 systemctl --user is-enabled openclaw-gateway.service
 systemctl --user status openclaw-gateway.service --no-pager
 ```
 
-## Nâng cao: đưa dịch vụ WSL ra LAN (portproxy)
+## Phơi bày dịch vụ WSL qua LAN
 
-WSL có mạng ảo riêng. Nếu một máy khác cần truy cập một dịch vụ đang chạy **bên trong WSL** (SSH, máy chủ TTS cục bộ hoặc Gateway), bạn phải chuyển tiếp một cổng Windows tới IP WSL hiện tại. IP WSL thay đổi sau khi khởi động lại, nên bạn có thể cần làm mới quy tắc chuyển tiếp.
+WSL có mạng ảo riêng. Nếu một máy khác cần truy cập một dịch vụ bên trong
+WSL, hãy chuyển tiếp một cổng Windows tới IP WSL hiện tại. IP WSL có thể thay đổi sau
+khi khởi động lại, vì vậy hãy làm mới quy tắc chuyển tiếp khi cần.
 
-Ví dụ (PowerShell **với quyền Administrator**):
+Ví dụ trong PowerShell với quyền Administrator:
 
 ```powershell
 $Distro = "Ubuntu-24.04"
@@ -154,104 +244,67 @@ if (-not $WslIp) { throw "WSL IP not found." }
 
 netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=$ListenPort `
   connectaddress=$WslIp connectport=$TargetPort
-```
 
-Cho phép cổng đi qua Windows Firewall (một lần):
-
-```powershell
 New-NetFirewallRule -DisplayName "WSL SSH $ListenPort" -Direction Inbound `
   -Protocol TCP -LocalPort $ListenPort -Action Allow
 ```
 
-Làm mới portproxy sau khi WSL khởi động lại:
-
-```powershell
-netsh interface portproxy delete v4tov4 listenport=$ListenPort listenaddress=0.0.0.0 | Out-Null
-netsh interface portproxy add v4tov4 listenport=$ListenPort listenaddress=0.0.0.0 `
-  connectaddress=$WslIp connectport=$TargetPort | Out-Null
-```
-
 Ghi chú:
 
-- SSH từ máy khác nhắm tới **IP máy chủ Windows** (ví dụ: `ssh user@windows-host -p 2222`).
-- Các node từ xa phải trỏ tới URL Gateway **có thể kết nối được** (không phải `127.0.0.1`); dùng `openclaw status --all` để xác nhận.
-- Dùng `listenaddress=0.0.0.0` để truy cập LAN; `127.0.0.1` chỉ giữ cục bộ.
-- Nếu bạn muốn việc này tự động, hãy đăng ký một Scheduled Task để chạy bước làm mới khi đăng nhập.
+- SSH từ máy khác nhắm tới IP máy chủ Windows, ví dụ
+  `ssh user@windows-host -p 2222`.
+- Các Node từ xa phải trỏ tới một URL Gateway có thể truy cập được, không phải `127.0.0.1`.
+- Dùng `listenaddress=0.0.0.0` để truy cập LAN. Dùng `127.0.0.1` để chỉ truy cập
+  cục bộ.
 
-## Cài đặt WSL2 từng bước
+## Khắc phục sự cố
 
-### 1) Cài đặt WSL2 + Ubuntu
+### Biểu tượng khay không xuất hiện
 
-Mở PowerShell (Admin):
+Kiểm tra Task Manager để tìm `OpenClaw.Tray.WinUI.exe`. Nếu nó đang chạy, hãy mở
+khu vực biểu tượng khay ẩn và ghim nó. Nếu nó không chạy, hãy khởi chạy **OpenClaw
+Companion** từ menu Start.
 
-```powershell
-wsl --install
-# Or pick a distro explicitly:
-wsl --list --online
-wsl --install -d Ubuntu-24.04
-```
+### Thiết lập cục bộ thất bại
 
-Khởi động lại nếu Windows yêu cầu.
-
-### 2) Bật systemd (bắt buộc để cài đặt gateway)
-
-Trong terminal WSL của bạn:
-
-```bash
-sudo tee /etc/wsl.conf >/dev/null <<'EOF'
-[boot]
-systemd=true
-EOF
-```
-
-Sau đó từ PowerShell:
+Mở nhật ký thiết lập từ Windows Hub hoặc kiểm tra:
 
 ```powershell
-wsl --shutdown
+notepad "$env:LOCALAPPDATA\OpenClawTray\Logs\Setup\easy-setup-latest.txt"
 ```
 
-Mở lại Ubuntu, rồi xác minh:
+Nguyên nhân thường gặp là WSL bị tắt, ảo hóa bị chặn, trạng thái WSL
+do ứng dụng sở hữu đã cũ, hoặc lỗi mạng trong khi cài đặt gói Gateway.
 
-```bash
-systemctl --user status
+### Ứng dụng báo cần ghép nối
+
+Phê duyệt yêu cầu operator hoặc Node từ Gateway:
+
+```powershell
+openclaw devices list
+openclaw devices approve <request-id>
 ```
 
-### 3) Cài đặt OpenClaw (bên trong WSL)
+Nếu thiết bị đã có token, hãy kết nối lại từ tab Kết nối sau khi
+phê duyệt.
 
-Để thiết lập lần đầu thông thường bên trong WSL, hãy làm theo luồng Bắt đầu trên Linux:
+### Web chat không thể truy cập Gateway từ xa
 
-```bash
-git clone https://github.com/openclaw/openclaw.git
-cd openclaw
-pnpm install
-pnpm build
-pnpm ui:build
-pnpm openclaw onboard --install-daemon
-```
+Web chat từ xa cần HTTPS hoặc localhost. Với chứng chỉ tự ký, hãy tin cậy
+chứng chỉ trong Windows, hoặc dùng đường hầm SSH tới một URL localhost.
 
-Nếu bạn đang phát triển từ mã nguồn thay vì onboarding lần đầu, hãy dùng vòng lặp phát triển từ mã nguồn trong [Thiết lập](/vi/start/setup):
+### `screen.snapshot`, camera hoặc lệnh âm thanh thất bại
 
-```bash
-pnpm install
-# First run only (or after resetting local OpenClaw config/workspace)
-pnpm openclaw setup
-pnpm gateway:watch
-```
+Xác nhận quyền Windows cho camera, microphone, chụp màn hình và
+thông báo. Các bản cài đặt đóng gói khai báo các khả năng được bảo vệ, nhưng Windows
+vẫn có thể nhắc trong lần đầu một lệnh sử dụng chúng.
 
-Hướng dẫn đầy đủ: [Bắt đầu](/vi/start/getting-started)
+### Kết nối Git hoặc GitHub thất bại
 
-## Ứng dụng đồng hành Windows
+Một số mạng chặn hoặc giới hạn HTTPS tới GitHub. Nếu `git clone` hoặc `gh auth
+login` thất bại, hãy thử mạng khác, VPN hoặc proxy HTTP/HTTPS.
 
-Chúng tôi chưa có ứng dụng đồng hành Windows. Rất hoan nghênh đóng góp nếu bạn muốn giúp biến điều đó thành hiện thực.
-
-## Kết nối Git và GitHub (người đóng góp)
-
-Một số mạng chặn hoặc giới hạn HTTPS tới GitHub. Nếu `git clone` thất bại do hết thời gian chờ hoặc kết nối bị đặt lại, hãy thử mạng khác, VPN hoặc proxy HTTP/HTTPS do tổ chức của bạn cung cấp.
-
-Nếu `gh auth login` thất bại trong luồng thiết bị qua trình duyệt (ví dụ hết thời gian chờ khi truy cập `github.com:443`), hãy xác thực bằng personal access token thay thế:
-
-1. Tạo token có ít nhất phạm vi `repo` (PAT classic) hoặc quyền truy cập fine-grained tương đương.
-2. Trong PowerShell cho phiên hiện tại:
+Để xác thực `gh` dựa trên token trong phiên hiện tại:
 
 ```powershell
 $env:GH_TOKEN="<your-token>"
@@ -259,18 +312,12 @@ gh auth status
 gh auth setup-git
 ```
 
-3. Nếu `gh auth status` cảnh báo thiếu `read:org`, hãy tạo token bao gồm phạm vi đó và gán lại biến:
-
-```powershell
-$env:GH_TOKEN="<your-token-with-repo-and-read:org>"
-gh auth status
-```
-
-`gh auth refresh -s read:org` chỉ áp dụng khi bạn đã xác thực qua `gh auth login` và có thông tin đăng nhập đã lưu để làm mới (không áp dụng khi dùng `GH_TOKEN`).
-
 Không bao giờ commit token hoặc dán chúng vào issue hay pull request.
 
 ## Liên quan
 
 - [Tổng quan cài đặt](/vi/install)
-- [Nền tảng](/vi/platforms)
+- [Thiết lập Node.js](/vi/install/node)
+- [Nodes](/vi/nodes)
+- [Control UI](/vi/web/control-ui)
+- [Cấu hình Gateway](/vi/gateway/configuration)

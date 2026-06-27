@@ -1,22 +1,23 @@
 ---
 read_when:
     - Je wilt Vydra-mediageneratie in OpenClaw
-    - Je hebt hulp nodig bij het instellen van een Vydra API-sleutel
-summary: Gebruik Vydra voor afbeeldingen, video en spraak in OpenClaw
+    - U hebt begeleiding nodig voor het instellen van de Vydra-API-sleutel
+summary: Gebruik Vydra-afbeeldingen, -video en -spraak in OpenClaw
 title: Vydra
 x-i18n:
-    generated_at: "2026-05-06T09:30:26Z"
+    generated_at: "2026-06-27T18:15:59Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6e73121300fc3121124d15ecd285603032644c7d3886703776adc58c7115401a
+    source_hash: 4cb1128d877e06a274fe07c42282a7990c322e4d88d4232a1cac78e54deaf163
     source_path: providers/vydra.md
     workflow: 16
 ---
 
-De gebundelde Vydra-plugin voegt toe:
+De meegeleverde Vydra-Plugin voegt toe:
 
-- Afbeeldingen genereren via `vydra/grok-imagine`
-- Video's genereren via `vydra/veo3` en `vydra/kling`
+- Afbeeldingsgeneratie via `vydra/grok-imagine`
+- Videogeneratie via `vydra/veo3` en `vydra/kling`
 - Spraaksynthese via Vydra's door ElevenLabs ondersteunde TTS-route
 
 OpenClaw gebruikt dezelfde `VYDRA_API_KEY` voor alle drie mogelijkheden.
@@ -24,26 +25,26 @@ OpenClaw gebruikt dezelfde `VYDRA_API_KEY` voor alle drie mogelijkheden.
 | Eigenschap      | Waarde                                                                    |
 | --------------- | ------------------------------------------------------------------------- |
 | Provider-id     | `vydra`                                                                   |
-| Plugin          | gebundeld, `enabledByDefault: true`                                       |
+| Plugin          | meegeleverd, `enabledByDefault: true`                                     |
 | Auth-env-var    | `VYDRA_API_KEY`                                                           |
-| Onboarding-flag | `--auth-choice vydra-api-key`                                             |
-| Directe CLI-flag | `--vydra-api-key <key>`                                                   |
+| Onboarding-vlag | `--auth-choice vydra-api-key`                                             |
+| Directe CLI-vlag | `--vydra-api-key <key>`                                                  |
 | Contracten      | `imageGenerationProviders`, `videoGenerationProviders`, `speechProviders` |
-| Basis-URL       | `https://www.vydra.ai/api/v1` (gebruik de `www`-host)                    |
+| Basis-URL       | `https://www.vydra.ai/api/v1` (gebruik de `www`-host)                     |
 
 <Warning>
-  Gebruik `https://www.vydra.ai/api/v1` als basis-URL. Vydra's apex-host (`https://vydra.ai/api/v1`) verwijst momenteel door naar `www`. Sommige HTTP-clients verwijderen `Authorization` bij die cross-host-doorverwijzing, waardoor een geldige API-sleutel verandert in een misleidende auth-fout. De gebundelde plugin gebruikt direct de `www`-basis-URL om dat te voorkomen.
+  Gebruik `https://www.vydra.ai/api/v1` als basis-URL. Vydra's apex-host (`https://vydra.ai/api/v1`) verwijst momenteel door naar `www`. Sommige HTTP-clients laten `Authorization` weg bij die cross-host-redirect, waardoor een geldige API-sleutel verandert in een misleidende auth-fout. De meegeleverde Plugin gebruikt de `www`-basis-URL rechtstreeks om dat te vermijden.
 </Warning>
 
-## Instellen
+## Installatie
 
 <Steps>
-  <Step title="Voer interactieve onboarding uit">
+  <Step title="Interactieve onboarding uitvoeren">
     ```bash
     openclaw onboard --auth-choice vydra-api-key
     ```
 
-    Of stel de env-var direct in:
+    Of stel de env-var rechtstreeks in:
 
     ```bash
     export VYDRA_API_KEY="vydra_live_..."
@@ -58,7 +59,7 @@ OpenClaw gebruikt dezelfde `VYDRA_API_KEY` voor alle drie mogelijkheden.
 ## Mogelijkheden
 
 <AccordionGroup>
-  <Accordion title="Afbeeldingen genereren">
+  <Accordion title="Afbeeldingsgeneratie">
     Standaard afbeeldingsmodel:
 
     - `vydra/grok-imagine`
@@ -77,15 +78,15 @@ OpenClaw gebruikt dezelfde `VYDRA_API_KEY` voor alle drie mogelijkheden.
     }
     ```
 
-    De huidige gebundelde ondersteuning is alleen tekst-naar-afbeelding. Vydra's gehoste bewerkingsroutes verwachten externe afbeeldings-URL's, en OpenClaw voegt nog geen Vydra-specifieke uploadbrug toe in de gebundelde plugin.
+    De huidige meegeleverde ondersteuning is alleen tekst-naar-afbeelding. Vydra's gehoste bewerkingsroutes verwachten externe afbeeldings-URL's, en OpenClaw voegt nog geen Vydra-specifieke uploadbrug toe in de meegeleverde Plugin.
 
     <Note>
-    Zie [Afbeeldingen genereren](/nl/tools/image-generation) voor gedeelde toolparameters, providerselectie en failover-gedrag.
+    Zie [Afbeeldingsgeneratie](/nl/tools/image-generation) voor gedeelde toolparameters, providerselectie en failovergedrag.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Video's genereren">
+  <Accordion title="Videogeneratie">
     Geregistreerde videomodellen:
 
     - `vydra/veo3` voor tekst-naar-video
@@ -107,19 +108,19 @@ OpenClaw gebruikt dezelfde `VYDRA_API_KEY` voor alle drie mogelijkheden.
 
     Opmerkingen:
 
-    - `vydra/veo3` is alleen als tekst-naar-video gebundeld.
+    - `vydra/veo3` wordt meegeleverd als alleen tekst-naar-video.
     - `vydra/kling` vereist momenteel een externe afbeeldings-URL-referentie. Lokale bestandsuploads worden vooraf geweigerd.
-    - Vydra's huidige `kling`-HTTP-route is inconsistent geweest over de vraag of `image_url` of `video_url` vereist is; de gebundelde provider koppelt dezelfde externe afbeeldings-URL aan beide velden.
-    - De gebundelde plugin blijft conservatief en stuurt geen ongedocumenteerde stijlknoppen door, zoals beeldverhouding, resolutie, watermerk of gegenereerde audio.
+    - Vydra's huidige `kling`-HTTP-route is inconsistent geweest over de vraag of deze `image_url` of `video_url` vereist; de meegeleverde provider koppelt dezelfde externe afbeeldings-URL aan beide velden.
+    - De meegeleverde Plugin blijft conservatief en stuurt geen ongedocumenteerde stijlknoppen door, zoals beeldverhouding, resolutie, watermerk of gegenereerde audio.
 
     <Note>
-    Zie [Video's genereren](/nl/tools/video-generation) voor gedeelde toolparameters, providerselectie en failover-gedrag.
+    Zie [Videogeneratie](/nl/tools/video-generation) voor gedeelde toolparameters, providerselectie en failovergedrag.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Video-live-tests">
-    Provider-specifieke live-dekking:
+  <Accordion title="Live videotests">
+    Provider-specifieke live dekking:
 
     ```bash
     OPENCLAW_LIVE_TEST=1 \
@@ -127,7 +128,7 @@ OpenClaw gebruikt dezelfde `VYDRA_API_KEY` voor alle drie mogelijkheden.
     pnpm test:live -- extensions/vydra/vydra.live.test.ts
     ```
 
-    Het gebundelde Vydra-livebestand dekt nu:
+    Het meegeleverde Vydra-livebestand dekt nu:
 
     - `vydra/veo3` tekst-naar-video
     - `vydra/kling` afbeelding-naar-video met een externe afbeeldings-URL
@@ -141,7 +142,7 @@ OpenClaw gebruikt dezelfde `VYDRA_API_KEY` voor alle drie mogelijkheden.
   </Accordion>
 
   <Accordion title="Spraaksynthese">
-    Stel Vydra in als spraakprovider:
+    Stel Vydra in als de spraakprovider:
 
     ```json5
     {
@@ -151,7 +152,7 @@ OpenClaw gebruikt dezelfde `VYDRA_API_KEY` voor alle drie mogelijkheden.
           providers: {
             vydra: {
               apiKey: "${VYDRA_API_KEY}",
-              voiceId: "21m00Tcm4TlvDq8ikWAM",
+              speakerVoiceId: "21m00Tcm4TlvDq8ikWAM",
             },
           },
         },
@@ -159,12 +160,12 @@ OpenClaw gebruikt dezelfde `VYDRA_API_KEY` voor alle drie mogelijkheden.
     }
     ```
 
-    Standaardwaarden:
+    Standaarden:
 
     - Model: `elevenlabs/tts`
     - Stem-id: `21m00Tcm4TlvDq8ikWAM`
 
-    De gebundelde plugin biedt momenteel een bekende, goed werkende standaardstem en retourneert MP3-audiobestanden.
+    De meegeleverde Plugin stelt momenteel een bekende, goed werkende standaardstem beschikbaar en retourneert MP3-audiobestanden.
 
   </Accordion>
 </AccordionGroup>
@@ -175,10 +176,10 @@ OpenClaw gebruikt dezelfde `VYDRA_API_KEY` voor alle drie mogelijkheden.
   <Card title="Providerdirectory" href="/nl/providers/index" icon="list">
     Blader door alle beschikbare providers.
   </Card>
-  <Card title="Afbeeldingen genereren" href="/nl/tools/image-generation" icon="image">
+  <Card title="Afbeeldingsgeneratie" href="/nl/tools/image-generation" icon="image">
     Gedeelde afbeeldings-toolparameters en providerselectie.
   </Card>
-  <Card title="Video's genereren" href="/nl/tools/video-generation" icon="video">
+  <Card title="Videogeneratie" href="/nl/tools/video-generation" icon="video">
     Gedeelde video-toolparameters en providerselectie.
   </Card>
   <Card title="Configuratiereferentie" href="/nl/gateway/config-agents#agent-defaults" icon="gear">

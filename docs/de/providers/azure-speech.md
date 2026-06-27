@@ -1,24 +1,26 @@
 ---
 read_when:
-    - Sie möchten Azure-Speech-Synthese für ausgehende Antworten.
-    - Sie benötigen native Ogg-Opus-Sprachnachrichten-Ausgabe aus Azure Speech.
-summary: Azure AI Speech Text-to-Speech für OpenClaw-Antworten
+    - Sie möchten Azure Speech-Synthese für ausgehende Antworten
+    - Sie benötigen native Sprachnotiz-Ausgabe im Format Ogg Opus von Azure Speech
+summary: Azure AI Speech Text-zu-Sprache für OpenClaw-Antworten
 title: Azure Speech
 x-i18n:
-    generated_at: "2026-04-26T11:37:29Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T18:02:12Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 59baf0865e0eba1076ae5c074b5978e1f5f104b3395c816c30c546da41a303b9
+    source_hash: c14b1f3c2fda9b2f820e537d7133b1dbf71573b7d735207c6a4ca19432a8d8c3
     source_path: providers/azure-speech.md
-    workflow: 15
+    workflow: 16
 ---
 
-Azure Speech ist ein Azure AI Speech Text-to-Speech-Anbieter. In OpenClaw
-synthetisiert er ausgehende Antwort-Audiodaten standardmäßig als MP3, natives Ogg/Opus für Sprach-
-nachrichten und 8-kHz-Mulaw-Audio für Telefonie-Kanäle wie Voice Call.
+Azure Speech ist ein Text-zu-Sprache-Provider von Azure AI Speech. In OpenClaw
+synthetisiert er ausgehende Antwort-Audiodateien standardmäßig als MP3, natives
+Ogg/Opus für Sprachnachrichten und 8-kHz-mulaw-Audio für Telefoniekanäle wie
+Sprachanruf.
 
-OpenClaw verwendet die Azure-Speech-REST-API direkt mit SSML und sendet das
-anbieterdefinierte Ausgabeformat über `X-Microsoft-OutputFormat`.
+OpenClaw verwendet die Azure Speech REST API direkt mit SSML und sendet das
+Provider-eigene Ausgabeformat über `X-Microsoft-OutputFormat`.
 
 | Detail                  | Wert                                                                                                           |
 | ----------------------- | -------------------------------------------------------------------------------------------------------------- |
@@ -27,15 +29,15 @@ anbieterdefinierte Ausgabeformat über `X-Microsoft-OutputFormat`.
 | Authentifizierung       | `AZURE_SPEECH_KEY` plus `AZURE_SPEECH_REGION`                                                                  |
 | Standardstimme          | `en-US-JennyNeural`                                                                                            |
 | Standard-Dateiausgabe   | `audio-24khz-48kbitrate-mono-mp3`                                                                              |
-| Standard-Sprachnachricht-Datei | `ogg-24khz-16bit-mono-opus`                                                                            |
+| Standard-Sprachnachrichtendatei | `ogg-24khz-16bit-mono-opus`                                                                            |
 
 ## Erste Schritte
 
 <Steps>
-  <Step title="Eine Azure-Speech-Ressource erstellen">
-    Erstellen Sie im Azure-Portal eine Speech-Ressource. Kopieren Sie **KEY 1** aus
-    Resource Management > Keys and Endpoint und kopieren Sie den Ressourcenstandort,
-    zum Beispiel `eastus`.
+  <Step title="Create an Azure Speech resource">
+    Erstellen Sie im Azure-Portal eine Speech-Ressource. Kopieren Sie **KEY 1**
+    aus Resource Management > Keys and Endpoint und kopieren Sie den
+    Ressourcenstandort, zum Beispiel `eastus`.
 
     ```
     AZURE_SPEECH_KEY=<speech-resource-key>
@@ -43,7 +45,7 @@ anbieterdefinierte Ausgabeformat über `X-Microsoft-OutputFormat`.
     ```
 
   </Step>
-  <Step title="Azure Speech in messages.tts auswählen">
+  <Step title="Select Azure Speech in messages.tts">
     ```json5
     {
       messages: {
@@ -52,7 +54,7 @@ anbieterdefinierte Ausgabeformat über `X-Microsoft-OutputFormat`.
           provider: "azure-speech",
           providers: {
             "azure-speech": {
-              voice: "en-US-JennyNeural",
+              speakerVoice: "en-US-JennyNeural",
               lang: "en-US",
             },
           },
@@ -61,66 +63,67 @@ anbieterdefinierte Ausgabeformat über `X-Microsoft-OutputFormat`.
     }
     ```
   </Step>
-  <Step title="Eine Nachricht senden">
-    Senden Sie eine Antwort über einen beliebigen verbundenen Kanal. OpenClaw synthetisiert das Audio
-    mit Azure Speech und liefert MP3 für Standard-Audio oder Ogg/Opus, wenn
-    der Kanal eine Sprachnachricht erwartet.
+  <Step title="Send a message">
+    Senden Sie eine Antwort über einen beliebigen verbundenen Kanal. OpenClaw
+    synthetisiert das Audio mit Azure Speech und liefert MP3 für Standardaudio
+    oder Ogg/Opus, wenn der Kanal eine Sprachnachricht erwartet.
   </Step>
 </Steps>
 
 ## Konfigurationsoptionen
 
-| Option                  | Pfad                                                        | Beschreibung                                                                                           |
-| ----------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `apiKey`                | `messages.tts.providers.azure-speech.apiKey`                | Schlüssel der Azure-Speech-Ressource. Fällt auf `AZURE_SPEECH_KEY`, `AZURE_SPEECH_API_KEY` oder `SPEECH_KEY` zurück. |
-| `region`                | `messages.tts.providers.azure-speech.region`                | Region der Azure-Speech-Ressource. Fällt auf `AZURE_SPEECH_REGION` oder `SPEECH_REGION` zurück.                 |
-| `endpoint`              | `messages.tts.providers.azure-speech.endpoint`              | Optionales Override für Azure-Speech-Endpunkt/Basis-URL.                                                     |
-| `baseUrl`               | `messages.tts.providers.azure-speech.baseUrl`               | Optionales Override für die Azure-Speech-Basis-URL.                                                              |
-| `voice`                 | `messages.tts.providers.azure-speech.voice`                 | Azure-Sprach-`ShortName` (Standard `en-US-JennyNeural`).                                                  |
-| `lang`                  | `messages.tts.providers.azure-speech.lang`                  | SSML-Sprachcode (Standard `en-US`).                                                                 |
-| `outputFormat`          | `messages.tts.providers.azure-speech.outputFormat`          | Audio-Datei-Ausgabeformat (Standard `audio-24khz-48kbitrate-mono-mp3`).                                 |
-| `voiceNoteOutputFormat` | `messages.tts.providers.azure-speech.voiceNoteOutputFormat` | Ausgabeformat für Sprachnachrichten (Standard `ogg-24khz-16bit-mono-opus`).                                       |
+| Option                  | Pfad                                                        | Beschreibung                                                                                              |
+| ----------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `apiKey`                | `messages.tts.providers.azure-speech.apiKey`                | Azure Speech-Ressourcenschlüssel. Fällt auf `AZURE_SPEECH_KEY`, `AZURE_SPEECH_API_KEY` oder `SPEECH_KEY` zurück. |
+| `region`                | `messages.tts.providers.azure-speech.region`                | Azure Speech-Ressourcenregion. Fällt auf `AZURE_SPEECH_REGION` oder `SPEECH_REGION` zurück.              |
+| `endpoint`              | `messages.tts.providers.azure-speech.endpoint`              | Optionale Überschreibung des Azure Speech-Endpunkts bzw. der Basis-URL.                                  |
+| `baseUrl`               | `messages.tts.providers.azure-speech.baseUrl`               | Optionale Überschreibung der Azure Speech-Basis-URL.                                                     |
+| `speakerVoice`          | `messages.tts.providers.azure-speech.speakerVoice`          | Azure-Stimmen-ShortName (Standard `en-US-JennyNeural`). Legacy-Alias: `voice`.                           |
+| `lang`                  | `messages.tts.providers.azure-speech.lang`                  | SSML-Sprachcode (Standard `en-US`).                                                                      |
+| `outputFormat`          | `messages.tts.providers.azure-speech.outputFormat`          | Ausgabeformat für Audiodateien (Standard `audio-24khz-48kbitrate-mono-mp3`).                             |
+| `voiceNoteOutputFormat` | `messages.tts.providers.azure-speech.voiceNoteOutputFormat` | Ausgabeformat für Sprachnachrichten (Standard `ogg-24khz-16bit-mono-opus`).                              |
 
 ## Hinweise
 
 <AccordionGroup>
-  <Accordion title="Authentifizierung">
-    Azure Speech verwendet einen Schlüssel für die Speech-Ressource, keinen Azure-OpenAI-Schlüssel. Der Schlüssel
-    wird als `Ocp-Apim-Subscription-Key` gesendet; OpenClaw leitet
-    `https://<region>.tts.speech.microsoft.com` aus `region` ab, sofern Sie nicht
-    `endpoint` oder `baseUrl` angeben.
+  <Accordion title="Authentication">
+    Azure Speech verwendet einen Speech-Ressourcenschlüssel, keinen Azure
+    OpenAI-Schlüssel. Der Schlüssel wird als `Ocp-Apim-Subscription-Key`
+    gesendet; OpenClaw leitet `https://<region>.tts.speech.microsoft.com` aus
+    `region` ab, sofern Sie nicht `endpoint` oder `baseUrl` angeben.
   </Accordion>
-  <Accordion title="Stimmnamen">
-    Verwenden Sie den Azure-Speech-`ShortName` der Stimme, zum Beispiel
-    `en-US-JennyNeural`. Der gebündelte Anbieter kann Stimmen über dieselbe
-    Speech-Ressource auflisten und filtert Stimmen heraus, die als deprecated oder retired markiert sind.
+  <Accordion title="Voice names">
+    Verwenden Sie den Azure Speech-Stimmenwert `ShortName`, zum Beispiel
+    `en-US-JennyNeural`. Der gebündelte Provider kann Stimmen über dieselbe
+    Speech-Ressource auflisten und filtert Stimmen heraus, die als veraltet
+    oder ausgemustert markiert sind.
   </Accordion>
-  <Accordion title="Audioausgaben">
+  <Accordion title="Audio outputs">
     Azure akzeptiert Ausgabeformate wie `audio-24khz-48kbitrate-mono-mp3`,
     `ogg-24khz-16bit-mono-opus` und `riff-24khz-16bit-mono-pcm`. OpenClaw
-    fordert für Ziele vom Typ `voice-note` Ogg/Opus an, damit Kanäle native
+    fordert Ogg/Opus für `voice-note`-Ziele an, damit Kanäle native
     Sprachblasen ohne zusätzliche MP3-Konvertierung senden können.
   </Accordion>
   <Accordion title="Alias">
-    `azure` wird als Anbieter-Alias für bestehende PRs und Nutzerkonfigurationen akzeptiert,
-    aber neue Konfigurationen sollten `azure-speech` verwenden, um Verwechslungen mit Azure-
-    OpenAI-Modellanbietern zu vermeiden.
+    `azure` wird als Provider-Alias für bestehende PRs und Benutzerkonfigurationen
+    akzeptiert, neue Konfigurationen sollten jedoch `azure-speech` verwenden,
+    um Verwechslungen mit Azure OpenAI-Modell-Providern zu vermeiden.
   </Accordion>
 </AccordionGroup>
 
 ## Verwandte Themen
 
 <CardGroup cols={2}>
-  <Card title="Text-to-Speech" href="/de/tools/tts" icon="waveform-lines">
-    TTS-Überblick, Anbieter und Konfiguration von `messages.tts`.
+  <Card title="Text-to-speech" href="/de/tools/tts" icon="waveform-lines">
+    TTS-Übersicht, Provider und `messages.tts`-Konfiguration.
   </Card>
-  <Card title="Konfiguration" href="/de/gateway/configuration" icon="gear">
-    Vollständige Konfigurationsreferenz einschließlich der Einstellungen für `messages.tts`.
+  <Card title="Configuration" href="/de/gateway/configuration" icon="gear">
+    Vollständige Konfigurationsreferenz einschließlich `messages.tts`-Einstellungen.
   </Card>
-  <Card title="Anbieter" href="/de/providers" icon="grid">
-    Alle gebündelten OpenClaw-Anbieter.
+  <Card title="Providers" href="/de/providers" icon="grid">
+    Alle gebündelten OpenClaw-Provider.
   </Card>
-  <Card title="Fehlerbehebung" href="/de/help/troubleshooting" icon="wrench">
-    Häufige Probleme und Schritte zur Fehlerdiagnose.
+  <Card title="Troubleshooting" href="/de/help/troubleshooting" icon="wrench">
+    Häufige Probleme und Debugging-Schritte.
   </Card>
 </CardGroup>

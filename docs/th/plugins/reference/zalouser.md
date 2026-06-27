@@ -1,20 +1,21 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin zalouser
-summary: เพิ่มพื้นผิวช่องทาง Zalo Personal สำหรับส่งและรับข้อความ OpenClaw.
-title: Plugin ส่วนบุคคลของ Zalo
+summary: Plugin บัญชีส่วนตัว Zalo ของ OpenClaw ผ่านการผสานรวม zca-js แบบเนทีฟ.
+title: Plugin Zalo Personal
 x-i18n:
-    generated_at: "2026-05-03T10:18:07Z"
+    generated_at: "2026-06-27T18:06:16Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 16ed8b255fd10e2a21bc9d9665c1eb26440929e5a46fe2f9dbfae929a25417a0
+    source_hash: c03db694c940cb1fb20f4a2f73512c9d3cf3c79e910cc6a0dd4aa38bd4465ed5
     source_path: plugins/reference/zalouser.md
     workflow: 16
 ---
 
-# Plugin Zalo Personal
+# Plugin บัญชีส่วนตัว Zalo
 
-เพิ่มพื้นผิวช่องทาง Zalo Personal สำหรับส่งและรับข้อความ OpenClaw
+Plugin บัญชีส่วนตัว Zalo ของ OpenClaw ผ่านการผสานรวม zca-js แบบเนทีฟ
 
 ## การเผยแพร่
 
@@ -23,7 +24,7 @@ x-i18n:
 
 ## พื้นผิว
 
-ช่องทาง: zalouser; สัญญา: tools
+ช่องทาง: zalouser; สัญญา: เครื่องมือ
 
 ## เอกสารที่เกี่ยวข้อง
 

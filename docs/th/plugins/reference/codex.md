@@ -1,29 +1,30 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin codex
-summary: ฮาร์เนส app-server ของ Codex และแค็ตตาล็อกโมเดล GPT ที่จัดการโดย Codex.
-title: Plugin ของ Codex
+summary: ฮาร์เนส app-server ของ OpenClaw Codex และ Plugin ผู้ให้บริการโมเดลพร้อมแค็ตตาล็อก GPT ที่ Codex จัดการ
+title: Plugin Codex
 x-i18n:
-    generated_at: "2026-05-03T10:15:36Z"
+    generated_at: "2026-06-27T18:00:44Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c049ce912109d9489a3bcdf31aa01668802ab4b9ded8fdd63e470a5901b261c5
+    source_hash: 8b9c123c0f72d6fb2a8d089ba8ad2cb3227a6c201925678124bd504324392253
     source_path: plugins/reference/codex.md
     workflow: 16
 ---
 
 # Codex Plugin
 
-ฮาร์เนสแอปเซิร์ฟเวอร์ของ Codex และแค็ตตาล็อกโมเดล GPT ที่จัดการโดย Codex
+Plugin ผู้ให้บริการโมเดลและ harness ของเซิร์ฟเวอร์แอป Codex สำหรับ OpenClaw พร้อมแค็ตตาล็อก GPT ที่ Codex จัดการ
 
-## การเผยแพร่
+## การแจกจ่าย
 
 - แพ็กเกจ: `@openclaw/codex`
-- ช่องทางการติดตั้ง: npm; ClawHub
+- เส้นทางการติดตั้ง: npm; ClawHub
 
 ## พื้นผิว
 
-ผู้ให้บริการ: codex; สัญญา: mediaUnderstandingProviders, migrationProviders
+providers: codex; contracts: mediaUnderstandingProviders, migrationProviders, webSearchProviders
 
 ## เอกสารที่เกี่ยวข้อง
 

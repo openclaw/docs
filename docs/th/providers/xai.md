@@ -1,35 +1,83 @@
 ---
 read_when:
     - คุณต้องการใช้โมเดล Grok ใน OpenClaw
-    - คุณกำลังกำหนดค่าการตรวจสอบสิทธิ์หรือรหัสโมเดลของ xAI
+    - คุณกำลังกำหนดค่าการยืนยันตัวตนของ xAI หรือรหัสโมเดล
 summary: ใช้โมเดล xAI Grok ใน OpenClaw
 title: xAI
 x-i18n:
-    generated_at: "2026-05-10T19:55:18Z"
+    generated_at: "2026-06-27T18:18:01Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f11c31e7ff39e7e13465b48d819db3921a32ed624676a57dc38f97c0dbd21e46
+    source_hash: b89c1037f9800366c03bdd1313a8c4ff05e8675effa60ed1e2985d38f045aad4
     source_path: providers/xai.md
     workflow: 16
 ---
 
-OpenClaw มาพร้อมกับ Plugin ผู้ให้บริการ `xai` แบบบันเดิลสำหรับโมเดล Grok
+OpenClaw มาพร้อม Plugin ผู้ให้บริการ `xai` แบบบันเดิลสำหรับโมเดล Grok สำหรับผู้ใช้ส่วนใหญ่
+เส้นทางที่แนะนำคือ Grok OAuth พร้อมการสมัครสมาชิก SuperGrok หรือ X Premium
+ที่เข้าเกณฑ์ OpenClaw ยังคงเน้นการทำงานบนเครื่องเป็นหลัก: Gateway, การกำหนดค่า, การกำหนดเส้นทาง และ
+เครื่องมือจะทำงานบนเครื่องของคุณ ส่วนคำขอโมเดล Grok จะยืนยันตัวตนผ่าน xAI
+และส่งไปยัง API ของ xAI
 
-## เริ่มต้นใช้งาน
+OAuth ไม่ต้องใช้คีย์ API ของ xAI และไม่ต้องใช้แอป Grok Build
+xAI อาจยังแสดง Grok Build บนหน้าจอขอความยินยอม เนื่องจาก OpenClaw ใช้
+OAuth client แบบใช้ร่วมกันของ xAI
+
+## เลือกเส้นทางการตั้งค่าของคุณ
+
+ใช้เส้นทางที่ตรงกับสถานะการติดตั้ง OpenClaw ของคุณ:
 
 <Steps>
-  <Step title="สร้าง API key">
-    สร้าง API key ใน [คอนโซล xAI](https://console.x.ai/)
-  </Step>
-  <Step title="ตั้งค่า API key ของคุณ">
-    ตั้งค่า `XAI_API_KEY` หรือเรียกใช้:
+  <Step title="New OpenClaw install">
+    เรียกใช้การเริ่มต้นใช้งานพร้อมติดตั้ง daemon เมื่อคุณกำลังตั้งค่า Gateway
+    ภายในเครื่องใหม่ จากนั้นเลือกตัวเลือก xAI/Grok OAuth ในขั้นตอนโมเดล/การยืนยันตัวตน:
 
     ```bash
-    openclaw onboard --auth-choice xai-api-key
+    openclaw onboard --install-daemon
+    ```
+
+    บน VPS หรือผ่าน SSH ให้เลือก xAI OAuth โดยตรง; OpenClaw ใช้การตรวจสอบด้วย device-code
+    และไม่ต้องใช้ localhost callback:
+
+    ```bash
+    openclaw onboard --install-daemon --auth-choice xai-oauth
+    ```
+
+    OAuth ไม่ต้องใช้คีย์ API ของ xAI OpenClaw ไม่ต้องใช้แอป Grok
+    Build xAI อาจยังติดป้ายแอปขอความยินยอมเป็น Grok Build เนื่องจาก
+    OpenClaw ใช้ OAuth client แบบใช้ร่วมกันของ xAI
+
+  </Step>
+  <Step title="Existing OpenClaw install">
+    หากกำหนดค่า OpenClaw ไว้แล้ว ให้ลงชื่อเข้าใช้ xAI เท่านั้น อย่าเรียกใช้การเริ่มต้นใช้งานเต็มรูปแบบซ้ำ
+    หรือติดตั้ง daemon ใหม่เพียงเพื่อเชื่อมต่อ Grok:
+
+    ```bash
+    openclaw models auth login --provider xai --method oauth
+    ```
+
+    หากต้องการทำให้ Grok เป็นโมเดลเริ่มต้นหลังลงชื่อเข้าใช้ ให้ตั้งค่าแยกต่างหาก:
+
+    ```bash
+    openclaw models set xai/grok-4.3
+    ```
+
+    เรียกใช้การเริ่มต้นใช้งานเต็มรูปแบบซ้ำเฉพาะเมื่อคุณตั้งใจจะเปลี่ยน Gateway,
+    daemon, ช่องทาง, พื้นที่ทำงาน หรือตัวเลือกการตั้งค่าอื่น ๆ
+
+  </Step>
+  <Step title="API-key path">
+    การตั้งค่าด้วยคีย์ API ยังคงใช้งานได้สำหรับคีย์ xAI Console และสำหรับพื้นผิวสื่อที่
+    ต้องใช้การกำหนดค่าผู้ให้บริการที่มีคีย์รองรับ:
+
+    ```bash
+    openclaw models auth login --provider xai --method api-key
+    export XAI_API_KEY=xai-...
     ```
 
   </Step>
-  <Step title="เลือกโมเดล">
+  <Step title="Pick a model">
     ```json5
     {
       agents: { defaults: { model: { primary: "xai/grok-4.3" } } },
@@ -39,74 +87,100 @@ OpenClaw มาพร้อมกับ Plugin ผู้ให้บริกา
 </Steps>
 
 <Note>
-OpenClaw ใช้ xAI Responses API เป็นการขนส่ง xAI แบบบันเดิล API key เดียวกัน
-จาก `openclaw onboard --auth-choice xai-api-key` ยังสามารถขับเคลื่อน
-`x_search` ระดับเฟิร์สต์คลาสและ `code_execution` ระยะไกลได้ด้วย; `XAI_API_KEY` หรือการกำหนดค่า
-เว็บเสิร์ชของ Plugin ก็สามารถขับเคลื่อน `web_search` ที่รองรับด้วย Grok ได้เช่นกัน
-หากคุณจัดเก็บคีย์ xAI ไว้ใต้ `plugins.entries.xai.config.webSearch.apiKey`
-ผู้ให้บริการโมเดล xAI แบบบันเดิลจะนำคีย์นั้นมาใช้ซ้ำเป็นทางเลือกสำรองด้วย
+OpenClaw ใช้ xAI Responses API เป็นการขนส่ง xAI แบบบันเดิล ข้อมูลรับรองเดียวกัน
+จาก `openclaw models auth login --provider xai --method oauth` หรือ
+`openclaw models auth login --provider xai --method api-key` ยังใช้ขับเคลื่อน
+`web_search`, `x_search`, `code_execution` ระยะไกล และการสร้างภาพ/วิดีโอของ xAI
+แบบ first-class ได้ด้วย
+ขณะนี้เสียงพูดและการถอดเสียงต้องใช้ `XAI_API_KEY` หรือการกำหนดค่าผู้ให้บริการ
+`web_search` ที่รองรับด้วย Grok จะเลือกใช้ xAI OAuth ก่อน และถอยกลับไปใช้ `XAI_API_KEY` หรือ
+การกำหนดค่า Plugin web-search
+หากคุณเก็บคีย์ xAI ไว้ใต้ `plugins.entries.xai.config.webSearch.apiKey`
+ผู้ให้บริการโมเดล xAI แบบบันเดิลจะนำคีย์นั้นมาใช้เป็น fallback ด้วย
 ตั้งค่า `plugins.entries.xai.config.webSearch.baseUrl` เพื่อกำหนดเส้นทาง Grok `web_search`
 และโดยค่าเริ่มต้น `x_search` ผ่านพร็อกซี xAI Responses ของผู้ปฏิบัติการ
 การปรับแต่ง `code_execution` อยู่ใต้ `plugins.entries.xai.config.codeExecution`
 </Note>
 
+## การแก้ปัญหา OAuth
+
+- สำหรับ SSH, Docker, VPS หรือการตั้งค่าระยะไกลอื่น ๆ ให้ใช้
+  `openclaw models auth login --provider xai --method oauth`; xAI OAuth ใช้
+  การตรวจสอบด้วย device-code แทน localhost callback
+- หากลงชื่อเข้าใช้สำเร็จแต่ Grok ไม่ใช่โมเดลเริ่มต้น ให้เรียกใช้
+  `openclaw models set xai/grok-4.3`
+- หากต้องการตรวจสอบโปรไฟล์การยืนยันตัวตน xAI ที่บันทึกไว้ ให้เรียกใช้:
+
+  ```bash
+  openclaw models auth list --provider xai
+  openclaw models status
+  ```
+
+- xAI เป็นผู้ตัดสินใจว่าบัญชีใดสามารถรับ OAuth API tokens ได้ หากบัญชีไม่
+  เข้าเกณฑ์ ให้ลองใช้เส้นทางคีย์ API หรือตรวจสอบการสมัครสมาชิกฝั่ง xAI
+
+<Tip>
+ใช้ `xai-oauth` เมื่อลงชื่อเข้าใช้จาก SSH, Docker หรือ VPS OpenClaw จะแสดง
+URL ของ xAI และรหัสสั้น ๆ; ดำเนินการลงชื่อเข้าใช้ให้เสร็จในเบราว์เซอร์ภายในเครื่องใดก็ได้ ขณะที่กระบวนการระยะไกล
+poll xAI เพื่อแลกเปลี่ยน token ให้เสร็จสมบูรณ์
+</Tip>
+
 ## แค็ตตาล็อกในตัว
 
-OpenClaw รวมตระกูลโมเดล xAI เหล่านี้มาให้พร้อมใช้งาน:
+OpenClaw มีโมเดลแชต xAI ปัจจุบันมาให้ตั้งแต่ต้น โดยเรียงจากใหม่ที่สุด
+ก่อนในตัวเลือกโมเดล:
 
 | ตระกูล         | ID โมเดล                                                                |
 | -------------- | ------------------------------------------------------------------------ |
-| Grok 3         | `grok-3`, `grok-3-fast`, `grok-3-mini`, `grok-3-mini-fast`               |
+| Grok Build 0.1 | `grok-build-0.1`                                                         |
 | Grok 4.3       | `grok-4.3`                                                               |
-| Grok 4         | `grok-4`, `grok-4-0709`                                                  |
-| Grok 4 Fast    | `grok-4-fast`, `grok-4-fast-non-reasoning`                               |
-| Grok 4.1 Fast  | `grok-4-1-fast`, `grok-4-1-fast-non-reasoning`                           |
 | Grok 4.20 Beta | `grok-4.20-beta-latest-reasoning`, `grok-4.20-beta-latest-non-reasoning` |
-| Grok Code      | `grok-code-fast-1`                                                       |
 
-Plugin ยัง forward-resolve ID `grok-4*` และ `grok-code-fast*` ที่ใหม่กว่าเมื่อ
-ID เหล่านั้นใช้รูปแบบ API เดียวกัน
+Plugin ยังคง forward-resolve slug เก่าอย่าง Grok 3, Grok 4, Grok 4 Fast, Grok 4.1
+Fast และ Grok Code สำหรับการกำหนดค่าที่มีอยู่ alias อย่างเป็นทางการของ Grok Code Fast
+จะ normalize เป็น `grok-build-0.1`; OpenClaw จะไม่แสดง slug upstream ที่เลิกใช้แล้วอื่น ๆ
+ในแค็ตตาล็อกที่เลือกได้อีกต่อไป
 
 <Tip>
-`grok-4.3`, `grok-4-fast`, `grok-4-1-fast` และตัวแปร `grok-4.20-beta-*`
-คือ refs ของ Grok ที่รองรับภาพในปัจจุบันในแค็ตตาล็อกแบบบันเดิล
+ใช้ `grok-4.3` สำหรับแชตทั่วไป และ `grok-build-0.1` สำหรับ workload ที่เน้นการ build/เขียนโค้ด
+เว้นแต่คุณต้องใช้ alias เบต้าของ Grok 4.20 โดยเฉพาะ
 </Tip>
 
 ## การครอบคลุมฟีเจอร์ของ OpenClaw
 
-Plugin แบบบันเดิลแมปพื้นผิว API สาธารณะปัจจุบันของ xAI ไปยังสัญญา
-ผู้ให้บริการและเครื่องมือที่ใช้ร่วมกันของ OpenClaw ความสามารถที่ไม่พอดีกับสัญญาที่ใช้ร่วมกัน
-(เช่น TTS แบบสตรีมมิงและเสียงแบบเรียลไทม์) จะไม่ถูกเปิดเผย - ดูตาราง
+Plugin แบบบันเดิลจะแมปพื้นผิว API สาธารณะปัจจุบันของ xAI เข้ากับสัญญา
+ผู้ให้บริการและเครื่องมือแบบใช้ร่วมกันของ OpenClaw ความสามารถที่ไม่เข้ากับสัญญาแบบใช้ร่วมกัน
+(เช่น streaming TTS และเสียงแบบ realtime) จะไม่ถูกเปิดเผย - ดูตาราง
 ด้านล่าง
 
 | ความสามารถของ xAI             | พื้นผิว OpenClaw                          | สถานะ                                                              |
 | -------------------------- | ----------------------------------------- | ------------------------------------------------------------------- |
-| แชท / Responses           | ผู้ให้บริการโมเดล `xai/<model>`              | ใช่                                                                 |
-| เว็บเสิร์ชฝั่งเซิร์ฟเวอร์     | ผู้ให้บริการ `web_search` `grok`              | ใช่                                                                 |
-| การค้นหา X ฝั่งเซิร์ฟเวอร์       | เครื่องมือ `x_search`                           | ใช่                                                                 |
-| การประมวลผลโค้ดฝั่งเซิร์ฟเวอร์ | เครื่องมือ `code_execution`                     | ใช่                                                                 |
+| Chat / Responses           | ผู้ให้บริการโมเดล `xai/<model>`              | ใช่                                                                 |
+| การค้นเว็บฝั่งเซิร์ฟเวอร์     | ผู้ให้บริการ `web_search` `grok`              | ใช่                                                                 |
+| การค้น X ฝั่งเซิร์ฟเวอร์       | เครื่องมือ `x_search`                           | ใช่                                                                 |
+| การรันโค้ดฝั่งเซิร์ฟเวอร์ | เครื่องมือ `code_execution`                     | ใช่                                                                 |
 | รูปภาพ                     | `image_generate`                          | ใช่                                                                 |
 | วิดีโอ                     | `video_generate`                          | ใช่                                                                 |
-| ข้อความเป็นเสียงแบบแบตช์       | `messages.tts.provider: "xai"` / `tts`    | ใช่                                                                 |
-| TTS แบบสตรีมมิง              | -                                         | ไม่เปิดเผย; สัญญา TTS ของ OpenClaw ส่งคืนบัฟเฟอร์เสียงแบบสมบูรณ์ |
-| เสียงพูดเป็นข้อความแบบแบตช์       | `tools.media.audio` / ความเข้าใจสื่อ | ใช่                                                                 |
-| เสียงพูดเป็นข้อความแบบสตรีมมิง   | Voice Call `streaming.provider: "xai"`    | ใช่                                                                 |
-| เสียงแบบเรียลไทม์             | -                                         | ยังไม่เปิดเผย; สัญญาเซสชัน/WebSocket แตกต่างกัน               |
-| ไฟล์ / แบตช์            | ความเข้ากันได้กับ API โมเดลทั่วไปเท่านั้น      | ไม่ใช่เครื่องมือ OpenClaw ระดับเฟิร์สต์คลาส                                     |
+| Batch text-to-speech       | `messages.tts.provider: "xai"` / `tts`    | ใช่                                                                 |
+| Streaming TTS              | -                                         | ไม่เปิดเผย; สัญญา TTS ของ OpenClaw ส่งคืนบัฟเฟอร์เสียงที่สมบูรณ์ |
+| Batch speech-to-text       | `tools.media.audio` / ความเข้าใจสื่อ | ใช่                                                                 |
+| Streaming speech-to-text   | Voice Call `streaming.provider: "xai"`    | ใช่                                                                 |
+| เสียงแบบ Realtime             | -                                         | ยังไม่เปิดเผย; ใช้สัญญา session/WebSocket ที่แตกต่างกัน               |
+| ไฟล์ / batches            | เฉพาะความเข้ากันได้กับ API โมเดลทั่วไป      | ไม่ใช่เครื่องมือ OpenClaw แบบ first-class                                     |
 
 <Note>
-OpenClaw ใช้ API REST รูปภาพ/วิดีโอ/TTS/STT ของ xAI สำหรับการสร้างสื่อ
-เสียงพูด และการถอดเสียงแบบแบตช์, ใช้ WebSocket STT แบบสตรีมมิงของ xAI สำหรับการถอดเสียง
-สายเสียงสด และใช้ Responses API สำหรับเครื่องมือโมเดล การค้นหา และ
-การประมวลผลโค้ด ฟีเจอร์ที่ต้องใช้สัญญา OpenClaw ที่แตกต่างกัน เช่น
-เซสชันเสียงแบบเรียลไทม์ จะถูกบันทึกไว้ที่นี่ในฐานะความสามารถต้นทาง
-แทนที่จะเป็นพฤติกรรมของ Plugin ที่ซ่อนอยู่
+OpenClaw ใช้ REST API ของ xAI สำหรับ image/video/TTS/STT เพื่อสร้างสื่อ,
+เสียงพูด และการถอดเสียงแบบ batch, ใช้ WebSocket STT แบบ streaming ของ xAI สำหรับการถอดเสียง
+voice-call แบบ live และใช้ Responses API สำหรับโมเดล, การค้นหา และ
+เครื่องมือ code-execution ฟีเจอร์ที่ต้องใช้สัญญา OpenClaw ที่แตกต่างกัน เช่น
+session เสียง Realtime จะถูกบันทึกไว้ที่นี่ในฐานะความสามารถ upstream แทนที่จะเป็น
+พฤติกรรม Plugin ที่ซ่อนอยู่
 </Note>
 
 ### การแมปโหมดเร็ว
 
 `/fast on` หรือ `agents.defaults.models["xai/<model>"].params.fastMode: true`
-เขียนคำขอ xAI แบบเนทีฟใหม่ดังนี้:
+จะเขียนคำขอ xAI แบบ native ใหม่ดังนี้:
 
 | โมเดลต้นทาง  | เป้าหมายโหมดเร็ว   |
 | ------------- | ------------------ |
@@ -115,12 +189,15 @@ OpenClaw ใช้ API REST รูปภาพ/วิดีโอ/TTS/STT ขอ
 | `grok-4`      | `grok-4-fast`      |
 | `grok-4-0709` | `grok-4-fast`      |
 
-### นามแฝงความเข้ากันได้แบบดั้งเดิม
+### alias ความเข้ากันได้แบบ legacy
 
-นามแฝงดั้งเดิมยังคงถูก normalize เป็น ID แบบบันเดิลมาตรฐาน:
+alias แบบ legacy ยังคง normalize ไปยัง ID แบบบันเดิลที่เป็น canonical:
 
-| นามแฝงดั้งเดิม              | ID มาตรฐาน                          |
+| alias แบบ legacy              | ID canonical                          |
 | ------------------------- | ------------------------------------- |
+| `grok-code-fast-1`        | `grok-build-0.1`                      |
+| `grok-code-fast`          | `grok-build-0.1`                      |
+| `grok-code-fast-1-0825`   | `grok-build-0.1`                      |
 | `grok-4-fast-reasoning`   | `grok-4-fast`                         |
 | `grok-4-1-fast-reasoning` | `grok-4-1-fast`                       |
 | `grok-4.20-reasoning`     | `grok-4.20-beta-latest-reasoning`     |
@@ -129,31 +206,37 @@ OpenClaw ใช้ API REST รูปภาพ/วิดีโอ/TTS/STT ขอ
 ## ฟีเจอร์
 
 <AccordionGroup>
-  <Accordion title="เว็บเสิร์ช">
-    ผู้ให้บริการเว็บเสิร์ช `grok` แบบบันเดิลสามารถใช้ `XAI_API_KEY` หรือคีย์
-    เว็บเสิร์ชของ Plugin ได้:
+  <Accordion title="Web search">
+    ผู้ให้บริการ web-search `grok` แบบบันเดิลจะเลือกใช้ xAI OAuth ก่อน แล้วจึงถอยกลับ
+    ไปใช้ `XAI_API_KEY` หรือคีย์ web-search ของ Plugin:
 
     ```bash
+    openclaw models auth login --provider xai --method oauth
     openclaw config set tools.web.search.provider grok
     ```
 
   </Accordion>
 
-  <Accordion title="การสร้างวิดีโอ">
-    Plugin `xai` แบบบันเดิลลงทะเบียนการสร้างวิดีโอผ่านเครื่องมือ
-    `video_generate` ที่ใช้ร่วมกัน
+  <Accordion title="Video generation">
+    Plugin `xai` แบบบันเดิลลงทะเบียนการสร้างวิดีโอผ่านเครื่องมือแบบใช้ร่วมกัน
+    `video_generate`
 
     - โมเดลวิดีโอเริ่มต้น: `xai/grok-imagine-video`
-    - โหมด: ข้อความเป็นวิดีโอ, ภาพเป็นวิดีโอ, การสร้างภาพอ้างอิง, การแก้ไขวิดีโอระยะไกล และการขยายวิดีโอระยะไกล
+    - โหมด: text-to-video, image-to-video, การสร้าง reference-image, การแก้ไขวิดีโอระยะไกล
+      และการต่อขยายวิดีโอระยะไกล
     - อัตราส่วนภาพ: `1:1`, `16:9`, `9:16`, `4:3`, `3:4`, `3:2`, `2:3`
     - ความละเอียด: `480P`, `720P`
-    - ระยะเวลา: 1-15 วินาทีสำหรับการสร้าง/ภาพเป็นวิดีโอ, 1-10 วินาทีเมื่อใช้บทบาท `reference_image`, 2-10 วินาทีสำหรับการขยาย
-    - การสร้างภาพอ้างอิง: ตั้งค่า `imageRoles` เป็น `reference_image` สำหรับภาพที่ให้มาทุกภาพ; xAI ยอมรับภาพดังกล่าวได้สูงสุด 7 ภาพ
+    - ระยะเวลา: 1-15 วินาทีสำหรับการสร้าง/image-to-video, 1-10 วินาทีเมื่อ
+      ใช้บทบาท `reference_image`, 2-10 วินาทีสำหรับการต่อขยาย
+    - การสร้าง reference-image: ตั้งค่า `imageRoles` เป็น `reference_image` สำหรับ
+      รูปภาพที่ให้มาทุกภาพ; xAI รับรูปภาพดังกล่าวได้สูงสุด 7 ภาพ
+    - timeout การดำเนินการเริ่มต้น: 600 วินาที เว้นแต่จะตั้งค่า `video_generate.timeoutMs`
+      หรือ `agents.defaults.videoGenerationModel.timeoutMs`
 
     <Warning>
-    ไม่รับบัฟเฟอร์วิดีโอในเครื่อง ใช้ URL `http(s)` ระยะไกลสำหรับ
-    อินพุตการแก้ไข/ขยายวิดีโอ ภาพเป็นวิดีโอรับบัฟเฟอร์รูปภาพในเครื่องได้เพราะ
-    OpenClaw สามารถเข้ารหัสเป็น URL ข้อมูลสำหรับ xAI ได้
+    ไม่รองรับบัฟเฟอร์วิดีโอภายในเครื่อง ใช้ URL `http(s)` ระยะไกลสำหรับ
+    อินพุตแก้ไข/ต่อขยายวิดีโอ image-to-video รองรับบัฟเฟอร์รูปภาพภายในเครื่อง เพราะ
+    OpenClaw สามารถเข้ารหัสเป็น data URL สำหรับ xAI ได้
     </Warning>
 
     หากต้องการใช้ xAI เป็นผู้ให้บริการวิดีโอเริ่มต้น:
@@ -171,27 +254,29 @@ OpenClaw ใช้ API REST รูปภาพ/วิดีโอ/TTS/STT ขอ
     ```
 
     <Note>
-    ดู [การสร้างวิดีโอ](/th/tools/video-generation) สำหรับพารามิเตอร์เครื่องมือที่ใช้ร่วมกัน
+    ดู [Video Generation](/th/tools/video-generation) สำหรับพารามิเตอร์เครื่องมือแบบใช้ร่วมกัน,
     การเลือกผู้ให้บริการ และพฤติกรรม failover
     </Note>
 
   </Accordion>
 
-  <Accordion title="การสร้างรูปภาพ">
-    Plugin `xai` แบบบันเดิลลงทะเบียนการสร้างรูปภาพผ่านเครื่องมือ
-    `image_generate` ที่ใช้ร่วมกัน
+  <Accordion title="Image generation">
+    Plugin `xai` แบบบันเดิลลงทะเบียนการสร้างรูปภาพผ่านเครื่องมือแบบใช้ร่วมกัน
+    `image_generate`
 
     - โมเดลรูปภาพเริ่มต้น: `xai/grok-imagine-image`
-    - โมเดลเพิ่มเติม: `xai/grok-imagine-image-pro`
-    - โหมด: ข้อความเป็นรูปภาพและการแก้ไขภาพอ้างอิง
-    - อินพุตอ้างอิง: `image` หนึ่งรายการหรือ `images` ได้สูงสุดห้ารายการ
+    - โมเดลเพิ่มเติม: `xai/grok-imagine-image-quality`
+    - โหมด: text-to-image และการแก้ไข reference-image
+    - อินพุตอ้างอิง: `image` หนึ่งรายการ หรือ `images` สูงสุดห้ารายการ
     - อัตราส่วนภาพ: `1:1`, `16:9`, `9:16`, `4:3`, `3:4`, `2:3`, `3:2`
     - ความละเอียด: `1K`, `2K`
-    - จำนวน: ได้สูงสุด 4 ภาพ
+    - จำนวน: สูงสุด 4 รูปภาพ
+    - timeout การดำเนินการเริ่มต้น: 600 วินาที เว้นแต่จะตั้งค่า `image_generate.timeoutMs`
+      หรือ `agents.defaults.imageGenerationModel.timeoutMs`
 
     OpenClaw ขอการตอบกลับรูปภาพแบบ `b64_json` จาก xAI เพื่อให้สื่อที่สร้างขึ้นสามารถ
-    จัดเก็บและส่งผ่านเส้นทางไฟล์แนบของช่องทางปกติได้ รูปภาพอ้างอิงในเครื่อง
-    จะถูกแปลงเป็น URL ข้อมูล; การอ้างอิง `http(s)` ระยะไกลจะถูกส่งผ่านตามเดิม
+    จัดเก็บและส่งผ่านเส้นทางไฟล์แนบของช่องทางปกติได้ รูปภาพอ้างอิงภายในเครื่อง
+    จะถูกแปลงเป็น data URL; การอ้างอิง `http(s)` ระยะไกลจะถูกส่งผ่านตามเดิม
 
     หากต้องการใช้ xAI เป็นผู้ให้บริการรูปภาพเริ่มต้น:
 
@@ -208,16 +293,16 @@ OpenClaw ใช้ API REST รูปภาพ/วิดีโอ/TTS/STT ขอ
     ```
 
     <Note>
-    xAI ยังบันทึก `quality`, `mask`, `user` และอัตราส่วนเนทีฟเพิ่มเติม
-    เช่น `1:2`, `2:1`, `9:20` และ `20:9` ด้วย ปัจจุบัน OpenClaw ส่งต่อเฉพาะ
-    ตัวควบคุมรูปภาพข้ามผู้ให้บริการที่ใช้ร่วมกัน; knob ที่เป็นเนทีฟเท่านั้นซึ่งไม่รองรับ
-    จะไม่ถูกเปิดเผยผ่าน `image_generate` โดยตั้งใจ
+    xAI ยังจัดทำเอกสารสำหรับ `quality`, `mask`, `user` และอัตราส่วนเนทีฟเพิ่มเติม
+    เช่น `1:2`, `2:1`, `9:20` และ `20:9` ปัจจุบัน OpenClaw ส่งต่อเฉพาะ
+    ตัวควบคุมรูปภาพแบบข้ามผู้ให้บริการที่ใช้ร่วมกันเท่านั้น; ปุ่มปรับแต่งที่เป็นเนทีฟเท่านั้นและยังไม่รองรับ
+    จึงตั้งใจไม่เปิดให้ใช้ผ่าน `image_generate`
     </Note>
 
   </Accordion>
 
-  <Accordion title="ข้อความเป็นเสียง">
-    Plugin `xai` แบบบันเดิลลงทะเบียนข้อความเป็นเสียงผ่านพื้นผิวผู้ให้บริการ `tts`
+  <Accordion title="ข้อความเป็นเสียงพูด">
+    Plugin `xai` ที่รวมมาให้ลงทะเบียนข้อความเป็นเสียงพูดผ่านพื้นผิวผู้ให้บริการ `tts`
     ที่ใช้ร่วมกัน
 
     - เสียง: `eve`, `ara`, `rex`, `sal`, `leo`, `una`
@@ -225,7 +310,7 @@ OpenClaw ใช้ API REST รูปภาพ/วิดีโอ/TTS/STT ขอ
     - รูปแบบ: `mp3`, `wav`, `pcm`, `mulaw`, `alaw`
     - ภาษา: รหัส BCP-47 หรือ `auto`
     - ความเร็ว: การแทนที่ความเร็วแบบเนทีฟของผู้ให้บริการ
-    - ไม่รองรับรูปแบบวอยซ์โน้ต Opus แบบเนทีฟ
+    - ไม่รองรับรูปแบบข้อความเสียง Opus แบบเนทีฟ
 
     หากต้องการใช้ xAI เป็นผู้ให้บริการ TTS เริ่มต้น:
 
@@ -236,7 +321,7 @@ OpenClaw ใช้ API REST รูปภาพ/วิดีโอ/TTS/STT ขอ
           provider: "xai",
           providers: {
             xai: {
-              voiceId: "eve",
+              speakerVoiceId: "eve",
             },
           },
         },
@@ -245,22 +330,22 @@ OpenClaw ใช้ API REST รูปภาพ/วิดีโอ/TTS/STT ขอ
     ```
 
     <Note>
-    OpenClaw ใช้ปลายทาง `/v1/tts` แบบแบตช์ของ xAI xAI ยังมี TTS แบบสตรีมมิง
-    ผ่าน WebSocket ด้วย แต่ปัจจุบันสัญญาผู้ให้บริการเสียงพูดของ OpenClaw คาดหวัง
+    OpenClaw ใช้ปลายทางแบบแบตช์ `/v1/tts` ของ xAI นอกจากนี้ xAI ยังมี TTS แบบสตรีม
+    ผ่าน WebSocket แต่สัญญาผู้ให้บริการเสียงพูดของ OpenClaw ในปัจจุบันคาดว่าจะได้รับ
     บัฟเฟอร์เสียงที่สมบูรณ์ก่อนส่งคำตอบ
     </Note>
 
   </Accordion>
 
   <Accordion title="เสียงพูดเป็นข้อความ">
-    Plugin `xai` แบบบันเดิลลงทะเบียนเสียงพูดเป็นข้อความแบบแบตช์ผ่านพื้นผิว
-    การถอดเสียงเพื่อความเข้าใจสื่อของ OpenClaw
+    Plugin `xai` ที่รวมมาให้ลงทะเบียนเสียงพูดเป็นข้อความแบบแบตช์ผ่านพื้นผิวการถอดเสียง
+    เพื่อทำความเข้าใจสื่อของ OpenClaw
 
     - โมเดลเริ่มต้น: `grok-stt`
     - ปลายทาง: xAI REST `/v1/stt`
-    - เส้นทางอินพุต: อัปโหลดไฟล์เสียงแบบ multipart
-    - OpenClaw รองรับในทุกที่ที่การถอดเสียงขาเข้าใช้
-      `tools.media.audio` รวมถึงส่วนเสียงของช่องเสียง Discord และ
+    - เส้นทางอินพุต: การอัปโหลดไฟล์เสียงแบบ multipart
+    - OpenClaw รองรับทุกที่ที่การถอดเสียงขาเข้าใช้
+      `tools.media.audio` รวมถึงเซกเมนต์ช่องเสียงของ Discord และ
       ไฟล์แนบเสียงของช่องทาง
 
     หากต้องการบังคับใช้ xAI สำหรับการถอดเสียงขาเข้า:
@@ -283,22 +368,22 @@ OpenClaw ใช้ API REST รูปภาพ/วิดีโอ/TTS/STT ขอ
     }
     ```
 
-    สามารถระบุภาษาได้ผ่านการกำหนดค่าสื่อเสียงที่ใช้ร่วมกันหรือคำขอถอดเสียง
-    รายการต่อรายการ คำใบ้พรอมป์ได้รับการยอมรับโดยพื้นผิว OpenClaw ที่ใช้ร่วมกัน
-    แต่การผสานรวม xAI REST STT ส่งต่อเฉพาะไฟล์ โมเดล และ
-    ภาษา เพราะสิ่งเหล่านั้นแมปกับปลายทางสาธารณะปัจจุบันของ xAI ได้อย่างชัดเจน
+    สามารถระบุภาษาได้ผ่านการกำหนดค่าสื่อเสียงที่ใช้ร่วมกัน หรือผ่านคำขอถอดเสียง
+    รายครั้ง พื้นผิว OpenClaw ที่ใช้ร่วมกันยอมรับคำใบ้พรอมป์ แต่การผสานรวม xAI REST STT
+    จะส่งต่อเฉพาะไฟล์ โมเดล และภาษา เพราะสิ่งเหล่านี้แมปกับปลายทาง xAI สาธารณะ
+    ในปัจจุบันได้อย่างชัดเจน
 
   </Accordion>
 
-  <Accordion title="เสียงพูดเป็นข้อความแบบสตรีมมิง">
-    Plugin `xai` แบบบันเดิลยังลงทะเบียนผู้ให้บริการการถอดเสียงแบบเรียลไทม์
-    สำหรับเสียงสายเสียงสดด้วย
+  <Accordion title="เสียงพูดเป็นข้อความแบบสตรีม">
+    Plugin `xai` ที่รวมมาให้ยังลงทะเบียนผู้ให้บริการถอดเสียงแบบเรียลไทม์
+    สำหรับเสียงการโทรสด
 
     - ปลายทาง: xAI WebSocket `wss://api.x.ai/v1/stt`
     - การเข้ารหัสเริ่มต้น: `mulaw`
     - อัตราสุ่มตัวอย่างเริ่มต้น: `8000`
-    - endpointing เริ่มต้น: `800ms`
-    - ข้อความถอดเสียงชั่วคราว: เปิดใช้งานตามค่าเริ่มต้น
+    - การกำหนดจุดสิ้นสุดเริ่มต้น: `800ms`
+    - ข้อความถอดเสียงระหว่างทาง: เปิดใช้เป็นค่าเริ่มต้น
 
     สตรีมสื่อ Twilio ของ Voice Call ส่งเฟรมเสียง G.711 µ-law ดังนั้น
     ผู้ให้บริการ xAI จึงส่งต่อเฟรมเหล่านั้นได้โดยตรงโดยไม่ต้องแปลงรหัส:
@@ -327,34 +412,34 @@ OpenClaw ใช้ API REST รูปภาพ/วิดีโอ/TTS/STT ขอ
     }
     ```
 
-    การกำหนดค่าที่ provider เป็นเจ้าของอยู่ภายใต้
-    `plugins.entries.voice-call.config.streaming.providers.xai` คีย์ที่รองรับ
-    ได้แก่ `apiKey`, `baseUrl`, `sampleRate`, `encoding` (`pcm`, `mulaw` หรือ
+    การกำหนดค่าที่ผู้ให้บริการเป็นเจ้าของอยู่ภายใต้
+    `plugins.entries.voice-call.config.streaming.providers.xai` คีย์ที่รองรับคือ
+    `apiKey`, `baseUrl`, `sampleRate`, `encoding` (`pcm`, `mulaw` หรือ
     `alaw`), `interimResults`, `endpointingMs` และ `language`
 
     <Note>
-    provider สำหรับสตรีมมิงนี้ใช้สำหรับเส้นทางการถอดเสียงแบบเรียลไทม์ของ Voice Call
-    ปัจจุบันเสียง Discord จะบันทึกช่วงสั้น ๆ และใช้เส้นทางการถอดเสียงแบบแบตช์
+    ผู้ให้บริการสตรีมนี้มีไว้สำหรับเส้นทางการถอดเสียงแบบเรียลไทม์ของ Voice Call
+    ปัจจุบันเสียงของ Discord บันทึกเป็นเซกเมนต์สั้นๆ และใช้เส้นทางการถอดเสียงแบบแบตช์
     `tools.media.audio` แทน
     </Note>
 
   </Accordion>
 
   <Accordion title="การกำหนดค่า x_search">
-    Plugin xAI ที่มาพร้อมชุดติดตั้งเปิดเผย `x_search` เป็นเครื่องมือ OpenClaw สำหรับค้นหา
+    Plugin xAI ที่รวมมาให้เปิดเผย `x_search` เป็นเครื่องมือของ OpenClaw สำหรับค้นหา
     เนื้อหา X (เดิมคือ Twitter) ผ่าน Grok
 
     เส้นทางการกำหนดค่า: `plugins.entries.xai.config.xSearch`
 
-    | คีย์                | ประเภท    | ค่าเริ่มต้น            | คำอธิบาย                          |
+    | คีย์               | ประเภท   | ค่าเริ่มต้น        | คำอธิบาย                            |
     | ------------------ | ------- | ------------------ | ------------------------------------ |
-    | `enabled`          | boolean | -                  | เปิดหรือปิดใช้งาน x_search           |
-    | `model`            | string  | `grok-4-1-fast`    | โมเดลที่ใช้สำหรับคำขอ x_search     |
-    | `baseUrl`          | string  | -                  | การแทนที่ URL ฐานของ xAI Responses      |
-    | `inlineCitations`  | boolean | -                  | รวมการอ้างอิงแบบอินไลน์ในผลลัพธ์  |
-    | `maxTurns`         | number  | -                  | จำนวนรอบการสนทนาสูงสุด           |
-    | `timeoutSeconds`   | number  | -                  | ระยะหมดเวลาของคำขอเป็นวินาที           |
-    | `cacheTtlMinutes`  | number  | -                  | อายุแคชเป็นนาที        |
+    | `enabled`          | boolean | -                  | เปิดหรือปิดใช้ x_search             |
+    | `model`            | string  | `grok-4-1-fast`    | โมเดลที่ใช้สำหรับคำขอ x_search      |
+    | `baseUrl`          | string  | -                  | การแทนที่ URL ฐานของ xAI Responses |
+    | `inlineCitations`  | boolean | -                  | รวมการอ้างอิงแบบอินไลน์ในผลลัพธ์   |
+    | `maxTurns`         | number  | -                  | จำนวนรอบสนทนาสูงสุด                 |
+    | `timeoutSeconds`   | number  | -                  | หมดเวลาคำขอเป็นวินาที               |
+    | `cacheTtlMinutes`  | number  | -                  | อายุการใช้งานแคชเป็นนาที            |
 
     ```json5
     {
@@ -377,21 +462,21 @@ OpenClaw ใช้ API REST รูปภาพ/วิดีโอ/TTS/STT ขอ
 
   </Accordion>
 
-  <Accordion title="การกำหนดค่า Code execution">
-    Plugin xAI ที่มาพร้อมชุดติดตั้งเปิดเผย `code_execution` เป็นเครื่องมือ OpenClaw สำหรับ
-    การรันโค้ดระยะไกลในสภาพแวดล้อม sandbox ของ xAI
+  <Accordion title="การกำหนดค่าการเรียกใช้โค้ด">
+    Plugin xAI ที่รวมมาให้เปิดเผย `code_execution` เป็นเครื่องมือของ OpenClaw สำหรับ
+    การเรียกใช้โค้ดระยะไกลในสภาพแวดล้อมแซนด์บ็อกซ์ของ xAI
 
     เส้นทางการกำหนดค่า: `plugins.entries.xai.config.codeExecution`
 
-    | คีย์               | ประเภท    | ค่าเริ่มต้น            | คำอธิบาย                              |
-    | ----------------- | ------- | ------------------ | ---------------------------------------- |
-    | `enabled`         | boolean | `true` (หากมีคีย์) | เปิดหรือปิดใช้งานการรันโค้ด  |
-    | `model`           | string  | `grok-4-1-fast`    | โมเดลที่ใช้สำหรับคำขอรันโค้ด   |
-    | `maxTurns`        | number  | -                  | จำนวนรอบการสนทนาสูงสุด               |
-    | `timeoutSeconds`  | number  | -                  | ระยะหมดเวลาของคำขอเป็นวินาที               |
+    | คีย์              | ประเภท   | ค่าเริ่มต้น               | คำอธิบาย                              |
+    | ----------------- | ------- | ------------------------- | ---------------------------------------- |
+    | `enabled`         | boolean | `true` (หากมีคีย์พร้อมใช้) | เปิดหรือปิดใช้การเรียกใช้โค้ด       |
+    | `model`           | string  | `grok-4-1-fast`           | โมเดลที่ใช้สำหรับคำขอเรียกใช้โค้ด     |
+    | `maxTurns`        | number  | -                         | จำนวนรอบสนทนาสูงสุด                    |
+    | `timeoutSeconds`  | number  | -                         | หมดเวลาคำขอเป็นวินาที                  |
 
     <Note>
-    นี่คือการรันใน sandbox ของ xAI ระยะไกล ไม่ใช่ [`exec`](/th/tools/exec) ในเครื่อง
+    นี่คือการเรียกใช้แซนด์บ็อกซ์ xAI ระยะไกล ไม่ใช่ [`exec`](/th/tools/exec) ภายในเครื่อง
     </Note>
 
     ```json5
@@ -414,46 +499,52 @@ OpenClaw ใช้ API REST รูปภาพ/วิดีโอ/TTS/STT ขอ
   </Accordion>
 
   <Accordion title="ข้อจำกัดที่ทราบ">
-    - การยืนยันตัวตนในปัจจุบันใช้คีย์ API เท่านั้น คีย์ API อาจถูกเก็บไว้ในโปรไฟล์การยืนยันตัวตน xAI
-      ตัวแปรสภาพแวดล้อม หรือการกำหนดค่า Plugin ยังไม่มี OAuth ของ xAI หรือ
-      โฟลว์ device-code ใน OpenClaw
-    - `grok-4.20-multi-agent-experimental-beta-0304` ไม่รองรับบนเส้นทาง
-      provider xAI ปกติ เพราะต้องใช้พื้นผิว API ต้นทางที่แตกต่างจาก
-      การขนส่ง xAI มาตรฐานของ OpenClaw
-    - เสียง xAI Realtime ยังไม่ได้ลงทะเบียนเป็น provider ของ OpenClaw
-      ต้องใช้สัญญาเซสชันเสียงแบบสองทิศทางที่แตกต่างจาก STT แบบแบตช์หรือ
-      การถอดเสียงแบบสตรีมมิง
-    - `quality` ของภาพ xAI, `mask` ของภาพ และอัตราส่วนภาพเพิ่มเติมที่ใช้ได้เฉพาะแบบ native
-      ยังไม่ถูกเปิดเผยจนกว่าเครื่องมือ `image_generate` ที่ใช้ร่วมกันจะมี
-      ตัวควบคุมข้าม provider ที่สอดคล้องกัน
+    - การยืนยันตัวตน xAI สามารถใช้คีย์ API, ตัวแปรสภาพแวดล้อม, ค่าถอยกลับจากการกำหนดค่า Plugin
+      หรือ OAuth กับบัญชี xAI ที่เข้าเกณฑ์ OAuth ใช้การยืนยันด้วยรหัสอุปกรณ์
+      โดยไม่มี callback localhost xAI เป็นผู้ตัดสินว่าบัญชีใดรับโทเค็น API
+      ผ่าน OAuth ได้ และหน้าความยินยอมอาจแสดง Grok Build แม้ว่า OpenClaw
+      จะไม่ต้องใช้แอป Grok Build
+    - ปัจจุบัน OpenClaw ยังไม่เปิดเผยตระกูลโมเดลหลายเอเจนต์ของ xAI xAI
+      ให้บริการโมเดลเหล่านี้ผ่าน Responses API แต่โมเดลเหล่านี้ไม่รับ
+      เครื่องมือฝั่งไคลเอนต์หรือเครื่องมือกำหนดเองที่ลูปเอเจนต์ร่วมของ OpenClaw ใช้ ดู
+      [ข้อจำกัดหลายเอเจนต์ของ xAI](https://docs.x.ai/developers/model-capabilities/text/multi-agent#limitations)
+    - เสียง xAI Realtime ยังไม่ได้ลงทะเบียนเป็นผู้ให้บริการ OpenClaw
+      จำเป็นต้องมีสัญญาเซสชันเสียงสองทิศทางที่ต่างจาก STT แบบแบตช์หรือ
+      การถอดเสียงแบบสตรีม
+    - รูปภาพ xAI `quality`, รูปภาพ `mask` และอัตราส่วนภาพเพิ่มเติมที่เป็นเนทีฟเท่านั้น
+      จะไม่ถูกเปิดเผยจนกว่าเครื่องมือ `image_generate` ที่ใช้ร่วมกันจะมี
+      ตัวควบคุมแบบข้ามผู้ให้บริการที่สอดคล้องกัน
   </Accordion>
 
   <Accordion title="หมายเหตุขั้นสูง">
-    - OpenClaw ใช้การแก้ไขความเข้ากันได้สำหรับ schema ของเครื่องมือและการเรียกเครื่องมือที่เฉพาะกับ xAI
-      โดยอัตโนมัติบนเส้นทาง runner ที่ใช้ร่วมกัน
-    - คำขอ xAI แบบ native ตั้งค่าเริ่มต้นเป็น `tool_stream: true` ตั้งค่า
+    - OpenClaw ใช้การแก้ไขความเข้ากันได้ของสคีมาเครื่องมือและการเรียกเครื่องมือเฉพาะ xAI
+      โดยอัตโนมัติบนเส้นทางตัวรันที่ใช้ร่วมกัน
+    - คำขอ xAI แบบเนทีฟตั้งค่าเริ่มต้นเป็น `tool_stream: true` ตั้งค่า
       `agents.defaults.models["xai/<model>"].params.tool_stream` เป็น `false` เพื่อ
-      ปิดใช้งาน
-    - wrapper xAI ที่มาพร้อมชุดติดตั้งจะลบแฟล็ก schema ของเครื่องมือแบบ strict ที่ไม่รองรับและ
-      คีย์ payload การให้เหตุผลก่อนส่งคำขอ xAI แบบ native
-    - `web_search`, `x_search` และ `code_execution` ถูกเปิดเผยเป็นเครื่องมือ OpenClaw
-      OpenClaw เปิดใช้งาน built-in ของ xAI ที่ต้องใช้ภายในคำขอเครื่องมือแต่ละรายการ
-      แทนการแนบเครื่องมือ native ทั้งหมดกับทุกเทิร์นของแชต
+      ปิดใช้
+    - ตัวห่อ xAI ที่รวมมาให้จะตัดแฟล็กสคีมาเครื่องมือแบบเข้มงวดที่ไม่รองรับ และ
+      คีย์เพย์โหลด *effort* สำหรับการให้เหตุผลออกก่อนส่งคำขอ xAI แบบเนทีฟ มีเพียง
+      `grok-4.3` / `grok-4.3-*` เท่านั้นที่ประกาศว่าสามารถกำหนด effort สำหรับการให้เหตุผลได้; โมเดล xAI
+      อื่นทั้งหมดที่มีความสามารถในการให้เหตุผลยังคงขอ
+      `include: ["reasoning.encrypted_content"]` เพื่อให้สามารถเล่นซ้ำการให้เหตุผลที่เข้ารหัสก่อนหน้า
+      ในรอบติดตามผลได้
+    - `web_search`, `x_search` และ `code_execution` ถูกเปิดเผยเป็นเครื่องมือของ OpenClaw
+      OpenClaw เปิดใช้ built-in เฉพาะของ xAI ที่ต้องการภายในคำขอเครื่องมือแต่ละรายการ
+      แทนที่จะผูกเครื่องมือเนทีฟทั้งหมดเข้ากับทุกๆ รอบแชต
     - Grok `web_search` อ่าน `plugins.entries.xai.config.webSearch.baseUrl`
-      `x_search` อ่าน `plugins.entries.xai.config.xSearch.baseUrl` จากนั้น
-      fallback ไปยัง URL ฐานของการค้นหาเว็บ Grok
-    - `x_search` และ `code_execution` เป็นของ Plugin xAI ที่มาพร้อมชุดติดตั้ง
-      ไม่ได้ถูก hardcode ไว้ใน runtime โมเดลหลัก
-    - `code_execution` คือการรันใน sandbox ของ xAI ระยะไกล ไม่ใช่
-      [`exec`](/th/tools/exec) ในเครื่อง
+      `x_search` อ่าน `plugins.entries.xai.config.xSearch.baseUrl` แล้ว
+      ถอยกลับไปใช้ URL ฐานของ Grok web-search
+    - `x_search` และ `code_execution` เป็นของ Plugin xAI ที่รวมมาให้
+      แทนที่จะ hardcode ลงในรันไทม์โมเดลหลัก
+    - `code_execution` คือการเรียกใช้แซนด์บ็อกซ์ xAI ระยะไกล ไม่ใช่
+      [`exec`](/th/tools/exec) ภายในเครื่อง
   </Accordion>
 </AccordionGroup>
 
-## การทดสอบแบบ live
+## การทดสอบสด
 
-เส้นทางสื่อ xAI ครอบคลุมด้วย unit test และชุดทดสอบแบบ live ที่เลือกเปิดใช้ คำสั่ง live
-จะโหลด secrets จาก shell ล็อกอินของคุณ รวมถึง `~/.profile` ก่อน
-probe `XAI_API_KEY`
+เส้นทางสื่อ xAI ครอบคลุมด้วยยูนิตเทสต์และชุดทดสอบสดแบบเลือกเปิดใช้ ส่งออก
+`XAI_API_KEY` ในสภาพแวดล้อมของกระบวนการก่อนรันโพรบสด
 
 ```bash
 pnpm test extensions/xai
@@ -461,25 +552,25 @@ OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_TEST_QUIET=1 pnpm test:live -- extensions/xai
 OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_TEST_QUIET=1 OPENCLAW_LIVE_IMAGE_GENERATION_PROVIDERS=xai pnpm test:live -- test/image-generation.runtime.live.test.ts
 ```
 
-ไฟล์ live เฉพาะ provider จะสังเคราะห์ TTS ปกติ, PCM TTS ที่เหมาะกับระบบโทรศัพท์,
-ถอดเสียงผ่าน STT แบบแบตช์ของ xAI, สตรีม PCM เดียวกันผ่าน STT เรียลไทม์ของ xAI,
-สร้างผลลัพธ์ text-to-image และแก้ไขภาพอ้างอิง ไฟล์ live ของภาพที่ใช้ร่วมกัน
-ยืนยัน provider xAI เดียวกันผ่านเส้นทางการเลือก runtime, fallback, การทำให้เป็นมาตรฐาน,
-และแนบสื่อของ OpenClaw
+ไฟล์สดเฉพาะผู้ให้บริการสังเคราะห์ TTS ปกติ, TTS แบบ PCM ที่เป็นมิตรกับโทรศัพท์,
+ถอดเสียงผ่าน xAI batch STT, สตรีม PCM เดียวกันผ่าน xAI realtime STT,
+สร้างผลลัพธ์ข้อความเป็นรูปภาพ และแก้ไขรูปภาพอ้างอิง ไฟล์สดรูปภาพที่ใช้ร่วมกัน
+ตรวจสอบผู้ให้บริการ xAI เดียวกันผ่านเส้นทางการเลือก รันไทม์ ค่าถอยกลับ
+การทำให้เป็นมาตรฐาน และไฟล์แนบสื่อของ OpenClaw
 
 ## ที่เกี่ยวข้อง
 
 <CardGroup cols={2}>
   <Card title="การเลือกโมเดล" href="/th/concepts/model-providers" icon="layers">
-    การเลือก provider, model refs และพฤติกรรม failover
+    การเลือกผู้ให้บริการ การอ้างอิงโมเดล และพฤติกรรม failover
   </Card>
   <Card title="การสร้างวิดีโอ" href="/th/tools/video-generation" icon="video">
-    พารามิเตอร์เครื่องมือวิดีโอที่ใช้ร่วมกันและการเลือก provider
+    พารามิเตอร์เครื่องมือวิดีโอที่ใช้ร่วมกันและการเลือกผู้ให้บริการ
   </Card>
-  <Card title="provider ทั้งหมด" href="/th/providers/index" icon="grid-2">
-    ภาพรวม provider ที่กว้างขึ้น
+  <Card title="ผู้ให้บริการทั้งหมด" href="/th/providers/index" icon="grid-2">
+    ภาพรวมผู้ให้บริการที่กว้างขึ้น
   </Card>
   <Card title="การแก้ไขปัญหา" href="/th/help/troubleshooting" icon="wrench">
-    ปัญหาทั่วไปและการแก้ไข
+    ปัญหาและการแก้ไขทั่วไป
   </Card>
 </CardGroup>

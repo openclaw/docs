@@ -1,13 +1,14 @@
 ---
 read_when:
-    - Anda sedang menginstal, mengonfigurasi, atau mengaudit Plugin firecrawl
+    - Anda sedang memasang, mengonfigurasi, atau mengaudit Plugin firecrawl
 summary: Menambahkan alat yang dapat dipanggil agen. Menambahkan dukungan penyedia pengambilan web. Menambahkan dukungan penyedia pencarian web.
 title: Plugin Firecrawl
 x-i18n:
-    generated_at: "2026-05-02T20:52:26Z"
+    generated_at: "2026-06-27T17:53:55Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: bf5108c28abe3bd4b18178d224cd420487be10b37476731b52862e4cb29f90dc
+    source_hash: ca5577e6e850d947a3714e3dc62c7756faae8471e150d3cdb320a85efe3fe4f5
     source_path: plugins/reference/firecrawl.md
     workflow: 16
 ---
@@ -19,9 +20,9 @@ Menambahkan alat yang dapat dipanggil agen. Menambahkan dukungan penyedia pengam
 ## Distribusi
 
 - Paket: `@openclaw/firecrawl-plugin`
-- Rute instalasi: disertakan dalam OpenClaw
+- Rute instalasi: npm; ClawHub: `clawhub:@openclaw/firecrawl-plugin`
 
-## Permukaan
+## Antarmuka
 
 kontrak: tools, webFetchProviders, webSearchProviders
 

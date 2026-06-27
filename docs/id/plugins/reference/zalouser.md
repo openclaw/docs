@@ -1,31 +1,32 @@
 ---
 read_when:
     - Anda sedang memasang, mengonfigurasi, atau mengaudit Plugin zalouser
-summary: Menambahkan permukaan channel Zalo Personal untuk mengirim dan menerima pesan OpenClaw.
+summary: Plugin Akun Pribadi Zalo OpenClaw melalui integrasi zca-js native.
 title: Plugin Zalo Personal
 x-i18n:
-    generated_at: "2026-05-03T09:21:42Z"
+    generated_at: "2026-06-27T17:57:59Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 16ed8b255fd10e2a21bc9d9665c1eb26440929e5a46fe2f9dbfae929a25417a0
+    source_hash: c03db694c940cb1fb20f4a2f73512c9d3cf3c79e910cc6a0dd4aa38bd4465ed5
     source_path: plugins/reference/zalouser.md
     workflow: 16
 ---
 
 # Plugin Zalo Personal
 
-Menambahkan permukaan kanal Zalo Personal untuk mengirim dan menerima pesan OpenClaw.
+Plugin Akun Pribadi Zalo OpenClaw melalui integrasi native zca-js.
 
 ## Distribusi
 
 - Paket: `@openclaw/zalouser`
-- Rute pemasangan: npm; ClawHub
+- Rute instalasi: npm; ClawHub
 
 ## Permukaan
 
-kanal: zalouser; kontrak: tools
+channels: zalouser; contracts: tools
 
-## Dokumentasi terkait
+## Dokumen terkait
 
 - [zalouser](/id/channels/zalouser)
 - [zalouser](/id/plugins/zalouser)

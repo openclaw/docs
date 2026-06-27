@@ -1,50 +1,69 @@
 ---
 read_when:
-    - คุณต้องการรันหรือเขียนเวิร์กโฟลว์ `.prose`
-    - คุณต้องการเปิดใช้ Plugin OpenProse
-    - คุณต้องการทำความเข้าใจการจัดเก็บสถานะ
-summary: 'OpenProse: เวิร์กโฟลว์ `.prose`, คำสั่งสแลช และสถานะใน OpenClaw'
+    - คุณต้องการเรียกใช้หรือเขียนไฟล์เวิร์กโฟลว์ .prose
+    - คุณต้องการเปิดใช้งาน Plugin OpenProse
+    - คุณต้องเข้าใจว่า OpenProse จับคู่กับองค์ประกอบพื้นฐานของ OpenClaw อย่างไร
+sidebarTitle: OpenProse
+summary: OpenProse เป็นรูปแบบเวิร์กโฟลว์ที่ให้ความสำคัญกับ Markdown เป็นหลักสำหรับเซสชัน AI แบบหลายเอเจนต์ ใน OpenClaw จะจัดส่งเป็น Plugin พร้อมคำสั่ง slash `/prose` และแพ็ก Skills
 title: OpenProse
 x-i18n:
-    generated_at: "2026-04-24T09:26:51Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T18:10:07Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e1d6f3aa64c403daedaeaa2d7934b8474c0756fe09eed09efd1efeef62413e9e
+    source_hash: dde819215f99055c2a83ec32ed6e0700994654ca2d1d9c9dda98b71545f8a012
     source_path: prose.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenProse เป็นรูปแบบเวิร์กโฟลว์แบบพกพาและยึด Markdown เป็นหลัก สำหรับ orchestration ของเซสชัน AI ใน OpenClaw มันมาในรูปแบบ Plugin ที่ติดตั้งชุด Skills ของ OpenProse พร้อมคำสั่งสแลช `/prose` โปรแกรมจะอยู่ในไฟล์ `.prose` และสามารถ spawn sub-agent หลายตัวด้วย control flow ที่ชัดเจน
+OpenProse เป็นรูปแบบเวิร์กโฟลว์แบบพกพาที่ให้ Markdown เป็นหลักสำหรับจัดการเซสชัน AI ใน OpenClaw รูปแบบนี้มาพร้อมเป็น Plugin ที่ติดตั้งแพ็ก Skills ของ OpenProse และคำสั่งสแลช `/prose` โปรแกรมอยู่ในไฟล์ `.prose` และสามารถสร้าง sub-agent หลายตัวพร้อมการควบคุมโฟลว์ที่ชัดเจนได้
 
-เว็บไซต์ทางการ: [https://www.prose.md](https://www.prose.md)
+<CardGroup cols={3}>
+  <Card title="Install" icon="download" href="#install">
+    เปิดใช้งาน Plugin OpenProse และรีสตาร์ต Gateway
+  </Card>
+  <Card title="Run a program" icon="play" href="#slash-command">
+    ใช้ `/prose run` เพื่อเรียกใช้ไฟล์ `.prose` หรือโปรแกรมระยะไกล
+  </Card>
+  <Card title="Write programs" icon="pencil" href="#example">
+    เขียนเวิร์กโฟลว์แบบหลายเอเจนต์ด้วยขั้นตอนแบบขนานและแบบลำดับ
+  </Card>
+</CardGroup>
 
-## สิ่งที่ทำได้
+## ติดตั้ง
 
-- งานวิจัย + การสังเคราะห์แบบหลาย agent พร้อม parallelism ที่ชัดเจน
-- เวิร์กโฟลว์ที่ทำซ้ำได้และปลอดภัยต่อ approval (code review, incident triage, content pipelines)
-- โปรแกรม `.prose` ที่ใช้ซ้ำได้และรันข้าม agent runtime ที่รองรับได้
+<Steps>
+  <Step title="Enable the plugin">
+    Plugin ที่มาพร้อมระบบจะถูกปิดใช้งานโดยค่าเริ่มต้น เปิดใช้งาน OpenProse:
 
-## ติดตั้ง + เปิดใช้
+    ```bash
+    openclaw plugins enable open-prose
+    ```
 
-Plugin ที่มาพร้อมกันจะถูกปิดไว้ตามค่าเริ่มต้น เปิดใช้ OpenProse ได้ดังนี้:
+  </Step>
+  <Step title="Restart the Gateway">
+    ```bash
+    openclaw gateway restart
+    ```
+  </Step>
+  <Step title="Verify">
+    ```bash
+    openclaw plugins list | grep prose
+    ```
 
-```bash
-openclaw plugins enable open-prose
-```
+    คุณควรเห็นว่า `open-prose` เปิดใช้งานอยู่ ตอนนี้คำสั่ง Skills `/prose`
+    พร้อมใช้งานในแชตแล้ว
 
-รีสตาร์ต Gateway หลังจากเปิดใช้ Plugin แล้ว
+  </Step>
+</Steps>
 
-สำหรับ dev/local checkout: `openclaw plugins install ./path/to/local/open-prose-plugin`
-
-เอกสารที่เกี่ยวข้อง: [Plugins](/th/tools/plugin), [Plugin manifest](/th/plugins/manifest), [Skills](/th/tools/skills).
+สำหรับเช็กเอาต์ในเครื่อง: `openclaw plugins install ./path/to/local/open-prose-plugin`
 
 ## คำสั่งสแลช
 
-OpenProse ลงทะเบียน `/prose` เป็นคำสั่ง Skills ที่ผู้ใช้เรียกใช้ได้ โดยจะส่งต่อไปยังคำสั่งของ OpenProse VM และใช้เครื่องมือของ OpenClaw อยู่เบื้องหลัง
+OpenProse ลงทะเบียน `/prose` เป็นคำสั่ง Skills ที่ผู้ใช้เรียกใช้ได้:
 
-คำสั่งที่ใช้บ่อย:
-
-```
+```text
 /prose help
 /prose run <file.prose>
 /prose run <handle/slug>
@@ -54,7 +73,17 @@ OpenProse ลงทะเบียน `/prose` เป็นคำสั่ง Sk
 /prose update
 ```
 
-## ตัวอย่าง: ไฟล์ `.prose` แบบง่าย
+`/prose run <handle/slug>` จะแปลงเป็น `https://p.prose.md/<handle>/<slug>` URL โดยตรงจะถูกดึงมาตามที่ระบุโดยใช้เครื่องมือ `web_fetch`
+
+การรันระยะไกลระดับบนสุดเป็นการกระทำที่ชัดเจน การนำเข้าระยะไกลภายในโปรแกรม `.prose` เป็น dependency ของโค้ดแบบส่งต่อ: ก่อนที่ OpenProse จะดึงเป้าหมาย `use` ระยะไกลใดๆ ระบบจะแสดงรายการนำเข้าที่ resolve แล้ว และกำหนดให้ผู้ควบคุมตอบกลับตรงตามนี้เท่านั้น `approve remote prose imports` สำหรับการรันนั้น
+
+## ทำอะไรได้บ้าง
+
+- การวิจัยและสังเคราะห์แบบหลายเอเจนต์พร้อมการทำงานขนานที่ชัดเจน
+- เวิร์กโฟลว์ที่ทำซ้ำได้และปลอดภัยด้วยการอนุมัติ เช่น รีวิวโค้ด คัดแยกเหตุการณ์ ไปป์ไลน์เนื้อหา
+- โปรแกรม `.prose` ที่นำกลับมาใช้ซ้ำได้และเรียกใช้ข้ามรันไทม์เอเจนต์ที่รองรับ
+
+## ตัวอย่าง: การวิจัยและสังเคราะห์แบบขนาน
 
 ```prose
 # Research + synthesis with two agents running in parallel.
@@ -79,11 +108,27 @@ session "Merge the findings + draft into a final answer."
 context: { findings, draft }
 ```
 
+## การแมปรันไทม์ของ OpenClaw
+
+โปรแกรม OpenProse แมปเข้ากับ primitive ของ OpenClaw:
+
+| แนวคิดของ OpenProse       | เครื่องมือ OpenClaw |
+| ------------------------- | ---------------- |
+| สร้างเซสชัน / เครื่องมือ Task | `sessions_spawn` |
+| อ่าน / เขียนไฟล์         | `read` / `write` |
+| ดึงข้อมูลเว็บ                 | `web_fetch`      |
+
+<Warning>
+  หาก allowlist ของเครื่องมือบล็อก `sessions_spawn`, `read`, `write` หรือ
+  `web_fetch` โปรแกรม OpenProse จะล้มเหลว ตรวจสอบ
+  [การกำหนดค่า allowlist ของเครื่องมือ](/th/gateway/config-tools)
+</Warning>
+
 ## ตำแหน่งไฟล์
 
-OpenProse เก็บสถานะไว้ใต้ `.prose/` ใน workspace ของคุณ:
+OpenProse เก็บสถานะไว้ใต้ `.prose/` ในเวิร์กสเปซของคุณ:
 
-```
+```text
 .prose/
 ├── .env
 ├── runs/
@@ -95,50 +140,54 @@ OpenProse เก็บสถานะไว้ใต้ `.prose/` ใน workspa
 └── agents/
 ```
 
-agent แบบคงอยู่ในระดับผู้ใช้จะอยู่ที่:
+เอเจนต์ถาวรระดับผู้ใช้อยู่ที่:
 
-```
+```text
 ~/.prose/agents/
 ```
 
-## โหมดสถานะ
+## แบ็กเอนด์สถานะ
 
-OpenProse รองรับแบ็กเอนด์สถานะหลายแบบ:
+<AccordionGroup>
+  <Accordion title="filesystem (default)">
+    สถานะจะถูกเขียนไปยัง `.prose/runs/...` ในเวิร์กสเปซ ไม่ต้องใช้
+    dependency เพิ่มเติม
+  </Accordion>
+  <Accordion title="in-context">
+    สถานะชั่วคราวที่เก็บไว้ในหน้าต่างบริบท เหมาะสำหรับโปรแกรมขนาดเล็กที่มีอายุสั้น
+  </Accordion>
+  <Accordion title="sqlite (experimental)">
+    ต้องมีไบนารี `sqlite3` บน `PATH`
+  </Accordion>
+  <Accordion title="postgres (experimental)">
+    ต้องมี `psql` และสตริงการเชื่อมต่อ
 
-- **filesystem** (ค่าเริ่มต้น): `.prose/runs/...`
-- **in-context**: ชั่วคราว สำหรับโปรแกรมขนาดเล็ก
-- **sqlite** (ทดลอง): ต้องใช้ไบนารี `sqlite3`
-- **postgres** (ทดลอง): ต้องใช้ `psql` และ connection string
+    <Warning>
+      ข้อมูลรับรอง Postgres จะไหลเข้าไปในล็อกของ sub-agent ใช้ฐานข้อมูลเฉพาะที่มีสิทธิ์น้อยที่สุด
+    </Warning>
 
-หมายเหตุ:
+  </Accordion>
+</AccordionGroup>
 
-- sqlite/postgres เป็นแบบ opt-in และยังอยู่ในสถานะทดลอง
-- credential ของ postgres จะไหลเข้าไปใน log ของ subagent; ให้ใช้ฐานข้อมูลเฉพาะที่มีสิทธิ์ต่ำที่สุดเท่าที่จำเป็น
+## ความปลอดภัย
 
-## โปรแกรมระยะไกล
-
-`/prose run <handle/slug>` จะ resolve ไปที่ `https://p.prose.md/<handle>/<slug>`
-ส่วน URL ตรงจะถูกดึงตามที่ระบุไว้ การทำงานนี้ใช้เครื่องมือ `web_fetch` (หรือ `exec` สำหรับ POST)
-
-## การแมป runtime ของ OpenClaw
-
-โปรแกรม OpenProse จะถูกแมปเข้ากับ primitive ของ OpenClaw ดังนี้:
-
-| แนวคิดของ OpenProse       | tool ของ OpenClaw |
-| ------------------------- | ----------------- |
-| Spawn session / Task tool | `sessions_spawn`  |
-| อ่าน/เขียนไฟล์           | `read` / `write`  |
-| ดึงข้อมูลเว็บ             | `web_fetch`       |
-
-หาก allowlist ของ tool ของคุณบล็อกเครื่องมือเหล่านี้ โปรแกรม OpenProse จะล้มเหลว ดู [การกำหนดค่า Skills](/th/tools/skills-config)
-
-## ความปลอดภัย + approval
-
-ให้ปฏิบัติต่อไฟล์ `.prose` เสมือนโค้ด ตรวจสอบก่อนรัน ใช้ tool allowlist และ approval gate ของ OpenClaw เพื่อควบคุมผลข้างเคียง
-
-หากต้องการเวิร์กโฟลว์ที่กำหนดแน่นอนและมี approval gate ให้เปรียบเทียบกับ [Lobster](/th/tools/lobster)
+ปฏิบัติกับไฟล์ `.prose` เหมือนโค้ด รีวิวก่อนรัน รวมถึงการนำเข้า `use` ระยะไกล คำขอ `/prose run https://...` ระดับบนสุดเป็นการกระทำที่ชัดเจน แต่การนำเข้าระยะไกลแบบส่งต่อต้องได้รับการอนุมัติต่อการรันก่อนที่จะถูกดึงหรือดำเนินการ ใช้ allowlist ของเครื่องมือ OpenClaw และด่านอนุมัติเพื่อควบคุมผลข้างเคียง สำหรับเวิร์กโฟลว์ที่กำหนดผลลัพธ์ได้และมีด่านอนุมัติ ให้เปรียบเทียบกับ [Lobster](/th/tools/lobster)
 
 ## ที่เกี่ยวข้อง
 
-- [Text-to-speech](/th/tools/tts)
-- [การจัดรูปแบบ Markdown](/th/concepts/markdown-formatting)
+<CardGroup cols={2}>
+  <Card title="Skills reference" href="/th/tools/skills" icon="puzzle-piece">
+    วิธีที่แพ็ก Skills ของ OpenProse โหลด และด่านใดที่มีผลบังคับใช้
+  </Card>
+  <Card title="Subagents" href="/th/tools/subagents" icon="users">
+    เลเยอร์ประสานงานหลายเอเจนต์แบบเนทีฟของ OpenClaw
+  </Card>
+  <Card title="Text-to-speech" href="/th/tools/tts" icon="volume-high">
+    เพิ่มเอาต์พุตเสียงให้กับเวิร์กโฟลว์ของคุณ
+  </Card>
+  <Card title="Slash commands" href="/th/tools/slash-commands" icon="terminal">
+    คำสั่งแชตทั้งหมดที่พร้อมใช้งาน รวมถึง /prose
+  </Card>
+</CardGroup>
+
+เว็บไซต์ทางการ: [https://www.prose.md](https://www.prose.md)

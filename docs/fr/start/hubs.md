@@ -1,33 +1,34 @@
 ---
 read_when:
     - Vous voulez une cartographie complète de la documentation
-summary: Hubs qui renvoient vers toute la documentation OpenClaw
-title: Centres de documentation
+summary: Hubs menant à toute la documentation OpenClaw
+title: Hubs de documentation
 x-i18n:
-    generated_at: "2026-05-12T00:59:03Z"
+    generated_at: "2026-06-27T18:14:03Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f4675773105bbff55e1f38c8449d688dcefc6ad70d9f5e572193f1e0c638e243
+    source_hash: d7d3f089e2caea1e1487c7c0375c62dfb007db05827a77d4e5616839023b9457
     source_path: start/hubs.md
     workflow: 16
 ---
 
 <Note>
-Si vous découvrez OpenClaw, commencez par [Bien démarrer](/fr/start/getting-started).
+Si vous débutez avec OpenClaw, commencez par [Bien démarrer](/fr/start/getting-started).
 </Note>
 
-Utilisez ces hubs pour découvrir chaque page, y compris les analyses approfondies et les documents de référence qui n’apparaissent pas dans la navigation de gauche.
+Utilisez ces hubs pour découvrir toutes les pages, y compris les analyses approfondies et la documentation de référence qui n’apparaissent pas dans la navigation de gauche.
 
 ## Commencez ici
 
 - [Index](/fr)
 - [Bien démarrer](/fr/start/getting-started)
-- [Intégration](/fr/start/onboarding)
-- [Intégration (CLI)](/fr/start/wizard)
-- [Configuration](/fr/start/setup)
+- [Onboarding](/fr/start/onboarding)
+- [Onboarding (CLI)](/fr/start/wizard)
+- [Configuration initiale](/fr/start/setup)
 - [Tableau de bord (Gateway local)](http://127.0.0.1:18789/)
 - [Aide](/fr/help)
-- [Répertoire de la documentation](/fr/start/docs-directory)
+- [Répertoire de documentation](/fr/start/docs-directory)
 - [Configuration](/fr/gateway/configuration)
 - [Exemples de configuration](/fr/gateway/configuration-examples)
 - [Assistant OpenClaw](/fr/start/openclaw)
@@ -38,19 +39,19 @@ Utilisez ces hubs pour découvrir chaque page, y compris les analyses approfondi
 
 - [Docker](/fr/install/docker)
 - [Nix](/fr/install/nix)
-- [Mise à jour / retour en arrière](/fr/install/updating)
+- [Mise à jour / restauration](/fr/install/updating)
 - [Workflow Bun (expérimental)](/fr/install/bun)
 
-## Concepts fondamentaux
+## Concepts clés
 
 - [Architecture](/fr/concepts/architecture)
 - [Fonctionnalités](/fr/concepts/features)
 - [Hub réseau](/fr/network)
-- [Runtime de l’agent](/fr/concepts/agent)
+- [Runtime d’agent](/fr/concepts/agent)
 - [Espace de travail de l’agent](/fr/concepts/agent-workspace)
 - [Mémoire](/fr/concepts/memory)
-- [Boucle de l’agent](/fr/concepts/agent-loop)
-- [Streaming + découpage en morceaux](/fr/concepts/streaming)
+- [Boucle d’agent](/fr/concepts/agent-loop)
+- [Streaming + découpage](/fr/concepts/streaming)
 - [Routage multi-agent](/fr/concepts/multi-agent)
 - [Compaction](/fr/concepts/compaction)
 - [Sessions](/fr/concepts/session)
@@ -72,7 +73,7 @@ Utilisez ces hubs pour découvrir chaque page, y compris les analyses approfondi
 
 ## Fournisseurs + ingress
 
-- [Hub des canaux de discussion](/fr/channels)
+- [Hub des canaux de chat](/fr/channels)
 - [Hub des fournisseurs de modèles](/fr/providers/models)
 - [WhatsApp](/fr/channels/whatsapp)
 - [Telegram](/fr/channels/telegram)
@@ -82,7 +83,7 @@ Utilisez ces hubs pour découvrir chaque page, y compris les analyses approfondi
 - [Signal](/fr/channels/signal)
 - [QQ Bot](/fr/channels/qqbot)
 - [iMessage](/fr/channels/imessage)
-- [Analyse de localisation](/fr/channels/location)
+- [Analyse des emplacements](/fr/channels/location)
 - [WebChat](/fr/web/webchat)
 - [Webhooks](/fr/automation/cron-jobs#webhooks)
 - [Gmail Pub/Sub](/fr/automation/cron-jobs#gmail-pubsub-integration)
@@ -102,26 +103,26 @@ Utilisez ces hubs pour découvrir chaque page, y compris les analyses approfondi
 - [Tableau de bord](/fr/web/dashboard)
 - [Interface de contrôle](/fr/web/control-ui)
 - [Accès distant](/fr/gateway/remote)
-- [README Gateway distant](/fr/gateway/remote-gateway-readme)
+- [README de la Gateway distante](/fr/gateway/remote-gateway-readme)
 - [Tailscale](/fr/gateway/tailscale)
 - [Sécurité](/fr/gateway/security)
 - [Dépannage](/fr/gateway/troubleshooting)
 
 ## Outils + automatisation
 
-- [Surface d’outils](/fr/tools)
+- [Surface des outils](/fr/tools)
 - [OpenProse](/fr/prose)
 - [Référence CLI](/fr/cli)
-- [Outil exec](/fr/tools/exec)
+- [Outil d’exécution](/fr/tools/exec)
 - [Outil PDF](/fr/tools/pdf)
 - [Mode élevé](/fr/tools/elevated)
 - [Tâches Cron](/fr/automation/cron-jobs)
 - [Automatisation](/fr/automation)
-- [Réflexion + verbosité](/fr/tools/thinking)
+- [Réflexion + verbeux](/fr/tools/thinking)
 - [Modèles](/fr/concepts/models)
 - [Sous-agents](/fr/tools/subagents)
 - [CLI d’envoi à l’agent](/fr/tools/agent-send)
-- [Interface de terminal](/fr/web/tui)
+- [Interface terminal](/fr/web/tui)
 - [Contrôle du navigateur](/fr/tools/browser)
 - [Navigateur (dépannage Linux)](/fr/tools/browser-linux-troubleshooting)
 - [Sondages](/fr/cli/message)
@@ -132,7 +133,7 @@ Utilisez ces hubs pour découvrir chaque page, y compris les analyses approfondi
 - [Caméra](/fr/nodes/camera)
 - [Images](/fr/nodes/images)
 - [Audio](/fr/nodes/audio)
-- [Commande de localisation](/fr/nodes/location-command)
+- [Commande d’emplacement](/fr/nodes/location-command)
 - [Réveil vocal](/fr/nodes/voicewake)
 - [Mode conversation](/fr/nodes/talk)
 
@@ -142,7 +143,7 @@ Utilisez ces hubs pour découvrir chaque page, y compris les analyses approfondi
 - [macOS](/fr/platforms/macos)
 - [iOS](/fr/platforms/ios)
 - [Android](/fr/platforms/android)
-- [Windows (WSL2)](/fr/platforms/windows)
+- [Hub Windows](/fr/platforms/windows)
 - [Linux](/fr/platforms/linux)
 - [Surfaces Web](/fr/web)
 
@@ -168,8 +169,8 @@ Utilisez ces hubs pour découvrir chaque page, y compris les analyses approfondi
 
 ## Plugins
 
-- [Vue d’ensemble des plugins](/fr/tools/plugin)
-- [Créer des plugins](/fr/plugins/building-plugins)
+- [Vue d’ensemble des Plugins](/fr/tools/plugin)
+- [Créer des Plugins](/fr/plugins/building-plugins)
 - [Hooks de Plugin](/fr/plugins/hooks)
 - [Manifeste de Plugin](/fr/plugins/manifest)
 - [Outils d’agent](/fr/plugins/building-plugins#registering-agent-tools)
@@ -203,6 +204,6 @@ Utilisez ces hubs pour découvrir chaque page, y compris les analyses approfondi
 - [Politique de publication](/fr/reference/RELEASING)
 - [Modèles d’appareils](/fr/reference/device-models)
 
-## Lié
+## Associé
 
 - [Bien démarrer](/fr/start/getting-started)

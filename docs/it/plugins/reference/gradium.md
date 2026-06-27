@@ -1,25 +1,26 @@
 ---
 read_when:
-    - Stai installando, configurando o verificando il Plugin gradium
+    - Stai installando, configurando o verificando il plugin gradium
 summary: Aggiunge il supporto per i provider di sintesi vocale.
 title: Plugin Gradium
 x-i18n:
-    generated_at: "2026-05-02T20:53:46Z"
+    generated_at: "2026-06-27T17:56:40Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b3b783c4a93c3ef0eda61b4d007d4aebea805b977484db44e62e3b718ca7dd09
+    source_hash: 4ae70f3e901d44c238d6e1abcec13f67c0d19df6f82d92e365c3ddf0355ea23d
     source_path: plugins/reference/gradium.md
     workflow: 16
 ---
 
 # Plugin Gradium
 
-Aggiunge il supporto ai provider di sintesi vocale.
+Aggiunge il supporto per provider di sintesi vocale.
 
 ## Distribuzione
 
 - Pacchetto: `@openclaw/gradium-speech`
-- Percorso di installazione: incluso in OpenClaw
+- Percorso di installazione: npm; ClawHub: `clawhub:@openclaw/gradium-speech`
 
 ## Superficie
 

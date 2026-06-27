@@ -1,23 +1,32 @@
 ---
 read_when:
-    - Bootstrap workspace secara manual
-summary: Template workspace untuk HEARTBEAT.md
-title: Template HEARTBEAT.md
+    - Menyiapkan ruang kerja secara manual
+summary: Templat ruang kerja untuk HEARTBEAT.md
+title: templat HEARTBEAT.md
 x-i18n:
-    generated_at: "2026-04-24T09:26:53Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T18:12:31Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f234f7f5fd016a29a56bae11fc9114649e9c48acd0ece69a9accf90302ed728c
+    source_hash: 44a1ea787d67110ca53d752706b62f5ce5c4df8637897dee97ce6502f6a05eb6
     source_path: reference/templates/HEARTBEAT.md
-    workflow: 15
+    workflow: 16
 ---
 
-```markdown
-# Biarkan file ini kosong (atau hanya berisi komentar) untuk melewati panggilan API Heartbeat.
+# Templat HEARTBEAT.md
 
-# Tambahkan tugas di bawah saat Anda ingin agen memeriksa sesuatu secara berkala.
+`HEARTBEAT.md` berada di ruang kerja agen. Biarkan file kosong, atau hanya berisi komentar dan heading Markdown, saat Anda ingin OpenClaw melewati panggilan model Heartbeat.
+
+Templat runtime default adalah:
+
+```markdown
+# Keep this file empty (or with only comments) to skip heartbeat API calls.
+
+# Add tasks below when you want the agent to check something periodically.
 ```
+
+Tambahkan tugas singkat di bawah komentar hanya saat Anda ingin agen memeriksa sesuatu secara berkala. Jaga agar instruksi Heartbeat tetap ringkas karena instruksi tersebut dibaca selama wake berulang.
 
 ## Terkait
 
-- [Config Heartbeat](/id/gateway/config-agents)
+- [Konfigurasi Heartbeat](/id/gateway/config-agents)

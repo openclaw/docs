@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Werken aan auth-profielresolutie of routering van aanmeldgegevens
+    - Werken aan het oplossen van authenticatieprofielen of routering van inloggegevens
     - Modelauthenticatiefouten of profielvolgorde debuggen
-summary: Canonieke geschiktheid van inloggegevens en resolutiesemantiek voor authenticatieprofielen
-title: Semantiek van authenticatiegegevens
+summary: Canonieke geschiktheid van inloggegevens en resolutiesemantiek voor auth-profielen
+title: Referentiesemantiek voor authenticatie
 x-i18n:
-    generated_at: "2026-05-07T13:13:37Z"
+    generated_at: "2026-06-27T17:08:58Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2d916ff95ca2ac1fe21e66f64b887b1df1e6b97d7dcc681e5bb9a9dee8ce9473
+    source_hash: 591c0384e1d43512252aaa7b362141b6bc93183b30b5847168758f86127f0663
     source_path: auth-credential-semantics.md
     workflow: 16
 ---
@@ -20,9 +21,9 @@ Dit document definieert de canonieke semantiek voor geschiktheid en resolutie va
 - `models status --probe`
 - `doctor-auth`
 
-Het doel is om gedrag tijdens selectie en runtime op elkaar afgestemd te houden.
+Het doel is om gedrag tijdens selectie en runtimegedrag op elkaar afgestemd te houden.
 
-## Stabiele reden-codes voor probes
+## Stabiele redencodes voor probes
 
 - `ok`
 - `excluded_by_auth_order`
@@ -40,68 +41,68 @@ Tokenreferenties (`type: "token"`) ondersteunen inline `token` en/of `tokenRef`.
 
 1. Een tokenprofiel is niet geschikt wanneer zowel `token` als `tokenRef` ontbreken.
 2. `expires` is optioneel.
-3. Als `expires` aanwezig is, moet dit een eindig getal groter dan `0` zijn.
-4. Als `expires` ongeldig is (`NaN`, `0`, negatief, niet-eindig of van het verkeerde type), is het profiel niet geschikt met `invalid_expires`.
+3. Als `expires` aanwezig is, moet het een eindig getal groter dan `0` zijn.
+4. Als `expires` ongeldig is (`NaN`, `0`, negatief, niet-eindig of verkeerd type), is het profiel niet geschikt met `invalid_expires`.
 5. Als `expires` in het verleden ligt, is het profiel niet geschikt met `expired`.
 6. `tokenRef` omzeilt de validatie van `expires` niet.
 
 ### Resolutieregels
 
-1. Resolversemantiek komt overeen met geschiktheidssemantiek voor `expires`.
+1. De semantiek van de resolver komt overeen met de geschiktheidssemantiek voor `expires`.
 2. Voor geschikte profielen kan tokenmateriaal worden opgelost vanuit een inline waarde of `tokenRef`.
-3. Niet-oplosbare referenties produceren `unresolved_ref` in de uitvoer van `models status --probe`.
+3. Niet-oplosbare refs produceren `unresolved_ref` in de uitvoer van `models status --probe`.
 
-## Overdraagbaarheid van agentkopieën
+## Portabiliteit van agentkopieën
 
-Overerving van agentverificatie is read-through. Wanneer een agent geen lokaal profiel heeft, kan deze tijdens runtime profielen oplossen vanuit de standaard-/hoofdopslag van de agent zonder geheim materiaal naar zijn eigen `auth-profiles.json` te kopiëren.
+Overerving van agentauthenticatie is read-through. Wanneer een agent geen lokaal profiel heeft, kan deze tijdens runtime profielen oplossen vanuit de standaard-/hoofdagentopslag zonder geheim materiaal naar zijn eigen `auth-profiles.json` te kopiëren.
 
-Expliciete kopieerstromen, zoals `openclaw agents add`, gebruiken dit overdraagbaarheidsbeleid:
+Expliciete kopieerstromen, zoals `openclaw agents add`, gebruiken dit portabiliteitsbeleid:
 
-- `api_key`-profielen zijn overdraagbaar, tenzij `copyToAgents: false`.
-- `token`-profielen zijn overdraagbaar, tenzij `copyToAgents: false`.
-- `oauth`-profielen zijn standaard niet overdraagbaar omdat refreshtokens eenmalig bruikbaar of rotatiegevoelig kunnen zijn.
-- OAuth-stromen die eigendom zijn van providers kunnen zich aanmelden met `copyToAgents: true` alleen wanneer bekend is dat het kopiëren van refreshmateriaal tussen agents veilig is.
+- `api_key`-profielen zijn portable tenzij `copyToAgents: false`.
+- `token`-profielen zijn portable tenzij `copyToAgents: false`.
+- `oauth`-profielen zijn standaard niet portable, omdat vernieuwingstokens eenmalig bruikbaar of rotatiegevoelig kunnen zijn.
+- OAuth-stromen die eigendom zijn van de provider mogen zich alleen aanmelden met `copyToAgents: true` wanneer bekend is dat het kopiëren van vernieuwingsmateriaal tussen agents veilig is.
 
-Niet-overdraagbare profielen blijven beschikbaar via read-through overerving, tenzij de doelagent afzonderlijk inlogt en zijn eigen lokale profiel maakt.
+Niet-portable profielen blijven beschikbaar via read-through overerving, tenzij de doelagent afzonderlijk inlogt en zijn eigen lokale profiel aanmaakt.
 
-## Config-only verificatieroutes
+## Configuratie-only authroutes
 
-`auth.profiles`-vermeldingen met `mode: "aws-sdk"` zijn routeringsmetadata, geen opgeslagen referenties. Ze zijn geldig wanneer de doelprovider `models.providers.<id>.auth: "aws-sdk"` gebruikt of de ingebouwde standaard AWS SDK-route van Amazon Bedrock. Deze profiel-id's mogen voorkomen in `auth.order` en sessie-overschrijvingen, zelfs wanneer er geen overeenkomende vermelding bestaat in `auth-profiles.json`.
+`auth.profiles`-items met `mode: "aws-sdk"` zijn routeringsmetadata, geen opgeslagen referenties. Ze zijn geldig wanneer de doelprovider `models.providers.<id>.auth: "aws-sdk"` gebruikt of de door de Plugin beheerde Amazon Bedrock-installatie de AWS SDK-route gebruikt. Deze profiel-id’s mogen voorkomen in `auth.order` en sessie-overschrijvingen, zelfs wanneer er geen overeenkomend item bestaat in `auth-profiles.json`.
 
-Schrijf `type: "aws-sdk"` niet naar `auth-profiles.json`. Als een verouderde installatie zo'n markering heeft, verplaatst `openclaw doctor --fix` deze naar `auth.profiles` en verwijdert de markering uit de referentieopslag.
+Schrijf geen `type: "aws-sdk"` naar `auth-profiles.json`. Als een oudere installatie zo’n marker heeft, verplaatst `openclaw doctor --fix` deze naar `auth.profiles` en verwijdert de marker uit de referentieopslag.
 
-## Expliciete filtering op verificatievolgorde
+## Expliciete filtering van authvolgorde
 
-- Wanneer `auth.order.<provider>` of de volgorde-overschrijving van de auth-store is ingesteld voor een provider, probet `models status --probe` alleen profiel-id's die in de opgeloste verificatievolgorde voor die provider blijven.
-- Een opgeslagen profiel voor die provider dat is weggelaten uit de expliciete volgorde, wordt later niet stilzwijgend geprobeerd. Probe-uitvoer rapporteert dit met `reasonCode: excluded_by_auth_order` en de details `Excluded by auth.order for this provider.`
+- Wanneer `auth.order.<provider>` of de volgorde-overschrijving van de authopslag voor een provider is ingesteld, probet `models status --probe` alleen profiel-id’s die in de opgeloste authvolgorde voor die provider blijven.
+- Een opgeslagen profiel voor die provider dat uit de expliciete volgorde is weggelaten, wordt later niet stilzwijgend geprobeerd. Probe-uitvoer rapporteert het met `reasonCode: excluded_by_auth_order` en de detailmelding `Excluded by auth.order for this provider.`
 
 ## Resolutie van probedoelen
 
-- Probedoelen kunnen afkomstig zijn van verificatieprofielen, omgevingsreferenties of `models.json`.
-- Als een provider referenties heeft maar OpenClaw geen probeerbare modelkandidaat ervoor kan oplossen, rapporteert `models status --probe` `status: no_model` met `reasonCode: no_model`.
+- Probedoelen kunnen afkomstig zijn van authprofielen, omgevingsreferenties of `models.json`.
+- Als een provider referenties heeft maar OpenClaw er geen probeerbare modelkandidaat voor kan oplossen, rapporteert `models status --probe` `status: no_model` met `reasonCode: no_model`.
 
-## Externe CLI-referentiedetectie
+## Ontdekking van externe CLI-referenties
 
-- Runtime-only referenties die eigendom zijn van externe CLI's worden alleen ontdekt wanneer de provider, runtime of het verificatieprofiel binnen bereik is voor de huidige bewerking, of wanneer er al een opgeslagen lokaal profiel voor die externe bron bestaat.
-- Auth-store-aanroepers moeten een expliciete detectiemodus voor externe CLI's kiezen: `none` voor alleen persistente/plugin-verificatie, `existing` voor het vernieuwen van al opgeslagen externe CLI-profielen, of `scoped` voor een concrete provider-/profielset.
-- Alleen-lezen/statuspaden geven `allowKeychainPrompt: false` door; ze gebruiken alleen bestandsgebaseerde externe CLI-referenties en lezen of hergebruiken geen macOS Keychain-resultaten.
+- Runtime-only referenties die eigendom zijn van externe CLI’s worden alleen ontdekt wanneer de provider, runtime of het authprofiel binnen scope is voor de huidige bewerking, of wanneer er al een opgeslagen lokaal profiel voor die externe bron bestaat.
+- Aanroepers van authopslag moeten een expliciete ontdekkingsmodus voor externe CLI’s kiezen: `none` voor alleen persistente/Plugin-auth, `existing` voor het vernieuwen van al opgeslagen externe CLI-profielen, of `scoped` voor een concrete provider-/profielset.
+- Read-only-/statuspaden geven `allowKeychainPrompt: false` door; ze gebruiken alleen bestandsgedragen externe CLI-referenties en lezen of hergebruiken geen macOS Keychain-resultaten.
 
-## OAuth SecretRef-beleidsbescherming
+## Beleidsbewaking voor OAuth SecretRef
 
-- SecretRef-invoer is alleen voor statische referenties.
-- Als een profielreferentie `type: "oauth"` is, worden SecretRef-objecten niet ondersteund voor dat profielreferentiemateriaal.
-- Als `auth.profiles.<id>.mode` `"oauth"` is, wordt SecretRef-gebaseerde `keyRef`/`tokenRef`-invoer voor dat profiel geweigerd.
-- Schendingen zijn harde fouten in verificatieresolutiepaden voor opstarten/herladen.
+- SecretRef-invoer is alleen bedoeld voor statische referenties.
+- Als een profielreferentie `type: "oauth"` is, worden SecretRef-objecten niet ondersteund voor het referentiemateriaal van dat profiel.
+- Als `auth.profiles.<id>.mode` `"oauth"` is, wordt door SecretRef ondersteunde `keyRef`/`tokenRef`-invoer voor dat profiel geweigerd.
+- Overtredingen zijn harde fouten in authresolutiepaden voor opstarten/herladen.
 
 ## Legacy-compatibele berichten
 
-Voor scriptcompatibiliteit behouden probe-fouten deze eerste regel ongewijzigd:
+Voor scriptcompatibiliteit blijft deze eerste regel van probefouten ongewijzigd:
 
 `Auth profile credentials are missing or expired.`
 
-Mensvriendelijke details en stabiele reden-codes kunnen op volgende regels worden toegevoegd.
+Mensvriendelijke details en stabiele redencodes kunnen op volgende regels worden toegevoegd.
 
 ## Gerelateerd
 
 - [Geheimenbeheer](/nl/gateway/secrets)
-- [Verificatieopslag](/nl/concepts/oauth)
+- [Authopslag](/nl/concepts/oauth)

@@ -1,50 +1,69 @@
 ---
 read_when:
-    - می‌خواهید گردش‌کارهای .prose را اجرا کنید یا بنویسید
-    - می‌خواهید Plugin OpenProse را فعال کنید
-    - لازم است ذخیره‌سازی وضعیت را درک کنید
-summary: 'OpenProse: جریان‌های کاری .prose، دستورهای اسلش، و وضعیت در OpenClaw'
+    - می‌خواهید فایل‌های گردش‌کار .prose را اجرا یا بنویسید
+    - می‌خواهید Plugin ‏OpenProse را فعال کنید
+    - باید درک کنید که OpenProse چگونه به مفاهیم پایهٔ OpenClaw نگاشت می‌شود.
+sidebarTitle: OpenProse
+summary: OpenProse یک قالب گردش‌کار مبتنی بر Markdown برای نشست‌های هوش مصنوعی چندعاملی است. در OpenClaw، به‌صورت یک Plugin با دستور اسلش `/prose` و یک بسته Skills عرضه می‌شود.
 title: OpenProse
 x-i18n:
-    generated_at: "2026-04-29T23:22:58Z"
+    generated_at: "2026-06-27T18:35:22Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e1d6f3aa64c403daedaeaa2d7934b8474c0756fe09eed09efd1efeef62413e9e
+    source_hash: dde819215f99055c2a83ec32ed6e0700994654ca2d1d9c9dda98b71545f8a012
     source_path: prose.md
     workflow: 16
 ---
 
-OpenProse یک قالب گردش‌کار قابل‌حمل و مبتنی بر markdown برای هماهنگ‌سازی نشست‌های هوش مصنوعی است. در OpenClaw، این قالب به‌صورت یک Plugin ارائه می‌شود که یک بسته Skills برای OpenProse به‌همراه دستور اسلش `/prose` نصب می‌کند. برنامه‌ها در فایل‌های `.prose` قرار می‌گیرند و می‌توانند چندین زیرعامل را با جریان کنترل صریح ایجاد کنند.
+OpenProse یک قالب گردش‌کار قابل‌حمل و مقدم بر Markdown برای هماهنگ‌سازی نشست‌های هوش مصنوعی است. در OpenClaw، این قالب به‌صورت یک Plugin عرضه می‌شود که یک بسته Skills برای OpenProse و یک فرمان اسلش `/prose` نصب می‌کند. برنامه‌ها در فایل‌های `.prose` قرار می‌گیرند و می‌توانند چندین زیرعامل را با جریان کنترل صریح اجرا کنند.
 
-سایت رسمی: [https://www.prose.md](https://www.prose.md)
+<CardGroup cols={3}>
+  <Card title="نصب" icon="download" href="#install">
+    Plugin OpenProse را فعال کنید و Gateway را دوباره راه‌اندازی کنید.
+  </Card>
+  <Card title="اجرای یک برنامه" icon="play" href="#slash-command">
+    برای اجرای یک فایل `.prose` یا برنامه راه‌دور، از `/prose run` استفاده کنید.
+  </Card>
+  <Card title="نوشتن برنامه‌ها" icon="pencil" href="#example">
+    گردش‌کارهای چندعاملی را با گام‌های موازی و ترتیبی بنویسید.
+  </Card>
+</CardGroup>
 
-## چه کارهایی می‌تواند انجام دهد
+## نصب
 
-- پژوهش چندعاملی + ترکیب با موازی‌سازی صریح.
-- گردش‌کارهای تکرارپذیر و امن از نظر تأیید (بازبینی کد، تریاژ رخداد، خط لوله‌های محتوا).
-- برنامه‌های `.prose` قابل‌استفاده‌مجدد که می‌توانید در زمان‌های اجرای عامل پشتیبانی‌شده اجرا کنید.
+<Steps>
+  <Step title="فعال‌سازی Plugin">
+    Pluginهای همراه به‌طور پیش‌فرض غیرفعال هستند. OpenProse را فعال کنید:
 
-## نصب + فعال‌سازی
+    ```bash
+    openclaw plugins enable open-prose
+    ```
 
-Pluginهای همراه به‌صورت پیش‌فرض غیرفعال هستند. OpenProse را فعال کنید:
+  </Step>
+  <Step title="راه‌اندازی دوباره Gateway">
+    ```bash
+    openclaw gateway restart
+    ```
+  </Step>
+  <Step title="تأیید">
+    ```bash
+    openclaw plugins list | grep prose
+    ```
 
-```bash
-openclaw plugins enable open-prose
-```
+    باید `open-prose` را به‌صورت فعال‌شده ببینید. فرمان Skills به نام `/prose` اکنون
+    در چت در دسترس است.
 
-پس از فعال‌سازی Plugin، Gateway را دوباره راه‌اندازی کنید.
+  </Step>
+</Steps>
 
-checkout توسعه/محلی: `openclaw plugins install ./path/to/local/open-prose-plugin`
+برای یک checkout محلی: `openclaw plugins install ./path/to/local/open-prose-plugin`
 
-مستندات مرتبط: [Pluginها](/fa/tools/plugin)، [مانیفست Plugin](/fa/plugins/manifest)، [Skills](/fa/tools/skills).
+## فرمان اسلش
 
-## دستور اسلش
+OpenProse،‏ `/prose` را به‌عنوان یک فرمان Skills قابل‌فراخوانی توسط کاربر ثبت می‌کند:
 
-OpenProse دستور `/prose` را به‌عنوان یک دستور Skills قابل‌فراخوانی توسط کاربر ثبت می‌کند. این دستور به دستورالعمل‌های ماشین مجازی OpenProse هدایت می‌شود و در پشت‌صحنه از ابزارهای OpenClaw استفاده می‌کند.
-
-دستورهای رایج:
-
-```
+```text
 /prose help
 /prose run <file.prose>
 /prose run <handle/slug>
@@ -54,7 +73,21 @@ OpenProse دستور `/prose` را به‌عنوان یک دستور Skills قا
 /prose update
 ```
 
-## نمونه: یک فایل ساده `.prose`
+`/prose run <handle/slug>` به `https://p.prose.md/<handle>/<slug>` resolve می‌شود.
+URLهای مستقیم همان‌طور که هستند با ابزار `web_fetch` دریافت می‌شوند.
+
+اجراهای راه‌دور در سطح بالا صریح هستند. importهای راه‌دور داخل یک برنامه `.prose`
+وابستگی‌های کد گذرا هستند: پیش از آنکه OpenProse هر هدف `use` راه‌دور را دریافت کند،
+فهرست importهای resolve‌شده را نشان می‌دهد و برای آن اجرا، اپراتور باید دقیقاً
+`approve remote prose imports` را پاسخ دهد.
+
+## چه کاری می‌تواند انجام دهد
+
+- پژوهش و ترکیب چندعاملی با موازی‌سازی صریح.
+- گردش‌کارهای تکرارپذیر و ایمن از نظر تأیید (بازبینی کد، تریاژ رخداد، pipelineهای محتوا).
+- برنامه‌های `.prose` قابل‌استفاده مجدد که می‌توانید در runtimeهای عامل پشتیبانی‌شده اجرا کنید.
+
+## مثال: پژوهش و ترکیب موازی
 
 ```prose
 # Research + synthesis with two agents running in parallel.
@@ -79,11 +112,27 @@ session "Merge the findings + draft into a final answer."
 context: { findings, draft }
 ```
 
-## مکان‌های فایل
+## نگاشت زمان اجرای OpenClaw
+
+برنامه‌های OpenProse به بدوی‌های OpenClaw نگاشت می‌شوند:
+
+| مفهوم OpenProse              | ابزار OpenClaw    |
+| ---------------------------- | ---------------- |
+| ایجاد نشست / ابزار Task      | `sessions_spawn` |
+| خواندن / نوشتن فایل          | `read` / `write` |
+| واکشی وب                     | `web_fetch`      |
+
+<Warning>
+  اگر فهرست مجاز ابزارهای شما `sessions_spawn`، `read`، `write` یا
+  `web_fetch` را مسدود کند، برنامه‌های OpenProse شکست می‌خورند. پیکربندی
+  [فهرست مجاز ابزارها](/fa/gateway/config-tools) را بررسی کنید.
+</Warning>
+
+## مکان فایل‌ها
 
 OpenProse وضعیت را در فضای کاری شما زیر `.prose/` نگه می‌دارد:
 
-```
+```text
 .prose/
 ├── .env
 ├── runs/
@@ -97,48 +146,59 @@ OpenProse وضعیت را در فضای کاری شما زیر `.prose/` نگه 
 
 عامل‌های پایدار در سطح کاربر در این مسیر قرار دارند:
 
-```
+```text
 ~/.prose/agents/
 ```
 
-## حالت‌های وضعیت
+## پشتوانه‌های وضعیت
 
-OpenProse از چندین پشتوانه وضعیت پشتیبانی می‌کند:
+<AccordionGroup>
+  <Accordion title="filesystem (default)">
+    وضعیت در فضای کاری در `.prose/runs/...` نوشته می‌شود. هیچ وابستگی
+    اضافی لازم نیست.
+  </Accordion>
+  <Accordion title="in-context">
+    وضعیت گذرا در پنجره زمینه نگه داشته می‌شود. برای برنامه‌های کوچک و
+    کوتاه‌عمر مناسب است.
+  </Accordion>
+  <Accordion title="sqlite (experimental)">
+    به باینری `sqlite3` روی `PATH` نیاز دارد.
+  </Accordion>
+  <Accordion title="postgres (experimental)">
+    به `psql` و یک رشته اتصال نیاز دارد.
 
-- **filesystem** (پیش‌فرض): `.prose/runs/...`
-- **in-context**: گذرا، برای برنامه‌های کوچک
-- **sqlite** (آزمایشی): به باینری `sqlite3` نیاز دارد
-- **postgres** (آزمایشی): به `psql` و یک رشته اتصال نیاز دارد
+    <Warning>
+      اعتبارنامه‌های Postgres وارد گزارش‌های زیرعامل‌ها می‌شوند. از یک
+      پایگاه داده اختصاصی با حداقل سطح دسترسی استفاده کنید.
+    </Warning>
 
-نکته‌ها:
+  </Accordion>
+</AccordionGroup>
 
-- sqlite/postgres اختیاری و آزمایشی هستند.
-- اعتبارنامه‌های postgres وارد گزارش‌های زیرعامل می‌شوند؛ از یک پایگاه داده اختصاصی با کمترین سطح دسترسی لازم استفاده کنید.
+## امنیت
 
-## برنامه‌های راه‌دور
-
-`/prose run <handle/slug>` به `https://p.prose.md/<handle>/<slug>` resolve می‌شود.
-URLهای مستقیم همان‌طور که هستند واکشی می‌شوند. این کار از ابزار `web_fetch` (یا `exec` برای POST) استفاده می‌کند.
-
-## نگاشت زمان اجرای OpenClaw
-
-برنامه‌های OpenProse به ابتدایی‌های OpenClaw نگاشت می‌شوند:
-
-| مفهوم OpenProse           | ابزار OpenClaw    |
-| ------------------------- | ---------------- |
-| ایجاد نشست / ابزار Task | `sessions_spawn` |
-| خواندن/نوشتن فایل        | `read` / `write` |
-| واکشی وب                 | `web_fetch`      |
-
-اگر allowlist ابزارهای شما این ابزارها را مسدود کند، برنامه‌های OpenProse شکست می‌خورند. [پیکربندی Skills](/fa/tools/skills-config) را ببینید.
-
-## امنیت + تأییدها
-
-با فایل‌های `.prose` مانند کد رفتار کنید. پیش از اجرا آن‌ها را بازبینی کنید. برای کنترل اثرات جانبی، از allowlistهای ابزار OpenClaw و دروازه‌های تأیید استفاده کنید.
-
-برای گردش‌کارهای قطعی و دارای دروازه تأیید، با [Lobster](/fa/tools/lobster) مقایسه کنید.
+با فایل‌های `.prose` مانند کد رفتار کنید. پیش از اجرا، آن‌ها را بازبینی کنید،
+از جمله importهای راه دور `use`. درخواست‌های سطح بالای `/prose run https://...`
+صریح هستند، اما importهای راه دورِ گذرا پیش از واکشی یا اجرا، برای هر اجرا به
+تأیید نیاز دارند. برای کنترل اثرات جانبی، از فهرست‌های مجاز ابزار و دروازه‌های
+تأیید OpenClaw استفاده کنید. برای گردش‌کارهای قطعی و دارای دروازه تأیید، با
+[Lobster](/fa/tools/lobster) مقایسه کنید.
 
 ## مرتبط
 
-- [تبدیل متن به گفتار](/fa/tools/tts)
-- [قالب‌بندی Markdown](/fa/concepts/markdown-formatting)
+<CardGroup cols={2}>
+  <Card title="Skills reference" href="/fa/tools/skills" icon="puzzle-piece">
+    اینکه بسته Skills در OpenProse چگونه بارگذاری می‌شود و چه دروازه‌هایی اعمال می‌شوند.
+  </Card>
+  <Card title="Subagents" href="/fa/tools/subagents" icon="users">
+    لایه بومی هماهنگی چندعاملی OpenClaw.
+  </Card>
+  <Card title="Text-to-speech" href="/fa/tools/tts" icon="volume-high">
+    خروجی صوتی را به گردش‌کارهای خود اضافه کنید.
+  </Card>
+  <Card title="Slash commands" href="/fa/tools/slash-commands" icon="terminal">
+    همه فرمان‌های چت موجود، از جمله /prose.
+  </Card>
+</CardGroup>
+
+سایت رسمی: [https://www.prose.md](https://www.prose.md)

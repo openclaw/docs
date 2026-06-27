@@ -2,28 +2,29 @@
 read_when:
     - Ви встановлюєте, налаштовуєте або перевіряєте плагін clickclack
 summary: Додає поверхню каналу Clickclack для надсилання й отримання повідомлень OpenClaw.
-title: плагін Clickclack
+title: Plugin Clickclack
 x-i18n:
-    generated_at: "2026-05-11T20:48:56Z"
+    generated_at: "2026-06-27T17:57:10Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 45ce98f1dcbc5d6369489c862704bcd714419aa7e41e33850d3776119822c02e
+    source_hash: d939f5291de0510eaac361732f93fb79cac94656ac56a653f3c9e97394c6a9ae
     source_path: plugins/reference/clickclack.md
     workflow: 16
 ---
 
 # Plugin Clickclack
 
-Додає інтерфейс каналу Clickclack для надсилання й отримання повідомлень OpenClaw.
+Додає поверхню каналу Clickclack для надсилання й отримання повідомлень OpenClaw.
 
 ## Розповсюдження
 
 - Пакет: `@openclaw/clickclack`
-- Маршрут встановлення: включено в OpenClaw
+- Маршрут установлення: npm; ClawHub: `clawhub:@openclaw/clickclack`
 
-## Інтерфейс
+## Поверхня
 
-канали: clickclack
+channels: clickclack
 
 ## Пов’язана документація
 

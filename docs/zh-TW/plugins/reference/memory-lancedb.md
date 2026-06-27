@@ -1,27 +1,28 @@
 ---
 read_when:
-    - 你正在安裝、設定或稽核 memory-lancedb Plugin
-summary: 新增代理可呼叫的工具。
-title: 記憶 Lancedb Plugin
+    - 你正在安裝、設定或稽核 memory-lancedb 外掛
+summary: OpenClaw LanceDB 支援的長期記憶外掛，具備自動回想、自動擷取與向量搜尋功能。
+title: 記憶 Lancedb 外掛
 x-i18n:
-    generated_at: "2026-05-03T21:41:04Z"
+    generated_at: "2026-06-27T19:44:41Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 68b679caf3a16929c59d9029b29f12520cf2a247ee51de0d67382d0caef4e694
+    source_hash: db3843c421abdf738723f87f5bf12ed7acc2e6638e5869c2ad10b4b5722d402d
     source_path: plugins/reference/memory-lancedb.md
     workflow: 16
 ---
 
-# Memory Lancedb Plugin
+# 記憶 LanceDB 外掛
 
-新增代理程式可呼叫的工具。
+由 LanceDB 支援的 OpenClaw 長期記憶外掛，具備自動回想、自動擷取與向量搜尋。
 
-## 發行
+## 發佈
 
 - 套件：`@openclaw/memory-lancedb`
 - 安裝路徑：npm；ClawHub
 
-## 表面
+## 介面
 
 合約：工具
 

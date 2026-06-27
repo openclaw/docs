@@ -2,47 +2,48 @@
 read_when:
     - إعداد OpenClaw على Raspberry Pi
     - تشغيل OpenClaw على أجهزة ARM
-    - بناء ذكاء اصطناعي شخصي منخفض التكلفة ودائم التشغيل
-summary: استضف OpenClaw على Raspberry Pi لاستضافة ذاتية دائمة التشغيل
+    - بناء ذكاء اصطناعي شخصي رخيص يعمل دائمًا
+summary: استضافة OpenClaw على Raspberry Pi للاستضافة الذاتية الدائمة
 title: Raspberry Pi
 x-i18n:
-    generated_at: "2026-05-06T08:02:14Z"
+    generated_at: "2026-06-27T17:53:07Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 96df076c2707b0b27751d452f15fad774356a86e96d10bce998581235776c4bc
+    source_hash: 9cd90b4cc70c8fe7eab2a0abadc0e2969c7dc1c09657a0819bc004280ec32ba3
     source_path: install/raspberry-pi.md
     workflow: 16
 ---
 
-شغّل OpenClaw Gateway دائم التشغيل ومستمرًا على Raspberry Pi. بما أن Pi يعمل كبوابة فقط (تعمل النماذج في السحابة عبر API)، فإن حتى Pi متواضع المواصفات يتعامل مع عبء العمل جيدًا — تكلفة العتاد النموذجية هي **35–80 دولارًا لمرة واحدة**، دون رسوم شهرية.
+شغّل OpenClaw Gateway مستمرًا ودائم التشغيل على Raspberry Pi. بما أن Pi ليس إلا Gateway (تعمل النماذج في السحابة عبر API)، فإن حتى Pi متواضعًا يتعامل مع عبء العمل جيدًا — تكلفة العتاد المعتادة هي **35–80 دولارًا تدفع مرة واحدة**، بلا رسوم شهرية.
 
 ## توافق العتاد
 
-| طراز Pi      | RAM       | هل يعمل؟ | ملاحظات                                  |
-| ------------ | --------- | -------- | ---------------------------------------- |
-| Pi 5         | 4/8 GB    | الأفضل   | الأسرع، موصى به.                         |
-| Pi 4         | 4 GB      | جيد      | الخيار الأنسب لمعظم المستخدمين.          |
-| Pi 4         | 2 GB      | مقبول    | أضف swap.                                |
-| Pi 4         | 1 GB      | محدود    | ممكن مع swap وإعدادات بسيطة.             |
-| Pi 3B+       | 1 GB      | بطيء     | يعمل لكنه متثاقل.                        |
-| Pi Zero 2 W  | 512 MB    | لا       | غير موصى به.                             |
+| طراز Pi      | الذاكرة | يعمل؟ | ملاحظات                              |
+| ----------- | ------ | ------ | ----------------------------------- |
+| Pi 5        | 4/8 GB | الأفضل | الأسرع، موصى به.                    |
+| Pi 4        | 4 GB   | جيد    | الخيار المتوازن لمعظم المستخدمين.   |
+| Pi 4        | 2 GB   | مقبول  | أضف swap.                           |
+| Pi 4        | 1 GB   | محدود  | ممكن مع swap وإعدادات بسيطة.        |
+| Pi 3B+      | 1 GB   | بطيء   | يعمل لكنه متثاقل.                   |
+| Pi Zero 2 W | 512 MB | لا     | غير موصى به.                        |
 
-**الحد الأدنى:** RAM بسعة 1 GB، نواة واحدة، مساحة قرص خالية 500 MB، نظام تشغيل 64-bit.
-**الموصى به:** RAM بسعة 2 GB+، بطاقة SD بسعة 16 GB+ (أو USB SSD)، Ethernet.
+**الحد الأدنى:** ذاكرة RAM بسعة 1 GB، نواة واحدة، مساحة قرص فارغة 500 MB، ونظام تشغيل 64-bit.
+**الموصى به:** ذاكرة RAM بسعة 2 GB+، بطاقة SD بسعة 16 GB+ (أو USB SSD)، واتصال Ethernet.
 
-## المتطلبات المسبقة
+## المتطلبات الأساسية
 
-- Raspberry Pi 4 أو 5 مع RAM بسعة 2 GB+ (يوصى بـ 4 GB)
-- بطاقة MicroSD (16 GB+) أو USB SSD (أداء أفضل)
+- Raspberry Pi 4 أو 5 بذاكرة RAM بسعة 2 GB+ (يوصى بـ 4 GB)
+- بطاقة MicroSD ‏(16 GB+) أو USB SSD (أداء أفضل)
 - مزود طاقة Pi رسمي
-- اتصال بالشبكة (Ethernet أو WiFi)
+- اتصال شبكة (Ethernet أو WiFi)
 - Raspberry Pi OS بنواة 64-bit (مطلوب -- لا تستخدم 32-bit)
-- حوالي 30 دقيقة
+- نحو 30 دقيقة
 
 ## الإعداد
 
 <Steps>
-  <Step title="تفليش نظام التشغيل">
+  <Step title="Flash the OS">
     استخدم **Raspberry Pi OS Lite (64-bit)** -- لا حاجة إلى سطح مكتب لخادم بلا شاشة.
 
     1. نزّل [Raspberry Pi Imager](https://www.raspberrypi.com/software/).
@@ -52,17 +53,17 @@ x-i18n:
        - فعّل SSH
        - عيّن اسم المستخدم وكلمة المرور
        - اضبط WiFi (إذا لم تكن تستخدم Ethernet)
-    4. فلّش بطاقة SD أو قرص USB، ثم أدخله وشغّل Pi.
+    4. اكتب النظام على بطاقة SD أو قرص USB، ثم أدخله وشغّل Pi.
 
   </Step>
 
-  <Step title="الاتصال عبر SSH">
+  <Step title="Connect via SSH">
     ```bash
     ssh user@gateway-host
     ```
   </Step>
 
-  <Step title="تحديث النظام">
+  <Step title="Update the system">
     ```bash
     sudo apt update && sudo apt upgrade -y
     sudo apt install -y git curl build-essential
@@ -73,7 +74,7 @@ x-i18n:
 
   </Step>
 
-  <Step title="تثبيت Node.js 24">
+  <Step title="Install Node.js 24">
     ```bash
     curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
     sudo apt install -y nodejs
@@ -81,7 +82,7 @@ x-i18n:
     ```
   </Step>
 
-  <Step title="إضافة swap (مهم لسعة 2 GB أو أقل)">
+  <Step title="Add swap (important for 2 GB or less)">
     ```bash
     sudo fallocate -l 2G /swapfile
     sudo chmod 600 /swapfile
@@ -96,22 +97,22 @@ x-i18n:
 
   </Step>
 
-  <Step title="تثبيت OpenClaw">
+  <Step title="Install OpenClaw">
     ```bash
     curl -fsSL https://openclaw.ai/install.sh | bash
     ```
   </Step>
 
-  <Step title="تشغيل التهيئة الأولية">
+  <Step title="Run onboarding">
     ```bash
     openclaw onboard --install-daemon
     ```
 
-    اتبع المعالج. يوصى بمفاتيح API بدلًا من OAuth للأجهزة بلا شاشة. Telegram هو أسهل قناة للبدء بها.
+    اتبع المعالج. يوصى بمفاتيح API بدل OAuth للأجهزة بلا شاشة. Telegram هو أسهل قناة للبدء.
 
   </Step>
 
-  <Step title="التحقق">
+  <Step title="Verify">
     ```bash
     openclaw status
     systemctl --user status openclaw-gateway.service
@@ -119,8 +120,8 @@ x-i18n:
     ```
   </Step>
 
-  <Step title="الوصول إلى Control UI">
-    من جهاز الكمبيوتر، احصل على عنوان URL للوحة التحكم من Pi:
+  <Step title="Access the Control UI">
+    على جهاز الكمبيوتر لديك، احصل على عنوان URL للوحة التحكم من Pi:
 
     ```bash
     ssh user@gateway-host 'openclaw dashboard --no-open'
@@ -139,9 +140,9 @@ x-i18n:
 
 ## نصائح الأداء
 
-**استخدم USB SSD** -- بطاقات SD بطيئة وتتآكل. يحسّن USB SSD الأداء بدرجة كبيرة. راجع [دليل إقلاع Pi عبر USB](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#usb-mass-storage-boot).
+**استخدم USB SSD** -- بطاقات SD بطيئة وتبلى. يحسّن USB SSD الأداء بدرجة كبيرة. راجع [دليل إقلاع Pi من USB](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#usb-mass-storage-boot).
 
-**فعّل ذاكرة التخزين المؤقتة لترجمة الوحدات** -- يسرّع استدعاءات CLI المتكررة على مضيفات Pi منخفضة القدرة:
+**فعّل ذاكرة التخزين المؤقت لتجميع الوحدات** -- يسرّع استدعاءات CLI المتكررة على مضيفات Pi منخفضة القدرة:
 
 ```bash
 grep -q 'NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache' ~/.bashrc || cat >> ~/.bashrc <<'EOF' # pragma: allowlist secret
@@ -152,14 +153,16 @@ EOF
 source ~/.bashrc
 ```
 
-**قلّل استخدام الذاكرة** -- للإعدادات بلا شاشة، حرّر ذاكرة GPU وعطّل الخدمات غير المستخدمة:
+يبقي `OPENCLAW_NO_RESPAWN=1` عمليات إعادة تشغيل Gateway الروتينية داخل العملية نفسها، ما يتجنب عمليات التسليم الإضافية بين العمليات ويحافظ على بساطة تتبع PID على المضيفات الصغيرة.
+
+**قلّل استخدام الذاكرة** -- في إعدادات التشغيل بلا شاشة، حرّر ذاكرة GPU وعطّل الخدمات غير المستخدمة:
 
 ```bash
 echo 'gpu_mem=16' | sudo tee -a /boot/config.txt
 sudo systemctl disable bluetooth
 ```
 
-**إضافة systemd drop-in لإعادة تشغيل مستقرة** -- إذا كان هذا Pi يشغّل OpenClaw غالبًا، أضف drop-in للخدمة:
+**إضافة systemd drop-in لإعادة التشغيل المستقرة** -- إذا كان هذا Pi مخصصًا غالبًا لتشغيل OpenClaw، فأضف service drop-in:
 
 ```bash
 systemctl --user edit openclaw-gateway.service
@@ -174,7 +177,7 @@ RestartSec=2
 TimeoutStartSec=90
 ```
 
-ثم `systemctl --user daemon-reload && systemctl --user restart openclaw-gateway.service`. على Pi بلا شاشة، فعّل أيضًا lingering مرة واحدة حتى تبقى خدمة المستخدم بعد تسجيل الخروج: `sudo loginctl enable-linger "$(whoami)"`.
+ثم `systemctl --user daemon-reload && systemctl --user restart openclaw-gateway.service`. على Pi بلا شاشة، فعّل أيضًا lingering مرة واحدة كي تبقى خدمة المستخدم تعمل بعد تسجيل الخروج: `sudo loginctl enable-linger "$(whoami)"`.
 
 ## إعداد النموذج الموصى به
 
@@ -197,16 +200,16 @@ TimeoutStartSec=90
 
 ## ملاحظات ثنائيات ARM
 
-تعمل معظم ميزات OpenClaw على ARM64 دون تغييرات (Node.js، Telegram، WhatsApp/Baileys، Chromium). الثنائيات التي قد تفتقر أحيانًا إلى إصدارات ARM هي عادةً أدوات CLI اختيارية مكتوبة بـ Go/Rust وتأتي مع Skills. تحقق من صفحة إصدار الثنائي المفقود بحثًا عن ملفات `linux-arm64` / `aarch64` قبل الرجوع إلى البناء من المصدر.
+تعمل معظم ميزات OpenClaw على ARM64 بلا تغييرات (Node.js وTelegram وWhatsApp/Baileys وChromium). الثنائيات التي قد لا تتوفر لها أحيانًا إصدارات ARM تكون عادة أدوات CLI اختيارية مكتوبة بـ Go/Rust ومشحونة عبر Skills. تحقق من صفحة إصدار الثنائي المفقود بحثًا عن عناصر `linux-arm64` / `aarch64` قبل الرجوع إلى البناء من المصدر.
 
 ## الاستمرارية والنسخ الاحتياطية
 
 توجد حالة OpenClaw ضمن:
 
-- `~/.openclaw/` — `openclaw.json`، و`auth-profiles.json` لكل وكيل، وحالة القنوات/المزوّدين، والجلسات.
-- `~/.openclaw/workspace/` — مساحة عمل الوكيل (SOUL.md، الذاكرة، المصنوعات).
+- `~/.openclaw/` — `openclaw.json`، وملف `auth-profiles.json` لكل وكيل، وحالة القنوات/المزودين، والجلسات.
+- `~/.openclaw/workspace/` — مساحة عمل الوكيل (SOUL.md، والذاكرة، والآثار).
 
-تبقى هذه بعد إعادة التشغيل. خذ لقطة قابلة للنقل باستخدام:
+تنجو هذه البيانات من عمليات إعادة التشغيل. خذ لقطة محمولة باستخدام:
 
 ```bash
 openclaw backup create
@@ -218,19 +221,19 @@ openclaw backup create
 
 **نفاد الذاكرة** -- تحقق من أن swap نشط باستخدام `free -h`. عطّل الخدمات غير المستخدمة (`sudo systemctl disable cups bluetooth avahi-daemon`). استخدم النماذج المعتمدة على API فقط.
 
-**أداء بطيء** -- استخدم USB SSD بدلًا من بطاقة SD. تحقق من خنق CPU باستخدام `vcgencmd get_throttled` (ينبغي أن يعيد `0x0`).
+**الأداء بطيء** -- استخدم USB SSD بدل بطاقة SD. تحقق من خنق CPU باستخدام `vcgencmd get_throttled` (يجب أن يعيد `0x0`).
 
-**الخدمة لا تبدأ** -- تحقق من السجلات باستخدام `journalctl --user -u openclaw-gateway.service --no-pager -n 100` وشغّل `openclaw doctor --non-interactive`. إذا كان هذا Pi بلا شاشة، فتحقق أيضًا من تفعيل lingering: `sudo loginctl enable-linger "$(whoami)"`.
+**الخدمة لا تبدأ** -- افحص السجلات باستخدام `journalctl --user -u openclaw-gateway.service --no-pager -n 100` وشغّل `openclaw doctor --non-interactive`. إذا كان هذا Pi بلا شاشة، فتحقق أيضًا من تفعيل lingering: `sudo loginctl enable-linger "$(whoami)"`.
 
-**مشكلات ثنائيات ARM** -- إذا فشلت إحدى Skills برسالة "exec format error"، فتحقق مما إذا كان للثنائي إصدار ARM64. تحقق من المعمارية باستخدام `uname -m` (ينبغي أن تظهر `aarch64`).
+**مشكلات ثنائيات ARM** -- إذا فشلت Skill مع "exec format error"، فتحقق مما إذا كان للثنائي إصدار ARM64. تحقق من البنية باستخدام `uname -m` (يجب أن يعرض `aarch64`).
 
 **انقطاع WiFi** -- عطّل إدارة طاقة WiFi: `sudo iwconfig wlan0 power off`.
 
 ## الخطوات التالية
 
 - [القنوات](/ar/channels) -- وصّل Telegram وWhatsApp وDiscord والمزيد
-- [إعدادات Gateway](/ar/gateway/configuration) -- جميع خيارات الإعداد
-- [التحديث](/ar/install/updating) -- أبقِ OpenClaw محدّثًا
+- [إعدادات Gateway](/ar/gateway/configuration) -- كل خيارات الإعداد
+- [التحديث](/ar/install/updating) -- حافظ على OpenClaw محدثًا
 
 ## ذات صلة
 

@@ -1,45 +1,49 @@
 ---
 read_when:
-    - تريد نتائج أقصر لأداتي `exec` أو `bash` في OpenClaw
-    - تريد تفعيل Plugin المضمّن tokenjuice
-    - أنت بحاجة إلى فهم ما الذي يغيّره tokenjuice وما الذي يتركه خامًا
-summary: ضغط نتائج أدوات exec وbash الصاخبة باستخدام Plugin مضمّن اختياري
+    - تريد نتائج أدوات أقصر `exec` أو `bash` في OpenClaw
+    - تريد تثبيت Plugin Tokenjuice أو تمكينه
+    - تحتاج إلى فهم ما يغيّره tokenjuice وما يتركه خامًا
+summary: ضغط نتائج أدوات exec و bash المليئة بالضجيج باستخدام Plugin الاختياري Tokenjuice
 title: Tokenjuice
 x-i18n:
-    generated_at: "2026-04-25T14:01:23Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T18:47:12Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 04328cc7a13ccd64f8309ddff867ae893387f93c26641dfa1a4013a4c3063962
+    source_hash: 183ab08d2a1150b446245514423b893cff9a85581980c15600cc16aec10eeae7
     source_path: tools/tokenjuice.md
-    workflow: 15
+    workflow: 16
 ---
 
-`tokenjuice` هو Plugin مضمّن اختياري يقوم بضغط نتائج أداتي `exec` و`bash`
-الصاخبة بعد أن يكون الأمر قد نُفِّذ بالفعل.
+`tokenjuice` هو Plugin خارجي اختياري يضغط نتائج أدوات `exec` و`bash`
+المليئة بالضجيج بعد تشغيل الأمر بالفعل.
 
-وهو يغيّر `tool_result` المعاد، وليس الأمر نفسه. ولا يقوم Tokenjuice
-بإعادة كتابة مدخلات shell، أو إعادة تشغيل الأوامر، أو تغيير رموز الخروج.
+إنه يغيّر `tool_result` المُعاد، وليس الأمر نفسه. لا يعيد Tokenjuice
+كتابة إدخال الصدفة، ولا يعيد تشغيل الأوامر، ولا يغيّر رموز الخروج.
 
-واليوم ينطبق هذا على تشغيلات PI المضمّنة وأدوات OpenClaw الديناميكية في حزام
-Codex app-server. ويتصل Tokenjuice بوسيط نتائج الأدوات في OpenClaw ويقوم
-بتقليم المخرجات قبل أن تعود إلى جلسة الحزام النشطة.
+ينطبق هذا اليوم على تشغيلات OpenClaw المضمّنة وأدوات OpenClaw الديناميكية في حزام
+app-server الخاص بتطبيق Codex. يتصل Tokenjuice بالبرمجيات الوسيطة لنتائج الأدوات في OpenClaw
+ويقلّم المخرجات قبل أن تعود إلى جلسة الحزام النشطة.
 
-## فعّل Plugin
+## تفعيل Plugin
 
-المسار السريع:
+ثبّته مرة واحدة:
+
+```bash
+openclaw plugins install clawhub:@openclaw/tokenjuice
+```
+
+ثم فعّله:
 
 ```bash
 openclaw config set plugins.entries.tokenjuice.enabled true
 ```
 
-والمكافئ له:
+ما يكافئ ذلك:
 
 ```bash
 openclaw plugins enable tokenjuice
 ```
-
-يشحن OpenClaw هذا Plugin بالفعل. ولا توجد خطوة منفصلة من نوع `plugins install`
-أو `tokenjuice install openclaw`.
 
 إذا كنت تفضّل تعديل الإعدادات مباشرة:
 
@@ -57,19 +61,19 @@ openclaw plugins enable tokenjuice
 
 ## ما الذي يغيّره tokenjuice
 
-- يضغط نتائج `exec` و`bash` الصاخبة قبل إعادتها إلى الجلسة.
-- يبقي تنفيذ الأمر الأصلي من دون تغيير.
-- يحافظ على قراءات محتوى الملفات الدقيقة والأوامر الأخرى التي ينبغي أن يتركها tokenjuice خامًا.
-- يظل خيار اشتراك صريح: عطّل Plugin إذا كنت تريد مخرجات حرفية في كل مكان.
+- يضغط نتائج `exec` و`bash` المليئة بالضجيج قبل إعادتها إلى الجلسة.
+- يبقي تنفيذ الأمر الأصلي دون تغيير.
+- يحافظ على قراءات محتوى الملفات الدقيقة وغيرها من الأوامر التي يجب أن يتركها tokenjuice خامًا.
+- يبقى اختياريًا: عطّل Plugin إذا كنت تريد المخرجات الحرفية في كل مكان.
 
-## تحقق من أنه يعمل
+## التحقق من أنه يعمل
 
 1. فعّل Plugin.
 2. ابدأ جلسة يمكنها استدعاء `exec`.
-3. شغّل أمرًا صاخبًا مثل `git status`.
-4. تحقق من أن نتيجة الأداة المعادة أقصر وأكثر تنظيمًا من مخرجات shell الخام.
+3. شغّل أمرًا كثير المخرجات مثل `git status`.
+4. تحقق من أن نتيجة الأداة المُعادة أقصر وأكثر تنظيمًا من مخرجات الصدفة الخام.
 
-## عطّل Plugin
+## تعطيل Plugin
 
 ```bash
 openclaw config set plugins.entries.tokenjuice.enabled false
@@ -81,7 +85,7 @@ openclaw config set plugins.entries.tokenjuice.enabled false
 openclaw plugins disable tokenjuice
 ```
 
-## ذو صلة
+## ذات صلة
 
 - [أداة Exec](/ar/tools/exec)
 - [مستويات التفكير](/ar/tools/thinking)

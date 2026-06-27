@@ -1,25 +1,26 @@
 ---
 read_when:
     - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin nostr
-summary: Thêm giao diện kênh Nostr để gửi và nhận tin nhắn OpenClaw.
+summary: Plugin kênh Nostr của OpenClaw cho tin nhắn trực tiếp được mã hóa NIP-04.
 title: Plugin Nostr
 x-i18n:
-    generated_at: "2026-05-03T10:42:28Z"
+    generated_at: "2026-06-27T17:54:11Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1205a3b286e406b41029418b5fb9b12dcb19b35aff60c32d12e60c45804d7eaa
+    source_hash: e56fd9eee17c55bcbba3d7b85d783930c10d2368f36173ac478b254c2bd5ec22
     source_path: plugins/reference/nostr.md
     workflow: 16
 ---
 
-# Nostr Plugin
+# Plugin Nostr
 
-Thêm bề mặt kênh Nostr để gửi và nhận tin nhắn OpenClaw.
+Plugin kênh Nostr của OpenClaw cho tin nhắn trực tiếp được mã hóa NIP-04.
 
 ## Phân phối
 
 - Gói: `@openclaw/nostr`
-- Cách cài đặt: npm; ClawHub
+- Đường cài đặt: npm; ClawHub
 
 ## Bề mặt
 

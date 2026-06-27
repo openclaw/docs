@@ -1,22 +1,23 @@
 ---
 read_when:
-    - Je wilt Chutes gebruiken met OpenClaw
-    - Je hebt het configuratiepad voor OAuth of de API-sleutel nodig
-    - Je wilt het standaardmodel, aliassen of ontdekkingsgedrag
-summary: Chutes instellen (OAuth of API-sleutel, modeldetectie, aliassen)
-title: Chutes
+    - Je wilt Chutes met OpenClaw gebruiken
+    - Je hebt het instelpad voor OAuth of de API-sleutel nodig
+    - U wilt het standaardmodel, aliassen of detectiegedrag
+summary: Chutes-installatie (OAuth of API-sleutel, modeldetectie, aliassen)
+title: Glijbanen
 x-i18n:
-    generated_at: "2026-04-29T23:09:09Z"
+    generated_at: "2026-06-27T18:10:59Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 52e2c767604ff50cc7fe1a5fcfac03c35345facf2225e80f62476bbc3852199a
+    source_hash: 8f1898c568fd664303a8bb5c2e46228c75f9c217bec5a65e752d9c7e10b980bb
     source_path: providers/chutes.md
     workflow: 16
 ---
 
-[Chutes](https://chutes.ai) biedt opensource-modelcatalogi aan via een
+[Chutes](https://chutes.ai) maakt open-source modelcatalogi beschikbaar via een
 OpenAI-compatibele API. OpenClaw ondersteunt zowel browser-OAuth als directe
-API-sleutel-authenticatie voor de meegeleverde `chutes`-provider.
+authenticatie met API-sleutel voor de `chutes`-provider.
 
 | Eigenschap | Waarde                       |
 | ---------- | ---------------------------- |
@@ -25,40 +26,49 @@ API-sleutel-authenticatie voor de meegeleverde `chutes`-provider.
 | Basis-URL  | `https://llm.chutes.ai/v1`   |
 | Auth       | OAuth of API-sleutel (zie hieronder) |
 
+## Plugin installeren
+
+Installeer de officiële plugin en herstart daarna Gateway:
+
+```bash
+openclaw plugins install @openclaw/chutes-provider
+openclaw gateway restart
+```
+
 ## Aan de slag
 
 <Tabs>
   <Tab title="OAuth">
     <Steps>
-      <Step title="Voer de OAuth-onboardingflow uit">
+      <Step title="De OAuth-onboardingflow uitvoeren">
         ```bash
         openclaw onboard --auth-choice chutes
         ```
-        OpenClaw start de browserflow lokaal, of toont een URL + flow voor het
-        plakken van de redirect op externe/headless hosts. OAuth-tokens worden
-        automatisch vernieuwd via OpenClaw-authenticatieprofielen.
+        OpenClaw start de browserflow lokaal, of toont een URL + doorverwijzing-plakflow
+        op externe/headless hosts. OAuth-tokens worden automatisch vernieuwd via OpenClaw-auth
+        profielen.
       </Step>
-      <Step title="Controleer het standaardmodel">
+      <Step title="Het standaardmodel verifiëren">
         Na onboarding wordt het standaardmodel ingesteld op
-        `chutes/zai-org/GLM-4.7-TEE` en wordt de meegeleverde Chutes-catalogus
+        `chutes/zai-org/GLM-4.7-TEE` en wordt de statische Chutes-catalogus
         geregistreerd.
       </Step>
     </Steps>
   </Tab>
   <Tab title="API-sleutel">
     <Steps>
-      <Step title="Haal een API-sleutel op">
+      <Step title="Een API-sleutel ophalen">
         Maak een sleutel aan op
         [chutes.ai/settings/api-keys](https://chutes.ai/settings/api-keys).
       </Step>
-      <Step title="Voer de onboardingflow voor de API-sleutel uit">
+      <Step title="De onboardingflow voor API-sleutels uitvoeren">
         ```bash
         openclaw onboard --auth-choice chutes-api-key
         ```
       </Step>
-      <Step title="Controleer het standaardmodel">
+      <Step title="Het standaardmodel verifiëren">
         Na onboarding wordt het standaardmodel ingesteld op
-        `chutes/zai-org/GLM-4.7-TEE` en wordt de meegeleverde Chutes-catalogus
+        `chutes/zai-org/GLM-4.7-TEE` en wordt de statische Chutes-catalogus
         geregistreerd.
       </Step>
     </Steps>
@@ -66,21 +76,20 @@ API-sleutel-authenticatie voor de meegeleverde `chutes`-provider.
 </Tabs>
 
 <Note>
-Beide authenticatiepaden registreren de meegeleverde Chutes-catalogus en stellen
-het standaardmodel in op `chutes/zai-org/GLM-4.7-TEE`. Runtime-omgevingsvariabelen:
-`CHUTES_API_KEY`, `CHUTES_OAUTH_TOKEN`.
+Beide authpaden registreren de statische Chutes-catalogus en stellen het standaardmodel in op
+`chutes/zai-org/GLM-4.7-TEE`. Runtime-omgevingsvariabelen: `CHUTES_API_KEY`,
+`CHUTES_OAUTH_TOKEN`.
 </Note>
 
-## Detectiegedrag
+## Discovery-gedrag
 
-Wanneer Chutes-authenticatie beschikbaar is, bevraagt OpenClaw de Chutes-catalogus
-met die referentie en gebruikt het de gevonden modellen. Als detectie mislukt,
-valt OpenClaw terug op een meegeleverde statische catalogus, zodat onboarding en
-opstarten blijven werken.
+Wanneer Chutes-auth beschikbaar is, vraagt OpenClaw de Chutes-catalogus op met die
+referentie en gebruikt het de ontdekte modellen. Als discovery mislukt, valt OpenClaw
+terug op een statische catalogus, zodat onboarding en opstarten blijven werken.
 
 ## Standaardaliassen
 
-OpenClaw registreert drie handige aliassen voor de meegeleverde Chutes-catalogus:
+OpenClaw registreert drie handige aliassen voor de statische Chutes-catalogus:
 
 | Alias           | Doelmodel                                             |
 | --------------- | ----------------------------------------------------- |
@@ -90,7 +99,7 @@ OpenClaw registreert drie handige aliassen voor de meegeleverde Chutes-catalogus
 
 ## Ingebouwde startercatalogus
 
-De meegeleverde fallback-catalogus bevat huidige Chutes-refs:
+De statische fallback-catalogus bevat actuele Chutes-refs:
 
 | Model-ref                                             |
 | ----------------------------------------------------- |
@@ -131,14 +140,14 @@ De meegeleverde fallback-catalogus bevat huidige Chutes-refs:
     | `CHUTES_OAUTH_SCOPES` | Aangepaste OAuth-scopes |
 
     Zie de [Chutes OAuth-documentatie](https://chutes.ai/docs/sign-in-with-chutes/overview)
-    voor vereisten en hulp voor redirect-apps.
+    voor vereisten voor redirect-apps en hulp.
 
   </Accordion>
 
   <Accordion title="Opmerkingen">
-    - API-sleutel- en OAuth-detectie gebruiken beide dezelfde provider-ID `chutes`.
+    - Discovery met API-sleutel en OAuth gebruikt beide dezelfde `chutes`-provider-ID.
     - Chutes-modellen worden geregistreerd als `chutes/<model-id>`.
-    - Als detectie bij het opstarten mislukt, wordt de meegeleverde statische catalogus automatisch gebruikt.
+    - Als discovery bij het opstarten mislukt, wordt automatisch de statische catalogus gebruikt.
 
   </Accordion>
 </AccordionGroup>
@@ -147,15 +156,15 @@ De meegeleverde fallback-catalogus bevat huidige Chutes-refs:
 
 <CardGroup cols={2}>
   <Card title="Modelselectie" href="/nl/concepts/model-providers" icon="layers">
-    Providerregels, model-refs en failovergedrag.
+    Providerregels, model-refs en failover-gedrag.
   </Card>
   <Card title="Configuratiereferentie" href="/nl/gateway/configuration-reference" icon="gear">
-    Volledig configuratieschema, inclusief providerinstellingen.
+    Volledig configuratieschema inclusief providerinstellingen.
   </Card>
   <Card title="Chutes" href="https://chutes.ai" icon="arrow-up-right-from-square">
     Chutes-dashboard en API-documentatie.
   </Card>
-  <Card title="Chutes API-sleutels" href="https://chutes.ai/settings/api-keys" icon="key">
-    Chutes API-sleutels aanmaken en beheren.
+  <Card title="Chutes-API-sleutels" href="https://chutes.ai/settings/api-keys" icon="key">
+    Maak en beheer Chutes-API-sleutels.
   </Card>
 </CardGroup>

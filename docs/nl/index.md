@@ -1,13 +1,14 @@
 ---
 read_when:
-    - Introductie van OpenClaw voor nieuwkomers
+    - OpenClaw introduceren bij nieuwkomers
 summary: OpenClaw is een meerkanaals Gateway voor AI-agenten die op elk besturingssysteem draait.
 title: OpenClaw
 x-i18n:
-    generated_at: "2026-05-07T13:20:51Z"
+    generated_at: "2026-06-27T17:41:21Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7bf82c8551703257e55289d2b82f6436c9900a8afae7ab9b6a655332716ff37b
+    source_hash: fcaa54a0a6d7aa62193fd9f03428bbcbfdcb2c00a184bcd6f49e4e093fefc473
     source_path: index.md
     workflow: 16
 ---
@@ -29,11 +30,11 @@ x-i18n:
     />
 </p>
 
-> _"EXFOLIEER! EXFOLIEER!"_ — Een ruimtekreeft, waarschijnlijk
+> _"EXFOLIATE! EXFOLIATE!"_ — Waarschijnlijk een ruimtekreeft
 
 <p align="center">
-  <strong>Gateway voor elk besturingssysteem voor AI-agenten via Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo en meer.</strong><br />
-  Stuur een bericht en ontvang een agentantwoord vanuit je broekzak. Voer één Gateway uit voor ingebouwde kanalen, meegeleverde kanaalplugins, WebChat en mobiele nodes.
+  <strong>Gateway voor elk besturingssysteem voor AI-agents via Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo en meer.</strong><br />
+  Stuur een bericht en ontvang een agentantwoord vanuit je broekzak. Voer één Gateway uit voor ingebouwde kanalen, gebundelde kanaalplugins, WebChat en mobiele nodes.
 </p>
 
 <Columns>
@@ -43,32 +44,32 @@ x-i18n:
   <Card title="Onboarding uitvoeren" href="/nl/start/wizard" icon="sparkles">
     Begeleide installatie met `openclaw onboard` en koppelingsflows.
   </Card>
-  <Card title="De beheerinterface openen" href="/nl/web/control-ui" icon="layout-dashboard">
+  <Card title="De Control UI openen" href="/nl/web/control-ui" icon="layout-dashboard">
     Start het browserdashboard voor chat, configuratie en sessies.
   </Card>
 </Columns>
 
 ## Wat is OpenClaw?
 
-OpenClaw is een **zelfgehoste gateway** die je favoriete chatapps en kanaaloppervlakken verbindt — ingebouwde kanalen plus meegeleverde of externe kanaalplugins zoals Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo en meer — met AI-codeeragenten zoals Pi. Je voert één Gateway-proces uit op je eigen machine (of een server), en dat wordt de brug tussen je berichtenapps en een altijd beschikbare AI-assistent.
+OpenClaw is een **zelfgehoste gateway** die je favoriete chatapps en kanaaloppervlakken verbindt — ingebouwde kanalen plus gebundelde of externe kanaalplugins zoals Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo en meer — met AI-codeagents. Je voert één Gateway-proces uit op je eigen machine (of een server), en het wordt de brug tussen je berichtenapps en een altijd beschikbare AI-assistent.
 
-**Voor wie is het bedoeld?** Ontwikkelaars en powerusers die een persoonlijke AI-assistent willen die ze overal vandaan kunnen berichten, zonder de controle over hun gegevens op te geven of afhankelijk te zijn van een gehoste service.
+**Voor wie is het bedoeld?** Ontwikkelaars en power users die een persoonlijke AI-assistent willen die ze overal kunnen berichten — zonder de controle over hun gegevens op te geven of afhankelijk te zijn van een gehoste dienst.
 
 **Wat maakt het anders?**
 
 - **Zelfgehost**: draait op jouw hardware, volgens jouw regels
-- **Meerdere kanalen**: één Gateway bedient gelijktijdig ingebouwde kanalen plus meegeleverde of externe kanaalplugins
-- **Agent-native**: gebouwd voor codeeragenten met toolgebruik, sessies, geheugen en multi-agent-routering
-- **Open source**: MIT-gelicentieerd en communitygedreven
+- **Meerdere kanalen**: één Gateway bedient ingebouwde kanalen plus gebundelde of externe kanaalplugins tegelijk
+- **Agent-native**: gebouwd voor codeagents met toolgebruik, sessies, geheugen en multi-agent-routering
+- **Open source**: MIT-licentie, communitygedreven
 
-**Wat heb je nodig?** Node 24 (aanbevolen), of Node 22 LTS (`22.16+`) voor compatibiliteit, een API-sleutel van je gekozen provider en 5 minuten. Gebruik voor de beste kwaliteit en beveiliging het krachtigste beschikbare model van de nieuwste generatie.
+**Wat heb je nodig?** Node 24 (aanbevolen), of Node 22 LTS (`22.19+`) voor compatibiliteit, een API-sleutel van je gekozen provider en 5 minuten. Gebruik voor de beste kwaliteit en beveiliging het krachtigste beschikbare model van de nieuwste generatie.
 
 ## Hoe het werkt
 
 ```mermaid
 flowchart LR
   A["Chat apps + plugins"] --> B["Gateway"]
-  B --> C["Pi agent"]
+  B --> C["OpenClaw agent"]
   B --> D["CLI"]
   B --> E["Web Control UI"]
   B --> F["macOS app"]
@@ -84,15 +85,15 @@ De Gateway is de enige bron van waarheid voor sessies, routering en kanaalverbin
     Discord, iMessage, Signal, Slack, Telegram, WhatsApp, WebChat en meer met één Gateway-proces.
   </Card>
   <Card title="Plugin-kanalen" icon="plug" href="/nl/tools/plugin">
-    Meegeleverde plugins voegen Matrix, Nostr, Twitch, Zalo en meer toe in normale huidige releases.
+    Gebundelde plugins voegen Matrix, Nostr, Twitch, Zalo en meer toe in normale huidige releases.
   </Card>
   <Card title="Multi-agent-routering" icon="route" href="/nl/concepts/multi-agent">
-    Geïsoleerde sessies per agent, werkruimte of afzender.
+    Geïsoleerde sessies per agent, workspace of afzender.
   </Card>
-  <Card title="Media-ondersteuning" icon="image" href="/nl/nodes/images">
-    Verzend en ontvang afbeeldingen, audio en documenten.
+  <Card title="Mediaondersteuning" icon="image" href="/nl/nodes/images">
+    Verstuur en ontvang afbeeldingen, audio en documenten.
   </Card>
-  <Card title="Webbeheerinterface" icon="monitor" href="/nl/web/control-ui">
+  <Card title="Web Control UI" icon="monitor" href="/nl/web/control-ui">
     Browserdashboard voor chat, configuratie, sessies en nodes.
   </Card>
   <Card title="Mobiele nodes" icon="smartphone" href="/nl/nodes">
@@ -114,7 +115,7 @@ De Gateway is de enige bron van waarheid voor sessies, routering en kanaalverbin
     ```
   </Step>
   <Step title="Chatten">
-    Open de beheerinterface in je browser en stuur een bericht:
+    Open de Control UI in je browser en stuur een bericht:
 
     ```bash
     openclaw dashboard
@@ -129,10 +130,10 @@ Heb je de volledige installatie- en ontwikkelsetup nodig? Zie [Aan de slag](/nl/
 
 ## Dashboard
 
-Open de browserbeheerinterface nadat de Gateway is gestart.
+Open de browser-Control UI nadat de Gateway is gestart.
 
 - Lokale standaard: [http://127.0.0.1:18789/](http://127.0.0.1:18789/)
-- Toegang op afstand: [Weboppervlakken](/nl/web) en [Tailscale](/nl/gateway/tailscale)
+- Externe toegang: [Weboppervlakken](/nl/web) en [Tailscale](/nl/gateway/tailscale)
 
 <p align="center">
   <img src="/whatsapp-openclaw.jpg" alt="OpenClaw" width="420" />
@@ -140,10 +141,10 @@ Open de browserbeheerinterface nadat de Gateway is gestart.
 
 ## Configuratie (optioneel)
 
-De configuratie staat op `~/.openclaw/openclaw.json`.
+Configuratie staat in `~/.openclaw/openclaw.json`.
 
-- Als je **niets doet**, gebruikt OpenClaw de meegeleverde Pi-binary in RPC-modus met sessies per afzender.
-- Als je het wilt vergrendelen, begin dan met `channels.whatsapp.allowFrom` en (voor groepen) vermeldingsregels.
+- Als je **niets doet**, gebruikt OpenClaw de gebundelde OpenClaw-agentruntime met sessies per afzender.
+- Als je dit wilt vergrendelen, begin dan met `channels.whatsapp.allowFrom` en (voor groepen) vermeldingsregels.
 
 Voorbeeld:
 
@@ -163,12 +164,12 @@ Voorbeeld:
 
 <Columns>
   <Card title="Docshubs" href="/nl/start/hubs" icon="book-open">
-    Alle docs en handleidingen, georganiseerd per usecase.
+    Alle documentatie en gidsen, georganiseerd per use case.
   </Card>
   <Card title="Configuratie" href="/nl/gateway/configuration" icon="settings">
     Kerninstellingen van de Gateway, tokens en providerconfiguratie.
   </Card>
-  <Card title="Toegang op afstand" href="/nl/gateway/remote" icon="globe">
+  <Card title="Externe toegang" href="/nl/gateway/remote" icon="globe">
     Toegangspatronen voor SSH en tailnet.
   </Card>
   <Card title="Kanalen" href="/nl/channels/telegram" icon="message-square">
@@ -178,18 +179,18 @@ Voorbeeld:
     iOS- en Android-nodes met koppeling, Canvas, camera en apparaatacties.
   </Card>
   <Card title="Help" href="/nl/help" icon="life-buoy">
-    Ingangspunt voor veelvoorkomende oplossingen en probleemoplossing.
+    Startpunt voor veelvoorkomende oplossingen en probleemoplossing.
   </Card>
 </Columns>
 
-## Meer informatie
+## Meer leren
 
 <Columns>
   <Card title="Volledige functielijst" href="/nl/concepts/features" icon="list">
-    Volledige mogelijkheden voor kanalen, routering en media.
+    Volledige kanaal-, routerings- en mediamogelijkheden.
   </Card>
   <Card title="Multi-agent-routering" href="/nl/concepts/multi-agent" icon="route">
-    Werkruimte-isolatie en sessies per agent.
+    Workspace-isolatie en sessies per agent.
   </Card>
   <Card title="Beveiliging" href="/nl/gateway/security" icon="shield">
     Tokens, allowlists en veiligheidscontroles.

@@ -1,19 +1,20 @@
 ---
 read_when:
     - Mise à niveau d’une installation Matrix existante
-    - Migration de l’historique chiffré de Matrix et de l’état de l’appareil
-summary: Comment OpenClaw met à niveau directement le Plugin Matrix précédent, y compris les limites de récupération de l’état chiffré et les étapes de récupération manuelle.
+    - Migration de l’historique Matrix chiffré et de l’état de l’appareil
+summary: Comment OpenClaw met à niveau sur place l’ancien Plugin Matrix, y compris les limites de récupération de l’état chiffré et les étapes de récupération manuelle.
 title: Migration de Matrix
 x-i18n:
-    generated_at: "2026-05-02T22:16:43Z"
+    generated_at: "2026-06-27T17:11:11Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8bc9b875fef0ae08978061a9fc7cbb076617009d79487ca8329e03076103b32c
+    source_hash: 796d27aa3f08388b78e005d5e93ee4a04bc9ae9bb1f214b83c3ba19165042755
     source_path: channels/matrix-migration.md
     workflow: 16
 ---
 
-Passez du précédent Plugin public `matrix` à l’implémentation actuelle.
+Mettez à niveau depuis le précédent Plugin public `matrix` vers l’implémentation actuelle.
 
 Pour la plupart des utilisateurs, la mise à niveau se fait sur place :
 
@@ -23,67 +24,72 @@ Pour la plupart des utilisateurs, la mise à niveau se fait sur place :
 - les identifiants mis en cache restent sous `~/.openclaw/credentials/matrix/`
 - l’état d’exécution reste sous `~/.openclaw/matrix/`
 
-Vous n’avez pas besoin de renommer les clés de configuration ni de réinstaller le Plugin sous un nouveau nom.
+Vous n’avez pas besoin de renommer des clés de configuration ni de réinstaller le Plugin sous un nouveau nom.
+Le paquet racine `openclaw` n’intègre plus le code d’exécution Matrix ni les
+dépendances du SDK Matrix. Si `openclaw channels status` indique que Matrix est configuré mais que le
+Plugin est manquant après une mise à jour, exécutez `openclaw doctor --fix` ou
+`openclaw plugins install @openclaw/matrix` ; n’installez pas les paquets du SDK Matrix
+dans le paquet racine OpenClaw.
 
 ## Ce que la migration fait automatiquement
 
-Lorsque le Gateway démarre, et lorsque vous exécutez [`openclaw doctor --fix`](/fr/gateway/doctor), OpenClaw tente de réparer automatiquement l’ancien état Matrix.
+Quand le gateway démarre, et quand vous exécutez [`openclaw doctor --fix`](/fr/gateway/doctor), OpenClaw essaie de réparer automatiquement l’ancien état Matrix.
 Avant qu’une étape de migration Matrix exploitable ne modifie l’état sur disque, OpenClaw crée ou réutilise un instantané de récupération ciblé.
 
-Lorsque vous utilisez `openclaw update`, le déclencheur exact dépend de la façon dont OpenClaw est installé :
+Quand vous utilisez `openclaw update`, le déclencheur exact dépend de la manière dont OpenClaw est installé :
 
-- les installations depuis les sources exécutent `openclaw doctor --fix` pendant le flux de mise à jour, puis redémarrent le Gateway par défaut
-- les installations via un gestionnaire de paquets mettent à jour le paquet, exécutent un passage doctor non interactif, puis s’appuient sur le redémarrage par défaut du Gateway afin que le démarrage puisse terminer la migration Matrix
-- si vous utilisez `openclaw update --no-restart`, la migration Matrix prise en charge au démarrage est différée jusqu’à ce que vous exécutiez plus tard `openclaw doctor --fix` et redémarriez le Gateway
+- les installations depuis les sources exécutent `openclaw doctor --fix` pendant le flux de mise à jour, puis redémarrent le gateway par défaut
+- les installations via un gestionnaire de paquets mettent à jour le paquet, exécutent un passage doctor non interactif, puis s’appuient sur le redémarrage par défaut du gateway pour que le démarrage puisse terminer la migration Matrix
+- si vous utilisez `openclaw update --no-restart`, la migration Matrix adossée au démarrage est différée jusqu’à ce que vous exécutiez plus tard `openclaw doctor --fix` et redémarriez le gateway
 
 La migration automatique couvre :
 
 - la création ou la réutilisation d’un instantané de pré-migration sous `~/Backups/openclaw-migrations/`
 - la réutilisation de vos identifiants Matrix mis en cache
 - la conservation de la même sélection de compte et de la configuration `channels.matrix`
-- le déplacement du plus ancien magasin de synchronisation Matrix plat vers l’emplacement actuel limité au compte
-- le déplacement du plus ancien magasin de chiffrement Matrix plat vers l’emplacement actuel limité au compte lorsque le compte cible peut être résolu en toute sécurité
-- l’extraction d’une clé de déchiffrement de sauvegarde de clés de salle Matrix précédemment enregistrée depuis l’ancien magasin de chiffrement rust, lorsque cette clé existe localement
-- la réutilisation de la racine de stockage par hachage de jeton la plus complète pour le même compte Matrix, serveur d’accueil et utilisateur lorsque le jeton d’accès change plus tard
-- l’analyse des racines de stockage par hachage de jeton voisines à la recherche de métadonnées de restauration d’état chiffré en attente lorsque le jeton d’accès Matrix a changé mais que l’identité de compte/appareil est restée la même
-- la restauration des clés de salle sauvegardées dans le nouveau magasin de chiffrement au prochain démarrage de Matrix
+- le déplacement du plus ancien magasin de synchronisation Matrix plat vers l’emplacement actuel propre au compte
+- le déplacement du plus ancien magasin de chiffrement Matrix plat vers l’emplacement actuel propre au compte lorsque le compte cible peut être résolu en toute sécurité
+- l’extraction d’une clé de déchiffrement de sauvegarde de clés de salon Matrix précédemment enregistrée depuis l’ancien magasin de chiffrement rust, lorsque cette clé existe localement
+- la réutilisation de la racine de stockage de hachage de jeton existante la plus complète pour le même compte Matrix, le même homeserver et le même utilisateur lorsque le jeton d’accès change ultérieurement
+- l’analyse des racines de stockage de hachage de jeton voisines pour les métadonnées de restauration d’état chiffré en attente lorsque le jeton d’accès Matrix a changé mais que l’identité du compte/appareil est restée la même
+- la restauration des clés de salon sauvegardées dans le nouveau magasin de chiffrement au prochain démarrage de Matrix
 
 Détails de l’instantané :
 
-- OpenClaw écrit un fichier marqueur à `~/.openclaw/matrix/migration-snapshot.json` après un instantané réussi afin que les passages de démarrage et de réparation ultérieurs puissent réutiliser la même archive.
+- OpenClaw écrit un fichier marqueur à `~/.openclaw/matrix/migration-snapshot.json` après un instantané réussi afin que les passages ultérieurs de démarrage et de réparation puissent réutiliser la même archive.
 - Ces instantanés automatiques de migration Matrix sauvegardent uniquement la configuration et l’état (`includeWorkspace: false`).
-- Si Matrix n’a qu’un état de migration avec avertissements uniquement, par exemple parce que `userId` ou `accessToken` manque encore, OpenClaw ne crée pas encore l’instantané, car aucune mutation Matrix n’est exploitable.
+- Si Matrix n’a qu’un état de migration avec avertissements, par exemple parce que `userId` ou `accessToken` est encore manquant, OpenClaw ne crée pas encore l’instantané car aucune mutation Matrix n’est exploitable.
 - Si l’étape d’instantané échoue, OpenClaw ignore la migration Matrix pour cette exécution au lieu de modifier l’état sans point de récupération.
 
-À propos des mises à niveau multi-comptes :
+À propos des mises à niveau multicomptes :
 
-- le plus ancien magasin Matrix plat (`~/.openclaw/matrix/bot-storage.json` et `~/.openclaw/matrix/crypto/`) provenait d’une disposition à magasin unique, OpenClaw ne peut donc le migrer que vers une seule cible de compte Matrix résolue
-- les anciens magasins Matrix déjà limités au compte sont détectés et préparés pour chaque compte Matrix configuré
+- le plus ancien magasin Matrix plat (`~/.openclaw/matrix/bot-storage.json` et `~/.openclaw/matrix/crypto/`) provenait d’une disposition à magasin unique, donc OpenClaw ne peut le migrer que vers une seule cible de compte Matrix résolue
+- les magasins Matrix hérités déjà propres à un compte sont détectés et préparés pour chaque compte Matrix configuré
 
 ## Ce que la migration ne peut pas faire automatiquement
 
-Le précédent Plugin public Matrix ne créait **pas** automatiquement de sauvegardes de clés de salle Matrix. Il persistait l’état de chiffrement local et demandait la vérification de l’appareil, mais il ne garantissait pas que vos clés de salle étaient sauvegardées sur le serveur d’accueil.
+Le précédent Plugin Matrix public ne créait **pas** automatiquement de sauvegardes de clés de salon Matrix. Il persistait l’état de chiffrement local et demandait la vérification de l’appareil, mais il ne garantissait pas que vos clés de salon étaient sauvegardées sur le homeserver.
 
 Cela signifie que certaines installations chiffrées ne peuvent être migrées que partiellement.
 
 OpenClaw ne peut pas récupérer automatiquement :
 
-- les clés de salle uniquement locales qui n’ont jamais été sauvegardées
-- l’état chiffré lorsque le compte Matrix cible ne peut pas encore être résolu parce que `homeserver`, `userId` ou `accessToken` ne sont toujours pas disponibles
+- les clés de salon uniquement locales qui n’ont jamais été sauvegardées
+- l’état chiffré lorsque le compte Matrix cible ne peut pas encore être résolu parce que `homeserver`, `userId` ou `accessToken` sont encore indisponibles
 - la migration automatique d’un magasin Matrix plat partagé lorsque plusieurs comptes Matrix sont configurés mais que `channels.matrix.defaultAccount` n’est pas défini
 - les installations avec chemin de Plugin personnalisé qui sont épinglées à un chemin de dépôt au lieu du paquet Matrix standard
-- une clé de récupération manquante lorsque l’ancien magasin contenait des clés sauvegardées mais ne conservait pas la clé de déchiffrement localement
+- une clé de récupération manquante lorsque l’ancien magasin avait des clés sauvegardées mais n’avait pas conservé la clé de déchiffrement localement
 
-Portée actuelle des avertissements :
+Périmètre actuel des avertissements :
 
-- les installations avec chemin de Plugin Matrix personnalisé sont signalées à la fois par le démarrage du Gateway et par `openclaw doctor`
+- les installations avec chemin de Plugin Matrix personnalisé sont signalées à la fois par le démarrage du gateway et par `openclaw doctor`
 
-Si votre ancienne installation avait un historique chiffré uniquement local qui n’a jamais été sauvegardé, certains messages chiffrés plus anciens peuvent rester illisibles après la mise à niveau.
+Si votre ancienne installation avait un historique chiffré uniquement local qui n’a jamais été sauvegardé, certains anciens messages chiffrés peuvent rester illisibles après la mise à niveau.
 
 ## Flux de mise à niveau recommandé
 
 1. Mettez à jour OpenClaw et le Plugin Matrix normalement.
-   Préférez un simple `openclaw update` sans `--no-restart` afin que le démarrage puisse terminer immédiatement la migration Matrix.
+   Préférez `openclaw update` simple sans `--no-restart` afin que le démarrage puisse terminer immédiatement la migration Matrix.
 2. Exécutez :
 
    ```bash
@@ -92,7 +98,7 @@ Si votre ancienne installation avait un historique chiffré uniquement local qui
 
    Si Matrix a un travail de migration exploitable, doctor créera ou réutilisera d’abord l’instantané de pré-migration et affichera le chemin de l’archive.
 
-3. Démarrez ou redémarrez le Gateway.
+3. Démarrez ou redémarrez le gateway.
 4. Vérifiez l’état actuel de vérification et de sauvegarde :
 
    ```bash
@@ -123,17 +129,17 @@ Si votre ancienne installation avait un historique chiffré uniquement local qui
    openclaw matrix verify self
    ```
 
-   Acceptez la demande dans un autre client Matrix, comparez les émojis ou les nombres décimaux,
-   et saisissez `yes` uniquement lorsqu’ils correspondent. La commande se termine avec succès uniquement
-   après que `Cross-signing verified` devient `yes`.
+   Acceptez la demande dans un autre client Matrix, comparez les emoji ou les décimales,
+   et tapez `yes` uniquement lorsqu’ils correspondent. La commande ne se termine avec succès
+   qu’après que `Cross-signing verified` devient `yes`.
 
-8. Si vous abandonnez volontairement l’ancien historique irrécupérable et voulez une nouvelle base de sauvegarde pour les futurs messages, exécutez :
+8. Si vous abandonnez volontairement l’ancien historique irrécupérable et souhaitez une nouvelle base de sauvegarde pour les futurs messages, exécutez :
 
    ```bash
    openclaw matrix verify backup reset --yes
    ```
 
-9. Si aucune sauvegarde de clés côté serveur n’existe encore, créez-en une pour les futures récupérations :
+9. Si aucune sauvegarde de clés côté serveur n’existe encore, créez-en une pour les récupérations futures :
 
    ```bash
    openclaw matrix verify bootstrap
@@ -145,10 +151,10 @@ La migration chiffrée est un processus en deux étapes :
 
 1. Le démarrage ou `openclaw doctor --fix` crée ou réutilise l’instantané de pré-migration si la migration chiffrée est exploitable.
 2. Le démarrage ou `openclaw doctor --fix` inspecte l’ancien magasin de chiffrement Matrix via l’installation active du Plugin Matrix.
-3. Si une clé de déchiffrement de sauvegarde est trouvée, OpenClaw l’écrit dans le nouveau flux de clé de récupération et marque la restauration des clés de salle comme en attente.
-4. Au prochain démarrage de Matrix, OpenClaw restaure automatiquement les clés de salle sauvegardées dans le nouveau magasin de chiffrement.
+3. Si une clé de déchiffrement de sauvegarde est trouvée, OpenClaw l’écrit dans le nouveau flux de clé de récupération et marque la restauration des clés de salon comme en attente.
+4. Au prochain démarrage de Matrix, OpenClaw restaure automatiquement les clés de salon sauvegardées dans le nouveau magasin de chiffrement.
 
-Si l’ancien magasin signale des clés de salle qui n’ont jamais été sauvegardées, OpenClaw émet un avertissement au lieu de prétendre que la récupération a réussi.
+Si l’ancien magasin signale des clés de salon qui n’ont jamais été sauvegardées, OpenClaw avertit au lieu de prétendre que la récupération a réussi.
 
 ## Messages courants et leur signification
 
@@ -157,125 +163,125 @@ Si l’ancien magasin signale des clés de salle qui n’ont jamais été sauveg
 `Matrix plugin upgraded in place.`
 
 - Signification : l’ancien état Matrix sur disque a été détecté et migré vers la disposition actuelle.
-- Action à effectuer : rien, sauf si la même sortie inclut également des avertissements.
+- Que faire : rien, sauf si la même sortie inclut aussi des avertissements.
 
 `Matrix migration snapshot created before applying Matrix upgrades.`
 
 - Signification : OpenClaw a créé une archive de récupération avant de modifier l’état Matrix.
-- Action à effectuer : conservez le chemin d’archive affiché jusqu’à ce que vous confirmiez que la migration a réussi.
+- Que faire : conservez le chemin d’archive affiché jusqu’à ce que vous confirmiez que la migration a réussi.
 
 `Matrix migration snapshot reused before applying Matrix upgrades.`
 
 - Signification : OpenClaw a trouvé un marqueur d’instantané de migration Matrix existant et a réutilisé cette archive au lieu de créer une sauvegarde en double.
-- Action à effectuer : conservez le chemin d’archive affiché jusqu’à ce que vous confirmiez que la migration a réussi.
+- Que faire : conservez le chemin d’archive affiché jusqu’à ce que vous confirmiez que la migration a réussi.
 
 `Legacy Matrix state detected at ... but channels.matrix is not configured yet.`
 
 - Signification : un ancien état Matrix existe, mais OpenClaw ne peut pas l’associer à un compte Matrix actuel parce que Matrix n’est pas configuré.
-- Action à effectuer : configurez `channels.matrix`, puis réexécutez `openclaw doctor --fix` ou redémarrez le Gateway.
+- Que faire : configurez `channels.matrix`, puis réexécutez `openclaw doctor --fix` ou redémarrez le gateway.
 
 `Legacy Matrix state detected at ... but the new account-scoped target could not be resolved yet (need homeserver, userId, and access token for channels.matrix...).`
 
-- Signification : OpenClaw a trouvé un ancien état, mais ne peut toujours pas déterminer la racine exacte de compte/appareil actuelle.
-- Action à effectuer : démarrez le Gateway une fois avec une connexion Matrix fonctionnelle, ou réexécutez `openclaw doctor --fix` après l’existence d’identifiants mis en cache.
+- Signification : OpenClaw a trouvé un ancien état, mais ne peut toujours pas déterminer la racine exacte du compte/appareil actuel.
+- Que faire : démarrez une fois le gateway avec une connexion Matrix fonctionnelle, ou réexécutez `openclaw doctor --fix` après l’existence des identifiants mis en cache.
 
 `Legacy Matrix state detected at ... but multiple Matrix accounts are configured and channels.matrix.defaultAccount is not set.`
 
 - Signification : OpenClaw a trouvé un magasin Matrix plat partagé, mais refuse de deviner quel compte Matrix nommé doit le recevoir.
-- Action à effectuer : définissez `channels.matrix.defaultAccount` sur le compte prévu, puis réexécutez `openclaw doctor --fix` ou redémarrez le Gateway.
+- Que faire : définissez `channels.matrix.defaultAccount` sur le compte prévu, puis réexécutez `openclaw doctor --fix` ou redémarrez le gateway.
 
 `Matrix legacy sync store not migrated because the target already exists (...)`
 
-- Signification : le nouvel emplacement limité au compte contient déjà un magasin de synchronisation ou de chiffrement, OpenClaw ne l’a donc pas écrasé automatiquement.
-- Action à effectuer : vérifiez que le compte actuel est le bon avant de supprimer ou de déplacer manuellement la cible en conflit.
+- Signification : l’emplacement propre au nouveau compte contient déjà un magasin de synchronisation ou de chiffrement, donc OpenClaw ne l’a pas écrasé automatiquement.
+- Que faire : vérifiez que le compte actuel est le bon avant de supprimer ou déplacer manuellement la cible en conflit.
 
-`Failed migrating Matrix legacy sync store (...)` or `Failed migrating Matrix legacy crypto store (...)`
+`Failed migrating Matrix legacy sync store (...)` ou `Failed migrating Matrix legacy crypto store (...)`
 
-- Signification : OpenClaw a tenté de déplacer l’ancien état Matrix, mais l’opération sur le système de fichiers a échoué.
-- Action à effectuer : inspectez les permissions du système de fichiers et l’état du disque, puis réexécutez `openclaw doctor --fix`.
+- Signification : OpenClaw a tenté de déplacer l’ancien état Matrix, mais l’opération du système de fichiers a échoué.
+- Que faire : inspectez les permissions du système de fichiers et l’état du disque, puis réexécutez `openclaw doctor --fix`.
 
 `Legacy Matrix encrypted state detected at ... but channels.matrix is not configured yet.`
 
-- Signification : OpenClaw a trouvé un ancien magasin Matrix chiffré, mais il n’existe aucune configuration Matrix actuelle à laquelle l’attacher.
-- Action à effectuer : configurez `channels.matrix`, puis réexécutez `openclaw doctor --fix` ou redémarrez le Gateway.
+- Signification : OpenClaw a trouvé un ancien magasin Matrix chiffré, mais il n’y a aucune configuration Matrix actuelle à laquelle l’attacher.
+- Que faire : configurez `channels.matrix`, puis réexécutez `openclaw doctor --fix` ou redémarrez le gateway.
 
 `Legacy Matrix encrypted state detected at ... but the account-scoped target could not be resolved yet (need homeserver, userId, and access token for channels.matrix...).`
 
 - Signification : le magasin chiffré existe, mais OpenClaw ne peut pas décider en toute sécurité à quel compte/appareil actuel il appartient.
-- Action à effectuer : démarrez le Gateway une fois avec une connexion Matrix fonctionnelle, ou réexécutez `openclaw doctor --fix` après la disponibilité des identifiants mis en cache.
+- Que faire : démarrez une fois le gateway avec une connexion Matrix fonctionnelle, ou réexécutez `openclaw doctor --fix` une fois les identifiants mis en cache disponibles.
 
 `Legacy Matrix encrypted state detected at ... but multiple Matrix accounts are configured and channels.matrix.defaultAccount is not set.`
 
 - Signification : OpenClaw a trouvé un magasin de chiffrement hérité plat partagé, mais refuse de deviner quel compte Matrix nommé doit le recevoir.
-- Action à effectuer : définissez `channels.matrix.defaultAccount` sur le compte prévu, puis réexécutez `openclaw doctor --fix` ou redémarrez le Gateway.
+- Que faire : définissez `channels.matrix.defaultAccount` sur le compte prévu, puis réexécutez `openclaw doctor --fix` ou redémarrez le gateway.
 
 `Matrix migration warnings are present, but no on-disk Matrix mutation is actionable yet. No pre-migration snapshot was needed.`
 
-- Signification : OpenClaw a détecté un ancien état Matrix, mais la migration est toujours bloquée par des données d’identité ou d’identifiants manquantes.
-- Action à effectuer : terminez la connexion Matrix ou la configuration, puis réexécutez `openclaw doctor --fix` ou redémarrez le Gateway.
+- Signification : OpenClaw a détecté un ancien état Matrix, mais la migration est encore bloquée par des données d’identité ou d’identifiants manquantes.
+- Que faire : terminez la connexion Matrix ou la configuration, puis réexécutez `openclaw doctor --fix` ou redémarrez le gateway.
 
 `Legacy Matrix encrypted state was detected, but the Matrix plugin helper is unavailable. Install or repair @openclaw/matrix so OpenClaw can inspect the old rust crypto store before upgrading.`
 
-- Signification : OpenClaw a trouvé un ancien état Matrix chiffré, mais n’a pas pu charger le point d’entrée d’assistance depuis le Plugin Matrix qui inspecte normalement ce magasin.
-- Action à effectuer : réinstallez ou réparez le Plugin Matrix (`openclaw plugins install @openclaw/matrix`, ou `openclaw plugins install ./path/to/local/matrix-plugin` pour une copie de dépôt), puis réexécutez `openclaw doctor --fix` ou redémarrez le Gateway.
+- Signification : OpenClaw a trouvé un ancien état Matrix chiffré, mais il n’a pas pu charger le point d’entrée d’aide depuis le plugin Matrix qui inspecte normalement ce magasin.
+- Que faire : réinstallez ou réparez le plugin Matrix (`openclaw plugins install @openclaw/matrix`, ou `openclaw plugins install ./path/to/local/matrix-plugin` pour un checkout de dépôt), puis relancez `openclaw doctor --fix` ou redémarrez le Gateway.
 
 `Matrix plugin helper path is unsafe: ... Reinstall @openclaw/matrix and try again.`
 
-- Signification : OpenClaw a trouvé un chemin de fichier d’assistance qui sort de la racine du Plugin ou échoue aux vérifications de limites du Plugin ; il a donc refusé de l’importer.
-- Que faire : réinstallez le Plugin Matrix depuis un chemin de confiance, puis relancez `openclaw doctor --fix` ou redémarrez le Gateway.
+- Signification : OpenClaw a trouvé un chemin de fichier d’aide qui sort de la racine du plugin ou échoue aux contrôles de frontière du plugin ; il a donc refusé de l’importer.
+- Que faire : réinstallez le plugin Matrix depuis un chemin de confiance, puis relancez `openclaw doctor --fix` ou redémarrez le Gateway.
 
 `- Failed creating a Matrix migration snapshot before repair: ...`
 
 `- Skipping Matrix migration changes for now. Resolve the snapshot failure, then rerun "openclaw doctor --fix".`
 
-- Signification : OpenClaw a refusé de modifier l’état Matrix, car il n’a pas pu créer d’abord l’instantané de récupération.
+- Signification : OpenClaw a refusé de modifier l’état Matrix parce qu’il n’a pas pu créer d’abord l’instantané de récupération.
 - Que faire : résolvez l’erreur de sauvegarde, puis relancez `openclaw doctor --fix` ou redémarrez le Gateway.
 
 `Failed migrating legacy Matrix client storage: ...`
 
-- Signification : la solution de repli côté client Matrix a trouvé un ancien stockage plat, mais le déplacement a échoué. OpenClaw interrompt désormais cette solution de repli au lieu de démarrer silencieusement avec un nouveau stockage.
-- Que faire : inspectez les autorisations du système de fichiers ou les conflits, gardez l’ancien état intact, puis réessayez après avoir corrigé l’erreur.
+- Signification : le fallback côté client Matrix a trouvé un ancien stockage plat, mais le déplacement a échoué. OpenClaw abandonne désormais ce fallback au lieu de démarrer silencieusement avec un nouveau magasin vide.
+- Que faire : inspectez les permissions ou conflits du système de fichiers, conservez l’ancien état intact, puis réessayez après avoir corrigé l’erreur.
 
 `Matrix is installed from a custom path: ...`
 
-- Signification : Matrix est épinglé à une installation par chemin, donc les mises à jour principales ne le remplacent pas automatiquement par le paquet Matrix standard du dépôt.
-- Que faire : réinstallez avec `openclaw plugins install @openclaw/matrix` lorsque vous voulez revenir au Plugin Matrix par défaut.
+- Signification : Matrix est épinglé à une installation par chemin ; les mises à jour principales ne le remplacent donc pas automatiquement par le paquet Matrix standard du dépôt.
+- Que faire : réinstallez avec `openclaw plugins install @openclaw/matrix` lorsque vous voulez revenir au plugin Matrix par défaut.
 
 ### Messages de récupération d’état chiffré
 
 `matrix: restored X/Y room key(s) from legacy encrypted-state backup`
 
-- Signification : les clés de salon sauvegardées ont été restaurées avec succès dans le nouveau stockage crypto.
+- Signification : les clés de salle sauvegardées ont été restaurées avec succès dans le nouveau magasin crypto.
 - Que faire : généralement rien.
 
 `matrix: N legacy local-only room key(s) were never backed up and could not be restored automatically`
 
-- Signification : certaines anciennes clés de salon n’existaient que dans l’ancien stockage local et n’avaient jamais été téléversées dans la sauvegarde Matrix.
+- Signification : certaines anciennes clés de salle n’existaient que dans l’ancien magasin local et n’avaient jamais été téléversées vers la sauvegarde Matrix.
 - Que faire : attendez-vous à ce qu’une partie de l’ancien historique chiffré reste indisponible, sauf si vous pouvez récupérer ces clés manuellement depuis un autre client vérifié.
 
 `Legacy Matrix encrypted state for account "..." has backed-up room keys, but no local backup decryption key was found. Ask the operator to run "openclaw matrix verify backup restore --recovery-key-stdin" after upgrade if they have the recovery key.`
 
-- Signification : une sauvegarde existe, mais OpenClaw n’a pas pu récupérer automatiquement la clé de récupération.
+- Signification : la sauvegarde existe, mais OpenClaw n’a pas pu récupérer automatiquement la clé de récupération.
 - Que faire : exécutez `printf '%s\n' "$MATRIX_RECOVERY_KEY" | openclaw matrix verify backup restore --recovery-key-stdin`.
 
 `Failed inspecting legacy Matrix encrypted state for account "..." (...): ...`
 
-- Signification : OpenClaw a trouvé l’ancien stockage chiffré, mais il n’a pas pu l’inspecter de manière suffisamment sûre pour préparer la récupération.
-- Que faire : relancez `openclaw doctor --fix`. Si cela se répète, gardez l’ancien répertoire d’état intact et récupérez avec un autre client Matrix vérifié ainsi que `printf '%s\n' "$MATRIX_RECOVERY_KEY" | openclaw matrix verify backup restore --recovery-key-stdin`.
+- Signification : OpenClaw a trouvé l’ancien magasin chiffré, mais il n’a pas pu l’inspecter avec assez de sécurité pour préparer la récupération.
+- Que faire : relancez `openclaw doctor --fix`. Si cela se répète, gardez l’ancien répertoire d’état intact et récupérez les données avec un autre client Matrix vérifié ainsi que `printf '%s\n' "$MATRIX_RECOVERY_KEY" | openclaw matrix verify backup restore --recovery-key-stdin`.
 
 `Legacy Matrix backup key was found for account "...", but .../recovery-key.json already contains a different recovery key. Leaving the existing file unchanged.`
 
-- Signification : OpenClaw a détecté un conflit de clé de sauvegarde et a refusé d’écraser automatiquement le fichier de clé de récupération actuel.
-- Que faire : vérifiez quelle clé de récupération est correcte avant de réessayer toute commande de restauration.
+- Signification : OpenClaw a détecté un conflit de clé de sauvegarde et a refusé d’écraser automatiquement le fichier recovery-key actuel.
+- Que faire : vérifiez quelle clé de récupération est correcte avant de réessayer une commande de restauration.
 
 `Legacy Matrix encrypted state for account "..." cannot be fully converted automatically because the old rust crypto store does not expose all local room keys for export.`
 
-- Signification : il s’agit de la limite stricte de l’ancien format de stockage.
-- Que faire : les clés sauvegardées peuvent toujours être restaurées, mais l’historique chiffré disponible uniquement localement peut rester indisponible.
+- Signification : c’est la limite stricte de l’ancien format de stockage.
+- Que faire : les clés sauvegardées peuvent toujours être restaurées, mais l’historique chiffré disponible uniquement en local peut rester indisponible.
 
 `matrix: failed restoring room keys from legacy encrypted-state backup: ...`
 
-- Signification : le nouveau Plugin a tenté une restauration, mais Matrix a renvoyé une erreur.
+- Signification : le nouveau plugin a tenté la restauration, mais Matrix a renvoyé une erreur.
 - Que faire : exécutez `openclaw matrix verify backup status`, puis réessayez avec `printf '%s\n' "$MATRIX_RECOVERY_KEY" | openclaw matrix verify backup restore --recovery-key-stdin` si nécessaire.
 
 ### Messages de récupération manuelle
@@ -287,18 +293,18 @@ Si l’ancien magasin signale des clés de salle qui n’ont jamais été sauveg
 
 `Store a recovery key with 'openclaw matrix verify device --recovery-key-stdin', then run 'openclaw matrix verify backup restore'.`
 
-- Signification : cet appareil ne possède actuellement pas la clé de récupération stockée.
+- Signification : cet appareil ne dispose actuellement pas de la clé de récupération stockée.
 - Que faire : définissez `MATRIX_RECOVERY_KEY`, exécutez `printf '%s\n' "$MATRIX_RECOVERY_KEY" | openclaw matrix verify device --recovery-key-stdin`, puis restaurez la sauvegarde.
 
 `Backup key mismatch on this device. Re-run 'openclaw matrix verify device --recovery-key-stdin' with the matching recovery key.`
 
 - Signification : la clé stockée ne correspond pas à la sauvegarde Matrix active.
-- Que faire : définissez `MATRIX_RECOVERY_KEY` avec la clé correcte et exécutez `printf '%s\n' "$MATRIX_RECOVERY_KEY" | openclaw matrix verify device --recovery-key-stdin`.
+- Que faire : définissez `MATRIX_RECOVERY_KEY` sur la bonne clé et exécutez `printf '%s\n' "$MATRIX_RECOVERY_KEY" | openclaw matrix verify device --recovery-key-stdin`.
 
 Si vous acceptez de perdre l’ancien historique chiffré irrécupérable, vous pouvez plutôt réinitialiser la
-base de référence de sauvegarde actuelle avec `openclaw matrix verify backup reset --yes`. Lorsque le
-secret de sauvegarde stocké est endommagé, cette réinitialisation peut aussi recréer le stockage de secrets afin que la
-nouvelle clé de sauvegarde puisse se charger correctement après le redémarrage.
+référence de sauvegarde actuelle avec `openclaw matrix verify backup reset --yes`. Lorsque le
+secret de sauvegarde stocké est endommagé, cette réinitialisation peut aussi recréer le stockage secret afin que la
+nouvelle clé de sauvegarde puisse se charger correctement après redémarrage.
 
 `Backup trust chain is not verified on this device. Re-run 'openclaw matrix verify device --recovery-key-stdin'.`
 
@@ -313,36 +319,36 @@ nouvelle clé de sauvegarde puisse se charger correctement après le redémarrag
 `Invalid Matrix recovery key: ...`
 
 - Signification : la clé fournie n’a pas pu être analysée ou ne correspondait pas au format attendu.
-- Que faire : réessayez avec la clé de récupération exacte provenant de votre client Matrix ou de votre fichier de clé de récupération.
+- Que faire : réessayez avec la clé de récupération exacte depuis votre client Matrix ou votre fichier recovery-key.
 
 `Matrix recovery key was applied, but this device still lacks full Matrix identity trust.`
 
 - Signification : OpenClaw a pu appliquer la clé de récupération, mais Matrix n’a toujours pas
-  établi une confiance complète dans l’identité par signature croisée pour cet appareil. Consultez la
+  établi une confiance complète d’identité par signature croisée pour cet appareil. Vérifiez la
   sortie de la commande pour `Recovery key accepted`, `Backup usable`,
   `Cross-signing verified` et `Device verified by owner`.
 - Que faire : exécutez `openclaw matrix verify self`, acceptez la demande dans un autre
-  client Matrix, comparez le SAS et saisissez `yes` uniquement lorsqu’il correspond. La
-  commande attend la confiance complète dans l’identité Matrix avant de signaler la réussite. Utilisez
+  client Matrix, comparez le SAS et tapez `yes` uniquement lorsqu’il correspond. La
+  commande attend la confiance complète d’identité Matrix avant de signaler la réussite. Utilisez
   `printf '%s\n' "$MATRIX_RECOVERY_KEY" | openclaw matrix verify bootstrap --recovery-key-stdin --force-reset-cross-signing`
   uniquement lorsque vous voulez intentionnellement remplacer l’identité de signature croisée actuelle.
 
 `Matrix key backup is not active on this device after loading from secret storage.`
 
-- Signification : le stockage de secrets n’a pas produit de session de sauvegarde active sur cet appareil.
+- Signification : le stockage secret n’a pas produit de session de sauvegarde active sur cet appareil.
 - Que faire : vérifiez d’abord l’appareil, puis revérifiez avec `openclaw matrix verify backup status`.
 
 `Matrix crypto backend cannot load backup keys from secret storage. Verify this device with 'openclaw matrix verify device --recovery-key-stdin' first.`
 
-- Signification : cet appareil ne peut pas restaurer depuis le stockage de secrets tant que la vérification de l’appareil n’est pas terminée.
+- Signification : cet appareil ne peut pas restaurer depuis le stockage secret tant que la vérification de l’appareil n’est pas terminée.
 - Que faire : exécutez d’abord `printf '%s\n' "$MATRIX_RECOVERY_KEY" | openclaw matrix verify device --recovery-key-stdin`.
 
-### Messages d’installation de Plugin personnalisé
+### Messages d’installation de plugin personnalisé
 
 `Matrix is installed from a custom path that no longer exists: ...`
 
-- Signification : votre enregistrement d’installation de Plugin pointe vers un chemin local qui n’existe plus.
-- Que faire : réinstallez avec `openclaw plugins install @openclaw/matrix`, ou si vous exécutez depuis un checkout de dépôt, `openclaw plugins install ./path/to/local/matrix-plugin`.
+- Signification : votre enregistrement d’installation de plugin pointe vers un chemin local qui n’existe plus.
+- Que faire : réinstallez avec `openclaw plugins install @openclaw/matrix`, ou, si vous exécutez depuis un checkout de dépôt, `openclaw plugins install ./path/to/local/matrix-plugin`.
 
 ## Si l’historique chiffré ne revient toujours pas
 
@@ -354,11 +360,11 @@ openclaw matrix verify backup status --verbose
 printf '%s\n' "$MATRIX_RECOVERY_KEY" | openclaw matrix verify backup restore --recovery-key-stdin --verbose
 ```
 
-Si la sauvegarde se restaure avec succès, mais que certains anciens salons ont toujours un historique manquant, ces clés manquantes n’ont probablement jamais été sauvegardées par le Plugin précédent.
+Si la sauvegarde se restaure correctement mais que certaines anciennes salles n’ont toujours pas d’historique, ces clés manquantes n’avaient probablement jamais été sauvegardées par le plugin précédent.
 
-## Si vous voulez repartir à neuf pour les futurs messages
+## Si vous voulez repartir de zéro pour les futurs messages
 
-Si vous acceptez de perdre l’ancien historique chiffré irrécupérable et voulez seulement une base de référence de sauvegarde propre pour la suite, exécutez ces commandes dans l’ordre :
+Si vous acceptez de perdre l’ancien historique chiffré irrécupérable et voulez seulement une référence de sauvegarde propre pour la suite, exécutez ces commandes dans l’ordre :
 
 ```bash
 openclaw matrix verify backup reset --yes
@@ -366,12 +372,12 @@ openclaw matrix verify backup status --verbose
 openclaw matrix verify status
 ```
 
-Si l’appareil n’est toujours pas vérifié après cela, terminez la vérification depuis votre client Matrix en comparant les emoji SAS ou les codes décimaux et en confirmant qu’ils correspondent.
+Si l’appareil n’est toujours pas vérifié après cela, terminez la vérification depuis votre client Matrix en comparant les émojis SAS ou les codes décimaux et en confirmant qu’ils correspondent.
 
 ## Connexe
 
 - [Matrix](/fr/channels/matrix) : configuration du canal.
 - [Règles push Matrix](/fr/channels/matrix-push-rules) : routage des notifications.
-- [Doctor](/fr/gateway/doctor) : contrôle d’intégrité et déclencheur de migration automatique.
-- [Guide de migration](/fr/install/migrating) : tous les chemins de migration (déplacements de machine, importations intersystèmes).
-- [Plugins](/fr/tools/plugin) : installation et enregistrement de Plugin.
+- [Doctor](/fr/gateway/doctor) : vérification de santé et déclencheur de migration automatique.
+- [Guide de migration](/fr/install/migrating) : tous les chemins de migration (déplacements de machine, imports inter-systèmes).
+- [Plugins](/fr/tools/plugin) : installation et enregistrement des plugins.

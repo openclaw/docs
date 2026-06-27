@@ -1,26 +1,27 @@
 ---
 read_when:
-    - أنت تثبّت أو تهيّئ أو تدقق Plugin الكركند
-summary: أداة سير عمل ذات أنواع محددة مع موافقات قابلة للاستئناف.
-title: Plugin الكركند
+    - تقوم بتثبيت Plugin lobster أو تهيئته أو تدقيقه
+summary: Plugin لأداة سير عمل Lobster لخطوط أنابيب مكتوبة وموافقات قابلة للاستئناف.
+title: Plugin Lobster
 x-i18n:
-    generated_at: "2026-05-03T07:37:17Z"
+    generated_at: "2026-06-27T18:13:29Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 50b4849c8ea841a543655eead358c550f223a3100ac538b41c27f59706e6cf27
+    source_hash: b91ea189fe8339380e2a7ef8a8761ea1591e1f1d8459b4a554211128c33f338b
     source_path: plugins/reference/lobster.md
     workflow: 16
 ---
 
 # Plugin Lobster
 
-أداة سير عمل ذات أنواع مع موافقات قابلة للاستئناف.
+Plugin أداة سير عمل Lobster للأنابيب المكتوبة والموافقات القابلة للاستئناف.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/lobster`
 - مسار التثبيت: npm؛ ClawHub
 
-## الواجهة
+## السطح
 
 العقود: الأدوات

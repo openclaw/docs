@@ -1,27 +1,28 @@
 ---
 read_when:
-    - Configurer les mises à jour visibles de progression pour les tours de conversation de longue durée
-    - Choisir entre les modes de diffusion partielle, par blocs et de progression
+    - Configurer les mises à jour de progression visibles pour les tours de chat longs
+    - Choisir entre les modes de streaming partiel, par bloc et de progression
     - Expliquer comment OpenClaw met à jour un message de canal pendant que le travail est en cours
-    - Dépannage des brouillons d’avancement, des messages d’avancement autonomes ou de la solution de repli de finalisation
-summary: 'Brouillons d’avancement : un seul message visible de travail en cours qui se met à jour pendant l’exécution d’un agent'
-title: Brouillons d’avancement
+    - Dépannage des brouillons de progression, des messages de progression autonomes ou de la solution de repli de finalisation
+summary: 'Brouillons de progression : un message de travail en cours visible qui se met à jour pendant l’exécution d’un agent'
+title: Brouillons de progression
 x-i18n:
-    generated_at: "2026-05-11T20:34:03Z"
+    generated_at: "2026-06-27T17:26:22Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3d84027a412a2c62ea9a5698d015c7aeb8a7f27d9db79112bb2c1c10f97ebd88
+    source_hash: 7cc005ed39c2a4a6d887748c769c9d2bb9c133aeeda87b2c11bfe5360f364fdd
     source_path: concepts/progress-drafts.md
     workflow: 16
 ---
 
-Les brouillons de progression rendent les longs tours d’agent plus vivants dans le chat sans transformer
+Les brouillons de progression donnent de la vie aux longs tours d’agent dans la discussion sans transformer
 la conversation en pile de réponses d’état temporaires.
 
-Lorsque les brouillons de progression sont activés, OpenClaw crée un seul message
-visible de travail en cours seulement après que le tour a prouvé qu’il effectue un vrai travail, le met à jour pendant que
-l’agent lit, planifie, appelle des outils ou attend une approbation, puis transforme ce brouillon
-en réponse finale lorsque le canal peut le faire en toute sécurité.
+Lorsque les brouillons de progression sont activés, OpenClaw crée un seul message visible
+de travail en cours uniquement après que le tour prouve qu’il effectue un vrai travail,
+le met à jour pendant que l’agent lit, planifie, appelle des outils ou attend une approbation,
+puis transforme ce brouillon en réponse finale lorsque le canal peut le faire en toute sécurité.
 
 ```text
 Shelling...
@@ -30,8 +31,8 @@ Shelling...
 🛠️ Bash: run tests
 ```
 
-Utilisez les brouillons de progression lorsque vous voulez un seul message d’état ordonné pendant un travail intensif en outils
-et la réponse finale lorsque le tour est terminé.
+Utilisez les brouillons de progression lorsque vous voulez un seul message d’état propre pendant un travail
+intensif en outils, puis la réponse finale lorsque le tour est terminé.
 
 ## Démarrage rapide
 
@@ -49,51 +50,51 @@ Activez les brouillons de progression par canal avec `streaming.mode: "progress"
 }
 ```
 
-C’est généralement suffisant. OpenClaw choisira un libellé automatique d’un mot, attendra
-que le travail dure au moins cinq secondes ou émette un second événement de travail, ajoutera des lignes de
-progression compactes pendant que du travail utile se produit, et supprimera le bavardage de progression autonome
-en double pour ce tour.
+Cela suffit généralement. OpenClaw choisira un libellé automatique d’un seul mot, attendra
+que le travail dure au moins cinq secondes ou émette un deuxième événement de travail, ajoutera des lignes de
+progression compactes pendant l’exécution d’un travail utile, et supprimera les bavardages autonomes
+de progression en double pour ce tour.
 
 ## Ce que voient les utilisateurs
 
 Un brouillon de progression comporte deux parties :
 
-| Partie                | Objectif                                                                                 |
-| --------------------- | ---------------------------------------------------------------------------------------- |
-| Libellé               | Une courte ligne de démarrage/d’état comme `Thinking...` ou `Shelling...`.               |
-| Lignes de progression | Des mises à jour d’exécution compactes utilisant les mêmes icônes d’outils et formateur de détails que la sortie détaillée. |
+| Partie                | Objectif                                                                                          |
+| --------------------- | ------------------------------------------------------------------------------------------------- |
+| Libellé               | Une courte ligne de démarrage/d’état telle que `Working` ou `Shelling`.                            |
+| Lignes de progression | Des mises à jour d’exécution compactes utilisant les mêmes icônes d’outils et le même formateur de détails que la sortie détaillée. |
 
-Le libellé apparaît après que l’agent commence un travail significatif et soit reste occupé
-pendant cinq secondes, soit émet un second événement de travail. Il fait partie de la liste déroulante des lignes de
-progression, donc l’état de démarrage défile hors de vue une fois qu’assez de travail concret apparaît.
+Le libellé apparaît après que l’agent commence un travail significatif et reste occupé
+pendant cinq secondes ou émet un deuxième événement de travail. Il fait partie de la liste déroulante
+des lignes de progression, donc l’état de démarrage disparaît du défilement dès qu’assez de travail concret apparaît.
 Les réponses en texte brut uniquement n’affichent pas de brouillon de progression. Les lignes de progression sont ajoutées
 uniquement lorsque l’agent émet des mises à jour de travail utiles, par exemple `🛠️ Bash: run tests`,
 `🔎 Web Search: for "discord edit message"` ou `✍️ Write: to /tmp/file`.
 Par défaut, elles utilisent le même mode d’explication compact que `/verbose` ; définissez
-`agents.defaults.toolProgressDetail: "raw"` lors du débogage si vous voulez aussi ajouter les
-commandes/détails bruts.
+`agents.defaults.toolProgressDetail: "raw"` lors du débogage si vous voulez aussi que les commandes/détails bruts
+soient ajoutés.
 La réponse finale remplace le brouillon lorsque c’est possible ; sinon
-OpenClaw envoie normalement la réponse finale et nettoie ou cesse de mettre à jour le
+OpenClaw envoie la réponse finale normalement et nettoie ou cesse de mettre à jour le
 brouillon selon le transport du canal.
 
 ## Choisir un mode
 
 `channels.<channel>.streaming.mode` contrôle le comportement visible en cours :
 
-| Mode       | Idéal pour                               | Ce qui apparaît dans le chat                         |
-| ---------- | ---------------------------------------- | ---------------------------------------------------- |
-| `off`      | Canaux silencieux                        | Seulement la réponse finale.                         |
-| `partial`  | Voir apparaître le texte de la réponse   | Un brouillon modifié avec le dernier texte de réponse. |
-| `block`    | Morceaux d’aperçu de réponse plus grands | Un aperçu mis à jour ou ajouté par morceaux plus grands. |
-| `progress` | Tours intensifs en outils ou longs       | Un brouillon d’état, puis la réponse finale.         |
+| Mode       | Idéal pour                           | Ce qui apparaît dans la discussion                  |
+| ---------- | ------------------------------------ | --------------------------------------------------- |
+| `off`      | Canaux silencieux                    | Uniquement la réponse finale.                       |
+| `partial`  | Voir apparaître le texte de réponse  | Un brouillon modifié avec le dernier texte de réponse. |
+| `block`    | Morceaux plus grands d’aperçu de réponse | Un aperçu mis à jour ou ajouté par morceaux plus grands. |
+| `progress` | Tours intensifs en outils ou longs   | Un brouillon d’état, puis la réponse finale.        |
 
 Choisissez `progress` lorsque les utilisateurs se soucient davantage de « ce qui se passe » que de regarder
-le texte de la réponse s’afficher jeton par jeton.
+le texte de la réponse défiler jeton par jeton.
 
 Choisissez `partial` lorsque la réponse elle-même est le signal de progression.
 
-Choisissez `block` lorsque vous voulez des mises à jour d’aperçu du brouillon en morceaux de texte plus grands. Sur
-Discord et Telegram, `streaming.mode: "block"` reste un streaming d’aperçu, pas
+Choisissez `block` lorsque vous voulez des mises à jour d’aperçu du brouillon par morceaux de texte plus grands. Sur
+Discord et Telegram, `streaming.mode: "block"` reste une diffusion d’aperçu, pas
 une livraison normale par blocs. Utilisez `streaming.block.enabled` ou l’ancien
 `blockStreaming` lorsque vous voulez des réponses normales par blocs.
 
@@ -101,30 +102,30 @@ une livraison normale par blocs. Utilisez `streaming.block.enabled` ou l’ancie
 
 Les libellés de progression se trouvent sous `channels.<channel>.streaming.progress`.
 
-Le libellé par défaut est `auto`, qui choisit dans le groupe de libellés
-intégrés à OpenClaw, composés d’un seul mot suivi de points de suspension :
+Le libellé par défaut est `auto`, qui choisit dans le groupe intégré de libellés
+d’un seul mot d’OpenClaw :
 
 ```text
-Thinking...
-Shelling...
-Scuttling...
-Clawing...
-Pinching...
-Molting...
-Bubbling...
-Tiding...
-Reefing...
-Cracking...
-Sifting...
-Brining...
-Nautiling...
-Krilling...
-Barnacling...
-Lobstering...
-Tidepooling...
-Pearling...
-Snapping...
-Surfacing...
+Working
+Shelling
+Scuttling
+Clawing
+Pinching
+Molting
+Bubbling
+Tiding
+Reefing
+Cracking
+Sifting
+Brining
+Nautiling
+Krilling
+Barnacling
+Lobstering
+Tidepooling
+Pearling
+Snapping
+Surfacing
 ```
 
 Utilisez un libellé fixe :
@@ -162,7 +163,7 @@ Utilisez votre propre groupe de libellés automatiques :
 }
 ```
 
-Masquez le libellé et affichez seulement les lignes de progression :
+Masquez le libellé et affichez uniquement les lignes de progression :
 
 ```json5
 {
@@ -182,8 +183,52 @@ Masquez le libellé et affichez seulement les lignes de progression :
 ## Contrôler les lignes de progression
 
 Les lignes de progression sont activées par défaut en mode progression. Elles proviennent de vrais événements
-d’exécution : démarrages d’outils, mises à jour d’éléments, plans de tâches, approbations, sortie de commandes, résumés
-de correctifs et activités d’agent similaires.
+d’exécution : démarrages d’outils, mises à jour d’éléments, plans de tâches, approbations, sortie de commande, résumés
+de correctifs et activités similaires de l’agent.
+
+Les outils peuvent aussi émettre une progression typée pendant qu’un seul appel d’outil est encore en cours.
+C’est ainsi qu’une récupération ou une recherche lente peut mettre à jour le brouillon visible avant que l’outil
+ne renvoie son résultat final. La mise à jour de progression est un résultat partiel d’outil avec
+un contenu de modèle vide et des métadonnées explicites de canal public :
+
+```json
+{
+  "content": [],
+  "progress": {
+    "text": "Fetching page content...",
+    "visibility": "channel",
+    "privacy": "public",
+    "id": "web_fetch:fetching"
+  }
+}
+```
+
+OpenClaw affiche uniquement `progress.text` dans l’interface de progression du canal. Le
+résultat normal de l’outil arrive quand même plus tard sous forme de `content` et de `details`, et c’est la
+seule partie renvoyée au modèle.
+
+Lorsque vous ajoutez une progression à un outil, utilisez un message court et générique, puis retardez-le jusqu’à ce que
+l’opération soit en attente assez longtemps pour être utile :
+
+```typescript
+const clearProgressTimer = scheduleToolProgress(
+  onUpdate,
+  { text: "Fetching page content...", id: "web_fetch:fetching" },
+  5_000,
+  { signal },
+);
+
+try {
+  return await runToolWork();
+} finally {
+  clearProgressTimer();
+}
+```
+
+Ce modèle signifie que les appels rapides n’affichent pas de ligne de progression, que les appels longs en affichent une
+tant qu’ils sont encore en attente, et que les appels annulés effacent le minuteur avant qu’une progression obsolète
+puisse apparaître. Le texte de progression est un canal latéral d’interface public, il ne doit donc pas
+inclure de secrets, d’arguments bruts, de contenu récupéré, de sortie de commande ou de texte de page.
 
 OpenClaw utilise le même formateur pour les brouillons de progression et `/verbose` :
 
@@ -198,15 +243,14 @@ OpenClaw utilise le même formateur pour les brouillons de progression et `/verb
 ```
 
 `"explain"` est la valeur par défaut et garde les brouillons stables avec des libellés concis comme
-`🛠️ check JS syntax for /tmp/app.js`. `"raw"` ajoute la commande ou le détail sous-jacent
-lorsqu’il est disponible, ce qui est utile pendant le débogage mais plus bruyant dans le
-chat.
+`🛠️ check JS syntax for /tmp/app.js`. `"raw"` ajoute la commande/le détail sous-jacent
+lorsqu’il est disponible, ce qui est utile pendant le débogage mais plus bruyant dans la discussion.
 
 Par exemple, la même commande apparaît différemment selon le mode de détail :
 
-| Mode      | Ligne de progression                                      |
-| --------- | --------------------------------------------------------- |
-| `explain` | `🛠️ check JS syntax for /tmp/app.js`                     |
+| Mode      | Ligne de progression                                         |
+| --------- | ------------------------------------------------------------ |
+| `explain` | `🛠️ check JS syntax for /tmp/app.js`                         |
 | `raw`     | `🛠️ check JS syntax for /tmp/app.js, node --check /tmp/app.js` |
 
 Limitez le nombre de lignes qui restent visibles :
@@ -226,14 +270,32 @@ Limitez le nombre de lignes qui restent visibles :
 }
 ```
 
-Les lignes de progression sont compactées automatiquement afin de réduire le réagencement des bulles de chat pendant que le brouillon est modifié.
+Les lignes de progression sont compactées automatiquement afin de réduire le réagencement des bulles de discussion pendant la modification du brouillon.
 
 OpenClaw tronque les longues lignes de progression par défaut afin que les modifications répétées du brouillon ne
-retournent pas à la ligne différemment à chaque mise à jour. Le préfixe reste lisible, et les longs détails
-comme les chemins ou les commandes brutes sont raccourcis avec des points de suspension.
+fassent pas des retours à la ligne différents à chaque mise à jour. Le budget par ligne par défaut est de 120 caractères.
+La prose est coupée à une limite de mot, tandis que les longs détails comme les chemins ou commandes brutes
+sont raccourcis avec des points de suspension au milieu afin que le suffixe reste visible.
 
-Slack peut afficher les lignes de progression sous forme de champs Block Kit structurés au lieu d’un
-seul corps de texte :
+Ajustez le budget par ligne :
+
+```json5
+{
+  channels: {
+    discord: {
+      streaming: {
+        mode: "progress",
+        progress: {
+          maxLineChars: 160,
+        },
+      },
+    },
+  },
+}
+```
+
+Slack peut afficher les lignes de progression sous forme de champs Block Kit structurés plutôt que dans un
+corps de texte unique :
 
 ```json5
 {
@@ -251,9 +313,9 @@ seul corps de texte :
 ```
 
 Le rendu enrichi conserve le même repli en texte brut afin que les canaux et clients qui
-ne prennent pas en charge la forme plus riche puissent toujours afficher le texte de progression compact.
+ne prennent pas en charge la forme plus riche puissent quand même afficher le texte de progression compact.
 
-Conservez le brouillon de progression unique, mais masquez les lignes d’outils et de tâches :
+Conservez le brouillon de progression unique mais masquez les lignes d’outils et de tâches :
 
 ```json5
 {
@@ -270,76 +332,73 @@ Conservez le brouillon de progression unique, mais masquez les lignes d’outils
 }
 ```
 
-Avec `toolProgress: false`, OpenClaw supprime toujours les anciens messages autonomes
-de progression des outils pour ce tour. Le canal reste visuellement silencieux jusqu’à la
+Avec `toolProgress: false`, OpenClaw supprime encore les anciens messages autonomes
+de progression d’outils pour ce tour. Le canal reste visuellement silencieux jusqu’à la
 réponse finale, sauf pour le libellé si l’un est configuré.
 
 ## Comportement des canaux
 
 Chaque canal utilise le transport le plus propre qu’il prend en charge :
 
-| Canal           | Transport de progression                  | Notes                                                                 |
-| --------------- | ----------------------------------------- | --------------------------------------------------------------------- |
-| Discord         | Envoyer un message, puis le modifier.     | Le texte final est modifié en place lorsqu’il tient dans un message d’aperçu sûr. |
-| Matrix          | Envoyer un événement, puis le modifier.   | La configuration de streaming au niveau du compte contrôle les brouillons au niveau du compte. |
-| Microsoft Teams | Stream Teams natif dans les chats personnels. | `streaming.mode: "block"` correspond à la livraison par blocs Teams. |
-| Slack           | Stream natif ou publication de brouillon modifiable. | La disponibilité du fil affecte la possibilité d’utiliser le streaming natif. |
-| Telegram        | Envoyer un message, puis le modifier.     | Les anciens brouillons visibles peuvent être remplacés afin que les horodatages finaux restent utiles. |
-| Mattermost      | Publication de brouillon modifiable.      | L’activité des outils est intégrée à la même publication de style brouillon. |
+| Canal           | Transport de progression                    | Notes                                                                    |
+| --------------- | ------------------------------------------- | ------------------------------------------------------------------------ |
+| Discord         | Envoyer un message, puis le modifier.       | Le texte final est modifié sur place lorsqu’il tient dans un message d’aperçu sûr. |
+| Matrix          | Envoyer un événement, puis le modifier.     | La configuration de diffusion au niveau du compte contrôle les brouillons au niveau du compte. |
+| Microsoft Teams | Flux Teams natif dans les discussions personnelles. | `streaming.mode: "block"` correspond à la livraison par blocs de Teams. |
+| Slack           | Flux natif ou publication de brouillon modifiable. | La disponibilité du fil affecte la possibilité d’utiliser la diffusion native. |
+| Telegram        | Envoyer un message, puis le modifier.       | Les anciens brouillons visibles peuvent être remplacés afin que les horodatages finaux restent utiles. |
+| Mattermost      | Publication de brouillon modifiable.        | L’activité des outils est intégrée dans la même publication de style brouillon. |
 
-Les canaux sans prise en charge sûre de la modification reviennent généralement aux indicateurs de saisie ou
-à une livraison uniquement finale.
+Les canaux sans prise en charge sûre de la modification se rabattent généralement sur des indicateurs de saisie ou
+une livraison finale uniquement.
 
 ## Finalisation
 
-Lorsque la réponse finale est prête, OpenClaw tente de garder le chat propre :
+Lorsque la réponse finale est prête, OpenClaw essaie de garder la discussion propre :
 
-- Si le brouillon peut devenir la réponse finale en toute sécurité, OpenClaw le modifie en place.
-- Si le canal utilise un streaming de progression natif, OpenClaw finalise ce stream
+- Si le brouillon peut devenir la réponse finale en toute sécurité, OpenClaw le modifie sur place.
+- Si le canal utilise une diffusion de progression native, OpenClaw finalise ce flux
   lorsque le transport natif accepte le texte final.
-- Si la réponse finale contient un média, une invite d’approbation, une cible de réponse explicite,
-  trop de morceaux, ou un échec de modification/envoi, OpenClaw envoie la réponse finale via
-  le chemin de livraison normal du canal.
+- Si la réponse finale comporte des médias, une demande d’approbation, une cible de réponse explicite,
+  trop de morceaux, ou un échec de modification/envoi, OpenClaw envoie la réponse finale par
+  le chemin normal de livraison du canal.
 
 Le chemin de repli est intentionnel. Il vaut mieux envoyer une nouvelle réponse finale que
-perdre du texte, mal rattacher une réponse à un fil, ou écraser un brouillon avec une charge utile que le canal
+perdre du texte, placer une réponse dans le mauvais fil, ou écraser un brouillon avec une charge utile que le canal
 ne peut pas représenter en toute sécurité.
 
 ## Dépannage
 
-**Je vois seulement la réponse finale.**
+**Je ne vois que la réponse finale.**
 
 Vérifiez que `channels.<channel>.streaming.mode` est défini sur `progress` pour le
 compte ou le canal qui a traité le message. Certains chemins de groupe ou de réponse avec citation peuvent
 désactiver les aperçus de brouillon pour un tour lorsque le canal ne peut pas modifier en toute sécurité le bon
 message.
 
-**Je vois le libellé, mais pas les lignes d’outils.**
+**Je vois le libellé mais aucune ligne d’outil.**
 
-Vérifiez `streaming.progress.toolProgress`. S’il vaut `false`, OpenClaw conserve le
-comportement de brouillon unique mais masque les lignes de progression d’outils et de tâches.
+Vérifiez `streaming.progress.toolProgress`. Si sa valeur est `false`, OpenClaw conserve le
+comportement de brouillon unique mais masque les lignes de progression des outils et des tâches.
 
 **Je vois un nouveau message final au lieu d’un brouillon modifié.**
 
 C’est un repli de sécurité. Cela peut arriver pour les réponses avec médias, les réponses longues,
 les cibles de réponse explicites, les anciens brouillons Telegram, les cibles de fil Slack manquantes,
-les messages d’aperçu supprimés, ou l’échec de finalisation d’un stream natif.
+les messages d’aperçu supprimés, ou l’échec de finalisation d’un flux natif.
 
 **Je vois encore des messages de progression autonomes.**
 
-Le mode progression supprime les messages autonomes de progression des outils par défaut lorsqu’un brouillon
+Le mode progression supprime les messages autonomes de progression d’outils par défaut lorsqu’un brouillon
 est actif. Si des messages autonomes apparaissent encore, vérifiez que le tour utilise réellement
 le mode progression et non `streaming.mode: "off"` ou un chemin de canal qui
 ne peut pas créer de brouillon pour ce message.
 
 **Teams se comporte différemment de Discord ou Telegram.**
 
-Microsoft Teams utilise un stream natif dans les chats personnels au lieu du transport d’aperçu générique
-par envoi puis modification. Teams traite aussi `streaming.mode: "block"` comme
-une livraison par blocs Teams, car il ne dispose pas du même mode de blocs d’aperçu de brouillon
-utilisé par Discord et Telegram.
+Microsoft Teams utilise un flux natif dans les discussions personnelles au lieu du transport générique d’aperçu par envoi et modification. Teams traite aussi `streaming.mode: "block"` comme une livraison par blocs Teams, car il ne dispose pas du même mode de bloc d’aperçu de brouillon utilisé par Discord et Telegram.
 
-## Connexe
+## Articles connexes
 
 - [Streaming et découpage](/fr/concepts/streaming)
 - [Messages](/fr/concepts/messages)

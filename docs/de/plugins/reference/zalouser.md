@@ -1,27 +1,28 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das zalouser-Plugin
-summary: Fügt die Zalo Personal-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
+    - Sie installieren, konfigurieren oder prüfen das zalouser Plugin
+summary: OpenClaw-Plugin für persönliche Zalo-Konten über native zca-js-Integration.
 title: Zalo Personal-Plugin
 x-i18n:
-    generated_at: "2026-05-03T06:43:04Z"
+    generated_at: "2026-06-27T17:57:45Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 16ed8b255fd10e2a21bc9d9665c1eb26440929e5a46fe2f9dbfae929a25417a0
+    source_hash: c03db694c940cb1fb20f4a2f73512c9d3cf3c79e910cc6a0dd4aa38bd4465ed5
     source_path: plugins/reference/zalouser.md
     workflow: 16
 ---
 
 # Zalo Personal Plugin
 
-Fügt die Zalo Personal-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
+OpenClaw-Plugin für persönliche Zalo-Konten über native zca-js-Integration.
 
 ## Distribution
 
 - Paket: `@openclaw/zalouser`
 - Installationsweg: npm; ClawHub
 
-## Oberfläche
+## Schnittstelle
 
 channels: zalouser; contracts: tools
 

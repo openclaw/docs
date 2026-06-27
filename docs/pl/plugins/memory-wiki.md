@@ -2,124 +2,121 @@
 read_when:
     - Chcesz trwałej wiedzy wykraczającej poza zwykłe notatki MEMORY.md
     - Konfigurujesz dołączony Plugin memory-wiki
-    - Chcesz zrozumieć wiki_search, wiki_get lub tryb mostka
-summary: 'memory-wiki: skompilowany magazyn wiedzy z pochodzeniem danych, twierdzeniami, panelami i trybem mostka'
+    - Chcesz zrozumieć wiki_search, wiki_get lub tryb mostu
+summary: 'memory-wiki: skompilowany magazyn wiedzy z pochodzeniem, twierdzeniami, pulpitami i trybem pomostu'
 title: Wiki pamięci
 x-i18n:
-    generated_at: "2026-05-04T02:25:56Z"
+    generated_at: "2026-06-27T17:55:04Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b070177b7c1217e9102bc57680b4009265e3584ede7ad6dc3ba7b6393260fefe
+    source_hash: 91512fbab8bfa87d3be29a75c217f99dbae11d9d7065fcc5ae9aa2c51847ec42
     source_path: plugins/memory-wiki.md
     workflow: 16
 ---
 
-`memory-wiki` to wbudowany plugin, który przekształca trwałą pamięć w skompilowany
-magazyn wiedzy.
+`memory-wiki` to dołączony plugin, który przekształca trwałą pamięć w skompilowany
+skarbiec wiedzy.
 
-Nie zastępuje **aktywnego pluginu pamięci**. Aktywny plugin pamięci nadal
-odpowiada za przywoływanie, promowanie, indeksowanie i Dreaming. `memory-wiki`
-działa obok niego i kompiluje trwałą wiedzę w nawigowalną wiki z deterministycznymi
-stronami, strukturalnymi twierdzeniami, pochodzeniem, pulpitami oraz digestami
-czytelnymi maszynowo.
+Nie zastępuje on pluginu aktywnej pamięci. Plugin aktywnej pamięci nadal
+odpowiada za przywoływanie, promowanie, indeksowanie i Dreaming. `memory-wiki` działa obok niego
+i kompiluje trwałą wiedzę do przeglądalnej wiki z deterministycznymi stronami,
+ustrukturyzowanymi twierdzeniami, pochodzeniem, panelami kontrolnymi i streszczeniami czytelnymi maszynowo.
 
-Użyj go, gdy chcesz, aby pamięć działała bardziej jak utrzymywana warstwa wiedzy,
+Użyj go, gdy chcesz, aby pamięć zachowywała się bardziej jak utrzymywana warstwa wiedzy,
 a mniej jak stos plików Markdown.
 
 ## Co dodaje
 
-- Dedykowany magazyn wiki z deterministycznym układem stron
-- Strukturalne metadane twierdzeń i dowodów, nie tylko prozę
+- Dedykowany skarbiec wiki z deterministycznym układem stron
+- Ustrukturyzowane metadane twierdzeń i dowodów, nie tylko prozę
 - Pochodzenie, pewność, sprzeczności i otwarte pytania na poziomie strony
-- Skompilowane digesty dla agentów i konsumentów runtime
-- Natywne dla wiki narzędzia search/get/apply/lint
-- Opcjonalny tryb mostu, który importuje publiczne artefakty z aktywnego pluginu pamięci
-- Opcjonalny tryb renderowania przyjazny Obsidianowi i integrację z CLI
+- Skompilowane streszczenia dla odbiorców po stronie agentów/środowiska wykonawczego
+- Natywne dla wiki narzędzia wyszukiwania/pobierania/stosowania/lintowania
+- Importy Open Knowledge Format do skompilowanych pojęć wiki
+- Opcjonalny tryb pomostowy importujący publiczne artefakty z pluginu aktywnej pamięci
+- Opcjonalny tryb renderowania przyjazny dla Obsidian i integrację z CLI
 
 ## Jak pasuje do pamięci
 
-Pomyśl o tym podziale tak:
+Podział można rozumieć tak:
 
-| Warstwa                                                 | Odpowiada za                                                                              |
+| Warstwa                                                   | Odpowiada za                                                                                       |
 | ------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| Aktywny plugin pamięci (`memory-core`, QMD, Honcho itd.) | Przywoływanie, wyszukiwanie semantyczne, promowanie, Dreaming, runtime pamięci             |
-| `memory-wiki`                                           | Skompilowane strony wiki, syntezy z bogatym pochodzeniem, pulpity, wiki search/get/apply   |
+| Plugin aktywnej pamięci (`memory-core`, QMD, Honcho itd.) | Przywoływanie, wyszukiwanie semantyczne, promowanie, Dreaming, środowisko wykonawcze pamięci                               |
+| `memory-wiki`                                           | Skompilowane strony wiki, syntezy bogate w pochodzenie, panele kontrolne, wyszukiwanie/pobieranie/stosowanie specyficzne dla wiki |
 
-Jeśli aktywny plugin pamięci udostępnia współdzielone artefakty przywoływania,
-OpenClaw może przeszukiwać obie warstwy jednym przebiegiem za pomocą
-`memory_search corpus=all`.
+Jeśli plugin aktywnej pamięci udostępnia współdzielone artefakty przywoływania, OpenClaw może przeszukiwać
+obie warstwy w jednym przebiegu za pomocą `memory_search corpus=all`.
 
-Gdy potrzebujesz rankingu specyficznego dla wiki, pochodzenia albo bezpośredniego
-dostępu do strony, użyj zamiast tego natywnych narzędzi wiki.
+Gdy potrzebujesz rankingu specyficznego dla wiki, pochodzenia lub bezpośredniego dostępu do strony, użyj
+zamiast tego narzędzi natywnych dla wiki.
 
 ## Zalecany wzorzec hybrydowy
 
-Dobrym ustawieniem domyślnym dla konfiguracji local-first jest:
+Mocnym ustawieniem domyślnym dla konfiguracji lokalnych jest:
 
-- QMD jako aktywny backend pamięci do przywoływania i szerokiego wyszukiwania semantycznego
-- `memory-wiki` w trybie `bridge` dla trwałych stron z syntetyzowaną wiedzą
+- QMD jako backend aktywnej pamięci do przywoływania i szerokiego wyszukiwania semantycznego
+- `memory-wiki` w trybie `bridge` dla trwałych, syntetyzowanych stron wiedzy
 
-Ten podział działa dobrze, ponieważ każda warstwa zachowuje koncentrację:
+Ten podział działa dobrze, ponieważ każda warstwa pozostaje skupiona:
 
-- QMD utrzymuje możliwość wyszukiwania surowych notatek, eksportów sesji i dodatkowych kolekcji
-- `memory-wiki` kompiluje stabilne encje, twierdzenia, pulpity i strony źródłowe
+- QMD utrzymuje przeszukiwalne surowe notatki, eksporty sesji i dodatkowe kolekcje
+- `memory-wiki` kompiluje stabilne encje, twierdzenia, panele kontrolne i strony źródłowe
 
 Praktyczna zasada:
 
-- używaj `memory_search`, gdy chcesz jednego szerokiego przebiegu przywoływania przez pamięć
+- używaj `memory_search`, gdy chcesz wykonać jeden szeroki przebieg przywoływania przez pamięć
 - używaj `wiki_search` i `wiki_get`, gdy chcesz wyników wiki świadomych pochodzenia
 - używaj `memory_search corpus=all`, gdy chcesz, aby współdzielone wyszukiwanie obejmowało obie warstwy
 
-Jeśli tryb mostu zgłasza zero wyeksportowanych artefaktów, aktywny plugin pamięci
-nie udostępnia obecnie publicznych wejść mostu. Najpierw uruchom
-`openclaw wiki doctor`, a potem potwierdź, że aktywny plugin pamięci obsługuje
-publiczne artefakty.
+Jeśli tryb pomostowy zgłasza zero wyeksportowanych artefaktów, plugin aktywnej pamięci
+nie udostępnia jeszcze obecnie publicznych wejść pomostowych. Najpierw uruchom `openclaw wiki doctor`,
+a potem potwierdź, że plugin aktywnej pamięci obsługuje publiczne artefakty.
 
-Gdy tryb mostu jest aktywny i `bridge.readMemoryArtifacts` jest włączone,
+Gdy tryb pomostowy jest aktywny, a `bridge.readMemoryArtifacts` jest włączone,
 `openclaw wiki status`, `openclaw wiki doctor` oraz `openclaw wiki bridge
-import` czytają przez działający Gateway. Dzięki temu kontrole mostu w CLI są
-zgodne z kontekstem runtime pluginu pamięci. Jeśli most jest wyłączony albo
-odczyty artefaktów są wyłączone, te polecenia zachowują swoje lokalne/offline
-działanie.
+import` odczytują przez działający Gateway. Dzięki temu kontrole pomostowe CLI są zgodne
+z kontekstem pluginu pamięci w środowisku wykonawczym. Jeśli most jest wyłączony albo odczyty artefaktów
+są wyłączone, te polecenia zachowują swoje lokalne/offline zachowanie.
 
-## Tryby magazynu
+## Tryby skarbca
 
-`memory-wiki` obsługuje trzy tryby magazynu:
+`memory-wiki` obsługuje trzy tryby skarbca:
 
 ### `isolated`
 
-Własny magazyn, własne źródła, brak zależności od `memory-core`.
+Własny skarbiec, własne źródła, bez zależności od `memory-core`.
 
 Użyj tego, gdy chcesz, aby wiki była własnym, kuratorowanym magazynem wiedzy.
 
 ### `bridge`
 
-Czyta publiczne artefakty pamięci i zdarzenia pamięci z aktywnego pluginu pamięci
-przez publiczne styki plugin SDK.
+Odczytuje publiczne artefakty pamięci i zdarzenia pamięci z pluginu aktywnej pamięci
+przez publiczne granice SDK pluginów.
 
-Użyj tego, gdy chcesz, aby wiki kompilowała i organizowała wyeksportowane
-artefakty pluginu pamięci bez sięgania do prywatnych elementów wewnętrznych
-pluginu.
+Użyj tego, gdy chcesz, aby wiki kompilowała i porządkowała wyeksportowane artefakty pluginu pamięci
+bez sięgania do prywatnych wewnętrznych elementów pluginu.
 
-Tryb mostu może indeksować:
+Tryb pomostowy może indeksować:
 
 - wyeksportowane artefakty pamięci
 - raporty snów
-- notatki dzienne
+- dzienne notatki
 - pliki główne pamięci
 - dzienniki zdarzeń pamięci
 
 ### `unsafe-local`
 
-Jawna furtka dla prywatnych ścieżek lokalnych na tej samej maszynie.
+Jawna furtka na tej samej maszynie dla lokalnych ścieżek prywatnych.
 
 Ten tryb jest celowo eksperymentalny i nieprzenośny. Używaj go tylko wtedy, gdy
-rozumiesz granicę zaufania i konkretnie potrzebujesz dostępu do lokalnego systemu
-plików, którego tryb mostu nie może zapewnić.
+rozumiesz granicę zaufania i konkretnie potrzebujesz dostępu do lokalnego systemu plików, którego
+tryb pomostowy nie może zapewnić.
 
-## Układ magazynu
+## Układ skarbca
 
-Plugin inicjalizuje magazyn tak:
+Plugin inicjuje skarbiec w ten sposób:
 
 ```text
 <vault>/
@@ -137,20 +134,47 @@ Plugin inicjalizuje magazyn tak:
   .openclaw-wiki/
 ```
 
-Zarządzana zawartość pozostaje wewnątrz wygenerowanych bloków. Bloki notatek
-ludzkich są zachowywane.
+Zarządzana treść pozostaje wewnątrz wygenerowanych bloków. Bloki ludzkich notatek są zachowywane.
 
 Główne grupy stron to:
 
-- `sources/` dla zaimportowanego surowego materiału i stron opartych na moście
+- `sources/` dla zaimportowanych surowych materiałów i stron opartych na moście
 - `entities/` dla trwałych rzeczy, osób, systemów, projektów i obiektów
 - `concepts/` dla idei, abstrakcji, wzorców i zasad
 - `syntheses/` dla skompilowanych podsumowań i utrzymywanych zestawień
-- `reports/` dla wygenerowanych pulpitów
+- `reports/` dla wygenerowanych paneli kontrolnych
 
-## Strukturalne twierdzenia i dowody
+## Importy Open Knowledge Format
 
-Strony mogą mieć strukturalny frontmatter `claims`, nie tylko tekst swobodny.
+`memory-wiki` może importować rozpakowane pakiety Open Knowledge Format za pomocą:
+
+```bash
+openclaw wiki okf import ./bundles/ga4
+```
+
+To najczystsze dopasowanie, gdy katalog danych, crawler dokumentacji lub
+agent wzbogacający już produkuje OKF: zachowaj OKF jako przenośny artefakt wymiany,
+a następnie pozwól `memory-wiki` przekształcić go w natywne dla OpenClaw strony pojęć i
+skompilowane streszczenia.
+
+Importer podąża za strukturą OKF v0.1:
+
+- niezastrzeżone pliki `.md` są dokumentami pojęć
+- każde zaimportowane pojęcie wymaga niepustego pola frontmatter `type`
+- nieznane wartości OKF `type` są akceptowane
+- zastrzeżone pliki `index.md` i `log.md` nie są importowane jako pojęcia
+- uszkodzone lub zewnętrzne linki Markdown są zachowywane
+
+Zaimportowane strony pojęć są spłaszczane pod `concepts/`, aby istniejące ścieżki kompilowania,
+wyszukiwania, pobierania, paneli kontrolnych i streszczeń promptów widziały je bez dodawania drugiego
+drzewa wiki. Każda strona zachowuje oryginalny identyfikator pojęcia OKF, ścieżkę źródłową, `type`,
+`resource`, `tags`, znacznik czasu i pełny frontmatter producenta. Wewnętrzne linki OKF
+są przepisywane do wygenerowanych stron pojęć wiki i emitowane także jako ustrukturyzowane
+wpisy `relationships` z `kind: okf-link`.
+
+## Ustrukturyzowane twierdzenia i dowody
+
+Strony mogą zawierać ustrukturyzowany frontmatter `claims`, nie tylko swobodny tekst.
 
 Każde twierdzenie może zawierać:
 
@@ -173,32 +197,31 @@ Wpisy dowodów mogą zawierać:
 - `note`
 - `updatedAt`
 
-To właśnie sprawia, że wiki działa bardziej jak warstwa przekonań niż pasywny
-zrzut notatek. Twierdzenia mogą być śledzone, punktowane, kwestionowane i
-rozwiązywane z powrotem do źródeł.
+To sprawia, że wiki działa bardziej jak warstwa przekonań niż pasywny
+zrzut notatek. Twierdzenia można śledzić, oceniać, kwestionować i rozwiązywać z powrotem do źródeł.
 
 ## Metadane encji dla agentów
 
-Strony encji mogą też zawierać metadane routingu do użytku agentów. To generyczny
-frontmatter, więc działa dla osób, zespołów, systemów, projektów lub dowolnego
-innego typu encji.
+Strony encji mogą również zawierać metadane routingu do użycia przez agentów. Jest to ogólny
+frontmatter, więc działa dla osób, zespołów, systemów, projektów lub dowolnego innego
+typu encji.
 
 Typowe pola obejmują:
 
 - `entityType`: na przykład `person`, `team`, `system` lub `project`
 - `canonicalId`: stabilny klucz tożsamości używany między aliasami i importami
-- `aliases`: nazwy, uchwyty lub etykiety, które powinny wskazywać tę samą stronę
+- `aliases`: nazwy, uchwyty lub etykiety, które powinny wskazywać na tę samą stronę
 - `privacyTier`: `public`, `local-private`, `sensitive` lub `confirm-before-use`
 - `bestUsedFor` / `notEnoughFor`: zwarte wskazówki routingu
-- `lastRefreshedAt`: znacznik czasu odświeżenia źródła odrębny od czasu edycji strony
+- `lastRefreshedAt`: znacznik czasu odświeżenia źródła oddzielny od czasu edycji strony
 - `personCard`: opcjonalna karta routingu specyficzna dla osoby z uchwytami, profilami społecznościowymi,
-  adresami e-mail, strefą czasową, ścieżką, ask-for, avoid-asking-for, pewnością i prywatnością
+  adresami e-mail, strefą czasową, ścieżką, informacjami „pytaj o”, „nie pytaj o”, pewnością i prywatnością
 - `relationships`: typowane krawędzie do powiązanych stron z celem, rodzajem, wagą,
   pewnością, rodzajem dowodu, poziomem prywatności i notatką
 
 W przypadku wiki osób agent powinien zwykle zacząć od
-`reports/person-agent-directory.md`, a następnie otworzyć stronę osoby za pomocą
-`wiki_get`, zanim użyje danych kontaktowych lub wywnioskowanych faktów.
+`reports/person-agent-directory.md`, a następnie otworzyć stronę osoby za pomocą `wiki_get`
+przed użyciem danych kontaktowych lub wywnioskowanych faktów.
 
 Przykład:
 
@@ -250,25 +273,25 @@ claims:
 
 ## Potok kompilacji
 
-Krok kompilacji czyta strony wiki, normalizuje podsumowania i emituje stabilne
-artefakty przeznaczone dla maszyn w:
+Krok kompilacji odczytuje strony wiki, normalizuje podsumowania i emituje stabilne
+artefakty przeznaczone dla maszyn pod:
 
 - `.openclaw-wiki/cache/agent-digest.json`
 - `.openclaw-wiki/cache/claims.jsonl`
 
-Te digesty istnieją po to, aby agenci i kod runtime nie musieli scrapować stron
+Te streszczenia istnieją po to, aby agenci i kod środowiska wykonawczego nie musieli scrapować stron
 Markdown.
 
-Skompilowane wyjście zasila także:
+Skompilowany wynik zasila również:
 
-- pierwszoprzebiegowe indeksowanie wiki dla przepływów search/get
-- wyszukiwanie identyfikatora twierdzenia z powrotem do strony właścicielskiej
-- zwarte dodatki do promptów
-- generowanie raportów/pulpitów
+- pierwszoprzebiegowe indeksowanie wiki dla przepływów wyszukiwania/pobierania
+- wyszukiwanie identyfikatorów twierdzeń z powrotem do stron właścicieli
+- zwarte uzupełnienia promptów
+- generowanie raportów/paneli kontrolnych
 
-## Pulpity i raporty zdrowia
+## Panele kontrolne i raporty kondycji
 
-Gdy `render.createDashboards` jest włączone, kompilacja utrzymuje pulpity w
+Gdy `render.createDashboards` jest włączone, kompilacja utrzymuje panele kontrolne pod
 `reports/`.
 
 Wbudowane raporty obejmują:
@@ -286,24 +309,24 @@ Wbudowane raporty obejmują:
 Te raporty śledzą takie rzeczy jak:
 
 - klastry notatek o sprzecznościach
-- klastry konkurujących twierdzeń
-- twierdzenia bez strukturalnych dowodów
+- konkurujące klastry twierdzeń
+- twierdzenia bez ustrukturyzowanych dowodów
 - strony i twierdzenia o niskiej pewności
-- nieaktualna lub nieznana świeżość
+- nieaktualną lub nieznaną świeżość
 - strony z nierozwiązanymi pytaniami
 - karty routingu osób/encji
-- strukturalne krawędzie relacji
+- ustrukturyzowane krawędzie relacji
 - pokrycie klas dowodów
-- niepubliczne poziomy prywatności, które wymagają przeglądu przed użyciem
+- niepubliczne poziomy prywatności wymagające przeglądu przed użyciem
 
 ## Wyszukiwanie i pobieranie
 
 `memory-wiki` obsługuje dwa backendy wyszukiwania:
 
-- `shared`: używa współdzielonego przepływu wyszukiwania pamięci, gdy jest dostępny
-- `local`: przeszukuje wiki lokalnie
+- `shared`: użyj współdzielonego przepływu wyszukiwania pamięci, gdy jest dostępny
+- `local`: wyszukuj wiki lokalnie
 
-Obsługuje też trzy korpusy:
+Obsługuje także trzy korpusy:
 
 - `wiki`
 - `memory`
@@ -311,34 +334,34 @@ Obsługuje też trzy korpusy:
 
 Ważne zachowanie:
 
-- `wiki_search` i `wiki_get` używają skompilowanych digestów jako pierwszego przebiegu, gdy to możliwe
-- identyfikatory twierdzeń mogą wskazywać z powrotem stronę właścicielską
+- `wiki_search` i `wiki_get` używają skompilowanych streszczeń jako pierwszego przebiegu, gdy to możliwe
+- identyfikatory twierdzeń mogą być rozwiązywane z powrotem do strony właściciela
 - kwestionowane/nieaktualne/świeże twierdzenia wpływają na ranking
 - etykiety pochodzenia mogą przetrwać do wyników
-- tryb wyszukiwania może ukierunkować ranking na wyszukiwanie osoby, routing pytania, dowody
+- tryb wyszukiwania może ukierunkować ranking na wyszukiwanie osób, routing pytań, dowody
   źródłowe lub surowe twierdzenia
 
 Praktyczna zasada:
 
-- używaj `memory_search corpus=all` do jednego szerokiego przebiegu przywoływania
+- używaj `memory_search corpus=all` dla jednego szerokiego przebiegu przywoływania
 - używaj `wiki_search` + `wiki_get`, gdy zależy Ci na rankingu specyficznym dla wiki,
   pochodzeniu lub strukturze przekonań na poziomie strony
 
 Tryby wyszukiwania:
 
-- `auto`: zrównoważona wartość domyślna
+- `auto`: zrównoważone ustawienie domyślne
 - `find-person`: wzmacnia encje podobne do osób, aliasy, uchwyty, profile społecznościowe i
-  kanoniczne identyfikatory
-- `route-question`: wzmacnia karty agentów, wskazówki ask-for, wskazówki best-used-for i
+  identyfikatory kanoniczne
+- `route-question`: wzmacnia karty agentów, wskazówki „pytaj o”, wskazówki „najlepiej używać do” i
   kontekst relacji
-- `source-evidence`: wzmacnia strony źródłowe i strukturalne metadane dowodów
-- `raw-claim`: wzmacnia dopasowane strukturalne twierdzenia i zwraca metadane twierdzeń/dowodów
+- `source-evidence`: wzmacnia strony źródłowe i metadane ustrukturyzowanych dowodów
+- `raw-claim`: wzmacnia pasujące ustrukturyzowane twierdzenia i zwraca metadane twierdzeń/dowodów
   w wynikach
 
-Gdy wynik pasuje do strukturalnego twierdzenia, `wiki_search` może zwrócić
+Gdy wynik pasuje do ustrukturyzowanego twierdzenia, `wiki_search` może zwrócić
 `matchedClaimId`, `matchedClaimStatus`, `matchedClaimConfidence`,
-`evidenceKinds` i `evidenceSourceIds` w swoim ładunku szczegółów. Wyjście tekstowe
-zawiera także zwarte wiersze `Claim:` i `Evidence:`, gdy są dostępne.
+`evidenceKinds` i `evidenceSourceIds` w swoim ładunku szczegółów. Wynik tekstowy
+zawiera również zwarte wiersze `Claim:` i `Evidence:`, gdy są dostępne.
 
 ## Narzędzia agentów
 
@@ -352,24 +375,24 @@ Plugin rejestruje te narzędzia:
 
 Co robią:
 
-- `wiki_status`: bieżący tryb magazynu, zdrowie, dostępność Obsidian CLI
-- `wiki_search`: przeszukuje strony wiki oraz, gdy skonfigurowano, współdzielone korpusy pamięci;
-  akceptuje `mode` do wyszukiwania osób, routingu pytań, dowodów źródłowych lub drążenia
-  surowych twierdzeń
-- `wiki_get`: czyta stronę wiki według identyfikatora/ścieżki albo wraca do współdzielonego korpusu pamięci
+- `wiki_status`: bieżący tryb skarbca, kondycja, dostępność CLI Obsidian
+- `wiki_search`: wyszukuje strony wiki oraz, gdy skonfigurowano, współdzielone korpusy pamięci;
+  akceptuje `mode` dla wyszukiwania osób, routingu pytań, dowodów źródłowych lub szczegółowego
+  przeglądu surowych twierdzeń
+- `wiki_get`: odczytuje stronę wiki według identyfikatora/ścieżki albo wraca do współdzielonego korpusu pamięci
 - `wiki_apply`: wąskie mutacje syntezy/metadanych bez swobodnej chirurgii strony
-- `wiki_lint`: kontrole strukturalne, luki pochodzenia, sprzeczności, otwarte pytania
+- `wiki_lint`: kontrole strukturalne, braki pochodzenia, sprzeczności, otwarte pytania
 
 Plugin rejestruje też niewyłączny dodatek korpusu pamięci, więc współdzielone
-`memory_search` i `memory_get` mogą sięgać do wiki, gdy aktywny plugin pamięci
+`memory_search` i `memory_get` mogą sięgać do wiki, gdy aktywny Plugin pamięci
 obsługuje wybór korpusu.
 
 ## Zachowanie promptu i kontekstu
 
 Gdy `context.includeCompiledDigestPrompt` jest włączone, sekcje promptu pamięci
-dołączają zwarty skompilowany snapshot z `agent-digest.json`.
+dołączają kompaktową, skompilowaną migawkę z `agent-digest.json`.
 
-Ten snapshot jest celowo mały i wysokosygnałowy:
+Ta migawka jest celowo mała i zawiera tylko najważniejsze sygnały:
 
 - tylko najważniejsze strony
 - tylko najważniejsze twierdzenia
@@ -378,8 +401,8 @@ Ten snapshot jest celowo mały i wysokosygnałowy:
 - kwalifikatory pewności/świeżości
 
 Jest to opcjonalne, ponieważ zmienia kształt promptu i jest głównie przydatne dla
-silników kontekstu lub starszego składania promptów, które jawnie konsumują
-dodatki pamięci.
+silników kontekstu lub starszego składania promptów, które jawnie korzystają z
+dodatków pamięci.
 
 ## Konfiguracja
 
@@ -439,15 +462,15 @@ Kluczowe przełączniki:
 
 - `vaultMode`: `isolated`, `bridge`, `unsafe-local`
 - `vault.renderMode`: `native` lub `obsidian`
-- `bridge.readMemoryArtifacts`: importuj publiczne artefakty pluginu aktywnej pamięci
-- `bridge.followMemoryEvents`: uwzględniaj dzienniki zdarzeń w trybie bridge
+- `bridge.readMemoryArtifacts`: importuj publiczne artefakty aktywnego Pluginu pamięci
+- `bridge.followMemoryEvents`: uwzględnij dzienniki zdarzeń w trybie mostu
 - `search.backend`: `shared` lub `local`
 - `search.corpus`: `wiki`, `memory` lub `all`
 - `context.includeCompiledDigestPrompt`: dołącz kompaktową migawkę digest do sekcji promptu pamięci
-- `render.createBacklinks`: generuj deterministyczne powiązane bloki
-- `render.createDashboards`: generuj strony pulpitów
+- `render.createBacklinks`: generuj deterministyczne bloki powiązane
+- `render.createDashboards`: generuj strony paneli
 
-### Przykład: QMD + tryb bridge
+### Przykład: QMD + tryb mostu
 
 Użyj tego, gdy chcesz używać QMD do przypominania i `memory-wiki` jako utrzymywanej
 warstwy wiedzy:
@@ -487,9 +510,9 @@ warstwy wiedzy:
 
 To zachowuje:
 
-- QMD jako odpowiedzialne za przypominanie aktywnej pamięci
-- `memory-wiki` skupione na skompilowanych stronach i pulpitach
-- kształt promptu bez zmian, dopóki celowo nie włączysz promptów skompilowanego digest
+- QMD jako mechanizm odpowiedzialny za przypominanie aktywnej pamięci
+- `memory-wiki` skoncentrowane na skompilowanych stronach i panelach
+- niezmieniony kształt promptu, dopóki celowo nie włączysz promptów ze skompilowanym digestem
 
 ## CLI
 
@@ -509,36 +532,36 @@ openclaw wiki bridge import
 openclaw wiki obsidian status
 ```
 
-Zobacz [CLI: wiki](/pl/cli/wiki), aby uzyskać pełny opis poleceń.
+Zobacz [CLI: wiki](/pl/cli/wiki), aby uzyskać pełne odniesienie do poleceń.
 
 ## Obsługa Obsidian
 
-Gdy `vault.renderMode` ma wartość `obsidian`, plugin zapisuje Markdown przyjazny dla Obsidian
-i może opcjonalnie używać oficjalnego CLI `obsidian`.
+Gdy `vault.renderMode` ma wartość `obsidian`, Plugin zapisuje Markdown przyjazny dla
+Obsidian i może opcjonalnie używać oficjalnego CLI `obsidian`.
 
 Obsługiwane przepływy pracy obejmują:
 
-- sprawdzanie statusu
-- wyszukiwanie w vault
+- sprawdzanie stanu
+- wyszukiwanie w skarbcu
 - otwieranie strony
 - wywoływanie polecenia Obsidian
 - przechodzenie do notatki dziennej
 
-To jest opcjonalne. Wiki nadal działa w trybie native bez Obsidian.
+Jest to opcjonalne. Wiki nadal działa w trybie natywnym bez Obsidian.
 
 ## Zalecany przepływ pracy
 
-1. Zachowaj plugin aktywnej pamięci do przypominania/promowania/Dreaming.
+1. Zachowaj aktywny Plugin pamięci do przypominania/promocji/Dreaming.
 2. Włącz `memory-wiki`.
-3. Zacznij od trybu `isolated`, chyba że wyraźnie chcesz używać trybu bridge.
-4. Używaj `wiki_search` / `wiki_get`, gdy pochodzenie ma znaczenie.
+3. Zacznij od trybu `isolated`, chyba że jawnie chcesz użyć trybu mostu.
+4. Używaj `wiki_search` / `wiki_get`, gdy znaczenie ma pochodzenie.
 5. Używaj `wiki_apply` do wąskich syntez lub aktualizacji metadanych.
-6. Uruchom `wiki_lint` po istotnych zmianach.
-7. Włącz pulpity, jeśli chcesz widoczności nieaktualnych danych/sprzeczności.
+6. Uruchamiaj `wiki_lint` po istotnych zmianach.
+7. Włącz panele, jeśli chcesz widzieć nieaktualne treści i sprzeczności.
 
 ## Powiązana dokumentacja
 
 - [Przegląd pamięci](/pl/concepts/memory)
 - [CLI: pamięć](/pl/cli/memory)
 - [CLI: wiki](/pl/cli/wiki)
-- [Przegląd Plugin SDK](/pl/plugins/sdk-overview)
+- [Omówienie Plugin SDK](/pl/plugins/sdk-overview)

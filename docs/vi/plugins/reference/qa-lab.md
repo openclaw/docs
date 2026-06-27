@@ -1,26 +1,27 @@
 ---
 read_when:
     - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin qa-lab
-summary: Plugin phòng lab QA của OpenClaw với giao diện người dùng trình gỡ lỗi riêng tư và trình chạy kịch bản.
+summary: Plugin phòng thí nghiệm QA OpenClaw với UI trình gỡ lỗi riêng tư và trình chạy kịch bản.
 title: Plugin QA Lab
 x-i18n:
-    generated_at: "2026-05-02T20:54:10Z"
+    generated_at: "2026-06-27T17:55:05Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a565d11bc2e1051685b6c067b695fbec980bfe21f50c98d5a616ed3dcbecb98e
+    source_hash: 0de3ac126939c822225cfd4bf75af594e6066f7992cacc71b1455638aab3af0b
     source_path: plugins/reference/qa-lab.md
     workflow: 16
 ---
 
 # Plugin QA Lab
 
-Plugin QA lab của OpenClaw với giao diện trình gỡ lỗi riêng tư và trình chạy kịch bản.
+Plugin QA lab của OpenClaw với giao diện người dùng trình gỡ lỗi riêng tư và trình chạy kịch bản.
 
 ## Phân phối
 
 - Gói: `@openclaw/qa-lab`
-- Cách cài đặt: chỉ checkout mã nguồn
+- Lộ trình cài đặt: chỉ bản checkout mã nguồn
 
 ## Bề mặt
 
-Plugin
+contracts: webSearchProviders

@@ -1,29 +1,30 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin nostr
-summary: เพิ่มส่วนติดต่อช่องทาง Nostr สำหรับการส่งและรับข้อความ OpenClaw
-title: Nostr Plugin
+summary: Plugin ช่องทาง Nostr ของ OpenClaw สำหรับข้อความส่วนตัวที่เข้ารหัสด้วย NIP-04.
+title: Plugin Nostr
 x-i18n:
-    generated_at: "2026-05-03T10:17:34Z"
+    generated_at: "2026-06-27T18:04:08Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1205a3b286e406b41029418b5fb9b12dcb19b35aff60c32d12e60c45804d7eaa
+    source_hash: e56fd9eee17c55bcbba3d7b85d783930c10d2368f36173ac478b254c2bd5ec22
     source_path: plugins/reference/nostr.md
     workflow: 16
 ---
 
-# Nostr Plugin
+# Plugin Nostr
 
-เพิ่มพื้นผิวช่องทาง Nostr สำหรับการส่งและรับข้อความ OpenClaw
+Plugin ช่องทาง Nostr ของ OpenClaw สำหรับข้อความโดยตรงที่เข้ารหัสด้วย NIP-04
 
-## การเผยแพร่
+## การแจกจ่าย
 
 - แพ็กเกจ: `@openclaw/nostr`
-- เส้นทางการติดตั้ง: npm; ClawHub
+- ช่องทางการติดตั้ง: npm; ClawHub
 
-## พื้นผิว
+## พื้นผิวการใช้งาน
 
-channels: nostr
+ช่องทาง: nostr
 
 ## เอกสารที่เกี่ยวข้อง
 

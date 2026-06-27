@@ -1,25 +1,26 @@
 ---
 read_when:
-    - Vous installez, configurez ou auditez le Plugin brave
-summary: Ajoute la prise en charge du fournisseur de recherche web.
+    - Vous installez, configurez ou auditez le plugin Brave
+summary: Plugin fournisseur Brave Search d’OpenClaw pour la recherche web.
 title: Plugin Brave
 x-i18n:
-    generated_at: "2026-05-03T07:12:12Z"
+    generated_at: "2026-06-27T17:52:35Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b26d45080e2db635e9b07e1c6b674061c2b82549edc4d8d88e6f4f68bc9d43df
+    source_hash: 265b0efa840eb3ebc7bfc1cc47b703737bbd76050ac95e79825728030a166d37
     source_path: plugins/reference/brave.md
     workflow: 16
 ---
 
 # Plugin Brave
 
-Ajoute la prise en charge des fournisseurs de recherche web.
+Plugin fournisseur Brave Search d’OpenClaw pour la recherche web.
 
 ## Distribution
 
 - Paquet : `@openclaw/brave-plugin`
-- Mode d’installation : npm; ClawHub
+- Méthode d’installation : npm ; ClawHub
 
 ## Surface
 

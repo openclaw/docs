@@ -1,16 +1,17 @@
 ---
 read_when:
     - 設定廣播群組
-    - 在 WhatsApp 中偵錯多代理回覆
+    - 偵錯 WhatsApp 中的多代理回覆
 sidebarTitle: Broadcast groups
 status: experimental
-summary: 向多個代理廣播 WhatsApp 訊息
+summary: 向多個代理程式廣播 WhatsApp 訊息
 title: 廣播群組
 x-i18n:
-    generated_at: "2026-05-04T02:21:36Z"
+    generated_at: "2026-06-27T18:54:18Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: eab43d3c3ffddb360340469433d74a380fbab98e662b2463a54f62eafc375b55
+    source_hash: a89b936322baf0fea7b487cb5354b9fad3fc021abb2970f7cd934b1880da2a0e
     source_path: channels/broadcast-groups.md
     workflow: 16
 ---
@@ -19,13 +20,13 @@ x-i18n:
 **狀態：** 實驗性。於 2026.1.9 新增。
 </Note>
 
-## 概覽
+## 概觀
 
-廣播群組可讓多個代理程式同時處理並回應同一則訊息。這讓你可以建立專門化的代理程式團隊，在單一 WhatsApp 群組或私訊中共同運作，且全部使用同一個電話號碼。
+廣播群組讓多個代理程式能同時處理並回應同一則訊息。這讓你可以建立專門化的代理程式團隊，在單一 WhatsApp 群組或私訊中共同運作，而且全都使用同一個電話號碼。
 
-目前範圍：**僅限 WhatsApp**（web 通道）。
+目前範圍：**僅 WhatsApp**（網頁通道）。
 
-廣播群組會在通道允許清單和群組啟用規則之後評估。在 WhatsApp 群組中，這表示當 OpenClaw 通常會回覆時就會發生廣播（例如：被提及時，視你的群組設定而定）。
+廣播群組會在通道允許清單與群組啟用規則之後評估。在 WhatsApp 群組中，這表示當 OpenClaw 通常會回覆時就會發生廣播（例如：被提及時，取決於你的群組設定）。
 
 ## 使用案例
 
@@ -42,7 +43,7 @@ x-i18n:
       - TestGenerator (suggests test cases)
     ```
 
-    每個代理程式都會處理同一則訊息，並提供其專門視角。
+    每個代理程式都會處理同一則訊息，並提供其專門化觀點。
 
   </Accordion>
   <Accordion title="2. 多語言支援">
@@ -62,7 +63,7 @@ x-i18n:
       - QAAgent (reviews quality, only responds if issues found)
     ```
   </Accordion>
-  <Accordion title="4. 工作自動化">
+  <Accordion title="4. 任務自動化">
     ```
     Group: "Project Management"
     Agents:
@@ -77,7 +78,7 @@ x-i18n:
 
 ### 基本設定
 
-新增頂層 `broadcast` 區段（與 `bindings` 並列）。鍵是 WhatsApp 對等端 ID：
+新增最上層的 `broadcast` 區段（放在 `bindings` 旁）。鍵是 WhatsApp 對等端 ID：
 
 - 群組聊天：群組 JID（例如 `120363403215116621@g.us`）
 - 私訊：E.164 電話號碼（例如 `+15551234567`）
@@ -166,36 +167,39 @@ x-i18n:
 
 <Steps>
   <Step title="收到傳入訊息">
-    收到一則 WhatsApp 群組或私訊訊息。
+    收到 WhatsApp 群組或私訊訊息。
+  </Step>
+  <Step title="路由與准入">
+    OpenClaw 會套用通道允許清單、群組啟用規則，以及已設定的 ACP 綁定擁有權。
   </Step>
   <Step title="廣播檢查">
-    系統會檢查對等端 ID 是否在 `broadcast` 中。
+    如果沒有已設定的 ACP 綁定擁有該路由，OpenClaw 會檢查對等端 ID 是否在 `broadcast` 中。
   </Step>
-  <Step title="如果在廣播清單中">
+  <Step title="如果套用廣播">
     - 所有列出的代理程式都會處理該訊息。
-    - 每個代理程式都有自己的工作階段鍵和隔離的內容脈絡。
+    - 每個代理程式都有自己的工作階段金鑰與隔離的脈絡。
     - 代理程式會平行（預設）或依序處理。
 
   </Step>
-  <Step title="如果不在廣播清單中">
-    套用一般路由（第一個符合的繫結）。
+  <Step title="如果未套用廣播">
+    OpenClaw 會分派一般路由，或在路由期間選取的已設定 ACP 工作階段路由。
   </Step>
 </Steps>
 
 <Note>
-廣播群組不會繞過通道允許清單或群組啟用規則（提及／命令等）。它們只會在訊息符合處理資格時，變更_哪些代理程式會執行_。
+廣播群組不會繞過通道允許清單或群組啟用規則（提及/命令等）。它們只會在訊息符合處理資格時，改變_哪些代理程式會執行_。
 </Note>
 
 ### 工作階段隔離
 
 廣播群組中的每個代理程式都會維持完全分離的：
 
-- **工作階段鍵**（`agent:alfred:whatsapp:group:120363...` 與 `agent:baerbel:whatsapp:group:120363...`）
+- **工作階段金鑰**（`agent:alfred:whatsapp:group:120363...` 與 `agent:baerbel:whatsapp:group:120363...`）
 - **對話歷史**（代理程式不會看到其他代理程式的訊息）
-- **工作區**（若有設定，則為分離的沙箱）
-- **工具存取權**（不同的允許／拒絕清單）
-- **記憶／內容脈絡**（分離的 IDENTITY.md、SOUL.md 等）
-- **群組內容脈絡緩衝區**（用於內容脈絡的近期群組訊息）會依對等端共用，因此所有廣播代理程式在觸發時都會看到相同的內容脈絡
+- **工作區**（若已設定，則使用不同的沙箱）
+- **工具存取**（不同的允許/拒絕清單）
+- **記憶/脈絡**（不同的 IDENTITY.md、SOUL.md 等）
+- **群組脈絡緩衝區**（用於脈絡的近期群組訊息）會按對等端共享，因此所有廣播代理程式在觸發時都會看到相同脈絡
 
 這讓每個代理程式可以有：
 
@@ -206,10 +210,10 @@ x-i18n:
 
 ### 範例：隔離的工作階段
 
-在群組 `120363403215116621@g.us` 中使用代理程式 `["alfred", "baerbel"]`：
+在群組 `120363403215116621@g.us` 中，代理程式為 `["alfred", "baerbel"]`：
 
 <Tabs>
-  <Tab title="Alfred 的內容脈絡">
+  <Tab title="Alfred 的脈絡">
     ```
     Session: agent:alfred:whatsapp:group:120363403215116621@g.us
     History: [user message, alfred's previous responses]
@@ -217,7 +221,7 @@ x-i18n:
     Tools: read, write, exec
     ```
   </Tab>
-  <Tab title="Bärbel 的內容脈絡">
+  <Tab title="Bärbel 的脈絡">
     ```
     Session: agent:baerbel:whatsapp:group:120363403215116621@g.us
     History: [user message, baerbel's previous responses]
@@ -231,7 +235,7 @@ x-i18n:
 
 <AccordionGroup>
   <Accordion title="1. 讓代理程式保持聚焦">
-    為每個代理程式設計單一且明確的職責：
+    為每個代理程式設計單一、清楚的職責：
 
     ```json
     {
@@ -245,7 +249,7 @@ x-i18n:
 
   </Accordion>
   <Accordion title="2. 使用描述性名稱">
-    讓每個代理程式的用途清楚明確：
+    清楚表達每個代理程式的用途：
 
     ```json
     {
@@ -258,8 +262,8 @@ x-i18n:
     ```
 
   </Accordion>
-  <Accordion title="3. 設定不同的工具存取權">
-    只授予代理程式所需的工具：
+  <Accordion title="3. 設定不同工具存取權">
+    只給代理程式所需的工具：
 
     ```json
     {
@@ -274,15 +278,15 @@ x-i18n:
     }
     ```
 
-    `reviewer` 是唯讀。`fixer` 可以讀取和寫入。
+    `reviewer` 是唯讀。`fixer` 可以讀取與寫入。
 
   </Accordion>
   <Accordion title="4. 監控效能">
     使用許多代理程式時，請考慮：
 
     - 使用 `"strategy": "parallel"`（預設）以提升速度
-    - 將廣播群組限制為 5 到 10 個代理程式
-    - 為較簡單的代理程式使用較快的模型
+    - 將廣播群組限制為 5-10 個代理程式
+    - 對較簡單的代理程式使用較快的模型
 
   </Accordion>
   <Accordion title="5. 優雅地處理失敗">
@@ -300,7 +304,7 @@ x-i18n:
 
 ### 提供者
 
-廣播群組目前可與以下項目搭配使用：
+廣播群組目前可與下列項目搭配使用：
 
 - ✅ WhatsApp（已實作）
 - 🚧 Telegram（規劃中）
@@ -309,7 +313,7 @@ x-i18n:
 
 ### 路由
 
-廣播群組可與現有路由並用：
+廣播群組可與既有路由並行運作：
 
 ```json
 {
@@ -325,11 +329,11 @@ x-i18n:
 }
 ```
 
-- `GROUP_A`：只有 alfred 回應（一般路由）。
+- `GROUP_A`：只有 alfred 會回應（一般路由）。
 - `GROUP_B`：agent1 和 agent2 都會回應（廣播）。
 
 <Note>
-**優先順序：** `broadcast` 優先於 `bindings`。
+**優先順序：** `broadcast` 優先於一般路由綁定。已設定的 ACP 綁定（`bindings[].type="acp"`）是排他的：當其中一個符合時，OpenClaw 會分派到已設定的 ACP 工作階段，而不是扇出廣播。
 </Note>
 
 ## 疑難排解
@@ -350,16 +354,16 @@ x-i18n:
 
   </Accordion>
   <Accordion title="只有一個代理程式回應">
-    **原因：** 對等端 ID 可能在 `bindings` 中，但不在 `broadcast` 中。
+    **原因：** 對等端 ID 可能位於一般路由綁定中但不在 `broadcast`，或可能符合排他的已設定 ACP 綁定。
 
-    **修正：** 加入廣播設定，或從繫結中移除。
+    **修正：** 將一般路由綁定的對等端加入廣播設定，或如果想要扇出廣播，移除/變更已設定的 ACP 綁定。
 
   </Accordion>
   <Accordion title="效能問題">
-    如果在許多代理程式下變慢：
+    如果使用許多代理程式時速度緩慢：
 
     - 減少每個群組的代理程式數量。
-    - 使用較輕量的模型（使用 sonnet 而非 opus）。
+    - 使用較輕量的模型（使用 sonnet 而不是 opus）。
     - 檢查沙箱啟動時間。
 
   </Accordion>
@@ -409,7 +413,7 @@ x-i18n:
 
     - code-formatter：「已修正縮排並新增型別提示」
     - security-scanner：「⚠️ 第 12 行有 SQL 注入弱點」
-    - test-coverage：「覆蓋率為 45%，缺少錯誤案例的測試」
+    - test-coverage：「覆蓋率為 45%，缺少錯誤案例測試」
     - docs-checker：「函式 `process_data` 缺少 docstring」
 
   </Accordion>
@@ -451,29 +455,29 @@ interface OpenClawConfig {
   如何處理代理程式。`parallel` 會同時執行所有代理程式；`sequential` 會依陣列順序執行。
 </ParamField>
 <ParamField path="[peerId]" type="string[]">
-  WhatsApp 群組 JID、E.164 號碼或其他對等端 ID。值是應處理訊息的代理程式 ID 陣列。
+  WhatsApp 群組 JID、E.164 號碼，或其他對等端 ID。值是應該處理訊息的代理程式 ID 陣列。
 </ParamField>
 
 ## 限制
 
 1. **代理程式上限：** 沒有硬性限制，但 10 個以上代理程式可能會變慢。
-2. **共享內容脈絡：** 代理程式不會看到彼此的回應（這是刻意設計）。
-3. **訊息順序：** 平行回應可能以任何順序抵達。
+2. **共享脈絡：** 代理程式看不到彼此的回應（這是設計使然）。
+3. **訊息順序：** 平行回應可能會以任何順序抵達。
 4. **速率限制：** 所有代理程式都會計入 WhatsApp 速率限制。
 
 ## 未來增強功能
 
 規劃中的功能：
 
-- [ ] 共享內容脈絡模式（代理程式會看到彼此的回應）
-- [ ] 代理程式協調（代理程式可以互相發出訊號）
+- [ ] 共享脈絡模式（代理程式可看到彼此的回應）
+- [ ] 代理程式協調（代理程式可互相傳送訊號）
 - [ ] 動態代理程式選擇（根據訊息內容選擇代理程式）
-- [ ] 代理程式優先順序（某些代理程式先於其他代理程式回應）
+- [ ] 代理程式優先順序（某些代理程式會先於其他代理程式回應）
 
-## 相關內容
+## 相關
 
 - [頻道路由](/zh-TW/channels/channel-routing)
 - [群組](/zh-TW/channels/groups)
-- [多代理沙盒工具](/zh-TW/tools/multi-agent-sandbox-tools)
+- [多代理程式沙盒工具](/zh-TW/tools/multi-agent-sandbox-tools)
 - [配對](/zh-TW/channels/pairing)
 - [工作階段管理](/zh-TW/concepts/session)

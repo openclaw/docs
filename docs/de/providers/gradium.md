@@ -1,26 +1,36 @@
 ---
 read_when:
     - Sie möchten Gradium für Text-to-Speech
-    - Sie benötigen einen Gradium-API-Schlüssel, eine Stimme oder eine Direktive-Token-Konfiguration
+    - Sie benötigen eine Konfiguration für Gradium-API-Schlüssel, Stimme oder Direktiven-Token
 summary: Gradium-Text-to-Speech in OpenClaw verwenden
 title: Gradium
 x-i18n:
-    generated_at: "2026-05-10T19:49:24Z"
+    generated_at: "2026-06-27T18:04:39Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5c79da6ec63532061a8112965a679f1113bbefcc91ee00def8153dd39b5b5e58
+    source_hash: 5178bfaf5087e18d5d71f46d04b16d52e0e132257b9ef772b7869ac11b49a0da
     source_path: providers/gradium.md
     workflow: 16
 ---
 
-[Gradium](https://gradium.ai) ist ein gebündelter Text-to-Speech-Provider für OpenClaw. Das Plugin kann normale Audioantworten (WAV), mit Sprachnotizen kompatible Opus-Ausgabe und 8-kHz-u-law-Audio für Telefonie-Oberflächen erzeugen.
+[Gradium](https://gradium.ai) ist ein Text-to-Speech-Provider für OpenClaw. Das Plugin kann normale Audioantworten (WAV), mit Sprachnotizen kompatible Opus-Ausgabe und 8-kHz-u-law-Audio für Telefonie-Oberflächen erzeugen.
 
-| Eigenschaft      | Wert                                 |
-| ---------------- | ------------------------------------ |
-| Provider-ID      | `gradium`                            |
-| Authentifizierung | `GRADIUM_API_KEY` oder Konfiguration `apiKey` |
-| Basis-URL        | `https://api.gradium.ai` (Standard)  |
-| Standardstimme   | `Emma` (`YTpq7expH9539ERJ`)          |
+| Eigenschaft    | Wert                                 |
+| -------------- | ------------------------------------ |
+| Provider-ID    | `gradium`                            |
+| Auth           | `GRADIUM_API_KEY` oder config `apiKey` |
+| Basis-URL      | `https://api.gradium.ai` (Standard)  |
+| Standardstimme | `Emma` (`YTpq7expH9539ERJ`)          |
+
+## Plugin installieren
+
+Installieren Sie das offizielle Plugin und starten Sie dann den Gateway neu:
+
+```bash
+openclaw plugins install @openclaw/gradium-speech
+openclaw gateway restart
+```
 
 ## Einrichtung
 
@@ -64,7 +74,7 @@ Das Plugin prüft zuerst den aufgelösten `apiKey` und fällt auf die Umgebungsv
       provider: "gradium",
       providers: {
         gradium: {
-          voiceId: "YTpq7expH9539ERJ",
+          speakerVoiceId: "YTpq7expH9539ERJ",
           // apiKey: "${GRADIUM_API_KEY}",
           // baseUrl: "https://api.gradium.ai",
         },
@@ -74,13 +84,13 @@ Das Plugin prüft zuerst den aufgelösten `apiKey` und fällt auf die Umgebungsv
 }
 ```
 
-| Schlüssel                                | Typ    | Beschreibung                                                                                 |
-| ---------------------------------------- | ------ | -------------------------------------------------------------------------------------------- |
-| `messages.tts.providers.gradium.apiKey`  | string | Aufgelöster API-Schlüssel. Unterstützt `${ENV}` und Secret-Referenzen.                       |
-| `messages.tts.providers.gradium.baseUrl` | string | Überschreibt den API-Ursprung. Abschließende Schrägstriche werden entfernt. Standard ist `https://api.gradium.ai`. |
-| `messages.tts.providers.gradium.voiceId` | string | Standardstimmen-ID, die verwendet wird, wenn keine Direktivenüberschreibung vorhanden ist.   |
+| Schlüssel                                       | Typ    | Beschreibung                                                                                 |
+| ----------------------------------------------- | ------ | -------------------------------------------------------------------------------------------- |
+| `messages.tts.providers.gradium.apiKey`         | string | Aufgelöster API-Schlüssel. Unterstützt `${ENV}` und secret refs.                             |
+| `messages.tts.providers.gradium.baseUrl`        | string | Überschreibt den API-Ursprung. Abschließende Schrägstriche werden entfernt. Standard ist `https://api.gradium.ai`. |
+| `messages.tts.providers.gradium.speakerVoiceId` | string | Standard-Stimmen-ID, die verwendet wird, wenn keine Direktivenüberschreibung vorhanden ist.   |
 
-Das Ausgabeaudioformat wird von der Runtime automatisch basierend auf der Zieloberfläche ausgewählt und ist nicht über `openclaw.json` konfigurierbar. Siehe unten [Ausgabe](#output).
+Das Ausgabeaudioformat wird von der Runtime automatisch anhand der Zieloberfläche ausgewählt und ist nicht über `openclaw.json` konfigurierbar. Siehe [Ausgabe](#output) unten.
 
 ## Stimmen
 
@@ -96,9 +106,9 @@ Das Ausgabeaudioformat wird von der Runtime automatisch basierend auf der Zielob
 
 Standardstimme: Emma.
 
-### Stimmenüberschreibung pro Nachricht
+### Stimmüberschreibung pro Nachricht
 
-Wenn die aktive Sprachrichtlinie Stimmenüberschreibungen erlaubt, können Sie Stimmen inline mit einem Direktiven-Token wechseln. Alle diese Angaben werden zur selben `voiceId`-Überschreibung aufgelöst:
+Wenn die aktive Sprachrichtlinie Stimmüberschreibungen erlaubt, können Sie Stimmen inline mit einem Direktiven-Token wechseln. Verwenden Sie `speakerVoiceId` für Provider-native Stimmen-IDs.
 
 ```text
 /voice:LFZvm12tW_z0xfGo
@@ -108,17 +118,17 @@ Wenn die aktive Sprachrichtlinie Stimmenüberschreibungen erlaubt, können Sie S
 /gradiumvoice:LFZvm12tW_z0xfGo
 ```
 
-Wenn die Sprachrichtlinie Stimmenüberschreibungen deaktiviert, wird die Direktive verbraucht, aber ignoriert.
+Wenn die Sprachrichtlinie Stimmüberschreibungen deaktiviert, wird die Direktive verarbeitet, aber ignoriert.
 
 ## Ausgabe
 
-Die Runtime wählt das Ausgabeformat anhand der Zieloberfläche aus. Der Provider erzeugt derzeit keine anderen Formate.
+Die Runtime wählt das Ausgabeformat anhand der Zieloberfläche aus. Der Provider synthetisiert derzeit keine anderen Formate.
 
-| Ziel            | Format      | Dateiendung | Abtastrate | Mit Stimme kompatibles Flag |
-| --------------- | ----------- | ----------- | ---------- | --------------------------- |
-| Standardaudio   | `wav`       | `.wav`      | Provider   | nein                        |
-| Sprachnotiz     | `opus`      | `.opus`     | Provider   | ja                          |
-| Telefonie       | `ulaw_8000` | n/a         | 8 kHz      | n/a                         |
+| Ziel           | Format      | Dateiendung | Abtastrate | Sprachnotiz-kompatibles Flag |
+| -------------- | ----------- | ----------- | ---------- | ---------------------------- |
+| Standardaudio  | `wav`       | `.wav`      | Provider   | nein                         |
+| Sprachnotiz    | `opus`      | `.opus`     | Provider   | ja                           |
+| Telefonie      | `ulaw_8000` | n/a         | 8 kHz      | n/a                          |
 
 ## Reihenfolge der automatischen Auswahl
 

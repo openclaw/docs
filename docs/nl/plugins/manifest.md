@@ -3,19 +3,20 @@ read_when:
     - Je bouwt een OpenClaw Plugin
     - Je moet een Plugin-configuratieschema leveren of Plugin-validatiefouten opsporen
 summary: Plugin-manifest + JSON-schemavereisten (strikte configuratievalidatie)
-title: Pluginmanifest
+title: Plugin-manifest
 x-i18n:
-    generated_at: "2026-05-11T20:40:38Z"
+    generated_at: "2026-06-27T17:54:57Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 27129a118083d41fc631282cbef37b1b8e36c31343026bd9def5d521ff7fddef
+    source_hash: 62f6684ab074e4f14ce5c833fe8c8c624a2750f80215bdeffd972e27dd6bfc9c
     source_path: plugins/manifest.md
     workflow: 16
 ---
 
-Deze pagina is alleen voor het **native OpenClaw-Pluginmanifest**.
+Deze pagina is alleen voor het **eigen OpenClaw-Pluginmanifest**.
 
-Zie [Plugin-bundels](/nl/plugins/bundles) voor compatibele bundelindelingen.
+Zie [Pluginbundels](/nl/plugins/bundles) voor compatibele bundelindelingen.
 
 Compatibele bundelindelingen gebruiken andere manifestbestanden:
 
@@ -28,37 +29,37 @@ OpenClaw detecteert die bundelindelingen ook automatisch, maar ze worden niet ge
 tegen het hier beschreven `openclaw.plugin.json`-schema.
 
 Voor compatibele bundels leest OpenClaw momenteel bundelmetadata plus gedeclareerde
-skill-roots, Claude-commandoroots, standaardwaarden uit Claude-bundel `settings.json`,
+skillroots, Claude-commandoroots, standaardwaarden uit Claude-bundel `settings.json`,
 standaardwaarden voor Claude-bundel-LSP en ondersteunde hookpakketten wanneer de indeling
 overeenkomt met de runtimeverwachtingen van OpenClaw.
 
-Elke native OpenClaw-Plugin **moet** een `openclaw.plugin.json`-bestand leveren in de
-**Plugin-root**. OpenClaw gebruikt dit manifest om configuratie te valideren
-**zonder Plugin-code uit te voeren**. Ontbrekende of ongeldige manifesten worden behandeld als
-Plugin-fouten en blokkeren configuratievalidatie.
+Elke eigen OpenClaw-Plugin **moet** een `openclaw.plugin.json`-bestand leveren in de
+**Pluginroot**. OpenClaw gebruikt dit manifest om configuratie te valideren
+**zonder Plugincode uit te voeren**. Ontbrekende of ongeldige manifests worden behandeld als
+Pluginfouten en blokkeren configuratievalidatie.
 
 Zie de volledige gids voor het Pluginsysteem: [Plugins](/nl/tools/plugin).
-Voor het native capaciteitsmodel en de huidige richtlijnen voor externe compatibiliteit:
-[Capaciteitsmodel](/nl/plugins/architecture#public-capability-model).
+Voor het eigen capabilitymodel en de huidige richtlijnen voor externe compatibiliteit:
+[Capabilitymodel](/nl/plugins/architecture#public-capability-model).
 
 ## Wat dit bestand doet
 
 `openclaw.plugin.json` is de metadata die OpenClaw leest **voordat het je
-Plugin-code laadt**. Alles hieronder moet goedkoop genoeg zijn om te inspecteren zonder de
-Plugin-runtime te starten.
+Plugincode laadt**. Alles hieronder moet goedkoop genoeg zijn om te inspecteren zonder de
+Pluginruntime te starten.
 
 **Gebruik het voor:**
 
-- Plugin-identiteit, configuratievalidatie en hints voor de configuratie-UI
-- metadata voor auth, onboarding en installatie (alias, automatisch inschakelen, provider-env-vars, auth-keuzes)
-- activeringshints voor control-plane-oppervlakken
+- Pluginidentiteit, configuratievalidatie en hints voor configuratie-UI
+- auth-, onboarding- en setupmetadata (alias, automatisch inschakelen, provider-env-vars, authkeuzes)
+- activatiehints voor control-plane-oppervlakken
 - eigenaarschap van verkorte modelfamilies
-- statische momentopnamen van capaciteits-eigenaarschap (`contracts`)
-- metadata voor de QA-runner die de gedeelde `openclaw qa`-host kan inspecteren
-- kanaalspecifieke configuratiemetadata samengevoegd in catalogus- en validatieoppervlakken
+- statische snapshots van capability-eigenaarschap (`contracts`)
+- QA-runner-metadata die de gedeelde `openclaw qa`-host kan inspecteren
+- kanaalspecifieke configuratiemetadata die wordt samengevoegd in catalogus- en validatieoppervlakken
 
-**Gebruik het niet voor:** het registreren van runtimegedrag, het declareren van code-entrypoints,
-of npm-installatiemetadata. Die horen thuis in je Plugin-code en `package.json`.
+**Gebruik het niet voor:** het registreren van runtimegedrag, het declareren van code-entrypoints
+of npm-installatiemetadata. Die horen thuis in je Plugincode en `package.json`.
 
 ## Minimaal voorbeeld
 
@@ -107,8 +108,13 @@ of npm-installatiemetadata. Die horen thuis in je Plugin-code en `package.json`.
   },
   "cliBackends": ["openrouter-cli"],
   "syntheticAuthRefs": ["openrouter-cli"],
-  "providerAuthEnvVars": {
-    "openrouter": ["OPENROUTER_API_KEY"]
+  "setup": {
+    "providers": [
+      {
+        "id": "openrouter",
+        "envVars": ["OPENROUTER_API_KEY"]
+      }
+    ]
   },
   "providerAuthAliases": {
     "openrouter-coding": "openrouter"
@@ -150,61 +156,64 @@ of npm-installatiemetadata. Die horen thuis in je Plugin-code en `package.json`.
 }
 ```
 
-## Referentie voor velden op topniveau
+## Referentie voor top-level velden
 
-| Veld                                 | Vereist  | Type                             | Wat het betekent                                                                                                                                                                                                                     |
-| ------------------------------------ | -------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`                                 | Ja       | `string`                         | Canonieke Plugin-id. Dit is de id die wordt gebruikt in `plugins.entries.<id>`.                                                                                                                                                      |
-| `configSchema`                       | Ja       | `object`                         | Inline JSON Schema voor de configuratie van deze Plugin.                                                                                                                                                                            |
-| `enabledByDefault`                   | Nee      | `true`                           | Markeert een gebundelde Plugin als standaard ingeschakeld. Laat dit weg, of stel een niet-`true` waarde in, om de Plugin standaard uitgeschakeld te laten.                                                                          |
-| `enabledByDefaultOnPlatforms`        | Nee      | `string[]`                       | Markeert een gebundelde Plugin alleen als standaard ingeschakeld op de vermelde Node.js-platforms, bijvoorbeeld `["darwin"]`. Expliciete configuratie heeft nog steeds voorrang.                                                    |
-| `legacyPluginIds`                    | Nee      | `string[]`                       | Verouderde ids die naar deze canonieke Plugin-id worden genormaliseerd.                                                                                                                                                             |
-| `autoEnableWhenConfiguredProviders`  | Nee      | `string[]`                       | Provider-ids die deze Plugin automatisch moeten inschakelen wanneer auth, configuratie of modelverwijzingen ze noemen.                                                                                                             |
-| `kind`                               | Nee      | `"memory"` \| `"context-engine"` | Declareert een exclusieve Plugin-soort die wordt gebruikt door `plugins.slots.*`.                                                                                                                                                   |
-| `channels`                           | Nee      | `string[]`                       | Kanaal-ids die eigendom zijn van deze Plugin. Gebruikt voor discovery en configuratievalidatie.                                                                                                                                      |
-| `providers`                          | Nee      | `string[]`                       | Provider-ids die eigendom zijn van deze Plugin.                                                                                                                                                                                     |
-| `providerCatalogEntry`               | Nee      | `string`                         | Lichtgewicht modulepad voor de provider-catalogus, relatief aan de Plugin-root, voor manifest-gebonden provider-catalogusmetadata die kan worden geladen zonder de volledige Plugin-runtime te activeren.                           |
-| `modelSupport`                       | Nee      | `object`                         | Door het manifest beheerde verkorte metadata voor modelfamilies die wordt gebruikt om de Plugin vóór runtime automatisch te laden.                                                                                                  |
-| `modelCatalog`                       | Nee      | `object`                         | Declaratieve modelcatalogusmetadata voor providers die eigendom zijn van deze Plugin. Dit is het control-plane contract voor toekomstige alleen-lezenlijsten, onboarding, modelkiezers, aliassen en onderdrukking zonder Plugin-runtime te laden. |
-| `modelPricing`                       | Nee      | `object`                         | Door de provider beheerd beleid voor externe prijsopzoeking. Gebruik dit om lokale/zelfgehoste providers uit externe prijscatalogi te laten stappen of providerverwijzingen naar OpenRouter/LiteLLM-catalogus-ids te mappen zonder provider-ids hard te coderen in de core. |
-| `modelIdNormalization`               | Nee      | `object`                         | Door de provider beheerde opschoning van model-id-aliassen/prefixen die moet worden uitgevoerd voordat de provider-runtime wordt geladen.                                                                                            |
-| `providerEndpoints`                  | Nee      | `object[]`                       | Door het manifest beheerde endpoint host/baseUrl-metadata voor providerroutes die de core moet classificeren voordat de provider-runtime wordt geladen.                                                                              |
-| `providerRequest`                    | Nee      | `object`                         | Goedkope providerfamilie- en verzoekcompatibiliteitsmetadata die door generiek aanvraagbeleid wordt gebruikt voordat de provider-runtime wordt geladen.                                                                              |
-| `cliBackends`                        | Nee      | `string[]`                       | CLI-inferentiebackend-ids die eigendom zijn van deze Plugin. Gebruikt voor automatische activering bij opstarten vanuit expliciete configuratieverwijzingen.                                                                         |
-| `syntheticAuthRefs`                  | Nee      | `string[]`                       | Provider- of CLI-backendverwijzingen waarvan de door de Plugin beheerde synthetische auth-hook moet worden onderzocht tijdens koude modeldiscovery voordat runtime wordt geladen.                                                    |
-| `nonSecretAuthMarkers`               | Nee      | `string[]`                       | Door gebundelde Plugins beheerde tijdelijke API-sleutelwaarden die niet-geheime lokale, OAuth- of ambient credential-status vertegenwoordigen.                                                                                      |
-| `commandAliases`                     | Nee      | `object[]`                       | Commandonamen die eigendom zijn van deze Plugin en die Plugin-bewuste configuratie- en CLI-diagnostiek moeten produceren voordat runtime wordt geladen.                                                                              |
-| `providerAuthEnvVars`                | Nee      | `Record<string, string[]>`       | Verouderde compatibiliteits-env-metadata voor provider-auth/statusopzoeking. Geef voor nieuwe Plugins de voorkeur aan `setup.providers[].envVars`; OpenClaw leest dit nog steeds tijdens de afschrijvingsperiode.                   |
-| `providerAuthAliases`                | Nee      | `Record<string, string>`         | Provider-ids die een andere provider-id moeten hergebruiken voor auth-opzoeking, bijvoorbeeld een codingprovider die de API-sleutel en auth-profielen van de basisprovider deelt.                                                   |
-| `channelEnvVars`                     | Nee      | `Record<string, string[]>`       | Goedkope kanaal-env-metadata die OpenClaw kan inspecteren zonder Plugin-code te laden. Gebruik dit voor env-gestuurde kanaalsetup of auth-oppervlakken die generieke opstart-/configuratiehelpers moeten zien.                     |
-| `providerAuthChoices`                | Nee      | `object[]`                       | Goedkope metadata voor auth-keuzes voor onboardingkiezers, voorkeursproviderresolutie en eenvoudige CLI-flagbedrading.                                                                                                             |
-| `activation`                         | Nee      | `object`                         | Goedkope metadata voor activatieplanning voor opstarten en door provider-, commando-, kanaal-, route- en capability getriggerd laden. Alleen metadata; de Plugin-runtime blijft eigenaar van het daadwerkelijke gedrag.             |
-| `setup`                              | Nee      | `object`                         | Goedkope setup-/onboardingbeschrijvingen die discovery- en setup-oppervlakken kunnen inspecteren zonder de Plugin-runtime te laden.                                                                                                 |
-| `qaRunners`                          | Nee      | `object[]`                       | Goedkope QA-runnerbeschrijvingen die worden gebruikt door de gedeelde `openclaw qa`-host voordat de Plugin-runtime wordt geladen.                                                                                                  |
-| `contracts`                          | Nee      | `object`                         | Statische momentopname van capability-eigendom voor externe auth-hooks, spraak, realtime transcriptie, realtime spraak, mediabegrip, beeldgeneratie, muziekgeneratie, videogeneratie, web-fetch, webzoekopdrachten en tool-eigendom. |
-| `mediaUnderstandingProviderMetadata` | Nee      | `Record<string, object>`         | Goedkope standaardwaarden voor mediabegrip voor provider-ids die zijn gedeclareerd in `contracts.mediaUnderstandingProviders`.                                                                                                      |
-| `imageGenerationProviderMetadata`    | Nee      | `Record<string, object>`         | Goedkope auth-metadata voor beeldgeneratie voor provider-ids die zijn gedeclareerd in `contracts.imageGenerationProviders`, inclusief door providers beheerde auth-aliassen en base-url-bewakers.                                   |
-| `videoGenerationProviderMetadata`    | Nee      | `Record<string, object>`         | Goedkope auth-metadata voor videogeneratie voor provider-ids die zijn gedeclareerd in `contracts.videoGenerationProviders`, inclusief door providers beheerde auth-aliassen en base-url-bewakers.                                  |
-| `musicGenerationProviderMetadata`    | Nee      | `Record<string, object>`         | Goedkope auth-metadata voor muziekgeneratie voor provider-ids die zijn gedeclareerd in `contracts.musicGenerationProviders`, inclusief door providers beheerde auth-aliassen en base-url-bewakers.                                 |
-| `toolMetadata`                       | Nee      | `Record<string, object>`         | Goedkope beschikbaarheidsmetadata voor door Plugins beheerde tools die zijn gedeclareerd in `contracts.tools`. Gebruik dit wanneer een tool geen runtime mag laden tenzij er configuratie-, env- of auth-bewijs bestaat.             |
-| `channelConfigs`                     | Nee      | `Record<string, object>`         | Door het manifest beheerde kanaalconfiguratiemetadata die in discovery- en validatie-oppervlakken wordt samengevoegd voordat runtime wordt geladen.                                                                                  |
-| `skills`                             | Nee      | `string[]`                       | Skill-mappen om te laden, relatief aan de Plugin-root.                                                                                                                                                                             |
-| `name`                               | Nee      | `string`                         | Menselijk leesbare pluginnaam.                                                                                                                                                                                                      |
-| `description`                        | Nee      | `string`                         | Korte samenvatting die in pluginoppervlakken wordt getoond.                                                                                                                                                                         |
-| `version`                            | Nee      | `string`                         | Informatieve pluginversie.                                                                                                                                                                                                          |
-| `uiHints`                            | Nee      | `Record<string, object>`         | UI-labels, plaatsaanduidingen en aanwijzingen voor gevoeligheid van configuratievelden.                                                                                                                                             |
+| Veld                                 | Vereist | Type                             | Wat het betekent                                                                                                                                                                                                                               |
+| ------------------------------------ | ------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                                 | Ja      | `string`                         | Canonieke Plugin-id. Dit is de id die wordt gebruikt in `plugins.entries.<id>`.                                                                                                                                                                |
+| `configSchema`                       | Ja      | `object`                         | Inline JSON Schema voor de configuratie van deze Plugin.                                                                                                                                                                                       |
+| `requiresPlugins`                    | Nee     | `string[]`                       | Plugin-id's die ook moeten zijn geïnstalleerd om deze Plugin effect te laten hebben. Discovery houdt de Plugin laadbaar, maar waarschuwt wanneer een vereiste Plugin ontbreekt.                                                               |
+| `enabledByDefault`                   | Nee     | `true`                           | Markeert een gebundelde Plugin als standaard ingeschakeld. Laat dit weg, of stel een waarde anders dan `true` in, om de Plugin standaard uitgeschakeld te laten.                                                                              |
+| `enabledByDefaultOnPlatforms`        | Nee     | `string[]`                       | Markeert een gebundelde Plugin als standaard ingeschakeld, maar alleen op de vermelde Node.js-platformen, bijvoorbeeld `["darwin"]`. Expliciete configuratie heeft nog steeds voorrang.                                                       |
+| `legacyPluginIds`                    | Nee     | `string[]`                       | Verouderde id's die naar deze canonieke Plugin-id normaliseren.                                                                                                                                                                                |
+| `autoEnableWhenConfiguredProviders`  | Nee     | `string[]`                       | Provider-id's die deze Plugin automatisch moeten inschakelen wanneer auth, configuratie of modelverwijzingen ze noemen.                                                                                                                       |
+| `kind`                               | Nee     | `"memory"` \| `"context-engine"` | Declareert een exclusieve Plugin-soort die wordt gebruikt door `plugins.slots.*`.                                                                                                                                                             |
+| `channels`                           | Nee     | `string[]`                       | Kanaal-id's die eigendom zijn van deze Plugin. Gebruikt voor discovery en configuratievalidatie.                                                                                                                                               |
+| `providers`                          | Nee     | `string[]`                       | Provider-id's die eigendom zijn van deze Plugin.                                                                                                                                                                                              |
+| `providerCatalogEntry`               | Nee     | `string`                         | Lichtgewicht modulepad voor de provider-catalogus, relatief aan de Plugin-root, voor provider-catalogusmetadata binnen de manifestscope die kan worden geladen zonder de volledige Plugin-runtime te activeren.                               |
+| `modelSupport`                       | Nee     | `object`                         | Door het manifest beheerde verkorte model-familiemetadata die wordt gebruikt om de Plugin vóór runtime automatisch te laden.                                                                                                                  |
+| `modelCatalog`                       | Nee     | `object`                         | Declaratieve modelcatalogusmetadata voor providers die eigendom zijn van deze Plugin. Dit is het control-planecontract voor toekomstige alleen-lezen-lijsten, onboarding, modelkiezers, aliassen en onderdrukking zonder Plugin-runtime te laden. |
+| `modelPricing`                       | Nee     | `object`                         | Door de provider beheerd extern prijsopzoekbeleid. Gebruik dit om lokale/zelfgehoste providers uit externe prijscatalogi te laten stappen of providerverwijzingen toe te wijzen aan OpenRouter/LiteLLM-catalogus-id's zonder provider-id's in de kern hard te coderen. |
+| `modelIdNormalization`               | Nee     | `object`                         | Door de provider beheerde opschoning van model-id-aliassen/prefixen die moet worden uitgevoerd voordat de provider-runtime laadt.                                                                                                             |
+| `providerEndpoints`                  | Nee     | `object[]`                       | Door het manifest beheerde endpoint-host-/baseUrl-metadata voor providerroutes die de kern moet classificeren voordat de provider-runtime laadt.                                                                                              |
+| `providerRequest`                    | Nee     | `object`                         | Goedkope provider-familie- en aanvraagcompatibiliteitsmetadata die door generiek aanvraagbeleid wordt gebruikt voordat de provider-runtime laadt.                                                                                             |
+| `secretProviderIntegrations`         | Nee     | `Record<string, object>`         | Declaratieve SecretRef exec-providerpresets die setup- of installatiesurfaces kunnen aanbieden zonder providerspecifieke integraties in de kern hard te coderen.                                                                              |
+| `cliBackends`                        | Nee     | `string[]`                       | CLI-inference-backend-id's die eigendom zijn van deze Plugin. Gebruikt voor automatische startupactivatie vanuit expliciete configuratieverwijzingen.                                                                                         |
+| `syntheticAuthRefs`                  | Nee     | `string[]`                       | Provider- of CLI-backendverwijzingen waarvan de door de Plugin beheerde synthetische auth-hook moet worden geprobed tijdens koude modeldiscovery voordat de runtime laadt.                                                                    |
+| `nonSecretAuthMarkers`               | Nee     | `string[]`                       | Door gebundelde Plugins beheerde placeholderwaarden voor API-sleutels die niet-geheime lokale, OAuth- of omgevingscredentialstatus vertegenwoordigen.                                                                                        |
+| `commandAliases`                     | Nee     | `object[]`                       | Commandonamen die eigendom zijn van deze Plugin en Plugin-bewuste configuratie- en CLI-diagnostiek moeten opleveren voordat de runtime laadt.                                                                                                 |
+| `providerAuthEnvVars`                | Nee     | `Record<string, string[]>`       | Verouderde compatibiliteits-env-metadata voor provider-auth/statusopzoekingen. Geef voor nieuwe Plugins de voorkeur aan `setup.providers[].envVars`; OpenClaw leest dit nog steeds tijdens de deprecatieperiode.                              |
+| `providerAuthAliases`                | Nee     | `Record<string, string>`         | Provider-id's die een andere provider-id moeten hergebruiken voor auth-opzoeking, bijvoorbeeld een codingprovider die de API-sleutel en auth-profielen van de basisprovider deelt.                                                            |
+| `channelEnvVars`                     | Nee     | `Record<string, string[]>`       | Goedkope kanaal-env-metadata die OpenClaw kan inspecteren zonder Plugin-code te laden. Gebruik dit voor env-gestuurde kanaalsetup of auth-surfaces die generieke startup-/configuratiehelpers moeten zien.                                   |
+| `providerAuthChoices`                | Nee     | `object[]`                       | Goedkope auth-keuzemetadata voor onboardingkiezers, resolutie van voorkeursproviders en eenvoudige CLI-flagbedrading.                                                                                                                        |
+| `activation`                         | Nee     | `object`                         | Goedkope metadata voor de activatieplanner voor startup, provider, commando, kanaal, route en capability-getriggerd laden. Alleen metadata; de Plugin-runtime blijft eigenaar van het daadwerkelijke gedrag.                                  |
+| `setup`                              | Nee     | `object`                         | Goedkope setup-/onboardingdescriptors die discovery- en setup-surfaces kunnen inspecteren zonder Plugin-runtime te laden.                                                                                                                     |
+| `qaRunners`                          | Nee     | `object[]`                       | Goedkope QA-runnerdescriptors die worden gebruikt door de gedeelde `openclaw qa`-host voordat de Plugin-runtime laadt.                                                                                                                        |
+| `contracts`                          | Nee     | `object`                         | Statische momentopname van capability-eigenaarschap voor externe auth-hooks, embeddings, spraak, realtime transcriptie, realtime stem, mediabegrip, afbeeldingsgeneratie, muziekgeneratie, videogeneratie, web-fetch, webzoeken en tool-eigenaarschap. |
+| `mediaUnderstandingProviderMetadata` | Nee     | `Record<string, object>`         | Goedkope mediabegripstandaarden voor provider-id's die zijn gedeclareerd in `contracts.mediaUnderstandingProviders`.                                                                                                                          |
+| `imageGenerationProviderMetadata`    | Nee     | `Record<string, object>`         | Goedkope auth-metadata voor afbeeldingsgeneratie voor provider-id's die zijn gedeclareerd in `contracts.imageGenerationProviders`, inclusief door de provider beheerde auth-aliassen en base-url-guards.                                     |
+| `videoGenerationProviderMetadata`    | Nee     | `Record<string, object>`         | Goedkope auth-metadata voor videogeneratie voor provider-id's die zijn gedeclareerd in `contracts.videoGenerationProviders`, inclusief door de provider beheerde auth-aliassen en base-url-guards.                                           |
+| `musicGenerationProviderMetadata`    | Nee     | `Record<string, object>`         | Goedkope auth-metadata voor muziekgeneratie voor provider-id's die zijn gedeclareerd in `contracts.musicGenerationProviders`, inclusief door de provider beheerde auth-aliassen en base-url-guards.                                          |
+| `toolMetadata`                       | Nee      | `Record<string, object>`         | Goedkope beschikbaarheidsmetadata voor Plugin-eigen tools die in `contracts.tools` zijn gedeclareerd. Gebruik dit wanneer een tool de runtime alleen moet laden als er bewijs voor config, env of auth bestaat.                                                                       |
+| `channelConfigs`                     | Nee      | `Record<string, object>`         | Kanaalconfiguratiemetadata die eigendom is van het manifest en wordt samengevoegd in discovery- en validatieoppervlakken voordat de runtime wordt geladen.                                                                                                                                      |
+| `skills`                             | Nee      | `string[]`                       | Skill-mappen om te laden, relatief ten opzichte van de Plugin-root.                                                                                                                                                                                         |
+| `name`                               | Nee      | `string`                         | Voor mensen leesbare Plugin-naam.                                                                                                                                                                                                                     |
+| `description`                        | Nee      | `string`                         | Korte samenvatting die wordt getoond in Plugin-oppervlakken.                                                                                                                                                                                                         |
+| `icon`                               | Nee      | `string`                         | HTTPS-afbeeldings-URL voor marketplace-/cataloguskaarten. ClawHub accepteert elke geldige `https://`-URL en valt terug op het standaard Plugin-pictogram wanneer dit is weggelaten of ongeldig is.                                                                              |
+| `version`                            | Nee      | `string`                         | Informatieve Plugin-versie.                                                                                                                                                                                                                   |
+| `uiHints`                            | Nee      | `Record<string, object>`         | UI-labels, placeholders en gevoeligheidshints voor config-velden.                                                                                                                                                                               |
 
-## Referentie voor metagegevens van generatieproviders
+## Referentie voor metadata van generatieproviders
 
-De metagegevensvelden van generatieproviders beschrijven statische auth-signalen voor
+De metadatavelden van generatieproviders beschrijven statische authenticatiesignalen voor
 providers die zijn gedeclareerd in de bijbehorende lijst `contracts.*GenerationProviders`.
-OpenClaw leest deze velden voordat de runtime van de provider wordt geladen, zodat kerntools
+OpenClaw leest deze velden voordat de providerruntime wordt geladen, zodat kerntools
 kunnen bepalen of een generatieprovider beschikbaar is zonder elke
-providerplugin te importeren.
+provider-Plugin te importeren.
 
-Gebruik deze velden alleen voor goedkope, declaratieve feiten. Transport, aanvraag-
-transformaties, tokenvernieuwing, validatie van inloggegevens en daadwerkelijk generatiegedrag
-blijven in de pluginruntime.
+Gebruik deze velden alleen voor lichte, declaratieve feiten. Transport, request-
+transformaties, tokenvernieuwing, credentialvalidatie en het daadwerkelijke generatiegedrag
+blijven in de Plugin-runtime.
 
 ```json
 {
@@ -246,60 +255,67 @@ blijven in de pluginruntime.
 }
 ```
 
-Elke metagegevensvermelding ondersteunt:
+Elke metadata-entry ondersteunt:
 
-| Veld            | Vereist | Type       | Wat het betekent                                                                                                                        |
-| --------------- | -------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `aliases`       | Nee      | `string[]` | Extra provider-id's die moeten meetellen als statische auth-aliassen voor de generatieprovider.                                         |
-| `authProviders` | Nee      | `string[]` | Provider-id's waarvan de geconfigureerde auth-profielen moeten meetellen als auth voor deze generatieprovider.                          |
-| `configSignals` | Nee      | `object[]` | Goedkope, alleen op configuratie gebaseerde beschikbaarheidssignalen voor lokale of zelf gehoste providers die kunnen worden geconfigureerd zonder auth-profielen of env-vars. |
-| `authSignals`   | Nee      | `object[]` | Expliciete auth-signalen. Indien aanwezig vervangen deze de standaardset signalen uit de provider-id, `aliases` en `authProviders`.      |
+| Veld                   | Vereist | Type       | Betekenis                                                                                                                                       |
+| ---------------------- | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `aliases`              | Nee     | `string[]` | Aanvullende provider-id's die moeten meetellen als statische authenticatiealiassen voor de generatieprovider.                                    |
+| `authProviders`        | Nee     | `string[]` | Provider-id's waarvan geconfigureerde authenticatieprofielen moeten meetellen als authenticatie voor deze generatieprovider.                     |
+| `configSignals`        | Nee     | `object[]` | Lichte, alleen-op-configuratie gebaseerde beschikbaarheidssignalen voor lokale of self-hosted providers die zonder authenticatieprofielen of omgevingsvariabelen kunnen worden geconfigureerd. |
+| `authSignals`          | Nee     | `object[]` | Expliciete authenticatiesignalen. Wanneer aanwezig vervangen deze de standaardset signalen van de provider-id, `aliases` en `authProviders`.     |
+| `referenceAudioInputs` | Nee     | `boolean`  | Alleen voor videogeneratie. Stel in op `true` wanneer de provider referentie-audioassets accepteert; anders verbergt `video_generate` audioreferentieparameters. |
 
-Elke `configSignals`-vermelding ondersteunt:
+Elke `configSignals`-entry ondersteunt:
 
-| Veld          | Vereist | Type       | Wat het betekent                                                                                                                                                                           |
-| ------------- | -------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `rootPath`    | Ja       | `string`   | Puntpad naar het configuratieobject dat eigendom is van de plugin om te inspecteren, bijvoorbeeld `plugins.entries.example.config`.                                                        |
-| `overlayPath` | Nee      | `string`   | Puntpad binnen de rootconfiguratie waarvan het object het rootobject moet overlayen voordat het signaal wordt geëvalueerd. Gebruik dit voor capability-specifieke configuratie zoals `image`, `video` of `music`. |
-| `required`    | Nee      | `string[]` | Puntpaden binnen de effectieve configuratie die geconfigureerde waarden moeten hebben. Strings mogen niet leeg zijn; objecten en arrays mogen niet leeg zijn.                              |
-| `requiredAny` | Nee      | `string[]` | Puntpaden binnen de effectieve configuratie waarvan er ten minste één een geconfigureerde waarde moet hebben.                                                                              |
-| `mode`        | Nee      | `object`   | Optionele stringmodusguard binnen de effectieve configuratie. Gebruik dit wanneer alleen-configuratiebeschikbaarheid slechts op één modus van toepassing is.                              |
+| Veld             | Vereist | Type       | Betekenis                                                                                                                                                                                  |
+| ---------------- | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `rootPath`       | Ja      | `string`   | Puntpad naar het configuratieobject dat eigendom is van de Plugin en moet worden geïnspecteerd, bijvoorbeeld `plugins.entries.example.config`.                                             |
+| `overlayPath`    | Nee     | `string`   | Puntpad binnen de rootconfiguratie waarvan het object de rootobjectwaarden moet overschrijven voordat het signaal wordt beoordeeld. Gebruik dit voor capability-specifieke configuratie zoals `image`, `video` of `music`. |
+| `overlayMapPath` | Nee     | `string`   | Puntpad binnen de rootconfiguratie waarvan elke objectwaarde de rootobjectwaarden moet overschrijven. Gebruik dit voor benoemde accountmaps zoals `accounts`, waarbij elk geconfigureerd account mag kwalificeren. |
+| `required`       | Nee     | `string[]` | Puntpaden binnen de effectieve configuratie die geconfigureerde waarden moeten hebben. Strings mogen niet leeg zijn; objecten en arrays mogen niet leeg zijn.                              |
+| `requiredAny`    | Nee     | `string[]` | Puntpaden binnen de effectieve configuratie waarvan er ten minste één een geconfigureerde waarde moet hebben.                                                                               |
+| `mode`           | Nee     | `object`   | Optionele stringmodusbewaking binnen de effectieve configuratie. Gebruik dit wanneer beschikbaarheid op basis van alleen configuratie slechts voor één modus geldt.                         |
 
-Elke `mode`-guard ondersteunt:
+Elke `mode`-bewaking ondersteunt:
 
-| Veld         | Vereist | Type       | Wat het betekent                                                                    |
-| ------------ | -------- | ---------- | ----------------------------------------------------------------------------------- |
-| `path`       | Nee      | `string`   | Puntpad binnen de effectieve configuratie. Standaard is `mode`.                     |
-| `default`    | Nee      | `string`   | Moduswaarde om te gebruiken wanneer de configuratie het pad weglaat.                |
-| `allowed`    | Nee      | `string[]` | Indien aanwezig slaagt het signaal alleen wanneer de effectieve modus een van deze waarden is. |
-| `disallowed` | Nee      | `string[]` | Indien aanwezig faalt het signaal wanneer de effectieve modus een van deze waarden is. |
+| Veld         | Vereist | Type       | Betekenis                                                                 |
+| ------------ | ------- | ---------- | ------------------------------------------------------------------------- |
+| `path`       | Nee     | `string`   | Puntpad binnen de effectieve configuratie. Standaard is `mode`.           |
+| `default`    | Nee     | `string`   | Moduswaarde om te gebruiken wanneer de configuratie het pad weglaat.      |
+| `allowed`    | Nee     | `string[]` | Indien aanwezig slaagt het signaal alleen wanneer de effectieve modus een van deze waarden is. |
+| `disallowed` | Nee     | `string[]` | Indien aanwezig faalt het signaal wanneer de effectieve modus een van deze waarden is. |
 
-Elke `authSignals`-vermelding ondersteunt:
+Elke `authSignals`-entry ondersteunt:
 
-| Veld              | Vereist | Type     | Wat het betekent                                                                                                                                                                  |
-| ----------------- | -------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `provider`        | Ja       | `string` | Provider-id om te controleren in geconfigureerde auth-profielen.                                                                                                                  |
-| `providerBaseUrl` | Nee      | `object` | Optionele guard die het signaal alleen laat meetellen wanneer de gerefereerde geconfigureerde provider een toegestane basis-URL gebruikt. Gebruik dit wanneer een auth-alias alleen geldig is voor bepaalde API's. |
+| Veld              | Vereist | Type     | Betekenis                                                                                                                                                            |
+| ----------------- | ------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `provider`        | Ja      | `string` | Provider-id om te controleren in geconfigureerde authenticatieprofielen.                                                                                              |
+| `providerBaseUrl` | Nee     | `object` | Optionele bewaking waardoor het signaal alleen meetelt wanneer de gerefereerde geconfigureerde provider een toegestane basis-URL gebruikt. Gebruik dit wanneer een authenticatiealias alleen geldig is voor bepaalde API's. |
 
-Elke `providerBaseUrl`-guard ondersteunt:
+Elke `providerBaseUrl`-bewaking ondersteunt:
 
-| Veld              | Vereist | Type       | Wat het betekent                                                                                                                                       |
-| ----------------- | -------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `provider`        | Ja       | `string`   | Providerconfiguratie-id waarvan `baseUrl` moet worden gecontroleerd.                                                                                   |
-| `defaultBaseUrl`  | Nee      | `string`   | Basis-URL om aan te nemen wanneer de providerconfiguratie `baseUrl` weglaat.                                                                           |
-| `allowedBaseUrls` | Ja       | `string[]` | Toegestane basis-URL's voor dit auth-signaal. Het signaal wordt genegeerd wanneer de geconfigureerde of standaardbasis-URL niet overeenkomt met een van deze genormaliseerde waarden. |
+| Veld              | Vereist | Type       | Betekenis                                                                                                                                          |
+| ----------------- | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `provider`        | Ja      | `string`   | Providerconfiguratie-id waarvan `baseUrl` moet worden gecontroleerd.                                                                               |
+| `defaultBaseUrl`  | Nee     | `string`   | Basis-URL om aan te nemen wanneer de providerconfiguratie `baseUrl` weglaat.                                                                       |
+| `allowedBaseUrls` | Ja      | `string[]` | Toegestane basis-URL's voor dit authenticatiesignaal. Het signaal wordt genegeerd wanneer de geconfigureerde of standaardbasis-URL niet overeenkomt met een van deze genormaliseerde waarden. |
 
-## Referentie voor toolmetagegevens
+## Referentie voor toolmetadata
 
 `toolMetadata` gebruikt dezelfde vormen voor `configSignals` en `authSignals` als
-metagegevens van generatieproviders, geïndexeerd op toolnaam. `contracts.tools` declareert
-eigenaarschap. `toolMetadata` declareert goedkoop beschikbaarheidsbewijs zodat OpenClaw kan
-voorkomen dat een pluginruntime wordt geïmporteerd alleen om de toolfactory `null` te laten retourneren.
+metadata van generatieproviders, met de toolnaam als sleutel. `contracts.tools` declareert
+eigenaarschap. `toolMetadata` declareert licht beschikbaarheidsbewijs zodat OpenClaw kan
+voorkomen dat een Plugin-runtime wordt geïmporteerd alleen om de toolfactory `null` te laten retourneren.
 
 ```json
 {
-  "providerAuthEnvVars": {
-    "example": ["EXAMPLE_API_KEY"]
+  "setup": {
+    "providers": [
+      {
+        "id": "example",
+        "envVars": ["EXAMPLE_API_KEY"]
+      }
+    ]
   },
   "contracts": {
     "tools": ["example_search"]
@@ -324,41 +340,39 @@ voorkomen dat een pluginruntime wordt geïmporteerd alleen om de toolfactory `nu
 ```
 
 Als een tool geen `toolMetadata` heeft, behoudt OpenClaw het bestaande gedrag en
-laadt het de eigenaarplugin wanneer het toolcontract overeenkomt met beleid. Voor hot-path
-tools waarvan de factory afhankelijk is van auth/configuratie, moeten pluginauteurs
+laadt het de eigenaar-Plugin wanneer het toolcontract overeenkomt met het beleid. Voor hot-path
+tools waarvan de factory afhankelijk is van authenticatie/configuratie, moeten Plugin-auteurs
 `toolMetadata` declareren in plaats van core runtime te laten importeren om het te vragen.
 
 ## Referentie voor providerAuthChoices
 
-Elke `providerAuthChoices`-vermelding beschrijft één onboarding- of auth-keuze.
-OpenClaw leest dit voordat de runtime van de provider wordt geladen.
-Providerinstallatielijsten gebruiken deze manifestkeuzes, uit descriptors afgeleide installatiekeuzes
-en metagegevens uit de installatiecatalogus zonder de runtime van de provider te laden.
+Elke `providerAuthChoices`-entry beschrijft één onboarding- of authenticatiekeuze.
+OpenClaw leest dit voordat de providerruntime wordt geladen.
+Providersetuplijsten gebruiken deze manifestkeuzes, setupkeuzes afgeleid van descriptors
+en install-catalogmetadata zonder de providerruntime te laden.
 
-| Veld                  | Vereist | Type                                            | Wat het betekent                                                                                           |
-| --------------------- | -------- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `provider`            | Ja       | `string`                                        | Provider-id waartoe deze keuze behoort.                                                                    |
-| `method`              | Ja       | `string`                                        | Auth-method-id waarnaar moet worden gedispatcht.                                                           |
-| `choiceId`            | Ja       | `string`                                        | Stabiele auth-keuze-id die wordt gebruikt door onboarding- en CLI-flows.                                   |
-| `choiceLabel`         | Nee      | `string`                                        | Gebruikersgericht label. Indien weggelaten valt OpenClaw terug op `choiceId`.                              |
-| `choiceHint`          | Nee      | `string`                                        | Korte helptekst voor de kiezer.                                                                            |
-| `assistantPriority`   | Nee      | `number`                                        | Lagere waarden worden eerder gesorteerd in door de assistent gestuurde interactieve kiezers.               |
-| `assistantVisibility` | Nee      | `"visible"` \| `"manual-only"`                  | Verberg de keuze voor assistentkiezers terwijl handmatige CLI-selectie nog steeds mogelijk blijft.         |
-| `deprecatedChoiceIds` | Nee      | `string[]`                                      | Verouderde keuze-id's die gebruikers naar deze vervangende keuze moeten omleiden.                          |
-| `groupId`             | Nee      | `string`                                        | Optionele groeps-id voor het groeperen van gerelateerde keuzes.                                            |
-| `groupLabel`          | Nee      | `string`                                        | Gebruikersgericht label voor die groep.                                                                    |
-| `groupHint`           | Nee      | `string`                                        | Korte helptekst voor de groep.                                                                             |
-| `optionKey`           | Nee      | `string`                                        | Interne optiesleutel voor eenvoudige auth-flows met één flag.                                              |
-| `cliFlag`             | Nee      | `string`                                        | CLI-flagnaam, zoals `--openrouter-api-key`.                                                                |
-| `cliOption`           | Nee      | `string`                                        | Volledige CLI-optievorm, zoals `--openrouter-api-key <key>`.                                               |
-| `cliDescription`      | Nee      | `string`                                        | Beschrijving die wordt gebruikt in CLI-help.                                                               |
-| `onboardingScopes`    | Nee      | `Array<"text-inference" \| "image-generation">` | In welke onboarding-oppervlakken deze keuze moet verschijnen. Indien weggelaten is de standaard `["text-inference"]`. |
+| Veld                  | Vereist | Type                                                                  | Betekenis                                                                                                |
+| --------------------- | ------- | --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `provider`            | Ja      | `string`                                                              | Provider-id waartoe deze keuze behoort.                                                                 |
+| `method`              | Ja      | `string`                                                              | Auth-methode-id waarnaar moet worden gedispatcht.                                                       |
+| `choiceId`            | Ja      | `string`                                                              | Stabiele auth-keuze-id die wordt gebruikt door onboarding- en CLI-flows.                                |
+| `choiceLabel`         | Nee     | `string`                                                              | Gebruikersgerichte label. Indien weggelaten valt OpenClaw terug op `choiceId`.                         |
+| `choiceHint`          | Nee     | `string`                                                              | Korte hulptekst voor de kiezer.                                                                         |
+| `assistantPriority`   | Nee     | `number`                                                              | Lagere waarden worden eerder gesorteerd in interactieve kiezers die door de assistent worden gestuurd. |
+| `assistantVisibility` | Nee     | `"visible"` \| `"manual-only"`                                        | Verberg de keuze voor assistentkiezers, terwijl handmatige CLI-selectie nog steeds mogelijk blijft.     |
+| `deprecatedChoiceIds` | Nee     | `string[]`                                                            | Verouderde keuze-id's die gebruikers naar deze vervangende keuze moeten omleiden.                       |
+| `groupId`             | Nee     | `string`                                                              | Optionele groeps-id voor het groeperen van gerelateerde keuzes.                                         |
+| `groupLabel`          | Nee     | `string`                                                              | Gebruikersgerichte label voor die groep.                                                                |
+| `groupHint`           | Nee     | `string`                                                              | Korte hulptekst voor de groep.                                                                          |
+| `optionKey`           | Nee     | `string`                                                              | Interne optiesleutel voor eenvoudige auth-flows met een enkele vlag.                                   |
+| `cliFlag`             | Nee     | `string`                                                              | Naam van de CLI-vlag, zoals `--openrouter-api-key`.                                                     |
+| `cliOption`           | Nee     | `string`                                                              | Volledige vorm van de CLI-optie, zoals `--openrouter-api-key <key>`.                                   |
+| `cliDescription`      | Nee     | `string`                                                              | Beschrijving die wordt gebruikt in CLI-help.                                                            |
+| `onboardingScopes`    | Nee     | `Array<"text-inference" \| "image-generation" \| "music-generation">` | Op welke onboarding-oppervlakken deze keuze moet verschijnen. Indien weggelaten is de standaard `["text-inference"]`. |
 
-## Referentie voor commandAliases
+## commandAliases-referentie
 
-Gebruik `commandAliases` wanneer een plugin eigenaar is van een runtime-opdrachtnaam die gebruikers
-per ongeluk in `plugins.allow` kunnen zetten of als root-CLI-opdracht proberen uit te voeren. OpenClaw
-gebruikt deze metadata voor diagnostiek zonder plugin-runtimecode te importeren.
+Gebruik `commandAliases` wanneer een Plugin eigenaar is van een runtime-commandonaam die gebruikers per ongeluk in `plugins.allow` kunnen zetten of proberen uit te voeren als root-CLI-commando. OpenClaw gebruikt deze metadata voor diagnostiek zonder runtimecode van de Plugin te importeren.
 
 ```json
 {
@@ -372,44 +386,24 @@ gebruikt deze metadata voor diagnostiek zonder plugin-runtimecode te importeren.
 }
 ```
 
-| Veld         | Vereist | Type              | Wat het betekent                                                        |
-| ------------ | ------- | ----------------- | ----------------------------------------------------------------------- |
-| `name`       | Ja      | `string`          | Opdrachtnaam die bij deze plugin hoort.                                 |
-| `kind`       | Nee     | `"runtime-slash"` | Markeert de alias als een chat-slashopdracht in plaats van een root-CLI-opdracht. |
-| `cliCommand` | Nee     | `string`          | Gerelateerde root-CLI-opdracht om voor CLI-bewerkingen voor te stellen, als die bestaat. |
+| Veld         | Vereist | Type              | Betekenis                                                              |
+| ------------ | ------- | ----------------- | ---------------------------------------------------------------------- |
+| `name`       | Ja      | `string`          | Commandonaam die bij deze Plugin hoort.                                |
+| `kind`       | Nee     | `"runtime-slash"` | Markeert de alias als een chat-slashcommando in plaats van een root-CLI-commando. |
+| `cliCommand` | Nee     | `string`          | Gerelateerd root-CLI-commando om voor CLI-bewerkingen voor te stellen, als er een bestaat. |
 
-## activatiereferentie
+## activation-referentie
 
-Gebruik `activation` wanneer de plugin goedkoop kan declareren welke control-plane-gebeurtenissen
-deze moeten opnemen in een activatie-/laadplan.
+Gebruik `activation` wanneer de Plugin goedkoop kan declareren welke control-plane-gebeurtenissen hem in een activatie-/laadplan moeten opnemen.
 
-Dit blok is planner-metadata, geen levenscyclus-API. Het registreert geen
-runtimegedrag, vervangt `register(...)` niet en belooft niet dat
-plugincode al is uitgevoerd. De activatieplanner gebruikt deze velden om
-kandidaat-plugins te beperken voordat wordt teruggevallen op bestaande manifest-eigenaarschapsmetadata
-zoals `providers`, `channels`, `commandAliases`, `setup.providers`,
-`contracts.tools` en hooks.
+Dit blok is planner-metadata, geen lifecycle-API. Het registreert geen runtimegedrag, vervangt `register(...)` niet en belooft niet dat Plugincode al is uitgevoerd. De activatieplanner gebruikt deze velden om kandidaat-Plugins te beperken voordat wordt teruggevallen op bestaande manifest-eigendomsmetadata zoals `providers`, `channels`, `commandAliases`, `setup.providers`, `contracts.tools` en hooks.
 
-Geef de voorkeur aan de smalste metadata die eigenaarschap al beschrijft. Gebruik
-`providers`, `channels`, `commandAliases`, setup-descriptors of `contracts`
-wanneer die velden de relatie uitdrukken. Gebruik `activation` voor extra planner-hints
-die niet door die eigenaarschapsvelden kunnen worden weergegeven.
-Gebruik top-level `cliBackends` voor CLI-runtimealiases zoals `claude-cli`,
-`codex-cli` of `google-gemini-cli`; `activation.onAgentHarnesses` is alleen voor
-ingebedde agent-harness-id's die nog geen eigenaarschapsveld hebben.
+Geef de voorkeur aan de smalste metadata die eigenaarschap al beschrijft. Gebruik `providers`, `channels`, `commandAliases`, setup-descriptors of `contracts` wanneer die velden de relatie uitdrukken. Gebruik `activation` voor extra planner-hints die niet door die eigendomsvelden kunnen worden weergegeven.
+Gebruik `cliBackends` op topniveau voor CLI-runtimealiases zoals `claude-cli`, `my-cli` of `google-gemini-cli`; `activation.onAgentHarnesses` is alleen voor ingebedde agent-harness-id's die nog geen eigendomsveld hebben.
 
-Dit blok is alleen metadata. Het registreert geen runtimegedrag en vervangt
-`register(...)`, `setupEntry` of andere runtime-/plugin-entrypoints niet.
-Huidige consumers gebruiken het als een beperkende hint vóór breder laden van plugins, dus
-ontbrekende niet-opstartactivatiemetadata kost meestal alleen prestaties; het
-zou de correctheid niet moeten veranderen zolang manifest-eigenaarschapsfallbacks nog bestaan.
+Dit blok is alleen metadata. Het registreert geen runtimegedrag en vervangt `register(...)`, `setupEntry` of andere runtime-/Plugin-entrypoints niet. Huidige consumers gebruiken het als een beperkende hint vóór bredere Plugin-loading, dus ontbrekende niet-startup-activatiemetadata kost meestal alleen prestaties; het zou de correctheid niet moeten veranderen zolang manifest-eigendomsfallbacks nog bestaan.
 
-Elke plugin moet `activation.onStartup` bewust instellen. Stel dit alleen in op `true`
-wanneer de plugin tijdens het opstarten van de Gateway moet draaien. Stel dit in op `false` wanneer
-de plugin inert is bij het opstarten en alleen via smallere triggers moet laden.
-Het weglaten van `onStartup` laadt de plugin niet langer impliciet bij het opstarten; gebruik expliciete
-activatiemetadata voor opstart-, kanaal-, config-, agent-harness-, geheugen- of
-andere smallere activatietriggers.
+Elke Plugin moet `activation.onStartup` bewust instellen. Stel dit alleen in op `true` wanneer de Plugin tijdens Gateway-opstart moet worden uitgevoerd. Stel dit in op `false` wanneer de Plugin inert is bij startup en alleen vanuit smallere triggers moet laden. Het weglaten van `onStartup` laadt de Plugin niet langer impliciet bij startup; gebruik expliciete activatiemetadata voor startup, kanaal, config, agent-harness, memory of andere smallere activatietriggers.
 
 ```json
 {
@@ -425,45 +419,31 @@ andere smallere activatietriggers.
 }
 ```
 
-| Veld               | Vereist | Type                                                 | Wat het betekent                                                                                                                                                                               |
-| ------------------ | ------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `onStartup`        | Nee     | `boolean`                                            | Expliciete Gateway-opstartactivatie. Elke plugin moet dit instellen. `true` importeert de plugin tijdens het opstarten; `false` houdt deze opstart-lazy tenzij een andere overeenkomende trigger laden vereist. |
-| `onProviders`      | Nee     | `string[]`                                           | Provider-id's die deze plugin moeten opnemen in activatie-/laadplannen.                                                                                                                        |
-| `onAgentHarnesses` | Nee     | `string[]`                                           | Ingebedde agent-harness-runtime-id's die deze plugin moeten opnemen in activatie-/laadplannen. Gebruik top-level `cliBackends` voor CLI-backendaliases.                                       |
-| `onCommands`       | Nee     | `string[]`                                           | Opdracht-id's die deze plugin moeten opnemen in activatie-/laadplannen.                                                                                                                        |
-| `onChannels`       | Nee     | `string[]`                                           | Kanaal-id's die deze plugin moeten opnemen in activatie-/laadplannen.                                                                                                                          |
-| `onRoutes`         | Nee     | `string[]`                                           | Route-soorten die deze plugin moeten opnemen in activatie-/laadplannen.                                                                                                                        |
-| `onConfigPaths`    | Nee     | `string[]`                                           | Root-relatieve configpaden die deze plugin moeten opnemen in opstart-/laadplannen wanneer het pad aanwezig is en niet expliciet is uitgeschakeld.                                             |
-| `onCapabilities`   | Nee     | `Array<"provider" \| "channel" \| "tool" \| "hook">` | Brede capaciteitshints die worden gebruikt door control-plane-activatieplanning. Geef waar mogelijk de voorkeur aan smallere velden.                                                           |
+| Veld               | Vereist | Type                                                 | Betekenis                                                                                                                                                                                  |
+| ------------------ | ------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `onStartup`        | Nee     | `boolean`                                            | Expliciete Gateway-startupactivatie. Elke Plugin moet dit instellen. `true` importeert de Plugin tijdens startup; `false` houdt hem startup-lazy tenzij een andere overeenkomende trigger laden vereist. |
+| `onProviders`      | Nee     | `string[]`                                           | Provider-id's die deze Plugin in activatie-/laadplannen moeten opnemen.                                                                                                                    |
+| `onAgentHarnesses` | Nee     | `string[]`                                           | Ingebedde agent-harness-runtime-id's die deze Plugin in activatie-/laadplannen moeten opnemen. Gebruik `cliBackends` op topniveau voor CLI-backendaliases.                                |
+| `onCommands`       | Nee     | `string[]`                                           | Commando-id's die deze Plugin in activatie-/laadplannen moeten opnemen.                                                                                                                    |
+| `onChannels`       | Nee     | `string[]`                                           | Kanaal-id's die deze Plugin in activatie-/laadplannen moeten opnemen.                                                                                                                       |
+| `onRoutes`         | Nee     | `string[]`                                           | Routetypen die deze Plugin in activatie-/laadplannen moeten opnemen.                                                                                                                       |
+| `onConfigPaths`    | Nee     | `string[]`                                           | Root-relatieve configpaden die deze Plugin in startup-/laadplannen moeten opnemen wanneer het pad aanwezig is en niet expliciet is uitgeschakeld.                                          |
+| `onCapabilities`   | Nee     | `Array<"provider" \| "channel" \| "tool" \| "hook">` | Brede capability-hints die worden gebruikt door activatieplanning van het besturingsvlak. Geef waar mogelijk de voorkeur aan smallere velden.                                               |
 
-Huidige live consumers:
+Huidige live-consumers:
 
-- Gateway-opstartplanning gebruikt `activation.onStartup` voor expliciete opstartimport
-- door opdrachten getriggerde CLI-planning valt terug op legacy
-  `commandAliases[].cliCommand` of `commandAliases[].name`
-- agent-runtime-opstartplanning gebruikt `activation.onAgentHarnesses` voor
-  ingebedde harnesses en top-level `cliBackends[]` voor CLI-runtimealiases
-- door kanalen getriggerde setup-/kanaalplanning valt terug op legacy `channels[]`-eigenaarschap
-  wanneer expliciete kanaalactivatiemetadata ontbreekt
-- pluginplanning bij opstarten gebruikt `activation.onConfigPaths` voor niet-kanaal-root
-  config-oppervlakken zoals het `browser`-blok van de gebundelde browserplugin
-- door providers getriggerde setup-/runtimeplanning valt terug op legacy
-  `providers[]` en top-level `cliBackends[]`-eigenaarschap wanneer expliciete provideractivatiemetadata
-  ontbreekt
+- Gateway-startupplanning gebruikt `activation.onStartup` voor expliciete startupimport
+- door commando's getriggerde CLI-planning valt terug op legacy `commandAliases[].cliCommand` of `commandAliases[].name`
+- startupplanning van de agent-runtime gebruikt `activation.onAgentHarnesses` voor ingebedde harnesses en `cliBackends[]` op topniveau voor CLI-runtimealiases
+- door kanalen getriggerde setup-/kanaalplanning valt terug op legacy `channels[]`-eigenaarschap wanneer expliciete kanaalactivatiemetadata ontbreekt
+- startupplanning van Plugins gebruikt `activation.onConfigPaths` voor niet-kanaal-rootconfigoppervlakken, zoals het `browser`-blok van de gebundelde browser-Plugin
+- door providers getriggerde setup-/runtimeplanning valt terug op legacy `providers[]`- en `cliBackends[]`-eigenaarschap op topniveau wanneer expliciete provideractivatiemetadata ontbreekt
 
-Planner-diagnostiek kan expliciete activatiehints onderscheiden van manifest-eigenaarschapsfallback.
-Bijvoorbeeld, `activation-command-hint` betekent dat
-`activation.onCommands` overeenkwam, terwijl `manifest-command-alias` betekent dat de
-planner in plaats daarvan `commandAliases`-eigenaarschap gebruikte. Deze redenlabels zijn voor
-hostdiagnostiek en tests; plugin-auteurs moeten de metadata blijven declareren
-die eigenaarschap het best beschrijft.
+Planner-diagnostiek kan expliciete activatiehints onderscheiden van manifest-eigendomsfallback. Bijvoorbeeld: `activation-command-hint` betekent dat `activation.onCommands` overeenkwam, terwijl `manifest-command-alias` betekent dat de planner in plaats daarvan `commandAliases`-eigenaarschap gebruikte. Deze redenlabels zijn voor hostdiagnostiek en tests; Plugin-auteurs moeten de metadata blijven declareren die eigenaarschap het best beschrijft.
 
 ## qaRunners-referentie
 
-Gebruik `qaRunners` wanneer een plugin een of meer transportrunners toevoegt onder
-de gedeelde `openclaw qa`-root. Houd deze metadata goedkoop en statisch; de plugin-runtime
-blijft eigenaar van de daadwerkelijke CLI-registratie via een lichtgewicht
-`runtime-api.ts`-oppervlak dat `qaRunnerCliRegistrations` exporteert.
+Gebruik `qaRunners` wanneer een Plugin een of meer transportrunners bijdraagt onder de gedeelde `openclaw qa`-root. Houd deze metadata goedkoop en statisch; de Plugin-runtime blijft eigenaar van de daadwerkelijke CLI-registratie via een lichtgewicht `runtime-api.ts`-oppervlak dat `qaRunnerCliRegistrations` exporteert.
 
 ```json
 {
@@ -476,15 +456,15 @@ blijft eigenaar van de daadwerkelijke CLI-registratie via een lichtgewicht
 }
 ```
 
-| Veld          | Vereist | Type     | Wat het betekent                                                      |
-| ------------- | ------- | -------- | --------------------------------------------------------------------- |
-| `commandName` | Ja      | `string` | Subopdracht gekoppeld onder `openclaw qa`, bijvoorbeeld `matrix`.     |
-| `description` | Nee     | `string` | Fallback-helptekst die wordt gebruikt wanneer de gedeelde host een stubopdracht nodig heeft. |
+| Veld          | Vereist | Type     | Wat het betekent                                                  |
+| ------------- | ------- | -------- | ----------------------------------------------------------------- |
+| `commandName` | Ja      | `string` | Subcommando gekoppeld onder `openclaw qa`, bijvoorbeeld `matrix`. |
+| `description` | Nee     | `string` | Fallback-helptekst die wordt gebruikt wanneer de gedeelde host een stubcommando nodig heeft. |
 
 ## setup-referentie
 
-Gebruik `setup` wanneer setup- en onboardingoppervlakken goedkope plugin-eigen metadata
-nodig hebben voordat runtimes laden.
+Gebruik `setup` wanneer setup- en onboardingsurfaces goedkope Plugin-eigen metadata nodig hebben
+voordat de runtime wordt geladen.
 
 ```json
 {
@@ -512,83 +492,83 @@ nodig hebben voordat runtimes laden.
 }
 ```
 
-Top-level `cliBackends` blijft geldig en blijft CLI-inferentiebackends beschrijven.
-`setup.cliBackends` is het setup-specifieke descriptoroppervlak voor
-control-plane-/setupflows die metadata-only moeten blijven.
+`cliBackends` op het hoogste niveau blijft geldig en blijft CLI-inferentie-
+backends beschrijven. `setup.cliBackends` is de setup-specifieke descriptorsurface voor
+control-plane-/setupflows die uitsluitend metadata moeten blijven.
 
-Wanneer aanwezig, zijn `setup.providers` en `setup.cliBackends` het voorkeursoppervlak
-voor descriptor-first lookup bij setupdetectie. Als de descriptor alleen
-de kandidaat-plugin beperkt en setup nog rijkere runtimehooks voor setup nodig heeft,
-stel dan `requiresRuntime: true` in en houd `setup-api` op zijn plaats als het
+Wanneer aanwezig, zijn `setup.providers` en `setup.cliBackends` de voorkeurs-
+lookupsurface met descriptors eerst voor setupdetectie. Als de descriptor alleen
+de kandidaat-Plugin vernauwt en setup nog rijkere runtimehooks tijdens setup
+nodig heeft, stel dan `requiresRuntime: true` in en houd `setup-api` aanwezig als
 fallback-uitvoeringspad.
 
-OpenClaw neemt ook `setup.providers[].envVars` op in generieke provider-authenticatie- en
-env-var-lookups. `providerAuthEnvVars` blijft ondersteund via een compatibiliteitsadapter
-tijdens de deprecatieperiode, maar niet-gebundelde plugins die dit nog gebruiken
+OpenClaw neemt ook `setup.providers[].envVars` op in generieke provider-auth- en
+env-var-lookups. `providerAuthEnvVars` blijft ondersteund via een compatibiliteits-
+adapter tijdens de deprecatievenster, maar niet-gebundelde plugins die het nog gebruiken
 ontvangen een manifestdiagnose. Nieuwe plugins moeten setup-/status-env-metadata
 op `setup.providers[].envVars` zetten.
 
 OpenClaw kan ook eenvoudige setupkeuzes afleiden uit `setup.providers[].authMethods`
 wanneer er geen setup-entry beschikbaar is, of wanneer `setup.requiresRuntime: false`
-declareert dat setup-runtime niet nodig is. Expliciete `providerAuthChoices`-entries blijven
-de voorkeur houden voor aangepaste labels, CLI-flags, onboardingbereik en assistentmetadata.
+verklaart dat setup-runtime overbodig is. Expliciete `providerAuthChoices`-entries blijven
+de voorkeur houden voor aangepaste labels, CLI-flags, onboardingscope en assistant-metadata.
 
-Stel `requiresRuntime: false` alleen in wanneer die descriptors voldoende zijn voor het
-setupoppervlak. OpenClaw behandelt expliciet `false` als een descriptor-only contract
-en voert `setup-api` of `openclaw.setupEntry` niet uit voor setup-lookup. Als
-een descriptor-only plugin nog steeds een van die setup-runtime-entries levert,
-rapporteert OpenClaw een additieve diagnose en blijft die negeren. Een weggelaten
-`requiresRuntime` behoudt legacy fallbackgedrag zodat bestaande plugins die
-descriptors zonder de vlag hebben toegevoegd niet breken.
+Stel `requiresRuntime: false` alleen in wanneer die descriptors voldoende zijn voor de
+setupsurface. OpenClaw behandelt expliciete `false` als een descriptor-only contract
+en voert `setup-api` of `openclaw.setupEntry` niet uit voor setuplookup. Als
+een descriptor-only Plugin nog steeds een van die setup-runtime-entries levert,
+rapporteert OpenClaw een additieve diagnose en blijft het die negeren. Een weggelaten
+`requiresRuntime` behoudt legacy fallback-gedrag zodat bestaande plugins die
+descriptors zonder de flag hebben toegevoegd niet breken.
 
-Omdat setup-lookup plugin-eigen `setup-api`-code kan uitvoeren, moeten genormaliseerde
-waarden voor `setup.providers[].id` en `setup.cliBackends[]` uniek blijven in alle
-ontdekte plugins. Ambigu eigenaarschap faalt gesloten in plaats van een
-winnaar uit ontdekkingsvolgorde te kiezen.
+Omdat setuplookup Plugin-eigen `setup-api`-code kan uitvoeren, moeten genormaliseerde
+`setup.providers[].id`- en `setup.cliBackends[]`-waarden uniek blijven over
+ontdekte plugins heen. Ambigu eigenaarschap faalt gesloten in plaats van een
+winnaar te kiezen op basis van ontdekkingsvolgorde.
 
-Wanneer setup-runtime wel wordt uitgevoerd, rapporteert setupregistry-diagnostiek descriptorafwijking
-als `setup-api` een provider of CLI-backend registreert die de manifestdescriptors
-niet declareren, of als een descriptor geen overeenkomende runtimeregistratie
-heeft. Deze diagnoses zijn additief en wijzen legacy plugins niet af.
+Wanneer setup-runtime wel wordt uitgevoerd, rapporteren setupregisterdiagnoses descriptor-
+drift als `setup-api` een provider of CLI-backend registreert die de manifest-
+descriptors niet declareren, of als een descriptor geen overeenkomende runtime-
+registratie heeft. Deze diagnoses zijn additief en wijzen legacy plugins niet af.
 
 ### setup.providers-referentie
 
-| Veld           | Vereist | Type       | Wat het betekent                                                                                     |
-| -------------- | ------- | ---------- | ---------------------------------------------------------------------------------------------------- |
-| `id`           | Ja      | `string`   | Provider-id zichtbaar tijdens setup of onboarding. Houd genormaliseerde id's wereldwijd uniek.       |
-| `authMethods`  | Nee     | `string[]` | Setup-/authenticatiemethode-id's die deze provider ondersteunt zonder volledige runtime te laden.    |
-| `envVars`      | Nee     | `string[]` | Env-vars die generieke setup-/statusoppervlakken kunnen controleren voordat de plugin-runtime laadt. |
-| `authEvidence` | Nee     | `object[]` | Goedkope lokale authenticatiebewijscontroles voor providers die kunnen authenticeren via niet-geheime markers. |
+| Veld           | Vereist | Type       | Wat het betekent                                                                                   |
+| -------------- | ------- | ---------- | -------------------------------------------------------------------------------------------------- |
+| `id`           | Ja      | `string`   | Provider-id die tijdens setup of onboarding wordt blootgesteld. Houd genormaliseerde ids wereldwijd uniek. |
+| `authMethods`  | Nee     | `string[]` | Setup-/auth-method-ids die deze provider ondersteunt zonder de volledige runtime te laden.          |
+| `envVars`      | Nee     | `string[]` | Env vars die generieke setup-/statussurfaces kunnen controleren voordat de Plugin-runtime laadt.    |
+| `authEvidence` | Nee     | `object[]` | Goedkope lokale auth-evidencecontroles voor providers die kunnen authenticeren via niet-geheime markers. |
 
-`authEvidence` is voor lokale credentialmarkers die eigendom zijn van de provider en kunnen worden
+`authEvidence` is bedoeld voor provider-eigen lokale credentialmarkers die kunnen worden
 geverifieerd zonder runtimecode te laden. Deze controles moeten goedkoop en lokaal blijven:
-geen netwerkaanroepen, geen leesbewerkingen uit keychains of secretmanagers, geen shellopdrachten en geen
+geen netwerkcalls, geen keychain- of secret-manager-reads, geen shellcommando's en geen
 provider-API-probes.
 
-Ondersteunde bewijsvermeldingen:
+Ondersteunde evidence-entries:
 
-| Veld               | Vereist | Type       | Betekenis                                                                                                           |
-| ------------------ | -------- | ---------- | ------------------------------------------------------------------------------------------------------------------- |
-| `type`             | Ja       | `string`   | Momenteel `local-file-with-env`.                                                                                    |
-| `fileEnvVar`       | Nee      | `string`   | Omgevingsvariabele met een expliciet credentialbestandspad.                                                         |
-| `fallbackPaths`    | Nee      | `string[]` | Lokale credentialbestandspaden die worden gecontroleerd wanneer `fileEnvVar` ontbreekt of leeg is. Ondersteunt `${HOME}` en `${APPDATA}`. |
-| `requiresAnyEnv`   | Nee      | `string[]` | Minstens een van de vermelde omgevingsvariabelen moet niet-leeg zijn voordat het bewijs geldig is.                  |
-| `requiresAllEnv`   | Nee      | `string[]` | Elke vermelde omgevingsvariabele moet niet-leeg zijn voordat het bewijs geldig is.                                  |
-| `credentialMarker` | Ja       | `string`   | Niet-geheime marker die wordt geretourneerd wanneer het bewijs aanwezig is.                                         |
-| `source`           | Nee      | `string`   | Gebruikersgericht bronlabel voor auth/status-uitvoer.                                                               |
+| Veld               | Vereist | Type       | Wat het betekent                                                                                              |
+| ------------------ | ------- | ---------- | ------------------------------------------------------------------------------------------------------------- |
+| `type`             | Ja      | `string`   | Momenteel `local-file-with-env`.                                                                              |
+| `fileEnvVar`       | Nee     | `string`   | Env var met een expliciet credentialbestandspad.                                                              |
+| `fallbackPaths`    | Nee     | `string[]` | Lokale credentialbestandspaden die worden gecontroleerd wanneer `fileEnvVar` ontbreekt of leeg is. Ondersteunt `${HOME}` en `${APPDATA}`. |
+| `requiresAnyEnv`   | Nee     | `string[]` | Ten minste één vermelde env var moet niet-leeg zijn voordat de evidence geldig is.                            |
+| `requiresAllEnv`   | Nee     | `string[]` | Elke vermelde env var moet niet-leeg zijn voordat de evidence geldig is.                                      |
+| `credentialMarker` | Ja      | `string`   | Niet-geheime marker die wordt geretourneerd wanneer de evidence aanwezig is.                                  |
+| `source`           | Nee     | `string`   | Gebruikersgericht bronlabel voor auth-/statusoutput.                                                         |
 
 ### setup-velden
 
-| Veld               | Vereist | Type       | Betekenis                                                                                              |
-| ------------------ | -------- | ---------- | ------------------------------------------------------------------------------------------------------ |
-| `providers`        | Nee      | `object[]` | Provider-setupdescriptors die tijdens setup en onboarding worden weergegeven.                          |
-| `cliBackends`      | Nee      | `string[]` | Backend-id's voor setuptijd die worden gebruikt voor descriptor-eerst setup-lookup. Houd genormaliseerde id's wereldwijd uniek. |
-| `configMigrations` | Nee      | `string[]` | Configmigratie-id's die eigendom zijn van het setup-oppervlak van deze plugin.                         |
-| `requiresRuntime`  | Nee      | `boolean`  | Of setup na descriptor-lookup nog uitvoering van `setup-api` nodig heeft.                              |
+| Veld               | Vereist | Type       | Wat het betekent                                                                                      |
+| ------------------ | ------- | ---------- | ----------------------------------------------------------------------------------------------------- |
+| `providers`        | Nee     | `object[]` | Provider-setupdescriptors die tijdens setup en onboarding worden blootgesteld.                         |
+| `cliBackends`      | Nee     | `string[]` | Backend-ids tijdens setup die worden gebruikt voor setuplookup met descriptors eerst. Houd genormaliseerde ids wereldwijd uniek. |
+| `configMigrations` | Nee     | `string[]` | Config-migratie-ids die eigendom zijn van de setupsurface van deze Plugin.                            |
+| `requiresRuntime`  | Nee     | `boolean`  | Of setup nog `setup-api`-uitvoering nodig heeft na descriptorlookup.                                  |
 
 ## uiHints-referentie
 
-`uiHints` is een map van configveldnamen naar kleine rendering-hints.
+`uiHints` is een map van config-veldnamen naar kleine renderinghints.
 
 ```json
 {
@@ -605,7 +585,7 @@ Ondersteunde bewijsvermeldingen:
 
 Elke veldhint kan bevatten:
 
-| Veld          | Type       | Betekenis                                  |
+| Veld          | Type       | Wat het betekent                           |
 | ------------- | ---------- | ------------------------------------------ |
 | `label`       | `string`   | Gebruikersgericht veldlabel.               |
 | `help`        | `string`   | Korte helptekst.                           |
@@ -616,24 +596,27 @@ Elke veldhint kan bevatten:
 
 ## contracts-referentie
 
-Gebruik `contracts` alleen voor statische metadata over capability-eigendom die OpenClaw kan
-lezen zonder de pluginruntime te importeren.
+Gebruik `contracts` alleen voor statische metadata over capability-eigenaarschap die OpenClaw kan
+lezen zonder de Plugin-runtime te importeren.
 
 ```json
 {
   "contracts": {
-    "agentToolResultMiddleware": ["pi", "codex"],
+    "agentToolResultMiddleware": ["openclaw", "codex"],
+    "trustedToolPolicies": ["workflow-budget"],
     "externalAuthProviders": ["acme-ai"],
+    "embeddingProviders": ["openai-compatible"],
     "speechProviders": ["openai"],
     "realtimeTranscriptionProviders": ["openai"],
     "realtimeVoiceProviders": ["openai"],
     "memoryEmbeddingProviders": ["local"],
-    "mediaUnderstandingProviders": ["openai", "openai-codex"],
+    "mediaUnderstandingProviders": ["openai"],
     "imageGenerationProviders": ["openai"],
     "videoGenerationProviders": ["qwen"],
     "webFetchProviders": ["firecrawl"],
     "webSearchProviders": ["gemini"],
     "migrationProviders": ["hermes"],
+    "gatewayMethodDispatch": ["authenticated-request"],
     "tools": ["firecrawl_search", "firecrawl_scrape"]
   }
 }
@@ -641,50 +624,73 @@ lezen zonder de pluginruntime te importeren.
 
 Elke lijst is optioneel:
 
-| Veld                             | Type       | Betekenis                                                              |
-| -------------------------------- | ---------- | ---------------------------------------------------------------------- |
-| `embeddedExtensionFactories`     | `string[]` | Codex app-server-extensiefactory-id's, momenteel `codex-app-server`.   |
-| `agentToolResultMiddleware`      | `string[]` | Runtime-id's waarvoor een gebundelde plugin tool-result-middleware mag registreren. |
-| `externalAuthProviders`          | `string[]` | Provider-id's waarvan deze plugin de externe-auth-profielhook bezit.   |
-| `speechProviders`                | `string[]` | Spraakprovider-id's die eigendom zijn van deze plugin.                 |
-| `realtimeTranscriptionProviders` | `string[]` | Realtime-transcriptieprovider-id's die eigendom zijn van deze plugin.  |
-| `realtimeVoiceProviders`         | `string[]` | Realtime-spraakprovider-id's die eigendom zijn van deze plugin.        |
-| `memoryEmbeddingProviders`       | `string[]` | Memory-embeddingprovider-id's die eigendom zijn van deze plugin.       |
-| `mediaUnderstandingProviders`    | `string[]` | Media-understandingprovider-id's die eigendom zijn van deze plugin.    |
-| `imageGenerationProviders`       | `string[]` | Afbeeldingsgeneratieprovider-id's die eigendom zijn van deze plugin.   |
-| `videoGenerationProviders`       | `string[]` | Videogeneratieprovider-id's die eigendom zijn van deze plugin.         |
-| `webFetchProviders`              | `string[]` | Web-fetchprovider-id's die eigendom zijn van deze plugin.              |
-| `webSearchProviders`             | `string[]` | Web-searchprovider-id's die eigendom zijn van deze plugin.             |
-| `migrationProviders`             | `string[]` | Importprovider-id's die deze plugin bezit voor `openclaw migrate`.     |
-| `tools`                          | `string[]` | Agent-toolnamen die eigendom zijn van deze plugin.                     |
+| Veld                             | Type       | Wat het betekent                                                                                                                            |
+| -------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `embeddedExtensionFactories`     | `string[]` | Codex app-server-extensiefactory-id's, momenteel `codex-app-server`.                                                                        |
+| `agentToolResultMiddleware`      | `string[]` | Runtime-id's waarvoor deze plugin middleware voor toolresultaten mag registreren.                                                           |
+| `trustedToolPolicies`            | `string[]` | Plugin-lokale vertrouwde pre-tool-beleids-id's die een geïnstalleerde plugin mag registreren. Gebundelde plugins mogen beleid zonder dit veld registreren. |
+| `externalAuthProviders`          | `string[]` | Provider-id's waarvan deze plugin de externe-auth-profielhook beheert.                                                                      |
+| `embeddingProviders`             | `string[]` | Algemene embeddingprovider-id's die deze plugin beheert voor herbruikbaar gebruik van vectorembeddings, inclusief geheugen.                 |
+| `speechProviders`                | `string[]` | Spraakprovider-id's die deze plugin beheert.                                                                                                |
+| `realtimeTranscriptionProviders` | `string[]` | Realtime-transcriptieprovider-id's die deze plugin beheert.                                                                                 |
+| `realtimeVoiceProviders`         | `string[]` | Realtime-spraakprovider-id's die deze plugin beheert.                                                                                       |
+| `memoryEmbeddingProviders`       | `string[]` | Verouderde geheugenspecifieke embeddingprovider-id's die deze plugin beheert.                                                               |
+| `mediaUnderstandingProviders`    | `string[]` | Media-understanding-provider-id's die deze plugin beheert.                                                                                  |
+| `transcriptSourceProviders`      | `string[]` | Transcriptbronprovider-id's die deze plugin beheert.                                                                                        |
+| `imageGenerationProviders`       | `string[]` | Afbeeldingsgeneratieprovider-id's die deze plugin beheert.                                                                                  |
+| `videoGenerationProviders`       | `string[]` | Videogeneratieprovider-id's die deze plugin beheert.                                                                                        |
+| `webFetchProviders`              | `string[]` | Webfetchprovider-id's die deze plugin beheert.                                                                                              |
+| `webSearchProviders`             | `string[]` | Webzoekprovider-id's die deze plugin beheert.                                                                                               |
+| `migrationProviders`             | `string[]` | Importprovider-id's die deze plugin beheert voor `openclaw migrate`.                                                                        |
+| `gatewayMethodDispatch`          | `string[]` | Gereserveerde aanspraak voor geauthenticeerde plugin-HTTP-routes die Gateway-methoden in-proces dispatchen.                                 |
+| `tools`                          | `string[]` | Agenttoolnamen die deze plugin beheert.                                                                                                     |
 
 `contracts.embeddedExtensionFactories` blijft behouden voor gebundelde Codex
-app-server-only extensiefactories. Gebundelde tool-result-transformaties moeten
-in plaats daarvan `contracts.agentToolResultMiddleware` declareren en registreren met
-`api.registerAgentToolResultMiddleware(...)`. Externe plugins kunnen geen
-tool-result-middleware registreren omdat de seam tooluitvoer met veel vertrouwen kan herschrijven
-voordat het model die ziet.
+extensiefactory's die alleen voor de app-server zijn. Gebundelde transformaties
+van toolresultaten moeten in plaats daarvan
+`contracts.agentToolResultMiddleware` declareren en registreren met
+`api.registerAgentToolResultMiddleware(...)`. Geïnstalleerde plugins mogen
+hetzelfde middlewarekoppelvlak alleen gebruiken wanneer het expliciet is
+ingeschakeld en alleen voor runtimes die ze declareren in
+`contracts.agentToolResultMiddleware`.
 
-Runtime-registraties met `api.registerTool(...)` moeten overeenkomen met `contracts.tools`.
-Tool-discovery gebruikt deze lijst om alleen de pluginruntimes te laden die eigenaar kunnen zijn van de
-aangevraagde tools.
+Geïnstalleerde plugins die het door de host vertrouwde pre-tool-beleidsniveau
+nodig hebben, moeten elke geregistreerde lokale id declareren in
+`contracts.trustedToolPolicies` en expliciet zijn ingeschakeld. Gebundelde
+plugins behouden het bestaande vertrouwde-beleidspad, maar geïnstalleerde
+plugins met niet-gedeclareerde beleids-id's worden vóór registratie geweigerd.
+Beleids-id's zijn beperkt tot de registrerende plugin, dus twee plugins mogen
+beide `workflow-budget` declareren en registreren; één plugin mag dezelfde lokale
+id niet twee keer registreren.
+
+Runtime-registraties met `api.registerTool(...)` moeten overeenkomen met
+`contracts.tools`. Tooldetectie gebruikt deze lijst om alleen de pluginruntimes
+te laden die eigenaar kunnen zijn van de gevraagde tools.
 
 Providerplugins die `resolveExternalAuthProfiles` implementeren, moeten
-`contracts.externalAuthProviders` declareren. Plugins zonder de declaratie lopen nog steeds
-via een verouderde compatibiliteitsfallback, maar die fallback is trager en
-wordt na de migratieperiode verwijderd.
+`contracts.externalAuthProviders` declareren; niet-gedeclareerde externe-auth-
+hooks worden genegeerd.
 
-Gebundelde memory-embeddingproviders moeten
-`contracts.memoryEmbeddingProviders` declareren voor elk adapter-id dat ze beschikbaar maken, inclusief
-ingebouwde adapters zoals `local`. Zelfstandige CLI-paden gebruiken dit manifestcontract
-om alleen de eigenaar-plugin te laden voordat de volledige Gateway-runtime
-providers heeft geregistreerd.
+Algemene embeddingproviders moeten `contracts.embeddingProviders` declareren
+voor elke adapter die met `api.registerEmbeddingProvider(...)` wordt
+geregistreerd. Gebruik het algemene contract voor herbruikbare vectorgeneratie,
+inclusief providers die door geheugenzoekopdrachten worden gebruikt.
+`contracts.memoryEmbeddingProviders` is verouderde geheugenspecifieke
+compatibiliteit en blijft alleen bestaan terwijl bestaande providers migreren
+naar het algemene embeddingproviderkoppelvlak.
+
+`contracts.gatewayMethodDispatch` accepteert momenteel
+`"authenticated-request"`. Het is een API-hygiënepoort voor native plugin-HTTP-
+routes die opzettelijk Gateway-control-plane-methoden in-proces dispatchen, geen
+sandbox tegen kwaadwillende native plugins. Gebruik het alleen voor strak
+gereviewde gebundelde/operator-oppervlakken die al Gateway-HTTP-auth vereisen.
 
 ## mediaUnderstandingProviderMetadata-referentie
 
-Gebruik `mediaUnderstandingProviderMetadata` wanneer een media-understandingprovider
-standaardmodellen, fallback-prioriteit voor auto-auth of native documentondersteuning heeft die
-generieke core-helpers nodig hebben voordat runtimes laden. Sleutels moeten ook worden gedeclareerd in
+Gebruik `mediaUnderstandingProviderMetadata` wanneer een media-understanding-
+provider standaardmodellen, fallbackprioriteit voor auto-auth of native
+documentondersteuning heeft die generieke core-helpers nodig hebben voordat de
+runtime laadt. Sleutels moeten ook worden gedeclareerd in
 `contracts.mediaUnderstandingProviders`.
 
 ```json
@@ -710,41 +716,45 @@ generieke core-helpers nodig hebben voordat runtimes laden. Sleutels moeten ook 
 
 Elke providervermelding kan bevatten:
 
-| Veld                   | Type                                | Betekenis                                                                        |
-| ---------------------- | ----------------------------------- | -------------------------------------------------------------------------------- |
-| `capabilities`         | `("image" \| "audio" \| "video")[]` | Mediacapabilities die door deze provider worden aangeboden.                      |
-| `defaultModels`        | `Record<string, string>`            | Capability-naar-model-standaarden die worden gebruikt wanneer config geen model opgeeft. |
-| `autoPriority`         | `Record<string, number>`            | Lagere getallen worden eerder gesorteerd voor automatische credentialgebaseerde providerfallback. |
-| `nativeDocumentInputs` | `"pdf"[]`                           | Native documentinvoer die door de provider wordt ondersteund.                    |
+| Veld                   | Type                                | Wat het betekent                                                                  |
+| ---------------------- | ----------------------------------- | --------------------------------------------------------------------------------- |
+| `capabilities`         | `("image" \| "audio" \| "video")[]` | Mediamogelijkheden die door deze provider worden aangeboden.                      |
+| `defaultModels`        | `Record<string, string>`            | Standaardwaarden van mogelijkheid naar model die worden gebruikt wanneer config geen model specificeert. |
+| `autoPriority`         | `Record<string, number>`            | Lagere getallen worden eerder gesorteerd voor automatische providerfallback op basis van referenties. |
+| `nativeDocumentInputs` | `"pdf"[]`                           | Native documentinvoer die door de provider wordt ondersteund.                     |
 
 ## channelConfigs-referentie
 
-Gebruik `channelConfigs` wanneer een kanaalplugin goedkope configmetadata nodig heeft voordat
-runtime laadt. Alleen-lezen discovery voor kanaalsetup/status kan deze metadata
-direct gebruiken voor geconfigureerde externe kanalen wanneer er geen setupvermelding beschikbaar is, of
-wanneer `setup.requiresRuntime: false` verklaart dat setupruntime overbodig is.
+Gebruik `channelConfigs` wanneer een kanaalplugin goedkope configmetadata nodig
+heeft voordat de runtime laadt. Alleen-lezen detectie van kanaalsetup/status kan
+deze metadata rechtstreeks gebruiken voor geconfigureerde externe kanalen
+wanneer er geen setupvermelding beschikbaar is, of wanneer
+`setup.requiresRuntime: false` verklaart dat setup-runtime niet nodig is.
 
-`channelConfigs` is pluginmanifestmetadata, geen nieuwe top-level gebruikersconfigsectie.
-Gebruikers configureren kanaalinstanties nog steeds onder `channels.<channel-id>`.
-OpenClaw leest manifestmetadata om te bepalen welke plugin eigenaar is van dat geconfigureerde
-kanaal voordat pluginruntimecode wordt uitgevoerd.
+`channelConfigs` is pluginmanifestmetadata, geen nieuwe top-level
+gebruikersconfigsectie. Gebruikers configureren kanaalinstanties nog steeds
+onder `channels.<channel-id>`. OpenClaw leest manifestmetadata om te bepalen
+welke plugin dat geconfigureerde kanaal beheert voordat pluginruntimecode wordt
+uitgevoerd.
 
-Voor een kanaalplugin beschrijven `configSchema` en `channelConfigs` verschillende
-paden:
+Voor een kanaalplugin beschrijven `configSchema` en `channelConfigs`
+verschillende paden:
 
 - `configSchema` valideert `plugins.entries.<plugin-id>.config`
 - `channelConfigs.<channel-id>.schema` valideert `channels.<channel-id>`
 
-Niet-gebundelde plugins die `channels[]` declareren, moeten ook overeenkomende
-`channelConfigs`-vermeldingen declareren. Zonder deze kan OpenClaw de plugin nog steeds laden, maar
-cold-path configschema-, setup- en Control UI-oppervlakken kunnen de
-kanaaleigen optiestructuur pas kennen wanneer pluginruntime wordt uitgevoerd.
+Niet-gebundelde plugins die `channels[]` declareren, moeten ook bijpassende
+`channelConfigs`-vermeldingen declareren. Zonder deze kan OpenClaw de plugin nog
+steeds laden, maar cold-path-configschema-, setup- en Control UI-oppervlakken
+kunnen de vorm van kanaaleigen opties niet kennen totdat de pluginruntime wordt
+uitgevoerd.
 
 `channelConfigs.<channel-id>.commands.nativeCommandsAutoEnabled` en
-`nativeSkillsAutoEnabled` kunnen statische `auto`-standaarden declareren voor command-config
-checks die worden uitgevoerd voordat de kanaalruntime laadt. Gebundelde kanalen kunnen ook
-dezelfde standaarden publiceren via `package.json#openclaw.channel.commands` naast
-hun andere package-eigen kanaalcatalogusmetadata.
+`nativeSkillsAutoEnabled` kunnen statische `auto`-standaarden declareren voor
+commandoconfigcontroles die worden uitgevoerd voordat de kanaalruntime laadt.
+Gebundelde kanalen kunnen dezelfde standaarden ook publiceren via
+`package.json#openclaw.channel.commands` naast hun andere kanaalcatalogusmetadata
+die eigendom is van het pakket.
 
 ```json
 {
@@ -764,7 +774,7 @@ hun andere package-eigen kanaalcatalogusmetadata.
         }
       },
       "label": "Matrix",
-      "description": "Matrix homeserver connection",
+      "description": "Matrix-homeserververbinding",
       "commands": {
         "nativeCommandsAutoEnabled": true,
         "nativeSkillsAutoEnabled": true
@@ -777,21 +787,22 @@ hun andere package-eigen kanaalcatalogusmetadata.
 
 Elke kanaalvermelding kan bevatten:
 
-| Veld          | Type                     | Wat het betekent                                                                         |
-| ------------- | ------------------------ | ---------------------------------------------------------------------------------------- |
-| `schema`      | `object`                 | JSON Schema voor `channels.<id>`. Vereist voor elke gedeclareerde kanaalconfiguratie.    |
-| `uiHints`     | `Record<string, object>` | Optionele UI-labels/placeholders/gevoeligheidshints voor die kanaalconfiguratiesectie.   |
-| `label`       | `string`                 | Kanaallabel dat wordt samengevoegd in selectie- en inspectieoppervlakken wanneer runtime-metadata niet klaar is. |
-| `description` | `string`                 | Korte kanaalbeschrijving voor inspectie- en catalogusoppervlakken.                       |
-| `commands`    | `object`                 | Statische native command- en native skill-auto-standaarden voor configuratiecontroles vóór runtime. |
-| `preferOver`  | `string[]`               | Verouderde of lager geprioriteerde plugin-id's die dit kanaal moet overtreffen in selectieoppervlakken. |
+| Veld          | Type                     | Wat het betekent                                                                             |
+| ------------- | ------------------------ | -------------------------------------------------------------------------------------------- |
+| `schema`      | `object`                 | JSON Schema voor `channels.<id>`. Vereist voor elke gedeclareerde kanaalconfigvermelding.    |
+| `uiHints`     | `Record<string, object>` | Optionele UI-labels/placeholders/gevoelige hints voor die kanaalconfigsectie.                |
+| `label`       | `string`                 | Kanaallabel dat wordt samengevoegd in picker- en inspectieoppervlakken wanneer runtimemetadata niet klaar is. |
+| `description` | `string`                 | Korte kanaalbeschrijving voor inspectie- en catalogusoppervlakken.                           |
+| `commands`    | `object`                 | Statische auto-standaarden voor native commando's en native Skills voor pre-runtime-configcontroles. |
+| `preferOver`  | `string[]`               | Verouderde plugin-id's of plugin-id's met lagere prioriteit die dit kanaal moet overtreffen in selectieoppervlakken. |
 
 ### Een andere kanaalplugin vervangen
 
-Gebruik `preferOver` wanneer je plugin de voorkeurs-eigenaar is voor een kanaal-id dat
-een andere plugin ook kan leveren. Veelvoorkomende gevallen zijn een hernoemde plugin-id, een
-zelfstandige plugin die een gebundelde plugin vervangt, of een onderhouden fork die
-dezelfde kanaal-id behoudt voor configuratiecompatibiliteit.
+Gebruik `preferOver` wanneer je plugin de voorkeursbeheerder is voor een
+kanaal-id die een andere plugin ook kan leveren. Veelvoorkomende gevallen zijn
+een hernoemde plugin-id, een zelfstandige plugin die een gebundelde plugin
+vervangt, of een onderhouden fork die dezelfde kanaal-id behoudt voor
+configcompatibiliteit.
 
 ```json
 {
@@ -812,21 +823,23 @@ dezelfde kanaal-id behoudt voor configuratiecompatibiliteit.
 }
 ```
 
-Wanneer `channels.chat` is geconfigureerd, houdt OpenClaw rekening met zowel de kanaal-id als
-de voorkeurs-plugin-id. Als de lager geprioriteerde plugin alleen was geselecteerd omdat
-deze gebundeld is of standaard is ingeschakeld, schakelt OpenClaw deze uit in de effectieve
-runtimeconfiguratie zodat één plugin eigenaar is van het kanaal en de tools ervan. Expliciete gebruikersselectie
-wint nog steeds: als de gebruiker beide plugins expliciet inschakelt, behoudt OpenClaw
-die keuze en meldt het dubbele kanaal-/tooldiagnostiek in plaats van
-de aangevraagde pluginset stilzwijgend te wijzigen.
+Wanneer `channels.chat` is geconfigureerd, houdt OpenClaw rekening met zowel de
+kanaal-id als de voorkeursplugin-id. Als de plugin met lagere prioriteit alleen
+was geselecteerd omdat deze gebundeld is of standaard is ingeschakeld, schakelt
+OpenClaw deze uit in de effectieve runtimeconfig, zodat één plugin eigenaar is
+van het kanaal en de bijbehorende tools. Expliciete gebruikersselectie wint nog
+steeds: als de gebruiker beide plugins expliciet inschakelt, behoudt OpenClaw
+die keuze en rapporteert het diagnostiek voor dubbele kanalen/tools in plaats
+van de gevraagde pluginset stilzwijgend te wijzigen.
 
-Houd `preferOver` beperkt tot plugin-id's die echt hetzelfde kanaal kunnen leveren.
-Het is geen algemeen prioriteitsveld en het hernoemt geen gebruikersconfiguratiesleutels.
+Houd `preferOver` beperkt tot plugin-id's die echt hetzelfde kanaal kunnen
+leveren. Het is geen algemeen prioriteitsveld en het hernoemt geen
+gebruikersconfigsleutels.
 
 ## modelSupport-referentie
 
-Gebruik `modelSupport` wanneer OpenClaw je providerplugin moet afleiden uit
-verkorte model-id's zoals `gpt-5.5` of `claude-sonnet-4.6` voordat de pluginruntime
+Gebruik `modelSupport` wanneer OpenClaw je provider-Plugin moet afleiden uit
+verkorte model-id's zoals `gpt-5.5` of `claude-sonnet-4.6` voordat de Plugin-runtime
 wordt geladen.
 
 ```json
@@ -838,27 +851,32 @@ wordt geladen.
 }
 ```
 
-OpenClaw past deze volgorde toe:
+OpenClaw past deze prioriteit toe:
 
-- expliciete `provider/model`-referenties gebruiken de metadata van het eigenaar-`providers`-manifest
-- `modelPatterns` gaan vóór `modelPrefixes`
-- als één niet-gebundelde plugin en één gebundelde plugin beide overeenkomen, wint de niet-gebundelde
-  plugin
-- resterende ambiguïteit wordt genegeerd totdat de gebruiker of configuratie een provider specificeert
+- expliciete `provider/model`-verwijzingen gebruiken de manifesmetadata van de eigenaar in `providers`
+- `modelPatterns` krijgen voorrang op `modelPrefixes`
+- als één niet-gebundelde Plugin en één gebundelde Plugin beide overeenkomen, wint de niet-gebundelde
+  Plugin
+- resterende ambiguïteit wordt genegeerd totdat de gebruiker of configuratie een provider opgeeft
 
 Velden:
 
-| Veld            | Type       | Wat het betekent                                                               |
-| --------------- | ---------- | ------------------------------------------------------------------------------ |
-| `modelPrefixes` | `string[]` | Prefixen die met `startsWith` worden gematcht tegen verkorte model-id's.       |
-| `modelPatterns` | `string[]` | Regex-bronnen die tegen verkorte model-id's worden gematcht na verwijdering van profielsuffixen. |
+| Veld            | Type       | Wat het betekent                                                                |
+| --------------- | ---------- | ------------------------------------------------------------------------------- |
+| `modelPrefixes` | `string[]` | Voorvoegsels die met `startsWith` worden vergeleken met verkorte model-id's.    |
+| `modelPatterns` | `string[]` | Regex-bronnen die na verwijdering van het profielsuffix met verkorte model-id's worden vergeleken. |
+
+`modelPatterns`-items worden gecompileerd via `compileSafeRegex`, dat patronen
+met geneste herhaling weigert (bijvoorbeeld `(a+)+$`). Patronen die niet door de
+veiligheidscontrole komen, worden stilzwijgend overgeslagen, net als syntactisch
+ongeldige regex. Houd patronen eenvoudig en vermijd geneste kwantoren.
 
 ## modelCatalog-referentie
 
-Gebruik `modelCatalog` wanneer OpenClaw provider-modelmetadata moet kennen voordat
-de pluginruntime wordt geladen. Dit is de door het manifest beheerde bron voor vaste catalogusrijen,
-provideraliassen, onderdrukkingsregels en ontdekkingsmodus. Runtimeverversing
-hoort nog steeds thuis in providerruntimecode, maar het manifest vertelt core wanneer runtime
+Gebruik `modelCatalog` wanneer OpenClaw providermodelmetadata moet kennen voordat
+de Plugin-runtime wordt geladen. Dit is de door het manifest beheerde bron voor vaste catalogusrijen,
+provideraliassen, onderdrukkingsregels en ontdekkingsmodus. Runtime-verversing
+hoort nog steeds in providerruntimecode, maar het manifest vertelt de kern wanneer runtime
 vereist is.
 
 ```json
@@ -908,26 +926,27 @@ vereist is.
 }
 ```
 
-Topnivelevelden:
+Velden op topniveau:
 
-| Veld           | Type                                                     | Wat het betekent                                                                                              |
-| -------------- | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `providers`    | `Record<string, object>`                                 | Catalogusrijen voor provider-id's waarvan deze plugin eigenaar is. Sleutels moeten ook voorkomen in `providers` op topniveau. |
-| `aliases`      | `Record<string, object>`                                 | Provideraliassen die moeten verwijzen naar een provider in eigendom voor catalogus- of onderdrukkingsplanning. |
-| `suppressions` | `object[]`                                               | Modelrijen uit een andere bron die deze plugin om providerspecifieke reden onderdrukt.                         |
-| `discovery`    | `Record<string, "static" \| "refreshable" \| "runtime">` | Of de providercatalogus uit manifestmetadata kan worden gelezen, in cache kan worden ververst, of runtime vereist. |
+| Veld             | Type                                                     | Wat het betekent                                                                                              |
+| ---------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `providers`      | `Record<string, object>`                                 | Catalogusrijen voor provider-id's die eigendom zijn van deze Plugin. Sleutels moeten ook voorkomen in `providers` op topniveau. |
+| `aliases`        | `Record<string, object>`                                 | Provideraliassen die moeten worden opgelost naar een eigen provider voor catalogus- of onderdrukkingsplanning. |
+| `suppressions`   | `object[]`                                               | Modelrijen uit een andere bron die deze Plugin onderdrukt om een providerspecifieke reden.                    |
+| `discovery`      | `Record<string, "static" \| "refreshable" \| "runtime">` | Of de providercatalogus uit manifestmetadata kan worden gelezen, naar de cache kan worden ververst, of runtime vereist. |
+| `runtimeAugment` | `boolean`                                                | Stel alleen in op `true` wanneer de providerruntime catalogusrijen moet toevoegen na manifest-/configuratieplanning. |
 
-`aliases` neemt deel aan provider-eigenaarschaplookup voor modelcatalogusplanning.
-Aliasdoelen moeten providers op topniveau zijn waarvan dezelfde plugin eigenaar is. Wanneer een
-op provider gefilterde lijst een alias gebruikt, kan OpenClaw het eigenaarmanifest lezen en
-alias-API-/basis-URL-overschrijvingen toepassen zonder providerruntime te laden.
-Aliassen breiden ongefilterde catalogusvermeldingen niet uit; brede lijsten geven alleen
-de canonieke providerrijen van de eigenaar weer.
+`aliases` doet mee aan de lookup van providereigenaarschap voor modelcatalogusplanning.
+Aliasdoelen moeten providers op topniveau zijn die eigendom zijn van dezelfde Plugin. Wanneer een
+op provider gefilterde lijst een alias gebruikt, kan OpenClaw het eigenaarsmanifest lezen en
+alias-API-/basis-URL-overschrijvingen toepassen zonder de providerruntime te laden.
+Aliassen breiden ongefilterde cataloguslijsten niet uit; brede lijsten geven alleen de rijen
+van de canonieke eigenaarprovider uit.
 
-`suppressions` vervangt de oude providerruntime-hook `suppressBuiltInModel`.
-Onderdrukkingsitems worden alleen gerespecteerd wanneer de provider eigendom is van de plugin of
-is gedeclareerd als een `modelCatalog.aliases`-sleutel die verwijst naar een provider in eigendom. Runtime-
-onderdrukkingshooks worden niet langer aangeroepen tijdens modelresolutie.
+`suppressions` vervangt de oude providerruntimehook `suppressBuiltInModel`.
+Onderdrukkingsitems worden alleen gehonoreerd wanneer de provider eigendom is van de Plugin of
+is gedeclareerd als een `modelCatalog.aliases`-sleutel die naar een eigen provider verwijst. Runtime-
+onderdrukkingshooks worden niet meer aangeroepen tijdens modelresolutie.
 
 Providervelden:
 
@@ -935,54 +954,54 @@ Providervelden:
 | --------- | ------------------------ | ------------------------------------------------------------------ |
 | `baseUrl` | `string`                 | Optionele standaardbasis-URL voor modellen in deze providercatalogus. |
 | `api`     | `ModelApi`               | Optionele standaard-API-adapter voor modellen in deze providercatalogus. |
-| `headers` | `Record<string, string>` | Optionele statische headers die van toepassing zijn op deze providercatalogus. |
-| `models`  | `object[]`               | Vereiste modelrijen. Rijen zonder `id` worden genegeerd.           |
+| `headers` | `Record<string, string>` | Optionele statische headers die op deze providercatalogus van toepassing zijn. |
+| `models`  | `object[]`               | Vereiste modelrijen. Rijen zonder een `id` worden genegeerd.       |
 
 Modelvelden:
 
-| Veld            | Type                                                           | Wat het betekent                                                               |
-| --------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| `id`            | `string`                                                       | Providerlokale model-id, zonder het `provider/`-prefix.                        |
-| `name`          | `string`                                                       | Optionele weergavenaam.                                                        |
-| `api`           | `ModelApi`                                                     | Optionele API-overschrijving per model.                                        |
-| `baseUrl`       | `string`                                                       | Optionele basis-URL-overschrijving per model.                                  |
-| `headers`       | `Record<string, string>`                                       | Optionele statische headers per model.                                         |
-| `input`         | `Array<"text" \| "image" \| "document" \| "audio" \| "video">` | Modaliteiten die het model accepteert.                                         |
-| `reasoning`     | `boolean`                                                      | Of het model reasoning-gedrag beschikbaar maakt.                               |
-| `contextWindow` | `number`                                                       | Native providercontextvenster.                                                 |
+| Veld            | Type                                                           | Wat het betekent                                                              |
+| --------------- | -------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `id`            | `string`                                                       | Providerlokale model-id, zonder het voorvoegsel `provider/`.                  |
+| `name`          | `string`                                                       | Optionele weergavenaam.                                                       |
+| `api`           | `ModelApi`                                                     | Optionele API-overschrijving per model.                                       |
+| `baseUrl`       | `string`                                                       | Optionele basis-URL-overschrijving per model.                                 |
+| `headers`       | `Record<string, string>`                                       | Optionele statische headers per model.                                        |
+| `input`         | `Array<"text" \| "image" \| "document" \| "audio" \| "video">` | Modaliteiten die het model accepteert.                                        |
+| `reasoning`     | `boolean`                                                      | Of het model redeneergedrag beschikbaar stelt.                                |
+| `contextWindow` | `number`                                                       | Native providercontextvenster.                                                |
 | `contextTokens` | `number`                                                       | Optionele effectieve runtimecontextlimiet wanneer die verschilt van `contextWindow`. |
-| `maxTokens`     | `number`                                                       | Maximumaantal outputtokens wanneer bekend.                                     |
-| `cost`          | `object`                                                       | Optionele USD-prijzen per miljoen tokens, inclusief optionele `tieredPricing`. |
+| `maxTokens`     | `number`                                                       | Maximum aantal uitvoertokens, indien bekend.                                  |
+| `cost`          | `object`                                                       | Optionele prijs in USD per miljoen tokens, inclusief optionele `tieredPricing`. |
 | `compat`        | `object`                                                       | Optionele compatibiliteitsvlaggen die overeenkomen met OpenClaw-modelconfiguratiecompatibiliteit. |
-| `status`        | `"available"` \| `"preview"` \| `"deprecated"` \| `"disabled"` | Vermeldingsstatus. Alleen onderdrukken wanneer de rij helemaal niet mag verschijnen. |
-| `statusReason`  | `string`                                                       | Optionele reden die wordt getoond bij een niet-beschikbare status.             |
-| `replaces`      | `string[]`                                                     | Oudere providerlokale model-id's die door dit model worden vervangen.          |
-| `replacedBy`    | `string`                                                       | Vervangende providerlokale model-id voor verouderde rijen.                     |
-| `tags`          | `string[]`                                                     | Stabiele tags die door pickers en filters worden gebruikt.                     |
+| `status`        | `"available"` \| `"preview"` \| `"deprecated"` \| `"disabled"` | Vermeldingsstatus. Onderdruk alleen wanneer de rij helemaal niet mag verschijnen. |
+| `statusReason`  | `string`                                                       | Optionele reden die wordt getoond bij een niet-beschikbare status.            |
+| `replaces`      | `string[]`                                                     | Oudere providerlokale model-id's die dit model vervangt.                      |
+| `replacedBy`    | `string`                                                       | Vervangende providerlokale model-id voor verouderde rijen.                    |
+| `tags`          | `string[]`                                                     | Stabiele tags die door kiezers en filters worden gebruikt.                    |
 
 Onderdrukkingsvelden:
 
-| Veld                       | Type       | Wat het betekent                                                                                           |
+| Veld                       | Type       | Wat het betekent                                                                                            |
 | -------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------- |
-| `provider`                 | `string`   | Provider-id voor de upstreamrij die moet worden onderdrukt. Moet eigendom zijn van deze plugin of gedeclareerd zijn als een alias in eigendom. |
+| `provider`                 | `string`   | Provider-id voor de upstreamrij die moet worden onderdrukt. Moet eigendom zijn van deze Plugin of zijn gedeclareerd als een eigen alias. |
 | `model`                    | `string`   | Providerlokale model-id die moet worden onderdrukt.                                                        |
-| `reason`                   | `string`   | Optioneel bericht dat wordt getoond wanneer de onderdrukte rij direct wordt aangevraagd.                   |
-| `when.baseUrlHosts`        | `string[]` | Optionele lijst met effectieve provider-basis-URL-hosts die vereist zijn voordat de onderdrukking geldt.   |
+| `reason`                   | `string`   | Optioneel bericht dat wordt getoond wanneer de onderdrukte rij rechtstreeks wordt opgevraagd.              |
+| `when.baseUrlHosts`        | `string[]` | Optionele lijst met effectieve providerbasis-URL-hosts die vereist zijn voordat de onderdrukking geldt.     |
 | `when.providerConfigApiIn` | `string[]` | Optionele lijst met exacte providerconfiguratie-`api`-waarden die vereist zijn voordat de onderdrukking geldt. |
 
-Plaats geen gegevens die alleen runtime zijn in `modelCatalog`. Gebruik `static` alleen wanneer manifest
-rijen volledig genoeg zijn zodat op provider gefilterde lijst- en kiezeroppervlakken
-registry-/runtime-detectie kunnen overslaan. Gebruik `refreshable` wanneer manifestrijen nuttige
-lijstbare zaden of aanvullingen zijn, maar een refresh/cache later meer rijen kan toevoegen;
-refreshable-rijen zijn op zichzelf niet gezaghebbend. Gebruik `runtime` wanneer OpenClaw
-de provider-runtime moet laden om de lijst te kennen.
+Plaats geen gegevens die alleen voor runtime zijn in `modelCatalog`. Gebruik `static` alleen wanneer manifestrijen
+volledig genoeg zijn zodat op provider gefilterde lijst- en kiezersurfaces
+registry-/runtimeontdekking kunnen overslaan. Gebruik `refreshable` wanneer manifestrijen nuttige
+lijstbare zaden of aanvullingen zijn, maar een verversing/cache later meer rijen kan toevoegen;
+verversbare rijen zijn op zichzelf niet gezaghebbend. Gebruik `runtime` wanneer OpenClaw
+de providerruntime moet laden om de lijst te kennen.
 
 ## modelIdNormalization-referentie
 
 Gebruik `modelIdNormalization` voor goedkope, door de provider beheerde opschoning van model-id's die moet
-gebeuren voordat de provider-runtime wordt geladen. Dit houdt aliassen zoals korte modelnamen,
-provider-lokale verouderde id's en proxy-prefixregels in het manifest van de eigenaar-Plugin
-in plaats van in kern-tabellen voor modelselectie.
+gebeuren voordat de providerruntime wordt geladen. Dit houdt aliassen zoals korte modelnamen,
+providerlokale legacy-id's en proxyvoorvoegselregels in het manifest van de eigenaar-Plugin
+in plaats van in kernmodelselectietabellen.
 
 ```json
 {
@@ -1004,35 +1023,35 @@ in plaats van in kern-tabellen voor modelselectie.
 
 Providervelden:
 
-| Veld                                 | Type                    | Wat het betekent                                                                                  |
-| ------------------------------------ | ----------------------- | ------------------------------------------------------------------------------------------------- |
-| `aliases`                            | `Record<string,string>` | Exacte model-id-aliassen, hoofdletterongevoelig. Waarden worden teruggegeven zoals geschreven.    |
-| `stripPrefixes`                      | `string[]`              | Prefixen om te verwijderen voor aliassen worden opgezocht, nuttig voor verouderde provider/model-duplicatie. |
-| `prefixWhenBare`                     | `string`                | Prefix om toe te voegen wanneer de genormaliseerde model-id nog geen `/` bevat.                   |
-| `prefixWhenBareAfterAliasStartsWith` | `object[]`              | Voorwaardelijke bare-id-prefixregels na alias-opzoeking, gesleuteld op `modelPrefix` en `prefix`. |
+| Veld                                 | Type                    | Wat het betekent                                                                         |
+| ------------------------------------ | ----------------------- | ---------------------------------------------------------------------------------------- |
+| `aliases`                            | `Record<string,string>` | Hoofdletterongevoelige exacte model-id-aliassen. Waarden worden teruggegeven zoals geschreven. |
+| `stripPrefixes`                      | `string[]`              | Voorvoegsels die vóór aliaslookup moeten worden verwijderd, nuttig voor legacy provider/model-duplicatie. |
+| `prefixWhenBare`                     | `string`                | Voorvoegsel om toe te voegen wanneer de genormaliseerde model-id nog geen `/` bevat.      |
+| `prefixWhenBareAfterAliasStartsWith` | `object[]`              | Voorwaardelijke voorvoegselregels voor kale id's na aliaslookup, gesleuteld op `modelPrefix` en `prefix`. |
 
 ## providerEndpoints-referentie
 
 Gebruik `providerEndpoints` voor endpointclassificatie die generiek aanvraagbeleid
-moet kennen voordat de provider-runtime wordt geladen. De kern blijft eigenaar van de betekenis van elke
-`endpointClass`; pluginmanifests bezitten de host- en basis-URL-metadata.
+moet kennen voordat de providerruntime wordt geladen. De kern beheert nog steeds de betekenis van elke
+`endpointClass`; Plugin-manifesten beheren de host- en basis-URL-metadata.
 
 Endpointvelden:
 
-| Veld                           | Type       | Wat het betekent                                                                                 |
-| ------------------------------ | ---------- | ------------------------------------------------------------------------------------------------ |
-| `endpointClass`                | `string`   | Bekende kern-endpointklasse, zoals `openrouter`, `moonshot-native` of `google-vertex`.           |
-| `hosts`                        | `string[]` | Exacte hostnamen die aan de endpointklasse worden gekoppeld.                                     |
-| `hostSuffixes`                 | `string[]` | Hostsuffixen die aan de endpointklasse worden gekoppeld. Prefix met `.` voor alleen domeinsuffix-matching. |
-| `baseUrls`                     | `string[]` | Exacte genormaliseerde HTTP(S)-basis-URL's die aan de endpointklasse worden gekoppeld.           |
-| `googleVertexRegion`           | `string`   | Statische Google Vertex-regio voor exacte globale hosts.                                         |
-| `googleVertexRegionHostSuffix` | `string`   | Suffix om van overeenkomende hosts te verwijderen om de Google Vertex-regioprefix zichtbaar te maken. |
+| Veld                           | Type       | Betekenis                                                                                         |
+| ------------------------------ | ---------- | ------------------------------------------------------------------------------------------------- |
+| `endpointClass`                | `string`   | Bekende core-endpointklasse, zoals `openrouter`, `moonshot-native` of `google-vertex`.            |
+| `hosts`                        | `string[]` | Exacte hostnamen die aan de endpointklasse worden gekoppeld.                                      |
+| `hostSuffixes`                 | `string[]` | Hostsuffixen die aan de endpointklasse worden gekoppeld. Voeg `.` toe voor alleen domeinsuffixmatching. |
+| `baseUrls`                     | `string[]` | Exacte genormaliseerde HTTP(S)-basis-URL's die aan de endpointklasse worden gekoppeld.            |
+| `googleVertexRegion`           | `string`   | Statische Google Vertex-regio voor exacte globale hosts.                                          |
+| `googleVertexRegionHostSuffix` | `string`   | Suffix om uit overeenkomende hosts te verwijderen om het Google Vertex-regioprefix zichtbaar te maken. |
 
 ## providerRequest-referentie
 
 Gebruik `providerRequest` voor goedkope metadata voor aanvraagcompatibiliteit die generiek
 aanvraagbeleid nodig heeft zonder de provider-runtime te laden. Houd gedragsspecifieke
-payload-herschrijving in provider-runtimehooks of gedeelde helpers voor providerfamilies.
+payloadherschrijving in provider-runtimehooks of gedeelde providerfamiliehelpers.
 
 ```json
 {
@@ -1052,16 +1071,82 @@ payload-herschrijving in provider-runtimehooks of gedeelde helpers voor provider
 
 Providervelden:
 
-| Veld                  | Type         | Wat het betekent                                                                          |
-| --------------------- | ------------ | ----------------------------------------------------------------------------------------- |
-| `family`              | `string`     | Providerfamilielabel dat wordt gebruikt door generieke beslissingen en diagnostiek voor aanvraagcompatibiliteit. |
-| `compatibilityFamily` | `"moonshot"` | Optionele compatibiliteitsbucket voor providerfamilies voor gedeelde aanvraaghelpers.     |
-| `openAICompletions`   | `object`     | OpenAI-compatibele completions-aanvraagvlaggen, momenteel `supportsStreamingUsage`.       |
+| Veld                  | Type         | Betekenis                                                                              |
+| --------------------- | ------------ | -------------------------------------------------------------------------------------- |
+| `family`              | `string`     | Providerfamilielabel dat wordt gebruikt door generieke compatibiliteitsbeslissingen en diagnostiek voor aanvragen. |
+| `compatibilityFamily` | `"moonshot"` | Optionele compatibiliteitsbucket per providerfamilie voor gedeelde aanvraaghelpers.    |
+| `openAICompletions`   | `object`     | OpenAI-compatibele vlaggen voor completions-aanvragen, momenteel `supportsStreamingUsage`. |
+
+## secretProviderIntegrations-referentie
+
+Gebruik `secretProviderIntegrations` wanneer een plugin een herbruikbare SecretRef
+exec-providerpreset kan publiceren. OpenClaw leest deze metadata voordat de plugin-runtime laadt,
+slaat plugin-eigenaarschap op in `secrets.providers.<alias>.pluginIntegration`, en
+laat daadwerkelijke geheimresolutie over aan de SecretRef-runtime.
+Presets worden alleen beschikbaar gemaakt voor gebundelde plugins en geïnstalleerde plugins die zijn ontdekt
+vanuit de beheerde plugin-installatieroots, zoals git- en ClawHub-installaties.
+
+```json
+{
+  "secretProviderIntegrations": {
+    "secret-store": {
+      "providerAlias": "team-secrets",
+      "displayName": "Team secrets",
+      "source": "exec",
+      "command": "${node}",
+      "args": ["./bin/resolve-secrets.mjs"]
+    }
+  }
+}
+```
+
+De mapsleutel is de integratie-id. Als `providerAlias` wordt weggelaten, gebruikt OpenClaw
+de integratie-id als de SecretRef-provideralias. Provideraliassen moeten overeenkomen met
+het normale SecretRef-provideraliaspatroon, bijvoorbeeld `team-secrets` of
+`onepassword-work`.
+
+Wanneer een operator de preset selecteert, schrijft OpenClaw een providerreferentie zoals:
+
+```json
+{
+  "secrets": {
+    "providers": {
+      "team-secrets": {
+        "source": "exec",
+        "pluginIntegration": {
+          "pluginId": "acme-secrets",
+          "integrationId": "secret-store"
+        }
+      }
+    }
+  }
+}
+```
+
+Bij opstarten/herladen lost OpenClaw die provider op door de huidige
+manifestmetadata van de plugin te laden, te controleren dat de eigenaarsplugin is geïnstalleerd en actief is, en
+de exec-opdracht uit het manifest te materialiseren. Het uitschakelen of verwijderen van de
+plugin trekt de provider in voor actieve SecretRefs. Operators die zelfstandige
+exec-configuratie willen, kunnen nog steeds handmatig `command`/`args`-providers rechtstreeks schrijven.
+
+Alleen `source: "exec"`-presets worden momenteel ondersteund. `command` moet
+`${node}` zijn, en `args[0]` moet een `./` resolver-script zijn relatief aan de plugin-root.
+OpenClaw materialiseert dit bij opstarten/herladen naar het huidige Node-uitvoerbare bestand en
+het absolute scriptpad binnen de plugin. Node-opties zoals `--require`, `--import`,
+`--loader`, `--env-file`, `--eval` en `--print` maken geen deel uit van het manifest
+presetcontract. Operators die niet-Node-opdrachten nodig hebben, kunnen zelfstandige
+handmatige exec-providers rechtstreeks configureren.
+
+OpenClaw leidt `trustedDirs` voor manifestpresets af van de plugin-root en,
+voor `${node}`-presets, de huidige map van het Node-uitvoerbare bestand. In het manifest opgegeven
+`trustedDirs` worden genegeerd. Andere exec-provideropties zoals `timeoutMs`,
+`maxOutputBytes`, `jsonOnly`, `env`, `passEnv` en `allowInsecurePath` worden
+doorgegeven aan de normale SecretRef exec-providerconfiguratie.
 
 ## modelPricing-referentie
 
-Gebruik `modelPricing` wanneer een provider control-plane-prijsgedrag nodig heeft voordat
-de runtime wordt geladen. De Gateway-prijscache leest deze metadata zonder
+Gebruik `modelPricing` wanneer een provider prijsstellingsgedrag in het besturingsvlak nodig heeft voordat
+de runtime laadt. De Gateway-prijscache leest deze metadata zonder
 provider-runtimecode te importeren.
 
 ```json
@@ -1085,145 +1170,174 @@ provider-runtimecode te importeren.
 
 Providervelden:
 
-| Veld         | Type              | Wat het betekent                                                                                 |
-| ------------ | ----------------- | ------------------------------------------------------------------------------------------------ |
+| Veld         | Type              | Betekenis                                                                                          |
+| ------------ | ----------------- | -------------------------------------------------------------------------------------------------- |
 | `external`   | `boolean`         | Stel in op `false` voor lokale/zelfgehoste providers die nooit OpenRouter- of LiteLLM-prijzen mogen ophalen. |
-| `openRouter` | `false \| object` | Mapping voor OpenRouter-prijsopzoeking. `false` schakelt OpenRouter-opzoeking voor deze provider uit. |
-| `liteLLM`    | `false \| object` | Mapping voor LiteLLM-prijsopzoeking. `false` schakelt LiteLLM-opzoeking voor deze provider uit.   |
+| `openRouter` | `false \| object` | Mapping voor OpenRouter-prijsopzoeking. `false` schakelt OpenRouter-opzoeking uit voor deze provider. |
+| `liteLLM`    | `false \| object` | Mapping voor LiteLLM-prijsopzoeking. `false` schakelt LiteLLM-opzoeking uit voor deze provider.    |
 
 Bronvelden:
 
-| Veld                       | Type               | Wat het betekent                                                                                                        |
-| -------------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| `provider`                 | `string`           | Externe catalogusprovider-id wanneer die afwijkt van de OpenClaw-provider-id, bijvoorbeeld `z-ai` voor een `zai`-provider. |
-| `passthroughProviderModel` | `boolean`          | Behandel model-id's met schuine strepen als geneste provider/model-referenties, nuttig voor proxyproviders zoals OpenRouter. |
-| `modelIdTransforms`        | `"version-dots"[]` | Extra externe catalogusvarianten voor model-id's. `version-dots` probeert gestippelde versie-id's zoals `claude-opus-4.6`. |
+| Veld                       | Type               | Betekenis                                                                                                       |
+| -------------------------- | ------------------ | --------------------------------------------------------------------------------------------------------------- |
+| `provider`                 | `string`           | Externe catalogusprovider-id wanneer dit verschilt van de OpenClaw-provider-id, bijvoorbeeld `z-ai` voor een `zai`-provider. |
+| `passthroughProviderModel` | `boolean`          | Behandel model-id's met een slash als geneste provider/model-referenties, nuttig voor proxyproviders zoals OpenRouter. |
+| `modelIdTransforms`        | `"version-dots"[]` | Extra varianten van externe catalogusmodel-id's. `version-dots` probeert versie-id's met punten zoals `claude-opus-4.6`. |
 
 ### OpenClaw Provider Index
 
-De OpenClaw Provider Index is door OpenClaw beheerde previewmetadata voor providers
+De OpenClaw Provider Index is previewmetadata in eigendom van OpenClaw voor providers
 waarvan de plugins mogelijk nog niet zijn geïnstalleerd. Het maakt geen deel uit van een pluginmanifest.
-Pluginmanifests blijven de autoriteit voor geïnstalleerde plugins. De Provider Index is
-het interne fallbackcontract dat toekomstige oppervlakken voor installeerbare providers en pre-install
-modelkiezers zullen gebruiken wanneer een providerplugin niet is geïnstalleerd.
+Pluginmanifesten blijven de autoriteit voor geïnstalleerde plugins. De Provider Index is
+het interne fallbackcontract dat toekomstige oppervlakken voor installeerbare providers en modelkiezers vóór installatie zullen gebruiken wanneer een providerplugin niet is geïnstalleerd.
 
 Volgorde van catalogusautoriteit:
 
 1. Gebruikersconfiguratie.
 2. Geïnstalleerd pluginmanifest `modelCatalog`.
-3. Modelcataloguscache van expliciete refresh.
-4. Previewrijen van OpenClaw Provider Index.
+3. Modelcataloguscache van expliciete vernieuwing.
+4. Previewrijen van de OpenClaw Provider Index.
 
 De Provider Index mag geen geheimen, ingeschakelde status, runtimehooks of
 live accountspecifieke modelgegevens bevatten. De previewcatalogi gebruiken dezelfde
-`modelCatalog`-provider-rijvorm als pluginmanifests, maar moeten beperkt blijven
+`modelCatalog`-providerrijvorm als pluginmanifesten, maar moeten beperkt blijven
 tot stabiele weergavemetadata tenzij runtime-adaptervelden zoals `api`,
 `baseUrl`, prijzen of compatibiliteitsvlaggen bewust afgestemd blijven op
-het geïnstalleerde pluginmanifest. Providers met live `/models`-detectie moeten
-ververste rijen schrijven via het expliciete cachepad voor de modelcatalogus in plaats van
-normale lijst- of onboarding-aanroepen provider-API's te laten aanroepen.
+het geïnstalleerde pluginmanifest. Providers met live `/models`-ontdekking moeten
+vernieuwde rijen via het expliciete modelcataloguscachepad schrijven in plaats van
+normale listing- of onboardingsaanroepen provider-API's te laten aanroepen.
 
-Provider Index-items kunnen ook metadata voor installeerbare plugins bevatten voor providers
-waarvan de plugin uit de kern is verplaatst of anders nog niet is geïnstalleerd. Deze
+Provider Index-vermeldingen kunnen ook metadata voor installeerbare plugins bevatten voor providers
+waarvan de plugin uit core is verplaatst of anderszins nog niet is geïnstalleerd. Deze
 metadata weerspiegelt het kanaalcataloguspatroon: pakketnaam, npm-installatiespecificatie,
-verwachte integriteit en goedkope labels voor auth-keuzes zijn genoeg om een
+verwachte integriteit en goedkope labels voor auth-keuzes zijn voldoende om een
 installeerbare setupoptie te tonen. Zodra de plugin is geïnstalleerd, wint het manifest ervan en
-wordt het Provider Index-item voor die provider genegeerd.
+wordt de Provider Index-vermelding voor die provider genegeerd.
 
-Verouderde capability-sleutels op topniveau zijn verouderd. Gebruik `openclaw doctor --fix` om
+Verouderde capability-sleutels op topniveau zijn deprecated. Gebruik `openclaw doctor --fix` om
 `speechProviders`, `realtimeTranscriptionProviders`,
 `realtimeVoiceProviders`, `mediaUnderstandingProviders`,
 `imageGenerationProviders`, `videoGenerationProviders`,
 `webFetchProviders` en `webSearchProviders` onder `contracts` te plaatsen; normaal
-laden van manifests behandelt die velden op topniveau niet langer als capability-eigenaarschap.
+manifestladen behandelt die velden op topniveau niet langer als capability-eigenaarschap.
 
 ## Manifest versus package.json
 
-De twee bestanden dienen verschillende doelen:
+De twee bestanden hebben verschillende taken:
 
 | Bestand                | Gebruik het voor                                                                                                                |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `openclaw.plugin.json` | Detectie, configvalidatie, auth-keuzemetadata en UI-hints die moeten bestaan voordat plugincode wordt uitgevoerd                |
-| `package.json`         | npm-metadata, installatie van afhankelijkheden en het `openclaw`-blok dat wordt gebruikt voor entrypoints, install gating, setup of catalogusmetadata |
+| `openclaw.plugin.json` | Ontdekking, configuratievalidatie, metadata voor auth-keuzes en UI-hints die moeten bestaan voordat plugincode wordt uitgevoerd |
+| `package.json`         | npm-metadata, afhankelijkheidsinstallatie en het `openclaw`-blok dat wordt gebruikt voor entrypoints, installatiegating, setup of catalogusmetadata |
 
 Als je niet zeker weet waar een stuk metadata thuishoort, gebruik dan deze regel:
 
 - als OpenClaw het moet weten voordat plugincode wordt geladen, zet het dan in `openclaw.plugin.json`
 - als het gaat over packaging, entrybestanden of npm-installatiegedrag, zet het dan in `package.json`
 
-### package.json-velden die detectie beïnvloeden
+### package.json-velden die ontdekking beïnvloeden
 
-Sommige pre-runtime pluginmetadata leeft bewust in `package.json` onder het
+Sommige pluginmetadata vóór runtime leeft bewust in `package.json` onder het
 `openclaw`-blok in plaats van in `openclaw.plugin.json`.
 `openclaw.bundle` en `openclaw.bundle.json` zijn geen OpenClaw-plugincontracten;
-native plugins moeten `openclaw.plugin.json` plus de ondersteunde
-`package.json#openclaw`-velden hieronder gebruiken.
+native plugins moeten `openclaw.plugin.json` gebruiken plus de ondersteunde
+`package.json#openclaw`-velden hieronder.
 
 Belangrijke voorbeelden:
 
-| Veld                                                                                       | Wat het betekent                                                                                                                                                                           |
-| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `openclaw.extensions`                                                                      | Declareert native plugin-ingangspunten. Moet binnen de pakketmap van de plugin blijven.                                                                                                    |
-| `openclaw.runtimeExtensions`                                                               | Declareert gebouwde JavaScript-runtime-ingangspunten voor geïnstalleerde pakketten. Moet binnen de pakketmap van de plugin blijven.                                                       |
-| `openclaw.setupEntry`                                                                      | Lichtgewicht ingangspunt uitsluitend voor installatie, gebruikt tijdens onboarding, uitgestelde kanaalstart en alleen-lezen kanaalstatus/SecretRef-detectie. Moet binnen de pakketmap van de plugin blijven. |
-| `openclaw.runtimeSetupEntry`                                                               | Declareert het gebouwde JavaScript-installatie-ingangspunt voor geïnstalleerde pakketten. Vereist `setupEntry`, moet bestaan en moet binnen de pakketmap van de plugin blijven.           |
-| `openclaw.channel`                                                                         | Goedkope kanaalcatalogusmetadata zoals labels, docspaden, aliassen en selectietekst.                                                                                                       |
-| `openclaw.channel.commands`                                                                | Statische native opdracht- en native skill-auto-defaultmetadata die door configuratie-, audit- en opdrachtenlijst-oppervlakken wordt gebruikt voordat de kanaalruntime laadt.             |
-| `openclaw.channel.configuredState`                                                         | Lichtgewicht checker-metadata voor geconfigureerde status die kan antwoorden: "bestaat env-only setup al?" zonder de volledige kanaalruntime te laden.                                     |
-| `openclaw.channel.persistedAuthState`                                                      | Lichtgewicht checker-metadata voor persistente authenticatie die kan antwoorden: "is er al iets aangemeld?" zonder de volledige kanaalruntime te laden.                                    |
-| `openclaw.install.clawhubSpec` / `openclaw.install.npmSpec` / `openclaw.install.localPath` | Installatie-/updatehints voor meegeleverde en extern gepubliceerde plugins.                                                                                                                |
-| `openclaw.install.defaultChoice`                                                           | Voorkeurspad voor installatie wanneer meerdere installatiebronnen beschikbaar zijn.                                                                                                        |
-| `openclaw.install.minHostVersion`                                                          | Minimaal ondersteunde OpenClaw-hostversie, met een semver-ondergrens zoals `>=2026.3.22` of `>=2026.5.1-beta.1`.                                                                          |
-| `openclaw.install.expectedIntegrity`                                                       | Verwachte npm dist-integriteitsstring zoals `sha512-...`; installatie- en updateflows verifiëren het opgehaalde artefact daartegen.                                                       |
-| `openclaw.install.allowInvalidConfigRecovery`                                              | Staat een smal herstelpad voor herinstallatie van meegeleverde plugins toe wanneer configuratie ongeldig is.                                                                               |
-| `openclaw.startup.deferConfiguredChannelFullLoadUntilAfterListen`                          | Laat installatie-only kanaaloppervlakken laden vóór de volledige kanaalplugin tijdens het opstarten.                                                                                       |
+| Veld                                                                                       | Wat het betekent                                                                                                                                                                      |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `openclaw.extensions`                                                                      | Declareert native Plugin-entrypoints. Moet binnen de Plugin-pakketmap blijven.                                                                                                       |
+| `openclaw.runtimeExtensions`                                                               | Declareert gebouwde JavaScript-runtime-entrypoints voor geïnstalleerde pakketten. Moet binnen de Plugin-pakketmap blijven.                                                          |
+| `openclaw.setupEntry`                                                                      | Lichtgewicht setup-only entrypoint dat wordt gebruikt tijdens onboarding, uitgestelde kanaalstart en read-only kanaalstatus-/SecretRef-detectie. Moet binnen de Plugin-pakketmap blijven. |
+| `openclaw.runtimeSetupEntry`                                                               | Declareert het gebouwde JavaScript-setup-entrypoint voor geïnstalleerde pakketten. Vereist `setupEntry`, moet bestaan en moet binnen de Plugin-pakketmap blijven.                    |
+| `openclaw.channel`                                                                         | Goedkope kanaalcatalogusmetadata zoals labels, documentatiepaden, aliassen en selectietekst.                                                                                         |
+| `openclaw.channel.commands`                                                                | Statische native opdracht- en native skill-auto-defaultmetadata die worden gebruikt door configuratie-, audit- en opdrachtenlijstoppervlakken voordat de kanaalruntime laadt.         |
+| `openclaw.channel.configuredState`                                                         | Lichtgewicht metadata voor controle van geconfigureerde status die kan antwoorden "bestaat env-only setup al?" zonder de volledige kanaalruntime te laden.                           |
+| `openclaw.channel.persistedAuthState`                                                      | Lichtgewicht metadata voor controle van persistente auth die kan antwoorden "is er al iets aangemeld?" zonder de volledige kanaalruntime te laden.                                   |
+| `openclaw.install.clawhubSpec` / `openclaw.install.npmSpec` / `openclaw.install.localPath` | Installatie-/updatehints voor gebundelde en extern gepubliceerde plugins.                                                                                                            |
+| `openclaw.install.defaultChoice`                                                           | Voorkeursinstallatiepad wanneer meerdere installatiebronnen beschikbaar zijn.                                                                                                        |
+| `openclaw.install.minHostVersion`                                                          | Minimaal ondersteunde OpenClaw-hostversie, met een semver-ondergrens zoals `>=2026.3.22` of `>=2026.5.1-beta.1`.                                                                    |
+| `openclaw.compat.pluginApi`                                                                | Minimaal OpenClaw-plugin-API-bereik dat dit pakket vereist, met een semver-ondergrens zoals `>=2026.5.27`.                                                                          |
+| `openclaw.install.expectedIntegrity`                                                       | Verwachte npm dist-integriteitstring zoals `sha512-...`; installatie- en updateflows verifiëren het opgehaalde artefact daartegen.                                                   |
+| `openclaw.install.allowInvalidConfigRecovery`                                              | Staat een smal herstelpad voor herinstallatie van gebundelde plugins toe wanneer configuratie ongeldig is.                                                                           |
+| `openclaw.install.requiredPlatformPackages`                                                | npm-pakketaliassen die moeten materialiseren wanneer hun lockfile-platformbeperkingen overeenkomen met de huidige host.                                                             |
+| `openclaw.startup.deferConfiguredChannelFullLoadUntilAfterListen`                          | Laat setup-runtime-kanaaloppervlakken vóór listen laden en stelt daarna de volledige geconfigureerde kanaalplugin uit tot activering na listen.                                      |
 
-Manifestmetadata bepaalt welke provider-/kanaal-/installatiekeuzes in
-onboarding verschijnen voordat runtimes laden. `package.json#openclaw.install` vertelt
-onboarding hoe die plugin moet worden opgehaald of ingeschakeld wanneer de gebruiker een van die
-keuzes selecteert. Verplaats installatiehints niet naar `openclaw.plugin.json`.
+Manifestmetadata bepaalt welke provider-/kanaal-/setupkeuzes verschijnen in
+onboarding voordat de runtime laadt. `package.json#openclaw.install` vertelt
+onboarding hoe die Plugin moet worden opgehaald of ingeschakeld wanneer de
+gebruiker een van die keuzes kiest. Verplaats installatiehints niet naar
+`openclaw.plugin.json`.
 
-`openclaw.install.minHostVersion` wordt afgedwongen tijdens installatie en bij het laden van het
-manifestregister voor niet-meegeleverde plugin-bronnen. Ongeldige waarden worden geweigerd;
-nieuwere-maar-geldige waarden slaan externe plugins over op oudere hosts. Meegeleverde bronplugins
-worden geacht mee-geversioneerd te zijn met de host-checkout.
+`openclaw.install.minHostVersion` wordt afgedwongen tijdens installatie en het
+laden van het manifestregister voor niet-gebundelde Plugin-bronnen. Ongeldige
+waarden worden geweigerd; nieuwere maar geldige waarden slaan externe plugins
+over op oudere hosts. Gebundelde bronplugins worden verondersteld dezelfde
+versie te hebben als de hostcheckout.
 
-Officiële metadata voor installatie op aanvraag moet `clawhubSpec` gebruiken wanneer de plugin op
-ClawHub is gepubliceerd; onboarding behandelt dat als de voorkeursbron op afstand en
-registreert ClawHub-artefactfeiten na installatie. `npmSpec` blijft de compatibiliteitsfallback
-voor pakketten die nog niet naar ClawHub zijn verhuisd.
+`openclaw.install.requiredPlatformPackages` is voor npm-pakketten die vereiste
+native binaries beschikbaar maken via optionele, platformspecifieke aliassen.
+Vermeld de kale npm-pakketnaam voor elke ondersteunde platformalias. Tijdens
+npm-installatie verifieert OpenClaw alleen de gedeclareerde alias waarvan de
+lockfile-beperkingen overeenkomen met de huidige host. Als npm succes meldt maar
+die alias weglaat, probeert OpenClaw het één keer opnieuw met een verse cache en
+draait de installatie terug als de alias nog steeds ontbreekt.
+
+`openclaw.compat.pluginApi` wordt afgedwongen tijdens pakketinstallatie voor
+niet-gebundelde Plugin-bronnen. Gebruik het voor de OpenClaw plugin-SDK-/
+runtime-API-ondergrens waartegen het pakket is gebouwd. Het kan strenger zijn
+dan `minHostVersion` wanneer een Plugin-pakket een nieuwere API nodig heeft maar
+nog steeds een lagere installatiehint behoudt voor andere flows. Officiële
+OpenClaw-release-synchronisatie verhoogt bestaande officiële plugin-API-
+ondergrenzen standaard naar de OpenClaw-releaseversie, maar plugin-only releases
+kunnen een lagere ondergrens behouden wanneer het pakket oudere hosts bewust
+ondersteunt. Gebruik niet alleen de pakketversie als compatibiliteitscontract.
+`peerDependencies.openclaw` blijft npm-pakketmetadata; OpenClaw gebruikt het
+`openclaw.compat.pluginApi`-contract voor beslissingen over
+installatiecompatibiliteit.
+
+Officiële install-on-demandmetadata moet `clawhubSpec` gebruiken wanneer de
+Plugin op ClawHub is gepubliceerd; onboarding behandelt dat als de gewenste
+remote bron en registreert ClawHub-artefactfeiten na installatie. `npmSpec`
+blijft de compatibiliteitsfallback voor pakketten die nog niet naar ClawHub zijn
+verplaatst.
 
 Exacte npm-versiepinnen staan al in `npmSpec`, bijvoorbeeld
-`"npmSpec": "@wecom/wecom-openclaw-plugin@1.2.3"`. Officiële externe catalogusitems
-moeten exacte specs combineren met `expectedIntegrity`, zodat updateflows gesloten falen
-als het opgehaalde npm-artefact niet langer overeenkomt met de gepinde release.
-Interactieve onboarding biedt voor compatibiliteit nog steeds vertrouwde registry-npm-specs,
-waaronder kale pakketnamen en dist-tags. Catalogusdiagnostiek kan
-onderscheid maken tussen exacte, zwevende, integriteit-gepinde, ontbrekende-integriteit,
-pakketnaam-mismatch en ongeldige default-choice-bronnen. Ze waarschuwt ook wanneer
-`expectedIntegrity` aanwezig is maar er geen geldige npm-bron is die ermee kan worden gepind.
-Wanneer `expectedIntegrity` aanwezig is,
-dwingen installatie-/updateflows dit af; wanneer het ontbreekt, wordt de registry-resolutie
-geregistreerd zonder integriteitspin.
+`"npmSpec": "@wecom/wecom-openclaw-plugin@1.2.3"`. Officiële externe
+catalogusitems moeten exacte specs koppelen aan `expectedIntegrity`, zodat
+updateflows fail-closed zijn als het opgehaalde npm-artefact niet langer
+overeenkomt met de gepinde release. Interactieve onboarding biedt nog steeds
+vertrouwde registry-npm-specs, inclusief kale pakketnamen en dist-tags, voor
+compatibiliteit. Catalogusdiagnostiek kan onderscheid maken tussen exacte,
+zwevende, met integriteit gepinde, ontbrekende-integriteit, pakketnaam-
+mismatch- en ongeldige default-choice-bronnen. Ze waarschuwen ook wanneer
+`expectedIntegrity` aanwezig is maar er geen geldige npm-bron is die ermee kan
+worden gepind. Wanneer `expectedIntegrity` aanwezig is, dwingen installatie-/
+updateflows dit af; wanneer het ontbreekt, wordt de registry-resolutie zonder
+integriteitspin geregistreerd.
 
-Kanaalplugins moeten `openclaw.setupEntry` leveren wanneer status, kanaallijst
-of SecretRef-scans geconfigureerde accounts moeten identificeren zonder de volledige
-runtime te laden. Het installatie-ingangspunt moet kanaalmetadata plus installatieveilige config-,
-status- en secrets-adapters beschikbaar maken; houd netwerkclients, gateway-listeners en
-transportruntimes in het hoofd-ingangspunt van de extensie.
+Kanaalplugins moeten `openclaw.setupEntry` aanbieden wanneer status,
+kanaallijst of SecretRef-scans geconfigureerde accounts moeten identificeren
+zonder de volledige runtime te laden. De setup-entry moet kanaalmetadata plus
+setup-veilige configuratie-, status- en secrets-adapters beschikbaar maken; houd
+netwerkclients, Gateway-listeners en transportruntimes in het hoofdextension-
+entrypoint.
 
-Runtime-ingangspuntvelden overschrijven pakketgrenscontroles voor bron-ingangspuntvelden niet.
-Bijvoorbeeld: `openclaw.runtimeExtensions` kan een ontsnappend
-`openclaw.extensions`-pad niet laadbaar maken.
+Runtime-entrypointvelden overschrijven pakketgrenscontroles voor
+bronentrypointvelden niet. Bijvoorbeeld: `openclaw.runtimeExtensions` kan een
+ontsnappend `openclaw.extensions`-pad niet laadbaar maken.
 
-`openclaw.install.allowInvalidConfigRecovery` is bewust smal. Het maakt niet
-willekeurige kapotte configs installeerbaar. Vandaag staat het alleen installatieflows toe
-te herstellen van specifieke verouderde upgradefouten van meegeleverde plugins, zoals een
-ontbrekend pad naar een meegeleverde plugin of een verouderde `channels.<id>`-entry voor diezelfde
-meegeleverde plugin. Niet-gerelateerde configfouten blokkeren installatie nog steeds en sturen operators
-naar `openclaw doctor --fix`.
+`openclaw.install.allowInvalidConfigRecovery` is bewust smal. Het maakt
+willekeurige defecte configuraties niet installeerbaar. Vandaag staat het alleen
+installatieflows toe om te herstellen van specifieke verouderde upgradefouten
+van gebundelde plugins, zoals een ontbrekend gebundeld Plugin-pad of een
+verouderde `channels.<id>`-vermelding voor diezelfde gebundelde Plugin. Niet-
+gerelateerde configuratiefouten blokkeren installatie nog steeds en sturen
+operators naar `openclaw doctor --fix`.
 
-`openclaw.channel.persistedAuthState` is pakketmetadata voor een kleine checkermodule:
+`openclaw.channel.persistedAuthState` is pakketmetadata voor een kleine
+checker-module:
 
 ```json
 {
@@ -1239,15 +1353,16 @@ naar `openclaw doctor --fix`.
 }
 ```
 
-Gebruik dit wanneer installatie-, doctor-, status- of alleen-lezen presenceflows een goedkope
-ja/nee-authenticatieprobe nodig hebben voordat de volledige kanaalplugin laadt. Persistente authenticatiestatus is
-geen geconfigureerde kanaalstatus: gebruik deze metadata niet om plugins automatisch in te schakelen,
-runtimedependencies te repareren of te beslissen of een kanaalruntime moet laden.
-De doel-export moet een kleine functie zijn die alleen persistente status leest; routeer deze
-niet via de volledige kanaalruntime-barrel.
+Gebruik dit wanneer setup, doctor, status of read-only presence-flows een
+goedkope ja/nee-authprobe nodig hebben voordat de volledige kanaalplugin laadt.
+Persistente authstatus is geen geconfigureerde kanaalstatus: gebruik deze
+metadata niet om plugins automatisch in te schakelen, runtimedependencies te
+herstellen of te bepalen of een kanaalruntime moet laden. De doel-export moet
+een kleine functie zijn die alleen persistente status leest; routeer die niet
+via de volledige kanaalruntime-barrel.
 
 `openclaw.channel.configuredState` volgt dezelfde vorm voor goedkope env-only
-geconfigureerde checks:
+geconfigureerde controles:
 
 ```json
 {
@@ -1263,35 +1378,39 @@ geconfigureerde checks:
 }
 ```
 
-Gebruik dit wanneer een kanaal geconfigureerde status kan beantwoorden vanuit env of andere kleine
-niet-runtime-inputs. Als de check volledige configresolutie of de echte
-kanaalruntime nodig heeft, houd die logica dan in de plugin-`config.hasConfiguredState`-
-hook.
+Gebruik dit wanneer een kanaal geconfigureerde status kan beantwoorden op basis
+van env of andere kleine niet-runtime-inputs. Als de controle volledige
+configuratieresolutie of de echte kanaalruntime nodig heeft, houd die logica dan
+in de Plugin-hook `config.hasConfiguredState`.
 
-## Ontdekkingsvoorrang (dubbele plugin-id's)
+## Discovery-volgorde (dubbele plugin-id's)
 
-OpenClaw ontdekt plugins vanuit meerdere roots (meegeleverd, globale installatie, workspace, expliciete door configuratie geselecteerde paden). Als twee ontdekkingen dezelfde `id` delen, wordt alleen het manifest met de **hoogste voorrang** behouden; duplicaten met lagere voorrang worden weggelaten in plaats van ernaast te laden.
+OpenClaw ontdekt plugins vanuit meerdere roots. Zie voor de ruwe scanvolgorde
+van het bestandssysteem [Plugin-scanvolgorde](/nl/gateway/configuration-reference#plugin-scan-order).
+Als twee ontdekkingen dezelfde `id` delen, wordt alleen het manifest met de
+**hoogste prioriteit** behouden; duplicaten met lagere prioriteit worden
+verwijderd in plaats van ernaast te laden.
 
-Voorrang, van hoog naar laag:
+Prioriteit, van hoog naar laag:
 
-1. **Door configuratie geselecteerd** — een pad dat expliciet is vastgepind in `plugins.entries.<id>`
-2. **Meegeleverd** — plugins die met OpenClaw worden meegeleverd
+1. **Config-selected** — een pad dat expliciet is vastgepind in `plugins.entries.<id>`
+2. **Gebundeld** — plugins die met OpenClaw worden meegeleverd
 3. **Globale installatie** — plugins die in de globale OpenClaw-pluginroot zijn geïnstalleerd
-4. **Workspace** — plugins die relatief ten opzichte van de huidige workspace worden ontdekt
+4. **Workspace** — plugins die relatief aan de huidige workspace zijn ontdekt
 
 Gevolgen:
 
-- Een geforkte of verouderde kopie van een meegeleverde plugin in de workspace overschaduwt de meegeleverde build niet.
-- Om een meegeleverde plugin daadwerkelijk met een lokale plugin te overschrijven, pin je die via `plugins.entries.<id>`, zodat die op basis van voorrang wint in plaats van te vertrouwen op workspace-ontdekking.
-- Weggelaten duplicaten worden gelogd zodat Doctor en opstartdiagnostiek naar de weggegooide kopie kunnen verwijzen.
-- Door configuratie geselecteerde duplicate overrides worden in diagnostiek geformuleerd als expliciete overrides, maar waarschuwen nog steeds zodat verouderde forks en onbedoelde overschaduwingen zichtbaar blijven.
+- Een geforkte of verouderde kopie van een gebundelde Plugin in de workspace overschaduwt de gebundelde build niet.
+- Om een gebundelde Plugin daadwerkelijk te overschrijven met een lokale, pin je die via `plugins.entries.<id>` zodat die wint op prioriteit in plaats van te vertrouwen op workspace-detectie.
+- Verwijderde duplicaten worden gelogd zodat Doctor en startupdiagnostiek naar de weggegooide kopie kunnen wijzen.
+- Config-selected dubbele overrides worden in diagnostiek verwoord als expliciete overrides, maar waarschuwen nog steeds zodat verouderde forks en onbedoelde overschaduwingen zichtbaar blijven.
 
 ## JSON Schema-vereisten
 
-- **Elke plugin moet een JSON Schema meeleveren**, zelfs als deze geen config accepteert.
+- **Elke Plugin moet een JSON Schema meeleveren**, zelfs als het geen configuratie accepteert.
 - Een leeg schema is acceptabel (bijvoorbeeld `{ "type": "object", "additionalProperties": false }`).
-- Schema's worden gevalideerd bij het lezen/schrijven van config, niet tijdens runtime.
-- Wanneer je een meegeleverde plugin uitbreidt of forkt met nieuwe configkeys, werk dan tegelijk de `configSchema` van die plugin in `openclaw.plugin.json` bij. Schema's van meegeleverde plugins zijn strikt, dus het toevoegen van `plugins.entries.<id>.config.myNewKey` aan gebruikersconfig zonder `myNewKey` toe te voegen aan `configSchema.properties` wordt geweigerd voordat de pluginruntime laadt.
+- Schema's worden gevalideerd bij het lezen/schrijven van de configuratie, niet tijdens runtime.
+- Wanneer je een meegeleverde Plugin uitbreidt of forkt met nieuwe configuratiesleutels, werk dan tegelijk de `configSchema` van die Plugin in `openclaw.plugin.json` bij. Schema's van meegeleverde Plugins zijn strikt, dus het toevoegen van `plugins.entries.<id>.config.myNewKey` in gebruikersconfiguratie zonder `myNewKey` toe te voegen aan `configSchema.properties` wordt geweigerd voordat de plugin-runtime wordt geladen.
 
 Voorbeeld van schema-uitbreiding:
 
@@ -1311,40 +1430,40 @@ Voorbeeld van schema-uitbreiding:
 
 ## Validatiegedrag
 
-- Onbekende `channels.*`-keys zijn **fouten**, tenzij de kanaal-id door
-  een pluginmanifest is gedeclareerd.
+- Onbekende `channels.*`-sleutels zijn **fouten**, tenzij de kanaal-id is gedeclareerd door
+  een plugin-manifest.
 - `plugins.entries.<id>`, `plugins.allow`, `plugins.deny` en `plugins.slots.*`
-  moeten verwijzen naar **ontdekbare** plugin-id's. Onbekende id's zijn **fouten**.
-- Als een plugin is geïnstalleerd maar een kapot of ontbrekend manifest of schema heeft,
-  mislukt validatie en rapporteert Doctor de pluginfout.
-- Als pluginconfig bestaat maar de plugin **uitgeschakeld** is, wordt de config bewaard en
-  verschijnt er een **waarschuwing** in Doctor + logs.
+  moeten verwijzen naar **detecteerbare** plugin-id's. Onbekende id's zijn **fouten**.
+- Als een Plugin is geïnstalleerd maar een defect of ontbrekend manifest of schema heeft,
+  mislukt de validatie en rapporteert Doctor de pluginfout.
+- Als pluginconfiguratie bestaat maar de Plugin **uitgeschakeld** is, blijft de configuratie behouden en
+  wordt er een **waarschuwing** weergegeven in Doctor + logs.
 
 Zie [Configuratiereferentie](/nl/gateway/configuration) voor het volledige `plugins.*`-schema.
 
-## Notities
+## Opmerkingen
 
-- Het manifest is **vereist voor native OpenClaw-plugins**, inclusief laden vanuit het lokale bestandssysteem. Runtime laadt de pluginmodule nog steeds afzonderlijk; het manifest is alleen bedoeld voor ontdekking + validatie.
-- Native manifests worden geparseerd met JSON5, dus opmerkingen, afsluitende komma's en niet-geciteerde sleutels worden geaccepteerd zolang de uiteindelijke waarde nog steeds een object is.
-- Alleen gedocumenteerde manifestvelden worden gelezen door de manifestloader. Vermijd aangepaste sleutels op het hoogste niveau.
-- `channels`, `providers`, `cliBackends` en `skills` kunnen allemaal worden weggelaten wanneer een plugin ze niet nodig heeft.
-- `providerCatalogEntry` moet lichtgewicht blijven en mag geen brede runtimecode importeren; gebruik het voor statische provider-catalogusmetadata of smalle ontdekkingsdescriptors, niet voor uitvoering tijdens verzoeken. `providerDiscoveryEntry` is de verouderde spelling en werkt nog steeds voor bestaande plugins.
+- Het manifest is **vereist voor native OpenClaw-plugins**, inclusief het laden vanaf het lokale bestandssysteem. Runtime laadt de plugin-module nog steeds afzonderlijk; het manifest is alleen voor ontdekking + validatie.
+- Native manifesten worden geparseerd met JSON5, dus opmerkingen, afsluitende komma's en sleutels zonder aanhalingstekens worden geaccepteerd zolang de uiteindelijke waarde nog steeds een object is.
+- Alleen gedocumenteerde manifestvelden worden gelezen door de manifestlader. Vermijd aangepaste sleutels op het hoogste niveau.
+- `channels`, `providers`, `cliBackends` en `skills` kunnen allemaal worden weggelaten wanneer een Plugin ze niet nodig heeft.
+- `providerCatalogEntry` moet lichtgewicht blijven en mag geen brede runtime-code importeren; gebruik het voor statische metadata van de providercatalogus of smalle ontdekkingsdescriptors, niet voor uitvoering tijdens verzoeken.
 - Exclusieve plugintypen worden geselecteerd via `plugins.slots.*`: `kind: "memory"` via `plugins.slots.memory`, `kind: "context-engine"` via `plugins.slots.contextEngine` (standaard `legacy`).
-- Declareer het exclusieve plugintype in dit manifest. Runtime-entry `OpenClawPluginDefinition.kind` is verouderd en blijft alleen bestaan als compatibiliteitsfallback voor oudere plugins.
-- Env-var-metadata (`setup.providers[].envVars`, verouderd `providerAuthEnvVars` en `channelEnvVars`) is alleen declaratief. Status, audit, cron-bezorgvalidatie en andere alleen-lezen-oppervlakken passen nog steeds pluginvertrouwen en effectief activatiebeleid toe voordat ze een env var als geconfigureerd behandelen.
-- Voor runtime-wizardmetadata waarvoor providercode vereist is, zie [Provider-runtimehooks](/nl/plugins/architecture-internals#provider-runtime-hooks).
-- Als je plugin afhankelijk is van native modules, documenteer dan de buildstappen en eventuele allowlistvereisten voor pakketbeheerders (bijvoorbeeld pnpm `allow-build-scripts` + `pnpm rebuild <package>`).
+- Declareer het exclusieve plugintype in dit manifest. Runtime-entry `OpenClawPluginDefinition.kind` is verouderd en blijft alleen bestaan als compatibiliteitsfallback voor oudere Plugins.
+- Metadata voor omgevingsvariabelen (`setup.providers[].envVars`, verouderde `providerAuthEnvVars` en `channelEnvVars`) is alleen declaratief. Status, audit, validatie van cronlevering en andere alleen-lezen oppervlakken passen nog steeds pluginvertrouwen en effectief activeringsbeleid toe voordat een omgevingsvariabele als geconfigureerd wordt behandeld.
+- Zie [Provider-runtimehooks](/nl/plugins/architecture-internals#provider-runtime-hooks) voor runtime-wizardmetadata waarvoor providercode nodig is.
+- Als je Plugin afhankelijk is van native modules, documenteer dan de buildstappen en eventuele vereisten voor allowlists van pakketbeheerders (bijvoorbeeld pnpm `allow-build-scripts` + `pnpm rebuild <package>`).
 
 ## Gerelateerd
 
 <CardGroup cols={3}>
   <Card title="Plugins bouwen" href="/nl/plugins/building-plugins" icon="rocket">
-    Aan de slag met plugins.
+    Aan de slag met Plugins.
   </Card>
-  <Card title="Plugin-architectuur" href="/nl/plugins/architecture" icon="diagram-project">
-    Interne architectuur en capability-model.
+  <Card title="Pluginarchitectuur" href="/nl/plugins/architecture" icon="diagram-project">
+    Interne architectuur en capaciteitsmodel.
   </Card>
   <Card title="SDK-overzicht" href="/nl/plugins/sdk-overview" icon="book">
-    Plugin SDK-referentie en subpad-imports.
+    Plugin SDK-referentie en subpadimports.
   </Card>
 </CardGroup>

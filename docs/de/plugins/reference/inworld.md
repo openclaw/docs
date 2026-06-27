@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das inworld-Plugin
+    - Sie installieren, konfigurieren oder prüfen das inworld-Plugin
 summary: Inworld-Streaming-Text-to-Speech (MP3, OGG_OPUS, PCM-Telefonie).
 title: Inworld-Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:55:29Z"
+    generated_at: "2026-06-27T17:54:11Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1ad17b02d9c3adb00baf596dbecf5d59f5910688dac76675050e7d0687f09e0c
+    source_hash: 02d912c51460e181e100bc227575cafd1ab3c49494057d2df1e26571000020a8
     source_path: plugins/reference/inworld.md
     workflow: 16
 ---
 
 # Inworld-Plugin
 
-Inworld Streaming-Text-to-Speech (MP3, OGG_OPUS, PCM-Telefonie).
+Inworld-Streaming-Text-to-Speech (MP3, OGG_OPUS, PCM-Telefonie).
 
 ## Distribution
 
 - Paket: `@openclaw/inworld-speech`
-- Installationsweg: in OpenClaw enthalten
+- Installationsweg: npm; ClawHub: `clawhub:@openclaw/inworld-speech`
 
 ## Oberfläche
 
 Verträge: speechProviders
 
-## Zugehörige Dokumentation
+## Verwandte Dokumentation
 
 - [inworld](/de/providers/inworld)

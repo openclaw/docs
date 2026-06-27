@@ -1,22 +1,25 @@
 ---
 read_when:
     - Menggunakan /steer atau /tell saat agen sudah berjalan
-    - Membandingkan /steer dengan /queue steer
-    - Menentukan apakah akan mengarahkan proses saat ini, sub-agen, atau sesi ACP
+    - Membandingkan mode /steer dengan /queue
+    - Memutuskan apakah akan mengarahkan proses berjalan saat ini atau sesi ACP
 sidebarTitle: Steer
-summary: Arahkan eksekusi aktif tanpa mengubah mode antrean
+summary: Arahkan proses aktif tanpa mengubah mode antrean
 title: Arahkan
 x-i18n:
-    generated_at: "2026-05-04T07:08:53Z"
+    generated_at: "2026-06-27T18:21:16Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 71e1c80c0eea86d5c3c29513d3ed0675c04779fc9c6ee3b8a76c4bedaa264d22
+    source_hash: 2e73f3f2fd938ee9dbdd14d183abe7f8676dbc7bb7382e6ad2c1fd41034fa09c
     source_path: tools/steer.md
     workflow: 16
 ---
 
-`/steer` mengirim panduan ke eksekusi yang sudah aktif. Ini untuk momen "sesuaikan
-eksekusi ini saat masih bekerja", bukan untuk memulai giliran baru.
+`/steer` pertama-tama mencoba mengirim panduan ke eksekusi yang sudah aktif. Ini untuk momen
+"sesuaikan eksekusi ini saat masih bekerja". Jika runtime saat ini
+tidak dapat menerima pengarahan, OpenClaw mengirim pesan sebagai masukan normal sebagai gantinya,
+bukan membuangnya.
 
 ## Sesi saat ini
 
@@ -31,44 +34,41 @@ Perilaku:
 
 - Hanya menargetkan eksekusi aktif sesi saat ini.
 - Bekerja secara independen dari mode `/queue` sesi.
-- Tidak memulai eksekusi baru ketika sesi sedang menganggur.
-- Membalas dengan peringatan ketika tidak ada eksekusi aktif untuk diarahkan.
+- Memulai giliran normal dengan pesan yang sama saat sesi sedang idle atau
+  eksekusi aktif tidak dapat menerima pengarahan.
 - Menggunakan jalur pengarahan runtime aktif, sehingga model melihat panduan pada
   batas runtime berikutnya yang didukung.
 
-## Pengarahan vs antrean
+## Steer vs antrean
 
-`/queue steer` mengubah perilaku pesan masuk normal ketika pesan tersebut tiba
-saat eksekusi sedang aktif. `/steer <message>` adalah perintah eksplisit yang mencoba
-menyuntikkan pesan perintah tersebut ke eksekusi aktif pada batas runtime berikutnya
-yang didukung, terlepas dari pengaturan `/queue` yang tersimpan.
+`/queue steer` membuat pesan masuk normal mencoba mengarahkan eksekusi aktif saat
+pesan tiba ketika eksekusi sedang aktif. `/steer <message>` adalah perintah eksplisit
+yang mencoba menyuntikkan pesan perintah tersebut ke eksekusi aktif pada batas
+runtime berikutnya yang didukung, terlepas dari pengaturan `/queue` yang tersimpan. Saat
+penyuntikan itu tidak tersedia, prefiks perintah dihapus dan `<message>`
+berlanjut sebagai masukan normal.
 
 Gunakan:
 
-- `/steer <message>` ketika Anda ingin memandu eksekusi aktif sekarang.
-- `/queue steer` ketika Anda ingin pesan normal berikutnya mengarahkan eksekusi aktif
-  secara default.
-- `/queue collect` atau `/queue followup` ketika pesan baru harus menunggu giliran
-  berikutnya alih-alih mengarahkan eksekusi aktif.
+- `/steer <message>` saat Anda ingin memandu eksekusi aktif sekarang.
+- `/queue steer` saat Anda ingin pesan normal berikutnya mengarahkan eksekusi aktif secara
+  default.
+- `/queue collect` atau `/queue followup` saat pesan normal berikutnya harus menunggu
+  giliran berikutnya alih-alih mengarahkan eksekusi aktif.
+- `/queue interrupt` saat pesan terbaru harus menggantikan eksekusi aktif
+  alih-alih mengarahkannya.
 
-Untuk mode antrean dan perilaku fallback, lihat [Antrean perintah](/id/concepts/queue) dan
+Untuk mode antrean dan batas pengarahan, lihat [Antrean perintah](/id/concepts/queue) dan
 [Antrean pengarahan](/id/concepts/queue-steering).
 
 ## Sub-agen
 
-Gunakan `/subagents steer` ketika targetnya adalah eksekusi anak:
-
-```text
-/subagents steer 2 focus only on the API surface
-```
-
-`/steer` tingkat atas tidak memilih sub-agen berdasarkan id atau indeks daftar. Perintah ini selalu
-menargetkan eksekusi aktif sesi saat ini. Lihat [Sub-agen](/id/tools/subagents) untuk
-id, label, dan perintah kontrol sub-agen.
+`/steer` tingkat atas menargetkan eksekusi aktif sesi saat ini. Sub-agen melapor
+kembali ke sesi induk/peminta mereka; `/subagents` hanya untuk visibilitas.
 
 ## Sesi ACP
 
-Gunakan `/acp steer` ketika targetnya adalah sesi harness ACP:
+Gunakan `/acp steer` saat targetnya adalah sesi harness ACP:
 
 ```text
 /acp steer --session agent:main:acp:codex tighten the repro

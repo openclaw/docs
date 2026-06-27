@@ -1,27 +1,28 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin amazon-bedrock
-summary: เพิ่มการรองรับผู้ให้บริการโมเดล Amazon Bedrock ให้กับ OpenClaw.
+summary: Plugin ผู้ให้บริการ Amazon Bedrock ของ OpenClaw พร้อมการค้นหาโมเดล การฝังเวกเตอร์ และการรองรับมาตรการควบคุม
 title: Plugin Amazon Bedrock
 x-i18n:
-    generated_at: "2026-05-02T20:48:40Z"
+    generated_at: "2026-06-27T17:59:36Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 001ec686133a9f6b17c8074bf6710c11ad92679d7badb08a8bef51272c40308d
+    source_hash: bf39e0d58332cd057e8f050dc1a8742c219b62182381a7f47856e3a657b80f03
     source_path: plugins/reference/amazon-bedrock.md
     workflow: 16
 ---
 
 # Plugin Amazon Bedrock
 
-เพิ่มการรองรับผู้ให้บริการโมเดล Amazon Bedrock ให้กับ OpenClaw
+Plugin ผู้ให้บริการ Amazon Bedrock ของ OpenClaw พร้อมการค้นหาโมเดล การฝังข้อมูล และการรองรับ guardrail
 
-## การเผยแพร่
+## การแจกจ่าย
 
 - แพ็กเกจ: `@openclaw/amazon-bedrock-provider`
-- ช่องทางการติดตั้ง: รวมอยู่ใน OpenClaw
+- เส้นทางการติดตั้ง: npm; ClawHub
 
-## พื้นผิวการใช้งาน
+## ส่วนติดต่อ
 
 providers: amazon-bedrock; contracts: memoryEmbeddingProviders
 

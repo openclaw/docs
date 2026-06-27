@@ -1,28 +1,38 @@
 ---
 read_when:
-    - Vuoi risultati più brevi degli strumenti `exec` o `bash` in OpenClaw
-    - Vuoi abilitare il Plugin tokenjuice incluso
-    - Ti serve capire cosa cambia tokenjuice e cosa lascia grezzo
-summary: Compatta i risultati rumorosi degli strumenti exec e bash con un Plugin incluso facoltativo
+    - Vuoi risultati degli strumenti `exec` o `bash` più brevi in OpenClaw
+    - Vuoi installare o abilitare il plugin Tokenjuice
+    - Devi capire che cosa modifica tokenjuice e che cosa lascia grezzo
+summary: Compatta i risultati rumorosi degli strumenti exec e bash con il Plugin Tokenjuice opzionale
 title: Tokenjuice
 x-i18n:
-    generated_at: "2026-04-25T13:59:54Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T18:24:24Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 04328cc7a13ccd64f8309ddff867ae893387f93c26641dfa1a4013a4c3063962
+    source_hash: 183ab08d2a1150b446245514423b893cff9a85581980c15600cc16aec10eeae7
     source_path: tools/tokenjuice.md
-    workflow: 15
+    workflow: 16
 ---
 
-`tokenjuice` è un Plugin incluso facoltativo che compatta i risultati rumorosi degli strumenti `exec` e `bash` dopo che il comando è già stato eseguito.
+`tokenjuice` è un Plugin esterno opzionale che compatta i risultati rumorosi degli strumenti `exec` e `bash`
+dopo che il comando è già stato eseguito.
 
-Modifica il `tool_result` restituito, non il comando stesso. Tokenjuice non riscrive l'input della shell, non riesegue i comandi e non cambia gli exit code.
+Modifica il `tool_result` restituito, non il comando stesso. Tokenjuice non
+riscrive l'input della shell, non riesegue i comandi e non modifica i codici di uscita.
 
-Oggi questo si applica alle esecuzioni PI integrate e agli strumenti dinamici OpenClaw nell'harness app-server Codex. Tokenjuice si aggancia al middleware dei risultati degli strumenti di OpenClaw e riduce l'output prima che ritorni nella sessione harness attiva.
+Oggi questo si applica alle esecuzioni incorporate di OpenClaw e agli strumenti dinamici di OpenClaw nell'harness app-server di Codex. Tokenjuice si aggancia al middleware dei risultati degli strumenti di OpenClaw e
+riduce l'output prima che rientri nella sessione harness attiva.
 
-## Abilita il Plugin
+## Abilitare il Plugin
 
-Percorso rapido:
+Installalo una volta:
+
+```bash
+openclaw plugins install clawhub:@openclaw/tokenjuice
+```
+
+Poi abilitalo:
 
 ```bash
 openclaw config set plugins.entries.tokenjuice.enabled true
@@ -33,9 +43,6 @@ Equivalente:
 ```bash
 openclaw plugins enable tokenjuice
 ```
-
-OpenClaw distribuisce già il Plugin. Non esiste un passaggio separato `plugins install`
-o `tokenjuice install openclaw`.
 
 Se preferisci modificare direttamente la configurazione:
 
@@ -51,21 +58,21 @@ Se preferisci modificare direttamente la configurazione:
 }
 ```
 
-## Cosa cambia tokenjuice
+## Cosa modifica tokenjuice
 
-- Compatta i risultati rumorosi di `exec` e `bash` prima che vengano reinseriti nella sessione.
-- Mantiene invariata l'esecuzione del comando originale.
-- Preserva le letture esatte del contenuto dei file e gli altri comandi che tokenjuice deve lasciare grezzi.
-- Resta opzionale: disabilita il Plugin se vuoi output verbatim ovunque.
+- Compatta i risultati rumorosi di `exec` e `bash` prima che vengano reimmessi nella sessione.
+- Mantiene intatta l'esecuzione originale del comando.
+- Preserva le letture esatte del contenuto dei file e altri comandi che tokenjuice deve lasciare grezzi.
+- Resta opt-in: disabilita il Plugin se vuoi output letterale ovunque.
 
-## Verifica che funzioni
+## Verificare che funzioni
 
 1. Abilita il Plugin.
 2. Avvia una sessione che possa chiamare `exec`.
 3. Esegui un comando rumoroso come `git status`.
 4. Controlla che il risultato dello strumento restituito sia più breve e più strutturato dell'output grezzo della shell.
 
-## Disabilita il Plugin
+## Disabilitare il Plugin
 
 ```bash
 openclaw config set plugins.entries.tokenjuice.enabled false
@@ -80,5 +87,5 @@ openclaw plugins disable tokenjuice
 ## Correlati
 
 - [Strumento Exec](/it/tools/exec)
-- [Livelli di thinking](/it/tools/thinking)
+- [Livelli di ragionamento](/it/tools/thinking)
 - [Motore di contesto](/it/concepts/context-engine)

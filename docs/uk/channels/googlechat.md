@@ -1,20 +1,21 @@
 ---
 read_when:
     - Робота над функціями каналу Google Chat
-summary: Стан підтримки застосунку Google Chat, можливості та налаштування
+summary: Стан підтримки, можливості та конфігурація застосунку Google Chat
 title: Google Chat
 x-i18n:
-    generated_at: "2026-05-06T06:16:05Z"
+    generated_at: "2026-06-27T17:09:47Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2b6ac581578df0fccfb560057e4b30ec359a368cb671519a153e1c727d7b920c
+    source_hash: 3d506f6e92bfb73940254ca906c7581f24ac49d3f498fcae213eae71c4449442
     source_path: channels/googlechat.md
     workflow: 16
 ---
 
-Стан: завантажуваний Plugin для особистих повідомлень і просторів через Webhook-и Google Chat API (лише HTTP).
+Статус: завантажуваний Plugin для DM і просторів через Webhook-и Google Chat API (лише HTTP).
 
-## Установлення
+## Встановлення
 
 Установіть Google Chat перед налаштуванням каналу:
 
@@ -22,7 +23,7 @@ x-i18n:
 openclaw plugins install @openclaw/googlechat
 ```
 
-Локальна робоча копія (під час запуску з git-репозиторію):
+Локальний checkout (під час запуску з git-репозиторію):
 
 ```bash
 openclaw plugins install ./path/to/local/googlechat-plugin
@@ -37,9 +38,9 @@ openclaw plugins install ./path/to/local/googlechat-plugin
    - Натисніть **Create Credentials** > **Service Account**.
    - Назвіть його як завгодно (наприклад, `openclaw-chat`).
    - Залиште дозволи порожніми (натисніть **Continue**).
-   - Залиште principals із доступом порожніми (натисніть **Done**).
+   - Залиште принципалів із доступом порожніми (натисніть **Done**).
 3. Створіть і завантажте **JSON Key**:
-   - У списку service accounts натисніть щойно створений обліковий запис.
+   - У списку service account-ів натисніть той, який ви щойно створили.
    - Перейдіть на вкладку **Keys**.
    - Натисніть **Add Key** > **Create new key**.
    - Виберіть **JSON** і натисніть **Create**.
@@ -52,43 +53,43 @@ openclaw plugins install ./path/to/local/googlechat-plugin
    - Увімкніть **Interactive features**.
    - У розділі **Functionality** позначте **Join spaces and group conversations**.
    - У розділі **Connection settings** виберіть **HTTP endpoint URL**.
-   - У розділі **Triggers** виберіть **Use a common HTTP endpoint URL for all triggers** і задайте публічний URL вашого Gateway з доданим `/googlechat`.
-     - _Порада: запустіть `openclaw status`, щоб знайти публічний URL вашого Gateway._
+   - У розділі **Triggers** виберіть **Use a common HTTP endpoint URL for all triggers** і задайте публічну URL-адресу вашого Gateway з доданим `/googlechat`.
+     - _Порада: запустіть `openclaw status`, щоб знайти публічну URL-адресу вашого Gateway._
    - У розділі **Visibility** позначте **Make this Chat app available to specific people and groups in `<Your Domain>`**.
    - Введіть свою адресу електронної пошти (наприклад, `user@example.com`) у текстове поле.
    - Натисніть **Save** внизу.
-6. **Увімкніть стан застосунку**:
+6. **Увімкніть статус застосунку**:
    - Після збереження **оновіть сторінку**.
-   - Знайдіть розділ **App status** (зазвичай біля верху або низу після збереження).
-   - Змініть стан на **Live - available to users**.
+   - Знайдіть розділ **App status** (зазвичай він розташований угорі або внизу після збереження).
+   - Змініть статус на **Live - available to users**.
    - Знову натисніть **Save**.
-7. Налаштуйте OpenClaw із шляхом до service account + аудиторією Webhook:
+7. Налаштуйте OpenClaw зі шляхом до service account + аудиторією Webhook:
    - Env: `GOOGLE_CHAT_SERVICE_ACCOUNT_FILE=/path/to/service-account.json`
-   - Або config: `channels.googlechat.serviceAccountFile: "/path/to/service-account.json"`.
-8. Задайте тип аудиторії Webhook + значення (відповідає конфігурації вашого застосунку Chat).
-9. Запустіть Gateway. Google Chat надсилатиме POST-запити на шлях вашого Webhook.
+   - Або конфігурація: `channels.googlechat.serviceAccountFile: "/path/to/service-account.json"`.
+8. Задайте тип і значення аудиторії Webhook (відповідає конфігурації вашого застосунку Chat).
+9. Запустіть Gateway. Google Chat надсилатиме POST на шлях вашого Webhook.
 
 ## Додавання до Google Chat
 
-Коли Gateway запущено, а вашу електронну пошту додано до списку видимості:
+Коли Gateway запущено, а вашу адресу електронної пошти додано до списку видимості:
 
 1. Перейдіть до [Google Chat](https://chat.google.com/).
-2. Натисніть піктограму **+** (плюс) поруч із **Direct Messages**.
-3. У рядку пошуку (де ви зазвичай додаєте людей) введіть **App name**, який ви налаштували в Google Cloud Console.
-   - **Примітка**: бот _не_ з'явиться у списку перегляду "Marketplace", бо це приватний застосунок. Його потрібно знайти за назвою.
+2. Натисніть піктограму **+** (плюс) поруч із **Прямі повідомлення**.
+3. У рядку пошуку (де зазвичай додають людей) введіть **App name**, який ви налаштували в Google Cloud Console.
+   - **Примітка**: бот _не_ з’явиться в списку перегляду "Marketplace", оскільки це приватний застосунок. Його потрібно шукати за назвою.
 4. Виберіть свого бота з результатів.
 5. Натисніть **Add** або **Chat**, щоб почати розмову 1:1.
 6. Надішліть "Hello", щоб запустити асистента!
 
-## Публічний URL (лише Webhook)
+## Публічна URL-адреса (лише Webhook)
 
-Webhook-и Google Chat потребують публічної HTTPS-точки доступу. З міркувань безпеки **відкривайте в інтернет лише шлях `/googlechat`**. Панель керування OpenClaw та інші чутливі точки доступу тримайте у приватній мережі.
+Webhook-и Google Chat потребують публічної HTTPS-кінцевої точки. З міркувань безпеки **відкривайте в інтернет лише шлях `/googlechat`**. Тримайте панель керування OpenClaw та інші чутливі кінцеві точки у приватній мережі.
 
 ### Варіант A: Tailscale Funnel (рекомендовано)
 
-Використовуйте Tailscale Serve для приватної панелі керування і Funnel для публічного шляху Webhook. Так `/` лишається приватним, а відкривається лише `/googlechat`.
+Використовуйте Tailscale Serve для приватної панелі керування та Funnel для публічного шляху Webhook. Так `/` залишається приватним, а відкривається лише `/googlechat`.
 
-1. **Перевірте, до якої адреси прив'язаний ваш Gateway:**
+1. **Перевірте, до якої адреси прив’язаний ваш Gateway:**
 
    ```bash
    ss -tlnp | grep 18789
@@ -116,8 +117,8 @@ Webhook-и Google Chat потребують публічної HTTPS-точки 
    tailscale funnel --bg --set-path /googlechat http://100.106.161.80:18789/googlechat
    ```
 
-4. **Авторизуйте node для доступу Funnel:**
-   Якщо з'явиться запит, перейдіть за URL авторизації, показаним у виводі, щоб увімкнути Funnel для цього node у політиці вашого tailnet.
+4. **Авторизуйте вузол для доступу Funnel:**
+   Якщо з’явиться запит, перейдіть за URL-адресою авторизації, показаною у виводі, щоб увімкнути Funnel для цього вузла в політиці вашого tailnet.
 
 5. **Перевірте конфігурацію:**
 
@@ -126,15 +127,15 @@ Webhook-и Google Chat потребують публічної HTTPS-точки 
    tailscale funnel status
    ```
 
-Ваш публічний URL Webhook буде:
+Ваша публічна URL-адреса Webhook буде:
 `https://<node-name>.<tailnet>.ts.net/googlechat`
 
-Ваша приватна панель керування лишається доступною лише в tailnet:
+Ваша приватна панель керування залишається доступною лише в tailnet:
 `https://<node-name>.<tailnet>.ts.net:8443/`
 
-Використовуйте публічний URL (без `:8443`) у конфігурації застосунку Google Chat.
+Використовуйте публічну URL-адресу (без `:8443`) у конфігурації застосунку Google Chat.
 
-> Примітка: ця конфігурація зберігається після перезавантажень. Щоб пізніше її прибрати, запустіть `tailscale funnel reset` і `tailscale serve reset`.
+> Примітка: ця конфігурація зберігається після перезавантажень. Щоб видалити її пізніше, запустіть `tailscale funnel reset` і `tailscale serve reset`.
 
 ### Варіант B: Reverse Proxy (Caddy)
 
@@ -146,37 +147,38 @@ your-domain.com {
 }
 ```
 
-З цією конфігурацією будь-який запит до `your-domain.com/` буде проігноровано або поверне 404, тоді як `your-domain.com/googlechat` буде безпечно спрямовано до OpenClaw.
+З цією конфігурацією будь-який запит до `your-domain.com/` буде проігноровано або поверне 404, тоді як `your-domain.com/googlechat` безпечно маршрутизується до OpenClaw.
 
 ### Варіант C: Cloudflare Tunnel
 
-Налаштуйте ingress-правила вашого tunnel так, щоб маршрутизувати лише шлях Webhook:
+Налаштуйте правила ingress для вашого тунелю так, щоб маршрутизувати лише шлях webhook:
 
-- **Path**: `/googlechat` -> `http://localhost:18789/googlechat`
-- **Default Rule**: HTTP 404 (Not Found)
+- **Шлях**: `/googlechat` -> `http://localhost:18789/googlechat`
+- **Правило за замовчуванням**: HTTP 404 (Не знайдено)
 
 ## Як це працює
 
-1. Google Chat надсилає Webhook POST-запити до Gateway. Кожен запит містить заголовок `Authorization: Bearer <token>`.
-   - OpenClaw перевіряє bearer auth перед читанням/розбором повних тіл Webhook, коли заголовок присутній.
-   - Запити Google Workspace Add-on, які містять `authorizationEventObject.systemIdToken` у тілі, підтримуються через суворіший ліміт тіла до автентифікації.
-2. OpenClaw перевіряє token відносно налаштованих `audienceType` + `audience`:
-   - `audienceType: "app-url"` → аудиторія — це ваш HTTPS URL Webhook.
-   - `audienceType: "project-number"` → аудиторія — це номер Cloud project.
+1. Google Chat надсилає webhook POST до gateway. Кожен запит містить заголовок `Authorization: Bearer <token>`.
+   - OpenClaw перевіряє bearer-автентифікацію перед читанням/розбором повних тіл webhook, коли заголовок присутній.
+   - Запити Google Workspace Add-on, що містять `authorizationEventObject.systemIdToken` у тілі, підтримуються через суворіший бюджет тіла до автентифікації.
+2. OpenClaw перевіряє токен відповідно до налаштованих `audienceType` + `audience`:
+   - `audienceType: "app-url"` → audience — це ваша HTTPS URL-адреса webhook.
+   - `audienceType: "project-number"` → audience — це номер Cloud project.
 3. Повідомлення маршрутизуються за простором:
-   - Особисті повідомлення використовують ключ сесії `agent:<agentId>:googlechat:direct:<spaceId>`.
-   - Простори використовують ключ сесії `agent:<agentId>:googlechat:group:<spaceId>`.
-4. Доступ до особистих повідомлень за замовчуванням працює через pairing. Невідомі відправники отримують код pairing; підтвердьте його так:
+   - Приватні повідомлення використовують ключ сеансу `agent:<agentId>:googlechat:direct:<spaceId>`.
+   - Простори використовують ключ сеансу `agent:<agentId>:googlechat:group:<spaceId>`.
+4. Доступ до приватних повідомлень за замовчуванням виконується через спарювання. Невідомі відправники отримують код спарювання; підтвердьте за допомогою:
    - `openclaw pairing approve googlechat <code>`
-5. Групові простори за замовчуванням потребують @-згадки. Використовуйте `botUser`, якщо для виявлення згадки потрібне ім'я користувача застосунку.
+5. Групові простори за замовчуванням потребують @-згадки. Використовуйте `botUser`, якщо виявленню згадок потрібне ім'я користувача застосунку.
+6. Коли запит на підтвердження виконання або plugin запускається з Google Chat і налаштовано стабільного підтверджувача `users/<id>`, OpenClaw публікує нативну картку підтвердження Google Chat у початковому просторі або треді. Кнопки картки використовують непрозорі callback-токени, а ручний запит `/approve <id> <decision>` показується лише тоді, коли нативна доставка підтвердження недоступна.
 
 ## Цілі
 
-Використовуйте ці ідентифікатори для доставки й allowlists:
+Використовуйте ці ідентифікатори для доставки та allowlist:
 
-- Особисті повідомлення: `users/<userId>` (рекомендовано).
-- Необроблена електронна адреса `name@example.com` є змінною і використовується лише для зіставлення direct allowlist, коли `channels.googlechat.dangerouslyAllowNameMatching: true`.
-- Застаріло: `users/<email>` обробляється як user id, а не як email allowlist.
+- Приватні повідомлення: `users/<userId>` (рекомендовано).
+- Необроблена email-адреса `name@example.com` є змінюваною та використовується лише для прямого зіставлення allowlist, коли `channels.googlechat.dangerouslyAllowNameMatching: true`.
+- Застаріло: `users/<email>` трактується як ідентифікатор користувача, а не як allowlist email-адрес.
 - Простори: `spaces/<spaceId>`.
 
 ## Основні параметри конфігурації
@@ -192,6 +194,7 @@ your-domain.com {
       audience: "https://gateway.example.com/googlechat",
       webhookPath: "/googlechat",
       botUser: "users/1234567890", // optional; helps mention detection
+      allowBots: false,
       dm: {
         policy: "pairing",
         allowFrom: ["users/1234567890"],
@@ -216,19 +219,21 @@ your-domain.com {
 Примітки:
 
 - Облікові дані service account також можна передати inline через `serviceAccount` (JSON-рядок).
-- `serviceAccountRef` також підтримується (env/file SecretRef), включно з refs для окремих облікових записів у `channels.googlechat.accounts.<id>.serviceAccountRef`.
-- Стандартний шлях Webhook — `/googlechat`, якщо `webhookPath` не задано.
-- `dangerouslyAllowNameMatching` повторно вмикає зіставлення змінних email principals для allowlists (режим сумісності break-glass).
+- `serviceAccountRef` також підтримується (env/file SecretRef), зокрема посилання для окремих акаунтів у `channels.googlechat.accounts.<id>.serviceAccountRef`.
+- Шлях webhook за замовчуванням — `/googlechat`, якщо `webhookPath` не задано.
+- `dangerouslyAllowNameMatching` повторно вмикає зіставлення змінюваних email principal для allowlist (режим сумісності break-glass).
 - Реакції доступні через інструмент `reactions` і `channels action`, коли `actions.reactions` увімкнено.
-- Дії з повідомленнями надають `send` для тексту та `upload-file` для явного надсилання вкладень. `upload-file` приймає `media` / `filePath` / `path`, а також необов'язкові `message`, `filename` і thread targeting.
-- `typingIndicator` підтримує `none`, `message` (за замовчуванням) і `reaction` (для реакції потрібен OAuth користувача).
-- Вкладення завантажуються через Chat API і зберігаються в media pipeline (розмір обмежено `mediaMaxMb`).
+- Нативні картки підтвердження використовують кліки кнопок Google Chat `cardsV2`, а не події реакцій. Підтверджувачі беруться з `dm.allowFrom` або `defaultTo` і мають бути стабільними числовими значеннями `users/<id>`.
+- Дії повідомлень надають `send` для тексту та `upload-file` для явного надсилання вкладень. `upload-file` приймає `media` / `filePath` / `path`, а також необов'язкові `message`, `filename` і цільовий тред.
+- `typingIndicator` підтримує `message` (за замовчуванням), `none` і `reaction` (реакція потребує user OAuth).
+- Вкладення завантажуються через Chat API і зберігаються в медіаконвеєрі (розмір обмежено `mediaMaxMb`).
+- Повідомлення Google Chat, створені ботами, за замовчуванням ігноруються. Якщо ви навмисно встановлюєте `allowBots: true`, прийняті повідомлення від ботів використовують спільний [захист від циклів ботів](/uk/channels/bot-loop-protection). Налаштуйте `channels.defaults.botLoopProtection`, а потім перевизначте через `channels.googlechat.botLoopProtection` або `channels.googlechat.groups.<space>.botLoopProtection`, коли одному простору потрібен інший бюджет.
 
-Докладно про посилання на секрети: [Керування секретами](/uk/gateway/secrets).
+Докладніше про посилання на секрети: [Керування секретами](/uk/gateway/secrets).
 
 ## Усунення несправностей
 
-### 405 Method Not Allowed
+### 405 Метод не дозволено
 
 Якщо Google Cloud Logs Explorer показує помилки на кшталт:
 
@@ -236,9 +241,9 @@ your-domain.com {
 status code: 405, reason phrase: HTTP error response: HTTP/1.1 405 Method Not Allowed
 ```
 
-Це означає, що обробник Webhook не зареєстровано. Поширені причини:
+Це означає, що обробник webhook не зареєстровано. Поширені причини:
 
-1. **Канал не налаштовано**: у вашій конфігурації відсутній розділ `channels.googlechat`. Перевірте так:
+1. **Канал не налаштовано**: розділ `channels.googlechat` відсутній у вашій конфігурації. Перевірте за допомогою:
 
    ```bash
    openclaw config get channels.googlechat
@@ -246,15 +251,15 @@ status code: 405, reason phrase: HTTP error response: HTTP/1.1 405 Method Not Al
 
    Якщо повертається "Config path not found", додайте конфігурацію (див. [Основні параметри конфігурації](#config-highlights)).
 
-2. **Plugin не ввімкнено**: перевірте стан Plugin:
+2. **Plugin не ввімкнено**: перевірте стан plugin:
 
    ```bash
    openclaw plugins list | grep googlechat
    ```
 
-   Якщо показано "disabled", додайте `plugins.entries.googlechat.enabled: true` до своєї конфігурації.
+   Якщо показано "disabled", додайте `plugins.entries.googlechat.enabled: true` до вашої конфігурації.
 
-3. **Gateway не перезапущено**: після додавання конфігурації перезапустіть Gateway:
+3. **Gateway не перезапущено**: після додавання конфігурації перезапустіть gateway:
 
    ```bash
    openclaw gateway restart
@@ -269,12 +274,12 @@ openclaw channels status
 
 ### Інші проблеми
 
-- Перевірте `openclaw channels status --probe` на помилки автентифікації або відсутню конфігурацію аудиторії.
-- Якщо повідомлення не надходять, підтвердьте URL Webhook застосунку Chat + підписки на події.
-- Якщо фільтр згадок блокує відповіді, задайте `botUser` як ім'я ресурсу користувача застосунку й перевірте `requireMention`.
-- Використовуйте `openclaw logs --follow` під час надсилання тестового повідомлення, щоб побачити, чи доходять запити до Gateway.
+- Перевірте `openclaw channels status --probe` на помилки автентифікації або відсутню конфігурацію audience.
+- Якщо повідомлення не надходять, підтвердьте URL-адресу webhook застосунку Chat і підписки на події.
+- Якщо шлюз згадок блокує відповіді, встановіть `botUser` на ім'я ресурсу користувача застосунку й перевірте `requireMention`.
+- Використовуйте `openclaw logs --follow` під час надсилання тестового повідомлення, щоб побачити, чи запити доходять до gateway.
 
-Пов'язані документи:
+Пов'язана документація:
 
 - [Конфігурація Gateway](/uk/gateway/configuration)
 - [Безпека](/uk/gateway/security)
@@ -283,7 +288,7 @@ openclaw channels status
 ## Пов'язане
 
 - [Огляд каналів](/uk/channels) — усі підтримувані канали
-- [Pairing](/uk/channels/pairing) — автентифікація особистих повідомлень і потік pairing
-- [Групи](/uk/channels/groups) — поведінка групових чатів і фільтрація згадок
-- [Маршрутизація каналів](/uk/channels/channel-routing) — маршрутизація сесій для повідомлень
+- [Спарювання](/uk/channels/pairing) — автентифікація в особистих повідомленнях і потік спарювання
+- [Групи](/uk/channels/groups) — поведінка групового чату та обмеження за згадками
+- [Маршрутизація каналів](/uk/channels/channel-routing) — маршрутизація сеансів для повідомлень
 - [Безпека](/uk/gateway/security) — модель доступу та посилення захисту

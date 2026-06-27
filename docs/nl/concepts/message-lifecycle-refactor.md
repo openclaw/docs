@@ -1,48 +1,53 @@
 ---
 read_when:
-    - Het verzend- of ontvangstgedrag van kanalen refactoren
-    - Kanaalbeurt, antwoordverzending, uitgaande wachtrij, voorbeeldstreaming of Plugin SDK-bericht-API's wijzigen
-    - Een nieuwe kanaalplugin ontwerpen die persistente verzendingen, ontvangstbevestigingen, voorvertoningen, bewerkingen of nieuwe pogingen nodig heeft
-summary: Ontwerpplan voor de uniforme, persistente levenscyclus voor het ontvangen, verzenden, vooraf bekijken, bewerken en streamen van berichten
-title: Refactor van de berichtlevenscyclus
+    - Kanaalgedrag voor verzenden of ontvangen refactoren
+    - Wijzigingen aan inkomend kanaalverkeer, antwoorddispatch, uitgaande wachtrij, previewstreaming of Plugin SDK-bericht-API's
+    - Een nieuwe kanaal-Plugin ontwerpen die persistente verzendingen, ontvangstbevestigingen, voorvertoningen, bewerkingen of nieuwe pogingen nodig heeft
+summary: Ontwerpplan voor de uniforme duurzame levenscyclus voor berichten ontvangen, verzenden, voorbeeldweergave, bewerken en streamen
+title: Refactor van berichtlevenscyclus
 x-i18n:
-    generated_at: "2026-05-10T19:32:12Z"
+    generated_at: "2026-06-27T17:27:22Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b2e136f1be0f7c1952731b464c3732c68c14a31e672ce628af8182a3f666c914
+    source_hash: 09afead1194a62453342af6feac20fbed24a7761db07a80234333b65947798bb
     source_path: concepts/message-lifecycle-refactor.md
     workflow: 16
 ---
 
-Deze pagina is het doelontwerp voor het vervangen van verspreide helpers voor kanaalbeurten, antwoorddispatch,
-previewstreaming en uitgaande levering door één duurzame
-berichtlevenscyclus.
+Deze pagina is het doelontwerp voor het vervangen van verspreide helpers voor
+inkomende kanaalberichten, antwoorddispatch, previewstreaming en uitgaande
+bezorging door één duurzame berichtlevenscyclus.
 
 De korte versie:
 
-- De kernprimitieven moeten **ontvangen** en **verzenden** zijn, niet **antwoorden**.
+- De kernprimitieven moeten **ontvangen** en **verzenden** zijn, niet
+  **antwoorden**.
 - Een antwoord is alleen een relatie op een uitgaand bericht.
-- Een beurt is een gemak voor inkomende verwerking, niet de eigenaar van levering.
-- Verzenden moet contextgebaseerd zijn: `begin`, renderen, previewen of streamen, definitief verzenden,
-  vastleggen, mislukken.
-- Ontvangen moet ook contextgebaseerd zijn: normaliseren, dedupliceren, routeren, registreren,
-  dispatchen, platformbevestiging, mislukken.
-- De publieke Plugin-SDK moet samenvallen tot één klein kanaalberichtoppervlak.
+- Een beurt is een gemak voor inkomende verwerking, niet de eigenaar van
+  bezorging.
+- Verzenden moet contextgebaseerd zijn: `begin`, renderen, preview of stream,
+  definitief verzenden, committen, falen.
+- Ontvangen moet ook contextgebaseerd zijn: normaliseren, dedupliceren, routeren,
+  vastleggen, dispatchen, platform-ack, falen.
+- De publieke Plugin-SDK moet worden teruggebracht tot één klein oppervlak voor
+  uitgaande kanaalberichten.
 
 ## Problemen
 
-De huidige kanaalstack is gegroeid vanuit meerdere geldige lokale behoeften:
+De huidige kanaalstack is ontstaan uit meerdere geldige lokale behoeften:
 
-- Eenvoudige inkomende adapters gebruiken `runtime.channel.turn.run`.
-- Rijke adapters gebruiken `runtime.channel.turn.runPrepared`.
+- Eenvoudige inkomende adapters gebruiken `runtime.channel.inbound.run`.
+- Rijke adapters gebruiken `runtime.channel.inbound.runPreparedReply`.
 - Legacy-helpers gebruiken `dispatchInboundReplyWithBase`,
-  `recordInboundSessionAndDispatchReply`, helpers voor antwoordpayloads, antwoordchunking,
-  antwoordreferenties en helpers voor uitgaande runtime.
+  `recordInboundSessionAndDispatchReply`, helpers voor antwoordpayloads,
+  antwoordchunking, antwoordreferenties en runtimehelpers voor uitgaand verkeer.
 - Previewstreaming leeft in kanaalspecifieke dispatchers.
-- Duurzaamheid van definitieve levering wordt toegevoegd rond bestaande antwoordpayloadpaden.
+- Duurzaamheid van definitieve bezorging wordt toegevoegd rond bestaande paden
+  voor antwoordpayloads.
 
 Die vorm lost lokale bugs op, maar laat OpenClaw achter met te veel publieke
-concepten en te veel plekken waar leveringssemantiek kan afwijken.
+concepten en te veel plekken waar bezorgsemantiek kan afwijken.
 
 Het betrouwbaarheidsprobleem dat dit blootlegde is:
 
@@ -53,42 +58,50 @@ Telegram polling update acked
   -> final response is lost
 ```
 
-De doelinvariant is breder dan Telegram: zodra core beslist dat een zichtbaar
-uitgaand bericht moet bestaan, moet de intentie duurzaam zijn voordat de platformverzending
-wordt geprobeerd, en moet het platformbewijs na succes worden vastgelegd.
-Dat geeft OpenClaw herstel met minstens-één-keer-semantiek. Exact-één-keer-gedrag bestaat alleen
-voor adapters die native idempotentie kunnen bewijzen of een
-onbekend-na-verzending-poging kunnen reconciliëren met de platformstatus vóór replay.
+De doelinvariant is breder dan Telegram: zodra core beslist dat er een zichtbaar
+uitgaand bericht moet bestaan, moet de intentie duurzaam zijn voordat de
+platformverzending wordt geprobeerd, en moet het platformontvangstbewijs na
+succes worden gecommit. Dat geeft OpenClaw herstel met at-least-once-semantiek.
+Exactly-once-gedrag bestaat alleen voor adapters die native idempotentie kunnen
+bewijzen of een poging met onbekende status na verzenden met de platformstatus
+kunnen reconciliëren voordat ze opnieuw afspelen.
 
-Dat is de eindtoestand voor deze refactor, niet een beschrijving van elk huidig
-pad. Tijdens migratie kunnen bestaande uitgaande helpers nog steeds terugvallen op een
-directe verzending wanneer best-effort wachtrijschrijfacties mislukken. De refactor is pas voltooid
-wanneer duurzame definitieve verzendingen gesloten falen of expliciet afzien met een gedocumenteerd
-niet-duurzaam beleid.
+Dat is de eindtoestand voor deze refactor, geen beschrijving van elk huidig pad.
+Tijdens de migratie kunnen bestaande uitgaande helpers nog steeds terugvallen op
+een directe verzending wanneer best-effort queue-writes falen. De refactor is pas
+compleet wanneer duurzame definitieve verzendingen fail-closed zijn of expliciet
+opt-outen met een gedocumenteerd niet-duurzaam beleid.
 
 ## Doelen
 
-- Eén core-levenscyclus voor alle ontvang- en verzendpaden van kanaalberichten.
-- Duurzame definitieve verzendingen standaard in de nieuwe berichtlevenscyclus nadat een adapter
-  replay-veilig gedrag declareert.
-- Gedeelde semantiek voor preview, bewerken, streamen, finalisatie, opnieuw proberen, herstel en ontvangstbewijzen.
-- Een klein Plugin-SDK-oppervlak dat externe plugins kunnen leren en onderhouden.
-- Compatibiliteit voor bestaande `channel.turn`-aanroepers tijdens migratie.
+- Eén core-levenscyclus voor alle paden voor het ontvangen en verzenden van
+  kanaalberichten.
+- Duurzame definitieve verzendingen standaard in de nieuwe berichtlevenscyclus
+  nadat een adapter replay-veilig gedrag declareert.
+- Gedeelde semantiek voor preview, bewerken, streamen, finalisatie, retry,
+  herstel en ontvangstbewijzen.
+- Een klein Plugin-SDK-oppervlak dat externe Plugins kunnen leren en
+  onderhouden.
+- Compatibiliteit voor bestaande inkomende antwoordcompatibiliteitscallers
+  tijdens migratie.
 - Duidelijke uitbreidingspunten voor nieuwe kanaalmogelijkheden.
 - Geen platformspecifieke branches in core.
 - Geen token-delta-kanaalberichten. Kanaalstreaming blijft berichtpreview,
-  bewerken, toevoegen of levering van voltooide blokken.
-- Gestructureerde metadata van OpenClaw-oorsprong voor operationele/systeemuitvoer, zodat zichtbare
-  gatewayfouten niet opnieuw binnenkomen in gedeelde bot-ingeschakelde ruimtes als nieuwe prompts.
+  bewerken, toevoegen of bezorging van voltooide blokken.
+- Gestructureerde metadata met OpenClaw-oorsprong voor operationele/systeemoutput
+  zodat zichtbare Gateway-fouten niet opnieuw als nieuwe prompts in gedeelde
+  bot-enabled rooms terechtkomen.
 
 ## Niet-doelen
 
-- Verwijder `runtime.channel.turn.*` niet in de eerste fase.
-- Dwing niet elk kanaal tot hetzelfde native transportgedrag.
+- Dwing niet elk bestaand kanaal in de eerste fase naar duurzame
+  berichtbezorging.
+- Dwing niet elk kanaal in hetzelfde native transportgedrag.
 - Leer core geen Telegram-topics, native Slack-streams, Matrix-redacties,
   Feishu-kaarten, QQ-spraak of Teams-activiteiten.
 - Publiceer niet alle interne migratiehelpers als stabiele SDK-API.
-- Laat retries voltooide niet-idempotente platformoperaties niet opnieuw afspelen.
+- Laat retries geen voltooide niet-idempotente platformbewerkingen opnieuw
+  afspelen.
 
 ## Referentiemodel
 
@@ -99,24 +112,25 @@ Vercel Chat heeft een goed publiek mentaal model:
 - `Channel`
 - `Message`
 - adaptermethoden zoals `postMessage`, `editMessage`, `deleteMessage`,
-  `stream`, `startTyping` en history-fetches
-- een statusadapter voor deduplicatie, locks, wachtrijen en persistentie
+  `stream`, `startTyping` en het ophalen van geschiedenis
+- een state-adapter voor deduplicatie, locks, queues en persistentie
 
 OpenClaw moet de woordenschat lenen, niet het oppervlak kopiëren.
 
 Wat OpenClaw bovenop dat model nodig heeft:
 
-- Duurzame uitgaande verzendintenties vóór directe transportaanroepen.
+- Duurzame intenties voor uitgaande verzending vóór directe transportcalls.
 - Expliciete verzendcontexten met begin, commit en fail.
-- Ontvangstcontexten die het platformbevestigingsbeleid kennen.
-- Ontvangstbewijzen die een herstart overleven en bewerkingen, verwijderingen, herstel en
-  onderdrukking van duplicaten kunnen aansturen.
-- Een kleinere publieke SDK. Gebundelde plugins kunnen interne runtimehelpers gebruiken, maar
-  externe plugins moeten één coherente bericht-API zien.
-- Agent-specifiek gedrag: sessies, transcripten, blokstreaming, toolvoortgang,
-  goedkeuringen, mediarichtlijnen, stille antwoorden en geschiedenis van groepsvermeldingen.
+- Ontvangstcontexten die het platform-ackbeleid kennen.
+- Ontvangstbewijzen die een herstart overleven en bewerkingen, verwijderingen,
+  herstel en duplicate suppression kunnen aansturen.
+- Een kleinere publieke SDK. Gebundelde Plugins kunnen interne runtimehelpers
+  gebruiken, maar externe Plugins moeten één coherente bericht-API zien.
+- Agentspecifiek gedrag: sessies, transcripts, blokstreaming, toolvoortgang,
+  approvals, mediadirectieven, stille antwoorden en geschiedenis van
+  groepsmentions.
 
-Beloften in `thread.post()`-stijl zijn niet genoeg voor OpenClaw. Ze verbergen de
+`thread.post()`-achtige promises zijn niet genoeg voor OpenClaw. Ze verbergen de
 transactiegrens die bepaalt of een verzending herstelbaar is.
 
 ## Core-model
@@ -133,14 +147,14 @@ core.messages.live(...)
 core.messages.state(...)
 ```
 
-`receive` bezit de inkomende levenscyclus.
+`receive` beheert de inkomende levenscyclus.
 
-`send` bezit de uitgaande levenscyclus.
+`send` beheert de uitgaande levenscyclus.
 
-`live` bezit preview, bewerken, voortgang en streamstatus.
+`live` beheert preview-, bewerk-, voortgangs- en streamstatus.
 
-`state` bezit duurzame intentieopslag, ontvangstbewijzen, idempotentie, herstel, locks en
-deduplicatie.
+`state` beheert duurzame intentieopslag, ontvangstbewijzen, idempotentie,
+herstel, locks en deduplicatie.
 
 ## Berichttermen
 
@@ -219,15 +233,16 @@ type MessageRelation =
     };
 ```
 
-Hierdoor kan hetzelfde verzendpad normale antwoorden, cronmeldingen, goedkeuringsprompts,
-taakvoltooiingen, verzendingen via berichttools, CLI- of Control UI-verzendingen, subagentresultaten
-en automatiseringsverzendingen afhandelen.
+Hierdoor kan hetzelfde verzendpad normale antwoorden, Cron-meldingen,
+approval-prompts, taakvoltooiingen, message-tool-verzendingen, CLI- of Control
+UI-verzendingen, subagentresultaten en automatiseringsverzendingen afhandelen.
 
 ### Oorsprong
 
-Oorsprong beschrijft wie een bericht heeft geproduceerd en hoe OpenClaw echo's van
-dat bericht moet behandelen. Het staat los van relatie: een bericht kan een antwoord op een gebruiker zijn
-en toch operationele uitvoer van OpenClaw-oorsprong zijn.
+Oorsprong beschrijft wie een bericht heeft geproduceerd en hoe OpenClaw echo's
+van dat bericht moet behandelen. Het staat los van relatie: een bericht kan een
+antwoord aan een gebruiker zijn en nog steeds operationele output met
+OpenClaw-oorsprong zijn.
 
 ```typescript
 type MessageOrigin =
@@ -243,17 +258,17 @@ type MessageOrigin =
     };
 ```
 
-Core bezit de betekenis van uitvoer met OpenClaw-oorsprong. Kanalen bezitten hoe die
-oorsprong in hun transport wordt gecodeerd.
+Core beheert de betekenis van output met OpenClaw-oorsprong. Kanalen beheren hoe
+die oorsprong in hun transport wordt gecodeerd.
 
-Het eerste vereiste gebruik is gatewayfoutuitvoer. Mensen moeten nog steeds
-berichten zien zoals "Agent failed before reply" of "Missing API key", maar getagde
-operationele OpenClaw-uitvoer mag niet worden geaccepteerd als door bots geschreven invoer in gedeelde
-ruimtes wanneer `allowBots` is ingeschakeld.
+Het eerste vereiste gebruik is Gateway-foutoutput. Mensen moeten nog steeds
+berichten zien zoals "Agent failed before reply" of "Missing API key", maar
+getagde operationele OpenClaw-output mag niet worden geaccepteerd als
+botgeschreven input in gedeelde rooms wanneer `allowBots` is ingeschakeld.
 
 ### Ontvangstbewijs
 
-Ontvangstbewijzen zijn eersteklas:
+Ontvangstbewijzen zijn first-class:
 
 ```typescript
 type MessageReceipt = {
@@ -282,17 +297,18 @@ type MessageReceiptPart = {
 };
 ```
 
-Ontvangstbewijzen zijn de brug van duurzame intentie naar toekomstige bewerking, verwijdering, previewfinalisatie,
-onderdrukking van duplicaten en herstel.
+Ontvangstbewijzen zijn de brug van duurzame intentie naar toekomstige
+bewerkingen, verwijderingen, previewfinalisatie, duplicate suppression en herstel.
 
-Een ontvangstbewijs kan één platformbericht of een levering in meerdere delen beschrijven. Gechunkte
-tekst, media plus tekst, spraak plus tekst en kaartfallbacks moeten alle
-platform-id's behouden en toch een primaire id voor threading en latere bewerkingen tonen.
+Een ontvangstbewijs kan één platformbericht of een bezorging in meerdere delen
+beschrijven. Gechunkte tekst, media plus tekst, spraak plus tekst en
+kaartfallbacks moeten alle platform-id's behouden, terwijl ze nog steeds een
+primaire id voor threading en latere bewerkingen blootstellen.
 
 ## Ontvangstcontext
 
-Ontvangen mag geen kale helperaanroep zijn. Core heeft een context nodig die
-deduplicatie, routering, sessieregistratie en platformbevestigingsbeleid kent.
+Ontvangen moet geen kale helpercall zijn. Core heeft een context nodig die
+deduplicatie, routering, sessieregistratie en platform-ackbeleid kent.
 
 ```typescript
 type MessageReceiveContext = {
@@ -330,22 +346,24 @@ platform event
   -> ack platform when policy allows
 ```
 
-Bevestiging is niet één ding. Het ontvangstcontract moet deze signalen gescheiden houden:
+Ack is niet één ding. Het ontvangstcontract moet deze signalen gescheiden houden:
 
-- **Transportbevestiging:** vertelt de platformwebhook of socket dat OpenClaw de gebeurtenisenvelop heeft geaccepteerd.
-  Sommige platforms vereisen dit vóór dispatch.
-- **Polling-offsetbevestiging:** schuift een cursor op zodat dezelfde gebeurtenis niet opnieuw wordt opgehaald.
-  Dit mag niet verder gaan dan werk dat niet kan worden hersteld.
-- **Inkomend-recordbevestiging:** bevestigt dat OpenClaw genoeg inkomende metadata heeft gepersisteerd om
-  een herlevering te dedupliceren en routeren.
-- **Zichtbaar ontvangstbewijs voor gebruiker:** optioneel lees-/status-/typgedrag; nooit een
-  duurzaamheidsgrens.
+- **Transport-ack:** vertelt de platformwebhook of socket dat OpenClaw de
+  event-envelope heeft geaccepteerd. Sommige platforms vereisen dit vóór
+  dispatch.
+- **Polling-offset-ack:** verplaatst een cursor zodat hetzelfde event niet
+  opnieuw wordt opgehaald. Dit mag niet voorbij werk gaan dat niet kan worden
+  hersteld.
+- **Inkomende-record-ack:** bevestigt dat OpenClaw genoeg inkomende metadata
+  heeft gepersisteerd om een herbezorging te dedupliceren en routeren.
+- **Gebruikerszichtbaar ontvangstbewijs:** optioneel lees-/status-/typinggedrag;
+  nooit een duurzaamheidsgrens.
 
-`ReceiveAckPolicy` beheert alleen transport- of pollingbevestiging. Het mag
-niet worden hergebruikt voor leesbewijzen of statusreacties.
+`ReceiveAckPolicy` beheert alleen transport- of pollingbevestiging. Het mag niet
+worden hergebruikt voor leesbevestigingen of statusreacties.
 
-Vóór botautorisatie moet ontvangen het gedeelde OpenClaw-echobeleid toepassen
-wanneer het kanaal metadata over berichtherkomst kan decoderen:
+Vóór botautorisatie moet ontvangst het gedeelde OpenClaw-echobeleid toepassen
+wanneer het kanaal metadata over berichtoorsprong kan decoderen:
 
 ```typescript
 function shouldDropOpenClawEcho(params: {
@@ -363,11 +381,11 @@ function shouldDropOpenClawEcho(params: {
 }
 ```
 
-Deze drop is taggebaseerd, niet tekstgebaseerd. Een door een bot geschreven roombericht met dezelfde
-zichtbare gatewayfouttekst maar zonder metadata over OpenClaw-oorsprong gaat nog steeds
-door normale `allowBots`-autorisatie.
+Deze drop is taggebaseerd, niet tekstgebaseerd. Een door een bot geschreven
+roombericht met dezelfde zichtbare Gateway-fouttekst maar zonder
+OpenClaw-oorsprongmetadata gaat nog steeds door normale `allowBots`-autorisatie.
 
-Bevestigingsbeleid is expliciet:
+Ackbeleid is expliciet:
 
 ```typescript
 type ReceiveAckPolicy =
@@ -377,15 +395,17 @@ type ReceiveAckPolicy =
   | { kind: "manual" };
 ```
 
-Telegram-polling gebruikt nu het bevestigingsbeleid van de ontvangstcontext voor zijn gepersisteerde
-herstartwatermerk. De tracker observeert grammY-updates nog steeds wanneer ze de
-middlewareketen binnenkomen, maar OpenClaw persisteert alleen de veilige voltooide update-id na
-succesvolle dispatch, waardoor mislukte of lagere openstaande updates na een herstart opnieuw afspeelbaar blijven.
-De upstream `getUpdates`-fetchoffset van Telegram wordt nog steeds beheerd door
-de pollingbibliotheek, dus de resterende diepere ingreep is een volledig duurzame pollingbron
-als we redelivery op platformniveau nodig hebben voorbij het herstartwatermerk van OpenClaw.
-Webhookplatforms kunnen directe HTTP-bevestiging nodig hebben, maar ze hebben nog steeds
-inkomende deduplicatie en duurzame uitgaande verzendintenties nodig omdat webhooks opnieuw kunnen leveren.
+Telegram-polling gebruikt nu het ackbeleid van de ontvangstcontext voor zijn
+gepersistenceerde herstart-watermark. De tracker observeert nog steeds
+grammY-updates wanneer ze de middlewareketen binnenkomen, maar OpenClaw
+persisteert alleen de veilige voltooide update-id na succesvolle dispatch,
+waardoor mislukte of lagere pending updates na een herstart opnieuw afspeelbaar
+blijven. Telegrams upstream `getUpdates`-fetchoffset wordt nog steeds beheerd
+door de pollingbibliotheek, dus de resterende diepere ingreep is een volledig
+duurzame pollingbron als we redelivery op platformniveau nodig hebben voorbij de
+herstart-watermark van OpenClaw. Webhookplatforms hebben mogelijk onmiddellijke
+HTTP-ack nodig, maar ze hebben nog steeds inkomende deduplicatie en duurzame
+intenties voor uitgaande verzending nodig omdat webhooks kunnen herbezorgen.
 
 ## Verzendcontext
 
@@ -428,7 +448,7 @@ await core.messages.withSendContext(message, async (ctx) => {
 });
 ```
 
-De helper wordt uitgebreid tot:
+De helper breidt uit naar:
 
 ```text
 begin durable intent
@@ -442,20 +462,20 @@ begin durable intent
   -> fail durable intent on classified failure
 ```
 
-De intentie moet bestaan vóór transport-I/O. Een herstart na het beginnen maar vóór
-het committen is herstelbaar.
+De intent moet bestaan voordat transport-I/O plaatsvindt. Een herstart na begin maar vóór
+commit is herstelbaar.
 
-De gevaarlijke grens ligt na platformsucces en vóór het committen van het ontvangstbewijs. Als een
-proces daar stopt, kan OpenClaw niet weten of het platformbericht bestaat,
-tenzij de adapter native idempotentie of een pad voor ontvangstbewijsafstemming biedt.
-Die pogingen moeten hervatten in `unknown_after_send`, niet blind opnieuw afspelen. Kanalen
-zonder afstemming mogen alleen kiezen voor at-least-once opnieuw afspelen als dubbele zichtbare
+De gevaarlijke grens ligt na platformsucces en vóór receipt-commit. Als een
+proces daar uitvalt, kan OpenClaw niet weten of het platformbericht bestaat,
+tenzij de adapter native idempotentie of een pad voor receipt-reconciliatie biedt.
+Die pogingen moeten hervatten in `unknown_after_send`, niet blind opnieuw worden afgespeeld. Kanalen
+zonder reconciliatie mogen alleen kiezen voor at-least-once opnieuw afspelen als dubbele zichtbare
 berichten een acceptabele, gedocumenteerde afweging zijn voor dat kanaal en die relatie.
-De huidige SDK-afstemmingsbrug vereist dat de adapter
+De huidige SDK-reconciliatiebridge vereist dat de adapter
 `reconcileUnknownSend` declareert, en vraagt vervolgens `durableFinal.reconcileUnknownSend` om
-een onbekende invoer te classificeren als `sent`, `not_sent` of `unresolved`; alleen `not_sent`
-staat opnieuw afspelen toe, en onopgeloste invoeren blijven terminaal of proberen alleen de
-afstemmingscontrole opnieuw.
+een onbekende entry te classificeren als `sent`, `not_sent` of `unresolved`; alleen `not_sent`
+staat opnieuw afspelen toe, en onopgeloste entries blijven terminaal of proberen alleen de
+reconciliatiecontrole opnieuw.
 
 Duurzaamheidsbeleid moet expliciet zijn:
 
@@ -463,29 +483,29 @@ Duurzaamheidsbeleid moet expliciet zijn:
 type MessageDurabilityPolicy = "required" | "best_effort" | "disabled";
 ```
 
-`required` betekent dat core gesloten moet falen wanneer het de duurzame intentie niet kan schrijven.
+`required` betekent dat core fail-closed moet zijn wanneer het de duurzame intent niet kan schrijven.
 `best_effort` kan doorvallen wanneer persistentie niet beschikbaar is. `disabled` behoudt
-het oude directe verzendgedrag. Tijdens migratie staan legacy-wrappers en openbare
-compatibiliteitshelpers standaard op `disabled`; ze mogen `required` niet afleiden uit
-het feit dat een kanaal een generieke uitgaande adapter heeft.
+het oude directe verzendgedrag. Tijdens migratie gebruiken legacy wrappers en publieke
+compatibiliteitshelpers standaard `disabled`; ze mogen niet `required` afleiden uit
+het feit dat een kanaal een generieke outbound-adapter heeft.
 
-Verzendcontexten zijn ook eigenaar van kanaallokale effecten na het verzenden. Een migratie is niet veilig
-als duurzame levering lokaal gedrag omzeilt dat eerder aan het directe verzendpad
-van het kanaal was gekoppeld. Voorbeelden zijn caches voor onderdrukking van self-echo,
-markers voor threaddeelname, native bewerkingsankers, rendering van modelhandtekeningen
-en platformspecifieke dubbele-beschermingen. Die effecten moeten naar de
-verzendadapter, de renderadapter of een benoemde verzendcontext-hook worden verplaatst voordat dat
+Verzendcontexten beheren ook kanaallokale effecten na verzending. Een migratie is niet veilig
+als duurzame levering lokaal gedrag omzeilt dat eerder was gekoppeld aan het
+directe verzendpad van het kanaal. Voorbeelden zijn caches voor het onderdrukken van self-echo's,
+markers voor deelname aan threads, native edit-ankers, rendering van modelhandtekeningen
+en platformspecifieke bescherming tegen duplicaten. Die effecten moeten ofwel naar de
+send-adapter, de render-adapter, of een benoemde send-context-hook verhuizen voordat dat
 kanaal duurzame generieke eindlevering kan inschakelen.
 
-Verzendhelpers moeten ontvangstbewijzen helemaal teruggeven aan hun aanroeper. Duurzame
-wrappers mogen bericht-id's niet inslikken of een kanaalleveringsresultaat vervangen door
-`undefined`; gebufferde dispatchers gebruiken die id's voor threadankers, latere bewerkingen,
-preview-finalisatie en onderdrukking van duplicaten.
+Verzendhelpers moeten receipts helemaal teruggeven aan hun aanroeper. Duurzame
+wrappers mogen message-id's niet inslikken of een kanaalleveringsresultaat vervangen door
+`undefined`; gebufferde dispatchers gebruiken die id's voor thread-ankers, latere edits,
+previewfinalisatie en duplicaatonderdrukking.
 
 Fallback-verzendingen werken op batches, niet op losse payloads. Silent-reply-herschrijvingen,
-mediafallback, kaartfallback en chunkprojectie kunnen allemaal meer dan
-één afleverbaar bericht produceren, dus een verzendcontext moet ofwel de hele
-geprojecteerde batch afleveren of expliciet documenteren waarom slechts één payload geldig is.
+mediafallback, cardfallback en chunkprojectie kunnen allemaal meer dan
+één leverbaar bericht produceren, dus een verzendcontext moet ofwel de hele
+geprojecteerde batch leveren, of expliciet documenteren waarom slechts één payload geldig is.
 
 ```typescript
 type RenderedMessageBatch = {
@@ -502,16 +522,16 @@ type RenderedMessageUnit = {
 };
 ```
 
-Wanneer zo'n fallback duurzaam is, moet de hele geprojecteerde batch worden vertegenwoordigd door
-één duurzame verzendintentie of een ander atomair batchplan. Elke payload
-één voor één vastleggen is niet genoeg: een crash tussen payloads kan een gedeeltelijk zichtbare
-fallback achterlaten zonder duurzame registratie voor de resterende payloads. Herstel moet weten
-welke units al ontvangstbewijzen hebben en ofwel alleen ontbrekende units opnieuw afspelen of
-de batch markeren als `unknown_after_send` totdat de adapter deze afstemt.
+Wanneer zo'n fallback duurzaam is, moet de hele geprojecteerde batch worden weergegeven door
+één duurzame send intent of een ander atomair batchplan. Elke payload
+één voor één registreren is niet genoeg: een crash tussen payloads kan een gedeeltelijk zichtbare
+fallback achterlaten zonder duurzaam record voor de resterende payloads. Herstel moet weten
+welke units al receipts hebben en ofwel alleen ontbrekende units opnieuw afspelen of
+de batch markeren als `unknown_after_send` totdat de adapter deze reconcilieert.
 
-## Live-context
+## Live context
 
-Preview-, bewerkings-, voortgangs- en streamgedrag zouden één opt-in levenscyclus moeten zijn.
+Preview-, edit-, voortgangs- en streamgedrag moeten één opt-in lifecycle zijn.
 
 ```typescript
 type MessageLiveAdapter = {
@@ -534,7 +554,7 @@ type MessageLiveAdapter = {
 };
 ```
 
-Live-status is duurzaam genoeg om te herstellen of duplicaten te onderdrukken:
+Live state is duurzaam genoeg om duplicaten te herstellen of te onderdrukken:
 
 ```typescript
 type LiveMessageState = {
@@ -547,22 +567,22 @@ type LiveMessageState = {
 };
 ```
 
-Dit zou huidig gedrag moeten dekken:
+Dit moet huidig gedrag dekken:
 
-- Telegram verzenden plus bewerkingspreview, met verse finale na verouderde previewleeftijd.
-- Discord verzenden plus bewerkingspreview, annuleren bij media/fout/expliciet antwoord.
-- Slack native stream of conceptpreview afhankelijk van threadvorm.
-- Mattermost-finalisatie van conceptbericht.
-- Matrix-finalisatie van conceptgebeurtenis of redactie bij mismatch.
+- Telegram-verzending plus edit-preview, met een verse finale na verouderde previewleeftijd.
+- Discord-verzending plus edit-preview, annuleren bij media/fout/expliciet antwoord.
+- Slack native stream of concept-preview afhankelijk van threadvorm.
+- Mattermost-finalisatie van conceptpost.
+- Matrix-finalisatie van concept-event of redactie bij mismatch.
 - Teams native voortgangsstream.
-- QQ Bot-stream of verzamelde fallback.
+- QQ Bot-stream of geaccumuleerde fallback.
 
 ## Adapteroppervlak
 
-Het openbare SDK-doel moet één subpad zijn:
+Het publieke SDK-doel moet één subpad zijn:
 
 ```typescript
-import { defineChannelMessageAdapter } from "openclaw/plugin-sdk/channel-message";
+import { defineChannelMessageAdapter } from "openclaw/plugin-sdk/channel-outbound";
 ```
 
 Doelvorm:
@@ -578,7 +598,7 @@ type ChannelMessageAdapter = {
 };
 ```
 
-Verzendadapter:
+Send-adapter:
 
 ```typescript
 type MessageSendAdapter = {
@@ -596,7 +616,7 @@ type MessageSendAdapter = {
 };
 ```
 
-Ontvangstadapter:
+Receive-adapter:
 
 ```typescript
 type MessageReceiveAdapter<TRaw = unknown> = {
@@ -607,10 +627,10 @@ type MessageReceiveAdapter<TRaw = unknown> = {
 };
 ```
 
-Vóór preflight-autorisatie moet core het gedeelde OpenClaw-echo-predicaat uitvoeren
-wanneer `origin.decode` OpenClaw-originmetadata retourneert. De ontvangstadapter
-levert platformfeiten zoals botauteur en roomvorm; core is eigenaar van de dropbeslissing
-en volgorde, zodat kanalen tekstfilters niet opnieuw implementeren.
+Vóór preflight-autorisatie moet core de gedeelde OpenClaw-echo-predicate uitvoeren
+telkens wanneer `origin.decode` OpenClaw-origin-metadata retourneert. De receive-adapter
+levert platformfeiten zoals bot-auteur en roomvorm; core beheert de drop-
+beslissing en ordening, zodat kanalen tekstfilters niet opnieuw implementeren.
 
 Origin-adapter:
 
@@ -621,10 +641,10 @@ type MessageOriginAdapter<TRaw = unknown, TNative = unknown> = {
 };
 ```
 
-Core stelt `MessageOrigin` in. Kanalen vertalen het alleen naar en van native
-transportmetadata. Slack koppelt dit aan `chat.postMessage({ metadata })` en
-inkomende `message.metadata`; Matrix kan het koppelen aan extra gebeurtenisinhoud; kanalen
-zonder native metadata kunnen een ontvangstbewijs-/uitgaand register gebruiken wanneer dat de
+Core stelt `MessageOrigin` in. Kanalen vertalen dit alleen naar en van native
+transportmetadata. Slack mapt dit naar `chat.postMessage({ metadata })` en
+inkomende `message.metadata`; Matrix kan het mappen naar extra eventcontent; kanalen
+zonder native metadata kunnen een receipt/outbound-register gebruiken wanneer dat de
 best beschikbare benadering is.
 
 Capabilities:
@@ -656,9 +676,9 @@ type MessageCapabilities = {
 };
 ```
 
-## Reductie van openbare SDK
+## Publieke SDK-reductie
 
-Het nieuwe openbare oppervlak moet deze conceptuele gebieden opnemen of afwaarderen:
+Het nieuwe publieke oppervlak moet deze conceptuele gebieden absorberen of afkeuren:
 
 - `reply-runtime`
 - `reply-dispatch-runtime`
@@ -667,30 +687,30 @@ Het nieuwe openbare oppervlak moet deze conceptuele gebieden opnemen of afwaarde
 - `reply-payload`
 - `inbound-reply-dispatch`
 - `channel-reply-pipeline`
-- de meeste openbare gebruiken van `outbound-runtime`
-- ad-hoc helpers voor de conceptstreamlevenscyclus
+- de meeste publieke gebruiken van `outbound-runtime`
+- ad-hoc helpers voor de concept-stream-lifecycle
 
 Compatibiliteitssubpaden kunnen als wrappers blijven bestaan, maar nieuwe externe plugins
 zouden ze niet nodig moeten hebben.
 
-Gebundelde plugins mogen interne helperimports via gereserveerde runtimesubpaden
-behouden tijdens de migratie. Openbare documentatie moet pluginauteurs naar
-`plugin-sdk/channel-message` sturen zodra het bestaat.
+Gebundelde plugins mogen tijdens migratie interne helperimports via gereserveerde runtime-
+subpaden blijven gebruiken. Publieke docs moeten pluginauteurs naar
+`plugin-sdk/channel-outbound` sturen zodra dit bestaat.
 
-## Relatie tot kanaalturn
+## Relatie tot channel inbound
 
-`runtime.channel.turn.*` moet tijdens de migratie blijven bestaan.
+`runtime.channel.inbound.*` is de runtimebridge tijdens migratie.
 
 Het moet een compatibiliteitsadapter worden:
 
 ```text
-channel.turn.run
+channel.inbound.run
   -> messages.receive context
   -> session dispatch
   -> messages.send context for visible output
 ```
 
-`channel.turn.runPrepared` moet aanvankelijk ook blijven bestaan:
+`channel.inbound.runPreparedReply` moet in eerste instantie ook blijven bestaan:
 
 ```text
 channel-owned dispatcher
@@ -699,90 +719,87 @@ channel-owned dispatcher
   -> messages.send for final delivery
 ```
 
-Nadat alle gebundelde plugins en bekende externe compatibiliteitspaden zijn overbrugd,
-kan `channel.turn` worden afgewaardeerd. Het mag niet worden verwijderd totdat er een
-gepubliceerd SDK-migratiepad en contracttests zijn die bewijzen dat oude plugins nog werken
-of falen met een duidelijke versiefout.
+Het oude `channel.turn`-runtimeoppervlak is verwijderd. Runtime-aanroepers gebruiken
+`channel.inbound.*`; kanaaldocs en SDK-subpaden gebruiken inbound/message-naamwoorden.
 
-## Compatibiliteitsvangrails
+## Compatibiliteitsrails
 
-Tijdens migratie is generieke duurzame levering opt-in voor elk kanaal waarvan
-de bestaande leveringscallback neveneffecten heeft naast "deze payload verzenden".
+Tijdens migratie is generieke duurzame levering opt-in voor elk kanaal waarvan de
+bestaande delivery-callback bijwerkingen heeft buiten "verzend deze payload".
 
-Legacy-toegangspunten zijn standaard niet-duurzaam:
+Legacy entrypoints zijn standaard niet-duurzaam:
 
-- `channel.turn.run` en `dispatchAssembledChannelTurn` gebruiken de
-  leveringscallback van het kanaal, tenzij dat kanaal expliciet een geaudit duurzaam
-  beleid-/optiesobject levert.
-- `channel.turn.runPrepared` blijft kanaaleigendom totdat de voorbereide dispatcher
-  expliciet de verzendcontext aanroept.
-- Openbare compatibiliteitshelpers zoals `recordInboundSessionAndDispatchReply`,
+- `channel.inbound.run` en `dispatchChannelInboundReply` gebruiken de delivery-callback van het kanaal
+  tenzij dat kanaal expliciet een gecontroleerd duurzaam beleid/options-object levert.
+- `channel.inbound.runPreparedReply` blijft kanaal-eigendom totdat de prepared dispatcher
+  expliciet de send-context aanroept.
+- Publieke compatibiliteitshelpers zoals `recordInboundSessionAndDispatchReply`,
   `dispatchInboundReplyWithBase` en direct-DM-helpers injecteren nooit generieke
   duurzame levering vóór de door de aanroeper geleverde `deliver`- of `reply`-callback.
 
-Voor migratiebrugtypen betekent `durable: undefined` "niet duurzaam". Het
-duurzame pad wordt alleen ingeschakeld door een expliciete beleid-/optiewaarde. `durable:
-false` kan als compatibiliteitsspelling blijven bestaan, maar de implementatie zou niet
-moeten vereisen dat elk ongemigreerd kanaal dit toevoegt.
+Voor migratiebridgetypes betekent `durable: undefined` "niet duurzaam". Het
+duurzame pad wordt alleen ingeschakeld door een expliciete policy/options-waarde. `durable:
+false` kan als compatibiliteitsspelling blijven bestaan, maar de implementatie mag niet
+vereisen dat elk ongemigreerd kanaal dit toevoegt.
 
-Huidige brugcode moet de duurzaamheidsbeslissing expliciet houden:
+Huidige bridgecode moet de duurzaamheidsbeslissing expliciet houden:
 
-- Persistente eindaflevering retourneert een gediscrimineerde status. `handled_visible` en
-  `handled_no_send` zijn terminaal; `unsupported` en `not_applicable` kunnen
-  terugvallen op door het kanaal beheerde aflevering; `failed` geeft de verzendfout door.
-- Generieke persistente eindaflevering wordt afgeschermd door adaptercapaciteiten zoals
-  stille aflevering, behoud van antwoorddoel, behoud van native citaten en
-  hooks voor het verzenden van berichten. Ontbrekende pariteit moet kiezen voor door het kanaal beheerde aflevering,
-  niet voor een generieke verzending die voor de gebruiker zichtbaar gedrag wijzigt.
-- Persistente verzendingen met wachtrijbackend stellen een referentie naar de afleveringsintentie beschikbaar. Bestaande
-  `pendingFinalDelivery*`-sessievelden kunnen de intent-id tijdens de
+- Duurzame eindlevering retourneert een gediscrimineerde status. `handled_visible` en
+  `handled_no_send` zijn terminal; `unsupported` en `not_applicable` kunnen
+  terugvallen op kanaalbeheerde levering; `failed` propageert de verzendfout.
+- Generieke duurzame eindlevering wordt afgeschermd door adaptermogelijkheden zoals
+  stille levering, behoud van antwoorddoel, behoud van native citaten en
+  hooks voor berichtverzending. Ontbrekende pariteit moet kanaalbeheerde levering kiezen,
+  geen generieke verzending die zichtbaar gedrag voor gebruikers wijzigt.
+- Wachtrijgedragen duurzame verzendingen geven een referentie naar de leveringsintentie vrij. Bestaande
+  `pendingFinalDelivery*`-sessievelden kunnen de intentie-id tijdens de
   overgang dragen; de eindtoestand is een `MessageSendIntent`-opslag in plaats van bevroren
   antwoordtekst plus ad-hoc contextvelden.
 
-Schakel het generieke persistente pad voor een kanaal niet in totdat al deze punten
-waar zijn:
+Schakel het generieke duurzame pad niet in voor een kanaal totdat al het volgende
+waar is:
 
-- De generieke verzendadapter voert hetzelfde rendering- en transportgedrag uit als
+- De generieke verzendadapter voert hetzelfde render- en transportgedrag uit als
   het oude directe pad.
 - Lokale neveneffecten na verzending blijven behouden via de verzendcontext.
-- De adapter retourneert ontvangstbewijzen of afleveringsresultaten met alle platformbericht-
-  ids.
-- Voorbereide dispatcherpaden roepen ofwel de nieuwe verzendcontext aan, of blijven gedocumenteerd
-  als buiten de persistente garantie.
-- Fallback-aflevering verwerkt elke geprojecteerde payload, niet alleen de eerste.
-- Persistente fallback-aflevering registreert de hele geprojecteerde payloadarray als één
+- De adapter retourneert ontvangstbewijzen of leveringsresultaten met alle platformbericht-
+  id's.
+- Voorbereide dispatcher-paden roepen de nieuwe verzendcontext aan of blijven gedocumenteerd
+  als buiten de duurzame garantie.
+- Fallback-levering verwerkt elke geprojecteerde payload, niet alleen de eerste.
+- Duurzame fallback-levering registreert de volledige geprojecteerde payload-array als één
   herspeelbare intentie of batchplan.
 
-Concrete migratierisico's die behouden moeten blijven:
+Concrete migratierisico's om te behouden:
 
-- iMessage-monitoraflevering registreert verzonden berichten in een echo-cache na een
-  succesvolle verzending. Persistente eindverzendingen moeten die cache nog steeds vullen, anders
+- iMessage-monitorlevering registreert verzonden berichten in een echo-cache na een
+  geslaagde verzending. Duurzame eindverzendingen moeten die cache nog steeds vullen, anders
   kan OpenClaw zijn eigen eindantwoorden opnieuw opnemen als inkomende gebruikersberichten.
-- Tlon voegt een optionele modelhandtekening toe en registreert deelgenomen threads
-  na groepsantwoorden. Generieke persistente aflevering mag die effecten niet omzeilen;
+- Tlon voegt een optionele modelhandtekening toe en registreert deelnemende threads
+  na groepsantwoorden. Generieke duurzame levering mag die effecten niet omzeilen;
   verplaats ze naar Tlon-render-/verzend-/finalize-adapters of houd Tlon op het
-  door het kanaal beheerde pad.
-- Discord en andere voorbereide dispatchers beheren al directe aflevering en preview-
-  gedrag. Ze vallen niet onder een persistente garantie voor een samengestelde beurt totdat
-  hun voorbereide dispatchers eindantwoorden expliciet via de verzendcontext routeren.
-- Telegram stille fallback-aflevering moet de volledige geprojecteerde payload-
-  array afleveren. Een shortcut met één payload kan aanvullende fallback-payloads na
+  kanaalbeheerde pad.
+- Discord en andere voorbereide dispatchers beheren al directe levering en preview-
+  gedrag. Ze vallen niet onder een duurzame garantie voor een samengestelde beurt totdat
+  hun voorbereide dispatchers eindberichten expliciet via de verzendcontext routeren.
+- Stille Telegram-fallback-levering moet de volledige geprojecteerde payload-
+  array leveren. Een snelkoppeling voor één payload kan extra fallback-payloads na
   projectie laten vallen.
-- LINE, Zalo, Nostr en andere bestaande samengestelde/helperpaden kunnen
-  reply-token-afhandeling, mediaproxying, caches voor verzonden berichten, opschoning van laad-/statusmeldingen
-  of alleen-callbackdoelen hebben. Ze blijven op door het kanaal beheerde aflevering totdat
-  die semantiek door de verzendadapter wordt vertegenwoordigd en door tests is geverifieerd.
-- Direct-DM-helpers kunnen een antwoordcallback hebben die het enige correcte transport-
+- LINE, Zalo, Nostr en andere bestaande samengestelde/helper-paden kunnen
+  reply-tokenverwerking, mediaproxying, caches voor verzonden berichten, opschoning van laad-/status-
+  informatie of doelen met alleen callback hebben. Ze blijven op kanaalbeheerde levering totdat
+  die semantiek door de verzendadapter wordt weergegeven en door tests is geverifieerd.
+- Direct-DM-helpers kunnen een antwoordcallback hebben die het enige juiste transport-
   doel is. Generieke uitgaande verzending mag niet raden op basis van `OriginatingTo` of `To` en
   die callback overslaan.
 - OpenClaw Gateway-foutuitvoer moet zichtbaar blijven voor mensen, maar getagde
-  door bots geschreven roomecho's moeten vóór `allowBots`-autorisatie worden verwijderd.
+  door bots geschreven kamer-echo's moeten worden verwijderd vóór `allowBots`-autorisatie.
   Kanalen mogen dit niet implementeren met prefixfilters op zichtbare tekst, behalve als een
-  korte noodoplossing; het persistente contract is gestructureerde origin-metadata.
+  korte noodstop; het duurzame contract is gestructureerde oorsprongsmetadata.
 
 ## Interne opslag
 
-De persistente wachtrij moet berichtverzendintenties opslaan, geen antwoordpayloads.
+De duurzame wachtrij moet berichtverzendintenties opslaan, geen antwoordpayloads.
 
 ```typescript
 type DurableSendIntent = {
@@ -811,7 +828,7 @@ type DurableSendIntent = {
 };
 ```
 
-Herstelloop:
+Herstellus:
 
 ```text
 load pending or sending intents
@@ -824,8 +841,8 @@ load pending or sending intents
   -> commit receipt, mark unknown_after_send, or schedule retry
 ```
 
-De wachtrij moet genoeg identiteit bewaren om na een herstart opnieuw af te spelen via hetzelfde account,
-dezelfde thread, hetzelfde doel, hetzelfde opmaakbeleid en dezelfde mediaregels.
+De wachtrij moet voldoende identiteit bewaren om na een herstart opnieuw af te spelen via hetzelfde account,
+dezelfde thread, hetzelfde doel, hetzelfde formatteringsbeleid en dezelfde mediaregels.
 
 ## Foutklassen
 
@@ -847,297 +864,281 @@ type DeliveryFailureKind =
 Kernbeleid:
 
 - Probeer `transient` en `rate_limit` opnieuw.
-- Probeer `invalid_payload` niet opnieuw, tenzij er een renderingfallback bestaat.
+- Probeer `invalid_payload` niet opnieuw, tenzij er een renderfallback bestaat.
 - Probeer `auth` of `permission` niet opnieuw totdat de configuratie wijzigt.
-- Laat voor `not_found` live-finalisatie terugvallen van bewerken naar een nieuwe verzending wanneer
+- Laat live-finalisatie bij `not_found` terugvallen van bewerken naar een nieuwe verzending wanneer
   het kanaal verklaart dat dit veilig is.
-- Gebruik voor `conflict` ontvangstbewijs-/idempotentieregels om te bepalen of het bericht
+- Gebruik bij `conflict` ontvangstbewijs-/idempotentieregels om te bepalen of het bericht
   al bestaat.
-- Elke fout nadat de adapter mogelijk platform-I/O heeft voltooid maar vóór ontvangstbewijs-
-  commit wordt `unknown_after_send`, tenzij de adapter kan bewijzen dat de platform-
+- Elke fout nadat de adapter mogelijk platform-I/O heeft voltooid maar vóór het vastleggen van het ontvangstbewijs
+  wordt `unknown_after_send`, tenzij de adapter kan bewijzen dat de platform-
   operatie niet heeft plaatsgevonden.
 
 ## Kanaaltoewijzing
 
-| Kanaal          | Doelmigratie                                                                                                                                                                                                                                                                                                                                                        |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Telegram        | Ontvang ack-beleid plus duurzame definitieve verzendingen. Live-adapter beheert verzending plus voorbeeldbewerking, definitieve verzending van verouderde voorbeelden, onderwerpen, overslaan van citaat-antwoordvoorbeelden, mediafallback en retry-after-afhandeling.                                                                                              |
-| Discord         | Verzendadapter wikkelt bestaande duurzame payloadlevering in. Live-adapter beheert conceptbewerking, voortgangsconcept, annulering van media-/foutvoorbeeld, behoud van antwoorddoel en ontvangstbewijzen voor bericht-id's. Controleer door bot geschreven gateway-fout-echo's in gedeelde ruimtes; gebruik een uitgaand register of een ander native equivalent als Discord geen oorsprongsmetadata op normale berichten kan dragen. |
-| Slack           | Verzendadapter handelt normale chatberichten af. Live-adapter kiest native stream wanneer de threadvorm dit ondersteunt, anders conceptvoorbeeld. Ontvangstbewijzen behouden threadtijdstempels. Oorsprongsadapter koppelt OpenClaw-gatewayfouten aan Slack `chat.postMessage.metadata` en verwijdert getagde botruimte-echo's vóór `allowBots`-autorisatie.                                  |
-| WhatsApp        | Verzendadapter beheert tekst-/mediaverzending met duurzame definitieve intents. Ontvangstadapter handelt groepsvermelding en afzenderidentiteit af. Live kan afwezig blijven totdat WhatsApp een bewerkbaar transport heeft.                                                                                                                                          |
-| Matrix          | Live-adapter beheert concepteventbewerkingen, finalisatie, redactie, beperkingen voor versleutelde media en fallback bij niet-overeenkomend antwoorddoel. Ontvangstadapter beheert hydratatie en deduplicatie van versleutelde events. Oorsprongsadapter moet de oorsprong van OpenClaw-gatewayfouten coderen in Matrix-eventinhoud en geconfigureerde botruimte-echo's verwijderen vóór `allowBots`-afhandeling.              |
-| Mattermost      | Live-adapter beheert één conceptbericht, voortgangs-/toolvouwing, finalisatie op dezelfde plek en fallback naar nieuwe verzending.                                                                                                                                                                                                                                    |
-| Microsoft Teams | Live-adapter beheert native voortgang en blokstreamgedrag. Verzendadapter beheert activiteiten en ontvangstbewijzen voor bijlagen/kaarten.                                                                                                                                                                                                                           |
-| Feishu          | Renderadapter beheert tekst-/kaart-/raw-rendering. Live-adapter beheert streamingkaarten en onderdrukking van dubbele definitieve berichten. Verzendadapter beheert reacties, onderwerpsessies, media en spraakonderdrukking.                                                                                                                                         |
-| QQ Bot          | Live-adapter beheert C2C-streaming, accumulatortime-out en fallback naar definitieve verzending. Renderadapter beheert mediatags en tekst-als-spraak.                                                                                                                                                                                                                 |
-| Signal          | Eenvoudige ontvangst plus verzendadapter. Geen live-adapter tenzij signal-cli betrouwbare bewerkingsondersteuning toevoegt.                                                                                                                                                                                                                                          |
-| iMessage        | Eenvoudige ontvangst plus verzendadapter. iMessage-verzending moet de populatie van de monitor-echo-cache behouden voordat duurzame definitieve berichten monitorlevering kunnen omzeilen.                                                                                                                                                                         |
-| Google Chat     | Eenvoudige ontvangst plus verzendadapter met threadrelatie gekoppeld aan spaces en thread-id's. Controleer `allowBots=true`-ruimtegedrag voor getagde OpenClaw-gatewayfout-echo's.                                                                                                                                                                                 |
-| LINE            | Eenvoudige ontvangst plus verzendadapter met reply-tokenbeperkingen gemodelleerd als doel-/relatiecapability.                                                                                                                                                                                                                                                       |
-| Nextcloud Talk  | SDK-ontvangstbridge plus verzendadapter.                                                                                                                                                                                                                                                                                                                            |
-| IRC             | Eenvoudige ontvangst plus verzendadapter, geen duurzame bewerkingsontvangstbewijzen.                                                                                                                                                                                                                                                                                 |
-| Nostr           | Ontvangst plus verzendadapter voor versleutelde DM's; ontvangstbewijzen zijn event-id's.                                                                                                                                                                                                                                                                             |
-| QA Channel      | Contracttestadapter voor ontvangst-, verzend-, live-, retry- en herstelgedrag.                                                                                                                                                                                                                                                                                      |
-| Synology Chat   | Eenvoudige ontvangst plus verzendadapter.                                                                                                                                                                                                                                                                                                                           |
-| Tlon            | Verzendadapter moet model-signature-rendering en tracking van deelgenomen threads behouden voordat generieke duurzame definitieve levering wordt ingeschakeld.                                                                                                                                                                                                       |
-| Twitch          | Eenvoudige ontvangst plus verzendadapter met rate-limit-classificatie.                                                                                                                                                                                                                                                                                               |
-| Zalo            | Eenvoudige ontvangst plus verzendadapter.                                                                                                                                                                                                                                                                                                                           |
-| Zalo Personal   | Eenvoudige ontvangst plus verzendadapter.                                                                                                                                                                                                                                                                                                                           |
+| Kanaal          | Doelmigratie                                                                                                                                                                                                                                                                                                                                                  |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Telegram        | Ontvangstbevestigingsbeleid plus duurzame definitieve verzendingen. Live-adapter beheert verzending plus bewerking van voorbeeld, definitieve verzending bij verouderd voorbeeld, onderwerpen, overslaan van quote-antwoordvoorbeeld, mediafallback en retry-after-afhandeling.                                                                               |
+| Discord         | Verzendadapter verpakt bestaande duurzame payloadbezorging. Live-adapter beheert conceptbewerking, voortgangsconcept, annulering van media-/foutvoorbeeld, behoud van antwoorddoel en ontvangstbewijzen voor bericht-id's. Audit door bot geschreven echo's van Gateway-fouten in gedeelde ruimtes; gebruik een uitgaand register of ander native equivalent als Discord geen oorsprongsmetadata op normale berichten kan dragen. |
+| Slack           | Verzendadapter verwerkt normale chatberichten. Live-adapter kiest native stream wanneer de threadvorm dit ondersteunt, anders conceptvoorbeeld. Ontvangstbewijzen behouden thread-tijdstempels. Oorsprongadapter koppelt OpenClaw Gateway-fouten aan Slack `chat.postMessage.metadata` en verwijdert getagde bot-ruimte-echo's vóór `allowBots`-autorisatie. |
+| WhatsApp        | Verzendadapter beheert tekst-/mediaverzending met duurzame definitieve intents. Ontvangstadapter verwerkt groepsvermelding en afzenderidentiteit. Live kan afwezig blijven totdat WhatsApp een bewerkbaar transport heeft.                                                                                                                                     |
+| Matrix          | Live-adapter beheert bewerkingen van conceptgebeurtenissen, finalisatie, redactie, beperkingen voor versleutelde media en fallback bij niet-overeenkomend antwoorddoel. Ontvangstadapter beheert hydratatie en deduplicatie van versleutelde gebeurtenissen. Oorsprongadapter moet de oorsprong van OpenClaw Gateway-fouten coderen in Matrix-gebeurtenisinhoud en geconfigureerde bot-ruimte-echo's verwijderen vóór `allowBots`-afhandeling. |
+| Mattermost      | Live-adapter beheert één conceptbericht, samenvoegen van voortgang/tools, finalisatie op dezelfde plek en fallback naar verse verzending.                                                                                                                                                                                                                     |
+| Microsoft Teams | Live-adapter beheert native voortgang en blokstreamgedrag. Verzendadapter beheert activiteiten en ontvangstbewijzen voor bijlagen/kaarten.                                                                                                                                                                                                                     |
+| Feishu          | Renderadapter beheert tekst-/kaart-/raw-rendering. Live-adapter beheert streamingkaarten en onderdrukking van dubbele definitieve berichten. Verzendadapter beheert opmerkingen, onderwerpsessies, media en stemonderdrukking.                                                                                                                               |
+| QQ Bot          | Live-adapter beheert C2C-streaming, accumulatortime-out en definitieve fallbackverzending. Renderadapter beheert mediatags en tekst-als-spraak.                                                                                                                                                                                                                |
+| Signal          | Eenvoudige ontvangstadapter plus verzendadapter. Geen live-adapter tenzij signal-cli betrouwbare bewerkingsondersteuning toevoegt.                                                                                                                                                                                                                             |
+| iMessage        | Eenvoudige ontvangstadapter plus verzendadapter. iMessage-verzending moet populatie van de monitor-echo-cache behouden voordat duurzame definitieve berichten monitorbezorging kunnen omzeilen.                                                                                                                                                               |
+| Google Chat     | Eenvoudige ontvangstadapter plus verzendadapter met threadrelatie gekoppeld aan ruimtes en thread-id's. Audit ruimtegedrag met `allowBots=true` voor getagde echo's van OpenClaw Gateway-fouten.                                                                                                                                                              |
+| LINE            | Eenvoudige ontvangstadapter plus verzendadapter met reply-tokenbeperkingen gemodelleerd als doel-/relatiecapaciteit.                                                                                                                                                                                                                                          |
+| Nextcloud Talk  | SDK-ontvangstbridge plus verzendadapter.                                                                                                                                                                                                                                                                                                                       |
+| IRC             | Eenvoudige ontvangstadapter plus verzendadapter, geen duurzame ontvangstbewijzen voor bewerkingen.                                                                                                                                                                                                                                                             |
+| Nostr           | Ontvangstadapter plus verzendadapter voor versleutelde DM's; ontvangstbewijzen zijn gebeurtenis-id's.                                                                                                                                                                                                                                                          |
+| QA-kanaal       | Contracttestadapter voor ontvangst-, verzend-, live-, retry- en herstelgedrag.                                                                                                                                                                                                                                                                                 |
+| Synology Chat   | Eenvoudige ontvangstadapter plus verzendadapter.                                                                                                                                                                                                                                                                                                               |
+| Tlon            | Verzendadapter moet modelhandtekening-rendering en tracking van deelgenomen threads behouden voordat generieke duurzame definitieve bezorging wordt ingeschakeld.                                                                                                                                                                                             |
+| Twitch          | Eenvoudige ontvangstadapter plus verzendadapter met rate-limitclassificatie.                                                                                                                                                                                                                                                                                   |
+| Zalo            | Eenvoudige ontvangstadapter plus verzendadapter.                                                                                                                                                                                                                                                                                                               |
+| Zalo Personal   | Eenvoudige ontvangstadapter plus verzendadapter.                                                                                                                                                                                                                                                                                                               |
 
 ## Migratieplan
 
 ### Fase 1: Intern berichtdomein
 
 - Voeg `src/channels/message/*`-typen toe voor berichten, doelen, relaties,
-  oorsprongen, ontvangstbewijzen, capabilities, duurzame intents, ontvangstcontext,
-  verzendcontext, live-context en foutklassen.
-- Voeg `origin?: MessageOrigin` toe aan het payloadtype van de migratiebridge dat
-  door huidige antwoordlevering wordt gebruikt, en verplaats dat veld daarna naar
-  `ChannelMessage` en gerenderde berichttypen naarmate de refactor antwoordpayloads
-  vervangt.
+  oorsprongen, ontvangstbewijzen, capaciteiten, duurzame intents, ontvangstcontext, verzendcontext,
+  live-context en foutklassen.
+- Voeg `origin?: MessageOrigin` toe aan het migratiebridge-payloadtype dat wordt gebruikt door
+  huidige antwoordbezorging, en verplaats dat veld daarna naar `ChannelMessage` en gerenderde
+  berichttypen terwijl de refactor antwoordpayloads vervangt.
 - Houd dit intern totdat adapters en tests de vorm bewijzen.
-- Voeg zuivere unittests toe voor statustransities en serialisatie.
+- Voeg pure unit-tests toe voor statusovergangen en serialisatie.
 
-### Fase 2: Kern voor duurzaam verzenden
+### Fase 2: Kern voor duurzame verzending
 
-- Verplaats de bestaande uitgaande wachtrij van antwoordpayloaddurabiliteit naar duurzame
-  berichtverzendintents.
-- Laat een duurzame verzendintent een geprojecteerde payloadarray of batchplan dragen, niet
+- Verplaats de bestaande uitgaande wachtrij van duurzaamheid voor antwoordpayloads naar duurzame
+  intents voor berichtverzending.
+- Laat een duurzame verzend-intent een geprojecteerde payload-array of batchplan dragen, niet
   slechts één antwoordpayload.
 - Behoud het huidige wachtrijherstelgedrag via compatibiliteitsconversie.
 - Laat `deliverOutboundPayloads` `messages.send` aanroepen.
-- Maak definitieve-verzenddurabiliteit de standaard en faal gesloten wanneer de duurzame intent
+- Maak duurzaamheid van definitieve verzending de standaard en faal gesloten wanneer de duurzame intent
   niet kan worden geschreven in de nieuwe berichtlevenscyclus, nadat de adapter
-  replay-veiligheid verklaart. Bestaande kanaalturn- en SDK-compatibiliteitspaden blijven
-  in deze fase standaard direct-send.
+  replay-veiligheid verklaart. Bestaande inbound runner- en SDK-compatibiliteitspaden blijven
+  tijdens deze fase standaard directe verzending gebruiken.
 - Registreer ontvangstbewijzen consistent.
-- Retourneer ontvangstbewijzen en leveringsresultaten aan de oorspronkelijke dispatcher-aanroeper in plaats
-  van duurzaam verzenden als een terminaal neveneffect te behandelen.
-- Persisteer berichtoorsprong via duurzame verzendintents, zodat herstel, replay en
-  opgesplitste verzendingen de operationele herkomst van OpenClaw behouden.
+- Retourneer ontvangstbewijzen en bezorgresultaten aan de oorspronkelijke dispatcher-aanroeper in plaats
+  van duurzame verzending als een terminaal neveneffect te behandelen.
+- Bewaar berichtoorsprong via duurzame verzend-intents zodat herstel, replay en
+  verzending in chunks de operationele herkomst van OpenClaw behouden.
 
-### Fase 3: Kanaalturnbridge
+### Fase 3: Channel Inbound Bridge
 
-- Implementeer `channel.turn.run` en `dispatchAssembledChannelTurn` opnieuw bovenop
+- Implementeer `channel.inbound.run` en `dispatchChannelInboundReply` opnieuw boven op
   `messages.receive` en `messages.send`.
-- Houd huidige facttypen stabiel.
-- Behoud legacygedrag standaard. Een assembled-turn-kanaal wordt alleen duurzaam
-  wanneer de adapter expliciet opt-in doet met een replay-veilig durabiliteitsbeleid.
+- Houd huidige fact-typen stabiel.
+- Behoud standaard legacy-gedrag. Een assembled-turn-kanaal wordt alleen duurzaam
+  wanneer de adapter expliciet opt-in doet met een replay-veilig duurzaamheidsbeleid.
 - Houd `durable: false` als compatibiliteitsuitweg voor paden die native bewerkingen finaliseren
   en nog niet veilig kunnen replayen, maar vertrouw niet op `false`-markeringen
-  om ongemigreerde kanalen te beschermen.
-- Stel assembled-turn-durabiliteit alleen standaard in binnen de nieuwe berichtlevenscyclus, nadat
-  de kanaalmapping bewijst dat het generieke verzendpad de oude kanaal-
-  leveringssemantiek behoudt.
+  om niet-gemigreerde kanalen te beschermen.
+- Stel assembled-turn-duurzaamheid alleen standaard in binnen de nieuwe berichtlevenscyclus, nadat
+  de kanaalkoppeling bewijst dat het generieke verzendpad de oude kanaalbezorgingssemantiek behoudt.
 
 ### Fase 4: Prepared Dispatcher Bridge
 
-- Vervang `deliverDurableInboundReplyPayload` door een verzendcontextbrug.
+- Vervang `deliverDurableInboundReplyPayload` door een send-context-bridge.
 - Behoud de oude helper als wrapper.
 - Porteer eerst Telegram, WhatsApp, Slack, Signal, iMessage en Discord, omdat
-  ze al duurzaam definitief werk of eenvoudigere verzendpaden hebben.
-- Beschouw elke voorbereide dispatcher als niet gedekt totdat die expliciet
-  kiest voor de verzendcontext. Documentatie en changelog-items moeten
-  "samengestelde kanaalbeurten" zeggen of de gemigreerde kanaalpaden noemen, in
-  plaats van te claimen dat alle automatische definitieve antwoorden zijn gedekt.
+  ze al durable-final-werk of eenvoudigere verzendpaden hebben.
+- Behandel elke voorbereide dispatcher als niet gedekt totdat deze expliciet
+  kiest voor de send context. Documentatie en changelog-vermeldingen moeten
+  "samengestelde channel turns" zeggen of de gemigreerde kanaalpaden noemen in
+  plaats van alle automatische eindantwoorden te claimen.
 - Houd `recordInboundSessionAndDispatchReply`, direct-DM-helpers en vergelijkbare
-  openbare compatibiliteitshelpers gedragsbehoudend. Ze mogen later een
-  expliciete opt-in voor verzendcontext aanbieden, maar mogen niet automatisch
-  proberen generieke duurzame levering uit te voeren vóór de door de aanroeper
-  beheerde leveringscallback.
+  publieke compatibiliteitshelpers gedragsbehoudend. Ze mogen later een expliciete
+  send-context-opt-in blootstellen, maar mogen niet automatisch proberen generieke
+  duurzame levering uit te voeren vóór de door de caller beheerde delivery callback.
 
-### Fase 5: Geünificeerde live-levenscyclus
+### Fase 5: Uniforme live-levenscyclus
 
 - Bouw `messages.live` met twee proof-adapters:
-  - Telegram voor verzenden plus bewerken plus verouderde definitieve verzending.
+  - Telegram voor verzenden plus bewerken plus verouderde eindverzending.
   - Matrix voor conceptfinalisatie plus redactie-fallback.
 - Migreer daarna Discord, Slack, Mattermost, Teams, QQ Bot en Feishu.
-- Verwijder gedupliceerde preview-finalisatiecode pas nadat elk kanaal
+- Verwijder gedupliceerde code voor preview-finalisatie pas nadat elk kanaal
   pariteitstests heeft.
 
-### Fase 6: Openbare SDK
+### Fase 6: Publieke SDK
 
-- Voeg `openclaw/plugin-sdk/channel-message` toe.
-- Documenteer dit als de voorkeurs-API voor kanaalplugins.
+- Voeg `openclaw/plugin-sdk/channel-outbound` toe.
+- Documenteer dit als de voorkeurs-API voor channel-Plugins.
 - Werk package-exports, entrypoint-inventaris, gegenereerde API-baselines en
-  plugin-SDK-documentatie bij.
-- Neem `MessageOrigin`, origin encode/decode-hooks en de gedeelde
-  `shouldDropOpenClawEcho`-predicate op in het channel-message-SDK-oppervlak.
+  Plugin-SDK-documentatie bij.
+- Neem `MessageOrigin`, origin-encode/decode-hooks en het gedeelde
+  `shouldDropOpenClawEcho`-predicaat op in het channel-outbound-SDK-oppervlak.
 - Behoud compatibiliteitswrappers voor oude subpaden.
-- Markeer reply-genoemde SDK-helpers als verouderd in de documentatie nadat
-  gebundelde plugins zijn gemigreerd.
+- Markeer reply-genoemde SDK-helpers als verouderd in de documentatie nadat gebundelde Plugins zijn
+  gemigreerd.
 
-### Fase 7: Alle verzenders
+### Fase 7: Alle afzenders
 
-Verplaats alle niet-reply-uitgaande producenten naar `messages.send`:
+Verplaats alle niet-reply outbound producers naar `messages.send`:
 
-- cron- en heartbeat-meldingen
+- cron- en Heartbeat-meldingen
 - taakvoltooiingen
 - hook-resultaten
 - goedkeuringsprompts en goedkeuringsresultaten
-- verzendingen via de message-tool
-- aankondigingen van subagent-voltooiing
-- expliciete verzendingen vanuit CLI of Control UI
+- verzendingen van message tools
+- aankondigingen van voltooiing door subagents
+- expliciete CLI- of Control UI-verzendingen
 - automatiserings-/broadcastpaden
 
-Dit is waar het model ophoudt "agent replies" te zijn en "OpenClaw sends
-messages" wordt.
+Dit is waar het model stopt met "agentantwoorden" en "OpenClaw verzendt
+berichten" wordt.
 
-### Fase 8: Turn afschaffen
+### Fase 8: Turn-genoemde compatibiliteit verwijderen
 
-- Behoud `channel.turn` ten minste één compatibiliteitsvenster als wrapper.
+- Behoud inbound/message-genoemde wrappers als compatibiliteitsvenster.
 - Publiceer migratienotities.
-- Voer plugin-SDK-compatibiliteitstests uit tegen oude imports.
-- Verwijder of verberg oude interne helpers pas nadat geen gebundelde plugin ze
-  nog nodig heeft en externe contracten een stabiele vervanging hebben.
+- Voer Plugin-SDK-compatibiliteitstests uit tegen oude imports.
+- Verwijder of verberg oude interne helpers pas nadat geen gebundelde Plugin ze
+  nog nodig heeft en contracten van derden een stabiele vervanging hebben.
 
 ## Testplan
 
 Unittests:
 
-- Serialisatie en herstel van duurzame verzendintentie.
+- Serialisatie en herstel van duurzame verzendintenties.
 - Hergebruik van idempotentiesleutels en onderdrukking van duplicaten.
-- Receipt-commit en replay overslaan.
-- `unknown_after_send`-herstel dat reconcilieert vóór replay wanneer een adapter
-  reconciliatie ondersteunt.
+- Receipt-commit en replay-skip.
+- `unknown_after_send`-herstel dat reconcile uitvoert vóór replay wanneer een adapter
+  reconciliation ondersteunt.
 - Beleid voor foutclassificatie.
-- Sequencing van receive-ack-beleid.
+- Volgordebepaling van receive-ack-beleid.
 - Relatiemapping voor reply-, followup-, system- en broadcast-verzendingen.
-- Origin-factory voor Gateway-fouten en `shouldDropOpenClawEcho`-predicate.
-- Behoud van origin via payloadnormalisatie, chunking, serialisatie van duurzame
-  wachtrij en herstel.
+- Origin-factory voor Gateway-fouten en `shouldDropOpenClawEcho`-predicaat.
+- Behoud van origin via payloadnormalisatie, chunking, serialisatie van durable queue
+  en herstel.
 
 Integratietests:
 
-- Eenvoudige `channel.turn.run`-adapter registreert en verzendt nog steeds.
-- Legacy levering van samengestelde turns wordt niet duurzaam tenzij het kanaal
+- `channel.inbound.run` eenvoudige adapter registreert en verzendt nog steeds.
+- Verouderde assembled-event-levering wordt niet duurzaam tenzij het kanaal
   expliciet opt-in doet.
-- `channel.turn.runPrepared`-brug registreert en finaliseert nog steeds.
-- Openbare compatibiliteitshelpers roepen standaard door de aanroeper beheerde
-  leveringscallbacks aan en voeren geen generieke send uit vóór die callbacks.
-- Duurzame fallback-levering speelt de volledige geprojecteerde payload-array na
-  herstart opnieuw af en kan de latere payloads niet ongeregistreerd laten na
-  een vroege crash.
-- Duurzame levering van samengestelde turns retourneert platformbericht-id's aan
-  de gebufferde dispatcher.
-- Aangepaste leveringshooks retourneren nog steeds platformbericht-id's wanneer
-  duurzame levering is uitgeschakeld of niet beschikbaar is.
-- Definitieve reply overleeft een herstart tussen assistant-voltooiing en
-  platformverzending.
-- Previewconcept wordt ter plekke gefinaliseerd wanneer dat is toegestaan.
-- Previewconcept wordt geannuleerd of geredigeerd wanneer media/fout/
-  reply-target-mismatch normale levering vereist.
-- Blokstreaming en previewstreaming leveren niet allebei dezelfde tekst.
-- Vroeg gestreamde media worden niet gedupliceerd in definitieve levering.
+- `channel.inbound.runPreparedReply`-bridge registreert en finaliseert nog steeds.
+- Publieke compatibiliteitshelpers roepen standaard door de caller beheerde delivery callbacks aan
+  en generic-senden niet vóór die callbacks.
+- Duurzame fallback-levering speelt de volledige geprojecteerde payload-array opnieuw af na
+  herstart en kan de latere payloads niet ongeregistreerd laten na een vroege crash.
+- Duurzame assembled-event-levering retourneert platformbericht-id's aan de gebufferde
+  dispatcher.
+- Aangepaste delivery hooks retourneren nog steeds platformbericht-id's wanneer duurzame levering
+  is uitgeschakeld of niet beschikbaar is.
+- Eindantwoord overleeft herstart tussen assistant-voltooiing en platformverzending.
+- Preview-concept finaliseert op zijn plaats wanneer toegestaan.
+- Preview-concept wordt geannuleerd of geredacteerd wanneer media-/fout-/reply-target-mismatch
+  normale levering vereist.
+- Block-streaming en preview-streaming leveren niet allebei dezelfde tekst.
+- Vroeg gestreamde media worden niet gedupliceerd in de uiteindelijke levering.
 
 Kanaaltests:
 
-- Telegram topic-reply met polling-ack vertraagd tot de veilige voltooide
-  watermark van de receive-context.
-- Telegram polling-herstel voor geaccepteerde-maar-niet-geleverde updates gedekt
-  door het gepersisteerde safe-completed offset-model.
-- Telegram verouderde preview verzendt een nieuwe definitieve versie en ruimt de
-  preview op.
+- Telegram-topicantwoord met polling-ack uitgesteld tot de safe
+  completed-watermark van de receive context.
+- Telegram-pollingherstel voor geaccepteerde maar niet-geleverde updates gedekt door
+  het persistente safe-completed-offsetmodel.
+- Telegram verouderde preview verzendt verse finale en ruimt preview op.
 - Telegram silent fallback verzendt elke geprojecteerde fallback-payload.
-- Telegram silent fallback-duurzaamheid registreert de volledige geprojecteerde
-  fallback-array atomisch, niet één duurzame intentie met één payload per
-  loop-iteratie.
-- Discord preview annuleren bij media/fout/expliciete reply.
-- Discord voorbereide dispatcher-finals lopen via de verzendcontext voordat docs
-  of changelog claimen dat Discord final-reply-duurzaamheid heeft.
-- Duurzame definitieve iMessage-verzendingen vullen de echo-cache voor verzonden
-  berichten van de monitor.
-- Legacy leveringspaden van LINE, Zalo en Nostr worden niet omzeild door
-  generieke duurzame verzending totdat hun adapterpariteitstests bestaan.
+- Telegram silent fallback-duurzaamheid registreert de volledige geprojecteerde fallback-array
+  atomisch, niet één duurzame single-payload-intentie per lusiteratie.
+- Discord-preview-annulering bij media/fout/expliciete reply.
+- Discord voorbereide dispatcher-finales routeren via de send context voordat docs
+  of changelog Discord-final-reply-duurzaamheid claimen.
+- iMessage duurzame eindverzendingen vullen de echo-cache voor verzonden berichten van de monitor.
+- LINE, Zalo en Nostr legacy-delivery-paden worden niet omzeild door
+  generic durable send totdat hun adapterpariteitstests bestaan.
 - Direct-DM-/Nostr-callbacklevering blijft gezaghebbend tenzij expliciet
-  gemigreerd naar een volledig berichtdoel en replay-veilige verzendadapter.
-- Slack getagde OpenClaw Gateway-foutberichten blijven uitgaand zichtbaar,
-  getagde botroom-echo's vallen vóór `allowBots` weg, en ongetagde botberichten
-  met dezelfde zichtbare tekst volgen nog steeds normale botautorisatie.
-- Slack native stream fallback naar conceptpreview in top-level DM's.
-- Matrix previewfinalisatie en redactie-fallback.
-- Matrix getagde OpenClaw Gateway-foutroom-echo's van geconfigureerde
-  botaccounts vallen weg vóór `allowBots`-afhandeling.
-- Discord en Google Chat shared-room Gateway-failure cascade-audits dekken
+  gemigreerd naar een compleet message target en replay-veilige send-adapter.
+- Slack getagde OpenClaw-Gateway-foutberichten blijven zichtbaar outbound, getagde
+  bot-room-echo's worden gedropt vóór `allowBots`, en ongetagde botberichten met
+  dezelfde zichtbare tekst volgen nog steeds normale botautorisatie.
+- Slack native stream-fallback naar conceptpreview in top-level-DM's.
+- Matrix-previewfinalisatie en redactie-fallback.
+- Matrix getagde OpenClaw-Gateway-fout-room-echo's van geconfigureerde bot
+  accounts worden gedropt vóór `allowBots`-afhandeling.
+- Discord en Google Chat shared-room-Gateway-failure-cascade-audits dekken
   `allowBots`-modi voordat daar generieke bescherming wordt geclaimd.
-- Mattermost conceptfinalisatie en fresh-send fallback.
+- Mattermost-conceptfinalisatie en fresh-send-fallback.
 - Teams native voortgangsfinalisatie.
-- Feishu onderdrukking van dubbele final.
-- QQ Bot accumulator-timeoutfallback.
-- Tlon duurzame definitieve verzendingen behouden model-signature-rendering en
-  participated-thread-tracking.
-- Eenvoudige duurzame definitieve verzendingen voor WhatsApp, Signal, iMessage,
-  Google Chat, LINE, IRC, Nostr, Nextcloud Talk, Synology Chat, Tlon, Twitch,
-  Zalo en Zalo Personal.
+- Feishu-onderdrukking van dubbele finale.
+- QQ Bot accumulator-timeout-fallback.
+- Tlon duurzame eindverzendingen behouden model-signature-rendering en participated
+  thread-tracking.
+- WhatsApp, Signal, iMessage, Google Chat, LINE, IRC, Nostr, Nextcloud Talk,
+  Synology Chat, Tlon, Twitch, Zalo en Zalo Personal eenvoudige duurzame
+  eindverzendingen.
 
 Validatie:
 
 - Gerichte Vitest-bestanden tijdens ontwikkeling.
 - `pnpm check:changed` in Testbox voor het volledige gewijzigde oppervlak.
-- Bredere `pnpm check` in Testbox vóór het landen van de complete refactor of
-  na openbare SDK-/exportwijzigingen.
-- Live of qa-channel smoke voor ten minste één kanaal dat bewerken ondersteunt en
-  één eenvoudig send-only-kanaal voordat compatibiliteitswrappers worden
-  verwijderd.
+- Bredere `pnpm check` in Testbox vóór het landen van de volledige refactor of na
+  publieke SDK-/exportwijzigingen.
+- Live of qa-channel-smoke voor ten minste één kanaal dat bewerken ondersteunt en één
+  eenvoudig send-only-kanaal voordat compatibiliteitswrappers worden verwijderd.
 
 ## Open vragen
 
-- Of Telegram uiteindelijk de grammY runner-bron moet vervangen door een
-  volledig duurzame pollingbron die platformniveau-herlevering kan beheren, niet
-  alleen OpenClaw's gepersisteerde herstartwatermark.
-- Of duurzame live preview-state moet worden opgeslagen in hetzelfde
-  wachtrijrecord als de definitieve verzendintentie of in een sibling
-  live-state-store.
+- Of Telegram uiteindelijk de grammY-runnerbron moet vervangen door een
+  volledig duurzame pollingbron die platformniveau-herlevering kan sturen, niet
+  alleen OpenClaw's persistente herstart-watermark.
+- Of duurzame live-previewstatus moet worden opgeslagen in hetzelfde queue-record
+  als de uiteindelijke verzendintentie of in een sibling live-state-store.
 - Hoe lang compatibiliteitswrappers gedocumenteerd blijven nadat
-  `plugin-sdk/channel-message` wordt geleverd.
-- Of externe plugins receive-adapters rechtstreeks moeten implementeren of
-  alleen normalize/send/live-hooks moeten leveren via
-  `defineChannelMessageAdapter`.
-- Welke receipt-velden veilig in de openbare SDK kunnen worden blootgesteld
-  versus interne runtimestate.
-- Of side effects zoals self-echo-caches en participated-thread-markers moeten
-  worden gemodelleerd als verzendcontext-hooks, adapterbeheerde finalisatiestappen
-  of receipt-subscribers.
-- Welke kanalen native origin-metadata hebben, welke gepersisteerde uitgaande
-  registers nodig hebben en welke geen betrouwbare cross-bot echo-onderdrukking
-  kunnen bieden.
+  `plugin-sdk/channel-outbound` wordt verzonden.
+- Of Plugins van derden receive-adapters rechtstreeks moeten implementeren of alleen
+  normalize/send/live-hooks moeten leveren via `defineChannelMessageAdapter`.
+- Welke receipt-velden veilig zijn om bloot te stellen in de publieke SDK versus interne runtime
+  state.
+- Of side-effects zoals self-echo-caches en participated-thread-markers moeten
+  worden gemodelleerd als send-context-hooks, finalize-stappen beheerd door adapters, of
+  receipt-subscribers.
+- Welke kanalen native origin-metadata hebben, welke persistente outbound
+  registries nodig hebben en welke geen betrouwbare cross-bot-echo-onderdrukking kunnen bieden.
 
 ## Acceptatiecriteria
 
-- Elk gebundeld berichtkanaal verzendt definitieve zichtbare output via
+- Elk gebundeld berichtenkanaal verzendt uiteindelijke zichtbare uitvoer via
   `messages.send`.
-- Elk inbound berichtkanaal komt binnen via `messages.receive` of een
+- Elk inbound berichtenkanaal komt binnen via `messages.receive` of een
   gedocumenteerde compatibiliteitswrapper.
-- Elk preview-/edit-/stream-kanaal gebruikt `messages.live` voor conceptstate en
+- Elk preview-/edit-/stream-kanaal gebruikt `messages.live` voor conceptstatus en
   finalisatie.
-- `channel.turn` is alleen een wrapper.
-- Reply-genoemde SDK-helpers zijn compatibiliteitsexports, niet het aanbevolen
-  pad.
-- Duurzaam herstel kan in behandeling zijnde definitieve verzendingen na een
-  herstart opnieuw afspelen zonder de definitieve respons te verliezen of al
-  gecommitte verzendingen te dupliceren; verzendingen waarvan de platformuitkomst
-  onbekend is, worden vóór replay gereconcilieerd of gedocumenteerd als
+- `channel.inbound` is alleen een wrapper.
+- Reply-genoemde SDK-helpers zijn compatibiliteitsexports, niet het aanbevolen pad.
+- Duurzaam herstel kan pending eindverzendingen na herstart opnieuw afspelen zonder
+  het eindantwoord te verliezen of reeds gecommitte verzendingen te dupliceren; verzendingen waarvan
+  de platformuitkomst onbekend is, worden vóór replay gereconciled of gedocumenteerd als
   at-least-once voor die adapter.
-- Duurzame definitieve verzendingen falen gesloten wanneer de duurzame intentie
-  niet kan worden geschreven, tenzij een aanroeper expliciet een gedocumenteerde
-  niet-duurzame modus heeft geselecteerd.
-- Legacy channel-turn- en SDK-compatibiliteitshelpers gebruiken standaard
-  directe kanaalbeheerde levering; generieke duurzame verzending is alleen een
-  expliciete opt-in.
-- Receipts behouden alle platformbericht-id's voor meerdelige leveringen en een
-  primaire id voor thread-/edit-gemak.
-- Duurzame wrappers behouden kanaallokale side effects voordat directe
-  leveringscallbacks worden vervangen.
-- Voorbereide dispatchers tellen niet als duurzaam totdat hun definitieve
-  leveringspad expliciet de verzendcontext gebruikt.
+- Duurzame eindverzendingen fail closed wanneer de durable intent niet kan worden geschreven,
+  tenzij een caller expliciet een gedocumenteerde niet-duurzame modus heeft geselecteerd.
+- Legacy SDK-compatibiliteitshelpers gebruiken standaard directe
+  door het kanaal beheerde levering; generic durable send is alleen expliciete opt-in.
+- Receipts behouden alle platformbericht-id's voor leveringen met meerdere delen en een
+  primaire id voor threading-/edit-gemak.
+- Duurzame wrappers behouden kanaallokale side-effects voordat directe
+  delivery callbacks worden vervangen.
+- Voorbereide dispatchers worden niet als duurzaam meegeteld totdat hun uiteindelijke delivery
+  path expliciet de send context gebruikt.
 - Fallback-levering verwerkt elke geprojecteerde payload.
-- Duurzame fallback-levering registreert elke geprojecteerde payload in één
-  replaybare intentie of batchplan.
-- Door OpenClaw ontstane Gateway-foutoutput is zichtbaar voor mensen, maar
-  getagde, door bots geschreven room-echo's worden vóór botautorisatie
-  weggegooid op kanalen die ondersteuning voor het origin-contract declareren.
-- De docs leggen send, receive, live, state, receipts, relations, failure policy,
-  migration en test coverage uit.
+- Duurzame fallback-levering registreert elke geprojecteerde payload in één replaybare
+  intentie of batchplan.
+- Door OpenClaw afkomstige Gateway-foutoutput is zichtbaar voor mensen, maar getagde
+  door bots gemaakte room-echo's worden gedropt vóór botautorisatie op kanalen die
+  ondersteuning voor het origin-contract declareren.
+- De docs leggen send, receive, live, state, receipts, relations, failure
+  policy, migration en test coverage uit.
 
 ## Gerelateerd
 
@@ -1145,4 +1146,4 @@ Validatie:
 - [Streaming en chunking](/nl/concepts/streaming)
 - [Voortgangsconcepten](/nl/concepts/progress-drafts)
 - [Retrybeleid](/nl/concepts/retry)
-- [Channel turn kernel](/nl/plugins/sdk-channel-turn)
+- [Channel inbound API](/nl/plugins/sdk-channel-inbound)

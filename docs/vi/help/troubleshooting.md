@@ -1,19 +1,20 @@
 ---
 read_when:
     - OpenClaw không hoạt động và bạn cần cách nhanh nhất để khắc phục
-    - Bạn muốn có một quy trình phân loại trước khi đi sâu vào các sổ tay vận hành chuyên sâu
-summary: Trung tâm khắc phục sự cố theo triệu chứng cho OpenClaw
+    - Bạn cần một luồng phân loại trước khi đi sâu vào các sổ tay vận hành chuyên sâu
+summary: Trung tâm khắc phục sự cố theo triệu chứng trước cho OpenClaw
 title: Khắc phục sự cố chung
 x-i18n:
-    generated_at: "2026-05-06T09:16:49Z"
+    generated_at: "2026-06-27T17:36:21Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 624fa34cda3b440fa9cc636beb3fe6e3608a77a332933fa593097ebc556ac745
+    source_hash: ae1236c73e3a5c9237bd81d603e8dca18c595a8bcbb71f5931bfbf2389b342cd
     source_path: help/troubleshooting.md
     workflow: 16
 ---
 
-Nếu bạn chỉ có 2 phút, hãy dùng trang này như cửa trước để phân loại sự cố.
+Nếu bạn chỉ có 2 phút, hãy dùng trang này như cửa vào phân loại sự cố.
 
 ## 60 giây đầu tiên
 
@@ -29,47 +30,74 @@ openclaw channels status --probe
 openclaw logs --follow
 ```
 
-Kết quả tốt trong một dòng:
+Đầu ra tốt trong một dòng:
 
 - `openclaw status` → hiển thị các kênh đã cấu hình và không có lỗi xác thực rõ ràng.
-- `openclaw status --all` → có báo cáo đầy đủ và có thể chia sẻ.
-- `openclaw gateway probe` → mục tiêu gateway mong đợi có thể truy cập được (`Reachable: yes`). `Capability: ...` cho bạn biết mức xác thực mà phép kiểm tra có thể chứng minh, và `Read probe: limited - missing scope: operator.read` là chẩn đoán bị giảm cấp, không phải lỗi kết nối.
+- `openclaw status --all` → báo cáo đầy đủ hiện diện và có thể chia sẻ.
+- `openclaw gateway probe` → mục tiêu Gateway mong đợi có thể truy cập được (`Reachable: yes`). `Capability: ...` cho biết probe có thể chứng minh mức xác thực nào, và `Read probe: limited - missing scope: operator.read` là chẩn đoán bị suy giảm, không phải lỗi kết nối.
 - `openclaw gateway status` → `Runtime: running`, `Connectivity probe: ok`, và một dòng `Capability: ...` hợp lý. Dùng `--require-rpc` nếu bạn cũng cần bằng chứng RPC phạm vi đọc.
 - `openclaw doctor` → không có lỗi cấu hình/dịch vụ chặn.
-- `openclaw channels status --probe` → Gateway có thể truy cập sẽ trả về trạng thái truyền tải theo từng tài khoản đang hoạt động cùng kết quả kiểm tra/kiểm toán như `works` hoặc `audit ok`; nếu Gateway không thể truy cập, lệnh sẽ quay về các tóm tắt chỉ dựa trên cấu hình.
+- `openclaw channels status --probe` → Gateway có thể truy cập sẽ trả về trạng thái truyền tải trực tiếp theo từng tài khoản
+  cùng kết quả probe/kiểm tra như `works` hoặc `audit ok`; nếu
+  Gateway không thể truy cập, lệnh sẽ chuyển sang các tóm tắt chỉ dựa trên cấu hình.
 - `openclaw logs --follow` → hoạt động ổn định, không có lỗi nghiêm trọng lặp lại.
 
-## Anthropic ngữ cảnh dài 429
+## Trợ lý bị giới hạn hoặc thiếu công cụ
+
+Nếu trợ lý không thể kiểm tra tệp, chạy lệnh, dùng tự động hóa trình duyệt, hoặc
+thấy các công cụ mong đợi, hãy kiểm tra hồ sơ công cụ hiệu lực trước:
+
+```bash
+openclaw status
+openclaw status --all
+openclaw doctor
+```
+
+Nguyên nhân phổ biến:
+
+- `tools.profile: "messaging"` cố ý hẹp cho các agent chỉ trò chuyện.
+- `tools.profile: "coding"` là hồ sơ thông thường cho các quy trình kho mã, tệp, shell,
+  và runtime.
+- `tools.profile: "full"` cung cấp bộ công cụ rộng nhất và nên được giới hạn
+  cho các agent do operator đáng tin cậy kiểm soát.
+- Ghi đè `agents.list[].tools` theo từng agent có thể thu hẹp hoặc mở rộng hồ sơ
+  gốc cho một agent.
+
+Thay đổi hồ sơ công cụ gốc hoặc theo từng agent, rồi khởi động lại hoặc tải lại Gateway
+và chạy lại `openclaw status --all`. Xem [Công cụ](/vi/tools) để biết mô hình hồ sơ
+và các ghi đè cho phép/từ chối.
+
+## Ngữ cảnh dài Anthropic 429
 
 Nếu bạn thấy:
 `HTTP 429: rate_limit_error: Extra usage is required for long context requests`,
 hãy đến [/gateway/troubleshooting#anthropic-429-extra-usage-required-for-long-context](/vi/gateway/troubleshooting#anthropic-429-extra-usage-required-for-long-context).
 
-## Backend tương thích OpenAI cục bộ hoạt động trực tiếp nhưng lỗi trong OpenClaw
+## Backend cục bộ tương thích OpenAI hoạt động trực tiếp nhưng lỗi trong OpenClaw
 
-Nếu backend `/v1` cục bộ hoặc tự lưu trữ của bạn trả lời các phép kiểm tra
+Nếu backend `/v1` cục bộ hoặc tự lưu trữ của bạn trả lời các probe
 `/v1/chat/completions` trực tiếp nhỏ nhưng lỗi trên `openclaw infer model run` hoặc các lượt
 agent thông thường:
 
-1. Nếu lỗi đề cập `messages[].content` mong đợi một chuỗi, hãy đặt
+1. Nếu lỗi nhắc đến `messages[].content` mong đợi một chuỗi, đặt
    `models.providers.<provider>.models[].compat.requiresStringContent: true`.
-2. Nếu backend vẫn chỉ lỗi trên các lượt agent OpenClaw, hãy đặt
-   `models.providers.<provider>.models[].compat.supportsTools: false` và thử lại.
-3. Nếu các lệnh gọi trực tiếp rất nhỏ vẫn hoạt động nhưng prompt OpenClaw lớn hơn làm
-   backend sập, hãy coi vấn đề còn lại là giới hạn của mô hình/máy chủ upstream và
+2. Nếu backend vẫn chỉ lỗi trên các lượt agent OpenClaw, đặt
+   `models.providers.<provider>.models[].compat.supportsTools: false` rồi thử lại.
+3. Nếu các lệnh gọi trực tiếp rất nhỏ vẫn hoạt động nhưng prompt OpenClaw lớn hơn làm sập
+   backend, hãy xem vấn đề còn lại là giới hạn của mô hình/máy chủ upstream và
    tiếp tục trong runbook chuyên sâu:
    [/gateway/troubleshooting#local-openai-compatible-backend-passes-direct-probes-but-agent-runs-fail](/vi/gateway/troubleshooting#local-openai-compatible-backend-passes-direct-probes-but-agent-runs-fail)
 
 ## Cài đặt Plugin lỗi vì thiếu openclaw extensions
 
-Nếu cài đặt lỗi với `package.json missing openclaw.extensions`, gói plugin
+Nếu cài đặt lỗi với `package.json missing openclaw.extensions`, gói Plugin
 đang dùng định dạng cũ mà OpenClaw không còn chấp nhận.
 
-Sửa trong gói plugin:
+Sửa trong gói Plugin:
 
 1. Thêm `openclaw.extensions` vào `package.json`.
 2. Trỏ các mục đến tệp runtime đã build (thường là `./dist/index.js`).
-3. Phát hành lại plugin và chạy lại `openclaw plugins install <package>`.
+3. Phát hành lại Plugin và chạy lại `openclaw plugins install <package>`.
 
 Ví dụ:
 
@@ -85,7 +113,57 @@ Ví dụ:
 
 Tham khảo: [Kiến trúc Plugin](/vi/plugins/architecture)
 
-## Có Plugin nhưng bị chặn do quyền sở hữu đáng ngờ
+## Chính sách cài đặt chặn cài đặt hoặc cập nhật Plugin
+
+Nếu một bản cập nhật hoàn tất nhưng Plugin bị cũ, bị vô hiệu hóa, hoặc hiển thị thông báo như
+`blocked by install policy`, `install policy failed closed`, hoặc
+`Disabled "<plugin>" after plugin update failure`, hãy kiểm tra
+`security.installPolicy`.
+
+Chính sách cài đặt chạy khi cài đặt và cập nhật Plugin. Các phiên bản Plugin
+do OpenClaw sở hữu thường đi cùng bản phát hành OpenClaw, nên một bản cập nhật OpenClaw
+cũng có thể cần các bản cập nhật Plugin `@openclaw/*` tương ứng trong đồng bộ sau cập nhật.
+
+Tránh các dạng chính sách rộng này trừ khi bạn cũng duy trì quy tắc nâng cấp tương ứng:
+
+- Đóng băng Plugin do OpenClaw sở hữu ở đúng một phiên bản cũ, chẳng hạn chỉ cho phép
+  `@openclaw/*@2026.5.3`.
+- Chặn chỉ theo loại nguồn, chẳng hạn mọi yêu cầu Plugin npm, mạng, hoặc
+  `request.mode: "update"`.
+- Xem lệnh chính sách là tùy chọn. Khi `security.installPolicy` được
+  bật, tệp thực thi chính sách bị thiếu, chậm, không đọc được, hoặc bị quyền chặn
+  sẽ fail closed.
+- Phê duyệt phiên bản Plugin mà không xét đến
+  `openclawVersion` của yêu cầu chính sách và metadata ứng viên Plugin.
+
+Quy tắc chính sách an toàn hơn cho phép cập nhật Plugin tin cậy do OpenClaw sở hữu khi
+ứng viên tương thích với host OpenClaw hiện tại, thay vì ghim
+một bản phát hành duy nhất mãi mãi. Nếu bạn chặn npm theo mặc định, hãy tạo ngoại lệ hẹp
+cho các gói Plugin `@openclaw/*` tin cậy hoặc id Plugin bạn dùng. Nếu bạn
+phân biệt yêu cầu cài đặt và cập nhật, hãy áp dụng cùng quy tắc tin cậy cho
+`request.mode: "update"`.
+
+Khôi phục:
+
+```bash
+openclaw doctor --deep
+openclaw plugins update --all
+openclaw status --all
+```
+
+Nếu chính sách cố ý nghiêm ngặt, hãy nới lỏng nó cho khoảng nâng cấp OpenClaw tin cậy,
+chạy lại `openclaw plugins update --all`, rồi khôi phục quy tắc nghiêm ngặt hơn.
+Nếu một Plugin bị vô hiệu hóa sau lỗi cập nhật, hãy kiểm tra nó và chỉ bật lại
+sau khi cập nhật thành công:
+
+```bash
+openclaw plugins inspect <plugin-id> --runtime --json
+openclaw plugins enable <plugin-id>
+```
+
+Tham khảo: [Chính sách cài đặt của operator](/vi/tools/skills-config#operator-install-policy-securityinstallpolicy)
+
+## Plugin hiện diện nhưng bị chặn vì quyền sở hữu đáng ngờ
 
 Nếu `openclaw doctor`, thiết lập, hoặc cảnh báo khởi động hiển thị:
 
@@ -94,19 +172,19 @@ blocked plugin candidate: suspicious ownership (... uid=1000, expected uid=0 or 
 plugin present but blocked
 ```
 
-các tệp plugin thuộc sở hữu của một người dùng Unix khác với tiến trình đang tải
-chúng. Đừng xóa cấu hình plugin. Hãy sửa quyền sở hữu tệp hoặc chạy OpenClaw bằng
+các tệp Plugin thuộc sở hữu của một người dùng Unix khác với tiến trình đang tải
+chúng. Đừng xóa cấu hình Plugin. Hãy sửa quyền sở hữu tệp hoặc chạy OpenClaw bằng
 cùng người dùng sở hữu thư mục trạng thái.
 
-Các bản cài Docker thường chạy dưới người dùng `node` (uid `1000`). Với thiết lập Docker
-mặc định, sửa các bind mount trên host:
+Các bản cài Docker thường chạy dưới dạng `node` (uid `1000`). Với thiết lập Docker mặc định,
+sửa các bind mount trên host:
 
 ```bash
 sudo chown -R 1000:1000 /path/to/openclaw-config /path/to/openclaw-workspace
 openclaw doctor --fix
 ```
 
-Nếu bạn cố ý chạy OpenClaw bằng root, hãy sửa thư mục gốc plugin được quản lý sang
+Nếu bạn cố ý chạy OpenClaw dưới quyền root, hãy sửa root Plugin được quản lý thành
 quyền sở hữu root thay vào đó:
 
 ```bash
@@ -114,7 +192,7 @@ sudo chown -R root:root /path/to/openclaw-config/npm
 openclaw doctor --fix
 ```
 
-Tài liệu chuyên sâu hơn:
+Tài liệu sâu hơn:
 
 - [Quyền sở hữu đường dẫn Plugin](/vi/tools/plugin#blocked-plugin-path-ownership)
 - [Quyền Docker](/vi/install/docker#permissions-and-eacces)
@@ -142,7 +220,7 @@ flowchart TD
 ```
 
 <AccordionGroup>
-  <Accordion title="Không có phản hồi">
+  <Accordion title="No replies">
     ```bash
     openclaw status
     openclaw gateway status
@@ -151,19 +229,19 @@ flowchart TD
     openclaw logs --follow
     ```
 
-    Kết quả tốt trông như sau:
+    Đầu ra tốt trông như sau:
 
     - `Runtime: running`
     - `Connectivity probe: ok`
     - `Capability: read-only`, `write-capable`, hoặc `admin-capable`
-    - Kênh của bạn hiển thị truyền tải đã kết nối và, ở nơi được hỗ trợ, `works` hoặc `audit ok` trong `channels status --probe`
+    - Kênh của bạn hiển thị truyền tải đã kết nối và, khi được hỗ trợ, `works` hoặc `audit ok` trong `channels status --probe`
     - Người gửi có vẻ đã được phê duyệt (hoặc chính sách DM đang mở/danh sách cho phép)
 
-    Các dấu hiệu nhật ký thường gặp:
+    Chữ ký log phổ biến:
 
-    - `drop guild message (mention required` → chặn do yêu cầu nhắc tên đã chặn tin nhắn trong Discord.
-    - `pairing request` → người gửi chưa được phê duyệt và đang chờ phê duyệt ghép nối qua DM.
-    - `blocked` / `allowlist` trong nhật ký kênh → người gửi, phòng, hoặc nhóm bị lọc.
+    - `drop guild message (mention required` → cổng nhắc đến đã chặn tin nhắn trong Discord.
+    - `pairing request` → người gửi chưa được phê duyệt và đang chờ phê duyệt ghép đôi qua DM.
+    - `blocked` / `allowlist` trong log kênh → người gửi, phòng, hoặc nhóm bị lọc.
 
     Trang chuyên sâu:
 
@@ -173,7 +251,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="Dashboard hoặc Control UI không kết nối">
+  <Accordion title="Dashboard or Control UI will not connect">
     ```bash
     openclaw status
     openclaw gateway status
@@ -182,24 +260,29 @@ flowchart TD
     openclaw channels status --probe
     ```
 
-    Kết quả tốt trông như sau:
+    Đầu ra tốt trông như sau:
 
     - `Dashboard: http://...` được hiển thị trong `openclaw gateway status`
     - `Connectivity probe: ok`
     - `Capability: read-only`, `write-capable`, hoặc `admin-capable`
-    - Không có vòng lặp xác thực trong nhật ký
+    - Không có vòng lặp xác thực trong log
 
-    Các dấu hiệu nhật ký thường gặp:
+    Chữ ký log phổ biến:
 
-    - `device identity required` → ngữ cảnh HTTP/không bảo mật không thể hoàn tất xác thực thiết bị.
-    - `origin not allowed` → `Origin` của trình duyệt không được phép cho mục tiêu Gateway của Control UI.
-    - `AUTH_TOKEN_MISMATCH` với gợi ý thử lại (`canRetryWithDeviceToken=true`) → một lần thử lại bằng token thiết bị đáng tin cậy có thể tự động xảy ra.
-    - Lần thử lại token đã lưu cache đó dùng lại tập phạm vi đã lưu cache cùng token thiết bị đã ghép nối. Các caller có `deviceToken` rõ ràng / `scopes` rõ ràng vẫn giữ tập phạm vi đã yêu cầu của chúng.
-    - Trên đường dẫn Control UI Tailscale Serve bất đồng bộ, các lần thử lỗi cho cùng
+    - `device identity required` → ngữ cảnh HTTP/không an toàn không thể hoàn tất xác thực thiết bị.
+    - `origin not allowed` → `Origin` của trình duyệt không được phép cho mục tiêu Gateway
+      Control UI.
+    - `AUTH_TOKEN_MISMATCH` kèm gợi ý thử lại (`canRetryWithDeviceToken=true`) → một lần thử lại bằng device-token tin cậy có thể tự động xảy ra.
+    - Lần thử lại bằng token đã lưu cache đó tái sử dụng bộ phạm vi đã lưu cache cùng với
+      device token đã ghép đôi. Các caller `deviceToken` rõ ràng / `scopes` rõ ràng giữ nguyên
+      bộ phạm vi đã yêu cầu của chúng.
+    - Trên đường dẫn Control UI bất đồng bộ qua Tailscale Serve, các lần thử thất bại cho cùng
       `{scope, ip}` được tuần tự hóa trước khi bộ giới hạn ghi nhận lỗi, nên một
-      lần thử lại sai thứ hai chạy đồng thời có thể đã hiển thị `retry later`.
-    - `too many failed authentication attempts (retry later)` từ origin trình duyệt localhost → các lỗi lặp lại từ cùng `Origin` đó tạm thời bị khóa; một origin localhost khác dùng bucket riêng.
-    - `unauthorized` lặp lại sau lần thử lại đó → token/mật khẩu sai, chế độ xác thực không khớp, hoặc token thiết bị đã ghép nối bị cũ.
+      lần thử lại sai đồng thời thứ hai đã có thể hiển thị `retry later`.
+    - `too many failed authentication attempts (retry later)` từ origin trình duyệt localhost
+      → các lỗi lặp lại từ cùng `Origin` đó tạm thời
+      bị khóa; một origin localhost khác dùng một bucket riêng.
+    - `unauthorized` lặp lại sau lần thử lại đó → token/mật khẩu sai, chế độ xác thực không khớp, hoặc device token đã ghép đôi bị cũ.
     - `gateway connect failed:` → UI đang trỏ đến sai URL/cổng hoặc Gateway không thể truy cập.
 
     Trang chuyên sâu:
@@ -210,7 +293,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="Gateway không khởi động hoặc dịch vụ đã cài nhưng không chạy">
+  <Accordion title="Gateway will not start or service installed but not running">
     ```bash
     openclaw status
     openclaw gateway status
@@ -219,17 +302,17 @@ flowchart TD
     openclaw channels status --probe
     ```
 
-    Kết quả tốt trông như sau:
+    Đầu ra tốt trông như sau:
 
     - `Service: ... (loaded)`
     - `Runtime: running`
     - `Connectivity probe: ok`
     - `Capability: read-only`, `write-capable`, hoặc `admin-capable`
 
-    Các dấu hiệu nhật ký thường gặp:
+    Chữ ký log phổ biến:
 
-    - `Gateway start blocked: set gateway.mode=local` hoặc `existing config is missing gateway.mode` → chế độ Gateway là remote, hoặc tệp cấu hình thiếu dấu local-mode và cần được sửa.
-    - `refusing to bind gateway ... without auth` → bind không phải loopback mà không có đường dẫn xác thực Gateway hợp lệ (token/mật khẩu, hoặc trusted-proxy khi đã cấu hình).
+    - `Gateway start blocked: set gateway.mode=local` hoặc `existing config is missing gateway.mode` → chế độ Gateway là remote, hoặc tệp cấu hình thiếu dấu local-mode và nên được sửa.
+    - `refusing to bind gateway ... without auth` → bind không phải local loopback mà không có đường xác thực Gateway hợp lệ (token/mật khẩu, hoặc trusted-proxy khi được cấu hình).
     - `another gateway instance is already listening` hoặc `EADDRINUSE` → cổng đã bị chiếm.
 
     Trang chuyên sâu:
@@ -240,7 +323,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="Kênh kết nối nhưng tin nhắn không luân chuyển">
+  <Accordion title="Kênh kết nối nhưng tin nhắn không lưu chuyển">
     ```bash
     openclaw status
     openclaw gateway status
@@ -249,17 +332,17 @@ flowchart TD
     openclaw channels status --probe
     ```
 
-    Kết quả tốt trông như sau:
+    Đầu ra tốt sẽ trông như sau:
 
-    - Truyền tải kênh đã kết nối.
-    - Kiểm tra ghép nối/danh sách cho phép đạt.
-    - Lượt nhắc tên được phát hiện khi bắt buộc.
+    - Transport của kênh đã kết nối.
+    - Kiểm tra ghép đôi/danh sách cho phép đều đạt.
+    - Lượt nhắc được phát hiện ở nơi bắt buộc.
 
-    Các dấu hiệu nhật ký thường gặp:
+    Chữ ký nhật ký thường gặp:
 
-    - `mention required` → chặn do yêu cầu nhắc tên trong nhóm đã chặn xử lý.
+    - `mention required` → cổng nhắc trong nhóm đã chặn xử lý.
     - `pairing` / `pending` → người gửi DM chưa được phê duyệt.
-    - `not_in_channel`, `missing_scope`, `Forbidden`, `401/403` → sự cố token quyền của kênh.
+    - `not_in_channel`, `missing_scope`, `Forbidden`, `401/403` → vấn đề token quyền của kênh.
 
     Trang chuyên sâu:
 
@@ -278,21 +361,21 @@ flowchart TD
     openclaw logs --follow
     ```
 
-    Kết quả tốt trông như sau:
+    Đầu ra tốt sẽ trông như sau:
 
-    - `cron.status` hiển thị đã bật với lần đánh thức tiếp theo.
+    - `cron.status` hiển thị đã bật kèm lần đánh thức tiếp theo.
     - `cron runs` hiển thị các mục `ok` gần đây.
     - Heartbeat đã bật và không nằm ngoài giờ hoạt động.
 
-    Các dấu hiệu nhật ký thường gặp:
+    Chữ ký nhật ký thường gặp:
 
     - `cron: scheduler disabled; jobs will not run automatically` → Cron bị tắt.
     - `heartbeat skipped` với `reason=quiet-hours` → ngoài giờ hoạt động đã cấu hình.
-    - `heartbeat skipped` với `reason=empty-heartbeat-file` → `HEARTBEAT.md` tồn tại nhưng chỉ chứa khung trống/chỉ có tiêu đề.
-    - `heartbeat skipped` với `reason=no-tasks-due` → chế độ tác vụ `HEARTBEAT.md` đang hoạt động nhưng chưa có khoảng thời gian tác vụ nào đến hạn.
-    - `heartbeat skipped` với `reason=alerts-disabled` → toàn bộ khả năng hiển thị Heartbeat bị tắt (`showOk`, `showAlerts`, và `useIndicator` đều tắt).
-    - `requests-in-flight` → làn chính đang bận; lần đánh thức Heartbeat bị hoãn.
-    - `unknown accountId` → tài khoản mục tiêu gửi Heartbeat không tồn tại.
+    - `heartbeat skipped` với `reason=empty-heartbeat-file` → `HEARTBEAT.md` tồn tại nhưng chỉ chứa khung trống, chú thích, tiêu đề, fence hoặc danh sách kiểm tra trống.
+    - `heartbeat skipped` với `reason=no-tasks-due` → chế độ tác vụ của `HEARTBEAT.md` đang hoạt động nhưng chưa đến hạn khoảng thời gian nào của tác vụ.
+    - `heartbeat skipped` với `reason=alerts-disabled` → toàn bộ khả năng hiển thị Heartbeat đã bị tắt (`showOk`, `showAlerts` và `useIndicator` đều tắt).
+    - `requests-in-flight` → luồng chính đang bận; lần đánh thức Heartbeat đã bị trì hoãn.
+    - `unknown accountId` → tài khoản đích gửi Heartbeat không tồn tại.
 
     Trang chuyên sâu:
 
@@ -302,7 +385,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="Node đã ghép nối nhưng công cụ camera canvas screen exec lỗi">
+  <Accordion title="Node đã ghép đôi nhưng công cụ camera canvas screen exec thất bại">
     ```bash
     openclaw status
     openclaw gateway status
@@ -311,18 +394,18 @@ flowchart TD
     openclaw logs --follow
     ```
 
-    Kết quả tốt trông như sau:
+    Đầu ra tốt sẽ trông như sau:
 
-    - Node được liệt kê là đã kết nối và đã ghép nối cho vai trò `node`.
-    - Có capability cho lệnh bạn đang gọi.
+    - Node được liệt kê là đã kết nối và đã ghép đôi cho vai trò `node`.
+    - Năng lực tồn tại cho lệnh bạn đang gọi.
     - Trạng thái quyền đã được cấp cho công cụ.
 
-    Các dấu hiệu nhật ký thường gặp:
+    Chữ ký nhật ký thường gặp:
 
-    - `NODE_BACKGROUND_UNAVAILABLE` → đưa ứng dụng Node ra tiền cảnh.
-    - `*_PERMISSION_REQUIRED` → quyền của OS đã bị từ chối/thiếu.
-    - `SYSTEM_RUN_DENIED: approval required` → phê duyệt exec đang chờ xử lý.
-    - `SYSTEM_RUN_DENIED: allowlist miss` → lệnh không có trong danh sách cho phép exec.
+    - `NODE_BACKGROUND_UNAVAILABLE` → đưa ứng dụng node ra nền trước.
+    - `*_PERMISSION_REQUIRED` → quyền hệ điều hành bị từ chối/thiếu.
+    - `SYSTEM_RUN_DENIED: approval required` → phê duyệt exec đang chờ.
+    - `SYSTEM_RUN_DENIED: allowlist miss` → lệnh không nằm trong danh sách cho phép exec.
 
     Trang chuyên sâu:
 
@@ -332,7 +415,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="Exec đột nhiên yêu cầu phê duyệt">
+  <Accordion title="Exec đột ngột yêu cầu phê duyệt">
     ```bash
     openclaw config get tools.exec.host
     openclaw config get tools.exec.security
@@ -342,12 +425,12 @@ flowchart TD
 
     Điều đã thay đổi:
 
-    - Nếu `tools.exec.host` chưa được đặt, mặc định là `auto`.
+    - Nếu `tools.exec.host` chưa đặt, mặc định là `auto`.
     - `host=auto` phân giải thành `sandbox` khi runtime sandbox đang hoạt động, nếu không thì thành `gateway`.
-    - `host=auto` chỉ là định tuyến; hành vi "YOLO" không nhắc đến từ `security=full` cộng với `ask=off` trên gateway/node.
-    - Trên `gateway` và `node`, `tools.exec.security` chưa đặt sẽ mặc định là `full`.
-    - `tools.exec.ask` chưa đặt sẽ mặc định là `off`.
-    - Kết quả: nếu bạn đang thấy các phê duyệt, một số chính sách cục bộ theo host hoặc theo phiên đã siết exec chặt hơn so với mặc định hiện tại.
+    - `host=auto` chỉ định tuyến; hành vi "YOLO" không nhắc đến từ `security=full` cộng với `ask=off` trên gateway/node.
+    - Trên `gateway` và `node`, `tools.exec.security` chưa đặt mặc định là `full`.
+    - `tools.exec.ask` chưa đặt mặc định là `off`.
+    - Kết quả: nếu bạn thấy các yêu cầu phê duyệt, một số chính sách cục bộ theo host hoặc theo phiên đã siết exec chặt hơn các mặc định hiện tại.
 
     Khôi phục hành vi mặc định hiện tại không cần phê duyệt:
 
@@ -361,14 +444,14 @@ flowchart TD
     Các lựa chọn thay thế an toàn hơn:
 
     - Chỉ đặt `tools.exec.host=gateway` nếu bạn chỉ muốn định tuyến host ổn định.
-    - Dùng `security=allowlist` với `ask=on-miss` nếu bạn muốn exec trên host nhưng vẫn muốn xem xét khi danh sách cho phép bị thiếu.
-    - Bật chế độ sandbox nếu bạn muốn `host=auto` phân giải trở lại `sandbox`.
+    - Dùng `security=allowlist` với `ask=on-miss` nếu bạn muốn exec trên host nhưng vẫn muốn xem xét khi trượt danh sách cho phép.
+    - Bật chế độ sandbox nếu bạn muốn `host=auto` phân giải lại về `sandbox`.
 
-    Chữ ký log thường gặp:
+    Chữ ký nhật ký thường gặp:
 
     - `Approval required.` → lệnh đang chờ `/approve ...`.
-    - `SYSTEM_RUN_DENIED: approval required` → phê duyệt exec trên node-host đang chờ xử lý.
-    - `exec host=sandbox requires a sandbox runtime for this session` → lựa chọn sandbox ngầm định/tường minh nhưng chế độ sandbox đang tắt.
+    - `SYSTEM_RUN_DENIED: approval required` → phê duyệt exec trên node-host đang chờ.
+    - `exec host=sandbox requires a sandbox runtime for this session` → lựa chọn sandbox ngầm định/rõ ràng nhưng chế độ sandbox đang tắt.
 
     Trang chuyên sâu:
 
@@ -378,7 +461,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="Công cụ trình duyệt gặp lỗi">
+  <Accordion title="Công cụ trình duyệt thất bại">
     ```bash
     openclaw status
     openclaw gateway status
@@ -387,22 +470,22 @@ flowchart TD
     openclaw doctor
     ```
 
-    Đầu ra tốt trông như sau:
+    Đầu ra tốt sẽ trông như sau:
 
-    - Trạng thái trình duyệt hiển thị `running: true` và một trình duyệt/hồ sơ đã chọn.
-    - `openclaw` khởi động, hoặc `user` có thể thấy các tab Chrome cục bộ.
+    - Trạng thái trình duyệt hiển thị `running: true` và trình duyệt/hồ sơ đã chọn.
+    - `openclaw` khởi động, hoặc `user` có thể thấy các thẻ Chrome cục bộ.
 
-    Chữ ký log thường gặp:
+    Chữ ký nhật ký thường gặp:
 
-    - `unknown command "browser"` hoặc `unknown command 'browser'` → `plugins.allow` đã được đặt và không bao gồm `browser`.
+    - `unknown command "browser"` hoặc `unknown command 'browser'` → `plugins.allow` đã đặt và không bao gồm `browser`.
     - `Failed to start Chrome CDP on port` → khởi chạy trình duyệt cục bộ thất bại.
-    - `browser.executablePath not found` → đường dẫn nhị phân đã cấu hình không đúng.
-    - `browser.cdpUrl must be http(s) or ws(s)` → URL CDP đã cấu hình dùng một scheme không được hỗ trợ.
-    - `browser.cdpUrl has invalid port` → URL CDP đã cấu hình có cổng không hợp lệ hoặc ngoài phạm vi.
-    - `No Chrome tabs found for profile="user"` → hồ sơ đính kèm Chrome MCP không có tab Chrome cục bộ nào đang mở.
+    - `browser.executablePath not found` → đường dẫn nhị phân đã cấu hình sai.
+    - `browser.cdpUrl must be http(s) or ws(s)` → URL CDP đã cấu hình dùng scheme không được hỗ trợ.
+    - `browser.cdpUrl has invalid port` → URL CDP đã cấu hình có cổng sai hoặc ngoài phạm vi.
+    - `No Chrome tabs found for profile="user"` → hồ sơ gắn Chrome MCP không có thẻ Chrome cục bộ nào đang mở.
     - `Remote CDP for profile "<name>" is not reachable` → endpoint CDP từ xa đã cấu hình không thể truy cập từ host này.
-    - `Browser attachOnly is enabled ... not reachable` hoặc `Browser attachOnly is enabled and CDP websocket ... is not reachable` → hồ sơ chỉ đính kèm không có mục tiêu CDP đang hoạt động.
-    - các ghi đè viewport / chế độ tối / locale / ngoại tuyến cũ trên hồ sơ chỉ đính kèm hoặc CDP từ xa → chạy `openclaw browser stop --browser-profile <name>` để đóng phiên điều khiển đang hoạt động và giải phóng trạng thái mô phỏng mà không cần khởi động lại gateway.
+    - `Browser attachOnly is enabled ... not reachable` hoặc `Browser attachOnly is enabled and CDP websocket ... is not reachable` → hồ sơ chỉ gắn không có mục tiêu CDP đang hoạt động.
+    - ghi đè viewport / chế độ tối / locale / ngoại tuyến bị cũ trên các hồ sơ chỉ gắn hoặc CDP từ xa → chạy `openclaw browser stop --browser-profile <name>` để đóng phiên điều khiển đang hoạt động và giải phóng trạng thái giả lập mà không cần khởi động lại gateway.
 
     Trang chuyên sâu:
 
@@ -419,6 +502,6 @@ flowchart TD
 
 - [FAQ](/vi/help/faq) — các câu hỏi thường gặp
 - [Khắc phục sự cố Gateway](/vi/gateway/troubleshooting) — các vấn đề riêng của gateway
-- [Doctor](/vi/gateway/doctor) — kiểm tra tình trạng và sửa chữa tự động
-- [Khắc phục sự cố kênh](/vi/channels/troubleshooting) — các vấn đề về kết nối kênh
-- [Khắc phục sự cố tự động hóa](/vi/automation/cron-jobs#troubleshooting) — các vấn đề về Cron và Heartbeat
+- [Doctor](/vi/gateway/doctor) — kiểm tra và sửa chữa tình trạng tự động
+- [Khắc phục sự cố kênh](/vi/channels/troubleshooting) — các vấn đề kết nối kênh
+- [Khắc phục sự cố tự động hóa](/vi/automation/cron-jobs#troubleshooting) — các vấn đề Cron và Heartbeat

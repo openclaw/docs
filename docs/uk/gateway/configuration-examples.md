@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Дізнайтеся, як налаштувати OpenClaw
-    - Шукаєте приклади конфігурації
-    - Перше налаштування OpenClaw
-summary: Приклади конфігурації, точні відповідно до схеми, для типових налаштувань OpenClaw
+    - Навчання налаштуванню OpenClaw
+    - Пошук прикладів конфігурації
+    - Налаштування OpenClaw уперше
+summary: Приклади конфігурації, точні щодо схеми, для поширених налаштувань OpenClaw
 title: Приклади конфігурації
 x-i18n:
-    generated_at: "2026-05-11T20:36:11Z"
+    generated_at: "2026-06-27T17:31:07Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e077b2fe83b1c6e4ffd2ff0029fe3b754c7dc5dced06f134ddf18e9ed6a11fd2
+    source_hash: 945f4cd8571814597ec0188853e91c6483a0d8b09bd0ca7dcfb79eb877607ce2
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Приклади нижче узгоджені з поточною схемою конфігурації. Повну довідку та примітки щодо кожного поля див. у [Конфігурації](/uk/gateway/configuration).
+Наведені нижче приклади узгоджені з поточною схемою конфігурації. Повний довідник і примітки до окремих полів див. у [Конфігурації](/uk/gateway/configuration).
 
 ## Швидкий старт
 
@@ -27,7 +28,7 @@ x-i18n:
 }
 ```
 
-Збережіть у `~/.openclaw/openclaw.json`, і ви зможете надсилати боту приватні повідомлення з цього номера.
+Збережіть у `~/.openclaw/openclaw.json`, і ви зможете надіслати боту приватне повідомлення з цього номера.
 
 ### Рекомендована початкова конфігурація
 
@@ -58,7 +59,8 @@ x-i18n:
   messages: {
     visibleReplies: "automatic",
     groupChat: {
-      visibleReplies: "message_tool", // default; use "automatic" for legacy room replies
+      visibleReplies: "message_tool", // opt-in; visible output requires message(action=send)
+      unmentionedInbound: "room_event",
     },
   },
 }
@@ -66,7 +68,7 @@ x-i18n:
 
 ## Розширений приклад (основні параметри)
 
-> JSON5 дозволяє використовувати коментарі та кінцеві коми. Звичайний JSON також працює.
+> JSON5 дає змогу використовувати коментарі та кінцеві коми. Звичайний JSON також працює.
 
 ```json5
 {
@@ -88,12 +90,11 @@ x-i18n:
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
       "anthropic:work": { provider: "anthropic", mode: "api_key" },
       "openai:default": { provider: "openai", mode: "api_key" },
-      "openai-codex:personal": { provider: "openai-codex", mode: "oauth" },
+      "openai:personal": { provider: "openai", mode: "oauth" },
     },
     order: {
       anthropic: ["anthropic:default", "anthropic:work"],
-      openai: ["openai:default"],
-      "openai-codex": ["openai-codex:personal"],
+      openai: ["openai:personal", "openai:default"],
     },
   },
 
@@ -117,21 +118,22 @@ x-i18n:
     ackReactionScope: "group-mentions",
     groupChat: {
       historyLimit: 50,
-      visibleReplies: "message_tool", // normal final replies stay private in groups/channels
+      visibleReplies: "message_tool", // opt in for shared rooms with tool-reliable models
+      unmentionedInbound: "room_event",
     },
     queue: {
-      mode: "steer",
+      mode: "followup",
       debounceMs: 500,
       cap: 20,
       drop: "summarize",
       byChannel: {
-        whatsapp: "steer",
-        telegram: "steer",
-        discord: "steer",
-        slack: "steer",
-        signal: "steer",
-        imessage: "steer",
-        webchat: "steer",
+        whatsapp: "followup",
+        telegram: "followup",
+        discord: "collect",
+        slack: "collect",
+        signal: "followup",
+        imessage: "followup",
+        webchat: "followup",
       },
     },
   },
@@ -390,7 +392,7 @@ x-i18n:
   cron: {
     enabled: true,
     store: "~/.openclaw/cron/cron.json",
-    maxConcurrentRuns: 2, // cron dispatch + isolated cron agent-turn execution
+    maxConcurrentRuns: 8, // default; cron dispatch + isolated cron agent-turn execution
     sessionRetention: "24h",
     runLog: {
       maxBytes: "2mb",
@@ -480,9 +482,9 @@ x-i18n:
 }
 ```
 
-### Сусідній репозиторій Skills із символічним посиланням
+### Репозиторій сусіднього skill із символьним посиланням
 
-Використовуйте це, коли вбудований корінь Skills містить символічне посилання на сусідній репозиторій, наприклад `~/.agents/skills/manager -> ~/Projects/manager/skills`.
+Використовуйте це, коли корінь вбудованого skill містить символьне посилання на сусідній репозиторій, наприклад `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ```json5
 {
@@ -495,12 +497,13 @@ x-i18n:
 }
 ```
 
-- `extraDirs` сканує сусідній репозиторій як явний корінь Skills.
-- `allowSymlinkTargets` дозволяє папкам Skills із символічними посиланнями розв’язуватися в цей довірений реальний цільовий корінь без дозволу на довільні виходи через символічні посилання.
+- `extraDirs` сканує сусідній репозиторій як явний корінь skill.
+- `allowSymlinkTargets` дає змогу папкам skill із символьними посиланнями розв’язуватися в цей довірений реальний цільовий корінь без дозволу довільних виходів через символьні посилання.
+- Щоб Skill Workshop міг застосовувати запис через той самий довірений цільовий шлях символьного посилання, задайте `skills.workshop.allowSymlinkTargetWrites: true`.
 
 ## Поширені шаблони
 
-### Спільна базова конфігурація Skills з одним перевизначенням
+### Спільна базова конфігурація skill з одним перевизначенням
 
 ```json5
 {
@@ -517,9 +520,9 @@ x-i18n:
 }
 ```
 
-- `agents.defaults.skills` — це спільна базова конфігурація.
+- `agents.defaults.skills` є спільною базовою конфігурацією.
 - `agents.list[].skills` замінює цю базову конфігурацію для одного агента.
-- Використовуйте `skills: []`, коли агент не має бачити жодних Skills.
+- Використовуйте `skills: []`, коли агент не повинен бачити Skills.
 
 ### Налаштування для кількох платформ
 
@@ -542,11 +545,11 @@ x-i18n:
 }
 ```
 
-### Автосхвалення довіреної мережі Node
+### Автосхвалення довіреної мережі вузлів
 
 Залишайте сполучення пристроїв ручним, якщо ви не контролюєте мережевий шлях. Для виділеної
-лабораторної або tailnet-підмережі можна ввімкнути одноразове автосхвалення
-Node-пристроїв за точними CIDR або IP-адресами:
+лабораторії або підмережі tailnet можна ввімкнути автосхвалення пристрою вузла під час першого сполучення
+з точними CIDR або IP-адресами:
 
 ```json5
 {
@@ -560,13 +563,13 @@ Node-пристроїв за точними CIDR або IP-адресами:
 }
 ```
 
-Якщо параметр не задано, це залишається вимкненим. Це застосовується лише до нового сполучення `role: node`
-без запитаних областей доступу. Клієнти операторів/браузера, а також оновлення ролі, області доступу,
-метаданих або публічного ключа все одно потребують ручного схвалення.
+Якщо це не задано, функція залишається вимкненою. Вона застосовується лише до нового сполучення `role: node`
+без запитаних областей доступу. Операторські/браузерні клієнти, а також оновлення ролі, області доступу, метаданих або
+відкритого ключа все одно потребують ручного схвалення.
 
-### Безпечний режим DM (спільна вхідна скринька / багатокористувацькі DM)
+### Режим безпечних DM (спільна вхідна скринька / багатокористувацькі DM)
 
-Якщо більше ніж одна людина може надсилати DM вашому боту (кілька записів у `allowFrom`, схвалення сполучення для кількох людей або `dmPolicy: "open"`), увімкніть **безпечний режим DM**, щоб DM від різних відправників типово не використовували один спільний контекст:
+Якщо кілька людей можуть надсилати DM вашому боту (кілька записів у `allowFrom`, схвалення сполучення для кількох людей або `dmPolicy: "open"`), увімкніть **режим безпечних DM**, щоб DM від різних відправників за замовчуванням не використовували один спільний контекст:
 
 ```json5
 {
@@ -590,8 +593,8 @@ Node-пристроїв за точними CIDR або IP-адресами:
 }
 ```
 
-Для Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC авторизація відправника типово спершу перевіряє ID.
-Увімкніть пряме зіставлення змінних імен/email/ніків через `dangerouslyAllowNameMatching: true` для кожного каналу лише тоді, коли ви явно приймаєте цей ризик.
+Для Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC авторизація відправника за замовчуванням спершу перевіряє ідентифікатор.
+Умикайте пряме зіставлення змінюваного імені/email/нікнейма через `dangerouslyAllowNameMatching: true` відповідного каналу лише тоді, коли ви явно приймаєте цей ризик.
 
 ### Ключ API Anthropic + резервний MiniMax
 
@@ -697,12 +700,12 @@ Node-пристроїв за точними CIDR або IP-адресами:
 
 ## Поради
 
-- Якщо ви встановлюєте `dmPolicy: "open"`, відповідний список `allowFrom` має містити `"*"`.
-- ID провайдерів відрізняються (номери телефонів, ID користувачів, ID каналів). Скористайтеся документацією провайдера, щоб підтвердити формат.
+- Якщо ви задаєте `dmPolicy: "open"`, відповідний список `allowFrom` має містити `"*"`.
+- Ідентифікатори провайдерів відрізняються (номери телефонів, ідентифікатори користувачів, ідентифікатори каналів). Скористайтеся документацією провайдера, щоб підтвердити формат.
 - Необов’язкові розділи, які можна додати пізніше: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
-- Див. [Провайдери](/uk/providers) і [Усунення несправностей](/uk/gateway/troubleshooting), щоб отримати докладніші примітки щодо налаштування.
+- Див. [Провайдери](/uk/providers) і [Усунення несправностей](/uk/gateway/troubleshooting), щоб отримати докладніші нотатки щодо налаштування.
 
 ## Пов’язане
 
-- [Довідник конфігурації](/uk/gateway/configuration-reference)
+- [Довідник із конфігурації](/uk/gateway/configuration-reference)
 - [Конфігурація](/uk/gateway/configuration)

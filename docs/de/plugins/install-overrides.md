@@ -1,28 +1,25 @@
 ---
 read_when:
-    - Onboarding- oder Einrichtungsabläufe mit einem lokal gepackten Plugin testen
-    - Überprüfen eines Plugin-Pakets vor der Veröffentlichung
+    - Onboarding- oder Einrichtungsabläufe gegen ein lokal gepacktes Plugin testen
+    - Ein Plugin-Paket vor der Veröffentlichung verifizieren
     - Automatische Plugin-Installation durch ein Testartefakt ersetzen
 sidebarTitle: Install overrides
-summary: Paketierte Plugin-Overrides mit Installationsabläufen während der Einrichtung testen
-title: Überschreibungen für Plugin-Installationen
+summary: Testen paketierter Plugin-Overrides mit Installationsabläufen zur Einrichtungszeit
+title: Plugin-Installationsüberschreibungen
 x-i18n:
-    generated_at: "2026-05-10T19:43:49Z"
+    generated_at: "2026-06-27T17:48:38Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f0fca17c1c78b11a87a1ec265510d9bc5aa9826822f4888e37ff1b3f3803598e
+    source_hash: 9ac3d8074f0455a3287c22447d134bebf57805bc06302652172eb5f87e47e548
     source_path: plugins/install-overrides.md
     workflow: 16
 ---
 
-Plugin-Installations-Overrides ermöglichen Maintainern, Plugin-Installationen zur Einrichtungszeit mit
-einem bestimmten npm-Paket oder einem lokalen `npm-pack`-Tarball zu testen. Sie sind nur für E2E- und Paketvalidierung
-gedacht. Normale Benutzer sollten Plugins mit
-[`openclaw plugins install`](/de/cli/plugins) installieren.
+Overrides für Plugin-Installationen ermöglichen Maintainern, Plugin-Installationen zur Einrichtungszeit gegen ein bestimmtes npm-Paket oder einen lokalen `npm-pack`-Tarball zu testen. Sie sind ausschließlich für E2E- und Paketvalidierung vorgesehen. Reguläre Benutzer sollten Plugins mit [`openclaw plugins install`](/de/cli/plugins) installieren.
 
 <Warning>
-Overrides führen Plugin-Code aus der von Ihnen angegebenen Quelle aus. Verwenden Sie sie nur in einem
-isolierten Zustandsverzeichnis oder auf einer entsorgbaren Testmaschine.
+Overrides führen Plugin-Code aus der von Ihnen bereitgestellten Quelle aus. Verwenden Sie sie nur in einem isolierten Zustandsverzeichnis oder auf einer wegwerfbaren Testmaschine.
 </Warning>
 
 ## Umgebung
@@ -37,34 +34,26 @@ export OPENCLAW_PLUGIN_INSTALL_OVERRIDES='{
 }'
 ```
 
-Die Override-Map ist JSON, indiziert nach Plugin-ID. Werte unterstützen:
+Die Override-Zuordnung ist JSON, nach Plugin-ID indiziert. Werte unterstützen:
 
 - `npm:<registry-spec>` für Registry-Pakete und exakte Versionen oder Tags
-- `npm-pack:<path.tgz>` für lokale Tarballs, die von `npm pack` erzeugt wurden
+- `npm-pack:<path.tgz>` für lokale Tarballs, die mit `npm pack` erzeugt wurden
 
 Relative `npm-pack:`-Pfade werden vom aktuellen Arbeitsverzeichnis aus aufgelöst.
 
 ## Verhalten
 
-Wenn ein Flow zur Einrichtungszeit die Installation eines Plugins anfordert, dessen ID in der Map enthalten ist,
-verwendet OpenClaw die Override-Quelle anstelle der Katalog-, gebündelten oder standardmäßigen
-npm-Quelle. Dies gilt für das Onboarding und andere Flows, die den gemeinsamen
-Plugin-Installer zur Einrichtungszeit verwenden.
+Wenn ein Flow zur Einrichtungszeit die Installation eines Plugins anfordert, dessen ID in der Zuordnung vorkommt, verwendet OpenClaw die Override-Quelle anstelle der Katalog-, gebündelten oder standardmäßigen npm-Quelle. Dies gilt für Onboarding und andere Flows, die den gemeinsam genutzten Plugin-Installer zur Einrichtungszeit verwenden.
 
-Overrides erzwingen weiterhin die erwartete Plugin-ID. Ein Tarball, der `codex`
-zugeordnet ist, muss ein Plugin installieren, dessen Manifest-ID `codex` ist.
+Overrides erzwingen weiterhin die erwartete Plugin-ID. Ein Tarball, der `codex` zugeordnet ist, muss ein Plugin installieren, dessen Manifest-ID `codex` ist.
 
-Overrides erben keinen offiziellen Status als vertrauenswürdige Quelle. Selbst wenn der Katalogeintrag
-normalerweise ein OpenClaw-eigenes Paket darstellt, wird ein Override als
-vom Operator bereitgestellte Testeingabe behandelt.
+Overrides erben nicht den offiziellen Status als vertrauenswürdige Quelle. Selbst wenn der Katalogeintrag normalerweise ein OpenClaw-eigenes Paket darstellt, wird ein Override als vom Betreiber bereitgestellte Testeingabe behandelt.
 
-Workspace-`.env`-Dateien können Installations-Overrides nicht aktivieren. Setzen Sie diese Variablen in
-der vertrauenswürdigen Shell, dem CI-Job oder dem Remote-Testbefehl, der OpenClaw startet.
+Workspace-`.env`-Dateien können Installations-Overrides nicht aktivieren. Setzen Sie diese Variablen in der vertrauenswürdigen Shell, im CI-Job oder im Remote-Testbefehl, der OpenClaw startet.
 
 ## Paket-E2E
 
-Verwenden Sie ein isoliertes Zustandsverzeichnis, damit Paketinstallationen und Installationsdatensätze
-Ihren normalen OpenClaw-Zustand nicht berühren:
+Verwenden Sie ein isoliertes Zustandsverzeichnis, damit Paketinstallationen und Installationsdatensätze Ihren normalen OpenClaw-Zustand nicht berühren:
 
 ```bash
 npm pack extensions/codex --pack-destination /tmp
@@ -75,13 +64,11 @@ OPENCLAW_PLUGIN_INSTALL_OVERRIDES='{"codex":"npm-pack:/tmp/openclaw-codex-2026.5
 pnpm openclaw onboard --mode local
 ```
 
-Überprüfen Sie das installierte Paket im Zustandsverzeichnis:
+Überprüfen Sie das installierte Paket unter dem Zustandsverzeichnis:
 
 ```bash
-find "$OPENCLAW_STATE_DIR/npm/node_modules" -maxdepth 3 -name package.json -print
-grep -R '"@openclaw/codex"' "$OPENCLAW_STATE_DIR/npm/package-lock.json"
+find "$OPENCLAW_STATE_DIR/npm/projects" -path '*/node_modules/@openclaw/codex/package.json' -print
+grep -R '"@openclaw/codex"' "$OPENCLAW_STATE_DIR/npm/projects"/*/package-lock.json
 ```
 
-Für Live-Provider-E2E laden Sie den echten API-Schlüssel aus einer vertrauenswürdigen Shell oder einem CI-Secret,
-bevor Sie den Testbefehl starten. Geben Sie keine Schlüssel aus; melden Sie nur die Quelle und
-ob der Schlüssel vorhanden war.
+Für Live-Provider-E2E beziehen Sie den echten API-Schlüssel aus einer vertrauenswürdigen Shell oder einem CI-Secret, bevor Sie den Testbefehl starten. Geben Sie Schlüssel nicht aus; berichten Sie nur die Quelle und ob der Schlüssel vorhanden war.

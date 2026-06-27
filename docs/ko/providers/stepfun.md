@@ -2,32 +2,42 @@
 read_when:
     - OpenClaw에서 StepFun 모델을 사용하려는 경우
     - StepFun 설정 안내가 필요합니다
-summary: OpenClaw에서 StepFun 모델 사용
+summary: OpenClaw에서 StepFun 모델 사용하기
 title: StepFun
 x-i18n:
-    generated_at: "2026-04-30T06:48:20Z"
+    generated_at: "2026-06-27T18:04:20Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c9d43f6e8cda9703a0b9b82d079b282ed5c955676b99b946529582af230d8d10
+    source_hash: 08c5d684382ae98a981f6f441f7eb49c01342598952bcf16dc251d0bdfb526ca
     source_path: providers/stepfun.md
     workflow: 16
 ---
 
-OpenClaw에는 두 개의 제공자 ID가 있는 번들 StepFun 제공자 Plugin이 포함되어 있습니다:
+StepFun 제공자 Plugin은 두 가지 제공자 ID를 지원합니다:
 
 - 표준 엔드포인트용 `stepfun`
 - Step Plan 엔드포인트용 `stepfun-plan`
 
 <Warning>
-표준과 Step Plan은 서로 다른 엔드포인트와 모델 참조 접두사(`stepfun/...` vs `stepfun-plan/...`)를 사용하는 **별도 제공자**입니다. `.com` 엔드포인트에는 중국 키를 사용하고, `.ai` 엔드포인트에는 글로벌 키를 사용하세요.
+표준 및 Step Plan은 서로 다른 엔드포인트와 모델 참조 접두사(`stepfun/...` 대 `stepfun-plan/...`)를 사용하는 **별도 제공자**입니다. `.com` 엔드포인트에는 중국 키를 사용하고, `.ai` 엔드포인트에는 글로벌 키를 사용하세요.
 </Warning>
 
-## 지역 및 엔드포인트 개요
+## Plugin 설치
 
-| 엔드포인트 | 중국 (`.com`)                         | 글로벌 (`.ai`)                       |
-| ---------- | ------------------------------------- | ------------------------------------ |
-| 표준       | `https://api.stepfun.com/v1`          | `https://api.stepfun.ai/v1`          |
-| Step Plan  | `https://api.stepfun.com/step_plan/v1` | `https://api.stepfun.ai/step_plan/v1` |
+공식 Plugin을 설치한 다음 Gateway를 다시 시작합니다:
+
+```bash
+openclaw plugins install @openclaw/stepfun-provider
+openclaw gateway restart
+```
+
+## 리전 및 엔드포인트 개요
+
+| 엔드포인트 | 중국 (`.com`)                          | 글로벌 (`.ai`)                         |
+| ---------- | -------------------------------------- | -------------------------------------- |
+| 표준       | `https://api.stepfun.com/v1`           | `https://api.stepfun.ai/v1`            |
+| Step Plan  | `https://api.stepfun.com/step_plan/v1` | `https://api.stepfun.ai/step_plan/v1`  |
 
 인증 환경 변수: `STEPFUN_API_KEY`
 
@@ -35,31 +45,31 @@ OpenClaw에는 두 개의 제공자 ID가 있는 번들 StepFun 제공자 Plugin
 
 표준 (`stepfun`):
 
-| 모델 참조                | 컨텍스트 | 최대 출력 | 참고             |
-| ------------------------ | -------- | --------- | ---------------- |
-| `stepfun/step-3.5-flash` | 262,144  | 65,536    | 기본 표준 모델   |
+| 모델 참조                | 컨텍스트 | 최대 출력 | 참고              |
+| ------------------------ | -------- | --------- | ----------------- |
+| `stepfun/step-3.5-flash` | 262,144  | 65,536    | 기본 표준 모델    |
 
 Step Plan (`stepfun-plan`):
 
-| 모델 참조                          | 컨텍스트 | 최대 출력 | 참고                    |
-| ---------------------------------- | -------- | --------- | ----------------------- |
-| `stepfun-plan/step-3.5-flash`      | 262,144  | 65,536    | 기본 Step Plan 모델     |
-| `stepfun-plan/step-3.5-flash-2603` | 262,144  | 65,536    | 추가 Step Plan 모델     |
+| 모델 참조                          | 컨텍스트 | 최대 출력 | 참고                       |
+| ---------------------------------- | -------- | --------- | -------------------------- |
+| `stepfun-plan/step-3.5-flash`      | 262,144  | 65,536    | 기본 Step Plan 모델        |
+| `stepfun-plan/step-3.5-flash-2603` | 262,144  | 65,536    | 추가 Step Plan 모델        |
 
 ## 시작하기
 
-제공자 인터페이스를 선택하고 설정 단계를 따르세요.
+제공자 표면을 선택하고 설정 단계를 따르세요.
 
 <Tabs>
   <Tab title="표준">
     **적합한 용도:** 표준 StepFun 엔드포인트를 통한 범용 사용.
 
     <Steps>
-      <Step title="엔드포인트 지역 선택">
-        | 인증 선택                        | 엔드포인트                       | 지역 |
-        | -------------------------------- | -------------------------------- | ---- |
-        | `stepfun-standard-api-key-intl`  | `https://api.stepfun.ai/v1`     | 국제 |
-        | `stepfun-standard-api-key-cn`    | `https://api.stepfun.com/v1`    | 중국 |
+      <Step title="엔드포인트 리전 선택">
+        | 인증 선택                        | 엔드포인트                      | 리전      |
+        | -------------------------------- | -------------------------------- | --------- |
+        | `stepfun-standard-api-key-intl`  | `https://api.stepfun.ai/v1`     | 국제      |
+        | `stepfun-standard-api-key-cn`    | `https://api.stepfun.com/v1`    | 중국      |
       </Step>
       <Step title="온보딩 실행">
         ```bash
@@ -95,11 +105,11 @@ Step Plan (`stepfun-plan`):
     **적합한 용도:** Step Plan 추론 엔드포인트.
 
     <Steps>
-      <Step title="엔드포인트 지역 선택">
-        | 인증 선택                    | 엔드포인트                              | 지역 |
-        | ---------------------------- | --------------------------------------- | ---- |
-        | `stepfun-plan-api-key-intl`  | `https://api.stepfun.ai/step_plan/v1`  | 국제 |
-        | `stepfun-plan-api-key-cn`    | `https://api.stepfun.com/step_plan/v1` | 중국 |
+      <Step title="엔드포인트 리전 선택">
+        | 인증 선택                    | 엔드포인트                              | 리전      |
+        | ---------------------------- | --------------------------------------- | --------- |
+        | `stepfun-plan-api-key-intl`  | `https://api.stepfun.ai/step_plan/v1`  | 국제      |
+        | `stepfun-plan-api-key-cn`    | `https://api.stepfun.com/step_plan/v1` | 중국      |
       </Step>
       <Step title="온보딩 실행">
         ```bash
@@ -206,10 +216,10 @@ Step Plan (`stepfun-plan`):
   </Accordion>
 
   <Accordion title="참고">
-    - 이 제공자는 OpenClaw에 번들되어 있으므로 별도의 Plugin 설치 단계가 없습니다.
+    - 이 제공자는 공식 외부 패키지입니다. 설정 전에 설치하세요.
     - `step-3.5-flash-2603`은 현재 `stepfun-plan`에서만 노출됩니다.
-    - 단일 인증 흐름이 `stepfun`과 `stepfun-plan` 모두에 대해 지역이 일치하는 프로필을 작성하므로, 두 인터페이스를 함께 검색할 수 있습니다.
-    - 모델을 확인하거나 전환하려면 `openclaw models list` 및 `openclaw models set <provider/model>`을 사용하세요.
+    - 단일 인증 흐름은 `stepfun`과 `stepfun-plan` 모두에 대해 리전이 일치하는 프로필을 작성하므로, 두 표면을 함께 검색할 수 있습니다.
+    - 모델을 검사하거나 전환하려면 `openclaw models list` 및 `openclaw models set <provider/model>`을 사용하세요.
 
   </Accordion>
 </AccordionGroup>
@@ -222,10 +232,10 @@ Step Plan (`stepfun-plan`):
 
 <CardGroup cols={2}>
   <Card title="모델 선택" href="/ko/concepts/model-providers" icon="layers">
-    모든 제공자, 모델 참조, 장애 조치 동작의 개요입니다.
+    모든 제공자, 모델 참조, 장애 조치 동작에 대한 개요입니다.
   </Card>
   <Card title="구성 참조" href="/ko/gateway/configuration-reference" icon="gear">
-    제공자, 모델, Plugin에 대한 전체 구성 스키마입니다.
+    제공자, 모델, Plugin의 전체 구성 스키마입니다.
   </Card>
   <Card title="모델 선택" href="/ko/concepts/models" icon="brain">
     모델을 선택하고 구성하는 방법입니다.

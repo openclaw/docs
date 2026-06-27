@@ -3,22 +3,23 @@ read_when:
     - 瞭解如何設定 OpenClaw
     - 正在尋找設定範例
     - 首次設定 OpenClaw
-summary: 符合結構描述的常見 OpenClaw 設定範例
+summary: 常見 OpenClaw 設定的結構描述準確設定範例
 title: 設定範例
 x-i18n:
-    generated_at: "2026-05-11T20:29:00Z"
+    generated_at: "2026-06-27T19:16:46Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e077b2fe83b1c6e4ffd2ff0029fe3b754c7dc5dced06f134ddf18e9ed6a11fd2
+    source_hash: 945f4cd8571814597ec0188853e91c6483a0d8b09bd0ca7dcfb79eb877607ce2
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-以下範例與目前的設定架構一致。完整參考資料與各欄位說明，請參閱[設定](/zh-TW/gateway/configuration)。
+以下範例與目前的設定結構一致。若要查看完整參考與各欄位說明，請參閱[設定](/zh-TW/gateway/configuration)。
 
 ## 快速開始
 
-### 最小必要設定
+### 絕對最小設定
 
 ```json5
 {
@@ -27,7 +28,7 @@ x-i18n:
 }
 ```
 
-儲存至 `~/.openclaw/openclaw.json`，即可從該號碼私訊機器人。
+儲存到 `~/.openclaw/openclaw.json` 後，你就可以從該號碼私訊機器人。
 
 ### 建議的起始設定
 
@@ -58,15 +59,16 @@ x-i18n:
   messages: {
     visibleReplies: "automatic",
     groupChat: {
-      visibleReplies: "message_tool", // default; use "automatic" for legacy room replies
+      visibleReplies: "message_tool", // 選擇啟用；可見輸出需要 message(action=send)
+      unmentionedInbound: "room_event",
     },
   },
 }
 ```
 
-## 擴充範例（主要選項）
+## 展開範例（主要選項）
 
-> JSON5 可讓你使用註解和尾隨逗號。一般 JSON 也可以使用。
+> JSON5 可讓你使用註解與尾隨逗號。一般 JSON 也可以。
 
 ```json5
 {
@@ -88,12 +90,11 @@ x-i18n:
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
       "anthropic:work": { provider: "anthropic", mode: "api_key" },
       "openai:default": { provider: "openai", mode: "api_key" },
-      "openai-codex:personal": { provider: "openai-codex", mode: "oauth" },
+      "openai:personal": { provider: "openai", mode: "oauth" },
     },
     order: {
       anthropic: ["anthropic:default", "anthropic:work"],
-      openai: ["openai:default"],
-      "openai-codex": ["openai-codex:personal"],
+      openai: ["openai:personal", "openai:default"],
     },
   },
 
@@ -117,21 +118,22 @@ x-i18n:
     ackReactionScope: "group-mentions",
     groupChat: {
       historyLimit: 50,
-      visibleReplies: "message_tool", // normal final replies stay private in groups/channels
+      visibleReplies: "message_tool", // opt in for shared rooms with tool-reliable models
+      unmentionedInbound: "room_event",
     },
     queue: {
-      mode: "steer",
+      mode: "followup",
       debounceMs: 500,
       cap: 20,
       drop: "summarize",
       byChannel: {
-        whatsapp: "steer",
-        telegram: "steer",
-        discord: "steer",
-        slack: "steer",
-        signal: "steer",
-        imessage: "steer",
-        webchat: "steer",
+        whatsapp: "followup",
+        telegram: "followup",
+        discord: "collect",
+        slack: "collect",
+        signal: "followup",
+        imessage: "followup",
+        webchat: "followup",
       },
     },
   },
@@ -390,7 +392,7 @@ x-i18n:
   cron: {
     enabled: true,
     store: "~/.openclaw/cron/cron.json",
-    maxConcurrentRuns: 2, // cron dispatch + isolated cron agent-turn execution
+    maxConcurrentRuns: 8, // default; cron dispatch + isolated cron agent-turn execution
     sessionRetention: "24h",
     runLog: {
       maxBytes: "2mb",
@@ -480,9 +482,9 @@ x-i18n:
 }
 ```
 
-### 符號連結的同層 Skill 儲存庫
+### 符號連結的同層技能 repo
 
-當內建 Skill 根目錄包含指向同層儲存庫的符號連結時，請使用此設定，例如 `~/.agents/skills/manager -> ~/Projects/manager/skills`。
+當內建技能根目錄包含指向同層 repo 的符號連結時使用此設定，例如 `~/.agents/skills/manager -> ~/Projects/manager/skills`。
 
 ```json5
 {
@@ -495,12 +497,13 @@ x-i18n:
 }
 ```
 
-- `extraDirs` 會將同層儲存庫掃描為明確的 Skill 根目錄。
-- `allowSymlinkTargets` 讓符號連結的 Skill 資料夾解析到該受信任的實際目標根目錄，而不允許任意符號連結逸出。
+- `extraDirs` 會將同層 repo 掃描為明確的技能根目錄。
+- `allowSymlinkTargets` 可讓符號連結的技能資料夾解析到該受信任的實際目標根目錄，而不允許任意符號連結跳脫。
+- 若要讓 Skill Workshop 透過同一個受信任的符號連結目標套用寫入，請設定 `skills.workshop.allowSymlinkTargetWrites: true`。
 
 ## 常見模式
 
-### 具有單一覆寫的共用 Skill 基準
+### 具備一項覆寫的共用技能基準
 
 ```json5
 {
@@ -518,7 +521,7 @@ x-i18n:
 ```
 
 - `agents.defaults.skills` 是共用基準。
-- `agents.list[].skills` 會取代單一代理程式的該基準。
+- `agents.list[].skills` 會為單一代理程式取代該基準。
 - 當代理程式不應看到任何 Skills 時，請使用 `skills: []`。
 
 ### 多平台設定
@@ -542,11 +545,11 @@ x-i18n:
 }
 ```
 
-### 受信任的 Node 網路自動核准
+### 受信任節點網路自動核准
 
 除非你能控制網路路徑，否則請維持手動裝置配對。對於專用
 實驗室或 tailnet 子網路，你可以選擇使用精確的 CIDR 或 IP，
-啟用首次 Node 裝置自動核准：
+讓首次節點裝置自動核准：
 
 ```json5
 {
@@ -560,13 +563,13 @@ x-i18n:
 }
 ```
 
-未設定時此功能會保持關閉。它只適用於沒有請求範圍的全新
-`role: node` 配對。操作員/瀏覽器用戶端，以及角色、範圍、中繼資料或
+未設定時此功能仍會關閉。它只適用於全新的 `role: node` 配對，且
+沒有要求任何範圍。操作員/瀏覽器用戶端，以及角色、範圍、中繼資料或
 公開金鑰升級，仍需要手動核准。
 
 ### 安全 DM 模式（共用收件匣 / 多使用者 DM）
 
-如果有一個以上的人可以 DM 你的 bot（`allowFrom` 中有多個項目、多人的配對核准，或 `dmPolicy: "open"`），請啟用**安全 DM 模式**，讓不同傳送者的 DM 預設不會共用同一個內容脈絡：
+如果有超過一個人可以 DM 你的機器人（`allowFrom` 中有多個項目、已核准多人的配對，或 `dmPolicy: "open"`），請啟用 **安全 DM 模式**，讓不同傳送者的 DM 預設不會共用同一個情境：
 
 ```json5
 {
@@ -590,8 +593,8 @@ x-i18n:
 }
 ```
 
-對於 Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC，傳送者授權預設會優先使用 ID。
-只有在你明確接受該風險時，才啟用每個頻道的 `dangerouslyAllowNameMatching: true`，以直接依可變動的名稱/電子郵件/暱稱比對。
+對於 Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC，傳送者授權預設優先使用 ID。
+只有在你明確接受該風險時，才為各通道啟用直接可變名稱/電子郵件/nick 比對的 `dangerouslyAllowNameMatching: true`。
 
 ### Anthropic API 金鑰 + MiniMax 備援
 
@@ -629,7 +632,7 @@ x-i18n:
 }
 ```
 
-### 工作 bot（受限制存取）
+### 工作機器人（限制存取）
 
 ```json5
 {
@@ -698,9 +701,9 @@ x-i18n:
 ## 提示
 
 - 如果你設定 `dmPolicy: "open"`，對應的 `allowFrom` 清單必須包含 `"*"`。
-- 提供者 ID 會有所不同（電話號碼、使用者 ID、頻道 ID）。請使用提供者文件確認格式。
-- 之後可新增的選用章節：`web`、`browser`、`ui`、`discovery`、`plugins`、`talk`、`signal`、`imessage`。
-- 請參閱[提供者](/zh-TW/providers)和[疑難排解](/zh-TW/gateway/troubleshooting)，了解更深入的設定說明。
+- 提供者 ID 各不相同（電話號碼、使用者 ID、通道 ID）。請使用提供者文件確認格式。
+- 之後可新增的選用區段：`web`、`browser`、`ui`、`discovery`、`plugins`、`talk`、`signal`、`imessage`。
+- 如需更深入的設定說明，請參閱[提供者](/zh-TW/providers)和[疑難排解](/zh-TW/gateway/troubleshooting)。
 
 ## 相關
 

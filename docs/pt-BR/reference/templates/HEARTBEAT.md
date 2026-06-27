@@ -1,23 +1,32 @@
 ---
 read_when:
-    - Fazendo bootstrap de um workspace manualmente
-summary: Template de workspace para HEARTBEAT.md
-title: Template HEARTBEAT.md
+    - Inicializando manualmente um workspace
+summary: Modelo de espaço de trabalho para HEARTBEAT.md
+title: modelo HEARTBEAT.md
 x-i18n:
-    generated_at: "2026-04-24T06:11:52Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T18:10:45Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f234f7f5fd016a29a56bae11fc9114649e9c48acd0ece69a9accf90302ed728c
+    source_hash: 44a1ea787d67110ca53d752706b62f5ce5c4df8637897dee97ce6502f6a05eb6
     source_path: reference/templates/HEARTBEAT.md
-    workflow: 15
+    workflow: 16
 ---
 
-```markdown
-# Mantenha este arquivo vazio (ou apenas com comentários) para ignorar chamadas da API de Heartbeat.
+# modelo de HEARTBEAT.md
 
-# Adicione tarefas abaixo quando quiser que o agente verifique algo periodicamente.
+`HEARTBEAT.md` fica no workspace do agente. Mantenha o arquivo vazio, ou apenas com comentários e títulos em Markdown, quando quiser que o OpenClaw ignore chamadas de modelo de Heartbeat.
+
+O modelo padrão do runtime é:
+
+```markdown
+# Keep this file empty (or with only comments) to skip heartbeat API calls.
+
+# Add tasks below when you want the agent to check something periodically.
 ```
 
-## Relacionados
+Adicione tarefas curtas abaixo dos comentários somente quando quiser que o agente verifique algo periodicamente. Mantenha as instruções de Heartbeat pequenas, porque elas são lidas durante despertares recorrentes.
 
-- [Heartbeat config](/pt-BR/gateway/config-agents)
+## Relacionado
+
+- [Configuração de Heartbeat](/pt-BR/gateway/config-agents)

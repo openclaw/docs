@@ -1,30 +1,31 @@
 ---
 read_when:
     - تريد جلب عنوان URL واستخراج محتوى قابل للقراءة
-    - تحتاج إلى تهيئة web_fetch أو بديله الاحتياطي Firecrawl
+    - تحتاج إلى تكوين web_fetch أو البديل الاحتياطي Firecrawl الخاص به
     - تريد فهم حدود web_fetch والتخزين المؤقت
 sidebarTitle: Web Fetch
-summary: أداة web_fetch -- جلب عبر HTTP مع استخراج المحتوى القابل للقراءة
+summary: أداة web_fetch -- جلب HTTP مع استخراج محتوى قابل للقراءة
 title: جلب الويب
 x-i18n:
-    generated_at: "2026-05-06T18:03:48Z"
+    generated_at: "2026-06-27T18:47:56Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 337174898861db217bf0db052d8e8749989c295e89c73d9d5a6911f6335ba03d
+    source_hash: b5a4127b97ded80eec1a5944bc8606069e630c61f89c4d5ce9cb729390b4eb4d
     source_path: tools/web-fetch.md
     workflow: 16
 ---
 
-تُجري أداة `web_fetch` طلب HTTP GET عاديًا وتستخرج المحتوى المقروء
-(من HTML إلى Markdown أو نص). وهي **لا** تنفّذ JavaScript.
+تُجري أداة `web_fetch` طلب HTTP GET عاديًا وتستخرج المحتوى القابل للقراءة
+(من HTML إلى markdown أو نص). وهي **لا** تنفّذ JavaScript.
 
-للمواقع المعتمدة بكثافة على JS أو الصفحات المحمية بتسجيل الدخول، استخدم
-[متصفح الويب](/ar/tools/browser) بدلًا منها.
+للمواقع كثيفة الاعتماد على JS أو الصفحات المحمية بتسجيل الدخول، استخدم
+[متصفح الويب](/ar/tools/browser) بدلًا من ذلك.
 
 ## البدء السريع
 
-تكون `web_fetch` **مفعّلة افتراضيًا** -- لا حاجة إلى أي إعداد. يمكن للوكيل
-استدعاؤها فورًا:
+`web_fetch` **مفعّلة افتراضيًا** -- لا يلزم أي إعداد. يستطيع الوكيل
+استدعاءها فورًا:
 
 ```javascript
 await web_fetch({ url: "https://example.com/article" });
@@ -33,7 +34,7 @@ await web_fetch({ url: "https://example.com/article" });
 ## معاملات الأداة
 
 <ParamField path="url" type="string" required>
-عنوان URL المطلوب جلبه. `http(s)` فقط.
+عنوان URL المراد جلبه. `http(s)` فقط.
 </ParamField>
 
 <ParamField path="extractMode" type="'markdown' | 'text'" default="markdown">
@@ -47,22 +48,37 @@ await web_fetch({ url: "https://example.com/article" });
 ## كيف تعمل
 
 <Steps>
-  <Step title="الجلب">
-    ترسل طلب HTTP GET مع User-Agent شبيه بـ Chrome وترويسة `Accept-Language`.
-    تحظر أسماء المضيفين الخاصة/الداخلية وتعيد فحص عمليات إعادة التوجيه.
+  <Step title="Fetch">
+    يرسل طلب HTTP GET باستخدام User-Agent مشابه لـ Chrome وترويسة
+    `Accept-Language`. يحظر أسماء المضيفين الخاصة/الداخلية ويعيد فحص عمليات إعادة التوجيه.
   </Step>
-  <Step title="الاستخراج">
-    تشغّل Readability (استخراج المحتوى الرئيسي) على استجابة HTML.
+  <Step title="Extract">
+    يشغّل Readability (استخراج المحتوى الرئيسي) على استجابة HTML.
   </Step>
-  <Step title="الخيار الاحتياطي (اختياري)">
-    إذا فشل Readability وكان Firecrawl مضبوطًا، تعيد المحاولة عبر
-    Firecrawl API مع وضع تجاوز البوتات.
+  <Step title="Fallback (optional)">
+    إذا فشل Readability وكان Firecrawl محددًا، يعيد المحاولة عبر
+    Firecrawl API بوضع تجاوز البوتات.
   </Step>
-  <Step title="ذاكرة التخزين المؤقت">
-    تُخزّن النتائج مؤقتًا لمدة 15 دقيقة (قابلة للضبط) لتقليل عمليات الجلب المتكررة
-    لعنوان URL نفسه.
+  <Step title="Cache">
+    تُخزّن النتائج مؤقتًا لمدة 15 دقيقة (قابلة للإعداد) لتقليل عمليات
+    الجلب المتكررة لنفس عنوان URL.
   </Step>
 </Steps>
+
+## تحديثات التقدم
+
+تصدر `web_fetch` سطر تقدم عامًا فقط عندما يظل الجلب معلقًا
+بعد خمس ثوانٍ:
+
+```text
+Fetching page content...
+```
+
+تنتهي إصابات التخزين المؤقت السريعة واستجابات الشبكة السريعة قبل تشغيل المؤقت، لذلك
+لا تعرض سطر تقدم. إذا أُلغيت الاستدعاء، يُمسح المؤقت.
+عندما يكتمل الجلب في النهاية، يتلقى الوكيل نتيجة الأداة العادية؛
+سطر التقدم هو حالة واجهة قناة فقط ولا يحتوي أبدًا على محتوى الصفحة
+المجلوب.
 
 ## الإعداد
 
@@ -92,7 +108,7 @@ await web_fetch({ url: "https://example.com/article" });
 }
 ```
 
-## الخيار الاحتياطي Firecrawl
+## احتياطي Firecrawl
 
 إذا فشل استخراج Readability، يمكن لـ `web_fetch` الرجوع إلى
 [Firecrawl](/ar/tools/firecrawl) لتجاوز البوتات وتحسين الاستخراج:
@@ -112,7 +128,7 @@ await web_fetch({ url: "https://example.com/article" });
         enabled: true,
         config: {
           webFetch: {
-            apiKey: "fc-...", // optional if FIRECRAWL_API_KEY is set
+            // apiKey: "fc-...", // optional; omit for keyless starter access
             baseUrl: "https://api.firecrawl.dev",
             onlyMainContent: true,
             maxAgeMs: 86400000, // cache duration (1 day)
@@ -125,45 +141,48 @@ await web_fetch({ url: "https://example.com/article" });
 }
 ```
 
-يدعم `plugins.entries.firecrawl.config.webFetch.apiKey` كائنات SecretRef.
-تُرحَّل إعدادات `tools.web.fetch.firecrawl.*` القديمة تلقائيًا بواسطة `openclaw doctor --fix`.
+`plugins.entries.firecrawl.config.webFetch.apiKey` اختياري ويدعم كائنات SecretRef.
+تُرحّل إعدادات `tools.web.fetch.firecrawl.*` القديمة تلقائيًا بواسطة `openclaw doctor --fix`.
 
 <Note>
-  إذا كان Firecrawl مفعّلًا وكان SecretRef الخاص به غير محلول من دون خيار احتياطي
-  عبر متغير البيئة `FIRECRAWL_API_KEY`، يفشل بدء تشغيل Gateway سريعًا.
+  إذا أعددت Firecrawl API-key SecretRef ولم يُحلّ مع عدم وجود
+  بديل env باسم `FIRECRAWL_API_KEY`، يفشل بدء تشغيل Gateway بسرعة.
 </Note>
 
 <Note>
-  تكون تجاوزات `baseUrl` في Firecrawl مقيدة بإحكام: تستخدم الحركة المستضافة
-  `https://api.firecrawl.dev`؛ ويجب أن تستهدف التجاوزات ذاتية الاستضافة نقاط نهاية خاصة أو
+  تجاوزات `baseUrl` في Firecrawl مقيّدة بإحكام: تستخدم الحركة المستضافة
+  `https://api.firecrawl.dev`؛ ويجب أن تستهدف تجاوزات الاستضافة الذاتية نقاط نهاية خاصة أو
   داخلية، ولا يُقبل `http://` إلا لتلك الأهداف الخاصة.
 </Note>
 
 سلوك وقت التشغيل الحالي:
 
-- يحدد `tools.web.fetch.provider` موفر خيار الجلب الاحتياطي صراحةً.
-- إذا حُذف `provider`، يكتشف OpenClaw تلقائيًا أول موفر web-fetch جاهز
-  من بيانات الاعتماد المتاحة. يمكن لـ `web_fetch` غير المعزول استخدام
-  Plugins المثبتة التي تعلن `contracts.webFetchProviders` وتُسجّل
-  موفرًا مطابقًا في وقت التشغيل. حاليًا الموفر المضمّن هو Firecrawl.
-- تبقى استدعاءات `web_fetch` المعزولة مقتصرة على الموفرين المضمّنين.
-- إذا كان Readability معطلًا، يتخطى `web_fetch` مباشرةً إلى الخيار الاحتياطي
-  للموفر المحدد. إذا لم يتوفر أي موفر، فإنه يفشل بشكل مغلق.
+- يحدد `tools.web.fetch.provider` مزود احتياطي الجلب صراحةً.
+- إذا حُذف `provider`، يكتشف OpenClaw تلقائيًا أول مزود web-fetch جاهز
+  من بيانات الاعتماد المعدّة. يمكن لاستدعاء `web_fetch` غير المعزول استخدام
+  Plugins المثبتة التي تعلن `contracts.webFetchProviders` وتسجل
+  مزودًا مطابقًا في وقت التشغيل. يوفر Plugin الرسمي لـ Firecrawl هذا
+  الاحتياطي.
+- تسمح استدعاءات `web_fetch` المعزولة بالمزودين المضمّنين بالإضافة إلى المزودين المثبتين
+  الذين جرى التحقق من مصدرهم الرسمي عبر npm أو ClawHub. حاليًا يسمح ذلك
+  بـ Plugin الرسمي لـ Firecrawl؛ وتظل Plugins الجلب الخارجية التابعة لأطراف ثالثة مستبعدة.
+- إذا عُطّل Readability، تتجاوز `web_fetch` مباشرة إلى احتياطي
+  المزود المحدد. إذا لم يتوفر أي مزود، تفشل بإغلاق آمن.
 
-## وكيل البيئة الموثوق
+## وكيل env موثوق
 
-إذا كان النشر لديك يتطلب مرور `web_fetch` عبر وكيل HTTP(S) صادر
+إذا كان نشرُك يتطلب أن تمر `web_fetch` عبر وكيل HTTP(S) صادر
 موثوق، فاضبط `tools.web.fetch.useTrustedEnvProxy: true`.
 
-في هذا الوضع، يظل OpenClaw يطبّق فحوصات SSRF المستندة إلى اسم المضيف قبل إرسال
-الطلب، لكنه يتيح للوكيل حل DNS بدلًا من إجراء تثبيت DNS محلي.
-فعّل ذلك فقط عندما يكون الوكيل خاضعًا لتحكم المشغّل ويفرض
-سياسة الصادر بعد حل DNS.
+في هذا الوضع، يظل OpenClaw يطبق فحوصات SSRF المستندة إلى اسم المضيف قبل إرسال
+الطلب، لكنه يترك للوكيل حل DNS بدلًا من تثبيت DNS المحلي.
+فعّل هذا فقط عندما يكون الوكيل خاضعًا لتحكم المشغّل ويفرض
+سياسة الخروج بعد حل DNS.
 
 <Note>
-  إذا لم يكن أي متغير بيئة لوكيل HTTP(S) مضبوطًا، أو كان المضيف الهدف مستثنى بواسطة
-  `NO_PROXY`، يعود `web_fetch` إلى المسار الصارم العادي مع تثبيت DNS
-  محلي.
+  إذا لم يكن أي متغير env لوكيل HTTP(S) معدًا، أو كان المضيف الهدف مستبعدًا بواسطة
+  `NO_PROXY`، تعود `web_fetch` إلى المسار الصارم العادي مع تثبيت DNS
+  المحلي.
 </Note>
 
 ## الحدود والسلامة
@@ -172,14 +191,14 @@ await web_fetch({ url: "https://example.com/article" });
 - يُحدّ جسم الاستجابة عند `maxResponseBytes` قبل التحليل؛ وتُقتطع
   الاستجابات كبيرة الحجم مع تحذير
 - تُحظر أسماء المضيفين الخاصة/الداخلية
-- يُعد `tools.web.fetch.ssrfPolicy.allowRfc2544BenchmarkRange` و
-  `tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` تفعيلين اختياريين ضيقين
-  لمكدسات وكلاء fake-IP الموثوقة؛ اتركهما غير مضبوطين ما لم يكن وكيلك يمتلك
-  تلك النطاقات الاصطناعية ويفرض سياسة وجهته الخاصة
+- `tools.web.fetch.ssrfPolicy.allowRfc2544BenchmarkRange` و
+  `tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` هما خيارا تفعيل ضيقان
+  لمكدسات وكلاء fake-IP الموثوقة؛ اتركهما غير مضبوطين ما لم يكن وكيلك يملك
+  تلك النطاقات الاصطناعية ويفرض سياسة الوجهة الخاصة به
 - تُفحص عمليات إعادة التوجيه وتُحد بواسطة `maxRedirects`
-- يُعد `useTrustedEnvProxy` تفعيلًا اختياريًا صريحًا ويجب ألا يُمكّن إلا للوكلاء
-  الخاضعين لتحكم المشغّل الذين لا يزالون يفرضون سياسة الصادر بعد حل DNS
-- `web_fetch` جهدها الأفضل -- بعض المواقع تحتاج إلى [متصفح الويب](/ar/tools/browser)
+- `useTrustedEnvProxy` خيار تفعيل صريح ويجب ألا يُفعّل إلا للوكلاء
+  الخاضعين لتحكم المشغّل الذين ما زالوا يفرضون سياسة الخروج بعد حل DNS
+- `web_fetch` تعمل بأفضل جهد -- تحتاج بعض المواقع إلى [متصفح الويب](/ar/tools/browser)
 
 ## ملفات تعريف الأدوات
 
@@ -196,6 +215,6 @@ await web_fetch({ url: "https://example.com/article" });
 
 ## ذات صلة
 
-- [بحث الويب](/ar/tools/web) -- ابحث في الويب باستخدام موفرين متعددين
-- [متصفح الويب](/ar/tools/browser) -- أتمتة متصفح كاملة للمواقع المعتمدة بكثافة على JS
-- [Firecrawl](/ar/tools/firecrawl) -- أدوات البحث والكشط من Firecrawl
+- [بحث الويب](/ar/tools/web) -- ابحث في الويب باستخدام مزودين متعددين
+- [متصفح الويب](/ar/tools/browser) -- أتمتة متصفح كاملة للمواقع كثيفة الاعتماد على JS
+- [Firecrawl](/ar/tools/firecrawl) -- أدوات بحث وكشط Firecrawl

@@ -1,15 +1,16 @@
 ---
 read_when:
-    - Plugin을 core npm 패키지에 포함해 배포할지, 별도로 설치할지 결정하고 있습니다
-    - 번들 Plugin 패키지 메타데이터 또는 릴리스 자동화를 업데이트하고 있습니다
-    - 정식 내부/외부 Plugin 목록이 필요합니다
-summary: 코어에 포함되어 배포되거나, 외부에 게시되거나, 소스 전용으로 유지되는 OpenClaw Plugin의 생성된 인벤토리
+    - Plugin이 핵심 npm 패키지에 포함되어 배포되는지, 아니면 별도로 설치되는지 결정합니다
+    - 번들된 Plugin 패키지 메타데이터 또는 릴리스 자동화를 업데이트하고 있습니다
+    - 정식 내부 Plugin과 외부 Plugin 목록이 필요합니다
+summary: 코어에 포함되어 제공되거나, 외부에 게시되거나, 소스 전용으로 유지되는 OpenClaw Plugin의 생성된 인벤토리
 title: Plugin 인벤토리
 x-i18n:
-    generated_at: "2026-05-10T19:44:26Z"
+    generated_at: "2026-06-27T17:47:51Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1a42c8f230925618eb7c15fd6ea7279694adccd45d8e827bb89dffa13576521d
+    source_hash: a1f0c5aa2c3e5f25308a4398dc2582caa8f355a4dfd0d5693d9cfaf1c1ce6926
     source_path: plugins/plugin-inventory.md
     workflow: 16
 ---
@@ -25,19 +26,19 @@ pnpm plugins:inventory:gen
 
 ## 정의
 
-- **핵심 npm 패키지:** `openclaw` npm 패키지에 포함되어 있으며 별도의 Plugin 설치 없이 사용할 수 있습니다.
-- **공식 외부 패키지:** 핵심 npm 패키지에서는 제외되지만 이 공식 인벤토리에 유지되며 ClawHub 및/또는 npm을 통해 필요할 때 설치되는 OpenClaw 유지 관리 Plugin입니다.
-- **소스 체크아웃 전용:** 게시된 npm 아티팩트에서 제외되며 설치 가능한 패키지로 안내되지 않는 저장소 로컬 Plugin입니다.
+- **코어 npm 패키지:** `openclaw` npm 패키지에 내장되어 있으며 별도의 plugin 설치 없이 사용할 수 있습니다.
+- **공식 외부 패키지:** 코어 npm 패키지에서 제외된 OpenClaw 유지 관리 plugin으로, 이 공식 인벤토리에 보관되며 ClawHub 및/또는 npm을 통해 필요할 때 설치됩니다.
+- **소스 체크아웃 전용:** 게시된 npm 아티팩트에서 제외되며 설치 가능한 패키지로 홍보되지 않는 저장소 로컬 plugin입니다.
 
-소스 체크아웃은 npm 설치와 다릅니다. `pnpm install` 후에는 번들된
-Plugin이 `extensions/<id>`에서 로드되므로 로컬 편집 사항과 패키지 로컬 워크스페이스
+소스 체크아웃은 npm 설치와 다릅니다. `pnpm install` 후 번들된
+plugins는 `extensions/<id>`에서 로드되므로 로컬 편집 사항과 패키지 로컬 워크스페이스
 의존성을 사용할 수 있습니다.
 
 ## Plugin 설치
 
-설치가 필요한지 판단하려면 **배포 방식** 열을 사용하세요. `included in OpenClaw`라고
-표시된 Plugin은 핵심 패키지에 이미 포함되어 있습니다. 공식 외부 패키지는 한 번
-설치한 다음 Gateway를 다시 시작해야 합니다.
+설치가 필요한지 판단하려면 각 항목의 설치 경로를 사용하세요. `included in OpenClaw`라고
+표시된 plugins는 이미 코어 패키지에 포함되어 있습니다.
+공식 외부 패키지는 한 번 설치한 뒤 Gateway를 다시 시작해야 합니다.
 
 예를 들어 Discord는 공식 외부 패키지입니다.
 
@@ -47,140 +48,282 @@ openclaw gateway restart
 openclaw plugins inspect discord --runtime --json
 ```
 
-bare 패키지 명세는 먼저 ClawHub를 시도한 다음 npm으로 대체합니다. 소스를 강제하려면
-`clawhub:@openclaw/discord` 또는 `npm:@openclaw/discord`를 사용하세요. 설치 후에는
-자격 증명과 채널 구성을 추가하기 위해 [Discord](/ko/channels/discord)와 같은
-Plugin의 설정 문서를 따르세요. 업데이트, 제거, 게시 명령은
-[Plugin 관리](/ko/plugins/manage-plugins)를 참조하세요.
+출시 전환 중에는 일반적인 bare 패키지 명세도 계속 npm에서 설치됩니다.
+명시적인 소스가 필요할 때는 `clawhub:@openclaw/discord` 또는 `npm:@openclaw/discord`를 사용하세요.
+설치 후에는 [Discord](/ko/channels/discord)와 같은 plugin의 설정 문서를 따라
+자격 증명과 채널 구성을 추가하세요. 업데이트, 제거, 게시
+명령은 [plugins 관리](/ko/plugins/manage-plugins)를 참조하세요.
 
-## 핵심 npm 패키지
+각 항목에는 패키지, 배포 경로, 설명이 나열됩니다.
 
-| Plugin                                                            | 설명                                                                                                                                                          | 배포                                                         | 노출면                                                                                                                                                                                                                                                          |
-| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [alibaba](/ko/plugins/reference/alibaba)                             | 비디오 생성 제공자 지원을 추가합니다.                                                                                                                              | `@openclaw/alibaba-provider`<br />OpenClaw에 포함               | contracts: videoGenerationProviders                                                                                                                                                                                                                              |
-| [amazon-bedrock](/ko/plugins/reference/amazon-bedrock)               | OpenClaw에 Amazon Bedrock 모델 제공자 지원을 추가합니다.                                                                                                              | `@openclaw/amazon-bedrock-provider`<br />OpenClaw에 포함        | providers: amazon-bedrock; contracts: memoryEmbeddingProviders                                                                                                                                                                                                   |
-| [amazon-bedrock-mantle](/ko/plugins/reference/amazon-bedrock-mantle) | OpenClaw에 Amazon Bedrock Mantle 모델 제공자 지원을 추가합니다.                                                                                                       | `@openclaw/amazon-bedrock-mantle-provider`<br />OpenClaw에 포함 | providers: amazon-bedrock-mantle                                                                                                                                                                                                                                 |
-| [anthropic](/ko/plugins/reference/anthropic)                         | OpenClaw에 Anthropic 모델 제공자 지원을 추가합니다.                                                                                                                   | `@openclaw/anthropic-provider`<br />OpenClaw에 포함             | providers: anthropic; contracts: mediaUnderstandingProviders                                                                                                                                                                                                     |
-| [anthropic-vertex](/ko/plugins/reference/anthropic-vertex)           | OpenClaw에 Anthropic Vertex 모델 제공자 지원을 추가합니다.                                                                                                            | `@openclaw/anthropic-vertex-provider`<br />OpenClaw에 포함      | providers: anthropic-vertex                                                                                                                                                                                                                                      |
-| [arcee](/ko/plugins/reference/arcee)                                 | OpenClaw에 Arcee 모델 제공자 지원을 추가합니다.                                                                                                                       | `@openclaw/arcee-provider`<br />OpenClaw에 포함                 | providers: arcee                                                                                                                                                                                                                                                 |
-| [azure-speech](/ko/plugins/reference/azure-speech)                   | Azure AI Speech 텍스트 음성 변환(MP3, 네이티브 Ogg/Opus 음성 노트, PCM 전화 통신).                                                                                    | `@openclaw/azure-speech`<br />OpenClaw에 포함                   | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [bonjour](/ko/plugins/reference/bonjour)                             | Bonjour/mDNS를 통해 로컬 OpenClaw Gateway를 광고합니다.                                                                                                              | `@openclaw/bonjour`<br />OpenClaw에 포함                        | plugin                                                                                                                                                                                                                                                           |
-| [browser](/ko/plugins/reference/browser)                             | 에이전트가 호출할 수 있는 도구를 추가합니다.                                                                                                                                           | `@openclaw/browser-plugin`<br />OpenClaw에 포함                 | contracts: tools; skills                                                                                                                                                                                                                                         |
-| [byteplus](/ko/plugins/reference/byteplus)                           | OpenClaw에 BytePlus, BytePlus Plan 모델 제공자 지원을 추가합니다.                                                                                                     | `@openclaw/byteplus-provider`<br />OpenClaw에 포함              | providers: byteplus, byteplus-plan; contracts: videoGenerationProviders                                                                                                                                                                                          |
-| [canvas](/ko/plugins/reference/canvas)                               | 페어링된 Node를 위한 실험적 Canvas 제어 및 A2UI 렌더링 노출면입니다.                                                                                            | `@openclaw/canvas-plugin`<br />OpenClaw에 포함                  | contracts: tools                                                                                                                                                                                                                                                 |
-| [cerebras](/ko/plugins/reference/cerebras)                           | OpenClaw에 Cerebras 모델 제공자 지원을 추가합니다.                                                                                                                    | `@openclaw/cerebras-provider`<br />OpenClaw에 포함              | providers: cerebras                                                                                                                                                                                                                                              |
-| [chutes](/ko/plugins/reference/chutes)                               | OpenClaw에 Chutes 모델 제공자 지원을 추가합니다.                                                                                                                      | `@openclaw/chutes-provider`<br />OpenClaw에 포함                | providers: chutes                                                                                                                                                                                                                                                |
-| [clickclack](/ko/plugins/reference/clickclack)                       | OpenClaw 메시지를 보내고 받기 위한 Clickclack 채널 노출면을 추가합니다.                                                                                     | `@openclaw/clickclack`<br />OpenClaw에 포함                     | channels: clickclack                                                                                                                                                                                                                                             |
-| [cloudflare-ai-gateway](/ko/plugins/reference/cloudflare-ai-gateway) | OpenClaw에 Cloudflare AI Gateway 모델 제공자 지원을 추가합니다.                                                                                                       | `@openclaw/cloudflare-ai-gateway-provider`<br />OpenClaw에 포함 | providers: cloudflare-ai-gateway                                                                                                                                                                                                                                 |
-| [comfy](/ko/plugins/reference/comfy)                                 | OpenClaw에 ComfyUI 모델 제공자 지원을 추가합니다.                                                                                                                     | `@openclaw/comfy-provider`<br />OpenClaw에 포함                 | providers: comfy; contracts: imageGenerationProviders, musicGenerationProviders, videoGenerationProviders                                                                                                                                                        |
-| [copilot-proxy](/ko/plugins/reference/copilot-proxy)                 | OpenClaw에 Copilot Proxy 모델 제공자 지원을 추가합니다.                                                                                                               | `@openclaw/copilot-proxy`<br />OpenClaw에 포함                  | providers: copilot-proxy                                                                                                                                                                                                                                         |
-| [deepgram](/ko/plugins/reference/deepgram)                           | 미디어 이해 제공자 지원을 추가합니다. 실시간 전사 제공자 지원을 추가합니다.                                                                             | `@openclaw/deepgram-provider`<br />OpenClaw에 포함              | contracts: mediaUnderstandingProviders, realtimeTranscriptionProviders                                                                                                                                                                                           |
-| [deepinfra](/ko/plugins/reference/deepinfra)                         | OpenClaw에 DeepInfra 모델 제공자 지원을 추가합니다.                                                                                                                   | `@openclaw/deepinfra-provider`<br />OpenClaw에 포함             | providers: deepinfra; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, speechProviders, videoGenerationProviders                                                                                                      |
-| [deepseek](/ko/plugins/reference/deepseek)                           | OpenClaw에 DeepSeek 모델 제공자 지원을 추가합니다.                                                                                                                    | `@openclaw/deepseek-provider`<br />OpenClaw에 포함됨              | providers: deepseek                                                                                                                                                                                                                                              |
-| [document-extract](/ko/plugins/reference/document-extract)           | 로컬 문서 첨부 파일에서 텍스트와 대체 페이지 이미지를 추출합니다.                                                                                               | `@openclaw/document-extract-plugin`<br />OpenClaw에 포함됨        | contracts: documentExtractors                                                                                                                                                                                                                                    |
-| [duckduckgo](/ko/plugins/reference/duckduckgo)                       | 웹 검색 제공자 지원을 추가합니다.                                                                                                                                    | `@openclaw/duckduckgo-plugin`<br />OpenClaw에 포함됨              | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [elevenlabs](/ko/plugins/reference/elevenlabs)                       | 미디어 이해 제공자 지원을 추가합니다. 실시간 전사 제공자 지원을 추가합니다. 텍스트 음성 변환 제공자 지원을 추가합니다.                                       | `@openclaw/elevenlabs-speech`<br />OpenClaw에 포함됨              | contracts: mediaUnderstandingProviders, realtimeTranscriptionProviders, speechProviders                                                                                                                                                                          |
-| [exa](/ko/plugins/reference/exa)                                     | 웹 검색 제공자 지원을 추가합니다.                                                                                                                                    | `@openclaw/exa-plugin`<br />OpenClaw에 포함됨                     | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [fal](/ko/plugins/reference/fal)                                     | OpenClaw에 fal 모델 제공자 지원을 추가합니다.                                                                                                                         | `@openclaw/fal-provider`<br />OpenClaw에 포함됨                   | providers: fal; contracts: imageGenerationProviders, videoGenerationProviders                                                                                                                                                                                    |
-| [file-transfer](/ko/plugins/reference/file-transfer)                 | 전용 Node 명령을 통해 페어링된 노드에서 파일을 가져오고, 나열하고, 씁니다. 최대 16MB 바이너리에 대해 node.invoke에서 base64를 사용하여 bash stdout 잘림을 우회합니다. | `@openclaw/file-transfer`<br />OpenClaw에 포함됨                  | contracts: tools                                                                                                                                                                                                                                                 |
-| [firecrawl](/ko/plugins/reference/firecrawl)                         | 에이전트가 호출할 수 있는 도구를 추가합니다. 웹 가져오기 제공자 지원을 추가합니다. 웹 검색 제공자 지원을 추가합니다.                                                                        | `@openclaw/firecrawl-plugin`<br />OpenClaw에 포함됨               | contracts: tools, webFetchProviders, webSearchProviders                                                                                                                                                                                                          |
-| [fireworks](/ko/plugins/reference/fireworks)                         | OpenClaw에 Fireworks 모델 제공자 지원을 추가합니다.                                                                                                                   | `@openclaw/fireworks-provider`<br />OpenClaw에 포함됨             | providers: fireworks                                                                                                                                                                                                                                             |
-| [github-copilot](/ko/plugins/reference/github-copilot)               | OpenClaw에 GitHub Copilot 모델 제공자 지원을 추가합니다.                                                                                                              | `@openclaw/github-copilot-provider`<br />OpenClaw에 포함됨        | providers: github-copilot; contracts: memoryEmbeddingProviders                                                                                                                                                                                                   |
-| [google](/ko/plugins/reference/google)                               | OpenClaw에 Google, Google Gemini CLI, Google Vertex 모델 제공자 지원을 추가합니다.                                                                                    | `@openclaw/google-plugin`<br />OpenClaw에 포함됨                  | providers: google, google-gemini-cli, google-vertex; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, musicGenerationProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders, webSearchProviders |
-| [gradium](/ko/plugins/reference/gradium)                             | 텍스트 음성 변환 제공자 지원을 추가합니다.                                                                                                                                | `@openclaw/gradium-speech`<br />OpenClaw에 포함됨                 | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [groq](/ko/plugins/reference/groq)                                   | OpenClaw에 Groq 모델 제공자 지원을 추가합니다.                                                                                                                        | `@openclaw/groq-provider`<br />OpenClaw에 포함됨                  | providers: groq; contracts: mediaUnderstandingProviders                                                                                                                                                                                                          |
-| [huggingface](/ko/plugins/reference/huggingface)                     | OpenClaw에 Hugging Face 모델 제공자 지원을 추가합니다.                                                                                                                | `@openclaw/huggingface-provider`<br />OpenClaw에 포함됨           | providers: huggingface                                                                                                                                                                                                                                           |
-| [imessage](/ko/plugins/reference/imessage)                           | OpenClaw 메시지를 보내고 받기 위한 iMessage 채널 표면을 추가합니다.                                                                                       | `@openclaw/imessage`<br />OpenClaw에 포함됨                       | channels: imessage                                                                                                                                                                                                                                               |
-| [inworld](/ko/plugins/reference/inworld)                             | Inworld 스트리밍 텍스트 음성 변환(MP3, OGG_OPUS, PCM 전화 통신).                                                                                                     | `@openclaw/inworld-speech`<br />OpenClaw에 포함됨                 | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [irc](/ko/plugins/reference/irc)                                     | OpenClaw 메시지를 보내고 받기 위한 IRC 채널 표면을 추가합니다.                                                                                            | `@openclaw/irc`<br />OpenClaw에 포함됨                            | channels: irc                                                                                                                                                                                                                                                    |
-| [kilocode](/ko/plugins/reference/kilocode)                           | OpenClaw에 Kilocode 모델 제공자 지원을 추가합니다.                                                                                                                    | `@openclaw/kilocode-provider`<br />OpenClaw에 포함됨              | providers: kilocode                                                                                                                                                                                                                                              |
-| [kimi](/ko/plugins/reference/kimi)                                   | OpenClaw에 Kimi, Kimi Coding 모델 제공자 지원을 추가합니다.                                                                                                           | `@openclaw/kimi-provider`<br />OpenClaw에 포함됨                  | providers: kimi, kimi-coding                                                                                                                                                                                                                                     |
-| [litellm](/ko/plugins/reference/litellm)                             | OpenClaw에 LiteLLM 모델 제공자 지원을 추가합니다.                                                                                                                     | `@openclaw/litellm-provider`<br />OpenClaw에 포함됨               | providers: litellm; contracts: imageGenerationProviders                                                                                                                                                                                                          |
-| [llm-task](/ko/plugins/reference/llm-task)                           | 워크플로에서 호출할 수 있는 구조화된 작업용 범용 JSON 전용 LLM 도구입니다.                                                                                             | `@openclaw/llm-task`<br />OpenClaw에 포함됨                       | contracts: tools                                                                                                                                                                                                                                                 |
-| [lmstudio](/ko/plugins/reference/lmstudio)                           | OpenClaw에 LM Studio 모델 제공자 지원을 추가합니다.                                                                                                                   | `@openclaw/lmstudio-provider`<br />OpenClaw에 포함됨              | providers: lmstudio; contracts: memoryEmbeddingProviders                                                                                                                                                                                                         |
-| [mattermost](/ko/plugins/reference/mattermost)                       | OpenClaw 메시지를 주고받기 위한 Mattermost 채널 인터페이스를 추가합니다.                                                                                     | `@openclaw/mattermost`<br />OpenClaw에 포함됨                     | channels: mattermost                                                                                                                                                                                                                                             |
-| [memory-core](/ko/plugins/reference/memory-core)                     | 메모리 임베딩 제공자 지원을 추가합니다. 에이전트가 호출할 수 있는 도구를 추가합니다.                                                                                                   | `@openclaw/memory-core`<br />OpenClaw에 포함됨                    | contracts: memoryEmbeddingProviders, tools                                                                                                                                                                                                                       |
-| [memory-wiki](/ko/plugins/reference/memory-wiki)                     | OpenClaw용 영구 wiki 컴파일러 및 Obsidian 친화적 지식 볼트입니다.                                                                                         | `@openclaw/memory-wiki`<br />OpenClaw에 포함됨                    | contracts: tools; skills                                                                                                                                                                                                                                         |
-| [microsoft](/ko/plugins/reference/microsoft)                         | 텍스트 음성 변환 제공자 지원을 추가합니다.                                                                                                                                | `@openclaw/microsoft-speech`<br />OpenClaw에 포함됨               | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [microsoft-foundry](/ko/plugins/reference/microsoft-foundry)         | OpenClaw에 Microsoft Foundry 모델 제공자 지원을 추가합니다.                                                                                                           | `@openclaw/microsoft-foundry`<br />OpenClaw에 포함됨              | providers: microsoft-foundry                                                                                                                                                                                                                                     |
-| [migrate-claude](/ko/plugins/reference/migrate-claude)               | Claude Code 및 Claude Desktop 지침, MCP 서버, skills, 안전한 구성을 OpenClaw로 가져옵니다.                                                      | `@openclaw/migrate-claude`<br />OpenClaw에 포함됨                 | contracts: migrationProviders                                                                                                                                                                                                                                    |
-| [migrate-hermes](/ko/plugins/reference/migrate-hermes)               | Hermes 구성, memories, skills, 지원되는 자격 증명을 OpenClaw로 가져옵니다.                                                                             | `@openclaw/migrate-hermes`<br />OpenClaw에 포함됨                 | contracts: migrationProviders                                                                                                                                                                                                                                    |
-| [minimax](/ko/plugins/reference/minimax)                             | OpenClaw에 MiniMax, MiniMax Portal 모델 제공자 지원을 추가합니다.                                                                                                     | `@openclaw/minimax-provider`<br />OpenClaw에 포함됨               | providers: minimax, minimax-portal; contracts: imageGenerationProviders, mediaUnderstandingProviders, musicGenerationProviders, speechProviders, videoGenerationProviders, webSearchProviders                                                                    |
-| [mistral](/ko/plugins/reference/mistral)                             | OpenClaw에 Mistral 모델 제공자 지원을 추가합니다.                                                                                                                     | `@openclaw/mistral-provider`<br />OpenClaw에 포함됨               | providers: mistral; contracts: mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders                                                                                                                                             |
-| [moonshot](/ko/plugins/reference/moonshot)                           | OpenClaw에 Moonshot 모델 제공자 지원을 추가합니다.                                                                                                                    | `@openclaw/moonshot-provider`<br />OpenClaw에 포함됨              | providers: moonshot; contracts: mediaUnderstandingProviders, webSearchProviders                                                                                                                                                                                  |
-| [nvidia](/ko/plugins/reference/nvidia)                               | OpenClaw에 NVIDIA 모델 제공자 지원을 추가합니다.                                                                                                                      | `@openclaw/nvidia-provider`<br />OpenClaw에 포함됨                | providers: nvidia                                                                                                                                                                                                                                                |
-| [oc-path](/ko/plugins/reference/oc-path)                             | oc:// 워크스페이스 파일 주소 지정을 위한 openclaw path CLI를 추가합니다.                                                                                                      | `@openclaw/oc-path`<br />OpenClaw에 포함됨                        | plugin                                                                                                                                                                                                                                                           |
-| [ollama](/ko/plugins/reference/ollama)                               | OpenClaw에 Ollama 모델 제공자 지원을 추가합니다.                                                                                                                      | `@openclaw/ollama-provider`<br />OpenClaw에 포함됨                | providers: ollama; contracts: memoryEmbeddingProviders, webSearchProviders                                                                                                                                                                                       |
-| [open-prose](/ko/plugins/reference/open-prose)                       | /prose 슬래시 명령이 포함된 OpenProse VM skill pack입니다.                                                                                                                 | `@openclaw/open-prose`<br />OpenClaw에 포함됨                     | skills                                                                                                                                                                                                                                                           |
-| [openai](/ko/plugins/reference/openai)                               | OpenClaw에 OpenAI, OpenAI Codex 모델 제공자 지원을 추가합니다.                                                                                                        | `@openclaw/openai-provider`<br />OpenClaw에 포함됨                | providers: openai, openai-codex; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders                                   |
-| [opencode](/ko/plugins/reference/opencode)                           | OpenClaw에 OpenCode 모델 제공자 지원을 추가합니다.                                                                                                                    | `@openclaw/opencode-provider`<br />OpenClaw에 포함됨              | providers: opencode; contracts: mediaUnderstandingProviders                                                                                                                                                                                                      |
-| [opencode-go](/ko/plugins/reference/opencode-go)                     | OpenClaw에 OpenCode Go 모델 제공자 지원을 추가합니다.                                                                                                                 | `@openclaw/opencode-go-provider`<br />OpenClaw에 포함됨           | providers: opencode-go; contracts: mediaUnderstandingProviders                                                                                                                                                                                                   |
-| [openrouter](/ko/plugins/reference/openrouter)                       | OpenClaw에 OpenRouter 모델 제공자 지원을 추가합니다.                                                                                                                  | `@openclaw/openrouter-provider`<br />OpenClaw에 포함됨            | providers: openrouter; contracts: imageGenerationProviders, mediaUnderstandingProviders, speechProviders, videoGenerationProviders                                                                                                                               |
-| [openshell](/ko/plugins/reference/openshell)                         | 미러링된 로컬 워크스페이스와 SSH 기반 명령 실행을 갖춘 OpenShell 기반 샌드박스 백엔드입니다.                                                                 | `@openclaw/openshell-sandbox`<br />OpenClaw에 포함됨              | plugin                                                                                                                                                                                                                                                           |
-| [perplexity](/ko/plugins/reference/perplexity)                       | 웹 검색 제공자 지원을 추가합니다.                                                                                                                                    | `@openclaw/perplexity-plugin`<br />OpenClaw에 포함됨              | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [qianfan](/ko/plugins/reference/qianfan)                             | OpenClaw에 Qianfan 모델 공급자 지원을 추가합니다.                                                                                                                     | `@openclaw/qianfan-provider`<br />OpenClaw에 포함됨               | providers: qianfan                                                                                                                                                                                                                                               |
-| [qwen](/ko/plugins/reference/qwen)                                   | OpenClaw에 Qwen, Qwen Cloud, Model Studio, DashScope 모델 공급자 지원을 추가합니다.                                                                                   | `@openclaw/qwen-provider`<br />OpenClaw에 포함됨                  | providers: qwen, qwencloud, modelstudio, dashscope; contracts: mediaUnderstandingProviders, videoGenerationProviders                                                                                                                                             |
-| [runway](/ko/plugins/reference/runway)                               | 비디오 생성 공급자 지원을 추가합니다.                                                                                                                              | `@openclaw/runway-provider`<br />OpenClaw에 포함됨                | contracts: videoGenerationProviders                                                                                                                                                                                                                              |
-| [searxng](/ko/plugins/reference/searxng)                             | 웹 검색 공급자 지원을 추가합니다.                                                                                                                                    | `@openclaw/searxng-plugin`<br />OpenClaw에 포함됨                 | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [senseaudio](/ko/plugins/reference/senseaudio)                       | 미디어 이해 공급자 지원을 추가합니다.                                                                                                                           | `@openclaw/senseaudio-provider`<br />OpenClaw에 포함됨            | contracts: mediaUnderstandingProviders                                                                                                                                                                                                                           |
-| [sglang](/ko/plugins/reference/sglang)                               | OpenClaw에 SGLang 모델 공급자 지원을 추가합니다.                                                                                                                      | `@openclaw/sglang-provider`<br />OpenClaw에 포함됨                | providers: sglang                                                                                                                                                                                                                                                |
-| [signal](/ko/plugins/reference/signal)                               | OpenClaw 메시지를 보내고 받기 위한 Signal 채널 표면을 추가합니다.                                                                                         | `@openclaw/signal`<br />OpenClaw에 포함됨                         | channels: signal                                                                                                                                                                                                                                                 |
-| [skill-workshop](/ko/plugins/reference/skill-workshop)               | 검토 대기, 안전한 쓰기, Skill 프롬프트 새로 고침과 함께 반복 가능한 워크플로를 작업공간 Skills로 캡처합니다.                                                       | `@openclaw/skill-workshop`<br />OpenClaw에 포함됨                 | contracts: tools                                                                                                                                                                                                                                                 |
-| [slack](/ko/plugins/reference/slack)                                 | OpenClaw 메시지를 보내고 받기 위한 Slack 채널 표면을 추가합니다.                                                                                          | `@openclaw/slack`<br />OpenClaw에 포함됨                          | channels: slack                                                                                                                                                                                                                                                  |
-| [stepfun](/ko/plugins/reference/stepfun)                             | OpenClaw에 StepFun, StepFun Plan 모델 공급자 지원을 추가합니다.                                                                                                       | `@openclaw/stepfun-provider`<br />OpenClaw에 포함됨               | providers: stepfun, stepfun-plan                                                                                                                                                                                                                                 |
-| [synthetic](/ko/plugins/reference/synthetic)                         | OpenClaw에 Synthetic 모델 공급자 지원을 추가합니다.                                                                                                                   | `@openclaw/synthetic-provider`<br />OpenClaw에 포함됨             | providers: synthetic                                                                                                                                                                                                                                             |
-| [tavily](/ko/plugins/reference/tavily)                               | 에이전트가 호출할 수 있는 도구를 추가합니다. 웹 검색 공급자 지원을 추가합니다.                                                                                                         | `@openclaw/tavily-plugin`<br />OpenClaw에 포함됨                  | contracts: tools, webSearchProviders; skills                                                                                                                                                                                                                     |
-| [telegram](/ko/plugins/reference/telegram)                           | OpenClaw 메시지를 보내고 받기 위한 Telegram 채널 표면을 추가합니다.                                                                                       | `@openclaw/telegram`<br />OpenClaw에 포함됨                       | channels: telegram                                                                                                                                                                                                                                               |
-| [tencent](/ko/plugins/reference/tencent)                             | OpenClaw에 Tencent TokenHub 모델 공급자 지원을 추가합니다.                                                                                                            | `@openclaw/tencent-provider`<br />OpenClaw에 포함됨               | providers: tencent-tokenhub                                                                                                                                                                                                                                      |
-| [together](/ko/plugins/reference/together)                           | OpenClaw에 Together 모델 공급자 지원을 추가합니다.                                                                                                                    | `@openclaw/together-provider`<br />OpenClaw에 포함됨              | providers: together; contracts: videoGenerationProviders                                                                                                                                                                                                         |
-| [tokenjuice](/ko/plugins/reference/tokenjuice)                       | tokenjuice 리듀서로 exec 및 bash 도구 결과를 압축합니다.                                                                                                        | `@openclaw/tokenjuice`<br />OpenClaw에 포함됨                     | contracts: agentToolResultMiddleware                                                                                                                                                                                                                             |
-| [tts-local-cli](/ko/plugins/reference/tts-local-cli)                 | 텍스트 음성 변환 공급자 지원을 추가합니다.                                                                                                                                | `@openclaw/tts-local-cli`<br />OpenClaw에 포함됨                  | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [venice](/ko/plugins/reference/venice)                               | OpenClaw에 Venice 모델 공급자 지원을 추가합니다.                                                                                                                      | `@openclaw/venice-provider`<br />OpenClaw에 포함됨                | providers: venice                                                                                                                                                                                                                                                |
-| [vercel-ai-gateway](/ko/plugins/reference/vercel-ai-gateway)         | OpenClaw에 Vercel AI Gateway 모델 공급자 지원을 추가합니다.                                                                                                           | `@openclaw/vercel-ai-gateway-provider`<br />OpenClaw에 포함됨     | providers: vercel-ai-gateway                                                                                                                                                                                                                                     |
-| [vllm](/ko/plugins/reference/vllm)                                   | OpenClaw에 vLLM 모델 공급자 지원을 추가합니다.                                                                                                                        | `@openclaw/vllm-provider`<br />OpenClaw에 포함됨                  | providers: vllm                                                                                                                                                                                                                                                  |
-| [volcengine](/ko/plugins/reference/volcengine)                       | OpenClaw에 Volcengine, Volcengine Plan 모델 공급자 지원을 추가합니다.                                                                                                 | `@openclaw/volcengine-provider`<br />OpenClaw에 포함됨            | providers: volcengine, volcengine-plan; contracts: speechProviders                                                                                                                                                                                               |
-| [voyage](/ko/plugins/reference/voyage)                               | 메모리 임베딩 프로바이더 지원을 추가합니다.                                                                                                                              | `@openclaw/voyage-provider`<br />OpenClaw에 포함됨                | contracts: memoryEmbeddingProviders                                                                                                                                                                                                                              |
-| [vydra](/ko/plugins/reference/vydra)                                 | Vydra 모델 프로바이더 지원을 OpenClaw에 추가합니다.                                                                                                                       | `@openclaw/vydra-provider`<br />OpenClaw에 포함됨                 | providers: vydra; contracts: imageGenerationProviders, speechProviders, videoGenerationProviders                                                                                                                                                                 |
-| [web-readability](/ko/plugins/reference/web-readability)             | 로컬 HTML 웹 가져오기 응답에서 읽기 쉬운 문서 콘텐츠를 추출합니다.                                                                                                | `@openclaw/web-readability-plugin`<br />OpenClaw에 포함됨         | contracts: webContentExtractors                                                                                                                                                                                                                                  |
-| [webhooks](/ko/plugins/reference/webhooks)                           | 외부 자동화를 OpenClaw TaskFlow에 바인딩하는 인증된 인바운드 Webhook입니다.                                                                                  | `@openclaw/webhooks`<br />OpenClaw에 포함됨                       | plugin                                                                                                                                                                                                                                                           |
-| [xai](/ko/plugins/reference/xai)                                     | xAI 모델 프로바이더 지원을 OpenClaw에 추가합니다.                                                                                                                         | `@openclaw/xai-plugin`<br />OpenClaw에 포함됨                     | providers: xai; contracts: imageGenerationProviders, mediaUnderstandingProviders, realtimeTranscriptionProviders, speechProviders, tools, videoGenerationProviders, webSearchProviders                                                                           |
-| [xiaomi](/ko/plugins/reference/xiaomi)                               | Xiaomi 모델 프로바이더 지원을 OpenClaw에 추가합니다.                                                                                                                      | `@openclaw/xiaomi-provider`<br />OpenClaw에 포함됨                | providers: xiaomi; contracts: speechProviders                                                                                                                                                                                                                    |
-| [zai](/ko/plugins/reference/zai)                                     | Z.AI 모델 프로바이더 지원을 OpenClaw에 추가합니다.                                                                                                                        | `@openclaw/zai-provider`<br />OpenClaw에 포함됨                   | providers: zai; contracts: mediaUnderstandingProviders                                                                                                                                                                                                           |
+## 코어 npm 패키지
+
+59개 plugins
+
+- **[admin-http-rpc](/ko/plugins/reference/admin-http-rpc)** (`@openclaw/admin-http-rpc`) - OpenClaw에 포함됨. OpenClaw 관리자 HTTP RPC 엔드포인트입니다.
+
+- **[alibaba](/ko/plugins/reference/alibaba)** (`@openclaw/alibaba-provider`) - OpenClaw에 포함됨. 동영상 생성 provider 지원을 추가합니다.
+
+- **[anthropic](/ko/plugins/reference/anthropic)** (`@openclaw/anthropic-provider`) - OpenClaw에 포함됨. OpenClaw에 Anthropic 모델 provider 지원을 추가합니다.
+
+- **[azure-speech](/ko/plugins/reference/azure-speech)** (`@openclaw/azure-speech`) - OpenClaw에 포함됨. Azure AI Speech 텍스트 음성 변환(MP3, 네이티브 Ogg/Opus 음성 메모, PCM 전화 통신).
+
+- **[bonjour](/ko/plugins/reference/bonjour)** (`@openclaw/bonjour`) - OpenClaw에 포함됨. Bonjour/mDNS를 통해 로컬 OpenClaw gateway를 알립니다.
+
+- **[browser](/ko/plugins/reference/browser)** (`@openclaw/browser-plugin`) - OpenClaw에 포함됨. 에이전트가 호출할 수 있는 도구를 추가합니다.
+
+- **[byteplus](/ko/plugins/reference/byteplus)** (`@openclaw/byteplus-provider`) - OpenClaw에 포함됨. OpenClaw에 BytePlus, BytePlus Plan 모델 provider 지원을 추가합니다.
+
+- **[canvas](/ko/plugins/reference/canvas)** (`@openclaw/canvas-plugin`) - OpenClaw에 포함됨. 페어링된 노드를 위한 실험적 Canvas 제어 및 A2UI 렌더링 표면입니다.
+
+- **[codex-supervisor](/ko/plugins/reference/codex-supervisor)** (`@openclaw/codex-supervisor`) - OpenClaw에 포함됨. OpenClaw에서 Codex 앱 서버 세션을 감독합니다.
+
+- **[cohere](/ko/plugins/reference/cohere)** (`@openclaw/cohere-provider`) - OpenClaw에 포함됨; npm; ClawHub: `clawhub:@openclaw/cohere-provider`. OpenClaw Cohere provider plugin입니다.
+
+- **[comfy](/ko/plugins/reference/comfy)** (`@openclaw/comfy-provider`) - OpenClaw에 포함됨. OpenClaw에 ComfyUI 모델 provider 지원을 추가합니다.
+
+- **[copilot-proxy](/ko/plugins/reference/copilot-proxy)** (`@openclaw/copilot-proxy`) - OpenClaw에 포함됨. OpenClaw에 Copilot Proxy 모델 provider 지원을 추가합니다.
+
+- **[deepgram](/ko/plugins/reference/deepgram)** (`@openclaw/deepgram-provider`) - OpenClaw에 포함됨. 미디어 이해 provider 지원을 추가합니다. 실시간 전사 provider 지원을 추가합니다.
+
+- **[document-extract](/ko/plugins/reference/document-extract)** (`@openclaw/document-extract-plugin`) - OpenClaw에 포함됨. 로컬 문서 첨부 파일에서 텍스트와 대체 페이지 이미지를 추출합니다.
+
+- **[duckduckgo](/ko/plugins/reference/duckduckgo)** (`@openclaw/duckduckgo-plugin`) - OpenClaw에 포함됨. 웹 검색 provider 지원을 추가합니다.
+
+- **[elevenlabs](/ko/plugins/reference/elevenlabs)** (`@openclaw/elevenlabs-speech`) - OpenClaw에 포함됨. 미디어 이해 provider 지원을 추가합니다. 실시간 전사 provider 지원을 추가합니다. 텍스트 음성 변환 provider 지원을 추가합니다.
+
+- **[fal](/ko/plugins/reference/fal)** (`@openclaw/fal-provider`) - OpenClaw에 포함됨. OpenClaw에 fal 모델 provider 지원을 추가합니다.
+
+- **[file-transfer](/ko/plugins/reference/file-transfer)** (`@openclaw/file-transfer`) - OpenClaw에 포함됨. 전용 노드 명령을 통해 페어링된 노드에서 파일을 가져오고, 나열하고, 씁니다. 최대 16MB의 바이너리에 대해 node.invoke를 통한 base64를 사용하여 bash stdout 잘림을 우회합니다.
+
+- **[github-copilot](/ko/plugins/reference/github-copilot)** (`@openclaw/github-copilot-provider`) - OpenClaw에 포함됨. OpenClaw에 GitHub Copilot 모델 provider 지원을 추가합니다.
+
+- **[google](/ko/plugins/reference/google)** (`@openclaw/google-plugin`) - OpenClaw에 포함됨. OpenClaw에 Google, Google Gemini CLI, Google Vertex 모델 provider 지원을 추가합니다.
+
+- **[huggingface](/ko/plugins/reference/huggingface)** (`@openclaw/huggingface-provider`) - OpenClaw에 포함됨. OpenClaw에 Hugging Face 모델 provider 지원을 추가합니다.
+
+- **[imessage](/ko/plugins/reference/imessage)** (`@openclaw/imessage`) - OpenClaw에 포함됨. OpenClaw 메시지를 보내고 받기 위한 iMessage 채널 표면을 추가합니다.
+
+- **[litellm](/ko/plugins/reference/litellm)** (`@openclaw/litellm-provider`) - OpenClaw에 포함됨. OpenClaw에 LiteLLM 모델 provider 지원을 추가합니다.
+
+- **[llm-task](/ko/plugins/reference/llm-task)** (`@openclaw/llm-task`) - OpenClaw에 포함됨. 워크플로에서 호출할 수 있는 구조화된 작업용 범용 JSON 전용 LLM 도구입니다.
+
+- **[lmstudio](/ko/plugins/reference/lmstudio)** (`@openclaw/lmstudio-provider`) - OpenClaw에 포함됨. OpenClaw에 LM Studio 모델 provider 지원을 추가합니다.
+
+- **[memory-core](/ko/plugins/reference/memory-core)** (`@openclaw/memory-core`) - OpenClaw에 포함됨. 에이전트가 호출할 수 있는 도구를 추가합니다.
+
+- **[memory-wiki](/ko/plugins/reference/memory-wiki)** (`@openclaw/memory-wiki`) - OpenClaw에 포함됨. OpenClaw를 위한 영구 위키 컴파일러 및 Obsidian 친화적 지식 보관소입니다.
+
+- **[microsoft](/ko/plugins/reference/microsoft)** (`@openclaw/microsoft-speech`) - OpenClaw에 포함됨. 텍스트 음성 변환 provider 지원을 추가합니다.
+
+- **[microsoft-foundry](/ko/plugins/reference/microsoft-foundry)** (`@openclaw/microsoft-foundry`) - OpenClaw에 포함됨. OpenClaw에 Microsoft Foundry 모델 provider 지원을 추가합니다.
+
+- **[migrate-claude](/ko/plugins/reference/migrate-claude)** (`@openclaw/migrate-claude`) - OpenClaw에 포함됨. Claude Code 및 Claude Desktop 지침, MCP 서버, skills, 안전한 구성을 OpenClaw로 가져옵니다.
+
+- **[migrate-hermes](/ko/plugins/reference/migrate-hermes)** (`@openclaw/migrate-hermes`) - OpenClaw에 포함됨. Hermes 구성, 메모리, skills, 지원되는 자격 증명을 OpenClaw로 가져옵니다.
+
+- **[minimax](/ko/plugins/reference/minimax)** (`@openclaw/minimax-provider`) - OpenClaw에 포함됨. OpenClaw에 MiniMax, MiniMax Portal 모델 provider 지원을 추가합니다.
+
+- **[mistral](/ko/plugins/reference/mistral)** (`@openclaw/mistral-provider`) - OpenClaw에 포함됨. OpenClaw에 Mistral 모델 provider 지원을 추가합니다.
+
+- **[novita](/ko/plugins/reference/novita)** (`@openclaw/novita-provider`) - OpenClaw에 포함됨. OpenClaw에 Novita, Novita AI, Novitaai 모델 provider 지원을 추가합니다.
+
+- **[nvidia](/ko/plugins/reference/nvidia)** (`@openclaw/nvidia-provider`) - OpenClaw에 포함됨. OpenClaw에 NVIDIA 모델 provider 지원을 추가합니다.
+
+- **[oc-path](/ko/plugins/reference/oc-path)** (`@openclaw/oc-path`) - OpenClaw에 포함됨. oc:// 워크스페이스 파일 주소 지정을 위한 openclaw path CLI를 추가합니다.
+
+- **[ollama](/ko/plugins/reference/ollama)** (`@openclaw/ollama-provider`) - OpenClaw에 포함됨. OpenClaw에 Ollama, Ollama Cloud 모델 provider 지원을 추가합니다.
+
+- **[open-prose](/ko/plugins/reference/open-prose)** (`@openclaw/open-prose`) - OpenClaw에 포함됨. /prose 슬래시 명령이 포함된 OpenProse VM skill 팩입니다.
+
+- **[openai](/ko/plugins/reference/openai)** (`@openclaw/openai-provider`) - OpenClaw에 포함됨. OpenClaw에 OpenAI 모델 provider 지원을 추가합니다.
+
+- **[opencode](/ko/plugins/reference/opencode)** (`@openclaw/opencode-provider`) - OpenClaw에 포함됨. OpenClaw에 OpenCode 모델 provider 지원을 추가합니다.
+
+- **[opencode-go](/ko/plugins/reference/opencode-go)** (`@openclaw/opencode-go-provider`) - OpenClaw에 포함됨. OpenClaw에 OpenCode Go 모델 provider 지원을 추가합니다.
+
+- **[openrouter](/ko/plugins/reference/openrouter)** (`@openclaw/openrouter-provider`) - OpenClaw에 포함됨. OpenClaw에 OpenRouter 모델 provider 지원을 추가합니다.
+
+- **[policy](/ko/plugins/reference/policy)** (`@openclaw/policy`) - OpenClaw에 포함됨. 워크스페이스 준수를 위한 정책 기반 doctor 검사를 추가합니다.
+
+- **[runway](/ko/plugins/reference/runway)** (`@openclaw/runway-provider`) - OpenClaw에 포함됨. 동영상 생성 provider 지원을 추가합니다.
+
+- **[senseaudio](/ko/plugins/reference/senseaudio)** (`@openclaw/senseaudio-provider`) - OpenClaw에 포함됨. 미디어 이해 provider 지원을 추가합니다.
+
+- **[sglang](/ko/plugins/reference/sglang)** (`@openclaw/sglang-provider`) - OpenClaw에 포함됨. OpenClaw에 SGLang 모델 provider 지원을 추가합니다.
+
+- **[synthetic](/ko/plugins/reference/synthetic)** (`@openclaw/synthetic-provider`) - OpenClaw에 포함됨. OpenClaw에 Synthetic 모델 provider 지원을 추가합니다.
+
+- **[telegram](/ko/plugins/reference/telegram)** (`@openclaw/telegram`) - OpenClaw에 포함됨. OpenClaw 메시지를 보내고 받기 위한 Telegram 채널 표면을 추가합니다.
+
+- **[together](/ko/plugins/reference/together)** (`@openclaw/together-provider`) - OpenClaw에 포함됨. OpenClaw에 Together 모델 provider 지원을 추가합니다.
+
+- **[tts-local-cli](/ko/plugins/reference/tts-local-cli)** (`@openclaw/tts-local-cli`) - OpenClaw에 포함됨. 텍스트 음성 변환 provider 지원을 추가합니다.
+
+- **[vllm](/ko/plugins/reference/vllm)** (`@openclaw/vllm-provider`) - OpenClaw에 포함됨. OpenClaw에 vLLM 모델 provider 지원을 추가합니다.
+
+- **[volcengine](/ko/plugins/reference/volcengine)** (`@openclaw/volcengine-provider`) - OpenClaw에 포함됨. OpenClaw에 Volcengine, Volcengine Plan 모델 provider 지원을 추가합니다.
+
+- **[voyage](/ko/plugins/reference/voyage)** (`@openclaw/voyage-provider`) - OpenClaw에 포함됨. 메모리 임베딩 provider 지원을 추가합니다.
+
+- **[vydra](/ko/plugins/reference/vydra)** (`@openclaw/vydra-provider`) - OpenClaw에 포함됨. OpenClaw에 Vydra 모델 provider 지원을 추가합니다.
+
+- **[web-readability](/ko/plugins/reference/web-readability)** (`@openclaw/web-readability-plugin`) - OpenClaw에 포함됨. 로컬 HTML 웹 가져오기 응답에서 읽기 쉬운 기사 콘텐츠를 추출합니다.
+
+- **[webhooks](/ko/plugins/reference/webhooks)** (`@openclaw/webhooks`) - OpenClaw TaskFlow에 외부 자동화를 바인딩하는 인증된 인바운드 webhooks입니다.
+
+- **[workboard](/ko/plugins/reference/workboard)** (`@openclaw/workboard`) - OpenClaw에 포함됨. 에이전트 소유 이슈와 세션을 위한 대시보드 작업 보드입니다.
+
+- **[xai](/ko/plugins/reference/xai)** (`@openclaw/xai-plugin`) - OpenClaw에 포함됨. OpenClaw에 xAI 모델 provider 지원을 추가합니다.
+
+- **[xiaomi](/ko/plugins/reference/xiaomi)** (`@openclaw/xiaomi-provider`) - OpenClaw에 포함됨. OpenClaw에 Xiaomi, Xiaomi Token Plan 모델 provider 지원을 추가합니다.
 
 ## 공식 외부 패키지
 
-| Plugin                                                              | 설명                                                                                  | 배포                                                                                             | 표면                                                                         |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
-| [acpx](/ko/plugins/reference/acpx)                                     | Plugin이 소유하는 세션 및 전송 관리를 갖춘 내장 ACP 런타임 백엔드입니다.             | `@openclaw/acpx`<br />npm; ClawHub                                                               | skills                                                                       |
-| [brave](/ko/plugins/reference/brave)                                   | 웹 검색 공급자 지원을 추가합니다.                                                     | `@openclaw/brave-plugin`<br />npm; ClawHub                                                       | contracts: webSearchProviders                                                |
-| [codex](/ko/plugins/reference/codex)                                   | Codex 앱 서버 하네스 및 Codex가 관리하는 GPT 모델 카탈로그입니다.                    | `@openclaw/codex`<br />npm; ClawHub                                                              | providers: codex; contracts: mediaUnderstandingProviders, migrationProviders |
-| [diagnostics-otel](/ko/plugins/reference/diagnostics-otel)             | OpenClaw 진단 OpenTelemetry 익스포터입니다.                                           | `@openclaw/diagnostics-otel`<br />npm; ClawHub: `clawhub:@openclaw/diagnostics-otel`             | plugin                                                                       |
-| [diagnostics-prometheus](/ko/plugins/reference/diagnostics-prometheus) | OpenClaw 진단 Prometheus 익스포터입니다.                                              | `@openclaw/diagnostics-prometheus`<br />npm; ClawHub: `clawhub:@openclaw/diagnostics-prometheus` | plugin                                                                       |
-| [diffs](/ko/plugins/reference/diffs)                                   | 에이전트를 위한 읽기 전용 diff 뷰어 및 파일 렌더러입니다.                            | `@openclaw/diffs`<br />npm; ClawHub                                                              | contracts: tools; skills                                                     |
-| [discord](/ko/plugins/reference/discord)                               | OpenClaw 메시지를 보내고 받기 위한 Discord 채널 표면을 추가합니다.                  | `@openclaw/discord`<br />npm; ClawHub                                                            | channels: discord                                                            |
-| [feishu](/ko/plugins/reference/feishu)                                 | OpenClaw 메시지를 보내고 받기 위한 Feishu 채널 표면을 추가합니다.                   | `@openclaw/feishu`<br />npm; ClawHub                                                             | channels: feishu; contracts: tools; skills                                   |
-| [google-meet](/ko/plugins/reference/google-meet)                       | Chrome 또는 Twilio 전송을 통해 Google Meet 통화에 참여합니다.                        | `@openclaw/google-meet`<br />npm; ClawHub                                                        | contracts: tools                                                             |
-| [googlechat](/ko/plugins/reference/googlechat)                         | OpenClaw 메시지를 보내고 받기 위한 Google Chat 채널 표면을 추가합니다.              | `@openclaw/googlechat`<br />npm; ClawHub                                                         | channels: googlechat                                                         |
-| [line](/ko/plugins/reference/line)                                     | OpenClaw 메시지를 보내고 받기 위한 LINE 채널 표면을 추가합니다.                     | `@openclaw/line`<br />npm; ClawHub                                                               | channels: line                                                               |
-| [lobster](/ko/plugins/reference/lobster)                               | 재개 가능한 승인을 지원하는 타입 지정 워크플로 도구입니다.                          | `@openclaw/lobster`<br />npm; ClawHub                                                            | contracts: tools                                                             |
-| [matrix](/ko/plugins/reference/matrix)                                 | OpenClaw 메시지를 보내고 받기 위한 Matrix 채널 표면을 추가합니다.                   | `@openclaw/matrix`<br />ClawHub: `clawhub:@openclaw/matrix`; npm                                 | channels: matrix                                                             |
-| [memory-lancedb](/ko/plugins/reference/memory-lancedb)                 | 에이전트가 호출할 수 있는 도구를 추가합니다.                                         | `@openclaw/memory-lancedb`<br />npm; ClawHub                                                     | contracts: tools                                                             |
-| [msteams](/ko/plugins/reference/msteams)                               | OpenClaw 메시지를 보내고 받기 위한 Microsoft Teams 채널 표면을 추가합니다.          | `@openclaw/msteams`<br />npm; ClawHub                                                            | channels: msteams                                                            |
-| [nextcloud-talk](/ko/plugins/reference/nextcloud-talk)                 | OpenClaw 메시지를 보내고 받기 위한 Nextcloud Talk 채널 표면을 추가합니다.           | `@openclaw/nextcloud-talk`<br />npm; ClawHub                                                     | channels: nextcloud-talk                                                     |
-| [nostr](/ko/plugins/reference/nostr)                                   | OpenClaw 메시지를 보내고 받기 위한 Nostr 채널 표면을 추가합니다.                    | `@openclaw/nostr`<br />npm; ClawHub                                                              | channels: nostr                                                              |
-| [qqbot](/ko/plugins/reference/qqbot)                                   | OpenClaw 메시지를 보내고 받기 위한 QQ Bot 채널 표면을 추가합니다.                   | `@openclaw/qqbot`<br />npm; ClawHub                                                              | channels: qqbot; contracts: tools; skills                                    |
-| [synology-chat](/ko/plugins/reference/synology-chat)                   | OpenClaw 메시지를 보내고 받기 위한 Synology Chat 채널 표면을 추가합니다.            | `@openclaw/synology-chat`<br />npm; ClawHub                                                      | channels: synology-chat                                                      |
-| [tlon](/ko/plugins/reference/tlon)                                     | OpenClaw 메시지를 보내고 받기 위한 Tlon 채널 표면을 추가합니다.                     | `@openclaw/tlon`<br />npm; ClawHub                                                               | channels: tlon; contracts: tools; skills                                     |
-| [twitch](/ko/plugins/reference/twitch)                                 | OpenClaw 메시지를 보내고 받기 위한 Twitch 채널 표면을 추가합니다.                   | `@openclaw/twitch`<br />npm; ClawHub                                                             | channels: twitch                                                             |
-| [voice-call](/ko/plugins/reference/voice-call)                         | 에이전트가 호출할 수 있는 도구를 추가합니다.                                         | `@openclaw/voice-call`<br />npm; ClawHub                                                         | contracts: tools                                                             |
-| [whatsapp](/ko/plugins/reference/whatsapp)                             | OpenClaw 메시지를 보내고 받기 위한 WhatsApp 채널 표면을 추가합니다.                 | `@openclaw/whatsapp`<br />npm; ClawHub                                                           | channels: whatsapp                                                           |
-| [zalo](/ko/plugins/reference/zalo)                                     | OpenClaw 메시지를 보내고 받기 위한 Zalo 채널 표면을 추가합니다.                     | `@openclaw/zalo`<br />npm; ClawHub                                                               | channels: zalo                                                               |
-| [zalouser](/ko/plugins/reference/zalouser)                             | OpenClaw 메시지를 보내고 받기 위한 Zalo Personal 채널 표면을 추가합니다.            | `@openclaw/zalouser`<br />npm; ClawHub                                                           | channels: zalouser; contracts: tools                                         |
+68개 plugins
+
+- **[acpx](/ko/plugins/reference/acpx)** (`@openclaw/acpx`) - npm; ClawHub. plugin 소유 세션 및 전송 관리를 제공하는 OpenClaw ACP 런타임 백엔드입니다.
+
+- **[amazon-bedrock](/ko/plugins/reference/amazon-bedrock)** (`@openclaw/amazon-bedrock-provider`) - npm; ClawHub. 모델 검색, 임베딩, 가드레일 지원을 제공하는 OpenClaw Amazon Bedrock provider plugin입니다.
+
+- **[amazon-bedrock-mantle](/ko/plugins/reference/amazon-bedrock-mantle)** (`@openclaw/amazon-bedrock-mantle-provider`) - npm; ClawHub. OpenAI 호환 모델 라우팅을 위한 OpenClaw Amazon Bedrock Mantle 제공자 Plugin입니다.
+
+- **[anthropic-vertex](/ko/plugins/reference/anthropic-vertex)** (`@openclaw/anthropic-vertex-provider`) - npm; ClawHub. Google Vertex AI의 Claude 모델을 위한 OpenClaw Anthropic Vertex 제공자 Plugin입니다.
+
+- **[arcee](/ko/plugins/reference/arcee)** (`@openclaw/arcee-provider`) - npm; ClawHub: `clawhub:@openclaw/arcee-provider`. OpenClaw에 Arcee 모델 제공자 지원을 추가합니다.
+
+- **[brave](/ko/plugins/reference/brave)** (`@openclaw/brave-plugin`) - npm; ClawHub. 웹 검색을 위한 OpenClaw Brave Search 제공자 Plugin입니다.
+
+- **[cerebras](/ko/plugins/reference/cerebras)** (`@openclaw/cerebras-provider`) - npm; ClawHub: `clawhub:@openclaw/cerebras-provider`. OpenClaw에 Cerebras 모델 제공자 지원을 추가합니다.
+
+- **[chutes](/ko/plugins/reference/chutes)** (`@openclaw/chutes-provider`) - npm; ClawHub: `clawhub:@openclaw/chutes-provider`. OpenClaw에 Chutes 모델 제공자 지원을 추가합니다.
+
+- **[clickclack](/ko/plugins/reference/clickclack)** (`@openclaw/clickclack`) - npm; ClawHub: `clawhub:@openclaw/clickclack`. OpenClaw 메시지를 보내고 받기 위한 Clickclack 채널 표면을 추가합니다.
+
+- **[cloudflare-ai-gateway](/ko/plugins/reference/cloudflare-ai-gateway)** (`@openclaw/cloudflare-ai-gateway-provider`) - npm; ClawHub: `clawhub:@openclaw/cloudflare-ai-gateway-provider`. OpenClaw에 Cloudflare AI Gateway 모델 제공자 지원을 추가합니다.
+
+- **[codex](/ko/plugins/reference/codex)** (`@openclaw/codex`) - npm; ClawHub. Codex가 관리하는 GPT 카탈로그를 포함한 OpenClaw Codex 앱 서버 하네스 및 모델 제공자 Plugin입니다.
+
+- **[copilot](/ko/plugins/reference/copilot)** (`@openclaw/copilot`) - npm; ClawHub: `clawhub:@openclaw/copilot`. GitHub Copilot 에이전트 런타임을 등록합니다.
+
+- **[deepinfra](/ko/plugins/reference/deepinfra)** (`@openclaw/deepinfra-provider`) - npm; ClawHub: `clawhub:@openclaw/deepinfra-provider`. OpenClaw에 DeepInfra 모델 제공자 지원을 추가합니다.
+
+- **[deepseek](/ko/plugins/reference/deepseek)** (`@openclaw/deepseek-provider`) - npm; ClawHub: `clawhub:@openclaw/deepseek-provider`. OpenClaw에 DeepSeek 모델 제공자 지원을 추가합니다.
+
+- **[diagnostics-otel](/ko/plugins/reference/diagnostics-otel)** (`@openclaw/diagnostics-otel`) - npm; ClawHub: `clawhub:@openclaw/diagnostics-otel`. 메트릭, 트레이스, 로그를 위한 OpenClaw 진단 OpenTelemetry 익스포터입니다.
+
+- **[diagnostics-prometheus](/ko/plugins/reference/diagnostics-prometheus)** (`@openclaw/diagnostics-prometheus`) - npm; ClawHub: `clawhub:@openclaw/diagnostics-prometheus`. 런타임 메트릭을 위한 OpenClaw 진단 Prometheus 익스포터입니다.
+
+- **[diffs](/ko/plugins/reference/diffs)** (`@openclaw/diffs`) - npm; ClawHub. 에이전트를 위한 OpenClaw 읽기 전용 diff 뷰어 Plugin 및 파일 렌더러입니다.
+
+- **[diffs-language-pack](/ko/plugins/reference/diffs-language-pack)** (`@openclaw/diffs-language-pack`) - npm; ClawHub: `clawhub:@openclaw/diffs-language-pack`. 기본 diff 뷰어 세트 밖의 언어에 대한 구문 강조를 추가합니다.
+
+- **[discord](/ko/plugins/reference/discord)** (`@openclaw/discord`) - npm; ClawHub. 채널, DM, 명령, 앱 이벤트를 위한 OpenClaw Discord 채널 Plugin입니다.
+
+- **[exa](/ko/plugins/reference/exa)** (`@openclaw/exa-plugin`) - npm; ClawHub: `clawhub:@openclaw/exa-plugin`. 웹 검색 제공자 지원을 추가합니다.
+
+- **[feishu](/ko/plugins/reference/feishu)** (`@openclaw/feishu`) - npm; ClawHub. 채팅 및 업무 도구를 위한 OpenClaw Feishu/Lark 채널 Plugin입니다(@m1heng가 커뮤니티에서 유지 관리).
+
+- **[firecrawl](/ko/plugins/reference/firecrawl)** (`@openclaw/firecrawl-plugin`) - npm; ClawHub: `clawhub:@openclaw/firecrawl-plugin`. 에이전트가 호출할 수 있는 도구를 추가합니다. 웹 가져오기 제공자 지원을 추가합니다. 웹 검색 제공자 지원을 추가합니다.
+
+- **[fireworks](/ko/plugins/reference/fireworks)** (`@openclaw/fireworks-provider`) - npm; ClawHub: `clawhub:@openclaw/fireworks-provider`. OpenClaw에 Fireworks 모델 제공자 지원을 추가합니다.
+
+- **[gmi](/ko/plugins/reference/gmi)** (`@openclaw/gmi-provider`) - npm; ClawHub: `clawhub:@openclaw/gmi-provider`. OpenClaw GMI Cloud 제공자 Plugin입니다.
+
+- **[google-meet](/ko/plugins/reference/google-meet)** (`@openclaw/google-meet`) - npm; ClawHub. Chrome 또는 Twilio 전송을 통해 통화에 참여하기 위한 OpenClaw Google Meet 참가자 Plugin입니다.
+
+- **[googlechat](/ko/plugins/reference/googlechat)** (`@openclaw/googlechat`) - npm; ClawHub. 스페이스와 다이렉트 메시지를 위한 OpenClaw Google Chat 채널 Plugin입니다.
+
+- **[gradium](/ko/plugins/reference/gradium)** (`@openclaw/gradium-speech`) - npm; ClawHub: `clawhub:@openclaw/gradium-speech`. 텍스트 음성 변환 제공자 지원을 추가합니다.
+
+- **[groq](/ko/plugins/reference/groq)** (`@openclaw/groq-provider`) - npm; ClawHub: `clawhub:@openclaw/groq-provider`. OpenClaw에 Groq 모델 제공자 지원을 추가합니다.
+
+- **[inworld](/ko/plugins/reference/inworld)** (`@openclaw/inworld-speech`) - npm; ClawHub: `clawhub:@openclaw/inworld-speech`. Inworld 스트리밍 텍스트 음성 변환(MP3, OGG_OPUS, PCM 텔레포니)입니다.
+
+- **[irc](/ko/plugins/reference/irc)** (`@openclaw/irc`) - npm; ClawHub: `clawhub:@openclaw/irc`. OpenClaw 메시지를 보내고 받기 위한 IRC 채널 표면을 추가합니다.
+
+- **[kilocode](/ko/plugins/reference/kilocode)** (`@openclaw/kilocode-provider`) - npm; ClawHub: `clawhub:@openclaw/kilocode-provider`. OpenClaw에 Kilocode 모델 제공자 지원을 추가합니다.
+
+- **[kimi](/ko/plugins/reference/kimi)** (`@openclaw/kimi-provider`) - npm; ClawHub: `clawhub:@openclaw/kimi-provider`. OpenClaw에 Kimi, Kimi Coding 모델 제공자 지원을 추가합니다.
+
+- **[line](/ko/plugins/reference/line)** (`@openclaw/line`) - npm; ClawHub. LINE Bot API 채팅을 위한 OpenClaw LINE 채널 Plugin입니다.
+
+- **[llama-cpp](/ko/plugins/reference/llama-cpp)** (`@openclaw/llama-cpp-provider`) - npm; ClawHub. node-llama-cpp를 통한 로컬 GGUF 임베딩입니다.
+
+- **[lobster](/ko/plugins/reference/lobster)** (`@openclaw/lobster`) - npm; ClawHub. 타입 지정 파이프라인과 재개 가능한 승인을 위한 Lobster 워크플로 도구 Plugin입니다.
+
+- **[matrix](/ko/plugins/reference/matrix)** (`@openclaw/matrix`) - ClawHub: `clawhub:@openclaw/matrix`; npm. 룸과 다이렉트 메시지를 위한 OpenClaw Matrix 채널 Plugin입니다.
+
+- **[mattermost](/ko/plugins/reference/mattermost)** (`@openclaw/mattermost`) - npm; ClawHub: `clawhub:@openclaw/mattermost`. OpenClaw 메시지를 보내고 받기 위한 Mattermost 채널 표면을 추가합니다.
+
+- **[memory-lancedb](/ko/plugins/reference/memory-lancedb)** (`@openclaw/memory-lancedb`) - npm; ClawHub. 자동 회상, 자동 캡처, 벡터 검색을 제공하는 OpenClaw LanceDB 기반 장기 메모리 Plugin입니다.
+
+- **[moonshot](/ko/plugins/reference/moonshot)** (`@openclaw/moonshot-provider`) - npm; ClawHub: `clawhub:@openclaw/moonshot-provider`. OpenClaw에 Moonshot 모델 제공자 지원을 추가합니다.
+
+- **[msteams](/ko/plugins/reference/msteams)** (`@openclaw/msteams`) - npm; ClawHub. 봇 대화를 위한 OpenClaw Microsoft Teams 채널 Plugin입니다.
+
+- **[nextcloud-talk](/ko/plugins/reference/nextcloud-talk)** (`@openclaw/nextcloud-talk`) - npm; ClawHub. 대화를 위한 OpenClaw Nextcloud Talk 채널 Plugin입니다.
+
+- **[nostr](/ko/plugins/reference/nostr)** (`@openclaw/nostr`) - npm; ClawHub. NIP-04 암호화 다이렉트 메시지를 위한 OpenClaw Nostr 채널 Plugin입니다.
+
+- **[openshell](/ko/plugins/reference/openshell)** (`@openclaw/openshell-sandbox`) - npm; ClawHub. 미러링된 로컬 워크스페이스와 SSH 명령 실행을 제공하는 NVIDIA OpenShell CLI용 OpenClaw 샌드박스 백엔드입니다.
+
+- **[parallel](/ko/tools/parallel-search)** (`@openclaw/parallel-plugin`) - npm; ClawHub: `clawhub:@openclaw/parallel-plugin`. 웹 검색 제공자 지원을 추가합니다.
+
+- **[perplexity](/ko/plugins/reference/perplexity)** (`@openclaw/perplexity-plugin`) - npm; ClawHub: `clawhub:@openclaw/perplexity-plugin`. 웹 검색 제공자 지원을 추가합니다.
+
+- **[pixverse](/ko/plugins/reference/pixverse)** (`@openclaw/pixverse-provider`) - npm; ClawHub: `clawhub:@openclaw/pixverse-provider`. OpenClaw PixVerse 동영상 생성 제공자 Plugin입니다.
+
+- **[qianfan](/ko/plugins/reference/qianfan)** (`@openclaw/qianfan-provider`) - npm; ClawHub: `clawhub:@openclaw/qianfan-provider`. OpenClaw에 Qianfan 모델 제공자 지원을 추가합니다.
+
+- **[qqbot](/ko/plugins/reference/qqbot)** (`@openclaw/qqbot`) - npm; ClawHub. 그룹 및 다이렉트 메시지 워크플로를 위한 OpenClaw QQ Bot 채널 Plugin입니다.
+
+- **[qwen](/ko/plugins/reference/qwen)** (`@openclaw/qwen-provider`) - npm; ClawHub: `clawhub:@openclaw/qwen-provider`. OpenClaw에 Qwen, Qwen Cloud, Model Studio, DashScope, Qwen Oauth, Qwen Portal, Qwen CLI 모델 제공자 지원을 추가합니다.
+
+- **[raft](/ko/plugins/reference/raft)** (`@openclaw/raft`) - npm; ClawHub. 안전한 CLI 깨우기 브리지를 위한 OpenClaw Raft 채널 Plugin입니다.
+
+- **[searxng](/ko/plugins/reference/searxng)** (`@openclaw/searxng-plugin`) - npm; ClawHub: `clawhub:@openclaw/searxng-plugin`. 웹 검색 제공자 지원을 추가합니다.
+
+- **[signal](/ko/plugins/reference/signal)** (`@openclaw/signal`) - npm; ClawHub: `clawhub:@openclaw/signal`. OpenClaw 메시지를 보내고 받기 위한 Signal 채널 표면을 추가합니다.
+
+- **[slack](/ko/plugins/reference/slack)** (`@openclaw/slack`) - npm; ClawHub. 채널, DM, 명령, 앱 이벤트를 위한 OpenClaw Slack 채널 Plugin입니다.
+
+- **[sms](/ko/plugins/reference/sms)** (`@openclaw/sms`) - npm; ClawHub: `clawhub:@openclaw/sms`. OpenClaw 텍스트 메시지를 위한 Twilio SMS 채널 Plugin입니다.
+
+- **[stepfun](/ko/plugins/reference/stepfun)** (`@openclaw/stepfun-provider`) - npm; ClawHub: `clawhub:@openclaw/stepfun-provider`. OpenClaw에 StepFun, StepFun Plan 모델 제공자 지원을 추가합니다.
+
+- **[synology-chat](/ko/plugins/reference/synology-chat)** (`@openclaw/synology-chat`) - npm; ClawHub. OpenClaw 채널과 다이렉트 메시지를 위한 Synology Chat 채널 Plugin입니다.
+
+- **[tavily](/ko/plugins/reference/tavily)** (`@openclaw/tavily-plugin`) - npm; ClawHub: `clawhub:@openclaw/tavily-plugin`. 에이전트가 호출할 수 있는 도구를 추가합니다. 웹 검색 제공자 지원을 추가합니다.
+
+- **[tencent](/ko/plugins/reference/tencent)** (`@openclaw/tencent-provider`) - npm; ClawHub: `clawhub:@openclaw/tencent-provider`. OpenClaw에 Tencent TokenHub 모델 제공자 지원을 추가합니다.
+
+- **[tlon](/ko/plugins/reference/tlon)** (`@openclaw/tlon`) - npm; ClawHub. 채팅 워크플로를 위한 OpenClaw Tlon/Urbit 채널 Plugin입니다.
+
+- **[tokenjuice](/ko/plugins/reference/tokenjuice)** (`@openclaw/tokenjuice`) - npm; ClawHub: `clawhub:@openclaw/tokenjuice`. tokenjuice 리듀서로 exec 및 bash 도구 결과를 압축합니다.
+
+- **[twitch](/ko/plugins/reference/twitch)** (`@openclaw/twitch`) - npm; ClawHub. 채팅 및 중재 워크플로를 위한 OpenClaw Twitch 채널 Plugin입니다.
+
+- **[venice](/ko/plugins/reference/venice)** (`@openclaw/venice-provider`) - npm; ClawHub: `clawhub:@openclaw/venice-provider`. OpenClaw에 Venice 모델 제공자 지원을 추가합니다.
+
+- **[vercel-ai-gateway](/ko/plugins/reference/vercel-ai-gateway)** (`@openclaw/vercel-ai-gateway-provider`) - npm; ClawHub: `clawhub:@openclaw/vercel-ai-gateway-provider`. OpenClaw에 Vercel AI Gateway 모델 제공자 지원을 추가합니다.
+
+- **[voice-call](/ko/plugins/reference/voice-call)** (`@openclaw/voice-call`) - npm; ClawHub. Twilio, Telnyx, Plivo 전화 통화를 위한 OpenClaw voice-call Plugin입니다.
+
+- **[whatsapp](/ko/plugins/reference/whatsapp)** (`@openclaw/whatsapp`) - ClawHub: `clawhub:@openclaw/whatsapp`; npm. WhatsApp Web 채팅을 위한 OpenClaw WhatsApp 채널 Plugin입니다.
+
+- **[zai](/ko/plugins/reference/zai)** (`@openclaw/zai-provider`) - npm; ClawHub: `clawhub:@openclaw/zai-provider`. OpenClaw에 Z.AI 모델 제공자 지원을 추가합니다.
+
+- **[zalo](/ko/plugins/reference/zalo)** (`@openclaw/zalo`) - npm; ClawHub. 봇 및 Webhook 채팅을 위한 OpenClaw Zalo 채널 Plugin입니다.
+
+- **[zalouser](/ko/plugins/reference/zalouser)** (`@openclaw/zalouser`) - npm; ClawHub. 네이티브 zca-js 통합을 통한 OpenClaw Zalo 개인 계정 Plugin입니다.
 
 ## 소스 체크아웃 전용
 
-| Plugin                                      | 설명                                                                     | 배포                                             | 표면                 |
-| ------------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------ | -------------------- |
-| [qa-channel](/ko/plugins/reference/qa-channel) | OpenClaw 메시지를 보내고 받기 위한 QA Channel 표면을 추가합니다.        | `@openclaw/qa-channel`<br />소스 체크아웃 전용   | channels: qa-channel |
-| [qa-lab](/ko/plugins/reference/qa-lab)         | 비공개 디버거 UI와 시나리오 러너를 갖춘 OpenClaw QA lab Plugin입니다.   | `@openclaw/qa-lab`<br />소스 체크아웃 전용       | plugin               |
-| [qa-matrix](/ko/plugins/reference/qa-matrix)   | Matrix QA 전송 러너 및 기반입니다.                                       | `@openclaw/qa-matrix`<br />소스 체크아웃 전용    | plugin               |
+3개 Plugin
+
+- **[qa-channel](/ko/plugins/reference/qa-channel)** (`@openclaw/qa-channel`) - 소스 체크아웃 전용. OpenClaw 메시지를 보내고 받기 위한 QA Channel 표면을 추가합니다.
+
+- **[qa-lab](/ko/plugins/reference/qa-lab)** (`@openclaw/qa-lab`) - 소스 체크아웃 전용. 비공개 디버거 UI와 시나리오 러너를 포함한 OpenClaw QA lab Plugin입니다.
+
+- **[qa-matrix](/ko/plugins/reference/qa-matrix)** (`@openclaw/qa-matrix`) - 소스 체크아웃 전용입니다. 매트릭스 QA 전송 러너 및 기반입니다.

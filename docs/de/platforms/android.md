@@ -1,30 +1,31 @@
 ---
 read_when:
     - Android-Node koppeln oder erneut verbinden
-    - Fehlerbehebung bei Android-Gateway-Erkennung oder -Authentifizierung
-    - Überprüfen der Chatverlauf-Parität über Clients hinweg
-summary: 'Android-App (Node): Verbindungs-Runbook + Befehlsoberfläche für Verbinden/Chat/Sprache/Canvas'
+    - Android-Gateway-Erkennung oder -Authentifizierung debuggen
+    - Überprüfung der Chatverlauf-Parität über Clients hinweg
+summary: 'Android-App (Node): Verbindungs-Runbook + Befehlsoberfläche für Connect/Chat/Voice/Canvas'
 title: Android-App
 x-i18n:
-    generated_at: "2026-05-06T06:55:40Z"
+    generated_at: "2026-06-27T17:41:40Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cce53df4675e01858ced3d58142512ad096ced0ef50cd617e57b65f9cf911c05
+    source_hash: 5c02d4921c3f3011c09e564d83b773a7c155d17a82a6e70d3fd3e973597142f1
     source_path: platforms/android.md
     workflow: 16
 ---
 
 <Note>
-Die Android-App wurde noch nicht öffentlich veröffentlicht. Der Quellcode ist im [OpenClaw-Repository](https://github.com/openclaw/openclaw) unter `apps/android` verfügbar. Sie können sie mit Java 17 und dem Android SDK (`./gradlew :app:assemblePlayDebug`) selbst bauen. Build-Anweisungen finden Sie unter [apps/android/README.md](https://github.com/openclaw/openclaw/blob/main/apps/android/README.md).
+Die offizielle Android-App ist auf [Google Play](https://play.google.com/store/apps/details?id=ai.openclaw.app&hl=en_IN) verfügbar. Sie ist ein Begleitknoten und erfordert einen laufenden OpenClaw Gateway. Der Quellcode ist ebenfalls im [OpenClaw-Repository](https://github.com/openclaw/openclaw) unter `apps/android` verfügbar; Build-Anweisungen finden Sie unter [apps/android/README.md](https://github.com/openclaw/openclaw/blob/main/apps/android/README.md).
 </Note>
 
-## Support-Überblick
+## Support-Momentaufnahme
 
-- Rolle: begleitende Node-App (Android hostet den Gateway nicht).
+- Rolle: Begleitknoten-App (Android hostet den Gateway nicht).
 - Gateway erforderlich: ja (führen Sie ihn unter macOS, Linux oder Windows über WSL2 aus).
-- Installation: [Erste Schritte](/de/start/getting-started) + [Pairing](/de/channels/pairing).
+- Installation: [Google Play](https://play.google.com/store/apps/details?id=ai.openclaw.app&hl=en_IN) für die App, [Erste Schritte](/de/start/getting-started) für den Gateway, dann [Kopplung](/de/channels/pairing).
 - Gateway: [Runbook](/de/gateway) + [Konfiguration](/de/gateway/configuration).
-  - Protokolle: [Gateway-Protokoll](/de/gateway/protocol) (Nodes + Control Plane).
+  - Protokolle: [Gateway-Protokoll](/de/gateway/protocol) (Knoten + Steuerungsebene).
 
 ## Systemsteuerung
 
@@ -32,9 +33,9 @@ Die Systemsteuerung (launchd/systemd) befindet sich auf dem Gateway-Host. Siehe 
 
 ## Verbindungs-Runbook
 
-Android-Node-App ⇄ (mDNS/NSD + WebSocket) ⇄ **Gateway**
+Android-Knoten-App ⇄ (mDNS/NSD + WebSocket) ⇄ **Gateway**
 
-Android verbindet sich direkt mit dem Gateway-WebSocket und verwendet Geräte-Pairing (`role: node`).
+Android verbindet sich direkt mit dem Gateway-WebSocket und verwendet die Gerätekopplung (`role: node`).
 
 Für Tailscale oder öffentliche Hosts benötigt Android einen sicheren Endpunkt:
 
@@ -44,13 +45,13 @@ Für Tailscale oder öffentliche Hosts benötigt Android einen sicheren Endpunkt
 
 ### Voraussetzungen
 
-- Sie können den Gateway auf der „Master“-Maschine ausführen.
-- Das Android-Gerät bzw. der Emulator kann den Gateway-WebSocket erreichen:
+- Sie können den Gateway auf dem „Master“-Computer ausführen.
+- Android-Gerät/-Emulator kann den Gateway-WebSocket erreichen:
   - Gleiches LAN mit mDNS/NSD, **oder**
   - Gleiches Tailscale-Tailnet mit Wide-Area Bonjour / Unicast-DNS-SD (siehe unten), **oder**
   - Manueller Gateway-Host/-Port (Fallback)
-- Pairing über Tailnet/öffentliche Mobilverbindungen verwendet **keine** rohen Tailnet-IP-`ws://`-Endpunkte. Verwenden Sie stattdessen Tailscale Serve oder eine andere `wss://`-URL.
-- Sie können die CLI (`openclaw`) auf der Gateway-Maschine ausführen (oder per SSH).
+- Tailnet-/öffentliche mobile Kopplung verwendet **keine** rohen Tailnet-IP-`ws://`-Endpunkte. Verwenden Sie stattdessen Tailscale Serve oder eine andere `wss://`-URL.
+- Sie können die CLI (`openclaw`) auf dem Gateway-Computer ausführen (oder per SSH).
 
 ### 1) Gateway starten
 
@@ -68,11 +69,11 @@ Für Remote-Android-Zugriff über Tailscale bevorzugen Sie Serve/Funnel statt ei
 openclaw gateway --tailscale serve
 ```
 
-Dadurch erhält Android einen sicheren `wss://`- / `https://`-Endpunkt. Eine einfache `gateway.bind: "tailnet"`-Konfiguration reicht für das erstmalige Remote-Android-Pairing nicht aus, sofern Sie TLS nicht zusätzlich separat terminieren.
+Dadurch erhält Android einen sicheren `wss://`- / `https://`-Endpunkt. Eine einfache `gateway.bind: "tailnet"`-Einrichtung reicht für die erstmalige Remote-Android-Kopplung nicht aus, es sei denn, Sie terminieren TLS zusätzlich separat.
 
-### 2) Discovery prüfen (optional)
+### 2) Discovery überprüfen (optional)
 
-Von der Gateway-Maschine aus:
+Vom Gateway-Computer aus:
 
 ```bash
 dns-sd -B _openclaw-gw._tcp local.
@@ -86,16 +87,17 @@ Wenn Sie außerdem eine Wide-Area-Discovery-Domain konfiguriert haben, vergleich
 openclaw gateway discover --json
 ```
 
-Das zeigt `local.` plus die konfigurierte Wide-Area-Domain in einem Durchlauf und verwendet den aufgelösten Dienstendpunkt statt reiner TXT-Hinweise.
+Das zeigt `local.` plus die konfigurierte Wide-Area-Domain in einem Durchlauf und verwendet den aufgelösten
+Dienstendpunkt statt reiner TXT-Hinweise.
 
 #### Tailnet-Discovery (Wien ⇄ London) über Unicast-DNS-SD
 
-Android-NSD/mDNS-Discovery überschreitet keine Netzwerkgrenzen. Wenn sich Ihr Android-Node und der Gateway in unterschiedlichen Netzwerken befinden, aber über Tailscale verbunden sind, verwenden Sie stattdessen Wide-Area Bonjour / Unicast-DNS-SD.
+Android-NSD-/mDNS-Discovery überschreitet keine Netzwerke. Wenn Ihr Android-Knoten und der Gateway in unterschiedlichen Netzwerken sind, aber über Tailscale verbunden sind, verwenden Sie stattdessen Wide-Area Bonjour / Unicast-DNS-SD.
 
-Discovery allein reicht für Tailnet/öffentliches Android-Pairing nicht aus. Die gefundene Route benötigt weiterhin einen sicheren Endpunkt (`wss://` oder Tailscale Serve):
+Discovery allein reicht für Tailnet-/öffentliche Android-Kopplung nicht aus. Die erkannte Route benötigt weiterhin einen sicheren Endpunkt (`wss://` oder Tailscale Serve):
 
-1. Richten Sie auf dem Gateway-Host eine DNS-SD-Zone ein (Beispiel `openclaw.internal.`) und veröffentlichen Sie `_openclaw-gw._tcp`-Einträge.
-2. Konfigurieren Sie Tailscale Split DNS für Ihre gewählte Domain, die auf diesen DNS-Server verweist.
+1. Richten Sie eine DNS-SD-Zone (Beispiel `openclaw.internal.`) auf dem Gateway-Host ein und veröffentlichen Sie `_openclaw-gw._tcp`-Einträge.
+2. Konfigurieren Sie Tailscale Split-DNS für Ihre gewählte Domain, die auf diesen DNS-Server zeigt.
 
 Details und Beispiel-CoreDNS-Konfiguration: [Bonjour](/de/gateway/bonjour).
 
@@ -103,25 +105,30 @@ Details und Beispiel-CoreDNS-Konfiguration: [Bonjour](/de/gateway/bonjour).
 
 In der Android-App:
 
-- Die App hält ihre Gateway-Verbindung über einen **Foreground Service** aufrecht (dauerhafte Benachrichtigung).
-- Öffnen Sie den Tab **Verbinden**.
-- Verwenden Sie den Modus **Setup-Code** oder **Manuell**.
-- Wenn Discovery blockiert ist, verwenden Sie in den **Erweiterten Steuerelementen** manuellen Host/Port. Für private LAN-Hosts funktioniert `ws://` weiterhin. Für Tailscale/öffentliche Hosts aktivieren Sie TLS und verwenden Sie einen `wss://`- / Tailscale-Serve-Endpunkt.
+- Die App hält ihre Gateway-Verbindung über einen **Vordergrunddienst** (dauerhafte Benachrichtigung) aktiv.
+- Öffnen Sie den Tab **Connect**.
+- Verwenden Sie den Modus **Setup Code** oder **Manual**.
+- Wenn Discovery blockiert ist, verwenden Sie manuellen Host/Port in **Advanced controls**. Für private LAN-Hosts funktioniert `ws://` weiterhin. Für Tailscale-/öffentliche Hosts aktivieren Sie TLS und verwenden Sie einen `wss://`- / Tailscale-Serve-Endpunkt.
 
-Nach dem ersten erfolgreichen Pairing verbindet sich Android beim Start automatisch erneut:
+Nach der ersten erfolgreichen Kopplung verbindet sich Android beim Start automatisch erneut:
 
 - Manueller Endpunkt (falls aktiviert), andernfalls
-- der zuletzt gefundene Gateway (Best-Effort).
+- Der zuletzt erkannte Gateway (Best-Effort).
 
 ### Presence-Alive-Beacons
 
-Nachdem die authentifizierte Node-Sitzung verbunden ist und wenn die App in den Hintergrund wechselt, während der Foreground Service weiterhin verbunden ist, ruft Android `node.event` mit `event: "node.presence.alive"` auf. Der Gateway zeichnet dies erst dann als `lastSeenAtMs`/`lastSeenReason` in den Metadaten des gepairten Nodes/Geräts auf, nachdem die authentifizierte Node-Geräteidentität bekannt ist.
+Nachdem die authentifizierte Knotensitzung verbunden ist und wenn die App in den Hintergrund wechselt, während der
+Vordergrunddienst weiterhin verbunden ist, ruft Android `node.event` mit
+`event: "node.presence.alive"` auf. Der Gateway speichert dies erst dann als `lastSeenAtMs`/`lastSeenReason` in den
+gekoppelten Knoten-/Gerätemetadaten, nachdem die authentifizierte Knotengeräteidentität bekannt ist.
 
-Die App zählt den Beacon nur dann als erfolgreich aufgezeichnet, wenn die Gateway-Antwort `handled: true` enthält. Ältere Gateways können `node.event` mit `{ "ok": true }` bestätigen; diese Antwort ist kompatibel, zählt aber nicht als dauerhafte Last-Seen-Aktualisierung.
+Die App zählt den Beacon nur dann als erfolgreich gespeichert, wenn die Gateway-Antwort
+`handled: true` enthält. Ältere Gateways können `node.event` mit `{ "ok": true }` bestätigen; diese Antwort ist
+kompatibel, zählt jedoch nicht als dauerhaftes Last-Seen-Update.
 
-### 4) Pairing genehmigen (CLI)
+### 4) Kopplung genehmigen (CLI)
 
-Auf der Gateway-Maschine:
+Auf dem Gateway-Computer:
 
 ```bash
 openclaw devices list
@@ -129,9 +136,10 @@ openclaw devices approve <requestId>
 openclaw devices reject <requestId>
 ```
 
-Pairing-Details: [Pairing](/de/channels/pairing).
+Kopplungsdetails: [Kopplung](/de/channels/pairing).
 
-Optional: Wenn sich der Android-Node immer aus einem streng kontrollierten Subnetz verbindet, können Sie die automatische Genehmigung für erstmaliges Node-Pairing mit expliziten CIDRs oder exakten IPs aktivieren:
+Optional: Wenn der Android-Knoten immer aus einem streng kontrollierten Subnetz verbindet,
+können Sie sich für die erstmalige automatische Knotengenehmigung mit expliziten CIDRs oder genauen IPs entscheiden:
 
 ```json5
 {
@@ -145,11 +153,13 @@ Optional: Wenn sich der Android-Node immer aus einem streng kontrollierten Subne
 }
 ```
 
-Dies ist standardmäßig deaktiviert. Es gilt nur für frisches `role: node`-Pairing ohne angeforderte Scopes. Operator-/Browser-Pairing sowie jede Änderung von Rolle, Scope, Metadaten oder Public Key erfordern weiterhin eine manuelle Genehmigung.
+Dies ist standardmäßig deaktiviert. Es gilt nur für frische `role: node`-Kopplungen ohne
+angeforderte Scopes. Operator-/Browser-Kopplung sowie jede Rollen-, Scope-, Metadaten- oder
+Public-Key-Änderung erfordern weiterhin manuelle Genehmigung.
 
-### 5) Prüfen, ob der Node verbunden ist
+### 5) Überprüfen, ob der Knoten verbunden ist
 
-- Über den Node-Status:
+- Über Knotenstatus:
 
   ```bash
   openclaw nodes status
@@ -163,25 +173,31 @@ Dies ist standardmäßig deaktiviert. Es gilt nur für frisches `role: node`-Pai
 
 ### 6) Chat + Verlauf
 
-Der Android-Chat-Tab unterstützt Sitzungsauswahl (standardmäßig `main` sowie andere vorhandene Sitzungen):
+Der Android-Chat-Tab unterstützt Sitzungsauswahl (Standard `main`, plus andere vorhandene Sitzungen):
 
-- Verlauf: `chat.history` (anzeige-normalisiert; Inline-Directive-Tags werden aus sichtbarem Text entfernt, Nur-Text-XML-Payloads von Tool-Aufrufen (einschließlich `<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` und abgeschnittener Tool-Aufruf-Blöcke) sowie geleakte ASCII-/Full-Width-Modellsteuerungs-Tokens werden entfernt, reine Silent-Token-Assistentenzeilen wie exakt `NO_REPLY` / `no_reply` werden ausgelassen, und übergroße Zeilen können durch Platzhalter ersetzt werden)
+- Verlauf: `chat.history` (anzeige-normalisiert; Inline-Direktiv-Tags werden
+  aus sichtbarem Text entfernt, Plain-Text-XML-Nutzdaten von Tool-Aufrufen (einschließlich
+  `<tool_call>...</tool_call>`, `<function_call>...</function_call>`,
+  `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` und
+  gekürzten Tool-Aufrufblöcken) sowie geleakte ASCII-/Vollbreiten-Modellsteuerungstoken
+  werden entfernt, reine Silent-Token-Assistentenzeilen wie exakt `NO_REPLY` /
+  `no_reply` werden ausgelassen, und übergroße Zeilen können durch Platzhalter ersetzt werden)
 - Senden: `chat.send`
-- Push-Aktualisierungen (Best-Effort): `chat.subscribe` → `event:"chat"`
+- Push-Updates (Best-Effort): `chat.subscribe` → `event:"chat"`
 
 ### 7) Canvas + Kamera
 
 #### Gateway Canvas Host (für Webinhalte empfohlen)
 
-Wenn der Node echtes HTML/CSS/JS anzeigen soll, das der Agent auf der Festplatte bearbeiten kann, richten Sie den Node auf den Gateway Canvas Host aus.
+Wenn der Knoten echtes HTML/CSS/JS anzeigen soll, das der Agent auf der Festplatte bearbeiten kann, richten Sie den Knoten auf den Gateway-Canvas-Host.
 
 <Note>
-Nodes laden Canvas vom Gateway-HTTP-Server (derselbe Port wie `gateway.port`, standardmäßig `18789`).
+Knoten laden Canvas vom Gateway-HTTP-Server (derselbe Port wie `gateway.port`, Standard `18789`).
 </Note>
 
 1. Erstellen Sie `~/.openclaw/workspace/canvas/index.html` auf dem Gateway-Host.
 
-2. Navigieren Sie den Node dorthin (LAN):
+2. Navigieren Sie den Knoten dorthin (LAN):
 
 ```bash
 openclaw nodes invoke --node "<Android Node>" --command canvas.navigate --params '{"url":"http://<gateway-hostname>.local:18789/__openclaw__/canvas/"}'
@@ -190,28 +206,30 @@ openclaw nodes invoke --node "<Android Node>" --command canvas.navigate --params
 Tailnet (optional): Wenn beide Geräte in Tailscale sind, verwenden Sie statt `.local` einen MagicDNS-Namen oder eine Tailnet-IP, z. B. `http://<gateway-magicdns>:18789/__openclaw__/canvas/`.
 
 Dieser Server injiziert einen Live-Reload-Client in HTML und lädt bei Dateiänderungen neu.
-Der A2UI-Host befindet sich unter `http://<gateway-host>:18789/__openclaw__/a2ui/`.
+Der Gateway stellt auch `/__openclaw__/a2ui/` bereit, aber die Android-App behandelt Remote-A2UI-Seiten als reines Rendering. Aktionsfähige A2UI-Befehle verwenden die gebündelte app-eigene A2UI-Seite, bevor Nachrichten angewendet werden.
 
 Canvas-Befehle (nur im Vordergrund):
 
-- `canvas.eval`, `canvas.snapshot`, `canvas.navigate` (verwenden Sie `{"url":""}` oder `{"url":"/"}`, um zum Standard-Scaffold zurückzukehren). `canvas.snapshot` gibt `{ format, base64 }` zurück (standardmäßig `format="jpeg"`).
-- A2UI: `canvas.a2ui.push`, `canvas.a2ui.reset` (`canvas.a2ui.pushJSONL` Legacy-Alias)
+- `canvas.eval`, `canvas.snapshot`, `canvas.navigate` (verwenden Sie `{"url":""}` oder `{"url":"/"}`, um zum Standardgerüst zurückzukehren). `canvas.snapshot` gibt `{ format, base64 }` zurück (Standard `format="jpeg"`).
+- A2UI: `canvas.a2ui.push`, `canvas.a2ui.reset` (`canvas.a2ui.pushJSONL` Legacy-Alias). Diese Befehle verwenden die gebündelte app-eigene A2UI-Seite für aktionsfähiges Rendering.
 
 Kamerabefehle (nur im Vordergrund; berechtigungsgebunden):
 
 - `camera.snap` (jpg)
 - `camera.clip` (mp4)
 
-Parameter und CLI-Helfer finden Sie unter [Kamera-Node](/de/nodes/camera).
+Siehe [Kamera-Knoten](/de/nodes/camera) für Parameter und CLI-Hilfsfunktionen.
 
 ### 8) Sprache + erweiterte Android-Befehlsoberfläche
 
-- Sprach-Tab: Android hat zwei explizite Aufnahmemodi. **Mikrofon** ist eine manuelle Sprach-Tab-Sitzung, die jede Pause als Chat-Turn sendet und stoppt, wenn die App den Vordergrund verlässt oder der Benutzer den Sprach-Tab verlässt. **Talk** ist der kontinuierliche Talk Mode und hört weiter zu, bis er deaktiviert wird oder der Node die Verbindung trennt.
-- Talk Mode stuft den vorhandenen Foreground Service vor Beginn der Aufnahme von `dataSync` auf `dataSync|microphone` hoch und stuft ihn wieder zurück, wenn Talk Mode stoppt. Android 14+ erfordert die Deklaration `FOREGROUND_SERVICE_MICROPHONE`, die Laufzeitberechtigung `RECORD_AUDIO` und den Mikrofon-Diensttyp zur Laufzeit.
-- Gesprochene Antworten verwenden `talk.speak` über den konfigurierten Gateway-Talk-Provider. Lokales System-TTS wird nur verwendet, wenn `talk.speak` nicht verfügbar ist.
-- Sprachaktivierung bleibt in der Android-UX/Laufzeitumgebung deaktiviert.
-- Zusätzliche Android-Befehlsfamilien (Verfügbarkeit hängt von Gerät + Berechtigungen ab):
+- Voice-Tab: Android hat zwei explizite Aufnahmemodi. **Mic** ist eine manuelle Voice-Tab-Sitzung, die jede Pause als Chat-Turn sendet und stoppt, wenn die App den Vordergrund verlässt oder der Benutzer den Voice-Tab verlässt. **Talk** ist der kontinuierliche Talk Mode und hört weiter zu, bis er ausgeschaltet wird oder der Knoten die Verbindung trennt.
+- Talk Mode stuft den vorhandenen Vordergrunddienst vor Beginn der Aufnahme von `connectedDevice` auf `connectedDevice|microphone` hoch und stuft ihn wieder herab, wenn Talk Mode stoppt. Der Knotendienst deklariert `FOREGROUND_SERVICE_CONNECTED_DEVICE` mit `CHANGE_NETWORK_STATE`; Android 14+ erfordert außerdem die Deklaration `FOREGROUND_SERVICE_MICROPHONE`, die Laufzeitberechtigung `RECORD_AUDIO` und den Mikrofon-Diensttyp zur Laufzeit.
+- Standardmäßig verwendet Android Talk native Spracherkennung, Gateway-Chat und `talk.speak` über den konfigurierten Gateway-Talk-Provider. Lokales System-TTS wird nur verwendet, wenn `talk.speak` nicht verfügbar ist.
+- Android Talk verwendet den Echtzeit-Gateway-Relay nur, wenn `talk.realtime.mode` `realtime` ist und `talk.realtime.transport` `gateway-relay` ist.
+- Voice Wake bleibt in der Android-UX/-Laufzeit deaktiviert.
+- Zusätzliche Android-Befehlsfamilien (Verfügbarkeit hängt von Gerät, Berechtigungen und Benutzereinstellungen ab):
   - `device.status`, `device.info`, `device.permissions`, `device.health`
+  - `device.apps` nur, wenn **Settings > Phone Capabilities > Installed Apps** aktiviert ist; es listet standardmäßig launcher-sichtbare Apps auf.
   - `notifications.list`, `notifications.actions` (siehe [Benachrichtigungsweiterleitung](#notification-forwarding) unten)
   - `photos.latest`
   - `contacts.search`, `contacts.add`
@@ -222,27 +240,32 @@ Parameter und CLI-Helfer finden Sie unter [Kamera-Node](/de/nodes/camera).
 
 ## Assistenten-Einstiegspunkte
 
-Android unterstützt das Starten von OpenClaw über den Systemassistenten-Trigger (Google Assistant). Wenn konfiguriert, öffnet das Halten der Home-Taste oder das Sagen von „Hey Google, ask OpenClaw...“ die App und übergibt den Prompt an den Chat-Composer.
+Android unterstützt das Starten von OpenClaw über den Systemassistenten-Trigger (Google
+Assistant). Wenn konfiguriert, öffnet das Halten der Home-Taste oder das Sagen von „Hey Google, frag
+OpenClaw...“ die App und übergibt den Prompt an den Chat-Composer.
 
-Dies verwendet Android-**App Actions**-Metadaten, die im App-Manifest deklariert sind. Auf Gateway-Seite ist keine zusätzliche Konfiguration erforderlich -- der Assistenten-Intent wird vollständig von der Android-App verarbeitet und als normale Chat-Nachricht weitergeleitet.
+Dies verwendet Android-**App Actions**-Metadaten, die im App-Manifest deklariert sind. Auf
+Gateway-Seite ist keine zusätzliche Konfiguration erforderlich -- der Assistenten-Intent wird
+vollständig von der Android-App verarbeitet und als normale Chat-Nachricht weitergeleitet.
 
 <Note>
-Die Verfügbarkeit von App Actions hängt vom Gerät, der Version der Google Play Services und davon ab, ob der Benutzer OpenClaw als Standard-Assistenten-App festgelegt hat.
+Die Verfügbarkeit von App Actions hängt vom Gerät, der Version der Google Play Services
+und davon ab, ob der Benutzer OpenClaw als Standard-Assistenten-App festgelegt hat.
 </Note>
 
 ## Benachrichtigungsweiterleitung
 
-Android kann Gerätebenachrichtigungen als Events an den Gateway weiterleiten. Mehrere Steuerelemente ermöglichen es Ihnen festzulegen, welche Benachrichtigungen weitergeleitet werden und wann.
+Android kann Gerätebenachrichtigungen als Ereignisse an den Gateway weiterleiten. Mehrere Steuerelemente erlauben es Ihnen, festzulegen, welche Benachrichtigungen weitergeleitet werden und wann.
 
-| Schlüssel                         | Typ            | Beschreibung                                                                                                                   |
-| --------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `notifications.allowPackages`     | string[]       | Nur Benachrichtigungen von diesen Paketnamen weiterleiten. Wenn gesetzt, werden alle anderen Pakete ignoriert.                  |
-| `notifications.denyPackages`      | string[]       | Benachrichtigungen von diesen Paketnamen niemals weiterleiten. Wird nach `allowPackages` angewendet.                           |
-| `notifications.quietHours.start`  | string (HH:mm) | Beginn des Ruhezeitenfensters (lokale Gerätezeit). Benachrichtigungen werden während dieses Fensters unterdrückt.              |
-| `notifications.quietHours.end`    | string (HH:mm) | Ende des Ruhezeitenfensters.                                                                                                   |
-| `notifications.rateLimit`         | number         | Maximale Anzahl weitergeleiteter Benachrichtigungen pro Paket und Minute. Überschüssige Benachrichtigungen werden verworfen.   |
+| Schlüssel                        | Typ            | Beschreibung                                                                                          |
+| -------------------------------- | -------------- | ----------------------------------------------------------------------------------------------------- |
+| `notifications.allowPackages`    | string[]       | Nur Benachrichtigungen von diesen Paketnamen weiterleiten. Wenn gesetzt, werden alle anderen Pakete ignoriert. |
+| `notifications.denyPackages`     | string[]       | Benachrichtigungen von diesen Paketnamen niemals weiterleiten. Wird nach `allowPackages` angewendet. |
+| `notifications.quietHours.start` | string (HH:mm) | Beginn des Ruhezeitenfensters (lokale Gerätezeit). Benachrichtigungen werden während dieses Fensters unterdrückt. |
+| `notifications.quietHours.end`   | string (HH:mm) | Ende des Ruhezeitenfensters.                                                                          |
+| `notifications.rateLimit`        | number         | Maximale weitergeleitete Benachrichtigungen pro Paket pro Minute. Überschüssige Benachrichtigungen werden verworfen. |
 
-Der Benachrichtigungsauswähler verwendet außerdem sichereres Verhalten für weitergeleitete Benachrichtigungs-Events und verhindert die versehentliche Weiterleitung sensibler Systembenachrichtigungen.
+Die Benachrichtigungsauswahl verwendet außerdem sichereres Verhalten für weitergeleitete Benachrichtigungsereignisse und verhindert so die versehentliche Weiterleitung sensibler Systembenachrichtigungen.
 
 Beispielkonfiguration:
 
@@ -261,11 +284,11 @@ Beispielkonfiguration:
 ```
 
 <Note>
-Benachrichtigungsweiterleitung erfordert die Android-Berechtigung Notification Listener. Die App fordert diese während der Einrichtung an.
+Die Weiterleitung von Benachrichtigungen erfordert die Android-Berechtigung für den Notification Listener. Die App fordert Sie während der Einrichtung dazu auf.
 </Note>
 
-## Verwandt
+## Verwandte Themen
 
 - [iOS-App](/de/platforms/ios)
 - [Nodes](/de/nodes)
-- [Android-Node-Fehlerbehebung](/de/nodes/troubleshooting)
+- [Fehlerbehebung für Android-Node](/de/nodes/troubleshooting)

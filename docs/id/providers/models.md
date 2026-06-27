@@ -1,24 +1,25 @@
 ---
 read_when:
     - Anda ingin memilih penyedia model
-    - Anda ingin contoh penyiapan cepat untuk autentikasi LLM + pemilihan model
+    - Anda menginginkan contoh penyiapan cepat untuk autentikasi LLM + pemilihan model
 summary: Penyedia model (LLM) yang didukung oleh OpenClaw
-title: Panduan memulai cepat penyedia model
+title: Mulai cepat penyedia model
 x-i18n:
-    generated_at: "2026-05-06T17:59:20Z"
+    generated_at: "2026-06-27T18:05:29Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7e95d37f3e332a9b2eb58a15dc356ad02b4cbf409926adb3faf1923825219887
+    source_hash: ca59b0203b4b5e327b2718a356f6fc1da2f868dac4ca219a2597a96dbf949804
     source_path: providers/models.md
     workflow: 16
 ---
 
-OpenClaw dapat menggunakan banyak penyedia LLM. Pilih salah satu, autentikasikan, lalu tetapkan model default
+OpenClaw dapat menggunakan banyak penyedia LLM. Pilih satu, autentikasi, lalu tetapkan model default
 sebagai `provider/model`.
 
 ## Mulai cepat (dua langkah)
 
-1. Autentikasikan dengan penyedia (biasanya melalui `openclaw onboard`).
+1. Autentikasi dengan penyedia (biasanya melalui `openclaw onboard`).
 2. Tetapkan model default:
 
 ```json5
@@ -34,12 +35,12 @@ sebagai `provider/model`.
 - [Anthropic (API + Claude CLI)](/id/providers/anthropic)
 - [BytePlus (Internasional)](/id/concepts/model-providers#byteplus-international)
 - [Chutes](/id/providers/chutes)
+- [Cohere](/id/providers/cohere)
 - [ComfyUI](/id/providers/comfy)
 - [Cloudflare AI Gateway](/id/providers/cloudflare-ai-gateway)
 - [DeepInfra](/id/providers/deepinfra)
 - [fal](/id/providers/fal)
 - [Fireworks](/id/providers/fireworks)
-- [model GLM](/id/providers/glm)
 - [MiniMax](/id/providers/minimax)
 - [Mistral](/id/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/id/providers/moonshot)
@@ -54,12 +55,12 @@ sebagai `provider/model`.
 - [Vercel AI Gateway](/id/providers/vercel-ai-gateway)
 - [Venice (Venice AI)](/id/providers/venice)
 - [xAI](/id/providers/xai)
-- [Z.AI](/id/providers/zai)
+- [Z.AI (GLM)](/id/providers/zai)
 
-## Varian penyedia tambahan yang dibundel
+## Varian penyedia tambahan
 
-- `anthropic-vertex` - dukungan Anthropic implisit di Google Vertex saat kredensial Vertex tersedia; tidak ada pilihan autentikasi onboarding terpisah
-- `copilot-proxy` - bridge Proxy VS Code Copilot lokal; gunakan `openclaw onboard --auth-choice copilot-proxy`
+- `anthropic-vertex` - instal `@openclaw/anthropic-vertex-provider` untuk dukungan Anthropic implisit di Google Vertex saat kredensial Vertex tersedia; tidak ada pilihan autentikasi onboarding terpisah
+- `copilot-proxy` - jembatan lokal VS Code Copilot Proxy; gunakan `openclaw onboard --auth-choice copilot-proxy`
 - `google-gemini-cli` - alur OAuth Gemini CLI tidak resmi; memerlukan instalasi `gemini` lokal (`brew install gemini-cli` atau `npm install -g @google/gemini-cli`); model default `google-gemini-cli/gemini-3-flash-preview`; gunakan `openclaw onboard --auth-choice google-gemini-cli` atau `openclaw models auth login --provider google-gemini-cli --set-default`
 
 Untuk katalog penyedia lengkap (xAI, Groq, Mistral, dll.) dan konfigurasi lanjutan,

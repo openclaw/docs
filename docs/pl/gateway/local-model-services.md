@@ -1,45 +1,43 @@
 ---
 read_when:
-    - Chcesz, aby OpenClaw uruchamiał lokalny serwer modelu tylko wtedy, gdy wybrano jego model
-    - Uruchamiasz ds4, inferrs, vLLM, llama.cpp, MLX lub inny lokalny serwer kompatybilny z OpenAI
-    - Musisz kontrolować zimny start, gotowość i wyłączanie po bezczynności w przypadku lokalnych dostawców
-summary: Uruchamiaj lokalne serwery modeli na żądanie przed żądaniami OpenClaw do modeli
+    - Chcesz, aby OpenClaw uruchamiał lokalny serwer modelu tylko wtedy, gdy wybrany jest jego model.
+    - Uruchamiasz ds4, inferrs, vLLM, llama.cpp, MLX lub inny lokalny serwer zgodny z OpenAI
+    - Musisz kontrolować zimny start, gotowość i wyłączanie lokalnych dostawców po bezczynności
+summary: Uruchamiaj lokalne serwery modeli na żądanie przed żądaniami modeli OpenClaw
 title: Lokalne usługi modeli
 x-i18n:
-    generated_at: "2026-05-10T19:37:07Z"
+    generated_at: "2026-06-27T17:34:21Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b900146c5831c784b5da66666322ed0f5d3457ccd741556f418cd197749b87b1
+    source_hash: 399648e32dd51faba7687a26de75ef349f1197269b5cca03d34552f0cd9cce28
     source_path: gateway/local-model-services.md
     workflow: 16
 ---
 
 `models.providers.<id>.localService` pozwala OpenClaw uruchamiać na żądanie lokalny
-serwer modelu należący do dostawcy. Jest to konfiguracja na poziomie dostawcy:
-gdy wybrany model należy do tego dostawcy, OpenClaw sprawdza usługę, uruchamia
-proces, jeśli punkt końcowy jest niedostępny, czeka na gotowość, a następnie
-wysyła żądanie do modelu.
+serwer modelu należący do providera. To konfiguracja na poziomie providera: gdy wybrany model
+należy do tego providera, OpenClaw sprawdza usługę, uruchamia proces, jeśli
+endpoint nie działa, czeka na gotowość, a następnie wysyła żądanie modelu.
 
-Używaj tego dla lokalnych serwerów, których utrzymywanie przez cały dzień jest
-kosztowne, albo dla ręcznych konfiguracji, w których sam wybór modelu powinien
-wystarczyć do uruchomienia backendu.
+Używaj tego dla lokalnych serwerów, których ciągłe utrzymywanie przez cały dzień jest kosztowne, albo dla
+ręcznych konfiguracji, w których wybór modelu powinien wystarczyć do uruchomienia backendu.
 
 ## Jak to działa
 
-1. Żądanie modelu jest rozwiązywane do skonfigurowanego dostawcy.
-2. Jeśli ten dostawca ma `localService`, OpenClaw sprawdza `healthUrl`.
+1. Żądanie modelu jest rozwiązywane do skonfigurowanego providera.
+2. Jeśli ten provider ma `localService`, OpenClaw sprawdza `healthUrl`.
 3. Jeśli sprawdzenie się powiedzie, OpenClaw używa istniejącego serwera.
 4. Jeśli sprawdzenie się nie powiedzie, OpenClaw uruchamia `command` z `args`.
-5. OpenClaw odpytuje gotowość do momentu wygaśnięcia `readyTimeoutMs`.
-6. Żądanie modelu jest wysyłane przez standardowy transport dostawcy.
+5. OpenClaw odpytuje gotowość do czasu wygaśnięcia `readyTimeoutMs`.
+6. Żądanie modelu jest wysyłane przez standardowy transport providera.
 7. Jeśli OpenClaw uruchomił proces, a `idleStopMs` jest dodatnie, proces jest
-   zatrzymywany po tym, jak ostatnie trwające żądanie pozostanie bezczynne przez
-   tak długi czas.
+   zatrzymywany, gdy ostatnie aktywne żądanie pozostawało bezczynne przez tak długi czas.
 
-OpenClaw nie instaluje w tym celu launchd, systemd, Docker ani demona. Serwer
-jest procesem potomnym procesu OpenClaw, który jako pierwszy go potrzebował.
+OpenClaw nie instaluje do tego launchd, systemd, Dockera ani demona.
+Serwer jest procesem potomnym procesu OpenClaw, który jako pierwszy go potrzebował.
 
-## Struktura konfiguracji
+## Kształt konfiguracji
 
 ```json5
 {
@@ -79,22 +77,21 @@ jest procesem potomnym procesu OpenClaw, który jako pierwszy go potrzebował.
 ## Pola
 
 - `command`: bezwzględna ścieżka do pliku wykonywalnego. Wyszukiwanie przez powłokę nie jest używane.
-- `args`: argumenty procesu. Nie są stosowane rozwijanie powłoki, potoki,
-  globowanie ani reguły cytowania.
+- `args`: argumenty procesu. Nie są stosowane żadne reguły rozwijania powłoki,
+  potoków, globowania ani cytowania.
 - `cwd`: opcjonalny katalog roboczy procesu.
-- `env`: opcjonalne zmienne środowiskowe scalane ze środowiskiem procesu
-  OpenClaw.
-- `healthUrl`: URL gotowości. Jeśli zostanie pominięty, OpenClaw dopisuje
-  `/models` do `baseUrl`, więc `http://127.0.0.1:8000/v1` staje się
+- `env`: opcjonalne zmienne środowiskowe scalane ze środowiskiem procesu OpenClaw.
+- `healthUrl`: adres URL gotowości. Jeśli zostanie pominięty, OpenClaw dodaje `/models` do
+  `baseUrl`, więc `http://127.0.0.1:8000/v1` staje się
   `http://127.0.0.1:8000/v1/models`.
-- `readyTimeoutMs`: limit czasu oczekiwania na gotowość podczas uruchamiania. Domyślnie: `120000`.
-- `idleStopMs`: opóźnienie wyłączenia po bezczynności dla procesów uruchomionych przez OpenClaw. `0` albo
-  pominięcie utrzymuje proces przy życiu do czasu zakończenia OpenClaw.
+- `readyTimeoutMs`: limit czasu gotowości podczas uruchamiania. Domyślnie: `120000`.
+- `idleStopMs`: opóźnienie zamknięcia po bezczynności dla procesów uruchomionych przez OpenClaw. `0` albo
+  pominięcie utrzymuje proces przy życiu do zakończenia OpenClaw.
 
 ## Przykład Inferrs
 
-Inferrs jest niestandardowym backendem `/v1` zgodnym z OpenAI, więc to samo API
-usługi lokalnej działa z wpisem dostawcy `inferrs`.
+Inferrs to niestandardowy backend zgodny z OpenAI dla `/v1`, więc ten sam interfejs API usługi lokalnej
+działa z wpisem providera `inferrs`.
 
 ```json5
 {
@@ -147,10 +144,13 @@ usługi lokalnej działa z wpisem dostawcy `inferrs`.
 }
 ```
 
-Zastąp `command` wynikiem `which inferrs` na maszynie uruchamiającej
+Zastąp `command` wynikiem `which inferrs` na maszynie, na której działa
 OpenClaw.
 
 ## Przykład ds4
+
+Pełną konfigurację, wskazówki dotyczące rozmiaru kontekstu oraz polecenia weryfikacyjne znajdziesz w
+[ds4](/pl/providers/ds4).
 
 ```json5
 {
@@ -162,18 +162,20 @@ OpenClaw.
         api: "openai-completions",
         timeoutSeconds: 300,
         localService: {
-          command: "/Users/you/Projects/oss/ds4/ds4-server",
+          command: "<DS4_DIR>/ds4-server",
           args: [
             "--model",
-            "/Users/you/Projects/oss/ds4/ds4flash.gguf",
+            "<DS4_DIR>/ds4flash.gguf",
             "--host",
             "127.0.0.1",
             "--port",
             "18000",
             "--ctx",
-            "393216",
+            "32768",
+            "--tokens",
+            "128",
           ],
-          cwd: "/Users/you/Projects/oss/ds4",
+          cwd: "<DS4_DIR>",
           healthUrl: "http://127.0.0.1:18000/v1/models",
           readyTimeoutMs: 300000,
           idleStopMs: 0,
@@ -188,23 +190,23 @@ OpenClaw.
 ## Uwagi operacyjne
 
 - Jeden proces OpenClaw zarządza uruchomionym przez siebie procesem potomnym. Inny proces OpenClaw,
-  który zobaczy, że ten sam URL sprawdzania kondycji już działa, użyje go ponownie bez przejmowania nad nim kontroli.
-- Uruchamianie jest serializowane dla każdego zestawu polecenia i argumentów dostawcy, więc równoczesne
+  który zobaczy ten sam adres URL zdrowia już działający, użyje go ponownie bez przejmowania.
+- Uruchamianie jest serializowane dla każdego zestawu polecenia providera i argumentów, więc równoczesne
   żądania nie tworzą zduplikowanych serwerów dla tej samej konfiguracji.
-- Aktywne odpowiedzi strumieniowe utrzymują dzierżawę; wyłączenie po bezczynności czeka do zakończenia
-  obsługi treści odpowiedzi.
-- Użyj `timeoutSeconds` dla wolnych dostawców lokalnych, aby zimne starty i długie generowania
+- Aktywne odpowiedzi strumieniowe utrzymują dzierżawę; zamknięcie po bezczynności czeka, aż obsługa
+  treści odpowiedzi się zakończy.
+- Użyj `timeoutSeconds` dla wolnych lokalnych providerów, aby zimne starty i długie generowania
   nie trafiały w domyślny limit czasu żądania modelu.
-- Użyj jawnego `healthUrl`, jeśli Twój serwer udostępnia gotowość w miejscu innym
-  niż `/v1/models`.
+- Użyj jawnego `healthUrl`, jeśli serwer wystawia gotowość w innym miejscu niż
+  `/v1/models`.
 
 ## Powiązane
 
 <CardGroup cols={2}>
   <Card title="Modele lokalne" href="/pl/gateway/local-models" icon="server">
-    Konfiguracja modelu lokalnego, wybór dostawcy i wskazówki dotyczące bezpieczeństwa.
+    Konfiguracja modeli lokalnych, wybór providerów i wskazówki dotyczące bezpieczeństwa.
   </Card>
   <Card title="Inferrs" href="/pl/providers/inferrs" icon="cpu">
-    Uruchamiaj OpenClaw przez lokalny serwer inferrs zgodny z OpenAI.
+    Uruchom OpenClaw przez zgodny z OpenAI lokalny serwer inferrs.
   </Card>
 </CardGroup>

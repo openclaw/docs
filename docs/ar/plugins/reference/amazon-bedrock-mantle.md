@@ -1,27 +1,28 @@
 ---
 read_when:
-    - أنت بصدد تثبيت Plugin amazon-bedrock-mantle أو تهيئته أو تدقيقه
-summary: يضيف دعم مزوّد نماذج Amazon Bedrock Mantle إلى OpenClaw.
+    - أنت تثبّت أو تهيّئ أو تدقّق Plugin amazon-bedrock-mantle
+summary: Plugin مزوّد OpenClaw Amazon Bedrock Mantle لتوجيه النماذج المتوافقة مع OpenAI.
 title: Plugin Mantle لـ Amazon Bedrock
 x-i18n:
-    generated_at: "2026-05-02T20:52:41Z"
+    generated_at: "2026-06-27T18:09:54Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 48212e4eefdc393b9ff6a9fa7b74f4e3960b0b922b95141aeaf41a3a667b1f4e
+    source_hash: 18725aa4678f967a5d34a2c951c11cc371e934abe62fde7616124157ebdb3799
     source_path: plugins/reference/amazon-bedrock-mantle.md
     workflow: 16
 ---
 
 # Plugin Amazon Bedrock Mantle
 
-يضيف دعم موفّر نماذج Amazon Bedrock Mantle إلى OpenClaw.
+Plugin موفّر OpenClaw Amazon Bedrock Mantle لتوجيه النماذج المتوافقة مع OpenAI.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/amazon-bedrock-mantle-provider`
-- مسار التثبيت: مضمّن في OpenClaw
+- مسار التثبيت: npm؛ ClawHub
 
-## الواجهة
+## السطح
 
 providers: amazon-bedrock-mantle
 

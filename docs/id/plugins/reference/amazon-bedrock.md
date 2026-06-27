@@ -1,30 +1,31 @@
 ---
 read_when:
     - Anda sedang menginstal, mengonfigurasi, atau mengaudit Plugin amazon-bedrock
-summary: Menambahkan dukungan penyedia model Amazon Bedrock ke OpenClaw.
+summary: Plugin penyedia Amazon Bedrock OpenClaw dengan penemuan model, embeddings, dan dukungan guardrail.
 title: Plugin Amazon Bedrock
 x-i18n:
-    generated_at: "2026-05-02T20:49:24Z"
+    generated_at: "2026-06-27T17:51:34Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 001ec686133a9f6b17c8074bf6710c11ad92679d7badb08a8bef51272c40308d
+    source_hash: bf39e0d58332cd057e8f050dc1a8742c219b62182381a7f47856e3a657b80f03
     source_path: plugins/reference/amazon-bedrock.md
     workflow: 16
 ---
 
-# Amazon Bedrock Plugin
+# Plugin Amazon Bedrock
 
-Menambahkan dukungan penyedia model Amazon Bedrock ke OpenClaw.
+Plugin penyedia Amazon Bedrock OpenClaw dengan dukungan penemuan model, embedding, dan guardrail.
 
 ## Distribusi
 
 - Paket: `@openclaw/amazon-bedrock-provider`
-- Rute pemasangan: disertakan dalam OpenClaw
+- Rute instalasi: npm; ClawHub
 
 ## Permukaan
 
 providers: amazon-bedrock; contracts: memoryEmbeddingProviders
 
-## Dokumen terkait
+## Dokumentasi terkait
 
 - [amazon-bedrock](/id/providers/bedrock)

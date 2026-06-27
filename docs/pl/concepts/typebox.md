@@ -1,24 +1,27 @@
 ---
 read_when:
     - Aktualizowanie schematów protokołu lub generowania kodu
-summary: Schematy TypeBox jako jedyne źródło prawdy dla protokołu Gateway
+summary: Schematy TypeBox jako jedno źródło prawdy dla protokołu Gateway
 title: TypeBox
 x-i18n:
-    generated_at: "2026-05-11T20:28:46Z"
+    generated_at: "2026-06-27T17:30:12Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ecc9a69ac6d4ac101a4a6f34e44acfbe952dce0f90d178d4f8559191fb92c3b4
+    source_hash: f2f3da11e9dcf3250fd77e0c43f4ed918551a536d93fa71bce95eaf3d7539f6d
     source_path: concepts/typebox.md
     workflow: 16
 ---
 
-TypeBox to biblioteka schematów zorientowana na TypeScript. Używamy jej do definiowania **protokołu WebSocket Gateway** (handshake, żądanie/odpowiedź, zdarzenia serwera). Te schematy
-napędzają **walidację w czasie działania**, **eksport JSON Schema** i **generowanie kodu Swift** dla aplikacji macOS. Jedno źródło prawdy; cała reszta jest generowana.
+TypeBox to biblioteka schematów zorientowana na TypeScript. Używamy jej do definiowania **protokołu Gateway
+WebSocket** (uzgadnianie połączenia, żądanie/odpowiedź, zdarzenia serwera). Te schematy
+napędzają **walidację w czasie wykonywania**, **eksport JSON Schema** oraz **generowanie kodu Swift** dla
+aplikacji macOS. Jedno źródło prawdy; wszystko inne jest generowane.
 
-Jeśli chcesz poznać kontekst protokołu na wyższym poziomie, zacznij od
+Jeśli chcesz poznać kontekst protokołu wyższego poziomu, zacznij od
 [architektury Gateway](/pl/concepts/architecture).
 
-## Model myślowy (30 sekund)
+## Model mentalny (30 sekund)
 
 Każda wiadomość Gateway WS jest jedną z trzech ramek:
 
@@ -47,21 +50,21 @@ Typowe metody i zdarzenia:
 | ---------- | ---------------------------------------------------------- | ---------------------------------- |
 | Rdzeń      | `connect`, `health`, `status`                              | `connect` musi być pierwsze        |
 | Wiadomości | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail` | skutki uboczne wymagają `idempotencyKey` |
-| Czat       | `chat.history`, `chat.send`, `chat.abort`                  | WebChat ich używa                  |
+| Czat       | `chat.history`, `chat.send`, `chat.abort`                  | WebChat używa tych metod           |
 | Sesje      | `sessions.list`, `sessions.patch`, `sessions.delete`       | administracja sesjami              |
 | Automatyzacja | `wake`, `cron.list`, `cron.run`, `cron.runs`            | sterowanie wybudzaniem i cronem    |
-| Węzły      | `node.list`, `node.invoke`, `node.pair.*`                  | Gateway WS + działania Node        |
+| Węzły      | `node.list`, `node.invoke`, `node.pair.*`                  | Gateway WS i akcje węzłów          |
 | Zdarzenia  | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown`  | wypychanie z serwera               |
 
-Autorytatywny reklamowany inwentarz **wykrywania** znajduje się w
+Autorytatywny reklamowany spis **odkrywania** znajduje się w
 `src/gateway/server-methods-list.ts` (`listGatewayMethods`, `GATEWAY_EVENTS`).
 
 ## Gdzie znajdują się schematy
 
-- Źródło: `src/gateway/protocol/schema.ts`
-- Walidatory w czasie działania (AJV): `src/gateway/protocol/index.ts`
-- Reklamowany rejestr funkcji/wykrywania: `src/gateway/server-methods-list.ts`
-- Handshake serwera + dispatch metod: `src/gateway/server.impl.ts`
+- Źródło: `packages/gateway-protocol/src/schema.ts`
+- Walidatory czasu wykonywania (AJV): `packages/gateway-protocol/src/index.ts`
+- Rejestr reklamowanych funkcji/odkrywania: `src/gateway/server-methods-list.ts`
+- Uzgadnianie po stronie serwera i dispatch metod: `src/gateway/server.impl.ts`
 - Klient Node: `src/gateway/client.ts`
 - Wygenerowany JSON Schema: `dist/protocol.schema.json`
 - Wygenerowane modele Swift: `apps/macos/Sources/OpenClawProtocol/GatewayModels.swift`
@@ -71,22 +74,22 @@ Autorytatywny reklamowany inwentarz **wykrywania** znajduje się w
 - `pnpm protocol:gen`
   - zapisuje JSON Schema (draft-07) do `dist/protocol.schema.json`
 - `pnpm protocol:gen:swift`
-  - generuje modele Gateway w Swift
+  - generuje modele Gateway dla Swift
 - `pnpm protocol:check`
-  - uruchamia oba generatory i sprawdza, czy wynik jest skomitowany
+  - uruchamia oba generatory i weryfikuje, że wynik jest zatwierdzony
 
-## Jak schematy są używane w czasie działania
+## Jak schematy są używane w czasie wykonywania
 
-- **Po stronie serwera**: każda przychodząca ramka jest walidowana za pomocą AJV. Handshake akceptuje tylko
+- **Po stronie serwera**: każda przychodząca ramka jest walidowana za pomocą AJV. Uzgadnianie połączenia akceptuje tylko
   żądanie `connect`, którego parametry pasują do `ConnectParams`.
 - **Po stronie klienta**: klient JS waliduje ramki zdarzeń i odpowiedzi przed
   ich użyciem.
-- **Wykrywanie funkcji**: Gateway wysyła konserwatywną listę `features.methods`
-  i `features.events` w `hello-ok` z `listGatewayMethods()` oraz
+- **Odkrywanie funkcji**: Gateway wysyła konserwatywną listę `features.methods`
+  i `features.events` w `hello-ok` z `listGatewayMethods()` i
   `GATEWAY_EVENTS`.
-- Ta lista wykrywania nie jest wygenerowanym zrzutem każdego możliwego do wywołania helpera w
+- Ta lista odkrywania nie jest wygenerowanym zrzutem każdego wywoływalnego helpera w
   `coreGatewayHandlers`; niektóre pomocnicze RPC są zaimplementowane w
-  `src/gateway/server-methods/*.ts`, ale nie są wyliczone na reklamowanej
+  `src/gateway/server-methods/*.ts` bez wyliczania ich w reklamowanej
   liście funkcji.
 
 ## Przykładowe ramki
@@ -136,7 +139,7 @@ Odpowiedź hello-ok:
 }
 ```
 
-Żądanie + odpowiedź:
+Żądanie i odpowiedź:
 
 ```json
 { "type": "req", "id": "r1", "method": "health" }
@@ -154,7 +157,7 @@ Zdarzenie:
 
 ## Minimalny klient (Node.js)
 
-Najmniejszy użyteczny przepływ: połączenie + health.
+Najmniejszy użyteczny przepływ: connect + health.
 
 ```ts
 import { WebSocket } from "ws";
@@ -200,7 +203,7 @@ Przykład: dodaj nowe żądanie `system.echo`, które zwraca `{ ok: true, text }
 
 1. **Schemat (źródło prawdy)**
 
-Dodaj do `src/gateway/protocol/schema.ts`:
+Dodaj do `packages/gateway-protocol/src/schema.ts`:
 
 ```ts
 export const SystemEchoParamsSchema = Type.Object(
@@ -228,7 +231,7 @@ export type SystemEchoResult = Static<typeof SystemEchoResultSchema>;
 
 2. **Walidacja**
 
-W `src/gateway/protocol/index.ts` wyeksportuj walidator AJV:
+W `packages/gateway-protocol/src/index.ts` wyeksportuj walidator AJV:
 
 ```ts
 export const validateSystemEchoParams = ajv.compile<SystemEchoParams>(SystemEchoParamsSchema);
@@ -251,9 +254,9 @@ Zarejestruj go w `src/gateway/server-methods.ts` (już scala `systemHandlers`),
 a następnie dodaj `"system.echo"` do wejścia `listGatewayMethods` w
 `src/gateway/server-methods-list.ts`.
 
-Jeśli metoda może być wywoływana przez klientów operatora lub Node, sklasyfikuj ją także w
-`src/gateway/method-scopes.ts`, aby egzekwowanie zakresów i reklamowanie funkcji
-w `hello-ok` pozostały spójne.
+Jeśli metoda może być wywoływana przez operatora lub klientów węzłów, sklasyfikuj ją również w
+`src/gateway/method-scopes.ts`, aby egzekwowanie zakresów i reklamowanie funkcji w `hello-ok`
+pozostały spójne.
 
 4. **Wygeneruj ponownie**
 
@@ -261,11 +264,11 @@ w `hello-ok` pozostały spójne.
 pnpm protocol:check
 ```
 
-5. **Testy + dokumentacja**
+5. **Testy i dokumentacja**
 
-Dodaj test serwera w `src/gateway/server.*.test.ts` i opisz metodę w dokumentacji.
+Dodaj test serwera w `src/gateway/server.*.test.ts` i odnotuj metodę w dokumentacji.
 
-## Zachowanie generowania kodu Swift
+## Zachowanie generatora kodu Swift
 
 Generator Swift emituje:
 
@@ -275,26 +278,27 @@ Generator Swift emituje:
 
 Nieznane typy ramek są zachowywane jako surowe payloady dla zgodności w przód.
 
-## Wersjonowanie + zgodność
+## Wersjonowanie i zgodność
 
-- `PROTOCOL_VERSION` znajduje się w `src/gateway/protocol/version.ts`.
-- Klienci wysyłają `minProtocol` + `maxProtocol`; serwer odrzuca zakresy, które
-  nie obejmują jego obecnego protokołu.
+- `PROTOCOL_VERSION` znajduje się w `packages/gateway-protocol/src/version.ts`.
+- Klienci wysyłają `minProtocol` i `maxProtocol`; serwer odrzuca zakresy, które
+  nie obejmują jego bieżącego protokołu.
 - Modele Swift zachowują nieznane typy ramek, aby nie psuć starszych klientów.
 
 ## Wzorce i konwencje schematów
 
 - Większość obiektów używa `additionalProperties: false` dla ścisłych payloadów.
-- `NonEmptyString` jest wartością domyślną dla identyfikatorów oraz nazw metod/zdarzeń.
+- `NonEmptyString` jest domyślne dla identyfikatorów oraz nazw metod/zdarzeń.
 - Najwyższego poziomu `GatewayFrame` używa **dyskryminatora** na `type`.
 - Metody ze skutkami ubocznymi zwykle wymagają `idempotencyKey` w parametrach
   (przykład: `send`, `poll`, `agent`, `chat.send`).
-- `agent` akceptuje opcjonalne `internalEvents` dla generowanego w czasie działania kontekstu orkiestracji
-  (na przykład przekazanie po ukończeniu zadania subagenta/cronu); traktuj to jako wewnętrzną powierzchnię API.
+- `agent` akceptuje opcjonalne `internalEvents` dla generowanego w czasie wykonywania kontekstu orkiestracji
+  (na przykład przekazanie po ukończeniu zadania subagenta/crona); traktuj to jako wewnętrzną powierzchnię API.
 
-## JSON schematu na żywo
+## Aktywny JSON schematu
 
-Wygenerowany JSON Schema znajduje się w repozytorium pod `dist/protocol.schema.json`. Opublikowany surowy plik jest zwykle dostępny pod adresem:
+Wygenerowany JSON Schema znajduje się w repozytorium pod `dist/protocol.schema.json`. Opublikowany
+surowy plik jest zwykle dostępny pod adresem:
 
 - [https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json](https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json)
 
@@ -303,9 +307,9 @@ Wygenerowany JSON Schema znajduje się w repozytorium pod `dist/protocol.schema.
 1. Zaktualizuj schematy TypeBox.
 2. Zarejestruj metodę/zdarzenie w `src/gateway/server-methods-list.ts`.
 3. Zaktualizuj `src/gateway/method-scopes.ts`, gdy nowe RPC wymaga klasyfikacji zakresu operatora lub
-   Node.
+   węzła.
 4. Uruchom `pnpm protocol:check`.
-5. Skomituj wygenerowany ponownie schemat + modele Swift.
+5. Zatwierdź ponownie wygenerowany schemat i modele Swift.
 
 ## Powiązane
 

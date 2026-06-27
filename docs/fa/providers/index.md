@@ -1,21 +1,23 @@
 ---
 read_when:
-    - می‌خواهید یک ارائه‌دهندهٔ مدل را انتخاب کنید
-    - به یک مرور سریع از بک‌اندهای LLM پشتیبانی‌شده نیاز دارید
-summary: ارائه‌دهندگان مدل (مدل‌های زبانی بزرگ) که توسط OpenClaw پشتیبانی می‌شوند
-title: فهرست ارائه‌دهندگان
+    - می‌خواهید یک ارائه‌دهندهٔ مدل انتخاب کنید
+    - به یک نمای کلی سریع از بک‌اندهای LLM پشتیبانی‌شده نیاز دارید
+summary: ارائه‌دهندگان مدل (LLMها) پشتیبانی‌شده توسط OpenClaw
+title: فهرست راهنمای ارائه‌دهنده
 x-i18n:
-    generated_at: "2026-05-06T09:38:27Z"
+    generated_at: "2026-06-27T18:40:56Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cfc3a15880a5e1881c1a58c60c9ad7e5624350a8db848d03c7cef6ee18c14b81
+    source_hash: a340f6a48f6f1d50116316f9679b009365cd617b3453ebd9b2b31e70f6b94c31
     source_path: providers/index.md
     workflow: 16
 ---
 
-OpenClaw می‌تواند از بسیاری از ارائه‌دهندگان LLM استفاده کند. یک ارائه‌دهنده انتخاب کنید، احراز هویت کنید، سپس مدل پیش‌فرض را به‌صورت `provider/model` تنظیم کنید.
+OpenClaw می‌تواند از ارائه‌دهندگان LLM زیادی استفاده کند. یک ارائه‌دهنده انتخاب کنید، احراز هویت کنید، سپس
+مدل پیش‌فرض را به صورت `provider/model` تنظیم کنید.
 
-به‌دنبال مستندات کانال‌های چت (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/و غیره) هستید؟ [کانال‌ها](/fa/channels) را ببینید.
+دنبال اسناد کانال‌های چت (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/غیره) هستید؟ [کانال‌ها](/fa/channels) را ببینید.
 
 ## شروع سریع
 
@@ -28,7 +30,7 @@ OpenClaw می‌تواند از بسیاری از ارائه‌دهندگان LL
 }
 ```
 
-## مستندات ارائه‌دهندگان
+## اسناد ارائه‌دهندگان
 
 - [Alibaba Model Studio](/fa/providers/alibaba)
 - [Amazon Bedrock](/fa/providers/bedrock)
@@ -39,14 +41,16 @@ OpenClaw می‌تواند از بسیاری از ارائه‌دهندگان LL
 - [BytePlus (بین‌المللی)](/fa/concepts/model-providers#byteplus-international)
 - [Cerebras](/fa/providers/cerebras)
 - [Chutes](/fa/providers/chutes)
+- [Cohere](/fa/providers/cohere)
 - [Cloudflare AI Gateway](/fa/providers/cloudflare-ai-gateway)
 - [ComfyUI](/fa/providers/comfy)
 - [DeepSeek](/fa/providers/deepseek)
+- [ds4 (DeepSeek V4 محلی)](/fa/providers/ds4)
 - [ElevenLabs](/fa/providers/elevenlabs)
 - [fal](/fa/providers/fal)
 - [Fireworks](/fa/providers/fireworks)
 - [GitHub Copilot](/fa/providers/github-copilot)
-- [مدل‌های GLM](/fa/providers/glm)
+- [GMI Cloud](/fa/providers/gmi)
 - [Google (Gemini)](/fa/providers/google)
 - [Gradium](/fa/providers/gradium)
 - [Groq (استنتاج LPU)](/fa/providers/groq)
@@ -59,14 +63,17 @@ OpenClaw می‌تواند از بسیاری از ارائه‌دهندگان LL
 - [Mistral](/fa/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/fa/providers/moonshot)
 - [NVIDIA](/fa/providers/nvidia)
-- [Ollama (ابر + مدل‌های محلی)](/fa/providers/ollama)
+- [NovitaAI](/fa/providers/novita)
+- [Ollama (مدل‌های ابری + محلی)](/fa/providers/ollama)
+- [Ollama Cloud](/fa/providers/ollama-cloud)
 - [OpenAI (API + Codex)](/fa/providers/openai)
 - [OpenCode](/fa/providers/opencode)
 - [OpenCode Go](/fa/providers/opencode-go)
 - [OpenRouter](/fa/providers/openrouter)
-- [Perplexity (جست‌وجوی وب)](/fa/providers/perplexity-provider)
+- [Perplexity (جستجوی وب)](/fa/providers/perplexity-provider)
 - [Qianfan](/fa/providers/qianfan)
 - [Qwen Cloud](/fa/providers/qwen)
+- [Qwen OAuth / Portal](/fa/providers/qwen-oauth)
 - [Runway](/fa/providers/runway)
 - [SenseAudio](/fa/providers/senseaudio)
 - [SGLang (مدل‌های محلی)](/fa/providers/sglang)
@@ -81,14 +88,14 @@ OpenClaw می‌تواند از بسیاری از ارائه‌دهندگان LL
 - [Vydra](/fa/providers/vydra)
 - [xAI](/fa/providers/xai)
 - [Xiaomi](/fa/providers/xiaomi)
-- [Z.AI](/fa/providers/zai)
+- [Z.AI (GLM)](/fa/providers/zai)
 
-## صفحه‌های نمای کلی مشترک
+## صفحات مرور کلی مشترک
 
-- [گونه‌های بسته‌بندی‌شدهٔ افزوده](/fa/providers/models#additional-bundled-provider-variants) - Anthropic Vertex، Copilot Proxy، و Gemini CLI OAuth
-- [تولید تصویر](/fa/tools/image-generation) - ابزار مشترک `image_generate`، انتخاب ارائه‌دهنده، و جایگزینی هنگام خرابی
-- [تولید موسیقی](/fa/tools/music-generation) - ابزار مشترک `music_generate`، انتخاب ارائه‌دهنده، و جایگزینی هنگام خرابی
-- [تولید ویدئو](/fa/tools/video-generation) - ابزار مشترک `video_generate`، انتخاب ارائه‌دهنده، و جایگزینی هنگام خرابی
+- [گونه‌های همراه اضافی](/fa/providers/models#additional-bundled-provider-variants) - Anthropic Vertex، Copilot Proxy و Gemini CLI OAuth
+- [تولید تصویر](/fa/tools/image-generation) - ابزار مشترک `image_generate`، انتخاب ارائه‌دهنده و جابه‌جایی خودکار هنگام خرابی
+- [تولید موسیقی](/fa/tools/music-generation) - ابزار مشترک `music_generate`، انتخاب ارائه‌دهنده و جابه‌جایی خودکار هنگام خرابی
+- [تولید ویدئو](/fa/tools/video-generation) - ابزار مشترک `video_generate`، انتخاب ارائه‌دهنده و جابه‌جایی خودکار هنگام خرابی
 
 ## ارائه‌دهندگان رونویسی
 
@@ -103,5 +110,5 @@ OpenClaw می‌تواند از بسیاری از ارائه‌دهندگان LL
 
 - [Claude Max API Proxy](/fa/providers/claude-max-api-proxy) - پروکسی جامعه برای اعتبارنامه‌های اشتراک Claude (پیش از استفاده، سیاست/شرایط Anthropic را بررسی کنید)
 
-برای فهرست کامل ارائه‌دهندگان (xAI، Groq، Mistral، و غیره) و پیکربندی پیشرفته،
+برای فهرست کامل ارائه‌دهندگان (xAI، Groq، Mistral و غیره) و پیکربندی پیشرفته،
 [ارائه‌دهندگان مدل](/fa/concepts/model-providers) را ببینید.

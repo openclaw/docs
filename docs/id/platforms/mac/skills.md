@@ -1,48 +1,51 @@
 ---
 read_when:
-    - Memperbarui UI pengaturan Skills di macOS
-    - Mengubah gating Skills atau perilaku instalasi
-summary: UI pengaturan Skills di macOS dan status yang didukung gateway
+    - Memperbarui UI pengaturan Skills macOS
+    - Mengubah pembatasan Skills atau perilaku instalasi
+summary: Antarmuka pengaturan Skills macOS dan status yang didukung Gateway
 title: Skills (macOS)
 x-i18n:
-    generated_at: "2026-04-24T09:17:27Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T17:44:06Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: dcd89d27220644866060d0f9954a116e6093d22f7ebd32d09dc16871c25b988e
+    source_hash: 5ecc470f1645051e03ab4f51bcb4972da4853c690354bc8ea18a89fcd387d413
     source_path: platforms/mac/skills.md
-    workflow: 15
+    workflow: 16
 ---
 
-Aplikasi macOS menampilkan Skills OpenClaw melalui gateway; aplikasi ini tidak mem-parsing skill secara lokal.
+Aplikasi macOS menampilkan Skills OpenClaw melalui Gateway; aplikasi ini tidak mengurai Skills secara lokal.
 
 ## Sumber data
 
-- `skills.status` (gateway) mengembalikan semua skill beserta eligibility dan missing requirements
-  (termasuk blok allowlist untuk skill bawaan).
-- Requirement diturunkan dari `metadata.openclaw.requires` di setiap `SKILL.md`.
+- `skills.status` (Gateway) mengembalikan semua Skills beserta kelayakan dan persyaratan yang hilang
+  (termasuk blok allowlist untuk Skills bawaan).
+- Persyaratan diturunkan dari `metadata.openclaw.requires` di setiap `SKILL.md`.
 
-## Aksi instalasi
+## Tindakan instalasi
 
-- `metadata.openclaw.install` menentukan opsi instalasi (brew/node/go/uv).
-- Aplikasi memanggil `skills.install` untuk menjalankan installer di host gateway.
-- Temuan `critical` dangerous-code bawaan memblokir `skills.install` secara default; temuan suspicious tetap hanya memberi peringatan. Override dangerous memang ada pada permintaan gateway, tetapi alur aplikasi default tetap fail-closed.
-- Jika setiap opsi instalasi adalah `download`, gateway menampilkan semua
+- `metadata.openclaw.install` mendefinisikan opsi instalasi (brew/node/go/uv).
+- Aplikasi memanggil `skills.install` untuk menjalankan penginstal di host Gateway.
+- `security.installPolicy` yang dimiliki operator dapat memblokir instalasi skill
+  yang didukung Gateway sebelum metadata penginstal berjalan. Pemblokiran kode berbahaya bawaan saat instalasi
+  bukan bagian dari alur instalasi skill.
+- Jika setiap opsi instalasi adalah `download`, Gateway menampilkan semua
   pilihan unduhan.
-- Jika tidak, gateway memilih satu installer yang diprioritaskan menggunakan preferensi instalasi saat ini
-  dan binary host: Homebrew terlebih dahulu ketika
-  `skills.install.preferBrew` diaktifkan dan `brew` ada, lalu `uv`, lalu
-  node manager yang dikonfigurasi dari `skills.install.nodeManager`, lalu
+- Jika tidak, Gateway memilih satu penginstal pilihan menggunakan preferensi
+  instalasi saat ini dan biner host: Homebrew terlebih dahulu saat
+  `skills.install.preferBrew` diaktifkan dan `brew` tersedia, lalu `uv`, lalu
+  pengelola node yang dikonfigurasi dari `skills.install.nodeManager`, lalu
   fallback berikutnya seperti `go` atau `download`.
-- Label instalasi Node mencerminkan node manager yang dikonfigurasi, termasuk `yarn`.
+- Label instalasi Node mencerminkan pengelola node yang dikonfigurasi, termasuk `yarn`.
 
-## Env/API key
+## Kunci env/API
 
-- Aplikasi menyimpan key di `~/.openclaw/openclaw.json` di bawah `skills.entries.<skillKey>`.
+- Aplikasi menyimpan kunci di `~/.openclaw/openclaw.json` di bawah `skills.entries.<skillKey>`.
 - `skills.update` menambal `enabled`, `apiKey`, dan `env`.
 
-## Mode remote
+## Mode jarak jauh
 
-- Instalasi + pembaruan konfigurasi terjadi di host gateway (bukan di Mac lokal).
+- Pembaruan instalasi + konfigurasi terjadi di host Gateway (bukan Mac lokal).
 
 ## Terkait
 

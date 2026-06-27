@@ -1,44 +1,58 @@
 ---
+doc-schema-version: 1
 read_when:
-    - تريد أمثلة سريعة لتثبيت Plugin أو سردها أو تحديثها أو إلغاء تثبيتها
-    - تريد الاختيار بين ClawHub وتوزيع Plugin عبر npm
-    - أنت تنشر حزمة Plugin
+    - تريد أمثلة سريعة لعرض قائمة Plugin أو تثبيته أو تحديثه أو فحصه أو إلغاء تثبيته
+    - تريد اختيار مصدر تثبيت Plugin
+    - تريد المرجع الصحيح لنشر حزم Plugin
 sidebarTitle: Manage plugins
-summary: أمثلة سريعة لتثبيت Plugins الخاصة بـ OpenClaw وسردها وإلغاء تثبيتها وتحديثها ونشرها
-title: إدارة Plugins
+summary: أمثلة سريعة لسرد Plugin الخاصة بـ OpenClaw وتثبيتها وتحديثها وفحصها وإلغاء تثبيتها
+title: إدارة plugins
 x-i18n:
-    generated_at: "2026-05-10T19:51:00Z"
+    generated_at: "2026-06-27T18:06:45Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5f666a8196c802190dfd69e8b6a679a47db22f97c4c14d2f9fed73e8fb1ffe5a
+    source_hash: dd0c1143c6312603311931cbbdc63069a44bc5ec487e2a46b0266b86a556da4e
     source_path: plugins/manage-plugins.md
     workflow: 16
 ---
 
-معظم سير عمل Plugin عبارة عن بضعة أوامر: البحث، والتثبيت، وإعادة تشغيل Gateway،
-والتحقق، وإلغاء التثبيت عندما لا تعود بحاجة إلى Plugin.
+استخدم هذه الصفحة لأوامر إدارة Plugin الشائعة. للاطلاع على عقد الأمر
+الكامل، والرايات، وقواعد اختيار المصدر، والحالات الطرفية، راجع
+[`openclaw plugins`](/ar/cli/plugins).
 
-## عرض Plugins
+معظم مسارات عمل التثبيت تكون كالتالي:
+
+1. العثور على حزمة
+2. تثبيتها من ClawHub، أو npm، أو git، أو مسار محلي
+3. السماح لـ Gateway المُدار بإعادة التشغيل تلقائيًا، أو إعادة تشغيله يدويًا عندما لا يكون مُدارًا
+4. التحقق من تسجيلات وقت تشغيل Plugin
+
+## سرد Plugins والبحث عنها
 
 ```bash
 openclaw plugins list
 openclaw plugins list --enabled
 openclaw plugins list --verbose
 openclaw plugins list --json
+openclaw plugins search "calendar"
 ```
 
-استخدم `--json` مع السكربتات. فهو يتضمن تشخيصات السجل وحالة
-`dependencyStatus` الثابتة لكل Plugin عندما تعلن حزمة Plugin عن `dependencies` أو
-`optionalDependencies`.
+استخدم `--json` للبرامج النصية:
 
 ```bash
 openclaw plugins list --json \
   | jq '.plugins[] | {id, enabled, format, source, dependencyStatus}'
 ```
 
-`plugins list` هو فحص مخزون بارد. يعرض ما يستطيع OpenClaw اكتشافه
-من الإعدادات والبيانات الوصفية وسجل Plugin؛ ولا يثبت أن عملية Gateway
-قيد التشغيل بالفعل قد استوردت وقت تشغيل Plugin.
+`plugins list` فحص جرد بارد. يعرض ما يمكن لـ OpenClaw اكتشافه
+من الإعدادات، وملفات البيان، وسجل Plugins؛ ولا يثبت أن Gateway
+قيد التشغيل بالفعل قد استورد وقت تشغيل Plugin. يتضمن إخراج JSON
+تشخيصات السجل و`dependencyStatus` الثابتة لكل Plugin عندما تعلن
+حزمة Plugin عن `dependencies` أو `optionalDependencies`.
+
+يستعلم `plugins search` من ClawHub عن حزم Plugin القابلة للتثبيت ويطبع
+تلميحات التثبيت مثل `openclaw plugins install clawhub:<package>`.
 
 ## تثبيت Plugins
 
@@ -46,18 +60,18 @@ openclaw plugins list --json \
 # Search ClawHub for plugin packages.
 openclaw plugins search "calendar"
 
-# Bare package specs try ClawHub first, then npm fallback.
-openclaw plugins install <package>
-
-# Force one source.
+# Install from ClawHub.
 openclaw plugins install clawhub:<package>
-openclaw plugins install npm:<package>
-
-# Install a specific version or dist-tag.
 openclaw plugins install clawhub:<package>@1.2.3
 openclaw plugins install clawhub:<package>@beta
+
+# Install from npm.
+openclaw plugins install npm:<package>
 openclaw plugins install npm:@scope/openclaw-plugin@1.2.3
 openclaw plugins install npm:@openclaw/codex
+
+# Install from a local npm pack artifact.
+openclaw plugins install npm-pack:<path.tgz>
 
 # Install from git or a local development checkout.
 openclaw plugins install git:github.com/acme/openclaw-plugin@v1.0.0
@@ -65,16 +79,31 @@ openclaw plugins install ./my-plugin
 openclaw plugins install --link ./my-plugin
 ```
 
-بعد تثبيت كود Plugin، أعد تشغيل Gateway الذي يخدم قنواتك:
+مواصفات الحزم العارية تُثبَّت من npm أثناء انتقال الإطلاق. استخدم `clawhub:`
+أو `npm:` أو `git:` أو `npm-pack:` عندما تحتاج إلى اختيار مصدر حتمي.
+إذا كان الاسم العاري يطابق معرّف Plugin رسميًا، يستطيع OpenClaw تثبيت
+إدخال الفهرس مباشرة.
+
+استخدم `--force` فقط عندما تريد عن قصد الكتابة فوق هدف تثبيت موجود.
+للترقيات الروتينية لتثبيتات npm أو ClawHub أو hook-pack المتتبعة، استخدم
+`openclaw plugins update`.
+
+## إعادة التشغيل والفحص
+
+بعد تثبيت أو تحديث أو إلغاء تثبيت كود Plugin، يعيد Gateway المُدار قيد التشغيل
+مع تمكين إعادة تحميل الإعدادات تشغيل نفسه تلقائيًا. إذا لم يكن Gateway
+مُدارًا أو كانت إعادة التحميل معطلة، فأعد تشغيله بنفسك قبل فحص أسطح وقت
+التشغيل الحية:
 
 ```bash
 openclaw gateway restart
 openclaw plugins inspect <plugin-id> --runtime --json
 ```
 
-استخدم `inspect --runtime` عندما تحتاج إلى دليل على أن Plugin سجّل أسطح وقت التشغيل
-مثل الأدوات أو الخطافات أو الخدمات أو أساليب Gateway أو أوامر CLI
-المملوكة لـ Plugin.
+استخدم `inspect --runtime` عندما تحتاج إلى دليل على أن Plugin سجّل أسطح
+وقت التشغيل مثل الأدوات، أو الخطافات، أو الخدمات، أو طرائق Gateway، أو
+مسارات HTTP، أو أوامر CLI التي يملكها Plugin. أما `inspect` و`list`
+العاديان فهما فحوصات باردة لملف البيان، والإعدادات، والسجل.
 
 ## تحديث Plugins
 
@@ -82,25 +111,33 @@ openclaw plugins inspect <plugin-id> --runtime --json
 openclaw plugins update <plugin-id>
 openclaw plugins update <npm-package-or-spec>
 openclaw plugins update --all
+openclaw plugins update <plugin-id> --dry-run
 ```
 
-إذا كان Plugin قد ثُبّت من وسم توزيع npm مثل `@beta`، فإن استدعاءات
-`update <plugin-id>` اللاحقة تعيد استخدام ذلك الوسم المسجل. تمرير مواصفة npm صريحة
-يبدّل التثبيت المتتبَّع إلى تلك المواصفة للتحديثات المستقبلية.
+عند تمرير معرّف Plugin، يعيد OpenClaw استخدام مواصفة التثبيت المتتبعة.
+تظل وسوم التوزيع المخزنة مثل `@beta` والإصدارات الدقيقة المثبتة مستخدمة
+في تشغيلات `update <plugin-id>` اللاحقة.
+
+`openclaw plugins update --all` هو مسار الصيانة المجمّعة. لا يزال يحترم
+مواصفات التثبيت المتتبعة العادية، لكن سجلات Plugin الرسمية الموثوقة الخاصة
+بـ OpenClaw يمكن أن تتزامن مع هدف الفهرس الرسمي الحالي بدل البقاء على
+حزمة رسمية دقيقة قديمة. إذا تم ضبط `update.channel` على `beta`، فستستخدم
+المزامنة الرسمية المجمّعة هذه سياق قناة beta. استخدم `update <plugin-id>`
+المستهدف عندما تريد عن قصد إبقاء مواصفة رسمية دقيقة أو موسومة دون تغيير.
+
+بالنسبة لتثبيتات npm، يمكنك تمرير مواصفة حزمة صريحة لتبديل السجل المتتبع:
 
 ```bash
 openclaw plugins update @scope/openclaw-plugin@beta
 openclaw plugins update @scope/openclaw-plugin
 ```
 
-يعيد الأمر الثاني Plugin إلى خط الإصدار الافتراضي في السجل
-عندما كان مثبتًا سابقًا على إصدار دقيق أو وسم محدد.
+يعيد الأمر الثاني Plugin إلى خط الإصدار الافتراضي في السجل عندما كان
+مثبتًا سابقًا على إصدار أو وسم دقيق.
 
-عند تشغيل `openclaw update` على قناة beta، تحاول سجلات Plugin الافتراضية من npm وClawHub
-استخدام إصدار Plugin المطابق `@beta` أولًا. إذا لم يكن إصدار beta
-هذا موجودًا، يعود OpenClaw إلى المواصفة الافتراضية/الأحدث المسجلة.
-بالنسبة إلى Plugins من npm، يعود OpenClaw أيضًا عندما تكون حزمة beta موجودة لكنها تفشل
-في تحقق التثبيت. تُحفظ الإصدارات الدقيقة والوسوم الصريحة مثل `@rc` أو `@beta`.
+عندما يعمل `openclaw update` على قناة beta، يمكن لسجلات Plugin تفضيل
+إصدارات `@beta` المطابقة. للاطلاع على قواعد الرجوع والتثبيت الدقيقة، راجع
+[`openclaw plugins`](/ar/cli/plugins#update).
 
 ## إلغاء تثبيت Plugins
 
@@ -108,28 +145,37 @@ openclaw plugins update @scope/openclaw-plugin
 openclaw plugins uninstall <plugin-id> --dry-run
 openclaw plugins uninstall <plugin-id>
 openclaw plugins uninstall <plugin-id> --keep-files
-openclaw gateway restart
 ```
 
-يزيل إلغاء التثبيت إدخال إعدادات Plugin، وسجل فهرس Plugin، وإدخالات قوائم السماح/الحظر،
-ومسارات التحميل المرتبطة عند الاقتضاء. تُزال أدلة التثبيت المُدارة
-ما لم تمرر `--keep-files`.
+يزيل إلغاء التثبيت إدخال إعدادات Plugin، وسجل فهرس Plugin المستمر،
+ومدخلات قوائم السماح/الرفض، ومسارات التحميل المرتبطة عند انطباق ذلك.
+تُزال أدلة التثبيت المُدارة ما لم تمرر `--keep-files`. يعيد Gateway المُدار
+قيد التشغيل تشغيل نفسه تلقائيًا عندما يغيّر إلغاء التثبيت مصدر Plugin.
 
-في وضع Nix (`OPENCLAW_NIX_MODE=1`)، تكون أوامر تثبيت Plugin وتحديثه وإلغاء تثبيته وتمكينه
-وتعطيله معطلة. أدِر هذه الاختيارات في مصدر Nix الخاص
-بالتثبيت بدلًا من ذلك؛ بالنسبة إلى nix-openclaw، استخدم
-[البداية السريعة](https://github.com/openclaw/nix-openclaw#quick-start) المعتمدة على الوكيل أولًا.
+في وضع Nix (`OPENCLAW_NIX_MODE=1`)، تكون أوامر تثبيت Plugin وتحديثه
+وإلغاء تثبيته وتمكينه وتعطيله معطلة. أدر هذه الخيارات في مصدر Nix الخاص
+بالتثبيت بدلًا من ذلك.
+
+## اختيار مصدر
+
+| المصدر      | استخدمه عندما                                                                  | مثال                                                          |
+| ----------- | --------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| ClawHub     | تريد اكتشافًا أصيلًا لـ OpenClaw، وملخصات فحص، وإصدارات، وتلميحات          | `openclaw plugins install clawhub:<package>`                   |
+| npmjs.com   | تشحن حزم JavaScript بالفعل أو تحتاج إلى وسوم توزيع npm/سجل خاص             | `openclaw plugins install npm:@acme/openclaw-plugin`           |
+| git         | تريد فرعًا أو وسمًا أو تثبيتًا من مستودع                                     | `openclaw plugins install git:github.com/<owner>/<repo>@<ref>` |
+| مسار محلي   | تطوّر أو تختبر Plugin على الجهاز نفسه                                       | `openclaw plugins install --link ./my-plugin`                  |
+| npm pack    | تثبت أثر حزمة محلية عبر دلالات تثبيت npm                                    | `openclaw plugins install npm-pack:<path.tgz>`                 |
+| marketplace | تثبت Plugin متوافقًا مع Claude من marketplace                               | `openclaw plugins install <plugin> --marketplace <source>`     |
+
+يجب أن تكون تثبيتات المسار المحلي المُدارة أدلة Plugin أو أرشيفات. ضع
+ملفات Plugin المستقلة في `plugins.load.paths` بدل تثبيتها باستخدام
+`plugins install`.
 
 ## نشر Plugins
 
-يمكنك نشر Plugins خارجية إلى [ClawHub](https://clawhub.ai)، أو npmjs.com، أو
-كليهما.
-
-### النشر إلى ClawHub
-
-ClawHub هو سطح الاكتشاف العام الأساسي لـ Plugins في OpenClaw. فهو يمنح
-المستخدمين بيانات وصفية قابلة للبحث، وسجل الإصدارات، ونتائج فحص السجل قبل
-التثبيت.
+ClawHub هو سطح الاكتشاف العام الأساسي لـ OpenClaw Plugins. انشر هناك
+عندما تريد أن يعثر المستخدمون على بيانات Plugin الوصفية، وسجل الإصدارات،
+ونتائج فحص السجل، وتلميحات التثبيت قبل أن يثبتوا.
 
 ```bash
 npm i -g clawhub
@@ -139,19 +185,8 @@ clawhub package publish your-org/your-plugin
 clawhub package publish your-org/your-plugin@v1.0.0
 ```
 
-يثبّت المستخدمون من ClawHub باستخدام:
-
-```bash
-openclaw plugins install clawhub:<package>
-openclaw plugins install <package>
-```
-
-لا يزال الشكل المجرد يفحص ClawHub أولًا.
-
-### النشر إلى npmjs.com
-
-يجب أن تتضمن Plugins الأصلية من npm بيان Plugin وبيانات وصفية لنقطة دخول OpenClaw
-في `package.json`.
+يجب أن تتضمن Plugins الأصلية في npm ملف بيان Plugin وبيانات وصفية للحزمة
+قبل النشر:
 
 ```json package.json
 {
@@ -166,32 +201,27 @@ openclaw plugins install <package>
 
 ```bash
 npm publish --access public
-```
-
-يثبّت المستخدمون Plugins المتاحة عبر npm فقط باستخدام:
-
-```bash
 openclaw plugins install npm:@acme/openclaw-plugin
 openclaw plugins install npm:@acme/openclaw-plugin@beta
 openclaw plugins install npm:@acme/openclaw-plugin@1.0.0
 ```
 
-إذا كانت الحزمة نفسها متاحة أيضًا على ClawHub، فإن `npm:` يتجاوز البحث في ClawHub ويفرض
-الحل عبر npm.
+استخدم هذه الصفحات لعقد النشر الكامل بدل اعتبار هذه الصفحة مرجع النشر:
 
-## اختيار المصدر
+- يشرح [نشر ClawHub](/ar/clawhub/publishing) المالكين، والنطاقات، والإصدارات،
+  والمراجعة، والتحقق من الحزمة، ونقل الحزمة.
+- تعرض [بناء Plugins](/ar/plugins/building-plugins) شكل حزمة Plugin
+  ومسار عمل النشر الأول.
+- يعرّف [ملف بيان Plugin](/ar/plugins/manifest) حقول ملف بيان Plugin الأصلية.
 
-- **ClawHub**: استخدمه عندما تريد اكتشافًا أصليًا لـ OpenClaw، وملخصات فحص،
-  وإصدارات، وتلميحات تثبيت.
-- **npmjs.com**: استخدمه عندما تكون قد بدأت بالفعل في شحن حزم JavaScript أو تحتاج إلى
-  وسوم توزيع npm أو سير عمل السجلات الخاصة.
-- **Git**: استخدمه عندما تريد التثبيت مباشرة من فرع أو وسم أو commit.
-- **مسار محلي**: استخدمه عندما تطوّر أو تختبر Plugin على الجهاز نفسه.
+إذا كانت الحزمة نفسها متاحة على كل من ClawHub وnpm، فاستخدم البادئة الصريحة
+`clawhub:` أو `npm:` عندما تحتاج إلى فرض مصدر واحد.
 
 ## ذات صلة
 
-- [Plugins](/ar/tools/plugin) - نظرة عامة واستكشاف الأخطاء وإصلاحها
+- [Plugins](/ar/tools/plugin) - التثبيت، والإعداد، وإعادة التشغيل، واستكشاف الأخطاء وإصلاحها
 - [`openclaw plugins`](/ar/cli/plugins) - مرجع CLI الكامل
-- [ClawHub](/ar/clawhub/cli) - عمليات النشر والسجل
+- [Plugins المجتمع](/ar/plugins/community) - الاكتشاف العام والنشر عبر ClawHub
+- [ClawHub](/ar/clawhub/cli) - عمليات CLI للسجل
 - [بناء Plugins](/ar/plugins/building-plugins) - إنشاء حزمة Plugin
-- [بيان Plugin](/ar/plugins/manifest) - البيان والبيانات الوصفية للحزمة
+- [ملف بيان Plugin](/ar/plugins/manifest) - ملف البيان والبيانات الوصفية للحزمة

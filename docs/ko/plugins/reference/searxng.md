@@ -4,10 +4,11 @@ read_when:
 summary: 웹 검색 제공자 지원을 추가합니다.
 title: SearXNG Plugin
 x-i18n:
-    generated_at: "2026-05-02T21:07:02Z"
+    generated_at: "2026-06-27T17:53:47Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 10b4111629b0ec9b86a98513dff46ee08f64d767d103be572849788a57d494c9
+    source_hash: 96d320ccd6ec69e380edfcfa33b498569058be6953257b5770cd4eea95cb401a
     source_path: plugins/reference/searxng.md
     workflow: 16
 ---
@@ -19,7 +20,7 @@ x-i18n:
 ## 배포
 
 - 패키지: `@openclaw/searxng-plugin`
-- 설치 경로: OpenClaw에 포함됨
+- 설치 경로: npm; ClawHub: `clawhub:@openclaw/searxng-plugin`
 
 ## 표면
 

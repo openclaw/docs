@@ -1,26 +1,27 @@
 ---
 read_when:
-    - تقوم بتثبيت Plugin diffs أو تكوينه أو تدقيقه
-summary: عارض فروقات ومُصيّر ملفات للقراءة فقط للوكلاء.
+    - أنت تثبّت Plugin الفروقات أو تهيئه أو تراجعه.
+summary: OpenClaw Plugin لعرض الفروقات للقراءة فقط ومصيّر ملفات للوكلاء.
 title: Plugin الفروقات
 x-i18n:
-    generated_at: "2026-05-03T07:36:25Z"
+    generated_at: "2026-06-27T18:11:54Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1a56c666d510a949b40b9aee47001844fc82206ee378ac5770f23bea9c550027
+    source_hash: 836ed7a32a0868ee24eacf8f72e8c7888ebbd5d07ca62b2b6170d6a1919f7382
     source_path: plugins/reference/diffs.md
     workflow: 16
 ---
 
-# Diffs Plugin
+# Plugin الفروقات
 
-عارض فروقات وعارض ملفات للوكيل بوضع القراءة فقط.
+Plugin عارض فروقات للقراءة فقط في OpenClaw ومصيّر ملفات للوكلاء.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/diffs`
 - مسار التثبيت: npm؛ ClawHub
 
-## السطح
+## الواجهة
 
 العقود: الأدوات؛ Skills

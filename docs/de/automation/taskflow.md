@@ -1,40 +1,41 @@
 ---
 read_when:
-    - Sie möchten verstehen, wie TaskFlow mit Hintergrundaufgaben zusammenhängt
-    - Sie stoßen in Versionshinweisen oder der Dokumentation auf Task Flow oder openclaw tasks flow
-    - Sie möchten persistenten Flow-Zustand prüfen oder verwalten
-summary: TaskFlow-Ablauforchestrierungsschicht oberhalb von Hintergrundaufgaben
+    - Sie möchten verstehen, wie TaskFlow mit Hintergrundaufgaben zusammenhängt.
+    - Sie stoßen in Versionshinweisen oder Dokumentation auf Task Flow oder openclaw tasks flow
+    - Sie möchten persistenten Flow-Zustand einsehen oder verwalten
+summary: Task-Flow-Orchestrierungsebene oberhalb von Hintergrundaufgaben
 title: Aufgabenablauf
 x-i18n:
-    generated_at: "2026-05-10T19:21:11Z"
+    generated_at: "2026-06-27T17:09:01Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 135227b250840cd579f10a8ab4211e9319c447bb4d6df25907738ea138fc2d2a
+    source_hash: e4f5ff3c9a68eb0408a180bc947a03b410568d7914cb1c1d7f31d6013e036096
     source_path: automation/taskflow.md
     workflow: 16
 ---
 
-Task Flow ist die Flow-Orchestrierungsschicht oberhalb von [Hintergrundaufgaben](/de/automation/tasks). Sie verwaltet dauerhafte mehrstufige Flows mit eigenem Zustand, Revisionsverfolgung und Sync-Semantik, während einzelne Aufgaben die Einheit für losgelöste Arbeit bleiben.
+Task Flow ist die Flow-Orchestrierungsgrundlage oberhalb von [Hintergrund-Tasks](/de/automation/tasks). Es verwaltet langlebige, mehrstufige Flows mit eigenem Zustand, Revisionsverfolgung und Synchronisierungssemantik, während einzelne Tasks die Einheit abgekoppelter Arbeit bleiben.
 
 ## Wann Sie Task Flow verwenden sollten
 
-Verwenden Sie Task Flow, wenn Arbeit mehrere sequenzielle oder verzweigte Schritte umfasst und Sie eine dauerhafte Fortschrittsverfolgung über Gateway-Neustarts hinweg benötigen. Für einzelne Hintergrundvorgänge reicht eine einfache [Aufgabe](/de/automation/tasks) aus.
+Verwenden Sie Task Flow, wenn Arbeit mehrere sequenzielle oder verzweigende Schritte umfasst und Sie eine dauerhafte Fortschrittsverfolgung über Gateway-Neustarts hinweg benötigen. Für einzelne Hintergrundoperationen reicht ein einfacher [Task](/de/automation/tasks) aus.
 
-| Szenario                              | Verwendung              |
-| ------------------------------------- | ----------------------- |
-| Einzelner Hintergrundjob              | Einfache Aufgabe        |
-| Mehrstufige Pipeline (A dann B dann C) | Task Flow (verwaltet)   |
-| Extern erstellte Aufgaben beobachten  | Task Flow (gespiegelt)  |
-| Einmalige Erinnerung                  | Cron-Job                |
+| Szenario                              | Verwendung             |
+| ------------------------------------- | ---------------------- |
+| Einzelner Hintergrundjob              | Einfacher Task         |
+| Mehrstufige Pipeline (A dann B dann C) | Task Flow (verwaltet)  |
+| Extern erstellte Tasks beobachten     | Task Flow (gespiegelt) |
+| Einmalige Erinnerung                  | Cron-Job               |
 
 ## Zuverlässiges Muster für geplante Workflows
 
-Für wiederkehrende Workflows wie Marktanalyse-Briefings behandeln Sie Zeitplanung, Orchestrierung und Zuverlässigkeitsprüfungen als getrennte Ebenen:
+Behandeln Sie bei wiederkehrenden Workflows wie Marktanalyse-Briefings Zeitplanung, Orchestrierung und Zuverlässigkeitsprüfungen als getrennte Ebenen:
 
-1. Verwenden Sie [geplante Aufgaben](/de/automation/cron-jobs) für das Timing.
+1. Verwenden Sie [Geplante Tasks](/de/automation/cron-jobs) für das Timing.
 2. Verwenden Sie eine persistente Cron-Sitzung, wenn der Workflow auf vorherigem Kontext aufbauen soll.
-3. Verwenden Sie [Lobster](/de/tools/lobster) für deterministische Schritte, Genehmigungsgates und Resume-Tokens.
-4. Verwenden Sie Task Flow, um den mehrstufigen Lauf über untergeordnete Aufgaben, Wartezeiten, Wiederholungen und Gateway-Neustarts hinweg zu verfolgen.
+3. Verwenden Sie [Lobster](/de/tools/lobster) für deterministische Schritte, Freigabe-Gates und Wiederaufnahme-Token.
+4. Verwenden Sie Task Flow, um den mehrstufigen Lauf über untergeordnete Tasks, Wartezeiten, Wiederholungen und Gateway-Neustarts hinweg zu verfolgen.
 
 Beispielhafte Cron-Struktur:
 
@@ -50,7 +51,7 @@ openclaw cron add \
   --to "channel:C1234567890"
 ```
 
-Verwenden Sie `session:<id>` anstelle von `isolated`, wenn der wiederkehrende Workflow bewusst Historie, Zusammenfassungen vorheriger Läufe oder dauerhaft vorhandenen Kontext benötigt. Verwenden Sie `isolated`, wenn jeder Lauf frisch starten soll und der gesamte erforderliche Zustand explizit im Workflow enthalten ist.
+Verwenden Sie `session:<id>` statt `isolated`, wenn der wiederkehrende Workflow bewussten Verlauf, Zusammenfassungen vorheriger Läufe oder stehenden Kontext benötigt. Verwenden Sie `isolated`, wenn jeder Lauf neu beginnen soll und der gesamte erforderliche Zustand im Workflow explizit ist.
 
 Platzieren Sie im Workflow Zuverlässigkeitsprüfungen vor dem LLM-Zusammenfassungsschritt:
 
@@ -77,11 +78,11 @@ steps:
 
 Empfohlene Preflight-Prüfungen:
 
-- Browserverfügbarkeit und Profilauswahl, zum Beispiel `openclaw` für verwalteten Zustand oder `user`, wenn eine angemeldete Chrome-Sitzung erforderlich ist. Siehe [Browser](/de/tools/browser).
-- API-Zugangsdaten und Kontingent für jede Quelle.
-- Netzwerkerreichbarkeit für erforderliche Endpunkte.
-- Erforderliche Tools, die für den Agenten aktiviert sind, wie `lobster`, `browser` und `llm-task`.
-- Fehlerziel für Cron konfiguriert, damit Preflight-Fehler sichtbar sind. Siehe [geplante Aufgaben](/de/automation/cron-jobs#delivery-and-output).
+- Browser-Verfügbarkeit und Profilauswahl, zum Beispiel `openclaw` für verwalteten Zustand oder `user`, wenn eine angemeldete Chrome-Sitzung erforderlich ist. Siehe [Browser](/de/tools/browser).
+- API-Anmeldedaten und Kontingent für jede Quelle.
+- Netzwerk-Erreichbarkeit der erforderlichen Endpunkte.
+- Erforderliche Tools für den Agent aktiviert, etwa `lobster`, `browser` und `llm-task`.
+- Fehlerziel für Cron konfiguriert, damit Preflight-Fehler sichtbar sind. Siehe [Geplante Tasks](/de/automation/cron-jobs#delivery-and-output).
 
 Empfohlene Datenherkunftsfelder für jedes erfasste Element:
 
@@ -95,17 +96,17 @@ Empfohlene Datenherkunftsfelder für jedes erfasste Element:
 }
 ```
 
-Lassen Sie den Workflow veraltete Elemente vor der Zusammenfassung ablehnen oder markieren. Der LLM-Schritt sollte nur strukturiertes JSON erhalten und angewiesen werden, `sourceUrl`, `retrievedAt` und `asOf` in seiner Ausgabe beizubehalten. Verwenden Sie [LLM Task](/de/tools/llm-task), wenn Sie einen schemavalidierten Modellschritt im Workflow benötigen.
+Lassen Sie den Workflow veraltete Elemente vor der Zusammenfassung ablehnen oder markieren. Der LLM-Schritt sollte nur strukturiertes JSON erhalten und angewiesen werden, `sourceUrl`, `retrievedAt` und `asOf` in seiner Ausgabe beizubehalten. Verwenden Sie [LLM Task](/de/tools/llm-task), wenn Sie innerhalb des Workflows einen schema-validierten Modellschritt benötigen.
 
-Für wiederverwendbare Team- oder Community-Workflows verpacken Sie die CLI, `.lobster`-Dateien und alle Einrichtungshinweise als Skill oder Plugin und veröffentlichen Sie sie über [ClawHub](/de/clawhub). Bewahren Sie Workflow-spezifische Leitplanken in diesem Paket auf, sofern der Plugin-API keine benötigte generische Fähigkeit fehlt.
+Für wiederverwendbare Team- oder Community-Workflows verpacken Sie die CLI, `.lobster`-Dateien und alle Einrichtungshinweise als Skill oder Plugin und veröffentlichen Sie sie über [ClawHub](/de/clawhub). Behalten Sie workflow-spezifische Guardrails in diesem Paket, sofern der Plugin-API keine benötigte generische Fähigkeit fehlt.
 
-## Sync-Modi
+## Synchronisierungsmodi
 
 ### Verwalteter Modus
 
-Task Flow besitzt den gesamten Lebenszyklus. Es erstellt Aufgaben als Flow-Schritte, führt sie bis zum Abschluss und setzt den Flow-Zustand automatisch fort.
+Task Flow besitzt den Lebenszyklus Ende-zu-Ende. Es erstellt Tasks als Flow-Schritte, führt sie bis zum Abschluss und setzt den Flow-Zustand automatisch fort.
 
-Beispiel: ein wöchentlicher Berichts-Flow, der (1) Daten sammelt, (2) den Bericht erzeugt und (3) ihn ausliefert. Task Flow erstellt jeden Schritt als Hintergrundaufgabe, wartet auf den Abschluss und wechselt dann zum nächsten Schritt.
+Beispiel: ein wöchentlicher Berichts-Flow, der (1) Daten sammelt, (2) den Bericht generiert und (3) ihn zustellt. Task Flow erstellt jeden Schritt als Hintergrund-Task, wartet auf den Abschluss und wechselt dann zum nächsten Schritt.
 
 ```
 Flow: weekly-report
@@ -116,20 +117,20 @@ Flow: weekly-report
 
 ### Gespiegelter Modus
 
-Task Flow beobachtet extern erstellte Aufgaben und hält den Flow-Zustand synchron, ohne die Erstellung der Aufgaben zu übernehmen. Dies ist nützlich, wenn Aufgaben aus Cron-Jobs, CLI-Befehlen oder anderen Quellen stammen und Sie eine einheitliche Ansicht ihres Fortschritts als Flow möchten.
+Task Flow beobachtet extern erstellte Tasks und hält den Flow-Zustand synchron, ohne die Verantwortung für die Task-Erstellung zu übernehmen. Das ist nützlich, wenn Tasks aus Cron-Jobs, CLI-Befehlen oder anderen Quellen stammen und Sie ihren Fortschritt als Flow in einer einheitlichen Ansicht sehen möchten.
 
-Beispiel: drei unabhängige Cron-Jobs, die zusammen eine „morning ops“-Routine bilden. Ein gespiegelter Flow verfolgt ihren gemeinsamen Fortschritt, ohne zu steuern, wann oder wie sie ausgeführt werden.
+Beispiel: drei unabhängige Cron-Jobs, die zusammen eine Routine für den Morgenbetrieb bilden. Ein gespiegelter Flow verfolgt ihren gemeinsamen Fortschritt, ohne zu steuern, wann oder wie sie ausgeführt werden.
 
-## Dauerhafter Zustand und Revisionsverfolgung
+## Langlebiger Zustand und Revisionsverfolgung
 
-Jeder Flow persistiert seinen eigenen Zustand und verfolgt Revisionen, damit der Fortschritt Gateway-Neustarts übersteht. Die Revisionsverfolgung ermöglicht Konflikterkennung, wenn mehrere Quellen gleichzeitig versuchen, denselben Flow fortzusetzen.
+Jeder Flow persistiert seinen eigenen Zustand und verfolgt Revisionen, sodass der Fortschritt Gateway-Neustarts übersteht. Die Revisionsverfolgung ermöglicht Konflikterkennung, wenn mehrere Quellen versuchen, denselben Flow gleichzeitig fortzusetzen.
 Die Flow-Registry verwendet SQLite mit begrenzter Write-Ahead-Log-Wartung, einschließlich
-periodischer und Shutdown-Checkpoints, sodass langfristig laufende Gateways keine
+periodischer und Shutdown-Checkpoints, sodass langlebige Gateways keine
 unbegrenzten `registry.sqlite-wal`-Sidecar-Dateien behalten.
 
 ## Abbruchverhalten
 
-`openclaw tasks flow cancel` setzt eine dauerhafte Abbruchabsicht für den Flow. Aktive Aufgaben innerhalb des Flows werden abgebrochen, und es werden keine neuen Schritte gestartet. Die Abbruchabsicht bleibt über Neustarts hinweg bestehen, sodass ein abgebrochener Flow abgebrochen bleibt, selbst wenn das Gateway neu startet, bevor alle untergeordneten Aufgaben beendet wurden.
+`openclaw tasks flow cancel` setzt eine haftende Abbruchabsicht für den Flow. Aktive Tasks innerhalb des Flows werden abgebrochen, und es werden keine neuen Schritte gestartet. Die Abbruchabsicht bleibt über Neustarts hinweg bestehen, sodass ein abgebrochener Flow abgebrochen bleibt, selbst wenn das Gateway neu startet, bevor alle untergeordneten Tasks beendet wurden.
 
 ## CLI-Befehle
 
@@ -144,19 +145,19 @@ openclaw tasks flow show <lookup>
 openclaw tasks flow cancel <lookup>
 ```
 
-| Befehl                           | Beschreibung                                      |
-| -------------------------------- | ------------------------------------------------- |
-| `openclaw tasks flow list`       | Zeigt verfolgte Flows mit Status und Sync-Modus   |
-| `openclaw tasks flow show <id>`  | Einen Flow nach Flow-ID oder Lookup-Schlüssel prüfen |
-| `openclaw tasks flow cancel <id>` | Einen laufenden Flow und seine aktiven Aufgaben abbrechen |
+| Befehl                            | Beschreibung                                                  |
+| --------------------------------- | ------------------------------------------------------------- |
+| `openclaw tasks flow list`        | Zeigt verfolgte Flows mit Status und Synchronisierungsmodus   |
+| `openclaw tasks flow show <id>`   | Einen Flow nach Flow-ID oder Suchschlüssel untersuchen        |
+| `openclaw tasks flow cancel <id>` | Einen laufenden Flow und seine aktiven Tasks abbrechen        |
 
-## Wie Flows mit Aufgaben zusammenhängen
+## Wie Flows mit Tasks zusammenhängen
 
-Flows koordinieren Aufgaben, ersetzen sie aber nicht. Ein einzelner Flow kann im Laufe seiner Lebensdauer mehrere Hintergrundaufgaben steuern. Verwenden Sie `openclaw tasks`, um einzelne Aufgabendatensätze zu prüfen, und `openclaw tasks flow`, um den orchestrierenden Flow zu prüfen.
+Flows koordinieren Tasks, sie ersetzen sie nicht. Ein einzelner Flow kann während seiner Lebensdauer mehrere Hintergrund-Tasks steuern. Verwenden Sie `openclaw tasks`, um einzelne Task-Datensätze zu untersuchen, und `openclaw tasks flow`, um den orchestrierenden Flow zu untersuchen.
 
-## Verwandt
+## Verwandte Themen
 
-- [Hintergrundaufgaben](/de/automation/tasks) — das Register für losgelöste Arbeit, das Flows koordinieren
-- [CLI: Aufgaben](/de/cli/tasks) — CLI-Befehlsreferenz für `openclaw tasks flow`
+- [Hintergrund-Tasks](/de/automation/tasks) — das abgekoppelte Arbeitsjournal, das Flows koordinieren
+- [CLI: Tasks](/de/cli/tasks) — CLI-Befehlsreferenz für `openclaw tasks flow`
 - [Automatisierungsübersicht](/de/automation) — alle Automatisierungsmechanismen auf einen Blick
 - [Cron-Jobs](/de/automation/cron-jobs) — geplante Jobs, die in Flows einfließen können

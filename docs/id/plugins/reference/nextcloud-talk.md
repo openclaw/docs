@@ -1,29 +1,30 @@
 ---
 read_when:
-    - Anda sedang menginstal, mengonfigurasi, atau mengaudit Plugin nextcloud-talk
-summary: Menambahkan permukaan kanal Nextcloud Talk untuk mengirim dan menerima pesan OpenClaw.
+    - Anda sedang memasang, mengonfigurasi, atau mengaudit plugin nextcloud-talk
+summary: Plugin saluran Nextcloud Talk OpenClaw untuk percakapan.
 title: Plugin Nextcloud Talk
 x-i18n:
-    generated_at: "2026-05-03T09:20:54Z"
+    generated_at: "2026-06-27T17:55:25Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4ef55f1a3a7f9eac5876e5a8e3d6b5182a18c54aee2a6a63e8e4b0115ab7f6a6
+    source_hash: ce8dd648fcc2226e6b365f092eb3dc54062d2c9d8d5c613cb0c2d5e9f237c720
     source_path: plugins/reference/nextcloud-talk.md
     workflow: 16
 ---
 
 # Plugin Nextcloud Talk
 
-Menambahkan permukaan channel Nextcloud Talk untuk mengirim dan menerima pesan OpenClaw.
+Plugin kanal Nextcloud Talk OpenClaw untuk percakapan.
 
 ## Distribusi
 
 - Paket: `@openclaw/nextcloud-talk`
-- Rute pemasangan: npm; ClawHub
+- Rute instalasi: npm; ClawHub
 
 ## Permukaan
 
-channels: nextcloud-talk
+kanal: nextcloud-talk
 
 ## Dokumentasi terkait
 

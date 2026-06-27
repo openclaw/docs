@@ -1,20 +1,21 @@
 ---
 read_when:
     - Instalujesz, konfigurujesz lub audytujesz Plugin googlechat
-summary: Dodaje obsługę kanału Google Chat do wysyłania i odbierania wiadomości OpenClaw.
+summary: Plugin kanału Google Chat dla OpenClaw do pokoi i wiadomości bezpośrednich.
 title: Plugin Google Chat
 x-i18n:
-    generated_at: "2026-05-03T09:51:42Z"
+    generated_at: "2026-06-27T18:00:50Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9d8626b6b5773218e22534e3f40aa82c5508c3f3e3223f6fd7343118efa63dc1
+    source_hash: 04febb1ead7d63e9ef79ecc52ce69f38a7c4eb404c90019717363f57477cd37d
     source_path: plugins/reference/googlechat.md
     workflow: 16
 ---
 
-# Plugin Google Chat
+# Wtyczka Google Chat
 
-Dodaje powierzchnię kanału Google Chat do wysyłania i odbierania wiadomości OpenClaw.
+Wtyczka kanału OpenClaw Google Chat do przestrzeni i wiadomości bezpośrednich.
 
 ## Dystrybucja
 
@@ -23,7 +24,7 @@ Dodaje powierzchnię kanału Google Chat do wysyłania i odbierania wiadomości 
 
 ## Powierzchnia
 
-channels: googlechat
+kanały: googlechat
 
 ## Powiązana dokumentacja
 

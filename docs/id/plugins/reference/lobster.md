@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Anda sedang menginstal, mengonfigurasi, atau mengaudit Plugin lobster
-summary: Alat alur kerja bertipe dengan persetujuan yang dapat dilanjutkan.
+    - Anda sedang memasang, mengonfigurasi, atau mengaudit Plugin lobster
+summary: Plugin alat alur kerja Lobster untuk pipeline bertipe dan persetujuan yang dapat dilanjutkan.
 title: Plugin Lobster
 x-i18n:
-    generated_at: "2026-05-03T09:20:45Z"
+    generated_at: "2026-06-27T17:55:24Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 50b4849c8ea841a543655eead358c550f223a3100ac538b41c27f59706e6cf27
+    source_hash: b91ea189fe8339380e2a7ef8a8761ea1591e1f1d8459b4a554211128c33f338b
     source_path: plugins/reference/lobster.md
     workflow: 16
 ---
 
 # Plugin Lobster
 
-Alat alur kerja bertipe dengan persetujuan yang dapat dilanjutkan.
+Plugin alat alur kerja Lobster untuk pipeline bertipe dan persetujuan yang dapat dilanjutkan.
 
 ## Distribusi
 

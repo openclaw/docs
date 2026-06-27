@@ -1,27 +1,28 @@
 ---
 read_when:
     - zalo Plugin을 설치, 구성 또는 감사하고 있습니다
-summary: OpenClaw 메시지를 보내고 받기 위한 Zalo 채널 인터페이스를 추가합니다.
-title: Zalo Plugin
+summary: 봇 및 Webhook 채팅을 위한 OpenClaw Zalo 채널 Plugin.
+title: Zalo plugin
 x-i18n:
-    generated_at: "2026-05-03T06:22:15Z"
+    generated_at: "2026-06-27T17:55:19Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2914ba7fec4427c6a8a322ea1d9308d9e37a81b5ff51a89b06227e5ecfcef6f2
+    source_hash: ff9da1e1591eaad36db74a27f817dd9dac8791af2d5030fcd3419ee50d2ed4aa
     source_path: plugins/reference/zalo.md
     workflow: 16
 ---
 
 # Zalo Plugin
 
-OpenClaw 메시지를 보내고 받기 위한 Zalo 채널 표면을 추가합니다.
+봇 및 Webhook 채팅용 OpenClaw Zalo 채널 Plugin입니다.
 
 ## 배포
 
 - 패키지: `@openclaw/zalo`
 - 설치 경로: npm; ClawHub
 
-## 표면
+## Surface
 
 channels: zalo
 

@@ -1,50 +1,53 @@
 ---
 read_when:
-    - Aggiornamento dell'interfaccia utente delle impostazioni di Skills su macOS
-    - Modifica del gating delle Skills o del comportamento di installazione
-summary: Interfaccia utente delle impostazioni di Skills su macOS e stato supportato dal gateway
+    - Aggiornamento dell'interfaccia delle impostazioni Skills di macOS
+    - Modifica dei controlli sulle Skills o del comportamento di installazione
+summary: UI delle impostazioni Skills di macOS e stato supportato da gateway
 title: Skills (macOS)
 x-i18n:
-    generated_at: "2026-04-24T08:50:39Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T17:45:47Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: dcd89d27220644866060d0f9954a116e6093d22f7ebd32d09dc16871c25b988e
+    source_hash: 5ecc470f1645051e03ab4f51bcb4972da4853c690354bc8ea18a89fcd387d413
     source_path: platforms/mac/skills.md
-    workflow: 15
+    workflow: 16
 ---
 
-L'app macOS espone Skills di OpenClaw tramite il gateway; non analizza le Skills localmente.
+L'app macOS espone le Skills di OpenClaw tramite il Gateway; non analizza le Skills localmente.
 
-## Origine dei dati
+## Origine dati
 
-- `skills.status` (gateway) restituisce tutte le Skills più idoneità e requisiti mancanti
-  (inclusi i blocchi allowlist per le Skills integrate).
-- I requisiti derivano da `metadata.openclaw.requires` in ogni `SKILL.md`.
+- `skills.status` (Gateway) restituisce tutte le Skills più l'idoneità e i requisiti mancanti
+  (inclusi i blocchi allowlist per le Skills in bundle).
+- I requisiti derivano da `metadata.openclaw.requires` in ciascun `SKILL.md`.
 
 ## Azioni di installazione
 
 - `metadata.openclaw.install` definisce le opzioni di installazione (brew/node/go/uv).
-- L'app chiama `skills.install` per eseguire gli installer sull'host gateway.
-- Le rilevazioni `critical` integrate di dangerous-code bloccano `skills.install` per impostazione predefinita; le rilevazioni sospette continuano solo a emettere avvisi. L'override dangerous esiste sulla richiesta gateway, ma il flusso predefinito dell'app resta fail-closed.
-- Se ogni opzione di installazione è `download`, il gateway espone tutte le
+- L'app chiama `skills.install` per eseguire gli installer sull'host Gateway.
+- `security.installPolicy`, gestita dall'operatore, può bloccare le installazioni di Skills
+  supportate dal Gateway prima che vengano eseguiti i metadati dell'installer. Il blocco
+  integrato del codice pericoloso in fase di installazione non fa parte del flusso di installazione delle Skills.
+- Se ogni opzione di installazione è `download`, il Gateway espone tutte le
   scelte di download.
-- In caso contrario, il gateway sceglie un installer preferito usando le preferenze di installazione
-  correnti e i binari host: prima Homebrew quando
+- Altrimenti, il Gateway sceglie un installer preferito usando le preferenze di
+  installazione correnti e i binari dell'host: Homebrew prima quando
   `skills.install.preferBrew` è abilitato e `brew` esiste, poi `uv`, poi il
-  gestore Node configurato da `skills.install.nodeManager`, poi fallback successivi
-  come `go` o `download`.
+  gestore Node configurato da `skills.install.nodeManager`, quindi i fallback
+  successivi come `go` o `download`.
 - Le etichette di installazione Node riflettono il gestore Node configurato, incluso `yarn`.
 
-## Env/API key
+## Chiavi env/API
 
-- L'app memorizza le chiavi in `~/.openclaw/openclaw.json` sotto `skills.entries.<skillKey>`.
-- `skills.update` applica patch a `enabled`, `apiKey` ed `env`.
+- L'app archivia le chiavi in `~/.openclaw/openclaw.json` sotto `skills.entries.<skillKey>`.
+- `skills.update` applica patch a `enabled`, `apiKey` e `env`.
 
 ## Modalità remota
 
-- Installazione + aggiornamenti di configurazione avvengono sull'host gateway (non sul Mac locale).
+- Le installazioni e gli aggiornamenti della configurazione avvengono sull'host Gateway (non sul Mac locale).
 
 ## Correlati
 
 - [Skills](/it/tools/skills)
-- [App macOS](/it/platforms/macos)
+- [app macOS](/it/platforms/macos)

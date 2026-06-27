@@ -1,25 +1,27 @@
 ---
 read_when:
     - OS 지원 또는 설치 경로 찾기
-    - Gateway를 실행할 위치 결정
-summary: 플랫폼 지원 개요 (Gateway + 컴패니언 앱)
+    - Gateway를 실행할 위치 결정하기
+summary: 플랫폼 지원 개요(Gateway + 컴패니언 앱)
 title: 플랫폼
 x-i18n:
-    generated_at: "2026-05-06T06:32:38Z"
+    generated_at: "2026-06-27T17:39:46Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: dd1fbd1af8b03a12014d91b2f300fb8ec65b9c42c38ada2b9ca089181140a75c
+    source_hash: 4d6edfaf9c4b1f1bc824d4bddf8263244902676dd5df98da556a8a5f35afe566
     source_path: platforms/index.md
     workflow: 16
 ---
 
 OpenClaw 코어는 TypeScript로 작성되었습니다. **Node가 권장 런타임입니다**.
-Gateway에는 Bun을 권장하지 않습니다. WhatsApp 및
-Telegram 채널에서 알려진 문제가 있습니다. 자세한 내용은 [Bun(실험적)](/ko/install/bun)을 참조하세요.
+Bun은 Gateway에 권장되지 않습니다. WhatsApp 및
+Telegram 채널에 알려진 문제가 있습니다. 자세한 내용은 [Bun(실험적)](/ko/install/bun)을 참고하세요.
 
-macOS(메뉴 막대 앱) 및 모바일 노드(iOS/Android)용 컴패니언 앱이 있습니다. Windows 및
-Linux 컴패니언 앱은 계획 중이지만, Gateway는 현재 완전히 지원됩니다.
-Windows용 네이티브 컴패니언 앱도 계획 중이며, Gateway는 WSL2를 통해 사용하는 것이 권장됩니다.
+Windows Hub, macOS(메뉴 막대 앱), 모바일 노드
+(iOS/Android)용 컴패니언 앱이 있습니다. Linux 컴패니언 앱은 계획되어 있지만, Gateway는 현재
+완전히 지원됩니다. Windows에서는 데스크톱 앱에는 Windows Hub를, 터미널 우선 사용에는 네이티브
+PowerShell 설치를, 가장 Linux와 호환되는 Gateway 런타임에는 WSL2를 선택하세요.
 
 ## OS 선택
 
@@ -37,10 +39,12 @@ Windows용 네이티브 컴패니언 앱도 계획 중이며, Gateway는 WSL2를
 - GCP(Compute Engine): [GCP](/ko/install/gcp)
 - Azure(Linux VM): [Azure](/ko/install/azure)
 - exe.dev(VM + HTTPS 프록시): [exe.dev](/ko/install/exe-dev)
+- EasyRunner(Podman + Caddy): [EasyRunner](/ko/platforms/easyrunner)
 
-## 일반 링크
+## 공통 링크
 
 - 설치 가이드: [시작하기](/ko/start/getting-started)
+- Windows Hub: [Windows](/ko/platforms/windows)
 - Gateway 런북: [Gateway](/ko/gateway)
 - Gateway 구성: [구성](/ko/gateway/configuration)
 - 서비스 상태: `openclaw gateway status`
@@ -51,17 +55,18 @@ Windows용 네이티브 컴패니언 앱도 계획 중이며, Gateway는 WSL2를
 
 - 마법사(권장): `openclaw onboard --install-daemon`
 - 직접 실행: `openclaw gateway install`
-- 구성 플로: `openclaw configure` → **Gateway 서비스** 선택
+- 구성 플로우: `openclaw configure` → **Gateway 서비스** 선택
 - 복구/마이그레이션: `openclaw doctor`(서비스 설치 또는 수정을 제안함)
 
-서비스 대상은 OS에 따라 달라집니다.
+서비스 대상은 OS에 따라 다릅니다.
 
-- macOS: LaunchAgent(`ai.openclaw.gateway` 또는 `ai.openclaw.<profile>`, 레거시 `com.openclaw.*`)
+- macOS: LaunchAgent(`ai.openclaw.gateway` 또는 `ai.openclaw.<profile>`; 레거시 `com.openclaw.*`)
 - Linux/WSL2: systemd 사용자 서비스(`openclaw-gateway[-<profile>].service`)
-- 네이티브 Windows: 예약 작업(`OpenClaw Gateway` 또는 `OpenClaw Gateway (<profile>)`), 작업 생성이 거부되는 경우 사용자별 시작 프로그램 폴더 로그인 항목 대체 방식 사용
+- 네이티브 Windows: 예약된 작업(`OpenClaw Gateway` 또는 `OpenClaw Gateway (<profile>)`), 작업 생성이 거부되면 사용자별 시작 폴더 로그인 항목 폴백 사용
 
-## 관련
+## 관련 항목
 
 - [설치 개요](/ko/install)
+- [Windows Hub](/ko/platforms/windows)
 - [macOS 앱](/ko/platforms/macos)
 - [iOS 앱](/ko/platforms/ios)

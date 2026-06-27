@@ -1,25 +1,26 @@
 ---
 read_when:
-    - Você está instalando, configurando ou auditando o Plugin firecrawl
-summary: Adiciona ferramentas invocáveis por agentes. Adiciona suporte a provedor de busca na web. Adiciona suporte a provedor de pesquisa na web.
+    - Você está instalando, configurando ou auditando o plugin firecrawl
+summary: Adiciona ferramentas chamáveis por agentes. Adiciona suporte a provedor de busca na web. Adiciona suporte a provedor de pesquisa na web.
 title: Plugin Firecrawl
 x-i18n:
-    generated_at: "2026-05-02T20:56:03Z"
+    generated_at: "2026-06-27T17:53:10Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: bf5108c28abe3bd4b18178d224cd420487be10b37476731b52862e4cb29f90dc
+    source_hash: ca5577e6e850d947a3714e3dc62c7756faae8471e150d3cdb320a85efe3fe4f5
     source_path: plugins/reference/firecrawl.md
     workflow: 16
 ---
 
-# Plugin do Firecrawl
+# Plugin Firecrawl
 
-Adiciona ferramentas chamáveis por agentes. Adiciona suporte a provedores de busca de conteúdo na web. Adiciona suporte a provedores de pesquisa na web.
+Adiciona ferramentas chamáveis pelo agente. Adiciona suporte a provedor de busca na web. Adiciona suporte a provedor de pesquisa na web.
 
 ## Distribuição
 
 - Pacote: `@openclaw/firecrawl-plugin`
-- Rota de instalação: incluído no OpenClaw
+- Rota de instalação: npm; ClawHub: `clawhub:@openclaw/firecrawl-plugin`
 
 ## Superfície
 

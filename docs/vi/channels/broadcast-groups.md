@@ -1,37 +1,38 @@
 ---
 read_when:
-    - Cấu hình nhóm phát sóng
-    - Gỡ lỗi các phản hồi đa tác nhân trong WhatsApp
+    - Định cấu hình nhóm phát sóng
+    - Gỡ lỗi phản hồi đa tác tử trong WhatsApp
 sidebarTitle: Broadcast groups
 status: experimental
-summary: Phát một tin nhắn WhatsApp tới nhiều tác nhân
+summary: Phát một tin nhắn WhatsApp đến nhiều tác nhân
 title: Nhóm phát sóng
 x-i18n:
-    generated_at: "2026-05-04T02:21:33Z"
+    generated_at: "2026-06-27T17:09:12Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: eab43d3c3ffddb360340469433d74a380fbab98e662b2463a54f62eafc375b55
+    source_hash: a89b936322baf0fea7b487cb5354b9fad3fc021abb2970f7cd934b1880da2a0e
     source_path: channels/broadcast-groups.md
     workflow: 16
 ---
 
 <Note>
-**Trạng thái:** Thử nghiệm. Đã thêm trong 2026.1.9.
+**Trạng thái:** Thử nghiệm. Được thêm vào trong 2026.1.9.
 </Note>
 
 ## Tổng quan
 
-Nhóm phát sóng cho phép nhiều tác tử xử lý và phản hồi cùng một tin nhắn đồng thời. Điều này cho phép bạn tạo các nhóm tác tử chuyên biệt cùng làm việc trong một nhóm WhatsApp hoặc DM duy nhất — tất cả đều dùng một số điện thoại.
+Broadcast Groups cho phép nhiều agent xử lý và phản hồi cùng một tin nhắn đồng thời. Điều này cho phép bạn tạo các đội agent chuyên biệt làm việc cùng nhau trong một nhóm WhatsApp hoặc DM duy nhất — tất cả đều dùng một số điện thoại.
 
 Phạm vi hiện tại: **chỉ WhatsApp** (kênh web).
 
-Nhóm phát sóng được đánh giá sau danh sách cho phép của kênh và quy tắc kích hoạt nhóm. Trong các nhóm WhatsApp, điều này nghĩa là phát sóng diễn ra khi OpenClaw thường sẽ phản hồi (ví dụ: khi được nhắc đến, tùy thuộc vào cài đặt nhóm của bạn).
+Broadcast groups được đánh giá sau allowlist kênh và quy tắc kích hoạt nhóm. Trong các nhóm WhatsApp, điều này nghĩa là broadcast xảy ra khi OpenClaw thông thường sẽ phản hồi (ví dụ: khi được nhắc đến, tùy theo cài đặt nhóm của bạn).
 
 ## Trường hợp sử dụng
 
 <AccordionGroup>
-  <Accordion title="1. Nhóm tác tử chuyên biệt">
-    Triển khai nhiều tác tử với các trách nhiệm nguyên tử, tập trung:
+  <Accordion title="1. Đội agent chuyên biệt">
+    Triển khai nhiều agent với trách nhiệm tập trung, nguyên tử:
 
     ```
     Group: "Development Team"
@@ -42,7 +43,7 @@ Nhóm phát sóng được đánh giá sau danh sách cho phép của kênh và 
       - TestGenerator (suggests test cases)
     ```
 
-    Mỗi tác tử xử lý cùng một tin nhắn và đưa ra góc nhìn chuyên biệt của mình.
+    Mỗi agent xử lý cùng một tin nhắn và cung cấp góc nhìn chuyên biệt của nó.
 
   </Accordion>
   <Accordion title="2. Hỗ trợ đa ngôn ngữ">
@@ -77,9 +78,9 @@ Nhóm phát sóng được đánh giá sau danh sách cho phép của kênh và 
 
 ### Thiết lập cơ bản
 
-Thêm một phần `broadcast` cấp cao nhất (bên cạnh `bindings`). Các khóa là ID peer của WhatsApp:
+Thêm một mục `broadcast` cấp cao nhất (bên cạnh `bindings`). Khóa là peer id của WhatsApp:
 
-- trò chuyện nhóm: JID nhóm (ví dụ `120363403215116621@g.us`)
+- trò chuyện nhóm: group JID (ví dụ `120363403215116621@g.us`)
 - DM: số điện thoại E.164 (ví dụ `+15551234567`)
 
 ```json
@@ -90,15 +91,15 @@ Thêm một phần `broadcast` cấp cao nhất (bên cạnh `bindings`). Các k
 }
 ```
 
-**Kết quả:** Khi OpenClaw sẽ phản hồi trong cuộc trò chuyện này, nó sẽ chạy cả ba tác tử.
+**Kết quả:** Khi OpenClaw sẽ phản hồi trong cuộc trò chuyện này, nó sẽ chạy cả ba agent.
 
 ### Chiến lược xử lý
 
-Kiểm soát cách tác tử xử lý tin nhắn:
+Kiểm soát cách agent xử lý tin nhắn:
 
 <Tabs>
   <Tab title="parallel (mặc định)">
-    Tất cả tác tử xử lý đồng thời:
+    Tất cả agent xử lý đồng thời:
 
     ```json
     {
@@ -111,7 +112,7 @@ Kiểm soát cách tác tử xử lý tin nhắn:
 
   </Tab>
   <Tab title="sequential">
-    Tác tử xử lý theo thứ tự (mỗi tác tử chờ tác tử trước hoàn tất):
+    Agent xử lý theo thứ tự (mỗi agent chờ agent trước đó hoàn tất):
 
     ```json
     {
@@ -168,45 +169,48 @@ Kiểm soát cách tác tử xử lý tin nhắn:
   <Step title="Tin nhắn đến">
     Một tin nhắn nhóm WhatsApp hoặc DM đến.
   </Step>
-  <Step title="Kiểm tra phát sóng">
-    Hệ thống kiểm tra xem ID peer có trong `broadcast` hay không.
+  <Step title="Định tuyến và tiếp nhận">
+    OpenClaw áp dụng allowlist kênh, quy tắc kích hoạt nhóm và quyền sở hữu binding ACP đã cấu hình.
   </Step>
-  <Step title="Nếu có trong danh sách phát sóng">
-    - Tất cả tác tử được liệt kê xử lý tin nhắn.
-    - Mỗi tác tử có khóa phiên riêng và ngữ cảnh tách biệt.
-    - Tác tử xử lý song song (mặc định) hoặc tuần tự.
+  <Step title="Kiểm tra broadcast">
+    Nếu không có binding ACP đã cấu hình nào sở hữu tuyến, OpenClaw kiểm tra liệu peer ID có nằm trong `broadcast` hay không.
+  </Step>
+  <Step title="Nếu áp dụng broadcast">
+    - Tất cả agent được liệt kê xử lý tin nhắn.
+    - Mỗi agent có khóa phiên và ngữ cảnh cô lập riêng.
+    - Agent xử lý song song (mặc định) hoặc tuần tự.
 
   </Step>
-  <Step title="Nếu không có trong danh sách phát sóng">
-    Áp dụng định tuyến bình thường (binding khớp đầu tiên).
+  <Step title="Nếu không áp dụng broadcast">
+    OpenClaw điều phối tuyến thông thường hoặc tuyến phiên ACP đã cấu hình được chọn trong quá trình định tuyến.
   </Step>
 </Steps>
 
 <Note>
-Nhóm phát sóng không bỏ qua danh sách cho phép của kênh hoặc quy tắc kích hoạt nhóm (lượt nhắc/lệnh/v.v.). Chúng chỉ thay đổi _tác tử nào chạy_ khi một tin nhắn đủ điều kiện để xử lý.
+Broadcast groups không bỏ qua allowlist kênh hoặc quy tắc kích hoạt nhóm (nhắc đến/lệnh/v.v.). Chúng chỉ thay đổi _agent nào chạy_ khi một tin nhắn đủ điều kiện để xử lý.
 </Note>
 
-### Tách biệt phiên
+### Cô lập phiên
 
-Mỗi tác tử trong một nhóm phát sóng duy trì hoàn toàn riêng biệt:
+Mỗi agent trong một broadcast group duy trì hoàn toàn riêng biệt:
 
 - **Khóa phiên** (`agent:alfred:whatsapp:group:120363...` so với `agent:baerbel:whatsapp:group:120363...`)
-- **Lịch sử hội thoại** (tác tử không thấy tin nhắn của các tác tử khác)
+- **Lịch sử hội thoại** (agent không thấy tin nhắn của các agent khác)
 - **Workspace** (sandbox riêng nếu được cấu hình)
 - **Quyền truy cập công cụ** (danh sách cho phép/từ chối khác nhau)
 - **Bộ nhớ/ngữ cảnh** (IDENTITY.md, SOUL.md, v.v. riêng)
-- **Bộ đệm ngữ cảnh nhóm** (các tin nhắn nhóm gần đây dùng làm ngữ cảnh) được chia sẻ theo từng peer, vì vậy tất cả tác tử phát sóng thấy cùng một ngữ cảnh khi được kích hoạt
+- **Bộ đệm ngữ cảnh nhóm** (các tin nhắn nhóm gần đây dùng làm ngữ cảnh) được chia sẻ theo từng peer, vì vậy tất cả broadcast agents thấy cùng một ngữ cảnh khi được kích hoạt
 
-Điều này cho phép mỗi tác tử có:
+Điều này cho phép mỗi agent có:
 
 - Tính cách khác nhau
 - Quyền truy cập công cụ khác nhau (ví dụ: chỉ đọc so với đọc-ghi)
 - Mô hình khác nhau (ví dụ: opus so với sonnet)
-- Skills khác nhau đã cài đặt
+- Skills khác nhau được cài đặt
 
-### Ví dụ: phiên tách biệt
+### Ví dụ: phiên cô lập
 
-Trong nhóm `120363403215116621@g.us` với các tác tử `["alfred", "baerbel"]`:
+Trong nhóm `120363403215116621@g.us` với các agent `["alfred", "baerbel"]`:
 
 <Tabs>
   <Tab title="Ngữ cảnh của Alfred">
@@ -230,8 +234,8 @@ Trong nhóm `120363403215116621@g.us` với các tác tử `["alfred", "baerbel"
 ## Thực hành tốt nhất
 
 <AccordionGroup>
-  <Accordion title="1. Giữ tác tử tập trung">
-    Thiết kế mỗi tác tử với một trách nhiệm duy nhất, rõ ràng:
+  <Accordion title="1. Giữ agent tập trung">
+    Thiết kế mỗi agent với một trách nhiệm duy nhất, rõ ràng:
 
     ```json
     {
@@ -241,11 +245,11 @@ Trong nhóm `120363403215116621@g.us` với các tác tử `["alfred", "baerbel"
     }
     ```
 
-    ✅ **Tốt:** Mỗi tác tử có một nhiệm vụ. ❌ **Không tốt:** Một tác tử "dev-helper" chung chung.
+    ✅ **Tốt:** Mỗi agent có một công việc. ❌ **Không tốt:** Một agent "dev-helper" chung chung.
 
   </Accordion>
   <Accordion title="2. Dùng tên mô tả rõ">
-    Làm rõ mỗi tác tử làm gì:
+    Làm rõ mỗi agent làm gì:
 
     ```json
     {
@@ -259,7 +263,7 @@ Trong nhóm `120363403215116621@g.us` với các tác tử `["alfred", "baerbel"
 
   </Accordion>
   <Accordion title="3. Cấu hình quyền truy cập công cụ khác nhau">
-    Chỉ cấp cho tác tử những công cụ chúng cần:
+    Chỉ cấp cho agent những công cụ chúng cần:
 
     ```json
     {
@@ -274,19 +278,19 @@ Trong nhóm `120363403215116621@g.us` với các tác tử `["alfred", "baerbel"
     }
     ```
 
-    `reviewer` chỉ đọc. `fixer` có thể đọc và ghi.
+    `reviewer` là chỉ đọc. `fixer` có thể đọc và ghi.
 
   </Accordion>
-  <Accordion title="4. Giám sát hiệu năng">
-    Với nhiều tác tử, hãy cân nhắc:
+  <Accordion title="4. Theo dõi hiệu năng">
+    Với nhiều agent, hãy cân nhắc:
 
-    - Dùng `"strategy": "parallel"` (mặc định) để tăng tốc độ
-    - Giới hạn nhóm phát sóng ở 5-10 tác tử
-    - Dùng mô hình nhanh hơn cho các tác tử đơn giản hơn
+    - Dùng `"strategy": "parallel"` (mặc định) để tăng tốc
+    - Giới hạn broadcast groups ở 5-10 agent
+    - Dùng mô hình nhanh hơn cho các agent đơn giản hơn
 
   </Accordion>
   <Accordion title="5. Xử lý lỗi một cách mềm dẻo">
-    Tác tử thất bại độc lập. Lỗi của một tác tử không chặn các tác tử khác:
+    Agent lỗi độc lập. Lỗi của một agent không chặn các agent khác:
 
     ```
     Message → [Agent A ✓, Agent B ✗ error, Agent C ✓]
@@ -296,11 +300,11 @@ Trong nhóm `120363403215116621@g.us` với các tác tử `["alfred", "baerbel"
   </Accordion>
 </AccordionGroup>
 
-## Khả năng tương thích
+## Tương thích
 
-### Nhà cung cấp
+### Provider
 
-Nhóm phát sóng hiện hoạt động với:
+Broadcast groups hiện hoạt động với:
 
 - ✅ WhatsApp (đã triển khai)
 - 🚧 Telegram (đã lên kế hoạch)
@@ -309,7 +313,7 @@ Nhóm phát sóng hiện hoạt động với:
 
 ### Định tuyến
 
-Nhóm phát sóng hoạt động cùng với định tuyến hiện có:
+Broadcast groups hoạt động cùng với định tuyến hiện có:
 
 ```json
 {
@@ -326,21 +330,21 @@ Nhóm phát sóng hoạt động cùng với định tuyến hiện có:
 ```
 
 - `GROUP_A`: Chỉ alfred phản hồi (định tuyến bình thường).
-- `GROUP_B`: agent1 VÀ agent2 phản hồi (phát sóng).
+- `GROUP_B`: agent1 VÀ agent2 phản hồi (broadcast).
 
 <Note>
-**Thứ tự ưu tiên:** `broadcast` có độ ưu tiên cao hơn `bindings`.
+**Thứ tự ưu tiên:** `broadcast` được ưu tiên hơn các route binding thông thường. Các binding ACP đã cấu hình (`bindings[].type="acp"`) là độc quyền: khi một binding khớp, OpenClaw điều phối đến phiên ACP đã cấu hình thay vì broadcast fan-out.
 </Note>
 
 ## Khắc phục sự cố
 
 <AccordionGroup>
-  <Accordion title="Tác tử không phản hồi">
+  <Accordion title="Agent không phản hồi">
     **Kiểm tra:**
 
-    1. ID tác tử tồn tại trong `agents.list`.
-    2. Định dạng ID peer chính xác (ví dụ `120363403215116621@g.us`).
-    3. Tác tử không nằm trong danh sách từ chối.
+    1. ID agent tồn tại trong `agents.list`.
+    2. Định dạng peer ID đúng (ví dụ `120363403215116621@g.us`).
+    3. Agent không nằm trong danh sách từ chối.
 
     **Gỡ lỗi:**
 
@@ -349,16 +353,16 @@ Nhóm phát sóng hoạt động cùng với định tuyến hiện có:
     ```
 
   </Accordion>
-  <Accordion title="Chỉ một tác tử phản hồi">
-    **Nguyên nhân:** ID peer có thể nằm trong `bindings` nhưng không nằm trong `broadcast`.
+  <Accordion title="Chỉ một agent phản hồi">
+    **Nguyên nhân:** Peer ID có thể nằm trong route binding thông thường nhưng không nằm trong `broadcast`, hoặc có thể khớp với một binding ACP đã cấu hình độc quyền.
 
-    **Cách sửa:** Thêm vào cấu hình phát sóng hoặc xóa khỏi bindings.
+    **Cách khắc phục:** Thêm các peer bị ràng buộc bởi tuyến thông thường vào cấu hình broadcast, hoặc xóa/thay đổi binding ACP đã cấu hình nếu muốn broadcast fan-out.
 
   </Accordion>
   <Accordion title="Vấn đề hiệu năng">
-    Nếu chậm với nhiều tác tử:
+    Nếu chậm với nhiều agent:
 
-    - Giảm số lượng tác tử trên mỗi nhóm.
+    - Giảm số lượng agent trong mỗi nhóm.
     - Dùng mô hình nhẹ hơn (sonnet thay vì opus).
     - Kiểm tra thời gian khởi động sandbox.
 
@@ -368,7 +372,7 @@ Nhóm phát sóng hoạt động cùng với định tuyến hiện có:
 ## Ví dụ
 
 <AccordionGroup>
-  <Accordion title="Ví dụ 1: Nhóm đánh giá mã">
+  <Accordion title="Ví dụ 1: Đội review code">
     ```json
     {
       "broadcast": {
@@ -403,13 +407,13 @@ Nhóm phát sóng hoạt động cùng với định tuyến hiện có:
     }
     ```
 
-    **Người dùng gửi:** Đoạn mã.
+    **Người dùng gửi:** Đoạn code.
 
     **Phản hồi:**
 
     - code-formatter: "Đã sửa thụt lề và thêm gợi ý kiểu"
     - security-scanner: "⚠️ Lỗ hổng SQL injection ở dòng 12"
-    - test-coverage: "Độ bao phủ là 45%, thiếu kiểm thử cho các trường hợp lỗi"
+    - test-coverage: "Coverage là 45%, thiếu test cho các trường hợp lỗi"
     - docs-checker: "Thiếu docstring cho hàm `process_data`"
 
   </Accordion>
@@ -448,32 +452,32 @@ interface OpenClawConfig {
 ### Trường
 
 <ParamField path="strategy" type='"parallel" | "sequential"' default='"parallel"'>
-  Cách xử lý tác tử. `parallel` chạy tất cả tác tử đồng thời; `sequential` chạy chúng theo thứ tự trong mảng.
+  Cách xử lý agent. `parallel` chạy tất cả agent đồng thời; `sequential` chạy chúng theo thứ tự trong mảng.
 </ParamField>
 <ParamField path="[peerId]" type="string[]">
-  JID nhóm WhatsApp, số E.164 hoặc ID peer khác. Giá trị là mảng ID tác tử sẽ xử lý tin nhắn.
+  WhatsApp group JID, số E.164 hoặc peer ID khác. Giá trị là mảng ID agent sẽ xử lý tin nhắn.
 </ParamField>
 
-## Hạn chế
+## Giới hạn
 
-1. **Số tác tử tối đa:** Không có giới hạn cứng, nhưng 10+ tác tử có thể chậm.
-2. **Ngữ cảnh chia sẻ:** Tác tử không thấy phản hồi của nhau (theo thiết kế).
-3. **Thứ tự tin nhắn:** Phản hồi song song có thể đến theo bất kỳ thứ tự nào.
-4. **Giới hạn tốc độ:** Tất cả tác tử đều tính vào giới hạn tốc độ của WhatsApp.
+1. **Số lượng agent tối đa:** Không có giới hạn cứng, nhưng hơn 10 agent có thể chậm.
+2. **Ngữ cảnh dùng chung:** Các agent không thấy phản hồi của nhau (theo thiết kế).
+3. **Thứ tự tin nhắn:** Các phản hồi song song có thể đến theo bất kỳ thứ tự nào.
+4. **Giới hạn tốc độ:** Tất cả agent đều được tính vào giới hạn tốc độ của WhatsApp.
 
 ## Cải tiến trong tương lai
 
 Các tính năng đã lên kế hoạch:
 
-- [ ] Chế độ ngữ cảnh chia sẻ (tác tử thấy phản hồi của nhau)
-- [ ] Điều phối tác tử (tác tử có thể gửi tín hiệu cho nhau)
-- [ ] Chọn tác tử động (chọn tác tử dựa trên nội dung tin nhắn)
-- [ ] Mức ưu tiên tác tử (một số tác tử phản hồi trước các tác tử khác)
+- [ ] Chế độ ngữ cảnh dùng chung (các agent thấy phản hồi của nhau)
+- [ ] Điều phối agent (các agent có thể gửi tín hiệu cho nhau)
+- [ ] Chọn agent động (chọn agent dựa trên nội dung tin nhắn)
+- [ ] Mức ưu tiên của agent (một số agent phản hồi trước các agent khác)
 
 ## Liên quan
 
 - [Định tuyến kênh](/vi/channels/channel-routing)
 - [Nhóm](/vi/channels/groups)
-- [Công cụ môi trường cách ly đa tác nhân](/vi/tools/multi-agent-sandbox-tools)
-- [Ghép nối](/vi/channels/pairing)
+- [Công cụ sandbox đa agent](/vi/tools/multi-agent-sandbox-tools)
+- [Ghép đôi](/vi/channels/pairing)
 - [Quản lý phiên](/vi/concepts/session)

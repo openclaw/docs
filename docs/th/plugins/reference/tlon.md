@@ -1,29 +1,30 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin tlon
-summary: เพิ่มพื้นผิวช่องทาง Tlon สำหรับส่งและรับข้อความ OpenClaw
+summary: Plugin ช่องทาง Tlon/Urbit ของ OpenClaw สำหรับเวิร์กโฟลว์แชท.
 title: Plugin Tlon
 x-i18n:
-    generated_at: "2026-05-03T10:17:44Z"
+    generated_at: "2026-06-27T18:05:28Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 636c7fc3ae8f8f35337d2fe279f1752226ff7ee017442372878448a82f99ecce
+    source_hash: 6fd1dcc934734599c0b671f0a9659dc5cc6e4ff907e3e14f9ff3ba5ec86aa0cc
     source_path: plugins/reference/tlon.md
     workflow: 16
 ---
 
-# Tlon Plugin
+# Plugin Tlon
 
-เพิ่มพื้นผิวช่องทาง Tlon สำหรับส่งและรับข้อความ OpenClaw
+Plugin ช่องทาง Tlon/Urbit ของ OpenClaw สำหรับเวิร์กโฟลว์แชต
 
-## การเผยแพร่
+## การจัดจำหน่าย
 
 - แพ็กเกจ: `@openclaw/tlon`
-- ช่องทางการติดตั้ง: npm; ClawHub
+- เส้นทางการติดตั้ง: npm; ClawHub
 
 ## พื้นผิว
 
-ช่องทาง: tlon; สัญญา: เครื่องมือ; Skills
+ช่องทาง: tlon; Skills
 
 ## เอกสารที่เกี่ยวข้อง
 

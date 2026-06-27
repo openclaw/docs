@@ -1,51 +1,52 @@
 ---
 read_when:
-    - Modification du comportement de mise à jour, de doctor, d’acceptation des packages ou d’installation des plugins d’OpenClaw
+    - Modification du comportement de mise à jour, de doctor, d’acceptation de package ou d’installation de Plugin d’OpenClaw
     - Préparer ou approuver une version candidate
-    - Débogage des régressions de mise à jour de package, de nettoyage des dépendances de Plugin ou d’installation de Plugin
+    - Débogage des régressions liées à la mise à jour des packages, au nettoyage des dépendances de Plugin ou à l’installation de Plugin
 sidebarTitle: Update and plugin tests
 summary: Comment OpenClaw valide les chemins de mise à jour, les migrations de paquets et le comportement d’installation/mise à jour des plugins
-title: 'Tests : mises à jour et Plugins'
+title: 'Tests : mises à jour et plugins'
 x-i18n:
-    generated_at: "2026-05-06T07:26:54Z"
+    generated_at: "2026-06-27T17:36:36Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: db3790bb8c6b952458342727f3e326f9610b4d8155889dfdadb143e3ef07aa46
+    source_hash: 9be94eab4be97c53022bdac3110da74a61cfa23db989964c803497305e5415db
     source_path: help/testing-updates-plugins.md
     workflow: 16
 ---
 
-Voici la liste de contrôle dédiée à la validation des mises à jour et des plugins. L'objectif est
-simple : prouver que le paquet installable peut mettre à jour un état utilisateur réel, réparer
-un état hérité obsolète via `doctor`, et toujours installer, charger, mettre à jour et désinstaller
-des plugins depuis les sources prises en charge.
+Cette checklist est dédiée à la validation des mises à jour et des Plugins. L’objectif est
+simple : prouver que le package installable peut mettre à jour un état utilisateur réel, réparer
+l’ancien état obsolète via `doctor`, et toujours installer, charger, mettre à jour et désinstaller
+des Plugins depuis les sources prises en charge.
 
-Pour la cartographie plus large de l'exécuteur de tests, consultez [Tests](/fr/help/testing). Pour les
-clés de fournisseurs en conditions réelles et les suites qui accèdent au réseau, consultez [Tests en conditions réelles](/fr/help/testing-live).
+Pour la cartographie plus générale du lanceur de tests, consultez [Tests](/fr/help/testing). Pour les clés de fournisseurs live
+et les suites qui touchent au réseau, consultez [Tests live](/fr/help/testing-live).
 
 ## Ce que nous protégeons
 
-Les tests de mise à jour et de plugins protègent ces contrats :
+Les tests de mise à jour et de Plugins protègent ces contrats :
 
-- Une archive de paquet est complète, possède un `dist/postinstall-inventory.json` valide,
-  et ne dépend pas de fichiers du dépôt non empaquetés.
-- Un utilisateur peut passer d'un paquet publié plus ancien au paquet candidat
-  sans perdre sa configuration, ses agents, ses sessions, ses espaces de travail, ses listes d'autorisation de plugins ni
-  sa configuration de canaux.
-- `openclaw doctor --fix --non-interactive` est responsable des chemins de nettoyage et de réparation
-  hérités. Le démarrage ne doit pas accumuler de migrations de compatibilité cachées pour les états de plugins
-  obsolètes.
-- Les installations de plugins fonctionnent depuis des répertoires locaux, des dépôts git, des paquets npm et le
+- Une archive tarball de package est complète, possède un `dist/postinstall-inventory.json`
+  valide, et ne dépend pas de fichiers du dépôt non empaquetés.
+- Un utilisateur peut passer d’un ancien package publié au package candidat
+  sans perdre sa configuration, ses agents, sessions, espaces de travail, listes d’autorisation de Plugins ou
+  configuration de canaux.
+- `openclaw doctor --fix --non-interactive` possède les chemins de nettoyage et de réparation
+  hérités. Le démarrage ne doit pas accumuler de migrations de compatibilité cachées pour un état
+  de Plugin obsolète.
+- Les installations de Plugins fonctionnent depuis des répertoires locaux, des dépôts git, des packages npm et le
   chemin du registre ClawHub.
-- Les dépendances npm des plugins sont installées dans la racine npm gérée, analysées avant
-  que la confiance soit accordée, et supprimées via npm pendant la désinstallation afin que les dépendances remontées ne
-  persistent pas.
-- La mise à jour des plugins est stable quand rien n'a changé : les enregistrements d'installation, la source
-  résolue, la disposition des dépendances installées et l'état d'activation restent intacts.
+- Les dépendances npm des Plugins sont installées dans un projet npm géré par Plugin,
+  analysées avant la confiance, et supprimées via npm pendant la désinstallation afin que les dépendances
+  hissées ne persistent pas.
+- La mise à jour de Plugin est stable quand rien n’a changé : les enregistrements d’installation, la source
+  résolue, l’agencement des dépendances installées et l’état activé restent intacts.
 
 ## Preuve locale pendant le développement
 
-Commencez de façon ciblée :
+Commencez de manière ciblée :
 
 ```bash
 pnpm changed:lanes --json
@@ -53,31 +54,31 @@ pnpm check:changed
 pnpm test:changed
 ```
 
-Pour les changements touchant l'installation, la désinstallation, les dépendances ou l'inventaire de paquet des plugins, exécutez aussi
-les tests ciblés qui couvrent le point modifié :
+Pour les changements d’installation, de désinstallation, de dépendances de Plugins ou d’inventaire de package, exécutez aussi
+les tests ciblés qui couvrent la jointure modifiée :
 
 ```bash
 pnpm test src/plugins/uninstall.test.ts src/infra/package-dist-inventory.test.ts test/scripts/package-acceptance-workflow.test.ts
 ```
 
-Avant qu'une voie Docker de paquet ne consomme une archive, prouvez l'artefact de paquet :
+Avant qu’une voie Docker de package ne consomme une tarball, prouvez l’artefact du package :
 
 ```bash
 pnpm release:check
 ```
 
-`release:check` exécute les contrôles de dérive configuration/docs/API, écrit l'inventaire dist du paquet,
+`release:check` exécute les contrôles de dérive config/docs/API, écrit l’inventaire de distribution du package,
 exécute `npm pack --dry-run`, rejette les fichiers empaquetés interdits, installe
-l'archive dans un préfixe temporaire, exécute postinstall et effectue des tests de fumée sur les points d'entrée de canaux
-embarqués.
+la tarball dans un préfixe temporaire, exécute postinstall, et teste sommairement les points d’entrée
+des canaux groupés.
 
 ## Voies Docker
 
-Les voies Docker constituent la preuve au niveau produit. Elles installent ou mettent à jour un vrai
-paquet dans des conteneurs Linux et vérifient le comportement via des commandes CLI,
-le démarrage du Gateway, des sondes HTTP, l'état RPC et l'état du système de fichiers.
+Les voies Docker sont la preuve au niveau produit. Elles installent ou mettent à jour un vrai
+package dans des conteneurs Linux et vérifient le comportement via des commandes CLI,
+le démarrage du Gateway, des sondes HTTP, le statut RPC et l’état du système de fichiers.
 
-Utilisez des voies ciblées pendant l'itération :
+Utilisez des voies ciblées pendant l’itération :
 
 ```bash
 pnpm test:docker:plugins
@@ -91,38 +92,39 @@ pnpm test:docker:update-migration
 
 Voies importantes :
 
-- `test:docker:plugins` valide le test de fumée d'installation de plugin, les installations depuis un dossier local,
-  le comportement de saut de mise à jour des dossiers locaux, les dossiers locaux avec dépendances
-  préinstallées, les installations de paquets `file:`, les installations git avec exécution CLI, les mises à jour de références git
-  mouvantes, les installations depuis le registre npm avec dépendances transitives
-  remontées, les opérations sans effet de mise à jour npm, les installations depuis le jeu de test ClawHub local et les opérations
-  sans effet de mise à jour, le comportement de mise à jour de la place de marché, et l'activation/inspection du lot Claude. Définissez
-  `OPENCLAW_PLUGINS_E2E_CLAWHUB=0` pour garder le bloc ClawHub hermétique/hors ligne.
-- `test:docker:plugin-lifecycle-matrix` installe le paquet candidat dans un conteneur nu,
-  fait passer un plugin npm par l'installation, l'inspection, la désactivation, l'activation,
-  la mise à niveau explicite, la rétrogradation explicite et la désinstallation après suppression du code du plugin.
+- `test:docker:plugins` valide le test sommaire d’installation de Plugin, les installations depuis un dossier local,
+  le comportement de saut de mise à jour pour les dossiers locaux, les dossiers locaux avec dépendances
+  préinstallées, les installations de packages `file:`, les installations git avec exécution CLI, les mises à jour
+  de références mobiles git, les installations depuis le registre npm avec dépendances transitives
+  hissées, les no-op de mise à jour npm, le rejet des métadonnées de package npm malformées,
+  les installations depuis une fixture ClawHub locale et les no-op de mise à jour, le comportement de mise à jour de marketplace,
+  et l’activation/inspection du bundle Claude. Définissez `OPENCLAW_PLUGINS_E2E_CLAWHUB=0` pour
+  garder le bloc ClawHub hermétique/hors ligne.
+- `test:docker:plugin-lifecycle-matrix` installe le package candidat dans un conteneur nu,
+  fait passer un Plugin npm par l’installation, l’inspection, la désactivation, l’activation,
+  la mise à niveau explicite, la rétrogradation explicite et la désinstallation après suppression du code du Plugin.
   Il journalise les métriques RSS et CPU pour chaque phase.
-- `test:docker:plugin-update` valide qu'un plugin installé inchangé ne se
-  réinstalle pas et ne perd pas ses métadonnées d'installation pendant `openclaw plugins update`.
-- `test:docker:upgrade-survivor` installe l'archive candidate par-dessus un jeu de test
-  d'ancien utilisateur avec état résiduel, exécute la mise à jour du paquet ainsi que doctor non interactif, puis démarre
-  un Gateway en boucle locale et vérifie la préservation de l'état.
-- `test:docker:published-upgrade-survivor` installe d'abord une référence publiée,
-  la configure via une recette `openclaw config set` intégrée, la met à jour vers
-  l'archive candidate, exécute doctor, vérifie le nettoyage hérité, démarre le Gateway et
-  sonde `/healthz`, `/readyz` et l'état RPC.
-- `test:docker:update-restart-auth` installe le paquet candidat, démarre un
-  Gateway géré à authentification par jeton, désactive les variables d'environnement d'authentification du Gateway appelant pour
+- `test:docker:plugin-update` valide qu’un Plugin installé inchangé ne se
+  réinstalle pas et ne perd pas ses métadonnées d’installation pendant `openclaw plugins update`.
+- `test:docker:upgrade-survivor` installe la tarball candidate par-dessus une fixture sale
+  d’ancien utilisateur, exécute la mise à jour du package plus le doctor non interactif, puis démarre
+  un Gateway en loopback et vérifie la préservation de l’état.
+- `test:docker:published-upgrade-survivor` installe d’abord une base publiée,
+  la configure via une recette `openclaw config set` intégrée, la met à jour vers la
+  tarball candidate, exécute doctor, vérifie le nettoyage hérité, démarre le Gateway et
+  sonde `/healthz`, `/readyz` et le statut RPC.
+- `test:docker:update-restart-auth` installe le package candidat, démarre un
+  Gateway géré avec authentification par jeton, désactive les variables d’environnement d’authentification Gateway de l’appelant pour
   `openclaw update --yes --json`, et exige que la commande de mise à jour candidate
   redémarre le Gateway avant les sondes normales.
-- `test:docker:update-migration` est la voie de mise à jour publiée fortement axée sur le nettoyage. Elle
-  part d'un état utilisateur configuré de type Discord/Telegram, exécute doctor sur la référence
-  afin que les dépendances des plugins configurés aient une chance de se matérialiser, sème
-  des résidus de dépendances héritées de plugin pour un plugin empaqueté configuré, met à jour vers
-  l'archive candidate, et exige que doctor après mise à jour supprime les racines de
-  dépendances héritées.
+- `test:docker:update-migration` est la voie de mise à jour publiée axée sur le nettoyage. Elle
+  démarre depuis un état utilisateur configuré de style Discord/Telegram, exécute le
+  doctor de base afin que les dépendances de Plugins configurés aient une chance de se matérialiser, sème
+  des débris hérités de dépendances de Plugin pour un Plugin packagé configuré, met à jour vers
+  la tarball candidate, et exige que le doctor post-mise à jour supprime les racines de dépendances
+  héritées.
 
-Variantes utiles de survie à la mise à niveau depuis une version publiée :
+Variantes utiles de survivor de mise à niveau publiée :
 
 ```bash
 OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPEC=openclaw@2026.4.23 \
@@ -137,13 +139,13 @@ pnpm test:docker:published-upgrade-survivor
 Les scénarios disponibles sont `base`, `feishu-channel`, `bootstrap-persona`,
 `plugin-deps-cleanup`, `configured-plugin-installs`,
 `stale-source-plugin-shadow`, `tilde-log-path` et `versioned-runtime-deps`. Dans les exécutions agrégées,
-`OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS=reported-issues` s'étend à tous les scénarios
-calqués sur des problèmes signalés, y compris la migration d'installation de plugins configurés.
+`OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS=reported-issues` s’étend à tous les scénarios
+modelés sur des problèmes signalés, y compris la migration d’installation de Plugin configuré.
 
-La migration complète des mises à jour est intentionnellement séparée de la CI de version complète. Utilisez le
-flux de travail manuel `Update Migration` quand la question de publication est « chaque
-version stable publiée depuis 2026.4.23 peut-elle se mettre à jour vers ce candidat et
-nettoyer les résidus de dépendances de plugin ? » :
+La migration complète de mise à jour est intentionnellement séparée de la CI de version complète. Utilisez le
+workflow manuel `Update Migration` lorsque la question de version est « chaque
+version stable publiée depuis 2026.4.23 peut-elle être mise à jour vers ce candidat et
+nettoyer les débris de dépendances de Plugins ? » :
 
 ```bash
 gh workflow run update-migration.yml \
@@ -154,35 +156,43 @@ gh workflow run update-migration.yml \
   -f scenarios=plugin-deps-cleanup
 ```
 
-## Acceptation du paquet
+## Acceptation des packages
 
-L'Acceptation du paquet est le contrôle de paquet natif de GitHub. Elle résout un paquet
-candidat en une archive `package-under-test`, enregistre la version et le SHA-256, puis
-exécute des voies Docker E2E réutilisables sur cette archive exacte. La référence du cadre d'exécution
-du flux de travail est distincte de la référence source du paquet, afin que la logique de test actuelle puisse valider
-des versions fiables plus anciennes.
+L’acceptation des packages est la barrière de package native GitHub. Elle résout un package
+candidat en tarball `package-under-test`, enregistre la version et le SHA-256, puis
+exécute des voies Docker E2E réutilisables contre cette tarball exacte. La référence du harnais de workflow
+est séparée de la référence source du package, afin que la logique de test actuelle puisse valider
+d’anciennes versions de confiance.
 
 Sources candidates :
 
 - `source=npm` : valider `openclaw@beta`, `openclaw@latest` ou une version
   publiée exacte.
-- `source=ref` : empaqueter une branche, une étiquette ou un commit fiable avec le cadre d'exécution actuel
+- `source=ref` : empaqueter une branche, une balise ou un commit de confiance avec le harnais courant
   sélectionné.
-- `source=url` : valider une archive HTTPS avec `package_sha256` obligatoire.
-- `source=artifact` : réutiliser une archive téléversée par une autre exécution Actions.
+- `source=url` : valider une tarball HTTPS publique avec `package_sha256` requis.
+  Ce chemin rejette les identifiants dans les URL, les ports HTTPS non par défaut, les noms d’hôtes ou résultats DNS/IP
+  privés/internes, l’espace IP à usage spécial et les redirections non sûres.
+- `source=trusted-url` : valider une tarball HTTPS avec
+  `package_sha256` et `trusted_source_id` requis par rapport à la politique détenue par les mainteneurs
+  dans `.github/package-trusted-sources.json`. Utilisez ceci pour les miroirs d’entreprise/privés
+  au lieu d’affaiblir `source=url` avec un interrupteur d’entrée autorisant le privé.
+  L’authentification Bearer, lorsqu’elle est configurée par la politique, utilise le secret fixe
+  `OPENCLAW_TRUSTED_PACKAGE_TOKEN`.
+- `source=artifact` : réutiliser une tarball téléversée par une autre exécution Actions.
 
 La validation complète de version utilise `source=artifact` par défaut, construit depuis le
-SHA de version résolu. Pour une preuve après publication, passez
-`package_acceptance_package_spec=openclaw@YYYY.M.D` afin que la même matrice de mise à niveau
-cible plutôt le paquet npm livré.
+SHA de version résolu. Pour une preuve post-publication, passez
+`package_acceptance_package_spec=openclaw@YYYY.M.PATCH` afin que la même matrice de mise à niveau
+cible plutôt le package npm livré.
 
-Les contrôles de version appellent l'Acceptation du paquet avec l'ensemble paquet/mise à jour/redémarrage/plugin :
+Les contrôles de version appellent l’acceptation des packages avec l’ensemble package/update/restart/plugin :
 
 ```text
 doctor-switch update-channel-switch update-corrupt-plugin upgrade-survivor published-upgrade-survivor update-restart-auth plugins-offline plugin-update
 ```
 
-Quand la validation d'endurance de version est activée, ils passent aussi :
+Quand le soak de version est activé, ils passent aussi :
 
 ```text
 published_upgrade_survivor_baselines=last-stable-4 2026.4.23 2026.5.2 2026.4.15
@@ -190,28 +200,27 @@ published_upgrade_survivor_scenarios=reported-issues
 telegram_mode=mock-openai
 ```
 
-Cela garde la migration de paquet, le changement de canal de mise à jour, la tolérance aux plugins gérés
-corrompus, le nettoyage des dépendances de plugin obsolètes, la couverture hors ligne des plugins, le
-comportement de mise à jour des plugins et la QA du paquet Telegram sur le même artefact résolu sans
-obliger le contrôle de paquet de publication par défaut à parcourir chaque version publiée.
+Cela garde la migration de package, le basculement de canal de mise à jour, la tolérance aux Plugins gérés
+corrompus, le nettoyage des dépendances de Plugins obsolètes, la couverture de Plugins hors ligne, le comportement de
+mise à jour de Plugins et la QA du package Telegram sur le même artefact résolu sans
+obliger la barrière de package de version par défaut à parcourir chaque version publiée.
 
-`last-stable-4` correspond aux quatre dernières versions stables d'OpenClaw
-publiées sur npm. L'acceptation du paquet de version épingle `2026.4.23` comme première frontière de compatibilité
-de mise à jour de plugins, `2026.5.2` comme frontière de remaniement de l'architecture des plugins, et
-`2026.4.15` comme référence de mise à jour publiée 2026.4.1x plus ancienne ; le résolveur
-déduplique les versions épinglées qui sont déjà dans les quatre dernières. Pour une couverture exhaustive de
-migration de mise à jour publiée, utilisez `all-since-2026.4.23` dans le flux de travail Update
-Migration séparé au lieu de la CI de version complète. `release-history` reste
-disponible pour un échantillonnage manuel plus large quand vous voulez aussi l'ancre héritée
-antérieure à la date.
+`last-stable-4` se résout aux quatre dernières versions stables d’OpenClaw publiées sur npm.
+L’acceptation de package de version épingle `2026.4.23` comme première frontière de compatibilité
+de mise à jour de Plugins, `2026.5.2` comme frontière de remaniement de l’architecture des Plugins, et
+`2026.4.15` comme base plus ancienne de mise à jour publiée 2026.4.1x ; le résolveur
+déduplique les épingles déjà présentes dans les quatre dernières. Pour une couverture exhaustive de migration
+de mise à jour publiée, utilisez `all-since-2026.4.23` dans le workflow séparé Update
+Migration au lieu de la CI de version complète. `release-history` reste
+disponible pour un échantillonnage manuel plus large lorsque vous voulez aussi l’ancre héritée antérieure.
 
-Quand plusieurs références de survie à la mise à niveau depuis une version publiée sont sélectionnées, le flux de travail
-Docker réutilisable répartit chaque référence dans sa propre tâche d'exécuteur ciblée. Chaque
-fragment de référence exécute toujours l'ensemble de scénarios sélectionné, mais les journaux et les artefacts restent
-par référence, et la durée totale est limitée par le fragment le plus lent au lieu d'une seule grande
+Quand plusieurs bases de survivor de mise à niveau publiée sont sélectionnées, le workflow Docker
+réutilisable partitionne chaque base dans sa propre tâche de runner ciblée. Chaque
+partition de base exécute toujours l’ensemble de scénarios sélectionné, mais les journaux et artefacts restent
+par base et le temps total est borné par la partition la plus lente plutôt que par une grande
 tâche série.
 
-Exécutez manuellement un profil de paquet lors de la validation d'un candidat avant publication :
+Exécutez manuellement un profil de package lors de la validation d’un candidat avant publication :
 
 ```bash
 gh workflow run package-acceptance.yml \
@@ -225,72 +234,74 @@ gh workflow run package-acceptance.yml \
   -f telegram_mode=mock-openai
 ```
 
-Utilisez `suite_profile=product` quand la question de publication inclut des canaux MCP,
-le nettoyage Cron/sous-agent, la recherche web OpenAI ou OpenWebUI. Utilisez `suite_profile=full`
-uniquement quand vous avez besoin d'une couverture Docker complète du parcours de publication.
+Utilisez `suite_profile=product` lorsque la question de version inclut les canaux MCP,
+le nettoyage cron/sous-agent, la recherche web OpenAI ou OpenWebUI. Utilisez `suite_profile=full`
+uniquement lorsque vous avez besoin de la couverture Docker complète du chemin de version.
 
-## Preuve par défaut de publication
+## Valeur par défaut de version
 
 Pour les candidats de version, la pile de preuves par défaut est :
 
-1. `pnpm check:changed` et `pnpm test:changed` pour les régressions au niveau du code source.
-2. `pnpm release:check` pour l'intégrité de l'artefact de paquet.
-3. Le profil `package` d'Acceptation du paquet ou les voies de paquet personnalisées des contrôles de version
-   pour les contrats d'installation/mise à jour/redémarrage/plugin.
-4. Les contrôles de version multi-OS pour le comportement spécifique à l'OS de l'installateur, du parcours
-   d'intégration et de la plateforme.
-5. Les suites en conditions réelles uniquement quand la surface modifiée touche le comportement des fournisseurs ou des services
-   hébergés.
+1. `pnpm check:changed` et `pnpm test:changed` pour les régressions au niveau source.
+2. `pnpm release:check` pour l’intégrité des artefacts de package.
+3. Le profil `package` d’acceptation des packages ou les voies de package personnalisées des contrôles de version
+   pour les contrats d’installation/mise à jour/redémarrage/Plugin.
+4. Les contrôles de version inter-OS pour l’installateur, l’onboarding et le comportement de plateforme
+   propres à chaque OS.
+5. Les suites live uniquement lorsque la surface modifiée touche au comportement de fournisseur ou de service hébergé.
 
-Sur les machines des mainteneurs, les contrôles larges et les preuves produit Docker/paquet devraient s'exécuter
-dans Testbox sauf en cas de preuve locale explicite.
+Sur les machines des mainteneurs, les barrières larges et la preuve produit Docker/package doivent s’exécuter
+dans Testbox sauf preuve locale explicite.
 
 ## Compatibilité héritée
 
-La tolérance de compatibilité est limitée et bornée dans le temps :
+La tolérance de compatibilité est étroite et limitée dans le temps :
 
-- Les paquets jusqu'à `2026.4.25`, y compris `2026.4.25-beta.*`, peuvent tolérer
-  les lacunes de métadonnées de paquet déjà livrées dans l'Acceptation du paquet.
-- Le paquet publié `2026.4.26` peut émettre un avertissement pour les fichiers d'horodatage de métadonnées
-  de build local déjà livrés.
-- Les paquets ultérieurs doivent satisfaire les contrats modernes. Les mêmes lacunes échouent au lieu
-  d'avertir ou d'être ignorées.
+- Les packages jusqu’à `2026.4.25`, y compris `2026.4.25-beta.*`, peuvent tolérer
+  les lacunes de métadonnées de package déjà livrées dans l’acceptation des packages.
+- Le package publié `2026.4.26` peut avertir pour les fichiers de tampon de métadonnées de build local
+  déjà livrés.
+- Les packages ultérieurs doivent satisfaire les contrats modernes. Les mêmes lacunes échouent au lieu
+  d’avertir ou de sauter.
 
-N'ajoutez pas de nouvelles migrations au démarrage pour ces anciens formats. Ajoutez ou étendez une réparation
+N’ajoutez pas de nouvelles migrations de démarrage pour ces anciennes formes. Ajoutez ou étendez une réparation
 doctor, puis prouvez-la avec `upgrade-survivor`, `published-upgrade-survivor` ou
-`update-restart-auth` quand la commande de mise à jour est responsable du redémarrage.
+`update-restart-auth` lorsque la commande de mise à jour possède le redémarrage.
 
-## Ajout de couverture
+## Ajouter une couverture
 
-Quand vous modifiez le comportement de mise à jour ou de plugin, ajoutez de la couverture au niveau le plus bas qui
+Lorsque vous modifiez le comportement de mise à jour ou de Plugin, ajoutez une couverture à la couche la plus basse qui
 peut échouer pour la bonne raison :
 
-- Logique pure de chemins ou de métadonnées : test unitaire à côté du code source.
-- Inventaire du paquet ou comportement des fichiers empaquetés : test `package-dist-inventory` ou test de
-  vérificateur d'archive.
-- Comportement d'installation/mise à jour de la CLI : assertion ou jeu de test de voie Docker.
-- Comportement de migration depuis une version publiée : scénario `published-upgrade-survivor`.
-- Comportement de redémarrage pris en charge par la mise à jour : `update-restart-auth`.
-- Comportement de source registre/paquet : jeu de test `test:docker:plugins` ou serveur de jeu de test ClawHub.
-- Comportement de disposition ou de nettoyage des dépendances : affirmez à la fois l'exécution à l'exécution et la
-  frontière du système de fichiers. Les dépendances npm peuvent être remontées sous la racine npm
-  gérée ; les tests doivent donc prouver que la racine est analysée/nettoyée au lieu de supposer une
-  arborescence `node_modules` locale au paquet.
+- Logique de chemin ou de métadonnées pure : test unitaire à côté de la source.
+- Comportement d’inventaire de package ou de fichiers empaquetés : test
+  `package-dist-inventory` ou vérificateur de tarball.
+- Comportement d’installation/mise à jour de la CLI : assertion de voie Docker ou fixture.
+- Comportement de migration de version publiée : scénario `published-upgrade-survivor`.
+- Comportement de redémarrage géré par la mise à jour : `update-restart-auth`.
+- Comportement de source de registre/package : fixture `test:docker:plugins` ou
+  serveur de fixture ClawHub.
+- Comportement de disposition ou de nettoyage des dépendances : vérifier à la fois
+  l’exécution au runtime et la limite du système de fichiers. Les dépendances npm
+  peuvent être hissées à l’intérieur du projet npm géré du plugin ; les tests doivent
+  donc prouver que ce projet est analysé/nettoyé au lieu de supposer uniquement
+  l’arborescence `node_modules` locale au package du plugin.
 
-Gardez les nouveaux jeux de test Docker hermétiques par défaut. Utilisez des registres de test locaux et
-de faux paquets, sauf si l'objectif du test est le comportement d'un registre réel.
+Gardez les nouvelles fixtures Docker hermétiques par défaut. Utilisez des registres
+de fixtures locaux et de faux packages, sauf si l’objectif du test est le
+comportement d’un registre réel.
 
 ## Triage des échecs
 
-Commencez par l'identité de l'artefact :
+Commencez par l’identité de l’artéfact :
 
-- Résumé `resolve_package` de l’acceptation du package : source, version, SHA-256 et
-  nom de l’artefact.
-- Artefacts Docker : `.artifacts/docker-tests/**/summary.json`,
+- Résumé Package Acceptance `resolve_package` : source, version, SHA-256 et
+  nom de l’artéfact.
+- Artéfacts Docker : `.artifacts/docker-tests/**/summary.json`,
   `failures.json`, journaux de voie et commandes de réexécution.
-- Résumé des survivants de mise à niveau : `.artifacts/upgrade-survivor/summary.json`,
-  incluant la version de référence, la version candidate, le scénario, les durées des phases et
-  les étapes de la recette.
+- Résumé Upgrade survivor : `.artifacts/upgrade-survivor/summary.json`,
+  incluant la version de référence, la version candidate, le scénario, les temps
+  de phase et les étapes de recette.
 
-Privilégiez la réexécution de la voie exacte en échec avec le même artefact de package plutôt que
-la réexécution de l’ensemble de l’umbrella de publication.
+Préférez réexécuter la voie exacte en échec avec le même artéfact de package
+plutôt que de relancer tout le périmètre de release.

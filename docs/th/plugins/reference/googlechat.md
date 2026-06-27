@@ -1,29 +1,30 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin googlechat
-summary: เพิ่มส่วนติดต่อช่องทาง Google Chat สำหรับส่งและรับข้อความ OpenClaw
+summary: Plugin ช่องทาง Google Chat ของ OpenClaw สำหรับสเปซและข้อความโดยตรง
 title: Plugin Google Chat
 x-i18n:
-    generated_at: "2026-05-03T10:16:45Z"
+    generated_at: "2026-06-27T18:02:31Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9d8626b6b5773218e22534e3f40aa82c5508c3f3e3223f6fd7343118efa63dc1
+    source_hash: 04febb1ead7d63e9ef79ecc52ce69f38a7c4eb404c90019717363f57477cd37d
     source_path: plugins/reference/googlechat.md
     workflow: 16
 ---
 
 # Plugin Google Chat
 
-เพิ่มพื้นผิวช่องทาง Google Chat สำหรับการส่งและรับข้อความ OpenClaw
+Plugin ช่องทาง Google Chat ของ OpenClaw สำหรับสเปซและข้อความโดยตรง
 
 ## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/googlechat`
-- วิธีติดตั้ง: npm; ClawHub
+- เส้นทางการติดตั้ง: npm; ClawHub
 
 ## พื้นผิว
 
-channels: googlechat
+ช่องทาง: googlechat
 
 ## เอกสารที่เกี่ยวข้อง
 

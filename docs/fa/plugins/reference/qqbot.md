@@ -1,20 +1,21 @@
 ---
 read_when:
-    - در حال نصب، پیکربندی یا ممیزی Plugin qqbot هستید
-summary: رابط کانال QQ Bot را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
+    - شما در حال نصب، پیکربندی یا ممیزی Plugin qqbot هستید
+summary: Plugin کانال ربات QQ برای گردش‌کارهای گروهی و پیام مستقیم در OpenClaw.
 title: Plugin ربات QQ
 x-i18n:
-    generated_at: "2026-05-03T11:43:28Z"
+    generated_at: "2026-06-27T18:28:47Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 988c342ef1cabeda5e3ede7ea598e3a96945bf814f9f823f17e1c357bfe3bf9c
+    source_hash: 10e67c8c8bd01a2fcd3ca55c32f6941cd52551ad241cb16a2ea38c62d80cfeb9
     source_path: plugins/reference/qqbot.md
     workflow: 16
 ---
 
-# Plugin QQ Bot
+# Plugin ربات QQ
 
-سطح کانال QQ Bot را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
+Plugin کانال QQ Bot در OpenClaw برای گردش‌کارهای گروهی و پیام مستقیم.
 
 ## توزیع
 
@@ -23,7 +24,7 @@ x-i18n:
 
 ## سطح
 
-channels: qqbot؛ contracts: tools؛ Skills
+کانال‌ها: qqbot؛ قراردادها: ابزارها؛ Skills
 
 ## مستندات مرتبط
 

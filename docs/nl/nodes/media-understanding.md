@@ -1,73 +1,74 @@
 ---
 read_when:
-    - Mediabegrip ontwerpen of herstructureren
-    - Afstemmen van voorverwerking van inkomende audio/video/afbeeldingen
+    - Media-inzicht ontwerpen of refactoren
+    - Voorbewerking van inkomende audio/video/afbeeldingen afstemmen
 sidebarTitle: Media understanding
-summary: Begrip van inkomende afbeeldingen/audio/video (optioneel) met fallbackopties voor provider en CLI
+summary: Inkomend beeld-/audio-/videobegrip (optioneel) met provider- en CLI-fallbacks
 title: Mediabegrip
 x-i18n:
-    generated_at: "2026-05-12T08:45:36Z"
+    generated_at: "2026-06-27T17:45:15Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8d58141ac1591890a4eb2c5cdcbc1bf19727fb0c3a1d4d0a912c6bb19d3f3592
+    source_hash: 4724578632b0210290d1b32077d2c0ccf7fdfa6b96160f76bf3eff591df7b92e
     source_path: nodes/media-understanding.md
     workflow: 16
 ---
 
-OpenClaw kan **binnenkomende media samenvatten** (afbeelding/audio/video) voordat de antwoordpipeline wordt uitgevoerd. Het detecteert automatisch wanneer lokale tools of providersleutels beschikbaar zijn, en kan worden uitgeschakeld of aangepast. Als begrip uitstaat, ontvangen modellen nog steeds zoals gebruikelijk de oorspronkelijke bestanden/URL’s.
+OpenClaw kan **binnenkomende media samenvatten** (afbeelding/audio/video) voordat de antwoordpipeline draait. Het detecteert automatisch wanneer lokale tools of providersleutels beschikbaar zijn, en kan worden uitgeschakeld of aangepast. Als begrip uitstaat, ontvangen modellen nog steeds zoals gebruikelijk de oorspronkelijke bestanden/URL's.
 
-Leveranciersspecifiek mediagedrag wordt geregistreerd door leverancierplugins, terwijl OpenClaw core eigenaar is van de gedeelde `tools.media`-configuratie, fallbackvolgorde en integratie met de antwoordpipeline.
+Vendorspecifiek mediagedrag wordt geregistreerd door vendorplugins, terwijl de OpenClaw-kern eigenaar is van de gedeelde `tools.media`-configuratie, fallbackvolgorde en integratie met de antwoordpipeline.
 
 ## Doelen
 
-- Optioneel: verwerk binnenkomende media vooraf tot korte tekst voor snellere routering + betere opdrachtanalyse.
-- Behoud levering van oorspronkelijke media aan het model (altijd).
-- Ondersteun **provider-API’s** en **CLI-fallbacks**.
-- Sta meerdere modellen toe met geordende fallback (fout/grootte/time-out).
+- Optioneel: binnenkomende media vooraf omzetten in korte tekst voor snellere routering + betere commandoparsing.
+- Oorspronkelijke medialevering aan het model behouden (altijd).
+- **Provider-API's** en **CLI-fallbacks** ondersteunen.
+- Meerdere modellen met geordende fallback toestaan (fout/grootte/time-out).
 
 ## Gedrag op hoofdlijnen
 
 <Steps>
-  <Step title="Bijlagen verzamelen">
+  <Step title="Collect attachments">
     Verzamel binnenkomende bijlagen (`MediaPaths`, `MediaUrls`, `MediaTypes`).
   </Step>
-  <Step title="Per capaciteit selecteren">
-    Selecteer voor elke ingeschakelde capaciteit (afbeelding/audio/video) bijlagen volgens beleid (standaard: **eerste**).
+  <Step title="Select per-capability">
+    Selecteer voor elke ingeschakelde mogelijkheid (afbeelding/audio/video) bijlagen per beleid (standaard: **eerste**).
   </Step>
-  <Step title="Model kiezen">
-    Kies de eerste geschikte modelvermelding (grootte + capaciteit + auth).
+  <Step title="Choose model">
+    Kies de eerste geschikte modelvermelding (grootte + mogelijkheid + auth).
   </Step>
-  <Step title="Fallback bij mislukking">
-    Als een model mislukt of de media te groot zijn, **val terug op de volgende vermelding**.
+  <Step title="Fallback on failure">
+    Als een model faalt of de media te groot is, **val terug op de volgende vermelding**.
   </Step>
-  <Step title="Succesblok toepassen">
+  <Step title="Apply success block">
     Bij succes:
 
     - `Body` wordt een `[Image]`-, `[Audio]`- of `[Video]`-blok.
-    - Audio stelt `{{Transcript}}` in; opdrachtanalyse gebruikt bijschrijfttekst wanneer aanwezig, anders het transcript.
-    - Bijschriften blijven behouden als `User text:` in het blok.
+    - Audio stelt `{{Transcript}}` in; commandoparsing gebruikt bij aanwezigheid captiontekst, anders het transcript.
+    - Captions blijven behouden als `User text:` binnen het blok.
 
   </Step>
 </Steps>
 
-Als begrip mislukt of is uitgeschakeld, **gaat de antwoordflow door** met de oorspronkelijke body + bijlagen.
+Als begrip faalt of is uitgeschakeld, **gaat de antwoordflow door** met de oorspronkelijke body + bijlagen.
 
-## Configuratieoverzicht
+## Configuratie-overzicht
 
-`tools.media` ondersteunt **gedeelde modellen** plus overrides per capaciteit:
+`tools.media` ondersteunt **gedeelde modellen** plus overschrijvingen per mogelijkheid:
 
 <AccordionGroup>
-  <Accordion title="Sleutels op het hoogste niveau">
+  <Accordion title="Top-level keys">
     - `tools.media.models`: gedeelde modellenlijst (gebruik `capabilities` om te beperken).
     - `tools.media.image` / `tools.media.audio` / `tools.media.video`:
-      - standaardwaarden (`prompt`, `maxChars`, `maxBytes`, `timeoutSeconds`, `language`)
+      - standaarden (`prompt`, `maxChars`, `maxBytes`, `timeoutSeconds`, `language`)
       - provideroverrides (`baseUrl`, `headers`, `providerOptions`)
       - Deepgram-audio-opties via `tools.media.audio.providerOptions.deepgram`
-      - echo-instellingen voor audiotranscript (`echoTranscript`, standaard `false`; `echoFormat`)
-      - optionele **per-capaciteit `models`-lijst** (heeft voorkeur boven gedeelde modellen)
+      - echo-instellingen voor audiotranscripten (`echoTranscript`, standaard `false`; `echoFormat`)
+      - optionele **`models`-lijst per mogelijkheid** (heeft voorkeur boven gedeelde modellen)
       - `attachments`-beleid (`mode`, `maxAttachments`, `prefer`)
-      - `scope` (optionele gating op channel/chatType/sessiesleutel)
-    - `tools.media.concurrency`: maximaal gelijktijdige capaciteitsruns (standaard **2**).
+      - `scope` (optionele beperking op kanaal/chatType/sessiesleutel)
+    - `tools.media.concurrency`: maximaal gelijktijdige mogelijkhedenruns (standaard **2**).
 
   </Accordion>
 </AccordionGroup>
@@ -100,7 +101,7 @@ Als begrip mislukt of is uitgeschakeld, **gaat de antwoordflow door** met de oor
 Elke `models[]`-vermelding kan **provider** of **CLI** zijn:
 
 <Tabs>
-  <Tab title="Providervermelding">
+  <Tab title="Provider entry">
     ```json5
     {
       type: "provider", // default if omitted
@@ -116,7 +117,7 @@ Elke `models[]`-vermelding kan **provider** of **CLI** zijn:
     }
     ```
   </Tab>
-  <Tab title="CLI-vermelding">
+  <Tab title="CLI entry">
     ```json5
     {
       type: "cli",
@@ -135,54 +136,79 @@ Elke `models[]`-vermelding kan **provider** of **CLI** zijn:
     }
     ```
 
-    CLI-sjablonen kunnen ook gebruiken:
+    CLI-templates kunnen ook gebruiken:
 
     - `{{MediaDir}}` (map die het mediabestand bevat)
-    - `{{OutputDir}}` (scratchmap gemaakt voor deze run)
+    - `{{OutputDir}}` (scratchmap die voor deze run is aangemaakt)
     - `{{OutputBase}}` (basispad van scratchbestand, zonder extensie)
 
   </Tab>
 </Tabs>
 
-## Standaardwaarden en limieten
+### Providerreferenties (`apiKey`)
 
-Aanbevolen standaardwaarden:
+Mediabegrip door providers gebruikt dezelfde provider-authresolutie als normale
+modelaanroepen: authprofielen, omgevingsvariabelen, daarna
+`models.providers.<providerId>.apiKey`.
 
-- `maxChars`: **500** voor afbeelding/video (kort, opdrachtvriendelijk)
+`tools.media.*.models[]`-vermeldingen accepteren geen inline `apiKey`-veld. De
+`provider`-waarde in een mediamodelvermelding, zoals `openai` of `moonshot`, moet
+referenties beschikbaar hebben via een van de standaard provider-authbronnen.
+
+Minimaal voorbeeld:
+
+```json5
+{
+  models: {
+    providers: {
+      openai: { apiKey: "<OPENAI_API_KEY>" },
+      moonshot: { apiKey: "<MOONSHOT_API_KEY>" },
+    },
+  },
+}
+```
+
+Zie [Tools en aangepaste providers](/nl/gateway/config-tools) voor de volledige provider-authreferentie, inclusief profielen, omgevingsvariabelen en aangepaste basis-URL's.
+
+## Standaarden en limieten
+
+Aanbevolen standaarden:
+
+- `maxChars`: **500** voor afbeelding/video (kort, commandovriendelijk)
 - `maxChars`: **niet ingesteld** voor audio (volledig transcript tenzij je een limiet instelt)
 - `maxBytes`:
-  - afbeelding: **10MB**
-  - audio: **20MB**
-  - video: **50MB**
+  - afbeelding: **10 MB**
+  - audio: **20 MB**
+  - video: **50 MB**
 
 <AccordionGroup>
-  <Accordion title="Regels">
-    - Als media `maxBytes` overschrijden, wordt dat model overgeslagen en wordt het **volgende model geprobeerd**.
-    - Audiobestanden kleiner dan **1024 bytes** worden behandeld als leeg/beschadigd en overgeslagen vóór provider-/CLI-transcriptie; de binnenkomende antwoordcontext ontvangt een deterministisch placeholdertranscript zodat de agent weet dat de notitie te klein was.
+  <Accordion title="Rules">
+    - Als media groter is dan `maxBytes`, wordt dat model overgeslagen en wordt het **volgende model geprobeerd**.
+    - Audiobestanden kleiner dan **1024 bytes** worden behandeld als leeg/beschadigd en overgeslagen vóór provider-/CLI-transcriptie; binnenkomende antwoordcontext ontvangt een deterministische placeholdertranscriptie zodat de agent weet dat de notitie te klein was.
     - Als het model meer dan `maxChars` retourneert, wordt de uitvoer ingekort.
-    - `prompt` gebruikt standaard eenvoudige "Describe the {media}." plus de `maxChars`-richtlijn (alleen afbeelding/video).
-    - Als het actieve primaire afbeeldingsmodel al native vision ondersteunt, slaat OpenClaw het `[Image]`-samenvattingsblok over en geeft het de oorspronkelijke afbeelding in plaats daarvan door aan het model.
-    - Als een Gateway-/WebChat-primair model alleen tekst ondersteunt, blijven afbeeldingsbijlagen behouden als offloaded `media://inbound/*`-refs zodat de afbeelding-/PDF-tools of het geconfigureerde afbeeldingsmodel ze nog steeds kunnen inspecteren in plaats van de bijlage kwijt te raken.
-    - Expliciete `openclaw infer image describe --model <provider/model>`-verzoeken zijn anders: ze voeren dat afbeeldingscapabele provider/model direct uit, inclusief Ollama-refs zoals `ollama/qwen2.5vl:7b`.
-    - Als `<capability>.enabled: true` maar er geen modellen zijn geconfigureerd, probeert OpenClaw het **actieve antwoordmodel** wanneer de provider de capaciteit ondersteunt.
+    - `prompt` gebruikt standaard een eenvoudige "Describe the {media}." plus de `maxChars`-richtlijn (alleen afbeelding/video).
+    - Als het actieve primaire afbeeldingsmodel al native vision ondersteunt, slaat OpenClaw het `[Image]`-samenvattingsblok over en geeft het in plaats daarvan de oorspronkelijke afbeelding door aan het model.
+    - Als een primair Gateway-/WebChat-model alleen tekst ondersteunt, blijven afbeeldingsbijlagen behouden als offloaded `media://inbound/*`-refs zodat de afbeelding-/PDF-tools of het geconfigureerde afbeeldingsmodel ze nog steeds kunnen inspecteren in plaats van de bijlage te verliezen.
+    - Expliciete `openclaw infer image describe --model <provider/model>`-requests zijn anders: ze draaien dat afbeeldingsgeschikte provider/model rechtstreeks, inclusief Ollama-refs zoals `ollama/qwen2.5vl:7b`.
+    - Als `<capability>.enabled: true` maar er geen modellen zijn geconfigureerd, probeert OpenClaw het **actieve antwoordmodel** wanneer de provider de mogelijkheid ondersteunt.
 
   </Accordion>
 </AccordionGroup>
 
 ### Mediabegrip automatisch detecteren (standaard)
 
-Als `tools.media.<capability>.enabled` **niet** is ingesteld op `false` en je geen modellen hebt geconfigureerd, detecteert OpenClaw automatisch in deze volgorde en **stopt bij de eerste werkende optie**:
+Als `tools.media.<capability>.enabled` **niet** op `false` staat en je geen modellen hebt geconfigureerd, detecteert OpenClaw automatisch in deze volgorde en **stopt bij de eerste werkende optie**:
 
 <Steps>
-  <Step title="Actief antwoordmodel">
-    Actief antwoordmodel wanneer de provider de capaciteit ondersteunt.
+  <Step title="Active reply model">
+    Actief antwoordmodel wanneer de provider de mogelijkheid ondersteunt.
   </Step>
   <Step title="agents.defaults.imageModel">
-    `agents.defaults.imageModel` primaire/fallback-refs (alleen afbeelding).
-    Geef de voorkeur aan `provider/model`-refs. Kale refs worden alleen gekwalificeerd vanuit geconfigureerde afbeeldingscapabele providermodelvermeldingen wanneer de match uniek is.
+    Primaire/fallbackrefs van `agents.defaults.imageModel` (alleen afbeelding).
+    Geef de voorkeur aan `provider/model`-refs. Kale refs worden alleen gekwalificeerd vanuit geconfigureerde afbeeldingsgeschikte providermodelvermeldingen wanneer de match uniek is.
   </Step>
-  <Step title="Lokale CLI’s (alleen audio)">
-    Lokale CLI’s (indien geïnstalleerd):
+  <Step title="Local CLIs (audio only)">
+    Lokale CLI's (indien geïnstalleerd):
 
     - `sherpa-onnx-offline` (vereist `SHERPA_ONNX_MODEL_DIR` met encoder/decoder/joiner/tokens)
     - `whisper-cli` (`whisper-cpp`; gebruikt `WHISPER_CPP_MODEL` of het gebundelde tiny-model)
@@ -192,9 +218,9 @@ Als `tools.media.<capability>.enabled` **niet** is ingesteld op `false` en je ge
   <Step title="Gemini CLI">
     `gemini` met `read_many_files`.
   </Step>
-  <Step title="Providerauth">
-    - Geconfigureerde `models.providers.*`-vermeldingen die de capaciteit ondersteunen, worden geprobeerd vóór de gebundelde fallbackvolgorde.
-    - Providers met alleen afbeeldingsconfiguratie en een afbeeldingscapabel model registreren zich automatisch voor mediabegrip, zelfs wanneer ze geen gebundelde leverancierplugin zijn.
+  <Step title="Provider auth">
+    - Geconfigureerde `models.providers.*`-vermeldingen die de mogelijkheid ondersteunen, worden geprobeerd vóór de gebundelde fallbackvolgorde.
+    - Configproviders voor alleen afbeeldingen met een afbeeldingsgeschikt model registreren zich automatisch voor mediabegrip, zelfs wanneer ze geen gebundelde vendorplugin zijn.
     - Ollama-afbeeldingsbegrip is beschikbaar wanneer expliciet geselecteerd, bijvoorbeeld via `agents.defaults.imageModel` of `openclaw infer image describe --model ollama/<vision-model>`.
 
     Gebundelde fallbackvolgorde:
@@ -206,7 +232,7 @@ Als `tools.media.<capability>.enabled` **niet** is ingesteld op `false` en je ge
   </Step>
 </Steps>
 
-Om automatische detectie uit te schakelen, stel in:
+Stel het volgende in om automatische detectie uit te schakelen:
 
 ```json5
 {
@@ -224,9 +250,9 @@ Om automatische detectie uit te schakelen, stel in:
 Binaire detectie is best-effort op macOS/Linux/Windows; zorg dat de CLI op `PATH` staat (we breiden `~` uit), of stel een expliciet CLI-model in met een volledig commandopad.
 </Note>
 
-### Ondersteuning voor proxyomgevingen (providermodellen)
+### Ondersteuning voor proxy-omgeving (providermodellen)
 
-Wanneer providergebaseerd **audio**- en **video**mediabegrip is ingeschakeld, respecteert OpenClaw standaard uitgaande proxyomgevingsvariabelen voor provider-HTTP-aanroepen:
+Wanneer providergebaseerd **audio-** en **video**mediabegrip is ingeschakeld, respecteert OpenClaw standaard omgevingsvariabelen voor outbound proxy's bij HTTP-aanroepen naar providers:
 
 - `HTTPS_PROXY`
 - `HTTP_PROXY`
@@ -235,11 +261,11 @@ Wanneer providergebaseerd **audio**- en **video**mediabegrip is ingeschakeld, re
 - `http_proxy`
 - `all_proxy`
 
-Als er geen proxy-env-vars zijn ingesteld, gebruikt mediabegrip directe egress. Als de proxywaarde ongeldig is, logt OpenClaw een waarschuwing en valt het terug op direct ophalen.
+Als er geen proxy-env-vars zijn ingesteld, gebruikt mediabegrip directe egress. Als de proxywaarde ongeldig is, logt OpenClaw een waarschuwing en valt terug op direct ophalen.
 
-## Capaciteiten (optioneel)
+## Mogelijkheden (optioneel)
 
-Als je `capabilities` instelt, draait de vermelding alleen voor die mediatypen. Voor gedeelde lijsten kan OpenClaw standaardwaarden afleiden:
+Als je `capabilities` instelt, draait de vermelding alleen voor die mediatypen. Voor gedeelde lijsten kan OpenClaw standaarden afleiden:
 
 - `openai`, `anthropic`, `minimax`: **afbeelding**
 - `minimax-portal`: **afbeelding**
@@ -252,55 +278,55 @@ Als je `capabilities` instelt, draait de vermelding alleen voor die mediatypen. 
 - `groq`: **audio**
 - `xai`: **audio**
 - `deepgram`: **audio**
-- Elke `models.providers.<id>.models[]`-catalogus met een afbeeldingscapabel model: **afbeelding**
+- Elke `models.providers.<id>.models[]`-catalogus met een afbeeldingsgeschikt model: **afbeelding**
 
-Voor CLI-vermeldingen: **stel `capabilities` expliciet in** om verrassende matches te voorkomen. Als je `capabilities` weglaat, komt de vermelding in aanmerking voor de lijst waarin deze staat.
+Stel voor CLI-vermeldingen **`capabilities` expliciet in** om verrassende matches te voorkomen. Als je `capabilities` weglaat, komt de vermelding in aanmerking voor de lijst waarin deze staat.
 
-## Providerondersteuningsmatrix (OpenClaw-integraties)
+## Matrix voor providerondersteuning (OpenClaw-integraties)
 
-| Capaciteit | Providerintegratie                                                                                                           | Notities                                                                                                                                                                                                                                |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Afbeelding | OpenAI, OpenAI Codex OAuth, Codex app-server, OpenRouter, Anthropic, Google, MiniMax, Moonshot, Qwen, Z.AI, config providers | Leverancierplugins registreren afbeeldingsondersteuning; `openai-codex/*` gebruikt OAuth-providerplumbing; `codex/*` gebruikt een begrensde Codex app-server-turn; MiniMax en MiniMax OAuth gebruiken allebei `MiniMax-VL-01`; afbeeldingscapabele config providers registreren zich automatisch. |
-| Audio      | OpenAI, Groq, xAI, Deepgram, OpenRouter, Google, SenseAudio, ElevenLabs, Mistral                                             | Providertranscriptie (Whisper/Groq/xAI/Deepgram/OpenRouter STT/Gemini/SenseAudio/Scribe/Voxtral).                                                                                                                                      |
-| Video      | Google, Qwen, Moonshot                                                                                                       | Providervideobegrip via leverancierplugins; Qwen-videobegrip gebruikt de Standard DashScope-endpoints.                                                                                                                                 |
+| Mogelijkheid | Providerintegratie                                                                                                           | Opmerkingen                                                                                                                                                                                                                                 |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Afbeelding | OpenAI, OpenAI Codex OAuth, Codex app-server, OpenRouter, Anthropic, Google, MiniMax, Moonshot, Qwen, Z.AI, configproviders | Vendorplugins registreren afbeeldingsondersteuning; `openai/*` kan API-key- of Codex OAuth-routering gebruiken; `codex/*` gebruikt een begrensde Codex app-server-turn; MiniMax en MiniMax OAuth gebruiken beide `MiniMax-VL-01`; afbeeldingsgeschikte configproviders registreren zich automatisch. |
+| Audio      | OpenAI, Groq, xAI, Deepgram, OpenRouter, Google, SenseAudio, ElevenLabs, Mistral                                             | Providertranscriptie (Whisper/Groq/xAI/Deepgram/OpenRouter STT/Gemini/SenseAudio/Scribe/Voxtral).                                                                                                                                           |
+| Video      | Google, Qwen, Moonshot                                                                                                       | Videobegrip door providers via vendorplugins; Qwen-videobegrip gebruikt de Standard DashScope-endpoints.                                                                                                                                    |
 
 <Note>
-**MiniMax-notitie**
+**MiniMax-opmerking**
 
-- `minimax`- en `minimax-portal`-afbeeldingsbegrip komt van de plugin-eigen `MiniMax-VL-01`-mediaprovider.
-- De gebundelde MiniMax-tekstcatalogus begint nog steeds als alleen tekst; expliciete `models.providers.minimax`-vermeldingen materialiseren afbeeldingscapabele M2.7-chatrefs.
+- `minimax`, `minimax-cn`, `minimax-portal` en `minimax-portal-cn` beeldbegrip komt van de door de plugin beheerde `MiniMax-VL-01`-mediaprovider.
+- Automatische beeldroutering blijft `MiniMax-VL-01` gebruiken, zelfs als verouderde MiniMax M2.x-chatmetadata beweert beeldinvoer te ondersteunen.
 
 </Note>
 
 ## Richtlijnen voor modelselectie
 
-- Geef de voorkeur aan het sterkste beschikbare nieuwste-generatiemodel voor elke mediacapaciteit wanneer kwaliteit en veiligheid belangrijk zijn.
-- Vermijd oudere/zwakkere mediamodellen voor tool-enabled agents die onvertrouwde invoer verwerken.
-- Houd ten minste één fallback per capaciteit voor beschikbaarheid (kwaliteitsmodel + sneller/goedkoper model).
-- CLI-fallbacks (`whisper-cli`, `whisper`, `gemini`) zijn nuttig wanneer provider-API’s niet beschikbaar zijn.
-- `parakeet-mlx`-notitie: met `--output-dir` leest OpenClaw `<output-dir>/<media-basename>.txt` wanneer de uitvoerindeling `txt` is (of niet is opgegeven); niet-`txt`-indelingen vallen terug op stdout.
+- Geef de voorkeur aan het sterkste model van de nieuwste generatie dat beschikbaar is voor elke mediamogelijkheid wanneer kwaliteit en veiligheid belangrijk zijn.
+- Vermijd oudere/zwakkere mediamodellen voor tool-ingeschakelde agents die niet-vertrouwde invoer verwerken.
+- Houd ten minste één fallback per mogelijkheid aan voor beschikbaarheid (kwaliteitsmodel + sneller/goedkoper model).
+- CLI-fallbacks (`whisper-cli`, `whisper`, `gemini`) zijn nuttig wanneer provider-API's niet beschikbaar zijn.
+- Opmerking bij `parakeet-mlx`: met `--output-dir` leest OpenClaw `<output-dir>/<media-basename>.txt` wanneer de uitvoerindeling `txt` is (of niet is opgegeven); niet-`txt`-indelingen vallen terug op stdout.
 
-## Bijlagebeleid
+## Beleid voor bijlagen
 
-Per-capaciteit `attachments` bepaalt welke bijlagen worden verwerkt:
+Per mogelijkheid bepaalt `attachments` welke bijlagen worden verwerkt:
 
 <ParamField path="mode" type='"first" | "all"' default="first">
-  Of de eerste geselecteerde bijlage of alle geselecteerde bijlagen moeten worden verwerkt.
+  Of de eerste geselecteerde bijlage of alle bijlagen moeten worden verwerkt.
 </ParamField>
 <ParamField path="maxAttachments" type="number" default="1">
   Beperk het aantal dat wordt verwerkt.
 </ParamField>
 <ParamField path="prefer" type='"first" | "last" | "path" | "url"'>
-  Selectievoorkeur tussen kandidaatbijlagen.
+  Selectievoorkeur onder kandidaatbijlagen.
 </ParamField>
 
-Wanneer `mode: "all"` is, krijgen uitvoerresultaten labels zoals `[Image 1/2]`, `[Audio 2/2]`, enzovoort.
+Wanneer `mode: "all"` is, worden outputs gelabeld als `[Image 1/2]`, `[Audio 2/2]`, enzovoort.
 
 <AccordionGroup>
-  <Accordion title="File-attachment extraction behavior">
+  <Accordion title="Extractiegedrag voor bestandsbijlagen">
     - Geëxtraheerde bestandstekst wordt verpakt als **niet-vertrouwde externe inhoud** voordat deze aan de mediaprompt wordt toegevoegd.
     - Het geïnjecteerde blok gebruikt expliciete grensmarkeringen zoals `<<<EXTERNAL_UNTRUSTED_CONTENT id="...">>>` / `<<<END_EXTERNAL_UNTRUSTED_CONTENT id="...">>>` en bevat een metadataregel `Source: External`.
-    - Dit pad voor bijlage-extractie laat bewust de lange banner `SECURITY NOTICE:` weg om te voorkomen dat de mediaprompt opzwelt; de grensmarkeringen en metadata blijven wel behouden.
+    - Dit pad voor bijlage-extractie laat bewust de lange banner `SECURITY NOTICE:` weg om te voorkomen dat de mediaprompt onnodig groot wordt; de grensmarkeringen en metadata blijven wel behouden.
     - Als een bestand geen extraheerbare tekst heeft, injecteert OpenClaw `[No extractable text]`.
     - Als een PDF in dit pad terugvalt op gerenderde pagina-afbeeldingen, behoudt de mediaprompt de placeholder `[PDF content rendered to images; images not forwarded to model]`, omdat deze stap voor bijlage-extractie tekstblokken doorstuurt, niet de gerenderde PDF-afbeeldingen.
 
@@ -310,7 +336,7 @@ Wanneer `mode: "all"` is, krijgen uitvoerresultaten labels zoals `[Image 1/2]`, 
 ## Configuratievoorbeelden
 
 <Tabs>
-  <Tab title="Shared models + overrides">
+  <Tab title="Gedeelde modellen + overschrijvingen">
     ```json5
     {
       tools: {
@@ -346,7 +372,7 @@ Wanneer `mode: "all"` is, krijgen uitvoerresultaten labels zoals `[Image 1/2]`, 
     }
     ```
   </Tab>
-  <Tab title="Audio + video only">
+  <Tab title="Alleen audio + video">
     ```json5
     {
       tools: {
@@ -385,7 +411,7 @@ Wanneer `mode: "all"` is, krijgen uitvoerresultaten labels zoals `[Image 1/2]`, 
     }
     ```
   </Tab>
-  <Tab title="Image-only">
+  <Tab title="Alleen afbeeldingen">
     ```json5
     {
       tools: {
@@ -415,7 +441,7 @@ Wanneer `mode: "all"` is, krijgen uitvoerresultaten labels zoals `[Image 1/2]`, 
     }
     ```
   </Tab>
-  <Tab title="Multi-modal single entry">
+  <Tab title="Enkele multimodale vermelding">
     ```json5
     {
       tools: {
@@ -462,15 +488,15 @@ Wanneer mediabegrip wordt uitgevoerd, bevat `/status` een korte samenvattingsreg
 📎 Media: image ok (openai/gpt-5.4) · audio skipped (maxBytes)
 ```
 
-Dit toont resultaten per capability en, waar van toepassing, de gekozen provider/het gekozen model.
+Dit toont resultaten per mogelijkheid en, waar van toepassing, de gekozen provider/het gekozen model.
 
 ## Opmerkingen
 
 - Begrip is **best-effort**. Fouten blokkeren antwoorden niet.
-- Bijlagen worden nog steeds aan modellen doorgegeven, zelfs wanneer begrip is uitgeschakeld.
+- Bijlagen worden nog steeds aan modellen doorgegeven, ook wanneer begrip is uitgeschakeld.
 - Gebruik `scope` om te beperken waar begrip wordt uitgevoerd (bijvoorbeeld alleen DM's).
 
 ## Gerelateerd
 
 - [Configuratie](/nl/gateway/configuration)
-- [Afbeeldings- en mediaondersteuning](/nl/nodes/images)
+- [Ondersteuning voor afbeeldingen en media](/nl/nodes/images)

@@ -1,29 +1,30 @@
 ---
 read_when:
-    - أنت تثبّت أو تهيّئ أو تدقّق Plugin clickclack
-summary: يضيف واجهة قناة Clickclack لإرسال رسائل OpenClaw وتلقيها.
+    - أنت تثبّت Plugin clickclack أو تهيّئه أو تدقّقه
+summary: يضيف سطح قناة Clickclack لإرسال رسائل OpenClaw واستقبالها.
 title: Plugin Clickclack
 x-i18n:
-    generated_at: "2026-05-10T19:51:51Z"
+    generated_at: "2026-06-27T18:11:04Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 45ce98f1dcbc5d6369489c862704bcd714419aa7e41e33850d3776119822c02e
+    source_hash: d939f5291de0510eaac361732f93fb79cac94656ac56a653f3c9e97394c6a9ae
     source_path: plugins/reference/clickclack.md
     workflow: 16
 ---
 
 # Plugin Clickclack
 
-يضيف واجهة قناة Clickclack لإرسال رسائل OpenClaw واستقبالها.
+يضيف سطح قناة Clickclack لإرسال رسائل OpenClaw واستقبالها.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/clickclack`
-- مسار التثبيت: مضمن في OpenClaw
+- مسار التثبيت: npm؛ ClawHub: `clawhub:@openclaw/clickclack`
 
-## الواجهة
+## السطح
 
-القنوات: clickclack
+channels: clickclack
 
 ## المستندات ذات الصلة
 

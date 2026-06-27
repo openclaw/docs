@@ -1,38 +1,45 @@
 ---
 read_when:
-    - Je wilt door de cloud beheerde sandboxen in plaats van lokale Docker
-    - Je stelt de OpenShell-Plugin in
-    - Je moet kiezen tussen de spiegelmodus en de modus voor externe werkruimtes
-summary: Gebruik OpenShell als beheerde sandbox-backend voor OpenClaw-agents
+    - Je wilt door de cloud beheerde sandboxes in plaats van lokale Docker
+    - Je stelt de OpenShell-plugin in
+    - Je moet kiezen tussen spiegel- en externe-werkruimtemodi
+summary: Gebruik OpenShell als beheerde sandbox-backend voor OpenClaw-agenten
 title: OpenShell
 x-i18n:
-    generated_at: "2026-04-29T22:46:57Z"
+    generated_at: "2026-06-27T17:35:33Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 694a0a145802f4b624af01b58cbb5886bab7426fb9a90f216480141082089144
+    source_hash: d278f7550a3178c30a1b42f80495c55bb9827f7785ce9c4d1ee4a57adb3a5e4b
     source_path: gateway/openshell.md
     workflow: 16
 ---
 
 OpenShell is een beheerde sandbox-backend voor OpenClaw. In plaats van Docker
-containers lokaal uit te voeren, delegeert OpenClaw de sandboxlevenscyclus aan de `openshell` CLI,
-die externe omgevingen inricht met SSH-gebaseerde opdrachtuitvoering.
+containers lokaal uit te voeren, delegeert OpenClaw de levenscyclus van de
+sandbox aan de `openshell` CLI, die externe omgevingen inricht met
+SSH-gebaseerde opdrachtuitvoering.
 
-De OpenShell-Plugin hergebruikt hetzelfde kerntransport via SSH en dezelfde externe bestandssysteembrug
-als de generieke [SSH-backend](/nl/gateway/sandboxing#ssh-backend). Deze voegt
-OpenShell-specifieke levenscyclusfunctionaliteit toe (`sandbox create/get/delete`, `sandbox ssh-config`)
+De OpenShell-Plugin hergebruikt hetzelfde kern-SSH-transport en dezelfde
+externe bestandssysteembrug als de generieke [SSH-backend](/nl/gateway/sandboxing#ssh-backend). Deze voegt
+OpenShell-specifieke levenscyclus toe (`sandbox create/get/delete`, `sandbox ssh-config`)
 en een optionele `mirror`-werkruimtemodus.
 
 ## Vereisten
 
-- De `openshell` CLI geinstalleerd en beschikbaar op `PATH` (of stel een aangepast pad in via
+- OpenShell-Plugin geïnstalleerd (`openclaw plugins install @openclaw/openshell-sandbox`)
+- De `openshell` CLI geïnstalleerd en beschikbaar op `PATH` (of stel een aangepast pad in via
   `plugins.entries.openshell.config.command`)
-- Een OpenShell-account met sandboxtoegang
+- Een OpenShell-account met sandbox-toegang
 - OpenClaw Gateway actief op de host
 
 ## Snel starten
 
-1. Schakel de Plugin in en stel de sandbox-backend in:
+1. Installeer en schakel de Plugin in en stel daarna de sandbox-backend in:
+
+```bash
+openclaw plugins install @openclaw/openshell-sandbox
+```
 
 ```json5
 {
@@ -60,7 +67,7 @@ en een optionele `mirror`-werkruimtemodus.
 }
 ```
 
-2. Start de Gateway opnieuw. Bij de volgende agentbeurt maakt OpenClaw een OpenShell
+2. Herstart de Gateway. Bij de volgende agentbeurt maakt OpenClaw een OpenShell-
    sandbox aan en routeert het tooluitvoering erdoorheen.
 
 3. Verifieer:
@@ -81,19 +88,19 @@ werkruimte canoniek blijft**.
 
 Gedrag:
 
-- Voor `exec` synchroniseert OpenClaw de lokale werkruimte naar de OpenShell-sandbox.
+- Vóór `exec` synchroniseert OpenClaw de lokale werkruimte naar de OpenShell-sandbox.
 - Na `exec` synchroniseert OpenClaw de externe werkruimte terug naar de lokale werkruimte.
 - Bestandstools werken nog steeds via de sandboxbrug, maar de lokale werkruimte
   blijft tussen beurten de bron van waarheid.
 
-Het beste voor:
+Het meest geschikt voor:
 
-- Je bewerkt bestanden lokaal buiten OpenClaw en wilt dat die wijzigingen automatisch zichtbaar zijn in de
-  sandbox.
-- Je wilt dat de OpenShell-sandbox zich zo veel mogelijk gedraagt als de Docker-backend.
-- Je wilt dat de hostwerkruimte sandboxschrijfacties weerspiegelt na elke exec-beurt.
+- Je bewerkt bestanden lokaal buiten OpenClaw en wilt dat die wijzigingen automatisch
+  zichtbaar zijn in de sandbox.
+- Je wilt dat de OpenShell-sandbox zich zoveel mogelijk gedraagt als de Docker-backend.
+- Je wilt dat de hostwerkruimte sandboxschrijfacties weergeeft na elke exec-beurt.
 
-Afweging: extra synchronisatiekosten voor en na elke exec.
+Afweging: extra synchronisatiekosten vóór en na elke exec.
 
 ### `remote`
 
@@ -102,22 +109,22 @@ Gebruik `plugins.entries.openshell.config.mode: "remote"` wanneer je wilt dat de
 
 Gedrag:
 
-- Wanneer de sandbox voor het eerst wordt aangemaakt, vult OpenClaw de externe werkruimte eenmalig vanuit
-  de lokale werkruimte.
+- Wanneer de sandbox voor het eerst wordt aangemaakt, vult OpenClaw de externe werkruimte
+  één keer vanuit de lokale werkruimte.
 - Daarna werken `exec`, `read`, `write`, `edit` en `apply_patch`
   rechtstreeks op de externe OpenShell-werkruimte.
 - OpenClaw synchroniseert externe wijzigingen **niet** terug naar de lokale werkruimte.
-- Media-lezingen tijdens prompttijd blijven werken omdat bestands- en mediatools lezen via
-  de sandboxbrug.
+- Media-lezingen tijdens prompts blijven werken, omdat bestands- en mediatools via
+  de sandboxbrug lezen.
 
-Het beste voor:
+Het meest geschikt voor:
 
-- De sandbox moet hoofdzakelijk aan de externe kant leven.
-- Je wilt minder synchronisatie-overhead per beurt.
-- Je wilt niet dat host-lokale bewerkingen stilzwijgend externe sandboxstatus overschrijven.
+- De sandbox moet primair aan de externe kant leven.
+- Je wilt lagere synchronisatie-overhead per beurt.
+- Je wilt niet dat lokale bewerkingen op de host stilzwijgend externe sandboxstatus overschrijven.
 
 <Warning>
-Als je na de eerste vulling bestanden op de host buiten OpenClaw bewerkt, ziet de externe sandbox die wijzigingen **niet**. Gebruik `openclaw sandbox recreate` om opnieuw te vullen.
+Als je na de initiële vulling bestanden op de host buiten OpenClaw bewerkt, ziet de externe sandbox die wijzigingen **niet**. Gebruik `openclaw sandbox recreate` om opnieuw te vullen.
 </Warning>
 
 ### Een modus kiezen
@@ -126,9 +133,9 @@ Als je na de eerste vulling bestanden op de host buiten OpenClaw bewerkt, ziet d
 | ------------------------ | -------------------------- | ------------------------- |
 | **Canonieke werkruimte** | Lokale host                | Externe OpenShell         |
 | **Synchronisatierichting** | Bidirectioneel (elke exec) | Eenmalige vulling         |
-| **Overhead per beurt**   | Hoger (upload + download)  | Lager (directe externe bewerkingen) |
-| **Lokale bewerkingen zichtbaar?** | Ja, bij volgende exec | Nee, tot opnieuw aanmaken |
-| **Het beste voor**       | Ontwikkelworkflows         | Langlopende agents, CI    |
+| **Overhead per beurt**   | Hoger (upload + download)  | Lager (rechtstreekse externe bewerkingen) |
+| **Lokale bewerkingen zichtbaar?** | Ja, bij de volgende exec | Nee, tot opnieuw aanmaken |
+| **Het meest geschikt voor** | Ontwikkelworkflows       | Langlopende agents, CI    |
 
 ## Configuratiereferentie
 
@@ -136,20 +143,20 @@ Alle OpenShell-configuratie staat onder `plugins.entries.openshell.config`:
 
 | Sleutel                   | Type                     | Standaard     | Beschrijving                                          |
 | ------------------------- | ------------------------ | ------------- | ----------------------------------------------------- |
-| `mode`                    | `"mirror"` or `"remote"` | `"mirror"`    | Werkruimtesynchronisatiemodus                         |
+| `mode`                    | `"mirror"` of `"remote"` | `"mirror"`    | Synchronisatiemodus voor werkruimte                   |
 | `command`                 | `string`                 | `"openshell"` | Pad of naam van de `openshell` CLI                    |
 | `from`                    | `string`                 | `"openclaw"`  | Sandboxbron voor eerste aanmaak                       |
-| `gateway`                 | `string`                 | —             | OpenShell-Gatewaynaam (`--gateway`)                   |
-| `gatewayEndpoint`         | `string`                 | —             | OpenShell-Gatewayendpoint-URL (`--gateway-endpoint`)  |
+| `gateway`                 | `string`                 | —             | OpenShell Gateway-naam (`--gateway`)                  |
+| `gatewayEndpoint`         | `string`                 | —             | OpenShell Gateway-eindpunt-URL (`--gateway-endpoint`) |
 | `policy`                  | `string`                 | —             | OpenShell-beleids-ID voor sandboxaanmaak              |
 | `providers`               | `string[]`               | `[]`          | Providernamen om te koppelen wanneer de sandbox wordt aangemaakt |
 | `gpu`                     | `boolean`                | `false`       | GPU-resources aanvragen                               |
-| `autoProviders`           | `boolean`                | `true`        | Geef `--auto-providers` door tijdens sandboxaanmaak   |
-| `remoteWorkspaceDir`      | `string`                 | `"/sandbox"`  | Primaire beschrijfbare werkruimte binnen de sandbox   |
-| `remoteAgentWorkspaceDir` | `string`                 | `"/agent"`    | Mountpad voor agentwerkruimte (voor alleen-lezen-toegang) |
-| `timeoutSeconds`          | `number`                 | `120`         | Time-out voor `openshell` CLI-bewerkingen             |
+| `autoProviders`           | `boolean`                | `true`        | Geef `--auto-providers` mee tijdens sandboxaanmaak    |
+| `remoteWorkspaceDir`      | `string`                 | `"/sandbox"`  | Primaire schrijfbare werkruimte binnen de sandbox     |
+| `remoteAgentWorkspaceDir` | `string`                 | `"/agent"`    | Koppelpad voor agentwerkruimte (voor alleen-lezen-toegang) |
+| `timeoutSeconds`          | `number`                 | `120`         | Timeout voor `openshell` CLI-bewerkingen              |
 
-Instellingen op sandboxniveau (`mode`, `scope`, `workspaceAccess`) worden geconfigureerd onder
+Sandboxinstellingen op niveau (`mode`, `scope`, `workspaceAccess`) worden geconfigureerd onder
 `agents.defaults.sandbox`, zoals bij elke backend. Zie
 [Sandboxing](/nl/gateway/sandboxing) voor de volledige matrix.
 
@@ -264,11 +271,11 @@ openclaw sandbox explain
 openclaw sandbox recreate --all
 ```
 
-Voor de `remote`-modus is **opnieuw aanmaken bijzonder belangrijk**: dit verwijdert de canonieke
-externe werkruimte voor dat bereik. Bij het volgende gebruik wordt een nieuwe externe werkruimte gevuld vanuit
+Voor `remote`-modus is **opnieuw aanmaken extra belangrijk**: dit verwijdert de canonieke
+externe werkruimte voor die scope. Het volgende gebruik vult een nieuwe externe werkruimte vanuit
 de lokale werkruimte.
 
-Voor de `mirror`-modus zet opnieuw aanmaken vooral de externe uitvoeringsomgeving terug, omdat
+Voor `mirror`-modus reset opnieuw aanmaken vooral de externe uitvoeringsomgeving, omdat
 de lokale werkruimte canoniek blijft.
 
 ### Wanneer opnieuw aanmaken
@@ -284,11 +291,11 @@ Maak opnieuw aan na het wijzigen van een van deze:
 openclaw sandbox recreate --all
 ```
 
-## Beveiligingsverharding
+## Beveiligingsversterking
 
-OpenShell pint de root-fd van de werkruimte en controleert de sandboxidentiteit opnieuw voor elke
-leesactie, zodat symlinkwissels of een opnieuw gemounte werkruimte leesacties niet kunnen omleiden uit
-de bedoelde externe werkruimte.
+OpenShell pint de fd van de werkruimteroot en controleert de sandboxidentiteit opnieuw vóór elke
+leesactie, zodat symlinkwissels of een opnieuw gekoppelde werkruimte leesacties niet buiten
+de bedoelde externe werkruimte kunnen omleiden.
 
 ## Huidige beperkingen
 
@@ -300,18 +307,18 @@ de bedoelde externe werkruimte.
 ## Hoe het werkt
 
 1. OpenClaw roept `openshell sandbox create` aan (met `--from`, `--gateway`,
-   `--policy`, `--providers`, `--gpu`-vlaggen zoals geconfigureerd).
-2. OpenClaw roept `openshell sandbox ssh-config <name>` aan om SSH-verbindingsgegevens
+   `--policy`, `--providers`, `--gpu`-flags zoals geconfigureerd).
+2. OpenClaw roept `openshell sandbox ssh-config <name>` aan om SSH-verbindingsdetails
    voor de sandbox op te halen.
-3. Core schrijft de SSH-configuratie naar een tijdelijk bestand en opent een SSH-sessie met dezelfde
-   externe bestandssysteembrug als de generieke SSH-backend.
-4. In `mirror`-modus: synchroniseer lokaal naar extern voor exec, voer uit, synchroniseer terug na exec.
-5. In `remote`-modus: vul eenmalig bij aanmaak en werk daarna rechtstreeks op de externe
+3. Core schrijft de SSH-configuratie naar een tijdelijk bestand en opent een SSH-sessie met
+   dezelfde externe bestandssysteembrug als de generieke SSH-backend.
+4. In `mirror`-modus: synchroniseer lokaal naar extern vóór exec, voer uit, synchroniseer terug na exec.
+5. In `remote`-modus: vul één keer bij aanmaak en werk daarna rechtstreeks op de externe
    werkruimte.
 
 ## Gerelateerd
 
-- [Sandboxing](/nl/gateway/sandboxing) -- modi, bereiken en backendvergelijking
-- [Sandbox vs Toolbeleid vs Verhoogd](/nl/gateway/sandbox-vs-tool-policy-vs-elevated) -- geblokkeerde tools debuggen
-- [Multi-Agent-sandbox en tools](/nl/tools/multi-agent-sandbox-tools) -- overschrijvingen per agent
+- [Sandboxing](/nl/gateway/sandboxing) -- modi, scopes en backendvergelijking
+- [Sandbox versus toolbeleid versus Elevated](/nl/gateway/sandbox-vs-tool-policy-vs-elevated) -- geblokkeerde tools debuggen
+- [Multi-agent-sandbox en tools](/nl/tools/multi-agent-sandbox-tools) -- overschrijvingen per agent
 - [Sandbox-CLI](/nl/cli/sandbox) -- `openclaw sandbox`-opdrachten

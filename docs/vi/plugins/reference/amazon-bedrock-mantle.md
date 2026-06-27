@@ -1,25 +1,26 @@
 ---
 read_when:
-    - Bạn đang cài đặt, cấu hình hoặc rà soát Plugin amazon-bedrock-mantle
-summary: Thêm hỗ trợ nhà cung cấp mô hình Amazon Bedrock Mantle vào OpenClaw.
+    - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin amazon-bedrock-mantle
+summary: Plugin nhà cung cấp Mantle Amazon Bedrock của OpenClaw dành cho định tuyến mô hình tương thích với OpenAI.
 title: Plugin Amazon Bedrock Mantle
 x-i18n:
-    generated_at: "2026-05-02T20:47:30Z"
+    generated_at: "2026-06-27T17:50:11Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 48212e4eefdc393b9ff6a9fa7b74f4e3960b0b922b95141aeaf41a3a667b1f4e
+    source_hash: 18725aa4678f967a5d34a2c951c11cc371e934abe62fde7616124157ebdb3799
     source_path: plugins/reference/amazon-bedrock-mantle.md
     workflow: 16
 ---
 
 # Plugin Amazon Bedrock Mantle
 
-Thêm hỗ trợ nhà cung cấp mô hình Amazon Bedrock Mantle cho OpenClaw.
+Plugin nhà cung cấp Amazon Bedrock Mantle của OpenClaw để định tuyến mô hình tương thích với OpenAI.
 
 ## Phân phối
 
 - Gói: `@openclaw/amazon-bedrock-mantle-provider`
-- Cách cài đặt: được bao gồm trong OpenClaw
+- Kênh cài đặt: npm; ClawHub
 
 ## Giao diện
 

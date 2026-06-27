@@ -1,30 +1,31 @@
 ---
 read_when:
-    - تقوم بتثبيت Plugin openai أو تكوينه أو تدقيقه
-summary: يضيف دعم موفّري النماذج OpenAI وOpenAI Codex إلى OpenClaw.
+    - أنت تقوم بتثبيت Plugin openai أو تكوينه أو تدقيقه
+summary: يضيف دعم موفر نماذج OpenAI إلى OpenClaw.
 title: Plugin OpenAI
 x-i18n:
-    generated_at: "2026-05-02T20:58:18Z"
+    generated_at: "2026-06-27T18:14:52Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6e6dad420e5879697dda03f866b7c0ef15b020b2c06da6b60293d3914d850969
+    source_hash: c8fa47c22cb54090493f3cbacc461344242e078716760289c0dd4fd0ae8c0085
     source_path: plugins/reference/openai.md
     workflow: 16
 ---
 
-# Plugin OpenAI
+# OpenAI Plugin
 
-يضيف دعم موفّر نماذج OpenAI وOpenAI Codex إلى OpenClaw.
+يضيف دعم موفّر نماذج OpenAI إلى OpenClaw.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/openai-provider`
-- مسار التثبيت: مضمن في OpenClaw
+- مسار التثبيت: مضمّن في OpenClaw
 
-## الواجهة
+## السطح
 
-الموفّرون: openai, openai-codex؛ العقود: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders
+providers: openai; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
 - [openai](/ar/providers/openai)

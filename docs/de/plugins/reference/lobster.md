@@ -1,26 +1,27 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das lobster Plugin
-summary: Typisiertes Workflow-Tool mit fortsetzbaren Freigaben.
+    - Sie installieren, konfigurieren oder prüfen das lobster-Plugin
+summary: Lobster-Workflow-Tool-Plugin für typisierte Pipelines und fortsetzbare Genehmigungen.
 title: Lobster-Plugin
 x-i18n:
-    generated_at: "2026-05-03T06:42:03Z"
+    generated_at: "2026-06-27T17:54:54Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 50b4849c8ea841a543655eead358c550f223a3100ac538b41c27f59706e6cf27
+    source_hash: b91ea189fe8339380e2a7ef8a8761ea1591e1f1d8459b4a554211128c33f338b
     source_path: plugins/reference/lobster.md
     workflow: 16
 ---
 
 # Lobster Plugin
 
-Typisiertes Workflow-Tool mit fortsetzbaren Genehmigungen.
+Lobster Workflow-Tool-Plugin für typisierte Pipelines und fortsetzbare Genehmigungen.
 
 ## Verteilung
 
 - Paket: `@openclaw/lobster`
 - Installationsweg: npm; ClawHub
 
-## Oberfläche
+## Schnittstelle
 
-contracts: tools
+Verträge: Tools

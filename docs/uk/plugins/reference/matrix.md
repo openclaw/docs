@@ -1,25 +1,26 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin matrix
-summary: Додає інтерфейс каналу Matrix для надсилання й отримання повідомлень OpenClaw.
-title: Matrix Plugin
+    - Ви встановлюєте, налаштовуєте або аудіюєте matrix Plugin
+summary: Plugin каналу Matrix для OpenClaw, призначений для кімнат і прямих повідомлень.
+title: Plugin Matrix
 x-i18n:
-    generated_at: "2026-05-11T20:49:09Z"
+    generated_at: "2026-06-27T17:59:51Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3c135053034d7d8c79c30316c788270278c00b72c1e0674dcbcc2215f1e23add
+    source_hash: 10497c79a626ea4c49dac80f2b87a3f8756880ed3ec8b8c4566a4bfe2a011a0c
     source_path: plugins/reference/matrix.md
     workflow: 16
 ---
 
 # Matrix Plugin
 
-Додає поверхню каналу Matrix для надсилання та отримання повідомлень OpenClaw.
+Plugin каналу Matrix для кімнат і прямих повідомлень.
 
-## Дистрибуція
+## Розповсюдження
 
 - Пакет: `@openclaw/matrix`
-- Маршрут встановлення: ClawHub: `clawhub:@openclaw/matrix`; npm
+- Маршрут установлення: ClawHub: `clawhub:@openclaw/matrix`; npm
 
 ## Поверхня
 

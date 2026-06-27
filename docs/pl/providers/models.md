@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Chcesz wybrać dostawcę modelu
-    - Potrzebujesz szybkich przykładów konfiguracji uwierzytelniania LLM + wyboru modelu
+    - Chcesz wybrać dostawcę modeli
+    - Chcesz szybkich przykładów konfiguracji uwierzytelniania LLM i wyboru modelu
 summary: Dostawcy modeli (LLM) obsługiwani przez OpenClaw
-title: Szybki start z dostawcą modeli
+title: Szybki start z dostawcą modelu
 x-i18n:
-    generated_at: "2026-05-06T18:00:05Z"
+    generated_at: "2026-06-27T18:13:16Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7e95d37f3e332a9b2eb58a15dc356ad02b4cbf409926adb3faf1923825219887
+    source_hash: ca59b0203b4b5e327b2718a356f6fc1da2f868dac4ca219a2597a96dbf949804
     source_path: providers/models.md
     workflow: 16
 ---
@@ -27,19 +28,19 @@ model jako `provider/model`.
 }
 ```
 
-## Obsługiwani dostawcy (zestaw startowy)
+## Obsługiwani dostawcy (zestaw początkowy)
 
 - [Alibaba Model Studio](/pl/providers/alibaba)
 - [Amazon Bedrock](/pl/providers/bedrock)
 - [Anthropic (API + Claude CLI)](/pl/providers/anthropic)
-- [BytePlus (International)](/pl/concepts/model-providers#byteplus-international)
+- [BytePlus (międzynarodowy)](/pl/concepts/model-providers#byteplus-international)
 - [Chutes](/pl/providers/chutes)
+- [Cohere](/pl/providers/cohere)
 - [ComfyUI](/pl/providers/comfy)
 - [Cloudflare AI Gateway](/pl/providers/cloudflare-ai-gateway)
 - [DeepInfra](/pl/providers/deepinfra)
 - [fal](/pl/providers/fal)
 - [Fireworks](/pl/providers/fireworks)
-- [Modele GLM](/pl/providers/glm)
 - [MiniMax](/pl/providers/minimax)
 - [Mistral](/pl/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/pl/providers/moonshot)
@@ -54,13 +55,13 @@ model jako `provider/model`.
 - [Vercel AI Gateway](/pl/providers/vercel-ai-gateway)
 - [Venice (Venice AI)](/pl/providers/venice)
 - [xAI](/pl/providers/xai)
-- [Z.AI](/pl/providers/zai)
+- [Z.AI (GLM)](/pl/providers/zai)
 
-## Dodatkowe dołączone warianty dostawców
+## Dodatkowe warianty dostawców
 
-- `anthropic-vertex` - niejawna obsługa Anthropic w Google Vertex, gdy dostępne są dane uwierzytelniające Vertex; bez oddzielnego wyboru uwierzytelniania podczas onboardingu
-- `copilot-proxy` - lokalny pomost VS Code Copilot Proxy; użyj `openclaw onboard --auth-choice copilot-proxy`
-- `google-gemini-cli` - nieoficjalny przepływ OAuth Gemini CLI; wymaga lokalnej instalacji `gemini` (`brew install gemini-cli` lub `npm install -g @google/gemini-cli`); domyślny model `google-gemini-cli/gemini-3-flash-preview`; użyj `openclaw onboard --auth-choice google-gemini-cli` lub `openclaw models auth login --provider google-gemini-cli --set-default`
+- `anthropic-vertex` - zainstaluj `@openclaw/anthropic-vertex-provider`, aby uzyskać obsługę niejawnego Anthropic w Google Vertex, gdy dostępne są poświadczenia Vertex; bez osobnego wyboru uwierzytelniania podczas onboardingu
+- `copilot-proxy` - lokalny most VS Code Copilot Proxy; użyj `openclaw onboard --auth-choice copilot-proxy`
+- `google-gemini-cli` - nieoficjalny przepływ OAuth Gemini CLI; wymaga lokalnej instalacji `gemini` (`brew install gemini-cli` lub `npm install -g @google/gemini-cli`); domyślny model `google-gemini-cli/gemini-3-flash-preview`; użyj `openclaw onboard --auth-choice google-gemini-cli` albo `openclaw models auth login --provider google-gemini-cli --set-default`
 
 Pełny katalog dostawców (xAI, Groq, Mistral itd.) oraz zaawansowaną konfigurację
 znajdziesz w [Dostawcy modeli](/pl/concepts/model-providers).

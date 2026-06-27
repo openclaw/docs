@@ -1,29 +1,30 @@
 ---
 read_when:
     - Anda sedang menginstal, mengonfigurasi, atau mengaudit Plugin openai
-summary: Menambahkan dukungan penyedia model OpenAI dan OpenAI Codex ke OpenClaw.
+summary: Menambahkan dukungan penyedia model OpenAI ke OpenClaw.
 title: Plugin OpenAI
 x-i18n:
-    generated_at: "2026-05-02T20:55:28Z"
+    generated_at: "2026-06-27T17:56:02Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6e6dad420e5879697dda03f866b7c0ef15b020b2c06da6b60293d3914d850969
+    source_hash: c8fa47c22cb54090493f3cbacc461344242e078716760289c0dd4fd0ae8c0085
     source_path: plugins/reference/openai.md
     workflow: 16
 ---
 
 # Plugin OpenAI
 
-Menambahkan dukungan penyedia model OpenAI dan OpenAI Codex ke OpenClaw.
+Menambahkan dukungan penyedia model OpenAI ke OpenClaw.
 
 ## Distribusi
 
 - Paket: `@openclaw/openai-provider`
 - Rute instalasi: disertakan dalam OpenClaw
 
-## Antarmuka
+## Permukaan
 
-providers: openai, openai-codex; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders
+providers: openai; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders
 
 ## Dokumentasi terkait
 

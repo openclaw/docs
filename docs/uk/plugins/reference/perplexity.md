@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або проводите аудит perplexity Plugin
-summary: Додає підтримку провайдера вебпошуку.
+    - Ви встановлюєте, налаштовуєте або аудіюєте Plugin perplexity
+summary: Додає підтримку постачальника вебпошуку.
 title: Plugin Perplexity
 x-i18n:
-    generated_at: "2026-05-02T15:20:55Z"
+    generated_at: "2026-06-27T18:01:01Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 86183b8201e7c6869eeeada3efcb15fd67c3d958fd5a50a56922bb0a61c5c74d
+    source_hash: c649c4dc4df04ca668e924e2644af970d75eab404b8f57579e509aa061994ffe
     source_path: plugins/reference/perplexity.md
     workflow: 16
 ---
 
 # Plugin Perplexity
 
-Додає підтримку провайдера вебпошуку.
+Додає підтримку постачальника вебпошуку.
 
 ## Розповсюдження
 
 - Пакет: `@openclaw/perplexity-plugin`
-- Маршрут встановлення: включено в OpenClaw
+- Шлях встановлення: npm; ClawHub: `clawhub:@openclaw/perplexity-plugin`
 
-## Інтерфейс
+## Поверхня
 
 контракти: webSearchProviders
 
-## Пов’язана документація
+## Пов’язані документи
 
 - [perplexity](/uk/tools/perplexity-search)

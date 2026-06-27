@@ -1,26 +1,37 @@
 ---
 read_when:
-    - 你正在安裝、設定或稽核 anthropic-vertex Plugin
-summary: 為 OpenClaw 新增 Anthropic Vertex 模型供應商支援。
-title: Anthropic Vertex Plugin
+    - 您正在安裝、設定或稽核 anthropic-vertex 外掛
+summary: OpenClaw Anthropic Vertex 提供者外掛，適用於 Google Vertex AI 上的 Claude 模型。
+title: Anthropic Vertex 外掛
 x-i18n:
-    generated_at: "2026-05-02T20:54:08Z"
+    generated_at: "2026-06-27T19:41:00Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: fc2c2f3f5d872d55270e494fb4d68a41ac96edec9eb311a12ab47905a14b668e
+    source_hash: f772c9a5bf1edd6a270b7ba5e6d695290fe96648c9ac38d0bc90bb1504f50cd7
     source_path: plugins/reference/anthropic-vertex.md
     workflow: 16
 ---
 
-# Anthropic Vertex Plugin
+# Anthropic Vertex 外掛
 
-為 OpenClaw 新增 Anthropic Vertex 模型提供者支援。
+OpenClaw Anthropic Vertex 提供者外掛，用於 Google Vertex AI 上的 Claude 模型。
 
-## 發行
+## 發佈
 
 - 套件：`@openclaw/anthropic-vertex-provider`
-- 安裝途徑：內含於 OpenClaw
+- 安裝途徑：npm；ClawHub
 
 ## 介面
 
 providers: anthropic-vertex
+
+<!-- openclaw-plugin-reference:manual-start -->
+
+## Claude Fable 5
+
+請在你的 Google Cloud 區域可用此模型時使用 `anthropic-vertex/claude-fable-5`。
+Fable 5 一律使用自適應思考，且預設為 `high` effort。`/think off` 和
+`/think minimal` 會使用 `low` effort，因為此模型不支援停用思考。
+
+<!-- openclaw-plugin-reference:manual-end -->

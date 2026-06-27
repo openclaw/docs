@@ -2,53 +2,62 @@
 read_when:
     - می‌خواهید از اشتراک Claude Max با ابزارهای سازگار با OpenAI استفاده کنید
     - شما یک سرور API محلی می‌خواهید که Claude Code CLI را پوشش دهد
-    - می‌خواهید دسترسی Anthropic مبتنی بر اشتراک را در برابر دسترسی مبتنی بر کلید API ارزیابی کنید
-summary: پراکسی جامعه‌محور برای ارائه اعتبارنامه‌های اشتراک Claude به‌صورت یک نقطه پایانی سازگار با OpenAI
-title: پراکسی API Claude Max
+    - می‌خواهید دسترسی Anthropic مبتنی بر اشتراک را در برابر دسترسی مبتنی بر کلید API ارزیابی کنید.
+summary: پروکسی جامعه برای در دسترس قرار دادن اعتبارنامه‌های اشتراک Claude به‌عنوان یک نقطهٔ پایانی سازگار با OpenAI
+title: پروکسی API Claude Max
 x-i18n:
-    generated_at: "2026-04-29T23:24:07Z"
+    generated_at: "2026-06-27T18:38:41Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 06c685c2f42f462a319ef404e4980f769e00654afb9637d873b98144e6a41c87
+    source_hash: 24bd2b4b56e4b8829e67f248d0e0a6bad53ccbd9ce98ee288bfa4de93508ef27
     source_path: providers/claude-max-api-proxy.md
     workflow: 16
 ---
 
-**claude-max-api-proxy** یک ابزار جامعه‌محور است که اشتراک Claude Max/Pro شما را به‌صورت یک نقطه پایانی API سازگار با OpenAI ارائه می‌کند. این امکان را می‌دهد که از اشتراک خود با هر ابزاری که از قالب OpenAI API پشتیبانی می‌کند استفاده کنید.
+**claude-max-api-proxy** یک ابزار جامعه‌محور است که اشتراک Claude Max/Pro شما را به‌صورت یک نقطه پایانی API سازگار با OpenAI ارائه می‌کند. این کار به شما امکان می‌دهد اشتراک خود را با هر ابزاری که از قالب OpenAI API پشتیبانی می‌کند استفاده کنید.
 
 <Warning>
-این مسیر فقط برای سازگاری فنی است. Anthropic در گذشته برخی استفاده‌ها از اشتراک
-در خارج از Claude Code را مسدود کرده است. باید خودتان تصمیم بگیرید که آیا از
-آن استفاده کنید یا نه، و پیش از اتکا به آن، شرایط فعلی Anthropic را بررسی کنید.
+این مسیر فقط برای سازگاری فنی است. Anthropic در گذشته برخی استفاده‌های اشتراک
+خارج از Claude Code را مسدود کرده است. باید خودتان تصمیم بگیرید که آیا از آن
+استفاده کنید یا نه و پیش از اتکا به آن، قوانین فعلی صورت‌حساب Anthropic را بررسی کنید.
+
+مستندات پشتیبانی فعلی Anthropic می‌گویند `claude -p` استفاده Agent SDK/برنامه‌نویسی است.
+از 15 ژوئن 2026، استفاده از `claude -p` در طرح اشتراک ابتدا از یک اعتبار ماهانه جداگانه
+Agent SDK کسر می‌شود، سپس اگر اعتبارهای استفاده فعال باشند، با نرخ‌های استاندارد API از
+اعتبارهای استفاده کسر می‌شود.
 </Warning>
 
 ## چرا از این استفاده کنیم؟
 
-| رویکرد                | هزینه                                                | مناسب برای                                   |
-| ----------------------- | --------------------------------------------------- | ------------------------------------------ |
-| Anthropic API           | پرداخت به‌ازای هر توکن (حدود $15/M ورودی، $75/M خروجی برای Opus) | برنامه‌های تولیدی، حجم بالا               |
-| اشتراک Claude Max | $200/ماه ثابت                                     | استفاده شخصی، توسعه، استفاده نامحدود |
+| رویکرد                    | مسیر هزینه                                      | مناسب برای                                  |
+| ------------------------- | ----------------------------------------------- | ------------------------------------------ |
+| Anthropic API             | پرداخت به‌ازای هر توکن از طریق Claude Console یا ابر | اپلیکیشن‌های تولیدی، خودکارسازی مشترک، حجم بالا |
+| پراکسی اشتراک Claude | قوانین طرح و اعتبار Claude Code / `claude -p` | آزمایش‌های شخصی با ابزارهای سازگار |
 
-اگر اشتراک Claude Max دارید و می‌خواهید از آن با ابزارهای سازگار با OpenAI استفاده کنید، این پروکسی ممکن است هزینه برخی گردش‌کارها را کاهش دهد. برای استفاده تولیدی، کلیدهای API همچنان مسیر روشن‌تری از نظر سیاست‌ها هستند.
+اگر اشتراک Claude Max یا Pro دارید و می‌خواهید آن را با ابزارهای سازگار با
+OpenAI استفاده کنید، این پراکسی ممکن است برای برخی گردش‌کارهای شخصی مناسب باشد. این یک
+مسیر نامحدود با نرخ ثابت نیست. کلیدهای API همچنان مسیر روشن‌تر سیاست و صورت‌حساب برای
+استفاده تولیدی هستند.
 
 ## چگونه کار می‌کند
 
 ```
-Your App → claude-max-api-proxy → Claude Code CLI → Anthropic (via subscription)
-     (OpenAI format)              (converts format)      (uses your login)
+Your App → claude-max-api-proxy → Claude Code CLI / claude -p → Anthropic
+     (OpenAI format)              (converts format)          (uses your login)
 ```
 
-پروکسی:
+پراکسی:
 
 1. درخواست‌های قالب OpenAI را در `http://localhost:3456/v1/chat/completions` می‌پذیرد
 2. آن‌ها را به فرمان‌های Claude Code CLI تبدیل می‌کند
-3. پاسخ‌ها را در قالب OpenAI برمی‌گرداند (جریان‌دهی پشتیبانی می‌شود)
+3. پاسخ‌ها را در قالب OpenAI برمی‌گرداند (پخش جریانی پشتیبانی می‌شود)
 
 ## شروع به کار
 
 <Steps>
   <Step title="Install the proxy">
-    به Node.js 20+ و Claude Code CLI نیاز دارد.
+    به Node.js 22+ و Claude Code CLI نیاز دارد.
 
     ```bash
     npm install -g claude-max-api-proxy
@@ -83,7 +92,7 @@ Your App → claude-max-api-proxy → Claude Code CLI → Anthropic (via subscri
 
   </Step>
   <Step title="Configure OpenClaw">
-    OpenClaw را به‌عنوان یک نقطه پایانی سفارشی سازگار با OpenAI به پروکسی متصل کنید:
+    OpenClaw را به‌عنوان یک نقطه پایانی سفارشی سازگار با OpenAI به پراکسی متصل کنید:
 
     ```json5
     {
@@ -104,7 +113,7 @@ Your App → claude-max-api-proxy → Claude Code CLI → Anthropic (via subscri
 
 ## کاتالوگ داخلی
 
-| شناسه مدل          | نگاشت می‌شود به         |
+| شناسه مدل          | نگاشت به         |
 | ----------------- | --------------- |
 | `claude-opus-4`   | Claude Opus 4   |
 | `claude-sonnet-4` | Claude Sonnet 4 |
@@ -114,19 +123,19 @@ Your App → claude-max-api-proxy → Claude Code CLI → Anthropic (via subscri
 
 <AccordionGroup>
   <Accordion title="Proxy-style OpenAI-compatible notes">
-    این مسیر از همان مسیر سازگار با OpenAI به سبک پروکسی استفاده می‌کند که سایر
-    پشتیبان‌های سفارشی `/v1` استفاده می‌کنند:
+    این مسیر از همان مسیر پراکسی‌گونه سازگار با OpenAI استفاده می‌کند که دیگر بک‌اندهای سفارشی
+    `/v1` از آن استفاده می‌کنند:
 
     - شکل‌دهی درخواست مخصوص OpenAI بومی اعمال نمی‌شود
-    - بدون `service_tier`، بدون `store` در Responses، بدون راهنمایی‌های prompt-cache، و بدون
-      شکل‌دهی payload سازگار با استدلال OpenAI
+    - نه `service_tier`، نه `store` در Responses، نه راهنماهای prompt-cache، و نه
+      شکل‌دهی payload سازگار با استدلال OpenAI وجود دارد
     - هدرهای پنهان انتساب OpenClaw (`originator`، `version`، `User-Agent`)
-      روی URL پروکسی تزریق نمی‌شوند
+      روی URL پراکسی تزریق نمی‌شوند
 
   </Accordion>
 
   <Accordion title="Auto-start on macOS with LaunchAgent">
-    برای اجرای خودکار پروکسی یک LaunchAgent ایجاد کنید:
+    یک LaunchAgent بسازید تا پراکسی به‌صورت خودکار اجرا شود:
 
     ```bash
     cat > ~/Library/LaunchAgents/com.claude-max-api.plist << 'EOF'
@@ -160,18 +169,13 @@ Your App → claude-max-api-proxy → Claude Code CLI → Anthropic (via subscri
   </Accordion>
 </AccordionGroup>
 
-## پیوندها
-
-- **npm:** [https://www.npmjs.com/package/claude-max-api-proxy](https://www.npmjs.com/package/claude-max-api-proxy)
-- **GitHub:** [https://github.com/atalovesyou/claude-max-api-proxy](https://github.com/atalovesyou/claude-max-api-proxy)
-- **Issues:** [https://github.com/atalovesyou/claude-max-api-proxy/issues](https://github.com/atalovesyou/claude-max-api-proxy/issues)
-
 ## یادداشت‌ها
 
 - این یک **ابزار جامعه‌محور** است و به‌صورت رسمی توسط Anthropic یا OpenClaw پشتیبانی نمی‌شود
 - به یک اشتراک فعال Claude Max/Pro با Claude Code CLI احراز هویت‌شده نیاز دارد
-- پروکسی به‌صورت محلی اجرا می‌شود و داده‌ها را به هیچ سرور شخص ثالثی ارسال نمی‌کند
-- پاسخ‌های جریانی به‌طور کامل پشتیبانی می‌شوند
+- رفتار صورت‌حساب، اعتبار استفاده، و محدودیت نرخ Claude Code `claude -p` را به ارث می‌برد
+- پراکسی به‌صورت محلی اجرا می‌شود و داده‌ها را به هیچ سرور شخص ثالثی ارسال نمی‌کند
+- پاسخ‌های پخش جریانی به‌طور کامل پشتیبانی می‌شوند
 
 <Note>
 برای یکپارچه‌سازی بومی Anthropic با Claude CLI یا کلیدهای API، [ارائه‌دهنده Anthropic](/fa/providers/anthropic) را ببینید. برای اشتراک‌های OpenAI/Codex، [ارائه‌دهنده OpenAI](/fa/providers/openai) را ببینید.
@@ -187,7 +191,7 @@ Your App → claude-max-api-proxy → Claude Code CLI → Anthropic (via subscri
     برای اشتراک‌های OpenAI/Codex.
   </Card>
   <Card title="Model selection" href="/fa/concepts/model-providers" icon="layers">
-    نمای کلی همه ارائه‌دهنده‌ها، ارجاع‌های مدل، و رفتار جایگزینی هنگام خرابی.
+    نمای کلی همه ارائه‌دهنده‌ها، ارجاع‌های مدل، و رفتار failover.
   </Card>
   <Card title="Configuration" href="/fa/gateway/configuration" icon="gear">
     مرجع کامل پیکربندی.

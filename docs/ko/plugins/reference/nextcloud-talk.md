@@ -1,27 +1,28 @@
 ---
 read_when:
-    - nextcloud-talk Plugin을 설치, 구성 또는 감사하고 있습니다
-summary: OpenClaw 메시지를 보내고 받기 위한 Nextcloud Talk 채널 인터페이스를 추가합니다.
+    - nextcloud-talk Plugin을 설치, 구성 또는 감사하는 중입니다
+summary: 대화용 OpenClaw Nextcloud Talk 채널 plugin.
 title: Nextcloud Talk Plugin
 x-i18n:
-    generated_at: "2026-05-03T06:21:38Z"
+    generated_at: "2026-06-27T17:52:38Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4ef55f1a3a7f9eac5876e5a8e3d6b5182a18c54aee2a6a63e8e4b0115ab7f6a6
+    source_hash: ce8dd648fcc2226e6b365f092eb3dc54062d2c9d8d5c613cb0c2d5e9f237c720
     source_path: plugins/reference/nextcloud-talk.md
     workflow: 16
 ---
 
 # Nextcloud Talk Plugin
 
-OpenClaw 메시지를 보내고 받기 위한 Nextcloud Talk 채널 Surface를 추가합니다.
+대화를 위한 OpenClaw Nextcloud Talk 채널 Plugin입니다.
 
 ## 배포
 
 - 패키지: `@openclaw/nextcloud-talk`
 - 설치 경로: npm; ClawHub
 
-## Surface
+## 노출 영역
 
 channels: nextcloud-talk
 

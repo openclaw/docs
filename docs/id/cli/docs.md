@@ -1,34 +1,35 @@
 ---
 read_when:
     - Anda ingin mencari di dokumentasi OpenClaw langsung dari terminal
-    - Anda perlu mengetahui biner pembantu mana yang dijalankan oleh CLI dokumentasi melalui shell
-summary: Referensi CLI untuk `openclaw docs` (cari di indeks dokumentasi langsung)
+    - Anda perlu mengetahui API pencarian terhosting mana yang dipanggil oleh CLI docs
+summary: Referensi CLI untuk `openclaw docs` (cari indeks dokumentasi langsung)
 title: Dokumentasi
 x-i18n:
-    generated_at: "2026-05-10T19:28:05Z"
+    generated_at: "2026-06-27T17:18:23Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c0f733083bf455695ed24b13db6fe53e95aa3804fa8696a2fd29e749f24324c8
+    source_hash: f8be22f689d40ffec29df9562b69444c0f8b9bb607dfcb79de20b3023e0eb30a
     source_path: cli/docs.md
     workflow: 16
 ---
 
 # `openclaw docs`
 
-Cari indeks dokumentasi OpenClaw langsung dari terminal. Perintah ini menjalankan endpoint pencarian MCP dokumentasi publik yang dihosting Mintlify di `https://docs.openclaw.ai/mcp.SearchOpenClaw` dan merender hasilnya di terminal Anda.
+Cari indeks dokumentasi OpenClaw live dari terminal. Perintah ini memanggil API pencarian dokumentasi OpenClaw yang dihosting di Cloudflare dan menampilkan hasilnya di terminal Anda.
 
 ## Penggunaan
 
 ```bash
-openclaw docs                       # cetak titik masuk dokumentasi dan contoh pencarian
-openclaw docs <query...>            # cari indeks dokumentasi langsung
+openclaw docs                       # print docs entrypoint and example search
+openclaw docs <query...>            # search the live docs index
 ```
 
 Argumen:
 
-| Argumen      | Deskripsi                                                                                 |
-| ------------ | ----------------------------------------------------------------------------------------- |
-| `[query...]` | Kueri pencarian bentuk bebas. Kueri multi-kata digabung dengan spasi dan dikirim sebagai satu kesatuan. |
+| Argumen      | Deskripsi                                                                          |
+| ------------ | ---------------------------------------------------------------------------------- |
+| `[query...]` | Kueri pencarian bentuk bebas. Kueri multi-kata digabungkan dengan spasi dan dikirim sebagai satu kueri. |
 
 ## Contoh
 
@@ -38,30 +39,20 @@ openclaw docs sandbox allowHostControl
 openclaw docs gateway token secretref
 ```
 
-Tanpa kueri, `openclaw docs` mencetak URL titik masuk dokumentasi beserta contoh perintah pencarian alih-alih menjalankan pencarian.
+Tanpa kueri, `openclaw docs` mencetak URL titik masuk dokumentasi beserta contoh perintah pencarian, alih-alih menjalankan pencarian.
 
 ## Cara kerjanya
 
-`openclaw docs` memanggil CLI `mcporter` untuk memanggil alat pencarian MCP dokumentasi, lalu mengurai blok `Title: / Link: / Content:` dari keluaran alat menjadi daftar hasil.
+`openclaw docs` memanggil `https://docs.openclaw.ai/api/search` dan menampilkan hasil JSON. Panggilan pencarian menggunakan batas waktu tetap 30 detik.
 
-Untuk menyelesaikan `mcporter`, OpenClaw memeriksa secara berurutan:
+## Output
 
-1. `mcporter` di `PATH` (digunakan langsung jika ada).
-2. `pnpm dlx mcporter ...` jika `pnpm` terinstal.
-3. `npx -y mcporter ...` jika `npx` terinstal.
+Di terminal kaya (TTY), hasil ditampilkan sebagai judul yang diikuti daftar berpoin. Setiap poin menampilkan judul halaman, URL dokumentasi yang ditautkan, dan cuplikan singkat pada baris berikutnya. Hasil kosong mencetak "Tidak ada hasil.".
 
-Jika tidak ada yang tersedia, perintah gagal dengan petunjuk untuk menginstal `pnpm` (`npm install -g pnpm`).
-
-Panggilan pencarian menggunakan batas waktu tetap 30 detik. Cuplikan hasil dipotong menjadi sekitar 220 karakter per entri.
-
-## Keluaran
-
-Di terminal kaya (TTY), hasil dirender sebagai heading yang diikuti daftar berpoin. Setiap poin menampilkan judul halaman, URL dokumentasi tertaut, dan cuplikan singkat pada baris berikutnya. Hasil kosong mencetak "Tidak ada hasil.".
-
-Dalam keluaran non-kaya (disalurkan, `--no-color`, skrip), data yang sama dirender sebagai Markdown:
+Pada output non-kaya (disalurkan, `--no-color`, skrip), data yang sama ditampilkan sebagai Markdown:
 
 ```markdown
-# Pencarian dokumentasi: <query>
+# Docs search: <query>
 
 - [Title](https://docs.openclaw.ai/...) - snippet
 - [Title](https://docs.openclaw.ai/...) - snippet
@@ -69,12 +60,12 @@ Dalam keluaran non-kaya (disalurkan, `--no-color`, skrip), data yang sama dirend
 
 ## Kode keluar
 
-| Kode | Arti                                                        |
-| ---- | ----------------------------------------------------------- |
-| `0`  | Pencarian berhasil (termasuk respons tanpa hasil).          |
-| `1`  | Panggilan alat MCP gagal; stderr dicetak sebaris.           |
+| Kode | Arti                                                              |
+| ---- | ----------------------------------------------------------------- |
+| `0`  | Pencarian berhasil (termasuk respons tanpa hasil).                |
+| `1`  | Panggilan API pencarian dokumentasi yang dihosting gagal; stderr dicetak sebaris. |
 
 ## Terkait
 
 - [Referensi CLI](/id/cli)
-- [Dokumentasi langsung](https://docs.openclaw.ai)
+- [Dokumentasi live](https://docs.openclaw.ai)

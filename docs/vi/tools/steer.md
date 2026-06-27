@@ -1,22 +1,25 @@
 ---
 read_when:
-    - Sử dụng /steer hoặc /tell khi một tác nhân đang chạy
-    - So sánh /steer với /queue steer
-    - Quyết định nên điều hướng lần chạy hiện tại, một tác nhân phụ hay một phiên ACP
+    - Sử dụng /steer hoặc /tell trong khi một tác tử đang chạy
+    - So sánh chế độ /steer với /queue
+    - Quyết định nên điều hướng lượt chạy hiện tại hay một phiên ACP
 sidebarTitle: Steer
 summary: Điều hướng một lượt chạy đang hoạt động mà không thay đổi chế độ hàng đợi
 title: Điều hướng
 x-i18n:
-    generated_at: "2026-05-04T02:26:29Z"
+    generated_at: "2026-06-27T18:18:46Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 71e1c80c0eea86d5c3c29513d3ed0675c04779fc9c6ee3b8a76c4bedaa264d22
+    source_hash: 2e73f3f2fd938ee9dbdd14d183abe7f8676dbc7bb7382e6ad2c1fd41034fa09c
     source_path: tools/steer.md
     workflow: 16
 ---
 
-`/steer` gửi hướng dẫn đến một lượt chạy đang hoạt động. Lệnh này dành cho những thời điểm "điều chỉnh lượt chạy này
-trong khi nó vẫn đang hoạt động", không phải để bắt đầu một lượt mới.
+`/steer` trước tiên cố gửi chỉ dẫn đến một lượt chạy đã hoạt động. Lệnh này dành cho
+những thời điểm cần "điều chỉnh lượt chạy này khi nó vẫn đang xử lý". Nếu môi trường thực thi hiện tại
+không thể nhận chỉ dẫn, OpenClaw sẽ gửi thông điệp dưới dạng lời nhắc thông thường thay vì
+loại bỏ nó.
 
 ## Phiên hiện tại
 
@@ -31,39 +34,36 @@ Hành vi:
 
 - Chỉ nhắm đến lượt chạy đang hoạt động của phiên hiện tại.
 - Hoạt động độc lập với chế độ `/queue` của phiên.
-- Không bắt đầu một lượt chạy mới khi phiên đang rảnh.
-- Trả lời bằng cảnh báo khi không có lượt chạy đang hoạt động để điều hướng.
-- Dùng đường dẫn điều hướng của runtime đang hoạt động, vì vậy mô hình sẽ thấy hướng dẫn tại
-  ranh giới runtime được hỗ trợ tiếp theo.
+- Bắt đầu một lượt thông thường với cùng thông điệp khi phiên đang rảnh hoặc
+  lượt chạy đang hoạt động không thể nhận chỉ dẫn.
+- Dùng đường dẫn chỉ dẫn của môi trường thực thi đang hoạt động, vì vậy mô hình sẽ thấy chỉ dẫn tại
+  ranh giới môi trường thực thi được hỗ trợ tiếp theo.
 
-## Steer so với queue
+## Chỉ dẫn so với hàng đợi
 
-`/queue steer` thay đổi cách các tin nhắn đến thông thường hoạt động khi chúng đến
-trong lúc một lượt chạy đang hoạt động. `/steer <message>` là một lệnh tường minh cố gắng
-chèn tin nhắn của lệnh đó vào lượt chạy đang hoạt động tại ranh giới runtime
-được hỗ trợ tiếp theo, bất kể thiết lập `/queue` đã lưu.
+`/queue steer` khiến các thông điệp đến thông thường cố chỉ dẫn lượt chạy đang hoạt động khi
+chúng đến trong lúc một lượt chạy đang hoạt động. `/steer <message>` là một lệnh rõ ràng
+cố chèn thông điệp của lệnh đó vào lượt chạy đang hoạt động tại ranh giới
+môi trường thực thi được hỗ trợ tiếp theo, bất kể thiết lập `/queue` đã lưu. Khi
+không thể chèn như vậy, tiền tố lệnh sẽ bị loại bỏ và `<message>`
+tiếp tục như một lời nhắc thông thường.
 
-Dùng:
+Sử dụng:
 
-- `/steer <message>` khi bạn muốn hướng dẫn lượt chạy đang hoạt động ngay bây giờ.
-- `/queue steer` khi bạn muốn các tin nhắn thông thường trong tương lai mặc định điều hướng các lượt chạy đang hoạt động.
-- `/queue collect` hoặc `/queue followup` khi tin nhắn mới nên chờ một
-  lượt sau thay vì điều hướng lượt chạy đang hoạt động.
+- `/steer <message>` khi bạn muốn chỉ dẫn lượt chạy đang hoạt động ngay bây giờ.
+- `/queue steer` khi bạn muốn các thông điệp thông thường trong tương lai mặc định chỉ dẫn các lượt chạy đang hoạt động.
+- `/queue collect` hoặc `/queue followup` khi các thông điệp thông thường trong tương lai nên chờ
+  một lượt sau thay vì chỉ dẫn lượt chạy đang hoạt động.
+- `/queue interrupt` khi thông điệp mới nhất nên thay thế lượt chạy đang hoạt động
+  thay vì chỉ dẫn nó.
 
-Để biết các chế độ hàng đợi và hành vi dự phòng, xem [Hàng đợi lệnh](/vi/concepts/queue) và
-[Hàng đợi điều hướng](/vi/concepts/queue-steering).
+Để biết các chế độ hàng đợi và ranh giới chỉ dẫn, xem [Hàng đợi lệnh](/vi/concepts/queue) và
+[Hàng đợi chỉ dẫn](/vi/concepts/queue-steering).
 
-## Sub-agent
+## Tác nhân phụ
 
-Dùng `/subagents steer` khi mục tiêu là một lượt chạy con:
-
-```text
-/subagents steer 2 focus only on the API surface
-```
-
-`/steer` cấp cao nhất không chọn sub-agent theo id hoặc chỉ mục danh sách. Nó luôn
-nhắm đến lượt chạy đang hoạt động của phiên hiện tại. Xem [Sub-agent](/vi/tools/subagents) để biết
-id, nhãn và lệnh điều khiển của sub-agent.
+`/steer` cấp cao nhất nhắm đến lượt chạy đang hoạt động của phiên hiện tại. Tác nhân phụ báo cáo
+lại cho phiên cha/người yêu cầu của chúng; `/subagents` chỉ dùng để quan sát.
 
 ## Phiên ACP
 
@@ -73,12 +73,12 @@ Dùng `/acp steer` khi mục tiêu là một phiên harness ACP:
 /acp steer --session agent:main:acp:codex tighten the repro
 ```
 
-Xem [Agent ACP](/vi/tools/acp-agents) để biết cách chọn phiên ACP và hành vi
-runtime.
+Xem [Tác nhân ACP](/vi/tools/acp-agents) để biết cách chọn phiên ACP và hành vi
+môi trường thực thi.
 
 ## Liên quan
 
-- [Lệnh slash](/vi/tools/slash-commands)
+- [Lệnh gạch chéo](/vi/tools/slash-commands)
 - [Hàng đợi lệnh](/vi/concepts/queue)
-- [Hàng đợi điều hướng](/vi/concepts/queue-steering)
-- [Sub-agent](/vi/tools/subagents)
+- [Hàng đợi chỉ dẫn](/vi/concepts/queue-steering)
+- [Tác nhân phụ](/vi/tools/subagents)

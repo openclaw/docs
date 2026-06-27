@@ -1,14 +1,15 @@
 ---
 read_when:
     - Vuoi scegliere un provider di modelli
-    - Serve una rapida panoramica dei backend LLM supportati
+    - Hai bisogno di una rapida panoramica dei backend LLM supportati
 summary: Provider di modelli (LLM) supportati da OpenClaw
 title: Directory dei provider
 x-i18n:
-    generated_at: "2026-05-06T09:05:52Z"
+    generated_at: "2026-06-27T18:07:49Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cfc3a15880a5e1881c1a58c60c9ad7e5624350a8db848d03c7cef6ee18c14b81
+    source_hash: a340f6a48f6f1d50116316f9679b009365cd617b3453ebd9b2b31e70f6b94c31
     source_path: providers/index.md
     workflow: 16
 ---
@@ -16,7 +17,7 @@ x-i18n:
 OpenClaw può usare molti provider LLM. Scegli un provider, autenticati, quindi imposta il
 modello predefinito come `provider/model`.
 
-Cerchi la documentazione sui canali di chat (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/ecc.)? Vedi [Canali](/it/channels).
+Cerchi la documentazione sui canali di chat (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/ecc.)? Vedi [Canali](/it/channels).
 
 ## Avvio rapido
 
@@ -37,21 +38,23 @@ Cerchi la documentazione sui canali di chat (WhatsApp/Telegram/Discord/Slack/Mat
 - [Anthropic (API + Claude CLI)](/it/providers/anthropic)
 - [Arcee AI (modelli Trinity)](/it/providers/arcee)
 - [Azure Speech](/it/providers/azure-speech)
-- [BytePlus (Internazionale)](/it/concepts/model-providers#byteplus-international)
+- [BytePlus (internazionale)](/it/concepts/model-providers#byteplus-international)
 - [Cerebras](/it/providers/cerebras)
 - [Chutes](/it/providers/chutes)
+- [Cohere](/it/providers/cohere)
 - [Cloudflare AI Gateway](/it/providers/cloudflare-ai-gateway)
 - [ComfyUI](/it/providers/comfy)
 - [DeepSeek](/it/providers/deepseek)
+- [ds4 (DeepSeek V4 locale)](/it/providers/ds4)
 - [ElevenLabs](/it/providers/elevenlabs)
 - [fal](/it/providers/fal)
 - [Fireworks](/it/providers/fireworks)
 - [GitHub Copilot](/it/providers/github-copilot)
-- [modelli GLM](/it/providers/glm)
+- [GMI Cloud](/it/providers/gmi)
 - [Google (Gemini)](/it/providers/google)
 - [Gradium](/it/providers/gradium)
 - [Groq (inferenza LPU)](/it/providers/groq)
-- [Hugging Face (Inference)](/it/providers/huggingface)
+- [Hugging Face (inferenza)](/it/providers/huggingface)
 - [inferrs (modelli locali)](/it/providers/inferrs)
 - [Kilocode](/it/providers/kilocode)
 - [LiteLLM (gateway unificato)](/it/providers/litellm)
@@ -60,7 +63,9 @@ Cerchi la documentazione sui canali di chat (WhatsApp/Telegram/Discord/Slack/Mat
 - [Mistral](/it/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/it/providers/moonshot)
 - [NVIDIA](/it/providers/nvidia)
+- [NovitaAI](/it/providers/novita)
 - [Ollama (cloud + modelli locali)](/it/providers/ollama)
+- [Ollama Cloud](/it/providers/ollama-cloud)
 - [OpenAI (API + Codex)](/it/providers/openai)
 - [OpenCode](/it/providers/opencode)
 - [OpenCode Go](/it/providers/opencode-go)
@@ -68,6 +73,7 @@ Cerchi la documentazione sui canali di chat (WhatsApp/Telegram/Discord/Slack/Mat
 - [Perplexity (ricerca web)](/it/providers/perplexity-provider)
 - [Qianfan](/it/providers/qianfan)
 - [Qwen Cloud](/it/providers/qwen)
+- [Qwen OAuth / Portal](/it/providers/qwen-oauth)
 - [Runway](/it/providers/runway)
 - [SenseAudio](/it/providers/senseaudio)
 - [SGLang (modelli locali)](/it/providers/sglang)
@@ -75,18 +81,18 @@ Cerchi la documentazione sui canali di chat (WhatsApp/Telegram/Discord/Slack/Mat
 - [Synthetic](/it/providers/synthetic)
 - [Tencent Cloud (TokenHub)](/it/providers/tencent)
 - [Together AI](/it/providers/together)
-- [Venice (Venice AI, incentrato sulla privacy)](/it/providers/venice)
+- [Venice (Venice AI, orientato alla privacy)](/it/providers/venice)
 - [Vercel AI Gateway](/it/providers/vercel-ai-gateway)
 - [vLLM (modelli locali)](/it/providers/vllm)
 - [Volcengine (Doubao)](/it/providers/volcengine)
 - [Vydra](/it/providers/vydra)
 - [xAI](/it/providers/xai)
 - [Xiaomi](/it/providers/xiaomi)
-- [Z.AI](/it/providers/zai)
+- [Z.AI (GLM)](/it/providers/zai)
 
 ## Pagine di panoramica condivise
 
-- [Varianti aggiuntive incluse](/it/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy e Gemini CLI OAuth
+- [Varianti in bundle aggiuntive](/it/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy e Gemini CLI OAuth
 - [Generazione di immagini](/it/tools/image-generation) - Strumento `image_generate` condiviso, selezione del provider e failover
 - [Generazione di musica](/it/tools/music-generation) - Strumento `music_generate` condiviso, selezione del provider e failover
 - [Generazione di video](/it/tools/video-generation) - Strumento `video_generate` condiviso, selezione del provider e failover
@@ -102,7 +108,7 @@ Cerchi la documentazione sui canali di chat (WhatsApp/Telegram/Discord/Slack/Mat
 
 ## Strumenti della community
 
-- [Claude Max API Proxy](/it/providers/claude-max-api-proxy) - Proxy della community per le credenziali di abbonamento Claude (verifica le policy/i termini di Anthropic prima dell'uso)
+- [Claude Max API Proxy](/it/providers/claude-max-api-proxy) - Proxy della community per le credenziali dell'abbonamento Claude (verifica le policy/i termini di Anthropic prima dell'uso)
 
 Per il catalogo completo dei provider (xAI, Groq, Mistral, ecc.) e la configurazione avanzata,
 vedi [Provider di modelli](/it/concepts/model-providers).

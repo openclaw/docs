@@ -1,29 +1,30 @@
 ---
 read_when:
     - Vous installez, configurez ou auditez le Plugin openai
-summary: Ajoute la prise en charge des fournisseurs de modèles OpenAI et OpenAI Codex à OpenClaw.
+summary: Ajoute la prise en charge du fournisseur de modèles OpenAI à OpenClaw.
 title: Plugin OpenAI
 x-i18n:
-    generated_at: "2026-05-02T20:57:08Z"
+    generated_at: "2026-06-27T17:56:04Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6e6dad420e5879697dda03f866b7c0ef15b020b2c06da6b60293d3914d850969
+    source_hash: c8fa47c22cb54090493f3cbacc461344242e078716760289c0dd4fd0ae8c0085
     source_path: plugins/reference/openai.md
     workflow: 16
 ---
 
 # Plugin OpenAI
 
-Ajoute la prise en charge des fournisseurs de modèles OpenAI et OpenAI Codex à OpenClaw.
+Ajoute à OpenClaw la prise en charge du fournisseur de modèles OpenAI.
 
 ## Distribution
 
 - Paquet : `@openclaw/openai-provider`
-- Mode d’installation : inclus dans OpenClaw
+- Route d’installation : inclus dans OpenClaw
 
 ## Surface
 
-providers : openai, openai-codex ; contracts : imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders
+fournisseurs : openai ; contrats : imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders
 
 ## Documentation associée
 

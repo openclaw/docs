@@ -1,27 +1,28 @@
 ---
 read_when:
-    - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin ของ Signal
-summary: เพิ่มส่วนอินเทอร์เฟซช่องทาง Signal สำหรับส่งและรับข้อความ OpenClaw.
-title: Signal Plugin
+    - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin signal
+summary: เพิ่มส่วนติดต่อช่องทาง Signal สำหรับส่งและรับข้อความ OpenClaw
+title: Plugin Signal
 x-i18n:
-    generated_at: "2026-05-02T20:56:18Z"
+    generated_at: "2026-06-27T18:05:05Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8d066bcea16277affe7ecc181207330fa9c439ec242bab279c65efdf67b361c6
+    source_hash: 7136222af25d73d50b9a973d287b863176c58d634da4c9d7726d5cc6942135bb
     source_path: plugins/reference/signal.md
     workflow: 16
 ---
 
 # Plugin Signal
 
-เพิ่มส่วนติดต่อช่องทาง Signal สำหรับส่งและรับข้อความ OpenClaw
+เพิ่มพื้นผิวช่องทาง Signal สำหรับส่งและรับข้อความ OpenClaw
 
 ## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/signal`
-- เส้นทางการติดตั้ง: รวมอยู่ใน OpenClaw
+- เส้นทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/signal`
 
-## ส่วนติดต่อ
+## พื้นผิว
 
 ช่องทาง: signal
 

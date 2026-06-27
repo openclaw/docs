@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Vous souhaitez choisir un fournisseur de modèles
-    - Vous avez besoin d’un aperçu rapide des moteurs LLM pris en charge
+    - Vous voulez choisir un fournisseur de modèles
+    - Vous avez besoin d’un aperçu rapide des backends LLM pris en charge
 summary: Fournisseurs de modèles (LLM) pris en charge par OpenClaw
 title: Répertoire des fournisseurs
 x-i18n:
-    generated_at: "2026-05-06T07:36:01Z"
+    generated_at: "2026-06-27T18:05:12Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cfc3a15880a5e1881c1a58c60c9ad7e5624350a8db848d03c7cef6ee18c14b81
+    source_hash: a340f6a48f6f1d50116316f9679b009365cd617b3453ebd9b2b31e70f6b94c31
     source_path: providers/index.md
     workflow: 16
 ---
@@ -34,33 +35,37 @@ Vous cherchez la documentation des canaux de chat (WhatsApp/Telegram/Discord/Sla
 - [Alibaba Model Studio](/fr/providers/alibaba)
 - [Amazon Bedrock](/fr/providers/bedrock)
 - [Amazon Bedrock Mantle](/fr/providers/bedrock-mantle)
-- [Anthropic (API + Claude CLI)](/fr/providers/anthropic)
+- [Anthropic (API + CLI Claude)](/fr/providers/anthropic)
 - [Arcee AI (modèles Trinity)](/fr/providers/arcee)
 - [Azure Speech](/fr/providers/azure-speech)
-- [BytePlus (international)](/fr/concepts/model-providers#byteplus-international)
+- [BytePlus (International)](/fr/concepts/model-providers#byteplus-international)
 - [Cerebras](/fr/providers/cerebras)
 - [Chutes](/fr/providers/chutes)
+- [Cohere](/fr/providers/cohere)
 - [Cloudflare AI Gateway](/fr/providers/cloudflare-ai-gateway)
 - [ComfyUI](/fr/providers/comfy)
 - [DeepSeek](/fr/providers/deepseek)
+- [ds4 (DeepSeek V4 local)](/fr/providers/ds4)
 - [ElevenLabs](/fr/providers/elevenlabs)
 - [fal](/fr/providers/fal)
 - [Fireworks](/fr/providers/fireworks)
 - [GitHub Copilot](/fr/providers/github-copilot)
-- [modèles GLM](/fr/providers/glm)
+- [GMI Cloud](/fr/providers/gmi)
 - [Google (Gemini)](/fr/providers/google)
 - [Gradium](/fr/providers/gradium)
 - [Groq (inférence LPU)](/fr/providers/groq)
-- [Hugging Face (inférence)](/fr/providers/huggingface)
+- [Hugging Face (Inference)](/fr/providers/huggingface)
 - [inferrs (modèles locaux)](/fr/providers/inferrs)
 - [Kilocode](/fr/providers/kilocode)
-- [LiteLLM (gateway unifié)](/fr/providers/litellm)
+- [LiteLLM (Gateway unifié)](/fr/providers/litellm)
 - [LM Studio (modèles locaux)](/fr/providers/lmstudio)
 - [MiniMax](/fr/providers/minimax)
 - [Mistral](/fr/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/fr/providers/moonshot)
 - [NVIDIA](/fr/providers/nvidia)
+- [NovitaAI](/fr/providers/novita)
 - [Ollama (cloud + modèles locaux)](/fr/providers/ollama)
+- [Ollama Cloud](/fr/providers/ollama-cloud)
 - [OpenAI (API + Codex)](/fr/providers/openai)
 - [OpenCode](/fr/providers/opencode)
 - [OpenCode Go](/fr/providers/opencode-go)
@@ -68,6 +73,7 @@ Vous cherchez la documentation des canaux de chat (WhatsApp/Telegram/Discord/Sla
 - [Perplexity (recherche web)](/fr/providers/perplexity-provider)
 - [Qianfan](/fr/providers/qianfan)
 - [Qwen Cloud](/fr/providers/qwen)
+- [Qwen OAuth / Portal](/fr/providers/qwen-oauth)
 - [Runway](/fr/providers/runway)
 - [SenseAudio](/fr/providers/senseaudio)
 - [SGLang (modèles locaux)](/fr/providers/sglang)
@@ -82,11 +88,11 @@ Vous cherchez la documentation des canaux de chat (WhatsApp/Telegram/Discord/Sla
 - [Vydra](/fr/providers/vydra)
 - [xAI](/fr/providers/xai)
 - [Xiaomi](/fr/providers/xiaomi)
-- [Z.AI](/fr/providers/zai)
+- [Z.AI (GLM)](/fr/providers/zai)
 
-## Pages de présentation partagées
+## Pages d’aperçu partagées
 
-- [Variantes groupées supplémentaires](/fr/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy et Gemini CLI OAuth
+- [Variantes groupées supplémentaires](/fr/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy et OAuth Gemini CLI
 - [Génération d’images](/fr/tools/image-generation) - Outil `image_generate` partagé, sélection du fournisseur et basculement
 - [Génération de musique](/fr/tools/music-generation) - Outil `music_generate` partagé, sélection du fournisseur et basculement
 - [Génération de vidéos](/fr/tools/video-generation) - Outil `video_generate` partagé, sélection du fournisseur et basculement

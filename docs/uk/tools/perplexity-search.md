@@ -1,35 +1,45 @@
 ---
 read_when:
     - Ви хочете використовувати Perplexity Search для вебпошуку
-    - Потрібно налаштувати PERPLEXITY_API_KEY або OPENROUTER_API_KEY
-summary: Perplexity Search API і сумісність Sonar/OpenRouter для web_search
-title: Пошук у Perplexity
+    - Вам потрібно налаштувати PERPLEXITY_API_KEY або OPENROUTER_API_KEY
+summary: Perplexity Search API та сумісність Sonar/OpenRouter для web_search
+title: Пошук Perplexity
 x-i18n:
-    generated_at: "2026-05-06T01:41:57Z"
+    generated_at: "2026-06-27T18:28:01Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 113abafae66acd8aaa0302b687ba13347eb44a81a4217b61bb68f07d8a119cb0
+    source_hash: 6ef003238bc38dd3d92b98654598cba05fb1c324d8ca766a683cf1defe5bd435
     source_path: tools/perplexity-search.md
     workflow: 16
 ---
 
-OpenClaw підтримує Perplexity Search API як провайдера `web_search`.
+OpenClaw підтримує Perplexity Search API як провайдер `web_search`.
 Він повертає структуровані результати з полями `title`, `url` і `snippet`.
 
 Для сумісності OpenClaw також підтримує застарілі налаштування Perplexity Sonar/OpenRouter.
-Якщо ви використовуєте `OPENROUTER_API_KEY`, ключ `sk-or-...` у `plugins.entries.perplexity.config.webSearch.apiKey` або задаєте `plugins.entries.perplexity.config.webSearch.baseUrl` / `model`, провайдер перемикається на шлях chat-completions і повертає AI-синтезовані відповіді з цитуваннями замість структурованих результатів Search API.
+Якщо ви використовуєте `OPENROUTER_API_KEY`, ключ `sk-or-...` у `plugins.entries.perplexity.config.webSearch.apiKey` або задаєте `plugins.entries.perplexity.config.webSearch.baseUrl` / `model`, провайдер перемикається на шлях chat-completions і повертає згенеровані ШІ відповіді з цитуваннями замість структурованих результатів Search API.
+
+## Установлення Plugin
+
+Установіть офіційний Plugin, а потім перезапустіть Gateway:
+
+```bash
+openclaw plugins install @openclaw/perplexity-plugin
+openclaw gateway restart
+```
 
 ## Отримання API-ключа Perplexity
 
 1. Створіть обліковий запис Perplexity на [perplexity.ai/settings/api](https://www.perplexity.ai/settings/api)
-2. Згенеруйте API-ключ у панелі керування
+2. Згенеруйте API-ключ на панелі керування
 3. Збережіть ключ у конфігурації або задайте `PERPLEXITY_API_KEY` у середовищі Gateway.
 
 ## Сумісність з OpenRouter
 
 Якщо ви вже використовували OpenRouter для Perplexity Sonar, залиште `provider: "perplexity"` і задайте `OPENROUTER_API_KEY` у середовищі Gateway або збережіть ключ `sk-or-...` у `plugins.entries.perplexity.config.webSearch.apiKey`.
 
-Необов’язкові параметри сумісності:
+Необов'язкові параметри керування сумісністю:
 
 - `plugins.entries.perplexity.config.webSearch.baseUrl`
 - `plugins.entries.perplexity.config.webSearch.model`
@@ -61,7 +71,7 @@ OpenClaw підтримує Perplexity Search API як провайдера `web
 }
 ```
 
-### Сумісність OpenRouter / Sonar
+### Сумісність з OpenRouter / Sonar
 
 ```json5
 {
@@ -90,15 +100,15 @@ OpenClaw підтримує Perplexity Search API як провайдера `web
 
 ## Де задавати ключ
 
-**Через конфігурацію:** виконайте `openclaw configure --section web`. Це зберігає ключ у
+**Через конфігурацію:** виконайте `openclaw configure --section web`. Команда зберігає ключ у
 `~/.openclaw/openclaw.json` у `plugins.entries.perplexity.config.webSearch.apiKey`.
-Це поле також приймає об’єкти SecretRef.
+Це поле також приймає об'єкти SecretRef.
 
 **Через середовище:** задайте `PERPLEXITY_API_KEY` або `OPENROUTER_API_KEY`
-у середовищі процесу Gateway. Для встановленого gateway помістіть його в
-`~/.openclaw/.env` (або у середовище вашої служби). Див. [змінні середовища](/uk/help/faq#env-vars-and-env-loading).
+у середовищі процесу Gateway. Для встановлення gateway додайте його в
+`~/.openclaw/.env` (або у середовище вашого сервісу). Див. [змінні середовища](/uk/help/faq#env-vars-and-env-loading).
 
-Якщо налаштовано `provider: "perplexity"` і SecretRef ключа Perplexity не розв’язується без резервного варіанта в середовищі, запуск/перезавантаження швидко завершується помилкою.
+Якщо налаштовано `provider: "perplexity"` і SecretRef ключа Perplexity не розв'язано без резервного значення з середовища, запуск/перезавантаження швидко завершується помилкою.
 
 ## Параметри інструмента
 
@@ -133,11 +143,11 @@ OpenClaw підтримує Perplexity Search API як провайдера `web
 </ParamField>
 
 <ParamField path="domain_filter" type="string[]">
-Масив дозволених/заборонених доменів (макс. 20).
+Масив дозволених/заборонених доменів (максимум 20).
 </ParamField>
 
 <ParamField path="max_tokens" type="number" default="25000">
-Загальний бюджет вмісту (макс. 1000000).
+Загальний бюджет вмісту (максимум 1000000).
 </ParamField>
 
 <ParamField path="max_tokens_per_page" type="number" default="2048">
@@ -149,7 +159,7 @@ OpenClaw підтримує Perplexity Search API як провайдера `web
 - приймаються `query`, `count` і `freshness`
 - `count` там призначений лише для сумісності; відповідь усе одно є однією синтезованою
   відповіддю з цитуваннями, а не списком із N результатів
-- фільтри лише для Search API, такі як `country`, `language`, `date_after`,
+- фільтри лише для Search API, як-от `country`, `language`, `date_after`,
   `date_before`, `domain_filter`, `max_tokens` і `max_tokens_per_page`,
   повертають явні помилки
 
@@ -199,29 +209,29 @@ await web_search({
 ### Правила фільтра доменів
 
 - Максимум 20 доменів на фільтр
-- Не можна змішувати список дозволених і список заборонених в одному запиті
-- Використовуйте префікс `-` для записів списку заборонених (наприклад, `["-reddit.com"]`)
+- Не можна змішувати список дозволених і список заборонених доменів в одному запиті
+- Використовуйте префікс `-` для записів списку заборонених доменів (наприклад, `["-reddit.com"]`)
 
 ## Примітки
 
 - Perplexity Search API повертає структуровані результати вебпошуку (`title`, `url`, `snippet`)
 - OpenRouter або явні `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` перемикають Perplexity назад на chat completions Sonar для сумісності
 - Сумісність Sonar/OpenRouter повертає одну синтезовану відповідь із цитуваннями, а не структуровані рядки результатів
-- Результати кешуються на 15 хвилин за замовчуванням (налаштовується через `cacheTtlMinutes`)
+- Результати типово кешуються на 15 хвилин (налаштовується через `cacheTtlMinutes`)
 
-## Пов’язане
+## Пов'язане
 
 <CardGroup cols={2}>
-  <Card title="Огляд вебпошуку" href="/uk/tools/web" icon="globe">
-    Усі провайдери та правила автовизначення.
+  <Card title="Web search overview" href="/uk/tools/web" icon="globe">
+    Усі провайдери та правила автовиявлення.
   </Card>
-  <Card title="Пошук Brave" href="/uk/tools/brave-search" icon="shield">
+  <Card title="Brave search" href="/uk/tools/brave-search" icon="shield">
     Структуровані результати з фільтрами країни та мови.
   </Card>
-  <Card title="Пошук Exa" href="/uk/tools/exa-search" icon="magnifying-glass">
+  <Card title="Exa search" href="/uk/tools/exa-search" icon="magnifying-glass">
     Нейронний пошук із витягуванням вмісту.
   </Card>
-  <Card title="Документація Perplexity Search API" href="https://docs.perplexity.ai/docs/search/quickstart" icon="arrow-up-right-from-square">
-    Офіційний quickstart і довідник Perplexity Search API.
+  <Card title="Perplexity Search API docs" href="https://docs.perplexity.ai/docs/search/quickstart" icon="arrow-up-right-from-square">
+    Офіційний короткий посібник і довідник Perplexity Search API.
   </Card>
 </CardGroup>

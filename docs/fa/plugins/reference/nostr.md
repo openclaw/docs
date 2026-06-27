@@ -1,20 +1,21 @@
 ---
 read_when:
     - شما در حال نصب، پیکربندی یا ممیزی Plugin nostr هستید
-summary: سطح کانال Nostr را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
-title: Plugin Nostr
+summary: Plugin کانال Nostr برای OpenClaw برای پیام‌های مستقیم رمزگذاری‌شده NIP-04.
+title: Plugin نوستر
 x-i18n:
-    generated_at: "2026-05-03T11:43:22Z"
+    generated_at: "2026-06-27T18:27:28Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1205a3b286e406b41029418b5fb9b12dcb19b35aff60c32d12e60c45804d7eaa
+    source_hash: e56fd9eee17c55bcbba3d7b85d783930c10d2368f36173ac478b254c2bd5ec22
     source_path: plugins/reference/nostr.md
     workflow: 16
 ---
 
 # Plugin Nostr
 
-سطح کانال Nostr را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
+Plugin کانال Nostr برای پیام‌های مستقیم رمزگذاری‌شده NIP-04 در OpenClaw.
 
 ## توزیع
 
@@ -25,6 +26,6 @@ x-i18n:
 
 channels: nostr
 
-## مستندات مرتبط
+## اسناد مرتبط
 
 - [nostr](/fa/channels/nostr)

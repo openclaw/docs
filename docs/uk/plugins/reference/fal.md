@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або проводите аудит fal Plugin
-summary: Додає підтримку постачальника моделей fal до OpenClaw.
-title: Plugin fal
+    - Ви встановлюєте, налаштовуєте або проводите аудит Plugin fal
+summary: Додає підтримку постачальника моделей fal в OpenClaw.
+title: fal Plugin
 x-i18n:
-    generated_at: "2026-05-02T15:17:50Z"
+    generated_at: "2026-06-27T17:58:31Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a7401899ad52835dbea562e6481787b15e92f2d7967c99e89fd249a53e4dcd25
+    source_hash: f62d6a642a6edaa581fb23fa27dade77486c827d460f19aa23750959f5aa6f1c
     source_path: plugins/reference/fal.md
     workflow: 16
 ---
 
-# fal Plugin
+# плагін fal
 
-Додає підтримку провайдера моделей fal до OpenClaw.
+Додає підтримку постачальника моделей fal до OpenClaw.
 
-## Розповсюдження
+## Дистрибуція
 
 - Пакет: `@openclaw/fal-provider`
-- Спосіб встановлення: включено до OpenClaw
+- Маршрут установлення: включено в OpenClaw
 
-## Поверхня
+## Інтерфейс
 
-провайдери: fal; контракти: imageGenerationProviders, videoGenerationProviders
+providers: fal; contracts: imageGenerationProviders, musicGenerationProviders, videoGenerationProviders
 
-## Пов’язані документи
+## Пов’язана документація
 
 - [fal](/uk/providers/fal)

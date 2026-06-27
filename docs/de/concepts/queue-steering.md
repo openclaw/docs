@@ -1,101 +1,97 @@
 ---
 read_when:
-    - Erklärung, wie sich die Steuerung verhält, während ein Agent Werkzeuge verwendet
-    - Ändern des Verhaltens der Warteschlange für aktive Ausführungen oder der Laufzeitsteuerungsintegration
-    - Vergleich der Modi steer, queue, collect und followup
-summary: Wie die Steuerung aktiver Ausführungen Nachrichten an Laufzeitgrenzen in die Warteschlange einreiht
+    - Erklären, wie sich die Steuerung verhält, während ein Agent Tools verwendet
+    - Ändern des Verhaltens der Warteschlange für aktive Ausführungen oder der Integration der Laufzeitsteuerung
+    - Steuerung mit den Warteschlangenmodi followup, collect und interrupt vergleichen
+summary: Wie die Steuerung aktiver Läufe Nachrichten an Laufzeitgrenzen in die Warteschlange einreiht
 title: Steuerungswarteschlange
 x-i18n:
-    generated_at: "2026-05-04T02:23:36Z"
+    generated_at: "2026-06-27T17:26:01Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c8df35b127ae0c1e1b3b684a1f63ce33874eb3d0b7bf9d0df7cb9dfce093090a
+    source_hash: b38d036d2a44af431653746e2d5918af0a8af471450f440479cf0a1acc86c9cd
     source_path: concepts/queue-steering.md
     workflow: 16
 ---
 
-Wenn eine Nachricht eintrifft, während eine Sitzungsausführung bereits streamt, kann OpenClaw
-diese Nachricht an die aktive Runtime senden, statt eine weitere Ausführung für
-dieselbe Sitzung zu starten. Die öffentlichen Modi sind Runtime-neutral; Pi und das native Codex
-App-Server-Harness implementieren die Zustelldetails unterschiedlich.
+Wenn eine normale Eingabe eintrifft, während ein Sitzungslauf bereits streamt, versucht OpenClaw
+standardmäßig, diese Eingabe an die aktive Runtime zu senden, wenn der Queue-Modus
+`steer` ist. Für dieses Standardverhalten sind weder ein Konfigurationseintrag
+noch eine Queue-Direktive erforderlich. OpenClaw und das native Codex App-Server-Harness
+implementieren die Zustelldetails unterschiedlich.
 
 ## Runtime-Grenze
 
-Steering unterbricht keinen Tool-Aufruf, der bereits läuft. Pi prüft an
-Modellgrenzen auf eingereihte Steering-Nachrichten:
+Steuerung unterbricht keinen Tool-Aufruf, der bereits ausgeführt wird. OpenClaw prüft an
+Modellgrenzen auf eingereihte Steuerungsnachrichten:
 
 1. Der Assistent fordert Tool-Aufrufe an.
-2. Pi führt den Tool-Aufruf-Batch der aktuellen Assistentennachricht aus.
-3. Pi gibt das Ereignis für das Ende des Turns aus.
-4. Pi leert eingereihte Steering-Nachrichten.
-5. Pi hängt diese Nachrichten vor dem nächsten LLM-Aufruf als Benutzernachrichten an.
+2. OpenClaw führt den Tool-Aufruf-Batch der aktuellen Assistentennachricht aus.
+3. OpenClaw gibt das Turn-Ende-Ereignis aus.
+4. OpenClaw leert die eingereihten Steuerungsnachrichten.
+5. OpenClaw hängt diese Nachrichten vor dem nächsten LLM-Aufruf als Benutzernachrichten an.
 
 So bleiben Tool-Ergebnisse mit der Assistentennachricht verknüpft, die sie angefordert hat,
 und der nächste Modellaufruf sieht anschließend die neueste Benutzereingabe.
 
-Das native Codex App-Server-Harness stellt `turn/steer` statt Pis
-interner Steering-Warteschlange bereit. OpenClaw passt dieselben Modi dort an:
+Das native Codex App-Server-Harness stellt `turn/steer` statt der internen
+Steuerungs-Queue der OpenClaw-Runtime bereit. OpenClaw bündelt eingereihte Eingaben für das konfigurierte
+Ruhefenster und sendet dann eine einzelne `turn/steer`-Anfrage mit allen gesammelten
+Benutzereingaben in Eingangsreihenfolge.
 
-- `steer` bündelt eingereihte Nachrichten für das konfigurierte Ruhefenster und sendet dann eine
-  einzelne `turn/steer`-Anfrage mit allen gesammelten Benutzereingaben in Eingangsreihenfolge.
-- `queue` behält die bisherige serialisierte Form bei, indem separate `turn/steer`-
-  Anfragen gesendet werden.
-- `followup`, `collect`, `steer-backlog` und `interrupt` bleiben OpenClaw-eigenes
-  Warteschlangenverhalten rund um den aktiven Codex-Turn.
+Codex-Review- und manuelle Compaction-Turns lehnen Steuerung im selben Turn ab. Wenn eine
+Runtime im Modus `steer` keine Steuerung annehmen kann, wartet OpenClaw, bis der aktive
+Lauf beendet ist, bevor die Eingabe gestartet wird.
 
-Codex-Review- und manuelle Compaction-Turns lehnen Same-Turn-Steering ab. Wenn eine
-Runtime kein Steering annehmen kann, fällt OpenClaw auf die Followup-Warteschlange zurück, sofern
-dieser Modus es erlaubt.
-
-Diese Seite erklärt Warteschlangenmodus-Steering für normale eingehende Nachrichten. Für den
-expliziten Befehl `/steer <message>` siehe [Steer](/de/tools/steer).
+Diese Seite erklärt Queue-Modus-Steuerung für normale eingehende Nachrichten, wenn der Modus
+`steer` ist. Wenn der Modus `followup` oder `collect` ist, gelangen normale Nachrichten nicht in
+diesen Steuerungspfad; sie warten, bis der aktive Lauf beendet ist. Für den expliziten
+Befehl `/steer <message>` siehe [Steuern](/de/tools/steer).
 
 ## Modi
 
-| Modus           | Verhalten bei aktiver Ausführung                                                                                             | Verhalten bei späterem Followup                                                  |
-| --------------- | ---------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `steer`         | Injiziert alle eingereihten Steering-Nachrichten zusammen an der nächsten Runtime-Grenze. Dies ist die Standardeinstellung.  | Fällt nur dann auf Followup zurück, wenn Steering nicht verfügbar ist.           |
-| `queue`         | Bisheriges Steering einzeln nacheinander. Pi injiziert eine eingereihte Nachricht pro Modellgrenze; Codex sendet separate `turn/steer`-Anfragen. | Fällt nur dann auf Followup zurück, wenn Steering nicht verfügbar ist.           |
-| `steer-backlog` | Gleiches Steering-Verhalten bei aktiver Ausführung wie `steer`.                                                              | Behält dieselbe Nachricht auch für einen späteren Followup-Turn bei.             |
-| `followup`      | Steuert die aktuelle Ausführung nicht.                                                                                        | Führt eingereihte Nachrichten später aus.                                        |
-| `collect`       | Steuert die aktuelle Ausführung nicht.                                                                                        | Fasst kompatible eingereihte Nachrichten nach dem Debounce-Fenster zu einem späteren Turn zusammen. |
-| `interrupt`     | Bricht die aktive Ausführung ab und startet dann die neueste Nachricht.                                                       | Keine.                                                                          |
+| Modus       | Verhalten bei aktivem Lauf                                      | Späteres Verhalten                                                                    |
+| ----------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `steer`     | Steuert die Eingabe in die aktive Runtime, wenn möglich.        | Wartet, bis der aktive Lauf beendet ist, wenn Steuerung nicht verfügbar ist.          |
+| `followup`  | Steuert nicht.                                                  | Führt eingereihte Nachrichten später aus, nachdem der aktive Lauf endet.              |
+| `collect`   | Steuert nicht.                                                  | Fasst kompatible eingereihte Nachrichten nach dem Debounce-Fenster zu einem späteren Turn zusammen. |
+| `interrupt` | Bricht den aktiven Lauf ab, statt ihn zu steuern.               | Startet nach dem Abbruch die neueste Nachricht.                                       |
 
 ## Burst-Beispiel
 
 Wenn vier Benutzer Nachrichten senden, während der Agent einen Tool-Aufruf ausführt:
 
-- `steer`: Die aktive Runtime erhält alle vier Nachrichten in Eingangsreihenfolge vor
-  ihrer nächsten Modellentscheidung. Pi leert sie an der nächsten Modellgrenze; Codex
-  erhält sie als eine gebündelte `turn/steer`-Anfrage.
-- `queue`: Bisheriges serialisiertes Steering. Pi injiziert jeweils eine eingereihte Nachricht;
-  Codex erhält separate `turn/steer`-Anfragen.
-- `collect`: OpenClaw wartet, bis die aktive Ausführung endet, und erstellt dann einen Followup-
-  Turn mit kompatiblen eingereihten Nachrichten nach dem Debounce-Fenster.
+- Beim Standardverhalten erhält die aktive Runtime alle vier Nachrichten in
+  Eingangsreihenfolge vor ihrer nächsten Modellentscheidung. OpenClaw leert sie an der nächsten Modellgrenze;
+  Codex erhält sie als ein gebündeltes `turn/steer`.
+- Mit `/queue collect` steuert OpenClaw nicht. Es wartet, bis der aktive Lauf
+  endet, und erstellt dann nach dem Debounce-Fenster einen Folge-Turn mit kompatiblen
+  eingereihten Nachrichten.
+- Mit `/queue interrupt` bricht OpenClaw den aktiven Lauf ab und startet die neueste
+  Nachricht, statt zu steuern.
 
-## Geltungsbereich
+## Umfang
 
-Steering zielt immer auf die aktuelle aktive Sitzungsausführung. Es erstellt keine neue
-Sitzung, ändert nicht die Tool-Richtlinie der aktiven Ausführung und teilt Nachrichten nicht nach Absender auf. In
-Mehrbenutzerkanälen enthalten eingehende Prompts bereits Absender- und Routing-Kontext, sodass
+Steuerung zielt immer auf den aktuellen aktiven Sitzungslauf. Sie erstellt keine neue
+Sitzung, ändert nicht die Tool-Richtlinie des aktiven Laufs und teilt Nachrichten nicht nach Absender auf. In
+Mehrbenutzerkanälen enthalten eingehende Eingaben bereits Absender- und Routing-Kontext, sodass
 der nächste Modellaufruf sehen kann, wer welche Nachricht gesendet hat.
 
-Verwenden Sie `collect`, wenn OpenClaw einen späteren Followup-Turn erstellen soll, der
-kompatible Nachrichten zusammenfassen und die Verwerfungsrichtlinie der Followup-Warteschlange beibehalten kann. Verwenden Sie
-`queue` nur, wenn Sie das ältere Steering-Verhalten einzeln nacheinander benötigen.
+Verwenden Sie `followup` oder `collect`, wenn Nachrichten standardmäßig eingereiht werden sollen,
+statt den aktiven Lauf zu steuern. Verwenden Sie `interrupt`, wenn die neueste Eingabe
+den aktiven Lauf ersetzen soll.
 
 ## Debounce
 
-`messages.queue.debounceMs` gilt für die Followup-Zustellung, einschließlich `collect`,
-`followup`, `steer-backlog` und `steer`-Fallback, wenn Steering bei aktiver Ausführung nicht
-verfügbar ist. Für Pi verwendet aktives `steer` selbst den Debounce-Timer nicht, weil
-Pi Nachrichten von Natur aus bis zur nächsten Modellgrenze bündelt. Für das native
-Codex-Harness verwendet OpenClaw denselben Debounce-Wert wie das Ruhefenster, bevor
-das gebündelte `turn/steer` gesendet wird.
+`messages.queue.debounceMs` gilt für die eingereihte Zustellung mit `followup` und `collect`.
+Im Modus `steer` mit dem nativen Codex-Harness legt es außerdem das Ruhefenster
+vor dem Senden des gebündelten `turn/steer` fest. Bei OpenClaw verwendet die aktive Steuerung selbst
+den Debounce-Timer nicht, weil OpenClaw Nachrichten auf natürliche Weise bis zur nächsten Modellgrenze bündelt.
 
 ## Verwandte Themen
 
-- [Befehlswarteschlange](/de/concepts/queue)
-- [Steer](/de/tools/steer)
+- [Befehls-Queue](/de/concepts/queue)
+- [Steuern](/de/tools/steer)
 - [Nachrichten](/de/concepts/messages)
 - [Agent-Schleife](/de/concepts/agent-loop)

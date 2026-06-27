@@ -1,33 +1,34 @@
 ---
 read_when:
-    - Sie möchten den OpenCode-Go-Katalog.
-    - Sie benötigen die Laufzeit-Modellreferenzen für Go-gehostete Modelle.
-summary: Verwenden Sie den OpenCode-Go-Katalog mit dem gemeinsamen OpenCode-Setup
+    - Sie möchten den OpenCode Go-Katalog
+    - Sie benötigen die Runtime-Modellreferenzen für in Go gehostete Modelle
+summary: Verwenden Sie den OpenCode-Go-Katalog mit der gemeinsamen OpenCode-Einrichtung
 title: OpenCode Go
 x-i18n:
-    generated_at: "2026-04-25T18:21:34Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T18:06:00Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2b2b5ba7f81cc101c3e9abdd79a18dc523a4f18b10242a0513b288fcbcc975e4
+    source_hash: eb4e6bd452eeebca5456b0cd70e7622e07ed050a07ff9d6d00926f32efe90569
     source_path: providers/opencode-go.md
-    workflow: 15
+    workflow: 16
 ---
 
 OpenCode Go ist der Go-Katalog innerhalb von [OpenCode](/de/providers/opencode).
-Er verwendet denselben `OPENCODE_API_KEY` wie der Zen-Katalog, behält aber die Laufzeit-
-Provider-ID `opencode-go` bei, damit das vorgelagerte Routing pro Modell korrekt bleibt.
+Er verwendet denselben `OPENCODE_API_KEY` wie der Zen-Katalog, behält aber die
+Runtime-Provider-ID `opencode-go` bei, damit das Upstream-Routing pro Modell korrekt bleibt.
 
 | Eigenschaft      | Wert                            |
 | ---------------- | ------------------------------- |
-| Laufzeit-Provider | `opencode-go`                  |
+| Runtime-Provider | `opencode-go`                   |
 | Authentifizierung | `OPENCODE_API_KEY`             |
-| Übergeordnete Einrichtung | [OpenCode](/de/providers/opencode) |
+| Übergeordnetes Setup | [OpenCode](/de/providers/opencode) |
 
 ## Integrierter Katalog
 
-OpenClaw bezieht die meisten Zeilen des Go-Katalogs aus der gebündelten Pi-Modell-Registry und
-ergänzt aktuelle vorgelagerte Zeilen, während die Registry aufholt. Führen Sie
-`openclaw models list --provider opencode-go` aus, um die aktuelle Modellliste zu sehen.
+OpenClaw bezieht die meisten Zeilen des Go-Katalogs aus der gebündelten OpenClaw-Modellregistrierung und
+ergänzt aktuelle Upstream-Zeilen, während die Registrierung aufholt. Führen Sie
+`openclaw models list --provider opencode-go` aus, um die aktuelle Modellliste anzuzeigen.
 
 Der Provider enthält:
 
@@ -35,8 +36,10 @@ Der Provider enthält:
 | ------------------------------- | --------------------- |
 | `opencode-go/glm-5`             | GLM-5                 |
 | `opencode-go/glm-5.1`           | GLM-5.1               |
+| `opencode-go/glm-5.2`           | GLM-5.2               |
 | `opencode-go/kimi-k2.5`         | Kimi K2.5             |
-| `opencode-go/kimi-k2.6`         | Kimi K2.6 (3x Limits) |
+| `opencode-go/kimi-k2.6`         | Kimi K2.6 (3x limits) |
+| `opencode-go/kimi-k2.7-code`    | Kimi K2.7 Code        |
 | `opencode-go/deepseek-v4-pro`   | DeepSeek V4 Pro       |
 | `opencode-go/deepseek-v4-flash` | DeepSeek V4 Flash     |
 | `opencode-go/mimo-v2-omni`      | MiMo V2 Omni          |
@@ -46,22 +49,24 @@ Der Provider enthält:
 | `opencode-go/qwen3.5-plus`      | Qwen3.5 Plus          |
 | `opencode-go/qwen3.6-plus`      | Qwen3.6 Plus          |
 
+GLM-5.2 verwendet ein Kontextfenster mit 1 Mio. Token und unterstützt bis zu 131.000 Ausgabe-Token.
+
 ## Erste Schritte
 
 <Tabs>
-  <Tab title="Interaktiv">
+  <Tab title="Interactive">
     <Steps>
-      <Step title="Onboarding ausführen">
+      <Step title="Run onboarding">
         ```bash
         openclaw onboard --auth-choice opencode-go
         ```
       </Step>
-      <Step title="Ein Go-Modell als Standard festlegen">
+      <Step title="Set a Go model as default">
         ```bash
         openclaw config set agents.defaults.model.primary "opencode-go/kimi-k2.6"
         ```
       </Step>
-      <Step title="Prüfen, ob Modelle verfügbar sind">
+      <Step title="Verify models are available">
         ```bash
         openclaw models list --provider opencode-go
         ```
@@ -69,14 +74,14 @@ Der Provider enthält:
     </Steps>
   </Tab>
 
-  <Tab title="Nicht interaktiv">
+  <Tab title="Non-interactive">
     <Steps>
-      <Step title="Den Key direkt übergeben">
+      <Step title="Pass the key directly">
         ```bash
         openclaw onboard --opencode-go-api-key "$OPENCODE_API_KEY"
         ```
       </Step>
-      <Step title="Prüfen, ob Modelle verfügbar sind">
+      <Step title="Verify models are available">
         ```bash
         openclaw models list --provider opencode-go
         ```
@@ -97,34 +102,34 @@ Der Provider enthält:
 ## Erweiterte Konfiguration
 
 <AccordionGroup>
-  <Accordion title="Routing-Verhalten">
-    OpenClaw übernimmt das Routing pro Modell automatisch, wenn die Modellreferenz
+  <Accordion title="Routing behavior">
+    OpenClaw verarbeitet das Routing pro Modell automatisch, wenn die Modellreferenz
     `opencode-go/...` verwendet. Es ist keine zusätzliche Provider-Konfiguration erforderlich.
   </Accordion>
 
-  <Accordion title="Konvention für Laufzeitreferenzen">
-    Laufzeitreferenzen bleiben explizit: `opencode/...` für Zen, `opencode-go/...` für Go.
-    Dadurch bleibt das vorgelagerte Routing pro Modell über beide Kataloge hinweg korrekt.
+  <Accordion title="Runtime ref convention">
+    Runtime-Referenzen bleiben explizit: `opencode/...` für Zen, `opencode-go/...` für Go.
+    Dadurch bleibt das Upstream-Routing pro Modell in beiden Katalogen korrekt.
   </Accordion>
 
-  <Accordion title="Gemeinsame Zugangsdaten">
+  <Accordion title="Shared credentials">
     Derselbe `OPENCODE_API_KEY` wird sowohl vom Zen- als auch vom Go-Katalog verwendet. Wenn Sie
-    den Key während der Einrichtung eingeben, werden Zugangsdaten für beide Laufzeit-Provider gespeichert.
+    den Schlüssel während der Einrichtung eingeben, werden Anmeldedaten für beide Runtime-Provider gespeichert.
   </Accordion>
 </AccordionGroup>
 
 <Tip>
-Siehe [OpenCode](/de/providers/opencode) für die gemeinsame Onboarding-Übersicht und die vollständige
-Referenz für Zen- und Go-Kataloge.
+Weitere Informationen zur gemeinsamen Onboarding-Übersicht und zur vollständigen
+Zen- und Go-Katalogreferenz finden Sie unter [OpenCode](/de/providers/opencode).
 </Tip>
 
-## Verwandt
+## Verwandte Themen
 
 <CardGroup cols={2}>
-  <Card title="OpenCode (übergeordnet)" href="/de/providers/opencode" icon="server">
+  <Card title="OpenCode (parent)" href="/de/providers/opencode" icon="server">
     Gemeinsames Onboarding, Katalogübersicht und erweiterte Hinweise.
   </Card>
-  <Card title="Modellauswahl" href="/de/concepts/model-providers" icon="layers">
-    Auswahl von Providern, Modellreferenzen und Failover-Verhalten.
+  <Card title="Model selection" href="/de/concepts/model-providers" icon="layers">
+    Provider, Modellreferenzen und Failover-Verhalten auswählen.
   </Card>
 </CardGroup>

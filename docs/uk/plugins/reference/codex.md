@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або аудитуєте codex Plugin
-summary: Обв’язка сервера застосунку Codex і керований Codex каталог моделей GPT.
+    - Ви встановлюєте, налаштовуєте або проводите аудит Plugin codex
+summary: Обв’язка app-server OpenClaw Codex і Plugin постачальника моделей із каталогом GPT, керованим Codex.
 title: Plugin Codex
 x-i18n:
-    generated_at: "2026-05-03T02:48:54Z"
+    generated_at: "2026-06-27T17:57:39Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c049ce912109d9489a3bcdf31aa01668802ab4b9ded8fdd63e470a5901b261c5
+    source_hash: 8b9c123c0f72d6fb2a8d089ba8ad2cb3227a6c201925678124bd504324392253
     source_path: plugins/reference/codex.md
     workflow: 16
 ---
 
-# Plugin Codex
+# Плагін Codex
 
-Обв'язка app-server Codex і каталог моделей GPT, керований Codex.
+Обв’язка app-server Codex для OpenClaw і плагін постачальника моделей із каталогом GPT, керованим Codex.
 
 ## Розповсюдження
 
 - Пакет: `@openclaw/codex`
-- Спосіб установлення: npm; ClawHub
+- Маршрут встановлення: npm; ClawHub
 
 ## Поверхня
 
-провайдери: codex; контракти: mediaUnderstandingProviders, migrationProviders
+providers: codex; contracts: mediaUnderstandingProviders, migrationProviders, webSearchProviders
 
-## Пов'язана документація
+## Пов’язані документи
 
 - [codex](/uk/plugins/codex-harness)

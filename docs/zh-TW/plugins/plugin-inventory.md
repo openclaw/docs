@@ -1,23 +1,24 @@
 ---
 read_when:
-    - 你正在決定某個 Plugin 是隨核心 npm 套件一併發布，還是另行安裝
-    - 你正在更新隨附 Plugin 套件的中繼資料或發行自動化
-    - 你需要內部與外部 Plugin 的標準清單
-summary: 自動產生的 OpenClaw Plugin 清單，包含隨核心出貨、對外發布或僅以原始碼保留的 Plugin
-title: Plugin 清單
+    - 你正在決定某個外掛是隨核心 npm 套件出貨，還是分開安裝
+    - 你正在更新內建外掛套件中繼資料或發布自動化
+    - 您需要標準的內部與外部外掛清單
+summary: OpenClaw 外掛清單，由核心隨附、外部發布或僅保留原始碼的外掛產生
+title: 外掛清單
 x-i18n:
-    generated_at: "2026-05-10T19:44:05Z"
+    generated_at: "2026-06-27T19:39:19Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1a42c8f230925618eb7c15fd6ea7279694adccd45d8e827bb89dffa13576521d
+    source_hash: a1f0c5aa2c3e5f25308a4398dc2582caa8f355a4dfd0d5693d9cfaf1c1ce6926
     source_path: plugins/plugin-inventory.md
     workflow: 16
 ---
 
-# Plugin 清單
+# 外掛清單
 
 此頁面是由 `extensions/*/package.json`、`openclaw.plugin.json`
-以及根 npm 套件的 `files` 排除項目產生。使用以下命令重新產生：
+以及根 npm 套件 `files` 排除項目產生。使用以下指令重新產生：
 
 ```bash
 pnpm plugins:inventory:gen
@@ -25,19 +26,18 @@ pnpm plugins:inventory:gen
 
 ## 定義
 
-- **核心 npm 套件：** 內建於 `openclaw` npm 套件中，無需另外安裝 Plugin 即可使用。
-- **官方外部套件：** 由 OpenClaw 維護、未包含在核心 npm 套件中的 Plugin，保留於此官方清單中，並可透過 ClawHub 和/或 npm 按需安裝。
-- **僅限原始碼 checkout：** 儲存庫本機 Plugin，未包含於已發布的 npm 成品中，也不會宣傳為可安裝套件。
+- **核心 npm 套件：**內建於 `openclaw` npm 套件，無需另外安裝外掛即可使用。
+- **官方外部套件：**由 OpenClaw 維護、從核心 npm 套件中省略、保留於此官方清單，並可透過 ClawHub 和/或 npm 按需安裝的外掛。
+- **僅限原始碼 checkout：**存放於 repo 本機、從已發布 npm 成品中省略，且未宣傳為可安裝套件的外掛。
 
-原始碼 checkout 與 npm 安裝不同：在 `pnpm install` 之後，內建
-Plugins 會從 `extensions/<id>` 載入，因此可使用本機編輯與套件本機 workspace
-相依項目。
+原始碼 checkout 與 npm 安裝不同：執行 `pnpm install` 後，隨附的
+外掛會從 `extensions/<id>` 載入，因此本機編輯與套件本機 workspace
+相依性都可使用。
 
-## 安裝 Plugin
+## 安裝外掛
 
-使用 **Distribution** 欄位判斷是否需要安裝。標示為
-`included in OpenClaw` 的 Plugins 已存在於核心套件中。官方
-外部套件需要安裝一次，然後重新啟動 Gateway。
+使用每個項目中的安裝路徑來判斷是否需要安裝。標示為 `included in OpenClaw` 的外掛已存在於核心套件中。
+官方外部套件需要安裝一次，然後重新啟動閘道。
 
 例如，Discord 是官方外部套件：
 
@@ -47,140 +47,282 @@ openclaw gateway restart
 openclaw plugins inspect discord --runtime --json
 ```
 
-裸套件規格會先嘗試 ClawHub，接著 fallback 到 npm。若要強制指定來源，請使用
-`clawhub:@openclaw/discord` 或 `npm:@openclaw/discord`。安裝後，請依照
-Plugin 的設定文件（例如 [Discord](/zh-TW/channels/discord)）新增憑證
-與頻道設定。請參閱 [管理 Plugins](/zh-TW/plugins/manage-plugins) 以了解更新、
-解除安裝與發布命令。
+在啟動切換期間，一般裸套件規格仍會從 npm 安裝。
+當你需要明確來源時，請使用 `clawhub:@openclaw/discord` 或 `npm:@openclaw/discord`。
+安裝後，依照外掛的設定文件，例如
+[Discord](/zh-TW/channels/discord)，加入憑證與通道設定。請參閱
+[管理外掛](/zh-TW/plugins/manage-plugins) 以取得更新、解除安裝與發布指令。
+
+每個項目列出套件、發行路徑與說明。
 
 ## 核心 npm 套件
 
-| Plugin                                                            | 描述                                                                                                                                                          | 發行                                                         | 介面                                                                                                                                                                                                                                                          |
-| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [alibaba](/zh-TW/plugins/reference/alibaba)                             | 新增影片生成提供者支援。                                                                                                                              | `@openclaw/alibaba-provider`<br />包含於 OpenClaw               | contracts: videoGenerationProviders                                                                                                                                                                                                                              |
-| [amazon-bedrock](/zh-TW/plugins/reference/amazon-bedrock)               | 為 OpenClaw 新增 Amazon Bedrock 模型提供者支援。                                                                                                              | `@openclaw/amazon-bedrock-provider`<br />包含於 OpenClaw        | providers: amazon-bedrock; contracts: memoryEmbeddingProviders                                                                                                                                                                                                   |
-| [amazon-bedrock-mantle](/zh-TW/plugins/reference/amazon-bedrock-mantle) | 為 OpenClaw 新增 Amazon Bedrock Mantle 模型提供者支援。                                                                                                       | `@openclaw/amazon-bedrock-mantle-provider`<br />包含於 OpenClaw | providers: amazon-bedrock-mantle                                                                                                                                                                                                                                 |
-| [anthropic](/zh-TW/plugins/reference/anthropic)                         | 為 OpenClaw 新增 Anthropic 模型提供者支援。                                                                                                                   | `@openclaw/anthropic-provider`<br />包含於 OpenClaw             | providers: anthropic; contracts: mediaUnderstandingProviders                                                                                                                                                                                                     |
-| [anthropic-vertex](/zh-TW/plugins/reference/anthropic-vertex)           | 為 OpenClaw 新增 Anthropic Vertex 模型提供者支援。                                                                                                            | `@openclaw/anthropic-vertex-provider`<br />包含於 OpenClaw      | providers: anthropic-vertex                                                                                                                                                                                                                                      |
-| [arcee](/zh-TW/plugins/reference/arcee)                                 | 為 OpenClaw 新增 Arcee 模型提供者支援。                                                                                                                       | `@openclaw/arcee-provider`<br />包含於 OpenClaw                 | providers: arcee                                                                                                                                                                                                                                                 |
-| [azure-speech](/zh-TW/plugins/reference/azure-speech)                   | Azure AI Speech 文字轉語音（MP3、原生 Ogg/Opus 語音訊息、PCM 電話通訊）。                                                                                    | `@openclaw/azure-speech`<br />包含於 OpenClaw                   | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [bonjour](/zh-TW/plugins/reference/bonjour)                             | 透過 Bonjour/mDNS 宣告本機 OpenClaw Gateway。                                                                                                              | `@openclaw/bonjour`<br />包含於 OpenClaw                        | plugin                                                                                                                                                                                                                                                           |
-| [browser](/zh-TW/plugins/reference/browser)                             | 新增代理程式可呼叫的工具。                                                                                                                                           | `@openclaw/browser-plugin`<br />包含於 OpenClaw                 | contracts: tools; skills                                                                                                                                                                                                                                         |
-| [byteplus](/zh-TW/plugins/reference/byteplus)                           | 為 OpenClaw 新增 BytePlus、BytePlus Plan 模型提供者支援。                                                                                                     | `@openclaw/byteplus-provider`<br />包含於 OpenClaw              | providers: byteplus, byteplus-plan; contracts: videoGenerationProviders                                                                                                                                                                                          |
-| [canvas](/zh-TW/plugins/reference/canvas)                               | 為配對節點提供實驗性 Canvas 控制與 A2UI 算繪介面。                                                                                            | `@openclaw/canvas-plugin`<br />包含於 OpenClaw                  | contracts: tools                                                                                                                                                                                                                                                 |
-| [cerebras](/zh-TW/plugins/reference/cerebras)                           | 為 OpenClaw 新增 Cerebras 模型提供者支援。                                                                                                                    | `@openclaw/cerebras-provider`<br />包含於 OpenClaw              | providers: cerebras                                                                                                                                                                                                                                              |
-| [chutes](/zh-TW/plugins/reference/chutes)                               | 為 OpenClaw 新增 Chutes 模型提供者支援。                                                                                                                      | `@openclaw/chutes-provider`<br />包含於 OpenClaw                | providers: chutes                                                                                                                                                                                                                                                |
-| [clickclack](/zh-TW/plugins/reference/clickclack)                       | 新增 Clickclack 頻道介面，用於傳送與接收 OpenClaw 訊息。                                                                                     | `@openclaw/clickclack`<br />包含於 OpenClaw                     | channels: clickclack                                                                                                                                                                                                                                             |
-| [cloudflare-ai-gateway](/zh-TW/plugins/reference/cloudflare-ai-gateway) | 為 OpenClaw 新增 Cloudflare AI Gateway 模型提供者支援。                                                                                                       | `@openclaw/cloudflare-ai-gateway-provider`<br />包含於 OpenClaw | providers: cloudflare-ai-gateway                                                                                                                                                                                                                                 |
-| [comfy](/zh-TW/plugins/reference/comfy)                                 | 為 OpenClaw 新增 ComfyUI 模型提供者支援。                                                                                                                     | `@openclaw/comfy-provider`<br />包含於 OpenClaw                 | providers: comfy; contracts: imageGenerationProviders, musicGenerationProviders, videoGenerationProviders                                                                                                                                                        |
-| [copilot-proxy](/zh-TW/plugins/reference/copilot-proxy)                 | 為 OpenClaw 新增 Copilot Proxy 模型提供者支援。                                                                                                               | `@openclaw/copilot-proxy`<br />包含於 OpenClaw                  | providers: copilot-proxy                                                                                                                                                                                                                                         |
-| [deepgram](/zh-TW/plugins/reference/deepgram)                           | 新增媒體理解提供者支援。新增即時轉錄提供者支援。                                                                             | `@openclaw/deepgram-provider`<br />包含於 OpenClaw              | contracts: mediaUnderstandingProviders, realtimeTranscriptionProviders                                                                                                                                                                                           |
-| [deepinfra](/zh-TW/plugins/reference/deepinfra)                         | 為 OpenClaw 新增 DeepInfra 模型提供者支援。                                                                                                                   | `@openclaw/deepinfra-provider`<br />包含於 OpenClaw             | providers: deepinfra; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, speechProviders, videoGenerationProviders                                                                                                      |
-| [deepseek](/zh-TW/plugins/reference/deepseek)                           | 為 OpenClaw 新增 DeepSeek 模型提供者支援。                                                                                                                    | `@openclaw/deepseek-provider`<br />已包含於 OpenClaw              | providers: deepseek                                                                                                                                                                                                                                              |
-| [document-extract](/zh-TW/plugins/reference/document-extract)           | 從本機文件附件擷取文字與備用頁面影像。                                                                                               | `@openclaw/document-extract-plugin`<br />已包含於 OpenClaw        | contracts: documentExtractors                                                                                                                                                                                                                                    |
-| [duckduckgo](/zh-TW/plugins/reference/duckduckgo)                       | 新增網頁搜尋提供者支援。                                                                                                                                    | `@openclaw/duckduckgo-plugin`<br />已包含於 OpenClaw              | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [elevenlabs](/zh-TW/plugins/reference/elevenlabs)                       | 新增媒體理解提供者支援。新增即時轉錄提供者支援。新增文字轉語音提供者支援。                                       | `@openclaw/elevenlabs-speech`<br />已包含於 OpenClaw              | contracts: mediaUnderstandingProviders, realtimeTranscriptionProviders, speechProviders                                                                                                                                                                          |
-| [exa](/zh-TW/plugins/reference/exa)                                     | 新增網頁搜尋提供者支援。                                                                                                                                    | `@openclaw/exa-plugin`<br />已包含於 OpenClaw                     | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [fal](/zh-TW/plugins/reference/fal)                                     | 為 OpenClaw 新增 fal 模型提供者支援。                                                                                                                         | `@openclaw/fal-provider`<br />已包含於 OpenClaw                   | providers: fal; contracts: imageGenerationProviders, videoGenerationProviders                                                                                                                                                                                    |
-| [file-transfer](/zh-TW/plugins/reference/file-transfer)                 | 透過專用節點命令，在已配對的節點上擷取、列出和寫入檔案。對最大 16 MB 的二進位檔，使用 node.invoke 上的 base64 來避開 bash stdout 截斷。 | `@openclaw/file-transfer`<br />已包含於 OpenClaw                  | contracts: tools                                                                                                                                                                                                                                                 |
-| [firecrawl](/zh-TW/plugins/reference/firecrawl)                         | 新增可由代理呼叫的工具。新增網頁擷取提供者支援。新增網頁搜尋提供者支援。                                                                        | `@openclaw/firecrawl-plugin`<br />已包含於 OpenClaw               | contracts: tools, webFetchProviders, webSearchProviders                                                                                                                                                                                                          |
-| [fireworks](/zh-TW/plugins/reference/fireworks)                         | 為 OpenClaw 新增 Fireworks 模型提供者支援。                                                                                                                   | `@openclaw/fireworks-provider`<br />已包含於 OpenClaw             | providers: fireworks                                                                                                                                                                                                                                             |
-| [github-copilot](/zh-TW/plugins/reference/github-copilot)               | 為 OpenClaw 新增 GitHub Copilot 模型提供者支援。                                                                                                              | `@openclaw/github-copilot-provider`<br />已包含於 OpenClaw        | providers: github-copilot; contracts: memoryEmbeddingProviders                                                                                                                                                                                                   |
-| [google](/zh-TW/plugins/reference/google)                               | 為 OpenClaw 新增 Google、Google Gemini CLI、Google Vertex 模型提供者支援。                                                                                    | `@openclaw/google-plugin`<br />已包含於 OpenClaw                  | providers: google, google-gemini-cli, google-vertex; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, musicGenerationProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders, webSearchProviders |
-| [gradium](/zh-TW/plugins/reference/gradium)                             | 新增文字轉語音提供者支援。                                                                                                                                | `@openclaw/gradium-speech`<br />已包含於 OpenClaw                 | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [groq](/zh-TW/plugins/reference/groq)                                   | 為 OpenClaw 新增 Groq 模型提供者支援。                                                                                                                        | `@openclaw/groq-provider`<br />已包含於 OpenClaw                  | providers: groq; contracts: mediaUnderstandingProviders                                                                                                                                                                                                          |
-| [huggingface](/zh-TW/plugins/reference/huggingface)                     | 為 OpenClaw 新增 Hugging Face 模型提供者支援。                                                                                                                | `@openclaw/huggingface-provider`<br />已包含於 OpenClaw           | providers: huggingface                                                                                                                                                                                                                                           |
-| [imessage](/zh-TW/plugins/reference/imessage)                           | 新增用於傳送與接收 OpenClaw 訊息的 iMessage 頻道介面。                                                                                       | `@openclaw/imessage`<br />已包含於 OpenClaw                       | channels: imessage                                                                                                                                                                                                                                               |
-| [inworld](/zh-TW/plugins/reference/inworld)                             | Inworld 串流文字轉語音（MP3、OGG_OPUS、PCM 電話音訊）。                                                                                                     | `@openclaw/inworld-speech`<br />已包含於 OpenClaw                 | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [irc](/zh-TW/plugins/reference/irc)                                     | 新增用於傳送與接收 OpenClaw 訊息的 IRC 頻道介面。                                                                                            | `@openclaw/irc`<br />已包含於 OpenClaw                            | channels: irc                                                                                                                                                                                                                                                    |
-| [kilocode](/zh-TW/plugins/reference/kilocode)                           | 為 OpenClaw 新增 Kilocode 模型提供者支援。                                                                                                                    | `@openclaw/kilocode-provider`<br />已包含於 OpenClaw              | providers: kilocode                                                                                                                                                                                                                                              |
-| [kimi](/zh-TW/plugins/reference/kimi)                                   | 為 OpenClaw 新增 Kimi、Kimi Coding 模型提供者支援。                                                                                                           | `@openclaw/kimi-provider`<br />已包含於 OpenClaw                  | providers: kimi, kimi-coding                                                                                                                                                                                                                                     |
-| [litellm](/zh-TW/plugins/reference/litellm)                             | 為 OpenClaw 新增 LiteLLM 模型提供者支援。                                                                                                                     | `@openclaw/litellm-provider`<br />已包含於 OpenClaw               | providers: litellm; contracts: imageGenerationProviders                                                                                                                                                                                                          |
-| [llm-task](/zh-TW/plugins/reference/llm-task)                           | 適用於可從工作流程呼叫之結構化任務的通用 JSON-only LLM 工具。                                                                                             | `@openclaw/llm-task`<br />已包含於 OpenClaw                       | contracts: tools                                                                                                                                                                                                                                                 |
-| [lmstudio](/zh-TW/plugins/reference/lmstudio)                           | 為 OpenClaw 新增 LM Studio 模型提供者支援。                                                                                                                   | `@openclaw/lmstudio-provider`<br />隨附於 OpenClaw              | providers: lmstudio; contracts: memoryEmbeddingProviders                                                                                                                                                                                                         |
-| [mattermost](/zh-TW/plugins/reference/mattermost)                       | 新增 Mattermost 通道介面，用於傳送和接收 OpenClaw 訊息。                                                                                     | `@openclaw/mattermost`<br />隨附於 OpenClaw                     | channels: mattermost                                                                                                                                                                                                                                             |
-| [memory-core](/zh-TW/plugins/reference/memory-core)                     | 新增記憶嵌入提供者支援。新增可由代理程式呼叫的工具。                                                                                                   | `@openclaw/memory-core`<br />隨附於 OpenClaw                    | contracts: memoryEmbeddingProviders, tools                                                                                                                                                                                                                       |
-| [memory-wiki](/zh-TW/plugins/reference/memory-wiki)                     | OpenClaw 的持久化 wiki 編譯器，以及適合 Obsidian 的知識庫。                                                                                         | `@openclaw/memory-wiki`<br />隨附於 OpenClaw                    | contracts: tools; skills                                                                                                                                                                                                                                         |
-| [microsoft](/zh-TW/plugins/reference/microsoft)                         | 新增文字轉語音提供者支援。                                                                                                                                | `@openclaw/microsoft-speech`<br />隨附於 OpenClaw               | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [microsoft-foundry](/zh-TW/plugins/reference/microsoft-foundry)         | 為 OpenClaw 新增 Microsoft Foundry 模型提供者支援。                                                                                                           | `@openclaw/microsoft-foundry`<br />隨附於 OpenClaw              | providers: microsoft-foundry                                                                                                                                                                                                                                     |
-| [migrate-claude](/zh-TW/plugins/reference/migrate-claude)               | 將 Claude Code 和 Claude Desktop 指示、MCP 伺服器、Skills，以及安全設定匯入 OpenClaw。                                                      | `@openclaw/migrate-claude`<br />隨附於 OpenClaw                 | contracts: migrationProviders                                                                                                                                                                                                                                    |
-| [migrate-hermes](/zh-TW/plugins/reference/migrate-hermes)               | 將 Hermes 設定、記憶、Skills，以及支援的憑證匯入 OpenClaw。                                                                             | `@openclaw/migrate-hermes`<br />隨附於 OpenClaw                 | contracts: migrationProviders                                                                                                                                                                                                                                    |
-| [minimax](/zh-TW/plugins/reference/minimax)                             | 為 OpenClaw 新增 MiniMax、MiniMax Portal 模型提供者支援。                                                                                                     | `@openclaw/minimax-provider`<br />隨附於 OpenClaw               | providers: minimax, minimax-portal; contracts: imageGenerationProviders, mediaUnderstandingProviders, musicGenerationProviders, speechProviders, videoGenerationProviders, webSearchProviders                                                                    |
-| [mistral](/zh-TW/plugins/reference/mistral)                             | 為 OpenClaw 新增 Mistral 模型提供者支援。                                                                                                                     | `@openclaw/mistral-provider`<br />隨附於 OpenClaw               | providers: mistral; contracts: mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders                                                                                                                                             |
-| [moonshot](/zh-TW/plugins/reference/moonshot)                           | 為 OpenClaw 新增 Moonshot 模型提供者支援。                                                                                                                    | `@openclaw/moonshot-provider`<br />隨附於 OpenClaw              | providers: moonshot; contracts: mediaUnderstandingProviders, webSearchProviders                                                                                                                                                                                  |
-| [nvidia](/zh-TW/plugins/reference/nvidia)                               | 為 OpenClaw 新增 NVIDIA 模型提供者支援。                                                                                                                      | `@openclaw/nvidia-provider`<br />隨附於 OpenClaw                | providers: nvidia                                                                                                                                                                                                                                                |
-| [oc-path](/zh-TW/plugins/reference/oc-path)                             | 新增用於 oc:// 工作區檔案定址的 openclaw path CLI。                                                                                                      | `@openclaw/oc-path`<br />隨附於 OpenClaw                        | plugin                                                                                                                                                                                                                                                           |
-| [ollama](/zh-TW/plugins/reference/ollama)                               | 為 OpenClaw 新增 Ollama 模型提供者支援。                                                                                                                      | `@openclaw/ollama-provider`<br />隨附於 OpenClaw                | providers: ollama; contracts: memoryEmbeddingProviders, webSearchProviders                                                                                                                                                                                       |
-| [open-prose](/zh-TW/plugins/reference/open-prose)                       | OpenProse VM Skill 套件，包含 /prose 斜線指令。                                                                                                                 | `@openclaw/open-prose`<br />隨附於 OpenClaw                     | skills                                                                                                                                                                                                                                                           |
-| [openai](/zh-TW/plugins/reference/openai)                               | 為 OpenClaw 新增 OpenAI、OpenAI Codex 模型提供者支援。                                                                                                        | `@openclaw/openai-provider`<br />隨附於 OpenClaw                | providers: openai, openai-codex; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders                                   |
-| [opencode](/zh-TW/plugins/reference/opencode)                           | 為 OpenClaw 新增 OpenCode 模型提供者支援。                                                                                                                    | `@openclaw/opencode-provider`<br />隨附於 OpenClaw              | providers: opencode; contracts: mediaUnderstandingProviders                                                                                                                                                                                                      |
-| [opencode-go](/zh-TW/plugins/reference/opencode-go)                     | 為 OpenClaw 新增 OpenCode Go 模型提供者支援。                                                                                                                 | `@openclaw/opencode-go-provider`<br />隨附於 OpenClaw           | providers: opencode-go; contracts: mediaUnderstandingProviders                                                                                                                                                                                                   |
-| [openrouter](/zh-TW/plugins/reference/openrouter)                       | 為 OpenClaw 新增 OpenRouter 模型提供者支援。                                                                                                                  | `@openclaw/openrouter-provider`<br />隨附於 OpenClaw            | providers: openrouter; contracts: imageGenerationProviders, mediaUnderstandingProviders, speechProviders, videoGenerationProviders                                                                                                                               |
-| [openshell](/zh-TW/plugins/reference/openshell)                         | 由 OpenShell 驅動的沙箱後端，具備鏡像的本機工作區和基於 SSH 的命令執行。                                                                 | `@openclaw/openshell-sandbox`<br />隨附於 OpenClaw              | plugin                                                                                                                                                                                                                                                           |
-| [perplexity](/zh-TW/plugins/reference/perplexity)                       | 新增網頁搜尋提供者支援。                                                                                                                                    | `@openclaw/perplexity-plugin`<br />隨附於 OpenClaw              | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [qianfan](/zh-TW/plugins/reference/qianfan)                             | 新增 Qianfan 模型提供者支援至 OpenClaw。                                                                                                                     | `@openclaw/qianfan-provider`<br />包含於 OpenClaw               | providers: qianfan                                                                                                                                                                                                                                               |
-| [qwen](/zh-TW/plugins/reference/qwen)                                   | 新增 Qwen、Qwen Cloud、Model Studio、DashScope 模型提供者支援至 OpenClaw。                                                                                   | `@openclaw/qwen-provider`<br />包含於 OpenClaw                  | providers: qwen, qwencloud, modelstudio, dashscope; contracts: mediaUnderstandingProviders, videoGenerationProviders                                                                                                                                             |
-| [runway](/zh-TW/plugins/reference/runway)                               | 新增影片生成提供者支援。                                                                                                                              | `@openclaw/runway-provider`<br />包含於 OpenClaw                | contracts: videoGenerationProviders                                                                                                                                                                                                                              |
-| [searxng](/zh-TW/plugins/reference/searxng)                             | 新增網頁搜尋提供者支援。                                                                                                                                    | `@openclaw/searxng-plugin`<br />包含於 OpenClaw                 | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [senseaudio](/zh-TW/plugins/reference/senseaudio)                       | 新增媒體理解提供者支援。                                                                                                                           | `@openclaw/senseaudio-provider`<br />包含於 OpenClaw            | contracts: mediaUnderstandingProviders                                                                                                                                                                                                                           |
-| [sglang](/zh-TW/plugins/reference/sglang)                               | 新增 SGLang 模型提供者支援至 OpenClaw。                                                                                                                      | `@openclaw/sglang-provider`<br />包含於 OpenClaw                | providers: sglang                                                                                                                                                                                                                                                |
-| [signal](/zh-TW/plugins/reference/signal)                               | 新增 Signal 通道介面，用於傳送和接收 OpenClaw 訊息。                                                                                         | `@openclaw/signal`<br />包含於 OpenClaw                         | channels: signal                                                                                                                                                                                                                                                 |
-| [skill-workshop](/zh-TW/plugins/reference/skill-workshop)               | 將可重複工作流程擷取為工作區技能，支援待審核、安全寫入和技能提示重新整理。                                                       | `@openclaw/skill-workshop`<br />包含於 OpenClaw                 | contracts: tools                                                                                                                                                                                                                                                 |
-| [slack](/zh-TW/plugins/reference/slack)                                 | 新增 Slack 通道介面，用於傳送和接收 OpenClaw 訊息。                                                                                          | `@openclaw/slack`<br />包含於 OpenClaw                          | channels: slack                                                                                                                                                                                                                                                  |
-| [stepfun](/zh-TW/plugins/reference/stepfun)                             | 新增 StepFun、StepFun Plan 模型提供者支援至 OpenClaw。                                                                                                       | `@openclaw/stepfun-provider`<br />包含於 OpenClaw               | providers: stepfun, stepfun-plan                                                                                                                                                                                                                                 |
-| [synthetic](/zh-TW/plugins/reference/synthetic)                         | 新增 Synthetic 模型提供者支援至 OpenClaw。                                                                                                                   | `@openclaw/synthetic-provider`<br />包含於 OpenClaw             | providers: synthetic                                                                                                                                                                                                                                             |
-| [tavily](/zh-TW/plugins/reference/tavily)                               | 新增可由代理呼叫的工具。新增網頁搜尋提供者支援。                                                                                                         | `@openclaw/tavily-plugin`<br />包含於 OpenClaw                  | contracts: tools, webSearchProviders; skills                                                                                                                                                                                                                     |
-| [telegram](/zh-TW/plugins/reference/telegram)                           | 新增 Telegram 通道介面，用於傳送和接收 OpenClaw 訊息。                                                                                       | `@openclaw/telegram`<br />包含於 OpenClaw                       | channels: telegram                                                                                                                                                                                                                                               |
-| [tencent](/zh-TW/plugins/reference/tencent)                             | 新增 Tencent TokenHub 模型提供者支援至 OpenClaw。                                                                                                            | `@openclaw/tencent-provider`<br />包含於 OpenClaw               | providers: tencent-tokenhub                                                                                                                                                                                                                                      |
-| [together](/zh-TW/plugins/reference/together)                           | 新增 Together 模型提供者支援至 OpenClaw。                                                                                                                    | `@openclaw/together-provider`<br />包含於 OpenClaw              | providers: together; contracts: videoGenerationProviders                                                                                                                                                                                                         |
-| [tokenjuice](/zh-TW/plugins/reference/tokenjuice)                       | 使用 tokenjuice reducers 壓縮 exec 和 bash 工具結果。                                                                                                        | `@openclaw/tokenjuice`<br />包含於 OpenClaw                     | contracts: agentToolResultMiddleware                                                                                                                                                                                                                             |
-| [tts-local-cli](/zh-TW/plugins/reference/tts-local-cli)                 | 新增文字轉語音提供者支援。                                                                                                                                | `@openclaw/tts-local-cli`<br />包含於 OpenClaw                  | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [venice](/zh-TW/plugins/reference/venice)                               | 新增 Venice 模型提供者支援至 OpenClaw。                                                                                                                      | `@openclaw/venice-provider`<br />包含於 OpenClaw                | providers: venice                                                                                                                                                                                                                                                |
-| [vercel-ai-gateway](/zh-TW/plugins/reference/vercel-ai-gateway)         | 新增 Vercel AI Gateway 模型提供者支援至 OpenClaw。                                                                                                           | `@openclaw/vercel-ai-gateway-provider`<br />包含於 OpenClaw     | providers: vercel-ai-gateway                                                                                                                                                                                                                                     |
-| [vllm](/zh-TW/plugins/reference/vllm)                                   | 新增 vLLM 模型提供者支援至 OpenClaw。                                                                                                                        | `@openclaw/vllm-provider`<br />包含於 OpenClaw                  | providers: vllm                                                                                                                                                                                                                                                  |
-| [volcengine](/zh-TW/plugins/reference/volcengine)                       | 新增 Volcengine、Volcengine Plan 模型提供者支援至 OpenClaw。                                                                                                 | `@openclaw/volcengine-provider`<br />包含於 OpenClaw            | providers: volcengine, volcengine-plan; contracts: speechProviders                                                                                                                                                                                               |
-| [voyage](/zh-TW/plugins/reference/voyage)                               | 新增記憶嵌入提供者支援。                                                                                                                              | `@openclaw/voyage-provider`<br />已包含於 OpenClaw                | contracts: memoryEmbeddingProviders                                                                                                                                                                                                                              |
-| [vydra](/zh-TW/plugins/reference/vydra)                                 | 為 OpenClaw 新增 Vydra 模型提供者支援。                                                                                                                       | `@openclaw/vydra-provider`<br />已包含於 OpenClaw                 | providers: vydra; contracts: imageGenerationProviders, speechProviders, videoGenerationProviders                                                                                                                                                                 |
-| [web-readability](/zh-TW/plugins/reference/web-readability)             | 從本機 HTML 網頁擷取回應中提取可讀的文章內容。                                                                                                | `@openclaw/web-readability-plugin`<br />已包含於 OpenClaw         | contracts: webContentExtractors                                                                                                                                                                                                                                  |
-| [webhooks](/zh-TW/plugins/reference/webhooks)                           | 經過驗證的入站 Webhook，將外部自動化綁定到 OpenClaw TaskFlow。                                                                                  | `@openclaw/webhooks`<br />已包含於 OpenClaw                       | plugin                                                                                                                                                                                                                                                           |
-| [xai](/zh-TW/plugins/reference/xai)                                     | 為 OpenClaw 新增 xAI 模型提供者支援。                                                                                                                         | `@openclaw/xai-plugin`<br />已包含於 OpenClaw                     | providers: xai; contracts: imageGenerationProviders, mediaUnderstandingProviders, realtimeTranscriptionProviders, speechProviders, tools, videoGenerationProviders, webSearchProviders                                                                           |
-| [xiaomi](/zh-TW/plugins/reference/xiaomi)                               | 為 OpenClaw 新增 Xiaomi 模型提供者支援。                                                                                                                      | `@openclaw/xiaomi-provider`<br />已包含於 OpenClaw                | providers: xiaomi; contracts: speechProviders                                                                                                                                                                                                                    |
-| [zai](/zh-TW/plugins/reference/zai)                                     | 為 OpenClaw 新增 Z.AI 模型提供者支援。                                                                                                                        | `@openclaw/zai-provider`<br />已包含於 OpenClaw                   | providers: zai; contracts: mediaUnderstandingProviders                                                                                                                                                                                                           |
+59 個外掛
+
+- **[admin-http-rpc](/zh-TW/plugins/reference/admin-http-rpc)** (`@openclaw/admin-http-rpc`) - 內含於 OpenClaw。OpenClaw 管理 HTTP RPC 端點。
+
+- **[alibaba](/zh-TW/plugins/reference/alibaba)** (`@openclaw/alibaba-provider`) - 內含於 OpenClaw。新增影片生成提供者支援。
+
+- **[anthropic](/zh-TW/plugins/reference/anthropic)** (`@openclaw/anthropic-provider`) - 內含於 OpenClaw。為 OpenClaw 新增 Anthropic 模型提供者支援。
+
+- **[azure-speech](/zh-TW/plugins/reference/azure-speech)** (`@openclaw/azure-speech`) - 內含於 OpenClaw。Azure AI Speech 文字轉語音（MP3、原生 Ogg/Opus 語音訊息、PCM 電話語音）。
+
+- **[bonjour](/zh-TW/plugins/reference/bonjour)** (`@openclaw/bonjour`) - 內含於 OpenClaw。透過 Bonjour/mDNS 廣播本機 OpenClaw 閘道。
+
+- **[browser](/zh-TW/plugins/reference/browser)** (`@openclaw/browser-plugin`) - 內含於 OpenClaw。新增代理可呼叫的工具。
+
+- **[byteplus](/zh-TW/plugins/reference/byteplus)** (`@openclaw/byteplus-provider`) - 內含於 OpenClaw。為 OpenClaw 新增 BytePlus、BytePlus Plan 模型提供者支援。
+
+- **[canvas](/zh-TW/plugins/reference/canvas)** (`@openclaw/canvas-plugin`) - 內含於 OpenClaw。為配對節點提供實驗性 Canvas 控制與 A2UI 算繪介面。
+
+- **[codex-supervisor](/zh-TW/plugins/reference/codex-supervisor)** (`@openclaw/codex-supervisor`) - 內含於 OpenClaw。從 OpenClaw 監督 Codex app-server 工作階段。
+
+- **[cohere](/zh-TW/plugins/reference/cohere)** (`@openclaw/cohere-provider`) - 內含於 OpenClaw；npm；ClawHub：`clawhub:@openclaw/cohere-provider`。OpenClaw Cohere 提供者外掛。
+
+- **[comfy](/zh-TW/plugins/reference/comfy)** (`@openclaw/comfy-provider`) - 內含於 OpenClaw。為 OpenClaw 新增 ComfyUI 模型提供者支援。
+
+- **[copilot-proxy](/zh-TW/plugins/reference/copilot-proxy)** (`@openclaw/copilot-proxy`) - 內含於 OpenClaw。為 OpenClaw 新增 Copilot Proxy 模型提供者支援。
+
+- **[deepgram](/zh-TW/plugins/reference/deepgram)** (`@openclaw/deepgram-provider`) - 內含於 OpenClaw。新增媒體理解提供者支援。新增即時轉錄提供者支援。
+
+- **[document-extract](/zh-TW/plugins/reference/document-extract)** (`@openclaw/document-extract-plugin`) - 內含於 OpenClaw。從本機文件附件擷取文字與備用頁面影像。
+
+- **[duckduckgo](/zh-TW/plugins/reference/duckduckgo)** (`@openclaw/duckduckgo-plugin`) - 內含於 OpenClaw。新增網路搜尋提供者支援。
+
+- **[elevenlabs](/zh-TW/plugins/reference/elevenlabs)** (`@openclaw/elevenlabs-speech`) - 內含於 OpenClaw。新增媒體理解提供者支援。新增即時轉錄提供者支援。新增文字轉語音提供者支援。
+
+- **[fal](/zh-TW/plugins/reference/fal)** (`@openclaw/fal-provider`) - 內含於 OpenClaw。為 OpenClaw 新增 fal 模型提供者支援。
+
+- **[file-transfer](/zh-TW/plugins/reference/file-transfer)** (`@openclaw/file-transfer`) - 內含於 OpenClaw。透過專用節點指令在配對節點上擷取、列出與寫入檔案。對於最高 16 MB 的二進位檔，使用透過 node.invoke 傳送的 base64，以略過 bash stdout 截斷。
+
+- **[github-copilot](/zh-TW/plugins/reference/github-copilot)** (`@openclaw/github-copilot-provider`) - 內含於 OpenClaw。為 OpenClaw 新增 GitHub Copilot 模型提供者支援。
+
+- **[google](/zh-TW/plugins/reference/google)** (`@openclaw/google-plugin`) - 內含於 OpenClaw。為 OpenClaw 新增 Google、Google Gemini CLI、Google Vertex 模型提供者支援。
+
+- **[huggingface](/zh-TW/plugins/reference/huggingface)** (`@openclaw/huggingface-provider`) - 內含於 OpenClaw。為 OpenClaw 新增 Hugging Face 模型提供者支援。
+
+- **[imessage](/zh-TW/plugins/reference/imessage)** (`@openclaw/imessage`) - 內含於 OpenClaw。新增用於傳送與接收 OpenClaw 訊息的 iMessage 通道介面。
+
+- **[litellm](/zh-TW/plugins/reference/litellm)** (`@openclaw/litellm-provider`) - 內含於 OpenClaw。為 OpenClaw 新增 LiteLLM 模型提供者支援。
+
+- **[llm-task](/zh-TW/plugins/reference/llm-task)** (`@openclaw/llm-task`) - 內含於 OpenClaw。可從工作流程呼叫、用於結構化任務的通用 JSON-only LLM 工具。
+
+- **[lmstudio](/zh-TW/plugins/reference/lmstudio)** (`@openclaw/lmstudio-provider`) - 內含於 OpenClaw。為 OpenClaw 新增 LM Studio 模型提供者支援。
+
+- **[memory-core](/zh-TW/plugins/reference/memory-core)** (`@openclaw/memory-core`) - 內含於 OpenClaw。新增代理可呼叫的工具。
+
+- **[memory-wiki](/zh-TW/plugins/reference/memory-wiki)** (`@openclaw/memory-wiki`) - 內含於 OpenClaw。為 OpenClaw 提供持久化 wiki 編譯器與適合 Obsidian 的知識庫。
+
+- **[microsoft](/zh-TW/plugins/reference/microsoft)** (`@openclaw/microsoft-speech`) - 內含於 OpenClaw。新增文字轉語音提供者支援。
+
+- **[microsoft-foundry](/zh-TW/plugins/reference/microsoft-foundry)** (`@openclaw/microsoft-foundry`) - 內含於 OpenClaw。為 OpenClaw 新增 Microsoft Foundry 模型提供者支援。
+
+- **[migrate-claude](/zh-TW/plugins/reference/migrate-claude)** (`@openclaw/migrate-claude`) - 內含於 OpenClaw。將 Claude Code 與 Claude Desktop 指示、MCP 伺服器、skills 以及安全設定匯入 OpenClaw。
+
+- **[migrate-hermes](/zh-TW/plugins/reference/migrate-hermes)** (`@openclaw/migrate-hermes`) - 內含於 OpenClaw。將 Hermes 設定、記憶、skills 與支援的憑證匯入 OpenClaw。
+
+- **[minimax](/zh-TW/plugins/reference/minimax)** (`@openclaw/minimax-provider`) - 內含於 OpenClaw。為 OpenClaw 新增 MiniMax、MiniMax Portal 模型提供者支援。
+
+- **[mistral](/zh-TW/plugins/reference/mistral)** (`@openclaw/mistral-provider`) - 內含於 OpenClaw。為 OpenClaw 新增 Mistral 模型提供者支援。
+
+- **[novita](/zh-TW/plugins/reference/novita)** (`@openclaw/novita-provider`) - 內含於 OpenClaw。為 OpenClaw 新增 Novita、Novita AI、Novitaai 模型提供者支援。
+
+- **[nvidia](/zh-TW/plugins/reference/nvidia)** (`@openclaw/nvidia-provider`) - 內含於 OpenClaw。為 OpenClaw 新增 NVIDIA 模型提供者支援。
+
+- **[oc-path](/zh-TW/plugins/reference/oc-path)** (`@openclaw/oc-path`) - 內含於 OpenClaw。新增用於 oc:// workspace 檔案定址的 openclaw path 命令列介面。
+
+- **[ollama](/zh-TW/plugins/reference/ollama)** (`@openclaw/ollama-provider`) - 內含於 OpenClaw。為 OpenClaw 新增 Ollama、Ollama Cloud 模型提供者支援。
+
+- **[open-prose](/zh-TW/plugins/reference/open-prose)** (`@openclaw/open-prose`) - 內含於 OpenClaw。OpenProse VM skill pack，提供 /prose 斜線指令。
+
+- **[openai](/zh-TW/plugins/reference/openai)** (`@openclaw/openai-provider`) - 內含於 OpenClaw。為 OpenClaw 新增 OpenAI 模型提供者支援。
+
+- **[opencode](/zh-TW/plugins/reference/opencode)** (`@openclaw/opencode-provider`) - 內含於 OpenClaw。為 OpenClaw 新增 OpenCode 模型提供者支援。
+
+- **[opencode-go](/zh-TW/plugins/reference/opencode-go)** (`@openclaw/opencode-go-provider`) - 內含於 OpenClaw。為 OpenClaw 新增 OpenCode Go 模型提供者支援。
+
+- **[openrouter](/zh-TW/plugins/reference/openrouter)** (`@openclaw/openrouter-provider`) - 內含於 OpenClaw。為 OpenClaw 新增 OpenRouter 模型提供者支援。
+
+- **[policy](/zh-TW/plugins/reference/policy)** (`@openclaw/policy`) - 內含於 OpenClaw。新增由政策支援的 doctor 檢查，以確認 workspace 符合規範。
+
+- **[runway](/zh-TW/plugins/reference/runway)** (`@openclaw/runway-provider`) - 內含於 OpenClaw。新增影片生成提供者支援。
+
+- **[senseaudio](/zh-TW/plugins/reference/senseaudio)** (`@openclaw/senseaudio-provider`) - 內含於 OpenClaw。新增媒體理解提供者支援。
+
+- **[sglang](/zh-TW/plugins/reference/sglang)** (`@openclaw/sglang-provider`) - 內含於 OpenClaw。為 OpenClaw 新增 SGLang 模型提供者支援。
+
+- **[synthetic](/zh-TW/plugins/reference/synthetic)** (`@openclaw/synthetic-provider`) - 內含於 OpenClaw。為 OpenClaw 新增 Synthetic 模型提供者支援。
+
+- **[telegram](/zh-TW/plugins/reference/telegram)** (`@openclaw/telegram`) - 內含於 OpenClaw。新增用於傳送與接收 OpenClaw 訊息的 Telegram 通道介面。
+
+- **[together](/zh-TW/plugins/reference/together)** (`@openclaw/together-provider`) - 內含於 OpenClaw。為 OpenClaw 新增 Together 模型提供者支援。
+
+- **[tts-local-cli](/zh-TW/plugins/reference/tts-local-cli)** (`@openclaw/tts-local-cli`) - 內含於 OpenClaw。新增文字轉語音提供者支援。
+
+- **[vllm](/zh-TW/plugins/reference/vllm)** (`@openclaw/vllm-provider`) - 內含於 OpenClaw。為 OpenClaw 新增 vLLM 模型提供者支援。
+
+- **[volcengine](/zh-TW/plugins/reference/volcengine)** (`@openclaw/volcengine-provider`) - 內含於 OpenClaw。為 OpenClaw 新增 Volcengine、Volcengine Plan 模型提供者支援。
+
+- **[voyage](/zh-TW/plugins/reference/voyage)** (`@openclaw/voyage-provider`) - 內含於 OpenClaw。新增記憶嵌入提供者支援。
+
+- **[vydra](/zh-TW/plugins/reference/vydra)** (`@openclaw/vydra-provider`) - 內含於 OpenClaw。為 OpenClaw 新增 Vydra 模型提供者支援。
+
+- **[web-readability](/zh-TW/plugins/reference/web-readability)** (`@openclaw/web-readability-plugin`) - 內含於 OpenClaw。從本機 HTML 網頁擷取回應中擷取可讀文章內容。
+
+- **[webhooks](/zh-TW/plugins/reference/webhooks)** (`@openclaw/webhooks`) - 內含於 OpenClaw。經驗證的入站網路鉤子，將外部自動化綁定至 OpenClaw TaskFlows。
+
+- **[workboard](/zh-TW/plugins/reference/workboard)** (`@openclaw/workboard`) - 內含於 OpenClaw。供代理擁有的議題與工作階段使用的儀表板工作板。
+
+- **[xai](/zh-TW/plugins/reference/xai)** (`@openclaw/xai-plugin`) - 內含於 OpenClaw。為 OpenClaw 新增 xAI 模型提供者支援。
+
+- **[xiaomi](/zh-TW/plugins/reference/xiaomi)** (`@openclaw/xiaomi-provider`) - 內含於 OpenClaw。為 OpenClaw 新增 Xiaomi、Xiaomi Token Plan 模型提供者支援。
 
 ## 官方外部套件
 
-| Plugin                                                              | 說明                                                                                  | 發佈                                                                                             | 介面                                                                         |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
-| [acpx](/zh-TW/plugins/reference/acpx)                                     | 內嵌 ACP 執行階段後端，具備由 Plugin 擁有的工作階段與傳輸管理。                      | `@openclaw/acpx`<br />npm; ClawHub                                                               | skills                                                                       |
-| [brave](/zh-TW/plugins/reference/brave)                                   | 新增網頁搜尋提供者支援。                                                              | `@openclaw/brave-plugin`<br />npm; ClawHub                                                       | contracts: webSearchProviders                                                |
-| [codex](/zh-TW/plugins/reference/codex)                                   | Codex 應用程式伺服器 harness，以及由 Codex 管理的 GPT 模型目錄。                      | `@openclaw/codex`<br />npm; ClawHub                                                              | providers: codex; contracts: mediaUnderstandingProviders, migrationProviders |
-| [diagnostics-otel](/zh-TW/plugins/reference/diagnostics-otel)             | OpenClaw diagnostics OpenTelemetry exporter。                                          | `@openclaw/diagnostics-otel`<br />npm; ClawHub: `clawhub:@openclaw/diagnostics-otel`             | plugin                                                                       |
-| [diagnostics-prometheus](/zh-TW/plugins/reference/diagnostics-prometheus) | OpenClaw diagnostics Prometheus exporter。                                             | `@openclaw/diagnostics-prometheus`<br />npm; ClawHub: `clawhub:@openclaw/diagnostics-prometheus` | plugin                                                                       |
-| [diffs](/zh-TW/plugins/reference/diffs)                                   | 供代理使用的唯讀差異檢視器與檔案渲染器。                                              | `@openclaw/diffs`<br />npm; ClawHub                                                              | contracts: tools; skills                                                     |
-| [discord](/zh-TW/plugins/reference/discord)                               | 新增 Discord channel 介面，用於傳送和接收 OpenClaw 訊息。                             | `@openclaw/discord`<br />npm; ClawHub                                                            | channels: discord                                                            |
-| [feishu](/zh-TW/plugins/reference/feishu)                                 | 新增 Feishu channel 介面，用於傳送和接收 OpenClaw 訊息。                              | `@openclaw/feishu`<br />npm; ClawHub                                                             | channels: feishu; contracts: tools; skills                                   |
-| [google-meet](/zh-TW/plugins/reference/google-meet)                       | 透過 Chrome 或 Twilio 傳輸加入 Google Meet 通話。                                     | `@openclaw/google-meet`<br />npm; ClawHub                                                        | contracts: tools                                                             |
-| [googlechat](/zh-TW/plugins/reference/googlechat)                         | 新增 Google Chat channel 介面，用於傳送和接收 OpenClaw 訊息。                         | `@openclaw/googlechat`<br />npm; ClawHub                                                         | channels: googlechat                                                         |
-| [line](/zh-TW/plugins/reference/line)                                     | 新增 LINE channel 介面，用於傳送和接收 OpenClaw 訊息。                                | `@openclaw/line`<br />npm; ClawHub                                                               | channels: line                                                               |
-| [lobster](/zh-TW/plugins/reference/lobster)                               | 具備可恢復核准流程的型別化工作流程工具。                                              | `@openclaw/lobster`<br />npm; ClawHub                                                            | contracts: tools                                                             |
-| [matrix](/zh-TW/plugins/reference/matrix)                                 | 新增 Matrix channel 介面，用於傳送和接收 OpenClaw 訊息。                              | `@openclaw/matrix`<br />ClawHub: `clawhub:@openclaw/matrix`; npm                                 | channels: matrix                                                             |
-| [memory-lancedb](/zh-TW/plugins/reference/memory-lancedb)                 | 新增代理可呼叫的工具。                                                                | `@openclaw/memory-lancedb`<br />npm; ClawHub                                                     | contracts: tools                                                             |
-| [msteams](/zh-TW/plugins/reference/msteams)                               | 新增 Microsoft Teams channel 介面，用於傳送和接收 OpenClaw 訊息。                     | `@openclaw/msteams`<br />npm; ClawHub                                                            | channels: msteams                                                            |
-| [nextcloud-talk](/zh-TW/plugins/reference/nextcloud-talk)                 | 新增 Nextcloud Talk channel 介面，用於傳送和接收 OpenClaw 訊息。                      | `@openclaw/nextcloud-talk`<br />npm; ClawHub                                                     | channels: nextcloud-talk                                                     |
-| [nostr](/zh-TW/plugins/reference/nostr)                                   | 新增 Nostr channel 介面，用於傳送和接收 OpenClaw 訊息。                               | `@openclaw/nostr`<br />npm; ClawHub                                                              | channels: nostr                                                              |
-| [qqbot](/zh-TW/plugins/reference/qqbot)                                   | 新增 QQ Bot channel 介面，用於傳送和接收 OpenClaw 訊息。                              | `@openclaw/qqbot`<br />npm; ClawHub                                                              | channels: qqbot; contracts: tools; skills                                    |
-| [synology-chat](/zh-TW/plugins/reference/synology-chat)                   | 新增 Synology Chat channel 介面，用於傳送和接收 OpenClaw 訊息。                       | `@openclaw/synology-chat`<br />npm; ClawHub                                                      | channels: synology-chat                                                      |
-| [tlon](/zh-TW/plugins/reference/tlon)                                     | 新增 Tlon channel 介面，用於傳送和接收 OpenClaw 訊息。                                | `@openclaw/tlon`<br />npm; ClawHub                                                               | channels: tlon; contracts: tools; skills                                     |
-| [twitch](/zh-TW/plugins/reference/twitch)                                 | 新增 Twitch channel 介面，用於傳送和接收 OpenClaw 訊息。                              | `@openclaw/twitch`<br />npm; ClawHub                                                             | channels: twitch                                                             |
-| [voice-call](/zh-TW/plugins/reference/voice-call)                         | 新增代理可呼叫的工具。                                                                | `@openclaw/voice-call`<br />npm; ClawHub                                                         | contracts: tools                                                             |
-| [whatsapp](/zh-TW/plugins/reference/whatsapp)                             | 新增 WhatsApp channel 介面，用於傳送和接收 OpenClaw 訊息。                            | `@openclaw/whatsapp`<br />npm; ClawHub                                                           | channels: whatsapp                                                           |
-| [zalo](/zh-TW/plugins/reference/zalo)                                     | 新增 Zalo channel 介面，用於傳送和接收 OpenClaw 訊息。                                | `@openclaw/zalo`<br />npm; ClawHub                                                               | channels: zalo                                                               |
-| [zalouser](/zh-TW/plugins/reference/zalouser)                             | 新增 Zalo Personal channel 介面，用於傳送和接收 OpenClaw 訊息。                       | `@openclaw/zalouser`<br />npm; ClawHub                                                           | channels: zalouser; contracts: tools                                         |
+68 個外掛
 
-## 僅限原始碼簽出
+- **[acpx](/zh-TW/plugins/reference/acpx)** (`@openclaw/acpx`) - npm；ClawHub。OpenClaw ACP 執行階段後端，具備外掛擁有的工作階段與傳輸管理。
 
-| Plugin                                      | 說明                                                                     | 發佈                                             | 介面                 |
-| ------------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------ | -------------------- |
-| [qa-channel](/zh-TW/plugins/reference/qa-channel) | 新增 QA Channel 介面，用於傳送和接收 OpenClaw 訊息。                    | `@openclaw/qa-channel`<br />僅限原始碼簽出       | channels: qa-channel |
-| [qa-lab](/zh-TW/plugins/reference/qa-lab)         | OpenClaw QA lab Plugin，包含私有偵錯器 UI 與情境執行器。                | `@openclaw/qa-lab`<br />僅限原始碼簽出           | plugin               |
-| [qa-matrix](/zh-TW/plugins/reference/qa-matrix)   | Matrix QA 傳輸執行器與基底。                                             | `@openclaw/qa-matrix`<br />僅限原始碼簽出        | plugin               |
+- **[amazon-bedrock](/zh-TW/plugins/reference/amazon-bedrock)** (`@openclaw/amazon-bedrock-provider`) - npm；ClawHub。OpenClaw Amazon Bedrock 提供者外掛，支援模型探索、嵌入與 guardrail。
+
+- **[amazon-bedrock-mantle](/zh-TW/plugins/reference/amazon-bedrock-mantle)** (`@openclaw/amazon-bedrock-mantle-provider`) - npm；ClawHub。OpenClaw Amazon Bedrock Mantle 提供者外掛，用於 OpenAI 相容模型路由。
+
+- **[anthropic-vertex](/zh-TW/plugins/reference/anthropic-vertex)** (`@openclaw/anthropic-vertex-provider`) - npm；ClawHub。OpenClaw Anthropic Vertex 提供者外掛，用於 Google Vertex AI 上的 Claude 模型。
+
+- **[arcee](/zh-TW/plugins/reference/arcee)** (`@openclaw/arcee-provider`) - npm；ClawHub：`clawhub:@openclaw/arcee-provider`。為 OpenClaw 新增 Arcee 模型提供者支援。
+
+- **[brave](/zh-TW/plugins/reference/brave)** (`@openclaw/brave-plugin`) - npm；ClawHub。OpenClaw Brave Search 提供者外掛，用於網頁搜尋。
+
+- **[cerebras](/zh-TW/plugins/reference/cerebras)** (`@openclaw/cerebras-provider`) - npm；ClawHub：`clawhub:@openclaw/cerebras-provider`。為 OpenClaw 新增 Cerebras 模型提供者支援。
+
+- **[chutes](/zh-TW/plugins/reference/chutes)** (`@openclaw/chutes-provider`) - npm；ClawHub：`clawhub:@openclaw/chutes-provider`。為 OpenClaw 新增 Chutes 模型提供者支援。
+
+- **[clickclack](/zh-TW/plugins/reference/clickclack)** (`@openclaw/clickclack`) - npm；ClawHub：`clawhub:@openclaw/clickclack`。新增 ClickClack 頻道介面，用於傳送和接收 OpenClaw 訊息。
+
+- **[cloudflare-ai-gateway](/zh-TW/plugins/reference/cloudflare-ai-gateway)** (`@openclaw/cloudflare-ai-gateway-provider`) - npm；ClawHub：`clawhub:@openclaw/cloudflare-ai-gateway-provider`。為 OpenClaw 新增 Cloudflare AI Gateway 模型提供者支援。
+
+- **[codex](/zh-TW/plugins/reference/codex)** (`@openclaw/codex`) - npm；ClawHub。OpenClaw Codex app-server harness 與模型提供者外掛，包含由 Codex 管理的 GPT 型錄。
+
+- **[copilot](/zh-TW/plugins/reference/copilot)** (`@openclaw/copilot`) - npm；ClawHub：`clawhub:@openclaw/copilot`。註冊 GitHub Copilot 代理程式執行階段。
+
+- **[deepinfra](/zh-TW/plugins/reference/deepinfra)** (`@openclaw/deepinfra-provider`) - npm；ClawHub：`clawhub:@openclaw/deepinfra-provider`。為 OpenClaw 新增 DeepInfra 模型提供者支援。
+
+- **[deepseek](/zh-TW/plugins/reference/deepseek)** (`@openclaw/deepseek-provider`) - npm；ClawHub：`clawhub:@openclaw/deepseek-provider`。為 OpenClaw 新增 DeepSeek 模型提供者支援。
+
+- **[diagnostics-otel](/zh-TW/plugins/reference/diagnostics-otel)** (`@openclaw/diagnostics-otel`) - npm；ClawHub：`clawhub:@openclaw/diagnostics-otel`。OpenClaw 診斷 OpenTelemetry 匯出器，用於指標、追蹤與記錄。
+
+- **[diagnostics-prometheus](/zh-TW/plugins/reference/diagnostics-prometheus)** (`@openclaw/diagnostics-prometheus`) - npm；ClawHub：`clawhub:@openclaw/diagnostics-prometheus`。OpenClaw 診斷 Prometheus 匯出器，用於執行階段指標。
+
+- **[diffs](/zh-TW/plugins/reference/diffs)** (`@openclaw/diffs`) - npm；ClawHub。OpenClaw 唯讀差異檢視器外掛與代理程式檔案轉譯器。
+
+- **[diffs-language-pack](/zh-TW/plugins/reference/diffs-language-pack)** (`@openclaw/diffs-language-pack`) - npm；ClawHub：`clawhub:@openclaw/diffs-language-pack`。為預設差異檢視器集合以外的語言新增語法醒目提示。
+
+- **[discord](/zh-TW/plugins/reference/discord)** (`@openclaw/discord`) - npm；ClawHub。OpenClaw Discord 頻道外掛，用於頻道、私訊、命令與應用程式事件。
+
+- **[exa](/zh-TW/plugins/reference/exa)** (`@openclaw/exa-plugin`) - npm；ClawHub：`clawhub:@openclaw/exa-plugin`。新增網頁搜尋提供者支援。
+
+- **[feishu](/zh-TW/plugins/reference/feishu)** (`@openclaw/feishu`) - npm；ClawHub。OpenClaw Feishu/Lark 頻道外掛，用於聊天與工作場所工具（由 @m1heng 社群維護）。
+
+- **[firecrawl](/zh-TW/plugins/reference/firecrawl)** (`@openclaw/firecrawl-plugin`) - npm；ClawHub：`clawhub:@openclaw/firecrawl-plugin`。新增可由代理程式呼叫的工具。新增網頁擷取提供者支援。新增網頁搜尋提供者支援。
+
+- **[fireworks](/zh-TW/plugins/reference/fireworks)** (`@openclaw/fireworks-provider`) - npm；ClawHub：`clawhub:@openclaw/fireworks-provider`。為 OpenClaw 新增 Fireworks 模型提供者支援。
+
+- **[gmi](/zh-TW/plugins/reference/gmi)** (`@openclaw/gmi-provider`) - npm；ClawHub：`clawhub:@openclaw/gmi-provider`。OpenClaw GMI Cloud 提供者外掛。
+
+- **[google-meet](/zh-TW/plugins/reference/google-meet)** (`@openclaw/google-meet`) - npm；ClawHub。OpenClaw Google Meet 參與者外掛，用於透過 Chrome 或 Twilio 傳輸加入通話。
+
+- **[googlechat](/zh-TW/plugins/reference/googlechat)** (`@openclaw/googlechat`) - npm；ClawHub。OpenClaw Google Chat 頻道外掛，用於聊天室與直接訊息。
+
+- **[gradium](/zh-TW/plugins/reference/gradium)** (`@openclaw/gradium-speech`) - npm；ClawHub：`clawhub:@openclaw/gradium-speech`。新增文字轉語音提供者支援。
+
+- **[groq](/zh-TW/plugins/reference/groq)** (`@openclaw/groq-provider`) - npm；ClawHub：`clawhub:@openclaw/groq-provider`。為 OpenClaw 新增 Groq 模型提供者支援。
+
+- **[inworld](/zh-TW/plugins/reference/inworld)** (`@openclaw/inworld-speech`) - npm；ClawHub：`clawhub:@openclaw/inworld-speech`。Inworld 串流文字轉語音（MP3、OGG_OPUS、PCM 電話語音）。
+
+- **[irc](/zh-TW/plugins/reference/irc)** (`@openclaw/irc`) - npm；ClawHub：`clawhub:@openclaw/irc`。新增 IRC 頻道介面，用於傳送和接收 OpenClaw 訊息。
+
+- **[kilocode](/zh-TW/plugins/reference/kilocode)** (`@openclaw/kilocode-provider`) - npm；ClawHub：`clawhub:@openclaw/kilocode-provider`。為 OpenClaw 新增 Kilocode 模型提供者支援。
+
+- **[kimi](/zh-TW/plugins/reference/kimi)** (`@openclaw/kimi-provider`) - npm；ClawHub：`clawhub:@openclaw/kimi-provider`。為 OpenClaw 新增 Kimi、Kimi Coding 模型提供者支援。
+
+- **[line](/zh-TW/plugins/reference/line)** (`@openclaw/line`) - npm；ClawHub。OpenClaw LINE 頻道外掛，用於 LINE Bot API 聊天。
+
+- **[llama-cpp](/zh-TW/plugins/reference/llama-cpp)** (`@openclaw/llama-cpp-provider`) - npm；ClawHub。透過 node-llama-cpp 進行本機 GGUF 嵌入。
+
+- **[lobster](/zh-TW/plugins/reference/lobster)** (`@openclaw/lobster`) - npm；ClawHub。Lobster 工作流程工具外掛，用於型別化管線與可恢復核准。
+
+- **[matrix](/zh-TW/plugins/reference/matrix)** (`@openclaw/matrix`) - ClawHub：`clawhub:@openclaw/matrix`；npm。OpenClaw Matrix 頻道外掛，用於房間與直接訊息。
+
+- **[mattermost](/zh-TW/plugins/reference/mattermost)** (`@openclaw/mattermost`) - npm；ClawHub：`clawhub:@openclaw/mattermost`。新增 Mattermost 頻道介面，用於傳送和接收 OpenClaw 訊息。
+
+- **[memory-lancedb](/zh-TW/plugins/reference/memory-lancedb)** (`@openclaw/memory-lancedb`) - npm；ClawHub。OpenClaw 由 LanceDB 支援的長期記憶外掛，具備自動回想、自動擷取與向量搜尋。
+
+- **[moonshot](/zh-TW/plugins/reference/moonshot)** (`@openclaw/moonshot-provider`) - npm；ClawHub：`clawhub:@openclaw/moonshot-provider`。為 OpenClaw 新增 Moonshot 模型提供者支援。
+
+- **[msteams](/zh-TW/plugins/reference/msteams)** (`@openclaw/msteams`) - npm；ClawHub。OpenClaw Microsoft Teams 頻道外掛，用於 Bot 對話。
+
+- **[nextcloud-talk](/zh-TW/plugins/reference/nextcloud-talk)** (`@openclaw/nextcloud-talk`) - npm；ClawHub。OpenClaw Nextcloud Talk 頻道外掛，用於對話。
+
+- **[nostr](/zh-TW/plugins/reference/nostr)** (`@openclaw/nostr`) - npm；ClawHub。OpenClaw Nostr 頻道外掛，用於 NIP-04 加密直接訊息。
+
+- **[openshell](/zh-TW/plugins/reference/openshell)** (`@openclaw/openshell-sandbox`) - npm；ClawHub。OpenClaw 沙盒後端，用於 NVIDIA OpenShell 命令列介面，具備鏡像本機工作區與 SSH 命令執行。
+
+- **[parallel](/zh-TW/tools/parallel-search)** (`@openclaw/parallel-plugin`) - npm；ClawHub：`clawhub:@openclaw/parallel-plugin`。新增網頁搜尋提供者支援。
+
+- **[perplexity](/zh-TW/plugins/reference/perplexity)** (`@openclaw/perplexity-plugin`) - npm；ClawHub：`clawhub:@openclaw/perplexity-plugin`。新增網頁搜尋提供者支援。
+
+- **[pixverse](/zh-TW/plugins/reference/pixverse)** (`@openclaw/pixverse-provider`) - npm；ClawHub：`clawhub:@openclaw/pixverse-provider`。OpenClaw PixVerse 影片生成提供者外掛。
+
+- **[qianfan](/zh-TW/plugins/reference/qianfan)** (`@openclaw/qianfan-provider`) - npm；ClawHub：`clawhub:@openclaw/qianfan-provider`。為 OpenClaw 新增 Qianfan 模型提供者支援。
+
+- **[qqbot](/zh-TW/plugins/reference/qqbot)** (`@openclaw/qqbot`) - npm；ClawHub。OpenClaw QQ Bot 頻道外掛，用於群組與直接訊息工作流程。
+
+- **[qwen](/zh-TW/plugins/reference/qwen)** (`@openclaw/qwen-provider`) - npm；ClawHub：`clawhub:@openclaw/qwen-provider`。為 OpenClaw 新增 Qwen、Qwen Cloud、Model Studio、DashScope、Qwen Oauth、Qwen Portal、Qwen 命令列介面模型提供者支援。
+
+- **[raft](/zh-TW/plugins/reference/raft)** (`@openclaw/raft`) - npm；ClawHub。OpenClaw Raft 頻道外掛，用於安全的命令列介面喚醒橋接。
+
+- **[searxng](/zh-TW/plugins/reference/searxng)** (`@openclaw/searxng-plugin`) - npm；ClawHub：`clawhub:@openclaw/searxng-plugin`。新增網頁搜尋提供者支援。
+
+- **[signal](/zh-TW/plugins/reference/signal)** (`@openclaw/signal`) - npm；ClawHub：`clawhub:@openclaw/signal`。新增 Signal 頻道介面，用於傳送和接收 OpenClaw 訊息。
+
+- **[slack](/zh-TW/plugins/reference/slack)** (`@openclaw/slack`) - npm；ClawHub。OpenClaw Slack 頻道外掛，用於頻道、私訊、命令與應用程式事件。
+
+- **[sms](/zh-TW/plugins/reference/sms)** (`@openclaw/sms`) - npm；ClawHub：`clawhub:@openclaw/sms`。Twilio SMS 頻道外掛，用於 OpenClaw 文字訊息。
+
+- **[stepfun](/zh-TW/plugins/reference/stepfun)** (`@openclaw/stepfun-provider`) - npm；ClawHub：`clawhub:@openclaw/stepfun-provider`。為 OpenClaw 新增 StepFun、StepFun Plan 模型提供者支援。
+
+- **[synology-chat](/zh-TW/plugins/reference/synology-chat)** (`@openclaw/synology-chat`) - npm；ClawHub。Synology Chat 頻道外掛，用於 OpenClaw 頻道與直接訊息。
+
+- **[tavily](/zh-TW/plugins/reference/tavily)** (`@openclaw/tavily-plugin`) - npm；ClawHub：`clawhub:@openclaw/tavily-plugin`。新增可由代理程式呼叫的工具。新增網頁搜尋提供者支援。
+
+- **[tencent](/zh-TW/plugins/reference/tencent)** (`@openclaw/tencent-provider`) - npm；ClawHub：`clawhub:@openclaw/tencent-provider`。為 OpenClaw 新增 Tencent TokenHub 模型提供者支援。
+
+- **[tlon](/zh-TW/plugins/reference/tlon)** (`@openclaw/tlon`) - npm；ClawHub。OpenClaw Tlon/Urbit 頻道外掛，用於聊天工作流程。
+
+- **[tokenjuice](/zh-TW/plugins/reference/tokenjuice)** (`@openclaw/tokenjuice`) - npm；ClawHub：`clawhub:@openclaw/tokenjuice`。使用 tokenjuice reducers 壓縮 exec 與 bash 工具結果。
+
+- **[twitch](/zh-TW/plugins/reference/twitch)** (`@openclaw/twitch`) - npm；ClawHub。OpenClaw Twitch 頻道外掛，用於聊天與審核工作流程。
+
+- **[venice](/zh-TW/plugins/reference/venice)** (`@openclaw/venice-provider`) - npm；ClawHub：`clawhub:@openclaw/venice-provider`。為 OpenClaw 新增 Venice 模型提供者支援。
+
+- **[vercel-ai-gateway](/zh-TW/plugins/reference/vercel-ai-gateway)** (`@openclaw/vercel-ai-gateway-provider`) - npm；ClawHub：`clawhub:@openclaw/vercel-ai-gateway-provider`。為 OpenClaw 新增 Vercel AI Gateway 模型提供者支援。
+
+- **[voice-call](/zh-TW/plugins/reference/voice-call)** (`@openclaw/voice-call`) - npm；ClawHub。OpenClaw voice-call 外掛，用於 Twilio、Telnyx 與 Plivo 電話通話。
+
+- **[whatsapp](/zh-TW/plugins/reference/whatsapp)** (`@openclaw/whatsapp`) - ClawHub：`clawhub:@openclaw/whatsapp`；npm。OpenClaw WhatsApp 頻道外掛，用於 WhatsApp Web 聊天。
+
+- **[zai](/zh-TW/plugins/reference/zai)** (`@openclaw/zai-provider`) - npm；ClawHub：`clawhub:@openclaw/zai-provider`。為 OpenClaw 新增 Z.AI 模型提供者支援。
+
+- **[zalo](/zh-TW/plugins/reference/zalo)** (`@openclaw/zalo`) - npm；ClawHub。OpenClaw Zalo 頻道外掛，用於 Bot 與網路鉤子聊天。
+
+- **[zalouser](/zh-TW/plugins/reference/zalouser)** (`@openclaw/zalouser`) - npm；ClawHub。OpenClaw Zalo Personal Account 外掛，透過原生 zca-js 整合。
+
+## 僅限原始碼 checkout
+
+3 個外掛
+
+- **[qa-channel](/zh-TW/plugins/reference/qa-channel)** (`@openclaw/qa-channel`) - 僅限原始碼 checkout。新增 QA Channel 介面，用於傳送和接收 OpenClaw 訊息。
+
+- **[qa-lab](/zh-TW/plugins/reference/qa-lab)** (`@openclaw/qa-lab`) - 僅限原始碼 checkout。OpenClaw QA lab 外掛，具備私有偵錯工具介面與情境執行器。
+
+- **[qa-matrix](/zh-TW/plugins/reference/qa-matrix)** (`@openclaw/qa-matrix`) - 僅限原始碼簽出。矩陣 QA 傳輸執行器與基底。

@@ -1,26 +1,27 @@
 ---
 read_when:
-    - 您正在安裝、設定或稽核 diagnostics-prometheus Plugin
-summary: OpenClaw 診斷 Prometheus 匯出器。
-title: 診斷 Prometheus Plugin
+    - 你正在安裝、設定或稽核 diagnostics-prometheus 外掛
+summary: OpenClaw 診斷用 Prometheus 匯出器，用於執行階段指標。
+title: 診斷 Prometheus 外掛
 x-i18n:
-    generated_at: "2026-05-03T21:40:06Z"
+    generated_at: "2026-06-27T19:42:25Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d69cf5b607ea7d93ed5886e63816716fef762a7b144d8a0d1b92c0101aa3678c
+    source_hash: dbf2b296f6ff8a468ad0072dc78066a48a9bee26cf1d233506aeae79149b5822
     source_path: plugins/reference/diagnostics-prometheus.md
     workflow: 16
 ---
 
-# 診斷 Prometheus Plugin
+# 診斷 Prometheus 外掛
 
-OpenClaw 診斷 Prometheus 匯出器。
+OpenClaw 診斷 Prometheus 匯出器，用於執行階段指標。
 
 ## 發佈
 
 - 套件：`@openclaw/diagnostics-prometheus`
-- 安裝路徑：npm；ClawHub：`clawhub:@openclaw/diagnostics-prometheus`
+- 安裝途徑：npm；ClawHub：`clawhub:@openclaw/diagnostics-prometheus`
 
 ## 介面
 
-Plugin
+外掛

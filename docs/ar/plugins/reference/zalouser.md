@@ -1,31 +1,32 @@
 ---
 read_when:
-    - أنت بصدد تثبيت Plugin zalouser أو تكوينه أو تدقيقه
-summary: يضيف واجهة قناة Zalo Personal لإرسال رسائل OpenClaw واستقبالها.
-title: Plugin Zalo الشخصي
+    - أنت بصدد تثبيت Plugin ‏zalouser أو تهيئته أو تدقيقه
+summary: Plugin OpenClaw لحساب Zalo الشخصي عبر تكامل zca-js الأصلي.
+title: Plugin Zalo Personal
 x-i18n:
-    generated_at: "2026-05-03T07:38:42Z"
+    generated_at: "2026-06-27T18:16:52Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 16ed8b255fd10e2a21bc9d9665c1eb26440929e5a46fe2f9dbfae929a25417a0
+    source_hash: c03db694c940cb1fb20f4a2f73512c9d3cf3c79e910cc6a0dd4aa38bd4465ed5
     source_path: plugins/reference/zalouser.md
     workflow: 16
 ---
 
-# Zalo Personal Plugin
+# Plugin Zalo Personal
 
-يضيف واجهة قناة Zalo Personal لإرسال رسائل OpenClaw واستقبالها.
+Plugin حساب Zalo Personal في OpenClaw عبر تكامل zca-js الأصلي.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/zalouser`
 - مسار التثبيت: npm؛ ClawHub
 
-## الواجهة
+## السطح
 
 القنوات: zalouser؛ العقود: tools
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
 - [zalouser](/ar/channels/zalouser)
 - [zalouser](/ar/plugins/zalouser)

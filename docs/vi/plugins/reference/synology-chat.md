@@ -1,29 +1,30 @@
 ---
 read_when:
     - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin synology-chat
-summary: Thêm giao diện kênh Synology Chat để gửi và nhận tin nhắn OpenClaw.
+summary: Plugin kênh Synology Chat cho các kênh và tin nhắn trực tiếp của OpenClaw.
 title: Plugin Synology Chat
 x-i18n:
-    generated_at: "2026-05-03T10:42:35Z"
+    generated_at: "2026-06-27T17:55:49Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 545eb93ad56c25e1261a0840747a494915a04773636fc14424d9e83395b4f663
+    source_hash: 13caa3939ae9abbf11f95a0578e9fcf79f280c54953bcde76a28383afa43c404
     source_path: plugins/reference/synology-chat.md
     workflow: 16
 ---
 
 # Plugin Synology Chat
 
-Thêm bề mặt kênh Synology Chat để gửi và nhận tin nhắn OpenClaw.
+Plugin kênh Synology Chat cho các kênh OpenClaw và tin nhắn trực tiếp.
 
 ## Phân phối
 
 - Gói: `@openclaw/synology-chat`
-- Phương thức cài đặt: npm; ClawHub
+- Tuyến cài đặt: npm; ClawHub
 
 ## Bề mặt
 
-channels: synology-chat
+kênh: synology-chat
 
 ## Tài liệu liên quan
 

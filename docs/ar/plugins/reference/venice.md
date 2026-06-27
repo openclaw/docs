@@ -1,30 +1,31 @@
 ---
 read_when:
-    - أنت بصدد تثبيت Plugin venice أو تهيئته أو تدقيقه
-summary: يضيف دعم موفر نماذج Venice إلى OpenClaw.
+    - أنت تثبّت Plugin venice أو تهيّئه أو تدقّقه
+summary: يضيف دعم موفّر نماذج Venice إلى OpenClaw.
 title: Plugin Venice
 x-i18n:
-    generated_at: "2026-05-02T21:00:25Z"
+    generated_at: "2026-06-27T18:16:26Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 360110485b78336c672acb6ad458e39d19b585b6532c82f4c99b8857b3f5401d
+    source_hash: 585efb336f3c3f5a9ca7da8a7dfc7bf2e5cb70bcd91fa2c05feea208bd93692e
     source_path: plugins/reference/venice.md
     workflow: 16
 ---
 
-# Venice Plugin
+# Plugin Venice
 
 يضيف دعم موفّر نماذج Venice إلى OpenClaw.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/venice-provider`
-- مسار التثبيت: مضمّن في OpenClaw
+- مسار التثبيت: npm؛ ClawHub: `clawhub:@openclaw/venice-provider`
 
 ## الواجهة
 
 providers: venice
 
-## الوثائق ذات الصلة
+## المستندات ذات الصلة
 
 - [venice](/ar/providers/venice)

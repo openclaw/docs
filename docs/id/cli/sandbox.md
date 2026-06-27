@@ -2,21 +2,22 @@
 read_when: You are managing sandbox runtimes or debugging sandbox/tool-policy behavior.
 status: active
 summary: Kelola runtime sandbox dan periksa kebijakan sandbox yang berlaku
-title: CLI Kotak Pasir
+title: CLI Sandbox
 x-i18n:
-    generated_at: "2026-05-03T21:29:13Z"
+    generated_at: "2026-06-27T17:20:45Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c50b97c35ba8cd79416de6a167a7cbc313d063b320db7deafd42f7a570e507ac
+    source_hash: eeba1a5530bb946b334cfe399b7a0c862694ae47c55b2341d7146333e112602a
     source_path: cli/sandbox.md
     workflow: 16
 ---
 
 Kelola runtime sandbox untuk eksekusi agen yang terisolasi.
 
-## Ringkasan
+## Ikhtisar
 
-OpenClaw dapat menjalankan agen dalam runtime sandbox terisolasi untuk keamanan. Perintah `sandbox` membantu Anda memeriksa dan membuat ulang runtime tersebut setelah pembaruan atau perubahan konfigurasi.
+OpenClaw dapat menjalankan agen dalam runtime sandbox terisolasi demi keamanan. Perintah `sandbox` membantu Anda memeriksa dan membuat ulang runtime tersebut setelah pembaruan atau perubahan konfigurasi.
 
 Saat ini biasanya berarti:
 
@@ -24,17 +25,17 @@ Saat ini biasanya berarti:
 - Runtime sandbox SSH saat `agents.defaults.sandbox.backend = "ssh"`
 - Runtime sandbox OpenShell saat `agents.defaults.sandbox.backend = "openshell"`
 
-Untuk `ssh` dan OpenShell `remote`, pembuatan ulang lebih penting dibandingkan dengan Docker:
+Untuk `ssh` dan OpenShell `remote`, membuat ulang lebih penting dibandingkan dengan Docker:
 
 - workspace jarak jauh menjadi kanonis setelah seed awal
 - `openclaw sandbox recreate` menghapus workspace jarak jauh kanonis tersebut untuk cakupan yang dipilih
-- penggunaan berikutnya melakukan seed ulang dari workspace lokal saat ini
+- penggunaan berikutnya melakukan seed lagi dari workspace lokal saat ini
 
 ## Perintah
 
 ### `openclaw sandbox explain`
 
-Periksa mode/cakupan/akses workspace sandbox **efektif**, kebijakan tool sandbox, dan gate yang ditinggikan (dengan jalur kunci konfigurasi untuk perbaikan).
+Periksa mode/cakupan/akses workspace sandbox yang **efektif**, kebijakan alat sandbox, dan gerbang elevasi (dengan jalur kunci konfigurasi untuk perbaikan).
 
 ```bash
 openclaw sandbox explain
@@ -49,8 +50,8 @@ Cantumkan semua runtime sandbox beserta status dan konfigurasinya.
 
 ```bash
 openclaw sandbox list
-openclaw sandbox list --browser  # List only browser containers
-openclaw sandbox list --json     # JSON output
+openclaw sandbox list --browser  # Cantumkan hanya kontainer browser
+openclaw sandbox list --json     # Output JSON
 ```
 
 **Output mencakup:**
@@ -67,11 +68,11 @@ openclaw sandbox list --json     # JSON output
 Hapus runtime sandbox untuk memaksa pembuatan ulang dengan konfigurasi yang diperbarui.
 
 ```bash
-openclaw sandbox recreate --all                # Recreate all containers
-openclaw sandbox recreate --session main       # Specific session
-openclaw sandbox recreate --agent mybot        # Specific agent
-openclaw sandbox recreate --browser            # Only browser containers
-openclaw sandbox recreate --all --force        # Skip confirmation
+openclaw sandbox recreate --all                # Buat ulang semua kontainer
+openclaw sandbox recreate --session main       # Sesi tertentu
+openclaw sandbox recreate --agent mybot        # Agen tertentu
+openclaw sandbox recreate --browser            # Hanya kontainer browser
+openclaw sandbox recreate --all --force        # Lewati konfirmasi
 ```
 
 **Opsi:**
@@ -83,7 +84,7 @@ openclaw sandbox recreate --all --force        # Skip confirmation
 - `--force`: Lewati prompt konfirmasi
 
 <Note>
-Runtime dibuat ulang secara otomatis saat agen berikutnya digunakan.
+Runtime otomatis dibuat ulang saat agen berikutnya digunakan.
 </Note>
 
 ## Kasus penggunaan
@@ -91,30 +92,30 @@ Runtime dibuat ulang secara otomatis saat agen berikutnya digunakan.
 ### Setelah memperbarui image Docker
 
 ```bash
-# Pull new image
+# Pull image baru
 docker pull openclaw-sandbox:latest
 docker tag openclaw-sandbox:latest openclaw-sandbox:bookworm-slim
 
-# Update config to use new image
-# Edit config: agents.defaults.sandbox.docker.image (or agents.list[].sandbox.docker.image)
+# Perbarui konfigurasi untuk menggunakan image baru
+# Edit konfigurasi: agents.defaults.sandbox.docker.image (atau agents.list[].sandbox.docker.image)
 
-# Recreate containers
+# Buat ulang kontainer
 openclaw sandbox recreate --all
 ```
 
 ### Setelah mengubah konfigurasi sandbox
 
 ```bash
-# Edit config: agents.defaults.sandbox.* (or agents.list[].sandbox.*)
+# Edit konfigurasi: agents.defaults.sandbox.* (atau agents.list[].sandbox.*)
 
-# Recreate to apply new config
+# Buat ulang untuk menerapkan konfigurasi baru
 openclaw sandbox recreate --all
 ```
 
 ### Setelah mengubah target SSH atau materi auth SSH
 
 ```bash
-# Edit config:
+# Edit konfigurasi:
 # - agents.defaults.sandbox.backend
 # - agents.defaults.sandbox.ssh.target
 # - agents.defaults.sandbox.ssh.workspaceRoot
@@ -125,12 +126,12 @@ openclaw sandbox recreate --all
 ```
 
 Untuk backend inti `ssh`, pembuatan ulang menghapus root workspace jarak jauh per cakupan
-pada target SSH. Run berikutnya melakukan seed ulang dari workspace lokal.
+pada target SSH. Run berikutnya melakukan seed lagi dari workspace lokal.
 
 ### Setelah mengubah sumber, kebijakan, atau mode OpenShell
 
 ```bash
-# Edit config:
+# Edit konfigurasi:
 # - agents.defaults.sandbox.backend
 # - plugins.entries.openshell.config.from
 # - plugins.entries.openshell.config.mode
@@ -140,20 +141,20 @@ openclaw sandbox recreate --all
 ```
 
 Untuk mode OpenShell `remote`, pembuatan ulang menghapus workspace jarak jauh kanonis
-untuk cakupan tersebut. Run berikutnya melakukan seed ulang dari workspace lokal.
+untuk cakupan tersebut. Run berikutnya melakukan seed lagi dari workspace lokal.
 
 ### Setelah mengubah setupCommand
 
 ```bash
 openclaw sandbox recreate --all
-# or just one agent:
+# atau hanya satu agen:
 openclaw sandbox recreate --agent family
 ```
 
 ### Hanya untuk agen tertentu
 
 ```bash
-# Update only one agent's containers
+# Perbarui hanya kontainer milik satu agen
 openclaw sandbox recreate --agent alfred
 ```
 
@@ -161,24 +162,24 @@ openclaw sandbox recreate --agent alfred
 
 Saat Anda memperbarui konfigurasi sandbox:
 
-- Runtime yang ada tetap berjalan dengan pengaturan lama.
+- Runtime yang ada terus berjalan dengan pengaturan lama.
 - Runtime hanya dipangkas setelah 24 jam tidak aktif.
-- Agen yang digunakan secara rutin mempertahankan runtime lama tanpa batas.
+- Agen yang digunakan secara rutin mempertahankan runtime lama tetap hidup tanpa batas.
 
-Gunakan `openclaw sandbox recreate` untuk memaksa penghapusan runtime lama. Runtime tersebut dibuat ulang secara otomatis dengan pengaturan saat ini saat berikutnya dibutuhkan.
+Gunakan `openclaw sandbox recreate` untuk memaksa penghapusan runtime lama. Runtime tersebut dibuat ulang otomatis dengan pengaturan saat ini saat berikutnya diperlukan.
 
 <Tip>
-Lebih baik gunakan `openclaw sandbox recreate` daripada pembersihan manual yang spesifik untuk backend. Perintah ini menggunakan registry runtime Gateway dan menghindari ketidakcocokan saat cakupan atau kunci sesi berubah.
+Lebih pilih `openclaw sandbox recreate` daripada pembersihan manual khusus backend. Perintah ini menggunakan registri runtime milik Gateway dan menghindari ketidaksesuaian saat cakupan atau kunci sesi berubah.
 </Tip>
 
-## Migrasi registry
+## Migrasi registri
 
-OpenClaw menyimpan metadata runtime sandbox sebagai satu shard JSON per entri kontainer/browser di bawah direktori status sandbox. Instalasi lama mungkin masih memiliki file legacy monolitik:
+OpenClaw menyimpan metadata runtime sandbox dalam basis data status SQLite bersama. Instalasi lama mungkin masih memiliki file registri sandbox legacy:
 
 - `~/.openclaw/sandbox/containers.json`
 - `~/.openclaw/sandbox/browsers.json`
 
-Pembacaan runtime sandbox reguler tidak menulis ulang file tersebut. Jalankan `openclaw doctor --fix` untuk memigrasikan entri legacy yang valid ke direktori registry bershard. File legacy yang tidak valid dikarantina sehingga satu registry lama yang buruk tidak dapat menyembunyikan entri runtime saat ini.
+Beberapa upgrade juga mungkin memiliki satu shard JSON per kontainer/browser di bawah `~/.openclaw/sandbox/containers/` atau `~/.openclaw/sandbox/browsers/`. Pembacaan runtime sandbox biasa tidak menulis ulang sumber legacy tersebut. Jalankan `openclaw doctor --fix` untuk memigrasikan entri legacy yang valid ke SQLite. File legacy yang tidak valid dikarantina sehingga satu registri lama yang rusak tidak dapat menyembunyikan entri runtime saat ini.
 
 ## Konfigurasi
 
@@ -212,4 +213,4 @@ Pengaturan sandbox berada di `~/.openclaw/openclaw.json` di bawah `agents.defaul
 - [Referensi CLI](/id/cli)
 - [Sandboxing](/id/gateway/sandboxing)
 - [Workspace agen](/id/concepts/agent-workspace)
-- [Doctor](/id/gateway/doctor): memeriksa setup sandbox.
+- [Doctor](/id/gateway/doctor): memeriksa penyiapan sandbox.

@@ -1,38 +1,39 @@
 ---
 read_when:
-    - Bạn muốn có một sơ đồ đầy đủ về tài liệu
+    - Bạn muốn có một bản đồ đầy đủ của tài liệu
 summary: Các trung tâm liên kết đến mọi tài liệu OpenClaw
-title: Các trung tâm tài liệu
+title: Trung tâm tài liệu
 x-i18n:
-    generated_at: "2026-05-12T00:59:41Z"
+    generated_at: "2026-06-27T18:12:10Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f4675773105bbff55e1f38c8449d688dcefc6ad70d9f5e572193f1e0c638e243
+    source_hash: d7d3f089e2caea1e1487c7c0375c62dfb007db05827a77d4e5616839023b9457
     source_path: start/hubs.md
     workflow: 16
 ---
 
 <Note>
-Nếu bạn mới làm quen với OpenClaw, hãy bắt đầu với [Bắt đầu](/vi/start/getting-started).
+Nếu bạn mới dùng OpenClaw, hãy bắt đầu với [Bắt đầu](/vi/start/getting-started).
 </Note>
 
 Dùng các trung tâm này để khám phá mọi trang, bao gồm các bài chuyên sâu và tài liệu tham khảo không xuất hiện trong thanh điều hướng bên trái.
 
 ## Bắt đầu tại đây
 
-- [Mục lục](/vi)
+- [Chỉ mục](/vi)
 - [Bắt đầu](/vi/start/getting-started)
 - [Onboarding](/vi/start/onboarding)
 - [Onboarding (CLI)](/vi/start/wizard)
 - [Thiết lập](/vi/start/setup)
-- [Dashboard (Gateway cục bộ)](http://127.0.0.1:18789/)
+- [Bảng điều khiển (Gateway cục bộ)](http://127.0.0.1:18789/)
 - [Trợ giúp](/vi/help)
 - [Thư mục tài liệu](/vi/start/docs-directory)
 - [Cấu hình](/vi/gateway/configuration)
 - [Ví dụ cấu hình](/vi/gateway/configuration-examples)
 - [Trợ lý OpenClaw](/vi/start/openclaw)
 - [Trưng bày](/vi/start/showcase)
-- [Truyền thuyết](/vi/start/lore)
+- [Lore](/vi/start/lore)
 
 ## Cài đặt + cập nhật
 
@@ -46,12 +47,12 @@ Dùng các trung tâm này để khám phá mọi trang, bao gồm các bài chu
 - [Kiến trúc](/vi/concepts/architecture)
 - [Tính năng](/vi/concepts/features)
 - [Trung tâm mạng](/vi/network)
-- [Runtime tác nhân](/vi/concepts/agent)
-- [Không gian làm việc tác nhân](/vi/concepts/agent-workspace)
+- [Runtime của agent](/vi/concepts/agent)
+- [Không gian làm việc của agent](/vi/concepts/agent-workspace)
 - [Bộ nhớ](/vi/concepts/memory)
-- [Vòng lặp tác nhân](/vi/concepts/agent-loop)
-- [Streaming + chia khối](/vi/concepts/streaming)
-- [Định tuyến đa tác nhân](/vi/concepts/multi-agent)
+- [Vòng lặp agent](/vi/concepts/agent-loop)
+- [Streaming + chia đoạn](/vi/concepts/streaming)
+- [Định tuyến đa agent](/vi/concepts/multi-agent)
 - [Compaction](/vi/concepts/compaction)
 - [Phiên](/vi/concepts/session)
 - [Cắt tỉa phiên](/vi/concepts/session-pruning)
@@ -59,15 +60,15 @@ Dùng các trung tâm này để khám phá mọi trang, bao gồm các bài chu
 - [Hàng đợi](/vi/concepts/queue)
 - [Lệnh gạch chéo](/vi/tools/slash-commands)
 - [Bộ chuyển đổi RPC](/vi/reference/rpc)
-- [Lược đồ TypeBox](/vi/concepts/typebox)
+- [Schema TypeBox](/vi/concepts/typebox)
 - [Xử lý múi giờ](/vi/concepts/timezone)
-- [Presence](/vi/concepts/presence)
+- [Hiện diện](/vi/concepts/presence)
 - [Khám phá + transport](/vi/gateway/discovery)
 - [Bonjour](/vi/gateway/bonjour)
 - [Định tuyến kênh](/vi/channels/channel-routing)
 - [Nhóm](/vi/channels/groups)
 - [Tin nhắn nhóm](/vi/channels/group-messages)
-- [Chuyển dự phòng mô hình](/vi/concepts/model-failover)
+- [Chuyển đổi dự phòng mô hình](/vi/concepts/model-failover)
 - [OAuth](/vi/concepts/oauth)
 
 ## Nhà cung cấp + ingress
@@ -84,7 +85,7 @@ Dùng các trung tâm này để khám phá mọi trang, bao gồm các bài chu
 - [iMessage](/vi/channels/imessage)
 - [Phân tích vị trí](/vi/channels/location)
 - [WebChat](/vi/web/webchat)
-- [Webhooks](/vi/automation/cron-jobs#webhooks)
+- [Webhook](/vi/automation/cron-jobs#webhooks)
 - [Gmail Pub/Sub](/vi/automation/cron-jobs#gmail-pubsub-integration)
 
 ## Gateway + vận hành
@@ -99,7 +100,7 @@ Dùng các trung tâm này để khám phá mọi trang, bao gồm các bài chu
 - [Doctor](/vi/gateway/doctor)
 - [Ghi log](/vi/gateway/logging)
 - [Sandboxing](/vi/gateway/sandboxing)
-- [Dashboard](/vi/web/dashboard)
+- [Bảng điều khiển](/vi/web/dashboard)
 - [Giao diện điều khiển](/vi/web/control-ui)
 - [Truy cập từ xa](/vi/gateway/remote)
 - [README Gateway từ xa](/vi/gateway/remote-gateway-readme)
@@ -119,12 +120,12 @@ Dùng các trung tâm này để khám phá mọi trang, bao gồm các bài chu
 - [Tự động hóa](/vi/automation)
 - [Suy nghĩ + chi tiết](/vi/tools/thinking)
 - [Mô hình](/vi/concepts/models)
-- [Tác nhân con](/vi/tools/subagents)
-- [CLI gửi tác nhân](/vi/tools/agent-send)
-- [Giao diện Terminal](/vi/web/tui)
+- [Sub-agent](/vi/tools/subagents)
+- [CLI gửi agent](/vi/tools/agent-send)
+- [Giao diện terminal](/vi/web/tui)
 - [Điều khiển trình duyệt](/vi/tools/browser)
 - [Trình duyệt (khắc phục sự cố Linux)](/vi/tools/browser-linux-troubleshooting)
-- [Khảo sát](/vi/cli/message)
+- [Thăm dò ý kiến](/vi/cli/message)
 
 ## Node, phương tiện, giọng nói
 
@@ -142,7 +143,7 @@ Dùng các trung tâm này để khám phá mọi trang, bao gồm các bài chu
 - [macOS](/vi/platforms/macos)
 - [iOS](/vi/platforms/ios)
 - [Android](/vi/platforms/android)
-- [Windows (WSL2)](/vi/platforms/windows)
+- [Trung tâm Windows](/vi/platforms/windows)
 - [Linux](/vi/platforms/linux)
 - [Bề mặt web](/vi/web)
 
@@ -159,23 +160,23 @@ Dùng các trung tâm này để khám phá mọi trang, bao gồm các bài chu
 - [Biểu tượng macOS](/vi/platforms/mac/icon)
 - [Ghi log macOS](/vi/platforms/mac/logging)
 - [Quyền macOS](/vi/platforms/mac/permissions)
-- [Điều khiển từ xa macOS](/vi/platforms/mac/remote)
+- [Từ xa macOS](/vi/platforms/mac/remote)
 - [Ký macOS](/vi/platforms/mac/signing)
 - [Gateway macOS (launchd)](/vi/platforms/mac/bundled-gateway)
 - [XPC macOS](/vi/platforms/mac/xpc)
 - [Skills macOS](/vi/platforms/mac/skills)
 - [Peekaboo macOS](/vi/platforms/mac/peekaboo)
 
-## Plugins
+## Plugin
 
-- [Tổng quan Plugins](/vi/tools/plugin)
-- [Xây dựng plugins](/vi/plugins/building-plugins)
+- [Tổng quan Plugin](/vi/tools/plugin)
+- [Xây dựng Plugin](/vi/plugins/building-plugins)
 - [Hook Plugin](/vi/plugins/hooks)
 - [Manifest Plugin](/vi/plugins/manifest)
-- [Công cụ tác nhân](/vi/plugins/building-plugins#registering-agent-tools)
+- [Công cụ agent](/vi/plugins/building-plugins#registering-agent-tools)
 - [Gói Plugin](/vi/plugins/bundles)
 - [ClawHub](/vi/clawhub)
-- [Sổ tay capability](/vi/plugins/adding-capabilities)
+- [Cookbook năng lực](/vi/plugins/adding-capabilities)
 - [Plugin cuộc gọi thoại](/vi/plugins/voice-call)
 - [Plugin người dùng Zalo](/vi/plugins/zalouser)
 

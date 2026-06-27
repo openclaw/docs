@@ -2,45 +2,55 @@
 read_when:
     - Je wilt Inworld-spraaksynthese voor uitgaande antwoorden
     - Je hebt PCM-telefonie of OGG_OPUS-spraaknotitie-uitvoer van Inworld nodig
-summary: Gestreamde tekst-naar-spraak van Inworld voor OpenClaw-antwoorden
+summary: Inworld streaming tekst-naar-spraak voor OpenClaw-antwoorden
 title: Inworld
 x-i18n:
-    generated_at: "2026-05-06T09:29:36Z"
+    generated_at: "2026-06-27T18:12:33Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: caf291bab5da946262ecaf4263c188c168be08ddb43fda72f250b8f8db87b3ff
+    source_hash: ea65903945586516b51b239f0671b9e59dac92f302442f3cb629f66b68338cfb
     source_path: providers/inworld.md
     workflow: 16
 ---
 
-Inworld is een provider voor streaming tekst-naar-spraak (TTS). In OpenClaw
+Inworld is een streaming tekst-naar-spraak-provider (TTS). In OpenClaw
 synthetiseert het uitgaande antwoordaudio (standaard MP3, OGG_OPUS voor spraaknotities)
 en PCM-audio voor telefoniekanalen zoals Voice Call.
 
 OpenClaw post naar het streaming TTS-eindpunt van Inworld, voegt de
-geretourneerde base64-audiochunks samen tot één buffer, en geeft het resultaat door aan
-de standaard pijplijn voor antwoordaudio.
+geretourneerde base64-audiofragmenten samen tot één buffer en geeft het resultaat door aan
+de standaardpijplijn voor antwoordaudio.
 
-| Eigenschap    | Waarde                                                          |
+| Eigenschap        | Waarde                                                          |
 | ------------- | --------------------------------------------------------------- |
 | Provider-id   | `inworld`                                                       |
-| Plugin        | meegeleverd, `enabledByDefault: true`                           |
+| Plugin        | officieel extern pakket                                         |
 | Contract      | `speechProviders` (alleen TTS)                                  |
 | Auth-env-var  | `INWORLD_API_KEY` (HTTP Basic, Base64-dashboardreferentie)      |
 | Basis-URL     | `https://api.inworld.ai`                                        |
 | Standaardstem | `Sarah`                                                         |
-| Standaardmodel | `inworld-tts-1.5-max`                                          |
+| Standaardmodel | `inworld-tts-1.5-max`                                           |
 | Uitvoer       | MP3 (standaard), OGG_OPUS (spraaknotities), PCM 22050 Hz (telefonie) |
 | Website       | [inworld.ai](https://inworld.ai)                                |
-| Docs          | [docs.inworld.ai/tts/tts](https://docs.inworld.ai/tts/tts)      |
+| Documentatie  | [docs.inworld.ai/tts/tts](https://docs.inworld.ai/tts/tts)      |
+
+## Plugin installeren
+
+Installeer de officiële Plugin en herstart daarna Gateway:
+
+```bash
+openclaw plugins install @openclaw/inworld-speech
+openclaw gateway restart
+```
 
 ## Aan de slag
 
 <Steps>
   <Step title="Stel je API-sleutel in">
     Kopieer de referentie uit je Inworld-dashboard (Workspace > API Keys)
-    en stel deze in als env-var. De waarde wordt letterlijk verzonden als de HTTP Basic-
-    referentie, dus codeer deze niet opnieuw met Base64 en converteer deze niet naar een bearer-
+    en stel deze in als env var. De waarde wordt letterlijk verzonden als de HTTP Basic-
+    referentie, dus codeer deze niet opnieuw met Base64 en zet deze niet om naar een bearer-
     token.
 
     ```
@@ -57,7 +67,7 @@ de standaard pijplijn voor antwoordaudio.
           provider: "inworld",
           providers: {
             inworld: {
-              voiceId: "Sarah",
+              speakerVoiceId: "Sarah",
               modelId: "inworld-tts-1.5-max",
             },
           },
@@ -66,8 +76,8 @@ de standaard pijplijn voor antwoordaudio.
     }
     ```
   </Step>
-  <Step title="Stuur een bericht">
-    Stuur een antwoord via een verbonden kanaal. OpenClaw synthetiseert de
+  <Step title="Verstuur een bericht">
+    Verstuur een antwoord via een verbonden kanaal. OpenClaw synthetiseert de
     audio met Inworld en levert deze als MP3 (of OGG_OPUS wanneer het kanaal
     een spraaknotitie verwacht).
   </Step>
@@ -75,13 +85,13 @@ de standaard pijplijn voor antwoordaudio.
 
 ## Configuratieopties
 
-| Optie         | Pad                                          | Beschrijving                                                      |
-| ------------- | -------------------------------------------- | ----------------------------------------------------------------- |
-| `apiKey`      | `messages.tts.providers.inworld.apiKey`      | Base64-dashboardreferentie. Valt terug op `INWORLD_API_KEY`.      |
-| `baseUrl`     | `messages.tts.providers.inworld.baseUrl`     | Overschrijf de basis-URL van de Inworld-API (standaard `https://api.inworld.ai`). |
-| `voiceId`     | `messages.tts.providers.inworld.voiceId`     | Stem-ID (standaard `Sarah`).                                      |
-| `modelId`     | `messages.tts.providers.inworld.modelId`     | TTS-model-id (standaard `inworld-tts-1.5-max`).                   |
-| `temperature` | `messages.tts.providers.inworld.temperature` | Samplingtemperatuur `0..2` (optioneel).                           |
+| Optie            | Pad                                             | Beschrijving                                                     |
+| ---------------- | ----------------------------------------------- | ---------------------------------------------------------------- |
+| `apiKey`         | `messages.tts.providers.inworld.apiKey`         | Base64-dashboardreferentie. Valt terug op `INWORLD_API_KEY`.     |
+| `baseUrl`        | `messages.tts.providers.inworld.baseUrl`        | Overschrijf de basis-URL van de Inworld-API (standaard `https://api.inworld.ai`). |
+| `speakerVoiceId` | `messages.tts.providers.inworld.speakerVoiceId` | Stem-ID (standaard `Sarah`).                                     |
+| `modelId`        | `messages.tts.providers.inworld.modelId`        | TTS-model-id (standaard `inworld-tts-1.5-max`).                  |
+| `temperature`    | `messages.tts.providers.inworld.temperature`    | Samplingtemperatuur `0..2` (optioneel).                          |
 
 ## Opmerkingen
 
@@ -99,13 +109,13 @@ de standaard pijplijn voor antwoordaudio.
   </Accordion>
   <Accordion title="Audio-uitvoer">
     Antwoorden gebruiken standaard MP3. Wanneer het kanaaldoel `voice-note` is,
-    vraagt OpenClaw Inworld om `OGG_OPUS` zodat de audio wordt afgespeeld als een native
+    vraagt OpenClaw Inworld om `OGG_OPUS`, zodat de audio wordt afgespeeld als een native
     spraakballon. Telefoniesynthese gebruikt ruwe `PCM` op 22050 Hz om
     de telefoniebrug te voeden.
   </Accordion>
   <Accordion title="Aangepaste eindpunten">
     Overschrijf de API-host met `messages.tts.providers.inworld.baseUrl`.
-    Afsluitende slashes worden verwijderd voordat verzoeken worden verzonden.
+    Afsluitende slashes worden verwijderd voordat aanvragen worden verzonden.
   </Accordion>
 </AccordionGroup>
 
@@ -119,9 +129,9 @@ de standaard pijplijn voor antwoordaudio.
     Volledige configuratiereferentie inclusief `messages.tts`-instellingen.
   </Card>
   <Card title="Providers" href="/nl/providers" icon="grid">
-    Alle meegeleverde OpenClaw-providers.
+    Alle ondersteunde OpenClaw-providers.
   </Card>
   <Card title="Probleemoplossing" href="/nl/help/troubleshooting" icon="wrench">
-    Veelvoorkomende problemen en foutopsporingsstappen.
+    Veelvoorkomende problemen en stappen voor foutopsporing.
   </Card>
 </CardGroup>

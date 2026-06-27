@@ -3,53 +3,54 @@ read_when: You want multiple isolated agents (workspaces + auth) in one gateway 
 sidebarTitle: Multi-agent routing
 status: active
 summary: 'Perutean multi-agen: agen terisolasi, akun kanal, dan pengikatan'
-title: Perutean multi-agen
+title: Perutean multi-agent
 x-i18n:
-    generated_at: "2026-05-10T19:31:53Z"
+    generated_at: "2026-06-27T17:25:05Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7fd194cbe0938cc6ef6dd9b9803d2b1fe6f3e0777f4df7c407c692fd9f743c59
+    source_hash: 4c1c55188cd27ea786cf65dcabd356a602e1e6da5f842532b189df59195274db
     source_path: concepts/multi-agent.md
     workflow: 16
 ---
 
-Jalankan beberapa agen _terisolasi_ — masing-masing dengan workspace, direktori state (`agentDir`), dan riwayat sesi sendiri — plus beberapa akun kanal (misalnya dua WhatsApp) dalam satu Gateway yang berjalan. Pesan masuk dirutekan ke agen yang tepat melalui binding.
+Jalankan beberapa agen yang _terisolasi_ — masing-masing dengan workspace, direktori state (`agentDir`), dan riwayat sesi sendiri — plus beberapa akun channel (mis. dua WhatsApp) dalam satu Gateway yang berjalan. Pesan masuk dirutekan ke agen yang tepat melalui binding.
 
-Sebuah **agen** di sini adalah cakupan penuh per persona: file workspace, profil autentikasi, registri model, dan penyimpanan sesi. `agentDir` adalah direktori state di disk yang menyimpan konfigurasi per agen ini di `~/.openclaw/agents/<agentId>/`. Sebuah **binding** memetakan akun kanal (misalnya workspace Slack atau nomor WhatsApp) ke salah satu agen tersebut.
+Sebuah **agen** di sini adalah cakupan penuh per-persona: file workspace, profil auth, registry model, dan penyimpanan sesi. `agentDir` adalah direktori state di disk yang menyimpan konfigurasi per-agen ini di `~/.openclaw/agents/<agentId>/`. Sebuah **binding** memetakan akun channel (mis. workspace Slack atau nomor WhatsApp) ke salah satu agen tersebut.
 
 ## Apa itu "satu agen"?
 
-Sebuah **agen** adalah otak dengan cakupan penuh yang memiliki:
+Sebuah **agen** adalah otak yang tercakup penuh dengan miliknya sendiri:
 
 - **Workspace** (file, AGENTS.md/SOUL.md/USER.md, catatan lokal, aturan persona).
-- **Direktori state** (`agentDir`) untuk profil autentikasi, registri model, dan konfigurasi per agen.
+- **Direktori state** (`agentDir`) untuk profil auth, registry model, dan konfigurasi per-agen.
 - **Penyimpanan sesi** (riwayat chat + state perutean) di bawah `~/.openclaw/agents/<agentId>/sessions`.
 
-Profil autentikasi bersifat **per agen**. Setiap agen membaca dari miliknya sendiri:
+Profil auth bersifat **per-agen**. Setiap agen membaca dari miliknya sendiri:
 
 ```text
 ~/.openclaw/agents/<agentId>/agent/auth-profiles.json
 ```
 
 <Note>
-`sessions_history` juga merupakan jalur recall lintas sesi yang lebih aman di sini: ia mengembalikan tampilan terbatas dan tersanitasi, bukan dump transkrip mentah. Recall asisten menghapus tag thinking, scaffolding `<relevant-memories>`, payload XML tool-call teks biasa (termasuk `<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>`, dan blok tool-call yang terpotong), scaffolding tool-call yang diturunkan, token kontrol model ASCII/full-width yang bocor, dan XML tool-call MiniMax yang cacat sebelum redaksi/pemotongan.
+`sessions_history` juga merupakan jalur recall lintas-sesi yang lebih aman di sini: ia mengembalikan tampilan terbatas dan tersanitasi, bukan dump transkrip mentah. Recall asisten menghapus tag pemikiran, scaffolding `<relevant-memories>`, payload XML tool-call teks biasa (termasuk `<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>`, dan blok tool-call yang terpotong), scaffolding tool-call yang diturunkan, token kontrol model ASCII/lebar-penuh yang bocor, dan XML tool-call MiniMax yang tidak valid sebelum redaksi/pemotongan.
 </Note>
 
 <Warning>
-Jangan pernah menggunakan ulang `agentDir` antar agen (ini menyebabkan tabrakan autentikasi/sesi). Agen
-dapat membaca hingga profil autentikasi agen default/utama saat mereka tidak memiliki
-profil lokal, tetapi OpenClaw tidak mengkloning token refresh OAuth ke dalam
+Jangan pernah menggunakan ulang `agentDir` di beberapa agen (itu menyebabkan tabrakan auth/sesi). Agen
+dapat membaca terus ke profil auth agen default/utama saat mereka tidak memiliki
+profil lokal, tetapi OpenClaw tidak mengkloning token refresh OAuth ke
 penyimpanan agen sekunder. Jika Anda menginginkan akun OAuth independen, masuk dari
 agen tersebut; jika Anda menyalin kredensial secara manual, salin hanya profil statis portabel
 `api_key` atau `token`.
 </Warning>
 
-Skills dimuat dari setiap workspace agen plus root bersama seperti `~/.openclaw/skills`, lalu difilter berdasarkan allowlist skill agen efektif saat dikonfigurasi. Gunakan `agents.defaults.skills` untuk baseline bersama dan `agents.list[].skills` untuk penggantian per agen. Lihat [Skills: per agen vs bersama](/id/tools/skills#per-agent-vs-shared-skills) dan [Skills: allowlist skill agen](/id/tools/skills#agent-skill-allowlists).
+Skills dimuat dari setiap workspace agen plus root bersama seperti `~/.openclaw/skills`, lalu difilter oleh allowlist skill agen efektif saat dikonfigurasi. Gunakan `agents.defaults.skills` untuk baseline bersama dan `agents.list[].skills` untuk penggantian per-agen. Lihat [Skills: per-agent vs shared](/id/tools/skills#per-agent-vs-shared-skills) dan [Skills: agent skill allowlists](/id/tools/skills#agent-allowlists).
 
 Gateway dapat menghosting **satu agen** (default) atau **banyak agen** berdampingan.
 
 <Note>
-**Catatan workspace:** workspace setiap agen adalah **cwd default**, bukan sandbox keras. Path relatif diselesaikan di dalam workspace, tetapi path absolut dapat menjangkau lokasi host lain kecuali sandboxing diaktifkan. Lihat [Sandboxing](/id/gateway/sandboxing).
+**Catatan workspace:** workspace setiap agen adalah **cwd default**, bukan sandbox keras. Path relatif di-resolve di dalam workspace, tetapi path absolut dapat menjangkau lokasi host lain kecuali sandboxing diaktifkan. Lihat [Sandboxing](/id/gateway/sandboxing).
 </Note>
 
 ## Path (peta cepat)
@@ -60,16 +61,16 @@ Gateway dapat menghosting **satu agen** (default) atau **banyak agen** berdampin
 - Direktori agen: `~/.openclaw/agents/<agentId>/agent` (atau `agents.list[].agentDir`)
 - Sesi: `~/.openclaw/agents/<agentId>/sessions`
 
-### Mode satu agen (default)
+### Mode agen tunggal (default)
 
 Jika Anda tidak melakukan apa pun, OpenClaw menjalankan satu agen:
 
 - `agentId` default ke **`main`**.
-- Sesi diberi key sebagai `agent:main:<mainKey>`.
+- Sesi diberi kunci sebagai `agent:main:<mainKey>`.
 - Workspace default ke `~/.openclaw/workspace` (atau `~/.openclaw/workspace-<profile>` saat `OPENCLAW_PROFILE` disetel).
 - State default ke `~/.openclaw/agents/main/agent`.
 
-## Pembantu agen
+## Helper agen
 
 Gunakan wizard agen untuk menambahkan agen terisolasi baru:
 
@@ -88,7 +89,7 @@ openclaw agents list --bindings
 ## Mulai cepat
 
 <Steps>
-  <Step title="Buat setiap workspace agen">
+  <Step title="Create each agent workspace">
     Gunakan wizard atau buat workspace secara manual:
 
     ```bash
@@ -99,8 +100,8 @@ openclaw agents list --bindings
     Setiap agen mendapatkan workspace sendiri dengan `SOUL.md`, `AGENTS.md`, dan `USER.md` opsional, plus `agentDir` khusus dan penyimpanan sesi di bawah `~/.openclaw/agents/<agentId>`.
 
   </Step>
-  <Step title="Buat akun kanal">
-    Buat satu akun per agen pada kanal pilihan Anda:
+  <Step title="Create channel accounts">
+    Buat satu akun per agen di channel pilihan Anda:
 
     - Discord: satu bot per agen, aktifkan Message Content Intent, salin setiap token.
     - Telegram: satu bot per agen melalui BotFather, salin setiap token.
@@ -110,13 +111,13 @@ openclaw agents list --bindings
     openclaw channels login --channel whatsapp --account work
     ```
 
-    Lihat panduan kanal: [Discord](/id/channels/discord), [Telegram](/id/channels/telegram), [WhatsApp](/id/channels/whatsapp).
+    Lihat panduan channel: [Discord](/id/channels/discord), [Telegram](/id/channels/telegram), [WhatsApp](/id/channels/whatsapp).
 
   </Step>
-  <Step title="Tambahkan agen, akun, dan binding">
-    Tambahkan agen di bawah `agents.list`, akun kanal di bawah `channels.<channel>.accounts`, dan hubungkan keduanya dengan `bindings` (contoh di bawah).
+  <Step title="Add agents, accounts, and bindings">
+    Tambahkan agen di bawah `agents.list`, akun channel di bawah `channels.<channel>.accounts`, dan hubungkan dengan `bindings` (contoh di bawah).
   </Step>
-  <Step title="Mulai ulang dan verifikasi">
+  <Step title="Restart and verify">
     ```bash
     openclaw gateway restart
     openclaw agents list --bindings
@@ -125,17 +126,17 @@ openclaw agents list --bindings
   </Step>
 </Steps>
 
-## Beberapa agen = beberapa orang, beberapa kepribadian
+## Banyak agen = banyak orang, banyak kepribadian
 
-Dengan **beberapa agen**, setiap `agentId` menjadi **persona yang sepenuhnya terisolasi**:
+Dengan **banyak agen**, setiap `agentId` menjadi **persona yang sepenuhnya terisolasi**:
 
-- **Nomor telepon/akun berbeda** (per kanal `accountId`).
-- **Kepribadian berbeda** (file workspace per agen seperti `AGENTS.md` dan `SOUL.md`).
-- **Autentikasi + sesi terpisah** (tidak ada percakapan silang kecuali diaktifkan secara eksplisit).
+- **Nomor telepon/akun berbeda** (per channel `accountId`).
+- **Kepribadian berbeda** (file workspace per-agen seperti `AGENTS.md` dan `SOUL.md`).
+- **Auth + sesi terpisah** (tidak ada saling bicara kecuali diaktifkan secara eksplisit).
 
-Ini memungkinkan **beberapa orang** berbagi satu server Gateway sambil menjaga "otak" AI dan data mereka tetap terisolasi.
+Ini memungkinkan **banyak orang** berbagi satu server Gateway sambil menjaga "otak" AI dan data mereka tetap terisolasi.
 
-## Pencarian memori QMD lintas agen
+## Pencarian memori QMD lintas-agen
 
 Jika satu agen harus mencari transkrip sesi QMD agen lain, tambahkan koleksi ekstra di bawah `agents.list[].memorySearch.qmd.extraCollections`. Gunakan `agents.defaults.memorySearch.qmd.extraCollections` hanya saat setiap agen harus mewarisi koleksi transkrip bersama yang sama.
 
@@ -170,14 +171,14 @@ Jika satu agen harus mencari transkrip sesi QMD agen lain, tambahkan koleksi eks
 }
 ```
 
-Path koleksi ekstra dapat dibagikan antar agen, tetapi nama koleksi tetap eksplisit saat path berada di luar workspace agen. Path di dalam workspace tetap bercakupan agen sehingga setiap agen mempertahankan set pencarian transkripnya sendiri.
+Path koleksi ekstra dapat dibagikan lintas agen, tetapi nama koleksi tetap eksplisit saat path berada di luar workspace agen. Path di dalam workspace tetap tercakup pada agen sehingga setiap agen mempertahankan set pencarian transkripnya sendiri.
 
-## Satu nomor WhatsApp, beberapa orang (pemisahan DM)
+## Satu nomor WhatsApp, banyak orang (pemisahan DM)
 
-Anda dapat merutekan **DM WhatsApp yang berbeda** ke agen yang berbeda sambil tetap berada pada **satu akun WhatsApp**. Cocokkan berdasarkan pengirim E.164 (seperti `+15551234567`) dengan `peer.kind: "direct"`. Balasan tetap berasal dari nomor WhatsApp yang sama (tidak ada identitas pengirim per agen).
+Anda dapat merutekan **DM WhatsApp yang berbeda** ke agen yang berbeda sambil tetap menggunakan **satu akun WhatsApp**. Cocokkan pada pengirim E.164 (seperti `+15551234567`) dengan `peer.kind: "direct"`. Balasan tetap datang dari nomor WhatsApp yang sama (tidak ada identitas pengirim per-agen).
 
 <Note>
-Chat langsung diciutkan ke **key sesi utama** agen, sehingga isolasi sejati memerlukan **satu agen per orang**.
+Chat langsung diringkas ke **kunci sesi utama** agen, jadi isolasi sejati memerlukan **satu agen per orang**.
 </Note>
 
 Contoh:
@@ -214,15 +215,15 @@ Catatan:
 - Kontrol akses DM bersifat **global per akun WhatsApp** (pairing/allowlist), bukan per agen.
 - Untuk grup bersama, bind grup ke satu agen atau gunakan [Grup broadcast](/id/channels/broadcast-groups).
 
-## Aturan perutean (bagaimana pesan memilih agen)
+## Aturan perutean (cara pesan memilih agen)
 
 Binding bersifat **deterministik** dan **yang paling spesifik menang**:
 
 <Steps>
-  <Step title="kecocokan peer">
-    ID DM/grup/kanal persis.
+  <Step title="peer match">
+    Id DM/grup/channel persis.
   </Step>
-  <Step title="kecocokan parentPeer">
+  <Step title="parentPeer match">
     Pewarisan thread.
   </Step>
   <Step title="guildId + roles">
@@ -234,38 +235,39 @@ Binding bersifat **deterministik** dan **yang paling spesifik menang**:
   <Step title="teamId">
     Slack.
   </Step>
-  <Step title="kecocokan accountId untuk kanal">
-    Fallback per akun.
+  <Step title="accountId match for a channel">
+    Fallback per-akun.
   </Step>
-  <Step title="Kecocokan tingkat kanal">
+  <Step title="Channel-level match">
     `accountId: "*"`.
   </Step>
-  <Step title="Agen default">
-    Fallback ke `agents.list[].default`, jika tidak ada entri daftar pertama, default: `main`.
+  <Step title="Default agent">
+    Fallback ke `agents.list[].default`, jika tidak entri daftar pertama, default: `main`.
   </Step>
 </Steps>
 
 <AccordionGroup>
-  <Accordion title="Pemecahan seri dan semantik AND">
-    - Jika beberapa binding cocok pada tingkat yang sama, yang pertama dalam urutan konfigurasi menang.
-    - Jika binding menetapkan beberapa field kecocokan (misalnya `peer` + `guildId`), semua field yang ditentukan diperlukan (semantik `AND`).
+  <Accordion title="Tie-breaking and AND semantics">
+    - Jika beberapa binding cocok dalam tingkat yang sama, yang pertama dalam urutan konfigurasi menang.
+    - Jika binding menetapkan beberapa field match (misalnya `peer` + `guildId`), semua field yang ditentukan wajib ada (semantik `AND`).
 
   </Accordion>
-  <Accordion title="Detail cakupan akun">
-    - Binding yang menghilangkan `accountId` hanya cocok dengan akun default.
-    - Gunakan `accountId: "*"` untuk fallback seluruh kanal di semua akun.
-    - Jika nanti Anda menambahkan binding yang sama untuk agen yang sama dengan id akun eksplisit, OpenClaw meningkatkan binding khusus kanal yang ada menjadi bercakupan akun alih-alih menduplikasinya.
+  <Accordion title="Account-scope detail">
+    - Binding yang menghilangkan `accountId` hanya cocok dengan akun default. Itu tidak cocok dengan semua akun.
+    - Gunakan `accountId: "*"` untuk fallback seluruh channel di semua akun.
+    - Gunakan `accountId: "<name>"` untuk mencocokkan satu akun.
+    - Jika nanti Anda menambahkan binding yang sama untuk agen yang sama dengan id akun eksplisit, OpenClaw meningkatkan binding channel-only yang ada menjadi account-scoped alih-alih menduplikasinya.
 
   </Accordion>
 </AccordionGroup>
 
-## Beberapa akun / nomor telepon
+## Banyak akun / nomor telepon
 
-Kanal yang mendukung **beberapa akun** (misalnya WhatsApp) menggunakan `accountId` untuk mengidentifikasi setiap login. Setiap `accountId` dapat dirutekan ke agen yang berbeda, sehingga satu server dapat menghosting beberapa nomor telepon tanpa mencampur sesi.
+Channel yang mendukung **banyak akun** (mis. WhatsApp) menggunakan `accountId` untuk mengidentifikasi setiap login. Setiap `accountId` dapat dirutekan ke agen yang berbeda, sehingga satu server dapat menghosting banyak nomor telepon tanpa mencampur sesi.
 
-Jika Anda menginginkan akun default seluruh kanal saat `accountId` dihilangkan, setel `channels.<channel>.defaultAccount` (opsional). Saat tidak disetel, OpenClaw fallback ke `default` jika ada, jika tidak ke id akun terkonfigurasi pertama (diurutkan).
+Jika Anda menginginkan akun default seluruh channel saat `accountId` dihilangkan, setel `channels.<channel>.defaultAccount` (opsional). Saat tidak disetel, OpenClaw fallback ke `default` jika ada, jika tidak id akun terkonfigurasi pertama (diurutkan).
 
-Kanal umum yang mendukung pola ini meliputi:
+Channel umum yang mendukung pola ini meliputi:
 
 - `whatsapp`, `telegram`, `discord`, `slack`, `signal`, `imessage`
 - `irc`, `line`, `googlechat`, `mattermost`, `matrix`, `nextcloud-talk`
@@ -273,15 +275,15 @@ Kanal umum yang mendukung pola ini meliputi:
 
 ## Konsep
 
-- `agentId`: satu "otak" (workspace, autentikasi per agen, penyimpanan sesi per agen).
-- `accountId`: satu instance akun kanal (misalnya akun WhatsApp `"personal"` vs `"biz"`).
-- `binding`: merutekan pesan masuk ke `agentId` berdasarkan `(channel, accountId, peer)` dan secara opsional id guild/team.
-- Chat langsung diciutkan ke `agent:<agentId>:<mainKey>` ("main" per agen; `session.mainKey`).
+- `agentId`: satu "otak" (workspace, auth per-agen, penyimpanan sesi per-agen).
+- `accountId`: satu instance akun channel (mis. akun WhatsApp `"personal"` vs `"biz"`).
+- `binding`: merutekan pesan masuk ke `agentId` berdasarkan `(channel, accountId, peer)` dan opsional id guild/team.
+- Chat langsung diringkas ke `agent:<agentId>:<mainKey>` ("utama" per-agen; `session.mainKey`).
 
 ## Contoh platform
 
 <AccordionGroup>
-  <Accordion title="Bot Discord per agen">
+  <Accordion title="Discord bots per agent">
     Setiap akun bot Discord dipetakan ke `accountId` unik. Bind setiap akun ke agen dan pertahankan allowlist per bot.
 
     ```json5
@@ -363,6 +365,11 @@ Kanal umum yang mendukung pola ini meliputi:
 
     - Buat satu bot per agen dengan BotFather dan salin setiap token.
     - Token berada di `channels.telegram.accounts.<id>.botToken` (akun default dapat menggunakan `TELEGRAM_BOT_TOKEN`).
+    - Untuk beberapa bot dalam grup Telegram yang sama, undang setiap bot dan sebut bot yang harus menjawab.
+    - Nonaktifkan Privacy Mode BotFather untuk setiap bot grup, lalu tambahkan ulang bot agar Telegram menerapkan pengaturan tersebut.
+    - Izinkan grup dengan `channels.telegram.groups`, atau gunakan `groupPolicy: "open"` hanya untuk deployment grup tepercaya.
+    - Letakkan ID pengguna pengirim di `groupAllowFrom`. ID grup dan supergrup berada di `channels.telegram.groups`, bukan `groupAllowFrom`.
+    - Ikat berdasarkan `accountId` agar setiap bot diarahkan ke agennya sendiri.
 
   </Accordion>
   <Accordion title="Nomor WhatsApp per agen">
@@ -443,7 +450,7 @@ Kanal umum yang mendukung pola ini meliputi:
 
 <Tabs>
   <Tab title="WhatsApp harian + kerja mendalam Telegram">
-    Bagi berdasarkan kanal: arahkan WhatsApp ke agen harian yang cepat dan Telegram ke agen Opus.
+    Bagi berdasarkan channel: arahkan WhatsApp ke agen harian yang cepat dan Telegram ke agen Opus.
 
     ```json5
     {
@@ -464,20 +471,20 @@ Kanal umum yang mendukung pola ini meliputi:
         ],
       },
       bindings: [
-        { agentId: "chat", match: { channel: "whatsapp" } },
-        { agentId: "opus", match: { channel: "telegram" } },
+        { agentId: "chat", match: { channel: "whatsapp", accountId: "*" } },
+        { agentId: "opus", match: { channel: "telegram", accountId: "*" } },
       ],
     }
     ```
 
     Catatan:
 
-    - Jika Anda memiliki beberapa akun untuk satu kanal, tambahkan `accountId` ke binding (misalnya `{ channel: "whatsapp", accountId: "personal" }`).
-    - Untuk mengarahkan satu DM/grup ke Opus sambil menjaga sisanya tetap di chat, tambahkan binding `match.peer` untuk peer tersebut; kecocokan peer selalu menang atas aturan seluruh kanal.
+    - Contoh ini menggunakan `accountId: "*"` sehingga binding tetap berfungsi jika Anda menambahkan akun nanti.
+    - Untuk mengarahkan satu DM/grup ke Opus sambil menjaga sisanya tetap di chat, tambahkan binding `match.peer` untuk peer tersebut; kecocokan peer selalu menang atas aturan seluruh channel.
 
   </Tab>
-  <Tab title="Kanal yang sama, satu peer ke Opus">
-    Pertahankan WhatsApp pada agen cepat, tetapi arahkan satu DM ke Opus:
+  <Tab title="Channel yang sama, satu peer ke Opus">
+    Pertahankan WhatsApp di agen cepat, tetapi arahkan satu DM ke Opus:
 
     ```json5
     {
@@ -500,18 +507,18 @@ Kanal umum yang mendukung pola ini meliputi:
       bindings: [
         {
           agentId: "opus",
-          match: { channel: "whatsapp", peer: { kind: "direct", id: "+15551234567" } },
+          match: { channel: "whatsapp", accountId: "*", peer: { kind: "direct", id: "+15551234567" } },
         },
-        { agentId: "chat", match: { channel: "whatsapp" } },
+        { agentId: "chat", match: { channel: "whatsapp", accountId: "*" } },
       ],
     }
     ```
 
-    Binding peer selalu menang, jadi letakkan di atas aturan seluruh kanal.
+    Binding peer selalu menang, jadi letakkan di atas aturan seluruh channel.
 
   </Tab>
   <Tab title="Agen keluarga yang diikat ke grup WhatsApp">
-    Ikat agen keluarga khusus ke satu grup WhatsApp, dengan gating mention dan kebijakan tool yang lebih ketat:
+    Ikat agen keluarga khusus ke satu grup WhatsApp, dengan gating penyebutan dan kebijakan tool yang lebih ketat:
 
     ```json5
     {
@@ -558,8 +565,8 @@ Kanal umum yang mendukung pola ini meliputi:
 
     Catatan:
 
-    - Daftar allow/deny tool adalah **tool**, bukan skills. Jika sebuah skill perlu menjalankan binary, pastikan `exec` diizinkan dan binary ada di sandbox.
-    - Untuk gating yang lebih ketat, atur `agents.list[].groupChat.mentionPatterns` dan tetap aktifkan allowlist grup untuk kanal tersebut.
+    - Daftar izinkan/tolak tool adalah **tool**, bukan Skills. Jika suatu skill perlu menjalankan binary, pastikan `exec` diizinkan dan binary tersebut ada di sandbox.
+    - Untuk gating yang lebih ketat, atur `agents.list[].groupChat.mentionPatterns` dan tetap aktifkan daftar izin grup untuk channel tersebut.
 
   </Tab>
 </Tabs>
@@ -602,25 +609,25 @@ Setiap agen dapat memiliki sandbox dan pembatasan tool sendiri:
 ```
 
 <Note>
-`setupCommand` berada di bawah `sandbox.docker` dan berjalan sekali saat pembuatan container. Override `sandbox.docker.*` per agen diabaikan ketika scope yang diselesaikan adalah `"shared"`.
+`setupCommand` berada di bawah `sandbox.docker` dan berjalan sekali saat pembuatan kontainer. Override `sandbox.docker.*` per agen diabaikan ketika cakupan yang diselesaikan adalah `"shared"`.
 </Note>
 
 **Manfaat:**
 
 - **Isolasi keamanan**: batasi tool untuk agen yang tidak tepercaya.
-- **Kontrol sumber daya**: sandbox-kan agen tertentu sambil tetap menjalankan yang lain di host.
+- **Kontrol sumber daya**: sandbox agen tertentu sambil mempertahankan agen lain di host.
 - **Kebijakan fleksibel**: izin berbeda per agen.
 
 <Note>
-`tools.elevated` bersifat **global** dan berbasis pengirim; ini tidak dapat dikonfigurasi per agen. Jika Anda memerlukan batasan per agen, gunakan `agents.list[].tools` untuk menolak `exec`. Untuk penargetan grup, gunakan `agents.list[].groupChat.mentionPatterns` agar @mention dipetakan dengan jelas ke agen yang dimaksud.
+`tools.elevated` bersifat **global** dan berbasis pengirim; ini tidak dapat dikonfigurasi per agen. Jika Anda memerlukan batasan per agen, gunakan `agents.list[].tools` untuk menolak `exec`. Untuk penargetan grup, gunakan `agents.list[].groupChat.mentionPatterns` agar @mention dipetakan dengan rapi ke agen yang dimaksud.
 </Note>
 
 Lihat [Sandbox dan tool multi-agen](/id/tools/multi-agent-sandbox-tools) untuk contoh terperinci.
 
 ## Terkait
 
-- [Agen ACP](/id/tools/acp-agents) — menjalankan harness pengodean eksternal
-- [Perutean kanal](/id/channels/channel-routing) — cara pesan dirutekan ke agen
+- [Agen ACP](/id/tools/acp-agents) — menjalankan harness coding eksternal
+- [Routing channel](/id/channels/channel-routing) — bagaimana pesan diarahkan ke agen
 - [Presence](/id/concepts/presence) — presence dan ketersediaan agen
-- [Session](/id/concepts/session) — isolasi dan perutean session
-- [Sub-agen](/id/tools/subagents) — memulai proses agen latar belakang
+- [Sesi](/id/concepts/session) — isolasi dan routing sesi
+- [Sub-agen](/id/tools/subagents) — menjalankan agen latar belakang

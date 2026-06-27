@@ -1,33 +1,46 @@
 ---
 read_when:
-    - Bạn muốn trích xuất nội dung web được hỗ trợ bởi Firecrawl
-    - Bạn cần một khóa API Firecrawl
-    - Bạn muốn dùng Firecrawl làm nhà cung cấp web_search
+    - Bạn muốn trích xuất web được hỗ trợ bởi Firecrawl
+    - Bạn muốn Firecrawl web_fetch không cần khóa
+    - Bạn cần khóa API Firecrawl để tìm kiếm hoặc có giới hạn cao hơn
+    - Bạn muốn Firecrawl làm nhà cung cấp web_search
     - Bạn muốn trích xuất chống bot cho web_fetch
-summary: Tìm kiếm, thu thập dữ liệu bằng Firecrawl và phương án dự phòng web_fetch
+summary: Tìm kiếm, thu thập dữ liệu và dự phòng web_fetch của Firecrawl
 title: Firecrawl
 x-i18n:
-    generated_at: "2026-05-02T10:54:56Z"
+    generated_at: "2026-06-27T18:16:10Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 0570fde055cf8028cddf78f1ba19225d10cccd0662f45d063f23a39b4a82a7e0
+    source_hash: e8f6ef7ea3711e8e3e55d6eec4a99397dec4efc548c7192924fdd5850cb270bf
     source_path: tools/firecrawl.md
     workflow: 16
 ---
 
-OpenClaw có thể sử dụng **Firecrawl** theo ba cách:
+OpenClaw có thể dùng **Firecrawl** theo ba cách:
 
 - làm nhà cung cấp `web_search`
-- làm các công cụ Plugin tường minh: `firecrawl_search` và `firecrawl_scrape`
+- làm các công cụ Plugin rõ ràng: `firecrawl_search` và `firecrawl_scrape`
 - làm bộ trích xuất dự phòng cho `web_fetch`
 
-Đây là dịch vụ trích xuất/tìm kiếm được lưu trữ, hỗ trợ vượt qua bot và bộ nhớ đệm,
-giúp ích cho các trang dùng nhiều JS hoặc các trang chặn yêu cầu fetch HTTP thông thường.
+Đây là dịch vụ trích xuất/tìm kiếm được lưu trữ, hỗ trợ né bot và lưu bộ nhớ đệm,
+giúp xử lý các trang nặng JS hoặc các trang chặn truy xuất HTTP thuần.
 
-## Lấy khóa API
+## Cài đặt Plugin
 
-1. Tạo tài khoản Firecrawl và tạo khóa API.
-2. Lưu khóa đó trong cấu hình hoặc đặt `FIRECRAWL_API_KEY` trong môi trường Gateway.
+Cài đặt Plugin chính thức, rồi khởi động lại Gateway:
+
+```bash
+openclaw plugins install @openclaw/firecrawl-plugin
+openclaw gateway restart
+```
+
+## web_fetch không cần khóa và khóa API
+
+Dự phòng `web_fetch` Firecrawl được lưu trữ và được chọn rõ ràng hỗ trợ quyền
+truy cập khởi đầu mà không cần khóa API. Thêm `FIRECRAWL_API_KEY` vào môi trường gateway
+hoặc cấu hình khóa khi bạn cần giới hạn cao hơn. Firecrawl `web_search` và
+`firecrawl_scrape` yêu cầu khóa API.
 
 ## Cấu hình tìm kiếm Firecrawl
 
@@ -58,23 +71,29 @@ giúp ích cho các trang dùng nhiều JS hoặc các trang chặn yêu cầu f
 
 Ghi chú:
 
-- Chọn Firecrawl trong onboarding hoặc `openclaw configure --section web` sẽ tự động bật Plugin Firecrawl được đóng gói kèm.
+- Việc chọn Firecrawl trong quá trình onboarding hoặc `openclaw configure --section web` sẽ tự động bật Plugin Firecrawl đã cài đặt.
 - `web_search` với Firecrawl hỗ trợ `query` và `count`.
-- Với các điều khiển riêng của Firecrawl như `sources`, `categories`, hoặc thu thập kết quả, hãy dùng `firecrawl_search`.
-- `baseUrl` mặc định là Firecrawl được lưu trữ tại `https://api.firecrawl.dev`. Chỉ cho phép ghi đè tự lưu trữ đối với các endpoint riêng tư/nội bộ; HTTP chỉ được chấp nhận cho các đích riêng tư đó.
-- `FIRECRAWL_BASE_URL` là giá trị env dự phòng dùng chung cho URL cơ sở của tìm kiếm và thu thập Firecrawl.
+- Với các điều khiển riêng của Firecrawl như `sources`, `categories` hoặc thu thập kết quả, hãy dùng `firecrawl_search`.
+- `baseUrl` mặc định là Firecrawl được lưu trữ tại `https://api.firecrawl.dev`. Chỉ cho phép ghi đè tự lưu trữ đối với endpoint riêng tư/nội bộ; HTTP chỉ được chấp nhận cho các đích riêng tư đó.
+- `FIRECRAWL_BASE_URL` là dự phòng env dùng chung cho URL cơ sở của tìm kiếm và thu thập Firecrawl.
 
-## Cấu hình thu thập Firecrawl + dự phòng web_fetch
+## Cấu hình dự phòng Firecrawl web_fetch
 
 ```json5
 {
+  tools: {
+    web: {
+      fetch: {
+        provider: "firecrawl", // explicit selection enables keyless fallback
+      },
+    },
+  },
   plugins: {
     entries: {
       firecrawl: {
         enabled: true,
         config: {
           webFetch: {
-            apiKey: "FIRECRAWL_API_KEY_HERE",
             baseUrl: "https://api.firecrawl.dev",
             onlyMainContent: true,
             maxAgeMs: 172800000,
@@ -89,29 +108,31 @@ Ghi chú:
 
 Ghi chú:
 
-- Các lần thử dự phòng Firecrawl chỉ chạy khi có khóa API (`plugins.entries.firecrawl.config.webFetch.apiKey` hoặc `FIRECRAWL_API_KEY`).
-- `maxAgeMs` kiểm soát độ cũ tối đa của kết quả đã lưu trong bộ nhớ đệm (ms). Mặc định là 2 ngày.
-- Cấu hình cũ `tools.web.fetch.firecrawl.*` được `openclaw doctor --fix` tự động di trú.
-- Các ghi đè URL thu thập/cơ sở của Firecrawl tuân theo cùng quy tắc được lưu trữ/riêng tư như tìm kiếm: lưu lượng công khai được lưu trữ dùng `https://api.firecrawl.dev`; các ghi đè tự lưu trữ phải phân giải tới endpoint riêng tư/nội bộ.
-- `firecrawl_scrape` từ chối các URL đích rõ ràng là riêng tư, loopback, metadata và không phải HTTP(S) trước khi chuyển tiếp chúng tới Firecrawl, khớp với hợp đồng an toàn đích của `web_fetch` cho các lệnh gọi thu thập Firecrawl tường minh.
+- Dự phòng Firecrawl `web_fetch` được chọn rõ ràng hoạt động mà không cần khóa API. Khi được cấu hình, OpenClaw gửi `plugins.entries.firecrawl.config.webFetch.apiKey` hoặc `FIRECRAWL_API_KEY` để có giới hạn cao hơn.
+- Việc chọn Firecrawl trong quá trình onboarding hoặc `openclaw configure --section web` sẽ bật Plugin và chọn Firecrawl cho `web_fetch`, trừ khi đã cấu hình nhà cung cấp fetch khác.
+- `firecrawl_scrape` yêu cầu khóa API.
+- `maxAgeMs` kiểm soát kết quả đã lưu bộ nhớ đệm có thể cũ đến mức nào (ms). Mặc định là 2 ngày.
+- Cấu hình cũ `tools.web.fetch.firecrawl.*` được `openclaw doctor --fix` tự động di chuyển.
+- Các ghi đè URL scrape/base của Firecrawl tuân theo cùng quy tắc lưu trữ/riêng tư như tìm kiếm: lưu lượng công khai được lưu trữ dùng `https://api.firecrawl.dev`; các ghi đè tự lưu trữ phải phân giải tới endpoint riêng tư/nội bộ.
+- `firecrawl_scrape` từ chối các URL đích rõ ràng là riêng tư, loopback, metadata và không phải HTTP(S) trước khi chuyển tiếp chúng đến Firecrawl, khớp với hợp đồng an toàn đích của `web_fetch` cho các lệnh gọi thu thập Firecrawl rõ ràng.
 
-`firecrawl_scrape` dùng lại cùng các thiết lập `plugins.entries.firecrawl.config.webFetch.*` và biến env.
+`firecrawl_scrape` tái sử dụng cùng các cài đặt và biến env `plugins.entries.firecrawl.config.webFetch.*`, bao gồm cả khóa API bắt buộc.
 
 ### Firecrawl tự lưu trữ
 
 Đặt `plugins.entries.firecrawl.config.webSearch.baseUrl`,
 `plugins.entries.firecrawl.config.webFetch.baseUrl`, hoặc `FIRECRAWL_BASE_URL`
 khi bạn tự chạy Firecrawl. OpenClaw chỉ chấp nhận `http://` cho các đích loopback,
-mạng riêng tư, `.local`, `.internal`, hoặc `.localhost`. Máy chủ tùy chỉnh công khai
-bị từ chối để khóa API Firecrawl không bị vô tình gửi tới endpoint tùy ý.
+mạng riêng, `.local`, `.internal`, hoặc `.localhost`. Các máy chủ tùy chỉnh công khai
+bị từ chối để khóa API Firecrawl không bị vô tình gửi đến các endpoint tùy ý.
 
 ## Công cụ Plugin Firecrawl
 
 ### `firecrawl_search`
 
-Dùng mục này khi bạn muốn các điều khiển tìm kiếm riêng của Firecrawl thay vì `web_search` chung.
+Dùng công cụ này khi bạn muốn các điều khiển tìm kiếm riêng của Firecrawl thay vì `web_search` chung.
 
-Tham số cốt lõi:
+Tham số chính:
 
 - `query`
 - `count`
@@ -122,9 +143,9 @@ Tham số cốt lõi:
 
 ### `firecrawl_scrape`
 
-Dùng mục này cho các trang dùng nhiều JS hoặc được bảo vệ khỏi bot, nơi `web_fetch` thông thường hoạt động yếu.
+Dùng công cụ này cho các trang nặng JS hoặc được bảo vệ khỏi bot, nơi `web_fetch` thuần hoạt động kém.
 
-Tham số cốt lõi:
+Tham số chính:
 
 - `url`
 - `extractMode`
@@ -135,24 +156,24 @@ Tham số cốt lõi:
 - `storeInCache`
 - `timeoutSeconds`
 
-## Ẩn mình / vượt qua bot
+## Ẩn mình / né bot
 
-Firecrawl cung cấp tham số **chế độ proxy** để vượt qua bot (`basic`, `stealth`, hoặc `auto`).
+Firecrawl cung cấp tham số **chế độ proxy** để né bot (`basic`, `stealth`, hoặc `auto`).
 OpenClaw luôn dùng `proxy: "auto"` cùng với `storeInCache: true` cho các yêu cầu Firecrawl.
-Nếu proxy bị bỏ qua, Firecrawl mặc định dùng `auto`. `auto` thử lại bằng proxy ẩn mình nếu lần thử cơ bản thất bại, điều này có thể dùng nhiều tín dụng hơn
-so với thu thập chỉ dùng cơ bản.
+Nếu bỏ qua proxy, Firecrawl mặc định là `auto`. `auto` thử lại bằng proxy ẩn mình nếu lần thử cơ bản thất bại, điều này có thể dùng nhiều credit hơn
+so với thu thập chỉ dùng basic.
 
 ## Cách `web_fetch` dùng Firecrawl
 
 Thứ tự trích xuất của `web_fetch`:
 
 1. Readability (cục bộ)
-2. Firecrawl (nếu được chọn hoặc tự động phát hiện là dự phòng web-fetch đang hoạt động)
+2. Firecrawl (khi được chọn, hoặc được tự động phát hiện từ thông tin xác thực đã cấu hình)
 3. Dọn dẹp HTML cơ bản (dự phòng cuối cùng)
 
-Nút chọn là `tools.web.fetch.provider`. Nếu bạn bỏ qua, OpenClaw
-tự động phát hiện nhà cung cấp web-fetch sẵn sàng đầu tiên từ các thông tin xác thực có sẵn.
-Hiện tại nhà cung cấp được đóng gói kèm là Firecrawl.
+Núm chọn là `tools.web.fetch.provider`. Nếu bạn bỏ qua nó, OpenClaw
+tự động phát hiện nhà cung cấp web-fetch sẵn sàng đầu tiên từ thông tin xác thực khả dụng.
+Plugin Firecrawl chính thức cung cấp dự phòng đó.
 
 ## Liên quan
 

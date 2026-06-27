@@ -1,46 +1,47 @@
 ---
 read_when:
     - คุณดูแล Plugin ของ OpenClaw
-    - คุณเห็นคำเตือนเกี่ยวกับความเข้ากันได้ของ Plugin
-    - คุณกำลังวางแผนการไมเกรต Plugin SDK หรือ manifest
-summary: สัญญาความเข้ากันได้ของ Plugin, เมตาดาตาการเลิกใช้ และความคาดหวังในการย้ายระบบ
+    - คุณเห็นคำเตือนความเข้ากันได้ของ Plugin
+    - คุณกำลังวางแผนการย้ายข้อมูล Plugin SDK หรือ manifest
+summary: Plugin สัญญาความเข้ากันได้ เมทาดาทาการเลิกใช้งาน และความคาดหวังในการย้ายระบบ
 title: ความเข้ากันได้ของ Plugin
 x-i18n:
-    generated_at: "2026-05-11T20:35:03Z"
+    generated_at: "2026-06-27T17:54:31Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1afd37697f55721ca8419256a6e8187c398d4b20fb11a65776b755050dd5368b
+    source_hash: 2e17881c393e3649cb6accb13996d83a855f434735da2e84738f823ac4eba0f5
     source_path: plugins/compatibility.md
     workflow: 16
 ---
 
-OpenClaw เชื่อมต่อสัญญา Plugin รุ่นเก่าผ่านอะแดปเตอร์ความเข้ากันได้ที่มีชื่อกำกับไว้ก่อนที่จะลบออก วิธีนี้ช่วยปกป้อง Plugin ที่บันเดิลมากับระบบและ Plugin ภายนอกที่มีอยู่ ขณะที่สัญญาของ SDK, manifest, setup, config และ agent runtime พัฒนาต่อไป
+OpenClaw เชื่อมสัญญา Plugin รุ่นเก่าไว้ผ่านอะแดปเตอร์ความเข้ากันได้ที่มีชื่อก่อนจะนำออก วิธีนี้ปกป้อง Plugin ที่มาพร้อมชุดและ Plugin ภายนอกที่มีอยู่ ขณะที่สัญญา SDK, แมนิเฟสต์, การตั้งค่า, config และรันไทม์ agent พัฒนาต่อไป
 
 ## รีจิสทรีความเข้ากันได้
 
-สัญญาความเข้ากันได้ของ Plugin ถูกติดตามในรีจิสทรีหลักที่
+สัญญาความเข้ากันได้ของ Plugin ถูกติดตามในรีจิสทรีแกนหลักที่
 `src/plugins/compat/registry.ts`
 
 แต่ละระเบียนมี:
 
-- รหัสความเข้ากันได้ที่คงที่
-- status: `active`, `deprecated`, `removal-pending`, หรือ `removed`
-- owner: SDK, config, setup, channel, provider, การรัน Plugin, agent runtime,
-  หรือ core
-- วันที่เริ่มใช้และวันที่เลิกใช้งานเมื่อเกี่ยวข้อง
-- คำแนะนำสำหรับสิ่งทดแทน
-- เอกสาร การวินิจฉัย และการทดสอบที่ครอบคลุมพฤติกรรมเก่าและใหม่
+- รหัสความเข้ากันได้ที่เสถียร
+- สถานะ: `active`, `deprecated`, `removal-pending` หรือ `removed`
+- เจ้าของ: SDK, config, การตั้งค่า, ช่องทาง, ผู้ให้บริการ, การเรียกใช้ Plugin, รันไทม์ agent,
+  หรือแกนหลัก
+- วันที่เริ่มใช้และวันที่เลิกใช้เมื่อเกี่ยวข้อง
+- แนวทางการแทนที่
+- เอกสาร, การวินิจฉัย และการทดสอบที่ครอบคลุมพฤติกรรมเก่าและใหม่
 
-รีจิสทรีเป็นแหล่งข้อมูลสำหรับการวางแผนของผู้ดูแลและการตรวจสอบของ plugin inspector ในอนาคต หากพฤติกรรมที่กระทบผู้สร้าง Plugin เปลี่ยนแปลง ให้เพิ่มหรืออัปเดตระเบียนความเข้ากันได้ในการเปลี่ยนแปลงเดียวกับที่เพิ่มอะแดปเตอร์
+รีจิสทรีเป็นแหล่งข้อมูลสำหรับการวางแผนของผู้ดูแลและการตรวจสอบ Plugin inspector ในอนาคต หากพฤติกรรมที่หันหน้าให้ Plugin เปลี่ยน ให้เพิ่มหรืออัปเดตระเบียนความเข้ากันได้ในชุดการเปลี่ยนแปลงเดียวกับที่เพิ่มอะแดปเตอร์
 
-ความเข้ากันได้สำหรับการซ่อมแซมและการย้ายข้อมูลของ doctor ถูกติดตามแยกต่างหากที่
-`src/commands/doctor/shared/deprecation-compat.ts` ระเบียนเหล่านั้นครอบคลุมรูปแบบ config เก่า เลย์เอาต์ install-ledger และ repair shim ที่อาจต้องคงอยู่หลังจากเส้นทางความเข้ากันได้ของ runtime ถูกลบออกแล้ว
+ความเข้ากันได้ของการซ่อมแซมและการย้ายข้อมูลของ doctor ถูกติดตามแยกต่างหากที่
+`src/commands/doctor/shared/deprecation-compat.ts` ระเบียนเหล่านั้นครอบคลุมรูปทรง config เก่า, เลย์เอาต์บัญชีแยกประเภทการติดตั้ง และชิมการซ่อมแซมที่อาจต้องคงอยู่หลังจากนำเส้นทางความเข้ากันได้ของรันไทม์ออกแล้ว
 
-การกวาดตรวจในรอบรีลีสควรตรวจสอบทั้งสองรีจิสทรี อย่าลบการย้ายข้อมูลของ doctor เพียงเพราะระเบียนความเข้ากันได้ของ runtime หรือ config ที่สอดคล้องกันหมดอายุแล้ว ให้ตรวจสอบก่อนว่าไม่มีเส้นทางอัปเกรดที่ยังรองรับและยังต้องใช้การซ่อมแซมนั้น นอกจากนี้ให้ตรวจสอบคำอธิบายสิ่งทดแทนแต่ละรายการอีกครั้งระหว่างการวางแผนรีลีส เพราะความเป็นเจ้าของ Plugin และขอบเขต config อาจเปลี่ยนไปเมื่อ provider และ channel ย้ายออกจาก core
+การกวาดตรวจช่วง release ควรตรวจสอบทั้งสองรีจิสทรี อย่าลบการย้ายข้อมูลของ doctor เพียงเพราะระเบียนความเข้ากันได้ของรันไทม์หรือ config ที่ตรงกันหมดอายุแล้ว ให้ตรวจสอบก่อนว่าไม่มีเส้นทางอัปเกรดที่รองรับซึ่งยังต้องใช้การซ่อมแซมนั้น นอกจากนี้ให้ตรวจสอบคำอธิบายประกอบการแทนที่แต่ละรายการอีกครั้งระหว่างการวางแผน release เพราะความเป็นเจ้าของ Plugin และขอบเขต config อาจเปลี่ยนเมื่อผู้ให้บริการและช่องทางย้ายออกจากแกนหลัก
 
-## แพ็กเกจ plugin inspector
+## แพ็กเกจ Plugin inspector
 
-plugin inspector ควรอยู่ภายนอก repo หลักของ OpenClaw ในฐานะแพ็กเกจ/รีโพซิทอรีแยกต่างหากที่อิงกับสัญญาความเข้ากันได้และ manifest ที่มีการกำหนดเวอร์ชัน
+Plugin inspector ควรอยู่ภายนอก repo แกนหลักของ OpenClaw เป็นแพ็กเกจ/รีโพสิทอรีแยกต่างหากที่อิงกับสัญญาความเข้ากันได้และแมนิเฟสต์แบบกำหนดเวอร์ชัน
 
 CLI วันแรกควรเป็น:
 
@@ -48,19 +49,19 @@ CLI วันแรกควรเป็น:
 openclaw-plugin-inspector ./my-plugin
 ```
 
-ควรแสดงผล:
+ควรส่งออก:
 
-- การตรวจสอบ manifest/schema
+- การตรวจสอบแมนิเฟสต์/สคีมา
 - เวอร์ชันความเข้ากันได้ของสัญญาที่กำลังตรวจสอบ
-- การตรวจสอบเมทาดาทา install/source
-- การตรวจสอบการ import แบบ cold-path
-- คำเตือนการเลิกใช้งานและความเข้ากันได้
+- การตรวจสอบเมตาดาต้าการติดตั้ง/แหล่งที่มา
+- การตรวจสอบการนำเข้าแบบ cold-path
+- คำเตือนการเลิกใช้และความเข้ากันได้
 
-ใช้ `--json` สำหรับผลลัพธ์ที่เครื่องอ่านได้อย่างเสถียรใน annotation ของ CI core ของ OpenClaw ควรเปิดเผยสัญญาและ fixture ที่ inspector นำไปใช้ได้ แต่ไม่ควรเผยแพร่ไบนารีของ inspector จากแพ็กเกจหลัก `openclaw`
+ใช้ `--json` สำหรับเอาต์พุตที่เครื่องอ่านได้อย่างเสถียรในคำอธิบายประกอบ CI แกนหลักของ OpenClaw ควรเปิดเผยสัญญาและฟิกซ์เจอร์ที่ inspector ใช้ได้ แต่ไม่ควรเผยแพร่ไบนารี inspector จากแพ็กเกจหลัก `openclaw`
 
 ### เลนการยอมรับของผู้ดูแล
 
-ใช้ Blacksmith Testbox ที่รองรับด้วย Crabbox สำหรับเลนการยอมรับแพ็กเกจที่ติดตั้งได้ เมื่อตรวจสอบ inspector ภายนอกกับแพ็กเกจ Plugin ของ OpenClaw ให้รันจาก checkout ของ OpenClaw ที่สะอาดหลังจากสร้างแพ็กเกจแล้ว:
+ใช้ Blacksmith Testbox ที่รองรับด้วย Crabbox สำหรับเลนการยอมรับแพ็กเกจที่ติดตั้งได้ เมื่อตรวจสอบ inspector ภายนอกกับแพ็กเกจ Plugin ของ OpenClaw เรียกใช้จาก checkout OpenClaw ที่สะอาดหลังจากสร้างแพ็กเกจแล้ว:
 
 ```sh
 pnpm crabbox:run -- --provider blacksmith-testbox --timing-json --shell -- "pnpm install && pnpm build && npm exec --yes @openclaw/plugin-inspector@0.1.0 -- ./extensions/telegram --json"
@@ -68,70 +69,108 @@ pnpm crabbox:run -- --provider blacksmith-testbox --timing-json --shell -- "npm 
 pnpm crabbox:run -- --provider blacksmith-testbox --timing-json --shell -- "npm exec --yes @openclaw/plugin-inspector@0.1.0 -- <clawhub-plugin-dir> --json"
 ```
 
-ให้เลนนี้เป็นแบบ opt-in สำหรับผู้ดูแล เพราะเลนนี้ติดตั้งแพ็กเกจ npm ภายนอกและอาจตรวจสอบแพ็กเกจ Plugin ที่ clone อยู่นอก repo ตัวป้องกันใน repo ภายในครอบคลุม export map ของ SDK, เมทาดาทารีจิสทรีความเข้ากันได้, การลดการใช้ SDK import ที่เลิกใช้งานแล้ว และขอบเขตการ import ของส่วนขยายที่บันเดิลมากับระบบ ส่วนหลักฐานจาก Testbox inspector ครอบคลุมแพ็กเกจในแบบที่ผู้สร้าง Plugin ภายนอกใช้งานจริง
+คงเลนนี้ไว้เป็นแบบ opt-in สำหรับผู้ดูแล เพราะมันติดตั้งแพ็กเกจ npm ภายนอกและอาจตรวจสอบแพ็กเกจ Plugin ที่ clone นอก repo การ์ดใน repo ภายในครอบคลุม export map ของ SDK, เมตาดาต้ารีจิสทรีความเข้ากันได้, การลดการนำเข้า SDK ที่เลิกใช้แล้ว และขอบเขตการนำเข้าส่วนขยายที่มาพร้อมชุด ส่วนหลักฐาน inspector ของ Testbox ครอบคลุมแพ็กเกจตามที่ผู้เขียน Plugin ภายนอกใช้งาน
 
-## นโยบายการเลิกใช้งาน
+## นโยบายการเลิกใช้
 
-OpenClaw ไม่ควรลบสัญญา Plugin ที่มีเอกสารระบุไว้ในรีลีสเดียวกับที่แนะนำสิ่งทดแทน
+OpenClaw ไม่ควรนำสัญญา Plugin ที่มีเอกสารออกใน release เดียวกับที่แนะนำตัวแทนที่
 
 ลำดับการย้ายข้อมูลคือ:
 
 1. เพิ่มสัญญาใหม่
-2. คงพฤติกรรมเก่าไว้โดยเชื่อมผ่านอะแดปเตอร์ความเข้ากันได้ที่มีชื่อกำกับ
-3. แสดงการวินิจฉัยหรือคำเตือนเมื่อผู้สร้าง Plugin สามารถดำเนินการได้
-4. จัดทำเอกสารสิ่งทดแทนและไทม์ไลน์
+2. คงพฤติกรรมเก่าไว้โดยเชื่อมผ่านอะแดปเตอร์ความเข้ากันได้ที่มีชื่อ
+3. ส่งการวินิจฉัยหรือคำเตือนเมื่อผู้เขียน Plugin สามารถดำเนินการได้
+4. จัดทำเอกสารตัวแทนที่และไทม์ไลน์
 5. ทดสอบทั้งเส้นทางเก่าและใหม่
-6. รอให้ครบช่วงเวลาการย้ายข้อมูลที่ประกาศไว้
-7. ลบเฉพาะเมื่อได้รับอนุมัติสำหรับรีลีสที่มีการเปลี่ยนแปลงแบบ breaking อย่างชัดเจน
+6. รอจนผ่านช่วงเวลาย้ายข้อมูลที่ประกาศไว้
+7. นำออกเฉพาะเมื่อมีการอนุมัติ breaking-release อย่างชัดเจน
 
-ระเบียนที่เลิกใช้งานต้องมีวันที่เริ่มเตือน สิ่งทดแทน ลิงก์เอกสาร และวันที่ลบขั้นสุดท้ายไม่เกินสามเดือนหลังจากเริ่มเตือน อย่าเพิ่มเส้นทางความเข้ากันได้ที่เลิกใช้งานพร้อมกรอบเวลาการลบแบบไม่มีกำหนด เว้นแต่ผู้ดูแลจะตัดสินใจอย่างชัดเจนว่าเป็นความเข้ากันได้ถาวรและทำเครื่องหมายเป็น `active` แทน
+ระเบียนที่เลิกใช้แล้วต้องมีวันที่เริ่มเตือน, ตัวแทนที่, ลิงก์เอกสาร และวันที่นำออกสุดท้ายไม่เกินสามเดือนหลังจากเริ่มเตือน อย่าเพิ่มเส้นทางความเข้ากันได้ที่เลิกใช้แล้วพร้อมกรอบเวลานำออกแบบเปิดปลาย เว้นแต่ผู้ดูแลจะตัดสินใจอย่างชัดเจนว่าเป็นความเข้ากันได้ถาวรและทำเครื่องหมายเป็น `active` แทน
 
 ## พื้นที่ความเข้ากันได้ปัจจุบัน
 
 ระเบียนความเข้ากันได้ปัจจุบันประกอบด้วย:
 
-- การ import SDK แบบกว้างรุ่นเก่า เช่น `openclaw/plugin-sdk/compat`
-- รูปแบบ Plugin รุ่นเก่าที่มีเฉพาะ hook และ `before_agent_start`
-- entrypoint ของ Plugin รุ่นเก่า `activate(api)` ระหว่างที่ Plugin ย้ายไปใช้
+- การนำเข้า SDK แบบกว้างรุ่นเก่า เช่น `openclaw/plugin-sdk/compat`
+- รูปทรง Plugin รุ่นเก่าแบบ hook-only และ `before_agent_start`
+- ชื่อ hook การล้างข้อมูล `api.on("deactivate", ...)` รุ่นเก่า ขณะที่ Plugin ย้ายไปใช้
+  `gateway_stop`
+- entrypoint ของ Plugin รุ่นเก่า `activate(api)` ขณะที่ Plugin ย้ายไปใช้
   `register(api)`
 - alias ของ SDK รุ่นเก่า เช่น `openclaw/extension-api`,
   `openclaw/plugin-sdk/channel-runtime`, ตัวสร้างสถานะ `openclaw/plugin-sdk/command-auth`,
   `openclaw/plugin-sdk/test-utils` (แทนที่ด้วย subpath ทดสอบ
-  `openclaw/plugin-sdk/*` ที่เฉพาะเจาะจง) และ type alias `ClawdbotConfig` /
+  `openclaw/plugin-sdk/*` ที่เจาะจง), และ alias ชนิด `ClawdbotConfig` /
   `OpenClawSchemaType`
-- พฤติกรรม allowlist และการเปิดใช้งานของ Plugin ที่บันเดิลมากับระบบ
-- เมทาดาทา manifest ของ env-var สำหรับ provider/channel รุ่นเก่า
-- hook และ type alias ของ provider Plugin รุ่นเก่า ระหว่างที่ provider ย้ายไปใช้
-  hook สำหรับ catalog, auth, thinking, replay และ transport อย่างชัดเจน
-- alias ของ runtime รุ่นเก่า เช่น `api.runtime.taskFlow`,
+- allowlist ของ Plugin ที่มาพร้อมชุดและพฤติกรรมการเปิดใช้งาน
+- เมตาดาต้าแมนิเฟสต์ env-var ของผู้ให้บริการ/ช่องทางรุ่นเก่า
+- hook และ alias ชนิดของ Plugin ผู้ให้บริการรุ่นเก่า ขณะที่ผู้ให้บริการย้ายไปใช้ hook แคตตาล็อก, auth, thinking, replay และ transport แบบชัดเจน
+- alias รันไทม์รุ่นเก่า เช่น `api.runtime.taskFlow`,
   `api.runtime.subagent.getSession`, `api.runtime.stt` และ
-  `api.runtime.config.loadConfig()` / `api.runtime.config.writeConfigFile(...)`
-  ที่เลิกใช้งานแล้ว
-- การลงทะเบียนแบบแยกของ memory-plugin รุ่นเก่า ระหว่างที่ memory Plugin ย้ายไปใช้
+  `api.runtime.config.loadConfig()` / `api.runtime.config.writeConfigFile(...)` ที่เลิกใช้แล้ว
+- ฟิลด์ callback แบบแบนของ WhatsApp `WebInboundMessage` เช่น `body`, `chatId`,
+  `reply(...)` และ `mediaPath` ขณะที่ผู้ใช้ callback ย้ายไปใช้บริบท
+  `event`, `payload`, `quote`, `group` และ
+  `platform` ของ `WebInboundCallbackMessage` แบบซ้อน
+- ฟิลด์ admission ระดับบนของ WhatsApp `WebInboundMessage` เช่น `from`,
+  `conversationId`, `accountId`, `accessControlPassed` และ `chatType` ขณะที่ผู้ใช้ callback ย้ายไปใช้ซอง `admission`
+- การลงทะเบียนแบบแยกของ memory-plugin รุ่นเก่า ขณะที่ memory Plugin ย้ายไปใช้
   `registerMemoryCapability`
-- helper ของ channel SDK รุ่นเก่าสำหรับ schema ข้อความ native, mention gating,
-  การจัดรูปแบบ inbound envelope และการซ้อนความสามารถ approval
-- alias ของ route key ของ channel และ helper เป้าหมายที่เปรียบเทียบได้ ระหว่างที่ Plugin
+- การลงทะเบียนผู้ให้บริการ embedding เฉพาะ memory รุ่นเก่า ขณะที่ผู้ให้บริการ embedding ย้ายไปใช้ `api.registerEmbeddingProvider(...)` และ
+  `contracts.embeddingProviders`
+- helper ของ SDK ช่องทางรุ่นเก่าสำหรับสคีมาข้อความเนทีฟ, การ gating mention,
+  การจัดรูปแบบซองขาเข้า และการซ้อนความสามารถ approval
+- alias ของ route key ช่องทางและ helper comparable-target ขณะที่ Plugin
   ย้ายไปใช้ `openclaw/plugin-sdk/channel-route`
-- activation hint ที่กำลังถูกแทนที่ด้วยความเป็นเจ้าของ contribution ใน manifest
-- fallback ของ runtime `setup-api` ระหว่างที่ตัวอธิบาย setup ย้ายไปใช้เมทาดาทาแบบ cold
+- activation hint ที่กำลังถูกแทนที่ด้วยความเป็นเจ้าของ contribution ในแมนิเฟสต์
+- fallback รันไทม์ `setup-api` ขณะที่ descriptor การตั้งค่าย้ายไปใช้เมตาดาต้า cold
   `setup.requiresRuntime: false`
-- hook `discovery` ของ provider ระหว่างที่ hook ของ provider catalog ย้ายไปใช้
+- hook `discovery` ของผู้ให้บริการ ขณะที่ hook แคตตาล็อกผู้ให้บริการย้ายไปใช้
   `catalog.run(...)`
-- เมทาดาทา `showConfigured` / `showInSetup` ของ channel ระหว่างที่แพ็กเกจ channel ย้ายไปใช้
+- เมตาดาต้า `showConfigured` / `showInSetup` ของช่องทาง ขณะที่แพ็กเกจช่องทางย้ายไปใช้
   `openclaw.channel.exposure`
-- key ของ runtime-policy config รุ่นเก่า ระหว่างที่ doctor ย้าย operator ไปใช้
+- คีย์ config runtime-policy รุ่นเก่า ขณะที่ doctor ย้าย operator ไปใช้
   `agentRuntime`
-- fallback เมทาดาทา config ของ channel ที่บันเดิลมากับระบบและสร้างขึ้นอัตโนมัติ ระหว่างที่เมทาดาทา
-  `channelConfigs` แบบ registry-first ถูกนำมาใช้
-- แฟล็ก env สำหรับการปิดใช้รีจิสทรี Plugin ที่คงไว้และ install-migration ระหว่างที่โฟลว์ซ่อมแซมย้าย operator ไปใช้ `openclaw plugins registry --refresh` และ
+- fallback เมตาดาต้า config ช่องทางที่มาพร้อมชุดซึ่งสร้างขึ้น ขณะที่เมตาดาต้า
+  `channelConfigs` แบบ registry-first เข้ามา
+- flag env สำหรับปิดใช้งานรีจิสทรี Plugin ที่ persist แล้วและการย้ายข้อมูลการติดตั้ง ขณะที่ flow การซ่อมแซมย้าย operator ไปใช้ `openclaw plugins registry --refresh` และ
   `openclaw doctor --fix`
-- เส้นทาง config ของ web search, web fetch และ x_search ที่ Plugin เป็นเจ้าของรุ่นเก่า ระหว่างที่
-  doctor ย้ายไปยัง `plugins.entries.<plugin>.config`
-- config ที่เขียนด้วย `plugins.installs` รุ่นเก่าและ alias ของ load-path ของ Plugin ที่บันเดิลมากับระบบ ระหว่างที่เมทาดาทาการติดตั้งย้ายไปอยู่ใน plugin ledger ที่จัดการโดย state
+- เส้นทาง config การค้นเว็บ, การ fetch เว็บ และ x_search ที่ Plugin เป็นเจ้าของรุ่นเก่า ขณะที่ doctor ย้ายไปที่ `plugins.entries.<plugin>.config`
+- config ที่เขียนด้วย `plugins.installs` รุ่นเก่าและ alias load-path ของ Plugin ที่มาพร้อมชุด ขณะที่เมตาดาต้าการติดตั้งย้ายเข้าไปในบัญชีแยกประเภท Plugin ที่จัดการโดย state
 
-โค้ด Plugin ใหม่ควรเลือกใช้สิ่งทดแทนที่ระบุไว้ในรีจิสทรีและในคู่มือการย้ายข้อมูลเฉพาะ Plugin ที่มีอยู่สามารถใช้เส้นทางความเข้ากันได้ต่อไปได้จนกว่าเอกสาร การวินิจฉัย และบันทึกรีลีสจะประกาศกรอบเวลาการลบ
+โค้ด Plugin ใหม่ควรใช้ตัวแทนที่ที่ระบุไว้ในรีจิสทรีและคู่มือการย้ายข้อมูลเฉพาะทาง Plugin ที่มีอยู่สามารถใช้เส้นทางความเข้ากันได้ต่อได้จนกว่าเอกสาร, การวินิจฉัย และ release notes จะประกาศกรอบเวลานำออก
 
-## บันทึกรีลีส
+### นามแฝงแบบแบนของคอลแบ็กขาเข้าของ WhatsApp
 
-บันทึกรีลีสควรรวมการเลิกใช้งาน Plugin ที่กำลังจะมาถึง พร้อมวันที่เป้าหมายและลิงก์ไปยังเอกสารการย้ายข้อมูล คำเตือนนั้นต้องเกิดขึ้นก่อนที่เส้นทางความเข้ากันได้จะย้ายไปเป็น `removal-pending` หรือ `removed`
+คอลแบ็กรันไทม์ของ WhatsApp ส่งมอบ `WebInboundMessage`: บริบทแบบซ้อนมาตรฐาน `event`, `payload`, `quote`, `group` และ `platform` พร้อม alias แบบแบนที่เลิกใช้แล้วสำหรับฟิลด์ callback ที่เคย ship แล้ว โค้ด callback ใหม่ควรอ่านบริบทแบบซ้อน โค้ดที่สร้างข้อความ callback แบบซ้อนที่สะอาดสามารถใช้ `WebInboundCallbackMessage`; listener ความเข้ากันได้ที่ยังฉีดข้อความทดสอบหรือข้อความ Plugin แบบแบนเก่าควรใช้ `LegacyFlatWebInboundMessage` หรือ
+`WebInboundMessageInput`
+
+alias แบบแบนยังคงพร้อมใช้งานจนถึง **2026-08-30** กรอบเวลานำออกนั้นใช้กับการเข้าถึง alias แบบแบนเท่านั้น รูปทรง callback แบบซ้อนคือสัญญารันไทม์มาตรฐาน คำอธิบายประกอบ TypeScript `@deprecated` บนชื่อ alias แบบแบนแต่ละรายการระบุตัวแทนที่แบบซ้อนที่แน่นอน ตัวอย่างทั่วไป:
+
+- `id`, `timestamp` และ `isBatched` ย้ายไปอยู่ใต้ `event`
+- `body`, `mediaPath`, `mediaType`, `mediaFileName`, `mediaUrl`, `location` และ
+  `untrustedStructuredContext` ย้ายไปอยู่ใต้ `payload`
+- `to`, `chatId`, ฟิลด์ sender/self, `sendComposing`, `reply(...)` และ
+  `sendMedia(...)` ย้ายไปอยู่ใต้ `platform`
+- ฟิลด์ `replyTo*` ย้ายไปอยู่ใต้ `quote` และฟิลด์ subject/participant/mention ของกลุ่มย้ายไปอยู่ใต้ `group`
+
+`payload.untrustedStructuredContext` ถูกสกัดจาก payload ของผู้ให้บริการขาเข้า Plugin ควรตรวจสอบ `label`, `source` และ `type` ก่อนปฏิบัติต่อ
+`payload` ของมันว่าเป็นข้อมูลที่เชื่อถือได้
+
+### ฟิลด์ Admission ขาเข้าของ WhatsApp
+
+ข้อความ callback ของ WhatsApp ที่ได้รับการยอมรับตอนนี้มี `admission` ซึ่งเป็นซองที่ปลอดภัยสำหรับสาธารณะสำหรับการตัดสินใจ access-control ที่รับข้อความนั้นเข้ามา โค้ด callback ใหม่ควรอ่านข้อเท็จจริง admission จาก `msg.admission` แทนฟิลด์ admission ระดับบนแบบเก่า
+
+ฟิลด์ระดับบนยังคงพร้อมใช้งานจนถึง **2026-08-30** คำอธิบายประกอบ TypeScript
+`@deprecated` ระบุตัวแทนที่แต่ละรายการ:
+
+- `from` และ `conversationId` ย้ายไปที่ `admission.conversation.id`
+- `accountId` ย้ายไปที่ `admission.accountId`
+- `accessControlPassed` เป็นมุมมองความเข้ากันได้ที่คำนวณจาก
+  `admission.ingress.decision === "allow"`; บนข้อความที่มี
+  `admission` อยู่แล้ว การเขียน boolean รุ่นเก่าจะไม่เขียนกราฟ ingress ใหม่
+- `chatType` ย้ายไปที่ `admission.conversation.kind`
+
+## Release notes
+
+Release notes ควรรวมการเลิกใช้ Plugin ที่กำลังจะมาถึง พร้อมวันที่เป้าหมายและลิงก์ไปยังเอกสารการย้ายข้อมูล คำเตือนนั้นต้องเกิดขึ้นก่อนที่เส้นทางความเข้ากันได้จะย้ายไปเป็น `removal-pending` หรือ `removed`

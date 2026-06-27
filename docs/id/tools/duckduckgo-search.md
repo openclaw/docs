@@ -2,14 +2,15 @@
 read_when:
     - Anda menginginkan penyedia pencarian web yang tidak memerlukan kunci API
     - Anda ingin menggunakan DuckDuckGo untuk web_search
-    - Anda memerlukan mekanisme pencarian cadangan tanpa konfigurasi
-summary: Pencarian web DuckDuckGo -- penyedia cadangan tanpa kunci (eksperimental, berbasis HTML)
+    - Anda menginginkan penyedia pencarian tanpa kunci yang dipilih secara eksplisit
+summary: Pencarian web DuckDuckGo -- penyedia tanpa kunci (eksperimental, berbasis HTML)
 title: Pencarian DuckDuckGo
 x-i18n:
-    generated_at: "2026-05-06T09:30:01Z"
+    generated_at: "2026-06-27T18:17:10Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 89c23535730dc272b88e22d1dbeef61abd55a7968d9e57bdce20594df8a2c0f2
+    source_hash: c042a3cd4fa6f37cb42b88930b5fe0122a561a810e275f26d9c1eb56502495a7
     source_path: tools/duckduckgo-search.md
     workflow: 16
 ---
@@ -17,17 +18,17 @@ x-i18n:
 OpenClaw mendukung DuckDuckGo sebagai penyedia `web_search` **tanpa kunci**. Tidak diperlukan kunci API atau akun.
 
 <Warning>
-  DuckDuckGo adalah integrasi **eksperimental, tidak resmi** yang mengambil hasil
-  dari halaman pencarian non-JavaScript DuckDuckGo - bukan API resmi. Bersiaplah
-  menghadapi gangguan sesekali dari halaman tantangan bot atau perubahan HTML.
+  DuckDuckGo adalah integrasi **eksperimental dan tidak resmi** yang mengambil hasil
+  dari halaman pencarian non-JavaScript DuckDuckGo - bukan API resmi. Antisipasi
+  gangguan sesekali akibat halaman tantangan bot atau perubahan HTML.
 </Warning>
 
 ## Penyiapan
 
-Tidak perlu kunci API - cukup atur DuckDuckGo sebagai penyedia Anda:
+Tidak perlu kunci API - cukup tetapkan DuckDuckGo sebagai penyedia Anda:
 
 <Steps>
-  <Step title="Konfigurasikan">
+  <Step title="Konfigurasi">
     ```bash
     openclaw configure --section web
     # Select "duckduckgo" as the provider
@@ -75,37 +76,37 @@ Kueri pencarian.
 </ParamField>
 
 <ParamField path="count" type="number" default="5">
-Hasil yang akan dikembalikan (1-10).
+Hasil yang dikembalikan (1-10).
 </ParamField>
 
 <ParamField path="region" type="string">
-Kode wilayah DuckDuckGo (mis. `us-en`, `uk-en`, `de-de`).
+Kode wilayah DuckDuckGo (misalnya `us-en`, `uk-en`, `de-de`).
 </ParamField>
 
 <ParamField path="safeSearch" type="'strict' | 'moderate' | 'off'" default="moderate">
 Tingkat SafeSearch.
 </ParamField>
 
-Wilayah dan SafeSearch juga dapat diatur dalam konfigurasi Plugin (lihat di atas) - parameter
-alat menggantikan nilai konfigurasi per kueri.
+Wilayah dan SafeSearch juga dapat ditetapkan dalam konfigurasi Plugin (lihat di atas) -
+parameter alat menggantikan nilai konfigurasi per kueri.
 
 ## Catatan
 
-- **Tidak ada kunci API** - langsung berfungsi, tanpa konfigurasi
+- **Tanpa kunci API** - berfungsi setelah Anda memilih DuckDuckGo sebagai penyedia
+  `web_search` Anda
 - **Eksperimental** - mengumpulkan hasil dari halaman pencarian HTML non-JavaScript
   DuckDuckGo, bukan API atau SDK resmi
 - **Risiko tantangan bot** - DuckDuckGo dapat menyajikan CAPTCHA atau memblokir permintaan
-  saat penggunaan berat atau otomatis
+  dalam penggunaan berat atau otomatis
 - **Penguraian HTML** - hasil bergantung pada struktur halaman, yang dapat berubah tanpa
   pemberitahuan
-- **Urutan deteksi otomatis** - DuckDuckGo adalah fallback tanpa kunci pertama
-  (urutan 100) dalam deteksi otomatis. Penyedia berbasis API dengan kunci yang dikonfigurasi berjalan
-  terlebih dahulu, lalu Ollama Web Search (urutan 110), lalu SearXNG (urutan 200)
+- **Pemilihan eksplisit** - OpenClaw tidak memilih DuckDuckGo secara otomatis
+  ketika tidak ada penyedia berbasis API yang dikonfigurasi
 - **SafeSearch default ke moderate** saat tidak dikonfigurasi
 
 <Tip>
   Untuk penggunaan produksi, pertimbangkan [Brave Search](/id/tools/brave-search) (tingkat gratis
-  tersedia) atau penyedia berbasis API lainnya.
+  tersedia) atau penyedia lain yang berbasis API.
 </Tip>
 
 ## Terkait

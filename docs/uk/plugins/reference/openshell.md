@@ -1,26 +1,27 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або проводите аудит Plugin openshell
-summary: Бекенд пісочниці на базі OpenShell із дзеркальними локальними робочими просторами та виконанням команд на основі SSH.
-title: Plugin Openshell
+    - Ви встановлюєте, налаштовуєте або перевіряєте плагін openshell
+summary: Бекенд пісочниці OpenClaw для NVIDIA OpenShell CLI з дзеркальними локальними робочими просторами та виконанням команд SSH.
+title: Openshell Plugin
 x-i18n:
-    generated_at: "2026-05-02T15:20:53Z"
+    generated_at: "2026-06-27T18:00:52Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c27c54061615e9765181cc1867109c993614266421ee584df95f04c44b5be735
+    source_hash: f97a099c465df22c0dfd7a68907c1a75c99ca301ad016ceb1be46c81376793f8
     source_path: plugins/reference/openshell.md
     workflow: 16
 ---
 
 # Openshell Plugin
 
-Бекенд пісочниці на базі OpenShell із дзеркальованими локальними робочими просторами та виконанням команд через SSH.
+Бекенд пісочниці OpenClaw для NVIDIA OpenShell CLI із дзеркальними локальними робочими просторами та виконанням команд через SSH.
 
-## Поширення
+## Розповсюдження
 
 - Пакет: `@openclaw/openshell-sandbox`
-- Маршрут установлення: включено до OpenClaw
+- Шлях встановлення: npm; ClawHub
 
 ## Поверхня
 
-Plugin
+plugin

@@ -1,13 +1,14 @@
 ---
 read_when:
     - شما در حال نصب، پیکربندی یا ممیزی Plugin firecrawl هستید
-summary: ابزارهای قابل فراخوانی توسط عامل را اضافه می‌کند. پشتیبانی از ارائه‌دهندهٔ واکشی وب را اضافه می‌کند. پشتیبانی از ارائه‌دهندهٔ جست‌وجوی وب را اضافه می‌کند.
+summary: ابزارهای قابل فراخوانی توسط عامل را اضافه می‌کند. پشتیبانی از ارائه‌دهنده واکشی وب را اضافه می‌کند. پشتیبانی از ارائه‌دهنده جست‌وجوی وب را اضافه می‌کند.
 title: Plugin Firecrawl
 x-i18n:
-    generated_at: "2026-05-02T20:53:22Z"
+    generated_at: "2026-06-27T18:25:37Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: bf5108c28abe3bd4b18178d224cd420487be10b37476731b52862e4cb29f90dc
+    source_hash: ca5577e6e850d947a3714e3dc62c7756faae8471e150d3cdb320a85efe3fe4f5
     source_path: plugins/reference/firecrawl.md
     workflow: 16
 ---
@@ -19,12 +20,12 @@ x-i18n:
 ## توزیع
 
 - بسته: `@openclaw/firecrawl-plugin`
-- مسیر نصب: همراه با OpenClaw ارائه می‌شود
+- مسیر نصب: npm؛ ClawHub: `clawhub:@openclaw/firecrawl-plugin`
 
 ## سطح
 
 قراردادها: tools, webFetchProviders, webSearchProviders
 
-## اسناد مرتبط
+## مستندات مرتبط
 
 - [firecrawl](/fa/tools/firecrawl)

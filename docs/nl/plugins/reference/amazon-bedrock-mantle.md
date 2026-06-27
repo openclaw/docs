@@ -1,25 +1,26 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de plugin amazon-bedrock-mantle
-summary: Voegt ondersteuning voor de Amazon Bedrock Mantle-modelprovider toe aan OpenClaw.
-title: Amazon Bedrock Mantle-Plugin
+    - Je installeert, configureert of controleert de amazon-bedrock-mantle-plugin
+summary: OpenClaw Amazon Bedrock Mantle-providerplugin voor OpenAI-compatibele modelroutering.
+title: Amazon Bedrock Mantle-plugin
 x-i18n:
-    generated_at: "2026-05-02T20:47:26Z"
+    generated_at: "2026-06-27T17:58:11Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 48212e4eefdc393b9ff6a9fa7b74f4e3960b0b922b95141aeaf41a3a667b1f4e
+    source_hash: 18725aa4678f967a5d34a2c951c11cc371e934abe62fde7616124157ebdb3799
     source_path: plugins/reference/amazon-bedrock-mantle.md
     workflow: 16
 ---
 
 # Amazon Bedrock Mantle Plugin
 
-Voegt ondersteuning voor de Amazon Bedrock Mantle-modelprovider toe aan OpenClaw.
+OpenClaw Amazon Bedrock Mantle provider-Plugin voor OpenAI-compatibele modelroutering.
 
 ## Distributie
 
 - Pakket: `@openclaw/amazon-bedrock-mantle-provider`
-- Installatieroute: inbegrepen in OpenClaw
+- Installatieroute: npm; ClawHub
 
 ## Oppervlak
 

@@ -5,12 +5,13 @@ read_when:
 summary: مرجع CLI لـ `openclaw uninstall` (إزالة خدمة Gateway + البيانات المحلية)
 title: إلغاء التثبيت
 x-i18n:
-    generated_at: "2026-04-24T07:36:31Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T17:25:45Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b774fc006e989068b9126aff2a72888fd808a2e0e3d5ea8b57e6ab9d9f1b63ee
+    source_hash: f90fa8cf513e2e8cd422c3b8a880e7fd20fb71131a3ec88260e765daa2ace543
     source_path: cli/uninstall.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw uninstall`
@@ -20,12 +21,12 @@ x-i18n:
 الخيارات:
 
 - `--service`: إزالة خدمة Gateway
-- `--state`: إزالة الحالة والتهيئة
-- `--workspace`: إزالة دلائل workspace
+- `--state`: إزالة الحالة والتكوين
+- `--workspace`: إزالة أدلة مساحة العمل
 - `--app`: إزالة تطبيق macOS
-- `--all`: إزالة الخدمة والحالة وworkspace والتطبيق
-- `--yes`: تخطّي مطالبات التأكيد
-- `--non-interactive`: تعطيل المطالبات؛ ويتطلب `--yes`
+- `--all`: إزالة الخدمة والحالة ومساحة العمل والتطبيق
+- `--yes`: تخطي مطالبات التأكيد
+- `--non-interactive`: تعطيل المطالبات؛ يتطلب `--yes`
 - `--dry-run`: طباعة الإجراءات دون إزالة الملفات
 
 أمثلة:
@@ -41,9 +42,10 @@ openclaw uninstall --dry-run
 
 ملاحظات:
 
-- شغّل `openclaw backup create` أولًا إذا كنت تريد لقطة قابلة للاستعادة قبل إزالة الحالة أو مساحات العمل.
-- `--all` اختصار لإزالة الخدمة والحالة وworkspace والتطبيق معًا.
-- يتطلب `--non-interactive` استخدام `--yes`.
+- شغّل `openclaw backup create` أولاً إذا كنت تريد لقطة قابلة للاستعادة قبل إزالة الحالة أو مساحات العمل.
+- يحافظ `--state` على أدلة مساحة العمل المكوّنة ما لم يتم تحديد `--workspace` أيضاً.
+- `--all` اختصار لإزالة الخدمة والحالة ومساحة العمل والتطبيق معاً.
+- يتطلب `--non-interactive` الخيار `--yes`.
 
 ## ذو صلة
 

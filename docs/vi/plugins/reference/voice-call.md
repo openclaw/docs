@@ -1,29 +1,30 @@
 ---
 read_when:
-    - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin gọi thoại
-summary: Thêm các công cụ mà tác nhân có thể gọi.
-title: Plugin gọi thoại
+    - Bạn đang cài đặt, cấu hình hoặc kiểm tra plugin cuộc gọi thoại
+summary: Plugin cuộc gọi thoại OpenClaw cho các cuộc gọi điện thoại qua Twilio, Telnyx và Plivo.
+title: Plugin Cuộc gọi thoại
 x-i18n:
-    generated_at: "2026-05-03T10:42:46Z"
+    generated_at: "2026-06-27T17:56:27Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4d91fe5d8c24761a7e8a57452c3826640a65301e18af88819188f8244515e36c
+    source_hash: b0e298a2d8701d6fd531b761f8c14477b8c37a376af43127aa67c2fa6ff1b02d
     source_path: plugins/reference/voice-call.md
     workflow: 16
 ---
 
 # Plugin Voice Call
 
-Thêm các công cụ mà tác tử có thể gọi.
+Plugin voice-call của OpenClaw cho các cuộc gọi điện thoại qua Twilio, Telnyx và Plivo.
 
 ## Phân phối
 
 - Gói: `@openclaw/voice-call`
-- Cách cài đặt: npm; ClawHub
+- Đường dẫn cài đặt: npm; ClawHub
 
 ## Bề mặt
 
-contracts: tools
+hợp đồng: công cụ; Skills
 
 ## Tài liệu liên quan
 

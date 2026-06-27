@@ -1,16 +1,17 @@
 ---
 read_when:
     - Você quer buscar uma URL e extrair conteúdo legível
-    - Você precisa configurar web_fetch ou seu mecanismo alternativo Firecrawl
-    - Você quer entender os limites e o armazenamento em cache do web_fetch
+    - Você precisa configurar o web_fetch ou seu fallback Firecrawl
+    - Você quer entender os limites e o cache de web_fetch
 sidebarTitle: Web Fetch
-summary: ferramenta web_fetch -- busca HTTP com extração de conteúdo legível
-title: Busca na web
+summary: ferramenta `web_fetch` -- busca HTTP com extração de conteúdo legível
+title: Busca na Web
 x-i18n:
-    generated_at: "2026-05-06T18:01:19Z"
+    generated_at: "2026-06-27T18:20:10Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 337174898861db217bf0db052d8e8749989c295e89c73d9d5a6911f6335ba03d
+    source_hash: b5a4127b97ded80eec1a5944bc8606069e630c61f89c4d5ce9cb729390b4eb4d
     source_path: tools/web-fetch.md
     workflow: 16
 ---
@@ -18,7 +19,7 @@ x-i18n:
 A ferramenta `web_fetch` faz um HTTP GET simples e extrai conteúdo legível
 (HTML para markdown ou texto). Ela **não** executa JavaScript.
 
-Para sites com muito JS ou páginas protegidas por login, use o
+Para sites com uso intenso de JS ou páginas protegidas por login, use o
 [Navegador Web](/pt-BR/tools/browser).
 
 ## Início rápido
@@ -33,7 +34,7 @@ await web_fetch({ url: "https://example.com/article" });
 ## Parâmetros da ferramenta
 
 <ParamField path="url" type="string" required>
-URL a buscar. Somente `http(s)`.
+URL a buscar. Apenas `http(s)`.
 </ParamField>
 
 <ParamField path="extractMode" type="'markdown' | 'text'" default="markdown">
@@ -48,21 +49,37 @@ Trunca a saída para esta quantidade de caracteres.
 
 <Steps>
   <Step title="Fetch">
-    Envia um HTTP GET com um User-Agent semelhante ao Chrome e o cabeçalho
-    `Accept-Language`. Bloqueia hostnames privados/internos e verifica redirects novamente.
+    Envia um HTTP GET com um User-Agent semelhante ao Chrome e cabeçalho
+    `Accept-Language`. Bloqueia nomes de host privados/internos e verifica
+    redirecionamentos novamente.
   </Step>
   <Step title="Extract">
-    Executa Readability (extração do conteúdo principal) na resposta HTML.
+    Executa Readability (extração de conteúdo principal) na resposta HTML.
   </Step>
   <Step title="Fallback (optional)">
-    Se Readability falhar e Firecrawl estiver configurado, tenta novamente pela
-    API do Firecrawl com modo de contorno de bots.
+    Se o Readability falhar e o Firecrawl estiver selecionado, tenta novamente
+    pela API do Firecrawl com modo de contorno de bots.
   </Step>
   <Step title="Cache">
-    Os resultados são armazenados em cache por 15 minutos (configurável) para reduzir buscas
-    repetidas da mesma URL.
+    Os resultados ficam em cache por 15 minutos (configurável) para reduzir
+    buscas repetidas da mesma URL.
   </Step>
 </Steps>
+
+## Atualizações de progresso
+
+`web_fetch` emite uma linha pública de progresso somente quando a busca ainda está pendente
+após cinco segundos:
+
+```text
+Fetching page content...
+```
+
+Acertos rápidos de cache e respostas rápidas de rede terminam antes do temporizador disparar, então
+não mostram uma linha de progresso. Se a chamada for cancelada, o temporizador é limpo.
+Quando a busca finalmente termina, o agente recebe o resultado normal da ferramenta;
+a linha de progresso é apenas estado da interface do canal e nunca contém conteúdo
+buscado da página.
 
 ## Configuração
 
@@ -112,7 +129,7 @@ Se a extração do Readability falhar, `web_fetch` pode recorrer ao
         enabled: true,
         config: {
           webFetch: {
-            apiKey: "fc-...", // optional if FIRECRAWL_API_KEY is set
+            // apiKey: "fc-...", // optional; omit for keyless starter access
             baseUrl: "https://api.firecrawl.dev",
             onlyMainContent: true,
             maxAgeMs: 86400000, // cache duration (1 day)
@@ -125,64 +142,69 @@ Se a extração do Readability falhar, `web_fetch` pode recorrer ao
 }
 ```
 
-`plugins.entries.firecrawl.config.webFetch.apiKey` aceita objetos SecretRef.
+`plugins.entries.firecrawl.config.webFetch.apiKey` é opcional e oferece suporte a objetos SecretRef.
 A configuração legada `tools.web.fetch.firecrawl.*` é migrada automaticamente por `openclaw doctor --fix`.
 
 <Note>
-  Se o Firecrawl estiver habilitado e seu SecretRef não for resolvido, sem fallback pela env
-  `FIRECRAWL_API_KEY`, a inicialização do Gateway falha rapidamente.
+  Se você configurar um SecretRef de chave de API do Firecrawl e ele não for resolvido sem
+  fallback de env `FIRECRAWL_API_KEY`, a inicialização do Gateway falha rapidamente.
 </Note>
 
 <Note>
   Substituições de `baseUrl` do Firecrawl são restritas: tráfego hospedado usa
-  `https://api.firecrawl.dev`; substituições auto-hospedadas devem apontar para endpoints privados ou
-  internos, e `http://` é aceito somente para esses destinos privados.
+  `https://api.firecrawl.dev`; substituições auto-hospedadas devem apontar para endpoints
+  privados ou internos, e `http://` é aceito apenas para esses destinos privados.
 </Note>
 
 Comportamento atual em runtime:
 
 - `tools.web.fetch.provider` seleciona explicitamente o provedor de fallback de busca.
-- Se `provider` for omitido, o OpenClaw detecta automaticamente o primeiro provedor pronto de web-fetch
-  a partir das credenciais disponíveis. `web_fetch` fora do sandbox pode usar
+- Se `provider` for omitido, o OpenClaw detecta automaticamente o primeiro provedor
+  de web-fetch pronto a partir das credenciais configuradas. `web_fetch` sem sandbox pode usar
   plugins instalados que declaram `contracts.webFetchProviders` e registram um
-  provedor correspondente em runtime. Hoje, o provedor incluído é o Firecrawl.
-- Chamadas `web_fetch` em sandbox permanecem limitadas aos provedores incluídos.
+  provedor correspondente em runtime. O Plugin oficial do Firecrawl fornece esse
+  fallback.
+- Chamadas `web_fetch` em sandbox permitem provedores incluídos no pacote e provedores instalados
+  cuja procedência oficial no npm ou ClawHub seja verificada. Hoje isso permite o
+  Plugin oficial do Firecrawl; plugins externos de busca de terceiros permanecem excluídos.
 - Se Readability estiver desabilitado, `web_fetch` pula direto para o fallback do
-  provedor selecionado. Se nenhum provedor estiver disponível, ela falha fechada.
+  provedor selecionado. Se nenhum provedor estiver disponível, falha em modo fechado.
 
-## Proxy env confiável
+## Proxy de env confiável
 
-Se sua implantação exigir que `web_fetch` passe por um proxy de saída
-HTTP(S) confiável, defina `tools.web.fetch.useTrustedEnvProxy: true`.
+Se sua implantação exigir que `web_fetch` passe por um proxy HTTP(S)
+de saída confiável, defina `tools.web.fetch.useTrustedEnvProxy: true`.
 
-Nesse modo, o OpenClaw ainda aplica verificações SSRF baseadas em hostname antes de enviar
-a requisição, mas permite que o proxy resolva DNS em vez de fazer fixação de DNS local.
-Habilite isso somente quando o proxy for controlado pelo operador e aplicar
-a política de saída após a resolução de DNS.
+Nesse modo, o OpenClaw ainda aplica verificações SSRF baseadas em nome de host antes de enviar
+a solicitação, mas deixa o proxy resolver o DNS em vez de fazer fixação de DNS local.
+Habilite isso apenas quando o proxy for controlado pelo operador e aplicar
+política de saída após a resolução de DNS.
 
 <Note>
-  Se nenhuma env var de proxy HTTP(S) estiver configurada, ou o host de destino for excluído por
-  `NO_PROXY`, `web_fetch` volta ao caminho estrito normal com fixação de DNS local.
+  Se nenhuma variável de env de proxy HTTP(S) estiver configurada, ou o host de destino for excluído por
+  `NO_PROXY`, `web_fetch` volta para o caminho estrito normal com fixação de DNS
+  local.
 </Note>
 
 ## Limites e segurança
 
 - `maxChars` é limitado a `tools.web.fetch.maxCharsCap`
-- O corpo da resposta é limitado a `maxResponseBytes` antes do parsing; respostas
-  grandes demais são truncadas com um aviso
-- Hostnames privados/internos são bloqueados
+- O corpo da resposta é limitado a `maxResponseBytes` antes da análise; respostas grandes demais
+  são truncadas com um aviso
+- Nomes de host privados/internos são bloqueados
 - `tools.web.fetch.ssrfPolicy.allowRfc2544BenchmarkRange` e
-  `tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` são opt-ins restritos
-  para stacks de proxy fake-IP confiáveis; deixe-os indefinidos, a menos que seu proxy seja dono
-  desses intervalos sintéticos e aplique sua própria política de destino
-- Redirects são verificados e limitados por `maxRedirects`
-- `useTrustedEnvProxy` é um opt-in explícito e só deve ser habilitado para
-  proxies controlados pelo operador que ainda apliquem política de saída após a resolução de DNS
-- `web_fetch` é de melhor esforço -- alguns sites precisam do [Navegador Web](/pt-BR/tools/browser)
+  `tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` são adesões restritas
+  para pilhas de proxy de IP falso confiáveis; deixe-as indefinidas, a menos que seu proxy possua
+  esses intervalos sintéticos e aplique sua própria política de destino
+- Redirecionamentos são verificados e limitados por `maxRedirects`
+- `useTrustedEnvProxy` é uma adesão explícita e deve ser habilitada apenas para
+  proxies controlados pelo operador que ainda apliquem política de saída após a
+  resolução de DNS
+- `web_fetch` funciona em regime de melhor esforço -- alguns sites precisam do [Navegador Web](/pt-BR/tools/browser)
 
-## Perfis de ferramentas
+## Perfis de ferramenta
 
-Se você usa perfis de ferramentas ou allowlists, adicione `web_fetch` ou `group:web`:
+Se você usa perfis de ferramenta ou listas de permissão, adicione `web_fetch` ou `group:web`:
 
 ```json5
 {
@@ -196,5 +218,5 @@ Se você usa perfis de ferramentas ou allowlists, adicione `web_fetch` ou `group
 ## Relacionados
 
 - [Pesquisa Web](/pt-BR/tools/web) -- pesquise na web com vários provedores
-- [Navegador Web](/pt-BR/tools/browser) -- automação completa de navegador para sites com muito JS
+- [Navegador Web](/pt-BR/tools/browser) -- automação completa de navegador para sites com uso intenso de JS
 - [Firecrawl](/pt-BR/tools/firecrawl) -- ferramentas de pesquisa e scraping do Firecrawl

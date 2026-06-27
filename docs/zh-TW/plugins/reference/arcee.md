@@ -1,25 +1,26 @@
 ---
 read_when:
-    - 您正在安裝、設定或稽核 arcee Plugin
-summary: 新增 OpenClaw 對 Arcee 模型提供者的支援。
-title: Arcee Plugin
+    - 你正在安裝、設定或稽核 arcee 外掛
+summary: 新增 Arcee 模型提供者支援至 OpenClaw。
+title: Arcee 外掛
 x-i18n:
-    generated_at: "2026-05-02T20:54:33Z"
+    generated_at: "2026-06-27T19:40:59Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7cff1ab321482d66e4ed6cca64154de57dfc2d5f6fd5ea9221e1126b9278137c
+    source_hash: 9d4880c859c2498ce3708834cdc62a8ff6babb0571672b99d62cc5c2c7299f8e
     source_path: plugins/reference/arcee.md
     workflow: 16
 ---
 
-# Arcee Plugin
+# Arcee 外掛
 
-為 OpenClaw 新增 Arcee 模型供應商支援。
+新增 Arcee 模型供應商支援至 OpenClaw。
 
-## 發佈
+## 發行
 
 - 套件：`@openclaw/arcee-provider`
-- 安裝途徑：包含於 OpenClaw
+- 安裝路徑：npm；ClawHub：`clawhub:@openclaw/arcee-provider`
 
 ## 介面
 

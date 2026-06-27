@@ -1,20 +1,21 @@
 ---
 read_when:
-    - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ line Plugin
-summary: เพิ่มส่วนติดต่อของช่องทาง LINE สำหรับส่งและรับข้อความ OpenClaw
-title: LINE Plugin
+    - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin LINE
+summary: Plugin ช่อง LINE ของ OpenClaw สำหรับแชต LINE Bot API
+title: Plugin LINE
 x-i18n:
-    generated_at: "2026-05-03T10:16:58Z"
+    generated_at: "2026-06-27T18:03:12Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 307e6e08345161bc53fe5a04cc9d0a3fabbc9ff01e9ebcae98a39899288ef4d4
+    source_hash: d561055be3fde476a78bf123f4025ca61e670b005d0b2d63e5b54318975c2fd9
     source_path: plugins/reference/line.md
     workflow: 16
 ---
 
-# LINE Plugin
+# Plugin LINE
 
-เพิ่มพื้นผิวช่องทาง LINE สำหรับส่งและรับข้อความ OpenClaw
+Plugin ช่องทาง LINE ของ OpenClaw สำหรับแชต LINE Bot API
 
 ## การเผยแพร่
 
@@ -27,4 +28,4 @@ channels: line
 
 ## เอกสารที่เกี่ยวข้อง
 
-- [line](/th/channels/line)
+- [LINE](/th/channels/line)

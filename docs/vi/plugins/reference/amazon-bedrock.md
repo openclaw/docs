@@ -1,25 +1,26 @@
 ---
 read_when:
-    - Bạn đang cài đặt, cấu hình hoặc rà soát Plugin amazon-bedrock
-summary: Thêm hỗ trợ nhà cung cấp mô hình Amazon Bedrock cho OpenClaw.
+    - Bạn đang cài đặt, cấu hình hoặc kiểm tra plugin amazon-bedrock
+summary: OpenClaw Amazon Bedrock provider plugin với hỗ trợ khám phá mô hình, embeddings và guardrail.
 title: Plugin Amazon Bedrock
 x-i18n:
-    generated_at: "2026-05-02T20:47:43Z"
+    generated_at: "2026-06-27T17:50:12Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 001ec686133a9f6b17c8074bf6710c11ad92679d7badb08a8bef51272c40308d
+    source_hash: bf39e0d58332cd057e8f050dc1a8742c219b62182381a7f47856e3a657b80f03
     source_path: plugins/reference/amazon-bedrock.md
     workflow: 16
 ---
 
 # Plugin Amazon Bedrock
 
-Thêm hỗ trợ nhà cung cấp mô hình Amazon Bedrock cho OpenClaw.
+Plugin nhà cung cấp Amazon Bedrock của OpenClaw với khả năng khám phá mô hình, embeddings và hỗ trợ guardrail.
 
 ## Phân phối
 
 - Gói: `@openclaw/amazon-bedrock-provider`
-- Cách cài đặt: được bao gồm trong OpenClaw
+- Tuyến cài đặt: npm; ClawHub
 
 ## Bề mặt
 

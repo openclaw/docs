@@ -1,55 +1,58 @@
 ---
 read_when:
     - Vuoi usare Qwen con OpenClaw
-    - Hai usato in precedenza Qwen OAuth
-summary: Usare Qwen Cloud tramite il provider qwen incluso in OpenClaw
+    - In precedenza hai usato Qwen OAuth
+summary: Usare Qwen Cloud tramite il suo Plugin OpenClaw
 title: Qwen
 x-i18n:
-    generated_at: "2026-04-30T09:09:57Z"
+    generated_at: "2026-06-27T18:09:44Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 898a7ef1f071c838f3bd877632dd06cf0e6112adfa2833895280f99642df56e6
+    source_hash: 4e42a38f3e7f2db54092886f2ef8c3ab27163c3c3d0f9b4d95affd58555f58d3
     source_path: providers/qwen.md
     workflow: 16
 ---
 
-<Warning>
-
-**Qwen OAuth è stato rimosso.** L'integrazione OAuth di livello gratuito
-(`qwen-portal`) che usava gli endpoint `portal.qwen.ai` non è più disponibile.
-Vedi [Issue #49557](https://github.com/openclaw/openclaw/issues/49557) per
-il contesto.
-
-</Warning>
-
-OpenClaw ora tratta Qwen come provider in bundle di prima classe con id canonico
-`qwen`. Il provider in bundle usa come destinazione gli endpoint Qwen Cloud / Alibaba DashScope e
-Coding Plan e mantiene funzionanti gli id `modelstudio` legacy come
-alias di compatibilità.
+OpenClaw ora tratta Qwen come Plugin provider di prima classe con id canonico
+`qwen`. Il Plugin provider punta agli endpoint Qwen Cloud / Alibaba DashScope e
+Coding Plan, mantiene funzionanti gli id legacy `modelstudio` come alias di
+compatibilità ed espone anche il flusso del token Qwen Portal come provider
+`qwen-oauth`.
 
 - Provider: `qwen`
+- Provider Portal: [`qwen-oauth`](/it/providers/qwen-oauth)
 - Variabile env preferita: `QWEN_API_KEY`
 - Accettate anche per compatibilità: `MODELSTUDIO_API_KEY`, `DASHSCOPE_API_KEY`
 - Stile API: compatibile con OpenAI
 
 <Tip>
-Se vuoi `qwen3.6-plus`, preferisci l'endpoint **Standard (pay-as-you-go)**.
+Se vuoi usare `qwen3.6-plus`, preferisci l'endpoint **Standard (pagamento a consumo)**.
 Il supporto del Coding Plan può essere in ritardo rispetto al catalogo pubblico.
 </Tip>
+
+## Installa Plugin
+
+Installa il Plugin ufficiale, poi riavvia Gateway:
+
+```bash
+openclaw plugins install @openclaw/qwen-provider
+openclaw gateway restart
+```
 
 ## Per iniziare
 
 Scegli il tipo di piano e segui i passaggi di configurazione.
 
 <Tabs>
-  <Tab title="Coding Plan (subscription)">
-    **Ideale per:** accesso basato su abbonamento tramite il Qwen Coding Plan.
+  <Tab title="Coding Plan (abbonamento)">
+    **Ideale per:** accesso basato su abbonamento tramite Qwen Coding Plan.
 
     <Steps>
-      <Step title="Get your API key">
+      <Step title="Ottieni la tua chiave API">
         Crea o copia una chiave API da [home.qwencloud.com/api-keys](https://home.qwencloud.com/api-keys).
       </Step>
-      <Step title="Run onboarding">
+      <Step title="Esegui l'onboarding">
         Per l'endpoint **Global**:
 
         ```bash
@@ -62,7 +65,7 @@ Scegli il tipo di piano e segui i passaggi di configurazione.
         openclaw onboard --auth-choice qwen-api-key-cn
         ```
       </Step>
-      <Step title="Set a default model">
+      <Step title="Imposta un modello predefinito">
         ```json5
         {
           agents: {
@@ -73,7 +76,7 @@ Scegli il tipo di piano e segui i passaggi di configurazione.
         }
         ```
       </Step>
-      <Step title="Verify the model is available">
+      <Step title="Verifica che il modello sia disponibile">
         ```bash
         openclaw models list --provider qwen
         ```
@@ -81,24 +84,25 @@ Scegli il tipo di piano e segui i passaggi di configurazione.
     </Steps>
 
     <Note>
-    Gli id `modelstudio-*` auth-choice legacy e i riferimenti modello `modelstudio/...`
-    funzionano ancora come alias di compatibilità, ma i nuovi flussi di configurazione dovrebbero preferire gli id
-    auth-choice canonici `qwen-*` e i riferimenti modello `qwen/...`. Se definisci una voce
-    personalizzata esatta `models.providers.modelstudio` con un altro valore `api`, quel
-    provider personalizzato possiede i riferimenti `modelstudio/...` invece dell'alias di compatibilità
-    Qwen.
+    Gli id auth-choice legacy `modelstudio-*` e i riferimenti modello `modelstudio/...`
+    continuano a funzionare come alias di compatibilità, ma i nuovi flussi di configurazione
+    dovrebbero preferire gli id auth-choice canonici `qwen-*` e i riferimenti modello
+    `qwen/...`. Se definisci una voce personalizzata esatta
+    `models.providers.modelstudio` con un altro valore `api`, quel provider
+    personalizzato possiede i riferimenti `modelstudio/...` invece dell'alias di
+    compatibilità Qwen.
     </Note>
 
   </Tab>
 
-  <Tab title="Standard (pay-as-you-go)">
-    **Ideale per:** accesso pay-as-you-go tramite l'endpoint Standard Model Studio, inclusi modelli come `qwen3.6-plus` che potrebbero non essere disponibili sul Coding Plan.
+  <Tab title="Standard (pagamento a consumo)">
+    **Ideale per:** accesso a consumo tramite l'endpoint Standard Model Studio, inclusi modelli come `qwen3.6-plus` che potrebbero non essere disponibili nel Coding Plan.
 
     <Steps>
-      <Step title="Get your API key">
+      <Step title="Ottieni la tua chiave API">
         Crea o copia una chiave API da [home.qwencloud.com/api-keys](https://home.qwencloud.com/api-keys).
       </Step>
-      <Step title="Run onboarding">
+      <Step title="Esegui l'onboarding">
         Per l'endpoint **Global**:
 
         ```bash
@@ -111,7 +115,7 @@ Scegli il tipo di piano e segui i passaggi di configurazione.
         openclaw onboard --auth-choice qwen-standard-api-key-cn
         ```
       </Step>
-      <Step title="Set a default model">
+      <Step title="Imposta un modello predefinito">
         ```json5
         {
           agents: {
@@ -122,7 +126,7 @@ Scegli il tipo di piano e segui i passaggi di configurazione.
         }
         ```
       </Step>
-      <Step title="Verify the model is available">
+      <Step title="Verifica che il modello sia disponibile">
         ```bash
         openclaw models list --provider qwen
         ```
@@ -130,12 +134,51 @@ Scegli il tipo di piano e segui i passaggi di configurazione.
     </Steps>
 
     <Note>
-    Gli id `modelstudio-*` auth-choice legacy e i riferimenti modello `modelstudio/...`
-    funzionano ancora come alias di compatibilità, ma i nuovi flussi di configurazione dovrebbero preferire gli id
-    auth-choice canonici `qwen-*` e i riferimenti modello `qwen/...`. Se definisci una voce
-    personalizzata esatta `models.providers.modelstudio` con un altro valore `api`, quel
-    provider personalizzato possiede i riferimenti `modelstudio/...` invece dell'alias di compatibilità
-    Qwen.
+    Gli id auth-choice legacy `modelstudio-*` e i riferimenti modello `modelstudio/...`
+    continuano a funzionare come alias di compatibilità, ma i nuovi flussi di configurazione
+    dovrebbero preferire gli id auth-choice canonici `qwen-*` e i riferimenti modello
+    `qwen/...`. Se definisci una voce personalizzata esatta
+    `models.providers.modelstudio` con un altro valore `api`, quel provider
+    personalizzato possiede i riferimenti `modelstudio/...` invece dell'alias di
+    compatibilità Qwen.
+    </Note>
+
+  </Tab>
+
+  <Tab title="Qwen OAuth / Portal">
+    **Ideale per:** un token Qwen Portal per `https://portal.qwen.ai/v1`.
+
+    Consulta [Qwen OAuth / Portal](/it/providers/qwen-oauth) per la pagina dedicata
+    del provider e le note di migrazione.
+
+    <Steps>
+      <Step title="Fornisci il tuo token Portal">
+        ```bash
+        openclaw onboard --auth-choice qwen-oauth
+        ```
+      </Step>
+      <Step title="Imposta un modello predefinito">
+        ```json5
+        {
+          agents: {
+            defaults: {
+              model: { primary: "qwen-oauth/qwen3.5-plus" },
+            },
+          },
+        }
+        ```
+      </Step>
+      <Step title="Verifica che il modello sia disponibile">
+        ```bash
+        openclaw models list --provider qwen-oauth
+        ```
+      </Step>
+    </Steps>
+
+    <Note>
+    `qwen-oauth` usa lo stesso nome di variabile env `QWEN_API_KEY` del provider
+    DashScope, ma salva l'autenticazione sotto l'id provider `qwen-oauth` quando
+    configurato tramite l'onboarding di OpenClaw.
     </Note>
 
   </Tab>
@@ -145,14 +188,16 @@ Scegli il tipo di piano e segui i passaggi di configurazione.
 
 | Piano                      | Regione | Scelta auth                | Endpoint                                         |
 | -------------------------- | ------ | -------------------------- | ------------------------------------------------ |
-| Standard (pay-as-you-go)   | China  | `qwen-standard-api-key-cn` | `dashscope.aliyuncs.com/compatible-mode/v1`      |
-| Standard (pay-as-you-go)   | Global | `qwen-standard-api-key`    | `dashscope-intl.aliyuncs.com/compatible-mode/v1` |
-| Coding Plan (subscription) | China  | `qwen-api-key-cn`          | `coding.dashscope.aliyuncs.com/v1`               |
-| Coding Plan (subscription) | Global | `qwen-api-key`             | `coding-intl.dashscope.aliyuncs.com/v1`          |
+| Standard (pagamento a consumo) | China  | `qwen-standard-api-key-cn` | `dashscope.aliyuncs.com/compatible-mode/v1`      |
+| Standard (pagamento a consumo) | Global | `qwen-standard-api-key`    | `dashscope-intl.aliyuncs.com/compatible-mode/v1` |
+| Coding Plan (abbonamento) | China  | `qwen-api-key-cn`          | `coding.dashscope.aliyuncs.com/v1`               |
+| Coding Plan (abbonamento) | Global | `qwen-api-key`             | `coding-intl.dashscope.aliyuncs.com/v1`          |
+| Qwen Portal                | Global | `qwen-oauth`               | `portal.qwen.ai/v1`                              |
 
-Il provider seleziona automaticamente l'endpoint in base alla tua scelta auth. Le scelte canoniche
-usano la famiglia `qwen-*`; `modelstudio-*` rimane solo per compatibilità.
-Puoi sovrascrivere con un `baseUrl` personalizzato nella configurazione.
+Il provider seleziona automaticamente l'endpoint in base alla tua scelta auth.
+Le scelte canoniche usano la famiglia `qwen-*`; `modelstudio-*` resta solo per
+compatibilità. Puoi eseguire l'override con un `baseUrl` personalizzato nella
+configurazione.
 
 <Tip>
 **Gestisci chiavi:** [home.qwencloud.com/api-keys](https://home.qwencloud.com/api-keys) |
@@ -161,38 +206,39 @@ Puoi sovrascrivere con un `baseUrl` personalizzato nella configurazione.
 
 ## Catalogo integrato
 
-OpenClaw attualmente include questo catalogo Qwen in bundle. Il catalogo configurato è
-consapevole dell'endpoint: le configurazioni Coding Plan omettono i modelli che sono noti per funzionare
-solo sull'endpoint Standard.
+OpenClaw attualmente distribuisce questo catalogo statico Qwen. Il catalogo
+configurato è consapevole dell'endpoint: le configurazioni Coding Plan omettono
+i modelli noti per funzionare solo sull'endpoint Standard.
 
-| Rif. modello                | Input       | Contesto  | Note                                                            |
-| --------------------------- | ----------- | --------- | --------------------------------------------------------------- |
-| `qwen/qwen3.5-plus`         | text, image | 1,000,000 | Modello predefinito                                             |
-| `qwen/qwen3.6-plus`         | text, image | 1,000,000 | Preferisci gli endpoint Standard quando ti serve questo modello |
-| `qwen/qwen3-max-2026-01-23` | text        | 262,144   | Linea Qwen Max                                                  |
-| `qwen/qwen3-coder-next`     | text        | 262,144   | Coding                                                          |
-| `qwen/qwen3-coder-plus`     | text        | 1,000,000 | Coding                                                          |
-| `qwen/MiniMax-M2.5`         | text        | 1,000,000 | Ragionamento abilitato                                          |
-| `qwen/glm-5`                | text        | 202,752   | GLM                                                             |
-| `qwen/glm-4.7`              | text        | 202,752   | GLM                                                             |
-| `qwen/kimi-k2.5`            | text, image | 262,144   | Moonshot AI tramite Alibaba                                     |
+| Riferimento modello         | Input       | Contesto  | Note                                               |
+| --------------------------- | ----------- | --------- | -------------------------------------------------- |
+| `qwen/qwen3.5-plus`         | text, image | 1,000,000 | Modello predefinito                                |
+| `qwen/qwen3.6-plus`         | text, image | 1,000,000 | Preferisci endpoint Standard quando ti serve questo modello |
+| `qwen/qwen3-max-2026-01-23` | text        | 262,144   | Linea Qwen Max                                     |
+| `qwen/qwen3-coder-next`     | text        | 262,144   | Coding                                             |
+| `qwen/qwen3-coder-plus`     | text        | 1,000,000 | Coding                                             |
+| `qwen/MiniMax-M2.5`         | text        | 1,000,000 | Ragionamento abilitato                             |
+| `qwen/glm-5`                | text        | 202,752   | GLM                                                |
+| `qwen/glm-4.7`              | text        | 202,752   | GLM                                                |
+| `qwen/kimi-k2.5`            | text, image | 262,144   | Moonshot AI tramite Alibaba                        |
+| `qwen-oauth/qwen3.5-plus`   | text, image | 1,000,000 | Predefinito Qwen Portal                            |
 
 <Note>
-La disponibilità può comunque variare in base all'endpoint e al piano di fatturazione anche quando un modello è
-presente nel catalogo in bundle.
+La disponibilità può comunque variare in base all'endpoint e al piano di fatturazione
+anche quando un modello è presente nel catalogo statico.
 </Note>
 
-## Controlli di thinking
+## Controlli di ragionamento
 
-Per i modelli Qwen Cloud con ragionamento abilitato, il provider in bundle mappa i livelli di
-thinking di OpenClaw al flag di richiesta di primo livello `enable_thinking` di DashScope. Il
-thinking disabilitato invia `enable_thinking: false`; gli altri livelli di thinking inviano
-`enable_thinking: true`.
+Per i modelli Qwen Cloud con ragionamento abilitato, il provider mappa i livelli
+di ragionamento di OpenClaw al flag di richiesta di primo livello `enable_thinking`
+di DashScope. Il ragionamento disabilitato invia `enable_thinking: false`; gli altri
+livelli di ragionamento inviano `enable_thinking: true`.
 
-## Componenti aggiuntivi multimodali
+## Add-on multimodali
 
-Il Plugin `qwen` espone anche capacità multimodali sugli endpoint DashScope **Standard**
-(non sugli endpoint Coding Plan):
+Il Plugin `qwen` espone anche capacità multimodali sugli endpoint DashScope
+**Standard** (non sugli endpoint Coding Plan):
 
 - **Comprensione video** tramite `qwen-vl-max-latest`
 - **Generazione video Wan** tramite `wan2.6-t2v` (predefinito), `wan2.6-i2v`, `wan2.6-r2v`, `wan2.6-r2v-flash`, `wan2.7-r2v`
@@ -216,65 +262,67 @@ Vedi [Generazione video](/it/tools/video-generation) per i parametri condivisi d
 ## Configurazione avanzata
 
 <AccordionGroup>
-  <Accordion title="Image and video understanding">
-    Il Plugin Qwen in bundle registra la comprensione dei media per immagini e video
+  <Accordion title="Comprensione di immagini e video">
+    Il Plugin Qwen registra la comprensione multimediale per immagini e video
     sugli endpoint DashScope **Standard** (non sugli endpoint Coding Plan).
 
-    | Proprietà       | Valore                |
+    | Proprietà     | Valore                |
     | ------------- | --------------------- |
     | Modello       | `qwen-vl-max-latest`  |
     | Input supportato | Immagini, video    |
 
-    La comprensione dei media viene risolta automaticamente dall'auth Qwen configurata: non è
-    necessaria alcuna configurazione aggiuntiva. Assicurati di usare un endpoint Standard (pay-as-you-go)
-    per il supporto della comprensione dei media.
+    La comprensione multimediale viene risolta automaticamente dall'autenticazione
+    Qwen configurata: non serve configurazione aggiuntiva. Assicurati di usare un
+    endpoint Standard (pagamento a consumo) per il supporto alla comprensione
+    multimediale.
 
   </Accordion>
 
-  <Accordion title="Qwen 3.6 Plus availability">
-    `qwen3.6-plus` è disponibile sugli endpoint Standard (pay-as-you-go) Model Studio:
+  <Accordion title="Disponibilità di Qwen 3.6 Plus">
+    `qwen3.6-plus` è disponibile sugli endpoint Standard (pagamento a consumo)
+    Model Studio:
 
     - China: `dashscope.aliyuncs.com/compatible-mode/v1`
     - Global: `dashscope-intl.aliyuncs.com/compatible-mode/v1`
 
     Se gli endpoint Coding Plan restituiscono un errore "unsupported model" per
-    `qwen3.6-plus`, passa a Standard (pay-as-you-go) invece della coppia endpoint/chiave
-    Coding Plan.
+    `qwen3.6-plus`, passa a Standard (pagamento a consumo) invece della coppia
+    endpoint/chiave del Coding Plan.
 
-    Il catalogo Qwen in bundle di OpenClaw non pubblicizza `qwen3.6-plus` sugli endpoint Coding
-    Plan, ma le voci `qwen/qwen3.6-plus` configurate esplicitamente sotto
-    `models.providers.qwen.models` vengono rispettate sui baseUrl Coding Plan, quindi puoi
-    abilitare quel modello se Aliyun lo abilita sul tuo abbonamento. L'API
-    upstream decide comunque se la chiamata riesce.
-
-  </Accordion>
-
-  <Accordion title="Capability plan">
-    Il Plugin `qwen` viene posizionato come sede del vendor per l'intera superficie Qwen
-    Cloud, non solo per i modelli di coding/testo.
-
-    - **Modelli testo/chat:** in bundle ora
-    - **Chiamata di strumenti, output strutturato, thinking:** ereditati dal trasporto compatibile con OpenAI
-    - **Generazione immagini:** pianificata a livello di provider-Plugin
-    - **Comprensione immagini/video:** in bundle ora sull'endpoint Standard
-    - **Voce/audio:** pianificati a livello di provider-Plugin
-    - **Embedding/reranking della memoria:** pianificati tramite la superficie dell'adapter di embedding
-    - **Generazione video:** in bundle ora tramite la capacità condivisa di generazione video
+    Il catalogo statico Qwen di OpenClaw non pubblicizza `qwen3.6-plus` sugli
+    endpoint Coding Plan, ma le voci `qwen/qwen3.6-plus` configurate esplicitamente
+    sotto `models.providers.qwen.models` vengono rispettate sui baseUrl Coding Plan,
+    così puoi abilitare quel modello se Aliyun lo abilita sul tuo abbonamento. L'API
+    upstream decide comunque se la chiamata va a buon fine.
 
   </Accordion>
 
-  <Accordion title="Video generation details">
-    Per la generazione video, OpenClaw mappa la regione Qwen configurata sull'host AIGC
-    DashScope corrispondente prima di inviare il job:
+  <Accordion title="Piano delle capacità">
+    Il Plugin `qwen` viene posizionato come sede vendor per l'intera superficie
+    Qwen Cloud, non solo per i modelli di coding/testo.
+
+    - **Modelli testo/chat:** disponibili tramite il Plugin
+    - **Tool calling, output strutturato, ragionamento:** ereditati dal trasporto compatibile con OpenAI
+    - **Generazione immagini:** pianificata a livello di Plugin provider
+    - **Comprensione immagini/video:** disponibile tramite il Plugin sull'endpoint Standard
+    - **Voce/audio:** pianificati a livello di Plugin provider
+    - **Embedding/reranking di memoria:** pianificati tramite la superficie dell'adattatore embedding
+    - **Generazione video:** disponibile tramite il Plugin attraverso la capacità condivisa di generazione video
+
+  </Accordion>
+
+  <Accordion title="Dettagli sulla generazione video">
+    Per la generazione video, OpenClaw mappa la regione Qwen configurata sull'host
+    DashScope AIGC corrispondente prima di inviare il job:
 
     - Global/Intl: `https://dashscope-intl.aliyuncs.com`
     - China: `https://dashscope.aliyuncs.com`
 
-    Ciò significa che un normale `models.providers.qwen.baseUrl` che punta agli host Qwen
-    Coding Plan o Standard mantiene comunque la generazione video sull'endpoint video DashScope
-    regionale corretto.
+    Ciò significa che un normale `models.providers.qwen.baseUrl` che punta agli
+    host Qwen Coding Plan o Standard mantiene comunque la generazione video
+    sull'endpoint video DashScope regionale corretto.
 
-    Limiti attuali della generazione video Qwen in bundle:
+    Limiti attuali della generazione video Qwen:
 
     - Fino a **1** video di output per richiesta
     - Fino a **1** immagine di input
@@ -282,20 +330,20 @@ Vedi [Generazione video](/it/tools/video-generation) per i parametri condivisi d
     - Fino a **10 secondi** di durata
     - Supporta `size`, `aspectRatio`, `resolution`, `audio` e `watermark`
     - La modalità immagine/video di riferimento attualmente richiede **URL http(s) remoti**. I percorsi
-      dei file locali vengono rifiutati in anticipo perché l'endpoint video DashScope non
-      accetta buffer locali caricati per quei riferimenti.
+      di file locali vengono rifiutati in anticipo perché l'endpoint video DashScope non
+      accetta buffer locali caricati per tali riferimenti.
 
   </Accordion>
 
-  <Accordion title="Streaming usage compatibility">
-    Gli endpoint nativi Model Studio pubblicizzano la compatibilità dell'uso in streaming sul
-    trasporto condiviso `openai-completions`. OpenClaw ora la determina dalle capacità
-    dell'endpoint, quindi gli id di provider personalizzati compatibili con DashScope che puntano agli
-    stessi host nativi ereditano lo stesso comportamento di streaming-usage invece di
-    richiedere specificamente l'id del provider integrato `qwen`.
+  <Accordion title="Compatibilità dell'utilizzo in streaming">
+    Gli endpoint nativi di Model Studio dichiarano la compatibilità dell'utilizzo in streaming sul
+    trasporto condiviso `openai-completions`. OpenClaw ora determina questo in base alle
+    capacità degli endpoint, quindi gli ID di provider personalizzati compatibili con DashScope che puntano agli
+    stessi host nativi ereditano lo stesso comportamento di utilizzo in streaming invece di
+    richiedere specificamente l'ID del provider integrato `qwen`.
 
-    La compatibilità dell'uso con streaming nativo si applica sia agli host Coding Plan sia
-    agli host compatibili con DashScope Standard:
+    La compatibilità dell'utilizzo con streaming nativo si applica sia agli host Coding Plan sia
+    agli host Standard compatibili con DashScope:
 
     - `https://coding.dashscope.aliyuncs.com/v1`
     - `https://coding-intl.dashscope.aliyuncs.com/v1`
@@ -304,18 +352,18 @@ Vedi [Generazione video](/it/tools/video-generation) per i parametri condivisi d
 
   </Accordion>
 
-  <Accordion title="Multimodal endpoint regions">
-    Le superfici multimodali (comprensione video e generazione video Wan) usano gli endpoint
-    DashScope **Standard**, non gli endpoint Coding Plan:
+  <Accordion title="Regioni degli endpoint multimodali">
+    Le superfici multimodali (comprensione video e generazione video Wan) usano gli
+    endpoint DashScope **Standard**, non gli endpoint Coding Plan:
 
-    - URL base Standard Global/Intl: `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`
-    - URL base Standard China: `https://dashscope.aliyuncs.com/compatible-mode/v1`
+    - URL di base Standard Global/Intl: `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`
+    - URL di base Standard Cina: `https://dashscope.aliyuncs.com/compatible-mode/v1`
 
   </Accordion>
 
-  <Accordion title="Configurazione dell'ambiente e del demone">
-    Se il Gateway viene eseguito come demone (launchd/systemd), assicurati che `QWEN_API_KEY` sia
-    disponibile per quel processo (ad esempio, in `~/.openclaw/.env` o tramite
+  <Accordion title="Configurazione dell'ambiente e del daemon">
+    Se il Gateway viene eseguito come daemon (launchd/systemd), assicurati che `QWEN_API_KEY` sia
+    disponibile per quel processo (ad esempio in `~/.openclaw/.env` o tramite
     `env.shellEnv`).
   </Accordion>
 </AccordionGroup>
@@ -324,7 +372,7 @@ Vedi [Generazione video](/it/tools/video-generation) per i parametri condivisi d
 
 <CardGroup cols={2}>
   <Card title="Selezione del modello" href="/it/concepts/model-providers" icon="layers">
-    Scelta dei provider, dei riferimenti dei modelli e del comportamento di failover.
+    Scelta dei provider, dei riferimenti ai modelli e del comportamento di failover.
   </Card>
   <Card title="Generazione video" href="/it/tools/video-generation" icon="video">
     Parametri condivisi dello strumento video e selezione del provider.

@@ -1,36 +1,47 @@
 ---
 read_when:
-    - Anda ingin agen OpenClaw mode Codex menggunakan Plugin Codex native
-    - Anda sedang memigrasikan Plugin Codex yang dikurasi OpenAI dan diinstal dari sumber
-    - Anda sedang memecahkan masalah codexPlugins, inventaris aplikasi, tindakan destruktif, atau diagnostik aplikasi Plugin
-summary: Konfigurasikan Plugin Codex asli yang dimigrasikan untuk agen OpenClaw mode Codex
+    - Anda ingin agen OpenClaw mode Codex menggunakan plugin Codex native
+    - Anda sedang memigrasikan Plugin Codex pilihan OpenAI yang diinstal dari sumber
+    - Anda sedang memecahkan masalah codexPlugins, inventaris aplikasi, tindakan destruktif, atau diagnostik aplikasi plugin
+summary: Konfigurasikan plugin Codex native yang dimigrasikan untuk agen OpenClaw mode Codex
 title: Plugin Codex native
 x-i18n:
-    generated_at: "2026-05-12T23:30:36Z"
+    generated_at: "2026-06-27T17:46:03Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ddec40cd5f9a74b43d55f327cdcd7088e024392fbafc7f1aa5bd9b136d3ecc13
+    source_hash: 82d8eb7ca7c10db5220c49426f5e9db5992ee751d48b2ac8c89e93773fc87776
     source_path: plugins/codex-native-plugins.md
     workflow: 16
 ---
 
-Dukungan Plugin Codex native memungkinkan agen OpenClaw mode Codex menggunakan kemampuan aplikasi dan Plugin milik Codex app-server di dalam thread Codex yang sama yang menangani giliran OpenClaw.
+Dukungan plugin Codex native memungkinkan agen OpenClaw mode Codex menggunakan
+kemampuan app dan plugin milik app-server Codex di dalam thread Codex yang sama
+yang menangani giliran OpenClaw.
 
-OpenClaw tidak menerjemahkan Plugin Codex menjadi alat dinamis OpenClaw `codex_plugin_*` sintetis. Panggilan Plugin tetap berada dalam transkrip Codex native, dan Codex app-server memiliki eksekusi MCP berbasis aplikasi.
+OpenClaw tidak menerjemahkan plugin Codex menjadi tool dinamis OpenClaw
+`codex_plugin_*` sintetis. Panggilan plugin tetap berada di transkrip Codex
+native, dan app-server Codex memiliki eksekusi MCP yang didukung app.
 
 Gunakan halaman ini setelah [harness Codex](/id/plugins/codex-harness) dasar berfungsi.
 
 ## Persyaratan
 
 - Runtime agen OpenClaw yang dipilih harus berupa harness Codex native.
-- `plugins.entries.codex.enabled` harus bernilai true.
-- `plugins.entries.codex.config.codexPlugins.enabled` harus bernilai true.
-- V1 hanya mendukung Plugin `openai-curated` yang diamati migrasi sebagai
-  terinstal dari sumber di home Codex sumber.
-- Codex app-server target harus dapat melihat inventaris marketplace,
-  Plugin, dan aplikasi yang diharapkan.
+- `plugins.entries.codex.enabled` harus true.
+- `plugins.entries.codex.config.codexPlugins.enabled` harus true.
+- V1 hanya mendukung plugin `openai-curated` yang diamati migrasi sebagai
+  terpasang dari sumber di home Codex sumber.
+- App-server Codex target harus dapat melihat marketplace, plugin, dan inventaris
+  app yang diharapkan.
 
-`codexPlugins` tidak berpengaruh pada run PI, run penyedia OpenAI normal, binding percakapan ACP, atau harness lain karena jalur-jalur tersebut tidak membuat thread Codex app-server dengan konfigurasi `apps` native.
+`codexPlugins` tidak berpengaruh pada proses OpenClaw, proses provider OpenAI
+normal, binding percakapan ACP, atau harness lain karena jalur tersebut tidak
+membuat thread app-server Codex dengan konfigurasi `apps` native.
+
+Akses Codex sisi OpenAI, ketersediaan app, dan kontrol app/plugin workspace
+berasal dari akun Codex yang masuk. Untuk model akun dan admin OpenAI, lihat
+[Menggunakan Codex dengan paket ChatGPT Anda](https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan).
 
 ## Mulai cepat
 
@@ -40,19 +51,22 @@ Pratinjau migrasi dari home Codex sumber:
 openclaw migrate codex --dry-run
 ```
 
-Gunakan verifikasi aplikasi sumber yang ketat saat Anda ingin migrasi memeriksa aksesibilitas aplikasi sumber sebelum merencanakan aktivasi Plugin native:
+Gunakan verifikasi app sumber yang ketat saat Anda ingin migrasi memeriksa
+aksesibilitas app sumber sebelum merencanakan aktivasi plugin native:
 
 ```bash
 openclaw migrate codex --dry-run --verify-plugin-apps
 ```
 
-Terapkan migrasi saat rencananya sudah sesuai:
+Terapkan migrasi saat rencananya terlihat benar:
 
 ```bash
 openclaw migrate apply codex --yes
 ```
 
-Migrasi menulis entri `codexPlugins` eksplisit untuk Plugin yang memenuhi syarat dan memanggil `plugin/install` Codex app-server untuk Plugin yang dipilih. Konfigurasi hasil migrasi yang umum terlihat seperti ini:
+Migrasi menulis entri `codexPlugins` eksplisit untuk plugin yang memenuhi syarat
+dan memanggil `plugin/install` app-server Codex untuk plugin yang dipilih.
+Konfigurasi hasil migrasi yang umum terlihat seperti ini:
 
 ```json5
 {
@@ -79,91 +93,207 @@ Migrasi menulis entri `codexPlugins` eksplisit untuk Plugin yang memenuhi syarat
 }
 ```
 
-Setelah mengubah `codexPlugins`, gunakan `/new`, `/reset`, atau mulai ulang gateway agar sesi harness Codex mendatang dimulai dengan set aplikasi yang diperbarui.
+Setelah mengubah `codexPlugins`, percakapan Codex baru akan mengambil set app
+yang diperbarui secara otomatis. Gunakan `/new` atau `/reset` untuk menyegarkan
+percakapan saat ini. Restart gateway tidak diperlukan untuk perubahan aktivasi
+atau penonaktifan plugin.
 
-## Cara kerja penyiapan Plugin native
+## Kelola plugin dari chat
+
+Gunakan `/codex plugins` saat Anda ingin memeriksa atau mengubah plugin Codex
+native yang dikonfigurasi dari chat yang sama tempat Anda mengoperasikan harness
+Codex:
+
+```text
+/codex plugins
+/codex plugins list
+/codex plugins disable google-calendar
+/codex plugins enable google-calendar
+```
+
+`/codex plugins` adalah alias untuk `/codex plugins list`. Output daftar
+menampilkan key plugin yang dikonfigurasi, status aktif/nonaktif, nama plugin
+Codex, dan marketplace dari `plugins.entries.codex.config.codexPlugins.plugins`.
+
+`enable` dan `disable` hanya menulis ke konfigurasi OpenClaw di
+`~/.openclaw/openclaw.json`; keduanya tidak mengedit `~/.codex/config.toml` atau
+memasang plugin Codex baru. Hanya pemilik atau klien gateway dengan cakupan
+`operator.admin` yang dapat mengubah status plugin.
+
+Mengaktifkan plugin yang dikonfigurasi juga menyalakan switch global
+`codexPlugins.enabled`. Jika plugin ditulis dalam keadaan nonaktif karena
+migrasi mengembalikan `auth_required`, otorisasi ulang app di Codex sebelum
+mengaktifkannya di OpenClaw.
+
+## Cara kerja penyiapan plugin native
 
 Integrasi memiliki tiga status terpisah:
 
-- Terinstal: Codex memiliki bundel Plugin lokal di runtime app-server target.
-- Diaktifkan: konfigurasi OpenClaw bersedia membuat Plugin tersedia untuk giliran harness Codex.
-- Dapat diakses: Codex app-server mengonfirmasi bahwa entri aplikasi Plugin tersedia untuk akun aktif dan dapat dipetakan ke identitas Plugin yang dimigrasikan.
+- Terpasang: Codex memiliki bundle plugin lokal di runtime app-server target.
+- Aktif: Konfigurasi OpenClaw bersedia membuat plugin tersedia untuk giliran
+  harness Codex.
+- Dapat diakses: App-server Codex mengonfirmasi entri app plugin tersedia untuk
+  akun aktif dan dapat dipetakan ke identitas plugin yang dimigrasikan.
 
-Migrasi adalah langkah instalasi/kelayakan yang tahan lama. Selama perencanaan, OpenClaw membaca detail `plugin/read` Codex sumber dan memeriksa bahwa respons akun Codex app-server sumber adalah akun langganan ChatGPT. Respons akun non-ChatGPT atau yang hilang melewati Plugin berbasis aplikasi dengan `codex_subscription_required`. Secara default, migrasi tidak memanggil `app/list` sumber; Plugin sumber berbasis aplikasi yang lolos gerbang akun direncanakan tanpa verifikasi aksesibilitas aplikasi sumber, dan kegagalan transport lookup akun dilewati dengan `codex_account_unavailable`. Dengan `--verify-plugin-apps`, migrasi mengambil snapshot `app/list` sumber baru dan mengharuskan setiap aplikasi yang dimiliki untuk hadir, diaktifkan, dan dapat diakses sebelum merencanakan aktivasi native. Dalam mode tersebut, kegagalan transport lookup akun diteruskan ke gerbang inventaris aplikasi sumber. Inventaris aplikasi runtime adalah pemeriksaan aksesibilitas sesi target setelah migrasi. Penyiapan sesi harness Codex kemudian menghitung konfigurasi aplikasi thread yang restriktif untuk aplikasi Plugin yang diaktifkan dan dapat diakses.
+Migrasi adalah langkah pemasangan/kelayakan yang tahan lama. Selama perencanaan,
+OpenClaw membaca detail `plugin/read` Codex sumber dan memeriksa bahwa respons
+akun app-server Codex sumber adalah akun langganan ChatGPT. Respons akun non-ChatGPT
+atau yang hilang melewati plugin yang didukung app dengan
+`codex_subscription_required`. Secara default, migrasi tidak memanggil `app/list`
+sumber; plugin sumber yang didukung app dan lulus gate akun direncanakan tanpa
+verifikasi aksesibilitas app sumber, dan kegagalan transport pencarian akun
+dilewati dengan `codex_account_unavailable`. Dengan `--verify-plugin-apps`,
+migrasi mengambil snapshot `app/list` sumber yang baru dan mengharuskan setiap
+app yang dimiliki ada, aktif, dan dapat diakses sebelum merencanakan aktivasi
+native. Dalam mode tersebut, kegagalan transport pencarian akun jatuh ke gate
+inventaris app sumber. Inventaris app runtime adalah pemeriksaan aksesibilitas
+sesi target setelah migrasi. Penyiapan sesi harness Codex lalu menghitung
+konfigurasi app thread yang restriktif untuk app plugin yang aktif dan dapat
+diakses.
 
-Konfigurasi aplikasi thread dihitung saat OpenClaw membuat sesi harness Codex atau mengganti binding thread Codex yang usang. Konfigurasi ini tidak dihitung ulang pada setiap giliran.
+Konfigurasi app thread dihitung saat OpenClaw membuat sesi harness Codex atau
+mengganti binding thread Codex yang stale. Konfigurasi ini tidak dihitung ulang
+pada setiap giliran, jadi `/codex plugins enable` dan `/codex plugins disable`
+memengaruhi percakapan Codex baru. Gunakan `/new` atau `/reset` saat percakapan
+saat ini harus mengambil set app yang diperbarui.
 
 ## Batas dukungan V1
 
 V1 sengaja dibuat sempit:
 
-- Hanya Plugin `openai-curated` yang sudah terinstal di inventaris Codex app-server sumber yang memenuhi syarat migrasi.
-- Plugin sumber berbasis aplikasi harus lolos gerbang langganan saat migrasi.
-  `--verify-plugin-apps` menambahkan gerbang inventaris aplikasi sumber. Akun yang dibatasi langganan ditambah, dalam mode verifikasi, aplikasi sumber yang tidak dapat diakses, dinonaktifkan, hilang, atau kegagalan refresh inventaris aplikasi sumber dilaporkan sebagai item manual yang dilewati alih-alih entri konfigurasi yang diaktifkan. Detail Plugin yang tidak dapat dibaca dilewati sebelum gerbang inventaris aplikasi sumber.
-- Migrasi menulis identitas Plugin eksplisit dengan `marketplaceName` dan
-  `pluginName`; migrasi tidak menulis jalur cache `marketplacePath` lokal.
-- `codexPlugins.enabled` adalah sakelar pengaktifan global.
-- Tidak ada wildcard `plugins["*"]` dan tidak ada kunci konfigurasi yang memberikan otoritas instalasi arbitrer.
-- Marketplace yang tidak didukung, bundel Plugin yang di-cache, hook, dan file konfigurasi Codex dipertahankan dalam laporan migrasi untuk peninjauan manual.
+- Hanya plugin `openai-curated` yang sudah terpasang di inventaris app-server
+  Codex sumber yang memenuhi syarat migrasi.
+- Plugin sumber yang didukung app harus lulus gate langganan pada waktu migrasi.
+  `--verify-plugin-apps` menambahkan gate inventaris app sumber. Akun yang
+  terkena gate langganan plus, dalam mode verifikasi, app sumber yang tidak
+  dapat diakses, nonaktif, hilang, atau kegagalan refresh inventaris app sumber
+  dilaporkan sebagai item manual yang dilewati, bukan entri konfigurasi yang
+  aktif. Detail plugin yang tidak dapat dibaca dilewati sebelum gate inventaris
+  app sumber.
+- Migrasi menulis identitas plugin eksplisit dengan `marketplaceName` dan
+  `pluginName`; migrasi tidak menulis path cache `marketplacePath` lokal.
+- `codexPlugins.enabled` adalah switch aktivasi global.
+- Tidak ada wildcard `plugins["*"]` dan tidak ada key konfigurasi yang memberikan
+  otoritas pemasangan arbitrer.
+- Marketplace yang tidak didukung, bundle plugin yang di-cache, hook, dan file
+  konfigurasi Codex dipertahankan dalam laporan migrasi untuk peninjauan manual.
 
-## Inventaris dan kepemilikan aplikasi
+## Inventaris app dan kepemilikan
 
-OpenClaw membaca inventaris aplikasi Codex melalui `app/list` app-server, menyimpannya dalam cache selama satu jam, dan me-refresh entri yang usang atau hilang secara asinkron. Cache hanya berada di memori; memulai ulang CLI atau gateway menghapusnya, dan OpenClaw membangunnya kembali dari pembacaan `app/list` berikutnya.
+OpenClaw membaca inventaris app Codex melalui `app/list` app-server, menyimpannya
+di cache selama satu jam, dan menyegarkan entri yang stale atau hilang secara
+asinkron. Cache hanya berada di memori; merestart CLI atau gateway akan
+menghapusnya, dan OpenClaw membangunnya ulang dari pembacaan `app/list` berikutnya.
 
-Migrasi dan runtime menggunakan kunci cache terpisah:
+Migrasi dan runtime menggunakan key cache terpisah:
 
-- Verifikasi migrasi sumber menggunakan home Codex sumber dan opsi start app-server sumber. Ini hanya berjalan saat `--verify-plugin-apps` disetel, dan memaksa traversal `app/list` sumber yang baru untuk run perencanaan tersebut.
-- Penyiapan runtime target menggunakan identitas Codex app-server milik agen target saat membangun konfigurasi aplikasi thread Codex. Aktivasi Plugin membatalkan kunci cache target tersebut lalu memaksa refresh setelah `plugin/install`.
+- Verifikasi migrasi sumber menggunakan home Codex sumber dan opsi start
+  app-server sumber. Ini hanya berjalan saat `--verify-plugin-apps` ditetapkan,
+  dan memaksa traversal `app/list` sumber yang baru untuk proses perencanaan itu.
+- Penyiapan runtime target menggunakan identitas app-server Codex agen target
+  saat membangun konfigurasi app thread Codex. Aktivasi plugin membatalkan key
+  cache target tersebut lalu me-refresh paksa setelah `plugin/install`.
 
-Aplikasi Plugin hanya diekspos saat OpenClaw dapat memetakannya kembali ke Plugin yang dimigrasikan melalui kepemilikan yang stabil:
+App plugin hanya diekspos saat OpenClaw dapat memetakannya kembali ke plugin
+yang dimigrasikan melalui kepemilikan stabil:
 
-- id aplikasi persis dari detail Plugin
-- nama server MCP yang dikenal
+- id app yang persis dari detail plugin
+- nama server MCP yang diketahui
 - metadata stabil yang unik
 
-Kepemilikan yang hanya cocok berdasarkan nama tampilan atau ambigu dikecualikan hingga refresh inventaris berikutnya membuktikan kepemilikan.
+Kepemilikan yang hanya berdasarkan nama tampilan atau ambigu dikecualikan
+hingga refresh inventaris berikutnya membuktikan kepemilikan.
 
-## Konfigurasi aplikasi thread
+## Konfigurasi app thread
 
-OpenClaw menyuntikkan patch `config.apps` restriktif untuk thread Codex:
-`_default` dinonaktifkan dan hanya aplikasi yang dimiliki oleh Plugin hasil migrasi yang diaktifkan yang diaktifkan.
+OpenClaw menyuntikkan patch `config.apps` yang restriktif untuk thread Codex:
+`_default` dinonaktifkan dan hanya app yang dimiliki plugin hasil migrasi yang
+aktif yang diaktifkan.
 
-OpenClaw menetapkan `destructive_enabled` tingkat aplikasi dari kebijakan global efektif atau per-Plugin `allow_destructive_actions` dan membiarkan Codex menegakkan metadata alat destruktif dari anotasi alat aplikasi native miliknya. Konfigurasi aplikasi `_default` dinonaktifkan dengan `open_world_enabled: false`. Aplikasi Plugin yang diaktifkan dipancarkan dengan `open_world_enabled: true`; OpenClaw tidak mengekspos knob kebijakan open-world Plugin terpisah dan tidak memelihara daftar penolakan nama alat destruktif per-Plugin.
+OpenClaw menetapkan `destructive_enabled` tingkat app dari kebijakan global atau
+per-plugin `allow_destructive_actions` yang efektif dan membiarkan Codex
+menegakkan metadata tool destruktif dari anotasi tool app native-nya. `true`,
+`"auto"`, dan `"always"` menetapkan `destructive_enabled: true`; `false`
+menetapkannya false. Konfigurasi app `_default` dinonaktifkan dengan
+`open_world_enabled: false`. App plugin yang aktif dikeluarkan dengan
+`open_world_enabled: true`; OpenClaw tidak mengekspos knob kebijakan open-world
+plugin terpisah dan tidak memelihara daftar tolak nama tool destruktif per plugin.
 
-Mode persetujuan alat bersifat otomatis secara default untuk aplikasi Plugin sehingga alat baca non-destruktif dapat berjalan tanpa UI persetujuan dalam thread yang sama. Alat destruktif tetap dikendalikan oleh kebijakan `destructive_enabled` setiap aplikasi.
+Mode persetujuan tool otomatis secara default untuk app plugin sehingga tool baca
+non-destruktif dapat berjalan tanpa UI persetujuan dalam thread yang sama. Tool
+destruktif tetap dikontrol oleh kebijakan `destructive_enabled` setiap app.
 
 ## Kebijakan tindakan destruktif
 
-Elisitasi Plugin destruktif diizinkan secara default untuk Plugin Codex yang dimigrasikan, sementara skema yang tidak aman dan kepemilikan ambigu tetap gagal tertutup:
+Elisitasi plugin destruktif diizinkan secara default untuk plugin Codex hasil
+migrasi, sementara skema yang tidak aman dan kepemilikan ambigu tetap gagal
+tertutup:
 
 - `allow_destructive_actions` global default ke `true`.
-- `allow_destructive_actions` per-Plugin menimpa kebijakan global untuk Plugin tersebut.
+- `allow_destructive_actions` per-plugin menimpa kebijakan global untuk plugin
+  tersebut.
 - Saat kebijakan bernilai `false`, OpenClaw mengembalikan penolakan deterministik.
-- Saat kebijakan bernilai `true`, OpenClaw hanya menerima otomatis skema aman yang dapat dipetakannya ke respons persetujuan, seperti field approve boolean.
-- Identitas Plugin yang hilang, kepemilikan ambigu, id giliran yang hilang, id giliran yang salah, atau skema elisitasi yang tidak aman akan ditolak alih-alih meminta prompt.
+- Saat kebijakan bernilai `true`, OpenClaw hanya menerima otomatis skema aman
+  yang dapat dipetakannya ke respons persetujuan, seperti field persetujuan
+  boolean.
+- Saat kebijakan bernilai `"auto"`, OpenClaw mengekspos tindakan plugin
+  destruktif ke Codex tetapi mengubah elisitasi persetujuan MCP dengan
+  kepemilikan terbukti menjadi persetujuan plugin OpenClaw sebelum mengembalikan
+  respons persetujuan Codex.
+- Saat kebijakan bernilai `"always"`, OpenClaw menggunakan gating tulis/destruktif
+  Codex yang sama seperti `"auto"`, menghapus override persetujuan per-tool
+  Codex yang tahan lama untuk app sebelum thread dimulai, dan hanya menawarkan
+  persetujuan atau penolakan sekali pakai agar persetujuan tahan lama tidak dapat
+  menekan prompt tindakan tulis berikutnya.
+- Identitas plugin yang hilang, kepemilikan ambigu, id giliran yang hilang, id
+  giliran yang salah, atau skema elisitasi yang tidak aman akan ditolak, bukan
+  memunculkan prompt.
 
 ## Pemecahan masalah
 
-**`auth_required`:** migrasi menginstal Plugin, tetapi salah satu aplikasinya masih membutuhkan autentikasi. Entri Plugin eksplisit ditulis dalam keadaan dinonaktifkan hingga Anda mengotorisasi ulang dan mengaktifkannya.
+**`auth_required`:** migrasi memasang plugin, tetapi salah satu app-nya masih
+memerlukan autentikasi. Entri plugin eksplisit ditulis dalam keadaan nonaktif
+hingga Anda mengotorisasi ulang dan mengaktifkannya.
 
 **`app_inaccessible`, `app_disabled`, atau `app_missing`:**
-migrasi tidak menginstal Plugin karena inventaris aplikasi Codex sumber tidak menunjukkan semua aplikasi yang dimiliki sebagai hadir, diaktifkan, dan dapat diakses saat `--verify-plugin-apps` disetel. Otorisasi ulang atau aktifkan aplikasi di Codex, lalu jalankan ulang migrasi dengan `--verify-plugin-apps`.
+migrasi tidak memasang plugin karena inventaris app Codex sumber tidak
+menunjukkan semua app yang dimiliki sebagai ada, aktif, dan dapat diakses saat
+`--verify-plugin-apps` ditetapkan. Otorisasi ulang atau aktifkan app di Codex,
+lalu jalankan ulang migrasi dengan `--verify-plugin-apps`.
 
-**`app_inventory_unavailable`:** migrasi tidak menginstal Plugin karena verifikasi aplikasi sumber yang ketat diminta dan refresh inventaris aplikasi Codex sumber gagal. Perbaiki akses Codex app-server sumber atau coba lagi tanpa `--verify-plugin-apps` jika Anda menerima rencana yang lebih cepat dengan gerbang akun.
+**`app_inventory_unavailable`:** migrasi tidak memasang plugin karena verifikasi
+app sumber yang ketat diminta dan refresh inventaris app Codex sumber gagal.
+Perbaiki akses app-server Codex sumber atau coba lagi tanpa
+`--verify-plugin-apps` jika Anda menerima rencana yang lebih cepat berbasis gate
+akun.
 
-**`codex_subscription_required`:** migrasi tidak menginstal Plugin berbasis aplikasi karena akun Codex app-server sumber tidak login dengan akun langganan ChatGPT. Login ke aplikasi Codex dengan auth langganan, lalu jalankan ulang migrasi.
+**`codex_subscription_required`:** migrasi tidak memasang plugin yang didukung
+app karena akun app-server Codex sumber tidak masuk dengan akun langganan
+ChatGPT. Masuk ke app Codex dengan auth langganan, lalu jalankan ulang migrasi.
 
-**`codex_account_unavailable`:** migrasi tidak menginstal Plugin berbasis aplikasi karena akun Codex app-server sumber tidak dapat dibaca. Perbaiki auth Codex app-server sumber atau jalankan ulang dengan `--verify-plugin-apps` jika Anda ingin inventaris aplikasi sumber menentukan kelayakan saat lookup akun gagal.
+**`codex_account_unavailable`:** migrasi tidak memasang plugin yang didukung app
+karena akun app-server Codex sumber tidak dapat dibaca. Perbaiki auth app-server
+Codex sumber atau jalankan ulang dengan `--verify-plugin-apps` jika Anda ingin
+inventaris app sumber menentukan kelayakan saat pencarian akun gagal.
 
-**`marketplace_missing` atau `plugin_missing`:** Codex app-server target tidak dapat melihat marketplace atau Plugin `openai-curated` yang diharapkan. Jalankan ulang migrasi terhadap runtime target atau periksa status Plugin Codex app-server.
+**`marketplace_missing` atau `plugin_missing`:** app-server Codex target tidak
+dapat melihat marketplace atau plugin `openai-curated` yang diharapkan. Jalankan
+ulang migrasi terhadap runtime target atau periksa status plugin app-server Codex.
 
-**`app_inventory_missing` atau `app_inventory_stale`:** kesiapan aplikasi berasal dari cache kosong atau usang. OpenClaw menjadwalkan refresh asinkron dan mengecualikan aplikasi Plugin hingga kepemilikan dan kesiapan diketahui.
+**`app_inventory_missing` atau `app_inventory_stale`:** kesiapan app berasal dari
+cache kosong atau stale. OpenClaw menjadwalkan refresh async dan mengecualikan
+app plugin hingga kepemilikan dan kesiapan diketahui.
 
-**`app_ownership_ambiguous`:** inventaris aplikasi hanya cocok berdasarkan nama tampilan, sehingga aplikasi tidak diekspos ke thread Codex.
+**`app_ownership_ambiguous`:** inventaris app hanya cocok berdasarkan nama
+tampilan, sehingga app tidak diekspos ke thread Codex.
 
-**Konfigurasi berubah tetapi agen tidak dapat melihat Plugin:** gunakan `/new`, `/reset`, atau mulai ulang gateway. Binding thread Codex yang ada mempertahankan konfigurasi aplikasi yang digunakan saat mulai hingga OpenClaw membuat sesi harness baru atau mengganti binding yang usang.
+**Konfigurasi berubah tetapi agen tidak dapat melihat plugin:** gunakan
+`/codex plugins list` untuk mengonfirmasi status yang dikonfigurasi, lalu gunakan
+`/new` atau `/reset`. Binding thread Codex yang ada mempertahankan konfigurasi
+app yang digunakan saat dimulai hingga OpenClaw membuat sesi harness baru atau
+mengganti binding yang stale.
 
-**Tindakan destruktif ditolak:** periksa nilai `allow_destructive_actions` global dan per-Plugin. Bahkan saat kebijakan bernilai true, skema elisitasi yang tidak aman dan identitas Plugin ambigu tetap gagal tertutup.
+**Tindakan destruktif ditolak:** periksa nilai `allow_destructive_actions` global dan per-Plugin. Bahkan ketika kebijakan bernilai true, `"auto"`, atau `"always"`, skema elisitasi yang tidak aman dan identitas Plugin yang ambigu tetap gagal tertutup.
 
 ## Terkait
 
@@ -171,4 +301,4 @@ migrasi tidak menginstal Plugin karena inventaris aplikasi Codex sumber tidak me
 - [Referensi harness Codex](/id/plugins/codex-harness-reference)
 - [Runtime harness Codex](/id/plugins/codex-harness-runtime)
 - [Referensi konfigurasi](/id/gateway/configuration-reference#codex-harness-plugin-config)
-- [CLI migrasi](/id/cli/migrate)
+- [Migrasi CLI](/id/cli/migrate)

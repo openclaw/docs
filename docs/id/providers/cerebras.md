@@ -2,29 +2,39 @@
 read_when:
     - Anda ingin menggunakan Cerebras dengan OpenClaw
     - Anda memerlukan variabel lingkungan kunci API Cerebras atau pilihan autentikasi CLI
-summary: Penyiapan Cerebras (autentikasi + pemilihan model)
+summary: Pengaturan Cerebras (auth + pemilihan model)
 title: Cerebras
 x-i18n:
-    generated_at: "2026-05-06T09:24:18Z"
+    generated_at: "2026-06-27T18:02:34Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6ba12fcc214ac756111a94f16ec619d26dc01ee2acc1eaef013fcb70bf752610
+    source_hash: cd21756ac521c7b60ca6d3dfbef8665574dca52d1a25e6293169b24f4af6273e
     source_path: providers/cerebras.md
     workflow: 16
 ---
 
-[Cerebras](https://www.cerebras.ai) menyediakan inferensi berkecepatan tinggi yang kompatibel dengan OpenAI pada perangkat keras inferensi khusus. OpenClaw menyertakan Plugin penyedia Cerebras yang dibundel dengan katalog statis empat model.
+[Cerebras](https://www.cerebras.ai) menyediakan inferensi kompatibel OpenAI berkecepatan tinggi pada perangkat keras inferensi khusus. Plugin penyedia Cerebras menyertakan katalog statis empat model.
 
 | Properti        | Nilai                                    |
 | --------------- | ---------------------------------------- |
 | ID penyedia     | `cerebras`                               |
-| Plugin          | dibundel, `enabledByDefault: true`       |
-| Variabel env autentikasi | `CEREBRAS_API_KEY`              |
-| Flag orientasi  | `--auth-choice cerebras-api-key`         |
+| Plugin          | paket eksternal resmi                    |
+| Variabel env auth | `CEREBRAS_API_KEY`                     |
+| Flag onboarding | `--auth-choice cerebras-api-key`         |
 | Flag CLI langsung | `--cerebras-api-key <key>`             |
-| API             | kompatibel dengan OpenAI (`openai-completions`) |
+| API             | kompatibel OpenAI (`openai-completions`) |
 | URL dasar       | `https://api.cerebras.ai/v1`             |
-| Model bawaan    | `cerebras/zai-glm-4.7`                   |
+| Model default   | `cerebras/zai-glm-4.7`                   |
+
+## Instal Plugin
+
+Instal plugin resmi, lalu mulai ulang Gateway:
+
+```bash
+openclaw plugins install @openclaw/cerebras-provider
+openclaw gateway restart
+```
 
 ## Memulai
 
@@ -32,10 +42,10 @@ x-i18n:
   <Step title="Dapatkan kunci API">
     Buat kunci API di [Cerebras Cloud Console](https://cloud.cerebras.ai).
   </Step>
-  <Step title="Jalankan orientasi">
+  <Step title="Jalankan onboarding">
     <CodeGroup>
 
-```bash Orientasi
+```bash Onboarding
 openclaw onboard --auth-choice cerebras-api-key
 ```
 
@@ -57,7 +67,7 @@ export CEREBRAS_API_KEY=csk-...
     openclaw models list --provider cerebras
     ```
 
-    Daftar tersebut seharusnya menyertakan keempat model yang dibundel. Jika `CEREBRAS_API_KEY` tidak terselesaikan, `openclaw models status --json` melaporkan kredensial yang hilang di bawah `auth.unusableProfiles`.
+    Daftar tersebut harus menyertakan keempat model statis. Jika `CEREBRAS_API_KEY` tidak terselesaikan, `openclaw models status --json` melaporkan kredensial yang hilang di bawah `auth.unusableProfiles`.
 
   </Step>
 </Steps>
@@ -73,22 +83,22 @@ openclaw onboard --non-interactive \
 
 ## Katalog bawaan
 
-OpenClaw mengirimkan katalog statis Cerebras yang mencerminkan endpoint publik yang kompatibel dengan OpenAI. Keempat model berbagi konteks 128k dan 8.192 token output maksimum.
+OpenClaw mengirimkan katalog Cerebras statis yang mencerminkan endpoint publik kompatibel OpenAI. Keempat model berbagi konteks 128k dan token output maksimum 8.192.
 
 | Ref model                                 | Nama                 | Penalaran | Catatan                               |
 | ----------------------------------------- | -------------------- | --------- | ------------------------------------- |
-| `cerebras/zai-glm-4.7`                    | Z.ai GLM 4.7         | ya        | Model bawaan; model penalaran pratinjau |
-| `cerebras/gpt-oss-120b`                   | GPT OSS 120B         | ya        | Model penalaran produksi             |
-| `cerebras/qwen-3-235b-a22b-instruct-2507` | Qwen 3 235B Instruct | tidak     | Model non-penalaran pratinjau        |
-| `cerebras/llama3.1-8b`                    | Llama 3.1 8B         | tidak     | Model produksi yang berfokus pada kecepatan |
+| `cerebras/zai-glm-4.7`                    | Z.ai GLM 4.7         | ya        | Model default; model penalaran pratinjau |
+| `cerebras/gpt-oss-120b`                   | GPT OSS 120B         | ya        | Model penalaran produksi              |
+| `cerebras/qwen-3-235b-a22b-instruct-2507` | Qwen 3 235B Instruct | tidak     | Model non-penalaran pratinjau         |
+| `cerebras/llama3.1-8b`                    | Llama 3.1 8B         | tidak     | Model produksi berfokus kecepatan     |
 
 <Warning>
-  Cerebras menandai `zai-glm-4.7` dan `qwen-3-235b-a22b-instruct-2507` sebagai model pratinjau, dan `llama3.1-8b` beserta `qwen-3-235b-a22b-instruct-2507` didokumentasikan akan dihentikan pada 27 Mei 2026. Periksa halaman model yang didukung Cerebras sebelum mengandalkannya untuk beban kerja produksi.
+  Cerebras menandai `zai-glm-4.7` dan `qwen-3-235b-a22b-instruct-2507` sebagai model pratinjau, dan `llama3.1-8b` serta `qwen-3-235b-a22b-instruct-2507` didokumentasikan untuk penghentian pada 27 Mei 2026. Periksa halaman model yang didukung Cerebras sebelum mengandalkannya untuk beban kerja produksi.
 </Warning>
 
 ## Konfigurasi manual
 
-Plugin yang dibundel biasanya berarti Anda hanya memerlukan kunci API. Gunakan konfigurasi eksplisit `models.providers.cerebras` ketika Anda ingin menimpa metadata model atau berjalan dalam `mode: "merge"` terhadap katalog statis:
+Plugin biasanya berarti Anda hanya memerlukan kunci API. Gunakan konfigurasi eksplisit `models.providers.cerebras` saat Anda ingin menimpa metadata model atau menjalankan dalam `mode: "merge"` terhadap katalog statis:
 
 ```json5
 {
@@ -116,7 +126,7 @@ Plugin yang dibundel biasanya berarti Anda hanya memerlukan kunci API. Gunakan k
 ```
 
 <Note>
-  Jika Gateway berjalan sebagai daemon (launchd, systemd, Docker), pastikan `CEREBRAS_API_KEY` tersedia untuk proses tersebut — misalnya di `~/.openclaw/.env` atau melalui `env.shellEnv`. Kunci yang hanya berada di `~/.profile` tidak akan membantu layanan terkelola kecuali env diimpor secara terpisah.
+  Jika Gateway berjalan sebagai daemon (launchd, systemd, Docker), pastikan `CEREBRAS_API_KEY` tersedia untuk proses tersebut — misalnya di `~/.openclaw/.env` atau melalui `env.shellEnv`. Kunci yang diekspor hanya di shell interaktif tidak akan membantu layanan terkelola kecuali env diimpor secara terpisah.
 </Note>
 
 ## Terkait
@@ -126,12 +136,12 @@ Plugin yang dibundel biasanya berarti Anda hanya memerlukan kunci API. Gunakan k
     Memilih penyedia, ref model, dan perilaku failover.
   </Card>
   <Card title="Mode berpikir" href="/id/tools/thinking" icon="brain">
-    Tingkat upaya penalaran untuk dua model Cerebras yang mendukung penalaran.
+    Tingkat upaya penalaran untuk dua model Cerebras yang mampu melakukan penalaran.
   </Card>
   <Card title="Referensi konfigurasi" href="/id/gateway/config-agents#agent-defaults" icon="gear">
-    Bawaan agen dan konfigurasi model.
+    Default agen dan konfigurasi model.
   </Card>
   <Card title="FAQ model" href="/id/help/faq-models" icon="circle-question">
-    Profil autentikasi, mengganti model, dan menyelesaikan galat "no profile".
+    Profil auth, berpindah model, dan menyelesaikan kesalahan "no profile".
   </Card>
 </CardGroup>

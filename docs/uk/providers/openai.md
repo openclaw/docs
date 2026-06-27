@@ -1,86 +1,133 @@
 ---
 read_when:
     - Ви хочете використовувати моделі OpenAI в OpenClaw
-    - Ви хочете використовувати автентифікацію через підписку Codex замість API-ключів
-    - Вам потрібна суворіша поведінка виконання агента GPT-5
-summary: Використовуйте OpenAI за допомогою ключів API або передплати Codex в OpenClaw
+    - Ви хочете автентифікацію через підписку Codex замість API-ключів
+    - Вам потрібна суворіша поведінка виконання агентів GPT-5
+summary: Використовуйте OpenAI через ключі API або підписку Codex в OpenClaw
 title: OpenAI
 x-i18n:
-    generated_at: "2026-05-11T20:55:21Z"
+    generated_at: "2026-06-27T18:12:49Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d63b8eff93ecffd85c2110f42044c26621ff50eb62c35b7cc99a07f0e6be1ffb
+    source_hash: 3f5346c6bb85341c4e1709e3023dee8b32a413189d5564778e9c919b7eaa78f1
     source_path: providers/openai.md
     workflow: 16
 ---
 
-OpenAI надає API для розробників для моделей GPT, а Codex також доступний як агент для програмування в межах плану ChatGPT через клієнти Codex від OpenAI. OpenClaw зберігає ці поверхні окремими, щоб конфігурація залишалася передбачуваною.
+OpenAI надає API для розробників для моделей GPT, а Codex також доступний як
+агент кодування плану ChatGPT через клієнти Codex від OpenAI. OpenClaw використовує один
+ідентифікатор провайдера, `openai`, для обох форм автентифікації.
 
-OpenClaw використовує `openai/*` як канонічний маршрут моделей OpenAI. Вбудовані ходи агента на моделях OpenAI за замовчуванням виконуються через нативне середовище виконання app-server Codex; пряма автентифікація ключем OpenAI API залишається доступною для неагентних поверхонь OpenAI, як-от зображення, embeddings, мовлення та realtime.
+OpenClaw використовує `openai/*` як канонічний маршрут моделі OpenAI. Вбудовані
+ходи агента на моделях OpenAI за замовчуванням виконуються через нативне середовище
+виконання app-server Codex; пряма автентифікація API-ключем OpenAI залишається
+доступною для неагентних поверхонь OpenAI, як-от зображення, embeddings, мовлення та realtime.
 
-- **Моделі агентів** - моделі `openai/*` через середовище виконання Codex; увійдіть через автентифікацію Codex для використання підписки ChatGPT/Codex або налаштуйте Codex-сумісний резервний ключ OpenAI API, якщо ви навмисно хочете автентифікацію ключем API.
-- **Неагентні API OpenAI** - прямий доступ до OpenAI Platform з оплатою за використання через `OPENAI_API_KEY` або онбординг ключа OpenAI API.
-- **Застаріла конфігурація** - посилання на моделі `openai-codex/*` виправляються командою `openclaw doctor --fix` до `openai/*` плюс середовище виконання Codex.
+- **Моделі агента** - моделі `openai/*` через середовище виконання Codex; увійдіть через
+  автентифікацію Codex для використання підписки ChatGPT/Codex або налаштуйте сумісний із Codex
+  резервний API-ключ OpenAI, коли ви навмисно хочете автентифікацію API-ключем.
+- **Неагентні API OpenAI** - прямий доступ до OpenAI Platform з оплатою за використання
+  через `OPENAI_API_KEY` або налаштування API-ключа OpenAI.
+- **Застаріла конфігурація** - застарілі посилання на моделі Codex виправляються
+  `openclaw doctor --fix` до `openai/*` плюс середовище виконання Codex.
 
-OpenAI явно підтримує використання OAuth підписки в зовнішніх інструментах і робочих процесах на кшталт OpenClaw.
+OpenAI явно підтримує використання OAuth підписки у зовнішніх інструментах і робочих процесах, як-от OpenClaw.
 
-Провайдер, модель, середовище виконання та канал - це окремі шари. Якщо ці мітки змішуються між собою, прочитайте [Середовища виконання агентів](/uk/concepts/agent-runtimes), перш ніж змінювати конфігурацію.
+Провайдер, модель, середовище виконання та канал є окремими шарами. Якщо ці мітки
+змішуються між собою, прочитайте [Середовища виконання агентів](/uk/concepts/agent-runtimes), перш ніж
+змінювати конфігурацію.
 
 ## Швидкий вибір
 
-| Мета                                                 | Використовуйте                                           | Примітки                                                              |
+| Ціль                                                 | Використовуйте                                           | Примітки                                                              |
 | ---------------------------------------------------- | -------------------------------------------------------- | --------------------------------------------------------------------- |
-| Підписка ChatGPT/Codex з нативним середовищем виконання Codex | `openai/gpt-5.5`                                         | Стандартне налаштування агента OpenAI. Увійдіть через автентифікацію Codex. |
-| Пряма оплата ключем API для моделей агентів          | `openai/gpt-5.5` плюс Codex-сумісний профіль ключа API   | Використовуйте `auth.order.openai`, щоб розмістити резерв після автентифікації підписки. |
-| Пряма оплата ключем API через явний PI               | `openai/gpt-5.5` плюс середовище виконання провайдера/моделі `pi` | Виберіть звичайний профіль ключа API `openai`.                         |
-| Найновіший API-псевдонім ChatGPT Instant             | `openai/chat-latest`                                     | Лише прямий ключ API. Рухомий псевдонім для експериментів, не стандартне значення. |
-| Автентифікація підписки ChatGPT/Codex через явний PI  | `openai/gpt-5.5` плюс середовище виконання провайдера/моделі `pi` | Виберіть профіль автентифікації `openai-codex` для маршруту сумісності. |
-| Генерація або редагування зображень                  | `openai/gpt-image-2`                                     | Працює як з `OPENAI_API_KEY`, так і з OpenAI Codex OAuth.             |
+| Підписка ChatGPT/Codex із нативним середовищем виконання Codex | `openai/gpt-5.5`                                         | Типове налаштування агента OpenAI. Увійдіть через автентифікацію Codex. |
+| Пряма оплата API-ключем для моделей агента           | `openai/gpt-5.5` плюс сумісний із Codex профіль API-ключа | Використовуйте `auth.order.openai`, щоб розмістити резерв після автентифікації підписки. |
+| Пряма оплата API-ключем через явний OpenClaw         | `openai/gpt-5.5` плюс середовище виконання провайдера/моделі `openclaw` | Виберіть звичайний профіль API-ключа `openai`. |
+| Найновіший псевдонім ChatGPT Instant API             | `openai/chat-latest`                                     | Лише прямий API-ключ. Рухомий псевдонім для експериментів, не типовий варіант. |
+| Автентифікація підписки ChatGPT/Codex через OpenClaw | `openai/gpt-5.5` плюс середовище виконання провайдера/моделі `openclaw` | Виберіть OAuth-профіль `openai` для маршруту сумісності. |
+| Генерація або редагування зображень                  | `openai/gpt-image-2`                                     | Працює з `OPENAI_API_KEY` або OpenAI Codex OAuth. |
 | Зображення з прозорим фоном                          | `openai/gpt-image-1.5`                                   | Використовуйте `outputFormat=png` або `webp` і `openai.background=transparent`. |
 
-## Мапа назв
+## Карта назв
 
-Назви схожі, але не взаємозамінні:
+Назви подібні, але не взаємозамінні:
 
-| Назва, яку ви бачите                    | Шар                        | Значення                                                                                                             |
-| --------------------------------------- | -------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `openai`                                | Префікс провайдера         | Канонічний маршрут моделей OpenAI; ходи агента використовують середовище виконання Codex.                            |
-| `openai-codex`                          | Застарілий префікс автентифікації/профілю | Старіший простір імен профілю OAuth/підписки OpenAI Codex. Наявні профілі та `auth.order.openai-codex` досі працюють. |
-| Plugin `codex`                          | Plugin                     | Вбудований Plugin OpenClaw, що надає нативне середовище виконання app-server Codex і елементи керування чатом `/codex`. |
-| провайдер/модель `agentRuntime.id: codex` | Середовище виконання агента | Примусово використовує нативний harness app-server Codex для відповідних вбудованих ходів.                          |
-| `/codex ...`                            | Набір команд чату          | Прив’язує/керує потоками app-server Codex із розмови.                                                                |
-| `runtime: "acp", agentId: "codex"`      | Маршрут сеансу ACP         | Явний резервний шлях, який запускає Codex через ACP/acpx.                                                            |
+| Назва, яку ви бачите                    | Шар              | Значення                                                                                          |
+| --------------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------- |
+| `openai`                                | Префікс провайдера | Канонічний маршрут моделі OpenAI; ходи агента використовують середовище виконання Codex.          |
+| застарілий префікс OpenAI Codex         | Застарілий префікс | Старіший простір імен моделі/профілю. `openclaw doctor --fix` мігрує його до `openai`.            |
+| Plugin `codex`                          | Plugin           | Вбудований Plugin OpenClaw, який надає нативне середовище виконання app-server Codex і елементи керування чатом `/codex`. |
+| provider/model `agentRuntime.id: codex` | Середовище виконання агента | Примусово використовує нативний harness app-server Codex для відповідних вбудованих ходів.        |
+| `/codex ...`                            | Набір команд чату | Прив’язує/керує потоками app-server Codex із розмови.                                             |
+| `runtime: "acp", agentId: "codex"`      | Маршрут сеансу ACP | Явний запасний шлях, який запускає Codex через ACP/acpx.                                          |
 
-Це означає, що конфігурація може навмисно містити посилання на моделі `openai/*`, тоді як профілі автентифікації все ще вказують на Codex-сумісні облікові дані. Для нової конфігурації надавайте перевагу `auth.order.openai`; наявні профілі `openai-codex:*` і `auth.order.openai-codex` залишаються підтримуваними. `openclaw doctor --fix` переписує застарілі посилання на моделі `openai-codex/*` до канонічного маршруту моделей OpenAI.
+Це означає, що конфігурація може навмисно містити посилання на моделі `openai/*`, тоді як
+профілі автентифікації вказують або на API-ключ, або на облікові дані ChatGPT/Codex OAuth. Використовуйте
+`auth.order.openai` для конфігурації; `openclaw doctor --fix` переписує застарілі
+посилання на моделі Codex, ідентифікатори застарілих профілів автентифікації Codex і
+застарілий порядок автентифікації Codex до канонічного маршруту OpenAI.
 
 <Note>
-GPT-5.5 доступна як через прямий доступ ключем API OpenAI Platform, так і через маршрути підписки/OAuth. Для підписки ChatGPT/Codex плюс нативного виконання Codex використовуйте `openai/gpt-5.5`; неналаштована конфігурація середовища виконання тепер вибирає harness Codex для ходів агентів OpenAI. Використовуйте профілі ключів OpenAI API лише тоді, коли потрібна пряма автентифікація ключем API для моделі агента OpenAI.
+GPT-5.5 доступна як через прямий доступ API-ключем OpenAI Platform, так і через
+маршрути підписки/OAuth. Для підписки ChatGPT/Codex плюс нативного виконання Codex
+використовуйте `openai/gpt-5.5`; неналаштована конфігурація середовища виконання тепер вибирає harness Codex
+для ходів агента OpenAI. Використовуйте профілі API-ключів OpenAI лише тоді, коли вам потрібна
+пряма автентифікація API-ключем для моделі агента OpenAI.
 </Note>
 
 <Note>
-Ходи моделі агента OpenAI потребують вбудованого Plugin app-server Codex. Явна конфігурація середовища виконання PI залишається доступною як опційний маршрут сумісності. Коли PI явно вибрано з профілем автентифікації `openai-codex`, OpenClaw зберігає публічне посилання на модель як `openai/*` і внутрішньо маршрутизує PI через застарілий транспорт автентифікації Codex. Запустіть `openclaw doctor --fix`, щоб виправити застарілі посилання на моделі `openai-codex/*` або старі прив’язки сеансів PI, які не походять з явної конфігурації середовища виконання.
+Ходи моделей агента OpenAI потребують вбудованого Plugin app-server Codex. Явна
+конфігурація середовища виконання OpenClaw залишається доступною як опційний маршрут сумісності. Коли OpenClaw
+явно вибрано з OAuth-профілем `openai`, OpenClaw зберігає
+публічне посилання на модель як `openai/*` і внутрішньо маршрутизує через транспорт
+автентифікації Codex. Запустіть `openclaw doctor --fix`, щоб виправити застарілі
+посилання на моделі Codex, `codex-cli/*` або старі прив’язки сеансів середовища виконання, які не походять з
+явної конфігурації середовища виконання.
 </Note>
 
 ## Покриття функцій OpenClaw
 
-| Можливість OpenAI        | Поверхня OpenClaw                                                                 | Статус                                                 |
-| ------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| Chat / Responses          | провайдер моделі `openai/<model>`                                                | Так                                                    |
-| Моделі підписки Codex     | `openai/<model>` з OAuth `openai-codex`                                          | Так                                                    |
-| Застарілі посилання на моделі Codex | `openai-codex/<model>`                                                           | Виправляються doctor до `openai/<model>`               |
-| Harness app-server Codex  | `openai/<model>` з пропущеним середовищем виконання або провайдером/моделлю `agentRuntime.id: codex` | Так                                                    |
-| Серверний вебпошук        | Нативний інструмент OpenAI Responses                                             | Так, коли вебпошук увімкнено й провайдера не закріплено |
-| Зображення                | `image_generate`                                                                 | Так                                                    |
-| Відео                     | `video_generate`                                                                 | Так                                                    |
-| Перетворення тексту на мовлення | `messages.tts.provider: "openai"` / `tts`                                        | Так                                                    |
-| Пакетне перетворення мовлення на текст | `tools.media.audio` / розуміння медіа                                            | Так                                                    |
-| Потокове перетворення мовлення на текст | Voice Call `streaming.provider: "openai"`                                        | Так                                                    |
-| Голос realtime            | Voice Call `realtime.provider: "openai"` / Control UI Talk                       | Так                                                    |
-| Embeddings                | провайдер embeddings пам’яті                                                     | Так                                                    |
+| Можливість OpenAI        | Поверхня OpenClaw                                                                              | Статус                                                                 |
+| ------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Chat / Responses          | провайдер моделей `openai/<model>`                                                            | Так                                                                    |
+| Моделі підписки Codex     | `openai/<model>` з OpenAI OAuth                                                               | Так                                                                    |
+| Застарілі посилання на моделі Codex | застарілі посилання на моделі Codex або `codex-cli/<model>`                           | Виправляється doctor до `openai/<model>`                               |
+| Harness app-server Codex  | `openai/<model>` з пропущеним середовищем виконання або provider/model `agentRuntime.id: codex` | Так                                                                    |
+| Серверний вебпошук        | Нативний інструмент OpenAI Responses                                                          | Так, коли вебпошук увімкнено й провайдера не закріплено                |
+| Зображення                | `image_generate`                                                                              | Так                                                                    |
+| Відео                     | `video_generate`                                                                              | Так                                                                    |
+| Text-to-speech            | `messages.tts.provider: "openai"` / `tts`                                                     | Так                                                                    |
+| Пакетне speech-to-text    | `tools.media.audio` / розуміння медіа                                                         | Так                                                                    |
+| Потокове speech-to-text   | Voice Call `streaming.provider: "openai"`                                                     | Так                                                                    |
+| Realtime voice            | Voice Call `realtime.provider: "openai"` / Control UI Talk `talk.realtime.provider: "openai"` | Так (потрібні кредити OpenAI Platform, не підписка Codex/ChatGPT)      |
+| Embeddings                | провайдер embeddings пам’яті                                                                  | Так                                                                    |
+
+<Note>
+  OpenAI Realtime voice (використовується Voice Call `realtime.provider: "openai"` і
+  Control UI Talk з `talk.realtime.provider: "openai"`) проходить через
+  публічний **OpenAI Platform Realtime API**, який виставляє рахунки за кредити OpenAI
+  Platform, а не за квоту підписки Codex/ChatGPT. Обліковий запис
+  зі справним OpenAI OAuth, який без проблем запускає моделі чату на базі Codex,
+  усе одно потребує профілю автентифікації API-ключем OpenAI або Platform API key з оплаченим
+  білінгом Platform для Realtime voice.
+
+Виправлення: поповніть кредити Platform на
+[platform.openai.com/account/billing](https://platform.openai.com/account/billing)
+для організації, яка підтримує ваші realtime облікові дані. Realtime voice приймає
+профіль автентифікації API-ключем `openai`, створений `openclaw onboard --auth-choice openai-api-key`,
+Platform `OPENAI_API_KEY`, налаштований через `talk.realtime.providers.openai.apiKey`
+для Control UI Talk, `plugins.entries.voice-call.config.realtime.providers.openai.apiKey`
+для Voice Call або змінну середовища `OPENAI_API_KEY`. OAuth-профілі OpenAI
+можуть і далі запускати моделі чату `openai/*` на базі Codex у тій самій
+інсталяції OpenClaw, але вони не налаштовують Realtime voice.
+</Note>
 
 ## Embeddings пам’яті
 
-OpenClaw може використовувати OpenAI або OpenAI-сумісну endpoint embeddings для індексування `memory_search` і embeddings запитів:
+OpenClaw може використовувати OpenAI або сумісну з OpenAI кінцеву точку embeddings для
+індексування `memory_search` і embeddings запитів:
 
 ```json5
 {
@@ -95,21 +142,25 @@ OpenClaw може використовувати OpenAI або OpenAI-суміс
 }
 ```
 
-Для OpenAI-сумісних endpoint, які потребують асиметричних міток embeddings, задайте `queryInputType` і `documentInputType` у `memorySearch`. OpenClaw передає їх як специфічні для провайдера поля запиту `input_type`: embeddings запитів використовують `queryInputType`; індексовані фрагменти пам’яті та пакетне індексування використовують `documentInputType`. Повний приклад див. у [довіднику конфігурації пам’яті](/uk/reference/memory-config#provider-specific-config).
+Для сумісних з OpenAI кінцевих точок, які потребують асиметричних міток embeddings, задайте
+`queryInputType` і `documentInputType` у `memorySearch`. OpenClaw пересилає
+їх як специфічні для провайдера поля запиту `input_type`: embeddings запитів використовують
+`queryInputType`; проіндексовані фрагменти пам’яті та пакетне індексування використовують
+`documentInputType`. Повний приклад дивіться в [довіднику з конфігурації пам’яті](/uk/reference/memory-config#provider-specific-config).
 
 ## Початок роботи
 
 Виберіть бажаний метод автентифікації та виконайте кроки налаштування.
 
 <Tabs>
-  <Tab title="Ключ API (OpenAI Platform)">
+  <Tab title="API key (OpenAI Platform)">
     **Найкраще для:** прямого доступу до API та оплати за використання.
 
     <Steps>
-      <Step title="Отримайте ключ API">
-        Створіть або скопіюйте ключ API з [панелі OpenAI Platform](https://platform.openai.com/api-keys).
+      <Step title="Отримайте свій API-ключ">
+        Створіть або скопіюйте API-ключ з [панелі OpenAI Platform](https://platform.openai.com/api-keys).
       </Step>
-      <Step title="Запустіть онбординг">
+      <Step title="Запустіть onboarding">
         ```bash
         openclaw onboard --auth-choice openai-api-key
         ```
@@ -129,61 +180,71 @@ OpenClaw може використовувати OpenAI або OpenAI-суміс
 
     ### Підсумок маршруту
 
-    | Посилання на модель    | Конфігурація середовища виконання | Маршрут                     | Автентифікація  |
+    | Посилання на модель  | Конфігурація середовища виконання | Маршрут                     | Автентифікація  |
     | ---------------------- | -------------------------- | --------------------------- | ---------------- |
-    | `openai/gpt-5.5`      | пропущено / провайдер/модель `agentRuntime.id: "codex"` | Harness app-server Codex | Codex-сумісний профіль OpenAI |
-    | `openai/gpt-5.4-mini` | пропущено / провайдер/модель `agentRuntime.id: "codex"` | Harness app-server Codex | Codex-сумісний профіль OpenAI |
-    | `openai/gpt-5.5`      | провайдер/модель `agentRuntime.id: "pi"`              | Вбудоване середовище виконання PI | профіль `openai` або вибраний профіль `openai-codex` |
+    | `openai/gpt-5.5`      | пропущено / provider/model `agentRuntime.id: "codex"` | Harness app-server Codex | Сумісний із Codex профіль OpenAI |
+    | `openai/gpt-5.4-mini` | пропущено / provider/model `agentRuntime.id: "codex"` | Harness app-server Codex | Сумісний із Codex профіль OpenAI |
+    | `openai/gpt-5.5`      | provider/model `agentRuntime.id: "openclaw"`              | Вбудоване середовище виконання OpenClaw | Вибраний профіль `openai` |
 
     <Note>
-    Моделі агентів `openai/*` використовують harness app-server Codex. Щоб використовувати автентифікацію ключем API для моделі агента, створіть Codex-сумісний профіль ключа API й упорядкуйте його через `auth.order.openai`; `OPENAI_API_KEY` залишається прямим резервом для неагентних поверхонь OpenAI API. Старіші записи `auth.order.openai-codex` досі працюють.
+    Моделі агентів `openai/*` використовують середовище сервера застосунку Codex. Щоб використати
+    автентифікацію за ключем API для моделі агента, створіть сумісний із Codex профіль ключа API й упорядкуйте
+    його через `auth.order.openai`; `OPENAI_API_KEY` залишається прямим резервним варіантом для
+    поверхонь API OpenAI не для агентів. Запустіть `openclaw doctor --fix`, щоб перенести старі
+    застарілі записи порядку автентифікації Codex.
     </Note>
 
     ### Приклад конфігурації
 
     ```json5
     {
-      env: { OPENAI_API_KEY: "sk-..." },
+      env: { OPENAI_API_KEY: "example-openai-key-not-real" },
       agents: { defaults: { model: { primary: "openai/gpt-5.5" } } },
     }
     ```
 
-    Щоб спробувати поточну модель Instant ChatGPT з OpenAI API, задайте модель як `openai/chat-latest`:
+    Щоб спробувати поточну модель Instant ChatGPT з API OpenAI, задайте модель
+    як `openai/chat-latest`:
 
     ```json5
     {
-      env: { OPENAI_API_KEY: "sk-..." },
+      env: { OPENAI_API_KEY: "example-openai-key-not-real" },
       agents: { defaults: { model: { primary: "openai/chat-latest" } } },
     }
     ```
 
-    `chat-latest` - це рухомий псевдонім. OpenAI документує його як найновішу модель Instant, що використовується в ChatGPT, і рекомендує `gpt-5.5` для виробничого використання API, тому залишайте `openai/gpt-5.5` стабільним стандартним значенням, якщо вам явно не потрібна поведінка цього псевдоніма. Наразі псевдонім приймає лише текстову докладність `medium`, тому OpenClaw нормалізує несумісні перевизначення текстової докладності OpenAI для цієї моделі.
+    `chat-latest` є рухомим псевдонімом. OpenAI документує його як найновішу модель Instant,
+    що використовується в ChatGPT, і рекомендує `gpt-5.5` для виробничого використання API, тому
+    залишайте `openai/gpt-5.5` стабільним стандартним значенням, якщо ви явно не хочете
+    поведінку цього псевдоніма. Наразі псевдонім приймає лише `medium` багатослівність тексту, тому
+    OpenClaw нормалізує несумісні перевизначення багатослівності тексту OpenAI для цієї
+    моделі.
 
     <Warning>
-    OpenClaw **не** надає `openai/gpt-5.3-codex-spark`. Живі запити OpenAI API відхиляють цю модель, і поточний каталог Codex також її не надає.
+    OpenClaw **не** відкриває `gpt-5.3-codex-spark` на прямому маршруті ключа API OpenAI. Вона доступна лише через записи каталогу підписки Codex, коли ваш обліковий запис після входу її відкриває.
     </Warning>
 
   </Tab>
 
   <Tab title="Підписка Codex">
-    **Найкраще для:** використання вашої підписки ChatGPT/Codex із нативним виконанням на app-server Codex замість окремого API-ключа. Хмара Codex вимагає входу в ChatGPT.
+    **Найкраще для:** використання вашої підписки ChatGPT/Codex із власним виконанням сервера застосунку Codex замість окремого ключа API. Хмара Codex потребує входу в ChatGPT.
 
     <Steps>
-      <Step title="Запустіть Codex OAuth">
+      <Step title="Запустіть OAuth Codex">
         ```bash
-        openclaw onboard --auth-choice openai-codex
+        openclaw onboard --auth-choice openai
         ```
 
         Або запустіть OAuth напряму:
 
         ```bash
-        openclaw models auth login --provider openai-codex
+        openclaw models auth login --provider openai
         ```
 
-        Для headless або несумісних із callback налаштувань додайте `--device-code`, щоб увійти через device-code flow ChatGPT замість browser callback localhost:
+        Для безголових або несумісних із callback налаштувань додайте `--device-code`, щоб увійти через потік коду пристрою ChatGPT замість callback браузера localhost:
 
         ```bash
-        openclaw models auth login --provider openai-codex --device-code
+        openclaw models auth login --provider openai --device-code
         ```
       </Step>
       <Step title="Використайте канонічний маршрут моделі OpenAI">
@@ -191,17 +252,17 @@ OpenClaw може використовувати OpenAI або OpenAI-суміс
         openclaw config set agents.defaults.model.primary openai/gpt-5.5
         ```
 
-        Для типового шляху конфігурація runtime не потрібна. Ходи агента OpenAI
-        автоматично вибирають нативний runtime app-server Codex, а OpenClaw
+        Для стандартного шляху конфігурація runtime не потрібна. Ходи агентів OpenAI
+        автоматично вибирають власний runtime сервера застосунку Codex, а OpenClaw
         встановлює або відновлює вбудований plugin Codex, коли вибрано цей маршрут.
       </Step>
-      <Step title="Перевірте, що автентифікація Codex доступна">
+      <Step title="Перевірте доступність автентифікації Codex">
         ```bash
-        openclaw models list --provider openai-codex
+        openclaw models list --provider openai
         ```
 
-        Після запуску gateway надішліть `/codex status` або `/codex models`
-        у чаті, щоб перевірити нативний runtime app-server.
+        Після запуску Gateway надішліть `/codex status` або `/codex models`
+        у чаті, щоб перевірити власний runtime сервера застосунку.
       </Step>
     </Steps>
 
@@ -209,22 +270,26 @@ OpenClaw може використовувати OpenAI або OpenAI-суміс
 
     | Посилання на модель | Конфігурація runtime | Маршрут | Автентифікація |
     |-----------|----------------|-------|------|
-    | `openai/gpt-5.5` | пропущено / provider/model `agentRuntime.id: "codex"` | Нативний harness app-server Codex | Вхід Codex або впорядкований профіль автентифікації `openai` |
-    | `openai/gpt-5.5` | provider/model `agentRuntime.id: "pi"` | Вбудований runtime PI з внутрішнім транспортом Codex-auth | Вибраний профіль `openai-codex` |
-    | `openai-codex/gpt-5.5` | відновлено doctor | Застарілий маршрут, переписаний на `openai/gpt-5.5` | Наявний профіль `openai-codex` |
+    | `openai/gpt-5.5` | пропущено / provider/model `agentRuntime.id: "codex"` | Власне середовище сервера застосунку Codex | Вхід Codex або впорядкований профіль автентифікації `openai` |
+    | `openai/gpt-5.5` | provider/model `agentRuntime.id: "openclaw"` | Вбудований runtime OpenClaw із внутрішнім транспортом автентифікації Codex | Вибраний профіль OAuth `openai` |
+    | застаріле посилання Codex GPT-5.5 | виправлено doctor | Застарілий маршрут переписано на `openai/gpt-5.5` | Перенесений профіль OAuth OpenAI |
+    | `codex-cli/gpt-5.5` | виправлено doctor | Застарілий маршрут CLI переписано на `openai/gpt-5.5` | Автентифікація сервера застосунку Codex |
 
     <Warning>
-    Не налаштовуйте старіші посилання на моделі `openai-codex/gpt-5.1*`, `openai-codex/gpt-5.2*` або
-    `openai-codex/gpt-5.3*`. Облікові записи ChatGPT/Codex OAuth тепер відхиляють
-    ці моделі. Використовуйте `openai/gpt-5.5`; ходи агента OpenAI тепер типово вибирають runtime Codex.
+    Надавайте перевагу `openai/gpt-5.5` для нової конфігурації агентів із підтримкою підписки. Старі
+    застарілі посилання GPT Codex є застарілими маршрутами OpenClaw, а не шляхом
+    власного runtime Codex; запустіть `openclaw doctor --fix`, коли хочете перенести їх до канонічних
+    посилань `openai/*`. `gpt-5.3-codex-spark` залишається обмеженою обліковими записами, чий
+    каталог підписки Codex оголошує цю модель; прямі посилання ключа API OpenAI та
+    Azure для неї залишаються прихованими.
     </Warning>
 
     <Note>
-    Префікс моделі `openai-codex/*` є застарілою конфігурацією, яку відновлює doctor. Для
-    поширеного налаштування з підпискою та нативним runtime увійдіть через автентифікацію Codex,
+    Застарілий префікс моделі Codex є застарілою конфігурацією, яку виправляє doctor. Для
+    поширеного налаштування з підпискою та власним runtime увійдіть через автентифікацію Codex,
     але залиште посилання на модель як `openai/gpt-5.5`. Нова конфігурація має розміщувати порядок
-    автентифікації агента OpenAI у `auth.order.openai`; старіші записи `auth.order.openai-codex`
-    залишаються чинними.
+    автентифікації агентів OpenAI у `auth.order.openai`; doctor переносить старі
+    застарілі записи порядку автентифікації Codex.
     </Note>
 
     ### Приклад конфігурації
@@ -240,9 +305,9 @@ OpenClaw може використовувати OpenAI або OpenAI-суміс
     }
     ```
 
-    З резервним API-ключем залиште модель на `openai/gpt-5.5` і розмістіть
-    порядок автентифікації в `openai`. OpenClaw спершу спробує підписку, потім
-    API-ключ, залишаючись у harness Codex:
+    Із резервним ключем API залишайте модель на `openai/gpt-5.5` і розмістіть
+    порядок автентифікації під `openai`. OpenClaw спочатку спробує підписку, потім
+    ключ API, залишаючись на середовищі Codex:
 
     ```json5
     {
@@ -255,7 +320,7 @@ OpenClaw може використовувати OpenAI або OpenAI-суміс
       auth: {
         order: {
           openai: [
-            "openai-codex:user@example.com",
+            "openai:user@example.com",
             "openai:api-key-backup",
           ],
         },
@@ -264,17 +329,17 @@ OpenClaw може використовувати OpenAI або OpenAI-суміс
     ```
 
     <Note>
-    Onboarding більше не імпортує матеріал OAuth із `~/.codex`. Увійдіть через browser OAuth (типово) або device-code flow вище — OpenClaw керує отриманими обліковими даними у власному сховищі автентифікації агента.
+    Onboarding більше не імпортує матеріал OAuth із `~/.codex`. Увійдіть через OAuth у браузері (стандартно) або через потік коду пристрою вище — OpenClaw керує отриманими обліковими даними у власному сховищі автентифікації агентів.
     </Note>
 
-    ### Перевірка та відновлення маршрутизації Codex OAuth
+    ### Перевірка й відновлення маршрутизації OAuth Codex
 
-    Використайте ці команди, щоб побачити, яку модель, runtime і маршрут автентифікації використовує ваш типовий
+    Використовуйте ці команди, щоб побачити, яку модель, runtime і маршрут автентифікації використовує ваш стандартний
     агент:
 
     ```bash
     openclaw models status
-    openclaw models auth list --provider openai-codex
+    openclaw models auth list --provider openai
     openclaw config get agents.defaults.model --json
     openclaw config get models.providers.openai.agentRuntime --json
     ```
@@ -283,58 +348,66 @@ OpenClaw може використовувати OpenAI або OpenAI-суміс
 
     ```bash
     openclaw models status --agent <id>
-    openclaw models auth list --agent <id> --provider openai-codex
+    openclaw models auth list --agent <id> --provider openai
     ```
 
-    Якщо старіша конфігурація досі має `openai-codex/gpt-*` або застаріле закріплення сесії OpenAI PI
-    без явної конфігурації runtime, відновіть її:
+    Якщо старіша конфігурація все ще має застарілі посилання GPT Codex або застарілу прив’язку
+    сеансу runtime OpenAI без явної конфігурації runtime, виправте її:
 
     ```bash
     openclaw doctor --fix
     openclaw config validate
     ```
 
-    Якщо `models auth list --provider openai-codex` не показує придатного профілю, увійдіть
+    Якщо `models auth list --provider openai` не показує придатного профілю, увійдіть
     знову:
 
     ```bash
-    openclaw models auth login --provider openai-codex
-    openclaw models status --probe --probe-provider openai-codex
+    openclaw models auth login --provider openai
+    openclaw models status --probe --probe-provider openai
     ```
 
-    `openai/*` — це маршрут моделі для ходів агента OpenAI через Codex. Ідентифікатор
-    провайдера автентифікації/профілю `openai-codex` залишається прийнятним для наявних
-    профілів і списків CLI.
+    Використовуйте `--profile-id`, коли хочете мати кілька входів OAuth Codex в одному
+    агенті й пізніше керувати ними через порядок автентифікації або `/model ...@<profileId>`:
+
+    ```bash
+    openclaw models auth login --provider openai --profile-id openai:ritsuko
+    openclaw models auth login --provider openai --profile-id openai:lain
+    ```
+
+    `openai/*` є маршрутом моделі для ходів агентів OpenAI через Codex. Запустіть
+    `openclaw doctor --fix`, щоб перенести старі застарілі ідентифікатори профілів із префіксом OpenAI Codex і
+    записи порядку перед тим, як покладатися на впорядкування профілів.
 
     ### Індикатор стану
 
-    Чатова команда `/status` показує, який runtime моделі активний для поточної сесії.
-    Вбудований harness app-server Codex відображається як `Runtime: OpenAI Codex` для
-    ходів моделей агента OpenAI. Застарілі закріплення сесій PI відновлюються до Codex, якщо
-    конфігурація явно не закріплює PI.
+    Чатова команда `/status` показує, який runtime моделі активний для поточного сеансу.
+    Вбудоване середовище сервера застосунку Codex відображається як `Runtime: OpenAI Codex` для
+    ходів моделей агентів OpenAI. Застарілі прив’язки сеансу runtime OpenAI виправляються на Codex, якщо
+    конфігурація явно не фіксує OpenClaw.
 
     ### Попередження doctor
 
-    Якщо маршрути `openai-codex/*` або застарілі закріплення OpenAI PI залишаються в конфігурації чи
-    стані сесії, `openclaw doctor --fix` переписує їх на `openai/*` із runtime Codex, якщо PI
-    не налаштовано явно.
+    Якщо застарілі посилання моделей Codex або застарілі прив’язки runtime OpenAI залишаються в конфігурації чи
+    стані сеансу, `openclaw doctor --fix` переписує їх на `openai/*` із
+    runtime Codex, якщо OpenClaw не налаштовано явно.
 
     ### Обмеження контекстного вікна
 
-    OpenClaw розглядає metadata моделі та обмеження runtime context як окремі значення.
+    OpenClaw розглядає метадані моделі та обмеження контексту runtime як окремі значення.
 
-    Для `openai/gpt-5.5` через каталог Codex OAuth:
+    Для `openai/gpt-5.5` через каталог OAuth Codex:
 
-    - Нативне `contextWindow`: `1000000`
-    - Типове обмеження runtime `contextTokens`: `272000`
+    - Власний `contextWindow`: `1000000`
+    - Стандартне обмеження runtime `contextTokens`: `272000`
 
-    Менше типове обмеження на практиці має кращі характеристики затримки та якості. Перевизначте його за допомогою `contextTokens`:
+    Менше стандартне обмеження на практиці має кращі характеристики затримки та якості. Перевизначте його за допомогою `contextTokens`:
 
     ```json5
     {
       models: {
         providers: {
-          "openai-codex": {
+          openai: {
             models: [{ id: "gpt-5.5", contextTokens: 160000 }],
           },
         },
@@ -343,60 +416,60 @@ OpenClaw може використовувати OpenAI або OpenAI-суміс
     ```
 
     <Note>
-    Використовуйте `contextWindow`, щоб оголосити нативні metadata моделі. Використовуйте `contextTokens`, щоб обмежити бюджет runtime context.
+    Використовуйте `contextWindow`, щоб оголосити власні метадані моделі. Використовуйте `contextTokens`, щоб обмежити бюджет контексту runtime.
     </Note>
 
     ### Відновлення каталогу
 
-    OpenClaw використовує upstream metadata каталогу Codex для `gpt-5.5`, коли вони
-    наявні. Якщо live discovery Codex пропускає рядок `gpt-5.5`, тоді як
-    обліковий запис автентифіковано, OpenClaw синтезує цей рядок моделі OAuth, щоб
-    запуски cron, sub-agent і налаштованої типової моделі не завершувалися помилкою
+    OpenClaw використовує upstream-метадані каталогу Codex для `gpt-5.5`, коли вони
+    наявні. Якщо живе виявлення Codex пропускає рядок `gpt-5.5`, поки
+    обліковий запис автентифікований, OpenClaw синтезує цей рядок моделі OAuth, щоб
+    cron, під-агент і запуски зі сконфігурованою стандартною моделлю не завершувалися помилкою
     `Unknown model`.
 
   </Tab>
 </Tabs>
 
-## Нативна автентифікація app-server Codex
+## Автентифікація власного сервера застосунку Codex
 
-Нативний harness app-server Codex використовує посилання на моделі `openai/*` плюс пропущену
+Власне середовище сервера застосунку Codex використовує посилання моделей `openai/*` плюс пропущену
 конфігурацію runtime або provider/model `agentRuntime.id: "codex"`, але його автентифікація
-все ще базується на обліковому записі. OpenClaw вибирає автентифікацію в такому порядку:
+все одно базується на обліковому записі. OpenClaw вибирає автентифікацію в такому порядку:
 
-1. Впорядковані профілі автентифікації OpenAI для агента, бажано в
-   `auth.order.openai`. Наявні профілі `openai-codex:*` і
-   `auth.order.openai-codex` залишаються чинними для старіших інсталяцій.
-2. Наявний обліковий запис app-server, наприклад локальний вхід Codex CLI ChatGPT.
-3. Лише для локальних запусків app-server stdio: `CODEX_API_KEY`, потім
-   `OPENAI_API_KEY`, коли app-server повідомляє, що облікового запису немає, але все ще потребує
+1. Упорядковані профілі автентифікації OpenAI для агента, бажано під
+   `auth.order.openai`. Запустіть `openclaw doctor --fix`, щоб перенести старі
+   застарілі ідентифікатори профілів автентифікації Codex і застарілий порядок автентифікації Codex.
+2. Наявний обліковий запис сервера застосунку, наприклад локальний вхід ChatGPT через Codex CLI.
+3. Лише для локальних запусків сервера застосунку через stdio: `CODEX_API_KEY`, потім
+   `OPENAI_API_KEY`, коли сервер застосунку повідомляє, що облікового запису немає, але все ще потребує
    автентифікації OpenAI.
 
-Це означає, що локальний вхід за підпискою ChatGPT/Codex не замінюється лише
-тому, що процес gateway також має `OPENAI_API_KEY` для прямих моделей OpenAI
-або embeddings. Резервний API-ключ із env використовується лише в локальному stdio-шляху без облікового запису; він
-не надсилається до WebSocket-з'єднань app-server. Коли вибрано профіль Codex
-у стилі підписки, OpenClaw також прибирає `CODEX_API_KEY` і `OPENAI_API_KEY`
-із породженого дочірнього процесу stdio app-server і надсилає вибрані облікові дані
-через RPC входу app-server. Коли цей профіль підписки заблоковано
-лімітом використання Codex, OpenClaw може перейти до наступного впорядкованого профілю API-ключа `openai:*`
-без зміни вибраної моделі або виходу з harness Codex. Після проходження часу скидання підписки
-профіль підписки знову стає придатним.
+Це означає, що локальний вхід із підпискою ChatGPT/Codex не замінюється лише
+тому, що процес Gateway також має `OPENAI_API_KEY` для прямих моделей OpenAI
+або embeddings. Резервний env-ключ API використовується лише для локального шляху stdio без облікового запису; він
+не надсилається до WebSocket-з’єднань сервера застосунку. Коли вибрано профіль Codex
+у стилі підписки, OpenClaw також не передає `CODEX_API_KEY` і `OPENAI_API_KEY`
+до породженого дочірнього процесу stdio сервера застосунку й надсилає вибрані облікові дані
+через RPC входу сервера застосунку. Коли цей профіль підписки заблоковано
+обмеженням використання Codex, OpenClaw може перейти до наступного впорядкованого API-key
+профілю `openai:*` без зміни вибраної моделі або виходу із середовища Codex.
+Коли час скидання підписки минає, профіль підписки знову стає придатним.
 
 ## Генерація зображень
 
 Вбудований plugin `openai` реєструє генерацію зображень через інструмент `image_generate`.
-Він підтримує як генерацію зображень через API-ключ OpenAI, так і генерацію зображень через Codex OAuth
-за допомогою того самого посилання на модель `openai/gpt-image-2`.
+Він підтримує як генерацію зображень за ключем API OpenAI, так і генерацію зображень через OAuth Codex
+через те саме посилання моделі `openai/gpt-image-2`.
 
-| Можливість                | API-ключ OpenAI                     | Codex OAuth                          |
+| Можливість                | Ключ API OpenAI                     | OAuth Codex                          |
 | ------------------------- | ---------------------------------- | ------------------------------------ |
 | Посилання на модель                 | `openai/gpt-image-2`               | `openai/gpt-image-2`                 |
-| Автентифікація                      | `OPENAI_API_KEY`                   | Вхід OpenAI Codex OAuth           |
-| Транспорт                 | OpenAI Images API                  | backend Codex Responses              |
+| Автентифікація                      | `OPENAI_API_KEY`                   | Вхід OAuth OpenAI Codex           |
+| Транспорт                 | API зображень OpenAI                  | Бекенд Responses Codex              |
 | Максимум зображень на запит    | 4                                  | 4                                    |
 | Режим редагування                 | Увімкнено (до 5 референсних зображень) | Увімкнено (до 5 референсних зображень)   |
-| Перевизначення розміру            | Підтримуються, зокрема розміри 2K/4K   | Підтримуються, зокрема розміри 2K/4K     |
-| Співвідношення сторін / роздільна здатність | Не пересилається до OpenAI Images API | Зіставляється з підтримуваним розміром, коли це безпечно |
+| Перевизначення розміру            | Підтримується, включно з розмірами 2K/4K   | Підтримується, включно з розмірами 2K/4K     |
+| Співвідношення сторін / роздільність | Не пересилається до API зображень OpenAI | Зіставляється з підтримуваним розміром, коли це безпечно |
 
 ```json5
 {
@@ -412,21 +485,21 @@ OpenClaw може використовувати OpenAI або OpenAI-суміс
 Див. [Генерація зображень](/uk/tools/image-generation) щодо спільних параметрів інструмента, вибору провайдера та поведінки failover.
 </Note>
 
-`gpt-image-2` є типовим для генерації зображень із тексту OpenAI та редагування зображень.
-`gpt-image-1.5`, `gpt-image-1` і `gpt-image-1-mini` залишаються придатними як
+`gpt-image-2` є стандартним значенням як для генерації текст-у-зображення OpenAI, так і для
+редагування зображень. `gpt-image-1.5`, `gpt-image-1` і `gpt-image-1-mini` залишаються придатними як
 явні перевизначення моделі. Використовуйте `openai/gpt-image-1.5` для виводу PNG/WebP
-із прозорим фоном; поточний API `gpt-image-2` відхиляє
+із прозорим тлом; поточний API `gpt-image-2` відхиляє
 `background: "transparent"`.
 
-Для запиту з прозорим фоном агенти мають викликати `image_generate` з
+Для запиту з прозорим тлом агенти мають викликати `image_generate` з
 `model: "openai/gpt-image-1.5"`, `outputFormat: "png"` або `"webp"` і
 `background: "transparent"`; старіший параметр провайдера `openai.background`
-все ще приймається. OpenClaw також захищає публічні маршрути OpenAI та
-OpenAI Codex OAuth, переписуючи типові прозорі запити `openai/gpt-image-2`
-на `gpt-image-1.5`; Azure і власні OpenAI-сумісні endpoints зберігають
-свої налаштовані deployment/model names.
+досі приймається. OpenClaw також захищає публічні маршрути OpenAI та
+OpenAI Codex OAuth, переписуючи прозорі запити за замовчуванням
+`openai/gpt-image-2` на `gpt-image-1.5`; Azure і власні OpenAI-сумісні кінцеві
+точки зберігають налаштовані назви розгортань/моделей.
 
-Те саме налаштування доступне для headless запусків CLI:
+Той самий параметр доступний для headless-запусків CLI:
 
 ```bash
 openclaw infer image generate \
@@ -439,18 +512,23 @@ openclaw infer image generate \
 
 Використовуйте ті самі прапорці `--output-format` і `--background` з
 `openclaw infer image edit`, коли починаєте з вхідного файлу.
-`--openai-background` залишається доступним як специфічний для OpenAI alias.
+`--openai-background` залишається доступним як OpenAI-специфічний псевдонім.
+Використовуйте `--quality low|medium|high|auto`, коли потрібно керувати якістю
+та вартістю OpenAI Images. Використовуйте `--openai-moderation low|auto`, щоб
+передати OpenAI провайдер-специфічну підказку модерації з `image generate` або
+`image edit`.
 
-Для інсталяцій Codex OAuth залишайте те саме посилання `openai/gpt-image-2`. Коли
-налаштовано OAuth-профіль `openai-codex`, OpenClaw розв'язує цей збережений access token OAuth
-і надсилає запити зображень через backend Codex Responses. Він
-не пробує спершу `OPENAI_API_KEY` і не переходить мовчки на API-ключ для цього
-запиту. Налаштуйте `models.providers.openai` явно з API-ключем,
-власним base URL або Azure endpoint, коли потрібен прямий маршрут OpenAI Images API.
-Якщо цей власний image endpoint перебуває в довіреній LAN/приватній адресі, також установіть
-`browser.ssrfPolicy.dangerouslyAllowPrivateNetwork: true`; OpenClaw залишає
-приватні/внутрішні OpenAI-сумісні image endpoints заблокованими, якщо ця opt-in опція
-відсутня.
+Для встановлень ChatGPT/Codex OAuth зберігайте той самий ref `openai/gpt-image-2`.
+Коли налаштовано OAuth-профіль `openai`, OpenClaw визначає збережений токен
+доступу OAuth і надсилає запити зображень через бекенд Codex Responses. Він
+спершу не пробує `OPENAI_API_KEY` і не переходить тихо на API-ключ для цього
+запиту. Налаштуйте `models.providers.openai` явно з API-ключем, власною базовою
+URL-адресою або кінцевою точкою Azure, коли вам потрібен прямий маршрут
+OpenAI Images API.
+Якщо ця власна кінцева точка зображень розташована в довіреній LAN/приватній
+адресі, також установіть `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork: true`;
+OpenClaw залишає приватні/внутрішні OpenAI-сумісні кінцеві точки зображень
+заблокованими, якщо цього явного ввімкнення немає.
 
 Згенерувати:
 
@@ -476,11 +554,15 @@ openclaw infer image generate \
 
 | Можливість       | Значення                                                                          |
 | ---------------- | --------------------------------------------------------------------------------- |
-| Модель за замовчуванням | `openai/sora-2`                                                            |
-| Режими           | Текст-у-відео, зображення-у-відео, редагування одного відео                       |
-| Референсні вхідні дані | 1 зображення або 1 відео                                                     |
-| Перевизначення розміру | Підтримується                                                               |
+| Модель за замовчуванням | `openai/sora-2`                                                                   |
+| Режими           | Перетворення тексту на відео, зображення на відео, редагування одного відео       |
+| Вхідні референси | 1 зображення або 1 відео                                                          |
+| Перевизначення розміру | Підтримується для перетворення тексту на відео та зображення на відео             |
 | Інші перевизначення | `aspectRatio`, `resolution`, `audio`, `watermark` ігноруються з попередженням інструмента |
+
+Запити OpenAI для перетворення зображення на відео використовують
+`POST /v1/videos` із зображенням `input_reference`. Редагування одного відео
+використовує `POST /v1/videos/edits` із завантаженим відео в полі `video`.
 
 ```json5
 {
@@ -493,22 +575,22 @@ openclaw infer image generate \
 ```
 
 <Note>
-Див. [Генерація відео](/uk/tools/video-generation) щодо спільних параметрів інструмента, вибору постачальника та поведінки failover.
+Див. [Генерація відео](/uk/tools/video-generation) щодо спільних параметрів інструмента, вибору провайдера та поведінки failover.
 </Note>
 
 ## Внесок промпта GPT-5
 
-OpenClaw додає спільний внесок промпта GPT-5 для запусків сімейства GPT-5 у різних постачальників. Він застосовується за ідентифікатором моделі, тому `openai/gpt-5.5`, застарілі refs до repair, як-от `openai-codex/gpt-5.5`, `openrouter/openai/gpt-5.5`, `opencode/gpt-5.5`, та інші сумісні refs GPT-5 отримують той самий overlay. Старіші моделі GPT-4.x не отримують його.
+OpenClaw додає спільний внесок промпта GPT-5 для запусків родини GPT-5 на поверхнях промптів, зібраних OpenClaw. Він застосовується за ідентифікатором моделі, тому маршрути OpenClaw/провайдера, як-от застарілі refs до ремонту (застарілий ref Codex GPT-5.5), `openrouter/openai/gpt-5.5`, `opencode/gpt-5.5` та інші сумісні refs GPT-5, отримують те саме накладання. Старіші моделі GPT-4.x не отримують його.
 
-Вбудований нативний harness Codex використовує ту саму поведінку GPT-5 і overlay heartbeat через інструкції розробника app-server Codex, тому сеанси `openai/gpt-5.x`, спрямовані через Codex, зберігають ті самі настанови щодо доведення дій до кінця та проактивного heartbeat, хоча рештою промпта harness володіє Codex.
+Вбудований нативний harness Codex не отримує це накладання OpenClaw GPT-5 через developer instructions app-server Codex. Нативний Codex зберігає базову поведінку, модель і поведінку проєктних документів, що належать Codex, тоді як OpenClaw вимикає вбудовану особистість Codex для нативних тредів, щоб файли особистості робочого простору агента залишалися авторитетними. OpenClaw додає лише runtime-контекст, як-от доставку каналами, динамічні інструменти OpenClaw, делегування ACP, контекст робочого простору та OpenClaw skills.
 
-Внесок GPT-5 додає тегований контракт поведінки для сталості persona, безпеки виконання, дисципліни інструментів, форми виводу, перевірок завершення та верифікації. Поведінка відповідей для конкретних каналів і тихих повідомлень лишається у спільному системному промпті OpenClaw та політиці вихідної доставки. Настанови GPT-5 завжди ввімкнені для відповідних моделей. Дружній шар стилю взаємодії є окремим і налаштовуваним.
+Внесок GPT-5 додає тегований контракт поведінки для збереження персони, безпеки виконання, дисципліни інструментів, форми виводу, перевірок завершення та верифікації на відповідних промптах, зібраних OpenClaw. Поведінка відповідей, специфічна для каналу, і поведінка тихих повідомлень залишаються в спільному системному промпті OpenClaw та політиці вихідної доставки. Дружній шар стилю взаємодії є окремим і налаштовуваним.
 
 | Значення              | Ефект                                      |
-| --------------------- | ------------------------------------------ |
+| ---------------------- | ------------------------------------------- |
 | `"friendly"` (за замовчуванням) | Увімкнути дружній шар стилю взаємодії |
-| `"on"`                | Псевдонім для `"friendly"`                 |
-| `"off"`               | Вимкнути лише дружній шар стилю            |
+| `"on"`                 | Псевдонім для `"friendly"`                      |
+| `"off"`                | Вимкнути лише дружній стильовий шар       |
 
 <Tabs>
   <Tab title="Конфігурація">
@@ -532,11 +614,11 @@ OpenClaw додає спільний внесок промпта GPT-5 для з
 </Tabs>
 
 <Tip>
-Під час виконання значення не залежать від регістру, тому `"Off"` і `"off"` обидва вимикають дружній шар стилю.
+Під час виконання значення не чутливі до регістру, тому `"Off"` і `"off"` обидва вимикають дружній стильовий шар.
 </Tip>
 
 <Note>
-Застарілий `plugins.entries.openai.config.personality` досі читається як сумісний fallback, коли спільний параметр `agents.defaults.promptOverlays.gpt5.personality` не задано.
+Застарілий `plugins.entries.openai.config.personality` досі читається як fallback сумісності, коли спільний параметр `agents.defaults.promptOverlays.gpt5.personality` не встановлено.
 </Note>
 
 ## Голос і мовлення
@@ -545,27 +627,27 @@ OpenClaw додає спільний внесок промпта GPT-5 для з
   <Accordion title="Синтез мовлення (TTS)">
     Вбудований Plugin `openai` реєструє синтез мовлення для поверхні `messages.tts`.
 
-    | Налаштування | Шлях конфігурації | За замовчуванням |
+    | Параметр | Шлях конфігурації | Значення за замовчуванням |
     |---------|------------|---------|
     | Модель | `messages.tts.providers.openai.model` | `gpt-4o-mini-tts` |
-    | Голос | `messages.tts.providers.openai.voice` | `coral` |
-    | Швидкість | `messages.tts.providers.openai.speed` | (не задано) |
-    | Інструкції | `messages.tts.providers.openai.instructions` | (не задано, лише `gpt-4o-mini-tts`) |
+    | Голос | `messages.tts.providers.openai.speakerVoice` | `coral` |
+    | Швидкість | `messages.tts.providers.openai.speed` | (не встановлено) |
+    | Інструкції | `messages.tts.providers.openai.instructions` | (не встановлено, лише `gpt-4o-mini-tts`) |
     | Формат | `messages.tts.providers.openai.responseFormat` | `opus` для голосових нотаток, `mp3` для файлів |
     | API-ключ | `messages.tts.providers.openai.apiKey` | Повертається до `OPENAI_API_KEY` |
     | Базова URL-адреса | `messages.tts.providers.openai.baseUrl` | `https://api.openai.com/v1` |
-    | Додаткове тіло | `messages.tts.providers.openai.extraBody` / `extra_body` | (не задано) |
+    | Додаткове тіло | `messages.tts.providers.openai.extraBody` / `extra_body` | (не встановлено) |
 
     Доступні моделі: `gpt-4o-mini-tts`, `tts-1`, `tts-1-hd`. Доступні голоси: `alloy`, `ash`, `ballad`, `cedar`, `coral`, `echo`, `fable`, `juniper`, `marin`, `onyx`, `nova`, `sage`, `shimmer`, `verse`.
 
-    `extraBody` об'єднується з JSON запиту `/audio/speech` після згенерованих OpenClaw полів, тож використовуйте його для OpenAI-сумісних endpoint, які потребують додаткових ключів, як-от `lang`. Ключі прототипу ігноруються.
+    `extraBody` об’єднується в JSON запиту `/audio/speech` після згенерованих OpenClaw полів, тому використовуйте його для OpenAI-сумісних кінцевих точок, які потребують додаткових ключів, як-от `lang`. Ключі прототипу ігноруються.
 
     ```json5
     {
       messages: {
         tts: {
           providers: {
-            openai: { model: "gpt-4o-mini-tts", voice: "coral" },
+            openai: { model: "gpt-4o-mini-tts", speakerVoice: "coral" },
           },
         },
       },
@@ -573,23 +655,23 @@ OpenClaw додає спільний внесок промпта GPT-5 для з
     ```
 
     <Note>
-    Установіть `OPENAI_TTS_BASE_URL`, щоб перевизначити базову URL-адресу TTS без впливу на endpoint chat API. OpenAI TTS усе ще налаштовується через API-ключ; для live talk-back лише через OAuth використовуйте шлях голосу Realtime замість мовлення agent-mode STT -> TTS.
+    Установіть `OPENAI_TTS_BASE_URL`, щоб перевизначити базову URL-адресу TTS, не впливаючи на кінцеву точку chat API. OpenAI TTS і Realtime voice обидва налаштовуються через API-ключ OpenAI Platform; встановлення лише з OAuth усе ще можуть використовувати моделі chat на базі Codex, але не OpenAI live talk-back.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Перетворення мовлення на текст">
-    Вбудований Plugin `openai` реєструє пакетне перетворення мовлення на текст через
-    поверхню транскрибування media-understanding OpenClaw.
+  <Accordion title="Мовлення в текст">
+    Вбудований Plugin `openai` реєструє пакетне перетворення мовлення в текст через
+    поверхню транскрипції OpenClaw для розуміння медіа.
 
     - Модель за замовчуванням: `gpt-4o-transcribe`
-    - Endpoint: OpenAI REST `/v1/audio/transcriptions`
-    - Шлях вхідних даних: завантаження аудіофайлу multipart
-    - Підтримується OpenClaw усюди, де транскрибування вхідного аудіо використовує
-      `tools.media.audio`, зокрема сегменти голосових каналів Discord і аудіовкладення
-      каналів
+    - Кінцева точка: OpenAI REST `/v1/audio/transcriptions`
+    - Шлях вводу: multipart-завантаження аудіофайлу
+    - Підтримується OpenClaw скрізь, де вхідна транскрипція аудіо використовує
+      `tools.media.audio`, включно із сегментами голосових каналів Discord і
+      аудіовкладеннями каналів
 
-    Щоб примусово використовувати OpenAI для транскрибування вхідного аудіо:
+    Щоб примусово використовувати OpenAI для вхідної транскрипції аудіо:
 
     ```json5
     {
@@ -609,33 +691,33 @@ OpenClaw додає спільний внесок промпта GPT-5 для з
     }
     ```
 
-    Підказки щодо мови та промпта передаються до OpenAI, коли їх надано через
-    спільну конфігурацію аудіомедіа або запит транскрибування для окремого виклику.
+    Підказки мови та промпта пересилаються до OpenAI, коли їх надано спільною
+    конфігурацією аудіомедіа або запитом транскрипції для окремого виклику.
 
   </Accordion>
 
-  <Accordion title="Транскрипція в реальному часі">
-    Вбудований Plugin `openai` реєструє транскрипцію в реальному часі для Plugin Voice Call.
+  <Accordion title="Realtime-транскрипція">
+    Вбудований Plugin `openai` реєструє realtime-транскрипцію для Plugin Voice Call.
 
-    | Налаштування | Шлях конфігурації | Типове значення |
+    | Параметр | Шлях конфігурації | Значення за замовчуванням |
     |---------|------------|---------|
     | Модель | `plugins.entries.voice-call.config.streaming.providers.openai.model` | `gpt-4o-transcribe` |
     | Мова | `...openai.language` | (не встановлено) |
-    | Prompt | `...openai.prompt` | (не встановлено) |
+    | Промпт | `...openai.prompt` | (не встановлено) |
     | Тривалість тиші | `...openai.silenceDurationMs` | `800` |
     | Поріг VAD | `...openai.vadThreshold` | `0.5` |
-    | Автентифікація | `...openai.apiKey`, `OPENAI_API_KEY`, або OAuth `openai-codex` | API-ключі підключаються напряму; OAuth створює клієнтський секрет Realtime transcription |
+    | Автентифікація | `...openai.apiKey`, `OPENAI_API_KEY` або `openai` OAuth | API-ключі підключаються напряму; OAuth випускає client secret для Realtime-транскрипції |
 
     <Note>
-    Використовує WebSocket-з'єднання з `wss://api.openai.com/v1/realtime` з аудіо G.711 u-law (`g711_ulaw` / `audio/pcmu`). Коли налаштовано лише OAuth `openai-codex`, Gateway створює ефемерний клієнтський секрет Realtime transcription перед відкриттям WebSocket. Цей потоковий провайдер призначений для шляху транскрипції в реальному часі Voice Call; голос Discord наразі записує короткі сегменти й натомість використовує пакетний шлях транскрипції `tools.media.audio`.
+    Використовує WebSocket-з’єднання з `wss://api.openai.com/v1/realtime` з аудіо G.711 u-law (`g711_ulaw` / `audio/pcmu`). Коли налаштовано лише OAuth `openai`, Gateway випускає ефемерний client secret для Realtime-транскрипції перед відкриттям WebSocket. Цей streaming-провайдер призначений для шляху realtime-транскрипції Voice Call; голос Discord наразі записує короткі сегменти й натомість використовує шлях пакетної транскрипції `tools.media.audio`.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Голос у реальному часі">
-    Вбудований Plugin `openai` реєструє голос у реальному часі для Plugin Voice Call.
+  <Accordion title="Realtime-голос">
+    Вбудований Plugin `openai` реєструє realtime-голос для Plugin Voice Call.
 
-    | Налаштування | Шлях конфігурації | Типове значення |
+    | Параметр | Шлях конфігурації | Значення за замовчуванням |
     |---------|------------|---------|
     | Модель | `plugins.entries.voice-call.config.realtime.providers.openai.model` | `gpt-realtime-2` |
     | Голос | `...openai.voice` | `alloy` |
@@ -644,36 +726,37 @@ OpenClaw додає спільний внесок промпта GPT-5 для з
     | Тривалість тиші | `...openai.silenceDurationMs` | `500` |
     | Префіксне доповнення | `...openai.prefixPaddingMs` | `300` |
     | Зусилля reasoning | `...openai.reasoningEffort` | (не встановлено) |
-    | Автентифікація | `...openai.apiKey`, `OPENAI_API_KEY`, або OAuth `openai-codex` | Browser Talk і не-Azure backend-мости можуть використовувати Codex OAuth |
+    | Автентифікація | профіль автентифікації API-ключем `openai`, `...openai.apiKey` або `OPENAI_API_KEY` | Потрібен API-ключ OpenAI Platform; OpenAI OAuth не налаштовує Realtime-голос |
 
     Доступні вбудовані Realtime-голоси для `gpt-realtime-2`: `alloy`, `ash`,
     `ballad`, `coral`, `echo`, `sage`, `shimmer`, `verse`, `marin`, `cedar`.
     OpenAI рекомендує `marin` і `cedar` для найкращої якості Realtime. Це
-    окремий набір від голосів Text-to-speech вище; не припускайте, що TTS
-    голос, як-от `fable`, `nova` або `onyx`, дійсний для Realtime-сесій.
+    окремий набір від наведених вище голосів Text-to-speech; не припускайте, що
+    TTS-голос, як-от `fable`, `nova` або `onyx`, є дійсним для Realtime-сесій.
 
     <Note>
-    Backend Realtime-мости OpenAI використовують форму GA Realtime WebSocket-сесії, яка не приймає `session.temperature`. Розгортання Azure OpenAI залишаються доступними через `azureEndpoint` і `azureDeployment` та зберігають сумісну з розгортанням форму сесії. Підтримує двонапрямні виклики інструментів і аудіо G.711 u-law.
+    Бекенд-мости OpenAI realtime використовують форму GA Realtime WebSocket-сесії, яка не приймає `session.temperature`. Розгортання Azure OpenAI залишаються доступними через `azureEndpoint` і `azureDeployment` та зберігають сумісну з розгортанням форму сесії. Підтримує двонапрямні виклики інструментів і аудіо G.711 u-law.
     </Note>
 
     <Note>
-    Голос у реальному часі вибирається під час створення сесії. OpenAI дозволяє змінювати більшість
-    полів сесії пізніше, але голос не можна змінити після того, як
-    модель згенерувала аудіо в цій сесії. OpenClaw наразі надає
-    вбудовані ідентифікатори Realtime-голосів як рядки.
+    Realtime-голос вибирається під час створення сесії. OpenAI дозволяє змінювати більшість
+    полів сесії пізніше, але голос не можна змінити після того, як модель
+    згенерувала аудіо в цій сесії. OpenClaw наразі відкриває вбудовані
+    ідентифікатори Realtime-голосів як рядки.
     </Note>
 
     <Note>
-    Control UI Talk використовує браузерні Realtime-сесії OpenAI з ефемерним
-    клієнтським секретом, створеним Gateway, і прямим браузерним обміном WebRTC SDP з
-    OpenAI Realtime API. Коли прямий API-ключ OpenAI не налаштовано,
-    Gateway може створити цей клієнтський секрет за допомогою вибраного OAuth
-    профілю `openai-codex`. Gateway relay і Backend Realtime WebSocket-мости Voice Call використовують
-    той самий резервний варіант OAuth для нативних кінцевих точок OpenAI. Live-перевірка
-    для супровідників доступна через
+    Control UI Talk використовує браузерні realtime-сеанси OpenAI з ефемерним
+    клієнтським секретом, випущеним Gateway, і прямим браузерним обміном WebRTC
+    SDP з OpenAI Realtime API. Gateway випускає цей клієнтський секрет за
+    допомогою вибраного профілю автентифікації API-ключа `openai` або
+    налаштованого API-ключа OpenAI Platform. Релей Gateway і realtime-мости
+    WebSocket бекенда Voice Call використовують той самий шлях автентифікації
+    лише за API-ключем для нативних кінцевих точок OpenAI. Maintainer live
+    verification доступна через
     `OPENAI_API_KEY=... GEMINI_API_KEY=... node --import tsx scripts/dev/realtime-talk-live-smoke.ts`;
-    гілки OpenAI перевіряють і Backend WebSocket-міст, і браузерний
-    обмін WebRTC SDP без журналювання секретів.
+    гілки OpenAI перевіряють і бекендний міст WebSocket, і браузерний обмін
+    WebRTC SDP без запису секретів у журнали.
     </Note>
 
   </Accordion>
@@ -681,29 +764,31 @@ OpenClaw додає спільний внесок промпта GPT-5 для з
 
 ## Кінцеві точки Azure OpenAI
 
-Вбудований провайдер `openai` може спрямовувати генерацію зображень до ресурсу Azure OpenAI
-через перевизначення базової URL-адреси. На шляху генерації зображень OpenClaw
-виявляє імена хостів Azure у `models.providers.openai.baseUrl` і автоматично перемикається на
-форму запиту Azure.
+Вбудований провайдер `openai` може націлюватися на ресурс Azure OpenAI для
+генерації зображень через перевизначення базової URL-адреси. На шляху генерації
+зображень OpenClaw виявляє імена хостів Azure у
+`models.providers.openai.baseUrl` і автоматично перемикається на форму запиту
+Azure.
 
 <Note>
-Голос у реальному часі використовує окремий шлях конфігурації
+Realtime-голос використовує окремий шлях конфігурації
 (`plugins.entries.voice-call.config.realtime.providers.openai.azureEndpoint`)
-і не залежить від `models.providers.openai.baseUrl`. Див. accordion **Голос у реальному часі**
-у розділі [Голос і мовлення](#voice-and-speech) для його налаштувань Azure.
+і не залежить від `models.providers.openai.baseUrl`. Див. акордеон
+**Realtime-голос** у розділі [Голос і мовлення](#voice-and-speech) для його
+налаштувань Azure.
 </Note>
 
 Використовуйте Azure OpenAI, коли:
 
-- У вас уже є підписка Azure OpenAI, квота або корпоративна угода
+- У вас уже є підписка, квота або корпоративна угода Azure OpenAI
 - Вам потрібні регіональне розміщення даних або засоби контролю відповідності, які надає Azure
-- Ви хочете залишити трафік усередині наявного клієнтського середовища Azure
+- Ви хочете зберегти трафік у межах наявного тенанта Azure
 
 ### Конфігурація
 
-Для генерації зображень Azure через вбудований провайдер `openai` вкажіть
-`models.providers.openai.baseUrl` на ваш ресурс Azure і встановіть `apiKey` як
-ключ Azure OpenAI (не ключ OpenAI Platform):
+Для генерації зображень Azure через вбудований провайдер `openai` спрямуйте
+`models.providers.openai.baseUrl` на ваш ресурс Azure і задайте `apiKey` як
+ключ Azure OpenAI (а не ключ OpenAI Platform):
 
 ```json5
 {
@@ -718,7 +803,8 @@ OpenClaw додає спільний внесок промпта GPT-5 для з
 }
 ```
 
-OpenClaw розпізнає ці суфікси хостів Azure для маршруту генерації зображень Azure:
+OpenClaw розпізнає ці суфікси хостів Azure для маршруту генерації зображень
+Azure:
 
 - `*.openai.azure.com`
 - `*.services.ai.azure.com`
@@ -727,90 +813,94 @@ OpenClaw розпізнає ці суфікси хостів Azure для мар
 Для запитів генерації зображень на розпізнаному хості Azure OpenClaw:
 
 - Надсилає заголовок `api-key` замість `Authorization: Bearer`
-- Використовує шляхи з областю розгортання (`/openai/deployments/{deployment}/...`)
+- Використовує шляхи в межах розгортання (`/openai/deployments/{deployment}/...`)
 - Додає `?api-version=...` до кожного запиту
-- Використовує типовий тайм-аут запиту 600 с для викликів генерації зображень Azure.
-  Значення `timeoutMs` для окремих викликів усе ще перевизначають це типове значення.
+- Використовує стандартний таймаут запиту 600 с для викликів генерації
+  зображень Azure. Значення `timeoutMs` для окремих викликів усе одно
+  перевизначають це стандартне значення.
 
-Інші базові URL-адреси (публічний OpenAI, OpenAI-сумісні проксі) зберігають стандартну
-форму запиту зображень OpenAI.
+Інші базові URL-адреси (публічний OpenAI, проксі, сумісні з OpenAI) зберігають
+стандартну форму запиту зображення OpenAI.
 
 <Note>
 Маршрутизація Azure для шляху генерації зображень провайдера `openai` потребує
-OpenClaw 2026.4.22 або новішої версії. Раніші версії трактують будь-який користувацький
-`openai.baseUrl` як публічну кінцеву точку OpenAI і зазнаватимуть невдачі з розгортаннями зображень Azure.
+OpenClaw 2026.4.22 або новішої версії. Раніші версії обробляють будь-який
+користувацький `openai.baseUrl` як публічну кінцеву точку OpenAI і зазнають
+помилки з розгортаннями зображень Azure.
 </Note>
 
 ### Версія API
 
-Установіть `AZURE_OPENAI_API_VERSION`, щоб зафіксувати конкретну preview- або GA-версію Azure
-для шляху генерації зображень Azure:
+Задайте `AZURE_OPENAI_API_VERSION`, щоб закріпити певну preview- або GA-версію
+Azure для шляху генерації зображень Azure:
 
 ```bash
 export AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-Типове значення — `2024-12-01-preview`, коли змінну не встановлено.
+Стандартне значення — `2024-12-01-preview`, коли змінну не задано.
 
 ### Назви моделей є назвами розгортань
 
-Azure OpenAI прив’язує моделі до розгортань. Для запитів генерації зображень Azure,
-маршрутизованих через вбудований провайдер `openai`, поле `model` в OpenClaw
-має бути **назвою розгортання Azure**, яку ви налаштували на порталі Azure, а не
-публічним ідентифікатором моделі OpenAI.
+Azure OpenAI прив’язує моделі до розгортань. Для запитів генерації зображень
+Azure, маршрутизованих через вбудований провайдер `openai`, поле `model` в
+OpenClaw має бути **назвою розгортання Azure**, яку ви налаштували на порталі
+Azure, а не ідентифікатором публічної моделі OpenAI.
 
-Якщо ви створите розгортання з назвою `gpt-image-2-prod`, яке обслуговує `gpt-image-2`:
+Якщо ви створили розгортання з назвою `gpt-image-2-prod`, яке обслуговує
+`gpt-image-2`:
 
 ```
 /tool image_generate model=openai/gpt-image-2-prod prompt="A clean poster" size=1024x1024 count=1
 ```
 
-Те саме правило щодо назви розгортання застосовується до викликів генерації зображень,
-маршрутизованих через вбудований провайдер `openai`.
+Те саме правило назви розгортання застосовується до викликів генерації
+зображень, маршрутизованих через вбудований провайдер `openai`.
 
 ### Регіональна доступність
 
-Генерація зображень Azure наразі доступна лише в підмножині регіонів
-(наприклад, `eastus2`, `swedencentral`, `polandcentral`, `westus3`,
-`uaenorth`). Перевірте поточний список регіонів Microsoft перед створенням
-розгортання та підтвердьте, що конкретна модель доступна у вашому регіоні.
+Генерація зображень Azure наразі доступна лише в частині регіонів (наприклад,
+`eastus2`, `swedencentral`, `polandcentral`, `westus3`, `uaenorth`). Перевірте
+поточний список регіонів Microsoft перед створенням розгортання і підтвердьте,
+що конкретна модель пропонується у вашому регіоні.
 
 ### Відмінності параметрів
 
-Azure OpenAI і публічний OpenAI не завжди приймають однакові параметри зображень.
-Azure може відхиляти параметри, які дозволяє публічний OpenAI (наприклад, певні
-значення `background` для `gpt-image-2`), або надавати їх лише для конкретних версій
-моделей. Ці відмінності походять від Azure і базової моделі, а не від
-OpenClaw. Якщо запит Azure завершується помилкою валідації, перевірте
-набір параметрів, підтримуваний вашим конкретним розгортанням і версією API
-на порталі Azure.
+Azure OpenAI і публічний OpenAI не завжди приймають однакові параметри
+зображень. Azure може відхиляти параметри, які дозволяє публічний OpenAI
+(наприклад, певні значення `background` для `gpt-image-2`), або надавати їх
+лише для конкретних версій моделі. Ці відмінності походять від Azure і базової
+моделі, а не від OpenClaw. Якщо запит Azure завершується помилкою валідації,
+перевірте набір параметрів, який підтримують ваше конкретне розгортання і
+версія API на порталі Azure.
 
 <Note>
 Azure OpenAI використовує нативний транспорт і compat-поведінку, але не отримує
-приховані заголовки атрибуції OpenClaw — див. акордеон **Нативні маршрути проти OpenAI-сумісних
-маршрутів** у розділі [Розширена конфігурація](#advanced-configuration).
+приховані заголовки атрибуції OpenClaw — див. акордеон **Нативні маршрути та
+маршрути, сумісні з OpenAI** у розділі [Розширена конфігурація](#advanced-configuration).
 
-Для трафіку chat або Responses в Azure (окрім генерації зображень) використовуйте
-процес onboarding або окрему конфігурацію провайдера Azure — сам лише `openai.baseUrl`
-не підхоплює форму Azure API/auth. Існує окремий
-провайдер `azure-openai-responses/*`; див. акордеон Server-side compaction нижче.
+Для трафіку chat або Responses в Azure (за межами генерації зображень)
+використовуйте потік онбордингу або спеціальну конфігурацію провайдера Azure —
+сам лише `openai.baseUrl` не застосовує форму API/автентифікації Azure. Існує
+окремий провайдер `azure-openai-responses/*`; див. акордеон Server-side
+Compaction нижче.
 </Note>
 
 ## Розширена конфігурація
 
 <AccordionGroup>
-  <Accordion title="Transport (WebSocket vs SSE)">
-    OpenClaw спершу використовує WebSocket із запасним переходом на SSE (`"auto"`) для `openai/*`.
+  <Accordion title="Транспорт (WebSocket і SSE)">
+    OpenClaw використовує спочатку WebSocket із резервним переходом на SSE (`"auto"`) для `openai/*`.
 
     У режимі `"auto"` OpenClaw:
-    - Повторює одну ранню помилку WebSocket перед переходом на SSE
-    - Після помилки позначає WebSocket як деградований приблизно на 60 секунд і використовує SSE під час охолодження
-    - Додає стабільні заголовки ідентичності сеансу й ходу для повторів і повторних підключень
+    - Повторює одну ранню помилку WebSocket перед резервним переходом на SSE
+    - Після збою позначає WebSocket як деградований приблизно на 60 секунд і використовує SSE під час періоду охолодження
+    - Додає стабільні заголовки ідентичності сеансу й ходу для повторів і перепідключень
     - Нормалізує лічильники використання (`input_tokens` / `prompt_tokens`) між варіантами транспорту
 
     | Значення | Поведінка |
     |-------|----------|
-    | `"auto"` (типово) | Спершу WebSocket, запасний перехід на SSE |
+    | `"auto"` (стандартно) | Спочатку WebSocket, резервний перехід на SSE |
     | `"sse"` | Примусово лише SSE |
     | `"websocket"` | Примусово лише WebSocket |
 
@@ -834,20 +924,20 @@ Azure OpenAI використовує нативний транспорт і com
 
   </Accordion>
 
-  <Accordion title="Fast mode">
-    OpenClaw надає спільний перемикач fast-mode для `openai/*`:
+  <Accordion title="Швидкий режим">
+    OpenClaw надає спільний перемикач швидкого режиму для `openai/*`:
 
-    - **Chat/UI:** `/fast status|on|off`
+    - **Chat/UI:** `/fast status|auto|on|off`
     - **Конфігурація:** `agents.defaults.models["<provider>/<model>"].params.fastMode`
 
-    Коли його ввімкнено, OpenClaw зіставляє fast mode з пріоритетною обробкою OpenAI (`service_tier = "priority"`). Наявні значення `service_tier` зберігаються, і fast mode не переписує `reasoning` або `text.verbosity`.
+    Коли ввімкнено, OpenClaw зіставляє швидкий режим із пріоритетною обробкою OpenAI (`service_tier = "priority"`). Наявні значення `service_tier` зберігаються, а швидкий режим не переписує `reasoning` або `text.verbosity`. `fastMode: "auto"` запускає нові виклики моделі у швидкому режимі до автоматичного порога, а потім запускає пізніші повторні, резервні, tool-result або continuation виклики без швидкого режиму. Поріг стандартно становить 60 секунд; задайте `params.fastAutoOnSeconds` на активній моделі, щоб змінити його.
 
     ```json5
     {
       agents: {
         defaults: {
           models: {
-            "openai/gpt-5.5": { params: { fastMode: true } },
+            "openai/gpt-5.5": { params: { fastMode: "auto", fastAutoOnSeconds: 30 } },
           },
         },
       },
@@ -855,7 +945,7 @@ Azure OpenAI використовує нативний транспорт і com
     ```
 
     <Note>
-    Перевизначення сеансу мають пріоритет над конфігурацією. Очищення перевизначення сеансу в UI Sessions повертає сеанс до налаштованого типового значення.
+    Перевизначення сеансу мають перевагу над конфігурацією. Очищення перевизначення сеансу в Sessions UI повертає сеанс до налаштованого стандартного значення.
     </Note>
 
   </Accordion>
@@ -878,23 +968,23 @@ Azure OpenAI використовує нативний транспорт і com
     Підтримувані значення: `auto`, `default`, `flex`, `priority`.
 
     <Warning>
-    `serviceTier` передається лише до нативних кінцевих точок OpenAI (`api.openai.com`) і нативних кінцевих точок Codex (`chatgpt.com/backend-api`). Якщо ви маршрутизуєте будь-якого з цих провайдерів через проксі, OpenClaw залишає `service_tier` без змін.
+    `serviceTier` пересилається лише до нативних кінцевих точок OpenAI (`api.openai.com`) і нативних кінцевих точок Codex (`chatgpt.com/backend-api`). Якщо ви маршрутизуєте будь-якого з цих провайдерів через проксі, OpenClaw залишає `service_tier` без змін.
     </Warning>
 
   </Accordion>
 
-  <Accordion title="Server-side compaction (Responses API)">
-    Для прямих моделей OpenAI Responses (`openai/*` на `api.openai.com`) stream-обгортка Pi-harness Plugin OpenAI автоматично вмикає server-side compaction:
+  <Accordion title="Серверне Compaction (Responses API)">
+    Для прямих моделей OpenAI Responses (`openai/*` на `api.openai.com`) обгортка потоку OpenClaw у Plugin OpenAI автоматично вмикає серверне Compaction:
 
-    - Примусово задає `store: true` (якщо compat моделі не задає `supportsStore: false`)
-    - Впроваджує `context_management: [{ type: "compaction", compact_threshold: ... }]`
-    - Типове значення `compact_threshold`: 70% від `contextWindow` (або `80000`, коли недоступно)
+    - Примусово задає `store: true` (якщо model compat не задає `supportsStore: false`)
+    - Вставляє `context_management: [{ type: "compaction", compact_threshold: ... }]`
+    - Стандартний `compact_threshold`: 70% від `contextWindow` (або `80000`, коли недоступно)
 
-    Це застосовується до вбудованого шляху Pi harness і до хуків провайдера OpenAI, які використовуються вбудованими запусками. Нативний harness app-server Codex керує власним контекстом через Codex і налаштовується типовим маршрутом агента OpenAI або runtime-політикою провайдера/моделі.
+    Це застосовується до вбудованого runtime-шляху OpenClaw і до хуків провайдера OpenAI, які використовуються вбудованими запусками. Нативний app-server harness Codex керує власним контекстом через Codex і налаштовується стандартним маршрутом агента OpenAI або runtime-політикою провайдера/моделі.
 
     <Tabs>
       <Tab title="Увімкнути явно">
-        Корисно для сумісних кінцевих точок, таких як Azure OpenAI Responses:
+        Корисно для сумісних кінцевих точок, як-от Azure OpenAI Responses:
 
         ```json5
         {
@@ -910,7 +1000,7 @@ Azure OpenAI використовує нативний транспорт і com
         }
         ```
       </Tab>
-      <Tab title="Власний поріг">
+      <Tab title="Користувацький поріг">
         ```json5
         {
           agents: {
@@ -946,54 +1036,55 @@ Azure OpenAI використовує нативний транспорт і com
     </Tabs>
 
     <Note>
-    `responsesServerCompaction` керує лише впровадженням `context_management`. Прямі моделі OpenAI Responses все одно примусово задають `store: true`, якщо compat не задає `supportsStore: false`.
+    `responsesServerCompaction` керує лише вставленням `context_management`. Прямі моделі OpenAI Responses усе одно примусово задають `store: true`, якщо compat не задає `supportsStore: false`.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Режим strict-agentic GPT">
-    Для запусків сімейства GPT-5 на `openai/*` OpenClaw може використовувати суворіший контракт вбудованого виконання:
+  <Accordion title="Суворий agentic-режим GPT">
+    Для запусків сімейства GPT-5 на `openai/*` OpenClaw може використовувати суворіший вбудований контракт виконання:
 
     ```json5
     {
       agents: {
         defaults: {
-          embeddedPi: { executionContract: "strict-agentic" },
+          embeddedAgent: { executionContract: "strict-agentic" },
         },
       },
     }
     ```
 
     З `strict-agentic` OpenClaw:
-    - Більше не вважає хід лише з планом успішним прогресом, коли доступна дія інструмента
-    - Повторює хід із підказкою діяти зараз
     - Автоматично вмикає `update_plan` для суттєвої роботи
-    - Показує явний заблокований стан, якщо модель продовжує планувати без дії
+    - Повторює структурно порожні або лише reasoning ходи з продовженням видимої відповіді
+    - Використовує явні події плану harness, коли вибраний harness їх надає
+
+    OpenClaw не класифікує прозу асистента, щоб вирішити, чи є хід планом, оновленням прогресу або фінальною відповіддю.
 
     <Note>
-    Обмежено лише запусками сімейства GPT-5 для OpenAI і Codex. Інші провайдери та старіші сімейства моделей зберігають типову поведінку.
+    Обмежено лише запусками сімейства GPT-5 для OpenAI і Codex. Інші провайдери й старіші сімейства моделей зберігають стандартну поведінку.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Нативні маршрути проти OpenAI-сумісних маршрутів">
-    OpenClaw обробляє прямі кінцеві точки OpenAI, Codex і Azure OpenAI інакше, ніж загальні OpenAI-сумісні проксі `/v1`:
+  <Accordion title="Нативні маршрути та маршрути, сумісні з OpenAI">
+    OpenClaw обробляє прямі кінцеві точки OpenAI, Codex і Azure OpenAI інакше, ніж універсальні проксі `/v1`, сумісні з OpenAI:
 
     **Нативні маршрути** (`openai/*`, Azure OpenAI):
     - Зберігають `reasoning: { effort: "none" }` лише для моделей, які підтримують OpenAI `none` effort
-    - Пропускають вимкнений reasoning для моделей або проксі, що відхиляють `reasoning.effort: "none"`
-    - За замовчуванням використовують строгий режим для схем інструментів
+    - Пропускають вимкнений reasoning для моделей або проксі, які відхиляють `reasoning.effort: "none"`
+    - Стандартно переводять схеми інструментів у строгий режим
     - Додають приховані заголовки атрибуції лише на перевірених нативних хостах
     - Зберігають формування запитів, специфічне для OpenAI (`service_tier`, `store`, reasoning-compat, підказки prompt-cache)
 
-    **Проксі/сумісні маршрути:**
-    - Використовують м’якшу compat-поведінку
-    - Вилучають Completions `store` з ненативних payload `openai-completions`
-    - Приймають наскрізний JSON `params.extra_body`/`params.extraBody` для OpenAI-сумісних проксі Completions
-    - Приймають `params.chat_template_kwargs` для OpenAI-сумісних проксі Completions, таких як vLLM
-    - Не примушують строгі схеми інструментів або лише нативні заголовки
+    **Маршрути проксі/сумісності:**
+    - Використовувати менш сувору поведінку сумісності
+    - Вилучати Completions `store` з ненативних payloads `openai-completions`
+    - Приймати розширений pass-through JSON `params.extra_body`/`params.extraBody` для проксі Completions, сумісних з OpenAI
+    - Приймати `params.chat_template_kwargs` для проксі Completions, сумісних з OpenAI, таких як vLLM
+    - Не примусово застосовувати суворі схеми інструментів або лише нативні заголовки
 
-    Azure OpenAI використовує нативний транспорт і compat-поведінку, але не отримує приховані заголовки атрибуції.
+    Azure OpenAI використовує нативний транспорт і поведінку сумісності, але не отримує приховані заголовки атрибуції.
 
   </Accordion>
 </AccordionGroup>
@@ -1002,7 +1093,7 @@ Azure OpenAI використовує нативний транспорт і com
 
 <CardGroup cols={2}>
   <Card title="Вибір моделі" href="/uk/concepts/model-providers" icon="layers">
-    Вибір провайдерів, посилань на моделі та поведінки failover.
+    Вибір провайдерів, посилань на моделі та поведінки аварійного перемикання.
   </Card>
   <Card title="Генерація зображень" href="/uk/tools/image-generation" icon="image">
     Спільні параметри інструмента зображень і вибір провайдера.
@@ -1010,7 +1101,7 @@ Azure OpenAI використовує нативний транспорт і com
   <Card title="Генерація відео" href="/uk/tools/video-generation" icon="video">
     Спільні параметри інструмента відео та вибір провайдера.
   </Card>
-  <Card title="OAuth і auth" href="/uk/gateway/authentication" icon="key">
-    Подробиці auth і правила повторного використання облікових даних.
+  <Card title="OAuth і автентифікація" href="/uk/gateway/authentication" icon="key">
+    Докладні відомості про автентифікацію та правила повторного використання облікових даних.
   </Card>
 </CardGroup>

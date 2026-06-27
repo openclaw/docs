@@ -1,76 +1,99 @@
 ---
 read_when:
     - تريد Gateway يعمل داخل حاوية بدلًا من التثبيتات المحلية
-    - أنت تتحقق من صحة تدفق Docker
-summary: الإعداد والتهيئة الأولية الاختياريان المستندان إلى Docker لـ OpenClaw
+    - أنت تتحقق من تدفق Docker
+summary: إعداد وتهيئة اختيارية قائمة على Docker لـ OpenClaw
 title: Docker
 x-i18n:
-    generated_at: "2026-05-12T12:51:18Z"
+    generated_at: "2026-06-27T17:50:27Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 241db808dcdaa91df67a88b93d94de61cb4c2265de0e84a3b7f031166c94ee77
+    source_hash: 717fbf53a465196bb7be22037b613939e7cad9e4f0642c9d59ec4e7ec064df14
     source_path: install/docker.md
     workflow: 16
 ---
 
-Docker اختياري **اختياري**. استخدمه فقط إذا كنت تريد Gateway داخل حاوية أو التحقق من مسار Docker.
+Docker **اختياري**. استخدمه فقط إذا كنت تريد Gateway ضمن حاوية أو تريد التحقق من مسار Docker.
 
 ## هل Docker مناسب لي؟
 
-- **نعم**: تريد بيئة Gateway معزولة ويمكن التخلص منها، أو تشغيل OpenClaw على مضيف من دون تثبيتات محلية.
-- **لا**: تعمل على جهازك الخاص وتريد فقط أسرع حلقة تطوير. استخدم مسار التثبيت العادي بدلًا من ذلك.
-- **ملاحظة حول العزل**: تستخدم واجهة العزل الخلفية الافتراضية Docker عند تمكين العزل، لكن العزل معطّل افتراضيًا ولا يتطلب **أن** يعمل Gateway بالكامل في Docker. تتوفر أيضًا واجهات العزل الخلفية SSH وOpenShell. راجع [العزل](/ar/gateway/sandboxing).
+- **نعم**: تريد بيئة Gateway معزولة ومؤقتة، أو تريد تشغيل OpenClaw على مضيف من دون تثبيتات محلية.
+- **لا**: أنت تشغل OpenClaw على جهازك وتريد فقط أسرع حلقة تطوير. استخدم مسار التثبيت العادي بدلا من ذلك.
+- **ملاحظة عن العزل**: يستخدم خلفية العزل الافتراضية Docker عند تمكين العزل، لكن العزل معطل افتراضيا ولا يتطلب تشغيل Gateway بالكامل في Docker. تتوفر أيضا خلفيات عزل SSH وOpenShell. راجع [العزل](/ar/gateway/sandboxing).
 
-## المتطلبات المسبقة
+## المتطلبات الأساسية
 
 - Docker Desktop (أو Docker Engine) + Docker Compose v2
-- ذاكرة RAM لا تقل عن 2 GB لبناء الصورة (`pnpm install` قد يُنهى بسبب نفاد الذاكرة على مضيفات 1 GB مع رمز الخروج 137)
+- ذاكرة RAM لا تقل عن 2 GB لبناء الصورة (`pnpm install` قد يقتل بسبب نفاد الذاكرة على مضيفات 1 GB مع رمز خروج 137)
 - مساحة قرص كافية للصور والسجلات
-- إذا كنت تشغله على VPS/مضيف عام، فراجع
+- إذا كنت تشغل على VPS/مضيف عام، فراجع
   [تقوية الأمان للتعرض الشبكي](/ar/gateway/security)،
-  خصوصًا سياسة جدار الحماية Docker `DOCKER-USER`.
+  وخاصة سياسة جدار حماية Docker `DOCKER-USER`.
 
-## Gateway داخل حاوية
+## Gateway ضمن حاوية
 
 <Steps>
-  <Step title="بناء الصورة">
-    من جذر المستودع، شغّل سكربت الإعداد:
+  <Step title="Build the image">
+    من جذر المستودع، شغل سكربت الإعداد:
 
     ```bash
     ./scripts/docker/setup.sh
     ```
 
-    يؤدي هذا إلى بناء صورة Gateway محليًا. لاستخدام صورة مبنية مسبقًا بدلًا من ذلك:
+    يبني هذا صورة Gateway محليا. لاستخدام صورة مبنية مسبقا بدلا من ذلك:
 
     ```bash
     export OPENCLAW_IMAGE="ghcr.io/openclaw/openclaw:latest"
     ./scripts/docker/setup.sh
     ```
 
-    تُنشر الصور المبنية مسبقًا في
+    تنشر الصور المبنية مسبقا في
     [GitHub Container Registry](https://github.com/openclaw/openclaw/pkgs/container/openclaw).
-    الوسوم الشائعة: `main`، `latest`، `<version>` (مثلًا `2026.2.26`).
+    الوسوم الشائعة: `main`، `latest`، `<version>` (مثلا `2026.2.26`).
 
   </Step>
 
-  <Step title="إكمال التهيئة الأولية">
-    يشغّل سكربت الإعداد التهيئة الأولية تلقائيًا. سيقوم بما يلي:
+  <Step title="Airgapped rerun">
+    على المضيفات غير المتصلة، انقل الصورة وحملها أولا:
 
-    - طلب مفاتيح API الخاصة بالمزوّد
+    ```bash
+    docker load -i openclaw-image.tar
+    export OPENCLAW_IMAGE="ghcr.io/openclaw/openclaw:latest"
+    ./scripts/docker/setup.sh --offline
+    ```
+
+    يتحقق `--offline` من أن `OPENCLAW_IMAGE` موجودة محليا بالفعل، ويعطل
+    عمليات السحب والبناء الضمنية في Compose، ثم يشغل مسار الإعداد العادي مثل
+    مزامنة `.env`، وإصلاحات الأذونات، والتهيئة الأولية، ومزامنة إعدادات Gateway،
+    وبدء تشغيل Compose.
+
+    إذا كان `OPENCLAW_SANDBOX=1`، يتحقق الإعداد دون اتصال أيضا من صور العزل
+    الافتراضية المهيأة والنشطة لكل وكيل على daemon خلف
+    `OPENCLAW_DOCKER_SOCKET`. يجب أن تحمل صور المتصفح المدعومة من Docker أيضا
+    وسم عقد متصفح OpenClaw الحالي. عند فقدان صورة مطلوبة أو عدم توافقها،
+    يخرج الإعداد من دون تغيير إعدادات العزل بدلا من الإبلاغ عن نجاح مع عزل غير قابل للاستخدام.
+
+  </Step>
+
+  <Step title="Complete onboarding">
+    يشغل سكربت الإعداد التهيئة الأولية تلقائيا. سيقوم بما يلي:
+
+    - طلب مفاتيح API للمزود
     - إنشاء رمز Gateway وكتابته إلى `.env`
     - إنشاء دليل مفتاح سر ملف تعريف المصادقة
-    - بدء تشغيل Gateway عبر Docker Compose
+    - بدء Gateway عبر Docker Compose
 
-    أثناء الإعداد، تُشغّل التهيئة الأولية قبل البدء وكتابات الإعدادات من خلال
-    `openclaw-gateway` مباشرة. يُستخدم `openclaw-cli` للأوامر التي تشغّلها بعد
-    أن تكون حاوية Gateway موجودة بالفعل.
+    أثناء الإعداد، تعمل التهيئة الأولية قبل البدء وكتابات الإعدادات عبر
+    `openclaw-gateway` مباشرة. `openclaw-cli` مخصص للأوامر التي تشغلها بعد
+    وجود حاوية Gateway بالفعل.
 
   </Step>
 
-  <Step title="فتح واجهة التحكم">
-    افتح `http://127.0.0.1:18789/` في متصفحك والصق السر المشترك المضبوط
-    في الإعدادات. يكتب سكربت الإعداد رمزًا إلى `.env` افتراضيًا؛ إذا بدّلت
-    إعداد الحاوية إلى مصادقة كلمة المرور، فاستخدم تلك الكلمة بدلًا من ذلك.
+  <Step title="Open the Control UI">
+    افتح `http://127.0.0.1:18789/` في متصفحك والصق السر المشترك المهيأ
+    في Settings. يكتب سكربت الإعداد رمزا إلى `.env` افتراضيا؛ إذا بدلت إعدادات
+    الحاوية إلى مصادقة بكلمة مرور، فاستخدم كلمة المرور تلك بدلا من ذلك.
 
     هل تحتاج إلى عنوان URL مرة أخرى؟
 
@@ -80,7 +103,7 @@ Docker اختياري **اختياري**. استخدمه فقط إذا كنت ت
 
   </Step>
 
-  <Step title="إعداد القنوات (اختياري)">
+  <Step title="Configure channels (optional)">
     استخدم حاوية CLI لإضافة قنوات المراسلة:
 
     ```bash
@@ -101,7 +124,7 @@ Docker اختياري **اختياري**. استخدمه فقط إذا كنت ت
 
 ### المسار اليدوي
 
-إذا كنت تفضّل تشغيل كل خطوة بنفسك بدلًا من استخدام سكربت الإعداد:
+إذا كنت تفضل تشغيل كل خطوة بنفسك بدلا من استخدام سكربت الإعداد:
 
 ```bash
 docker build -t openclaw:local -f Dockerfile .
@@ -113,53 +136,65 @@ docker compose up -d openclaw-gateway
 ```
 
 <Note>
-شغّل `docker compose` من جذر المستودع. إذا فعّلت `OPENCLAW_EXTRA_MOUNTS`
+شغل `docker compose` من جذر المستودع. إذا فعلت `OPENCLAW_EXTRA_MOUNTS`
 أو `OPENCLAW_HOME_VOLUME`، يكتب سكربت الإعداد `docker-compose.extra.yml`؛
-قم بتضمينه باستخدام `-f docker-compose.yml -f docker-compose.extra.yml`.
+أدرجه بعد أي ملف تجاوز قياسي، مثلا
+`-f docker-compose.yml -f docker-compose.override.yml -f docker-compose.extra.yml`
+عند وجود ملفي التجاوز معا.
 </Note>
 
 <Note>
-لأن `openclaw-cli` يشارك مساحة أسماء الشبكة الخاصة بـ `openclaw-gateway`، فهو
-أداة تُستخدم بعد بدء التشغيل. قبل `docker compose up -d openclaw-gateway`، شغّل التهيئة الأولية
-وكتابات إعدادات وقت الإعداد من خلال `openclaw-gateway` باستخدام
+لأن `openclaw-cli` يشارك مساحة أسماء شبكة `openclaw-gateway`، فهو أداة
+ما بعد البدء. قبل `docker compose up -d openclaw-gateway`، شغل التهيئة الأولية
+وكتابات الإعدادات وقت الإعداد عبر `openclaw-gateway` باستخدام
 `--no-deps --entrypoint node`.
 </Note>
 
 ### متغيرات البيئة
 
-يقبل سكربت الإعداد متغيرات البيئة الاختيارية التالية:
+يقبل سكربت الإعداد متغيرات البيئة الاختيارية هذه:
 
-| المتغير                                   | الغرض                                                         |
-| ------------------------------------------ | --------------------------------------------------------------- |
-| `OPENCLAW_IMAGE`                           | استخدام صورة بعيدة بدلًا من البناء محليًا                  |
-| `OPENCLAW_DOCKER_APT_PACKAGES`             | تثبيت حزم apt إضافية أثناء البناء (مفصولة بمسافات)       |
-| `OPENCLAW_EXTENSIONS`                      | تضمين مساعدين محددين من Plugins المضمّنة وقت البناء           |
-| `OPENCLAW_EXTRA_MOUNTS`                    | ربطات تركيب إضافية للمضيف (مفصولة بفواصل `source:target[:opts]`) |
-| `OPENCLAW_HOME_VOLUME`                     | حفظ `/home/node` في مجلد Docker مسمّى                   |
-| `OPENCLAW_SANDBOX`                         | الاشتراك في تمهيد العزل (`1`، `true`، `yes`، `on`)          |
-| `OPENCLAW_SKIP_ONBOARDING`                 | تخطي خطوة التهيئة الأولية التفاعلية (`1`، `true`، `yes`، `on`) |
-| `OPENCLAW_DOCKER_SOCKET`                   | تجاوز مسار مقبس Docker                                     |
-| `OPENCLAW_DISABLE_BONJOUR`                 | تعطيل إعلان Bonjour/mDNS (القيمة الافتراضية `1` لـ Docker)   |
-| `OPENCLAW_DISABLE_BUNDLED_SOURCE_OVERLAYS` | تعطيل طبقات تركيب ربط مصدر Plugin المضمّنة               |
-| `OTEL_EXPORTER_OTLP_ENDPOINT`              | نقطة نهاية مجمّع OTLP/HTTP مشتركة لتصدير OpenTelemetry    |
-| `OTEL_EXPORTER_OTLP_*_ENDPOINT`            | نقاط نهاية OTLP خاصة بالإشارات للتتبعات أو المقاييس أو السجلات     |
-| `OTEL_EXPORTER_OTLP_PROTOCOL`              | تجاوز بروتوكول OTLP. لا يُدعم اليوم إلا `http/protobuf` |
-| `OTEL_SERVICE_NAME`                        | اسم الخدمة المستخدم لموارد OpenTelemetry                   |
-| `OTEL_SEMCONV_STABILITY_OPT_IN`            | الاشتراك في أحدث السمات الدلالية التجريبية لـ GenAI         |
-| `OPENCLAW_OTEL_PRELOADED`                  | تخطي بدء SDK ثانٍ لـ OpenTelemetry عند تحميل واحد مسبقًا  |
+| المتغير                                   | الغرض                                                               |
+| ------------------------------------------ | --------------------------------------------------------------------- |
+| `OPENCLAW_IMAGE`                           | استخدام صورة بعيدة بدلا من البناء محليا                        |
+| `OPENCLAW_IMAGE_APT_PACKAGES`              | تثبيت حزم apt إضافية أثناء البناء (مفصولة بمسافات)             |
+| `OPENCLAW_IMAGE_PIP_PACKAGES`              | تثبيت حزم Python إضافية أثناء البناء (مفصولة بمسافات)          |
+| `OPENCLAW_EXTENSIONS`                      | تثبيت تبعيات Plugin مسبقا وقت البناء (أسماء مفصولة بمسافات) |
+| `OPENCLAW_EXTRA_MOUNTS`                    | ربطات تحميل إضافية من المضيف (مفصولة بفواصل `source:target[:opts]`)       |
+| `OPENCLAW_HOME_VOLUME`                     | الاحتفاظ بـ `/home/node` في وحدة تخزين Docker مسماة                         |
+| `OPENCLAW_SANDBOX`                         | تفعيل تمهيد العزل اختياريا (`1`، `true`، `yes`، `on`)                |
+| `OPENCLAW_SKIP_ONBOARDING`                 | تخطي خطوة التهيئة الأولية التفاعلية (`1`، `true`، `yes`، `on`)       |
+| `OPENCLAW_DOCKER_SOCKET`                   | تجاوز مسار مقبس Docker                                           |
+| `OPENCLAW_DISABLE_BONJOUR`                 | تعطيل إعلان Bonjour/mDNS (افتراضيا `1` في Docker)         |
+| `OPENCLAW_DISABLE_BUNDLED_SOURCE_OVERLAYS` | تعطيل طبقات تحميل ربط مصدر Plugin المضمن                     |
+| `OTEL_EXPORTER_OTLP_ENDPOINT`              | نقطة نهاية جامع OTLP/HTTP مشتركة لتصدير OpenTelemetry          |
+| `OTEL_EXPORTER_OTLP_*_ENDPOINT`            | نقاط نهاية OTLP خاصة بالإشارة للتتبعات أو المقاييس أو السجلات           |
+| `OTEL_EXPORTER_OTLP_PROTOCOL`              | تجاوز بروتوكول OTLP. يدعم حاليا `http/protobuf` فقط       |
+| `OTEL_SERVICE_NAME`                        | اسم الخدمة المستخدم لموارد OpenTelemetry                         |
+| `OTEL_SEMCONV_STABILITY_OPT_IN`            | الاشتراك في أحدث سمات GenAI الدلالية التجريبية               |
+| `OPENCLAW_OTEL_PRELOADED`                  | تخطي بدء OpenTelemetry SDK ثان عند تحميل واحد مسبقا        |
 
-يمكن للمشرفين اختبار مصدر Plugin مضمّن مقابل صورة معبأة بتركيب
-دليل مصدر Plugin واحد فوق مسار مصدره المعبأ، مثلًا
+لا تتضمن صورة Docker الرسمية Homebrew. أثناء التهيئة الأولية، يخفي OpenClaw
+مثبتات تبعيات Skills المعتمدة على brew فقط عندما يعمل في حاوية Linux
+من دون `brew`؛ يجب توفير تلك التبعيات عبر صورة مخصصة أو تثبيتها يدويا.
+للتبعيات المتاحة من حزم Debian، استخدم
+`OPENCLAW_IMAGE_APT_PACKAGES` أثناء بناء الصورة. لا يزال اسم
+`OPENCLAW_DOCKER_APT_PACKAGES` القديم مقبولا.
+لتبعيات Python، استخدم `OPENCLAW_IMAGE_PIP_PACKAGES`. يشغل هذا
+`python3 -m pip install --break-system-packages` أثناء بناء الصورة، لذلك ثبت
+إصدارات الحزم واستخدم فقط فهارس الحزم التي تثق بها.
+
+يمكن للمشرفين اختبار مصدر Plugin المضمن مقابل صورة معلبة بتحميل
+دليل مصدر Plugin واحد فوق مسار مصدره المعلب، مثلا
 `OPENCLAW_EXTRA_MOUNTS=/path/to/fork/extensions/synology-chat:/app/extensions/synology-chat:ro`.
-يتجاوز دليل المصدر المركّب ذلك الحزمة المطابقة المترجمة
-`/app/dist/extensions/synology-chat` لمعرّف Plugin نفسه.
+يتجاوز دليل المصدر المحمل ذلك حزمة
+`/app/dist/extensions/synology-chat` المترجمة المطابقة لمعرف Plugin نفسه.
 
-### قابلية المراقبة
+### قابلية الملاحظة
 
-يكون تصدير OpenTelemetry صادرًا من حاوية Gateway إلى مجمّع OTLP
-الخاص بك. لا يتطلب ذلك منفذ Docker منشورًا. إذا بنيت الصورة
-محليًا وتريد أن يكون مصدّر OpenTelemetry المضمّن متاحًا داخل الصورة،
-فضمّن اعتماديات وقت تشغيله:
+تصدير OpenTelemetry صادر من حاوية Gateway إلى جامع OTLP لديك.
+لا يتطلب منفذ Docker منشورا. إذا بنيت الصورة محليا وتريد أن يكون مصدر
+OpenTelemetry المضمن متاحا داخل الصورة، فأدرج تبعيات وقت التشغيل الخاصة به:
 
 ```bash
 export OPENCLAW_EXTENSIONS="diagnostics-otel"
@@ -168,28 +203,28 @@ export OTEL_SERVICE_NAME="openclaw-gateway"
 ./scripts/docker/setup.sh
 ```
 
-ثبّت Plugin الرسمي `@openclaw/diagnostics-otel` من ClawHub في
-تثبيتات Docker المعبأة قبل تمكين التصدير. لا تزال الصور المخصّصة المبنية من المصدر قادرة على
-تضمين مصدر Plugin المحلي باستخدام
-`OPENCLAW_EXTENSIONS=diagnostics-otel`. لتمكين التصدير، اسمح بتمكين
-Plugin `diagnostics-otel` في الإعدادات وفعّله، ثم عيّن
-`diagnostics.otel.enabled=true` أو استخدم مثال الإعدادات في [تصدير OpenTelemetry
-](/ar/gateway/opentelemetry). تُضبط ترويسات مصادقة المجمّع من خلال
-`diagnostics.otel.headers`، وليس من خلال متغيرات بيئة Docker.
+ثبت Plugin الرسمي `@openclaw/diagnostics-otel` من ClawHub في
+تثبيتات Docker المعلبة قبل تمكين التصدير. لا تزال الصور المخصصة المبنية من المصدر قادرة
+على تضمين مصدر Plugin المحلي باستخدام
+`OPENCLAW_EXTENSIONS=diagnostics-otel`. لتمكين التصدير، اسمح بـ Plugin
+`diagnostics-otel` وفعله في الإعدادات، ثم اضبط
+`diagnostics.otel.enabled=true` أو استخدم مثال الإعدادات في [تصدير OpenTelemetry](/ar/gateway/opentelemetry).
+تضبط رؤوس مصادقة الجامع عبر
+`diagnostics.otel.headers`، وليس عبر متغيرات بيئة Docker.
 
-تستخدم مقاييس Prometheus منفذ Gateway المنشور بالفعل. ثبّت
-`clawhub:@openclaw/diagnostics-prometheus`، وفعّل
-Plugin `diagnostics-prometheus`، ثم اجمع المقاييس:
+تستخدم مقاييس Prometheus منفذ Gateway المنشور بالفعل. ثبت
+`clawhub:@openclaw/diagnostics-prometheus`، وفعل Plugin
+`diagnostics-prometheus`، ثم اجمع المقاييس من:
 
 ```text
 http://<gateway-host>:18789/api/diagnostics/prometheus
 ```
 
-المسار محمي بمصادقة Gateway. لا تكشف منفذًا عامًا منفصلًا
-لـ `/metrics` أو مسار وكيل عكسيًا غير مصادق عليه. راجع
+المسار محمي بمصادقة Gateway. لا تعرض منفذ `/metrics` عاما منفصلا
+أو مسار وكيل عكسي غير مصادق. راجع
 [مقاييس Prometheus](/ar/gateway/prometheus).
 
-### فحوصات الصحة
+### فحوص الصحة
 
 نقاط نهاية فحص الحاوية (لا تتطلب مصادقة):
 
@@ -198,11 +233,11 @@ curl -fsS http://127.0.0.1:18789/healthz   # liveness
 curl -fsS http://127.0.0.1:18789/readyz     # readiness
 ```
 
-تتضمن صورة Docker أمر `HEALTHCHECK` مدمجًا يفحص `/healthz`.
-إذا استمرت الفحوصات بالفشل، يعلّم Docker الحاوية على أنها `unhealthy` ويمكن
+تتضمن صورة Docker فحص `HEALTHCHECK` مدمجا يطلب `/healthz`.
+إذا استمرت الفحوص في الفشل، يضع Docker علامة `unhealthy` على الحاوية ويمكن
 لأنظمة التنسيق إعادة تشغيلها أو استبدالها.
 
-لقطة صحة عميقة موثّقة:
+لقطة صحة عميقة مصادق عليها:
 
 ```bash
 docker compose exec openclaw-gateway node dist/index.js health --token "$OPENCLAW_GATEWAY_TOKEN"
@@ -210,109 +245,204 @@ docker compose exec openclaw-gateway node dist/index.js health --token "$OPENCLA
 
 ### LAN مقابل loopback
 
-يضبط `scripts/docker/setup.sh` القيمة الافتراضية `OPENCLAW_GATEWAY_BIND=lan` بحيث يعمل وصول المضيف إلى
+يضبط `scripts/docker/setup.sh` افتراضيا `OPENCLAW_GATEWAY_BIND=lan` بحيث يعمل وصول المضيف إلى
 `http://127.0.0.1:18789` مع نشر منفذ Docker.
 
-- `lan` (افتراضي): يستطيع متصفح المضيف وCLI على المضيف الوصول إلى منفذ Gateway المنشور.
-- `loopback`: لا تستطيع الوصول إلى Gateway مباشرة إلا العمليات داخل مساحة أسماء شبكة الحاوية.
+- `lan` (افتراضي): يمكن لمتصفح المضيف وCLI المضيف الوصول إلى منفذ Gateway المنشور.
+- `loopback`: لا يمكن إلا للعمليات داخل مساحة أسماء شبكة الحاوية الوصول إلى
+  Gateway مباشرة.
 
 <Note>
 استخدم قيم وضع الربط في `gateway.bind` (`lan` / `loopback` / `custom` /
 `tailnet` / `auto`)، وليس أسماء مستعارة للمضيف مثل `0.0.0.0` أو `127.0.0.1`.
 </Note>
 
-### مزوّدو المضيف المحليون
+### مزودو المضيف المحليون
 
-عندما يعمل OpenClaw في Docker، فإن `127.0.0.1` داخل الحاوية هو الحاوية
-نفسها، وليس جهاز المضيف لديك. استخدم `host.docker.internal` لمزوّدي الذكاء الاصطناعي الذين
+عند تشغيل OpenClaw في Docker، يكون `127.0.0.1` داخل الحاوية هو الحاوية
+نفسها، وليس جهازك المضيف. استخدم `host.docker.internal` لمزودي الذكاء الاصطناعي الذين
 يعملون على المضيف:
 
-| المزوّد  | عنوان URL الافتراضي للمضيف         | عنوان URL لإعداد Docker                    |
+| المزود  | عنوان URL الافتراضي للمضيف         | عنوان URL لإعداد Docker                    |
 | --------- | ------------------------ | ----------------------------------- |
 | LM Studio | `http://127.0.0.1:1234`  | `http://host.docker.internal:1234`  |
 | Ollama    | `http://127.0.0.1:11434` | `http://host.docker.internal:11434` |
 
-يستخدم إعداد Docker المضمّن عناوين URL الخاصة بالمضيف تلك كقيم افتراضية للتهيئة الأولية
-لـ LM Studio وOllama، ويربط `docker-compose.yml` الاسم `host.docker.internal` بـ
-Gateway المضيف في Docker لـ Linux Docker Engine. يوفر Docker Desktop بالفعل
-اسم المضيف نفسه على macOS وWindows.
+يستخدم إعداد Docker المضمن عناوين URL تلك للمضيف كافتراضات التهيئة الأولية
+لـ LM Studio وOllama، ويربط `docker-compose.yml` الاسم `host.docker.internal`
+بـ Gateway مضيف Docker لمحرك Docker Engine على Linux. يوفر Docker Desktop
+اسم المضيف نفسه بالفعل على macOS وWindows.
 
-يجب أن تستمع خدمات المضيف أيضًا على عنوان يمكن الوصول إليه من Docker:
+يجب أن تستمع خدمات المضيف أيضا على عنوان يمكن الوصول إليه من Docker:
 
 ```bash
 lms server start --port 1234 --bind 0.0.0.0
 OLLAMA_HOST=0.0.0.0:11434 ollama serve
 ```
 
-إذا كنت تستخدم ملف Compose الخاص بك أو أمر `docker run`، فأضف تعيين المضيف
-نفسه بنفسك، مثلًا
+إذا كنت تستخدم ملف Compose خاصًا بك أو أمر `docker run`، فأضف تعيين المضيف نفسه
+بنفسك، على سبيل المثال
 `--add-host=host.docker.internal:host-gateway`.
+
+### واجهة Claude CLI الخلفية في Docker
+
+لا تأتي صورة OpenClaw Docker الرسمية مثبتًا فيها Claude Code مسبقًا. ثبّت
+وسجّل الدخول إلى Claude Code داخل مستخدم الحاوية الذي يشغّل OpenClaw، ثم اجعل
+منزل تلك الحاوية دائمًا حتى لا تمحو ترقيات الصورة الملف التنفيذي أو حالة مصادقة Claude.
+
+لعمليات تثبيت Docker الجديدة، فعّل وحدة تخزين دائمة لـ `/home/node` قبل تشغيل
+الإعداد:
+
+```bash
+export OPENCLAW_IMAGE="ghcr.io/openclaw/openclaw:latest"
+export OPENCLAW_HOME_VOLUME="openclaw_home"
+./scripts/docker/setup.sh
+```
+
+لتثبيت Docker موجود، أوقف المكدس أولًا وأعد تحميل قيم Docker `.env` الحالية
+قبل إعادة تشغيل الإعداد. لا يقرأ سكربت الإعداد `.env` من تلقاء نفسه؛ بل يعيد
+كتابة `.env` من الصدفة الحالية والقيم الافتراضية. بالنسبة إلى `.env` المولّد، شغّل:
+
+```bash
+set -a
+. ./.env
+set +a
+export OPENCLAW_HOME_VOLUME="${OPENCLAW_HOME_VOLUME:-openclaw_home}"
+./scripts/docker/setup.sh
+```
+
+إذا كان ملف `.env` لديك يحتوي قيمًا لا تستطيع الصدفة تحميلها كمصدر، فأعد تصدير
+القيم الحالية التي تعتمد عليها يدويًا أولًا، مثل `OPENCLAW_IMAGE`، والمنافذ،
+ووضع الربط، والمسارات المخصصة، و`OPENCLAW_EXTRA_MOUNTS`، وبيئة العزل، وإعدادات
+تخطي التهيئة. يركّب التراكب المولّد وحدة تخزين المنزل لكل من `openclaw-gateway`
+و`openclaw-cli`.
+
+شغّل الأوامر المتبقية باستخدام تراكب Compose المولّد حتى يركّب كلا الخدمتين
+المنزل الدائم. إذا كان إعدادك يستخدم أيضًا `docker-compose.override.yml`، فأدرجه
+قبل `docker-compose.extra.yml`.
+
+ثبّت Claude Code في ذلك المنزل الدائم:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.extra.yml run --rm \
+  --entrypoint sh openclaw-cli -lc \
+  'curl -fsSL https://claude.ai/install.sh | bash'
+```
+
+يكتب المثبّت الأصلي الملف التنفيذي `claude` تحت
+`/home/node/.local/bin/claude`. أخبر OpenClaw باستخدام مسار الحاوية هذا:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.extra.yml run --rm \
+  openclaw-cli config set \
+  agents.defaults.cliBackends.claude-cli.command \
+  /home/node/.local/bin/claude
+```
+
+سجّل الدخول وتحقق من داخل منزل الحاوية الدائم نفسه:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.extra.yml run --rm \
+  --entrypoint /home/node/.local/bin/claude openclaw-cli auth login
+docker compose -f docker-compose.yml -f docker-compose.extra.yml run --rm \
+  --entrypoint /home/node/.local/bin/claude openclaw-cli auth status --text
+docker compose -f docker-compose.yml -f docker-compose.extra.yml run --rm \
+  openclaw-cli models auth login \
+  --provider anthropic --method cli --set-default
+docker compose -f docker-compose.yml -f docker-compose.extra.yml run --rm \
+  openclaw-cli models list --provider anthropic
+```
+
+بعد ذلك، يمكنك استخدام واجهة `claude-cli` الخلفية المضمّنة:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.extra.yml run --rm \
+  openclaw-cli agent \
+  --agent main \
+  --model claude-cli/claude-sonnet-4-6 \
+  --message "Say hello from Docker Claude CLI"
+```
+
+يجعل `OPENCLAW_HOME_VOLUME` تثبيت Claude Code الأصلي دائمًا تحت
+`/home/node/.local/bin` و`/home/node/.local/share/claude`، إضافةً إلى إعدادات
+Claude Code وحالة المصادقة تحت `/home/node/.claude` و`/home/node/.claude.json`.
+جعل `/home/node/.openclaw` وحده دائمًا لا يكفي لإعادة استخدام Claude CLI. إذا
+كنت تستخدم `OPENCLAW_EXTRA_MOUNTS` بدلًا من وحدة تخزين المنزل، فاربط كل مسارات
+Claude هذه داخل خدمتي Docker كلتيهما.
+
+<Note>
+لأتمتة إنتاجية مشتركة أو فوترة Anthropic قابلة للتنبؤ، فضّل مسار مفتاح API
+لـ Anthropic. إعادة استخدام Claude CLI تتبع إصدار Claude Code المثبّت، وتسجيل
+دخول الحساب، والفوترة، وسلوك التحديث.
+</Note>
 
 ### Bonjour / mDNS
 
-عادةً لا تمرر شبكات جسر Docker بث Bonjour/mDNS المتعدد
-(`224.0.0.251:5353`) بشكل موثوق. لذلك يضبط إعداد Compose المضمّن
-`OPENCLAW_DISABLE_BONJOUR=1` افتراضيًا حتى لا يدخل Gateway في حلقة تعطل أو يعيد
-بدء الإعلان مرارًا عندما يسقط الجسر حركة البث المتعدد.
+لا تمرر شبكات جسر Docker عادةً بث Bonjour/mDNS المتعدد
+(`224.0.0.251:5353`) بشكل موثوق. لذلك يضبط إعداد Compose المضمّن القيمة
+الافتراضية `OPENCLAW_DISABLE_BONJOUR=1` حتى لا يدخل Gateway في حلقة تعطل أو
+يعيد تشغيل الإعلان مرارًا عندما يسقط الجسر حركة البث المتعدد.
 
-استخدم عنوان URL المنشور لـ Gateway، أو Tailscale، أو DNS-SD واسع النطاق لمضيفي Docker.
-عيّن `OPENCLAW_DISABLE_BONJOUR=0` فقط عند التشغيل مع شبكة المضيف، أو macvlan،
-أو شبكة أخرى يُعرف أن بث mDNS المتعدد يعمل فيها.
+استخدم عنوان URL المنشور لـ Gateway أو Tailscale أو DNS-SD واسع النطاق لمضيفات
+Docker. اضبط `OPENCLAW_DISABLE_BONJOUR=0` فقط عند التشغيل مع شبكة المضيف، أو
+macvlan، أو شبكة أخرى معروف أن بث mDNS المتعدد يعمل فيها.
 
-للمشكلات الشائعة واستكشاف الأخطاء وإصلاحها، راجع [اكتشاف Bonjour](/ar/gateway/bonjour).
+للملاحظات والمشكلات الشائعة واستكشاف الأخطاء، راجع [اكتشاف Bonjour](/ar/gateway/bonjour).
 
 ### التخزين والاستمرارية
 
 يربط Docker Compose ‏`OPENCLAW_CONFIG_DIR` إلى `/home/node/.openclaw`،
 و`OPENCLAW_WORKSPACE_DIR` إلى `/home/node/.openclaw/workspace`، و
-`OPENCLAW_AUTH_PROFILE_SECRET_DIR` إلى `/home/node/.config/openclaw`، بحيث تبقى هذه
-المسارات بعد استبدال الحاوية. عند عدم تعيين أي متغير، يعود
-`docker-compose.yml` المضمّن إلى مسار تحت `${HOME}`، أو إلى `/tmp` عندما يكون `HOME` نفسه
-مفقودًا أيضًا. يمنع ذلك `docker compose up` من إصدار مواصفة مجلد
-ذات مصدر فارغ في البيئات المجردة.
+`OPENCLAW_AUTH_PROFILE_SECRET_DIR` إلى `/home/node/.config/openclaw`، بحيث تبقى
+هذه المسارات بعد استبدال الحاوية. عندما لا يتم ضبط أي متغير، يعود
+`docker-compose.yml` المضمّن إلى مسارات تحت `${HOME}`، أو `/tmp` عندما يكون
+`HOME` نفسه مفقودًا أيضًا. يمنع ذلك `docker compose up` من إصدار مواصفة وحدة
+تخزين بمصدر فارغ في البيئات المجردة.
 
 دليل الإعدادات المركّب هذا هو المكان الذي يحتفظ فيه OpenClaw بما يلي:
 
 - `openclaw.json` لإعدادات السلوك
-- `agents/<agentId>/agent/auth-profiles.json` لمصادقة OAuth/API-key المحفوظة الخاصة بالمزوّدين
+- `agents/<agentId>/agent/auth-profiles.json` لمصادقة OAuth/API-key المخزنة للمزوّد
 - `.env` لأسرار وقت التشغيل المدعومة بالبيئة مثل `OPENCLAW_GATEWAY_TOKEN`
 
-يخزّن دليل مفتاح سر ملف تعريف المصادقة مفتاح التشفير المحلي المستخدم
-لمواد رمز ملف تعريف المصادقة المدعومة بـ OAuth. احتفظ به مع حالة مضيف Docker لديك،
-لكن منفصلًا عن `OPENCLAW_CONFIG_DIR`.
+يخزّن دليل مفتاح سر ملفات تعريف المصادقة مفتاح التشفير المحلي المستخدم لمادة
+رموز ملفات تعريف المصادقة المدعومة بـ OAuth. احتفظ به مع حالة مضيف Docker
+لديك، لكن منفصلًا عن `OPENCLAW_CONFIG_DIR`.
 
-تخزّن Plugins القابلة للتنزيل والمثبتة حالة حِزمها ضمن مجلد OpenClaw الرئيسي المركّب، لذلك تبقى سجلات تثبيت Plugin وجذور الحِزم بعد استبدال الحاوية. لا ينشئ بدء تشغيل Gateway أشجار تبعيات Plugins المضمّنة.
+تخزّن Plugins القابلة للتنزيل والمثبتة حالة حزمتها تحت منزل OpenClaw المركّب،
+لذلك تبقى سجلات تثبيت Plugin وجذور الحزم بعد استبدال الحاوية. لا يولّد بدء
+تشغيل Gateway أشجار اعتماد لـ Plugin المضمّنة.
 
-للحصول على التفاصيل الكاملة للاستمرارية في عمليات نشر VM، راجع
-[وقت تشغيل Docker VM - ما الذي يستمر وأين](/ar/install/docker-vm-runtime#what-persists-where).
+للحصول على تفاصيل الاستمرارية الكاملة في عمليات نشر الآلات الافتراضية، راجع
+[وقت تشغيل آلة Docker الافتراضية - ما الذي يستمر وأين](/ar/install/docker-vm-runtime#what-persists-where).
 
-**النقاط الأكثر تسببًا في نمو القرص:** راقب `media/`، وملفات JSONL الخاصة بالجلسات،
-و`cron/runs/*.jsonl`، وجذور حِزم Plugin المثبتة، وسجلات الملفات الدوّارة
-ضمن `/tmp/openclaw/`.
+**نقاط نمو القرص:** راقب `media/`، وملفات JSONL للجلسات، وقاعدة بيانات حالة
+SQLite المشتركة، وجذور حزم Plugins المثبتة، وسجلات الملفات الدوّارة تحت
+`/tmp/openclaw/`.
 
-### مساعدات Shell (اختيارية)
+### مساعدات الصدفة (اختيارية)
 
-لتسهيل إدارة Docker اليومية، ثبّت `ClawDock`:
+لإدارة Docker اليومية بسهولة أكبر، ثبّت `ClawDock`:
 
 ```bash
 mkdir -p ~/.clawdock && curl -sL https://raw.githubusercontent.com/openclaw/openclaw/main/scripts/clawdock/clawdock-helpers.sh -o ~/.clawdock/clawdock-helpers.sh
 echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
 ```
 
-إذا كنت قد ثبّت ClawDock من المسار الخام الأقدم `scripts/shell-helpers/clawdock-helpers.sh`، فأعد تشغيل أمر التثبيت أعلاه حتى يتتبع ملف المساعد المحلي الموقع الجديد.
+إذا كنت قد ثبّت ClawDock من المسار الخام الأقدم `scripts/shell-helpers/clawdock-helpers.sh`، فأعد تشغيل أمر التثبيت أعلاه حتى يتتبع ملف المساعد المحلي لديك الموقع الجديد.
 
 ثم استخدم `clawdock-start`، و`clawdock-stop`، و`clawdock-dashboard`، وما إلى ذلك. شغّل
 `clawdock-help` لكل الأوامر.
 راجع [ClawDock](/ar/install/clawdock) للحصول على دليل المساعد الكامل.
 
 <AccordionGroup>
-  <Accordion title="تفعيل وضع حماية الوكيل لـ Docker gateway">
+  <Accordion title="Enable agent sandbox for Docker gateway">
     ```bash
     export OPENCLAW_SANDBOX=1
     ./scripts/docker/setup.sh
     ```
 
-    مسار مقبس مخصص (مثل Docker دون root):
+    مسار مقبس مخصص (مثل Docker بلا جذر):
 
     ```bash
     export OPENCLAW_SANDBOX=1
@@ -320,16 +450,16 @@ echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
     ./scripts/docker/setup.sh
     ```
 
-    لا يركّب السكربت `docker.sock` إلا بعد نجاح متطلبات وضع الحماية الأساسية. إذا
-    تعذر إكمال إعداد وضع الحماية، يعيد السكربت ضبط `agents.defaults.sandbox.mode`
-    إلى `off`. تظل جولات وضع كود Codex مقيّدة بـ Codex
-    `workspace-write` أثناء نشاط وضع حماية OpenClaw؛ لا تركّب
-    مقبس Docker الخاص بالمضيف داخل حاويات وضع حماية الوكلاء.
+    لا يركّب السكربت `docker.sock` إلا بعد نجاح متطلبات بيئة العزل. إذا تعذر
+    إكمال إعداد بيئة العزل، يعيد السكربت ضبط `agents.defaults.sandbox.mode`
+    إلى `off`. تظل أدوار وضع كود Codex مقيدة بـ Codex
+    `workspace-write` أثناء نشاط بيئة عزل OpenClaw؛ لا تربط مقبس Docker الخاص
+    بالمضيف داخل حاويات بيئة عزل الوكيل.
 
   </Accordion>
 
-  <Accordion title="الأتمتة / CI (غير تفاعلي)">
-    عطّل تخصيص Compose pseudo-TTY باستخدام `-T`:
+  <Accordion title="Automation / CI (non-interactive)">
+    عطّل تخصيص Compose لـ pseudo-TTY باستخدام `-T`:
 
     ```bash
     docker compose run -T --rm openclaw-cli gateway probe
@@ -338,22 +468,21 @@ echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
 
   </Accordion>
 
-  <Accordion title="ملاحظة أمان الشبكة المشتركة">
-    يستخدم `openclaw-cli` الإعداد `network_mode: "service:openclaw-gateway"` حتى تتمكن أوامر CLI
-    من الوصول إلى Gateway عبر `127.0.0.1`. تعامل مع هذا باعتباره حدّ ثقة مشتركًا.
-    يسقط إعداد compose إمكانات `NET_RAW`/`NET_ADMIN` ويفعّل
+  <Accordion title="Shared-network security note">
+    يستخدم `openclaw-cli` ‏`network_mode: "service:openclaw-gateway"` حتى تتمكن
+    أوامر CLI من الوصول إلى Gateway عبر `127.0.0.1`. تعامل مع هذا باعتباره حدًا
+    مشتركًا للثقة. يسقط إعداد Compose ‏`NET_RAW`/`NET_ADMIN` ويفعّل
     `no-new-privileges` على كل من `openclaw-gateway` و`openclaw-cli`.
   </Accordion>
 
-  <Accordion title="إخفاقات DNS في Docker Desktop داخل openclaw-cli">
+  <Accordion title="Docker Desktop DNS failures in openclaw-cli">
     تفشل بعض إعدادات Docker Desktop في عمليات بحث DNS من حاوية
-    `openclaw-cli` الجانبية ذات الشبكة المشتركة بعد إسقاط `NET_RAW`، ويظهر ذلك على شكل
-    `EAI_AGAIN` أثناء الأوامر المدعومة بـ npm مثل `openclaw plugins install`.
-    أبقِ ملف compose الافتراضي المشدّد لعملية Gateway العادية. يعمل
-    التجاوز المحلي أدناه على تخفيف وضع أمان حاوية CLI عبر
-    استعادة الإمكانات الافتراضية لـ Docker، لذلك استخدمه فقط لأمر CLI
-    لمرة واحدة يحتاج إلى الوصول إلى سجل الحِزم، وليس كاستدعاء Compose
-    الافتراضي لديك:
+    `openclaw-cli` الجانبية ذات الشبكة المشتركة بعد إسقاط `NET_RAW`، ويظهر ذلك
+    كـ `EAI_AGAIN` أثناء الأوامر المدعومة بـ npm مثل `openclaw plugins install`.
+    احتفظ بملف Compose المقوّى الافتراضي للتشغيل الطبيعي لـ Gateway. يخفف
+    التراكب المحلي أدناه وضع أمان حاوية CLI من خلال استعادة قدرات Docker
+    الافتراضية، لذلك استخدمه فقط لأمر CLI لمرة واحدة يحتاج إلى الوصول إلى سجل
+    الحزم، وليس كاستدعاء Compose الافتراضي لديك:
 
     ```bash
     printf '%s\n' \
@@ -366,14 +495,14 @@ echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
     ```
 
     إذا كنت قد أنشأت بالفعل حاوية `openclaw-cli` طويلة التشغيل، فأعد إنشاءها
-    باستخدام التجاوز نفسه. لا يستطيع `docker compose exec` ولا `docker exec`
-    تغيير إمكانات Linux على حاوية أُنشئت مسبقًا.
+    باستخدام التراكب نفسه. لا يستطيع `docker compose exec` و`docker exec`
+    تغيير قدرات Linux على حاوية تم إنشاؤها بالفعل.
 
   </Accordion>
 
-  <Accordion title="الأذونات وEACCES">
-    تعمل الصورة باسم `node` (uid 1000). إذا رأيت أخطاء أذونات على
-    `/home/node/.openclaw`، فتأكد من أن عمليات bind mount على المضيف مملوكة لـ uid 1000:
+  <Accordion title="Permissions and EACCES">
+    تعمل الصورة كمستخدم `node` (uid 1000). إذا رأيت أخطاء أذونات على
+    `/home/node/.openclaw`، فتأكد من أن ربطات المضيف مملوكة لـ uid 1000:
 
     ```bash
     sudo chown -R 1000:1000 /path/to/openclaw-config /path/to/openclaw-workspace
@@ -381,16 +510,15 @@ echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
 
     يمكن أن يظهر عدم التطابق نفسه كتحذير Plugin مثل
     `blocked plugin candidate: suspicious ownership (... uid=1000, expected uid=0 or root)`
-    متبوعًا بـ `plugin present but blocked`. يعني ذلك أن uid العملية ومالك
-    دليل Plugin المركّب غير متفقين. يُفضّل تشغيل الحاوية بالـ
-    uid 1000 الافتراضي وإصلاح ملكية bind mount. لا تستخدم chown
-    على `/path/to/openclaw-config/npm` إلى `root:root` إلا إذا كنت تشغّل
-    OpenClaw كـ root عمدًا على المدى الطويل.
+    متبوعًا بـ `plugin present but blocked`. هذا يعني أن uid العملية ومالك دليل
+    Plugin المركّب غير متفقين. فضّل تشغيل الحاوية بالـ uid الافتراضي 1000
+    وإصلاح ملكية الربط. لا تنفذ chown لـ `/path/to/openclaw-config/npm` إلى
+    `root:root` إلا إذا كنت تشغّل OpenClaw عمدًا كجذر على المدى الطويل.
 
   </Accordion>
 
-  <Accordion title="إعادة بناء أسرع">
-    رتّب Dockerfile بحيث تُخزّن طبقات التبعيات مؤقتًا. هذا يتجنب إعادة تشغيل
+  <Accordion title="Faster rebuilds">
+    رتّب Dockerfile بحيث تُخزّن طبقات الاعتماد مؤقتًا. يتجنب هذا إعادة تشغيل
     `pnpm install` ما لم تتغير ملفات القفل:
 
     ```dockerfile
@@ -413,64 +541,66 @@ echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
 
   </Accordion>
 
-  <Accordion title="خيارات الحاوية للمستخدمين المتقدمين">
-    الصورة الافتراضية تركّز على الأمان أولًا وتعمل كمستخدم `node` غير root. للحصول على
-    حاوية أكثر اكتمالًا بالميزات:
+  <Accordion title="Power-user container options">
+    الصورة الافتراضية تعطي الأولوية للأمان وتعمل كمستخدم غير جذري `node`. للحصول
+    على حاوية أكثر اكتمالًا:
 
-    1. **استمرارية `/home/node`**: `export OPENCLAW_HOME_VOLUME="openclaw_home"`
-    2. **تضمين تبعيات النظام**: `export OPENCLAW_DOCKER_APT_PACKAGES="git curl jq"`
-    3. **تضمين Playwright Chromium**: `export OPENCLAW_INSTALL_BROWSER=1`
-    4. **أو تثبيت متصفحات Playwright في مجلد مستمر**:
+    1. **اجعل `/home/node` دائمًا**: `export OPENCLAW_HOME_VOLUME="openclaw_home"`
+    2. **ادمج اعتماديات النظام**: `export OPENCLAW_IMAGE_APT_PACKAGES="git curl jq"`
+    3. **ادمج اعتماديات Python**: `export OPENCLAW_IMAGE_PIP_PACKAGES="requests==2.32.5 humanize==4.14.0"`
+    4. **ادمج Playwright Chromium**: `export OPENCLAW_INSTALL_BROWSER=1`
+    5. **أو ثبّت متصفحات Playwright في وحدة تخزين دائمة**:
        ```bash
        docker compose run --rm openclaw-cli \
          node /app/node_modules/playwright-core/cli.js install chromium
        ```
-    5. **استمرارية تنزيلات المتصفح**: استخدم `OPENCLAW_HOME_VOLUME` أو
-       `OPENCLAW_EXTRA_MOUNTS`. يكتشف OpenClaw تلقائيًا Chromium المُدار بواسطة Playwright
-       في صورة Docker على Linux.
+    6. **اجعل تنزيلات المتصفح دائمة**: استخدم `OPENCLAW_HOME_VOLUME` أو
+       `OPENCLAW_EXTRA_MOUNTS`. يكتشف OpenClaw تلقائيًا Chromium المدار بواسطة
+       Playwright في صورة Docker على Linux.
 
   </Accordion>
 
-  <Accordion title="OpenAI Codex OAuth (Docker دون واجهة)">
-    إذا اخترت OpenAI Codex OAuth في المعالج، فسيفتح URL في المتصفح. في
-    Docker أو الإعدادات دون واجهة، انسخ URL إعادة التوجيه الكامل الذي تصل إليه والصقه
-    مرة أخرى في المعالج لإكمال المصادقة.
+  <Accordion title="OpenAI Codex OAuth (headless Docker)">
+    إذا اخترت OpenAI Codex OAuth في المعالج، فسيفتح عنوان URL في المتصفح. في
+    إعدادات Docker أو الإعدادات بلا واجهة، انسخ عنوان URL الكامل لإعادة التوجيه
+    الذي تصل إليه والصقه مرة أخرى في المعالج لإكمال المصادقة.
   </Accordion>
 
   <Accordion title="بيانات تعريف الصورة الأساسية">
-    تستخدم صورة وقت تشغيل Docker الرئيسية `node:24-bookworm-slim` وتتضمن `tini` كعملية init لنقطة الدخول (PID 1) لضمان حصاد العمليات الزومبي والتعامل مع الإشارات بشكل صحيح في الحاويات طويلة التشغيل. تنشر تعليقات توضيحية لصورة OCI الأساسية تشمل `org.opencontainers.image.base.name`,
-    و`org.opencontainers.image.source`، وغيرها. يتم
-    تحديث ملخص قاعدة Node عبر PRs صور Docker الأساسية في Dependabot؛ لا تشغّل إصدارات النشر
+    تستخدم صورة تشغيل Docker الرئيسية `node:24-bookworm-slim` وتتضمن `tini` كعملية تهيئة لنقطة الدخول (PID 1) لضمان جمع العمليات الزومبي ومعالجة الإشارات بشكل صحيح في الحاويات طويلة التشغيل. وتنشر تعليقات توضيحية لصورة OCI الأساسية تشمل `org.opencontainers.image.base.name`،
+    و`org.opencontainers.image.source`، وغيرها. يُحدَّث ملخص أساس Node
+    عبر PRs صور Docker الأساسية من Dependabot؛ ولا تشغّل إصدارات الإصدار
     طبقة ترقية للتوزيعة. راجع
     [تعليقات صور OCI التوضيحية](https://github.com/opencontainers/image-spec/blob/main/annotations.md).
   </Accordion>
 </AccordionGroup>
 
-### هل تشغّل على VPS؟
+### التشغيل على VPS؟
 
 راجع [Hetzner (Docker VPS)](/ar/install/hetzner) و
-[وقت تشغيل Docker VM](/ar/install/docker-vm-runtime) لخطوات نشر VM المشتركة
+[تشغيل Docker VM](/ar/install/docker-vm-runtime) لخطوات النشر المشتركة على VM
 بما في ذلك تضمين الثنائيات، والاستمرارية، والتحديثات.
 
-## وضع حماية الوكيل
+## صندوق عزل الوكيل
 
 عند تفعيل `agents.defaults.sandbox` مع خلفية Docker، يشغّل Gateway
-تنفيذ أدوات الوكيل (shell، وقراءة/كتابة الملفات، وما إلى ذلك) داخل حاويات Docker
-معزولة بينما يبقى Gateway نفسه على المضيف. يمنحك هذا حاجزًا صارمًا
-حول جلسات الوكلاء غير الموثوقة أو متعددة المستأجرين دون وضع Gateway بالكامل
+تنفيذ أدوات الوكيل (الصدفة، وقراءة/كتابة الملفات، وما إلى ذلك) داخل حاويات Docker
+معزولة بينما يبقى Gateway نفسه على المضيف. يمنحك هذا جدارًا صلبًا
+حول جلسات الوكلاء غير الموثوقة أو متعددة المستأجرين من دون وضع Gateway بالكامل
 داخل حاوية.
 
-يمكن أن يكون نطاق وضع الحماية لكل وكيل (افتراضيًا)، أو لكل جلسة، أو مشتركًا. يحصل كل نطاق
-على مساحة عمل خاصة به مركّبة عند `/workspace`. يمكنك أيضًا تكوين
-سياسات السماح/المنع للأدوات، وعزل الشبكة، وحدود الموارد، وحاويات المتصفح.
+يمكن أن يكون نطاق صندوق العزل لكل وكيل (الافتراضي)، أو لكل جلسة، أو مشتركًا. يحصل كل نطاق
+على مساحة عمل خاصة به مثبتة عند `/workspace`. يمكنك أيضًا ضبط
+سياسات السماح/المنع للأدوات، وعزل الشبكة، وحدود الموارد، وحاويات
+المتصفح.
 
-للاطلاع على التكوين الكامل، والصور، وملاحظات الأمان، وملفات تعريف الوكلاء المتعددة، راجع:
+للاطلاع على الإعداد الكامل، والصور، وملاحظات الأمان، وملفات تعريف الوكلاء المتعددين، راجع:
 
-- [وضع الحماية](/ar/gateway/sandboxing) -- مرجع وضع الحماية الكامل
-- [OpenShell](/ar/gateway/openshell) -- وصول shell تفاعلي إلى حاويات وضع الحماية
-- [وضع حماية وأدوات الوكلاء المتعددين](/ar/tools/multi-agent-sandbox-tools) -- تجاوزات لكل وكيل
+- [العزل](/ar/gateway/sandboxing) -- مرجع صندوق العزل الكامل
+- [OpenShell](/ar/gateway/openshell) -- وصول تفاعلي عبر الصدفة إلى حاويات صندوق العزل
+- [صندوق عزل وأدوات الوكلاء المتعددين](/ar/tools/multi-agent-sandbox-tools) -- تجاوزات لكل وكيل
 
-### تفعيل سريع
+### التفعيل السريع
 
 ```json5
 {
@@ -485,42 +615,42 @@ echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
 }
 ```
 
-ابنِ صورة وضع الحماية الافتراضية (من نسخة مصدر):
+ابنِ صورة صندوق العزل الافتراضية (من نسخة مصدر محلية):
 
 ```bash
 scripts/sandbox-setup.sh
 ```
 
-لتثبيتات npm دون نسخة مصدر، راجع [وضع الحماية § الصور والإعداد](/ar/gateway/sandboxing#images-and-setup) لأوامر `docker build` المضمّنة.
+لتثبيتات npm من دون نسخة مصدر محلية، راجع [العزل § الصور والإعداد](/ar/gateway/sandboxing#images-and-setup) لأوامر `docker build` المضمنة.
 
 ## استكشاف الأخطاء وإصلاحها
 
 <AccordionGroup>
-  <Accordion title="الصورة مفقودة أو حاوية وضع الحماية لا تبدأ">
-    ابنِ صورة وضع الحماية باستخدام
+  <Accordion title="الصورة مفقودة أو حاوية صندوق العزل لا تبدأ">
+    ابنِ صورة صندوق العزل باستخدام
     [`scripts/sandbox-setup.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/sandbox-setup.sh)
-    (نسخة مصدر) أو أمر `docker build` المضمّن من [وضع الحماية § الصور والإعداد](/ar/gateway/sandboxing#images-and-setup) (تثبيت npm)،
-    أو اضبط `agents.defaults.sandbox.docker.image` على صورتك المخصصة.
+    (نسخة مصدر محلية) أو أمر `docker build` المضمن من [العزل § الصور والإعداد](/ar/gateway/sandboxing#images-and-setup) (تثبيت npm)،
+    أو عيّن `agents.defaults.sandbox.docker.image` إلى صورتك المخصصة.
     تُنشأ الحاويات تلقائيًا لكل جلسة عند الطلب.
   </Accordion>
 
-  <Accordion title="أخطاء الأذونات في وضع الحماية">
-    اضبط `docker.user` على UID:GID يطابق ملكية مساحة العمل المركّبة لديك،
-    أو غيّر ملكية مجلد مساحة العمل باستخدام chown.
+  <Accordion title="أخطاء الأذونات في صندوق العزل">
+    عيّن `docker.user` إلى UID:GID يطابق ملكية مساحة العمل المثبتة لديك،
+    أو غيّر مالك مجلد مساحة العمل باستخدام chown.
   </Accordion>
 
-  <Accordion title="الأدوات المخصصة غير موجودة في وضع الحماية">
-    يشغّل OpenClaw الأوامر باستخدام `sh -lc` (login shell)، والذي يقرأ
-    `/etc/profile` وقد يعيد ضبط PATH. اضبط `docker.env.PATH` لإضافة مسارات
-    أدواتك المخصصة في المقدمة، أو أضف سكربتًا ضمن `/etc/profile.d/` في Dockerfile.
+  <Accordion title="الأدوات المخصصة غير موجودة في صندوق العزل">
+    يشغّل OpenClaw الأوامر باستخدام `sh -lc` (صدفة تسجيل دخول)، والتي تقرأ
+    `/etc/profile` وقد تعيد ضبط PATH. عيّن `docker.env.PATH` لإضافة مسارات
+    أدواتك المخصصة في البداية، أو أضف سكربتًا تحت `/etc/profile.d/` في Dockerfile لديك.
   </Accordion>
 
-  <Accordion title="تم إنهاء بناء الصورة بسبب نفاد الذاكرة (الخروج 137)">
-    تحتاج VM إلى ذاكرة RAM لا تقل عن 2 GB. استخدم فئة آلة أكبر وأعد المحاولة.
+  <Accordion title="إنهاء بسبب نفاد الذاكرة أثناء بناء الصورة (رمز الخروج 137)">
+    تحتاج VM إلى ذاكرة RAM لا تقل عن 2 GB. استخدم فئة جهاز أكبر ثم أعد المحاولة.
   </Accordion>
 
-  <Accordion title="غير مصرّح أو الاقتران مطلوب في واجهة التحكم">
-    اجلب رابط لوحة تحكم جديدًا ووافق على جهاز المتصفح:
+  <Accordion title="غير مصرح أو يلزم الاقتران في واجهة Control UI">
+    اجلب رابط لوحة معلومات جديدًا ووافق على جهاز المتصفح:
 
     ```bash
     docker compose run --rm openclaw-cli dashboard --no-open
@@ -528,7 +658,7 @@ scripts/sandbox-setup.sh
     docker compose run --rm openclaw-cli devices approve <requestId>
     ```
 
-    مزيد من التفاصيل: [لوحة التحكم](/ar/web/dashboard)، [الأجهزة](/ar/cli/devices).
+    مزيد من التفاصيل: [لوحة المعلومات](/ar/web/dashboard)، [الأجهزة](/ar/cli/devices).
 
   </Accordion>
 
@@ -545,7 +675,7 @@ scripts/sandbox-setup.sh
 
 ## ذو صلة
 
-- [نظرة عامة على التثبيت](/ar/install) — كل طرق التثبيت
+- [نظرة عامة على التثبيت](/ar/install) — جميع طرق التثبيت
 - [Podman](/ar/install/podman) — بديل Podman لـ Docker
 - [ClawDock](/ar/install/clawdock) — إعداد Docker Compose من المجتمع
 - [التحديث](/ar/install/updating) — إبقاء OpenClaw محدّثًا

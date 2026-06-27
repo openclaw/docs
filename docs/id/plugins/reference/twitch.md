@@ -1,27 +1,28 @@
 ---
 read_when:
-    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin twitch
-summary: Menambahkan antarmuka saluran Twitch untuk mengirim dan menerima pesan OpenClaw.
+    - Anda sedang memasang, mengonfigurasi, atau mengaudit plugin twitch
+summary: Plugin kanal Twitch OpenClaw untuk alur kerja obrolan dan moderasi.
 title: Plugin Twitch
 x-i18n:
-    generated_at: "2026-05-03T09:21:14Z"
+    generated_at: "2026-06-27T17:57:18Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c567b1d30b82f119f577dc74a416702c8e2c78930fb7036208368835af12805f
+    source_hash: fc1bbe93d4d91427cf9c53abd4ed6833c9a06520f466cc31a24f94f6f0f327d7
     source_path: plugins/reference/twitch.md
     workflow: 16
 ---
 
 # Plugin Twitch
 
-Menambahkan antarmuka saluran Twitch untuk mengirim dan menerima pesan OpenClaw.
+Plugin channel Twitch OpenClaw untuk alur kerja chat dan moderasi.
 
 ## Distribusi
 
 - Paket: `@openclaw/twitch`
 - Rute instalasi: npm; ClawHub
 
-## Antarmuka
+## Permukaan
 
 channels: twitch
 

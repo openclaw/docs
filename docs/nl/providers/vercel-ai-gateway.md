@@ -2,30 +2,32 @@
 read_when:
     - Je wilt Vercel AI Gateway met OpenClaw gebruiken
     - Je hebt de omgevingsvariabele voor de API-sleutel of de CLI-authenticatiekeuze nodig
-summary: Vercel AI Gateway instellen (auth + modelselectie)
+summary: Vercel AI Gateway-configuratie (authenticatie + modelselectie)
 title: Vercel AI Gateway
 x-i18n:
-    generated_at: "2026-04-29T23:14:11Z"
+    generated_at: "2026-06-27T18:15:50Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c3bbe498a04c2073020fcfbbe68cb506eca4c52c3274e4eca6ab7e6893fcfa56
+    source_hash: 27aeeeff28661839f3be55c60bf1b383b95af78e17abb77441ae4e81f58688ed
     source_path: providers/vercel-ai-gateway.md
     workflow: 16
 ---
 
 De [Vercel AI Gateway](https://vercel.com/ai-gateway) biedt een uniforme API om
-toegang te krijgen tot honderden modellen via één enkel eindpunt.
+honderden modellen via één endpoint te gebruiken.
 
-| Eigenschap     | Waarde                         |
-| -------------- | ------------------------------ |
-| Provider       | `vercel-ai-gateway`            |
-| Auth           | `AI_GATEWAY_API_KEY`           |
-| API            | compatibel met Anthropic Messages |
-| Modelcatalogus | automatisch ontdekt via `/v1/models` |
+| Eigenschap    | Waarde                                 |
+| ------------- | -------------------------------------- |
+| Provider      | `vercel-ai-gateway`                    |
+| Pakket        | `@openclaw/vercel-ai-gateway-provider` |
+| Authenticatie | `AI_GATEWAY_API_KEY`                   |
+| API           | compatibel met Anthropic Messages      |
+| Modelcatalogus | automatisch ontdekt via `/v1/models`  |
 
 <Tip>
-OpenClaw ontdekt automatisch de Gateway-catalogus `/v1/models`, zodat
-`/models vercel-ai-gateway` actuele modelverwijzingen bevat, zoals
+OpenClaw ontdekt automatisch de Gateway-`/v1/models`-catalogus, zodat
+`/models vercel-ai-gateway` huidige modelrefs bevat, zoals
 `vercel-ai-gateway/openai/gpt-5.5` en
 `vercel-ai-gateway/moonshotai/kimi-k2.6`.
 </Tip>
@@ -33,15 +35,20 @@ OpenClaw ontdekt automatisch de Gateway-catalogus `/v1/models`, zodat
 ## Aan de slag
 
 <Steps>
-  <Step title="De API-sleutel instellen">
-    Voer onboarding uit en kies de AI Gateway-authoptie:
+  <Step title="Installeer de plugin">
+    ```bash
+    openclaw plugins install @openclaw/vercel-ai-gateway-provider
+    ```
+  </Step>
+  <Step title="Stel de API-sleutel in">
+    Voer onboarding uit en kies de authenticatieoptie voor AI Gateway:
 
     ```bash
     openclaw onboard --auth-choice ai-gateway-api-key
     ```
 
   </Step>
-  <Step title="Een standaardmodel instellen">
+  <Step title="Stel een standaardmodel in">
     Voeg het model toe aan je OpenClaw-configuratie:
 
     ```json5
@@ -55,7 +62,7 @@ OpenClaw ontdekt automatisch de Gateway-catalogus `/v1/models`, zodat
     ```
 
   </Step>
-  <Step title="Controleren of het model beschikbaar is">
+  <Step title="Controleer of het model beschikbaar is">
     ```bash
     openclaw models list --provider vercel-ai-gateway
     ```
@@ -64,7 +71,7 @@ OpenClaw ontdekt automatisch de Gateway-catalogus `/v1/models`, zodat
 
 ## Niet-interactief voorbeeld
 
-Voor gescripte of CI-installaties geef je alle waarden door op de opdrachtregel:
+Geef voor gescripte of CI-configuraties alle waarden door op de opdrachtregel:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -75,17 +82,17 @@ openclaw onboard --non-interactive \
 
 ## Verkorte model-ID
 
-OpenClaw accepteert verkorte Vercel Claude-modelverwijzingen en normaliseert ze tijdens
+OpenClaw accepteert verkorte Vercel Claude-modelrefs en normaliseert ze tijdens
 runtime:
 
-| Verkorte invoer                     | Genormaliseerde modelverwijzing              |
+| Verkorte invoer                     | Genormaliseerde modelref                      |
 | ----------------------------------- | --------------------------------------------- |
 | `vercel-ai-gateway/claude-opus-4.6` | `vercel-ai-gateway/anthropic/claude-opus-4.6` |
 | `vercel-ai-gateway/opus-4.6`        | `vercel-ai-gateway/anthropic/claude-opus-4-6` |
 
 <Tip>
-Je kunt de verkorte of de volledig gekwalificeerde modelverwijzing in je
-configuratie gebruiken. OpenClaw lost de canonieke vorm automatisch op.
+Je kunt in je configuratie de verkorte vorm of de volledig gekwalificeerde
+modelref gebruiken. OpenClaw lost de canonieke vorm automatisch op.
 </Tip>
 
 ## Geavanceerde configuratie
@@ -96,29 +103,30 @@ configuratie gebruiken. OpenClaw lost de canonieke vorm automatisch op.
     dat `AI_GATEWAY_API_KEY` beschikbaar is voor dat proces.
 
     <Warning>
-    Een sleutel die alleen in `~/.profile` is ingesteld, is niet zichtbaar voor een launchd/systemd-
-    daemon tenzij die omgeving expliciet wordt geïmporteerd. Stel de sleutel in
-    `~/.openclaw/.env` in of via `env.shellEnv` om ervoor te zorgen dat het Gateway-proces deze kan
-    lezen.
+    Een sleutel die alleen in een interactieve shell is geëxporteerd, is niet
+    zichtbaar voor een launchd/systemd-daemon, tenzij die omgeving expliciet is
+    geïmporteerd. Stel de sleutel in `~/.openclaw/.env` in of via
+    `env.shellEnv` om ervoor te zorgen dat het gatewayproces deze kan lezen.
     </Warning>
 
   </Accordion>
 
-  <Accordion title="Providerroutering">
-    Vercel AI Gateway routeert aanvragen naar de upstream provider op basis van het prefix van de modelverwijzing. Bijvoorbeeld: `vercel-ai-gateway/anthropic/claude-opus-4.6` routeert
-    via Anthropic, terwijl `vercel-ai-gateway/openai/gpt-5.5` via
-    OpenAI routeert en `vercel-ai-gateway/moonshotai/kimi-k2.6` via
-    MoonshotAI. Je enkele `AI_GATEWAY_API_KEY` verzorgt authenticatie voor alle
-    upstream providers.
+  <Accordion title="Provider-routering">
+    Vercel AI Gateway routeert aanvragen naar de upstream-provider op basis van
+    het voorvoegsel van de modelref. `vercel-ai-gateway/anthropic/claude-opus-4.6`
+    routeert bijvoorbeeld via Anthropic, terwijl `vercel-ai-gateway/openai/gpt-5.5`
+    via OpenAI routeert en `vercel-ai-gateway/moonshotai/kimi-k2.6` via
+    MoonshotAI routeert. Je enkele `AI_GATEWAY_API_KEY` verzorgt authenticatie
+    voor alle upstream-providers.
   </Accordion>
-  <Accordion title="Denk­niveaus">
-    `/think`-opties volgen vertrouwde upstream modelprefixen wanneer OpenClaw het
-    contract van de upstream provider kent. `vercel-ai-gateway/anthropic/...` gebruikt het
-    Claude-denkprofiel, inclusief adaptieve standaardwaarden voor Claude 4.6-modellen.
-    `vercel-ai-gateway/openai/gpt-5.4`, `gpt-5.5` en Codex-achtige verwijzingen bieden
-    `/think xhigh`, net als de directe OpenAI/OpenAI Codex-providers. Andere
-    namespaced verwijzingen behouden de normale redeneerniveaus, tenzij hun catalogusmetadata
-    meer declareert.
+  <Accordion title="Denk-niveaus">
+    `/think`-opties volgen vertrouwde upstream-modelvoorvoegsels wanneer
+    OpenClaw het upstream-providercontract kent. `vercel-ai-gateway/anthropic/...`
+    gebruikt het Claude-denkprofiel, inclusief adaptieve standaardwaarden voor
+    Claude 4.6-modellen. `vercel-ai-gateway/openai/gpt-5.4`, `gpt-5.5` en
+    Codex-achtige refs bieden `/think xhigh`, net als de directe
+    OpenAI/OpenAI Codex-providers. Andere refs met een namespace behouden de
+    normale reasoning-niveaus, tenzij hun catalogusmetadata meer declareren.
   </Accordion>
 </AccordionGroup>
 
@@ -126,7 +134,7 @@ configuratie gebruiken. OpenClaw lost de canonieke vorm automatisch op.
 
 <CardGroup cols={2}>
   <Card title="Modelselectie" href="/nl/concepts/model-providers" icon="layers">
-    Providers, modelverwijzingen en failover-gedrag kiezen.
+    Providers, modelrefs en failovergedrag kiezen.
   </Card>
   <Card title="Probleemoplossing" href="/nl/help/troubleshooting" icon="wrench">
     Algemene probleemoplossing en veelgestelde vragen.

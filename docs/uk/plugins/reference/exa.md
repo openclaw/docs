@@ -1,25 +1,26 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або проводите аудит exa Plugin
+    - Ви встановлюєте, налаштовуєте або перевіряєте plugin exa
 summary: Додає підтримку провайдера вебпошуку.
 title: Plugin Exa
 x-i18n:
-    generated_at: "2026-05-02T15:17:47Z"
+    generated_at: "2026-06-27T17:58:23Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e8cde3e0199d84893e63becdd7a32fbec25d8e90f52ee604dcba78f5a5980f61
+    source_hash: 6170d70f03913f87b62f7a85647b4748032b7d01c56e909826e10e261e58160f
     source_path: plugins/reference/exa.md
     workflow: 16
 ---
 
-# Exa Plugin
+# Plugin Exa
 
 Додає підтримку провайдера вебпошуку.
 
-## Дистрибуція
+## Розповсюдження
 
 - Пакет: `@openclaw/exa-plugin`
-- Шлях встановлення: включено до OpenClaw
+- Маршрут встановлення: npm; ClawHub: `clawhub:@openclaw/exa-plugin`
 
 ## Інтерфейс
 

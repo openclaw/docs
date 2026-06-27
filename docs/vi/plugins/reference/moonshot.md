@@ -4,10 +4,11 @@ read_when:
 summary: Thêm hỗ trợ nhà cung cấp mô hình Moonshot vào OpenClaw.
 title: Plugin Moonshot
 x-i18n:
-    generated_at: "2026-05-02T20:53:05Z"
+    generated_at: "2026-06-27T17:53:55Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 30a828575030bb3b35b0d5a2887682e1d63cba03f1d010cd94b93d99df3e9e2f
+    source_hash: 477307769a710ac8d430a837d7b5ffda012a942f3b44f367bf4ea0770b87f48e
     source_path: plugins/reference/moonshot.md
     workflow: 16
 ---
@@ -19,9 +20,9 @@ Thêm hỗ trợ nhà cung cấp mô hình Moonshot cho OpenClaw.
 ## Phân phối
 
 - Gói: `@openclaw/moonshot-provider`
-- Cách cài đặt: được bao gồm trong OpenClaw
+- Cách cài đặt: npm; ClawHub: `clawhub:@openclaw/moonshot-provider`
 
-## Giao diện
+## Bề mặt
 
 providers: moonshot; contracts: mediaUnderstandingProviders, webSearchProviders
 

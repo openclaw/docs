@@ -1,29 +1,30 @@
 ---
 read_when:
     - Ви встановлюєте, налаштовуєте або проводите аудит Plugin nextcloud-talk
-summary: Додає поверхню каналу Nextcloud Talk для надсилання й отримання повідомлень OpenClaw.
+summary: Plugin каналу Nextcloud Talk для розмов OpenClaw.
 title: Plugin Nextcloud Talk
 x-i18n:
-    generated_at: "2026-05-03T02:50:09Z"
+    generated_at: "2026-06-27T18:00:22Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4ef55f1a3a7f9eac5876e5a8e3d6b5182a18c54aee2a6a63e8e4b0115ab7f6a6
+    source_hash: ce8dd648fcc2226e6b365f092eb3dc54062d2c9d8d5c613cb0c2d5e9f237c720
     source_path: plugins/reference/nextcloud-talk.md
     workflow: 16
 ---
 
-# Nextcloud Talk Plugin
+# Plugin Nextcloud Talk
 
-Додає поверхню каналу Nextcloud Talk для надсилання та отримання повідомлень OpenClaw.
+Plugin каналу OpenClaw Nextcloud Talk для розмов.
 
 ## Розповсюдження
 
 - Пакет: `@openclaw/nextcloud-talk`
-- Спосіб встановлення: npm; ClawHub
+- Маршрут встановлення: npm; ClawHub
 
 ## Поверхня
 
-channels: nextcloud-talk
+канали: nextcloud-talk
 
 ## Пов’язані документи
 

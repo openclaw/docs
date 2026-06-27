@@ -1,42 +1,43 @@
 ---
 read_when:
-    - تريد الوصول السريع إلى صفحات الوثائق الرئيسية
-summary: روابط منتقاة لأكثر وثائق OpenClaw استخدامًا.
-title: مجلد التوثيق
+    - تريد وصولًا سريعًا إلى صفحات التوثيق الرئيسية
+summary: روابط منتقاة إلى أكثر وثائق OpenClaw استخدامًا.
+title: دليل المستندات
 x-i18n:
-    generated_at: "2026-05-10T20:01:30Z"
+    generated_at: "2026-06-27T18:36:55Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ddd6903aeb87e36db977b2cef62bd80e84fc67633ca00beb3365ced1f5abdd99
+    source_hash: f7d45effe4df50fb544e9f6fd2fcd87f4ed674eba0042eace757dbfcad93d07a
     source_path: start/docs-directory.md
     workflow: 16
 ---
 
 <Note>
-هذه الصفحة فهرس منسّق. إذا كنت جديدًا، فابدأ بـ [بدء الاستخدام](/ar/start/getting-started).
-للحصول على خريطة كاملة للوثائق، راجع [محاور الوثائق](/ar/start/hubs).
+هذه الصفحة فهرس منتقى. إذا كنت جديدًا، فابدأ بـ [البدء](/ar/start/getting-started).
+للحصول على خريطة كاملة للوثائق، راجع [مراكز الوثائق](/ar/start/hubs).
 </Note>
 
 ## ابدأ من هنا
 
-- [محاور الوثائق (كل الصفحات مرتبطة)](/ar/start/hubs)
+- [مراكز الوثائق (كل الصفحات مرتبطة)](/ar/start/hubs)
 - [المساعدة](/ar/help)
-- [التكوين](/ar/gateway/configuration)
-- [أمثلة التكوين](/ar/gateway/configuration-examples)
+- [الإعدادات](/ar/gateway/configuration)
+- [أمثلة الإعدادات](/ar/gateway/configuration-examples)
 - [أوامر الشرطة المائلة](/ar/tools/slash-commands)
-- [التوجيه متعدد الوكلاء](/ar/concepts/multi-agent)
+- [توجيه الوكلاء المتعددين](/ar/concepts/multi-agent)
 - [التحديث والتراجع](/ar/install/updating)
-- [الإقران (الرسائل المباشرة والعُقَد)](/ar/channels/pairing)
+- [الاقتران (الرسائل المباشرة والعُقد)](/ar/channels/pairing)
 - [وضع Nix](/ar/install/nix)
 - [إعداد مساعد OpenClaw](/ar/start/openclaw)
 - [Skills](/ar/tools/skills)
-- [تكوين Skills](/ar/tools/skills-config)
+- [إعدادات Skills](/ar/tools/skills-config)
 - [قوالب مساحة العمل](/ar/reference/templates/AGENTS)
-- [محولات RPC](/ar/reference/rpc)
+- [محوّلات RPC](/ar/reference/rpc)
 - [دليل تشغيل Gateway](/ar/gateway)
-- [العُقَد (iOS وAndroid)](/ar/nodes)
-- [واجهات الويب (واجهة التحكم)](/ar/web)
-- [الاكتشاف ووسائط النقل](/ar/gateway/discovery)
+- [العُقد (iOS و Android)](/ar/nodes)
+- [أسطح الويب (واجهة التحكم)](/ar/web)
+- [الاكتشاف ووسائل النقل](/ar/gateway/discovery)
 - [الوصول عن بُعد](/ar/gateway/remote)
 
 ## المزوّدون وتجربة المستخدم
@@ -53,15 +54,15 @@ x-i18n:
 - [صور الوسائط](/ar/nodes/images)
 - [صوت الوسائط](/ar/nodes/audio)
 
-## التطبيقات المصاحبة
+## التطبيقات المرافقة
 
 - [تطبيق macOS](/ar/platforms/macos)
 - [تطبيق iOS](/ar/platforms/ios)
 - [تطبيق Android](/ar/platforms/android)
-- [Windows (WSL2)](/ar/platforms/windows)
+- [مركز Windows](/ar/platforms/windows)
 - [تطبيق Linux](/ar/platforms/linux)
 
-## العمليات والسلامة
+## التشغيل والسلامة
 
 - [الجلسات](/ar/concepts/session)
 - [مهام Cron](/ar/automation/cron-jobs)
@@ -72,5 +73,5 @@ x-i18n:
 
 ## ذات صلة
 
-- [بدء الاستخدام](/ar/start/getting-started)
-- [محاور الوثائق](/ar/start/hubs)
+- [البدء](/ar/start/getting-started)
+- [مراكز الوثائق](/ar/start/hubs)

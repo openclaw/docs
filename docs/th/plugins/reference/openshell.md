@@ -1,26 +1,27 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin openshell
-summary: แบ็กเอนด์แซนด์บ็อกซ์ที่ขับเคลื่อนโดย OpenShell พร้อมพื้นที่ทำงานภายในเครื่องที่ทำมิเรอร์และการดำเนินการคำสั่งผ่าน SSH
+summary: แบ็กเอนด์แซนด์บ็อกซ์ของ OpenClaw สำหรับ NVIDIA OpenShell CLI พร้อมพื้นที่ทำงานภายในเครื่องแบบมิเรอร์และการดำเนินการคำสั่ง SSH
 title: Plugin Openshell
 x-i18n:
-    generated_at: "2026-05-02T20:55:26Z"
+    generated_at: "2026-06-27T18:04:17Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c27c54061615e9765181cc1867109c993614266421ee584df95f04c44b5be735
+    source_hash: f97a099c465df22c0dfd7a68907c1a75c99ca301ad016ceb1be46c81376793f8
     source_path: plugins/reference/openshell.md
     workflow: 16
 ---
 
-# Openshell Plugin
+# Plugin Openshell
 
-แบ็กเอนด์แซนด์บ็อกซ์ที่ขับเคลื่อนโดย OpenShell พร้อมพื้นที่ทำงานภายในเครื่องที่มิเรอร์ไว้และการเรียกใช้คำสั่งผ่าน SSH
+แบ็กเอนด์แซนด์บ็อกซ์ของ OpenClaw สำหรับ NVIDIA OpenShell CLI พร้อมเวิร์กสเปซภายในเครื่องที่มิเรอร์กันและการดำเนินการคำสั่งผ่าน SSH
 
-## การแจกจ่าย
+## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/openshell-sandbox`
-- เส้นทางการติดตั้ง: รวมอยู่ใน OpenClaw
+- ช่องทางการติดตั้ง: npm; ClawHub
 
-## พื้นผิว
+## ส่วนติดต่อ
 
 Plugin

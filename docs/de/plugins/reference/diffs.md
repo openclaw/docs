@@ -1,20 +1,21 @@
 ---
 read_when:
     - Sie installieren, konfigurieren oder prüfen das diffs-Plugin
-summary: Schreibgeschützter Diff-Viewer und Datei-Renderer für Agenten.
+summary: OpenClaw schreibgeschütztes Diff-Viewer-Plugin und Dateirenderer für Agenten.
 title: Diffs-Plugin
 x-i18n:
-    generated_at: "2026-05-03T06:41:09Z"
+    generated_at: "2026-06-27T17:53:21Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1a56c666d510a949b40b9aee47001844fc82206ee378ac5770f23bea9c550027
+    source_hash: 836ed7a32a0868ee24eacf8f72e8c7888ebbd5d07ca62b2b6170d6a1919f7382
     source_path: plugins/reference/diffs.md
     workflow: 16
 ---
 
 # Diffs-Plugin
 
-Schreibgeschützter Diff-Viewer und Datei-Renderer für Agenten.
+OpenClaw-Plugin zur schreibgeschützten Diff-Anzeige und Dateidarstellung für Agenten.
 
 ## Distribution
 
@@ -23,4 +24,4 @@ Schreibgeschützter Diff-Viewer und Datei-Renderer für Agenten.
 
 ## Oberfläche
 
-Verträge: Werkzeuge; Skills
+Verträge: Tools; Skills

@@ -1,30 +1,31 @@
 ---
 read_when:
-    - أنت بصدد تثبيت Plugin xiaomi أو تكوينه أو تدقيقه
-summary: يضيف دعم موفّر نماذج Xiaomi إلى OpenClaw.
-title: Plugin Xiaomi
+    - أنت تثبّت Plugin xiaomi أو تهيّئه أو تدقّقه
+summary: يضيف دعم موفر نماذج Xiaomi وXiaomi Token Plan إلى OpenClaw.
+title: Plugin شاومي
 x-i18n:
-    generated_at: "2026-05-02T21:01:12Z"
+    generated_at: "2026-06-27T18:16:29Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: da5eab95af1e0fb371e5472f0173a8a63bfe2f8ead22734ff5e2941e9299e1b0
+    source_hash: cd7918f5f372158fbf033381b6977fd98ec193f120797bb0eee7095a6a293b86
     source_path: plugins/reference/xiaomi.md
     workflow: 16
 ---
 
-# Plugin Xiaomi
+# Plugin ‏Xiaomi
 
-يضيف دعم موفّر نماذج Xiaomi إلى OpenClaw.
+يضيف دعم موفر نموذج Xiaomi وXiaomi Token Plan إلى OpenClaw.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/xiaomi-provider`
-- مسار التثبيت: مضمّن في OpenClaw
+- مسار التثبيت: مضمن في OpenClaw
 
 ## السطح
 
-providers: xiaomi; contracts: speechProviders
+الموفرون: xiaomi، xiaomi-token-plan؛ العقود: speechProviders
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
 - [xiaomi](/ar/providers/xiaomi)

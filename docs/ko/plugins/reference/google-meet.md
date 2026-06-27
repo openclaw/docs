@@ -1,20 +1,21 @@
 ---
 read_when:
     - google-meet Plugin을 설치, 구성 또는 감사하고 있습니다
-summary: Chrome 또는 Twilio 전송 방식을 통해 Google Meet 통화에 참여합니다.
+summary: Chrome 또는 Twilio 전송 방식을 통해 통화에 참여하기 위한 OpenClaw Google Meet 참가자 Plugin.
 title: Google Meet Plugin
 x-i18n:
-    generated_at: "2026-05-03T06:20:51Z"
+    generated_at: "2026-06-27T17:51:13Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1418e8400d3efc0e9448e337269636d3801cee38ad05be1fa6657564974bfccb
+    source_hash: 2f0086a8b48f6e120ad391a99d60a14d7682910ca3ad176e41a51b341e9bdb49
     source_path: plugins/reference/google-meet.md
     workflow: 16
 ---
 
 # Google Meet Plugin
 
-Chrome 또는 Twilio 전송 수단을 통해 Google Meet 통화에 참여합니다.
+Chrome 또는 Twilio 전송을 통해 통화에 참여하기 위한 OpenClaw Google Meet 참가자 Plugin입니다.
 
 ## 배포
 

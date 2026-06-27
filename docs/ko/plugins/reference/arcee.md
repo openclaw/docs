@@ -4,10 +4,11 @@ read_when:
 summary: OpenClaw에 Arcee 모델 제공자 지원을 추가합니다.
 title: Arcee Plugin
 x-i18n:
-    generated_at: "2026-05-02T21:00:26Z"
+    generated_at: "2026-06-27T17:49:07Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7cff1ab321482d66e4ed6cca64154de57dfc2d5f6fd5ea9221e1126b9278137c
+    source_hash: 9d4880c859c2498ce3708834cdc62a8ff6babb0571672b99d62cc5c2c7299f8e
     source_path: plugins/reference/arcee.md
     workflow: 16
 ---
@@ -19,9 +20,9 @@ OpenClaw에 Arcee 모델 제공자 지원을 추가합니다.
 ## 배포
 
 - 패키지: `@openclaw/arcee-provider`
-- 설치 경로: OpenClaw에 포함됨
+- 설치 경로: npm; ClawHub: `clawhub:@openclaw/arcee-provider`
 
-## 노출 영역
+## 표면
 
 providers: arcee
 

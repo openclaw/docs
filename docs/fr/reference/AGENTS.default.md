@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Démarrer une nouvelle session d’agent OpenClaw
+    - Démarrage d’une nouvelle session d’agent OpenClaw
     - Activation ou audit des Skills par défaut
-summary: Instructions par défaut de l’agent OpenClaw et liste des Skills pour la configuration de l’assistant personnel
+summary: Instructions d’agent OpenClaw par défaut et liste des Skills pour la configuration de l’assistant personnel
 title: AGENTS.md par défaut
 x-i18n:
-    generated_at: "2026-05-06T07:37:21Z"
+    generated_at: "2026-06-27T18:09:17Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8ecfafd0bee8b18f5787a0b8e273ce281c40c7d2d5754f15daa1f2b7cc7ecad0
+    source_hash: 6af0d9e5bb250fe91dda6ad31b7e0b169d94d4e7c19c2fc0943b816b4599ec26
     source_path: reference/AGENTS.default.md
     workflow: 16
 ---
@@ -31,7 +32,7 @@ cp docs/reference/templates/SOUL.md ~/.openclaw/workspace/SOUL.md
 cp docs/reference/templates/TOOLS.md ~/.openclaw/workspace/TOOLS.md
 ```
 
-3. Facultatif : si vous voulez la liste de Skills de l’assistant personnel, remplacez AGENTS.md par ce fichier :
+3. Facultatif : si vous voulez la liste des Skills d’assistant personnel, remplacez AGENTS.md par ce fichier :
 
 ```bash
 cp docs/reference/AGENTS.default.md ~/.openclaw/workspace/AGENTS.md
@@ -45,15 +46,20 @@ cp docs/reference/AGENTS.default.md ~/.openclaw/workspace/AGENTS.md
 }
 ```
 
-## Valeurs de sécurité par défaut
+## Paramètres de sécurité par défaut
 
 - Ne déversez pas de répertoires ni de secrets dans le chat.
 - N’exécutez pas de commandes destructrices sauf demande explicite.
-- N’envoyez pas de réponses partielles/en streaming aux surfaces de messagerie externes (uniquement les réponses finales).
+- Avant de modifier la configuration ou les planificateurs (par exemple crontab, les unités systemd, les configurations nginx ou les fichiers rc du shell), inspectez d’abord l’état existant et conservez/fusionnez par défaut.
+- N’envoyez pas de réponses partielles/en streaming vers des surfaces de messagerie externes (uniquement des réponses finales).
 
-## Démarrage de session (obligatoire)
+## Vérification préalable des solutions existantes
 
-- Lisez `SOUL.md`, `USER.md`, ainsi qu’aujourd’hui+hier dans `memory/`.
+Avant de proposer ou de créer un système, une fonctionnalité, un workflow, un outil, une intégration ou une automatisation personnalisés, effectuez une brève vérification des projets open source, bibliothèques maintenues, plugins OpenClaw existants ou plateformes gratuites qui résolvent déjà suffisamment bien le problème. Préférez-les lorsqu’ils conviennent. Ne construisez du personnalisé que lorsque les options existantes sont inadaptées, trop coûteuses, non maintenues, dangereuses, non conformes, ou lorsque l’utilisateur demande explicitement du personnalisé. Évitez de recommander des services payants sauf si l’utilisateur approuve explicitement la dépense. Gardez cela léger : une vérification préalable, pas une vaste mission de recherche.
+
+## Début de session (obligatoire)
+
+- Lisez `SOUL.md`, `USER.md`, ainsi qu’aujourd’hui + hier dans `memory/`.
 - Lisez `MEMORY.md` lorsqu’il est présent.
 - Faites-le avant de répondre.
 
@@ -66,20 +72,21 @@ cp docs/reference/AGENTS.default.md ~/.openclaw/workspace/AGENTS.md
 ## Espaces partagés (recommandé)
 
 - Vous n’êtes pas la voix de l’utilisateur ; soyez prudent dans les discussions de groupe ou les canaux publics.
-- Ne partagez pas de données privées, d’informations de contact ni de notes internes.
+- Ne partagez pas de données privées, de coordonnées ni de notes internes.
 
 ## Système de mémoire (recommandé)
 
 - Journal quotidien : `memory/YYYY-MM-DD.md` (créez `memory/` si nécessaire).
 - Mémoire à long terme : `MEMORY.md` pour les faits, préférences et décisions durables.
-- `memory.md` en minuscules est uniquement une entrée de réparation héritée ; ne conservez pas volontairement les deux fichiers racine.
-- Au démarrage de session, lisez aujourd’hui + hier + `MEMORY.md` lorsqu’il est présent.
+- `memory.md` en minuscules sert uniquement d’entrée de réparation héritée ; ne conservez pas volontairement les deux fichiers à la racine.
+- Au début de la session, lisez aujourd’hui + hier + `MEMORY.md` lorsqu’il est présent.
+- Avant d’écrire dans les fichiers de mémoire, lisez-les d’abord ; n’écrivez que des mises à jour concrètes, jamais de placeholders vides.
 - Capturez : décisions, préférences, contraintes, boucles ouvertes.
 - Évitez les secrets sauf demande explicite.
 
 ## Outils et Skills
 
-- Les outils résident dans les Skills ; suivez le `SKILL.md` de chaque Skill lorsque vous en avez besoin.
+- Les outils vivent dans les Skills ; suivez le `SKILL.md` de chaque Skill lorsque vous en avez besoin.
 - Conservez les notes propres à l’environnement dans `TOOLS.md` (Notes pour les Skills).
 
 ## Conseil de sauvegarde (recommandé)
@@ -96,25 +103,25 @@ git commit -m "Add Clawd workspace"
 
 ## Ce que fait OpenClaw
 
-- Exécute le Gateway WhatsApp + l’agent de codage Pi afin que l’assistant puisse lire/écrire des chats, récupérer du contexte et exécuter des Skills via le Mac hôte.
-- L’app macOS gère les autorisations (enregistrement d’écran, notifications, microphone) et expose la CLI `openclaw` via son binaire intégré.
-- Les discussions directes se replient par défaut dans la session `main` de l’agent ; les groupes restent isolés sous `agent:<agentId>:<channel>:group:<id>` (salons/canaux : `agent:<agentId>:<channel>:channel:<id>`) ; les heartbeats maintiennent les tâches en arrière-plan actives.
+- Exécute la passerelle WhatsApp + l’agent OpenClaw intégré afin que l’assistant puisse lire/écrire des chats, récupérer du contexte et exécuter des Skills via le Mac hôte.
+- L’application macOS gère les autorisations (enregistrement d’écran, notifications, microphone) et expose la CLI `openclaw` via son binaire intégré.
+- Les conversations directes se replient par défaut dans la session `main` de l’agent ; les groupes restent isolés sous `agent:<agentId>:<channel>:group:<id>` (salons/canaux : `agent:<agentId>:<channel>:channel:<id>`) ; les Heartbeats maintiennent les tâches d’arrière-plan en vie.
 
-## Skills de base (activer dans Paramètres → Skills)
+## Skills principaux (à activer dans Paramètres → Skills)
 
-- **mcporter** - Runtime/CLI de serveur d’outils pour gérer des backends de Skills externes.
-- **Peekaboo** - Captures d’écran macOS rapides avec analyse de vision IA facultative.
-- **camsnap** - Capturez des images, des clips ou des alertes de mouvement depuis des caméras de sécurité RTSP/ONVIF.
-- **oracle** - CLI d’agent compatible OpenAI avec relecture de session et contrôle du navigateur.
+- **mcporter** - Environnement d’exécution/CLI de serveur d’outils pour gérer des backends de Skills externes.
+- **Peekaboo** - Captures d’écran macOS rapides avec analyse visuelle IA facultative.
+- **camsnap** - Capturez des images, clips ou alertes de mouvement depuis des caméras de sécurité RTSP/ONVIF.
+- **oracle** - CLI d’agent prête pour OpenAI avec relecture de session et contrôle du navigateur.
 - **eightctl** - Contrôlez votre sommeil depuis le terminal.
-- **imsg** - Envoyer, lire et streamer iMessage et SMS.
+- **imsg** - Envoyez, lisez et streamez iMessage et SMS.
 - **wacli** - CLI WhatsApp : synchroniser, rechercher, envoyer.
-- **discord** - Actions Discord : réactions, stickers, sondages. Utilisez les cibles `user:<id>` ou `channel:<id>` (les identifiants numériques seuls sont ambigus).
+- **discord** - Actions Discord : réactions, autocollants, sondages. Utilisez des cibles `user:<id>` ou `channel:<id>` (les ids numériques seuls sont ambigus).
 - **gog** - CLI Google Suite : Gmail, Calendar, Drive, Contacts.
-- **spotify-player** - Client Spotify en terminal pour rechercher/mettre en file d’attente/contrôler la lecture.
-- **sag** - Parole ElevenLabs avec UX de type say mac ; diffuse par défaut vers les haut-parleurs.
+- **spotify-player** - Client Spotify pour terminal afin de rechercher/mettre en file d’attente/contrôler la lecture.
+- **sag** - Synthèse vocale ElevenLabs avec une UX `say` de style Mac ; streame vers les haut-parleurs par défaut.
 - **Sonos CLI** - Contrôlez les enceintes Sonos (découverte/état/lecture/volume/groupement) depuis des scripts.
-- **blucli** - Lire, grouper et automatiser les lecteurs BluOS depuis des scripts.
+- **blucli** - Lisez, groupez et automatisez des lecteurs BluOS depuis des scripts.
 - **OpenHue CLI** - Contrôle de l’éclairage Philips Hue pour les scènes et automatisations.
 - **OpenAI Whisper** - Reconnaissance vocale locale pour la dictée rapide et les transcriptions de messages vocaux.
 - **Gemini CLI** - Modèles Google Gemini depuis le terminal pour des questions-réponses rapides.
@@ -122,15 +129,15 @@ git commit -m "Add Clawd workspace"
 
 ## Notes d’utilisation
 
-- Préférez la CLI `openclaw` pour les scripts ; l’app Mac gère les autorisations.
+- Préférez la CLI `openclaw` pour les scripts ; l’application Mac gère les autorisations.
 - Lancez les installations depuis l’onglet Skills ; il masque le bouton si un binaire est déjà présent.
-- Gardez les heartbeats activés afin que l’assistant puisse planifier des rappels, surveiller les boîtes de réception et déclencher des captures caméra.
-- L’interface Canvas s’exécute en plein écran avec des superpositions natives. Évitez de placer des contrôles critiques dans les coins supérieur gauche/supérieur droit ou sur les bords inférieurs ; ajoutez des gouttières explicites dans la mise en page et ne vous appuyez pas sur les marges de zone sûre.
-- Pour la vérification pilotée par navigateur, utilisez `openclaw browser` (onglets/état/capture d’écran) avec le profil Chrome géré par OpenClaw.
-- Pour l’inspection du DOM, utilisez `openclaw browser eval|query|dom|snapshot` (et `--json`/`--out` lorsque vous avez besoin d’une sortie exploitable par machine).
+- Gardez les Heartbeats activés afin que l’assistant puisse planifier des rappels, surveiller les boîtes de réception et déclencher des captures de caméra.
+- L’UI Canvas s’exécute en plein écran avec des superpositions natives. Évitez de placer des contrôles critiques dans les bords supérieur gauche/supérieur droit/inférieurs ; ajoutez des gouttières explicites dans la mise en page et ne vous fiez pas aux safe-area insets.
+- Pour la vérification pilotée par navigateur, utilisez `openclaw browser` (tabs/status/screenshot) avec le profil Chrome géré par OpenClaw.
+- Pour l’inspection DOM, utilisez `openclaw browser eval|query|dom|snapshot` (et `--json`/`--out` lorsque vous avez besoin d’une sortie machine).
 - Pour les interactions, utilisez `openclaw browser click|type|hover|drag|select|upload|press|wait|navigate|back|evaluate|run` (click/type nécessitent des références de snapshot ; utilisez `evaluate` pour les sélecteurs CSS).
 
-## Associés
+## Connexe
 
 - [Espace de travail de l’agent](/fr/concepts/agent-workspace)
-- [Runtime de l’agent](/fr/concepts/agent)
+- [Environnement d’exécution de l’agent](/fr/concepts/agent)

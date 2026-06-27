@@ -4,27 +4,28 @@ read_when:
 summary: پشتیبانی از ارائه‌دهندهٔ جست‌وجوی وب را اضافه می‌کند.
 title: Plugin Perplexity
 x-i18n:
-    generated_at: "2026-05-02T20:56:32Z"
+    generated_at: "2026-06-27T18:28:20Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 86183b8201e7c6869eeeada3efcb15fd67c3d958fd5a50a56922bb0a61c5c74d
+    source_hash: c649c4dc4df04ca668e924e2644af970d75eab404b8f57579e509aa061994ffe
     source_path: plugins/reference/perplexity.md
     workflow: 16
 ---
 
 # Plugin Perplexity
 
-پشتیبانی از ارائه‌دهندهٔ جستجوی وب را اضافه می‌کند.
+پشتیبانی از ارائه‌دهنده جستجوی وب را اضافه می‌کند.
 
 ## توزیع
 
 - بسته: `@openclaw/perplexity-plugin`
-- مسیر نصب: در OpenClaw گنجانده شده است
+- مسیر نصب: npm؛ ClawHub: `clawhub:@openclaw/perplexity-plugin`
 
 ## سطح
 
-contracts: webSearchProviders
+قراردادها: webSearchProviders
 
-## مستندات مرتبط
+## اسناد مرتبط
 
 - [perplexity](/fa/tools/perplexity-search)

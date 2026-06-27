@@ -1,20 +1,21 @@
 ---
 read_when:
     - شما در حال نصب، پیکربندی یا ممیزی Plugin feishu هستید
-summary: سطح کانال Feishu را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
-title: Plugin Feishu
+summary: Plugin کانال Feishu/Lark برای OpenClaw جهت چت‌ها و ابزارهای محیط کار (نگهداری‌شده توسط جامعه و @m1heng).
+title: Plugin فیشو
 x-i18n:
-    generated_at: "2026-05-03T11:42:01Z"
+    generated_at: "2026-06-27T18:25:48Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cb9fa20533e6ad7f65ffbb3050166637bea8e8ab867dd3894ad90a77999ba9b8
+    source_hash: d55792e08be92877a8b86548b725b59aee149b352bba8a5e51ed590a59e0dbc9
     source_path: plugins/reference/feishu.md
     workflow: 16
 ---
 
-# Plugin فیشو
+# Plugin فِیشو
 
-سطح کانال Feishu را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
+Plugin کانال Feishu/Lark برای OpenClaw جهت چت‌ها و ابزارهای محیط کار (نگه‌داری‌شده توسط جامعه با @m1heng).
 
 ## توزیع
 
@@ -23,7 +24,7 @@ x-i18n:
 
 ## سطح
 
-کانال‌ها: feishu؛ قراردادها: ابزارها؛ Skills
+کانال‌ها: feishu؛ قراردادها: ابزارها؛ skills
 
 ## مستندات مرتبط
 

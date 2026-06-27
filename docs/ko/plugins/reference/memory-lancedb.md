@@ -1,20 +1,21 @@
 ---
 read_when:
-    - memory-lancedb Plugin을 설치, 구성 또는 감사 중입니다
-summary: 에이전트가 호출할 수 있는 도구를 추가합니다.
+    - memory-lancedb Plugin을 설치, 구성 또는 감사하고 있습니다
+summary: OpenClaw LanceDB 기반 장기 메모리 Plugin으로 자동 회상, 자동 캡처, 벡터 검색을 제공합니다.
 title: 메모리 Lancedb Plugin
 x-i18n:
-    generated_at: "2026-05-03T06:21:21Z"
+    generated_at: "2026-06-27T17:52:18Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 68b679caf3a16929c59d9029b29f12520cf2a247ee51de0d67382d0caef4e694
+    source_hash: db3843c421abdf738723f87f5bf12ed7acc2e6638e5869c2ad10b4b5722d402d
     source_path: plugins/reference/memory-lancedb.md
     workflow: 16
 ---
 
 # Memory Lancedb Plugin
 
-에이전트가 호출할 수 있는 도구를 추가합니다.
+자동 회상, 자동 캡처, 벡터 검색을 지원하는 OpenClaw LanceDB 기반 장기 메모리 Plugin입니다.
 
 ## 배포
 

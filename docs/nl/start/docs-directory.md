@@ -1,32 +1,33 @@
 ---
 read_when:
     - Je wilt snel toegang tot belangrijke documentatiepagina's
-summary: Gecureerde links naar de meestgebruikte OpenClaw-documentatie.
+summary: Samengestelde links naar de meest gebruikte OpenClaw-documentatie.
 title: Documentatiemap
 x-i18n:
-    generated_at: "2026-05-11T20:49:48Z"
+    generated_at: "2026-06-27T18:21:46Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ddd6903aeb87e36db977b2cef62bd80e84fc67633ca00beb3365ced1f5abdd99
+    source_hash: f7d45effe4df50fb544e9f6fd2fcd87f4ed674eba0042eace757dbfcad93d07a
     source_path: start/docs-directory.md
     workflow: 16
 ---
 
 <Note>
 Deze pagina is een samengestelde index. Als je nieuw bent, begin dan met [Aan de slag](/nl/start/getting-started).
-Voor een volledige kaart van de documentatie, zie [Documentatiehubs](/nl/start/hubs).
+Zie [Documentatiehubs](/nl/start/hubs) voor een volledige kaart van de documentatie.
 </Note>
 
 ## Begin hier
 
 - [Documentatiehubs (alle pagina's gelinkt)](/nl/start/hubs)
-- [Hulp](/nl/help)
+- [Help](/nl/help)
 - [Configuratie](/nl/gateway/configuration)
 - [Configuratievoorbeelden](/nl/gateway/configuration-examples)
-- [Slash-commando's](/nl/tools/slash-commands)
-- [Routering met meerdere agents](/nl/concepts/multi-agent)
+- [Slash-opdrachten](/nl/tools/slash-commands)
+- [Multi-agent-routering](/nl/concepts/multi-agent)
 - [Bijwerken en terugdraaien](/nl/install/updating)
-- [Koppelen (DM en Nodes)](/nl/channels/pairing)
+- [Koppelen (DM en knooppunten)](/nl/channels/pairing)
 - [Nix-modus](/nl/install/nix)
 - [OpenClaw-assistent instellen](/nl/start/openclaw)
 - [Skills](/nl/tools/skills)
@@ -34,7 +35,7 @@ Voor een volledige kaart van de documentatie, zie [Documentatiehubs](/nl/start/h
 - [Werkruimtesjablonen](/nl/reference/templates/AGENTS)
 - [RPC-adapters](/nl/reference/rpc)
 - [Gateway-runbook](/nl/gateway)
-- [Nodes (iOS en Android)](/nl/nodes)
+- [Knooppunten (iOS en Android)](/nl/nodes)
 - [Weboppervlakken (Control UI)](/nl/web)
 - [Detectie en transporten](/nl/gateway/discovery)
 - [Externe toegang](/nl/gateway/remote)
@@ -53,12 +54,12 @@ Voor een volledige kaart van de documentatie, zie [Documentatiehubs](/nl/start/h
 - [Media-afbeeldingen](/nl/nodes/images)
 - [Media-audio](/nl/nodes/audio)
 
-## Companion-apps
+## Begeleidende apps
 
 - [macOS-app](/nl/platforms/macos)
 - [iOS-app](/nl/platforms/ios)
 - [Android-app](/nl/platforms/android)
-- [Windows (WSL2)](/nl/platforms/windows)
+- [Windows Hub](/nl/platforms/windows)
 - [Linux-app](/nl/platforms/linux)
 
 ## Beheer en veiligheid

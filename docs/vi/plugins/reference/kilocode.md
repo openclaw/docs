@@ -4,24 +4,25 @@ read_when:
 summary: Thêm hỗ trợ nhà cung cấp mô hình Kilocode vào OpenClaw.
 title: Plugin Kilocode
 x-i18n:
-    generated_at: "2026-05-02T20:51:45Z"
+    generated_at: "2026-06-27T17:53:11Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 66872df1b93d5a9365320e260ee019a9319b8a4ddd7d50b464200c6bd53d002b
+    source_hash: 83843bd0e8a3e9944a60540a0329630f7660f8e9440c157b790ddca8655052f9
     source_path: plugins/reference/kilocode.md
     workflow: 16
 ---
 
 # Plugin Kilocode
 
-Thêm hỗ trợ nhà cung cấp mô hình Kilocode vào OpenClaw.
+Thêm hỗ trợ nhà cung cấp mô hình Kilocode cho OpenClaw.
 
 ## Phân phối
 
 - Gói: `@openclaw/kilocode-provider`
-- Tuyến cài đặt: được bao gồm trong OpenClaw
+- Tuyến cài đặt: npm; ClawHub: `clawhub:@openclaw/kilocode-provider`
 
-## Giao diện
+## Bề mặt
 
 providers: kilocode
 

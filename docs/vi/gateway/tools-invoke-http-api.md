@@ -1,75 +1,80 @@
 ---
 read_when:
-    - Gọi công cụ mà không chạy một lượt tác tử đầy đủ
-    - Xây dựng các tự động hóa cần thực thi chính sách về công cụ
+    - Gọi công cụ mà không chạy một lượt tác nhân đầy đủ
+    - Xây dựng các tự động hóa cần thực thi chính sách công cụ
 summary: Gọi trực tiếp một công cụ duy nhất qua điểm cuối HTTP của Gateway
-title: API gọi công cụ
+title: Công cụ gọi API
 x-i18n:
-    generated_at: "2026-05-10T19:37:09Z"
+    generated_at: "2026-06-27T17:33:36Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 531e77673fb9c06d0cc8f8145d874e22f7e590dc3e4c5dee1574874af5666886
+    source_hash: 2023505f5a705b62e2fd685d64d3f9bd7788d09adfe89ac99604e6660c78ad8a
     source_path: gateway/tools-invoke-http-api.md
     workflow: 16
 ---
 
-Gateway của OpenClaw cung cấp một endpoint HTTP đơn giản để gọi trực tiếp một công cụ duy nhất. Nó luôn được bật và sử dụng xác thực Gateway cùng chính sách công cụ. Giống như bề mặt tương thích OpenAI `/v1/*`, xác thực bearer bằng shared-secret được xem là quyền truy cập nhà vận hành đáng tin cậy cho toàn bộ Gateway.
+OpenClaw's Gateway exposes a simple HTTP endpoint for invoking a single tool directly. It is always enabled and uses Gateway auth plus tool policy. Like the OpenAI-compatible `/v1/*` surface, shared-secret bearer auth is treated as trusted operator access for the whole gateway.
 
 - `POST /tools/invoke`
-- Cùng cổng với Gateway (ghép kênh WS + HTTP): `http://<gateway-host>:<port>/tools/invoke`
+- Same port as the Gateway (WS + HTTP multiplex): `http://<gateway-host>:<port>/tools/invoke`
 
-Kích thước payload tối đa mặc định là 2 MB.
+Default max payload size is 2 MB.
 
-## Xác thực
+## Authentication
 
-Sử dụng cấu hình xác thực Gateway.
+Uses the Gateway auth configuration.
 
-Các đường dẫn xác thực HTTP phổ biến:
+Common HTTP auth paths:
 
-- xác thực shared-secret (`gateway.auth.mode="token"` hoặc `"password"`):
+- shared-secret auth (`gateway.auth.mode="token"` or `"password"`):
   `Authorization: Bearer <token-or-password>`
-- xác thực HTTP mang danh tính đáng tin cậy (`gateway.auth.mode="trusted-proxy"`):
-  định tuyến qua proxy nhận biết danh tính đã cấu hình và để nó chèn các
-  header danh tính bắt buộc
-- xác thực mở qua ingress riêng tư (`gateway.auth.mode="none"`):
-  không cần header xác thực
+- trusted identity-bearing HTTP auth (`gateway.auth.mode="trusted-proxy"`):
+  route through the configured identity-aware proxy and let it inject the
+  required identity headers
+- private-ingress open auth (`gateway.auth.mode="none"`):
+  no auth header required
 
-Ghi chú:
+Notes:
 
-- Khi `gateway.auth.mode="token"`, hãy dùng `gateway.auth.token` (hoặc `OPENCLAW_GATEWAY_TOKEN`).
-- Khi `gateway.auth.mode="password"`, hãy dùng `gateway.auth.password` (hoặc `OPENCLAW_GATEWAY_PASSWORD`).
-- Khi `gateway.auth.mode="trusted-proxy"`, yêu cầu HTTP phải đến từ một
-  nguồn proxy đáng tin cậy đã cấu hình; proxy local loopback cùng máy chủ yêu cầu đặt rõ
+- When `gateway.auth.mode="token"`, use `gateway.auth.token` (or `OPENCLAW_GATEWAY_TOKEN`).
+- When `gateway.auth.mode="password"`, use `gateway.auth.password` (or `OPENCLAW_GATEWAY_PASSWORD`).
+- When `gateway.auth.mode="trusted-proxy"`, the HTTP request must come from a
+  configured trusted proxy source; same-host loopback proxies require explicit
   `gateway.auth.trustedProxy.allowLoopback = true`.
-- Nếu `gateway.auth.rateLimit` được cấu hình và xảy ra quá nhiều lần xác thực thất bại, endpoint trả về `429` với `Retry-After`.
+- Internal same-host callers that bypass the proxy can use
+  `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` as a local direct
+  fallback. Any `Forwarded`, `X-Forwarded-*`, or `X-Real-IP` header evidence
+  keeps the request on the trusted-proxy path instead.
+- If `gateway.auth.rateLimit` is configured and too many auth failures occur, the endpoint returns `429` with `Retry-After`.
 
-## Ranh giới bảo mật (quan trọng)
+## Security boundary (important)
 
-Hãy xem endpoint này là một bề mặt **toàn quyền truy cập nhà vận hành** cho phiên bản Gateway.
+Treat this endpoint as a **full operator-access** surface for the gateway instance.
 
-- Xác thực HTTP bearer ở đây không phải là mô hình phạm vi hẹp theo từng người dùng.
-- Token/mật khẩu Gateway hợp lệ cho endpoint này nên được xem như thông tin xác thực của chủ sở hữu/nhà vận hành.
-- Với các chế độ xác thực shared-secret (`token` và `password`), endpoint khôi phục các mặc định toàn quyền nhà vận hành bình thường ngay cả khi caller gửi header `x-openclaw-scopes` hẹp hơn.
-- Xác thực shared-secret cũng xem các lần gọi công cụ trực tiếp trên endpoint này là lượt owner-sender.
-- Các chế độ HTTP mang danh tính đáng tin cậy (ví dụ xác thực trusted proxy hoặc `gateway.auth.mode="none"` trên ingress riêng tư) tôn trọng `x-openclaw-scopes` khi có mặt và nếu không thì quay về bộ phạm vi mặc định của nhà vận hành bình thường.
-- Chỉ giữ endpoint này trên loopback/tailnet/ingress riêng tư; không phơi bày trực tiếp ra internet công cộng.
+- HTTP bearer auth here is not a narrow per-user scope model.
+- A valid Gateway token/password for this endpoint should be treated like an owner/operator credential.
+- For shared-secret auth modes (`token` and `password`), the endpoint restores the normal full operator defaults even if the caller sends a narrower `x-openclaw-scopes` header.
+- Shared-secret auth also treats direct tool invokes on this endpoint as owner-sender turns.
+- Trusted identity-bearing HTTP modes (for example trusted proxy auth or `gateway.auth.mode="none"` on a private ingress) honor `x-openclaw-scopes` when present and otherwise fall back to the normal operator default scope set.
+- Keep this endpoint on loopback/tailnet/private ingress only; do not expose it directly to the public internet.
 
-Ma trận xác thực:
+Auth matrix:
 
-- `gateway.auth.mode="token"` hoặc `"password"` + `Authorization: Bearer ...`
-  - chứng minh quyền sở hữu shared gateway operator secret
-  - bỏ qua `x-openclaw-scopes` hẹp hơn
-  - khôi phục toàn bộ bộ phạm vi nhà vận hành mặc định:
+- `gateway.auth.mode="token"` or `"password"` + `Authorization: Bearer ...`
+  - proves possession of the shared gateway operator secret
+  - ignores narrower `x-openclaw-scopes`
+  - restores the full default operator scope set:
     `operator.admin`, `operator.approvals`, `operator.pairing`,
     `operator.read`, `operator.talk.secrets`, `operator.write`
-  - xem các lần gọi công cụ trực tiếp trên endpoint này là lượt owner-sender
-- các chế độ HTTP mang danh tính đáng tin cậy (ví dụ xác thực trusted proxy, hoặc `gateway.auth.mode="none"` trên ingress riêng tư)
-  - xác thực một danh tính đáng tin cậy bên ngoài hoặc ranh giới triển khai
-  - tôn trọng `x-openclaw-scopes` khi header có mặt
-  - quay về bộ phạm vi mặc định của nhà vận hành bình thường khi header vắng mặt
-  - chỉ mất ngữ nghĩa chủ sở hữu khi caller thu hẹp phạm vi một cách rõ ràng và bỏ qua `operator.admin`
+  - treats direct tool invokes on this endpoint as owner-sender turns
+- trusted identity-bearing HTTP modes (for example trusted proxy auth, or `gateway.auth.mode="none"` on private ingress)
+  - authenticate some outer trusted identity or deployment boundary
+  - honor `x-openclaw-scopes` when the header is present
+  - fall back to the normal operator default scope set when the header is absent
+  - only lose owner semantics when the caller explicitly narrows scopes and omits `operator.admin`
 
-## Thân yêu cầu
+## Request body
 
 ```json
 {
@@ -81,49 +86,49 @@ Ma trận xác thực:
 }
 ```
 
-Trường:
+Fields:
 
-- `tool` (chuỗi, bắt buộc): tên công cụ cần gọi.
-- `action` (chuỗi, tùy chọn): được ánh xạ vào args nếu schema công cụ hỗ trợ `action` và payload args đã bỏ qua nó.
-- `args` (đối tượng, tùy chọn): đối số riêng của công cụ.
-- `sessionKey` (chuỗi, tùy chọn): khóa phiên đích. Nếu bỏ qua hoặc là `"main"`, Gateway dùng khóa phiên chính đã cấu hình (tôn trọng `session.mainKey` và tác nhân mặc định, hoặc `global` trong phạm vi toàn cục).
-- `dryRun` (boolean, tùy chọn): dành riêng cho sử dụng trong tương lai; hiện bị bỏ qua.
+- `tool` (string, required): tool name to invoke.
+- `action` (string, optional): mapped into args if the tool schema supports `action` and the args payload omitted it.
+- `args` (object, optional): tool-specific arguments.
+- `sessionKey` (string, optional): target session key. If omitted or `"main"`, the Gateway uses the configured main session key (honors `session.mainKey` and default agent, or `global` in global scope).
+- `dryRun` (boolean, optional): reserved for future use; currently ignored.
 
-## Chính sách + hành vi định tuyến
+## Policy + routing behavior
 
-Tính khả dụng của công cụ được lọc qua cùng chuỗi chính sách mà các tác nhân Gateway sử dụng:
+Tool availability is filtered through the same policy chain used by Gateway agents:
 
 - `tools.profile` / `tools.byProvider.profile`
 - `tools.allow` / `tools.byProvider.allow`
 - `agents.<id>.tools.allow` / `agents.<id>.tools.byProvider.allow`
-- chính sách nhóm (nếu khóa phiên ánh xạ tới một nhóm hoặc kênh)
-- chính sách subagent (khi gọi bằng khóa phiên subagent)
+- group policies (if the session key maps to a group or channel)
+- subagent policy (when invoking with a subagent session key)
 
-Nếu một công cụ không được chính sách cho phép, endpoint trả về **404**.
+If a tool is not allowed by policy, the endpoint returns **404**.
 
-Ghi chú ranh giới quan trọng:
+Important boundary notes:
 
-- Phê duyệt exec là hàng rào bảo vệ cho nhà vận hành, không phải ranh giới ủy quyền riêng cho endpoint HTTP này. Nếu một công cụ có thể truy cập ở đây qua xác thực Gateway + chính sách công cụ, `/tools/invoke` không thêm lời nhắc phê duyệt riêng cho từng lần gọi.
-- Nếu `exec` có thể truy cập ở đây, hãy xem nó là một bề mặt shell có khả năng thay đổi. Từ chối `write`, `edit`, `apply_patch`, hoặc các công cụ ghi hệ thống tệp qua HTTP không làm cho việc thực thi shell trở thành chỉ đọc.
-- Không chia sẻ thông tin xác thực bearer của Gateway với caller không đáng tin cậy. Nếu bạn cần tách biệt giữa các ranh giới tin cậy, hãy chạy các Gateway riêng biệt (và lý tưởng là các người dùng/máy chủ OS riêng biệt).
+- Exec approvals are operator guardrails, not a separate authorization boundary for this HTTP endpoint. If a tool is reachable here via Gateway auth + tool policy, `/tools/invoke` does not add an extra per-call approval prompt.
+- If `exec` is reachable here, treat it as a mutating shell surface. Denying `write`, `edit`, `apply_patch`, or HTTP filesystem-write tools does not make shell execution read-only.
+- Do not share Gateway bearer credentials with untrusted callers. If you need separation across trust boundaries, run separate gateways (and ideally separate OS users/hosts).
 
-HTTP của Gateway cũng áp dụng một danh sách từ chối cứng theo mặc định (ngay cả khi chính sách phiên cho phép công cụ):
+Gateway HTTP also applies a hard deny list by default (even if session policy allows the tool):
 
-- `exec` - thực thi lệnh trực tiếp (bề mặt RCE)
-- `spawn` - tạo tiến trình con tùy ý (bề mặt RCE)
-- `shell` - thực thi lệnh shell (bề mặt RCE)
-- `fs_write` - thay đổi tệp tùy ý trên máy chủ
-- `fs_delete` - xóa tệp tùy ý trên máy chủ
-- `fs_move` - di chuyển/đổi tên tệp tùy ý trên máy chủ
-- `apply_patch` - áp dụng patch có thể ghi lại các tệp tùy ý
-- `sessions_spawn` - điều phối phiên; sinh tác nhân từ xa là RCE
-- `sessions_send` - chèn thông điệp giữa các phiên
-- `cron` - mặt phẳng điều khiển tự động hóa bền vững
-- `gateway` - mặt phẳng điều khiển Gateway; ngăn cấu hình lại qua HTTP
-- `nodes` - chuyển tiếp lệnh Node có thể chạm tới system.run trên các máy chủ đã ghép cặp
-- `whatsapp_login` - thiết lập tương tác yêu cầu quét QR trong terminal; bị treo trên HTTP
+- `exec` - direct command execution (RCE surface)
+- `spawn` - arbitrary child process creation (RCE surface)
+- `shell` - shell command execution (RCE surface)
+- `fs_write` - arbitrary file mutation on the host
+- `fs_delete` - arbitrary file deletion on the host
+- `fs_move` - arbitrary file move/rename on the host
+- `apply_patch` - patch application can rewrite arbitrary files
+- `sessions_spawn` - session orchestration; spawning agents remotely is RCE
+- `sessions_send` - cross-session message injection
+- `cron` - persistent automation control plane
+- `gateway` - gateway control plane; prevents reconfiguration via HTTP
+- `nodes` - node command relay can reach system.run on paired hosts
+- `whatsapp_login` - interactive setup requiring terminal QR scan; hangs on HTTP
 
-Bạn có thể tùy chỉnh danh sách từ chối này qua `gateway.tools`:
+You can customize this deny list via `gateway.tools`:
 
 ```json5
 {
@@ -131,29 +136,35 @@ Bạn có thể tùy chỉnh danh sách từ chối này qua `gateway.tools`:
     tools: {
       // Additional tools to block over HTTP /tools/invoke
       deny: ["browser"],
-      // Remove tools from the default deny list
+      // Remove tools from the default deny list for owner/admin callers
       allow: ["gateway"],
     },
   },
 }
 ```
 
-Để giúp chính sách nhóm phân giải ngữ cảnh, bạn có thể tùy chọn đặt:
+`gateway.tools.allow` is an exposure override, not a scope upgrade. In
+identity-bearing HTTP modes, `cron`, `gateway`, and `nodes` remain unavailable
+to callers that do not have owner/admin identity (`operator.admin`) even when
+they are listed in `gateway.tools.allow`. Shared-secret bearer auth still follows
+the full trusted-operator rule above.
 
-- `x-openclaw-message-channel: <channel>` (ví dụ: `slack`, `telegram`)
-- `x-openclaw-account-id: <accountId>` (khi tồn tại nhiều tài khoản)
+To help group policies resolve context, you can optionally set:
 
-## Phản hồi
+- `x-openclaw-message-channel: <channel>` (example: `slack`, `telegram`)
+- `x-openclaw-account-id: <accountId>` (when multiple accounts exist)
+
+## Responses
 
 - `200` → `{ ok: true, result }`
-- `400` → `{ ok: false, error: { type, message } }` (yêu cầu không hợp lệ hoặc lỗi đầu vào công cụ)
-- `401` → chưa được ủy quyền
-- `429` → xác thực bị giới hạn tốc độ (`Retry-After` được đặt)
-- `404` → công cụ không khả dụng (không tìm thấy hoặc không nằm trong allowlist)
-- `405` → phương thức không được phép
-- `500` → `{ ok: false, error: { type, message } }` (lỗi thực thi công cụ không mong đợi; thông điệp đã được làm sạch)
+- `400` → `{ ok: false, error: { type, message } }` (invalid request or tool input error)
+- `401` → unauthorized
+- `429` → auth rate-limited (`Retry-After` set)
+- `404` → tool not available (not found or not allowlisted)
+- `405` → method not allowed
+- `500` → `{ ok: false, error: { type, message } }` (unexpected tool execution error; sanitized message)
 
-## Ví dụ
+## Example
 
 ```bash
 curl -sS http://127.0.0.1:18789/tools/invoke \
@@ -166,7 +177,7 @@ curl -sS http://127.0.0.1:18789/tools/invoke \
   }'
 ```
 
-## Liên quan
+## Related
 
-- [Giao thức Gateway](/vi/gateway/protocol)
-- [Công cụ và Plugin](/vi/tools)
+- [Gateway protocol](/vi/gateway/protocol)
+- [Tools and plugins](/vi/tools)

@@ -1,58 +1,73 @@
 ---
+doc-schema-version: 1
 read_when:
-    - Вам потрібні швидкі приклади встановлення, перегляду списку, оновлення або видалення Plugin
-    - Ви хочете вибрати між розповсюдженням плагінів через ClawHub і npm
-    - Ви публікуєте пакет Plugin
+    - Вам потрібні швидкі приклади для списку Plugin, встановлення, оновлення, перевірки або видалення
+    - Ви хочете вибрати джерело встановлення plugin
+    - Вам потрібен правильний довідковий матеріал для публікації пакетів Plugin
 sidebarTitle: Manage plugins
-summary: Швидкі приклади встановлення, перегляду списку, видалення, оновлення та публікації плагінів OpenClaw
-title: Керування Plugin
+summary: Короткі приклади для перегляду списку, установлення, оновлення, перевірки та видалення плагінів OpenClaw
+title: Керування плагінами
 x-i18n:
-    generated_at: "2026-05-11T20:48:18Z"
+    generated_at: "2026-06-27T17:53:44Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5f666a8196c802190dfd69e8b6a679a47db22f97c4c14d2f9fed73e8fb1ffe5a
+    source_hash: dd0c1143c6312603311931cbbdc63069a44bc5ec487e2a46b0266b86a556da4e
     source_path: plugins/manage-plugins.md
     workflow: 16
 ---
 
-Найпоширеніші робочі процеси Plugin складаються з кількох команд: пошук, установлення, перезапуск Gateway, перевірка та видалення, коли Plugin більше не потрібен.
+Використовуйте цю сторінку для поширених команд керування плагінами. Повний контракт команд, прапорці, правила вибору джерела та крайові випадки див. у
+[`openclaw plugins`](/uk/cli/plugins).
 
-## Список Plugins
+Більшість робочих процесів встановлення такі:
+
+1. знайти пакет
+2. встановити його з ClawHub, npm, git або локального шляху
+3. дозволити керованому Gateway автоматично перезапуститися або перезапустити його вручну, якщо він некерований
+4. перевірити реєстрації середовища виконання плагіна
+
+## Список і пошук плагінів
 
 ```bash
 openclaw plugins list
 openclaw plugins list --enabled
 openclaw plugins list --verbose
 openclaw plugins list --json
+openclaw plugins search "calendar"
 ```
 
-Використовуйте `--json` для скриптів. Він містить діагностику реєстру та статичний `dependencyStatus` кожного Plugin, коли пакет Plugin оголошує `dependencies` або `optionalDependencies`.
+Використовуйте `--json` для скриптів:
 
 ```bash
 openclaw plugins list --json \
   | jq '.plugins[] | {id, enabled, format, source, dependencyStatus}'
 ```
 
-`plugins list` — це холодна перевірка інвентарю. Вона показує, що OpenClaw може виявити з конфігурації, маніфестів і реєстру Plugin; вона не доводить, що вже запущений процес Gateway імпортував runtime Plugin.
+`plugins list` — це холодна перевірка інвентарю. Вона показує, що OpenClaw може виявити
+з конфігурації, маніфестів і реєстру плагінів; вона не доводить, що вже запущений Gateway імпортував середовище виконання плагіна. Вивід JSON містить діагностику реєстру та статичний `dependencyStatus` кожного плагіна, коли пакет плагіна оголошує `dependencies` або `optionalDependencies`.
 
-## Установлення Plugins
+`plugins search` запитує ClawHub щодо встановлюваних пакетів плагінів і виводить
+підказки для встановлення, наприклад `openclaw plugins install clawhub:<package>`.
+
+## Встановлення плагінів
 
 ```bash
 # Search ClawHub for plugin packages.
 openclaw plugins search "calendar"
 
-# Bare package specs try ClawHub first, then npm fallback.
-openclaw plugins install <package>
-
-# Force one source.
+# Install from ClawHub.
 openclaw plugins install clawhub:<package>
-openclaw plugins install npm:<package>
-
-# Install a specific version or dist-tag.
 openclaw plugins install clawhub:<package>@1.2.3
 openclaw plugins install clawhub:<package>@beta
+
+# Install from npm.
+openclaw plugins install npm:<package>
 openclaw plugins install npm:@scope/openclaw-plugin@1.2.3
 openclaw plugins install npm:@openclaw/codex
+
+# Install from a local npm pack artifact.
+openclaw plugins install npm-pack:<path.tgz>
 
 # Install from git or a local development checkout.
 openclaw plugins install git:github.com/acme/openclaw-plugin@v1.0.0
@@ -60,54 +75,99 @@ openclaw plugins install ./my-plugin
 openclaw plugins install --link ./my-plugin
 ```
 
-Після встановлення коду Plugin перезапустіть Gateway, який обслуговує ваші канали:
+Специфікації пакетів без префікса встановлюються з npm під час стартового переходу. Використовуйте `clawhub:`,
+`npm:`, `git:` або `npm-pack:`, коли потрібен детермінований вибір джерела.
+Якщо ім’я без префікса збігається з ідентифікатором офіційного плагіна, OpenClaw може встановити
+запис каталогу напряму.
+
+Використовуйте `--force` лише тоді, коли навмисно хочете перезаписати наявну ціль встановлення.
+Для звичайних оновлень відстежуваних встановлень npm, ClawHub або hook-pack використовуйте
+`openclaw plugins update`.
+
+## Перезапуск і перевірка
+
+Після встановлення, оновлення або видалення коду плагіна запущений керований
+Gateway з увімкненим перезавантаженням конфігурації перезапускається автоматично. Якщо Gateway не
+керований або перезавантаження вимкнено, перезапустіть його самостійно перед перевіркою живих поверхонь
+середовища виконання:
 
 ```bash
 openclaw gateway restart
 openclaw plugins inspect <plugin-id> --runtime --json
 ```
 
-Використовуйте `inspect --runtime`, коли вам потрібен доказ, що Plugin зареєстрував runtime-поверхні, як-от інструменти, hooks, сервіси, методи Gateway або команди CLI, що належать Plugin.
+Використовуйте `inspect --runtime`, коли потрібен доказ, що плагін зареєстрував поверхні середовища виконання, як-от інструменти, хуки, сервіси, методи Gateway, HTTP-маршрути або CLI-команди, що належать плагіну. Звичайні `inspect` і `list` — це холодні перевірки маніфесту, конфігурації та реєстру.
 
-## Оновлення Plugins
+## Оновлення плагінів
 
 ```bash
 openclaw plugins update <plugin-id>
 openclaw plugins update <npm-package-or-spec>
 openclaw plugins update --all
+openclaw plugins update <plugin-id> --dry-run
 ```
 
-Якщо Plugin було встановлено з npm dist-tag, такого як `@beta`, подальші виклики `update <plugin-id>` повторно використовують цей записаний тег. Передавання явної npm-специфікації перемикає відстежуване встановлення на цю специфікацію для майбутніх оновлень.
+Коли ви передаєте ідентифікатор плагіна, OpenClaw повторно використовує відстежувану специфікацію встановлення. Збережені dist-tags, як-от `@beta`, і точні закріплені версії продовжують використовуватися під час подальших запусків `update <plugin-id>`.
+
+`openclaw plugins update --all` — це шлях масового обслуговування. Він усе ще поважає
+звичайні відстежувані специфікації встановлення, але довірені офіційні записи плагінів OpenClaw можуть
+синхронізуватися з поточною ціллю офіційного каталогу замість того, щоб залишатися на застарілому точному
+офіційному пакеті. Якщо `update.channel` має значення `beta`, ця масова офіційна синхронізація
+використовує контекст beta-каналу. Використовуйте цільовий `update <plugin-id>`, коли ви
+навмисно хочете залишити точну або теговану офіційну специфікацію без змін.
+
+Для встановлень npm можна передати явну специфікацію пакета, щоб переключити відстежуваний
+запис:
 
 ```bash
 openclaw plugins update @scope/openclaw-plugin@beta
 openclaw plugins update @scope/openclaw-plugin
 ```
 
-Друга команда повертає Plugin до стандартної лінії випусків реєстру, якщо раніше він був закріплений за точною версією або тегом.
+Друга команда повертає плагін до стандартної лінійки випусків реєстру,
+якщо раніше він був закріплений на точній версії або тегу.
 
-Коли `openclaw update` виконується на beta-каналі, записи Plugin npm і ClawHub зі стандартної лінії спочатку пробують відповідний випуск Plugin `@beta`. Якщо такого beta-випуску не існує, OpenClaw повертається до записаної специфікації default/latest. Для npm Plugins OpenClaw також повертається назад, коли beta-пакет існує, але не проходить перевірку встановлення. Точні версії та явні теги, як-от `@rc` або `@beta`, зберігаються.
+Коли `openclaw update` виконується на beta-каналі, записи плагінів можуть надавати перевагу
+відповідним випускам `@beta`. Точні правила резервного вибору та закріплення див. у
+[`openclaw plugins`](/uk/cli/plugins#update).
 
-## Видалення Plugins
+## Видалення плагінів
 
 ```bash
 openclaw plugins uninstall <plugin-id> --dry-run
 openclaw plugins uninstall <plugin-id>
 openclaw plugins uninstall <plugin-id> --keep-files
-openclaw gateway restart
 ```
 
-Видалення прибирає конфігураційний запис Plugin, запис індексу Plugin, записи списків дозволу/заборони та пов’язані шляхи завантаження, коли це застосовно. Керовані каталоги встановлення видаляються, якщо не передано `--keep-files`.
+Видалення прибирає запис конфігурації плагіна, збережений індексний запис плагіна,
+записи списків дозволу/заборони та пов’язані шляхи завантаження, коли це застосовно. Керовані каталоги
+встановлення видаляються, якщо не передати `--keep-files`. Запущений керований
+Gateway перезапускається автоматично, коли видалення змінює джерело плагіна.
 
-У режимі Nix (`OPENCLAW_NIX_MODE=1`) команди встановлення, оновлення, видалення, увімкнення та вимкнення Plugin вимкнені. Натомість керуйте цими виборами у джерелі Nix для встановлення; для nix-openclaw використовуйте agent-first [Швидкий старт](https://github.com/openclaw/nix-openclaw#quick-start).
+У режимі Nix (`OPENCLAW_NIX_MODE=1`) команди встановлення, оновлення, видалення, увімкнення
+та вимкнення плагінів вимкнені. Керуйте цими виборами в джерелі Nix для
+встановлення натомість.
 
-## Публікація Plugins
+## Вибір джерела
 
-Ви можете публікувати зовнішні Plugins у [ClawHub](https://clawhub.ai), npmjs.com або в обох місцях.
+| Джерело      | Використовуйте, коли                                                                    | Приклад                                                        |
+| ----------- | --------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| ClawHub     | Вам потрібні нативне для OpenClaw виявлення, зведення сканування, версії та підказки     | `openclaw plugins install clawhub:<package>`                   |
+| npmjs.com   | Ви вже постачаєте JavaScript-пакети або потребуєте npm dist-tags/приватного реєстру | `openclaw plugins install npm:@acme/openclaw-plugin`           |
+| git         | Вам потрібна гілка, тег або коміт із репозиторію                         | `openclaw plugins install git:github.com/<owner>/<repo>@<ref>` |
+| локальний шлях  | Ви розробляєте або тестуєте плагін на тому самому комп’ютері                  | `openclaw plugins install --link ./my-plugin`                  |
+| npm pack    | Ви перевіряєте локальний артефакт пакета через семантику встановлення npm      | `openclaw plugins install npm-pack:<path.tgz>`                 |
+| маркетплейс | Ви встановлюєте сумісний із Claude плагін маркетплейсу                   | `openclaw plugins install <plugin> --marketplace <source>`     |
 
-### Публікація в ClawHub
+Керовані встановлення з локального шляху мають бути каталогами або архівами плагінів. Додавайте
+окремі файли плагінів у `plugins.load.paths` замість встановлення їх за допомогою
+`plugins install`.
 
-ClawHub є основною публічною поверхнею виявлення для OpenClaw Plugins. Він надає користувачам метадані з пошуком, історію версій і результати сканування реєстру перед встановленням.
+## Публікація плагінів
+
+ClawHub — основна публічна поверхня виявлення для плагінів OpenClaw. Публікуйте
+там, коли хочете, щоб користувачі знаходили метадані плагіна, історію версій, результати
+сканування реєстру та підказки для встановлення перед встановленням.
 
 ```bash
 npm i -g clawhub
@@ -117,18 +177,8 @@ clawhub package publish your-org/your-plugin
 clawhub package publish your-org/your-plugin@v1.0.0
 ```
 
-Користувачі встановлюють із ClawHub так:
-
-```bash
-openclaw plugins install clawhub:<package>
-openclaw plugins install <package>
-```
-
-Коротка форма все одно спочатку перевіряє ClawHub.
-
-### Публікація в npmjs.com
-
-Нативні npm Plugins повинні містити маніфест Plugin і метадані entrypoint OpenClaw у `package.json`.
+Нативні npm-плагіни мають містити маніфест плагіна та метадані пакета перед
+публікацією:
 
 ```json package.json
 {
@@ -143,29 +193,28 @@ openclaw plugins install <package>
 
 ```bash
 npm publish --access public
-```
-
-Користувачі встановлюють лише з npm так:
-
-```bash
 openclaw plugins install npm:@acme/openclaw-plugin
 openclaw plugins install npm:@acme/openclaw-plugin@beta
 openclaw plugins install npm:@acme/openclaw-plugin@1.0.0
 ```
 
-Якщо той самий пакет також доступний у ClawHub, `npm:` пропускає пошук у ClawHub і примусово використовує розв’язання через npm.
+Використовуйте ці сторінки для повного контракту публікації замість того, щоб вважати цю сторінку
+довідником із публікації:
 
-## Вибір джерела
+- [Публікація ClawHub](/uk/clawhub/publishing) пояснює власників, scopes, випуски,
+  рев’ю, перевірку пакета та передавання пакета.
+- [Створення плагінів](/uk/plugins/building-plugins) показує форму пакета плагіна
+  та перший робочий процес публікації.
+- [Маніфест Plugin](/uk/plugins/manifest) визначає поля нативного маніфесту плагіна.
 
-- **ClawHub**: використовуйте, коли вам потрібні нативне для OpenClaw виявлення, підсумки сканування, версії та підказки щодо встановлення.
-- **npmjs.com**: використовуйте, коли ви вже постачаєте JavaScript-пакети або потребуєте npm dist-tags/робочих процесів приватного реєстру.
-- **Git**: використовуйте, коли потрібно встановити безпосередньо з гілки, тегу або коміту.
-- **Локальний шлях**: використовуйте, коли розробляєте або тестуєте Plugin на тій самій машині.
+Якщо той самий пакет доступний і в ClawHub, і в npm, використовуйте явний
+префікс `clawhub:` або `npm:`, коли потрібно примусово вибрати одне джерело.
 
 ## Пов’язане
 
-- [Plugins](/uk/tools/plugin) - огляд і усунення несправностей
+- [Плагіни](/uk/tools/plugin) - встановлення, налаштування, перезапуск і усунення несправностей
 - [`openclaw plugins`](/uk/cli/plugins) - повна довідка CLI
-- [ClawHub](/uk/clawhub/cli) - публікація та операції реєстру
-- [Створення Plugins](/uk/plugins/building-plugins) - створення пакета Plugin
+- [Спільнотні плагіни](/uk/plugins/community) - публічне виявлення та публікація ClawHub
+- [ClawHub](/uk/clawhub/cli) - операції CLI реєстру
+- [Створення плагінів](/uk/plugins/building-plugins) - створення пакета плагіна
 - [Маніфест Plugin](/uk/plugins/manifest) - маніфест і метадані пакета

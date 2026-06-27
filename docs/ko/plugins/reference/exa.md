@@ -4,24 +4,25 @@ read_when:
 summary: 웹 검색 제공자 지원을 추가합니다.
 title: Exa Plugin
 x-i18n:
-    generated_at: "2026-05-02T21:02:46Z"
+    generated_at: "2026-06-27T17:50:37Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e8cde3e0199d84893e63becdd7a32fbec25d8e90f52ee604dcba78f5a5980f61
+    source_hash: 6170d70f03913f87b62f7a85647b4748032b7d01c56e909826e10e261e58160f
     source_path: plugins/reference/exa.md
     workflow: 16
 ---
 
 # Exa Plugin
 
-웹 검색 제공자 지원을 추가합니다.
+웹 검색 공급자 지원을 추가합니다.
 
 ## 배포
 
 - 패키지: `@openclaw/exa-plugin`
-- 설치 경로: OpenClaw에 포함됨
+- 설치 경로: npm; ClawHub: `clawhub:@openclaw/exa-plugin`
 
-## 노출 영역
+## 표면
 
 계약: webSearchProviders
 

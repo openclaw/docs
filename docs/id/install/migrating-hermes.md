@@ -1,23 +1,24 @@
 ---
 read_when:
     - Anda beralih dari Hermes dan ingin mempertahankan konfigurasi model, prompt, memori, dan Skills Anda
-    - Anda ingin mengetahui apa saja yang diimpor OpenClaw secara otomatis dan apa saja yang tetap hanya tersedia di arsip
-    - Anda memerlukan jalur migrasi yang bersih dan berbasis skrip (CI, laptop baru, automasi)
-summary: Beralih dari Hermes ke OpenClaw dengan impor yang dipratinjau dan dapat dikembalikan
+    - Anda ingin mengetahui apa yang diimpor OpenClaw secara otomatis dan apa yang tetap hanya arsip
+    - Anda memerlukan jalur migrasi yang bersih dan terskrip (CI, laptop baru, otomatisasi)
+summary: Pindah dari Hermes ke OpenClaw dengan impor yang dipratinjau dan dapat dibalik
 title: Bermigrasi dari Hermes
 x-i18n:
-    generated_at: "2026-04-30T09:56:56Z"
+    generated_at: "2026-06-27T17:38:31Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 01f8a71e524b31c85864be63e54fc8a2057ecb06a73aac9e6fb107fc0c49757d
+    source_hash: 4f2a2bfea4fd276e3392261e8ecea09d147424636efb200ced1deb86ac0161b5
     source_path: install/migrating-hermes.md
     workflow: 16
 ---
 
-OpenClaw mengimpor state Hermes melalui penyedia migrasi bawaan. Penyedia ini meninjau semuanya sebelum mengubah state, menyamarkan secret dalam rencana dan laporan, serta membuat backup terverifikasi sebelum apply.
+OpenClaw mengimpor status Hermes melalui penyedia migrasi bawaan. Penyedia ini mempratinjau semuanya sebelum mengubah status, menyamarkan rahasia dalam rencana dan laporan, serta membuat cadangan terverifikasi sebelum menerapkan.
 
 <Note>
-Impor memerlukan setup OpenClaw yang baru. Jika Anda sudah memiliki state OpenClaw lokal, reset config, credentials, sessions, dan workspace terlebih dahulu, atau gunakan `openclaw migrate` secara langsung dengan `--overwrite` setelah meninjau rencananya.
+Impor memerlukan penyiapan OpenClaw yang baru. Jika Anda sudah memiliki status OpenClaw lokal, reset konfigurasi, kredensial, sesi, dan workspace terlebih dahulu, atau gunakan `openclaw migrate` langsung dengan `--overwrite` setelah meninjau rencana.
 </Note>
 
 ## Dua cara untuk mengimpor
@@ -38,7 +39,7 @@ Impor memerlukan setup OpenClaw yang baru. Jika Anda sudah memiliki state OpenCl
 
   </Tab>
   <Tab title="CLI">
-    Gunakan `openclaw migrate` untuk eksekusi berskrip atau berulang. Lihat [`openclaw migrate`](/id/cli/migrate) untuk referensi lengkap.
+    Gunakan `openclaw migrate` untuk eksekusi berskrip atau yang dapat diulang. Lihat [`openclaw migrate`](/id/cli/migrate) untuk referensi lengkap.
 
     ```bash
     openclaw migrate hermes --dry-run    # preview only
@@ -50,11 +51,11 @@ Impor memerlukan setup OpenClaw yang baru. Jika Anda sudah memiliki state OpenCl
   </Tab>
 </Tabs>
 
-## Apa yang diimpor
+## Yang diimpor
 
 <AccordionGroup>
   <Accordion title="Konfigurasi model">
-    - Pilihan model default dari Hermes `config.yaml`.
+    - Pilihan model default dari `config.yaml` Hermes.
     - Penyedia model yang dikonfigurasi dan endpoint kustom yang kompatibel dengan OpenAI dari `providers` dan `custom_providers`.
 
   </Accordion>
@@ -67,47 +68,46 @@ Impor memerlukan setup OpenClaw yang baru. Jika Anda sudah memiliki state OpenCl
 
   </Accordion>
   <Accordion title="Konfigurasi memori">
-    Default config memori untuk memori file OpenClaw. Penyedia memori eksternal seperti Honcho dicatat sebagai item arsip atau tinjauan manual agar Anda dapat memindahkannya secara sengaja.
+    Default konfigurasi memori untuk memori file OpenClaw. Penyedia memori eksternal seperti Honcho dicatat sebagai item arsip atau peninjauan manual agar Anda dapat memindahkannya secara sengaja.
   </Accordion>
   <Accordion title="Skills">
-    Skills dengan file `SKILL.md` di bawah `skills/<name>/` disalin, bersama dengan nilai config per skill dari `skills.config`.
+    Skills dengan file `SKILL.md` di bawah `skills/<name>/` disalin, beserta nilai konfigurasi per-Skills dari `skills.config`.
   </Accordion>
-  <Accordion title="Kunci API (ikut serta)">
-    Atur `--include-secrets` untuk mengimpor kunci `.env` yang didukung: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `OPENROUTER_API_KEY`, `GOOGLE_API_KEY`, `GEMINI_API_KEY`, `GROQ_API_KEY`, `XAI_API_KEY`, `MISTRAL_API_KEY`, `DEEPSEEK_API_KEY`. Tanpa flag tersebut, secret tidak pernah disalin.
+  <Accordion title="Kredensial auth">
+    `openclaw migrate` interaktif bertanya sebelum mengimpor kredensial auth, dengan ya dipilih secara default. Impor yang diterima mencakup kredensial OAuth OpenAI OpenCode dari `auth.json` OpenCode, entri OpenCode dan GitHub Copilot dari `auth.json` OpenCode, serta [kunci `.env` yang didukung](/id/cli/migrate#supported-env-keys). Entri OAuth `auth.json` Hermes adalah status legacy dan ditampilkan sebagai pekerjaan reauth/doctor manual, bukan diimpor ke auth aktif. Gunakan `--include-secrets` untuk impor kredensial `openclaw migrate` non-interaktif, `--no-auth-credentials` untuk melewatinya, atau onboarding `--import-secrets` saat mengimpor dari wizard onboarding.
   </Accordion>
 </AccordionGroup>
 
-## Yang tetap hanya diarsipkan
+## Yang tetap hanya arsip
 
-Penyedia menyalin ini ke direktori laporan migrasi untuk tinjauan manual, tetapi **tidak** memuatnya ke config atau credentials OpenClaw live:
+Penyedia menyalin ini ke direktori laporan migrasi untuk peninjauan manual, tetapi **tidak** memuatnya ke konfigurasi atau kredensial OpenClaw aktif:
 
 - `plugins/`
 - `sessions/`
 - `logs/`
 - `cron/`
 - `mcp-tokens/`
-- `auth.json`
 - `state.db`
 
-OpenClaw menolak mengeksekusi atau memercayai state ini secara otomatis karena format dan asumsi kepercayaan dapat bergeser antar sistem. Pindahkan yang Anda butuhkan secara manual setelah meninjau arsip.
+OpenClaw menolak mengeksekusi atau memercayai status ini secara otomatis karena format dan asumsi kepercayaan dapat bergeser antar sistem. Pindahkan yang Anda butuhkan secara manual setelah meninjau arsip.
 
 ## Alur yang direkomendasikan
 
 <Steps>
-  <Step title="Tinjau rencana">
+  <Step title="Pratinjau rencana">
     ```bash
     openclaw migrate hermes --dry-run
     ```
 
-    Rencana mencantumkan semua hal yang akan berubah, termasuk konflik, item yang dilewati, dan item sensitif apa pun. Output rencana menyamarkan kunci bertingkat yang tampak seperti secret.
+    Rencana mencantumkan semua yang akan berubah, termasuk konflik, item yang dilewati, dan item sensitif apa pun. Output rencana menyamarkan kunci bertingkat yang terlihat seperti rahasia.
 
   </Step>
-  <Step title="Terapkan dengan backup">
+  <Step title="Terapkan dengan cadangan">
     ```bash
     openclaw migrate apply hermes --yes
     ```
 
-    OpenClaw membuat dan memverifikasi backup sebelum menerapkan. Jika Anda perlu mengimpor kunci API, tambahkan `--include-secrets`.
+    OpenClaw membuat dan memverifikasi cadangan sebelum menerapkan. Contoh non-interaktif ini mengimpor status non-rahasia. Jalankan tanpa `--yes` untuk menjawab prompt kredensial, atau tambahkan `--include-secrets` untuk menyertakan kredensial yang didukung dalam eksekusi tanpa pengawasan.
 
   </Step>
   <Step title="Jalankan doctor">
@@ -115,63 +115,65 @@ OpenClaw menolak mengeksekusi atau memercayai state ini secara otomatis karena f
     openclaw doctor
     ```
 
-    [Doctor](/id/gateway/doctor) menerapkan ulang migrasi config yang tertunda dan memeriksa masalah yang muncul selama impor.
+    [Doctor](/id/gateway/doctor) menerapkan ulang migrasi konfigurasi yang tertunda dan memeriksa masalah yang muncul selama impor.
 
   </Step>
-  <Step title="Restart dan verifikasi">
+  <Step title="Mulai ulang dan verifikasi">
     ```bash
     openclaw gateway restart
     openclaw status
     ```
 
-    Pastikan Gateway sehat dan model, memori, serta skills yang diimpor sudah dimuat.
+    Pastikan Gateway sehat dan model, memori, serta Skills yang diimpor sudah dimuat.
 
   </Step>
 </Steps>
 
 ## Penanganan konflik
 
-Apply menolak melanjutkan saat rencana melaporkan konflik (file atau nilai config sudah ada di target).
+Penerapan menolak melanjutkan saat rencana melaporkan konflik (file atau nilai konfigurasi sudah ada di target).
 
 <Warning>
-Jalankan ulang dengan `--overwrite` hanya saat mengganti target yang sudah ada memang disengaja. Penyedia mungkin tetap menulis backup tingkat item untuk file yang ditimpa di direktori laporan migrasi.
+Jalankan ulang dengan `--overwrite` hanya saat mengganti target yang ada memang disengaja. Penyedia mungkin tetap menulis cadangan tingkat item untuk file yang ditimpa di direktori laporan migrasi.
 </Warning>
 
-Untuk instalasi OpenClaw baru, konflik jarang terjadi. Konflik biasanya muncul saat Anda menjalankan ulang impor pada setup yang sudah memiliki editan pengguna.
+Untuk instalasi OpenClaw baru, konflik jarang terjadi. Biasanya konflik muncul saat Anda menjalankan ulang impor pada penyiapan yang sudah memiliki editan pengguna.
 
-Jika konflik muncul di tengah apply (misalnya, race tak terduga pada file config), Hermes menandai item config dependen yang tersisa sebagai `skipped` dengan alasan `blocked by earlier apply conflict`, bukan menulisnya sebagian. Laporan migrasi mencatat setiap item yang diblokir agar Anda dapat menyelesaikan konflik asal dan menjalankan ulang impor.
+Jika konflik muncul di tengah penerapan (misalnya, race tak terduga pada file konfigurasi), Hermes menandai item konfigurasi dependen yang tersisa sebagai `skipped` dengan alasan `blocked by earlier apply conflict`, bukan menuliskannya sebagian. Laporan migrasi mencatat setiap item yang diblokir sehingga Anda dapat menyelesaikan konflik asli dan menjalankan ulang impor.
 
-## Secret
+## Rahasia
 
-Secret tidak pernah diimpor secara default.
+`openclaw migrate` interaktif bertanya apakah akan mengimpor kredensial auth yang terdeteksi, dengan ya dipilih secara default.
 
-- Jalankan `openclaw migrate apply hermes --yes` terlebih dahulu untuk mengimpor state non-secret.
-- Jika Anda juga ingin kunci `.env` yang didukung disalin, jalankan ulang dengan `--include-secrets`.
-- Untuk credentials yang dikelola SecretRef, konfigurasikan sumber SecretRef setelah impor selesai.
+- Menerima prompt mengimpor kredensial OAuth OpenAI OpenCode dari `auth.json` OpenCode, entri OpenCode dan GitHub Copilot dari `auth.json` OpenCode, serta [kunci `.env` yang didukung](/id/cli/migrate#supported-env-keys). Entri OAuth `auth.json` Hermes dilaporkan untuk reauth OpenAI manual atau perbaikan doctor.
+- Gunakan `--no-auth-credentials` atau pilih tidak pada prompt untuk hanya mengimpor status non-rahasia.
+- Gunakan `--include-secrets` saat menjalankan tanpa pengawasan dengan `--yes`.
+- Gunakan onboarding `--import-secrets` saat mengimpor kredensial dari wizard onboarding.
+- Untuk kredensial yang dikelola SecretRef, konfigurasikan sumber SecretRef setelah impor selesai.
 
-## Output JSON untuk otomasi
+## Output JSON untuk automasi
 
 ```bash
 openclaw migrate hermes --dry-run --json
 openclaw migrate apply hermes --json --yes
 ```
 
-Dengan `--json` dan tanpa `--yes`, apply mencetak rencana dan tidak mengubah state. Ini adalah mode paling aman untuk CI dan skrip bersama.
+Dengan `--json` dan tanpa `--yes`, penerapan mencetak rencana dan tidak mengubah status. Ini adalah mode paling aman untuk CI dan skrip bersama.
 
 ## Pemecahan masalah
 
 <AccordionGroup>
-  <Accordion title="Apply menolak dengan konflik">
+  <Accordion title="Penerapan menolak karena konflik">
     Periksa output rencana. Setiap konflik mengidentifikasi path sumber dan target yang sudah ada. Putuskan per item apakah akan melewati, mengedit target, atau menjalankan ulang dengan `--overwrite`.
   </Accordion>
   <Accordion title="Hermes berada di luar ~/.hermes">
     Berikan `--from /actual/path` (CLI) atau `--import-source /actual/path` (onboarding).
   </Accordion>
-  <Accordion title="Onboarding menolak mengimpor pada setup yang sudah ada">
-    Impor onboarding memerlukan setup baru. Reset state dan lakukan onboarding ulang, atau gunakan `openclaw migrate apply hermes` secara langsung, yang mendukung `--overwrite` dan kontrol backup eksplisit.
+  <Accordion title="Onboarding menolak mengimpor pada penyiapan yang sudah ada">
+    Impor onboarding memerlukan penyiapan baru. Reset status dan lakukan onboarding ulang, atau gunakan `openclaw migrate apply hermes` langsung, yang mendukung `--overwrite` dan kontrol cadangan eksplisit.
   </Accordion>
   <Accordion title="Kunci API tidak terimpor">
-    `--include-secrets` wajib digunakan, dan hanya kunci yang tercantum di atas yang dikenali. Variabel lain di `.env` diabaikan.
+    `openclaw migrate` interaktif mengimpor kunci API hanya saat Anda menerima prompt kredensial. Eksekusi `--yes` non-interaktif memerlukan `--include-secrets`; impor onboarding memerlukan `--import-secrets`. Hanya [kunci `.env` yang didukung](/id/cli/migrate#supported-env-keys) yang dikenali; variabel lain di `.env` diabaikan.
   </Accordion>
 </AccordionGroup>
 

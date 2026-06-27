@@ -1,22 +1,23 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das msteams-Plugin
-summary: Fügt die Kanalschnittstelle für Microsoft Teams zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
+    - Sie installieren, konfigurieren oder auditieren das msteams-Plugin
+summary: OpenClaw Microsoft Teams-Kanal-Plugin für Bot-Unterhaltungen.
 title: Microsoft Teams-Plugin
 x-i18n:
-    generated_at: "2026-05-03T06:42:17Z"
+    generated_at: "2026-06-27T17:55:22Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b1e72dae5dc51a30521bde8520afec7cd743d236df63f440098b72a922bdad9c
+    source_hash: 32353faf19a94c9df5ffc57fbf0ef91391500e0ae317c9626edcbbcf295c697b
     source_path: plugins/reference/msteams.md
     workflow: 16
 ---
 
 # Microsoft Teams-Plugin
 
-Fügt die Microsoft Teams-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
+OpenClaw Microsoft Teams-Kanal-Plugin für Bot-Unterhaltungen.
 
-## Verteilung
+## Distribution
 
 - Paket: `@openclaw/msteams`
 - Installationsweg: npm; ClawHub
@@ -25,6 +26,6 @@ Fügt die Microsoft Teams-Kanaloberfläche zum Senden und Empfangen von OpenClaw
 
 channels: msteams
 
-## Zugehörige Dokumentation
+## Verwandte Dokumentation
 
 - [msteams](/de/channels/msteams)

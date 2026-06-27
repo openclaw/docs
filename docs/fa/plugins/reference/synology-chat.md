@@ -1,20 +1,21 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin synology-chat هستید
-summary: سطح کانال Synology Chat را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
-title: Plugin Synology Chat
+    - شما در حال نصب، پیکربندی، یا ممیزی Plugin synology-chat هستید
+summary: Plugin کانال Synology Chat برای کانال‌های OpenClaw و پیام‌های مستقیم.
+title: Plugin چت Synology
 x-i18n:
-    generated_at: "2026-05-03T11:43:27Z"
+    generated_at: "2026-06-27T18:29:24Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 545eb93ad56c25e1261a0840747a494915a04773636fc14424d9e83395b4f663
+    source_hash: 13caa3939ae9abbf11f95a0578e9fcf79f280c54953bcde76a28383afa43c404
     source_path: plugins/reference/synology-chat.md
     workflow: 16
 ---
 
 # Plugin Synology Chat
 
-سطح کانال Synology Chat را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
+Plugin کانال Synology Chat برای کانال‌ها و پیام‌های مستقیم OpenClaw.
 
 ## توزیع
 
@@ -23,7 +24,7 @@ x-i18n:
 
 ## سطح
 
-channels: synology-chat
+کانال‌ها: synology-chat
 
 ## مستندات مرتبط
 

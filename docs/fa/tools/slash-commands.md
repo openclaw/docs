@@ -1,43 +1,47 @@
 ---
 read_when:
-    - استفاده از فرمان‌های چت یا پیکربندی آن‌ها
-    - اشکال‌زدایی مسیریابی فرمان یا مجوزها
+    - استفاده یا پیکربندی فرمان‌های چت
+    - اشکال‌زدایی مسیریابی دستور یا مجوزها
+    - درک نحوهٔ ثبت فرمان‌های Skills
 sidebarTitle: Slash commands
-summary: 'دستورهای اسلش: متن در برابر بومی، پیکربندی و دستورهای پشتیبانی‌شده'
+summary: همهٔ دستورهای اسلش، دستورالعمل‌ها و میان‌برهای درون‌خطی موجود — پیکربندی، مسیریابی و رفتار برای هر سطح.
 title: دستورهای اسلش
 x-i18n:
-    generated_at: "2026-05-11T20:46:46Z"
+    generated_at: "2026-06-27T19:04:24Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 0a9030d88abd04c395369f8f6587632b53f3249ea95a26726fb1f165dae2d0f6
+    source_hash: 5f53a5209d1c99c593d646b4ecc12e7074f72766cf3d1278c4d13511369d29bc
     source_path: tools/slash-commands.md
     workflow: 16
 ---
 
-دستورات توسط Gateway مدیریت می‌شوند. بیشتر دستورات باید به‌صورت یک پیام **مستقل** ارسال شوند که با `/` شروع می‌شود. دستور چت bash فقط برای میزبان از `! <cmd>` استفاده می‌کند (`/bash <cmd>` نیز به‌عنوان نام مستعار آن است).
+Gateway فرمان‌هایی را مدیریت می‌کند که به‌صورت پیام‌های مستقل و با شروع `/` ارسال می‌شوند.
+فرمان‌های bash فقط برای میزبان از `! <cmd>` استفاده می‌کنند (با `/bash <cmd>` به‌عنوان نام مستعار).
 
-وقتی یک مکالمه یا رشته به یک نشست ACP متصل باشد، متن‌های پیگیری عادی به همان مهار ACP هدایت می‌شوند. دستورات مدیریت Gateway همچنان محلی می‌مانند: `/acp ...` همیشه به مدیر دستور ACP در OpenClaw می‌رسد، و `/status` به‌همراه `/unfocus` هر زمان که مدیریت دستور برای سطح فعال باشد، محلی می‌مانند.
+وقتی یک مکالمه به یک نشست ACP متصل باشد، متن عادی به harness ACP هدایت می‌شود. فرمان‌های مدیریتی Gateway محلی می‌مانند: `/acp ...` همیشه به گردانندهٔ فرمان OpenClaw می‌رسد، و `/status` به‌همراه `/unfocus` هر زمان که مدیریت فرمان برای سطح فعال باشد، محلی می‌مانند.
 
-دو سامانه مرتبط وجود دارد:
+## سه نوع فرمان
+
+<CardGroup cols={3}>
+  <Card title="فرمان‌ها" icon="terminal">
+    پیام‌های مستقل `/...` که توسط Gateway مدیریت می‌شوند. باید تنها محتوای پیام باشند.
+  </Card>
+  <Card title="دستورالعمل‌ها" icon="sliders">
+    `/think`، `/fast`، `/verbose`، `/trace`، `/reasoning`، `/elevated`،
+    `/exec`، `/model`، `/queue` — پیش از آنکه مدل پیام را ببیند، از پیام حذف می‌شوند. وقتی تنها ارسال شوند، تنظیمات نشست را پایدار می‌کنند؛ وقتی همراه متن دیگر ارسال شوند، مانند راهنمایی‌های درون‌خطی عمل می‌کنند.
+  </Card>
+  <Card title="میانبرهای درون‌خطی" icon="bolt">
+    `/help`، `/commands`، `/status`، `/whoami` — فوراً اجرا می‌شوند و پیش از آنکه مدل متن باقی‌مانده را ببیند، حذف می‌شوند. فقط فرستندگان مجاز.
+  </Card>
+</CardGroup>
 
 <AccordionGroup>
-  <Accordion title="دستورات">
-    پیام‌های مستقل `/...`.
-  </Accordion>
-  <Accordion title="رهنمودها">
-    `/think`, `/fast`, `/verbose`, `/trace`, `/reasoning`, `/elevated`, `/exec`, `/model`, `/queue`.
-
-    - رهنمودها پیش از آنکه مدل پیام را ببیند از پیام حذف می‌شوند.
-    - در پیام‌های چت عادی (نه پیام‌هایی که فقط رهنمود دارند)، آن‌ها به‌عنوان «نکات درون‌خطی» در نظر گرفته می‌شوند و تنظیمات نشست را پایدار نمی‌کنند.
-    - در پیام‌هایی که فقط رهنمود دارند (پیام فقط شامل رهنمودها است)، آن‌ها در نشست پایدار می‌شوند و با یک تأیید پاسخ می‌دهند.
-    - رهنمودها فقط برای **فرستندگان مجاز** اعمال می‌شوند. اگر `commands.allowFrom` تنظیم شده باشد، تنها فهرست مجاز مورد استفاده همان است؛ در غیر این صورت مجوز از فهرست‌های مجاز/جفت‌سازی کانال به‌همراه `commands.useAccessGroups` می‌آید. فرستندگان غیرمجاز رهنمودها را به‌صورت متن ساده می‌بینند.
-
-  </Accordion>
-  <Accordion title="میان‌برهای درون‌خطی">
-    فقط فرستندگان در فهرست مجاز/مجازشده: `/help`, `/commands`, `/status`, `/whoami` (`/id`).
-
-    آن‌ها بلافاصله اجرا می‌شوند، پیش از آنکه مدل پیام را ببیند حذف می‌شوند، و متن باقی‌مانده از جریان عادی ادامه پیدا می‌کند.
-
+  <Accordion title="جزئیات رفتار دستورالعمل‌ها">
+    - دستورالعمل‌ها پیش از آنکه مدل پیام را ببیند، از پیام حذف می‌شوند.
+    - در پیام‌های **فقط دستورالعمل** (پیامی که فقط شامل دستورالعمل‌ها است)، آن‌ها در نشست پایدار می‌شوند و با یک تأیید پاسخ داده می‌شود.
+    - در پیام‌های **گفت‌وگوی عادی** همراه با متن دیگر، آن‌ها مانند راهنمایی‌های درون‌خطی عمل می‌کنند و تنظیمات نشست را پایدار **نمی‌کنند**.
+    - دستورالعمل‌ها فقط برای **فرستندگان مجاز** اعمال می‌شوند. اگر `commands.allowFrom` تنظیم شده باشد، تنها فهرست مجاز استفاده‌شده همان است؛ در غیر این صورت، مجوز از فهرست‌های مجاز/جفت‌سازی کانال به‌همراه `commands.useAccessGroups` می‌آید. برای فرستندگان غیرمجاز، دستورالعمل‌ها مانند متن ساده تلقی می‌شوند.
   </Accordion>
 </AccordionGroup>
 
@@ -69,328 +73,292 @@ x-i18n:
 ```
 
 <ParamField path="commands.text" type="boolean" default="true">
-  پردازش `/...` را در پیام‌های چت فعال می‌کند. روی سطح‌هایی که دستورات بومی ندارند (WhatsApp/WebChat/Signal/iMessage/Google Chat/Microsoft Teams)، دستورات متنی حتی اگر این گزینه را روی `false` بگذارید همچنان کار می‌کنند.
+  پردازش `/...` را در پیام‌های گفت‌وگو فعال می‌کند. روی سطح‌هایی که فرمان بومی ندارند
+  (WhatsApp، WebChat، Signal، iMessage، Google Chat، Microsoft Teams)، فرمان‌های متنی حتی وقتی روی `false` تنظیم شده باشد هم کار می‌کنند.
 </ParamField>
+
 <ParamField path="commands.native" type='boolean | "auto"' default='"auto"'>
-  دستورات بومی را ثبت می‌کند. حالت خودکار: برای Discord/Telegram روشن؛ برای Slack خاموش (تا زمانی که فرمان‌های اسلش را اضافه کنید)؛ برای ارائه‌دهندگانی که پشتیبانی بومی ندارند نادیده گرفته می‌شود. برای بازنویسی به‌ازای هر ارائه‌دهنده، `channels.discord.commands.native`، `channels.telegram.commands.native`، یا `channels.slack.commands.native` را تنظیم کنید (بولی یا `"auto"`). در Discord، مقدار `false` ثبت و پاک‌سازی فرمان اسلش را هنگام راه‌اندازی رد می‌کند؛ دستوراتی که قبلاً ثبت شده‌اند ممکن است تا وقتی آن‌ها را از برنامه Discord حذف کنید همچنان قابل مشاهده بمانند. دستورات Slack در برنامه Slack مدیریت می‌شوند و به‌طور خودکار حذف نمی‌شوند.
+  فرمان‌های بومی را ثبت می‌کند. خودکار: برای Discord/Telegram روشن؛ برای Slack خاموش؛
+  برای ارائه‌دهندگانی که پشتیبانی بومی ندارند نادیده گرفته می‌شود. برای هر کانال با
+  `channels.<provider>.commands.native` بازنویسی کنید. در Discord، مقدار `false` از ثبت slash-command صرف‌نظر می‌کند؛ فرمان‌هایی که قبلاً ثبت شده‌اند ممکن است تا زمان حذف شدن قابل مشاهده بمانند.
 </ParamField>
-در Discord، مشخصات دستور بومی ممکن است شامل `descriptionLocalizations` باشد که OpenClaw آن را به‌عنوان `description_localizations` در Discord منتشر می‌کند و در مقایسه‌های سازگارسازی قرار می‌دهد.
+
 <ParamField path="commands.nativeSkills" type='boolean | "auto"' default='"auto"'>
-  دستورات **skill** را، وقتی پشتیبانی شوند، به‌صورت بومی ثبت می‌کند. حالت خودکار: برای Discord/Telegram روشن؛ برای Slack خاموش (Slack نیاز دارد برای هر skill یک فرمان اسلش ایجاد شود). برای بازنویسی به‌ازای هر ارائه‌دهنده، `channels.discord.commands.nativeSkills`، `channels.telegram.commands.nativeSkills`، یا `channels.slack.commands.nativeSkills` را تنظیم کنید (بولی یا `"auto"`).
+  در صورت پشتیبانی، فرمان‌های Skills را به‌صورت بومی ثبت می‌کند. خودکار: برای
+  Discord/Telegram روشن؛ برای Slack خاموش. با
+  `channels.<provider>.commands.nativeSkills` بازنویسی کنید.
 </ParamField>
+
 <ParamField path="commands.bash" type="boolean" default="false">
-  `! <cmd>` را برای اجرای دستورات پوسته میزبان فعال می‌کند (`/bash <cmd>` یک نام مستعار است؛ به فهرست‌های مجاز `tools.elevated` نیاز دارد).
+  `! <cmd>` را برای اجرای فرمان‌های پوستهٔ میزبان فعال می‌کند (نام مستعار `/bash <cmd>`). به فهرست‌های مجاز `tools.elevated` نیاز دارد.
 </ParamField>
+
 <ParamField path="commands.bashForegroundMs" type="number" default="2000">
-  کنترل می‌کند bash چه مدت منتظر بماند پیش از آنکه به حالت پس‌زمینه برود (`0` بلافاصله آن را پس‌زمینه می‌کند).
+  مدت زمانی که bash پیش از رفتن به حالت پس‌زمینه منتظر می‌ماند (`0` بلافاصله آن را پس‌زمینه می‌کند).
 </ParamField>
+
 <ParamField path="commands.config" type="boolean" default="false">
-  `/config` را فعال می‌کند (`openclaw.json` را می‌خواند/می‌نویسد).
+  `/config` را فعال می‌کند (`openclaw.json` را می‌خواند/می‌نویسد). فقط مالک.
 </ParamField>
+
 <ParamField path="commands.mcp" type="boolean" default="false">
-  `/mcp` را فعال می‌کند (پیکربندی MCP مدیریت‌شده توسط OpenClaw را زیر `mcp.servers` می‌خواند/می‌نویسد).
+  `/mcp` را فعال می‌کند (پیکربندی MCP مدیریت‌شده توسط OpenClaw را زیر `mcp.servers` می‌خواند/می‌نویسد). فقط مالک.
 </ParamField>
+
 <ParamField path="commands.plugins" type="boolean" default="false">
-  `/plugins` را فعال می‌کند (کشف/وضعیت Plugin به‌همراه کنترل‌های نصب و فعال/غیرفعال‌سازی).
+  `/plugins` را فعال می‌کند (کشف/وضعیت Plugin به‌همراه نصب و فعال/غیرفعال‌سازی). نوشتن فقط برای مالک.
 </ParamField>
+
 <ParamField path="commands.debug" type="boolean" default="false">
-  `/debug` را فعال می‌کند (بازنویسی‌های فقط زمان اجرا).
+  `/debug` را فعال می‌کند (بازنویسی‌های پیکربندی فقط زمان اجرا). فقط مالک.
 </ParamField>
+
 <ParamField path="commands.restart" type="boolean" default="true">
-  `/restart` را به‌همراه کنش‌های ابزار راه‌اندازی مجدد Gateway فعال می‌کند.
+  `/restart` و کنش‌های ابزار راه‌اندازی دوبارهٔ Gateway را فعال می‌کند.
 </ParamField>
+
 <ParamField path="commands.ownerAllowFrom" type="string[]">
-  فهرست مجاز صریح مالک را برای سطح‌های دستور/ابزار فقط مالک تنظیم می‌کند. این همان حساب اپراتور انسانی است که می‌تواند کنش‌های خطرناک را تأیید کند و دستورهایی مانند `/diagnostics`، `/export-trajectory`، و `/config` را اجرا کند. این گزینه از `commands.allowFrom` و از دسترسی جفت‌سازی پیام خصوصی جدا است.
+  فهرست مجاز صریح مالک برای سطح‌های فرمان فقط مالک. جدا از
+  `commands.allowFrom` و دسترسی جفت‌سازی پیام مستقیم است.
 </ParamField>
+
 <ParamField path="channels.<channel>.commands.enforceOwnerForCommands" type="boolean" default="false">
-  به‌ازای هر کانال: باعث می‌شود دستورات فقط مالک برای اجرا روی آن سطح به **هویت مالک** نیاز داشته باشند. وقتی `true` باشد، فرستنده باید یا با یک نامزد مالک resolve‌شده مطابقت داشته باشد (برای مثال ورودی‌ای در `commands.ownerAllowFrom` یا فراداده مالک بومی ارائه‌دهنده) یا روی یک کانال پیام داخلی محدوده داخلی `operator.admin` داشته باشد. یک ورودی wildcard در `allowFrom` کانال، یا یک فهرست نامزد مالک خالی/resolveنشده، **کافی نیست** — دستورات فقط مالک روی آن کانال fail closed می‌شوند. اگر می‌خواهید دستورات فقط مالک فقط با `ownerAllowFrom` و فهرست‌های مجاز استاندارد دستور کنترل شوند، این گزینه را خاموش بگذارید.
+  برای هر کانال: برای فرمان‌های فقط مالک، هویت مالک را الزامی می‌کند. وقتی `true` باشد،
+  فرستنده باید با `commands.ownerAllowFrom` مطابقت داشته باشد یا دامنهٔ داخلی `operator.admin` را داشته باشد. یک ورودی wildcard در `allowFrom` کافی **نیست**.
 </ParamField>
+
 <ParamField path="commands.ownerDisplay" type='"raw" | "hash"'>
-  کنترل می‌کند شناسه‌های مالک چگونه در system prompt ظاهر شوند.
+  کنترل می‌کند شناسه‌های مالک چگونه در اعلان سیستم نمایش داده شوند.
 </ParamField>
+
 <ParamField path="commands.ownerDisplaySecret" type="string">
-  به‌صورت اختیاری secret مربوط به HMAC را که هنگام `commands.ownerDisplay="hash"` استفاده می‌شود تنظیم می‌کند.
+  راز HMAC که هنگام `commands.ownerDisplay: "hash"` استفاده می‌شود.
 </ParamField>
+
 <ParamField path="commands.allowFrom" type="object">
-  فهرست مجاز به‌ازای هر ارائه‌دهنده برای مجوزدهی دستور. وقتی پیکربندی شود، تنها منبع مجوزدهی برای دستورات و رهنمودها است (فهرست‌های مجاز/جفت‌سازی کانال و `commands.useAccessGroups` نادیده گرفته می‌شوند). برای پیش‌فرض سراسری از `"*"` استفاده کنید؛ کلیدهای ویژه ارائه‌دهنده آن را بازنویسی می‌کنند.
+  فهرست مجاز برای هر ارائه‌دهنده جهت مجوزدهی فرمان. وقتی پیکربندی شود، تنها منبع مجوزدهی برای فرمان‌ها و دستورالعمل‌ها است. از `"*"` برای پیش‌فرض سراسری استفاده کنید؛ کلیدهای مخصوص ارائه‌دهنده آن را بازنویسی می‌کنند.
 </ParamField>
+
 <ParamField path="commands.useAccessGroups" type="boolean" default="true">
-  وقتی `commands.allowFrom` تنظیم نشده باشد، فهرست‌های مجاز/سیاست‌ها را برای دستورات اعمال می‌کند.
+  وقتی `commands.allowFrom` تنظیم نشده باشد، فهرست‌های مجاز/سیاست‌ها را برای فرمان‌ها اعمال می‌کند.
 </ParamField>
 
-## فهرست دستورات
+## فهرست فرمان‌ها
 
-منبع حقیقت فعلی:
+فرمان‌ها از سه منبع می‌آیند:
 
-- موارد داخلی هسته از `src/auto-reply/commands-registry.shared.ts` می‌آیند
-- دستورات dock تولیدشده از `src/auto-reply/commands-registry.data.ts` می‌آیند
-- دستورات Plugin از فراخوانی‌های `registerCommand()` در Plugin می‌آیند
-- دسترس‌پذیری واقعی روی Gateway شما همچنان به پرچم‌های پیکربندی، سطح کانال، و Pluginهای نصب‌شده/فعال بستگی دارد
+- **درون‌ساخته‌های هسته:** `src/auto-reply/commands-registry.shared.ts`
+- **فرمان‌های dock تولیدشده:** `src/auto-reply/commands-registry.data.ts`
+- **فرمان‌های Plugin:** فراخوانی‌های `registerCommand()` در Plugin
 
-### دستورات داخلی هسته
+دسترس‌پذیری به پرچم‌های پیکربندی، سطح کانال، و Pluginهای نصب‌شده/فعال بستگی دارد.
+
+### فرمان‌های هسته
 
 <AccordionGroup>
   <Accordion title="نشست‌ها و اجراها">
-    - `/new [model]` یک نشست جدید آغاز می‌کند؛ `/reset` نام مستعار بازنشانی است.
-    - رابط کاربری کنترل، `/new` تایپ‌شده را برای ایجاد و جابه‌جایی به یک نشست تازه داشبورد می‌گیرد، مگر وقتی `session.dmScope: "main"` پیکربندی شده باشد و والد فعلی نشست اصلی عامل باشد؛ در این حالت `/new` نشست اصلی را در همان‌جا بازنشانی می‌کند. `/reset` تایپ‌شده همچنان بازنشانی درجا توسط Gateway را اجرا می‌کند.
-    - `/reset soft [message]` رونوشت فعلی را نگه می‌دارد، شناسه‌های نشست backend CLI استفاده‌مجددشده را حذف می‌کند، و بارگذاری راه‌اندازی/system-prompt را درجا دوباره اجرا می‌کند.
-    - `/compact [instructions]` زمینه نشست را compact می‌کند. [Compaction](/fa/concepts/compaction) را ببینید.
-    - `/stop` اجرای فعلی را لغو می‌کند.
-    - `/session idle <duration|off>` و `/session max-age <duration|off>` انقضای اتصال رشته را مدیریت می‌کنند.
-    - `/export-session [path]` نشست فعلی را به HTML صادر می‌کند. نام مستعار: `/export`.
-    - `/export-trajectory [path]` تأیید exec را درخواست می‌کند، سپس یک [بسته trajectory](/fa/tools/trajectory) JSONL برای نشست فعلی صادر می‌کند. وقتی برای یک نشست OpenClaw به prompt، ابزار، و timeline رونوشت نیاز دارید از آن استفاده کنید. در چت‌های گروهی، prompt تأیید و نتیجه صدور به‌صورت خصوصی برای مالک ارسال می‌شود. نام مستعار: `/trajectory`.
+    | فرمان | توضیح |
+    | --- | --- |
+    | `/new [model]` | نشست فعلی را بایگانی و یک نشست تازه شروع می‌کند |
+    | `/reset [soft [message]]` | نشست فعلی را درجا بازنشانی می‌کند. `soft` رونوشت را نگه می‌دارد، شناسه‌های نشست backend مربوط به CLI را که دوباره استفاده شده‌اند حذف می‌کند، و راه‌اندازی اولیه را دوباره اجرا می‌کند |
+    | `/name <title>` | نشست فعلی را نام‌گذاری یا تغییر نام می‌دهد. عنوان را حذف کنید تا نام فعلی و یک پیشنهاد را ببینید |
+    | `/compact [instructions]` | زمینهٔ نشست را فشرده می‌کند. ببینید [Compaction](/fa/concepts/compaction) |
+    | `/stop` | اجرای فعلی را لغو می‌کند |
+    | `/session idle <duration\|off>` | انقضای بیکاری اتصال رشته را مدیریت می‌کند |
+    | `/session max-age <duration\|off>` | انقضای بیشینهٔ عمر اتصال رشته را مدیریت می‌کند |
+    | `/export-session [path]` | نشست فعلی را به HTML صادر می‌کند. نام مستعار: `/export` |
+    | `/export-trajectory [path]` | یک بستهٔ trajectory با قالب JSONL برای نشست فعلی صادر می‌کند. نام مستعار: `/trajectory` |
+
+    <Note>
+      رابط کنترل، `/new` تایپ‌شده را رهگیری می‌کند تا یک نشست داشبورد تازه بسازد و به آن جابه‌جا شود، مگر وقتی `session.dmScope: "main"` پیکربندی شده باشد و والد فعلی نشست اصلی عامل باشد — در آن حالت `/new` نشست اصلی را درجا بازنشانی می‌کند. `/reset` تایپ‌شده همچنان بازنشانی درجای Gateway را اجرا می‌کند. وقتی می‌خواهید انتخاب مدل پین‌شدهٔ نشست را پاک کنید، از `/model default` استفاده کنید.
+    </Note>
 
   </Accordion>
-  <Accordion title="کنترل‌های مدل و اجرا">
-    - `/think <level|default>` سطح thinking را تنظیم می‌کند یا بازنویسی نشست را پاک می‌کند. گزینه‌ها از نمایه ارائه‌دهنده مدل فعال می‌آیند؛ سطح‌های رایج `off`، `minimal`، `low`، `medium`، و `high` هستند، و سطح‌های سفارشی مانند `xhigh`، `adaptive`، `max`، یا مقدار دودویی `on` فقط در جاهایی که پشتیبانی شوند وجود دارند. نام‌های مستعار: `/thinking`، `/t`.
-    - `/verbose on|off|full` خروجی verbose را روشن یا خاموش می‌کند. نام مستعار: `/v`.
-    - `/trace on|off` خروجی trace مربوط به Plugin را برای نشست فعلی روشن یا خاموش می‌کند.
-    - `/fast [status|on|off|default]` حالت fast را نمایش می‌دهد، تنظیم می‌کند، یا پاک می‌کند.
-    - `/reasoning [on|off|stream]` نمایش reasoning را روشن یا خاموش می‌کند. نام مستعار: `/reason`.
-    - `/elevated [on|off|ask|full]` حالت elevated را روشن یا خاموش می‌کند. نام مستعار: `/elev`.
-    - `/exec host=<auto|sandbox|gateway|node> security=<deny|allowlist|full> ask=<off|on-miss|always> node=<id>` پیش‌فرض‌های exec را نمایش می‌دهد یا تنظیم می‌کند.
-    - `/model [name|#|status]` مدل را نمایش می‌دهد یا تنظیم می‌کند.
-    - `/models [provider] [page] [limit=<n>|size=<n>|all]` ارائه‌دهندگان پیکربندی‌شده/دارای احراز هویت در دسترس یا مدل‌های یک ارائه‌دهنده را فهرست می‌کند؛ برای مرور کاتالوگ کامل آن ارائه‌دهنده، `all` را اضافه کنید. ورودی‌های `provider/*` در `agents.defaults.models` باعث می‌شوند `/model` و `/models` فقط مدل‌های کشف‌شده برای همان ارائه‌دهندگان را نشان دهند.
-    - `/queue <mode>` رفتار queue را مدیریت می‌کند (`steer`، `queue` قدیمی، `followup`، `collect`، `steer-backlog`، `interrupt`) به‌همراه گزینه‌هایی مانند `debounce:0.5s cap:25 drop:summarize`؛ `/queue default` یا `/queue reset` بازنویسی نشست را پاک می‌کند. [صف دستور](/fa/concepts/queue) و [صف هدایت](/fa/concepts/queue-steering) را ببینید.
-    - `/steer <message>` راهنمایی را به اجرای فعال برای نشست فعلی تزریق می‌کند، مستقل از حالت `/queue`. وقتی نشست idle باشد اجرای جدیدی شروع نمی‌کند. نام مستعار: `/tell`. [Steer](/fa/tools/steer) را ببینید.
+
+  <Accordion title="مدل و کنترل‌های اجرا">
+    | فرمان | توضیح |
+    | --- | --- |
+    | `/think <level\|default>` | سطح تفکر را تنظیم می‌کند یا بازنویسی نشست را پاک می‌کند. نام‌های مستعار: `/thinking`، `/t` |
+    | `/verbose on\|off\|full` | خروجی verbose را تغییر می‌دهد. نام مستعار: `/v` |
+    | `/trace on\|off` | خروجی trace مربوط به Plugin را برای نشست فعلی تغییر می‌دهد |
+    | `/fast [status\|auto\|on\|off\|default]` | حالت سریع را نمایش می‌دهد، تنظیم می‌کند، یا پاک می‌کند |
+    | `/reasoning [on\|off\|stream]` | نمایانی استدلال را تغییر می‌دهد. نام مستعار: `/reason` |
+    | `/elevated [on\|off\|ask\|full]` | حالت elevated را تغییر می‌دهد. نام مستعار: `/elev` |
+    | `/exec host=<auto\|sandbox\|gateway\|node> security=<deny\|allowlist\|full> ask=<off\|on-miss\|always> node=<id>` | پیش‌فرض‌های exec را نمایش می‌دهد یا تنظیم می‌کند |
+    | `/model [name\|#\|status]` | مدل را نمایش می‌دهد یا تنظیم می‌کند |
+    | `/models [provider] [page] [limit=<n>\|all]` | ارائه‌دهندگان یا مدل‌های پیکربندی‌شده/دارای احراز هویت را فهرست می‌کند |
+    | `/queue <mode>` | رفتار صف اجرای فعال را مدیریت می‌کند. ببینید [صف](/fa/concepts/queue) و [هدایت صف](/fa/concepts/queue-steering) |
+    | `/steer <message>` | راهنمایی را به اجرای فعال تزریق می‌کند. نام مستعار: `/tell`. ببینید [هدایت](/fa/tools/steer) |
+
+    <AccordionGroup>
+      <Accordion title="ایمنی verbose / trace / fast / reasoning">
+        - `/verbose` برای اشکال‌زدایی است — در استفادهٔ عادی آن را **خاموش** نگه دارید.
+        - `/trace` فقط خط‌های trace/debug متعلق به Plugin را آشکار می‌کند؛ گفت‌وگوی verbose عادی خاموش می‌ماند.
+        - `/fast auto|on|off` یک بازنویسی نشست را پایدار می‌کند؛ برای پاک کردن آن از گزینهٔ `inherit` در رابط نشست‌ها استفاده کنید.
+        - `/fast` وابسته به ارائه‌دهنده است: OpenAI/Codex آن را به `service_tier=priority` نگاشت می‌کنند؛ درخواست‌های مستقیم Anthropic آن را به `service_tier=auto` یا `standard_only` نگاشت می‌کنند.
+        - `/reasoning`، `/verbose` و `/trace` در محیط‌های گروهی پرریسک هستند — ممکن است استدلال داخلی یا عیب‌یابی‌های Plugin را آشکار کنند. آن‌ها را در گفت‌وگوهای گروهی خاموش نگه دارید.
+
+      </Accordion>
+      <Accordion title="جزئیات تغییر مدل">
+        - `/model` مدل جدید را فوراً در نشست پایدار می‌کند.
+        - اگر عامل بیکار باشد، اجرای بعدی بلافاصله از آن استفاده می‌کند.
+        - اگر اجرایی فعال باشد، تغییر به‌صورت معلق علامت‌گذاری می‌شود و در نقطهٔ تلاش مجدد تمیز بعدی اعمال می‌شود.
+
+      </Accordion>
+    </AccordionGroup>
 
   </Accordion>
+
   <Accordion title="کشف و وضعیت">
-    - `/help` خلاصه کوتاه راهنما را نشان می‌دهد.
-    - `/commands` کاتالوگ دستور تولیدشده را نشان می‌دهد.
-    - `/tools [compact|verbose]` نشان می‌دهد عامل فعلی همین حالا از چه چیزهایی می‌تواند استفاده کند.
-    - `/status` وضعیت اجرا/زمان اجرا، uptime مربوط به Gateway و سیستم، به‌همراه میزان استفاده/quota ارائه‌دهنده را وقتی در دسترس باشد نشان می‌دهد.
-    - `/diagnostics [note]` جریان گزارش پشتیبانی فقط مالک برای باگ‌های Gateway و اجراهای مهار Codex است. هر بار پیش از اجرای `openclaw gateway diagnostics export --json` تأیید صریح exec درخواست می‌کند؛ diagnostics را با قاعده allow-all تأیید نکنید. پس از تأیید، گزارشی قابل paste با مسیر بسته محلی، خلاصه manifest، نکات حریم خصوصی، و شناسه‌های نشست مرتبط می‌فرستد. در چت‌های گروهی، prompt تأیید و گزارش به‌صورت خصوصی برای مالک ارسال می‌شوند. وقتی نشست فعال از مهار OpenAI Codex استفاده می‌کند، همان تأیید همچنین بازخورد مرتبط Codex را به سرورهای OpenAI می‌فرستد و پاسخ کامل‌شده شناسه‌های نشست OpenClaw، شناسه‌های thread در Codex، و دستورات `codex resume <thread-id>` را فهرست می‌کند. [صدور Diagnostics](/fa/gateway/diagnostics) را ببینید.
-    - `/crestodian <request>` راه‌انداز و ابزار کمکی تعمیر Crestodian را از یک پیام خصوصی مالک اجرا می‌کند.
-    - `/tasks` وظایف پس‌زمینه فعال/اخیر را برای نشست فعلی فهرست می‌کند.
-    - `/context [list|detail|map|json]` توضیح می‌دهد context چگونه مونتاژ می‌شود. `map` یک تصویر treemap از context نشست فعلی ارسال می‌کند.
-    - `/whoami` شناسه فرستنده شما را نشان می‌دهد. نام مستعار: `/id`.
-    - `/usage off|tokens|full|cost` footer مربوط به usage در هر پاسخ را کنترل می‌کند یا یک خلاصه هزینه محلی چاپ می‌کند.
-
+    | فرمان | توضیح |
+    | --- | --- |
+    | `/help` | خلاصهٔ کوتاه راهنما را نمایش می‌دهد |
+    | `/commands` | کاتالوگ فرمان تولیدشده را نمایش می‌دهد |
+    | `/tools [compact\|verbose]` | نشان می‌دهد عامل فعلی همین حالا از چه چیزهایی می‌تواند استفاده کند |
+    | `/status` | وضعیت اجرا/زمان اجرا، زمان کارکرد Gateway و سیستم، سلامت Plugin، به‌همراه مصرف/سهمیهٔ ارائه‌دهنده را نمایش می‌دهد |
+    | `/status plugins` | سلامت تفصیلی Plugin را نمایش می‌دهد: خطاهای بارگذاری، قرنطینه‌ها، خرابی‌های کانال، مشکلات وابستگی، اعلان‌های سازگاری |
+    | `/goal [status\|start\|pause\|resume\|complete\|block\|clear] ...` | [هدف](/fa/tools/goal) پایدار نشست فعلی را مدیریت می‌کند |
+    | `/diagnostics [note]` | جریان گزارش پشتیبانی فقط مالک. هر بار تأیید exec را درخواست می‌کند |
+    | `/crestodian <request>` | کمک‌کنندهٔ راه‌اندازی و تعمیر Crestodian را از یک پیام مستقیم مالک اجرا می‌کند |
+    | `/tasks` | کارهای پس‌زمینهٔ فعال/اخیر را برای نشست فعلی فهرست می‌کند |
+    | `/context [list\|detail\|map\|json]` | توضیح می‌دهد زمینه چگونه مونتاژ می‌شود |
+    | `/whoami` | شناسهٔ فرستندهٔ شما را نمایش می‌دهد. نام مستعار: `/id` |
+    | `/usage off\|tokens\|full\|reset\|cost` | پاورقی مصرف هر پاسخ را کنترل می‌کند (`reset`/`inherit`/`clear`/`default` بازنویسی نشست را پاک می‌کند تا دوباره پیش‌فرض پیکربندی‌شده را به ارث ببرد) یا یک خلاصهٔ هزینهٔ محلی چاپ می‌کند |
   </Accordion>
+
   <Accordion title="Skills، فهرست‌های مجاز، تأییدها">
-    - `/skill <name> [input]` یک skill را با نام اجرا می‌کند.
-    - `/allowlist [list|add|remove] ...` ورودی‌های فهرست مجاز را مدیریت می‌کند. فقط متنی.
-    - `/approve <id> <decision>` درخواست‌های تأیید اجرا را حل می‌کند.
-    - `/btw <question>` یک پرسش جانبی می‌پرسد بدون اینکه زمینهٔ آیندهٔ نشست را تغییر دهد. نام مستعار: `/side`. [BTW](/fa/tools/btw) را ببینید.
-
+    | فرمان | توضیح |
+    | --- | --- |
+    | `/skill <name> [input]` | یک skill را با نام اجرا می‌کند |
+    | `/allowlist [list\|add\|remove] ...` | ورودی‌های فهرست مجاز را مدیریت می‌کند. فقط متنی |
+    | `/approve <id> <decision>` | درخواست‌های تأیید exec یا Plugin را حل می‌کند |
+    | `/btw <question>` | بدون تغییر زمینهٔ نشست، یک پرسش جانبی می‌پرسد. نام مستعار: `/side`. ببینید [BTW](/fa/tools/btw) |
   </Accordion>
+
   <Accordion title="زیرعامل‌ها و ACP">
-    - `/subagents list|kill|log|info|send|steer|spawn` اجراهای زیرعامل را برای نشست فعلی مدیریت می‌کند.
-    - `/acp spawn|cancel|steer|close|sessions|status|set-mode|set|cwd|permissions|timeout|model|reset-options|doctor|install|help` نشست‌های ACP و گزینه‌های زمان اجرا را مدیریت می‌کند.
-    - `/focus <target>` رشتهٔ فعلی Discord یا موضوع/گفت‌وگوی Telegram را به یک هدف نشست متصل می‌کند.
-    - `/unfocus` اتصال فعلی را حذف می‌کند.
-    - `/agents` عامل‌های متصل به رشته را برای نشست فعلی فهرست می‌کند.
-    - `/kill <id|#|all>` یک یا همهٔ زیرعامل‌های در حال اجرا را متوقف می‌کند.
-    - `/subagents steer <id|#> <message>` پیام هدایت را به یک زیرعامل در حال اجرا می‌فرستد. [Steer](/fa/tools/steer) را ببینید.
-
+    | دستور | توضیح |
+    | --- | --- |
+    | `/subagents list\|log\|info` | اجراهای زیرعامل را برای نشست فعلی بررسی کنید |
+    | `/acp spawn\|cancel\|steer\|close\|sessions\|status\|set-mode\|set\|cwd\|permissions\|timeout\|model\|reset-options\|doctor\|install\|help` | نشست‌های ACP و گزینه‌های زمان اجرا را مدیریت کنید |
+    | `/focus <target>` | رشتهٔ فعلی Discord یا موضوع Telegram را به یک هدف نشست متصل کنید |
+    | `/unfocus` | اتصال رشتهٔ فعلی را حذف کنید |
+    | `/agents` | عامل‌های متصل به رشته را برای نشست فعلی فهرست کنید |
   </Accordion>
+
   <Accordion title="نوشتن‌های فقط مالک و مدیریت">
-    - `/config show|get|set|unset` فایل `openclaw.json` را می‌خواند یا می‌نویسد. فقط مالک. به `commands.config: true` نیاز دارد.
-    - `/mcp show|get|set|unset` پیکربندی سرور MCP مدیریت‌شده توسط OpenClaw را زیر `mcp.servers` می‌خواند یا می‌نویسد. فقط مالک. به `commands.mcp: true` نیاز دارد.
-    - `/plugins list|inspect|show|get|install|enable|disable` وضعیت Plugin را بررسی یا تغییر می‌دهد. `/plugin` یک نام مستعار است. نوشتن فقط برای مالک. به `commands.plugins: true` نیاز دارد.
-    - `/debug show|set|unset|reset` بازنویسی‌های پیکربندی فقط زمان اجرا را مدیریت می‌کند. فقط مالک. به `commands.debug: true` نیاز دارد.
-    - `/restart` وقتی فعال باشد OpenClaw را دوباره راه‌اندازی می‌کند. پیش‌فرض: فعال؛ برای غیرفعال‌کردن آن `commands.restart: false` را تنظیم کنید.
-    - `/send on|off|inherit` سیاست ارسال را تنظیم می‌کند. فقط مالک.
-
+    | دستور | نیازمند | توضیح |
+    | --- | --- | --- |
+    | `/config show\|get\|set\|unset` | `commands.config: true` | `openclaw.json` را بخوانید یا بنویسید. فقط مالک |
+    | `/mcp show\|get\|set\|unset` | `commands.mcp: true` | پیکربندی سرور MCP مدیریت‌شده توسط OpenClaw را بخوانید یا بنویسید. فقط مالک |
+    | `/plugins list\|inspect\|show\|get\|install\|enable\|disable` | `commands.plugins: true` | وضعیت plugin را بررسی یا تغییر دهید. برای نوشتن‌ها فقط مالک. نام مستعار: `/plugin` |
+    | `/debug show\|set\|unset\|reset` | `commands.debug: true` | بازنویسی‌های پیکربندی فقط در زمان اجرا. فقط مالک |
+    | `/restart` | `commands.restart: true` (پیش‌فرض) | OpenClaw را راه‌اندازی دوباره کنید |
+    | `/send on\|off\|inherit` | مالک | سیاست ارسال را تنظیم کنید |
   </Accordion>
-  <Accordion title="صدا، TTS، کنترل کانال">
-    - `/tts on|off|status|chat|latest|provider|limit|summary|audio|help`، TTS را کنترل می‌کند. [TTS](/fa/tools/tts) را ببینید.
-    - `/activation mention|always` حالت فعال‌سازی گروهی را تنظیم می‌کند.
-    - `/bash <command>` یک فرمان پوستهٔ میزبان را اجرا می‌کند. فقط متنی. نام مستعار: `! <command>`. به `commands.bash: true` به‌همراه فهرست‌های مجاز `tools.elevated` نیاز دارد.
-    - `!poll [sessionId]` یک کار پس‌زمینهٔ bash را بررسی می‌کند.
-    - `!stop [sessionId]` یک کار پس‌زمینهٔ bash را متوقف می‌کند.
 
+  <Accordion title="صدا، TTS و کنترل کانال">
+    | دستور | توضیح |
+    | --- | --- |
+    | `/tts on\|off\|status\|chat\|latest\|provider\|limit\|summary\|audio\|help` | TTS را کنترل کنید. [TTS](/fa/tools/tts) را ببینید |
+    | `/activation mention\|always` | حالت فعال‌سازی گروه را تنظیم کنید |
+    | `/bash <command>` | یک دستور shell میزبان را اجرا کنید. نام مستعار: `! <command>`. نیازمند `commands.bash: true` |
+    | `!poll [sessionId]` | یک کار bash پس‌زمینه را بررسی کنید |
+    | `!stop [sessionId]` | یک کار bash پس‌زمینه را متوقف کنید |
   </Accordion>
 </AccordionGroup>
 
-### فرمان‌های dock تولیدشده
+### دستورهای Dock
 
-فرمان‌های dock مسیر پاسخ نشست فعلی را به کانال پیوندخوردهٔ دیگری تغییر می‌دهند. برای راه‌اندازی، مثال‌ها و عیب‌یابی، [Channel docking](/fa/concepts/channel-docking) را ببینید.
+دستورهای Dock مسیر پاسخ نشست فعال را به کانال متصل دیگری تغییر می‌دهند.
+برای راه‌اندازی و عیب‌یابی، [Channel docking](/fa/concepts/channel-docking) را ببینید.
 
-فرمان‌های dock از Pluginهای کانال با پشتیبانی فرمان بومی تولید می‌شوند. مجموعهٔ همراه فعلی:
+تولیدشده از pluginهای کانال با پشتیبانی از دستور بومی:
 
 - `/dock-discord` (نام مستعار: `/dock_discord`)
 - `/dock-mattermost` (نام مستعار: `/dock_mattermost`)
 - `/dock-slack` (نام مستعار: `/dock_slack`)
 - `/dock-telegram` (نام مستعار: `/dock_telegram`)
 
-از فرمان‌های dock در یک گفت‌وگوی مستقیم استفاده کنید تا مسیر پاسخ نشست فعلی را به کانال پیوندخوردهٔ دیگری تغییر دهید. عامل همان زمینهٔ نشست را نگه می‌دارد، اما پاسخ‌های آیندهٔ آن نشست به همتای کانال انتخاب‌شده تحویل داده می‌شوند.
+دستورهای Dock به `session.identityLinks` نیاز دارند. فرستندهٔ مبدأ و همتای هدف
+باید در همان گروه هویتی باشند.
 
-فرمان‌های dock به `session.identityLinks` نیاز دارند. فرستندهٔ مبدأ و همتای مقصد باید در همان گروه هویتی باشند، برای مثال `["telegram:123", "discord:456"]`. اگر یک کاربر Telegram با شناسهٔ `123` فرمان `/dock_discord` را بفرستد، OpenClaw مقدار `lastChannel: "discord"` و `lastTo: "456"` را روی نشست فعال ذخیره می‌کند. اگر فرستنده به یک همتای Discord پیوند نشده باشد، فرمان به‌جای افتادن در گفت‌وگوی عادی، با یک راهنمای راه‌اندازی پاسخ می‌دهد.
+### دستورهای plugin همراه
 
-dock فقط مسیر نشست فعال را تغییر می‌دهد. حساب‌های کانال ایجاد نمی‌کند، دسترسی اعطا نمی‌کند، فهرست‌های مجاز کانال را دور نمی‌زند، یا تاریخچهٔ رونوشت را به نشست دیگری منتقل نمی‌کند. برای تغییر دوبارهٔ مسیر، از `/dock-telegram`، `/dock-slack`، `/dock-mattermost` یا فرمان dock تولیدشدهٔ دیگری استفاده کنید.
+| دستور                                                                                      | توضیح                                                                       |
+| -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `/dreaming [on\|off\|status\|help]`                                                          | Dreaming حافظه را روشن یا خاموش کنید. [Dreaming](/fa/concepts/dreaming) را ببینید                        |
+| `/pair [qr\|status\|pending\|approve\|cleanup\|notify]`                                      | جفت‌سازی دستگاه را مدیریت کنید. [Pairing](/fa/channels/pairing) را ببینید                           |
+| `/phone status\|arm ...\|disarm`                                                             | دستورهای گره تلفن پرخطر را موقتاً مسلح کنید                                     |
+| `/voice status\|list\|set <voiceId>`                                                         | پیکربندی صدای Talk را مدیریت کنید. نام بومی Discord: `/talkvoice`                       |
+| `/card ...`                                                                                  | پیش‌تنظیم‌های کارت غنی LINE را ارسال کنید. [LINE](/fa/channels/line) را ببینید                           |
+| `/codex status\|models\|threads\|resume\|compact\|review\|diagnostics\|account\|mcp\|skills` | harness سرور برنامهٔ Codex را کنترل کنید. [Codex harness](/fa/plugins/codex-harness) را ببینید |
 
-### فرمان‌های Plugin همراه
+فقط QQBot: `/bot-ping`, `/bot-version`, `/bot-help`, `/bot-upgrade`, `/bot-logs`
 
-Pluginهای همراه می‌توانند فرمان‌های slash بیشتری اضافه کنند. فرمان‌های همراه فعلی در این مخزن:
+### دستورهای Skills
 
-- `/dreaming [on|off|status|help]`، Dreaming حافظه را تغییر وضعیت می‌دهد. [Dreaming](/fa/concepts/dreaming) را ببینید.
-- `/pair [qr|status|pending|approve|cleanup|notify]` جریان جفت‌سازی/راه‌اندازی دستگاه را مدیریت می‌کند. [Pairing](/fa/channels/pairing) را ببینید.
-- `/phone status|arm <camera|screen|writes|all> [duration]|disarm` فرمان‌های پرریسک گره تلفن را موقتاً مسلح می‌کند.
-- `/voice status|list [limit]|set <voiceId|name>` پیکربندی صدای Talk را مدیریت می‌کند. در Discord، نام فرمان بومی `/talkvoice` است.
-- `/card ...` پیش‌تنظیم‌های کارت غنی LINE را می‌فرستد. [LINE](/fa/channels/line) را ببینید.
-- `/codex status|models|threads|resume|compact|review|diagnostics|account|mcp|skills` مهار app-server همراه Codex را بررسی و کنترل می‌کند. [Codex harness](/fa/plugins/codex-harness) را ببینید.
-- فرمان‌های فقط QQBot:
-  - `/bot-ping`
-  - `/bot-version`
-  - `/bot-help`
-  - `/bot-upgrade`
-  - `/bot-logs`
-
-### فرمان‌های skill پویا
-
-skillهای قابل فراخوانی توسط کاربر نیز به‌صورت فرمان‌های slash ارائه می‌شوند:
+Skills قابل فراخوانی توسط کاربر به‌صورت دستورهای slash عرضه می‌شوند:
 
 - `/skill <name> [input]` همیشه به‌عنوان نقطهٔ ورود عمومی کار می‌کند.
-- skillها ممکن است وقتی skill/Plugin آن‌ها را ثبت می‌کند، به‌صورت فرمان‌های مستقیم مانند `/prose` نیز ظاهر شوند.
-- ثبت فرمان skill بومی با `commands.nativeSkills` و `channels.<provider>.commands.nativeSkills` کنترل می‌شود.
-- مشخصات فرمان می‌توانند برای سطوح بومی‌ای که از توضیح‌های بومی‌سازی‌شده پشتیبانی می‌کنند، از جمله Discord، `descriptionLocalizations` ارائه کنند.
+- Skills ممکن است به‌عنوان دستورهای مستقیم ثبت شوند (برای مثال `/prose` برای OpenProse).
+- ثبت دستور بومی skill توسط `commands.nativeSkills` و
+  `channels.<provider>.commands.nativeSkills` کنترل می‌شود.
+- نام‌ها به `a-z0-9_` پاک‌سازی می‌شوند (حداکثر ۳۲ نویسه)؛ برخوردها پسوند عددی می‌گیرند.
 
 <AccordionGroup>
-  <Accordion title="نکته‌های آرگومان و پارسر">
-    - فرمان‌ها یک `:` اختیاری بین فرمان و آرگومان‌ها می‌پذیرند (برای نمونه `/think: high`، `/send: on`، `/help:`).
-    - `/new <model>` یک نام مستعار مدل، `provider/model`، یا نام یک ارائه‌دهنده را می‌پذیرد (تطبیق فازی)؛ اگر هیچ تطبیقی نباشد، متن به‌عنوان بدنهٔ پیام در نظر گرفته می‌شود.
-    - برای تفکیک کامل استفادهٔ ارائه‌دهنده، از `openclaw status --usage` استفاده کنید.
-    - `/allowlist add|remove` به `commands.config=true` نیاز دارد و `configWrites` کانال را رعایت می‌کند.
-    - در کانال‌های چندحسابی، `/allowlist --account <id>` هدف‌گذاری‌شده برای پیکربندی و `/config set channels.<provider>.accounts.<id>...` نیز `configWrites` حساب هدف را رعایت می‌کنند.
-    - `/usage` پانویس استفاده برای هر پاسخ را کنترل می‌کند؛ `/usage cost` یک خلاصهٔ هزینهٔ محلی را از گزارش‌های نشست OpenClaw چاپ می‌کند.
-    - `/restart` به‌صورت پیش‌فرض فعال است؛ برای غیرفعال‌کردن آن `commands.restart: false` را تنظیم کنید.
-    - `/plugins install <spec>` همان مشخصات Plugin را می‌پذیرد که `openclaw plugins install` می‌پذیرد: مسیر/آرشیو محلی، بستهٔ npm، `git:<repo>`، یا `clawhub:<pkg>`، سپس چون ماژول‌های منبع Plugin تغییر کرده‌اند، درخواست راه‌اندازی دوبارهٔ Gateway می‌دهد.
-    - `/plugins enable|disable` پیکربندی Plugin را به‌روزرسانی می‌کند و برای نوبت‌های جدید عامل، بارگذاری دوبارهٔ Pluginهای Gateway را آغاز می‌کند.
+  <Accordion title="ارسال دستور Skill">
+    به‌طور پیش‌فرض، دستورهای skill مانند یک درخواست عادی به مدل مسیریابی می‌شوند.
+
+    Skills می‌توانند `command-dispatch: tool` را اعلام کنند تا مستقیماً به یک ابزار
+    مسیریابی شوند (قطعی، بدون دخالت مدل). مثال: `/prose` (plugin OpenProse)
+    — [OpenProse](/fa/prose) را ببینید.
 
   </Accordion>
-  <Accordion title="رفتار ویژهٔ کانال">
-    - فرمان بومی فقط Discord: `/vc join|leave|status` کانال‌های صوتی را کنترل می‌کند (به‌صورت متن در دسترس نیست). `join` به یک guild و کانال صوتی/استیج انتخاب‌شده نیاز دارد. به `channels.discord.voice` و فرمان‌های بومی نیاز دارد.
-    - فرمان‌های اتصال رشتهٔ Discord (`/focus`، `/unfocus`، `/agents`، `/session idle`، `/session max-age`) نیاز دارند اتصال‌های رشتهٔ مؤثر فعال باشند (`session.threadBindings.enabled` و/یا `channels.discord.threadBindings.enabled`).
-    - مرجع فرمان ACP و رفتار زمان اجرا: [ACP agents](/fa/tools/acp-agents).
-
-  </Accordion>
-  <Accordion title="ایمنی verbose / trace / fast / reasoning">
-    - `/verbose` برای اشکال‌زدایی و دیدپذیری بیشتر است؛ در استفادهٔ عادی آن را **خاموش** نگه دارید.
-    - `/trace` از `/verbose` محدودتر است: فقط خط‌های trace/debug متعلق به Plugin را آشکار می‌کند و گفت‌وگوی پرجزئیات عادی ابزار را خاموش نگه می‌دارد.
-    - `/fast on|off` یک بازنویسی نشست را پایدار می‌کند. برای پاک‌کردن آن و بازگشت به پیش‌فرض‌های پیکربندی، از گزینهٔ `inherit` در رابط کاربری Sessions استفاده کنید.
-    - `/fast` ویژهٔ ارائه‌دهنده است: OpenAI/OpenAI Codex آن را روی نقاط پایانی بومی Responses به `service_tier=priority` نگاشت می‌کنند، درحالی‌که درخواست‌های مستقیم عمومی Anthropic، از جمله ترافیک احرازشده با OAuth که به `api.anthropic.com` فرستاده می‌شود، آن را به `service_tier=auto` یا `standard_only` نگاشت می‌کنند. [OpenAI](/fa/providers/openai) و [Anthropic](/fa/providers/anthropic) را ببینید.
-    - خلاصه‌های شکست ابزار همچنان هنگام مرتبط بودن نشان داده می‌شوند، اما متن تفصیلی شکست فقط وقتی گنجانده می‌شود که `/verbose` روی `on` یا `full` باشد.
-    - `/reasoning`، `/verbose`، و `/trace` در محیط‌های گروهی پرریسک هستند: ممکن است reasoning داخلی، خروجی ابزار، یا عیب‌یابی‌های Plugin را که قصد افشایشان را نداشتید آشکار کنند. ترجیحاً آن‌ها را خاموش بگذارید، به‌ویژه در گفت‌وگوهای گروهی.
-
-  </Accordion>
-  <Accordion title="تغییر مدل">
-    - `/model` مدل جدید نشست را فوراً پایدار می‌کند.
-    - اگر عامل بیکار باشد، اجرای بعدی بی‌درنگ از آن استفاده می‌کند.
-    - اگر یک اجرا از قبل فعال باشد، OpenClaw یک تغییر زنده را به‌عنوان در انتظار علامت‌گذاری می‌کند و فقط در یک نقطهٔ retry تمیز با مدل جدید دوباره شروع می‌کند.
-    - اگر فعالیت ابزار یا خروجی پاسخ از قبل شروع شده باشد، تغییر در انتظار می‌تواند تا فرصت retry بعدی یا نوبت بعدی کاربر در صف بماند.
-    - در TUI محلی، `/crestodian [request]` از TUI عادی عامل به Crestodian بازمی‌گردد. این از حالت نجات کانال پیام جداست و اختیار پیکربندی از راه دور اعطا نمی‌کند.
-
-  </Accordion>
-  <Accordion title="مسیر سریع و میان‌برهای درون‌خطی">
-    - **مسیر سریع:** پیام‌های فقط فرمان از فرستندگان مجاز فوراً پردازش می‌شوند (دورزدن صف + مدل).
-    - **دروازه‌گذاری منشن گروه:** پیام‌های فقط فرمان از فرستندگان مجاز، الزامات منشن را دور می‌زنند.
-    - **میان‌برهای درون‌خطی (فقط فرستندگان مجاز):** برخی فرمان‌ها هنگام جاسازی در یک پیام عادی نیز کار می‌کنند و پیش از اینکه مدل متن باقی‌مانده را ببیند حذف می‌شوند.
-      - مثال: `hey /status` یک پاسخ وضعیت را فعال می‌کند، و متن باقی‌مانده از جریان عادی ادامه می‌یابد.
-    - در حال حاضر: `/help`، `/commands`، `/status`، `/whoami` (`/id`).
-    - پیام‌های فقط فرمانِ غیرمجاز بی‌صدا نادیده گرفته می‌شوند، و توکن‌های درون‌خطی `/...` به‌عنوان متن ساده در نظر گرفته می‌شوند.
-
-  </Accordion>
-  <Accordion title="فرمان‌های skill و آرگومان‌های بومی">
-    - **فرمان‌های skill:** skillهای `user-invocable` به‌صورت فرمان‌های slash ارائه می‌شوند. نام‌ها به `a-z0-9_` پاک‌سازی می‌شوند (حداکثر ۳۲ نویسه)؛ برخوردها پسوندهای عددی می‌گیرند (برای نمونه `_2`).
-      - `/skill <name> [input]` یک skill را با نام اجرا می‌کند (وقتی محدودیت‌های فرمان بومی مانع فرمان‌های جداگانه برای هر skill می‌شوند، مفید است).
-      - به‌صورت پیش‌فرض، فرمان‌های skill به‌عنوان یک درخواست عادی به مدل فرستاده می‌شوند.
-      - skillها می‌توانند به‌صورت اختیاری `command-dispatch: tool` را اعلام کنند تا فرمان مستقیماً به یک ابزار مسیریابی شود (قطعی، بدون مدل).
-      - مثال: `/prose` (Plugin OpenProse) — [OpenProse](/fa/prose) را ببینید.
-    - **آرگومان‌های فرمان بومی:** Discord برای گزینه‌های پویا از تکمیل خودکار استفاده می‌کند (و وقتی آرگومان‌های الزامی را حذف کنید، از منوهای دکمه‌ای استفاده می‌کند). Telegram و Slack وقتی یک فرمان از انتخاب‌ها پشتیبانی کند و شما آرگومان را حذف کنید، یک منوی دکمه‌ای نشان می‌دهند. انتخاب‌های پویا در برابر مدل نشست هدف حل می‌شوند، بنابراین گزینه‌های ویژهٔ مدل مانند سطح‌های `/think` از بازنویسی `/model` همان نشست پیروی می‌کنند.
-
+  <Accordion title="آرگومان‌های دستور بومی">
+    Discord برای گزینه‌های پویا و منوهای دکمه‌ای، وقتی آرگومان‌های الزامی
+    حذف شده باشند، از تکمیل خودکار استفاده می‌کند. Telegram و Slack برای دستورهای دارای
+    گزینه‌ها یک منوی دکمه‌ای نشان می‌دهند. گزینه‌های پویا نسبت به مدل نشست هدف resolve می‌شوند، بنابراین گزینه‌های
+    مختص مدل مثل سطح‌های `/think` از بازنویسی `/model` نشست پیروی می‌کنند.
   </Accordion>
 </AccordionGroup>
 
-## `/tools`
+## `/tools` — عامل اکنون از چه چیزهایی می‌تواند استفاده کند
 
-`/tools` به یک پرسش زمان اجرا پاسخ می‌دهد، نه یک پرسش پیکربندی: **این عامل همین حالا در این گفت‌وگو از چه چیزهایی می‌تواند استفاده کند**.
-
-- `/tools` پیش‌فرض فشرده و برای مرور سریع بهینه شده است.
-- `/tools verbose` توضیح‌های کوتاه اضافه می‌کند.
-- سطوح فرمان بومی که از آرگومان‌ها پشتیبانی می‌کنند، همان کلید تغییر حالت را به‌صورت `compact|verbose` ارائه می‌کنند.
-- نتیجه‌ها وابسته به نشست هستند، بنابراین تغییر عامل، کانال، رشته، مجوز فرستنده یا مدل می‌تواند خروجی را تغییر دهد.
-- `/tools` شامل ابزارهایی است که واقعاً در زمان اجرا قابل دسترسی هستند، از جمله ابزارهای هسته، ابزارهای Plugin متصل، و ابزارهای متعلق به کانال.
-
-برای ویرایش پروفایل و بازنویسی، به‌جای اینکه `/tools` را یک کاتالوگ ایستا بدانید، از پنل Tools در رابط کاربری Control یا سطوح پیکربندی/کاتالوگ استفاده کنید.
-
-## سطوح استفاده (چه چیزی کجا نشان داده می‌شود)
-
-- **مصرف/سهمیه ارائه‌دهنده** (مثال: «۸۰٪ Claude باقی مانده») وقتی رهگیری مصرف فعال باشد، برای ارائه‌دهنده مدل فعلی در `/status` نمایش داده می‌شود. OpenClaw پنجره‌های ارائه‌دهنده را به «٪ باقی‌مانده» نرمال‌سازی می‌کند؛ برای MiniMax، فیلدهای درصدیِ فقط-باقی‌مانده پیش از نمایش معکوس می‌شوند، و پاسخ‌های `model_remains` ورودی مدل چت را همراه با یک برچسب طرحِ دارای تگ مدل ترجیح می‌دهند.
-- **خط‌های توکن/کش** در `/status` می‌توانند وقتی نمای لحظه‌ای نشست زنده کم‌جزئیات است، به آخرین ورودی مصرف رونوشت برگردند. مقدارهای زنده غیرصفر موجود همچنان اولویت دارند، و جایگزینی از رونوشت می‌تواند برچسب مدل runtime فعال را نیز همراه با یک مجموع بزرگ‌ترِ متمرکز بر پرامپت، وقتی مجموع‌های ذخیره‌شده وجود ندارند یا کوچک‌ترند، بازیابی کند.
-- **اجرا در برابر runtime:** `/status` مقدار `Execution` را برای مسیر sandbox مؤثر و مقدار `Runtime` را برای چیزی که واقعا نشست را اجرا می‌کند گزارش می‌کند: `OpenClaw Pi Default`، `OpenAI Codex`، یک پشتیبان CLI، یا یک پشتیبان ACP.
-- **توکن/هزینه به‌ازای هر پاسخ** با `/usage off|tokens|full` کنترل می‌شود (به پاسخ‌های عادی افزوده می‌شود).
-- `/model status` درباره **مدل‌ها/احراز هویت/نقاط پایانی** است، نه مصرف.
-
-## انتخاب مدل (`/model`)
-
-`/model` به‌صورت یک دستورالعمل پیاده‌سازی شده است.
-
-مثال‌ها:
-
-```
-/model
-/model list
-/model 3
-/model openai/gpt-5.4
-/model opus@anthropic:default
-/model status
-```
-
-نکته‌ها:
-
-- `/model` و `/model list` یک انتخاب‌گر فشرده و شماره‌گذاری‌شده را نمایش می‌دهند (خانواده مدل + ارائه‌دهنده‌های موجود).
-- در Discord، `/model` و `/models` یک انتخاب‌گر تعاملی با فهرست‌های کشویی ارائه‌دهنده و مدل، به‌همراه یک مرحله ارسال باز می‌کنند. این انتخاب‌گر `agents.defaults.models` را، شامل ورودی‌های `provider/*`، رعایت می‌کند، بنابراین کشف محدود به ارائه‌دهنده می‌تواند انتخاب‌گر را زیر محدودیت ۲۵ گزینه‌ای مؤلفه‌های Discord نگه دارد.
-- `/model <#>` از همان انتخاب‌گر انتخاب می‌کند (و در صورت امکان ارائه‌دهنده فعلی را ترجیح می‌دهد).
-- `/model status` نمای جزئیات را نشان می‌دهد، از جمله نقطه پایانی پیکربندی‌شده ارائه‌دهنده (`baseUrl`) و حالت API (`api`) وقتی موجود باشند.
-
-## بازنویسی‌های اشکال‌زدایی
-
-`/debug` به شما اجازه می‌دهد بازنویسی‌های پیکربندی **فقط در runtime** را تنظیم کنید (در حافظه، نه روی دیسک). فقط مالک. به‌صورت پیش‌فرض غیرفعال است؛ با `commands.debug: true` فعال کنید.
-
-مثال‌ها:
-
-```
-/debug show
-/debug set messages.responsePrefix="[openclaw]"
-/debug set channels.whatsapp.allowFrom=["+1555","+4477"]
-/debug unset messages.responsePrefix
-/debug reset
-```
-
-<Note>
-بازنویسی‌ها بلافاصله روی خواندن‌های جدید پیکربندی اعمال می‌شوند، اما در `openclaw.json` نوشته **نمی‌شوند**. برای پاک کردن همه بازنویسی‌ها و بازگشت به پیکربندی روی دیسک، از `/debug reset` استفاده کنید.
-</Note>
-
-## خروجی رهگیری Plugin
-
-`/trace` به شما اجازه می‌دهد **خط‌های رهگیری/اشکال‌زدایی Plugin در محدوده نشست** را بدون روشن کردن حالت کاملا پرجزئیات تغییر وضعیت دهید.
-
-مثال‌ها:
+`/tools` به یک پرسش زمان اجرا پاسخ می‌دهد: **این عامل همین حالا در این
+گفت‌وگو از چه چیزهایی می‌تواند استفاده کند** — نه یک کاتالوگ پیکربندی ایستا.
 
 ```text
-/trace
-/trace on
-/trace off
+/tools         # نمای فشرده
+/tools verbose # همراه با توضیح‌های کوتاه
 ```
 
-نکته‌ها:
+نتایج محدود به نشست هستند. تغییر عامل، کانال، رشته، مجوز فرستنده
+یا مدل می‌تواند خروجی را تغییر دهد. برای ویرایش پروفایل و بازنویسی‌ها،
+از پنل Tools در Control UI یا سطوح پیکربندی استفاده کنید.
 
-- `/trace` بدون آرگومان وضعیت رهگیری نشست فعلی را نشان می‌دهد.
-- `/trace on` خط‌های رهگیری Plugin را برای نشست فعلی فعال می‌کند.
-- `/trace off` آن‌ها را دوباره غیرفعال می‌کند.
-- خط‌های رهگیری Plugin می‌توانند در `/status` و به‌صورت یک پیام تشخیصیِ پیگیری پس از پاسخ عادی دستیار ظاهر شوند.
-- `/trace` جایگزین `/debug` نیست؛ `/debug` همچنان بازنویسی‌های پیکربندی فقط در runtime را مدیریت می‌کند.
-- `/trace` جایگزین `/verbose` نیست؛ خروجی عادی و پرجزئیات ابزار/وضعیت همچنان متعلق به `/verbose` است.
+## `/model` — انتخاب مدل
 
-## به‌روزرسانی‌های پیکربندی
-
-`/config` در پیکربندی روی دیسک شما (`openclaw.json`) می‌نویسد. فقط مالک. به‌صورت پیش‌فرض غیرفعال است؛ با `commands.config: true` فعال کنید.
-
-مثال‌ها:
-
+```text
+/model             # نمایش انتخابگر مدل
+/model list        # همان
+/model 3           # انتخاب با شماره از انتخابگر
+/model openai/gpt-5.4
+/model opus@anthropic:default
+/model default     # پاک کردن انتخاب مدل نشست
+/model status      # نمای تفصیلی همراه با endpoint و حالت API
 ```
+
+در Discord، `/model` و `/models` یک انتخابگر تعاملی با provider و
+منوهای کشویی مدل باز می‌کنند. انتخابگر به `agents.defaults.models`، از جمله
+ورودی‌های `provider/*`، احترام می‌گذارد.
+
+## `/config` — نوشتن پیکربندی روی دیسک
+
+<Note>
+  فقط مالک. به‌طور پیش‌فرض غیرفعال است — با `commands.config: true` فعال کنید.
+</Note>
+
+```text
 /config show
 /config show messages.responsePrefix
 /config get messages.responsePrefix
@@ -398,15 +366,14 @@ skillهای قابل فراخوانی توسط کاربر نیز به‌صورت
 /config unset messages.responsePrefix
 ```
 
+پیکربندی پیش از نوشتن اعتبارسنجی می‌شود. تغییرات نامعتبر رد می‌شوند. به‌روزرسانی‌های `/config`
+پس از راه‌اندازی دوباره نیز باقی می‌مانند.
+
+## `/mcp` — پیکربندی سرور MCP
+
 <Note>
-پیکربندی پیش از نوشتن اعتبارسنجی می‌شود؛ تغییرات نامعتبر رد می‌شوند. به‌روزرسانی‌های `/config` پس از راه‌اندازی‌های دوباره نیز باقی می‌مانند.
+  فقط مالک. به‌طور پیش‌فرض غیرفعال است — با `commands.mcp: true` فعال کنید.
 </Note>
-
-## به‌روزرسانی‌های MCP
-
-`/mcp` تعریف‌های سرور MCP مدیریت‌شده توسط OpenClaw را زیر `mcp.servers` می‌نویسد. فقط مالک. به‌صورت پیش‌فرض غیرفعال است؛ با `commands.mcp: true` فعال کنید.
-
-مثال‌ها:
 
 ```text
 /mcp show
@@ -415,15 +382,28 @@ skillهای قابل فراخوانی توسط کاربر نیز به‌صورت
 /mcp unset context7
 ```
 
+`/mcp` پیکربندی را در پیکربندی OpenClaw ذخیره می‌کند، نه در تنظیمات پروژهٔ عامل تعبیه‌شده.
+
+## `/debug` — بازنویسی‌های فقط زمان اجرا
+
 <Note>
-`/mcp` پیکربندی را در پیکربندی OpenClaw ذخیره می‌کند، نه تنظیمات پروژه متعلق به Pi. آداپتورهای runtime تصمیم می‌گیرند کدام انتقال‌ها واقعا قابل اجرا هستند.
+  فقط مالک. به‌طور پیش‌فرض غیرفعال است — با `commands.debug: true` فعال کنید.
+  بازنویسی‌ها فوراً روی خواندن‌های جدید پیکربندی اعمال می‌شوند، اما روی دیسک نوشته **نمی‌شوند**.
 </Note>
 
-## به‌روزرسانی‌های Plugin
+```text
+/debug show
+/debug set messages.responsePrefix="[openclaw]"
+/debug set channels.whatsapp.allowFrom=["+1555","+4477"]
+/debug unset messages.responsePrefix
+/debug reset
+```
 
-`/plugins` به اپراتورها اجازه می‌دهد Pluginهای کشف‌شده را بررسی کنند و فعال‌بودن آن‌ها را در پیکربندی تغییر دهند. جریان‌های فقط‌خواندنی می‌توانند از `/plugin` به‌عنوان نام مستعار استفاده کنند. به‌صورت پیش‌فرض غیرفعال است؛ با `commands.plugins: true` فعال کنید.
+## `/plugins` — مدیریت plugin
 
-مثال‌ها:
+<Note>
+  برای نوشتن‌ها فقط مالک. به‌طور پیش‌فرض غیرفعال است — با `commands.plugins: true` فعال کنید.
+</Note>
 
 ```text
 /plugins
@@ -431,63 +411,95 @@ skillهای قابل فراخوانی توسط کاربر نیز به‌صورت
 /plugin show context7
 /plugins enable context7
 /plugins disable context7
+/plugins install ./path/to/plugin
 ```
 
-<Note>
-- `/plugins list` و `/plugins show` از کشف واقعی Plugin در برابر فضای کاری فعلی به‌همراه پیکربندی روی دیسک استفاده می‌کنند.
-- `/plugins install` از ClawHub، npm، git، دایرکتوری‌های محلی و آرشیوها نصب می‌کند.
-- `/plugins enable|disable` فقط پیکربندی Plugin را به‌روزرسانی می‌کند؛ Pluginها را نصب یا حذف نمی‌کند.
-- تغییرات فعال‌سازی و غیرفعال‌سازی سطح‌های runtime Plugin در Gateway را برای نوبت‌های جدید عامل، با بارگذاری مجدد داغ به‌روزرسانی می‌کنند؛ درخواست نصب به راه‌اندازی دوباره Gateway نیاز دارد، چون ماژول‌های منبع Plugin تغییر کرده‌اند.
+`/plugins enable|disable` پیکربندی plugin را به‌روزرسانی می‌کند و زمان اجرای plugin
+Gateway را برای نوبت‌های جدید عامل hot-reload می‌کند. `/plugins install` چون ماژول‌های منبع
+plugin تغییر کرده‌اند، Gatewayهای مدیریت‌شده را به‌صورت خودکار راه‌اندازی دوباره می‌کند.
 
-</Note>
+## `/trace` — خروجی trace Plugin
 
-## نکته‌های سطح
+```text
+/trace          # نمایش وضعیت فعلی trace
+/trace on
+/trace off
+```
 
-<AccordionGroup>
-  <Accordion title="نشست‌ها به‌ازای هر سطح">
-    - **دستورهای متنی** در نشست چت عادی اجرا می‌شوند (پیام‌های مستقیم `main` را به‌اشتراک می‌گذارند، گروه‌ها نشست خودشان را دارند).
-    - **دستورهای بومی** از نشست‌های ایزوله استفاده می‌کنند:
-      - Discord: `agent:<agentId>:discord:slash:<userId>`
-      - Slack: `agent:<agentId>:slack:slash:<userId>` (پیشوند از طریق `channels.slack.slashCommand.sessionPrefix` قابل پیکربندی است)
-      - Telegram: `telegram:slash:<userId>` (از طریق `CommandTargetSessionKey` نشست چت را هدف می‌گیرد)
-    - **`/stop`** نشست چت فعال را هدف می‌گیرد تا بتواند اجرای فعلی را متوقف کند.
+`/trace` خط‌های trace/debug مربوط به plugin و محدود به نشست را بدون حالت verbose کامل
+آشکار می‌کند. این جایگزین `/debug` (بازنویسی‌های زمان اجرا) یا `/verbose` (خروجی عادی
+ابزار) نیست.
 
-  </Accordion>
-  <Accordion title="جزئیات مخصوص Slack">
-    `channels.slack.slashCommand` همچنان برای یک دستور تکی به سبک `/openclaw` پشتیبانی می‌شود. اگر `commands.native` را فعال کنید، باید برای هر دستور داخلی یک دستور اسلش Slack بسازید (با همان نام‌های `/help`). منوهای آرگومان دستور برای Slack به‌صورت دکمه‌های موقت Block Kit تحویل داده می‌شوند.
+## `/btw` — پرسش‌های جانبی
 
-    استثنای بومی Slack: `/agentstatus` را ثبت کنید (نه `/status`)، چون Slack مقدار `/status` را رزرو کرده است. متن `/status` همچنان در پیام‌های Slack کار می‌کند.
-
-  </Accordion>
-</AccordionGroup>
-
-## پرسش‌های جانبی BTW
-
-`/btw` یک **پرسش جانبی** سریع درباره نشست فعلی است. `/side` یک نام مستعار است.
-
-برخلاف چت عادی:
-
-- از نشست فعلی به‌عنوان زمینه پس‌زمینه استفاده می‌کند،
-- در نشست‌های harness مربوط به Codex، به‌صورت یک رشته جانبی موقت Codex با
-  مجوزهای فعلی Codex و سطح ابزار بومی اجرا می‌شود،
-- در نشست‌های غیر Codex، رفتار قدیمی‌ترِ فراخوانی جانبی مستقیم و یک‌باره را حفظ می‌کند،
-- زمینه نشست‌های آینده را تغییر نمی‌دهد،
-- در تاریخچه رونوشت نوشته نمی‌شود،
-- به‌جای یک پیام عادی دستیار، به‌صورت یک نتیجه جانبی زنده تحویل داده می‌شود.
-
-این باعث می‌شود `/btw` زمانی مفید باشد که هنگام ادامه یافتن کار اصلی، یک شفاف‌سازی موقت می‌خواهید.
-
-مثال:
+`/btw` یک پرسش جانبی سریع دربارهٔ زمینهٔ نشست فعلی است. نام مستعار: `/side`.
 
 ```text
 /btw what are we doing right now?
 /side what changed while the main run continued?
 ```
 
-برای رفتار کامل و جزئیات تجربه کاربری کلاینت، [پرسش‌های جانبی BTW](/fa/tools/btw) را ببینید.
+برخلاف یک پیام عادی:
+
+- از نشست فعلی به‌عنوان زمینهٔ پس‌زمینه استفاده می‌کند.
+- در نشست‌های Codex harness، به‌عنوان یک رشتهٔ جانبی موقت Codex اجرا می‌شود.
+- زمینهٔ نشست‌های آینده را تغییر **نمی‌دهد**.
+- در تاریخچهٔ transcript نوشته نمی‌شود.
+
+برای رفتار کامل، [BTW side questions](/fa/tools/btw) را ببینید.
+
+## یادداشت‌های سطح
+
+<AccordionGroup>
+  <Accordion title="محدوده‌بندی نشست برای هر سطح">
+    - **دستورهای متنی:** در نشست گفت‌وگوی عادی اجرا می‌شوند (DMها `main` را به‌اشتراک می‌گذارند، گروه‌ها نشست خودشان را دارند).
+    - **دستورهای بومی Discord:** `agent:<agentId>:discord:slash:<userId>`
+    - **دستورهای بومی Slack:** `agent:<agentId>:slack:slash:<userId>` (پیشوند از طریق `channels.slack.slashCommand.sessionPrefix` قابل پیکربندی است)
+    - **دستورهای بومی Telegram:** `telegram:slash:<userId>` (نشست گفت‌وگو را از طریق `CommandTargetSessionKey` هدف می‌گیرد)
+    - **`/stop`** نشست گفت‌وگوی فعال را برای قطع اجرای فعلی هدف می‌گیرد.
+
+  </Accordion>
+  <Accordion title="جزئیات Slack">
+    `channels.slack.slashCommand` از یک دستور واحد به سبک `/openclaw` پشتیبانی می‌کند.
+    با `commands.native: true`، برای هر دستور داخلی یک دستور slash در Slack بسازید.
+    `/agentstatus` را ثبت کنید (نه `/status`) چون Slack
+    `/status` را رزرو کرده است. متن `/status` همچنان در پیام‌های Slack کار می‌کند.
+  </Accordion>
+  <Accordion title="مسیر سریع و میانبرهای درون‌خطی">
+    - پیام‌های فقط دستور از فرستنده‌های allowlistشده فوراً رسیدگی می‌شوند (دور زدن صف + مدل).
+    - میانبرهای درون‌خطی (`/help`, `/commands`, `/status`, `/whoami`) همچنین در پیام‌های عادی تعبیه‌شده کار می‌کنند و پیش از آنکه مدل متن باقی‌مانده را ببیند حذف می‌شوند.
+    - پیام‌های فقط دستورِ غیرمجاز بی‌صدا نادیده گرفته می‌شوند؛ توکن‌های درون‌خطی `/...` به‌عنوان متن ساده در نظر گرفته می‌شوند.
+
+  </Accordion>
+  <Accordion title="یادداشت‌های آرگومان">
+    - دستورها یک `:` اختیاری بین دستور و آرگومان‌ها می‌پذیرند (`/think: high`, `/send: on`).
+    - `/new <model>` یک نام مستعار مدل، `provider/model`، یا نام provider را می‌پذیرد (تطبیق fuzzy)؛ اگر تطبیقی نباشد، متن به‌عنوان بدنهٔ پیام در نظر گرفته می‌شود.
+    - `/allowlist add|remove` به `commands.config: true` نیاز دارد و به `configWrites` کانال احترام می‌گذارد.
+
+  </Accordion>
+</AccordionGroup>
+
+## استفاده و وضعیت provider
+
+- **استفاده/سهمیهٔ provider** (مثلاً «Claude 80% left») وقتی ردیابی استفاده فعال باشد، در `/status` برای provider مدل فعلی نشان داده می‌شود.
+- **خط‌های token/cache** در `/status` وقتی snapshot زندهٔ نشست کم‌اطلاعات باشد، می‌توانند به آخرین ورودی استفادهٔ transcript برگردند.
+- **اجرا در برابر زمان اجرا:** `/status` برای مسیر sandbox مؤثر `Execution` و برای اینکه چه کسی نشست را اجرا می‌کند `Runtime` را گزارش می‌کند: `OpenClaw Default`، `OpenAI Codex`، یک backend CLI، یا یک backend ACP.
+- **توکن/هزینه برای هر پاسخ:** توسط `/usage off|tokens|full` کنترل می‌شود.
+- `/model status` دربارهٔ مدل‌ها/auth/endpoints است، نه استفاده.
 
 ## مرتبط
 
-- [ایجاد Skills](/fa/tools/creating-skills)
-- [Skills](/fa/tools/skills)
-- [پیکربندی Skills](/fa/tools/skills-config)
+<CardGroup cols={2}>
+  <Card title="Skills" href="/fa/tools/skills" icon="puzzle-piece">
+    اینکه دستورهای slash مربوط به skill چگونه ثبت و gate می‌شوند.
+  </Card>
+  <Card title="ساخت Skills" href="/fa/tools/creating-skills" icon="hammer">
+    یک skill بسازید که دستور slash خودش را ثبت می‌کند.
+  </Card>
+  <Card title="BTW" href="/fa/tools/btw" icon="comments">
+    پرسش‌های جانبی بدون تغییر زمینهٔ نشست.
+  </Card>
+  <Card title="هدایت" href="/fa/tools/steer" icon="compass">
+    عامل را در میانهٔ اجرا با `/steer` هدایت کنید.
+  </Card>
+</CardGroup>

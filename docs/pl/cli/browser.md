@@ -1,22 +1,23 @@
 ---
 read_when:
-    - Używasz `openclaw browser` i chcesz zobaczyć przykłady typowych zadań
+    - Używasz `openclaw browser` i chcesz przykłady typowych zadań
     - Chcesz sterować przeglądarką działającą na innym komputerze za pośrednictwem hosta Node
-    - Chcesz połączyć się z lokalną, zalogowaną przeglądarką Chrome przez Chrome MCP
+    - Chcesz połączyć się z lokalnie zalogowaną przeglądarką Chrome za pomocą Chrome MCP
 summary: Dokumentacja referencyjna CLI dla `openclaw browser` (cykl życia, profile, karty, akcje, stan i debugowanie)
 title: Przeglądarka
 x-i18n:
-    generated_at: "2026-04-30T09:41:54Z"
+    generated_at: "2026-06-27T17:19:40Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c7b5112c61e8289ab6a02bc30c9aefe640c053271f82197c0ee810b4a5efa580
+    source_hash: d9e45a6b89f23623c25b61d41273151b60da1fc415b5d3c901d8c555d8244f7a
     source_path: cli/browser.md
     workflow: 16
 ---
 
 # `openclaw browser`
 
-Zarządzaj powierzchnią sterowania przeglądarką OpenClaw i uruchamiaj akcje przeglądarki (cykl życia, profile, karty, migawki, zrzuty ekranu, nawigacja, dane wejściowe, emulacja stanu i debugowanie).
+Zarządzaj powierzchnią sterowania przeglądarką OpenClaw i uruchamiaj akcje przeglądarki (cykl życia, profile, karty, migawki, zrzuty ekranu, nawigacja, wprowadzanie danych, emulacja stanu i debugowanie).
 
 Powiązane:
 
@@ -44,7 +45,7 @@ Agenci mogą uruchomić tę samą kontrolę gotowości za pomocą `browser({ act
 
 ## Szybkie rozwiązywanie problemów
 
-Jeśli `start` kończy się błędem `not reachable after start`, najpierw sprawdź gotowość CDP. Jeśli `start` i `tabs` działają, ale `open` lub `navigate` kończy się niepowodzeniem, płaszczyzna sterowania przeglądarką jest sprawna, a przyczyną niepowodzenia jest zwykle polityka SSRF nawigacji.
+Jeśli `start` kończy się błędem `not reachable after start`, najpierw rozwiąż problem z gotowością CDP. Jeśli `start` i `tabs` działają, ale `open` lub `navigate` kończy się niepowodzeniem, płaszczyzna sterowania przeglądarką jest zdrowa, a przyczyną błędu jest zwykle polityka SSRF dla nawigacji.
 
 Minimalna sekwencja:
 
@@ -71,18 +72,18 @@ openclaw browser --browser-profile openclaw reset-profile
 
 Uwagi:
 
-- `doctor --deep` dodaje test migawki na żywo. Jest przydatny, gdy podstawowa
-  gotowość CDP jest prawidłowa, ale potrzebujesz dowodu, że bieżącą kartę można zbadać.
+- `doctor --deep` dodaje sondę migawki na żywo. Jest przydatne, gdy podstawowa
+  gotowość CDP jest zielona, ale chcesz dowodu, że bieżącą kartę można zbadać.
 - W przypadku profili `attachOnly` i zdalnych profili CDP `openclaw browser stop` zamyka
   aktywną sesję sterowania i czyści tymczasowe nadpisania emulacji nawet wtedy, gdy
   OpenClaw nie uruchomił samodzielnie procesu przeglądarki.
-- W przypadku lokalnych zarządzanych profili `openclaw browser stop` zatrzymuje uruchomiony
+- W przypadku lokalnie zarządzanych profili `openclaw browser stop` zatrzymuje uruchomiony
   proces przeglądarki.
 - `openclaw browser start --headless` dotyczy tylko tego żądania uruchomienia i
-  tylko wtedy, gdy OpenClaw uruchamia lokalną zarządzaną przeglądarkę. Nie przepisuje
+  tylko wtedy, gdy OpenClaw uruchamia lokalnie zarządzaną przeglądarkę. Nie przepisuje
   `browser.headless` ani konfiguracji profilu i nie ma efektu dla już działającej
   przeglądarki.
-- Na hostach Linux bez `DISPLAY` lub `WAYLAND_DISPLAY` lokalne zarządzane profile
+- Na hostach Linux bez `DISPLAY` ani `WAYLAND_DISPLAY` lokalnie zarządzane profile
   działają automatycznie w trybie headless, chyba że `OPENCLAW_BROWSER_HEADLESS=0`,
   `browser.headless=false` lub `browser.profiles.<name>.headless=false`
   jawnie żąda widocznej przeglądarki.
@@ -92,7 +93,7 @@ Uwagi:
 Jeśli `openclaw browser` jest nieznanym poleceniem, sprawdź `plugins.allow` w
 `~/.openclaw/openclaw.json`.
 
-Gdy `plugins.allow` jest obecne, jawnie wymień dołączony Plugin przeglądarki,
+Gdy `plugins.allow` jest obecne, jawnie wymień wbudowany Plugin przeglądarki,
 chyba że konfiguracja ma już główny blok `browser`:
 
 ```json5
@@ -104,8 +105,8 @@ chyba że konfiguracja ma już główny blok `browser`:
 ```
 
 Jawny główny blok `browser`, na przykład `browser.enabled=true` lub
-`browser.profiles.<name>`, również aktywuje dołączony Plugin przeglądarki przy
-restrykcyjnej liście dozwolonych Plugin.
+`browser.profiles.<name>`, również aktywuje wbudowany Plugin przeglądarki przy
+restrykcyjnej liście dozwolonych Pluginów.
 
 Powiązane: [Narzędzie przeglądarki](/pl/tools/browser#missing-browser-command-or-tool)
 
@@ -113,8 +114,8 @@ Powiązane: [Narzędzie przeglądarki](/pl/tools/browser#missing-browser-command
 
 Profile to nazwane konfiguracje routingu przeglądarki. W praktyce:
 
-- `openclaw`: uruchamia dedykowaną instancję Chrome zarządzaną przez OpenClaw lub dołącza do niej (izolowany katalog danych użytkownika).
-- `user`: steruje istniejącą zalogowaną sesją Chrome przez Chrome DevTools MCP.
+- `openclaw`: uruchamia lub dołącza do dedykowanej instancji Chrome zarządzanej przez OpenClaw (izolowany katalog danych użytkownika).
+- `user`: steruje istniejącą, zalogowaną sesją Chrome przez Chrome DevTools MCP.
 - niestandardowe profile CDP: wskazują lokalny lub zdalny punkt końcowy CDP.
 
 ```bash
@@ -144,14 +145,17 @@ openclaw browser focus docs
 openclaw browser close t1
 ```
 
-`tabs` zwraca najpierw `suggestedTargetId`, a następnie stabilny `tabId`, taki jak `t1`,
-opcjonalną etykietę i surowy `targetId`. Agenci powinni przekazywać
+`tabs` zwraca najpierw `suggestedTargetId`, następnie stabilne `tabId`, takie jak `t1`,
+opcjonalną etykietę oraz surowe `targetId`. Agenci powinni przekazywać
 `suggestedTargetId` z powrotem do `focus`, `close`, migawek i akcji. Możesz
 przypisać etykietę za pomocą `open --label`, `tab new --label` lub `tab label`; etykiety,
-identyfikatory kart, surowe identyfikatory celów i unikatowe prefiksy identyfikatorów celów są akceptowane.
-Gdy Chromium zastępuje bazowy surowy cel podczas nawigacji lub przesłania formularza,
-OpenClaw zachowuje stabilny `tabId`/etykietę przy zastępczej karcie,
-gdy może potwierdzić dopasowanie. Surowe identyfikatory celów pozostają zmienne; preferuj
+identyfikatory kart, surowe identyfikatory celów i unikalne prefiksy identyfikatorów celów są akceptowane.
+Pole żądania nadal nazywa się `targetId` ze względu na zgodność, ale akceptuje
+te odwołania do kart. Traktuj surowe identyfikatory celów jako uchwyty diagnostyczne, a nie trwałą
+pamięć agenta.
+Gdy Chromium zastępuje bazowy surowy cel podczas nawigacji lub wysłania formularza,
+OpenClaw utrzymuje stabilne `tabId`/etykietę przypięte do karty zastępczej,
+gdy może udowodnić dopasowanie. Surowe identyfikatory celów pozostają zmienne; preferuj
 `suggestedTargetId`.
 
 ## Migawka / zrzut ekranu / akcje
@@ -176,14 +180,29 @@ Uwagi:
 
 - `--full-page` służy tylko do przechwytywania stron; nie można go łączyć z `--ref`
   ani `--element`.
-- Profile `existing-session` / `user` obsługują zrzuty ekranu strony i zrzuty ekranu `--ref`
-  z danych wyjściowych migawki, ale nie obsługują zrzutów ekranu CSS `--element`.
-- `--labels` nakłada na zrzut ekranu bieżące odwołania migawki.
+- Profile `existing-session` / `user` obsługują zrzuty ekranu stron oraz zrzuty ekranu `--ref`
+  z danych wyjściowych migawki, ale nie zrzuty ekranu CSS `--element`.
+- `--labels` nakłada bieżące referencje migawki na zrzut ekranu. W profilach
+  opartych na Playwright działa z `--full-page` (nakładka etykiet pełnej strony),
+  `--ref` (nakładka etykiet wycinka elementu według referencji ARIA) oraz `--element`
+  (nakładka etykiet wycinka elementu według selektora CSS); w trybach wycinka elementu etykiety
+  są rzutowane względem elementu. Odpowiedź zawiera też tablicę
+  `annotations` z ramką ograniczającą każdej referencji. Każdy element ma `ref`,
+  `number`, `role`, opcjonalne `name` oraz `box: {x, y, width, height}`;
+  współrzędne są w przestrzeni przechwyconego obrazu (viewport / pełna strona /
+  względem elementu). Pole jest pomijane, gdy jest puste.
+  Profile `existing-session` renderują nakładkę chrome-mcp na zrzutach ekranu stron,
+  ale nie używają pomocnika projekcji Playwright i nie zawierają
+  `annotations`; zrzuty ekranu CSS `--element` nie są tam obsługiwane. Bez
+  Playwright lub chrome-mcp etykietowane zrzuty ekranu nie są dostępne. Poprzednie
+  wydania ignorowały `--full-page`, `--ref` i `--element` w etykietowanych
+  zrzutach ekranu Playwright i zawsze zwracały przechwycony viewport; etykietowane
+  zrzuty ekranu teraz respektują te zakresy.
 - `snapshot --urls` dołącza wykryte miejsca docelowe linków do migawek AI, aby
-  agenci mogli wybierać bezpośrednie cele nawigacji zamiast zgadywać wyłącznie na podstawie
-  tekstu linku.
+  agenci mogli wybierać bezpośrednie cele nawigacji zamiast zgadywać wyłącznie na podstawie tekstu
+  linku.
 
-Nawigacja/kliknięcie/wpisywanie (automatyzacja UI oparta na odwołaniach):
+Nawigacja/kliknięcie/pisanie (automatyzacja UI oparta na referencjach):
 
 ```bash
 openclaw browser navigate https://example.com
@@ -198,29 +217,46 @@ openclaw browser select <ref> OptionA OptionB
 openclaw browser fill --fields '[{"ref":"1","value":"Ada"}]'
 openclaw browser wait --text "Done"
 openclaw browser evaluate --fn '(el) => el.textContent' --ref <ref>
+openclaw browser evaluate --fn 'const title = document.title; return title;'
+openclaw browser evaluate --timeout-ms 30000 --fn 'async () => { await window.ready; return true; }'
 ```
 
-Odpowiedzi akcji zwracają bieżący surowy `targetId` po wywołanej akcją wymianie strony,
-gdy OpenClaw może potwierdzić kartę zastępczą. Skrypty nadal powinny
+`evaluate --fn` akceptuje źródło funkcji, wyrażenie lub ciało instrukcji.
+Ciała instrukcji są opakowywane jako funkcje asynchroniczne, więc użyj `return` dla wartości,
+którą chcesz otrzymać z powrotem. Użyj `evaluate --timeout-ms <ms>`, gdy funkcja po stronie strony może
+potrzebować więcej czasu niż domyślny limit czasu evaluate.
+
+Odpowiedzi akcji zwracają bieżące surowe `targetId` po zastąpieniu strony
+wywołanym akcją, gdy OpenClaw może udowodnić kartę zastępczą. Skrypty powinny nadal
 przechowywać i przekazywać `suggestedTargetId`/etykiety w długotrwałych przepływach pracy.
 
 Pomocniki plików i okien dialogowych:
 
 ```bash
 openclaw browser upload /tmp/openclaw/uploads/file.pdf --ref <ref>
+openclaw browser upload media://inbound/file.pdf --ref <ref>
 openclaw browser waitfordownload
 openclaw browser download <ref> report.pdf
 openclaw browser dialog --accept
+openclaw browser dialog --dismiss --dialog-id d1
 ```
 
-Zarządzane profile Chrome zapisują zwykłe pobrania wywołane kliknięciem w katalogu pobrań OpenClaw
-(`/tmp/openclaw/downloads` domyślnie lub w skonfigurowanym tymczasowym
-katalogu głównym). Użyj `waitfordownload` lub `download`, gdy agent musi poczekać na
-konkretny plik i zwrócić jego ścieżkę; te jawne mechanizmy oczekiwania przejmują następne pobranie.
+Zarządzane profile Chrome zapisują zwykłe pobrania wywołane kliknięciem w katalogu
+pobrań OpenClaw (`/tmp/openclaw/downloads` domyślnie albo skonfigurowanym głównym katalogu tymczasowym).
+Użyj `waitfordownload` lub `download`, gdy agent musi poczekać na
+konkretny plik i zwrócić jego ścieżkę; te jawne oczekiwania przejmują następne pobranie.
+Przesyłanie akceptuje pliki z głównego katalogu tymczasowych przesłań OpenClaw oraz zarządzanych przez OpenClaw
+przychodzących multimediów, w tym referencje `media://inbound/<id>` i względne względem piaskownicy
+`media/inbound/<id>`. Zagnieżdżone referencje multimediów, przechodzenie po katalogach i dowolne
+ścieżki lokalne pozostają odrzucane.
+Gdy akcja otwiera modalne okno dialogowe, odpowiedź akcji zwraca
+`blockedByDialog` z `browserState.dialogs.pending`; przekaż `--dialog-id`, aby
+odpowiedzieć bezpośrednio. Okna dialogowe obsłużone poza OpenClaw pojawiają się w
+`browserState.dialogs.recent`.
 
-## Stan i pamięć
+## Stan i przechowywanie
 
-Widok + emulacja:
+Viewport + emulacja:
 
 ```bash
 openclaw browser resize 1280 720
@@ -259,45 +295,49 @@ openclaw browser trace start
 openclaw browser trace stop --out trace.zip
 ```
 
-## Istniejąca sesja Chrome przez MCP
+## Istniejący Chrome przez MCP
 
-Użyj wbudowanego profilu `user` lub utwórz własny profil `existing-session`:
+Użyj wbudowanego profilu `user` albo utwórz własny profil `existing-session`:
 
 ```bash
 openclaw browser --browser-profile user tabs
 openclaw browser create-profile --name chrome-live --driver existing-session
 openclaw browser create-profile --name brave-live --driver existing-session --user-data-dir "~/Library/Application Support/BraveSoftware/Brave-Browser"
+openclaw browser create-profile --name chrome-port --driver existing-session --cdp-url http://127.0.0.1:9222
 openclaw browser --browser-profile chrome-live tabs
 ```
 
-Ta ścieżka jest dostępna tylko na hoście. W przypadku Docker, serwerów headless, Browserless lub innych konfiguracji zdalnych użyj zamiast tego profilu CDP.
+Domyślna ścieżka existing-session to automatyczne połączenie Chrome MCP tylko z hosta. Jeśli przeglądarka już
+działa z punktem końcowym DevTools, przekaż `--cdp-url`, aby Chrome MCP dołączył zamiast tego do tego punktu końcowego.
+W przypadku Dockera, Browserless lub innych zdalnych konfiguracji, w których semantyka Chrome MCP nie jest potrzebna, użyj
+profilu CDP.
 
-Obecne ograniczenia `existing-session`:
+Obecne ograniczenia existing-session:
 
-- akcje sterowane migawkami używają odwołań, a nie selektorów CSS
-- `browser.actionTimeoutMs` ustawia domyślnie obsługiwane żądania `act` na 60000 ms, gdy
-  wywołujący pomijają `timeoutMs`; `timeoutMs` dla pojedynczego wywołania nadal ma pierwszeństwo.
-- `click` to tylko kliknięcie lewym przyciskiem
+- akcje sterowane snapshotami używają referencji, a nie selektorów CSS
+- `browser.actionTimeoutMs` domyślnie ustawia obsługiwane żądania `act` na 60000 ms, gdy
+  wywołujący pominą `timeoutMs`; `timeoutMs` dla pojedynczego wywołania nadal ma pierwszeństwo.
+- `click` obsługuje tylko kliknięcie lewym przyciskiem
 - `type` nie obsługuje `slowly=true`
 - `press` nie obsługuje `delayMs`
 - `hover`, `scrollintoview`, `drag`, `select`, `fill` i `evaluate` odrzucają
-  nadpisania limitu czasu dla pojedynczych wywołań
+  nadpisania limitu czasu dla pojedynczego wywołania
 - `select` obsługuje tylko jedną wartość
-- `wait --load networkidle` nie jest obsługiwane
+- `wait --load networkidle` nie jest obsługiwane w profilach istniejących sesji (działa w zarządzanych i surowych/zdalnych CDP)
 - przesyłanie plików wymaga `--ref` / `--input-ref`, nie obsługuje CSS
   `--element` i obecnie obsługuje jeden plik naraz
-- haki okien dialogowych nie obsługują `--timeout`
-- zrzuty ekranu obsługują przechwytywanie stron i `--ref`, ale nie CSS `--element`
-- `responsebody`, przechwytywanie pobrań, eksport PDF i akcje wsadowe nadal
+- hooki dialogów nie obsługują `--timeout`
+- zrzuty ekranu obsługują przechwytywanie strony i `--ref`, ale nie CSS `--element`
+- `responsebody`, przechwytywanie pobierania, eksport PDF i akcje wsadowe nadal
   wymagają zarządzanej przeglądarki lub surowego profilu CDP
 
-## Zdalne sterowanie przeglądarką (proxy hosta węzła)
+## Zdalne sterowanie przeglądarką (proxy hosta node)
 
-Jeśli Gateway działa na innej maszynie niż przeglądarka, uruchom **host węzła** na maszynie, która ma Chrome/Brave/Edge/Chromium. Gateway będzie pośredniczyć w akcjach przeglądarki do tego węzła (oddzielny serwer sterowania przeglądarką nie jest wymagany).
+Jeśli Gateway działa na innym komputerze niż przeglądarka, uruchom **host node** na komputerze, który ma Chrome/Brave/Edge/Chromium. Gateway będzie przekazywać akcje przeglądarki do tego węzła (osobny serwer sterowania przeglądarką nie jest wymagany).
 
-Użyj `gateway.nodes.browser.mode`, aby kontrolować automatyczny routing, oraz `gateway.nodes.browser.node`, aby przypiąć konkretny węzeł, jeśli połączonych jest kilka.
+Użyj `gateway.nodes.browser.mode`, aby kontrolować automatyczne trasowanie, oraz `gateway.nodes.browser.node`, aby przypiąć konkretny węzeł, jeśli podłączonych jest wiele.
 
-Bezpieczeństwo + konfiguracja zdalna: [Narzędzie przeglądarki](/pl/tools/browser), [Dostęp zdalny](/pl/gateway/remote), [Tailscale](/pl/gateway/tailscale), [Bezpieczeństwo](/pl/gateway/security)
+Bezpieczeństwo i konfiguracja zdalna: [Narzędzie przeglądarki](/pl/tools/browser), [Dostęp zdalny](/pl/gateway/remote), [Tailscale](/pl/gateway/tailscale), [Bezpieczeństwo](/pl/gateway/security)
 
 ## Powiązane
 

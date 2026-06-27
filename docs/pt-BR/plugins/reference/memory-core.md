@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Você está instalando, configurando ou auditando o Plugin memory-core
-summary: Adiciona suporte a provedor de embeddings de memória. Adiciona ferramentas que podem ser chamadas por agentes.
+    - Você está instalando, configurando ou auditando o plugin memory-core
+summary: Adiciona ferramentas chamáveis por agentes.
 title: Plugin Memory Core
 x-i18n:
-    generated_at: "2026-05-02T20:57:49Z"
+    generated_at: "2026-06-27T17:54:19Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7c9c5d79e5a17c13592f2d485ac24a5e2e5e3640ea68fc5315a6ba8f1640e0ef
+    source_hash: cda6ebb02b0e4c1616f68c3c9636b269248b4c63ca5f778d7f8c48152b27f303
     source_path: plugins/reference/memory-core.md
     workflow: 16
 ---
 
 # Plugin Memory Core
 
-Adiciona suporte a provedor de embedding de memória. Adiciona ferramentas chamáveis por agente.
+Adiciona ferramentas chamáveis por agentes.
 
 ## Distribuição
 
@@ -23,4 +24,4 @@ Adiciona suporte a provedor de embedding de memória. Adiciona ferramentas cham�
 
 ## Superfície
 
-contratos: memoryEmbeddingProviders, tools
+contratos: ferramentas

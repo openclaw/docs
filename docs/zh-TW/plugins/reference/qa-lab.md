@@ -1,26 +1,27 @@
 ---
 read_when:
-    - 您正在安裝、設定或稽核 qa-lab Plugin
-summary: OpenClaw QA 實驗室 Plugin，具備私有偵錯器 UI 與情境執行器。
-title: QA 實驗室 Plugin
+    - 你正在安裝、設定或稽核 qa-lab 外掛
+summary: OpenClaw QA 實驗室外掛，具備私有偵錯工具使用者介面和情境執行器。
+title: QA Lab 外掛
 x-i18n:
-    generated_at: "2026-05-02T20:59:23Z"
+    generated_at: "2026-06-27T19:45:42Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a565d11bc2e1051685b6c067b695fbec980bfe21f50c98d5a616ed3dcbecb98e
+    source_hash: 0de3ac126939c822225cfd4bf75af594e6066f7992cacc71b1455638aab3af0b
     source_path: plugins/reference/qa-lab.md
     workflow: 16
 ---
 
-# QA Lab Plugin
+# QA Lab 外掛
 
-OpenClaw QA Lab Plugin，具備私人偵錯工具 UI 與情境執行器。
+OpenClaw QA lab 外掛，具備私人除錯器 UI 與情境執行器。
 
 ## 發佈
 
 - 套件：`@openclaw/qa-lab`
-- 安裝途徑：僅限原始碼簽出
+- 安裝路徑：僅限原始碼 checkout
 
 ## 介面
 
-Plugin
+contracts: webSearchProviders

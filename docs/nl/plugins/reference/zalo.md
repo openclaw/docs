@@ -1,20 +1,21 @@
 ---
 read_when:
     - Je installeert, configureert of controleert de zalo-Plugin
-summary: Voegt de Zalo-kanaalinterface toe voor het verzenden en ontvangen van OpenClaw-berichten.
-title: Zalo Plugin
+summary: OpenClaw Zalo-kanaalplugin voor bot- en webhookchats.
+title: Zalo-plugin
 x-i18n:
-    generated_at: "2026-05-03T11:16:19Z"
+    generated_at: "2026-06-27T18:05:27Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2914ba7fec4427c6a8a322ea1d9308d9e37a81b5ff51a89b06227e5ecfcef6f2
+    source_hash: ff9da1e1591eaad36db74a27f817dd9dac8791af2d5030fcd3419ee50d2ed4aa
     source_path: plugins/reference/zalo.md
     workflow: 16
 ---
 
 # Zalo Plugin
 
-Voegt het Zalo-kanaaloppervlak toe voor het verzenden en ontvangen van OpenClaw-berichten.
+OpenClaw Zalo-kanaalplugin voor bot- en webhookchats.
 
 ## Distributie
 
@@ -25,6 +26,6 @@ Voegt het Zalo-kanaaloppervlak toe voor het verzenden en ontvangen van OpenClaw-
 
 channels: zalo
 
-## Gerelateerde docs
+## Gerelateerde documentatie
 
 - [zalo](/nl/channels/zalo)

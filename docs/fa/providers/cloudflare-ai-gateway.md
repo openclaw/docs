@@ -1,35 +1,45 @@
 ---
 read_when:
     - می‌خواهید از Cloudflare AI Gateway با OpenClaw استفاده کنید
-    - به شناسه حساب، شناسه Gateway یا متغیر محیطی کلید API نیاز دارید.
+    - به شناسه حساب، شناسه Gateway، یا متغیر محیطی کلید API نیاز دارید
 summary: راه‌اندازی Cloudflare AI Gateway (احراز هویت + انتخاب مدل)
 title: Gateway هوش مصنوعی Cloudflare
 x-i18n:
-    generated_at: "2026-04-29T23:24:02Z"
+    generated_at: "2026-06-27T18:38:43Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c7c567076a5b3fea0f09f44d772c0858aed2a4813f91f1cc9f87b0da39c2e5db
+    source_hash: 05678faa049349c610a9c7ea9d23958bf51927453cf6987fef397cd273f6556b
     source_path: providers/cloudflare-ai-gateway.md
     workflow: 16
 ---
 
-Cloudflare AI Gateway در برابر APIهای ارائه‌دهنده قرار می‌گیرد و به شما امکان می‌دهد تحلیل، کش و کنترل‌ها را اضافه کنید. برای Anthropic، OpenClaw از Anthropic Messages API از طریق نقطه پایانی Gateway شما استفاده می‌کند.
+Cloudflare AI Gateway جلوی APIهای ارائه‌دهنده قرار می‌گیرد و به شما امکان می‌دهد تحلیل‌، کش‌کردن، و کنترل‌ها را اضافه کنید. برای Anthropic، OpenClaw از Anthropic Messages API از طریق نقطه پایانی Gateway شما استفاده می‌کند.
 
-| ویژگی        | مقدار                                                                                   |
+| ویژگی       | مقدار                                                                                   |
 | ------------- | ---------------------------------------------------------------------------------------- |
 | ارائه‌دهنده  | `cloudflare-ai-gateway`                                                                  |
 | URL پایه      | `https://gateway.ai.cloudflare.com/v1/<account_id>/<gateway_id>/anthropic`               |
-| مدل پیش‌فرض  | `cloudflare-ai-gateway/claude-sonnet-4-6`                                                |
-| کلید API     | `CLOUDFLARE_AI_GATEWAY_API_KEY` (کلید API ارائه‌دهنده شما برای درخواست‌ها از طریق Gateway) |
+| مدل پیش‌فرض   | `cloudflare-ai-gateway/claude-sonnet-4-6`                                                |
+| کلید API      | `CLOUDFLARE_AI_GATEWAY_API_KEY` (کلید API ارائه‌دهنده شما برای درخواست‌ها از طریق Gateway) |
 
 <Note>
 برای مدل‌های Anthropic که از طریق Cloudflare AI Gateway مسیریابی می‌شوند، از **کلید API Anthropic** خود به‌عنوان کلید ارائه‌دهنده استفاده کنید.
 </Note>
 
-وقتی thinking برای مدل‌های Anthropic Messages فعال باشد، OpenClaw نوبت‌های
-assistant prefill انتهایی را پیش از ارسال payload از طریق Cloudflare AI Gateway حذف می‌کند.
-Anthropic پاسخ‌های ازپیش‌پرشده را با extended thinking رد می‌کند، در حالی که prefill عادی
-بدون thinking همچنان در دسترس می‌ماند.
+وقتی thinking برای مدل‌های Anthropic Messages فعال باشد، OpenClaw نوبت‌های prefill پایانی
+دستیار را پیش از ارسال payload از طریق Cloudflare AI Gateway حذف می‌کند.
+Anthropic، پیش‌پرکردن پاسخ را با extended thinking رد می‌کند، در حالی که prefill معمولی
+بدون thinking همچنان در دسترس است.
+
+## نصب Plugin
+
+Plugin رسمی را نصب کنید، سپس Gateway را راه‌اندازی مجدد کنید:
+
+```bash
+openclaw plugins install @openclaw/cloudflare-ai-gateway-provider
+openclaw gateway restart
+```
 
 ## شروع به کار
 
@@ -41,10 +51,10 @@ Anthropic پاسخ‌های ازپیش‌پرشده را با extended thinking 
     openclaw onboard --auth-choice cloudflare-ai-gateway-api-key
     ```
 
-    این کار شناسه حساب، شناسه Gateway و کلید API شما را درخواست می‌کند.
+    این کار شناسه حساب، شناسه gateway، و کلید API شما را درخواست می‌کند.
 
   </Step>
-  <Step title="تنظیم یک مدل پیش‌فرض">
+  <Step title="تنظیم مدل پیش‌فرض">
     مدل را به پیکربندی OpenClaw خود اضافه کنید:
 
     ```json5
@@ -81,8 +91,8 @@ openclaw onboard --non-interactive \
 ## پیکربندی پیشرفته
 
 <AccordionGroup>
-  <Accordion title="Gatewayهای احراز هویت‌شده">
-    اگر احراز هویت Gateway را در Cloudflare فعال کرده‌اید، سرآیند `cf-aig-authorization` را اضافه کنید. این مورد **علاوه بر** کلید API ارائه‌دهنده شما است.
+  <Accordion title="gatewayهای احراز هویت‌شده">
+    اگر احراز هویت Gateway را در Cloudflare فعال کرده‌اید، سربرگ `cf-aig-authorization` را اضافه کنید. این **علاوه بر** کلید API ارائه‌دهنده شماست.
 
     ```json5
     {
@@ -99,16 +109,16 @@ openclaw onboard --non-interactive \
     ```
 
     <Tip>
-    سرآیند `cf-aig-authorization` با خود Cloudflare Gateway احراز هویت می‌کند، در حالی که کلید API ارائه‌دهنده (برای مثال، کلید Anthropic شما) با ارائه‌دهنده بالادست احراز هویت می‌کند.
+    سربرگ `cf-aig-authorization` با خود Cloudflare Gateway احراز هویت می‌کند، در حالی که کلید API ارائه‌دهنده (برای مثال، کلید Anthropic شما) با ارائه‌دهنده بالادستی احراز هویت می‌کند.
     </Tip>
 
   </Accordion>
 
-  <Accordion title="یادداشت محیط">
+  <Accordion title="نکته محیطی">
     اگر Gateway به‌صورت daemon (launchd/systemd) اجرا می‌شود، مطمئن شوید `CLOUDFLARE_AI_GATEWAY_API_KEY` برای آن فرایند در دسترس است.
 
     <Warning>
-    کلیدی که فقط در `~/.profile` قرار دارد به daemon مربوط به launchd/systemd کمکی نمی‌کند، مگر اینکه آن محیط نیز در آنجا وارد شده باشد. کلید را در `~/.openclaw/.env` یا از طریق `env.shellEnv` تنظیم کنید تا مطمئن شوید فرایند Gateway می‌تواند آن را بخواند.
+    کلیدی که فقط در یک پوسته تعاملی export شده باشد، به daemon مربوط به launchd/systemd کمکی نمی‌کند مگر اینکه آن محیط در آنجا نیز import شده باشد. کلید را در `~/.openclaw/.env` یا از طریق `env.shellEnv` تنظیم کنید تا مطمئن شوید فرایند gateway می‌تواند آن را بخواند.
     </Warning>
 
   </Accordion>
@@ -118,7 +128,7 @@ openclaw onboard --non-interactive \
 
 <CardGroup cols={2}>
   <Card title="انتخاب مدل" href="/fa/concepts/model-providers" icon="layers">
-    انتخاب ارائه‌دهنده‌ها، ارجاع‌های مدل و رفتار failover.
+    انتخاب ارائه‌دهندگان، ارجاع‌های مدل، و رفتار failover.
   </Card>
   <Card title="عیب‌یابی" href="/fa/help/troubleshooting" icon="wrench">
     عیب‌یابی عمومی و پرسش‌های متداول.

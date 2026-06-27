@@ -1,20 +1,21 @@
 ---
 read_when:
     - Chcesz mieć szybki dostęp do kluczowych stron dokumentacji
-summary: Wyselekcjonowane linki do najczęściej używanej dokumentacji OpenClaw.
+summary: Wyselekcjonowane linki do najczęściej używanych dokumentów OpenClaw.
 title: Katalog dokumentacji
 x-i18n:
-    generated_at: "2026-05-10T19:54:57Z"
+    generated_at: "2026-06-27T18:21:58Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ddd6903aeb87e36db977b2cef62bd80e84fc67633ca00beb3365ced1f5abdd99
+    source_hash: f7d45effe4df50fb544e9f6fd2fcd87f4ed674eba0042eace757dbfcad93d07a
     source_path: start/docs-directory.md
     workflow: 16
 ---
 
 <Note>
-Ta strona jest wyselekcjonowanym indeksem. Jeśli zaczynasz, przejdź najpierw do [Pierwsze kroki](/pl/start/getting-started).
-Pełną mapę dokumentacji znajdziesz w [Centrach dokumentacji](/pl/start/hubs).
+Ta strona jest wyselekcjonowanym indeksem. Jeśli jesteś tu nowy, zacznij od [Pierwsze kroki](/pl/start/getting-started).
+Pełną mapę dokumentacji znajdziesz w sekcji [Centra dokumentacji](/pl/start/hubs).
 </Note>
 
 ## Zacznij tutaj
@@ -23,9 +24,9 @@ Pełną mapę dokumentacji znajdziesz w [Centrach dokumentacji](/pl/start/hubs).
 - [Pomoc](/pl/help)
 - [Konfiguracja](/pl/gateway/configuration)
 - [Przykłady konfiguracji](/pl/gateway/configuration-examples)
-- [Polecenia slash](/pl/tools/slash-commands)
+- [Polecenia ukośnikowe](/pl/tools/slash-commands)
 - [Trasowanie wielu agentów](/pl/concepts/multi-agent)
-- [Aktualizacja i wycofywanie zmian](/pl/install/updating)
+- [Aktualizowanie i wycofywanie zmian](/pl/install/updating)
 - [Parowanie (DM i węzły)](/pl/channels/pairing)
 - [Tryb Nix](/pl/install/nix)
 - [Konfiguracja asystenta OpenClaw](/pl/start/openclaw)
@@ -58,7 +59,7 @@ Pełną mapę dokumentacji znajdziesz w [Centrach dokumentacji](/pl/start/hubs).
 - [Aplikacja macOS](/pl/platforms/macos)
 - [Aplikacja iOS](/pl/platforms/ios)
 - [Aplikacja Android](/pl/platforms/android)
-- [Windows (WSL2)](/pl/platforms/windows)
+- [Windows Hub](/pl/platforms/windows)
 - [Aplikacja Linux](/pl/platforms/linux)
 
 ## Operacje i bezpieczeństwo

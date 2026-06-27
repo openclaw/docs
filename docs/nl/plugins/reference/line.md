@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de line-plugin
-summary: Voegt de LINE-kanaalinterface toe voor het verzenden en ontvangen van OpenClaw-berichten.
-title: LINE-plugin
+    - Je installeert, configureert of controleert de LINE-Plugin
+summary: OpenClaw LINE-kanaal-Plugin voor LINE Bot API-chats.
+title: LINE Plugin
 x-i18n:
-    generated_at: "2026-05-03T11:15:13Z"
+    generated_at: "2026-06-27T18:01:50Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 307e6e08345161bc53fe5a04cc9d0a3fabbc9ff01e9ebcae98a39899288ef4d4
+    source_hash: d561055be3fde476a78bf123f4025ca61e670b005d0b2d63e5b54318975c2fd9
     source_path: plugins/reference/line.md
     workflow: 16
 ---
 
 # LINE Plugin
 
-Voegt het LINE-kanaaloppervlak toe voor het verzenden en ontvangen van OpenClaw-berichten.
+OpenClaw LINE-kanaal-Plugin voor LINE Bot API-chats.
 
 ## Distributie
 

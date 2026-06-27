@@ -1,25 +1,26 @@
 ---
 read_when:
     - การตรวจสอบความครอบคลุมของข้อมูลประจำตัว SecretRef
-    - การตรวจสอบว่าข้อมูลประจำตัวมีสิทธิ์สำหรับ `secrets configure` หรือ `secrets apply` หรือไม่
-    - การตรวจสอบว่าเหตุใดข้อมูลประจำตัวจึงอยู่นอกขอบเขตที่รองรับ
-summary: ขอบเขตการใช้งานข้อมูลประจำตัว SecretRef แบบมาตรฐานที่รองรับและไม่รองรับ
-title: พื้นผิวข้อมูลรับรองของ SecretRef
+    - ตรวจสอบว่าข้อมูลรับรองมีสิทธิ์สำหรับ `secrets configure` หรือ `secrets apply` หรือไม่
+    - การตรวจสอบว่าเหตุใดข้อมูลประจำตัวจึงอยู่นอกพื้นผิวที่รองรับ
+summary: พื้นผิวข้อมูลประจำตัว SecretRef ที่รองรับและไม่รองรับตามแบบมาตรฐาน
+title: อินเทอร์เฟซข้อมูลประจำตัว SecretRef
 x-i18n:
-    generated_at: "2026-05-10T19:56:56Z"
+    generated_at: "2026-06-27T18:21:23Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2778ea781f7b6fc4d579892225f9cf29bfb8f9ece5961554620ca8e82123ceff
+    source_hash: 668ee7e72565194bfe53a397767d060e5fe7743c9bf8bde2597ec3dad2a32431
     source_path: reference/secretref-credential-surface.md
     workflow: 16
 ---
 
-หน้านี้กำหนดพื้นผิวข้อมูลประจำตัว SecretRef ที่เป็นมาตรฐาน
+หน้านี้กำหนดพื้นผิวข้อมูลประจำตัว SecretRef แบบมาตรฐาน
 
 เจตนาของขอบเขต:
 
-- อยู่ในขอบเขต: ข้อมูลประจำตัวที่ผู้ใช้จัดหาให้โดยตรง ซึ่ง OpenClaw ไม่ได้สร้างหรือหมุนเวียนให้
-- อยู่นอกขอบเขต: ข้อมูลประจำตัวที่สร้างหรือหมุนเวียนระหว่างรันไทม์, วัสดุรีเฟรช OAuth และอาร์ติแฟกต์ลักษณะคล้ายเซสชัน
+- อยู่ในขอบเขต: ข้อมูลประจำตัวที่ผู้ใช้ระบุเองอย่างเคร่งครัด ซึ่ง OpenClaw ไม่ได้ออกหรือหมุนเวียนให้
+- อยู่นอกขอบเขต: ข้อมูลประจำตัวที่รันไทม์ออกให้หรือมีการหมุนเวียน, วัสดุ OAuth refresh, และอาร์ติแฟกต์ลักษณะคล้ายเซสชัน
 
 ## ข้อมูลประจำตัวที่รองรับ
 
@@ -45,11 +46,15 @@ x-i18n:
 - `agents.list[].tts.providers.*.apiKey`
 - `agents.list[].memorySearch.remote.apiKey`
 - `talk.providers.*.apiKey`
+- `talk.realtime.providers.*.apiKey`
 - `messages.tts.providers.*.apiKey`
 - `tools.web.fetch.firecrawl.apiKey`
 - `plugins.entries.acpx.config.mcpServers.*.env.*`
 - `plugins.entries.brave.config.webSearch.apiKey`
+- `plugins.entries.codex.config.appServer.authToken`
+- `plugins.entries.codex.config.appServer.headers.*`
 - `plugins.entries.exa.config.webSearch.apiKey`
+- `plugins.entries.google-meet.config.realtime.providers.*.apiKey`
 - `plugins.entries.google.config.webSearch.apiKey`
 - `plugins.entries.xai.config.webSearch.apiKey`
 - `plugins.entries.moonshot.config.webSearch.apiKey`
@@ -57,10 +62,12 @@ x-i18n:
 - `plugins.entries.firecrawl.config.webSearch.apiKey`
 - `plugins.entries.minimax.config.webSearch.apiKey`
 - `plugins.entries.tavily.config.webSearch.apiKey`
+- `plugins.entries.parallel.config.webSearch.apiKey`
 - `plugins.entries.voice-call.config.realtime.providers.*.apiKey`
 - `plugins.entries.voice-call.config.streaming.providers.*.apiKey`
 - `plugins.entries.voice-call.config.tts.providers.*.apiKey`
 - `plugins.entries.voice-call.config.twilio.authToken`
+- `tools.web.search.*.apiKey`
 - `tools.web.search.apiKey`
 - `gateway.auth.password`
 - `gateway.auth.token`
@@ -73,12 +80,16 @@ x-i18n:
 - `channels.telegram.accounts.*.webhookSecret`
 - `channels.slack.botToken`
 - `channels.slack.appToken`
+- `channels.slack.relay.authToken`
 - `channels.slack.userToken`
 - `channels.slack.signingSecret`
 - `channels.slack.accounts.*.botToken`
 - `channels.slack.accounts.*.appToken`
+- `channels.slack.accounts.*.relay.authToken`
 - `channels.slack.accounts.*.userToken`
 - `channels.slack.accounts.*.signingSecret`
+- `channels.sms.authToken`
+- `channels.sms.accounts.*.authToken`
 - `channels.discord.token`
 - `channels.discord.pluralkit.token`
 - `channels.discord.voice.tts.providers.*.apiKey`
@@ -124,18 +135,18 @@ x-i18n:
 
 หมายเหตุ:
 
-- เป้าหมายแผนโปรไฟล์การตรวจสอบสิทธิ์ต้องใช้ `agentId`
-- รายการแผนมุ่งเป้าไปที่ `profiles.*.key` / `profiles.*.token` และเขียน refs ระดับพี่น้อง (`keyRef` / `tokenRef`)
-- refs ของโปรไฟล์การตรวจสอบสิทธิ์ถูกรวมอยู่ในการแก้ค่าระหว่างรันไทม์และความครอบคลุมของการตรวจสอบแล้ว
-- ใน `openclaw.json` SecretRefs ต้องใช้ออบเจ็กต์ที่มีโครงสร้าง เช่น `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}` สตริงมาร์กเกอร์เดิม `secretref-env:<ENV_VAR>` จะถูกปฏิเสธบนพาธข้อมูลประจำตัว SecretRef; รัน `openclaw doctor --fix` เพื่อย้ายมาร์กเกอร์ที่ถูกต้อง
-- ตัวป้องกันนโยบาย OAuth: `auth.profiles.<id>.mode = "oauth"` ไม่สามารถใช้ร่วมกับอินพุต SecretRef สำหรับโปรไฟล์นั้นได้ การเริ่มต้น/โหลดซ้ำและการแก้ค่าโปรไฟล์การตรวจสอบสิทธิ์จะล้มเหลวทันทีเมื่อนโยบายนี้ถูกละเมิด
-- สำหรับผู้ให้บริการโมเดลที่จัดการด้วย SecretRef รายการ `agents/*/agent/models.json` ที่สร้างขึ้นจะคงมาร์กเกอร์ที่ไม่ใช่ความลับไว้ (ไม่ใช่ค่าความลับที่แก้แล้ว) สำหรับพื้นผิว `apiKey`/header
-- การคงมาร์กเกอร์ยึดแหล่งที่มาเป็นอำนาจหลัก: OpenClaw เขียนมาร์กเกอร์จากสแนปชอตคอนฟิกแหล่งที่มาที่ใช้งานอยู่ (ก่อนการแก้ค่า) ไม่ใช่จากค่าความลับรันไทม์ที่แก้แล้ว
+- เป้าหมายแผน Auth-profile ต้องมี `agentId`
+- รายการแผนกำหนดเป้าหมายไปที่ `profiles.*.key` / `profiles.*.token` และเขียน refs ระดับพี่น้อง (`keyRef` / `tokenRef`)
+- refs ของ Auth-profile รวมอยู่ในการแก้ค่าในรันไทม์และขอบเขตการ audit
+- ใน `openclaw.json`, SecretRefs ต้องใช้ออบเจ็กต์แบบมีโครงสร้าง เช่น `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}` สตริงมาร์กเกอร์แบบเดิม `secretref-env:<ENV_VAR>` จะถูกปฏิเสธบนเส้นทางข้อมูลประจำตัว SecretRef; เรียกใช้ `openclaw doctor --fix` เพื่อย้ายมาร์กเกอร์ที่ถูกต้อง
+- ตัวคุ้มกันนโยบาย OAuth: `auth.profiles.<id>.mode = "oauth"` ไม่สามารถใช้ร่วมกับอินพุต SecretRef สำหรับโปรไฟล์นั้นได้ การเริ่มต้น/โหลดซ้ำและการแก้ค่า auth-profile จะล้มเหลวอย่างรวดเร็วเมื่อมีการละเมิดนโยบายนี้
+- สำหรับผู้ให้บริการโมเดลที่จัดการด้วย SecretRef รายการ `agents/*/agent/models.json` ที่สร้างขึ้นจะคงมาร์กเกอร์ที่ไม่ใช่ความลับ (ไม่ใช่ค่าความลับที่แก้แล้ว) สำหรับพื้นผิว `apiKey`/header
+- การคงอยู่ของมาร์กเกอร์ยึดแหล่งที่มาเป็นอำนาจ: OpenClaw เขียนมาร์กเกอร์จากสแนปช็อตคอนฟิกแหล่งที่มาที่ใช้งานอยู่ (ก่อนการแก้ค่า) ไม่ใช่จากค่าความลับรันไทม์ที่แก้แล้ว
 - สำหรับการค้นหาเว็บ:
-  - ในโหมดผู้ให้บริการแบบระบุชัดเจน (ตั้งค่า `tools.web.search.provider`) เฉพาะคีย์ของผู้ให้บริการที่เลือกเท่านั้นที่ใช้งานอยู่
-  - ในโหมดอัตโนมัติ (ไม่ได้ตั้งค่า `tools.web.search.provider`) เฉพาะคีย์ผู้ให้บริการแรกที่แก้ค่าได้ตามลำดับความสำคัญเท่านั้นที่ใช้งานอยู่
+  - ในโหมดผู้ให้บริการแบบชัดเจน (ตั้งค่า `tools.web.search.provider`) เฉพาะคีย์ของผู้ให้บริการที่เลือกเท่านั้นที่ใช้งานอยู่
+  - ในโหมดอัตโนมัติ (ไม่ได้ตั้งค่า `tools.web.search.provider`) เฉพาะคีย์ผู้ให้บริการตัวแรกที่แก้ค่าได้ตามลำดับความสำคัญเท่านั้นที่ใช้งานอยู่
   - ในโหมดอัตโนมัติ refs ของผู้ให้บริการที่ไม่ได้เลือกจะถือว่าไม่ใช้งานจนกว่าจะถูกเลือก
-  - พาธผู้ให้บริการเดิม `tools.web.search.*` ยังแก้ค่าได้ในช่วงเวลาความเข้ากันได้ แต่พื้นผิว SecretRef มาตรฐานคือ `plugins.entries.<plugin>.config.webSearch.*`
+  - เส้นทางผู้ให้บริการแบบเดิม `tools.web.search.*` ยังแก้ค่าได้ระหว่างช่วงความเข้ากันได้ แต่พื้นผิว SecretRef แบบมาตรฐานคือ `plugins.entries.<plugin>.config.webSearch.*`
 
 ## ข้อมูลประจำตัวที่ไม่รองรับ
 
@@ -157,9 +168,9 @@ x-i18n:
 
 เหตุผล:
 
-- ข้อมูลประจำตัวเหล่านี้เป็นคลาสที่ถูกสร้างขึ้น, ถูกหมุนเวียน, มีเซสชันประกอบ หรือคงทนแบบ OAuth ซึ่งไม่เหมาะกับการแก้ค่า SecretRef ภายนอกแบบอ่านอย่างเดียว
+- ข้อมูลประจำตัวเหล่านี้เป็นคลาสที่ถูกออกให้ มีการหมุนเวียน มีเซสชัน หรือคงทนด้วย OAuth ซึ่งไม่เหมาะกับการแก้ค่า SecretRef ภายนอกแบบอ่านอย่างเดียว
 
 ## ที่เกี่ยวข้อง
 
 - [การจัดการความลับ](/th/gateway/secrets)
-- [ความหมายของข้อมูลประจำตัวการตรวจสอบสิทธิ์](/th/auth-credential-semantics)
+- [ความหมายของข้อมูลประจำตัวสำหรับ auth](/th/auth-credential-semantics)

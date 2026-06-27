@@ -1,55 +1,57 @@
 ---
 read_when:
-    - Sie möchten eine Terminal-Benutzeroberfläche für das Gateway (für Remote-Nutzung geeignet)
+    - Sie möchten eine Terminal-UI für das Gateway (remote-freundlich)
     - Sie möchten url/token/session aus Skripten übergeben
     - Sie möchten die TUI im lokalen eingebetteten Modus ohne Gateway ausführen
     - Sie möchten openclaw chat oder openclaw tui --local verwenden
-summary: CLI-Referenz für `openclaw tui` (Gateway-gestützte oder lokal eingebettete Terminal-UI)
+summary: CLI-Referenz für `openclaw tui` (Gateway-gestützte oder lokal eingebettete Terminal-Benutzeroberfläche)
 title: TUI
 x-i18n:
-    generated_at: "2026-05-10T19:30:13Z"
+    generated_at: "2026-06-27T17:21:24Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3e59f0f5360a456d19cfee38adc540b27665c55de68480616f269d1088f13677
+    source_hash: 514bbbcd0b695e8d4ccc87d1e242d816e264ac1f8b137f2bd891803ef7f48d5a
     source_path: cli/tui.md
     workflow: 16
 ---
 
 # `openclaw tui`
 
-Öffnen Sie die mit dem Gateway verbundene Terminal-UI, oder führen Sie sie im lokalen eingebetteten
-Modus aus.
+Öffnen Sie die mit dem Gateway verbundene Terminal-UI, oder führen Sie sie im lokalen eingebetteten Modus aus.
 
-Siehe auch:
+Verwandt:
 
 - TUI-Leitfaden: [TUI](/de/web/tui)
 
 ## Optionen
 
-| Flag                  | Standardwert                             | Beschreibung                                                                                                    |
-| --------------------- | ---------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `--local`             | `false`                                  | Gegen die lokale eingebettete Agent-Runtime statt gegen ein Gateway ausführen.                                  |
-| `--url <url>`         | `gateway.remote.url` aus der Konfiguration | Gateway-WebSocket-URL.                                                                                         |
-| `--token <token>`     | (keiner)                                 | Gateway-Token, falls erforderlich.                                                                             |
-| `--password <pass>`   | (keines)                                 | Gateway-Passwort, falls erforderlich.                                                                          |
-| `--session <key>`     | `main` (oder `global`, wenn der Scope global ist) | Sitzungsschlüssel. Innerhalb eines Agent-Arbeitsbereichs wird dieser Agent automatisch ausgewählt, sofern kein Präfix angegeben ist. |
-| `--deliver`           | `false`                                  | Assistant-Antworten über konfigurierte Kanäle zustellen.                                                       |
-| `--thinking <level>`  | (Modellstandardwert)                     | Überschreibung des Thinking-Levels.                                                                            |
-| `--message <text>`    | (keine)                                  | Nach dem Verbinden eine anfängliche Nachricht senden.                                                          |
-| `--timeout-ms <ms>`   | `agents.defaults.timeoutSeconds`         | Agent-Timeout. Ungültige Werte protokollieren eine Warnung und werden ignoriert.                               |
-| `--history-limit <n>` | `200`                                    | Verlaufseinträge, die beim Anhängen geladen werden.                                                            |
+| Flag                  | Standard                                  | Beschreibung                                                                                                                         |
+| --------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `--local`             | `false`                                   | Gegen die lokale eingebettete Agent-Laufzeitumgebung statt gegen ein Gateway ausführen.                                               |
+| `--url <url>`         | `gateway.remote.url` aus der Konfiguration | Gateway-WebSocket-URL.                                                                                                               |
+| `--token <token>`     | (keine)                                   | Gateway-Token, falls erforderlich.                                                                                                   |
+| `--password <pass>`   | (keine)                                   | Gateway-Passwort, falls erforderlich.                                                                                                |
+| `--session <key>`     | `main` (oder `global`, wenn der Geltungsbereich global ist) | Sitzungsschlüssel. Innerhalb eines Agent-Arbeitsbereichs wird dieser Agent automatisch ausgewählt, sofern kein Präfix angegeben ist. |
+| `--deliver`           | `false`                                   | Assistant-Antworten über konfigurierte Kanäle zustellen.                                                                             |
+| `--thinking <level>`  | (Modellstandard)                          | Überschreibung des Denklevels.                                                                                                       |
+| `--message <text>`    | (keine)                                   | Nach dem Verbinden eine Anfangsnachricht senden.                                                                                     |
+| `--timeout-ms <ms>`   | `agents.defaults.timeoutSeconds`          | Agent-Timeout. Ungültige Werte protokollieren eine Warnung und werden ignoriert.                                                      |
+| `--history-limit <n>` | `200`                                     | Verlaufseinträge, die beim Anhängen geladen werden.                                                                                  |
 
-Aliasse: `openclaw chat` und `openclaw terminal` rufen denselben Befehl mit impliziertem `--local` auf.
+Aliase: `openclaw chat` und `openclaw terminal` rufen denselben Befehl mit impliziertem `--local` auf.
 
 Hinweise:
 
-- `chat` und `terminal` sind Aliasse für `openclaw tui --local`.
+- `chat` und `terminal` sind Aliase für `openclaw tui --local`.
 - `--local` kann nicht mit `--url`, `--token` oder `--password` kombiniert werden.
-- `tui` löst konfigurierte Gateway-Auth-SecretRefs für Token-/Passwort-Auth nach Möglichkeit auf (`env`-/`file`-/`exec`-Provider).
-- Wenn TUI aus einem konfigurierten Agent-Arbeitsbereichsverzeichnis gestartet wird, wählt es diesen Agent automatisch als Standard für den Sitzungsschlüssel aus (sofern `--session` nicht explizit `agent:<id>:...` ist).
-- Der lokale Modus verwendet die eingebettete Agent-Runtime direkt. Die meisten lokalen Tools funktionieren, aber reine Gateway-Funktionen sind nicht verfügbar.
+- `tui` löst konfigurierte Gateway-Auth-SecretRefs für Token-/Passwort-Auth nach Möglichkeit auf (`env`/`file`/`exec`-Provider).
+- Beim Start aus einem konfigurierten Agent-Arbeitsbereichsverzeichnis wählt TUI diesen Agent automatisch als Standard für den Sitzungsschlüssel aus (es sei denn, `--session` ist explizit `agent:<id>:...`).
+- Um den Gateway-Hostnamen in der Fußzeile für nicht lokale URL-gestützte Verbindungen anzuzeigen, führen Sie `openclaw config set tui.footer.showRemoteHost true` aus. Die Host-Beschriftung ist standardmäßig deaktiviert und erscheint nie für loopback- oder eingebettete lokale Verbindungen.
+- Der lokale Modus verwendet die eingebettete Agent-Laufzeitumgebung direkt. Die meisten lokalen Tools funktionieren, aber reine Gateway-Funktionen sind nicht verfügbar.
 - Der lokale Modus fügt `/auth [provider]` innerhalb der TUI-Befehlsoberfläche hinzu.
-- Plugin-Genehmigungs-Gates gelten weiterhin im lokalen Modus. Tools, die eine Genehmigung erfordern, fragen im Terminal nach einer Entscheidung; nichts wird stillschweigend automatisch genehmigt, nur weil das Gateway nicht beteiligt ist.
+- Plugin-Freigabesperren gelten auch im lokalen Modus. Tools, die eine Freigabe erfordern, fragen im Terminal nach einer Entscheidung; nichts wird stillschweigend automatisch freigegeben, nur weil das Gateway nicht beteiligt ist.
+- Sitzungs-[Ziele](/de/tools/goal) erscheinen in der Fußzeile und können mit `/goal` verwaltet werden.
 
 ## Beispiele
 
@@ -64,15 +66,11 @@ openclaw chat --message "Compare my config to the docs and tell me what to fix"
 openclaw tui --session bugfix
 ```
 
-## Reparaturschleife für die Konfiguration
+## Konfigurations-Reparaturschleife
 
-Verwenden Sie den lokalen Modus, wenn die aktuelle Konfiguration bereits validiert
-und Sie möchten, dass der eingebettete Agent sie prüft, mit der Dokumentation
-vergleicht und Ihnen hilft, sie aus demselben Terminal heraus zu reparieren:
+Verwenden Sie den lokalen Modus, wenn die aktuelle Konfiguration bereits validiert wird und Sie möchten, dass der eingebettete Agent sie prüft, mit der Dokumentation vergleicht und aus demselben Terminal heraus bei der Reparatur hilft:
 
-Wenn `openclaw config validate` bereits fehlschlägt, verwenden Sie zuerst `openclaw configure` oder
-`openclaw doctor --fix`. `openclaw chat` umgeht den Schutz vor ungültiger
-Konfiguration nicht.
+Wenn `openclaw config validate` bereits fehlschlägt, verwenden Sie zuerst `openclaw configure` oder `openclaw doctor --fix`. `openclaw chat` umgeht die Schutzprüfung für ungültige Konfigurationen nicht.
 
 ```bash
 openclaw chat
@@ -87,10 +85,10 @@ Dann innerhalb der TUI:
 !openclaw doctor
 ```
 
-Wenden Sie gezielte Korrekturen mit `openclaw config set` oder `openclaw configure` an, und
-führen Sie anschließend `openclaw config validate` erneut aus. Siehe [TUI](/de/web/tui) und [Konfiguration](/de/cli/config).
+Wenden Sie gezielte Korrekturen mit `openclaw config set` oder `openclaw configure` an, und führen Sie anschließend `openclaw config validate` erneut aus. Siehe [TUI](/de/web/tui) und [Konfiguration](/de/cli/config).
 
-## Siehe auch
+## Verwandt
 
 - [CLI-Referenz](/de/cli)
 - [TUI](/de/web/tui)
+- [Ziel](/de/tools/goal)

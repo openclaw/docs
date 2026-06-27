@@ -1,26 +1,27 @@
 ---
 read_when:
-    - Générer ou examiner des plans `openclaw secrets apply`
-    - Déboguer les erreurs de `Invalid plan target path`
+    - Génération ou révision des plans `openclaw secrets apply`
+    - Débogage des erreurs `Invalid plan target path`
     - Comprendre le comportement de validation du type de cible et du chemin
-summary: 'Contrat pour les plans `secrets apply` : validation des cibles, correspondance de chemin et portée de la cible `auth-profiles.json`'
-title: Contrat du plan d’application des secrets
+summary: 'Contrat pour les plans `secrets apply` : validation de la cible, correspondance des chemins et périmètre de cible `auth-profiles.json`'
+title: Contrat de plan d’application des secrets
 x-i18n:
-    generated_at: "2026-04-24T07:12:29Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T17:33:45Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 80214353a1368b249784aa084c714e043c2d515706357d4ba1f111a3c68d1a84
+    source_hash: 03f0ca9b433553a2f6d86d01b8c227a24b6f53ef7034a94bd648fbf04c81f13e
     source_path: gateway/secrets-plan-contract.md
-    workflow: 15
+    workflow: 16
 ---
 
 Cette page définit le contrat strict appliqué par `openclaw secrets apply`.
 
-Si une cible ne correspond pas à ces règles, l’application échoue avant toute mutation de la configuration.
+Si une cible ne respecte pas ces règles, l’application échoue avant de modifier la configuration.
 
 ## Forme du fichier de plan
 
-`openclaw secrets apply --from <plan.json>` attend un tableau `targets` de cibles de plan :
+`openclaw secrets apply --from <plan.json>` attend un tableau `targets` de cibles de plan :
 
 ```json5
 {
@@ -45,19 +46,54 @@ Si une cible ne correspond pas à ces règles, l’application échoue avant tou
 }
 ```
 
-## Portée des cibles prises en charge
+## Ajouts/mises à jour et suppressions de fournisseurs
 
-Les cibles de plan sont acceptées pour les chemins d’identifiants pris en charge dans :
+Les plans peuvent aussi inclure deux champs optionnels de premier niveau qui modifient la carte `secrets.providers` en plus des écritures par cible :
 
-- [Surface d’identifiants SecretRef](/fr/reference/secretref-credential-surface)
+- `providerUpserts` — un objet indexé par alias de fournisseur. Chaque valeur est une définition de fournisseur (la même forme que celle acceptée sous `secrets.providers.<alias>` dans `openclaw.json`, par exemple un fournisseur `exec` ou `file`).
+- `providerDeletes` — un tableau d’alias de fournisseurs à supprimer.
 
-## Comportement du type de cible
+`providerUpserts` s’exécute avant `targets`, de sorte qu’un `target.ref.provider` peut référencer un alias de fournisseur que le même plan introduit dans `providerUpserts`. Sans cela, les plans qui référencent un alias pas encore configuré dans `openclaw.json` échouent avec `provider "<alias>" is not configured`.
 
-Règle générale :
+```json5
+{
+  version: 1,
+  protocolVersion: 1,
+  providerUpserts: {
+    onepassword_anthropic: {
+      source: "exec",
+      command: "/usr/bin/op",
+      args: ["read", "op://Vault/Anthropic/credential"],
+    },
+  },
+  providerDeletes: ["legacy_unused_alias"],
+  targets: [
+    {
+      type: "models.providers.apiKey",
+      path: "models.providers.anthropic.apiKey",
+      pathSegments: ["models", "providers", "anthropic", "apiKey"],
+      providerId: "anthropic",
+      ref: { source: "exec", provider: "onepassword_anthropic", id: "credential" },
+    },
+  ],
+}
+```
+
+Les fournisseurs Exec introduits via `providerUpserts` restent soumis aux règles de consentement exec dans [Comportement du consentement du fournisseur Exec](#exec-provider-consent-behavior) : les plans contenant des fournisseurs exec nécessitent `--allow-exec` en mode écriture.
+
+## Portée de cible prise en charge
+
+Les cibles de plan sont acceptées pour les chemins d’identifiants pris en charge dans :
+
+- [Surface des identifiants SecretRef](/fr/reference/secretref-credential-surface)
+
+## Comportement des types de cible
+
+Règle générale :
 
 - `target.type` doit être reconnu et doit correspondre à la forme normalisée de `target.path`.
 
-Les alias de compatibilité restent acceptés pour les plans existants :
+Les alias de compatibilité restent acceptés pour les plans existants :
 
 - `models.providers.apiKey`
 - `skills.entries.apiKey`
@@ -65,12 +101,12 @@ Les alias de compatibilité restent acceptés pour les plans existants :
 
 ## Règles de validation des chemins
 
-Chaque cible est validée avec l’ensemble des règles suivantes :
+Chaque cible est validée avec tous les contrôles suivants :
 
 - `type` doit être un type de cible reconnu.
-- `path` doit être un chemin pointé non vide.
+- `path` doit être un chemin à points non vide.
 - `pathSegments` peut être omis. S’il est fourni, il doit se normaliser exactement vers le même chemin que `path`.
-- Les segments interdits sont rejetés : `__proto__`, `prototype`, `constructor`.
+- Les segments interdits sont rejetés : `__proto__`, `prototype`, `constructor`.
 - Le chemin normalisé doit correspondre à la forme de chemin enregistrée pour le type de cible.
 - Si `providerId` ou `accountId` est défini, il doit correspondre à l’identifiant encodé dans le chemin.
 - Les cibles `auth-profiles.json` exigent `agentId`.
@@ -78,7 +114,7 @@ Chaque cible est validée avec l’ensemble des règles suivantes :
 
 ## Comportement en cas d’échec
 
-Si une cible échoue à la validation, l’application se termine avec une erreur du type :
+Si la validation d’une cible échoue, apply se termine avec une erreur comme :
 
 ```text
 Invalid plan target path for models.providers.apiKey: models.providers.openai.baseUrl
@@ -86,16 +122,16 @@ Invalid plan target path for models.providers.apiKey: models.providers.openai.ba
 
 Aucune écriture n’est validée pour un plan invalide.
 
-## Comportement de consentement du fournisseur Exec
+## Comportement du consentement du fournisseur Exec
 
-- `--dry-run` ignore par défaut les vérifications SecretRef exec.
-- Les plans contenant des SecretRefs/fournisseurs exec sont rejetés en mode écriture sauf si `--allow-exec` est défini.
-- Lors de la validation/de l’application de plans contenant exec, transmettez `--allow-exec` dans les commandes dry-run et écriture.
+- `--dry-run` ignore les vérifications des SecretRef exec par défaut.
+- Les plans contenant des SecretRefs/fournisseurs exec sont rejetés en mode écriture, sauf si `--allow-exec` est défini.
+- Lors de la validation/de l’application de plans contenant exec, passez `--allow-exec` dans les commandes dry-run et d’écriture.
 
-## Remarques sur la portée d’exécution et d’audit
+## Notes sur la portée d’exécution et d’audit
 
-- Les entrées `auth-profiles.json` uniquement par ref (`keyRef`/`tokenRef`) sont incluses dans la résolution d’exécution et dans la couverture d’audit.
-- `secrets apply` écrit les cibles `openclaw.json` prises en charge, les cibles `auth-profiles.json` prises en charge et les cibles facultatives de nettoyage.
+- Les entrées `auth-profiles.json` uniquement par référence (`keyRef`/`tokenRef`) sont incluses dans la résolution d’exécution et la couverture d’audit.
+- `secrets apply` écrit les cibles `openclaw.json` prises en charge, les cibles `auth-profiles.json` prises en charge et les cibles de nettoyage optionnelles.
 
 ## Vérifications opérateur
 
@@ -113,9 +149,9 @@ openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --allow-exec
 
 Si l’application échoue avec un message de chemin de cible invalide, régénérez le plan avec `openclaw secrets configure` ou corrigez le chemin de cible vers une forme prise en charge ci-dessus.
 
-## Documentation associée
+## Documents associés
 
 - [Gestion des secrets](/fr/gateway/secrets)
 - [CLI `secrets`](/fr/cli/secrets)
-- [Surface d’identifiants SecretRef](/fr/reference/secretref-credential-surface)
+- [Surface des identifiants SecretRef](/fr/reference/secretref-credential-surface)
 - [Référence de configuration](/fr/gateway/configuration-reference)

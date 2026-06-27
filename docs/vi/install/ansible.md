@@ -1,15 +1,16 @@
 ---
 read_when:
-    - Bạn muốn triển khai máy chủ tự động với gia cố bảo mật
-    - Bạn cần một thiết lập được cô lập bằng tường lửa với quyền truy cập VPN
+    - Bạn muốn triển khai máy chủ tự động với tăng cường bảo mật
+    - Bạn cần thiết lập cách ly bằng tường lửa với quyền truy cập VPN
     - Bạn đang triển khai lên các máy chủ Debian/Ubuntu từ xa
-summary: Cài đặt OpenClaw tự động, được gia cố bảo mật bằng Ansible, Tailscale VPN và cách ly bằng tường lửa
+summary: Cài đặt OpenClaw tự động, được tăng cường bảo mật bằng Ansible, VPN Tailscale và cách ly tường lửa
 title: Ansible
 x-i18n:
-    generated_at: "2026-05-07T13:20:15Z"
+    generated_at: "2026-06-27T17:36:36Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1f7a2a0c575529fd45804e160299239339100ec37979a17162cee9537ddb4653
+    source_hash: 03eb6f40139d7e154eee92a7a1a67471da90b128cc90daf86fbc87e383a5297c
     source_path: install/ansible.md
     workflow: 16
 ---
@@ -17,26 +18,26 @@ x-i18n:
 Triển khai OpenClaw lên máy chủ production bằng **[openclaw-ansible](https://github.com/openclaw/openclaw-ansible)** -- trình cài đặt tự động với kiến trúc ưu tiên bảo mật.
 
 <Info>
-Repo [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) là nguồn chuẩn cho triển khai Ansible. Trang này là tổng quan nhanh.
+Repo [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) là nguồn chuẩn cho triển khai Ansible. Trang này là phần tổng quan nhanh.
 </Info>
 
 ## Điều kiện tiên quyết
 
 | Yêu cầu      | Chi tiết                                                  |
 | ------------ | --------------------------------------------------------- |
-| **OS**       | Debian 11+ hoặc Ubuntu 20.04+                             |
-| **Truy cập** | Quyền root hoặc sudo                                      |
+| **Hệ điều hành** | Debian 11+ hoặc Ubuntu 20.04+                            |
+| **Quyền truy cập** | Quyền root hoặc sudo                                    |
 | **Mạng**     | Kết nối Internet để cài đặt gói                           |
-| **Ansible**  | 2.14+ (được cài tự động bởi script khởi động nhanh)       |
+| **Ansible**  | 2.14+ (được cài tự động bởi tập lệnh khởi động nhanh)     |
 
 ## Bạn nhận được gì
 
-- **Bảo mật ưu tiên tường lửa** -- UFW + cách ly Docker (chỉ SSH + Tailscale có thể truy cập)
+- **Bảo mật ưu tiên tường lửa** -- UFW + cô lập Docker (chỉ SSH + Tailscale có thể truy cập)
 - **Tailscale VPN** -- truy cập từ xa an toàn mà không công khai dịch vụ
-- **Docker** -- container sandbox cách ly, chỉ bind vào localhost
+- **Docker** -- container sandbox cô lập, chỉ bind vào localhost
 - **Phòng thủ nhiều lớp** -- kiến trúc bảo mật 4 lớp
-- **Tích hợp Systemd** -- tự động khởi động khi boot với hardening
-- **Thiết lập bằng một lệnh** -- triển khai hoàn tất trong vài phút
+- **Tích hợp Systemd** -- tự khởi động khi boot với cơ chế tăng cường bảo mật
+- **Thiết lập bằng một lệnh** -- triển khai hoàn chỉnh trong vài phút
 
 ## Khởi động nhanh
 
@@ -53,14 +54,14 @@ Playbook Ansible cài đặt và cấu hình:
 1. **Tailscale** -- VPN mesh để truy cập từ xa an toàn
 2. **Tường lửa UFW** -- chỉ các cổng SSH + Tailscale
 3. **Docker CE + Compose V2** -- cho backend sandbox agent mặc định
-4. **Node.js 24 + pnpm** -- các phụ thuộc runtime (Node 22 LTS, hiện là `22.16+`, vẫn được hỗ trợ)
+4. **Node.js 24 + pnpm** -- phụ thuộc runtime (Node 22 LTS, hiện là `22.19+`, vẫn được hỗ trợ)
 5. **OpenClaw** -- chạy trên host, không container hóa
-6. **Dịch vụ Systemd** -- tự động khởi động với hardening bảo mật
+6. **Dịch vụ Systemd** -- tự khởi động với tăng cường bảo mật
 
 <Note>
-Gateway chạy trực tiếp trên host (không trong Docker). Cách ly sandbox cho agent là
+Gateway chạy trực tiếp trên host (không chạy trong Docker). Sandbox cho agent là
 tùy chọn; playbook này cài Docker vì đó là backend sandbox mặc định.
-Xem [Cách ly sandbox](/vi/gateway/sandboxing) để biết chi tiết và các backend khác.
+Xem [Sandboxing](/vi/gateway/sandboxing) để biết chi tiết và các backend khác.
 </Note>
 
 ## Thiết lập sau cài đặt
@@ -72,7 +73,7 @@ Xem [Cách ly sandbox](/vi/gateway/sandboxing) để biết chi tiết và các 
     ```
   </Step>
   <Step title="Chạy trình hướng dẫn onboarding">
-    Script sau cài đặt hướng dẫn bạn cấu hình các cài đặt OpenClaw.
+    Tập lệnh sau cài đặt hướng dẫn bạn cấu hình các thiết lập OpenClaw.
   </Step>
   <Step title="Kết nối nhà cung cấp nhắn tin">
     Đăng nhập vào WhatsApp, Telegram, Discord hoặc Signal:
@@ -113,9 +114,9 @@ openclaw channels login
 Triển khai sử dụng mô hình phòng thủ 4 lớp:
 
 1. **Tường lửa (UFW)** -- chỉ SSH (22) + Tailscale (41641/udp) được công khai
-2. **VPN (Tailscale)** -- gateway chỉ truy cập được qua VPN mesh
-3. **Cách ly Docker** -- chuỗi iptables DOCKER-USER ngăn lộ cổng ra bên ngoài
-4. **Hardening Systemd** -- NoNewPrivileges, PrivateTmp, người dùng không đặc quyền
+2. **VPN (Tailscale)** -- Gateway chỉ truy cập được qua VPN mesh
+3. **Cô lập Docker** -- chuỗi iptables DOCKER-USER ngăn lộ cổng ra bên ngoài
+4. **Tăng cường Systemd** -- NoNewPrivileges, PrivateTmp, người dùng không đặc quyền
 
 Để xác minh bề mặt tấn công bên ngoài của bạn:
 
@@ -123,9 +124,9 @@ Triển khai sử dụng mô hình phòng thủ 4 lớp:
 nmap -p- YOUR_SERVER_IP
 ```
 
-Chỉ cổng 22 (SSH) nên mở. Tất cả dịch vụ khác (gateway, Docker) đều bị khóa.
+Chỉ cổng 22 (SSH) nên mở. Tất cả dịch vụ khác (Gateway, Docker) đều bị khóa.
 
-Docker được cài cho sandbox agent (thực thi công cụ cách ly), không phải để chạy chính gateway. Xem [Sandbox và công cụ đa agent](/vi/tools/multi-agent-sandbox-tools) để cấu hình sandbox.
+Docker được cài cho sandbox agent (thực thi công cụ trong môi trường cô lập), không phải để chạy chính Gateway. Xem [Multi-Agent Sandbox and Tools](/vi/tools/multi-agent-sandbox-tools) để cấu hình sandbox.
 
 ## Cài đặt thủ công
 
@@ -153,7 +154,7 @@ Nếu bạn muốn kiểm soát thủ công thay vì dùng tự động hóa:
     ./run-playbook.sh
     ```
 
-    Hoặc chạy trực tiếp rồi sau đó tự thực thi script thiết lập:
+    Hoặc chạy trực tiếp rồi tự thực thi tập lệnh thiết lập sau đó:
     ```bash
     ansible-playbook playbook.yml --ask-become-pass
     # Then run: /tmp/openclaw-setup.sh
@@ -164,24 +165,24 @@ Nếu bạn muốn kiểm soát thủ công thay vì dùng tự động hóa:
 
 ## Cập nhật
 
-Trình cài đặt Ansible thiết lập OpenClaw để cập nhật thủ công. Xem [Cập nhật](/vi/install/updating) để biết quy trình cập nhật chuẩn.
+Trình cài đặt Ansible thiết lập OpenClaw để cập nhật thủ công. Xem [Updating](/vi/install/updating) để biết quy trình cập nhật chuẩn.
 
-Để chạy lại playbook Ansible (ví dụ, cho các thay đổi cấu hình):
+Để chạy lại playbook Ansible (ví dụ: cho thay đổi cấu hình):
 
 ```bash
 cd openclaw-ansible
 ./run-playbook.sh
 ```
 
-Quy trình này có tính idempotent và an toàn khi chạy nhiều lần.
+Thao tác này có tính idempotent và an toàn để chạy nhiều lần.
 
 ## Khắc phục sự cố
 
 <AccordionGroup>
   <Accordion title="Tường lửa chặn kết nối của tôi">
-    - Trước tiên hãy đảm bảo bạn có thể truy cập qua Tailscale VPN
+    - Đảm bảo trước tiên bạn có thể truy cập qua Tailscale VPN
     - Truy cập SSH (cổng 22) luôn được cho phép
-    - Gateway chỉ truy cập được qua Tailscale theo thiết kế
+    - Theo thiết kế, Gateway chỉ truy cập được qua Tailscale
 
   </Accordion>
   <Accordion title="Dịch vụ không khởi động">
@@ -216,7 +217,7 @@ Quy trình này có tính idempotent và an toàn khi chạy nhiều lần.
 
   </Accordion>
   <Accordion title="Đăng nhập nhà cung cấp thất bại">
-    Đảm bảo bạn đang chạy với người dùng `openclaw`:
+    Đảm bảo bạn đang chạy với tư cách người dùng `openclaw`:
     ```bash
     sudo -i -u openclaw
     openclaw channels login
@@ -226,7 +227,7 @@ Quy trình này có tính idempotent và an toàn khi chạy nhiều lần.
 
 ## Cấu hình nâng cao
 
-Để biết kiến trúc bảo mật chi tiết và cách khắc phục sự cố, hãy xem repo openclaw-ansible:
+Để biết kiến trúc bảo mật chi tiết và cách khắc phục sự cố, xem repo openclaw-ansible:
 
 - [Kiến trúc bảo mật](https://github.com/openclaw/openclaw-ansible/blob/main/docs/security.md)
 - [Chi tiết kỹ thuật](https://github.com/openclaw/openclaw-ansible/blob/main/docs/architecture.md)
@@ -235,6 +236,6 @@ Quy trình này có tính idempotent và an toàn khi chạy nhiều lần.
 ## Liên quan
 
 - [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) -- hướng dẫn triển khai đầy đủ
-- [Docker](/vi/install/docker) -- thiết lập gateway container hóa
-- [Cách ly sandbox](/vi/gateway/sandboxing) -- cấu hình sandbox agent
-- [Sandbox và công cụ đa agent](/vi/tools/multi-agent-sandbox-tools) -- cách ly theo từng agent
+- [Docker](/vi/install/docker) -- thiết lập Gateway dạng container
+- [Sandboxing](/vi/gateway/sandboxing) -- cấu hình sandbox agent
+- [Multi-Agent Sandbox and Tools](/vi/tools/multi-agent-sandbox-tools) -- cô lập theo từng agent

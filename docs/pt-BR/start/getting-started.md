@@ -1,31 +1,32 @@
 ---
 read_when:
     - Configuração inicial do zero
-    - Você quer o caminho mais rápido para ter um chat funcionando
-summary: Instale o OpenClaw e inicie seu primeiro chat em minutos.
+    - Você quer o caminho mais rápido para um chat funcionando
+summary: Instale o OpenClaw e execute seu primeiro chat em minutos.
 title: Primeiros passos
 x-i18n:
-    generated_at: "2026-05-07T13:24:22Z"
+    generated_at: "2026-06-27T18:12:24Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 295ce8fd03320027a77a3aef494f785f0fe58e0f57c72ee63f6f9aca68626c20
+    source_hash: 769682cfa35a361cc4adc49f010fed18cf897ce66e1404d07b631e4dede64de8
     source_path: start/getting-started.md
     workflow: 16
 ---
 
 Instale o OpenClaw, execute a integração inicial e converse com seu assistente de IA — tudo em
 cerca de 5 minutos. Ao final, você terá um Gateway em execução, autenticação configurada
-e uma sessão de conversa funcional.
+e uma sessão de chat funcional.
 
 ## O que você precisa
 
-- **Node.js** — Node 24 recomendado (Node 22.16+ também é compatível)
-- **Uma chave de API** de um provedor de modelo (Anthropic, OpenAI, Google, etc.) — a integração inicial solicitará isso
+- **Node.js** — Node 24 recomendado (Node 22.19+ também é compatível)
+- **Uma chave de API** de um provedor de modelos (Anthropic, OpenAI, Google etc.) — a integração inicial solicitará isso
 
 <Tip>
 Verifique sua versão do Node com `node --version`.
-**Usuários do Windows:** tanto o Windows nativo quanto o WSL2 são compatíveis. O WSL2 é mais
-estável e recomendado para a experiência completa. Consulte [Windows](/pt-BR/platforms/windows).
+**Usuários do Windows:** o aplicativo nativo Windows Hub é o caminho mais fácil para desktop. O
+instalador do PowerShell e os caminhos do Gateway no WSL2 também são compatíveis. Consulte [Windows](/pt-BR/platforms/windows).
 Precisa instalar o Node? Consulte [Configuração do Node](/pt-BR/install/node).
 </Tip>
 
@@ -40,7 +41,7 @@ Precisa instalar o Node? Consulte [Configuração do Node](/pt-BR/install/node).
         ```
         <img
   src="/assets/install-script.svg"
-  alt="Processo do Script de Instalação"
+  alt="Processo do script de instalação"
   className="rounded-lg"
 />
       </Tab>
@@ -52,7 +53,7 @@ Precisa instalar o Node? Consulte [Configuração do Node](/pt-BR/install/node).
     </Tabs>
 
     <Note>
-    Outros métodos de instalação (Docker, Nix, npm): [Instalar](/pt-BR/install).
+    Outros métodos de instalação (Docker, Nix, npm): [Instalação](/pt-BR/install).
     </Note>
 
   </Step>
@@ -61,7 +62,7 @@ Precisa instalar o Node? Consulte [Configuração do Node](/pt-BR/install/node).
     openclaw onboard --install-daemon
     ```
 
-    O assistente guia você na escolha de um provedor de modelo, na definição de uma chave de API
+    O assistente orienta você na escolha de um provedor de modelos, na definição de uma chave de API
     e na configuração do Gateway. Leva cerca de 2 minutos.
 
     Consulte [Integração inicial (CLI)](/pt-BR/start/wizard) para a referência completa.
@@ -80,23 +81,23 @@ Precisa instalar o Node? Consulte [Configuração do Node](/pt-BR/install/node).
     openclaw dashboard
     ```
 
-    Isso abre a interface de controle no seu navegador. Se ela carregar, tudo está funcionando.
+    Isso abre a Control UI no seu navegador. Se ela carregar, tudo está funcionando.
 
   </Step>
   <Step title="Enviar sua primeira mensagem">
-    Digite uma mensagem no chat da interface de controle e você deverá receber uma resposta da IA.
+    Digite uma mensagem no chat da Control UI e você deverá receber uma resposta de IA.
 
-    Quer conversar pelo telefone em vez disso? O canal mais rápido de configurar é o
+    Quer conversar pelo celular em vez disso? O canal mais rápido de configurar é
     [Telegram](/pt-BR/channels/telegram) (apenas um token de bot). Consulte [Canais](/pt-BR/channels)
-    para todas as opções.
+    para ver todas as opções.
 
   </Step>
 </Steps>
 
-<Accordion title="Avançado: montar uma build personalizada da interface de controle">
+<Accordion title="Avançado: montar uma build personalizada da Control UI">
   Se você mantém uma build localizada ou personalizada do painel, aponte
   `gateway.controlUi.root` para um diretório que contenha seus ativos estáticos
-  gerados e `index.html`.
+  compilados e `index.html`.
 
 ```bash
 mkdir -p "$HOME/.openclaw/control-ui-custom"
@@ -116,7 +117,7 @@ Então defina:
 }
 ```
 
-Reinicie o Gateway e reabra o painel:
+Reinicie o gateway e reabra o painel:
 
 ```bash
 openclaw gateway restart
@@ -138,12 +139,12 @@ openclaw dashboard
     Modelos, ferramentas, sandbox e configurações avançadas.
   </Card>
   <Card title="Explorar ferramentas" href="/pt-BR/tools" icon="wrench">
-    Navegador, exec, busca na web, Skills e Plugins.
+    Navegador, exec, pesquisa na web, skills e plugins.
   </Card>
 </Columns>
 
 <Accordion title="Avançado: variáveis de ambiente">
-  Se você executa o OpenClaw como uma conta de serviço ou deseja caminhos personalizados:
+  Se você executa o OpenClaw como uma conta de serviço ou quer caminhos personalizados:
 
 - `OPENCLAW_HOME` — diretório inicial para resolução de caminhos internos
 - `OPENCLAW_STATE_DIR` — substitui o diretório de estado

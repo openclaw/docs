@@ -1,191 +1,72 @@
 ---
+doc-schema-version: 1
 read_when:
-    - 您想尋找第三方 OpenClaw Plugin
-    - 你想發布或列出自己的 Plugin
-summary: 由社群維護的 OpenClaw Plugin：瀏覽、安裝並提交您自己的 Plugin
-title: 社群 Plugin
+    - 您想尋找第三方 OpenClaw 外掛
+    - 你想在 ClawHub 發布或上架自己的外掛
+summary: 尋找並發布由社群維護的 OpenClaw 外掛
+title: 社群外掛
 x-i18n:
-    generated_at: "2026-05-10T19:42:34Z"
+    generated_at: "2026-06-27T19:35:36Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ee23598011f79f46b9171296501605cf0a5ef5aa7b67040135ea47cac21ca6a4
+    source_hash: 0ecf059fa0c32f09d09381b2153a6a63ca522d49719aaa8476209389a6b5b36a
     source_path: plugins/community.md
     workflow: 16
 ---
 
-社群 Plugin 是擴充 OpenClaw 的第三方套件，可加入新的
-通道、工具、提供者或其他功能。它們由社群建置與維護，
-通常發布在 [ClawHub](/zh-TW/clawhub)，並可透過單一指令安裝。
-在 ClawHub 套件安裝推出期間，npm 仍是裸套件規格的預設啟動來源。
+社群外掛是第三方套件，可透過頻道、工具、提供者、掛鉤或其他功能來擴充 OpenClaw。使用 [ClawHub](/zh-TW/clawhub) 作為公開社群外掛的主要探索介面。
 
-ClawHub 是社群 Plugin 的標準探索介面。請不要只為了讓你的 Plugin
-能被發現而開啟僅文件的 PR；請改為將其發布到 ClawHub。
+## 尋找外掛
+
+從命令列介面搜尋 ClawHub：
+
+```bash
+openclaw plugins search "calendar"
+```
+
+使用明確的來源前綴安裝 ClawHub 外掛：
 
 ```bash
 openclaw plugins install clawhub:<package-name>
 ```
 
-對 npm 託管的套件，請使用 `openclaw plugins install <package-name>`。
-
-## 已列出的 Plugin
-
-### Apify
-
-使用 20,000+ 個現成爬蟲從任何網站擷取資料。讓你的 agent
-只要提出要求，就能從 Instagram、Facebook、TikTok、YouTube、Google Maps、Google
-Search、電子商務網站等來源擷取資料。
-
-- **npm:** `@apify/apify-openclaw-plugin`
-- **repo:** [github.com/apify/apify-openclaw-plugin](https://github.com/apify/apify-openclaw-plugin)
+在上線切換期間，npm 仍然是受支援的直接安裝路徑：
 
 ```bash
-openclaw plugins install @apify/apify-openclaw-plugin
+openclaw plugins install npm:<package-name>
 ```
 
-### Codex App Server Bridge
+請參閱[管理外掛](/zh-TW/plugins/manage-plugins)，了解常見的安裝、更新、檢查和解除安裝範例。請參閱 [`openclaw plugins`](/zh-TW/cli/plugins)，取得完整的命令參考與來源選擇規則。
 
-用於 Codex App Server 對話的獨立 OpenClaw 橋接器。將聊天綁定到
-Codex thread，以純文字與它對話，並使用聊天原生指令控制續接、規劃、審查、模型選擇、Compaction 等功能。
+## 發佈外掛
 
-- **npm:** `openclaw-codex-app-server`
-- **repo:** [github.com/pwrdrvr/openclaw-codex-app-server](https://github.com/pwrdrvr/openclaw-codex-app-server)
+當你希望 OpenClaw 使用者能探索並安裝公開社群外掛時，請將其發佈到 ClawHub。ClawHub 負責即時套件清單、發行歷史、掃描狀態和安裝提示；文件不維護靜態的第三方外掛目錄。
 
 ```bash
-openclaw plugins install openclaw-codex-app-server
+clawhub package publish your-org/your-plugin --dry-run
+clawhub package publish your-org/your-plugin
 ```
 
-### DingTalk
+發佈前，請確認外掛具備套件中繼資料、外掛資訊清單、設定文件，以及明確的維護負責人。ClawHub 會在建立發行版本前驗證擁有者範圍、套件名稱、版本、檔案限制和來源中繼資料，然後在審查與驗證完成前，讓新發行版本對一般安裝與下載介面保持隱藏。
 
-使用 Stream 模式的企業機器人整合。支援透過任何 DingTalk 用戶端傳送文字、圖片與檔案訊息。
+發佈前請使用這份檢查清單：
 
-- **npm:** `@largezhou/ddingtalk`
-- **repo:** [github.com/largezhou/openclaw-dingtalk](https://github.com/largezhou/openclaw-dingtalk)
+| 需求                 | 原因                                                |
+| -------------------- | --------------------------------------------------- |
+| 已發佈到 ClawHub     | 使用者需要 `openclaw plugins install` 提示才能運作 |
+| 公開 GitHub 儲存庫   | 原始碼審查、問題追蹤、透明度                        |
+| 設定與使用文件       | 使用者需要知道如何設定它                            |
+| 積極維護             | 近期更新或能回應問題處理                            |
 
-```bash
-openclaw plugins install @largezhou/ddingtalk
-```
+請使用這些頁面了解完整的發佈合約：
 
-### Lossless Claw (LCM)
-
-OpenClaw 的無損情境管理 Plugin。以 DAG 為基礎進行對話摘要，
-並支援增量式 Compaction，在降低 token 使用量的同時保留完整的情境保真度。
-
-- **npm:** `@martian-engineering/lossless-claw`
-- **repo:** [github.com/Martian-Engineering/lossless-claw](https://github.com/Martian-Engineering/lossless-claw)
-
-```bash
-openclaw plugins install @martian-engineering/lossless-claw
-```
-
-### Opik
-
-將 agent trace 匯出到 Opik 的官方 Plugin。監控 agent 行為、
-成本、token、錯誤等資訊。
-
-- **npm:** `@opik/opik-openclaw`
-- **repo:** [github.com/comet-ml/opik-openclaw](https://github.com/comet-ml/opik-openclaw)
-
-```bash
-openclaw plugins install @opik/opik-openclaw
-```
-
-### Prometheus Avatar
-
-為你的 OpenClaw agent 加上 Live2D 虛擬形象，具備即時對嘴、情緒表情與文字轉語音功能。
-包含用於 AI 資產生成的創作者工具，以及一鍵部署到 Prometheus Marketplace 的功能。目前處於 alpha 階段。
-
-- **npm:** `@prometheusavatar/openclaw-plugin`
-- **repo:** [github.com/myths-labs/prometheus-avatar](https://github.com/myths-labs/prometheus-avatar)
-
-```bash
-openclaw plugins install @prometheusavatar/openclaw-plugin
-```
-
-### QQbot
-
-透過 QQ Bot API 將 OpenClaw 連接到 QQ。支援私人聊天、群組提及、
-頻道訊息，以及包含語音、圖片、影片和檔案的富媒體。
-
-目前的 OpenClaw 版本已內建 QQ Bot。一般安裝請使用
-[QQ Bot](/zh-TW/channels/qqbot) 中的內建設定；只有在你有意使用 Tencent 維護的獨立套件時，
-才安裝此外部 Plugin。
-
-- **npm:** `@tencent-connect/openclaw-qqbot`
-- **repo:** [github.com/tencent-connect/openclaw-qqbot](https://github.com/tencent-connect/openclaw-qqbot)
-
-```bash
-openclaw plugins install @tencent-connect/openclaw-qqbot
-```
-
-### wecom
-
-Tencent WeCom 團隊提供的 OpenClaw WeCom 通道 Plugin。由
-WeCom Bot WebSocket 持久連線驅動，支援直接訊息與群組聊天、
-串流回覆、主動傳訊、圖片/檔案處理、Markdown 格式化、
-內建存取控制，以及文件/會議/訊息 Skills。
-
-- **npm:** `@wecom/wecom-openclaw-plugin`
-- **repo:** [github.com/WecomTeam/wecom-openclaw-plugin](https://github.com/WecomTeam/wecom-openclaw-plugin)
-
-```bash
-openclaw plugins install @wecom/wecom-openclaw-plugin
-```
-
-### Yuanbao
-
-Tencent Yuanbao 團隊提供的 OpenClaw Yuanbao 通道 Plugin。由
-WebSocket 持久連線驅動，支援直接訊息與群組聊天、
-串流回覆、主動傳訊、圖片/檔案/音訊/影片處理、
-Markdown 格式化、內建存取控制，以及斜線指令選單。
-
-- **npm:** `openclaw-plugin-yuanbao`
-- **repo:** [github.com/YuanbaoTeam/yuanbao-openclaw-plugin](https://github.com/YuanbaoTeam/yuanbao-openclaw-plugin)
-
-```bash
-openclaw plugins install openclaw-plugin-yuanbao
-```
-
-## 提交你的 Plugin
-
-我們歡迎實用、有文件且可安全運作的社群 Plugin。
-
-<Steps>
-  <Step title="發布到 ClawHub 或 npm">
-    你的 Plugin 必須可透過 `openclaw plugins install \<package-name\>` 安裝。
-    除非你明確需要僅 npm 的發行方式，否則請發布到 [ClawHub](/zh-TW/clawhub)。
-    完整指南請參閱[建置 Plugin](/zh-TW/plugins/building-plugins)。
-
-  </Step>
-
-  <Step title="託管在 GitHub">
-    原始碼必須位於公開儲存庫，並包含設定文件與 issue
-    tracker。
-
-  </Step>
-
-  <Step title="僅將文件 PR 用於來源文件變更">
-    你不需要只為了讓 Plugin 可被發現而提交文件 PR。請改為將其發布到
-    ClawHub。
-
-    只有在 OpenClaw 的來源文件需要實際內容變更時才開啟文件 PR，
-    例如修正安裝指引，或新增屬於主要文件集的跨儲存庫文件。
-
-  </Step>
-</Steps>
-
-## 品質門檻
-
-| 要求                        | 原因                                           |
-| --------------------------- | --------------------------------------------- |
-| 發布在 ClawHub 或 npm       | 使用者需要 `openclaw plugins install` 可正常運作 |
-| 公開 GitHub repo            | 原始碼審查、issue 追蹤、透明度                |
-| 設定與使用文件              | 使用者需要知道如何設定它                      |
-| 積極維護                    | 近期更新或回應式 issue 處理                   |
-
-低投入包裝器、所有權不明確或未維護的套件可能會被拒絕。
+- [ClawHub 發佈](/zh-TW/clawhub/publishing)說明擁有者、範圍、發行版本、審查、套件驗證和套件轉移。
+- [建置外掛](/zh-TW/plugins/building-plugins)展示外掛套件形態與首次發佈工作流程。
+- [外掛資訊清單](/zh-TW/plugins/manifest)定義原生外掛資訊清單欄位。
 
 ## 相關
 
-- [安裝和設定 Plugin](/zh-TW/tools/plugin) — 如何安裝任何 Plugin
-- [建置 Plugin](/zh-TW/plugins/building-plugins) — 建立你自己的 Plugin
-- [Plugin Manifest](/zh-TW/plugins/manifest) — manifest schema
+- [外掛](/zh-TW/tools/plugin) - 安裝、設定、重新啟動與疑難排解
+- [管理外掛](/zh-TW/plugins/manage-plugins) - 命令範例
+- [ClawHub 發佈](/zh-TW/clawhub/publishing) - 發佈與發行規則

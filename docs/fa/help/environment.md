@@ -1,36 +1,53 @@
 ---
 read_when:
     - باید بدانید کدام متغیرهای محیطی بارگذاری می‌شوند و به چه ترتیبی
-    - در حال اشکال‌زدایی کلیدهای API گم‌شده در Gateway هستید
+    - شما در حال اشکال‌زدایی کلیدهای API گم‌شده در Gateway هستید.
     - شما در حال مستندسازی احراز هویت ارائه‌دهنده یا محیط‌های استقرار هستید
-summary: OpenClaw متغیرهای محیطی را از کجا بارگذاری می‌کند و ترتیب تقدم چگونه است
+summary: محل بارگذاری متغیرهای محیطی توسط OpenClaw و ترتیب اولویت
 title: متغیرهای محیطی
 x-i18n:
-    generated_at: "2026-05-11T20:35:39Z"
+    generated_at: "2026-06-27T17:52:35Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b4b91e9bb3c386292f11a3ffe5ae718a74a800bd19fe95073da990d881e6069d
+    source_hash: 7e36f93efe29f9cc0e9942659c323a635d21fcaa436427dcb21f5694e5d0458b
     source_path: help/environment.md
     workflow: 16
 ---
 
-OpenClaw متغیرهای محیطی را از چندین منبع دریافت می‌کند. قاعده این است: **هرگز مقادیر موجود را بازنویسی نکنید**.
+OpenClaw متغیرهای محیطی را از چندین منبع می‌خواند. قاعده این است: **هرگز مقادیر موجود را بازنویسی نکن**.
+فایل‌های `.env` فضای کاری منبعی با اعتماد کمتر هستند: OpenClaw پیش از اعمال ترتیب تقدم، اعتبارنامه‌های ارائه‌دهنده و کنترل‌های محافظت‌شده runtime را از `.env` فضای کاری نادیده می‌گیرد.
 
-## تقدم (بیشترین → کمترین)
+## ترتیب تقدم (بالاترین ← پایین‌ترین)
 
-1. **محیط فرایند** (چیزی که فرایند Gateway از قبل از shell/daemon والد دارد).
-2. **`.env` در دایرکتوری کاری فعلی** (پیش‌فرض dotenv؛ بازنویسی نمی‌کند).
-3. **`.env` سراسری** در `~/.openclaw/.env` (معروف به `$OPENCLAW_STATE_DIR/.env`؛ بازنویسی نمی‌کند).
-4. **بلوک `env` پیکربندی** در `~/.openclaw/openclaw.json` (فقط در صورت نبودن اعمال می‌شود).
-5. **واردسازی اختیاری login-shell** (`env.shellEnv.enabled` یا `OPENCLAW_LOAD_SHELL_ENV=1`)، فقط برای کلیدهای مورد انتظارِ ناموجود اعمال می‌شود.
+1. **محیط فرایند** (آنچه فرایند Gateway از قبل از شل/daemon والد دارد).
+2. **`.env` در دایرکتوری کاری فعلی** (پیش‌فرض dotenv؛ بازنویسی نمی‌کند؛ اعتبارنامه‌های ارائه‌دهنده و کنترل‌های محافظت‌شده runtime نادیده گرفته می‌شوند).
+3. **`.env` سراسری** در `~/.openclaw/.env` (یا `$OPENCLAW_STATE_DIR/.env`؛ برای کلیدهای API ارائه‌دهنده توصیه می‌شود؛ بازنویسی نمی‌کند).
+4. **بلوک `env` پیکربندی** در `~/.openclaw/openclaw.json` (فقط اگر مقدار موجود نباشد اعمال می‌شود).
+5. **واردسازی اختیاری login-shell** (`env.shellEnv.enabled` یا `OPENCLAW_LOAD_SHELL_ENV=1`) که فقط برای کلیدهای مورد انتظارِ ناموجود اعمال می‌شود.
 
-در نصب‌های تازه Ubuntu که از دایرکتوری وضعیت پیش‌فرض استفاده می‌کنند، OpenClaw همچنین `~/.config/openclaw/gateway.env` را پس از `.env` سراسری به‌عنوان جایگزین سازگاری در نظر می‌گیرد. اگر هر دو فایل وجود داشته باشند و با هم ناسازگار باشند، OpenClaw مقدار `~/.openclaw/.env` را نگه می‌دارد و یک هشدار چاپ می‌کند.
+در نصب‌های تازه Ubuntu که از دایرکتوری وضعیت پیش‌فرض استفاده می‌کنند، OpenClaw همچنین `~/.config/openclaw/gateway.env` را پس از `.env` سراسری به‌عنوان fallback سازگاری در نظر می‌گیرد. اگر هر دو فایل وجود داشته باشند و با هم ناسازگار باشند، OpenClaw مقدار `~/.openclaw/.env` را نگه می‌دارد و هشدار چاپ می‌کند.
 
-اگر فایل پیکربندی کاملاً وجود نداشته باشد، گام 4 نادیده گرفته می‌شود؛ واردسازی shell همچنان در صورت فعال بودن اجرا می‌شود.
+اگر فایل پیکربندی کاملا وجود نداشته باشد، مرحله 4 رد می‌شود؛ واردسازی شل همچنان در صورت فعال بودن اجرا می‌شود.
+
+## اعتبارنامه‌های ارائه‌دهنده و `.env` فضای کاری
+
+کلیدهای API ارائه‌دهنده را فقط در `.env` فضای کاری نگه ندارید. OpenClaw متغیرهای محیطی اعتبارنامه ارائه‌دهنده را از فایل‌های `.env` فضای کاری نادیده می‌گیرد، از جمله کلیدهای رایجی مانند `GEMINI_API_KEY`، `GOOGLE_API_KEY`، `XAI_API_KEY`، `MISTRAL_API_KEY`، `GROQ_API_KEY`، `DEEPSEEK_API_KEY`، `PERPLEXITY_API_KEY`، `BRAVE_API_KEY`، `TAVILY_API_KEY`، `EXA_API_KEY` و `FIRECRAWL_API_KEY`.
+
+برای اعتبارنامه‌های ارائه‌دهنده از یکی از این منابع مورد اعتماد استفاده کنید:
+
+- محیط فرایند Gateway، مانند شل، واحد launchd/systemd، secret کانتینر، یا secret در CI.
+- فایل dotenv سراسری runtime در `~/.openclaw/.env` یا `$OPENCLAW_STATE_DIR/.env`.
+- بلوک `env` پیکربندی در `~/.openclaw/openclaw.json`.
+- واردسازی اختیاری login-shell وقتی `env.shellEnv.enabled` یا `OPENCLAW_LOAD_SHELL_ENV=1` فعال باشد.
+
+اگر قبلا کلیدهای ارائه‌دهنده را فقط در `.env` فضای کاری ذخیره کرده‌اید، آن‌ها را به یکی از منابع مورد اعتماد بالا منتقل کنید. `.env` فضای کاری همچنان می‌تواند متغیرهای عادی پروژه را که اعتبارنامه، تغییرمسیر endpoint، بازنویسی host، یا کنترل‌های runtime با پیشوند `OPENCLAW_*` نیستند فراهم کند.
+
+برای منطق امنیتی، [فایل‌های `.env` فضای کاری](/fa/gateway/security#workspace-env-files) را ببینید.
 
 ## بلوک `env` پیکربندی
 
-دو روش معادل برای تنظیم متغیرهای محیطی درون‌خطی (هر دو بدون بازنویسی هستند):
+دو روش معادل برای تنظیم inline env vars (هر دو غیر بازنویسنده هستند):
 
 ```json5
 {
@@ -43,9 +60,40 @@ OpenClaw متغیرهای محیطی را از چندین منبع دریافت 
 }
 ```
 
-## واردسازی محیط shell
+بلوک `env` پیکربندی فقط مقدارهای رشته‌ای literal را می‌پذیرد. مقدارهای
+`file:...` را گسترش نمی‌دهد؛ برای مثال، `XAI_API_KEY: "file:secrets/xai-api-key.txt"`
+دقیقا به‌صورت همان رشته به ارائه‌دهنده‌ها فرستاده می‌شود.
 
-`env.shellEnv`، login shell شما را اجرا می‌کند و فقط کلیدهای مورد انتظارِ **ناموجود** را وارد می‌کند:
+برای کلیدهای ارائه‌دهنده مبتنی بر فایل، روی فیلد اعتبارنامه‌ای که از آن
+پشتیبانی می‌کند از SecretRef استفاده کنید:
+
+```json5
+{
+  secrets: {
+    providers: {
+      xai_key_file: {
+        source: "file",
+        path: "~/.openclaw/secrets/xai-api-key.txt",
+        mode: "singleValue",
+      },
+    },
+  },
+  models: {
+    providers: {
+      xai: {
+        apiKey: { source: "file", provider: "xai_key_file", id: "value" },
+      },
+    },
+  },
+}
+```
+
+برای فیلدهای پشتیبانی‌شده، [مدیریت Secrets](/fa/gateway/secrets) و
+[سطح اعتبارنامه SecretRef](/fa/reference/secretref-credential-surface) را ببینید.
+
+## واردسازی env شل
+
+`env.shellEnv` شل ورود شما را اجرا می‌کند و فقط کلیدهای مورد انتظارِ **ناموجود** را وارد می‌کند:
 
 ```json5
 {
@@ -63,27 +111,35 @@ OpenClaw متغیرهای محیطی را از چندین منبع دریافت 
 - `OPENCLAW_LOAD_SHELL_ENV=1`
 - `OPENCLAW_SHELL_ENV_TIMEOUT_MS=15000`
 
-## متغیرهای محیطی تزریق‌شده در زمان اجرا
+## snapshotهای شل exec
+
+روی میزبان‌های Gateway غیر Windows، دستورهای bash و zsh `exec` به‌طور پیش‌فرض از snapshot زمان شروع استفاده می‌کنند.
+برای غیرفعال کردن این مسیر، `OPENCLAW_EXEC_SHELL_SNAPSHOT=0` را در محیط فرایند Gateway تنظیم کنید.
+مقادیر `false`، `no` و `off` نیز آن را غیرفعال می‌کنند. مقدارهای `exec.env` در هر فراخوانی نمی‌توانند
+snapshotها را تغییر دهند یا cache مربوط به snapshot را تغییرمسیر دهند.
+
+## متغیرهای محیطی تزریق‌شده توسط runtime
 
 OpenClaw همچنین نشانگرهای زمینه را به فرایندهای فرزند ایجادشده تزریق می‌کند:
 
-- `OPENCLAW_SHELL=exec`: برای فرمان‌هایی که از طریق ابزار `exec` اجرا می‌شوند تنظیم می‌شود.
-- `OPENCLAW_SHELL=acp`: برای ایجاد فرایندهای backend زمان اجرای ACP تنظیم می‌شود (برای مثال `acpx`).
-- `OPENCLAW_SHELL=acp-client`: برای `openclaw acp client` هنگامی که فرایند پل ACP را ایجاد می‌کند تنظیم می‌شود.
-- `OPENCLAW_SHELL=tui-local`: برای فرمان‌های shell محلی TUI با `!` تنظیم می‌شود.
+- `OPENCLAW_SHELL=exec`: برای دستورهایی که از طریق ابزار `exec` اجرا می‌شوند تنظیم می‌شود.
+- `OPENCLAW_SHELL=acp`: برای ایجاد فرایندهای backend runtime مربوط به ACP تنظیم می‌شود (برای مثال `acpx`).
+- `OPENCLAW_SHELL=acp-client`: برای `openclaw acp client` وقتی فرایند bridge مربوط به ACP را ایجاد می‌کند تنظیم می‌شود.
+- `OPENCLAW_SHELL=tui-local`: برای دستورهای شل `!` در TUI محلی تنظیم می‌شود.
+- `OPENCLAW_CLI=1`: برای فرایندهای فرزندی که توسط نقطه ورود CLI ایجاد می‌شوند تنظیم می‌شود.
 
-این‌ها نشانگرهای زمان اجرا هستند (نه پیکربندی موردنیاز کاربر). می‌توان از آن‌ها در منطق shell/profile
-برای اعمال قواعد وابسته به زمینه استفاده کرد.
+این‌ها نشانگرهای runtime هستند (پیکربندی کاربر لازم نیستند). می‌توان از آن‌ها در منطق shell/profile
+برای اعمال قواعد ویژه هر زمینه استفاده کرد.
 
 ## متغیرهای محیطی UI
 
-- `OPENCLAW_THEME=light`: هنگامی که ترمینال شما پس‌زمینه روشن دارد، palette روشن TUI را اجبار می‌کند.
-- `OPENCLAW_THEME=dark`: palette تیره TUI را اجبار می‌کند.
-- `COLORFGBG`: اگر ترمینال شما آن را export کند، OpenClaw از راهنمای رنگ پس‌زمینه برای انتخاب خودکار palette TUI استفاده می‌کند.
+- `OPENCLAW_THEME=light`: وقتی terminal شما پس‌زمینه روشن دارد، palette روشن TUI را اجباری می‌کند.
+- `OPENCLAW_THEME=dark`: palette تیره TUI را اجباری می‌کند.
+- `COLORFGBG`: اگر terminal شما آن را export کند، OpenClaw از راهنمای رنگ پس‌زمینه برای انتخاب خودکار palette در TUI استفاده می‌کند.
 
-## جایگزینی متغیر محیطی در پیکربندی
+## جای‌گذاری متغیر محیطی در پیکربندی
 
-می‌توانید با استفاده از نحو `${VAR_NAME}` مستقیماً در مقادیر رشته‌ای پیکربندی به متغیرهای محیطی ارجاع دهید:
+می‌توانید با استفاده از نحو `${VAR_NAME}` مستقیما در مقدارهای رشته‌ای پیکربندی به env vars ارجاع دهید:
 
 ```json5
 {
@@ -97,43 +153,45 @@ OpenClaw همچنین نشانگرهای زمینه را به فرایندهای
 }
 ```
 
-برای جزئیات کامل، [پیکربندی: جایگزینی متغیر محیطی](/fa/gateway/configuration-reference#env-var-substitution) را ببینید.
+برای جزئیات کامل، [پیکربندی: جای‌گذاری متغیر محیطی](/fa/gateway/configuration-reference#env-var-substitution) را ببینید.
 
-## ارجاع‌های محرمانه در برابر رشته‌های `${ENV}`
+## secret refها در برابر رشته‌های `${ENV}`
 
 OpenClaw از دو الگوی مبتنی بر env پشتیبانی می‌کند:
 
-- جایگزینی رشته‌ای `${VAR}` در مقادیر پیکربندی.
-- اشیای SecretRef (`{ source: "env", provider: "default", id: "VAR" }`) برای فیلدهایی که از ارجاع‌های محرمانه پشتیبانی می‌کنند.
+- جای‌گذاری رشته‌ای `${VAR}` در مقدارهای پیکربندی.
+- آبجکت‌های SecretRef (`{ source: "env", provider: "default", id: "VAR" }`) برای فیلدهایی که از ارجاع به secrets پشتیبانی می‌کنند.
 
-هر دو در زمان فعال‌سازی از env فرایند resolve می‌شوند. جزئیات SecretRef در [مدیریت اسرار](/fa/gateway/secrets) مستند شده است.
+هر دو در زمان فعال‌سازی از env فرایند resolve می‌شوند. جزئیات SecretRef در [مدیریت Secrets](/fa/gateway/secrets) مستند شده است.
+خود بلوک `env` پیکربندی، SecretRefها یا مقدارهای کوتاه‌نویسی
+`file:...` را resolve نمی‌کند.
 
 ## متغیرهای محیطی مرتبط با مسیر
 
-| متغیر                    | هدف                                                                                                                                                                                     |
-| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `OPENCLAW_HOME`          | بازنویسی دایرکتوری home استفاده‌شده برای تمام resolve کردن مسیرهای داخلی (`~/.openclaw/`، دایرکتوری‌های agent، نشست‌ها، credentials). هنگام اجرای OpenClaw به‌عنوان کاربر سرویس اختصاصی مفید است. |
-| `OPENCLAW_STATE_DIR`     | بازنویسی دایرکتوری وضعیت (پیش‌فرض `~/.openclaw`).                                                                                                                                       |
-| `OPENCLAW_CONFIG_PATH`   | بازنویسی مسیر فایل پیکربندی (پیش‌فرض `~/.openclaw/openclaw.json`).                                                                                                                     |
-| `OPENCLAW_INCLUDE_ROOTS` | فهرست مسیر دایرکتوری‌هایی که دستورهای `$include` می‌توانند فایل‌های بیرون از دایرکتوری پیکربندی را از آن‌ها resolve کنند (پیش‌فرض: هیچ‌کدام — `$include` به دایرکتوری پیکربندی محدود است). با tilde گسترش می‌یابد. |
+| متغیر                    | هدف                                                                                                                                                                                                                                   |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `OPENCLAW_HOME`          | دایرکتوری home استفاده‌شده برای پیش‌فرض‌های مسیر داخلی OpenClaw را بازنویسی می‌کند (`~/.openclaw/`، دایرکتوری‌های agent، sessionها، اعتبارنامه‌ها، onboarding نصب‌کننده، و checkout پیش‌فرض dev). هنگام اجرای OpenClaw به‌عنوان کاربر سرویس اختصاصی مفید است. |
+| `OPENCLAW_STATE_DIR`     | دایرکتوری وضعیت را بازنویسی می‌کند (پیش‌فرض `~/.openclaw`).                                                                                                                                                                         |
+| `OPENCLAW_CONFIG_PATH`   | مسیر فایل پیکربندی را بازنویسی می‌کند (پیش‌فرض `~/.openclaw/openclaw.json`).                                                                                                                                                         |
+| `OPENCLAW_INCLUDE_ROOTS` | فهرست مسیر دایرکتوری‌هایی که directiveهای `$include` ممکن است فایل‌هایی بیرون از دایرکتوری پیکربندی را در آن‌ها resolve کنند (پیش‌فرض: هیچ‌کدام — `$include` به دایرکتوری پیکربندی محدود است). Tilde-expanded.                      |
 
-## ثبت رویداد
+## ثبت رخداد
 
-| متغیر                           | هدف                                                                                                                                                                                                 |
-| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `OPENCLAW_LOG_LEVEL`             | بازنویسی سطح log برای هر دو خروجی فایل و console (مثلاً `debug`، `trace`). نسبت به `logging.level` و `logging.consoleLevel` در پیکربندی تقدم دارد. مقادیر نامعتبر با هشدار نادیده گرفته می‌شوند. |
-| `OPENCLAW_DEBUG_MODEL_TRANSPORT` | انتشار diagnostics هدفمند زمان‌بندی request/response مدل در سطح `info` بدون فعال کردن logهای debug سراسری.                                                                                         |
-| `OPENCLAW_DEBUG_MODEL_PAYLOAD`   | diagnostics payload مدل: `summary`، `tools`، یا `full-redacted`. `full-redacted` محدود و redacted است اما ممکن است متن prompt/message را شامل شود.                                                   |
-| `OPENCLAW_DEBUG_SSE`             | diagnostics جریان‌دهی: `events` برای زمان‌بندی first/done، `peek` برای شامل کردن پنج رویداد redacted SSE نخست.                                                                                     |
-| `OPENCLAW_DEBUG_CODE_MODE`       | diagnostics سطح مدل code-mode، شامل پنهان‌سازی provider-tool و اعمال محدودیت exec/wait-only.                                                                                                        |
+| متغیر                           | هدف                                                                                                                                                                                        |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `OPENCLAW_LOG_LEVEL`             | سطح log را هم برای فایل و هم کنسول بازنویسی می‌کند (مثلا `debug`، `trace`). نسبت به `logging.level` و `logging.consoleLevel` در پیکربندی تقدم دارد. مقدارهای نامعتبر با هشدار نادیده گرفته می‌شوند. |
+| `OPENCLAW_DEBUG_MODEL_TRANSPORT` | diagnostics زمان‌بندی هدفمند request/response مدل را در سطح `info` بدون فعال کردن logهای debug سراسری منتشر می‌کند.                                                                      |
+| `OPENCLAW_DEBUG_MODEL_PAYLOAD`   | diagnostics payload مدل: `summary`، `tools`، یا `full-redacted`. `full-redacted` محدود و redacted است، اما ممکن است متن prompt/message را شامل شود.                                      |
+| `OPENCLAW_DEBUG_SSE`             | diagnostics جریان‌دهی: `events` برای زمان‌بندی first/done، `peek` برای شامل کردن پنج رویداد SSE نخست که redacted شده‌اند.                                                                |
+| `OPENCLAW_DEBUG_CODE_MODE`       | diagnostics سطح مدل در code-mode، شامل پنهان‌سازی provider-tool و اجرای اجباری exec/wait-only.                                                                                           |
 
 ### `OPENCLAW_HOME`
 
-وقتی تنظیم شود، `OPENCLAW_HOME` دایرکتوری home سیستم (`$HOME` / `os.homedir()`) را برای تمام resolve کردن مسیرهای داخلی جایگزین می‌کند. این کار جداسازی کامل filesystem را برای حساب‌های سرویس headless ممکن می‌سازد.
+وقتی تنظیم شود، `OPENCLAW_HOME` دایرکتوری home سیستم (`$HOME` / `os.homedir()`) را برای پیش‌فرض‌های مسیر داخلی OpenClaw جایگزین می‌کند. این شامل دایرکتوری وضعیت پیش‌فرض، مسیر پیکربندی، دایرکتوری‌های agent، اعتبارنامه‌ها، فضای کاری onboarding نصب‌کننده، و checkout پیش‌فرض dev است که توسط `openclaw update --channel dev` استفاده می‌شود.
 
-**تقدم:** `OPENCLAW_HOME` > `$HOME` > `USERPROFILE` > `os.homedir()`
+**ترتیب تقدم:** `OPENCLAW_HOME` > `$HOME` > `USERPROFILE` > fallback مربوط به home در Termux `PREFIX` روی Android > `os.homedir()`
 
-**نمونه** (macOS LaunchDaemon):
+**مثال** (macOS LaunchDaemon):
 
 ```xml
 <key>EnvironmentVariables</key>
@@ -143,20 +201,22 @@ OpenClaw از دو الگوی مبتنی بر env پشتیبانی می‌کند
 </dict>
 ```
 
-`OPENCLAW_HOME` همچنین می‌تواند به‌صورت مسیر tilde تنظیم شود (مثلاً `~/svc`) که پیش از استفاده با `$HOME` گسترش می‌یابد.
+`OPENCLAW_HOME` همچنین می‌تواند روی یک مسیر tilde تنظیم شود (مثلا `~/svc`) که پیش از استفاده با همان زنجیره fallback مربوط به home در OS گسترش می‌یابد.
+
+متغیرهای مسیر صریح مانند `OPENCLAW_STATE_DIR`، `OPENCLAW_CONFIG_PATH` و `OPENCLAW_GIT_DIR` همچنان تقدم دارند. کارهای مربوط به حساب OS مانند تشخیص فایل startup شل، راه‌اندازی package-manager، و گسترش `~` در host ممکن است همچنان از home واقعی سیستم استفاده کنند.
 
 ## کاربران nvm: خطاهای TLS در web_fetch
 
-اگر Node.js از طریق **nvm** نصب شده باشد (نه مدیر بسته سیستم)، `fetch()` داخلی از
-مخزن CA همراه nvm استفاده می‌کند که ممکن است CAهای ریشه مدرن را نداشته باشد (ISRG Root X1/X2 برای Let's Encrypt،
-DigiCert Global Root G2 و غیره). این باعث می‌شود `web_fetch` در بیشتر سایت‌های HTTPS با `"fetch failed"` شکست بخورد.
+اگر Node.js از طریق **nvm** نصب شده باشد (نه package manager سیستم)، `fetch()` داخلی از
+CA store همراه nvm استفاده می‌کند که ممکن است CAهای ریشه مدرن را نداشته باشد (ISRG Root X1/X2 برای Let's Encrypt،
+DigiCert Global Root G2، و غیره). این باعث می‌شود `web_fetch` در بیشتر سایت‌های HTTPS با `"fetch failed"` شکست بخورد.
 
-در Linux، OpenClaw به‌طور خودکار nvm را تشخیص می‌دهد و اصلاح را در محیط startup واقعی اعمال می‌کند:
+روی Linux، OpenClaw به‌طور خودکار nvm را تشخیص می‌دهد و اصلاح را در محیط واقعی startup اعمال می‌کند:
 
-- `openclaw gateway install`، مقدار `NODE_EXTRA_CA_CERTS` را در محیط سرویس systemd می‌نویسد
-- entrypoint مربوط به CLI با نام `openclaw`، پیش از startup Node خود را با تنظیم `NODE_EXTRA_CA_CERTS` دوباره اجرا می‌کند
+- `openclaw gateway install` مقدار `NODE_EXTRA_CA_CERTS` را در محیط سرویس systemd می‌نویسد
+- نقطه ورود CLI یعنی `openclaw` پیش از startup مربوط به Node خودش را با `NODE_EXTRA_CA_CERTS` تنظیم‌شده دوباره exec می‌کند
 
-**اصلاح دستی (برای نسخه‌های قدیمی‌تر یا اجراهای مستقیم `node ...`):**
+**اصلاح دستی (برای نسخه‌های قدیمی‌تر یا اجرای مستقیم `node ...`):**
 
 پیش از شروع OpenClaw، متغیر را export کنید:
 
@@ -165,23 +225,23 @@ export NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt
 openclaw gateway run
 ```
 
-برای این متغیر فقط به نوشتن در `~/.openclaw/.env` تکیه نکنید؛ Node مقدار
+برای این متغیر فقط به نوشتن در `~/.openclaw/.env` اتکا نکنید؛ Node مقدار
 `NODE_EXTRA_CA_CERTS` را هنگام startup فرایند می‌خواند.
 
-## متغیرهای محیطی قدیمی
+## متغیرهای محیطی legacy
 
-OpenClaw فقط متغیرهای محیطی `OPENCLAW_*` را می‌خواند. پیشوندهای قدیمی
-`CLAWDBOT_*` و `MOLTBOT_*` از نسخه‌های قبلی بی‌صدا
+OpenClaw فقط متغیرهای محیطی `OPENCLAW_*` را می‌خواند. پیشوندهای legacy
+`CLAWDBOT_*` و `MOLTBOT_*` از انتشارهای قدیمی‌تر بی‌صدا
 نادیده گرفته می‌شوند.
 
-اگر هنگام startup هنوز هرکدام از آن‌ها روی فرایند Gateway تنظیم شده باشند، OpenClaw یک
-هشدار deprecation واحد Node (`OPENCLAW_LEGACY_ENV_VARS`) منتشر می‌کند که
+اگر هرکدام هنوز هنگام startup روی فرایند Gateway تنظیم باشند، OpenClaw یک
+هشدار deprecation واحد از Node (`OPENCLAW_LEGACY_ENV_VARS`) منتشر می‌کند که
 پیشوندهای شناسایی‌شده و تعداد کل را فهرست می‌کند. هر مقدار را با جایگزین کردن
-پیشوند قدیمی با `OPENCLAW_` تغییر نام دهید (برای مثال `CLAWDBOT_GATEWAY_TOKEN` →
-`OPENCLAW_GATEWAY_TOKEN`)؛ نام‌های قدیمی هیچ اثری ندارند.
+پیشوند legacy با `OPENCLAW_` تغییرنام دهید (برای مثال `CLAWDBOT_GATEWAY_TOKEN` →
+`OPENCLAW_GATEWAY_TOKEN`)؛ نام‌های قدیمی اثری ندارند.
 
 ## مرتبط
 
 - [پیکربندی Gateway](/fa/gateway/configuration)
-- [پرسش‌های متداول: متغیرهای محیطی و بارگذاری .env](/fa/help/faq#env-vars-and-env-loading)
-- [نمای کلی مدل‌ها](/fa/concepts/models)
+- [سوالات متداول: env vars و بارگذاری .env](/fa/help/faq#env-vars-and-env-loading)
+- [مرور کلی مدل‌ها](/fa/concepts/models)

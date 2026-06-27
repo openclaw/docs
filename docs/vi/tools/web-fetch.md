@@ -1,30 +1,31 @@
 ---
 read_when:
     - Bạn muốn tìm nạp một URL và trích xuất nội dung dễ đọc
-    - Bạn cần cấu hình web_fetch hoặc cơ chế dự phòng Firecrawl của nó
-    - Bạn muốn hiểu các giới hạn và cơ chế lưu vào bộ nhớ đệm của web_fetch
+    - Bạn cần cấu hình web_fetch hoặc phương án dự phòng Firecrawl của nó
+    - Bạn muốn hiểu các giới hạn và bộ nhớ đệm của web_fetch
 sidebarTitle: Web Fetch
-summary: công cụ web_fetch -- tìm nạp HTTP với khả năng trích xuất nội dung dễ đọc
+summary: công cụ web_fetch -- truy xuất HTTP với trích xuất nội dung dễ đọc
 title: Tìm nạp web
 x-i18n:
-    generated_at: "2026-05-06T17:59:48Z"
+    generated_at: "2026-06-27T18:20:32Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 337174898861db217bf0db052d8e8749989c295e89c73d9d5a6911f6335ba03d
+    source_hash: b5a4127b97ded80eec1a5944bc8606069e630c61f89c4d5ce9cb729390b4eb4d
     source_path: tools/web-fetch.md
     workflow: 16
 ---
 
-Công cụ `web_fetch` thực hiện HTTP GET thuần túy và trích xuất nội dung dễ đọc
+Công cụ `web_fetch` thực hiện HTTP GET thuần và trích xuất nội dung dễ đọc
 (HTML sang markdown hoặc văn bản). Công cụ này **không** thực thi JavaScript.
 
-Đối với các trang dùng nhiều JS hoặc trang được bảo vệ bằng đăng nhập, hãy dùng
-[Web Browser](/vi/tools/browser) thay thế.
+Đối với các trang phụ thuộc nhiều vào JS hoặc các trang được bảo vệ bằng đăng nhập, hãy dùng
+[Trình duyệt Web](/vi/tools/browser) thay thế.
 
 ## Bắt đầu nhanh
 
 `web_fetch` được **bật theo mặc định** -- không cần cấu hình. Agent có thể
-gọi ngay:
+gọi công cụ này ngay:
 
 ```javascript
 await web_fetch({ url: "https://example.com/article" });
@@ -33,7 +34,7 @@ await web_fetch({ url: "https://example.com/article" });
 ## Tham số công cụ
 
 <ParamField path="url" type="string" required>
-URL cần tìm nạp. Chỉ hỗ trợ `http(s)`.
+URL cần tìm nạp. Chỉ `http(s)`.
 </ParamField>
 
 <ParamField path="extractMode" type="'markdown' | 'text'" default="markdown">
@@ -41,28 +42,43 @@ URL cần tìm nạp. Chỉ hỗ trợ `http(s)`.
 </ParamField>
 
 <ParamField path="maxChars" type="number">
-Cắt ngắn đầu ra xuống số ký tự này.
+Cắt ngắn đầu ra còn số ký tự này.
 </ParamField>
 
 ## Cách hoạt động
 
 <Steps>
-  <Step title="Fetch">
+  <Step title="Tìm nạp">
     Gửi HTTP GET với User-Agent giống Chrome và header `Accept-Language`.
-    Chặn tên máy chủ riêng tư/nội bộ và kiểm tra lại chuyển hướng.
+    Chặn tên máy chủ riêng tư/nội bộ và kiểm tra lại các chuyển hướng.
   </Step>
-  <Step title="Extract">
+  <Step title="Trích xuất">
     Chạy Readability (trích xuất nội dung chính) trên phản hồi HTML.
   </Step>
-  <Step title="Fallback (optional)">
-    Nếu Readability thất bại và Firecrawl đã được cấu hình, thử lại thông qua
-    API Firecrawl với chế độ vượt qua bot.
+  <Step title="Dự phòng (tùy chọn)">
+    Nếu Readability thất bại và Firecrawl được chọn, thử lại qua
+    Firecrawl API với chế độ vượt né bot.
   </Step>
-  <Step title="Cache">
+  <Step title="Bộ nhớ đệm">
     Kết quả được lưu vào bộ nhớ đệm trong 15 phút (có thể cấu hình) để giảm
-    việc tìm nạp lặp lại cùng một URL.
+    số lần tìm nạp lặp lại cùng một URL.
   </Step>
 </Steps>
+
+## Cập nhật tiến trình
+
+`web_fetch` chỉ phát một dòng tiến trình công khai khi lượt tìm nạp vẫn đang chờ
+sau năm giây:
+
+```text
+Fetching page content...
+```
+
+Các lần trúng bộ nhớ đệm nhanh và phản hồi mạng nhanh sẽ hoàn tất trước khi bộ hẹn giờ kích hoạt, nên
+chúng không hiển thị dòng tiến trình. Nếu lệnh gọi bị hủy, bộ hẹn giờ sẽ được xóa.
+Khi lượt tìm nạp cuối cùng hoàn tất, agent nhận kết quả công cụ bình thường;
+dòng tiến trình chỉ là trạng thái giao diện kênh và không bao giờ chứa nội dung
+trang đã tìm nạp.
 
 ## Cấu hình
 
@@ -94,8 +110,8 @@ Cắt ngắn đầu ra xuống số ký tự này.
 
 ## Dự phòng Firecrawl
 
-Nếu trích xuất Readability thất bại, `web_fetch` có thể chuyển sang
-[Firecrawl](/vi/tools/firecrawl) để vượt qua bot và trích xuất tốt hơn:
+Nếu trích xuất Readability thất bại, `web_fetch` có thể dự phòng sang
+[Firecrawl](/vi/tools/firecrawl) để vượt né bot và trích xuất tốt hơn:
 
 ```json5
 {
@@ -112,7 +128,7 @@ Nếu trích xuất Readability thất bại, `web_fetch` có thể chuyển san
         enabled: true,
         config: {
           webFetch: {
-            apiKey: "fc-...", // optional if FIRECRAWL_API_KEY is set
+            // apiKey: "fc-...", // optional; omit for keyless starter access
             baseUrl: "https://api.firecrawl.dev",
             onlyMainContent: true,
             maxAgeMs: 86400000, // cache duration (1 day)
@@ -125,66 +141,69 @@ Nếu trích xuất Readability thất bại, `web_fetch` có thể chuyển san
 }
 ```
 
-`plugins.entries.firecrawl.config.webFetch.apiKey` hỗ trợ các đối tượng SecretRef.
-Cấu hình `tools.web.fetch.firecrawl.*` cũ được `openclaw doctor --fix` tự động di chuyển.
+`plugins.entries.firecrawl.config.webFetch.apiKey` là tùy chọn và hỗ trợ các đối tượng SecretRef.
+Cấu hình `tools.web.fetch.firecrawl.*` cũ được tự động di chuyển bởi `openclaw doctor --fix`.
 
 <Note>
-  Nếu Firecrawl được bật và SecretRef của nó chưa được phân giải mà không có
-  phương án dự phòng env `FIRECRAWL_API_KEY`, quá trình khởi động Gateway sẽ thất bại nhanh.
+  Nếu bạn cấu hình SecretRef khóa API Firecrawl và khóa đó không được phân giải mà không có
+  dự phòng env `FIRECRAWL_API_KEY`, Gateway sẽ khởi động thất bại nhanh.
 </Note>
 
 <Note>
-  Ghi đè `baseUrl` của Firecrawl được khóa chặt: lưu lượng được lưu trữ dùng
-  `https://api.firecrawl.dev`; ghi đè tự lưu trữ phải nhắm tới endpoint riêng tư hoặc
-  nội bộ, và `http://` chỉ được chấp nhận cho các đích riêng tư đó.
+  Các ghi đè `baseUrl` của Firecrawl được khóa chặt: lưu lượng được lưu trữ dùng
+  `https://api.firecrawl.dev`; các ghi đè tự lưu trữ phải trỏ tới endpoint riêng tư hoặc
+  nội bộ, và `http://` chỉ được chấp nhận cho những đích riêng tư đó.
 </Note>
 
 Hành vi runtime hiện tại:
 
-- `tools.web.fetch.provider` chọn rõ ràng nhà cung cấp dự phòng cho việc tìm nạp.
-- Nếu bỏ qua `provider`, OpenClaw tự động phát hiện nhà cung cấp web-fetch sẵn sàng
-  đầu tiên từ các thông tin xác thực khả dụng. `web_fetch` không sandbox có thể dùng
-  các Plugin đã cài đặt khai báo `contracts.webFetchProviders` và đăng ký một
-  nhà cung cấp khớp tại runtime. Hiện nay nhà cung cấp đi kèm là Firecrawl.
-- Các lệnh gọi `web_fetch` trong sandbox vẫn chỉ giới hạn ở các nhà cung cấp đi kèm.
-- Nếu Readability bị tắt, `web_fetch` bỏ qua thẳng tới phương án dự phòng của
-  nhà cung cấp đã chọn. Nếu không có nhà cung cấp nào khả dụng, nó thất bại đóng.
+- `tools.web.fetch.provider` chọn rõ ràng provider dự phòng tìm nạp.
+- Nếu bỏ qua `provider`, OpenClaw tự động phát hiện provider web-fetch sẵn sàng đầu tiên
+  từ thông tin xác thực đã cấu hình. `web_fetch` không sandbox có thể dùng
+  các Plugin đã cài đặt khai báo `contracts.webFetchProviders` và đăng ký
+  provider khớp tại runtime. Plugin Firecrawl chính thức cung cấp
+  dự phòng này.
+- Các lệnh gọi `web_fetch` sandbox cho phép provider được đóng gói kèm cùng các provider đã cài đặt
+  có nguồn gốc npm chính thức hoặc ClawHub đã được xác minh. Hiện tại điều đó cho phép
+  Plugin Firecrawl chính thức; các Plugin tìm nạp bên ngoài của bên thứ ba vẫn bị loại trừ.
+- Nếu Readability bị tắt, `web_fetch` bỏ qua thẳng tới
+  dự phòng provider đã chọn. Nếu không có provider nào khả dụng, công cụ sẽ thất bại theo hướng đóng an toàn.
 
 ## Proxy env tin cậy
 
-Nếu triển khai của bạn yêu cầu `web_fetch` đi qua một proxy HTTP(S) outbound
+Nếu triển khai của bạn yêu cầu `web_fetch` đi qua một proxy HTTP(S) đi ra
 tin cậy, hãy đặt `tools.web.fetch.useTrustedEnvProxy: true`.
 
-Ở chế độ này, OpenClaw vẫn áp dụng kiểm tra SSRF dựa trên tên máy chủ trước khi gửi
-yêu cầu, nhưng cho phép proxy phân giải DNS thay vì ghim DNS cục bộ.
+Trong chế độ này, OpenClaw vẫn áp dụng các kiểm tra SSRF dựa trên tên máy chủ trước khi gửi
+yêu cầu, nhưng cho phép proxy phân giải DNS thay vì thực hiện ghim DNS cục bộ.
 Chỉ bật tùy chọn này khi proxy do operator kiểm soát và thực thi
-chính sách outbound sau khi phân giải DNS.
+chính sách đi ra sau khi phân giải DNS.
 
 <Note>
   Nếu không có biến env proxy HTTP(S) nào được cấu hình, hoặc máy chủ đích bị loại trừ bởi
-  `NO_PROXY`, `web_fetch` sẽ quay về đường dẫn nghiêm ngặt thông thường với ghim DNS
-  cục bộ.
+  `NO_PROXY`, `web_fetch` sẽ quay về đường dẫn nghiêm ngặt bình thường với
+  ghim DNS cục bộ.
 </Note>
 
 ## Giới hạn và an toàn
 
-- `maxChars` bị giới hạn theo `tools.web.fetch.maxCharsCap`
-- Nội dung phản hồi bị giới hạn ở `maxResponseBytes` trước khi phân tích; phản hồi
-  quá lớn sẽ bị cắt ngắn kèm cảnh báo
+- `maxChars` bị giới hạn ở `tools.web.fetch.maxCharsCap`
+- Phần thân phản hồi bị giới hạn ở `maxResponseBytes` trước khi phân tích; các phản hồi
+  quá lớn bị cắt ngắn kèm cảnh báo
 - Tên máy chủ riêng tư/nội bộ bị chặn
 - `tools.web.fetch.ssrfPolicy.allowRfc2544BenchmarkRange` và
-  `tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` là các tùy chọn tham gia hẹp
+  `tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` là các tùy chọn opt-in hẹp
   cho các ngăn xếp proxy IP giả tin cậy; hãy để chúng chưa đặt trừ khi proxy của bạn sở hữu
-  các dải tổng hợp đó và thực thi chính sách đích riêng của nó
-- Chuyển hướng được kiểm tra và giới hạn bởi `maxRedirects`
-- `useTrustedEnvProxy` là tùy chọn tham gia rõ ràng và chỉ nên được bật cho
-  các proxy do operator kiểm soát vẫn thực thi chính sách outbound sau khi
+  các dải tổng hợp đó và thực thi chính sách đích riêng
+- Chuyển hướng được kiểm tra và bị giới hạn bởi `maxRedirects`
+- `useTrustedEnvProxy` là opt-in rõ ràng và chỉ nên được bật cho
+  các proxy do operator kiểm soát vẫn thực thi chính sách đi ra sau khi
   phân giải DNS
-- `web_fetch` hoạt động theo nỗ lực tối đa -- một số trang cần [Web Browser](/vi/tools/browser)
+- `web_fetch` hoạt động theo nỗ lực tốt nhất -- một số trang cần [Trình duyệt Web](/vi/tools/browser)
 
 ## Hồ sơ công cụ
 
-Nếu bạn dùng hồ sơ công cụ hoặc allowlist, hãy thêm `web_fetch` hoặc `group:web`:
+Nếu bạn dùng hồ sơ công cụ hoặc danh sách cho phép, hãy thêm `web_fetch` hoặc `group:web`:
 
 ```json5
 {
@@ -197,6 +216,6 @@ Nếu bạn dùng hồ sơ công cụ hoặc allowlist, hãy thêm `web_fetch` h
 
 ## Liên quan
 
-- [Web Search](/vi/tools/web) -- tìm kiếm web bằng nhiều nhà cung cấp
-- [Web Browser](/vi/tools/browser) -- tự động hóa trình duyệt đầy đủ cho các trang dùng nhiều JS
+- [Tìm kiếm Web](/vi/tools/web) -- tìm kiếm web bằng nhiều provider
+- [Trình duyệt Web](/vi/tools/browser) -- tự động hóa trình duyệt đầy đủ cho các trang phụ thuộc nhiều vào JS
 - [Firecrawl](/vi/tools/firecrawl) -- công cụ tìm kiếm và scrape của Firecrawl

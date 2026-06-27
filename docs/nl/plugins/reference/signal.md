@@ -1,13 +1,14 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de Signal-Plugin
-summary: Voegt de Signal-kanaalinterface toe voor het verzenden en ontvangen van OpenClaw-berichten.
-title: Signal-plugin
+    - U installeert, configureert of controleert de Signal-plugin
+summary: Voegt het Signal-kanaaloppervlak toe voor het verzenden en ontvangen van OpenClaw-berichten.
+title: Signal Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:55:10Z"
+    generated_at: "2026-06-27T18:04:12Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8d066bcea16277affe7ecc181207330fa9c439ec242bab279c65efdf67b361c6
+    source_hash: 7136222af25d73d50b9a973d287b863176c58d634da4c9d7726d5cc6942135bb
     source_path: plugins/reference/signal.md
     workflow: 16
 ---
@@ -19,7 +20,7 @@ Voegt het Signal-kanaaloppervlak toe voor het verzenden en ontvangen van OpenCla
 ## Distributie
 
 - Pakket: `@openclaw/signal`
-- Installatieroute: inbegrepen in OpenClaw
+- Installatieroute: npm; ClawHub: `clawhub:@openclaw/signal`
 
 ## Oppervlak
 

@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Sono necessari log di debug mirati senza aumentare i livelli globali di logging
-    - È necessario acquisire i log specifici del sottosistema per l'assistenza
-summary: Flag di diagnostica per log di debug mirati
+    - Hai bisogno di log di debug mirati senza aumentare i livelli di logging globali
+    - Devi acquisire i log specifici del sottosistema per il supporto
+summary: Flag diagnostici per log di debug mirati
 title: Flag di diagnostica
 x-i18n:
-    generated_at: "2026-05-02T08:21:53Z"
+    generated_at: "2026-06-27T17:29:39Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1d0ff92d45cf1c5a12a7103ba5b97d656a55a13a7a4f2e86e26ba3a9cfae7687
+    source_hash: c78c5c2f90fb1d601d0a3ef94919310759d58c9f9c70a093c91f31594bc777fb
     source_path: diagnostics/flags.md
     workflow: 16
 ---
@@ -18,7 +19,7 @@ I flag di diagnostica consentono di abilitare log di debug mirati senza attivare
 ## Come funziona
 
 - I flag sono stringhe (senza distinzione tra maiuscole e minuscole).
-- Puoi abilitare i flag nella configurazione o tramite un override env.
+- Puoi abilitare i flag nella configurazione o tramite una sovrascrittura env.
 - I caratteri jolly sono supportati:
   - `telegram.*` corrisponde a `telegram.http`
   - `*` abilita tutti i flag
@@ -43,23 +44,67 @@ Più flag:
 }
 ```
 
-Riavvia il gateway dopo aver modificato i flag.
+Riavvia il Gateway dopo aver modificato i flag.
 
-## Override env (una tantum)
+## Sovrascrittura env (una tantum)
 
 ```bash
 OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
 ```
 
-Disabilitare tutti i flag:
+Disabilita tutti i flag:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=0
 ```
 
+`OPENCLAW_DIAGNOSTICS=0` è una sovrascrittura di disabilitazione a livello di processo: disabilita
+i flag sia da env sia dalla configurazione per quel processo.
+
+## Flag di profilazione
+
+I flag del profiler abilitano intervalli temporali mirati senza aumentare i
+livelli di logging globali. Sono disabilitati per impostazione predefinita.
+
+Abilita tutti gli intervalli protetti dal profiler per una singola esecuzione del Gateway:
+
+```bash
+OPENCLAW_DIAGNOSTICS=profiler openclaw gateway run
+```
+
+Abilita solo gli intervalli del profiler di invio delle risposte:
+
+```bash
+OPENCLAW_DIAGNOSTICS=reply.profiler openclaw gateway run
+```
+
+Abilita solo gli intervalli del profiler di avvio/tool/thread dell'app-server Codex:
+
+```bash
+OPENCLAW_DIAGNOSTICS=codex.profiler openclaw gateway run
+```
+
+Abilita i flag del profiler dalla configurazione:
+
+```json
+{
+  "diagnostics": {
+    "flags": ["reply.profiler", "codex.profiler"]
+  }
+}
+```
+
+Riavvia il Gateway dopo aver modificato i flag di configurazione. Per disabilitare un flag del profiler,
+rimuovilo da `diagnostics.flags` e riavvia. Per disabilitare temporaneamente ogni
+flag di diagnostica anche quando la configurazione abilita i flag del profiler, avvia il processo con:
+
+```bash
+OPENCLAW_DIAGNOSTICS=0 openclaw gateway run
+```
+
 ## Artefatti della timeline
 
-Il flag `timeline` scrive eventi strutturati di avvio e temporizzazione runtime per
+Il flag `timeline` scrive eventi temporali strutturati di avvio e runtime per
 harness QA esterni:
 
 ```bash
@@ -78,21 +123,21 @@ Puoi abilitarlo anche nella configurazione:
 }
 ```
 
-Il percorso del file della timeline proviene comunque da
+Il percorso del file timeline proviene comunque da
 `OPENCLAW_DIAGNOSTICS_TIMELINE_PATH`. Quando `timeline` è abilitato solo dalla
-configurazione, i primi intervalli di caricamento della configurazione non vengono emessi perché OpenClaw
-non ha ancora letto la configurazione; gli intervalli di avvio successivi usano il flag di configurazione.
+configurazione, i primi intervalli di caricamento della configurazione non vengono emessi perché OpenClaw non ha
+ancora letto la configurazione; gli intervalli di avvio successivi usano il flag di configurazione.
 
 Anche `OPENCLAW_DIAGNOSTICS=1`, `OPENCLAW_DIAGNOSTICS=all` e
 `OPENCLAW_DIAGNOSTICS=*` abilitano la timeline perché abilitano ogni
-flag di diagnostica. Preferisci `timeline` quando vuoi solo l'artefatto di temporizzazione
+flag di diagnostica. Preferisci `timeline` quando vuoi solo l'artefatto temporale
 JSONL.
 
-I record della timeline usano l'involucro `openclaw.diagnostics.v1`. Gli eventi possono includere
-ID di processo, nomi di fase, nomi di intervallo, durate, ID di plugin, conteggi delle dipendenze,
-campioni di ritardo dell'event loop, nomi di operazioni provider, stato di uscita dei processi figlio
-e nomi/messaggi degli errori di avvio. Tratta i file della timeline come artefatti di diagnostica
-locali; esaminali prima di condividerli fuori dalla tua macchina.
+I record della timeline usano l'envelope `openclaw.diagnostics.v1`. Gli eventi possono includere
+ID di processo, nomi di fase, nomi di intervallo, durate, ID dei plugin, conteggi delle dipendenze,
+campioni di ritardo dell'event loop, nomi delle operazioni del provider, stato di uscita dei processi figli
+e nomi/messaggi degli errori di avvio. Tratta i file timeline come artefatti di diagnostica locali;
+rivedili prima di condividerli fuori dalla tua macchina.
 
 ## Dove vanno i log
 
@@ -124,22 +169,22 @@ Filtra per la diagnostica HTTP di Brave Search:
 rg "brave http" /tmp/openclaw/openclaw-*.log
 ```
 
-Oppure segui il log mentre riproduci il problema:
+Oppure segui la coda mentre riproduci:
 
 ```bash
 tail -f /tmp/openclaw/openclaw-$(date +%F).log | rg "telegram http error"
 ```
 
-Per i gateway remoti, puoi anche usare `openclaw logs --follow` (vedi [/cli/logs](/it/cli/logs)).
+Per Gateway remoti, puoi usare anche `openclaw logs --follow` (vedi [/cli/logs](/it/cli/logs)).
 
 ## Note
 
-- Se `logging.level` è impostato su un valore superiore a `warn`, questi log potrebbero essere soppressi. Il valore predefinito `info` va bene.
-- `brave.http` registra URL/parametri di query delle richieste Brave Search, stato/tempi delle risposte ed eventi di hit/miss/scrittura della cache. Non registra chiavi API o corpi delle risposte, ma le query di ricerca possono essere sensibili.
-- I flag possono essere lasciati abilitati in sicurezza; influiscono solo sul volume dei log per il sottosistema specifico.
+- Se `logging.level` è impostato su un valore più alto di `warn`, questi log potrebbero essere soppressi. Il valore predefinito `info` va bene.
+- `brave.http` registra gli URL/i parametri di query delle richieste Brave Search, lo stato/la tempistica delle risposte e gli eventi di hit/miss/scrittura della cache. Non registra chiavi API o corpi delle risposte, ma le query di ricerca possono essere sensibili.
+- I flag possono restare abilitati in sicurezza; influenzano solo il volume dei log per il sottosistema specifico.
 - Usa [/logging](/it/logging) per modificare destinazioni, livelli e redazione dei log.
 
 ## Correlati
 
-- [Diagnostica del gateway](/it/gateway/diagnostics)
-- [Risoluzione dei problemi del gateway](/it/gateway/troubleshooting)
+- [Diagnostica del Gateway](/it/gateway/diagnostics)
+- [Risoluzione dei problemi del Gateway](/it/gateway/troubleshooting)

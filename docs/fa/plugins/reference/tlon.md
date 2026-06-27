@@ -1,20 +1,21 @@
 ---
 read_when:
-    - در حال نصب، پیکربندی یا ممیزی Plugin tlon هستید
-summary: سطح کانال Tlon را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
+    - شما در حال نصب، پیکربندی یا ممیزی Plugin tlon هستید
+summary: Plugin کانال Tlon/Urbit برای OpenClaw جهت گردش‌کارهای گفت‌وگو.
 title: Plugin Tlon
 x-i18n:
-    generated_at: "2026-05-03T11:43:23Z"
+    generated_at: "2026-06-27T18:29:54Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 636c7fc3ae8f8f35337d2fe279f1752226ff7ee017442372878448a82f99ecce
+    source_hash: 6fd1dcc934734599c0b671f0a9659dc5cc6e4ff907e3e14f9ff3ba5ec86aa0cc
     source_path: plugins/reference/tlon.md
     workflow: 16
 ---
 
-# Plugin تلون
+# Plugin تلان
 
-سطح کانال Tlon را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
+Plugin کانال Tlon/Urbit برای OpenClaw جهت گردش‌کارهای گفت‌وگو.
 
 ## توزیع
 
@@ -23,8 +24,8 @@ x-i18n:
 
 ## سطح
 
-کانال‌ها: tlon؛ قراردادها: ابزارها؛ Skills
+کانال‌ها: tlon؛ Skills
 
 ## مستندات مرتبط
 
-- [tlون](/fa/channels/tlon)
+- [tlon](/fa/channels/tlon)

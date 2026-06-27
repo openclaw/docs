@@ -2,25 +2,27 @@
 read_when:
     - Anda ingin menggunakan pembuatan gambar fal di OpenClaw
     - Anda memerlukan alur autentikasi FAL_KEY
-    - Anda menginginkan nilai default fal untuk image_generate atau video_generate
-summary: Penyiapan pembuatan gambar dan video fal di OpenClaw
+    - Anda menginginkan default fal untuk image_generate, video_generate, atau music_generate
+summary: penyiapan pembuatan gambar, video, dan musik fal di OpenClaw
 title: Fal
 x-i18n:
-    generated_at: "2026-05-11T20:34:09Z"
+    generated_at: "2026-06-27T18:04:05Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7f074629e5274154b7a17686264a8b137d61df321d791d6e47c9d8abe67ad273
+    source_hash: af294939a39673fb32cb68c882708dbe69b64ca5e5d13f5504de9d1d8715e3bd
     source_path: providers/fal.md
     workflow: 16
 ---
 
-OpenClaw menyertakan penyedia `fal` bawaan untuk pembuatan gambar dan video yang dihosting.
+OpenClaw menyertakan provider `fal` bawaan untuk pembuatan gambar, video, dan musik
+yang dihosting.
 
 | Properti | Nilai                                                         |
 | -------- | ------------------------------------------------------------- |
-| Penyedia | `fal`                                                         |
-| Autentikasi | `FAL_KEY` (kanonis; `FAL_API_KEY` juga berfungsi sebagai fallback) |
-| API      | endpoint model fal                                           |
+| Provider | `fal`                                                         |
+| Auth     | `FAL_KEY` (kanonis; `FAL_API_KEY` juga berfungsi sebagai fallback) |
+| API      | endpoint model fal                                            |
 
 ## Memulai
 
@@ -47,29 +49,51 @@ OpenClaw menyertakan penyedia `fal` bawaan untuk pembuatan gambar dan video yang
 
 ## Pembuatan gambar
 
-Penyedia pembuatan gambar `fal` bawaan secara default menggunakan
+Provider pembuatan gambar `fal` bawaan menggunakan default
 `fal/fal-ai/flux/dev`.
 
-| Kemampuan      | Nilai                                                       |
-| -------------- | ----------------------------------------------------------- |
-| Gambar maksimum | 4 per permintaan                                               |
-| Mode edit      | Flux: 1 gambar referensi; GPT Image 2: 10; Nano Banana 2: 14 |
-| Penggantian ukuran | Didukung                                                   |
-| Rasio aspek   | Didukung untuk generate dan edit GPT Image 2/Nano Banana 2   |
-| Resolusi     | Didukung                                                   |
-| Format keluaran  | `png` atau `jpeg`                                             |
+| Kapabilitas      | Nilai                                                              |
+| ---------------- | ------------------------------------------------------------------ |
+| Gambar maks      | 4 per permintaan; Krea 2: 1 per permintaan                         |
+| Mode edit        | Flux: 1 gambar referensi; GPT Image 2: 10; Nano Banana 2: 14       |
+| Referensi gaya   | Krea 2: hingga 10 referensi gaya melalui `image` / `images`        |
+| Override ukuran  | Didukung                                                           |
+| Rasio aspek      | Didukung untuk generate, Krea 2, dan edit GPT Image 2/Nano Banana 2 |
+| Resolusi         | Didukung                                                           |
+| Format output    | `png` atau `jpeg`                                                  |
 
 <Warning>
-Permintaan image-to-image Flux **tidak** mendukung penggantian `aspectRatio`. Permintaan edit GPT
-Image 2 dan Nano Banana 2 menggunakan endpoint `/edit` milik fal dan menerima
-petunjuk rasio aspek.
+Permintaan image-to-image Flux **tidak** mendukung override `aspectRatio`. Permintaan edit GPT
+Image 2 dan Nano Banana 2 menggunakan endpoint `/edit` fal dan menerima
+petunjuk rasio aspek. Nano Banana 2 juga menerima rasio lebar/tinggi ekstra-native
+seperti `4:1`, `1:4`, `8:1`, dan `1:8`; Krea 2 memvalidasi subset rasio
+aspeknya sendiri yang lebih kecil.
 </Warning>
 
-Gunakan `outputFormat: "png"` saat Anda menginginkan keluaran PNG. fal tidak mendeklarasikan
-kontrol latar belakang transparan eksplisit di OpenClaw, sehingga `background:
-"transparent"` dilaporkan sebagai penggantian yang diabaikan untuk model fal.
+Model Krea 2 menggunakan skema payload Krea native milik fal. OpenClaw mengirim
+`aspect_ratio`, `creativity`, dan `image_style_references`, bukan payload
+generik `image_size` / endpoint edit yang digunakan oleh Flux. Ref modelnya adalah:
 
-Untuk menggunakan fal sebagai penyedia gambar default:
+- `fal/krea/v2/medium/text-to-image`
+- `fal/krea/v2/large/text-to-image`
+
+Gunakan Medium untuk ilustrasi ekspresif, anime, lukisan, dan gaya artistik
+yang lebih cepat. Gunakan Large untuk tampilan fotorealistis, tekstur mentah, grain film, dan detail
+yang lebih lambat. Default Krea adalah `fal.creativity: "medium"`; nilai yang didukung adalah
+`raw`, `low`, `medium`, dan `high`.
+
+Krea 2 mengekspos rasio aspek, bukan `image_size`, dalam skema permintaan fal. Utamakan
+`aspectRatio`; OpenClaw memetakan `size` ke rasio aspek Krea terdekat yang didukung
+dan menolak `resolution` untuk Krea alih-alih mengabaikannya.
+
+Gunakan `outputFormat: "png"` saat Anda menginginkan output PNG dari model fal yang mengekspos
+`output_format`. fal tidak mendeklarasikan kontrol latar belakang transparan
+eksplisit di OpenClaw, jadi `background: "transparent"` dilaporkan sebagai override yang diabaikan
+untuk model fal.
+Endpoint Krea 2 tidak mengekspos field permintaan `output_format` melalui fal, jadi
+OpenClaw menolak override `outputFormat` untuk permintaan Krea.
+
+Untuk menggunakan fal sebagai provider gambar default:
 
 ```json5
 {
@@ -83,15 +107,29 @@ Untuk menggunakan fal sebagai penyedia gambar default:
 }
 ```
 
+Untuk menggunakan Krea 2 Medium:
+
+```json5
+{
+  agents: {
+    defaults: {
+      imageGenerationModel: {
+        primary: "fal/krea/v2/medium/text-to-image",
+      },
+    },
+  },
+}
+```
+
 ## Pembuatan video
 
-Penyedia pembuatan video `fal` bawaan secara default menggunakan
+Provider pembuatan video `fal` bawaan menggunakan default
 `fal/fal-ai/minimax/video-01-live`.
 
-| Kemampuan | Nilai                                                              |
-| ---------- | ------------------------------------------------------------------ |
-| Mode      | Teks-ke-video, referensi gambar tunggal, referensi-ke-video Seedance |
-| Runtime    | Alur submit/status/result berbasis antrean untuk pekerjaan berdurasi lama       |
+| Kapabilitas | Nilai                                                              |
+| ----------- | ------------------------------------------------------------------ |
+| Mode        | Text-to-video, referensi satu gambar, Seedance reference-to-video  |
+| Runtime     | Alur submit/status/result berbasis antrean untuk pekerjaan berjalan lama |
 
 <AccordionGroup>
   <Accordion title="Model video yang tersedia">
@@ -110,7 +148,7 @@ Penyedia pembuatan video `fal` bawaan secara default menggunakan
 
   </Accordion>
 
-  <Accordion title="Contoh config Seedance 2.0">
+  <Accordion title="Contoh konfigurasi Seedance 2.0">
     ```json5
     {
       agents: {
@@ -124,7 +162,7 @@ Penyedia pembuatan video `fal` bawaan secara default menggunakan
     ```
   </Accordion>
 
-  <Accordion title="Contoh config reference-to-video Seedance 2.0">
+  <Accordion title="Contoh konfigurasi reference-to-video Seedance 2.0">
     ```json5
     {
       agents: {
@@ -143,7 +181,7 @@ Penyedia pembuatan video `fal` bawaan secara default menggunakan
 
   </Accordion>
 
-  <Accordion title="Contoh config agen video HeyGen">
+  <Accordion title="Contoh konfigurasi agen video HeyGen">
     ```json5
     {
       agents: {
@@ -158,6 +196,35 @@ Penyedia pembuatan video `fal` bawaan secara default menggunakan
   </Accordion>
 </AccordionGroup>
 
+## Pembuatan musik
+
+Plugin `fal` bawaan juga mendaftarkan provider pembuatan musik untuk tool
+bersama `music_generate`.
+
+| Kapabilitas   | Nilai                                                                                                  |
+| ------------- | ------------------------------------------------------------------------------------------------------ |
+| Model default | `fal/fal-ai/minimax-music/v2.6`                                                                        |
+| Model         | `fal-ai/minimax-music/v2.6`, `fal-ai/ace-step/prompt-to-audio`, `fal-ai/stable-audio-25/text-to-audio` |
+| Runtime       | Permintaan sinkron ditambah unduhan audio yang dihasilkan                                              |
+
+Gunakan fal sebagai provider musik default:
+
+```json5
+{
+  agents: {
+    defaults: {
+      musicGenerationModel: {
+        primary: "fal/fal-ai/minimax-music/v2.6",
+      },
+    },
+  },
+}
+```
+
+`fal-ai/minimax-music/v2.6` mendukung lirik eksplisit dan mode instrumental.
+ACE-Step dan Stable Audio adalah endpoint prompt-to-audio; pilih keduanya dengan override
+`model` saat Anda menginginkan keluarga model tersebut.
+
 <Tip>
 Gunakan `openclaw models list --provider fal` untuk melihat daftar lengkap model fal
 yang tersedia, termasuk entri yang baru ditambahkan.
@@ -167,12 +234,15 @@ yang tersedia, termasuk entri yang baru ditambahkan.
 
 <CardGroup cols={2}>
   <Card title="Pembuatan gambar" href="/id/tools/image-generation" icon="image">
-    Parameter alat gambar bersama dan pemilihan penyedia.
+    Parameter tool gambar bersama dan pemilihan provider.
   </Card>
   <Card title="Pembuatan video" href="/id/tools/video-generation" icon="video">
-    Parameter alat video bersama dan pemilihan penyedia.
+    Parameter tool video bersama dan pemilihan provider.
+  </Card>
+  <Card title="Pembuatan musik" href="/id/tools/music-generation" icon="music">
+    Parameter tool musik bersama dan pemilihan provider.
   </Card>
   <Card title="Referensi konfigurasi" href="/id/gateway/config-agents#agent-defaults" icon="gear">
-    Default agen termasuk pemilihan model gambar dan video.
+    Default agen termasuk pemilihan model gambar, video, dan musik.
   </Card>
 </CardGroup>

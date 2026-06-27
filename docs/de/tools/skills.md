@@ -1,66 +1,104 @@
 ---
 read_when:
     - Skills hinzufügen oder ändern
-    - Ändern von Skill-Gating, Allowlisten oder Laderegeln
-    - Skills-Priorität und Snapshot-Verhalten verstehen
+    - Skill-Gating, Allowlists oder Laderegeln ändern
+    - Skill-Priorität und Snapshot-Verhalten verstehen
 sidebarTitle: Skills
-summary: 'Skills: verwaltet vs. Workspace, Gating-Regeln, Agent-Allowlists und Konfigurationsverdrahtung'
+summary: Skills bringen Ihrem Agenten bei, wie er Tools verwendet. Erfahren Sie, wie sie geladen werden, wie die Rangfolge funktioniert und wie Sie Gating, Allowlisten und Umgebungsinjektion konfigurieren.
 title: Skills
 x-i18n:
-    generated_at: "2026-05-10T19:55:59Z"
+    generated_at: "2026-06-27T18:21:31Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a265932a9990e71c0dd6b4444f26efb04019ed979477b0712a3a45569b1b4dff
+    source_hash: e42d89d47125a4d92f68a20d754de571d5582858a9c44618b999a27335e78ab2
     source_path: tools/skills.md
     workflow: 16
 ---
 
-OpenClaw verwendet **[AgentSkills](https://agentskills.io)-kompatible** Skill-Ordner, um dem Agenten beizubringen, wie er Tools verwendet. Jeder Skill ist ein Verzeichnis, das eine `SKILL.md` mit YAML-Frontmatter und Anweisungen enthält. OpenClaw lädt gebündelte Skills sowie optionale lokale Überschreibungen und filtert sie zur Ladezeit basierend auf Umgebung, Konfiguration und Vorhandensein von Binaries.
+Skills sind Markdown-Anweisungsdateien, die dem Agent beibringen, wie und wann er
+Tools verwenden soll. Jeder Skill liegt in einem Verzeichnis mit einer `SKILL.md`-Datei
+mit YAML-Frontmatter und einem Markdown-Body. OpenClaw lädt gebündelte Skills plus
+alle lokalen Überschreibungen und filtert sie beim Laden anhand von Umgebung,
+Konfiguration und vorhandenen Binaries.
 
-## Speicherorte und Priorität
+<CardGroup cols={2}>
+  <Card title="Creating skills" href="/de/tools/creating-skills" icon="hammer">
+    Erstellen und testen Sie einen benutzerdefinierten Skill von Grund auf.
+  </Card>
+  <Card title="Skill Workshop" href="/de/tools/skill-workshop" icon="flask">
+    Prüfen und genehmigen Sie vom Agent entworfene Skill-Vorschläge.
+  </Card>
+  <Card title="Skills config" href="/de/tools/skills-config" icon="gear">
+    Vollständiges `skills.*`-Konfigurationsschema und Agent-Allowlists.
+  </Card>
+  <Card title="ClawHub" href="/de/clawhub" icon="cloud">
+    Durchsuchen und installieren Sie Community-Skills.
+  </Card>
+</CardGroup>
 
-OpenClaw lädt Skills aus diesen Quellen, **höchste Priorität zuerst**:
+## Ladereihenfolge
 
-| #   | Quelle                  | Pfad                             |
-| --- | ----------------------- | -------------------------------- |
-| 1   | Workspace-Skills        | `<workspace>/skills`             |
-| 2   | Projekt-Agent-Skills    | `<workspace>/.agents/skills`     |
-| 3   | Persönliche Agent-Skills | `~/.agents/skills`               |
-| 4   | Verwaltete/lokale Skills | `~/.openclaw/skills`             |
-| 5   | Gebündelte Skills       | mit der Installation ausgeliefert |
-| 6   | Zusätzliche Skill-Ordner | `skills.load.extraDirs` (Konfiguration) |
+OpenClaw lädt aus diesen Quellen, **höchste Priorität zuerst**. Wenn derselbe
+Skill-Name an mehreren Stellen vorkommt, gewinnt die Quelle mit der höchsten Priorität.
 
-Wenn ein Skill-Name kollidiert, gewinnt die Quelle mit der höchsten Priorität.
+| Priorität     | Quelle                  | Pfad                                    |
+| ------------- | ----------------------- | --------------------------------------- |
+| 1 — höchste   | Workspace-Skills        | `<workspace>/skills`                    |
+| 2             | Projekt-Agent-Skills    | `<workspace>/.agents/skills`            |
+| 3             | Persönliche Agent-Skills| `~/.agents/skills`                      |
+| 4             | Verwaltete / lokale Skills | `~/.openclaw/skills`                 |
+| 5             | Gebündelte Skills       | mit der Installation ausgeliefert       |
+| 6 — niedrigste| Zusätzliche Verzeichnisse | `skills.load.extraDirs` + Plugin-Skills |
 
-Das native Verzeichnis `$CODEX_HOME/skills` der Codex CLI gehört nicht zu diesen OpenClaw-Skill-Roots. Im Codex-Harness-Modus verwenden lokale App-Server-Starts isolierte Codex-Homes pro Agent, daher werden persönliche Codex CLI-Skills nicht implizit geladen. Verwenden Sie `openclaw migrate codex --dry-run`, um sie zu inventarisieren, und `openclaw migrate codex`, um Skill-Verzeichnisse über eine interaktive Checkbox-Eingabe auszuwählen, bevor sie in den aktuellen OpenClaw-Agent-Workspace kopiert werden. Für nicht interaktive Läufe wiederholen Sie `--skill <name>` für die exakt zu kopierenden Skills.
+Skill-Roots unterstützen gruppierte Layouts. OpenClaw erkennt einen Skill immer dann,
+wenn `SKILL.md` irgendwo unter einem konfigurierten Root erscheint:
 
-## Agent-spezifische und gemeinsam genutzte Skills
+```text
+<workspace>/skills/research/SKILL.md          ✓ found as "research"
+<workspace>/skills/personal/research/SKILL.md ✓ also found as "research"
+```
 
-In **Multi-Agent**-Setups hat jeder Agent seinen eigenen Workspace:
+Der Ordnerpfad dient nur der Organisation. Der Name des Skills, der Slash-Befehl
+und der Allowlist-Schlüssel stammen alle aus dem Frontmatter-Feld `name` (oder aus
+dem Verzeichnisnamen, wenn `name` fehlt).
 
-| Geltungsbereich            | Pfad                                        | Sichtbar für                         |
-| -------------------------- | ------------------------------------------- | ------------------------------------ |
-| Agent-spezifisch           | `<workspace>/skills`                        | Nur diesen Agent                     |
-| Projekt-Agent              | `<workspace>/.agents/skills`                | Nur den Agent dieses Workspaces      |
-| Persönlicher Agent         | `~/.agents/skills`                          | Alle Agenten auf dieser Maschine     |
-| Gemeinsam verwaltet/lokal  | `~/.openclaw/skills`                        | Alle Agenten auf dieser Maschine     |
-| Gemeinsame zusätzliche Verzeichnisse | `skills.load.extraDirs` (niedrigste Priorität) | Alle Agenten auf dieser Maschine     |
+<Note>
+  Das native `$CODEX_HOME/skills`-Verzeichnis der Codex CLI ist **kein**
+  OpenClaw-Skill-Root. Verwenden Sie `openclaw migrate plan codex`, um diese
+  Skills zu inventarisieren, und anschließend `openclaw migrate codex`, um sie
+  in Ihren OpenClaw-Workspace zu kopieren.
+</Note>
 
-Gleicher Name an mehreren Stellen → Quelle mit der höchsten Priorität gewinnt. Workspace schlägt Projekt-Agent, schlägt persönlichen Agent, schlägt verwaltet/lokal, schlägt gebündelt, schlägt zusätzliche Verzeichnisse.
+## Pro-Agent- gegenüber gemeinsamen Skills
 
-## Agent-Skill-Allowlists
+In Multi-Agent-Setups hat jeder Agent seinen eigenen Workspace. Verwenden Sie den
+Pfad, der zur gewünschten Sichtbarkeit passt:
 
-Skill-**Speicherort** und Skill-**Sichtbarkeit** sind getrennte Steuerungen. Speicherort/Priorität entscheidet, welche Kopie eines gleichnamigen Skills gewinnt; Agent-Allowlists entscheiden, welche Skills ein Agent tatsächlich verwenden kann.
+| Geltungsbereich | Pfad                         | Sichtbar für                 |
+| ---------------- | ---------------------------- | ---------------------------- |
+| Pro Agent        | `<workspace>/skills`         | Nur diesen Agent             |
+| Projekt-Agent    | `<workspace>/.agents/skills` | Nur den Agent dieses Workspace |
+| Persönlicher Agent | `~/.agents/skills`         | Alle Agents auf dieser Maschine |
+| Gemeinsam verwaltet | `~/.openclaw/skills`      | Alle Agents auf dieser Maschine |
+| Zusätzliche Verzeichnisse | `skills.load.extraDirs` | Alle Agents auf dieser Maschine |
+
+## Agent-Allowlists
+
+Skill-**Speicherort** (Priorität) und Skill-**Sichtbarkeit** (welcher Agent ihn
+verwenden kann) sind getrennte Steuerungen. Verwenden Sie Allowlists, um
+einzuschränken, welche Skills ein Agent sieht, unabhängig davon, woher sie geladen
+werden.
 
 ```json5
 {
   agents: {
     defaults: {
-      skills: ["github", "weather"],
+      skills: ["github", "weather"], // shared baseline
     },
     list: [
       { id: "writer" }, // inherits github, weather
-      { id: "docs", skills: ["docs-search"] }, // replaces defaults
+      { id: "docs", skills: ["docs-search"] }, // replaces defaults entirely
       { id: "locked-down", skills: [] }, // no skills
     ],
   },
@@ -68,99 +106,198 @@ Skill-**Speicherort** und Skill-**Sichtbarkeit** sind getrennte Steuerungen. Spe
 ```
 
 <AccordionGroup>
-  <Accordion title="Allowlist-Regeln">
-    - Lassen Sie `agents.defaults.skills` weg, um Skills standardmäßig uneingeschränkt zuzulassen.
+  <Accordion title="Allowlist rules">
+    - Lassen Sie `agents.defaults.skills` weg, damit standardmäßig alle Skills uneingeschränkt bleiben.
     - Lassen Sie `agents.list[].skills` weg, um `agents.defaults.skills` zu erben.
-    - Setzen Sie `agents.list[].skills: []`, um keine Skills zuzulassen.
-    - Eine nicht leere Liste `agents.list[].skills` ist die **endgültige** Menge für diesen Agenten - sie wird nicht mit Defaults zusammengeführt.
-    - Die effektive Allowlist gilt über Prompt-Erstellung, Skill-Slash-Command-Erkennung, Sandbox-Synchronisierung und Skill-Snapshots hinweg.
-
+    - Setzen Sie `agents.list[].skills: []`, um für diesen Agent keine Skills bereitzustellen.
+    - Eine nicht leere `agents.list[].skills`-Liste ist die **endgültige** Menge — sie wird nicht
+      mit den Defaults zusammengeführt.
+    - Die effektive Allowlist gilt über Prompt-Erstellung, Slash-Befehl-Erkennung,
+      Sandbox-Synchronisierung und Skill-Snapshots hinweg.
   </Accordion>
 </AccordionGroup>
 
 ## Plugins und Skills
 
-Plugins können eigene Skills mitliefern, indem sie `skills`-Verzeichnisse in `openclaw.plugin.json` aufführen (Pfade relativ zum Plugin-Root). Plugin-Skills werden geladen, wenn das Plugin aktiviert ist. Dies ist der richtige Ort für tool-spezifische Betriebsanleitungen, die zu lang für die Tool-Beschreibung sind, aber verfügbar sein sollten, wenn das Plugin installiert ist - zum Beispiel liefert das Browser-Plugin einen `browser-automation`-Skill für mehrstufige Browser-Steuerung mit.
+Plugins können ihre eigenen Skills ausliefern, indem sie `skills`-Verzeichnisse in
+`openclaw.plugin.json` auflisten (Pfade relativ zum Plugin-Root). Plugin-Skills
+werden geladen, wenn das Plugin aktiviert ist — zum Beispiel liefert das Browser-Plugin
+einen `browser-automation`-Skill für mehrstufige Browser-Steuerung aus.
 
-Plugin-Skill-Verzeichnisse werden in denselben Pfad mit niedriger Priorität wie `skills.load.extraDirs` gemischt, sodass ein gleichnamiger gebündelter, verwalteter, Agent- oder Workspace-Skill sie überschreibt. Sie können sie über `metadata.openclaw.requires.config` im Konfigurationseintrag des Plugins sperren.
+Plugin-Skill-Verzeichnisse werden auf derselben Ebene mit niedriger Priorität wie
+`skills.load.extraDirs` zusammengeführt, sodass ein gleichnamiger gebündelter,
+verwalteter, Agent- oder Workspace-Skill sie überschreibt. Steuern Sie sie über
+`metadata.openclaw.requires.config` im Konfigurationseintrag des Plugins.
 
-Siehe [Plugins](/de/tools/plugin) für Erkennung/Konfiguration und [Tools](/de/tools) für die Tool-Oberfläche, deren Verwendung diese Skills vermitteln.
+Siehe [Plugins](/de/tools/plugin) und [Tools](/de/tools) für das vollständige Plugin-System.
 
 ## Skill Workshop
 
-Das optionale, experimentelle **Skill Workshop**-Plugin kann Workspace-Skills aus wiederverwendbaren Verfahren erstellen oder aktualisieren, die während der Agent-Arbeit beobachtet wurden. Es ist standardmäßig deaktiviert und muss explizit über `plugins.entries.skill-workshop` aktiviert werden.
+[Skill Workshop](/de/tools/skill-workshop) ist eine Vorschlagswarteschlange zwischen
+dem Agent und Ihren aktiven Skill-Dateien. Wenn der Agent wiederverwendbare Arbeit
+erkennt, entwirft er einen Vorschlag, statt direkt in `SKILL.md` zu schreiben.
+Sie prüfen und genehmigen, bevor sich etwas ändert.
 
-Skill Workshop schreibt nur nach `<workspace>/skills`, scannt generierte Inhalte, unterstützt ausstehende Genehmigung oder automatische sichere Schreibvorgänge, quarantänisiert unsichere Vorschläge und aktualisiert den Skill-Snapshot nach erfolgreichen Schreibvorgängen, damit neue Skills ohne Gateway-Neustart verfügbar werden.
+```bash
+openclaw skills workshop list
+openclaw skills workshop inspect <proposal-id>
+openclaw skills workshop apply <proposal-id>
+```
 
-Verwenden Sie es für Korrekturen wie _"beim nächsten Mal GIF-Attribution prüfen"_ oder hart erarbeitete Workflows wie Medien-QA-Checklisten. Beginnen Sie mit ausstehender Genehmigung; verwenden Sie automatische Schreibvorgänge nur in vertrauenswürdigen Workspaces, nachdem Sie seine Vorschläge geprüft haben. Vollständige Anleitung: [Skill Workshop-Plugin](/de/plugins/skill-workshop).
+Siehe [Skill Workshop](/de/tools/skill-workshop) für den vollständigen Lebenszyklus,
+die CLI-Referenz und die Konfiguration.
 
-## ClawHub (Installieren und Synchronisieren)
+## Installation aus ClawHub
 
-[ClawHub](https://clawhub.ai) ist die öffentliche Skills-Registry für OpenClaw. Verwenden Sie native `openclaw skills`-Befehle für Suche/Installation/Aktualisierung oder die separate `clawhub` CLI für Veröffentlichungs-/Synchronisierungs-Workflows. Vollständige Anleitung: [ClawHub](/de/clawhub).
+[ClawHub](https://clawhub.ai) ist die öffentliche Skills-Registry. Verwenden Sie
+`openclaw skills`-Befehle für Installation und Aktualisierung oder die `clawhub` CLI
+für Veröffentlichung und Synchronisierung.
 
-| Aktion                                      | Befehl                                |
-| ------------------------------------------- | -------------------------------------- |
-| Einen Skill im Workspace installieren       | `openclaw skills install <skill-slug>` |
-| Alle installierten Skills aktualisieren     | `openclaw skills update --all`         |
-| Synchronisieren (Scannen + Updates veröffentlichen) | `clawhub sync --all`                   |
+| Aktion                                  | Befehl                                                 |
+| --------------------------------------- | ------------------------------------------------------ |
+| Einen Skill im Workspace installieren   | `openclaw skills install @owner/<slug>`                |
+| Aus einem Git-Repository installieren   | `openclaw skills install git:owner/repo@ref`           |
+| Ein lokales Skill-Verzeichnis installieren | `openclaw skills install ./path/to/skill --as my-tool` |
+| Für alle lokalen Agents installieren    | `openclaw skills install @owner/<slug> --global`       |
+| Alle Workspace-Skills aktualisieren     | `openclaw skills update --all`                         |
+| Einen gemeinsam verwalteten Skill aktualisieren | `openclaw skills update @owner/<slug> --global` |
+| Alle gemeinsam verwalteten Skills aktualisieren | `openclaw skills update --all --global`          |
+| Trust Envelope eines Skills prüfen      | `openclaw skills verify @owner/<slug>`                 |
+| Die generierte Skill Card ausgeben      | `openclaw skills verify @owner/<slug> --card`          |
+| Über die ClawHub CLI veröffentlichen / synchronisieren | `clawhub sync --all`                      |
 
-Das native `openclaw skills install` installiert in das aktive Workspace-Verzeichnis `skills/`. Die separate `clawhub` CLI installiert ebenfalls in `./skills` unter Ihrem aktuellen Arbeitsverzeichnis (oder fällt auf den konfigurierten OpenClaw-Workspace zurück). OpenClaw nimmt dies in der nächsten Sitzung als `<workspace>/skills` auf. Konfigurierte Skill-Roots unterstützen außerdem eine Gruppierungsebene, etwa `skills/<group>/<skill>/SKILL.md`, sodass verwandte Drittanbieter-Skills unter einem gemeinsamen Ordner gehalten werden können, ohne breit rekursiv zu scannen.
+<AccordionGroup>
+  <Accordion title="Installationsdetails">
+    `openclaw skills install` installiert standardmäßig in das `skills/`-Verzeichnis
+    des aktiven Workspace. Fügen Sie `--global` hinzu, um in das gemeinsame
+    Verzeichnis `~/.openclaw/skills` zu installieren, das für alle lokalen Agents
+    sichtbar ist, sofern Agent-Allowlists es nicht einschränken.
 
-Gateway-Clients, die eine private, nicht über ClawHub laufende Bereitstellung benötigen, können ein ZIP-Skill-Archiv mit `skills.upload.begin`, `skills.upload.chunk` und `skills.upload.commit` bereitstellen und den abgeschlossenen Upload dann mit `skills.install({ source: "upload", uploadId, slug, force?, sha256? })` installieren. Dies ist ein expliziter Admin-Upload-Pfad für vertrauenswürdige Clients, nicht der normale `openclaw skills install <slug>`- oder ClawHub-Installationsfluss. Er ist standardmäßig deaktiviert und funktioniert nur, wenn `skills.install.allowUploadedArchives: true` in `openclaw.json` gesetzt ist. Der Upload-Modus installiert weiterhin in das Standardverzeichnis `skills/<slug>` des Agent-Workspaces; der interne Ordnername des Archivs wird für das endgültige Installationsziel ignoriert.
+    Git- und lokale Installationen erwarten `SKILL.md` im Quell-Root. Der Slug stammt
+    aus dem `SKILL.md`-Frontmatter-`name`, wenn gültig, und fällt dann auf den
+    Verzeichnis- oder Repository-Namen zurück. Verwenden Sie `--as <slug>`, um ihn
+    zu überschreiben. `openclaw skills update` verfolgt nur ClawHub-Installationen —
+    installieren Sie Git- oder lokale Quellen erneut, um sie zu aktualisieren.
 
-ClawHub-Skill-Seiten zeigen vor der Installation den neuesten Sicherheits-Scan-Status an, mit Scanner-Detailseiten für VirusTotal, ClawScan und statische Analyse. `openclaw skills install <slug>` bleibt ausschließlich der Installationspfad; Publisher beheben falsch positive Ergebnisse über das ClawHub-Dashboard oder `clawhub skill rescan <slug>`.
+  </Accordion>
+  <Accordion title="Verifizierung und Sicherheitsscans">
+    `openclaw skills verify @owner/<slug>` fragt ClawHub nach dem
+    `clawhub.skill.verify.v1`-Trust Envelope des Skills. Installierte ClawHub-Skills
+    werden gegen die Version und Registry geprüft, die in `.clawhub/origin.json`
+    aufgezeichnet sind. Reine Slugs bleiben für vorhandene installierte oder eindeutige
+    Skills akzeptiert, aber inhaberqualifizierte Refs vermeiden Publisher-Mehrdeutigkeit.
+
+    ClawHub-Skill-Seiten zeigen vor der Installation den neuesten Sicherheits-Scanstatus
+    mit Detailseiten für VirusTotal, ClawScan und statische Analyse. Der Befehl beendet
+    sich mit einem Nicht-Null-Code, wenn ClawHub die Verifizierung als fehlgeschlagen
+    markiert. Publisher beheben False Positives über das ClawHub-Dashboard oder
+    `clawhub skill rescan @owner/<slug>`.
+
+  </Accordion>
+  <Accordion title="Installationen aus privaten Archiven">
+    Gateway-Clients, die eine Nicht-ClawHub-Bereitstellung benötigen, können ein
+    Zip-Skill-Archiv mit `skills.upload.begin`, `skills.upload.chunk` und
+    `skills.upload.commit` bereitstellen und dann mit
+    `skills.install({ source: "upload", ... })` installieren. Dieser Pfad ist
+    standardmäßig deaktiviert und erfordert `skills.install.allowUploadedArchives: true`
+    in `openclaw.json`. Normale ClawHub-Installationen benötigen diese Einstellung nie.
+  </Accordion>
+</AccordionGroup>
 
 ## Sicherheit
 
 <Warning>
-Behandeln Sie Drittanbieter-Skills als **nicht vertrauenswürdigen Code**. Lesen Sie sie, bevor Sie sie aktivieren. Bevorzugen Sie sandboxed Ausführungen für nicht vertrauenswürdige Eingaben und riskante Tools. Siehe [Sandboxing](/de/gateway/sandboxing) für die agentseitigen Steuerungen.
+  Behandeln Sie Skills von Drittanbietern als **nicht vertrauenswürdigen Code**.
+  Lesen Sie sie, bevor Sie sie aktivieren. Bevorzugen Sie Sandbox-Ausführungen für
+  nicht vertrauenswürdige Eingaben und riskante Tools. Siehe
+  [Sandboxing](/de/gateway/sandboxing) für agentseitige Steuerungen.
 </Warning>
 
-- Workspace- und Extra-Dir-Skill-Erkennung akzeptiert nur Skill-Roots und `SKILL.md`-Dateien, deren aufgelöster Realpath innerhalb des konfigurierten Roots bleibt.
-- Private Gateway-Archivinstallationen sind standardmäßig deaktiviert. Wenn sie explizit aktiviert sind, erfordern sie einen abgeschlossenen ZIP-Upload mit `SKILL.md` und verwenden dieselben Archivextraktions-, Path-Traversal-, Symlink-, Force- und Rollback-Schutzmaßnahmen wie ClawHub-Skill-Installationen. Sie werden durch `skills.install.allowUploadedArchives` gesteuert; normale ClawHub-Installationen benötigen diese Einstellung nicht.
-- Gateway-gestützte Skill-Abhängigkeitsinstallationen (`skills.install`, Onboarding und die Skills-Einstellungsoberfläche) führen den integrierten Scanner für gefährlichen Code aus, bevor Installer-Metadaten ausgeführt werden. `critical`-Befunde blockieren standardmäßig, sofern der Aufrufer nicht explizit die Dangerous-Override setzt; verdächtige Befunde warnen weiterhin nur.
-- `openclaw skills install <slug>` ist anders - es lädt einen ClawHub-Skill-Ordner in den Workspace herunter und verwendet nicht den oben beschriebenen Installer-Metadatenpfad.
-- `skills.entries.*.env` und `skills.entries.*.apiKey` injizieren Secrets in den **Host**-Prozess für diesen Agent-Turn (nicht in die Sandbox). Halten Sie Secrets aus Prompts und Logs heraus.
+<AccordionGroup>
+  <Accordion title="Pfadbegrenzung">
+    Die Skill-Erkennung für Workspace-, Projekt-Agent- und Extra-Dir-Skills akzeptiert
+    nur Skill-Roots, deren aufgelöster Realpath innerhalb des konfigurierten Roots
+    bleibt, sofern `skills.load.allowSymlinkTargets` nicht ausdrücklich einen Ziel-Root
+    als vertrauenswürdig einstuft. Skill Workshop schreibt nur dann über diese
+    vertrauenswürdigen Ziele, wenn `skills.workshop.allowSymlinkTargetWrites` aktiviert ist.
+    Verwaltete `~/.openclaw/skills` und persönliche `~/.agents/skills` dürfen
+    symlinkte Skill-Ordner enthalten, aber jeder `SKILL.md`-Realpath muss weiterhin
+    innerhalb seines aufgelösten Skill-Verzeichnisses bleiben.
+  </Accordion>
+  <Accordion title="Installationsrichtlinie für Betreiber">
+    Konfigurieren Sie `security.installPolicy`, um einen vertrauenswürdigen lokalen
+    Richtlinienbefehl auszuführen, bevor Skill-Installationen fortgesetzt werden.
+    Die Richtlinie erhält Metadaten und den bereitgestellten Quellpfad, gilt für
+    ClawHub-, Upload-, Git-, lokale, Update- und Dependency-Installer-Pfade und
+    schlägt geschlossen fehl, wenn der Befehl keine gültige Entscheidung zurückgeben kann.
+  </Accordion>
+  <Accordion title="Umfang der Secret-Injektion">
+    `skills.entries.*.env` und `skills.entries.*.apiKey` injizieren Secrets nur für
+    diesen Agent-Turn in den **Host**-Prozess — nicht in die Sandbox. Halten Sie
+    Secrets aus Prompts und Logs heraus.
+  </Accordion>
+</AccordionGroup>
 
-Für ein breiteres Bedrohungsmodell und Checklisten siehe [Sicherheit](/de/gateway/security).
+Für das umfassendere Bedrohungsmodell und Sicherheits-Checklisten siehe
+[Security](/de/gateway/security).
 
 ## SKILL.md-Format
 
-`SKILL.md` muss mindestens Folgendes enthalten:
+Jeder Skill benötigt mindestens einen `name` und eine `description` im Frontmatter:
 
 ```markdown
 ---
 name: image-lab
 description: Generate or edit images via a provider-backed image workflow
 ---
+
+When the user asks to generate an image, use the `image_generate` tool...
 ```
 
-OpenClaw folgt der AgentSkills-Spezifikation für Layout/Intention. Der vom eingebetteten Agenten verwendete Parser unterstützt nur **einzeilige** Frontmatter-Schlüssel; `metadata` sollte ein **einzeiliges JSON-Objekt** sein. Verwenden Sie `{baseDir}` in Anweisungen, um auf den Skill-Ordnerpfad zu verweisen.
+<Note>
+  OpenClaw folgt der [AgentSkills](https://agentskills.io)-Spezifikation. Der
+  Frontmatter-Parser unterstützt **nur einzeilige Schlüssel** — `metadata` muss ein
+  einzeiliges JSON-Objekt sein. Verwenden Sie `{baseDir}` im Body, um auf den
+  Skill-Ordnerpfad zu verweisen.
+</Note>
 
 ### Optionale Frontmatter-Schlüssel
 
 <ParamField path="homepage" type="string">
-  URL, die in der macOS-Skills-Oberfläche als "Website" angezeigt wird. Wird auch über `metadata.openclaw.homepage` unterstützt.
+  URL, die in der macOS-Skills-UI als "Website" angezeigt wird. Wird auch über
+  `metadata.openclaw.homepage` unterstützt.
 </ParamField>
+
 <ParamField path="user-invocable" type="boolean" default="true">
-  Wenn `true`, wird der Skill als Benutzer-Slash-Command verfügbar gemacht.
+  Wenn `true`, wird der Skill als vom Benutzer aufrufbarer Slash-Befehl bereitgestellt.
 </ParamField>
+
 <ParamField path="disable-model-invocation" type="boolean" default="false">
-  Wenn `true`, hält OpenClaw die Anweisungen des Skills aus dem normalen Prompt des Agenten heraus. Der Skill ist weiterhin installiert und kann weiterhin explizit als Slash-Command ausgeführt werden, wenn `user-invocable` ebenfalls `true` ist.
+  Wenn `true`, hält OpenClaw die Anweisungen des Skills aus dem normalen Prompt des
+  Agent heraus. Der Skill ist weiterhin als Slash-Befehl verfügbar, wenn
+  `user-invocable` ebenfalls `true` ist.
 </ParamField>
+
 <ParamField path="command-dispatch" type='"tool"'>
-  Wenn auf `tool` gesetzt, umgeht der Slash-Command das Modell und wird direkt an ein Tool weitergeleitet.
+  Wenn auf `tool` gesetzt, umgeht der Slash-Befehl das Modell und dispatcht direkt
+  an ein registriertes Tool.
 </ParamField>
+
 <ParamField path="command-tool" type="string">
   Tool-Name, der aufgerufen wird, wenn `command-dispatch: tool` gesetzt ist.
 </ParamField>
+
 <ParamField path="command-arg-mode" type='"raw"' default="raw">
-  Für Tool-Dispatch wird die unverarbeitete Argumentzeichenfolge an das Tool weitergeleitet (kein Core-Parsing). Das Tool wird mit `{ command: "<raw args>", commandName: "<slash command>", skillName: "<skill name>" }` aufgerufen.
+  Für Tool-Dispatch wird der rohe Args-String ohne Core-Parsing an das Tool
+  weitergeleitet. Das Tool erhält
+  `{ command: "<raw args>", commandName: "<slash command>", skillName: "<skill name>" }`.
 </ParamField>
 
-## Gating (Ladezeitfilter)
+## Gating
 
-OpenClaw filtert Skills zur Ladezeit mithilfe von `metadata` (einzeiliges JSON):
+OpenClaw filtert Skills zur Ladezeit anhand von `metadata.openclaw` (einzeiliges
+JSON im Frontmatter). Ein Skill ohne `metadata.openclaw`-Block ist immer
+zulässig, sofern er nicht ausdrücklich deaktiviert wurde.
 
 ```markdown
 ---
@@ -177,56 +314,56 @@ metadata:
 ---
 ```
 
-Felder unter `metadata.openclaw`:
-
 <ParamField path="always" type="boolean">
-  Wenn `true`, den Skill immer einschließen (andere Gates überspringen).
+  Wenn `true`, wird der Skill immer eingeschlossen und alle anderen Gates werden übersprungen.
 </ParamField>
+
 <ParamField path="emoji" type="string">
-  Optionales Emoji, das von der macOS Skills UI verwendet wird.
+  Optionales Emoji, das in der macOS-Skills-UI angezeigt wird.
 </ParamField>
+
 <ParamField path="homepage" type="string">
-  Optionale URL, die in der macOS Skills UI als "Website" angezeigt wird.
+  Optionale URL, die in der macOS-Skills-UI als „Website“ angezeigt wird.
 </ParamField>
-<ParamField path="os" type='"darwin" | "linux" | "win32"' >
-  Optionale Liste von Plattformen. Wenn festgelegt, ist der Skill nur auf diesen Betriebssystemen geeignet.
+
+<ParamField path="os" type='"darwin" | "linux" | "win32"'>
+  Plattformfilter. Wenn gesetzt, ist der Skill nur auf den aufgeführten Betriebssystemen zulässig.
 </ParamField>
+
 <ParamField path="requires.bins" type="string[]">
-  Jeder Eintrag muss in `PATH` vorhanden sein.
+  Jede Binärdatei muss auf `PATH` vorhanden sein.
 </ParamField>
+
 <ParamField path="requires.anyBins" type="string[]">
-  Mindestens einer muss in `PATH` vorhanden sein.
+  Mindestens eine Binärdatei muss auf `PATH` vorhanden sein.
 </ParamField>
+
 <ParamField path="requires.env" type="string[]">
-  Die Umgebungsvariable muss vorhanden sein oder in der Konfiguration bereitgestellt werden.
+  Jede Umgebungsvariable muss im Prozess vorhanden sein oder über die Konfiguration bereitgestellt werden.
 </ParamField>
+
 <ParamField path="requires.config" type="string[]">
-  Liste von `openclaw.json`-Pfaden, die wahr sein müssen.
+  Jeder `openclaw.json`-Pfad muss truthy sein.
 </ParamField>
+
 <ParamField path="primaryEnv" type="string">
   Name der Umgebungsvariable, die `skills.entries.<name>.apiKey` zugeordnet ist.
 </ParamField>
+
 <ParamField path="install" type="object[]">
-  Optionale Installer-Spezifikationen, die von der macOS Skills UI verwendet werden (brew/node/go/uv/download).
+  Optionale Installer-Spezifikationen, die von der macOS-Skills-UI verwendet werden (brew / node / go / uv / download).
 </ParamField>
 
-Wenn kein `metadata.openclaw` vorhanden ist, ist der Skill immer geeignet (außer
-er ist in der Konfiguration deaktiviert oder durch `skills.allowBundled` für gebündelte Skills blockiert).
-
 <Note>
-Legacy-`metadata.clawdbot`-Blöcke werden weiterhin akzeptiert, wenn
-`metadata.openclaw` fehlt, sodass ältere installierte Skills ihre
-Abhängigkeits-Gates und Installer-Hinweise behalten. Neue und aktualisierte Skills sollten
-`metadata.openclaw` verwenden.
+  Legacy-`metadata.clawdbot`-Blöcke werden weiterhin akzeptiert, wenn
+  `metadata.openclaw` fehlt, sodass ältere installierte Skills ihre
+  Abhängigkeits-Gates und Installer-Hinweise behalten. Neue Skills sollten
+  `metadata.openclaw` verwenden.
 </Note>
 
-### Sandbox-Hinweise
-
-- `requires.bins` wird beim Laden des Skills auf dem **Host** geprüft.
-- Wenn ein Agent in einer Sandbox ausgeführt wird, muss die Binärdatei auch **innerhalb des Containers** vorhanden sein. Installieren Sie sie über `agents.defaults.sandbox.docker.setupCommand` (oder ein benutzerdefiniertes Image). `setupCommand` wird einmal ausgeführt, nachdem der Container erstellt wurde. Paketinstallationen erfordern außerdem Netzwerk-Egress, ein beschreibbares Root-Dateisystem und einen Root-Benutzer in der Sandbox.
-- Beispiel: Der Skill `summarize` (`skills/summarize/SKILL.md`) benötigt die `summarize`-CLI im Sandbox-Container, um dort ausgeführt zu werden.
-
 ### Installer-Spezifikationen
+
+Installer-Spezifikationen teilen der macOS-Skills-UI mit, wie eine Abhängigkeit installiert wird:
 
 ```markdown
 ---
@@ -255,25 +392,41 @@ metadata:
 
 <AccordionGroup>
   <Accordion title="Regeln für die Installer-Auswahl">
-    - Wenn mehrere Installer aufgeführt sind, wählt der Gateway eine einzelne bevorzugte Option aus (brew, wenn verfügbar, andernfalls node).
-    - Wenn alle Installer `download` sind, listet OpenClaw jeden Eintrag auf, damit Sie die verfügbaren Artefakte sehen können.
-    - Installer-Spezifikationen können `os: ["darwin"|"linux"|"win32"]` enthalten, um Optionen nach Plattform zu filtern.
-    - Node-Installationen berücksichtigen `skills.install.nodeManager` in `openclaw.json` (Standard: npm; Optionen: npm/pnpm/yarn/bun). Dies betrifft nur Skill-Installationen; die Gateway-Laufzeit sollte weiterhin Node sein - Bun wird für WhatsApp/Telegram nicht empfohlen.
-    - Die Gateway-gestützte Installer-Auswahl ist präferenzgesteuert: Wenn Installer-Spezifikationen verschiedene Arten mischen, bevorzugt OpenClaw Homebrew, wenn `skills.install.preferBrew` aktiviert ist und `brew` vorhanden ist, dann `uv`, dann den konfigurierten Node-Manager, dann andere Fallbacks wie `go` oder `download`.
-    - Wenn jede Installationsspezifikation `download` ist, zeigt OpenClaw alle Download-Optionen an, statt sie auf einen bevorzugten Installer zu reduzieren.
-
+    - Wenn mehrere Installer aufgeführt sind, wählt der Gateway eine bevorzugte
+      Option aus (brew, wenn verfügbar, andernfalls node).
+    - Wenn alle Installer `download` sind, listet OpenClaw jeden Eintrag auf, damit Sie
+      alle verfügbaren Artefakte sehen können.
+    - Spezifikationen können `os: ["darwin"|"linux"|"win32"]` enthalten, um nach Plattform zu filtern.
+    - Node-Installationen berücksichtigen `skills.install.nodeManager` in `openclaw.json`
+      (Standard: npm; Optionen: npm / pnpm / yarn / bun). Dies betrifft nur Skill-
+      Installationen; die Gateway-Runtime sollte weiterhin Node sein.
+    - Installer-Präferenz des Gateway: Homebrew → uv → konfigurierter Node-Manager →
+      go → download.
   </Accordion>
   <Accordion title="Details pro Installer">
-    - **Go-Installationen:** Wenn `go` fehlt und `brew` verfügbar ist, installiert der Gateway zuerst Go über Homebrew und setzt `GOBIN` wenn möglich auf das `bin` von Homebrew.
-    - **Download-Installationen:** `url` (erforderlich), `archive` (`tar.gz` | `tar.bz2` | `zip`), `extract` (Standard: automatisch, wenn Archiv erkannt), `stripComponents`, `targetDir` (Standard: `~/.openclaw/tools/<skillKey>`).
-
+    - **Homebrew:** OpenClaw installiert Homebrew nicht automatisch und übersetzt brew-
+      Formeln nicht in Systempaketbefehle. In Linux-Containern ohne
+      `brew` werden Installer, die nur brew unterstützen, ausgeblendet; verwenden Sie ein eigenes Image oder installieren
+      Sie die Abhängigkeit manuell.
+    - **Go:** Wenn `go` fehlt und `brew` verfügbar ist, installiert der Gateway
+      zuerst Go über Homebrew und setzt `GOBIN` auf Homebrews `bin`.
+    - **Download:** `url` (erforderlich), `archive` (`tar.gz` | `tar.bz2` | `zip`),
+      `extract` (Standard: automatisch, wenn Archiv erkannt), `stripComponents`,
+      `targetDir` (Standard: `~/.openclaw/tools/<skillKey>`).
+  </Accordion>
+  <Accordion title="Hinweise zum Sandboxing">
+    `requires.bins` wird zur Skill-Ladezeit auf dem **Host** geprüft. Wenn ein Agent
+    in einer Sandbox ausgeführt wird, muss die Binärdatei auch **im Container** vorhanden sein.
+    Installieren Sie sie über `agents.defaults.sandbox.docker.setupCommand` oder ein eigenes
+    Image. `setupCommand` wird einmal nach der Container-Erstellung ausgeführt und erfordert
+    Netzwerk-Egress, ein beschreibbares Root-Dateisystem und einen Root-Benutzer in der Sandbox.
   </Accordion>
 </AccordionGroup>
 
 ## Konfigurationsüberschreibungen
 
-Gebündelte und verwaltete Skills können umgeschaltet und mit Umgebungswerten
-unter `skills.entries` in `~/.openclaw/openclaw.json` versorgt werden:
+Aktivieren und konfigurieren Sie gebündelte oder verwaltete Skills unter `skills.entries` in
+`~/.openclaw/openclaw.json`:
 
 ```json5
 {
@@ -281,10 +434,8 @@ unter `skills.entries` in `~/.openclaw/openclaw.json` versorgt werden:
     entries: {
       "image-lab": {
         enabled: true,
-        apiKey: { source: "env", provider: "default", id: "GEMINI_API_KEY" }, // or plaintext string
-        env: {
-          GEMINI_API_KEY: "GEMINI_KEY_HERE",
-        },
+        apiKey: { source: "env", provider: "default", id: "GEMINI_API_KEY" },
+        env: { GEMINI_API_KEY: "GEMINI_KEY_HERE" },
         config: {
           endpoint: "https://example.invalid",
           model: "nano-pro",
@@ -298,149 +449,157 @@ unter `skills.entries` in `~/.openclaw/openclaw.json` versorgt werden:
 ```
 
 <ParamField path="enabled" type="boolean">
-  `false` deaktiviert den Skill, selbst wenn er gebündelt oder installiert ist.
-  Der gebündelte Skill `coding-agent` ist Opt-in: Legen Sie
-  `skills.entries.coding-agent.enabled: true` fest, bevor Sie ihn Agenten verfügbar machen,
-  und stellen Sie dann sicher, dass eines von `claude`, `codex`, `opencode` oder `pi` installiert und
-  für seine eigene CLI authentifiziert ist.
-</ParamField>
-<ParamField path="apiKey" type='string | { source, provider, id }'>
-  Komfortfunktion für Skills, die `metadata.openclaw.primaryEnv` deklarieren. Unterstützt Klartext oder SecretRef.
-</ParamField>
-<ParamField path="env" type="Record<string, string>">
-  Wird nur injiziert, wenn die Variable im Prozess noch nicht gesetzt ist.
-</ParamField>
-<ParamField path="config" type="object">
-  Optionaler Container für benutzerdefinierte Felder pro Skill. Benutzerdefinierte Schlüssel müssen hier liegen.
-</ParamField>
-<ParamField path="allowBundled" type="string[]">
-  Optionale Zulassungsliste nur für **gebündelte** Skills. Wenn gesetzt, sind nur gebündelte Skills in der Liste geeignet (verwaltete/Workspace-Skills bleiben unberührt).
+  `false` deaktiviert den Skill, auch wenn er gebündelt oder installiert ist. Der gebündelte
+  `coding-agent`-Skill ist Opt-in — setzen Sie `skills.entries.coding-agent.enabled: true`
+  und stellen Sie sicher, dass `claude`, `codex`, `opencode` oder eine andere unterstützte CLI
+  installiert und authentifiziert ist.
 </ParamField>
 
-Wenn der Skill-Name Bindestriche enthält, setzen Sie den Schlüssel in Anführungszeichen (JSON5 erlaubt
-Schlüssel in Anführungszeichen). Konfigurationsschlüssel entsprechen standardmäßig dem **Skill-Namen** - wenn ein Skill
-`metadata.openclaw.skillKey` definiert, verwenden Sie diesen Schlüssel unter `skills.entries`.
+<ParamField path="apiKey" type='string | { source, provider, id }'>
+  Komfortfeld für Skills, die `metadata.openclaw.primaryEnv` deklarieren.
+  Unterstützt eine Klartextzeichenfolge oder ein SecretRef-Objekt.
+</ParamField>
+
+<ParamField path="env" type="Record<string, string>">
+  Umgebungsvariablen, die für den Agent-Lauf injiziert werden. Sie werden nur injiziert, wenn die
+  Variable im Prozess noch nicht gesetzt ist.
+</ParamField>
+
+<ParamField path="config" type="object">
+  Optionale Sammlung für benutzerdefinierte Konfigurationsfelder pro Skill.
+</ParamField>
+
+<ParamField path="allowBundled" type="string[]">
+  Optionale Allowlist nur für **gebündelte** Skills. Wenn gesetzt, sind nur gebündelte Skills
+  in der Liste zulässig. Verwaltete Skills und Workspace-Skills sind nicht betroffen.
+</ParamField>
 
 <Note>
-Für Standard-Bilderzeugung/-bearbeitung innerhalb von OpenClaw verwenden Sie das Kernwerkzeug
-`image_generate` mit `agents.defaults.imageGenerationModel` statt
-eines gebündelten Skills. Skill-Beispiele hier sind für benutzerdefinierte oder Drittanbieter-
-Workflows vorgesehen. Für native Bildanalyse verwenden Sie das Werkzeug `image` mit
-`agents.defaults.imageModel`. Wenn Sie `openai/*`, `google/*`,
-`fal/*` oder ein anderes providerspezifisches Bildmodell auswählen, fügen Sie auch den
-Auth-/API-Schlüssel dieses Providers hinzu.
+  Konfigurationsschlüssel entsprechen standardmäßig dem **Skill-Namen**. Wenn ein Skill
+  `metadata.openclaw.skillKey` definiert, verwenden Sie diesen Schlüssel unter `skills.entries`. Setzen
+  Sie Namen mit Bindestrich in Anführungszeichen: JSON5 erlaubt Schlüssel in Anführungszeichen.
 </Note>
 
 ## Umgebungsinjektion
 
 Wenn ein Agent-Lauf startet, führt OpenClaw Folgendes aus:
 
-1. Liest Skill-Metadaten.
-2. Wendet `skills.entries.<key>.env` und `skills.entries.<key>.apiKey` auf `process.env` an.
-3. Erstellt den System-Prompt mit **geeigneten** Skills.
-4. Stellt die ursprüngliche Umgebung wieder her, nachdem der Lauf endet.
+<Steps>
+  <Step title="Liest Skill-Metadaten">
+    OpenClaw ermittelt die effektive Skill-Liste für den Agent und wendet dabei Gating-
+    Regeln, Allowlists und Konfigurationsüberschreibungen an.
+  </Step>
+  <Step title="Injiziert env und API-Schlüssel">
+    `skills.entries.<key>.env` und `skills.entries.<key>.apiKey` werden für die Dauer
+    des Laufs auf `process.env` angewendet.
+  </Step>
+  <Step title="Erstellt den System-Prompt">
+    Zulässige Skills werden in einen kompakten XML-Block kompiliert und in den
+    System-Prompt injiziert.
+  </Step>
+  <Step title="Stellt die Umgebung wieder her">
+    Nachdem der Lauf endet, wird die ursprüngliche Umgebung wiederhergestellt.
+  </Step>
+</Steps>
 
-Die Umgebungsinjektion ist **auf den Agent-Lauf beschränkt**, nicht auf eine globale Shell-
-Umgebung.
+<Warning>
+  Die env-Injektion ist auf den **Host**-Agent-Lauf beschränkt, nicht auf die Sandbox. Innerhalb einer
+  Sandbox haben `env` und `apiKey` keine Wirkung. Siehe
+  [Skills-Konfiguration](/de/tools/skills-config#sandboxed-skills-and-env-vars), um zu erfahren,
+  wie Secrets an Sandbox-Läufe übergeben werden.
+</Warning>
 
-Für das gebündelte Backend `claude-cli` materialisiert OpenClaw außerdem denselben
-geeigneten Snapshot als temporäres Claude Code Plugin und übergibt ihn mit
-`--plugin-dir`. Claude Code kann dann seinen nativen Skill-Resolver verwenden, während
-OpenClaw weiterhin Vorrang, Agent-spezifische Zulassungslisten, Gating und
-`skills.entries.*`-Umgebungs-/API-Schlüssel-Injektion verwaltet. Andere CLI-Backends verwenden nur den
-Prompt-Katalog.
+Für das gebündelte `claude-cli`-Backend materialisiert OpenClaw außerdem denselben
+zulässigen Skill-Snapshot als temporäres Claude-Code-Plugin und übergibt ihn über
+`--plugin-dir`. Andere CLI-Backends verwenden nur den Prompt-Katalog.
 
 ## Snapshots und Aktualisierung
 
-OpenClaw erstellt einen Snapshot der geeigneten Skills **beim Start einer Sitzung** und
-verwendet diese Liste für nachfolgende Turns in derselben Sitzung wieder. Änderungen an
-Skills oder Konfiguration werden in der nächsten neuen Sitzung wirksam.
+OpenClaw erstellt Snapshots zulässiger Skills **beim Start einer Session** und verwendet diese
+Liste für alle nachfolgenden Turns in der Session wieder. Änderungen an Skills oder Konfiguration
+werden bei der nächsten neuen Session wirksam.
 
-Skills können in zwei Fällen während einer Sitzung aktualisiert werden:
+Skills werden mitten in einer Session in zwei Fällen aktualisiert:
 
-- Der Skills-Watcher ist aktiviert.
-- Ein neuer geeigneter Remote-Node erscheint.
+- Der Skills-Watcher erkennt eine Änderung an `SKILL.md`.
+- Ein neuer zulässiger Remote-Knoten verbindet sich.
 
-Betrachten Sie dies als **Hot Reload**: Die aktualisierte Liste wird beim
-nächsten Agent-Turn übernommen. Wenn sich die effektive Skill-Zulassungsliste des Agenten für diese
-Sitzung ändert, aktualisiert OpenClaw den Snapshot, damit sichtbare Skills mit dem
-aktuellen Agenten synchron bleiben.
+Die aktualisierte Liste wird beim nächsten Agent-Turn übernommen. Wenn sich die effektive Agent-
+Allowlist ändert, aktualisiert OpenClaw den Snapshot, damit sichtbare Skills
+abgeglichen bleiben.
 
-### Skills-Watcher
+<AccordionGroup>
+  <Accordion title="Skills-Watcher">
+    Standardmäßig überwacht OpenClaw Skill-Ordner und erhöht den Snapshot, wenn
+    sich `SKILL.md`-Dateien ändern. Konfigurieren Sie dies unter `skills.load`:
 
-Standardmäßig überwacht OpenClaw Skill-Ordner und erhöht den Skills-Snapshot,
-wenn sich `SKILL.md`-Dateien ändern. Konfigurieren Sie dies unter `skills.load`:
+    ```json5
+    {
+      skills: {
+        load: {
+          extraDirs: ["~/Projects/agent-scripts/skills"],
+          allowSymlinkTargets: ["~/Projects/manager/skills"],
+          watch: true,
+          watchDebounceMs: 250,
+        },
+      },
+    }
+    ```
 
-```json5
-{
-  skills: {
-    load: {
-      extraDirs: ["~/Projects/agent-scripts/skills"],
-      allowSymlinkTargets: ["~/Projects/manager/skills"],
-      watch: true,
-      watchDebounceMs: 250,
-    },
-  },
-}
-```
+    Verwenden Sie `allowSymlinkTargets` für beabsichtigte Symlink-Layouts, bei denen ein Skill-
+    Root-Symlink außerhalb des konfigurierten Roots zeigt, zum Beispiel
+    `<workspace>/skills/manager -> ~/Projects/manager/skills`.
+    Aktivieren Sie `skills.workshop.allowSymlinkTargetWrites` nur, wenn der Skill Workshop
+    Vorschläge auch über diese vertrauenswürdigen Symlink-Pfade anwenden soll.
 
-Verwenden Sie `allowSymlinkTargets` für beabsichtigte Layouts mit benachbarten Repositories, bei denen ein integrierter
-Skill-Root einen Symlink enthält, zum Beispiel
-`~/.agents/skills/manager -> ~/Projects/manager/skills`. Die Zielliste wird
-nach Realpath-Auflösung abgeglichen und sollte eng gefasst bleiben.
+  </Accordion>
+  <Accordion title="Remote-macOS-Knoten (Linux-Gateway)">
+    Wenn der Gateway auf Linux läuft, aber ein **macOS-Knoten** mit erlaubtem
+    `system.run` verbunden ist, kann OpenClaw macOS-exklusive Skills als zulässig behandeln, wenn
+    die erforderlichen Binärdateien auf diesem Knoten vorhanden sind. Der Agent sollte diese
+    Skills über das `exec`-Tool mit `host=node` ausführen.
 
-### Remote-macOS-Nodes (Linux-Gateway)
+    Offline-Knoten machen **keine** reinen Remote-Skills sichtbar. Wenn ein Knoten nicht mehr
+    auf Binärdatei-Probes antwortet, löscht OpenClaw seine zwischengespeicherten Binärdatei-Treffer.
 
-Wenn der Gateway unter Linux läuft, aber ein **macOS-Node** mit erlaubtem
-`system.run` verbunden ist (Exec-Genehmigungssicherheit nicht auf `deny` gesetzt),
-kann OpenClaw macOS-exklusive Skills als geeignet behandeln, wenn die erforderlichen
-Binärdateien auf diesem Node vorhanden sind. Der Agent sollte diese Skills
-über das Werkzeug `exec` mit `host=node` ausführen.
-
-Dies hängt davon ab, dass der Node seine Befehlsunterstützung meldet und ein Bin-Probe
-über `system.which` oder `system.run` möglich ist. Offline-Nodes machen
-Remote-exklusive Skills **nicht** sichtbar. Wenn ein verbundener Node nicht mehr auf Bin-
-Probes antwortet, löscht OpenClaw seine gecachten Bin-Treffer, sodass Agenten keine
-Skills mehr sehen, die dort derzeit nicht ausgeführt werden können.
+  </Accordion>
+</AccordionGroup>
 
 ## Token-Auswirkung
 
-Wenn Skills geeignet sind, injiziert OpenClaw eine kompakte XML-Liste verfügbarer
-Skills in den System-Prompt (über `formatSkillsForPrompt` in
-`pi-coding-agent`). Die Kosten sind deterministisch:
-
-- **Basis-Overhead** (nur bei ≥1 Skill): 195 Zeichen.
-- **Pro Skill:** 97 Zeichen + die Länge der XML-escaped Werte `<name>`, `<description>` und `<location>`.
-
-Formel (Zeichen):
+Wenn Skills zulässig sind, injiziert OpenClaw einen kompakten XML-Block in den System-
+Prompt. Die Kosten sind deterministisch:
 
 ```text
-total = 195 + Σ (97 + len(name_escaped) + len(description_escaped) + len(location_escaped))
+total = 195 + Σ (97 + len(name) + len(description) + len(filepath))
 ```
 
-XML-Escaping erweitert `& < > " '` zu Entitäten (`&amp;`, `&lt;` usw.)
-und erhöht dadurch die Länge. Token-Zahlen variieren je nach Modell-Tokenizer. Eine grobe
-Schätzung im OpenAI-Stil ist ~4 Zeichen/Token, also **97 Zeichen ≈ 24 Token** pro
-Skill plus Ihre tatsächlichen Feldlängen.
+- **Basis-Overhead** (nur bei ≥ 1 Skill): ~195 Zeichen
+- **Pro Skill:** ~97 Zeichen + die Feldlängen Ihrer `name`-, `description`- und `location`-Felder
+- XML-Escaping erweitert `& < > " '` zu Entitäten und fügt pro Vorkommen einige Zeichen hinzu
+- Bei ~4 Zeichen/Token entsprechen 97 Zeichen etwa 24 Tokens pro Skill vor Feldlängen
 
-## Lebenszyklus verwalteter Skills
+Halten Sie Beschreibungen kurz und aussagekräftig, um den Prompt-Overhead zu minimieren.
 
-OpenClaw liefert eine Baseline-Menge von Skills als **gebündelte Skills** mit der
-Installation aus (npm-Paket oder OpenClaw.app). `~/.openclaw/skills` ist für
-lokale Überschreibungen vorgesehen - zum Beispiel zum Pinning oder Patchen eines Skills, ohne
-die gebündelte Kopie zu ändern. Workspace-Skills gehören dem Benutzer und überschreiben
-beide bei Namenskonflikten.
+## Verwandte Themen
 
-## Suchen Sie nach weiteren Skills?
-
-Durchsuchen Sie [https://clawhub.ai](https://clawhub.ai). Vollständiges Konfigurationsschema:
-[Skills-Konfiguration](/de/tools/skills-config).
-
-## Verwandt
-
-- [ClawHub](/de/clawhub) - öffentliches Skills-Registry
-- [Skills erstellen](/de/tools/creating-skills) - benutzerdefinierte Skills erstellen
-- [Plugins](/de/tools/plugin) - Überblick über das Plugin-System
-- [Skill Workshop Plugin](/de/plugins/skill-workshop) - Skills aus Agent-Arbeit generieren
-- [Skills-Konfiguration](/de/tools/skills-config) - Referenz zur Skill-Konfiguration
-- [Slash-Befehle](/de/tools/slash-commands) - alle verfügbaren Slash-Befehle
+<CardGroup cols={2}>
+  <Card title="Skills erstellen" href="/de/tools/creating-skills" icon="hammer">
+    Schritt-für-Schritt-Anleitung zum Erstellen eines benutzerdefinierten Skill.
+  </Card>
+  <Card title="Skill Workshop" href="/de/tools/skill-workshop" icon="flask">
+    Vorschlagswarteschlange für von Agents entworfene Skills.
+  </Card>
+  <Card title="Skills-Konfiguration" href="/de/tools/skills-config" icon="gear">
+    Vollständiges `skills.*`-Konfigurationsschema und Agent-Allowlists.
+  </Card>
+  <Card title="Slash-Befehle" href="/de/tools/slash-commands" icon="terminal">
+    Wie Skill-Slash-Befehle registriert und geroutet werden.
+  </Card>
+  <Card title="ClawHub" href="/de/clawhub" icon="cloud">
+    Skills im öffentlichen Registry durchsuchen und veröffentlichen.
+  </Card>
+  <Card title="Plugins" href="/de/tools/plugin" icon="plug">
+    Plugins können Skills zusammen mit den Tools ausliefern, die sie dokumentieren.
+  </Card>
+</CardGroup>

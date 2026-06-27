@@ -1,13 +1,14 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin irc
-summary: Додає інтерфейс каналу IRC для надсилання й отримання повідомлень OpenClaw.
-title: Plugin для IRC
+    - Ви встановлюєте, налаштовуєте або аудіюєте irc Plugin
+summary: Додає поверхню каналу IRC для надсилання й отримання повідомлень OpenClaw.
+title: Plugin IRC
 x-i18n:
-    generated_at: "2026-05-02T15:18:49Z"
+    generated_at: "2026-06-27T17:59:18Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5f5897d17baf1bf76a8c88a4cf7e7d034c84625ef5bddb81dd76affa03b166c0
+    source_hash: ef4c5df880542d4d3554320f4d183a2464ef8b31d0e86edc1b6c63e1e41f35d3
     source_path: plugins/reference/irc.md
     workflow: 16
 ---
@@ -16,15 +17,15 @@ x-i18n:
 
 Додає поверхню каналу IRC для надсилання й отримання повідомлень OpenClaw.
 
-## Поширення
+## Розповсюдження
 
 - Пакет: `@openclaw/irc`
-- Спосіб встановлення: включено до OpenClaw
+- Шлях встановлення: npm; ClawHub: `clawhub:@openclaw/irc`
 
 ## Поверхня
 
 channels: irc
 
-## Пов’язана документація
+## Пов’язані документи
 
 - [irc](/uk/channels/irc)

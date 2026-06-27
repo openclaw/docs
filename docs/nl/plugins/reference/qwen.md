@@ -1,30 +1,32 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de qwen Plugin
-summary: Voegt ondersteuning voor modelproviders Qwen, Qwen Cloud, Model Studio en DashScope toe aan OpenClaw.
+    - Je installeert, configureert of controleert de qwen-plugin
+summary: Voegt ondersteuning voor de modelproviders Qwen, Qwen Cloud, Model Studio, DashScope, Qwen Oauth, Qwen Portal en Qwen CLI toe aan OpenClaw.
 title: Qwen Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:54:45Z"
+    generated_at: "2026-06-27T18:03:39Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 47e72a024e652f78584765a563bbdf725e3fd40a07c0e2ebf331a1858387b68d
+    source_hash: 3be7c8f459e2ec3b5c5c13f5c67382cc84b568c3aeedeaedceab9259b29886f1
     source_path: plugins/reference/qwen.md
     workflow: 16
 ---
 
-# Qwen Plugin
+# Qwen-plugin
 
-Voegt ondersteuning toe voor Qwen, Qwen Cloud, Model Studio en DashScope als modelproviders aan OpenClaw.
+Voegt ondersteuning voor de modelproviders Qwen, Qwen Cloud, Model Studio, DashScope, Qwen Oauth, Qwen Portal en Qwen CLI toe aan OpenClaw.
 
 ## Distributie
 
 - Pakket: `@openclaw/qwen-provider`
-- Installatieroute: inbegrepen in OpenClaw
+- Installatieroute: npm; ClawHub: `clawhub:@openclaw/qwen-provider`
 
 ## Oppervlak
 
-providers: qwen, qwencloud, modelstudio, dashscope; contracts: mediaUnderstandingProviders, videoGenerationProviders
+providers: qwen, qwencloud, modelstudio, dashscope, qwen-oauth, qwen-portal, qwen-cli; contracts: mediaUnderstandingProviders, videoGenerationProviders
 
 ## Gerelateerde docs
 
 - [qwen](/nl/providers/qwen)
+- [qwen-oauth](/nl/providers/qwen-oauth)

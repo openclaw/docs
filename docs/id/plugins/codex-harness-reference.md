@@ -1,26 +1,27 @@
 ---
 read_when:
     - Anda memerlukan setiap bidang konfigurasi harness Codex
-    - Anda mengubah perilaku transport, autentikasi, penemuan, atau batas waktu app-server
-    - Anda sedang men-debug inisialisasi harness Codex, penemuan model, atau isolasi lingkungan
-summary: Referensi konfigurasi, autentikasi, penemuan, dan server aplikasi untuk harness Codex
+    - Anda mengubah perilaku transport, autentikasi, discovery, atau timeout app-server
+    - Anda sedang men-debug startup harness Codex, penemuan model, atau isolasi lingkungan
+summary: Referensi konfigurasi, autentikasi, discovery, dan server aplikasi untuk harness Codex
 title: Referensi kerangka kerja Codex
 x-i18n:
-    generated_at: "2026-05-10T19:42:25Z"
+    generated_at: "2026-06-27T17:45:29Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 72767810c9448015a1ce7f35263dba576151b18c1f4a43ba531d45728241f095
+    source_hash: 32da817c262a61769b78b16c10e508175c730a568c2ba6321595c430815526a5
     source_path: plugins/codex-harness-reference.md
     workflow: 16
 ---
 
 Referensi ini mencakup konfigurasi terperinci untuk Plugin `codex`
-bawaan. Untuk penyiapan dan keputusan perutean, mulai dari
-[Codex harness](/id/plugins/codex-harness).
+bawaan. Untuk penyiapan dan keputusan perutean, mulai dengan
+[harness Codex](/id/plugins/codex-harness).
 
 ## Permukaan konfigurasi Plugin
 
-Semua pengaturan Codex harness berada di bawah `plugins.entries.codex.config`.
+Semua pengaturan harness Codex berada di bawah `plugins.entries.codex.config`.
 
 ```json5
 {
@@ -43,16 +44,16 @@ Semua pengaturan Codex harness berada di bawah `plugins.entries.codex.config`.
 }
 ```
 
-Kolom tingkat atas yang didukung:
+Bidang tingkat atas yang didukung:
 
-| Kolom                      | Default                  | Arti                                                                                                                                   |
+| Bidang                     | Default                  | Arti                                                                                                                                      |
 | -------------------------- | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `discovery`                | diaktifkan                  | Pengaturan penemuan model untuk Codex app-server `model/list`.                                                                               |
-| `appServer`                | app-server stdio terkelola | Pengaturan transport, perintah, auth, persetujuan, sandbox, dan timeout.                                                                        |
-| `codexDynamicToolsLoading` | `"searchable"`           | Gunakan `"direct"` untuk menempatkan alat dinamis OpenClaw langsung di konteks alat Codex awal.                                                  |
-| `codexDynamicToolsExclude` | `[]`                     | Nama alat dinamis OpenClaw tambahan yang dihilangkan dari giliran Codex app-server.                                                               |
-| `codexPlugins`             | dinonaktifkan                 | Dukungan Plugin/aplikasi Codex native untuk Plugin kurasi terinstal dari sumber yang dimigrasikan. Lihat [Plugin Codex native](/id/plugins/codex-native-plugins). |
-| `computerUse`              | dinonaktifkan                 | Penyiapan Codex Computer Use. Lihat [Codex Computer Use](/id/plugins/codex-computer-use).                                                          |
+| `discovery`                | diaktifkan               | Pengaturan penemuan model untuk `model/list` app-server Codex.                                                                            |
+| `appServer`                | app-server stdio terkelola | Pengaturan transport, perintah, auth, persetujuan, sandbox, dan batas waktu.                                                            |
+| `codexDynamicToolsLoading` | `"searchable"`           | Gunakan `"direct"` untuk menempatkan alat dinamis OpenClaw langsung dalam konteks alat Codex awal.                                        |
+| `codexDynamicToolsExclude` | `[]`                     | Nama alat dinamis OpenClaw tambahan yang dihilangkan dari giliran app-server Codex.                                                       |
+| `codexPlugins`             | dinonaktifkan            | Dukungan Plugin/aplikasi Codex native untuk Plugin kurasi terpasang dari sumber yang telah dimigrasikan. Lihat [Plugin Codex native](/id/plugins/codex-native-plugins). |
+| `computerUse`              | dinonaktifkan            | Penyiapan Codex Computer Use. Lihat [Codex Computer Use](/id/plugins/codex-computer-use).                                                    |
 
 ## Transport app-server
 
@@ -63,9 +64,9 @@ Plugin bawaan:
 codex app-server --listen stdio://
 ```
 
-Ini menjaga versi app-server tetap terkait dengan Plugin `codex` bawaan, bukan
-Codex CLI terpisah mana pun yang kebetulan terinstal secara lokal. Atur
-`appServer.command` hanya saat Anda memang ingin menjalankan executable yang
+Ini menjaga versi app-server tetap terikat ke Plugin `codex` bawaan, bukan ke
+CLI Codex terpisah mana pun yang kebetulan terinstal secara lokal. Tetapkan
+`appServer.command` hanya jika Anda memang ingin menjalankan executable yang
 berbeda.
 
 Untuk app-server yang sudah berjalan, gunakan transport WebSocket:
@@ -90,45 +91,105 @@ Untuk app-server yang sudah berjalan, gunakan transport WebSocket:
 }
 ```
 
-Kolom `appServer` yang didukung:
+Bidang `appServer` yang didukung:
 
-| Kolom                         | Default                                                | Arti                                                                                                                                                                                         |
-| ----------------------------- | ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `transport`                   | `"stdio"`                                              | `"stdio"` menjalankan Codex; `"websocket"` terhubung ke `url`.                                                                                                                                        |
-| `command`                     | biner Codex terkelola                                   | Executable untuk transport stdio. Biarkan tidak diatur untuk menggunakan biner terkelola.                                                                                                                          |
-| `args`                        | `["app-server", "--listen", "stdio://"]`               | Argumen untuk transport stdio.                                                                                                                                                                  |
-| `url`                         | tidak diatur                                                  | URL app-server WebSocket.                                                                                                                                                                       |
-| `authToken`                   | tidak diatur                                                  | Token bearer untuk transport WebSocket.                                                                                                                                                           |
-| `headers`                     | `{}`                                                   | Header WebSocket tambahan.                                                                                                                                                                        |
-| `clearEnv`                    | `[]`                                                   | Nama variabel lingkungan tambahan yang dihapus dari proses app-server stdio yang dijalankan setelah OpenClaw membangun lingkungan turunannya.                                                             |
-| `requestTimeoutMs`            | `60000`                                                | Timeout untuk panggilan control-plane app-server.                                                                                                                                                     |
-| `turnCompletionIdleTimeoutMs` | `60000`                                                | Jendela senyap setelah permintaan app-server yang tercakup pada satu giliran sementara OpenClaw menunggu `turn/completed`.                                                                                                  |
-| `mode`                        | `"yolo"` kecuali persyaratan Codex lokal tidak mengizinkan YOLO | Preset untuk eksekusi YOLO atau yang ditinjau guardian.                                                                                                                                                 |
-| `approvalPolicy`              | `"never"` atau kebijakan persetujuan guardian yang diizinkan       | Kebijakan persetujuan Codex native yang dikirim ke awal thread, resume, dan giliran.                                                                                                                            |
-| `sandbox`                     | `"danger-full-access"` atau sandbox guardian yang diizinkan  | Mode sandbox Codex native yang dikirim ke awal thread dan resume.                                                                                                                                      |
-| `approvalsReviewer`           | `"user"` atau peninjau guardian yang diizinkan               | Gunakan `"auto_review"` agar Codex meninjau prompt persetujuan native saat diizinkan.                                                                                                                   |
-| `defaultWorkspaceDir`         | direktori proses saat ini                              | Workspace yang digunakan oleh `/codex bind` saat `--cwd` dihilangkan.                                                                                                                                        |
-| `serviceTier`                 | tidak diatur                                                  | Tingkat layanan app-server Codex opsional. `"priority"` mengaktifkan perutean mode cepat, `"flex"` meminta pemrosesan flex, dan `null` menghapus override. `"fast"` lama diterima sebagai `"priority"`. |
+| Bidang                                        | Bawaan                                                | Makna                                                                                                                                                                                                                                                                                                                                                                                         |
+| --------------------------------------------- | ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `transport`                                   | `"stdio"`                                              | `"stdio"` menjalankan Codex; `"websocket"` terhubung ke `url`.                                                                                                                                                                                                                                                                                                                                        |
+| `command`                                     | biner Codex terkelola                                   | Eksekutabel untuk transport stdio. Biarkan tidak diatur untuk menggunakan biner terkelola.                                                                                                                                                                                                                                                                                                                          |
+| `args`                                        | `["app-server", "--listen", "stdio://"]`               | Argumen untuk transport stdio.                                                                                                                                                                                                                                                                                                                                                                  |
+| `url`                                         | tidak diatur                                                  | URL app-server WebSocket.                                                                                                                                                                                                                                                                                                                                                                       |
+| `authToken`                                   | tidak diatur                                                  | Token Bearer untuk transport WebSocket. Menerima string literal atau SecretInput seperti `${CODEX_APP_SERVER_TOKEN}`.                                                                                                                                                                                                                                                                              |
+| `headers`                                     | `{}`                                                   | Header WebSocket tambahan. Nilai header menerima string literal atau nilai SecretInput, misalnya `x-codex-client-session-token: "${CODEX_CLIENT_SESSION_TOKEN}"`.                                                                                                                                                                                                                               |
+| `clearEnv`                                    | `[]`                                                   | Nama variabel lingkungan tambahan yang dihapus dari proses app-server stdio yang dijalankan setelah OpenClaw membangun lingkungan warisannya.                                                                                                                                                                                                                                                             |
+| `remoteWorkspaceRoot`                         | tidak diatur                                                  | Root workspace app-server Codex jarak jauh. Saat diatur, OpenClaw menyimpulkan root workspace lokal dari workspace OpenClaw yang terselesaikan, mempertahankan sufiks cwd saat ini di bawah root jarak jauh ini, dan hanya mengirim cwd app-server akhir ke Codex. Jika cwd berada di luar root workspace OpenClaw yang terselesaikan, OpenClaw gagal tertutup alih-alih mengirim path lokal Gateway ke app-server jarak jauh. |
+| `requestTimeoutMs`                            | `60000`                                                | Batas waktu untuk panggilan control-plane app-server.                                                                                                                                                                                                                                                                                                                                                     |
+| `turnCompletionIdleTimeoutMs`                 | `60000`                                                | Jendela senyap setelah Codex menerima giliran atau setelah permintaan app-server dalam cakupan giliran saat OpenClaw menunggu `turn/completed`.                                                                                                                                                                                                                                                                    |
+| `postToolRawAssistantCompletionIdleTimeoutMs` | `300000`                                               | Penjaga completion-idle dan progres yang digunakan setelah handoff alat, penyelesaian alat native, progres asisten mentah pasca-alat, penyelesaian reasoning mentah, atau progres reasoning saat OpenClaw menunggu `turn/completed`. Gunakan ini untuk beban kerja tepercaya atau berat saat sintesis pasca-alat dapat secara sah tetap senyap lebih lama daripada anggaran rilis asisten akhir.                                |
+| `mode`                                        | `"yolo"` kecuali persyaratan Codex lokal tidak mengizinkan YOLO | Preset untuk eksekusi YOLO atau yang ditinjau guardian.                                                                                                                                                                                                                                                                                                                                                 |
+| `approvalPolicy`                              | `"never"` atau kebijakan persetujuan guardian yang diizinkan       | Kebijakan persetujuan native Codex yang dikirim ke awal thread, resume, dan giliran.                                                                                                                                                                                                                                                                                                                            |
+| `sandbox`                                     | `"danger-full-access"` atau sandbox guardian yang diizinkan  | Mode sandbox native Codex yang dikirim ke awal thread dan resume. Sandbox OpenClaw aktif mempersempit giliran `danger-full-access` menjadi Codex `workspace-write`; flag jaringan giliran mengikuti egress sandbox OpenClaw.                                                                                                                                                                                       |
+| `approvalsReviewer`                           | `"user"` atau peninjau guardian yang diizinkan               | Gunakan `"auto_review"` agar Codex meninjau prompt persetujuan native saat diizinkan.                                                                                                                                                                                                                                                                                                                   |
+| `defaultWorkspaceDir`                         | direktori proses saat ini                              | Workspace yang digunakan oleh `/codex bind` saat `--cwd` dihilangkan.                                                                                                                                                                                                                                                                                                                                        |
+| `serviceTier`                                 | tidak diatur                                                  | Tingkat layanan app-server Codex opsional. `"priority"` mengaktifkan perutean mode cepat, `"flex"` meminta pemrosesan fleksibel, dan `null` menghapus override. Legacy `"fast"` diterima sebagai `"priority"`.                                                                                                                                                                                                 |
+| `networkProxy`                                | dinonaktifkan                                               | Ikut serta dalam jaringan profil izin Codex untuk perintah app-server. OpenClaw mendefinisikan config `permissions.<profile>.network` yang dipilih dan memilihnya dengan `default_permissions` alih-alih mengirim `sandbox`.                                                                                                                                                                             |
+| `experimental.sandboxExecServer`              | `false`                                                | Opt-in pratinjau yang mendaftarkan lingkungan Codex berbasis sandbox OpenClaw dengan app-server Codex 0.132.0 atau lebih baru sehingga eksekusi native Codex dapat berjalan di dalam sandbox OpenClaw yang aktif.                                                                                                                                                                                                         |
 
-Plugin memblokir handshake app-server lama atau tanpa versi. Codex app-server
-harus melaporkan versi stabil `0.125.0` atau yang lebih baru.
+`appServer.networkProxy` bersifat eksplisit karena mengubah kontrak sandbox
+Codex. Saat diaktifkan, OpenClaw juga mengatur `features.network_proxy.enabled` dan
+`default_permissions` dalam config thread Codex sehingga profil izin yang
+dihasilkan dapat memulai jaringan terkelola Codex. Secara bawaan, OpenClaw menghasilkan
+nama profil `openclaw-network-<fingerprint>` yang tahan benturan dari
+isi profil; gunakan `profileName` hanya saat nama lokal yang stabil diperlukan.
+
+```js
+export default {
+  plugins: {
+    entries: {
+      codex: {
+        config: {
+          appServer: {
+            sandbox: "workspace-write",
+            networkProxy: {
+              enabled: true,
+              domains: {
+                "api.openai.com": "allow",
+                "blocked.example.com": "deny",
+              },
+              allowUpstreamProxy: true,
+              proxyUrl: "http://127.0.0.1:3128",
+            },
+          },
+        },
+      },
+    },
+  },
+};
+```
+
+Jika runtime app-server normal adalah `danger-full-access`, mengaktifkan
+`networkProxy` menggunakan akses filesystem bergaya workspace untuk profil
+izin yang dihasilkan. Penegakan jaringan terkelola Codex adalah jaringan yang disandbox,
+sehingga profil akses penuh tidak akan melindungi lalu lintas keluar.
+
+Plugin memblokir handshake app-server yang lebih lama atau tidak berversi. App-server Codex
+harus melaporkan versi stabil `0.125.0` atau lebih baru.
+
+OpenClaw memperlakukan URL server aplikasi WebSocket non-loopback sebagai remote dan mewajibkan
+autentikasi WebSocket yang membawa identitas melalui `appServer.authToken` atau header
+`Authorization`. `appServer.authToken` dan setiap nilai `appServer.headers.*`
+dapat berupa SecretInput; runtime rahasia menyelesaikan SecretRefs dan singkatan env
+sebelum OpenClaw membuat opsi mulai server aplikasi, dan SecretRefs terstruktur
+yang tidak terselesaikan akan gagal sebelum token atau header apa pun dikirim. Ketika Plugin Codex
+native dikonfigurasi, OpenClaw menggunakan control plane Plugin dari server aplikasi yang
+terhubung untuk menginstal atau menyegarkan Plugin tersebut, lalu menyegarkan inventaris aplikasi agar
+aplikasi milik Plugin terlihat oleh thread Codex. `app/list` tetap menjadi sumber
+inventaris dan metadata otoritatif, tetapi kebijakan OpenClaw menentukan apakah
+`thread/start` mengirim `config.apps[appId].enabled = true` untuk aplikasi terdaftar yang dapat diakses
+meskipun Codex saat ini menandainya nonaktif. ID aplikasi yang tidak diketahui atau hilang tetap
+gagal secara tertutup; jalur ini hanya mengaktifkan Plugin marketplace melalui `plugin/install`
+dan menyegarkan inventaris. Hanya hubungkan OpenClaw ke server aplikasi remote yang
+dipercaya untuk menerima instalasi Plugin yang dikelola OpenClaw dan penyegaran inventaris aplikasi.
 
 ## Mode persetujuan dan sandbox
 
-Sesi app-server stdio lokal secara default menggunakan mode YOLO:
+Sesi server aplikasi stdio lokal secara default menggunakan mode YOLO:
 `approvalPolicy: "never"`, `approvalsReviewer: "user"`, dan
 `sandbox: "danger-full-access"`. Postur operator lokal tepercaya ini memungkinkan
-giliran dan Heartbeat OpenClaw tanpa pengawasan tetap berjalan tanpa prompt
-persetujuan native yang tidak ada orang untuk menjawabnya.
+giliran OpenClaw tanpa pengawasan dan heartbeat terus berjalan tanpa prompt persetujuan native
+yang tidak ada orang untuk menjawabnya.
 
-Jika file persyaratan sistem lokal Codex tidak mengizinkan nilai persetujuan,
-peninjau, atau sandbox YOLO implisit, OpenClaw memperlakukan default implisit
-sebagai guardian dan memilih izin guardian yang diizinkan. Entri
-`[[remote_sandbox_config]]` yang mencocokkan hostname dalam file persyaratan yang
-sama dihormati untuk keputusan default sandbox.
+Jika file persyaratan sistem lokal Codex melarang persetujuan YOLO implisit,
+peninjau, atau nilai sandbox, OpenClaw memperlakukan default implisit sebagai guardian
+dan memilih izin guardian yang diizinkan. `tools.exec.mode: "auto"`
+juga memaksa persetujuan Codex yang ditinjau guardian dan tidak mempertahankan override legacy
+yang tidak aman seperti `approvalPolicy: "never"` atau `sandbox: "danger-full-access"`;
+atur `tools.exec.mode: "full"` untuk postur tanpa persetujuan yang disengaja.
+Entri
+`[[remote_sandbox_config]]` yang cocok dengan hostname dalam file persyaratan yang sama dihormati
+untuk keputusan default sandbox.
 
-Atur `appServer.mode: "guardian"` untuk persetujuan Codex yang ditinjau
-guardian:
+Atur `appServer.mode: "guardian"` untuk persetujuan Codex yang ditinjau guardian:
 
 ```json5
 {
@@ -149,53 +210,112 @@ guardian:
 ```
 
 Preset `guardian` diperluas menjadi `approvalPolicy: "on-request"`,
-`approvalsReviewer: "auto_review"`, dan `sandbox: "workspace-write"` saat nilai
-tersebut diizinkan. Kolom kebijakan individual mengesampingkan `mode`. Nilai
-peninjau lama `guardian_subagent` masih diterima sebagai alias kompatibilitas,
+`approvalsReviewer: "auto_review"`, dan `sandbox: "workspace-write"` ketika nilai-nilai tersebut
+diizinkan. Field kebijakan individual mengesampingkan `mode`. Nilai peninjau lama
+`guardian_subagent` masih diterima sebagai alias kompatibilitas,
 tetapi konfigurasi baru sebaiknya menggunakan `auto_review`.
 
-## Auth dan isolasi lingkungan
+Ketika sandbox OpenClaw aktif, proses server aplikasi Codex lokal tetap
+berjalan di host Gateway. Karena itu, OpenClaw menonaktifkan Code Mode native Codex,
+server MCP pengguna, dan eksekusi Plugin berbasis aplikasi untuk giliran tersebut, alih-alih
+memperlakukan sandboxing sisi host Codex sebagai setara dengan backend sandbox OpenClaw.
+Akses shell diekspos melalui alat dinamis berbasis sandbox OpenClaw
+seperti `sandbox_exec` dan `sandbox_process` ketika alat exec/proses normal
+tersedia.
 
-Auth dipilih dalam urutan ini:
+Pada host Ubuntu/AppArmor, bwrap Codex dapat gagal dalam `workspace-write` sebelum
+perintah shell dimulai ketika Anda sengaja menjalankan `workspace-write` Codex native
+tanpa sandboxing OpenClaw aktif. Jika Anda melihat
+`bwrap: setting up uid map: Permission denied` atau
+`bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted`, jalankan
+`openclaw doctor` dan perbaiki kebijakan namespace host yang dilaporkan untuk pengguna layanan OpenClaw
+alih-alih memberikan hak istimewa container Docker yang lebih luas. Lebih pilih
+profil AppArmor terbatas untuk proses layanan; fallback
+`kernel.apparmor_restrict_unprivileged_userns=0` berlaku di seluruh host dan memiliki
+konsekuensi keamanan.
 
-1. Profil auth OpenClaw Codex eksplisit untuk agen.
-2. Akun app-server yang sudah ada di home Codex agen tersebut.
-3. Hanya untuk peluncuran app-server stdio lokal, `CODEX_API_KEY`, lalu
-   `OPENAI_API_KEY`, saat tidak ada akun app-server dan auth OpenAI masih
-   diperlukan.
+## Eksekusi native tersandbox
 
-Saat OpenClaw melihat profil auth Codex bergaya langganan ChatGPT, ia menghapus
-`CODEX_API_KEY` dan `OPENAI_API_KEY` dari proses anak Codex yang dijalankan. Itu
-menjaga kunci API tingkat Gateway tetap tersedia untuk embeddings atau model
-OpenAI langsung tanpa membuat giliran app-server Codex native tanpa sengaja
-ditagihkan melalui API.
+Default stabilnya adalah gagal secara tertutup: sandboxing OpenClaw aktif menonaktifkan surface
+eksekusi native Codex yang sebaliknya akan berjalan dari host server aplikasi Codex.
+Gunakan `appServer.experimental.sandboxExecServer: true` hanya ketika Anda ingin
+mencoba dukungan lingkungan remote Codex dengan backend sandbox OpenClaw. Jalur
+pratinjau ini memerlukan server aplikasi Codex 0.132.0 atau yang lebih baru.
 
-Profil kunci API Codex eksplisit dan fallback kunci env stdio lokal menggunakan
-login app-server, bukan env proses anak yang diwariskan. Koneksi app-server
-WebSocket tidak menerima fallback kunci API env Gateway; gunakan profil auth
-eksplisit atau akun app-server remote itu sendiri.
+```json5
+{
+  plugins: {
+    entries: {
+      codex: {
+        enabled: true,
+        config: {
+          appServer: {
+            experimental: {
+              sandboxExecServer: true,
+            },
+          },
+        },
+      },
+    },
+  },
+}
+```
 
-Peluncuran app-server stdio mewarisi lingkungan proses OpenClaw secara default,
-tetapi OpenClaw memiliki bridge akun app-server Codex dan menetapkan `CODEX_HOME`
-serta `HOME` ke direktori per agen di bawah state OpenClaw agen tersebut.
-Pemuat skill Codex sendiri membaca `$CODEX_HOME/skills` dan
-`$HOME/.agents/skills`, sehingga kedua nilai tersebut diisolasi untuk peluncuran
-app-server lokal. Itu menjaga skills, Plugin, konfigurasi, akun, dan state thread
-Codex-native tetap tercakup pada agen OpenClaw, bukan bocor dari home Codex CLI
-pribadi operator.
+Ketika flag aktif dan sesi OpenClaw saat ini tersandbox, OpenClaw
+memulai exec-server local loopback yang didukung oleh sandbox aktif, mendaftarkannya
+ke server aplikasi Codex, lalu memulai thread dan giliran Codex dengan lingkungan
+milik OpenClaw tersebut. Jika server aplikasi tidak dapat mendaftarkan lingkungan,
+run gagal secara tertutup alih-alih diam-diam fallback ke eksekusi host.
 
-Plugin OpenClaw dan snapshot skill OpenClaw masih mengalir melalui registry
-Plugin dan pemuat skill milik OpenClaw sendiri. Aset Codex CLI pribadi tidak.
-Jika Anda memiliki skill atau Plugin Codex CLI berguna yang sebaiknya menjadi
-bagian dari agen OpenClaw, inventarisasikan secara eksplisit:
+Jalur pratinjau ini hanya lokal. Server aplikasi WebSocket remote tidak dapat menjangkau
+exec-server loopback kecuali berjalan di host yang sama, sehingga OpenClaw menolak
+kombinasi tersebut.
+
+## Autentikasi dan isolasi lingkungan
+
+Autentikasi dipilih dalam urutan berikut:
+
+1. Profil autentikasi Codex OpenClaw eksplisit untuk agen.
+2. Akun yang sudah ada milik server aplikasi di home Codex agen tersebut.
+3. Hanya untuk peluncuran server aplikasi stdio lokal, `CODEX_API_KEY`, lalu
+   `OPENAI_API_KEY`, ketika tidak ada akun server aplikasi dan autentikasi OpenAI
+   masih diperlukan.
+
+Ketika OpenClaw melihat profil autentikasi Codex bergaya langganan ChatGPT, OpenClaw menghapus
+`CODEX_API_KEY` dan `OPENAI_API_KEY` dari proses child Codex yang diluncurkan. Ini
+menjaga kunci API tingkat Gateway tetap tersedia untuk embeddings atau model OpenAI langsung
+tanpa membuat giliran server aplikasi Codex native ditagih melalui API secara tidak sengaja.
+
+Profil kunci API Codex eksplisit dan fallback kunci env stdio lokal menggunakan login server aplikasi
+alih-alih env proses child yang diwarisi. Koneksi server aplikasi WebSocket
+tidak menerima fallback kunci API env Gateway; gunakan profil autentikasi eksplisit atau
+akun milik server aplikasi remote sendiri.
+
+Peluncuran server aplikasi stdio mewarisi lingkungan proses OpenClaw secara default.
+OpenClaw memiliki bridge akun server aplikasi Codex dan menetapkan `CODEX_HOME` ke
+direktori per agen di bawah state OpenClaw agen tersebut. Ini menjaga konfigurasi Codex,
+akun, cache/data Plugin, dan state thread tetap tercakup ke agen OpenClaw
+alih-alih bocor dari home `~/.codex` pribadi operator.
+
+OpenClaw tidak menulis ulang `HOME` untuk peluncuran server aplikasi lokal normal. Subproses yang dijalankan Codex
+seperti `openclaw`, `gh`, `git`, CLI cloud, dan perintah shell melihat
+home proses normal dan dapat menemukan konfigurasi serta token user-home. Codex juga dapat
+menemukan `$HOME/.agents/skills` dan `$HOME/.agents/plugins/marketplace.json`;
+penemuan `.agents` tersebut sengaja dibagikan dengan home operator dan
+terpisah dari state `~/.codex` yang terisolasi.
+
+Plugin OpenClaw dan snapshot skill OpenClaw tetap mengalir melalui registry
+Plugin dan loader skill milik OpenClaw sendiri. Aset Codex `~/.codex` pribadi tidak. Jika
+Anda memiliki Skills atau Plugin CLI Codex berguna dari home Codex yang seharusnya menjadi
+bagian dari agen OpenClaw, inventariskan secara eksplisit:
 
 ```bash
 openclaw migrate codex --dry-run
 openclaw migrate apply codex --yes
 ```
 
-Jika deployment memerlukan isolasi lingkungan tambahan, tambahkan variabel
-tersebut ke `appServer.clearEnv`:
+Jika deployment memerlukan isolasi lingkungan tambahan, tambahkan variabel tersebut ke
+`appServer.clearEnv`:
 
 ```json5
 {
@@ -214,14 +334,15 @@ tersebut ke `appServer.clearEnv`:
 }
 ```
 
-`appServer.clearEnv` hanya memengaruhi proses anak Codex app-server yang
-dijalankan. `CODEX_HOME` dan `HOME` tetap dicadangkan untuk isolasi Codex per
-agen milik OpenClaw pada peluncuran lokal.
+`appServer.clearEnv` hanya memengaruhi proses child server aplikasi Codex yang diluncurkan.
+OpenClaw menghapus `CODEX_HOME` dan `HOME` dari daftar ini selama normalisasi peluncuran lokal:
+`CODEX_HOME` tetap per agen, dan `HOME` tetap diwarisi sehingga
+subproses dapat menggunakan state user-home normal.
 
 ## Alat dinamis
 
-Alat dinamis Codex secara default menggunakan pemuatan `searchable`. OpenClaw
-tidak mengekspos alat dinamis yang menduplikasi operasi workspace Codex-native:
+Alat dinamis Codex secara default menggunakan pemuatan `searchable`. OpenClaw tidak mengekspos
+alat dinamis yang menduplikasi operasi workspace native Codex:
 
 - `read`
 - `write`
@@ -231,77 +352,108 @@ tidak mengekspos alat dinamis yang menduplikasi operasi workspace Codex-native:
 - `process`
 - `update_plan`
 
-Alat integrasi OpenClaw yang tersisa, seperti olah pesan, sesi, media, cron,
+Sebagian besar alat integrasi OpenClaw lain, seperti messaging, media, cron,
 browser, nodes, gateway, `heartbeat_respond`, dan `web_search`, tersedia
 melalui pencarian alat Codex di bawah namespace `openclaw`. Ini menjaga konteks
-model awal tetap lebih kecil. `sessions_yield` dan balasan sumber khusus alat
-pesan tetap langsung karena keduanya adalah kontrak kendali giliran.
+model awal lebih kecil. `sessions_yield` dan balasan sumber khusus alat pesan
+tetap langsung karena keduanya adalah kontrak kontrol giliran. `sessions_spawn` tetap
+searchable sehingga `spawn_agent` native Codex tetap menjadi surface subagen Codex utama,
+sementara delegasi OpenClaw atau ACP eksplisit tetap tersedia melalui
+namespace alat dinamis `openclaw`.
 
-Tetapkan `codexDynamicToolsLoading: "direct"` hanya saat menyambungkan ke app-server
-Codex khusus yang tidak dapat mencari alat dinamis tertunda atau saat men-debug payload
-alat lengkap.
+Atur `codexDynamicToolsLoading: "direct"` hanya ketika menghubungkan ke server aplikasi Codex
+kustom yang tidak dapat mencari alat dinamis yang ditunda atau ketika men-debug payload
+alat penuh.
 
-## Batas Waktu
+## Timeout
 
 Panggilan alat dinamis milik OpenClaw dibatasi secara independen dari
-`appServer.requestTimeoutMs`. Setiap permintaan Codex `item/tool/call` menggunakan
-batas waktu pertama yang tersedia dalam urutan ini:
+`appServer.requestTimeoutMs`. Setiap request Codex `item/tool/call` menggunakan timeout pertama
+yang tersedia dalam urutan berikut:
 
 - Argumen `timeoutMs` per panggilan yang positif.
 - Untuk `image_generate`, `agents.defaults.imageGenerationModel.timeoutMs`.
-- Untuk alat `image` pemahaman media, `tools.media.image.timeoutSeconds`
-  yang dikonversi ke milidetik, atau default media 60 detik.
-- Default alat dinamis 30 detik.
+- Untuk `image_generate` tanpa timeout yang dikonfigurasi, default pembuatan gambar
+  120 detik.
+- Untuk alat pemahaman media `image`, `tools.media.image.timeoutSeconds`
+  dikonversi ke milidetik, atau default media 60 detik. Untuk pemahaman gambar,
+  ini berlaku pada request itu sendiri dan tidak dikurangi oleh
+  pekerjaan persiapan sebelumnya.
+- Default alat dinamis 90 detik.
 
-Anggaran alat dinamis dibatasi pada 600000 md. Saat batas waktu habis, OpenClaw
-membatalkan sinyal alat jika didukung dan mengembalikan respons alat dinamis
-yang gagal ke Codex agar giliran dapat berlanjut alih-alih membiarkan sesi dalam
-`processing`.
+Watchdog ini adalah anggaran luar dinamis `item/tool/call`. Timeout request
+khusus provider berjalan di dalam panggilan tersebut dan mempertahankan semantik timeout-nya sendiri.
+Anggaran alat dinamis dibatasi hingga 600000 ms. Saat timeout, OpenClaw membatalkan
+sinyal alat jika didukung dan mengembalikan respons alat dinamis yang gagal ke Codex
+agar giliran dapat berlanjut alih-alih meninggalkan sesi dalam `processing`.
 
-Setelah OpenClaw merespons permintaan app-server bercakupan giliran Codex, harness
-juga mengharapkan Codex menyelesaikan giliran native dengan `turn/completed`. Jika
-app-server menjadi diam selama `appServer.turnCompletionIdleTimeoutMs` setelah
-respons itu, OpenClaw melakukan interupsi best-effort terhadap giliran Codex,
-mencatat batas waktu diagnostik, dan melepaskan jalur sesi OpenClaw agar pesan
-chat lanjutan tidak mengantre di belakang giliran native yang kedaluwarsa.
+Setelah Codex menerima giliran, dan setelah OpenClaw merespons request server aplikasi
+yang tercakup pada giliran, harness mengharapkan Codex membuat progres giliran saat ini dan
+akhirnya menyelesaikan giliran native dengan `turn/completed`. Jika server aplikasi menjadi
+diam selama `appServer.turnCompletionIdleTimeoutMs`, OpenClaw dengan upaya terbaik
+menginterupsi giliran Codex, mencatat timeout diagnostik, dan melepaskan
+lane sesi OpenClaw agar pesan chat lanjutan tidak mengantre di belakang giliran
+native yang stale.
 
-Notifikasi non-terminal apa pun untuk giliran yang sama, termasuk
-`rawResponseItem/completed`, menonaktifkan watchdog singkat itu karena Codex telah
-membuktikan giliran masih hidup. Watchdog terminal yang lebih panjang terus
-melindungi giliran yang benar-benar macet. Diagnostik batas waktu menyertakan
-metode notifikasi app-server terakhir dan, untuk item respons asisten mentah,
-jenis item, role, id, serta pratinjau teks asisten yang dibatasi.
+Sebagian besar notifikasi non-terminal untuk giliran yang sama menonaktifkan watchdog singkat itu
+karena Codex sudah membuktikan bahwa giliran masih hidup. Handoff alat menggunakan anggaran idle
+pasca-alat yang lebih panjang: setelah OpenClaw mengembalikan respons `item/tool/call`, setelah
+item alat native seperti `commandExecution` selesai, setelah penyelesaian
+`custom_tool_call_output` mentah, dan setelah progres asisten mentah pasca-alat,
+penyelesaian reasoning mentah, atau progres reasoning. Guard menggunakan
+`appServer.postToolRawAssistantCompletionIdleTimeoutMs` saat dikonfigurasi dan
+default ke lima menit jika tidak. Anggaran pasca-alat yang sama juga memperpanjang
+watchdog progres untuk jendela sintesis senyap sebelum Codex memancarkan event
+giliran-saat-ini berikutnya. Penyelesaian reasoning, penyelesaian
+`agentMessage` commentary, serta progres reasoning atau asisten mentah pra-alat dapat
+diikuti oleh balasan akhir otomatis, jadi semuanya menggunakan guard balasan
+pasca-progres alih-alih langsung melepaskan lane sesi. Hanya item `agentMessage`
+selesai yang final/non-commentary dan penyelesaian asisten mentah pra-alat yang
+mengaktifkan pelepasan output asisten: jika Codex kemudian diam tanpa
+`turn/completed`, OpenClaw berupaya sebaik mungkin untuk menginterupsi giliran
+native dan melepaskan lane sesi. Kegagalan stdio app-server yang aman untuk
+replay, termasuk timeout idle penyelesaian giliran tanpa bukti asisten, alat,
+item aktif, atau efek samping, dicoba ulang sekali pada upaya app-server baru.
+Timeout yang tidak aman tetap memensiunkan klien app-server yang macet dan
+melepaskan lane sesi OpenClaw. Timeout itu juga menghapus binding thread native
+yang basi alih-alih direplay otomatis. Timeout completion-watch menampilkan teks
+timeout khusus Codex: kasus yang aman untuk replay mengatakan respons mungkin
+tidak lengkap, sedangkan kasus yang tidak aman memberi tahu pengguna untuk
+memverifikasi state saat ini sebelum mencoba lagi. Diagnostik timeout publik
+menyertakan field struktural seperti metode notifikasi app-server terakhir,
+id/tipe/role item respons asisten mentah, jumlah request/item aktif, dan state
+watch yang sedang aktif. Ketika notifikasi terakhir adalah item respons asisten
+mentah, diagnostik juga menyertakan pratinjau teks asisten yang dibatasi.
+Diagnostik tidak menyertakan prompt mentah atau konten alat.
 
-## Penemuan Model
+## Penemuan model
 
-Secara default, Plugin Codex meminta model yang tersedia dari app-server.
-Ketersediaan model dimiliki oleh app-server Codex, sehingga daftar dapat berubah
-ketika OpenClaw meningkatkan versi `@openai/codex` bawaan atau ketika deployment
-mengarahkan `appServer.command` ke biner Codex yang berbeda. Ketersediaan juga
-dapat bercakupan akun. Gunakan `/codex models` pada gateway yang sedang berjalan
-untuk melihat katalog live bagi harness dan akun tersebut.
+Secara default, Plugin Codex meminta daftar model yang tersedia dari app-server.
+Ketersediaan model dimiliki oleh app-server Codex, jadi daftar itu dapat berubah
+ketika OpenClaw meningkatkan versi `@openai/codex` yang dibundel atau ketika
+deployment mengarahkan `appServer.command` ke binary Codex yang berbeda.
+Ketersediaan juga dapat bersifat per akun. Gunakan `/codex models` pada Gateway
+yang sedang berjalan untuk melihat katalog live bagi harness dan akun tersebut.
 
-Jika penemuan gagal atau habis waktu, OpenClaw menggunakan katalog fallback
-bawaan untuk:
+Jika penemuan gagal atau timeout, OpenClaw menggunakan katalog fallback bawaan untuk:
 
 - GPT-5.5
 - GPT-5.4 mini
 - GPT-5.2
 
-Harness bawaan saat ini adalah `@openai/codex` `0.130.0`. Probe `model/list`
-terhadap app-server bawaan tersebut mengembalikan:
+Harness bawaan saat ini adalah `@openai/codex` `0.139.0`. Probe `model/list`
+terhadap app-server bawaan itu mengembalikan:
 
-| Id model              | Default | Tersembunyi | Modalitas input | Upaya reasoning          |
-| --------------------- | ------- | ----------- | --------------- | ------------------------ |
-| `gpt-5.5`             | Ya      | Tidak       | text, image     | low, medium, high, xhigh |
-| `gpt-5.4`             | Tidak   | Tidak       | text, image     | low, medium, high, xhigh |
-| `gpt-5.4-mini`        | Tidak   | Tidak       | text, image     | low, medium, high, xhigh |
-| `gpt-5.3-codex`       | Tidak   | Tidak       | text, image     | low, medium, high, xhigh |
-| `gpt-5.3-codex-spark` | Tidak   | Tidak       | text            | low, medium, high, xhigh |
-| `gpt-5.2`             | Tidak   | Tidak       | text, image     | low, medium, high, xhigh |
+| ID model        | Default | Tersembunyi | Modalitas input | Upaya reasoning          |
+| --------------- | ------- | ----------- | --------------- | ------------------------ |
+| `gpt-5.5`       | Ya      | Tidak       | teks, gambar    | low, medium, high, xhigh |
+| `gpt-5.4`       | Tidak   | Tidak       | teks, gambar    | low, medium, high, xhigh |
+| `gpt-5.4-mini`  | Tidak   | Tidak       | teks, gambar    | low, medium, high, xhigh |
+| `gpt-5.3-codex` | Tidak   | Tidak       | teks, gambar    | low, medium, high, xhigh |
+| `gpt-5.2`       | Tidak   | Tidak       | teks, gambar    | low, medium, high, xhigh |
 
 Model tersembunyi dapat dikembalikan oleh katalog app-server untuk alur internal
-atau khusus, tetapi model tersebut bukan pilihan pemilih model normal.
+atau khusus, tetapi model tersebut bukan pilihan normal di pemilih model.
 
 Sesuaikan penemuan di bawah `plugins.entries.codex.config.discovery`:
 
@@ -323,8 +475,8 @@ Sesuaikan penemuan di bawah `plugins.entries.codex.config.discovery`:
 }
 ```
 
-Nonaktifkan penemuan saat Anda ingin startup menghindari probe Codex dan hanya
-menggunakan katalog fallback:
+Nonaktifkan penemuan ketika Anda ingin startup menghindari probing Codex dan
+hanya menggunakan katalog fallback:
 
 ```json5
 {
@@ -343,23 +495,33 @@ menggunakan katalog fallback:
 }
 ```
 
-## File Bootstrap Ruang Kerja
+## File bootstrap workspace
 
 Codex menangani `AGENTS.md` sendiri melalui penemuan dokumen proyek native.
 OpenClaw tidak menulis file dokumen proyek Codex sintetis atau bergantung pada
 nama file fallback Codex untuk file persona, karena fallback Codex hanya berlaku
 ketika `AGENTS.md` tidak ada.
 
-Untuk paritas ruang kerja OpenClaw, harness Codex menyelesaikan file bootstrap
-lainnya, termasuk `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`,
-`HEARTBEAT.md`, `BOOTSTRAP.md`, dan `MEMORY.md` saat ada, dan meneruskannya
-melalui instruksi developer Codex pada `thread/start` dan `thread/resume`.
-Ini menjaga konteks persona dan profil ruang kerja tetap terlihat pada jalur
-pembentuk perilaku Codex native tanpa menduplikasi `AGENTS.md`.
+Untuk paritas workspace OpenClaw, harness Codex me-resolve file bootstrap
+lainnya. `SOUL.md`, `IDENTITY.md`, `TOOLS.md`, dan `USER.md` diteruskan sebagai
+instruksi developer OpenClaw Codex karena semuanya mendefinisikan agen aktif,
+panduan workspace yang tersedia, dan profil pengguna. Daftar Skills OpenClaw yang
+ringkas diteruskan sebagai instruksi developer kolaborasi berskala giliran.
+Konten `HEARTBEAT.md` tidak diinjeksi; giliran Heartbeat mendapatkan pointer
+mode kolaborasi untuk membaca file tersebut ketika ada dan tidak kosong. Konten
+`MEMORY.md` dari workspace agen yang dikonfigurasi tidak ditempelkan ke input
+giliran Codex native ketika alat memori tersedia untuk workspace tersebut; ketika
+ada, harness menambahkan pointer memori-workspace kecil ke instruksi developer
+kolaborasi berskala giliran dan Codex harus menggunakan `memory_search` atau
+`memory_get` ketika memori durabel relevan. Jika alat dinonaktifkan, pencarian
+memori tidak tersedia, atau workspace aktif berbeda dari workspace memori agen,
+`MEMORY.md` menggunakan jalur konteks giliran berbatas yang normal.
+`BOOTSTRAP.md` ketika ada diteruskan sebagai konteks referensi input giliran
+OpenClaw.
 
-## Penggantian Lingkungan
+## Override lingkungan
 
-Penggantian lingkungan tetap tersedia untuk pengujian lokal:
+Override lingkungan tetap tersedia untuk pengujian lokal:
 
 - `OPENCLAW_CODEX_APP_SERVER_BIN`
 - `OPENCLAW_CODEX_APP_SERVER_ARGS`
@@ -367,14 +529,14 @@ Penggantian lingkungan tetap tersedia untuk pengujian lokal:
 - `OPENCLAW_CODEX_APP_SERVER_APPROVAL_POLICY`
 - `OPENCLAW_CODEX_APP_SERVER_SANDBOX`
 
-`OPENCLAW_CODEX_APP_SERVER_BIN` melewati biner terkelola saat
-`appServer.command` tidak ditetapkan.
+`OPENCLAW_CODEX_APP_SERVER_BIN` melewati binary terkelola ketika
+`appServer.command` tidak disetel.
 
 `OPENCLAW_CODEX_APP_SERVER_GUARDIAN=1` telah dihapus. Gunakan
 `plugins.entries.codex.config.appServer.mode: "guardian"` sebagai gantinya, atau
 `OPENCLAW_CODEX_APP_SERVER_MODE=guardian` untuk pengujian lokal sekali pakai.
-Konfigurasi lebih disukai untuk deployment yang dapat diulang karena menjaga
-perilaku Plugin dalam file yang ditinjau yang sama dengan sisa penyiapan harness
+Konfigurasi lebih disarankan untuk deployment yang dapat diulang karena menjaga
+perilaku Plugin dalam file yang ditinjau yang sama dengan sisa setup harness
 Codex.
 
 ## Terkait
@@ -383,5 +545,5 @@ Codex.
 - [Runtime harness Codex](/id/plugins/codex-harness-runtime)
 - [Plugin Codex native](/id/plugins/codex-native-plugins)
 - [Codex Computer Use](/id/plugins/codex-computer-use)
-- [Penyedia OpenAI](/id/providers/openai)
+- [Provider OpenAI](/id/providers/openai)
 - [Referensi konfigurasi](/id/gateway/configuration-reference)

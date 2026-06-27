@@ -1,13 +1,14 @@
 ---
 read_when:
-    - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ groq Plugin
-summary: เพิ่มการรองรับผู้ให้บริการโมเดล Groq ให้กับ OpenClaw.
-title: Plugin Groq
+    - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin groq
+summary: เพิ่มการรองรับผู้ให้บริการโมเดล Groq ให้กับ OpenClaw
+title: Groq Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:52:43Z"
+    generated_at: "2026-06-27T18:02:42Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 570a15776efbe94b41518ca9c5fac1559c49be0d8f6c5bd71fdcd0841a0626e9
+    source_hash: 41bae84645b09b5185d62530788a17be0338e93e6f29b9cca11438b69932bbc5
     source_path: plugins/reference/groq.md
     workflow: 16
 ---
@@ -19,11 +20,11 @@ x-i18n:
 ## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/groq-provider`
-- เส้นทางการติดตั้ง: รวมอยู่ใน OpenClaw
+- เส้นทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/groq-provider`
 
-## พื้นผิว
+## พื้นผิวการทำงาน
 
-ผู้ให้บริการ: groq; สัญญา: mediaUnderstandingProviders
+providers: groq; contracts: mediaUnderstandingProviders
 
 ## เอกสารที่เกี่ยวข้อง
 

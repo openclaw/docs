@@ -1,48 +1,50 @@
 ---
 read_when:
-    - 偵錯模型驗證或 OAuth 到期問題
-    - 記錄驗證或憑證儲存方式
-summary: 模型身分驗證：OAuth、API 金鑰、Claude CLI 重用，以及 Anthropic setup-token
-title: 身分驗證
+    - 偵錯模型驗證或 OAuth 到期
+    - 記錄驗證或憑證儲存
+summary: 模型驗證：OAuth、API 金鑰、Claude 命令列介面重用，以及 Anthropic setup-token
+title: 驗證
 x-i18n:
-    generated_at: "2026-05-07T13:16:12Z"
+    generated_at: "2026-06-27T19:15:42Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d95ac66b4771ee4058f81294b54b345d9bf688da9d985e45e056547c9d395d37
+    source_hash: 4b33eff2386ba48797c96b99f3eb80df4df2d5baab9c42b73fc8e5e722f0767b
     source_path: gateway/authentication.md
     workflow: 16
 ---
 
 <Note>
-本頁是**模型提供者**驗證參考（API 金鑰、OAuth、Claude CLI 重用，以及 Anthropic setup-token）。如需 **Gateway 連線**驗證（權杖、密碼、受信任代理），請參閱[設定](/zh-TW/gateway/configuration)與[受信任代理驗證](/zh-TW/gateway/trusted-proxy-auth)。
+此頁是**模型供應商**驗證參考（API 金鑰、OAuth、Claude 命令列介面重用，以及 Anthropic setup-token）。如需**閘道連線**驗證（token、密碼、trusted-proxy），請參閱[設定](/zh-TW/gateway/configuration)與[受信任 Proxy 驗證](/zh-TW/gateway/trusted-proxy-auth)。
 </Note>
 
-OpenClaw 支援模型提供者使用 OAuth 與 API 金鑰。對於常駐 Gateway
+OpenClaw 支援模型供應商使用 OAuth 與 API 金鑰。對於常駐的閘道
 主機，API 金鑰通常是最可預期的選項。當訂閱/OAuth
-流程符合你的提供者帳號模型時，也支援這些流程。
+流程符合你的供應商帳戶模型時，也支援這些流程。
 
-請參閱 [/concepts/oauth](/zh-TW/concepts/oauth) 了解完整 OAuth 流程與儲存
-配置。
-如需 SecretRef 型驗證（`env`/`file`/`exec` 提供者），請參閱[密鑰管理](/zh-TW/gateway/secrets)。
+完整的 OAuth 流程與儲存
+版面配置請參閱 [/concepts/oauth](/zh-TW/concepts/oauth)。
+如需 SecretRef 型驗證（`env`/`file`/`exec` 供應器），請參閱[密鑰管理](/zh-TW/gateway/secrets)。
 如需 `models status --probe` 使用的憑證資格/原因碼規則，請參閱
-[驗證憑證語意](/zh-TW/auth-credential-semantics)。
+[驗證憑證語義](/zh-TW/auth-credential-semantics)。
 
-## 建議設定（API 金鑰，任何提供者）
+## 建議設定（API 金鑰，任何供應商）
 
-如果你正在執行長時間存活的 Gateway，請先為你選擇的提供者設定 API 金鑰。
+如果你正在執行長時間運作的閘道，請先為所選
+供應商設定 API 金鑰。
 特別是 Anthropic，API 金鑰驗證仍是最可預期的伺服器
-設定，但 OpenClaw 也支援重用本機 Claude CLI 登入。
+設定，但 OpenClaw 也支援重用本機 Claude 命令列介面登入。
 
-1. 在你的提供者主控台建立 API 金鑰。
-2. 將它放在 **Gateway 主機**（執行 `openclaw gateway` 的機器）上。
+1. 在供應商主控台建立 API 金鑰。
+2. 將它放在**閘道主機**上（執行 `openclaw gateway` 的機器）。
 
 ```bash
 export <PROVIDER>_API_KEY="..."
 openclaw models status
 ```
 
-3. 如果 Gateway 在 systemd/launchd 下執行，建議將金鑰放在
-   `~/.openclaw/.env`，讓守護程式可以讀取：
+3. 如果閘道在 systemd/launchd 下執行，建議將金鑰放在
+   `~/.openclaw/.env`，讓 daemon 可以讀取：
 
 ```bash
 cat >> ~/.openclaw/.env <<'EOF'
@@ -50,31 +52,32 @@ cat >> ~/.openclaw/.env <<'EOF'
 EOF
 ```
 
-接著重新啟動守護程式（或重新啟動你的 Gateway 程序）並重新檢查：
+然後重新啟動 daemon（或重新啟動你的閘道程序）並重新檢查：
 
 ```bash
 openclaw models status
 openclaw doctor
 ```
 
-如果你不想自行管理環境變數，onboarding 可以儲存
-API 金鑰供守護程式使用：`openclaw onboard`。
+如果你不想自行管理 env vars，onboarding 可以儲存
+API 金鑰供 daemon 使用：`openclaw onboard`。
 
-如需環境繼承（`env.shellEnv`、
-`~/.openclaw/.env`、systemd/launchd）的詳細資料，請參閱[說明](/zh-TW/help)。
+如需 env 繼承（`env.shellEnv`、
+`~/.openclaw/.env`、systemd/launchd）的詳細資訊，請參閱[說明](/zh-TW/help)。
 
-## Anthropic：Claude CLI 與權杖相容性
+## Anthropic：Claude 命令列介面與 token 相容性
 
-Anthropic setup-token 驗證仍在 OpenClaw 中作為受支援的權杖
-路徑提供。Anthropic 員工後來告知我們，OpenClaw 風格的 Claude CLI 使用方式
-已再次允許，因此除非 Anthropic 發布新政策，OpenClaw 會將 Claude CLI 重用與 `claude -p` 使用
-視為此整合的核准方式。當主機上可使用 Claude CLI 重用時，這現在是偏好的路徑。
+Anthropic setup-token 驗證仍在 OpenClaw 中作為受支援的 token
+路徑提供。Anthropic 工作人員後來告訴我們，OpenClaw 風格的 Claude 命令列介面用法
+已再次被允許，因此 OpenClaw 會將 Claude 命令列介面重用與 `claude -p` 用法視為
+此整合的核准用法，除非 Anthropic 發布新政策。當
+Claude 命令列介面重用可在主機上使用時，這現在是偏好的路徑。
 
-對於長時間存活的 Gateway 主機，Anthropic API 金鑰仍是最可預期的
-設定。如果你想在同一台主機上重用既有 Claude 登入，請在 onboarding/configure 中使用
-Anthropic Claude CLI 路徑。
+對於長時間運作的閘道主機，Anthropic API 金鑰仍是最可預期的
+設定。如果你想在同一台主機上重用現有 Claude 登入，請在
+onboarding/configure 中使用 Anthropic Claude 命令列介面路徑。
 
-Claude CLI 重用的建議主機設定：
+建議的 Claude 命令列介面重用主機設定：
 
 ```bash
 # Run on the gateway host
@@ -85,20 +88,20 @@ openclaw models auth login --provider anthropic --method cli --set-default
 
 這是兩步驟設定：
 
-1. 讓 Claude Code 本身在 Gateway 主機上登入 Anthropic。
+1. 在閘道主機上讓 Claude Code 本身登入 Anthropic。
 2. 告訴 OpenClaw 將 Anthropic 模型選擇切換到本機 `claude-cli`
-   後端，並儲存相符的 OpenClaw 驗證設定檔。
+   後端，並儲存對應的 OpenClaw 驗證設定檔。
 
 如果 `claude` 不在 `PATH` 上，請先安裝 Claude Code，或將
 `agents.defaults.cliBackends.claude-cli.command` 設為實際的二進位檔路徑。
 
-手動輸入權杖（任何提供者；寫入 `auth-profiles.json` + 更新設定）：
+手動 token 輸入（任何供應商；寫入每個代理的 SQLite 驗證儲存區並更新設定）：
 
 ```bash
 openclaw models auth paste-token --provider openrouter
 ```
 
-`auth-profiles.json` 只儲存憑證。標準形狀為：
+驗證設定檔儲存區只保留憑證。舊版 `auth-profiles.json` 檔案使用此標準形狀：
 
 ```json
 {
@@ -113,17 +116,17 @@ openclaw models auth paste-token --provider openrouter
 }
 ```
 
-OpenClaw 在執行階段預期使用標準的 `version` + `profiles` 形狀。如果較舊的安裝仍有像 `{ "openrouter": { "apiKey": "..." } }` 這樣的扁平檔案，請執行 `openclaw doctor --fix`，將它重寫為 `openrouter:default` API 金鑰設定檔；doctor 會在原始檔旁保留 `.legacy-flat.*.bak` 副本。`baseUrl`、`api`、模型 ID、標頭與逾時等端點詳細資料，應放在 `openclaw.json` 或 `models.json` 的 `models.providers.<id>` 下，而不是放在 `auth-profiles.json` 中。
+OpenClaw 現在會從每個代理的 `openclaw-agent.sqlite` 讀取驗證設定檔。如果舊安裝仍有 `auth-profiles.json`、`auth-state.json`，或像 `{ "openrouter": { "apiKey": "..." } }` 這樣的扁平驗證設定檔，請執行 `openclaw doctor --fix` 將其匯入 SQLite；doctor 會在原始 JSON 檔案旁保留加上時間戳記的備份。`baseUrl`、`api`、模型 id、headers 與 timeouts 等端點詳細資訊應放在 `openclaw.json` 或 `models.json` 的 `models.providers.<id>` 下，而不是放在驗證設定檔中。
 
-像 Bedrock `auth: "aws-sdk"` 這類外部驗證路由也不是憑證。如果你想要具名的 Bedrock 路由，請在 `openclaw.json` 中放入 `auth.profiles.<id>.mode: "aws-sdk"`；不要將 `type: "aws-sdk"` 寫入 `auth-profiles.json`。`openclaw doctor --fix` 會將舊版 AWS SDK 標記從憑證儲存移到設定中繼資料。
+Bedrock `auth: "aws-sdk"` 等外部驗證路由也不是憑證。如果你想要具名 Bedrock 路由，請在 `openclaw.json` 中放入 `auth.profiles.<id>.mode: "aws-sdk"`；不要將 `type: "aws-sdk"` 寫入驗證設定檔儲存區。`openclaw doctor --fix` 會將舊版 AWS SDK 標記從憑證儲存區移到設定中繼資料。
 
-靜態憑證也支援驗證設定檔參照：
+靜態憑證也支援驗證設定檔 refs：
 
 - `api_key` 憑證可以使用 `keyRef: { source, provider, id }`
 - `token` 憑證可以使用 `tokenRef: { source, provider, id }`
-- OAuth 模式設定檔不支援 SecretRef 憑證；如果 `auth.profiles.<id>.mode` 設為 `"oauth"`，該設定檔的 SecretRef 支援 `keyRef`/`tokenRef` 輸入會被拒絕。
+- OAuth 模式設定檔不支援 SecretRef 憑證；如果 `auth.profiles.<id>.mode` 設為 `"oauth"`，則該設定檔的 SecretRef 支援 `keyRef`/`tokenRef` 輸入會遭拒絕。
 
-適合自動化的檢查（過期/遺失時結束碼 `1`，即將過期時為 `2`）：
+適合自動化的檢查（過期/缺少時 exit `1`，即將過期時 `2`）：
 
 ```bash
 openclaw models status --check
@@ -137,26 +140,26 @@ openclaw models status --probe
 
 注意：
 
-- 探測列可以來自驗證設定檔、環境憑證或 `models.json`。
-- 如果明確的 `auth.order.<provider>` 省略已儲存的設定檔，探測會針對該設定檔回報
-  `excluded_by_auth_order`，而不是嘗試使用它。
-- 如果驗證存在，但 OpenClaw 無法為該提供者解析可探測的模型候選項，
-  探測會回報 `status: no_model`。
-- 速率限制冷卻可以限定於模型。某個設定檔因一個
-  模型而冷卻時，仍可用於同一提供者上的同層模型。
+- 探測列可以來自驗證設定檔、env 憑證或 `models.json`。
+- 如果明確的 `auth.order.<provider>` 省略已儲存的設定檔，探測會對該設定檔回報
+  `excluded_by_auth_order`，而不是嘗試它。
+- 如果驗證存在，但 OpenClaw 無法為
+  該供應商解析可探測的模型候選項，探測會回報 `status: no_model`。
+- 速率限制冷卻可以限定於模型範圍。某個設定檔針對一個
+  模型冷卻中時，仍可能可用於同一供應商上的同層模型。
 
-可選的維運腳本（systemd/Termux）記錄在此：
-[驗證監控腳本](/zh-TW/help/scripts#auth-monitoring-scripts)
+選用的維運指令碼（systemd/Termux）記錄於此：
+[驗證監控指令碼](/zh-TW/help/scripts#auth-monitoring-scripts)
 
 ## Anthropic 注意事項
 
 Anthropic `claude-cli` 後端已再次受支援。
 
-- Anthropic 員工告訴我們，此 OpenClaw 整合路徑已再次允許。
-- 因此，除非 Anthropic 發布新政策，OpenClaw 會將 Claude CLI 重用與 `claude -p` 使用
-  視為 Anthropic 支援執行的核准方式。
-- Anthropic API 金鑰仍是長時間存活 Gateway
-  主機與明確伺服器端計費控制的最可預期選擇。
+- Anthropic 工作人員告訴我們，此 OpenClaw 整合路徑已再次被允許。
+- 因此，除非 Anthropic 發布新政策，OpenClaw 會將 Claude 命令列介面重用與 `claude -p` 用法視為
+  Anthropic 支援執行的核准用法。
+- 對於長時間運作的閘道
+  主機與明確的伺服器端計費控制，Anthropic API 金鑰仍是最可預期的選擇。
 
 ## 檢查模型驗證狀態
 
@@ -165,35 +168,90 @@ openclaw models status
 openclaw doctor
 ```
 
-## API 金鑰輪替行為（Gateway）
+## API 金鑰輪替行為（閘道）
 
-某些提供者在 API 呼叫遭遇提供者速率限制時，支援使用替代金鑰重試請求。
+有些供應商支援在 API 呼叫
+遇到供應商速率限制時，使用替代金鑰重試請求。
 
 - 優先順序：
   - `OPENCLAW_LIVE_<PROVIDER>_KEY`（單一覆寫）
   - `<PROVIDER>_API_KEYS`
   - `<PROVIDER>_API_KEY`
   - `<PROVIDER>_API_KEY_*`
-- Google 提供者也包含 `GOOGLE_API_KEY` 作為額外備援。
-- 相同金鑰清單會在使用前去重。
-- OpenClaw 只會在速率限制錯誤時用下一個金鑰重試（例如
+- Google 供應商也包含 `GOOGLE_API_KEY` 作為額外 fallback。
+- 相同金鑰清單在使用前會先去重。
+- OpenClaw 只會在速率限制錯誤時使用下一個金鑰重試（例如
   `429`、`rate_limit`、`quota`、`resource exhausted`、`Too many concurrent
 requests`、`ThrottlingException`、`concurrency limit reached` 或
   `workers_ai ... quota limit exceeded`）。
 - 非速率限制錯誤不會使用替代金鑰重試。
 - 如果所有金鑰都失敗，會傳回最後一次嘗試的最終錯誤。
 
-## 控制使用哪個憑證
+## 在閘道執行時移除供應商驗證
 
-### 每個工作階段（聊天指令）
+透過閘道控制平面移除供應商驗證時，OpenClaw 會刪除
+該供應商已儲存的驗證設定檔，並中止所選模型供應商符合已移除供應商的作用中聊天或代理執行。
+中止的執行會發出一般聊天取消與生命週期事件，並帶有
+`stopReason: "auth-revoked"`，讓已連線的用戶端可以顯示該執行
+因憑證被移除而停止。
 
-使用 `/model <alias-or-id>@<profileId>` 為目前工作階段固定特定提供者憑證（設定檔 ID 範例：`anthropic:default`、`anthropic:work`）。
+移除已儲存驗證不會在供應商端撤銷金鑰。當你需要供應商端失效時，請在供應商 dashboard 中輪替或撤銷
+金鑰。
 
-使用 `/model`（或 `/model list`）取得精簡選擇器；使用 `/model status` 取得完整檢視（候選項 + 下一個驗證設定檔，以及已設定時的提供者端點詳細資料）。
+## 控制要使用哪個憑證
 
-### 每個代理（CLI 覆寫）
+### OpenAI 與舊版 `openai-codex` id
 
-為代理設定明確的驗證設定檔順序覆寫（儲存在該代理的 `auth-state.json` 中）：
+OpenAI API 金鑰設定檔與 ChatGPT/Codex OAuth 設定檔都使用標準
+供應商 id `openai`。新設定應使用 `openai:*` 設定檔 id 與
+`auth.order.openai`。
+
+如果你在舊設定、驗證設定檔 id 或
+`auth.order.openai-codex` 中看到 `openai-codex`，請將其視為舊版遷移輸入。不要建立新的
+`openai-codex` 設定檔。執行：
+
+```bash
+openclaw doctor --fix
+openclaw models auth list --provider openai
+```
+
+Doctor 會將舊版 `openai-codex:*` 設定檔 id 與
+`auth.order.openai-codex` 項目重寫為標準 `openai` 驗證路由。如需
+OpenAI 專用模型/執行階段路由，請參閱 [OpenAI](/zh-TW/providers/openai)。
+
+### 登入期間（命令列介面）
+
+對於支援在登入期間使用具名驗證設定檔的
+供應商，請使用 `openclaw models auth login --provider <id> --profile-id <profileId>`。
+
+```bash
+openclaw models auth login --provider openai --profile-id openai:ritsuko
+openclaw models auth login --provider openai --profile-id openai:lain
+```
+
+這是在同一個代理內，將同一供應商的多個 OAuth 登入
+分開保存的最簡單方式。
+
+當已儲存的供應商設定檔卡住、過期或綁定到
+錯誤帳戶，而一般登入命令持續重用它時，請使用 `--force`。`--force` 會刪除
+所選代理目錄中該供應商已儲存的驗證設定檔，然後
+再次執行相同的供應商驗證流程。它不會在
+供應商端撤銷憑證；當你需要
+供應商端失效時，請在供應商 dashboard 中輪替或撤銷它們。
+
+```bash
+openclaw models auth login --provider anthropic --force
+```
+
+### 每個 session（聊天命令）
+
+使用 `/model <alias-or-id>@<profileId>` 為目前 session 固定特定供應商憑證（範例設定檔 id：`anthropic:default`、`anthropic:work`）。
+
+使用 `/model`（或 `/model list`）取得精簡選擇器；使用 `/model status` 查看完整檢視（候選項 + 下一個驗證設定檔，以及已設定時的供應商端點詳細資訊）。
+
+### 每個代理（命令列介面覆寫）
+
+為代理設定明確的驗證設定檔順序覆寫（儲存在該代理的 SQLite 驗證狀態中）：
 
 ```bash
 openclaw models auth order get --provider anthropic
@@ -201,27 +259,31 @@ openclaw models auth order set --provider anthropic anthropic:default
 openclaw models auth order clear --provider anthropic
 ```
 
-使用 `--agent <id>` 指定特定代理；省略則使用已設定的預設代理。
-當你偵錯順序問題時，`openclaw models status --probe` 會將被省略的
-已儲存設定檔顯示為 `excluded_by_auth_order`，而不是默默跳過。
-當你偵錯冷卻問題時，請記得速率限制冷卻可能綁定到
-某一個模型 ID，而不是整個提供者設定檔。
+使用 `--agent <id>` 指定特定代理；省略它則使用已設定的預設代理。
+當你偵錯順序問題時，`openclaw models status --probe` 會將省略的
+已儲存設定檔顯示為 `excluded_by_auth_order`，而不是默默略過它們。
+當你偵錯冷卻問題時，請記住速率限制冷卻可能綁定
+到單一模型 id，而不是整個供應商設定檔。
+
+如果你為已在執行中的聊天變更驗證順序或設定檔釘選，
+請在該聊天中傳送 `/new` 或 `/reset` 以啟動全新 session。既有
+session 可以保留目前的模型/設定檔選擇，直到重設為止。
 
 ## 疑難排解
 
-###「找不到憑證」
+### 「找不到憑證」
 
-如果 Anthropic 設定檔遺失，請在
-**Gateway 主機**上設定 Anthropic API 金鑰，或設定 Anthropic setup-token 路徑，然後重新檢查：
+如果 Anthropic 設定檔缺失，請在
+**閘道主機**上設定 Anthropic API 金鑰，或設定 Anthropic setup-token 路徑，然後重新檢查：
 
 ```bash
 openclaw models status
 ```
 
-### 權杖即將過期/已過期
+### Token 即將過期/已過期
 
 執行 `openclaw models status` 以確認哪個設定檔即將過期。如果
-Anthropic 權杖設定檔遺失或已過期，請透過
+Anthropic token 設定檔缺失或已過期，請透過
 setup-token 重新整理該設定，或遷移到 Anthropic API 金鑰。
 
 ## 相關

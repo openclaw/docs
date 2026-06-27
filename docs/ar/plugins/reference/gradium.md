@@ -1,30 +1,31 @@
 ---
 read_when:
-    - أنت بصدد تثبيت Plugin gradium أو تهيئته أو تدقيقه
-summary: يضيف دعماً لموفّر تحويل النص إلى كلام.
+    - أنت تثبّت Plugin gradium أو تهيئه أو تدقّق فيه
+summary: يضيف دعم مزوّد تحويل النص إلى كلام.
 title: Plugin Gradium
 x-i18n:
-    generated_at: "2026-05-02T20:56:17Z"
+    generated_at: "2026-06-27T18:12:58Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b3b783c4a93c3ef0eda61b4d007d4aebea805b977484db44e62e3b718ca7dd09
+    source_hash: 4ae70f3e901d44c238d6e1abcec13f67c0d19df6f82d92e365c3ddf0355ea23d
     source_path: plugins/reference/gradium.md
     workflow: 16
 ---
 
 # Plugin Gradium
 
-يضيف دعم مزوّد تحويل النص إلى كلام.
+يضيف دعم موفر تحويل النص إلى كلام.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/gradium-speech`
-- مسار التثبيت: مضمّن في OpenClaw
+- مسار التثبيت: npm؛ ClawHub: `clawhub:@openclaw/gradium-speech`
 
-## الواجهة
+## السطح
 
 العقود: speechProviders
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
 - [gradium](/ar/providers/gradium)

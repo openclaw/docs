@@ -2,25 +2,26 @@
 read_when:
     - Sie installieren, konfigurieren oder prüfen das qa-lab-Plugin
 summary: OpenClaw-QA-Lab-Plugin mit privater Debugger-UI und Szenario-Runner.
-title: QA Lab-Plugin
+title: QA-Lab-Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:58:19Z"
+    generated_at: "2026-06-27T17:56:11Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a565d11bc2e1051685b6c067b695fbec980bfe21f50c98d5a616ed3dcbecb98e
+    source_hash: 0de3ac126939c822225cfd4bf75af594e6066f7992cacc71b1455638aab3af0b
     source_path: plugins/reference/qa-lab.md
     workflow: 16
 ---
 
-# QA Lab-Plugin
+# QA-Lab-Plugin
 
-OpenClaw QA Lab-Plugin mit privater Debugger-UI und Szenario-Runner.
+OpenClaw-QA-Lab-Plugin mit privater Debugger-Benutzeroberfläche und Szenario-Runner.
 
 ## Distribution
 
 - Paket: `@openclaw/qa-lab`
-- Installationsweg: nur Source-Checkout
+- Installationsroute: nur Source-Checkout
 
 ## Oberfläche
 
-Plugin
+Verträge: webSearchProviders

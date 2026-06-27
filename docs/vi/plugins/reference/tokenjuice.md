@@ -1,27 +1,28 @@
 ---
 read_when:
     - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin tokenjuice
-summary: Nén kết quả công cụ exec và bash bằng các bộ rút gọn tokenjuice.
+summary: Nén kết quả của công cụ exec và bash bằng các bộ rút gọn tokenjuice.
 title: Plugin Tokenjuice
 x-i18n:
-    generated_at: "2026-05-02T20:55:30Z"
+    generated_at: "2026-06-27T17:56:07Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2a6e6194d80faf6d261200f3b1b2e4c92d238b901efc4acd7ccdfee065b5f07b
+    source_hash: a51416caa94a17799e3a55c1d3b88bf2c026fd003317b86d7926cf11b9b81fab
     source_path: plugins/reference/tokenjuice.md
     workflow: 16
 ---
 
-# Plugin Tokenjuice
+# Plugin tokenjuice
 
-Compacts kết quả của công cụ exec và bash bằng các bộ rút gọn tokenjuice.
+Nén kết quả công cụ exec và bash bằng các bộ rút gọn tokenjuice.
 
 ## Phân phối
 
 - Gói: `@openclaw/tokenjuice`
-- Cách cài đặt: được bao gồm trong OpenClaw
+- Tuyến cài đặt: npm; ClawHub: `clawhub:@openclaw/tokenjuice`
 
-## Giao diện
+## Bề mặt
 
 contracts: agentToolResultMiddleware
 

@@ -1,50 +1,69 @@
 ---
 read_when:
-    - تريد تشغيل أو كتابة مسارات عمل `.prose`
-    - تريد تفعيل Plugin ‏OpenProse
-    - تحتاج إلى فهم تخزين الحالة
-summary: 'OpenProse: مسارات عمل `.prose`، وأوامر الشرطة المائلة، والحالة في OpenClaw'
+    - تريد تشغيل ملفات سير عمل .prose أو كتابتها
+    - تريد تفعيل Plugin OpenProse
+    - تحتاج إلى فهم كيفية ارتباط OpenProse بعناصر OpenClaw الأساسية
+sidebarTitle: OpenProse
+summary: OpenProse هو تنسيق سير عمل يرتكز على Markdown لجلسات الذكاء الاصطناعي متعددة الوكلاء. في OpenClaw، يأتي على هيئة Plugin يتضمن أمر شرطة مائلة /prose وحزمة مهارات.
 title: OpenProse
 x-i18n:
-    generated_at: "2026-04-24T07:57:46Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T18:21:55Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e1d6f3aa64c403daedaeaa2d7934b8474c0756fe09eed09efd1efeef62413e9e
+    source_hash: dde819215f99055c2a83ec32ed6e0700994654ca2d1d9c9dda98b71545f8a012
     source_path: prose.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenProse هو تنسيق مسارات عمل محمول يعتمد على Markdown أولًا لتنسيق جلسات الذكاء الاصطناعي. وفي OpenClaw يأتي على هيئة Plugin يثبّت حزمة Skills لـ OpenProse بالإضافة إلى أمر الشرطة المائلة `/prose`. وتعيش البرامج في ملفات `.prose` ويمكنها تشغيل عدة وكلاء فرعيين مع تدفق تحكم صريح.
+OpenProse هو تنسيق سير عمل محمول، يضع Markdown أولًا، لتنظيم جلسات الذكاء الاصطناعي. في OpenClaw يُشحن كـ Plugin يثبّت حزمة Skills خاصة بـ OpenProse وأمر شرطة مائلة `/prose`. تعيش البرامج في ملفات `.prose` ويمكنها إنشاء عدة وكلاء فرعيين مع تدفق تحكم صريح.
 
-الموقع الرسمي: [https://www.prose.md](https://www.prose.md)
+<CardGroup cols={3}>
+  <Card title="Install" icon="download" href="#install">
+    فعّل Plugin الخاص بـ OpenProse وأعد تشغيل Gateway.
+  </Card>
+  <Card title="Run a program" icon="play" href="#slash-command">
+    استخدم `/prose run` لتنفيذ ملف `.prose` أو برنامج بعيد.
+  </Card>
+  <Card title="Write programs" icon="pencil" href="#example">
+    ألّف سير عمل متعدد الوكلاء بخطوات متوازية ومتتابعة.
+  </Card>
+</CardGroup>
 
-## ما الذي يمكنه فعله
+## التثبيت
 
-- بحث وتركيب متعدد الوكلاء مع توازٍ صريح.
-- مسارات عمل قابلة للتكرار وآمنة من ناحية الموافقات (مراجعة الشيفرة، وفرز الحوادث، ومسارات محتوى).
-- برامج `.prose` قابلة لإعادة الاستخدام يمكنك تشغيلها عبر بيئات الوكلاء المدعومة.
+<Steps>
+  <Step title="Enable the plugin">
+    تكون الـ plugins المضمّنة معطلة افتراضيًا. فعّل OpenProse:
 
-## التثبيت + التفعيل
+    ```bash
+    openclaw plugins enable open-prose
+    ```
 
-تكون Plugins المضمنة معطلة افتراضيًا. فعّل OpenProse:
+  </Step>
+  <Step title="Restart the Gateway">
+    ```bash
+    openclaw gateway restart
+    ```
+  </Step>
+  <Step title="Verify">
+    ```bash
+    openclaw plugins list | grep prose
+    ```
 
-```bash
-openclaw plugins enable open-prose
-```
+    يجب أن ترى `open-prose` مفعّلًا. أصبح أمر Skills `/prose` متاحًا الآن
+    في الدردشة.
 
-أعد تشغيل Gateway بعد تفعيل Plugin.
+  </Step>
+</Steps>
 
-نسخة تطوير/checkout محلية: `openclaw plugins install ./path/to/local/open-prose-plugin`
-
-وثائق ذات صلة: [Plugins](/ar/tools/plugin)، [بيان Plugin](/ar/plugins/manifest)، [Skills](/ar/tools/skills).
+للنسخة المحلية: `openclaw plugins install ./path/to/local/open-prose-plugin`
 
 ## أمر الشرطة المائلة
 
-يسجل OpenProse الأمر `/prose` كأمر Skill يمكن للمستخدم استدعاؤه. وهو يوجّه إلى تعليمات OpenProse VM ويستخدم أدوات OpenClaw في الخلفية.
+يسجّل OpenProse الأمر `/prose` كأمر Skills يمكن للمستخدم استدعاؤه:
 
-أوامر شائعة:
-
-```
+```text
 /prose help
 /prose run <file.prose>
 /prose run <handle/slug>
@@ -54,7 +73,21 @@ openclaw plugins enable open-prose
 /prose update
 ```
 
-## مثال: ملف `.prose` بسيط
+يُحلّ `/prose run <handle/slug>` إلى `https://p.prose.md/<handle>/<slug>`.
+تُجلب عناوين URL المباشرة كما هي باستخدام أداة `web_fetch`.
+
+عمليات التشغيل البعيدة على المستوى الأعلى صريحة. أما الاستيرادات البعيدة داخل برنامج `.prose` فهي
+اعتماديات كود انتقالية: قبل أن يجلب OpenProse أي هدف `use` بعيد،
+يعرض قائمة الاستيراد المحلولة ويتطلب من المشغّل الرد بالنص نفسه تمامًا
+`approve remote prose imports` لتلك العملية.
+
+## ما الذي يمكنه فعله
+
+- بحث وتوليف متعدد الوكلاء مع توازٍ صريح.
+- سير عمل قابلة للتكرار وآمنة بالموافقة (مراجعة الكود، فرز الحوادث، خطوط إنتاج المحتوى).
+- برامج `.prose` قابلة لإعادة الاستخدام يمكنك تشغيلها عبر بيئات تشغيل الوكلاء المدعومة.
+
+## مثال: بحث وتوليف متوازيان
 
 ```prose
 # Research + synthesis with two agents running in parallel.
@@ -79,11 +112,27 @@ session "Merge the findings + draft into a final answer."
 context: { findings, draft }
 ```
 
+## ربط بيئة تشغيل OpenClaw
+
+تُربط برامج OpenProse بأساسيات OpenClaw:
+
+| مفهوم OpenProse         | أداة OpenClaw    |
+| ------------------------- | ---------------- |
+| إنشاء جلسة / أداة Task | `sessions_spawn` |
+| قراءة / كتابة ملف         | `read` / `write` |
+| جلب الويب                 | `web_fetch`      |
+
+<Warning>
+  إذا كانت قائمة السماح للأدوات لديك تحظر `sessions_spawn` أو `read` أو `write` أو
+  `web_fetch`، فستفشل برامج OpenProse. تحقق من
+  [إعدادات قائمة السماح للأدوات](/ar/gateway/config-tools).
+</Warning>
+
 ## مواقع الملفات
 
-يحتفظ OpenProse بالحالة تحت `.prose/` في مساحة العمل الخاصة بك:
+يحتفظ OpenProse بالحالة ضمن `.prose/` في مساحة عملك:
 
-```
+```text
 .prose/
 ├── .env
 ├── runs/
@@ -95,50 +144,60 @@ context: { findings, draft }
 └── agents/
 ```
 
-توجد الوكلاء الدائمون على مستوى المستخدم في:
+تعيش الوكلاء الدائمون على مستوى المستخدم في:
 
-```
+```text
 ~/.prose/agents/
 ```
 
-## أوضاع الحالة
+## خلفيات الحالة
 
-يدعم OpenProse عدة واجهات خلفية للحالة:
+<AccordionGroup>
+  <Accordion title="filesystem (default)">
+    تُكتب الحالة إلى `.prose/runs/...` في مساحة العمل. لا توجد
+    اعتماديات إضافية مطلوبة.
+  </Accordion>
+  <Accordion title="in-context">
+    حالة مؤقتة محفوظة في نافذة السياق. مناسبة للبرامج الصغيرة قصيرة العمر.
+  </Accordion>
+  <Accordion title="sqlite (experimental)">
+    يتطلب وجود الملف التنفيذي `sqlite3` في `PATH`.
+  </Accordion>
+  <Accordion title="postgres (experimental)">
+    يتطلب `psql` وسلسلة اتصال.
 
-- **filesystem** (الافتراضي): `.prose/runs/...`
-- **in-context**: مؤقت، للبرامج الصغيرة
-- **sqlite** (تجريبي): يتطلب الملف التنفيذي `sqlite3`
-- **postgres** (تجريبي): يتطلب `psql` وسلسلة اتصال
+    <Warning>
+      تتدفق بيانات اعتماد Postgres إلى سجلات الوكلاء الفرعيين. استخدم قاعدة بيانات مخصصة
+      بأقل الامتيازات اللازمة.
+    </Warning>
 
-ملاحظات:
+  </Accordion>
+</AccordionGroup>
 
-- يعد sqlite/postgres اختياريين وتجريبيين.
-- تنتقل بيانات اعتماد postgres إلى سجلات الوكلاء الفرعيين؛ استخدم قاعدة بيانات مخصصة ذات أقل قدر من الامتيازات.
+## الأمان
 
-## البرامج البعيدة
+تعامل مع ملفات `.prose` مثل الكود. راجعها قبل التشغيل، بما في ذلك استيرادات
+`use` البعيدة. تكون طلبات `/prose run https://...` على المستوى الأعلى صريحة، لكن
+الاستيرادات البعيدة الانتقالية تتطلب موافقة لكل عملية تشغيل قبل جلبها أو
+تنفيذها. استخدم قوائم السماح للأدوات في OpenClaw وبوابات الموافقة للتحكم في
+الآثار الجانبية. لسير العمل الحتمية المحكومة بالموافقة، قارن مع
+[Lobster](/ar/tools/lobster).
 
-يقوم `/prose run <handle/slug>` بتحليل المسار إلى `https://p.prose.md/<handle>/<slug>`.
-أما عناوين URL المباشرة فيتم جلبها كما هي. ويستخدم هذا أداة `web_fetch` ‏(أو `exec` من أجل POST).
+## ذات صلة
 
-## تعيين وقت تشغيل OpenClaw
+<CardGroup cols={2}>
+  <Card title="Skills reference" href="/ar/tools/skills" icon="puzzle-piece">
+    كيف تُحمَّل حزمة Skills الخاصة بـ OpenProse وما البوابات التي تنطبق.
+  </Card>
+  <Card title="Subagents" href="/ar/tools/subagents" icon="users">
+    طبقة التنسيق الأصلية متعددة الوكلاء في OpenClaw.
+  </Card>
+  <Card title="Text-to-speech" href="/ar/tools/tts" icon="volume-high">
+    أضف إخراجًا صوتيًا إلى سير عملك.
+  </Card>
+  <Card title="Slash commands" href="/ar/tools/slash-commands" icon="terminal">
+    جميع أوامر الدردشة المتاحة، بما في ذلك /prose.
+  </Card>
+</CardGroup>
 
-تُعيَّن برامج OpenProse إلى بدائيات OpenClaw:
-
-| مفهوم OpenProse            | أداة OpenClaw   |
-| -------------------------- | --------------- |
-| تشغيل جلسة / أداة Task tool | `sessions_spawn` |
-| قراءة/كتابة الملفات        | `read` / `write` |
-| جلب الويب                  | `web_fetch`     |
-
-إذا كانت قائمة السماح الخاصة بالأدوات تمنع هذه الأدوات، فستفشل برامج OpenProse. راجع [إعداد Skills](/ar/tools/skills-config).
-
-## الأمان + الموافقات
-
-تعامل مع ملفات `.prose` كما تتعامل مع الشيفرة. راجعها قبل التشغيل. واستخدم قوائم السماح الخاصة بالأدوات في OpenClaw وبوابات الموافقة للتحكم في الآثار الجانبية.
-
-وبالنسبة إلى مسارات العمل الحتمية والمحكومة بالموافقة، قارنها مع [Lobster](/ar/tools/lobster).
-
-## ذو صلة
-
-- [تحويل النص إلى كلام](/ar/tools/tts)
-- [تنسيق Markdown](/ar/concepts/markdown-formatting)
+الموقع الرسمي: [https://www.prose.md](https://www.prose.md)

@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Sie möchten die aktuelle OpenClaw-Dokumentation vom Terminal aus durchsuchen
-    - Sie müssen wissen, welche Hilfs-Binärdateien die Dokumentations-CLI per Shell aufruft
+    - Sie möchten die aktuellen OpenClaw-Dokumente über das Terminal durchsuchen
+    - Sie müssen wissen, welche gehostete Such-API die Dokumentations-CLI aufruft
 summary: CLI-Referenz für `openclaw docs` (Live-Dokumentationsindex durchsuchen)
 title: Dokumentation
 x-i18n:
-    generated_at: "2026-05-10T19:28:07Z"
+    generated_at: "2026-06-27T17:18:21Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c0f733083bf455695ed24b13db6fe53e95aa3804fa8696a2fd29e749f24324c8
+    source_hash: f8be22f689d40ffec29df9562b69444c0f8b9bb607dfcb79de20b3023e0eb30a
     source_path: cli/docs.md
     workflow: 16
 ---
 
 # `openclaw docs`
 
-Durchsuchen Sie den Live-Index der OpenClaw-Dokumentation vom Terminal aus. Der Befehl ruft den öffentlichen, von Mintlify gehosteten MCP-Suchendpunkt der Dokumentation unter `https://docs.openclaw.ai/mcp.SearchOpenClaw` auf und stellt die Ergebnisse in Ihrem Terminal dar.
+Durchsuchen Sie den Live-Index der OpenClaw-Dokumentation vom Terminal aus. Der Befehl ruft die von Cloudflare gehostete Such-API der OpenClaw-Dokumentation auf und rendert die Ergebnisse in Ihrem Terminal.
 
 ## Verwendung
 
@@ -26,9 +27,9 @@ openclaw docs <query...>            # search the live docs index
 
 Argumente:
 
-| Argument     | Beschreibung                                                                                         |
-| ------------ | ---------------------------------------------------------------------------------------------------- |
-| `[query...]` | Freiform-Suchabfrage. Abfragen mit mehreren Wörtern werden mit Leerzeichen verbunden und als eine gesendet. |
+| Argument     | Beschreibung                                                                                          |
+| ------------ | ----------------------------------------------------------------------------------------------------- |
+| `[query...]` | Frei formulierte Suchanfrage. Mehrwort-Abfragen werden mit Leerzeichen verbunden und als eine gesendet. |
 
 ## Beispiele
 
@@ -38,27 +39,17 @@ openclaw docs sandbox allowHostControl
 openclaw docs gateway token secretref
 ```
 
-Ohne Abfrage gibt `openclaw docs` die Einstiegs-URL der Dokumentation sowie einen Beispiel-Suchbefehl aus, anstatt eine Suche auszuführen.
+Ohne Abfrage gibt `openclaw docs` die URL des Dokumentations-Einstiegspunkts sowie einen Beispiel-Suchbefehl aus, statt eine Suche auszuführen.
 
 ## Funktionsweise
 
-`openclaw docs` ruft die `mcporter`-CLI auf, um das MCP-Tool für die Dokumentationssuche auszuführen, und parst anschließend die Blöcke `Title: / Link: / Content:` aus der Tool-Ausgabe in eine Ergebnisliste.
-
-Um `mcporter` aufzulösen, prüft OpenClaw der Reihe nach:
-
-1. `mcporter` in `PATH` (wird direkt verwendet, wenn vorhanden).
-2. `pnpm dlx mcporter ...`, wenn `pnpm` installiert ist.
-3. `npx -y mcporter ...`, wenn `npx` installiert ist.
-
-Wenn keines davon verfügbar ist, schlägt der Befehl mit einem Hinweis fehl, `pnpm` zu installieren (`npm install -g pnpm`).
-
-Der Suchaufruf verwendet ein festes Timeout von 30 Sekunden. Ergebnisausschnitte werden auf etwa 220 Zeichen pro Eintrag gekürzt.
+`openclaw docs` ruft `https://docs.openclaw.ai/api/search` auf und rendert die JSON-Ergebnisse. Der Suchaufruf verwendet ein festes Timeout von 30 Sekunden.
 
 ## Ausgabe
 
-In einem Rich-Terminal (TTY) werden Ergebnisse als Überschrift gefolgt von einer Aufzählungsliste dargestellt. Jeder Aufzählungspunkt zeigt den Seitentitel, die verlinkte Dokumentations-URL und in der nächsten Zeile einen kurzen Ausschnitt. Leere Ergebnisse geben "Keine Ergebnisse." aus.
+In einem Rich-(TTY)-Terminal werden Ergebnisse als Überschrift gefolgt von einer Aufzählungsliste gerendert. Jeder Aufzählungspunkt zeigt den Seitentitel, die verlinkte Dokumentations-URL und in der nächsten Zeile einen kurzen Ausschnitt. Leere Ergebnisse geben „Keine Ergebnisse.“ aus.
 
-In nicht-formatierter Ausgabe (per Pipe, `--no-color`, Skripte) werden dieselben Daten als Markdown dargestellt:
+In nicht angereicherter Ausgabe (weitergeleitet, `--no-color`, Skripte) werden dieselben Daten als Markdown gerendert:
 
 ```markdown
 # Docs search: <query>
@@ -69,12 +60,12 @@ In nicht-formatierter Ausgabe (per Pipe, `--no-color`, Skripte) werden dieselben
 
 ## Exit-Codes
 
-| Code | Bedeutung                                                         |
-| ---- | ----------------------------------------------------------------- |
-| `0`  | Suche erfolgreich (einschließlich Antworten ohne Ergebnisse).     |
-| `1`  | Der MCP-Tool-Aufruf ist fehlgeschlagen; stderr wird inline ausgegeben. |
+| Code | Bedeutung                                                                 |
+| ---- | ------------------------------------------------------------------------- |
+| `0`  | Suche erfolgreich (einschließlich Antworten ohne Ergebnisse).             |
+| `1`  | Der Aufruf der gehosteten Such-API der Dokumentation ist fehlgeschlagen; stderr wird inline ausgegeben. |
 
-## Verwandt
+## Verwandte Themen
 
 - [CLI-Referenz](/de/cli)
 - [Live-Dokumentation](https://docs.openclaw.ai)

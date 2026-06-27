@@ -1,50 +1,63 @@
 ---
 read_when:
-    - Mengubah perenderan keluaran asisten di UI Kontrol
-    - Men-debug arahan presentasi `[embed ...]`, `MEDIA:`, balasan, atau audio
-summary: Protokol kode singkat keluaran kaya untuk sematan, media, petunjuk audio, dan balasan
-title: Protokol keluaran kaya
+    - Mengubah perenderan output asisten di Control UI
+    - Men-debug `[embed ...]`, media terstruktur, balasan, atau direktif presentasi audio
+summary: Protokol keluaran kaya untuk media terstruktur, sematan, petunjuk audio, dan balasan
+title: Protokol output kaya
 x-i18n:
-    generated_at: "2026-05-02T22:22:57Z"
+    generated_at: "2026-06-27T18:11:10Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8e0c365029c26d198090e1f181703e3979394afb0dfa1742f9c088885650de8b
+    source_hash: f5915f0ba29e6b0d27c99b1c7fdc632f1b58a4d96eae26bf6670205bd4fb88b1
     source_path: reference/rich-output-protocol.md
     workflow: 16
 ---
 
-Keluaran asisten dapat membawa sekumpulan kecil direktif pengiriman/rendering:
+Output asisten dapat membawa sekumpulan kecil direktif pengiriman/perenderan:
 
-- `MEDIA:` untuk pengiriman lampiran
-- `[[audio_as_voice]]` untuk petunjuk penyajian audio
+- field terstruktur `mediaUrl` / `mediaUrls` untuk pengiriman lampiran
+- `[[audio_as_voice]]` untuk petunjuk presentasi audio
 - `[[reply_to_current]]` / `[[reply_to:<id>]]` untuk metadata balasan
 - `[embed ...]` untuk rendering kaya Control UI
 
-Lampiran `MEDIA:` jarak jauh harus berupa URL `https:` publik. `http:` biasa,
-loopback, link-local, privat, dan nama host internal diabaikan sebagai direktif
-lampiran; pengambil media sisi server tetap memberlakukan penjaga jaringan
-mereka sendiri.
+Lampiran media jarak jauh harus berupa URL `https:` publik. `http:` biasa,
+loopback, link-local, privat, dan hostname internal diabaikan sebagai direktif
+lampiran; pengambil media sisi server tetap menerapkan penjaga jaringannya sendiri.
 
-Lampiran `MEDIA:` lokal dapat menggunakan path absolut, path relatif terhadap
-workspace, atau path relatif terhadap home `~/`. Lampiran tersebut tetap melewati
-kebijakan baca file agen dan pemeriksaan jenis media sebelum pengiriman.
+Lampiran media lokal dapat menggunakan path absolut, path relatif terhadap workspace, atau
+path `~/` relatif terhadap home. Lampiran tersebut tetap melewati kebijakan baca-file agen dan
+pemeriksaan jenis media sebelum pengiriman.
 
-Sintaks gambar Markdown biasa tetap berupa teks secara default. Channel yang
-secara sengaja memetakan balasan gambar Markdown ke lampiran media memilih ikut
-di adaptor keluar mereka; Telegram melakukan ini agar `![alt](url)` tetap dapat
-menjadi balasan media.
+<Warning>
+Jangan mengeluarkan perintah teks untuk lampiran dari alat, plugin, blok streaming,
+output browser, atau aksi pesan. Gunakan field media terstruktur sebagai gantinya.
 
-Direktif ini terpisah. `MEDIA:` dan tag balasan/suara tetap menjadi metadata pengiriman; `[embed ...]` adalah jalur rendering kaya khusus web.
-Media hasil alat tepercaya menggunakan parser `MEDIA:` / `[[audio_as_voice]]` yang sama sebelum pengiriman, sehingga keluaran alat teks tetap dapat menandai lampiran audio sebagai catatan suara.
+Payload message-tool yang valid:
 
-Saat streaming blok diaktifkan, `MEDIA:` tetap menjadi metadata pengiriman
-tunggal untuk sebuah giliran. Jika URL media yang sama dikirim dalam blok yang
-di-stream dan diulang dalam payload asisten final, OpenClaw mengirim lampiran
-sekali dan menghapus duplikat dari payload final.
+```json
+{ "message": "Here is your image.", "mediaUrl": "/workspace/image.png" }
+```
+
+Teks balasan akhir asisten lama mungkin masih dinormalisasi untuk kompatibilitas, tetapi
+itu bukan protokol plugin/alat umum.
+</Warning>
+
+Sintaks gambar Markdown biasa tetap berupa teks secara default. Saluran yang secara sengaja
+memetakan balasan gambar Markdown ke lampiran media ikut serta di adaptor keluar
+mereka; Telegram melakukan ini sehingga `![alt](url)` tetap dapat menjadi balasan media.
+
+Direktif ini terpisah. Field media terstruktur dan tag balasan/suara adalah
+metadata pengiriman; `[embed ...]` adalah jalur render kaya khusus web.
+
+Saat streaming blok diaktifkan, media harus dibawa pada field payload terstruktur.
+Jika URL media yang sama dikirim dalam blok yang di-streaming dan diulang dalam
+payload akhir asisten, OpenClaw mengirim lampiran sekali dan menghapus duplikat
+dari payload akhir.
 
 ## `[embed ...]`
 
-`[embed ...]` adalah satu-satunya sintaks rendering kaya yang berhadapan dengan agen untuk Control UI.
+`[embed ...]` adalah satu-satunya sintaks render kaya yang menghadap agen untuk Control UI.
 
 Contoh self-closing:
 
@@ -54,12 +67,12 @@ Contoh self-closing:
 
 Aturan:
 
-- `[view ...]` tidak lagi valid untuk keluaran baru.
+- `[view ...]` tidak lagi valid untuk output baru.
 - Shortcode embed dirender hanya di permukaan pesan asisten.
 - Hanya embed yang didukung URL yang dirender. Gunakan `ref="..."` atau `url="..."`.
 - Shortcode embed HTML inline berbentuk blok tidak dirender.
 - UI web menghapus shortcode dari teks yang terlihat dan merender embed secara inline.
-- `MEDIA:` bukan alias embed dan tidak boleh digunakan untuk rendering embed kaya.
+- Media terstruktur bukan alias embed dan tidak boleh digunakan untuk rendering embed kaya.
 
 ## Bentuk rendering tersimpan
 

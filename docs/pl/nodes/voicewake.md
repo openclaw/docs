@@ -1,36 +1,40 @@
 ---
 read_when:
-    - Zmiana zachowania lub ustawień domyślnych głosowych słów wybudzających
-    - Dodawanie nowych platform Node wymagających synchronizacji słowa wybudzającego
-summary: Globalne głosowe słowa wybudzające (zarządzane przez Gateway) i sposób ich synchronizacji między węzłami
-title: Wybudzanie głosem
+    - Zmiana zachowania lub wartości domyślnych słów wybudzających sterowania głosowego
+    - Dodawanie nowych platform Node wymagających synchronizacji frazy wybudzającej
+summary: Globalne słowa wybudzania głosem (należące do Gateway) i sposób ich synchronizacji między węzłami
+title: Wybudzanie głosowe
 x-i18n:
-    generated_at: "2026-05-06T09:20:33Z"
+    generated_at: "2026-06-27T17:45:36Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a284cbe3e12784a8d7a3eab6ba8ae230123557bca7593c956111199b94b91b73
+    source_hash: 3c57955e8061eca2f9fec83500e829f183cd3ef9f794bf385823a28f9c89b0a4
     source_path: nodes/voicewake.md
     workflow: 16
 ---
 
-OpenClaw traktuje **słowa wybudzające jako jedną globalną listę** należącą do **Gateway**.
+OpenClaw traktuje **słowa wybudzające jako jedną globalną listę**, której właścicielem jest **Gateway**.
 
 - Nie ma **niestandardowych słów wybudzających dla poszczególnych węzłów**.
-- **Dowolny interfejs węzła/aplikacji może edytować** tę listę; zmiany są utrwalane przez Gateway i rozgłaszane do wszystkich.
-- macOS i iOS zachowują lokalne przełączniki **włączenia/wyłączenia wybudzania głosem** (lokalny UX i uprawnienia się różnią).
-- Android obecnie utrzymuje wybudzanie głosem wyłączone i używa ręcznego przepływu mikrofonu na karcie Głos.
+- **Interfejs dowolnego węzła/aplikacji może edytować** listę; zmiany są utrwalane przez Gateway i rozsyłane do wszystkich.
+- macOS i iOS zachowują lokalne przełączniki **włączonego/wyłączonego wybudzania głosowego** (lokalny UX i uprawnienia się różnią).
+- Android obecnie utrzymuje wybudzanie głosowe wyłączone i używa ręcznego przepływu mikrofonu na karcie Głos.
 
 ## Przechowywanie (host Gateway)
 
-Słowa wybudzające są przechowywane na maszynie Gateway w:
+Słowa wybudzające i reguły routingu są przechowywane w bazie danych stanu gateway:
 
-- `~/.openclaw/settings/voicewake.json`
+- `~/.openclaw/state/openclaw.sqlite`
 
-Kształt:
+Aktywne tabele to:
 
-```json
-{ "triggers": ["openclaw", "claude", "computer"], "updatedAtMs": 1730000000000 }
-```
+- `voicewake_triggers`
+- `voicewake_routing_config`
+- `voicewake_routing_routes`
+
+Starsze pliki `settings/voicewake.json` i `settings/voicewake-routing.json` są
+wyłącznie danymi wejściowymi migracji doctor; runtime odczytuje i zapisuje tabele SQLite.
 
 ## Protokół
 
@@ -41,7 +45,7 @@ Kształt:
 
 Uwagi:
 
-- Wyzwalacze są normalizowane (przycinane, puste usuwane). Puste listy wracają do wartości domyślnych.
+- Wyzwalacze są normalizowane (przycinane, puste wartości są usuwane). Puste listy wracają do wartości domyślnych.
 - Limity są egzekwowane ze względów bezpieczeństwa (ograniczenia liczby/długości).
 
 ### Metody routingu (wyzwalacz → cel)
@@ -60,7 +64,7 @@ Kształt `VoiceWakeRoutingConfig`:
 }
 ```
 
-Cele tras obsługują dokładnie jedno z:
+Cele tras obsługują dokładnie jedną z poniższych postaci:
 
 - `{ "mode": "current" }`
 - `{ "agentId": "main" }`
@@ -73,28 +77,28 @@ Cele tras obsługują dokładnie jedno z:
 
 Kto je otrzymuje:
 
-- Wszyscy klienci WebSocket (aplikacja macOS, WebChat itp.)
-- Wszystkie połączone węzły (iOS/Android), a także przy połączeniu węzła jako początkowe wypchnięcie „bieżącego stanu”.
+- Wszyscy klienci WebSocket (aplikacja macOS, WebChat itd.)
+- Wszystkie połączone węzły (iOS/Android), a także przy połączeniu węzła jako początkowe wysłanie „bieżącego stanu”.
 
 ## Zachowanie klienta
 
 ### Aplikacja macOS
 
 - Używa globalnej listy do bramkowania wyzwalaczy `VoiceWakeRuntime`.
-- Edycja „Słów wyzwalających” w ustawieniach wybudzania głosem wywołuje `voicewake.set`, a następnie polega na rozgłoszeniu, aby utrzymać synchronizację innych klientów.
+- Edycja „Słów wyzwalających” w ustawieniach wybudzania głosowego wywołuje `voicewake.set`, a następnie polega na rozgłoszeniu, aby utrzymać synchronizację innych klientów.
 
 ### Węzeł iOS
 
-- Używa globalnej listy do wykrywania wyzwalaczy przez `VoiceWakeManager`.
-- Edycja słów wybudzających w Ustawieniach wywołuje `voicewake.set` (przez Gateway WS) i jednocześnie utrzymuje responsywne lokalne wykrywanie słów wybudzających.
+- Używa globalnej listy do wykrywania wyzwalaczy `VoiceWakeManager`.
+- Edycja słów wybudzających w ustawieniach wywołuje `voicewake.set` (przez Gateway WS) i utrzymuje lokalne wykrywanie słów wybudzających w gotowości.
 
 ### Węzeł Android
 
-- Wybudzanie głosem jest obecnie wyłączone w środowisku uruchomieniowym/ustawieniach Androida.
-- Głos na Androidzie używa ręcznego przechwytywania mikrofonu na karcie Głos zamiast wyzwalaczy słów wybudzających.
+- Wybudzanie głosowe jest obecnie wyłączone w runtime/ustawieniach Androida.
+- Głos w Androidzie używa ręcznego przechwytywania mikrofonu na karcie Głos zamiast wyzwalaczy słów wybudzających.
 
 ## Powiązane
 
 - [Tryb rozmowy](/pl/nodes/talk)
-- [Notatki audio i głosowe](/pl/nodes/audio)
+- [Dźwięk i notatki głosowe](/pl/nodes/audio)
 - [Rozumienie multimediów](/pl/nodes/media-understanding)

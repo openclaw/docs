@@ -1,29 +1,30 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin amazon-bedrock-mantle
-summary: เพิ่มการรองรับผู้ให้บริการโมเดล Amazon Bedrock Mantle ให้กับ OpenClaw.
-title: Plugin Mantle สำหรับ Amazon Bedrock
+summary: Plugin ผู้ให้บริการ Amazon Bedrock Mantle ของ OpenClaw สำหรับการกำหนดเส้นทางโมเดลที่เข้ากันได้กับ OpenAI.
+title: Plugin Amazon Bedrock Mantle
 x-i18n:
-    generated_at: "2026-05-02T20:48:36Z"
+    generated_at: "2026-06-27T17:59:27Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 48212e4eefdc393b9ff6a9fa7b74f4e3960b0b922b95141aeaf41a3a667b1f4e
+    source_hash: 18725aa4678f967a5d34a2c951c11cc371e934abe62fde7616124157ebdb3799
     source_path: plugins/reference/amazon-bedrock-mantle.md
     workflow: 16
 ---
 
 # Plugin Amazon Bedrock Mantle
 
-เพิ่มการรองรับผู้ให้บริการโมเดล Amazon Bedrock Mantle ให้กับ OpenClaw
+Plugin ผู้ให้บริการ OpenClaw Amazon Bedrock Mantle สำหรับการกำหนดเส้นทางโมเดลที่เข้ากันได้กับ OpenAI
 
 ## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/amazon-bedrock-mantle-provider`
-- เส้นทางการติดตั้ง: รวมอยู่ใน OpenClaw
+- เส้นทางการติดตั้ง: npm; ClawHub
 
 ## พื้นผิว
 
-providers: amazon-bedrock-mantle
+ผู้ให้บริการ: amazon-bedrock-mantle
 
 ## เอกสารที่เกี่ยวข้อง
 

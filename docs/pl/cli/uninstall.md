@@ -1,31 +1,32 @@
 ---
 read_when:
-    - Chcesz usunąć usługę gateway i/lub stan lokalny
-    - Najpierw chcesz wykonać symulację
-summary: Dokumentacja CLI dla `openclaw uninstall` (usuwanie usługi gateway i danych lokalnych)
+    - Chcesz usunąć usługę Gateway i/lub stan lokalny
+    - Chcesz najpierw próbę na sucho
+summary: Dokumentacja referencyjna CLI dla `openclaw uninstall` (usuń usługę Gateway + dane lokalne)
 title: Odinstalowanie
 x-i18n:
-    generated_at: "2026-04-24T09:04:41Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T17:24:11Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b774fc006e989068b9126aff2a72888fd808a2e0e3d5ea8b57e6ab9d9f1b63ee
+    source_hash: f90fa8cf513e2e8cd422c3b8a880e7fd20fb71131a3ec88260e765daa2ace543
     source_path: cli/uninstall.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw uninstall`
 
-Odinstaluj usługę gateway + dane lokalne (CLI pozostaje).
+Odinstaluj usługę Gateway + dane lokalne (CLI pozostaje).
 
 Opcje:
 
-- `--service`: usuń usługę gateway
+- `--service`: usuń usługę Gateway
 - `--state`: usuń stan i konfigurację
-- `--workspace`: usuń katalogi obszaru roboczego
+- `--workspace`: usuń katalogi przestrzeni roboczych
 - `--app`: usuń aplikację macOS
-- `--all`: usuń usługę, stan, obszar roboczy i aplikację
+- `--all`: usuń usługę, stan, przestrzeń roboczą i aplikację
 - `--yes`: pomiń prośby o potwierdzenie
-- `--non-interactive`: wyłącz prompty; wymaga `--yes`
+- `--non-interactive`: wyłącz monity; wymaga `--yes`
 - `--dry-run`: wypisz działania bez usuwania plików
 
 Przykłady:
@@ -41,11 +42,12 @@ openclaw uninstall --dry-run
 
 Uwagi:
 
-- Najpierw uruchom `openclaw backup create`, jeśli chcesz mieć możliwy do przywrócenia snapshot przed usunięciem stanu lub obszarów roboczych.
-- `--all` to skrót do jednoczesnego usunięcia usługi, stanu, obszaru roboczego i aplikacji.
+- Najpierw uruchom `openclaw backup create`, jeśli chcesz mieć możliwą do przywrócenia migawkę przed usunięciem stanu lub przestrzeni roboczych.
+- `--state` zachowuje skonfigurowane katalogi przestrzeni roboczych, chyba że wybrano też `--workspace`.
+- `--all` to skrót do jednoczesnego usunięcia usługi, stanu, przestrzeni roboczej i aplikacji.
 - `--non-interactive` wymaga `--yes`.
 
 ## Powiązane
 
-- [CLI reference](/pl/cli)
-- [Uninstall](/pl/install/uninstall)
+- [Dokumentacja CLI](/pl/cli)
+- [Odinstalowanie](/pl/install/uninstall)

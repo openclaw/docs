@@ -1,16 +1,18 @@
 ---
 read_when:
-    - คุณต้องการการดึงข้อมูลจากเว็บที่รองรับด้วย Firecrawl
-    - คุณต้องมีคีย์ API ของ Firecrawl
-    - คุณต้องการใช้ Firecrawl เป็นผู้ให้บริการ web_search
-    - คุณต้องการการดึงข้อมูลแบบป้องกันบอตสำหรับ web_fetch
-summary: การค้นหา การสแครป และการถอยกลับไปใช้ web_fetch ของ Firecrawl
+    - คุณต้องการการดึงข้อมูลเว็บที่รองรับด้วย Firecrawl
+    - คุณต้องการ Firecrawl web_fetch แบบไม่ใช้คีย์
+    - คุณต้องมีคีย์ API ของ Firecrawl สำหรับการค้นหาหรือขีดจำกัดที่สูงขึ้น
+    - คุณต้องการ Firecrawl เป็นผู้ให้บริการ web_search
+    - คุณต้องการการดึงข้อมูลแบบต้านบอตสำหรับ web_fetch
+summary: การค้นหา การสเครป และ fallback ของ web_fetch สำหรับ Firecrawl
 title: Firecrawl
 x-i18n:
-    generated_at: "2026-05-02T10:31:05Z"
+    generated_at: "2026-06-27T18:27:30Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 0570fde055cf8028cddf78f1ba19225d10cccd0662f45d063f23a39b4a82a7e0
+    source_hash: e8f6ef7ea3711e8e3e55d6eec4a99397dec4efc548c7192924fdd5850cb270bf
     source_path: tools/firecrawl.md
     workflow: 16
 ---
@@ -18,16 +20,27 @@ x-i18n:
 OpenClaw สามารถใช้ **Firecrawl** ได้สามวิธี:
 
 - เป็นผู้ให้บริการ `web_search`
-- เป็นเครื่องมือ Plugin แบบระบุชัด: `firecrawl_search` และ `firecrawl_scrape`
+- เป็นเครื่องมือ Plugin แบบระบุชัดเจน: `firecrawl_search` และ `firecrawl_scrape`
 - เป็นตัวแยกข้อมูลสำรองสำหรับ `web_fetch`
 
-Firecrawl เป็นบริการแยกข้อมูล/ค้นหาแบบโฮสต์ที่รองรับการหลบเลี่ยงบอตและการแคช
-ซึ่งช่วยกับเว็บไซต์ที่ใช้ JS หนักหรือหน้าที่บล็อกการ fetch ผ่าน HTTP แบบธรรมดา
+นี่คือบริการค้นหา/แยกข้อมูลแบบโฮสต์ที่รองรับการหลบเลี่ยงบอตและการแคช
+ซึ่งช่วยกับไซต์ที่ใช้ JS หนักหรือหน้าที่บล็อกการดึงข้อมูล HTTP แบบธรรมดา
 
-## รับ API key
+## ติดตั้ง Plugin
 
-1. สร้างบัญชี Firecrawl และสร้าง API key
-2. เก็บไว้ในการกำหนดค่า หรือตั้งค่า `FIRECRAWL_API_KEY` ในสภาพแวดล้อมของ Gateway
+ติดตั้ง Plugin ทางการ แล้วรีสตาร์ท Gateway:
+
+```bash
+openclaw plugins install @openclaw/firecrawl-plugin
+openclaw gateway restart
+```
+
+## web_fetch แบบไม่ต้องใช้คีย์และ API keys
+
+ตัวสำรอง `web_fetch` ของ Firecrawl แบบโฮสต์ที่เลือกไว้อย่างชัดเจนรองรับการเข้าถึงระดับเริ่มต้น
+โดยไม่ต้องใช้ API key เพิ่ม `FIRECRAWL_API_KEY` ในสภาพแวดล้อมของ Gateway
+หรือกำหนดค่าเมื่อคุณต้องการขีดจำกัดที่สูงขึ้น Firecrawl `web_search` และ
+`firecrawl_scrape` ต้องใช้ API key
 
 ## กำหนดค่าการค้นหาของ Firecrawl
 
@@ -58,23 +71,29 @@ Firecrawl เป็นบริการแยกข้อมูล/ค้นห
 
 หมายเหตุ:
 
-- การเลือก Firecrawl ในการเริ่มต้นใช้งานหรือ `openclaw configure --section web` จะเปิดใช้ Plugin Firecrawl ที่มาพร้อมกับระบบโดยอัตโนมัติ
+- การเลือก Firecrawl ในขั้นตอนเริ่มต้นใช้งานหรือ `openclaw configure --section web` จะเปิดใช้ Firecrawl Plugin ที่ติดตั้งไว้โดยอัตโนมัติ
 - `web_search` ที่ใช้ Firecrawl รองรับ `query` และ `count`
 - สำหรับการควบคุมเฉพาะของ Firecrawl เช่น `sources`, `categories` หรือการ scrape ผลลัพธ์ ให้ใช้ `firecrawl_search`
-- ค่าเริ่มต้นของ `baseUrl` คือ Firecrawl แบบโฮสต์ที่ `https://api.firecrawl.dev` การ override แบบ self-hosted อนุญาตเฉพาะสำหรับ endpoint ส่วนตัว/ภายในเท่านั้น; HTTP จะยอมรับเฉพาะสำหรับเป้าหมายส่วนตัวเหล่านั้น
-- `FIRECRAWL_BASE_URL` เป็น env สำรองร่วมสำหรับ URL ฐานของการค้นหาและการ scrape ของ Firecrawl
+- ค่าเริ่มต้นของ `baseUrl` คือ Firecrawl แบบโฮสต์ที่ `https://api.firecrawl.dev` อนุญาตให้แทนที่ด้วยแบบ self-hosted ได้เฉพาะสำหรับปลายทางส่วนตัว/ภายในเท่านั้น และยอมรับ HTTP เฉพาะสำหรับเป้าหมายส่วนตัวเหล่านั้น
+- `FIRECRAWL_BASE_URL` คือ env สำรองร่วมสำหรับ URL ฐานของการค้นหาและการ scrape ของ Firecrawl
 
-## กำหนดค่า Firecrawl scrape + ตัวสำรองของ web_fetch
+## กำหนดค่าตัวสำรอง Firecrawl web_fetch
 
 ```json5
 {
+  tools: {
+    web: {
+      fetch: {
+        provider: "firecrawl", // explicit selection enables keyless fallback
+      },
+    },
+  },
   plugins: {
     entries: {
       firecrawl: {
         enabled: true,
         config: {
           webFetch: {
-            apiKey: "FIRECRAWL_API_KEY_HERE",
             baseUrl: "https://api.firecrawl.dev",
             onlyMainContent: true,
             maxAgeMs: 172800000,
@@ -89,13 +108,15 @@ Firecrawl เป็นบริการแยกข้อมูล/ค้นห
 
 หมายเหตุ:
 
-- ความพยายามใช้ Firecrawl เป็นตัวสำรองจะทำงานเฉพาะเมื่อมี API key (`plugins.entries.firecrawl.config.webFetch.apiKey` หรือ `FIRECRAWL_API_KEY`)
-- `maxAgeMs` ควบคุมว่าผลลัพธ์ที่แคชไว้มีอายุได้มากเท่าไร (มิลลิวินาที) ค่าเริ่มต้นคือ 2 วัน
-- การกำหนดค่าเก่า `tools.web.fetch.firecrawl.*` จะถูกย้ายโดยอัตโนมัติด้วย `openclaw doctor --fix`
-- การ override URL สำหรับ Firecrawl scrape/base ใช้กฎแบบโฮสต์/ส่วนตัวเดียวกับการค้นหา: ทราฟฟิกแบบโฮสต์สาธารณะใช้ `https://api.firecrawl.dev`; การ override แบบ self-hosted ต้อง resolve ไปยัง endpoint ส่วนตัว/ภายใน
-- `firecrawl_scrape` จะปฏิเสธ URL เป้าหมายที่เห็นได้ชัดว่าเป็นส่วนตัว, loopback, metadata และไม่ใช่ HTTP(S) ก่อนส่งต่อไปยัง Firecrawl โดยตรงตามสัญญาความปลอดภัยของเป้าหมาย `web_fetch` สำหรับการเรียก Firecrawl scrape แบบระบุชัด
+- ตัวสำรอง Firecrawl `web_fetch` ที่เลือกไว้อย่างชัดเจนทำงานได้โดยไม่ต้องใช้ API key เมื่อกำหนดค่าแล้ว OpenClaw จะส่ง `plugins.entries.firecrawl.config.webFetch.apiKey` หรือ `FIRECRAWL_API_KEY` สำหรับขีดจำกัดที่สูงขึ้น
+- การเลือก Firecrawl ระหว่างขั้นตอนเริ่มต้นใช้งานหรือ `openclaw configure --section web` จะเปิดใช้ Plugin และเลือก Firecrawl สำหรับ `web_fetch` เว้นแต่ว่ามีผู้ให้บริการ fetch รายอื่นกำหนดค่าไว้แล้ว
+- `firecrawl_scrape` ต้องใช้ API key
+- `maxAgeMs` ควบคุมว่าผลลัพธ์ที่แคชไว้เก่าได้แค่ไหน (มิลลิวินาที) ค่าเริ่มต้นคือ 2 วัน
+- การกำหนดค่า legacy `tools.web.fetch.firecrawl.*` จะถูกย้ายโดยอัตโนมัติด้วย `openclaw doctor --fix`
+- การแทนที่ URL ของ Firecrawl scrape/base ใช้กฎโฮสต์/ส่วนตัวเดียวกับการค้นหา: ทราฟฟิกโฮสต์สาธารณะใช้ `https://api.firecrawl.dev`; การแทนที่แบบ self-hosted ต้อง resolve ไปยังปลายทางส่วนตัว/ภายใน
+- `firecrawl_scrape` ปฏิเสธ URL เป้าหมายที่เห็นได้ชัดว่าเป็นส่วนตัว, loopback, metadata และไม่ใช่ HTTP(S) ก่อนส่งต่อไปยัง Firecrawl ให้ตรงกับสัญญาความปลอดภัยของเป้าหมาย `web_fetch` สำหรับการเรียก Firecrawl scrape แบบระบุชัดเจน
 
-`firecrawl_scrape` ใช้การตั้งค่าและ env vars ชุดเดียวกันจาก `plugins.entries.firecrawl.config.webFetch.*`
+`firecrawl_scrape` ใช้การตั้งค่า `plugins.entries.firecrawl.config.webFetch.*` และ env vars เดียวกันซ้ำ รวมถึง API key ที่จำเป็น
 
 ### Firecrawl แบบ self-hosted
 
@@ -103,14 +124,13 @@ Firecrawl เป็นบริการแยกข้อมูล/ค้นห
 `plugins.entries.firecrawl.config.webFetch.baseUrl` หรือ `FIRECRAWL_BASE_URL`
 เมื่อคุณรัน Firecrawl เอง OpenClaw ยอมรับ `http://` เฉพาะสำหรับเป้าหมาย loopback,
 เครือข่ายส่วนตัว, `.local`, `.internal` หรือ `.localhost` เท่านั้น โฮสต์แบบกำหนดเองสาธารณะ
-จะถูกปฏิเสธเพื่อไม่ให้ API key ของ Firecrawl ถูกส่งไปยัง endpoint ใด ๆ โดย
-ไม่ตั้งใจ
+จะถูกปฏิเสธ เพื่อไม่ให้ Firecrawl API keys ถูกส่งไปยังปลายทางใดๆ โดยไม่ตั้งใจ
 
-## เครื่องมือ Plugin ของ Firecrawl
+## เครื่องมือ Firecrawl Plugin
 
 ### `firecrawl_search`
 
-ใช้รายการนี้เมื่อคุณต้องการการควบคุมการค้นหาเฉพาะของ Firecrawl แทน `web_search` ทั่วไป
+ใช้สิ่งนี้เมื่อคุณต้องการการควบคุมการค้นหาเฉพาะของ Firecrawl แทน `web_search` ทั่วไป
 
 พารามิเตอร์หลัก:
 
@@ -123,7 +143,7 @@ Firecrawl เป็นบริการแยกข้อมูล/ค้นห
 
 ### `firecrawl_scrape`
 
-ใช้รายการนี้สำหรับหน้าที่ใช้ JS หนักหรือมีการป้องกันบอต ซึ่ง `web_fetch` แบบธรรมดายังทำงานได้ไม่ดี
+ใช้สิ่งนี้กับหน้าที่ใช้ JS หนักหรือป้องกันบอต ซึ่ง `web_fetch` แบบธรรมดาทำงานได้ไม่ดี
 
 พารามิเตอร์หลัก:
 
@@ -136,27 +156,27 @@ Firecrawl เป็นบริการแยกข้อมูล/ค้นห
 - `storeInCache`
 - `timeoutSeconds`
 
-## Stealth / การหลบเลี่ยงบอต
+## โหมดล่องหน / การหลบเลี่ยงบอต
 
-Firecrawl เปิดเผยพารามิเตอร์ **โหมดพร็อกซี** สำหรับการหลบเลี่ยงบอต (`basic`, `stealth` หรือ `auto`)
-OpenClaw ใช้ `proxy: "auto"` พร้อมกับ `storeInCache: true` สำหรับคำขอ Firecrawl เสมอ
-หากละเว้น proxy Firecrawl จะใช้ค่าเริ่มต้นเป็น `auto` `auto` จะลองซ้ำด้วยพร็อกซี stealth หากความพยายามแบบ basic ล้มเหลว ซึ่งอาจใช้เครดิตมากกว่า
-การ scrape แบบ basic เท่านั้น
+Firecrawl เปิดเผยพารามิเตอร์ **proxy mode** สำหรับการหลบเลี่ยงบอต (`basic`, `stealth` หรือ `auto`)
+OpenClaw ใช้ `proxy: "auto"` พร้อมกับ `storeInCache: true` เสมอสำหรับคำขอ Firecrawl
+หากละ `proxy` ไว้ Firecrawl จะใช้ค่าเริ่มต้นเป็น `auto` `auto` จะลองใหม่ด้วยพร็อกซี stealth หากความพยายามแบบ basic ล้มเหลว ซึ่งอาจใช้เครดิตมากกว่า
+การ scrape แบบ basic-only
 
 ## `web_fetch` ใช้ Firecrawl อย่างไร
 
 ลำดับการแยกข้อมูลของ `web_fetch`:
 
 1. Readability (ภายในเครื่อง)
-2. Firecrawl (หากเลือกไว้หรือถูกตรวจพบอัตโนมัติว่าเป็นตัวสำรอง web-fetch ที่ใช้งานอยู่)
-3. การล้าง HTML แบบพื้นฐาน (ตัวสำรองสุดท้าย)
+2. Firecrawl (เมื่อเลือกไว้ หรือเมื่อตรวจพบอัตโนมัติจากข้อมูลรับรองที่กำหนดค่าไว้)
+3. การล้าง HTML ขั้นพื้นฐาน (ตัวสำรองสุดท้าย)
 
-ตัวเลือกสำหรับการเลือกคือ `tools.web.fetch.provider` หากคุณละเว้น OpenClaw
-จะตรวจพบผู้ให้บริการ web-fetch รายแรกที่พร้อมใช้งานจากข้อมูลรับรองที่มีอยู่โดยอัตโนมัติ
-ปัจจุบันผู้ให้บริการที่มาพร้อมกับระบบคือ Firecrawl
+ปุ่มเลือกคือ `tools.web.fetch.provider` หากคุณละไว้ OpenClaw
+จะตรวจหาผู้ให้บริการ web-fetch รายแรกที่พร้อมใช้งานโดยอัตโนมัติจากข้อมูลรับรองที่มี
+Firecrawl Plugin ทางการเป็นผู้จัดเตรียมตัวสำรองนั้น
 
 ## ที่เกี่ยวข้อง
 
-- [ภาพรวม Web Search](/th/tools/web) -- ผู้ให้บริการทั้งหมดและการตรวจพบอัตโนมัติ
+- [ภาพรวมการค้นหาเว็บ](/th/tools/web) -- ผู้ให้บริการทั้งหมดและการตรวจหาอัตโนมัติ
 - [Web Fetch](/th/tools/web-fetch) -- เครื่องมือ web_fetch พร้อมตัวสำรอง Firecrawl
 - [Tavily](/th/tools/tavily) -- เครื่องมือค้นหา + แยกข้อมูล

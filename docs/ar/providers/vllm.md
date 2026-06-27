@@ -1,54 +1,55 @@
 ---
 read_when:
-    - تريد تشغيل OpenClaw مع خادم vLLM محلي
-    - تريد نقاط نهاية /v1 متوافقة مع OpenAI لنماذجك الخاصة
+    - تريد تشغيل OpenClaw مقابل خادم vLLM محلي
+    - تريد نقاط نهاية /v1 متوافقة مع OpenAI باستخدام نماذجك الخاصة
 summary: تشغيل OpenClaw باستخدام vLLM (خادم محلي متوافق مع OpenAI)
 title: vLLM
 x-i18n:
-    generated_at: "2026-05-13T05:34:03Z"
+    generated_at: "2026-06-27T18:28:33Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3b58fc0694fa9629ae87b6958d1ab39e484d468e6f92346f39f55316dbc09a04
+    source_hash: a3a5da5ce359bf62c44cddd0c97d2852d98c996ad6d44552a68d4aeb4d1d2893
     source_path: providers/vllm.md
     workflow: 16
 ---
 
-يمكن لـ vLLM تقديم نماذج مفتوحة المصدر (وبعض النماذج المخصصة) عبر واجهة HTTP API **متوافقة مع OpenAI**. يتصل OpenClaw بـ vLLM باستخدام واجهة API `openai-completions`.
+يمكن لـ vLLM تشغيل نماذج مفتوحة المصدر (وبعض النماذج المخصصة) عبر واجهة HTTP API **متوافقة مع OpenAI**. يتصل OpenClaw بـ vLLM باستخدام واجهة `openai-completions` API.
 
-يمكن لـ OpenClaw أيضًا **الاكتشاف التلقائي** للنماذج المتاحة من vLLM عند تفعيل ذلك باستخدام `VLLM_API_KEY` (تعمل أي قيمة إذا كان خادمك لا يفرض المصادقة). استخدم `vllm/*` في `agents.defaults.models` لإبقاء الاكتشاف ديناميكيًا عندما تضبط أيضًا عنوان URL أساسيًا مخصصًا لـ vLLM.
+يمكن لـ OpenClaw أيضًا **اكتشاف** النماذج المتاحة تلقائيًا من vLLM عند تفعيل ذلك باستخدام `VLLM_API_KEY` (أي قيمة تعمل إذا كان خادمك لا يفرض المصادقة). استخدم `vllm/*` في `agents.defaults.models` لإبقاء الاكتشاف ديناميكيًا عندما تضبط أيضًا عنوان URL أساسيًا مخصصًا لـ vLLM.
 
 يتعامل OpenClaw مع `vllm` كمزوّد محلي متوافق مع OpenAI يدعم
-محاسبة الاستخدام المتدفقة، لذلك يمكن تحديث أعداد رموز الحالة/السياق من
+محاسبة الاستخدام المتدفقة، لذا يمكن تحديث أعداد رموز الحالة/السياق من
 استجابات `stream_options.include_usage`.
 
-| الخاصية         | القيمة                                   |
+| الخاصية         | القيمة                                    |
 | ---------------- | ---------------------------------------- |
 | معرّف المزوّد      | `vllm`                                   |
-| API              | `openai-completions` (متوافقة مع OpenAI) |
+| API              | `openai-completions` (متوافق مع OpenAI) |
 | المصادقة             | متغير البيئة `VLLM_API_KEY`      |
 | عنوان URL الأساسي الافتراضي | `http://127.0.0.1:8000/v1`               |
 
 ## البدء
 
 <Steps>
-  <Step title="ابدأ vLLM بخادم متوافق مع OpenAI">
-    يجب أن يكشف عنوان URL الأساسي لديك نقاط نهاية `/v1` (مثل `/v1/models` و`/v1/chat/completions`). يعمل vLLM عادةً على:
+  <Step title="Start vLLM with an OpenAI-compatible server">
+    يجب أن يوفّر عنوان URL الأساسي لديك نقاط نهاية `/v1` (مثل `/v1/models` و`/v1/chat/completions`). يعمل vLLM عادةً على:
 
     ```
     http://127.0.0.1:8000/v1
     ```
 
   </Step>
-  <Step title="اضبط متغير البيئة الخاص بمفتاح API">
-    تعمل أي قيمة إذا كان خادمك لا يفرض المصادقة:
+  <Step title="Set the API key environment variable">
+    أي قيمة تعمل إذا كان خادمك لا يفرض المصادقة:
 
     ```bash
     export VLLM_API_KEY="vllm-local"
     ```
 
   </Step>
-  <Step title="اختر نموذجًا">
-    استبدله بأحد معرّفات نماذج vLLM لديك:
+  <Step title="Select a model">
+    استبدلها بأحد معرّفات نماذج vLLM لديك:
 
     ```json5
     {
@@ -61,7 +62,7 @@ x-i18n:
     ```
 
   </Step>
-  <Step title="تحقق من توفر النموذج">
+  <Step title="Verify the model is available">
     ```bash
     openclaw models list --provider vllm
     ```
@@ -76,13 +77,13 @@ x-i18n:
 GET http://127.0.0.1:8000/v1/models
 ```
 
-ويحوّل المعرّفات المرتجعة إلى إدخالات نماذج.
+ويحوّل المعرّفات المُعادة إلى إدخالات نماذج.
 
 <Note>
-إذا ضبطت `models.providers.vllm` صراحةً، يستخدم OpenClaw النماذج التي صرّحت بها افتراضيًا. أضف `"vllm/*": {}` إلى `agents.defaults.models` عندما تريد أن يستعلم OpenClaw عن نقطة نهاية `/models` لذلك المزوّد المضبوط وأن يضمّن كل نماذج vLLM المعلنة.
+إذا ضبطت `models.providers.vllm` صراحةً، يستخدم OpenClaw نماذجك المعلنة افتراضيًا. أضف `"vllm/*": {}` إلى `agents.defaults.models` عندما تريد من OpenClaw الاستعلام عن نقطة نهاية `/models` الخاصة بذلك المزوّد المضبوط وتضمين جميع نماذج vLLM المُعلنة.
 </Note>
 
-## الضبط الصريح (النماذج اليدوية)
+## الضبط الصريح (نماذج يدوية)
 
 استخدم الضبط الصريح عندما:
 
@@ -99,7 +100,6 @@ GET http://127.0.0.1:8000/v1/models
         baseUrl: "http://127.0.0.1:8000/v1",
         apiKey: "${VLLM_API_KEY}",
         api: "openai-completions",
-        request: { allowPrivateNetwork: true },
         timeoutSeconds: 300, // Optional: extend connect/header/body/request timeout for slow local models
         models: [
           {
@@ -136,25 +136,48 @@ GET http://127.0.0.1:8000/v1/models
 ## الضبط المتقدم
 
 <AccordionGroup>
-  <Accordion title="سلوك نمط الوكيل">
-    يُعامَل vLLM كواجهة خلفية `/v1` متوافقة مع OpenAI بنمط الوكيل، وليس كنقطة نهاية
-    OpenAI أصلية. يعني هذا:
+  <Accordion title="Proxy-style behavior">
+    يُعامل vLLM كواجهة خلفية `/v1` متوافقة مع OpenAI بنمط الوكيل، وليس كنقطة نهاية
+    OpenAI أصلية. يعني ذلك:
 
-    | السلوك | مطبّق؟ |
+    | السلوك | مُطبّق؟ |
     |----------|----------|
-    | تشكيل طلب OpenAI الأصلي | لا |
+    | تشكيل طلبات OpenAI الأصلية | لا |
     | `service_tier` | لا يُرسل |
-    | Responses `store` | لا يُرسل |
-    | تلميحات ذاكرة التخزين المؤقت للمطالبات | لا تُرسل |
-    | تشكيل حمولة توافق الاستدلال في OpenAI | غير مطبّق |
-    | رؤوس إسناد OpenClaw المخفية | لا تُحقن في عناوين URL الأساسية المخصصة |
+    | `store` في Responses | لا يُرسل |
+    | تلميحات ذاكرة التخزين المؤقت للموجه | لا تُرسل |
+    | تشكيل حمولة توافق الاستدلال مع OpenAI | غير مُطبّق |
+    | رؤوس إسناد OpenClaw المخفية | لا تُحقن على عناوين URL الأساسية المخصصة |
 
   </Accordion>
 
-  <Accordion title="عناصر تحكم التفكير في Qwen">
-    لنماذج Qwen المقدمة عبر vLLM، اضبط
-    `params.qwenThinkingFormat: "chat-template"` على إدخال النموذج عندما يتوقع
-    الخادم kwargs لقالب محادثة Qwen. يربط OpenClaw الأمر `/think off` بـ:
+  <Accordion title="Qwen thinking controls">
+    بالنسبة إلى نماذج Qwen المقدّمة عبر vLLM، اضبط
+    `compat.thinkingFormat: "qwen-chat-template"` على صف نموذج المزوّد المضبوط
+    عندما يتوقع الخادم معاملات Qwen chat-template kwargs. تعرض النماذج
+    المضبوطة بهذه الطريقة ملف تعريف `/think` ثنائيًا (`off`، `on`) لأن
+    تفكير قالب Qwen هو علم طلب تشغيل/إيقاف، وليس سلّم جهد بنمط OpenAI.
+
+    ```json5
+    {
+      models: {
+        providers: {
+          vllm: {
+            models: [
+              {
+                id: "Qwen/Qwen3-8B",
+                name: "Qwen3 8B",
+                reasoning: true,
+                compat: { thinkingFormat: "qwen-chat-template" },
+              },
+            ],
+          },
+        },
+      },
+    }
+    ```
+
+    يربط OpenClaw الأمر `/think off` بما يلي:
 
     ```json
     {
@@ -167,15 +190,15 @@ GET http://127.0.0.1:8000/v1/models
 
     ترسل مستويات التفكير غير `off` القيمة `enable_thinking: true`. إذا كانت نقطة النهاية لديك
     تتوقع بدلًا من ذلك أعلامًا علوية بنمط DashScope، فاستخدم
-    `params.qwenThinkingFormat: "top-level"` لإرسال `enable_thinking` في جذر
-    الطلب. يُقبل أيضًا `params.qwen_thinking_format` بصيغة snake-case.
+    `compat.thinkingFormat: "qwen"` لإرسال `enable_thinking` في جذر
+    الطلب.
 
   </Accordion>
 
-  <Accordion title="عناصر تحكم التفكير في Nemotron 3">
-    يمكن لـ vLLM/Nemotron 3 استخدام kwargs لقالب المحادثة للتحكم فيما إذا كان الاستدلال
+  <Accordion title="Nemotron 3 thinking controls">
+    يمكن لـ vLLM/Nemotron 3 استخدام chat-template kwargs للتحكم فيما إذا كان الاستدلال
     يُعاد كاستدلال مخفي أو كنص إجابة مرئي. عندما تستخدم جلسة OpenClaw
-    `vllm/nemotron-3-*` مع إيقاف التفكير، يرسل Plugin vLLM المضمّن:
+    النموذج `vllm/nemotron-3-*` مع إيقاف التفكير، يرسل Plugin vLLM المضمّن:
 
     ```json
     {
@@ -211,21 +234,21 @@ GET http://127.0.0.1:8000/v1/models
 
   </Accordion>
 
-  <Accordion title="استدعاءات أدوات Qwen تظهر كنص">
-    تأكد أولًا من بدء vLLM باستخدام محلل استدعاءات الأدوات وقالب المحادثة
-    المناسبين للنموذج. على سبيل المثال، توثق vLLM استخدام `hermes` لنماذج Qwen2.5
+  <Accordion title="Qwen tool calls appear as text">
+    تأكد أولًا من أن vLLM بدأ بمحلل استدعاءات الأدوات وقالب الدردشة الصحيحين
+    للنموذج. على سبيل المثال، توثّق vLLM استخدام `hermes` لنماذج Qwen2.5
     و`qwen3_xml` لنماذج Qwen3-Coder.
 
     الأعراض:
 
-    - لا تعمل skills أو الأدوات مطلقًا
+    - لا تعمل Skills أو الأدوات مطلقًا
     - يطبع المساعد JSON/XML خامًا مثل `{"name":"read","arguments":...}`
     - يعيد vLLM مصفوفة `tool_calls` فارغة عندما يرسل OpenClaw
       `tool_choice: "auto"`
 
-    تُعيد بعض مجموعات Qwen/vLLM استدعاءات أدوات منظمة فقط عندما يستخدم
-    الطلب `tool_choice: "required"`. لتلك إدخالات النماذج، افرض حقل
-    الطلب المتوافق مع OpenAI باستخدام `params.extra_body`:
+    تعيد بعض تركيبات Qwen/vLLM استدعاءات أدوات مهيكلة فقط عندما يستخدم
+    الطلب `tool_choice: "required"`. لهذه إدخالات النماذج، افرض حقل الطلب
+    المتوافق مع OpenAI باستخدام `params.extra_body`:
 
     ```json5
     {
@@ -245,7 +268,7 @@ GET http://127.0.0.1:8000/v1/models
     }
     ```
 
-    استبدل `Qwen-Qwen2.5-Coder-32B-Instruct` بالمعرّف الدقيق الذي يعيده:
+    استبدل `Qwen-Qwen2.5-Coder-32B-Instruct` بالمعرّف الدقيق المُعاد بواسطة:
 
     ```bash
     openclaw models list --provider vllm
@@ -257,16 +280,16 @@ GET http://127.0.0.1:8000/v1/models
     openclaw config set agents.defaults.models '{"vllm/Qwen-Qwen2.5-Coder-32B-Instruct":{"params":{"extra_body":{"tool_choice":"required"}}}}' --strict-json --merge
     ```
 
-    هذا حل توافق اختياري. يجعل كل دورة نموذج مع
-    الأدوات تتطلب استدعاء أداة، لذلك استخدمه فقط لإدخال نموذج محلي مخصص
-    يكون فيه هذا السلوك مقبولًا. لا تستخدمه كافتراضي عام لكل
-    نماذج vLLM، ولا تستخدم وكيلًا يحوّل عشوائيًا أي
-    نص مساعد إلى استدعاءات أدوات قابلة للتنفيذ.
+    هذا حل توافق اختياري. يجعل كل دورة نموذج تحتوي على
+    أدوات تتطلب استدعاء أداة، لذلك استخدمه فقط لإدخال نموذج محلي مخصص
+    يكون هذا السلوك مقبولًا فيه. لا تستخدمه كإعداد افتراضي عام لكل
+    نماذج vLLM، ولا تستخدم وكيلًا يحوّل نص المساعد الاعتباطي عشوائيًا
+    إلى استدعاءات أدوات قابلة للتنفيذ.
 
   </Accordion>
 
-  <Accordion title="عنوان URL أساسي مخصص">
-    إذا كان خادم vLLM يعمل على مضيف أو منفذ غير افتراضي، فاضبط `baseUrl` في ضبط المزوّد الصريح:
+  <Accordion title="Custom base URL">
+    إذا كان خادم vLLM لديك يعمل على مضيف أو منفذ غير افتراضي، فاضبط `baseUrl` في ضبط المزوّد الصريح:
 
     ```json5
     {
@@ -276,7 +299,6 @@ GET http://127.0.0.1:8000/v1/models
             baseUrl: "http://192.168.1.50:9000/v1",
             apiKey: "${VLLM_API_KEY}",
             api: "openai-completions",
-            request: { allowPrivateNetwork: true },
             timeoutSeconds: 300,
             models: [
               {
@@ -300,9 +322,9 @@ GET http://127.0.0.1:8000/v1/models
 ## استكشاف الأخطاء وإصلاحها
 
 <AccordionGroup>
-  <Accordion title="استجابة أولى بطيئة أو انتهاء مهلة الخادم البعيد">
-    للنماذج المحلية الكبيرة، أو مضيفي LAN البعيدين، أو روابط tailnet، اضبط
-    مهلة طلب على مستوى المزوّد:
+  <Accordion title="Slow first response or remote server timeout">
+    بالنسبة إلى النماذج المحلية الكبيرة، أو مضيفي LAN البعيدين، أو روابط tailnet، اضبط
+    مهلة طلب على نطاق المزوّد:
 
     ```json5
     {
@@ -312,7 +334,6 @@ GET http://127.0.0.1:8000/v1/models
             baseUrl: "http://192.168.1.50:8000/v1",
             apiKey: "${VLLM_API_KEY}",
             api: "openai-completions",
-            request: { allowPrivateNetwork: true },
             timeoutSeconds: 300,
             models: [{ id: "your-model-id", name: "Local vLLM Model" }],
           },
@@ -322,13 +343,13 @@ GET http://127.0.0.1:8000/v1/models
     ```
 
     ينطبق `timeoutSeconds` على طلبات HTTP لنماذج vLLM فقط، بما في ذلك
-    إعداد الاتصال، ورؤوس الاستجابة، وتدفق الجسم، وإحباط
-    guarded-fetch الإجمالي. فضّل هذا قبل زيادة
+    إعداد الاتصال، ورؤوس الاستجابة، وبث الجسم، والإجهاض الإجمالي
+    للجلب المحمي. فضّل هذا قبل زيادة
     `agents.defaults.timeoutSeconds`، الذي يتحكم في تشغيل الوكيل بالكامل.
 
   </Accordion>
 
-  <Accordion title="الخادم غير قابل للوصول">
+  <Accordion title="Server not reachable">
     تحقق من أن خادم vLLM يعمل ويمكن الوصول إليه:
 
     ```bash
@@ -336,34 +357,37 @@ GET http://127.0.0.1:8000/v1/models
     ```
 
     إذا رأيت خطأ اتصال، فتحقق من المضيف والمنفذ وأن vLLM بدأ بوضع الخادم المتوافق مع OpenAI.
-    ولنقاط نهاية loopback أو LAN أو Tailscale الصريحة، اضبط أيضًا
-    `models.providers.vllm.request.allowPrivateNetwork: true`؛ تحظر طلبات
-    المزوّد عناوين URL للشبكات الخاصة افتراضيًا ما لم يكن المزوّد
-    موثوقًا به صراحةً.
+    بالنسبة إلى نقاط نهاية loopback أو LAN أو Tailscale الصريحة، يثق OpenClaw في
+    أصل `models.providers.vllm.baseUrl` المضبوط بدقة لطلبات النماذج
+    المحمية. تبقى أصول metadata/link-local محظورة دون
+    تفعيل صريح. اضبط `models.providers.vllm.request.allowPrivateNetwork: true` فقط
+    عندما يجب أن تصل طلبات vLLM إلى أصل خاص آخر، واضبطه على `false`
+    لإلغاء الثقة بالأصل الدقيق.
 
   </Accordion>
 
-  <Accordion title="أخطاء المصادقة في الطلبات">
-    إذا فشلت الطلبات بسبب أخطاء المصادقة، فاضبط `VLLM_API_KEY` حقيقيًا يطابق ضبط الخادم لديك، أو اضبط المزوّد صراحةً ضمن `models.providers.vllm`.
+  <Accordion title="Auth errors on requests">
+    إذا فشلت الطلبات بسبب أخطاء مصادقة، فاضبط `VLLM_API_KEY` حقيقيًا يطابق ضبط خادمك، أو اضبط المزوّد صراحةً ضمن `models.providers.vllm`.
 
     <Tip>
-    إذا كان خادم vLLM لديك لا يفرض المصادقة، تعمل أي قيمة غير فارغة لـ `VLLM_API_KEY` كإشارة تفعيل اختيارية لـ OpenClaw.
+    إذا كان خادم vLLM لديك لا يفرض المصادقة، فإن أي قيمة غير فارغة لـ `VLLM_API_KEY` تعمل كإشارة تفعيل لـ OpenClaw.
     </Tip>
 
   </Accordion>
 
-  <Accordion title="لم تُكتشف أي نماذج">
-    يتطلب الاكتشاف التلقائي ضبط `VLLM_API_KEY`. إذا عرّفت `models.providers.vllm`، يستخدم OpenClaw النماذج التي صرّحت بها فقط ما لم يتضمن `agents.defaults.models` القيمة `"vllm/*": {}`.
+  <Accordion title="No models discovered">
+    يتطلب الاكتشاف التلقائي ضبط `VLLM_API_KEY`. إذا عرّفت `models.providers.vllm`، يستخدم OpenClaw نماذجك المعلنة فقط ما لم يتضمن `agents.defaults.models` القيمة `"vllm/*": {}`.
   </Accordion>
 
-  <Accordion title="تُعرض الأدوات كنص خام">
-    إذا طبع نموذج Qwen صيغة أدوات JSON/XML بدلًا من تنفيذ skill،
-    فتحقق من إرشادات Qwen في الضبط المتقدم أعلاه. الإصلاح المعتاد هو:
+  <Accordion title="Tools render as raw text">
+    إذا طبع نموذج Qwen صياغة أدوات JSON/XML بدلًا من تنفيذ Skill،
+    فراجع إرشادات Qwen في الضبط المتقدم أعلاه. الإصلاح المعتاد هو:
 
     - بدء vLLM بالمحلل/القالب الصحيح لذلك النموذج
     - تأكيد معرّف النموذج الدقيق باستخدام `openclaw models list --provider vllm`
     - إضافة تجاوز مخصص لكل نموذج لـ `params.extra_body.tool_choice: "required"`
-      فقط إذا ظل `tool_choice: "auto"` يعيد استدعاءات أدوات فارغة أو نصية فقط
+      فقط إذا كان `tool_choice: "auto"` لا يزال يعيد استدعاءات أدوات فارغة أو
+      نصية فقط
 
   </Accordion>
 </AccordionGroup>
@@ -372,7 +396,7 @@ GET http://127.0.0.1:8000/v1/models
 مزيد من المساعدة: [استكشاف الأخطاء وإصلاحها](/ar/help/troubleshooting) و[الأسئلة الشائعة](/ar/help/faq).
 </Warning>
 
-## ذو صلة
+## ذات صلة
 
 <CardGroup cols={2}>
   <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
@@ -385,6 +409,6 @@ GET http://127.0.0.1:8000/v1/models
     تفاصيل المصادقة وقواعد إعادة استخدام بيانات الاعتماد.
   </Card>
   <Card title="استكشاف الأخطاء وإصلاحها" href="/ar/help/troubleshooting" icon="wrench">
-    المشكلات الشائعة وكيفية حلها.
+    المشكلات الشائعة وكيفية حلّها.
   </Card>
 </CardGroup>

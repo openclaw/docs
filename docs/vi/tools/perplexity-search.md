@@ -5,21 +5,31 @@ read_when:
 summary: Perplexity Search API và khả năng tương thích Sonar/OpenRouter cho web_search
 title: Tìm kiếm Perplexity
 x-i18n:
-    generated_at: "2026-05-06T09:34:25Z"
+    generated_at: "2026-06-27T18:18:01Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 113abafae66acd8aaa0302b687ba13347eb44a81a4217b61bb68f07d8a119cb0
+    source_hash: 6ef003238bc38dd3d92b98654598cba05fb1c324d8ca766a683cf1defe5bd435
     source_path: tools/perplexity-search.md
     workflow: 16
 ---
 
 OpenClaw hỗ trợ Perplexity Search API làm nhà cung cấp `web_search`.
-API này trả về kết quả có cấu trúc với các trường `title`, `url` và `snippet`.
+Nó trả về kết quả có cấu trúc với các trường `title`, `url` và `snippet`.
 
 Để tương thích, OpenClaw cũng hỗ trợ các thiết lập Perplexity Sonar/OpenRouter cũ.
-Nếu bạn dùng `OPENROUTER_API_KEY`, khóa `sk-or-...` trong `plugins.entries.perplexity.config.webSearch.apiKey`, hoặc đặt `plugins.entries.perplexity.config.webSearch.baseUrl` / `model`, nhà cung cấp sẽ chuyển sang đường dẫn chat-completions và trả về câu trả lời do AI tổng hợp kèm trích dẫn thay vì kết quả Search API có cấu trúc.
+Nếu bạn dùng `OPENROUTER_API_KEY`, một khóa `sk-or-...` trong `plugins.entries.perplexity.config.webSearch.apiKey`, hoặc đặt `plugins.entries.perplexity.config.webSearch.baseUrl` / `model`, nhà cung cấp sẽ chuyển sang đường dẫn chat-completions và trả về câu trả lời do AI tổng hợp kèm trích dẫn thay vì kết quả Search API có cấu trúc.
 
-## Lấy khóa Perplexity API
+## Cài đặt Plugin
+
+Cài đặt Plugin chính thức, sau đó khởi động lại Gateway:
+
+```bash
+openclaw plugins install @openclaw/perplexity-plugin
+openclaw gateway restart
+```
+
+## Lấy khóa API Perplexity
 
 1. Tạo tài khoản Perplexity tại [perplexity.ai/settings/api](https://www.perplexity.ai/settings/api)
 2. Tạo khóa API trong bảng điều khiển
@@ -27,9 +37,9 @@ Nếu bạn dùng `OPENROUTER_API_KEY`, khóa `sk-or-...` trong `plugins.entries
 
 ## Tương thích OpenRouter
 
-Nếu bạn đã dùng OpenRouter cho Perplexity Sonar, hãy giữ `provider: "perplexity"` và đặt `OPENROUTER_API_KEY` trong môi trường Gateway, hoặc lưu khóa `sk-or-...` trong `plugins.entries.perplexity.config.webSearch.apiKey`.
+Nếu bạn đã dùng OpenRouter cho Perplexity Sonar, hãy giữ `provider: "perplexity"` và đặt `OPENROUTER_API_KEY` trong môi trường Gateway, hoặc lưu một khóa `sk-or-...` trong `plugins.entries.perplexity.config.webSearch.apiKey`.
 
-Điều khiển tương thích tùy chọn:
+Các điều khiển tương thích tùy chọn:
 
 - `plugins.entries.perplexity.config.webSearch.baseUrl`
 - `plugins.entries.perplexity.config.webSearch.model`
@@ -95,10 +105,10 @@ Nếu bạn đã dùng OpenRouter cho Perplexity Sonar, hãy giữ `provider: "p
 Trường đó cũng chấp nhận các đối tượng SecretRef.
 
 **Qua môi trường:** đặt `PERPLEXITY_API_KEY` hoặc `OPENROUTER_API_KEY`
-trong môi trường tiến trình Gateway. Với bản cài đặt gateway, đặt khóa trong
+trong môi trường tiến trình Gateway. Với bản cài đặt gateway, hãy đặt trong
 `~/.openclaw/.env` (hoặc môi trường dịch vụ của bạn). Xem [Biến môi trường](/vi/help/faq#env-vars-and-env-loading).
 
-Nếu `provider: "perplexity"` được cấu hình và SecretRef của khóa Perplexity không phân giải được mà không có dự phòng env, quá trình khởi động/tải lại sẽ thất bại ngay.
+Nếu `provider: "perplexity"` được cấu hình và SecretRef của khóa Perplexity không được phân giải mà không có phương án dự phòng env, quá trình khởi động/tải lại sẽ thất bại ngay.
 
 ## Tham số công cụ
 
@@ -113,11 +123,11 @@ Số lượng kết quả cần trả về (1-10).
 </ParamField>
 
 <ParamField path="country" type="string">
-Mã quốc gia ISO gồm 2 chữ cái (ví dụ: `US`, `DE`).
+Mã quốc gia ISO gồm 2 chữ cái (ví dụ `US`, `DE`).
 </ParamField>
 
 <ParamField path="language" type="string">
-Mã ngôn ngữ ISO 639-1 (ví dụ: `en`, `de`, `fr`).
+Mã ngôn ngữ ISO 639-1 (ví dụ `en`, `de`, `fr`).
 </ParamField>
 
 <ParamField path="freshness" type="'day' | 'week' | 'month' | 'year'">
@@ -133,7 +143,7 @@ Chỉ các kết quả được xuất bản trước ngày này (`YYYY-MM-DD`).
 </ParamField>
 
 <ParamField path="domain_filter" type="string[]">
-Mảng danh sách cho phép/từ chối miền (tối đa 20).
+Mảng danh sách miền cho phép/từ chối (tối đa 20).
 </ParamField>
 
 <ParamField path="max_tokens" type="number" default="25000">
@@ -147,8 +157,8 @@ Giới hạn token trên mỗi trang.
 Đối với đường dẫn tương thích Sonar/OpenRouter cũ:
 
 - `query`, `count` và `freshness` được chấp nhận
-- `count` chỉ để tương thích ở đó; phản hồi vẫn là một câu trả lời được tổng hợp
-  kèm trích dẫn thay vì danh sách N kết quả
+- `count` ở đó chỉ dành cho tương thích; phản hồi vẫn là một câu trả lời
+  tổng hợp duy nhất kèm trích dẫn thay vì danh sách N kết quả
 - Các bộ lọc chỉ dành cho Search API như `country`, `language`, `date_after`,
   `date_before`, `domain_filter`, `max_tokens` và `max_tokens_per_page`
   trả về lỗi rõ ràng
@@ -200,13 +210,13 @@ await web_search({
 
 - Tối đa 20 miền cho mỗi bộ lọc
 - Không thể trộn danh sách cho phép và danh sách từ chối trong cùng một yêu cầu
-- Dùng tiền tố `-` cho các mục danh sách từ chối (ví dụ: `["-reddit.com"]`)
+- Dùng tiền tố `-` cho các mục danh sách từ chối (ví dụ `["-reddit.com"]`)
 
 ## Ghi chú
 
 - Perplexity Search API trả về kết quả tìm kiếm web có cấu trúc (`title`, `url`, `snippet`)
-- OpenRouter hoặc `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` rõ ràng sẽ chuyển Perplexity trở lại Sonar chat completions để tương thích
-- Tương thích Sonar/OpenRouter trả về một câu trả lời được tổng hợp kèm trích dẫn, không phải các hàng kết quả có cấu trúc
+- OpenRouter hoặc `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` rõ ràng sẽ chuyển Perplexity trở lại chat completions Sonar để tương thích
+- Tương thích Sonar/OpenRouter trả về một câu trả lời tổng hợp duy nhất kèm trích dẫn, không phải các hàng kết quả có cấu trúc
 - Kết quả được lưu vào bộ nhớ đệm trong 15 phút theo mặc định (có thể cấu hình qua `cacheTtlMinutes`)
 
 ## Liên quan
@@ -222,6 +232,6 @@ await web_search({
     Tìm kiếm neural với trích xuất nội dung.
   </Card>
   <Card title="Perplexity Search API docs" href="https://docs.perplexity.ai/docs/search/quickstart" icon="arrow-up-right-from-square">
-    Hướng dẫn bắt đầu nhanh và tài liệu tham khảo chính thức của Perplexity Search API.
+    Hướng dẫn bắt đầu nhanh và tài liệu tham khảo Perplexity Search API chính thức.
   </Card>
 </CardGroup>

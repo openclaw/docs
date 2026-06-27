@@ -1,31 +1,32 @@
 ---
 read_when:
-    - Vous souhaitez utiliser Ollama pour web_search
+    - Vous voulez utiliser Ollama pour web_search
     - Vous voulez un fournisseur web_search sans clé
-    - Vous souhaitez utiliser la recherche Web Ollama hébergée avec OLLAMA_API_KEY
-    - Vous avez besoin d’instructions de configuration pour Ollama Web Search
-summary: Recherche web Ollama via un hôte Ollama local ou l’API Ollama hébergée
+    - Vous voulez utiliser la recherche Web Ollama hébergée avec OLLAMA_API_KEY
+    - Vous avez besoin d’instructions de configuration pour la recherche Web Ollama
+summary: Recherche Web Ollama via un hôte Ollama local ou l’API Ollama hébergée
 title: Recherche web Ollama
 x-i18n:
-    generated_at: "2026-04-30T07:53:08Z"
+    generated_at: "2026-06-27T18:19:46Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e626ee38b80fc66aa33589f030f9b420cf27848faed2183912ade17cb222771b
+    source_hash: 4a30a6a2ed78d0d5f680ca2894e5e015cf99fbae2bcad4601727bbc9f560c124
     source_path: tools/ollama-search.md
     workflow: 16
 ---
 
-OpenClaw prend en charge **Ollama Web Search** comme fournisseur `web_search` intégré. Il
-utilise l’API de recherche Web d’Ollama et renvoie des résultats structurés avec des titres, des URL
+OpenClaw prend en charge **Recherche web Ollama** comme fournisseur `web_search` intégré. Il
+utilise l’API de recherche web d’Ollama et renvoie des résultats structurés avec des titres, des URL
 et des extraits.
 
-Pour Ollama local ou auto-hébergé, cette configuration ne nécessite pas de clé API par
+Pour Ollama local ou auto-hébergé, cette configuration ne nécessite pas de clé d’API par
 défaut. Elle nécessite toutefois :
 
-- un hôte Ollama accessible depuis OpenClaw
+- un hôte Ollama joignable depuis OpenClaw
 - `ollama signin`
 
-Pour une recherche hébergée directe, définissez l’URL de base du fournisseur Ollama sur `https://ollama.com`
+Pour la recherche hébergée directe, définissez l’URL de base du fournisseur Ollama sur `https://ollama.com`
 et fournissez une vraie `OLLAMA_API_KEY`.
 
 ## Configuration
@@ -42,22 +43,22 @@ et fournissez une vraie `OLLAMA_API_KEY`.
     ```
 
   </Step>
-  <Step title="Choisir Ollama Web Search">
+  <Step title="Choisir Recherche web Ollama">
     Exécutez :
 
     ```bash
     openclaw configure --section web
     ```
 
-    Sélectionnez ensuite **Ollama Web Search** comme fournisseur.
+    Sélectionnez ensuite **Recherche web Ollama** comme fournisseur.
 
   </Step>
 </Steps>
 
-Si vous utilisez déjà Ollama pour les modèles, Ollama Web Search réutilise le même
+Si vous utilisez déjà Ollama pour les modèles, Recherche web Ollama réutilise le même
 hôte configuré.
 
-## Configuration
+## Config
 
 ```json5
 {
@@ -89,7 +90,7 @@ Remplacement facultatif de l’hôte Ollama :
 }
 ```
 
-Si vous configurez déjà Ollama comme fournisseur de modèles, le fournisseur de recherche Web peut
+Si vous configurez déjà Ollama comme fournisseur de modèles, le fournisseur de recherche web peut
 réutiliser cet hôte à la place :
 
 ```json5
@@ -104,15 +105,15 @@ réutiliser cet hôte à la place :
 }
 ```
 
-Le fournisseur de modèles Ollama utilise `baseUrl` comme clé canonique. Le fournisseur de recherche Web prend également en charge `baseURL` sur `models.providers.ollama` pour la compatibilité avec les exemples de configuration de style SDK OpenAI.
+Le fournisseur de modèles Ollama utilise `baseUrl` comme clé canonique. Le fournisseur de recherche web prend également en charge `baseURL` sur `models.providers.ollama` pour la compatibilité avec les exemples de configuration de style SDK OpenAI.
 
 Si aucune URL de base Ollama explicite n’est définie, OpenClaw utilise `http://127.0.0.1:11434`.
 
 Si votre hôte Ollama attend une authentification bearer, OpenClaw réutilise
-`models.providers.ollama.apiKey` (ou l’authentification de fournisseur correspondante adossée à l’environnement)
+`models.providers.ollama.apiKey` (ou l’authentification fournisseur correspondante adossée à l’environnement)
 pour les requêtes vers cet hôte configuré.
 
-Ollama Web Search hébergé direct :
+Recherche web Ollama hébergée directe :
 
 ```json5
 {
@@ -136,25 +137,26 @@ Ollama Web Search hébergé direct :
 
 ## Notes
 
-- Aucun champ de clé API propre à la recherche Web n’est requis pour ce fournisseur.
-- Si l’hôte Ollama est protégé par authentification, OpenClaw réutilise la clé API normale du fournisseur Ollama
-  lorsqu’elle est présente.
+- Aucun champ de clé d’API spécifique à la recherche web n’est requis pour ce fournisseur.
+- Si l’hôte Ollama est protégé par authentification, OpenClaw réutilise la clé d’API du fournisseur
+  Ollama normal lorsqu’elle est présente.
 - Si `baseUrl` vaut `https://ollama.com`, OpenClaw appelle
-  `https://ollama.com/api/web_search` directement et envoie la clé API Ollama configurée
+  `https://ollama.com/api/web_search` directement et envoie la clé d’API Ollama configurée
   comme authentification bearer.
-- Si l’hôte configuré n’expose pas la recherche Web et que `OLLAMA_API_KEY` est définie,
+- Si l’hôte configuré n’expose pas la recherche web et que `OLLAMA_API_KEY` est défini,
   OpenClaw peut se rabattre sur `https://ollama.com/api/web_search` sans envoyer
   cette clé d’environnement à l’hôte local.
-- OpenClaw avertit pendant la configuration si Ollama est inaccessible ou si vous n’êtes pas connecté, mais
-  ne bloque pas la sélection.
-- La détection automatique à l’exécution peut se rabattre sur Ollama Web Search lorsqu’aucun fournisseur
-  avec identifiants à priorité plus élevée n’est configuré.
-- Les hôtes du démon Ollama local utilisent le point de terminaison proxy local
-  `/api/experimental/web_search`, qui signe et transmet à Ollama Cloud.
+- OpenClaw avertit pendant la configuration si Ollama est injoignable ou si vous n’êtes pas connecté, mais
+  il ne bloque pas la sélection.
+- OpenClaw ne sélectionne pas automatiquement Recherche web Ollama lorsqu’aucun fournisseur authentifié
+  de priorité plus élevée n’est configuré ; choisissez-le explicitement avec
+  `tools.web.search.provider: "ollama"`.
+- Les hôtes du daemon Ollama local utilisent le point de terminaison proxy local
+  `/api/experimental/web_search`, qui signe et transfère vers Ollama Cloud.
 - Les hôtes `https://ollama.com` utilisent directement le point de terminaison hébergé public
-  `/api/web_search` avec une authentification par clé API bearer.
+  `/api/web_search` avec une authentification par clé d’API bearer.
 
-## Associé
+## Connexe
 
-- [Présentation de la recherche Web](/fr/tools/web) -- tous les fournisseurs et la détection automatique
+- [Vue d’ensemble de la recherche web](/fr/tools/web) -- tous les fournisseurs et l’auto-détection
 - [Ollama](/fr/providers/ollama) -- configuration des modèles Ollama et modes cloud/local

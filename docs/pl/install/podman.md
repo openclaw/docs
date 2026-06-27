@@ -1,32 +1,33 @@
 ---
 read_when:
-    - Chcesz używać skonteneryzowanego Gateway z Podman zamiast Docker
-summary: Uruchom OpenClaw w kontenerze Podman bez uprawnień roota
+    - Chcesz skonteneryzowany gateway z Podmanem zamiast Dockera
+summary: Uruchamianie OpenClaw w bezrootowym kontenerze Podman
 title: Podman
 x-i18n:
-    generated_at: "2026-05-06T09:19:26Z"
+    generated_at: "2026-06-27T17:43:34Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 44f89feede7fe10325810599dad457f8fcc3adbd9c139e26df67b9ad12019d56
+    source_hash: 3f6950956551dc3c274db33712cf66632fb5facbca4954bf67c30a8bff740c2f
     source_path: install/podman.md
     workflow: 16
 ---
 
-Uruchom OpenClaw Gateway w bezrootowym kontenerze Podman zarządzanym przez bieżącego użytkownika bez uprawnień roota.
+Uruchom OpenClaw Gateway w bezrootowym kontenerze Podman, zarządzanym przez bieżącego użytkownika bez uprawnień root.
 
 Docelowy model jest następujący:
 
-- Podman uruchamia kontener Gateway.
-- Twój hostowy CLI `openclaw` jest płaszczyzną sterowania.
+- Podman uruchamia kontener gateway.
+- Hostowy `openclaw` CLI jest płaszczyzną sterowania.
 - Stan trwały domyślnie znajduje się na hoście w `~/.openclaw`.
 - Codzienne zarządzanie używa `openclaw --container <name> ...` zamiast `sudo -u openclaw`, `podman exec` lub osobnego użytkownika usługi.
 
 ## Wymagania wstępne
 
 - **Podman** w trybie bezrootowym
-- **OpenClaw CLI** zainstalowany na hoście
-- **Opcjonalnie:** `systemd --user`, jeśli chcesz automatyczny start zarządzany przez Quadlet
-- **Opcjonalnie:** `sudo` tylko wtedy, gdy chcesz użyć `loginctl enable-linger "$(whoami)"` dla trwałości po rozruchu na hoście bez monitora
+- **OpenClaw CLI** zainstalowane na hoście
+- **Opcjonalnie:** `systemd --user`, jeśli chcesz automatyczne uruchamianie zarządzane przez Quadlet
+- **Opcjonalnie:** `sudo` tylko wtedy, gdy chcesz użyć `loginctl enable-linger "$(whoami)"` dla trwałości po uruchomieniu systemu na hoście bez monitora
 
 ## Szybki start
 
@@ -36,7 +37,7 @@ Docelowy model jest następujący:
   </Step>
 
   <Step title="Uruchom kontener Gateway">
-    Uruchom kontener poleceniem `./scripts/run-openclaw-podman.sh launch`.
+    Uruchom kontener za pomocą `./scripts/run-openclaw-podman.sh launch`.
   </Step>
 
   <Step title="Uruchom onboarding wewnątrz kontenera">
@@ -50,10 +51,10 @@ Docelowy model jest następujący:
 
 Szczegóły konfiguracji:
 
-- `./scripts/podman/setup.sh` domyślnie buduje `openclaw:local` w Twoim bezrootowym magazynie Podman albo używa `OPENCLAW_IMAGE` / `OPENCLAW_PODMAN_IMAGE`, jeśli ustawisz jedną z tych zmiennych.
+- `./scripts/podman/setup.sh` domyślnie buduje `openclaw:local` w Twoim bezrootowym magazynie Podman albo używa `OPENCLAW_IMAGE` / `OPENCLAW_PODMAN_IMAGE`, jeśli je ustawisz.
 - Tworzy `~/.openclaw/openclaw.json` z `gateway.mode: "local"`, jeśli go brakuje.
 - Tworzy `~/.openclaw/.env` z `OPENCLAW_GATEWAY_TOKEN`, jeśli go brakuje.
-- Przy ręcznych uruchomieniach pomocnik odczytuje tylko krótką listę dozwolonych kluczy związanych z Podman z `~/.openclaw/.env` i przekazuje do kontenera jawne zmienne środowiskowe środowiska uruchomieniowego; nie przekazuje pełnego pliku środowiska do Podman.
+- Przy ręcznym uruchamianiu helper odczytuje tylko niewielką listę dozwolonych kluczy związanych z Podman z `~/.openclaw/.env` i przekazuje jawne zmienne środowiskowe runtime do kontenera; nie przekazuje całego pliku środowiska do Podman.
 
 Konfiguracja zarządzana przez Quadlet:
 
@@ -61,16 +62,17 @@ Konfiguracja zarządzana przez Quadlet:
 ./scripts/podman/setup.sh --quadlet
 ```
 
-Quadlet jest opcją wyłącznie dla Linuksa, ponieważ zależy od usług użytkownika systemd.
+Quadlet jest opcją tylko dla Linuksa, ponieważ zależy od usług użytkownika systemd.
 
 Możesz też ustawić `OPENCLAW_PODMAN_QUADLET=1`.
 
 Opcjonalne zmienne środowiskowe budowania/konfiguracji:
 
 - `OPENCLAW_IMAGE` lub `OPENCLAW_PODMAN_IMAGE` -- użyj istniejącego/pobranego obrazu zamiast budować `openclaw:local`
-- `OPENCLAW_DOCKER_APT_PACKAGES` -- zainstaluj dodatkowe pakiety apt podczas budowania obrazu
-- `OPENCLAW_EXTENSIONS` -- wstępnie zainstaluj zależności Plugin podczas budowania
-- `OPENCLAW_INSTALL_BROWSER` -- wstępnie zainstaluj Chromium i Xvfb dla automatyzacji przeglądarki (ustaw na `1`, aby włączyć)
+- `OPENCLAW_IMAGE_APT_PACKAGES` -- zainstaluj dodatkowe pakiety apt podczas budowania obrazu (akceptuje też starsze `OPENCLAW_DOCKER_APT_PACKAGES`)
+- `OPENCLAW_IMAGE_PIP_PACKAGES` -- zainstaluj dodatkowe pakiety Python podczas budowania obrazu; przypnij wersje i używaj tylko indeksów pakietów, którym ufasz
+- `OPENCLAW_EXTENSIONS` -- wstępnie zainstaluj zależności pluginów w czasie budowania
+- `OPENCLAW_INSTALL_BROWSER` -- wstępnie zainstaluj Chromium i Xvfb do automatyzacji przeglądarki (ustaw na `1`, aby włączyć)
 
 Uruchomienie kontenera:
 
@@ -78,7 +80,7 @@ Uruchomienie kontenera:
 ./scripts/run-openclaw-podman.sh launch
 ```
 
-Skrypt uruchamia kontener jako bieżący uid/gid z `--userns=keep-id` i montuje przez bind stan OpenClaw w kontenerze.
+Skrypt uruchamia kontener z bieżącymi uid/gid za pomocą `--userns=keep-id` i montuje stan OpenClaw do kontenera przez bind mount.
 
 Onboarding:
 
@@ -86,9 +88,15 @@ Onboarding:
 ./scripts/run-openclaw-podman.sh launch setup
 ```
 
-Następnie otwórz `http://127.0.0.1:18789/` i użyj tokena z `~/.openclaw/.env`.
+Następnie otwórz `http://127.0.0.1:18789/` i użyj tokenu z `~/.openclaw/.env`.
 
-Domyślne ustawienie hostowego CLI:
+Uwierzytelnianie modeli w Podman:
+
+- Użyj uwierzytelniania zarządzanego przez OpenClaw podczas konfiguracji: kluczy API Anthropic dla Anthropic albo uwierzytelniania OAuth przeglądarki/kodem urządzenia OpenAI Codex dla OpenAI opartego na Codex.
+- Launcher Podman nie montuje katalogów domowych poświadczeń hostowego CLI, takich jak `~/.claude` czy `~/.codex`, do kontenera konfiguracji ani gateway.
+- Istniejące logowania hostowego CLI są ścieżkami wygody na tym samym hoście. W instalacjach kontenerowych trzymaj uwierzytelnianie dostawców w zamontowanym stanie `~/.openclaw`, którym zarządza konfiguracja.
+
+Domyślne hostowe CLI:
 
 ```bash
 export OPENCLAW_CONTAINER=openclaw
@@ -103,8 +111,8 @@ openclaw doctor
 openclaw channels login
 ```
 
-Na macOS maszyna Podman może sprawić, że przeglądarka będzie wyglądać dla Gateway jak nielokalna.
-Jeśli Control UI zgłasza błędy uwierzytelniania urządzenia po uruchomieniu, skorzystaj ze wskazówek dotyczących Tailscale w sekcji
+W systemie macOS maszyna Podman może sprawić, że przeglądarka będzie wyglądać dla gateway jak nielokalna.
+Jeśli Control UI zgłasza błędy uwierzytelniania urządzenia po uruchomieniu, skorzystaj ze wskazówek Tailscale w
 [Podman i Tailscale](#podman--tailscale).
 
 <a id="podman--tailscale"></a>
@@ -115,9 +123,9 @@ Aby uzyskać dostęp HTTPS lub zdalny dostęp przez przeglądarkę, postępuj zg
 
 Uwaga specyficzna dla Podman:
 
-- Zachowaj host publikowania Podman jako `127.0.0.1`.
+- Pozostaw host publikacji Podman jako `127.0.0.1`.
 - Preferuj zarządzane przez hosta `tailscale serve` zamiast `openclaw gateway --tailscale serve`.
-- Na macOS, jeśli lokalny kontekst uwierzytelniania urządzenia w przeglądarce jest zawodny, użyj dostępu Tailscale zamiast doraźnych obejść z lokalnym tunelem.
+- W systemie macOS, jeśli lokalny kontekst uwierzytelniania urządzenia w przeglądarce jest zawodny, użyj dostępu Tailscale zamiast doraźnych obejść z lokalnymi tunelami.
 
 Zobacz:
 
@@ -146,68 +154,68 @@ systemctl --user daemon-reload
 systemctl --user restart openclaw.service
 ```
 
-Aby zapewnić trwałość po rozruchu na hostach SSH/bez monitora, włącz lingering dla bieżącego użytkownika:
+Aby zachować trwałość po uruchomieniu systemu na hostach SSH/bez monitora, włącz lingering dla bieżącego użytkownika:
 
 ```bash
 sudo loginctl enable-linger "$(whoami)"
 ```
 
-## Konfiguracja, środowisko i pamięć masowa
+## Konfiguracja, środowisko i przechowywanie
 
 - **Katalog konfiguracji:** `~/.openclaw`
-- **Katalog obszaru roboczego:** `~/.openclaw/workspace`
-- **Plik tokena:** `~/.openclaw/.env`
-- **Pomocnik uruchamiania:** `./scripts/run-openclaw-podman.sh`
+- **Katalog workspace:** `~/.openclaw/workspace`
+- **Plik tokenu:** `~/.openclaw/.env`
+- **Helper uruchamiania:** `./scripts/run-openclaw-podman.sh`
 
-Skrypt uruchamiania i Quadlet montują przez bind stan hosta w kontenerze:
+Skrypt uruchamiania i Quadlet montują stan hosta do kontenera przez bind mount:
 
 - `OPENCLAW_CONFIG_DIR` -> `/home/node/.openclaw`
 - `OPENCLAW_WORKSPACE_DIR` -> `/home/node/.openclaw/workspace`
 
 Domyślnie są to katalogi hosta, a nie anonimowy stan kontenera, więc
-`openclaw.json`, `auth-profiles.json` poszczególnych agentów, stan kanałów/dostawców,
-sesje i obszar roboczy przetrwają wymianę kontenera.
-Konfiguracja Podman zasila też `gateway.controlUi.allowedOrigins` dla `127.0.0.1` i `localhost` na opublikowanym porcie Gateway, aby lokalny dashboard działał z wiązaniem kontenera innym niż loopback.
+`openclaw.json`, per-agent `auth-profiles.json`, stan kanałów/dostawców,
+sesje i workspace przetrwają wymianę kontenera.
+Konfiguracja Podman zasila też `gateway.controlUi.allowedOrigins` dla `127.0.0.1` i `localhost` na opublikowanym porcie gateway, aby lokalny dashboard działał z powiązaniem kontenera, które nie jest local loopback.
 
 Przydatne zmienne środowiskowe dla ręcznego launchera:
 
 - `OPENCLAW_PODMAN_CONTAINER` -- nazwa kontenera (domyślnie `openclaw`)
 - `OPENCLAW_PODMAN_IMAGE` / `OPENCLAW_IMAGE` -- obraz do uruchomienia
-- `OPENCLAW_PODMAN_GATEWAY_HOST_PORT` -- port hosta mapowany na port kontenera `18789`
-- `OPENCLAW_PODMAN_BRIDGE_HOST_PORT` -- port hosta mapowany na port kontenera `18790`
+- `OPENCLAW_PODMAN_GATEWAY_HOST_PORT` -- port hosta mapowany na kontener `18789`
+- `OPENCLAW_PODMAN_BRIDGE_HOST_PORT` -- port hosta mapowany na kontener `18790`
 - `OPENCLAW_PODMAN_PUBLISH_HOST` -- interfejs hosta dla opublikowanych portów; domyślnie `127.0.0.1`
-- `OPENCLAW_GATEWAY_BIND` -- tryb wiązania Gateway wewnątrz kontenera; domyślnie `lan`
+- `OPENCLAW_GATEWAY_BIND` -- tryb wiązania gateway wewnątrz kontenera; domyślnie `lan`
 - `OPENCLAW_PODMAN_USERNS` -- `keep-id` (domyślnie), `auto` lub `host`
 
-Ręczny launcher odczytuje `~/.openclaw/.env` przed finalizacją domyślnych ustawień kontenera/obrazu, więc możesz je tam utrwalić.
+Ręczny launcher odczytuje `~/.openclaw/.env` przed finalizacją domyślnych wartości kontenera/obrazu, więc możesz je tam utrwalić.
 
-Jeśli używasz niestandardowego `OPENCLAW_CONFIG_DIR` lub `OPENCLAW_WORKSPACE_DIR`, ustaw te same zmienne zarówno dla poleceń `./scripts/podman/setup.sh`, jak i późniejszych `./scripts/run-openclaw-podman.sh launch`. Launcher lokalny dla repozytorium nie utrwala niestandardowych nadpisań ścieżek między powłokami.
+Jeśli używasz niestandardowego `OPENCLAW_CONFIG_DIR` lub `OPENCLAW_WORKSPACE_DIR`, ustaw te same zmienne zarówno dla `./scripts/podman/setup.sh`, jak i późniejszych poleceń `./scripts/run-openclaw-podman.sh launch`. Repozytoryjny launcher lokalny nie utrwala niestandardowych nadpisań ścieżek między powłokami.
 
 Uwaga dotycząca Quadlet:
 
 - Wygenerowana usługa Quadlet celowo zachowuje stały, utwardzony domyślny kształt: opublikowane porty `127.0.0.1`, `--bind lan` wewnątrz kontenera i przestrzeń nazw użytkownika `keep-id`.
 - Przypina `OPENCLAW_NO_RESPAWN=1`, `Restart=on-failure` i `TimeoutStartSec=300`.
-- Publikuje zarówno `127.0.0.1:18789:18789` (Gateway), jak i `127.0.0.1:18790:18790` (bridge).
-- Odczytuje `~/.openclaw/.env` jako środowiskowy `EnvironmentFile` czasu działania dla wartości takich jak `OPENCLAW_GATEWAY_TOKEN`, ale nie używa listy dozwolonych nadpisań specyficznych dla Podman z ręcznego launchera.
-- Jeśli potrzebujesz niestandardowych portów publikowania, hosta publikowania lub innych flag uruchamiania kontenera, użyj ręcznego launchera albo edytuj bezpośrednio `~/.config/containers/systemd/openclaw.container`, a następnie przeładuj i uruchom usługę ponownie.
+- Publikuje zarówno `127.0.0.1:18789:18789` (gateway), jak i `127.0.0.1:18790:18790` (bridge).
+- Odczytuje `~/.openclaw/.env` jako runtime `EnvironmentFile` dla wartości takich jak `OPENCLAW_GATEWAY_TOKEN`, ale nie używa listy dozwolonych nadpisań specyficznych dla Podman z ręcznego launchera.
+- Jeśli potrzebujesz niestandardowych portów publikacji, hosta publikacji lub innych flag uruchamiania kontenera, użyj ręcznego launchera albo edytuj bezpośrednio `~/.config/containers/systemd/openclaw.container`, a następnie przeładuj i zrestartuj usługę.
 
 ## Przydatne polecenia
 
 - **Logi kontenera:** `podman logs -f openclaw`
-- **Zatrzymanie kontenera:** `podman stop openclaw`
-- **Usunięcie kontenera:** `podman rm -f openclaw`
-- **Otwarcie URL dashboardu z hostowego CLI:** `openclaw dashboard --no-open`
+- **Zatrzymaj kontener:** `podman stop openclaw`
+- **Usuń kontener:** `podman rm -f openclaw`
+- **Otwórz URL dashboardu z hostowego CLI:** `openclaw dashboard --no-open`
 - **Kondycja/status przez hostowe CLI:** `openclaw gateway status --deep` (sonda RPC + dodatkowe
   skanowanie usługi)
 
 ## Rozwiązywanie problemów
 
-- **Odmowa dostępu (EACCES) do konfiguracji lub obszaru roboczego:** Kontener domyślnie działa z `--userns=keep-id` i `--user <your uid>:<your gid>`. Upewnij się, że ścieżki konfiguracji/obszaru roboczego na hoście należą do bieżącego użytkownika.
+- **Odmowa uprawnień (EACCES) w konfiguracji lub workspace:** Kontener domyślnie działa z `--userns=keep-id` i `--user <your uid>:<your gid>`. Upewnij się, że ścieżki konfiguracji/workspace na hoście należą do bieżącego użytkownika.
 - **Start Gateway zablokowany (brak `gateway.mode=local`):** Upewnij się, że `~/.openclaw/openclaw.json` istnieje i ustawia `gateway.mode="local"`. `scripts/podman/setup.sh` tworzy go, jeśli go brakuje.
-- **Polecenia CLI kontenera trafiają do niewłaściwego celu:** Użyj jawnie `openclaw --container <name> ...` albo wyeksportuj `OPENCLAW_CONTAINER=<name>` w swojej powłoce.
-- **`openclaw update` kończy się niepowodzeniem z `--container`:** To oczekiwane. Odbuduj/pobierz obraz, a następnie uruchom ponownie kontener albo usługę Quadlet.
+- **Polecenia CLI kontenera trafiają w zły cel:** Użyj jawnie `openclaw --container <name> ...` albo wyeksportuj `OPENCLAW_CONTAINER=<name>` w swojej powłoce.
+- **`openclaw update` kończy się niepowodzeniem z `--container`:** To oczekiwane. Przebuduj/pobierz obraz, a następnie zrestartuj kontener albo usługę Quadlet.
 - **Usługa Quadlet nie startuje:** Uruchom `systemctl --user daemon-reload`, a następnie `systemctl --user start openclaw.service`. W systemach bez monitora może być też potrzebne `sudo loginctl enable-linger "$(whoami)"`.
-- **SELinux blokuje montowania bind:** Pozostaw domyślne zachowanie montowania bez zmian; launcher automatycznie dodaje `:Z` w Linuksie, gdy SELinux działa w trybie enforcing lub permissive.
+- **SELinux blokuje bind mounty:** Pozostaw domyślne zachowanie montowania bez zmian; launcher automatycznie dodaje `:Z` w Linuksie, gdy SELinux jest w trybie enforcing lub permissive.
 
 ## Powiązane
 

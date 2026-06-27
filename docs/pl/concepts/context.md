@@ -2,42 +2,43 @@
 read_when:
     - Chcesz zrozumieć, co oznacza „kontekst” w OpenClaw
     - Debugujesz, dlaczego model coś „wie” (albo o tym zapomniał)
-    - Chcesz ograniczyć narzut kontekstu (/context, /status, /compact)
-summary: 'Kontekst: co widzi model, jak jest tworzony i jak go sprawdzić'
+    - Chcesz zmniejszyć narzut kontekstu (/context, /status, /compact)
+summary: 'Kontekst: co widzi model, jak jest tworzony i jak go sprawdzać'
 title: Kontekst
 x-i18n:
-    generated_at: "2026-05-10T19:31:36Z"
+    generated_at: "2026-06-27T17:25:56Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: dc2dae290e63f82111d865ae066567ef58ec3f48eb62b409b76ee9e6ff65d696
+    source_hash: 900b4a72acf43405a6b7718b93c3b5c8543eb2cc90766298889052c7468e39fb
     source_path: concepts/context.md
     workflow: 16
 ---
 
-„Kontekst” to **wszystko, co OpenClaw wysyła do modelu na potrzeby uruchomienia**. Jest on ograniczony przez **okno kontekstu** modelu (limit tokenów).
+„Kontekst” to **wszystko, co OpenClaw wysyła do modelu dla danego uruchomienia**. Jest ograniczony przez **okno kontekstu** modelu (limit tokenów).
 
 Model mentalny dla początkujących:
 
 - **Prompt systemowy** (zbudowany przez OpenClaw): reguły, narzędzia, lista Skills, czas/środowisko uruchomieniowe oraz wstrzyknięte pliki obszaru roboczego.
 - **Historia rozmowy**: Twoje wiadomości + wiadomości asystenta w tej sesji.
-- **Wywołania/wyniki narzędzi + załączniki**: dane wyjściowe poleceń, odczyty plików, obrazy/audio itd.
+- **Wywołania/wyniki narzędzi + załączniki**: wynik poleceń, odczyty plików, obrazy/audio itd.
 
-Kontekst to _nie to samo_ co „pamięć”: pamięć może być przechowywana na dysku i ponownie załadowana później; kontekst to to, co znajduje się w bieżącym oknie modelu.
+Kontekst to _nie to samo_ co „pamięć”: pamięć może być przechowywana na dysku i wczytywana później; kontekst to to, co znajduje się w bieżącym oknie modelu.
 
-## Szybki start (inspekcja kontekstu)
+## Szybki start (sprawdzanie kontekstu)
 
-- `/status` → szybki widok „jak zapełnione jest moje okno?” + ustawienia sesji.
-- `/context list` → co jest wstrzyknięte + przybliżone rozmiary (dla każdego pliku + sumy).
-- `/context detail` → głębszy podział: rozmiary dla każdego pliku, schematów narzędzi, wpisów Skills oraz rozmiar promptu systemowego.
-- `/context map` → obraz mapy drzewa w stylu WinDirStat dla śledzonych składników kontekstu bieżącej sesji.
-- `/usage tokens` → dodaje do zwykłych odpowiedzi stopkę użycia dla każdej odpowiedzi.
-- `/compact` → podsumowuje starszą historię w kompaktowy wpis, aby zwolnić miejsce w oknie.
+- `/status` → szybki widok „jak pełne jest moje okno?” + ustawienia sesji.
+- `/context list` → co jest wstrzyknięte + przybliżone rozmiary (na plik + sumy).
+- `/context detail` → głębszy podział: rozmiary na plik, schematy narzędzi, wpisy Skills, rozmiar promptu systemowego oraz liczby wiadomości transkryptu możliwych do kompaktowania.
+- `/context map` → obraz mapy drzewa w stylu WinDirStat przedstawiający śledzone źródła bieżącego kontekstu sesji.
+- `/usage tokens` → dodaje stopkę użycia dla każdej odpowiedzi do zwykłych odpowiedzi.
+- `/compact` → streszcza starszą historię do kompaktowego wpisu, aby zwolnić miejsce w oknie.
 
-Zobacz także: [Polecenia slash](/pl/tools/slash-commands), [Użycie tokenów i koszty](/pl/reference/token-use), [Compaction](/pl/concepts/compaction).
+Zobacz także: [Polecenia ukośnikowe](/pl/tools/slash-commands), [Użycie tokenów i koszty](/pl/reference/token-use), [Compaction](/pl/concepts/compaction).
 
-## Przykładowe dane wyjściowe
+## Przykładowy wynik
 
-Wartości różnią się zależnie od modelu, dostawcy, polityki narzędzi i zawartości obszaru roboczego.
+Wartości różnią się zależnie od modelu, providera, zasad narzędzi i zawartości obszaru roboczego.
 
 ### `/context list`
 
@@ -84,14 +85,14 @@ Top tools (schema size):
 
 ### `/context map`
 
-Wysyła obraz wygenerowany z najnowszego buforowanego raportu uruchomienia. Zanim zwykła wiadomość utworzy raport uruchomienia w sesji, `/context map` zwraca komunikat o niedostępności zamiast renderować oszacowanie. Pole prostokąta jest proporcjonalne do śledzonych znaków promptu:
+Wysyła obraz wygenerowany z najnowszego buforowanego raportu uruchomienia. Zanim zwykła wiadomość wygeneruje raport uruchomienia w sesji, `/context map` zwraca komunikat o niedostępności zamiast renderować szacunek. Powierzchnia prostokąta jest proporcjonalna do śledzonych znaków promptu:
 
 - wstrzyknięte pliki obszaru roboczego
-- podstawowy tekst promptu systemowego
-- wpisy promptu Skills
+- bazowy tekst promptu systemowego
+- wpisy promptów Skills
 - schematy JSON narzędzi
 
-`/context list`, `/context detail` i `/context json` nadal mogą sprawdzić oszacowanie na żądanie, gdy nie ma buforowanego raportu uruchomienia.
+`/context list`, `/context detail` i `/context json` nadal mogą sprawdzać szacunek na żądanie, gdy żaden raport uruchomienia nie jest zbuforowany.
 
 ## Co wlicza się do okna kontekstu
 
@@ -102,18 +103,18 @@ Liczy się wszystko, co otrzymuje model, w tym:
 - Wywołania narzędzi + wyniki narzędzi.
 - Załączniki/transkrypty (obrazy/audio/pliki).
 - Podsumowania Compaction i artefakty przycinania.
-- „Wrappery” dostawcy lub ukryte nagłówki (niewidoczne, ale nadal liczone).
+- „Opakowania” providera lub ukryte nagłówki (niewidoczne, ale nadal liczone).
 
 ## Jak OpenClaw buduje prompt systemowy
 
-Prompt systemowy jest **własnością OpenClaw** i jest przebudowywany przy każdym uruchomieniu. Obejmuje:
+Prompt systemowy jest **własnością OpenClaw** i jest przebudowywany przy każdym uruchomieniu. Zawiera:
 
 - Listę narzędzi + krótkie opisy.
-- Listę Skills (tylko metadane; zobacz niżej).
+- Listę Skills (tylko metadane; patrz niżej).
 - Lokalizację obszaru roboczego.
 - Czas (UTC + przeliczony czas użytkownika, jeśli skonfigurowano).
-- Metadane środowiska uruchomieniowego (host/OS/model/thinking).
-- Wstrzyknięte pliki startowe obszaru roboczego w sekcji **Project Context**.
+- Metadane środowiska uruchomieniowego (host/OS/model/myślenie).
+- Wstrzyknięte pliki bootstrap obszaru roboczego pod **Project Context**.
 
 Pełny podział: [Prompt systemowy](/pl/concepts/system-prompt).
 
@@ -129,15 +130,15 @@ Domyślnie OpenClaw wstrzykuje stały zestaw plików obszaru roboczego (jeśli i
 - `HEARTBEAT.md`
 - `BOOTSTRAP.md` (tylko przy pierwszym uruchomieniu)
 
-Duże pliki są obcinane osobno dla każdego pliku z użyciem `agents.defaults.bootstrapMaxChars` (domyślnie `12000` znaków). OpenClaw wymusza też łączny limit wstrzykiwania bootstrap dla wszystkich plików przy użyciu `agents.defaults.bootstrapTotalMaxChars` (domyślnie `60000` znaków). `/context` pokazuje rozmiary **surowe vs wstrzyknięte** oraz informację, czy nastąpiło obcięcie.
+Duże pliki są obcinane osobno dla każdego pliku przy użyciu `agents.defaults.bootstrapMaxChars` (domyślnie `20000` znaków). OpenClaw egzekwuje też łączny limit wstrzyknięcia bootstrap dla wszystkich plików przez `agents.defaults.bootstrapTotalMaxChars` (domyślnie `60000` znaków). `/context` pokazuje rozmiary **surowe vs wstrzyknięte** oraz czy doszło do obcięcia.
 
-Gdy nastąpi obcięcie, środowisko uruchomieniowe może wstrzyknąć blok ostrzeżenia wewnątrz promptu pod Project Context. Skonfiguruj to za pomocą `agents.defaults.bootstrapPromptTruncationWarning` (`off`, `once`, `always`; domyślnie `once`).
+Gdy dochodzi do obcięcia, środowisko uruchomieniowe może wstrzyknąć blok ostrzeżenia w prompcie pod Project Context. Skonfiguruj to za pomocą `agents.defaults.bootstrapPromptTruncationWarning` (`off`, `once`, `always`; domyślnie `always`).
 
 ## Skills: wstrzyknięte vs ładowane na żądanie
 
 Prompt systemowy zawiera kompaktową **listę Skills** (nazwa + opis + lokalizacja). Ta lista ma rzeczywisty narzut.
 
-Instrukcje Skills _nie_ są domyślnie uwzględniane. Oczekuje się, że model wykona `read` pliku `SKILL.md` danej Skills **tylko wtedy, gdy jest potrzebny**.
+Instrukcje Skills _nie_ są domyślnie uwzględniane. Model powinien `read` plik `SKILL.md` danej Skills **tylko wtedy, gdy jest potrzebny**.
 
 ## Narzędzia: są dwa koszty
 
@@ -146,61 +147,61 @@ Narzędzia wpływają na kontekst na dwa sposoby:
 1. **Tekst listy narzędzi** w prompcie systemowym (to, co widzisz jako „Tooling”).
 2. **Schematy narzędzi** (JSON). Są wysyłane do modelu, aby mógł wywoływać narzędzia. Wliczają się do kontekstu, mimo że nie widzisz ich jako zwykłego tekstu.
 
-`/context detail` rozbija największe schematy narzędzi, aby było widać, co dominuje.
+`/context detail` rozbija największe schematy narzędzi, aby pokazać, co dominuje.
 
 ## Polecenia, dyrektywy i „skróty inline”
 
-Polecenia slash są obsługiwane przez Gateway. Istnieje kilka różnych zachowań:
+Polecenia ukośnikowe są obsługiwane przez Gateway. Istnieje kilka różnych zachowań:
 
-- **Samodzielne polecenia**: wiadomość, która zawiera tylko `/...`, uruchamia się jako polecenie.
+- **Polecenia samodzielne**: wiadomość zawierająca tylko `/...` uruchamia się jako polecenie.
 - **Dyrektywy**: `/think`, `/verbose`, `/trace`, `/reasoning`, `/elevated`, `/model`, `/queue` są usuwane, zanim model zobaczy wiadomość.
-  - Wiadomości zawierające tylko dyrektywy utrwalają ustawienia sesji.
-  - Dyrektywy inline w zwykłej wiadomości działają jako wskazówki dla pojedynczej wiadomości.
-- **Skróty inline** (tylko nadawcy z listy dozwolonych): określone tokeny `/...` wewnątrz zwykłej wiadomości mogą zostać uruchomione natychmiast (przykład: „hej /status”) i są usuwane, zanim model zobaczy pozostały tekst.
+  - Wiadomości zawierające tylko dyrektywę utrwalają ustawienia sesji.
+  - Dyrektywy inline w zwykłej wiadomości działają jako wskazówki dla tej jednej wiadomości.
+- **Skróty inline** (tylko nadawcy z listy dozwolonych): niektóre tokeny `/...` wewnątrz zwykłej wiadomości mogą uruchomić się natychmiast (przykład: „hej /status”) i są usuwane, zanim model zobaczy pozostały tekst.
 
-Szczegóły: [Polecenia slash](/pl/tools/slash-commands).
+Szczegóły: [Polecenia ukośnikowe](/pl/tools/slash-commands).
 
 ## Sesje, Compaction i przycinanie (co jest utrwalane)
 
 To, co utrzymuje się między wiadomościami, zależy od mechanizmu:
 
-- **Zwykła historia** utrzymuje się w transkrypcie sesji, dopóki nie zostanie objęta Compaction/przycięta przez politykę.
-- **Compaction** zapisuje podsumowanie w transkrypcie i pozostawia ostatnie wiadomości bez zmian.
-- **Przycinanie** usuwa stare wyniki narzędzi z promptu _w pamięci_, aby zwolnić miejsce w oknie kontekstu, ale nie przepisuje transkryptu sesji - pełna historia nadal jest dostępna do inspekcji na dysku.
+- **Zwykła historia** utrzymuje się w transkrypcie sesji, dopóki nie zostanie skompaktowana/przycięta zgodnie z zasadami.
+- **Compaction** utrwala podsumowanie w transkrypcie i zachowuje ostatnie wiadomości bez zmian.
+- **Przycinanie** usuwa stare wyniki narzędzi z promptu _w pamięci_, aby zwolnić miejsce w oknie kontekstu, ale nie przepisuje transkryptu sesji - pełna historia nadal jest dostępna do sprawdzenia na dysku.
 
 Dokumentacja: [Sesja](/pl/concepts/session), [Compaction](/pl/concepts/compaction), [Przycinanie sesji](/pl/concepts/session-pruning).
 
 Domyślnie OpenClaw używa wbudowanego silnika kontekstu `legacy` do składania i
-Compaction. Jeśli zainstalujesz Plugin, który udostępnia `kind: "context-engine"` i
-wybierzesz go za pomocą `plugins.slots.contextEngine`, OpenClaw przekaże składanie
+Compaction. Jeśli zainstalujesz plugin, który udostępnia `kind: "context-engine"` i
+wybierzesz go za pomocą `plugins.slots.contextEngine`, OpenClaw deleguje składanie
 kontekstu, `/compact` oraz powiązane haki cyklu życia kontekstu subagentów do tego
 silnika. `ownsCompaction: false` nie powoduje automatycznego powrotu do silnika
 legacy; aktywny silnik nadal musi poprawnie implementować `compact()`. Zobacz
 [Silnik kontekstu](/pl/concepts/context-engine), aby poznać pełny
-interfejs rozszerzalny przez Plugin, haki cyklu życia i konfigurację.
+interfejs rozszerzalny przez pluginy, haki cyklu życia i konfigurację.
 
-## Co `/context` faktycznie raportuje
+## Co faktycznie raportuje `/context`
 
-`/context` preferuje najnowszy raport promptu systemowego **zbudowany podczas uruchomienia**, jeśli jest dostępny:
+`/context` preferuje najnowszy raport promptu systemowego **zbudowany podczas uruchomienia**, gdy jest dostępny:
 
-- `System prompt (run)` = przechwycony z ostatniego osadzonego uruchomienia (obsługującego narzędzia) i utrwalony w magazynie sesji.
-- `System prompt (estimate)` = obliczany w locie, gdy nie istnieje raport uruchomienia (lub podczas pracy przez backend CLI, który nie generuje raportu).
+- `System prompt (run)` = przechwycony z ostatniego osadzonego uruchomienia (zdolnego do używania narzędzi) i utrwalony w magazynie sesji.
+- `System prompt (estimate)` = obliczany w locie, gdy nie istnieje raport uruchomienia (lub podczas działania przez backend CLI, który nie generuje raportu).
 
-W obu przypadkach raportuje rozmiary i główne źródła narzutu; **nie** zrzuca pełnego promptu systemowego ani schematów narzędzi.
+W obu przypadkach raportuje rozmiary i największe źródła; **nie** zrzuca pełnego promptu systemowego ani schematów narzędzi. W trybie szczegółowym porównuje też transkrypt sesji z tym samym predykatem wiadomości prawdziwej rozmowy, którego używa Compaction, dzięki czemu łatwiej odróżnić wysokie użycie promptu/cache od historii rozmowy możliwej do kompaktowania.
 
 ## Powiązane
 
 <CardGroup cols={2}>
   <Card title="Silnik kontekstu" href="/pl/concepts/context-engine" icon="puzzle-piece">
-    Niestandardowe wstrzykiwanie kontekstu przez plugins.
+    Niestandardowe wstrzykiwanie kontekstu przez pluginy.
   </Card>
   <Card title="Compaction" href="/pl/concepts/compaction" icon="compress">
-    Podsumowywanie długich rozmów, aby utrzymać je wewnątrz okna modelu.
+    Streszczanie długich rozmów, aby utrzymać je w oknie modelu.
   </Card>
   <Card title="Prompt systemowy" href="/pl/concepts/system-prompt" icon="message-lines">
     Jak budowany jest prompt systemowy i co wstrzykuje w każdej turze.
   </Card>
   <Card title="Pętla agenta" href="/pl/concepts/agent-loop" icon="arrows-rotate">
-    Pełny cykl wykonywania agenta od wiadomości przychodzącej do końcowej odpowiedzi.
+    Pełny cykl wykonania agenta od wiadomości przychodzącej do końcowej odpowiedzi.
   </Card>
 </CardGroup>

@@ -2,13 +2,14 @@
 read_when:
     - Anda menginginkan pembuatan media Vydra di OpenClaw
     - Anda memerlukan panduan penyiapan kunci API Vydra
-summary: Gunakan gambar, video, dan wicara Vydra di OpenClaw
+summary: Gunakan gambar, video, dan ucapan Vydra di OpenClaw
 title: Vydra
 x-i18n:
-    generated_at: "2026-05-06T09:26:10Z"
+    generated_at: "2026-06-27T18:08:11Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6e73121300fc3121124d15ecd285603032644c7d3886703776adc58c7115401a
+    source_hash: 4cb1128d877e06a274fe07c42282a7990c322e4d88d4232a1cac78e54deaf163
     source_path: providers/vydra.md
     workflow: 16
 ---
@@ -19,20 +20,20 @@ Plugin Vydra bawaan menambahkan:
 - Pembuatan video melalui `vydra/veo3` dan `vydra/kling`
 - Sintesis ucapan melalui rute TTS Vydra yang didukung ElevenLabs
 
-OpenClaw menggunakan `VYDRA_API_KEY` yang sama untuk ketiga kapabilitas tersebut.
+OpenClaw menggunakan `VYDRA_API_KEY` yang sama untuk ketiga kemampuan tersebut.
 
-| Properti        | Nilai                                                                     |
-| --------------- | ------------------------------------------------------------------------- |
-| ID penyedia     | `vydra`                                                                   |
-| Plugin          | bawaan, `enabledByDefault: true`                                          |
-| Variabel env auth | `VYDRA_API_KEY`                                                         |
-| Flag onboarding | `--auth-choice vydra-api-key`                                             |
-| Flag CLI langsung | `--vydra-api-key <key>`                                                 |
-| Kontrak         | `imageGenerationProviders`, `videoGenerationProviders`, `speechProviders` |
-| URL dasar       | `https://www.vydra.ai/api/v1` (gunakan host `www`)                        |
+| Properti              | Nilai                                                                     |
+| --------------------- | ------------------------------------------------------------------------- |
+| Id penyedia           | `vydra`                                                                   |
+| Plugin                | bawaan, `enabledByDefault: true`                                          |
+| Variabel env autentikasi | `VYDRA_API_KEY`                                                        |
+| Flag onboarding       | `--auth-choice vydra-api-key`                                             |
+| Flag CLI langsung     | `--vydra-api-key <key>`                                                   |
+| Kontrak               | `imageGenerationProviders`, `videoGenerationProviders`, `speechProviders` |
+| URL dasar             | `https://www.vydra.ai/api/v1` (gunakan host `www`)                        |
 
 <Warning>
-  Gunakan `https://www.vydra.ai/api/v1` sebagai URL dasar. Host apex Vydra (`https://vydra.ai/api/v1`) saat ini mengalihkan ke `www`. Beberapa klien HTTP menghapus `Authorization` pada pengalihan lintas-host tersebut, yang mengubah kunci API valid menjadi kegagalan auth yang menyesatkan. Plugin bawaan menggunakan URL dasar `www` secara langsung untuk menghindari hal itu.
+  Gunakan `https://www.vydra.ai/api/v1` sebagai URL dasar. Host apex Vydra (`https://vydra.ai/api/v1`) saat ini mengalihkan ke `www`. Sebagian klien HTTP menghapus `Authorization` pada pengalihan lintas-host tersebut, yang mengubah kunci API valid menjadi kegagalan autentikasi yang menyesatkan. Plugin bawaan menggunakan URL dasar `www` secara langsung untuk menghindari hal itu.
 </Warning>
 
 ## Penyiapan
@@ -50,12 +51,12 @@ OpenClaw menggunakan `VYDRA_API_KEY` yang sama untuk ketiga kapabilitas tersebut
     ```
 
   </Step>
-  <Step title="Pilih kapabilitas default">
-    Pilih satu atau beberapa kapabilitas di bawah ini (gambar, video, atau ucapan) dan terapkan konfigurasi yang sesuai.
+  <Step title="Pilih kemampuan default">
+    Pilih satu atau lebih kemampuan di bawah ini (gambar, video, atau ucapan) dan terapkan konfigurasi yang sesuai.
   </Step>
 </Steps>
 
-## Kapabilitas
+## Kemampuan
 
 <AccordionGroup>
   <Accordion title="Pembuatan gambar">
@@ -77,7 +78,7 @@ OpenClaw menggunakan `VYDRA_API_KEY` yang sama untuk ketiga kapabilitas tersebut
     }
     ```
 
-    Dukungan bawaan saat ini hanya teks-ke-gambar. Rute edit yang dihosting Vydra mengharapkan URL gambar jarak jauh, dan OpenClaw belum menambahkan jembatan unggah khusus Vydra di Plugin bawaan.
+    Dukungan bawaan saat ini hanya teks-ke-gambar. Rute edit yang dihosting Vydra mengharapkan URL gambar jarak jauh, dan OpenClaw belum menambahkan jembatan unggahan khusus Vydra di Plugin bawaan.
 
     <Note>
     Lihat [Pembuatan Gambar](/id/tools/image-generation) untuk parameter alat bersama, pemilihan penyedia, dan perilaku failover.
@@ -107,9 +108,9 @@ OpenClaw menggunakan `VYDRA_API_KEY` yang sama untuk ketiga kapabilitas tersebut
 
     Catatan:
 
-    - `vydra/veo3` dibundel hanya sebagai teks-ke-video.
+    - `vydra/veo3` disertakan sebagai bawaan hanya untuk teks-ke-video.
     - `vydra/kling` saat ini memerlukan referensi URL gambar jarak jauh. Unggahan file lokal ditolak sejak awal.
-    - Rute HTTP `kling` Vydra saat ini tidak konsisten mengenai apakah memerlukan `image_url` atau `video_url`; penyedia bawaan memetakan URL gambar jarak jauh yang sama ke kedua bidang.
+    - Rute HTTP `kling` Vydra saat ini belum konsisten tentang apakah memerlukan `image_url` atau `video_url`; penyedia bawaan memetakan URL gambar jarak jauh yang sama ke kedua bidang.
     - Plugin bawaan tetap konservatif dan tidak meneruskan pengaturan gaya yang tidak terdokumentasi seperti rasio aspek, resolusi, watermark, atau audio yang dihasilkan.
 
     <Note>
@@ -132,7 +133,7 @@ OpenClaw menggunakan `VYDRA_API_KEY` yang sama untuk ketiga kapabilitas tersebut
     - `vydra/veo3` teks-ke-video
     - `vydra/kling` gambar-ke-video menggunakan URL gambar jarak jauh
 
-    Timpa fixture gambar jarak jauh bila diperlukan:
+    Timpa fixture gambar jarak jauh jika diperlukan:
 
     ```bash
     export OPENCLAW_LIVE_VYDRA_KLING_IMAGE_URL="https://example.com/reference.png"
@@ -151,7 +152,7 @@ OpenClaw menggunakan `VYDRA_API_KEY` yang sama untuk ketiga kapabilitas tersebut
           providers: {
             vydra: {
               apiKey: "${VYDRA_API_KEY}",
-              voiceId: "21m00Tcm4TlvDq8ikWAM",
+              speakerVoiceId: "21m00Tcm4TlvDq8ikWAM",
             },
           },
         },
@@ -162,9 +163,9 @@ OpenClaw menggunakan `VYDRA_API_KEY` yang sama untuk ketiga kapabilitas tersebut
     Default:
 
     - Model: `elevenlabs/tts`
-    - ID suara: `21m00Tcm4TlvDq8ikWAM`
+    - Id suara: `21m00Tcm4TlvDq8ikWAM`
 
-    Plugin bawaan saat ini mengekspos satu suara default yang telah terbukti baik dan mengembalikan file audio MP3.
+    Plugin bawaan saat ini mengekspos satu suara default yang sudah terbukti baik dan mengembalikan file audio MP3.
 
   </Accordion>
 </AccordionGroup>

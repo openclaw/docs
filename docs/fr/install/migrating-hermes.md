@@ -1,36 +1,37 @@
 ---
 read_when:
-    - Vous venez d’Hermes et souhaitez conserver votre configuration de modèle, vos prompts, votre mémoire et vos Skills
-    - Vous voulez savoir ce qu’OpenClaw importe automatiquement et ce qui reste réservé aux archives
-    - Vous avez besoin d’un chemin de migration propre et scripté (CI, ordinateur portable fraîchement configuré, automatisation)
-summary: Migrez de Hermes vers OpenClaw avec un import prévisualisé et réversible
-title: Migrer depuis Hermes
+    - Vous venez de Hermes et souhaitez conserver votre configuration de modèle, vos prompts, votre mémoire et vos Skills
+    - Vous voulez savoir ce qu’OpenClaw importe automatiquement et ce qui reste uniquement archivé
+    - Vous avez besoin d’un chemin de migration propre et scripté (CI, nouvel ordinateur portable, automatisation)
+summary: Passez d’Hermes à OpenClaw avec un import prévisualisé et réversible
+title: Migration depuis Hermes
 x-i18n:
-    generated_at: "2026-04-30T07:34:28Z"
+    generated_at: "2026-06-27T17:39:18Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 01f8a71e524b31c85864be63e54fc8a2057ecb06a73aac9e6fb107fc0c49757d
+    source_hash: 4f2a2bfea4fd276e3392261e8ecea09d147424636efb200ced1deb86ac0161b5
     source_path: install/migrating-hermes.md
     workflow: 16
 ---
 
-OpenClaw importe l’état Hermes via un fournisseur de migration intégré. Le fournisseur prévisualise tout avant de modifier l’état, masque les secrets dans les plans et les rapports, et crée une sauvegarde vérifiée avant l’application.
+OpenClaw importe l’état Hermes au moyen d’un fournisseur de migration intégré. Le fournisseur prévisualise tout avant de modifier l’état, masque les secrets dans les plans et les rapports, et crée une sauvegarde vérifiée avant l’application.
 
 <Note>
-Les imports nécessitent une nouvelle configuration OpenClaw propre. Si vous avez déjà un état OpenClaw local, réinitialisez d’abord la configuration, les identifiants, les sessions et l’espace de travail, ou utilisez directement `openclaw migrate` avec `--overwrite` après avoir examiné le plan.
+Les importations nécessitent une nouvelle configuration OpenClaw. Si vous disposez déjà d’un état OpenClaw local, réinitialisez d’abord la configuration, les identifiants, les sessions et l’espace de travail, ou utilisez directement `openclaw migrate` avec `--overwrite` après avoir examiné le plan.
 </Note>
 
 ## Deux façons d’importer
 
 <Tabs>
-  <Tab title="Assistant d’intégration">
-    Le chemin le plus rapide. L’assistant détecte Hermes dans `~/.hermes` et affiche une prévisualisation avant l’application.
+  <Tab title="Onboarding wizard">
+    Le chemin le plus rapide. L’assistant détecte Hermes dans `~/.hermes` et affiche un aperçu avant d’appliquer les changements.
 
     ```bash
     openclaw onboard --flow import
     ```
 
-    Ou indiquez une source spécifique :
+    Ou indiquez une source précise :
 
     ```bash
     openclaw onboard --import-from hermes --import-source ~/.hermes
@@ -38,14 +39,14 @@ Les imports nécessitent une nouvelle configuration OpenClaw propre. Si vous ave
 
   </Tab>
   <Tab title="CLI">
-    Utilisez `openclaw migrate` pour les exécutions scriptées ou reproductibles. Consultez [`openclaw migrate`](/fr/cli/migrate) pour la référence complète.
+    Utilisez `openclaw migrate` pour les exécutions scriptées ou répétables. Consultez [`openclaw migrate`](/fr/cli/migrate) pour la référence complète.
 
     ```bash
     openclaw migrate hermes --dry-run    # preview only
     openclaw migrate apply hermes --yes  # apply with confirmation skipped
     ```
 
-    Ajoutez `--from <path>` lorsque Hermes se trouve hors de `~/.hermes`.
+    Ajoutez `--from <path>` lorsque Hermes se trouve en dehors de `~/.hermes`.
 
   </Tab>
 </Tabs>
@@ -53,72 +54,71 @@ Les imports nécessitent une nouvelle configuration OpenClaw propre. Si vous ave
 ## Ce qui est importé
 
 <AccordionGroup>
-  <Accordion title="Configuration du modèle">
+  <Accordion title="Model configuration">
     - Sélection du modèle par défaut depuis le `config.yaml` de Hermes.
-    - Fournisseurs de modèles configurés et points de terminaison personnalisés compatibles OpenAI depuis `providers` et `custom_providers`.
+    - Fournisseurs de modèles configurés et points de terminaison personnalisés compatibles avec OpenAI depuis `providers` et `custom_providers`.
 
   </Accordion>
-  <Accordion title="Serveurs MCP">
-    Définitions de serveurs MCP depuis `mcp_servers` ou `mcp.servers`.
+  <Accordion title="MCP servers">
+    Définitions des serveurs MCP depuis `mcp_servers` ou `mcp.servers`.
   </Accordion>
-  <Accordion title="Fichiers de l’espace de travail">
+  <Accordion title="Workspace files">
     - `SOUL.md` et `AGENTS.md` sont copiés dans l’espace de travail de l’agent OpenClaw.
-    - `memories/MEMORY.md` et `memories/USER.md` sont **ajoutés** aux fichiers de mémoire OpenClaw correspondants au lieu de les remplacer.
+    - `memories/MEMORY.md` et `memories/USER.md` sont **ajoutés** aux fichiers de mémoire OpenClaw correspondants au lieu de les écraser.
 
   </Accordion>
-  <Accordion title="Configuration de la mémoire">
-    Valeurs par défaut de configuration de la mémoire pour la mémoire de fichiers OpenClaw. Les fournisseurs de mémoire externes comme Honcho sont enregistrés comme éléments d’archive ou de révision manuelle afin que vous puissiez les déplacer délibérément.
+  <Accordion title="Memory configuration">
+    Valeurs par défaut de configuration de la mémoire pour la mémoire fichier OpenClaw. Les fournisseurs de mémoire externes tels que Honcho sont enregistrés comme éléments d’archive ou de revue manuelle afin que vous puissiez les déplacer délibérément.
   </Accordion>
   <Accordion title="Skills">
-    Les Skills comportant un fichier `SKILL.md` sous `skills/<name>/` sont copiées, avec les valeurs de configuration propres à chaque Skill depuis `skills.config`.
+    Les Skills avec un fichier `SKILL.md` sous `skills/<name>/` sont copiées, ainsi que les valeurs de configuration propres à chaque Skill depuis `skills.config`.
   </Accordion>
-  <Accordion title="Clés d’API (optionnel)">
-    Définissez `--include-secrets` pour importer les clés `.env` prises en charge : `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `OPENROUTER_API_KEY`, `GOOGLE_API_KEY`, `GEMINI_API_KEY`, `GROQ_API_KEY`, `XAI_API_KEY`, `MISTRAL_API_KEY`, `DEEPSEEK_API_KEY`. Sans cet indicateur, les secrets ne sont jamais copiés.
+  <Accordion title="Auth credentials">
+    `openclaw migrate` interactif demande confirmation avant d’importer les identifiants d’authentification, avec oui sélectionné par défaut. Les importations acceptées incluent les identifiants OAuth OpenAI d’OpenCode depuis le `auth.json` d’OpenCode, les entrées OpenCode et GitHub Copilot depuis le `auth.json` d’OpenCode, ainsi que les [clés `.env` prises en charge](/fr/cli/migrate#supported-env-keys). Les entrées OAuth du `auth.json` de Hermes sont un état hérité et sont présentées comme une réauthentification manuelle ou une tâche de doctor au lieu d’être importées dans l’authentification active. Utilisez `--include-secrets` pour l’importation non interactive d’identifiants avec `openclaw migrate`, `--no-auth-credentials` pour l’ignorer, ou `--import-secrets` dans l’onboarding lors de l’importation depuis l’assistant d’onboarding.
   </Accordion>
 </AccordionGroup>
 
-## Ce qui reste uniquement archivé
+## Ce qui reste seulement archivé
 
-Le fournisseur copie ces éléments dans le répertoire de rapport de migration pour révision manuelle, mais ne les charge **pas** dans la configuration ou les identifiants OpenClaw actifs :
+Le fournisseur copie ces éléments dans le répertoire de rapport de migration pour revue manuelle, mais ne les charge **pas** dans la configuration ou les identifiants actifs d’OpenClaw :
 
 - `plugins/`
 - `sessions/`
 - `logs/`
 - `cron/`
 - `mcp-tokens/`
-- `auth.json`
 - `state.db`
 
-OpenClaw refuse d’exécuter cet état ou de lui faire automatiquement confiance, car les formats et les hypothèses de confiance peuvent diverger entre les systèmes. Déplacez manuellement ce dont vous avez besoin après avoir examiné l’archive.
+OpenClaw refuse d’exécuter ou de faire automatiquement confiance à cet état, car les formats et les hypothèses de confiance peuvent diverger entre les systèmes. Déplacez manuellement ce dont vous avez besoin après avoir examiné l’archive.
 
 ## Flux recommandé
 
 <Steps>
-  <Step title="Prévisualiser le plan">
+  <Step title="Preview the plan">
     ```bash
     openclaw migrate hermes --dry-run
     ```
 
-    Le plan répertorie tout ce qui changera, y compris les conflits, les éléments ignorés et tout élément sensible. La sortie du plan masque les clés imbriquées qui ressemblent à des secrets.
+    Le plan liste tout ce qui va changer, y compris les conflits, les éléments ignorés et les éléments sensibles. La sortie du plan masque les clés imbriquées qui ressemblent à des secrets.
 
   </Step>
-  <Step title="Appliquer avec sauvegarde">
+  <Step title="Apply with backup">
     ```bash
     openclaw migrate apply hermes --yes
     ```
 
-    OpenClaw crée et vérifie une sauvegarde avant d’appliquer. Si vous devez importer des clés d’API, ajoutez `--include-secrets`.
+    OpenClaw crée et vérifie une sauvegarde avant l’application. Cet exemple non interactif importe un état non secret. Exécutez sans `--yes` pour répondre à l’invite concernant les identifiants, ou ajoutez `--include-secrets` pour inclure les identifiants pris en charge dans les exécutions sans surveillance.
 
   </Step>
-  <Step title="Exécuter doctor">
+  <Step title="Run doctor">
     ```bash
     openclaw doctor
     ```
 
-    [Doctor](/fr/gateway/doctor) réapplique toute migration de configuration en attente et recherche les problèmes introduits pendant l’import.
+    [Doctor](/fr/gateway/doctor) réapplique toute migration de configuration en attente et vérifie les problèmes introduits pendant l’importation.
 
   </Step>
-  <Step title="Redémarrer et vérifier">
+  <Step title="Restart and verify">
     ```bash
     openclaw gateway restart
     openclaw status
@@ -131,23 +131,25 @@ OpenClaw refuse d’exécuter cet état ou de lui faire automatiquement confianc
 
 ## Gestion des conflits
 
-L’application refuse de continuer lorsque le plan signale des conflits (un fichier ou une valeur de configuration existe déjà à la cible).
+L’application refuse de continuer lorsque le plan signale des conflits (un fichier ou une valeur de configuration existe déjà à la destination).
 
 <Warning>
-Réexécutez avec `--overwrite` uniquement lorsque le remplacement de la cible existante est intentionnel. Les fournisseurs peuvent encore écrire des sauvegardes au niveau des éléments pour les fichiers remplacés dans le répertoire de rapport de migration.
+Relancez avec `--overwrite` uniquement lorsque le remplacement de la cible existante est intentionnel. Les fournisseurs peuvent tout de même écrire des sauvegardes au niveau des éléments pour les fichiers écrasés dans le répertoire de rapport de migration.
 </Warning>
 
-Pour une installation OpenClaw propre, les conflits sont inhabituels. Ils apparaissent généralement lorsque vous relancez l’import sur une configuration qui comporte déjà des modifications utilisateur.
+Pour une nouvelle installation OpenClaw, les conflits sont inhabituels. Ils apparaissent généralement lorsque vous relancez l’importation sur une configuration qui comporte déjà des modifications utilisateur.
 
-Si un conflit survient en cours d’application (par exemple, une course inattendue sur un fichier de configuration), Hermes marque les éléments de configuration dépendants restants comme `skipped` avec la raison `blocked by earlier apply conflict` au lieu de les écrire partiellement. Le rapport de migration enregistre chaque élément bloqué afin que vous puissiez résoudre le conflit d’origine et relancer l’import.
+Si un conflit apparaît au milieu de l’application (par exemple, une course inattendue sur un fichier de configuration), Hermes marque les éléments de configuration dépendants restants comme `skipped` avec la raison `blocked by earlier apply conflict` au lieu de les écrire partiellement. Le rapport de migration enregistre chaque élément bloqué afin que vous puissiez résoudre le conflit d’origine et relancer l’importation.
 
 ## Secrets
 
-Les secrets ne sont jamais importés par défaut.
+`openclaw migrate` interactif demande s’il faut importer les identifiants d’authentification détectés, avec oui sélectionné par défaut.
 
-- Exécutez d’abord `openclaw migrate apply hermes --yes` pour importer l’état non secret.
-- Si vous souhaitez aussi copier les clés `.env` prises en charge, relancez avec `--include-secrets`.
-- Pour les identifiants gérés par SecretRef, configurez la source SecretRef une fois l’import terminé.
+- Accepter l’invite importe les identifiants OAuth OpenAI d’OpenCode depuis le `auth.json` d’OpenCode, les entrées OpenCode et GitHub Copilot depuis le `auth.json` d’OpenCode, ainsi que les [clés `.env` prises en charge](/fr/cli/migrate#supported-env-keys). Les entrées OAuth du `auth.json` de Hermes sont signalées pour une réauthentification OpenAI manuelle ou une réparation par doctor.
+- Utilisez `--no-auth-credentials` ou choisissez non à l’invite pour importer uniquement l’état non secret.
+- Utilisez `--include-secrets` lors d’une exécution sans surveillance avec `--yes`.
+- Utilisez `--import-secrets` dans l’onboarding lors de l’importation d’identifiants depuis l’assistant d’onboarding.
+- Pour les identifiants gérés par SecretRef, configurez la source SecretRef une fois l’importation terminée.
 
 ## Sortie JSON pour l’automatisation
 
@@ -161,24 +163,24 @@ Avec `--json` et sans `--yes`, l’application affiche le plan et ne modifie pas
 ## Dépannage
 
 <AccordionGroup>
-  <Accordion title="L’application refuse avec des conflits">
+  <Accordion title="Apply refuses with conflicts">
     Inspectez la sortie du plan. Chaque conflit identifie le chemin source et la cible existante. Décidez pour chaque élément s’il faut l’ignorer, modifier la cible ou relancer avec `--overwrite`.
   </Accordion>
-  <Accordion title="Hermes se trouve hors de ~/.hermes">
-    Passez `--from /actual/path` (CLI) ou `--import-source /actual/path` (intégration).
+  <Accordion title="Hermes lives outside ~/.hermes">
+    Passez `--from /actual/path` (CLI) ou `--import-source /actual/path` (onboarding).
   </Accordion>
-  <Accordion title="L’intégration refuse d’importer sur une configuration existante">
-    Les imports d’intégration nécessitent une configuration propre. Réinitialisez l’état et relancez l’intégration, ou utilisez directement `openclaw migrate apply hermes`, qui prend en charge `--overwrite` et le contrôle explicite de la sauvegarde.
+  <Accordion title="Onboarding refuses to import on an existing setup">
+    Les importations d’onboarding nécessitent une nouvelle configuration. Réinitialisez l’état et relancez l’onboarding, ou utilisez directement `openclaw migrate apply hermes`, qui prend en charge `--overwrite` et le contrôle explicite des sauvegardes.
   </Accordion>
-  <Accordion title="Les clés d’API n’ont pas été importées">
-    `--include-secrets` est requis, et seules les clés listées ci-dessus sont reconnues. Les autres variables dans `.env` sont ignorées.
+  <Accordion title="API keys did not import">
+    `openclaw migrate` interactif importe les clés API uniquement lorsque vous acceptez l’invite concernant les identifiants. Les exécutions non interactives avec `--yes` nécessitent `--include-secrets` ; les importations via l’onboarding nécessitent `--import-secrets`. Seules les [clés `.env` prises en charge](/fr/cli/migrate#supported-env-keys) sont reconnues ; les autres variables dans `.env` sont ignorées.
   </Accordion>
 </AccordionGroup>
 
-## Associés
+## Connexe
 
-- [`openclaw migrate`](/fr/cli/migrate) : référence CLI complète, contrat de plugin et formes JSON.
-- [Intégration](/fr/cli/onboard) : flux de l’assistant et indicateurs non interactifs.
+- [`openclaw migrate`](/fr/cli/migrate) : référence CLI complète, contrat de Plugin et formes JSON.
+- [Onboarding](/fr/cli/onboard) : flux d’assistant et indicateurs non interactifs.
 - [Migration](/fr/install/migrating) : déplacer une installation OpenClaw entre machines.
-- [Doctor](/fr/gateway/doctor) : contrôle de santé post-migration.
+- [Doctor](/fr/gateway/doctor) : contrôle de santé après migration.
 - [Espace de travail de l’agent](/fr/concepts/agent-workspace) : emplacement de `SOUL.md`, `AGENTS.md` et des fichiers de mémoire.

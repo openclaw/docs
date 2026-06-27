@@ -1,102 +1,107 @@
 ---
 read_when:
     - WebChat-Zugriff debuggen oder konfigurieren
-summary: 'Loopback-WebChat: statischer Host und Gateway-WS-Nutzung für die Chat-UI'
-title: WebChat
+summary: Statischer Loopback-WebChat-Host und Gateway-WS-Nutzung für Chat-UI
+title: Webchat
 x-i18n:
-    generated_at: "2026-05-04T02:26:56Z"
+    generated_at: "2026-06-27T18:23:58Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: bf435585a13a1cde5885714837017109eeeb61ffa5e33a400017706f676f57ea
+    source_hash: 108dd98f975a2d2e980921bd0f486c3683c18ba6eb37111163af87929a9d7973
     source_path: web/webchat.md
     workflow: 16
 ---
 
-Status: Die macOS/iOS-SwiftUI-Chat-UI kommuniziert direkt mit dem Gateway WebSocket.
+Status: Die macOS/iOS-SwiftUI-Chat-Oberfläche spricht direkt mit dem Gateway-WebSocket.
 
 ## Was es ist
 
-- Eine native Chat-UI für das Gateway (kein eingebetteter Browser und kein lokaler statischer Server).
+- Eine native Chat-Oberfläche für das Gateway (kein eingebetteter Browser und kein lokaler statischer Server).
 - Verwendet dieselben Sitzungen und Routing-Regeln wie andere Kanäle.
 - Deterministisches Routing: Antworten gehen immer zurück an WebChat.
 
 ## Schnellstart
 
 1. Starten Sie das Gateway.
-2. Öffnen Sie die WebChat-UI (macOS/iOS-App) oder den Chat-Tab der Control UI.
-3. Stellen Sie sicher, dass ein gültiger Authentifizierungspfad für das Gateway konfiguriert ist (standardmäßig Shared-Secret,
-   auch bei loopback).
+2. Öffnen Sie die WebChat-Oberfläche (macOS/iOS-App) oder den Chat-Tab der Control UI.
+3. Stellen Sie sicher, dass ein gültiger Gateway-Authentifizierungspfad konfiguriert ist (standardmäßig gemeinsames Geheimnis,
+   selbst bei loopback).
 
 ## Funktionsweise (Verhalten)
 
-- Die UI stellt eine Verbindung zum Gateway WebSocket her und verwendet `chat.history`, `chat.send` und `chat.inject`.
-- `chat.history` ist zur Stabilität begrenzt: Das Gateway kann lange Textfelder kürzen, umfangreiche Metadaten auslassen und übergroße Einträge durch `[chat.history omitted: message too large]` ersetzen.
-- `chat.history` folgt dem aktiven Transkriptzweig für moderne append-only Sitzungsdateien, sodass verworfene Rewrite-Zweige und ersetzte Prompt-Kopien in WebChat nicht gerendert werden.
-- Compaction-Einträge werden als ausdrücklicher Trenner für komprimierten Verlauf gerendert. Der Trenner erklärt, dass frühere Turns in einem Checkpoint beibehalten werden, und verlinkt auf die Sitzungs-Checkpoint-Steuerungen, wo Operatoren die Ansicht vor der Compaction verzweigen oder wiederherstellen können, sofern ihre Berechtigungen dies erlauben.
-- Die Control UI merkt sich die vom Gateway `sessionId`, die von `chat.history` zurückgegeben wurde, und schließt sie in nachfolgende `chat.send`-Aufrufe ein, sodass erneute Verbindungen und Seitenaktualisierungen dieselbe gespeicherte Unterhaltung fortsetzen, sofern der Benutzer keine Sitzung startet oder zurücksetzt.
-- Die Control UI fasst doppelte laufende Übermittlungen für dieselbe Sitzung, Nachricht und Anhänge zusammen, bevor eine neue `chat.send`-Run-ID generiert wird; das Gateway dedupliziert weiterhin wiederholte Anfragen, die denselben Idempotency Key wiederverwenden.
-- Workspace-Startdateien und ausstehende `BOOTSTRAP.md`-Anweisungen werden über den Project Context des System-Prompts des Agenten bereitgestellt und nicht in die WebChat-Benutzernachricht kopiert. Bootstrap-Kürzung fügt nur einen knappen Wiederherstellungshinweis im System-Prompt hinzu; detaillierte Zählwerte und Konfigurationsoptionen bleiben auf Diagnoseoberflächen.
-- `chat.history` wird außerdem für die Anzeige normalisiert: Laufzeitreiner OpenClaw-Kontext,
-  eingehende Envelope-Wrapper, Inline-Zustellungsdirektiv-Tags
-  wie `[[reply_to_*]]` und `[[audio_as_voice]]`, Plain-Text-Tool-Call-XML-
-  Payloads (einschließlich `<tool_call>...</tool_call>`,
+- Die Oberfläche verbindet sich mit dem Gateway-WebSocket und verwendet `chat.history`, `chat.send` und `chat.inject`.
+- `chat.history` ist aus Stabilitätsgründen begrenzt: Das Gateway kann lange Textfelder kürzen, umfangreiche Metadaten auslassen und übergroße Einträge durch `[chat.history omitted: message too large]` ersetzen.
+- Wenn eine sichtbare Assistant-Nachricht in `chat.history` gekürzt wurde, kann die Control UI einen seitlichen Reader öffnen und den vollständigen anzeigebereinigten Eintrag bei Bedarf über `chat.message.get` abrufen, ohne die standardmäßige History-Nutzlast zu vergrößern.
+- `chat.history` folgt dem aktiven Transcript-Zweig für moderne sitzungsdateien, an die nur angehängt wird, sodass verworfene Rewrite-Zweige und überholte Prompt-Kopien in WebChat nicht gerendert werden.
+- Compaction-Einträge werden als expliziter Trenner für kompaktierte History gerendert. Der Trenner erklärt, dass das kompaktierte Transcript als Checkpoint erhalten bleibt, und verlinkt auf die Checkpoint-Steuerungen der Sitzungen, wo Operators bei entsprechender Berechtigung von dieser kompaktierten Ansicht abzweigen oder sie wiederherstellen können.
+- Die Control UI merkt sich die vom Gateway über `chat.history` zurückgegebene zugrunde liegende `sessionId` und fügt sie nachfolgenden `chat.send`-Aufrufen hinzu, sodass Wiederverbindungen und Seitenaktualisierungen dieselbe gespeicherte Unterhaltung fortsetzen, sofern die Person keine Sitzung startet oder zurücksetzt.
+- Die Control UI fasst doppelte laufende Übermittlungen für dieselbe Sitzung, Nachricht und Anhänge zusammen, bevor eine neue `chat.send`-Run-ID erzeugt wird; das Gateway dedupliziert weiterhin wiederholte Anfragen, die denselben Idempotency Key wiederverwenden.
+- Workspace-Startdateien und ausstehende `BOOTSTRAP.md`-Anweisungen werden über den Project Context des Agent-System-Prompts bereitgestellt und nicht in die WebChat-Benutzernachricht kopiert. Bootstrap-Kürzung fügt nur einen knappen Wiederherstellungshinweis im System-Prompt hinzu; detaillierte Zählungen und Konfigurationsregler bleiben auf Diagnoseoberflächen.
+- `chat.history` ist außerdem anzeigebereinigt: Nur zur Laufzeit verwendeter OpenClaw-Kontext,
+  eingehende Envelope-Wrapper, Inline-Delivery-Directive-Tags
+  wie `[[reply_to_*]]` und `[[audio_as_voice]]`, XML-Nutzlasten für Tool-Aufrufe in Klartext
+  (einschließlich `<tool_call>...</tool_call>`,
   `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`,
-  `<function_calls>...</function_calls>` und gekürzter Tool-Call-Blöcke) sowie
-  geleakte ASCII-/Vollbreiten-Modellsteuerungs-Token werden aus sichtbarem Text entfernt,
-  und Assistenteneinträge, deren gesamter sichtbarer Text nur das exakte stille
-  Token `NO_REPLY` / `no_reply` ist, werden ausgelassen.
-- Als Reasoning markierte Antwort-Payloads (`isReasoning: true`) werden aus WebChat-Assistenteninhalten, Transkript-Replay-Text und Audio-Inhaltsblöcken ausgeschlossen, sodass reine Denk-Payloads nicht als sichtbare Assistentennachrichten oder abspielbares Audio erscheinen.
-- `chat.inject` hängt eine Assistentennotiz direkt an das Transkript an und sendet sie an die UI (kein Agenten-Run).
-- Abgebrochene Runs können teilweise Assistentenausgaben in der UI sichtbar lassen.
-- Das Gateway persistiert abgebrochenen partiellen Assistententext im Transkriptverlauf, wenn gepufferte Ausgabe vorhanden ist, und markiert diese Einträge mit Abbruchmetadaten.
-- Der Verlauf wird immer vom Gateway abgerufen (keine lokale Dateiüberwachung).
+  `<function_calls>...</function_calls>` und gekürzter Tool-Aufrufblöcke) sowie
+  durchgesickerte ASCII-/vollbreite Modellsteuerungstokens werden aus sichtbarem Text entfernt,
+  und Assistant-Einträge, deren gesamter sichtbarer Text nur aus dem exakten stillen
+  Token `NO_REPLY` / `no_reply` besteht, werden ausgelassen.
+- Als Reasoning gekennzeichnete Antwortnutzlasten (`isReasoning: true`) werden von WebChat-Assistant-Inhalten, Transcript-Replay-Text und Audio-Inhaltsblöcken ausgeschlossen, sodass reine Denk-Nutzlasten nicht als sichtbare Assistant-Nachrichten oder abspielbares Audio erscheinen.
+- `chat.inject` hängt eine Assistant-Notiz direkt an das Transcript an und sendet sie an die Oberfläche (kein Agent-Run).
+- Abgebrochene Runs können teilweise Assistant-Ausgabe in der Oberfläche sichtbar lassen.
+- Das Gateway persistiert abgebrochenen partiellen Assistant-Text in der Transcript-History, wenn gepufferte Ausgabe vorhanden ist, und markiert diese Einträge mit Abbruch-Metadaten.
+- History wird immer vom Gateway abgerufen (keine lokale Dateiüberwachung).
 - Wenn das Gateway nicht erreichbar ist, ist WebChat schreibgeschützt.
 
-### Transkript- und Zustellungsmodell
+### Transcript- und Delivery-Modell
 
 WebChat hat zwei getrennte Datenpfade:
 
-- Die JSONL-Sitzungsdatei ist das dauerhafte Modell-/Laufzeittranskript. Für normale Agenten-Runs persistiert Pi über seinen Sitzungsmanager modell-sichtbare `user`-, `assistant`- und `toolResult`-Nachrichten. WebChat schreibt keinen beliebigen Zustellungs-, Status- oder Hilfstext in dieses Transkript.
-- Gateway-`ReplyPayload`-Events sind die Live-Zustellungsprojektion. Sie können für WebChat-/Kanalanzeige, Block-Streaming, Direktiv-Tags, Medieneinbettung, TTS-/Audio-Flags und UI-Fallback-Verhalten normalisiert werden. Sie sind selbst nicht das kanonische Sitzungsprotokoll.
-- WebChat injiziert Assistenten-Transkripteinträge nur, wenn das Gateway eine angezeigte Nachricht außerhalb eines normalen Pi-Assistenten-Turns besitzt: `chat.inject`, Nicht-Agenten-Befehlsantworten, abgebrochene partielle Ausgabe und von WebChat verwaltete Medien-Transkriptergänzungen.
-- `chat.history` liest das gespeicherte Sitzungstranskript und wendet die WebChat-Anzeigeprojektion an. Wenn Live-Assistententext während eines Runs erscheint, aber nach dem erneuten Laden des Verlaufs verschwindet, prüfen Sie zuerst, ob die rohe JSONL den Assistententext enthält, dann ob die `chat.history`-Projektion ihn entfernt hat, und dann ob die optimistische Tail-Zusammenführung der Control UI den lokalen Zustellungszustand durch den persistierten Snapshot ersetzt hat.
+- Die Sitzungs-JSONL-Datei ist das dauerhafte Modell-/Runtime-Transcript. Bei normalen Agent-Runs persistiert die eingebettete OpenClaw-Runtime modell-sichtbare `user`-, `assistant`- und `toolResult`-Nachrichten über ihren Sitzungsmanager. WebChat schreibt keine beliebigen Delivery-, Status- oder Hilfstexte in dieses Transcript.
+- Gateway-`ReplyPayload`-Ereignisse sind die Live-Delivery-Projektion. Sie können für WebChat-/Kanalanzeige, Block-Streaming, Directive-Tags, Medieneinbettung, TTS-/Audio-Flags und UI-Fallback-Verhalten normalisiert werden. Sie sind selbst nicht das kanonische Sitzungsprotokoll.
+- Harnesses, die sichtbare Antworten über `tools.message` benötigen, verwenden WebChat weiterhin als internen Source-Reply-Sink des aktuellen Runs. Ein zielloses `message.send` aus diesem aktiven WebChat-Run wird in denselben Chat projiziert und ins Sitzungs-Transcript gespiegelt; WebChat wird nicht zu einem wiederverwendbaren ausgehenden Kanal und erbt niemals `lastChannel`.
+- WebChat fügt Assistant-Transcript-Einträge nur ein, wenn das Gateway eine angezeigte Nachricht außerhalb eines normalen eingebetteten Agent-Turns besitzt: `chat.inject`, Nicht-Agent-Befehlsantworten, abgebrochene partielle Ausgabe und von WebChat verwaltete Medien-Transcript-Ergänzungen.
+- `chat.history` liest das gespeicherte Sitzungs-Transcript und wendet die WebChat-Anzeigeprojektion an. Wenn während eines Runs Live-Assistant-Text erscheint, aber nach dem Neuladen der History verschwindet, prüfen Sie zuerst, ob die rohe JSONL den Assistant-Text enthält, dann, ob die `chat.history`-Projektion ihn entfernt hat, und dann, ob die optimistic-tail-Zusammenführung der Control UI lokalen Delivery-State durch den persistierten Snapshot ersetzt hat.
+- `chat.message.get` verwendet dieselben Transcript-Zweig- und Anzeigeprojektionsregeln wie `chat.history`, einschließlich Active-Agent-Scoping, zielt aber auf einen einzelnen Transcript-Eintrag per `messageId` und gibt einen ehrlichen Nichtverfügbarkeitsgrund zurück, wenn der vollständige Inhalt nicht mehr zurückgegeben werden kann.
 
-Finale Antworten normaler Agenten-Runs sollten dauerhaft sein, weil Pi das Assistenten-`message_end` schreibt. Jeder Fallback, der eine zugestellte finale Payload in das Transkript spiegelt, muss zuerst vermeiden, einen Assistenten-Turn zu duplizieren, den Pi bereits geschrieben hat.
+Endgültige Antworten normaler Agent-Runs sollten dauerhaft sein, weil die eingebettete Runtime das Assistant-`message_end` schreibt. Jeder Fallback, der eine zugestellte finale Nutzlast in das Transcript spiegelt, muss zuerst vermeiden, einen Assistant-Turn zu duplizieren, den die eingebettete Runtime bereits geschrieben hat.
 
-## Tools-Panel der Control UI für Agenten
+## Tools-Bereich für Control-UI-Agents
 
-- Das Tools-Panel `/agents` der Control UI hat zwei getrennte Ansichten:
-  - **Jetzt verfügbar** verwendet `tools.effective(sessionKey=...)` und zeigt, was die aktuelle
-    Sitzung zur Laufzeit tatsächlich verwenden kann, einschließlich Kern-, Plugin- und kanalverwalteter Tools.
-  - **Tool-Konfiguration** verwendet `tools.catalog` und bleibt auf Profile, Überschreibungen und
+- Der Tools-Bereich der Control UI unter `/agents` hat zwei getrennte Ansichten:
+  - **Aktuell verfügbar** verwendet `tools.effective(sessionKey=...)` und zeigt eine serverabgeleitete
+    schreibgeschützte Projektion des aktuellen Sitzungsinventars, einschließlich Core-, Plugin-, kanalverwalteter
+    und bereits entdeckter MCP-Server-Tools.
+  - **Tool-Konfiguration** verwendet `tools.catalog` und bleibt auf Profile, Overrides und
     Katalogsemantik fokussiert.
-- Laufzeitverfügbarkeit ist sitzungsbezogen. Der Wechsel von Sitzungen für denselben Agenten kann die
-  Liste **Jetzt verfügbar** ändern.
-- Der Konfigurationseditor impliziert keine Laufzeitverfügbarkeit; effektiver Zugriff folgt weiterhin der Policy-
-  Präzedenz (`allow`/`deny`, Überschreibungen pro Agent sowie Provider/Kanal).
+- Runtime-Verfügbarkeit ist sitzungsbezogen. Ein Sitzungswechsel auf demselben Agent kann die Liste
+  **Aktuell verfügbar** ändern. Wenn konfigurierte MCP-Server noch nicht verbunden wurden oder seit der letzten Discovery
+  geändert wurden, zeigt der Bereich einen Hinweis an, statt MCP-Transporte stillschweigend
+  aus dem Lesepfad zu starten.
+- Der Konfigurationseditor impliziert keine Runtime-Verfügbarkeit; effektiver Zugriff folgt weiterhin der Policy-
+  Präzedenz (`allow`/`deny`, Overrides pro Agent und Provider/Kanal).
 
 ## Remote-Nutzung
 
-- Der Remote-Modus tunnelt den Gateway WebSocket über SSH/Tailscale.
+- Der Remote-Modus tunnelt den Gateway-WebSocket über SSH/Tailscale.
 - Sie müssen keinen separaten WebChat-Server ausführen.
 
 ## Konfigurationsreferenz (WebChat)
 
 Vollständige Konfiguration: [Konfiguration](/de/gateway/configuration)
 
-WebChat-Optionen:
+WebChat hat keinen persistierten Konfigurationsabschnitt. Das Gateway verwendet das integrierte Anzeigelimit von `chat.history`; API-Clients können pro Anfrage `maxChars` senden, um es für einen einzelnen `chat.history`-Aufruf zu überschreiben. Die Legacy-Konfiguration `channels.webchat` und `gateway.webchat` ist außer Betrieb genommen; führen Sie `openclaw doctor --fix` aus, um sie zu entfernen.
 
-- `gateway.webchat.chatHistoryMaxChars`: maximale Zeichenzahl für Textfelder in `chat.history`-Antworten. Wenn ein Transkripteintrag dieses Limit überschreitet, kürzt das Gateway lange Textfelder und kann übergroße Nachrichten durch einen Platzhalter ersetzen. Pro Anfrage kann der Client auch `maxChars` senden, um diesen Standardwert für einen einzelnen `chat.history`-Aufruf zu überschreiben.
-
-Zugehörige globale Optionen:
+Verwandte globale Optionen:
 
 - `gateway.port`, `gateway.bind`: WebSocket-Host/-Port.
 - `gateway.auth.mode`, `gateway.auth.token`, `gateway.auth.password`:
-  Shared-Secret-WebSocket-Authentifizierung.
-- `gateway.auth.allowTailscale`: Der Chat-Tab der browserbasierten Control UI kann Tailscale-
-  Serve-Identity-Header verwenden, wenn aktiviert.
-- `gateway.auth.mode: "trusted-proxy"`: Reverse-Proxy-Authentifizierung für Browser-Clients hinter einer identitätsbewussten **non-loopback**-Proxyquelle (siehe [Trusted Proxy Auth](/de/gateway/trusted-proxy-auth)).
-- `gateway.remote.url`, `gateway.remote.token`, `gateway.remote.password`: Ziel für Remote-Gateway.
+  WebSocket-Authentifizierung mit gemeinsamem Geheimnis.
+- `gateway.auth.allowTailscale`: Der Chat-Tab der Browser-Control-UI kann Tailscale
+  Serve-Identity-Header verwenden, wenn dies aktiviert ist.
+- `gateway.auth.mode: "trusted-proxy"`: Reverse-Proxy-Authentifizierung für Browser-Clients hinter einer identitätsbewussten **non-loopback** Proxy-Quelle (siehe [Trusted Proxy Auth](/de/gateway/trusted-proxy-auth)).
+- `gateway.remote.url`, `gateway.remote.token`, `gateway.remote.password`: Remote-Gateway-Ziel.
 - `session.*`: Sitzungsspeicher und Standardwerte für Hauptschlüssel.
 
 ## Verwandt

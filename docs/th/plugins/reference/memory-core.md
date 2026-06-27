@@ -1,26 +1,27 @@
 ---
 read_when:
-    - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin memory-core
-summary: เพิ่มการรองรับผู้ให้บริการการฝังเวกเตอร์หน่วยความจำ เพิ่มเครื่องมือที่เอเจนต์เรียกใช้ได้
-title: Plugin Memory Core
+    - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจประเมิน Plugin memory-core
+summary: เพิ่มเครื่องมือที่เอเจนต์เรียกใช้ได้
+title: Plugin แกนหน่วยความจำ
 x-i18n:
-    generated_at: "2026-05-02T20:53:45Z"
+    generated_at: "2026-06-27T18:03:31Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7c9c5d79e5a17c13592f2d485ac24a5e2e5e3640ea68fc5315a6ba8f1640e0ef
+    source_hash: cda6ebb02b0e4c1616f68c3c9636b269248b4c63ca5f778d7f8c48152b27f303
     source_path: plugins/reference/memory-core.md
     workflow: 16
 ---
 
-# Memory Core Plugin
+# Plugin Memory Core
 
-เพิ่มการรองรับผู้ให้บริการการฝังหน่วยความจำ เพิ่มเครื่องมือที่เอเจนต์เรียกใช้ได้
+เพิ่มเครื่องมือที่เอเจนต์เรียกใช้ได้
 
 ## การจัดจำหน่าย
 
 - แพ็กเกจ: `@openclaw/memory-core`
 - เส้นทางการติดตั้ง: รวมอยู่ใน OpenClaw
 
-## พื้นผิวการใช้งาน
+## พื้นผิว
 
-สัญญา: memoryEmbeddingProviders, tools
+contracts: tools

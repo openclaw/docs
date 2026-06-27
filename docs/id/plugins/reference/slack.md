@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Anda sedang menginstal, mengonfigurasi, atau mengaudit Plugin Slack
-summary: Menambahkan antarmuka channel Slack untuk mengirim dan menerima pesan OpenClaw.
+    - Anda sedang memasang, mengonfigurasi, atau mengaudit plugin Slack
+summary: Plugin kanal Slack OpenClaw untuk kanal, DM, perintah, dan peristiwa aplikasi.
 title: Plugin Slack
 x-i18n:
-    generated_at: "2026-05-02T20:56:56Z"
+    generated_at: "2026-06-27T17:56:50Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 53e79f0d6a243a560fdc145b80cc1a2b986ce114fad7c9bb4f1008dc14e3ab24
+    source_hash: 602ccb21ce084219d922860d186664bbb098fd034117893dc7359d79495bedd6
     source_path: plugins/reference/slack.md
     workflow: 16
 ---
 
 # Plugin Slack
 
-Menambahkan permukaan channel Slack untuk mengirim dan menerima pesan OpenClaw.
+Plugin saluran Slack OpenClaw untuk saluran, DM, perintah, dan peristiwa aplikasi.
 
 ## Distribusi
 
 - Paket: `@openclaw/slack`
-- Rute pemasangan: disertakan dalam OpenClaw
+- Rute instalasi: npm; ClawHub
 
-## Permukaan
+## Antarmuka
 
-channels: slack
+saluran: slack; Skills
 
-## Dokumentasi terkait
+## Dokumen terkait
 
 - [slack](/id/channels/slack)

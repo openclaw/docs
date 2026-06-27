@@ -2,44 +2,45 @@
 read_when:
     - Triển khai phê duyệt ghép nối Node mà không cần giao diện người dùng macOS
     - Thêm các luồng CLI để phê duyệt các nút từ xa
-    - Mở rộng giao thức Gateway với quản lý Node
-summary: Ghép nối Node do Gateway quản lý (Tùy chọn B) cho iOS và các Node từ xa khác
-title: Ghép nối do Gateway sở hữu
+    - Mở rộng giao thức gateway với quản lý node
+summary: Ghép cặp nút do Gateway sở hữu (Tùy chọn B) cho iOS và các nút từ xa khác
+title: Gateway sở hữu ghép đôi
 x-i18n:
-    generated_at: "2026-05-06T09:14:25Z"
+    generated_at: "2026-06-27T17:31:33Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 75713e04e37dcbae151d170e2eb459d0e9b9a799c64a10db731b61d7b53998b4
+    source_hash: aefddafaef419fc59b04ee17dae8ef21685b4f514f4286530bf07362663a8996
     source_path: gateway/pairing.md
     workflow: 16
 ---
 
-Trong ghép đôi do Gateway quản lý, **Gateway** là nguồn sự thật cho việc các node nào
-được phép tham gia. UI (ứng dụng macOS, các client tương lai) chỉ là frontend
-phê duyệt hoặc từ chối các yêu cầu đang chờ.
+Trong quá trình ghép đôi do Gateway sở hữu, **Gateway** là nguồn dữ liệu xác thực về những nút
+được phép tham gia. UI (ứng dụng macOS, các máy khách tương lai) chỉ là các giao diện
+phê duyệt hoặc từ chối yêu cầu đang chờ.
 
-**Quan trọng:** Các node WS dùng **ghép đôi thiết bị** (role `node`) trong quá trình `connect`.
-`node.pair.*` là một kho ghép đôi riêng và **không** kiểm soát WS handshake.
-Chỉ các client gọi rõ ràng `node.pair.*` mới dùng luồng này.
+**Quan trọng:** Các nút WS dùng **ghép đôi thiết bị** (vai trò `node`) trong lúc `connect`.
+`node.pair.*` là một kho ghép đôi riêng và **không** chặn bắt tay WS.
+Chỉ những máy khách gọi tường minh `node.pair.*` mới dùng luồng này.
 
 ## Khái niệm
 
-- **Yêu cầu đang chờ**: một node đã yêu cầu tham gia; cần phê duyệt.
-- **Node đã ghép đôi**: node đã được phê duyệt với auth token đã cấp.
-- **Transport**: endpoint WS của Gateway chuyển tiếp yêu cầu nhưng không quyết định
-  tư cách thành viên. (Hỗ trợ TCP bridge cũ đã bị gỡ bỏ.)
+- **Yêu cầu đang chờ**: một nút đã yêu cầu tham gia; cần được phê duyệt.
+- **Nút đã ghép đôi**: nút đã được phê duyệt với token xác thực đã cấp.
+- **Transport**: điểm cuối WS của Gateway chuyển tiếp yêu cầu nhưng không quyết định
+  tư cách thành viên. (Hỗ trợ cầu nối TCP cũ đã bị gỡ bỏ.)
 
 ## Cách ghép đôi hoạt động
 
-1. Một node kết nối tới WS của Gateway và yêu cầu ghép đôi.
-2. Gateway lưu một **yêu cầu đang chờ** và phát `node.pair.requested`.
+1. Một nút kết nối tới WS của Gateway và yêu cầu ghép đôi.
+2. Gateway lưu một **yêu cầu đang chờ** và phát ra `node.pair.requested`.
 3. Bạn phê duyệt hoặc từ chối yêu cầu (CLI hoặc UI).
-4. Khi phê duyệt, Gateway cấp một **token mới** (token được xoay vòng khi ghép đôi lại).
-5. Node kết nối lại bằng token và lúc này đã được "ghép đôi".
+4. Khi được phê duyệt, Gateway cấp một **token mới** (token được xoay vòng khi ghép đôi lại).
+5. Nút kết nối lại bằng token và giờ đã được "ghép đôi".
 
-Các yêu cầu đang chờ tự động hết hạn sau **5 phút**.
+Yêu cầu đang chờ tự động hết hạn sau **5 phút**.
 
-## Quy trình CLI (thân thiện với môi trường headless)
+## Quy trình CLI (thân thiện với môi trường không có giao diện)
 
 ```bash
 openclaw nodes pending
@@ -50,90 +51,96 @@ openclaw nodes remove --node <id|name|ip>
 openclaw nodes rename --node <id|name|ip> --name "Living Room iPad"
 ```
 
-`nodes status` hiển thị các node đã ghép đôi/đã kết nối và capability của chúng.
+`nodes status` hiển thị các nút đã ghép đôi/đã kết nối và năng lực của chúng.
 
-## Bề mặt API (gateway protocol)
+## Bề mặt API (giao thức gateway)
 
 Sự kiện:
 
-- `node.pair.requested` - được phát khi một yêu cầu đang chờ mới được tạo.
-- `node.pair.resolved` - được phát khi một yêu cầu được phê duyệt/từ chối/hết hạn.
+- `node.pair.requested` - được phát ra khi một yêu cầu đang chờ mới được tạo.
+- `node.pair.resolved` - được phát ra khi một yêu cầu được phê duyệt/từ chối/hết hạn.
 
 Phương thức:
 
-- `node.pair.request` - tạo hoặc dùng lại một yêu cầu đang chờ.
-- `node.pair.list` - liệt kê các node đang chờ + đã ghép đôi (`operator.pairing`).
+- `node.pair.request` - tạo hoặc tái sử dụng một yêu cầu đang chờ.
+- `node.pair.list` - liệt kê các nút đang chờ + đã ghép đôi (`operator.pairing`).
 - `node.pair.approve` - phê duyệt một yêu cầu đang chờ (cấp token).
 - `node.pair.reject` - từ chối một yêu cầu đang chờ.
-- `node.pair.remove` - xóa một mục node đã ghép đôi đã cũ.
+- `node.pair.remove` - gỡ bỏ một nút đã ghép đôi. Với các ghép đôi dựa trên thiết bị, thao tác này
+  thu hồi vai trò `node` của thiết bị: nó sửa đổi `devices/paired.json` và
+  vô hiệu hóa/ngắt kết nối các phiên vai trò nút của thiết bị đó. Một thiết bị **nhiều vai trò**
+  (ví dụ: cũng giữ `operator`) vẫn giữ hàng của nó và chỉ mất vai trò `node`;
+  hàng của thiết bị chỉ có nút sẽ bị xóa. Nó cũng gỡ mọi mục ghép đôi nút cũ do Gateway sở hữu khớp tương ứng. Authz: `operator.pairing` có thể gỡ bỏ
+  các hàng nút không phải operator; một bên gọi bằng device-token thu hồi vai trò nút **của chính nó** trên
+  thiết bị nhiều vai trò còn cần thêm `operator.admin`.
 - `node.pair.verify` - xác minh `{ nodeId, token }`.
 
 Ghi chú:
 
-- `node.pair.request` có tính idempotent theo từng node: các lần gọi lặp lại trả về cùng
+- `node.pair.request` là lũy đẳng theo từng nút: các lần gọi lặp lại trả về cùng
   yêu cầu đang chờ.
-- Các yêu cầu lặp lại cho cùng một node đang chờ cũng làm mới metadata node đã lưu
-  và ảnh chụp declared command mới nhất trong danh sách cho phép để operator quan sát.
-- Phê duyệt **luôn** tạo một token mới; không token nào từng được trả về từ
+- Các yêu cầu lặp lại cho cùng một nút đang chờ cũng làm mới siêu dữ liệu nút đã lưu
+  và ảnh chụp lệnh đã khai báo mới nhất trong danh sách cho phép để operator quan sát.
+- Phê duyệt **luôn** tạo token mới; không token nào từng được trả về từ
   `node.pair.request`.
-- Các cấp độ phạm vi operator và kiểm tra tại thời điểm phê duyệt được tóm tắt trong
+- Các mức phạm vi operator và kiểm tra tại thời điểm phê duyệt được tóm tắt trong
   [Phạm vi operator](/vi/gateway/operator-scopes).
 - Yêu cầu có thể bao gồm `silent: true` như một gợi ý cho các luồng tự động phê duyệt.
-- `node.pair.approve` dùng các command đã khai báo của yêu cầu đang chờ để áp đặt
+- `node.pair.approve` dùng các lệnh đã khai báo của yêu cầu đang chờ để thực thi
   các phạm vi phê duyệt bổ sung:
-  - yêu cầu không có command: `operator.pairing`
-  - yêu cầu command không exec: `operator.pairing` + `operator.write`
+  - yêu cầu không có lệnh: `operator.pairing`
+  - yêu cầu lệnh không phải exec: `operator.pairing` + `operator.write`
   - yêu cầu `system.run` / `system.run.prepare` / `system.which`:
     `operator.pairing` + `operator.admin`
 
 <Warning>
-Ghép đôi Node là một luồng tin cậy và danh tính cùng với việc cấp token. Nó **không** ghim bề mặt command node trực tiếp theo từng node.
+Ghép đôi nút là một luồng tin cậy và định danh cùng với việc cấp token. Nó **không** ghim bề mặt lệnh nút trực tiếp theo từng nút.
 
-- Các command node trực tiếp đến từ những gì node khai báo khi kết nối sau khi chính sách command node toàn cục của gateway (`gateway.nodes.allowCommands` và `denyCommands`) được áp dụng.
-- Chính sách cho phép và hỏi của `system.run` theo từng node nằm trên node trong `exec.approvals.node.*`, không nằm trong bản ghi ghép đôi.
+- Lệnh nút trực tiếp đến từ những gì nút khai báo khi kết nối sau khi chính sách lệnh nút toàn cục của gateway (`gateway.nodes.allowCommands` và `denyCommands`) được áp dụng.
+- Chính sách cho phép và hỏi theo từng nút cho `system.run` nằm trên nút trong `exec.approvals.node.*`, không nằm trong bản ghi ghép đôi.
 
 </Warning>
 
-## Kiểm soát command Node (2026.3.31+)
+## Chặn lệnh nút (2026.3.31+)
 
 <Warning>
-**Thay đổi phá vỡ tương thích:** Bắt đầu từ `2026.3.31`, các command node bị vô hiệu hóa cho đến khi ghép đôi node được phê duyệt. Chỉ ghép đôi thiết bị thôi không còn đủ để phơi bày các command node đã khai báo.
+**Thay đổi phá vỡ tương thích:** Bắt đầu từ `2026.3.31`, lệnh nút bị tắt cho đến khi ghép đôi nút được phê duyệt. Chỉ ghép đôi thiết bị thôi không còn đủ để phơi bày các lệnh nút đã khai báo.
 </Warning>
 
-Khi một node kết nối lần đầu, việc ghép đôi được yêu cầu tự động. Cho đến khi yêu cầu ghép đôi được phê duyệt, tất cả command node đang chờ từ node đó đều bị lọc và sẽ không thực thi. Sau khi niềm tin được thiết lập thông qua phê duyệt ghép đôi, các command đã khai báo của node sẽ khả dụng theo chính sách command thông thường.
+Khi một nút kết nối lần đầu, ghép đôi được yêu cầu tự động. Cho đến khi yêu cầu ghép đôi được phê duyệt, mọi lệnh nút đang chờ từ nút đó đều bị lọc và sẽ không thực thi. Sau khi niềm tin được thiết lập thông qua phê duyệt ghép đôi, các lệnh đã khai báo của nút sẽ khả dụng theo chính sách lệnh thông thường.
 
 Điều này có nghĩa là:
 
-- Các node trước đây chỉ dựa vào ghép đôi thiết bị để phơi bày command giờ phải hoàn tất ghép đôi node.
-- Các command được xếp hàng trước khi phê duyệt ghép đôi sẽ bị loại bỏ, không được trì hoãn.
+- Các nút trước đây chỉ dựa vào ghép đôi thiết bị để phơi bày lệnh giờ phải hoàn tất ghép đôi nút.
+- Các lệnh được xếp hàng trước khi phê duyệt ghép đôi sẽ bị loại bỏ, không được trì hoãn.
 
-## Ranh giới tin cậy sự kiện Node (2026.3.31+)
+## Ranh giới tin cậy sự kiện nút (2026.3.31+)
 
 <Warning>
-**Thay đổi phá vỡ tương thích:** Các lượt chạy bắt nguồn từ Node giờ ở trên một bề mặt tin cậy rút gọn.
+**Thay đổi phá vỡ tương thích:** Các lần chạy khởi phát từ nút giờ nằm trên một bề mặt tin cậy bị thu hẹp.
 </Warning>
 
-Các bản tóm tắt bắt nguồn từ Node và các sự kiện session liên quan bị giới hạn trong bề mặt tin cậy dự kiến. Các luồng do thông báo điều khiển hoặc do node kích hoạt trước đây dựa vào quyền truy cập công cụ host hoặc session rộng hơn có thể cần điều chỉnh. Việc gia cố này bảo đảm rằng các sự kiện node không thể leo thang thành quyền truy cập công cụ cấp host vượt quá phạm vi ranh giới tin cậy của node cho phép.
+Các bản tóm tắt khởi phát từ nút và sự kiện phiên liên quan bị giới hạn trong bề mặt tin cậy dự kiến. Các luồng do thông báo điều khiển hoặc do nút kích hoạt trước đây dựa vào quyền truy cập công cụ rộng hơn ở cấp host hoặc phiên có thể cần điều chỉnh. Việc gia cố này đảm bảo sự kiện nút không thể leo thang thành quyền truy cập công cụ cấp host vượt quá những gì ranh giới tin cậy của nút cho phép.
 
-Các bản cập nhật hiện diện node bền vững tuân theo cùng ranh giới danh tính. Sự kiện `node.presence.alive` chỉ
-được chấp nhận từ các session thiết bị node đã xác thực và chỉ cập nhật metadata ghép đôi khi
-danh tính thiết bị/node đã được ghép đôi. Các giá trị `client.id` tự khai báo không đủ để ghi
-trạng thái nhìn-thấy-lần-cuối.
+Các cập nhật hiện diện nút bền vững tuân theo cùng ranh giới định danh. Sự kiện `node.presence.alive` được
+chấp nhận chỉ từ các phiên thiết bị nút đã xác thực và chỉ cập nhật siêu dữ liệu ghép đôi khi
+định danh thiết bị/nút đã được ghép đôi. Các giá trị `client.id` tự khai báo không đủ để ghi
+trạng thái lần thấy gần nhất.
 
 ## Tự động phê duyệt (ứng dụng macOS)
 
 Ứng dụng macOS có thể tùy chọn thử **phê duyệt im lặng** khi:
 
 - yêu cầu được đánh dấu `silent`, và
-- ứng dụng có thể xác minh một kết nối SSH tới host gateway bằng cùng người dùng.
+- ứng dụng có thể xác minh kết nối SSH tới máy chủ gateway bằng cùng người dùng.
 
-Nếu phê duyệt im lặng thất bại, nó rơi về lời nhắc "Approve/Reject" thông thường.
+Nếu phê duyệt im lặng thất bại, nó quay về lời nhắc "Phê duyệt/Từ chối" thông thường.
 
 ## Tự động phê duyệt thiết bị theo CIDR tin cậy
 
 Ghép đôi thiết bị WS cho `role: node` mặc định vẫn là thủ công. Với các mạng
-node riêng tư nơi Gateway đã tin cậy đường dẫn mạng, operator có thể
-chọn tham gia bằng các CIDR rõ ràng hoặc IP chính xác:
+nút riêng tư nơi Gateway đã tin cậy đường mạng, operator có thể
+chọn tham gia bằng CIDR tường minh hoặc IP chính xác:
 
 ```json5
 {
@@ -149,42 +156,43 @@ chọn tham gia bằng các CIDR rõ ràng hoặc IP chính xác:
 
 Ranh giới bảo mật:
 
-- Bị vô hiệu hóa khi `gateway.nodes.pairing.autoApproveCidrs` chưa được đặt.
-- Không có chế độ tự động phê duyệt LAN hoặc mạng riêng tư toàn cục.
+- Bị tắt khi `gateway.nodes.pairing.autoApproveCidrs` chưa được đặt.
+- Không có chế độ tự động phê duyệt toàn bộ LAN hoặc mạng riêng.
 - Chỉ ghép đôi thiết bị `role: node` mới, không có phạm vi được yêu cầu, mới đủ điều kiện.
-- Các client operator, browser, Control UI và WebChat vẫn là thủ công.
-- Nâng cấp role, phạm vi, metadata và public-key vẫn là thủ công.
-- Các đường dẫn header trusted-proxy loopback cùng host không đủ điều kiện vì
-  đường dẫn đó có thể bị giả mạo bởi các caller cục bộ.
+- Các máy khách operator, trình duyệt, Control UI và WebChat vẫn thủ công.
+- Nâng cấp vai trò, phạm vi, siêu dữ liệu và khóa công khai vẫn thủ công.
+- Các đường dẫn header trusted-proxy local loopback cùng host không đủ điều kiện vì đường dẫn đó
+  có thể bị bên gọi cục bộ giả mạo.
 
-## Tự động phê duyệt nâng cấp metadata
+## Tự động phê duyệt nâng cấp siêu dữ liệu
 
-Khi một thiết bị đã ghép đôi kết nối lại chỉ với các thay đổi metadata không nhạy cảm
-(ví dụ: tên hiển thị hoặc gợi ý nền tảng client), OpenClaw xem đó là một `metadata-upgrade`. Tự động phê duyệt im lặng có phạm vi hẹp: nó chỉ áp dụng
-cho các lần kết nối lại cục bộ không phải browser, đáng tin cậy, vốn đã chứng minh quyền sở hữu thông tin xác thực cục bộ
-hoặc dùng chung, bao gồm các lần kết nối lại ứng dụng native cùng host sau khi metadata phiên bản OS thay đổi. Các client Browser/Control UI và client từ xa vẫn
-dùng luồng tái phê duyệt rõ ràng. Nâng cấp phạm vi (read sang write/admin) và
-thay đổi public key **không** đủ điều kiện cho tự động phê duyệt metadata-upgrade -
-chúng vẫn là các yêu cầu tái phê duyệt rõ ràng.
+Khi một thiết bị đã ghép đôi kết nối lại chỉ với các thay đổi siêu dữ liệu không nhạy cảm
+(ví dụ: tên hiển thị hoặc gợi ý nền tảng máy khách), OpenClaw xem
+đó là `metadata-upgrade`. Tự động phê duyệt im lặng rất hẹp: nó chỉ áp dụng
+cho các lần kết nối lại cục bộ không phải trình duyệt đáng tin cậy đã chứng minh quyền sở hữu thông tin xác thực cục bộ
+hoặc dùng chung, bao gồm các lần kết nối lại ứng dụng gốc cùng host sau thay đổi siêu dữ liệu
+phiên bản OS. Máy khách trình duyệt/Control UI và máy khách từ xa vẫn
+dùng luồng phê duyệt lại tường minh. Nâng cấp phạm vi (read sang write/admin) và
+thay đổi khóa công khai **không** đủ điều kiện cho tự động phê duyệt metadata-upgrade -
+chúng vẫn là yêu cầu phê duyệt lại tường minh.
 
-## Trình hỗ trợ ghép đôi QR
+## Trợ giúp ghép đôi QR
 
-`/pair qr` kết xuất payload ghép đôi dưới dạng media có cấu trúc để các client mobile và
-browser có thể quét trực tiếp.
+`/pair qr` kết xuất payload ghép đôi dưới dạng phương tiện có cấu trúc để máy khách di động và
+trình duyệt có thể quét trực tiếp.
 
-Việc xóa một thiết bị cũng quét sạch mọi yêu cầu ghép đôi đang chờ đã cũ cho
-device id đó, nên `nodes pending` không hiển thị các hàng mồ côi sau khi thu hồi.
+Xóa một thiết bị cũng quét sạch mọi yêu cầu ghép đôi đang chờ đã cũ cho
+id thiết bị đó, nên `nodes pending` không hiển thị hàng mồ côi sau khi thu hồi.
 
-## Locality và header được chuyển tiếp
+## Tính cục bộ và header được chuyển tiếp
 
-Ghép đôi Gateway chỉ xem một kết nối là loopback khi cả raw socket
-và mọi bằng chứng proxy upstream đều đồng ý. Nếu một yêu cầu đến trên loopback nhưng
-mang các header `X-Forwarded-For` / `X-Forwarded-Host` / `X-Forwarded-Proto`
-trỏ tới một nguồn gốc không cục bộ, bằng chứng forwarded-header đó sẽ loại bỏ
-tuyên bố locality loopback. Đường dẫn ghép đôi khi đó yêu cầu phê duyệt rõ ràng
-thay vì âm thầm xem yêu cầu là kết nối cùng host. Xem
-[Trusted Proxy Auth](/vi/gateway/trusted-proxy-auth) để biết quy tắc tương đương về
-operator auth.
+Ghép đôi Gateway chỉ xem một kết nối là loopback khi cả socket thô
+và mọi bằng chứng proxy thượng nguồn đều thống nhất. Nếu một yêu cầu đến trên loopback nhưng
+mang bằng chứng header `Forwarded`, bất kỳ `X-Forwarded-*`, hoặc `X-Real-IP`, bằng chứng
+header được chuyển tiếp đó sẽ làm mất hiệu lực tuyên bố tính cục bộ loopback. Đường dẫn ghép đôi
+khi đó yêu cầu phê duyệt tường minh thay vì âm thầm xem yêu cầu là
+kết nối cùng host. Xem [Xác thực proxy tin cậy](/vi/gateway/trusted-proxy-auth) để biết
+quy tắc tương đương trên xác thực operator.
 
 ## Lưu trữ (cục bộ, riêng tư)
 
@@ -193,21 +201,21 @@ Trạng thái ghép đôi được lưu dưới thư mục trạng thái Gateway
 - `~/.openclaw/nodes/paired.json`
 - `~/.openclaw/nodes/pending.json`
 
-Nếu bạn ghi đè `OPENCLAW_STATE_DIR`, thư mục `nodes/` sẽ di chuyển theo.
+Nếu bạn ghi đè `OPENCLAW_STATE_DIR`, thư mục `nodes/` sẽ di chuyển theo nó.
 
 Ghi chú bảo mật:
 
 - Token là bí mật; hãy xem `paired.json` là nhạy cảm.
-- Xoay vòng token yêu cầu tái phê duyệt (hoặc xóa mục node).
+- Xoay vòng token yêu cầu phê duyệt lại (hoặc xóa mục nút).
 
 ## Hành vi transport
 
-- Transport là **stateless**; nó không lưu tư cách thành viên.
-- Nếu Gateway offline hoặc ghép đôi bị vô hiệu hóa, node không thể ghép đôi.
-- Nếu Gateway ở chế độ từ xa, ghép đôi vẫn diễn ra trên kho của Gateway từ xa.
+- Transport là **phi trạng thái**; nó không lưu trữ tư cách thành viên.
+- Nếu Gateway ngoại tuyến hoặc ghép đôi bị tắt, các nút không thể ghép đôi.
+- Nếu Gateway ở chế độ từ xa, ghép đôi vẫn diễn ra với kho của Gateway từ xa.
 
 ## Liên quan
 
 - [Ghép đôi kênh](/vi/channels/pairing)
-- [Nodes](/vi/nodes)
+- [Nút](/vi/nodes)
 - [CLI thiết bị](/vi/cli/devices)

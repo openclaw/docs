@@ -1,20 +1,21 @@
 ---
 read_when:
-    - در حال نصب، پیکربندی یا ممیزی Plugin msteams هستید
-summary: سطح کانال Microsoft Teams را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
+    - در حال نصب، پیکربندی، یا ممیزی Plugin msteams هستید
+summary: Plugin کانال Microsoft Teams در OpenClaw برای مکالمات ربات.
 title: Plugin Microsoft Teams
 x-i18n:
-    generated_at: "2026-05-03T11:43:09Z"
+    generated_at: "2026-06-27T18:27:28Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b1e72dae5dc51a30521bde8520afec7cd743d236df63f440098b72a922bdad9c
+    source_hash: 32353faf19a94c9df5ffc57fbf0ef91391500e0ae317c9626edcbbcf295c697b
     source_path: plugins/reference/msteams.md
     workflow: 16
 ---
 
 # Plugin Microsoft Teams
 
-سطح کانال Microsoft Teams را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
+Plugin کانال Microsoft Teams در OpenClaw برای گفت‌وگوهای ربات.
 
 ## توزیع
 

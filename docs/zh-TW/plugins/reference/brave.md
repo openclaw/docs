@@ -1,25 +1,26 @@
 ---
 read_when:
-    - 您正在安裝、設定或稽核 brave Plugin
-summary: 新增對網頁搜尋提供者的支援。
-title: Brave Plugin
+    - 你正在安裝、設定或稽核 brave 外掛
+summary: OpenClaw Brave Search 提供者外掛，用於網路搜尋。
+title: Brave 外掛
 x-i18n:
-    generated_at: "2026-05-03T21:39:49Z"
+    generated_at: "2026-06-27T19:41:07Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b26d45080e2db635e9b07e1c6b674061c2b82549edc4d8d88e6f4f68bc9d43df
+    source_hash: 265b0efa840eb3ebc7bfc1cc47b703737bbd76050ac95e79825728030a166d37
     source_path: plugins/reference/brave.md
     workflow: 16
 ---
 
-# Brave Plugin
+# Brave 外掛
 
-新增網頁搜尋提供者支援。
+OpenClaw Brave Search 網頁搜尋提供者外掛。
 
 ## 發行
 
 - 套件：`@openclaw/brave-plugin`
-- 安裝途徑：npm；ClawHub
+- 安裝路徑：npm；ClawHub
 
 ## 介面
 

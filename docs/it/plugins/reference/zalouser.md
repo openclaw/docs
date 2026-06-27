@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Stai installando, configurando o eseguendo l'audit del plugin zalouser
-summary: Aggiunge l'interfaccia del canale Zalo Personal per l'invio e la ricezione di messaggi OpenClaw.
-title: Plugin Zalo Personal
+    - Stai installando, configurando o verificando il Plugin zalouser
+summary: Plugin OpenClaw per account personale Zalo tramite integrazione nativa zca-js.
+title: Plugin personale Zalo
 x-i18n:
-    generated_at: "2026-05-03T21:42:34Z"
+    generated_at: "2026-06-27T18:00:19Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 16ed8b255fd10e2a21bc9d9665c1eb26440929e5a46fe2f9dbfae929a25417a0
+    source_hash: c03db694c940cb1fb20f4a2f73512c9d3cf3c79e910cc6a0dd4aa38bd4465ed5
     source_path: plugins/reference/zalouser.md
     workflow: 16
 ---
 
 # Plugin Zalo Personal
 
-Aggiunge la superficie del canale Zalo Personal per l'invio e la ricezione di messaggi OpenClaw.
+Plugin OpenClaw Zalo Personal Account tramite integrazione nativa zca-js.
 
 ## Distribuzione
 
@@ -23,9 +24,9 @@ Aggiunge la superficie del canale Zalo Personal per l'invio e la ricezione di me
 
 ## Superficie
 
-channels: zalouser; contracts: tools
+canali: zalouser; contratti: tools
 
-## Documentazione correlata
+## Documenti correlati
 
 - [zalouser](/it/channels/zalouser)
 - [zalouser](/it/plugins/zalouser)

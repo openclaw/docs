@@ -1,41 +1,44 @@
 ---
 read_when:
-    - Die macOS-Skills-Einstellungs-UI aktualisieren
-    - Skills-Gating oder Installationsverhalten ändern
+    - Aktualisieren der macOS-Skills-Einstellungen im UI
+    - Ändern der Skills-Zugangssteuerung oder des Installationsverhaltens
 summary: macOS-Skills-Einstellungs-UI und Gateway-gestützter Status
 title: Skills (macOS)
 x-i18n:
-    generated_at: "2026-04-24T06:48:19Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T17:43:50Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: dcd89d27220644866060d0f9954a116e6093d22f7ebd32d09dc16871c25b988e
+    source_hash: 5ecc470f1645051e03ab4f51bcb4972da4853c690354bc8ea18a89fcd387d413
     source_path: platforms/mac/skills.md
-    workflow: 15
+    workflow: 16
 ---
 
 Die macOS-App stellt OpenClaw Skills über das Gateway bereit; sie parst Skills nicht lokal.
 
 ## Datenquelle
 
-- `skills.status` (Gateway) gibt alle Skills plus Berechtigungsstatus und fehlende Anforderungen zurück
-  (einschließlich Allowlist-Blockierungen für gebündelte Skills).
+- `skills.status` (Gateway) gibt alle Skills plus Eignung und fehlende Anforderungen zurück
+  (einschließlich Allowlist-Sperren für gebündelte Skills).
 - Anforderungen werden aus `metadata.openclaw.requires` in jeder `SKILL.md` abgeleitet.
 
 ## Installationsaktionen
 
 - `metadata.openclaw.install` definiert Installationsoptionen (brew/node/go/uv).
 - Die App ruft `skills.install` auf, um Installer auf dem Gateway-Host auszuführen.
-- Eingebaute Findings vom Typ `critical` für gefährlichen Code blockieren `skills.install` standardmäßig; verdächtige Findings erzeugen weiterhin nur Warnungen. Das gefährliche Override existiert auf der Gateway-Anfrage, aber der Standardablauf der App bleibt fail-closed.
+- Die vom Operator verwaltete `security.installPolicy` kann Gateway-gestützte Skill-
+  Installationen blockieren, bevor Installer-Metadaten ausgeführt werden. Die integrierte Blockierung von gefährlichem Code zur Installationszeit
+  ist nicht Teil des Skill-Installationsablaufs.
 - Wenn jede Installationsoption `download` ist, stellt das Gateway alle Download-
   Optionen bereit.
-- Andernfalls wählt das Gateway einen bevorzugten Installer anhand der aktuellen
-  Installationspräferenzen und Host-Binärdateien aus: Homebrew zuerst, wenn
-  `skills.install.preferBrew` aktiviert ist und `brew` existiert, dann `uv`, dann der
+- Andernfalls wählt das Gateway anhand der aktuellen
+  Installationseinstellungen und Host-Binärdateien einen bevorzugten Installer aus: zuerst Homebrew, wenn
+  `skills.install.preferBrew` aktiviert ist und `brew` vorhanden ist, dann `uv`, dann der
   konfigurierte Node-Manager aus `skills.install.nodeManager`, danach weitere
   Fallbacks wie `go` oder `download`.
-- Labels für Node-Installationen spiegeln den konfigurierten Node-Manager wider, einschließlich `yarn`.
+- Node-Installationslabels spiegeln den konfigurierten Node-Manager wider, einschließlich `yarn`.
 
-## Env/API-Schlüssel
+## Umgebungs-/API-Schlüssel
 
 - Die App speichert Schlüssel in `~/.openclaw/openclaw.json` unter `skills.entries.<skillKey>`.
 - `skills.update` patcht `enabled`, `apiKey` und `env`.
@@ -44,7 +47,7 @@ Die macOS-App stellt OpenClaw Skills über das Gateway bereit; sie parst Skills 
 
 - Installations- und Konfigurationsupdates erfolgen auf dem Gateway-Host (nicht auf dem lokalen Mac).
 
-## Verwandt
+## Verwandte Themen
 
 - [Skills](/de/tools/skills)
 - [macOS-App](/de/platforms/macos)

@@ -1,13 +1,14 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin qa-lab
-summary: Plugin แล็บ QA ของ OpenClaw พร้อมส่วนติดต่อผู้ใช้สำหรับดีบักเกอร์แบบส่วนตัวและตัวรันสถานการณ์.
-title: Plugin แล็บ QA
+summary: Plugin ห้องปฏิบัติการ QA ของ OpenClaw พร้อม UI ตัวดีบักส่วนตัวและตัวรันสถานการณ์.
+title: Plugin QA Lab
 x-i18n:
-    generated_at: "2026-05-02T20:55:40Z"
+    generated_at: "2026-06-27T18:04:36Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a565d11bc2e1051685b6c067b695fbec980bfe21f50c98d5a616ed3dcbecb98e
+    source_hash: 0de3ac126939c822225cfd4bf75af594e6066f7992cacc71b1455638aab3af0b
     source_path: plugins/reference/qa-lab.md
     workflow: 16
 ---
@@ -16,11 +17,11 @@ x-i18n:
 
 Plugin QA Lab ของ OpenClaw พร้อม UI ดีบักเกอร์ส่วนตัวและตัวเรียกใช้สถานการณ์
 
-## การแจกจ่าย
+## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/qa-lab`
-- วิธีการติดตั้ง: เฉพาะการเช็กเอาต์ซอร์สเท่านั้น
+- เส้นทางการติดตั้ง: เฉพาะ source checkout เท่านั้น
 
 ## พื้นผิว
 
-Plugin
+contracts: webSearchProviders

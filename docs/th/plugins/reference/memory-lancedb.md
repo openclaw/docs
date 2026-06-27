@@ -1,25 +1,26 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin memory-lancedb
-summary: เพิ่มเครื่องมือที่เอเจนต์เรียกใช้ได้.
+summary: OpenClaw Plugin หน่วยความจำระยะยาวที่ใช้ LanceDB เป็นแบ็กเอนด์ พร้อมการเรียกคืนอัตโนมัติ การบันทึกอัตโนมัติ และการค้นหาเวกเตอร์.
 title: Plugin หน่วยความจำ Lancedb
 x-i18n:
-    generated_at: "2026-05-03T10:17:13Z"
+    generated_at: "2026-06-27T18:03:38Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 68b679caf3a16929c59d9029b29f12520cf2a247ee51de0d67382d0caef4e694
+    source_hash: db3843c421abdf738723f87f5bf12ed7acc2e6638e5869c2ad10b4b5722d402d
     source_path: plugins/reference/memory-lancedb.md
     workflow: 16
 ---
 
 # Plugin หน่วยความจำ Lancedb
 
-เพิ่มเครื่องมือที่เอเจนต์เรียกใช้ได้
+Plugin หน่วยความจำระยะยาวของ OpenClaw ที่รองรับโดย LanceDB พร้อมการเรียกคืนอัตโนมัติ การบันทึกอัตโนมัติ และการค้นหาแบบเวกเตอร์
 
-## การแจกจ่าย
+## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/memory-lancedb`
-- ช่องทางการติดตั้ง: npm; ClawHub
+- เส้นทางการติดตั้ง: npm; ClawHub
 
 ## พื้นผิว
 

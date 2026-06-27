@@ -1,27 +1,28 @@
 ---
 read_when:
-    - Configuração do ambiente de desenvolvimento no macOS
+    - Configurando o ambiente de desenvolvimento do macOS
 summary: Guia de configuração para desenvolvedores que trabalham no app macOS do OpenClaw
 title: Configuração de desenvolvimento no macOS
 x-i18n:
-    generated_at: "2026-05-07T13:20:58Z"
+    generated_at: "2026-06-27T17:42:42Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b39b449570176f44305c98ec4f00482a8b75ad20174b80c93abc45df37ffa0bc
+    source_hash: 09212c9b9139dd19867b9286dc43361794a3efd37b2a8d769bb0a8fdd389b816
     source_path: platforms/mac/dev-setup.md
     workflow: 16
 ---
 
-# Configuração de desenvolvedor do macOS
+# Configuração de desenvolvimento no macOS
 
 Compile e execute o aplicativo macOS do OpenClaw a partir do código-fonte.
 
 ## Pré-requisitos
 
-Antes de compilar o app, verifique se você tem os seguintes itens instalados:
+Antes de compilar o app, garanta que você tenha o seguinte instalado:
 
 1. **Xcode 26.2+**: Necessário para desenvolvimento em Swift.
-2. **Node.js 24 e pnpm**: Recomendado para o gateway, a CLI e os scripts de empacotamento. Node 22 LTS, atualmente `22.16+`, continua compatível.
+2. **Node.js 24 e pnpm**: Recomendado para o Gateway, a CLI e os scripts de empacotamento. Node 22 LTS, atualmente `22.19+`, continua compatível por compatibilidade.
 
 ## 1. Instale as dependências
 
@@ -39,12 +40,12 @@ Para compilar o app macOS e empacotá-lo em `dist/OpenClaw.app`, execute:
 ./scripts/package-mac-app.sh
 ```
 
-Se você não tiver um certificado de Apple Developer ID, o script usará automaticamente a **assinatura ad-hoc** (`-`).
+Se você não tiver um certificado Apple Developer ID, o script usará automaticamente **assinatura ad-hoc** (`-`).
 
 Para modos de execução de desenvolvimento, flags de assinatura e solução de problemas de Team ID, consulte o README do app macOS:
 [https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md](https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md)
 
-> **Observação**: apps assinados de forma ad-hoc podem acionar avisos de segurança. Se o app falhar imediatamente com "Abort trap 6", consulte a seção [Solução de problemas](#troubleshooting).
+> **Observação**: Apps assinados ad-hoc podem acionar avisos de segurança. Se o app travar imediatamente com "Abort trap 6", consulte a seção [Solução de problemas](#troubleshooting).
 
 ## 3. Instale a CLI
 
@@ -53,8 +54,8 @@ O app macOS espera uma instalação global da CLI `openclaw` para gerenciar tare
 **Para instalá-la (recomendado):**
 
 1. Abra o app OpenClaw.
-2. Vá para a aba de configurações **General**.
-3. Clique em **"Install CLI"**.
+2. Acesse a aba de configurações **Geral**.
+3. Clique em **"Instalar CLI"**.
 
 Como alternativa, instale manualmente:
 
@@ -85,9 +86,9 @@ xcrun swift --version
 
 Se as versões não corresponderem, atualize o macOS/Xcode e execute a compilação novamente.
 
-### O app falha ao conceder permissão
+### O app trava ao conceder permissão
 
-Se o app falhar quando você tentar permitir acesso a **Speech Recognition** ou **Microphone**, isso pode ocorrer devido a um cache TCC corrompido ou uma incompatibilidade de assinatura.
+Se o app travar quando você tentar permitir acesso a **Reconhecimento de Fala** ou **Microfone**, isso pode ocorrer devido a um cache TCC corrompido ou uma incompatibilidade de assinatura.
 
 **Correção:**
 
@@ -97,21 +98,21 @@ Se o app falhar quando você tentar permitir acesso a **Speech Recognition** ou 
    tccutil reset All ai.openclaw.mac.debug
    ```
 
-2. Se isso falhar, altere temporariamente o `BUNDLE_ID` em [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) para forçar um "começo limpo" do macOS.
+2. Se isso falhar, altere temporariamente o `BUNDLE_ID` em [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) para forçar um "estado limpo" no macOS.
 
-### Gateway em "Starting..." indefinidamente
+### Gateway em "Iniciando..." indefinidamente
 
-Se o status do gateway permanecer em "Starting...", verifique se um processo zumbi está ocupando a porta:
+Se o status do Gateway permanecer em "Iniciando...", verifique se um processo zumbi está segurando a porta:
 
 ```bash
 openclaw gateway status
 openclaw gateway stop
 
-# Se você não estiver usando um LaunchAgent (modo dev / execuções manuais), encontre o listener:
+# If you're not using a LaunchAgent (dev mode / manual runs), find the listener:
 lsof -nP -iTCP:18789 -sTCP:LISTEN
 ```
 
-Se uma execução manual estiver ocupando a porta, interrompa esse processo (Ctrl+C). Como último recurso, encerre o PID encontrado acima.
+Se uma execução manual estiver segurando a porta, pare esse processo (Ctrl+C). Como último recurso, encerre o PID encontrado acima.
 
 ## Relacionado
 

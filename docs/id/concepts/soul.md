@@ -3,25 +3,26 @@ read_when:
     - Anda ingin agen Anda terdengar tidak terlalu generik
     - Anda sedang mengedit SOUL.md
     - Anda menginginkan kepribadian yang lebih kuat tanpa mengorbankan keamanan atau keringkasan
-summary: Gunakan SOUL.md untuk memberi agen OpenClaw Anda suara yang nyata alih-alih gaya asisten generik yang hambar
-title: Panduan kepribadian SOUL.md
+summary: Gunakan SOUL.md untuk memberi agen OpenClaw Anda suara yang nyata, bukan gaya asisten generik yang hambar
+title: SOUL.md panduan kepribadian
 x-i18n:
-    generated_at: "2026-05-06T09:09:11Z"
+    generated_at: "2026-06-27T17:27:11Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2101c0c7a22ab1fe5acfd0d2d413a002326dca380fc6e020a7d77a242d13c3d7
+    source_hash: d916e5c9a97f25b53c93da7969583a535b48ad49e02c30bbbbf2dbe0da0f589a
     source_path: concepts/soul.md
     workflow: 16
 ---
 
-`SOUL.md` adalah tempat suara agen Anda berada.
+`SOUL.md` adalah tempat suara agent Anda berada.
 
-OpenClaw menyisipkannya pada sesi normal, jadi file ini punya bobot nyata. Jika agen Anda
-terdengar hambar, ragu-ragu, atau anehnya terlalu korporat, biasanya inilah file yang perlu diperbaiki.
+OpenClaw menyuntikkannya pada sesi normal, jadi file ini benar-benar berpengaruh. Jika agent Anda
+terdengar hambar, terlalu ragu-ragu, atau anehnya korporat, biasanya inilah file yang perlu diperbaiki.
 
-## Apa yang seharusnya ada di SOUL.md
+## Apa yang termasuk dalam SOUL.md
 
-Masukkan hal-hal yang mengubah rasa saat berbicara dengan agen:
+Masukkan hal-hal yang mengubah rasa percakapan dengan agent:
 
 - nada
 - opini
@@ -30,29 +31,29 @@ Masukkan hal-hal yang mengubah rasa saat berbicara dengan agen:
 - batasan
 - tingkat keterusterangan bawaan
 
-Jangan **mengubahnya** menjadi:
+Jangan **pernah** mengubahnya menjadi:
 
 - kisah hidup
 - changelog
-- tumpahan kebijakan keamanan
+- tumpukan kebijakan keamanan
 - dinding besar berisi nuansa tanpa efek perilaku
 
 Pendek mengalahkan panjang. Tajam mengalahkan samar.
 
 ## Mengapa ini berhasil
 
-Ini selaras dengan panduan prompt OpenAI:
+Ini sejalan dengan panduan prompt OpenAI:
 
 - Panduan rekayasa prompt mengatakan perilaku tingkat tinggi, nada, tujuan, dan
-  contoh seharusnya berada di lapisan instruksi berprioritas tinggi, bukan dikubur di
+  contoh berada di lapisan instruksi berprioritas tinggi, bukan terkubur di
   giliran pengguna.
-- Panduan yang sama menyarankan memperlakukan prompt sebagai sesuatu yang Anda iterasikan,
-  tetapkan, dan evaluasi, bukan prosa ajaib yang Anda tulis sekali lalu lupakan.
+- Panduan yang sama menyarankan untuk memperlakukan prompt sebagai sesuatu yang Anda iterasi,
+  pin, dan evaluasi, bukan prosa ajaib yang Anda tulis sekali lalu lupakan.
 
 Untuk OpenClaw, `SOUL.md` adalah lapisan itu.
 
-Jika Anda menginginkan kepribadian yang lebih baik, tulis instruksi yang lebih kuat. Jika Anda menginginkan kepribadian yang stabil,
-jaga agar tetap ringkas dan berversi.
+Jika Anda ingin kepribadian yang lebih baik, tulis instruksi yang lebih kuat. Jika Anda ingin kepribadian
+yang stabil, jaga agar instruksinya ringkas dan berversi.
 
 Referensi OpenAI:
 
@@ -61,7 +62,7 @@ Referensi OpenAI:
 
 ## Prompt Molty
 
-Tempelkan ini ke agen Anda dan biarkan agen menulis ulang `SOUL.md`.
+Tempelkan ini ke agent Anda dan biarkan ia menulis ulang `SOUL.md`.
 
 Path tetap untuk workspace OpenClaw: gunakan `SOUL.md`, bukan `http://SOUL.md`.
 
@@ -80,14 +81,14 @@ Read your `SOUL.md`. Now rewrite it with these changes:
 Save the new `SOUL.md`. Welcome to having a personality.
 ```
 
-## Seperti apa yang bagus
+## Seperti apa yang baik
 
-Aturan `SOUL.md` yang bagus terdengar seperti ini:
+Aturan `SOUL.md` yang baik terdengar seperti ini:
 
 - punya pendirian
 - lewati pengisi
-- lucu saat memang cocok
-- tunjukkan ide buruk sejak awal
+- lucu saat cocok
+- tegur ide buruk sejak awal
 - tetap ringkas kecuali kedalaman benar-benar berguna
 
 Aturan `SOUL.md` yang buruk terdengar seperti ini:
@@ -102,20 +103,20 @@ Daftar kedua itulah cara Anda mendapatkan bubur.
 
 Kepribadian bukan izin untuk ceroboh.
 
-Simpan `AGENTS.md` untuk aturan operasional. Simpan `SOUL.md` untuk suara, sikap, dan
-gaya. Jika agen Anda bekerja di kanal bersama, balasan publik, atau permukaan pelanggan,
-pastikan nadanya tetap sesuai dengan ruangnya.
+Simpan `AGENTS.md` untuk aturan operasi. Simpan `SOUL.md` untuk suara, sikap, dan
+gaya. Jika agent Anda bekerja di kanal bersama, balasan publik, atau permukaan
+pelanggan, pastikan nadanya tetap sesuai dengan ruangnya.
 
-Tajam itu bagus. Menyebalkan itu tidak.
+Tajam itu bagus. Menyebalkan tidak.
 
 ## Terkait
 
 <CardGroup cols={2}>
   <Card title="Agent workspace" href="/id/concepts/agent-workspace" icon="folder-open">
-    File workspace yang disisipkan OpenClaw ke dalam prompt sistem.
+    File workspace yang disuntikkan OpenClaw ke konteks model.
   </Card>
   <Card title="System prompt" href="/id/concepts/system-prompt" icon="message-lines">
-    Cara `SOUL.md` disusun ke dalam prompt sistem per giliran.
+    Bagaimana `SOUL.md` disusun ke dalam konteks runtime OpenClaw dan Codex.
   </Card>
   <Card title="SOUL.md template" href="/id/reference/templates/SOUL" icon="file-lines">
     Templat awal untuk file kepribadian.

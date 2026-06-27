@@ -5,15 +5,16 @@ read_when:
 summary: تشغيل OpenClaw باستخدام LM Studio
 title: LM Studio
 x-i18n:
-    generated_at: "2026-05-02T22:23:45Z"
+    generated_at: "2026-06-27T18:25:36Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 814117ecbdc52cf67e921d0f0d67c4219f8bdc15fb8cf34b983cda775cba9b9e
+    source_hash: 20dff6e3156edf0e840c5450999bc511ba168b23692494c9030bfb946936ae40
     source_path: providers/lmstudio.md
     workflow: 16
 ---
 
-LM Studio هو تطبيق سهل الاستخدام وقوي لتشغيل نماذج open-weight على عتادك الخاص. يتيح لك تشغيل نماذج llama.cpp (GGUF) أو MLX (Apple Silicon). يأتي كحزمة GUI أو كخادم daemon بلا واجهة (`llmster`). للاطلاع على وثائق المنتج والإعداد، راجع [lmstudio.ai](https://lmstudio.ai/).
+LM Studio تطبيق سهل الاستخدام وقوي لتشغيل نماذج open-weight على عتادك الخاص. يتيح لك تشغيل نماذج llama.cpp (GGUF) أو MLX (Apple Silicon). يتوفر كحزمة GUI أو كخدمة daemon بلا واجهة (`llmster`). للاطلاع على وثائق المنتج والإعداد، راجع [lmstudio.ai](https://lmstudio.ai/).
 
 ## البدء السريع
 
@@ -25,7 +26,7 @@ curl -fsSL https://lmstudio.ai/install.sh | bash
 
 2. شغّل الخادم
 
-تأكد من تشغيل تطبيق سطح المكتب أو تشغيل daemon باستخدام الأمر التالي:
+تأكد من تشغيل تطبيق سطح المكتب أو تشغيل خدمة daemon باستخدام الأمر التالي:
 
 ```bash
 lms daemon up
@@ -35,9 +36,9 @@ lms daemon up
 lms server start --port 1234
 ```
 
-إذا كنت تستخدم التطبيق، فتأكد من تفعيل JIT للحصول على تجربة سلسة. تعرّف على المزيد في [دليل JIT وTTL في LM Studio](https://lmstudio.ai/docs/developer/core/ttl-and-auto-evict).
+إذا كنت تستخدم التطبيق، فتأكد من تفعيل JIT لتجربة سلسة. تعرّف على المزيد في [دليل LM Studio JIT وTTL](https://lmstudio.ai/docs/developer/core/ttl-and-auto-evict).
 
-3. إذا كانت مصادقة LM Studio مفعّلة، فاضبط `LM_API_TOKEN`:
+3. إذا كانت مصادقة LM Studio مفعّلة، فعيّن `LM_API_TOKEN`:
 
 ```bash
 export LM_API_TOKEN="your-lm-studio-api-token"
@@ -45,29 +46,29 @@ export LM_API_TOKEN="your-lm-studio-api-token"
 
 إذا كانت مصادقة LM Studio معطّلة، يمكنك ترك مفتاح API فارغًا أثناء إعداد OpenClaw التفاعلي.
 
-للحصول على تفاصيل إعداد مصادقة LM Studio، راجع [مصادقة LM Studio](https://lmstudio.ai/docs/developer/core/authentication).
+لتفاصيل إعداد مصادقة LM Studio، راجع [مصادقة LM Studio](https://lmstudio.ai/docs/developer/core/authentication).
 
-4. شغّل التهيئة الأولية واختر `LM Studio`:
+4. شغّل الإعداد الأولي واختر `LM Studio`:
 
 ```bash
 openclaw onboard
 ```
 
-5. في التهيئة الأولية، استخدم مطالبة `Default model` لاختيار نموذج LM Studio.
+5. في الإعداد الأولي، استخدم مطالبة `Default model` لاختيار نموذج LM Studio.
 
-يمكنك أيضًا ضبطه أو تغييره لاحقًا:
+يمكنك أيضًا تعيينه أو تغييره لاحقًا:
 
 ```bash
 openclaw models set lmstudio/qwen/qwen3.5-9b
 ```
 
-تتبع مفاتيح نماذج LM Studio تنسيق `author/model-name` (مثل `qwen/qwen3.5-9b`). تضيف مراجع نماذج OpenClaw
-اسم المزوّد في المقدمة: `lmstudio/qwen/qwen3.5-9b`. يمكنك العثور على المفتاح الدقيق
+تتبع مفاتيح نماذج LM Studio تنسيق `author/model-name` (مثل `qwen/qwen3.5-9b`). تسبق مراجع نماذج OpenClaw
+اسم المزوّد: `lmstudio/qwen/qwen3.5-9b`. يمكنك العثور على المفتاح الدقيق
 لنموذج عبر تشغيل `curl http://localhost:1234/api/v1/models` والنظر إلى حقل `key`.
 
-## التهيئة الأولية غير التفاعلية
+## الإعداد الأولي غير التفاعلي
 
-استخدم التهيئة الأولية غير التفاعلية عندما تريد كتابة إعداد قابل للتشغيل آليًا (CI، التوفير، التمهيد عن بُعد):
+استخدم الإعداد الأولي غير التفاعلي عندما تريد تنفيذ الإعداد عبر سكربت (CI أو التجهيز أو التشغيل التمهيدي عن بُعد):
 
 ```bash
 openclaw onboard \
@@ -88,30 +89,30 @@ openclaw onboard \
   --custom-model-id qwen/qwen3.5-9b
 ```
 
-يأخذ `--custom-model-id` مفتاح النموذج كما يُرجعه LM Studio (مثل `qwen/qwen3.5-9b`)، من دون
+يأخذ `--custom-model-id` مفتاح النموذج كما ترجعه LM Studio (مثل `qwen/qwen3.5-9b`)، من دون
 بادئة المزوّد `lmstudio/`.
 
-لخوادم LM Studio المصادَق عليها، مرّر `--lmstudio-api-key` أو اضبط `LM_API_TOKEN`.
-لخوادم LM Studio غير المصادَق عليها، احذف المفتاح؛ يخزّن OpenClaw علامة محلية غير سرية.
+لخوادم LM Studio التي تستخدم المصادقة، مرّر `--lmstudio-api-key` أو عيّن `LM_API_TOKEN`.
+لخوادم LM Studio التي لا تستخدم المصادقة، احذف المفتاح؛ يخزّن OpenClaw علامة محلية غير سرية.
 
 يبقى `--custom-api-key` مدعومًا للتوافق، لكن يُفضّل استخدام `--lmstudio-api-key` مع LM Studio.
 
-يكتب هذا `models.providers.lmstudio` ويضبط النموذج الافتراضي على
-`lmstudio/<custom-model-id>`. عند تقديم مفتاح API، يكتب الإعداد أيضًا ملف تعريف المصادقة
-`lmstudio:default`.
+يكتب هذا `models.providers.lmstudio` ويعيّن النموذج الافتراضي إلى
+`lmstudio/<custom-model-id>`. عند تقديم مفتاح API، يكتب الإعداد أيضًا
+ملف تعريف المصادقة `lmstudio:default`.
 
-يمكن للإعداد التفاعلي أن يطلب طول سياق تحميل مفضّلًا اختياريًا ويطبّقه على نماذج LM Studio المكتشفة التي يحفظها في الإعدادات.
-تثق إعدادات Plugin الخاصة بـ LM Studio بنقطة نهاية LM Studio المضبوطة لطلبات النماذج، بما في ذلك مضيفو loopback وLAN وtailnet. يمكنك إلغاء ذلك عبر ضبط `models.providers.lmstudio.request.allowPrivateNetwork: false`.
+يمكن للإعداد التفاعلي أن يطلب طول سياق تحميل مفضلًا اختياريًا ويطبّقه على نماذج LM Studio المكتشفة التي يحفظها في الإعدادات.
+يثق إعداد Plugin الخاص بـ LM Studio بنقطة نهاية LM Studio المضبوطة لطلبات النماذج، بما في ذلك local loopback ومضيفو LAN وtailnet. ما زالت مصادر metadata/link-local تتطلب موافقة صريحة. يمكنك إلغاء الاشتراك بتعيين `models.providers.lmstudio.request.allowPrivateNetwork: false`.
 
 ## الإعدادات
 
 ### توافق استخدام البث
 
-LM Studio متوافق مع استخدام البث. عندما لا يصدر كائن `usage` على شكل OpenAI،
-يستعيد OpenClaw أعداد الرموز من بيانات وصفية بأسلوب llama.cpp مثل
+LM Studio متوافق مع استخدام البث. عندما لا يصدر كائن
+`usage` على هيئة OpenAI، يستعيد OpenClaw أعداد الرموز من بيانات التعريف بنمط llama.cpp
 `timings.prompt_n` / `timings.predicted_n` بدلًا من ذلك.
 
-ينطبق سلوك استخدام البث نفسه على الخلفيات المحلية التالية المتوافقة مع OpenAI:
+ينطبق سلوك استخدام البث نفسه على الخلفيات المحلية المتوافقة مع OpenAI التالية:
 
 - vLLM
 - SGLang
@@ -123,16 +124,16 @@ LM Studio متوافق مع استخدام البث. عندما لا يصدر ك
 
 ### توافق التفكير
 
-عندما يبلّغ اكتشاف `/api/v1/models` في LM Studio عن خيارات استدلال
-خاصة بالنموذج، يعرض OpenClaw قيم `reasoning_effort` المتوافقة مع OpenAI
-المطابقة في بيانات توافق النموذج الوصفية. يمكن لإصدارات LM Studio الحالية الإعلان عن خيارات UI ثنائية
-مثل `allowed_options: ["off", "on"]` بينما ترفض هذه القيم
+عندما يبلّغ اكتشاف `/api/v1/models` في LM Studio عن خيارات استدلال خاصة بالنموذج،
+يعرض OpenClaw قيم `reasoning_effort` المتوافقة مع OpenAI المطابقة
+في بيانات توافق النموذج الوصفية. يمكن لإصدارات LM Studio الحالية أن تعلن عن خيارات UI ثنائية
+مثل `allowed_options: ["off", "on"]` مع رفض تلك القيم
 على `/v1/chat/completions`؛ يطبّع OpenClaw شكل الاكتشاف الثنائي هذا إلى
 `none` و`minimal` و`low` و`medium` و`high` و`xhigh` قبل إرسال الطلبات.
-تُطبّع إعدادات LM Studio القديمة المحفوظة التي تحتوي على خرائط استدلال `off`/`on`
+تُطبّع إعدادات LM Studio المحفوظة القديمة التي تحتوي على خرائط استدلال `off`/`on`
 بالطريقة نفسها عند تحميل الكتالوج.
 
-### إعداد صريح
+### إعدادات صريحة
 
 ```json5
 {
@@ -163,7 +164,7 @@ LM Studio متوافق مع استخدام البث. عندما لا يصدر ك
 
 ### لم يتم اكتشاف LM Studio
 
-تأكد من أن LM Studio قيد التشغيل. إذا كانت المصادقة مفعّلة، فاضبط أيضًا `LM_API_TOKEN`:
+تأكد من أن LM Studio يعمل. إذا كانت المصادقة مفعّلة، فعيّن أيضًا `LM_API_TOKEN`:
 
 ```bash
 # Start via desktop app, or headless:
@@ -178,15 +179,15 @@ curl http://localhost:1234/api/v1/models
 
 ### أخطاء المصادقة (HTTP 401)
 
-إذا أبلغ الإعداد عن HTTP 401، فتحقق من مفتاح API لديك:
+إذا أبلغ الإعداد عن HTTP 401، فتحقق من مفتاح API:
 
 - تحقق من أن `LM_API_TOKEN` يطابق المفتاح المضبوط في LM Studio.
-- للحصول على تفاصيل إعداد مصادقة LM Studio، راجع [مصادقة LM Studio](https://lmstudio.ai/docs/developer/core/authentication).
+- لتفاصيل إعداد مصادقة LM Studio، راجع [مصادقة LM Studio](https://lmstudio.ai/docs/developer/core/authentication).
 - إذا كان خادمك لا يتطلب مصادقة، فاترك المفتاح فارغًا أثناء الإعداد.
 
-### تحميل النماذج في الوقت المناسب
+### تحميل النموذج عند الحاجة
 
-يدعم LM Studio تحميل النماذج في الوقت المناسب (JIT)، حيث تُحمّل النماذج عند أول طلب. يحمّل OpenClaw النماذج مسبقًا عبر نقطة نهاية التحميل الأصلية في LM Studio افتراضيًا، مما يساعد عندما يكون JIT معطّلًا. للسماح لـ JIT في LM Studio، وTTL عند الخمول، وسلوك الإخراج التلقائي بامتلاك دورة حياة النموذج، عطّل خطوة التحميل المسبق في OpenClaw:
+يدعم LM Studio تحميل النماذج عند الحاجة (JIT)، حيث تُحمّل النماذج عند أول طلب. يحمّل OpenClaw النماذج مسبقًا عبر نقطة نهاية التحميل الأصلية في LM Studio افتراضيًا، مما يساعد عندما يكون JIT معطّلًا. للسماح لسلوكيات JIT وTTL الخامل والإخلاء التلقائي في LM Studio بامتلاك دورة حياة النموذج، عطّل خطوة التحميل المسبق في OpenClaw:
 
 ```json5
 {
@@ -205,7 +206,7 @@ curl http://localhost:1234/api/v1/models
 
 ### مضيف LM Studio على LAN أو tailnet
 
-استخدم العنوان القابل للوصول لمضيف LM Studio، وأبقِ `/v1`، وتأكد من أن LM Studio مرتبط بما يتجاوز loopback على ذلك الجهاز:
+استخدم العنوان القابل للوصول لمضيف LM Studio، واحتفظ بـ `/v1`، وتأكد من أن LM Studio مرتبط بما يتجاوز loopback على ذلك الجهاز:
 
 ```json5
 {
@@ -222,7 +223,7 @@ curl http://localhost:1234/api/v1/models
 }
 ```
 
-بخلاف المزوّدين العامين المتوافقين مع OpenAI، يثق `lmstudio` تلقائيًا بنقطة النهاية المحلية/الخاصة المضبوطة لطلبات النماذج المحمية. كما تُوثق معرّفات المزوّدين المخصصين الخاصة بـ loopback مثل `localhost` أو `127.0.0.1` تلقائيًا؛ بالنسبة إلى LAN أو tailnet أو معرّفات المزوّدين المخصصين عبر DNS خاص، اضبط `models.providers.<id>.request.allowPrivateNetwork: true` صراحةً.
+يثق `lmstudio` تلقائيًا بنقطة النهاية المحلية/الخاصة المضبوطة لطلبات النماذج المحمية. تثق إدخالات المزوّد المخصص/المحلي المتوافقة مع OpenAI أيضًا بمصدر `baseUrl` المضبوط بدقة، باستثناء مصادر metadata/link-local؛ ما زالت الطلبات إلى منافذ أو وجهات خاصة مختلفة تتطلب `models.providers.<id>.request.allowPrivateNetwork: true`. عيّن `models.providers.<id>.request.allowPrivateNetwork: false` لإلغاء الثقة بالمصدر المطابق.
 
 ## ذات صلة
 

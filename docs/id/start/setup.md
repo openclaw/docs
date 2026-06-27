@@ -1,14 +1,15 @@
 ---
 read_when:
     - Menyiapkan mesin baru
-    - Anda menginginkan "yang terbaru dan terbaik" tanpa merusak pengaturan pribadi Anda
-summary: Penyiapan lanjutan dan alur kerja pengembangan untuk OpenClaw
+    - Anda menginginkan "terbaru + terbaik" tanpa merusak pengaturan pribadi Anda
+summary: Alur kerja pengaturan lanjutan dan pengembangan untuk OpenClaw
 title: Penyiapan
 x-i18n:
-    generated_at: "2026-05-07T13:25:37Z"
+    generated_at: "2026-06-27T18:14:45Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9325ebfc2c5868e44fba18b75ca27cd9333a8bc7072e933468e1608dde487a8e
+    source_hash: 81cad59d4eab731ba548452211bfc578d6f79e38431057c52cc3580d3b9d9944
     source_path: start/setup.md
     workflow: 16
 ---
@@ -18,19 +19,19 @@ Jika Anda menyiapkan untuk pertama kali, mulai dengan [Memulai](/id/start/gettin
 Untuk detail onboarding, lihat [Onboarding (CLI)](/id/start/wizard).
 </Note>
 
-## Ringkasnya
+## TL;DR
 
 Pilih alur kerja penyiapan berdasarkan seberapa sering Anda menginginkan pembaruan dan apakah Anda ingin menjalankan Gateway sendiri:
 
 - **Penyesuaian berada di luar repo:** simpan konfigurasi dan workspace Anda di `~/.openclaw/openclaw.json` dan `~/.openclaw/workspace/` agar pembaruan repo tidak menyentuhnya.
 - **Alur kerja stabil (direkomendasikan untuk sebagian besar pengguna):** instal aplikasi macOS dan biarkan aplikasi menjalankan Gateway bawaan.
-- **Alur kerja paling mutakhir (pengembangan):** jalankan Gateway sendiri melalui `pnpm gateway:watch`, lalu biarkan aplikasi macOS terhubung dalam mode Local.
+- **Alur kerja bleeding edge (dev):** jalankan Gateway sendiri melalui `pnpm gateway:watch`, lalu biarkan aplikasi macOS terhubung dalam mode Lokal.
 
 ## Prasyarat (dari sumber)
 
-- Node 24 direkomendasikan (Node 22 LTS, saat ini `22.16+`, masih didukung)
-- `pnpm` diperlukan untuk checkout sumber. OpenClaw memuat plugin bawaan dari paket workspace pnpm
-  `extensions/*` dalam mode pengembangan, jadi `npm install` root
+- Node 24 direkomendasikan (Node 22 LTS, saat ini `22.19+`, masih didukung)
+- `pnpm` diperlukan untuk checkout sumber. OpenClaw memuat Plugin bawaan dari paket workspace pnpm
+  `extensions/*` dalam mode dev, sehingga `npm install` di root
   tidak menyiapkan seluruh pohon sumber.
 - Docker (opsional; hanya untuk penyiapan/e2e berbasis kontainer - lihat [Docker](/id/install/docker))
 
@@ -41,7 +42,7 @@ Jika Anda menginginkan "100% disesuaikan untuk saya" _dan_ pembaruan yang mudah,
 - **Konfigurasi:** `~/.openclaw/openclaw.json` (mirip JSON/JSON5)
 - **Workspace:** `~/.openclaw/workspace` (skills, prompt, memori; jadikan repo git privat)
 
-Bootstrap sekali:
+Bootstrap satu kali:
 
 ```bash
 openclaw setup
@@ -63,12 +64,12 @@ Setelah `pnpm build`, Anda dapat menjalankan CLI terpaket secara langsung:
 node openclaw.mjs gateway --port 18789 --verbose
 ```
 
-## Alur kerja stabil (aplikasi macOS terlebih dahulu)
+## Alur kerja stabil (aplikasi macOS lebih dulu)
 
-1. Instal + luncurkan **OpenClaw.app** (bilah menu).
-2. Selesaikan daftar periksa onboarding/izin (prompt TCC).
-3. Pastikan Gateway berada dalam mode **Local** dan berjalan (aplikasi mengelolanya).
-4. Tautkan permukaan (contoh: WhatsApp):
+1. Instal + luncurkan **OpenClaw.app** (menu bar).
+2. Selesaikan checklist onboarding/izin (prompt TCC).
+3. Pastikan Gateway **Lokal** dan berjalan (aplikasi mengelolanya).
+4. Tautkan surface (contoh: WhatsApp):
 
 ```bash
 openclaw channels login
@@ -84,19 +85,19 @@ Jika onboarding tidak tersedia dalam build Anda:
 
 - Jalankan `openclaw setup`, lalu `openclaw channels login`, lalu mulai Gateway secara manual (`openclaw gateway`).
 
-## Alur kerja paling mutakhir (Gateway di terminal)
+## Alur kerja bleeding edge (Gateway di terminal)
 
-Tujuan: bekerja pada Gateway TypeScript, mendapatkan hot reload, tetap membuat UI aplikasi macOS terhubung.
+Tujuan: bekerja pada Gateway TypeScript, mendapatkan hot reload, dan menjaga UI aplikasi macOS tetap terhubung.
 
 ### 0) (Opsional) Jalankan juga aplikasi macOS dari sumber
 
-Jika Anda juga menginginkan aplikasi macOS pada versi paling mutakhir:
+Jika Anda juga menginginkan aplikasi macOS pada bleeding edge:
 
 ```bash
 ./scripts/restart-mac.sh
 ```
 
-### 1) Mulai Gateway pengembangan
+### 1) Mulai Gateway dev
 
 ```bash
 pnpm install
@@ -109,24 +110,24 @@ pnpm gateway:watch
 bernama dan otomatis terhubung dari terminal interaktif. Shell non-interaktif tetap
 terlepas dan mencetak `tmux attach -t openclaw-gateway-watch-main`; gunakan
 `OPENCLAW_GATEWAY_WATCH_ATTACH=0 pnpm gateway:watch` agar proses interaktif tetap
-terlepas, atau `pnpm gateway:watch:raw` untuk mode watch latar depan. Watcher
-memuat ulang saat ada perubahan sumber, konfigurasi, dan metadata plugin bawaan yang relevan. Jika
-Gateway yang dipantau keluar saat startup, `gateway:watch` menjalankan
-`openclaw doctor --fix --non-interactive` sekali dan mencoba lagi; tetapkan
-`OPENCLAW_GATEWAY_WATCH_AUTO_DOCTOR=0` untuk menonaktifkan langkah perbaikan khusus pengembangan tersebut.
+terlepas, atau `pnpm gateway:watch:raw` untuk mode watch foreground. Watcher
+memuat ulang pada perubahan sumber, konfigurasi, dan metadata Plugin bawaan yang relevan. Jika
+Gateway yang diawasi keluar saat startup, `gateway:watch` menjalankan
+`openclaw doctor --fix --non-interactive` satu kali dan mencoba ulang; tetapkan
+`OPENCLAW_GATEWAY_WATCH_AUTO_DOCTOR=0` untuk menonaktifkan langkah perbaikan khusus dev tersebut.
 `pnpm openclaw setup` adalah langkah inisialisasi konfigurasi/workspace lokal satu kali untuk checkout baru.
-`pnpm gateway:watch` tidak membangun ulang `dist/control-ui`, jadi jalankan ulang `pnpm ui:build` setelah perubahan `ui/` atau gunakan `pnpm ui:dev` saat mengembangkan Control UI.
+`pnpm gateway:watch` tidak membangun ulang `dist/control-ui`, jadi jalankan ulang `pnpm ui:build` setelah perubahan `ui/` atau gunakan `pnpm ui:dev` saat mengembangkan UI Kontrol.
 
 ### 2) Arahkan aplikasi macOS ke Gateway yang sedang berjalan
 
 Di **OpenClaw.app**:
 
-- Mode Koneksi: **Local**
+- Mode Koneksi: **Lokal**
   Aplikasi akan terhubung ke gateway yang sedang berjalan pada port yang dikonfigurasi.
 
 ### 3) Verifikasi
 
-- Status Gateway dalam aplikasi seharusnya menampilkan **"Using existing gateway …"**
+- Status Gateway di dalam aplikasi seharusnya menampilkan **"Menggunakan gateway yang ada …"**
 - Atau melalui CLI:
 
 ```bash
@@ -135,16 +136,16 @@ openclaw health
 
 ### Kesalahan umum
 
-- **Port salah:** Gateway WS secara default menggunakan `ws://127.0.0.1:18789`; jaga agar aplikasi + CLI berada pada port yang sama.
-- **Lokasi state disimpan:**
+- **Port salah:** WS Gateway default ke `ws://127.0.0.1:18789`; pastikan aplikasi + CLI menggunakan port yang sama.
+- **Lokasi state:**
   - State channel/provider: `~/.openclaw/credentials/`
-  - Profil autentikasi model: `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
+  - Profil auth model: `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
   - Sesi: `~/.openclaw/agents/<agentId>/sessions/`
   - Log: `/tmp/openclaw/`
 
 ## Peta penyimpanan kredensial
 
-Gunakan ini saat men-debug autentikasi atau memutuskan apa yang perlu dicadangkan:
+Gunakan ini saat men-debug auth atau memutuskan apa yang perlu dicadangkan:
 
 - **WhatsApp**: `~/.openclaw/credentials/whatsapp/<accountId>/creds.json`
 - **Token bot Telegram**: konfigurasi/env atau `channels.telegram.tokenFile` (hanya file biasa; symlink ditolak)
@@ -153,28 +154,28 @@ Gunakan ini saat men-debug autentikasi atau memutuskan apa yang perlu dicadangka
 - **Allowlist pairing**:
   - `~/.openclaw/credentials/<channel>-allowFrom.json` (akun default)
   - `~/.openclaw/credentials/<channel>-<accountId>-allowFrom.json` (akun non-default)
-- **Profil autentikasi model**: `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
-- **Payload secret berbasis file (opsional)**: `~/.openclaw/secrets.json`
+- **Profil auth model**: `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
+- **Payload rahasia berbasis file (opsional)**: `~/.openclaw/secrets.json`
 - **Impor OAuth legacy**: `~/.openclaw/credentials/oauth.json`
-  Detail selengkapnya: [Keamanan](/id/gateway/security#credential-storage-map).
+  Detail lebih lanjut: [Keamanan](/id/gateway/security#credential-storage-map).
 
 ## Memperbarui (tanpa merusak penyiapan Anda)
 
 - Perlakukan `~/.openclaw/workspace` dan `~/.openclaw/` sebagai "milik Anda"; jangan masukkan prompt/konfigurasi pribadi ke repo `openclaw`.
-- Memperbarui sumber: `git pull` + `pnpm install` + tetap gunakan `pnpm gateway:watch`.
+- Memperbarui sumber: `git pull` + `pnpm install` + terus gunakan `pnpm gateway:watch`.
 
 ## Linux (layanan pengguna systemd)
 
-Instalasi Linux menggunakan layanan **pengguna** systemd. Secara default, systemd menghentikan
-layanan pengguna saat logout/idle, yang mematikan Gateway. Onboarding mencoba mengaktifkan
+Instalasi Linux menggunakan layanan **pengguna** systemd. Secara default, systemd menghentikan layanan
+pengguna saat logout/idle, yang mematikan Gateway. Onboarding mencoba mengaktifkan
 lingering untuk Anda (mungkin meminta sudo). Jika masih nonaktif, jalankan:
 
 ```bash
 sudo loginctl enable-linger $USER
 ```
 
-Untuk server yang selalu aktif atau multi-pengguna, pertimbangkan layanan **sistem** alih-alih
-layanan pengguna (tidak perlu lingering). Lihat [runbook Gateway](/id/gateway) untuk catatan systemd.
+Untuk server always-on atau multi-pengguna, pertimbangkan layanan **sistem** alih-alih
+layanan pengguna (tidak perlu lingering). Lihat [Runbook Gateway](/id/gateway) untuk catatan systemd.
 
 ## Dokumen terkait
 

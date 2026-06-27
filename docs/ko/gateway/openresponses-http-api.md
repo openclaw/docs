@@ -1,14 +1,15 @@
 ---
 read_when:
-    - OpenResponses API와 호환되는 클라이언트 통합
+    - OpenResponses API를 사용하는 클라이언트 통합하기
     - 항목 기반 입력, 클라이언트 도구 호출 또는 SSE 이벤트가 필요한 경우
 summary: Gateway에서 OpenResponses 호환 /v1/responses HTTP 엔드포인트 노출
 title: OpenResponses API
 x-i18n:
-    generated_at: "2026-05-06T06:26:30Z"
+    generated_at: "2026-06-27T17:30:04Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 69d46dc448a8856a6f3213f2fbfdba000a342ec4dcf258435b7029102cfb8119
+    source_hash: fbc41a14f5c585a0fb0aae96fb3d2376f94cdb77f41bcd7cc5e7998a27673c44
     source_path: gateway/openresponses-http-api.md
     workflow: 16
 ---
@@ -20,39 +21,40 @@ OpenClaw의 Gateway는 OpenResponses 호환 `POST /v1/responses` 엔드포인트
 - `POST /v1/responses`
 - Gateway와 동일한 포트(WS + HTTP 멀티플렉스): `http://<gateway-host>:<port>/v1/responses`
 
-내부적으로 요청은 일반 Gateway 에이전트 실행(`openclaw agent`와 같은 코드 경로)으로 실행되므로, 라우팅/권한/구성은 사용자의 Gateway와 일치합니다.
+내부적으로 요청은 일반 Gateway 에이전트 실행(`openclaw agent`와 동일한 코드 경로)으로 실행되므로 라우팅/권한/구성은 사용자의 Gateway와 일치합니다.
 
 ## 인증, 보안 및 라우팅
 
 운영 동작은 [OpenAI Chat Completions](/ko/gateway/openai-http-api)와 일치합니다.
 
-- 일치하는 Gateway HTTP 인증 경로를 사용합니다.
-  - 공유 시크릿 인증(`gateway.auth.mode="token"` 또는 `"password"`): `Authorization: Bearer <token-or-password>`
-  - 신뢰할 수 있는 프록시 인증(`gateway.auth.mode="trusted-proxy"`): 구성된 신뢰할 수 있는 프록시 소스의 ID 인식 프록시 헤더. 동일 호스트 loopback 프록시는 명시적으로 `gateway.auth.trustedProxy.allowLoopback = true`가 필요합니다.
-  - 비공개 인그레스 공개 인증(`gateway.auth.mode="none"`): 인증 헤더 없음
-- 엔드포인트를 Gateway 인스턴스에 대한 전체 운영자 액세스로 취급합니다.
-- 공유 시크릿 인증 모드(`token` 및 `password`)에서는 더 좁은 bearer 선언 `x-openclaw-scopes` 값을 무시하고 일반 전체 운영자 기본값을 복원합니다.
-- 신뢰할 수 있는 ID 전달 HTTP 모드(예: 신뢰할 수 있는 프록시 인증 또는 `gateway.auth.mode="none"`)에서는 `x-openclaw-scopes`가 있으면 이를 존중하고, 없으면 일반 운영자 기본 범위 세트로 대체합니다.
-- `model: "openclaw"`, `model: "openclaw/default"`, `model: "openclaw/<agentId>"` 또는 `x-openclaw-agent-id`로 에이전트를 선택합니다.
-- 선택한 에이전트의 백엔드 모델을 재정의하려면 `x-openclaw-model`을 사용합니다.
-- 명시적 세션 라우팅에는 `x-openclaw-session-key`를 사용합니다.
-- 기본값이 아닌 합성 인그레스 채널 컨텍스트를 원하면 `x-openclaw-message-channel`을 사용합니다.
+- 일치하는 Gateway HTTP 인증 경로 사용:
+  - 공유 비밀 인증(`gateway.auth.mode="token"` 또는 `"password"`): `Authorization: Bearer <token-or-password>`
+  - 신뢰할 수 있는 프록시 인증(`gateway.auth.mode="trusted-proxy"`): 구성된 신뢰할 수 있는 프록시 소스의 ID 인식 프록시 헤더. 동일 호스트 loopback 프록시는 명시적 `gateway.auth.trustedProxy.allowLoopback = true`가 필요합니다.
+  - 신뢰할 수 있는 프록시 로컬 직접 fallback: `Forwarded`, `X-Forwarded-*` 또는 `X-Real-IP` 헤더가 없는 동일 호스트 호출자는 `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`를 사용할 수 있습니다.
+  - 프라이빗 인그레스 공개 인증(`gateway.auth.mode="none"`): 인증 헤더 없음
+- 엔드포인트를 Gateway 인스턴스에 대한 전체 운영자 액세스로 취급
+- 공유 비밀 인증 모드(`token` 및 `password`)에서는 더 좁은 bearer 선언 `x-openclaw-scopes` 값을 무시하고 일반 전체 운영자 기본값을 복원
+- 신뢰할 수 있는 ID 포함 HTTP 모드(예: 신뢰할 수 있는 프록시 인증 또는 `gateway.auth.mode="none"`)에서는 `x-openclaw-scopes`가 있으면 이를 준수하고, 없으면 일반 운영자 기본 scope 집합으로 fallback
+- `model: "openclaw"`, `model: "openclaw/default"`, `model: "openclaw/<agentId>"` 또는 `x-openclaw-agent-id`로 에이전트 선택
+- 선택된 에이전트의 백엔드 모델을 override하려면 `x-openclaw-model` 사용
+- 명시적 세션 라우팅에는 `x-openclaw-session-key` 사용
+- 기본이 아닌 합성 인그레스 채널 컨텍스트를 원할 때는 `x-openclaw-message-channel` 사용
 
 인증 매트릭스:
 
 - `gateway.auth.mode="token"` 또는 `"password"` + `Authorization: Bearer ...`
-  - 공유 Gateway 운영자 시크릿을 보유하고 있음을 증명합니다.
-  - 더 좁은 `x-openclaw-scopes`를 무시합니다.
-  - 전체 기본 운영자 범위 세트를 복원합니다.
+  - 공유 Gateway 운영자 비밀의 소유를 증명
+  - 더 좁은 `x-openclaw-scopes` 무시
+  - 전체 기본 운영자 scope 집합 복원:
     `operator.admin`, `operator.approvals`, `operator.pairing`,
     `operator.read`, `operator.talk.secrets`, `operator.write`
-  - 이 엔드포인트의 채팅 턴을 소유자 발신자 턴으로 취급합니다.
-- 신뢰할 수 있는 ID 전달 HTTP 모드(예: 신뢰할 수 있는 프록시 인증 또는 비공개 인그레스의 `gateway.auth.mode="none"`)
-  - 헤더가 있으면 `x-openclaw-scopes`를 존중합니다.
-  - 헤더가 없으면 일반 운영자 기본 범위 세트로 대체합니다.
-  - 호출자가 명시적으로 범위를 좁히고 `operator.admin`을 생략한 경우에만 소유자 의미가 사라집니다.
+  - 이 엔드포인트의 채팅 턴을 소유자 발신자 턴으로 취급
+- 신뢰할 수 있는 ID 포함 HTTP 모드(예: 신뢰할 수 있는 프록시 인증 또는 프라이빗 인그레스의 `gateway.auth.mode="none"`)
+  - 헤더가 있으면 `x-openclaw-scopes` 준수
+  - 헤더가 없으면 일반 운영자 기본 scope 집합으로 fallback
+  - 호출자가 명시적으로 scope를 좁히고 `operator.admin`을 생략할 때만 소유자 의미 체계를 잃음
 
-이 엔드포인트는 `gateway.http.endpoints.responses.enabled`로 활성화하거나 비활성화합니다.
+`gateway.http.endpoints.responses.enabled`로 이 엔드포인트를 활성화하거나 비활성화합니다.
 
 동일한 호환성 표면에는 다음도 포함됩니다.
 
@@ -61,24 +63,26 @@ OpenClaw의 Gateway는 OpenResponses 호환 `POST /v1/responses` 엔드포인트
 - `POST /v1/embeddings`
 - `POST /v1/chat/completions`
 
-에이전트 대상 모델, `openclaw/default`, 임베딩 패스스루, 백엔드 모델 재정의가 어떻게 함께 동작하는지에 대한 표준 설명은 [OpenAI Chat Completions](/ko/gateway/openai-http-api#agent-first-model-contract) 및 [모델 목록과 에이전트 라우팅](/ko/gateway/openai-http-api#model-list-and-agent-routing)을 참조하세요.
+에이전트 대상 모델, `openclaw/default`, 임베딩 pass-through, 백엔드 모델 override가 어떻게 함께 작동하는지에 대한 표준 설명은 [OpenAI Chat Completions](/ko/gateway/openai-http-api#agent-first-model-contract) 및 [모델 목록 및 에이전트 라우팅](/ko/gateway/openai-http-api#model-list-and-agent-routing)을 참조하세요.
 
 ## 세션 동작
 
-기본적으로 엔드포인트는 **요청마다 상태가 없습니다**(호출할 때마다 새 세션 키가 생성됨).
+기본적으로 엔드포인트는 **요청별 무상태**입니다(각 호출마다 새 세션 키가 생성됨).
 
-요청에 OpenResponses `user` 문자열이 포함되어 있으면 Gateway는 여기에서 안정적인 세션 키를 파생하므로, 반복 호출이 에이전트 세션을 공유할 수 있습니다.
+요청에 OpenResponses `user` 문자열이 포함되어 있으면 Gateway는 이 문자열에서 안정적인 세션 키를 파생하므로 반복 호출이 에이전트 세션을 공유할 수 있습니다.
 
 ## 요청 형태(지원됨)
 
-요청은 항목 기반 입력이 있는 OpenResponses API를 따릅니다. 현재 지원 항목:
+요청은 항목 기반 입력이 있는 OpenResponses API를 따릅니다. 현재 지원 사항:
 
 - `input`: 문자열 또는 항목 객체 배열.
 - `instructions`: 시스템 프롬프트에 병합됩니다.
-- `tools`: 클라이언트 도구 정의(함수 도구).
-- `tool_choice`: 클라이언트 도구를 필터링하거나 필수로 지정합니다.
+- `tools`: 클라이언트 도구 정의(function 도구).
+- `tool_choice`: 클라이언트 도구를 필터링하거나 요구하기 위한 `"auto"`, `"none"`, `"required"` 또는 `{ "type": "function", "name": "..." }`.
 - `stream`: SSE 스트리밍을 활성화합니다.
-- `max_output_tokens`: 최선 노력 방식의 출력 제한(제공자에 따라 다름).
+- `max_output_tokens`: 최선 노력 출력 제한(프로바이더 종속).
+- `temperature`: 프로바이더에 전달되는 최선 노력 샘플링 온도입니다. 고정된 서버 측 샘플링을 사용하는 ChatGPT 기반 Codex Responses 백엔드에서는 무시됩니다.
+- `top_p`: 프로바이더에 전달되는 최선 노력 nucleus 샘플링입니다. `temperature`와 동일한 Codex Responses 주의 사항이 적용됩니다.
 - `user`: 안정적인 세션 라우팅.
 
 허용되지만 **현재 무시됨**:
@@ -91,9 +95,9 @@ OpenClaw의 Gateway는 OpenResponses 호환 `POST /v1/responses` 엔드포인트
 
 지원됨:
 
-- `previous_response_id`: 요청이 동일한 에이전트/사용자/요청된 세션 범위 안에 유지되면 OpenClaw가 이전 응답 세션을 재사용합니다.
+- `previous_response_id`: 요청이 동일한 에이전트/사용자/요청된 세션 scope 내에 머무르면 OpenClaw는 이전 응답 세션을 재사용합니다.
 
-## 항목(입력)
+## 항목(input)
 
 ### `message`
 
@@ -101,7 +105,7 @@ OpenClaw의 Gateway는 OpenResponses 호환 `POST /v1/responses` 엔드포인트
 
 - `system` 및 `developer`는 시스템 프롬프트에 추가됩니다.
 - 가장 최근의 `user` 또는 `function_call_output` 항목이 "현재 메시지"가 됩니다.
-- 이전 user/assistant 메시지는 컨텍스트용 히스토리로 포함됩니다.
+- 이전 사용자/assistant 메시지는 컨텍스트를 위한 기록으로 포함됩니다.
 
 ### `function_call_output`(턴 기반 도구)
 
@@ -117,14 +121,16 @@ OpenClaw의 Gateway는 OpenResponses 호환 `POST /v1/responses` 엔드포인트
 
 ### `reasoning` 및 `item_reference`
 
-스키마 호환성을 위해 허용되지만 프롬프트를 만들 때는 무시됩니다.
+스키마 호환성을 위해 허용되지만 프롬프트를 구성할 때는 무시됩니다.
 
-## 도구(클라이언트 측 함수 도구)
+## 도구(클라이언트 측 function 도구)
 
-`tools: [{ type: "function", function: { name, description?, parameters? } }]`로 도구를 제공합니다.
+`tools: [{ type: "function", name, description?, parameters? }]`로 도구를 제공합니다.
 
 에이전트가 도구 호출을 결정하면 응답은 `function_call` 출력 항목을 반환합니다.
-그런 다음 `function_call_output`이 포함된 후속 요청을 보내 턴을 계속합니다.
+그런 다음 턴을 계속하려면 `function_call_output`이 포함된 후속 요청을 보냅니다.
+
+`tool_choice: "required"` 및 function 고정 `tool_choice`의 경우, 엔드포인트는 노출된 클라이언트 function-tool 집합을 좁히고, 런타임에 응답 전에 클라이언트 도구를 호출하도록 지시하며, 일치하는 구조화된 클라이언트 도구 호출이 포함되지 않으면 턴을 거부합니다. 이 계약은 모든 내부 OpenClaw 에이전트 도구가 아니라 호출자가 제공한 HTTP `tools` 목록에 적용됩니다. 비스트리밍 요청은 `api_error`와 함께 `502`를 반환하고, 스트리밍 요청은 `response.failed` 이벤트를 내보냅니다. 이는 `/v1/chat/completions` 계약과 일치합니다.
 
 ## 이미지(`input_image`)
 
@@ -137,7 +143,7 @@ base64 또는 URL 소스를 지원합니다.
 }
 ```
 
-허용 MIME 유형(현재): `image/jpeg`, `image/png`, `image/gif`, `image/webp`, `image/heic`, `image/heif`.
+허용되는 MIME 유형(현재): `image/jpeg`, `image/png`, `image/gif`, `image/webp`, `image/heic`, `image/heif`.
 최대 크기(현재): 10MB.
 
 ## 파일(`input_file`)
@@ -156,34 +162,34 @@ base64 또는 URL 소스를 지원합니다.
 }
 ```
 
-허용 MIME 유형(현재): `text/plain`, `text/markdown`, `text/html`, `text/csv`,
+허용되는 MIME 유형(현재): `text/plain`, `text/markdown`, `text/html`, `text/csv`,
 `application/json`, `application/pdf`.
 
 최대 크기(현재): 5MB.
 
 현재 동작:
 
-- 파일 콘텐츠는 디코딩되어 사용자 메시지가 아닌 **시스템 프롬프트**에 추가되므로, 임시 상태로 유지됩니다(세션 히스토리에 지속되지 않음).
-- 디코딩된 파일 텍스트는 추가되기 전에 **신뢰할 수 없는 외부 콘텐츠**로 래핑되므로, 파일 바이트는 신뢰할 수 있는 지시가 아니라 데이터로 취급됩니다.
+- 파일 콘텐츠는 사용자 메시지가 아니라 **시스템 프롬프트**에 디코딩되어 추가되므로 일시적으로 유지됩니다(세션 기록에 지속되지 않음).
+- 디코딩된 파일 텍스트는 추가되기 전에 **신뢰할 수 없는 외부 콘텐츠**로 래핑되므로 파일 바이트는 신뢰할 수 있는 지시가 아니라 데이터로 취급됩니다.
 - 삽입된 블록은
   `<<<EXTERNAL_UNTRUSTED_CONTENT id="...">>>` /
-  `<<<END_EXTERNAL_UNTRUSTED_CONTENT id="...">>>` 같은 명시적 경계 마커를 사용하고
+  `<<<END_EXTERNAL_UNTRUSTED_CONTENT id="...">>>` 같은 명시적 경계 마커를 사용하며
   `Source: External` 메타데이터 줄을 포함합니다.
-- 이 파일 입력 경로는 프롬프트 예산을 보존하기 위해 긴 `SECURITY NOTICE:` 배너를 의도적으로 생략하지만, 경계 마커와 메타데이터는 그대로 유지됩니다.
+- 이 파일 입력 경로는 프롬프트 예산을 보존하기 위해 긴 `SECURITY NOTICE:` 배너를 의도적으로 생략합니다. 경계 마커와 메타데이터는 그대로 유지됩니다.
 - PDF는 먼저 텍스트로 파싱됩니다. 텍스트가 거의 없으면 첫 페이지들이 이미지로 래스터화되어 모델에 전달되고, 삽입된 파일 블록은 `[PDF content rendered to images]` 플레이스홀더를 사용합니다.
 
-PDF 파싱은 번들된 `document-extract` Plugin에서 제공되며, 이 Plugin은 Node 친화적인 `pdfjs-dist` 레거시 빌드(워커 없음)를 사용합니다. 최신 PDF.js 빌드는 브라우저 워커/DOM 전역을 기대하므로 Gateway에서는 사용되지 않습니다.
+PDF 파싱은 번들된 `document-extract` Plugin에서 제공하며, 이 Plugin은 텍스트 추출 및 페이지 렌더링에 `clawpdf`와 패키지된 PDFium WebAssembly 런타임을 사용합니다.
 
 URL 가져오기 기본값:
 
 - `files.allowUrl`: `true`
 - `images.allowUrl`: `true`
-- `maxUrlParts`: `8`(요청당 URL 기반 `input_file` + `input_image` 파트 총합)
-- 요청은 보호됩니다(DNS 해석, 사설 IP 차단, 리디렉션 제한, 타임아웃).
-- 선택적 호스트명 허용 목록은 입력 유형별로 지원됩니다(`files.urlAllowlist`, `images.urlAllowlist`).
+- `maxUrlParts`: `8`(요청당 URL 기반 `input_file` + `input_image` 부분 총합)
+- 요청은 보호됩니다(DNS 확인, 프라이빗 IP 차단, 리디렉션 제한, timeout).
+- 선택적 호스트 이름 allowlist는 입력 유형별로 지원됩니다(`files.urlAllowlist`, `images.urlAllowlist`).
   - 정확한 호스트: `"cdn.example.com"`
-  - 와일드카드 하위 도메인: `"*.assets.example.com"`(apex와는 일치하지 않음)
-  - 비어 있거나 생략된 허용 목록은 호스트명 허용 목록 제한이 없음을 의미합니다.
+  - 와일드카드 하위 도메인: `"*.assets.example.com"`(apex와 일치하지 않음)
+  - 비어 있거나 생략된 allowlist는 호스트 이름 allowlist 제한이 없음을 의미합니다.
 - URL 기반 가져오기를 완전히 비활성화하려면 `files.allowUrl: false` 및/또는 `images.allowUrl: false`를 설정하세요.
 
 ## 파일 + 이미지 제한(구성)
@@ -256,13 +262,13 @@ URL 가져오기 기본값:
 - `images.maxBytes`: 10MB
 - `images.maxRedirects`: 3
 - `images.timeoutMs`: 10s
-- HEIC/HEIF `input_image` 소스는 허용되며 제공자 전달 전에 JPEG로 정규화됩니다.
+- HEIC/HEIF `input_image` 소스는 시스템 변환기가 사용 가능할 때 허용되며 프로바이더 전달 전에 JPEG로 정규화됩니다. 지원되는 변환기는 macOS `sips`, ImageMagick, GraphicsMagick 또는 ffmpeg입니다.
 
 보안 참고:
 
-- URL 허용 목록은 가져오기 전과 리디렉션 홉에서 적용됩니다.
-- 호스트명을 허용 목록에 추가해도 사설/내부 IP 차단을 우회하지 않습니다.
-- 인터넷에 노출된 Gateway의 경우 앱 수준 보호 장치에 더해 네트워크 이그레스 제어를 적용하세요.
+- URL allowlist는 가져오기 전과 리디렉션 홉에서 강제 적용됩니다.
+- 호스트 이름을 allowlist에 추가해도 프라이빗/내부 IP 차단을 우회하지 않습니다.
+- 인터넷에 노출된 gateway의 경우 앱 수준 보호 외에도 네트워크 egress 제어를 적용하세요.
   [보안](/ko/gateway/security)을 참조하세요.
 
 ## 스트리밍(SSE)
@@ -271,7 +277,7 @@ Server-Sent Events(SSE)를 받으려면 `stream: true`를 설정하세요.
 
 - `Content-Type: text/event-stream`
 - 각 이벤트 줄은 `event: <type>` 및 `data: <json>`입니다.
-- 스트림은 `data: [DONE]`으로 끝납니다.
+- 스트림은 `data: [DONE]`으로 종료됩니다.
 
 현재 내보내는 이벤트 유형:
 
@@ -288,8 +294,9 @@ Server-Sent Events(SSE)를 받으려면 `stream: true`를 설정하세요.
 
 ## 사용량
 
-기본 제공자가 토큰 수를 보고하면 `usage`가 채워집니다.
-OpenClaw는 해당 카운터가 다운스트림 상태/세션 표면에 도달하기 전에 일반적인 OpenAI 스타일 별칭을 정규화합니다. 여기에는 `input_tokens` / `output_tokens` 및 `prompt_tokens` / `completion_tokens`가 포함됩니다.
+`usage`는 기본 프로바이더가 토큰 수를 보고할 때 채워집니다.
+OpenClaw는 해당 카운터가 downstream 상태/세션 표면에 도달하기 전에
+`input_tokens` / `output_tokens` 및 `prompt_tokens` / `completion_tokens`를 포함한 일반적인 OpenAI 스타일 alias를 정규화합니다.
 
 ## 오류
 
@@ -336,5 +343,5 @@ curl -N http://127.0.0.1:18789/v1/responses \
 
 ## 관련 항목
 
-- [OpenAI chat completions](/ko/gateway/openai-http-api)
+- [OpenAI 채팅 완성](/ko/gateway/openai-http-api)
 - [OpenAI](/ko/providers/openai)

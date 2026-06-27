@@ -1,15 +1,16 @@
 ---
 read_when:
-    - Bạn đang quyết định liệu một Plugin được phân phối trong gói npm lõi hay được cài đặt riêng
+    - Bạn đang quyết định liệu một plugin được phát hành trong gói npm lõi hay được cài đặt riêng
     - Bạn đang cập nhật siêu dữ liệu gói Plugin đi kèm hoặc tự động hóa phát hành
     - Bạn cần danh sách Plugin nội bộ và bên ngoài chuẩn
-summary: Bản kiểm kê được tạo ra về các Plugin OpenClaw được phân phối trong lõi, được xuất bản bên ngoài, hoặc chỉ được giữ dưới dạng mã nguồn
-title: Bản kiểm kê Plugin
+summary: Bản kiểm kê được tạo về các Plugin OpenClaw được phát hành trong lõi, phát hành bên ngoài, hoặc chỉ giữ dưới dạng mã nguồn
+title: Kho Plugin
 x-i18n:
-    generated_at: "2026-05-10T19:44:00Z"
+    generated_at: "2026-06-27T17:49:31Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1a42c8f230925618eb7c15fd6ea7279694adccd45d8e827bb89dffa13576521d
+    source_hash: a1f0c5aa2c3e5f25308a4398dc2582caa8f355a4dfd0d5693d9cfaf1c1ce6926
     source_path: plugins/plugin-inventory.md
     workflow: 16
 ---
@@ -26,18 +27,18 @@ pnpm plugins:inventory:gen
 ## Định nghĩa
 
 - **Gói npm lõi:** được tích hợp vào gói npm `openclaw` và có sẵn mà không cần cài đặt Plugin riêng.
-- **Gói bên ngoài chính thức:** Plugin do OpenClaw duy trì, được lược khỏi gói npm lõi, được giữ trong danh mục chính thức này, và được cài đặt khi cần thông qua ClawHub và/hoặc npm.
-- **Chỉ bản checkout mã nguồn:** Plugin cục bộ trong repo, được lược khỏi các tạo tác npm đã phát hành và không được quảng bá là gói có thể cài đặt.
+- **Gói bên ngoài chính thức:** Plugin do OpenClaw duy trì, bị loại khỏi gói npm lõi, được giữ trong danh mục chính thức này và được cài đặt khi cần thông qua ClawHub và/hoặc npm.
+- **Chỉ checkout nguồn:** Plugin cục bộ trong repo, bị loại khỏi các artifact npm đã xuất bản và không được quảng bá như một gói có thể cài đặt.
 
-Các bản checkout mã nguồn khác với cài đặt npm: sau `pnpm install`, các
-Plugin đi kèm tải từ `extensions/<id>` để các chỉnh sửa cục bộ và phụ thuộc
-workspace cục bộ của gói có sẵn.
+Các checkout nguồn khác với cài đặt npm: sau `pnpm install`, các Plugin được đóng gói
+tải từ `extensions/<id>` để các chỉnh sửa cục bộ và dependency workspace cục bộ theo gói
+khả dụng.
 
 ## Cài đặt Plugin
 
-Dùng cột **Phân phối** để quyết định có cần cài đặt hay không. Các Plugin ghi
-`included in OpenClaw` đã có sẵn trong gói lõi. Các gói bên ngoài chính thức
-cần cài đặt một lần, rồi khởi động lại Gateway.
+Dùng tuyến cài đặt trong từng mục để quyết định có cần cài đặt hay không. Các Plugin
+ghi `được bao gồm trong OpenClaw` đã có sẵn trong gói lõi.
+Các gói bên ngoài chính thức cần cài đặt một lần, rồi khởi động lại Gateway.
 
 Ví dụ, Discord là một gói bên ngoài chính thức:
 
@@ -47,140 +48,282 @@ openclaw gateway restart
 openclaw plugins inspect discord --runtime --json
 ```
 
-Thông số gói dạng trần sẽ thử ClawHub trước, rồi dùng npm dự phòng. Để buộc một nguồn, hãy dùng
-`clawhub:@openclaw/discord` hoặc `npm:@openclaw/discord`. Sau khi cài đặt, làm theo
-tài liệu thiết lập của Plugin, chẳng hạn [Discord](/vi/channels/discord), để thêm thông tin xác thực
-và cấu hình kênh. Xem [Quản lý Plugin](/vi/plugins/manage-plugins) để biết các lệnh cập nhật,
-gỡ cài đặt và phát hành.
+Trong giai đoạn chuyển đổi khi ra mắt, các spec gói trần thông thường vẫn cài đặt từ npm.
+Dùng `clawhub:@openclaw/discord` hoặc `npm:@openclaw/discord` khi bạn cần một
+nguồn rõ ràng. Sau khi cài đặt, làm theo tài liệu thiết lập của Plugin, chẳng hạn như
+[Discord](/vi/channels/discord), để thêm thông tin xác thực và cấu hình kênh. Xem
+[Quản lý Plugin](/vi/plugins/manage-plugins) để biết các lệnh cập nhật, gỡ cài đặt và xuất bản.
+
+Mỗi mục liệt kê gói, tuyến phân phối và mô tả.
 
 ## Gói npm lõi
 
-| Plugin                                                            | Mô tả                                                                                                                                                          | Phân phối                                                         | Bề mặt                                                                                                                                                                                                                                                          |
-| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [alibaba](/vi/plugins/reference/alibaba)                             | Thêm hỗ trợ nhà cung cấp tạo video.                                                                                                                              | `@openclaw/alibaba-provider`<br />được bao gồm trong OpenClaw               | contracts: videoGenerationProviders                                                                                                                                                                                                                              |
-| [amazon-bedrock](/vi/plugins/reference/amazon-bedrock)               | Thêm hỗ trợ nhà cung cấp mô hình Amazon Bedrock cho OpenClaw.                                                                                                              | `@openclaw/amazon-bedrock-provider`<br />được bao gồm trong OpenClaw        | providers: amazon-bedrock; contracts: memoryEmbeddingProviders                                                                                                                                                                                                   |
-| [amazon-bedrock-mantle](/vi/plugins/reference/amazon-bedrock-mantle) | Thêm hỗ trợ nhà cung cấp mô hình Amazon Bedrock Mantle cho OpenClaw.                                                                                                       | `@openclaw/amazon-bedrock-mantle-provider`<br />được bao gồm trong OpenClaw | providers: amazon-bedrock-mantle                                                                                                                                                                                                                                 |
-| [anthropic](/vi/plugins/reference/anthropic)                         | Thêm hỗ trợ nhà cung cấp mô hình Anthropic cho OpenClaw.                                                                                                                   | `@openclaw/anthropic-provider`<br />được bao gồm trong OpenClaw             | providers: anthropic; contracts: mediaUnderstandingProviders                                                                                                                                                                                                     |
-| [anthropic-vertex](/vi/plugins/reference/anthropic-vertex)           | Thêm hỗ trợ nhà cung cấp mô hình Anthropic Vertex cho OpenClaw.                                                                                                            | `@openclaw/anthropic-vertex-provider`<br />được bao gồm trong OpenClaw      | providers: anthropic-vertex                                                                                                                                                                                                                                      |
-| [arcee](/vi/plugins/reference/arcee)                                 | Thêm hỗ trợ nhà cung cấp mô hình Arcee cho OpenClaw.                                                                                                                       | `@openclaw/arcee-provider`<br />được bao gồm trong OpenClaw                 | providers: arcee                                                                                                                                                                                                                                                 |
-| [azure-speech](/vi/plugins/reference/azure-speech)                   | Chuyển văn bản thành giọng nói bằng Azure AI Speech (MP3, ghi chú thoại Ogg/Opus gốc, điện thoại PCM).                                                                                    | `@openclaw/azure-speech`<br />được bao gồm trong OpenClaw                   | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [bonjour](/vi/plugins/reference/bonjour)                             | Quảng bá Gateway OpenClaw cục bộ qua Bonjour/mDNS.                                                                                                              | `@openclaw/bonjour`<br />được bao gồm trong OpenClaw                        | Plugin                                                                                                                                                                                                                                                           |
-| [browser](/vi/plugins/reference/browser)                             | Thêm các công cụ mà tác nhân có thể gọi.                                                                                                                                           | `@openclaw/browser-plugin`<br />được bao gồm trong OpenClaw                 | contracts: tools; Skills                                                                                                                                                                                                                                         |
-| [byteplus](/vi/plugins/reference/byteplus)                           | Thêm hỗ trợ nhà cung cấp mô hình BytePlus, BytePlus Plan cho OpenClaw.                                                                                                     | `@openclaw/byteplus-provider`<br />được bao gồm trong OpenClaw              | providers: byteplus, byteplus-plan; contracts: videoGenerationProviders                                                                                                                                                                                          |
-| [canvas](/vi/plugins/reference/canvas)                               | Các bề mặt điều khiển Canvas thử nghiệm và kết xuất A2UI cho các nút đã ghép đôi.                                                                                            | `@openclaw/canvas-plugin`<br />được bao gồm trong OpenClaw                  | contracts: tools                                                                                                                                                                                                                                                 |
-| [cerebras](/vi/plugins/reference/cerebras)                           | Thêm hỗ trợ nhà cung cấp mô hình Cerebras cho OpenClaw.                                                                                                                    | `@openclaw/cerebras-provider`<br />được bao gồm trong OpenClaw              | providers: cerebras                                                                                                                                                                                                                                              |
-| [chutes](/vi/plugins/reference/chutes)                               | Thêm hỗ trợ nhà cung cấp mô hình Chutes cho OpenClaw.                                                                                                                      | `@openclaw/chutes-provider`<br />được bao gồm trong OpenClaw                | providers: chutes                                                                                                                                                                                                                                                |
-| [clickclack](/vi/plugins/reference/clickclack)                       | Thêm bề mặt kênh Clickclack để gửi và nhận tin nhắn OpenClaw.                                                                                     | `@openclaw/clickclack`<br />được bao gồm trong OpenClaw                     | channels: clickclack                                                                                                                                                                                                                                             |
-| [cloudflare-ai-gateway](/vi/plugins/reference/cloudflare-ai-gateway) | Thêm hỗ trợ nhà cung cấp mô hình Cloudflare AI Gateway cho OpenClaw.                                                                                                       | `@openclaw/cloudflare-ai-gateway-provider`<br />được bao gồm trong OpenClaw | providers: cloudflare-ai-gateway                                                                                                                                                                                                                                 |
-| [comfy](/vi/plugins/reference/comfy)                                 | Thêm hỗ trợ nhà cung cấp mô hình ComfyUI cho OpenClaw.                                                                                                                     | `@openclaw/comfy-provider`<br />được bao gồm trong OpenClaw                 | providers: comfy; contracts: imageGenerationProviders, musicGenerationProviders, videoGenerationProviders                                                                                                                                                        |
-| [copilot-proxy](/vi/plugins/reference/copilot-proxy)                 | Thêm hỗ trợ nhà cung cấp mô hình Copilot Proxy cho OpenClaw.                                                                                                               | `@openclaw/copilot-proxy`<br />được bao gồm trong OpenClaw                  | providers: copilot-proxy                                                                                                                                                                                                                                         |
-| [deepgram](/vi/plugins/reference/deepgram)                           | Thêm hỗ trợ nhà cung cấp hiểu nội dung đa phương tiện. Thêm hỗ trợ nhà cung cấp phiên âm thời gian thực.                                                                             | `@openclaw/deepgram-provider`<br />được bao gồm trong OpenClaw              | contracts: mediaUnderstandingProviders, realtimeTranscriptionProviders                                                                                                                                                                                           |
-| [deepinfra](/vi/plugins/reference/deepinfra)                         | Thêm hỗ trợ nhà cung cấp mô hình DeepInfra cho OpenClaw.                                                                                                                   | `@openclaw/deepinfra-provider`<br />được bao gồm trong OpenClaw             | providers: deepinfra; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, speechProviders, videoGenerationProviders                                                                                                      |
-| [deepseek](/vi/plugins/reference/deepseek)                           | Thêm hỗ trợ nhà cung cấp mô hình DeepSeek cho OpenClaw.                                                                                                                    | `@openclaw/deepseek-provider`<br />được bao gồm trong OpenClaw              | providers: deepseek                                                                                                                                                                                                                                              |
-| [document-extract](/vi/plugins/reference/document-extract)           | Trích xuất văn bản và hình ảnh trang dự phòng từ tệp đính kèm tài liệu cục bộ.                                                                                               | `@openclaw/document-extract-plugin`<br />được bao gồm trong OpenClaw        | contracts: documentExtractors                                                                                                                                                                                                                                    |
-| [duckduckgo](/vi/plugins/reference/duckduckgo)                       | Thêm hỗ trợ nhà cung cấp tìm kiếm web.                                                                                                                                    | `@openclaw/duckduckgo-plugin`<br />được bao gồm trong OpenClaw              | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [elevenlabs](/vi/plugins/reference/elevenlabs)                       | Thêm hỗ trợ nhà cung cấp hiểu nội dung đa phương tiện. Thêm hỗ trợ nhà cung cấp phiên âm thời gian thực. Thêm hỗ trợ nhà cung cấp chuyển văn bản thành giọng nói.                                       | `@openclaw/elevenlabs-speech`<br />được bao gồm trong OpenClaw              | contracts: mediaUnderstandingProviders, realtimeTranscriptionProviders, speechProviders                                                                                                                                                                          |
-| [exa](/vi/plugins/reference/exa)                                     | Thêm hỗ trợ nhà cung cấp tìm kiếm web.                                                                                                                                    | `@openclaw/exa-plugin`<br />được bao gồm trong OpenClaw                     | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [fal](/vi/plugins/reference/fal)                                     | Thêm hỗ trợ nhà cung cấp mô hình fal cho OpenClaw.                                                                                                                         | `@openclaw/fal-provider`<br />được bao gồm trong OpenClaw                   | providers: fal; contracts: imageGenerationProviders, videoGenerationProviders                                                                                                                                                                                    |
-| [file-transfer](/vi/plugins/reference/file-transfer)                 | Tải, liệt kê và ghi tệp trên các Node đã ghép đôi thông qua các lệnh Node chuyên dụng. Bỏ qua việc cắt ngắn stdout của bash bằng cách sử dụng base64 qua node.invoke cho các tệp nhị phân lên đến 16 MB. | `@openclaw/file-transfer`<br />được bao gồm trong OpenClaw                  | contracts: tools                                                                                                                                                                                                                                                 |
-| [firecrawl](/vi/plugins/reference/firecrawl)                         | Thêm các công cụ mà tác nhân có thể gọi. Thêm hỗ trợ nhà cung cấp lấy nội dung web. Thêm hỗ trợ nhà cung cấp tìm kiếm web.                                                                        | `@openclaw/firecrawl-plugin`<br />được bao gồm trong OpenClaw               | contracts: tools, webFetchProviders, webSearchProviders                                                                                                                                                                                                          |
-| [fireworks](/vi/plugins/reference/fireworks)                         | Thêm hỗ trợ nhà cung cấp mô hình Fireworks cho OpenClaw.                                                                                                                   | `@openclaw/fireworks-provider`<br />được bao gồm trong OpenClaw             | providers: fireworks                                                                                                                                                                                                                                             |
-| [github-copilot](/vi/plugins/reference/github-copilot)               | Thêm hỗ trợ nhà cung cấp mô hình GitHub Copilot cho OpenClaw.                                                                                                              | `@openclaw/github-copilot-provider`<br />được bao gồm trong OpenClaw        | providers: github-copilot; contracts: memoryEmbeddingProviders                                                                                                                                                                                                   |
-| [google](/vi/plugins/reference/google)                               | Thêm hỗ trợ nhà cung cấp mô hình Google, Google Gemini CLI, Google Vertex cho OpenClaw.                                                                                    | `@openclaw/google-plugin`<br />được bao gồm trong OpenClaw                  | providers: google, google-gemini-cli, google-vertex; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, musicGenerationProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders, webSearchProviders |
-| [gradium](/vi/plugins/reference/gradium)                             | Thêm hỗ trợ nhà cung cấp chuyển văn bản thành giọng nói.                                                                                                                                | `@openclaw/gradium-speech`<br />được bao gồm trong OpenClaw                 | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [groq](/vi/plugins/reference/groq)                                   | Thêm hỗ trợ nhà cung cấp mô hình Groq cho OpenClaw.                                                                                                                        | `@openclaw/groq-provider`<br />được bao gồm trong OpenClaw                  | providers: groq; contracts: mediaUnderstandingProviders                                                                                                                                                                                                          |
-| [huggingface](/vi/plugins/reference/huggingface)                     | Thêm hỗ trợ nhà cung cấp mô hình Hugging Face cho OpenClaw.                                                                                                                | `@openclaw/huggingface-provider`<br />được bao gồm trong OpenClaw           | providers: huggingface                                                                                                                                                                                                                                           |
-| [imessage](/vi/plugins/reference/imessage)                           | Thêm bề mặt kênh iMessage để gửi và nhận tin nhắn OpenClaw.                                                                                       | `@openclaw/imessage`<br />được bao gồm trong OpenClaw                       | channels: imessage                                                                                                                                                                                                                                               |
-| [inworld](/vi/plugins/reference/inworld)                             | Chuyển văn bản thành giọng nói dạng streaming của Inworld (MP3, OGG_OPUS, PCM điện thoại).                                                                                                     | `@openclaw/inworld-speech`<br />được bao gồm trong OpenClaw                 | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [irc](/vi/plugins/reference/irc)                                     | Thêm bề mặt kênh IRC để gửi và nhận tin nhắn OpenClaw.                                                                                            | `@openclaw/irc`<br />được bao gồm trong OpenClaw                            | channels: irc                                                                                                                                                                                                                                                    |
-| [kilocode](/vi/plugins/reference/kilocode)                           | Thêm hỗ trợ nhà cung cấp mô hình Kilocode cho OpenClaw.                                                                                                                    | `@openclaw/kilocode-provider`<br />được bao gồm trong OpenClaw              | providers: kilocode                                                                                                                                                                                                                                              |
-| [kimi](/vi/plugins/reference/kimi)                                   | Thêm hỗ trợ nhà cung cấp mô hình Kimi, Kimi Coding cho OpenClaw.                                                                                                           | `@openclaw/kimi-provider`<br />được bao gồm trong OpenClaw                  | providers: kimi, kimi-coding                                                                                                                                                                                                                                     |
-| [litellm](/vi/plugins/reference/litellm)                             | Thêm hỗ trợ nhà cung cấp mô hình LiteLLM cho OpenClaw.                                                                                                                     | `@openclaw/litellm-provider`<br />được bao gồm trong OpenClaw               | providers: litellm; contracts: imageGenerationProviders                                                                                                                                                                                                          |
-| [llm-task](/vi/plugins/reference/llm-task)                           | Công cụ LLM chung chỉ dùng JSON cho các tác vụ có cấu trúc, có thể được gọi từ quy trình làm việc.                                                                                             | `@openclaw/llm-task`<br />được bao gồm trong OpenClaw                       | contracts: tools                                                                                                                                                                                                                                                 |
-| [lmstudio](/vi/plugins/reference/lmstudio)                           | Thêm hỗ trợ nhà cung cấp mô hình LM Studio cho OpenClaw.                                                                                                             | `@openclaw/lmstudio-provider`<br />được bao gồm trong OpenClaw       | providers: lmstudio; contracts: memoryEmbeddingProviders                                                                                                                                                                                                         |
-| [mattermost](/vi/plugins/reference/mattermost)                       | Thêm bề mặt kênh Mattermost để gửi và nhận tin nhắn OpenClaw.                                                                                                       | `@openclaw/mattermost`<br />được bao gồm trong OpenClaw              | channels: mattermost                                                                                                                                                                                                                                             |
-| [memory-core](/vi/plugins/reference/memory-core)                     | Thêm hỗ trợ nhà cung cấp nhúng bộ nhớ. Thêm các công cụ mà tác tử có thể gọi.                                                                                       | `@openclaw/memory-core`<br />được bao gồm trong OpenClaw             | contracts: memoryEmbeddingProviders, tools                                                                                                                                                                                                                       |
-| [memory-wiki](/vi/plugins/reference/memory-wiki)                     | Trình biên dịch wiki bền vững và kho tri thức thân thiện với Obsidian cho OpenClaw.                                                                                 | `@openclaw/memory-wiki`<br />được bao gồm trong OpenClaw             | contracts: tools; skills                                                                                                                                                                                                                                         |
-| [microsoft](/vi/plugins/reference/microsoft)                         | Thêm hỗ trợ nhà cung cấp chuyển văn bản thành giọng nói.                                                                                                            | `@openclaw/microsoft-speech`<br />được bao gồm trong OpenClaw        | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [microsoft-foundry](/vi/plugins/reference/microsoft-foundry)         | Thêm hỗ trợ nhà cung cấp mô hình Microsoft Foundry cho OpenClaw.                                                                                                    | `@openclaw/microsoft-foundry`<br />được bao gồm trong OpenClaw       | providers: microsoft-foundry                                                                                                                                                                                                                                     |
-| [migrate-claude](/vi/plugins/reference/migrate-claude)               | Nhập hướng dẫn Claude Code và Claude Desktop, máy chủ MCP, Skills, và cấu hình an toàn vào OpenClaw.                                                                | `@openclaw/migrate-claude`<br />được bao gồm trong OpenClaw          | contracts: migrationProviders                                                                                                                                                                                                                                    |
-| [migrate-hermes](/vi/plugins/reference/migrate-hermes)               | Nhập cấu hình Hermes, bộ nhớ, Skills, và thông tin xác thực được hỗ trợ vào OpenClaw.                                                                               | `@openclaw/migrate-hermes`<br />được bao gồm trong OpenClaw          | contracts: migrationProviders                                                                                                                                                                                                                                    |
-| [minimax](/vi/plugins/reference/minimax)                             | Thêm hỗ trợ nhà cung cấp mô hình MiniMax, MiniMax Portal cho OpenClaw.                                                                                              | `@openclaw/minimax-provider`<br />được bao gồm trong OpenClaw        | providers: minimax, minimax-portal; contracts: imageGenerationProviders, mediaUnderstandingProviders, musicGenerationProviders, speechProviders, videoGenerationProviders, webSearchProviders                                                                    |
-| [mistral](/vi/plugins/reference/mistral)                             | Thêm hỗ trợ nhà cung cấp mô hình Mistral cho OpenClaw.                                                                                                              | `@openclaw/mistral-provider`<br />được bao gồm trong OpenClaw        | providers: mistral; contracts: mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders                                                                                                                                             |
-| [moonshot](/vi/plugins/reference/moonshot)                           | Thêm hỗ trợ nhà cung cấp mô hình Moonshot cho OpenClaw.                                                                                                             | `@openclaw/moonshot-provider`<br />được bao gồm trong OpenClaw       | providers: moonshot; contracts: mediaUnderstandingProviders, webSearchProviders                                                                                                                                                                                  |
-| [nvidia](/vi/plugins/reference/nvidia)                               | Thêm hỗ trợ nhà cung cấp mô hình NVIDIA cho OpenClaw.                                                                                                               | `@openclaw/nvidia-provider`<br />được bao gồm trong OpenClaw         | providers: nvidia                                                                                                                                                                                                                                                |
-| [oc-path](/vi/plugins/reference/oc-path)                             | Thêm CLI đường dẫn openclaw để định địa chỉ tệp không gian làm việc oc://.                                                                                          | `@openclaw/oc-path`<br />được bao gồm trong OpenClaw                 | plugin                                                                                                                                                                                                                                                           |
-| [ollama](/vi/plugins/reference/ollama)                               | Thêm hỗ trợ nhà cung cấp mô hình Ollama cho OpenClaw.                                                                                                               | `@openclaw/ollama-provider`<br />được bao gồm trong OpenClaw         | providers: ollama; contracts: memoryEmbeddingProviders, webSearchProviders                                                                                                                                                                                       |
-| [open-prose](/vi/plugins/reference/open-prose)                       | Gói Skills OpenProse VM có lệnh slash /prose.                                                                                                                       | `@openclaw/open-prose`<br />được bao gồm trong OpenClaw              | skills                                                                                                                                                                                                                                                           |
-| [openai](/vi/plugins/reference/openai)                               | Thêm hỗ trợ nhà cung cấp mô hình OpenAI, OpenAI Codex cho OpenClaw.                                                                                                 | `@openclaw/openai-provider`<br />được bao gồm trong OpenClaw         | providers: openai, openai-codex; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders                                   |
-| [opencode](/vi/plugins/reference/opencode)                           | Thêm hỗ trợ nhà cung cấp mô hình OpenCode cho OpenClaw.                                                                                                             | `@openclaw/opencode-provider`<br />được bao gồm trong OpenClaw       | providers: opencode; contracts: mediaUnderstandingProviders                                                                                                                                                                                                      |
-| [opencode-go](/vi/plugins/reference/opencode-go)                     | Thêm hỗ trợ nhà cung cấp mô hình OpenCode Go cho OpenClaw.                                                                                                          | `@openclaw/opencode-go-provider`<br />được bao gồm trong OpenClaw    | providers: opencode-go; contracts: mediaUnderstandingProviders                                                                                                                                                                                                   |
-| [openrouter](/vi/plugins/reference/openrouter)                       | Thêm hỗ trợ nhà cung cấp mô hình OpenRouter cho OpenClaw.                                                                                                           | `@openclaw/openrouter-provider`<br />được bao gồm trong OpenClaw     | providers: openrouter; contracts: imageGenerationProviders, mediaUnderstandingProviders, speechProviders, videoGenerationProviders                                                                                                                               |
-| [openshell](/vi/plugins/reference/openshell)                         | Phần phụ trợ sandbox do OpenShell cung cấp với các không gian làm việc cục bộ được phản chiếu và thực thi lệnh dựa trên SSH.                                       | `@openclaw/openshell-sandbox`<br />được bao gồm trong OpenClaw       | plugin                                                                                                                                                                                                                                                           |
-| [perplexity](/vi/plugins/reference/perplexity)                       | Thêm hỗ trợ nhà cung cấp tìm kiếm web.                                                                                                                              | `@openclaw/perplexity-plugin`<br />được bao gồm trong OpenClaw       | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [qianfan](/vi/plugins/reference/qianfan)                             | Bổ sung hỗ trợ nhà cung cấp mô hình Qianfan cho OpenClaw.                                                                                                            | `@openclaw/qianfan-provider`<br />được bao gồm trong OpenClaw        | providers: qianfan                                                                                                                                                                                                                                               |
-| [qwen](/vi/plugins/reference/qwen)                                   | Bổ sung hỗ trợ nhà cung cấp mô hình Qwen, Qwen Cloud, Model Studio, DashScope cho OpenClaw.                                                                          | `@openclaw/qwen-provider`<br />được bao gồm trong OpenClaw           | providers: qwen, qwencloud, modelstudio, dashscope; contracts: mediaUnderstandingProviders, videoGenerationProviders                                                                                                                                             |
-| [runway](/vi/plugins/reference/runway)                               | Bổ sung hỗ trợ nhà cung cấp tạo video.                                                                                                                               | `@openclaw/runway-provider`<br />được bao gồm trong OpenClaw         | contracts: videoGenerationProviders                                                                                                                                                                                                                              |
-| [searxng](/vi/plugins/reference/searxng)                             | Bổ sung hỗ trợ nhà cung cấp tìm kiếm web.                                                                                                                            | `@openclaw/searxng-plugin`<br />được bao gồm trong OpenClaw          | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [senseaudio](/vi/plugins/reference/senseaudio)                       | Bổ sung hỗ trợ nhà cung cấp hiểu nội dung phương tiện.                                                                                                               | `@openclaw/senseaudio-provider`<br />được bao gồm trong OpenClaw     | contracts: mediaUnderstandingProviders                                                                                                                                                                                                                           |
-| [sglang](/vi/plugins/reference/sglang)                               | Bổ sung hỗ trợ nhà cung cấp mô hình SGLang cho OpenClaw.                                                                                                             | `@openclaw/sglang-provider`<br />được bao gồm trong OpenClaw         | providers: sglang                                                                                                                                                                                                                                                |
-| [signal](/vi/plugins/reference/signal)                               | Bổ sung bề mặt kênh Signal để gửi và nhận tin nhắn OpenClaw.                                                                                                         | `@openclaw/signal`<br />được bao gồm trong OpenClaw                  | channels: signal                                                                                                                                                                                                                                                 |
-| [skill-workshop](/vi/plugins/reference/skill-workshop)               | Ghi lại các quy trình làm việc có thể lặp lại dưới dạng kỹ năng trong không gian làm việc, với phần chờ xem xét, ghi an toàn và làm mới lời nhắc kỹ năng.             | `@openclaw/skill-workshop`<br />được bao gồm trong OpenClaw          | contracts: tools                                                                                                                                                                                                                                                 |
-| [slack](/vi/plugins/reference/slack)                                 | Bổ sung bề mặt kênh Slack để gửi và nhận tin nhắn OpenClaw.                                                                                                          | `@openclaw/slack`<br />được bao gồm trong OpenClaw                   | channels: slack                                                                                                                                                                                                                                                  |
-| [stepfun](/vi/plugins/reference/stepfun)                             | Bổ sung hỗ trợ nhà cung cấp mô hình StepFun, StepFun Plan cho OpenClaw.                                                                                              | `@openclaw/stepfun-provider`<br />được bao gồm trong OpenClaw        | providers: stepfun, stepfun-plan                                                                                                                                                                                                                                 |
-| [synthetic](/vi/plugins/reference/synthetic)                         | Bổ sung hỗ trợ nhà cung cấp mô hình Synthetic cho OpenClaw.                                                                                                          | `@openclaw/synthetic-provider`<br />được bao gồm trong OpenClaw      | providers: synthetic                                                                                                                                                                                                                                             |
-| [tavily](/vi/plugins/reference/tavily)                               | Bổ sung các công cụ mà agent có thể gọi. Bổ sung hỗ trợ nhà cung cấp tìm kiếm web.                                                                                   | `@openclaw/tavily-plugin`<br />được bao gồm trong OpenClaw           | contracts: tools, webSearchProviders; skills                                                                                                                                                                                                                     |
-| [telegram](/vi/plugins/reference/telegram)                           | Bổ sung bề mặt kênh Telegram để gửi và nhận tin nhắn OpenClaw.                                                                                                       | `@openclaw/telegram`<br />được bao gồm trong OpenClaw                | channels: telegram                                                                                                                                                                                                                                               |
-| [tencent](/vi/plugins/reference/tencent)                             | Bổ sung hỗ trợ nhà cung cấp mô hình Tencent TokenHub cho OpenClaw.                                                                                                   | `@openclaw/tencent-provider`<br />được bao gồm trong OpenClaw        | providers: tencent-tokenhub                                                                                                                                                                                                                                      |
-| [together](/vi/plugins/reference/together)                           | Bổ sung hỗ trợ nhà cung cấp mô hình Together cho OpenClaw.                                                                                                           | `@openclaw/together-provider`<br />được bao gồm trong OpenClaw       | providers: together; contracts: videoGenerationProviders                                                                                                                                                                                                         |
-| [tokenjuice](/vi/plugins/reference/tokenjuice)                       | Thu gọn kết quả công cụ exec và bash bằng các bộ rút gọn tokenjuice.                                                                                                 | `@openclaw/tokenjuice`<br />được bao gồm trong OpenClaw              | contracts: agentToolResultMiddleware                                                                                                                                                                                                                             |
-| [tts-local-cli](/vi/plugins/reference/tts-local-cli)                 | Bổ sung hỗ trợ nhà cung cấp chuyển văn bản thành giọng nói.                                                                                                          | `@openclaw/tts-local-cli`<br />được bao gồm trong OpenClaw           | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [venice](/vi/plugins/reference/venice)                               | Bổ sung hỗ trợ nhà cung cấp mô hình Venice cho OpenClaw.                                                                                                             | `@openclaw/venice-provider`<br />được bao gồm trong OpenClaw         | providers: venice                                                                                                                                                                                                                                                |
-| [vercel-ai-gateway](/vi/plugins/reference/vercel-ai-gateway)         | Bổ sung hỗ trợ nhà cung cấp mô hình Vercel AI Gateway cho OpenClaw.                                                                                                  | `@openclaw/vercel-ai-gateway-provider`<br />được bao gồm trong OpenClaw     | providers: vercel-ai-gateway                                                                                                                                                                                                                                     |
-| [vllm](/vi/plugins/reference/vllm)                                   | Bổ sung hỗ trợ nhà cung cấp mô hình vLLM cho OpenClaw.                                                                                                               | `@openclaw/vllm-provider`<br />được bao gồm trong OpenClaw           | providers: vllm                                                                                                                                                                                                                                                  |
-| [volcengine](/vi/plugins/reference/volcengine)                       | Bổ sung hỗ trợ nhà cung cấp mô hình Volcengine, Volcengine Plan cho OpenClaw.                                                                                        | `@openclaw/volcengine-provider`<br />được bao gồm trong OpenClaw     | providers: volcengine, volcengine-plan; contracts: speechProviders                                                                                                                                                                                               |
-| [voyage](/vi/plugins/reference/voyage)                               | Thêm hỗ trợ nhà cung cấp embedding bộ nhớ.                                                                                                                              | `@openclaw/voyage-provider`<br />được bao gồm trong OpenClaw                | contracts: memoryEmbeddingProviders                                                                                                                                                                                                                              |
-| [vydra](/vi/plugins/reference/vydra)                                 | Thêm hỗ trợ nhà cung cấp mô hình Vydra vào OpenClaw.                                                                                                                       | `@openclaw/vydra-provider`<br />được bao gồm trong OpenClaw                 | providers: vydra; contracts: imageGenerationProviders, speechProviders, videoGenerationProviders                                                                                                                                                                 |
-| [web-readability](/vi/plugins/reference/web-readability)             | Trích xuất nội dung bài viết dễ đọc từ các phản hồi tìm nạp web HTML cục bộ.                                                                                                | `@openclaw/web-readability-plugin`<br />được bao gồm trong OpenClaw         | contracts: webContentExtractors                                                                                                                                                                                                                                  |
-| [webhooks](/vi/plugins/reference/webhooks)                           | Các Webhook đến đã xác thực liên kết tự động hóa bên ngoài với OpenClaw TaskFlows.                                                                                  | `@openclaw/webhooks`<br />được bao gồm trong OpenClaw                       | plugin                                                                                                                                                                                                                                                           |
-| [xai](/vi/plugins/reference/xai)                                     | Thêm hỗ trợ nhà cung cấp mô hình xAI vào OpenClaw.                                                                                                                         | `@openclaw/xai-plugin`<br />được bao gồm trong OpenClaw                     | providers: xai; contracts: imageGenerationProviders, mediaUnderstandingProviders, realtimeTranscriptionProviders, speechProviders, tools, videoGenerationProviders, webSearchProviders                                                                           |
-| [xiaomi](/vi/plugins/reference/xiaomi)                               | Thêm hỗ trợ nhà cung cấp mô hình Xiaomi vào OpenClaw.                                                                                                                      | `@openclaw/xiaomi-provider`<br />được bao gồm trong OpenClaw                | providers: xiaomi; contracts: speechProviders                                                                                                                                                                                                                    |
-| [zai](/vi/plugins/reference/zai)                                     | Thêm hỗ trợ nhà cung cấp mô hình Z.AI vào OpenClaw.                                                                                                                        | `@openclaw/zai-provider`<br />được bao gồm trong OpenClaw                   | providers: zai; contracts: mediaUnderstandingProviders                                                                                                                                                                                                           |
+59 Plugin
 
-## Các gói bên ngoài chính thức
+- **[admin-http-rpc](/vi/plugins/reference/admin-http-rpc)** (`@openclaw/admin-http-rpc`) - được bao gồm trong OpenClaw. Endpoint HTTP RPC quản trị OpenClaw.
 
-| Plugin                                                              | Mô tả                                                                                      | Phân phối                                                                                       | Bề mặt                                                                      |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
-| [acpx](/vi/plugins/reference/acpx)                                     | Backend thời gian chạy ACP nhúng với quản lý phiên và vận chuyển do plugin sở hữu.        | `@openclaw/acpx`<br />npm; ClawHub                                                               | skills                                                                       |
-| [brave](/vi/plugins/reference/brave)                                   | Thêm hỗ trợ nhà cung cấp tìm kiếm web.                                                     | `@openclaw/brave-plugin`<br />npm; ClawHub                                                       | contracts: webSearchProviders                                                |
-| [codex](/vi/plugins/reference/codex)                                   | Harness app-server Codex và danh mục mô hình GPT do Codex quản lý.                         | `@openclaw/codex`<br />npm; ClawHub                                                              | providers: codex; contracts: mediaUnderstandingProviders, migrationProviders |
-| [diagnostics-otel](/vi/plugins/reference/diagnostics-otel)             | Trình xuất OpenTelemetry chẩn đoán OpenClaw.                                                | `@openclaw/diagnostics-otel`<br />npm; ClawHub: `clawhub:@openclaw/diagnostics-otel`             | plugin                                                                       |
-| [diagnostics-prometheus](/vi/plugins/reference/diagnostics-prometheus) | Trình xuất Prometheus chẩn đoán OpenClaw.                                                   | `@openclaw/diagnostics-prometheus`<br />npm; ClawHub: `clawhub:@openclaw/diagnostics-prometheus` | plugin                                                                       |
-| [diffs](/vi/plugins/reference/diffs)                                   | Trình xem diff chỉ đọc và trình kết xuất tệp cho agent.                                     | `@openclaw/diffs`<br />npm; ClawHub                                                              | contracts: tools; skills                                                     |
-| [discord](/vi/plugins/reference/discord)                               | Thêm bề mặt kênh Discord để gửi và nhận tin nhắn OpenClaw.                                  | `@openclaw/discord`<br />npm; ClawHub                                                            | channels: discord                                                            |
-| [feishu](/vi/plugins/reference/feishu)                                 | Thêm bề mặt kênh Feishu để gửi và nhận tin nhắn OpenClaw.                                   | `@openclaw/feishu`<br />npm; ClawHub                                                             | channels: feishu; contracts: tools; skills                                   |
-| [google-meet](/vi/plugins/reference/google-meet)                       | Tham gia cuộc gọi Google Meet thông qua các vận chuyển Chrome hoặc Twilio.                  | `@openclaw/google-meet`<br />npm; ClawHub                                                        | contracts: tools                                                             |
-| [googlechat](/vi/plugins/reference/googlechat)                         | Thêm bề mặt kênh Google Chat để gửi và nhận tin nhắn OpenClaw.                              | `@openclaw/googlechat`<br />npm; ClawHub                                                         | channels: googlechat                                                         |
-| [line](/vi/plugins/reference/line)                                     | Thêm bề mặt kênh LINE để gửi và nhận tin nhắn OpenClaw.                                     | `@openclaw/line`<br />npm; ClawHub                                                               | channels: line                                                               |
-| [lobster](/vi/plugins/reference/lobster)                               | Công cụ quy trình làm việc có kiểu với phê duyệt có thể tiếp tục.                          | `@openclaw/lobster`<br />npm; ClawHub                                                            | contracts: tools                                                             |
-| [matrix](/vi/plugins/reference/matrix)                                 | Thêm bề mặt kênh Matrix để gửi và nhận tin nhắn OpenClaw.                                   | `@openclaw/matrix`<br />ClawHub: `clawhub:@openclaw/matrix`; npm                                 | channels: matrix                                                             |
-| [memory-lancedb](/vi/plugins/reference/memory-lancedb)                 | Thêm các công cụ agent có thể gọi.                                                         | `@openclaw/memory-lancedb`<br />npm; ClawHub                                                     | contracts: tools                                                             |
-| [msteams](/vi/plugins/reference/msteams)                               | Thêm bề mặt kênh Microsoft Teams để gửi và nhận tin nhắn OpenClaw.                         | `@openclaw/msteams`<br />npm; ClawHub                                                            | channels: msteams                                                            |
-| [nextcloud-talk](/vi/plugins/reference/nextcloud-talk)                 | Thêm bề mặt kênh Nextcloud Talk để gửi và nhận tin nhắn OpenClaw.                          | `@openclaw/nextcloud-talk`<br />npm; ClawHub                                                     | channels: nextcloud-talk                                                     |
-| [nostr](/vi/plugins/reference/nostr)                                   | Thêm bề mặt kênh Nostr để gửi và nhận tin nhắn OpenClaw.                                    | `@openclaw/nostr`<br />npm; ClawHub                                                              | channels: nostr                                                              |
-| [qqbot](/vi/plugins/reference/qqbot)                                   | Thêm bề mặt kênh QQ Bot để gửi và nhận tin nhắn OpenClaw.                                   | `@openclaw/qqbot`<br />npm; ClawHub                                                              | channels: qqbot; contracts: tools; skills                                    |
-| [synology-chat](/vi/plugins/reference/synology-chat)                   | Thêm bề mặt kênh Synology Chat để gửi và nhận tin nhắn OpenClaw.                           | `@openclaw/synology-chat`<br />npm; ClawHub                                                      | channels: synology-chat                                                      |
-| [tlon](/vi/plugins/reference/tlon)                                     | Thêm bề mặt kênh Tlon để gửi và nhận tin nhắn OpenClaw.                                     | `@openclaw/tlon`<br />npm; ClawHub                                                               | channels: tlon; contracts: tools; skills                                     |
-| [twitch](/vi/plugins/reference/twitch)                                 | Thêm bề mặt kênh Twitch để gửi và nhận tin nhắn OpenClaw.                                   | `@openclaw/twitch`<br />npm; ClawHub                                                             | channels: twitch                                                             |
-| [voice-call](/vi/plugins/reference/voice-call)                         | Thêm các công cụ agent có thể gọi.                                                         | `@openclaw/voice-call`<br />npm; ClawHub                                                         | contracts: tools                                                             |
-| [whatsapp](/vi/plugins/reference/whatsapp)                             | Thêm bề mặt kênh WhatsApp để gửi và nhận tin nhắn OpenClaw.                                 | `@openclaw/whatsapp`<br />npm; ClawHub                                                           | channels: whatsapp                                                           |
-| [zalo](/vi/plugins/reference/zalo)                                     | Thêm bề mặt kênh Zalo để gửi và nhận tin nhắn OpenClaw.                                     | `@openclaw/zalo`<br />npm; ClawHub                                                               | channels: zalo                                                               |
-| [zalouser](/vi/plugins/reference/zalouser)                             | Thêm bề mặt kênh Zalo Personal để gửi và nhận tin nhắn OpenClaw.                            | `@openclaw/zalouser`<br />npm; ClawHub                                                           | channels: zalouser; contracts: tools                                         |
+- **[alibaba](/vi/plugins/reference/alibaba)** (`@openclaw/alibaba-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp tạo video.
+
+- **[anthropic](/vi/plugins/reference/anthropic)** (`@openclaw/anthropic-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp mô hình Anthropic cho OpenClaw.
+
+- **[azure-speech](/vi/plugins/reference/azure-speech)** (`@openclaw/azure-speech`) - được bao gồm trong OpenClaw. Văn bản thành giọng nói Azure AI Speech (MP3, ghi chú thoại Ogg/Opus gốc, PCM điện thoại).
+
+- **[bonjour](/vi/plugins/reference/bonjour)** (`@openclaw/bonjour`) - được bao gồm trong OpenClaw. Quảng bá Gateway OpenClaw cục bộ qua Bonjour/mDNS.
+
+- **[browser](/vi/plugins/reference/browser)** (`@openclaw/browser-plugin`) - được bao gồm trong OpenClaw. Thêm công cụ mà agent có thể gọi.
+
+- **[byteplus](/vi/plugins/reference/byteplus)** (`@openclaw/byteplus-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp mô hình BytePlus, BytePlus Plan cho OpenClaw.
+
+- **[canvas](/vi/plugins/reference/canvas)** (`@openclaw/canvas-plugin`) - được bao gồm trong OpenClaw. Các bề mặt điều khiển Canvas và kết xuất A2UI thử nghiệm cho các node được ghép đôi.
+
+- **[codex-supervisor](/vi/plugins/reference/codex-supervisor)** (`@openclaw/codex-supervisor`) - được bao gồm trong OpenClaw. Giám sát các phiên Codex app-server từ OpenClaw.
+
+- **[cohere](/vi/plugins/reference/cohere)** (`@openclaw/cohere-provider`) - được bao gồm trong OpenClaw; npm; ClawHub: `clawhub:@openclaw/cohere-provider`. Plugin nhà cung cấp Cohere của OpenClaw.
+
+- **[comfy](/vi/plugins/reference/comfy)** (`@openclaw/comfy-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp mô hình ComfyUI cho OpenClaw.
+
+- **[copilot-proxy](/vi/plugins/reference/copilot-proxy)** (`@openclaw/copilot-proxy`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp mô hình Copilot Proxy cho OpenClaw.
+
+- **[deepgram](/vi/plugins/reference/deepgram)** (`@openclaw/deepgram-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp hiểu media. Thêm hỗ trợ nhà cung cấp phiên âm thời gian thực.
+
+- **[document-extract](/vi/plugins/reference/document-extract)** (`@openclaw/document-extract-plugin`) - được bao gồm trong OpenClaw. Trích xuất văn bản và ảnh trang dự phòng từ tệp đính kèm tài liệu cục bộ.
+
+- **[duckduckgo](/vi/plugins/reference/duckduckgo)** (`@openclaw/duckduckgo-plugin`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp tìm kiếm web.
+
+- **[elevenlabs](/vi/plugins/reference/elevenlabs)** (`@openclaw/elevenlabs-speech`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp hiểu media. Thêm hỗ trợ nhà cung cấp phiên âm thời gian thực. Thêm hỗ trợ nhà cung cấp văn bản thành giọng nói.
+
+- **[fal](/vi/plugins/reference/fal)** (`@openclaw/fal-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp mô hình fal cho OpenClaw.
+
+- **[file-transfer](/vi/plugins/reference/file-transfer)** (`@openclaw/file-transfer`) - được bao gồm trong OpenClaw. Tải về, liệt kê và ghi tệp trên các node được ghép đôi qua các lệnh node chuyên dụng. Vượt qua giới hạn cắt ngắn stdout của bash bằng cách dùng base64 qua node.invoke cho nhị phân tối đa 16 MB.
+
+- **[github-copilot](/vi/plugins/reference/github-copilot)** (`@openclaw/github-copilot-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp mô hình GitHub Copilot cho OpenClaw.
+
+- **[google](/vi/plugins/reference/google)** (`@openclaw/google-plugin`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp mô hình Google, Google Gemini CLI, Google Vertex cho OpenClaw.
+
+- **[huggingface](/vi/plugins/reference/huggingface)** (`@openclaw/huggingface-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp mô hình Hugging Face cho OpenClaw.
+
+- **[imessage](/vi/plugins/reference/imessage)** (`@openclaw/imessage`) - được bao gồm trong OpenClaw. Thêm bề mặt kênh iMessage để gửi và nhận tin nhắn OpenClaw.
+
+- **[litellm](/vi/plugins/reference/litellm)** (`@openclaw/litellm-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp mô hình LiteLLM cho OpenClaw.
+
+- **[llm-task](/vi/plugins/reference/llm-task)** (`@openclaw/llm-task`) - được bao gồm trong OpenClaw. Công cụ LLM chỉ JSON chung cho các tác vụ có cấu trúc, có thể gọi từ workflow.
+
+- **[lmstudio](/vi/plugins/reference/lmstudio)** (`@openclaw/lmstudio-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp mô hình LM Studio cho OpenClaw.
+
+- **[memory-core](/vi/plugins/reference/memory-core)** (`@openclaw/memory-core`) - được bao gồm trong OpenClaw. Thêm công cụ mà agent có thể gọi.
+
+- **[memory-wiki](/vi/plugins/reference/memory-wiki)** (`@openclaw/memory-wiki`) - được bao gồm trong OpenClaw. Trình biên dịch wiki bền vững và kho tri thức thân thiện với Obsidian cho OpenClaw.
+
+- **[microsoft](/vi/plugins/reference/microsoft)** (`@openclaw/microsoft-speech`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp văn bản thành giọng nói.
+
+- **[microsoft-foundry](/vi/plugins/reference/microsoft-foundry)** (`@openclaw/microsoft-foundry`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp mô hình Microsoft Foundry cho OpenClaw.
+
+- **[migrate-claude](/vi/plugins/reference/migrate-claude)** (`@openclaw/migrate-claude`) - được bao gồm trong OpenClaw. Nhập chỉ dẫn Claude Code và Claude Desktop, máy chủ MCP, Skills, và cấu hình an toàn vào OpenClaw.
+
+- **[migrate-hermes](/vi/plugins/reference/migrate-hermes)** (`@openclaw/migrate-hermes`) - được bao gồm trong OpenClaw. Nhập cấu hình Hermes, bộ nhớ, Skills, và thông tin xác thực được hỗ trợ vào OpenClaw.
+
+- **[minimax](/vi/plugins/reference/minimax)** (`@openclaw/minimax-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp mô hình MiniMax, MiniMax Portal cho OpenClaw.
+
+- **[mistral](/vi/plugins/reference/mistral)** (`@openclaw/mistral-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp mô hình Mistral cho OpenClaw.
+
+- **[novita](/vi/plugins/reference/novita)** (`@openclaw/novita-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp mô hình Novita, Novita AI, Novitaai cho OpenClaw.
+
+- **[nvidia](/vi/plugins/reference/nvidia)** (`@openclaw/nvidia-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp mô hình NVIDIA cho OpenClaw.
+
+- **[oc-path](/vi/plugins/reference/oc-path)** (`@openclaw/oc-path`) - được bao gồm trong OpenClaw. Thêm CLI đường dẫn openclaw cho định địa chỉ tệp workspace oc://.
+
+- **[ollama](/vi/plugins/reference/ollama)** (`@openclaw/ollama-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp mô hình Ollama, Ollama Cloud cho OpenClaw.
+
+- **[open-prose](/vi/plugins/reference/open-prose)** (`@openclaw/open-prose`) - được bao gồm trong OpenClaw. Gói skill OpenProse VM với lệnh slash /prose.
+
+- **[openai](/vi/plugins/reference/openai)** (`@openclaw/openai-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp mô hình OpenAI cho OpenClaw.
+
+- **[opencode](/vi/plugins/reference/opencode)** (`@openclaw/opencode-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp mô hình OpenCode cho OpenClaw.
+
+- **[opencode-go](/vi/plugins/reference/opencode-go)** (`@openclaw/opencode-go-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp mô hình OpenCode Go cho OpenClaw.
+
+- **[openrouter](/vi/plugins/reference/openrouter)** (`@openclaw/openrouter-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp mô hình OpenRouter cho OpenClaw.
+
+- **[policy](/vi/plugins/reference/policy)** (`@openclaw/policy`) - được bao gồm trong OpenClaw. Thêm các kiểm tra doctor dựa trên policy cho việc tuân thủ của workspace.
+
+- **[runway](/vi/plugins/reference/runway)** (`@openclaw/runway-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp tạo video.
+
+- **[senseaudio](/vi/plugins/reference/senseaudio)** (`@openclaw/senseaudio-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp hiểu media.
+
+- **[sglang](/vi/plugins/reference/sglang)** (`@openclaw/sglang-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp mô hình SGLang cho OpenClaw.
+
+- **[synthetic](/vi/plugins/reference/synthetic)** (`@openclaw/synthetic-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp mô hình Synthetic cho OpenClaw.
+
+- **[telegram](/vi/plugins/reference/telegram)** (`@openclaw/telegram`) - được bao gồm trong OpenClaw. Thêm bề mặt kênh Telegram để gửi và nhận tin nhắn OpenClaw.
+
+- **[together](/vi/plugins/reference/together)** (`@openclaw/together-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp mô hình Together cho OpenClaw.
+
+- **[tts-local-cli](/vi/plugins/reference/tts-local-cli)** (`@openclaw/tts-local-cli`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp văn bản thành giọng nói.
+
+- **[vllm](/vi/plugins/reference/vllm)** (`@openclaw/vllm-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp mô hình vLLM cho OpenClaw.
+
+- **[volcengine](/vi/plugins/reference/volcengine)** (`@openclaw/volcengine-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp mô hình Volcengine, Volcengine Plan cho OpenClaw.
+
+- **[voyage](/vi/plugins/reference/voyage)** (`@openclaw/voyage-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp embedding bộ nhớ.
+
+- **[vydra](/vi/plugins/reference/vydra)** (`@openclaw/vydra-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp mô hình Vydra cho OpenClaw.
+
+- **[web-readability](/vi/plugins/reference/web-readability)** (`@openclaw/web-readability-plugin`) - được bao gồm trong OpenClaw. Trích xuất nội dung bài viết dễ đọc từ các phản hồi tải web HTML cục bộ.
+
+- **[webhooks](/vi/plugins/reference/webhooks)** (`@openclaw/webhooks`) - được bao gồm trong OpenClaw. Các Webhook đầu vào đã xác thực, liên kết tự động hóa bên ngoài với OpenClaw TaskFlows.
+
+- **[workboard](/vi/plugins/reference/workboard)** (`@openclaw/workboard`) - được bao gồm trong OpenClaw. Workboard dạng dashboard cho các issue và phiên do agent sở hữu.
+
+- **[xai](/vi/plugins/reference/xai)** (`@openclaw/xai-plugin`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp mô hình xAI cho OpenClaw.
+
+- **[xiaomi](/vi/plugins/reference/xiaomi)** (`@openclaw/xiaomi-provider`) - được bao gồm trong OpenClaw. Thêm hỗ trợ nhà cung cấp mô hình Xiaomi, Xiaomi Token Plan cho OpenClaw.
+
+## Gói bên ngoài chính thức
+
+68 Plugin
+
+- **[acpx](/vi/plugins/reference/acpx)** (`@openclaw/acpx`) - npm; ClawHub. Backend runtime ACP của OpenClaw với quản lý phiên và vận chuyển do Plugin sở hữu.
+
+- **[amazon-bedrock](/vi/plugins/reference/amazon-bedrock)** (`@openclaw/amazon-bedrock-provider`) - npm; ClawHub. Plugin nhà cung cấp Amazon Bedrock của OpenClaw với hỗ trợ khám phá mô hình, embedding và guardrail.
+
+- **[amazon-bedrock-mantle](/vi/plugins/reference/amazon-bedrock-mantle)** (`@openclaw/amazon-bedrock-mantle-provider`) - npm; ClawHub. Plugin nhà cung cấp Amazon Bedrock Mantle của OpenClaw để định tuyến mô hình tương thích OpenAI.
+
+- **[anthropic-vertex](/vi/plugins/reference/anthropic-vertex)** (`@openclaw/anthropic-vertex-provider`) - npm; ClawHub. Plugin nhà cung cấp Anthropic Vertex của OpenClaw cho các mô hình Claude trên Google Vertex AI.
+
+- **[arcee](/vi/plugins/reference/arcee)** (`@openclaw/arcee-provider`) - npm; ClawHub: `clawhub:@openclaw/arcee-provider`. Thêm hỗ trợ nhà cung cấp mô hình Arcee vào OpenClaw.
+
+- **[brave](/vi/plugins/reference/brave)** (`@openclaw/brave-plugin`) - npm; ClawHub. Plugin nhà cung cấp Brave Search của OpenClaw cho tìm kiếm web.
+
+- **[cerebras](/vi/plugins/reference/cerebras)** (`@openclaw/cerebras-provider`) - npm; ClawHub: `clawhub:@openclaw/cerebras-provider`. Thêm hỗ trợ nhà cung cấp mô hình Cerebras vào OpenClaw.
+
+- **[chutes](/vi/plugins/reference/chutes)** (`@openclaw/chutes-provider`) - npm; ClawHub: `clawhub:@openclaw/chutes-provider`. Thêm hỗ trợ nhà cung cấp mô hình Chutes vào OpenClaw.
+
+- **[clickclack](/vi/plugins/reference/clickclack)** (`@openclaw/clickclack`) - npm; ClawHub: `clawhub:@openclaw/clickclack`. Thêm bề mặt kênh Clickclack để gửi và nhận tin nhắn OpenClaw.
+
+- **[cloudflare-ai-gateway](/vi/plugins/reference/cloudflare-ai-gateway)** (`@openclaw/cloudflare-ai-gateway-provider`) - npm; ClawHub: `clawhub:@openclaw/cloudflare-ai-gateway-provider`. Thêm hỗ trợ nhà cung cấp mô hình Cloudflare AI Gateway vào OpenClaw.
+
+- **[codex](/vi/plugins/reference/codex)** (`@openclaw/codex`) - npm; ClawHub. Plugin bộ điều phối máy chủ ứng dụng Codex và nhà cung cấp mô hình của OpenClaw với danh mục GPT do Codex quản lý.
+
+- **[copilot](/vi/plugins/reference/copilot)** (`@openclaw/copilot`) - npm; ClawHub: `clawhub:@openclaw/copilot`. Đăng ký runtime tác tử GitHub Copilot.
+
+- **[deepinfra](/vi/plugins/reference/deepinfra)** (`@openclaw/deepinfra-provider`) - npm; ClawHub: `clawhub:@openclaw/deepinfra-provider`. Thêm hỗ trợ nhà cung cấp mô hình DeepInfra vào OpenClaw.
+
+- **[deepseek](/vi/plugins/reference/deepseek)** (`@openclaw/deepseek-provider`) - npm; ClawHub: `clawhub:@openclaw/deepseek-provider`. Thêm hỗ trợ nhà cung cấp mô hình DeepSeek vào OpenClaw.
+
+- **[diagnostics-otel](/vi/plugins/reference/diagnostics-otel)** (`@openclaw/diagnostics-otel`) - npm; ClawHub: `clawhub:@openclaw/diagnostics-otel`. Bộ xuất chẩn đoán OpenTelemetry của OpenClaw cho số liệu, dấu vết và nhật ký.
+
+- **[diagnostics-prometheus](/vi/plugins/reference/diagnostics-prometheus)** (`@openclaw/diagnostics-prometheus`) - npm; ClawHub: `clawhub:@openclaw/diagnostics-prometheus`. Bộ xuất Prometheus chẩn đoán của OpenClaw cho số liệu runtime.
+
+- **[diffs](/vi/plugins/reference/diffs)** (`@openclaw/diffs`) - npm; ClawHub. Plugin trình xem diff chỉ đọc và trình kết xuất tệp cho tác tử của OpenClaw.
+
+- **[diffs-language-pack](/vi/plugins/reference/diffs-language-pack)** (`@openclaw/diffs-language-pack`) - npm; ClawHub: `clawhub:@openclaw/diffs-language-pack`. Thêm tô sáng cú pháp cho các ngôn ngữ ngoài bộ trình xem diff mặc định.
+
+- **[discord](/vi/plugins/reference/discord)** (`@openclaw/discord`) - npm; ClawHub. Plugin kênh Discord của OpenClaw cho kênh, DM, lệnh và sự kiện ứng dụng.
+
+- **[exa](/vi/plugins/reference/exa)** (`@openclaw/exa-plugin`) - npm; ClawHub: `clawhub:@openclaw/exa-plugin`. Thêm hỗ trợ nhà cung cấp tìm kiếm web.
+
+- **[feishu](/vi/plugins/reference/feishu)** (`@openclaw/feishu`) - npm; ClawHub. Plugin kênh Feishu/Lark của OpenClaw cho trò chuyện và công cụ nơi làm việc (do cộng đồng @m1heng duy trì).
+
+- **[firecrawl](/vi/plugins/reference/firecrawl)** (`@openclaw/firecrawl-plugin`) - npm; ClawHub: `clawhub:@openclaw/firecrawl-plugin`. Thêm công cụ mà tác tử có thể gọi. Thêm hỗ trợ nhà cung cấp tìm nạp web. Thêm hỗ trợ nhà cung cấp tìm kiếm web.
+
+- **[fireworks](/vi/plugins/reference/fireworks)** (`@openclaw/fireworks-provider`) - npm; ClawHub: `clawhub:@openclaw/fireworks-provider`. Thêm hỗ trợ nhà cung cấp mô hình Fireworks vào OpenClaw.
+
+- **[gmi](/vi/plugins/reference/gmi)** (`@openclaw/gmi-provider`) - npm; ClawHub: `clawhub:@openclaw/gmi-provider`. Plugin nhà cung cấp GMI Cloud của OpenClaw.
+
+- **[google-meet](/vi/plugins/reference/google-meet)** (`@openclaw/google-meet`) - npm; ClawHub. Plugin người tham gia Google Meet của OpenClaw để tham gia cuộc gọi qua các phương thức truyền tải Chrome hoặc Twilio.
+
+- **[googlechat](/vi/plugins/reference/googlechat)** (`@openclaw/googlechat`) - npm; ClawHub. Plugin kênh Google Chat của OpenClaw cho không gian và tin nhắn trực tiếp.
+
+- **[gradium](/vi/plugins/reference/gradium)** (`@openclaw/gradium-speech`) - npm; ClawHub: `clawhub:@openclaw/gradium-speech`. Thêm hỗ trợ nhà cung cấp chuyển văn bản thành giọng nói.
+
+- **[groq](/vi/plugins/reference/groq)** (`@openclaw/groq-provider`) - npm; ClawHub: `clawhub:@openclaw/groq-provider`. Thêm hỗ trợ nhà cung cấp mô hình Groq vào OpenClaw.
+
+- **[inworld](/vi/plugins/reference/inworld)** (`@openclaw/inworld-speech`) - npm; ClawHub: `clawhub:@openclaw/inworld-speech`. Chuyển văn bản thành giọng nói phát trực tuyến Inworld (MP3, OGG_OPUS, PCM điện thoại).
+
+- **[irc](/vi/plugins/reference/irc)** (`@openclaw/irc`) - npm; ClawHub: `clawhub:@openclaw/irc`. Thêm bề mặt kênh IRC để gửi và nhận tin nhắn OpenClaw.
+
+- **[kilocode](/vi/plugins/reference/kilocode)** (`@openclaw/kilocode-provider`) - npm; ClawHub: `clawhub:@openclaw/kilocode-provider`. Thêm hỗ trợ nhà cung cấp mô hình Kilocode vào OpenClaw.
+
+- **[kimi](/vi/plugins/reference/kimi)** (`@openclaw/kimi-provider`) - npm; ClawHub: `clawhub:@openclaw/kimi-provider`. Thêm hỗ trợ nhà cung cấp mô hình Kimi, Kimi Coding vào OpenClaw.
+
+- **[line](/vi/plugins/reference/line)** (`@openclaw/line`) - npm; ClawHub. Plugin kênh LINE của OpenClaw cho trò chuyện LINE Bot API.
+
+- **[llama-cpp](/vi/plugins/reference/llama-cpp)** (`@openclaw/llama-cpp-provider`) - npm; ClawHub. Nhúng GGUF cục bộ thông qua node-llama-cpp.
+
+- **[lobster](/vi/plugins/reference/lobster)** (`@openclaw/lobster`) - npm; ClawHub. Plugin công cụ quy trình làm việc Lobster cho các pipeline có kiểu và phê duyệt có thể tiếp tục.
+
+- **[matrix](/vi/plugins/reference/matrix)** (`@openclaw/matrix`) - ClawHub: `clawhub:@openclaw/matrix`; npm. Plugin kênh Matrix của OpenClaw cho phòng và tin nhắn trực tiếp.
+
+- **[mattermost](/vi/plugins/reference/mattermost)** (`@openclaw/mattermost`) - npm; ClawHub: `clawhub:@openclaw/mattermost`. Thêm bề mặt kênh Mattermost để gửi và nhận tin nhắn OpenClaw.
+
+- **[memory-lancedb](/vi/plugins/reference/memory-lancedb)** (`@openclaw/memory-lancedb`) - npm; ClawHub. Plugin bộ nhớ dài hạn dựa trên LanceDB của OpenClaw với tự động nhớ lại, tự động ghi lại và tìm kiếm vector.
+
+- **[moonshot](/vi/plugins/reference/moonshot)** (`@openclaw/moonshot-provider`) - npm; ClawHub: `clawhub:@openclaw/moonshot-provider`. Thêm hỗ trợ nhà cung cấp mô hình Moonshot vào OpenClaw.
+
+- **[msteams](/vi/plugins/reference/msteams)** (`@openclaw/msteams`) - npm; ClawHub. Plugin kênh Microsoft Teams của OpenClaw cho hội thoại bot.
+
+- **[nextcloud-talk](/vi/plugins/reference/nextcloud-talk)** (`@openclaw/nextcloud-talk`) - npm; ClawHub. Plugin kênh Nextcloud Talk của OpenClaw cho hội thoại.
+
+- **[nostr](/vi/plugins/reference/nostr)** (`@openclaw/nostr`) - npm; ClawHub. Plugin kênh Nostr của OpenClaw cho tin nhắn trực tiếp được mã hóa NIP-04.
+
+- **[openshell](/vi/plugins/reference/openshell)** (`@openclaw/openshell-sandbox`) - npm; ClawHub. Backend sandbox của OpenClaw cho NVIDIA OpenShell CLI với không gian làm việc cục bộ được phản chiếu và thực thi lệnh SSH.
+
+- **[parallel](/vi/tools/parallel-search)** (`@openclaw/parallel-plugin`) - npm; ClawHub: `clawhub:@openclaw/parallel-plugin`. Thêm hỗ trợ nhà cung cấp tìm kiếm web.
+
+- **[perplexity](/vi/plugins/reference/perplexity)** (`@openclaw/perplexity-plugin`) - npm; ClawHub: `clawhub:@openclaw/perplexity-plugin`. Thêm hỗ trợ nhà cung cấp tìm kiếm web.
+
+- **[pixverse](/vi/plugins/reference/pixverse)** (`@openclaw/pixverse-provider`) - npm; ClawHub: `clawhub:@openclaw/pixverse-provider`. Plugin nhà cung cấp tạo video PixVerse của OpenClaw.
+
+- **[qianfan](/vi/plugins/reference/qianfan)** (`@openclaw/qianfan-provider`) - npm; ClawHub: `clawhub:@openclaw/qianfan-provider`. Thêm hỗ trợ nhà cung cấp mô hình Qianfan vào OpenClaw.
+
+- **[qqbot](/vi/plugins/reference/qqbot)** (`@openclaw/qqbot`) - npm; ClawHub. Plugin kênh QQ Bot của OpenClaw cho quy trình làm việc nhóm và tin nhắn trực tiếp.
+
+- **[qwen](/vi/plugins/reference/qwen)** (`@openclaw/qwen-provider`) - npm; ClawHub: `clawhub:@openclaw/qwen-provider`. Thêm hỗ trợ nhà cung cấp mô hình Qwen, Qwen Cloud, Model Studio, DashScope, Qwen Oauth, Qwen Portal, Qwen CLI vào OpenClaw.
+
+- **[raft](/vi/plugins/reference/raft)** (`@openclaw/raft`) - npm; ClawHub. Plugin kênh Raft của OpenClaw cho cầu đánh thức CLI bảo mật.
+
+- **[searxng](/vi/plugins/reference/searxng)** (`@openclaw/searxng-plugin`) - npm; ClawHub: `clawhub:@openclaw/searxng-plugin`. Thêm hỗ trợ nhà cung cấp tìm kiếm web.
+
+- **[signal](/vi/plugins/reference/signal)** (`@openclaw/signal`) - npm; ClawHub: `clawhub:@openclaw/signal`. Thêm bề mặt kênh Signal để gửi và nhận tin nhắn OpenClaw.
+
+- **[slack](/vi/plugins/reference/slack)** (`@openclaw/slack`) - npm; ClawHub. Plugin kênh Slack của OpenClaw cho kênh, DM, lệnh và sự kiện ứng dụng.
+
+- **[sms](/vi/plugins/reference/sms)** (`@openclaw/sms`) - npm; ClawHub: `clawhub:@openclaw/sms`. Plugin kênh SMS Twilio cho tin nhắn văn bản OpenClaw.
+
+- **[stepfun](/vi/plugins/reference/stepfun)** (`@openclaw/stepfun-provider`) - npm; ClawHub: `clawhub:@openclaw/stepfun-provider`. Thêm hỗ trợ nhà cung cấp mô hình StepFun, StepFun Plan vào OpenClaw.
+
+- **[synology-chat](/vi/plugins/reference/synology-chat)** (`@openclaw/synology-chat`) - npm; ClawHub. Plugin kênh Synology Chat cho kênh OpenClaw và tin nhắn trực tiếp.
+
+- **[tavily](/vi/plugins/reference/tavily)** (`@openclaw/tavily-plugin`) - npm; ClawHub: `clawhub:@openclaw/tavily-plugin`. Thêm công cụ mà tác tử có thể gọi. Thêm hỗ trợ nhà cung cấp tìm kiếm web.
+
+- **[tencent](/vi/plugins/reference/tencent)** (`@openclaw/tencent-provider`) - npm; ClawHub: `clawhub:@openclaw/tencent-provider`. Thêm hỗ trợ nhà cung cấp mô hình Tencent TokenHub vào OpenClaw.
+
+- **[tlon](/vi/plugins/reference/tlon)** (`@openclaw/tlon`) - npm; ClawHub. Plugin kênh Tlon/Urbit của OpenClaw cho quy trình làm việc trò chuyện.
+
+- **[tokenjuice](/vi/plugins/reference/tokenjuice)** (`@openclaw/tokenjuice`) - npm; ClawHub: `clawhub:@openclaw/tokenjuice`. Nén kết quả công cụ exec và bash bằng các bộ rút gọn tokenjuice.
+
+- **[twitch](/vi/plugins/reference/twitch)** (`@openclaw/twitch`) - npm; ClawHub. Plugin kênh Twitch của OpenClaw cho quy trình làm việc trò chuyện và kiểm duyệt.
+
+- **[venice](/vi/plugins/reference/venice)** (`@openclaw/venice-provider`) - npm; ClawHub: `clawhub:@openclaw/venice-provider`. Thêm hỗ trợ nhà cung cấp mô hình Venice vào OpenClaw.
+
+- **[vercel-ai-gateway](/vi/plugins/reference/vercel-ai-gateway)** (`@openclaw/vercel-ai-gateway-provider`) - npm; ClawHub: `clawhub:@openclaw/vercel-ai-gateway-provider`. Thêm hỗ trợ nhà cung cấp mô hình Vercel AI Gateway vào OpenClaw.
+
+- **[voice-call](/vi/plugins/reference/voice-call)** (`@openclaw/voice-call`) - npm; ClawHub. Plugin voice-call của OpenClaw cho cuộc gọi điện thoại Twilio, Telnyx và Plivo.
+
+- **[whatsapp](/vi/plugins/reference/whatsapp)** (`@openclaw/whatsapp`) - ClawHub: `clawhub:@openclaw/whatsapp`; npm. Plugin kênh WhatsApp của OpenClaw cho trò chuyện WhatsApp Web.
+
+- **[zai](/vi/plugins/reference/zai)** (`@openclaw/zai-provider`) - npm; ClawHub: `clawhub:@openclaw/zai-provider`. Thêm hỗ trợ nhà cung cấp mô hình Z.AI vào OpenClaw.
+
+- **[zalo](/vi/plugins/reference/zalo)** (`@openclaw/zalo`) - npm; ClawHub. Plugin kênh Zalo của OpenClaw cho trò chuyện bot và webhook.
+
+- **[zalouser](/vi/plugins/reference/zalouser)** (`@openclaw/zalouser`) - npm; ClawHub. Plugin Tài khoản Cá nhân Zalo của OpenClaw thông qua tích hợp zca-js gốc.
 
 ## Chỉ checkout nguồn
 
-| Plugin                                      | Mô tả                                                                                     | Phân phối                                       | Bề mặt               |
-| ------------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------ | -------------------- |
-| [qa-channel](/vi/plugins/reference/qa-channel) | Thêm bề mặt kênh QA Channel để gửi và nhận tin nhắn OpenClaw.                             | `@openclaw/qa-channel`<br />chỉ checkout nguồn | channels: qa-channel |
-| [qa-lab](/vi/plugins/reference/qa-lab)         | Plugin phòng thí nghiệm QA của OpenClaw với UI trình gỡ lỗi riêng tư và trình chạy kịch bản. | `@openclaw/qa-lab`<br />chỉ checkout nguồn     | plugin               |
-| [qa-matrix](/vi/plugins/reference/qa-matrix)   | Trình chạy vận chuyển QA Matrix và nền tảng nền.                                          | `@openclaw/qa-matrix`<br />chỉ checkout nguồn  | plugin               |
+3 plugin
+
+- **[qa-channel](/vi/plugins/reference/qa-channel)** (`@openclaw/qa-channel`) - chỉ checkout nguồn. Thêm bề mặt Kênh QA để gửi và nhận tin nhắn OpenClaw.
+
+- **[qa-lab](/vi/plugins/reference/qa-lab)** (`@openclaw/qa-lab`) - chỉ checkout nguồn. Plugin phòng thí nghiệm QA của OpenClaw với giao diện người dùng gỡ lỗi riêng tư và trình chạy kịch bản.
+
+- **[qa-matrix](/vi/plugins/reference/qa-matrix)** (`@openclaw/qa-matrix`) - chỉ dành cho bản checkout nguồn. Trình chạy vận chuyển QA Matrix và nền tảng cơ sở.

@@ -1,19 +1,20 @@
 ---
 read_when:
     - Je wilt een beginnersvriendelijke stapsgewijze uitleg van de TUI
-    - Je hebt de volledige lijst met TUI-functies, opdrachten en sneltoetsen nodig
-summary: 'Terminal-UI (TUI): verbinding maken met de Gateway of lokaal uitvoeren in embedded modus'
+    - Je hebt de volledige lijst met TUI-functies, -opdrachten en -sneltoetsen nodig
+summary: 'Terminal-UI (TUI): verbind met de Gateway of voer lokaal uit in ingebedde modus'
 title: TUI
 x-i18n:
-    generated_at: "2026-05-05T11:16:22Z"
+    generated_at: "2026-06-27T18:32:48Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2b517ff434cc440aeffd8698df75d4d85c22a19e59b38a1f2383e58e1b4084ff
+    source_hash: ed02875ea5dcb8cef987d16fe11701eba11160525caf9791f74c610b1b6bec6e
     source_path: web/tui.md
     workflow: 16
 ---
 
-## Snel starten
+## Snelstart
 
 ### Gateway-modus
 
@@ -37,7 +38,7 @@ Externe Gateway:
 openclaw tui --url ws://<host>:<port> --token <gateway-token>
 ```
 
-Gebruik `--password` als je Gateway wachtwoordverificatie gebruikt.
+Gebruik `--password` als je Gateway wachtwoordauthenticatie gebruikt.
 
 ### Lokale modus
 
@@ -54,15 +55,15 @@ Opmerkingen:
 - `openclaw chat` en `openclaw terminal` zijn aliassen voor `openclaw tui --local`.
 - `--local` kan niet worden gecombineerd met `--url`, `--token` of `--password`.
 - Lokale modus gebruikt de ingebedde agentruntime rechtstreeks. De meeste lokale tools werken, maar functies die alleen via de Gateway beschikbaar zijn, zijn niet beschikbaar.
-- `openclaw` en `openclaw crestodian` gebruiken ook deze TUI-shell, met Crestodian als backend voor de lokale installatie- en reparatiechat.
+- Nadat een configuratiebestand instellingen bevat die zijn aangemaakt, gebruiken `openclaw` en `openclaw crestodian` ook deze TUI-shell, met Crestodian als lokale backend voor setup- en reparatiechat.
 
 ## Wat je ziet
 
 - Koptekst: verbindings-URL, huidige agent, huidige sessie.
-- Chatlogboek: gebruikersberichten, antwoorden van de assistent, systeemmeldingen, toolkaarten.
+- Chatlog: gebruikersberichten, assistentantwoorden, systeemmeldingen, toolkaarten.
 - Statusregel: verbindings-/uitvoeringsstatus (verbinden, actief, streamen, inactief, fout).
-- Voettekst: verbindingsstatus + agent + sessie + model + denken/snel/uitgebreid/trace/reasoning + tokenaantallen + bezorgen.
-- Invoer: teksteditor met automatisch aanvullen.
+- Voettekst: agent + sessie + model + doelstatus + think/fast/verbose/trace/reasoning + tokenaantallen + afleveren. Wanneer `tui.footer.showRemoteHost` is ingeschakeld, tonen externe Gateway-verbindingen ook de verbindingshost.
+- Invoer: teksteditor met autocomplete.
 
 ## Mentaal model: agents + sessies
 
@@ -73,24 +74,36 @@ Opmerkingen:
   - Als je `/session agent:other:main` typt, schakel je expliciet over naar die agentsessie.
 - Sessiebereik:
   - `per-sender` (standaard): elke agent heeft meerdere sessies.
-  - `global`: de TUI gebruikt altijd de `global`-sessie (de kiezer kan leeg zijn).
+  - `global`: de TUI gebruikt altijd de sessie `global` (de kiezer kan leeg zijn).
 - De huidige agent + sessie zijn altijd zichtbaar in de voettekst.
-- Wanneer de TUI in gateway-modus zonder `--session` wordt gestart, hervat deze de laatst geselecteerde sessie voor dezelfde gateway, agent en hetzelfde sessiebereik als die sessie nog bestaat. Het doorgeven van `--session`, `/session`, `/new` of `/reset` blijft expliciet.
+- Schakel dit in om de Gateway-host voor niet-lokale URL-ondersteunde verbindingen te tonen:
 
-## Verzenden + bezorging
+  ```bash
+  openclaw config set tui.footer.showRemoteHost true
+  ```
 
-- Berichten worden naar de Gateway verzonden; bezorging aan providers is standaard uitgeschakeld.
-- Schakel bezorging in:
+  Loopback- en ingebedde lokale verbindingen tonen nooit een hostlabel.
+
+- Als de sessie een [doel](/nl/tools/goal) heeft, toont de voettekst de compacte status,
+  zoals `Pursuing goal`, `Goal paused (/goal resume)` of
+  `Goal achieved`.
+- Wanneer de TUI in Gateway-modus zonder `--session` wordt gestart, hervat die de laatst geselecteerde sessie voor dezelfde Gateway, agent en hetzelfde sessiebereik als die sessie nog bestaat. Het doorgeven van `--session`, `/session`, `/new` of `/reset` blijft expliciet.
+
+## Verzenden + aflevering
+
+- Berichten worden naar de Gateway verzonden; aflevering aan providers staat standaard uit.
+- De TUI is een intern bronoppervlak zoals WebChat, geen generiek uitgaand kanaal. Harnassen die `tools.message` vereisen voor zichtbare antwoorden kunnen de actieve TUI-beurt afhandelen met een doelloze `message.send`; expliciete provideraflevering gebruikt nog steeds normale geconfigureerde kanalen en valt nooit terug op `lastChannel`.
+- Schakel aflevering in:
   - `/deliver on`
   - of het paneel Instellingen
   - of start met `openclaw tui --deliver`
 
 ## Kiezers + overlays
 
-- Modelkiezer: toon beschikbare modellen en stel de sessie-override in.
-- Agentkiezer: kies een andere agent.
-- Sessiekiezer: toont maximaal 50 sessies voor de huidige agent die in de laatste 7 dagen zijn bijgewerkt. Gebruik `/session <key>` om naar een oudere bekende sessie te springen.
-- Instellingen: schakel bezorgen, uitbreiding van tooluitvoer en zichtbaarheid van denken in of uit.
+- Modelkiezer: lijst beschikbare modellen weergeven en de sessie-override instellen.
+- Agentkiezer: een andere agent kiezen.
+- Sessiekiezer: toont tot 50 sessies voor de huidige agent die in de afgelopen 7 dagen zijn bijgewerkt. Gebruik `/session <key>` om naar een oudere bekende sessie te springen.
+- Instellingen: aflevering, uitvouwen van tooluitvoer en zichtbaarheid van denkproces in- of uitschakelen.
 
 ## Sneltoetsen
 
@@ -101,8 +114,8 @@ Opmerkingen:
 - Ctrl+L: modelkiezer
 - Ctrl+G: agentkiezer
 - Ctrl+P: sessiekiezer
-- Ctrl+O: uitbreiding van tooluitvoer in-/uitschakelen
-- Ctrl+T: zichtbaarheid van denken in-/uitschakelen (laadt geschiedenis opnieuw)
+- Ctrl+O: uitvouwen van tooluitvoer in- of uitschakelen
+- Ctrl+T: zichtbaarheid van denkproces in- of uitschakelen (laadt geschiedenis opnieuw)
 
 ## Slash-opdrachten
 
@@ -121,12 +134,13 @@ Sessiebesturing:
 - `/verbose <on|full|off>`
 - `/trace <on|off>`
 - `/reasoning <on|off|stream>`
-- `/usage <off|tokens|full>`
+- `/usage <off|tokens|full|reset>` (`reset`/`inherit`/`clear`/`default` wist de sessie-override)
+- `/goal [status] | /goal start <objective> | /goal pause|resume|complete|block|clear`
 - `/elevated <on|off|ask|full>` (alias: `/elev`)
 - `/activation <mention|always>`
 - `/deliver <on|off>`
 
-Sessielevenscyclus:
+Sessielevenloop:
 
 - `/new` of `/reset` (de sessie resetten)
 - `/abort` (de actieve uitvoering afbreken)
@@ -135,27 +149,27 @@ Sessielevenscyclus:
 
 Alleen lokale modus:
 
-- `/auth [provider]` opent de verificatie-/loginflow van de provider in de TUI.
+- `/auth [provider]` opent de provider-authenticatie-/inlogflow binnen de TUI.
 
 Andere Gateway-slash-opdrachten (bijvoorbeeld `/context`) worden doorgestuurd naar de Gateway en getoond als systeemuitvoer. Zie [Slash-opdrachten](/nl/tools/slash-commands).
 
 ## Lokale shellopdrachten
 
-- Zet `!` aan het begin van een regel om een lokale shellopdracht op de TUI-host uit te voeren.
-- De TUI vraagt één keer per sessie om lokale uitvoering toe te staan; als je weigert, blijft `!` uitgeschakeld voor de sessie.
-- Opdrachten worden uitgevoerd in een nieuwe, niet-interactieve shell in de werkmap van de TUI (geen blijvende `cd`/env).
-- Lokale shellopdrachten krijgen `OPENCLAW_SHELL=tui-local` in hun omgeving.
-- Een losse `!` wordt verzonden als een normaal bericht; voorloopspaties activeren geen lokale uitvoering.
+- Begin een regel met `!` om een lokale shellopdracht op de TUI-host uit te voeren.
+- De TUI vraagt één keer per sessie toestemming om lokale uitvoering toe te staan; weigeren houdt `!` uitgeschakeld voor de sessie.
+- Opdrachten worden uitgevoerd in een nieuwe, niet-interactieve shell in de werkdirectory van de TUI (geen persistente `cd`/env).
+- Lokale shellopdrachten ontvangen `OPENCLAW_SHELL=tui-local` in hun omgeving.
+- Een losse `!` wordt als normaal bericht verzonden; voorafgaande spaties activeren geen lokale uitvoering.
 
-## Configs repareren vanuit de lokale TUI
+## Configuraties repareren vanuit de lokale TUI
 
-Gebruik lokale modus wanneer de huidige config al valideert en je wilt dat de
-ingebedde agent deze op dezelfde machine inspecteert, vergelijkt met de docs,
+Gebruik lokale modus wanneer de huidige configuratie al valideert en je wilt dat de
+ingebedde agent deze op dezelfde machine inspecteert, vergelijkt met de docs
 en helpt afwijkingen te repareren zonder afhankelijk te zijn van een draaiende Gateway.
 
 Als `openclaw config validate` al faalt, begin dan eerst met `openclaw configure`
 of `openclaw doctor --fix`. `openclaw chat` omzeilt de bewaking tegen ongeldige
-config niet.
+configuratie niet.
 
 Typische lus:
 
@@ -171,7 +185,7 @@ openclaw chat
 Compare my gateway auth config with the docs and suggest the smallest fix.
 ```
 
-3. Gebruik lokale shellopdrachten voor exact bewijs en validatie:
+3. Gebruik lokale shellopdrachten voor exacte bewijzen en validatie:
 
 ```text
 !openclaw config file
@@ -181,72 +195,72 @@ Compare my gateway auth config with the docs and suggest the smallest fix.
 ```
 
 4. Pas smalle wijzigingen toe met `openclaw config set` of `openclaw configure` en voer daarna `!openclaw config validate` opnieuw uit.
-5. Als Doctor een automatische migratie of reparatie aanbeveelt, beoordeel die dan en voer `!openclaw doctor --fix` uit.
+5. Als Doctor een automatische migratie of reparatie aanbeveelt, beoordeel die en voer `!openclaw doctor --fix` uit.
 
 Tips:
 
 - Geef de voorkeur aan `openclaw config set` of `openclaw configure` boven het handmatig bewerken van `openclaw.json`.
 - `openclaw docs "<query>"` doorzoekt de live docs-index vanaf dezelfde machine.
-- `openclaw config validate --json` is nuttig wanneer je gestructureerde schema- en SecretRef-/oplosbaarheidsfouten wilt.
+- `openclaw config validate --json` is handig wanneer je gestructureerde schema- en SecretRef-/oplosbaarheidsfouten wilt.
 
 ## Tooluitvoer
 
-- Toolaanroepen worden weergegeven als kaarten met argumenten + resultaten.
+- Toolaanroepen worden weergegeven als kaarten met args + resultaten.
 - Ctrl+O schakelt tussen ingeklapte/uitgeklapte weergaven.
-- Terwijl tools draaien, streamen gedeeltelijke updates naar dezelfde kaart.
+- Terwijl tools worden uitgevoerd, streamen gedeeltelijke updates naar dezelfde kaart.
 
 ## Terminalkleuren
 
-- De TUI houdt de hoofdtekst van de assistent in de standaardvoorgrondkleur van je terminal, zodat donkere en lichte terminals beide leesbaar blijven.
+- De TUI houdt de hoofdtekst van de assistent in de standaardvoorgrondkleur van je terminal, zodat donkere en lichte terminals allebei leesbaar blijven.
 - Als je terminal een lichte achtergrond gebruikt en automatische detectie verkeerd is, stel dan `OPENCLAW_THEME=light` in voordat je `openclaw tui` start.
-- Als je in plaats daarvan het oorspronkelijke donkere palet wilt afdwingen, stel dan `OPENCLAW_THEME=dark` in.
+- Stel `OPENCLAW_THEME=dark` in om in plaats daarvan het oorspronkelijke donkere palet te forceren.
 
 ## Geschiedenis + streaming
 
 - Bij verbinden laadt de TUI de nieuwste geschiedenis (standaard 200 berichten).
-- Streamende antwoorden worden ter plekke bijgewerkt tot ze definitief zijn.
-- De TUI luistert ook naar agenttoolgebeurtenissen voor rijkere toolkaarten.
+- Streaming-antwoorden worden ter plekke bijgewerkt totdat ze definitief zijn.
+- De TUI luistert ook naar agent-toolgebeurtenissen voor rijkere toolkaarten.
 
 ## Verbindingsdetails
 
 - De TUI registreert zich bij de Gateway als `mode: "tui"`.
-- Herverbindingen tonen een systeembericht; gaten in events worden zichtbaar gemaakt in het logboek.
+- Nieuwe verbindingen tonen een systeembericht; gaten in gebeurtenissen worden in het log weergegeven.
 
 ## Opties
 
 - `--local`: uitvoeren tegen de lokale ingebedde agentruntime
-- `--url <url>`: Gateway WebSocket-URL (standaard uit config of `ws://127.0.0.1:<port>`)
+- `--url <url>`: Gateway WebSocket-URL (standaard uit configuratie of `ws://127.0.0.1:<port>`)
 - `--token <token>`: Gateway-token (indien vereist)
 - `--password <password>`: Gateway-wachtwoord (indien vereist)
-- `--session <key>`: sessiesleutel (standaard: `main`, of `global` wanneer het bereik global is)
-- `--deliver`: antwoorden van de assistent bezorgen aan de provider (standaard uit)
+- `--session <key>`: sessiesleutel (standaard: `main`, of `global` wanneer het bereik globaal is)
+- `--deliver`: assistentantwoorden afleveren aan de provider (standaard uit)
 - `--thinking <level>`: denkniveau voor verzendingen overschrijven
-- `--message <text>`: een eerste bericht verzenden na verbinding
-- `--timeout-ms <ms>`: agenttimeout in ms (standaard uit `agents.defaults.timeoutSeconds`)
+- `--message <text>`: een eerste bericht verzenden na verbinden
+- `--timeout-ms <ms>`: agenttime-out in ms (standaard `agents.defaults.timeoutSeconds`)
 - `--history-limit <n>`: te laden geschiedenisitems (standaard `200`)
 
 <Warning>
-Wanneer je `--url` instelt, valt de TUI niet terug op config- of omgevingsreferenties. Geef `--token` of `--password` expliciet door. Ontbrekende expliciete referenties zijn een fout. Geef in lokale modus geen `--url`, `--token` of `--password` door.
+Wanneer je `--url` instelt, valt de TUI niet terug op configuratie- of omgevingsreferenties. Geef `--token` of `--password` expliciet door. Ontbrekende expliciete referenties zijn een fout. Geef in lokale modus geen `--url`, `--token` of `--password` door.
 </Warning>
 
-## Problemen oplossen
+## Probleemoplossing
 
 Geen uitvoer na het verzenden van een bericht:
 
 - Voer `/status` uit in de TUI om te bevestigen dat de Gateway verbonden en inactief/bezig is.
-- Controleer de Gateway-logboeken: `openclaw logs --follow`.
-- Bevestig dat de agent kan draaien: `openclaw status` en `openclaw models status`.
-- Als je berichten in een chatkanaal verwacht, schakel bezorging in (`/deliver on` of `--deliver`).
+- Controleer de Gateway-logs: `openclaw logs --follow`.
+- Bevestig dat de agent kan worden uitgevoerd: `openclaw status` en `openclaw models status`.
+- Als je berichten in een chatkanaal verwacht, schakel aflevering in (`/deliver on` of `--deliver`).
 
 ## Verbindingsproblemen oplossen
 
 - `disconnected`: zorg dat de Gateway draait en dat je `--url/--token/--password` correct zijn.
-- Geen agents in de kiezer: controleer `openclaw agents list` en je routeringsconfig.
-- Lege sessiekiezer: je bevindt je mogelijk in global bereik of je hebt nog geen sessies.
+- Geen agents in kiezer: controleer `openclaw agents list` en je routeringsconfiguratie.
+- Lege sessiekiezer: je bevindt je mogelijk in globaal bereik of hebt nog geen sessies.
 
 ## Gerelateerd
 
 - [Control UI](/nl/web/control-ui) — webgebaseerde besturingsinterface
 - [Config](/nl/cli/config) — `openclaw.json` inspecteren, valideren en bewerken
 - [Doctor](/nl/cli/doctor) — begeleide reparatie- en migratiecontroles
-- [CLI Reference](/nl/cli) — volledige CLI-opdrachtenreferentie
+- [CLI Reference](/nl/cli) — volledige CLI-opdrachtreferentie

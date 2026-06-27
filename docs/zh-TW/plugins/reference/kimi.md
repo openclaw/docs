@@ -1,29 +1,30 @@
 ---
 read_when:
-    - 你正在安裝、設定或稽核 kimi Plugin
-summary: 為 OpenClaw 新增 Kimi、Kimi Coding 模型供應商支援。
-title: Kimi Plugin
+    - 你正在安裝、設定或稽核 kimi 外掛
+summary: 為 OpenClaw 新增 Kimi、Kimi Coding 模型提供者支援。
+title: Kimi 外掛
 x-i18n:
-    generated_at: "2026-05-02T20:57:24Z"
+    generated_at: "2026-06-27T19:43:59Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ccfc557ee819deb906b3509febbefcd7879754561c17632b8e544cc8b3b5443e
+    source_hash: 6f609f6e21b493ea83e5cc34a28921be2fed3334b531194050257857a06ef259
     source_path: plugins/reference/kimi.md
     workflow: 16
 ---
 
-# Kimi Plugin
+# Kimi 外掛
 
-為 OpenClaw 新增 Kimi、Kimi Coding 模型提供者支援。
+為 OpenClaw 新增 Kimi、Kimi Coding 模型供應商支援。
 
 ## 發行
 
 - 套件：`@openclaw/kimi-provider`
-- 安裝途徑：內建於 OpenClaw
+- 安裝路徑：npm；ClawHub：`clawhub:@openclaw/kimi-provider`
 
 ## 介面
 
-提供者：kimi, kimi-coding
+providers: kimi, kimi-coding
 
 ## 相關文件
 

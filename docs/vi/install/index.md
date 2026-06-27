@@ -1,28 +1,33 @@
 ---
 read_when:
-    - Bạn cần một phương thức cài đặt khác ngoài hướng dẫn bắt đầu nhanh
+    - Bạn cần một phương thức cài đặt khác ngoài hướng dẫn khởi động nhanh trong phần Bắt đầu
     - Bạn muốn triển khai lên một nền tảng đám mây
     - Bạn cần cập nhật, di chuyển hoặc gỡ cài đặt
-summary: Cài đặt OpenClaw - tập lệnh cài đặt, npm/pnpm/bun, từ mã nguồn, Docker và nhiều cách khác
+summary: Cài đặt OpenClaw - tập lệnh cài đặt, npm/pnpm/bun, từ mã nguồn, Docker và hơn thế nữa
 title: Cài đặt
 x-i18n:
-    generated_at: "2026-05-07T13:20:31Z"
+    generated_at: "2026-06-27T17:37:25Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8a5dc92d262710cc96a160b7cac2b93ee1e25f994ddcd45e274ad96c026b7d72
+    source_hash: a8c6108cecea3e38a6f714758fe4de9b01eebe1c89f9ff68251685c440e8a41f
     source_path: install/index.md
     workflow: 16
 ---
 
 ## Yêu cầu hệ thống
 
-- **Node 24** (khuyến nghị) hoặc Node 22.16+ - tập lệnh cài đặt tự động xử lý việc này
-- **macOS, Linux, hoặc Windows** - hỗ trợ cả Windows gốc và WSL2; WSL2 ổn định hơn. Xem [Windows](/vi/platforms/windows).
+- **Node 24** (khuyến nghị) hoặc Node 22.19+ - script cài đặt tự động xử lý việc này
+- **macOS, Linux, hoặc Windows** - người dùng Windows có thể bắt đầu với ứng dụng Windows Hub gốc, trình cài đặt CLI PowerShell, hoặc WSL2 Gateway. Xem [Windows](/vi/platforms/windows).
 - `pnpm` chỉ cần thiết nếu bạn build từ mã nguồn
 
-## Khuyến nghị: tập lệnh cài đặt
+## Khuyến nghị: script cài đặt
 
-Cách cài đặt nhanh nhất. Nó phát hiện OS của bạn, cài đặt Node nếu cần, cài đặt OpenClaw, và khởi chạy quy trình thiết lập ban đầu.
+Cách cài đặt nhanh nhất. Script phát hiện hệ điều hành của bạn, cài Node nếu cần, cài OpenClaw và khởi chạy onboarding.
+
+<Note>
+Người dùng desktop Windows cũng có thể cài ứng dụng đồng hành [Windows Hub](/vi/platforms/windows#recommended-windows-hub) gốc, bao gồm thiết lập, trạng thái khay hệ thống, chat, chế độ node và chế độ MCP cục bộ.
+</Note>
 
 <Tabs>
   <Tab title="macOS / Linux / WSL2">
@@ -37,7 +42,7 @@ Cách cài đặt nhanh nhất. Nó phát hiện OS của bạn, cài đặt Nod
   </Tab>
 </Tabs>
 
-Để cài đặt mà không chạy quy trình thiết lập ban đầu:
+Để cài đặt mà không chạy onboarding:
 
 <Tabs>
   <Tab title="macOS / Linux / WSL2">
@@ -52,23 +57,23 @@ Cách cài đặt nhanh nhất. Nó phát hiện OS của bạn, cài đặt Nod
   </Tab>
 </Tabs>
 
-Để biết tất cả cờ và tùy chọn CI/tự động hóa, xem [nội bộ trình cài đặt](/vi/install/installer).
+Để xem tất cả flag và tùy chọn CI/tự động hóa, xem [nội bộ trình cài đặt](/vi/install/installer).
 
-## Phương thức cài đặt thay thế
+## Các phương thức cài đặt thay thế
 
-### Trình cài đặt tiền tố cục bộ (`install-cli.sh`)
+### Trình cài đặt prefix cục bộ (`install-cli.sh`)
 
-Dùng cách này khi bạn muốn giữ OpenClaw và Node dưới một tiền tố cục bộ như
-`~/.openclaw`, mà không phụ thuộc vào bản cài đặt Node toàn hệ thống:
+Dùng cách này khi bạn muốn giữ OpenClaw và Node dưới một prefix cục bộ như
+`~/.openclaw`, không phụ thuộc vào bản cài Node toàn hệ thống:
 
 ```bash
 curl -fsSL https://openclaw.ai/install-cli.sh | bash
 ```
 
-Mặc định nó hỗ trợ cài đặt npm, cùng với cài đặt từ git-checkout theo cùng
-luồng tiền tố. Tài liệu tham khảo đầy đủ: [nội bộ trình cài đặt](/vi/install/installer#install-clish).
+Theo mặc định, script hỗ trợ cài đặt npm, cùng với cài đặt git-checkout trong cùng
+luồng prefix. Tham khảo đầy đủ: [nội bộ trình cài đặt](/vi/install/installer#install-clish).
 
-Đã cài đặt rồi? Chuyển đổi giữa bản cài đặt package và git bằng
+Đã cài đặt rồi? Chuyển đổi giữa bản cài package và git bằng
 `openclaw update --channel dev` và `openclaw update --channel stable`. Xem
 [Cập nhật](/vi/install/updating#switch-between-npm-and-git-installs).
 
@@ -82,6 +87,13 @@ Nếu bạn đã tự quản lý Node:
     npm install -g openclaw@latest
     openclaw onboard --install-daemon
     ```
+
+    <Note>
+    Trình cài đặt được host sẽ bỏ qua các bộ lọc độ mới npm như `min-release-age`
+    cho việc cài package OpenClaw. Nếu bạn cài thủ công bằng npm, chính sách npm
+    của bạn vẫn được áp dụng.
+    </Note>
+
   </Tab>
   <Tab title="pnpm">
     ```bash
@@ -91,7 +103,7 @@ Nếu bạn đã tự quản lý Node:
     ```
 
     <Note>
-    pnpm yêu cầu phê duyệt rõ ràng cho các package có tập lệnh build. Chạy `pnpm approve-builds -g` sau lần cài đặt đầu tiên.
+    pnpm yêu cầu phê duyệt rõ ràng cho các package có build scripts. Chạy `pnpm approve-builds -g` sau lần cài đặt đầu tiên.
     </Note>
 
   </Tab>
@@ -102,24 +114,15 @@ Nếu bạn đã tự quản lý Node:
     ```
 
     <Note>
-    Bun được hỗ trợ cho đường dẫn cài đặt CLI toàn cục. Với runtime của Gateway, Node vẫn là runtime daemon được khuyến nghị.
+    Bun được hỗ trợ cho đường dẫn cài đặt CLI toàn cục. Đối với runtime Gateway, Node vẫn là runtime daemon được khuyến nghị.
     </Note>
 
   </Tab>
 </Tabs>
 
-<Accordion title="Troubleshooting: sharp build errors (npm)">
-  Nếu `sharp` lỗi do libvips được cài đặt toàn cục:
-
-```bash
-SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g openclaw@latest
-```
-
-</Accordion>
-
 ### Từ mã nguồn
 
-Dành cho người đóng góp hoặc bất kỳ ai muốn chạy từ một checkout cục bộ:
+Dành cho contributor hoặc bất kỳ ai muốn chạy từ một checkout cục bộ:
 
 ```bash
 git clone https://github.com/openclaw/openclaw.git
@@ -129,12 +132,12 @@ pnpm link --global
 openclaw onboard --install-daemon
 ```
 
-Hoặc bỏ qua bước link và dùng `pnpm openclaw ...` từ bên trong repo. Xem [Thiết lập](/vi/start/setup) để biết đầy đủ các quy trình phát triển.
+Hoặc bỏ qua bước link và dùng `pnpm openclaw ...` từ bên trong repo. Xem [Thiết lập](/vi/start/setup) để biết đầy đủ workflow phát triển.
 
-### Cài đặt từ GitHub main
+### Cài đặt từ checkout main trên GitHub
 
 ```bash
-npm install -g github:openclaw/openclaw#main
+curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --install-method git --version main
 ```
 
 ### Container và trình quản lý package
@@ -144,20 +147,20 @@ npm install -g github:openclaw/openclaw#main
     Triển khai dạng container hoặc headless.
   </Card>
   <Card title="Podman" href="/vi/install/podman" icon="container">
-    Giải pháp container không root thay thế Docker.
+    Giải pháp container không cần root thay thế Docker.
   </Card>
   <Card title="Nix" href="/vi/install/nix" icon="snowflake">
     Cài đặt khai báo qua Nix flake.
   </Card>
   <Card title="Ansible" href="/vi/install/ansible" icon="server">
-    Cấp phát đội máy tự động.
+    Cấp phát fleet tự động.
   </Card>
   <Card title="Bun" href="/vi/install/bun" icon="zap">
     Chỉ dùng CLI qua runtime Bun.
   </Card>
 </CardGroup>
 
-## Xác minh cài đặt
+## Xác minh bản cài đặt
 
 ```bash
 openclaw --version      # confirm the CLI is available
@@ -165,27 +168,47 @@ openclaw doctor         # check for config issues
 openclaw gateway status # verify the Gateway is running
 ```
 
-Nếu bạn muốn khởi động được quản lý sau khi cài đặt:
+Nếu bạn muốn startup được quản lý sau khi cài đặt:
 
 - macOS: LaunchAgent qua `openclaw onboard --install-daemon` hoặc `openclaw gateway install`
-- Linux/WSL2: dịch vụ systemd của người dùng qua cùng các lệnh
-- Windows gốc: Scheduled Task trước, với mục đăng nhập trong thư mục Startup theo từng người dùng làm phương án dự phòng nếu việc tạo task bị từ chối
+- Linux/WSL2: dịch vụ người dùng systemd qua các lệnh tương tự
+- Windows gốc: ưu tiên Scheduled Task, với mục đăng nhập theo người dùng trong thư mục Startup làm phương án dự phòng nếu việc tạo task bị từ chối
 
-## Lưu trữ và triển khai
+## Hosting và triển khai
 
-Triển khai OpenClaw trên máy chủ đám mây hoặc VPS:
+Triển khai OpenClaw trên cloud server hoặc VPS:
 
 <CardGroup cols={3}>
-  <Card title="VPS" href="/vi/vps">Bất kỳ VPS Linux nào</Card>
-  <Card title="Docker VM" href="/vi/install/docker-vm-runtime">Các bước Docker dùng chung</Card>
-  <Card title="Kubernetes" href="/vi/install/kubernetes">K8s</Card>
-  <Card title="Fly.io" href="/vi/install/fly">Fly.io</Card>
-  <Card title="Hetzner" href="/vi/install/hetzner">Hetzner</Card>
-  <Card title="GCP" href="/vi/install/gcp">Google Cloud</Card>
-  <Card title="Azure" href="/vi/install/azure">Azure</Card>
-  <Card title="Railway" href="/vi/install/railway">Railway</Card>
-  <Card title="Render" href="/vi/install/render">Render</Card>
-  <Card title="Northflank" href="/vi/install/northflank">Northflank</Card>
+  <Card title="VPS" href="/vi/vps">
+    Bất kỳ Linux VPS nào.
+  </Card>
+  <Card title="Docker VM" href="/vi/install/docker-vm-runtime">
+    Các bước Docker dùng chung.
+  </Card>
+  <Card title="Kubernetes" href="/vi/install/kubernetes">
+    Triển khai K8s.
+  </Card>
+  <Card title="Fly.io" href="/vi/install/fly">
+    Triển khai trên Fly.io.
+  </Card>
+  <Card title="Hetzner" href="/vi/install/hetzner">
+    Triển khai Hetzner.
+  </Card>
+  <Card title="GCP" href="/vi/install/gcp">
+    Triển khai Google Cloud.
+  </Card>
+  <Card title="Azure" href="/vi/install/azure">
+    Triển khai Azure.
+  </Card>
+  <Card title="Railway" href="/vi/install/railway">
+    Triển khai Railway.
+  </Card>
+  <Card title="Render" href="/vi/install/render">
+    Triển khai Render.
+  </Card>
+  <Card title="Northflank" href="/vi/install/northflank">
+    Triển khai Northflank.
+  </Card>
 </CardGroup>
 
 ## Cập nhật, di chuyển, hoặc gỡ cài đặt
@@ -204,7 +227,7 @@ Triển khai OpenClaw trên máy chủ đám mây hoặc VPS:
 
 ## Khắc phục sự cố: không tìm thấy `openclaw`
 
-Nếu cài đặt thành công nhưng terminal của bạn không tìm thấy `openclaw`:
+Nếu cài đặt thành công nhưng không tìm thấy `openclaw` trong terminal của bạn:
 
 ```bash
 node -v           # Node installed?
@@ -212,7 +235,7 @@ npm prefix -g     # Where are global packages?
 echo "$PATH"      # Is the global bin dir in PATH?
 ```
 
-Nếu `$(npm prefix -g)/bin` không nằm trong `$PATH`, hãy thêm nó vào tệp khởi động shell của bạn (`~/.zshrc` hoặc `~/.bashrc`):
+Nếu `$(npm prefix -g)/bin` không có trong `$PATH` của bạn, hãy thêm nó vào file startup của shell (`~/.zshrc` hoặc `~/.bashrc`):
 
 ```bash
 export PATH="$(npm prefix -g)/bin:$PATH"

@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Você quer pesquisar a documentação online do OpenClaw pelo terminal
-    - Você precisa saber quais binários auxiliares a CLI da documentação invoca via shell
-summary: Referência da CLI para `openclaw docs` (pesquise no índice ativo da documentação)
+    - Você quer pesquisar a documentação ativa do OpenClaw pelo terminal
+    - Você precisa saber qual API de busca hospedada a CLI da documentação chama
+summary: Referência da CLI para `openclaw docs` (pesquise no índice da documentação online)
 title: Documentação
 x-i18n:
-    generated_at: "2026-05-10T19:27:51Z"
+    generated_at: "2026-06-27T17:19:06Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c0f733083bf455695ed24b13db6fe53e95aa3804fa8696a2fd29e749f24324c8
+    source_hash: f8be22f689d40ffec29df9562b69444c0f8b9bb607dfcb79de20b3023e0eb30a
     source_path: cli/docs.md
     workflow: 16
 ---
 
 # `openclaw docs`
 
-Pesquise o índice de documentação ao vivo do OpenClaw pelo terminal. O comando chama o endpoint público de busca MCP da documentação hospedada no Mintlify em `https://docs.openclaw.ai/mcp.SearchOpenClaw` e exibe os resultados no seu terminal.
+Pesquise o índice de documentação ativo do OpenClaw pelo terminal. O comando chama a API de busca da documentação do OpenClaw hospedada na Cloudflare e renderiza os resultados no seu terminal.
 
 ## Uso
 
@@ -38,27 +39,17 @@ openclaw docs sandbox allowHostControl
 openclaw docs gateway token secretref
 ```
 
-Sem consulta, `openclaw docs` imprime a URL do ponto de entrada da documentação mais um exemplo de comando de busca, em vez de executar uma busca.
+Sem consulta, `openclaw docs` imprime a URL de entrada da documentação mais um comando de busca de exemplo em vez de executar uma busca.
 
 ## Como funciona
 
-`openclaw docs` invoca a CLI `mcporter` para chamar a ferramenta MCP de busca da documentação e, em seguida, analisa os blocos `Title: / Link: / Content:` da saída da ferramenta em uma lista de resultados.
-
-Para resolver `mcporter`, o OpenClaw verifica na ordem:
-
-1. `mcporter` no `PATH` (usado diretamente se estiver presente).
-2. `pnpm dlx mcporter ...` se `pnpm` estiver instalado.
-3. `npx -y mcporter ...` se `npx` estiver instalado.
-
-Se nenhum estiver disponível, o comando falha com uma dica para instalar `pnpm` (`npm install -g pnpm`).
-
-A chamada de busca usa um tempo limite fixo de 30 segundos. Os trechos dos resultados são truncados para cerca de 220 caracteres por entrada.
+`openclaw docs` chama `https://docs.openclaw.ai/api/search` e renderiza os resultados JSON. A chamada de busca usa um tempo limite fixo de 30 segundos.
 
 ## Saída
 
-Em um terminal avançado (TTY), os resultados são exibidos como um título seguido por uma lista com marcadores. Cada marcador mostra o título da página, a URL vinculada da documentação e um trecho curto na linha seguinte. Resultados vazios imprimem "Nenhum resultado.".
+Em um terminal rico (TTY), os resultados são renderizados como um título seguido por uma lista com marcadores. Cada marcador mostra o título da página, a URL vinculada da documentação e um trecho curto na linha seguinte. Resultados vazios imprimem "Nenhum resultado.".
 
-Em saída sem recursos avançados (redirecionada por pipe, `--no-color`, scripts), os mesmos dados são exibidos como Markdown:
+Em saída não rica (redirecionada, `--no-color`, scripts), os mesmos dados são renderizados como Markdown:
 
 ```markdown
 # Docs search: <query>
@@ -69,12 +60,12 @@ Em saída sem recursos avançados (redirecionada por pipe, `--no-color`, scripts
 
 ## Códigos de saída
 
-| Código | Significado                                                    |
-| ------ | -------------------------------------------------------------- |
-| `0`    | A busca foi bem-sucedida (incluindo respostas sem resultados). |
-| `1`    | A chamada da ferramenta MCP falhou; a saída de erro padrão é impressa em linha. |
+| Código | Significado                                                       |
+| ------ | ----------------------------------------------------------------- |
+| `0`    | A busca foi bem-sucedida (incluindo respostas sem resultados).    |
+| `1`    | A chamada à API de busca da documentação hospedada falhou; stderr é impresso embutido. |
 
-## Relacionados
+## Relacionado
 
 - [Referência da CLI](/pt-BR/cli)
-- [Documentação ao vivo](https://docs.openclaw.ai)
+- [Documentação ativa](https://docs.openclaw.ai)

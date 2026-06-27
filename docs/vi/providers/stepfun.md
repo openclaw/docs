@@ -1,84 +1,94 @@
 ---
 read_when:
-    - Bạn muốn dùng các mô hình StepFun trong OpenClaw
+    - Bạn muốn các mô hình StepFun trong OpenClaw
     - Bạn cần hướng dẫn thiết lập StepFun
 summary: Sử dụng các mô hình StepFun với OpenClaw
 title: StepFun
 x-i18n:
-    generated_at: "2026-04-29T23:09:17Z"
+    generated_at: "2026-06-27T18:06:01Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c9d43f6e8cda9703a0b9b82d079b282ed5c955676b99b946529582af230d8d10
+    source_hash: 08c5d684382ae98a981f6f441f7eb49c01342598952bcf16dc251d0bdfb526ca
     source_path: providers/stepfun.md
     workflow: 16
 ---
 
-OpenClaw bao gồm một Plugin nhà cung cấp StepFun được tích hợp sẵn với hai id nhà cung cấp:
+Plugin nhà cung cấp StepFun hỗ trợ hai id nhà cung cấp:
 
-- `stepfun` cho endpoint tiêu chuẩn
-- `stepfun-plan` cho endpoint Step Plan
+- `stepfun` cho điểm cuối tiêu chuẩn
+- `stepfun-plan` cho điểm cuối Step Plan
 
 <Warning>
-Standard và Step Plan là **các nhà cung cấp riêng biệt** với endpoint và tiền tố model ref khác nhau (`stepfun/...` so với `stepfun-plan/...`). Dùng khóa Trung Quốc với các endpoint `.com` và khóa toàn cầu với các endpoint `.ai`.
+Standard và Step Plan là **các nhà cung cấp riêng biệt** với điểm cuối và tiền tố model ref khác nhau (`stepfun/...` so với `stepfun-plan/...`). Dùng khóa Trung Quốc với các điểm cuối `.com` và khóa toàn cầu với các điểm cuối `.ai`.
 </Warning>
 
-## Tổng quan về khu vực và endpoint
+## Cài đặt Plugin
 
-| Endpoint  | Trung Quốc (`.com`)                    | Toàn cầu (`.ai`)                      |
+Cài đặt Plugin chính thức, rồi khởi động lại Gateway:
+
+```bash
+openclaw plugins install @openclaw/stepfun-provider
+openclaw gateway restart
+```
+
+## Tổng quan về khu vực và điểm cuối
+
+| Điểm cuối | Trung Quốc (`.com`)                   | Toàn cầu (`.ai`)                      |
 | --------- | -------------------------------------- | ------------------------------------- |
 | Standard  | `https://api.stepfun.com/v1`           | `https://api.stepfun.ai/v1`           |
 | Step Plan | `https://api.stepfun.com/step_plan/v1` | `https://api.stepfun.ai/step_plan/v1` |
 
 Biến môi trường xác thực: `STEPFUN_API_KEY`
 
-## Catalog tích hợp sẵn
+## Danh mục tích hợp sẵn
 
 Standard (`stepfun`):
 
-| Model ref                | Ngữ cảnh | Đầu ra tối đa | Ghi chú               |
-| ------------------------ | -------- | ------------- | --------------------- |
-| `stepfun/step-3.5-flash` | 262,144  | 65,536        | Model tiêu chuẩn mặc định |
+| Model ref                | Ngữ cảnh | Đầu ra tối đa | Ghi chú                  |
+| ------------------------ | -------- | ------------- | ------------------------ |
+| `stepfun/step-3.5-flash` | 262,144  | 65,536        | Mô hình tiêu chuẩn mặc định |
 
 Step Plan (`stepfun-plan`):
 
-| Model ref                          | Ngữ cảnh | Đầu ra tối đa | Ghi chú                    |
-| ---------------------------------- | -------- | ------------- | -------------------------- |
-| `stepfun-plan/step-3.5-flash`      | 262,144  | 65,536        | Model Step Plan mặc định   |
-| `stepfun-plan/step-3.5-flash-2603` | 262,144  | 65,536        | Model Step Plan bổ sung    |
+| Model ref                          | Ngữ cảnh | Đầu ra tối đa | Ghi chú                       |
+| ---------------------------------- | -------- | ------------- | ----------------------------- |
+| `stepfun-plan/step-3.5-flash`      | 262,144  | 65,536        | Mô hình Step Plan mặc định    |
+| `stepfun-plan/step-3.5-flash-2603` | 262,144  | 65,536        | Mô hình Step Plan bổ sung     |
 
 ## Bắt đầu
 
 Chọn bề mặt nhà cung cấp của bạn và làm theo các bước thiết lập.
 
 <Tabs>
-  <Tab title="Tiêu chuẩn">
-    **Phù hợp nhất cho:** sử dụng đa mục đích thông qua endpoint StepFun tiêu chuẩn.
+  <Tab title="Standard">
+    **Phù hợp nhất cho:** sử dụng mục đích chung thông qua điểm cuối StepFun tiêu chuẩn.
 
     <Steps>
-      <Step title="Chọn khu vực endpoint của bạn">
-        | Lựa chọn xác thực             | Endpoint                         | Khu vực       |
-        | ----------------------------- | -------------------------------- | ------------- |
+      <Step title="Choose your endpoint region">
+        | Lựa chọn xác thực             | Điểm cuối                       | Khu vực        |
+        | -------------------------------- | -------------------------------- | ------------- |
         | `stepfun-standard-api-key-intl`  | `https://api.stepfun.ai/v1`     | Quốc tế       |
         | `stepfun-standard-api-key-cn`    | `https://api.stepfun.com/v1`    | Trung Quốc    |
       </Step>
-      <Step title="Chạy onboarding">
+      <Step title="Run onboarding">
         ```bash
         openclaw onboard --auth-choice stepfun-standard-api-key-intl
         ```
 
-        Hoặc cho endpoint Trung Quốc:
+        Hoặc cho điểm cuối Trung Quốc:
 
         ```bash
         openclaw onboard --auth-choice stepfun-standard-api-key-cn
         ```
       </Step>
-      <Step title="Phương án không tương tác">
+      <Step title="Non-interactive alternative">
         ```bash
         openclaw onboard --auth-choice stepfun-standard-api-key-intl \
           --stepfun-api-key "$STEPFUN_API_KEY"
         ```
       </Step>
-      <Step title="Xác minh model có sẵn">
+      <Step title="Verify models are available">
         ```bash
         openclaw models list --provider stepfun
         ```
@@ -87,38 +97,38 @@ Chọn bề mặt nhà cung cấp của bạn và làm theo các bước thiết
 
     ### Model ref
 
-    - Model mặc định: `stepfun/step-3.5-flash`
+    - Mô hình mặc định: `stepfun/step-3.5-flash`
 
   </Tab>
 
   <Tab title="Step Plan">
-    **Phù hợp nhất cho:** endpoint suy luận Step Plan.
+    **Phù hợp nhất cho:** điểm cuối suy luận Step Plan.
 
     <Steps>
-      <Step title="Chọn khu vực endpoint của bạn">
-        | Lựa chọn xác thực         | Endpoint                                | Khu vực       |
-        | ------------------------- | --------------------------------------- | ------------- |
+      <Step title="Choose your endpoint region">
+        | Lựa chọn xác thực         | Điểm cuối                              | Khu vực        |
+        | ---------------------------- | --------------------------------------- | ------------- |
         | `stepfun-plan-api-key-intl`  | `https://api.stepfun.ai/step_plan/v1`  | Quốc tế       |
         | `stepfun-plan-api-key-cn`    | `https://api.stepfun.com/step_plan/v1` | Trung Quốc    |
       </Step>
-      <Step title="Chạy onboarding">
+      <Step title="Run onboarding">
         ```bash
         openclaw onboard --auth-choice stepfun-plan-api-key-intl
         ```
 
-        Hoặc cho endpoint Trung Quốc:
+        Hoặc cho điểm cuối Trung Quốc:
 
         ```bash
         openclaw onboard --auth-choice stepfun-plan-api-key-cn
         ```
       </Step>
-      <Step title="Phương án không tương tác">
+      <Step title="Non-interactive alternative">
         ```bash
         openclaw onboard --auth-choice stepfun-plan-api-key-intl \
           --stepfun-api-key "$STEPFUN_API_KEY"
         ```
       </Step>
-      <Step title="Xác minh model có sẵn">
+      <Step title="Verify models are available">
         ```bash
         openclaw models list --provider stepfun-plan
         ```
@@ -127,8 +137,8 @@ Chọn bề mặt nhà cung cấp của bạn và làm theo các bước thiết
 
     ### Model ref
 
-    - Model mặc định: `stepfun-plan/step-3.5-flash`
-    - Model thay thế: `stepfun-plan/step-3.5-flash-2603`
+    - Mô hình mặc định: `stepfun-plan/step-3.5-flash`
+    - Mô hình thay thế: `stepfun-plan/step-3.5-flash-2603`
 
   </Tab>
 </Tabs>
@@ -136,7 +146,7 @@ Chọn bề mặt nhà cung cấp của bạn và làm theo các bước thiết
 ## Cấu hình nâng cao
 
 <AccordionGroup>
-  <Accordion title="Cấu hình đầy đủ: Nhà cung cấp Standard">
+  <Accordion title="Full config: Standard provider">
     ```json5
     {
       env: { STEPFUN_API_KEY: "your-key" },
@@ -166,7 +176,7 @@ Chọn bề mặt nhà cung cấp của bạn và làm theo các bước thiết
     ```
   </Accordion>
 
-  <Accordion title="Cấu hình đầy đủ: Nhà cung cấp Step Plan">
+  <Accordion title="Full config: Step Plan provider">
     ```json5
     {
       env: { STEPFUN_API_KEY: "your-key" },
@@ -205,32 +215,32 @@ Chọn bề mặt nhà cung cấp của bạn và làm theo các bước thiết
     ```
   </Accordion>
 
-  <Accordion title="Ghi chú">
-    - Nhà cung cấp này được tích hợp sẵn với OpenClaw, nên không có bước cài đặt Plugin riêng.
-    - `step-3.5-flash-2603` hiện chỉ được cung cấp trên `stepfun-plan`.
+  <Accordion title="Notes">
+    - Nhà cung cấp là một gói bên ngoài chính thức; hãy cài đặt trước khi thiết lập.
+    - `step-3.5-flash-2603` hiện chỉ được hiển thị trên `stepfun-plan`.
     - Một luồng xác thực duy nhất ghi các hồ sơ khớp khu vực cho cả `stepfun` và `stepfun-plan`, nên có thể khám phá cả hai bề mặt cùng nhau.
-    - Dùng `openclaw models list` và `openclaw models set <provider/model>` để kiểm tra hoặc chuyển đổi model.
+    - Dùng `openclaw models list` và `openclaw models set <provider/model>` để kiểm tra hoặc chuyển đổi mô hình.
 
   </Accordion>
 </AccordionGroup>
 
 <Note>
-Để xem tổng quan nhà cung cấp rộng hơn, hãy xem [Nhà cung cấp model](/vi/concepts/model-providers).
+Để xem tổng quan rộng hơn về nhà cung cấp, hãy xem [Nhà cung cấp mô hình](/vi/concepts/model-providers).
 </Note>
 
 ## Liên quan
 
 <CardGroup cols={2}>
-  <Card title="Lựa chọn model" href="/vi/concepts/model-providers" icon="layers">
+  <Card title="Model selection" href="/vi/concepts/model-providers" icon="layers">
     Tổng quan về tất cả nhà cung cấp, model ref và hành vi failover.
   </Card>
-  <Card title="Tham chiếu cấu hình" href="/vi/gateway/configuration-reference" icon="gear">
-    Schema cấu hình đầy đủ cho nhà cung cấp, model và Plugin.
+  <Card title="Configuration reference" href="/vi/gateway/configuration-reference" icon="gear">
+    Schema cấu hình đầy đủ cho nhà cung cấp, mô hình và Plugin.
   </Card>
-  <Card title="Lựa chọn model" href="/vi/concepts/models" icon="brain">
-    Cách chọn và cấu hình model.
+  <Card title="Model selection" href="/vi/concepts/models" icon="brain">
+    Cách chọn và cấu hình mô hình.
   </Card>
-  <Card title="Nền tảng StepFun" href="https://platform.stepfun.com" icon="globe">
+  <Card title="StepFun Platform" href="https://platform.stepfun.com" icon="globe">
     Quản lý khóa API StepFun và tài liệu.
   </Card>
 </CardGroup>

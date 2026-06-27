@@ -1,29 +1,30 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de perplexity-plugin
-summary: Voegt ondersteuning voor webzoekproviders toe.
-title: Perplexity-Plugin
+    - Je installeert, configureert of controleert de perplexity-Plugin
+summary: Voegt ondersteuning toe voor webzoekproviders.
+title: Perplexity-plugin
 x-i18n:
-    generated_at: "2026-05-02T20:54:15Z"
+    generated_at: "2026-06-27T18:03:15Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 86183b8201e7c6869eeeada3efcb15fd67c3d958fd5a50a56922bb0a61c5c74d
+    source_hash: c649c4dc4df04ca668e924e2644af970d75eab404b8f57579e509aa061994ffe
     source_path: plugins/reference/perplexity.md
     workflow: 16
 ---
 
-# Perplexity Plugin
+# Perplexity-Plugin
 
 Voegt ondersteuning voor webzoekproviders toe.
 
 ## Distributie
 
 - Pakket: `@openclaw/perplexity-plugin`
-- Installatieroute: opgenomen in OpenClaw
+- Installatieroute: npm; ClawHub: `clawhub:@openclaw/perplexity-plugin`
 
 ## Oppervlak
 
-contracts: webSearchProviders
+contracten: webSearchProviders
 
 ## Gerelateerde documentatie
 

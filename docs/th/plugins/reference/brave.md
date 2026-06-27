@@ -1,25 +1,26 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin brave
-summary: เพิ่มการรองรับผู้ให้บริการค้นหาเว็บ
+summary: Plugin ผู้ให้บริการ Brave Search ของ OpenClaw สำหรับการค้นหาเว็บ.
 title: Plugin Brave
 x-i18n:
-    generated_at: "2026-05-03T10:15:29Z"
+    generated_at: "2026-06-27T18:00:01Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b26d45080e2db635e9b07e1c6b674061c2b82549edc4d8d88e6f4f68bc9d43df
+    source_hash: 265b0efa840eb3ebc7bfc1cc47b703737bbd76050ac95e79825728030a166d37
     source_path: plugins/reference/brave.md
     workflow: 16
 ---
 
 # Plugin Brave
 
-เพิ่มการรองรับผู้ให้บริการค้นหาเว็บ
+Plugin ผู้ให้บริการ Brave Search ของ OpenClaw สำหรับการค้นหาเว็บ
 
-## การเผยแพร่
+## การแจกจ่าย
 
 - แพ็กเกจ: `@openclaw/brave-plugin`
-- เส้นทางการติดตั้ง: npm; ClawHub
+- ช่องทางติดตั้ง: npm; ClawHub
 
 ## พื้นผิว
 

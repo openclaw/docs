@@ -1,27 +1,28 @@
 ---
 read_when:
-    - Vous voulez poser une question annexe rapide sur la session en cours
-    - Vous mettez en œuvre ou déboguez le comportement BTW sur l’ensemble des clients
-summary: Questions annexes éphémères avec /btw
+    - Vous voulez poser rapidement une question annexe sur la session en cours
+    - Vous implémentez ou déboguez le comportement BTW entre les clients
+summary: Questions secondaires éphémères avec /btw
 title: Au fait, questions annexes
 x-i18n:
-    generated_at: "2026-05-11T20:57:35Z"
+    generated_at: "2026-06-27T18:16:03Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: fba82915b0a8f59d20073dac5c159c4aff4e81ccb1be5979be521212e22c493a
+    source_hash: cf97c17fb02c2464b1d1b31cfec652d52c60be6ce0cad25eaf32a9c080843ef2
     source_path: tools/btw.md
     workflow: 16
 ---
 
-`/btw` vous permet de poser rapidement une question annexe sur la **session actuelle** sans
+`/btw` vous permet de poser une brève question annexe sur la **session actuelle** sans
 transformer cette question en historique de conversation normal. `/side` est un alias.
 
-Son comportement est inspiré de `/btw` dans Claude Code, mais adapté au Gateway
-d’OpenClaw et à son architecture multicanal.
+Son comportement s’inspire du `/btw` de Claude Code, mais il est adapté au Gateway
+et à l’architecture multicanal d’OpenClaw.
 
 ## Ce qu’il fait
 
-Quand vous envoyez :
+Lorsque vous envoyez :
 
 ```text
 /btw what changed?
@@ -29,47 +30,54 @@ Quand vous envoyez :
 
 OpenClaw :
 
-1. prend un instantané du contexte de session actuel,
-2. exécute une requête annexe éphémère séparée,
+1. capture un instantané du contexte de session actuel,
+2. exécute une question annexe éphémère séparée,
 3. répond uniquement à la question annexe,
 4. laisse l’exécution principale inchangée,
-5. n’écrit **pas** la question BTW ni sa réponse dans l’historique de session,
-6. émet la réponse comme **résultat annexe en direct** plutôt que comme message assistant normal.
+5. n’écrit **pas** la question ni la réponse BTW dans l’historique de session,
+6. émet la réponse comme **résultat annexe en direct** plutôt que comme message d’assistant normal.
 
 Le modèle mental important est le suivant :
 
 - même contexte de session
-- requête annexe séparée et ponctuelle
-- même transport natif du harnais lorsque la session utilise un harnais natif
+- question annexe séparée à usage unique
+- même transport de harnais natif lorsque la session utilise un harnais natif
 - aucune pollution du contexte futur
-- aucune persistance dans la transcription
+- aucune persistance de transcription
 
-Pour les sessions du harnais Codex, BTW reste dans Codex en dupliquant le fil
-actif du serveur d’application sous forme de fil annexe éphémère. Cela conserve
-intacts l’OAuth Codex et le comportement natif des fils, tout en isolant la
-réponse annexe de la transcription parente. Comme `/side` dans Codex, le fil annexe
-conserve les autorisations Codex actuelles et la surface d’outils native, avec
-des garde-fous indiquant au modèle de ne pas traiter le travail hérité du fil
-parent comme des instructions actives. Les environnements d’exécution non-Codex
-conservent l’ancien chemin ponctuel direct.
+Pour les sessions avec le harnais Codex, BTW reste dans Codex en dupliquant le
+fil app-server actif sous forme de fil annexe éphémère. Cela préserve le
+comportement OAuth de Codex et le comportement de fil natif, tout en isolant la
+réponse annexe de la transcription parente. Comme avec `/side` de Codex, le fil
+annexe conserve les autorisations Codex actuelles et la surface d’outils native,
+avec des garde-fous qui indiquent au modèle de ne pas traiter le travail hérité
+du fil parent comme des instructions actives.
+
+Pour les alias d’exécution CLI, BTW utilise le backend CLI propriétaire en mode
+question annexe au lieu de revenir à un appel fournisseur direct. OpenClaw injecte
+un contexte de conversation assaini dans une nouvelle invocation CLI à usage
+unique, désactive le groupement d’outils MCP OpenClaw et l’état de session CLI
+réutilisable pour cette invocation, et laisse le backend ajouter les indicateurs
+CLI natifs no-resume ou no-tools qu’il prend en charge. Les runtimes directs non
+CLI conservent le chemin direct à usage unique.
 
 ## Ce qu’il ne fait pas
 
-`/btw` ne fait **pas** ce qui suit :
+`/btw` ne fait **pas** les actions suivantes :
 
 - créer une nouvelle session durable,
-- poursuivre la tâche principale inachevée,
+- continuer la tâche principale inachevée,
 - écrire les données de question/réponse BTW dans l’historique de transcription,
 - apparaître dans `chat.history`,
 - survivre à un rechargement.
 
-Il est intentionnellement **éphémère**.
+Il est volontairement **éphémère**.
 
 ## Fonctionnement du contexte
 
 BTW utilise la session actuelle comme **contexte d’arrière-plan uniquement**.
 
-Si l’exécution principale est actuellement active, OpenClaw prend un instantané
+Si l’exécution principale est actuellement active, OpenClaw capture un instantané
 de l’état actuel des messages et inclut l’invite principale en cours comme
 contexte d’arrière-plan, tout en indiquant explicitement au modèle :
 
@@ -82,51 +90,50 @@ comprendre le sujet de la session.
 
 ## Modèle de livraison
 
-BTW n’est **pas** livré comme un message assistant normal dans la transcription.
+BTW n’est **pas** livré comme un message de transcription d’assistant normal.
 
 Au niveau du protocole Gateway :
 
-- le chat assistant normal utilise l’événement `chat`
+- la discussion normale avec l’assistant utilise l’événement `chat`
 - BTW utilise l’événement `chat.side_result`
 
 Cette séparation est intentionnelle. Si BTW réutilisait le chemin d’événement
-`chat` normal, les clients le traiteraient comme un historique de conversation
+`chat` normal, les clients le traiteraient comme de l’historique de conversation
 ordinaire.
 
 Comme BTW utilise un événement en direct séparé et n’est pas rejoué depuis
 `chat.history`, il disparaît après un rechargement.
 
-## Comportement en surface
+## Comportement des surfaces
 
 ### TUI
 
-Dans la TUI, BTW est rendu en ligne dans la vue de session actuelle, mais il
+Dans le TUI, BTW est rendu en ligne dans la vue de session actuelle, mais il
 reste éphémère :
 
-- visiblement distinct d’une réponse assistant normale
-- supprimable avec `Enter` ou `Esc`
+- visiblement distinct d’une réponse d’assistant normale
+- pouvant être ignoré avec `Enter` ou `Esc`
 - non rejoué au rechargement
 
 ### Canaux externes
 
-Sur des canaux comme Telegram, WhatsApp et Discord, BTW est livré comme une
-réponse ponctuelle clairement libellée, car ces surfaces ne disposent pas d’un
-concept local de superposition éphémère.
+Sur les canaux comme Telegram, WhatsApp et Discord, BTW est livré comme une
+réponse ponctuelle clairement libellée, car ces surfaces n’ont pas de concept
+local de superposition éphémère.
 
-La réponse est tout de même traitée comme un résultat annexe, et non comme un
-historique de session normal.
+La réponse est tout de même traitée comme un résultat annexe, et non comme de
+l’historique de session normal.
 
 ### Interface de contrôle / web
 
-Le Gateway émet correctement BTW sous forme de `chat.side_result`, et BTW n’est
-pas inclus dans `chat.history`; le contrat de persistance est donc déjà correct
-pour le web.
+Le Gateway émet correctement BTW comme `chat.side_result`, et BTW n’est pas inclus
+dans `chat.history`, donc le contrat de persistance est déjà correct pour le web.
 
-L’interface de contrôle actuelle a encore besoin d’un consommateur dédié de
+L’interface Control UI actuelle a encore besoin d’un consommateur dédié de
 `chat.side_result` pour afficher BTW en direct dans le navigateur. Tant que cette
-prise en charge côté client n’est pas livrée, BTW est une fonctionnalité au
-niveau du Gateway avec un comportement complet dans la TUI et les canaux
-externes, mais pas encore une expérience utilisateur navigateur complète.
+prise en charge côté client n’est pas disponible, BTW est une fonctionnalité au
+niveau du Gateway avec un comportement complet dans le TUI et les canaux externes,
+mais pas encore une expérience navigateur complète.
 
 ## Quand utiliser BTW
 
@@ -148,8 +155,8 @@ Exemples :
 
 ## Quand ne pas utiliser BTW
 
-N’utilisez pas `/btw` lorsque vous voulez que la réponse fasse partie du futur
-contexte de travail de la session.
+N’utilisez pas `/btw` si vous voulez que la réponse fasse partie du futur contexte
+de travail de la session.
 
 Dans ce cas, posez la question normalement dans la session principale au lieu
 d’utiliser BTW.
@@ -158,7 +165,7 @@ d’utiliser BTW.
 
 <CardGroup cols={2}>
   <Card title="Slash commands" href="/fr/tools/slash-commands" icon="terminal">
-    Catalogue de commandes natives et directives de chat.
+    Catalogue de commandes natives et directives de discussion.
   </Card>
   <Card title="Thinking levels" href="/fr/tools/thinking" icon="brain">
     Niveaux d’effort de raisonnement pour l’appel au modèle de question annexe.

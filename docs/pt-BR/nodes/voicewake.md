@@ -1,36 +1,40 @@
 ---
 read_when:
-    - Alterar o comportamento ou os valores padrão das palavras de ativação por voz
-    - Adicionando novas plataformas Node que precisam de sincronização da palavra de ativação
-summary: Palavras de ativação por voz globais (gerenciadas pelo Gateway) e como elas são sincronizadas entre os nós
+    - Alterar o comportamento ou os padrões das palavras de ativação por voz
+    - Adicionando novas plataformas de nó que precisam de sincronização de palavra de ativação
+summary: Palavras de ativação de voz globais (gerenciadas pelo Gateway) e como elas são sincronizadas entre nós
 title: Ativação por voz
 x-i18n:
-    generated_at: "2026-05-06T09:05:18Z"
+    generated_at: "2026-06-27T17:40:53Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a284cbe3e12784a8d7a3eab6ba8ae230123557bca7593c956111199b94b91b73
+    source_hash: 3c57955e8061eca2f9fec83500e829f183cd3ef9f794bf385823a28f9c89b0a4
     source_path: nodes/voicewake.md
     workflow: 16
 ---
 
 OpenClaw trata **palavras de ativação como uma única lista global** pertencente ao **Gateway**.
 
-- Não há **palavras de ativação personalizadas por Node**.
-- **Qualquer UI de Node/app pode editar** a lista; as alterações são persistidas pelo Gateway e transmitidas para todos.
-- macOS e iOS mantêm alternâncias locais de **Ativação por voz habilitada/desabilitada** (a UX local e as permissões diferem).
-- Atualmente, o Android mantém a Ativação por voz desativada e usa um fluxo manual de microfone na aba Voz.
+- Não há **palavras de ativação personalizadas por nó**.
+- **Qualquer interface de nó/app pode editar** a lista; as alterações são persistidas pelo Gateway e transmitidas para todos.
+- macOS e iOS mantêm alternâncias locais para **Voice Wake ativado/desativado** (a UX local + permissões diferem).
+- No momento, o Android mantém o Voice Wake desativado e usa um fluxo manual de microfone na aba Voz.
 
 ## Armazenamento (host do Gateway)
 
-As palavras de ativação são armazenadas na máquina do Gateway em:
+Palavras de ativação e regras de roteamento são armazenadas no banco de dados de estado do gateway:
 
-- `~/.openclaw/settings/voicewake.json`
+- `~/.openclaw/state/openclaw.sqlite`
 
-Formato:
+As tabelas ativas são:
 
-```json
-{ "triggers": ["openclaw", "claude", "computer"], "updatedAtMs": 1730000000000 }
-```
+- `voicewake_triggers`
+- `voicewake_routing_config`
+- `voicewake_routing_routes`
+
+Arquivos legados `settings/voicewake.json` e `settings/voicewake-routing.json` são
+apenas entradas de migração do doctor; em tempo de execução, a leitura e a escrita usam as tabelas SQLite.
 
 ## Protocolo
 
@@ -41,8 +45,8 @@ Formato:
 
 Observações:
 
-- Os gatilhos são normalizados (espaços aparados, vazios removidos). Listas vazias retornam aos padrões.
-- Limites são aplicados por segurança (limites de quantidade/tamanho).
+- Os gatilhos são normalizados (espaços removidos nas extremidades, vazios descartados). Listas vazias retornam aos padrões.
+- Limites são aplicados por segurança (limites de contagem/comprimento).
 
 ### Métodos de roteamento (gatilho → destino)
 
@@ -60,7 +64,7 @@ Formato de `VoiceWakeRoutingConfig`:
 }
 ```
 
-Os destinos de rota oferecem suporte a exatamente um de:
+Os destinos de rota oferecem suporte a exatamente um dos seguintes:
 
 - `{ "mode": "current" }`
 - `{ "agentId": "main" }`
@@ -68,30 +72,30 @@ Os destinos de rota oferecem suporte a exatamente um de:
 
 ### Eventos
 
-- carga útil de `voicewake.changed` `{ triggers: string[] }`
-- carga útil de `voicewake.routing.changed` `{ config: VoiceWakeRoutingConfig }`
+- payload de `voicewake.changed` `{ triggers: string[] }`
+- payload de `voicewake.routing.changed` `{ config: VoiceWakeRoutingConfig }`
 
-Quem recebe:
+Quem o recebe:
 
 - Todos os clientes WebSocket (app macOS, WebChat etc.)
-- Todos os Nodes conectados (iOS/Android), e também no momento em que um Node se conecta, como envio inicial do "estado atual".
+- Todos os nós conectados (iOS/Android), e também ao conectar um nó como um envio inicial de "estado atual".
 
 ## Comportamento do cliente
 
 ### App macOS
 
 - Usa a lista global para controlar os gatilhos de `VoiceWakeRuntime`.
-- Editar "Palavras de gatilho" nas configurações de Ativação por voz chama `voicewake.set` e então depende da transmissão para manter outros clientes sincronizados.
+- Editar "Palavras de gatilho" nas configurações de Voice Wake chama `voicewake.set` e então depende da transmissão para manter outros clientes sincronizados.
 
-### Node iOS
+### Nó iOS
 
-- Usa a lista global para detecção de gatilhos de `VoiceWakeManager`.
-- Editar Palavras de ativação em Configurações chama `voicewake.set` (pelo WS do Gateway) e também mantém a detecção local de palavras de ativação responsiva.
+- Usa a lista global para a detecção de gatilhos de `VoiceWakeManager`.
+- Editar Palavras de ativação nas Configurações chama `voicewake.set` (pelo WS do Gateway) e também mantém a detecção local de palavras de ativação responsiva.
 
-### Node Android
+### Nó Android
 
-- Atualmente, a Ativação por voz está desabilitada no runtime/configurações do Android.
-- A voz no Android usa captura manual de microfone na aba Voz em vez de gatilhos por palavras de ativação.
+- Voice Wake está atualmente desativado no runtime/Configurações do Android.
+- A voz no Android usa captura manual de microfone na aba Voz em vez de gatilhos por palavra de ativação.
 
 ## Relacionado
 

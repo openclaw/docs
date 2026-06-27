@@ -2,12 +2,13 @@
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin qianfan
 summary: เพิ่มการรองรับผู้ให้บริการโมเดล Qianfan ให้กับ OpenClaw.
-title: Plugin Qianfan
+title: Qianfan Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:55:44Z"
+    generated_at: "2026-06-27T18:04:40Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9501e430da47fca297adb38d8516383a251315e7c144058f59b3232b75ccbbe1
+    source_hash: 49d639836cefb6c96502e614e1b5d06615fbef31a50ea186e1a02c060882019a
     source_path: plugins/reference/qianfan.md
     workflow: 16
 ---
@@ -16,10 +17,10 @@ x-i18n:
 
 เพิ่มการรองรับผู้ให้บริการโมเดล Qianfan ให้กับ OpenClaw
 
-## การแจกจ่าย
+## การจัดจำหน่าย
 
 - แพ็กเกจ: `@openclaw/qianfan-provider`
-- เส้นทางการติดตั้ง: รวมอยู่ใน OpenClaw
+- ช่องทางติดตั้ง: npm; ClawHub: `clawhub:@openclaw/qianfan-provider`
 
 ## พื้นผิว
 

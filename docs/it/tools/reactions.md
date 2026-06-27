@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Lavorare con le reazioni in qualsiasi canale
-    - Comprendere le differenze delle reazioni emoji tra le piattaforme
+    - Lavorare sulle reazioni in qualsiasi canale
+    - Comprendere le differenze nelle reazioni emoji tra le piattaforme
 summary: Semantica dello strumento di reazione in tutti i canali supportati
 title: Reazioni
 x-i18n:
-    generated_at: "2026-05-12T01:00:48Z"
+    generated_at: "2026-06-27T18:23:11Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 835c2a580f7f3e098ee956274de24191587929bfea7405a022cd68b35710c455
+    source_hash: 2dc9575eaeb79a56ca82ee491c2974e9984b1a12999762b1532ca9affdbbd72f
     source_path: tools/reactions.md
     workflow: 16
 ---
@@ -28,9 +29,7 @@ L'agente può aggiungere e rimuovere reazioni emoji sui messaggi usando lo strum
 - `emoji` è obbligatorio quando si aggiunge una reazione.
 - Imposta `emoji` su una stringa vuota (`""`) per rimuovere le reazioni del bot.
 - Imposta `remove: true` per rimuovere un emoji specifico (richiede `emoji` non vuoto).
-- Sui canali che supportano le reazioni di stato, `trackToolCalls: true` su una
-  reazione consente al runtime di usare quel messaggio reagito per le reazioni
-  di avanzamento degli strumenti successive durante lo stesso turno.
+- Sui canali che supportano le reazioni di stato, `trackToolCalls: true` su una reazione consente al runtime di usare quel messaggio con reazione per le successive reazioni di avanzamento degli strumenti durante lo stesso turno.
 
 ## Comportamento dei canali
 
@@ -47,15 +46,23 @@ L'agente può aggiungere e rimuovere reazioni emoji sui messaggi usando lo strum
 
   </Accordion>
 
+  <Accordion title="Nextcloud Talk">
+    - Solo aggiunta di reazioni: `emoji` è obbligatorio e non deve essere vuoto.
+    - La rimozione delle reazioni non è ancora supportata; le chiamate con `remove: true` (o `emoji` vuoto) vengono rifiutate con un errore chiaro invece di non avere effetto in modo silenzioso.
+    - Richiede che il bot Talk sia registrato con la funzionalità `reaction` (vedi [documentazione del canale Nextcloud Talk](/it/channels/nextcloud-talk)).
+
+  </Accordion>
+
   <Accordion title="Telegram">
     - `emoji` vuoto rimuove le reazioni del bot.
-    - `remove: true` rimuove anche le reazioni, ma richiede comunque un `emoji` non vuoto per la convalida dello strumento.
+    - Anche `remove: true` rimuove le reazioni, ma richiede comunque un `emoji` non vuoto per la validazione dello strumento.
 
   </Accordion>
 
   <Accordion title="WhatsApp">
     - `emoji` vuoto rimuove la reazione del bot.
-    - `remove: true` viene mappato internamente a un emoji vuoto (richiede comunque `emoji` nella chiamata allo strumento).
+    - `remove: true` viene mappato internamente a emoji vuoto (richiede comunque `emoji` nella chiamata allo strumento).
+    - WhatsApp ha uno slot di reazione del bot per messaggio; gli aggiornamenti delle reazioni di stato sostituiscono quello slot invece di accumulare più emoji.
 
   </Accordion>
 
@@ -67,18 +74,18 @@ L'agente può aggiungere e rimuovere reazioni emoji sui messaggi usando lo strum
 
   <Accordion title="Feishu/Lark">
     - Usa lo strumento `feishu_reaction` con le azioni `add`, `remove` e `list`.
-    - Aggiunta/rimozione richiede `emoji_type`; la rimozione richiede anche `reaction_id`.
+    - Add/remove richiede `emoji_type`; remove richiede anche `reaction_id`.
 
   </Accordion>
 
   <Accordion title="Signal">
-    - Le notifiche delle reazioni in ingresso sono controllate da `channels.signal.reactionNotifications`: `"off"` le disabilita, `"own"` (predefinito) emette eventi quando gli utenti reagiscono ai messaggi del bot e `"all"` emette eventi per tutte le reazioni.
+    - Le notifiche delle reazioni in ingresso sono controllate da `channels.signal.reactionNotifications`: `"off"` le disattiva, `"own"` (predefinito) emette eventi quando gli utenti reagiscono ai messaggi del bot e `"all"` emette eventi per tutte le reazioni.
 
   </Accordion>
 
   <Accordion title="iMessage">
     - Le reazioni in uscita sono tapback di iMessage (`love`, `like`, `dislike`, `laugh`, `emphasize` e `question`).
-    - Le notifiche dei tapback in ingresso sono controllate da `channels.imessage.reactionNotifications`: `"off"` le disabilita, `"own"` (predefinito) emette eventi quando gli utenti reagiscono ai messaggi scritti dal bot e `"all"` emette eventi per tutti i tapback provenienti da mittenti autorizzati.
+    - Le notifiche dei tapback in ingresso sono controllate da `channels.imessage.reactionNotifications`: `"off"` le disattiva, `"own"` (predefinito) emette eventi quando gli utenti reagiscono ai messaggi scritti dal bot e `"all"` emette eventi per tutti i tapback provenienti da mittenti autorizzati.
 
   </Accordion>
 </AccordionGroup>
@@ -90,7 +97,7 @@ La configurazione `reactionLevel` per canale controlla quanto ampiamente l'agent
 - [Telegram reactionLevel](/it/channels/telegram#reaction-notifications) — `channels.telegram.reactionLevel`
 - [WhatsApp reactionLevel](/it/channels/whatsapp#reaction-level) — `channels.whatsapp.reactionLevel`
 
-Imposta `reactionLevel` sui singoli canali per regolare quanto attivamente l'agente reagisce ai messaggi su ogni piattaforma.
+Imposta `reactionLevel` sui singoli canali per regolare quanto attivamente l'agente reagisce ai messaggi su ciascuna piattaforma.
 
 ## Correlati
 

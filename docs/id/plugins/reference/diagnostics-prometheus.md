@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Anda sedang memasang, mengonfigurasi, atau mengaudit Plugin diagnostics-prometheus
-summary: Pengekspor Prometheus untuk diagnostik OpenClaw.
-title: Plugin Diagnostik Prometheus
+    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin diagnostics-prometheus
+summary: Eksportir Prometheus diagnostik OpenClaw untuk metrik runtime.
+title: Plugin Prometheus diagnostik
 x-i18n:
-    generated_at: "2026-05-03T09:19:45Z"
+    generated_at: "2026-06-27T17:53:07Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d69cf5b607ea7d93ed5886e63816716fef762a7b144d8a0d1b92c0101aa3678c
+    source_hash: dbf2b296f6ff8a468ad0072dc78066a48a9bee26cf1d233506aeae79149b5822
     source_path: plugins/reference/diagnostics-prometheus.md
     workflow: 16
 ---
 
-# Plugin Diagnostik Prometheus
+# Plugin Prometheus Diagnostik
 
-Eksportir Prometheus diagnostik OpenClaw.
+Eksportir Prometheus diagnostik OpenClaw untuk metrik runtime.
 
 ## Distribusi
 
@@ -23,4 +24,4 @@ Eksportir Prometheus diagnostik OpenClaw.
 
 ## Permukaan
 
-Plugin
+plugin

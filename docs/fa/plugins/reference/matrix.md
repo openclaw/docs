@@ -1,20 +1,21 @@
 ---
 read_when:
-    - در حال نصب، پیکربندی یا ممیزی Plugin ماتریکس هستید
-summary: سطح کانال Matrix را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
-title: Plugin Matrix
+    - شما در حال نصب، پیکربندی یا ممیزی Plugin matrix هستید
+summary: Plugin کانال Matrix برای OpenClaw جهت اتاق‌ها و پیام‌های مستقیم.
+title: Plugin ماتریس
 x-i18n:
-    generated_at: "2026-05-10T19:57:09Z"
+    generated_at: "2026-06-27T18:26:50Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3c135053034d7d8c79c30316c788270278c00b72c1e0674dcbcc2215f1e23add
+    source_hash: 10497c79a626ea4c49dac80f2b87a3f8756880ed3ec8b8c4566a4bfe2a011a0c
     source_path: plugins/reference/matrix.md
     workflow: 16
 ---
 
 # Plugin ماتریکس
 
-سطح کانال Matrix را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
+Plugin کانال Matrix در OpenClaw برای اتاق‌ها و پیام‌های مستقیم.
 
 ## توزیع
 
@@ -23,7 +24,7 @@ x-i18n:
 
 ## سطح
 
-کانال‌ها: matrix
+channels: matrix
 
 ## مستندات مرتبط
 

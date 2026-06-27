@@ -1,27 +1,28 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin vercel-ai-gateway
-summary: เพิ่มการรองรับผู้ให้บริการโมเดล Vercel AI Gateway ให้กับ OpenClaw.
+summary: เพิ่มการรองรับผู้ให้บริการโมเดล Vercel AI Gateway ให้กับ OpenClaw
 title: Plugin Vercel AI Gateway
 x-i18n:
-    generated_at: "2026-05-02T20:57:33Z"
+    generated_at: "2026-06-27T18:05:43Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1fd4dcc30ddd7893aca6ac32c3ed08b287f70ee047f9013fcbe4a44870c24ef4
+    source_hash: d923028f0767ecf6e55c33ad09f769835d5b91fe5285700fc98b1463e9ab7323
     source_path: plugins/reference/vercel-ai-gateway.md
     workflow: 16
 ---
 
-# Vercel AI Gateway Plugin
+# Plugin Vercel AI Gateway
 
 เพิ่มการรองรับผู้ให้บริการโมเดล Vercel AI Gateway ให้กับ OpenClaw
 
-## การจัดจำหน่าย
+## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/vercel-ai-gateway-provider`
-- วิธีติดตั้ง: รวมอยู่ใน OpenClaw
+- เส้นทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/vercel-ai-gateway-provider`
 
-## พื้นผิวการใช้งาน
+## พื้นผิว
 
 providers: vercel-ai-gateway
 

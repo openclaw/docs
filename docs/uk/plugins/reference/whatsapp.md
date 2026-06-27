@@ -1,39 +1,30 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або виконуєте аудит Plugin для WhatsApp
-summary: Додає інтерфейс каналу WhatsApp для надсилання й отримання повідомлень OpenClaw.
-title: WhatsApp Plugin
+    - Ви встановлюєте, налаштовуєте або аудіюєте Plugin WhatsApp
+summary: Plugin каналу OpenClaw WhatsApp для чатів WhatsApp Web.
+title: Плагін WhatsApp
 x-i18n:
-    generated_at: "2026-05-05T04:18:47Z"
+    generated_at: "2026-06-27T18:02:59Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a0fa274f7e937894a070abd9307aa12eed17b27275bc7e5cfc432f8a41373c54
+    source_hash: cf563ff1384728455bd4035ba20e3bb793d039c53916cc6ee55c2f3e6fd62f01
     source_path: plugins/reference/whatsapp.md
     workflow: 16
 ---
 
-# WhatsApp Plugin
+# Plugin WhatsApp
 
-Додає поверхню каналу WhatsApp для надсилання й отримання повідомлень OpenClaw.
+Plugin каналу OpenClaw WhatsApp для чатів WhatsApp Web.
 
-## Розповсюдження
+## Дистрибуція
 
-- Package: `@openclaw/whatsapp`
-- Маршрут встановлення: npm; ClawHub
+- Пакет: `@openclaw/whatsapp`
+- Маршрут встановлення: ClawHub: `clawhub:@openclaw/whatsapp`; npm
 
 ## Поверхня
 
-channels: whatsapp
-
-## Примітка щодо встановлення у Windows
-
-У Windows Plugin WhatsApp потребує Git у `PATH` під час встановлення через npm, оскільки одну з його залежностей Baileys/libsignal отримують із git URL. Встановіть Git for Windows, потім перезапустіть оболонку й повторно запустіть встановлення:
-
-```powershell
-winget install --id Git.Git -e
-```
-
-Portable Git також працює, якщо його каталог `bin` є в `PATH`.
+канали: whatsapp; skills
 
 ## Пов’язані документи
 

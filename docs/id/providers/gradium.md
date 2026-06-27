@@ -1,30 +1,40 @@
 ---
 read_when:
     - Anda menginginkan Gradium untuk teks-ke-ucapan
-    - Anda memerlukan kunci API Gradium, suara, atau konfigurasi token direktif
+    - Anda memerlukan konfigurasi kunci API, suara, atau token direktif Gradium
 summary: Gunakan teks-ke-ucapan Gradium di OpenClaw
 title: Gradium
 x-i18n:
-    generated_at: "2026-05-10T19:50:05Z"
+    generated_at: "2026-06-27T18:04:48Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5c79da6ec63532061a8112965a679f1113bbefcc91ee00def8153dd39b5b5e58
+    source_hash: 5178bfaf5087e18d5d71f46d04b16d52e0e132257b9ef772b7869ac11b49a0da
     source_path: providers/gradium.md
     workflow: 16
 ---
 
-[Gradium](https://gradium.ai) adalah penyedia teks-ke-ucapan bawaan untuk OpenClaw. Plugin dapat merender balasan audio normal (WAV), output Opus yang kompatibel dengan catatan suara, dan audio u-law 8 kHz untuk permukaan telepon.
+[Gradium](https://gradium.ai) adalah penyedia text-to-speech untuk OpenClaw. Plugin ini dapat merender balasan audio normal (WAV), keluaran Opus yang kompatibel dengan catatan suara, dan audio u-law 8 kHz untuk permukaan teleponi.
 
 | Properti      | Nilai                                |
 | ------------- | ------------------------------------ |
-| ID penyedia   | `gradium`                            |
+| Id penyedia   | `gradium`                            |
 | Autentikasi   | `GRADIUM_API_KEY` atau config `apiKey` |
 | URL dasar     | `https://api.gradium.ai` (default)   |
 | Suara default | `Emma` (`YTpq7expH9539ERJ`)          |
 
+## Instal Plugin
+
+Instal Plugin resmi, lalu mulai ulang Gateway:
+
+```bash
+openclaw plugins install @openclaw/gradium-speech
+openclaw gateway restart
+```
+
 ## Penyiapan
 
-Buat kunci API Gradium, lalu ekspos ke OpenClaw dengan env var atau kunci config.
+Buat kunci API Gradium, lalu ekspos ke OpenClaw dengan variabel lingkungan atau kunci config.
 
 <Tabs>
   <Tab title="Env var">
@@ -33,7 +43,7 @@ Buat kunci API Gradium, lalu ekspos ke OpenClaw dengan env var atau kunci config
     ```
   </Tab>
 
-  <Tab title="Kunci config">
+  <Tab title="Config key">
     ```json5
     {
       messages: {
@@ -52,9 +62,9 @@ Buat kunci API Gradium, lalu ekspos ke OpenClaw dengan env var atau kunci config
   </Tab>
 </Tabs>
 
-Plugin memeriksa `apiKey` yang telah di-resolve terlebih dahulu dan melakukan fallback ke variabel lingkungan `GRADIUM_API_KEY`.
+Plugin memeriksa `apiKey` yang telah di-resolve terlebih dahulu dan kembali menggunakan variabel lingkungan `GRADIUM_API_KEY`.
 
-## Config
+## Konfigurasi
 
 ```json5
 {
@@ -64,7 +74,7 @@ Plugin memeriksa `apiKey` yang telah di-resolve terlebih dahulu dan melakukan fa
       provider: "gradium",
       providers: {
         gradium: {
-          voiceId: "YTpq7expH9539ERJ",
+          speakerVoiceId: "YTpq7expH9539ERJ",
           // apiKey: "${GRADIUM_API_KEY}",
           // baseUrl: "https://api.gradium.ai",
         },
@@ -74,13 +84,13 @@ Plugin memeriksa `apiKey` yang telah di-resolve terlebih dahulu dan melakukan fa
 }
 ```
 
-| Kunci                                    | Tipe   | Deskripsi                                                                                   |
-| ---------------------------------------- | ------ | ------------------------------------------------------------------------------------------- |
-| `messages.tts.providers.gradium.apiKey`  | string | Kunci API yang telah di-resolve. Mendukung `${ENV}` dan referensi rahasia.                  |
-| `messages.tts.providers.gradium.baseUrl` | string | Mengganti origin API. Garis miring penutup dihapus. Default ke `https://api.gradium.ai`.    |
-| `messages.tts.providers.gradium.voiceId` | string | ID suara default yang digunakan saat tidak ada penggantian direktif.                        |
+| Kunci                                           | Jenis  | Deskripsi                                                                                   |
+| ----------------------------------------------- | ------ | ------------------------------------------------------------------------------------------- |
+| `messages.tts.providers.gradium.apiKey`         | string | Kunci API yang telah di-resolve. Mendukung `${ENV}` dan referensi rahasia.                  |
+| `messages.tts.providers.gradium.baseUrl`        | string | Mengganti origin API. Garis miring di akhir akan dihapus. Default ke `https://api.gradium.ai`. |
+| `messages.tts.providers.gradium.speakerVoiceId` | string | Id suara default yang digunakan saat tidak ada penggantian direktif.                        |
 
-Format audio output dipilih secara otomatis oleh runtime berdasarkan permukaan target dan tidak dapat dikonfigurasi dari `openclaw.json`. Lihat [Output](#output) di bawah.
+Format audio keluaran dipilih otomatis oleh runtime berdasarkan permukaan target dan tidak dapat dikonfigurasi dari `openclaw.json`. Lihat [Keluaran](#output) di bawah.
 
 ## Suara
 
@@ -96,9 +106,9 @@ Format audio output dipilih secara otomatis oleh runtime berdasarkan permukaan t
 
 Suara default: Emma.
 
-### Penggantian suara per pesan
+### Penimpaan suara per pesan
 
-Saat kebijakan ucapan aktif mengizinkan penggantian suara, Anda dapat mengganti suara secara inline menggunakan token direktif. Semua ini di-resolve ke penggantian `voiceId` yang sama:
+Ketika kebijakan ucapan aktif mengizinkan penimpaan suara, Anda dapat mengganti suara secara inline menggunakan token direktif. Gunakan `speakerVoiceId` untuk ID suara native penyedia.
 
 ```text
 /voice:LFZvm12tW_z0xfGo
@@ -108,23 +118,23 @@ Saat kebijakan ucapan aktif mengizinkan penggantian suara, Anda dapat mengganti 
 /gradiumvoice:LFZvm12tW_z0xfGo
 ```
 
-Jika kebijakan ucapan menonaktifkan penggantian suara, direktif akan dikonsumsi tetapi diabaikan.
+Jika kebijakan ucapan menonaktifkan penimpaan suara, direktif tersebut diproses tetapi diabaikan.
 
-## Output
+## Keluaran
 
-Runtime memilih format output dari permukaan target. Penyedia tidak mensintesis format lain saat ini.
+Runtime memilih format keluaran dari permukaan target. Penyedia saat ini tidak menyintesis format lain.
 
 | Target         | Format      | Ekstensi file | Laju sampel | Flag kompatibel suara |
 | -------------- | ----------- | ------------- | ----------- | --------------------- |
 | Audio standar  | `wav`       | `.wav`        | penyedia    | tidak                 |
 | Catatan suara  | `opus`      | `.opus`       | penyedia    | ya                    |
-| Telepon        | `ulaw_8000` | n/a           | 8 kHz       | n/a                   |
+| Telefoni       | `ulaw_8000` | n/a           | 8 kHz       | n/a                   |
 
 ## Urutan pemilihan otomatis
 
-Di antara penyedia TTS yang dikonfigurasi, urutan pemilihan otomatis Gradium adalah `30`. Lihat [Teks-ke-Ucapan](/id/tools/tts) untuk mengetahui cara OpenClaw memilih penyedia aktif saat `messages.tts.provider` tidak dipin.
+Di antara penyedia TTS yang dikonfigurasi, urutan pemilihan otomatis Gradium adalah `30`. Lihat [Text-to-Speech](/id/tools/tts) untuk cara OpenClaw memilih penyedia aktif ketika `messages.tts.provider` tidak dipasangkan.
 
 ## Terkait
 
-- [Teks-ke-Ucapan](/id/tools/tts)
+- [Text-to-Speech](/id/tools/tts)
 - [Ikhtisar Media](/id/tools/media-overview)

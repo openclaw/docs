@@ -1,25 +1,26 @@
 ---
 read_when:
-    - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ inworld Plugin
-summary: การแปลงข้อความเป็นเสียงพูดแบบสตรีมมิงของ Inworld (MP3, OGG_OPUS, PCM สำหรับระบบโทรศัพท์).
+    - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin inworld
+summary: การแปลงข้อความเป็นเสียงพูดแบบสตรีมมิงของ Inworld (MP3, OGG_OPUS, PCM สำหรับโทรศัพท์).
 title: Plugin Inworld
 x-i18n:
-    generated_at: "2026-05-02T20:52:58Z"
+    generated_at: "2026-06-27T18:02:51Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1ad17b02d9c3adb00baf596dbecf5d59f5910688dac76675050e7d0687f09e0c
+    source_hash: 02d912c51460e181e100bc227575cafd1ab3c49494057d2df1e26571000020a8
     source_path: plugins/reference/inworld.md
     workflow: 16
 ---
 
-# Inworld Plugin
+# Plugin Inworld
 
-การสตรีมข้อความเป็นเสียงของ Inworld (MP3, OGG_OPUS, PCM สำหรับระบบโทรศัพท์)
+การแปลงข้อความเป็นเสียงแบบสตรีมของ Inworld (MP3, OGG_OPUS, PCM สำหรับโทรศัพท์)
 
 ## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/inworld-speech`
-- เส้นทางการติดตั้ง: รวมอยู่ใน OpenClaw
+- เส้นทางการติดตั้ง: npm; ClawHub: `clawhub:@openclaw/inworld-speech`
 
 ## พื้นผิว
 

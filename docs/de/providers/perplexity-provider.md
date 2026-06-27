@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Sie möchten Perplexity als Provider für die Websuche konfigurieren
-    - Sie benötigen den Perplexity-API-Schlüssel oder eine OpenRouter-Proxy-Konfiguration.
-summary: Einrichtung des Perplexity-Providers für die Websuche (API-Schlüssel, Suchmodi, Filterung)
+    - Sie möchten Perplexity als Websuch-Provider konfigurieren
+    - Sie benötigen den Perplexity-API-Schlüssel oder die OpenRouter-Proxy-Einrichtung
+summary: Einrichtung des Perplexity-Websuch-Providers (API-Schlüssel, Suchmodi, Filterung)
 title: Perplexity
 x-i18n:
-    generated_at: "2026-04-30T07:11:33Z"
+    generated_at: "2026-06-27T18:06:16Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 36475ba0d6ab7d569f83b7f6fdc13c5dbe6b12ca5acab44e8d213da23d04a795
+    source_hash: 3be6f5066ba180a63ea8b374f641613c815be0f84ee1d3577feea04e31ab4694
     source_path: providers/perplexity-provider.md
     workflow: 16
 ---
 
-Das Perplexity-Plugin stellt Websuchfunktionen über die Perplexity
-Search API oder Perplexity Sonar über OpenRouter bereit.
+Das Perplexity-Plugin stellt Websuchfunktionen über die Perplexity Search API
+oder Perplexity Sonar über OpenRouter bereit.
 
 <Note>
 Diese Seite beschreibt die Einrichtung des Perplexity-**Providers**. Für das Perplexity-**Tool** (wie der Agent es verwendet), siehe [Perplexity-Tool](/de/tools/perplexity-search).
@@ -24,7 +25,16 @@ Diese Seite beschreibt die Einrichtung des Perplexity-**Providers**. Für das Pe
 | ----------- | ---------------------------------------------------------------------- |
 | Typ         | Websuch-Provider (kein Modell-Provider)                                |
 | Auth        | `PERPLEXITY_API_KEY` (direkt) oder `OPENROUTER_API_KEY` (über OpenRouter) |
-| Konfigurationspfad | `plugins.entries.perplexity.config.webSearch.apiKey`            |
+| Konfigurationspfad | `plugins.entries.perplexity.config.webSearch.apiKey`             |
+
+## Plugin installieren
+
+Installieren Sie das offizielle Plugin und starten Sie anschließend den Gateway neu:
+
+```bash
+openclaw plugins install @openclaw/perplexity-plugin
+openclaw gateway restart
+```
 
 ## Erste Schritte
 
@@ -61,17 +71,17 @@ Das Plugin wählt den Transport automatisch anhand des API-Schlüsselpräfixes a
   </Tab>
   <Tab title="OpenRouter / Sonar (sk-or-)">
     Wenn Ihr Schlüssel mit `sk-or-` beginnt, leitet OpenClaw über OpenRouter weiter und verwendet
-    das Perplexity Sonar-Modell. Dieser Transport gibt KI-synthetisierte Antworten mit
+    das Perplexity Sonar-Modell. Dieser Transport gibt KI-generierte Antworten mit
     Zitierungen zurück.
   </Tab>
 </Tabs>
 
-| Schlüsselpräfix | Transport                    | Funktionen                                      |
-| ---------------- | ---------------------------- | ----------------------------------------------- |
+| Schlüsselpräfix | Transport                    | Funktionen                                       |
+| ---------------- | ---------------------------- | ------------------------------------------------ |
 | `pplx-`          | Native Perplexity Search API | Strukturierte Ergebnisse, Domain-/Sprach-/Datumsfilter |
-| `sk-or-`         | OpenRouter (Sonar)           | KI-synthetisierte Antworten mit Zitierungen     |
+| `sk-or-`         | OpenRouter (Sonar)           | KI-generierte Antworten mit Zitierungen          |
 
-## Native API-Filterung
+## Filterung mit der nativen API
 
 <Note>
 Filteroptionen sind nur verfügbar, wenn die native Perplexity API
@@ -82,10 +92,10 @@ Bei Verwendung der nativen Perplexity API unterstützen Suchen die folgenden Fil
 
 | Filter         | Beschreibung                          | Beispiel                            |
 | -------------- | ------------------------------------- | ----------------------------------- |
-| Land           | 2-stelliger Ländercode                | `us`, `de`, `jp`                    |
+| Land           | 2-Buchstaben-Ländercode               | `us`, `de`, `jp`                    |
 | Sprache        | ISO-639-1-Sprachcode                  | `en`, `fr`, `zh`                    |
 | Datumsbereich  | Aktualitätsfenster                    | `day`, `week`, `month`, `year`      |
-| Domain-Filter  | Allowlist oder Denylist (max. 20 Domains) | `example.com`                  |
+| Domainfilter   | Allowlist oder Denylist (max. 20 Domains) | `example.com`                   |
 | Inhaltsbudget  | Token-Limits pro Antwort / pro Seite  | `max_tokens`, `max_tokens_per_page` |
 
 ## Erweiterte Konfiguration
@@ -96,28 +106,28 @@ Bei Verwendung der nativen Perplexity API unterstützen Suchen die folgenden Fil
     dass `PERPLEXITY_API_KEY` für diesen Prozess verfügbar ist.
 
     <Warning>
-    Ein Schlüssel, der nur in `~/.profile` gesetzt ist, ist für einen launchd/systemd-
-    Daemon nicht sichtbar, sofern diese Umgebung nicht explizit importiert wird. Setzen Sie den Schlüssel in
-    `~/.openclaw/.env` oder über `env.shellEnv`, um sicherzustellen, dass der Gateway-Prozess ihn
-    lesen kann.
+    Ein Schlüssel, der nur in einer interaktiven Shell exportiert wurde, ist für einen
+    launchd/systemd-Daemon nicht sichtbar, sofern diese Umgebung nicht ausdrücklich importiert wird. Legen Sie
+    den Schlüssel in `~/.openclaw/.env` oder über `env.shellEnv` fest, damit der Gateway-
+    Prozess ihn lesen kann.
     </Warning>
 
   </Accordion>
 
   <Accordion title="OpenRouter-Proxy-Einrichtung">
-    Wenn Sie Perplexity-Suchen lieber über OpenRouter leiten möchten, legen Sie statt eines nativen Perplexity-Schlüssels einen
-    `OPENROUTER_API_KEY` (Präfix `sk-or-`) fest.
+    Wenn Sie Perplexity-Suchen lieber über OpenRouter weiterleiten möchten, legen Sie
+    `OPENROUTER_API_KEY` (Präfix `sk-or-`) anstelle eines nativen Perplexity-Schlüssels fest.
     OpenClaw erkennt das Präfix und wechselt automatisch zum Sonar-Transport.
 
     <Tip>
     Der OpenRouter-Transport ist nützlich, wenn Sie bereits ein OpenRouter-Konto haben
-    und eine konsolidierte Abrechnung über mehrere Provider wünschen.
+    und eine konsolidierte Abrechnung über mehrere Provider hinweg wünschen.
     </Tip>
 
   </Accordion>
 </AccordionGroup>
 
-## Verwandte Themen
+## Verwandt
 
 <CardGroup cols={2}>
   <Card title="Perplexity-Suchtool" href="/de/tools/perplexity-search" icon="magnifying-glass">

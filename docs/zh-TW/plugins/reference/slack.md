@@ -1,29 +1,30 @@
 ---
 read_when:
-    - 你正在安裝、設定或稽核 Slack Plugin
-summary: 新增 Slack 頻道介面，用於傳送和接收 OpenClaw 訊息。
-title: Slack Plugin
+    - 你正在安裝、設定或稽核 Slack 外掛
+summary: OpenClaw Slack 頻道外掛，適用於頻道、私訊、命令和應用程式事件。
+title: Slack 外掛
 x-i18n:
-    generated_at: "2026-05-02T21:00:03Z"
+    generated_at: "2026-06-27T19:46:10Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 53e79f0d6a243a560fdc145b80cc1a2b986ce114fad7c9bb4f1008dc14e3ab24
+    source_hash: 602ccb21ce084219d922860d186664bbb098fd034117893dc7359d79495bedd6
     source_path: plugins/reference/slack.md
     workflow: 16
 ---
 
-# Slack Plugin
+# Slack 外掛
 
-新增 Slack 通道介面，用於傳送與接收 OpenClaw 訊息。
+OpenClaw Slack 頻道外掛，適用於頻道、私訊、命令和應用程式事件。
 
 ## 發佈
 
 - 套件：`@openclaw/slack`
-- 安裝途徑：包含於 OpenClaw
+- 安裝途徑：npm；ClawHub
 
 ## 介面
 
-channels: slack
+頻道：slack；Skills
 
 ## 相關文件
 

@@ -1,26 +1,27 @@
 ---
 read_when:
-    - 您正在安裝、設定或稽核 memory-core Plugin
-summary: 新增記憶嵌入提供者支援。新增代理程式可呼叫的工具。
-title: 記憶核心 Plugin
+    - 你正在安裝、設定或稽核 memory-core 外掛
+summary: 新增可由代理程式呼叫的工具。
+title: 記憶核心外掛
 x-i18n:
-    generated_at: "2026-05-02T20:57:56Z"
+    generated_at: "2026-06-27T19:44:32Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7c9c5d79e5a17c13592f2d485ac24a5e2e5e3640ea68fc5315a6ba8f1640e0ef
+    source_hash: cda6ebb02b0e4c1616f68c3c9636b269248b4c63ca5f778d7f8c48152b27f303
     source_path: plugins/reference/memory-core.md
     workflow: 16
 ---
 
-# Memory Core Plugin
+# Memory Core 外掛
 
-新增記憶體嵌入提供者支援。新增可由代理呼叫的工具。
+新增代理可呼叫的工具。
 
 ## 發佈
 
 - 套件：`@openclaw/memory-core`
-- 安裝路徑：包含在 OpenClaw 中
+- 安裝路徑：包含於 OpenClaw
 
 ## 介面
 
-合約：memoryEmbeddingProviders、工具
+合約：工具

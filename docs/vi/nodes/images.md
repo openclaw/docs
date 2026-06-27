@@ -1,23 +1,24 @@
 ---
 read_when:
-    - Sửa đổi quy trình xử lý phương tiện hoặc tệp đính kèm
-summary: Quy tắc xử lý hình ảnh và phương tiện cho thao tác gửi, Gateway và phản hồi của tác nhân
-title: Hỗ trợ hình ảnh và nội dung đa phương tiện
+    - Sửa đổi pipeline phương tiện hoặc tệp đính kèm
+summary: Quy tắc xử lý hình ảnh và phương tiện cho các phản hồi gửi, Gateway và agent
+title: Hỗ trợ hình ảnh và phương tiện
 x-i18n:
-    generated_at: "2026-05-06T17:57:20Z"
+    generated_at: "2026-06-27T17:39:38Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 069140a3ad3bade166d4576ead604b4675006a01e546672872379ce83291471c
+    source_hash: eeee181cae2798b7d0f5dbe0331c6b09612755b4d796d98baaeaf6989955def5
     source_path: nodes/images.md
     workflow: 16
 ---
 
-Kênh WhatsApp chạy qua **Baileys Web**. Tài liệu này ghi lại các quy tắc xử lý phương tiện hiện tại cho gửi, Gateway và phản hồi của tác tử.
+Kênh WhatsApp chạy qua **Baileys Web**. Tài liệu này ghi lại các quy tắc xử lý phương tiện hiện tại cho lượt gửi, Gateway và phản hồi của tác nhân.
 
 ## Mục tiêu
 
-- Gửi phương tiện kèm chú thích tùy chọn qua `openclaw message send --media`.
-- Cho phép phản hồi tự động từ hộp thư web bao gồm phương tiện cùng với văn bản.
+- Gửi phương tiện với chú thích tùy chọn qua `openclaw message send --media`.
+- Cho phép phản hồi tự động từ hộp thư đến web bao gồm phương tiện cùng với văn bản.
 - Giữ giới hạn theo từng loại hợp lý và dễ dự đoán.
 
 ## Bề mặt CLI
@@ -29,56 +30,56 @@ Kênh WhatsApp chạy qua **Baileys Web**. Tài liệu này ghi lại các quy t
 ## Hành vi kênh WhatsApp Web
 
 - Đầu vào: đường dẫn tệp cục bộ **hoặc** URL HTTP(S).
-- Luồng: tải vào Buffer, phát hiện loại phương tiện và tạo payload đúng:
+- Luồng: tải vào Buffer, phát hiện loại phương tiện và tạo payload phù hợp:
   - **Hình ảnh:** đổi kích thước và nén lại thành JPEG (cạnh tối đa 2048px) theo mục tiêu `channels.whatsapp.mediaMaxMb` (mặc định: 50 MB).
-  - **Âm thanh/Giọng nói/Video:** truyền nguyên trạng tối đa 16 MB; âm thanh được gửi dưới dạng ghi chú thoại (`ptt: true`).
+  - **Âm thanh/Tin nhắn thoại/Video:** truyền nguyên trạng đến 16 MB; âm thanh được gửi dưới dạng tin nhắn thoại (`ptt: true`).
   - **Tài liệu:** mọi loại khác, tối đa 100 MB, giữ nguyên tên tệp khi có.
-- Phát lại kiểu GIF trên WhatsApp: gửi MP4 với `gifPlayback: true` (CLI: `--gif-playback`) để ứng dụng di động phát lặp trong dòng.
-- Phát hiện MIME ưu tiên magic bytes, sau đó là header, rồi phần mở rộng tệp.
+- Phát kiểu GIF trên WhatsApp: gửi MP4 với `gifPlayback: true` (CLI: `--gif-playback`) để ứng dụng khách di động lặp nội tuyến.
+- Phát hiện MIME ưu tiên magic bytes, sau đó đến header, rồi phần mở rộng tệp.
 - Chú thích lấy từ `--message` hoặc `reply.text`; cho phép chú thích trống.
-- Ghi log: chế độ không chi tiết hiển thị `↩️`/`✅`; chế độ chi tiết bao gồm kích thước và đường dẫn/URL nguồn.
+- Ghi log: không chi tiết hiển thị `↩️`/`✅`; chi tiết bao gồm kích thước và đường dẫn/URL nguồn.
 
 ## Quy trình phản hồi tự động
 
 - `getReplyFromConfig` trả về `{ text?, mediaUrl?, mediaUrls? }`.
-- Khi có phương tiện, trình gửi web phân giải đường dẫn cục bộ hoặc URL bằng cùng quy trình như `openclaw message send`.
-- Nếu được cung cấp, nhiều mục phương tiện sẽ được gửi tuần tự.
+- Khi có phương tiện, bộ gửi web phân giải đường dẫn cục bộ hoặc URL bằng cùng quy trình như `openclaw message send`.
+- Nhiều mục phương tiện sẽ được gửi tuần tự nếu được cung cấp.
 
-## Phương tiện đến trong lệnh (Pi)
+## Phương tiện đầu vào thành lệnh
 
-- Khi tin nhắn web đến có phương tiện, OpenClaw tải xuống tệp tạm và cung cấp các biến mẫu:
-  - `{{MediaUrl}}` URL giả cho phương tiện đến.
-  - `{{MediaPath}}` đường dẫn tạm cục bộ được ghi trước khi chạy lệnh.
-- Khi sandbox Docker theo phiên được bật, phương tiện đến được sao chép vào không gian làm việc của sandbox và `MediaPath`/`MediaUrl` được viết lại thành đường dẫn tương đối như `media/inbound/<filename>`.
-- Hiểu phương tiện (nếu được cấu hình qua `tools.media.*` hoặc `tools.media.models` dùng chung) chạy trước khi áp dụng mẫu và có thể chèn các khối `[Image]`, `[Audio]` và `[Video]` vào `Body`.
-  - Âm thanh đặt `{{Transcript}}` và dùng bản chép lời để phân tích lệnh, nhờ đó lệnh slash vẫn hoạt động.
-  - Mô tả video và hình ảnh giữ nguyên mọi văn bản chú thích để phân tích lệnh.
-  - Nếu mô hình hình ảnh chính đang hoạt động đã hỗ trợ thị giác nguyên bản, OpenClaw bỏ qua khối tóm tắt `[Image]` và chuyển hình ảnh gốc cho mô hình thay thế.
+- Khi tin nhắn web đầu vào có phương tiện, OpenClaw tải xuống một tệp tạm và cung cấp các biến mẫu:
+  - `{{MediaUrl}}` URL giả cho phương tiện đầu vào.
+  - `{{MediaPath}}` đường dẫn tệp tạm cục bộ được ghi trước khi chạy lệnh.
+- Khi bật sandbox Docker theo phiên, phương tiện đầu vào được sao chép vào workspace của sandbox và `MediaPath`/`MediaUrl` được viết lại thành đường dẫn tương đối như `media/inbound/<filename>`.
+- Hiểu nội dung phương tiện (nếu được cấu hình qua `tools.media.*` hoặc `tools.media.models` dùng chung) chạy trước khi áp dụng mẫu và có thể chèn các khối `[Image]`, `[Audio]` và `[Video]` vào `Body`.
+  - Âm thanh đặt `{{Transcript}}` và dùng bản chép lời để phân tích lệnh, nhờ đó các lệnh slash vẫn hoạt động.
+  - Mô tả video và hình ảnh giữ lại mọi văn bản chú thích để phân tích lệnh.
+  - Nếu mô hình hình ảnh chính đang hoạt động đã hỗ trợ vision nguyên bản, OpenClaw bỏ qua khối tóm tắt `[Image]` và thay vào đó truyền hình ảnh gốc cho mô hình.
 - Theo mặc định, chỉ tệp đính kèm hình ảnh/âm thanh/video khớp đầu tiên được xử lý; đặt `tools.media.<cap>.attachments` để xử lý nhiều tệp đính kèm.
 
 ## Giới hạn và lỗi
 
-**Mức trần gửi đi (gửi qua WhatsApp web)**
+**Giới hạn gửi đi (gửi qua WhatsApp web)**
 
 - Hình ảnh: tối đa `channels.whatsapp.mediaMaxMb` (mặc định: 50 MB) sau khi nén lại.
-- Âm thanh/giọng nói/video: mức trần 16 MB; tài liệu: mức trần 100 MB.
-- Phương tiện quá lớn hoặc không đọc được → lỗi rõ ràng trong log và phản hồi bị bỏ qua.
+- Âm thanh/tin nhắn thoại/video: giới hạn 16 MB; tài liệu: giới hạn 100 MB.
+- Phương tiện quá kích thước hoặc không đọc được → lỗi rõ ràng trong log và phản hồi bị bỏ qua.
 
-**Mức trần hiểu phương tiện (chép lời/mô tả)**
+**Giới hạn hiểu nội dung phương tiện (chép lời/mô tả)**
 
-- Hình ảnh mặc định: 10 MB (`tools.media.image.maxBytes`).
-- Âm thanh mặc định: 20 MB (`tools.media.audio.maxBytes`).
-- Video mặc định: 50 MB (`tools.media.video.maxBytes`).
-- Phương tiện quá lớn sẽ bỏ qua bước hiểu, nhưng phản hồi vẫn tiếp tục với phần thân gốc.
+- Mặc định cho hình ảnh: 10 MB (`tools.media.image.maxBytes`).
+- Mặc định cho âm thanh: 20 MB (`tools.media.audio.maxBytes`).
+- Mặc định cho video: 50 MB (`tools.media.video.maxBytes`).
+- Phương tiện quá kích thước sẽ bỏ qua bước hiểu nội dung, nhưng phản hồi vẫn tiếp tục với nội dung gốc.
 
 ## Ghi chú cho kiểm thử
 
-- Bao phủ luồng gửi + phản hồi cho các trường hợp hình ảnh/âm thanh/tài liệu.
-- Xác thực việc nén lại cho hình ảnh (giới hạn kích thước) và cờ ghi chú thoại cho âm thanh.
-- Đảm bảo phản hồi nhiều phương tiện tỏa ra thành các lượt gửi tuần tự.
+- Bao phủ các luồng gửi + phản hồi cho trường hợp hình ảnh/âm thanh/tài liệu.
+- Xác thực việc nén lại cho hình ảnh (giới hạn kích thước) và cờ tin nhắn thoại cho âm thanh.
+- Đảm bảo phản hồi nhiều phương tiện được tỏa ra thành các lượt gửi tuần tự.
 
 ## Liên quan
 
-- [Chụp bằng camera](/vi/nodes/camera)
-- [Hiểu phương tiện](/vi/nodes/media-understanding)
-- [Âm thanh và ghi chú thoại](/vi/nodes/audio)
+- [Chụp ảnh bằng camera](/vi/nodes/camera)
+- [Hiểu nội dung phương tiện](/vi/nodes/media-understanding)
+- [Âm thanh và tin nhắn thoại](/vi/nodes/audio)

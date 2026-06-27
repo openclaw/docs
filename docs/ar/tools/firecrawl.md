@@ -1,35 +1,48 @@
 ---
 read_when:
-    - تريد استخراجًا من الويب مدعومًا بـ Firecrawl
-    - تحتاج إلى مفتاح API لـ Firecrawl
-    - تريد استخدام Firecrawl كمزوّد web_search
-    - تريد استخراجًا مقاومًا للروبوتات لـ web_fetch
-summary: البحث والكشط عبر Firecrawl، والرجوع الاحتياطي إلى web_fetch
+    - تريد استخراج الويب المدعوم بـ Firecrawl
+    - تريد استخدام Firecrawl web_fetch بلا مفتاح
+    - تحتاج إلى مفتاح API من Firecrawl للبحث أو للحصول على حدود أعلى
+    - تريد Firecrawl كموفّر web_search
+    - تريد استخراجًا مضادًا للبوتات لـ web_fetch
+summary: بحث Firecrawl وكشطه واحتياطي web_fetch
 title: Firecrawl
 x-i18n:
-    generated_at: "2026-05-02T07:44:56Z"
+    generated_at: "2026-06-27T18:42:01Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 0570fde055cf8028cddf78f1ba19225d10cccd0662f45d063f23a39b4a82a7e0
+    source_hash: e8f6ef7ea3711e8e3e55d6eec4a99397dec4efc548c7192924fdd5850cb270bf
     source_path: tools/firecrawl.md
     workflow: 16
 ---
 
 يمكن لـ OpenClaw استخدام **Firecrawl** بثلاث طرق:
 
-- بصفته موفر `web_search`
+- بوصفه موفّر `web_search`
 - كأدوات Plugin صريحة: `firecrawl_search` و`firecrawl_scrape`
 - كمستخرج احتياطي لـ `web_fetch`
 
-إنه خدمة مستضافة للاستخراج/البحث تدعم تجاوز البوتات والتخزين المؤقت،
-ما يساعد مع المواقع كثيفة JS أو الصفحات التي تحظر عمليات الجلب العادية عبر HTTP.
+إنه خدمة مستضافة للاستخراج/البحث تدعم التحايل على البوتات والتخزين المؤقت،
+وهذا يساعد مع المواقع كثيفة JavaScript أو الصفحات التي تحظر جلب HTTP العادي.
 
-## الحصول على مفتاح API
+## تثبيت Plugin
 
-1. أنشئ حساب Firecrawl وولّد مفتاح API.
-2. خزّنه في الإعدادات أو عيّن `FIRECRAWL_API_KEY` في بيئة Gateway.
+ثبّت Plugin الرسمي، ثم أعد تشغيل Gateway:
 
-## تكوين بحث Firecrawl
+```bash
+openclaw plugins install @openclaw/firecrawl-plugin
+openclaw gateway restart
+```
+
+## web_fetch بلا مفتاح ومفاتيح API
+
+يدعم احتياطي `web_fetch` المستضاف من Firecrawl والمحدد صراحة وصولًا أوليًا
+من دون مفتاح API. أضف `FIRECRAWL_API_KEY` في بيئة gateway
+أو اضبطه عندما تحتاج إلى حدود أعلى. يتطلب Firecrawl `web_search` و
+`firecrawl_scrape` مفتاح API.
+
+## إعداد بحث Firecrawl
 
 ```json5
 {
@@ -58,23 +71,29 @@ x-i18n:
 
 ملاحظات:
 
-- يؤدي اختيار Firecrawl في الإعداد الأولي أو `openclaw configure --section web` إلى تفعيل Plugin Firecrawl المضمّن تلقائيًا.
-- يدعم `web_search` مع Firecrawl المعلمتين `query` و`count`.
-- لعناصر التحكم الخاصة بـ Firecrawl مثل `sources` أو `categories` أو استخراج النتائج، استخدم `firecrawl_search`.
-- تكون القيمة الافتراضية لـ `baseUrl` هي Firecrawl المستضاف على `https://api.firecrawl.dev`. لا يُسمح بالتجاوزات ذاتية الاستضافة إلا لنقاط النهاية الخاصة/الداخلية؛ ولا يُقبل HTTP إلا لتلك الأهداف الخاصة.
-- `FIRECRAWL_BASE_URL` هو بديل البيئة المشترك لعناوين URL الأساسية لبحث Firecrawl والاستخراج.
+- يؤدي اختيار Firecrawl أثناء الإعداد الأولي أو عبر `openclaw configure --section web` إلى تمكين Plugin Firecrawl المثبّت تلقائيًا.
+- يدعم `web_search` مع Firecrawl المعاملين `query` و`count`.
+- لعناصر تحكم Firecrawl الخاصة مثل `sources` أو `categories` أو كشط النتائج، استخدم `firecrawl_search`.
+- القيمة الافتراضية لـ `baseUrl` هي Firecrawl المستضاف عند `https://api.firecrawl.dev`. لا يُسمح بتجاوزات الاستضافة الذاتية إلا لنقاط النهاية الخاصة/الداخلية؛ ولا يُقبل HTTP إلا لهذه الأهداف الخاصة.
+- `FIRECRAWL_BASE_URL` هو احتياطي البيئة المشترك لعناوين URL الأساسية للبحث والكشط في Firecrawl.
 
-## تكوين استخراج Firecrawl + احتياطي web_fetch
+## إعداد احتياطي Firecrawl لـ web_fetch
 
 ```json5
 {
+  tools: {
+    web: {
+      fetch: {
+        provider: "firecrawl", // explicit selection enables keyless fallback
+      },
+    },
+  },
   plugins: {
     entries: {
       firecrawl: {
         enabled: true,
         config: {
           webFetch: {
-            apiKey: "FIRECRAWL_API_KEY_HERE",
             baseUrl: "https://api.firecrawl.dev",
             onlyMainContent: true,
             maxAgeMs: 172800000,
@@ -89,30 +108,32 @@ x-i18n:
 
 ملاحظات:
 
-- لا تُشغَّل محاولات احتياطي Firecrawl إلا عند توفر مفتاح API (`plugins.entries.firecrawl.config.webFetch.apiKey` أو `FIRECRAWL_API_KEY`).
-- يتحكم `maxAgeMs` في مدى قِدم النتائج المخزنة مؤقتًا المسموح به (بالمللي ثانية). القيمة الافتراضية هي يومان.
-- يتم ترحيل إعدادات `tools.web.fetch.firecrawl.*` القديمة تلقائيًا بواسطة `openclaw doctor --fix`.
-- تتبع تجاوزات عنوان URL الأساسي/الاستخراج في Firecrawl قاعدة الاستضافة/الخصوصية نفسها مثل البحث: تستخدم حركة المرور العامة المستضافة `https://api.firecrawl.dev`؛ ويجب أن تشير التجاوزات ذاتية الاستضافة إلى نقاط نهاية خاصة/داخلية.
-- يرفض `firecrawl_scrape` عناوين URL المستهدفة الواضحة الخاصة، وloopback، والبيانات الوصفية، وغير HTTP(S) قبل تمريرها إلى Firecrawl، بما يطابق عقد سلامة الهدف في `web_fetch` لاستدعاءات استخراج Firecrawl الصريحة.
+- يعمل احتياطي `web_fetch` من Firecrawl والمحدد صراحة من دون مفتاح API. عند ضبطه، يرسل OpenClaw القيمة `plugins.entries.firecrawl.config.webFetch.apiKey` أو `FIRECRAWL_API_KEY` للحصول على حدود أعلى.
+- يؤدي اختيار Firecrawl أثناء الإعداد الأولي أو عبر `openclaw configure --section web` إلى تمكين Plugin واختيار Firecrawl لـ `web_fetch` ما لم يكن موفّر جلب آخر مضبوطًا بالفعل.
+- يتطلب `firecrawl_scrape` مفتاح API.
+- يتحكم `maxAgeMs` في مدى قِدم النتائج المخزنة مؤقتًا المسموح به (بالملي ثانية). القيمة الافتراضية يومان.
+- تتم ترحيل إعدادات `tools.web.fetch.firecrawl.*` القديمة تلقائيًا بواسطة `openclaw doctor --fix`.
+- تتبع تجاوزات عنوان URL الأساسي/الكشط في Firecrawl قاعدة الاستضافة/الخصوصية نفسها المتبعة في البحث: يستخدم المرور العام المستضاف `https://api.firecrawl.dev`؛ ويجب أن تتحلل تجاوزات الاستضافة الذاتية إلى نقاط نهاية خاصة/داخلية.
+- يرفض `firecrawl_scrape` عناوين URL الهدف الخاصة وذات loopback والبيانات الوصفية وغير HTTP(S) الواضحة قبل تمريرها إلى Firecrawl، بما يطابق عقد سلامة الهدف في `web_fetch` لاستدعاءات كشط Firecrawl الصريحة.
 
-يعيد `firecrawl_scrape` استخدام إعدادات `plugins.entries.firecrawl.config.webFetch.*` نفسها ومتغيرات البيئة نفسها.
+يعيد `firecrawl_scrape` استخدام إعدادات ومتغيرات البيئة نفسها في `plugins.entries.firecrawl.config.webFetch.*`، بما في ذلك مفتاح API المطلوب.
 
-### Firecrawl ذاتي الاستضافة
+### Firecrawl مستضاف ذاتيًا
 
-عيّن `plugins.entries.firecrawl.config.webSearch.baseUrl`،
+اضبط `plugins.entries.firecrawl.config.webSearch.baseUrl`،
 أو `plugins.entries.firecrawl.config.webFetch.baseUrl`، أو `FIRECRAWL_BASE_URL`
-عند تشغيل Firecrawl بنفسك. يقبل OpenClaw ‏`http://` فقط لأهداف loopback
-أو الشبكة الخاصة أو `.local` أو `.internal` أو `.localhost`. تُرفض المضيفات
-العامة المخصصة حتى لا تُرسل مفاتيح Firecrawl API إلى نقاط نهاية عشوائية
+عندما تشغّل Firecrawl بنفسك. يقبل OpenClaw استخدام `http://` فقط لأهداف loopback،
+أو الشبكات الخاصة، أو `.local`، أو `.internal`، أو `.localhost`. تُرفض المضيفات
+العامة المخصصة حتى لا تُرسل مفاتيح API الخاصة بـ Firecrawl إلى نقاط نهاية عشوائية
 عن طريق الخطأ.
 
-## أدوات Plugin في Firecrawl
+## أدوات Plugin Firecrawl
 
 ### `firecrawl_search`
 
 استخدم هذا عندما تريد عناصر تحكم بحث خاصة بـ Firecrawl بدلًا من `web_search` العام.
 
-المعلمات الأساسية:
+المعاملات الأساسية:
 
 - `query`
 - `count`
@@ -123,9 +144,9 @@ x-i18n:
 
 ### `firecrawl_scrape`
 
-استخدم هذا للصفحات كثيفة JS أو المحمية من البوتات حيث يكون `web_fetch` العادي ضعيفًا.
+استخدم هذا للصفحات كثيفة JavaScript أو المحمية من البوتات حيث يكون `web_fetch` العادي ضعيفًا.
 
-المعلمات الأساسية:
+المعاملات الأساسية:
 
 - `url`
 - `extractMode`
@@ -136,27 +157,27 @@ x-i18n:
 - `storeInCache`
 - `timeoutSeconds`
 
-## التخفي / تجاوز البوتات
+## التخفي / التحايل على البوتات
 
-يعرض Firecrawl معلمة **وضع proxy** لتجاوز البوتات (`basic` أو `stealth` أو `auto`).
-يستخدم OpenClaw دائمًا `proxy: "auto"` بالإضافة إلى `storeInCache: true` لطلبات Firecrawl.
-إذا تم حذف proxy، يستخدم Firecrawl القيمة الافتراضية `auto`. يعيد `auto` المحاولة باستخدام وكلاء التخفي إذا فشلت محاولة أساسية، ما قد يستخدم رصيدًا أكثر
-من الاستخراج الأساسي فقط.
+يعرض Firecrawl معامل **وضع الوكيل** للتحايل على البوتات (`basic` أو `stealth` أو `auto`).
+يستخدم OpenClaw دائمًا `proxy: "auto"` مع `storeInCache: true` لطلبات Firecrawl.
+إذا حُذف الوكيل، يستخدم Firecrawl القيمة الافتراضية `auto`. يعيد `auto` المحاولة باستخدام وكلاء التخفي إذا فشلت محاولة أساسية، وقد يستهلك ذلك أرصدة أكثر
+من الكشط الأساسي فقط.
 
 ## كيف يستخدم `web_fetch` Firecrawl
 
-ترتيب استخراج `web_fetch`:
+ترتيب الاستخراج في `web_fetch`:
 
 1. Readability (محلي)
-2. Firecrawl (إذا تم اختياره أو اكتشافه تلقائيًا بصفته احتياطي جلب الويب النشط)
+2. Firecrawl (عند تحديده، أو اكتشافه تلقائيًا من بيانات الاعتماد المضبوطة)
 3. تنظيف HTML الأساسي (آخر احتياطي)
 
 مفتاح الاختيار هو `tools.web.fetch.provider`. إذا حذفته، يكتشف OpenClaw
-تلقائيًا أول موفر جاهز لجلب الويب من بيانات الاعتماد المتاحة.
-حاليًا، الموفر المضمّن هو Firecrawl.
+تلقائيًا أول موفّر جاهز لجلب الويب من بيانات الاعتماد المتاحة.
+يوفر Plugin Firecrawl الرسمي ذلك الاحتياطي.
 
 ## ذو صلة
 
-- [نظرة عامة على بحث الويب](/ar/tools/web) -- جميع الموفرين والاكتشاف التلقائي
+- [نظرة عامة على بحث الويب](/ar/tools/web) -- جميع الموفّرين والاكتشاف التلقائي
 - [جلب الويب](/ar/tools/web-fetch) -- أداة web_fetch مع احتياطي Firecrawl
 - [Tavily](/ar/tools/tavily) -- أدوات البحث + الاستخراج

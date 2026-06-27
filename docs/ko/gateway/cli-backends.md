@@ -1,57 +1,64 @@
 ---
 read_when:
-    - API 제공업체가 실패할 때 안정적인 대체 수단이 필요합니다
-    - Codex CLI 또는 다른 로컬 AI CLI를 실행 중이며 이를 재사용하려는 경우
-    - CLI 백엔드 도구 접근을 위한 MCP 루프백 브리지를 이해하려는 경우
-summary: 'CLI 백엔드: 선택적 MCP 도구 브리지를 지원하는 로컬 AI CLI 폴백'
+    - API 제공업체에 장애가 발생할 때 신뢰할 수 있는 대체 수단이 필요합니다
+    - 로컬 AI CLI를 실행 중이며 이를 재사용하려는 경우
+    - CLI 백엔드 도구 접근을 위한 MCP 루프백 브리지를 이해하려고 합니다
+summary: 'CLI 백엔드: 선택적 MCP 도구 브리지가 있는 로컬 AI CLI 폴백'
 title: CLI 백엔드
 x-i18n:
-    generated_at: "2026-05-10T19:34:00Z"
+    generated_at: "2026-06-27T17:27:15Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e6fbbca3bc7e9c0b87147b91d419c03ea0b112494fa54c1ac041e80e76c7b186
+    source_hash: dfcfbe821887dd5c46fdcca6dbd089bbf5f61d5b2ac9ad59980b156933bb3d54
     source_path: gateway/cli-backends.md
     workflow: 16
 ---
 
-OpenClaw는 API providers가 중단되었거나, 속도 제한에 걸렸거나, 일시적으로 오동작할 때 **local AI CLI**를 **텍스트 전용 fallback**으로 실행할 수 있습니다. 이는 의도적으로 보수적인 방식입니다.
+OpenClaw는 API 공급자가 중단되었거나, 속도 제한에 걸렸거나, 일시적으로 오작동할 때
+**로컬 AI CLI**를 **텍스트 전용 폴백**으로 실행할 수 있습니다. 이는 의도적으로 보수적인 방식입니다.
 
-- **OpenClaw 도구는 직접 주입되지 않지만**, `bundleMcp: true`인 백엔드는 loopback MCP 브리지를 통해 gateway 도구를 받을 수 있습니다.
-- 이를 지원하는 CLI를 위한 **JSONL streaming**.
-- **Sessions are supported**됩니다(따라서 후속 턴이 일관성을 유지합니다).
-- CLI가 이미지 경로를 허용하는 경우 **Images can be passed through**됩니다.
+- **OpenClaw 도구는 직접 주입되지 않지만**, `bundleMcp: true`인 백엔드는
+  local loopback MCP 브리지를 통해 Gateway 도구를 받을 수 있습니다.
+- 이를 지원하는 CLI를 위한 **JSONL 스트리밍**.
+- **세션이 지원됩니다**(따라서 후속 턴이 일관성을 유지합니다).
+- CLI가 이미지 경로를 받는 경우 **이미지를 그대로 전달할 수 있습니다**.
 
-이는 기본 경로가 아니라 **안전망**으로 설계되었습니다. 외부 API에 의존하지 않고
+이는 기본 경로라기보다 **안전망**으로 설계되었습니다. 외부 API에 의존하지 않고
 "항상 작동하는" 텍스트 응답을 원할 때 사용하세요.
 
-ACP session controls, background tasks,
-thread/conversation binding, 영구 외부 coding sessions를 갖춘 전체 harness runtime을 원한다면
-대신 [ACP Agents](/ko/tools/acp-agents)를 사용하세요. CLI 백엔드는 ACP가 아닙니다.
+ACP 세션 제어, 백그라운드 작업, 스레드/대화 바인딩, 지속적인 외부 코딩 세션이 있는
+전체 하네스 런타임을 원한다면 대신
+[ACP 에이전트](/ko/tools/acp-agents)를 사용하세요. CLI 백엔드는 ACP가 아닙니다.
 
 <Tip>
-  새 backend Plugin을 빌드하나요? 
-  [CLI backend plugins](/ko/plugins/cli-backend-plugins)를 사용하세요. 이 페이지는 이미 등록된 백엔드를
-  구성하고 운영하는 사용자를 위한 것입니다.
+  새 백엔드 Plugin을 만들고 있나요? 
+  [CLI 백엔드 Plugin](/ko/plugins/cli-backend-plugins)을 사용하세요. 이 페이지는 이미
+  등록된 백엔드를 구성하고 운영하는 사용자를 위한 것입니다.
 </Tip>
 
-## 초보자 친화적 빠른 시작
+## 초보자 친화 빠른 시작
 
-Codex CLI는 **어떤 config도 없이** 사용할 수 있습니다(번들 OpenAI Plugin이
+Claude Code CLI는 **구성 없이도** 사용할 수 있습니다(번들 Anthropic Plugin이
 기본 백엔드를 등록합니다).
 
 ```bash
-openclaw agent --message "hi" --model codex-cli/gpt-5.5
+openclaw agent --agent main --message "hi" --model claude-cli/claude-sonnet-4-6
 ```
 
-Gateway가 launchd/systemd 아래에서 실행되고 PATH가 최소화되어 있다면, command 경로만 추가하세요.
+명시적 에이전트 목록이 구성되어 있지 않으면 `main`이 기본 에이전트 id입니다. 여러
+에이전트를 사용하는 경우 실행하려는 에이전트 id로 바꾸세요.
+
+Gateway가 launchd/systemd 아래에서 실행되고 PATH가 최소화되어 있다면,
+명령 경로만 추가하세요.
 
 ```json5
 {
   agents: {
     defaults: {
       cliBackends: {
-        "codex-cli": {
-          command: "/opt/homebrew/bin/codex",
+        "claude-cli": {
+          command: "/opt/homebrew/bin/claude",
         },
       },
     },
@@ -59,15 +66,15 @@ Gateway가 launchd/systemd 아래에서 실행되고 PATH가 최소화되어 있
 }
 ```
 
-이것으로 충분합니다. CLI 자체 외에는 키나 추가 auth config가 필요 없습니다.
+이것이 전부입니다. CLI 자체에 필요한 것 외에는 키나 추가 인증 구성이 필요 없습니다.
 
-번들 CLI 백엔드를 Gateway 호스트의 **기본 message provider**로 사용하는 경우,
-이제 config가 model ref나 `agents.defaults.cliBackends` 아래에서 해당 백엔드를 명시적으로 참조하면
-OpenClaw가 소유 번들 Plugin을 자동으로 로드합니다.
+번들 CLI 백엔드를 Gateway 호스트의 **기본 메시지 공급자**로 사용하는 경우,
+이제 구성에서 모델 ref 또는 `agents.defaults.cliBackends` 아래에 해당 백엔드를
+명시적으로 참조하면 OpenClaw가 소유 번들 Plugin을 자동으로 로드합니다.
 
-## fallback으로 사용하기
+## 폴백으로 사용하기
 
-기본 모델이 실패할 때만 실행되도록 fallback 목록에 CLI 백엔드를 추가하세요.
+CLI 백엔드를 폴백 목록에 추가하면 기본 모델이 실패할 때만 실행됩니다.
 
 ```json5
 {
@@ -75,11 +82,11 @@ OpenClaw가 소유 번들 Plugin을 자동으로 로드합니다.
     defaults: {
       model: {
         primary: "anthropic/claude-opus-4-6",
-        fallbacks: ["codex-cli/gpt-5.5"],
+        fallbacks: ["claude-cli/claude-sonnet-4-6"],
       },
       models: {
         "anthropic/claude-opus-4-6": { alias: "Opus" },
-        "codex-cli/gpt-5.5": {},
+        "claude-cli/claude-sonnet-4-6": {},
       },
     },
   },
@@ -88,35 +95,32 @@ OpenClaw가 소유 번들 Plugin을 자동으로 로드합니다.
 
 참고:
 
-- `agents.defaults.models`(allowlist)를 사용하는 경우, CLI 백엔드 모델도 거기에 포함해야 합니다.
-- 기본 provider가 실패하면(auth, rate limits, timeouts), OpenClaw는
+- `agents.defaults.models`(허용 목록)를 사용하는 경우 CLI 백엔드 모델도 거기에 포함해야 합니다.
+- 기본 공급자가 실패하면(인증, 속도 제한, 시간 초과) OpenClaw는
   다음으로 CLI 백엔드를 시도합니다.
 
 ## 구성 개요
 
-모든 CLI 백엔드는 다음 아래에 있습니다.
+모든 CLI 백엔드는 다음 위치에 있습니다.
 
 ```
 agents.defaults.cliBackends
 ```
 
-각 항목은 **provider id**(예: `codex-cli`, `my-cli`)를 키로 사용합니다.
-provider id는 model ref의 왼쪽 부분이 됩니다.
+각 항목은 **공급자 id**(예: `claude-cli`, `my-cli`)를 키로 사용합니다.
+공급자 id는 모델 ref의 왼쪽이 됩니다.
 
 ```
 <provider>/<model>
 ```
 
-### 예시 구성
+### 구성 예시
 
 ```json5
 {
   agents: {
     defaults: {
       cliBackends: {
-        "codex-cli": {
-          command: "/opt/homebrew/bin/codex",
-        },
         "my-cli": {
           command: "my-cli",
           args: ["--json"],
@@ -152,47 +156,47 @@ provider id는 model ref의 왼쪽 부분이 됩니다.
 
 ## 작동 방식
 
-1. provider prefix(`codex-cli/...`)를 기준으로 **백엔드를 선택**합니다.
-2. 동일한 OpenClaw prompt + workspace context를 사용해 **system prompt를 빌드**합니다.
-3. 지원되는 경우 session id로 **CLI를 실행**하여 기록이 일관되게 유지되도록 합니다.
-   번들 `claude-cli` 백엔드는 OpenClaw session마다 Claude stdio 프로세스를 살려 두고
-   후속 턴을 stream-json stdin으로 보냅니다.
-4. **출력을 파싱**(JSON 또는 일반 텍스트)하고 최종 텍스트를 반환합니다.
-5. 백엔드별로 **session ids를 영속화**하여 후속 턴이 같은 CLI session을 재사용하도록 합니다.
+1. 공급자 접두사(`claude-cli/...`)를 기반으로 **백엔드를 선택합니다**.
+2. 동일한 OpenClaw 프롬프트와 워크스페이스 컨텍스트를 사용해 **시스템 프롬프트를 만듭니다**.
+3. 지원되는 경우 세션 id와 함께 **CLI를 실행하여** 기록이 일관되게 유지되도록 합니다.
+   번들 `claude-cli` 백엔드는 OpenClaw 세션마다 Claude stdio 프로세스를 유지하고
+   후속 턴을 stream-json stdin을 통해 보냅니다.
+4. **출력을 파싱하고**(JSON 또는 일반 텍스트) 최종 텍스트를 반환합니다.
+5. 백엔드별로 **세션 id를 유지**하므로 후속 요청이 같은 CLI 세션을 재사용합니다.
 
 <Note>
-번들 Anthropic `claude-cli` 백엔드가 다시 지원됩니다. Anthropic 직원이
-OpenClaw 방식의 Claude CLI 사용이 다시 허용된다고 알려주었으므로, Anthropic이
-새 정책을 게시하지 않는 한 OpenClaw는 이 integration에 대해 `claude -p` 사용을
-승인된 것으로 취급합니다.
+번들 Anthropic `claude-cli` 백엔드는 다시 지원됩니다. Anthropic 직원이
+OpenClaw 스타일의 Claude CLI 사용이 다시 허용된다고 알려왔으므로, Anthropic이
+새 정책을 게시하지 않는 한 OpenClaw는 이 통합에서 `claude -p` 사용을 승인된 것으로
+취급합니다.
 </Note>
 
-번들 OpenAI `codex-cli` 백엔드는 Codex의 `model_instructions_file` config override(`-c
-model_instructions_file="..."`)를 통해 OpenClaw의 system prompt를 전달합니다. Codex는 Claude 방식의
-`--append-system-prompt` flag를 노출하지 않으므로, OpenClaw는 새 Codex CLI session마다 조립된 prompt를
-임시 파일에 씁니다.
+번들 Anthropic `claude-cli` 백엔드는 OpenClaw Skills에 대해 Claude Code의 네이티브 Skill
+리졸버를 선호합니다. 현재 Skills 스냅샷에 구체화된 경로가 있는 선택된 Skill이 하나 이상
+포함되어 있으면, OpenClaw는 임시 Claude Code Plugin을 `--plugin-dir`과 함께 전달하고
+추가된 시스템 프롬프트에서 중복 OpenClaw Skills 카탈로그를 생략합니다. 스냅샷에
+구체화된 Plugin Skill이 없으면 OpenClaw는 프롬프트 카탈로그를 폴백으로 유지합니다.
+Skill env/API 키 오버라이드는 여전히 OpenClaw가 실행을 위해 자식 프로세스 환경에
+적용합니다.
 
-번들 Anthropic `claude-cli` 백엔드는 두 가지 방식으로 OpenClaw skills snapshot을 받습니다.
-추가된 system prompt의 compact OpenClaw skills catalog와 `--plugin-dir`로 전달되는
-임시 Claude Code Plugin입니다. 이 Plugin에는 해당 agent/session에 적합한 Skills만 포함되므로,
-Claude Code의 native skill resolver는 OpenClaw가 prompt에서 광고했을 것과 같은 필터링된 집합을 봅니다.
-Skill env/API key overrides는 여전히 OpenClaw가 실행을 위해 child process environment에 적용합니다.
+Claude CLI에는 자체 비대화형 권한 모드도 있습니다. OpenClaw는 Claude 전용 정책 구성을
+추가하는 대신 이를 기존 exec 정책에 매핑합니다. OpenClaw가 관리하는 Claude 라이브
+세션의 경우 유효한 OpenClaw exec 정책이 권한을 가집니다. YOLO(`tools.exec.security: "full"` 및
+`tools.exec.ask: "off"`)는 Claude를
+`--permission-mode bypassPermissions`로 실행하는 반면, 제한적인 유효 exec 정책은
+Claude를 `--permission-mode default`로 실행합니다. 에이전트별
+`agents.list[].tools.exec` 설정은 해당 에이전트에 대해 전역 `tools.exec`를 재정의합니다.
+원시 Claude 백엔드 args에 `--permission-mode`가 여전히 포함될 수 있지만, 라이브
+Claude 실행은 그 플래그를 유효한 OpenClaw exec 정책에 맞게 정규화합니다.
 
-Claude CLI에는 자체 noninteractive permission mode도 있습니다. OpenClaw는 Claude 전용 config를 추가하는 대신
-이를 기존 exec policy에 매핑합니다. 유효하게 요청된 exec policy가 YOLO(`tools.exec.security: "full"` 및
-`tools.exec.ask: "off"`)이면 OpenClaw는 `--permission-mode bypassPermissions`를 추가합니다.
-agent별 `agents.list[].tools.exec` 설정은 해당 agent에 대해 전역 `tools.exec`를 재정의합니다.
-다른 Claude mode를 강제하려면 `agents.defaults.cliBackends.claude-cli.args` 및 일치하는 `resumeArgs` 아래에
-`--permission-mode default` 또는 `--permission-mode acceptEdits` 같은 명시적 raw backend args를 설정하세요.
+번들 Anthropic `claude-cli` 백엔드는 OpenClaw `/think` 수준도 Claude Code의 네이티브
+`--effort` 플래그에 매핑합니다(꺼짐이 아닌 수준의 경우). `minimal`과
+`low`는 `low`로, `adaptive`와 `medium`은 `medium`으로 매핑되며, `high`,
+`xhigh`, `max`는 직접 매핑됩니다. 다른 CLI 백엔드는 `/think`가 생성된 CLI에 영향을
+미치기 전에 소유 Plugin이 동등한 argv 매퍼를 선언해야 합니다.
 
-번들 Anthropic `claude-cli` 백엔드는 또한 OpenClaw `/think` levels를 non-off levels에 대해
-Claude Code의 native `--effort` flag에 매핑합니다. `minimal` 및
-`low`는 `low`에, `adaptive` 및 `medium`은 `medium`에 매핑되며, `high`,
-`xhigh`, `max`는 직접 매핑됩니다. 다른 CLI 백엔드는 `/think`가 spawned CLI에 영향을 주기 전에
-소유 Plugin이 동등한 argv mapper를 선언해야 합니다.
-
-OpenClaw가 번들 `claude-cli` 백엔드를 사용하려면, Claude Code 자체가
-동일한 호스트에서 이미 로그인되어 있어야 합니다.
+OpenClaw가 번들 `claude-cli` 백엔드를 사용하려면, 같은 호스트에서 Claude Code 자체가
+이미 로그인되어 있어야 합니다.
 
 ```bash
 claude auth login
@@ -200,129 +204,149 @@ claude auth status --text
 openclaw models auth login --provider anthropic --method cli --set-default
 ```
 
-`claude` binary가 이미 `PATH`에 없을 때만 `agents.defaults.cliBackends.claude-cli.command`를 사용하세요.
+Docker 설치에서는 호스트뿐만 아니라 지속되는 컨테이너 홈 안에도 Claude Code가 설치되고
+로그인되어 있어야 합니다.
+[Docker의 Claude CLI 백엔드](/ko/install/docker#claude-cli-backend-in-docker)를 참고하세요.
 
-## Sessions
+`claude` 바이너리가 이미 `PATH`에 없는 경우에만 `agents.defaults.cliBackends.claude-cli.command`를 사용하세요.
 
-- CLI가 sessions를 지원하면 ID를 여러 flags에 삽입해야 할 때 `sessionArg`(예: `--session-id`) 또는
-  `sessionArgs`(placeholder `{sessionId}`)를 설정하세요.
-- CLI가 다른 flags를 가진 **resume subcommand**를 사용하는 경우,
-  `resumeArgs`(resuming 시 `args` 대체)와 선택적으로 `resumeOutput`
-  (non-JSON resumes용)을 설정하세요.
+## 세션
+
+- CLI가 세션을 지원하는 경우 ID를 단일 플래그에 전달하려면 `sessionArg`(예: `--session-id`)를,
+  여러 플래그에 삽입해야 하면 `sessionArgs`(플레이스홀더 `{sessionId}`)를 설정하세요.
+- CLI가 서로 다른 플래그를 사용하는 **resume 하위 명령**을 사용한다면,
+  `resumeArgs`(재개 시 `args`를 대체)와 필요하다면 `resumeOutput`
+  (비 JSON 재개용)을 설정하세요.
 - `sessionMode`:
-  - `always`: 항상 session id를 보냅니다(저장된 것이 없으면 새 UUID).
-  - `existing`: 이전에 저장된 session id가 있을 때만 보냅니다.
-  - `none`: session id를 절대 보내지 않습니다.
+  - `always`: 항상 세션 id를 보냅니다(저장된 것이 없으면 새 UUID).
+  - `existing`: 이전에 저장된 세션 id가 있을 때만 보냅니다.
+  - `none`: 세션 id를 절대 보내지 않습니다.
 - `claude-cli`는 기본적으로 `liveSession: "claude-stdio"`, `output: "jsonl"`,
-  `input: "stdin"`을 사용하므로 후속 턴은 활성 상태인 동안 live Claude process를 재사용합니다.
-  Warm stdio는 이제 transport fields를 생략한 custom configs를 포함해 기본값입니다.
-  Gateway가 재시작되거나 idle process가 종료되면, OpenClaw는 저장된 Claude session id에서 resume합니다.
-  저장된 session ids는 resume 전에 기존 readable project transcript와 대조해 검증되므로,
-  phantom bindings는 `--resume` 아래에서 조용히 새 Claude CLI session을 시작하는 대신
-  `reason=transcript-missing`으로 지워집니다.
-- Claude live sessions는 제한된 JSONL output guards를 유지합니다. 기본값은 턴당
-  최대 8 MiB 및 20,000 raw JSONL lines를 허용합니다. Tool-heavy Claude turns는 백엔드별로
+  `input: "stdin"`을 사용하므로 활성 상태인 동안 후속 턴이 라이브 Claude 프로세스를
+  재사용합니다. 전송 필드를 생략한 사용자 지정 구성을 포함해 이제 warm stdio가
+  기본값입니다. Gateway가 재시작되거나 유휴 프로세스가 종료되면 OpenClaw는 저장된
+  Claude 세션 id에서 재개합니다. 저장된 세션 id는 재개 전에 기존의 읽을 수 있는
+  프로젝트 transcript와 대조해 검증되므로, 존재하지 않는 바인딩은 `--resume` 아래에서
+  조용히 새 Claude CLI 세션을 시작하는 대신 `reason=transcript-missing`으로 제거됩니다.
+- Claude 라이브 세션은 제한된 JSONL 출력 가드를 유지합니다. 기본값은 턴당 최대
+  8 MiB 및 20,000개의 원시 JSONL 줄을 허용합니다. 도구를 많이 사용하는 Claude 턴은
+  백엔드별로
   `agents.defaults.cliBackends.claude-cli.reliability.outputLimits.maxTurnRawChars`
-  및 `maxTurnLines`로 이를 늘릴 수 있습니다. OpenClaw는 해당 설정을 64 MiB 및 100,000
-  lines로 제한합니다.
-- 저장된 CLI sessions는 provider-owned continuity입니다. 암시적 daily session reset은
-  이를 끊지 않습니다. `/reset` 및 명시적 `session.reset` policies는 여전히 끊습니다.
-- Fresh CLI sessions는 일반적으로 OpenClaw의 compaction summary와 post-compaction tail에서만 reseed합니다.
-  Compaction 전에 invalidated된 짧은 sessions를 복구하려면, 백엔드가
-  `reseedFromRawTranscriptWhenUncompacted: true`로 opt in할 수 있습니다. OpenClaw는 raw
-  transcript reseed를 여전히 bounded로 유지하고, missing CLI transcripts, system-prompt/MCP changes,
-  session-expired retry 같은 safe invalidations로 제한합니다. auth profile 또는 credential-epoch changes는
-  raw transcript history를 절대 reseed하지 않습니다.
+  및 `maxTurnLines`로 이를 올릴 수 있습니다. OpenClaw는 해당 설정을 64 MiB 및 100,000
+  줄로 제한합니다.
+- 저장된 CLI 세션은 공급자가 소유하는 연속성입니다. 암시적 일일 세션
+  재설정은 이를 끊지 않으며, `/reset`과 명시적 `session.reset` 정책은 여전히
+  끊습니다.
+- 새 CLI 세션은 일반적으로 OpenClaw의 Compaction 요약과 Compaction 이후 tail에서만
+  다시 시드합니다. Compaction 전에 무효화된 짧은 세션을 복구하려면 백엔드가
+  `reseedFromRawTranscriptWhenUncompacted: true`로 옵트인할 수 있습니다. OpenClaw는 여전히
+  원시 transcript 재시드를 제한된 범위로 유지하고, 누락된 CLI transcript, 시스템 프롬프트/MCP
+  변경, session-expired 재시도 같은 안전한 무효화로 제한합니다. 인증 프로필 또는
+  자격 증명 epoch 변경은 원시 transcript 기록을 절대 다시 시드하지 않습니다.
 
 직렬화 참고:
 
-- `serialize: true`는 같은 lane의 실행 순서를 유지합니다.
-- 대부분의 CLI는 하나의 provider lane에서 serialize합니다.
-- OpenClaw는 선택된 auth identity가 변경되면 저장된 CLI session reuse를 중단합니다.
-  여기에는 CLI가 노출하는 경우 변경된 auth profile id, static API key, static token, OAuth
-  account identity가 포함됩니다. OAuth access 및 refresh token rotation은 저장된 CLI session을 끊지 않습니다.
-  CLI가 stable OAuth account id를 노출하지 않으면, OpenClaw는 해당 CLI가 resume permissions를 강제하도록 둡니다.
+- `serialize: true`는 같은 레인의 실행 순서를 유지합니다.
+- 대부분의 CLI는 하나의 공급자 레인에서 직렬화됩니다.
+- OpenClaw는 선택된 인증 ID가 변경되면 저장된 CLI 세션 재사용을 중단합니다.
+  여기에는 변경된 인증 프로필 id, 정적 API 키, 정적 토큰, 또는 CLI가 노출하는 경우
+  OAuth 계정 ID가 포함됩니다. OAuth 액세스 및 리프레시 토큰 회전은 저장된 CLI 세션을
+  끊지 않습니다. CLI가 안정적인 OAuth 계정 id를 노출하지 않으면 OpenClaw는 해당 CLI가
+  재개 권한을 강제하도록 둡니다.
 
-## claude-cli sessions의 fallback prelude
+## claude-cli 세션의 폴백 프렐류드
 
-`claude-cli` 시도가 [`agents.defaults.model.fallbacks`](/ko/concepts/model-failover)의 non-CLI 후보로 fail over되면,
-OpenClaw는 `~/.claude/projects/`의 Claude Code local JSONL transcript에서 수집한 context prelude로
-다음 시도를 seed합니다. 이 seed가 없으면 `claude-cli` 실행에 대해 OpenClaw 자체 session transcript가 비어 있으므로
-fallback provider는 cold start하게 됩니다.
+`claude-cli` 시도가
+[`agents.defaults.model.fallbacks`](/ko/concepts/model-failover)의 비 CLI 후보로 폴백될 때,
+OpenClaw는 `~/.claude/projects/`에 있는 Claude Code의 로컬 JSONL transcript에서 수집한
+컨텍스트 프렐류드로 다음 시도를 시드합니다. 이 시드가 없으면 OpenClaw 자체 세션
+transcript가 `claude-cli` 실행에 대해 비어 있기 때문에 폴백 공급자는 콜드 스타트하게 됩니다.
 
-- prelude는 최신 `/compact` summary 또는 `compact_boundary` marker를 우선 사용한 다음,
-  char budget까지 가장 최근 post-boundary turns를 추가합니다. summary가 이미 이를 대표하므로
-  pre-boundary turns는 삭제됩니다.
-- Tool blocks는 prompt budget을 정직하게 유지하기 위해 compact `(tool call: name)` 및
-  `(tool result: …)` hints로 병합됩니다. summary가 넘치면 `(truncated)`로 표시됩니다.
-- 같은 provider의 `claude-cli`에서 `claude-cli`로 fallback하는 경우 Claude 자체
-  `--resume`에 의존하고 prelude를 건너뜁니다.
-- seed는 기존 Claude session-file path validation을 재사용하므로,
+- 프렐류드는 최신 `/compact` 요약 또는 `compact_boundary` 마커를 선호한 다음,
+  문자 예산까지 가장 최근의 경계 이후 턴을 덧붙입니다. 경계 이전 턴은 요약이 이미
+  이를 대표하므로 제외됩니다.
+- 도구 블록은 프롬프트 예산을 정직하게 유지하기 위해 압축된 `(tool call: name)` 및
+  `(tool result: …)` 힌트로 병합됩니다. 요약이 초과되면 `(truncated)`로 표시됩니다.
+- 같은 공급자의 `claude-cli`에서 `claude-cli`로의 폴백은 Claude 자체의
+  `--resume`에 의존하며 프렐류드를 건너뜁니다.
+- 시드는 기존 Claude 세션 파일 경로 검증을 재사용하므로
   임의 경로를 읽을 수 없습니다.
 
-## Images (pass-through)
+## 이미지(그대로 전달)
 
-CLI가 이미지 경로를 허용하면 `imageArg`를 설정하세요.
+CLI가 이미지 경로를 받는 경우 `imageArg`를 설정하세요.
 
 ```json5
 imageArg: "--image",
 imageMode: "repeat"
 ```
 
-OpenClaw는 base64 images를 temp files에 씁니다. `imageArg`가 설정되어 있으면 해당
-paths가 CLI args로 전달됩니다. `imageArg`가 없으면 OpenClaw는 파일 경로를
-prompt에 추가합니다(path injection). 이는 plain paths에서 local files를 자동 로드하는 CLI에는 충분합니다.
+OpenClaw는 base64 이미지를 임시 파일에 씁니다. `imageArg`가 설정되어 있으면 해당
+경로가 CLI args로 전달됩니다. `imageArg`가 없으면 OpenClaw는 파일 경로를 프롬프트에
+추가합니다(경로 주입). 이는 일반 경로에서 로컬 파일을 자동으로 로드하는 CLI에 충분합니다.
 
-## Inputs / outputs
+## 입력 / 출력
 
-- `output: "json"`(기본값)은 JSON을 파싱하고 text + session id를 추출하려고 시도합니다.
-- Gemini CLI JSON output의 경우, OpenClaw는 `usage`가 없거나 비어 있으면 `response`에서 reply text를,
-  `stats`에서 usage를 읽습니다.
-- `output: "jsonl"`은 JSONL streams(예: Codex CLI `--json`)를 파싱하고, 존재하는 경우 최종 agent message와 session
-  identifiers를 추출합니다.
+- `output: "json"`(기본값)은 JSON을 파싱하고 텍스트와 세션 id를 추출하려고 시도합니다.
+- Gemini CLI JSON 출력의 경우, `usage`가 없거나 비어 있으면 OpenClaw는 `response`에서
+  응답 텍스트를 읽고 `stats`에서 사용량을 읽습니다. 번들 Gemini CLI 기본값은
+  `stream-json`을 사용하지만, 이전 `--output-format json` 오버라이드는 여전히
+  JSON 파서를 사용합니다.
+- `output: "jsonl"`은 JSONL 스트림을 파싱하고 최종 에이전트 메시지와 세션
+  식별자가 있으면 이를 추출합니다.
 - `output: "text"`는 stdout을 최종 응답으로 취급합니다.
 
-Input modes:
+입력 모드:
 
-- `input: "arg"`(기본값)는 prompt를 마지막 CLI arg로 전달합니다.
-- `input: "stdin"`은 prompt를 stdin으로 보냅니다.
-- prompt가 매우 길고 `maxPromptArgChars`가 설정되어 있으면 stdin이 사용됩니다.
+- `input: "arg"`(기본값)는 프롬프트를 마지막 CLI 인수로 전달합니다.
+- `input: "stdin"`은 stdin을 통해 프롬프트를 보냅니다.
+- 프롬프트가 매우 길고 `maxPromptArgChars`가 설정되어 있으면 stdin이 사용됩니다.
 
-## Defaults (plugin-owned)
+## 기본값(Plugin 소유)
 
-번들 OpenAI Plugin은 `codex-cli`의 기본값도 등록합니다:
+번들 CLI 백엔드 기본값은 이를 소유한 Plugin에 있습니다. 예를 들어,
+Anthropic은 `claude-cli`를 소유하고 Google은 `google-gemini-cli`를 소유합니다. OpenAI Codex
+agent 실행은 `openai/*`를 통해 Codex 앱 서버 하네스를 사용하며, OpenClaw는 더 이상
+번들 `codex-cli` 백엔드를 등록하지 않습니다.
 
-- `command: "codex"`
-- `args: ["exec","--json","--color","never","--sandbox","workspace-write","--skip-git-repo-check"]`
-- `resumeArgs: ["exec","resume","{sessionId}","-c","sandbox_mode=\"workspace-write\"","--skip-git-repo-check"]`
+번들 Anthropic Plugin은 `claude-cli`의 기본값을 등록합니다.
+
+- `command: "claude"`
+- `args: ["-p","--output-format","stream-json","--include-partial-messages","--verbose", ...]`
 - `output: "jsonl"`
-- `resumeOutput: "text"`
+- `input: "stdin"`
 - `modelArg: "--model"`
-- `imageArg: "--image"`
-- `sessionMode: "existing"`
+- `sessionMode: "always"`
 
-번들 Google Plugin은 `google-gemini-cli`에 대한 기본값도 등록합니다.
+번들 Google Plugin도 `google-gemini-cli`의 기본값을 등록합니다.
 
 - `command: "gemini"`
-- `args: ["--output-format", "json", "--prompt", "{prompt}"]`
-- `resumeArgs: ["--resume", "{sessionId}", "--output-format", "json", "--prompt", "{prompt}"]`
+- `args: ["--skip-trust", "--approval-mode", "auto_edit", "--output-format", "stream-json", "--prompt", "{prompt}"]`
+- `resumeArgs: ["--skip-trust", "--approval-mode", "auto_edit", "--resume", "{sessionId}", "--output-format", "stream-json", "--prompt", "{prompt}"]`
+- `output: "jsonl"`
+- `resumeOutput: "jsonl"`
+- `jsonlDialect: "gemini-stream-json"`
 - `imageArg: "@"`
 - `imagePathScope: "workspace"`
 - `modelArg: "--model"`
 - `sessionMode: "existing"`
 - `sessionIdFields: ["session_id", "sessionId"]`
 
-전제 조건: 로컬 Gemini CLI가 설치되어 있어야 하며 `PATH`에서
+필수 조건: 로컬 Gemini CLI가 설치되어 있고 `PATH`에서
 `gemini`로 사용할 수 있어야 합니다(`brew install gemini-cli` 또는
 `npm install -g @google/gemini-cli`).
 
-Gemini CLI JSON 참고 사항:
+Gemini CLI 출력 참고 사항:
 
-- 응답 텍스트는 JSON `response` 필드에서 읽습니다.
+- 기본 `stream-json` 파서는 assistant `message` 이벤트, tool 이벤트,
+  최종 `result` 사용량, 치명적인 Gemini 오류 이벤트를 읽습니다.
+- Gemini 인수를 `--output-format json`으로 재정의하면 OpenClaw는 해당
+  백엔드를 다시 `output: "json"`으로 정규화하고 JSON `response`
+  필드에서 응답 텍스트를 읽습니다.
 - `usage`가 없거나 비어 있으면 사용량은 `stats`로 대체됩니다.
 - `stats.cached`는 OpenClaw `cacheRead`로 정규화됩니다.
-- `stats.input`이 없으면 OpenClaw는 입력 토큰을
-  `stats.input_tokens - stats.cached`에서 파생합니다.
+- `stats.input`이 없으면 OpenClaw는
+  `stats.input_tokens - stats.cached`에서 입력 토큰을 파생합니다.
 
 필요한 경우에만 재정의하세요(일반적인 경우: 절대 `command` 경로).
 
@@ -331,12 +355,13 @@ Gemini CLI JSON 참고 사항:
 CLI 백엔드 기본값은 이제 Plugin 표면의 일부입니다.
 
 - Plugin은 `api.registerCliBackend(...)`로 이를 등록합니다.
-- 백엔드 `id`는 모델 참조에서 제공자 접두사가 됩니다.
-- `agents.defaults.cliBackends.<id>`의 사용자 설정은 여전히 Plugin 기본값을 재정의합니다.
-- 백엔드별 설정 정리는 선택적 `normalizeConfig` 훅을 통해 Plugin 소유로 유지됩니다.
+- 백엔드 `id`는 모델 참조의 공급자 접두사가 됩니다.
+- `agents.defaults.cliBackends.<id>`의 사용자 구성은 여전히 Plugin 기본값을 재정의합니다.
+- 백엔드별 구성 정리는 선택적
+  `normalizeConfig` 훅을 통해 Plugin 소유로 유지됩니다.
 
-작은 프롬프트/메시지 호환성 shim이 필요한 Plugin은 제공자나 CLI 백엔드를
-교체하지 않고 양방향 텍스트 변환을 선언할 수 있습니다.
+작은 프롬프트/메시지 호환성 shim이 필요한 Plugin은
+공급자나 CLI 백엔드를 교체하지 않고 양방향 텍스트 변환을 선언할 수 있습니다.
 
 ```typescript
 api.registerTextTransforms({
@@ -353,64 +378,100 @@ api.registerTextTransforms({
 });
 ```
 
-`input`은 CLI에 전달되는 시스템 프롬프트와 사용자 프롬프트를 다시 씁니다. `output`은
-OpenClaw가 자체 제어 마커와 채널 전달을 처리하기 전에 스트리밍된 어시스턴트 델타와
-파싱된 최종 텍스트를 다시 씁니다.
+`input`은 CLI에 전달되는 시스템 프롬프트와 사용자 프롬프트를 다시 작성합니다. `output`은
+OpenClaw가 자체 제어 마커와 채널 전달을 처리하기 전에 스트리밍된 assistant 델타와
+파싱된 최종 텍스트를 다시 작성합니다.
 
-Claude Code stream-json 호환 JSONL을 내보내는 CLI의 경우 해당 백엔드 설정에
-`jsonlDialect: "claude-stream-json"`을 설정하세요.
+공급자별 JSONL 이벤트를 내보내는 CLI의 경우 해당
+백엔드 구성에 `jsonlDialect`를 설정하세요. 지원되는 dialect는 Claude
+Code 호환 스트림용 `claude-stream-json`과 Gemini CLI `stream-json`
+이벤트용 `gemini-stream-json`입니다.
+
+## 네이티브 Compaction 소유권
+
+일부 CLI 백엔드는 **자체** transcript를 compact하는 agent를 실행하므로 OpenClaw는
+그 백엔드에 대해 safeguard summarizer를 실행해서는 안 됩니다. 그렇게 하면 백엔드 자체
+Compaction과 충돌하며 해당 턴이 하드 실패할 수 있습니다.
+
+`claude-cli`에는 하네스 엔드포인트가 없습니다. Claude Code는 내부적으로 compact하므로
+`ownsNativeCompaction: true`를 선언하고, OpenClaw는 Compaction 경로에서 no-op을 반환합니다.
+Codex 같은 네이티브 하네스 세션은 대신 계속 하네스 Compaction 엔드포인트로 라우팅됩니다.
+
+백엔드가 Compaction을 소유하므로, 순전히 claude-cli 세션에서 OpenClaw의 safeguard가
+실행되지 않게 하려고 `contextTokens: 1_000_000`을 설정하던 기존 임시방편은
+**더 이상 필요하지 않습니다**. 이 opt-out이 이를 대체합니다.
+
+```typescript
+api.registerCliBackend({ id: "my-cli", ownsNativeCompaction: true /* ... */ });
+```
+
+Compaction을 실제로 소유하는 백엔드에만 `ownsNativeCompaction`을 선언하세요. 해당 백엔드는
+컨텍스트 창에 가까워질 때 자체 transcript를 안정적으로 제한하고 재개 가능한 세션
+(예: `--resume` / `--session-id`)을 유지해야 합니다. 그렇지 않으면 지연된 세션이
+예산을 초과한 상태로 남을 수 있습니다. 일치하는 `agentHarnessId` 세션은 계속 하네스 엔드포인트로 라우팅됩니다.
 
 ## 번들 MCP 오버레이
 
-CLI 백엔드는 OpenClaw 도구 호출을 직접 받지 않지만, 백엔드는
-`bundleMcp: true`로 생성된 MCP 설정 오버레이를 선택할 수 있습니다.
+CLI 백엔드는 OpenClaw tool 호출을 직접 받지 않지만, 백엔드는
+`bundleMcp: true`로 생성된 MCP 구성 오버레이에 opt in할 수 있습니다.
 
 현재 번들 동작:
 
-- `claude-cli`: 생성된 엄격한 MCP 설정 파일
-- `codex-cli`: `mcp_servers`에 대한 인라인 설정 재정의; 생성된
-  OpenClaw loopback 서버는 Codex의 서버별 도구 승인 모드로 표시되어
-  MCP 호출이 로컬 승인 프롬프트에서 중단되지 않도록 합니다
+- `claude-cli`: 생성된 엄격한 MCP 구성 파일
 - `google-gemini-cli`: 생성된 Gemini 시스템 설정 파일
 
 번들 MCP가 활성화되면 OpenClaw는 다음을 수행합니다.
 
-- Gateway 도구를 CLI 프로세스에 노출하는 loopback HTTP MCP 서버 생성
-- 세션별 토큰(`OPENCLAW_MCP_TOKEN`)으로 브리지 인증
-- 도구 접근 범위를 현재 세션, 계정, 채널 컨텍스트로 제한
-- 현재 작업공간에 대해 활성화된 bundle-MCP 서버 로드
-- 기존 백엔드 MCP 설정/설정 형태와 병합
-- 소유 extension의 백엔드 소유 통합 모드를 사용하여 실행 설정 재작성
+- Gateway tool을 CLI 프로세스에 노출하는 loopback HTTP MCP 서버를 생성합니다.
+- 세션별 토큰(`OPENCLAW_MCP_TOKEN`)으로 브리지를 인증합니다.
+- tool 접근을 현재 세션, 계정, 채널 컨텍스트로 범위 지정합니다.
+- 현재 워크스페이스에 대해 활성화된 bundle-MCP 서버를 로드합니다.
+- 기존 백엔드 MCP 구성/설정 형태와 병합합니다.
+- 소유 확장의 백엔드 소유 통합 모드를 사용하여 실행 구성을 다시 작성합니다.
 
-활성화된 MCP 서버가 없더라도, 백엔드가 번들 MCP를 선택하면 OpenClaw는
-백그라운드 실행이 격리된 상태를 유지하도록 엄격한 설정을 계속 주입합니다.
+MCP 서버가 활성화되어 있지 않아도, 백엔드가 번들 MCP에 opt in하면 OpenClaw는
+백그라운드 실행이 격리되도록 엄격한 구성을 계속 주입합니다.
 
 세션 범위 번들 MCP 런타임은 세션 내 재사용을 위해 캐시된 다음,
-유휴 시간이 `mcp.sessionIdleTtlMs`밀리초에 도달하면 회수됩니다(기본값 10분,
-비활성화하려면 `0`으로 설정). 인증 프로브, 슬러그 생성, active-memory recall 요청과 같은
-일회성 임베디드 실행은 실행 종료 시 정리되어 stdio 자식 프로세스와 Streamable HTTP/SSE
-스트림이 실행보다 오래 지속되지 않도록 합니다.
+유휴 시간이 `mcp.sessionIdleTtlMs`밀리초(기본값 10분, 비활성화하려면 `0` 설정)를
+지나면 정리됩니다. 인증 프로브, slug 생성, active-memory recall 같은 일회성
+임베디드 실행은 stdio 하위 프로세스와 Streamable HTTP/SSE 스트림이 실행보다 오래 남지 않도록
+실행 종료 시 정리를 요청합니다.
+
+## 리시드 기록 한도
+
+새 CLI 세션이 이전 OpenClaw transcript에서 seed되는 경우(예:
+`session_expired` 재시도 후), 렌더링된
+`<conversation_history>` 블록은 리시드 프롬프트가 폭증하지 않도록 제한됩니다.
+기본값은 `12288`자(약 3000토큰)입니다.
+
+Claude CLI 백엔드는 확인된
+Claude 컨텍스트 계층에서 파생된 더 큰 한도를 자동으로 사용합니다. 표준 200K 토큰 Claude 실행은 더 큰 transcript
+슬라이스를 유지하고, 1M 토큰 Claude 실행은 다시 더 큰 슬라이스를 유지하는 반면, 다른 CLI
+백엔드는 보수적인 기본값을 유지합니다.
+
+- 이 한도는 리시드 프롬프트의 이전 기록 블록에만 적용됩니다. 라이브 세션
+  출력 한도는 `reliability.outputLimits` 아래에서 별도로 조정됩니다
+  ([세션](#sessions) 참조).
 
 ## 제한 사항
 
-- **직접 OpenClaw 도구 호출 없음.** OpenClaw는 도구 호출을
+- **직접 OpenClaw tool 호출 없음.** OpenClaw는 tool 호출을
   CLI 백엔드 프로토콜에 주입하지 않습니다. 백엔드는
-  `bundleMcp: true`를 선택한 경우에만 Gateway 도구를 볼 수 있습니다.
+  `bundleMcp: true`에 opt in한 경우에만 Gateway tool을 봅니다.
 - **스트리밍은 백엔드별로 다릅니다.** 일부 백엔드는 JSONL을 스트리밍하고, 다른 백엔드는
   종료될 때까지 버퍼링합니다.
 - **구조화된 출력**은 CLI의 JSON 형식에 따라 달라집니다.
-- **Codex CLI 세션**은 텍스트 출력(JSONL 아님)을 통해 재개되며, 이는 초기 `--json` 실행보다
-  구조화가 덜 되어 있습니다. OpenClaw 세션은 여전히 정상적으로 작동합니다.
 
 ## 문제 해결
 
 - **CLI를 찾을 수 없음**: `command`를 전체 경로로 설정하세요.
-- **잘못된 모델 이름**: `modelAliases`를 사용하여 `provider/model` → CLI 모델로 매핑하세요.
+- **잘못된 모델 이름**: `modelAliases`를 사용해 `provider/model` → CLI 모델로 매핑하세요.
 - **세션 연속성 없음**: `sessionArg`가 설정되어 있고 `sessionMode`가
-  `none`이 아닌지 확인하세요(Codex CLI는 현재 JSON 출력으로 재개할 수 없습니다).
+  `none`이 아닌지 확인하세요.
 - **이미지가 무시됨**: `imageArg`를 설정하세요(그리고 CLI가 파일 경로를 지원하는지 확인하세요).
 
 ## 관련 항목
 
-- [Gateway 런북](/ko/gateway)
+- [Gateway 실행 안내서](/ko/gateway)
 - [로컬 모델](/ko/gateway/local-models)

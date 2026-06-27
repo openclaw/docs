@@ -1,38 +1,39 @@
 ---
 read_when:
-    - Vuoi usare la CLI memory-wiki
+    - Si desidera usare la CLI memory-wiki
     - Stai documentando o modificando `openclaw wiki`
-summary: Riferimento CLI per `openclaw wiki` (stato del vault memory-wiki, ricerca, compilazione, lint, applicazione, bridge e helper di Obsidian)
+summary: Riferimento CLI per `openclaw wiki` (stato dell'archivio memory-wiki, ricerca, compilazione, lint, applicazione, bridge e helper di Obsidian)
 title: Wiki
 x-i18n:
-    generated_at: "2026-04-30T08:45:37Z"
+    generated_at: "2026-06-27T17:23:12Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 67fe56c9bff7b24570f890733314857dd261fca8233051681a83c171656ff27d
+    source_hash: c6679a5aad41a19dbcad6075c190c3eb533e3ba13a6d5018d56988a23b2d9023
     source_path: cli/wiki.md
     workflow: 16
 ---
 
 # `openclaw wiki`
 
-Ispeziona e mantieni il vault `memory-wiki`.
+Ispeziona e mantiene il vault `memory-wiki`.
 
-Fornito dal Plugin `memory-wiki` incluso.
+Fornito dal plugin `memory-wiki` incluso.
 
 Correlati:
 
 - [Plugin Memory Wiki](/it/plugins/memory-wiki)
 - [Panoramica della memoria](/it/concepts/memory)
-- [CLI: memoria](/it/cli/memory)
+- [CLI: memory](/it/cli/memory)
 
 ## A cosa serve
 
 Usa `openclaw wiki` quando vuoi un vault di conoscenza compilato con:
 
-- ricerca nativa della wiki e lettura delle pagine
+- ricerca nativa wiki e lettura delle pagine
 - sintesi ricche di provenienza
 - report su contraddizioni e aggiornamento
-- importazioni bridge dal Plugin di memoria attiva
+- importazioni bridge dal plugin di memoria attiva
 - helper CLI Obsidian opzionali
 
 ## Comandi comuni
@@ -42,6 +43,7 @@ openclaw wiki status
 openclaw wiki doctor
 openclaw wiki init
 openclaw wiki ingest ./notes/alpha.md
+openclaw wiki okf import ./knowledge-catalog/okf/bundles/ga4
 openclaw wiki compile
 openclaw wiki lint
 openclaw wiki search "alpha"
@@ -71,17 +73,22 @@ openclaw wiki obsidian daily
 
 ### `wiki status`
 
-Ispeziona la modalità corrente del vault, lo stato di integrità e la disponibilità della CLI Obsidian.
+Ispeziona la modalità attuale del vault, lo stato di salute e la disponibilità della CLI Obsidian.
 
-Usalo per primo quando non sei sicuro che il vault sia inizializzato, che la modalità bridge sia integra o che l'integrazione Obsidian sia disponibile.
+Usalo per primo quando non sai se il vault è inizializzato, se la modalità bridge
+è in buono stato o se l'integrazione Obsidian è disponibile.
 
-Quando la modalità bridge è attiva e configurata per leggere gli artefatti di memoria, questo comando interroga il Gateway in esecuzione, così vede lo stesso contesto del Plugin di memoria attiva della memoria di agent/runtime.
+Quando la modalità bridge è attiva e configurata per leggere gli artefatti di memoria, questo comando
+interroga il Gateway in esecuzione, così vede lo stesso contesto del plugin di memoria attiva di
+memoria agent/runtime.
 
 ### `wiki doctor`
 
-Esegui controlli di integrità della wiki ed evidenzia problemi di configurazione o del vault.
+Esegue controlli di integrità wiki e mostra problemi di configurazione o del vault.
 
-Quando la modalità bridge è attiva e configurata per leggere gli artefatti di memoria, questo comando interroga il Gateway in esecuzione prima di creare il report. Le importazioni bridge disabilitate e le configurazioni bridge che non leggono artefatti di memoria restano locali/offline.
+Quando la modalità bridge è attiva e configurata per leggere gli artefatti di memoria, questo comando
+interroga il Gateway in esecuzione prima di costruire il report. Le importazioni bridge disabilitate
+e le configurazioni bridge che non leggono artefatti di memoria restano locali/offline.
 
 I problemi tipici includono:
 
@@ -93,7 +100,8 @@ I problemi tipici includono:
 
 Crea il layout del vault wiki e le pagine iniziali.
 
-Questo inizializza la struttura radice, inclusi gli indici di primo livello e le directory cache.
+Questo inizializza la struttura radice, inclusi indici di primo livello e directory
+di cache.
 
 ### `wiki ingest <path-or-url>`
 
@@ -101,52 +109,79 @@ Importa contenuti nel livello sorgente della wiki.
 
 Note:
 
-- l'inserimento da URL è controllato da `ingest.allowUrlIngest`
+- l'ingestione da URL è controllata da `ingest.allowUrlIngest`
 - le pagine sorgente importate mantengono la provenienza nel frontmatter
-- la compilazione automatica può essere eseguita dopo l'inserimento quando è abilitata
+- la compilazione automatica può essere eseguita dopo l'ingestione quando abilitata
+
+### `wiki okf import <path>`
+
+Importa un bundle Open Knowledge Format estratto in pagine concetto della wiki.
+
+L'importatore legge ogni documento concetto `.md` non riservato nell'albero di directory OKF,
+richiede un campo `type` non vuoto e tratta i valori OKF `type` sconosciuti come concetti generici.
+I file OKF riservati `index.md` e `log.md` non vengono importati come concetti.
+
+Le pagine importate vengono appiattite sotto `concepts/`, così i flussi wiki esistenti di compilazione,
+ricerca, lettura, digest e dashboard le vedono immediatamente. L'ID concetto OKF originale,
+`type`, `resource`, `tags`, timestamp, percorso sorgente e frontmatter completo
+sono preservati nel frontmatter della pagina. I link markdown OKF interni
+vengono riscritti verso le pagine wiki generate; i link interrotti o esterni restano
+invariati.
+
+Esempi:
+
+```bash
+openclaw wiki okf import ./bundles/ga4
+openclaw wiki okf import ./bundles/ga4 --json
+openclaw wiki search "BigQuery Table" --mode source-evidence --json
+openclaw wiki get <path-from-json-result>
+```
 
 ### `wiki compile`
 
-Ricostruisci indici, blocchi correlati, dashboard e digest compilati.
+Ricostruisce indici, blocchi correlati, dashboard e digest compilati.
 
-Questo scrive artefatti stabili destinati alle macchine in:
+Questo scrive artefatti stabili orientati alla macchina in:
 
 - `.openclaw-wiki/cache/agent-digest.json`
 - `.openclaw-wiki/cache/claims.jsonl`
 
-Se `render.createDashboards` è abilitato, la compilazione aggiorna anche le pagine di report.
+Se `render.createDashboards` è abilitato, la compilazione aggiorna anche le pagine report.
 
 ### `wiki lint`
 
-Esegui il lint del vault e segnala:
+Esegue il lint del vault e segnala:
 
 - problemi strutturali
 - lacune di provenienza
 - contraddizioni
 - domande aperte
-- pagine/affermazioni a bassa attendibilità
-- pagine/affermazioni obsolete
+- pagine/asserzioni a bassa affidabilità
+- pagine/asserzioni obsolete
 
-Eseguilo dopo aggiornamenti significativi della wiki.
+Eseguilo dopo aggiornamenti wiki significativi.
 
 ### `wiki search <query>`
 
-Cerca nei contenuti della wiki.
+Cerca nei contenuti wiki.
 
 Il comportamento dipende dalla configurazione:
 
 - `search.backend`: `shared` o `local`
 - `search.corpus`: `wiki`, `memory` o `all`
-- `--mode`: `auto`, `find-person`, `route-question`, `source-evidence` o `raw-claim`
+- `--mode`: `auto`, `find-person`, `route-question`, `source-evidence` o
+  `raw-claim`
 
-Usa `wiki search` quando vuoi dettagli di ranking o provenienza specifici della wiki. Per un singolo passaggio ampio di richiamo condiviso, preferisci `openclaw memory search` quando il Plugin di memoria attiva espone la ricerca condivisa.
+Usa `wiki search` quando vuoi ranking specifico della wiki o dettagli di provenienza.
+Per un passaggio ampio di richiamo condiviso, preferisci `openclaw memory search` quando il
+plugin di memoria attiva espone la ricerca condivisa.
 
 Le modalità di ricerca aiutano l'agente a scegliere la superficie giusta:
 
 - `find-person`: alias, handle, profili social, ID canonici e pagine persona
-- `route-question`: suggerimenti su chi consultare/per cosa usarlo al meglio e contesto delle relazioni
+- `route-question`: suggerimenti ask-for/best-used-for e contesto delle relazioni
 - `source-evidence`: pagine sorgente e campi di evidenza strutturati
-- `raw-claim`: testo dell'affermazione strutturato con metadati di affermazione/evidenza
+- `raw-claim`: testo di asserzione strutturato con metadati di asserzione/evidenza
 
 Esempi:
 
@@ -157,11 +192,14 @@ openclaw wiki search "maintainer-whois" --mode source-evidence
 openclaw wiki search "strong route Teams" --mode raw-claim --json
 ```
 
-L'output testuale include righe `Claim:` ed `Evidence:` quando un risultato corrisponde a un'affermazione strutturata. L'output JSON espone inoltre `matchedClaimId`, `matchedClaimStatus`, `matchedClaimConfidence`, `evidenceKinds` ed `evidenceSourceIds` per l'approfondimento lato agente.
+L'output testuale include righe `Claim:` ed `Evidence:` quando un risultato corrisponde a una
+asserzione strutturata. L'output JSON espone inoltre `matchedClaimId`,
+`matchedClaimStatus`, `matchedClaimConfidence`, `evidenceKinds` e
+`evidenceSourceIds` per l'analisi lato agente.
 
 ### `wiki get <lookup>`
 
-Leggi una pagina wiki per ID o percorso relativo.
+Legge una pagina wiki per ID o percorso relativo.
 
 Esempi:
 
@@ -172,33 +210,39 @@ openclaw wiki get syntheses/alpha-summary.md --from 1 --lines 80
 
 ### `wiki apply`
 
-Applica modifiche mirate senza interventi liberi sulle pagine.
+Applica mutazioni ristrette senza interventi liberi sulle pagine.
 
 I flussi supportati includono:
 
 - creare/aggiornare una pagina di sintesi
 - aggiornare i metadati della pagina
-- collegare ID sorgente
+- allegare ID sorgente
 - aggiungere domande
 - aggiungere contraddizioni
-- aggiornare attendibilità/stato
-- scrivere affermazioni strutturate
+- aggiornare affidabilità/stato
+- scrivere asserzioni strutturate
 
-Questo comando esiste affinché la wiki possa evolvere in sicurezza senza modificare manualmente i blocchi gestiti.
+Questo comando esiste affinché la wiki possa evolvere in modo sicuro senza modificare manualmente
+i blocchi gestiti.
 
 ### `wiki bridge import`
 
-Importa artefatti di memoria pubblici dal Plugin di memoria attiva in pagine sorgente basate su bridge.
+Importa artefatti di memoria pubblici dal plugin di memoria attiva in pagine sorgente
+supportate da bridge.
 
-Usalo in modalità `bridge` quando vuoi importare nel vault wiki gli artefatti di memoria esportati più recenti.
+Usalo in modalità `bridge` quando vuoi portare nel vault wiki gli ultimi artefatti di memoria
+esportati.
 
-Per le letture attive di artefatti bridge, la CLI instrada l'importazione tramite Gateway RPC, così l'importazione usa il contesto runtime del Plugin di memoria. Se le importazioni bridge sono disabilitate o le letture degli artefatti sono disattivate, il comando mantiene il comportamento locale/offline a importazione zero.
+Per le letture attive degli artefatti bridge, la CLI instrada l'importazione tramite Gateway RPC,
+così l'importazione usa il contesto runtime del plugin di memoria. Se le importazioni bridge sono
+disabilitate o le letture degli artefatti sono disattivate, il comando mantiene il comportamento locale/offline
+a importazione zero.
 
 ### `wiki unsafe-local import`
 
 Importa da percorsi locali configurati esplicitamente in modalità `unsafe-local`.
 
-Questa funzionalità è intenzionalmente sperimentale e limitata alla stessa macchina.
+Questo è intenzionalmente sperimentale e solo sulla stessa macchina.
 
 ### `wiki obsidian ...`
 
@@ -212,19 +256,24 @@ Sottocomandi:
 - `command`
 - `daily`
 
-Questi richiedono la CLI ufficiale `obsidian` in `PATH` quando `obsidian.useOfficialCli` è abilitato.
+Richiedono la CLI ufficiale `obsidian` in `PATH` quando
+`obsidian.useOfficialCli` è abilitato.
 
 ## Indicazioni pratiche d'uso
 
-- Usa `wiki search` + `wiki get` quando la provenienza e l'identità della pagina sono importanti.
+- Usa `wiki search` + `wiki get` quando la provenienza e l'identità della pagina contano.
 - Usa `wiki apply` invece di modificare a mano le sezioni generate gestite.
-- Usa `wiki lint` prima di fidarti di contenuti contraddittori o a bassa attendibilità.
-- Usa `wiki compile` dopo importazioni massive o modifiche alle sorgenti quando vuoi subito dashboard e digest compilati aggiornati.
-- Usa `wiki bridge import` quando la modalità bridge dipende da artefatti di memoria appena esportati.
+- Usa `wiki lint` prima di fidarti di contenuti contraddittori o a bassa affidabilità.
+- Usa `wiki compile` dopo importazioni di massa o modifiche sorgente quando vuoi dashboard
+  e digest compilati aggiornati immediatamente.
+- Usa `wiki okf import` quando un catalogo dati, un'esportazione di documentazione o una pipeline
+  di arricchimento agent emette già bundle markdown OKF.
+- Usa `wiki bridge import` quando la modalità bridge dipende da artefatti di memoria
+  appena esportati.
 
 ## Collegamenti alla configurazione
 
-Il comportamento di `openclaw wiki` è determinato da:
+Il comportamento di `openclaw wiki` è modellato da:
 
 - `plugins.entries.memory-wiki.config.vaultMode`
 - `plugins.entries.memory-wiki.config.search.backend`

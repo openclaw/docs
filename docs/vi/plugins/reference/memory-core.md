@@ -1,26 +1,27 @@
 ---
 read_when:
-    - Bạn đang cài đặt, cấu hình hoặc rà soát Plugin memory-core
-summary: Thêm hỗ trợ cho nhà cung cấp nhúng bộ nhớ. Thêm các công cụ mà tác tử có thể gọi.
-title: Plugin lõi bộ nhớ
+    - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin memory-core
+summary: Thêm các công cụ mà agent có thể gọi.
+title: Plugin Memory Core
 x-i18n:
-    generated_at: "2026-05-02T20:52:30Z"
+    generated_at: "2026-06-27T17:53:49Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7c9c5d79e5a17c13592f2d485ac24a5e2e5e3640ea68fc5315a6ba8f1640e0ef
+    source_hash: cda6ebb02b0e4c1616f68c3c9636b269248b4c63ca5f778d7f8c48152b27f303
     source_path: plugins/reference/memory-core.md
     workflow: 16
 ---
 
 # Plugin Memory Core
 
-Thêm hỗ trợ nhà cung cấp embedding bộ nhớ. Thêm các công cụ có thể được agent gọi.
+Thêm các công cụ mà agent có thể gọi.
 
 ## Phân phối
 
 - Gói: `@openclaw/memory-core`
-- Lộ trình cài đặt: được bao gồm trong OpenClaw
+- Tuyến cài đặt: được bao gồm trong OpenClaw
 
 ## Bề mặt
 
-hợp đồng: memoryEmbeddingProviders, tools
+hợp đồng: công cụ

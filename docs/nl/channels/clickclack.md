@@ -5,19 +5,20 @@ read_when:
 summary: ClickClack bot-token-kanaalconfiguratie en doelsyntaxis
 title: ClickClack
 x-i18n:
-    generated_at: "2026-05-10T19:20:48Z"
+    generated_at: "2026-06-27T17:09:35Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8d4860b5f0a40d38af99bec0b8187f723a30c9b4b78d2d1de50ba8a97954baeb
+    source_hash: 17d5dd79c29122916474a54069306e8e040a68c15c46bd217391bc97dd5d5bb5
     source_path: channels/clickclack.md
     workflow: 16
 ---
 
-ClickClack verbindt OpenClaw met een zelfgehoste ClickClack-werkruimte via volwaardig ondersteunde ClickClack-bottokens.
+ClickClack verbindt OpenClaw met een zelf gehoste ClickClack-werkruimte via eersteklas ClickClack-bottokens.
 
-Gebruik dit wanneer je wilt dat een OpenClaw-agent verschijnt als ClickClack-botgebruiker. ClickClack ondersteunt onafhankelijke servicebots en bots van gebruikers; bots van gebruikers behouden een `owner_user_id` en ontvangen alleen de tokenbereiken die je toekent.
+Gebruik dit wanneer je wilt dat een OpenClaw-agent verschijnt als een ClickClack-botgebruiker. ClickClack ondersteunt onafhankelijke servicebots en bots die eigendom zijn van gebruikers; bots die eigendom zijn van gebruikers behouden een `owner_user_id` en krijgen alleen de token-scopes die je verleent.
 
-## Snelle configuratie
+## Snelle installatie
 
 Maak een bottoken aan in ClickClack:
 
@@ -30,7 +31,7 @@ clickclack admin bot create \
   --plain
 ```
 
-Voeg voor een bot van een gebruiker `--owner <user_id>` toe.
+Voeg voor een bot die eigendom is van een gebruiker `--owner <user_id>` toe.
 
 Configureer OpenClaw:
 
@@ -65,6 +66,14 @@ Voer daarna uit:
 export CLICKCLACK_BOT_TOKEN="ccb_..."
 openclaw gateway
 ```
+
+Als `plugins.allow` een niet-lege beperkende lijst is, wordt bij het expliciet selecteren
+van ClickClack tijdens kanaalconfiguratie of het uitvoeren van `openclaw plugins enable clickclack`
+`clickclack` aan die lijst toegevoegd. Installatie tijdens onboarding gebruikt hetzelfde
+gedrag voor expliciete selectie. Deze paden overschrijven `plugins.deny` of een
+globale instelling `plugins.enabled: false` niet. Rechtstreeks
+`openclaw plugins install @openclaw/clickclack` volgt het normale
+Plugin-installatiebeleid en registreert ClickClack ook in een bestaande allowlist.
 
 ## Meerdere bots
 
@@ -109,14 +118,14 @@ Elk account opent zijn eigen ClickClack-realtimeverbinding en gebruikt zijn eige
 
 `replyMode: "model"` gebruikt `api.runtime.llm.complete` rechtstreeks voor korte botantwoorden.
 Wanneer een account `agentId` instelt, vereist OpenClaw de expliciete
-`plugins.entries.clickclack.llm.allowAgentIdOverride`-vertrouwensbit zodat de Plugin
-aanvullingen voor die botagent kan uitvoeren. Laat dit uit als je alleen de standaard
+vertrouwensbit `plugins.entries.clickclack.llm.allowAgentIdOverride`, zodat de Plugin
+voltooiingen voor die botagent kan uitvoeren. Laat dit uitgeschakeld als je alleen de standaard
 agentroute gebruikt.
 
 ## Doelen
 
-- `channel:<name-or-id>` stuurt naar een werkruimtekanaal. Kale doelen gebruiken standaard `channel:`.
-- `dm:<user_id>` maakt een rechtstreeks gesprek met die gebruiker aan of hergebruikt het.
+- `channel:<name-or-id>` verzendt naar een werkruimtekanaal. Kale doelen gebruiken standaard `channel:`.
+- `dm:<user_id>` maakt een direct gesprek met die gebruiker aan of hergebruikt dit.
 - `thread:<message_id>` antwoordt in een bestaande thread.
 
 Voorbeelden:
@@ -129,9 +138,9 @@ openclaw message send --channel clickclack --target thread:msg_123 --message "fo
 
 ## Machtigingen
 
-ClickClack-tokenbereiken worden afgedwongen door de ClickClack-API.
+ClickClack-token-scopes worden afgedwongen door de ClickClack-API.
 
-- `bot:read`: lees werkruimte-, kanaal-, bericht-, thread-, DM-, realtime- en profielgegevens.
+- `bot:read`: lees werkruimte-/kanaal-/bericht-/thread-/DM-/realtime-/profielgegevens.
 - `bot:write`: `bot:read` plus kanaalberichten, threadantwoorden, DM's en uploads.
 - `bot:admin`: `bot:write` plus kanaalaanmaak.
 
@@ -140,6 +149,6 @@ OpenClaw heeft alleen `bot:write` nodig voor normale agentchat.
 ## Probleemoplossing
 
 - `ClickClack is not configured`: stel `channels.clickclack.token` of `CLICKCLACK_BOT_TOKEN` in.
-- `workspace not found`: stel `workspace` in op de werkruimte-ID of slug die door ClickClack wordt geretourneerd.
-- Geen inkomende antwoorden: bevestig dat het token realtime-leestoegang heeft en dat de bot niet op zijn eigen berichten antwoordt.
-- Verzenden naar kanalen mislukt: controleer of de bot lid is van de werkruimte en `bot:write` heeft.
+- `workspace not found`: stel `workspace` in op de werkruimte-id of slug die door ClickClack wordt geretourneerd.
+- Geen inkomende antwoorden: controleer of het token realtime leestoegang heeft en of de bot niet op zijn eigen berichten antwoordt.
+- Verzenden naar kanaal mislukt: controleer of de bot lid is van de werkruimte en `bot:write` heeft.

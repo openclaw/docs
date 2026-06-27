@@ -1,25 +1,26 @@
 ---
 read_when:
     - تريد استخدام Together AI مع OpenClaw
-    - تحتاج إلى متغير البيئة الخاص بمفتاح واجهة برمجة التطبيقات أو خيار مصادقة CLI
+    - تحتاج إلى متغير بيئة مفتاح API أو خيار مصادقة CLI
 summary: إعداد Together AI (المصادقة + اختيار النموذج)
 title: Together AI
 x-i18n:
-    generated_at: "2026-04-30T08:23:06Z"
+    generated_at: "2026-06-27T18:28:01Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a7713c0b1e64014bbdd87a120de0a950b583afd1481338f2c6cccfb2b7da76e7
+    source_hash: a1f803ae88828a775d93dcf8b0b62e70b1dbd0cf963639121e2995fabfcd280b
     source_path: providers/together.md
     workflow: 16
 ---
 
-[Together AI](https://together.ai) يوفّر وصولًا إلى نماذج مفتوحة المصدر رائدة، بما في ذلك Llama وDeepSeek وKimi والمزيد، عبر API موحّد.
+[Together AI](https://together.ai) يوفّر وصولًا إلى نماذج مفتوحة المصدر رائدة، بما في ذلك Llama وDeepSeek وKimi والمزيد عبر API موحّد.
 
-| الخاصية | القيمة                        |
+| الخاصية | القيمة                         |
 | -------- | ----------------------------- |
 | المزوّد | `together`                    |
-| المصادقة | `TOGETHER_API_KEY`            |
-| API      | متوافق مع OpenAI              |
+| المصادقة     | `TOGETHER_API_KEY`            |
+| API      | متوافق مع OpenAI             |
 | عنوان URL الأساسي | `https://api.together.xyz/v1` |
 
 ## البدء
@@ -39,7 +40,9 @@ x-i18n:
     {
       agents: {
         defaults: {
-          model: { primary: "together/moonshotai/Kimi-K2.5" },
+          model: {
+            primary: "together/meta-llama/Llama-3.3-70B-Instruct-Turbo",
+          },
         },
       },
     }
@@ -57,33 +60,32 @@ openclaw onboard --non-interactive \
 ```
 
 <Note>
-يضبط إعداد الإعداد الأولي المسبق `together/moonshotai/Kimi-K2.5` بوصفه النموذج الافتراضي.
+يضبط الإعداد الأولي المسبق
+`together/meta-llama/Llama-3.3-70B-Instruct-Turbo` كنموذج افتراضي.
 </Note>
 
-## الكتالوج المضمّن
+## الفهرس المضمّن
 
-يشحن OpenClaw كتالوج Together المضمّن هذا:
+يشحن OpenClaw فهرس Together المضمّن هذا:
 
-| مرجع النموذج                                                 | الاسم                                  | الإدخال     | السياق    | الملاحظات                       |
-| ------------------------------------------------------------ | -------------------------------------- | ----------- | ---------- | -------------------------------- |
-| `together/moonshotai/Kimi-K2.5`                              | Kimi K2.5                              | نص، صورة    | 262,144    | النموذج الافتراضي؛ الاستدلال مفعّل |
-| `together/zai-org/GLM-4.7`                                   | GLM 4.7 Fp8                            | نص          | 202,752    | نموذج نصوص عام الغرض             |
-| `together/meta-llama/Llama-3.3-70B-Instruct-Turbo`           | Llama 3.3 70B Instruct Turbo           | نص          | 131,072    | نموذج تعليمات سريع              |
-| `together/meta-llama/Llama-4-Scout-17B-16E-Instruct`         | Llama 4 Scout 17B 16E Instruct         | نص، صورة    | 10,000,000 | متعدد الوسائط                   |
-| `together/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8` | Llama 4 Maverick 17B 128E Instruct FP8 | نص، صورة    | 20,000,000 | متعدد الوسائط                   |
-| `together/deepseek-ai/DeepSeek-V3.1`                         | DeepSeek V3.1                          | نص          | 131,072    | نموذج نصوص عام                  |
-| `together/deepseek-ai/DeepSeek-R1`                           | DeepSeek R1                            | نص          | 131,072    | نموذج استدلال                   |
-| `together/moonshotai/Kimi-K2-Instruct-0905`                  | Kimi K2-Instruct 0905                  | نص          | 262,144    | نموذج نصوص Kimi ثانوي           |
+| مرجع النموذج                                          | الاسم                         | الإدخال       | السياق | الملاحظات                |
+| -------------------------------------------------- | ---------------------------- | ----------- | ------- | -------------------- |
+| `together/meta-llama/Llama-3.3-70B-Instruct-Turbo` | Llama 3.3 70B Instruct Turbo | نص        | 131,072 | النموذج الافتراضي        |
+| `together/moonshotai/Kimi-K2.6`                    | Kimi K2.6 FP4                | نص، صورة | 262,144 | نموذج Kimi للاستدلال |
+| `together/deepseek-ai/DeepSeek-V4-Pro`             | DeepSeek V4 Pro              | نص        | 512,000 | نموذج نصي للاستدلال |
+| `together/Qwen/Qwen2.5-7B-Instruct-Turbo`          | Qwen2.5 7B Instruct Turbo    | نص        | 32,768  | نموذج نصي سريع      |
+| `together/zai-org/GLM-5.1`                         | GLM 5.1 FP4                  | نص        | 202,752 | نموذج نصي للاستدلال |
 
-## إنشاء الفيديو
+## توليد الفيديو
 
-يسجّل Plugin `together` المضمّن أيضًا إنشاء الفيديو من خلال أداة `video_generate` المشتركة.
+يسجّل Plugin المضمّن `together` أيضًا توليد الفيديو عبر أداة
+`video_generate` المشتركة.
 
-| الخاصية             | القيمة                                |
-| -------------------- | ------------------------------------- |
-| نموذج الفيديو الافتراضي | `together/Wan-AI/Wan2.2-T2V-A14B`     |
-| الأوضاع              | تحويل النص إلى فيديو، مرجع صورة واحدة |
-| المعلمات المدعومة    | `aspectRatio`, `resolution`           |
+| الخاصية             | القيمة                                                                    |
+| -------------------- | ------------------------------------------------------------------------ |
+| نموذج الفيديو الافتراضي  | `together/Wan-AI/Wan2.2-T2V-A14B`                                        |
+| الأوضاع                | تحويل النص إلى فيديو؛ مرجع صورة واحدة فقط مع `Wan-AI/Wan2.2-I2V-A14B` |
+| المعاملات المدعومة | `aspectRatio`, `resolution`                                              |
 
 لاستخدام Together كمزوّد الفيديو الافتراضي:
 
@@ -100,40 +102,44 @@ openclaw onboard --non-interactive \
 ```
 
 <Tip>
-راجع [إنشاء الفيديو](/ar/tools/video-generation) لمعلمات الأداة المشتركة، واختيار المزوّد، وسلوك تجاوز الفشل.
+راجع [توليد الفيديو](/ar/tools/video-generation) للاطلاع على معاملات الأداة المشتركة،
+واختيار المزوّد، وسلوك تجاوز الفشل.
 </Tip>
 
 <AccordionGroup>
-  <Accordion title="ملاحظة حول البيئة">
-    إذا كان Gateway يعمل كبرنامج خفي (launchd/systemd)، فتأكد من إتاحة
-    `TOGETHER_API_KEY` لتلك العملية (على سبيل المثال، في
+  <Accordion title="ملاحظة البيئة">
+    إذا كان Gateway يعمل كخدمة daemon (launchd/systemd)، فتأكد من أن
+    `TOGETHER_API_KEY` متاح لتلك العملية (على سبيل المثال، في
     `~/.openclaw/.env` أو عبر `env.shellEnv`).
 
     <Warning>
-    المفاتيح المضبوطة فقط في الصدفة التفاعلية لديك لا تكون مرئية لعمليات Gateway المُدارة كبرامج خفية. استخدم إعداد `~/.openclaw/.env` أو `env.shellEnv` للإتاحة المستمرة.
+    المفاتيح المضبوطة فقط في الصدفة التفاعلية لديك لا تكون مرئية لعمليات
+    Gateway المُدارة بواسطة daemon. استخدم تهيئة `~/.openclaw/.env` أو
+    `env.shellEnv` لضمان الإتاحة المستمرة.
     </Warning>
 
   </Accordion>
 
   <Accordion title="استكشاف الأخطاء وإصلاحها">
     - تحقق من أن مفتاحك يعمل: `openclaw models list --provider together`
-    - إذا لم تظهر النماذج، فتأكد من ضبط مفتاح API في البيئة الصحيحة لعملية Gateway لديك.
+    - إذا لم تظهر النماذج، فتأكد من ضبط مفتاح API في البيئة الصحيحة
+      لعملية Gateway لديك.
     - تستخدم مراجع النماذج الصيغة `together/<model-id>`.
 
   </Accordion>
 </AccordionGroup>
 
-## ذات صلة
+## ذو صلة
 
 <CardGroup cols={2}>
   <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
     قواعد المزوّد، ومراجع النماذج، وسلوك تجاوز الفشل.
   </Card>
-  <Card title="إنشاء الفيديو" href="/ar/tools/video-generation" icon="video">
-    معلمات أداة إنشاء الفيديو المشتركة واختيار المزوّد.
+  <Card title="توليد الفيديو" href="/ar/tools/video-generation" icon="video">
+    معاملات أداة توليد الفيديو المشتركة واختيار المزوّد.
   </Card>
-  <Card title="مرجع الإعدادات" href="/ar/gateway/configuration-reference" icon="gear">
-    مخطط الإعدادات الكامل، بما في ذلك إعدادات المزوّد.
+  <Card title="مرجع التهيئة" href="/ar/gateway/configuration-reference" icon="gear">
+    مخطط التهيئة الكامل، بما في ذلك إعدادات المزوّد.
   </Card>
   <Card title="Together AI" href="https://together.ai" icon="arrow-up-right-from-square">
     لوحة تحكم Together AI، ووثائق API، والأسعار.

@@ -1,192 +1,194 @@
 ---
 read_when:
-    - คุณต้องการคำอธิบายแบบทีละขั้นตอนที่ตรงครบถ้วนเกี่ยวกับลูปของเอเจนต์หรือเหตุการณ์ในวงจรชีวิต
+    - คุณต้องการคำแนะนำแบบละเอียดครบถ้วนเกี่ยวกับลูปของเอเจนต์หรือเหตุการณ์วงจรชีวิต
     - คุณกำลังเปลี่ยนการจัดคิวเซสชัน การเขียนทรานสคริปต์ หรือพฤติกรรมล็อกการเขียนของเซสชัน
-summary: วงจรชีวิตของลูปเอเจนต์ สตรีม และซีแมนติกของการรอ
-title: ลูปของเอเจนต์
+summary: วงจรชีวิตลูปของเอเจนต์ สตรีม และความหมายเชิงพฤติกรรมของการรอ
+title: ลูปเอเจนต์
 x-i18n:
-    generated_at: "2026-05-06T09:07:02Z"
+    generated_at: "2026-06-27T17:24:54Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e040d090e686db47a432c8d6f13c167838825b16e491297422f909aba0add5f0
+    source_hash: 1ccfdf4a3ea6b9c946064f051e32c88cefbcb707c7426abe85b04294030eedaf
     source_path: concepts/agent-loop.md
     workflow: 16
 ---
 
-ลูปแบบเอเจนต์คือการรันเอเจนต์แบบ "จริง" เต็มรูปแบบ: รับเข้า → ประกอบบริบท → อนุมานด้วยโมเดล →
-เรียกใช้เครื่องมือ → สตรีมคำตอบ → บันทึกคงทน เป็นเส้นทางหลักที่เชื่อถือได้ซึ่งเปลี่ยนข้อความ
+ลูปแบบเอเจนต์คือการรัน "จริง" แบบเต็มของเอเจนต์: การรับเข้า → การประกอบบริบท → การอนุมานของโมเดล →
+การเรียกใช้เครื่องมือ → การสตรีมคำตอบ → การคงข้อมูล เป็นเส้นทางที่เชื่อถือได้ซึ่งเปลี่ยนข้อความ
 ให้เป็นการกระทำและคำตอบสุดท้าย พร้อมรักษาสถานะเซสชันให้สอดคล้องกัน
 
-ใน OpenClaw ลูปคือการรันเดี่ยวแบบเรียงลำดับต่อเซสชัน ซึ่งส่งเหตุการณ์วงจรชีวิตและสตรีม
-ขณะที่โมเดลคิด เรียกเครื่องมือ และสตรีมผลลัพธ์ เอกสารนี้อธิบายว่าลูปจริงนี้
-เชื่อมต่อแบบต้นจนจบอย่างไร
+ใน OpenClaw ลูปคือการรันแบบลำดับเดียวต่อเซสชัน ซึ่งปล่อยเหตุการณ์วงจรชีวิตและสตรีม
+ขณะที่โมเดลคิด เรียกเครื่องมือ และสตรีมผลลัพธ์ เอกสารนี้อธิบายวิธีเชื่อมลูปจริงนั้น
+ตั้งแต่ต้นจนจบ
 
 ## จุดเข้าใช้งาน
 
 - Gateway RPC: `agent` และ `agent.wait`
 - CLI: คำสั่ง `agent`
 
-## วิธีทำงาน (ภาพรวม)
+## วิธีทำงาน (ภาพรวมระดับสูง)
 
-1. RPC `agent` ตรวจสอบ params, resolve session (sessionKey/sessionId), บันทึก metadata ของ session, แล้วคืน `{ runId, acceptedAt }` ทันที
+1. RPC `agent` ตรวจสอบพารามิเตอร์ แก้ไขเซสชัน (sessionKey/sessionId) คงข้อมูลเมตาเซสชัน และส่งคืน `{ runId, acceptedAt }` ทันที
 2. `agentCommand` รันเอเจนต์:
-   - resolve โมเดล + ค่าเริ่มต้น thinking/verbose/trace
-   - โหลดสแนปชอต Skills
-   - เรียก `runEmbeddedPiAgent` (runtime ของ pi-agent-core)
-   - ส่ง **lifecycle end/error** หากลูปแบบฝังไม่ได้ส่งเอง
-3. `runEmbeddedPiAgent`:
+   - แก้ไขค่าเริ่มต้นของโมเดล + thinking/verbose/trace
+   - โหลดสแนปช็อต Skills
+   - เรียก `runEmbeddedAgent` (รันไทม์เอเจนต์ OpenClaw)
+   - ปล่อย **lifecycle end/error** หากลูปแบบฝังไม่ได้ปล่อยเหตุการณ์นั้น
+3. `runEmbeddedAgent`:
    - จัดลำดับการรันผ่านคิวต่อเซสชัน + คิวส่วนกลาง
-   - resolve โมเดล + โปรไฟล์ auth และสร้างเซสชัน Pi
-   - subscribe เหตุการณ์ Pi และสตรีม delta ของ assistant/tool
-   - บังคับใช้ timeout -> abort การรันหากเกินเวลา
-   - สำหรับ turn ของ Codex app-server จะ abort turn ที่รับแล้วซึ่งหยุดสร้างความคืบหน้า app-server ก่อนเหตุการณ์สิ้นสุด
-   - คืน payloads + metadata การใช้งาน
-4. `subscribeEmbeddedPiSession` เชื่อมเหตุการณ์ pi-agent-core ไปยังสตรีม `agent` ของ OpenClaw:
-   - เหตุการณ์ tool => `stream: "tool"`
-   - delta ของ assistant => `stream: "assistant"`
-   - เหตุการณ์ lifecycle => `stream: "lifecycle"` (`phase: "start" | "end" | "error"`)
+   - แก้ไขโมเดล + โปรไฟล์ auth และสร้างเซสชัน OpenClaw
+   - สมัครรับเหตุการณ์รันไทม์และสตรีมเดลตาของผู้ช่วย/เครื่องมือ
+   - บังคับใช้ timeout -> ยกเลิกการรันหากเกินกำหนด
+   - สำหรับเทิร์น app-server ของ Codex จะยกเลิกเทิร์นที่รับแล้วซึ่งหยุดสร้างความคืบหน้า app-server ก่อนเกิดเหตุการณ์สิ้นสุด
+   - ส่งคืนเพย์โหลด + เมตาดาตาการใช้งาน
+4. `subscribeEmbeddedAgentSession` เชื่อมเหตุการณ์รันไทม์เอเจนต์ไปยังสตรีม `agent` ของ OpenClaw:
+   - เหตุการณ์เครื่องมือ => `stream: "tool"`
+   - เดลตาของผู้ช่วย => `stream: "assistant"`
+   - เหตุการณ์วงจรชีวิต => `stream: "lifecycle"` (`phase: "start" | "end" | "error"`)
 5. `agent.wait` ใช้ `waitForAgentRun`:
    - รอ **lifecycle end/error** สำหรับ `runId`
-   - คืน `{ status: ok|error|timeout, startedAt, endedAt, error? }`
+   - ส่งคืน `{ status: ok|error|timeout, startedAt, endedAt, error? }`
 
-## การเข้าคิว + การทำงานพร้อมกัน
+## การเข้าคิว + ภาวะพร้อมกัน
 
-- การรันจะถูกจัดลำดับต่อ session key (session lane) และอาจผ่าน global lane ด้วย
-- วิธีนี้ป้องกัน race ของ tool/session และรักษาประวัติ session ให้สอดคล้องกัน
-- ช่องทางข้อความสามารถเลือกโหมดคิว (collect/steer/followup) ที่ป้อนเข้าระบบ lane นี้ได้
+- การรันถูกจัดลำดับต่อคีย์เซสชัน (เลนเซสชัน) และอาจผ่านเลนส่วนกลางด้วย
+- สิ่งนี้ป้องกันการแข่งขันของเครื่องมือ/เซสชัน และรักษาประวัติเซสชันให้สอดคล้องกัน
+- ช่องทางรับส่งข้อความสามารถเลือกโหมดคิว (steer/followup/collect/interrupt) ที่ป้อนเข้าสู่ระบบเลนนี้
   ดู [คิวคำสั่ง](/th/concepts/queue)
-- การเขียน transcript ก็ได้รับการป้องกันด้วย session write lock บนไฟล์ session เช่นกัน lock นี้
-  รับรู้ process และอิงไฟล์ จึงจับ writer ที่ข้ามคิวใน process หรือมาจาก
-  process อื่นได้ writer ของ session transcript จะรอได้สูงสุด `session.writeLock.acquireTimeoutMs`
-  ก่อนรายงานว่า session ไม่ว่าง ค่าเริ่มต้นคือ `60000` ms
-- session write lock ไม่ใช่ reentrant โดยค่าเริ่มต้น หาก helper ตั้งใจซ้อนการ acquire
-  lock เดิมขณะยังรักษา writer เชิงตรรกะไว้หนึ่งตัว ต้อง opt in อย่างชัดเจนด้วย
+- การเขียนทรานสคริปต์ยังได้รับการป้องกันด้วยล็อกการเขียนเซสชันบนไฟล์เซสชัน ล็อกนี้
+  รับรู้กระบวนการและอิงไฟล์ จึงจับตัวเขียนที่ข้ามคิวภายในกระบวนการหรือมาจาก
+  กระบวนการอื่นได้ ตัวเขียนทรานสคริปต์เซสชันรอได้สูงสุด `session.writeLock.acquireTimeoutMs`
+  ก่อนรายงานว่าเซสชันไม่ว่าง ค่าเริ่มต้นคือ `60000` มิลลิวินาที
+- ล็อกการเขียนเซสชันไม่เป็นแบบ reentrant โดยค่าเริ่มต้น หากตัวช่วยตั้งใจซ้อนการยึด
+  ล็อกเดียวกันโดยยังรักษาตัวเขียนเชิงตรรกะหนึ่งตัวไว้ จะต้องเลือกใช้โดยชัดเจนด้วย
   `allowReentrant: true`
 
-## การเตรียม session + workspace
+## การเตรียมเซสชัน + เวิร์กสเปซ
 
-- workspace ถูก resolve และสร้างขึ้น การรันใน sandbox อาจ redirect ไปยัง root ของ sandbox workspace
-- Skills ถูกโหลด (หรือใช้ซ้ำจากสแนปชอต) และ inject เข้า env และ prompt
-- ไฟล์ bootstrap/context ถูก resolve และ inject เข้า report ของ system prompt
-- มีการ acquire session write lock; `SessionManager` ถูกเปิดและเตรียมก่อนเริ่มสตรีม เส้นทาง rewrite, compaction หรือ truncation ของ transcript ในภายหลัง
-  ต้องใช้ lock เดียวกันก่อนเปิดหรือ
-  แก้ไขไฟล์ transcript
+- เวิร์กสเปซถูกแก้ไขและสร้างขึ้น การรันแบบ sandbox อาจเปลี่ยนเส้นทางไปยังรากเวิร์กสเปซ sandbox
+- Skills ถูกโหลด (หรือนำกลับมาใช้จากสแนปช็อต) และฉีดเข้า env และ prompt
+- ไฟล์ bootstrap/context ถูกแก้ไขและฉีดเข้าในรายงาน system prompt
+- มีการยึดล็อกการเขียนเซสชัน จากนั้นเปิดและเตรียม `SessionManager` ก่อนเริ่มสตรีม เส้นทาง
+  การเขียนทรานสคริปต์ใหม่ การทำ Compaction หรือการตัดทอนในภายหลัง ต้องใช้ล็อกเดียวกันก่อนเปิดหรือ
+  เปลี่ยนแปลงไฟล์ทรานสคริปต์
 
 ## การประกอบ prompt + system prompt
 
-- system prompt สร้างจาก base prompt ของ OpenClaw, prompt ของ Skills, bootstrap context และ override ต่อการรัน
-- บังคับใช้ขีดจำกัดเฉพาะโมเดลและ token สำรองสำหรับ compaction
-- ดู [system prompt](/th/concepts/system-prompt) เพื่อดูว่าโมเดลเห็นอะไร
+- system prompt ถูกสร้างจาก prompt พื้นฐานของ OpenClaw, prompt ของ Skills, บริบท bootstrap และการแทนที่รายรัน
+- บังคับใช้ขีดจำกัดเฉพาะโมเดลและโทเค็นสำรองสำหรับ Compaction
+- ดู [System prompt](/th/concepts/system-prompt) เพื่อดูว่าโมเดลเห็นอะไร
 
-## จุด hook (ที่คุณสามารถดักแทรกได้)
+## จุด hook (ตำแหน่งที่คุณดักแทรกได้)
 
 OpenClaw มีระบบ hook สองแบบ:
 
-- **hook ภายใน** (Gateway hooks): สคริปต์แบบ event-driven สำหรับคำสั่งและเหตุการณ์ lifecycle
-- **Plugin hooks**: จุดต่อขยายภายใน lifecycle ของ agent/tool และ gateway pipeline
+- **hook ภายใน** (hook ของ Gateway): สคริปต์ขับเคลื่อนด้วยเหตุการณ์สำหรับคำสั่งและเหตุการณ์วงจรชีวิต
+- **hook ของ Plugin**: จุดขยายภายในวงจรชีวิตเอเจนต์/เครื่องมือและ pipeline ของ gateway
 
-### hook ภายใน (Gateway hooks)
+### hook ภายใน (hook ของ Gateway)
 
-- **`agent:bootstrap`**: ทำงานขณะสร้างไฟล์ bootstrap ก่อน finalize system prompt
-  ใช้สิ่งนี้เพื่อเพิ่ม/ลบไฟล์ bootstrap context
+- **`agent:bootstrap`**: รันขณะสร้างไฟล์ bootstrap ก่อนสรุป system prompt
+  ใช้สิ่งนี้เพื่อเพิ่ม/ลบไฟล์บริบท bootstrap
 - **hook คำสั่ง**: `/new`, `/reset`, `/stop` และเหตุการณ์คำสั่งอื่นๆ (ดูเอกสาร Hooks)
 
 ดู [Hooks](/th/automation/hooks) สำหรับการตั้งค่าและตัวอย่าง
 
-### Plugin hooks (lifecycle ของ agent + gateway)
+### hook ของ Plugin (วงจรชีวิตเอเจนต์ + gateway)
 
-สิ่งเหล่านี้ทำงานภายในลูปเอเจนต์หรือ gateway pipeline:
+สิ่งเหล่านี้รันภายในลูปเอเจนต์หรือ pipeline ของ gateway:
 
-- **`before_model_resolve`**: ทำงานก่อน session (ไม่มี `messages`) เพื่อ override provider/model อย่างกำหนดซ้ำได้ก่อนการ resolve โมเดล
-- **`before_prompt_build`**: ทำงานหลังโหลด session (พร้อม `messages`) เพื่อ inject `prependContext`, `systemPrompt`, `prependSystemContext` หรือ `appendSystemContext` ก่อนส่ง prompt ใช้ `prependContext` สำหรับข้อความ dynamic ต่อ turn และใช้ฟิลด์ system-context สำหรับคำแนะนำที่เสถียรซึ่งควรอยู่ในพื้นที่ system prompt
-- **`before_agent_start`**: hook เพื่อความเข้ากันได้แบบ legacy ที่อาจทำงานใน phase ใดก็ได้; ควรใช้ hook ที่ชัดเจนด้านบน
-- **`before_agent_reply`**: ทำงานหลัง inline actions และก่อนการเรียก LLM ทำให้ Plugin claim turn และคืน synthetic reply หรือทำให้ turn เงียบทั้งหมดได้
-- **`agent_end`**: ตรวจรายการข้อความสุดท้ายและ metadata การรันหลังเสร็จสิ้น
-- **`before_compaction` / `after_compaction`**: สังเกตหรือ annotate รอบ compaction
-- **`before_tool_call` / `after_tool_call`**: ดักพารามิเตอร์/ผลลัพธ์ของ tool
-- **`before_install`**: ตรวจ findings จาก built-in scan และอาจบล็อกการติดตั้ง skill หรือ Plugin
-- **`tool_result_persist`**: transform ผลลัพธ์ tool แบบ synchronous ก่อนเขียนลง session transcript ที่ OpenClaw เป็นเจ้าของ
+- **`before_model_resolve`**: รันก่อนเซสชัน (ไม่มี `messages`) เพื่อแทนที่ provider/model อย่างกำหนดได้แน่นอนก่อนการแก้ไขโมเดล
+- **`before_prompt_build`**: รันหลังโหลดเซสชัน (พร้อม `messages`) เพื่อฉีด `prependContext`, `systemPrompt`, `prependSystemContext` หรือ `appendSystemContext` ก่อนส่ง prompt ใช้ `prependContext` สำหรับข้อความไดนามิกต่อเทิร์น และใช้ฟิลด์ system-context สำหรับคำแนะนำคงที่ที่ควรอยู่ในพื้นที่ system prompt
+- **`before_agent_start`**: hook ความเข้ากันได้แบบเดิมที่อาจรันในเฟสใดเฟสหนึ่ง ควรใช้ hook แบบชัดเจนด้านบน
+- **`before_agent_reply`**: รันหลังการกระทำแบบ inline และก่อนการเรียก LLM ช่วยให้ Plugin รับเทิร์นนี้และส่งคืนคำตอบสังเคราะห์หรือปิดเสียงเทิร์นทั้งหมด
+- **`agent_end`**: ตรวจสอบรายการข้อความสุดท้ายและเมตาดาตาการรันหลังเสร็จสิ้น
+- **`before_compaction` / `after_compaction`**: สังเกตหรือใส่หมายเหตุรอบการทำ Compaction
+- **`before_tool_call` / `after_tool_call`**: ดักพารามิเตอร์/ผลลัพธ์ของเครื่องมือ
+- **`before_install`**: ตรวจสอบวัสดุการติดตั้ง skill หรือ Plugin ที่จัดเตรียมแล้ว หลังนโยบายติดตั้งของผู้ปฏิบัติการรัน เมื่อ hook ของ Plugin ถูกโหลดในกระบวนการ OpenClaw ปัจจุบัน
+- **`tool_result_persist`**: แปลงผลลัพธ์เครื่องมือแบบซิงโครนัสก่อนเขียนลงในทรานสคริปต์เซสชันที่ OpenClaw เป็นเจ้าของ
 - **`message_received` / `message_sending` / `message_sent`**: hook ข้อความขาเข้า + ขาออก
-- **`session_start` / `session_end`**: ขอบเขต lifecycle ของ session
-- **`gateway_start` / `gateway_stop`**: เหตุการณ์ lifecycle ของ gateway
+- **`session_start` / `session_end`**: ขอบเขตวงจรชีวิตเซสชัน
+- **`gateway_start` / `gateway_stop`**: เหตุการณ์วงจรชีวิต gateway
 
-กฎการตัดสินใจของ hook สำหรับ guard ขาออก/tool:
+กฎการตัดสินใจของ hook สำหรับตัวกันขาออก/เครื่องมือ:
 
-- `before_tool_call`: `{ block: true }` เป็น terminal และหยุด handler ที่ priority ต่ำกว่า
-- `before_tool_call`: `{ block: false }` เป็น no-op และไม่ล้าง block ก่อนหน้า
-- `before_install`: `{ block: true }` เป็น terminal และหยุด handler ที่ priority ต่ำกว่า
-- `before_install`: `{ block: false }` เป็น no-op และไม่ล้าง block ก่อนหน้า
-- `message_sending`: `{ cancel: true }` เป็น terminal และหยุด handler ที่ priority ต่ำกว่า
-- `message_sending`: `{ cancel: false }` เป็น no-op และไม่ล้าง cancel ก่อนหน้า
+- `before_tool_call`: `{ block: true }` เป็นสถานะสิ้นสุดและหยุด handler ที่มีลำดับความสำคัญต่ำกว่า
+- `before_tool_call`: `{ block: false }` เป็น no-op และไม่ล้างการบล็อกก่อนหน้า
+- `before_install`: `{ block: true }` เป็นสถานะสิ้นสุดและหยุด handler ที่มีลำดับความสำคัญต่ำกว่า
+- `before_install`: `{ block: false }` เป็น no-op และไม่ล้างการบล็อกก่อนหน้า
+- ใช้ `security.installPolicy` ไม่ใช่ `before_install` สำหรับการตัดสินใจอนุญาต/บล็อกการติดตั้งที่ผู้ปฏิบัติการเป็นเจ้าของ ซึ่งต้องครอบคลุมเส้นทางการติดตั้งและอัปเดตผ่าน CLI
+- `message_sending`: `{ cancel: true }` เป็นสถานะสิ้นสุดและหยุด handler ที่มีลำดับความสำคัญต่ำกว่า
+- `message_sending`: `{ cancel: false }` เป็น no-op และไม่ล้างการยกเลิกก่อนหน้า
 
-ดู [Plugin hooks](/th/plugins/hooks) สำหรับรายละเอียด hook API และการลงทะเบียน
+ดู [hook ของ Plugin](/th/plugins/hooks) สำหรับ API ของ hook และรายละเอียดการลงทะเบียน
 
-harness อาจปรับ hook เหล่านี้ต่างกัน harness ของ Codex app-server คง
-OpenClaw plugin hooks ไว้เป็น contract ความเข้ากันได้สำหรับพื้นผิว mirrored
-ที่จัดทำเอกสารไว้ ขณะที่ Codex native hooks ยังคงเป็นกลไก Codex ระดับล่างที่แยกต่างหาก
+harness อาจปรับ hook เหล่านี้แตกต่างกัน harness app-server ของ Codex รักษา
+hook ของ Plugin OpenClaw เป็นสัญญาความเข้ากันได้สำหรับพื้นผิว mirror ที่จัดทำเอกสารไว้
+ขณะที่ hook native ของ Codex ยังคงเป็นกลไก Codex ระดับต่ำกว่าแยกต่างหาก
 
 ## การสตรีม + คำตอบบางส่วน
 
-- delta ของ assistant ถูกสตรีมจาก pi-agent-core และส่งเป็นเหตุการณ์ `assistant`
-- block streaming สามารถส่งคำตอบบางส่วนได้ทั้งบน `text_end` หรือ `message_end`
-- reasoning streaming สามารถส่งเป็นสตรีมแยกต่างหากหรือเป็น block replies
-- ดู [Streaming](/th/concepts/streaming) สำหรับพฤติกรรม chunking และ block reply
+- เดลตาของผู้ช่วยถูกสตรีมจากรันไทม์เอเจนต์และปล่อยเป็นเหตุการณ์ `assistant`
+- การสตรีมบล็อกสามารถปล่อยคำตอบบางส่วนได้ทั้งที่ `text_end` หรือ `message_end`
+- การสตรีม reasoning สามารถปล่อยเป็นสตรีมแยกหรือเป็นคำตอบแบบบล็อกได้
+- ดู [การสตรีม](/th/concepts/streaming) สำหรับพฤติกรรมการแบ่งชิ้นและคำตอบแบบบล็อก
 
-## การเรียกใช้เครื่องมือ + เครื่องมือส่งข้อความ
+## การเรียกใช้เครื่องมือ + เครื่องมือรับส่งข้อความ
 
-- เหตุการณ์เริ่ม/update/จบของ tool ถูกส่งบนสตรีม `tool`
-- ผลลัพธ์ tool ถูก sanitize ด้านขนาดและ payload รูปภาพก่อน logging/emitting
-- การส่งผ่าน messaging tool ถูกติดตามเพื่อกดทับ confirmation ของ assistant ที่ซ้ำกัน
+- เหตุการณ์เริ่ม/อัปเดต/จบของเครื่องมือถูกปล่อยบนสตรีม `tool`
+- ผลลัพธ์เครื่องมือถูกทำให้ปลอดภัยด้านขนาดและเพย์โหลดรูปภาพก่อนบันทึก/ปล่อยเหตุการณ์
+- การส่งผ่านเครื่องมือรับส่งข้อความถูกติดตามเพื่อระงับการยืนยันของผู้ช่วยที่ซ้ำกัน
 
-## การจัดรูปคำตอบ + การกดทับ
+## การจัดรูปคำตอบ + การระงับ
 
-- payload สุดท้ายประกอบจาก:
-  - ข้อความ assistant (และ reasoning ที่เป็น optional)
-  - summary ของ inline tool (เมื่อ verbose + allowed)
-  - ข้อความ error ของ assistant เมื่อโมเดล error
-- token เงียบแบบตรงตัว `NO_REPLY` / `no_reply` ถูกกรองออกจาก
-  payload ขาออก
-- messaging tool ที่ซ้ำกันถูกลบออกจากรายการ payload สุดท้าย
-- หากไม่มี payload ที่ render ได้เหลืออยู่และ tool เกิด error จะส่ง fallback tool error reply
-  (เว้นแต่ว่า messaging tool ได้ส่งคำตอบที่ผู้ใช้มองเห็นไปแล้ว)
+- เพย์โหลดสุดท้ายถูกประกอบจาก:
+  - ข้อความผู้ช่วย (และ reasoning ที่เป็นทางเลือก)
+  - สรุปเครื่องมือแบบ inline (เมื่อ verbose + อนุญาต)
+  - ข้อความข้อผิดพลาดของผู้ช่วยเมื่อโมเดลเกิดข้อผิดพลาด
+- โทเค็นเงียบที่ตรงตัว `NO_REPLY` / `no_reply` ถูกกรองออกจากเพย์โหลด
+  ขาออก
+- รายการซ้ำจากเครื่องมือรับส่งข้อความถูกลบออกจากรายการเพย์โหลดสุดท้าย
+- หากไม่มีเพย์โหลดที่เรนเดอร์ได้เหลืออยู่และเครื่องมือเกิดข้อผิดพลาด จะปล่อยคำตอบข้อผิดพลาดเครื่องมือสำรอง
+  (เว้นแต่เครื่องมือรับส่งข้อความได้ส่งคำตอบที่ผู้ใช้เห็นได้ไปแล้ว)
 
 ## Compaction + การลองใหม่
 
-- auto-compaction ส่งเหตุการณ์สตรีม `compaction` และสามารถ trigger การลองใหม่
-- เมื่อ retry buffer ในหน่วยความจำและ summary ของ tool จะถูก reset เพื่อหลีกเลี่ยง output ซ้ำ
-- ดู [Compaction](/th/concepts/compaction) สำหรับ pipeline ของ compaction
+- Auto-compaction ปล่อยเหตุการณ์สตรีม `compaction` และสามารถกระตุ้นการลองใหม่
+- เมื่อลองใหม่ บัฟเฟอร์ในหน่วยความจำและสรุปเครื่องมือจะถูกรีเซ็ตเพื่อหลีกเลี่ยงผลลัพธ์ซ้ำ
+- ดู [Compaction](/th/concepts/compaction) สำหรับ pipeline ของ Compaction
 
 ## สตรีมเหตุการณ์ (ปัจจุบัน)
 
-- `lifecycle`: ส่งโดย `subscribeEmbeddedPiSession` (และส่งเป็น fallback โดย `agentCommand`)
-- `assistant`: delta ที่สตรีมจาก pi-agent-core
-- `tool`: เหตุการณ์ tool ที่สตรีมจาก pi-agent-core
+- `lifecycle`: ปล่อยโดย `subscribeEmbeddedAgentSession` (และเป็น fallback โดย `agentCommand`)
+- `assistant`: เดลตาที่สตรีมจากรันไทม์เอเจนต์
+- `tool`: เหตุการณ์เครื่องมือที่สตรีมจากรันไทม์เอเจนต์
 
-## การจัดการช่องทางแชต
+## การจัดการช่องแชต
 
-- delta ของ assistant ถูก buffer เป็นข้อความ `delta` ของแชต
-- `final` ของแชตถูกส่งเมื่อ **lifecycle end/error**
+- เดลตาของผู้ช่วยถูกบัฟเฟอร์เป็นข้อความ `delta` ของแชต
+- ปล่อย `final` ของแชตเมื่อเกิด **lifecycle end/error**
 
-## timeout
+## Timeout
 
-- ค่าเริ่มต้นของ `agent.wait`: 30s (เฉพาะการรอ) พารามิเตอร์ `timeoutMs` override ได้
-- runtime ของ agent: ค่าเริ่มต้น `agents.defaults.timeoutSeconds` 172800s (48 ชั่วโมง); บังคับใช้ใน abort timer ของ `runEmbeddedPiAgent`
-- runtime ของ Cron: `timeoutSeconds` ของ agent-turn แบบ isolated เป็นของ cron scheduler เริ่ม timer นั้นเมื่อการ execute เริ่มขึ้น, abort run ที่อยู่ข้างใต้เมื่อถึง deadline ที่กำหนดค่าไว้, แล้วทำ cleanup แบบมีขอบเขตก่อนบันทึก timeout เพื่อให้ child session ที่ stale ไม่ทำให้ lane ค้างอยู่
-- diagnostics ความยังทำงานของ session: เมื่อเปิด diagnostics, `diagnostics.stuckSessionWarnMs` จะจำแนก session `processing` ที่ยาวนานซึ่งไม่มี reply, tool, status, block หรือความคืบหน้า ACP ที่สังเกตได้ การรันแบบ embedded ที่ active, การเรียกโมเดล และการเรียก tool จะรายงานเป็น `session.long_running`; งานที่ active แต่ไม่มีความคืบหน้าล่าสุดจะรายงานเป็น `session.stalled`; `session.stuck` สงวนไว้สำหรับ bookkeeping ของ session ที่ stale โดยไม่มีงาน active bookkeeping ของ session ที่ stale จะปล่อย session lane ที่ได้รับผลกระทบทันที; embedded run ที่ stalled จะถูก abort-drain หลังจาก `diagnostics.stuckSessionAbortMs` เท่านั้น (ค่าเริ่มต้น: อย่างน้อย 10 นาทีและ 5 เท่าของ threshold การเตือน) เพื่อให้งานที่เข้าคิวกลับมาทำต่อได้โดยไม่ตัดการรันที่เพียงแค่ช้าออก Recovery ส่ง outcome requested/completed แบบมีโครงสร้าง และสถานะ diagnostic จะถูกทำเครื่องหมาย idle เฉพาะเมื่อ processing generation เดิมยัง current อยู่เท่านั้น diagnostics `session.stuck` ที่ซ้ำจะ back off ขณะที่ session ยังไม่เปลี่ยนแปลง
-- model idle timeout: OpenClaw abort request ของโมเดลเมื่อไม่มี response chunk มาถึงก่อน idle window `models.providers.<id>.timeoutSeconds` ขยาย idle watchdog นี้สำหรับ provider แบบ local/self-hosted ที่ช้า; มิฉะนั้น OpenClaw ใช้ `agents.defaults.timeoutSeconds` เมื่อกำหนดค่าไว้ โดย capped ที่ 120s ตามค่าเริ่มต้น การรันที่ trigger โดย Cron และไม่มี timeout ของโมเดลหรือ agent ที่ explicit จะปิด idle watchdog และพึ่ง timeout ชั้นนอกของ cron
-- timeout ของ HTTP request ของ provider: `models.providers.<id>.timeoutSeconds` ใช้กับ model HTTP fetches ของ provider นั้น รวมถึง connect, headers, body, SDK request timeout, การจัดการ abort ของ guarded-fetch ทั้งหมด และ model stream idle watchdog ใช้ค่านี้สำหรับ provider แบบ local/self-hosted ที่ช้า เช่น Ollama ก่อนเพิ่ม timeout runtime ของ agent ทั้งหมด
+- ค่าเริ่มต้นของ `agent.wait`: 30 วินาที (เฉพาะการรอ) พารามิเตอร์ `timeoutMs` จะแทนที่
+- รันไทม์เอเจนต์: ค่าเริ่มต้นของ `agents.defaults.timeoutSeconds` คือ 172800 วินาที (48 ชั่วโมง); บังคับใช้ในตัวจับเวลา abort ของ `runEmbeddedAgent`
+- รันไทม์ Cron: `timeoutSeconds` ของ agent-turn ที่แยกโดดเดี่ยวเป็นของ cron ตัว scheduler เริ่มตัวจับเวลานั้นเมื่อการดำเนินการเริ่มขึ้น ยกเลิกการรันพื้นฐานเมื่อถึงกำหนดเวลาที่กำหนดค่าไว้ จากนั้นรันการล้างข้อมูลแบบมีขอบเขตก่อนบันทึก timeout เพื่อไม่ให้เซสชันลูกค้างเก่าทำให้เลนติดค้าง
+- การวินิจฉัยความมีชีวิตของเซสชัน: เมื่อเปิดใช้ diagnostics, `diagnostics.stuckSessionWarnMs` จะจัดประเภทเซสชัน `processing` ที่ใช้เวลานานและไม่มี reply, tool, status, block หรือความคืบหน้า ACP ที่สังเกตได้ การรันแบบฝัง การเรียกโมเดล และการเรียกเครื่องมือที่ active จะรายงานเป็น `session.long_running`; การเรียกโมเดลแบบเงียบที่มีเจ้าของยังคงเป็น `session.long_running` จนถึง `diagnostics.stuckSessionAbortMs` เพื่อไม่ให้ provider ที่ช้าหรือไม่สตรีมถูกรายงานว่าค้างเร็วเกินไป งานที่ active แต่ไม่มีความคืบหน้าล่าสุดจะรายงานเป็น `session.stalled`; การเรียกโมเดลที่มีเจ้าของจะเปลี่ยนเป็น `session.stalled` เมื่อถึงหรือหลังเกณฑ์ abort และกิจกรรมโมเดล/เครื่องมือเก่าที่ไม่มีเจ้าของจะไม่ถูกซ่อนไว้ในฐานะ long-running `session.stuck` สงวนไว้สำหรับการทำบัญชีเซสชันเก่าที่กู้คืนได้ รวมถึงเซสชันที่อยู่ในคิวและ idle พร้อมกิจกรรมโมเดล/เครื่องมือเก่าที่ไม่มีเจ้าของ การทำบัญชีเซสชันเก่าจะปล่อยเลนเซสชันที่ได้รับผลกระทบทันทีหลังผ่าน recovery gate; การรันแบบฝังที่ stalled จะถูก abort-drain หลัง `diagnostics.stuckSessionAbortMs` เท่านั้น (ค่าเริ่มต้น: อย่างน้อย 5 นาทีและ 3 เท่าของเกณฑ์เตือน) เพื่อให้งานที่เข้าคิวกลับมาทำงานต่อได้โดยไม่ตัดการรันที่เพียงแค่ช้าออก การกู้คืนปล่อยผลลัพธ์ requested/completed แบบมีโครงสร้าง และสถานะ diagnostic จะถูกทำเครื่องหมาย idle เฉพาะเมื่อ generation การประมวลผลเดียวกันยังเป็นปัจจุบันอยู่ diagnostic `session.stuck` ที่เกิดซ้ำจะ back off ขณะที่เซสชันยังไม่เปลี่ยนแปลง
+- Timeout ขณะโมเดล idle: OpenClaw ยกเลิกคำขอโมเดลเมื่อไม่มีชิ้นส่วนคำตอบมาถึงก่อนครบหน้าต่าง idle `models.providers.<id>.timeoutSeconds` ขยายตัวเฝ้าระวัง idle นี้สำหรับ provider ในเครื่อง/โฮสต์เองที่ช้า แต่ยังถูกจำกัดโดย `agents.defaults.timeoutSeconds` หรือ timeout เฉพาะการรันที่ต่ำกว่า เพราะสิ่งเหล่านั้นควบคุมการรันเอเจนต์ทั้งหมด มิฉะนั้น OpenClaw ใช้ `agents.defaults.timeoutSeconds` เมื่อกำหนดค่าไว้ โดยจำกัดไว้ที่ 120 วินาทีตามค่าเริ่มต้น การรันโมเดลบนคลาวด์ที่ถูก Cron กระตุ้นโดยไม่มี timeout ของโมเดลหรือเอเจนต์แบบชัดเจนจะใช้ตัวเฝ้าระวัง idle ค่าเริ่มต้นเดียวกัน; เมื่อมี timeout การรัน cron แบบชัดเจน การค้างของสตรีมโมเดลบนคลาวด์จะถูกจำกัดที่ 60 วินาที เพื่อให้ model fallback ที่กำหนดค่าไว้รันได้ก่อนกำหนดเวลาภายนอกของ cron การรันโมเดลในเครื่องหรือโฮสต์เองที่ถูก Cron กระตุ้นจะปิดใช้ตัวเฝ้าระวังโดยนัย เว้นแต่กำหนดค่า timeout แบบชัดเจนไว้ และ timeout การรัน cron แบบชัดเจนยังคงเป็นหน้าต่าง idle สำหรับ provider ในเครื่อง/โฮสต์เอง ดังนั้น provider ในเครื่องที่ช้าควรตั้ง `models.providers.<id>.timeoutSeconds`
+- Timeout คำขอ HTTP ของ provider: `models.providers.<id>.timeoutSeconds` ใช้กับการ fetch HTTP ของโมเดลของ provider นั้น รวมถึง connect, headers, body, timeout คำขอ SDK, การจัดการ abort ของ guarded-fetch ทั้งหมด และตัวเฝ้าระวัง idle ของสตรีมโมเดล ใช้สิ่งนี้สำหรับ provider ในเครื่อง/โฮสต์เองที่ช้า เช่น Ollama ก่อนเพิ่ม timeout ของรันไทม์เอเจนต์ทั้งหมด และคง timeout ของเอเจนต์/รันไทม์ให้สูงอย่างน้อยเท่ากันเมื่อคำขอโมเดลต้องรันนานขึ้น
 
-## จุดที่สิ่งต่างๆ อาจจบก่อนกำหนด
+## ตำแหน่งที่สิ่งต่างๆ อาจจบก่อนกำหนด
 
-- timeout ของ agent (abort)
-- AbortSignal (cancel)
-- Gateway disconnect หรือ RPC timeout
-- timeout ของ `agent.wait` (เฉพาะการรอ ไม่หยุด agent)
+- หมดเวลาของเอเจนต์ (ยกเลิก)
+- AbortSignal (ยกเลิก)
+- Gateway ตัดการเชื่อมต่อหรือ RPC หมดเวลา
+- หมดเวลา `agent.wait` (รอเท่านั้น ไม่หยุดเอเจนต์)
 
 ## ที่เกี่ยวข้อง
 
-- [Tools](/th/tools) — เครื่องมือ agent ที่มีให้ใช้
-- [Hooks](/th/automation/hooks) — สคริปต์ event-driven ที่ trigger โดยเหตุการณ์ lifecycle ของ agent
-- [Compaction](/th/concepts/compaction) — วิธีสรุปบทสนทนายาวๆ
-- [Exec Approvals](/th/tools/exec-approvals) — approval gates สำหรับคำสั่ง shell
-- [Thinking](/th/tools/thinking) — การกำหนดค่าระดับ thinking/reasoning
+- [เครื่องมือ](/th/tools) — เครื่องมือเอเจนต์ที่มีให้ใช้
+- [Hooks](/th/automation/hooks) — สคริปต์ที่ขับเคลื่อนด้วยเหตุการณ์ ซึ่งถูกทริกเกอร์โดยเหตุการณ์ในวงจรชีวิตของเอเจนต์
+- [Compaction](/th/concepts/compaction) — วิธีสรุปการสนทนาที่ยาว
+- [การอนุมัติ Exec](/th/tools/exec-approvals) — จุดควบคุมการอนุมัติสำหรับคำสั่งเชลล์
+- [การคิด](/th/tools/thinking) — การกำหนดค่าระดับการคิด/การให้เหตุผล

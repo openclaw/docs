@@ -1,19 +1,20 @@
 ---
 read_when:
     - Je wilt een modelprovider kiezen
-    - Je wilt snelle configuratievoorbeelden voor LLM-authenticatie en modelselectie
-summary: Modelaanbieders (LLM's) die door OpenClaw worden ondersteund
-title: Snelstartgids voor modelproviders
+    - Je wilt snelle installatievoorbeelden voor LLM-authenticatie + modelselectie
+summary: Modelproviders (LLM's) ondersteund door OpenClaw
+title: Snelstart voor modelprovider
 x-i18n:
-    generated_at: "2026-05-06T18:00:08Z"
+    generated_at: "2026-06-27T18:13:06Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7e95d37f3e332a9b2eb58a15dc356ad02b4cbf409926adb3faf1923825219887
+    source_hash: ca59b0203b4b5e327b2718a356f6fc1da2f868dac4ca219a2597a96dbf949804
     source_path: providers/models.md
     workflow: 16
 ---
 
-OpenClaw kan veel LLM-providers gebruiken. Kies er één, authenticeer en stel vervolgens het standaardmodel in als `provider/model`.
+OpenClaw kan veel LLM-providers gebruiken. Kies er een, authenticeer en stel vervolgens het standaardmodel in als `provider/model`.
 
 ## Snelstart (twee stappen)
 
@@ -31,14 +32,14 @@ OpenClaw kan veel LLM-providers gebruiken. Kies er één, authenticeer en stel v
 - [Alibaba Model Studio](/nl/providers/alibaba)
 - [Amazon Bedrock](/nl/providers/bedrock)
 - [Anthropic (API + Claude CLI)](/nl/providers/anthropic)
-- [BytePlus (Internationaal)](/nl/concepts/model-providers#byteplus-international)
+- [BytePlus (International)](/nl/concepts/model-providers#byteplus-international)
 - [Chutes](/nl/providers/chutes)
+- [Cohere](/nl/providers/cohere)
 - [ComfyUI](/nl/providers/comfy)
 - [Cloudflare AI Gateway](/nl/providers/cloudflare-ai-gateway)
 - [DeepInfra](/nl/providers/deepinfra)
 - [fal](/nl/providers/fal)
 - [Fireworks](/nl/providers/fireworks)
-- [GLM-modellen](/nl/providers/glm)
 - [MiniMax](/nl/providers/minimax)
 - [Mistral](/nl/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/nl/providers/moonshot)
@@ -53,16 +54,15 @@ OpenClaw kan veel LLM-providers gebruiken. Kies er één, authenticeer en stel v
 - [Vercel AI Gateway](/nl/providers/vercel-ai-gateway)
 - [Venice (Venice AI)](/nl/providers/venice)
 - [xAI](/nl/providers/xai)
-- [Z.AI](/nl/providers/zai)
+- [Z.AI (GLM)](/nl/providers/zai)
 
-## Aanvullende gebundelde providervarianten
+## Extra providervarianten
 
-- `anthropic-vertex` - impliciete Anthropic op Google Vertex-ondersteuning wanneer Vertex-referenties beschikbaar zijn; geen afzonderlijke authenticatiekeuze voor onboarding
-- `copilot-proxy` - lokale VS Code Copilot Proxy-brug; gebruik `openclaw onboard --auth-choice copilot-proxy`
-- `google-gemini-cli` - onofficiële Gemini CLI OAuth-flow; vereist een lokale `gemini`-installatie (`brew install gemini-cli` of `npm install -g @google/gemini-cli`); standaardmodel `google-gemini-cli/gemini-3-flash-preview`; gebruik `openclaw onboard --auth-choice google-gemini-cli` of `openclaw models auth login --provider google-gemini-cli --set-default`
+- `anthropic-vertex` - installeer `@openclaw/anthropic-vertex-provider` voor impliciete ondersteuning voor Anthropic op Google Vertex wanneer Vertex-referenties beschikbaar zijn; geen afzonderlijke onboarding-authenticatiekeuze
+- `copilot-proxy` - lokale VS Code Copilot Proxy-bridge; gebruik `openclaw onboard --auth-choice copilot-proxy`
+- `google-gemini-cli` - onofficiële OAuth-flow van Gemini CLI; vereist een lokale `gemini`-installatie (`brew install gemini-cli` of `npm install -g @google/gemini-cli`); standaardmodel `google-gemini-cli/gemini-3-flash-preview`; gebruik `openclaw onboard --auth-choice google-gemini-cli` of `openclaw models auth login --provider google-gemini-cli --set-default`
 
-Voor de volledige providercatalogus (xAI, Groq, Mistral, enzovoort) en geavanceerde configuratie,
-zie [Modelproviders](/nl/concepts/model-providers).
+Zie [Modelproviders](/nl/concepts/model-providers) voor de volledige providercatalogus (xAI, Groq, Mistral, enz.) en geavanceerde configuratie.
 
 ## Gerelateerd
 

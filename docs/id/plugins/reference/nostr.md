@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Anda sedang memasang, mengonfigurasi, atau mengaudit Plugin nostr
-summary: Menambahkan permukaan kanal Nostr untuk mengirim dan menerima pesan OpenClaw.
+    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin nostr
+summary: Plugin kanal Nostr OpenClaw untuk pesan langsung terenkripsi NIP-04.
 title: Plugin Nostr
 x-i18n:
-    generated_at: "2026-05-03T09:21:08Z"
+    generated_at: "2026-06-27T17:55:26Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1205a3b286e406b41029418b5fb9b12dcb19b35aff60c32d12e60c45804d7eaa
+    source_hash: e56fd9eee17c55bcbba3d7b85d783930c10d2368f36173ac478b254c2bd5ec22
     source_path: plugins/reference/nostr.md
     workflow: 16
 ---
 
 # Plugin Nostr
 
-Menambahkan permukaan kanal Nostr untuk mengirim dan menerima pesan OpenClaw.
+Plugin saluran Nostr OpenClaw untuk pesan langsung terenkripsi NIP-04.
 
 ## Distribusi
 
@@ -23,7 +24,7 @@ Menambahkan permukaan kanal Nostr untuk mengirim dan menerima pesan OpenClaw.
 
 ## Permukaan
 
-kanal: nostr
+channels: nostr
 
 ## Dokumentasi terkait
 

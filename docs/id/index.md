@@ -1,13 +1,14 @@
 ---
 read_when:
-    - Memperkenalkan OpenClaw kepada pengguna baru
-summary: OpenClaw adalah Gateway multikanal untuk agen AI yang berjalan di sistem operasi apa pun.
+    - Memperkenalkan OpenClaw kepada pendatang baru
+summary: OpenClaw adalah gateway multi-channel untuk agen AI yang berjalan di OS apa pun.
 title: OpenClaw
 x-i18n:
-    generated_at: "2026-05-07T13:19:50Z"
+    generated_at: "2026-06-27T17:36:30Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7bf82c8551703257e55289d2b82f6436c9900a8afae7ab9b6a655332716ff37b
+    source_hash: fcaa54a0a6d7aa62193fd9f03428bbcbfdcb2c00a184bcd6f49e4e093fefc473
     source_path: index.md
     workflow: 16
 ---
@@ -33,7 +34,7 @@ x-i18n:
 
 <p align="center">
   <strong>Gateway OS apa pun untuk agen AI di Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo, dan lainnya.</strong><br />
-  Kirim pesan, dapatkan respons agen dari saku Anda. Jalankan satu Gateway di seluruh kanal bawaan, Plugin kanal terbundel, WebChat, dan Node seluler.
+  Kirim pesan, dapatkan respons agen dari saku Anda. Jalankan satu Gateway di seluruh kanal bawaan, Plugin kanal terbundel, WebChat, dan simpul seluler.
 </p>
 
 <Columns>
@@ -41,7 +42,7 @@ x-i18n:
     Instal OpenClaw dan jalankan Gateway dalam hitungan menit.
   </Card>
   <Card title="Jalankan Onboarding" href="/id/start/wizard" icon="sparkles">
-    Penyiapan terpandu dengan `openclaw onboard` dan alur pemasangan.
+    Penyiapan terpandu dengan `openclaw onboard` dan alur pairing.
   </Card>
   <Card title="Buka UI Kontrol" href="/id/web/control-ui" icon="layout-dashboard">
     Luncurkan dasbor browser untuk chat, konfigurasi, dan sesi.
@@ -50,25 +51,25 @@ x-i18n:
 
 ## Apa itu OpenClaw?
 
-OpenClaw adalah **gateway yang di-host sendiri** yang menghubungkan aplikasi chat dan permukaan kanal favorit Anda — kanal bawaan ditambah Plugin kanal terbundel atau eksternal seperti Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo, dan lainnya — ke agen coding AI seperti Pi. Anda menjalankan satu proses Gateway di mesin Anda sendiri (atau server), dan proses itu menjadi jembatan antara aplikasi pesan Anda dan asisten AI yang selalu tersedia.
+OpenClaw adalah **gateway yang di-host sendiri** yang menghubungkan aplikasi chat dan permukaan kanal favorit Anda — kanal bawaan serta Plugin kanal terbundel atau eksternal seperti Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo, dan lainnya — ke agen coding AI. Anda menjalankan satu proses Gateway di mesin Anda sendiri (atau server), dan proses itu menjadi jembatan antara aplikasi perpesanan Anda dan asisten AI yang selalu tersedia.
 
-**Untuk siapa ini?** Developer dan pengguna tingkat lanjut yang menginginkan asisten AI pribadi yang bisa mereka kirimi pesan dari mana saja — tanpa melepaskan kendali atas data mereka atau bergantung pada layanan yang di-host.
+**Untuk siapa ini?** Developer dan power user yang menginginkan asisten AI pribadi yang dapat mereka kirimi pesan dari mana saja — tanpa melepas kontrol atas data mereka atau bergantung pada layanan ter-host.
 
 **Apa yang membuatnya berbeda?**
 
 - **Di-host sendiri**: berjalan di perangkat keras Anda, dengan aturan Anda
-- **Multi-kanal**: satu Gateway melayani kanal bawaan ditambah Plugin kanal terbundel atau eksternal secara bersamaan
-- **Native untuk agen**: dibuat untuk agen coding dengan penggunaan alat, sesi, memori, dan perutean multi-agen
-- **Sumber terbuka**: berlisensi MIT, digerakkan oleh komunitas
+- **Multi-kanal**: satu Gateway melayani kanal bawaan serta Plugin kanal terbundel atau eksternal secara bersamaan
+- **Native agen**: dibuat untuk agen coding dengan penggunaan alat, sesi, memori, dan perutean multi-agen
+- **Open source**: berlisensi MIT, digerakkan oleh komunitas
 
-**Apa yang Anda perlukan?** Node 24 (direkomendasikan), atau Node 22 LTS (`22.16+`) untuk kompatibilitas, kunci API dari penyedia pilihan Anda, dan 5 menit. Untuk kualitas dan keamanan terbaik, gunakan model generasi terbaru terkuat yang tersedia.
+**Apa yang Anda butuhkan?** Node 24 (direkomendasikan), atau Node 22 LTS (`22.19+`) untuk kompatibilitas, kunci API dari provider pilihan Anda, dan 5 menit. Untuk kualitas dan keamanan terbaik, gunakan model generasi terbaru terkuat yang tersedia.
 
 ## Cara kerjanya
 
 ```mermaid
 flowchart LR
   A["Chat apps + plugins"] --> B["Gateway"]
-  B --> C["Pi agent"]
+  B --> C["OpenClaw agent"]
   B --> D["CLI"]
   B --> E["Web Control UI"]
   B --> F["macOS app"]
@@ -84,19 +85,19 @@ Gateway adalah sumber kebenaran tunggal untuk sesi, perutean, dan koneksi kanal.
     Discord, iMessage, Signal, Slack, Telegram, WhatsApp, WebChat, dan lainnya dengan satu proses Gateway.
   </Card>
   <Card title="Kanal Plugin" icon="plug" href="/id/tools/plugin">
-    Plugin terbundel menambahkan Matrix, Nostr, Twitch, Zalo, dan lainnya dalam rilis terkini normal.
+    Plugin terbundel menambahkan Matrix, Nostr, Twitch, Zalo, dan lainnya dalam rilis normal saat ini.
   </Card>
   <Card title="Perutean multi-agen" icon="route" href="/id/concepts/multi-agent">
-    Sesi terisolasi per agen, ruang kerja, atau pengirim.
+    Sesi terisolasi per agen, workspace, atau pengirim.
   </Card>
   <Card title="Dukungan media" icon="image" href="/id/nodes/images">
     Kirim dan terima gambar, audio, dan dokumen.
   </Card>
   <Card title="UI Kontrol Web" icon="monitor" href="/id/web/control-ui">
-    Dasbor browser untuk chat, konfigurasi, sesi, dan Node.
+    Dasbor browser untuk chat, konfigurasi, sesi, dan simpul.
   </Card>
-  <Card title="Node seluler" icon="smartphone" href="/id/nodes">
-    Pasangkan Node iOS dan Android untuk alur kerja yang mendukung Canvas, kamera, dan suara.
+  <Card title="Simpul seluler" icon="smartphone" href="/id/nodes">
+    Pasangkan simpul iOS dan Android untuk alur kerja yang mendukung Canvas, kamera, dan suara.
   </Card>
 </Columns>
 
@@ -125,7 +126,7 @@ Gateway adalah sumber kebenaran tunggal untuk sesi, perutean, dan koneksi kanal.
   </Step>
 </Steps>
 
-Perlu penyiapan instalasi dan dev lengkap? Lihat [Mulai](/id/start/getting-started).
+Butuh penyiapan instalasi dan dev lengkap? Lihat [Mulai](/id/start/getting-started).
 
 ## Dasbor
 
@@ -142,8 +143,8 @@ Buka UI Kontrol browser setelah Gateway dimulai.
 
 Konfigurasi berada di `~/.openclaw/openclaw.json`.
 
-- Jika Anda **tidak melakukan apa pun**, OpenClaw menggunakan biner Pi terbundel dalam mode RPC dengan sesi per pengirim.
-- Jika Anda ingin menguncinya, mulai dengan `channels.whatsapp.allowFrom` dan (untuk grup) aturan penyebutan.
+- Jika Anda **tidak melakukan apa pun**, OpenClaw menggunakan runtime agen OpenClaw terbundel dengan sesi per pengirim.
+- Jika Anda ingin menguncinya, mulai dengan `channels.whatsapp.allowFrom` dan (untuk grup) aturan mention.
 
 Contoh:
 
@@ -163,10 +164,10 @@ Contoh:
 
 <Columns>
   <Card title="Hub dokumentasi" href="/id/start/hubs" icon="book-open">
-    Semua dokumentasi dan panduan, diatur berdasarkan kasus penggunaan.
+    Semua dokumentasi dan panduan, disusun berdasarkan kasus penggunaan.
   </Card>
   <Card title="Konfigurasi" href="/id/gateway/configuration" icon="settings">
-    Pengaturan Gateway inti, token, dan konfigurasi penyedia.
+    Pengaturan inti Gateway, token, dan konfigurasi provider.
   </Card>
   <Card title="Akses jarak jauh" href="/id/gateway/remote" icon="globe">
     Pola akses SSH dan tailnet.
@@ -174,11 +175,11 @@ Contoh:
   <Card title="Kanal" href="/id/channels/telegram" icon="message-square">
     Penyiapan khusus kanal untuk Feishu, Microsoft Teams, WhatsApp, Telegram, Discord, dan lainnya.
   </Card>
-  <Card title="Node" href="/id/nodes" icon="smartphone">
-    Node iOS dan Android dengan pemasangan, Canvas, kamera, dan tindakan perangkat.
+  <Card title="Simpul" href="/id/nodes" icon="smartphone">
+    Simpul iOS dan Android dengan pairing, Canvas, kamera, dan tindakan perangkat.
   </Card>
   <Card title="Bantuan" href="/id/help" icon="life-buoy">
-    Titik awal untuk perbaikan umum dan pemecahan masalah.
+    Titik masuk untuk perbaikan umum dan pemecahan masalah.
   </Card>
 </Columns>
 
@@ -189,10 +190,10 @@ Contoh:
     Kemampuan kanal, perutean, dan media yang lengkap.
   </Card>
   <Card title="Perutean multi-agen" href="/id/concepts/multi-agent" icon="route">
-    Isolasi ruang kerja dan sesi per agen.
+    Isolasi workspace dan sesi per agen.
   </Card>
   <Card title="Keamanan" href="/id/gateway/security" icon="shield">
-    Token, daftar izin, dan kontrol keselamatan.
+    Token, allowlist, dan kontrol keamanan.
   </Card>
   <Card title="Pemecahan masalah" href="/id/gateway/troubleshooting" icon="wrench">
     Diagnostik Gateway dan kesalahan umum.

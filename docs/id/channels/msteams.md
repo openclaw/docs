@@ -1,35 +1,33 @@
 ---
 read_when:
     - Mengerjakan fitur saluran Microsoft Teams
-summary: Status dukungan bot Microsoft Teams, kapabilitas, dan konfigurasi
+summary: Status dukungan, kemampuan, dan konfigurasi bot Microsoft Teams
 title: Microsoft Teams
 x-i18n:
-    generated_at: "2026-05-11T20:21:30Z"
+    generated_at: "2026-06-27T17:11:23Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d7bf8cd0ae6c6053f51794e6bc03bb6d927d640256272f3afb04f3b0ec99eb43
+    source_hash: cad5dc92b3a70e85412cbf34c926d7211dce7534c31387744e6f085bcfe23f08
     source_path: channels/msteams.md
     workflow: 16
 ---
 
-Status: teks + lampiran DM didukung; pengiriman file channel/grup memerlukan `sharePointSiteId` + izin Graph (lihat [Mengirim file dalam obrolan grup](#sending-files-in-group-chats)). Poll dikirim melalui Adaptive Cards. Tindakan pesan mengekspos `upload-file` eksplisit untuk pengiriman yang mengutamakan file.
+Status: teks + lampiran DM didukung; pengiriman file channel/grup memerlukan `sharePointSiteId` + izin Graph (lihat [Mengirim file di chat grup](#sending-files-in-group-chats)). Poll dikirim melalui Adaptive Cards. Tindakan pesan mengekspos `upload-file` eksplisit untuk pengiriman yang mengutamakan file.
 
 ## Plugin bawaan
 
-Microsoft Teams dikirim sebagai Plugin bawaan dalam rilis OpenClaw saat ini, jadi tidak
-diperlukan instalasi terpisah dalam build paket normal.
+Microsoft Teams dikirim sebagai plugin bawaan dalam rilis OpenClaw saat ini, sehingga tidak diperlukan instalasi terpisah dalam build paket normal.
 
-Jika Anda menggunakan build lama atau instalasi kustom yang mengecualikan Teams bawaan,
-instal paket npm secara langsung:
+Jika Anda menggunakan build lama atau instalasi kustom yang mengecualikan Teams bawaan, instal paket npm secara langsung:
 
 ```bash
 openclaw plugins install @openclaw/msteams
 ```
 
-Gunakan paket polos untuk mengikuti tag rilis resmi saat ini. Sematkan versi
-persis hanya saat Anda memerlukan instalasi yang dapat direproduksi.
+Gunakan paket polos untuk mengikuti tag rilis resmi saat ini. Sematkan versi persis hanya saat Anda memerlukan instalasi yang dapat direproduksi.
 
-Checkout lokal (saat berjalan dari repo git):
+Checkout lokal (saat menjalankan dari repo git):
 
 ```bash
 openclaw plugins install ./path/to/local/msteams-plugin
@@ -39,7 +37,7 @@ Detail: [Plugin](/id/tools/plugin)
 
 ## Penyiapan cepat
 
-[`@microsoft/teams.cli`](https://www.npmjs.com/package/@microsoft/teams.cli) menangani pendaftaran bot, pembuatan manifest, dan pembuatan kredensial dalam satu perintah.
+[`@microsoft/teams.cli`](https://www.npmjs.com/package/@microsoft/teams.cli) menangani pendaftaran bot, pembuatan manifes, dan pembuatan kredensial dalam satu perintah.
 
 **1. Instal dan masuk**
 
@@ -50,12 +48,12 @@ teams status   # verify you're logged in and see your tenant info
 ```
 
 <Note>
-Teams CLI saat ini dalam pratinjau. Perintah dan flag dapat berubah antar rilis.
+Teams CLI saat ini dalam pratinjau. Perintah dan flag dapat berubah antar-rilis.
 </Note>
 
 **2. Mulai tunnel** (Teams tidak dapat menjangkau localhost)
 
-Instal dan autentikasi devtunnel CLI jika Anda belum melakukannya ([panduan memulai](https://learn.microsoft.com/en-us/azure/developer/dev-tunnels/get-started)).
+Instal dan autentikasi devtunnel CLI jika belum ([panduan memulai](https://learn.microsoft.com/en-us/azure/developer/dev-tunnels/get-started)).
 
 ```bash
 # One-time setup (persistent URL across sessions):
@@ -68,7 +66,7 @@ devtunnel host my-openclaw-bot
 ```
 
 <Note>
-`--allow-anonymous` diperlukan karena Teams tidak dapat mengautentikasi dengan devtunnels. Setiap permintaan bot yang masuk tetap divalidasi oleh Teams SDK secara otomatis.
+`--allow-anonymous` diperlukan karena Teams tidak dapat melakukan autentikasi dengan devtunnels. Setiap permintaan bot yang masuk tetap divalidasi secara otomatis oleh Teams SDK.
 </Note>
 
 Alternatif: `ngrok http 3978` atau `tailscale funnel 3978` (tetapi ini dapat mengubah URL setiap sesi).
@@ -84,11 +82,11 @@ teams app create \
 Perintah tunggal ini:
 
 - Membuat aplikasi Entra ID (Azure AD)
-- Menghasilkan client secret
-- Membangun dan mengunggah manifest aplikasi Teams (dengan ikon)
-- Mendaftarkan bot (dikelola Teams secara default - tidak perlu langganan Azure)
+- Membuat client secret
+- Membangun dan mengunggah manifes aplikasi Teams (dengan ikon)
+- Mendaftarkan bot (dikelola Teams secara default - tidak memerlukan langganan Azure)
 
-Output akan menampilkan `CLIENT_ID`, `CLIENT_SECRET`, `TENANT_ID`, dan **Teams App ID** - catat ini untuk langkah berikutnya. Output juga menawarkan untuk menginstal aplikasi di Teams secara langsung.
+Output akan menampilkan `CLIENT_ID`, `CLIENT_SECRET`, `TENANT_ID`, dan **Teams App ID** - catat ini untuk langkah berikutnya. Output juga menawarkan untuk menginstal aplikasi langsung di Teams.
 
 **4. Konfigurasikan OpenClaw** menggunakan kredensial dari output:
 
@@ -110,7 +108,7 @@ Atau gunakan variabel lingkungan secara langsung: `MSTEAMS_APP_ID`, `MSTEAMS_APP
 
 **5. Instal aplikasi di Teams**
 
-`teams app create` akan meminta Anda menginstal aplikasi - pilih "Install in Teams". Jika Anda melewatkannya, Anda dapat memperoleh tautannya nanti:
+`teams app create` akan meminta Anda menginstal aplikasi - pilih "Instal di Teams". Jika Anda melewatkannya, Anda dapat memperoleh tautan nanti:
 
 ```bash
 teams app get <teamsAppId> --install-link
@@ -122,19 +120,19 @@ teams app get <teamsAppId> --install-link
 teams app doctor <teamsAppId>
 ```
 
-Ini menjalankan diagnostik di seluruh pendaftaran bot, konfigurasi aplikasi AAD, validitas manifest, dan penyiapan SSO.
+Ini menjalankan diagnostik pada pendaftaran bot, konfigurasi aplikasi AAD, validitas manifes, dan penyiapan SSO.
 
-Untuk deployment produksi, pertimbangkan menggunakan [autentikasi terfederasi](/id/channels/msteams#federated-authentication-certificate-plus-managed-identity) (sertifikat atau managed identity) alih-alih client secret.
+Untuk deployment produksi, pertimbangkan menggunakan [autentikasi federasi](/id/channels/msteams#federated-authentication-certificate-plus-managed-identity) (sertifikat atau identitas terkelola) alih-alih client secret.
 
 <Note>
-Obrolan grup diblokir secara default (`channels.msteams.groupPolicy: "allowlist"`). Untuk mengizinkan balasan grup, tetapkan `channels.msteams.groupAllowFrom`, atau gunakan `groupPolicy: "open"` untuk mengizinkan anggota mana pun (dibatasi mention).
+Chat grup diblokir secara default (`channels.msteams.groupPolicy: "allowlist"`). Untuk mengizinkan balasan grup, tetapkan `channels.msteams.groupAllowFrom`, atau gunakan `groupPolicy: "open"` untuk mengizinkan anggota mana pun (dengan gerbang mention).
 </Note>
 
 ## Tujuan
 
-- Berbicara dengan OpenClaw melalui DM Teams, obrolan grup, atau channel.
-- Menjaga routing tetap deterministik: balasan selalu kembali ke channel tempat balasan diterima.
-- Secara default menggunakan perilaku channel yang aman (mention diperlukan kecuali dikonfigurasi lain).
+- Berbicara dengan OpenClaw melalui DM Teams, chat grup, atau channel.
+- Menjaga routing tetap deterministik: balasan selalu kembali ke channel asalnya.
+- Menggunakan perilaku channel yang aman secara default (mention diperlukan kecuali dikonfigurasi sebaliknya).
 
 ## Penulisan konfigurasi
 
@@ -159,9 +157,9 @@ Nonaktifkan dengan:
 
 **Akses grup**
 
-- Default: `channels.msteams.groupPolicy = "allowlist"` (diblokir kecuali Anda menambahkan `groupAllowFrom`). Gunakan `channels.defaults.groupPolicy` untuk menimpa default saat belum ditetapkan.
-- `channels.msteams.groupAllowFrom` mengontrol pengirim atau grup akses pengirim statis mana yang dapat memicu dalam obrolan grup/channel (fallback ke `channels.msteams.allowFrom`).
-- Tetapkan `groupPolicy: "open"` untuk mengizinkan anggota mana pun (tetap dibatasi mention secara default).
+- Default: `channels.msteams.groupPolicy = "allowlist"` (diblokir kecuali Anda menambahkan `groupAllowFrom`). Gunakan `channels.defaults.groupPolicy` untuk menimpa default saat tidak ditetapkan.
+- `channels.msteams.groupAllowFrom` mengontrol pengirim atau grup akses pengirim statis mana yang dapat memicu di chat/channel grup (fallback ke `channels.msteams.allowFrom`).
+- Tetapkan `groupPolicy: "open"` untuk mengizinkan anggota mana pun (tetap dengan gerbang mention secara default).
 - Untuk tidak mengizinkan **channel apa pun**, tetapkan `channels.msteams.groupPolicy: "disabled"`.
 
 Contoh:
@@ -180,11 +178,11 @@ Contoh:
 **Teams + allowlist channel**
 
 - Batasi cakupan balasan grup/channel dengan mencantumkan teams dan channel di bawah `channels.msteams.teams`.
-- Key harus menggunakan ID percakapan Teams yang stabil dari tautan Teams, bukan nama tampilan yang dapat berubah.
-- Saat `groupPolicy="allowlist"` dan allowlist teams ada, hanya teams/channel yang tercantum yang diterima (dibatasi mention).
+- Kunci harus menggunakan ID percakapan Teams yang stabil dari tautan Teams, bukan nama tampilan yang dapat berubah.
+- Saat `groupPolicy="allowlist"` dan allowlist teams ada, hanya teams/channel yang tercantum yang diterima (dengan gerbang mention).
 - Wizard konfigurasi menerima entri `Team/Channel` dan menyimpannya untuk Anda.
 - Saat startup, OpenClaw menyelesaikan nama allowlist team/channel dan pengguna menjadi ID (saat izin Graph mengizinkan)
-  dan mencatat pemetaan; nama team/channel yang tidak terselesaikan disimpan sebagaimana diketik tetapi diabaikan untuk routing secara default kecuali `channels.msteams.dangerouslyAllowNameMatching: true` diaktifkan.
+  dan mencatat pemetaannya; nama team/channel yang tidak terselesaikan dipertahankan sebagaimana diketik tetapi diabaikan untuk routing secara default kecuali `channels.msteams.dangerouslyAllowNameMatching: true` diaktifkan.
 
 Contoh:
 
@@ -212,12 +210,12 @@ Jika Anda tidak dapat menggunakan Teams CLI, Anda dapat menyiapkan bot secara ma
 
 ### Cara kerjanya
 
-1. Pastikan Plugin Microsoft Teams tersedia (dibundel dalam rilis saat ini).
+1. Pastikan plugin Microsoft Teams tersedia (bawaan dalam rilis saat ini).
 2. Buat **Azure Bot** (App ID + secret + tenant ID).
 3. Bangun **paket aplikasi Teams** yang mereferensikan bot dan menyertakan izin RSC di bawah.
-4. Unggah/instal aplikasi Teams ke dalam team (atau cakupan personal untuk DM).
-5. Konfigurasikan `msteams` di `~/.openclaw/openclaw.json` (atau variabel lingkungan) dan mulai Gateway.
-6. Gateway mendengarkan traffic Webhook Bot Framework di `/api/messages` secara default.
+4. Unggah/instal aplikasi Teams ke dalam team (atau cakupan pribadi untuk DM).
+5. Konfigurasikan `msteams` di `~/.openclaw/openclaw.json` (atau env vars) dan mulai gateway.
+6. Gateway mendengarkan lalu lintas Webhook Bot Framework di `/api/messages` secara default.
 
 ### Langkah 1: Buat Azure Bot
 
@@ -226,20 +224,20 @@ Jika Anda tidak dapat menggunakan Teams CLI, Anda dapat menyiapkan bot secara ma
 
    | Bidang             | Nilai                                                    |
    | ------------------ | -------------------------------------------------------- |
-   | **Bot handle**     | Nama bot Anda, misalnya, `openclaw-msteams` (harus unik) |
+   | **Bot handle**     | Nama bot Anda, mis., `openclaw-msteams` (harus unik)     |
    | **Subscription**   | Pilih langganan Azure Anda                               |
-   | **Resource group** | Buat baru atau gunakan yang ada                          |
+   | **Resource group** | Buat baru atau gunakan yang sudah ada                    |
    | **Pricing tier**   | **Free** untuk dev/pengujian                             |
    | **Type of App**    | **Single Tenant** (direkomendasikan - lihat catatan di bawah) |
    | **Creation type**  | **Create new Microsoft App ID**                          |
 
 <Warning>
-Pembuatan bot multi-tenant baru tidak digunakan lagi setelah 2025-07-31. Gunakan **Single Tenant** untuk bot baru.
+Pembuatan bot multi-tenant baru dihentikan setelah 2025-07-31. Gunakan **Single Tenant** untuk bot baru.
 </Warning>
 
 3. Klik **Review + create** → **Create** (tunggu ~1-2 menit)
 
-### Langkah 2: Dapatkan kredensial
+### Langkah 2: Dapatkan Kredensial
 
 1. Buka sumber daya Azure Bot Anda → **Configuration**
 2. Salin **Microsoft App ID** → ini adalah `appId` Anda
@@ -247,24 +245,24 @@ Pembuatan bot multi-tenant baru tidak digunakan lagi setelah 2025-07-31. Gunakan
 4. Di bawah **Certificates & secrets** → **New client secret** → salin **Value** → ini adalah `appPassword` Anda
 5. Buka **Overview** → salin **Directory (tenant) ID** → ini adalah `tenantId` Anda
 
-### Langkah 3: Konfigurasikan endpoint Messaging
+### Langkah 3: Konfigurasikan Endpoint Perpesanan
 
 1. Di Azure Bot → **Configuration**
 2. Tetapkan **Messaging endpoint** ke URL Webhook Anda:
    - Produksi: `https://your-domain.com/api/messages`
    - Dev lokal: Gunakan tunnel (lihat [Pengembangan Lokal](#local-development-tunneling) di bawah)
 
-### Langkah 4: Aktifkan channel Teams
+### Langkah 4: Aktifkan Channel Teams
 
 1. Di Azure Bot → **Channels**
 2. Klik **Microsoft Teams** → Configure → Save
 3. Terima Terms of Service
 
-### Langkah 5: Bangun manifest aplikasi Teams
+### Langkah 5: Bangun Manifes Aplikasi Teams
 
 - Sertakan entri `bot` dengan `botId = <App ID>`.
 - Cakupan: `personal`, `team`, `groupChat`.
-- `supportsFiles: true` (diperlukan untuk penanganan file cakupan personal).
+- `supportsFiles: true` (diperlukan untuk penanganan file cakupan pribadi).
 - Tambahkan izin RSC (lihat [Izin RSC](#current-teams-rsc-permissions-manifest)).
 - Buat ikon: `outline.png` (32x32) dan `color.png` (192x192).
 - Zip ketiga file bersama-sama: `manifest.json`, `outline.png`, `color.png`.
@@ -289,15 +287,15 @@ Variabel lingkungan: `MSTEAMS_APP_ID`, `MSTEAMS_APP_PASSWORD`, `MSTEAMS_TENANT_I
 
 ### Langkah 7: Jalankan Gateway
 
-Channel Teams dimulai secara otomatis saat Plugin tersedia dan konfigurasi `msteams` ada dengan kredensial.
+Channel Teams dimulai secara otomatis saat plugin tersedia dan konfigurasi `msteams` ada dengan kredensial.
 
 </details>
 
-## Autentikasi terfederasi (sertifikat plus managed identity)
+## Autentikasi federasi (sertifikat plus identitas terkelola)
 
 > Ditambahkan pada 2026.4.11
 
-Untuk deployment produksi, OpenClaw mendukung **autentikasi terfederasi** sebagai alternatif yang lebih aman untuk client secret. Tersedia dua metode:
+Untuk deployment produksi, OpenClaw mendukung **autentikasi federasi** sebagai alternatif yang lebih aman daripada client secret. Dua metode tersedia:
 
 ### Opsi A: Autentikasi berbasis sertifikat
 
@@ -305,7 +303,7 @@ Gunakan sertifikat PEM yang terdaftar dengan pendaftaran aplikasi Entra ID Anda.
 
 **Penyiapan:**
 
-1. Buat atau dapatkan sertifikat (format PEM dengan private key).
+1. Buat atau peroleh sertifikat (format PEM dengan kunci privat).
 2. Di Entra ID → App Registration → **Certificates & secrets** → **Certificates** → Unggah sertifikat publik.
 
 **Konfigurasi:**
@@ -325,29 +323,29 @@ Gunakan sertifikat PEM yang terdaftar dengan pendaftaran aplikasi Entra ID Anda.
 }
 ```
 
-**Variabel lingkungan:**
+**Env vars:**
 
 - `MSTEAMS_AUTH_TYPE=federated`
 - `MSTEAMS_CERTIFICATE_PATH=/path/to/cert.pem`
 
 ### Opsi B: Azure Managed Identity
 
-Gunakan Azure Managed Identity untuk autentikasi tanpa kata sandi. Ini ideal untuk deployment pada infrastruktur Azure (AKS, App Service, Azure VM) tempat managed identity tersedia.
+Gunakan Azure Managed Identity untuk autentikasi tanpa kata sandi. Ini ideal untuk deployment pada infrastruktur Azure (AKS, App Service, Azure VM) saat identitas terkelola tersedia.
 
 **Cara kerjanya:**
 
-1. Pod/VM bot memiliki managed identity (ditetapkan sistem atau ditetapkan pengguna).
-2. **Kredensial identitas terfederasi** menautkan managed identity ke pendaftaran aplikasi Entra ID.
+1. Pod/VM bot memiliki identitas terkelola (ditetapkan sistem atau ditetapkan pengguna).
+2. **Kredensial identitas federasi** menautkan identitas terkelola ke pendaftaran aplikasi Entra ID.
 3. Saat runtime, OpenClaw menggunakan `@azure/identity` untuk memperoleh token dari endpoint Azure IMDS (`169.254.169.254`).
 4. Token diteruskan ke Teams SDK untuk autentikasi bot.
 
 **Prasyarat:**
 
-- Infrastruktur Azure dengan managed identity diaktifkan (identitas workload AKS, App Service, VM)
-- Kredensial identitas terfederasi dibuat pada pendaftaran aplikasi Entra ID
+- Infrastruktur Azure dengan identitas terkelola diaktifkan (identitas beban kerja AKS, App Service, VM)
+- Kredensial identitas federasi dibuat pada pendaftaran aplikasi Entra ID
 - Akses jaringan ke IMDS (`169.254.169.254:80`) dari pod/VM
 
-**Konfigurasi (managed identity yang ditetapkan sistem):**
+**Konfigurasi (identitas terkelola yang ditetapkan sistem):**
 
 ```json5
 {
@@ -382,7 +380,7 @@ Gunakan Azure Managed Identity untuk autentikasi tanpa kata sandi. Ini ideal unt
 }
 ```
 
-**Variabel lingkungan:**
+**Variabel env:**
 
 - `MSTEAMS_AUTH_TYPE=federated`
 - `MSTEAMS_USE_MANAGED_IDENTITY=true`
@@ -392,8 +390,8 @@ Gunakan Azure Managed Identity untuk autentikasi tanpa kata sandi. Ini ideal unt
 
 Untuk deployment AKS yang menggunakan workload identity:
 
-1. **Aktifkan workload identity** pada kluster AKS Anda.
-2. **Buat kredensial identitas federasi** pada pendaftaran aplikasi Entra ID:
+1. **Aktifkan workload identity** pada klaster AKS Anda.
+2. **Buat kredensial identitas federated** pada pendaftaran aplikasi Entra ID:
 
    ```bash
    az ad app federated-credential create --id <APP_OBJECT_ID> --parameters '{
@@ -427,17 +425,17 @@ Untuk deployment AKS yang menggunakan workload identity:
 
 ### Perbandingan jenis autentikasi
 
-| Metode               | Konfigurasi                                    | Kelebihan                          | Kekurangan                            |
-| -------------------- | ---------------------------------------------- | ---------------------------------- | ------------------------------------- |
-| **Rahasia klien**    | `appPassword`                                  | Penyiapan sederhana                | Rotasi rahasia diperlukan, kurang aman |
-| **Sertifikat**       | `authType: "federated"` + `certificatePath`    | Tidak ada rahasia bersama melalui jaringan | Beban pengelolaan sertifikat          |
-| **Managed Identity** | `authType: "federated"` + `useManagedIdentity` | Tanpa kata sandi, tidak ada rahasia untuk dikelola | Infrastruktur Azure diperlukan        |
+| Metode               | Konfigurasi                                    | Kelebihan                          | Kekurangan                                      |
+| -------------------- | ---------------------------------------------- | ---------------------------------- | ----------------------------------------------- |
+| **Client secret**    | `appPassword`                                  | Penyiapan sederhana                | Rotasi secret wajib, kurang aman                |
+| **Sertifikat**       | `authType: "federated"` + `certificatePath`    | Tidak ada shared secret via jaringan | Overhead pengelolaan sertifikat               |
+| **Managed Identity** | `authType: "federated"` + `useManagedIdentity` | Tanpa kata sandi, tidak ada secret untuk dikelola | Infrastruktur Azure diperlukan       |
 
-**Perilaku default:** Saat `authType` tidak diatur, OpenClaw menggunakan autentikasi rahasia klien secara default. Konfigurasi yang sudah ada tetap berfungsi tanpa perubahan.
+**Perilaku default:** Saat `authType` tidak diatur, OpenClaw menggunakan autentikasi client secret secara default. Konfigurasi yang sudah ada tetap berfungsi tanpa perubahan.
 
 ## Pengembangan lokal (tunneling)
 
-Teams tidak dapat menjangkau `localhost`. Gunakan tunnel pengembangan persisten agar URL Anda tetap sama di seluruh sesi:
+Teams tidak dapat menjangkau `localhost`. Gunakan dev tunnel persisten agar URL Anda tetap sama di seluruh sesi:
 
 ```bash
 # One-time setup:
@@ -448,7 +446,7 @@ devtunnel port create my-openclaw-bot -p 3978 --protocol auto
 devtunnel host my-openclaw-bot
 ```
 
-Alternatif: `ngrok http 3978` atau `tailscale funnel 3978` (URL dapat berubah pada setiap sesi).
+Alternatif: `ngrok http 3978` atau `tailscale funnel 3978` (URL dapat berubah setiap sesi).
 
 Jika URL tunnel Anda berubah, perbarui endpoint:
 
@@ -464,13 +462,13 @@ teams app update <teamsAppId> --endpoint "https://<new-url>/api/messages"
 teams app doctor <teamsAppId>
 ```
 
-Memeriksa pendaftaran bot, aplikasi AAD, manifes, dan konfigurasi SSO dalam satu lintasan.
+Memeriksa pendaftaran bot, aplikasi AAD, manifest, dan konfigurasi SSO dalam satu kali proses.
 
 **Kirim pesan uji:**
 
 1. Instal aplikasi Teams (gunakan tautan instal dari `teams app get <id> --install-link`)
 2. Temukan bot di Teams dan kirim DM
-3. Periksa log Gateway untuk aktivitas masuk
+3. Periksa log gateway untuk aktivitas masuk
 
 ## Variabel lingkungan
 
@@ -485,29 +483,29 @@ Semua kunci konfigurasi dapat diatur melalui variabel lingkungan sebagai gantiny
 - `MSTEAMS_USE_MANAGED_IDENTITY` (federated + managed identity)
 - `MSTEAMS_MANAGED_IDENTITY_CLIENT_ID` (hanya MI yang ditetapkan pengguna)
 
-## Tindakan info anggota
+## Aksi info anggota
 
-OpenClaw mengekspos tindakan `member-info` yang didukung Graph untuk Microsoft Teams agar agent dan automasi dapat me-resolve detail anggota channel (nama tampilan, email, peran) langsung dari Microsoft Graph.
+OpenClaw mengekspos aksi `member-info` yang didukung Graph untuk Microsoft Teams sehingga agent dan otomasi dapat menyelesaikan detail anggota channel (nama tampilan, email, peran) langsung dari Microsoft Graph.
 
 Persyaratan:
 
-- Izin RSC `Member.Read.Group` (sudah ada dalam manifes yang direkomendasikan)
-- Untuk lookup lintas tim: izin Graph Application `User.Read.All` dengan persetujuan admin
+- Izin RSC `Member.Read.Group` (sudah ada dalam manifest yang direkomendasikan)
+- Untuk pencarian lintas tim: izin Graph Application `User.Read.All` dengan persetujuan admin
 
-Tindakan ini dikendalikan oleh `channels.msteams.actions.memberInfo` (default: aktif saat kredensial Graph tersedia).
+Aksi ini dibatasi oleh `channels.msteams.actions.memberInfo` (default: aktif saat kredensial Graph tersedia).
 
 ## Konteks riwayat
 
 - `channels.msteams.historyLimit` mengontrol berapa banyak pesan channel/grup terbaru yang dibungkus ke dalam prompt.
 - Fallback ke `messages.groupChat.historyLimit`. Atur `0` untuk menonaktifkan (default 50).
-- Riwayat thread yang diambil difilter berdasarkan daftar izin pengirim (`allowFrom` / `groupAllowFrom`), sehingga penyemaian konteks thread hanya menyertakan pesan dari pengirim yang diizinkan.
-- Konteks lampiran yang dikutip (`ReplyTo*` yang diturunkan dari HTML balasan Teams) saat ini diteruskan sebagaimana diterima.
-- Dengan kata lain, daftar izin mengatur siapa yang dapat memicu agent; hanya jalur konteks tambahan tertentu yang difilter saat ini.
+- Riwayat thread yang diambil difilter berdasarkan allowlist pengirim (`allowFrom` / `groupAllowFrom`), sehingga pengisian awal konteks thread hanya menyertakan pesan dari pengirim yang diizinkan.
+- Konteks lampiran yang dikutip (`ReplyTo*` yang berasal dari HTML balasan Teams) saat ini diteruskan sebagaimana diterima.
+- Dengan kata lain, allowlist membatasi siapa yang dapat memicu agent; hanya jalur konteks tambahan tertentu yang difilter saat ini.
 - Riwayat DM dapat dibatasi dengan `channels.msteams.dmHistoryLimit` (giliran pengguna). Override per pengguna: `channels.msteams.dms["<user_id>"].historyLimit`.
 
-## Izin RSC Teams saat ini (manifes)
+## Izin RSC Teams saat ini (manifest)
 
-Berikut adalah **izin resourceSpecific yang ada** dalam manifes aplikasi Teams kami. Izin ini hanya berlaku di dalam tim/chat tempat aplikasi diinstal.
+Ini adalah **izin resourceSpecific yang sudah ada** dalam manifest aplikasi Teams kami. Izin ini hanya berlaku di dalam tim/chat tempat aplikasi diinstal.
 
 **Untuk channel (cakupan tim):**
 
@@ -529,9 +527,9 @@ Untuk menambahkan izin RSC melalui Teams CLI:
 teams app rsc add <teamsAppId> ChannelMessage.Read.Group --type Application
 ```
 
-## Contoh manifes Teams (disunting)
+## Contoh manifest Teams (disamarkan)
 
-Contoh minimal dan valid dengan kolom yang diperlukan. Ganti ID dan URL.
+Contoh minimal dan valid dengan field yang diperlukan. Ganti ID dan URL.
 
 ```json5
 {
@@ -579,17 +577,17 @@ Contoh minimal dan valid dengan kolom yang diperlukan. Ganti ID dan URL.
 }
 ```
 
-### Catatan manifes (kolom wajib)
+### Catatan manifest (field wajib)
 
-- `bots[].botId` **harus** cocok dengan ID Aplikasi Azure Bot.
-- `webApplicationInfo.id` **harus** cocok dengan ID Aplikasi Azure Bot.
-- `bots[].scopes` harus menyertakan permukaan yang Anda rencanakan untuk digunakan (`personal`, `team`, `groupChat`).
+- `bots[].botId` **harus** cocok dengan Azure Bot App ID.
+- `webApplicationInfo.id` **harus** cocok dengan Azure Bot App ID.
+- `bots[].scopes` harus menyertakan surface yang Anda rencanakan untuk digunakan (`personal`, `team`, `groupChat`).
 - `bots[].supportsFiles: true` diperlukan untuk penanganan file dalam cakupan personal.
 - `authorization.permissions.resourceSpecific` harus menyertakan baca/kirim channel jika Anda menginginkan lalu lintas channel.
 
-### Memperbarui aplikasi yang ada
+### Memperbarui aplikasi yang sudah ada
 
-Untuk memperbarui aplikasi Teams yang sudah terinstal (misalnya, untuk menambahkan izin RSC):
+Untuk memperbarui aplikasi Teams yang sudah diinstal (misalnya, untuk menambahkan izin RSC):
 
 ```bash
 # Download, edit, and re-upload the manifest
@@ -599,14 +597,14 @@ teams app manifest upload manifest.json <teamsAppId>
 # Version is auto-bumped if content changed
 ```
 
-Setelah memperbarui, instal ulang aplikasi di setiap tim agar izin baru berlaku, dan **keluar sepenuhnya lalu luncurkan ulang Teams** (bukan hanya menutup jendela) untuk menghapus metadata aplikasi yang di-cache.
+Setelah memperbarui, instal ulang aplikasi di setiap tim agar izin baru berlaku, dan **keluar sepenuhnya lalu jalankan ulang Teams** (bukan hanya menutup jendela) untuk membersihkan metadata aplikasi yang tersimpan di cache.
 
 <details>
-<summary>Pembaruan manifes manual (tanpa CLI)</summary>
+<summary>Pembaruan manifest manual (tanpa CLI)</summary>
 
 1. Perbarui `manifest.json` Anda dengan pengaturan baru
-2. **Naikkan kolom `version`** (misalnya, `1.0.0` → `1.1.0`)
-3. **Zip ulang** manifes dengan ikon (`manifest.json`, `outline.png`, `color.png`)
+2. **Naikkan field `version`** (misalnya, `1.0.0` → `1.1.0`)
+3. **Zip ulang** manifest dengan ikon (`manifest.json`, `outline.png`, `color.png`)
 4. Unggah zip baru:
    - **Teams Admin Center:** Aplikasi Teams → Kelola aplikasi → temukan aplikasi Anda → Unggah versi baru
    - **Sideload:** Di Teams → Aplikasi → Kelola aplikasi Anda → Unggah aplikasi kustom
@@ -623,122 +621,176 @@ Berfungsi:
 - Mengirim konten **teks** pesan channel.
 - Menerima lampiran file **personal (DM)**.
 
-TIDAK berfungsi:
+Tidak berfungsi:
 
 - **Isi gambar atau file** channel/grup (payload hanya menyertakan stub HTML).
 - Mengunduh lampiran yang disimpan di SharePoint/OneDrive.
-- Membaca riwayat pesan (di luar event Webhook langsung).
+- Membaca riwayat pesan (di luar peristiwa webhook langsung).
 
 ### Dengan **Teams RSC + izin Microsoft Graph Application**
 
 Menambahkan:
 
-- Mengunduh konten yang di-host (gambar yang ditempelkan ke pesan).
+- Mengunduh konten yang di-host (gambar yang ditempel ke pesan).
 - Mengunduh lampiran file yang disimpan di SharePoint/OneDrive.
 - Membaca riwayat pesan channel/chat melalui Graph.
 
 ### RSC vs Graph API
 
-| Kemampuan              | Izin RSC             | Graph API                           |
-| ----------------------- | -------------------- | ----------------------------------- |
-| **Pesan real-time**     | Ya (melalui Webhook) | Tidak (hanya polling)               |
-| **Pesan historis**      | Tidak                | Ya (dapat mengueri riwayat)         |
-| **Kompleksitas penyiapan** | Hanya manifes aplikasi | Memerlukan persetujuan admin + alur token |
-| **Berfungsi offline**   | Tidak (harus berjalan) | Ya (kueri kapan saja)              |
+| Kemampuan               | Izin RSC             | Graph API                              |
+| ----------------------- | -------------------- | -------------------------------------- |
+| **Pesan real-time**     | Ya (via webhook)     | Tidak (hanya polling)                  |
+| **Pesan historis**      | Tidak                | Ya (dapat mengkueri riwayat)           |
+| **Kompleksitas penyiapan** | Hanya manifest aplikasi | Memerlukan persetujuan admin + alur token |
+| **Berfungsi offline**   | Tidak (harus berjalan) | Ya (kueri kapan saja)                |
 
-**Intinya:** RSC untuk mendengarkan secara real-time; Graph API untuk akses historis. Untuk mengejar pesan yang terlewat saat offline, Anda memerlukan Graph API dengan `ChannelMessage.Read.All` (memerlukan persetujuan admin).
+**Intinya:** RSC digunakan untuk mendengarkan secara real-time; Graph API digunakan untuk akses historis. Untuk mengejar pesan yang terlewat saat offline, Anda memerlukan Graph API dengan `ChannelMessage.Read.All` (memerlukan persetujuan admin).
 
-## Media + riwayat yang diaktifkan Graph (diperlukan untuk channel)
+## Media + riwayat yang didukung Graph (diperlukan untuk channel)
 
 Jika Anda memerlukan gambar/file di **channel** atau ingin mengambil **riwayat pesan**, Anda harus mengaktifkan izin Microsoft Graph dan memberikan persetujuan admin.
 
-1. Di Entra ID (Azure AD) **App Registration**, tambahkan **izin Application** Microsoft Graph:
+1. Di **App Registration** Entra ID (Azure AD), tambahkan **izin Application** Microsoft Graph:
    - `ChannelMessage.Read.All` (lampiran channel + riwayat)
    - `Chat.Read.All` atau `ChatMessage.Read.All` (chat grup)
 2. **Berikan persetujuan admin** untuk tenant.
-3. Naikkan **versi manifes** aplikasi Teams, unggah ulang, dan **instal ulang aplikasi di Teams**.
-4. **Keluar sepenuhnya lalu luncurkan ulang Teams** untuk menghapus metadata aplikasi yang di-cache.
+3. Naikkan **versi manifest** aplikasi Teams, unggah ulang, dan **instal ulang aplikasi di Teams**.
+4. **Keluar sepenuhnya lalu jalankan ulang Teams** untuk membersihkan metadata aplikasi yang tersimpan di cache.
 
-**Izin tambahan untuk mention pengguna:** @mention pengguna berfungsi langsung untuk pengguna dalam percakapan. Namun, jika Anda ingin mencari dan me-mention pengguna secara dinamis yang **tidak berada dalam percakapan saat ini**, tambahkan izin `User.Read.All` (Application) dan berikan persetujuan admin.
+**Izin tambahan untuk mention pengguna:** @mention pengguna berfungsi langsung untuk pengguna dalam percakapan. Namun, jika Anda ingin mencari dan mention pengguna secara dinamis yang **tidak berada dalam percakapan saat ini**, tambahkan izin `User.Read.All` (Application) dan berikan persetujuan admin.
 
 ## Batasan yang diketahui
 
-### Timeout Webhook
+### Timeout webhook
 
-Teams mengirimkan pesan melalui Webhook HTTP. Jika pemrosesan terlalu lama (misalnya, respons LLM yang lambat), Anda mungkin melihat:
+Teams mengirim pesan melalui webhook HTTP. Jika pemrosesan terlalu lama (misalnya, respons LLM lambat), Anda mungkin melihat:
 
 - Timeout Gateway
-- Teams mencoba ulang pesan (menyebabkan duplikasi)
-- Balasan yang terlewat
+- Teams mencoba ulang pesan (menyebabkan duplikat)
+- Balasan yang gagal dikirim
 
-OpenClaw menangani ini dengan kembali secara cepat dan mengirim balasan secara proaktif, tetapi respons yang sangat lambat masih dapat menyebabkan masalah.
+OpenClaw menangani ini dengan mengembalikan respons dengan cepat dan mengirim balasan secara proaktif, tetapi respons yang sangat lambat masih dapat menyebabkan masalah.
+
+### Dukungan cloud Teams dan URL layanan
+
+Jalur Teams yang didukung SDK ini telah divalidasi secara live untuk cloud publik Microsoft Teams.
+
+Balasan masuk menggunakan konteks turn Teams SDK yang masuk. Operasi proaktif di luar konteks - pengiriman, pengeditan, penghapusan, kartu, polling, pesan persetujuan file, dan balasan antrean yang berjalan lama - menggunakan `serviceUrl` referensi percakapan yang tersimpan. Cloud publik secara default menggunakan lingkungan cloud publik Teams SDK dan mengizinkan referensi tersimpan pada host Teams Connector publik: `https://smba.trafficmanager.net/`.
+
+Cloud publik adalah default. Anda tidak perlu menetapkan `channels.msteams.cloud` atau `channels.msteams.serviceUrl` untuk bot cloud publik normal.
+
+Untuk cloud Teams non-publik, tetapkan `cloud` dan batas proaktif yang cocok saat Microsoft menerbitkannya:
+
+- `channels.msteams.cloud` memilih preset cloud Teams SDK untuk autentikasi, validasi JWT, layanan token, dan cakupan Graph.
+- `channels.msteams.serviceUrl` memilih batas endpoint Bot Connector yang digunakan untuk memvalidasi referensi percakapan tersimpan sebelum pengiriman, pengeditan, penghapusan, kartu, polling, pesan persetujuan file, dan balasan antrean yang berjalan lama secara proaktif. Ini wajib untuk cloud SDK USGov dan DoD. Untuk China/21Vianet, OpenClaw menggunakan preset SDK `China` dan hanya menerima URL layanan tersimpan/terkonfigurasi pada host kanal Azure China Bot Framework.
+
+Microsoft menerbitkan endpoint Bot Connector proaktif global di bagian [Buat percakapan](https://learn.microsoft.com/en-us/microsoftteams/platform/bots/how-to/conversations/send-proactive-messages?tabs=dotnet#create-the-conversation) pada dokumentasi pesan proaktif Teams. Gunakan `serviceUrl` aktivitas masuk saat tersedia; jika Anda memerlukan endpoint proaktif global, gunakan tabel Microsoft.
+
+| Lingkungan Teams | Konfigurasi OpenClaw                                      | `serviceUrl` proaktif                             |
+| ----------------- | ----------------------------------------------------------- | -------------------------------------------------- |
+| Publik            | tidak diperlukan konfigurasi cloud/serviceUrl               | `https://smba.trafficmanager.net/teams`            |
+| GCC               | tetapkan `serviceUrl`; tidak ada preset cloud Teams SDK terpisah | `https://smba.infra.gcc.teams.microsoft.com/teams` |
+| GCC High          | `cloud: "USGov"` + `serviceUrl`                             | `https://smba.infra.gov.teams.microsoft.us/teams`  |
+| DoD               | `cloud: "USGovDoD"` + `serviceUrl`                          | `https://smba.infra.dod.teams.microsoft.us/teams`  |
+| China/21Vianet    | `cloud: "China"`                                            | gunakan `serviceUrl` aktivitas masuk               |
+
+Contoh untuk GCC, ketika Microsoft mendokumentasikan URL layanan proaktif terpisah tetapi Teams SDK tidak mengekspos preset cloud GCC terpisah:
+
+```json
+{
+  "channels": {
+    "msteams": {
+      "serviceUrl": "https://smba.infra.gcc.teams.microsoft.com/teams"
+    }
+  }
+}
+```
+
+Contoh untuk GCC High:
+
+```json
+{
+  "channels": {
+    "msteams": {
+      "cloud": "USGov",
+      "serviceUrl": "https://smba.infra.gov.teams.microsoft.us/teams"
+    }
+  }
+}
+```
+
+`channels.msteams.serviceUrl` dibatasi hanya untuk host Microsoft Teams Bot Connector yang didukung. Saat URL layanan dikonfigurasi, OpenClaw memeriksa bahwa `serviceUrl` percakapan tersimpan menggunakan host yang sama sebelum pengiriman, pengeditan, penghapusan, kartu, polling, atau balasan antrean yang berjalan lama secara proaktif dijalankan. Dengan konfigurasi cloud publik default, OpenClaw gagal tertutup jika percakapan tersimpan mengarah ke luar host Teams Connector publik. Terima pesan baru dari percakapan setelah mengubah pengaturan cloud/URL layanan agar referensi percakapan tersimpan tetap mutakhir.
+
+China/21Vianet tidak memiliki URL `smba` proaktif global terpisah dalam tabel endpoint proaktif Teams milik Microsoft. Konfigurasikan `cloud: "China"` agar Teams SDK menggunakan endpoint autentikasi, token, dan JWT Azure China. Pengiriman proaktif kemudian memerlukan referensi percakapan tersimpan dari aktivitas China Teams yang masuk, atau URL layanan yang dikonfigurasi secara eksplisit, pada batas kanal Azure China Bot Framework (`*.botframework.azure.cn`). Pembantu Teams yang didukung Graph saat ini dinonaktifkan untuk `cloud: "China"` hingga OpenClaw merutekan permintaan Graph melalui endpoint Azure China Graph.
 
 ### Pemformatan
 
 Markdown Teams lebih terbatas daripada Slack atau Discord:
 
 - Pemformatan dasar berfungsi: **tebal**, _miring_, `code`, tautan
-- Markdown kompleks (tabel, daftar bertingkat) mungkin tidak dirender dengan benar
-- Adaptive Cards didukung untuk jajak pendapat dan pengiriman presentasi semantik (lihat di bawah)
+- Markdown kompleks (tabel, daftar bersarang) mungkin tidak dirender dengan benar
+- Adaptive Cards didukung untuk polling dan pengiriman presentasi semantik (lihat di bawah)
 
 ## Konfigurasi
 
-Pengaturan utama (lihat `/gateway/configuration` untuk pola channel bersama):
+Pengaturan utama (lihat `/gateway/configuration` untuk pola kanal bersama):
 
-- `channels.msteams.enabled`: aktifkan/nonaktifkan channel.
+- `channels.msteams.enabled`: aktifkan/nonaktifkan kanal.
 - `channels.msteams.appId`, `channels.msteams.appPassword`, `channels.msteams.tenantId`: kredensial bot.
+- `channels.msteams.cloud`: lingkungan cloud Teams SDK (`Public`, `USGov`, `USGovDoD`, atau `China`; default `Public`). Tetapkan ini dengan `serviceUrl` untuk cloud SDK USGov/DoD; China menggunakan preset SDK dan referensi percakapan Azure China Bot Framework tersimpan, dengan pembantu yang didukung Graph dinonaktifkan hingga perutean Azure China Graph diimplementasikan.
+- `channels.msteams.serviceUrl`: batas URL layanan Bot Connector untuk operasi proaktif SDK. Cloud publik menggunakan default SDK; tetapkan ini untuk GCC (`https://smba.infra.gcc.teams.microsoft.com/teams`), GCC High, atau DoD. China menerima host kanal Azure China Bot Framework saat referensi percakapan tersimpan berasal dari Teams yang dioperasikan oleh 21Vianet.
 - `channels.msteams.webhook.port` (default `3978`)
 - `channels.msteams.webhook.path` (default `/api/messages`)
 - `channels.msteams.dmPolicy`: `pairing | allowlist | open | disabled` (default: pairing)
-- `channels.msteams.allowFrom`: daftar yang diizinkan untuk DM (ID objek AAD direkomendasikan). Wizard menyelesaikan nama menjadi ID saat penyiapan ketika akses Graph tersedia.
-- `channels.msteams.dangerouslyAllowNameMatching`: toggle darurat untuk mengaktifkan kembali pencocokan UPN/nama tampilan yang dapat berubah dan perutean nama tim/channel langsung.
+- `channels.msteams.allowFrom`: daftar izin DM (ID objek AAD direkomendasikan). Wizard menyelesaikan nama menjadi ID selama penyiapan saat akses Graph tersedia.
+- `channels.msteams.dangerouslyAllowNameMatching`: toggle break-glass untuk mengaktifkan kembali pencocokan UPN/nama tampilan yang dapat berubah dan perutean nama tim/kanal langsung.
 - `channels.msteams.textChunkLimit`: ukuran potongan teks keluar.
-- `channels.msteams.chunkMode`: `length` (default) atau `newline` untuk memisahkan pada baris kosong (batas paragraf) sebelum pemotongan berdasarkan panjang.
-- `channels.msteams.mediaAllowHosts`: daftar host yang diizinkan untuk lampiran masuk (default ke domain Microsoft/Teams).
-- `channels.msteams.mediaAuthAllowHosts`: daftar host yang diizinkan untuk melampirkan header Authorization pada percobaan ulang media (default ke host Graph + Bot Framework).
-- `channels.msteams.requireMention`: wajibkan @mention di channel/grup (default true).
+- `channels.msteams.chunkMode`: `length` (default) atau `newline` untuk memecah pada baris kosong (batas paragraf) sebelum pemotongan berdasarkan panjang.
+- `channels.msteams.mediaAllowHosts`: daftar izin untuk host lampiran masuk (default ke domain Microsoft/Teams).
+- `channels.msteams.mediaAuthAllowHosts`: daftar izin untuk menyertakan header Authorization pada percobaan ulang media (default ke host Graph + Bot Framework).
+- `channels.msteams.requireMention`: wajibkan @mention di kanal/grup (default true).
 - `channels.msteams.replyStyle`: `thread | top-level` (lihat [Gaya Balasan](#reply-style-threads-vs-posts)).
 - `channels.msteams.teams.<teamId>.replyStyle`: override per tim.
 - `channels.msteams.teams.<teamId>.requireMention`: override per tim.
-- `channels.msteams.teams.<teamId>.tools`: override kebijakan tool default per tim (`allow`/`deny`/`alsoAllow`) yang digunakan saat override channel tidak ada.
-- `channels.msteams.teams.<teamId>.toolsBySender`: override kebijakan tool default per tim per pengirim (`"*"` wildcard didukung).
-- `channels.msteams.teams.<teamId>.channels.<conversationId>.replyStyle`: override per channel.
-- `channels.msteams.teams.<teamId>.channels.<conversationId>.requireMention`: override per channel.
-- `channels.msteams.teams.<teamId>.channels.<conversationId>.tools`: override kebijakan tool per channel (`allow`/`deny`/`alsoAllow`).
-- `channels.msteams.teams.<teamId>.channels.<conversationId>.toolsBySender`: override kebijakan tool per channel per pengirim (`"*"` wildcard didukung).
+- `channels.msteams.teams.<teamId>.tools`: override kebijakan alat default per tim (`allow`/`deny`/`alsoAllow`) yang digunakan saat override kanal tidak ada.
+- `channels.msteams.teams.<teamId>.toolsBySender`: override kebijakan alat default per tim per pengirim (wildcard `"*"` didukung).
+- `channels.msteams.teams.<teamId>.channels.<conversationId>.replyStyle`: override per kanal.
+- `channels.msteams.teams.<teamId>.channels.<conversationId>.requireMention`: override per kanal.
+- `channels.msteams.teams.<teamId>.channels.<conversationId>.tools`: override kebijakan alat per kanal (`allow`/`deny`/`alsoAllow`).
+- `channels.msteams.teams.<teamId>.channels.<conversationId>.toolsBySender`: override kebijakan alat per kanal per pengirim (wildcard `"*"` didukung).
 - Kunci `toolsBySender` sebaiknya menggunakan prefiks eksplisit:
   `channel:`, `id:`, `e164:`, `username:`, `name:` (kunci lama tanpa prefiks masih hanya dipetakan ke `id:`).
-- `channels.msteams.actions.memberInfo`: aktifkan atau nonaktifkan aksi info anggota yang didukung Graph (default: diaktifkan ketika kredensial Graph tersedia).
-- `channels.msteams.authType`: jenis autentikasi - `"secret"` (default) atau `"federated"`.
-- `channels.msteams.certificatePath`: path ke file sertifikat PEM (federated + autentikasi sertifikat).
+- `channels.msteams.actions.memberInfo`: aktifkan atau nonaktifkan aksi info anggota yang didukung Graph (default: aktif saat kredensial Graph tersedia).
+- `channels.msteams.authType`: tipe autentikasi - `"secret"` (default) atau `"federated"`.
+- `channels.msteams.certificatePath`: jalur ke file sertifikat PEM (autentikasi federated + sertifikat).
 - `channels.msteams.certificateThumbprint`: thumbprint sertifikat (opsional, tidak diperlukan untuk autentikasi).
 - `channels.msteams.useManagedIdentity`: aktifkan autentikasi managed identity (mode federated).
 - `channels.msteams.managedIdentityClientId`: ID klien untuk managed identity yang ditetapkan pengguna.
-- `channels.msteams.sharePointSiteId`: ID situs SharePoint untuk unggahan file dalam obrolan grup/channel (lihat [Mengirim file dalam obrolan grup](#sending-files-in-group-chats)).
+- `channels.msteams.sharePointSiteId`: ID situs SharePoint untuk unggahan file di obrolan grup/kanal (lihat [Mengirim file di obrolan grup](#sending-files-in-group-chats)).
 
 ## Perutean dan sesi
 
 - Kunci sesi mengikuti format agen standar (lihat [/concepts/session](/id/concepts/session)):
   - Pesan langsung berbagi sesi utama (`agent:<agentId>:<mainKey>`).
-  - Pesan channel/grup menggunakan ID percakapan:
+  - Pesan kanal/grup menggunakan id percakapan:
     - `agent:<agentId>:msteams:channel:<conversationId>`
     - `agent:<agentId>:msteams:group:<conversationId>`
 
-## Gaya balasan: thread vs postingan
+## Gaya balasan: utas vs postingan
 
-Teams baru-baru ini memperkenalkan dua gaya UI channel di atas model data dasar yang sama:
+Teams baru-baru ini memperkenalkan dua gaya UI kanal di atas model data dasar yang sama:
 
-| Gaya                         | Deskripsi                                                   | `replyStyle` yang direkomendasikan |
-| ---------------------------- | ----------------------------------------------------------- | ---------------------------------- |
-| **Postingan** (klasik)       | Pesan muncul sebagai kartu dengan balasan ber-thread di bawahnya | `thread` (default)                 |
-| **Thread** (mirip Slack)     | Pesan mengalir secara linear, lebih mirip Slack             | `top-level`                        |
+| Gaya                     | Deskripsi                                                 | `replyStyle` yang direkomendasikan |
+| ------------------------ | --------------------------------------------------------- | ------------------------ |
+| **Postingan** (klasik)   | Pesan muncul sebagai kartu dengan balasan berutas di bawahnya | `thread` (default)       |
+| **Utas** (mirip Slack)   | Pesan mengalir secara linear, lebih mirip Slack           | `top-level`              |
 
-**Masalahnya:** API Teams tidak mengekspos gaya UI mana yang digunakan channel. Jika Anda menggunakan `replyStyle` yang salah:
+**Masalahnya:** API Teams tidak mengekspos gaya UI mana yang digunakan sebuah kanal. Jika Anda menggunakan `replyStyle` yang salah:
 
-- `thread` di channel bergaya Thread → balasan muncul bertingkat dengan canggung
-- `top-level` di channel bergaya Postingan → balasan muncul sebagai postingan tingkat atas terpisah, bukan di dalam thread
+- `thread` di kanal bergaya Utas → balasan tampak bersarang secara canggung
+- `top-level` di kanal bergaya Postingan → balasan muncul sebagai postingan tingkat atas terpisah, bukan di dalam utas
 
-**Solusi:** Konfigurasikan `replyStyle` per channel berdasarkan bagaimana channel disiapkan:
+**Solusi:** Konfigurasikan `replyStyle` per kanal berdasarkan cara kanal disiapkan:
 
 ```json5
 {
@@ -761,55 +813,55 @@ Teams baru-baru ini memperkenalkan dua gaya UI channel di atas model data dasar 
 
 ### Prioritas resolusi
 
-Ketika bot mengirim balasan ke channel, `replyStyle` diselesaikan dari override yang paling spesifik hingga default. Nilai pertama yang bukan `undefined` yang menang:
+Saat bot mengirim balasan ke kanal, `replyStyle` diselesaikan dari override yang paling spesifik hingga default. Nilai pertama yang bukan `undefined` akan menang:
 
-1. **Per channel** — `channels.msteams.teams.<teamId>.channels.<conversationId>.replyStyle`
+1. **Per kanal** — `channels.msteams.teams.<teamId>.channels.<conversationId>.replyStyle`
 2. **Per tim** — `channels.msteams.teams.<teamId>.replyStyle`
 3. **Global** — `channels.msteams.replyStyle`
 4. **Default implisit** — diturunkan dari `requireMention`:
    - `requireMention: true` → `thread`
    - `requireMention: false` → `top-level`
 
-Jika Anda menetapkan `requireMention: false` secara global tanpa `replyStyle` eksplisit, mention di channel bergaya Postingan akan muncul sebagai postingan tingkat atas meskipun pesan masuknya adalah balasan thread. Pin `replyStyle: "thread"` pada tingkat global, tim, atau channel untuk menghindari kejutan.
+Jika Anda menetapkan `requireMention: false` secara global tanpa `replyStyle` eksplisit, mention di kanal bergaya Postingan akan muncul sebagai postingan tingkat atas meskipun pesan masuk adalah balasan utas. Tetapkan `replyStyle: "thread"` pada tingkat global, tim, atau kanal untuk menghindari kejutan.
 
-### Pelestarian konteks thread
+### Pelestarian konteks utas
 
-Ketika `replyStyle: "thread"` berlaku dan bot di-@mention dari dalam thread channel, OpenClaw melampirkan kembali root thread asli ke referensi percakapan keluar (`19:…@thread.tacv2;messageid=<root>`) agar balasan masuk ke thread yang sama. Ini berlaku untuk pengiriman live (dalam turn) maupun pengiriman proaktif yang dibuat setelah konteks turn Bot Framework kedaluwarsa (misalnya, agen yang berjalan lama, balasan tool-call antrean melalui `mcp__openclaw__message`).
+Saat `replyStyle: "thread"` berlaku dan bot di-@mention dari dalam utas kanal, OpenClaw melampirkan kembali akar utas asli ke referensi percakapan keluar (`19:…@thread.tacv2;messageid=<root>`) agar balasan mendarat di dalam utas yang sama. Ini berlaku untuk pengiriman live (dalam turn) dan pengiriman proaktif yang dibuat setelah konteks turn Bot Framework kedaluwarsa (misalnya, agen yang berjalan lama, balasan panggilan alat yang diantrekan melalui `mcp__openclaw__message`).
 
-Root thread diambil dari `threadId` yang disimpan pada referensi percakapan. Referensi tersimpan lama yang dibuat sebelum `threadId` kembali menggunakan `activityId` (aktivitas masuk apa pun yang terakhir menanam percakapan), sehingga deployment yang ada tetap berfungsi tanpa seeding ulang.
+Akar utas diambil dari `threadId` yang tersimpan pada referensi percakapan. Referensi tersimpan yang lebih lama dan dibuat sebelum `threadId` akan fallback ke `activityId` (aktivitas masuk apa pun yang terakhir menginisialisasi percakapan), sehingga deployment yang ada tetap berfungsi tanpa seed ulang.
 
-Ketika `replyStyle: "top-level"` berlaku, pesan masuk thread channel sengaja dijawab sebagai postingan tingkat atas baru — tidak ada sufiks thread yang dilampirkan. Ini adalah perilaku yang benar untuk channel bergaya Thread; jika Anda melihat postingan tingkat atas ketika mengharapkan balasan ber-thread, `replyStyle` Anda diatur secara keliru untuk channel tersebut.
+Ketika `replyStyle: "top-level"` berlaku, inbound channel-thread sengaja dijawab sebagai posting tingkat atas baru — tidak ada sufiks utas yang dilampirkan. Ini adalah perilaku yang benar untuk kanal bergaya Threads; jika Anda melihat posting tingkat atas ketika Anda mengharapkan balasan berutas, `replyStyle` Anda salah diatur untuk kanal tersebut.
 
 ## Lampiran dan gambar
 
 **Batasan saat ini:**
 
 - **DM:** Gambar dan lampiran file berfungsi melalui API file bot Teams.
-- **Channel/grup:** Lampiran berada di penyimpanan M365 (SharePoint/OneDrive). Payload Webhook hanya menyertakan stub HTML, bukan byte file aktual. **Izin Graph API diperlukan** untuk mengunduh lampiran channel.
-- Untuk pengiriman eksplisit yang mendahulukan file, gunakan `action=upload-file` dengan `media` / `filePath` / `path`; `message` opsional menjadi teks/komentar pendamping, dan `filename` mengganti nama unggahan.
+- **Kanal/grup:** Lampiran berada di penyimpanan M365 (SharePoint/OneDrive). Payload Webhook hanya menyertakan stub HTML, bukan byte file sebenarnya. **Izin Graph API diperlukan** untuk mengunduh lampiran kanal.
+- Untuk pengiriman eksplisit yang mengutamakan file, gunakan `action=upload-file` dengan `media` / `filePath` / `path`; `message` opsional menjadi teks/komentar pendamping, dan `filename` mengganti nama yang diunggah.
 
-Tanpa izin Graph, pesan channel dengan gambar akan diterima sebagai teks saja (konten gambar tidak dapat diakses oleh bot).
-Secara default, OpenClaw hanya mengunduh media dari hostname Microsoft/Teams. Override dengan `channels.msteams.mediaAllowHosts` (gunakan `["*"]` untuk mengizinkan host apa pun).
-Header Authorization hanya dilampirkan untuk host dalam `channels.msteams.mediaAuthAllowHosts` (default ke host Graph + Bot Framework). Jaga daftar ini tetap ketat (hindari sufiks multi-tenant).
+Tanpa izin Graph, pesan kanal dengan gambar akan diterima sebagai teks saja (konten gambar tidak dapat diakses oleh bot).
+Secara default, OpenClaw hanya mengunduh media dari nama host Microsoft/Teams. Timpa dengan `channels.msteams.mediaAllowHosts` (gunakan `["*"]` untuk mengizinkan host apa pun).
+Header otorisasi hanya dilampirkan untuk host di `channels.msteams.mediaAuthAllowHosts` (defaultnya host Graph + Bot Framework). Jaga daftar ini tetap ketat (hindari sufiks multi-tenant).
 
 ## Mengirim file dalam obrolan grup
 
-Bot dapat mengirim file dalam DM menggunakan alur FileConsentCard (bawaan). Namun, **mengirim file dalam obrolan grup/channel** memerlukan penyiapan tambahan:
+Bot dapat mengirim file di DM menggunakan alur FileConsentCard (bawaan). Namun, **mengirim file dalam obrolan grup/kanal** memerlukan penyiapan tambahan:
 
-| Konteks                  | Cara file dikirim                              | Penyiapan yang diperlukan                       |
-| ------------------------ | --------------------------------------------- | ----------------------------------------------- |
-| **DM**                   | FileConsentCard → pengguna menerima → bot mengunggah | Berfungsi langsung tanpa konfigurasi tambahan   |
-| **Obrolan grup/channel** | Unggah ke SharePoint → bagikan tautan         | Memerlukan `sharePointSiteId` + izin Graph      |
-| **Gambar (konteks apa pun)** | Inline berenkode Base64                    | Berfungsi langsung tanpa konfigurasi tambahan   |
+| Konteks                  | Cara file dikirim                           | Penyiapan yang diperlukan                                    |
+| ------------------------ | -------------------------------------------- | ----------------------------------------------- |
+| **DM**                  | FileConsentCard → pengguna menerima → bot mengunggah | Langsung berfungsi                            |
+| **Obrolan grup/kanal** | Unggah ke SharePoint → bagikan tautan            | Memerlukan `sharePointSiteId` + izin Graph |
+| **Gambar (konteks apa pun)** | Inline berkode Base64                        | Langsung berfungsi                            |
 
 ### Mengapa obrolan grup memerlukan SharePoint
 
-Bot tidak memiliki drive OneDrive pribadi (endpoint Graph API `/me/drive` tidak berfungsi untuk identitas aplikasi). Untuk mengirim file dalam obrolan grup/channel, bot mengunggah ke **situs SharePoint** dan membuat tautan berbagi.
+Bot tidak memiliki drive OneDrive pribadi (endpoint Graph API `/me/drive` tidak berfungsi untuk identitas aplikasi). Untuk mengirim file dalam obrolan grup/kanal, bot mengunggah ke **situs SharePoint** dan membuat tautan berbagi.
 
 ### Penyiapan
 
 1. **Tambahkan izin Graph API** di Entra ID (Azure AD) → App Registration:
-   - `Sites.ReadWrite.All` (Application) - mengunggah file ke SharePoint
+   - `Sites.ReadWrite.All` (Application) - unggah file ke SharePoint
    - `Chat.Read.All` (Application) - opsional, mengaktifkan tautan berbagi per pengguna
 
 2. **Berikan persetujuan admin** untuk tenant.
@@ -843,40 +895,41 @@ Bot tidak memiliki drive OneDrive pribadi (endpoint Graph API `/me/drive` tidak 
 
 ### Perilaku berbagi
 
-| Izin                                    | Perilaku berbagi                                           |
-| --------------------------------------- | ---------------------------------------------------------- |
+| Izin                              | Perilaku berbagi                                          |
+| --------------------------------------- | --------------------------------------------------------- |
 | `Sites.ReadWrite.All` saja              | Tautan berbagi seluruh organisasi (siapa pun di org dapat mengakses) |
-| `Sites.ReadWrite.All` + `Chat.Read.All` | Tautan berbagi per pengguna (hanya anggota chat yang dapat mengakses) |
+| `Sites.ReadWrite.All` + `Chat.Read.All` | Tautan berbagi per pengguna (hanya anggota obrolan yang dapat mengakses)      |
 
-Berbagi per pengguna lebih aman karena hanya peserta chat yang dapat mengakses file. Jika izin `Chat.Read.All` tidak ada, bot kembali menggunakan berbagi seluruh organisasi.
+Berbagi per pengguna lebih aman karena hanya peserta obrolan yang dapat mengakses file. Jika izin `Chat.Read.All` tidak ada, bot kembali ke berbagi seluruh organisasi.
 
-### Perilaku fallback
+### Perilaku cadangan
 
-| Skenario                                         | Hasil                                             |
-| ------------------------------------------------ | ------------------------------------------------- |
-| Obrolan grup + file + `sharePointSiteId` dikonfigurasi | Unggah ke SharePoint, kirim tautan berbagi        |
-| Obrolan grup + file + tanpa `sharePointSiteId`   | Coba unggah OneDrive (mungkin gagal), kirim teks saja |
-| Chat pribadi + file                              | Alur FileConsentCard (berfungsi tanpa SharePoint) |
-| Konteks apa pun + gambar                         | Inline berenkode Base64 (berfungsi tanpa SharePoint) |
+| Skenario                                          | Hasil                                             |
+| ------------------------------------------------- | -------------------------------------------------- |
+| Obrolan grup + file + `sharePointSiteId` dikonfigurasi | Unggah ke SharePoint, kirim tautan berbagi            |
+| Obrolan grup + file + tanpa `sharePointSiteId`         | Coba unggah OneDrive (mungkin gagal), kirim teks saja |
+| Obrolan pribadi + file                              | Alur FileConsentCard (berfungsi tanpa SharePoint)    |
+| Konteks apa pun + gambar                               | Inline berkode Base64 (berfungsi tanpa SharePoint)   |
 
-### Lokasi file tersimpan
+### Lokasi penyimpanan file
 
 File yang diunggah disimpan dalam folder `/OpenClawShared/` di pustaka dokumen default situs SharePoint yang dikonfigurasi.
 
-## Jajak pendapat (Adaptive Cards)
+## Polling (Adaptive Cards)
 
-OpenClaw mengirim jajak pendapat Teams sebagai Adaptive Cards (tidak ada API jajak pendapat Teams native).
+OpenClaw mengirim polling Teams sebagai Adaptive Cards (tidak ada API polling Teams native).
 
 - CLI: `openclaw message poll --channel msteams --target conversation:<id> ...`
-- Suara dicatat oleh Gateway di `~/.openclaw/msteams-polls.json`.
+- Suara dicatat oleh Gateway di SQLite status Plugin OpenClaw di bawah `state/openclaw.sqlite`.
+- File `msteams-polls.json` yang sudah ada diimpor oleh `openclaw doctor --fix`, bukan oleh Plugin yang berjalan.
 - Gateway harus tetap online untuk mencatat suara.
-- Polling belum memposting ringkasan hasil secara otomatis (periksa file store jika diperlukan).
+- Polling belum otomatis memposting ringkasan hasil, dan belum ada CLI hasil polling yang didukung.
 
 ## Kartu presentasi
 
-Kirim payload presentasi semantik ke pengguna atau percakapan Teams menggunakan alat `message` atau CLI. OpenClaw merendernya sebagai Teams Adaptive Cards dari kontrak presentasi generik.
+Kirim payload presentasi semantik ke pengguna atau percakapan Teams menggunakan alat `message`, CLI, atau pengiriman balasan normal. OpenClaw merendernya sebagai Teams Adaptive Cards dari kontrak presentasi generik.
 
-Parameter `presentation` menerima blok semantik. Ketika `presentation` disediakan, teks pesan bersifat opsional.
+Parameter `presentation` menerima blok semantik. Ketika `presentation` disediakan, teks pesan bersifat opsional. Tombol dirender sebagai tindakan kirim Adaptive Card atau URL. Menu pilih belum native di renderer Teams, jadi OpenClaw menurunkannya menjadi teks yang dapat dibaca sebelum pengiriman.
 
 **Alat agen:**
 
@@ -904,14 +957,14 @@ Untuk detail format target, lihat [Format target](#target-formats) di bawah.
 
 ## Format target
 
-Target MSTeams menggunakan prefiks untuk membedakan pengguna dan percakapan:
+Target MSTeams menggunakan prefiks untuk membedakan antara pengguna dan percakapan:
 
-| Jenis target        | Format                           | Contoh                                              |
+| Jenis target         | Format                           | Contoh                                             |
 | ------------------- | -------------------------------- | --------------------------------------------------- |
-| Pengguna (berdasarkan ID) | `user:<aad-object-id>`           | `user:40a1a0ed-4ff2-4164-a219-55518990c197`         |
-| Pengguna (berdasarkan nama) | `user:<display-name>`            | `user:John Smith` (memerlukan Graph API)            |
-| Grup/channel        | `conversation:<conversation-id>` | `conversation:19:abc123...@thread.tacv2`            |
-| Grup/channel (mentah) | `<conversation-id>`              | `19:abc123...@thread.tacv2` (jika berisi `@thread`) |
+| Pengguna (berdasarkan ID)        | `user:<aad-object-id>`           | `user:40a1a0ed-4ff2-4164-a219-55518990c197`         |
+| Pengguna (berdasarkan nama)      | `user:<display-name>`            | `user:John Smith` (memerlukan Graph API)              |
+| Grup/kanal       | `conversation:<conversation-id>` | `conversation:19:abc123...@thread.tacv2`            |
+| Grup/kanal (mentah) | `<conversation-id>`              | `19:abc123...@thread.tacv2` (jika berisi `@thread`) |
 
 **Contoh CLI:**
 
@@ -954,19 +1007,19 @@ openclaw message send --channel msteams --target "conversation:19:abc...@thread.
 ```
 
 <Note>
-Tanpa prefiks `user:`, nama secara default diselesaikan sebagai grup atau tim. Selalu gunakan `user:` saat menargetkan orang berdasarkan nama tampilan.
+Tanpa prefiks `user:`, nama default ke resolusi grup atau tim. Selalu gunakan `user:` saat menargetkan orang berdasarkan nama tampilan.
 </Note>
 
 ## Pesan proaktif
 
-- Pesan proaktif hanya mungkin **setelah** pengguna berinteraksi, karena kami menyimpan referensi percakapan pada titik tersebut.
+- Pesan proaktif hanya mungkin **setelah** pengguna berinteraksi, karena kami menyimpan referensi percakapan pada titik itu.
 - Lihat `/gateway/configuration` untuk `dmPolicy` dan gating allowlist.
 
-## ID Tim dan Channel (Jebakan Umum)
+## ID Tim dan Kanal (Jebakan Umum)
 
 Parameter kueri `groupId` dalam URL Teams **BUKAN** ID tim yang digunakan untuk konfigurasi. Ekstrak ID dari path URL sebagai gantinya:
 
-**URL Tim:**
+**URL tim:**
 
 ```
 https://teams.microsoft.com/l/team/19%3ABk4j...%40thread.tacv2/conversations?groupId=...
@@ -974,7 +1027,7 @@ https://teams.microsoft.com/l/team/19%3ABk4j...%40thread.tacv2/conversations?gro
                                     Team conversation ID (URL-decode this)
 ```
 
-**URL Channel:**
+**URL kanal:**
 
 ```
 https://teams.microsoft.com/l/channel/19%3A15bc...%40thread.tacv2/ChannelName?groupId=...
@@ -984,25 +1037,25 @@ https://teams.microsoft.com/l/channel/19%3A15bc...%40thread.tacv2/ChannelName?gr
 
 **Untuk konfigurasi:**
 
-- Kunci tim = segmen path setelah `/team/` (di-URL-decode, misalnya, `19:Bk4j...@thread.tacv2`; tenant lama mungkin menampilkan `@thread.skype`, yang juga valid)
-- Kunci channel = segmen path setelah `/channel/` (di-URL-decode)
-- **Abaikan** parameter kueri `groupId` untuk routing OpenClaw. Itu adalah ID grup Microsoft Entra, bukan ID percakapan Bot Framework yang digunakan dalam aktivitas Teams yang masuk.
+- Kunci tim = segmen path setelah `/team/` (di-decode dari URL, misalnya, `19:Bk4j...@thread.tacv2`; tenant lama mungkin menampilkan `@thread.skype`, yang juga valid)
+- Kunci kanal = segmen path setelah `/channel/` (di-decode dari URL)
+- **Abaikan** parameter kueri `groupId` untuk perutean OpenClaw. Itu adalah ID grup Microsoft Entra, bukan ID percakapan Bot Framework yang digunakan dalam aktivitas Teams masuk.
 
-## Channel privat
+## Kanal pribadi
 
-Bot memiliki dukungan terbatas di channel privat:
+Bot memiliki dukungan terbatas di kanal pribadi:
 
-| Fitur                        | Channel Standar | Channel Privat        |
-| ---------------------------- | ---------------- | --------------------- |
-| Instalasi bot                | Ya               | Terbatas              |
-| Pesan real-time (webhook)    | Ya               | Mungkin tidak berfungsi |
-| Izin RSC                     | Ya               | Mungkin berperilaku berbeda |
-| @mention                     | Ya               | Jika bot dapat diakses |
-| Riwayat Graph API            | Ya               | Ya (dengan izin)      |
+| Fitur                      | Kanal Standar | Kanal Pribadi       |
+| ---------------------------- | ----------------- | ---------------------- |
+| Instalasi bot             | Ya               | Terbatas                |
+| Pesan real-time (Webhook) | Ya               | Mungkin tidak berfungsi           |
+| Izin RSC              | Ya               | Mungkin berperilaku berbeda |
+| @mention                    | Ya               | Jika bot dapat diakses   |
+| Riwayat Graph API            | Ya               | Ya (dengan izin) |
 
-**Solusi sementara jika channel privat tidak berfungsi:**
+**Solusi sementara jika kanal pribadi tidak berfungsi:**
 
-1. Gunakan channel standar untuk interaksi bot
+1. Gunakan kanal standar untuk interaksi bot
 2. Gunakan DM - pengguna selalu dapat mengirim pesan langsung ke bot
 3. Gunakan Graph API untuk akses historis (memerlukan `ChannelMessage.Read.All`)
 
@@ -1010,16 +1063,16 @@ Bot memiliki dukungan terbatas di channel privat:
 
 ### Masalah umum
 
-- **Gambar tidak muncul di channel:** Izin Graph atau persetujuan admin hilang. Instal ulang aplikasi Teams dan tutup sepenuhnya/buka kembali Teams.
-- **Tidak ada respons di channel:** mention diperlukan secara default; atur `channels.msteams.requireMention=false` atau konfigurasikan per tim/channel.
-- **Ketidakcocokan versi (Teams masih menampilkan manifes lama):** hapus + tambahkan ulang aplikasi dan tutup Teams sepenuhnya untuk menyegarkan.
-- **401 Unauthorized dari webhook:** Diharapkan saat menguji secara manual tanpa Azure JWT - berarti endpoint dapat dijangkau tetapi autentikasi gagal. Gunakan Azure Web Chat untuk menguji dengan benar.
+- **Gambar tidak muncul di kanal:** Izin Graph atau persetujuan admin tidak ada. Instal ulang aplikasi Teams dan keluar sepenuhnya/buka ulang Teams.
+- **Tidak ada respons di kanal:** mention diperlukan secara default; atur `channels.msteams.requireMention=false` atau konfigurasikan per tim/kanal.
+- **Ketidakcocokan versi (Teams masih menampilkan manifes lama):** hapus + tambahkan ulang aplikasi dan keluar sepenuhnya dari Teams untuk menyegarkan.
+- **401 Unauthorized dari Webhook:** Diharapkan saat menguji secara manual tanpa Azure JWT - berarti endpoint dapat dijangkau tetapi autentikasi gagal. Gunakan Azure Web Chat untuk menguji dengan benar.
 
 ### Kesalahan unggah manifes
 
-- **"Icon file cannot be empty":** Manifes merujuk file ikon yang berukuran 0 byte. Buat ikon PNG yang valid (32x32 untuk `outline.png`, 192x192 untuk `color.png`).
-- **"webApplicationInfo.Id already in use":** Aplikasi masih terpasang di tim/chat lain. Temukan dan copot pemasangannya terlebih dahulu, atau tunggu 5-10 menit untuk propagasi.
-- **"Something went wrong" saat mengunggah:** Unggah melalui [https://admin.teams.microsoft.com](https://admin.teams.microsoft.com) sebagai gantinya, buka DevTools browser (F12) → tab Network, dan periksa body respons untuk kesalahan sebenarnya.
+- **"Icon file cannot be empty":** Manifes mereferensikan file ikon yang berukuran 0 byte. Buat ikon PNG yang valid (32x32 untuk `outline.png`, 192x192 untuk `color.png`).
+- **"webApplicationInfo.Id already in use":** Aplikasi masih terinstal di tim/obrolan lain. Temukan dan hapus instalasinya terlebih dahulu, atau tunggu 5-10 menit untuk propagasi.
+- **"Something went wrong" saat mengunggah:** Unggah melalui [https://admin.teams.microsoft.com](https://admin.teams.microsoft.com) sebagai gantinya, buka DevTools browser (F12) → tab Network, dan periksa isi respons untuk kesalahan sebenarnya.
 - **Sideload gagal:** Coba "Upload an app to your org's app catalog" alih-alih "Upload a custom app" - ini sering melewati pembatasan sideload.
 
 ### Izin RSC tidak berfungsi
@@ -1027,23 +1080,23 @@ Bot memiliki dukungan terbatas di channel privat:
 1. Verifikasi `webApplicationInfo.id` sama persis dengan App ID bot Anda
 2. Unggah ulang aplikasi dan instal ulang di tim/chat
 3. Periksa apakah admin organisasi Anda telah memblokir izin RSC
-4. Konfirmasi Anda menggunakan scope yang tepat: `ChannelMessage.Read.Group` untuk tim, `ChatMessage.Read.Chat` untuk chat grup
+4. Konfirmasi bahwa Anda menggunakan cakupan yang tepat: `ChannelMessage.Read.Group` untuk tim, `ChatMessage.Read.Chat` untuk obrolan grup
 
 ## Referensi
 
 - [Buat Azure Bot](https://learn.microsoft.com/en-us/azure/bot-service/bot-service-quickstart-registration) - panduan penyiapan Azure Bot
-- [Teams Developer Portal](https://dev.teams.microsoft.com/apps) - buat/kelola aplikasi Teams
+- [Portal Pengembang Teams](https://dev.teams.microsoft.com/apps) - buat/kelola aplikasi Teams
 - [Skema manifes aplikasi Teams](https://learn.microsoft.com/en-us/microsoftteams/platform/resources/schema/manifest-schema)
 - [Terima pesan channel dengan RSC](https://learn.microsoft.com/en-us/microsoftteams/platform/bots/how-to/conversations/channel-messages-with-rsc)
 - [Referensi izin RSC](https://learn.microsoft.com/en-us/microsoftteams/platform/graph-api/rsc/resource-specific-consent)
 - [Penanganan file bot Teams](https://learn.microsoft.com/en-us/microsoftteams/platform/bots/how-to/bots-filesv4) (channel/grup memerlukan Graph)
 - [Pesan proaktif](https://learn.microsoft.com/en-us/microsoftteams/platform/bots/how-to/conversations/send-proactive-messages)
-- [@microsoft/teams.cli](https://www.npmjs.com/package/@microsoft/teams.cli) - Teams CLI untuk manajemen bot
+- [@microsoft/teams.cli](https://www.npmjs.com/package/@microsoft/teams.cli) - CLI Teams untuk pengelolaan bot
 
 ## Terkait
 
 - [Ikhtisar Channel](/id/channels) - semua channel yang didukung
-- [Pairing](/id/channels/pairing) - autentikasi DM dan alur pairing
-- [Grup](/id/channels/groups) - perilaku chat grup dan gating mention
-- [Routing Channel](/id/channels/channel-routing) - routing sesi untuk pesan
+- [Penyandingan](/id/channels/pairing) - autentikasi DM dan alur penyandingan
+- [Grup](/id/channels/groups) - perilaku obrolan grup dan pembatasan mention
+- [Perutean Channel](/id/channels/channel-routing) - perutean sesi untuk pesan
 - [Keamanan](/id/gateway/security) - model akses dan hardening

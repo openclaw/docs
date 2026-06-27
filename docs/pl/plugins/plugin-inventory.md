@@ -1,23 +1,24 @@
 ---
 read_when:
-    - Decydujesz, czy Plugin jest dostarczany w głównym pakiecie npm, czy instalowany osobno
-    - Aktualizujesz metadane dołączonego pakietu Plugin lub automatyzację wydań
+    - Decydujesz, czy Plugin jest dostarczany w podstawowym pakiecie npm, czy instalowany osobno
+    - Aktualizujesz metadane pakietu dołączonego Plugin lub automatyzację wydań
     - Potrzebujesz kanonicznej listy Pluginów wewnętrznych i zewnętrznych
-summary: Wygenerowany wykaz Plugin OpenClaw dostarczanych w rdzeniu, publikowanych zewnętrznie lub przechowywanych wyłącznie jako źródło
+summary: Wygenerowany spis pluginów OpenClaw dostarczanych w rdzeniu, publikowanych zewnętrznie lub utrzymywanych wyłącznie jako kod źródłowy
 title: Inwentarz Plugin
 x-i18n:
-    generated_at: "2026-05-10T19:46:52Z"
+    generated_at: "2026-06-27T17:56:38Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1a42c8f230925618eb7c15fd6ea7279694adccd45d8e827bb89dffa13576521d
+    source_hash: a1f0c5aa2c3e5f25308a4398dc2582caa8f355a4dfd0d5693d9cfaf1c1ce6926
     source_path: plugins/plugin-inventory.md
     workflow: 16
 ---
 
-# Spis Plugin
+# Inwentarz Plugin
 
 Ta strona jest generowana z `extensions/*/package.json`, `openclaw.plugin.json`
-oraz wykluczeń `files` głównego pakietu npm. Wygeneruj ją ponownie poleceniem:
+oraz wykluczeń `files` w głównym pakiecie npm. Wygeneruj ją ponownie za pomocą:
 
 ```bash
 pnpm plugins:inventory:gen
@@ -25,19 +26,19 @@ pnpm plugins:inventory:gen
 
 ## Definicje
 
-- **Główny pakiet npm:** wbudowany w pakiet npm `openclaw` i dostępny bez osobnej instalacji Plugin.
-- **Oficjalny pakiet zewnętrzny:** utrzymywany przez OpenClaw Plugin pominięty w głównym pakiecie npm, przechowywany w tym oficjalnym spisie i instalowany na żądanie przez ClawHub i/lub npm.
-- **Tylko checkout źródłowy:** lokalny dla repozytorium Plugin pominięty w publikowanych artefaktach npm i niereklamowany jako pakiet możliwy do zainstalowania.
+- **Główny pakiet npm:** wbudowany w pakiet npm `openclaw` i dostępny bez osobnej instalacji pluginu.
+- **Oficjalny pakiet zewnętrzny:** plugin utrzymywany przez OpenClaw, pominięty w głównym pakiecie npm, przechowywany w tym oficjalnym inwentarzu i instalowany na żądanie przez ClawHub i/lub npm.
+- **Tylko checkout źródeł:** plugin lokalny dla repozytorium, pominięty w opublikowanych artefaktach npm i niereklamowany jako pakiet możliwy do zainstalowania.
 
-Checkouty źródłowe różnią się od instalacji npm: po `pnpm install` dołączone
-Pluginy ładują się z `extensions/<id>`, więc dostępne są lokalne zmiany i zależności
-obszaru roboczego lokalne dla pakietu.
+Checkouty źródeł różnią się od instalacji npm: po `pnpm install` dołączone
+pluginy ładują się z `extensions/<id>`, więc dostępne są lokalne zmiany oraz
+zależności workspace lokalne dla pakietu.
 
-## Zainstaluj Plugin
+## Instalowanie pluginu
 
-Użyj kolumny **Dystrybucja**, aby zdecydować, czy instalacja jest potrzebna. Pluginy, które
-mają wartość `included in OpenClaw`, są już obecne w głównym pakiecie. Oficjalne
-pakiety zewnętrzne wymagają jednej instalacji, a następnie ponownego uruchomienia Gateway.
+Użyj ścieżki instalacji w każdym wpisie, aby zdecydować, czy instalacja jest potrzebna. Pluginy,
+które mówią `included in OpenClaw`, są już obecne w głównym pakiecie.
+Oficjalne pakiety zewnętrzne wymagają jednej instalacji, a następnie ponownego uruchomienia Gateway.
 
 Na przykład Discord jest oficjalnym pakietem zewnętrznym:
 
@@ -47,140 +48,282 @@ openclaw gateway restart
 openclaw plugins inspect discord --runtime --json
 ```
 
-Surowe specyfikacje pakietów najpierw próbują ClawHub, a potem zapasowo npm. Aby wymusić źródło, użyj
-`clawhub:@openclaw/discord` lub `npm:@openclaw/discord`. Po instalacji postępuj zgodnie
-z dokumentacją konfiguracji Plugin, taką jak [Discord](/pl/channels/discord), aby dodać dane uwierzytelniające
-i konfigurację kanału. Zobacz [Zarządzaj Pluginami](/pl/plugins/manage-plugins), aby poznać polecenia aktualizacji,
-odinstalowania i publikowania.
+Podczas przełączenia uruchomieniowego zwykłe gołe specyfikacje pakietów nadal instalują się z npm.
+Użyj `clawhub:@openclaw/discord` lub `npm:@openclaw/discord`, gdy potrzebujesz
+jawnego źródła. Po instalacji postępuj zgodnie z dokumentacją konfiguracji pluginu, taką jak
+[Discord](/pl/channels/discord), aby dodać dane uwierzytelniające i konfigurację kanału. Zobacz
+[Zarządzanie pluginami](/pl/plugins/manage-plugins), aby poznać polecenia aktualizacji, odinstalowania i publikowania.
+
+Każdy wpis zawiera pakiet, ścieżkę dystrybucji i opis.
 
 ## Główny pakiet npm
 
-| Plugin                                                            | Opis                                                                                                                                                                 | Dystrybucja                                                          | Powierzchnia                                                                                                                                                                                                                                                     |
-| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [alibaba](/pl/plugins/reference/alibaba)                             | Dodaje obsługę dostawcy generowania wideo.                                                                                                                           | `@openclaw/alibaba-provider`<br />zawarte w OpenClaw                 | contracts: videoGenerationProviders                                                                                                                                                                                                                              |
-| [amazon-bedrock](/pl/plugins/reference/amazon-bedrock)               | Dodaje do OpenClaw obsługę dostawcy modeli Amazon Bedrock.                                                                                                           | `@openclaw/amazon-bedrock-provider`<br />zawarte w OpenClaw          | providers: amazon-bedrock; contracts: memoryEmbeddingProviders                                                                                                                                                                                                   |
-| [amazon-bedrock-mantle](/pl/plugins/reference/amazon-bedrock-mantle) | Dodaje do OpenClaw obsługę dostawcy modeli Amazon Bedrock Mantle.                                                                                                    | `@openclaw/amazon-bedrock-mantle-provider`<br />zawarte w OpenClaw   | providers: amazon-bedrock-mantle                                                                                                                                                                                                                                 |
-| [anthropic](/pl/plugins/reference/anthropic)                         | Dodaje do OpenClaw obsługę dostawcy modeli Anthropic.                                                                                                                | `@openclaw/anthropic-provider`<br />zawarte w OpenClaw               | providers: anthropic; contracts: mediaUnderstandingProviders                                                                                                                                                                                                     |
-| [anthropic-vertex](/pl/plugins/reference/anthropic-vertex)           | Dodaje do OpenClaw obsługę dostawcy modeli Anthropic Vertex.                                                                                                         | `@openclaw/anthropic-vertex-provider`<br />zawarte w OpenClaw        | providers: anthropic-vertex                                                                                                                                                                                                                                      |
-| [arcee](/pl/plugins/reference/arcee)                                 | Dodaje do OpenClaw obsługę dostawcy modeli Arcee.                                                                                                                    | `@openclaw/arcee-provider`<br />zawarte w OpenClaw                   | providers: arcee                                                                                                                                                                                                                                                 |
-| [azure-speech](/pl/plugins/reference/azure-speech)                   | Azure AI Speech text-to-speech (MP3, natywne notatki głosowe Ogg/Opus, telefonia PCM).                                                                               | `@openclaw/azure-speech`<br />zawarte w OpenClaw                     | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [bonjour](/pl/plugins/reference/bonjour)                             | Rozgłasza lokalny Gateway OpenClaw przez Bonjour/mDNS.                                                                                                               | `@openclaw/bonjour`<br />zawarte w OpenClaw                          | plugin                                                                                                                                                                                                                                                           |
-| [browser](/pl/plugins/reference/browser)                             | Dodaje narzędzia wywoływane przez agenta.                                                                                                                            | `@openclaw/browser-plugin`<br />zawarte w OpenClaw                   | contracts: tools; skills                                                                                                                                                                                                                                         |
-| [byteplus](/pl/plugins/reference/byteplus)                           | Dodaje do OpenClaw obsługę dostawców modeli BytePlus i BytePlus Plan.                                                                                                | `@openclaw/byteplus-provider`<br />zawarte w OpenClaw                | providers: byteplus, byteplus-plan; contracts: videoGenerationProviders                                                                                                                                                                                          |
-| [canvas](/pl/plugins/reference/canvas)                               | Eksperymentalne powierzchnie sterowania Canvas i renderowania A2UI dla sparowanych węzłów.                                                                            | `@openclaw/canvas-plugin`<br />zawarte w OpenClaw                    | contracts: tools                                                                                                                                                                                                                                                 |
-| [cerebras](/pl/plugins/reference/cerebras)                           | Dodaje do OpenClaw obsługę dostawcy modeli Cerebras.                                                                                                                 | `@openclaw/cerebras-provider`<br />zawarte w OpenClaw                | providers: cerebras                                                                                                                                                                                                                                              |
-| [chutes](/pl/plugins/reference/chutes)                               | Dodaje do OpenClaw obsługę dostawcy modeli Chutes.                                                                                                                   | `@openclaw/chutes-provider`<br />zawarte w OpenClaw                  | providers: chutes                                                                                                                                                                                                                                                |
-| [clickclack](/pl/plugins/reference/clickclack)                       | Dodaje powierzchnię kanału Clickclack do wysyłania i odbierania wiadomości OpenClaw.                                                                                  | `@openclaw/clickclack`<br />zawarte w OpenClaw                       | channels: clickclack                                                                                                                                                                                                                                             |
-| [cloudflare-ai-gateway](/pl/plugins/reference/cloudflare-ai-gateway) | Dodaje do OpenClaw obsługę dostawcy modeli Cloudflare AI Gateway.                                                                                                    | `@openclaw/cloudflare-ai-gateway-provider`<br />zawarte w OpenClaw   | providers: cloudflare-ai-gateway                                                                                                                                                                                                                                 |
-| [comfy](/pl/plugins/reference/comfy)                                 | Dodaje do OpenClaw obsługę dostawcy modeli ComfyUI.                                                                                                                  | `@openclaw/comfy-provider`<br />zawarte w OpenClaw                   | providers: comfy; contracts: imageGenerationProviders, musicGenerationProviders, videoGenerationProviders                                                                                                                                                        |
-| [copilot-proxy](/pl/plugins/reference/copilot-proxy)                 | Dodaje do OpenClaw obsługę dostawcy modeli Copilot Proxy.                                                                                                            | `@openclaw/copilot-proxy`<br />zawarte w OpenClaw                    | providers: copilot-proxy                                                                                                                                                                                                                                         |
-| [deepgram](/pl/plugins/reference/deepgram)                           | Dodaje obsługę dostawcy rozumienia multimediów. Dodaje obsługę dostawcy transkrypcji w czasie rzeczywistym.                                                          | `@openclaw/deepgram-provider`<br />zawarte w OpenClaw                | contracts: mediaUnderstandingProviders, realtimeTranscriptionProviders                                                                                                                                                                                           |
-| [deepinfra](/pl/plugins/reference/deepinfra)                         | Dodaje do OpenClaw obsługę dostawcy modeli DeepInfra.                                                                                                                | `@openclaw/deepinfra-provider`<br />zawarte w OpenClaw               | providers: deepinfra; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, speechProviders, videoGenerationProviders                                                                                                      |
-| [deepseek](/pl/plugins/reference/deepseek)                           | Dodaje obsługę dostawcy modeli DeepSeek do OpenClaw.                                                                                                                    | `@openclaw/deepseek-provider`<br />zawarte w OpenClaw              | providers: deepseek                                                                                                                                                                                                                                              |
-| [document-extract](/pl/plugins/reference/document-extract)           | Wyodrębnia tekst i zapasowe obrazy stron z lokalnych załączników dokumentów.                                                                                               | `@openclaw/document-extract-plugin`<br />zawarte w OpenClaw        | contracts: documentExtractors                                                                                                                                                                                                                                    |
-| [duckduckgo](/pl/plugins/reference/duckduckgo)                       | Dodaje obsługę dostawcy wyszukiwania w sieci.                                                                                                                                    | `@openclaw/duckduckgo-plugin`<br />zawarte w OpenClaw              | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [elevenlabs](/pl/plugins/reference/elevenlabs)                       | Dodaje obsługę dostawcy rozumienia multimediów. Dodaje obsługę dostawcy transkrypcji w czasie rzeczywistym. Dodaje obsługę dostawcy zamiany tekstu na mowę.                                       | `@openclaw/elevenlabs-speech`<br />zawarte w OpenClaw              | contracts: mediaUnderstandingProviders, realtimeTranscriptionProviders, speechProviders                                                                                                                                                                          |
-| [exa](/pl/plugins/reference/exa)                                     | Dodaje obsługę dostawcy wyszukiwania w sieci.                                                                                                                                    | `@openclaw/exa-plugin`<br />zawarte w OpenClaw                     | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [fal](/pl/plugins/reference/fal)                                     | Dodaje obsługę dostawcy modeli fal do OpenClaw.                                                                                                                         | `@openclaw/fal-provider`<br />zawarte w OpenClaw                   | providers: fal; contracts: imageGenerationProviders, videoGenerationProviders                                                                                                                                                                                    |
-| [file-transfer](/pl/plugins/reference/file-transfer)                 | Pobiera, wyświetla listę i zapisuje pliki na sparowanych węzłach za pomocą dedykowanych poleceń węzła. Omija obcinanie stdout przez bash, używając base64 przez node.invoke dla plików binarnych do 16 MB. | `@openclaw/file-transfer`<br />zawarte w OpenClaw                  | contracts: tools                                                                                                                                                                                                                                                 |
-| [firecrawl](/pl/plugins/reference/firecrawl)                         | Dodaje narzędzia wywoływane przez agenta. Dodaje obsługę dostawcy pobierania treści z sieci. Dodaje obsługę dostawcy wyszukiwania w sieci.                                                                        | `@openclaw/firecrawl-plugin`<br />zawarte w OpenClaw               | contracts: tools, webFetchProviders, webSearchProviders                                                                                                                                                                                                          |
-| [fireworks](/pl/plugins/reference/fireworks)                         | Dodaje obsługę dostawcy modeli Fireworks do OpenClaw.                                                                                                                   | `@openclaw/fireworks-provider`<br />zawarte w OpenClaw             | providers: fireworks                                                                                                                                                                                                                                             |
-| [github-copilot](/pl/plugins/reference/github-copilot)               | Dodaje obsługę dostawcy modeli GitHub Copilot do OpenClaw.                                                                                                              | `@openclaw/github-copilot-provider`<br />zawarte w OpenClaw        | providers: github-copilot; contracts: memoryEmbeddingProviders                                                                                                                                                                                                   |
-| [google](/pl/plugins/reference/google)                               | Dodaje obsługę dostawców modeli Google, Google Gemini CLI i Google Vertex do OpenClaw.                                                                                    | `@openclaw/google-plugin`<br />zawarte w OpenClaw                  | providers: google, google-gemini-cli, google-vertex; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, musicGenerationProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders, webSearchProviders |
-| [gradium](/pl/plugins/reference/gradium)                             | Dodaje obsługę dostawcy zamiany tekstu na mowę.                                                                                                                                | `@openclaw/gradium-speech`<br />zawarte w OpenClaw                 | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [groq](/pl/plugins/reference/groq)                                   | Dodaje obsługę dostawcy modeli Groq do OpenClaw.                                                                                                                        | `@openclaw/groq-provider`<br />zawarte w OpenClaw                  | providers: groq; contracts: mediaUnderstandingProviders                                                                                                                                                                                                          |
-| [huggingface](/pl/plugins/reference/huggingface)                     | Dodaje obsługę dostawcy modeli Hugging Face do OpenClaw.                                                                                                                | `@openclaw/huggingface-provider`<br />zawarte w OpenClaw           | providers: huggingface                                                                                                                                                                                                                                           |
-| [imessage](/pl/plugins/reference/imessage)                           | Dodaje powierzchnię kanału iMessage do wysyłania i odbierania wiadomości OpenClaw.                                                                                       | `@openclaw/imessage`<br />zawarte w OpenClaw                       | channels: imessage                                                                                                                                                                                                                                               |
-| [inworld](/pl/plugins/reference/inworld)                             | Strumieniowa zamiana tekstu na mowę Inworld (MP3, OGG_OPUS, PCM dla telefonii).                                                                                                     | `@openclaw/inworld-speech`<br />zawarte w OpenClaw                 | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [irc](/pl/plugins/reference/irc)                                     | Dodaje powierzchnię kanału IRC do wysyłania i odbierania wiadomości OpenClaw.                                                                                            | `@openclaw/irc`<br />zawarte w OpenClaw                            | channels: irc                                                                                                                                                                                                                                                    |
-| [kilocode](/pl/plugins/reference/kilocode)                           | Dodaje obsługę dostawcy modeli Kilocode do OpenClaw.                                                                                                                    | `@openclaw/kilocode-provider`<br />zawarte w OpenClaw              | providers: kilocode                                                                                                                                                                                                                                              |
-| [kimi](/pl/plugins/reference/kimi)                                   | Dodaje obsługę dostawców modeli Kimi i Kimi Coding do OpenClaw.                                                                                                           | `@openclaw/kimi-provider`<br />zawarte w OpenClaw                  | providers: kimi, kimi-coding                                                                                                                                                                                                                                     |
-| [litellm](/pl/plugins/reference/litellm)                             | Dodaje obsługę dostawcy modeli LiteLLM do OpenClaw.                                                                                                                     | `@openclaw/litellm-provider`<br />zawarte w OpenClaw               | providers: litellm; contracts: imageGenerationProviders                                                                                                                                                                                                          |
-| [llm-task](/pl/plugins/reference/llm-task)                           | Ogólne narzędzie LLM wyłącznie JSON do ustrukturyzowanych zadań, wywoływane z przepływów pracy.                                                                                             | `@openclaw/llm-task`<br />zawarte w OpenClaw                       | contracts: tools                                                                                                                                                                                                                                                 |
-| [lmstudio](/pl/plugins/reference/lmstudio)                           | Dodaje obsługę dostawcy modeli LM Studio do OpenClaw.                                                                                                                | `@openclaw/lmstudio-provider`<br />zawarty w OpenClaw                | providers: lmstudio; contracts: memoryEmbeddingProviders                                                                                                                                                                                                         |
-| [mattermost](/pl/plugins/reference/mattermost)                       | Dodaje powierzchnię kanału Mattermost do wysyłania i odbierania wiadomości OpenClaw.                                                                                 | `@openclaw/mattermost`<br />zawarty w OpenClaw                       | channels: mattermost                                                                                                                                                                                                                                             |
-| [memory-core](/pl/plugins/reference/memory-core)                     | Dodaje obsługę dostawcy osadzeń pamięci. Dodaje narzędzia wywoływalne przez agenta.                                                                                 | `@openclaw/memory-core`<br />zawarty w OpenClaw                      | contracts: memoryEmbeddingProviders, tools                                                                                                                                                                                                                       |
-| [memory-wiki](/pl/plugins/reference/memory-wiki)                     | Trwały kompilator wiki oraz zgodny z Obsidianem magazyn wiedzy dla OpenClaw.                                                                                        | `@openclaw/memory-wiki`<br />zawarty w OpenClaw                      | contracts: tools; skills                                                                                                                                                                                                                                         |
-| [microsoft](/pl/plugins/reference/microsoft)                         | Dodaje obsługę dostawcy zamiany tekstu na mowę.                                                                                                                      | `@openclaw/microsoft-speech`<br />zawarty w OpenClaw                 | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [microsoft-foundry](/pl/plugins/reference/microsoft-foundry)         | Dodaje obsługę dostawcy modeli Microsoft Foundry do OpenClaw.                                                                                                        | `@openclaw/microsoft-foundry`<br />zawarty w OpenClaw                | providers: microsoft-foundry                                                                                                                                                                                                                                     |
-| [migrate-claude](/pl/plugins/reference/migrate-claude)               | Importuje instrukcje Claude Code i Claude Desktop, serwery MCP, umiejętności oraz bezpieczną konfigurację do OpenClaw.                                              | `@openclaw/migrate-claude`<br />zawarty w OpenClaw                   | contracts: migrationProviders                                                                                                                                                                                                                                    |
-| [migrate-hermes](/pl/plugins/reference/migrate-hermes)               | Importuje konfigurację Hermes, pamięci, umiejętności i obsługiwane dane uwierzytelniające do OpenClaw.                                                             | `@openclaw/migrate-hermes`<br />zawarty w OpenClaw                   | contracts: migrationProviders                                                                                                                                                                                                                                    |
-| [minimax](/pl/plugins/reference/minimax)                             | Dodaje obsługę dostawców modeli MiniMax i MiniMax Portal do OpenClaw.                                                                                                | `@openclaw/minimax-provider`<br />zawarty w OpenClaw                 | providers: minimax, minimax-portal; contracts: imageGenerationProviders, mediaUnderstandingProviders, musicGenerationProviders, speechProviders, videoGenerationProviders, webSearchProviders                                                                    |
-| [mistral](/pl/plugins/reference/mistral)                             | Dodaje obsługę dostawcy modeli Mistral do OpenClaw.                                                                                                                  | `@openclaw/mistral-provider`<br />zawarty w OpenClaw                 | providers: mistral; contracts: mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders                                                                                                                                             |
-| [moonshot](/pl/plugins/reference/moonshot)                           | Dodaje obsługę dostawcy modeli Moonshot do OpenClaw.                                                                                                                 | `@openclaw/moonshot-provider`<br />zawarty w OpenClaw                | providers: moonshot; contracts: mediaUnderstandingProviders, webSearchProviders                                                                                                                                                                                  |
-| [nvidia](/pl/plugins/reference/nvidia)                               | Dodaje obsługę dostawcy modeli NVIDIA do OpenClaw.                                                                                                                   | `@openclaw/nvidia-provider`<br />zawarty w OpenClaw                  | providers: nvidia                                                                                                                                                                                                                                                |
-| [oc-path](/pl/plugins/reference/oc-path)                             | Dodaje CLI ścieżek openclaw do adresowania plików obszaru roboczego `oc://`.                                                                                        | `@openclaw/oc-path`<br />zawarty w OpenClaw                          | plugin                                                                                                                                                                                                                                                           |
-| [ollama](/pl/plugins/reference/ollama)                               | Dodaje obsługę dostawcy modeli Ollama do OpenClaw.                                                                                                                   | `@openclaw/ollama-provider`<br />zawarty w OpenClaw                  | providers: ollama; contracts: memoryEmbeddingProviders, webSearchProviders                                                                                                                                                                                       |
-| [open-prose](/pl/plugins/reference/open-prose)                       | Pakiet Skills OpenProse VM z poleceniem ukośnikowym `/prose`.                                                                                                        | `@openclaw/open-prose`<br />zawarty w OpenClaw                       | skills                                                                                                                                                                                                                                                           |
-| [openai](/pl/plugins/reference/openai)                               | Dodaje obsługę dostawców modeli OpenAI i OpenAI Codex do OpenClaw.                                                                                                   | `@openclaw/openai-provider`<br />zawarty w OpenClaw                  | providers: openai, openai-codex; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders                                   |
-| [opencode](/pl/plugins/reference/opencode)                           | Dodaje obsługę dostawcy modeli OpenCode do OpenClaw.                                                                                                                 | `@openclaw/opencode-provider`<br />zawarty w OpenClaw                | providers: opencode; contracts: mediaUnderstandingProviders                                                                                                                                                                                                      |
-| [opencode-go](/pl/plugins/reference/opencode-go)                     | Dodaje obsługę dostawcy modeli OpenCode Go do OpenClaw.                                                                                                              | `@openclaw/opencode-go-provider`<br />zawarty w OpenClaw             | providers: opencode-go; contracts: mediaUnderstandingProviders                                                                                                                                                                                                   |
-| [openrouter](/pl/plugins/reference/openrouter)                       | Dodaje obsługę dostawcy modeli OpenRouter do OpenClaw.                                                                                                               | `@openclaw/openrouter-provider`<br />zawarty w OpenClaw              | providers: openrouter; contracts: imageGenerationProviders, mediaUnderstandingProviders, speechProviders, videoGenerationProviders                                                                                                                               |
-| [openshell](/pl/plugins/reference/openshell)                         | Backend piaskownicy oparty na OpenShell z lustrzanymi lokalnymi obszarami roboczymi i wykonywaniem poleceń przez SSH.                                              | `@openclaw/openshell-sandbox`<br />zawarty w OpenClaw                | plugin                                                                                                                                                                                                                                                           |
-| [perplexity](/pl/plugins/reference/perplexity)                       | Dodaje obsługę dostawcy wyszukiwania w internecie.                                                                                                                   | `@openclaw/perplexity-plugin`<br />zawarty w OpenClaw                | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [qianfan](/pl/plugins/reference/qianfan)                             | Dodaje obsługę dostawcy modeli Qianfan do OpenClaw.                                                                                                                 | `@openclaw/qianfan-provider`<br />dołączony do OpenClaw              | providers: qianfan                                                                                                                                                                                                                                               |
-| [qwen](/pl/plugins/reference/qwen)                                   | Dodaje obsługę dostawców modeli Qwen, Qwen Cloud, Model Studio i DashScope do OpenClaw.                                                                             | `@openclaw/qwen-provider`<br />dołączony do OpenClaw                 | providers: qwen, qwencloud, modelstudio, dashscope; contracts: mediaUnderstandingProviders, videoGenerationProviders                                                                                                                                             |
-| [runway](/pl/plugins/reference/runway)                               | Dodaje obsługę dostawcy generowania wideo.                                                                                                                          | `@openclaw/runway-provider`<br />dołączony do OpenClaw               | contracts: videoGenerationProviders                                                                                                                                                                                                                              |
-| [searxng](/pl/plugins/reference/searxng)                             | Dodaje obsługę dostawcy wyszukiwania w sieci.                                                                                                                       | `@openclaw/searxng-plugin`<br />dołączony do OpenClaw                | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [senseaudio](/pl/plugins/reference/senseaudio)                       | Dodaje obsługę dostawcy rozumienia multimediów.                                                                                                                     | `@openclaw/senseaudio-provider`<br />dołączony do OpenClaw           | contracts: mediaUnderstandingProviders                                                                                                                                                                                                                           |
-| [sglang](/pl/plugins/reference/sglang)                               | Dodaje obsługę dostawcy modeli SGLang do OpenClaw.                                                                                                                  | `@openclaw/sglang-provider`<br />dołączony do OpenClaw               | providers: sglang                                                                                                                                                                                                                                                |
-| [signal](/pl/plugins/reference/signal)                               | Dodaje powierzchnię kanału Signal do wysyłania i odbierania wiadomości OpenClaw.                                                                                    | `@openclaw/signal`<br />dołączony do OpenClaw                        | channels: signal                                                                                                                                                                                                                                                 |
-| [skill-workshop](/pl/plugins/reference/skill-workshop)               | Ujmuje powtarzalne przepływy pracy jako Skills obszaru roboczego, z oczekującym przeglądem, bezpiecznymi zapisami i odświeżaniem promptu Skills.                  | `@openclaw/skill-workshop`<br />dołączony do OpenClaw                | contracts: tools                                                                                                                                                                                                                                                 |
-| [slack](/pl/plugins/reference/slack)                                 | Dodaje powierzchnię kanału Slack do wysyłania i odbierania wiadomości OpenClaw.                                                                                     | `@openclaw/slack`<br />dołączony do OpenClaw                         | channels: slack                                                                                                                                                                                                                                                  |
-| [stepfun](/pl/plugins/reference/stepfun)                             | Dodaje obsługę dostawców modeli StepFun i StepFun Plan do OpenClaw.                                                                                                | `@openclaw/stepfun-provider`<br />dołączony do OpenClaw              | providers: stepfun, stepfun-plan                                                                                                                                                                                                                                 |
-| [synthetic](/pl/plugins/reference/synthetic)                         | Dodaje obsługę dostawcy modeli Synthetic do OpenClaw.                                                                                                               | `@openclaw/synthetic-provider`<br />dołączony do OpenClaw            | providers: synthetic                                                                                                                                                                                                                                             |
-| [tavily](/pl/plugins/reference/tavily)                               | Dodaje narzędzia wywoływalne przez agenta. Dodaje obsługę dostawcy wyszukiwania w sieci.                                                                            | `@openclaw/tavily-plugin`<br />dołączony do OpenClaw                 | contracts: tools, webSearchProviders; skills                                                                                                                                                                                                                     |
-| [telegram](/pl/plugins/reference/telegram)                           | Dodaje powierzchnię kanału Telegram do wysyłania i odbierania wiadomości OpenClaw.                                                                                  | `@openclaw/telegram`<br />dołączony do OpenClaw                      | channels: telegram                                                                                                                                                                                                                                               |
-| [tencent](/pl/plugins/reference/tencent)                             | Dodaje obsługę dostawcy modeli Tencent TokenHub do OpenClaw.                                                                                                        | `@openclaw/tencent-provider`<br />dołączony do OpenClaw              | providers: tencent-tokenhub                                                                                                                                                                                                                                      |
-| [together](/pl/plugins/reference/together)                           | Dodaje obsługę dostawcy modeli Together do OpenClaw.                                                                                                                | `@openclaw/together-provider`<br />dołączony do OpenClaw             | providers: together; contracts: videoGenerationProviders                                                                                                                                                                                                         |
-| [tokenjuice](/pl/plugins/reference/tokenjuice)                       | Kompaktuje wyniki narzędzi exec i bash za pomocą reduktorów tokenjuice.                                                                                             | `@openclaw/tokenjuice`<br />dołączony do OpenClaw                    | contracts: agentToolResultMiddleware                                                                                                                                                                                                                             |
-| [tts-local-cli](/pl/plugins/reference/tts-local-cli)                 | Dodaje obsługę dostawcy syntezy mowy.                                                                                                                               | `@openclaw/tts-local-cli`<br />dołączony do OpenClaw                 | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [venice](/pl/plugins/reference/venice)                               | Dodaje obsługę dostawcy modeli Venice do OpenClaw.                                                                                                                  | `@openclaw/venice-provider`<br />dołączony do OpenClaw               | providers: venice                                                                                                                                                                                                                                                |
-| [vercel-ai-gateway](/pl/plugins/reference/vercel-ai-gateway)         | Dodaje obsługę dostawcy modeli Vercel AI Gateway do OpenClaw.                                                                                                       | `@openclaw/vercel-ai-gateway-provider`<br />dołączony do OpenClaw    | providers: vercel-ai-gateway                                                                                                                                                                                                                                     |
-| [vllm](/pl/plugins/reference/vllm)                                   | Dodaje obsługę dostawcy modeli vLLM do OpenClaw.                                                                                                                    | `@openclaw/vllm-provider`<br />dołączony do OpenClaw                 | providers: vllm                                                                                                                                                                                                                                                  |
-| [volcengine](/pl/plugins/reference/volcengine)                       | Dodaje obsługę dostawców modeli Volcengine i Volcengine Plan do OpenClaw.                                                                                          | `@openclaw/volcengine-provider`<br />dołączony do OpenClaw           | providers: volcengine, volcengine-plan; contracts: speechProviders                                                                                                                                                                                               |
-| [voyage](/pl/plugins/reference/voyage)                               | Dodaje obsługę dostawcy osadzania pamięci.                                                                                                                              | `@openclaw/voyage-provider`<br />zawarte w OpenClaw                | contracts: memoryEmbeddingProviders                                                                                                                                                                                                                              |
-| [vydra](/pl/plugins/reference/vydra)                                 | Dodaje do OpenClaw obsługę dostawcy modeli Vydra.                                                                                                                       | `@openclaw/vydra-provider`<br />zawarte w OpenClaw                 | providers: vydra; contracts: imageGenerationProviders, speechProviders, videoGenerationProviders                                                                                                                                                                 |
-| [web-readability](/pl/plugins/reference/web-readability)             | Wyodrębnia czytelną treść artykułu z lokalnych odpowiedzi pobierania stron internetowych w formacie HTML.                                                                                                | `@openclaw/web-readability-plugin`<br />zawarte w OpenClaw         | contracts: webContentExtractors                                                                                                                                                                                                                                  |
-| [webhooks](/pl/plugins/reference/webhooks)                           | Uwierzytelnione przychodzące Webhook, które wiążą zewnętrzną automatyzację z TaskFlow OpenClaw.                                                                                  | `@openclaw/webhooks`<br />zawarte w OpenClaw                       | plugin                                                                                                                                                                                                                                                           |
-| [xai](/pl/plugins/reference/xai)                                     | Dodaje do OpenClaw obsługę dostawcy modeli xAI.                                                                                                                         | `@openclaw/xai-plugin`<br />zawarte w OpenClaw                     | providers: xai; contracts: imageGenerationProviders, mediaUnderstandingProviders, realtimeTranscriptionProviders, speechProviders, tools, videoGenerationProviders, webSearchProviders                                                                           |
-| [xiaomi](/pl/plugins/reference/xiaomi)                               | Dodaje do OpenClaw obsługę dostawcy modeli Xiaomi.                                                                                                                      | `@openclaw/xiaomi-provider`<br />zawarte w OpenClaw                | providers: xiaomi; contracts: speechProviders                                                                                                                                                                                                                    |
-| [zai](/pl/plugins/reference/zai)                                     | Dodaje do OpenClaw obsługę dostawcy modeli Z.AI.                                                                                                                        | `@openclaw/zai-provider`<br />zawarte w OpenClaw                   | providers: zai; contracts: mediaUnderstandingProviders                                                                                                                                                                                                           |
+59 pluginów
+
+- **[admin-http-rpc](/pl/plugins/reference/admin-http-rpc)** (`@openclaw/admin-http-rpc`) - dołączony w OpenClaw. Punkt końcowy HTTP RPC administracji OpenClaw.
+
+- **[alibaba](/pl/plugins/reference/alibaba)** (`@openclaw/alibaba-provider`) - dołączony w OpenClaw. Dodaje obsługę dostawcy generowania wideo.
+
+- **[anthropic](/pl/plugins/reference/anthropic)** (`@openclaw/anthropic-provider`) - dołączony w OpenClaw. Dodaje do OpenClaw obsługę dostawcy modeli Anthropic.
+
+- **[azure-speech](/pl/plugins/reference/azure-speech)** (`@openclaw/azure-speech`) - dołączony w OpenClaw. Azure AI Speech do zamiany tekstu na mowę (MP3, natywne notatki głosowe Ogg/Opus, telefonia PCM).
+
+- **[bonjour](/pl/plugins/reference/bonjour)** (`@openclaw/bonjour`) - dołączony w OpenClaw. Rozgłasza lokalny Gateway OpenClaw przez Bonjour/mDNS.
+
+- **[browser](/pl/plugins/reference/browser)** (`@openclaw/browser-plugin`) - dołączony w OpenClaw. Dodaje narzędzia wywoływalne przez agenta.
+
+- **[byteplus](/pl/plugins/reference/byteplus)** (`@openclaw/byteplus-provider`) - dołączony w OpenClaw. Dodaje do OpenClaw obsługę dostawców modeli BytePlus, BytePlus Plan.
+
+- **[canvas](/pl/plugins/reference/canvas)** (`@openclaw/canvas-plugin`) - dołączony w OpenClaw. Eksperymentalne powierzchnie sterowania Canvas i renderowania A2UI dla sparowanych węzłów.
+
+- **[codex-supervisor](/pl/plugins/reference/codex-supervisor)** (`@openclaw/codex-supervisor`) - dołączony w OpenClaw. Nadzoruj sesje app-server Codex z OpenClaw.
+
+- **[cohere](/pl/plugins/reference/cohere)** (`@openclaw/cohere-provider`) - dołączony w OpenClaw; npm; ClawHub: `clawhub:@openclaw/cohere-provider`. Plugin dostawcy Cohere dla OpenClaw.
+
+- **[comfy](/pl/plugins/reference/comfy)** (`@openclaw/comfy-provider`) - dołączony w OpenClaw. Dodaje do OpenClaw obsługę dostawcy modeli ComfyUI.
+
+- **[copilot-proxy](/pl/plugins/reference/copilot-proxy)** (`@openclaw/copilot-proxy`) - dołączony w OpenClaw. Dodaje do OpenClaw obsługę dostawcy modeli Copilot Proxy.
+
+- **[deepgram](/pl/plugins/reference/deepgram)** (`@openclaw/deepgram-provider`) - dołączony w OpenClaw. Dodaje obsługę dostawcy rozumienia multimediów. Dodaje obsługę dostawcy transkrypcji w czasie rzeczywistym.
+
+- **[document-extract](/pl/plugins/reference/document-extract)** (`@openclaw/document-extract-plugin`) - dołączony w OpenClaw. Wyodrębnia tekst i zapasowe obrazy stron z lokalnych załączników dokumentów.
+
+- **[duckduckgo](/pl/plugins/reference/duckduckgo)** (`@openclaw/duckduckgo-plugin`) - dołączony w OpenClaw. Dodaje obsługę dostawcy wyszukiwania internetowego.
+
+- **[elevenlabs](/pl/plugins/reference/elevenlabs)** (`@openclaw/elevenlabs-speech`) - dołączony w OpenClaw. Dodaje obsługę dostawcy rozumienia multimediów. Dodaje obsługę dostawcy transkrypcji w czasie rzeczywistym. Dodaje obsługę dostawcy zamiany tekstu na mowę.
+
+- **[fal](/pl/plugins/reference/fal)** (`@openclaw/fal-provider`) - dołączony w OpenClaw. Dodaje do OpenClaw obsługę dostawcy modeli fal.
+
+- **[file-transfer](/pl/plugins/reference/file-transfer)** (`@openclaw/file-transfer`) - dołączony w OpenClaw. Pobieraj, wyświetlaj i zapisuj pliki na sparowanych węzłach za pomocą dedykowanych poleceń węzła. Omija obcinanie stdout powłoki bash, używając base64 przez node.invoke dla plików binarnych do 16 MB.
+
+- **[github-copilot](/pl/plugins/reference/github-copilot)** (`@openclaw/github-copilot-provider`) - dołączony w OpenClaw. Dodaje do OpenClaw obsługę dostawcy modeli GitHub Copilot.
+
+- **[google](/pl/plugins/reference/google)** (`@openclaw/google-plugin`) - dołączony w OpenClaw. Dodaje do OpenClaw obsługę dostawców modeli Google, Google Gemini CLI, Google Vertex.
+
+- **[huggingface](/pl/plugins/reference/huggingface)** (`@openclaw/huggingface-provider`) - dołączony w OpenClaw. Dodaje do OpenClaw obsługę dostawcy modeli Hugging Face.
+
+- **[imessage](/pl/plugins/reference/imessage)** (`@openclaw/imessage`) - dołączony w OpenClaw. Dodaje powierzchnię kanału iMessage do wysyłania i odbierania wiadomości OpenClaw.
+
+- **[litellm](/pl/plugins/reference/litellm)** (`@openclaw/litellm-provider`) - dołączony w OpenClaw. Dodaje do OpenClaw obsługę dostawcy modeli LiteLLM.
+
+- **[llm-task](/pl/plugins/reference/llm-task)** (`@openclaw/llm-task`) - dołączony w OpenClaw. Ogólne narzędzie LLM wyłącznie JSON do ustrukturyzowanych zadań wywoływalnych z przepływów pracy.
+
+- **[lmstudio](/pl/plugins/reference/lmstudio)** (`@openclaw/lmstudio-provider`) - dołączony w OpenClaw. Dodaje do OpenClaw obsługę dostawcy modeli LM Studio.
+
+- **[memory-core](/pl/plugins/reference/memory-core)** (`@openclaw/memory-core`) - dołączony w OpenClaw. Dodaje narzędzia wywoływalne przez agenta.
+
+- **[memory-wiki](/pl/plugins/reference/memory-wiki)** (`@openclaw/memory-wiki`) - dołączony w OpenClaw. Trwały kompilator wiki i przyjazny dla Obsidian magazyn wiedzy dla OpenClaw.
+
+- **[microsoft](/pl/plugins/reference/microsoft)** (`@openclaw/microsoft-speech`) - dołączony w OpenClaw. Dodaje obsługę dostawcy zamiany tekstu na mowę.
+
+- **[microsoft-foundry](/pl/plugins/reference/microsoft-foundry)** (`@openclaw/microsoft-foundry`) - dołączony w OpenClaw. Dodaje do OpenClaw obsługę dostawcy modeli Microsoft Foundry.
+
+- **[migrate-claude](/pl/plugins/reference/migrate-claude)** (`@openclaw/migrate-claude`) - dołączony w OpenClaw. Importuje instrukcje Claude Code i Claude Desktop, serwery MCP, Skills oraz bezpieczną konfigurację do OpenClaw.
+
+- **[migrate-hermes](/pl/plugins/reference/migrate-hermes)** (`@openclaw/migrate-hermes`) - dołączony w OpenClaw. Importuje konfigurację Hermes, pamięci, Skills i obsługiwane dane uwierzytelniające do OpenClaw.
+
+- **[minimax](/pl/plugins/reference/minimax)** (`@openclaw/minimax-provider`) - dołączony w OpenClaw. Dodaje do OpenClaw obsługę dostawców modeli MiniMax, MiniMax Portal.
+
+- **[mistral](/pl/plugins/reference/mistral)** (`@openclaw/mistral-provider`) - dołączony w OpenClaw. Dodaje do OpenClaw obsługę dostawcy modeli Mistral.
+
+- **[novita](/pl/plugins/reference/novita)** (`@openclaw/novita-provider`) - dołączony w OpenClaw. Dodaje do OpenClaw obsługę dostawców modeli Novita, Novita AI, Novitaai.
+
+- **[nvidia](/pl/plugins/reference/nvidia)** (`@openclaw/nvidia-provider`) - dołączony w OpenClaw. Dodaje do OpenClaw obsługę dostawcy modeli NVIDIA.
+
+- **[oc-path](/pl/plugins/reference/oc-path)** (`@openclaw/oc-path`) - dołączony w OpenClaw. Dodaje CLI ścieżki openclaw do adresowania plików workspace przez oc://.
+
+- **[ollama](/pl/plugins/reference/ollama)** (`@openclaw/ollama-provider`) - dołączony w OpenClaw. Dodaje do OpenClaw obsługę dostawców modeli Ollama, Ollama Cloud.
+
+- **[open-prose](/pl/plugins/reference/open-prose)** (`@openclaw/open-prose`) - dołączony w OpenClaw. Pakiet Skills OpenProse VM z poleceniem ukośnikowym /prose.
+
+- **[openai](/pl/plugins/reference/openai)** (`@openclaw/openai-provider`) - dołączony w OpenClaw. Dodaje do OpenClaw obsługę dostawcy modeli OpenAI.
+
+- **[opencode](/pl/plugins/reference/opencode)** (`@openclaw/opencode-provider`) - dołączony w OpenClaw. Dodaje do OpenClaw obsługę dostawcy modeli OpenCode.
+
+- **[opencode-go](/pl/plugins/reference/opencode-go)** (`@openclaw/opencode-go-provider`) - dołączony w OpenClaw. Dodaje do OpenClaw obsługę dostawcy modeli OpenCode Go.
+
+- **[openrouter](/pl/plugins/reference/openrouter)** (`@openclaw/openrouter-provider`) - dołączony w OpenClaw. Dodaje do OpenClaw obsługę dostawcy modeli OpenRouter.
+
+- **[policy](/pl/plugins/reference/policy)** (`@openclaw/policy`) - dołączony w OpenClaw. Dodaje kontrole doctor oparte na zasadach zgodności workspace.
+
+- **[runway](/pl/plugins/reference/runway)** (`@openclaw/runway-provider`) - dołączony w OpenClaw. Dodaje obsługę dostawcy generowania wideo.
+
+- **[senseaudio](/pl/plugins/reference/senseaudio)** (`@openclaw/senseaudio-provider`) - dołączony w OpenClaw. Dodaje obsługę dostawcy rozumienia multimediów.
+
+- **[sglang](/pl/plugins/reference/sglang)** (`@openclaw/sglang-provider`) - dołączony w OpenClaw. Dodaje do OpenClaw obsługę dostawcy modeli SGLang.
+
+- **[synthetic](/pl/plugins/reference/synthetic)** (`@openclaw/synthetic-provider`) - dołączony w OpenClaw. Dodaje do OpenClaw obsługę dostawcy modeli Synthetic.
+
+- **[telegram](/pl/plugins/reference/telegram)** (`@openclaw/telegram`) - dołączony w OpenClaw. Dodaje powierzchnię kanału Telegram do wysyłania i odbierania wiadomości OpenClaw.
+
+- **[together](/pl/plugins/reference/together)** (`@openclaw/together-provider`) - dołączony w OpenClaw. Dodaje do OpenClaw obsługę dostawcy modeli Together.
+
+- **[tts-local-cli](/pl/plugins/reference/tts-local-cli)** (`@openclaw/tts-local-cli`) - dołączony w OpenClaw. Dodaje obsługę dostawcy zamiany tekstu na mowę.
+
+- **[vllm](/pl/plugins/reference/vllm)** (`@openclaw/vllm-provider`) - dołączony w OpenClaw. Dodaje do OpenClaw obsługę dostawcy modeli vLLM.
+
+- **[volcengine](/pl/plugins/reference/volcengine)** (`@openclaw/volcengine-provider`) - dołączony w OpenClaw. Dodaje do OpenClaw obsługę dostawców modeli Volcengine, Volcengine Plan.
+
+- **[voyage](/pl/plugins/reference/voyage)** (`@openclaw/voyage-provider`) - dołączony w OpenClaw. Dodaje obsługę dostawcy embeddingów pamięci.
+
+- **[vydra](/pl/plugins/reference/vydra)** (`@openclaw/vydra-provider`) - dołączony w OpenClaw. Dodaje do OpenClaw obsługę dostawcy modeli Vydra.
+
+- **[web-readability](/pl/plugins/reference/web-readability)** (`@openclaw/web-readability-plugin`) - dołączony w OpenClaw. Wyodrębnia czytelną treść artykułu z lokalnych odpowiedzi pobierania stron HTML.
+
+- **[webhooks](/pl/plugins/reference/webhooks)** (`@openclaw/webhooks`) - dołączony w OpenClaw. Uwierzytelnione przychodzące Webhooki, które wiążą zewnętrzną automatyzację z OpenClaw TaskFlows.
+
+- **[workboard](/pl/plugins/reference/workboard)** (`@openclaw/workboard`) - dołączony w OpenClaw. Tablica dashboard dla spraw i sesji należących do agenta.
+
+- **[xai](/pl/plugins/reference/xai)** (`@openclaw/xai-plugin`) - dołączony w OpenClaw. Dodaje do OpenClaw obsługę dostawcy modeli xAI.
+
+- **[xiaomi](/pl/plugins/reference/xiaomi)** (`@openclaw/xiaomi-provider`) - dołączony w OpenClaw. Dodaje do OpenClaw obsługę dostawców modeli Xiaomi, Xiaomi Token Plan.
 
 ## Oficjalne pakiety zewnętrzne
 
-| Plugin                                                              | Opis                                                                                             | Dystrybucja                                                                                      | Powierzchnia                                                                 |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
-| [acpx](/pl/plugins/reference/acpx)                                     | Osadzony backend środowiska uruchomieniowego ACP z zarządzaniem sesją i transportem po stronie pluginu. | `@openclaw/acpx`<br />npm; ClawHub                                                               | skills                                                                       |
-| [brave](/pl/plugins/reference/brave)                                   | Dodaje obsługę dostawcy wyszukiwania w sieci.                                                    | `@openclaw/brave-plugin`<br />npm; ClawHub                                                       | contracts: webSearchProviders                                                |
-| [codex](/pl/plugins/reference/codex)                                   | Uprząż serwera aplikacji Codex oraz zarządzany przez Codex katalog modeli GPT.                   | `@openclaw/codex`<br />npm; ClawHub                                                              | providers: codex; contracts: mediaUnderstandingProviders, migrationProviders |
-| [diagnostics-otel](/pl/plugins/reference/diagnostics-otel)             | Eksporter diagnostyki OpenClaw OpenTelemetry.                                                    | `@openclaw/diagnostics-otel`<br />npm; ClawHub: `clawhub:@openclaw/diagnostics-otel`             | plugin                                                                       |
-| [diagnostics-prometheus](/pl/plugins/reference/diagnostics-prometheus) | Eksporter diagnostyki OpenClaw Prometheus.                                                       | `@openclaw/diagnostics-prometheus`<br />npm; ClawHub: `clawhub:@openclaw/diagnostics-prometheus` | plugin                                                                       |
-| [diffs](/pl/plugins/reference/diffs)                                   | Przeglądarka różnic tylko do odczytu i renderer plików dla agentów.                              | `@openclaw/diffs`<br />npm; ClawHub                                                              | contracts: tools; skills                                                     |
-| [discord](/pl/plugins/reference/discord)                               | Dodaje powierzchnię kanału Discord do wysyłania i odbierania wiadomości OpenClaw.                | `@openclaw/discord`<br />npm; ClawHub                                                            | channels: discord                                                            |
-| [feishu](/pl/plugins/reference/feishu)                                 | Dodaje powierzchnię kanału Feishu do wysyłania i odbierania wiadomości OpenClaw.                 | `@openclaw/feishu`<br />npm; ClawHub                                                             | channels: feishu; contracts: tools; skills                                   |
-| [google-meet](/pl/plugins/reference/google-meet)                       | Dołączanie do rozmów Google Meet przez transporty Chrome lub Twilio.                             | `@openclaw/google-meet`<br />npm; ClawHub                                                        | contracts: tools                                                             |
-| [googlechat](/pl/plugins/reference/googlechat)                         | Dodaje powierzchnię kanału Google Chat do wysyłania i odbierania wiadomości OpenClaw.            | `@openclaw/googlechat`<br />npm; ClawHub                                                         | channels: googlechat                                                         |
-| [line](/pl/plugins/reference/line)                                     | Dodaje powierzchnię kanału LINE do wysyłania i odbierania wiadomości OpenClaw.                   | `@openclaw/line`<br />npm; ClawHub                                                               | channels: line                                                               |
-| [lobster](/pl/plugins/reference/lobster)                               | Typowane narzędzie przepływu pracy z wznawialnymi zatwierdzeniami.                               | `@openclaw/lobster`<br />npm; ClawHub                                                            | contracts: tools                                                             |
-| [matrix](/pl/plugins/reference/matrix)                                 | Dodaje powierzchnię kanału Matrix do wysyłania i odbierania wiadomości OpenClaw.                 | `@openclaw/matrix`<br />ClawHub: `clawhub:@openclaw/matrix`; npm                                 | channels: matrix                                                             |
-| [memory-lancedb](/pl/plugins/reference/memory-lancedb)                 | Dodaje narzędzia wywoływalne przez agenta.                                                       | `@openclaw/memory-lancedb`<br />npm; ClawHub                                                     | contracts: tools                                                             |
-| [msteams](/pl/plugins/reference/msteams)                               | Dodaje powierzchnię kanału Microsoft Teams do wysyłania i odbierania wiadomości OpenClaw.        | `@openclaw/msteams`<br />npm; ClawHub                                                            | channels: msteams                                                            |
-| [nextcloud-talk](/pl/plugins/reference/nextcloud-talk)                 | Dodaje powierzchnię kanału Nextcloud Talk do wysyłania i odbierania wiadomości OpenClaw.         | `@openclaw/nextcloud-talk`<br />npm; ClawHub                                                     | channels: nextcloud-talk                                                     |
-| [nostr](/pl/plugins/reference/nostr)                                   | Dodaje powierzchnię kanału Nostr do wysyłania i odbierania wiadomości OpenClaw.                  | `@openclaw/nostr`<br />npm; ClawHub                                                              | channels: nostr                                                              |
-| [qqbot](/pl/plugins/reference/qqbot)                                   | Dodaje powierzchnię kanału QQ Bot do wysyłania i odbierania wiadomości OpenClaw.                 | `@openclaw/qqbot`<br />npm; ClawHub                                                              | channels: qqbot; contracts: tools; skills                                    |
-| [synology-chat](/pl/plugins/reference/synology-chat)                   | Dodaje powierzchnię kanału Synology Chat do wysyłania i odbierania wiadomości OpenClaw.          | `@openclaw/synology-chat`<br />npm; ClawHub                                                      | channels: synology-chat                                                      |
-| [tlon](/pl/plugins/reference/tlon)                                     | Dodaje powierzchnię kanału Tlon do wysyłania i odbierania wiadomości OpenClaw.                   | `@openclaw/tlon`<br />npm; ClawHub                                                               | channels: tlon; contracts: tools; skills                                     |
-| [twitch](/pl/plugins/reference/twitch)                                 | Dodaje powierzchnię kanału Twitch do wysyłania i odbierania wiadomości OpenClaw.                 | `@openclaw/twitch`<br />npm; ClawHub                                                             | channels: twitch                                                             |
-| [voice-call](/pl/plugins/reference/voice-call)                         | Dodaje narzędzia wywoływalne przez agenta.                                                       | `@openclaw/voice-call`<br />npm; ClawHub                                                         | contracts: tools                                                             |
-| [whatsapp](/pl/plugins/reference/whatsapp)                             | Dodaje powierzchnię kanału WhatsApp do wysyłania i odbierania wiadomości OpenClaw.               | `@openclaw/whatsapp`<br />npm; ClawHub                                                           | channels: whatsapp                                                           |
-| [zalo](/pl/plugins/reference/zalo)                                     | Dodaje powierzchnię kanału Zalo do wysyłania i odbierania wiadomości OpenClaw.                   | `@openclaw/zalo`<br />npm; ClawHub                                                               | channels: zalo                                                               |
-| [zalouser](/pl/plugins/reference/zalouser)                             | Dodaje powierzchnię kanału Zalo Personal do wysyłania i odbierania wiadomości OpenClaw.          | `@openclaw/zalouser`<br />npm; ClawHub                                                           | channels: zalouser; contracts: tools                                         |
+68 pluginów
 
-## Tylko checkout źródła
+- **[acpx](/pl/plugins/reference/acpx)** (`@openclaw/acpx`) - npm; ClawHub. Backend runtime ACP OpenClaw z zarządzaniem sesją i transportem należącym do pluginu.
 
-| Plugin                                      | Opis                                                                    | Dystrybucja                                      | Powierzchnia         |
-| ------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------ | -------------------- |
-| [qa-channel](/pl/plugins/reference/qa-channel) | Dodaje powierzchnię kanału QA Channel do wysyłania i odbierania wiadomości OpenClaw. | `@openclaw/qa-channel`<br />tylko checkout źródła | channels: qa-channel |
-| [qa-lab](/pl/plugins/reference/qa-lab)         | Plugin laboratorium QA OpenClaw z prywatnym interfejsem debuggera i runnerem scenariuszy. | `@openclaw/qa-lab`<br />tylko checkout źródła     | plugin               |
-| [qa-matrix](/pl/plugins/reference/qa-matrix)   | Runner i substrat transportu Matrix QA.                                 | `@openclaw/qa-matrix`<br />tylko checkout źródła  | plugin               |
+- **[amazon-bedrock](/pl/plugins/reference/amazon-bedrock)** (`@openclaw/amazon-bedrock-provider`) - npm; ClawHub. Plugin dostawcy Amazon Bedrock dla OpenClaw z wykrywaniem modeli, embeddingami i obsługą guardrail.
+
+- **[amazon-bedrock-mantle](/pl/plugins/reference/amazon-bedrock-mantle)** (`@openclaw/amazon-bedrock-mantle-provider`) - npm; ClawHub. Plugin dostawcy OpenClaw Amazon Bedrock Mantle do routingu modeli zgodnych z OpenAI.
+
+- **[anthropic-vertex](/pl/plugins/reference/anthropic-vertex)** (`@openclaw/anthropic-vertex-provider`) - npm; ClawHub. Plugin dostawcy OpenClaw Anthropic Vertex dla modeli Claude w Google Vertex AI.
+
+- **[arcee](/pl/plugins/reference/arcee)** (`@openclaw/arcee-provider`) - npm; ClawHub: `clawhub:@openclaw/arcee-provider`. Dodaje do OpenClaw obsługę dostawcy modeli Arcee.
+
+- **[brave](/pl/plugins/reference/brave)** (`@openclaw/brave-plugin`) - npm; ClawHub. Plugin dostawcy OpenClaw Brave Search do wyszukiwania w sieci.
+
+- **[cerebras](/pl/plugins/reference/cerebras)** (`@openclaw/cerebras-provider`) - npm; ClawHub: `clawhub:@openclaw/cerebras-provider`. Dodaje do OpenClaw obsługę dostawcy modeli Cerebras.
+
+- **[chutes](/pl/plugins/reference/chutes)** (`@openclaw/chutes-provider`) - npm; ClawHub: `clawhub:@openclaw/chutes-provider`. Dodaje do OpenClaw obsługę dostawcy modeli Chutes.
+
+- **[clickclack](/pl/plugins/reference/clickclack)** (`@openclaw/clickclack`) - npm; ClawHub: `clawhub:@openclaw/clickclack`. Dodaje powierzchnię kanału Clickclack do wysyłania i odbierania wiadomości OpenClaw.
+
+- **[cloudflare-ai-gateway](/pl/plugins/reference/cloudflare-ai-gateway)** (`@openclaw/cloudflare-ai-gateway-provider`) - npm; ClawHub: `clawhub:@openclaw/cloudflare-ai-gateway-provider`. Dodaje do OpenClaw obsługę dostawcy modeli Cloudflare AI Gateway.
+
+- **[codex](/pl/plugins/reference/codex)** (`@openclaw/codex`) - npm; ClawHub. Plugin uprzęży serwera aplikacji OpenClaw Codex i dostawcy modeli z katalogiem GPT zarządzanym przez Codex.
+
+- **[copilot](/pl/plugins/reference/copilot)** (`@openclaw/copilot`) - npm; ClawHub: `clawhub:@openclaw/copilot`. Rejestruje środowisko uruchomieniowe agenta GitHub Copilot.
+
+- **[deepinfra](/pl/plugins/reference/deepinfra)** (`@openclaw/deepinfra-provider`) - npm; ClawHub: `clawhub:@openclaw/deepinfra-provider`. Dodaje do OpenClaw obsługę dostawcy modeli DeepInfra.
+
+- **[deepseek](/pl/plugins/reference/deepseek)** (`@openclaw/deepseek-provider`) - npm; ClawHub: `clawhub:@openclaw/deepseek-provider`. Dodaje do OpenClaw obsługę dostawcy modeli DeepSeek.
+
+- **[diagnostics-otel](/pl/plugins/reference/diagnostics-otel)** (`@openclaw/diagnostics-otel`) - npm; ClawHub: `clawhub:@openclaw/diagnostics-otel`. Eksporter diagnostyki OpenClaw OpenTelemetry dla metryk, śladów i dzienników.
+
+- **[diagnostics-prometheus](/pl/plugins/reference/diagnostics-prometheus)** (`@openclaw/diagnostics-prometheus`) - npm; ClawHub: `clawhub:@openclaw/diagnostics-prometheus`. Eksporter diagnostyki OpenClaw Prometheus dla metryk środowiska uruchomieniowego.
+
+- **[diffs](/pl/plugins/reference/diffs)** (`@openclaw/diffs`) - npm; ClawHub. Plugin OpenClaw tylko do odczytu do przeglądania diffów i renderowania plików dla agentów.
+
+- **[diffs-language-pack](/pl/plugins/reference/diffs-language-pack)** (`@openclaw/diffs-language-pack`) - npm; ClawHub: `clawhub:@openclaw/diffs-language-pack`. Dodaje podświetlanie składni dla języków spoza domyślnego zestawu przeglądarki diffów.
+
+- **[discord](/pl/plugins/reference/discord)** (`@openclaw/discord`) - npm; ClawHub. Plugin kanału OpenClaw Discord dla kanałów, wiadomości DM, poleceń i zdarzeń aplikacji.
+
+- **[exa](/pl/plugins/reference/exa)** (`@openclaw/exa-plugin`) - npm; ClawHub: `clawhub:@openclaw/exa-plugin`. Dodaje obsługę dostawcy wyszukiwania w sieci.
+
+- **[feishu](/pl/plugins/reference/feishu)** (`@openclaw/feishu`) - npm; ClawHub. Plugin kanału OpenClaw Feishu/Lark dla czatów i narzędzi miejsca pracy (utrzymywany przez społeczność przez @m1heng).
+
+- **[firecrawl](/pl/plugins/reference/firecrawl)** (`@openclaw/firecrawl-plugin`) - npm; ClawHub: `clawhub:@openclaw/firecrawl-plugin`. Dodaje narzędzia wywoływane przez agentów. Dodaje obsługę dostawcy pobierania stron z sieci. Dodaje obsługę dostawcy wyszukiwania w sieci.
+
+- **[fireworks](/pl/plugins/reference/fireworks)** (`@openclaw/fireworks-provider`) - npm; ClawHub: `clawhub:@openclaw/fireworks-provider`. Dodaje do OpenClaw obsługę dostawcy modeli Fireworks.
+
+- **[gmi](/pl/plugins/reference/gmi)** (`@openclaw/gmi-provider`) - npm; ClawHub: `clawhub:@openclaw/gmi-provider`. Plugin dostawcy OpenClaw GMI Cloud.
+
+- **[google-meet](/pl/plugins/reference/google-meet)** (`@openclaw/google-meet`) - npm; ClawHub. Plugin uczestnika OpenClaw Google Meet do dołączania do połączeń przez transporty Chrome lub Twilio.
+
+- **[googlechat](/pl/plugins/reference/googlechat)** (`@openclaw/googlechat`) - npm; ClawHub. Plugin kanału OpenClaw Google Chat dla przestrzeni i wiadomości bezpośrednich.
+
+- **[gradium](/pl/plugins/reference/gradium)** (`@openclaw/gradium-speech`) - npm; ClawHub: `clawhub:@openclaw/gradium-speech`. Dodaje obsługę dostawcy zamiany tekstu na mowę.
+
+- **[groq](/pl/plugins/reference/groq)** (`@openclaw/groq-provider`) - npm; ClawHub: `clawhub:@openclaw/groq-provider`. Dodaje do OpenClaw obsługę dostawcy modeli Groq.
+
+- **[inworld](/pl/plugins/reference/inworld)** (`@openclaw/inworld-speech`) - npm; ClawHub: `clawhub:@openclaw/inworld-speech`. Strumieniowa zamiana tekstu na mowę Inworld (MP3, OGG_OPUS, PCM telephony).
+
+- **[irc](/pl/plugins/reference/irc)** (`@openclaw/irc`) - npm; ClawHub: `clawhub:@openclaw/irc`. Dodaje powierzchnię kanału IRC do wysyłania i odbierania wiadomości OpenClaw.
+
+- **[kilocode](/pl/plugins/reference/kilocode)** (`@openclaw/kilocode-provider`) - npm; ClawHub: `clawhub:@openclaw/kilocode-provider`. Dodaje do OpenClaw obsługę dostawcy modeli Kilocode.
+
+- **[kimi](/pl/plugins/reference/kimi)** (`@openclaw/kimi-provider`) - npm; ClawHub: `clawhub:@openclaw/kimi-provider`. Dodaje do OpenClaw obsługę dostawcy modeli Kimi, Kimi Coding.
+
+- **[line](/pl/plugins/reference/line)** (`@openclaw/line`) - npm; ClawHub. Plugin kanału OpenClaw LINE dla czatów LINE Bot API.
+
+- **[llama-cpp](/pl/plugins/reference/llama-cpp)** (`@openclaw/llama-cpp-provider`) - npm; ClawHub. Lokalne osadzenia GGUF przez node-llama-cpp.
+
+- **[lobster](/pl/plugins/reference/lobster)** (`@openclaw/lobster`) - npm; ClawHub. Plugin narzędzia przepływu pracy Lobster dla typowanych potoków i wznawialnych zatwierdzeń.
+
+- **[matrix](/pl/plugins/reference/matrix)** (`@openclaw/matrix`) - ClawHub: `clawhub:@openclaw/matrix`; npm. Plugin kanału OpenClaw Matrix dla pokojów i wiadomości bezpośrednich.
+
+- **[mattermost](/pl/plugins/reference/mattermost)** (`@openclaw/mattermost`) - npm; ClawHub: `clawhub:@openclaw/mattermost`. Dodaje powierzchnię kanału Mattermost do wysyłania i odbierania wiadomości OpenClaw.
+
+- **[memory-lancedb](/pl/plugins/reference/memory-lancedb)** (`@openclaw/memory-lancedb`) - npm; ClawHub. Plugin pamięci długoterminowej OpenClaw oparty na LanceDB, z automatycznym przywoływaniem, automatycznym przechwytywaniem i wyszukiwaniem wektorowym.
+
+- **[moonshot](/pl/plugins/reference/moonshot)** (`@openclaw/moonshot-provider`) - npm; ClawHub: `clawhub:@openclaw/moonshot-provider`. Dodaje do OpenClaw obsługę dostawcy modeli Moonshot.
+
+- **[msteams](/pl/plugins/reference/msteams)** (`@openclaw/msteams`) - npm; ClawHub. Plugin kanału OpenClaw Microsoft Teams dla rozmów z botem.
+
+- **[nextcloud-talk](/pl/plugins/reference/nextcloud-talk)** (`@openclaw/nextcloud-talk`) - npm; ClawHub. Plugin kanału OpenClaw Nextcloud Talk dla rozmów.
+
+- **[nostr](/pl/plugins/reference/nostr)** (`@openclaw/nostr`) - npm; ClawHub. Plugin kanału OpenClaw Nostr dla szyfrowanych wiadomości bezpośrednich NIP-04.
+
+- **[openshell](/pl/plugins/reference/openshell)** (`@openclaw/openshell-sandbox`) - npm; ClawHub. Backend piaskownicy OpenClaw dla CLI NVIDIA OpenShell z lustrzanymi lokalnymi obszarami roboczymi i wykonywaniem poleceń SSH.
+
+- **[parallel](/pl/tools/parallel-search)** (`@openclaw/parallel-plugin`) - npm; ClawHub: `clawhub:@openclaw/parallel-plugin`. Dodaje obsługę dostawcy wyszukiwania w sieci.
+
+- **[perplexity](/pl/plugins/reference/perplexity)** (`@openclaw/perplexity-plugin`) - npm; ClawHub: `clawhub:@openclaw/perplexity-plugin`. Dodaje obsługę dostawcy wyszukiwania w sieci.
+
+- **[pixverse](/pl/plugins/reference/pixverse)** (`@openclaw/pixverse-provider`) - npm; ClawHub: `clawhub:@openclaw/pixverse-provider`. Plugin dostawcy OpenClaw PixVerse do generowania wideo.
+
+- **[qianfan](/pl/plugins/reference/qianfan)** (`@openclaw/qianfan-provider`) - npm; ClawHub: `clawhub:@openclaw/qianfan-provider`. Dodaje do OpenClaw obsługę dostawcy modeli Qianfan.
+
+- **[qqbot](/pl/plugins/reference/qqbot)** (`@openclaw/qqbot`) - npm; ClawHub. Plugin kanału OpenClaw QQ Bot dla przepływów pracy grupowych i wiadomości bezpośrednich.
+
+- **[qwen](/pl/plugins/reference/qwen)** (`@openclaw/qwen-provider`) - npm; ClawHub: `clawhub:@openclaw/qwen-provider`. Dodaje do OpenClaw obsługę dostawcy modeli Qwen, Qwen Cloud, Model Studio, DashScope, Qwen Oauth, Qwen Portal, Qwen CLI.
+
+- **[raft](/pl/plugins/reference/raft)** (`@openclaw/raft`) - npm; ClawHub. Plugin kanału OpenClaw Raft dla bezpiecznych mostów wybudzania CLI.
+
+- **[searxng](/pl/plugins/reference/searxng)** (`@openclaw/searxng-plugin`) - npm; ClawHub: `clawhub:@openclaw/searxng-plugin`. Dodaje obsługę dostawcy wyszukiwania w sieci.
+
+- **[signal](/pl/plugins/reference/signal)** (`@openclaw/signal`) - npm; ClawHub: `clawhub:@openclaw/signal`. Dodaje powierzchnię kanału Signal do wysyłania i odbierania wiadomości OpenClaw.
+
+- **[slack](/pl/plugins/reference/slack)** (`@openclaw/slack`) - npm; ClawHub. Plugin kanału OpenClaw Slack dla kanałów, wiadomości DM, poleceń i zdarzeń aplikacji.
+
+- **[sms](/pl/plugins/reference/sms)** (`@openclaw/sms`) - npm; ClawHub: `clawhub:@openclaw/sms`. Plugin kanału Twilio SMS dla wiadomości tekstowych OpenClaw.
+
+- **[stepfun](/pl/plugins/reference/stepfun)** (`@openclaw/stepfun-provider`) - npm; ClawHub: `clawhub:@openclaw/stepfun-provider`. Dodaje do OpenClaw obsługę dostawcy modeli StepFun, StepFun Plan.
+
+- **[synology-chat](/pl/plugins/reference/synology-chat)** (`@openclaw/synology-chat`) - npm; ClawHub. Plugin kanału Synology Chat dla kanałów OpenClaw i wiadomości bezpośrednich.
+
+- **[tavily](/pl/plugins/reference/tavily)** (`@openclaw/tavily-plugin`) - npm; ClawHub: `clawhub:@openclaw/tavily-plugin`. Dodaje narzędzia wywoływane przez agentów. Dodaje obsługę dostawcy wyszukiwania w sieci.
+
+- **[tencent](/pl/plugins/reference/tencent)** (`@openclaw/tencent-provider`) - npm; ClawHub: `clawhub:@openclaw/tencent-provider`. Dodaje do OpenClaw obsługę dostawcy modeli Tencent TokenHub.
+
+- **[tlon](/pl/plugins/reference/tlon)** (`@openclaw/tlon`) - npm; ClawHub. Plugin kanału OpenClaw Tlon/Urbit dla przepływów pracy czatu.
+
+- **[tokenjuice](/pl/plugins/reference/tokenjuice)** (`@openclaw/tokenjuice`) - npm; ClawHub: `clawhub:@openclaw/tokenjuice`. Kompaktuje wyniki narzędzi exec i bash za pomocą reduktorów tokenjuice.
+
+- **[twitch](/pl/plugins/reference/twitch)** (`@openclaw/twitch`) - npm; ClawHub. Plugin kanału OpenClaw Twitch dla przepływów pracy czatu i moderacji.
+
+- **[venice](/pl/plugins/reference/venice)** (`@openclaw/venice-provider`) - npm; ClawHub: `clawhub:@openclaw/venice-provider`. Dodaje do OpenClaw obsługę dostawcy modeli Venice.
+
+- **[vercel-ai-gateway](/pl/plugins/reference/vercel-ai-gateway)** (`@openclaw/vercel-ai-gateway-provider`) - npm; ClawHub: `clawhub:@openclaw/vercel-ai-gateway-provider`. Dodaje do OpenClaw obsługę dostawcy modeli Vercel AI Gateway.
+
+- **[voice-call](/pl/plugins/reference/voice-call)** (`@openclaw/voice-call`) - npm; ClawHub. Plugin OpenClaw voice-call dla połączeń telefonicznych Twilio, Telnyx i Plivo.
+
+- **[whatsapp](/pl/plugins/reference/whatsapp)** (`@openclaw/whatsapp`) - ClawHub: `clawhub:@openclaw/whatsapp`; npm. Plugin kanału OpenClaw WhatsApp dla czatów WhatsApp Web.
+
+- **[zai](/pl/plugins/reference/zai)** (`@openclaw/zai-provider`) - npm; ClawHub: `clawhub:@openclaw/zai-provider`. Dodaje do OpenClaw obsługę dostawcy modeli Z.AI.
+
+- **[zalo](/pl/plugins/reference/zalo)** (`@openclaw/zalo`) - npm; ClawHub. Plugin kanału OpenClaw Zalo dla czatów botów i Webhook.
+
+- **[zalouser](/pl/plugins/reference/zalouser)** (`@openclaw/zalouser`) - npm; ClawHub. Plugin OpenClaw Zalo Personal Account przez natywną integrację zca-js.
+
+## Tylko checkout źródłowy
+
+3 pluginy
+
+- **[qa-channel](/pl/plugins/reference/qa-channel)** (`@openclaw/qa-channel`) - tylko checkout źródłowy. Dodaje powierzchnię QA Channel do wysyłania i odbierania wiadomości OpenClaw.
+
+- **[qa-lab](/pl/plugins/reference/qa-lab)** (`@openclaw/qa-lab`) - tylko checkout źródłowy. Plugin OpenClaw QA lab z prywatnym interfejsem debuggera i runnerem scenariuszy.
+
+- **[qa-matrix](/pl/plugins/reference/qa-matrix)** (`@openclaw/qa-matrix`) - tylko checkout źródłowy. Mechanizm uruchamiający transport QA Matrix i podłoże.

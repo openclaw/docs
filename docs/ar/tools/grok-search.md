@@ -1,47 +1,59 @@
 ---
 read_when:
-    - تريد استخدام Grok لإجراء web_search
-    - تحتاج إلى XAI_API_KEY للبحث على الويب
-summary: بحث Grok على الويب عبر استجابات xAI المستندة إلى الويب
+    - تريد استخدام Grok لـ web_search
+    - تريد استخدام xAI OAuth أو XAI_API_KEY للبحث على الويب
+summary: بحث الويب في Grok عبر ردود xAI المستندة إلى الويب
 title: بحث Grok
 x-i18n:
-    generated_at: "2026-05-10T20:04:13Z"
+    generated_at: "2026-06-27T18:42:54Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 91220e1f9d3fb998d8270af5d5e9e2e47658688de00be0bab7a265910acef478
+    source_hash: 4d18866f12648c5c194112633f6e888711cab83628dcc06ac58cb7801841a73b
     source_path: tools/grok-search.md
     workflow: 16
 ---
 
-يدعم OpenClaw استخدام Grok بصفته مزود `web_search`، باستخدام استجابات xAI المستندة إلى الويب لإنتاج إجابات مركّبة بالذكاء الاصطناعي ومدعومة بنتائج بحث مباشرة مع الاستشهادات.
+يدعم OpenClaw Grok كمزوّد `web_search`، باستخدام ردود xAI المستندة إلى الويب لإنتاج إجابات مركّبة بالذكاء الاصطناعي ومدعومة بنتائج بحث مباشرة مع الاستشهادات.
 
-يمكن لمفتاح API نفسه الخاص بـ xAI تشغيل أداة `x_search` المدمجة للبحث في منشورات X (سابقًا Twitter) وأداة `code_execution` أيضًا. إذا خزّنت المفتاح ضمن `plugins.entries.xai.config.webSearch.apiKey`، فسيعيد OpenClaw الآن استخدامه كخيار احتياطي لمزود نماذج xAI المضمّن أيضًا.
+يفضّل بحث Grok على الويب تسجيل دخول OAuth الحالي لديك في xAI عندما يكون متاحًا.
+إذا لم يكن هناك ملف OAuth موجود، فيمكن لمفتاح API نفسه الخاص بـ xAI أيضًا تشغيل أداة `x_search` المضمّنة للبحث في منشورات X (المعروفة سابقًا باسم Twitter) وأداة `code_execution`. إذا خزّنت المفتاح ضمن `plugins.entries.xai.config.webSearch.apiKey`، يعيد OpenClaw استخدامه كخيار احتياطي لمزوّد نماذج xAI المضمّن أيضًا.
 
-بالنسبة إلى مقاييس X على مستوى المنشور مثل إعادة النشر أو الردود أو الإشارات المرجعية أو المشاهدات، فضّل استخدام `x_search` مع عنوان URL الدقيق للمنشور أو معرّف الحالة بدلًا من استعلام بحث واسع.
+بالنسبة إلى مقاييس X على مستوى المنشور، مثل إعادة النشر أو الردود أو العلامات المرجعية أو المشاهدات، ففضّل استخدام `x_search` مع عنوان URL الدقيق للمنشور أو معرّف الحالة بدلًا من استعلام بحث واسع.
 
-## الإعداد الأولي والتهيئة
+## الإعداد الأولي والتكوين
 
 إذا اخترت **Grok** أثناء:
 
 - `openclaw onboard`
 - `openclaw configure --section web`
 
-يمكن لـ OpenClaw عرض خطوة متابعة منفصلة لتمكين `x_search` باستخدام `XAI_API_KEY` نفسه. خطوة المتابعة تلك:
+يمكن لـ OpenClaw استخدام ملف OAuth حالي في xAI من دون مطالبتك بمفتاح منفصل للبحث على الويب. إذا لم يكن OAuth متاحًا، فإنه يعود إلى إعداد مفتاح API الخاص بـ xAI.
+يمكن لـ OpenClaw أيضًا عرض خطوة متابعة منفصلة لتمكين `x_search` باستخدام بيانات اعتماد xAI نفسها. خطوة المتابعة هذه:
 
 - لا تظهر إلا بعد اختيار Grok لـ `web_search`
-- ليست اختيارًا منفصلًا لمزود بحث ويب من المستوى الأعلى
-- يمكنها اختياريًا ضبط نموذج `x_search` أثناء التدفق نفسه
+- ليست خيارًا منفصلًا عالي المستوى لمزوّد البحث على الويب
+- يمكنها اختياريًا ضبط نموذج `x_search` أثناء المسار نفسه
 
-إذا تخطيتها، يمكنك تمكين `x_search` أو تغييره لاحقًا في الإعدادات.
+إذا تخطّيتها، يمكنك تمكين `x_search` أو تغييره لاحقًا في الإعدادات.
 
-## الحصول على مفتاح API
+## تسجيل الدخول أو الحصول على مفتاح API
 
 <Steps>
-  <Step title="أنشئ مفتاحًا">
-    احصل على مفتاح API من [xAI](https://console.x.ai/).
+  <Step title="Use xAI OAuth">
+    إذا سبق أن سجّلت الدخول باستخدام xAI أثناء الإعداد الأولي أو مصادقة النموذج، فاختر Grok كمزوّد `web_search`. لا يلزم مفتاح API منفصل:
+
+    ```bash
+    openclaw onboard --auth-choice xai-oauth
+    openclaw config set tools.web.search.provider grok
+    ```
+
   </Step>
-  <Step title="خزّن المفتاح">
-    عيّن `XAI_API_KEY` في بيئة Gateway، أو هيّئه عبر:
+  <Step title="Use an API key fallback">
+    احصل على مفتاح API من [xAI](https://console.x.ai/) عندما لا يكون OAuth متاحًا أو عندما تريد عمدًا إعداد بحث ويب مدعومًا بمفتاح.
+  </Step>
+  <Step title="Store the key">
+    اضبط `XAI_API_KEY` في بيئة Gateway، أو كوّنه عبر:
 
     ```bash
     openclaw configure --section web
@@ -59,7 +71,7 @@ x-i18n:
       xai: {
         config: {
           webSearch: {
-            apiKey: "xai-...", // optional if XAI_API_KEY is set
+            apiKey: "xai-...", // optional if xAI OAuth or XAI_API_KEY is available
             baseUrl: "https://api.x.ai/v1", // optional Responses API proxy/base URL override
           },
         },
@@ -76,29 +88,29 @@ x-i18n:
 }
 ```
 
-**بديل البيئة:** عيّن `XAI_API_KEY` في بيئة Gateway.
-لتثبيت Gateway، ضعه في `~/.openclaw/.env`.
+**بدائل بيانات الاعتماد:** سجّل الدخول باستخدام `openclaw models auth login
+--provider xai --method oauth`، أو اضبط `XAI_API_KEY` في بيئة Gateway، أو خزّن `plugins.entries.xai.config.webSearch.apiKey`. بالنسبة إلى تثبيت gateway، ضع متغيرات البيئة في `~/.openclaw/.env`.
 
 ## آلية العمل
 
-يستخدم Grok استجابات xAI المستندة إلى الويب لتركيب إجابات مع استشهادات مضمّنة، على غرار نهج الإسناد إلى Google Search في Gemini.
+يستخدم Grok ردود xAI المستندة إلى الويب لتركيب إجابات تتضمن استشهادات مضمّنة، على نحو مشابه لنهج Gemini في الاستناد إلى Google Search.
 
-## المعلمات المدعومة
+## المعاملات المدعومة
 
-يدعم بحث Grok المعلمة `query`.
+يدعم بحث Grok المعامل `query`.
 
-تُقبل `count` للتوافق المشترك مع `web_search`، لكن Grok لا يزال يعيد إجابة واحدة مركّبة مع استشهادات بدلًا من قائمة نتائج بعدد N.
+يُقبل `count` للتوافق المشترك مع `web_search`، لكن Grok لا يزال يعيد إجابة مركّبة واحدة مع استشهادات بدلًا من قائمة نتائج بعدد N.
 
-لا تُدعم عوامل التصفية الخاصة بالمزود حاليًا.
+الفلاتر الخاصة بالمزوّد غير مدعومة حاليًا.
 
-يستخدم Grok مهلة افتراضية خاصة بالمزود قدرها 60 ثانية لأن عمليات بحث xAI Responses المستندة إلى الويب قد تستغرق وقتًا أطول من مهلة `web_search` المشتركة الافتراضية. عيّن `tools.web.search.timeoutSeconds` لتجاوزها.
+يستخدم Grok مهلة افتراضية خاصة بالمزوّد قدرها 60 ثانية لأن عمليات البحث المستندة إلى الويب في xAI Responses قد تستغرق وقتًا أطول من الإعداد الافتراضي المشترك لـ `web_search`. اضبط `tools.web.search.timeoutSeconds` لتجاوزها.
 
 ## تجاوزات عنوان URL الأساسي
 
-عيّن `plugins.entries.xai.config.webSearch.baseUrl` عندما ينبغي توجيه بحث الويب في Grok عبر وكيل مشغّل أو نقطة نهاية Responses متوافقة مع xAI. يرسل OpenClaw الطلبات إلى `<baseUrl>/responses` بعد إزالة الشرطات المائلة اللاحقة. يستخدم `x_search` خيار `webSearch.baseUrl` الاحتياطي نفسه ما لم يتم تعيين `plugins.entries.xai.config.xSearch.baseUrl`.
+اضبط `plugins.entries.xai.config.webSearch.baseUrl` عندما ينبغي أن يمر بحث Grok على الويب عبر وكيل مشغّل أو نقطة نهاية Responses متوافقة مع xAI. يرسل OpenClaw الطلبات إلى `<baseUrl>/responses` بعد إزالة الشرطات المائلة اللاحقة. يستخدم `x_search` خيار `webSearch.baseUrl` الاحتياطي نفسه ما لم يتم ضبط `plugins.entries.xai.config.xSearch.baseUrl`.
 
-## ذات صلة
+## ذو صلة
 
-- [نظرة عامة على Web Search](/ar/tools/web) -- كل المزودين والاكتشاف التلقائي
-- [x_search في Web Search](/ar/tools/web#x_search) -- بحث X من الدرجة الأولى عبر xAI
-- [Gemini Search](/ar/tools/gemini-search) -- إجابات مركّبة بالذكاء الاصطناعي عبر إسناد Google
+- [نظرة عامة على بحث الويب](/ar/tools/web) -- جميع المزوّدين والاكتشاف التلقائي
+- [`x_search` في بحث الويب](/ar/tools/web#x_search) -- بحث X من الدرجة الأولى عبر xAI
+- [بحث Gemini](/ar/tools/gemini-search) -- إجابات مركّبة بالذكاء الاصطناعي عبر الاستناد إلى Google

@@ -1,29 +1,30 @@
 ---
 read_when:
-    - คุณต้องการแผนผังเอกสารฉบับสมบูรณ์
-summary: ฮับที่ลิงก์ไปยังเอกสาร OpenClaw ทุกหน้า
+    - คุณต้องการแผนผังทั้งหมดของเอกสารประกอบ
+summary: ฮับที่ลิงก์ไปยังเอกสาร OpenClaw ทุกฉบับ
 title: ศูนย์รวมเอกสาร
 x-i18n:
-    generated_at: "2026-05-12T01:00:07Z"
+    generated_at: "2026-06-27T18:23:55Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f4675773105bbff55e1f38c8449d688dcefc6ad70d9f5e572193f1e0c638e243
+    source_hash: d7d3f089e2caea1e1487c7c0375c62dfb007db05827a77d4e5616839023b9457
     source_path: start/hubs.md
     workflow: 16
 ---
 
 <Note>
-หากคุณเพิ่งเริ่มใช้ OpenClaw ให้เริ่มจาก [เริ่มต้นใช้งาน](/th/start/getting-started)
+หากคุณเพิ่งเริ่มใช้ OpenClaw ให้เริ่มที่ [การเริ่มต้นใช้งาน](/th/start/getting-started)
 </Note>
 
-ใช้ฮับเหล่านี้เพื่อค้นหาทุกหน้า รวมถึงบทความเจาะลึกและเอกสารอ้างอิงที่ไม่ปรากฏในแถบนำทางด้านซ้าย
+ใช้ศูนย์รวมเหล่านี้เพื่อค้นหาทุกหน้า รวมถึงเนื้อหาเจาะลึกและเอกสารอ้างอิงที่ไม่ปรากฏในแถบนำทางด้านซ้าย
 
 ## เริ่มที่นี่
 
 - [ดัชนี](/th)
-- [เริ่มต้นใช้งาน](/th/start/getting-started)
-- [การเริ่มใช้งานครั้งแรก](/th/start/onboarding)
-- [การเริ่มใช้งานครั้งแรก (CLI)](/th/start/wizard)
+- [การเริ่มต้นใช้งาน](/th/start/getting-started)
+- [การเริ่มต้นตั้งค่า](/th/start/onboarding)
+- [การเริ่มต้นตั้งค่า (CLI)](/th/start/wizard)
 - [การตั้งค่า](/th/start/setup)
 - [แดชบอร์ด (Gateway ภายในเครื่อง)](http://127.0.0.1:18789/)
 - [ความช่วยเหลือ](/th/help)
@@ -31,7 +32,7 @@ x-i18n:
 - [การกำหนดค่า](/th/gateway/configuration)
 - [ตัวอย่างการกำหนดค่า](/th/gateway/configuration-examples)
 - [ผู้ช่วย OpenClaw](/th/start/openclaw)
-- [ตัวอย่างการใช้งาน](/th/start/showcase)
+- [โชว์เคส](/th/start/showcase)
 - [เรื่องราวเบื้องหลัง](/th/start/lore)
 
 ## การติดตั้ง + การอัปเดต
@@ -44,14 +45,14 @@ x-i18n:
 ## แนวคิดหลัก
 
 - [สถาปัตยกรรม](/th/concepts/architecture)
-- [คุณสมบัติ](/th/concepts/features)
-- [ฮับเครือข่าย](/th/network)
+- [ฟีเจอร์](/th/concepts/features)
+- [ศูนย์รวมเครือข่าย](/th/network)
 - [รันไทม์ของเอเจนต์](/th/concepts/agent)
 - [พื้นที่ทำงานของเอเจนต์](/th/concepts/agent-workspace)
 - [หน่วยความจำ](/th/concepts/memory)
-- [ลูปเอเจนต์](/th/concepts/agent-loop)
+- [ลูปของเอเจนต์](/th/concepts/agent-loop)
 - [การสตรีม + การแบ่งชิ้น](/th/concepts/streaming)
-- [การกำหนดเส้นทางแบบหลายเอเจนต์](/th/concepts/multi-agent)
+- [การกำหนดเส้นทางหลายเอเจนต์](/th/concepts/multi-agent)
 - [Compaction](/th/concepts/compaction)
 - [เซสชัน](/th/concepts/session)
 - [การตัดแต่งเซสชัน](/th/concepts/session-pruning)
@@ -61,19 +62,19 @@ x-i18n:
 - [อะแดปเตอร์ RPC](/th/reference/rpc)
 - [สคีมา TypeBox](/th/concepts/typebox)
 - [การจัดการเขตเวลา](/th/concepts/timezone)
-- [สถานะการพร้อมใช้งาน](/th/concepts/presence)
+- [สถานะการปรากฏ](/th/concepts/presence)
 - [การค้นพบ + ทรานสปอร์ต](/th/gateway/discovery)
 - [Bonjour](/th/gateway/bonjour)
 - [การกำหนดเส้นทางช่องทาง](/th/channels/channel-routing)
 - [กลุ่ม](/th/channels/groups)
 - [ข้อความกลุ่ม](/th/channels/group-messages)
-- [การสลับโมเดลสำรอง](/th/concepts/model-failover)
+- [การสลับโมเดลเมื่อขัดข้อง](/th/concepts/model-failover)
 - [OAuth](/th/concepts/oauth)
 
-## ผู้ให้บริการ + อินเกรส
+## ผู้ให้บริการ + ทางเข้าข้อมูล
 
-- [ฮับช่องทางแชท](/th/channels)
-- [ฮับผู้ให้บริการโมเดล](/th/providers/models)
+- [ศูนย์รวมช่องแชต](/th/channels)
+- [ศูนย์รวมผู้ให้บริการโมเดล](/th/providers/models)
 - [WhatsApp](/th/channels/whatsapp)
 - [Telegram](/th/channels/telegram)
 - [Slack](/th/channels/slack)
@@ -84,7 +85,7 @@ x-i18n:
 - [iMessage](/th/channels/imessage)
 - [การแยกวิเคราะห์ตำแหน่ง](/th/channels/location)
 - [WebChat](/th/web/webchat)
-- [Webhook](/th/automation/cron-jobs#webhooks)
+- [Webhooks](/th/automation/cron-jobs#webhooks)
 - [Gmail Pub/Sub](/th/automation/cron-jobs#gmail-pubsub-integration)
 
 ## Gateway + การปฏิบัติการ
@@ -100,7 +101,7 @@ x-i18n:
 - [การบันทึกล็อก](/th/gateway/logging)
 - [การทำแซนด์บ็อกซ์](/th/gateway/sandboxing)
 - [แดชบอร์ด](/th/web/dashboard)
-- [ส่วนติดต่อควบคุม](/th/web/control-ui)
+- [UI ควบคุม](/th/web/control-ui)
 - [การเข้าถึงระยะไกล](/th/gateway/remote)
 - [README ของ Gateway ระยะไกล](/th/gateway/remote-gateway-readme)
 - [Tailscale](/th/gateway/tailscale)
@@ -111,13 +112,13 @@ x-i18n:
 
 - [พื้นผิวเครื่องมือ](/th/tools)
 - [OpenProse](/th/prose)
-- [ข้อมูลอ้างอิง CLI](/th/cli)
+- [เอกสารอ้างอิง CLI](/th/cli)
 - [เครื่องมือ Exec](/th/tools/exec)
 - [เครื่องมือ PDF](/th/tools/pdf)
 - [โหมดยกระดับสิทธิ์](/th/tools/elevated)
 - [งาน Cron](/th/automation/cron-jobs)
 - [ระบบอัตโนมัติ](/th/automation)
-- [การคิด + แบบละเอียด](/th/tools/thinking)
+- [การคิด + รายละเอียดแบบ verbose](/th/tools/thinking)
 - [โมเดล](/th/concepts/models)
 - [เอเจนต์ย่อย](/th/tools/subagents)
 - [CLI ส่งเอเจนต์](/th/tools/agent-send)
@@ -126,9 +127,9 @@ x-i18n:
 - [เบราว์เซอร์ (การแก้ไขปัญหา Linux)](/th/tools/browser-linux-troubleshooting)
 - [โพล](/th/cli/message)
 
-## Node, สื่อ, เสียง
+## Nodes, สื่อ, เสียง
 
-- [ภาพรวม Node](/th/nodes)
+- [ภาพรวม Nodes](/th/nodes)
 - [กล้อง](/th/nodes/camera)
 - [รูปภาพ](/th/nodes/images)
 - [เสียง](/th/nodes/audio)
@@ -142,40 +143,40 @@ x-i18n:
 - [macOS](/th/platforms/macos)
 - [iOS](/th/platforms/ios)
 - [Android](/th/platforms/android)
-- [Windows (WSL2)](/th/platforms/windows)
+- [ศูนย์รวม Windows](/th/platforms/windows)
 - [Linux](/th/platforms/linux)
 - [พื้นผิวเว็บ](/th/web)
 
-## แอปคู่หู macOS (ขั้นสูง)
+## แอปคู่ขนาน macOS (ขั้นสูง)
 
-- [การตั้งค่าสภาพแวดล้อมพัฒนา macOS](/th/platforms/mac/dev-setup)
+- [การตั้งค่า dev สำหรับ macOS](/th/platforms/mac/dev-setup)
 - [แถบเมนู macOS](/th/platforms/mac/menu-bar)
 - [การปลุกด้วยเสียงบน macOS](/th/platforms/mac/voicewake)
-- [โอเวอร์เลย์เสียงบน macOS](/th/platforms/mac/voice-overlay)
+- [โอเวอร์เลย์เสียง macOS](/th/platforms/mac/voice-overlay)
 - [WebChat บน macOS](/th/platforms/mac/webchat)
 - [Canvas บน macOS](/th/platforms/mac/canvas)
-- [กระบวนการลูกบน macOS](/th/platforms/mac/child-process)
-- [สุขภาพระบบบน macOS](/th/platforms/mac/health)
+- [กระบวนการลูก macOS](/th/platforms/mac/child-process)
+- [สุขภาพระบบ macOS](/th/platforms/mac/health)
 - [ไอคอน macOS](/th/platforms/mac/icon)
-- [การบันทึกล็อกบน macOS](/th/platforms/mac/logging)
-- [สิทธิ์บน macOS](/th/platforms/mac/permissions)
-- [ระยะไกลบน macOS](/th/platforms/mac/remote)
-- [การลงนามบน macOS](/th/platforms/mac/signing)
-- [Gateway บน macOS (launchd)](/th/platforms/mac/bundled-gateway)
+- [การบันทึกล็อก macOS](/th/platforms/mac/logging)
+- [สิทธิ์ macOS](/th/platforms/mac/permissions)
+- [ระยะไกล macOS](/th/platforms/mac/remote)
+- [การเซ็น macOS](/th/platforms/mac/signing)
+- [Gateway macOS (launchd)](/th/platforms/mac/bundled-gateway)
 - [XPC บน macOS](/th/platforms/mac/xpc)
 - [Skills บน macOS](/th/platforms/mac/skills)
 - [Peekaboo บน macOS](/th/platforms/mac/peekaboo)
 
-## Plugin
+## Plugins
 
-- [ภาพรวม Plugin](/th/tools/plugin)
-- [การสร้าง Plugin](/th/plugins/building-plugins)
+- [ภาพรวม Plugins](/th/tools/plugin)
+- [การสร้าง Plugins](/th/plugins/building-plugins)
 - [ฮุก Plugin](/th/plugins/hooks)
 - [แมนิเฟสต์ Plugin](/th/plugins/manifest)
 - [เครื่องมือเอเจนต์](/th/plugins/building-plugins#registering-agent-tools)
 - [บันเดิล Plugin](/th/plugins/bundles)
 - [ClawHub](/th/clawhub)
-- [ตำรา Capability](/th/plugins/adding-capabilities)
+- [คู่มือสูตรความสามารถ](/th/plugins/adding-capabilities)
 - [Plugin การโทรด้วยเสียง](/th/plugins/voice-call)
 - [Plugin ผู้ใช้ Zalo](/th/plugins/zalouser)
 
@@ -205,4 +206,4 @@ x-i18n:
 
 ## ที่เกี่ยวข้อง
 
-- [เริ่มต้นใช้งาน](/th/start/getting-started)
+- [การเริ่มต้นใช้งาน](/th/start/getting-started)

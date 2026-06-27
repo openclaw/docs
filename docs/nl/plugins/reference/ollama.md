@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de ollama Plugin
-summary: Voegt ondersteuning voor Ollama als modelprovider toe aan OpenClaw.
-title: Ollama Plugin
+    - Je installeert, configureert of controleert de ollama-Plugin
+summary: Voegt ondersteuning voor Ollama- en Ollama Cloud-modelproviders toe aan OpenClaw.
+title: Ollama-Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:53:43Z"
+    generated_at: "2026-06-27T18:02:49Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3257b3086e28e62c0c9bdc4ff22bd8c7a6ea6bec0ed018e5a93e811ba0353a23
+    source_hash: 25f12b28696c80f0d15069b6c8b0b4c84d54bf5119208dd80eafd230b6d8f314
     source_path: plugins/reference/ollama.md
     workflow: 16
 ---
 
 # Ollama-Plugin
 
-Voegt ondersteuning voor Ollama-modelprovider toe aan OpenClaw.
+Voegt ondersteuning voor Ollama- en Ollama Cloud-modelproviders toe aan OpenClaw.
 
 ## Distributie
 
@@ -23,8 +24,9 @@ Voegt ondersteuning voor Ollama-modelprovider toe aan OpenClaw.
 
 ## Oppervlak
 
-providers: ollama; contracten: memoryEmbeddingProviders, webSearchProviders
+providers: ollama, ollama-cloud; contracten: memoryEmbeddingProviders, webSearchProviders
 
-## Gerelateerde documentatie
+## Gerelateerde docs
 
 - [ollama](/nl/providers/ollama)
+- [ollama-cloud](/nl/providers/ollama-cloud)

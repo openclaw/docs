@@ -1,15 +1,16 @@
 ---
 read_when:
-    - Anda sedang menentukan apakah sebuah Plugin disertakan dalam paket npm inti atau diinstal secara terpisah
-    - Anda sedang memperbarui metadata paket Plugin bawaan atau otomatisasi rilis
-    - Anda memerlukan daftar Plugin internal versus eksternal yang kanonis
-summary: Inventaris yang dihasilkan dari plugin OpenClaw yang disertakan dalam inti, dipublikasikan secara eksternal, atau disimpan hanya sebagai kode sumber
+    - Anda sedang memutuskan apakah sebuah plugin dikirim dalam paket npm inti atau diinstal secara terpisah
+    - Anda sedang memperbarui metadata paket Plugin bawaan atau otomasi rilis
+    - Anda memerlukan daftar Plugin internal vs eksternal kanonis
+summary: Inventaris yang dihasilkan dari Plugin OpenClaw yang dikirimkan di core, dipublikasikan secara eksternal, atau dipertahankan hanya sebagai sumber
 title: Inventaris Plugin
 x-i18n:
-    generated_at: "2026-05-10T19:45:12Z"
+    generated_at: "2026-06-27T17:51:05Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1a42c8f230925618eb7c15fd6ea7279694adccd45d8e827bb89dffa13576521d
+    source_hash: a1f0c5aa2c3e5f25308a4398dc2582caa8f355a4dfd0d5693d9cfaf1c1ce6926
     source_path: plugins/plugin-inventory.md
     workflow: 16
 ---
@@ -26,18 +27,18 @@ pnpm plugins:inventory:gen
 ## Definisi
 
 - **Paket npm inti:** dibangun ke dalam paket npm `openclaw` dan tersedia tanpa instalasi plugin terpisah.
-- **Paket eksternal resmi:** plugin yang dipelihara OpenClaw, dikecualikan dari paket npm inti, disimpan dalam inventaris resmi ini, dan diinstal sesuai kebutuhan melalui ClawHub dan/atau npm.
-- **Hanya source checkout:** plugin lokal repo yang dikecualikan dari artefak npm yang dipublikasikan dan tidak diiklankan sebagai paket yang dapat diinstal.
+- **Paket eksternal resmi:** Plugin yang dikelola OpenClaw, dihilangkan dari paket npm inti, disimpan dalam inventaris resmi ini, dan diinstal sesuai kebutuhan melalui ClawHub dan/atau npm.
+- **Hanya checkout sumber:** plugin lokal repo yang dihilangkan dari artefak npm yang dipublikasikan dan tidak diiklankan sebagai paket yang dapat diinstal.
 
-Source checkout berbeda dari instalasi npm: setelah `pnpm install`, plugin yang dibundel
-dimuat dari `extensions/<id>` sehingga edit lokal dan dependensi workspace lokal paket
-tersedia.
+Checkout sumber berbeda dari instalasi npm: setelah `pnpm install`, plugin
+bundel dimuat dari `extensions/<id>` sehingga edit lokal dan dependensi workspace
+lokal paket tersedia.
 
 ## Instal Plugin
 
-Gunakan kolom **Distribusi** untuk menentukan apakah instalasi diperlukan. Plugin yang
-menyatakan `included in OpenClaw` sudah ada dalam paket inti. Paket
-eksternal resmi perlu satu kali instalasi, lalu restart Gateway.
+Gunakan rute instalasi di setiap entri untuk menentukan apakah instalasi diperlukan. Plugin
+yang menyebutkan `included in OpenClaw` sudah tersedia dalam paket inti.
+Paket eksternal resmi memerlukan satu instalasi, lalu restart Gateway.
 
 Misalnya, Discord adalah paket eksternal resmi:
 
@@ -47,140 +48,282 @@ openclaw gateway restart
 openclaw plugins inspect discord --runtime --json
 ```
 
-Spesifikasi paket tanpa awalan mencoba ClawHub terlebih dahulu, lalu fallback npm. Untuk memaksa sumber, gunakan
-`clawhub:@openclaw/discord` atau `npm:@openclaw/discord`. Setelah instalasi, ikuti
-dokumentasi penyiapan plugin, seperti [Discord](/id/channels/discord), untuk menambahkan kredensial
-dan konfigurasi channel. Lihat [Kelola plugin](/id/plugins/manage-plugins) untuk perintah pembaruan,
-penghapusan instalasi, dan publikasi.
+Selama cutover peluncuran, spesifikasi paket biasa tanpa awalan tetap diinstal dari npm.
+Gunakan `clawhub:@openclaw/discord` atau `npm:@openclaw/discord` ketika Anda memerlukan
+sumber eksplisit. Setelah instalasi, ikuti dokumen setup plugin, seperti
+[Discord](/id/channels/discord), untuk menambahkan kredensial dan konfigurasi channel. Lihat
+[Kelola plugin](/id/plugins/manage-plugins) untuk perintah pembaruan, pencopotan instalasi, dan publikasi.
+
+Setiap entri mencantumkan paket, rute distribusi, dan deskripsi.
 
 ## Paket npm inti
 
-| Plugin                                                            | Deskripsi                                                                                                                                                          | Distribusi                                                          | Permukaan                                                                                                                                                                                                                                                       |
-| ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [alibaba](/id/plugins/reference/alibaba)                             | Menambahkan dukungan penyedia pembuatan video.                                                                                                                     | `@openclaw/alibaba-provider`<br />termasuk dalam OpenClaw           | contracts: videoGenerationProviders                                                                                                                                                                                                                              |
-| [amazon-bedrock](/id/plugins/reference/amazon-bedrock)               | Menambahkan dukungan penyedia model Amazon Bedrock ke OpenClaw.                                                                                                    | `@openclaw/amazon-bedrock-provider`<br />termasuk dalam OpenClaw    | providers: amazon-bedrock; contracts: memoryEmbeddingProviders                                                                                                                                                                                                   |
-| [amazon-bedrock-mantle](/id/plugins/reference/amazon-bedrock-mantle) | Menambahkan dukungan penyedia model Amazon Bedrock Mantle ke OpenClaw.                                                                                             | `@openclaw/amazon-bedrock-mantle-provider`<br />termasuk dalam OpenClaw | providers: amazon-bedrock-mantle                                                                                                                                                                                                                                 |
-| [anthropic](/id/plugins/reference/anthropic)                         | Menambahkan dukungan penyedia model Anthropic ke OpenClaw.                                                                                                         | `@openclaw/anthropic-provider`<br />termasuk dalam OpenClaw         | providers: anthropic; contracts: mediaUnderstandingProviders                                                                                                                                                                                                     |
-| [anthropic-vertex](/id/plugins/reference/anthropic-vertex)           | Menambahkan dukungan penyedia model Anthropic Vertex ke OpenClaw.                                                                                                  | `@openclaw/anthropic-vertex-provider`<br />termasuk dalam OpenClaw  | providers: anthropic-vertex                                                                                                                                                                                                                                      |
-| [arcee](/id/plugins/reference/arcee)                                 | Menambahkan dukungan penyedia model Arcee ke OpenClaw.                                                                                                             | `@openclaw/arcee-provider`<br />termasuk dalam OpenClaw             | providers: arcee                                                                                                                                                                                                                                                 |
-| [azure-speech](/id/plugins/reference/azure-speech)                   | Text-to-speech Azure AI Speech (MP3, catatan suara Ogg/Opus native, telefoni PCM).                                                                                 | `@openclaw/azure-speech`<br />termasuk dalam OpenClaw               | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [bonjour](/id/plugins/reference/bonjour)                             | Mengiklankan Gateway OpenClaw lokal melalui Bonjour/mDNS.                                                                                                          | `@openclaw/bonjour`<br />termasuk dalam OpenClaw                    | plugin                                                                                                                                                                                                                                                           |
-| [browser](/id/plugins/reference/browser)                             | Menambahkan alat yang dapat dipanggil agen.                                                                                                                        | `@openclaw/browser-plugin`<br />termasuk dalam OpenClaw             | contracts: tools; skills                                                                                                                                                                                                                                         |
-| [byteplus](/id/plugins/reference/byteplus)                           | Menambahkan dukungan penyedia model BytePlus, BytePlus Plan ke OpenClaw.                                                                                           | `@openclaw/byteplus-provider`<br />termasuk dalam OpenClaw          | providers: byteplus, byteplus-plan; contracts: videoGenerationProviders                                                                                                                                                                                          |
-| [canvas](/id/plugins/reference/canvas)                               | Permukaan kontrol Canvas dan rendering A2UI eksperimental untuk node yang dipasangkan.                                                                              | `@openclaw/canvas-plugin`<br />termasuk dalam OpenClaw              | contracts: tools                                                                                                                                                                                                                                                 |
-| [cerebras](/id/plugins/reference/cerebras)                           | Menambahkan dukungan penyedia model Cerebras ke OpenClaw.                                                                                                          | `@openclaw/cerebras-provider`<br />termasuk dalam OpenClaw          | providers: cerebras                                                                                                                                                                                                                                              |
-| [chutes](/id/plugins/reference/chutes)                               | Menambahkan dukungan penyedia model Chutes ke OpenClaw.                                                                                                            | `@openclaw/chutes-provider`<br />termasuk dalam OpenClaw            | providers: chutes                                                                                                                                                                                                                                                |
-| [clickclack](/id/plugins/reference/clickclack)                       | Menambahkan permukaan channel Clickclack untuk mengirim dan menerima pesan OpenClaw.                                                                                | `@openclaw/clickclack`<br />termasuk dalam OpenClaw                 | channels: clickclack                                                                                                                                                                                                                                             |
-| [cloudflare-ai-gateway](/id/plugins/reference/cloudflare-ai-gateway) | Menambahkan dukungan penyedia model Cloudflare AI Gateway ke OpenClaw.                                                                                             | `@openclaw/cloudflare-ai-gateway-provider`<br />termasuk dalam OpenClaw | providers: cloudflare-ai-gateway                                                                                                                                                                                                                                 |
-| [comfy](/id/plugins/reference/comfy)                                 | Menambahkan dukungan penyedia model ComfyUI ke OpenClaw.                                                                                                           | `@openclaw/comfy-provider`<br />termasuk dalam OpenClaw             | providers: comfy; contracts: imageGenerationProviders, musicGenerationProviders, videoGenerationProviders                                                                                                                                                        |
-| [copilot-proxy](/id/plugins/reference/copilot-proxy)                 | Menambahkan dukungan penyedia model Copilot Proxy ke OpenClaw.                                                                                                     | `@openclaw/copilot-proxy`<br />termasuk dalam OpenClaw              | providers: copilot-proxy                                                                                                                                                                                                                                         |
-| [deepgram](/id/plugins/reference/deepgram)                           | Menambahkan dukungan penyedia pemahaman media. Menambahkan dukungan penyedia transkripsi realtime.                                                                  | `@openclaw/deepgram-provider`<br />termasuk dalam OpenClaw          | contracts: mediaUnderstandingProviders, realtimeTranscriptionProviders                                                                                                                                                                                           |
-| [deepinfra](/id/plugins/reference/deepinfra)                         | Menambahkan dukungan penyedia model DeepInfra ke OpenClaw.                                                                                                         | `@openclaw/deepinfra-provider`<br />termasuk dalam OpenClaw         | providers: deepinfra; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, speechProviders, videoGenerationProviders                                                                                                      |
-| [deepseek](/id/plugins/reference/deepseek)                           | Menambahkan dukungan penyedia model DeepSeek ke OpenClaw.                                                                                                           | `@openclaw/deepseek-provider`<br />disertakan dalam OpenClaw         | providers: deepseek                                                                                                                                                                                                                                              |
-| [document-extract](/id/plugins/reference/document-extract)           | Mengekstrak teks dan gambar halaman cadangan dari lampiran dokumen lokal.                                                                                            | `@openclaw/document-extract-plugin`<br />disertakan dalam OpenClaw   | contracts: documentExtractors                                                                                                                                                                                                                                    |
-| [duckduckgo](/id/plugins/reference/duckduckgo)                       | Menambahkan dukungan penyedia pencarian web.                                                                                                                         | `@openclaw/duckduckgo-plugin`<br />disertakan dalam OpenClaw         | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [elevenlabs](/id/plugins/reference/elevenlabs)                       | Menambahkan dukungan penyedia pemahaman media. Menambahkan dukungan penyedia transkripsi waktu nyata. Menambahkan dukungan penyedia teks-ke-ucapan.                 | `@openclaw/elevenlabs-speech`<br />disertakan dalam OpenClaw         | contracts: mediaUnderstandingProviders, realtimeTranscriptionProviders, speechProviders                                                                                                                                                                          |
-| [exa](/id/plugins/reference/exa)                                     | Menambahkan dukungan penyedia pencarian web.                                                                                                                         | `@openclaw/exa-plugin`<br />disertakan dalam OpenClaw                | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [fal](/id/plugins/reference/fal)                                     | Menambahkan dukungan penyedia model fal ke OpenClaw.                                                                                                                 | `@openclaw/fal-provider`<br />disertakan dalam OpenClaw              | providers: fal; contracts: imageGenerationProviders, videoGenerationProviders                                                                                                                                                                                    |
-| [file-transfer](/id/plugins/reference/file-transfer)                 | Mengambil, mencantumkan, dan menulis file pada node berpasangan melalui perintah node khusus. Melewati pemotongan stdout bash dengan menggunakan base64 melalui node.invoke untuk biner hingga 16 MB. | `@openclaw/file-transfer`<br />disertakan dalam OpenClaw             | contracts: tools                                                                                                                                                                                                                                                 |
-| [firecrawl](/id/plugins/reference/firecrawl)                         | Menambahkan alat yang dapat dipanggil agen. Menambahkan dukungan penyedia pengambilan web. Menambahkan dukungan penyedia pencarian web.                              | `@openclaw/firecrawl-plugin`<br />disertakan dalam OpenClaw          | contracts: tools, webFetchProviders, webSearchProviders                                                                                                                                                                                                          |
-| [fireworks](/id/plugins/reference/fireworks)                         | Menambahkan dukungan penyedia model Fireworks ke OpenClaw.                                                                                                           | `@openclaw/fireworks-provider`<br />disertakan dalam OpenClaw        | providers: fireworks                                                                                                                                                                                                                                             |
-| [github-copilot](/id/plugins/reference/github-copilot)               | Menambahkan dukungan penyedia model GitHub Copilot ke OpenClaw.                                                                                                      | `@openclaw/github-copilot-provider`<br />disertakan dalam OpenClaw   | providers: github-copilot; contracts: memoryEmbeddingProviders                                                                                                                                                                                                   |
-| [google](/id/plugins/reference/google)                               | Menambahkan dukungan penyedia model Google, Google Gemini CLI, Google Vertex ke OpenClaw.                                                                            | `@openclaw/google-plugin`<br />disertakan dalam OpenClaw             | providers: google, google-gemini-cli, google-vertex; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, musicGenerationProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders, webSearchProviders |
-| [gradium](/id/plugins/reference/gradium)                             | Menambahkan dukungan penyedia teks-ke-ucapan.                                                                                                                        | `@openclaw/gradium-speech`<br />disertakan dalam OpenClaw            | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [groq](/id/plugins/reference/groq)                                   | Menambahkan dukungan penyedia model Groq ke OpenClaw.                                                                                                                | `@openclaw/groq-provider`<br />disertakan dalam OpenClaw             | providers: groq; contracts: mediaUnderstandingProviders                                                                                                                                                                                                          |
-| [huggingface](/id/plugins/reference/huggingface)                     | Menambahkan dukungan penyedia model Hugging Face ke OpenClaw.                                                                                                        | `@openclaw/huggingface-provider`<br />disertakan dalam OpenClaw      | providers: huggingface                                                                                                                                                                                                                                           |
-| [imessage](/id/plugins/reference/imessage)                           | Menambahkan antarmuka kanal iMessage untuk mengirim dan menerima pesan OpenClaw.                                                                                     | `@openclaw/imessage`<br />disertakan dalam OpenClaw                  | channels: imessage                                                                                                                                                                                                                                               |
-| [inworld](/id/plugins/reference/inworld)                             | Teks-ke-ucapan streaming Inworld (MP3, OGG_OPUS, PCM teleponi).                                                                                                      | `@openclaw/inworld-speech`<br />disertakan dalam OpenClaw            | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [irc](/id/plugins/reference/irc)                                     | Menambahkan antarmuka kanal IRC untuk mengirim dan menerima pesan OpenClaw.                                                                                          | `@openclaw/irc`<br />disertakan dalam OpenClaw                       | channels: irc                                                                                                                                                                                                                                                    |
-| [kilocode](/id/plugins/reference/kilocode)                           | Menambahkan dukungan penyedia model Kilocode ke OpenClaw.                                                                                                            | `@openclaw/kilocode-provider`<br />disertakan dalam OpenClaw         | providers: kilocode                                                                                                                                                                                                                                              |
-| [kimi](/id/plugins/reference/kimi)                                   | Menambahkan dukungan penyedia model Kimi, Kimi Coding ke OpenClaw.                                                                                                   | `@openclaw/kimi-provider`<br />disertakan dalam OpenClaw             | providers: kimi, kimi-coding                                                                                                                                                                                                                                     |
-| [litellm](/id/plugins/reference/litellm)                             | Menambahkan dukungan penyedia model LiteLLM ke OpenClaw.                                                                                                             | `@openclaw/litellm-provider`<br />disertakan dalam OpenClaw          | providers: litellm; contracts: imageGenerationProviders                                                                                                                                                                                                          |
-| [llm-task](/id/plugins/reference/llm-task)                           | Alat LLM khusus JSON generik untuk tugas terstruktur yang dapat dipanggil dari alur kerja.                                                                           | `@openclaw/llm-task`<br />disertakan dalam OpenClaw                  | contracts: tools                                                                                                                                                                                                                                                 |
-| [lmstudio](/id/plugins/reference/lmstudio)                           | Menambahkan dukungan penyedia model LM Studio ke OpenClaw.                                                                                                                   | `@openclaw/lmstudio-provider`<br />disertakan dalam OpenClaw              | providers: lmstudio; contracts: memoryEmbeddingProviders                                                                                                                                                                                                         |
-| [mattermost](/id/plugins/reference/mattermost)                       | Menambahkan permukaan channel Mattermost untuk mengirim dan menerima pesan OpenClaw.                                                                                     | `@openclaw/mattermost`<br />disertakan dalam OpenClaw                     | channels: mattermost                                                                                                                                                                                                                                             |
-| [memory-core](/id/plugins/reference/memory-core)                     | Menambahkan dukungan penyedia embedding memori. Menambahkan alat yang dapat dipanggil agen.                                                                                                   | `@openclaw/memory-core`<br />disertakan dalam OpenClaw                    | contracts: memoryEmbeddingProviders, tools                                                                                                                                                                                                                       |
-| [memory-wiki](/id/plugins/reference/memory-wiki)                     | Compiler wiki persisten dan vault pengetahuan yang ramah Obsidian untuk OpenClaw.                                                                                         | `@openclaw/memory-wiki`<br />disertakan dalam OpenClaw                    | contracts: tools; skills                                                                                                                                                                                                                                         |
-| [microsoft](/id/plugins/reference/microsoft)                         | Menambahkan dukungan penyedia text-to-speech.                                                                                                                                | `@openclaw/microsoft-speech`<br />disertakan dalam OpenClaw               | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [microsoft-foundry](/id/plugins/reference/microsoft-foundry)         | Menambahkan dukungan penyedia model Microsoft Foundry ke OpenClaw.                                                                                                           | `@openclaw/microsoft-foundry`<br />disertakan dalam OpenClaw              | providers: microsoft-foundry                                                                                                                                                                                                                                     |
-| [migrate-claude](/id/plugins/reference/migrate-claude)               | Mengimpor instruksi Claude Code dan Claude Desktop, server MCP, skills, dan konfigurasi aman ke OpenClaw.                                                      | `@openclaw/migrate-claude`<br />disertakan dalam OpenClaw                 | contracts: migrationProviders                                                                                                                                                                                                                                    |
-| [migrate-hermes](/id/plugins/reference/migrate-hermes)               | Mengimpor konfigurasi Hermes, memori, skills, dan kredensial yang didukung ke OpenClaw.                                                                             | `@openclaw/migrate-hermes`<br />disertakan dalam OpenClaw                 | contracts: migrationProviders                                                                                                                                                                                                                                    |
-| [minimax](/id/plugins/reference/minimax)                             | Menambahkan dukungan penyedia model MiniMax, MiniMax Portal ke OpenClaw.                                                                                                     | `@openclaw/minimax-provider`<br />disertakan dalam OpenClaw               | providers: minimax, minimax-portal; contracts: imageGenerationProviders, mediaUnderstandingProviders, musicGenerationProviders, speechProviders, videoGenerationProviders, webSearchProviders                                                                    |
-| [mistral](/id/plugins/reference/mistral)                             | Menambahkan dukungan penyedia model Mistral ke OpenClaw.                                                                                                                     | `@openclaw/mistral-provider`<br />disertakan dalam OpenClaw               | providers: mistral; contracts: mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders                                                                                                                                             |
-| [moonshot](/id/plugins/reference/moonshot)                           | Menambahkan dukungan penyedia model Moonshot ke OpenClaw.                                                                                                                    | `@openclaw/moonshot-provider`<br />disertakan dalam OpenClaw              | providers: moonshot; contracts: mediaUnderstandingProviders, webSearchProviders                                                                                                                                                                                  |
-| [nvidia](/id/plugins/reference/nvidia)                               | Menambahkan dukungan penyedia model NVIDIA ke OpenClaw.                                                                                                                      | `@openclaw/nvidia-provider`<br />disertakan dalam OpenClaw                | providers: nvidia                                                                                                                                                                                                                                                |
-| [oc-path](/id/plugins/reference/oc-path)                             | Menambahkan CLI path openclaw untuk pengalamatan file workspace oc://.                                                                                                      | `@openclaw/oc-path`<br />disertakan dalam OpenClaw                        | plugin                                                                                                                                                                                                                                                           |
-| [ollama](/id/plugins/reference/ollama)                               | Menambahkan dukungan penyedia model Ollama ke OpenClaw.                                                                                                                      | `@openclaw/ollama-provider`<br />disertakan dalam OpenClaw                | providers: ollama; contracts: memoryEmbeddingProviders, webSearchProviders                                                                                                                                                                                       |
-| [open-prose](/id/plugins/reference/open-prose)                       | Paket skill OpenProse VM dengan perintah slash /prose.                                                                                                                 | `@openclaw/open-prose`<br />disertakan dalam OpenClaw                     | skills                                                                                                                                                                                                                                                           |
-| [openai](/id/plugins/reference/openai)                               | Menambahkan dukungan penyedia model OpenAI, OpenAI Codex ke OpenClaw.                                                                                                        | `@openclaw/openai-provider`<br />disertakan dalam OpenClaw                | providers: openai, openai-codex; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders                                   |
-| [opencode](/id/plugins/reference/opencode)                           | Menambahkan dukungan penyedia model OpenCode ke OpenClaw.                                                                                                                    | `@openclaw/opencode-provider`<br />disertakan dalam OpenClaw              | providers: opencode; contracts: mediaUnderstandingProviders                                                                                                                                                                                                      |
-| [opencode-go](/id/plugins/reference/opencode-go)                     | Menambahkan dukungan penyedia model OpenCode Go ke OpenClaw.                                                                                                                 | `@openclaw/opencode-go-provider`<br />disertakan dalam OpenClaw           | providers: opencode-go; contracts: mediaUnderstandingProviders                                                                                                                                                                                                   |
-| [openrouter](/id/plugins/reference/openrouter)                       | Menambahkan dukungan penyedia model OpenRouter ke OpenClaw.                                                                                                                  | `@openclaw/openrouter-provider`<br />disertakan dalam OpenClaw            | providers: openrouter; contracts: imageGenerationProviders, mediaUnderstandingProviders, speechProviders, videoGenerationProviders                                                                                                                               |
-| [openshell](/id/plugins/reference/openshell)                         | Backend sandbox yang didukung oleh OpenShell dengan workspace lokal yang dicerminkan dan eksekusi perintah berbasis SSH.                                                                 | `@openclaw/openshell-sandbox`<br />disertakan dalam OpenClaw              | plugin                                                                                                                                                                                                                                                           |
-| [perplexity](/id/plugins/reference/perplexity)                       | Menambahkan dukungan penyedia pencarian web.                                                                                                                                    | `@openclaw/perplexity-plugin`<br />disertakan dalam OpenClaw              | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [qianfan](/id/plugins/reference/qianfan)                             | Menambahkan dukungan penyedia model Qianfan ke OpenClaw.                                                                                                                     | `@openclaw/qianfan-provider`<br />disertakan dalam OpenClaw               | providers: qianfan                                                                                                                                                                                                                                               |
-| [qwen](/id/plugins/reference/qwen)                                   | Menambahkan dukungan penyedia model Qwen, Qwen Cloud, Model Studio, DashScope ke OpenClaw.                                                                                   | `@openclaw/qwen-provider`<br />disertakan dalam OpenClaw                  | providers: qwen, qwencloud, modelstudio, dashscope; contracts: mediaUnderstandingProviders, videoGenerationProviders                                                                                                                                             |
-| [runway](/id/plugins/reference/runway)                               | Menambahkan dukungan penyedia pembuatan video.                                                                                                                              | `@openclaw/runway-provider`<br />disertakan dalam OpenClaw                | contracts: videoGenerationProviders                                                                                                                                                                                                                              |
-| [searxng](/id/plugins/reference/searxng)                             | Menambahkan dukungan penyedia pencarian web.                                                                                                                                    | `@openclaw/searxng-plugin`<br />disertakan dalam OpenClaw                 | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [senseaudio](/id/plugins/reference/senseaudio)                       | Menambahkan dukungan penyedia pemahaman media.                                                                                                                           | `@openclaw/senseaudio-provider`<br />disertakan dalam OpenClaw            | contracts: mediaUnderstandingProviders                                                                                                                                                                                                                           |
-| [sglang](/id/plugins/reference/sglang)                               | Menambahkan dukungan penyedia model SGLang ke OpenClaw.                                                                                                                      | `@openclaw/sglang-provider`<br />disertakan dalam OpenClaw                | providers: sglang                                                                                                                                                                                                                                                |
-| [signal](/id/plugins/reference/signal)                               | Menambahkan permukaan channel Signal untuk mengirim dan menerima pesan OpenClaw.                                                                                         | `@openclaw/signal`<br />disertakan dalam OpenClaw                         | channels: signal                                                                                                                                                                                                                                                 |
-| [skill-workshop](/id/plugins/reference/skill-workshop)               | Merekam alur kerja yang dapat diulang sebagai Skills ruang kerja, dengan tinjauan tertunda, penulisan aman, dan penyegaran prompt Skills.                                                       | `@openclaw/skill-workshop`<br />disertakan dalam OpenClaw                 | contracts: tools                                                                                                                                                                                                                                                 |
-| [slack](/id/plugins/reference/slack)                                 | Menambahkan permukaan channel Slack untuk mengirim dan menerima pesan OpenClaw.                                                                                          | `@openclaw/slack`<br />disertakan dalam OpenClaw                          | channels: slack                                                                                                                                                                                                                                                  |
-| [stepfun](/id/plugins/reference/stepfun)                             | Menambahkan dukungan penyedia model StepFun, StepFun Plan ke OpenClaw.                                                                                                       | `@openclaw/stepfun-provider`<br />disertakan dalam OpenClaw               | providers: stepfun, stepfun-plan                                                                                                                                                                                                                                 |
-| [synthetic](/id/plugins/reference/synthetic)                         | Menambahkan dukungan penyedia model Synthetic ke OpenClaw.                                                                                                                   | `@openclaw/synthetic-provider`<br />disertakan dalam OpenClaw             | providers: synthetic                                                                                                                                                                                                                                             |
-| [tavily](/id/plugins/reference/tavily)                               | Menambahkan alat yang dapat dipanggil agen. Menambahkan dukungan penyedia pencarian web.                                                                                                         | `@openclaw/tavily-plugin`<br />disertakan dalam OpenClaw                  | contracts: tools, webSearchProviders; skills                                                                                                                                                                                                                     |
-| [telegram](/id/plugins/reference/telegram)                           | Menambahkan permukaan channel Telegram untuk mengirim dan menerima pesan OpenClaw.                                                                                       | `@openclaw/telegram`<br />disertakan dalam OpenClaw                       | channels: telegram                                                                                                                                                                                                                                               |
-| [tencent](/id/plugins/reference/tencent)                             | Menambahkan dukungan penyedia model Tencent TokenHub ke OpenClaw.                                                                                                            | `@openclaw/tencent-provider`<br />disertakan dalam OpenClaw               | providers: tencent-tokenhub                                                                                                                                                                                                                                      |
-| [together](/id/plugins/reference/together)                           | Menambahkan dukungan penyedia model Together ke OpenClaw.                                                                                                                    | `@openclaw/together-provider`<br />disertakan dalam OpenClaw              | providers: together; contracts: videoGenerationProviders                                                                                                                                                                                                         |
-| [tokenjuice](/id/plugins/reference/tokenjuice)                       | Memadatkan hasil alat exec dan bash dengan reducer tokenjuice.                                                                                                        | `@openclaw/tokenjuice`<br />disertakan dalam OpenClaw                     | contracts: agentToolResultMiddleware                                                                                                                                                                                                                             |
-| [tts-local-cli](/id/plugins/reference/tts-local-cli)                 | Menambahkan dukungan penyedia text-to-speech.                                                                                                                                | `@openclaw/tts-local-cli`<br />disertakan dalam OpenClaw                  | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [venice](/id/plugins/reference/venice)                               | Menambahkan dukungan penyedia model Venice ke OpenClaw.                                                                                                                      | `@openclaw/venice-provider`<br />disertakan dalam OpenClaw                | providers: venice                                                                                                                                                                                                                                                |
-| [vercel-ai-gateway](/id/plugins/reference/vercel-ai-gateway)         | Menambahkan dukungan penyedia model Vercel AI Gateway ke OpenClaw.                                                                                                           | `@openclaw/vercel-ai-gateway-provider`<br />disertakan dalam OpenClaw     | providers: vercel-ai-gateway                                                                                                                                                                                                                                     |
-| [vllm](/id/plugins/reference/vllm)                                   | Menambahkan dukungan penyedia model vLLM ke OpenClaw.                                                                                                                        | `@openclaw/vllm-provider`<br />disertakan dalam OpenClaw                  | providers: vllm                                                                                                                                                                                                                                                  |
-| [volcengine](/id/plugins/reference/volcengine)                       | Menambahkan dukungan penyedia model Volcengine, Volcengine Plan ke OpenClaw.                                                                                                 | `@openclaw/volcengine-provider`<br />disertakan dalam OpenClaw            | providers: volcengine, volcengine-plan; contracts: speechProviders                                                                                                                                                                                               |
-| [voyage](/id/plugins/reference/voyage)                               | Menambahkan dukungan penyedia embedding memori.                                                                                                                       | `@openclaw/voyage-provider`<br />disertakan dalam OpenClaw           | contracts: memoryEmbeddingProviders                                                                                                                                                                                                                              |
-| [vydra](/id/plugins/reference/vydra)                                 | Menambahkan dukungan penyedia model Vydra ke OpenClaw.                                                                                                                | `@openclaw/vydra-provider`<br />disertakan dalam OpenClaw            | providers: vydra; contracts: imageGenerationProviders, speechProviders, videoGenerationProviders                                                                                                                                                                 |
-| [web-readability](/id/plugins/reference/web-readability)             | Mengekstrak konten artikel yang mudah dibaca dari respons pengambilan web HTML lokal.                                                                                 | `@openclaw/web-readability-plugin`<br />disertakan dalam OpenClaw    | contracts: webContentExtractors                                                                                                                                                                                                                                  |
-| [webhooks](/id/plugins/reference/webhooks)                           | Webhook masuk terautentikasi yang mengikat otomatisasi eksternal ke TaskFlows OpenClaw.                                                                               | `@openclaw/webhooks`<br />disertakan dalam OpenClaw                  | plugin                                                                                                                                                                                                                                                           |
-| [xai](/id/plugins/reference/xai)                                     | Menambahkan dukungan penyedia model xAI ke OpenClaw.                                                                                                                  | `@openclaw/xai-plugin`<br />disertakan dalam OpenClaw                | providers: xai; contracts: imageGenerationProviders, mediaUnderstandingProviders, realtimeTranscriptionProviders, speechProviders, tools, videoGenerationProviders, webSearchProviders                                                                           |
-| [xiaomi](/id/plugins/reference/xiaomi)                               | Menambahkan dukungan penyedia model Xiaomi ke OpenClaw.                                                                                                               | `@openclaw/xiaomi-provider`<br />disertakan dalam OpenClaw           | providers: xiaomi; contracts: speechProviders                                                                                                                                                                                                                    |
-| [zai](/id/plugins/reference/zai)                                     | Menambahkan dukungan penyedia model Z.AI ke OpenClaw.                                                                                                                 | `@openclaw/zai-provider`<br />disertakan dalam OpenClaw              | providers: zai; contracts: mediaUnderstandingProviders                                                                                                                                                                                                           |
+59 plugin
+
+- **[admin-http-rpc](/id/plugins/reference/admin-http-rpc)** (`@openclaw/admin-http-rpc`) - disertakan dalam OpenClaw. Endpoint RPC HTTP admin OpenClaw.
+
+- **[alibaba](/id/plugins/reference/alibaba)** (`@openclaw/alibaba-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia pembuatan video.
+
+- **[anthropic](/id/plugins/reference/anthropic)** (`@openclaw/anthropic-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia model Anthropic ke OpenClaw.
+
+- **[azure-speech](/id/plugins/reference/azure-speech)** (`@openclaw/azure-speech`) - disertakan dalam OpenClaw. Text-to-speech Azure AI Speech (MP3, catatan suara Ogg/Opus native, telefoni PCM).
+
+- **[bonjour](/id/plugins/reference/bonjour)** (`@openclaw/bonjour`) - disertakan dalam OpenClaw. Mengiklankan gateway OpenClaw lokal melalui Bonjour/mDNS.
+
+- **[browser](/id/plugins/reference/browser)** (`@openclaw/browser-plugin`) - disertakan dalam OpenClaw. Menambahkan alat yang dapat dipanggil agen.
+
+- **[byteplus](/id/plugins/reference/byteplus)** (`@openclaw/byteplus-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia model BytePlus, BytePlus Plan ke OpenClaw.
+
+- **[canvas](/id/plugins/reference/canvas)** (`@openclaw/canvas-plugin`) - disertakan dalam OpenClaw. Permukaan kontrol Canvas eksperimental dan rendering A2UI untuk node yang dipasangkan.
+
+- **[codex-supervisor](/id/plugins/reference/codex-supervisor)** (`@openclaw/codex-supervisor`) - disertakan dalam OpenClaw. Mengawasi sesi app-server Codex dari OpenClaw.
+
+- **[cohere](/id/plugins/reference/cohere)** (`@openclaw/cohere-provider`) - disertakan dalam OpenClaw; npm; ClawHub: `clawhub:@openclaw/cohere-provider`. Plugin penyedia Cohere OpenClaw.
+
+- **[comfy](/id/plugins/reference/comfy)** (`@openclaw/comfy-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia model ComfyUI ke OpenClaw.
+
+- **[copilot-proxy](/id/plugins/reference/copilot-proxy)** (`@openclaw/copilot-proxy`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia model Copilot Proxy ke OpenClaw.
+
+- **[deepgram](/id/plugins/reference/deepgram)** (`@openclaw/deepgram-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia pemahaman media. Menambahkan dukungan penyedia transkripsi realtime.
+
+- **[document-extract](/id/plugins/reference/document-extract)** (`@openclaw/document-extract-plugin`) - disertakan dalam OpenClaw. Mengekstrak teks dan gambar halaman fallback dari lampiran dokumen lokal.
+
+- **[duckduckgo](/id/plugins/reference/duckduckgo)** (`@openclaw/duckduckgo-plugin`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia pencarian web.
+
+- **[elevenlabs](/id/plugins/reference/elevenlabs)** (`@openclaw/elevenlabs-speech`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia pemahaman media. Menambahkan dukungan penyedia transkripsi realtime. Menambahkan dukungan penyedia text-to-speech.
+
+- **[fal](/id/plugins/reference/fal)** (`@openclaw/fal-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia model fal ke OpenClaw.
+
+- **[file-transfer](/id/plugins/reference/file-transfer)** (`@openclaw/file-transfer`) - disertakan dalam OpenClaw. Mengambil, mencantumkan, dan menulis file pada node yang dipasangkan melalui perintah node khusus. Melewati pemotongan stdout bash dengan menggunakan base64 melalui node.invoke untuk biner hingga 16 MB.
+
+- **[github-copilot](/id/plugins/reference/github-copilot)** (`@openclaw/github-copilot-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia model GitHub Copilot ke OpenClaw.
+
+- **[google](/id/plugins/reference/google)** (`@openclaw/google-plugin`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia model Google, Google Gemini CLI, Google Vertex ke OpenClaw.
+
+- **[huggingface](/id/plugins/reference/huggingface)** (`@openclaw/huggingface-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia model Hugging Face ke OpenClaw.
+
+- **[imessage](/id/plugins/reference/imessage)** (`@openclaw/imessage`) - disertakan dalam OpenClaw. Menambahkan permukaan channel iMessage untuk mengirim dan menerima pesan OpenClaw.
+
+- **[litellm](/id/plugins/reference/litellm)** (`@openclaw/litellm-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia model LiteLLM ke OpenClaw.
+
+- **[llm-task](/id/plugins/reference/llm-task)** (`@openclaw/llm-task`) - disertakan dalam OpenClaw. Alat LLM khusus JSON generik untuk tugas terstruktur yang dapat dipanggil dari workflow.
+
+- **[lmstudio](/id/plugins/reference/lmstudio)** (`@openclaw/lmstudio-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia model LM Studio ke OpenClaw.
+
+- **[memory-core](/id/plugins/reference/memory-core)** (`@openclaw/memory-core`) - disertakan dalam OpenClaw. Menambahkan alat yang dapat dipanggil agen.
+
+- **[memory-wiki](/id/plugins/reference/memory-wiki)** (`@openclaw/memory-wiki`) - disertakan dalam OpenClaw. Kompiler wiki persisten dan brankas pengetahuan ramah Obsidian untuk OpenClaw.
+
+- **[microsoft](/id/plugins/reference/microsoft)** (`@openclaw/microsoft-speech`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia text-to-speech.
+
+- **[microsoft-foundry](/id/plugins/reference/microsoft-foundry)** (`@openclaw/microsoft-foundry`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia model Microsoft Foundry ke OpenClaw.
+
+- **[migrate-claude](/id/plugins/reference/migrate-claude)** (`@openclaw/migrate-claude`) - disertakan dalam OpenClaw. Mengimpor instruksi Claude Code dan Claude Desktop, server MCP, Skills, dan konfigurasi aman ke OpenClaw.
+
+- **[migrate-hermes](/id/plugins/reference/migrate-hermes)** (`@openclaw/migrate-hermes`) - disertakan dalam OpenClaw. Mengimpor konfigurasi Hermes, memori, Skills, dan kredensial yang didukung ke OpenClaw.
+
+- **[minimax](/id/plugins/reference/minimax)** (`@openclaw/minimax-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia model MiniMax, MiniMax Portal ke OpenClaw.
+
+- **[mistral](/id/plugins/reference/mistral)** (`@openclaw/mistral-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia model Mistral ke OpenClaw.
+
+- **[novita](/id/plugins/reference/novita)** (`@openclaw/novita-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia model Novita, Novita AI, Novitaai ke OpenClaw.
+
+- **[nvidia](/id/plugins/reference/nvidia)** (`@openclaw/nvidia-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia model NVIDIA ke OpenClaw.
+
+- **[oc-path](/id/plugins/reference/oc-path)** (`@openclaw/oc-path`) - disertakan dalam OpenClaw. Menambahkan CLI path openclaw untuk pengalamatan file workspace oc://.
+
+- **[ollama](/id/plugins/reference/ollama)** (`@openclaw/ollama-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia model Ollama, Ollama Cloud ke OpenClaw.
+
+- **[open-prose](/id/plugins/reference/open-prose)** (`@openclaw/open-prose`) - disertakan dalam OpenClaw. Paket skill VM OpenProse dengan perintah slash /prose.
+
+- **[openai](/id/plugins/reference/openai)** (`@openclaw/openai-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia model OpenAI ke OpenClaw.
+
+- **[opencode](/id/plugins/reference/opencode)** (`@openclaw/opencode-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia model OpenCode ke OpenClaw.
+
+- **[opencode-go](/id/plugins/reference/opencode-go)** (`@openclaw/opencode-go-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia model OpenCode Go ke OpenClaw.
+
+- **[openrouter](/id/plugins/reference/openrouter)** (`@openclaw/openrouter-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia model OpenRouter ke OpenClaw.
+
+- **[policy](/id/plugins/reference/policy)** (`@openclaw/policy`) - disertakan dalam OpenClaw. Menambahkan pemeriksaan doctor yang didukung kebijakan untuk kesesuaian workspace.
+
+- **[runway](/id/plugins/reference/runway)** (`@openclaw/runway-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia pembuatan video.
+
+- **[senseaudio](/id/plugins/reference/senseaudio)** (`@openclaw/senseaudio-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia pemahaman media.
+
+- **[sglang](/id/plugins/reference/sglang)** (`@openclaw/sglang-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia model SGLang ke OpenClaw.
+
+- **[synthetic](/id/plugins/reference/synthetic)** (`@openclaw/synthetic-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia model Synthetic ke OpenClaw.
+
+- **[telegram](/id/plugins/reference/telegram)** (`@openclaw/telegram`) - disertakan dalam OpenClaw. Menambahkan permukaan channel Telegram untuk mengirim dan menerima pesan OpenClaw.
+
+- **[together](/id/plugins/reference/together)** (`@openclaw/together-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia model Together ke OpenClaw.
+
+- **[tts-local-cli](/id/plugins/reference/tts-local-cli)** (`@openclaw/tts-local-cli`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia text-to-speech.
+
+- **[vllm](/id/plugins/reference/vllm)** (`@openclaw/vllm-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia model vLLM ke OpenClaw.
+
+- **[volcengine](/id/plugins/reference/volcengine)** (`@openclaw/volcengine-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia model Volcengine, Volcengine Plan ke OpenClaw.
+
+- **[voyage](/id/plugins/reference/voyage)** (`@openclaw/voyage-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia embedding memori.
+
+- **[vydra](/id/plugins/reference/vydra)** (`@openclaw/vydra-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia model Vydra ke OpenClaw.
+
+- **[web-readability](/id/plugins/reference/web-readability)** (`@openclaw/web-readability-plugin`) - disertakan dalam OpenClaw. Mengekstrak konten artikel yang mudah dibaca dari respons pengambilan web HTML lokal.
+
+- **[webhooks](/id/plugins/reference/webhooks)** (`@openclaw/webhooks`) - disertakan dalam OpenClaw. Webhook masuk terautentikasi yang mengikat otomatisasi eksternal ke TaskFlow OpenClaw.
+
+- **[workboard](/id/plugins/reference/workboard)** (`@openclaw/workboard`) - disertakan dalam OpenClaw. Workboard dashboard untuk isu dan sesi yang dimiliki agen.
+
+- **[xai](/id/plugins/reference/xai)** (`@openclaw/xai-plugin`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia model xAI ke OpenClaw.
+
+- **[xiaomi](/id/plugins/reference/xiaomi)** (`@openclaw/xiaomi-provider`) - disertakan dalam OpenClaw. Menambahkan dukungan penyedia model Xiaomi, Xiaomi Token Plan ke OpenClaw.
 
 ## Paket eksternal resmi
 
-| Plugin                                                              | Deskripsi                                                                                  | Distribusi                                                                                     | Permukaan                                                                    |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| [acpx](/id/plugins/reference/acpx)                                     | Backend runtime ACP tertanam dengan manajemen sesi dan transport milik plugin.             | `@openclaw/acpx`<br />npm; ClawHub                                                             | skills                                                                       |
-| [brave](/id/plugins/reference/brave)                                   | Menambahkan dukungan penyedia pencarian web.                                               | `@openclaw/brave-plugin`<br />npm; ClawHub                                                     | contracts: webSearchProviders                                                |
-| [codex](/id/plugins/reference/codex)                                   | Harness server aplikasi Codex dan katalog model GPT yang dikelola Codex.                   | `@openclaw/codex`<br />npm; ClawHub                                                            | providers: codex; contracts: mediaUnderstandingProviders, migrationProviders |
-| [diagnostics-otel](/id/plugins/reference/diagnostics-otel)             | Eksportir OpenTelemetry diagnostik OpenClaw.                                               | `@openclaw/diagnostics-otel`<br />npm; ClawHub: `clawhub:@openclaw/diagnostics-otel`           | plugin                                                                       |
-| [diagnostics-prometheus](/id/plugins/reference/diagnostics-prometheus) | Eksportir Prometheus diagnostik OpenClaw.                                                  | `@openclaw/diagnostics-prometheus`<br />npm; ClawHub: `clawhub:@openclaw/diagnostics-prometheus` | plugin                                                                       |
-| [diffs](/id/plugins/reference/diffs)                                   | Penampil diff baca-saja dan perender file untuk agen.                                      | `@openclaw/diffs`<br />npm; ClawHub                                                            | contracts: tools; skills                                                     |
-| [discord](/id/plugins/reference/discord)                               | Menambahkan permukaan channel Discord untuk mengirim dan menerima pesan OpenClaw.          | `@openclaw/discord`<br />npm; ClawHub                                                          | channels: discord                                                            |
-| [feishu](/id/plugins/reference/feishu)                                 | Menambahkan permukaan channel Feishu untuk mengirim dan menerima pesan OpenClaw.           | `@openclaw/feishu`<br />npm; ClawHub                                                           | channels: feishu; contracts: tools; skills                                   |
-| [google-meet](/id/plugins/reference/google-meet)                       | Bergabung ke panggilan Google Meet melalui transport Chrome atau Twilio.                   | `@openclaw/google-meet`<br />npm; ClawHub                                                      | contracts: tools                                                             |
-| [googlechat](/id/plugins/reference/googlechat)                         | Menambahkan permukaan channel Google Chat untuk mengirim dan menerima pesan OpenClaw.      | `@openclaw/googlechat`<br />npm; ClawHub                                                       | channels: googlechat                                                         |
-| [line](/id/plugins/reference/line)                                     | Menambahkan permukaan channel LINE untuk mengirim dan menerima pesan OpenClaw.             | `@openclaw/line`<br />npm; ClawHub                                                             | channels: line                                                               |
-| [lobster](/id/plugins/reference/lobster)                               | Alat alur kerja bertipe dengan persetujuan yang dapat dilanjutkan.                         | `@openclaw/lobster`<br />npm; ClawHub                                                          | contracts: tools                                                             |
-| [matrix](/id/plugins/reference/matrix)                                 | Menambahkan permukaan channel Matrix untuk mengirim dan menerima pesan OpenClaw.           | `@openclaw/matrix`<br />ClawHub: `clawhub:@openclaw/matrix`; npm                               | channels: matrix                                                             |
-| [memory-lancedb](/id/plugins/reference/memory-lancedb)                 | Menambahkan alat yang dapat dipanggil agen.                                                | `@openclaw/memory-lancedb`<br />npm; ClawHub                                                   | contracts: tools                                                             |
-| [msteams](/id/plugins/reference/msteams)                               | Menambahkan permukaan channel Microsoft Teams untuk mengirim dan menerima pesan OpenClaw.  | `@openclaw/msteams`<br />npm; ClawHub                                                          | channels: msteams                                                            |
-| [nextcloud-talk](/id/plugins/reference/nextcloud-talk)                 | Menambahkan permukaan channel Nextcloud Talk untuk mengirim dan menerima pesan OpenClaw.   | `@openclaw/nextcloud-talk`<br />npm; ClawHub                                                   | channels: nextcloud-talk                                                     |
-| [nostr](/id/plugins/reference/nostr)                                   | Menambahkan permukaan channel Nostr untuk mengirim dan menerima pesan OpenClaw.            | `@openclaw/nostr`<br />npm; ClawHub                                                            | channels: nostr                                                              |
-| [qqbot](/id/plugins/reference/qqbot)                                   | Menambahkan permukaan channel QQ Bot untuk mengirim dan menerima pesan OpenClaw.           | `@openclaw/qqbot`<br />npm; ClawHub                                                            | channels: qqbot; contracts: tools; skills                                    |
-| [synology-chat](/id/plugins/reference/synology-chat)                   | Menambahkan permukaan channel Synology Chat untuk mengirim dan menerima pesan OpenClaw.    | `@openclaw/synology-chat`<br />npm; ClawHub                                                    | channels: synology-chat                                                      |
-| [tlon](/id/plugins/reference/tlon)                                     | Menambahkan permukaan channel Tlon untuk mengirim dan menerima pesan OpenClaw.             | `@openclaw/tlon`<br />npm; ClawHub                                                             | channels: tlon; contracts: tools; skills                                     |
-| [twitch](/id/plugins/reference/twitch)                                 | Menambahkan permukaan channel Twitch untuk mengirim dan menerima pesan OpenClaw.           | `@openclaw/twitch`<br />npm; ClawHub                                                           | channels: twitch                                                             |
-| [voice-call](/id/plugins/reference/voice-call)                         | Menambahkan alat yang dapat dipanggil agen.                                                | `@openclaw/voice-call`<br />npm; ClawHub                                                       | contracts: tools                                                             |
-| [whatsapp](/id/plugins/reference/whatsapp)                             | Menambahkan permukaan channel WhatsApp untuk mengirim dan menerima pesan OpenClaw.         | `@openclaw/whatsapp`<br />npm; ClawHub                                                         | channels: whatsapp                                                           |
-| [zalo](/id/plugins/reference/zalo)                                     | Menambahkan permukaan channel Zalo untuk mengirim dan menerima pesan OpenClaw.             | `@openclaw/zalo`<br />npm; ClawHub                                                             | channels: zalo                                                               |
-| [zalouser](/id/plugins/reference/zalouser)                             | Menambahkan permukaan channel Zalo Personal untuk mengirim dan menerima pesan OpenClaw.    | `@openclaw/zalouser`<br />npm; ClawHub                                                         | channels: zalouser; contracts: tools                                         |
+68 plugin
+
+- **[acpx](/id/plugins/reference/acpx)** (`@openclaw/acpx`) - npm; ClawHub. Backend runtime ACP OpenClaw dengan manajemen sesi dan transport milik plugin.
+
+- **[amazon-bedrock](/id/plugins/reference/amazon-bedrock)** (`@openclaw/amazon-bedrock-provider`) - npm; ClawHub. Plugin penyedia Amazon Bedrock OpenClaw dengan penemuan model, embeddings, dan dukungan guardrail.
+
+- **[amazon-bedrock-mantle](/id/plugins/reference/amazon-bedrock-mantle)** (`@openclaw/amazon-bedrock-mantle-provider`) - npm; ClawHub. Plugin penyedia Amazon Bedrock Mantle OpenClaw untuk perutean model yang kompatibel dengan OpenAI.
+
+- **[anthropic-vertex](/id/plugins/reference/anthropic-vertex)** (`@openclaw/anthropic-vertex-provider`) - npm; ClawHub. Plugin penyedia Anthropic Vertex OpenClaw untuk model Claude di Google Vertex AI.
+
+- **[arcee](/id/plugins/reference/arcee)** (`@openclaw/arcee-provider`) - npm; ClawHub: `clawhub:@openclaw/arcee-provider`. Menambahkan dukungan penyedia model Arcee ke OpenClaw.
+
+- **[brave](/id/plugins/reference/brave)** (`@openclaw/brave-plugin`) - npm; ClawHub. Plugin penyedia Brave Search OpenClaw untuk pencarian web.
+
+- **[cerebras](/id/plugins/reference/cerebras)** (`@openclaw/cerebras-provider`) - npm; ClawHub: `clawhub:@openclaw/cerebras-provider`. Menambahkan dukungan penyedia model Cerebras ke OpenClaw.
+
+- **[chutes](/id/plugins/reference/chutes)** (`@openclaw/chutes-provider`) - npm; ClawHub: `clawhub:@openclaw/chutes-provider`. Menambahkan dukungan penyedia model Chutes ke OpenClaw.
+
+- **[clickclack](/id/plugins/reference/clickclack)** (`@openclaw/clickclack`) - npm; ClawHub: `clawhub:@openclaw/clickclack`. Menambahkan permukaan kanal Clickclack untuk mengirim dan menerima pesan OpenClaw.
+
+- **[cloudflare-ai-gateway](/id/plugins/reference/cloudflare-ai-gateway)** (`@openclaw/cloudflare-ai-gateway-provider`) - npm; ClawHub: `clawhub:@openclaw/cloudflare-ai-gateway-provider`. Menambahkan dukungan penyedia model Cloudflare AI Gateway ke OpenClaw.
+
+- **[codex](/id/plugins/reference/codex)** (`@openclaw/codex`) - npm; ClawHub. Plugin penyedia model dan harness server aplikasi Codex OpenClaw dengan katalog GPT yang dikelola Codex.
+
+- **[copilot](/id/plugins/reference/copilot)** (`@openclaw/copilot`) - npm; ClawHub: `clawhub:@openclaw/copilot`. Mendaftarkan runtime agen GitHub Copilot.
+
+- **[deepinfra](/id/plugins/reference/deepinfra)** (`@openclaw/deepinfra-provider`) - npm; ClawHub: `clawhub:@openclaw/deepinfra-provider`. Menambahkan dukungan penyedia model DeepInfra ke OpenClaw.
+
+- **[deepseek](/id/plugins/reference/deepseek)** (`@openclaw/deepseek-provider`) - npm; ClawHub: `clawhub:@openclaw/deepseek-provider`. Menambahkan dukungan penyedia model DeepSeek ke OpenClaw.
+
+- **[diagnostics-otel](/id/plugins/reference/diagnostics-otel)** (`@openclaw/diagnostics-otel`) - npm; ClawHub: `clawhub:@openclaw/diagnostics-otel`. Eksportir diagnostik OpenTelemetry OpenClaw untuk metrik, trace, dan log.
+
+- **[diagnostics-prometheus](/id/plugins/reference/diagnostics-prometheus)** (`@openclaw/diagnostics-prometheus`) - npm; ClawHub: `clawhub:@openclaw/diagnostics-prometheus`. Eksportir diagnostik Prometheus OpenClaw untuk metrik runtime.
+
+- **[diffs](/id/plugins/reference/diffs)** (`@openclaw/diffs`) - npm; ClawHub. Plugin penampil diff baca-saja dan perender file OpenClaw untuk agen.
+
+- **[diffs-language-pack](/id/plugins/reference/diffs-language-pack)** (`@openclaw/diffs-language-pack`) - npm; ClawHub: `clawhub:@openclaw/diffs-language-pack`. Menambahkan penyorotan sintaks untuk bahasa di luar set penampil diff default.
+
+- **[discord](/id/plugins/reference/discord)** (`@openclaw/discord`) - npm; ClawHub. Plugin kanal Discord OpenClaw untuk kanal, DM, perintah, dan peristiwa aplikasi.
+
+- **[exa](/id/plugins/reference/exa)** (`@openclaw/exa-plugin`) - npm; ClawHub: `clawhub:@openclaw/exa-plugin`. Menambahkan dukungan penyedia pencarian web.
+
+- **[feishu](/id/plugins/reference/feishu)** (`@openclaw/feishu`) - npm; ClawHub. Plugin kanal Feishu/Lark OpenClaw untuk obrolan dan alat tempat kerja (dipelihara komunitas oleh @m1heng).
+
+- **[firecrawl](/id/plugins/reference/firecrawl)** (`@openclaw/firecrawl-plugin`) - npm; ClawHub: `clawhub:@openclaw/firecrawl-plugin`. Menambahkan alat yang dapat dipanggil agen. Menambahkan dukungan penyedia pengambilan web. Menambahkan dukungan penyedia pencarian web.
+
+- **[fireworks](/id/plugins/reference/fireworks)** (`@openclaw/fireworks-provider`) - npm; ClawHub: `clawhub:@openclaw/fireworks-provider`. Menambahkan dukungan penyedia model Fireworks ke OpenClaw.
+
+- **[gmi](/id/plugins/reference/gmi)** (`@openclaw/gmi-provider`) - npm; ClawHub: `clawhub:@openclaw/gmi-provider`. Plugin penyedia GMI Cloud OpenClaw.
+
+- **[google-meet](/id/plugins/reference/google-meet)** (`@openclaw/google-meet`) - npm; ClawHub. Plugin peserta Google Meet OpenClaw untuk bergabung ke panggilan melalui transport Chrome atau Twilio.
+
+- **[googlechat](/id/plugins/reference/googlechat)** (`@openclaw/googlechat`) - npm; ClawHub. Plugin kanal Google Chat OpenClaw untuk ruang dan pesan langsung.
+
+- **[gradium](/id/plugins/reference/gradium)** (`@openclaw/gradium-speech`) - npm; ClawHub: `clawhub:@openclaw/gradium-speech`. Menambahkan dukungan penyedia teks-ke-suara.
+
+- **[groq](/id/plugins/reference/groq)** (`@openclaw/groq-provider`) - npm; ClawHub: `clawhub:@openclaw/groq-provider`. Menambahkan dukungan penyedia model Groq ke OpenClaw.
+
+- **[inworld](/id/plugins/reference/inworld)** (`@openclaw/inworld-speech`) - npm; ClawHub: `clawhub:@openclaw/inworld-speech`. Teks-ke-suara streaming Inworld (MP3, OGG_OPUS, PCM telepon).
+
+- **[irc](/id/plugins/reference/irc)** (`@openclaw/irc`) - npm; ClawHub: `clawhub:@openclaw/irc`. Menambahkan permukaan kanal IRC untuk mengirim dan menerima pesan OpenClaw.
+
+- **[kilocode](/id/plugins/reference/kilocode)** (`@openclaw/kilocode-provider`) - npm; ClawHub: `clawhub:@openclaw/kilocode-provider`. Menambahkan dukungan penyedia model Kilocode ke OpenClaw.
+
+- **[kimi](/id/plugins/reference/kimi)** (`@openclaw/kimi-provider`) - npm; ClawHub: `clawhub:@openclaw/kimi-provider`. Menambahkan dukungan penyedia model Kimi, Kimi Coding ke OpenClaw.
+
+- **[line](/id/plugins/reference/line)** (`@openclaw/line`) - npm; ClawHub. Plugin kanal LINE OpenClaw untuk obrolan LINE Bot API.
+
+- **[llama-cpp](/id/plugins/reference/llama-cpp)** (`@openclaw/llama-cpp-provider`) - npm; ClawHub. Embedding GGUF lokal melalui node-llama-cpp.
+
+- **[lobster](/id/plugins/reference/lobster)** (`@openclaw/lobster`) - npm; ClawHub. Plugin alat alur kerja Lobster untuk pipeline bertipe dan persetujuan yang dapat dilanjutkan.
+
+- **[matrix](/id/plugins/reference/matrix)** (`@openclaw/matrix`) - ClawHub: `clawhub:@openclaw/matrix`; npm. Plugin kanal Matrix OpenClaw untuk ruangan dan pesan langsung.
+
+- **[mattermost](/id/plugins/reference/mattermost)** (`@openclaw/mattermost`) - npm; ClawHub: `clawhub:@openclaw/mattermost`. Menambahkan permukaan kanal Mattermost untuk mengirim dan menerima pesan OpenClaw.
+
+- **[memory-lancedb](/id/plugins/reference/memory-lancedb)** (`@openclaw/memory-lancedb`) - npm; ClawHub. Plugin memori jangka panjang OpenClaw berbasis LanceDB dengan pemanggilan otomatis, penangkapan otomatis, dan pencarian vektor.
+
+- **[moonshot](/id/plugins/reference/moonshot)** (`@openclaw/moonshot-provider`) - npm; ClawHub: `clawhub:@openclaw/moonshot-provider`. Menambahkan dukungan penyedia model Moonshot ke OpenClaw.
+
+- **[msteams](/id/plugins/reference/msteams)** (`@openclaw/msteams`) - npm; ClawHub. Plugin kanal Microsoft Teams OpenClaw untuk percakapan bot.
+
+- **[nextcloud-talk](/id/plugins/reference/nextcloud-talk)** (`@openclaw/nextcloud-talk`) - npm; ClawHub. Plugin kanal Nextcloud Talk OpenClaw untuk percakapan.
+
+- **[nostr](/id/plugins/reference/nostr)** (`@openclaw/nostr`) - npm; ClawHub. Plugin kanal Nostr OpenClaw untuk pesan langsung terenkripsi NIP-04.
+
+- **[openshell](/id/plugins/reference/openshell)** (`@openclaw/openshell-sandbox`) - npm; ClawHub. Backend sandbox OpenClaw untuk NVIDIA OpenShell CLI dengan ruang kerja lokal yang dicerminkan dan eksekusi perintah SSH.
+
+- **[parallel](/id/tools/parallel-search)** (`@openclaw/parallel-plugin`) - npm; ClawHub: `clawhub:@openclaw/parallel-plugin`. Menambahkan dukungan penyedia pencarian web.
+
+- **[perplexity](/id/plugins/reference/perplexity)** (`@openclaw/perplexity-plugin`) - npm; ClawHub: `clawhub:@openclaw/perplexity-plugin`. Menambahkan dukungan penyedia pencarian web.
+
+- **[pixverse](/id/plugins/reference/pixverse)** (`@openclaw/pixverse-provider`) - npm; ClawHub: `clawhub:@openclaw/pixverse-provider`. Plugin penyedia pembuatan video PixVerse OpenClaw.
+
+- **[qianfan](/id/plugins/reference/qianfan)** (`@openclaw/qianfan-provider`) - npm; ClawHub: `clawhub:@openclaw/qianfan-provider`. Menambahkan dukungan penyedia model Qianfan ke OpenClaw.
+
+- **[qqbot](/id/plugins/reference/qqbot)** (`@openclaw/qqbot`) - npm; ClawHub. Plugin kanal QQ Bot OpenClaw untuk alur kerja grup dan pesan langsung.
+
+- **[qwen](/id/plugins/reference/qwen)** (`@openclaw/qwen-provider`) - npm; ClawHub: `clawhub:@openclaw/qwen-provider`. Menambahkan dukungan penyedia model Qwen, Qwen Cloud, Model Studio, DashScope, Qwen Oauth, Qwen Portal, Qwen CLI ke OpenClaw.
+
+- **[raft](/id/plugins/reference/raft)** (`@openclaw/raft`) - npm; ClawHub. Plugin kanal Raft OpenClaw untuk jembatan bangun CLI yang aman.
+
+- **[searxng](/id/plugins/reference/searxng)** (`@openclaw/searxng-plugin`) - npm; ClawHub: `clawhub:@openclaw/searxng-plugin`. Menambahkan dukungan penyedia pencarian web.
+
+- **[signal](/id/plugins/reference/signal)** (`@openclaw/signal`) - npm; ClawHub: `clawhub:@openclaw/signal`. Menambahkan permukaan kanal Signal untuk mengirim dan menerima pesan OpenClaw.
+
+- **[slack](/id/plugins/reference/slack)** (`@openclaw/slack`) - npm; ClawHub. Plugin kanal Slack OpenClaw untuk kanal, DM, perintah, dan peristiwa aplikasi.
+
+- **[sms](/id/plugins/reference/sms)** (`@openclaw/sms`) - npm; ClawHub: `clawhub:@openclaw/sms`. Plugin kanal SMS Twilio untuk pesan teks OpenClaw.
+
+- **[stepfun](/id/plugins/reference/stepfun)** (`@openclaw/stepfun-provider`) - npm; ClawHub: `clawhub:@openclaw/stepfun-provider`. Menambahkan dukungan penyedia model StepFun, StepFun Plan ke OpenClaw.
+
+- **[synology-chat](/id/plugins/reference/synology-chat)** (`@openclaw/synology-chat`) - npm; ClawHub. Plugin kanal Synology Chat untuk kanal OpenClaw dan pesan langsung.
+
+- **[tavily](/id/plugins/reference/tavily)** (`@openclaw/tavily-plugin`) - npm; ClawHub: `clawhub:@openclaw/tavily-plugin`. Menambahkan alat yang dapat dipanggil agen. Menambahkan dukungan penyedia pencarian web.
+
+- **[tencent](/id/plugins/reference/tencent)** (`@openclaw/tencent-provider`) - npm; ClawHub: `clawhub:@openclaw/tencent-provider`. Menambahkan dukungan penyedia model Tencent TokenHub ke OpenClaw.
+
+- **[tlon](/id/plugins/reference/tlon)** (`@openclaw/tlon`) - npm; ClawHub. Plugin kanal Tlon/Urbit OpenClaw untuk alur kerja obrolan.
+
+- **[tokenjuice](/id/plugins/reference/tokenjuice)** (`@openclaw/tokenjuice`) - npm; ClawHub: `clawhub:@openclaw/tokenjuice`. Memadatkan hasil alat exec dan bash dengan pereduksi tokenjuice.
+
+- **[twitch](/id/plugins/reference/twitch)** (`@openclaw/twitch`) - npm; ClawHub. Plugin kanal Twitch OpenClaw untuk alur kerja obrolan dan moderasi.
+
+- **[venice](/id/plugins/reference/venice)** (`@openclaw/venice-provider`) - npm; ClawHub: `clawhub:@openclaw/venice-provider`. Menambahkan dukungan penyedia model Venice ke OpenClaw.
+
+- **[vercel-ai-gateway](/id/plugins/reference/vercel-ai-gateway)** (`@openclaw/vercel-ai-gateway-provider`) - npm; ClawHub: `clawhub:@openclaw/vercel-ai-gateway-provider`. Menambahkan dukungan penyedia model Vercel AI Gateway ke OpenClaw.
+
+- **[voice-call](/id/plugins/reference/voice-call)** (`@openclaw/voice-call`) - npm; ClawHub. Plugin panggilan suara OpenClaw untuk panggilan telepon Twilio, Telnyx, dan Plivo.
+
+- **[whatsapp](/id/plugins/reference/whatsapp)** (`@openclaw/whatsapp`) - ClawHub: `clawhub:@openclaw/whatsapp`; npm. Plugin kanal WhatsApp OpenClaw untuk obrolan WhatsApp Web.
+
+- **[zai](/id/plugins/reference/zai)** (`@openclaw/zai-provider`) - npm; ClawHub: `clawhub:@openclaw/zai-provider`. Menambahkan dukungan penyedia model Z.AI ke OpenClaw.
+
+- **[zalo](/id/plugins/reference/zalo)** (`@openclaw/zalo`) - npm; ClawHub. Plugin kanal Zalo OpenClaw untuk obrolan bot dan webhook.
+
+- **[zalouser](/id/plugins/reference/zalouser)** (`@openclaw/zalouser`) - npm; ClawHub. Plugin Akun Pribadi Zalo OpenClaw melalui integrasi native zca-js.
 
 ## Hanya checkout sumber
 
-| Plugin                                      | Deskripsi                                                                                 | Distribusi                                       | Permukaan           |
-| ------------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------ | ------------------- |
-| [qa-channel](/id/plugins/reference/qa-channel) | Menambahkan permukaan QA Channel untuk mengirim dan menerima pesan OpenClaw.              | `@openclaw/qa-channel`<br />hanya checkout sumber | channels: qa-channel |
-| [qa-lab](/id/plugins/reference/qa-lab)         | Plugin lab QA OpenClaw dengan UI debugger privat dan runner skenario.                    | `@openclaw/qa-lab`<br />hanya checkout sumber    | plugin              |
-| [qa-matrix](/id/plugins/reference/qa-matrix)   | Runner dan substrat transport QA Matrix.                                                  | `@openclaw/qa-matrix`<br />hanya checkout sumber | plugin              |
+3 Plugin
+
+- **[qa-channel](/id/plugins/reference/qa-channel)** (`@openclaw/qa-channel`) - hanya checkout sumber. Menambahkan permukaan QA Channel untuk mengirim dan menerima pesan OpenClaw.
+
+- **[qa-lab](/id/plugins/reference/qa-lab)** (`@openclaw/qa-lab`) - hanya checkout sumber. Plugin lab QA OpenClaw dengan UI debugger privat dan runner skenario.
+
+- **[qa-matrix](/id/plugins/reference/qa-matrix)** (`@openclaw/qa-matrix`) - hanya checkout sumber. Runner transport QA matriks dan substrat.

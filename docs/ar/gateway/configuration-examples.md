@@ -1,20 +1,21 @@
 ---
 read_when:
     - تعلّم كيفية تكوين OpenClaw
-    - البحث عن أمثلة للتكوين
+    - جارٍ البحث عن أمثلة التكوين
     - إعداد OpenClaw لأول مرة
-summary: أمثلة تكوين مطابقة للمخطط لإعدادات OpenClaw الشائعة
+summary: أمثلة تكوين دقيقة المخطط لإعدادات OpenClaw الشائعة
 title: أمثلة التكوين
 x-i18n:
-    generated_at: "2026-05-11T20:32:01Z"
+    generated_at: "2026-06-27T17:35:45Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e077b2fe83b1c6e4ffd2ff0029fe3b754c7dc5dced06f134ddf18e9ed6a11fd2
+    source_hash: 945f4cd8571814597ec0188853e91c6483a0d8b09bd0ca7dcfb79eb877607ce2
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-الأمثلة أدناه متوافقة مع مخطط التهيئة الحالي. للاطلاع على المرجع الشامل وملاحظات كل حقل، راجع [التهيئة](/ar/gateway/configuration).
+الأمثلة أدناه متوافقة مع مخطط الإعدادات الحالي. للاطلاع على المرجع الشامل وملاحظات كل حقل، راجع [الإعدادات](/ar/gateway/configuration).
 
 ## البدء السريع
 
@@ -27,9 +28,9 @@ x-i18n:
 }
 ```
 
-احفظه في `~/.openclaw/openclaw.json` ويمكنك مراسلة الروبوت برسالة خاصة من ذلك الرقم.
+احفظه في `~/.openclaw/openclaw.json` ويمكنك إرسال رسالة مباشرة إلى البوت من ذلك الرقم.
 
-### إعداد البدء الموصى به
+### بداية موصى بها
 
 ```json5
 {
@@ -58,7 +59,8 @@ x-i18n:
   messages: {
     visibleReplies: "automatic",
     groupChat: {
-      visibleReplies: "message_tool", // default; use "automatic" for legacy room replies
+      visibleReplies: "message_tool", // opt-in; visible output requires message(action=send)
+      unmentionedInbound: "room_event",
     },
   },
 }
@@ -66,11 +68,11 @@ x-i18n:
 
 ## مثال موسّع (الخيارات الرئيسية)
 
-> يتيح لك JSON5 استخدام التعليقات والفواصل اللاحقة. يعمل JSON العادي أيضًا.
+> يتيح لك JSON5 استخدام التعليقات والفواصل اللاحقة. ويعمل JSON العادي أيضًا.
 
 ```json5
 {
-  // Environment + shell
+  // البيئة + الصدفة
   env: {
     OPENROUTER_API_KEY: "sk-or-...",
     vars: {
@@ -82,24 +84,23 @@ x-i18n:
     },
   },
 
-  // Auth profile metadata (secrets live in auth-profiles.json)
+  // بيانات تعريف ملف تعريف المصادقة (الأسرار موجودة في auth-profiles.json)
   auth: {
     profiles: {
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
       "anthropic:work": { provider: "anthropic", mode: "api_key" },
       "openai:default": { provider: "openai", mode: "api_key" },
-      "openai-codex:personal": { provider: "openai-codex", mode: "oauth" },
+      "openai:personal": { provider: "openai", mode: "oauth" },
     },
     order: {
       anthropic: ["anthropic:default", "anthropic:work"],
-      openai: ["openai:default"],
-      "openai-codex": ["openai-codex:personal"],
+      openai: ["openai:personal", "openai:default"],
     },
   },
 
-  // Identity is per agent — set it on agents.list[].identity below.
+  // الهوية لكل وكيل — عيّنها في agents.list[].identity أدناه.
 
-  // Logging
+  // التسجيل
   logging: {
     level: "info",
     file: "/tmp/openclaw/openclaw.log",
@@ -108,7 +109,7 @@ x-i18n:
     redactSensitive: "tools",
   },
 
-  // Message formatting
+  // تنسيق الرسائل
   messages: {
     messagePrefix: "[openclaw]",
     visibleReplies: "automatic",
@@ -117,26 +118,27 @@ x-i18n:
     ackReactionScope: "group-mentions",
     groupChat: {
       historyLimit: 50,
-      visibleReplies: "message_tool", // normal final replies stay private in groups/channels
+      visibleReplies: "message_tool", // الاشتراك للغرف المشتركة مع نماذج موثوقة الأدوات
+      unmentionedInbound: "room_event",
     },
     queue: {
-      mode: "steer",
+      mode: "followup",
       debounceMs: 500,
       cap: 20,
       drop: "summarize",
       byChannel: {
-        whatsapp: "steer",
-        telegram: "steer",
-        discord: "steer",
-        slack: "steer",
-        signal: "steer",
-        imessage: "steer",
-        webchat: "steer",
+        whatsapp: "followup",
+        telegram: "followup",
+        discord: "collect",
+        slack: "collect",
+        signal: "followup",
+        imessage: "followup",
+        webchat: "followup",
       },
     },
   },
 
-  // Tooling
+  // الأدوات
   tools: {
     media: {
       audio: {
@@ -144,7 +146,7 @@ x-i18n:
         maxBytes: 20971520,
         models: [
           { provider: "openai", model: "gpt-4o-mini-transcribe" },
-          // Optional CLI fallback (Whisper binary):
+          // رجوع CLI اختياري (ملف Whisper الثنائي):
           // { type: "cli", command: "whisper", args: ["--model", "base", "{{MediaPath}}"] }
         ],
         timeoutSeconds: 120,
@@ -157,10 +159,10 @@ x-i18n:
     },
   },
 
-  // Session behavior
+  // سلوك الجلسة
   session: {
     scope: "per-sender",
-    dmScope: "per-channel-peer", // recommended for multi-user inboxes
+    dmScope: "per-channel-peer", // موصى به لصناديق الوارد متعددة المستخدمين
     reset: {
       mode: "daily",
       atHour: 4,
@@ -175,9 +177,9 @@ x-i18n:
       mode: "warn",
       pruneAfter: "30d",
       maxEntries: 500,
-      resetArchiveRetention: "30d", // duration or false
-      maxDiskBytes: "500mb", // optional
-      highWaterBytes: "400mb", // optional (defaults to 80% of maxDiskBytes)
+      resetArchiveRetention: "30d", // مدة أو false
+      maxDiskBytes: "500mb", // اختياري
+      highWaterBytes: "400mb", // اختياري (القيمة الافتراضية 80% من maxDiskBytes)
     },
     typingIntervalSeconds: 5,
     sendPolicy: {
@@ -186,7 +188,7 @@ x-i18n:
     },
   },
 
-  // Channels
+  // القنوات
   channels: {
     whatsapp: {
       dmPolicy: "pairing",
@@ -238,7 +240,7 @@ x-i18n:
     },
   },
 
-  // Agent runtime
+  // وقت تشغيل الوكيل
   agents: {
     defaults: {
       workspace: "~/.openclaw/workspace",
@@ -255,7 +257,7 @@ x-i18n:
         "anthropic/claude-sonnet-4-6": { alias: "sonnet" },
         "openai/gpt-5.4": { alias: "gpt" },
       },
-      skills: ["github", "weather"], // inherited by agents that omit list[].skills
+      skills: ["github", "weather"], // تورثها الوكلاء الذين يحذفون list[].skills
       thinkingDefault: "low",
       verboseDefault: "off",
       toolProgressDetail: "explain",
@@ -282,7 +284,7 @@ x-i18n:
         every: "30m",
         model: "anthropic/claude-sonnet-4-6",
         target: "last",
-        directPolicy: "allow", // allow (default) | block
+        directPolicy: "allow", // السماح (افتراضي) | الحظر
         to: "+15555550123",
         prompt: "HEARTBEAT",
         ackMaxChars: 300,
@@ -297,7 +299,7 @@ x-i18n:
       },
       sandbox: {
         mode: "non-main",
-        scope: "session", // preferred over legacy perSession: true
+        scope: "session", // مفضّل على perSession: true القديم
         workspaceRoot: "~/.openclaw/sandboxes",
         docker: {
           image: "openclaw-sandbox:bookworm-slim",
@@ -318,21 +320,21 @@ x-i18n:
         default: true,
         identity: {
           name: "Samantha",
-          theme: "helpful sloth",
+          theme: "كسلان مساعد",
           emoji: "🦥",
         },
-        // inherits defaults.skills -> github, weather
+        // يرث defaults.skills -> github, weather
         groupChat: {
           mentionPatterns: ["@openclaw", "openclaw"],
         },
-        thinkingDefault: "high", // per-agent thinking override
-        reasoningDefault: "on", // per-agent reasoning visibility
-        fastModeDefault: false, // per-agent fast mode
+        thinkingDefault: "high", // تجاوز التفكير لكل وكيل
+        reasoningDefault: "on", // رؤية الاستدلال لكل وكيل
+        fastModeDefault: false, // الوضع السريع لكل وكيل
       },
       {
         id: "quick",
-        skills: [], // no skills for this agent
-        fastModeDefault: true, // this agent always runs fast
+        skills: [], // لا Skills لهذا الوكيل
+        fastModeDefault: true, // يعمل هذا الوكيل بسرعة دائماً
         thinkingDefault: "off",
       },
     ],
@@ -360,7 +362,7 @@ x-i18n:
     },
   },
 
-  // Custom model providers
+  // موفرو النماذج المخصصون
   models: {
     mode: "merge",
     providers: {
@@ -386,11 +388,11 @@ x-i18n:
     },
   },
 
-  // Cron jobs
+  // مهام Cron
   cron: {
     enabled: true,
     store: "~/.openclaw/cron/cron.json",
-    maxConcurrentRuns: 2, // cron dispatch + isolated cron agent-turn execution
+    maxConcurrentRuns: 8, // افتراضي؛ إرسال cron + تنفيذ دور وكيل cron معزول
     sessionRetention: "24h",
     runLog: {
       maxBytes: "2mb",
@@ -441,7 +443,7 @@ x-i18n:
     },
   },
 
-  // Gateway + networking
+  // Gateway + الشبكات
   gateway: {
     mode: "local",
     port: 18789,
@@ -482,7 +484,8 @@ x-i18n:
 
 ### مستودع Skills شقيق مرتبط رمزياً
 
-استخدم هذا عندما يحتوي جذر Skills مدمج على رابط رمزي إلى مستودع شقيق، على سبيل المثال `~/.agents/skills/manager -> ~/Projects/manager/skills`.
+استخدم هذا عندما يحتوي جذر Skills مدمج على رابط رمزي إلى مستودع شقيق، على
+سبيل المثال `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ```json5
 {
@@ -495,8 +498,11 @@ x-i18n:
 }
 ```
 
-- يفحص `extraDirs` المستودع الشقيق باعتباره جذر Skills صريحاً.
-- يتيح `allowSymlinkTargets` لمجلدات Skills المرتبطة رمزياً أن تُحل إلى جذر الهدف الحقيقي الموثوق هذا من دون السماح بأي إفلات عشوائي عبر الروابط الرمزية.
+- يفحص `extraDirs` المستودع الشقيق كجذر Skills صريح.
+- يتيح `allowSymlinkTargets` لمجلدات Skills المرتبطة رمزياً أن تتحلل إلى جذر
+  الهدف الحقيقي الموثوق هذا من دون السماح بخروج الروابط الرمزية عشوائياً.
+- للسماح لـ Skill Workshop بتطبيق الكتابة عبر هدف الرابط الرمزي الموثوق نفسه،
+  عيّن `skills.workshop.allowSymlinkTargetWrites: true`.
 
 ## الأنماط الشائعة
 
@@ -518,8 +524,8 @@ x-i18n:
 ```
 
 - `agents.defaults.skills` هو خط الأساس المشترك.
-- يستبدل `agents.list[].skills` خط الأساس هذا لوكيل واحد.
-- استخدم `skills: []` عندما ينبغي ألا يرى الوكيل أي Skills.
+- `agents.list[].skills` يستبدل خط الأساس هذا لوكيل واحد.
+- استخدم `skills: []` عندما يجب ألا يرى الوكيل أي Skills.
 
 ### إعداد متعدد المنصات
 
@@ -542,11 +548,11 @@ x-i18n:
 }
 ```
 
-### الموافقة التلقائية لشبكة Node الموثوقة
+### الموافقة التلقائية على شبكة العُقد الموثوقة
 
-أبقِ إقران الأجهزة يدويًا ما لم تكن تتحكم في مسار الشبكة. بالنسبة إلى مختبر مخصص
-أو شبكة فرعية ضمن tailnet، يمكنك تفعيل الموافقة التلقائية على جهاز Node عند أول استخدام
-باستخدام CIDR أو عناوين IP دقيقة:
+أبقِ إقران الأجهزة يدويًا ما لم تكن تتحكم في مسار الشبكة. لمختبر مخصص
+أو شبكة فرعية في tailnet، يمكنك الاشتراك في الموافقة التلقائية على جهاز العقدة
+للمرة الأولى باستخدام CIDR أو عناوين IP دقيقة:
 
 ```json5
 {
@@ -560,13 +566,13 @@ x-i18n:
 }
 ```
 
-يبقى هذا معطلاً عند عدم ضبطه. لا ينطبق إلا على إقران جديد لـ `role: node` دون
-نطاقات مطلوبة. لا يزال عملاء المشغّل/المتصفح وترقيات الدور أو النطاق أو البيانات الوصفية أو
+يبقى هذا معطّلًا عند عدم ضبطه. ينطبق فقط على إقران `role: node` الجديد
+بلا نطاقات مطلوبة. لا يزال عملاء المشغّل/المتصفح وترقيات الدور أو النطاق أو البيانات الوصفية أو
 المفتاح العام تتطلب موافقة يدوية.
 
-### وضع DM الآمن (صندوق وارد مشترك / رسائل DM متعددة المستخدمين)
+### وضع الرسائل المباشرة الآمن (صندوق وارد مشترك / رسائل مباشرة متعددة المستخدمين)
 
-إذا كان بإمكان أكثر من شخص مراسلة برنامجك عبر DM (إدخالات متعددة في `allowFrom`، أو موافقات إقران لعدة أشخاص، أو `dmPolicy: "open"`)، ففعّل **وضع DM الآمن** حتى لا تشارك رسائل DM من مرسلين مختلفين سياقًا واحدًا افتراضيًا:
+إذا كان يمكن لأكثر من شخص إرسال رسالة مباشرة إلى bot الخاص بك (إدخالات متعددة في `allowFrom`، أو موافقات إقران لعدة أشخاص، أو `dmPolicy: "open"`)، ففعّل **وضع الرسائل المباشرة الآمن** حتى لا تشارك الرسائل المباشرة من مرسلين مختلفين سياقًا واحدًا افتراضيًا:
 
 ```json5
 {
@@ -590,10 +596,10 @@ x-i18n:
 }
 ```
 
-بالنسبة إلى Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC، يكون تفويض المرسل قائمًا على المعرّف أولاً افتراضيًا.
-لا تفعّل المطابقة المباشرة القابلة للتغيير للاسم/البريد الإلكتروني/اللقب باستخدام `dangerouslyAllowNameMatching: true` الخاص بكل قناة إلا إذا كنت تقبل هذا الخطر صراحةً.
+بالنسبة إلى Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC، يكون تفويض المرسل قائمًا على المعرّف أولًا افتراضيًا.
+لا تفعّل المطابقة المباشرة القابلة للتغيير للاسم/البريد الإلكتروني/اللقب باستخدام `dangerouslyAllowNameMatching: true` الخاص بكل قناة إلا إذا كنت تقبل هذه المخاطرة صراحةً.
 
-### مفتاح Anthropic API + احتياط MiniMax
+### مفتاح Anthropic API + احتياطي MiniMax
 
 ```json5
 {
@@ -629,7 +635,7 @@ x-i18n:
 }
 ```
 
-### بوت العمل (وصول مقيّد)
+### bot للعمل (وصول مقيّد)
 
 ```json5
 {
@@ -698,11 +704,11 @@ x-i18n:
 ## نصائح
 
 - إذا ضبطت `dmPolicy: "open"`، فيجب أن تتضمن قائمة `allowFrom` المطابقة `"*"`.
-- تختلف معرّفات المزوّدين (أرقام الهواتف، معرّفات المستخدمين، معرّفات القنوات). استخدم وثائق المزوّد لتأكيد التنسيق.
-- أقسام اختيارية لإضافتها لاحقًا: `web`، `browser`، `ui`، `discovery`، `plugins`، `talk`، `signal`، `imessage`.
-- راجع [المزوّدون](/ar/providers) و[استكشاف الأخطاء وإصلاحها](/ar/gateway/troubleshooting) للحصول على ملاحظات إعداد أعمق.
+- تختلف معرّفات المزوّدين (أرقام الهاتف، معرّفات المستخدمين، معرّفات القنوات). استخدم وثائق المزوّد لتأكيد الصيغة.
+- أقسام اختيارية لإضافتها لاحقًا: `web` و`browser` و`ui` و`discovery` و`plugins` و`talk` و`signal` و`imessage`.
+- راجع [المزوّدون](/ar/providers) و[استكشاف الأخطاء وإصلاحها](/ar/gateway/troubleshooting) لملاحظات إعداد أعمق.
 
 ## ذات صلة
 
-- [مرجع الإعدادات](/ar/gateway/configuration-reference)
-- [الإعدادات](/ar/gateway/configuration)
+- [مرجع التكوين](/ar/gateway/configuration-reference)
+- [التكوين](/ar/gateway/configuration)

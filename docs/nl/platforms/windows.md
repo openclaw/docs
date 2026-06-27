@@ -1,126 +1,211 @@
 ---
 read_when:
     - OpenClaw installeren op Windows
-    - Kiezen tussen native Windows en WSL2
-    - Zoeken naar de status van de begeleidende Windows-app
-summary: 'Windows-ondersteuning: systeemeigen en WSL2-installatiepaden, daemon en huidige kanttekeningen'
+    - Kiezen tussen Windows Hub, native Windows en WSL2
+    - De Windows-begeleidende app of Windows-node-modus instellen
+summary: 'Windows-ondersteuning: Windows Hub, native CLI en Gateway, WSL2-gatewayconfiguratie, node-modus en probleemoplossing'
 title: Windows
 x-i18n:
-    generated_at: "2026-05-05T06:18:04Z"
+    generated_at: "2026-06-27T17:49:21Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: adf885747e3a897cb4ee57f6494805468d38c4595c0ab7582b063153a1134d18
+    source_hash: e7c7bde33f27bce6c1136ccf688547ee82750d317a997c4a45b354c52ae1b690
     source_path: platforms/windows.md
     workflow: 16
 ---
 
-OpenClaw ondersteunt zowel **native Windows** als **WSL2**. WSL2 is de stabielere route en wordt aanbevolen voor de volledige ervaring: de CLI, Gateway en tooling draaien binnen Linux met volledige compatibiliteit. Native Windows werkt voor basisgebruik van de CLI en Gateway, met enkele kanttekeningen hieronder.
+OpenClaw levert een native **Windows Hub**-companion-app plus Windows CLI-ondersteuning.
+Gebruik Windows Hub wanneer je een desktop-app wilt met setup, traystatus, chat,
+diagnostiek in het Commandocentrum en Windows-node-mogelijkheden. Gebruik het PowerShell-
+installatieprogramma wanneer je de CLI/Gateway direct wilt. Gebruik WSL2 wanneer je de
+meest Linux-compatibele Gateway-runtime wilt.
 
-Native Windows-companion-apps zijn gepland.
+## Aanbevolen: Windows Hub
 
-## WSL2 (aanbevolen)
+Windows Hub is de native WinUI-companion-app voor Windows 10 20H2+ en Windows 11. Deze installeert zonder beheerdersrechten en wordt gepubliceerd met ondertekende
+x64- en ARM64-installatieprogramma's op OpenClaw-releases.
 
-- [Aan de slag](/nl/start/getting-started) (gebruik binnen WSL)
-- [Installatie en updates](/nl/install/updating)
-- Officiële WSL2-handleiding (Microsoft): [https://learn.microsoft.com/windows/wsl/install](https://learn.microsoft.com/windows/wsl/install)
+Download het nieuwste stabiele installatieprogramma vanaf de [OpenClaw-releasepagina](https://github.com/openclaw/openclaw/releases):
 
-## Status van native Windows
+- [OpenClawCompanion-Setup-x64.exe](https://github.com/openclaw/openclaw/releases/download/v2026.6.5/OpenClawCompanion-Setup-x64.exe)
+- [OpenClawCompanion-Setup-arm64.exe](https://github.com/openclaw/openclaw/releases/download/v2026.6.5/OpenClawCompanion-Setup-arm64.exe)
+- [Controlesommen](https://github.com/openclaw/openclaw/releases/download/v2026.6.5/OpenClawCompanion-SHA256SUMS.txt)
 
-CLI-flows op native Windows worden beter, maar WSL2 blijft de aanbevolen route.
+Als een downloadlink hierboven een 404 retourneert, bezoek dan de [releasepagina](https://github.com/openclaw/openclaw/releases) en zoek naar de `OpenClawCompanion-Setup-*`-assets op de nieuwste release.
 
-Wat vandaag goed werkt op native Windows:
+Start na installatie **OpenClaw Companion** vanuit het Startmenu of het systeemvak.
+Het installatieprogramma voegt ook snelkoppelingen toe voor Gateway Setup, Chat, Instellingen,
+Controleren op updates en verwijderen.
 
-- website-installatieprogramma via `install.ps1`
-- lokaal CLI-gebruik zoals `openclaw --version`, `openclaw doctor` en `openclaw plugins list --json`
-- ingebouwde rooktests voor lokale agent/provider zoals:
+### Wat Windows Hub bevat
+
+- status in het systeemvak en starten bij aanmelding
+- eerste setup voor een lokale, app-eigen WSL Gateway
+- verbindingsinstellingen voor lokale, externe en via SSH getunnelde Gateways
+- native chatvenster plus toegang tot de browser-Bedienings-UI
+- diagnostiek in het Commandocentrum voor sessies, gebruik, kanalen, nodes, koppeling en
+  herstelopdrachten
+- Windows-node-modus voor door agents aangestuurde canvas, scherm, camera, meldingen,
+  apparaatstatus, tekst-naar-spraak, spraak-naar-tekst en beheerde `system.run`
+- lokale MCP-servermodus voor MCP-clients zoals Claude Desktop, Claude Code en
+  Cursor
+
+### Eerste start
+
+Bij de eerste start opent Windows Hub de setup wanneer er geen bruikbare opgeslagen Gateway is.
+Het snelste pad is **Lokaal instellen**, waarmee een app-eigen
+`OpenClawGateway` WSL-distro wordt ingericht, de Gateway daarin wordt geïnstalleerd en de app wordt gekoppeld.
+Dit exporteert of wijzigt je bestaande Ubuntu-distro niet.
+
+Kies **Geavanceerde setup** of open het tabblad Verbindingen wanneer je al een
+Gateway hebt. Je kunt verbinding maken met:
+
+- een lokale Gateway op deze pc
+- een WSL Gateway op deze pc
+- een externe Gateway via URL en token of setupcode
+- een Gateway die via een SSH-tunnel wordt bereikt
+
+Wanneer de setup is voltooid, wordt het traypictogram groen. Open **Commandocentrum** vanuit het
+systeemvak om verbinding, koppeling, nodestatus en kanaalgezondheid te bevestigen.
+
+## Windows-node-modus
+
+Windows Hub kan zich registreren als een eersteklas OpenClaw-node. De agent kan vervolgens
+gedeclareerde Windows-native mogelijkheden gebruiken via de Gateway.
+
+Veelvoorkomende opdrachten zijn:
+
+- `canvas.present`, `canvas.hide`, `canvas.navigate`, `canvas.eval`,
+  `canvas.snapshot`
+- `screen.snapshot` en, met expliciete opt-in, `screen.record`
+- `camera.list` en, met expliciete opt-in, `camera.snap`, `camera.clip`
+- `system.notify`, `system.run`, `system.run.prepare`, `system.which`
+- `location.get`, `device.info`, `device.status`
+- `stt.transcribe`, `tts.speak`
+
+Node-modus vereist Gateway-koppeling. Als de app een koppelingsverzoek toont, keur
+dit dan goed vanaf de Gateway-host:
 
 ```powershell
-openclaw agent --local --agent main --thinking low -m "Reply with exactly WINDOWS-HATCH-OK."
+openclaw devices list
+openclaw devices approve <request-id>
+openclaw nodes status
 ```
 
-Huidige kanttekeningen:
+De Gateway stuurt alleen opdrachten door die de node declareert en die serverbeleid
+toestaat. Privacygevoelige opdrachten zoals `screen.record`, `camera.snap` en
+`camera.clip` vereisen expliciete `gateway.nodes.allowCommands`-opt-in.
 
-- `openclaw onboard --non-interactive` verwacht nog steeds een bereikbare lokale gateway, tenzij je `--skip-health` meegeeft
-- `openclaw onboard --non-interactive --install-daemon` en `openclaw gateway install` proberen eerst Windows Scheduled Tasks
-- als het aanmaken van een Scheduled Task wordt geweigerd, valt OpenClaw terug op een login-item in de Startup-map per gebruiker en start het de gateway direct
-- als `schtasks` zelf vastloopt of niet meer reageert, breekt OpenClaw dat pad nu snel af en valt het terug in plaats van voor altijd te blijven hangen
-- Scheduled Tasks hebben nog steeds de voorkeur wanneer ze beschikbaar zijn, omdat ze betere supervisorstatus bieden
+## Lokale MCP-modus
 
-Als je alleen de native CLI wilt, zonder installatie van de gateway-service, gebruik dan een van deze:
+Windows Hub kan hetzelfde Windows-native mogelijkhedenregister aanbieden als een lokale
+MCP-server op loopback. Dit is handig wanneer je lokale MCP-clients Windows-
+mogelijkheden wilt laten aansturen zonder een actieve OpenClaw Gateway.
+
+Schakel dit in Windows Hub Instellingen in onder de sectie voor ontwikkelaars/geavanceerd. De app
+toont het loopback-eindpunt en bearer-token nadat de server is ingeschakeld.
+
+Modusmatrix:
+
+| Node-modus | MCP-server | Gedrag                            |
+| ---------- | ---------- | --------------------------------- |
+| uit        | uit        | Desktop-app alleen voor operatoren |
+| aan        | uit        | Met Gateway verbonden Windows-node |
+| uit        | aan        | Alleen lokale MCP-server          |
+| aan        | aan        | Gateway-node plus lokale MCP-server |
+
+## Native Windows CLI en Gateway
+
+Voor terminal-eerst gebruik installeer je OpenClaw vanuit PowerShell:
 
 ```powershell
-openclaw onboard --non-interactive --skip-health
-openclaw gateway run
+iwr -useb https://openclaw.ai/install.ps1 | iex
 ```
 
-Als je wel beheerde opstart op native Windows wilt:
+Verifieer:
+
+```powershell
+openclaw --version
+openclaw doctor
+openclaw gateway status --json
+```
+
+Native Windows CLI- en Gateway-flows worden ondersteund en blijven verbeteren.
+Beheerd opstarten gebruikt Windows Geplande taken wanneer beschikbaar. De taak bewaart het
+leesbare `gateway.cmd`-script in de OpenClaw-statusmap, maar start het via
+een gegenereerde `gateway.vbs` WScript-wrapper zodat de Gateway op de achtergrond geen
+zichtbaar consolevenster opent. Als het maken van de taak wordt geweigerd, valt OpenClaw terug op een
+aanmelditem in de Startup-map per gebruiker.
+
+Om de Gateway-service te installeren:
 
 ```powershell
 openclaw gateway install
 openclaw gateway status --json
 ```
 
-Als het aanmaken van Scheduled Tasks wordt geblokkeerd, start de fallback-servicemodus nog steeds automatisch na aanmelding via de Startup-map van de huidige gebruiker.
+Als je alleen CLI-gebruik wilt zonder beheerde Gateway-service:
 
-## Gateway
-
-- [Gateway-runbook](/nl/gateway)
-- [Configuratie](/nl/gateway/configuration)
-
-## Gateway-service installeren (CLI)
-
-Binnen WSL2:
-
-```
-openclaw onboard --install-daemon
+```powershell
+openclaw onboard --non-interactive --skip-health
+openclaw gateway run
 ```
 
-Of:
+## WSL2 Gateway
 
+WSL2 blijft de meest Linux-compatibele Gateway-runtime op Windows. Windows Hub
+kan een app-eigen WSL Gateway voor je instellen, of je kunt handmatig installeren binnen
+je eigen distro.
+
+Handmatige setup:
+
+```powershell
+wsl --install
+# Or pick a distro explicitly:
+wsl --list --online
+wsl --install -d Ubuntu-24.04
 ```
-openclaw gateway install
+
+Schakel systemd in binnen WSL:
+
+```bash
+sudo tee /etc/wsl.conf >/dev/null <<'EOF'
+[boot]
+systemd=true
+EOF
 ```
 
-Of:
+Herstart WSL vanuit PowerShell:
 
+```powershell
+wsl --shutdown
 ```
-openclaw configure
-```
 
-Selecteer **Gateway-service** wanneer daarom wordt gevraagd.
+Installeer vervolgens OpenClaw binnen WSL met de Linux-snelstart:
 
-Herstellen/migreren:
-
-```
-openclaw doctor
+```bash
+curl -fsSL https://openclaw.ai/install.sh | bash
+openclaw gateway status
 ```
 
 ## Gateway automatisch starten vóór Windows-aanmelding
 
-Zorg er voor headless setups voor dat de volledige opstartketen draait, zelfs wanneer niemand zich aanmeldt bij Windows.
-
-### 1) Gebruikersservices laten draaien zonder aanmelding
+Voor headless WSL-setups moet je ervoor zorgen dat de volledige opstartketen draait, zelfs wanneer niemand zich
+bij Windows aanmeldt.
 
 Binnen WSL:
 
 ```bash
+sudo apt-get install -y dbus-x11
 sudo loginctl enable-linger "$(whoami)"
-```
-
-### 2) De OpenClaw Gateway-gebruikersservice installeren
-
-Binnen WSL:
-
-```bash
 openclaw gateway install
 ```
 
-### 3) WSL automatisch starten bij het opstarten van Windows
-
-In PowerShell als Administrator:
+In PowerShell als beheerder:
 
 ```powershell
-schtasks /create /tn "WSL Boot" /tr "wsl.exe -d Ubuntu --exec /bin/true" /sc onstart /ru SYSTEM
+schtasks /create /tn "WSL Boot" /tr "wsl.exe -d Ubuntu --exec dbus-launch true" /sc onstart /ru "$env:USERNAME"
 ```
 
 Vervang `Ubuntu` door je distronaam uit:
@@ -129,20 +214,25 @@ Vervang `Ubuntu` door je distronaam uit:
 wsl --list --verbose
 ```
 
-### Opstartketen verifiëren
+> **Opmerking:** Twee wijzigingen ten opzichte van oudere recepten:
+>
+> - **`dbus-launch true` in plaats van `/bin/true`** — In WSL ≥ 2.6.1.0 zorgt een regressie ([microsoft/WSL #13416](https://github.com/microsoft/WSL/issues/13416)) ervoor dat de distro 15-20 seconden nadat de laatste client afsluit inactief wordt beëindigd, zelfs met linger ingeschakeld. `dbus-launch true` houdt als workaround een child-of-init-proces actief ([communitydiscussie, microsoft/WSL #9245](https://github.com/microsoft/WSL/discussions/9245)).
+> - **`/ru "$env:USERNAME"` in plaats van `/ru SYSTEM`** — WSL-distro's per gebruiker (de standaardsetup) zijn niet zichtbaar voor het SYSTEM-account; de taak lijkt te draaien, maar de distro wordt nooit gestart. Uitvoeren als je eigen account voorkomt dit. Windows vraagt om je wachtwoord wanneer de taak wordt gemaakt.
 
-Controleer na een herstart (vóór Windows-aanmelding) vanuit WSL:
+Verifieer na herstart vanuit WSL:
 
 ```bash
 systemctl --user is-enabled openclaw-gateway.service
 systemctl --user status openclaw-gateway.service --no-pager
 ```
 
-## Geavanceerd: WSL-services via LAN beschikbaar maken (portproxy)
+## WSL-services via LAN beschikbaar maken
 
-WSL heeft een eigen virtueel netwerk. Als een andere machine een service moet bereiken die **binnen WSL** draait (SSH, een lokale TTS-server of de Gateway), moet je een Windows-poort doorsturen naar het huidige WSL-IP. Het WSL-IP verandert na herstarts, dus mogelijk moet je de doorstuurregel vernieuwen.
+WSL heeft een eigen virtueel netwerk. Als een andere machine een service binnen
+WSL moet bereiken, stuur dan een Windows-poort door naar het huidige WSL-IP. Het WSL-IP kan na
+herstarts veranderen, dus vernieuw de doorstuurregel wanneer nodig.
 
-Voorbeeld (PowerShell **als Administrator**):
+Voorbeeld in PowerShell als beheerder:
 
 ```powershell
 $Distro = "Ubuntu-24.04"
@@ -154,104 +244,67 @@ if (-not $WslIp) { throw "WSL IP not found." }
 
 netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=$ListenPort `
   connectaddress=$WslIp connectport=$TargetPort
-```
 
-Sta de poort toe via Windows Firewall (eenmalig):
-
-```powershell
 New-NetFirewallRule -DisplayName "WSL SSH $ListenPort" -Direction Inbound `
   -Protocol TCP -LocalPort $ListenPort -Action Allow
 ```
 
-Vernieuw de portproxy nadat WSL opnieuw is gestart:
-
-```powershell
-netsh interface portproxy delete v4tov4 listenport=$ListenPort listenaddress=0.0.0.0 | Out-Null
-netsh interface portproxy add v4tov4 listenport=$ListenPort listenaddress=0.0.0.0 `
-  connectaddress=$WslIp connectport=$TargetPort | Out-Null
-```
-
 Opmerkingen:
 
-- SSH vanaf een andere machine richt zich op het **Windows-host-IP** (voorbeeld: `ssh user@windows-host -p 2222`).
-- Remote nodes moeten naar een **bereikbare** Gateway-URL verwijzen (niet `127.0.0.1`); gebruik `openclaw status --all` om dit te bevestigen.
-- Gebruik `listenaddress=0.0.0.0` voor LAN-toegang; `127.0.0.1` houdt het alleen lokaal.
-- Als je dit automatisch wilt, registreer dan een Scheduled Task om de vernieuwingsstap bij aanmelding uit te voeren.
+- SSH vanaf een andere machine richt zich op het IP-adres van de Windows-host, bijvoorbeeld
+  `ssh user@windows-host -p 2222`.
+- Externe nodes moeten verwijzen naar een bereikbare Gateway-URL, niet naar `127.0.0.1`.
+- Gebruik `listenaddress=0.0.0.0` voor LAN-toegang. Gebruik `127.0.0.1` voor alleen lokale
+  toegang.
 
-## Stapsgewijze WSL2-installatie
+## Probleemoplossing
 
-### 1) WSL2 + Ubuntu installeren
+### Het traypictogram verschijnt niet
 
-Open PowerShell (Admin):
+Controleer Taakbeheer op `OpenClaw.Tray.WinUI.exe`. Als het draait, open dan het
+gebied met verborgen traypictogrammen en pin het. Als het niet draait, start **OpenClaw
+Companion** vanuit het Startmenu.
 
-```powershell
-wsl --install
-# Or pick a distro explicitly:
-wsl --list --online
-wsl --install -d Ubuntu-24.04
-```
+### Lokale setup mislukt
 
-Herstart als Windows daarom vraagt.
-
-### 2) systemd inschakelen (vereist voor gateway-installatie)
-
-In je WSL-terminal:
-
-```bash
-sudo tee /etc/wsl.conf >/dev/null <<'EOF'
-[boot]
-systemd=true
-EOF
-```
-
-Daarna vanuit PowerShell:
+Open het setuplog vanuit Windows Hub of inspecteer:
 
 ```powershell
-wsl --shutdown
+notepad "$env:LOCALAPPDATA\OpenClawTray\Logs\Setup\easy-setup-latest.txt"
 ```
 
-Open Ubuntu opnieuw en verifieer daarna:
+Veelvoorkomende oorzaken zijn uitgeschakelde WSL, geblokkeerde virtualisatie, verouderde app-eigen WSL-
+status of een netwerkfout tijdens het installeren van het Gateway-pakket.
 
-```bash
-systemctl --user status
+### De app zegt dat koppeling vereist is
+
+Keur het operator- of nodeverzoek goed vanaf de Gateway:
+
+```powershell
+openclaw devices list
+openclaw devices approve <request-id>
 ```
 
-### 3) OpenClaw installeren (binnen WSL)
+Als het apparaat al een token had, maak dan opnieuw verbinding vanaf het tabblad Verbindingen na
+goedkeuring.
 
-Volg voor een normale eerste setup binnen WSL de Linux-flow Aan de slag:
+### Webchat kan een externe Gateway niet bereiken
 
-```bash
-git clone https://github.com/openclaw/openclaw.git
-cd openclaw
-pnpm install
-pnpm build
-pnpm ui:build
-pnpm openclaw onboard --install-daemon
-```
+Externe webchat heeft HTTPS of localhost nodig. Vertrouw voor zelfondertekende certificaten
+het certificaat in Windows, of gebruik een SSH-tunnel naar een localhost-URL.
 
-Als je vanuit de broncode ontwikkelt in plaats van een eerste onboarding uit te voeren, gebruik dan de source-dev-loop uit [Setup](/nl/start/setup):
+### `screen.snapshot`-, camera- of audio-opdrachten mislukken
 
-```bash
-pnpm install
-# First run only (or after resetting local OpenClaw config/workspace)
-pnpm openclaw setup
-pnpm gateway:watch
-```
+Controleer Windows-machtigingen voor camera, microfoon, schermopname en
+meldingen. Gepackagede installaties declareren de beschermde mogelijkheden, maar Windows
+kan nog steeds de eerste keer dat een opdracht ze gebruikt om toestemming vragen.
 
-Volledige handleiding: [Aan de slag](/nl/start/getting-started)
+### Git- of GitHub-connectiviteit mislukt
 
-## Windows-companion-app
+Sommige netwerken blokkeren of beperken HTTPS naar GitHub. Als `git clone` of `gh auth
+login` mislukt, probeer dan een ander netwerk, een VPN of een HTTP/HTTPS-proxy.
 
-We hebben nog geen Windows-companion-app. Bijdragen zijn welkom als je wilt helpen om dit mogelijk te maken.
-
-## Git- en GitHub-connectiviteit (contributors)
-
-Sommige netwerken blokkeren of beperken HTTPS naar GitHub. Als `git clone` mislukt met time-outs of verbindingsresets, probeer dan een ander netwerk, een VPN of een HTTP/HTTPS-proxy die je organisatie aanbiedt.
-
-Als `gh auth login` mislukt tijdens de browser-device-flow (bijvoorbeeld een time-out bij het bereiken van `github.com:443`), authenticeer dan in plaats daarvan met een persoonlijk toegangstoken:
-
-1. Maak een token met ten minste de `repo`-scope (classic PAT) of equivalente fijnmazige toegang.
-2. In PowerShell voor de huidige sessie:
+Voor tokengebaseerde `gh`-authenticatie in de huidige sessie:
 
 ```powershell
 $env:GH_TOKEN="<your-token>"
@@ -259,18 +312,12 @@ gh auth status
 gh auth setup-git
 ```
 
-3. Als `gh auth status` waarschuwt voor ontbrekende `read:org`, maak dan een token aan dat die scope bevat en wijs de variabele opnieuw toe:
-
-```powershell
-$env:GH_TOKEN="<your-token-with-repo-and-read:org>"
-gh auth status
-```
-
-`gh auth refresh -s read:org` is alleen van toepassing wanneer je via `gh auth login` bent geauthenticeerd en opgeslagen credentials hebt om te vernieuwen (niet wanneer je `GH_TOKEN` gebruikt).
-
 Commit nooit tokens en plak ze niet in issues of pull requests.
 
 ## Gerelateerd
 
 - [Installatieoverzicht](/nl/install)
-- [Platforms](/nl/platforms)
+- [Node.js-setup](/nl/install/node)
+- [Nodes](/nl/nodes)
+- [Bedienings-UI](/nl/web/control-ui)
+- [Gateway-configuratie](/nl/gateway/configuration)

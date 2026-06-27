@@ -1,148 +1,237 @@
 ---
 read_when:
     - نصب OpenClaw روی Windows
-    - انتخاب بین Windows بومی و WSL2
-    - در حال جست‌وجوی وضعیت برنامه همراه Windows
-summary: 'پشتیبانی از Windows: مسیرهای نصب بومی و WSL2، daemon و هشدارهای فعلی'
+    - انتخاب بین Windows Hub، Windows بومی، و WSL2
+    - راه‌اندازی برنامه همراه Windows یا حالت گره Windows
+summary: 'پشتیبانی از Windows: Windows Hub، CLI و Gateway بومی، راه‌اندازی Gateway در WSL2، حالت node، و عیب‌یابی'
 title: Windows
 x-i18n:
-    generated_at: "2026-05-05T06:19:55Z"
+    generated_at: "2026-06-27T18:08:49Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: adf885747e3a897cb4ee57f6494805468d38c4595c0ab7582b063153a1134d18
+    source_hash: e7c7bde33f27bce6c1136ccf688547ee82750d317a997c4a45b354c52ae1b690
     source_path: platforms/windows.md
     workflow: 16
 ---
 
-OpenClaw از هر دو حالت **Windows بومی** و **WSL2** پشتیبانی می‌کند. WSL2 مسیر پایدارتر است و برای تجربه کامل توصیه می‌شود؛ CLI، Gateway و ابزارها داخل Linux با سازگاری کامل اجرا می‌شوند. Windows بومی برای استفاده اصلی از CLI و Gateway کار می‌کند، با چند نکته احتیاطی که در ادامه آمده است.
+OpenClaw یک برنامه همراه بومی **Windows Hub** به‌همراه پشتیبانی CLI ویندوز ارائه می‌کند.
+وقتی یک برنامه دسکتاپ با راه‌اندازی، وضعیت tray، چت،
+عیب‌یابی Command Center و قابلیت‌های Node ویندوز می‌خواهید، از Windows Hub استفاده کنید. وقتی CLI/Gateway را مستقیم می‌خواهید، از نصب‌کننده PowerShell استفاده کنید. وقتی
+سازگارترین runtime Gateway با لینوکس را می‌خواهید، از WSL2 استفاده کنید.
 
-برنامه‌های همراه بومی Windows برنامه‌ریزی شده‌اند.
+## پیشنهادی: Windows Hub
 
-## WSL2 (توصیه‌شده)
+Windows Hub برنامه همراه بومی WinUI برای Windows 10 20H2+ و Windows 11 است. بدون دسترسی administrator نصب می‌شود و با نصب‌کننده‌های امضاشده
+x64 و ARM64 در نسخه‌های منتشرشده OpenClaw ارائه می‌شود.
 
-- [شروع به کار](/fa/start/getting-started) (داخل WSL استفاده شود)
-- [نصب و به‌روزرسانی‌ها](/fa/install/updating)
-- راهنمای رسمی WSL2 (Microsoft): [https://learn.microsoft.com/windows/wsl/install](https://learn.microsoft.com/windows/wsl/install)
+آخرین نصب‌کننده پایدار را از [صفحه انتشارهای OpenClaw](https://github.com/openclaw/openclaw/releases) دانلود کنید:
 
-## وضعیت Windows بومی
+- [OpenClawCompanion-Setup-x64.exe](https://github.com/openclaw/openclaw/releases/download/v2026.6.5/OpenClawCompanion-Setup-x64.exe)
+- [OpenClawCompanion-Setup-arm64.exe](https://github.com/openclaw/openclaw/releases/download/v2026.6.5/OpenClawCompanion-Setup-arm64.exe)
+- [Checksums](https://github.com/openclaw/openclaw/releases/download/v2026.6.5/OpenClawCompanion-SHA256SUMS.txt)
 
-جریان‌های CLI در Windows بومی در حال بهبود هستند، اما WSL2 همچنان مسیر توصیه‌شده است.
+اگر یکی از پیوندهای دانلود بالا خطای 404 داد، به [صفحه انتشارها](https://github.com/openclaw/openclaw/releases) بروید و در آخرین انتشار به‌دنبال دارایی‌های `OpenClawCompanion-Setup-*` بگردید.
 
-مواردی که امروز در Windows بومی خوب کار می‌کنند:
+پس از نصب، **OpenClaw Companion** را از منوی Start یا system
+tray اجرا کنید. نصب‌کننده همچنین میان‌برهایی برای Gateway Setup، Chat، Settings،
+Check for Updates و حذف نصب اضافه می‌کند.
 
-- نصب‌کننده وب‌سایت از طریق `install.ps1`
-- استفاده محلی از CLI مانند `openclaw --version`، `openclaw doctor` و `openclaw plugins list --json`
-- دودآزمایی عامل/ارائه‌دهنده محلی تعبیه‌شده مانند:
+### Windows Hub شامل چه چیزهایی است
+
+- وضعیت system tray و اجرا هنگام ورود
+- راه‌اندازی اولین اجرا برای یک WSL Gateway محلی متعلق به برنامه
+- تنظیمات اتصال برای Gatewayهای محلی، راه دور و تونل‌شده با SSH
+- پنجره چت بومی به‌همراه دسترسی به Control UI مرورگر
+- عیب‌یابی Command Center برای نشست‌ها، مصرف، کانال‌ها، Nodeها، pairing و
+  دستورهای تعمیر
+- حالت Node ویندوز برای canvas، صفحه‌نمایش، دوربین، اعلان‌ها،
+  وضعیت دستگاه، متن‌به‌گفتار، گفتاربه‌متن و `system.run` کنترل‌شده توسط agent
+- حالت سرور MCP محلی برای مشتریان MCP مانند Claude Desktop، Claude Code و
+  Cursor
+
+### اولین اجرا
+
+در اولین اجرا، وقتی Gateway ذخیره‌شده قابل‌استفاده‌ای وجود نداشته باشد، Windows Hub راه‌اندازی را باز می‌کند.
+سریع‌ترین مسیر **Set up locally** است، که یک توزیع WSL متعلق به برنامه با نام
+`OpenClawGateway` فراهم می‌کند، Gateway را داخل آن نصب می‌کند، و برنامه را pair می‌کند.
+این کار توزیع Ubuntu موجود شما را export یا تغییر نمی‌دهد.
+
+وقتی از قبل Gateway دارید، **Advanced setup** را انتخاب کنید یا زبانه Connections را باز کنید.
+می‌توانید به این موارد متصل شوید:
+
+- یک Gateway محلی روی همین PC
+- یک WSL Gateway روی همین PC
+- یک Gateway راه دور با URL و token یا setup code
+- یک Gateway که از طریق تونل SSH در دسترس است
+
+وقتی راه‌اندازی تمام شد، نماد tray سبز می‌شود. **Command Center** را از
+tray باز کنید تا اتصال، pairing، وضعیت Node و سلامت کانال را تأیید کنید.
+
+## حالت Node ویندوز
+
+Windows Hub می‌تواند به‌عنوان یک Node درجه‌یک OpenClaw ثبت شود. سپس agent می‌تواند
+از قابلیت‌های بومی ویندوز که از طریق Gateway اعلام شده‌اند استفاده کند.
+
+دستورهای رایج شامل این موارد هستند:
+
+- `canvas.present`, `canvas.hide`, `canvas.navigate`, `canvas.eval`,
+  `canvas.snapshot`
+- `screen.snapshot` و، با opt-in صریح، `screen.record`
+- `camera.list` و، با opt-in صریح، `camera.snap`, `camera.clip`
+- `system.notify`, `system.run`, `system.run.prepare`, `system.which`
+- `location.get`, `device.info`, `device.status`
+- `stt.transcribe`, `tts.speak`
+
+حالت Node به pairing با Gateway نیاز دارد. اگر برنامه درخواست pairing نشان داد، آن را
+از میزبان Gateway تأیید کنید:
 
 ```powershell
-openclaw agent --local --agent main --thinking low -m "Reply with exactly WINDOWS-HATCH-OK."
+openclaw devices list
+openclaw devices approve <request-id>
+openclaw nodes status
 ```
 
-نکات احتیاطی فعلی:
+Gateway فقط دستورهایی را عبور می‌دهد که Node اعلام کرده و سیاست سرور
+اجازه داده است. دستورهای حساس به حریم خصوصی مانند `screen.record`، `camera.snap` و
+`camera.clip` به opt-in صریح `gateway.nodes.allowCommands` نیاز دارند.
 
-- `openclaw onboard --non-interactive` همچنان انتظار دارد یک gateway محلی دردسترس باشد، مگر اینکه `--skip-health` را پاس دهید
-- `openclaw onboard --non-interactive --install-daemon` و `openclaw gateway install` ابتدا Windows Scheduled Tasks را امتحان می‌کنند
-- اگر ایجاد Scheduled Task رد شود، OpenClaw به یک آیتم ورود پوشه Startup مخصوص هر کاربر برمی‌گردد و gateway را بلافاصله شروع می‌کند
-- اگر خود `schtasks` گیر کند یا پاسخ ندهد، OpenClaw اکنون آن مسیر را سریع قطع می‌کند و به‌جای معطل‌ماندن همیشگی، به مسیر جایگزین برمی‌گردد
-- Scheduled Tasks همچنان در صورت دردسترس‌بودن ترجیح داده می‌شوند، چون وضعیت ناظر بهتری ارائه می‌کنند
+## حالت MCP محلی
 
-اگر فقط CLI بومی را می‌خواهید، بدون نصب سرویس gateway، از یکی از این‌ها استفاده کنید:
+Windows Hub می‌تواند همان رجیستری قابلیت بومی ویندوز را به‌صورت یک سرور MCP محلی
+روی loopback ارائه کند. این زمانی مفید است که بخواهید مشتریان MCP محلی
+قابلیت‌های ویندوز را بدون یک OpenClaw Gateway در حال اجرا کنترل کنند.
+
+آن را در Settings ویندوز هاب، زیر بخش developer/advanced فعال کنید. پس از فعال‌شدن سرور، برنامه
+endpoint loopback و bearer token را نشان می‌دهد.
+
+ماتریس حالت‌ها:
+
+| حالت Node | سرور MCP | رفتار                           |
+| --------- | ---------- | ---------------------------------- |
+| خاموش       | خاموش        | برنامه دسکتاپ فقط برای operator          |
+| روشن        | خاموش        | Node ویندوز متصل به Gateway     |
+| خاموش       | روشن         | فقط سرور MCP محلی              |
+| روشن        | روشن         | Node Gateway به‌همراه سرور MCP محلی |
+
+## CLI و Gateway بومی ویندوز
+
+برای استفاده terminal-first، OpenClaw را از PowerShell نصب کنید:
 
 ```powershell
-openclaw onboard --non-interactive --skip-health
-openclaw gateway run
+iwr -useb https://openclaw.ai/install.ps1 | iex
 ```
 
-اگر راه‌اندازی مدیریت‌شده را روی Windows بومی می‌خواهید:
+بررسی کنید:
+
+```powershell
+openclaw --version
+openclaw doctor
+openclaw gateway status --json
+```
+
+جریان‌های CLI و Gateway بومی ویندوز پشتیبانی می‌شوند و همچنان در حال بهبود هستند.
+راه‌اندازی مدیریت‌شده، وقتی در دسترس باشد، از Windows Scheduled Tasks استفاده می‌کند. task اسکریپت خوانای
+`gateway.cmd` را در دایرکتوری state مربوط به OpenClaw نگه می‌دارد، اما آن را از طریق
+یک wrapper تولیدشده `gateway.vbs` برای WScript اجرا می‌کند تا Gateway پس‌زمینه
+یک پنجره console قابل‌مشاهده باز نکند. اگر ساخت task رد شود، OpenClaw به یک
+آیتم ورود پوشه Startup برای هر کاربر fallback می‌کند.
+
+برای نصب سرویس Gateway:
 
 ```powershell
 openclaw gateway install
 openclaw gateway status --json
 ```
 
-اگر ایجاد Scheduled Task مسدود شده باشد، حالت سرویس جایگزین همچنان پس از ورود، از طریق پوشه Startup کاربر فعلی به‌طور خودکار شروع می‌شود.
-
-## Gateway
-
-- [راهنمای عملیاتی Gateway](/fa/gateway)
-- [پیکربندی](/fa/gateway/configuration)
-
-## نصب سرویس Gateway (CLI)
-
-داخل WSL2:
-
-```
-openclaw onboard --install-daemon
-```
-
-یا:
-
-```
-openclaw gateway install
-```
-
-یا:
-
-```
-openclaw configure
-```
-
-هنگام درخواست، **سرویس Gateway** را انتخاب کنید.
-
-ترمیم/مهاجرت:
-
-```
-openclaw doctor
-```
-
-## شروع خودکار Gateway پیش از ورود به Windows
-
-برای راه‌اندازی‌های headless، مطمئن شوید زنجیره کامل بوت حتی وقتی کسی وارد Windows نمی‌شود اجرا می‌شود.
-
-### 1) اجرای سرویس‌های کاربر بدون ورود را فعال نگه دارید
-
-داخل WSL:
-
-```bash
-sudo loginctl enable-linger "$(whoami)"
-```
-
-### 2) سرویس کاربری gateway در OpenClaw را نصب کنید
-
-داخل WSL:
-
-```bash
-openclaw gateway install
-```
-
-### 3) WSL را هنگام بوت Windows به‌طور خودکار شروع کنید
-
-در PowerShell با دسترسی Administrator:
+اگر فقط استفاده CLI بدون سرویس Gateway مدیریت‌شده می‌خواهید:
 
 ```powershell
-schtasks /create /tn "WSL Boot" /tr "wsl.exe -d Ubuntu --exec /bin/true" /sc onstart /ru SYSTEM
+openclaw onboard --non-interactive --skip-health
+openclaw gateway run
 ```
 
-`Ubuntu` را با نام توزیع خود از خروجی زیر جایگزین کنید:
+## WSL2 Gateway
+
+WSL2 همچنان سازگارترین runtime Gateway با لینوکس روی ویندوز است. Windows Hub
+می‌تواند یک WSL Gateway متعلق به برنامه را برای شما راه‌اندازی کند، یا می‌توانید به‌صورت دستی داخل
+توزیع خودتان نصب کنید.
+
+راه‌اندازی دستی:
+
+```powershell
+wsl --install
+# Or pick a distro explicitly:
+wsl --list --online
+wsl --install -d Ubuntu-24.04
+```
+
+systemd را داخل WSL فعال کنید:
+
+```bash
+sudo tee /etc/wsl.conf >/dev/null <<'EOF'
+[boot]
+systemd=true
+EOF
+```
+
+WSL را از PowerShell دوباره راه‌اندازی کنید:
+
+```powershell
+wsl --shutdown
+```
+
+سپس OpenClaw را داخل WSL با quickstart لینوکس نصب کنید:
+
+```bash
+curl -fsSL https://openclaw.ai/install.sh | bash
+openclaw gateway status
+```
+
+## شروع خودکار Gateway پیش از ورود به ویندوز
+
+برای راه‌اندازی‌های WSL بدون نمایشگر، مطمئن شوید زنجیره کامل boot حتی وقتی کسی وارد
+ویندوز نشده اجرا می‌شود.
+
+داخل WSL:
+
+```bash
+sudo apt-get install -y dbus-x11
+sudo loginctl enable-linger "$(whoami)"
+openclaw gateway install
+```
+
+در PowerShell به‌عنوان Administrator:
+
+```powershell
+schtasks /create /tn "WSL Boot" /tr "wsl.exe -d Ubuntu --exec dbus-launch true" /sc onstart /ru "$env:USERNAME"
+```
+
+`Ubuntu` را با نام توزیع خود از این دستور جایگزین کنید:
 
 ```powershell
 wsl --list --verbose
 ```
 
-### راستی‌آزمایی زنجیره راه‌اندازی
+> **نکته:** دو تغییر نسبت به دستورالعمل‌های قدیمی‌تر:
+>
+> - **`dbus-launch true` به‌جای `/bin/true`** — در WSL ≥ 2.6.1.0 یک regression ([microsoft/WSL #13416](https://github.com/microsoft/WSL/issues/13416)) باعث می‌شود توزیع 15 تا 20 ثانیه پس از خروج آخرین client، حتی با فعال بودن linger، به‌علت بیکاری terminate شود. `dbus-launch true` به‌عنوان workaround یک فرایند child-of-init را زنده نگه می‌دارد ([بحث جامعه، microsoft/WSL #9245](https://github.com/microsoft/WSL/discussions/9245)).
+> - **`/ru "$env:USERNAME"` به‌جای `/ru SYSTEM`** — توزیع‌های WSL هر کاربر (راه‌اندازی پیش‌فرض) برای حساب SYSTEM قابل‌مشاهده نیستند؛ task ظاهراً اجرا می‌شود اما توزیع هرگز شروع نمی‌شود. اجرا با حساب خودتان از این مشکل جلوگیری می‌کند. هنگام ساخت task، ویندوز گذرواژه شما را درخواست می‌کند.
 
-پس از راه‌اندازی مجدد (پیش از ورود به Windows)، از داخل WSL بررسی کنید:
+پس از reboot، از WSL بررسی کنید:
 
 ```bash
 systemctl --user is-enabled openclaw-gateway.service
 systemctl --user status openclaw-gateway.service --no-pager
 ```
 
-## پیشرفته: ارائه سرویس‌های WSL روی LAN (portproxy)
+## در دسترس قراردادن سرویس‌های WSL روی LAN
 
-WSL شبکه مجازی خودش را دارد. اگر ماشین دیگری باید به سرویسی که **داخل WSL** اجرا می‌شود دسترسی داشته باشد (SSH، یک سرور TTS محلی، یا Gateway)، باید یک پورت Windows را به IP فعلی WSL فوروارد کنید. IP مربوط به WSL پس از راه‌اندازی مجدد تغییر می‌کند، بنابراین ممکن است لازم باشد قانون فوروارد را تازه‌سازی کنید.
+WSL شبکه مجازی خودش را دارد. اگر دستگاه دیگری باید به سرویسی داخل
+WSL دسترسی داشته باشد، یک پورت ویندوز را به IP فعلی WSL forward کنید. IP مربوط به WSL ممکن است پس از
+راه‌اندازی‌های مجدد تغییر کند، بنابراین در صورت نیاز rule مربوط به forwarding را refresh کنید.
 
-مثال (PowerShell **با دسترسی Administrator**):
+نمونه در PowerShell به‌عنوان Administrator:
 
 ```powershell
 $Distro = "Ubuntu-24.04"
@@ -154,104 +243,67 @@ if (-not $WslIp) { throw "WSL IP not found." }
 
 netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=$ListenPort `
   connectaddress=$WslIp connectport=$TargetPort
-```
 
-اجازه عبور پورت از Windows Firewall را بدهید (یک‌باره):
-
-```powershell
 New-NetFirewallRule -DisplayName "WSL SSH $ListenPort" -Direction Inbound `
   -Protocol TCP -LocalPort $ListenPort -Action Allow
 ```
 
-پس از راه‌اندازی مجدد WSL، portproxy را تازه‌سازی کنید:
+نکته‌ها:
+
+- SSH از دستگاه دیگر، IP میزبان ویندوز را هدف می‌گیرد، برای مثال
+  `ssh user@windows-host -p 2222`.
+- Nodeهای راه دور باید به URL قابل‌دسترسی Gateway اشاره کنند، نه `127.0.0.1`.
+- برای دسترسی LAN از `listenaddress=0.0.0.0` استفاده کنید. برای دسترسی فقط محلی
+  از `127.0.0.1` استفاده کنید.
+
+## عیب‌یابی
+
+### نماد tray ظاهر نمی‌شود
+
+Task Manager را برای `OpenClaw.Tray.WinUI.exe` بررسی کنید. اگر در حال اجراست، ناحیه
+نمادهای پنهان tray را باز کنید و آن را pin کنید. اگر در حال اجرا نیست، **OpenClaw
+Companion** را از منوی Start اجرا کنید.
+
+### راه‌اندازی محلی ناموفق است
+
+لاگ راه‌اندازی را از Windows Hub باز کنید یا این مسیر را بررسی کنید:
 
 ```powershell
-netsh interface portproxy delete v4tov4 listenport=$ListenPort listenaddress=0.0.0.0 | Out-Null
-netsh interface portproxy add v4tov4 listenport=$ListenPort listenaddress=0.0.0.0 `
-  connectaddress=$WslIp connectport=$TargetPort | Out-Null
+notepad "$env:LOCALAPPDATA\OpenClawTray\Logs\Setup\easy-setup-latest.txt"
 ```
 
-نکات:
+علت‌های رایج عبارت‌اند از WSL غیرفعال، virtualization مسدودشده، state کهنه WSL
+متعلق به برنامه، یا خطای شبکه هنگام نصب بسته Gateway.
 
-- SSH از ماشین دیگر، **IP میزبان Windows** را هدف می‌گیرد (مثال: `ssh user@windows-host -p 2222`).
-- گره‌های ریموت باید به یک URL مربوط به Gateway که **قابل دسترسی** است اشاره کنند (نه `127.0.0.1`)؛ برای تایید از `openclaw status --all` استفاده کنید.
-- برای دسترسی LAN از `listenaddress=0.0.0.0` استفاده کنید؛ `127.0.0.1` آن را فقط محلی نگه می‌دارد.
-- اگر می‌خواهید این کار خودکار باشد، یک Scheduled Task ثبت کنید تا مرحله تازه‌سازی را هنگام ورود اجرا کند.
+### برنامه می‌گوید pairing لازم است
 
-## نصب گام‌به‌گام WSL2
-
-### 1) نصب WSL2 + Ubuntu
-
-PowerShell را باز کنید (Admin):
+درخواست operator یا Node را از Gateway تأیید کنید:
 
 ```powershell
-wsl --install
-# Or pick a distro explicitly:
-wsl --list --online
-wsl --install -d Ubuntu-24.04
+openclaw devices list
+openclaw devices approve <request-id>
 ```
 
-اگر Windows درخواست کرد، راه‌اندازی مجدد کنید.
+اگر دستگاه از قبل token داشت، پس از
+تأیید از زبانه Connections دوباره متصل شوید.
 
-### 2) فعال‌کردن systemd (برای نصب gateway لازم است)
+### چت وب نمی‌تواند به Gateway راه دور دسترسی پیدا کند
 
-در ترمینال WSL خود:
+چت وب راه دور به HTTPS یا localhost نیاز دارد. برای گواهی‌های self-signed،
+گواهی را در ویندوز trust کنید، یا از یک تونل SSH به URL localhost استفاده کنید.
 
-```bash
-sudo tee /etc/wsl.conf >/dev/null <<'EOF'
-[boot]
-systemd=true
-EOF
-```
+### دستورهای `screen.snapshot`، دوربین، یا صدا ناموفق هستند
 
-سپس از PowerShell:
+مجوزهای ویندوز برای دوربین، میکروفون، screen capture و
+اعلان‌ها را تأیید کنید. نصب‌های packaged قابلیت‌های محافظت‌شده را declare می‌کنند، اما ویندوز
+ممکن است در اولین استفاده یک دستور از آن‌ها همچنان prompt نشان دهد.
 
-```powershell
-wsl --shutdown
-```
+### اتصال Git یا GitHub ناموفق است
 
-Ubuntu را دوباره باز کنید، سپس بررسی کنید:
+برخی شبکه‌ها HTTPS به GitHub را مسدود یا throttle می‌کنند. اگر `git clone` یا `gh auth
+login` ناموفق بود، یک شبکه دیگر، VPN، یا proxy HTTP/HTTPS را امتحان کنید.
 
-```bash
-systemctl --user status
-```
-
-### 3) نصب OpenClaw (داخل WSL)
-
-برای راه‌اندازی عادی بار اول داخل WSL، جریان شروع به کار Linux را دنبال کنید:
-
-```bash
-git clone https://github.com/openclaw/openclaw.git
-cd openclaw
-pnpm install
-pnpm build
-pnpm ui:build
-pnpm openclaw onboard --install-daemon
-```
-
-اگر به‌جای onboarding بار اول، از سورس توسعه می‌دهید، از حلقه توسعه سورس در [راه‌اندازی](/fa/start/setup) استفاده کنید:
-
-```bash
-pnpm install
-# First run only (or after resetting local OpenClaw config/workspace)
-pnpm openclaw setup
-pnpm gateway:watch
-```
-
-راهنمای کامل: [شروع به کار](/fa/start/getting-started)
-
-## برنامه همراه Windows
-
-هنوز برنامه همراه Windows نداریم. اگر می‌خواهید در تحقق آن کمک کنید، مشارکت‌ها پذیرفته می‌شوند.
-
-## اتصال Git و GitHub (مشارکت‌کنندگان)
-
-بعضی شبکه‌ها HTTPS به GitHub را مسدود یا محدود می‌کنند. اگر `git clone` با timeout یا بازنشانی اتصال شکست خورد، شبکه‌ای دیگر، VPN، یا یک پراکسی HTTP/HTTPS ارائه‌شده توسط سازمانتان را امتحان کنید.
-
-اگر `gh auth login` هنگام جریان دستگاه مرورگر شکست خورد (برای مثال timeout هنگام دسترسی به `github.com:443`)، به‌جای آن با یک personal access token احراز هویت کنید:
-
-1. یک token با حداقل scope مربوط به `repo` (PAT کلاسیک) یا دسترسی fine-grained معادل بسازید.
-2. در PowerShell برای نشست فعلی:
+برای auth مبتنی بر token در `gh` در نشست فعلی:
 
 ```powershell
 $env:GH_TOKEN="<your-token>"
@@ -259,18 +311,12 @@ gh auth status
 gh auth setup-git
 ```
 
-3. اگر `gh auth status` درباره نبودن `read:org` هشدار داد، token بسازید که شامل آن scope باشد و متغیر را دوباره اختصاص دهید:
-
-```powershell
-$env:GH_TOKEN="<your-token-with-repo-and-read:org>"
-gh auth status
-```
-
-`gh auth refresh -s read:org` فقط زمانی اعمال می‌شود که از طریق `gh auth login` احراز هویت کرده باشید و اعتبارنامه‌های ذخیره‌شده برای تازه‌سازی داشته باشید (نه هنگام استفاده از `GH_TOKEN`).
-
-هرگز tokenها را commit نکنید یا آن‌ها را در issueها یا pull requestها نچسبانید.
+هرگز tokenها را commit نکنید یا آن‌ها را در issueها یا pull requestها paste نکنید.
 
 ## مرتبط
 
 - [نمای کلی نصب](/fa/install)
-- [پلتفرم‌ها](/fa/platforms)
+- [راه‌اندازی Node.js](/fa/install/node)
+- [Nodeها](/fa/nodes)
+- [Control UI](/fa/web/control-ui)
+- [پیکربندی Gateway](/fa/gateway/configuration)

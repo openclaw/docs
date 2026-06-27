@@ -1,38 +1,48 @@
 ---
 read_when:
-    - Você quer síntese de fala da Inworld para respostas de saída
-    - Você precisa de saída de telefonia PCM ou de nota de voz OGG_OPUS da Inworld
-summary: Texto para fala em streaming da Inworld para respostas do OpenClaw
+    - Você quer síntese de fala da Inworld para respostas enviadas
+    - Você precisa de saída de telefonia PCM ou nota de voz OGG_OPUS do Inworld
+summary: Texto em fala por streaming da Inworld para respostas do OpenClaw
 title: Inworld
 x-i18n:
-    generated_at: "2026-05-06T09:10:59Z"
+    generated_at: "2026-06-27T18:04:14Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: caf291bab5da946262ecaf4263c188c168be08ddb43fda72f250b8f8db87b3ff
+    source_hash: ea65903945586516b51b239f0671b9e59dac92f302442f3cb629f66b68338cfb
     source_path: providers/inworld.md
     workflow: 16
 ---
 
 Inworld é um provedor de texto para fala (TTS) por streaming. No OpenClaw, ele
-sintetiza o áudio de respostas de saída (MP3 por padrão, OGG_OPUS para notas de voz)
-e áudio PCM para canais de telefonia, como Chamada de voz.
+sintetiza áudio de resposta de saída (MP3 por padrão, OGG_OPUS para notas de voz)
+e áudio PCM para canais de telefonia, como Voice Call.
 
-O OpenClaw envia requisições para o endpoint de TTS por streaming da Inworld, concatena os
-fragmentos de áudio em base64 retornados em um único buffer e entrega o resultado ao
+O OpenClaw envia requisições ao endpoint de TTS por streaming da Inworld, concatena os
+blocos de áudio em base64 retornados em um único buffer e entrega o resultado ao
 pipeline padrão de áudio de resposta.
 
-| Propriedade   | Valor                                                           |
-| ------------- | --------------------------------------------------------------- |
-| ID do provedor | `inworld`                                                      |
-| Plugin        | incluído, `enabledByDefault: true`                              |
-| Contrato      | `speechProviders` (somente TTS)                                 |
-| Variável de ambiente de autenticação | `INWORLD_API_KEY` (HTTP Basic, credencial Base64 do painel) |
-| URL base      | `https://api.inworld.ai`                                        |
-| Voz padrão    | `Sarah`                                                         |
-| Modelo padrão | `inworld-tts-1.5-max`                                           |
-| Saída         | MP3 (padrão), OGG_OPUS (notas de voz), PCM 22050 Hz (telefonia) |
-| Site          | [inworld.ai](https://inworld.ai)                                |
-| Documentação  | [docs.inworld.ai/tts/tts](https://docs.inworld.ai/tts/tts)      |
+| Propriedade     | Valor                                                           |
+| --------------- | --------------------------------------------------------------- |
+| ID do provedor  | `inworld`                                                       |
+| Plugin          | pacote externo oficial                                          |
+| Contrato        | `speechProviders` (somente TTS)                                 |
+| Variável de ambiente de autenticação | `INWORLD_API_KEY` (HTTP Basic, credencial do painel em Base64) |
+| URL base        | `https://api.inworld.ai`                                        |
+| Voz padrão      | `Sarah`                                                         |
+| Modelo padrão   | `inworld-tts-1.5-max`                                           |
+| Saída           | MP3 (padrão), OGG_OPUS (notas de voz), PCM 22050 Hz (telefonia) |
+| Site            | [inworld.ai](https://inworld.ai)                                |
+| Documentação    | [docs.inworld.ai/tts/tts](https://docs.inworld.ai/tts/tts)      |
+
+## Instalar Plugin
+
+Instale o Plugin oficial e reinicie o Gateway:
+
+```bash
+openclaw plugins install @openclaw/inworld-speech
+openclaw gateway restart
+```
 
 ## Primeiros passos
 
@@ -57,7 +67,7 @@ pipeline padrão de áudio de resposta.
           provider: "inworld",
           providers: {
             inworld: {
-              voiceId: "Sarah",
+              speakerVoiceId: "Sarah",
               modelId: "inworld-tts-1.5-max",
             },
           },
@@ -75,13 +85,13 @@ pipeline padrão de áudio de resposta.
 
 ## Opções de configuração
 
-| Opção         | Caminho                                      | Descrição                                                        |
-| ------------- | -------------------------------------------- | ---------------------------------------------------------------- |
-| `apiKey`      | `messages.tts.providers.inworld.apiKey`      | Credencial Base64 do painel. Usa `INWORLD_API_KEY` como fallback. |
-| `baseUrl`     | `messages.tts.providers.inworld.baseUrl`     | Substitui a URL base da API da Inworld (padrão `https://api.inworld.ai`). |
-| `voiceId`     | `messages.tts.providers.inworld.voiceId`     | Identificador de voz (padrão `Sarah`).                           |
-| `modelId`     | `messages.tts.providers.inworld.modelId`     | ID do modelo TTS (padrão `inworld-tts-1.5-max`).                 |
-| `temperature` | `messages.tts.providers.inworld.temperature` | Temperatura de amostragem `0..2` (opcional).                     |
+| Opção            | Caminho                                         | Descrição                                                         |
+| ---------------- | ----------------------------------------------- | ----------------------------------------------------------------- |
+| `apiKey`         | `messages.tts.providers.inworld.apiKey`         | Credencial do painel em Base64. Usa `INWORLD_API_KEY` como fallback. |
+| `baseUrl`        | `messages.tts.providers.inworld.baseUrl`        | Substitui a URL base da API da Inworld (padrão `https://api.inworld.ai`). |
+| `speakerVoiceId` | `messages.tts.providers.inworld.speakerVoiceId` | Identificador da voz (padrão `Sarah`).                            |
+| `modelId`        | `messages.tts.providers.inworld.modelId`        | ID do modelo de TTS (padrão `inworld-tts-1.5-max`).               |
+| `temperature`    | `messages.tts.providers.inworld.temperature`    | Temperatura de amostragem `0..2` (opcional).                      |
 
 ## Observações
 
@@ -91,7 +101,7 @@ pipeline padrão de áudio de resposta.
     codificada em Base64. Copie-a literalmente do painel da Inworld. O provedor a envia
     como `Authorization: Basic <apiKey>` sem nenhuma codificação adicional, portanto
     não a codifique em Base64 você mesmo e não passe um token no estilo bearer.
-    Consulte [observações de autenticação de TTS](/pt-BR/tools/tts#inworld-primary) para o mesmo destaque.
+    Consulte [observações de autenticação de TTS](/pt-BR/tools/tts#inworld-primary) para o mesmo aviso.
   </Accordion>
   <Accordion title="Modelos">
     IDs de modelo compatíveis: `inworld-tts-1.5-max` (padrão),
@@ -99,8 +109,8 @@ pipeline padrão de áudio de resposta.
   </Accordion>
   <Accordion title="Saídas de áudio">
     As respostas usam MP3 por padrão. Quando o destino do canal é `voice-note`,
-    o OpenClaw solicita `OGG_OPUS` à Inworld para que o áudio seja reproduzido como uma
-    bolha de voz nativa. A síntese de telefonia usa `PCM` bruto a 22050 Hz para alimentar
+    o OpenClaw solicita `OGG_OPUS` à Inworld para que o áudio seja reproduzido como um balão
+    de voz nativo. A síntese para telefonia usa `PCM` bruto a 22050 Hz para alimentar
     a ponte de telefonia.
   </Accordion>
   <Accordion title="Endpoints personalizados">
@@ -109,7 +119,7 @@ pipeline padrão de áudio de resposta.
   </Accordion>
 </AccordionGroup>
 
-## Relacionado
+## Relacionados
 
 <CardGroup cols={2}>
   <Card title="Texto para fala" href="/pt-BR/tools/tts" icon="waveform-lines">
@@ -119,7 +129,7 @@ pipeline padrão de áudio de resposta.
     Referência completa de configuração, incluindo definições de `messages.tts`.
   </Card>
   <Card title="Provedores" href="/pt-BR/providers" icon="grid">
-    Todos os provedores incluídos do OpenClaw.
+    Todos os provedores compatíveis do OpenClaw.
   </Card>
   <Card title="Solução de problemas" href="/pt-BR/help/troubleshooting" icon="wrench">
     Problemas comuns e etapas de depuração.

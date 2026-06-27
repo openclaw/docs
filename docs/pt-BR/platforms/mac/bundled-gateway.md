@@ -1,15 +1,16 @@
 ---
 read_when:
-    - Empacotamento do OpenClaw.app
-    - Depuração do serviço launchd do Gateway no macOS
-    - Instalação da CLI do Gateway para macOS
-summary: Ambiente de execução do Gateway no macOS (serviço launchd externo)
+    - Empacotando OpenClaw.app
+    - Depurando o serviço launchd do Gateway no macOS
+    - Instalando a CLI do gateway para macOS
+summary: Runtime do Gateway no macOS (serviço launchd externo)
 title: Gateway no macOS
 x-i18n:
-    generated_at: "2026-05-07T13:20:52Z"
+    generated_at: "2026-06-27T17:42:50Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: caf129918c46f8f54026e9db04e8ad5a033148899d3029fe1a362bb14c7f25f8
+    source_hash: 76c55e3d24e5bc743233e11be4897f4f2a865c97f2e0d795a472caeb6d097d34
     source_path: platforms/mac/bundled-gateway.md
     workflow: 16
 ---
@@ -21,7 +22,7 @@ em execução (ou se conecta a um Gateway local existente se já houver um em ex
 
 ## Instale a CLI (obrigatório para o modo local)
 
-Node 24 é o runtime padrão no Mac. Node 22 LTS, atualmente `22.16+`, ainda funciona por compatibilidade. Em seguida, instale `openclaw` globalmente:
+Node 24 é o runtime padrão no Mac. Node 22 LTS, atualmente `22.19+`, ainda funciona por compatibilidade. Em seguida, instale `openclaw` globalmente:
 
 ```bash
 npm install -g openclaw@<version>
@@ -44,26 +45,27 @@ Localização do plist (por usuário):
 
 Gerenciador:
 
-- O app macOS é responsável por instalar/atualizar o LaunchAgent no modo Local.
+- O app macOS é responsável pela instalação/atualização do LaunchAgent no modo Local.
 - A CLI também pode instalá-lo: `openclaw gateway install`.
 
 Comportamento:
 
-- "OpenClaw Ativo" ativa/desativa o LaunchAgent.
+- "OpenClaw Active" ativa/desativa o LaunchAgent.
 - Sair do app **não** interrompe o gateway (o launchd o mantém ativo).
 - Se um Gateway já estiver em execução na porta configurada, o app se conecta a
   ele em vez de iniciar um novo.
 
-Logs:
+Registro:
 
-- stdout/err do launchd: `/tmp/openclaw/openclaw-gateway.log`
+- stdout do launchd: `~/Library/Logs/openclaw/gateway.log` (perfis usam `gateway-<profile>.log`)
+- stderr do launchd: suprimido
 
-## Compatibilidade de versões
+## Compatibilidade de versão
 
 O app macOS verifica a versão do gateway em relação à sua própria versão. Se elas forem
 incompatíveis, atualize a CLI global para corresponder à versão do app.
 
-## Verificação smoke
+## Verificação rápida
 
 ```bash
 openclaw --version
@@ -79,7 +81,7 @@ Em seguida:
 openclaw gateway call health --url ws://127.0.0.1:18999 --timeout 3000
 ```
 
-## Relacionado
+## Relacionados
 
 - [app macOS](/pt-BR/platforms/macos)
 - [Runbook do Gateway](/pt-BR/gateway)

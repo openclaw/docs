@@ -1,40 +1,31 @@
 ---
 read_when:
-    - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin WhatsApp
-summary: Thêm giao diện kênh WhatsApp để gửi và nhận tin nhắn OpenClaw.
+    - Bạn đang cài đặt, cấu hình hoặc kiểm tra plugin WhatsApp
+summary: Plugin kênh WhatsApp của OpenClaw cho các cuộc trò chuyện WhatsApp Web.
 title: Plugin WhatsApp
 x-i18n:
-    generated_at: "2026-05-05T06:18:32Z"
+    generated_at: "2026-06-27T17:56:39Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a0fa274f7e937894a070abd9307aa12eed17b27275bc7e5cfc432f8a41373c54
+    source_hash: cf563ff1384728455bd4035ba20e3bb793d039c53916cc6ee55c2f3e6fd62f01
     source_path: plugins/reference/whatsapp.md
     workflow: 16
 ---
 
 # Plugin WhatsApp
 
-Thêm giao diện kênh WhatsApp để gửi và nhận tin nhắn OpenClaw.
+Plugin kênh WhatsApp của OpenClaw cho các cuộc trò chuyện trên WhatsApp Web.
 
 ## Phân phối
 
 - Gói: `@openclaw/whatsapp`
-- Phương thức cài đặt: npm; ClawHub
+- Đường dẫn cài đặt: ClawHub: `clawhub:@openclaw/whatsapp`; npm
 
-## Giao diện
+## Phạm vi
 
-channels: whatsapp
-
-## Ghi chú cài đặt trên Windows
-
-Trên Windows, Plugin WhatsApp cần Git có trong `PATH` trong quá trình cài đặt npm vì một trong các phụ thuộc Baileys/libsignal của nó được tải từ URL git. Cài đặt Git for Windows, sau đó khởi động lại shell và chạy lại lệnh cài đặt:
-
-```powershell
-winget install --id Git.Git -e
-```
-
-Portable Git cũng hoạt động nếu thư mục `bin` của nó có trong `PATH`.
+channels: whatsapp; skills
 
 ## Tài liệu liên quan
 
-- [whatsapp](/vi/channels/whatsapp)
+- [WhatsApp](/vi/channels/whatsapp)

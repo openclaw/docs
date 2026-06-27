@@ -2,30 +2,40 @@
 read_when:
     - Je wilt Exa gebruiken voor web_search
     - Je hebt een EXA_API_KEY nodig
-    - Je wilt neuraal zoeken of contentextractie
-summary: Exa AI-zoekfunctie -- neurale zoekfunctie en zoeken op trefwoorden met inhoudsextractie
+    - Je wilt neurale zoekfunctionaliteit of contentextractie
+summary: Exa AI-zoekfunctie -- neurale zoekfunctie en trefwoordzoekfunctie met contentextractie
 title: Exa-zoekfunctie
 x-i18n:
-    generated_at: "2026-05-02T11:29:04Z"
+    generated_at: "2026-06-27T18:25:16Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d2ddf83c5130208eadc78eccb10aebf67af11b05690d75a817d6999f79be5fc3
+    source_hash: ffbf61b6cb7768898842e27805acc34334544b327d010246da12513218aa465f
     source_path: tools/exa-search.md
     workflow: 16
 ---
 
 OpenClaw ondersteunt [Exa AI](https://exa.ai/) als `web_search`-provider. Exa
-biedt neurale, trefwoord- en hybride zoekmodi met ingebouwde contentextractie
+biedt neurale, trefwoord- en hybride zoekmodi met ingebouwde inhoudsextractie
 (highlights, tekst, samenvattingen).
+
+## Plugin installeren
+
+Installeer de officiële Plugin en herstart daarna Gateway:
+
+```bash
+openclaw plugins install @openclaw/exa-plugin
+openclaw gateway restart
+```
 
 ## Een API-sleutel verkrijgen
 
 <Steps>
-  <Step title="Een account maken">
-    Registreer je op [exa.ai](https://exa.ai/) en genereer een API-sleutel via je
+  <Step title="Maak een account aan">
+    Registreer je op [exa.ai](https://exa.ai/) en genereer een API-sleutel vanuit je
     dashboard.
   </Step>
-  <Step title="De sleutel opslaan">
+  <Step title="Sla de sleutel op">
     Stel `EXA_API_KEY` in de Gateway-omgeving in, of configureer via:
 
     ```bash
@@ -62,15 +72,16 @@ biedt neurale, trefwoord- en hybride zoekmodi met ingebouwde contentextractie
 ```
 
 **Omgevingsalternatief:** stel `EXA_API_KEY` in de Gateway-omgeving in.
-Voor een gateway-installatie plaats je dit in `~/.openclaw/.env`.
+Plaats dit voor een Gateway-installatie in `~/.openclaw/.env`.
 
 ## Base-URL overschrijven
 
 Stel `plugins.entries.exa.config.webSearch.baseUrl` in wanneer Exa-zoekverzoeken
 via een compatibele proxy of alternatief Exa-eindpunt moeten lopen. OpenClaw
-normaliseert kale hosts door `https://` ervoor te zetten en voegt `/search` toe, tenzij het
-pad daar al op eindigt. Het opgeloste eindpunt wordt opgenomen in de zoekcache-
-sleutel, zodat resultaten van verschillende Exa-eindpunten niet worden gedeeld.
+normaliseert kale hosts door `https://` ervoor te plaatsen en voegt `/search`
+toe, tenzij het pad daar al op eindigt. Het opgeloste eindpunt wordt opgenomen
+in de zoekcache-sleutel, zodat resultaten van verschillende Exa-eindpunten niet
+worden gedeeld.
 
 ## Toolparameters
 
@@ -79,7 +90,7 @@ Zoekquery.
 </ParamField>
 
 <ParamField path="count" type="number">
-Aantal te retourneren resultaten (1-100).
+Terug te geven resultaten (1-100).
 </ParamField>
 
 <ParamField path="type" type="'auto' | 'neural' | 'fast' | 'deep' | 'deep-reasoning' | 'instant'">
@@ -87,7 +98,7 @@ Zoekmodus.
 </ParamField>
 
 <ParamField path="freshness" type="'day' | 'week' | 'month' | 'year'">
-Tijdsfilter.
+Tijdfilter.
 </ParamField>
 
 <ParamField path="date_after" type="string">
@@ -99,13 +110,13 @@ Resultaten vóór deze datum (`YYYY-MM-DD`).
 </ParamField>
 
 <ParamField path="contents" type="object">
-Opties voor contentextractie (zie hieronder).
+Opties voor inhoudsextractie (zie hieronder).
 </ParamField>
 
-### Contentextractie
+### Inhoudsextractie
 
-Exa kan geëxtraheerde content naast zoekresultaten retourneren. Geef een `contents`-
-object door om dit in te schakelen:
+Exa kan geëxtraheerde inhoud naast zoekresultaten teruggeven. Geef een
+`contents`-object door om dit in te schakelen:
 
 ```javascript
 await web_search({
@@ -119,41 +130,41 @@ await web_search({
 });
 ```
 
-| Contents-optie | Type                                                                  | Beschrijving                         |
+| Inhoudsoptie    | Type                                                                  | Beschrijving                         |
 | --------------- | --------------------------------------------------------------------- | ------------------------------------ |
-| `text`          | `boolean \| { maxCharacters }`                                        | Volledige paginatekst extraheren     |
-| `highlights`    | `boolean \| { maxCharacters, query, numSentences, highlightsPerUrl }` | Kernzinnen extraheren                |
+| `text`          | `boolean \| { maxCharacters }`                                        | Extraheer volledige paginatekst      |
+| `highlights`    | `boolean \| { maxCharacters, query, numSentences, highlightsPerUrl }` | Extraheer kernzinnen                 |
 | `summary`       | `boolean \| { query }`                                                | Door AI gegenereerde samenvatting    |
 
 ### Zoekmodi
 
-| Modus            | Beschrijving                                  |
-| ---------------- | --------------------------------------------- |
-| `auto`           | Exa kiest de beste modus (standaard)          |
-| `neural`         | Semantisch/betekenisgebaseerd zoeken          |
-| `fast`           | Snel zoeken op trefwoorden                    |
-| `deep`           | Grondig diep zoeken                           |
-| `deep-reasoning` | Diep zoeken met redeneren                     |
-| `instant`        | Snelste resultaten                            |
+| Modus            | Beschrijving                                      |
+| ---------------- | ------------------------------------------------- |
+| `auto`           | Exa kiest de beste modus (standaard)              |
+| `neural`         | Semantische/op betekenis gebaseerde zoekopdracht  |
+| `fast`           | Snelle trefwoordzoekopdracht                      |
+| `deep`           | Grondige deep search                              |
+| `deep-reasoning` | Deep search met reasoning                         |
+| `instant`        | Snelste resultaten                                |
 
 ## Opmerkingen
 
-- Als er geen `contents`-optie is opgegeven, gebruikt Exa standaard `{ highlights: true }`
+- Als er geen `contents`-optie wordt opgegeven, gebruikt Exa standaard `{ highlights: true }`,
   zodat resultaten fragmenten van kernzinnen bevatten
-- Resultaten behouden `highlightScores`- en `summary`-velden uit de Exa API-
-  respons wanneer beschikbaar
-- Resultaatbeschrijvingen worden eerst uit highlights bepaald, daarna uit de samenvatting en daarna
-  uit de volledige tekst, afhankelijk van wat beschikbaar is
-- `freshness` en `date_after`/`date_before` kunnen niet worden gecombineerd; gebruik één
-  tijdsfiltermodus
-- Er kunnen maximaal 100 resultaten per query worden geretourneerd (afhankelijk van Exa-zoektype-
-  limieten)
+- Resultaten behouden de velden `highlightScores` en `summary` uit de Exa API-
+  response wanneer beschikbaar
+- Resultaatbeschrijvingen worden eerst uit highlights opgelost, daarna uit de samenvatting en daarna
+  uit volledige tekst — afhankelijk van wat beschikbaar is
+- `freshness` en `date_after`/`date_before` kunnen niet worden gecombineerd — gebruik één
+  tijdfiltermodus
+- Per query kunnen maximaal 100 resultaten worden teruggegeven (afhankelijk van de
+  limieten van het Exa-zoektype)
 - Resultaten worden standaard 15 minuten gecachet (configureerbaar via
   `cacheTtlMinutes`)
-- Exa is een officiële API-integratie met gestructureerde JSON-responsen
+- Exa is een officiële API-integratie met gestructureerde JSON-responses
 
 ## Gerelateerd
 
 - [Overzicht van Web Search](/nl/tools/web) -- alle providers en automatische detectie
-- [Brave Search](/nl/tools/brave-search) -- gestructureerde resultaten met filters voor land/taal
+- [Brave Search](/nl/tools/brave-search) -- gestructureerde resultaten met land-/taalfilters
 - [Perplexity Search](/nl/tools/perplexity-search) -- gestructureerde resultaten met domeinfiltering

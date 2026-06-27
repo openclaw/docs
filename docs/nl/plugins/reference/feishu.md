@@ -1,20 +1,21 @@
 ---
 read_when:
     - Je installeert, configureert of controleert de feishu Plugin
-summary: Voegt de Feishu-kanaalinterface toe voor het verzenden en ontvangen van OpenClaw-berichten.
+summary: OpenClaw Feishu/Lark-kanaalplugin voor chats en werkplektools (door de community onderhouden door @m1heng).
 title: Feishu Plugin
 x-i18n:
-    generated_at: "2026-05-03T11:14:48Z"
+    generated_at: "2026-06-27T18:00:42Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cb9fa20533e6ad7f65ffbb3050166637bea8e8ab867dd3894ad90a77999ba9b8
+    source_hash: d55792e08be92877a8b86548b725b59aee149b352bba8a5e51ed590a59e0dbc9
     source_path: plugins/reference/feishu.md
     workflow: 16
 ---
 
-# Feishu-plugin
+# Feishu-Plugin
 
-Voegt het Feishu-kanaaloppervlak toe voor het verzenden en ontvangen van OpenClaw-berichten.
+OpenClaw Feishu/Lark-kanaalplugin voor chats en werkplektools (door de community onderhouden door @m1heng).
 
 ## Distributie
 
@@ -23,8 +24,8 @@ Voegt het Feishu-kanaaloppervlak toe voor het verzenden en ontvangen van OpenCla
 
 ## Oppervlak
 
-channels: feishu; contracts: tools; skills
+kanalen: feishu; contracten: tools; skills
 
-## Gerelateerde docs
+## Gerelateerde documentatie
 
 - [feishu](/nl/channels/feishu)

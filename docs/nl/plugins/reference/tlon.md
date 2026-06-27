@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de tlon-plugin
-summary: Voegt de Tlon-kanaalinterface toe voor het verzenden en ontvangen van OpenClaw-berichten.
-title: Tlon-plugin
+    - Je installeert, configureert of auditeert de tlon-Plugin
+summary: OpenClaw Tlon/Urbit-kanaal-Plugin voor chatworkflows.
+title: Tlon Plugin
 x-i18n:
-    generated_at: "2026-05-03T11:15:59Z"
+    generated_at: "2026-06-27T18:04:41Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 636c7fc3ae8f8f35337d2fe279f1752226ff7ee017442372878448a82f99ecce
+    source_hash: 6fd1dcc934734599c0b671f0a9659dc5cc6e4ff907e3e14f9ff3ba5ec86aa0cc
     source_path: plugins/reference/tlon.md
     workflow: 16
 ---
 
 # Tlon Plugin
 
-Voegt het Tlon-kanaaloppervlak toe voor het verzenden en ontvangen van OpenClaw-berichten.
+OpenClaw Tlon/Urbit-kanaalplugin voor chatworkflows.
 
 ## Distributie
 
@@ -23,7 +24,7 @@ Voegt het Tlon-kanaaloppervlak toe voor het verzenden en ontvangen van OpenClaw-
 
 ## Oppervlak
 
-kanalen: tlon; contracten: tools; Skills
+kanalen: tlon; Skills
 
 ## Gerelateerde documentatie
 

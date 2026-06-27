@@ -1,26 +1,27 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або аудіюєте Plugin qa-lab
-summary: Plugin лабораторії QA OpenClaw із приватним інтерфейсом налагоджувача та засобом запуску сценаріїв.
-title: Plugin QA Lab
+    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin qa-lab
+summary: Plugin лабораторії QA OpenClaw із приватним інтерфейсом налагоджувача та запуском сценаріїв.
+title: Плагін QA Lab
 x-i18n:
-    generated_at: "2026-05-02T15:20:58Z"
+    generated_at: "2026-06-27T18:01:10Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a565d11bc2e1051685b6c067b695fbec980bfe21f50c98d5a616ed3dcbecb98e
+    source_hash: 0de3ac126939c822225cfd4bf75af594e6066f7992cacc71b1455638aab3af0b
     source_path: plugins/reference/qa-lab.md
     workflow: 16
 ---
 
 # Plugin QA Lab
 
-Plugin OpenClaw QA lab із приватним інтерфейсом налагоджувача та запуском сценаріїв.
+Plugin QA Lab OpenClaw із приватним інтерфейсом налагоджувача та засобом запуску сценаріїв.
 
-## Поширення
+## Розповсюдження
 
 - Пакет: `@openclaw/qa-lab`
-- Маршрут установлення: лише checkout вихідного коду
+- Шлях встановлення: лише вихідний checkout
 
 ## Поверхня
 
-Plugin
+контракти: webSearchProviders

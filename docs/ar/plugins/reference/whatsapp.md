@@ -1,39 +1,30 @@
 ---
 read_when:
-    - تقوم بتثبيت Plugin الخاص بـ WhatsApp أو تكوينه أو تدقيقه
-summary: يضيف واجهة قناة WhatsApp لإرسال رسائل OpenClaw واستلامها.
+    - أنت تثبّت أو تضبط أو تراجع Plugin WhatsApp
+summary: Plugin قناة OpenClaw WhatsApp لمحادثات WhatsApp Web.
 title: Plugin WhatsApp
 x-i18n:
-    generated_at: "2026-05-05T06:19:17Z"
+    generated_at: "2026-06-27T18:16:18Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a0fa274f7e937894a070abd9307aa12eed17b27275bc7e5cfc432f8a41373c54
+    source_hash: cf563ff1384728455bd4035ba20e3bb793d039c53916cc6ee55c2f3e6fd62f01
     source_path: plugins/reference/whatsapp.md
     workflow: 16
 ---
 
-# WhatsApp Plugin
+# Plugin WhatsApp
 
-يضيف سطح قناة WhatsApp لإرسال رسائل OpenClaw واستقبالها.
+Plugin قناة OpenClaw WhatsApp لمحادثات WhatsApp Web.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/whatsapp`
-- مسار التثبيت: npm؛ ClawHub
+- مسار التثبيت: ClawHub: `clawhub:@openclaw/whatsapp`؛ npm
 
 ## السطح
 
-channels: whatsapp
-
-## ملاحظة تثبيت Windows
-
-على Windows، يحتاج WhatsApp Plugin إلى وجود Git في `PATH` أثناء تثبيت npm لأن إحدى تبعيات Baileys/libsignal الخاصة به تُجلب من عنوان URL خاص بـ git. ثبّت Git for Windows، ثم أعد تشغيل الصدفة وأعد تنفيذ التثبيت:
-
-```powershell
-winget install --id Git.Git -e
-```
-
-يعمل Portable Git أيضًا إذا كان دليل `bin` الخاص به موجودًا في `PATH`.
+القنوات: whatsapp؛ Skills
 
 ## المستندات ذات الصلة
 

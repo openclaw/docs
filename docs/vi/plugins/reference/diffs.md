@@ -1,26 +1,27 @@
 ---
 read_when:
     - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin diffs
-summary: Trình xem diff chỉ đọc và trình kết xuất tệp cho các tác nhân.
-title: Plugin Diffs
+summary: Plugin xem diff chỉ đọc và trình kết xuất tệp cho tác nhân của OpenClaw.
+title: Plugin so sánh khác biệt
 x-i18n:
-    generated_at: "2026-05-03T10:41:16Z"
+    generated_at: "2026-06-27T17:52:04Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1a56c666d510a949b40b9aee47001844fc82206ee378ac5770f23bea9c550027
+    source_hash: 836ed7a32a0868ee24eacf8f72e8c7888ebbd5d07ca62b2b6170d6a1919f7382
     source_path: plugins/reference/diffs.md
     workflow: 16
 ---
 
 # Plugin Diffs
 
-Trình xem diff chỉ đọc và trình kết xuất tệp dành cho tác tử.
+Plugin xem diff chỉ đọc và trình kết xuất tệp của OpenClaw cho tác nhân.
 
 ## Phân phối
 
 - Gói: `@openclaw/diffs`
-- Lộ trình cài đặt: npm; ClawHub
+- Tuyến cài đặt: npm; ClawHub
 
 ## Bề mặt
 
-hợp đồng: công cụ; kỹ năng
+hợp đồng: công cụ; Skills

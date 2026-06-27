@@ -1,20 +1,21 @@
 ---
 read_when:
-    - أنت تثبّت Plugin brave أو تهيّئه أو تدقّق فيه
-summary: يضيف دعم موفّر البحث على الويب.
+    - أنت بصدد تثبيت Plugin brave أو تهيئته أو تدقيقه
+summary: Plugin موفّر Brave Search في OpenClaw للبحث على الويب.
 title: Plugin Brave
 x-i18n:
-    generated_at: "2026-05-03T07:35:50Z"
+    generated_at: "2026-06-27T18:10:33Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b26d45080e2db635e9b07e1c6b674061c2b82549edc4d8d88e6f4f68bc9d43df
+    source_hash: 265b0efa840eb3ebc7bfc1cc47b703737bbd76050ac95e79825728030a166d37
     source_path: plugins/reference/brave.md
     workflow: 16
 ---
 
 # Plugin Brave
 
-يضيف دعم مزود بحث الويب.
+Plugin موفّر Brave Search من OpenClaw للبحث على الويب.
 
 ## التوزيع
 

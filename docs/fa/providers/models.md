@@ -1,19 +1,20 @@
 ---
 read_when:
-    - می‌خواهید یک ارائه‌دهندهٔ مدل را انتخاب کنید
-    - نمونه‌های راه‌اندازی سریع برای احراز هویت LLM + انتخاب مدل می‌خواهید
-summary: ارائه‌دهندگان مدل (مدل‌های زبانی بزرگ) پشتیبانی‌شده توسط OpenClaw
+    - می‌خواهید یک ارائه‌دهندهٔ مدل انتخاب کنید
+    - نمونه‌های راه‌اندازی سریع برای احراز هویت LLM و انتخاب مدل می‌خواهید
+summary: ارائه‌دهندگان مدل (LLMها) پشتیبانی‌شده توسط OpenClaw
 title: شروع سریع ارائه‌دهندهٔ مدل
 x-i18n:
-    generated_at: "2026-05-06T18:02:04Z"
+    generated_at: "2026-06-27T18:41:44Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7e95d37f3e332a9b2eb58a15dc356ad02b4cbf409926adb3faf1923825219887
+    source_hash: ca59b0203b4b5e327b2718a356f6fc1da2f868dac4ca219a2597a96dbf949804
     source_path: providers/models.md
     workflow: 16
 ---
 
-OpenClaw می‌تواند از بسیاری از ارائه‌دهندگان LLM استفاده کند. یکی را انتخاب کنید، احراز هویت کنید، سپس مدل پیش‌فرض را به صورت `provider/model` تنظیم کنید.
+OpenClaw می‌تواند از ارائه‌دهندگان LLM متعددی استفاده کند. یکی را انتخاب کنید، احراز هویت کنید، سپس مدل پیش‌فرض را به‌صورت `provider/model` تنظیم کنید.
 
 ## شروع سریع (دو مرحله)
 
@@ -33,12 +34,12 @@ OpenClaw می‌تواند از بسیاری از ارائه‌دهندگان LL
 - [Anthropic (API + Claude CLI)](/fa/providers/anthropic)
 - [BytePlus (بین‌المللی)](/fa/concepts/model-providers#byteplus-international)
 - [Chutes](/fa/providers/chutes)
+- [Cohere](/fa/providers/cohere)
 - [ComfyUI](/fa/providers/comfy)
 - [Cloudflare AI Gateway](/fa/providers/cloudflare-ai-gateway)
 - [DeepInfra](/fa/providers/deepinfra)
 - [fal](/fa/providers/fal)
 - [Fireworks](/fa/providers/fireworks)
-- [مدل‌های GLM](/fa/providers/glm)
 - [MiniMax](/fa/providers/minimax)
 - [Mistral](/fa/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/fa/providers/moonshot)
@@ -53,19 +54,18 @@ OpenClaw می‌تواند از بسیاری از ارائه‌دهندگان LL
 - [Vercel AI Gateway](/fa/providers/vercel-ai-gateway)
 - [Venice (Venice AI)](/fa/providers/venice)
 - [xAI](/fa/providers/xai)
-- [Z.AI](/fa/providers/zai)
+- [Z.AI (GLM)](/fa/providers/zai)
 
-## گونه‌های اضافی ارائه‌دهنده‌های همراه
+## گونه‌های اضافی ارائه‌دهنده
 
-- `anthropic-vertex` - پشتیبانی ضمنی از Anthropic روی Google Vertex زمانی که اعتبارنامه‌های Vertex در دسترس باشند؛ گزینه احراز هویت جداگانه‌ای برای راه‌اندازی اولیه ندارد
+- `anthropic-vertex` - برای پشتیبانی ضمنی از Anthropic روی Google Vertex، وقتی اعتبارنامه‌های Vertex در دسترس هستند، `@openclaw/anthropic-vertex-provider` را نصب کنید؛ گزینه احراز هویت جداگانه‌ای در فرایند راه‌اندازی ندارد
 - `copilot-proxy` - پل محلی VS Code Copilot Proxy؛ از `openclaw onboard --auth-choice copilot-proxy` استفاده کنید
 - `google-gemini-cli` - جریان غیررسمی OAuth برای Gemini CLI؛ به نصب محلی `gemini` نیاز دارد (`brew install gemini-cli` یا `npm install -g @google/gemini-cli`)؛ مدل پیش‌فرض `google-gemini-cli/gemini-3-flash-preview`؛ از `openclaw onboard --auth-choice google-gemini-cli` یا `openclaw models auth login --provider google-gemini-cli --set-default` استفاده کنید
 
-برای کاتالوگ کامل ارائه‌دهندگان (xAI، Groq، Mistral و غیره) و پیکربندی پیشرفته،
-[ارائه‌دهندگان مدل](/fa/concepts/model-providers) را ببینید.
+برای کاتالوگ کامل ارائه‌دهندگان (xAI، Groq، Mistral و غیره) و پیکربندی پیشرفته، به [ارائه‌دهندگان مدل](/fa/concepts/model-providers) مراجعه کنید.
 
 ## مرتبط
 
 - [انتخاب مدل](/fa/concepts/model-providers)
-- [failover مدل](/fa/concepts/model-failover)
+- [جابه‌جایی خودکار مدل هنگام خرابی](/fa/concepts/model-failover)
 - [CLI مدل‌ها](/fa/cli/models)

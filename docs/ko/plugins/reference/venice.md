@@ -1,13 +1,14 @@
 ---
 read_when:
-    - venice Plugin을 설치, 구성 또는 감사하는 경우
+    - venice plugin을 설치, 구성 또는 감사하고 있습니다
 summary: OpenClaw에 Venice 모델 제공자 지원을 추가합니다.
 title: Venice Plugin
 x-i18n:
-    generated_at: "2026-05-02T21:08:30Z"
+    generated_at: "2026-06-27T17:54:42Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 360110485b78336c672acb6ad458e39d19b585b6532c82f4c99b8857b3f5401d
+    source_hash: 585efb336f3c3f5a9ca7da8a7dfc7bf2e5cb70bcd91fa2c05feea208bd93692e
     source_path: plugins/reference/venice.md
     workflow: 16
 ---
@@ -19,11 +20,11 @@ OpenClaw에 Venice 모델 제공자 지원을 추가합니다.
 ## 배포
 
 - 패키지: `@openclaw/venice-provider`
-- 설치 경로: OpenClaw에 포함됨
+- 설치 경로: npm; ClawHub: `clawhub:@openclaw/venice-provider`
 
 ## 표면
 
-제공자: venice
+providers: venice
 
 ## 관련 문서
 

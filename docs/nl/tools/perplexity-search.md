@@ -1,23 +1,33 @@
 ---
 read_when:
-    - U wilt Perplexity Search gebruiken voor zoekopdrachten op het web
-    - Je moet PERPLEXITY_API_KEY of OPENROUTER_API_KEY hebben ingesteld
+    - Je wilt Perplexity Search gebruiken voor zoeken op het web
+    - Je moet PERPLEXITY_API_KEY of OPENROUTER_API_KEY instellen
 summary: Perplexity Search API en Sonar/OpenRouter-compatibiliteit voor web_search
-title: Perplexity-zoekfunctie
+title: Perplexity-zoekopdracht
 x-i18n:
-    generated_at: "2026-05-06T09:37:21Z"
+    generated_at: "2026-06-27T18:28:46Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 113abafae66acd8aaa0302b687ba13347eb44a81a4217b61bb68f07d8a119cb0
+    source_hash: 6ef003238bc38dd3d92b98654598cba05fb1c324d8ca766a683cf1defe5bd435
     source_path: tools/perplexity-search.md
     workflow: 16
 ---
 
-OpenClaw ondersteunt de Perplexity Search API als een `web_search`-provider.
+OpenClaw ondersteunt de Perplexity Search API als `web_search`-provider.
 Deze retourneert gestructureerde resultaten met de velden `title`, `url` en `snippet`.
 
 Voor compatibiliteit ondersteunt OpenClaw ook verouderde Perplexity Sonar/OpenRouter-configuraties.
-Als je `OPENROUTER_API_KEY` gebruikt, een `sk-or-...`-sleutel in `plugins.entries.perplexity.config.webSearch.apiKey`, of `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` instelt, schakelt de provider over naar het chat-completions-pad en retourneert AI-gegenereerde antwoorden met bronvermeldingen in plaats van gestructureerde Search API-resultaten.
+Als je `OPENROUTER_API_KEY` gebruikt, een `sk-or-...`-sleutel in `plugins.entries.perplexity.config.webSearch.apiKey`, of `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` instelt, schakelt de provider over naar het chat-completions-pad en retourneert deze door AI gesynthetiseerde antwoorden met citaties in plaats van gestructureerde Search API-resultaten.
+
+## Plugin installeren
+
+Installeer de officiële Plugin en herstart daarna Gateway:
+
+```bash
+openclaw plugins install @openclaw/perplexity-plugin
+openclaw gateway restart
+```
 
 ## Een Perplexity API-sleutel verkrijgen
 
@@ -61,7 +71,7 @@ Optionele compatibiliteitsinstellingen:
 }
 ```
 
-### OpenRouter- / Sonar-compatibiliteit
+### OpenRouter / Sonar-compatibiliteit
 
 ```json5
 {
@@ -95,10 +105,10 @@ Optionele compatibiliteitsinstellingen:
 Dat veld accepteert ook SecretRef-objecten.
 
 **Via omgeving:** stel `PERPLEXITY_API_KEY` of `OPENROUTER_API_KEY` in
-in de procesomgeving van de Gateway. Plaats dit voor een gateway-installatie in
-`~/.openclaw/.env` (of in je serviceomgeving). Zie [Omgevingsvariabelen](/nl/help/faq#env-vars-and-env-loading).
+in de procesomgeving van Gateway. Voor een gateway-installatie zet je dit in
+`~/.openclaw/.env` (of je serviceomgeving). Zie [Omgevingsvariabelen](/nl/help/faq#env-vars-and-env-loading).
 
-Als `provider: "perplexity"` is geconfigureerd en de SecretRef voor de Perplexity-sleutel niet kan worden opgelost zonder env-fallback, mislukt starten/herladen direct.
+Als `provider: "perplexity"` is geconfigureerd en de SecretRef voor de Perplexity-sleutel niet kan worden opgelost zonder env-fallback, mislukt opstarten/herladen direct.
 
 ## Toolparameters
 
@@ -109,7 +119,7 @@ Zoekopdracht.
 </ParamField>
 
 <ParamField path="count" type="number" default="5">
-Aantal resultaten om te retourneren (1-10).
+Aantal te retourneren resultaten (1-10).
 </ParamField>
 
 <ParamField path="country" type="string">
@@ -133,24 +143,24 @@ Alleen resultaten die vóór deze datum zijn gepubliceerd (`YYYY-MM-DD`).
 </ParamField>
 
 <ParamField path="domain_filter" type="string[]">
-Domein-allowlist/denylist-array (max. 20).
+Array met domeinen voor allowlist/denylist (max. 20).
 </ParamField>
 
 <ParamField path="max_tokens" type="number" default="25000">
-Totaal inhoudsbudget (max. 1000000).
+Totaal contentbudget (max. 1000000).
 </ParamField>
 
 <ParamField path="max_tokens_per_page" type="number" default="2048">
 Tokenlimiet per pagina.
 </ParamField>
 
-Voor het compatibiliteitspad voor legacy Sonar/OpenRouter:
+Voor het verouderde Sonar/OpenRouter-compatibiliteitspad:
 
 - `query`, `count` en `freshness` worden geaccepteerd
-- `count` is daar alleen voor compatibiliteit; het antwoord is nog steeds één gesynthetiseerd
+- `count` is daar alleen voor compatibiliteit; de respons blijft één gesynthetiseerd
   antwoord met citaties in plaats van een lijst met N resultaten
 - Filters die alleen voor de Search API gelden, zoals `country`, `language`, `date_after`,
-  `date_before`, `domain_filter`, `max_tokens` en `max_tokens_per_page`
+  `date_before`, `domain_filter`, `max_tokens` en `max_tokens_per_page`,
   retourneren expliciete fouten
 
 **Voorbeelden:**
@@ -199,13 +209,13 @@ await web_search({
 ### Regels voor domeinfilters
 
 - Maximaal 20 domeinen per filter
-- Kan geen allowlist en denylist combineren in dezelfde aanvraag
+- Kan allowlist en denylist niet in dezelfde aanvraag combineren
 - Gebruik het voorvoegsel `-` voor denylist-vermeldingen (bijv. `["-reddit.com"]`)
 
 ## Opmerkingen
 
 - Perplexity Search API retourneert gestructureerde webzoekresultaten (`title`, `url`, `snippet`)
-- OpenRouter of expliciete `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` schakelt Perplexity voor compatibiliteit terug naar Sonar-chatvoltooiingen
+- OpenRouter of expliciete `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` schakelt Perplexity voor compatibiliteit terug naar Sonar chat completions
 - Sonar/OpenRouter-compatibiliteit retourneert één gesynthetiseerd antwoord met citaties, geen gestructureerde resultaatrijen
 - Resultaten worden standaard 15 minuten gecachet (configureerbaar via `cacheTtlMinutes`)
 
@@ -219,7 +229,7 @@ await web_search({
     Gestructureerde resultaten met land- en taalfilters.
   </Card>
   <Card title="Exa search" href="/nl/tools/exa-search" icon="magnifying-glass">
-    Neuraal zoeken met inhoudsextractie.
+    Neurale zoekopdracht met contentextractie.
   </Card>
   <Card title="Perplexity Search API docs" href="https://docs.perplexity.ai/docs/search/quickstart" icon="arrow-up-right-from-square">
     Officiële quickstart en referentie voor de Perplexity Search API.

@@ -1,30 +1,31 @@
 ---
 read_when:
     - Vous installez, configurez ou auditez le plugin Slack
-summary: Ajoute la surface du canal Slack pour envoyer et recevoir des messages OpenClaw.
+summary: Plugin de canal Slack OpenClaw pour les canaux, les messages privés, les commandes et les événements d’application.
 title: Plugin Slack
 x-i18n:
-    generated_at: "2026-05-02T20:58:28Z"
+    generated_at: "2026-06-27T17:56:51Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 53e79f0d6a243a560fdc145b80cc1a2b986ce114fad7c9bb4f1008dc14e3ab24
+    source_hash: 602ccb21ce084219d922860d186664bbb098fd034117893dc7359d79495bedd6
     source_path: plugins/reference/slack.md
     workflow: 16
 ---
 
 # Plugin Slack
 
-Ajoute la surface de canal Slack pour l’envoi et la réception de messages OpenClaw.
+Plugin de canal Slack OpenClaw pour les canaux, les messages privés, les commandes et les événements d’application.
 
 ## Distribution
 
-- Paquet : `@openclaw/slack`
-- Mode d’installation : inclus dans OpenClaw
+- Package : `@openclaw/slack`
+- Voie d’installation : npm ; ClawHub
 
 ## Surface
 
-channels: slack
+canaux : Slack ; Skills
 
-## Documentation connexe
+## Docs connexes
 
-- [slack](/fr/channels/slack)
+- [Slack](/fr/channels/slack)

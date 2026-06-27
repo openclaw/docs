@@ -1,29 +1,30 @@
 ---
 read_when:
-    - 您正在安裝、設定或稽核 perplexity Plugin
-summary: 新增網路搜尋提供者支援。
-title: Perplexity Plugin
+    - 你正在安裝、設定或稽核 Perplexity 外掛
+summary: 新增網頁搜尋提供者支援。
+title: Perplexity 外掛
 x-i18n:
-    generated_at: "2026-05-02T20:59:08Z"
+    generated_at: "2026-06-27T19:45:24Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 86183b8201e7c6869eeeada3efcb15fd67c3d958fd5a50a56922bb0a61c5c74d
+    source_hash: c649c4dc4df04ca668e924e2644af970d75eab404b8f57579e509aa061994ffe
     source_path: plugins/reference/perplexity.md
     workflow: 16
 ---
 
-# Perplexity Plugin
+# Perplexity 外掛
 
 新增網頁搜尋提供者支援。
 
-## 發佈
+## 發行
 
 - 套件：`@openclaw/perplexity-plugin`
-- 安裝路徑：包含於 OpenClaw
+- 安裝路徑：npm；ClawHub：`clawhub:@openclaw/perplexity-plugin`
 
 ## 介面
 
-contracts: webSearchProviders
+合約：webSearchProviders
 
 ## 相關文件
 

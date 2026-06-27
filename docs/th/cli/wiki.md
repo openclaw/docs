@@ -2,46 +2,48 @@
 read_when:
     - คุณต้องการใช้ CLI ของ memory-wiki
     - คุณกำลังจัดทำเอกสารหรือเปลี่ยนแปลง `openclaw wiki`
-summary: ข้อมูลอ้างอิง CLI สำหรับ `openclaw wiki` (สถานะ vault ของ memory-wiki, search, compile, lint, apply, bridge และตัวช่วย Obsidian)
+summary: เอกสารอ้างอิง CLI สำหรับ `openclaw wiki` (สถานะ vault ของ memory-wiki, การค้นหา, การคอมไพล์, การ lint, การปรับใช้, bridge และตัวช่วย Obsidian)
 title: วิกิ
 x-i18n:
-    generated_at: "2026-04-30T09:45:31Z"
+    generated_at: "2026-06-27T17:24:47Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 67fe56c9bff7b24570f890733314857dd261fca8233051681a83c171656ff27d
+    source_hash: c6679a5aad41a19dbcad6075c190c3eb533e3ba13a6d5018d56988a23b2d9023
     source_path: cli/wiki.md
     workflow: 16
 ---
 
 # `openclaw wiki`
 
-ตรวจสอบและดูแล vault ของ `memory-wiki`
+ตรวจสอบและดูแลคลัง `memory-wiki`
 
-จัดเตรียมโดย Plugin `memory-wiki` ที่รวมมาให้
+จัดหาโดย Plugin `memory-wiki` ที่บันเดิลมาให้
 
-เกี่ยวข้อง:
+ที่เกี่ยวข้อง:
 
 - [Plugin Memory Wiki](/th/plugins/memory-wiki)
 - [ภาพรวมหน่วยความจำ](/th/concepts/memory)
-- [CLI: memory](/th/cli/memory)
+- [CLI: หน่วยความจำ](/th/cli/memory)
 
 ## ใช้ทำอะไร
 
-ใช้ `openclaw wiki` เมื่อคุณต้องการ vault ความรู้ที่รวบรวมแล้วพร้อม:
+ใช้ `openclaw wiki` เมื่อต้องการคลังความรู้ที่คอมไพล์แล้วพร้อมด้วย:
 
-- การค้นหาแบบ wiki-native และการอ่านหน้า
-- synthesis ที่มี provenance ครบถ้วน
-- รายงานความขัดแย้งและความสดใหม่
-- การนำเข้าแบบ bridge จาก Plugin active memory
-- ตัวช่วย Obsidian CLI เสริม
+- การค้นหาและการอ่านหน้าแบบเนทีฟของวิกิ
+- การสังเคราะห์ที่มีแหล่งที่มาอย่างละเอียด
+- รายงานข้อขัดแย้งและความสดใหม่
+- การนำเข้าแบบ bridge จาก Plugin หน่วยความจำที่ใช้งานอยู่
+- ตัวช่วย Obsidian CLI แบบไม่บังคับ
 
-## คำสั่งที่ใช้บ่อย
+## คำสั่งทั่วไป
 
 ```bash
 openclaw wiki status
 openclaw wiki doctor
 openclaw wiki init
 openclaw wiki ingest ./notes/alpha.md
+openclaw wiki okf import ./knowledge-catalog/okf/bundles/ga4
 openclaw wiki compile
 openclaw wiki lint
 openclaw wiki search "alpha"
@@ -71,90 +73,114 @@ openclaw wiki obsidian daily
 
 ### `wiki status`
 
-ตรวจสอบโหมด vault ปัจจุบัน สถานะสุขภาพ และความพร้อมใช้งานของ Obsidian CLI
+ตรวจสอบโหมดคลังปัจจุบัน สถานะสุขภาพ และความพร้อมใช้งานของ Obsidian CLI
 
-ใช้คำสั่งนี้ก่อนเมื่อคุณไม่แน่ใจว่า vault ถูกเริ่มต้นแล้วหรือไม่ โหมด bridge
+ใช้คำสั่งนี้ก่อนเมื่อคุณไม่แน่ใจว่าคลังเริ่มต้นแล้วหรือยัง โหมด bridge
 ทำงานปกติหรือไม่ หรือมีการผสานรวม Obsidian พร้อมใช้งานหรือไม่
 
-เมื่อโหมด bridge เปิดใช้งานและกำหนดค่าให้อ่าน artifact ของหน่วยความจำ คำสั่งนี้
-จะ query Gateway ที่กำลังทำงานอยู่เพื่อให้เห็นบริบท Plugin active memory เดียวกับ
-หน่วยความจำของ agent/runtime
+เมื่อโหมด bridge เปิดใช้งานและถูกกำหนดค่าให้อ่านอาร์ติแฟกต์หน่วยความจำ คำสั่งนี้
+จะสอบถาม Gateway ที่กำลังทำงานอยู่เพื่อให้เห็นบริบท Plugin หน่วยความจำที่ใช้งานอยู่เดียวกันกับ
+หน่วยความจำของเอเจนต์/รันไทม์
 
 ### `wiki doctor`
 
-รันการตรวจสุขภาพ wiki และแสดงปัญหาการกำหนดค่าหรือ vault
+เรียกใช้การตรวจสอบสุขภาพของวิกิและแสดงปัญหาการกำหนดค่าหรือคลัง
 
-เมื่อโหมด bridge เปิดใช้งานและกำหนดค่าให้อ่าน artifact ของหน่วยความจำ คำสั่งนี้
-จะ query Gateway ที่กำลังทำงานอยู่ก่อนสร้างรายงาน การนำเข้า bridge ที่ปิดใช้งาน
-และการกำหนดค่า bridge ที่ไม่อ่าน artifact ของหน่วยความจำจะยังคงเป็นแบบ local/offline
+เมื่อโหมด bridge เปิดใช้งานและถูกกำหนดค่าให้อ่านอาร์ติแฟกต์หน่วยความจำ คำสั่งนี้
+จะสอบถาม Gateway ที่กำลังทำงานอยู่ก่อนสร้างรายงาน การนำเข้า bridge ที่ปิดใช้งาน
+และการกำหนดค่า bridge ที่ไม่อ่านอาร์ติแฟกต์หน่วยความจำจะยังคงเป็นแบบโลคัล/ออฟไลน์
 
 ปัญหาทั่วไปได้แก่:
 
-- เปิดโหมด bridge โดยไม่มี artifact หน่วยความจำสาธารณะ
-- layout ของ vault ไม่ถูกต้องหรือขาดหาย
+- เปิดใช้โหมด bridge โดยไม่มีอาร์ติแฟกต์หน่วยความจำสาธารณะ
+- เลย์เอาต์คลังไม่ถูกต้องหรือขาดหาย
 - ไม่มี Obsidian CLI ภายนอกเมื่อคาดว่าจะใช้โหมด Obsidian
 
 ### `wiki init`
 
-สร้าง layout ของ wiki vault และหน้าเริ่มต้น
+สร้างเลย์เอาต์คลังวิกิและหน้าเริ่มต้น
 
-คำสั่งนี้จะเริ่มต้นโครงสร้างราก รวมถึงดัชนีระดับบนสุดและไดเรกทอรี cache
+คำสั่งนี้เริ่มต้นโครงสร้างราก รวมถึงดัชนีระดับบนสุดและไดเรกทอรีแคช
 
 ### `wiki ingest <path-or-url>`
 
-นำเข้าเนื้อหาเข้าสู่ชั้น source ของ wiki
+นำเข้าเนื้อหาเข้าสู่เลเยอร์แหล่งข้อมูลของวิกิ
 
 หมายเหตุ:
 
-- การ ingest URL ถูกควบคุมโดย `ingest.allowUrlIngest`
-- หน้า source ที่นำเข้าจะเก็บ provenance ไว้ใน frontmatter
-- auto-compile สามารถรันหลัง ingest ได้เมื่อเปิดใช้งาน
+- การนำเข้า URL ถูกควบคุมโดย `ingest.allowUrlIngest`
+- หน้าต้นทางที่นำเข้าจะเก็บแหล่งที่มาไว้ใน frontmatter
+- auto-compile สามารถทำงานหลังนำเข้าเมื่อเปิดใช้งาน
+
+### `wiki okf import <path>`
+
+นำเข้าบันเดิล Open Knowledge Format ที่แตกไฟล์แล้วเข้าสู่หน้าคอนเซปต์ของวิกิ
+
+ตัวนำเข้าจะอ่านเอกสารคอนเซปต์ `.md` ที่ไม่สงวนไว้ทุกไฟล์ในแผนผังไดเรกทอรี OKF
+ต้องมีฟิลด์ `type` ที่ไม่ว่าง และถือว่าค่า OKF `type` ที่ไม่รู้จักเป็นคอนเซปต์ทั่วไป
+ไฟล์ OKF ที่สงวนไว้ `index.md` และ `log.md`
+จะไม่ถูกนำเข้าเป็นคอนเซปต์
+
+หน้าที่นำเข้าจะถูกทำให้แบนภายใต้ `concepts/` เพื่อให้โฟลว์คอมไพล์
+ค้นหา get digest และแดชบอร์ดของวิกิที่มีอยู่เห็นได้ทันที ID คอนเซปต์ OKF เดิม,
+`type`, `resource`, `tags`, เวลา, พาธต้นทาง และ frontmatter แบบเต็ม
+จะถูกเก็บไว้ใน frontmatter ของหน้า ลิงก์มาร์กดาวน์ OKF ภายใน
+จะถูกเขียนใหม่ไปยังหน้าวิกิที่สร้างขึ้น ส่วนลิงก์เสียหรือภายนอกจะคงไว้ไม่เปลี่ยนแปลง
+
+ตัวอย่าง:
+
+```bash
+openclaw wiki okf import ./bundles/ga4
+openclaw wiki okf import ./bundles/ga4 --json
+openclaw wiki search "BigQuery Table" --mode source-evidence --json
+openclaw wiki get <path-from-json-result>
+```
 
 ### `wiki compile`
 
-สร้างดัชนี บล็อกที่เกี่ยวข้อง dashboard และ digest ที่คอมไพล์แล้วใหม่
+สร้างดัชนี บล็อกที่เกี่ยวข้อง แดชบอร์ด และ digest ที่คอมไพล์แล้วใหม่
 
-คำสั่งนี้จะเขียน artifact ที่มีเสถียรภาพสำหรับเครื่องไว้ใต้:
+คำสั่งนี้เขียนอาร์ติแฟกต์ที่เสถียรสำหรับเครื่องภายใต้:
 
 - `.openclaw-wiki/cache/agent-digest.json`
 - `.openclaw-wiki/cache/claims.jsonl`
 
-หากเปิดใช้งาน `render.createDashboards` การ compile จะรีเฟรชหน้ารายงานด้วย
+หากเปิดใช้ `render.createDashboards` การคอมไพล์จะรีเฟรชหน้ารายงานด้วย
 
 ### `wiki lint`
 
-Lint vault และรายงาน:
+lint คลังและรายงาน:
 
 - ปัญหาเชิงโครงสร้าง
-- ช่องว่างของ provenance
-- ความขัดแย้ง
+- ช่องว่างของแหล่งที่มา
+- ข้อขัดแย้ง
 - คำถามที่ยังเปิดอยู่
-- หน้า/claim ที่มีความเชื่อมั่นต่ำ
-- หน้า/claim ที่ล้าสมัย
+- หน้า/คำกล่าวอ้างที่มีความเชื่อมั่นต่ำ
+- หน้า/คำกล่าวอ้างที่ล้าสมัย
 
-รันคำสั่งนี้หลังจากอัปเดต wiki อย่างมีนัยสำคัญ
+เรียกใช้คำสั่งนี้หลังการอัปเดตวิกิที่มีนัยสำคัญ
 
 ### `wiki search <query>`
 
-ค้นหาเนื้อหา wiki
+ค้นหาเนื้อหาวิกิ
 
-พฤติกรรมขึ้นอยู่กับ config:
+พฤติกรรมขึ้นอยู่กับการกำหนดค่า:
 
 - `search.backend`: `shared` หรือ `local`
 - `search.corpus`: `wiki`, `memory` หรือ `all`
 - `--mode`: `auto`, `find-person`, `route-question`, `source-evidence` หรือ
   `raw-claim`
 
-ใช้ `wiki search` เมื่อคุณต้องการการจัดอันดับหรือรายละเอียด provenance เฉพาะของ wiki
-สำหรับการ recall ร่วมแบบกว้างหนึ่งรอบ ให้ใช้ `openclaw memory search` เมื่อ
-Plugin active memory เปิดเผย shared search
+ใช้ `wiki search` เมื่อต้องการการจัดอันดับเฉพาะของวิกิหรือรายละเอียดแหล่งที่มา
+สำหรับการเรียกคืนข้อมูลร่วมแบบกว้างหนึ่งรอบ ให้ใช้ `openclaw memory search` เมื่อ
+Plugin หน่วยความจำที่ใช้งานอยู่เปิดเผยการค้นหาร่วม
 
-โหมดค้นหาช่วยให้ agent เลือก surface ที่เหมาะสม:
+โหมดค้นหาช่วยให้เอเจนต์เลือกพื้นผิวที่ถูกต้อง:
 
-- `find-person`: alias, handle, social, ID canonical และหน้าบุคคล
-- `route-question`: hint ว่าควรถามใคร/เหมาะใช้สำหรับอะไร และบริบทความสัมพันธ์
-- `source-evidence`: หน้า source และฟิลด์ evidence แบบมีโครงสร้าง
-- `raw-claim`: ข้อความ claim แบบมีโครงสร้างพร้อม metadata ของ claim/evidence
+- `find-person`: alias, handle, โซเชียล, ID แคนนอนิคัล และหน้าบุคคล
+- `route-question`: คำใบ้ ask-for/best-used-for และบริบทความสัมพันธ์
+- `source-evidence`: หน้าต้นทางและฟิลด์หลักฐานแบบมีโครงสร้าง
+- `raw-claim`: ข้อความคำกล่าวอ้างแบบมีโครงสร้างพร้อมเมทาดาทาคำกล่าวอ้าง/หลักฐาน
 
 ตัวอย่าง:
 
@@ -165,14 +191,14 @@ openclaw wiki search "maintainer-whois" --mode source-evidence
 openclaw wiki search "strong route Teams" --mode raw-claim --json
 ```
 
-เอาต์พุตแบบข้อความมีบรรทัด `Claim:` และ `Evidence:` เมื่อผลลัพธ์ตรงกับ
-claim แบบมีโครงสร้าง เอาต์พุต JSON ยังเปิดเผย `matchedClaimId`,
+เอาต์พุตข้อความมีบรรทัด `Claim:` และ `Evidence:` เมื่อผลลัพธ์ตรงกับ
+คำกล่าวอ้างแบบมีโครงสร้าง เอาต์พุต JSON ยังเปิดเผย `matchedClaimId`,
 `matchedClaimStatus`, `matchedClaimConfidence`, `evidenceKinds` และ
-`evidenceSourceIds` สำหรับการเจาะรายละเอียดฝั่ง agent
+`evidenceSourceIds` เพิ่มเติมสำหรับการเจาะลึกฝั่งเอเจนต์
 
 ### `wiki get <lookup>`
 
-อ่านหน้า wiki ตาม id หรือ path สัมพัทธ์
+อ่านหน้าวิกิตาม ID หรือพาธสัมพัทธ์
 
 ตัวอย่าง:
 
@@ -187,36 +213,39 @@ openclaw wiki get syntheses/alpha-summary.md --from 1 --lines 80
 
 โฟลว์ที่รองรับได้แก่:
 
-- สร้าง/อัปเดตหน้า synthesis
-- อัปเดต metadata ของหน้า
-- แนบ source id
+- สร้าง/อัปเดตหน้าการสังเคราะห์
+- อัปเดตเมทาดาทาของหน้า
+- แนบ ID ต้นทาง
 - เพิ่มคำถาม
-- เพิ่มความขัดแย้ง
+- เพิ่มข้อขัดแย้ง
 - อัปเดตความเชื่อมั่น/สถานะ
-- เขียน claim แบบมีโครงสร้าง
+- เขียนคำกล่าวอ้างแบบมีโครงสร้าง
 
-คำสั่งนี้มีอยู่เพื่อให้ wiki พัฒนาได้อย่างปลอดภัยโดยไม่ต้องแก้ไขบล็อกที่จัดการอยู่ด้วยมือ
+คำสั่งนี้มีอยู่เพื่อให้วิกิพัฒนาได้อย่างปลอดภัยโดยไม่ต้องแก้ไข
+บล็อกที่จัดการแล้วด้วยตนเอง
 
 ### `wiki bridge import`
 
-นำเข้า artifact หน่วยความจำสาธารณะจาก Plugin active memory เข้าสู่หน้า source ที่อิง bridge
+นำเข้าอาร์ติแฟกต์หน่วยความจำสาธารณะจาก Plugin หน่วยความจำที่ใช้งานอยู่เข้าสู่
+หน้าต้นทางที่หนุนด้วย bridge
 
-ใช้คำสั่งนี้ในโหมด `bridge` เมื่อคุณต้องการดึง artifact หน่วยความจำที่ export ล่าสุด
-เข้าสู่ wiki vault
+ใช้คำสั่งนี้ในโหมด `bridge` เมื่อต้องการดึงอาร์ติแฟกต์หน่วยความจำที่ส่งออกล่าสุด
+เข้าสู่คลังวิกิ
 
-สำหรับการอ่าน artifact bridge ที่ใช้งานอยู่ CLI จะ route การนำเข้าผ่าน Gateway RPC
-เพื่อให้การนำเข้าใช้บริบท Plugin หน่วยความจำของ runtime หากปิดการนำเข้า bridge
-หรือปิดการอ่าน artifact คำสั่งจะคงพฤติกรรม zero-import แบบ local/offline ไว้
+สำหรับการอ่านอาร์ติแฟกต์ bridge ที่ใช้งานอยู่ CLI จะกำหนดเส้นทางการนำเข้าผ่าน Gateway RPC
+เพื่อให้การนำเข้าใช้บริบท Plugin หน่วยความจำของรันไทม์ หากการนำเข้า bridge
+ถูกปิดใช้งานหรือการอ่านอาร์ติแฟกต์ถูกปิด คำสั่งจะคงพฤติกรรมโลคัล/ออฟไลน์
+แบบไม่นำเข้าไว้
 
 ### `wiki unsafe-local import`
 
-นำเข้าจาก path local ที่กำหนดค่าไว้อย่างชัดเจนในโหมด `unsafe-local`
+นำเข้าจากพาธโลคัลที่กำหนดค่าไว้อย่างชัดเจนในโหมด `unsafe-local`
 
-สิ่งนี้เป็นการทดลองโดยเจตนาและใช้ได้เฉพาะเครื่องเดียวกันเท่านั้น
+สิ่งนี้ตั้งใจให้เป็นแบบทดลองและสำหรับเครื่องเดียวกันเท่านั้น
 
 ### `wiki obsidian ...`
 
-คำสั่งตัวช่วย Obsidian สำหรับ vault ที่ทำงานในโหมดที่เป็นมิตรกับ Obsidian
+คำสั่งตัวช่วย Obsidian สำหรับคลังที่ทำงานในโหมดที่เป็นมิตรกับ Obsidian
 
 คำสั่งย่อย:
 
@@ -226,17 +255,20 @@ openclaw wiki get syntheses/alpha-summary.md --from 1 --lines 80
 - `command`
 - `daily`
 
-คำสั่งเหล่านี้ต้องใช้ CLI `obsidian` อย่างเป็นทางการบน `PATH` เมื่อเปิดใช้งาน
-`obsidian.useOfficialCli`
+คำสั่งเหล่านี้ต้องใช้ CLI ทางการ `obsidian` บน `PATH` เมื่อ
+เปิดใช้ `obsidian.useOfficialCli`
 
-## คำแนะนำการใช้งานจริง
+## แนวทางการใช้งานจริง
 
-- ใช้ `wiki search` + `wiki get` เมื่อ provenance และตัวตนของหน้ามีความสำคัญ
-- ใช้ `wiki apply` แทนการแก้ไข section ที่สร้างและจัดการอยู่ด้วยมือ
+- ใช้ `wiki search` + `wiki get` เมื่อแหล่งที่มาและตัวตนของหน้ามีความสำคัญ
+- ใช้ `wiki apply` แทนการแก้ไขส่วนที่สร้างและจัดการแล้วด้วยมือ
 - ใช้ `wiki lint` ก่อนเชื่อถือเนื้อหาที่ขัดแย้งกันหรือมีความเชื่อมั่นต่ำ
-- ใช้ `wiki compile` หลังการนำเข้าจำนวนมากหรือการเปลี่ยนแปลง source เมื่อคุณต้องการ
-  dashboard และ digest ที่คอมไพล์แล้วแบบสดใหม่ทันที
-- ใช้ `wiki bridge import` เมื่อโหมด bridge ขึ้นอยู่กับ artifact หน่วยความจำที่ export ใหม่
+- ใช้ `wiki compile` หลังการนำเข้าจำนวนมากหรือการเปลี่ยนแปลงต้นทาง เมื่อต้องการ
+  แดชบอร์ดและ digest ที่คอมไพล์แล้วใหม่ทันที
+- ใช้ `wiki okf import` เมื่อแค็ตตาล็อกข้อมูล การส่งออกเอกสาร หรือไปป์ไลน์
+  เสริมข้อมูลของเอเจนต์สร้างบันเดิลมาร์กดาวน์ OKF อยู่แล้ว
+- ใช้ `wiki bridge import` เมื่อโหมด bridge พึ่งพาอาร์ติแฟกต์หน่วยความจำ
+  ที่เพิ่งส่งออกใหม่
 
 ## การเชื่อมโยงกับการกำหนดค่า
 
@@ -250,9 +282,9 @@ openclaw wiki get syntheses/alpha-summary.md --from 1 --lines 80
 - `plugins.entries.memory-wiki.config.render.*`
 - `plugins.entries.memory-wiki.config.context.includeCompiledDigestPrompt`
 
-ดู [Plugin Memory Wiki](/th/plugins/memory-wiki) สำหรับโมเดล config ฉบับเต็ม
+ดู [Plugin Memory Wiki](/th/plugins/memory-wiki) สำหรับโมเดลการกำหนดค่าแบบเต็ม
 
 ## ที่เกี่ยวข้อง
 
-- [อ้างอิง CLI](/th/cli)
-- [Memory wiki](/th/plugins/memory-wiki)
+- [ข้อมูลอ้างอิง CLI](/th/cli)
+- [วิกิหน่วยความจำ](/th/plugins/memory-wiki)

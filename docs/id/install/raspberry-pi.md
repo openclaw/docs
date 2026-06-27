@@ -2,39 +2,40 @@
 read_when:
     - Menyiapkan OpenClaw di Raspberry Pi
     - Menjalankan OpenClaw di perangkat ARM
-    - Membangun AI pribadi yang murah dan selalu aktif
+    - Membangun AI pribadi murah yang selalu aktif
 summary: Jalankan OpenClaw di Raspberry Pi untuk hosting mandiri yang selalu aktif
 title: Raspberry Pi
 x-i18n:
-    generated_at: "2026-05-06T09:18:13Z"
+    generated_at: "2026-06-27T17:38:46Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 96df076c2707b0b27751d452f15fad774356a86e96d10bce998581235776c4bc
+    source_hash: 9cd90b4cc70c8fe7eab2a0abadc0e2969c7dc1c09657a0819bc004280ec32ba3
     source_path: install/raspberry-pi.md
     workflow: 16
 ---
 
-Jalankan Gateway OpenClaw yang persisten dan selalu aktif di Raspberry Pi. Karena Pi hanya berfungsi sebagai gateway (model berjalan di cloud melalui API), bahkan Pi sederhana dapat menangani beban kerja dengan baik — biaya perangkat keras biasanya **$35–80 sekali bayar**, tanpa biaya bulanan.
+Jalankan OpenClaw Gateway yang persisten dan selalu aktif di Raspberry Pi. Karena Pi hanya berfungsi sebagai Gateway (model berjalan di cloud melalui API), bahkan Pi sederhana dapat menangani beban kerja dengan baik — biaya perangkat keras biasanya **$35–80 sekali bayar**, tanpa biaya bulanan.
 
 ## Kompatibilitas perangkat keras
 
 | Model Pi    | RAM    | Berfungsi? | Catatan                                  |
 | ----------- | ------ | ---------- | ---------------------------------------- |
-| Pi 5        | 4/8 GB | Terbaik    | Paling cepat, direkomendasikan.          |
-| Pi 4        | 4 GB   | Baik       | Pilihan ideal untuk sebagian besar pengguna. |
-| Pi 4        | 2 GB   | Oke        | Tambahkan swap.                          |
-| Pi 4        | 1 GB   | Terbatas   | Memungkinkan dengan swap, konfigurasi minimal. |
-| Pi 3B+      | 1 GB   | Lambat     | Berfungsi tetapi terasa lamban.          |
+| Pi 5        | 4/8 GB | Terbaik    | Tercepat, direkomendasikan.              |
+| Pi 4        | 4 GB   | Bagus      | Pilihan ideal untuk sebagian besar pengguna. |
+| Pi 4        | 2 GB   | Cukup      | Tambahkan swap.                          |
+| Pi 4        | 1 GB   | Terbatas   | Bisa dengan swap, konfigurasi minimal.   |
+| Pi 3B+      | 1 GB   | Lambat     | Berfungsi tetapi tersendat.              |
 | Pi Zero 2 W | 512 MB | Tidak      | Tidak direkomendasikan.                  |
 
 **Minimum:** RAM 1 GB, 1 core, disk kosong 500 MB, OS 64-bit.
-**Direkomendasikan:** RAM 2 GB+, kartu SD 16 GB+ (atau SSD USB), Ethernet.
+**Direkomendasikan:** RAM 2 GB+, kartu SD 16 GB+ (atau USB SSD), Ethernet.
 
 ## Prasyarat
 
 - Raspberry Pi 4 atau 5 dengan RAM 2 GB+ (4 GB direkomendasikan)
-- Kartu MicroSD (16 GB+) atau SSD USB (performa lebih baik)
-- Catu daya Pi resmi
+- Kartu MicroSD (16 GB+) atau USB SSD (performa lebih baik)
+- Catu daya resmi Pi
 - Koneksi jaringan (Ethernet atau WiFi)
 - Raspberry Pi OS 64-bit (wajib -- jangan gunakan 32-bit)
 - Sekitar 30 menit
@@ -43,20 +44,20 @@ Jalankan Gateway OpenClaw yang persisten dan selalu aktif di Raspberry Pi. Karen
 
 <Steps>
   <Step title="Flash OS">
-    Gunakan **Raspberry Pi OS Lite (64-bit)** -- desktop tidak diperlukan untuk server headless.
+    Gunakan **Raspberry Pi OS Lite (64-bit)** -- desktop tidak diperlukan untuk server tanpa antarmuka.
 
     1. Unduh [Raspberry Pi Imager](https://www.raspberrypi.com/software/).
     2. Pilih OS: **Raspberry Pi OS Lite (64-bit)**.
-    3. Di dialog pengaturan, prakonfigurasikan:
-       - Hostname: `gateway-host`
+    3. Di dialog pengaturan, konfigurasikan terlebih dahulu:
+       - Nama host: `gateway-host`
        - Aktifkan SSH
-       - Atur nama pengguna dan kata sandi
+       - Tetapkan nama pengguna dan kata sandi
        - Konfigurasikan WiFi (jika tidak menggunakan Ethernet)
     4. Flash ke kartu SD atau drive USB Anda, masukkan, lalu boot Pi.
 
   </Step>
 
-  <Step title="Hubungkan via SSH">
+  <Step title="Hubungkan melalui SSH">
     ```bash
     ssh user@gateway-host
     ```
@@ -107,7 +108,7 @@ Jalankan Gateway OpenClaw yang persisten dan selalu aktif di Raspberry Pi. Karen
     openclaw onboard --install-daemon
     ```
 
-    Ikuti wizard. Kunci API direkomendasikan dibanding OAuth untuk perangkat headless. Telegram adalah kanal termudah untuk memulai.
+    Ikuti wizard. Kunci API lebih direkomendasikan daripada OAuth untuk perangkat tanpa antarmuka. Telegram adalah channel termudah untuk memulai.
 
   </Step>
 
@@ -139,9 +140,9 @@ Jalankan Gateway OpenClaw yang persisten dan selalu aktif di Raspberry Pi. Karen
 
 ## Tips performa
 
-**Gunakan SSD USB** -- Kartu SD lambat dan cepat aus. SSD USB meningkatkan performa secara drastis. Lihat [panduan boot USB Pi](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#usb-mass-storage-boot).
+**Gunakan USB SSD** -- Kartu SD lambat dan cepat aus. USB SSD meningkatkan performa secara drastis. Lihat [panduan boot USB Pi](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#usb-mass-storage-boot).
 
-**Aktifkan cache kompilasi modul** -- Mempercepat pemanggilan CLI berulang di host Pi berdaya lebih rendah:
+**Aktifkan cache kompilasi modul** -- Mempercepat pemanggilan CLI berulang di host Pi berdaya rendah:
 
 ```bash
 grep -q 'NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache' ~/.bashrc || cat >> ~/.bashrc <<'EOF' # pragma: allowlist secret
@@ -152,14 +153,16 @@ EOF
 source ~/.bashrc
 ```
 
-**Kurangi penggunaan memori** -- Untuk penyiapan headless, kosongkan memori GPU dan nonaktifkan layanan yang tidak digunakan:
+`OPENCLAW_NO_RESPAWN=1` menjaga restart rutin Gateway tetap dalam proses yang sama, sehingga menghindari handoff proses tambahan dan menjaga pelacakan PID tetap sederhana pada host kecil.
+
+**Kurangi penggunaan memori** -- Untuk penyiapan tanpa antarmuka, bebaskan memori GPU dan nonaktifkan layanan yang tidak digunakan:
 
 ```bash
 echo 'gpu_mem=16' | sudo tee -a /boot/config.txt
 sudo systemctl disable bluetooth
 ```
 
-**Drop-in systemd untuk restart stabil** -- Jika Pi ini terutama menjalankan OpenClaw, tambahkan drop-in layanan:
+**Konfigurasi tambahan systemd untuk restart stabil** -- Jika Pi ini sebagian besar menjalankan OpenClaw, tambahkan konfigurasi tambahan layanan:
 
 ```bash
 systemctl --user edit openclaw-gateway.service
@@ -174,11 +177,11 @@ RestartSec=2
 TimeoutStartSec=90
 ```
 
-Lalu `systemctl --user daemon-reload && systemctl --user restart openclaw-gateway.service`. Pada Pi headless, aktifkan juga lingering sekali agar layanan pengguna tetap bertahan setelah logout: `sudo loginctl enable-linger "$(whoami)"`.
+Lalu `systemctl --user daemon-reload && systemctl --user restart openclaw-gateway.service`. Pada Pi tanpa antarmuka, aktifkan juga lingering satu kali agar layanan pengguna tetap berjalan setelah logout: `sudo loginctl enable-linger "$(whoami)"`.
 
 ## Penyiapan model yang direkomendasikan
 
-Karena Pi hanya menjalankan gateway, gunakan model API yang di-host di cloud:
+Karena Pi hanya menjalankan Gateway, gunakan model API yang di-host di cloud:
 
 ```json
 {
@@ -197,40 +200,40 @@ Jangan jalankan LLM lokal di Pi — bahkan model kecil terlalu lambat untuk berg
 
 ## Catatan biner ARM
 
-Sebagian besar fitur OpenClaw berfungsi di ARM64 tanpa perubahan (Node.js, Telegram, WhatsApp/Baileys, Chromium). Biner yang sesekali tidak memiliki build ARM biasanya adalah alat CLI Go/Rust opsional yang dikirim oleh skills. Verifikasi halaman rilis biner yang hilang untuk artefak `linux-arm64` / `aarch64` sebelum beralih ke build dari sumber.
+Sebagian besar fitur OpenClaw berfungsi di ARM64 tanpa perubahan (Node.js, Telegram, WhatsApp/Baileys, Chromium). Biner yang kadang tidak memiliki build ARM biasanya adalah alat CLI Go/Rust opsional yang dikirim oleh Skills. Verifikasi halaman rilis biner yang hilang untuk artefak `linux-arm64` / `aarch64` sebelum kembali ke membangun dari sumber.
 
-## Persistensi dan pencadangan
+## Persistensi dan cadangan
 
-Status OpenClaw berada di bawah:
+State OpenClaw berada di bawah:
 
-- `~/.openclaw/` — `openclaw.json`, `auth-profiles.json` per agen, status kanal/penyedia, sesi.
-- `~/.openclaw/workspace/` — ruang kerja agen (SOUL.md, memori, artefak).
+- `~/.openclaw/` — `openclaw.json`, `auth-profiles.json` per agen, state channel/penyedia, sesi.
+- `~/.openclaw/workspace/` — workspace agen (SOUL.md, memori, artefak).
 
-Ini tetap bertahan setelah reboot. Ambil snapshot portabel dengan:
+Ini bertahan setelah reboot. Ambil snapshot portabel dengan:
 
 ```bash
 openclaw backup create
 ```
 
-Jika Anda menyimpannya di SSD, performa dan umur pakai akan meningkat dibanding kartu SD.
+Jika Anda menyimpannya di SSD, performa dan umur pakai meningkat dibandingkan kartu SD.
 
 ## Pemecahan masalah
 
 **Kehabisan memori** -- Verifikasi swap aktif dengan `free -h`. Nonaktifkan layanan yang tidak digunakan (`sudo systemctl disable cups bluetooth avahi-daemon`). Gunakan hanya model berbasis API.
 
-**Performa lambat** -- Gunakan SSD USB alih-alih kartu SD. Periksa throttling CPU dengan `vcgencmd get_throttled` (seharusnya mengembalikan `0x0`).
+**Performa lambat** -- Gunakan USB SSD alih-alih kartu SD. Periksa throttling CPU dengan `vcgencmd get_throttled` (seharusnya mengembalikan `0x0`).
 
-**Layanan tidak dapat dimulai** -- Periksa log dengan `journalctl --user -u openclaw-gateway.service --no-pager -n 100` dan jalankan `openclaw doctor --non-interactive`. Jika ini Pi headless, verifikasi juga bahwa lingering diaktifkan: `sudo loginctl enable-linger "$(whoami)"`.
+**Layanan tidak dapat dimulai** -- Periksa log dengan `journalctl --user -u openclaw-gateway.service --no-pager -n 100` dan jalankan `openclaw doctor --non-interactive`. Jika ini Pi tanpa antarmuka, verifikasi juga bahwa lingering aktif: `sudo loginctl enable-linger "$(whoami)"`.
 
-**Masalah biner ARM** -- Jika skill gagal dengan "exec format error", periksa apakah biner memiliki build ARM64. Verifikasi arsitektur dengan `uname -m` (seharusnya menampilkan `aarch64`).
+**Masalah biner ARM** -- Jika sebuah skill gagal dengan "exec format error", periksa apakah biner tersebut memiliki build ARM64. Verifikasi arsitektur dengan `uname -m` (seharusnya menampilkan `aarch64`).
 
 **WiFi terputus** -- Nonaktifkan manajemen daya WiFi: `sudo iwconfig wlan0 power off`.
 
 ## Langkah berikutnya
 
-- [Kanal](/id/channels) -- hubungkan Telegram, WhatsApp, Discord, dan lainnya
+- [Channel](/id/channels) -- hubungkan Telegram, WhatsApp, Discord, dan lainnya
 - [Konfigurasi Gateway](/id/gateway/configuration) -- semua opsi konfigurasi
-- [Memperbarui](/id/install/updating) -- jaga OpenClaw tetap terbaru
+- [Memperbarui](/id/install/updating) -- jaga OpenClaw tetap mutakhir
 
 ## Terkait
 

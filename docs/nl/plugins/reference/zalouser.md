@@ -1,20 +1,21 @@
 ---
 read_when:
-    - U installeert, configureert of auditeert de zalouser-Plugin
-summary: Voegt de Zalo Personal-kanaalinterface toe voor het verzenden en ontvangen van OpenClaw-berichten.
+    - Je installeert, configureert of controleert de zalouser Plugin
+summary: OpenClaw Zalo Plugin voor persoonlijke accounts via native zca-js-integratie.
 title: Zalo Personal-Plugin
 x-i18n:
-    generated_at: "2026-05-03T11:16:36Z"
+    generated_at: "2026-06-27T18:05:30Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 16ed8b255fd10e2a21bc9d9665c1eb26440929e5a46fe2f9dbfae929a25417a0
+    source_hash: c03db694c940cb1fb20f4a2f73512c9d3cf3c79e910cc6a0dd4aa38bd4465ed5
     source_path: plugins/reference/zalouser.md
     workflow: 16
 ---
 
-# Zalo Personal Plugin
+# Zalo Personal-plugin
 
-Voegt het Zalo Personal-kanaaloppervlak toe voor het verzenden en ontvangen van OpenClaw-berichten.
+OpenClaw Zalo Personal Account-plugin via native zca-js-integratie.
 
 ## Distributie
 

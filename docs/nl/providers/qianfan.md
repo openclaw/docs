@@ -1,43 +1,53 @@
 ---
 read_when:
     - Je wilt één API-sleutel voor veel LLM's
-    - Je hebt begeleiding nodig bij het instellen van Baidu Qianfan
-summary: Gebruik de uniforme API van Qianfan om toegang te krijgen tot veel modellen in OpenClaw
+    - Je hebt configuratie-instructies voor Baidu Qianfan nodig
+summary: Gebruik Qianfan's uniforme API om toegang te krijgen tot veel modellen in OpenClaw
 title: Qianfan
 x-i18n:
-    generated_at: "2026-04-29T23:12:43Z"
+    generated_at: "2026-06-27T18:14:37Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6adfbad6c18bf2bcf93d9c56c51591c862ebb751ffd8183015fa2fc9566ce0af
+    source_hash: a8bc31970dc7fbc43819ec6d51f4bd0047b1acc5a03b23b656e617e3abd97475
     source_path: providers/qianfan.md
     workflow: 16
 ---
 
-Qianfan is Baidu's MaaS-platform, dat een **uniforme API** biedt die aanvragen naar veel modellen achter één
-endpoint en API-sleutel routeert. Het is OpenAI-compatibel, dus de meeste OpenAI-SDK's werken door de basis-URL te wijzigen.
+Qianfan is Baidu's MaaS-platform, met een **uniforme API** die verzoeken naar veel modellen achter één
+eindpunt en API-sleutel routeert. Het is OpenAI-compatibel, dus de meeste OpenAI-SDK's werken door de basis-URL te wijzigen.
 
 | Eigenschap | Waarde                            |
-| -------- | --------------------------------- |
-| Provider | `qianfan`                         |
-| Auth     | `QIANFAN_API_KEY`                 |
-| API      | OpenAI-compatibel                 |
-| Basis-URL | `https://qianfan.baidubce.com/v2` |
+| ---------- | --------------------------------- |
+| Provider   | `qianfan`                         |
+| Auth       | `QIANFAN_API_KEY`                 |
+| API        | OpenAI-compatibel                 |
+| Basis-URL  | `https://qianfan.baidubce.com/v2` |
+
+## Plugin installeren
+
+Installeer de officiële Plugin en start daarna Gateway opnieuw:
+
+```bash
+openclaw plugins install @openclaw/qianfan-provider
+openclaw gateway restart
+```
 
 ## Aan de slag
 
 <Steps>
-  <Step title="Maak een Baidu Cloud-account aan">
-    Registreer je of log in bij de [Qianfan Console](https://console.bce.baidu.com/qianfan/ais/console/apiKey) en zorg dat je Qianfan API-toegang is ingeschakeld.
+  <Step title="Create a Baidu Cloud account">
+    Registreer je of log in bij de [Qianfan Console](https://console.bce.baidu.com/qianfan/ais/console/apiKey) en zorg dat Qianfan API-toegang is ingeschakeld.
   </Step>
-  <Step title="Genereer een API-sleutel">
-    Maak een nieuwe applicatie aan of selecteer een bestaande, en genereer vervolgens een API-sleutel. De sleutelindeling is `bce-v3/ALTAK-...`.
+  <Step title="Generate an API key">
+    Maak een nieuwe applicatie of selecteer een bestaande en genereer daarna een API-sleutel. De sleutelindeling is `bce-v3/ALTAK-...`.
   </Step>
-  <Step title="Voer onboarding uit">
+  <Step title="Run onboarding">
     ```bash
     openclaw onboard --auth-choice qianfan-api-key
     ```
   </Step>
-  <Step title="Controleer of het model beschikbaar is">
+  <Step title="Verify the model is available">
     ```bash
     openclaw models list --provider qianfan
     ```
@@ -46,13 +56,13 @@ endpoint en API-sleutel routeert. Het is OpenAI-compatibel, dus de meeste OpenAI
 
 ## Ingebouwde catalogus
 
-| Modelreferentie                     | Invoer      | Context | Maximale uitvoer | Redeneren | Opmerkingen      |
-| ------------------------------------ | ----------- | ------- | ---------- | --------- | ------------- |
-| `qianfan/deepseek-v3.2`              | tekst       | 98,304  | 32,768     | Ja        | Standaardmodel |
-| `qianfan/ernie-5.0-thinking-preview` | tekst, afbeelding | 119,000 | 64,000     | Ja        | Multimodaal    |
+| Modelreferentie                     | Invoer      | Context | Max. uitvoer | Redenering | Opmerkingen    |
+| ----------------------------------- | ----------- | ------- | ------------ | ---------- | -------------- |
+| `qianfan/deepseek-v3.2`             | tekst       | 98,304  | 32,768       | Ja         | Standaardmodel |
+| `qianfan/ernie-5.0-thinking-preview` | tekst, afbeelding | 119,000 | 64,000 | Ja | Multimodaal    |
 
 <Tip>
-De standaard meegeleverde modelreferentie is `qianfan/deepseek-v3.2`. Je hoeft `models.providers.qianfan` alleen te overschrijven wanneer je een aangepaste basis-URL of modelmetadata nodig hebt.
+De standaardmodelreferentie is `qianfan/deepseek-v3.2`. Je hoeft `models.providers.qianfan` alleen te overschrijven wanneer je een aangepaste basis-URL of modelmetadata nodig hebt.
 </Tip>
 
 ## Configuratievoorbeeld
@@ -100,23 +110,23 @@ De standaard meegeleverde modelreferentie is `qianfan/deepseek-v3.2`. Je hoeft `
 ```
 
 <AccordionGroup>
-  <Accordion title="Transport en compatibiliteit">
-    Qianfan gebruikt het OpenAI-compatibele transportpad, niet native OpenAI-aanvraagvorming. Dit betekent dat standaardfuncties van OpenAI-SDK's werken, maar providerspecifieke parameters mogelijk niet worden doorgestuurd.
+  <Accordion title="Transport and compatibility">
+    Qianfan draait via het OpenAI-compatibele transportpad, niet via native OpenAI-verzoekvorming. Dit betekent dat standaardfuncties van OpenAI-SDK's werken, maar providerspecifieke parameters mogelijk niet worden doorgestuurd.
   </Accordion>
 
-  <Accordion title="Catalogus en overschrijvingen">
-    De meegeleverde catalogus bevat momenteel `deepseek-v3.2` en `ernie-5.0-thinking-preview`. Voeg `models.providers.qianfan` alleen toe of overschrijf het alleen wanneer je een aangepaste basis-URL of modelmetadata nodig hebt.
+  <Accordion title="Catalog and overrides">
+    De statische catalogus bevat momenteel `deepseek-v3.2` en `ernie-5.0-thinking-preview`. Voeg `models.providers.qianfan` alleen toe of overschrijf het alleen wanneer je een aangepaste basis-URL of modelmetadata nodig hebt.
 
     <Note>
-    Modelreferenties gebruiken het voorvoegsel `qianfan/` (bijvoorbeeld `qianfan/deepseek-v3.2`).
+    Modelreferenties gebruiken het prefix `qianfan/` (bijvoorbeeld `qianfan/deepseek-v3.2`).
     </Note>
 
   </Accordion>
 
-  <Accordion title="Probleemoplossing">
+  <Accordion title="Troubleshooting">
     - Zorg dat je API-sleutel begint met `bce-v3/ALTAK-` en dat Qianfan API-toegang is ingeschakeld in de Baidu Cloud-console.
     - Als modellen niet worden weergegeven, controleer dan of de Qianfan-service voor je account is geactiveerd.
-    - De standaard basis-URL is `https://qianfan.baidubce.com/v2`. Wijzig deze alleen als je een aangepast endpoint of een proxy gebruikt.
+    - De standaardbasis-URL is `https://qianfan.baidubce.com/v2`. Wijzig deze alleen als je een aangepast eindpunt of een proxy gebruikt.
 
   </Accordion>
 </AccordionGroup>
@@ -124,16 +134,16 @@ De standaard meegeleverde modelreferentie is `qianfan/deepseek-v3.2`. Je hoeft `
 ## Gerelateerd
 
 <CardGroup cols={2}>
-  <Card title="Modelselectie" href="/nl/concepts/model-providers" icon="layers">
+  <Card title="Model selection" href="/nl/concepts/model-providers" icon="layers">
     Providers, modelreferenties en failovergedrag kiezen.
   </Card>
-  <Card title="Configuratiereferentie" href="/nl/gateway/configuration-reference" icon="gear">
+  <Card title="Configuration reference" href="/nl/gateway/configuration-reference" icon="gear">
     Volledige OpenClaw-configuratiereferentie.
   </Card>
-  <Card title="Agentconfiguratie" href="/nl/concepts/agent" icon="robot">
-    Agentstandaarden en modeltoewijzingen configureren.
+  <Card title="Agent setup" href="/nl/concepts/agent" icon="robot">
+    Standaardinstellingen en modeltoewijzingen voor agents configureren.
   </Card>
-  <Card title="Qianfan API-documentatie" href="https://cloud.baidu.com/doc/qianfan-api/s/3m7of64lb" icon="arrow-up-right-from-square">
+  <Card title="Qianfan API docs" href="https://cloud.baidu.com/doc/qianfan-api/s/3m7of64lb" icon="arrow-up-right-from-square">
     Officiële Qianfan API-documentatie.
   </Card>
 </CardGroup>

@@ -1,163 +1,175 @@
 ---
 read_when:
     - Vollständige Release-Validierung ausführen oder erneut ausführen
-    - Vergleich stabiler und vollständiger Release-Validierungsprofile
-    - Debugging von Fehlern in der Release-Validierungsphase
-summary: Stufen der vollständigen Release-Validierung, untergeordnete Workflows, Release-Profile, Handles für erneute Ausführungen und Nachweise
+    - Stabile und vollständige Release-Validierungsprofile vergleichen
+    - Fehler in Release-Validierungsphasen debuggen
+summary: Vollständige Release-Validierungsstufen, untergeordnete Workflows, Release-Profile, Handles für erneute Ausführungen und Nachweise
 title: Vollständige Release-Validierung
 x-i18n:
-    generated_at: "2026-05-11T20:36:15Z"
+    generated_at: "2026-06-27T18:09:03Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3d83d15272e4f7cff82ef791c8dbeb6adc447626ada8ae221d074ee16b2cadd5
+    source_hash: 791930254e3cac7da101d809cfc9b56773225159574d3727189f67cf85bd3fce
     source_path: reference/full-release-validation.md
     workflow: 16
 ---
 
-`Full Release Validation` ist der übergeordnete Release-Workflow. Er ist der einzige manuelle
-Einstiegspunkt für den Vorab-Release-Nachweis, die meiste Arbeit erfolgt jedoch in
-untergeordneten Workflows, sodass eine fehlgeschlagene Box erneut ausgeführt
-werden kann, ohne das gesamte Release neu zu starten.
+`Full Release Validation` ist der Release-Rahmen. Es ist der einzige manuelle
+Einstiegspunkt für den Pre-Release-Nachweis, aber die meiste Arbeit geschieht in
+untergeordneten Workflows, damit ein fehlgeschlagener Rechner erneut ausgeführt
+werden kann, ohne den gesamten Release neu zu starten.
 
-Führen Sie ihn von einer vertrauenswürdigen Workflow-Referenz aus aus, normalerweise `main`,
-und übergeben Sie den Release-Branch, das Tag oder die vollständige Commit-SHA als `ref`:
+Führen Sie ihn von einer vertrauenswürdigen Workflow-Referenz aus, normalerweise
+`main`, und übergeben Sie den Release-Branch, das Tag oder die vollständige
+Commit-SHA als `ref`:
 
 ```bash
 gh workflow run full-release-validation.yml \
   --ref main \
-  -f ref=release/YYYY.M.D \
+  -f ref=release/YYYY.M.PATCH \
   -f provider=openai \
   -f mode=both \
   -f release_profile=stable
 ```
 
-Untergeordnete Workflows verwenden die vertrauenswürdige Workflow-Referenz für den Harness und
-die Eingabe `ref` für den zu testenden Kandidaten. Dadurch bleibt neue Validierungslogik
-verfügbar, wenn ein älterer Release-Branch oder ein älteres Tag validiert wird.
+Untergeordnete Workflows verwenden die vertrauenswürdige Workflow-Referenz für
+das Test-Harness und die Eingabe `ref` für den zu testenden Kandidaten. Dadurch
+bleibt neue Validierungslogik verfügbar, wenn ein älterer Release-Branch oder
+ein älteres Tag validiert wird.
 
-Standardmäßig führt `release_profile=stable` die release-blockierenden Lanes aus und
-überspringt den umfassenden Live-/Docker-Soak. Übergeben Sie `run_release_soak=true`, um die
-Soak-Lanes in einen stabilen Lauf einzubeziehen. `release_profile=full` aktiviert Soak-Lanes
-immer, sodass das breite Advisory-Profil niemals stillschweigend Abdeckung verliert.
+`release_profile=stable` und `release_profile=full` führen immer den
+vollständigen Live-/Docker-Dauerlauf aus. Übergeben Sie
+`run_release_soak=true`, um dieselben Dauerlauf-Lanes mit dem Beta-Profil
+einzubeziehen. Die Stable-Veröffentlichung weist ein Validierungsmanifest ohne
+diesen Dauerlauf und blockierende Nachweise zur Produktleistung zurück.
 
-Package Acceptance baut den Kandidaten-Tarball normalerweise aus dem aufgelösten
-`ref`, einschließlich vollständiger SHA-Läufe, die mit `pnpm ci:full-release` ausgelöst wurden. Nach einer
-Beta-Veröffentlichung übergeben Sie `release_package_spec=openclaw@YYYY.M.D-beta.N`, um das
-ausgelieferte npm-Paket über Release-Prüfungen, Package Acceptance, cross-OS,
-Release-Path-Docker und Package Telegram hinweg wiederzuverwenden. Verwenden Sie `package_acceptance_package_spec`
-nur, wenn Package Acceptance absichtlich ein anderes Paket nachweisen soll.
+Package Acceptance baut das Kandidaten-Tarball normalerweise aus dem aufgelösten
+`ref`, einschließlich vollständiger SHA-Läufe, die mit `pnpm ci:full-release`
+ausgelöst wurden. Nach einer Beta-Veröffentlichung übergeben Sie
+`release_package_spec=openclaw@YYYY.M.PATCH-beta.N`, um das veröffentlichte
+npm-Paket über Release-Prüfungen, Package Acceptance, plattformübergreifende
+Prüfungen, Release-Pfad-Docker und Paket-Telegram hinweg wiederzuverwenden.
+Verwenden Sie `package_acceptance_package_spec` nur, wenn Package Acceptance
+absichtlich ein anderes Paket nachweisen soll. Die Live-Paket-Lane des Codex
+Plugins folgt demselben Zustand: veröffentlichte `release_package_spec`-Werte
+leiten `codex_plugin_spec=npm:@openclaw/codex@<version>` ab; SHA-/Artefaktläufe
+packen `extensions/codex` aus der ausgewählten Referenz; und Operatoren können
+`codex_plugin_spec` direkt für Plugin-Quellen vom Typ `npm:`, `npm-pack:` oder
+`git:` setzen. Die Lane erteilt die explizite Installationsgenehmigung für die
+Codex CLI, die dieses Plugin verlangt, und führt dann den Codex-CLI-Preflight
+sowie OpenAI-Agent-Turns in derselben Sitzung aus.
 
-## Phasen der obersten Ebene
+## Top-Level-Phasen
 
-| Phase                | Details                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Zielauflösung    | **Job:** `Resolve target ref`<br />**Untergeordneter Workflow:** keiner<br />**Weist nach:** löst den Release-Branch, das Tag oder die vollständige Commit-SHA auf und zeichnet die ausgewählten Eingaben auf.<br />**Erneute Ausführung:** führen Sie den übergeordneten Workflow erneut aus, wenn dies fehlschlägt.                                                                                                                                                                                                                               |
-| Vitest und normale CI | **Job:** `Run normal full CI`<br />**Untergeordneter Workflow:** `CI`<br />**Weist nach:** manueller vollständiger CI-Graph gegen die Zielreferenz, einschließlich Linux-Node-Lanes, gebündelter Plugin-Shards, Channel-Verträgen, Node-22-Kompatibilität, `check`, `check-additional`, Build-Smoke, Dokumentationsprüfungen, Python-Skills, Windows, macOS, Control-UI-i18n und Android über den übergeordneten Workflow.<br />**Erneute Ausführung:** `rerun_group=ci`.                                                  |
-| Plugin-Prerelease    | **Job:** `Run plugin prerelease validation`<br />**Untergeordneter Workflow:** `Plugin Prerelease`<br />**Weist nach:** release-spezifische statische Plugin-Prüfungen, agentische Plugin-Abdeckung, vollständige Erweiterungs-Batch-Shards, Plugin-Prerelease-Docker-Lanes und ein nicht blockierendes `plugin-inspector-advisory`-Artefakt für Kompatibilitätstriage.<br />**Erneute Ausführung:** `rerun_group=plugin-prerelease`.                                                                          |
-| Release-Prüfungen       | **Job:** `Run release/live/Docker/QA validation`<br />**Untergeordneter Workflow:** `OpenClaw Release Checks`<br />**Weist nach:** Installations-Smoke, cross-OS-Paketprüfungen, Package Acceptance, QA-Lab-Parität, Live-Matrix und Live-Telegram. Mit `run_release_soak=true` oder `release_profile=full` werden außerdem umfassende Live-/E2E-Suites und Docker-Release-Path-Chunks ausgeführt.<br />**Erneute Ausführung:** `rerun_group=release-checks` oder ein engerer Release-Checks-Handle. |
-| Paketartefakt     | **Job:** `Prepare release package artifact`<br />**Untergeordneter Workflow:** keiner<br />**Weist nach:** erstellt den übergeordneten Tarball `release-package-under-test` früh genug für paketbezogene Prüfungen, die nicht auf `OpenClaw Release Checks` warten müssen.<br />**Erneute Ausführung:** führen Sie den übergeordneten Workflow erneut aus oder stellen Sie `release_package_spec` für erneute Läufe mit veröffentlichten Paketen bereit.                                                                                           |
-| Package Telegram     | **Job:** `Run package Telegram E2E`<br />**Untergeordneter Workflow:** `NPM Telegram Beta E2E`<br />**Weist nach:** übergeordnetes artefaktgestütztes Telegram-Paket-Proof für `rerun_group=all` mit `release_profile=full` oder veröffentlichtes Paket-Telegram-Proof, wenn `release_package_spec` oder `npm_telegram_package_spec` gesetzt ist.<br />**Erneute Ausführung:** `rerun_group=npm-telegram` mit `release_package_spec` oder `npm_telegram_package_spec`.                           |
-| Umbrella-Prüfer    | **Job:** `Verify full validation`<br />**Untergeordneter Workflow:** keiner<br />**Weist nach:** prüft aufgezeichnete Ergebnisse untergeordneter Läufe erneut und hängt Tabellen der langsamsten Jobs aus untergeordneten Workflows an.<br />**Erneute Ausführung:** führen Sie nur diesen Job erneut aus, nachdem ein fehlgeschlagener untergeordneter Workflow erneut bis Grün ausgeführt wurde.                                                                                                                                                                                    |
+| Phase                | Details                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Zielauflösung        | **Job:** `Resolve target ref`<br />**Untergeordneter Workflow:** keiner<br />**Belegt:** löst den Release-Branch, das Tag oder die vollständige Commit-SHA auf und zeichnet die ausgewählten Eingaben auf.<br />**Erneut ausführen:** Führen Sie den Rahmen erneut aus, wenn dies fehlschlägt.                                                                                                                                                                |
+| Vitest und normale CI | **Job:** `Run normal full CI`<br />**Untergeordneter Workflow:** `CI`<br />**Belegt:** manueller vollständiger CI-Graph gegen die Zielreferenz, einschließlich Linux-Node-Lanes, Shards für gebündelte Plugins, Shards für Plugin- und Channel-Verträge, Node-22-Kompatibilität, `check-*`, `check-additional-*`, Smoke-Checks für gebaute Artefakte, Dokumentationsprüfungen, Python-Skills, Windows, macOS, Control-UI-i18n und Android über den Rahmen.<br />**Erneut ausführen:** `rerun_group=ci`. |
+| Plugin-Prerelease    | **Job:** `Run plugin prerelease validation`<br />**Untergeordneter Workflow:** `Plugin Prerelease`<br />**Belegt:** release-spezifische statische Plugin-Prüfungen, agentische Plugin-Abdeckung, vollständige Erweiterungs-Batch-Shards, Plugin-Prerelease-Docker-Lanes und ein nicht blockierendes Artefakt `plugin-inspector-advisory` für die Kompatibilitätstriage.<br />**Erneut ausführen:** `rerun_group=plugin-prerelease`.                                |
+| Release-Prüfungen    | **Job:** `Run release/live/Docker/QA validation`<br />**Untergeordneter Workflow:** `OpenClaw Release Checks`<br />**Belegt:** Installations-Smoke, plattformübergreifende Paketprüfungen, Package Acceptance, QA-Lab-Parität, Live-Matrix und Live-Telegram. Stable- und Full-Profile führen außerdem vollständige Live-/E2E-Suites und Docker-Release-Pfad-Chunks aus; Beta kann dies mit `run_release_soak=true` aktivieren.<br />**Erneut ausführen:** `rerun_group=release-checks` oder ein enger gefasster Release-Checks-Handle. |
+| Paket-Telegram       | **Job:** `Run package Telegram E2E`<br />**Untergeordneter Workflow:** `NPM Telegram Beta E2E`<br />**Belegt:** ein fokussiertes Telegram-E2E für veröffentlichte Pakete, wenn `release_package_spec` oder `npm_telegram_package_spec` gesetzt ist. Die vollständige Kandidatenvalidierung verwendet stattdessen das kanonische Package-Acceptance-Telegram-E2E.<br />**Erneut ausführen:** `rerun_group=npm-telegram` mit `release_package_spec` oder `npm_telegram_package_spec`. |
+| Rahmen-Verifizierer  | **Job:** `Verify full validation`<br />**Untergeordneter Workflow:** keiner<br />**Belegt:** prüft die aufgezeichneten Ergebnisse untergeordneter Läufe erneut und hängt Tabellen der langsamsten Jobs aus untergeordneten Workflows an.<br />**Erneut ausführen:** Führen Sie nur diesen Job erneut aus, nachdem Sie ein fehlgeschlagenes untergeordnetes Element erfolgreich erneut ausgeführt haben.                                                                 |
 
-Für `ref=main` und `rerun_group=all` ersetzt ein neuerer übergeordneter Workflow einen älteren.
-Wenn der übergeordnete Workflow abgebrochen wird, bricht sein Monitor alle untergeordneten Workflows ab, die er bereits
-ausgelöst hat. Release-Branch- und Tag-Validierungsläufe brechen sich standardmäßig nicht
-gegenseitig ab.
+Für `ref=main` und `rerun_group=all` ersetzt ein neuerer Rahmen einen älteren.
+Wenn der übergeordnete Lauf abgebrochen wird, bricht sein Monitor alle
+untergeordneten Workflows ab, die er bereits ausgelöst hat. Validierungsläufe für
+Release-Branches und Tags brechen sich standardmäßig nicht gegenseitig ab.
 
 ## Phasen der Release-Prüfungen
 
-`OpenClaw Release Checks` ist der größte untergeordnete Workflow. Er löst das Ziel
-einmal auf und bereitet ein gemeinsames `release-package-under-test`-Artefakt vor, wenn paket-
-oder Docker-bezogene Phasen es benötigen.
+`OpenClaw Release Checks` ist der größte untergeordnete Workflow. Er löst das
+Ziel einmal auf und bereitet ein gemeinsames Artefakt
+`release-package-under-test` vor, wenn paket- oder Docker-bezogene Phasen es
+benötigen.
 
-| Phase               | Details                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Release-Ziel        | **Job:** `Resolve target ref`<br />**Zugrunde liegender Workflow:** keiner<br />**Tests:** ausgewählte Referenz, optional erwartete SHA, Profil, Rerun-Gruppe und fokussierter Live-Suite-Filter.<br />**Rerun:** `rerun_group=release-checks`.                                                                                                                                                                                                                                                        |
-| Paketartefakt       | **Job:** `Prepare release package artifact`<br />**Zugrunde liegender Workflow:** keiner<br />**Tests:** packt oder ermittelt einen Kandidaten-Tarball und lädt `release-package-under-test` für nachgelagerte paketbezogene Prüfungen hoch.<br />**Rerun:** das betroffene Paket, die Cross-OS- oder die Live/E2E-Gruppe.                                                                                                                                                                      |
-| Installations-Smoke | **Job:** `Run install smoke`<br />**Zugrunde liegender Workflow:** `Install Smoke`<br />**Tests:** vollständiger Installationspfad mit Wiederverwendung des Root-Dockerfile-Smoke-Images, QR-Paketinstallation, Root- und Gateway-Docker-Smokes, Installer-Docker-Tests, Bun-Global-Install-Image-Provider-Smoke und schnellem gebündeltem Plugin-Installations-/Deinstallations-E2E.<br />**Rerun:** `rerun_group=install-smoke`. |
-| Cross-OS            | **Job:** `cross_os_release_checks`<br />**Zugrunde liegender Workflow:** `OpenClaw Cross-OS Release Checks (Reusable)`<br />**Tests:** Fresh- und Upgrade-Lanes unter Linux, Windows und macOS für den ausgewählten Provider und Modus, mit dem Kandidaten-Tarball plus Baseline-Paket.<br />**Rerun:** `rerun_group=cross-os`.                                                                                                                                                                  |
-| Repo und Live-E2E   | **Job:** `Run repo/live E2E validation`<br />**Zugrunde liegender Workflow:** `OpenClaw Live And E2E Checks (Reusable)`<br />**Tests:** Repository-E2E, Live-Cache, OpenAI-Websocket-Streaming, nativer Live-Provider und Plugin-Shards sowie Docker-gestützte Live-Model-/Backend-/Gateway-Harnesses, ausgewählt durch `release_profile`.<br />**Läufe:** `run_release_soak=true`, `release_profile=full` oder fokussiertes `rerun_group=live-e2e`.<br />**Rerun:** `rerun_group=live-e2e`, optional mit `live_suite_filter`. |
-| Docker-Release-Pfad | **Job:** `Run Docker release-path validation`<br />**Zugrunde liegender Workflow:** `OpenClaw Live And E2E Checks (Reusable)`<br />**Tests:** Release-Pfad-Docker-Chunks gegen das gemeinsame Paketartefakt.<br />**Läufe:** `run_release_soak=true`, `release_profile=full` oder fokussiertes `rerun_group=live-e2e`.<br />**Rerun:** `rerun_group=live-e2e`.                                                                                                                                       |
-| Paketakzeptanz      | **Job:** `Run package acceptance`<br />**Zugrunde liegender Workflow:** `Package Acceptance`<br />**Tests:** Offline-Plugin-Paket-Fixtures, Plugin-Aktualisierung, mock-OpenAI-Telegram-Paketakzeptanz und Prüfungen für überlebende veröffentlichte Upgrades gegen denselben Tarball. Blockierende Release-Prüfungen verwenden die standardmäßig zuletzt veröffentlichte Baseline; Soak-Prüfungen werden auf jede stabile npm-Version ab `2026.4.23` sowie gemeldete Issue-Fixtures erweitert.<br />**Rerun:** `rerun_group=package`. |
-| QA-Parität          | **Job:** `Run QA Lab parity lane` und `Run QA Lab parity report`<br />**Zugrunde liegender Workflow:** direkte Jobs<br />**Tests:** agentische Paritätspakete für Kandidat und Baseline, danach der Paritätsbericht.<br />**Rerun:** `rerun_group=qa-parity` oder `rerun_group=qa`.                                                                                                                                                                                                             |
-| QA-Live-Matrix      | **Job:** `Run QA Lab live Matrix lane`<br />**Zugrunde liegender Workflow:** direkter Job<br />**Tests:** schnelles Live-Matrix-QA-Profil in der Umgebung `qa-live-shared`.<br />**Rerun:** `rerun_group=qa-live` oder `rerun_group=qa`.                                                                                                                                                                                                                                                        |
-| QA-Live-Telegram    | **Job:** `Run QA Lab live Telegram lane`<br />**Zugrunde liegender Workflow:** direkter Job<br />**Tests:** Live-Telegram-QA mit Convex-CI-Anmeldedaten-Leases.<br />**Rerun:** `rerun_group=qa-live` oder `rerun_group=qa`.                                                                                                                                                                                                                                                                   |
-| Release-Verifier    | **Job:** `Verify release checks`<br />**Zugrunde liegender Workflow:** keiner<br />**Tests:** erforderliche Release-Prüf-Jobs für die ausgewählte Rerun-Gruppe.<br />**Rerun:** erneut ausführen, nachdem fokussierte Child-Jobs bestanden haben.                                                                                                                                                                                                                                             |
+| Phase               | Details                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Release-Ziel        | **Job:** `Resolve target ref`<br />**Zugehöriger Workflow:** keiner<br />**Tests:** ausgewählte Ref, optionale erwartete SHA, Profil, Gruppe für erneute Läufe und fokussierter Filter für Live-Suites.<br />**Erneuter Lauf:** `rerun_group=release-checks`.                                                                                                                                                                                                                                     |
+| Paketartefakt       | **Job:** `Prepare release package artifact`<br />**Zugehöriger Workflow:** keiner<br />**Tests:** packt oder löst einen Kandidaten-Tarball auf und lädt `release-package-under-test` für nachgelagerte paketbezogene Prüfungen hoch.<br />**Erneuter Lauf:** die betroffene Paket-, Cross-OS- oder Live/E2E-Gruppe.                                                                                                                                                                               |
+| Installations-Smoke | **Job:** `Run install smoke`<br />**Zugehöriger Workflow:** `Install Smoke`<br />**Tests:** vollständiger Installationspfad mit Wiederverwendung des Smoke-Images aus dem Root-Dockerfile, QR-Paketinstallation, Root- und Gateway-Docker-Smokes, Installer-Docker-Tests, Bun-Globalinstallations-Smoke für Image-Provider und schnelles E2E für Installation/Deinstallation gebündelter Plugins.<br />**Erneuter Lauf:** `rerun_group=install-smoke`.                                      |
+| Cross-OS            | **Job:** `cross_os_release_checks`<br />**Zugehöriger Workflow:** `OpenClaw Cross-OS Release Checks (Reusable)`<br />**Tests:** Frischinstallations- und Upgrade-Lanes unter Linux, Windows und macOS für den ausgewählten Provider und Modus, mit dem Kandidaten-Tarball plus einem Baseline-Paket.<br />**Erneuter Lauf:** `rerun_group=cross-os`.                                                                                                                                             |
+| Repo und Live-E2E   | **Job:** `Run repo/live E2E validation`<br />**Zugehöriger Workflow:** `OpenClaw Live And E2E Checks (Reusable)`<br />**Tests:** Repository-E2E, Live-Cache, OpenAI-WebSocket-Streaming, native Live-Provider- und Plugin-Shards sowie Docker-gestützte Harnesses für Live-Modelle/Backend/Gateway, ausgewählt durch `release_profile`.<br />**Läuft bei:** `run_release_soak=true`, `release_profile=full` oder fokussiertem `rerun_group=live-e2e`.<br />**Erneuter Lauf:** `rerun_group=live-e2e`, optional mit `live_suite_filter`. |
+| Docker-Release-Pfad | **Job:** `Run Docker release-path validation`<br />**Zugehöriger Workflow:** `OpenClaw Live And E2E Checks (Reusable)`<br />**Tests:** Docker-Blöcke für den Release-Pfad gegen das gemeinsame Paketartefakt.<br />**Läuft bei:** `run_release_soak=true`, `release_profile=full` oder fokussiertem `rerun_group=live-e2e`.<br />**Erneuter Lauf:** `rerun_group=live-e2e`.                                                                                                                       |
+| Paketabnahme        | **Job:** `Run package acceptance`<br />**Zugehöriger Workflow:** `Package Acceptance`<br />**Tests:** Offline-Plugin-Paket-Fixtures, Plugin-Update, das kanonische Mock-OpenAI-Telegram-Paket-E2E und Survivor-Prüfungen für veröffentlichte Upgrades gegen denselben Tarball. Blockierende Release-Prüfungen verwenden die standardmäßige zuletzt veröffentlichte Baseline; Soak-Prüfungen erweitern dies auf jede stabile npm-Veröffentlichung ab `2026.4.23` plus Fixtures für gemeldete Issues.<br />**Erneuter Lauf:** `rerun_group=package`. |
+| QA-Parität          | **Job:** `Run QA Lab parity lane` und `Run QA Lab parity report`<br />**Zugehöriger Workflow:** direkte Jobs<br />**Tests:** kandidat- und baselinebasierte Agentic-Paritätspakete, anschließend der Paritätsbericht.<br />**Erneuter Lauf:** `rerun_group=qa-parity` oder `rerun_group=qa`.                                                                                                                                                                                                        |
+| QA Live Matrix      | **Job:** `Run QA Lab live Matrix lane`<br />**Zugehöriger Workflow:** direkter Job<br />**Tests:** schnelles Live-Matrix-QA-Profil in der Umgebung `qa-live-shared`.<br />**Erneuter Lauf:** `rerun_group=qa-live` oder `rerun_group=qa`.                                                                                                                                                                                                                                                          |
+| QA Live Telegram    | **Job:** `Run QA Lab live Telegram lane`<br />**Zugehöriger Workflow:** direkter Job<br />**Tests:** Live-Telegram-QA mit Convex-CI-Zugangsdaten-Leases.<br />**Erneuter Lauf:** `rerun_group=qa-live` oder `rerun_group=qa`.                                                                                                                                                                                                                                                                     |
+| Release-Verifier    | **Job:** `Verify release checks`<br />**Zugehöriger Workflow:** keiner<br />**Tests:** erforderliche Release-Check-Jobs für die ausgewählte Gruppe für erneute Läufe.<br />**Erneuter Lauf:** erneut ausführen, nachdem fokussierte untergeordnete Jobs bestanden haben.                                                                                                                                                                                                                           |
 
-## Docker-Release-Pfad-Chunks
+## Docker-Blöcke für den Release-Pfad
 
-Die Docker-Release-Pfad-Phase führt diese Chunks aus, wenn `live_suite_filter`
+Die Docker-Phase für den Release-Pfad führt diese Blöcke aus, wenn `live_suite_filter`
 leer ist:
 
-| Chunk                                                           | Abdeckung                                                                                           |
-| --------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| `core`                                                          | Core-Docker-Release-Pfad-Smoke-Lanes.                                                               |
-| `package-update-openai`                                         | OpenAI-Paketinstallations-/-aktualisierungsverhalten, Codex-On-Demand-Installation und Chat Completions-Tool-Aufrufe. |
-| `package-update-anthropic`                                      | Anthropic-Paketinstallations- und Aktualisierungsverhalten.                                         |
-| `package-update-core`                                           | Provider-neutrales Paket- und Aktualisierungsverhalten.                                             |
-| `plugins-runtime-plugins`                                       | Plugin-Runtime-Lanes, die Plugin-Verhalten ausüben.                                                 |
-| `plugins-runtime-services`                                      | Service-gestützte und Live-Plugin-Runtime-Lanes; enthält OpenWebUI, wenn angefordert.               |
-| `plugins-runtime-install-a` through `plugins-runtime-install-h` | Plugin-Installations-/Runtime-Batches, aufgeteilt für parallele Release-Validierung.                |
+| Block                                                           | Abdeckung                                                                                                                           |
+| --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `core`                                                          | Core-Docker-Smoke-Lanes für den Release-Pfad.                                                                                       |
+| `package-update-openai`                                         | Installations-/Update-Verhalten des OpenAI-Pakets, bedarfsgesteuerte Codex-Installation, Live-Turns des Codex-Plugins und Chat-Completions-Toolaufrufe. |
+| `package-update-anthropic`                                      | Installations- und Update-Verhalten des Anthropic-Pakets.                                                                           |
+| `package-update-core`                                           | Provider-neutrales Paket- und Update-Verhalten.                                                                                     |
+| `plugins-runtime-plugins`                                       | Plugin-Runtime-Lanes, die Plugin-Verhalten ausführen.                                                                               |
+| `plugins-runtime-services`                                      | Service-gestützte und Live-Plugin-Runtime-Lanes; enthält OpenWebUI, wenn angefordert.                                                |
+| `plugins-runtime-install-a` bis `plugins-runtime-install-h`     | Plugin-Installations-/Runtime-Batches, aufgeteilt für parallele Release-Validierung.                                                 |
 
 Verwenden Sie gezielt `docker_lanes=<lane[,lane]>` im wiederverwendbaren Live/E2E-Workflow, wenn
-nur eine Docker-Lane fehlgeschlagen ist. Die Release-Artefakte enthalten
-Rerun-Befehle pro Lane mit Eingaben für Paketartefakt- und Image-Wiederverwendung, wenn verfügbar.
+nur eine Docker-Lane fehlgeschlagen ist. Die Release-Artefakte enthalten Befehle für erneute Läufe
+pro Lane mit Eingaben für Paketartefakt und Image-Wiederverwendung, sofern verfügbar.
 
 ## Release-Profile
 
 `release_profile` steuert hauptsächlich die Live-/Provider-Breite innerhalb der Release-Prüfungen.
-Es entfernt nicht die normale vollständige CI, Plugin-Prerelease, Installations-Smoke, Paketakzeptanz
-oder QA Lab. Für `stable` sind erschöpfende Repo-/Live-E2E- und Docker-
-Release-Pfad-Chunks Soak-Abdeckung und laufen, wenn `run_release_soak=true`.
-`full` erzwingt die Soak-Abdeckung und sorgt außerdem dafür, dass der Umbrella-Lauf Paket-Telegram-
-E2E gegen das übergeordnete Release-Paketartefakt ausführt, wenn `rerun_group=all`, sodass ein vollständiger
-Pre-Publish-Kandidat diese Telegram-Paket-Lane nicht stillschweigend überspringt.
+Es entfernt keine normale vollständige CI, Plugin Prerelease, Installations-Smoke, Paketabnahme
+oder QA Lab. Stabile und vollständige Profile führen immer umfassende Repo/Live-E2E- und
+Docker-Soak-Abdeckung für den Release-Pfad aus. Das Beta-Profil kann dies mit
+`run_release_soak=true` aktivieren. Paketabnahme liefert das kanonische Paket-Telegram-E2E
+für jeden vollständigen Kandidaten, daher dupliziert der Umbrella diesen Live-Poller nicht.
 
-| Profil    | Vorgesehene Verwendung             | Enthaltene Live-/Provider-Abdeckung                                                                                                                                                 |
-| --------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `minimum` | Schnellster releasekritischer Smoke. | OpenAI/Core-Live-Pfad, Docker-Live-Modelle für OpenAI, nativer Gateway-Core, natives OpenAI-Gateway-Profil, natives OpenAI-Plugin und Docker-Live-Gateway OpenAI.                  |
-| `stable`  | Standardprofil für Release-Freigaben. | `minimum` plus Anthropic-Smoke, Google, MiniMax, Backend, natives Live-Test-Harness, Docker-Live-CLI-Backend, Docker-ACP-Bind, Docker-Codex-Harness und ein OpenCode Go-Smoke-Shard. |
-| `full`    | Breiter beratender Sweep.          | `stable` plus beratende Provider, Plugin-Live-Shards und Medien-Live-Shards.                                                                                                       |
+| Profil    | Vorgesehene Verwendung                | Enthaltene Live-/Provider-Abdeckung                                                                                                                                                  |
+| --------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `minimum` | Schnellster releasekritischer Smoke.  | OpenAI/Core-Live-Pfad, Docker-Live-Modelle für OpenAI, nativer Gateway-Core, natives OpenAI-Gateway-Profil, natives OpenAI-Plugin und Docker-Live-Gateway OpenAI.                   |
+| `stable`  | Standardprofil für Release-Freigaben. | `minimum` plus Anthropic-Smoke, Google, MiniMax, Backend, nativer Live-Test-Harness, Docker-Live-CLI-Backend, Docker-ACP-Bind, Docker-Codex-Harness und ein OpenCode-Go-Smoke-Shard. |
+| `full`    | Breiter Advisory-Sweep.               | `stable` plus Advisory-Provider, Plugin-Live-Shards und Medien-Live-Shards.                                                                                                         |
 
-## Nur in Full enthaltene Ergänzungen
+## Nur in `full` enthaltene Ergänzungen
 
-Diese Suites werden von `stable` übersprungen und von `full` eingeschlossen:
+Diese Suites werden von `stable` übersprungen und von `full` einbezogen:
 
-| Bereich                          | Nur in Full enthaltene Abdeckung                                                                                         |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| Docker-Live-Modelle              | OpenCode Go, OpenRouter, xAI, Z.ai und Fireworks.                                                                         |
-| Docker-Live-Gateway              | Beratende Provider, aufgeteilt in DeepSeek/Fireworks-, OpenCode Go/OpenRouter- und xAI/Z.ai-Shards.                       |
-| Native Gateway-Provider-Profile  | Vollständige Anthropic Opus- und Sonnet/Haiku-Shards, Fireworks, DeepSeek, vollständige OpenCode Go-Modell-Shards, OpenRouter, xAI und Z.ai. |
-| Native Plugin-Live-Shards        | Plugins A-K, L-N, O-Z other, Moonshot und xAI.                                                                            |
-| Native Medien-Live-Shards        | Audio, Google-Musik, MiniMax-Musik und Videogruppen A-D.                                                                  |
+| Bereich                          | Nur in `full` enthaltene Abdeckung                                                                                           |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| Docker-Live-Modelle              | OpenCode Go, OpenRouter, xAI, Z.ai und Fireworks.                                                                             |
+| Docker-Live-Gateway              | Advisory-Provider, aufgeteilt in DeepSeek/Fireworks-, OpenCode Go/OpenRouter- und xAI/Z.ai-Shards.                            |
+| Native Gateway-Provider-Profile  | Vollständige Anthropic-Opus- und Sonnet/Haiku-Shards, Fireworks, DeepSeek, vollständige OpenCode-Go-Modell-Shards, OpenRouter, xAI und Z.ai. |
+| Native Plugin-Live-Shards        | Plugins A-K, L-N, O-Z Sonstige, Moonshot und xAI.                                                                             |
+| Native Medien-Live-Shards        | Audio-, Google-Musik-, MiniMax-Musik- und Videogruppen A-D.                                                                   |
 
 `stable` enthält `native-live-src-gateway-profiles-anthropic-smoke` und
 `native-live-src-gateway-profiles-opencode-go-smoke`; `full` verwendet stattdessen die breiteren
-Anthropic- und OpenCode Go-Modell-Shards. Fokussierte Reruns können weiterhin die
+Anthropic- und OpenCode-Go-Modell-Shards. Fokussierte erneute Läufe können weiterhin die
 aggregierten Handles `native-live-src-gateway-profiles-anthropic` oder
 `native-live-src-gateway-profiles-opencode-go` verwenden.
 
-## Fokussierte Reruns
+## Fokussierte erneute Läufe
 
-Verwenden Sie `rerun_group`, um zu vermeiden, dass nicht zusammenhängende Release-Boxen wiederholt werden:
+Verwenden Sie `rerun_group`, um die Wiederholung nicht zugehöriger Release-Boxen zu vermeiden:
 
-| Handle              | Geltungsbereich                                                                                 |
+| Handle              | Umfang                                                                                          |
 | ------------------- | ----------------------------------------------------------------------------------------------- |
-| `all`               | Alle Phasen der Full Release Validation.                                                        |
-| `ci`                | Nur manueller vollständiger CI-Child.                                                           |
-| `plugin-prerelease` | Nur Plugin-Prerelease-Child.                                                                    |
-| `release-checks`    | Alle Phasen der OpenClaw Release Checks.                                                        |
-| `install-smoke`     | Install Smoke über Release Checks.                                                             |
+| `all`               | Alle Stufen der vollständigen Release-Validierung.                                              |
+| `ci`                | Nur das manuelle vollständige CI-Child.                                                         |
+| `plugin-prerelease` | Nur das Plugin-Prerelease-Child.                                                                |
+| `release-checks`    | Alle Stufen der OpenClaw Release Checks.                                                        |
+| `install-smoke`     | Install Smoke bis hin zu Release-Checks.                                                        |
 | `cross-os`          | Cross-OS-Release-Checks.                                                                        |
-| `live-e2e`          | Repo-/Live-E2E- und Docker-Validierung des Release-Pfads.                                      |
+| `live-e2e`          | Repo-/Live-E2E und Docker-Validierung des Release-Pfads.                                        |
 | `package`           | Package Acceptance.                                                                             |
-| `qa`                | QA-Parität plus QA-Live-Lanes.                                                                 |
-| `qa-parity`         | Nur QA-Paritäts-Lanes und Bericht.                                                             |
-| `qa-live`           | Nur QA-Live-Matrix und Telegram.                                                               |
-| `npm-telegram`      | Telegram-E2E für veröffentlichtes Package; erfordert `release_package_spec` oder `npm_telegram_package_spec`. |
+| `qa`                | QA-Parität plus QA-Live-Lanes.                                                                  |
+| `qa-parity`         | Nur QA-Paritäts-Lanes und Bericht.                                                              |
+| `qa-live`           | QA-Live-Matrix/Telegram plus aktivierte gated Discord-, WhatsApp- und Slack-Lanes.              |
+| `npm-telegram`      | Telegram-E2E für veröffentlichte Pakete; erfordert `release_package_spec` oder `npm_telegram_package_spec`. |
 
 Verwenden Sie `live_suite_filter` mit `rerun_group=live-e2e`, wenn eine Live-Suite fehlgeschlagen ist.
-Gültige Filter-IDs sind im wiederverwendbaren Live-/E2E-Workflow definiert, einschließlich
+Gültige Filter-IDs werden im wiederverwendbaren Live-/E2E-Workflow definiert, darunter
 `docker-live-models`, `live-gateway-docker`,
 `live-gateway-anthropic-docker`, `live-gateway-google-docker`,
 `live-gateway-minimax-docker`, `live-gateway-advisory-docker`,
@@ -165,30 +177,35 @@ Gültige Filter-IDs sind im wiederverwendbaren Live-/E2E-Workflow definiert, ein
 `live-codex-harness-docker`.
 
 Der Handle `live-gateway-advisory-docker` ist ein aggregierter Rerun-Handle für seine
-drei Provider-Shards, daher fächert er weiterhin auf alle Advisory-Docker-Gateway-Jobs auf.
+drei Provider-Shards, sodass er weiterhin auf alle Advisory-Docker-Gateway-Jobs auffächert.
 
 Verwenden Sie `cross_os_suite_filter` mit `rerun_group=cross-os`, wenn eine Cross-OS-Lane
 fehlgeschlagen ist. Der Filter akzeptiert eine OS-ID, eine Suite-ID oder ein OS-/Suite-Paar, zum
 Beispiel `windows/packaged-upgrade`, `windows` oder `packaged-fresh`. Cross-OS-
-Zusammenfassungen enthalten Zeitmessungen pro Phase für Packaged-Upgrade-Lanes, und lang laufende
-Befehle geben Heartbeat-Zeilen aus, sodass ein festhängendes Windows-Update vor dem
+Zusammenfassungen enthalten timings pro Phase für Packaged-Upgrade-Lanes, und lang laufende
+Befehle geben Heartbeat-Zeilen aus, damit ein hängendes Windows-Update vor dem
 Job-Timeout sichtbar ist.
 
-QA-Release-Check-Lanes sind advisory. Ein reiner QA-Fehler wird als Warnung gemeldet
-und blockiert den Release-Check-Verifier nicht; führen Sie `rerun_group=qa`,
+Fehlschläge bei QA-Release-Checks blockieren die normale Release-Validierung. Erforderlicher OpenClaw-
+Dynamic-Tool-Drift im Standard-Tier blockiert ebenfalls den Release-Check-Verifier.
+Tideclaw-Alpha-Läufe können Nicht-Package-Safety-Release-Check-Lanes weiterhin als
+advisory behandeln. Wenn `live_suite_filter` ausdrücklich eine gated QA-Live-Lane wie
+Discord, WhatsApp oder Slack anfordert, muss die passende
+`OPENCLAW_RELEASE_QA_*_LIVE_CI_ENABLED`-Repo-Variable aktiviert sein; andernfalls
+schlägt die Eingabeerfassung fehl, statt die Lane stillschweigend zu überspringen. Führen Sie `rerun_group=qa`,
 `qa-parity` oder `qa-live` erneut aus, wenn Sie frische QA-Nachweise benötigen.
 
 ## Aufzubewahrende Nachweise
 
-Bewahren Sie die Zusammenfassung `Full Release Validation` als Index auf Release-Ebene auf. Sie verlinkt
-Child-Run-IDs und enthält Tabellen der langsamsten Jobs. Prüfen Sie bei Fehlern zuerst den Child-
-Workflow, und führen Sie dann den kleinsten passenden Handle oben erneut aus.
+Behalten Sie die Zusammenfassung `Full Release Validation` als Release-weiten Index bei. Sie verlinkt
+Child-Run-IDs und enthält Tabellen der langsamsten Jobs. Prüfen Sie bei Fehlschlägen zuerst den Child-
+Workflow und führen Sie dann den kleinsten passenden Handle oben erneut aus.
 
 Nützliche Artefakte:
 
-- `release-package-under-test` aus dem Full-Release-Validation-Parent und `OpenClaw Release Checks`
+- `release-package-under-test` aus `OpenClaw Release Checks`
 - Docker-Release-Pfad-Artefakte unter `.artifacts/docker-tests/`
-- Package-Acceptance-`package-under-test` und Docker-Acceptance-Artefakte
+- Package Acceptance `package-under-test` und Docker-Acceptance-Artefakte
 - Cross-OS-Release-Check-Artefakte für jedes OS und jede Suite
 - QA-Paritäts-, Matrix- und Telegram-Artefakte
 

@@ -2,108 +2,109 @@
 read_when: You want multiple isolated agents (workspaces + auth) in one gateway process.
 sidebarTitle: Multi-agent routing
 status: active
-summary: 'Routering voor meerdere agents: geïsoleerde agents, kanaalaccounts en bindingen'
-title: Routering voor meerdere agents
+summary: 'Multi-agentroutering: geïsoleerde agents, kanaalaccounts en koppelingen'
+title: Routering met meerdere agents
 x-i18n:
-    generated_at: "2026-05-10T19:32:19Z"
+    generated_at: "2026-06-27T17:28:13Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7fd194cbe0938cc6ef6dd9b9803d2b1fe6f3e0777f4df7c407c692fd9f743c59
+    source_hash: 4c1c55188cd27ea786cf65dcabd356a602e1e6da5f842532b189df59195274db
     source_path: concepts/multi-agent.md
     workflow: 16
 ---
 
-Voer meerdere _geïsoleerde_ agents uit — elk met een eigen werkruimte, statusmap (`agentDir`) en sessiegeschiedenis — plus meerdere kanaalaccounts (bijv. twee WhatsApps) in één draaiende Gateway. Inkomende berichten worden via bindings naar de juiste agent gerouteerd.
+  Voer meerdere _geïsoleerde_ agents uit — elk met een eigen workspace, state-directory (`agentDir`) en sessiegeschiedenis — plus meerdere kanaalaccounts (bijv. twee WhatsApps) in één draaiende Gateway. Inkomende berichten worden via bindings naar de juiste agent gerouteerd.
 
-Een **agent** is hier de volledige scope per persona: werkruimtebestanden, auth-profielen, modelregister en sessieopslag. `agentDir` is de statusmap op schijf die deze configuratie per agent bevat op `~/.openclaw/agents/<agentId>/`. Een **binding** koppelt een kanaalaccount (bijv. een Slack-werkruimte of een WhatsApp-nummer) aan een van die agents.
+  Een **agent** is hier de volledige scope per persona: workspace-bestanden, auth-profielen, modelregister en sessieopslag. `agentDir` is de state-directory op schijf die deze configuratie per agent bewaart in `~/.openclaw/agents/<agentId>/`. Een **binding** koppelt een kanaalaccount (bijv. een Slack-workspace of een WhatsApp-nummer) aan een van die agents.
 
-## Wat is "één agent"?
+  ## Wat is "één agent"?
 
-Een **agent** is een volledig afgebakend brein met een eigen:
+  Een **agent** is een volledig afgebakend brein met een eigen:
 
-- **Werkruimte** (bestanden, AGENTS.md/SOUL.md/USER.md, lokale notities, persona-regels).
-- **Statusmap** (`agentDir`) voor auth-profielen, modelregister en configuratie per agent.
-- **Sessieopslag** (chatgeschiedenis + routeringsstatus) onder `~/.openclaw/agents/<agentId>/sessions`.
+  - **Workspace** (bestanden, AGENTS.md/SOUL.md/USER.md, lokale notities, persona-regels).
+  - **State-directory** (`agentDir`) voor auth-profielen, modelregister en configuratie per agent.
+  - **Sessieopslag** (chatgeschiedenis + routeringsstatus) onder `~/.openclaw/agents/<agentId>/sessions`.
 
-Auth-profielen zijn **per agent**. Elke agent leest uit zijn eigen:
+  Auth-profielen zijn **per agent**. Elke agent leest uit zijn eigen:
 
-```text
-~/.openclaw/agents/<agentId>/agent/auth-profiles.json
-```
+  ```text
+  ~/.openclaw/agents/<agentId>/agent/auth-profiles.json
+  ```
 
-<Note>
-`sessions_history` is hier ook het veiligere pad voor herinnering tussen sessies: het retourneert een begrensde, opgeschoonde weergave, geen ruwe transcriptdump. Assistant-herinnering verwijdert denktags, `<relevant-memories>`-scaffolding, plattetekst-XML-payloads voor tool-aanroepen (inclusief `<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` en afgekorte tool-aanroepblokken), gedegradeerde tool-aanroep-scaffolding, gelekte ASCII-/full-width-modelbesturingstokens en misvormde MiniMax-tool-aanroep-XML vóór redactie/afkapping.
-</Note>
+  <Note>
+  `sessions_history` is ook hier het veiligere pad voor herinnering tussen sessies: het geeft een begrensde, opgeschoonde weergave terug, geen ruwe transcriptdump. Assistentherinnering verwijdert thinking-tags, `<relevant-memories>`-scaffolding, XML-payloads voor tool-calls in platte tekst (waaronder `<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` en afgekorte tool-call-blokken), gedegradeerde tool-call-scaffolding, gelekte ASCII-/full-width modelcontroletokens en misvormde MiniMax-tool-call-XML vóór redactie/afkapping.
+  </Note>
 
-<Warning>
-Hergebruik `agentDir` nooit tussen agents (dat veroorzaakt botsingen tussen auth en sessies). Agents
-kunnen doorlezen naar de auth-profielen van de standaard-/hoofdagent wanneer ze geen
-lokaal profiel hebben, maar OpenClaw kloont OAuth-vernieuwingstokens niet naar de
-opslag van de secundaire agent. Als je een onafhankelijk OAuth-account wilt, meld je dan aan vanuit
-die agent; als je referenties handmatig kopieert, kopieer dan alleen draagbare statische
-`api_key`- of `token`-profielen.
-</Warning>
+  <Warning>
+  Gebruik `agentDir` nooit opnieuw voor meerdere agents (dat veroorzaakt auth-/sessiebotsingen). Agents
+  kunnen doorlezen naar de auth-profielen van de standaard-/main-agent wanneer ze
+  geen lokaal profiel hebben, maar OpenClaw kloont OAuth-vernieuwingstokens niet naar de
+  secundaire agentopslag. Als je een onafhankelijk OAuth-account wilt, meld je dan aan vanaf
+  die agent; als je credentials handmatig kopieert, kopieer dan alleen overdraagbare statische
+  `api_key`- of `token`-profielen.
+  </Warning>
 
-Skills worden geladen vanuit elke agentwerkruimte plus gedeelde roots zoals `~/.openclaw/skills`, en daarna gefilterd op de effectieve allowlist voor agentskills wanneer die is geconfigureerd. Gebruik `agents.defaults.skills` voor een gedeelde basislijn en `agents.list[].skills` voor vervanging per agent. Zie [Skills: per-agent vs gedeeld](/nl/tools/skills#per-agent-vs-shared-skills) en [Skills: allowlists voor agentskills](/nl/tools/skills#agent-skill-allowlists).
+  Skills worden geladen uit elke agent-workspace plus gedeelde roots zoals `~/.openclaw/skills`, en vervolgens gefilterd op basis van de effectieve allowlist voor agent-skills wanneer die is geconfigureerd. Gebruik `agents.defaults.skills` voor een gedeelde basislijn en `agents.list[].skills` voor vervanging per agent. Zie [Skills: per-agent vs shared](/nl/tools/skills#per-agent-vs-shared-skills) en [Skills: agent skill allowlists](/nl/tools/skills#agent-allowlists).
 
-De Gateway kan **één agent** (standaard) of **veel agents** naast elkaar hosten.
+  De Gateway kan **één agent** (standaard) of **veel agents** naast elkaar hosten.
 
-<Note>
-**Werkruimtenotitie:** de werkruimte van elke agent is de **standaard cwd**, geen harde sandbox. Relatieve paden worden binnen de werkruimte opgelost, maar absolute paden kunnen andere hostlocaties bereiken tenzij sandboxing is ingeschakeld. Zie [Sandboxing](/nl/gateway/sandboxing).
-</Note>
+  <Note>
+  **Workspace-opmerking:** de workspace van elke agent is de **standaard-cwd**, geen harde sandbox. Relatieve paden worden binnen de workspace opgelost, maar absolute paden kunnen andere hostlocaties bereiken tenzij sandboxing is ingeschakeld. Zie [Sandboxing](/nl/gateway/sandboxing).
+  </Note>
 
-## Paden (snelle kaart)
+  ## Paden (snelle kaart)
 
-- Configuratie: `~/.openclaw/openclaw.json` (of `OPENCLAW_CONFIG_PATH`)
-- Statusmap: `~/.openclaw` (of `OPENCLAW_STATE_DIR`)
-- Werkruimte: `~/.openclaw/workspace` (of `~/.openclaw/workspace-<agentId>`)
-- Agentmap: `~/.openclaw/agents/<agentId>/agent` (of `agents.list[].agentDir`)
-- Sessies: `~/.openclaw/agents/<agentId>/sessions`
+  - Configuratie: `~/.openclaw/openclaw.json` (of `OPENCLAW_CONFIG_PATH`)
+  - State-dir: `~/.openclaw` (of `OPENCLAW_STATE_DIR`)
+  - Workspace: `~/.openclaw/workspace` (of `~/.openclaw/workspace-<agentId>`)
+  - Agent-dir: `~/.openclaw/agents/<agentId>/agent` (of `agents.list[].agentDir`)
+  - Sessies: `~/.openclaw/agents/<agentId>/sessions`
 
-### Modus met één agent (standaard)
+  ### Modus met één agent (standaard)
 
-Als je niets doet, voert OpenClaw één agent uit:
+  Als je niets doet, voert OpenClaw één agent uit:
 
-- `agentId` staat standaard op **`main`**.
-- Sessies worden gesleuteld als `agent:main:<mainKey>`.
-- Werkruimte staat standaard op `~/.openclaw/workspace` (of `~/.openclaw/workspace-<profile>` wanneer `OPENCLAW_PROFILE` is ingesteld).
-- Status staat standaard op `~/.openclaw/agents/main/agent`.
+  - `agentId` is standaard **`main`**.
+  - Sessies krijgen sleutels als `agent:main:<mainKey>`.
+  - Workspace is standaard `~/.openclaw/workspace` (of `~/.openclaw/workspace-<profile>` wanneer `OPENCLAW_PROFILE` is ingesteld).
+  - State is standaard `~/.openclaw/agents/main/agent`.
 
-## Agent-helper
+  ## Agent-helper
 
-Gebruik de agent-wizard om een nieuwe geïsoleerde agent toe te voegen:
+  Gebruik de agent-wizard om een nieuwe geïsoleerde agent toe te voegen:
 
-```bash
-openclaw agents add work
-```
+  ```bash
+  openclaw agents add work
+  ```
 
-Voeg daarna `bindings` toe (of laat de wizard dat doen) om inkomende berichten te routeren.
+  Voeg daarna `bindings` toe (of laat de wizard dat doen) om inkomende berichten te routeren.
 
-Verifieer met:
+  Verifieer met:
 
-```bash
-openclaw agents list --bindings
-```
+  ```bash
+  openclaw agents list --bindings
+  ```
 
-## Snelle start
+  ## Snelstart
 
-<Steps>
-  <Step title="Maak elke agentwerkruimte aan">
-    Gebruik de wizard of maak werkruimten handmatig aan:
+  <Steps>
+  <Step title="Maak elke agent-workspace aan">
+    Gebruik de wizard of maak workspaces handmatig aan:
 
     ```bash
     openclaw agents add coding
     openclaw agents add social
     ```
 
-    Elke agent krijgt een eigen werkruimte met `SOUL.md`, `AGENTS.md` en optioneel `USER.md`, plus een toegewezen `agentDir` en sessieopslag onder `~/.openclaw/agents/<agentId>`.
+    Elke agent krijgt een eigen workspace met `SOUL.md`, `AGENTS.md` en optioneel `USER.md`, plus een dedicated `agentDir` en sessieopslag onder `~/.openclaw/agents/<agentId>`.
 
   </Step>
   <Step title="Maak kanaalaccounts aan">
     Maak één account per agent aan op je voorkeurskanalen:
 
-    - Discord: één bot per agent, schakel Message Content Intent in, kopieer elk token.
-    - Telegram: één bot per agent via BotFather, kopieer elk token.
+    - Discord: één bot per agent, schakel Message Content Intent in, kopieer elke token.
+    - Telegram: één bot per agent via BotFather, kopieer elke token.
     - WhatsApp: koppel elk telefoonnummer per account.
 
     ```bash
@@ -113,10 +114,10 @@ openclaw agents list --bindings
     Zie kanaalgidsen: [Discord](/nl/channels/discord), [Telegram](/nl/channels/telegram), [WhatsApp](/nl/channels/whatsapp).
 
   </Step>
-  <Step title="Voeg agents, accounts en bindings toe">
+  <Step title="Agents, accounts en bindings toevoegen">
     Voeg agents toe onder `agents.list`, kanaalaccounts onder `channels.<channel>.accounts`, en verbind ze met `bindings` (voorbeelden hieronder).
   </Step>
-  <Step title="Herstart en verifieer">
+  <Step title="Opnieuw starten en verifiëren">
     ```bash
     openclaw gateway restart
     openclaw agents list --bindings
@@ -125,15 +126,15 @@ openclaw agents list --bindings
   </Step>
 </Steps>
 
-## Meerdere agents = meerdere mensen, meerdere persoonlijkheden
+## Meerdere agents = meerdere personen, meerdere persoonlijkheden
 
 Met **meerdere agents** wordt elke `agentId` een **volledig geïsoleerde persona**:
 
-- **Andere telefoonnummers/accounts** (per kanaal `accountId`).
-- **Andere persoonlijkheden** (werkruimtebestanden per agent zoals `AGENTS.md` en `SOUL.md`).
-- **Gescheiden auth + sessies** (geen kruisverkeer tenzij expliciet ingeschakeld).
+- **Verschillende telefoonnummers/accounts** (per kanaal `accountId`).
+- **Verschillende persoonlijkheden** (workspace-bestanden per agent, zoals `AGENTS.md` en `SOUL.md`).
+- **Afzonderlijke auth + sessies** (geen kruisverkeer tenzij expliciet ingeschakeld).
 
-Hiermee kunnen **meerdere mensen** één Gateway-server delen terwijl hun AI-"breinen" en gegevens geïsoleerd blijven.
+Hierdoor kunnen **meerdere personen** één Gateway-server delen terwijl hun AI-"breinen" en data geïsoleerd blijven.
 
 ## QMD-geheugenzoekopdracht tussen agents
 
@@ -170,14 +171,14 @@ Als één agent de QMD-sessietranscripten van een andere agent moet doorzoeken, 
 }
 ```
 
-Het pad naar de extra collectie kan tussen agents worden gedeeld, maar de collectienaam blijft expliciet wanneer het pad buiten de agentwerkruimte ligt. Paden binnen de werkruimte blijven agent-scoped, zodat elke agent zijn eigen set voor transcriptzoekopdrachten behoudt.
+Het pad van de extra collectie kan tussen agents worden gedeeld, maar de collectienaam blijft expliciet wanneer het pad buiten de workspace van de agent ligt. Paden binnen de workspace blijven aan de agent gekoppeld, zodat elke agent zijn eigen transcriptzoekset behoudt.
 
-## Eén WhatsApp-nummer, meerdere mensen (DM-splitsing)
+## Eén WhatsApp-nummer, meerdere personen (DM-splitsing)
 
-Je kunt **verschillende WhatsApp-DM's** naar verschillende agents routeren terwijl je op **één WhatsApp-account** blijft. Match op E.164 van de afzender (zoals `+15551234567`) met `peer.kind: "direct"`. Antwoorden komen nog steeds vanaf hetzelfde WhatsApp-nummer (geen afzenderidentiteit per agent).
+Je kunt **verschillende WhatsApp-DM's** naar verschillende agents routeren terwijl je op **één WhatsApp-account** blijft. Match op afzender in E.164-indeling (zoals `+15551234567`) met `peer.kind: "direct"`. Antwoorden komen nog steeds vanaf hetzelfde WhatsApp-nummer (geen afzenderidentiteit per agent).
 
 <Note>
-Directe chats vallen terug op de **hoofdsessiesleutel** van de agent, dus echte isolatie vereist **één agent per persoon**.
+Directe chats vallen samen met de **hoofdsessiesleutel** van de agent, dus echte isolatie vereist **één agent per persoon**.
 </Note>
 
 Voorbeeld:
@@ -209,10 +210,10 @@ Voorbeeld:
 }
 ```
 
-Notities:
+Opmerkingen:
 
 - DM-toegangscontrole is **globaal per WhatsApp-account** (koppeling/allowlist), niet per agent.
-- Voor gedeelde groepen bind je de groep aan één agent of gebruik je [Broadcast-groepen](/nl/channels/broadcast-groups).
+- Voor gedeelde groepen bind je de groep aan één agent of gebruik je [Uitzendgroepen](/nl/channels/broadcast-groups).
 
 ## Routeringsregels (hoe berichten een agent kiezen)
 
@@ -241,20 +242,21 @@ Bindings zijn **deterministisch** en **meest specifiek wint**:
     `accountId: "*"`.
   </Step>
   <Step title="Standaardagent">
-    Fallback naar `agents.list[].default`, anders het eerste lijstitem, standaard: `main`.
+    Fallback naar `agents.list[].default`, anders het eerste item in de lijst, standaard: `main`.
   </Step>
 </Steps>
 
 <AccordionGroup>
   <Accordion title="Tie-breaking en AND-semantiek">
-    - Als meerdere bindings in dezelfde laag matchen, wint de eerste in configuratievolgorde.
+    - Als meerdere bindings in dezelfde laag matchen, wint de eerste in de configuratievolgorde.
     - Als een binding meerdere matchvelden instelt (bijvoorbeeld `peer` + `guildId`), zijn alle opgegeven velden vereist (`AND`-semantiek).
 
   </Accordion>
-  <Accordion title="Detail van accountscope">
-    - Een binding die `accountId` weglaat, matcht alleen het standaardaccount.
-    - Gebruik `accountId: "*"` voor een kanaalbrede fallback over alle accounts.
-    - Als je later dezelfde binding voor dezelfde agent toevoegt met een expliciete account-id, werkt OpenClaw de bestaande kanaal-only binding bij naar account-scoped in plaats van deze te dupliceren.
+  <Accordion title="Details over accountscope">
+    - Een binding die `accountId` weglaat, matcht alleen het standaardaccount. Deze matcht niet alle accounts.
+    - Gebruik `accountId: "*"` voor een kanaalbrede fallback voor alle accounts.
+    - Gebruik `accountId: "<name>"` om één account te matchen.
+    - Als je later dezelfde binding voor dezelfde agent toevoegt met een expliciete account-id, werkt OpenClaw de bestaande kanaal-only binding bij naar accountscope in plaats van deze te dupliceren.
 
   </Accordion>
 </AccordionGroup>
@@ -273,16 +275,16 @@ Veelvoorkomende kanalen die dit patroon ondersteunen zijn:
 
 ## Concepten
 
-- `agentId`: één "brein" (werkruimte, auth per agent, sessieopslag per agent).
+- `agentId`: één "brein" (workspace, auth per agent, sessieopslag per agent).
 - `accountId`: één kanaalaccountinstantie (bijv. WhatsApp-account `"personal"` versus `"biz"`).
-- `binding`: routeert inkomende berichten naar een `agentId` via `(channel, accountId, peer)` en optioneel guild-/team-id's.
-- Directe chats vallen terug op `agent:<agentId>:<mainKey>` ("main" per agent; `session.mainKey`).
+- `binding`: routeert binnenkomende berichten naar een `agentId` op basis van `(channel, accountId, peer)` en optioneel guild-/team-id's.
+- Directe chats vallen samen met `agent:<agentId>:<mainKey>` ("main" per agent; `session.mainKey`).
 
 ## Platformvoorbeelden
 
 <AccordionGroup>
   <Accordion title="Discord-bots per agent">
-    Elk Discord-botaccount wordt gekoppeld aan een unieke `accountId`. Bind elk account aan een agent en houd allowlists per bot bij.
+    Elk Discord-botaccount wordt toegewezen aan een unieke `accountId`. Bind elk account aan een agent en houd allowlists per bot bij.
 
     ```json5
     {
@@ -327,10 +329,10 @@ Veelvoorkomende kanalen die dit patroon ondersteunen zijn:
     ```
 
     - Nodig elke bot uit voor de guild en schakel Message Content Intent in.
-    - Tokens staan in `channels.discord.accounts.<id>.token` (standaardaccount kan `DISCORD_BOT_TOKEN` gebruiken).
+    - Tokens staan in `channels.discord.accounts.<id>.token` (het standaardaccount kan `DISCORD_BOT_TOKEN` gebruiken).
 
   </Accordion>
-  <Accordion title="Telegram bots per agent">
+  <Accordion title="Telegram-bots per agent">
     ```json5
     {
       agents: {
@@ -361,12 +363,17 @@ Veelvoorkomende kanalen die dit patroon ondersteunen zijn:
     }
     ```
 
-    - Maak één bot per agent met BotFather en kopieer elke token.
-    - Tokens staan in `channels.telegram.accounts.<id>.botToken` (standaardaccount kan `TELEGRAM_BOT_TOKEN` gebruiken).
+    - Maak met BotFather één bot per agent en kopieer elk token.
+    - Tokens staan in `channels.telegram.accounts.<id>.botToken` (het standaardaccount kan `TELEGRAM_BOT_TOKEN` gebruiken).
+    - Nodig bij meerdere bots in dezelfde Telegram-groep elke bot uit en vermeld de bot die moet antwoorden.
+    - Schakel BotFather Privacy Mode uit voor elke groepsbot en voeg de bot daarna opnieuw toe, zodat Telegram de instelling toepast.
+    - Sta groepen toe met `channels.telegram.groups`, of gebruik `groupPolicy: "open"` alleen voor vertrouwde groepsimplementaties.
+    - Zet gebruikers-ID's van afzenders in `groupAllowFrom`. Groeps- en supergroep-ID's horen in `channels.telegram.groups`, niet in `groupAllowFrom`.
+    - Bind op `accountId`, zodat elke bot naar zijn eigen agent routeert.
 
   </Accordion>
-  <Accordion title="WhatsApp numbers per agent">
-    Koppel elk account voordat je de Gateway start:
+  <Accordion title="WhatsApp-nummers per agent">
+    Koppel elk account voordat je de gateway start:
 
     ```bash
     openclaw channels login --channel whatsapp --account personal
@@ -439,11 +446,11 @@ Veelvoorkomende kanalen die dit patroon ondersteunen zijn:
   </Accordion>
 </AccordionGroup>
 
-## Veelvoorkomende patronen
+## Veelgebruikte patronen
 
 <Tabs>
-  <Tab title="WhatsApp daily + Telegram deep work">
-    Splits op kanaal: routeer WhatsApp naar een snelle dagelijkse agent en Telegram naar een Opus-agent.
+  <Tab title="WhatsApp dagelijks + diep werk in Telegram">
+    Splits op kanaal: routeer WhatsApp naar een snelle alledaagse agent en Telegram naar een Opus-agent.
 
     ```json5
     {
@@ -464,19 +471,19 @@ Veelvoorkomende kanalen die dit patroon ondersteunen zijn:
         ],
       },
       bindings: [
-        { agentId: "chat", match: { channel: "whatsapp" } },
-        { agentId: "opus", match: { channel: "telegram" } },
+        { agentId: "chat", match: { channel: "whatsapp", accountId: "*" } },
+        { agentId: "opus", match: { channel: "telegram", accountId: "*" } },
       ],
     }
     ```
 
     Opmerkingen:
 
-    - Als je meerdere accounts voor een kanaal hebt, voeg dan `accountId` toe aan de binding (bijvoorbeeld `{ channel: "whatsapp", accountId: "personal" }`).
-    - Om één DM/groep naar Opus te routeren terwijl de rest op chat blijft, voeg je een `match.peer`-binding toe voor die peer; peer-matches winnen altijd van kanaalbrede regels.
+    - Deze voorbeelden gebruiken `accountId: "*"`, zodat de bindingen blijven werken als je later accounts toevoegt.
+    - Voeg een `match.peer`-binding voor die peer toe om één DM/groep naar Opus te routeren terwijl de rest op chat blijft; peer-matches winnen altijd van kanaalbrede regels.
 
   </Tab>
-  <Tab title="Same channel, one peer to Opus">
+  <Tab title="Zelfde kanaal, één peer naar Opus">
     Houd WhatsApp op de snelle agent, maar routeer één DM naar Opus:
 
     ```json5
@@ -500,9 +507,9 @@ Veelvoorkomende kanalen die dit patroon ondersteunen zijn:
       bindings: [
         {
           agentId: "opus",
-          match: { channel: "whatsapp", peer: { kind: "direct", id: "+15551234567" } },
+          match: { channel: "whatsapp", accountId: "*", peer: { kind: "direct", id: "+15551234567" } },
         },
-        { agentId: "chat", match: { channel: "whatsapp" } },
+        { agentId: "chat", match: { channel: "whatsapp", accountId: "*" } },
       ],
     }
     ```
@@ -510,8 +517,8 @@ Veelvoorkomende kanalen die dit patroon ondersteunen zijn:
     Peer-bindingen winnen altijd, dus houd ze boven de kanaalbrede regel.
 
   </Tab>
-  <Tab title="Family agent bound to a WhatsApp group">
-    Bind een speciale familie-agent aan één WhatsApp-groep, met vermeldingsgating en een strikter toolbeleid:
+  <Tab title="Familie-agent gebonden aan een WhatsApp-groep">
+    Bind een toegewezen familie-agent aan één WhatsApp-groep, met vermeldingsgating en een strikter toolbeleid:
 
     ```json5
     {
@@ -558,7 +565,7 @@ Veelvoorkomende kanalen die dit patroon ondersteunen zijn:
 
     Opmerkingen:
 
-    - Tool-allow/deny-lijsten zijn **tools**, geen skills. Als een skill een binary moet uitvoeren, zorg er dan voor dat `exec` is toegestaan en dat de binary in de sandbox bestaat.
+    - Tool-allow/deny-lijsten zijn **tools**, geen Skills. Als een skill een binary moet uitvoeren, zorg dan dat `exec` is toegestaan en dat de binary in de sandbox bestaat.
     - Stel voor strengere gating `agents.list[].groupChat.mentionPatterns` in en houd groeps-allowlists ingeschakeld voor het kanaal.
 
   </Tab>
@@ -566,7 +573,7 @@ Veelvoorkomende kanalen die dit patroon ondersteunen zijn:
 
 ## Sandbox- en toolconfiguratie per agent
 
-Elke agent kan zijn eigen sandbox- en toolbeperkingen hebben:
+Elke agent kan zijn eigen sandbox en toolbeperkingen hebben:
 
 ```js
 {
@@ -602,25 +609,25 @@ Elke agent kan zijn eigen sandbox- en toolbeperkingen hebben:
 ```
 
 <Note>
-`setupCommand` staat onder `sandbox.docker` en wordt één keer uitgevoerd wanneer de container wordt aangemaakt. Overrides voor `sandbox.docker.*` per agent worden genegeerd wanneer de opgeloste scope `"shared"` is.
+`setupCommand` staat onder `sandbox.docker` en wordt één keer uitgevoerd bij het maken van de container. Overrides voor `sandbox.docker.*` per agent worden genegeerd wanneer de opgeloste scope `"shared"` is.
 </Note>
 
 **Voordelen:**
 
 - **Beveiligingsisolatie**: beperk tools voor niet-vertrouwde agents.
-- **Resourcebeheer**: plaats specifieke agents in een sandbox terwijl andere op de host blijven.
-- **Flexibel beleid**: verschillende rechten per agent.
+- **Resourcebeheer**: sandbox specifieke agents terwijl andere op de host blijven.
+- **Flexibel beleid**: verschillende machtigingen per agent.
 
 <Note>
-`tools.elevated` is **globaal** en gebaseerd op afzender; het is niet per agent configureerbaar. Als je grenzen per agent nodig hebt, gebruik dan `agents.list[].tools` om `exec` te weigeren. Gebruik voor groepstargeting `agents.list[].groupChat.mentionPatterns` zodat @vermeldingen netjes aan de bedoelde agent worden gekoppeld.
+`tools.elevated` is **globaal** en gebaseerd op afzenders; het is niet per agent configureerbaar. Als je grenzen per agent nodig hebt, gebruik dan `agents.list[].tools` om `exec` te weigeren. Gebruik voor groepstargeting `agents.list[].groupChat.mentionPatterns`, zodat @mentions netjes aan de bedoelde agent worden gekoppeld.
 </Note>
 
-Zie [Multi-agent sandbox and tools](/nl/tools/multi-agent-sandbox-tools) voor gedetailleerde voorbeelden.
+Zie [Multi-agent sandbox en tools](/nl/tools/multi-agent-sandbox-tools) voor gedetailleerde voorbeelden.
 
 ## Gerelateerd
 
-- [ACP-agents](/nl/tools/acp-agents) — externe coding-harnassen uitvoeren
-- [Kanaalroutering](/nl/channels/channel-routing) — hoe berichten naar agents worden gerouteerd
+- [ACP-agents](/nl/tools/acp-agents) — externe codeharnassen uitvoeren
+- [Kanaalroutering](/nl/channels/channel-routing) — hoe berichten naar agents routeren
 - [Aanwezigheid](/nl/concepts/presence) — aanwezigheid en beschikbaarheid van agents
 - [Sessie](/nl/concepts/session) — sessie-isolatie en routering
-- [Sub-agents](/nl/tools/subagents) — agent-runs op de achtergrond starten
+- [Subagents](/nl/tools/subagents) — agent-runs op de achtergrond starten

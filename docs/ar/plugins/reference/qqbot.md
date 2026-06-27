@@ -1,20 +1,21 @@
 ---
 read_when:
-    - أنت بصدد تثبيت Plugin qqbot أو تهيئته أو تدقيقه
-summary: يضيف سطح قناة QQ Bot لإرسال رسائل OpenClaw واستلامها.
-title: Plugin بوت QQ
+    - أنت تقوم بتثبيت Plugin qqbot أو تكوينه أو تدقيقه
+summary: Plugin قناة روبوت QQ لـ OpenClaw لسير عمل المجموعات والرسائل المباشرة.
+title: Plugin روبوت QQ
 x-i18n:
-    generated_at: "2026-05-03T07:38:02Z"
+    generated_at: "2026-06-27T18:15:01Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 988c342ef1cabeda5e3ede7ea598e3a96945bf814f9f823f17e1c357bfe3bf9c
+    source_hash: 10e67c8c8bd01a2fcd3ca55c32f6941cd52551ad241cb16a2ea38c62d80cfeb9
     source_path: plugins/reference/qqbot.md
     workflow: 16
 ---
 
-# Plugin QQ Bot
+# Plugin بوت QQ
 
-يضيف سطح قناة QQ Bot لإرسال رسائل OpenClaw واستقبالها.
+Plugin قناة بوت QQ في OpenClaw لسير عمل المجموعات والرسائل المباشرة.
 
 ## التوزيع
 

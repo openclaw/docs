@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Anda sedang memasang, mengonfigurasi, atau mengaudit Plugin Discord
-summary: Menambahkan antarmuka kanal Discord untuk mengirim dan menerima pesan OpenClaw.
+    - Anda sedang menginstal, mengonfigurasi, atau mengaudit Plugin Discord
+summary: Plugin saluran Discord OpenClaw untuk saluran, DM, perintah, dan peristiwa aplikasi.
 title: Plugin Discord
 x-i18n:
-    generated_at: "2026-05-03T09:20:03Z"
+    generated_at: "2026-06-27T17:53:33Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c0af255dc0e58e91c1f0ebcc5bca46e1e8e80f415ed3f5a9840bb31f717c9703
+    source_hash: 9e3305f8ad8eb84fd350bdfa0983b4fd8f848e0697ecf3e779e31cd6cb44dbf5
     source_path: plugins/reference/discord.md
     workflow: 16
 ---
 
 # Plugin Discord
 
-Menambahkan permukaan saluran Discord untuk mengirim dan menerima pesan OpenClaw.
+Plugin saluran Discord OpenClaw untuk saluran, DM, perintah, dan peristiwa aplikasi.
 
 ## Distribusi
 
@@ -23,8 +24,8 @@ Menambahkan permukaan saluran Discord untuk mengirim dan menerima pesan OpenClaw
 
 ## Permukaan
 
-channels: discord
+saluran: discord; kontrak: transcriptSourceProviders; skills
 
-## Dokumen terkait
+## Dokumentasi terkait
 
 - [discord](/id/channels/discord)

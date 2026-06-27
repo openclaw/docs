@@ -1,76 +1,79 @@
 ---
 read_when:
     - Native OpenClaw-Plugins erstellen oder debuggen
-    - Das Plugin-Fähigkeitsmodell oder Zuständigkeitsgrenzen verstehen
+    - Das Plugin-Fähigkeitsmodell oder die Eigentumsgrenzen verstehen
     - Arbeiten an der Plugin-Ladepipeline oder Registry
-    - Provider-Runtime-Hooks oder Kanal-Plugins implementieren
+    - Provider-Runtime-Hooks oder Channel-Plugins implementieren
 sidebarTitle: Internals
-summary: 'Plugin-Interna: Fähigkeitsmodell, Zuständigkeiten, Kontrakte, Lade-Pipeline und Runtime-Hilfsfunktionen'
+summary: 'Plugin-Interna: Capability-Modell, Zuständigkeiten, Schnittstellenverträge, Ladepipeline und Runtime-Hilfsfunktionen'
 title: Plugin-Interna
 x-i18n:
-    generated_at: "2026-05-02T06:39:49Z"
+    generated_at: "2026-06-27T17:44:56Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 138fb962c98f71e29e8b2621ce318336c38a317636d090eb315fed806fc6abda
+    source_hash: 0e36f77594f16d7f03e31be81a241a15fb15c0b160f22a4dce863f6da184dfe3
     source_path: plugins/architecture.md
     workflow: 16
 ---
 
-Dies ist die **umfassende Architekturreferenz** für das OpenClaw-Plugin-System. Für praktische Anleitungen beginnen Sie mit einer der fokussierten Seiten unten.
+Dies ist die **detaillierte Architekturreferenz** für das OpenClaw-Plugin-System. Für praktische Anleitungen beginnen Sie mit einer der fokussierten Seiten unten.
 
 <CardGroup cols={2}>
-  <Card title="Install and use plugins" icon="plug" href="/de/tools/plugin">
-    Leitfaden für Endbenutzer zum Hinzufügen, Aktivieren und Beheben von Problemen mit Plugins.
+  <Card title="Plugins installieren und verwenden" icon="plug" href="/de/tools/plugin">
+    Endbenutzeranleitung zum Hinzufügen, Aktivieren und Beheben von Problemen mit Plugins.
   </Card>
-  <Card title="Building plugins" icon="rocket" href="/de/plugins/building-plugins">
+  <Card title="Plugins erstellen" icon="rocket" href="/de/plugins/building-plugins">
     Tutorial für das erste Plugin mit dem kleinsten funktionsfähigen Manifest.
   </Card>
-  <Card title="Channel plugins" icon="comments" href="/de/plugins/sdk-channel-plugins">
-    Erstellen Sie ein Messaging-Kanal-Plugin.
+  <Card title="Channel-Plugins" icon="comments" href="/de/plugins/sdk-channel-plugins">
+    Erstellen Sie ein Messaging-Channel-Plugin.
   </Card>
-  <Card title="Provider plugins" icon="microchip" href="/de/plugins/sdk-provider-plugins">
+  <Card title="Provider-Plugins" icon="microchip" href="/de/plugins/sdk-provider-plugins">
     Erstellen Sie ein Modell-Provider-Plugin.
   </Card>
-  <Card title="SDK overview" icon="book" href="/de/plugins/sdk-overview">
+  <Card title="SDK-Überblick" icon="book" href="/de/plugins/sdk-overview">
     Import-Map und Referenz zur Registrierungs-API.
   </Card>
 </CardGroup>
 
-## Öffentliches Fähigkeitsmodell
+## Öffentliches Capability-Modell
 
-Fähigkeiten sind das öffentliche **native Plugin**-Modell innerhalb von OpenClaw. Jedes native OpenClaw-Plugin registriert sich für einen oder mehrere Fähigkeitstypen:
+Capabilities sind das öffentliche **native Plugin**-Modell innerhalb von OpenClaw. Jedes native OpenClaw-Plugin registriert sich für einen oder mehrere Capability-Typen:
 
-| Fähigkeit              | Registrierungsmethode                           | Beispiel-Plugins                    |
-| ---------------------- | ------------------------------------------------ | ------------------------------------ |
-| Textinferenz           | `api.registerProvider(...)`                      | `openai`, `anthropic`                |
-| CLI-Inferenz-Backend   | `api.registerCliBackend(...)`                    | `openai`, `anthropic`                |
-| Sprache                | `api.registerSpeechProvider(...)`                | `elevenlabs`, `microsoft`            |
+| Capability             | Registrierungsmethode                          | Beispiel-Plugins                     |
+| ---------------------- | ---------------------------------------------- | ------------------------------------ |
+| Textinferenz           | `api.registerProvider(...)`                    | `openai`, `anthropic`                |
+| CLI-Inferenz-Backend   | `api.registerCliBackend(...)`                  | `openai`, `anthropic`                |
+| Embeddings             | `api.registerEmbeddingProvider(...)`           | Provider-eigene Vektor-Plugins       |
+| Sprache                | `api.registerSpeechProvider(...)`              | `elevenlabs`, `microsoft`            |
 | Echtzeit-Transkription | `api.registerRealtimeTranscriptionProvider(...)` | `openai`                             |
-| Echtzeit-Sprache       | `api.registerRealtimeVoiceProvider(...)`         | `openai`                             |
-| Medienverständnis      | `api.registerMediaUnderstandingProvider(...)`    | `openai`, `google`                   |
-| Bildgenerierung        | `api.registerImageGenerationProvider(...)`       | `openai`, `google`, `fal`, `minimax` |
-| Musikgenerierung       | `api.registerMusicGenerationProvider(...)`       | `google`, `minimax`                  |
-| Videogenerierung       | `api.registerVideoGenerationProvider(...)`       | `qwen`                               |
-| Web-Abruf              | `api.registerWebFetchProvider(...)`              | `firecrawl`                          |
-| Websuche               | `api.registerWebSearchProvider(...)`             | `google`                             |
-| Kanal / Messaging      | `api.registerChannel(...)`                       | `msteams`, `matrix`                  |
-| Gateway-Erkennung      | `api.registerGatewayDiscoveryService(...)`       | `bonjour`                            |
+| Echtzeit-Sprache       | `api.registerRealtimeVoiceProvider(...)`       | `openai`                             |
+| Medienverständnis      | `api.registerMediaUnderstandingProvider(...)`  | `openai`, `google`                   |
+| Transkriptquelle       | `api.registerTranscriptSourceProvider(...)`    | `discord`                            |
+| Bildgenerierung        | `api.registerImageGenerationProvider(...)`     | `openai`, `google`, `fal`, `minimax` |
+| Musikgenerierung       | `api.registerMusicGenerationProvider(...)`     | `google`, `minimax`                  |
+| Videogenerierung       | `api.registerVideoGenerationProvider(...)`     | `qwen`                               |
+| Web-Abruf              | `api.registerWebFetchProvider(...)`            | `firecrawl`                          |
+| Websuche               | `api.registerWebSearchProvider(...)`           | `google`                             |
+| Channel / Messaging    | `api.registerChannel(...)`                     | `msteams`, `matrix`                  |
+| Gateway-Erkennung      | `api.registerGatewayDiscoveryService(...)`     | `bonjour`                            |
 
 <Note>
-Ein Plugin, das keine Fähigkeiten registriert, aber Hooks, Tools, Erkennungsdienste oder Hintergrunddienste bereitstellt, ist ein **Legacy-Plugin nur mit Hooks**. Dieses Muster wird weiterhin vollständig unterstützt.
+Ein Plugin, das keine Capabilities registriert, aber Hooks, Tools, Erkennungsdienste oder Hintergrunddienste bereitstellt, ist ein **älteres reines Hook-Plugin**. Dieses Muster wird weiterhin vollständig unterstützt.
 </Note>
 
 ### Haltung zur externen Kompatibilität
 
-Das Fähigkeitsmodell ist im Core gelandet und wird heute von mitgelieferten/nativen Plugins verwendet, aber externe Plugin-Kompatibilität braucht weiterhin einen strengeren Maßstab als „es ist exportiert, also ist es eingefroren“.
+Das Capability-Modell ist im Kern gelandet und wird heute von gebündelten/nativen Plugins verwendet, aber externe Plugin-Kompatibilität benötigt weiterhin eine strengere Messlatte als „es ist exportiert, also ist es eingefroren“.
 
-| Plugin-Situation                                  | Empfehlung                                                                                         |
-| ------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| Bestehende externe Plugins                        | Hook-basierte Integrationen funktionsfähig halten; dies ist die Kompatibilitätsbasis.              |
-| Neue mitgelieferte/native Plugins                 | Explizite Fähigkeitsregistrierung gegenüber anbieterspezifischen Zugriffen oder neuen Hook-only-Designs bevorzugen. |
-| Externe Plugins mit Fähigkeitsregistrierung       | Erlaubt, aber behandeln Sie fähigkeitsspezifische Hilfsoberflächen als in Entwicklung, sofern die Dokumentation sie nicht als stabil markiert. |
+| Plugin-Situation                                | Leitlinie                                                                                         |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Bestehende externe Plugins                      | Hook-basierte Integrationen funktionsfähig halten; dies ist die Kompatibilitätsbasis.             |
+| Neue gebündelte/native Plugins                  | Explizite Capability-Registrierung gegenüber anbieterspezifischen Zugriffen oder neuen reinen Hook-Designs bevorzugen. |
+| Externe Plugins mit Capability-Registrierung    | Erlaubt, aber Capability-spezifische Hilfsoberflächen als in Entwicklung behandeln, sofern die Dokumentation sie nicht als stabil markiert. |
 
-Fähigkeitsregistrierung ist die vorgesehene Richtung. Legacy-Hooks bleiben während der Übergangsphase der sicherste Pfad ohne Breaking Changes für externe Plugins. Exportierte Hilfs-Subpfade sind nicht alle gleichwertig — bevorzugen Sie eng gefasste dokumentierte Verträge gegenüber beiläufigen Hilfsexporten.
+Capability-Registrierung ist die vorgesehene Richtung. Legacy-Hooks bleiben während der Umstellung der sicherste Pfad ohne Brüche für externe Plugins. Exportierte Hilfs-Subpfade sind nicht alle gleichwertig — bevorzugen Sie enge dokumentierte Verträge gegenüber beiläufigen Hilfsexporten.
 
 ### Plugin-Formen
 
@@ -78,133 +81,133 @@ OpenClaw klassifiziert jedes geladene Plugin anhand seines tatsächlichen Regist
 
 <AccordionGroup>
   <Accordion title="plain-capability">
-    Registriert genau einen Fähigkeitstyp (zum Beispiel ein reines Provider-Plugin wie `mistral`).
+    Registriert genau einen Capability-Typ (zum Beispiel ein reines Provider-Plugin wie `mistral`).
   </Accordion>
   <Accordion title="hybrid-capability">
-    Registriert mehrere Fähigkeitstypen (zum Beispiel besitzt `openai` Textinferenz, Sprache, Medienverständnis und Bildgenerierung).
+    Registriert mehrere Capability-Typen (zum Beispiel besitzt `openai` Textinferenz, Sprache, Medienverständnis und Bildgenerierung).
   </Accordion>
   <Accordion title="hook-only">
-    Registriert nur Hooks (typisiert oder benutzerdefiniert), keine Fähigkeiten, Tools, Befehle oder Dienste.
+    Registriert nur Hooks (typisierte oder benutzerdefinierte), keine Capabilities, Tools, Befehle oder Dienste.
   </Accordion>
   <Accordion title="non-capability">
-    Registriert Tools, Befehle, Dienste oder Routen, aber keine Fähigkeiten.
+    Registriert Tools, Befehle, Dienste oder Routen, aber keine Capabilities.
   </Accordion>
 </AccordionGroup>
 
-Verwenden Sie `openclaw plugins inspect <id>`, um die Form und Fähigkeitsaufschlüsselung eines Plugins zu sehen. Details finden Sie in der [CLI-Referenz](/de/cli/plugins#inspect).
+Verwenden Sie `openclaw plugins inspect <id>`, um die Form und Capability-Aufschlüsselung eines Plugins zu sehen. Details finden Sie in der [CLI-Referenz](/de/cli/plugins#inspect).
 
 ### Legacy-Hooks
 
-Der Hook `before_agent_start` bleibt als Kompatibilitätspfad für Hook-only-Plugins unterstützt. Ältere reale Plugins hängen weiterhin davon ab.
+Der Hook `before_agent_start` bleibt als Kompatibilitätspfad für reine Hook-Plugins unterstützt. Reale Legacy-Plugins hängen weiterhin davon ab.
 
 Richtung:
 
 - funktionsfähig halten
 - als Legacy dokumentieren
-- `before_model_resolve` für Arbeiten an Modell-/Provider-Overrides bevorzugen
-- `before_prompt_build` für Arbeiten an Prompt-Änderungen bevorzugen
+- `before_model_resolve` für Arbeiten zum Überschreiben von Modell/Provider bevorzugen
+- `before_prompt_build` für Arbeiten an Prompt-Mutationen bevorzugen
 - erst entfernen, nachdem die reale Nutzung zurückgegangen ist und Fixture-Abdeckung die Migrationssicherheit belegt
 
 ### Kompatibilitätssignale
 
 Wenn Sie `openclaw doctor` oder `openclaw plugins inspect <id>` ausführen, sehen Sie möglicherweise eines dieser Labels:
 
-| Signal                     | Bedeutung                                                    |
-| -------------------------- | ------------------------------------------------------------ |
-| **config valid**           | Die Konfiguration wird korrekt geparst und Plugins werden aufgelöst |
-| **compatibility advisory** | Plugin verwendet ein unterstütztes, aber älteres Muster (z. B. `hook-only`) |
-| **legacy warning**         | Plugin verwendet `before_agent_start`, das veraltet ist      |
-| **hard error**             | Die Konfiguration ist ungültig oder das Plugin konnte nicht geladen werden |
+| Signal                         | Bedeutung                                                            |
+| ------------------------------ | -------------------------------------------------------------------- |
+| **config valid**               | Konfiguration lässt sich korrekt parsen und Plugins werden aufgelöst |
+| **compatibility advisory**     | Plugin verwendet ein unterstütztes, aber älteres Muster (z. B. `hook-only`) |
+| **legacy warning**             | Plugin verwendet `before_agent_start`, das veraltet ist              |
+| **hard error**                 | Konfiguration ist ungültig oder Plugin konnte nicht geladen werden   |
 
-Weder `hook-only` noch `before_agent_start` machen Ihr Plugin heute kaputt: `hook-only` ist ein Hinweis, und `before_agent_start` löst nur eine Warnung aus. Diese Signale erscheinen auch in `openclaw status --all` und `openclaw plugins doctor`.
+Weder `hook-only` noch `before_agent_start` brechen Ihr Plugin heute: `hook-only` ist ein Hinweis, und `before_agent_start` löst nur eine Warnung aus. Diese Signale erscheinen auch in `openclaw status --all` und `openclaw plugins doctor`.
 
-## Architekturübersicht
+## Architekturüberblick
 
 Das Plugin-System von OpenClaw hat vier Schichten:
 
 <Steps>
-  <Step title="Manifest + discovery">
-    OpenClaw findet Plugin-Kandidaten aus konfigurierten Pfaden, Workspace-Roots, globalen Plugin-Roots und mitgelieferten Plugins. Die Erkennung liest zuerst native `openclaw.plugin.json`-Manifeste sowie unterstützte Bundle-Manifeste.
+  <Step title="Manifest + Erkennung">
+    OpenClaw findet Plugin-Kandidaten aus konfigurierten Pfaden, Workspace-Roots, globalen Plugin-Roots und gebündelten Plugins. Die Erkennung liest zuerst native `openclaw.plugin.json`-Manifeste sowie unterstützte Bundle-Manifeste.
   </Step>
-  <Step title="Enablement + validation">
-    Der Core entscheidet, ob ein erkanntes Plugin aktiviert, deaktiviert, blockiert oder für einen exklusiven Slot wie Speicher ausgewählt ist.
+  <Step title="Aktivierung + Validierung">
+    Core entscheidet, ob ein erkanntes Plugin aktiviert, deaktiviert, blockiert oder für einen exklusiven Slot wie Speicher ausgewählt ist.
   </Step>
-  <Step title="Runtime loading">
-    Native OpenClaw-Plugins werden im Prozess geladen und registrieren Fähigkeiten in einer zentralen Registry. Paketiertes JavaScript wird über natives `require` geladen; lokale TypeScript-Quellen von Drittanbietern sind der Notfall-Fallback über Jiti. Kompatible Bundles werden ohne Import von Laufzeitcode in Registry-Datensätze normalisiert.
+  <Step title="Runtime-Laden">
+    Native OpenClaw-Plugins werden im Prozess geladen und registrieren Capabilities in einer zentralen Registry. Paketiertes JavaScript wird über natives `require` geladen; TypeScript aus Drittanbieter-Quellcode ist der Notfall-Fallback über Jiti. Kompatible Bundles werden in Registry-Einträge normalisiert, ohne Runtime-Code zu importieren.
   </Step>
-  <Step title="Surface consumption">
-    Der Rest von OpenClaw liest die Registry, um Tools, Kanäle, Provider-Einrichtung, Hooks, HTTP-Routen, CLI-Befehle und Dienste bereitzustellen.
+  <Step title="Oberflächennutzung">
+    Der Rest von OpenClaw liest die Registry, um Tools, Channels, Provider-Einrichtung, Hooks, HTTP-Routen, CLI-Befehle und Dienste bereitzustellen.
   </Step>
 </Steps>
 
-Speziell für die Plugin-CLI ist die Root-Befehlserkennung in zwei Phasen aufgeteilt:
+Speziell für die Plugin-CLI ist die Erkennung von Root-Befehlen in zwei Phasen aufgeteilt:
 
-- Metadaten zur Parse-Zeit kommen aus `registerCli(..., { descriptors: [...] })`
-- das eigentliche Plugin-CLI-Modul kann lazy bleiben und sich beim ersten Aufruf registrieren
+- Parse-Zeit-Metadaten stammen aus `registerCli(..., { descriptors: [...] })`
+- das eigentliche Plugin-CLI-Modul kann lazy bleiben und sich erst beim ersten Aufruf registrieren
 
-Dadurch bleibt plugin-eigener CLI-Code innerhalb des Plugins, während OpenClaw weiterhin Root-Befehlsnamen vor dem Parsen reservieren kann.
+Dadurch bleibt Plugin-eigener CLI-Code im Plugin, während OpenClaw Root-Befehlsnamen weiterhin vor dem Parsen reservieren kann.
 
 Die wichtige Designgrenze:
 
-- Manifest-/Konfigurationsvalidierung sollte anhand von **Manifest-/Schema-Metadaten** funktionieren, ohne Plugin-Code auszuführen
-- native Fähigkeitserkennung kann vertrauenswürdigen Plugin-Einstiegscode laden, um einen nicht aktivierenden Registry-Snapshot zu erstellen
-- natives Laufzeitverhalten kommt aus dem Pfad `register(api)` des Plugin-Moduls mit `api.registrationMode === "full"`
+- Manifest-/Konfigurationsvalidierung sollte aus **Manifest-/Schema-Metadaten** funktionieren, ohne Plugin-Code auszuführen
+- native Capability-Erkennung darf vertrauenswürdigen Plugin-Einstiegscode laden, um einen nicht aktivierenden Registry-Snapshot zu erstellen
+- natives Runtime-Verhalten stammt aus dem `register(api)`-Pfad des Plugin-Moduls mit `api.registrationMode === "full"`
 
-Diese Aufteilung ermöglicht OpenClaw, die Konfiguration zu validieren, fehlende/deaktivierte Plugins zu erklären und UI-/Schema-Hinweise zu erstellen, bevor die vollständige Laufzeit aktiv ist.
+Diese Aufteilung ermöglicht es OpenClaw, Konfiguration zu validieren, fehlende/deaktivierte Plugins zu erklären und UI-/Schema-Hinweise zu erstellen, bevor die vollständige Runtime aktiv ist.
 
-### Snapshot der Plugin-Metadaten und Lookup-Tabelle
+### Plugin-Metadaten-Snapshot und Lookup-Tabelle
 
-Der Gateway-Start erstellt einen `PluginMetadataSnapshot` für den aktuellen Konfigurations-Snapshot. Der Snapshot enthält nur Metadaten: Er speichert den Index installierter Plugins, die Manifest-Registry, Manifest-Diagnosen, Owner-Maps, einen Plugin-ID-Normalizer und Manifest-Datensätze. Er enthält keine geladenen Plugin-Module, Provider-SDKs, Paketinhalte oder Laufzeitexporte.
+Der Gateway-Start erstellt einen `PluginMetadataSnapshot` für den aktuellen Konfigurations-Snapshot. Der Snapshot enthält nur Metadaten: Er speichert den installierten Plugin-Index, die Manifest-Registry, Manifestdiagnosen, Owner-Maps, einen Plugin-ID-Normalisierer und Manifestdatensätze. Er enthält keine geladenen Plugin-Module, Provider-SDKs, Paket-Inhalte oder Runtime-Exporte.
 
-Plugin-bewusste Konfigurationsvalidierung, automatisches Aktivieren beim Start und Plugin-Bootstrap des Gateway verwenden diesen Snapshot, statt Manifest-/Index-Metadaten unabhängig neu aufzubauen. `PluginLookUpTable` wird aus demselben Snapshot abgeleitet und fügt den Start-Plugin-Plan für die aktuelle Laufzeitkonfiguration hinzu.
+Plugin-bewusste Konfigurationsvalidierung, automatisches Aktivieren beim Start und Gateway-Plugin-Bootstrap verwenden diesen Snapshot, anstatt Manifest-/Index-Metadaten unabhängig neu aufzubauen. `PluginLookUpTable` wird aus demselben Snapshot abgeleitet und ergänzt den Start-Plugin-Plan für die aktuelle Runtime-Konfiguration.
 
-Nach dem Start behält Gateway den aktuellen Metadaten-Snapshot als ersetzbares Laufzeitprodukt. Wiederholte Laufzeit-Provider-Erkennung kann diesen Snapshot verwenden, statt den installierten Index und die Manifest-Registry für jeden Provider-Katalogdurchlauf neu zu rekonstruieren. Der Snapshot wird beim Herunterfahren des Gateway, bei Änderungen an Konfiguration/Plugin-Inventar und bei Schreibvorgängen am installierten Index gelöscht oder ersetzt; Aufrufer fallen auf den kalten Manifest-/Index-Pfad zurück, wenn kein kompatibler aktueller Snapshot vorhanden ist. Kompatibilitätsprüfungen müssen Plugin-Erkennungs-Roots wie `plugins.load.paths` und den Standard-Agent-Workspace einschließen, weil Workspace-Plugins Teil des Metadatenumfangs sind.
+Nach dem Start hält Gateway den aktuellen Metadaten-Snapshot als ersetzbares Runtime-Produkt. Wiederholte Runtime-Provider-Erkennung kann diesen Snapshot verwenden, statt für jeden Provider-Katalog-Durchlauf den installierten Index und die Manifest-Registry neu zu rekonstruieren. Der Snapshot wird beim Herunterfahren des Gateway, bei Änderungen an Konfiguration/Plugin-Inventar und bei Schreibvorgängen am installierten Index gelöscht oder ersetzt; Aufrufer fallen auf den kalten Manifest-/Index-Pfad zurück, wenn kein kompatibler aktueller Snapshot vorhanden ist. Kompatibilitätsprüfungen müssen Plugin-Erkennungs-Roots wie `plugins.load.paths` und den Standard-Agent-Workspace einschließen, weil Workspace-Plugins Teil des Metadatenumfangs sind.
 
 Der Snapshot und die Lookup-Tabelle halten wiederholte Startentscheidungen auf dem schnellen Pfad:
 
-- Kanal-Ownership
-- verzögerter Kanalstart
+- Channel-Ownership
+- verzögerter Channel-Start
 - Start-Plugin-IDs
-- Ownership für Provider und CLI-Backend
-- Ownership für Einrichtungs-Provider, Befehlsalias, Modellkatalog-Provider und Manifest-Vertrag
-- Validierung von Plugin-Konfigurationsschema und Kanal-Konfigurationsschema
+- Provider- und CLI-Backend-Ownership
+- Ownership von Einrichtungs-Provider, Befehlsalias, Modellkatalog-Provider und Manifestvertrag
+- Validierung des Plugin-Konfigurationsschemas und Channel-Konfigurationsschemas
 - Entscheidungen zum automatischen Aktivieren beim Start
 
-Die Sicherheitsgrenze ist Snapshot-Ersetzung, nicht Mutation. Erstellen Sie den Snapshot neu, wenn sich Konfiguration, Plugin-Inventar, Installationsdatensätze oder persistierte Indexrichtlinien ändern. Behandeln Sie ihn nicht als breit gefasste veränderbare globale Registry, und halten Sie keine unbegrenzten historischen Snapshots vor. Das Laden von Laufzeit-Plugins bleibt von Metadaten-Snapshots getrennt, damit veralteter Laufzeitstatus nicht hinter einem Metadaten-Cache verborgen werden kann.
+Die Sicherheitsgrenze ist Snapshot-Ersetzung, nicht Mutation. Erstellen Sie den Snapshot neu, wenn sich Konfiguration, Plugin-Inventar, Installationsdatensätze oder persistierte Index-Policy ändern. Behandeln Sie ihn nicht als breite veränderliche globale Registry und halten Sie keine unbegrenzten historischen Snapshots. Runtime-Plugin-Laden bleibt von Metadaten-Snapshots getrennt, damit veralteter Runtime-Zustand nicht hinter einem Metadaten-Cache verborgen werden kann.
 
-Die Cache-Regel ist in [Interne Plugin-Architektur](/de/plugins/architecture-internals#plugin-cache-boundary) dokumentiert: Manifest- und Erkennungsmetadaten sind frisch, sofern ein Aufrufer keinen expliziten Snapshot, keine Lookup-Tabelle oder keine Manifest-Registry für den aktuellen Ablauf hält. Versteckte Metadaten-Caches und wall-clock-TTLs sind nicht Teil des Plugin-Ladens. Nur Laufzeit-Loader-, Modul- und Abhängigkeitsartefakt-Caches dürfen bestehen bleiben, nachdem Code oder installierte Artefakte tatsächlich geladen wurden.
+Die Cache-Regel ist in [Plugin-Architektur-Interna](/de/plugins/architecture-internals#plugin-cache-boundary) dokumentiert: Manifest- und Erkennungsmetadaten sind frisch, sofern ein Aufrufer nicht einen expliziten Snapshot, eine Lookup-Tabelle oder eine Manifest-Registry für den aktuellen Ablauf hält. Verborgene Metadaten-Caches und Wall-Clock-TTLs sind nicht Teil des Plugin-Ladens. Nur Runtime-Loader-, Modul- und Abhängigkeitsartefakt-Caches dürfen bestehen bleiben, nachdem Code oder installierte Artefakte tatsächlich geladen wurden.
 
-Einige Cold-Path-Aufrufer rekonstruieren Manifest-Registries weiterhin direkt aus dem persistierten installierten Plugin-Index, statt eine Gateway-`PluginLookUpTable` zu erhalten. Dieser Pfad rekonstruiert die Registry jetzt bei Bedarf; bevorzugen Sie die Übergabe der aktuellen Lookup-Tabelle oder einer expliziten Manifest-Registry durch Laufzeitabläufe, wenn ein Aufrufer bereits eine hat.
+Einige Cold-Path-Aufrufer rekonstruieren Manifest-Registries weiterhin direkt aus dem persistierten installierten Plugin-Index, statt eine Gateway-`PluginLookUpTable` zu erhalten. Dieser Pfad rekonstruiert die Registry nun bei Bedarf; bevorzugen Sie es, die aktuelle Lookup-Tabelle oder eine explizite Manifest-Registry durch Runtime-Abläufe zu reichen, wenn ein Aufrufer bereits eine hat.
 
 ### Aktivierungsplanung
 
-Aktivierungsplanung ist Teil der Control Plane. Aufrufer können abfragen, welche Plugins für einen konkreten Befehl, Provider, Kanal, eine Route, ein Agent-Harness oder eine Fähigkeit relevant sind, bevor breitere Laufzeit-Registries geladen werden.
+Aktivierungsplanung ist Teil der Control Plane. Aufrufer können abfragen, welche Plugins für einen konkreten Befehl, Provider, Channel, eine Route, ein Agent-Harness oder eine Capability relevant sind, bevor sie breitere Runtime-Registries laden.
 
-Der Planner hält das aktuelle Manifest-Verhalten kompatibel:
+Der Planer hält aktuelles Manifestverhalten kompatibel:
 
 - `activation.*`-Felder sind explizite Planner-Hinweise
-- `providers`, `channels`, `commandAliases`, `setup.providers`, `contracts.tools` und Hooks bleiben Fallback für Manifest-Ownership
-- die API des ids-only Planners bleibt für bestehende Aufrufer verfügbar
-- die Plan-API meldet Begründungslabels, damit Diagnosen explizite Hinweise von Ownership-Fallback unterscheiden können
+- `providers`, `channels`, `commandAliases`, `setup.providers`, `contracts.tools` und Hooks bleiben der Fallback für Manifest-Verantwortung
+- die reine IDs-Planner-API bleibt für bestehende Aufrufer verfügbar
+- die Plan-API meldet Begründungslabels, damit Diagnosen explizite Hinweise von Verantwortungs-Fallback unterscheiden können
 
 <Warning>
-Behandeln Sie `activation` nicht als Lebenszyklus-Hook oder als Ersatz für `register(...)`. Es handelt sich um Metadaten, die dazu dienen, das Laden einzugrenzen. Bevorzugen Sie Ownership-Felder, wenn diese die Beziehung bereits beschreiben; verwenden Sie `activation` nur für zusätzliche Planner-Hinweise.
+Behandeln Sie `activation` nicht als Lifecycle-Hook oder als Ersatz für `register(...)`. Es handelt sich um Metadaten, die das Laden eingrenzen. Bevorzugen Sie Verantwortungsfelder, wenn sie die Beziehung bereits beschreiben; verwenden Sie `activation` nur für zusätzliche Planner-Hinweise.
 </Warning>
 
 ### Channel-Plugins und das gemeinsame Nachrichtentool
 
-Channel-Plugins müssen für normale Chat-Aktionen kein separates Tool zum Senden, Bearbeiten oder Reagieren registrieren. OpenClaw hält ein gemeinsames `message`-Tool im Kern vor, und Channel-Plugins besitzen die channelspezifische Erkennung und Ausführung dahinter.
+Channel-Plugins müssen für normale Chat-Aktionen kein separates Sende-/Bearbeitungs-/Reaktionstool registrieren. OpenClaw hält ein gemeinsames `message`-Tool im Kern vor, und Channel-Plugins verantworten die kanalspezifische Erkennung und Ausführung dahinter.
 
 Die aktuelle Grenze ist:
 
-- der Kern besitzt den gemeinsamen `message`-Tool-Host, die Prompt-Verkabelung, die Sitzungs-/Thread-Buchführung und die Ausführungsweiterleitung
-- Channel-Plugins besitzen die bereichsbezogene Aktionserkennung, Capability-Erkennung und alle channelspezifischen Schemafragmente
-- Channel-Plugins besitzen die providerspezifische Konversationsgrammatik für Sitzungen, etwa wie Konversations-IDs Thread-IDs kodieren oder von übergeordneten Konversationen erben
+- der Kern verantwortet den gemeinsamen `message`-Tool-Host, Prompt-Verkabelung, Sitzungs-/Thread-Buchhaltung und Ausführungsdispatch
+- Channel-Plugins verantworten bereichsbezogene Aktionserkennung, Capability-Erkennung und alle kanalspezifischen Schemafragmente
+- Channel-Plugins verantworten Provider-spezifische Sitzungs-Konversationsgrammatik, etwa wie Konversations-IDs Thread-IDs codieren oder von übergeordneten Konversationen erben
 - Channel-Plugins führen die finale Aktion über ihren Aktionsadapter aus
 
-Für Channel-Plugins ist die SDK-Oberfläche `ChannelMessageActionAdapter.describeMessageTool(...)`. Dieser einheitliche Erkennungsaufruf ermöglicht es einem Plugin, seine sichtbaren Aktionen, Capabilities und Schemabeiträge gemeinsam zurückzugeben, damit diese Teile nicht auseinanderlaufen.
+Für Channel-Plugins ist die SDK-Oberfläche `ChannelMessageActionAdapter.describeMessageTool(...)`. Dieser vereinheitlichte Erkennungsaufruf lässt ein Plugin seine sichtbaren Aktionen, Capabilities und Schemabeiträge zusammen zurückgeben, damit diese Teile nicht auseinanderlaufen.
 
-Wenn ein channelspezifischer Parameter des Nachrichtentools eine Medienquelle wie einen lokalen Pfad oder eine entfernte Medien-URL enthält, sollte das Plugin außerdem `mediaSourceParams` aus `describeMessageTool(...)` zurückgeben. Der Kern verwendet diese explizite Liste, um Sandbox-Pfadnormalisierung und Hinweise zum ausgehenden Medienzugriff anzuwenden, ohne plugin-eigene Parameternamen fest zu codieren. Bevorzugen Sie dort aktionsbezogene Maps statt einer channelweiten flachen Liste, damit ein nur für Profile bestimmter Medienparameter nicht bei nicht verwandten Aktionen wie `send` normalisiert wird.
+Wenn ein kanalspezifischer Message-Tool-Parameter eine Medienquelle wie einen lokalen Pfad oder eine Remote-Medien-URL enthält, sollte das Plugin außerdem `mediaSourceParams` aus `describeMessageTool(...)` zurückgeben. Der Kern verwendet diese explizite Liste, um Sandbox-Pfadnormalisierung und Hinweise für ausgehenden Medienzugriff anzuwenden, ohne Plugin-eigene Parameternamen fest zu codieren. Bevorzugen Sie dort aktionsbezogene Maps, keine kanalweite flache Liste, damit ein nur für Profile bestimmter Medienparameter nicht bei nicht verwandten Aktionen wie `send` normalisiert wird.
 
 Der Kern übergibt den Laufzeitbereich in diesen Erkennungsschritt. Wichtige Felder sind:
 
@@ -217,59 +220,59 @@ Der Kern übergibt den Laufzeitbereich in diesen Erkennungsschritt. Wichtige Fel
 - `agentId`
 - vertrauenswürdige eingehende `requesterSenderId`
 
-Das ist für kontextsensitive Plugins wichtig. Ein Channel kann Nachrichtenaktionen basierend auf aktivem Konto, aktuellem Raum/Thread/aktueller Nachricht oder vertrauenswürdiger Requester-Identität ausblenden oder anzeigen, ohne channelspezifische Verzweigungen im zentralen `message`-Tool fest zu codieren.
+Das ist für kontextsensitive Plugins wichtig. Ein Kanal kann Nachrichtenaktionen basierend auf dem aktiven Konto, dem aktuellen Raum/Thread/der aktuellen Nachricht oder der vertrauenswürdigen Identität des Anfragenden ausblenden oder anzeigen, ohne kanalspezifische Verzweigungen im Kern-`message`-Tool fest zu codieren.
 
-Deshalb sind Routing-Änderungen am eingebetteten Runner weiterhin Plugin-Arbeit: Der Runner ist dafür verantwortlich, die aktuelle Chat-/Sitzungsidentität an die Plugin-Erkennungsgrenze weiterzuleiten, damit das gemeinsame `message`-Tool die richtige channel-eigene Oberfläche für den aktuellen Turn bereitstellt.
+Deshalb bleiben Routing-Änderungen für eingebettete Runner weiterhin Plugin-Arbeit: Der Runner ist dafür verantwortlich, die aktuelle Chat-/Sitzungsidentität an die Plugin-Erkennungsgrenze weiterzugeben, damit das gemeinsame `message`-Tool die passende kanalverantwortete Oberfläche für den aktuellen Turn verfügbar macht.
 
-Für channel-eigene Ausführungshelfer sollten gebündelte Plugins die Ausführungslaufzeit in ihren eigenen Erweiterungsmodulen halten. Der Kern besitzt die Laufzeiten für Discord-, Slack-, Telegram- oder WhatsApp-Nachrichtenaktionen unter `src/agents/tools` nicht mehr. Wir veröffentlichen keine separaten `plugin-sdk/*-action-runtime`-Unterpfade, und gebündelte Plugins sollten ihren eigenen lokalen Laufzeitcode direkt aus ihren erweiterungseigenen Modulen importieren.
+Für kanalverantwortete Ausführungshelfer sollten gebündelte Plugins die Ausführungslaufzeit in ihren eigenen Erweiterungsmodulen halten. Der Kern verantwortet die Discord-, Slack-, Telegram- oder WhatsApp-Nachrichtenaktions-Laufzeiten unter `src/agents/tools` nicht mehr. Wir veröffentlichen keine separaten `plugin-sdk/*-action-runtime`-Unterpfade, und gebündelte Plugins sollten ihren eigenen lokalen Laufzeitcode direkt aus ihren erweiterungseigenen Modulen importieren.
 
-Dieselbe Grenze gilt allgemein für provider-benannte SDK-Schnittstellen: Der Kern sollte keine channelspezifischen Convenience-Barrels für Slack, Discord, Signal, WhatsApp oder ähnliche Erweiterungen importieren. Wenn der Kern ein Verhalten benötigt, sollte er entweder das eigene `api.ts`- / `runtime-api.ts`-Barrel des gebündelten Plugins konsumieren oder den Bedarf in eine enge generische Capability im gemeinsamen SDK überführen.
+Dieselbe Grenze gilt allgemein für Provider-benannte SDK-Nähte: Der Kern sollte keine kanalspezifischen Convenience-Barrels für Slack, Discord, Signal, WhatsApp oder ähnliche Erweiterungen importieren. Wenn der Kern ein Verhalten benötigt, soll er entweder das eigene `api.ts`- / `runtime-api.ts`-Barrel des gebündelten Plugins verwenden oder den Bedarf in eine schmale generische Capability im gemeinsamen SDK heben.
 
-Gebündelte Plugins folgen derselben Regel. Das `runtime-api.ts` eines gebündelten Plugins sollte seine eigene markenspezifische `openclaw/plugin-sdk/<plugin-id>`-Fassade nicht erneut exportieren. Diese markenspezifischen Fassaden bleiben Kompatibilitäts-Shims für externe Plugins und ältere Verbraucher, aber gebündelte Plugins sollten lokale Exporte plus enge generische SDK-Unterpfade wie `openclaw/plugin-sdk/channel-policy`, `openclaw/plugin-sdk/runtime-store` oder `openclaw/plugin-sdk/webhook-ingress` verwenden. Neuer Code sollte keine plugin-id-spezifischen SDK-Fassaden hinzufügen, außer die Kompatibilitätsgrenze für ein bestehendes externes Ökosystem erfordert es.
+Gebündelte Plugins folgen derselben Regel. Das `runtime-api.ts` eines gebündelten Plugins sollte seine eigene gebrandete `openclaw/plugin-sdk/<plugin-id>`-Fassade nicht erneut exportieren. Diese gebrandeten Fassaden bleiben Kompatibilitäts-Shims für externe Plugins und ältere Konsumenten, aber gebündelte Plugins sollten lokale Exporte plus schmale generische SDK-Unterpfade wie `openclaw/plugin-sdk/channel-policy`, `openclaw/plugin-sdk/runtime-store` oder `openclaw/plugin-sdk/webhook-ingress` verwenden. Neuer Code sollte keine Plugin-ID-spezifischen SDK-Fassaden hinzufügen, sofern die Kompatibilitätsgrenze für ein bestehendes externes Ökosystem dies nicht erfordert.
 
 Speziell für Umfragen gibt es zwei Ausführungspfade:
 
-- `outbound.sendPoll` ist die gemeinsame Basis für Channels, die zum üblichen Umfragemodell passen
-- `actions.handleAction("poll")` ist der bevorzugte Pfad für channelspezifische Umfragesemantik oder zusätzliche Umfrageparameter
+- `outbound.sendPoll` ist die gemeinsame Basis für Kanäle, die zum gemeinsamen Umfragemodell passen
+- `actions.handleAction("poll")` ist der bevorzugte Pfad für kanalspezifische Umfragesemantik oder zusätzliche Umfrageparameter
 
-Der Kern verschiebt das gemeinsame Parsen von Umfragen jetzt, bis die Plugin-Umfrageweiterleitung die Aktion ablehnt, damit plugin-eigene Umfrage-Handler channelspezifische Umfragefelder akzeptieren können, ohne zuerst vom generischen Umfrageparser blockiert zu werden.
+Der Kern verschiebt das gemeinsame Parsen von Umfragen jetzt, bis der Plugin-Umfrage-Dispatch die Aktion ablehnt, sodass Plugin-eigene Umfrage-Handler kanalspezifische Umfragefelder akzeptieren können, ohne zuerst vom generischen Umfrageparser blockiert zu werden.
 
-Siehe [Plugin-Architektur-Interna](/de/plugins/architecture-internals) für die vollständige Startsequenz.
+Siehe [Interne Plugin-Architektur](/de/plugins/architecture-internals) für die vollständige Startsequenz.
 
-## Capability-Ownership-Modell
+## Verantwortungsmodell für Capabilities
 
-OpenClaw behandelt ein natives Plugin als Ownership-Grenze für ein **Unternehmen** oder ein **Feature**, nicht als Sammelbecken nicht zusammenhängender Integrationen.
+OpenClaw behandelt ein natives Plugin als Verantwortungsgrenze für ein **Unternehmen** oder ein **Feature**, nicht als Sammelbecken unzusammenhängender Integrationen.
 
 Das bedeutet:
 
-- ein Unternehmens-Plugin sollte in der Regel alle OpenClaw-bezogenen Oberflächen dieses Unternehmens besitzen
-- ein Feature-Plugin sollte in der Regel die vollständige Feature-Oberfläche besitzen, die es einführt
-- Channels sollten gemeinsame Kern-Capabilities konsumieren, statt Provider-Verhalten ad hoc neu zu implementieren
+- ein Unternehmens-Plugin sollte normalerweise alle OpenClaw-bezogenen Oberflächen dieses Unternehmens verantworten
+- ein Feature-Plugin sollte normalerweise die vollständige Feature-Oberfläche verantworten, die es einführt
+- Kanäle sollten gemeinsame Kern-Capabilities nutzen, statt Provider-Verhalten ad hoc neu zu implementieren
 
 <AccordionGroup>
-  <Accordion title="Mehrere Vendor-Capabilities">
-    `openai` besitzt Textinferenz, Sprache, Echtzeit-Sprache, Medienverständnis und Bilderzeugung. `google` besitzt Textinferenz plus Medienverständnis, Bilderzeugung und Websuche. `qwen` besitzt Textinferenz plus Medienverständnis und Videogenerierung.
+  <Accordion title="Mehrfach-Capability eines Anbieters">
+    `openai` verantwortet Textinferenz, Sprache, Echtzeit-Sprache, Medienverständnis und Bilderzeugung. `google` verantwortet Textinferenz plus Medienverständnis, Bilderzeugung und Websuche. `qwen` verantwortet Textinferenz plus Medienverständnis und Videogenerierung.
   </Accordion>
-  <Accordion title="Eine Vendor-Capability">
-    `elevenlabs` und `microsoft` besitzen Sprache; `firecrawl` besitzt Web-Abruf; `minimax` / `mistral` / `moonshot` / `zai` besitzen Backends für Medienverständnis.
+  <Accordion title="Einzel-Capability eines Anbieters">
+    `elevenlabs` und `microsoft` verantworten Sprache; `firecrawl` verantwortet Web-Fetch; `minimax` / `mistral` / `moonshot` / `zai` verantworten Backends für Medienverständnis.
   </Accordion>
   <Accordion title="Feature-Plugin">
-    `voice-call` besitzt Anruftransport, Tools, CLI, Routen und Twilio-Media-Stream-Bridging, konsumiert aber gemeinsame Capabilities für Sprache, Echtzeit-Transkription und Echtzeit-Sprache, statt Vendor-Plugins direkt zu importieren.
+    `voice-call` verantwortet Anruftransport, Tools, CLI, Routen und Twilio-Medienstream-Bridging, nutzt aber gemeinsame Capabilities für Sprache, Echtzeit-Transkription und Echtzeit-Sprache, statt Vendor-Plugins direkt zu importieren.
   </Accordion>
 </AccordionGroup>
 
-Der angestrebte Endzustand ist:
+Der beabsichtigte Endzustand ist:
 
-- OpenAI lebt in einem Plugin, auch wenn es Textmodelle, Sprache, Bilder und künftige Videos umfasst
-- ein anderer Vendor kann dasselbe für seine eigene Oberfläche tun
-- Channels ist es egal, welches Vendor-Plugin den Provider besitzt; sie konsumieren den gemeinsamen Capability-Vertrag, den der Kern bereitstellt
+- OpenAI lebt in einem Plugin, selbst wenn es Textmodelle, Sprache, Bilder und zukünftige Videos umfasst
+- ein anderer Anbieter kann dasselbe für seine eigene Oberfläche tun
+- Kanäle müssen nicht wissen, welches Vendor-Plugin den Provider verantwortet; sie nutzen den vom Kern bereitgestellten gemeinsamen Capability-Vertrag
 
-Das ist die zentrale Unterscheidung:
+Das ist die entscheidende Unterscheidung:
 
-- **Plugin** = Ownership-Grenze
-- **Capability** = Kernvertrag, den mehrere Plugins implementieren oder konsumieren können
+- **Plugin** = Verantwortungsgrenze
+- **Capability** = Kernvertrag, den mehrere Plugins implementieren oder nutzen können
 
-Wenn OpenClaw also eine neue Domäne wie Video hinzufügt, lautet die erste Frage nicht: „Welcher Provider sollte die Videoverarbeitung fest codieren?“ Die erste Frage lautet: „Was ist der Kernvertrag für die Video-Capability?“ Sobald dieser Vertrag existiert, können Vendor-Plugins sich dagegen registrieren, und Channel-/Feature-Plugins können ihn konsumieren.
+Wenn OpenClaw also eine neue Domäne wie Video hinzufügt, lautet die erste Frage nicht: „Welcher Provider sollte die Videoverarbeitung fest codieren?“ Die erste Frage lautet: „Was ist der Kernvertrag für die Video-Capability?“ Sobald dieser Vertrag existiert, können Vendor-Plugins sich dafür registrieren, und Kanal-/Feature-Plugins können ihn nutzen.
 
 Wenn die Capability noch nicht existiert, ist der richtige Schritt normalerweise:
 
@@ -278,17 +281,17 @@ Wenn die Capability noch nicht existiert, ist der richtige Schritt normalerweise
     Definieren Sie die fehlende Capability im Kern.
   </Step>
   <Step title="Über das SDK bereitstellen">
-    Stellen Sie sie typisiert über die Plugin-API/-Laufzeit bereit.
+    Stellen Sie sie typisiert über die Plugin-API/Laufzeit bereit.
   </Step>
-  <Step title="Verbraucher verdrahten">
-    Verdrahten Sie Channels/Features gegen diese Capability.
+  <Step title="Konsumenten verkabeln">
+    Verkabeln Sie Kanäle/Features mit dieser Capability.
   </Step>
   <Step title="Vendor-Implementierungen">
     Lassen Sie Vendor-Plugins Implementierungen registrieren.
   </Step>
 </Steps>
 
-So bleibt Ownership explizit, während Kernverhalten vermieden wird, das von einem einzelnen Vendor oder einem einmaligen plugin-spezifischen Codepfad abhängt.
+Das hält Verantwortung explizit und vermeidet gleichzeitig Kernverhalten, das von einem einzelnen Anbieter oder einem einmaligen Plugin-spezifischen Codepfad abhängt.
 
 ### Capability-Schichtung
 
@@ -296,27 +299,27 @@ Verwenden Sie dieses mentale Modell, wenn Sie entscheiden, wohin Code gehört:
 
 <Tabs>
   <Tab title="Kern-Capability-Schicht">
-    Gemeinsame Orchestrierung, Policy, Fallback, Regeln zum Zusammenführen von Konfiguration, Auslieferungssemantik und typisierte Verträge.
+    Gemeinsame Orchestrierung, Policy, Fallback, Regeln für Konfigurationszusammenführung, Auslieferungssemantik und typisierte Verträge.
   </Tab>
   <Tab title="Vendor-Plugin-Schicht">
-    Vendorspezifische APIs, Authentifizierung, Modellkataloge, Sprachsynthese, Bilderzeugung, künftige Video-Backends, Nutzungsendpunkte.
+    Anbieterspezifische APIs, Auth, Modellkataloge, Sprachsynthese, Bilderzeugung, zukünftige Video-Backends, Usage-Endpunkte.
   </Tab>
-  <Tab title="Channel-/Feature-Plugin-Schicht">
-    Slack-/Discord-/voice-call-/usw.-Integration, die Kern-Capabilities konsumiert und sie auf einer Oberfläche präsentiert.
+  <Tab title="Kanal-/Feature-Plugin-Schicht">
+    Slack-/Discord-/voice-call-/usw.-Integration, die Kern-Capabilities nutzt und sie auf einer Oberfläche präsentiert.
   </Tab>
 </Tabs>
 
-TTS folgt zum Beispiel dieser Form:
+Zum Beispiel folgt TTS dieser Form:
 
-- der Kern besitzt die TTS-Policy zur Antwortzeit, Fallback-Reihenfolge, Einstellungen und Channel-Auslieferung
-- `openai`, `elevenlabs` und `microsoft` besitzen Syntheseimplementierungen
-- `voice-call` konsumiert den TTS-Laufzeithelfer für Telefonie
+- der Kern verantwortet TTS-Policy zur Antwortzeit, Fallback-Reihenfolge, Einstellungen und Kanalauslieferung
+- `openai`, `elevenlabs` und `microsoft` verantworten Syntheseimplementierungen
+- `voice-call` nutzt den Laufzeithelfer für Telefonie-TTS
 
-Dasselbe Muster sollte für künftige Capabilities bevorzugt werden.
+Dasselbe Muster sollte für zukünftige Capabilities bevorzugt werden.
 
 ### Beispiel für ein Unternehmens-Plugin mit mehreren Capabilities
 
-Ein Unternehmens-Plugin sollte sich von außen kohärent anfühlen. Wenn OpenClaw gemeinsame Verträge für Modelle, Sprache, Echtzeit-Transkription, Echtzeit-Sprache, Medienverständnis, Bilderzeugung, Videogenerierung, Web-Abruf und Websuche hat, kann ein Vendor alle seine Oberflächen an einem Ort besitzen:
+Ein Unternehmens-Plugin sollte von außen kohärent wirken. Wenn OpenClaw gemeinsame Verträge für Modelle, Sprache, Echtzeit-Transkription, Echtzeit-Sprache, Medienverständnis, Bilderzeugung, Videogenerierung, Web-Fetch und Websuche hat, kann ein Anbieter alle seine Oberflächen an einer Stelle verantworten:
 
 ```ts
 import type { OpenClawPluginDefinition } from "openclaw/plugin-sdk/plugin-entry";
@@ -370,34 +373,34 @@ const plugin: OpenClawPluginDefinition = {
 export default plugin;
 ```
 
-Wichtig sind nicht die exakten Namen der Helfer. Wichtig ist die Form:
+Wichtig sind nicht die exakten Helper-Namen. Wichtig ist die Form:
 
-- ein Plugin besitzt die Vendor-Oberfläche
-- der Kern besitzt weiterhin die Capability-Verträge
-- Channels und Feature-Plugins konsumieren `api.runtime.*`-Helfer, keinen Vendor-Code
-- Vertragstests können sicherstellen, dass das Plugin die Capabilities registriert hat, die es zu besitzen beansprucht
+- ein Plugin verantwortet die Anbieteroberfläche
+- der Kern verantwortet weiterhin die Capability-Verträge
+- Kanäle und Feature-Plugins nutzen `api.runtime.*`-Helper, nicht Vendor-Code
+- Vertragstests können sicherstellen, dass das Plugin die Capabilities registriert hat, deren Verantwortung es beansprucht
 
 ### Capability-Beispiel: Videoverständnis
 
-OpenClaw behandelt Bild-/Audio-/Videoverständnis bereits als eine gemeinsame Capability. Dasselbe Ownership-Modell gilt dort:
+OpenClaw behandelt Bild-/Audio-/Videoverständnis bereits als eine gemeinsame Capability. Dasselbe Verantwortungsmodell gilt dort:
 
 <Steps>
   <Step title="Der Kern definiert den Vertrag">
     Der Kern definiert den Vertrag für Medienverständnis.
   </Step>
-  <Step title="Vendor-Plugins registrieren">
-    Vendor-Plugins registrieren `describeImage`, `transcribeAudio` und `describeVideo`, sofern zutreffend.
+  <Step title="Vendor-Plugins registrieren sich">
+    Vendor-Plugins registrieren `describeImage`, `transcribeAudio` und `describeVideo`, soweit zutreffend.
   </Step>
-  <Step title="Verbraucher verwenden das gemeinsame Verhalten">
-    Channels und Feature-Plugins konsumieren das gemeinsame Kernverhalten, statt direkt mit Vendor-Code zu verdrahten.
+  <Step title="Konsumenten nutzen das gemeinsame Verhalten">
+    Kanäle und Feature-Plugins nutzen das gemeinsame Kernverhalten, statt direkt mit Vendor-Code zu verkabeln.
   </Step>
 </Steps>
 
-Das verhindert, dass die Videoannahmen eines einzelnen Providers in den Kern eingebettet werden. Das Plugin besitzt die Vendor-Oberfläche; der Kern besitzt den Capability-Vertrag und das Fallback-Verhalten.
+Das verhindert, dass die Videoannahmen eines Providers in den Kern eingebaut werden. Das Plugin verantwortet die Anbieteroberfläche; der Kern verantwortet den Capability-Vertrag und das Fallback-Verhalten.
 
-Videogenerierung verwendet bereits dieselbe Sequenz: Der Kern besitzt den typisierten Capability-Vertrag und den Laufzeithelfer, und Vendor-Plugins registrieren `api.registerVideoGenerationProvider(...)`-Implementierungen dagegen.
+Videogenerierung verwendet bereits dieselbe Sequenz: Der Kern verantwortet den typisierten Capability-Vertrag und den Laufzeithelfer, und Vendor-Plugins registrieren `api.registerVideoGenerationProvider(...)`-Implementierungen dagegen.
 
-Benötigen Sie eine konkrete Rollout-Checkliste? Siehe [Capability Cookbook](/de/plugins/architecture).
+Benötigen Sie eine konkrete Rollout-Checkliste? Siehe [Capability-Kochbuch](/de/plugins/adding-capabilities).
 
 ## Verträge und Durchsetzung
 
@@ -406,22 +409,22 @@ Die Plugin-API-Oberfläche ist absichtlich typisiert und in `OpenClawPluginApi` 
 Warum das wichtig ist:
 
 - Plugin-Autoren erhalten einen stabilen internen Standard
-- der Kern kann doppelte Ownership ablehnen, etwa wenn zwei Plugins dieselbe Provider-ID registrieren
+- der Kern kann doppelte Verantwortung ablehnen, etwa wenn zwei Plugins dieselbe Provider-ID registrieren
 - der Start kann umsetzbare Diagnosen für fehlerhafte Registrierung anzeigen
-- Vertragstests können Ownership gebündelter Plugins durchsetzen und stille Abweichungen verhindern
+- Vertragstests können die Verantwortung gebündelter Plugins durchsetzen und stilles Auseinanderdriften verhindern
 
-Es gibt zwei Ebenen der Durchsetzung:
+Es gibt zwei Durchsetzungsebenen:
 
 <AccordionGroup>
   <Accordion title="Durchsetzung der Runtime-Registrierung">
-    Die Plugin-Registry validiert Registrierungen, während Plugins geladen werden. Beispiele: doppelte Provider-IDs, doppelte Speech-Provider-IDs und fehlerhafte Registrierungen erzeugen Plugin-Diagnosen statt undefiniertem Verhalten.
+    Die Plugin-Registry validiert Registrierungen beim Laden von Plugins. Beispiele: doppelte Provider-IDs, doppelte Sprach-Provider-IDs und fehlerhafte Registrierungen erzeugen Plugin-Diagnosen statt undefiniertem Verhalten.
   </Accordion>
   <Accordion title="Contract-Tests">
-    Gebündelte Plugins werden während Testläufen in Contract-Registries erfasst, damit OpenClaw die Ownership explizit prüfen kann. Derzeit wird dies für Modell-Provider, Speech-Provider, Websuche-Provider und die Ownership gebündelter Registrierungen verwendet.
+    Gebündelte Plugins werden während Testläufen in Contract-Registries erfasst, damit OpenClaw Ownership explizit prüfen kann. Heute wird dies für Modell-Provider, Sprach-Provider, Websuche-Provider und Ownership gebündelter Registrierungen verwendet.
   </Accordion>
 </AccordionGroup>
 
-Der praktische Effekt ist, dass OpenClaw im Voraus weiß, welches Plugin welche Oberfläche besitzt. Dadurch können Core und Channels nahtlos zusammenspielen, weil Ownership deklariert, typisiert und testbar ist, statt implizit zu sein.
+Der praktische Effekt ist, dass OpenClaw im Voraus weiß, welches Plugin welche Oberfläche besitzt. Dadurch können Core und Channels nahtlos zusammengesetzt werden, weil Ownership deklariert, typisiert und testbar ist statt implizit.
 
 ### Was in einen Contract gehört
 
@@ -432,57 +435,57 @@ Der praktische Effekt ist, dass OpenClaw im Voraus weiß, welches Plugin welche 
     - capability-spezifisch
     - im Besitz des Core
     - von mehreren Plugins wiederverwendbar
-    - von Channels/Funktionen ohne Vendor-Wissen nutzbar
+    - von Channels/Features ohne Vendor-Wissen nutzbar
 
   </Tab>
   <Tab title="Schlechte Contracts">
     - Vendor-spezifische Policy, die im Core verborgen ist
-    - einmalige Plugin-Fluchtwege, die die Registry umgehen
+    - einmalige Plugin-Ausweichpfade, die die Registry umgehen
     - Channel-Code, der direkt in eine Vendor-Implementierung greift
     - Ad-hoc-Runtime-Objekte, die nicht Teil von `OpenClawPluginApi` oder `api.runtime` sind
 
   </Tab>
 </Tabs>
 
-Im Zweifel erhöhen Sie die Abstraktionsebene: Definieren Sie zuerst die Capability, und lassen Sie Plugins sich dann daran anbinden.
+Im Zweifel heben Sie die Abstraktionsebene an: Definieren Sie zuerst die Capability, und lassen Sie Plugins sich dann daran anschließen.
 
 ## Ausführungsmodell
 
-Native OpenClaw-Plugins laufen **in-process** mit dem Gateway. Sie sind nicht sandboxed. Ein geladenes natives Plugin hat dieselbe Vertrauensgrenze auf Prozessebene wie Core-Code.
+Native OpenClaw-Plugins laufen **im Prozess** mit dem Gateway. Sie sind nicht sandboxed. Ein geladenes natives Plugin hat dieselbe Vertrauensgrenze auf Prozessebene wie Core-Code.
 
 <Warning>
-Auswirkungen nativer Plugins: Ein Plugin kann Tools, Netzwerk-Handler, Hooks und Services registrieren; ein Plugin-Fehler kann das Gateway zum Absturz bringen oder destabilisieren; und ein bösartiges natives Plugin entspricht beliebiger Codeausführung innerhalb des OpenClaw-Prozesses.
+Auswirkungen nativer Plugins: Ein Plugin kann Tools, Netzwerk-Handler, Hooks und Services registrieren; ein Plugin-Fehler kann das Gateway abstürzen lassen oder destabilisieren; und ein bösartiges natives Plugin entspricht der Ausführung beliebigen Codes innerhalb des OpenClaw-Prozesses.
 </Warning>
 
-Compatible Bundles sind standardmäßig sicherer, weil OpenClaw sie derzeit als Metadaten-/Inhaltspakete behandelt. In aktuellen Releases bedeutet das hauptsächlich gebündelte Skills.
+Kompatible Bundles sind standardmäßig sicherer, weil OpenClaw sie derzeit als Metadaten-/Inhaltspakete behandelt. In aktuellen Releases bedeutet das hauptsächlich gebündelte Skills.
 
-Verwenden Sie Allowlists und explizite Installations-/Ladepfade für nicht gebündelte Plugins. Behandeln Sie Workspace-Plugins als Code für die Entwicklungszeit, nicht als Produktionsstandard.
+Verwenden Sie Allowlisten und explizite Installations-/Ladepfade für nicht gebündelte Plugins. Behandeln Sie Workspace-Plugins als Code für die Entwicklungszeit, nicht als Produktions-Defaults.
 
-Halten Sie bei gebündelten Workspace-Paketnamen die Plugin-ID standardmäßig im npm-Namen verankert: `@openclaw/<id>`, oder verwenden Sie ein genehmigtes typisiertes Suffix wie `-provider`, `-plugin`, `-speech`, `-sandbox` oder `-media-understanding`, wenn das Paket absichtlich eine engere Plugin-Rolle bereitstellt.
+Für gebündelte Workspace-Paketnamen behalten Sie die Plugin-ID standardmäßig im npm-Namen verankert: `@openclaw/<id>` oder ein genehmigtes typisiertes Suffix wie `-provider`, `-plugin`, `-speech`, `-sandbox` oder `-media-understanding`, wenn das Paket absichtlich eine enger gefasste Plugin-Rolle bereitstellt.
 
 <Note>
-**Vertrauenshinweis:** `plugins.allow` vertraut **Plugin-IDs**, nicht der Herkunft der Quelle. Ein Workspace-Plugin mit derselben ID wie ein gebündeltes Plugin überschattet die gebündelte Kopie absichtlich, wenn dieses Workspace-Plugin aktiviert/allowlisted ist. Das ist normal und nützlich für lokale Entwicklung, Patch-Tests und Hotfixes. Das Vertrauen in gebündelte Plugins wird aus dem Quell-Snapshot aufgelöst — dem Manifest und dem Code auf dem Datenträger zum Ladezeitpunkt — und nicht aus Installationsmetadaten. Ein beschädigter oder ersetzter Installationsdatensatz kann die Vertrauensoberfläche eines gebündelten Plugins nicht stillschweigend über das hinaus erweitern, was die tatsächliche Quelle beansprucht.
+**Vertrauenshinweis:** `plugins.allow` vertraut **Plugin-IDs**, nicht der Herkunft des Quellcodes. Ein Workspace-Plugin mit derselben ID wie ein gebündeltes Plugin überschattet absichtlich die gebündelte Kopie, wenn dieses Workspace-Plugin aktiviert bzw. in die Allowlist aufgenommen ist. Das ist normal und nützlich für lokale Entwicklung, Patch-Tests und Hotfixes. Das Vertrauen in gebündelte Plugins wird aus dem Quell-Snapshot aufgelöst, also aus Manifest und Code auf der Festplatte zum Ladezeitpunkt, nicht aus Installationsmetadaten. Ein beschädigter oder ersetzter Installationseintrag kann die Vertrauensoberfläche eines gebündelten Plugins nicht stillschweigend über das hinaus erweitern, was der tatsächliche Quellcode angibt.
 </Note>
 
-## Exportgrenze
+## Export-Grenze
 
-OpenClaw exportiert Capabilities, nicht Implementierungskomfort.
+OpenClaw exportiert Capabilities, nicht Implementierungsbequemlichkeit.
 
-Halten Sie Capability-Registrierung öffentlich. Entfernen Sie Nicht-Contract-Hilfsexporte:
+Halten Sie die Capability-Registrierung öffentlich. Entfernen Sie Nicht-Contract-Helper-Exporte:
 
-- Hilfs-Subpfade, die spezifisch für gebündelte Plugins sind
-- Runtime-Plumbing-Subpfade, die nicht als öffentliche API gedacht sind
-- Vendor-spezifische Komfort-Helper
+- gebündelte-Plugin-spezifische Helper-Unterpfade
+- Runtime-Plumbing-Unterpfade, die nicht als öffentliche API vorgesehen sind
+- Vendor-spezifische Convenience-Helper
 - Setup-/Onboarding-Helper, die Implementierungsdetails sind
 
-Reservierte Hilfs-Subpfade für gebündelte Plugins wurden aus der generierten SDK-Export-Map entfernt. Halten Sie owner-spezifische Helper innerhalb des besitzenden Plugin-Pakets; heben Sie nur wiederverwendbares Host-Verhalten in generische SDK-Contracts wie `plugin-sdk/gateway-runtime`, `plugin-sdk/security-runtime` und `plugin-sdk/plugin-config-runtime`.
+Reservierte Helper-Unterpfade für gebündelte Plugins wurden aus der generierten SDK-Export-Map entfernt. Behalten Sie owner-spezifische Helper im besitzenden Plugin-Paket; befördern Sie nur wiederverwendbares Host-Verhalten zu generischen SDK-Contracts wie `plugin-sdk/gateway-runtime`, `plugin-sdk/security-runtime` und `plugin-sdk/plugin-config-runtime`.
 
 ## Interna und Referenz
 
-Informationen zur Ladepipeline, zum Registry-Modell, zu Provider-Runtime-Hooks, Gateway-HTTP-Routen, Message-Tool-Schemata, Channel-Zielauflösung, Provider-Katalogen, Context-Engine-Plugins und zur Anleitung zum Hinzufügen einer neuen Capability finden Sie unter [Interna der Plugin-Architektur](/de/plugins/architecture-internals).
+Für die Lade-Pipeline, das Registry-Modell, Provider-Runtime-Hooks, Gateway-HTTP-Routen, Message-Tool-Schemas, Channel-Zielauflösung, Provider-Kataloge, Context-Engine-Plugins und die Anleitung zum Hinzufügen einer neuen Capability siehe [Interna der Plugin-Architektur](/de/plugins/architecture-internals).
 
 ## Verwandt
 
 - [Plugins erstellen](/de/plugins/building-plugins)
 - [Plugin-Manifest](/de/plugins/manifest)
-- [Plugin-SDK einrichten](/de/plugins/sdk-setup)
+- [Plugin-SDK-Einrichtung](/de/plugins/sdk-setup)

@@ -4,10 +4,11 @@ read_when:
 summary: Fügt Unterstützung für Websuch-Provider hinzu.
 title: Perplexity-Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:57:58Z"
+    generated_at: "2026-06-27T17:55:54Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 86183b8201e7c6869eeeada3efcb15fd67c3d958fd5a50a56922bb0a61c5c74d
+    source_hash: c649c4dc4df04ca668e924e2644af970d75eab404b8f57579e509aa061994ffe
     source_path: plugins/reference/perplexity.md
     workflow: 16
 ---
@@ -19,12 +20,12 @@ Fügt Unterstützung für Websuche-Provider hinzu.
 ## Distribution
 
 - Paket: `@openclaw/perplexity-plugin`
-- Installationsweg: in OpenClaw enthalten
+- Installationsweg: npm; ClawHub: `clawhub:@openclaw/perplexity-plugin`
 
 ## Oberfläche
 
 contracts: webSearchProviders
 
-## Zugehörige Dokumentation
+## Verwandte Dokumentation
 
 - [perplexity](/de/tools/perplexity-search)

@@ -1,51 +1,61 @@
 ---
 read_when:
     - تريد استخدام Cloudflare AI Gateway مع OpenClaw
-    - تحتاج إلى معرّف الحساب أو معرّف Gateway أو متغيّر البيئة لمفتاح API
+    - تحتاج إلى معرّف الحساب أو معرّف Gateway أو متغير بيئة مفتاح API
 summary: إعداد Cloudflare AI Gateway (المصادقة + اختيار النموذج)
 title: Gateway الذكاء الاصطناعي من Cloudflare
 x-i18n:
-    generated_at: "2026-04-30T08:20:26Z"
+    generated_at: "2026-06-27T18:24:05Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c7c567076a5b3fea0f09f44d772c0858aed2a4813f91f1cc9f87b0da39c2e5db
+    source_hash: 05678faa049349c610a9c7ea9d23958bf51927453cf6987fef397cd273f6556b
     source_path: providers/cloudflare-ai-gateway.md
     workflow: 16
 ---
 
-يقع Cloudflare AI Gateway أمام واجهات API للمزوّدين ويتيح لك إضافة التحليلات والتخزين المؤقت وعناصر التحكم. بالنسبة إلى Anthropic، يستخدم OpenClaw واجهة Anthropic Messages API عبر نقطة نهاية Gateway الخاصة بك.
+Cloudflare AI Gateway sits in front of provider APIs and lets you add analytics, caching, and controls. For Anthropic, OpenClaw uses the Anthropic Messages API through your Gateway endpoint.
 
-| الخاصية | القيمة |
+| Property      | Value                                                                                    |
 | ------------- | ---------------------------------------------------------------------------------------- |
-| المزوّد | `cloudflare-ai-gateway`                                                                  |
-| عنوان URL الأساسي | `https://gateway.ai.cloudflare.com/v1/<account_id>/<gateway_id>/anthropic`               |
-| النموذج الافتراضي | `cloudflare-ai-gateway/claude-sonnet-4-6`                                                |
-| مفتاح API | `CLOUDFLARE_AI_GATEWAY_API_KEY` (مفتاح API الخاص بالمزوّد لديك للطلبات عبر Gateway) |
+| Provider      | `cloudflare-ai-gateway`                                                                  |
+| Base URL      | `https://gateway.ai.cloudflare.com/v1/<account_id>/<gateway_id>/anthropic`               |
+| Default model | `cloudflare-ai-gateway/claude-sonnet-4-6`                                                |
+| API key       | `CLOUDFLARE_AI_GATEWAY_API_KEY` (your provider API key for requests through the Gateway) |
 
 <Note>
-بالنسبة إلى نماذج Anthropic الموجّهة عبر Cloudflare AI Gateway، استخدم **مفتاح Anthropic API** الخاص بك كمفتاح المزوّد.
+For Anthropic models routed through Cloudflare AI Gateway, use your **Anthropic API key** as the provider key.
 </Note>
 
-عند تمكين التفكير لنماذج Anthropic Messages، يزيل OpenClaw أدوار
-الملء المسبق اللاحقة الخاصة بالمساعد قبل إرسال الحمولة عبر Cloudflare AI Gateway.
-ترفض Anthropic الملء المسبق للاستجابة مع التفكير الموسّع، بينما يظل
-الملء المسبق العادي من دون تفكير متاحًا.
+When thinking is enabled for Anthropic Messages models, OpenClaw strips trailing
+assistant prefill turns before sending the payload through Cloudflare AI Gateway.
+Anthropic rejects response prefilling with extended thinking, while ordinary
+non-thinking prefill remains available.
 
-## البدء
+## Install plugin
+
+Install the official plugin, then restart Gateway:
+
+```bash
+openclaw plugins install @openclaw/cloudflare-ai-gateway-provider
+openclaw gateway restart
+```
+
+## Getting started
 
 <Steps>
-  <Step title="عيّن مفتاح API للمزوّد وتفاصيل Gateway">
-    شغّل الإعداد الأولي واختر خيار مصادقة Cloudflare AI Gateway:
+  <Step title="Set the provider API key and Gateway details">
+    Run onboarding and choose the Cloudflare AI Gateway auth option:
 
     ```bash
     openclaw onboard --auth-choice cloudflare-ai-gateway-api-key
     ```
 
-    سيطلب ذلك معرّف الحساب ومعرّف Gateway ومفتاح API.
+    This prompts for your account ID, gateway ID, and API key.
 
   </Step>
-  <Step title="عيّن نموذجًا افتراضيًا">
-    أضف النموذج إلى إعدادات OpenClaw لديك:
+  <Step title="Set a default model">
+    Add the model to your OpenClaw config:
 
     ```json5
     {
@@ -58,16 +68,16 @@ x-i18n:
     ```
 
   </Step>
-  <Step title="تحقق من أن النموذج متاح">
+  <Step title="Verify the model is available">
     ```bash
     openclaw models list --provider cloudflare-ai-gateway
     ```
   </Step>
 </Steps>
 
-## مثال غير تفاعلي
+## Non-interactive example
 
-لإعدادات البرمجة النصية أو CI، مرّر كل القيم في سطر الأوامر:
+For scripted or CI setups, pass all values on the command line:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -78,11 +88,11 @@ openclaw onboard --non-interactive \
   --cloudflare-ai-gateway-api-key "$CLOUDFLARE_AI_GATEWAY_API_KEY"
 ```
 
-## الإعدادات المتقدمة
+## Advanced configuration
 
 <AccordionGroup>
-  <Accordion title="Gateways مصادَق عليها">
-    إذا فعّلت مصادقة Gateway في Cloudflare، فأضف ترويسة `cf-aig-authorization`. هذا **إضافةً إلى** مفتاح API الخاص بالمزوّد لديك.
+  <Accordion title="Authenticated gateways">
+    If you enabled Gateway authentication in Cloudflare, add the `cf-aig-authorization` header. This is **in addition to** your provider API key.
 
     ```json5
     {
@@ -99,28 +109,28 @@ openclaw onboard --non-interactive \
     ```
 
     <Tip>
-    تصادق ترويسة `cf-aig-authorization` مع Cloudflare Gateway نفسه، بينما يصادق مفتاح API الخاص بالمزوّد (على سبيل المثال، مفتاح Anthropic لديك) مع المزوّد المنبعي.
+    The `cf-aig-authorization` header authenticates with the Cloudflare Gateway itself, while the provider API key (for example, your Anthropic key) authenticates with the upstream provider.
     </Tip>
 
   </Accordion>
 
-  <Accordion title="ملاحظة عن البيئة">
-    إذا كان Gateway يعمل كخدمة خفية (launchd/systemd)، فتأكد من أن `CLOUDFLARE_AI_GATEWAY_API_KEY` متاح لتلك العملية.
+  <Accordion title="Environment note">
+    If the Gateway runs as a daemon (launchd/systemd), make sure `CLOUDFLARE_AI_GATEWAY_API_KEY` is available to that process.
 
     <Warning>
-    وجود المفتاح في `~/.profile` فقط لن يفيد خدمة launchd/systemd خفية ما لم تُستورد تلك البيئة هناك أيضًا. عيّن المفتاح في `~/.openclaw/.env` أو عبر `env.shellEnv` لضمان أن عملية Gateway يمكنها قراءته.
+    A key exported only in an interactive shell will not help a launchd/systemd daemon unless that environment is imported there as well. Set the key in `~/.openclaw/.env` or via `env.shellEnv` to ensure the gateway process can read it.
     </Warning>
 
   </Accordion>
 </AccordionGroup>
 
-## ذات صلة
+## Related
 
 <CardGroup cols={2}>
-  <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
-    اختيار المزوّدين ومراجع النماذج وسلوك تجاوز الفشل.
+  <Card title="Model selection" href="/ar/concepts/model-providers" icon="layers">
+    Choosing providers, model refs, and failover behavior.
   </Card>
-  <Card title="استكشاف الأخطاء وإصلاحها" href="/ar/help/troubleshooting" icon="wrench">
-    استكشاف الأخطاء وإصلاحها العام والأسئلة الشائعة.
+  <Card title="Troubleshooting" href="/ar/help/troubleshooting" icon="wrench">
+    General troubleshooting and FAQ.
   </Card>
 </CardGroup>

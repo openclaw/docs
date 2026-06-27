@@ -1,25 +1,26 @@
 ---
 read_when:
-    - 您正在安裝、設定或稽核 amazon-bedrock-mantle Plugin
-summary: 為 OpenClaw 新增 Amazon Bedrock Mantle 模型提供者支援。
-title: Amazon Bedrock Mantle Plugin
+    - 你正在安裝、設定或稽核 amazon-bedrock-mantle 外掛
+summary: OpenClaw Amazon Bedrock Mantle 供應商外掛，用於 OpenAI 相容模型路由。
+title: Amazon Bedrock Mantle 外掛
 x-i18n:
-    generated_at: "2026-05-02T20:53:59Z"
+    generated_at: "2026-06-27T19:40:37Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 48212e4eefdc393b9ff6a9fa7b74f4e3960b0b922b95141aeaf41a3a667b1f4e
+    source_hash: 18725aa4678f967a5d34a2c951c11cc371e934abe62fde7616124157ebdb3799
     source_path: plugins/reference/amazon-bedrock-mantle.md
     workflow: 16
 ---
 
-# Amazon Bedrock Mantle Plugin
+# Amazon Bedrock Mantle 外掛
 
-為 OpenClaw 新增 Amazon Bedrock Mantle 模型提供者支援。
+OpenClaw Amazon Bedrock Mantle 提供者外掛，用於 OpenAI 相容的模型路由。
 
-## 發行
+## 發佈
 
 - 套件：`@openclaw/amazon-bedrock-mantle-provider`
-- 安裝方式：包含於 OpenClaw
+- 安裝途徑：npm；ClawHub
 
 ## 介面
 

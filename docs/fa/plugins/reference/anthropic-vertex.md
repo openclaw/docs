@@ -1,26 +1,37 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin anthropic-vertex هستید
-summary: پشتیبانی از ارائه‌دهندهٔ مدل Anthropic Vertex را به OpenClaw اضافه می‌کند.
-title: Plugin Anthropic Vertex
+    - شما در حال نصب، پیکربندی، یا ممیزی Plugin ‏anthropic-vertex هستید.
+summary: Plugin ارائه‌دهنده Anthropic Vertex در OpenClaw برای مدل‌های Claude در Google Vertex AI.
+title: Plugin انتروپیک Vertex
 x-i18n:
-    generated_at: "2026-05-02T20:50:06Z"
+    generated_at: "2026-06-27T18:23:27Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: fc2c2f3f5d872d55270e494fb4d68a41ac96edec9eb311a12ab47905a14b668e
+    source_hash: f772c9a5bf1edd6a270b7ba5e6d695290fe96648c9ac38d0bc90bb1504f50cd7
     source_path: plugins/reference/anthropic-vertex.md
     workflow: 16
 ---
 
-# Plugin Anthropic Vertex
+# Plugin آنتروپیک Vertex
 
-پشتیبانی از ارائه‌دهندهٔ مدل Anthropic Vertex را به OpenClaw اضافه می‌کند.
+Plugin ارائه‌دهنده OpenClaw آنتروپیک Vertex برای مدل‌های Claude در Google Vertex AI.
 
 ## توزیع
 
 - بسته: `@openclaw/anthropic-vertex-provider`
-- مسیر نصب: در OpenClaw گنجانده شده است
+- مسیر نصب: npm؛ ClawHub
 
 ## سطح
 
 providers: anthropic-vertex
+
+<!-- openclaw-plugin-reference:manual-start -->
+
+## Claude Fable 5
+
+از `anthropic-vertex/claude-fable-5` در جایی استفاده کنید که مدل در منطقه Google Cloud شما در دسترس است.
+Fable 5 همیشه از تفکر تطبیقی استفاده می‌کند و به‌طور پیش‌فرض روی تلاش `high` قرار دارد. `/think off` و
+`/think minimal` از تلاش `low` استفاده می‌کنند، زیرا مدل از غیرفعال‌کردن تفکر پشتیبانی نمی‌کند.
+
+<!-- openclaw-plugin-reference:manual-end -->

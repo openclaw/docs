@@ -1,32 +1,33 @@
 ---
 read_when:
-    - คุณต้องการลบบริการ gateway และ/หรือสถานะในเครื่อง
-    - คุณต้องการลองแบบ dry-run ก่อน
-summary: ข้อมูลอ้างอิง CLI สำหรับ `openclaw uninstall` (ลบบริการ gateway + ข้อมูลในเครื่อง)
+    - คุณต้องการลบบริการ Gateway และ/หรือสถานะภายในเครื่อง
+    - คุณต้องการทดลองรันก่อน
+summary: ข้อมูลอ้างอิง CLI สำหรับ `openclaw uninstall` (ลบบริการ Gateway + ข้อมูลภายในเครื่อง)
 title: ถอนการติดตั้ง
 x-i18n:
-    generated_at: "2026-04-24T09:04:44Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T17:24:21Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b774fc006e989068b9126aff2a72888fd808a2e0e3d5ea8b57e6ab9d9f1b63ee
+    source_hash: f90fa8cf513e2e8cd422c3b8a880e7fd20fb71131a3ec88260e765daa2ace543
     source_path: cli/uninstall.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw uninstall`
 
-ถอนการติดตั้งบริการ gateway + ข้อมูลในเครื่อง (CLI ยังคงอยู่)
+ถอนการติดตั้งบริการ Gateway + ข้อมูลภายในเครื่อง (CLI ยังคงอยู่)
 
 ตัวเลือก:
 
-- `--service`: ลบบริการ gateway
-- `--state`: ลบสถานะและคอนฟิก
+- `--service`: ลบบริการ Gateway
+- `--state`: ลบสถานะและการกำหนดค่า
 - `--workspace`: ลบไดเรกทอรี workspace
 - `--app`: ลบแอป macOS
-- `--all`: ลบบริการ สถานะ workspace และแอปทั้งหมด
-- `--yes`: ข้ามพรอมป์ยืนยัน
-- `--non-interactive`: ปิดพรอมป์; ต้องใช้ร่วมกับ `--yes`
-- `--dry-run`: แสดงการกระทำโดยยังไม่ลบไฟล์
+- `--all`: ลบบริการ สถานะ workspace และแอป
+- `--yes`: ข้ามพรอมต์ยืนยัน
+- `--non-interactive`: ปิดใช้พรอมต์; ต้องใช้ `--yes`
+- `--dry-run`: แสดงการดำเนินการโดยไม่ลบไฟล์
 
 ตัวอย่าง:
 
@@ -41,9 +42,10 @@ openclaw uninstall --dry-run
 
 หมายเหตุ:
 
-- รัน `openclaw backup create` ก่อน หากคุณต้องการ snapshot ที่กู้คืนได้ก่อนลบสถานะหรือ workspace
-- `--all` เป็นรูปแบบย่อสำหรับการลบบริการ สถานะ workspace และแอปร่วมกัน
-- `--non-interactive` ต้องใช้ร่วมกับ `--yes`
+- เรียกใช้ `openclaw backup create` ก่อน หากคุณต้องการสแนปช็อตที่กู้คืนได้ก่อนลบสถานะหรือ workspace
+- `--state` จะคงไดเรกทอรี workspace ที่กำหนดค่าไว้ เว้นแต่จะเลือก `--workspace` ด้วย
+- `--all` เป็นคำย่อสำหรับการลบบริการ สถานะ workspace และแอปพร้อมกัน
+- `--non-interactive` ต้องใช้ `--yes`
 
 ## ที่เกี่ยวข้อง
 

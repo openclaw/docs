@@ -1,43 +1,56 @@
 ---
 read_when:
-    - Sử dụng hoặc cấu hình các lệnh trò chuyện
+    - Sử dụng hoặc cấu hình lệnh trò chuyện
     - Gỡ lỗi định tuyến lệnh hoặc quyền
+    - Hiểu cách các lệnh skill được đăng ký
 sidebarTitle: Slash commands
-summary: 'Lệnh gạch chéo: dạng văn bản so với dạng gốc, cấu hình và các lệnh được hỗ trợ'
-title: Lệnh dấu gạch chéo
+summary: Tất cả lệnh gạch chéo, chỉ thị và lối tắt nội dòng hiện có — cấu hình, định tuyến và hành vi theo từng bề mặt.
+title: Lệnh gạch chéo
 x-i18n:
-    generated_at: "2026-05-11T20:38:43Z"
+    generated_at: "2026-06-27T18:18:48Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 0a9030d88abd04c395369f8f6587632b53f3249ea95a26726fb1f165dae2d0f6
+    source_hash: 5f53a5209d1c99c593d646b4ecc12e7074f72766cf3d1278c4d13511369d29bc
     source_path: tools/slash-commands.md
     workflow: 16
 ---
 
-Các lệnh do Gateway xử lý. Hầu hết lệnh phải được gửi dưới dạng một tin nhắn **độc lập** bắt đầu bằng `/`. Lệnh trò chuyện bash chỉ dành cho host dùng `! <cmd>` (với `/bash <cmd>` làm bí danh).
+Gateway xử lý các lệnh được gửi dưới dạng thông điệp độc lập bắt đầu bằng `/`.
+Các lệnh bash chỉ dành cho máy chủ dùng `! <cmd>` (với `/bash <cmd>` làm bí danh).
 
-Khi một cuộc hội thoại hoặc luồng được liên kết với một phiên ACP, văn bản theo dõi thông thường sẽ được định tuyến đến harness ACP đó. Các lệnh quản lý Gateway vẫn ở cục bộ: `/acp ...` luôn đến trình xử lý lệnh ACP của OpenClaw, còn `/status` cùng `/unfocus` vẫn ở cục bộ bất cứ khi nào xử lý lệnh được bật cho bề mặt đó.
+Khi một cuộc hội thoại được liên kết với một phiên ACP, văn bản thông thường sẽ được định tuyến đến harness ACP. Các lệnh quản lý Gateway vẫn ở cục bộ: `/acp ...` luôn đến bộ xử lý lệnh OpenClaw, còn `/status` cùng `/unfocus` vẫn ở cục bộ bất cứ khi nào việc xử lý lệnh được bật cho bề mặt đó.
 
-Có hai hệ thống liên quan:
+## Ba loại lệnh
+
+<CardGroup cols={3}>
+  <Card title="Lệnh" icon="terminal">
+    Các thông điệp `/...` độc lập do Gateway xử lý. Phải được gửi dưới dạng
+    nội dung duy nhất trong thông điệp.
+  </Card>
+  <Card title="Chỉ thị" icon="sliders">
+    `/think`, `/fast`, `/verbose`, `/trace`, `/reasoning`, `/elevated`,
+    `/exec`, `/model`, `/queue` — bị loại khỏi thông điệp trước khi mô hình
+    nhìn thấy. Duy trì thiết lập phiên khi được gửi riêng; hoạt động như gợi ý
+    nội tuyến khi được gửi cùng văn bản khác.
+  </Card>
+  <Card title="Lối tắt nội tuyến" icon="bolt">
+    `/help`, `/commands`, `/status`, `/whoami` — chạy ngay lập tức và bị
+    loại bỏ trước khi mô hình nhìn thấy phần văn bản còn lại. Chỉ dành cho người gửi được ủy quyền.
+  </Card>
+</CardGroup>
 
 <AccordionGroup>
-  <Accordion title="Lệnh">
-    Các tin nhắn `/...` độc lập.
-  </Accordion>
-  <Accordion title="Chỉ thị">
-    `/think`, `/fast`, `/verbose`, `/trace`, `/reasoning`, `/elevated`, `/exec`, `/model`, `/queue`.
-
-    - Các chỉ thị được loại khỏi tin nhắn trước khi model nhìn thấy.
-    - Trong tin nhắn trò chuyện thông thường (không phải chỉ có chỉ thị), chúng được xem là "gợi ý nội tuyến" và **không** lưu lại thiết lập phiên.
-    - Trong tin nhắn chỉ có chỉ thị (tin nhắn chỉ chứa các chỉ thị), chúng được lưu vào phiên và phản hồi bằng một xác nhận.
-    - Chỉ thị chỉ được áp dụng cho **người gửi đã được ủy quyền**. Nếu `commands.allowFrom` được đặt, đó là allowlist duy nhất được dùng; nếu không, ủy quyền đến từ allowlist/ghép đôi của kênh cộng với `commands.useAccessGroups`. Người gửi không được ủy quyền sẽ thấy chỉ thị được xử lý như văn bản thường.
-
-  </Accordion>
-  <Accordion title="Lối tắt nội tuyến">
-    Chỉ dành cho người gửi nằm trong allowlist/đã được ủy quyền: `/help`, `/commands`, `/status`, `/whoami` (`/id`).
-
-    Chúng chạy ngay lập tức, được loại khỏi tin nhắn trước khi model nhìn thấy, và phần văn bản còn lại tiếp tục đi qua luồng thông thường.
-
+  <Accordion title="Chi tiết hành vi của chỉ thị">
+    - Chỉ thị bị loại khỏi thông điệp trước khi mô hình nhìn thấy.
+    - Trong các thông điệp **chỉ có chỉ thị** (thông điệp chỉ gồm chỉ thị), chúng
+      được duy trì vào phiên và trả lời bằng một xác nhận.
+    - Trong các thông điệp **trò chuyện thông thường** có văn bản khác, chúng hoạt động như gợi ý nội tuyến và
+      **không** duy trì thiết lập phiên.
+    - Chỉ thị chỉ áp dụng cho **người gửi được ủy quyền**. Nếu `commands.allowFrom`
+      được đặt, đó là allowlist duy nhất được dùng; nếu không, ủy quyền đến từ
+      allowlist/ghép cặp của kênh cộng với `commands.useAccessGroups`. Người gửi không được ủy quyền
+      sẽ thấy chỉ thị được xử lý như văn bản thuần.
   </Accordion>
 </AccordionGroup>
 
@@ -69,328 +82,303 @@ Có hai hệ thống liên quan:
 ```
 
 <ParamField path="commands.text" type="boolean" default="true">
-  Bật phân tích cú pháp `/...` trong tin nhắn trò chuyện. Trên các bề mặt không có lệnh gốc (WhatsApp/WebChat/Signal/iMessage/Google Chat/Microsoft Teams), lệnh văn bản vẫn hoạt động ngay cả khi bạn đặt giá trị này thành `false`.
+  Bật phân tích cú pháp `/...` trong thông điệp trò chuyện. Trên các bề mặt không có lệnh native
+  (WhatsApp, WebChat, Signal, iMessage, Google Chat, Microsoft Teams), lệnh dạng văn bản
+  vẫn hoạt động ngay cả khi được đặt thành `false`.
 </ParamField>
+
 <ParamField path="commands.native" type='boolean | "auto"' default='"auto"'>
-  Đăng ký lệnh gốc. Tự động: bật cho Discord/Telegram; tắt cho Slack (cho đến khi bạn thêm slash commands); bị bỏ qua với các provider không hỗ trợ gốc. Đặt `channels.discord.commands.native`, `channels.telegram.commands.native`, hoặc `channels.slack.commands.native` để ghi đè theo từng provider (bool hoặc `"auto"`). Trên Discord, `false` bỏ qua việc đăng ký và dọn dẹp slash-command trong khi khởi động; các lệnh đã đăng ký trước đó có thể vẫn hiển thị cho đến khi bạn xóa chúng khỏi ứng dụng Discord. Lệnh Slack được quản lý trong ứng dụng Slack và không bị xóa tự động.
+  Đăng ký lệnh native. Tự động: bật cho Discord/Telegram; tắt cho Slack;
+  bị bỏ qua với các nhà cung cấp không hỗ trợ native. Ghi đè theo từng kênh bằng
+  `channels.<provider>.commands.native`. Trên Discord, `false` bỏ qua đăng ký slash-command;
+  các lệnh đã đăng ký trước đó có thể vẫn hiển thị cho đến khi bị xóa.
 </ParamField>
-Trên Discord, đặc tả lệnh gốc có thể bao gồm `descriptionLocalizations`, được OpenClaw phát hành dưới dạng `description_localizations` của Discord và đưa vào các so sánh reconcile.
+
 <ParamField path="commands.nativeSkills" type='boolean | "auto"' default='"auto"'>
-  Đăng ký lệnh **skill** theo cách gốc khi được hỗ trợ. Tự động: bật cho Discord/Telegram; tắt cho Slack (Slack yêu cầu tạo một slash command cho mỗi skill). Đặt `channels.discord.commands.nativeSkills`, `channels.telegram.commands.nativeSkills`, hoặc `channels.slack.commands.nativeSkills` để ghi đè theo từng provider (bool hoặc `"auto"`).
+  Đăng ký lệnh Skills theo cách native khi được hỗ trợ. Tự động: bật cho
+  Discord/Telegram; tắt cho Slack. Ghi đè bằng
+  `channels.<provider>.commands.nativeSkills`.
 </ParamField>
+
 <ParamField path="commands.bash" type="boolean" default="false">
-  Bật `! <cmd>` để chạy lệnh shell của host (`/bash <cmd>` là bí danh; yêu cầu allowlist `tools.elevated`).
+  Bật `! <cmd>` để chạy lệnh shell trên máy chủ (bí danh `/bash <cmd>`). Yêu cầu
+  allowlist `tools.elevated`.
 </ParamField>
+
 <ParamField path="commands.bashForegroundMs" type="number" default="2000">
-  Kiểm soát thời gian bash chờ trước khi chuyển sang chế độ nền (`0` đưa vào nền ngay lập tức).
+  Thời gian bash chờ trước khi chuyển sang chế độ nền (`0` đưa vào nền
+  ngay lập tức).
 </ParamField>
+
 <ParamField path="commands.config" type="boolean" default="false">
-  Bật `/config` (đọc/ghi `openclaw.json`).
+  Bật `/config` (đọc/ghi `openclaw.json`). Chỉ dành cho chủ sở hữu.
 </ParamField>
+
 <ParamField path="commands.mcp" type="boolean" default="false">
-  Bật `/mcp` (đọc/ghi cấu hình MCP do OpenClaw quản lý trong `mcp.servers`).
+  Bật `/mcp` (đọc/ghi cấu hình MCP do OpenClaw quản lý trong `mcp.servers`). Chỉ dành cho chủ sở hữu.
 </ParamField>
+
 <ParamField path="commands.plugins" type="boolean" default="false">
-  Bật `/plugins` (khám phá/trạng thái plugin cùng với điều khiển cài đặt + bật/tắt).
+  Bật `/plugins` (khám phá/trạng thái Plugin cùng với cài đặt + bật/tắt). Chỉ chủ sở hữu mới được ghi.
 </ParamField>
+
 <ParamField path="commands.debug" type="boolean" default="false">
-  Bật `/debug` (ghi đè chỉ trong runtime).
+  Bật `/debug` (ghi đè cấu hình chỉ trong thời gian chạy). Chỉ dành cho chủ sở hữu.
 </ParamField>
+
 <ParamField path="commands.restart" type="boolean" default="true">
-  Bật `/restart` cùng các hành động công cụ khởi động lại gateway.
+  Bật `/restart` và các hành động công cụ khởi động lại Gateway.
 </ParamField>
+
 <ParamField path="commands.ownerAllowFrom" type="string[]">
-  Đặt allowlist chủ sở hữu rõ ràng cho các bề mặt lệnh/công cụ chỉ dành cho chủ sở hữu. Đây là tài khoản người vận hành có thể phê duyệt các hành động nguy hiểm và chạy các lệnh như `/diagnostics`, `/export-trajectory`, và `/config`. Nó tách biệt với `commands.allowFrom` và quyền truy cập ghép đôi DM.
+  Allowlist chủ sở hữu rõ ràng cho các bề mặt lệnh chỉ dành cho chủ sở hữu. Tách biệt với
+  `commands.allowFrom` và quyền truy cập ghép cặp DM.
 </ParamField>
+
 <ParamField path="channels.<channel>.commands.enforceOwnerForCommands" type="boolean" default="false">
-  Theo từng kênh: yêu cầu các lệnh chỉ dành cho chủ sở hữu phải có **danh tính chủ sở hữu** để chạy trên bề mặt đó. Khi `true`, người gửi phải khớp với một ứng viên chủ sở hữu đã được phân giải (ví dụ một mục trong `commands.ownerAllowFrom` hoặc metadata chủ sở hữu gốc của provider) hoặc có phạm vi `operator.admin` nội bộ trên một kênh tin nhắn nội bộ. Một mục wildcard trong `allowFrom` của kênh, hoặc danh sách ứng viên chủ sở hữu trống/chưa phân giải, là **không** đủ — lệnh chỉ dành cho chủ sở hữu sẽ đóng khi không đạt trên kênh đó. Để tắt tùy chọn này nếu bạn muốn lệnh chỉ dành cho chủ sở hữu chỉ bị kiểm soát bởi `ownerAllowFrom` và các allowlist lệnh tiêu chuẩn.
+  Theo từng kênh: yêu cầu danh tính chủ sở hữu cho các lệnh chỉ dành cho chủ sở hữu. Khi `true`,
+  người gửi phải khớp với `commands.ownerAllowFrom` hoặc có phạm vi nội bộ `operator.admin`.
+  Một mục ký tự đại diện `allowFrom` là **không** đủ.
 </ParamField>
+
 <ParamField path="commands.ownerDisplay" type='"raw" | "hash"'>
   Kiểm soát cách id chủ sở hữu xuất hiện trong system prompt.
 </ParamField>
+
 <ParamField path="commands.ownerDisplaySecret" type="string">
-  Tùy chọn đặt secret HMAC được dùng khi `commands.ownerDisplay="hash"`.
+  Bí mật HMAC được dùng khi `commands.ownerDisplay: "hash"`.
 </ParamField>
+
 <ParamField path="commands.allowFrom" type="object">
-  Allowlist theo từng provider để ủy quyền lệnh. Khi được cấu hình, đây là nguồn ủy quyền duy nhất cho lệnh và chỉ thị (allowlist/ghép đôi của kênh và `commands.useAccessGroups` bị bỏ qua). Dùng `"*"` làm mặc định toàn cục; các khóa dành riêng cho provider sẽ ghi đè nó.
+  Allowlist theo từng nhà cung cấp để ủy quyền lệnh. Khi được cấu hình, đây là
+  nguồn ủy quyền **duy nhất** cho lệnh và chỉ thị. Dùng `"*"` cho
+  mặc định toàn cục; các khóa dành riêng cho nhà cung cấp sẽ ghi đè nó.
 </ParamField>
+
 <ParamField path="commands.useAccessGroups" type="boolean" default="true">
-  Thực thi allowlist/chính sách cho lệnh khi `commands.allowFrom` không được đặt.
+  Thực thi allowlist/chính sách cho lệnh khi `commands.allowFrom` chưa được đặt.
 </ParamField>
 
 ## Danh sách lệnh
 
-Nguồn chân lý hiện tại:
+Các lệnh đến từ ba nguồn:
 
-- các lệnh tích hợp cốt lõi đến từ `src/auto-reply/commands-registry.shared.ts`
-- các lệnh dock được tạo đến từ `src/auto-reply/commands-registry.data.ts`
-- lệnh plugin đến từ các lệnh gọi `registerCommand()` của plugin
-- khả dụng thực tế trên gateway của bạn vẫn phụ thuộc vào cờ cấu hình, bề mặt kênh, và các plugin đã cài đặt/bật
+- **Tích hợp sẵn trong core:** `src/auto-reply/commands-registry.shared.ts`
+- **Lệnh dock được tạo:** `src/auto-reply/commands-registry.data.ts`
+- **Lệnh Plugin:** các lệnh gọi `registerCommand()` của Plugin
 
-### Lệnh tích hợp cốt lõi
+Tính khả dụng phụ thuộc vào cờ cấu hình, bề mặt kênh, và các Plugin đã cài đặt/bật.
+
+### Lệnh core
 
 <AccordionGroup>
   <Accordion title="Phiên và lượt chạy">
-    - `/new [model]` bắt đầu một phiên mới; `/reset` là bí danh reset.
-    - Control UI chặn `/new` được nhập để tạo và chuyển sang một phiên dashboard mới, ngoại trừ khi `session.dmScope: "main"` được cấu hình và parent hiện tại là phiên chính của agent; trong trường hợp đó `/new` reset phiên chính tại chỗ. `/reset` được nhập vẫn chạy reset tại chỗ của Gateway.
-    - `/reset soft [message]` giữ transcript hiện tại, bỏ các id phiên backend CLI được tái sử dụng, và chạy lại quá trình tải startup/system-prompt tại chỗ.
-    - `/compact [instructions]` compacts ngữ cảnh phiên. Xem [Compaction](/vi/concepts/compaction).
-    - `/stop` hủy lượt chạy hiện tại.
-    - `/session idle <duration|off>` và `/session max-age <duration|off>` quản lý thời hạn liên kết luồng.
-    - `/export-session [path]` xuất phiên hiện tại sang HTML. Bí danh: `/export`.
-    - `/export-trajectory [path]` yêu cầu phê duyệt exec, rồi xuất một [trajectory bundle](/vi/tools/trajectory) JSONL cho phiên hiện tại. Dùng nó khi bạn cần dòng thời gian prompt, công cụ, và transcript cho một phiên OpenClaw. Trong trò chuyện nhóm, lời nhắc phê duyệt và kết quả xuất được gửi riêng cho chủ sở hữu. Bí danh: `/trajectory`.
+    | Lệnh | Mô tả |
+    | --- | --- |
+    | `/new [model]` | Lưu trữ phiên hiện tại và bắt đầu một phiên mới |
+    | `/reset [soft [message]]` | Đặt lại phiên hiện tại tại chỗ. `soft` giữ bản ghi hội thoại, bỏ các id phiên backend CLI được tái sử dụng, và chạy lại khởi động |
+    | `/name <title>` | Đặt tên hoặc đổi tên phiên hiện tại. Bỏ qua tiêu đề để xem tên hiện tại và một gợi ý |
+    | `/compact [instructions]` | Nén ngữ cảnh phiên. Xem [Compaction](/vi/concepts/compaction) |
+    | `/stop` | Hủy lượt chạy hiện tại |
+    | `/session idle <duration\|off>` | Quản lý thời hạn hết hạn khi nhàn rỗi của liên kết luồng |
+    | `/session max-age <duration\|off>` | Quản lý thời hạn tuổi tối đa của liên kết luồng |
+    | `/export-session [path]` | Xuất phiên hiện tại sang HTML. Bí danh: `/export` |
+    | `/export-trajectory [path]` | Xuất một gói trajectory JSONL cho phiên hiện tại. Bí danh: `/trajectory` |
+
+    <Note>
+      Control UI chặn `/new` được nhập để tạo và chuyển sang một phiên
+      bảng điều khiển mới, ngoại trừ khi `session.dmScope: "main"` được cấu hình
+      và phiên cha hiện tại là phiên chính của agent — trong trường hợp đó `/new`
+      đặt lại phiên chính tại chỗ. `/reset` được nhập vẫn chạy thao tác đặt lại tại chỗ của Gateway.
+      Dùng `/model default` khi bạn muốn xóa lựa chọn mô hình phiên đã ghim.
+    </Note>
 
   </Accordion>
-  <Accordion title="Điều khiển model và lượt chạy">
-    - `/think <level|default>` đặt mức suy nghĩ hoặc xóa ghi đè phiên. Các tùy chọn đến từ hồ sơ provider của model đang hoạt động; các mức phổ biến là `off`, `minimal`, `low`, `medium`, và `high`, với các mức tùy chỉnh như `xhigh`, `adaptive`, `max`, hoặc nhị phân `on` chỉ ở nơi được hỗ trợ. Bí danh: `/thinking`, `/t`.
-    - `/verbose on|off|full` bật/tắt đầu ra chi tiết. Bí danh: `/v`.
-    - `/trace on|off` bật/tắt đầu ra trace của plugin cho phiên hiện tại.
-    - `/fast [status|on|off|default]` hiển thị, đặt, hoặc xóa chế độ nhanh.
-    - `/reasoning [on|off|stream]` bật/tắt hiển thị reasoning. Bí danh: `/reason`.
-    - `/elevated [on|off|ask|full]` bật/tắt chế độ elevated. Bí danh: `/elev`.
-    - `/exec host=<auto|sandbox|gateway|node> security=<deny|allowlist|full> ask=<off|on-miss|always> node=<id>` hiển thị hoặc đặt mặc định exec.
-    - `/model [name|#|status]` hiển thị hoặc đặt model.
-    - `/models [provider] [page] [limit=<n>|size=<n>|all]` liệt kê các provider đã cấu hình/có auth khả dụng hoặc các model cho một provider; thêm `all` để duyệt toàn bộ catalog của provider đó. Các mục `provider/*` trong `agents.defaults.models` khiến `/model` và `/models` chỉ hiển thị model được phát hiện cho các provider đó.
-    - `/queue <mode>` quản lý hành vi hàng đợi (`steer`, `queue` legacy, `followup`, `collect`, `steer-backlog`, `interrupt`) cùng các tùy chọn như `debounce:0.5s cap:25 drop:summarize`; `/queue default` hoặc `/queue reset` xóa ghi đè phiên. Xem [Hàng đợi lệnh](/vi/concepts/queue) và [Hàng đợi điều hướng](/vi/concepts/queue-steering).
-    - `/steer <message>` chèn hướng dẫn vào lượt chạy đang hoạt động cho phiên hiện tại, độc lập với chế độ `/queue`. Nó không bắt đầu lượt chạy mới khi phiên đang idle. Bí danh: `/tell`. Xem [Điều hướng](/vi/tools/steer).
+
+  <Accordion title="Điều khiển mô hình và lượt chạy">
+    | Lệnh | Mô tả |
+    | --- | --- |
+    | `/think <level\|default>` | Đặt mức suy nghĩ hoặc xóa ghi đè phiên. Bí danh: `/thinking`, `/t` |
+    | `/verbose on\|off\|full` | Bật/tắt đầu ra chi tiết. Bí danh: `/v` |
+    | `/trace on\|off` | Bật/tắt đầu ra trace Plugin cho phiên hiện tại |
+    | `/fast [status\|auto\|on\|off\|default]` | Hiển thị, đặt, hoặc xóa chế độ nhanh |
+    | `/reasoning [on\|off\|stream]` | Bật/tắt hiển thị reasoning. Bí danh: `/reason` |
+    | `/elevated [on\|off\|ask\|full]` | Bật/tắt chế độ elevated. Bí danh: `/elev` |
+    | `/exec host=<auto\|sandbox\|gateway\|node> security=<deny\|allowlist\|full> ask=<off\|on-miss\|always> node=<id>` | Hiển thị hoặc đặt mặc định exec |
+    | `/model [name\|#\|status]` | Hiển thị hoặc đặt mô hình |
+    | `/models [provider] [page] [limit=<n>\|all]` | Liệt kê nhà cung cấp hoặc mô hình đã cấu hình/có xác thực |
+    | `/queue <mode>` | Quản lý hành vi hàng đợi lượt chạy đang hoạt động. Xem [Queue](/vi/concepts/queue) và [Điều hướng hàng đợi](/vi/concepts/queue-steering) |
+    | `/steer <message>` | Chèn hướng dẫn vào lượt chạy đang hoạt động. Bí danh: `/tell`. Xem [Steer](/vi/tools/steer) |
+
+    <AccordionGroup>
+      <Accordion title="an toàn verbose / trace / fast / reasoning">
+        - `/verbose` dành cho gỡ lỗi — giữ **tắt** trong sử dụng thông thường.
+        - `/trace` chỉ tiết lộ các dòng trace/gỡ lỗi thuộc sở hữu Plugin; phần trao đổi verbose thông thường vẫn tắt.
+        - `/fast auto|on|off` duy trì một ghi đè phiên; dùng tùy chọn `inherit` trong Sessions UI để xóa nó.
+        - `/fast` phụ thuộc vào nhà cung cấp: OpenAI/Codex ánh xạ nó sang `service_tier=priority`; yêu cầu Anthropic trực tiếp ánh xạ nó sang `service_tier=auto` hoặc `standard_only`.
+        - `/reasoning`, `/verbose`, và `/trace` rủi ro trong bối cảnh nhóm — chúng có thể tiết lộ reasoning nội bộ hoặc chẩn đoán Plugin. Giữ chúng tắt trong trò chuyện nhóm.
+
+      </Accordion>
+      <Accordion title="Chi tiết chuyển đổi mô hình">
+        - `/model` duy trì mô hình mới ngay lập tức vào phiên.
+        - Nếu agent đang nhàn rỗi, lượt chạy tiếp theo dùng nó ngay.
+        - Nếu một lượt chạy đang hoạt động, việc chuyển đổi được đánh dấu là đang chờ và áp dụng tại điểm thử lại sạch tiếp theo.
+
+      </Accordion>
+    </AccordionGroup>
 
   </Accordion>
+
   <Accordion title="Khám phá và trạng thái">
-    - `/help` hiển thị tóm tắt trợ giúp ngắn.
-    - `/commands` hiển thị catalog lệnh được tạo.
-    - `/tools [compact|verbose]` hiển thị agent hiện tại có thể dùng những gì ngay lúc này.
-    - `/status` hiển thị trạng thái thực thi/runtime, thời gian hoạt động của Gateway và hệ thống, cùng mức sử dụng/hạn mức provider khi có.
-    - `/diagnostics [note]` là luồng báo cáo hỗ trợ chỉ dành cho chủ sở hữu cho lỗi Gateway và lượt chạy harness Codex. Nó yêu cầu phê duyệt exec rõ ràng mỗi lần trước khi chạy `openclaw gateway diagnostics export --json`; đừng phê duyệt diagnostics bằng quy tắc allow-all. Sau khi được phê duyệt, nó gửi một báo cáo có thể dán với đường dẫn bundle cục bộ, tóm tắt manifest, ghi chú quyền riêng tư, và các id phiên liên quan. Trong trò chuyện nhóm, lời nhắc phê duyệt và báo cáo được gửi riêng cho chủ sở hữu. Khi phiên đang hoạt động dùng harness OpenAI Codex, cùng phê duyệt đó cũng gửi phản hồi Codex liên quan đến máy chủ OpenAI và phản hồi hoàn tất liệt kê các id phiên OpenClaw, id luồng Codex, và lệnh `codex resume <thread-id>`. Xem [Xuất Diagnostics](/vi/gateway/diagnostics).
-    - `/crestodian <request>` chạy trình trợ giúp thiết lập và sửa chữa Crestodian từ DM của chủ sở hữu.
-    - `/tasks` liệt kê tác vụ nền đang hoạt động/gần đây cho phiên hiện tại.
-    - `/context [list|detail|map|json]` giải thích cách ngữ cảnh được lắp ráp. `map` gửi một ảnh treemap của ngữ cảnh phiên hiện tại.
-    - `/whoami` hiển thị id người gửi của bạn. Bí danh: `/id`.
-    - `/usage off|tokens|full|cost` kiểm soát footer mức sử dụng trên mỗi phản hồi hoặc in tóm tắt chi phí cục bộ.
-
+    | Lệnh | Mô tả |
+    | --- | --- |
+    | `/help` | Hiển thị tóm tắt trợ giúp ngắn |
+    | `/commands` | Hiển thị danh mục lệnh được tạo |
+    | `/tools [compact\|verbose]` | Hiển thị những gì agent hiện tại có thể dùng ngay lúc này |
+    | `/status` | Hiển thị trạng thái thực thi/thời gian chạy, thời gian hoạt động của Gateway và hệ thống, sức khỏe Plugin, cùng với mức sử dụng/hạn mức nhà cung cấp |
+    | `/status plugins` | Hiển thị sức khỏe Plugin chi tiết: lỗi tải, cách ly, lỗi kênh, vấn đề phụ thuộc, thông báo tương thích |
+    | `/goal [status\|start\|pause\|resume\|complete\|block\|clear] ...` | Quản lý [mục tiêu](/vi/tools/goal) bền vững của phiên hiện tại |
+    | `/diagnostics [note]` | Luồng báo cáo hỗ trợ chỉ dành cho chủ sở hữu. Luôn yêu cầu phê duyệt exec mỗi lần |
+    | `/crestodian <request>` | Chạy trình trợ giúp thiết lập và sửa chữa Crestodian từ DM của chủ sở hữu |
+    | `/tasks` | Liệt kê các tác vụ nền đang hoạt động/gần đây cho phiên hiện tại |
+    | `/context [list\|detail\|map\|json]` | Giải thích cách ngữ cảnh được lắp ráp |
+    | `/whoami` | Hiển thị id người gửi của bạn. Bí danh: `/id` |
+    | `/usage off\|tokens\|full\|reset\|cost` | Điều khiển chân trang mức sử dụng theo từng phản hồi (`reset`/`inherit`/`clear`/`default` xóa ghi đè phiên để kế thừa lại mặc định đã cấu hình) hoặc in tóm tắt chi phí cục bộ |
   </Accordion>
-  <Accordion title="Skills, danh sách cho phép, phê duyệt">
-    - `/skill <name> [input]` chạy một skill theo tên.
-    - `/allowlist [list|add|remove] ...` quản lý các mục trong danh sách cho phép. Chỉ văn bản.
-    - `/approve <id> <decision>` xử lý lời nhắc phê duyệt exec.
-    - `/btw <question>` hỏi một câu hỏi bên lề mà không thay đổi ngữ cảnh phiên trong tương lai. Bí danh: `/side`. Xem [BTW](/vi/tools/btw).
 
+  <Accordion title="Skills, allowlist, phê duyệt">
+    | Lệnh | Mô tả |
+    | --- | --- |
+    | `/skill <name> [input]` | Chạy một skill theo tên |
+    | `/allowlist [list\|add\|remove] ...` | Quản lý các mục allowlist. Chỉ dạng văn bản |
+    | `/approve <id> <decision>` | Giải quyết lời nhắc phê duyệt exec hoặc Plugin |
+    | `/btw <question>` | Hỏi một câu hỏi phụ mà không thay đổi ngữ cảnh phiên. Bí danh: `/side`. Xem [BTW](/vi/tools/btw) |
   </Accordion>
-  <Accordion title="Subagent và ACP">
-    - `/subagents list|kill|log|info|send|steer|spawn` quản lý các lần chạy sub-agent cho phiên hiện tại.
-    - `/acp spawn|cancel|steer|close|sessions|status|set-mode|set|cwd|permissions|timeout|model|reset-options|doctor|install|help` quản lý các phiên ACP và tùy chọn runtime.
-    - `/focus <target>` gắn luồng Discord hiện tại hoặc chủ đề/cuộc trò chuyện Telegram với một mục tiêu phiên.
-    - `/unfocus` xóa liên kết hiện tại.
-    - `/agents` liệt kê các agent được gắn với luồng cho phiên hiện tại.
-    - `/kill <id|#|all>` hủy một hoặc tất cả các sub-agent đang chạy.
-    - `/subagents steer <id|#> <message>` gửi hướng dẫn cho một sub-agent đang chạy. Xem [Steer](/vi/tools/steer).
 
+  <Accordion title="Tác nhân phụ và ACP">
+    | Lệnh | Mô tả |
+    | --- | --- |
+    | `/subagents list\|log\|info` | Kiểm tra các lượt chạy tác nhân phụ cho phiên hiện tại |
+    | `/acp spawn\|cancel\|steer\|close\|sessions\|status\|set-mode\|set\|cwd\|permissions\|timeout\|model\|reset-options\|doctor\|install\|help` | Quản lý phiên ACP và tùy chọn runtime |
+    | `/focus <target>` | Gắn luồng Discord hoặc chủ đề Telegram hiện tại với một mục tiêu phiên |
+    | `/unfocus` | Gỡ liên kết luồng hiện tại |
+    | `/agents` | Liệt kê các tác nhân được gắn với luồng cho phiên hiện tại |
   </Accordion>
+
   <Accordion title="Ghi chỉ dành cho chủ sở hữu và quản trị">
-    - `/config show|get|set|unset` đọc hoặc ghi `openclaw.json`. Chỉ dành cho chủ sở hữu. Yêu cầu `commands.config: true`.
-    - `/mcp show|get|set|unset` đọc hoặc ghi cấu hình máy chủ MCP do OpenClaw quản lý trong `mcp.servers`. Chỉ dành cho chủ sở hữu. Yêu cầu `commands.mcp: true`.
-    - `/plugins list|inspect|show|get|install|enable|disable` kiểm tra hoặc thay đổi trạng thái Plugin. `/plugin` là một bí danh. Ghi chỉ dành cho chủ sở hữu. Yêu cầu `commands.plugins: true`.
-    - `/debug show|set|unset|reset` quản lý các ghi đè cấu hình chỉ áp dụng trong runtime. Chỉ dành cho chủ sở hữu. Yêu cầu `commands.debug: true`.
-    - `/restart` khởi động lại OpenClaw khi được bật. Mặc định: bật; đặt `commands.restart: false` để tắt.
-    - `/send on|off|inherit` đặt chính sách gửi. Chỉ dành cho chủ sở hữu.
-
+    | Lệnh | Yêu cầu | Mô tả |
+    | --- | --- | --- |
+    | `/config show\|get\|set\|unset` | `commands.config: true` | Đọc hoặc ghi `openclaw.json`. Chỉ dành cho chủ sở hữu |
+    | `/mcp show\|get\|set\|unset` | `commands.mcp: true` | Đọc hoặc ghi cấu hình máy chủ MCP do OpenClaw quản lý. Chỉ dành cho chủ sở hữu |
+    | `/plugins list\|inspect\|show\|get\|install\|enable\|disable` | `commands.plugins: true` | Kiểm tra hoặc thay đổi trạng thái plugin. Chỉ chủ sở hữu mới được ghi. Bí danh: `/plugin` |
+    | `/debug show\|set\|unset\|reset` | `commands.debug: true` | Ghi đè cấu hình chỉ trong runtime. Chỉ dành cho chủ sở hữu |
+    | `/restart` | `commands.restart: true` (mặc định) | Khởi động lại OpenClaw |
+    | `/send on\|off\|inherit` | chủ sở hữu | Đặt chính sách gửi |
   </Accordion>
-  <Accordion title="Giọng nói, TTS, điều khiển kênh">
-    - `/tts on|off|status|chat|latest|provider|limit|summary|audio|help` điều khiển TTS. Xem [TTS](/vi/tools/tts).
-    - `/activation mention|always` đặt chế độ kích hoạt nhóm.
-    - `/bash <command>` chạy một lệnh shell trên máy chủ. Chỉ văn bản. Bí danh: `! <command>`. Yêu cầu `commands.bash: true` cộng với danh sách cho phép `tools.elevated`.
-    - `!poll [sessionId]` kiểm tra một tác vụ bash chạy nền.
-    - `!stop [sessionId]` dừng một tác vụ bash chạy nền.
 
+  <Accordion title="Giọng nói, TTS, điều khiển kênh">
+    | Lệnh | Mô tả |
+    | --- | --- |
+    | `/tts on\|off\|status\|chat\|latest\|provider\|limit\|summary\|audio\|help` | Điều khiển TTS. Xem [TTS](/vi/tools/tts) |
+    | `/activation mention\|always` | Đặt chế độ kích hoạt nhóm |
+    | `/bash <command>` | Chạy một lệnh shell trên máy chủ. Bí danh: `! <command>`. Yêu cầu `commands.bash: true` |
+    | `!poll [sessionId]` | Kiểm tra một tác vụ bash nền |
+    | `!stop [sessionId]` | Dừng một tác vụ bash nền |
   </Accordion>
 </AccordionGroup>
 
-### Các lệnh dock được tạo
+### Lệnh Dock
 
-Các lệnh dock chuyển tuyến trả lời của phiên hiện tại sang một kênh đã liên kết khác. Xem [Channel docking](/vi/concepts/channel-docking) để biết cách thiết lập, ví dụ và khắc phục sự cố.
+Lệnh Dock chuyển tuyến trả lời của phiên đang hoạt động sang một kênh đã liên kết khác.
+Xem [Gắn kênh](/vi/concepts/channel-docking) để thiết lập và khắc phục sự cố.
 
-Các lệnh dock được tạo từ Plugin kênh có hỗ trợ lệnh gốc. Tập hợp tích hợp hiện tại:
+Được tạo từ các plugin kênh có hỗ trợ lệnh gốc:
 
 - `/dock-discord` (bí danh: `/dock_discord`)
 - `/dock-mattermost` (bí danh: `/dock_mattermost`)
 - `/dock-slack` (bí danh: `/dock_slack`)
 - `/dock-telegram` (bí danh: `/dock_telegram`)
 
-Dùng các lệnh dock từ một cuộc trò chuyện trực tiếp để chuyển tuyến trả lời của phiên hiện tại sang một kênh đã liên kết khác. Agent giữ nguyên ngữ cảnh phiên, nhưng các câu trả lời sau này cho phiên đó được gửi đến peer kênh đã chọn.
+Lệnh Dock yêu cầu `session.identityLinks`. Người gửi nguồn và đối tượng ngang hàng đích
+phải nằm trong cùng một nhóm định danh.
 
-Các lệnh dock yêu cầu `session.identityLinks`. Người gửi nguồn và peer đích phải ở trong cùng một nhóm định danh, ví dụ `["telegram:123", "discord:456"]`. Nếu một người dùng Telegram có id `123` gửi `/dock_discord`, OpenClaw lưu `lastChannel: "discord"` và `lastTo: "456"` trên phiên đang hoạt động. Nếu người gửi không được liên kết với một peer Discord, lệnh sẽ trả lời bằng gợi ý thiết lập thay vì chuyển tiếp sang trò chuyện bình thường.
+### Lệnh plugin được đóng gói
 
-Docking chỉ thay đổi tuyến phiên đang hoạt động. Nó không tạo tài khoản kênh, cấp quyền truy cập, bỏ qua danh sách cho phép của kênh, hoặc chuyển lịch sử bản ghi sang một phiên khác. Dùng `/dock-telegram`, `/dock-slack`, `/dock-mattermost`, hoặc một lệnh dock được tạo khác để chuyển tuyến lần nữa.
+| Lệnh                                                                                         | Mô tả                                                                             |
+| -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `/dreaming [on\|off\|status\|help]`                                                          | Bật/tắt Dreaming bộ nhớ. Xem [Dreaming](/vi/concepts/dreaming)                       |
+| `/pair [qr\|status\|pending\|approve\|cleanup\|notify]`                                      | Quản lý ghép nối thiết bị. Xem [Ghép nối](/vi/channels/pairing)                      |
+| `/phone status\|arm ...\|disarm`                                                             | Tạm thời kích hoạt các lệnh nút điện thoại rủi ro cao                             |
+| `/voice status\|list\|set <voiceId>`                                                         | Quản lý cấu hình giọng Talk. Tên gốc của Discord: `/talkvoice`                    |
+| `/card ...`                                                                                  | Gửi các mẫu thẻ phong phú LINE. Xem [LINE](/vi/channels/line)                        |
+| `/codex status\|models\|threads\|resume\|compact\|review\|diagnostics\|account\|mcp\|skills` | Điều khiển harness máy chủ ứng dụng Codex. Xem [harness Codex](/vi/plugins/codex-harness) |
 
-### Các lệnh Plugin tích hợp
+Chỉ dành cho QQBot: `/bot-ping`, `/bot-version`, `/bot-help`, `/bot-upgrade`, `/bot-logs`
 
-Các Plugin tích hợp có thể thêm nhiều lệnh slash hơn. Các lệnh tích hợp hiện tại trong repo này:
+### Lệnh Skills
 
-- `/dreaming [on|off|status|help]` bật/tắt Dreaming bộ nhớ. Xem [Dreaming](/vi/concepts/dreaming).
-- `/pair [qr|status|pending|approve|cleanup|notify]` quản lý luồng ghép nối/thiết lập thiết bị. Xem [Pairing](/vi/channels/pairing).
-- `/phone status|arm <camera|screen|writes|all> [duration]|disarm` tạm thời kích hoạt các lệnh node điện thoại có rủi ro cao.
-- `/voice status|list [limit]|set <voiceId|name>` quản lý cấu hình giọng nói Talk. Trên Discord, tên lệnh gốc là `/talkvoice`.
-- `/card ...` gửi các preset thẻ giàu nội dung của LINE. Xem [LINE](/vi/channels/line).
-- `/codex status|models|threads|resume|compact|review|diagnostics|account|mcp|skills` kiểm tra và điều khiển harness app-server Codex tích hợp. Xem [Codex harness](/vi/plugins/codex-harness).
-- Các lệnh chỉ dành cho QQBot:
-  - `/bot-ping`
-  - `/bot-version`
-  - `/bot-help`
-  - `/bot-upgrade`
-  - `/bot-logs`
-
-### Các lệnh skill động
-
-Các skill mà người dùng có thể gọi cũng được hiển thị dưới dạng lệnh slash:
+Các skill mà người dùng có thể gọi được hiển thị dưới dạng lệnh gạch chéo:
 
 - `/skill <name> [input]` luôn hoạt động như điểm vào chung.
-- các skill cũng có thể xuất hiện dưới dạng lệnh trực tiếp như `/prose` khi skill/Plugin đăng ký chúng.
-- đăng ký lệnh skill gốc được điều khiển bởi `commands.nativeSkills` và `channels.<provider>.commands.nativeSkills`.
-- đặc tả lệnh có thể cung cấp `descriptionLocalizations` cho các bề mặt gốc hỗ trợ mô tả đã bản địa hóa, bao gồm Discord.
+- Skills có thể đăng ký làm lệnh trực tiếp (ví dụ: `/prose` cho OpenProse).
+- Việc đăng ký lệnh skill gốc được điều khiển bởi `commands.nativeSkills` và
+  `channels.<provider>.commands.nativeSkills`.
+- Tên được chuẩn hóa thành `a-z0-9_` (tối đa 32 ký tự); xung đột sẽ nhận hậu tố số.
 
 <AccordionGroup>
-  <Accordion title="Ghi chú về đối số và parser">
-    - Các lệnh chấp nhận dấu `:` tùy chọn giữa lệnh và đối số (ví dụ `/think: high`, `/send: on`, `/help:`).
-    - `/new <model>` chấp nhận bí danh model, `provider/model`, hoặc tên provider (khớp mờ); nếu không khớp, văn bản được xem là nội dung tin nhắn.
-    - Để xem phân tích đầy đủ về mức sử dụng provider, dùng `openclaw status --usage`.
-    - `/allowlist add|remove` yêu cầu `commands.config=true` và tuân theo `configWrites` của kênh.
-    - Trong các kênh nhiều tài khoản, `/allowlist --account <id>` nhắm đến cấu hình và `/config set channels.<provider>.accounts.<id>...` cũng tuân theo `configWrites` của tài khoản đích.
-    - `/usage` điều khiển phần chân trang mức sử dụng theo từng phản hồi; `/usage cost` in bản tóm tắt chi phí cục bộ từ nhật ký phiên OpenClaw.
-    - `/restart` được bật theo mặc định; đặt `commands.restart: false` để tắt.
-    - `/plugins install <spec>` chấp nhận cùng các đặc tả Plugin như `openclaw plugins install`: đường dẫn/kho lưu trữ cục bộ, gói npm, `git:<repo>`, hoặc `clawhub:<pkg>`, rồi yêu cầu khởi động lại Gateway vì các module nguồn Plugin đã thay đổi.
-    - `/plugins enable|disable` cập nhật cấu hình Plugin và kích hoạt tải lại Plugin của Gateway cho các lượt agent mới.
+  <Accordion title="Điều phối lệnh skill">
+    Theo mặc định, lệnh skill được định tuyến tới mô hình như một yêu cầu bình thường.
+
+    Skills có thể khai báo `command-dispatch: tool` để định tuyến trực tiếp tới một công cụ
+    (xác định, không có sự tham gia của mô hình). Ví dụ: `/prose` (plugin OpenProse)
+    — xem [OpenProse](/vi/prose).
 
   </Accordion>
-  <Accordion title="Hành vi theo từng kênh">
-    - Lệnh gốc chỉ dành cho Discord: `/vc join|leave|status` điều khiển kênh thoại (không khả dụng dưới dạng văn bản). `join` yêu cầu một guild và kênh thoại/stage đã chọn. Yêu cầu `channels.discord.voice` và lệnh gốc.
-    - Các lệnh gắn luồng Discord (`/focus`, `/unfocus`, `/agents`, `/session idle`, `/session max-age`) yêu cầu liên kết luồng hiệu lực được bật (`session.threadBindings.enabled` và/hoặc `channels.discord.threadBindings.enabled`).
-    - Tham chiếu lệnh ACP và hành vi runtime: [ACP agents](/vi/tools/acp-agents).
-
-  </Accordion>
-  <Accordion title="An toàn verbose / trace / fast / reasoning">
-    - `/verbose` dành cho gỡ lỗi và tăng khả năng quan sát; giữ nó **tắt** khi sử dụng bình thường.
-    - `/trace` hẹp hơn `/verbose`: nó chỉ tiết lộ các dòng trace/gỡ lỗi thuộc sở hữu Plugin và giữ phần nhiễu công cụ verbose bình thường ở trạng thái tắt.
-    - `/fast on|off` lưu một ghi đè phiên. Dùng tùy chọn `inherit` trong UI Sessions để xóa nó và quay về mặc định cấu hình.
-    - `/fast` phụ thuộc vào provider: OpenAI/OpenAI Codex ánh xạ nó tới `service_tier=priority` trên các endpoint Responses gốc, còn các yêu cầu Anthropic công khai trực tiếp, bao gồm lưu lượng được xác thực bằng OAuth gửi tới `api.anthropic.com`, ánh xạ nó tới `service_tier=auto` hoặc `standard_only`. Xem [OpenAI](/vi/providers/openai) và [Anthropic](/vi/providers/anthropic).
-    - Tóm tắt lỗi công cụ vẫn được hiển thị khi có liên quan, nhưng văn bản lỗi chi tiết chỉ được đưa vào khi `/verbose` là `on` hoặc `full`.
-    - `/reasoning`, `/verbose`, và `/trace` có rủi ro trong môi trường nhóm: chúng có thể tiết lộ reasoning nội bộ, đầu ra công cụ, hoặc chẩn đoán Plugin mà bạn không định phơi bày. Nên để chúng tắt, đặc biệt trong trò chuyện nhóm.
-
-  </Accordion>
-  <Accordion title="Chuyển đổi model">
-    - `/model` lưu model phiên mới ngay lập tức.
-    - Nếu agent đang rảnh, lần chạy tiếp theo sẽ dùng nó ngay.
-    - Nếu một lần chạy đã hoạt động, OpenClaw đánh dấu một chuyển đổi trực tiếp là đang chờ và chỉ khởi động lại vào model mới tại một điểm thử lại sạch.
-    - Nếu hoạt động công cụ hoặc đầu ra trả lời đã bắt đầu, chuyển đổi đang chờ có thể tiếp tục nằm trong hàng đợi cho đến cơ hội thử lại sau đó hoặc lượt người dùng tiếp theo.
-    - Trong TUI cục bộ, `/crestodian [request]` quay lại từ TUI agent bình thường về Crestodian. Điều này tách biệt với chế độ cứu hộ kênh tin nhắn và không cấp quyền cấu hình từ xa.
-
-  </Accordion>
-  <Accordion title="Đường nhanh và phím tắt nội tuyến">
-    - **Đường nhanh:** các tin nhắn chỉ chứa lệnh từ người gửi trong danh sách cho phép được xử lý ngay lập tức (bỏ qua hàng đợi + model).
-    - **Cổng nhắc đến trong nhóm:** các tin nhắn chỉ chứa lệnh từ người gửi trong danh sách cho phép bỏ qua yêu cầu nhắc đến.
-    - **Phím tắt nội tuyến (chỉ người gửi trong danh sách cho phép):** một số lệnh cũng hoạt động khi được nhúng trong tin nhắn bình thường và bị loại bỏ trước khi model thấy phần văn bản còn lại.
-      - Ví dụ: `hey /status` kích hoạt phản hồi trạng thái, và phần văn bản còn lại tiếp tục đi qua luồng bình thường.
-    - Hiện tại: `/help`, `/commands`, `/status`, `/whoami` (`/id`).
-    - Các tin nhắn chỉ chứa lệnh không được ủy quyền bị âm thầm bỏ qua, và các token `/...` nội tuyến được xem là văn bản thường.
-
-  </Accordion>
-  <Accordion title="Lệnh skill và đối số gốc">
-    - **Lệnh skill:** các skill `user-invocable` được hiển thị dưới dạng lệnh slash. Tên được làm sạch thành `a-z0-9_` (tối đa 32 ký tự); xung đột nhận hậu tố số (ví dụ `_2`).
-      - `/skill <name> [input]` chạy một skill theo tên (hữu ích khi giới hạn lệnh gốc ngăn không cho tạo lệnh riêng cho từng skill).
-      - Theo mặc định, lệnh skill được chuyển tiếp tới model như một yêu cầu bình thường.
-      - Skills có thể tùy chọn khai báo `command-dispatch: tool` để định tuyến lệnh trực tiếp tới một công cụ (xác định, không qua model).
-      - Ví dụ: `/prose` (Plugin OpenProse) — xem [OpenProse](/vi/prose).
-    - **Đối số lệnh gốc:** Discord dùng tự động hoàn thành cho các tùy chọn động (và menu nút khi bạn bỏ qua đối số bắt buộc). Telegram và Slack hiển thị menu nút khi một lệnh hỗ trợ lựa chọn và bạn bỏ qua đối số. Các lựa chọn động được phân giải theo model phiên đích, nên các tùy chọn theo model như mức `/think` tuân theo ghi đè `/model` của phiên đó.
-
+  <Accordion title="Đối số lệnh gốc">
+    Discord dùng tự động hoàn thành cho tùy chọn động và menu nút khi các đối số
+    bắt buộc bị bỏ qua. Telegram và Slack hiển thị menu nút cho các lệnh có
+    lựa chọn. Lựa chọn động được phân giải theo mô hình phiên đích, nên các tùy chọn
+    dành riêng cho mô hình như cấp độ `/think` sẽ đi theo ghi đè `/model` của phiên.
   </Accordion>
 </AccordionGroup>
 
-## `/tools`
+## `/tools` — tác nhân hiện có thể dùng gì
 
-`/tools` trả lời một câu hỏi runtime, không phải câu hỏi cấu hình: **agent này có thể dùng gì ngay bây giờ trong cuộc trò chuyện này**.
-
-- `/tools` mặc định ngắn gọn và được tối ưu để quét nhanh.
-- `/tools verbose` thêm mô tả ngắn.
-- Các bề mặt lệnh gốc hỗ trợ đối số hiển thị cùng công tắc chế độ như `compact|verbose`.
-- Kết quả được phạm vi theo phiên, nên việc thay đổi agent, kênh, luồng, ủy quyền người gửi, hoặc model có thể thay đổi đầu ra.
-- `/tools` bao gồm các công cụ thực sự có thể truy cập trong runtime, bao gồm công cụ lõi, công cụ Plugin đã kết nối, và công cụ thuộc sở hữu kênh.
-
-Để chỉnh sửa hồ sơ và ghi đè, dùng bảng Tools trong Control UI hoặc các bề mặt cấu hình/catalog thay vì xem `/tools` như một catalog tĩnh.
-
-## Bề mặt sử dụng (hiển thị ở đâu)
-
-- **Mức sử dụng/hạn mức của nhà cung cấp** (ví dụ: "Claude 80% left") hiển thị trong `/status` cho nhà cung cấp mô hình hiện tại khi bật theo dõi mức sử dụng. OpenClaw chuẩn hóa các cửa sổ của nhà cung cấp thành `% left`; với MiniMax, các trường phần trăm chỉ thể hiện phần còn lại sẽ được đảo ngược trước khi hiển thị, và các phản hồi `model_remains` ưu tiên mục mô hình chat cùng nhãn gói có gắn thẻ mô hình.
-- **Dòng token/cache** trong `/status` có thể quay về mục mức sử dụng transcript mới nhất khi ảnh chụp nhanh phiên trực tiếp quá ít dữ liệu. Các giá trị trực tiếp khác 0 hiện có vẫn được ưu tiên, và phương án dự phòng từ transcript cũng có thể khôi phục nhãn mô hình runtime đang hoạt động cùng tổng lớn hơn theo hướng prompt khi tổng đã lưu bị thiếu hoặc nhỏ hơn.
-- **Thực thi so với runtime:** `/status` báo cáo `Execution` cho đường dẫn sandbox hiệu lực và `Runtime` cho bên thực sự đang chạy phiên: `OpenClaw Pi Default`, `OpenAI Codex`, một backend CLI, hoặc một backend ACP.
-- **Token/chi phí theo từng phản hồi** được điều khiển bằng `/usage off|tokens|full` (được nối vào các phản hồi thông thường).
-- `/model status` nói về **mô hình/xác thực/endpoint**, không phải mức sử dụng.
-
-## Chọn mô hình (`/model`)
-
-`/model` được triển khai dưới dạng một chỉ thị.
-
-Ví dụ:
-
-```
-/model
-/model list
-/model 3
-/model openai/gpt-5.4
-/model opus@anthropic:default
-/model status
-```
-
-Ghi chú:
-
-- `/model` và `/model list` hiển thị bộ chọn nhỏ gọn, được đánh số (họ mô hình + các nhà cung cấp khả dụng).
-- Trên Discord, `/model` và `/models` mở một bộ chọn tương tác với menu thả xuống nhà cung cấp và mô hình cùng bước Submit. Bộ chọn tôn trọng `agents.defaults.models`, bao gồm các mục `provider/*`, nên việc khám phá theo phạm vi nhà cung cấp có thể giữ bộ chọn dưới giới hạn thành phần 25 tùy chọn của Discord.
-- `/model <#>` chọn từ bộ chọn đó (và ưu tiên nhà cung cấp hiện tại khi có thể).
-- `/model status` hiển thị chế độ xem chi tiết, bao gồm endpoint nhà cung cấp đã cấu hình (`baseUrl`) và chế độ API (`api`) khi có.
-
-## Ghi đè gỡ lỗi
-
-`/debug` cho phép bạn đặt ghi đè cấu hình **chỉ trong runtime** (bộ nhớ, không phải ổ đĩa). Chỉ chủ sở hữu. Tắt theo mặc định; bật bằng `commands.debug: true`.
-
-Ví dụ:
-
-```
-/debug show
-/debug set messages.responsePrefix="[openclaw]"
-/debug set channels.whatsapp.allowFrom=["+1555","+4477"]
-/debug unset messages.responsePrefix
-/debug reset
-```
-
-<Note>
-Ghi đè áp dụng ngay cho các lần đọc cấu hình mới, nhưng **không** ghi vào `openclaw.json`. Dùng `/debug reset` để xóa tất cả ghi đè và quay lại cấu hình trên ổ đĩa.
-</Note>
-
-## Đầu ra truy vết Plugin
-
-`/trace` cho phép bạn bật/tắt **các dòng truy vết/gỡ lỗi Plugin trong phạm vi phiên** mà không cần bật toàn bộ chế độ chi tiết.
-
-Ví dụ:
+`/tools` trả lời một câu hỏi runtime: **tác nhân này có thể dùng gì ngay lúc này trong
+cuộc trò chuyện này** — không phải một catalog cấu hình tĩnh.
 
 ```text
-/trace
-/trace on
-/trace off
+/tools         # chế độ xem gọn
+/tools verbose # kèm mô tả ngắn
 ```
 
-Ghi chú:
+Kết quả nằm trong phạm vi phiên. Việc thay đổi tác nhân, kênh, luồng, quyền của
+người gửi, hoặc mô hình có thể làm thay đổi đầu ra. Để chỉnh sửa hồ sơ và ghi đè,
+hãy dùng bảng Tools trong Control UI hoặc các bề mặt cấu hình.
 
-- `/trace` không có đối số sẽ hiển thị trạng thái truy vết phiên hiện tại.
-- `/trace on` bật các dòng truy vết Plugin cho phiên hiện tại.
-- `/trace off` tắt lại các dòng đó.
-- Các dòng truy vết Plugin có thể xuất hiện trong `/status` và dưới dạng một thông báo chẩn đoán tiếp theo sau phản hồi trợ lý thông thường.
-- `/trace` không thay thế `/debug`; `/debug` vẫn quản lý các ghi đè cấu hình chỉ trong runtime.
-- `/trace` không thay thế `/verbose`; đầu ra công cụ/trạng thái chi tiết thông thường vẫn thuộc về `/verbose`.
+## `/model` — chọn mô hình
 
-## Cập nhật cấu hình
-
-`/config` ghi vào cấu hình trên ổ đĩa của bạn (`openclaw.json`). Chỉ chủ sở hữu. Tắt theo mặc định; bật bằng `commands.config: true`.
-
-Ví dụ:
-
+```text
+/model             # hiển thị bộ chọn mô hình
+/model list        # tương tự
+/model 3           # chọn theo số từ bộ chọn
+/model openai/gpt-5.4
+/model opus@anthropic:default
+/model default     # xóa lựa chọn mô hình của phiên
+/model status      # chế độ xem chi tiết với endpoint và chế độ API
 ```
+
+Trên Discord, `/model` và `/models` mở một bộ chọn tương tác với menu thả xuống
+nhà cung cấp và mô hình. Bộ chọn tôn trọng `agents.defaults.models`, bao gồm
+các mục `provider/*`.
+
+## `/config` — ghi cấu hình trên ổ đĩa
+
+<Note>
+  Chỉ dành cho chủ sở hữu. Bị tắt theo mặc định — bật bằng `commands.config: true`.
+</Note>
+
+```text
 /config show
 /config show messages.responsePrefix
 /config get messages.responsePrefix
@@ -398,15 +386,14 @@ Ví dụ:
 /config unset messages.responsePrefix
 ```
 
+Cấu hình được xác thực trước khi ghi. Các thay đổi không hợp lệ sẽ bị từ chối. `/config`
+được lưu qua các lần khởi động lại.
+
+## `/mcp` — cấu hình máy chủ MCP
+
 <Note>
-Cấu hình được xác thực trước khi ghi; các thay đổi không hợp lệ sẽ bị từ chối. Các cập nhật `/config` được duy trì qua các lần khởi động lại.
+  Chỉ dành cho chủ sở hữu. Bị tắt theo mặc định — bật bằng `commands.mcp: true`.
 </Note>
-
-## Cập nhật MCP
-
-`/mcp` ghi các định nghĩa máy chủ MCP do OpenClaw quản lý dưới `mcp.servers`. Chỉ chủ sở hữu. Tắt theo mặc định; bật bằng `commands.mcp: true`.
-
-Ví dụ:
 
 ```text
 /mcp show
@@ -415,15 +402,28 @@ Ví dụ:
 /mcp unset context7
 ```
 
+`/mcp` lưu cấu hình trong cấu hình OpenClaw, không nhúng vào cài đặt dự án của tác nhân nhúng.
+
+## `/debug` — ghi đè chỉ trong runtime
+
 <Note>
-`/mcp` lưu cấu hình trong cấu hình OpenClaw, không phải cài đặt dự án do Pi sở hữu. Các adapter runtime quyết định transport nào thực sự có thể thực thi.
+  Chỉ dành cho chủ sở hữu. Bị tắt theo mặc định — bật bằng `commands.debug: true`.
+  Ghi đè áp dụng ngay cho các lần đọc cấu hình mới nhưng **không** ghi ra ổ đĩa.
 </Note>
 
-## Cập nhật Plugin
+```text
+/debug show
+/debug set messages.responsePrefix="[openclaw]"
+/debug set channels.whatsapp.allowFrom=["+1555","+4477"]
+/debug unset messages.responsePrefix
+/debug reset
+```
 
-`/plugins` cho phép người vận hành kiểm tra các Plugin đã phát hiện và bật/tắt trạng thái kích hoạt trong cấu hình. Các luồng chỉ đọc có thể dùng `/plugin` làm bí danh. Tắt theo mặc định; bật bằng `commands.plugins: true`.
+## `/plugins` — quản lý plugin
 
-Ví dụ:
+<Note>
+  Chỉ chủ sở hữu mới được ghi. Bị tắt theo mặc định — bật bằng `commands.plugins: true`.
+</Note>
 
 ```text
 /plugins
@@ -431,63 +431,95 @@ Ví dụ:
 /plugin show context7
 /plugins enable context7
 /plugins disable context7
+/plugins install ./path/to/plugin
 ```
 
-<Note>
-- `/plugins list` và `/plugins show` dùng khám phá Plugin thực tế đối với workspace hiện tại cùng cấu hình trên ổ đĩa.
-- `/plugins install` cài đặt từ ClawHub, npm, git, thư mục cục bộ và archive.
-- `/plugins enable|disable` chỉ cập nhật cấu hình Plugin; nó không cài đặt hoặc gỡ cài đặt Plugin.
-- Các thay đổi bật và tắt sẽ hot-reload các bề mặt runtime Plugin của Gateway cho các lượt agent mới; lệnh cài đặt yêu cầu khởi động lại Gateway vì các module nguồn Plugin đã thay đổi.
+`/plugins enable|disable` cập nhật cấu hình plugin và tải nóng runtime plugin
+Gateway cho các lượt tác nhân mới. `/plugins install` tự động khởi động lại các
+Gateway được quản lý vì các module nguồn plugin đã thay đổi.
 
-</Note>
+## `/trace` — đầu ra truy vết plugin
 
-## Ghi chú về bề mặt
+```text
+/trace          # hiển thị trạng thái truy vết hiện tại
+/trace on
+/trace off
+```
+
+`/trace` hiển thị các dòng truy vết/gỡ lỗi plugin trong phạm vi phiên mà không cần bật
+chế độ dài đầy đủ. Nó không thay thế `/debug` (ghi đè runtime) hoặc `/verbose` (đầu ra
+công cụ bình thường).
+
+## `/btw` — câu hỏi phụ
+
+`/btw` là một câu hỏi phụ nhanh về ngữ cảnh phiên hiện tại. Bí danh: `/side`.
+
+```text
+/btw hiện giờ chúng ta đang làm gì?
+/side điều gì đã thay đổi trong khi lượt chạy chính tiếp tục?
+```
+
+Khác với một tin nhắn bình thường:
+
+- Dùng phiên hiện tại làm ngữ cảnh nền.
+- Trong các phiên harness Codex, chạy như một luồng phụ Codex tạm thời.
+- **Không** thay đổi ngữ cảnh phiên trong tương lai.
+- Không được ghi vào lịch sử bản ghi.
+
+Xem [Câu hỏi phụ BTW](/vi/tools/btw) để biết đầy đủ hành vi.
+
+## Ghi chú bề mặt
 
 <AccordionGroup>
-  <Accordion title="Sessions per surface">
-    - **Lệnh văn bản** chạy trong phiên chat thông thường (DM dùng chung `main`, nhóm có phiên riêng).
-    - **Lệnh native** dùng các phiên tách biệt:
-      - Discord: `agent:<agentId>:discord:slash:<userId>`
-      - Slack: `agent:<agentId>:slack:slash:<userId>` (tiền tố có thể cấu hình qua `channels.slack.slashCommand.sessionPrefix`)
-      - Telegram: `telegram:slash:<userId>` (nhắm tới phiên chat qua `CommandTargetSessionKey`)
-    - **`/stop`** nhắm tới phiên chat đang hoạt động để có thể hủy lượt chạy hiện tại.
+  <Accordion title="Phạm vi phiên theo từng bề mặt">
+    - **Lệnh văn bản:** chạy trong phiên chat bình thường (DM dùng chung `main`, nhóm có phiên riêng).
+    - **Lệnh Discord gốc:** `agent:<agentId>:discord:slash:<userId>`
+    - **Lệnh Slack gốc:** `agent:<agentId>:slack:slash:<userId>` (có thể cấu hình tiền tố qua `channels.slack.slashCommand.sessionPrefix`)
+    - **Lệnh Telegram gốc:** `telegram:slash:<userId>` (nhắm tới phiên chat qua `CommandTargetSessionKey`)
+    - **`/stop`** nhắm tới phiên chat đang hoạt động để hủy lượt chạy hiện tại.
 
   </Accordion>
-  <Accordion title="Slack specifics">
-    `channels.slack.slashCommand` vẫn được hỗ trợ cho một lệnh kiểu `/openclaw` duy nhất. Nếu bạn bật `commands.native`, bạn phải tạo một lệnh slash Slack cho mỗi lệnh tích hợp sẵn (cùng tên như `/help`). Menu đối số lệnh cho Slack được gửi dưới dạng các nút Block Kit tạm thời.
+  <Accordion title="Chi tiết riêng của Slack">
+    `channels.slack.slashCommand` hỗ trợ một lệnh kiểu `/openclaw` duy nhất.
+    Với `commands.native: true`, hãy tạo một lệnh gạch chéo Slack cho mỗi lệnh
+    tích hợp sẵn. Đăng ký `/agentstatus` (không phải `/status`) vì Slack dành riêng
+    `/status`. Văn bản `/status` vẫn hoạt động trong tin nhắn Slack.
+  </Accordion>
+  <Accordion title="Đường nhanh và lối tắt nội tuyến">
+    - Tin nhắn chỉ có lệnh từ người gửi trong danh sách cho phép được xử lý ngay lập tức (bỏ qua hàng đợi + mô hình).
+    - Lối tắt nội tuyến (`/help`, `/commands`, `/status`, `/whoami`) cũng hoạt động khi được nhúng trong tin nhắn bình thường và bị loại bỏ trước khi mô hình thấy phần văn bản còn lại.
+    - Tin nhắn chỉ có lệnh không được cấp quyền sẽ bị im lặng bỏ qua; các token `/...` nội tuyến được coi là văn bản thuần.
 
-    Ngoại lệ native của Slack: đăng ký `/agentstatus` (không phải `/status`) vì Slack dành riêng `/status`. Văn bản `/status` vẫn hoạt động trong tin nhắn Slack.
+  </Accordion>
+  <Accordion title="Ghi chú đối số">
+    - Lệnh chấp nhận dấu `:` tùy chọn giữa lệnh và đối số (`/think: high`, `/send: on`).
+    - `/new <model>` chấp nhận bí danh mô hình, `provider/model`, hoặc tên nhà cung cấp (khớp mờ); nếu không khớp, văn bản được coi là nội dung tin nhắn.
+    - `/allowlist add|remove` yêu cầu `commands.config: true` và tôn trọng `configWrites` của kênh.
 
   </Accordion>
 </AccordionGroup>
 
-## Câu hỏi phụ BTW
+## Mức sử dụng và trạng thái nhà cung cấp
 
-`/btw` là một **câu hỏi phụ** nhanh về phiên hiện tại. `/side` là bí danh.
-
-Khác với chat thông thường:
-
-- nó dùng phiên hiện tại làm ngữ cảnh nền,
-- trong các phiên harness Codex, nó chạy như một luồng phụ Codex tạm thời với
-  quyền Codex hiện tại và bề mặt công cụ native,
-- trong các phiên không phải Codex, nó giữ hành vi gọi phụ trực tiếp một lần cũ hơn,
-- nó không thay đổi ngữ cảnh phiên trong tương lai,
-- nó không được ghi vào lịch sử transcript,
-- nó được gửi dưới dạng kết quả phụ trực tiếp thay vì một thông báo trợ lý thông thường.
-
-Điều đó làm cho `/btw` hữu ích khi bạn muốn làm rõ tạm thời trong lúc tác vụ chính tiếp tục chạy.
-
-Ví dụ:
-
-```text
-/btw what are we doing right now?
-/side what changed while the main run continued?
-```
-
-Xem [Câu hỏi phụ BTW](/vi/tools/btw) để biết đầy đủ hành vi và chi tiết UX của client.
+- **Mức sử dụng/hạn mức nhà cung cấp** (ví dụ: "Claude còn 80%") hiển thị trong `/status` cho nhà cung cấp mô hình hiện tại khi bật theo dõi mức sử dụng.
+- **Dòng token/cache** trong `/status` có thể dùng mục mức sử dụng mới nhất trong bản ghi làm dự phòng khi ảnh chụp nhanh phiên trực tiếp còn thưa.
+- **Thực thi so với runtime:** `/status` báo cáo `Execution` cho đường dẫn sandbox hiệu lực và `Runtime` cho thành phần đang chạy phiên: `OpenClaw Default`, `OpenAI Codex`, một backend CLI, hoặc một backend ACP.
+- **Token/chi phí theo từng phản hồi:** được điều khiển bởi `/usage off|tokens|full`.
+- `/model status` nói về mô hình/xác thực/endpoint, không phải mức sử dụng.
 
 ## Liên quan
 
-- [Tạo Skills](/vi/tools/creating-skills)
-- [Skills](/vi/tools/skills)
-- [Cấu hình Skills](/vi/tools/skills-config)
+<CardGroup cols={2}>
+  <Card title="Skills" href="/vi/tools/skills" icon="puzzle-piece">
+    Cách các lệnh gạch chéo skill được đăng ký và kiểm soát.
+  </Card>
+  <Card title="Tạo skills" href="/vi/tools/creating-skills" icon="hammer">
+    Xây dựng một skill đăng ký lệnh gạch chéo riêng.
+  </Card>
+  <Card title="BTW" href="/vi/tools/btw" icon="comments">
+    Câu hỏi phụ mà không thay đổi ngữ cảnh phiên.
+  </Card>
+  <Card title="Steer" href="/vi/tools/steer" icon="compass">
+    Dẫn hướng tác nhân giữa lượt chạy bằng `/steer`.
+  </Card>
+</CardGroup>

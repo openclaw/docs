@@ -1,26 +1,27 @@
 ---
 read_when:
-    - أنت تقوم بتثبيت Plugin qa-lab أو تهيئته أو تدقيقه
-summary: Plugin مختبر ضمان الجودة في OpenClaw مع واجهة مستخدم خاصة لمصحح الأخطاء ومشغّل سيناريوهات.
+    - أنت تثبّت Plugin qa-lab أو تهيئه أو تراجعه
+summary: Plugin مختبر ضمان الجودة في OpenClaw مع واجهة مصحح أخطاء خاصة ومشغل سيناريوهات.
 title: Plugin مختبر ضمان الجودة
 x-i18n:
-    generated_at: "2026-05-02T20:58:49Z"
+    generated_at: "2026-06-27T18:14:59Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a565d11bc2e1051685b6c067b695fbec980bfe21f50c98d5a616ed3dcbecb98e
+    source_hash: 0de3ac126939c822225cfd4bf75af594e6066f7992cacc71b1455638aab3af0b
     source_path: plugins/reference/qa-lab.md
     workflow: 16
 ---
 
-# Plugin مختبر ضمان الجودة
+# Plugin مختبر QA
 
-Plugin مختبر ضمان الجودة من OpenClaw مع واجهة مستخدم خاصة لمصحح الأخطاء ومشغل سيناريوهات.
+Plugin مختبر QA في OpenClaw مع واجهة مصحح أخطاء خاصة ومشغل سيناريوهات.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/qa-lab`
-- مسار التثبيت: نسخة مصدر فقط
+- مسار التثبيت: نسخة مصدرية محلية فقط
 
-## السطح
+## الواجهة
 
-Plugin
+العقود: webSearchProviders

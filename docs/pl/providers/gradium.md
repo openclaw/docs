@@ -1,39 +1,49 @@
 ---
 read_when:
-    - Potrzebujesz Gradium do zamiany tekstu na mowę
-    - Potrzebujesz klucza API Gradium, głosu lub konfiguracji tokena dyrektywy
-summary: Używanie syntezy mowy Gradium w OpenClaw
+    - Chcesz używać Gradium do zamiany tekstu na mowę
+    - Potrzebujesz konfiguracji klucza API Gradium, głosu lub tokenu dyrektywy
+summary: Używanie zamiany tekstu na mowę Gradium w OpenClaw
 title: Gradium
 x-i18n:
-    generated_at: "2026-05-10T19:51:59Z"
+    generated_at: "2026-06-27T18:12:16Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5c79da6ec63532061a8112965a679f1113bbefcc91ee00def8153dd39b5b5e58
+    source_hash: 5178bfaf5087e18d5d71f46d04b16d52e0e132257b9ef772b7869ac11b49a0da
     source_path: providers/gradium.md
     workflow: 16
 ---
 
-[Gradium](https://gradium.ai) jest dołączonym dostawcą zamiany tekstu na mowę dla OpenClaw. Plugin może generować zwykłe odpowiedzi audio (WAV), wyjście Opus zgodne z notatkami głosowymi oraz audio 8 kHz u-law dla powierzchni telefonicznych.
+[Gradium](https://gradium.ai) jest dostawcą zamiany tekstu na mowę dla OpenClaw. Plugin może renderować zwykłe odpowiedzi audio (WAV), wyjście Opus zgodne z notatkami głosowymi oraz dźwięk u-law 8 kHz dla powierzchni telefonicznych.
 
-| Właściwość            | Wartość                              |
-| --------------------- | ------------------------------------ |
+| Właściwość       | Wartość                              |
+| ------------- | ------------------------------------ |
 | Identyfikator dostawcy | `gradium`                            |
-| Uwierzytelnianie      | `GRADIUM_API_KEY` lub config `apiKey` |
-| Bazowy URL            | `https://api.gradium.ai` (domyślnie) |
-| Domyślny głos         | `Emma` (`YTpq7expH9539ERJ`)          |
+| Uwierzytelnianie          | `GRADIUM_API_KEY` lub konfiguracja `apiKey` |
+| Bazowy URL      | `https://api.gradium.ai` (domyślnie)   |
+| Domyślny głos | `Emma` (`YTpq7expH9539ERJ`)          |
+
+## Zainstaluj Plugin
+
+Zainstaluj oficjalny Plugin, a następnie zrestartuj Gateway:
+
+```bash
+openclaw plugins install @openclaw/gradium-speech
+openclaw gateway restart
+```
 
 ## Konfiguracja
 
-Utwórz klucz API Gradium, a następnie udostępnij go OpenClaw za pomocą zmiennej środowiskowej albo klucza config.
+Utwórz klucz API Gradium, a następnie udostępnij go OpenClaw za pomocą zmiennej środowiskowej albo klucza konfiguracji.
 
 <Tabs>
-  <Tab title="Env var">
+  <Tab title="Zmienna środowiskowa">
     ```bash
     export GRADIUM_API_KEY="gsk_..."
     ```
   </Tab>
 
-  <Tab title="Config key">
+  <Tab title="Klucz konfiguracji">
     ```json5
     {
       messages: {
@@ -52,9 +62,9 @@ Utwórz klucz API Gradium, a następnie udostępnij go OpenClaw za pomocą zmien
   </Tab>
 </Tabs>
 
-Plugin najpierw sprawdza rozwiązany `apiKey`, a w razie jego braku używa zmiennej środowiskowej `GRADIUM_API_KEY`.
+Plugin najpierw sprawdza rozpoznany `apiKey`, a następnie wraca do zmiennej środowiskowej `GRADIUM_API_KEY`.
 
-## Config
+## Konfiguracja
 
 ```json5
 {
@@ -64,7 +74,7 @@ Plugin najpierw sprawdza rozwiązany `apiKey`, a w razie jego braku używa zmien
       provider: "gradium",
       providers: {
         gradium: {
-          voiceId: "YTpq7expH9539ERJ",
+          speakerVoiceId: "YTpq7expH9539ERJ",
           // apiKey: "${GRADIUM_API_KEY}",
           // baseUrl: "https://api.gradium.ai",
         },
@@ -74,17 +84,17 @@ Plugin najpierw sprawdza rozwiązany `apiKey`, a w razie jego braku używa zmien
 }
 ```
 
-| Klucz                                    | Typ    | Opis                                                                                               |
-| ---------------------------------------- | ------ | -------------------------------------------------------------------------------------------------- |
-| `messages.tts.providers.gradium.apiKey`  | string | Rozwiązany klucz API. Obsługuje `${ENV}` i referencje do sekretów.                                 |
-| `messages.tts.providers.gradium.baseUrl` | string | Nadpisuje źródło API. Końcowe ukośniki są usuwane. Domyślnie `https://api.gradium.ai`.             |
-| `messages.tts.providers.gradium.voiceId` | string | Domyślny identyfikator głosu używany, gdy nie ma nadpisania dyrektywą.                             |
+| Klucz                                             | Typ   | Opis                                                                                   |
+| ----------------------------------------------- | ------ | --------------------------------------------------------------------------------------------- |
+| `messages.tts.providers.gradium.apiKey`         | string | Rozpoznany klucz API. Obsługuje `${ENV}` i odwołania do sekretów.                                          |
+| `messages.tts.providers.gradium.baseUrl`        | string | Nadpisuje origin API. Końcowe ukośniki są usuwane. Domyślnie `https://api.gradium.ai`. |
+| `messages.tts.providers.gradium.speakerVoiceId` | string | Domyślny identyfikator głosu używany, gdy nie ma nadpisania dyrektywą.                                  |
 
-Format wyjściowego audio jest wybierany automatycznie przez środowisko uruchomieniowe na podstawie powierzchni docelowej i nie można go konfigurować z `openclaw.json`. Zobacz [Wyjście](#output) poniżej.
+Format wyjściowego dźwięku jest wybierany automatycznie przez runtime na podstawie docelowej powierzchni i nie można go skonfigurować w `openclaw.json`. Zobacz [Wyjście](#output) poniżej.
 
 ## Głosy
 
-| Nazwa     | Identyfikator głosu |
+| Nazwa      | Identyfikator głosu           |
 | --------- | ------------------ |
 | Emma      | `YTpq7expH9539ERJ` |
 | Kent      | `LFZvm12tW_z0xfGo` |
@@ -96,9 +106,9 @@ Format wyjściowego audio jest wybierany automatycznie przez środowisko uruchom
 
 Domyślny głos: Emma.
 
-### Nadpisanie głosu dla wiadomości
+### Nadpisanie głosu dla pojedynczej wiadomości
 
-Gdy aktywna polityka mowy zezwala na nadpisywanie głosu, możesz przełączać głosy bezpośrednio w treści za pomocą tokenu dyrektywy. Wszystkie poniższe warianty rozwiązują się do tego samego nadpisania `voiceId`:
+Gdy aktywna polityka mowy zezwala na nadpisania głosu, możesz przełączać głosy w treści za pomocą tokenu dyrektywy. Użyj `speakerVoiceId` dla natywnych identyfikatorów głosu dostawcy.
 
 ```text
 /voice:LFZvm12tW_z0xfGo
@@ -108,17 +118,17 @@ Gdy aktywna polityka mowy zezwala na nadpisywanie głosu, możesz przełączać 
 /gradiumvoice:LFZvm12tW_z0xfGo
 ```
 
-Jeśli polityka mowy wyłącza nadpisywanie głosu, dyrektywa jest zużywana, ale ignorowana.
+Jeśli polityka mowy wyłącza nadpisania głosu, dyrektywa zostaje przetworzona, ale zignorowana.
 
 ## Wyjście
 
-Środowisko uruchomieniowe wybiera format wyjściowy na podstawie powierzchni docelowej. Dostawca obecnie nie syntetyzuje innych formatów.
+Runtime wybiera format wyjściowy na podstawie docelowej powierzchni. Dostawca obecnie nie syntetyzuje innych formatów.
 
-| Cel              | Format      | Rozszerzenie pliku | Częstotliwość próbkowania | Flaga zgodności z głosem |
-| ---------------- | ----------- | ------------------ | ------------------------- | ------------------------ |
-| Standardowe audio | `wav`       | `.wav`             | dostawca                  | nie                      |
-| Notatka głosowa  | `opus`      | `.opus`            | dostawca                  | tak                      |
-| Telefonia        | `ulaw_8000` | n/a                | 8 kHz                     | n/a                      |
+| Cel         | Format      | Rozszerzenie pliku | Częstotliwość próbkowania | Flaga zgodności z głosem |
+| -------------- | ----------- | -------- | ----------- | --------------------- |
+| Standardowy dźwięk | `wav`       | `.wav`   | dostawca    | nie                    |
+| Notatka głosowa     | `opus`      | `.opus`  | dostawca    | tak                   |
+| Telefonia      | `ulaw_8000` | n/d      | 8 kHz       | n/d                   |
 
 ## Kolejność automatycznego wyboru
 

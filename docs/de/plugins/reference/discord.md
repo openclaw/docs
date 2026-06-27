@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das Discord-Plugin
-summary: Fügt die Discord-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
+    - Sie installieren, konfigurieren oder prüfen das Discord-Plugin
+summary: OpenClaw Discord-Kanal-Plugin für Kanäle, Direktnachrichten, Befehle und App-Ereignisse.
 title: Discord-Plugin
 x-i18n:
-    generated_at: "2026-05-03T06:41:13Z"
+    generated_at: "2026-06-27T17:53:24Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c0af255dc0e58e91c1f0ebcc5bca46e1e8e80f415ed3f5a9840bb31f717c9703
+    source_hash: 9e3305f8ad8eb84fd350bdfa0983b4fd8f848e0697ecf3e779e31cd6cb44dbf5
     source_path: plugins/reference/discord.md
     workflow: 16
 ---
 
 # Discord-Plugin
 
-Fügt die Discord-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
+OpenClaw Discord-Kanal-Plugin für Kanäle, DMs, Befehle und App-Ereignisse.
 
 ## Distribution
 
@@ -23,7 +24,7 @@ Fügt die Discord-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachric
 
 ## Oberfläche
 
-channels: discord
+Kanäle: discord; Verträge: transcriptSourceProviders; Skills
 
 ## Zugehörige Dokumentation
 

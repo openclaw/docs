@@ -1,58 +1,70 @@
 ---
 read_when:
-    - Menulis skrip untuk atau menelusuri kesalahan pada peramban agen melalui API kontrol lokal
+    - Pembuatan skrip atau debugging browser agen melalui API kontrol lokal
     - Mencari referensi CLI `openclaw browser`
-    - Menambahkan automasi browser kustom dengan cuplikan dan referensi
-summary: API kontrol browser OpenClaw, referensi CLI, dan aksi skrip
+    - Menambahkan otomatisasi browser kustom dengan snapshot dan ref
+summary: API kontrol browser OpenClaw, referensi CLI, dan tindakan scripting
 title: API kontrol peramban
 x-i18n:
-    generated_at: "2026-05-11T20:35:53Z"
+    generated_at: "2026-06-27T18:15:56Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 317ac82cb9060ae1f9495a992dcbb25356ef23b98a5802cf0ed65d1720c2a57d
+    source_hash: ccfd1ec996b0fc211e2aefa0554e0fa5c7b0899ca981836134a3741b38bf7600
     source_path: tools/browser-control.md
     workflow: 16
 ---
 
-Untuk penyiapan, konfigurasi, dan pemecahan masalah, lihat [Browser](/id/tools/browser).
+Untuk penyiapan, konfigurasi, dan pemecahan masalah, lihat [Peramban](/id/tools/browser).
 Halaman ini adalah referensi untuk API HTTP kontrol lokal, CLI `openclaw browser`,
-dan pola skrip (snapshot, ref, tunggu, alur debug).
+dan pola skrip (snapshot, ref, penantian, alur debug).
 
 ## API Kontrol (opsional)
 
-Hanya untuk integrasi lokal, Gateway mengekspos API HTTP loopback kecil:
+Hanya untuk integrasi lokal, Gateway mengekspos API HTTP loopback kecil.
+Server mandiri ini bersifat opsional — atur variabel lingkungan
+`OPENCLAW_EAGER_BROWSER_CONTROL_SERVER=1` di lingkungan layanan gateway
+dan mulai ulang gateway sebelum endpoint HTTP tersedia. Tanpa
+variabel ini, runtime kontrol peramban tetap bekerja melalui CLI dan
+alat agen, tetapi tidak ada yang mendengarkan pada port kontrol loopback.
 
-- Status/mulai/hentikan: `GET /`, `POST /start`, `POST /stop`
+- Status/mulai/berhenti: `GET /`, `POST /start`, `POST /stop`
 - Tab: `GET /tabs`, `POST /tabs/open`, `POST /tabs/focus`, `DELETE /tabs/:targetId`
 - Snapshot/tangkapan layar: `GET /snapshot`, `POST /screenshot`
 - Tindakan: `POST /navigate`, `POST /act`
 - Hook: `POST /hooks/file-chooser`, `POST /hooks/dialog`
 - Unduhan: `POST /download`, `POST /wait/download`
 - Izin: `POST /permissions/grant`
-- Debugging: `GET /console`, `POST /pdf`
-- Debugging: `GET /errors`, `GET /requests`, `POST /trace/start`, `POST /trace/stop`, `POST /highlight`
+- Debug: `GET /console`, `POST /pdf`
+- Debug: `GET /errors`, `GET /requests`, `POST /trace/start`, `POST /trace/stop`, `POST /highlight`
 - Jaringan: `POST /response/body`
 - Status: `GET /cookies`, `POST /cookies/set`, `POST /cookies/clear`
 - Status: `GET /storage/:kind`, `POST /storage/:kind/set`, `POST /storage/:kind/clear`
 - Pengaturan: `POST /set/offline`, `POST /set/headers`, `POST /set/credentials`, `POST /set/geolocation`, `POST /set/media`, `POST /set/timezone`, `POST /set/locale`, `POST /set/device`
 
 Semua endpoint menerima `?profile=<name>`. `POST /start?headless=true` meminta
-peluncuran headless sekali jalan untuk profil terkelola lokal tanpa mengubah
-konfigurasi browser yang disimpan; profil attach-only, CDP jarak jauh, dan
-existing-session menolak override itu karena OpenClaw tidak meluncurkan proses
-browser tersebut.
+peluncuran headless satu kali untuk profil lokal terkelola tanpa mengubah
+konfigurasi peramban yang dipersistenkan; profil attach-only, CDP jarak jauh,
+dan existing-session menolak override itu karena OpenClaw tidak meluncurkan
+proses peramban tersebut.
 
-Jika autentikasi gateway shared-secret dikonfigurasi, rute HTTP browser juga memerlukan autentikasi:
+Untuk endpoint tab, `targetId` adalah nama bidang kompatibilitas. Utamakan
+meneruskan `suggestedTargetId` dari `GET /tabs` atau `POST /tabs/open`; label
+dan handle `tabId` seperti `t1` juga diterima. ID target CDP mentah dan prefiks
+ID target mentah yang unik tetap berfungsi, tetapi itu adalah handle diagnostik
+yang volatil.
+
+Jika autentikasi gateway dengan rahasia bersama dikonfigurasi, rute HTTP peramban juga memerlukan autentikasi:
 
 - `Authorization: Bearer <gateway token>`
 - `x-openclaw-password: <gateway password>` atau autentikasi HTTP Basic dengan kata sandi tersebut
 
 Catatan:
 
-- API browser loopback mandiri ini **tidak** menggunakan header identitas trusted-proxy atau
+- API peramban loopback mandiri ini **tidak** memakai header identitas trusted-proxy atau
   Tailscale Serve.
-- Jika `gateway.auth.mode` adalah `none` atau `trusted-proxy`, rute browser loopback ini
-  tidak mewarisi mode pembawa identitas tersebut; pertahankan agar hanya loopback.
+- Jika `gateway.auth.mode` adalah `none` atau `trusted-proxy`, rute peramban loopback ini
+  tidak mewarisi mode yang membawa identitas tersebut; pertahankan agar hanya loopback.
 
 ### Kontrak error `/act`
 
@@ -72,12 +84,12 @@ Nilai `code` saat ini:
 - `ACT_TARGET_ID_MISMATCH` (HTTP 403): `targetId` tingkat atas atau batch bertentangan dengan target permintaan.
 - `ACT_EXISTING_SESSION_UNSUPPORTED` (HTTP 501): tindakan tidak didukung untuk profil existing-session.
 
-Kegagalan runtime lain mungkin masih mengembalikan `{ "error": "<message>" }` tanpa kolom
-`code`.
+Kegagalan runtime lain mungkin tetap mengembalikan `{ "error": "<message>" }` tanpa
+bidang `code`.
 
 ### Persyaratan Playwright
 
-Beberapa fitur (navigate/act/snapshot AI/snapshot peran, tangkapan layar elemen,
+Beberapa fitur (navigasi/tindakan/snapshot AI/snapshot peran, tangkapan layar elemen,
 PDF) memerlukan Playwright. Jika Playwright tidak terpasang, endpoint tersebut mengembalikan
 error 501 yang jelas.
 
@@ -88,28 +100,28 @@ Yang tetap berfungsi tanpa Playwright:
   `--depth`, `--efficient`) saat WebSocket CDP per tab tersedia. Ini adalah
   fallback untuk inspeksi dan penemuan ref; Playwright tetap menjadi mesin
   tindakan utama.
-- Tangkapan layar halaman untuk browser `openclaw` terkelola saat WebSocket CDP
+- Tangkapan layar halaman untuk peramban `openclaw` terkelola saat WebSocket CDP
   per tab tersedia
 - Tangkapan layar halaman untuk profil `existing-session` / Chrome MCP
 - Tangkapan layar berbasis ref `existing-session` (`--ref`) dari output snapshot
 
-Yang masih memerlukan Playwright:
+Yang tetap membutuhkan Playwright:
 
 - `navigate`
 - `act`
 - Snapshot AI yang bergantung pada format snapshot AI native Playwright
-- Tangkapan layar elemen dengan selector CSS (`--element`)
-- ekspor PDF browser penuh
+- Tangkapan layar elemen selector CSS (`--element`)
+- ekspor PDF peramban penuh
 
 Tangkapan layar elemen juga menolak `--full-page`; rute mengembalikan `fullPage is
 not supported for element screenshots`.
 
-Jika Anda melihat `Playwright is not available in this gateway build`, Gateway paket
-tidak memiliki dependensi runtime browser inti. Pasang ulang atau perbarui
-OpenClaw, lalu mulai ulang gateway. Untuk Docker, pasang juga binary browser
+Jika Anda melihat `Playwright is not available in this gateway build`, Gateway
+terpaket kehilangan dependensi runtime peramban inti. Pasang ulang atau perbarui
+OpenClaw, lalu mulai ulang gateway. Untuk Docker, pasang juga binari peramban
 Chromium seperti ditunjukkan di bawah.
 
-#### Instalasi Docker Playwright
+#### Instalasi Playwright Docker
 
 Jika Gateway Anda berjalan di Docker, hindari `npx playwright` (konflik override npm).
 Untuk image kustom, masukkan Chromium ke dalam image:
@@ -125,14 +137,14 @@ docker compose run --rm openclaw-cli \
   node /app/node_modules/playwright-core/cli.js install chromium
 ```
 
-Untuk mempertahankan unduhan browser, tetapkan `PLAYWRIGHT_BROWSERS_PATH` (misalnya,
-`/home/node/.cache/ms-playwright`) dan pastikan `/home/node` dipertahankan melalui
-`OPENCLAW_HOME_VOLUME` atau bind mount. OpenClaw mendeteksi otomatis Chromium
-yang dipertahankan di Linux. Lihat [Docker](/id/install/docker).
+Untuk mempertahankan unduhan peramban, atur `PLAYWRIGHT_BROWSERS_PATH` (misalnya,
+`/home/node/.cache/ms-playwright`) dan pastikan `/home/node` dipersistenkan melalui
+`OPENCLAW_HOME_VOLUME` atau bind mount. OpenClaw mendeteksi Chromium yang dipersistenkan
+secara otomatis di Linux. Lihat [Docker](/id/install/docker).
 
 ## Cara kerjanya (internal)
 
-Server kontrol loopback kecil menerima permintaan HTTP dan terhubung ke browser berbasis Chromium melalui CDP. Tindakan lanjutan (klik/ketik/snapshot/PDF) melewati Playwright di atas CDP; saat Playwright tidak ada, hanya operasi non-Playwright yang tersedia. Agen melihat satu antarmuka stabil sementara browser dan profil lokal/jarak jauh dapat berganti bebas di bawahnya.
+Server kontrol loopback kecil menerima permintaan HTTP dan terhubung ke peramban berbasis Chromium melalui CDP. Tindakan lanjutan (klik/ketik/snapshot/PDF) berjalan melalui Playwright di atas CDP; saat Playwright tidak ada, hanya operasi non-Playwright yang tersedia. Agen melihat satu antarmuka stabil sementara peramban dan profil lokal/jarak jauh dapat ditukar bebas di bawahnya.
 
 ## Referensi cepat CLI
 
@@ -140,7 +152,7 @@ Semua perintah menerima `--browser-profile <name>` untuk menargetkan profil tert
 
 <AccordionGroup>
 
-<Accordion title="Basics: status, tabs, open/focus/close">
+<Accordion title="Dasar: status, tab, buka/fokus/tutup">
 
 ```bash
 openclaw browser status
@@ -159,7 +171,7 @@ openclaw browser close abcd1234
 
 </Accordion>
 
-<Accordion title="Inspection: screenshot, snapshot, console, errors, requests">
+<Accordion title="Inspeksi: tangkapan layar, snapshot, konsol, error, permintaan">
 
 ```bash
 openclaw browser screenshot
@@ -183,7 +195,7 @@ openclaw browser responsebody "**/api" --max-chars 5000
 
 </Accordion>
 
-<Accordion title="Actions: navigate, click, type, drag, wait, evaluate">
+<Accordion title="Tindakan: navigasi, klik, ketik, seret, tunggu, evaluasi">
 
 ```bash
 openclaw browser navigate https://example.com
@@ -199,11 +211,15 @@ openclaw browser select 9 OptionA OptionB
 openclaw browser download e12 report.pdf
 openclaw browser waitfordownload report.pdf
 openclaw browser upload /tmp/openclaw/uploads/file.pdf
+openclaw browser upload media://inbound/file.pdf
 openclaw browser fill --fields '[{"ref":"1","type":"text","value":"Ada"}]'
 openclaw browser dialog --accept
+openclaw browser dialog --dismiss --dialog-id d1
 openclaw browser wait --text "Done"
 openclaw browser wait "#main" --url "**/dash" --load networkidle --fn "window.ready===true"
 openclaw browser evaluate --fn '(el) => el.textContent' --ref 7
+openclaw browser evaluate --fn 'const title = document.title; return title;'
+openclaw browser evaluate --timeout-ms 30000 --fn 'async () => { await window.ready; return true; }'
 openclaw browser highlight e12
 openclaw browser trace start
 openclaw browser trace stop
@@ -211,7 +227,7 @@ openclaw browser trace stop
 
 </Accordion>
 
-<Accordion title="State: cookies, storage, offline, headers, geo, device">
+<Accordion title="Status: cookie, storage, offline, header, geo, perangkat">
 
 ```bash
 openclaw browser cookies
@@ -236,30 +252,42 @@ openclaw browser set device "iPhone 14"
 
 Catatan:
 
-- `upload` dan `dialog` adalah panggilan **arming**; jalankan sebelum klik/tekan yang memicu pemilih/dialog.
+- `upload` dan `dialog` adalah panggilan **arming**; jalankan keduanya sebelum klik/tekan yang memicu pemilih/dialog. Jika suatu tindakan membuka modal, respons tindakan menyertakan `blockedByDialog` dan `browserState.dialogs.pending`; teruskan `dialogId` tersebut untuk merespons langsung. Dialog yang ditangani di luar OpenClaw muncul di bawah `browserState.dialogs.recent`.
 - `click`/`type`/dll. memerlukan `ref` dari `snapshot` (numerik `12`, ref peran `e12`, atau ref ARIA yang dapat ditindaklanjuti `ax12`). Selector CSS sengaja tidak didukung untuk tindakan. Gunakan `click-coords` saat posisi viewport yang terlihat adalah satu-satunya target yang andal.
-- Jalur unduhan, trace, dan unggahan dibatasi ke root sementara OpenClaw: `/tmp/openclaw{,/downloads,/uploads}` (fallback: `${os.tmpdir()}/openclaw/...`).
-- `upload` juga dapat menetapkan input file secara langsung melalui `--input-ref` atau `--element`.
+- Jalur unduhan dan trace dibatasi ke root temp OpenClaw: `/tmp/openclaw{,/downloads}` (fallback: `${os.tmpdir()}/openclaw/...`).
+- `upload` menerima file dari root unggahan temp OpenClaw dan
+  media masuk yang dikelola OpenClaw. Media masuk terkelola dapat dirujuk sebagai
+  `media://inbound/<id>`, `media/inbound/<id>` yang relatif terhadap sandbox, atau jalur yang di-resolve
+  di dalam direktori media masuk terkelola. Ref media bertingkat,
+  traversal, symlink, hardlink, dan jalur lokal arbitrer tetap ditolak.
+- `upload` juga dapat mengatur input file secara langsung melalui `--input-ref` atau `--element`.
 
-ID dan label tab stabil bertahan dari penggantian raw-target Chromium saat OpenClaw
+ID dan label tab stabil tetap bertahan dari penggantian raw-target Chromium saat OpenClaw
 dapat membuktikan tab penggantinya, seperti URL yang sama atau satu tab lama menjadi
 satu tab baru setelah pengiriman formulir. ID target mentah tetap volatil; utamakan
 `suggestedTargetId` dari `tabs` dalam skrip.
 
-Ringkasan flag snapshot:
+Sekilas flag snapshot:
 
-- `--format ai` (default dengan Playwright): snapshot AI dengan ref numerik (`aria-ref="<n>"`).
-- `--format aria`: pohon aksesibilitas dengan ref `axN`. Saat Playwright tersedia, OpenClaw mengikat ref dengan ID DOM backend ke halaman langsung agar tindakan lanjutan dapat menggunakannya; jika tidak, perlakukan output sebagai hanya untuk inspeksi.
-- `--efficient` (atau `--mode efficient`): preset snapshot peran ringkas. Tetapkan `browser.snapshotDefaults.mode: "efficient"` untuk menjadikannya default (lihat [Konfigurasi Gateway](/id/gateway/configuration-reference#browser)).
-- `--interactive`, `--compact`, `--depth`, `--selector` memaksa snapshot peran dengan ref `ref=e12`. `--frame "<iframe>"` membatasi snapshot peran ke iframe.
-- `--labels` menambahkan tangkapan layar khusus viewport dengan label ref yang ditumpangkan (mencetak `MEDIA:<path>`).
+- `--format ai` (bawaan dengan Playwright): snapshot AI dengan ref numerik (`aria-ref="<n>"`).
+- `--format aria`: pohon aksesibilitas dengan ref `axN`. Saat Playwright tersedia, OpenClaw mengikat ref dengan ID DOM backend ke halaman live agar tindakan lanjutan dapat menggunakannya; jika tidak, perlakukan output sebagai hanya untuk inspeksi.
+- `--efficient` (atau `--mode efficient`): preset snapshot peran ringkas. Atur `browser.snapshotDefaults.mode: "efficient"` untuk menjadikannya bawaan (lihat [konfigurasi Gateway](/id/gateway/configuration-reference#browser)).
+- `--interactive`, `--compact`, `--depth`, `--selector` memaksa snapshot peran dengan ref `ref=e12`. `--frame "<iframe>"` membatasi cakupan snapshot peran ke sebuah iframe.
+- Dengan Playwright, `--labels` menambahkan screenshot dengan label ref yang ditumpangkan
+  (mencetak `MEDIA:<path>`) plus array `annotations` dengan kotak pembatas
+  setiap ref. Pada `screenshot`, label berbasis Playwright bekerja dengan `--full-page`,
+  `--ref`, dan `--element`; pada `snapshot`, screenshot pendamping tetap
+  hanya viewport. Profil existing-session/chrome-mcp merender label overlay pada
+  screenshot halaman tetapi tidak mengembalikan `annotations` atau menggunakan helper proyeksi
+  full-page/ref/element Playwright. Tanpa Playwright atau chrome-mcp,
+  screenshot berlabel tidak tersedia.
 - `--urls` menambahkan tujuan tautan yang ditemukan ke snapshot AI.
 
 ## Snapshot dan ref
 
 OpenClaw mendukung dua gaya "snapshot":
 
-- **Snapshot AI (ref numerik)**: `openclaw browser snapshot` (default; `--format ai`)
+- **Snapshot AI (ref numerik)**: `openclaw browser snapshot` (bawaan; `--format ai`)
   - Output: snapshot teks yang menyertakan ref numerik.
   - Tindakan: `openclaw browser click 12`, `openclaw browser type 23 "hello"`.
   - Secara internal, ref diselesaikan melalui `aria-ref` Playwright.
@@ -267,42 +295,45 @@ OpenClaw mendukung dua gaya "snapshot":
 - **Snapshot peran (ref peran seperti `e12`)**: `openclaw browser snapshot --interactive` (atau `--compact`, `--depth`, `--selector`, `--frame`)
   - Output: daftar/pohon berbasis peran dengan `[ref=e12]` (dan opsional `[nth=1]`).
   - Tindakan: `openclaw browser click e12`, `openclaw browser highlight e12`.
-  - Secara internal, ref diselesaikan melalui `getByRole(...)` (ditambah `nth()` untuk duplikat).
-  - Tambahkan `--labels` untuk menyertakan tangkapan layar viewport dengan label `e12` yang ditumpangkan.
-  - Tambahkan `--urls` saat teks tautan ambigu dan agen memerlukan target
-    navigasi konkret.
+  - Secara internal, ref diselesaikan melalui `getByRole(...)` (plus `nth()` untuk duplikat).
+  - Tambahkan `--labels` untuk menyertakan screenshot dengan label `e12` yang ditumpangkan. Pada
+    profil berbasis Playwright, ini juga mengembalikan metadata kotak pembatas per ref
+    (`annotations[]`).
+  - Tambahkan `--urls` ketika teks tautan ambigu dan agen memerlukan target
+    navigasi yang konkret.
 
 - **Snapshot ARIA (ref ARIA seperti `ax12`)**: `openclaw browser snapshot --format aria`
   - Output: pohon aksesibilitas sebagai node terstruktur.
-  - Tindakan: `openclaw browser click ax12` berfungsi saat path snapshot dapat mengikat
-    ref melalui Playwright dan id DOM backend Chrome.
+  - Tindakan: `openclaw browser click ax12` bekerja saat jalur snapshot dapat mengikat
+    ref melalui Playwright dan ID DOM backend Chrome.
 - Jika Playwright tidak tersedia, snapshot ARIA masih dapat berguna untuk
   inspeksi, tetapi ref mungkin tidak dapat ditindaklanjuti. Ambil snapshot ulang dengan `--format ai`
-  atau `--interactive` saat Anda membutuhkan ref tindakan.
-- Bukti Docker untuk path fallback raw-CDP: `pnpm test:docker:browser-cdp-snapshot`
-  memulai Chromium dengan CDP, menjalankan `browser doctor --deep`, dan memverifikasi snapshot role
-  menyertakan URL tautan, elemen yang dapat diklik yang dipromosikan kursor, dan metadata iframe.
+  atau `--interactive` saat Anda memerlukan ref tindakan.
+- Bukti Docker untuk jalur fallback raw-CDP: `pnpm test:docker:browser-cdp-snapshot`
+  memulai Chromium dengan CDP, menjalankan `browser doctor --deep`, dan memverifikasi snapshot peran
+  menyertakan URL tautan, elemen dapat diklik yang dinaikkan dari kursor, dan metadata iframe.
 
 Perilaku ref:
 
-- Ref **tidak stabil antar navigasi**; jika sesuatu gagal, jalankan ulang `snapshot` dan gunakan ref baru.
-- `/act` mengembalikan `targetId` raw saat ini setelah penggantian yang dipicu tindakan
-  ketika dapat membuktikan tab pengganti. Tetap gunakan id/label tab yang stabil untuk
+- Ref **tidak stabil di antara navigasi**; jika sesuatu gagal, jalankan ulang `snapshot` dan gunakan ref baru.
+- `/act` mengembalikan `targetId` mentah saat ini setelah penggantian yang dipicu tindakan
+  saat dapat membuktikan tab pengganti. Tetap gunakan ID/label tab stabil untuk
   perintah lanjutan.
-- Jika snapshot role diambil dengan `--frame`, ref role dicakup ke iframe tersebut hingga snapshot role berikutnya.
-- Ref `axN` yang tidak dikenal atau sudah usang gagal cepat alih-alih jatuh ke
+- Jika snapshot peran diambil dengan `--frame`, ref peran dicakup ke iframe tersebut hingga snapshot peran berikutnya.
+- Ref `axN` yang tidak dikenal atau usang gagal cepat alih-alih jatuh ke
   selector `aria-ref` Playwright. Jalankan snapshot baru pada tab yang sama saat
-  hal itu terjadi.
+  itu terjadi.
 
-## Peningkatan kemampuan wait
+## Peningkatan wait
 
 Anda dapat menunggu lebih dari sekadar waktu/teks:
 
 - Tunggu URL (glob didukung oleh Playwright):
   - `openclaw browser wait --url "**/dash"`
-- Tunggu status pemuatan:
+- Tunggu status muat:
   - `openclaw browser wait --load networkidle`
-- Tunggu predicate JS:
+  - Didukung pada profil `openclaw` terkelola dan profil CDP raw/remote. Profil `user` dan `existing-session` menolak `networkidle`; gunakan wait `--url`, `--text`, selector, atau `--fn` di sana.
+- Tunggu predikat JS:
   - `openclaw browser wait --fn "window.ready===true"`
 - Tunggu selector menjadi terlihat:
   - `openclaw browser wait "#main"`
@@ -319,22 +350,22 @@ openclaw browser wait "#main" \
 
 ## Alur kerja debug
 
-Saat tindakan gagal (mis. "not visible", "strict mode violation", "covered"):
+Saat tindakan gagal (misalnya "not visible", "strict mode violation", "covered"):
 
 1. `openclaw browser snapshot --interactive`
-2. Gunakan `click <ref>` / `type <ref>` (utamakan ref role dalam mode interaktif)
+2. Gunakan `click <ref>` / `type <ref>` (utamakan ref peran dalam mode interaktif)
 3. Jika masih gagal: `openclaw browser highlight <ref>` untuk melihat apa yang ditargetkan Playwright
 4. Jika halaman berperilaku aneh:
    - `openclaw browser errors --clear`
    - `openclaw browser requests --filter api --clear`
-5. Untuk debugging mendalam: rekam trace:
+5. Untuk debug mendalam: rekam trace:
    - `openclaw browser trace start`
-   - reproduksi masalahnya
+   - reproduksi masalah
    - `openclaw browser trace stop` (mencetak `TRACE:<path>`)
 
 ## Output JSON
 
-`--json` digunakan untuk scripting dan tooling terstruktur.
+`--json` ditujukan untuk scripting dan tooling terstruktur.
 
 Contoh:
 
@@ -345,9 +376,9 @@ openclaw browser requests --filter api --json
 openclaw browser cookies --json
 ```
 
-Snapshot role dalam JSON menyertakan `refs` plus blok `stats` kecil (lines/chars/refs/interactive) sehingga tool dapat menalar ukuran dan kepadatan payload.
+Snapshot peran dalam JSON menyertakan `refs` plus blok `stats` kecil (lines/chars/refs/interactive) agar tool dapat menalar ukuran dan kepadatan payload.
 
-## Pengaturan status dan lingkungan
+## Kenop status dan lingkungan
 
 Ini berguna untuk alur kerja "buat situs berperilaku seperti X":
 
@@ -355,7 +386,7 @@ Ini berguna untuk alur kerja "buat situs berperilaku seperti X":
 - Storage: `storage local|session get|set|clear`
 - Offline: `set offline on|off`
 - Header: `set headers --headers-json '{"X-Debug":"1"}'` (legacy `set headers --json '{"X-Debug":"1"}'` tetap didukung)
-- HTTP basic auth: `set credentials user pass` (atau `--clear`)
+- Autentikasi dasar HTTP: `set credentials user pass` (atau `--clear`)
 - Geolokasi: `set geo <lat> <lon> --origin "https://example.com"` (atau `--clear`)
 - Media: `set media dark|light|no-preference|none`
 - Zona waktu / locale: `set timezone ...`, `set locale ...`
@@ -367,13 +398,17 @@ Ini berguna untuk alur kerja "buat situs berperilaku seperti X":
 
 - Profil browser openclaw dapat berisi sesi yang sudah login; perlakukan sebagai sensitif.
 - `browser act kind=evaluate` / `openclaw browser evaluate` dan `wait --fn`
-  menjalankan JavaScript arbitrer dalam konteks halaman. Prompt injection dapat mengarahkan
+  mengeksekusi JavaScript arbitrer dalam konteks halaman. Prompt injection dapat mengarahkan
   ini. Nonaktifkan dengan `browser.evaluateEnabled=false` jika Anda tidak membutuhkannya.
-- Untuk login dan catatan anti-bot (X/Twitter, dll.), lihat [Login browser + posting X/Twitter](/id/tools/browser-login).
-- Jaga host Gateway/node tetap privat (loopback atau hanya tailnet).
-- Endpoint CDP jarak jauh sangat kuat; tunnel dan lindungi endpoint tersebut.
+- `openclaw browser evaluate --fn` menerima sumber fungsi, ekspresi, atau
+  body statement. Body statement dibungkus sebagai fungsi async, jadi gunakan
+  `return` untuk nilai yang ingin Anda dapatkan kembali. Gunakan `--timeout-ms <ms>` saat
+  fungsi sisi halaman mungkin membutuhkan waktu lebih lama daripada timeout evaluate bawaan.
+- Untuk catatan login dan anti-bot (X/Twitter, dll.), lihat [Login browser + posting X/Twitter](/id/tools/browser-login).
+- Jaga host Gateway/node tetap privat (loopback atau khusus tailnet).
+- Endpoint CDP remote sangat kuat; tunnel dan lindungi endpoint tersebut.
 
-Contoh strict-mode (blokir tujuan privat/internal secara default):
+Contoh strict-mode (blokir tujuan privat/internal secara bawaan):
 
 ```json5
 {

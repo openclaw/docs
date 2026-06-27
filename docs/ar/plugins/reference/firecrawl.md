@@ -1,27 +1,28 @@
 ---
 read_when:
-    - أنت تقوم بتثبيت Plugin firecrawl أو تكوينه أو تدقيقه
-summary: يضيف أدوات قابلة للاستدعاء من الوكيل. يضيف دعماً لمزوّد جلب الويب. يضيف دعماً لمزوّد بحث الويب.
+    - أنت بصدد تثبيت Plugin firecrawl أو تكوينه أو تدقيقه
+summary: يضيف أدوات قابلة للاستدعاء من الوكيل. يضيف دعم مزوّد جلب الويب. يضيف دعم مزوّد بحث الويب.
 title: Plugin Firecrawl
 x-i18n:
-    generated_at: "2026-05-02T20:55:56Z"
+    generated_at: "2026-06-27T18:12:31Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: bf5108c28abe3bd4b18178d224cd420487be10b37476731b52862e4cb29f90dc
+    source_hash: ca5577e6e850d947a3714e3dc62c7756faae8471e150d3cdb320a85efe3fe4f5
     source_path: plugins/reference/firecrawl.md
     workflow: 16
 ---
 
-# Firecrawl Plugin
+# Plugin Firecrawl
 
-يضيف أدوات قابلة للاستدعاء بواسطة الوكيل. يضيف دعم موفر جلب الويب. يضيف دعم موفر بحث الويب.
+يضيف أدوات قابلة للاستدعاء من الوكيل. يضيف دعم مزوّد جلب الويب. يضيف دعم مزوّد بحث الويب.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/firecrawl-plugin`
-- مسار التثبيت: مضمن في OpenClaw
+- مسار التثبيت: npm؛ ClawHub: `clawhub:@openclaw/firecrawl-plugin`
 
-## السطح
+## الواجهة
 
 العقود: tools, webFetchProviders, webSearchProviders
 

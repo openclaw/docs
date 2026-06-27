@@ -4,22 +4,23 @@ read_when:
 summary: پشتیبانی از ارائه‌دهندهٔ تبدیل متن به گفتار را اضافه می‌کند.
 title: Plugin Gradium
 x-i18n:
-    generated_at: "2026-05-02T20:54:00Z"
+    generated_at: "2026-06-27T18:26:15Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b3b783c4a93c3ef0eda61b4d007d4aebea805b977484db44e62e3b718ca7dd09
+    source_hash: 4ae70f3e901d44c238d6e1abcec13f67c0d19df6f82d92e365c3ddf0355ea23d
     source_path: plugins/reference/gradium.md
     workflow: 16
 ---
 
-# Gradium Plugin
+# Plugin گرادیوم
 
 پشتیبانی از ارائه‌دهندهٔ تبدیل متن به گفتار را اضافه می‌کند.
 
 ## توزیع
 
 - بسته: `@openclaw/gradium-speech`
-- مسیر نصب: در OpenClaw گنجانده شده است
+- مسیر نصب: npm؛ ClawHub: `clawhub:@openclaw/gradium-speech`
 
 ## سطح
 
@@ -27,4 +28,4 @@ x-i18n:
 
 ## مستندات مرتبط
 
-- [gradium](/fa/providers/gradium)
+- [گرادیوم](/fa/providers/gradium)

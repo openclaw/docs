@@ -1,20 +1,21 @@
 ---
 read_when:
     - شما در حال نصب، پیکربندی یا ممیزی Plugin diagnostics-prometheus هستید
-summary: صادرکنندهٔ Prometheus برای عیب‌یابی OpenClaw.
-title: Plugin عیب‌یابی Prometheus
+summary: صادرکننده Prometheus تشخیص‌های OpenClaw برای معیارهای زمان اجرا.
+title: Plugin پرومتئوس تشخیص‌ها
 x-i18n:
-    generated_at: "2026-05-03T11:41:35Z"
+    generated_at: "2026-06-27T18:25:03Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d69cf5b607ea7d93ed5886e63816716fef762a7b144d8a0d1b92c0101aa3678c
+    source_hash: dbf2b296f6ff8a468ad0072dc78066a48a9bee26cf1d233506aeae79149b5822
     source_path: plugins/reference/diagnostics-prometheus.md
     workflow: 16
 ---
 
-# Plugin Prometheus عیب‌یابی
+# Plugin تشخیص Prometheus
 
-صادرکننده Prometheus عیب‌یابی OpenClaw.
+صادرکننده Prometheus برای تشخیص‌های OpenClaw جهت سنجه‌های زمان اجرا.
 
 ## توزیع
 

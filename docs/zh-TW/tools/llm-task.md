@@ -1,27 +1,28 @@
 ---
 read_when:
-    - 您想在工作流程中加入僅輸出 JSON 的 LLM 步驟
-    - 你需要經過結構描述驗證的大型語言模型輸出來進行自動化
-summary: 工作流程的僅限 JSON LLM 任務（選用的 Plugin 工具）
+    - 你想要在工作流程內加入僅輸出 JSON 的 LLM 步驟
+    - 你需要經過結構描述驗證的 LLM 輸出用於自動化
+summary: 用於工作流程的僅 JSON LLM 任務（選用外掛工具）
 title: LLM 任務
 x-i18n:
-    generated_at: "2026-05-07T13:26:19Z"
+    generated_at: "2026-06-27T20:08:33Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4f5efe399165e31a7f5966b93c2f83bced4fd96b7f04f5156412fd321bf5f403
+    source_hash: ab83202bd0954a948c933c80de17385eb385573b8e3974dba41ff876f91c3ddb
     source_path: tools/llm-task.md
     workflow: 16
 ---
 
-`llm-task` 是一個**選用的 Plugin 工具**，會執行僅限 JSON 的 LLM 任務，並
+`llm-task` 是一個**選用外掛工具**，會執行僅限 JSON 的 LLM 任務，並
 傳回結構化輸出（可選擇依 JSON Schema 驗證）。
 
-這很適合像 Lobster 這類工作流程引擎：你可以加入單一 LLM 步驟，
+這很適合 Lobster 這類工作流程引擎：你可以加入單一 LLM 步驟，
 而不必為每個工作流程撰寫自訂 OpenClaw 程式碼。
 
-## 啟用 Plugin
+## 啟用外掛
 
-1. 啟用 Plugin：
+1. 啟用外掛：
 
 ```json
 {
@@ -54,10 +55,10 @@ x-i18n:
       "llm-task": {
         "enabled": true,
         "config": {
-          "defaultProvider": "openai-codex",
+          "defaultProvider": "openai",
           "defaultModel": "gpt-5.5",
           "defaultAuthProfileId": "main",
-          "allowedModels": ["openai/gpt-5.4"],
+          "allowedModels": ["openai/gpt-5.5"],
           "maxTokens": 800,
           "timeoutMs": 30000
         }
@@ -67,13 +68,13 @@ x-i18n:
 }
 ```
 
-`allowedModels` 是 `provider/model` 字串的允許清單。如果有設定，任何不在清單中的請求
-都會被拒絕。
+`allowedModels` 是 `provider/model` 字串的允許清單。如果有設定，任何
+不在清單中的請求都會被拒絕。
 
 ## 工具參數
 
 - `prompt`（字串，必填）
-- `input`（任何值，選填）
+- `input`（任意，選填）
 - `schema`（物件，選填 JSON Schema）
 - `provider`（字串，選填）
 - `model`（字串，選填）
@@ -83,31 +84,30 @@ x-i18n:
 - `maxTokens`（數字，選填）
 - `timeoutMs`（數字，選填）
 
-`thinking` 接受標準 OpenClaw 推理預設值，例如 `low` 或 `medium`。
+`thinking` 接受標準 OpenClaw 推理預設，例如 `low` 或 `medium`。
 
 ## 輸出
 
-傳回包含已剖析 JSON 的 `details.json`（並在提供 `schema` 時依其
-驗證）。
+傳回包含已剖析 JSON 的 `details.json`（並在提供 `schema` 時依其驗證）。
 
 ## 範例：Lobster 工作流程步驟
 
 ### 重要限制
 
-下列範例假設**獨立版 Lobster CLI** 正在某個環境中執行，且 `openclaw.invoke` 已具備正確的 Gateway URL/驗證情境。
+以下範例假設**獨立 Lobster 命令列介面**是在 `openclaw.invoke` 已具備正確閘道 URL/驗證內容的環境中執行。
 
-對於 OpenClaw 內建的**嵌入式** Lobster 執行器，這種巢狀 CLI 模式**目前不可靠**：
+對於 OpenClaw 內建的**嵌入式** Lobster 執行器，這種巢狀命令列介面模式**目前並不可靠**：
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{ ... }'
 ```
 
-在嵌入式 Lobster 支援此流程的橋接之前，請優先使用下列任一方式：
+在嵌入式 Lobster 尚未為此流程提供受支援的橋接之前，請優先使用以下任一方式：
 
-- 在 Lobster 之外直接呼叫 `llm-task` 工具，或
+- 在 Lobster 外部直接呼叫 `llm-task` 工具，或
 - 使用不依賴巢狀 `openclaw.invoke` 呼叫的 Lobster 步驟。
 
-獨立版 Lobster CLI 範例：
+獨立 Lobster 命令列介面範例：
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{
@@ -131,11 +131,11 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 
 ## 安全注意事項
 
-- 此工具**僅限 JSON**，並指示模型只輸出 JSON（沒有
-  程式碼區塊，沒有評論）。
-- 此次執行不會向模型公開任何工具。
-- 除非你使用 `schema` 驗證，否則請將輸出視為不受信任。
-- 在任何會產生副作用的步驟（傳送、發布、執行）之前加入核准。
+- 此工具**僅限 JSON**，並指示模型只輸出 JSON（不含
+  程式碼圍欄、無評論）。
+- 這次執行不會向模型公開任何工具。
+- 除非你使用 `schema` 驗證，否則應將輸出視為不受信任。
+- 在任何具副作用的步驟（send、post、exec）之前放置核准。
 
 ## 相關
 

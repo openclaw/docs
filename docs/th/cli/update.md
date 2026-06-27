@@ -1,31 +1,33 @@
 ---
 read_when:
-    - คุณต้องการอัปเดตสำเนาซอร์สที่เช็กเอาต์ไว้อย่างปลอดภัย
+    - คุณต้องการอัปเดตเช็กเอาต์ซอร์สอย่างปลอดภัย
     - คุณกำลังดีบักเอาต์พุตหรือตัวเลือกของ `openclaw update`
-    - คุณต้องเข้าใจลักษณะการทำงานแบบย่อของ `--update`
-summary: เอกสารอ้างอิง CLI สำหรับ `openclaw update` (การอัปเดตซอร์สที่ค่อนข้างปลอดภัย + การรีสตาร์ต Gateway อัตโนมัติ)
+    - คุณต้องเข้าใจพฤติกรรมของรูปแบบย่อ `--update`
+summary: ข้อมูลอ้างอิง CLI สำหรับ `openclaw update` (อัปเดตแหล่งที่มาที่ค่อนข้างปลอดภัย + รีสตาร์ท Gateway อัตโนมัติ)
 title: อัปเดต
 x-i18n:
-    generated_at: "2026-05-12T08:45:43Z"
+    generated_at: "2026-06-27T17:24:38Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 93244af800aaa53c55a52f9593a7727910aa91acac9d1e34e89c39a95b133461
+    source_hash: a3503e1cd15baa4d4f6c26734b37556831c612f1da0da5ccfe7bcde35b9be64b
     source_path: cli/update.md
     workflow: 16
 ---
 
 # `openclaw update`
 
-อัปเดต OpenClaw อย่างปลอดภัยและสลับระหว่างช่องทาง stable/beta/dev
+อัปเดต OpenClaw อย่างปลอดภัย และสลับระหว่างช่องทาง stable/beta/dev
 
 หากคุณติดตั้งผ่าน **npm/pnpm/bun** (ติดตั้งแบบ global ไม่มีข้อมูลเมตา git)
-การอัปเดตจะเกิดขึ้นผ่านขั้นตอน package-manager ใน [การอัปเดต](/th/install/updating)
+การอัปเดตจะเกิดขึ้นผ่านโฟลว์ตัวจัดการแพ็กเกจใน [การอัปเดต](/th/install/updating)
 
 ## การใช้งาน
 
 ```bash
 openclaw update
 openclaw update status
+openclaw update repair
 openclaw update wizard
 openclaw update --channel beta
 openclaw update --channel dev
@@ -34,43 +36,49 @@ openclaw update --tag main
 openclaw update --dry-run
 openclaw update --no-restart
 openclaw update --yes
+openclaw update --acknowledge-clawhub-risk
 openclaw update --json
 openclaw --update
 ```
 
 ## ตัวเลือก
 
-- `--no-restart`: ข้ามการรีสตาร์ตบริการ Gateway หลังการอัปเดตสำเร็จ การอัปเดตผ่าน package-manager ที่รีสตาร์ต Gateway จะตรวจสอบว่าบริการที่รีสตาร์ตรายงานเวอร์ชันที่อัปเดตตามที่คาดไว้ก่อนที่คำสั่งจะสำเร็จ
-- `--channel <stable|beta|dev>`: ตั้งค่าช่องทางอัปเดต (git + npm; บันทึกไว้ในคอนฟิก)
-- `--tag <dist-tag|version|spec>`: แทนที่เป้าหมายแพ็กเกจสำหรับการอัปเดตครั้งนี้เท่านั้น สำหรับการติดตั้งแบบแพ็กเกจ `main` จะแมปไปยัง `github:openclaw/openclaw#main`
-- `--dry-run`: ดูตัวอย่างการดำเนินการอัปเดตที่วางแผนไว้ (ช่องทาง/แท็ก/เป้าหมาย/ขั้นตอนรีสตาร์ต) โดยไม่เขียนคอนฟิก ติดตั้ง ซิงก์ plugins หรือรีสตาร์ต
+- `--no-restart`: ข้ามการรีสตาร์ตบริการ Gateway หลังจากอัปเดตสำเร็จ การอัปเดตผ่านตัวจัดการแพ็กเกจที่รีสตาร์ต Gateway จะตรวจสอบว่าบริการที่รีสตาร์ตรายงานเวอร์ชันที่อัปเดตตามที่คาดไว้ก่อนที่คำสั่งจะสำเร็จ
+- `--channel <stable|beta|dev>`: ตั้งค่าช่องทางอัปเดต (git + npm; บันทึกคงไว้ใน config)
+- `--tag <dist-tag|version|spec>`: แทนที่เป้าหมายแพ็กเกจสำหรับการอัปเดตครั้งนี้เท่านั้น สำหรับการติดตั้งแพ็กเกจ `main` จะ map ไปที่ `github:openclaw/openclaw#main`; สเปกซอร์ส GitHub/git จะถูกแพ็กเป็น tarball ชั่วคราวก่อนการติดตั้ง npm แบบ global ที่จัดเตรียมไว้
+- `--dry-run`: แสดงตัวอย่างการดำเนินการอัปเดตที่วางแผนไว้ (โฟลว์ channel/tag/target/restart) โดยไม่เขียน config, ติดตั้ง, ซิงก์ Plugin หรือรีสตาร์ต
 - `--json`: พิมพ์ JSON `UpdateRunResult` ที่เครื่องอ่านได้ รวมถึง
-  `postUpdate.plugins.warnings` เมื่อ plugins ที่จัดการอยู่เสียหายหรือโหลดไม่ได้และต้อง
-  ซ่อมแซมหลังการอัปเดตแกนหลักสำเร็จ รายละเอียดการถอยกลับของ Plugin ในช่องทาง beta
+  `postUpdate.plugins.warnings` เมื่อ Plugin ที่จัดการไว้เสียหายหรือโหลดไม่ได้และต้อง
+  ซ่อมหลังจากการอัปเดต core สำเร็จ รายละเอียดการ fallback ของ Plugin ช่องทาง beta
   เมื่อ Plugin ไม่มีรุ่น beta และ `postUpdate.plugins.integrityDrifts`
-  เมื่อพบความคลาดเคลื่อนของอาร์ติแฟกต์ Plugin ของ npm ระหว่างการซิงก์ Plugin หลังอัปเดต
-- `--timeout <seconds>`: เวลาหมดอายุต่อขั้นตอน (ค่าเริ่มต้นคือ 1800 วินาที)
+  เมื่อตรวจพบการคลาดเคลื่อนของอาร์ติแฟกต์ Plugin npm ระหว่างการซิงก์ Plugin หลังอัปเดต
+- `--timeout <seconds>`: ระยะหมดเวลาต่อขั้นตอน (ค่าเริ่มต้นคือ 1800s)
 - `--yes`: ข้ามพรอมป์ยืนยัน (เช่น การยืนยันการดาวน์เกรด)
+- `--acknowledge-clawhub-risk`: หลังจากตรวจสอบคำเตือนความน่าเชื่อถือของ ClawHub ชุมชนแล้ว
+  อนุญาตให้การซิงก์ Plugin หลังอัปเดตดำเนินต่อโดยไม่มีพรอมป์แบบโต้ตอบ
+  หากไม่มีตัวเลือกนี้ รุ่น Plugin ClawHub ชุมชนที่มีความเสี่ยงจะถูกข้ามและ
+  คงไว้ไม่เปลี่ยนแปลงเมื่อ OpenClaw ไม่สามารถแสดงพรอมป์ได้ แพ็กเกจ ClawHub อย่างเป็นทางการและ
+  ซอร์ส Plugin OpenClaw ที่รวมมากับระบบจะข้ามพรอมป์ความน่าเชื่อถือของรุ่นนี้
 
-`openclaw update` ไม่มีแฟล็ก `--verbose` ใช้ `--dry-run` เพื่อดูตัวอย่าง
-การดำเนินการช่องทาง/แท็ก/ติดตั้ง/รีสตาร์ตที่วางแผนไว้, `--json` สำหรับผลลัพธ์
-ที่เครื่องอ่านได้ และ `openclaw update status --json` เมื่อคุณต้องการเฉพาะรายละเอียด
-ช่องทางและความพร้อมใช้งาน หากคุณกำลังดีบักบันทึก Gateway ในช่วงการอัปเดต
-ระดับความละเอียดของคอนโซลและระดับบันทึกไฟล์จะแยกกัน: Gateway `--verbose` มีผลต่อ
-เอาต์พุตเทอร์มินัล/WebSocket ขณะที่บันทึกไฟล์ต้องใช้ `logging.level: "debug"` หรือ
-`"trace"` ในคอนฟิก ดู [การบันทึก Gateway](/th/gateway/logging)
+`openclaw update` ไม่มีแฟล็ก `--verbose` ใช้ `--dry-run` เพื่อแสดงตัวอย่าง
+การดำเนินการ channel/tag/install/restart ที่วางแผนไว้, `--json` สำหรับผลลัพธ์ที่เครื่องอ่านได้
+และ `openclaw update status --json` เมื่อคุณต้องการเพียงรายละเอียดช่องทางและ
+ความพร้อมใช้งาน หากคุณกำลังดีบักบันทึก Gateway ระหว่างการอัปเดต
+ความละเอียดของคอนโซลและระดับบันทึกไฟล์จะแยกกัน: Gateway `--verbose` มีผลต่อ
+เอาต์พุต terminal/WebSocket ส่วนบันทึกไฟล์ต้องใช้ `logging.level: "debug"` หรือ
+`"trace"` ใน config ดู [การบันทึก Gateway](/th/gateway/logging)
 
 <Note>
-ในโหมด Nix (`OPENCLAW_NIX_MODE=1`) การรัน `openclaw update` ที่เปลี่ยนแปลงระบบจะถูกปิดใช้งาน ให้อัปเดตซอร์ส Nix หรืออินพุต flake สำหรับการติดตั้งนี้แทน; สำหรับ nix-openclaw ให้ใช้ [เริ่มต้นอย่างรวดเร็ว](https://github.com/openclaw/nix-openclaw#quick-start) แบบ agent-first `openclaw update status` และ `openclaw update --dry-run` ยังคงเป็นแบบอ่านอย่างเดียว
+ในโหมด Nix (`OPENCLAW_NIX_MODE=1`) การรัน `openclaw update` ที่เปลี่ยนแปลงสถานะจะถูกปิดใช้งาน ให้อัปเดตซอร์ส Nix หรืออินพุต flake สำหรับการติดตั้งนี้แทน; สำหรับ nix-openclaw ให้ใช้ [เริ่มต้นอย่างรวดเร็ว](https://github.com/openclaw/nix-openclaw#quick-start) แบบ agent-first `openclaw update status` และ `openclaw update --dry-run` ยังคงเป็นแบบอ่านอย่างเดียว
 </Note>
 
 <Warning>
-การดาวน์เกรดต้องมีการยืนยัน เพราะเวอร์ชันเก่าอาจทำให้คอนฟิกเสียหายได้
+การดาวน์เกรดต้องมีการยืนยัน เพราะเวอร์ชันเก่าอาจทำให้การกำหนดค่าเสียหายได้
 </Warning>
 
 ## `update status`
 
-แสดงช่องทางอัปเดตที่ใช้งานอยู่ + แท็ก/สาขา/SHA ของ git (สำหรับ source checkouts) พร้อมสถานะความพร้อมของอัปเดต
+แสดงช่องทางอัปเดตที่ใช้งานอยู่ + tag/branch/SHA ของ git (สำหรับ source checkout) พร้อมความพร้อมใช้งานของอัปเดต
 
 ```bash
 openclaw update status
@@ -81,133 +89,214 @@ openclaw update status --timeout 10
 ตัวเลือก:
 
 - `--json`: พิมพ์ JSON สถานะที่เครื่องอ่านได้
-- `--timeout <seconds>`: เวลาหมดอายุสำหรับการตรวจสอบ (ค่าเริ่มต้นคือ 3 วินาที)
+- `--timeout <seconds>`: ระยะหมดเวลาสำหรับการตรวจสอบ (ค่าเริ่มต้นคือ 3s)
+
+## `update repair`
+
+รันการจบงานอัปเดตอีกครั้งหลังจากแพ็กเกจ core เปลี่ยนไปแล้ว แต่ภายหลัง
+งานซ่อมไม่เสร็จเรียบร้อย นี่คือเส้นทางกู้คืนที่รองรับเมื่อ
+`openclaw update` ติดตั้งแพ็กเกจ core ใหม่แล้ว แต่การซิงก์ Plugin หลัง core,
+ข้อมูลเมตา Plugin npm ที่จัดการไว้, การรีเฟรช registry หรือการซ่อม doctor ยังต้อง
+ทำให้เข้าที่
+
+```bash
+openclaw update repair
+openclaw update repair --channel beta
+openclaw update repair --acknowledge-clawhub-risk
+openclaw update repair --json
+```
+
+ตัวเลือก:
+
+- `--channel <stable|beta|dev>`: บันทึกช่องทางอัปเดตก่อนซ่อมและ
+  รันการทำให้ Plugin เข้าที่กับช่องทางนั้น
+- `--json`: พิมพ์ JSON การจบงานที่เครื่องอ่านได้
+- `--timeout <seconds>`: ระยะหมดเวลาสำหรับขั้นตอนซ่อม (ค่าเริ่มต้น `1800`)
+- `--yes`: ข้ามพรอมป์ยืนยัน
+- `--acknowledge-clawhub-risk`: หลังจากตรวจสอบคำเตือนความน่าเชื่อถือของ ClawHub ชุมชนแล้ว
+  อนุญาตให้การทำให้ Plugin เข้าที่ในช่วงซ่อมดำเนินต่อโดยไม่มี
+  พรอมป์แบบโต้ตอบ แพ็กเกจ ClawHub อย่างเป็นทางการและซอร์ส Plugin OpenClaw
+  ที่รวมมากับระบบจะข้ามพรอมป์ความน่าเชื่อถือของรุ่นนี้
+- `--no-restart`: รับไว้เพื่อให้สอดคล้องกับคำสั่ง update; repair จะไม่รีสตาร์ต
+  Gateway
+
+`openclaw update repair` รัน `openclaw doctor --fix`, โหลด config และบันทึกการติดตั้ง
+ที่ซ่อมแล้วใหม่, ซิงก์ Plugin ที่ติดตามไว้สำหรับช่องทางอัปเดตที่ใช้งานอยู่,
+อัปเดตการติดตั้ง Plugin npm ที่จัดการไว้, ซ่อม payload ของ Plugin ที่กำหนดค่าไว้แต่ขาดหาย,
+รีเฟรช Plugin registry และเขียนข้อมูลเมตาบันทึกการติดตั้งที่เข้าที่แล้ว
+คำสั่งนี้ไม่ติดตั้งแพ็กเกจ core ใหม่และไม่รีสตาร์ต Gateway
 
 ## `update wizard`
 
-ขั้นตอนแบบโต้ตอบเพื่อเลือกช่องทางอัปเดตและยืนยันว่าจะรีสตาร์ต Gateway
+โฟลว์แบบโต้ตอบเพื่อเลือกช่องทางอัปเดตและยืนยันว่าจะรีสตาร์ต Gateway
 หลังอัปเดตหรือไม่ (ค่าเริ่มต้นคือรีสตาร์ต) หากคุณเลือก `dev` โดยไม่มี git checkout ระบบจะ
 เสนอให้สร้างให้
 
 ตัวเลือก:
 
-- `--timeout <seconds>`: เวลาหมดอายุสำหรับแต่ละขั้นตอนการอัปเดต (ค่าเริ่มต้น `1800`)
+- `--timeout <seconds>`: ระยะหมดเวลาสำหรับแต่ละขั้นตอนอัปเดต (ค่าเริ่มต้น `1800`)
 
 ## สิ่งที่ทำ
 
-เมื่อคุณสลับช่องทางอย่างชัดเจน (`--channel ...`) OpenClaw จะรักษา
-วิธีติดตั้งให้สอดคล้องกันด้วย:
+เมื่อคุณสลับช่องทางอย่างชัดเจน (`--channel ...`) OpenClaw จะคงวิธีการ
+ติดตั้งให้สอดคล้องด้วย:
 
-- `dev` → รับประกันว่ามี git checkout (ค่าเริ่มต้น: `~/openclaw`, แทนที่ด้วย `OPENCLAW_GIT_DIR`),
+- `dev` → ทำให้แน่ใจว่ามี git checkout (ค่าเริ่มต้น: `~/openclaw` หรือ `$OPENCLAW_HOME/openclaw` เมื่อ
+  ตั้งค่า `OPENCLAW_HOME`; แทนที่ได้ด้วย `OPENCLAW_GIT_DIR`),
   อัปเดต checkout นั้น และติดตั้ง CLI แบบ global จาก checkout นั้น
 - `stable` → ติดตั้งจาก npm โดยใช้ `latest`
-- `beta` → ให้ความสำคัญกับ npm dist-tag `beta` แต่ถอยกลับไปใช้ `latest` เมื่อ beta
+- `beta` → เลือกใช้ npm dist-tag `beta` ก่อน แต่ fallback ไปที่ `latest` เมื่อ beta
   ไม่มีหรือเก่ากว่ารุ่น stable ปัจจุบัน
 
-ตัวอัปเดตอัตโนมัติของแกน Gateway (เมื่อเปิดใช้ผ่านคอนฟิก) จะเปิดเส้นทางอัปเดต CLI
-ภายนอกตัวจัดการคำขอ Gateway ที่กำลังทำงานอยู่ การอัปเดต package-manager ผ่าน control-plane `update.run`
-จะบังคับให้มีการรีสตาร์ตอัปเดตแบบไม่เลื่อนเวลาและไม่มีคูลดาวน์หลังการสลับแพ็กเกจ
-เพราะกระบวนการ Gateway เก่าอาจยังมีชิ้นส่วนในหน่วยความจำที่ชี้ไปยัง
-ไฟล์ที่แพ็กเกจใหม่ลบออกแล้ว
-
-สำหรับการติดตั้งผ่าน package-manager, `openclaw update` จะแก้หาเวอร์ชัน
-แพ็กเกจเป้าหมายก่อนเรียก package manager การติดตั้ง npm แบบ global ใช้การติดตั้งแบบจัดเตรียม:
-OpenClaw ติดตั้งแพ็กเกจใหม่ลงใน prefix ชั่วคราวของ npm ตรวจสอบ
-รายการ `dist` ที่แพ็กเกจไว้ที่นั่น แล้วจึงสลับ tree ของแพ็กเกจที่สะอาดนั้นเข้าไปใน
-prefix global จริง หากการตรวจสอบล้มเหลว งาน doctor หลังอัปเดต การซิงก์ Plugin และ
-การรีสตาร์ตจะไม่รันจาก tree ที่น่าสงสัยนั้น แม้เวอร์ชันที่ติดตั้งอยู่
-จะตรงกับเป้าหมายแล้ว คำสั่งก็จะรีเฟรชการติดตั้งแพ็กเกจ global,
-จากนั้นรันการซิงก์ Plugin, การรีเฟรช completion ของคำสั่งแกนหลัก และงานรีสตาร์ต สิ่งนี้
-ช่วยให้ sidecar ที่แพ็กเกจไว้และระเบียน Plugin ที่ช่องทางเป็นเจ้าของสอดคล้องกับ
-บิลด์ OpenClaw ที่ติดตั้งอยู่ ขณะที่ปล่อยให้การสร้าง completion ของคำสั่ง Plugin แบบเต็ม
-ทำผ่านการรัน `openclaw completion --write-state` อย่างชัดเจน
-
-เมื่อมีบริการ Gateway ในเครื่องที่จัดการอยู่ติดตั้งไว้และเปิดใช้การรีสตาร์ต
-การอัปเดตผ่าน package-manager จะหยุดบริการที่กำลังทำงานก่อนแทนที่ tree ของแพ็กเกจ
-จากนั้นรีเฟรชข้อมูลเมตาของบริการจากการติดตั้งที่อัปเดต รีสตาร์ต
-บริการ และตรวจสอบว่า Gateway ที่รีสตาร์ตรายงานเวอร์ชันที่คาดไว้ก่อน
-รายงานว่าสำเร็จ บน macOS การตรวจสอบหลังอัปเดตยังตรวจสอบว่า LaunchAgent
-ถูกโหลด/ทำงานสำหรับโปรไฟล์ที่ใช้งานอยู่ และพอร์ตลูปแบ็กที่กำหนดค่าไว้
-มีสถานะปกติ หากติดตั้ง plist แล้วแต่ launchd ไม่ได้กำกับดูแลอยู่ OpenClaw
-จะ bootstrap LaunchAgent ใหม่โดยอัตโนมัติ แล้วรันการตรวจสอบ
-ความพร้อมด้านสุขภาพ/เวอร์ชัน/ช่องทางอีกครั้ง bootstrap ใหม่จะโหลดงาน RunAtLoad
-โดยตรง ดังนั้นการกู้คืนอัปเดตจะไม่ `kickstart -k` Gateway ที่เพิ่ง
-เริ่มขึ้นทันที หาก Gateway ยังไม่พร้อมใช้งาน คำสั่งจะออกด้วย
-รหัสไม่เป็นศูนย์และพิมพ์เส้นทางบันทึกการรีสตาร์ต พร้อมคำสั่งรีสตาร์ต ติดตั้งใหม่ และ
-ย้อนกลับแพ็กเกจอย่างชัดเจน เมื่อใช้ `--no-restart`,
-การแทนที่แพ็กเกจยังคงรัน แต่บริการที่จัดการอยู่จะไม่ถูกหยุดหรือ
-รีสตาร์ต ดังนั้น Gateway ที่กำลังทำงานอาจยังใช้โค้ดเก่าจนกว่าคุณจะรีสตาร์ต
+ตัวอัปเดตอัตโนมัติของ core Gateway (เมื่อเปิดใช้ผ่าน config) จะเปิดเส้นทางอัปเดต CLI
+นอกตัวจัดการคำขอ Gateway ที่กำลังทำงานอยู่ การอัปเดตผ่านตัวจัดการแพ็กเกจ
+`update.run` ของระนาบควบคุมและการอัปเดต git-checkout ที่ถูกควบคุมดูแลจะใช้
+การส่งต่อให้บริการที่จัดการไว้เช่นกัน แทนการแทนที่แผนผังแพ็กเกจหรือ rebuild
+`dist/` ภายในกระบวนการ Gateway ที่กำลังทำงาน Gateway จะเริ่มตัวช่วยแบบ detached,
+ออกจากกระบวนการ และตัวช่วยจะรันเส้นทาง CLI ปกติ `openclaw update --yes --json`
+จากนอกแผนผังกระบวนการ Gateway หากการส่งต่อนั้นใช้ไม่ได้
+`update.run` จะส่งคืนคำตอบแบบมีโครงสร้างพร้อมคำสั่ง shell ที่ปลอดภัยให้รัน
 ด้วยตนเอง
 
-## ขั้นตอน git checkout
+สำหรับการติดตั้งผ่านตัวจัดการแพ็กเกจ `openclaw update` จะ resolve เวอร์ชันแพ็กเกจเป้าหมาย
+ก่อนเรียกใช้ตัวจัดการแพ็กเกจ การติดตั้ง npm แบบ global ใช้การติดตั้งแบบจัดเตรียม:
+OpenClaw ติดตั้งแพ็กเกจใหม่ลงใน npm prefix ชั่วคราว ตรวจสอบ
+inventory ของ `dist` ที่แพ็กไว้ที่นั่น แล้วสลับแผนผังแพ็กเกจสะอาดนั้นเข้าไปใน
+global prefix จริง หากการตรวจสอบล้มเหลว doctor หลังอัปเดต, การซิงก์ Plugin และ
+งานรีสตาร์ตจะไม่รันจากแผนผังที่น่าสงสัยนั้น แม้เมื่อเวอร์ชันที่ติดตั้ง
+ตรงกับเป้าหมายอยู่แล้ว คำสั่งจะรีเฟรชการติดตั้งแพ็กเกจ global,
+จากนั้นรันการซิงก์ Plugin, การรีเฟรช completion ของคำสั่ง core และงานรีสตาร์ต สิ่งนี้
+ช่วยให้ sidecar ที่แพ็กไว้และบันทึก Plugin ที่ช่องทางเป็นเจ้าของสอดคล้องกับ
+build OpenClaw ที่ติดตั้งอยู่ โดยปล่อยการ rebuild completion ของคำสั่ง Plugin ทั้งหมดให้กับ
+การรัน `openclaw completion --write-state` ที่สั่งอย่างชัดเจน
+
+เมื่อบริการ Gateway ที่จัดการไว้แบบ local ติดตั้งอยู่และเปิดใช้การรีสตาร์ต
+การอัปเดตผ่านตัวจัดการแพ็กเกจและ git-checkout จะหยุดบริการที่กำลังรันก่อน
+แทนที่แผนผังแพ็กเกจหรือเปลี่ยนแปลง checkout/build output จากนั้นตัวอัปเดต
+จะรีเฟรชข้อมูลเมตาบริการจากการติดตั้งที่อัปเดตแล้ว รีสตาร์ต
+บริการ และตรวจสอบ Gateway ที่รีสตาร์ตก่อนรายงาน
+`Gateway: restarted and verified.` การอัปเดตผ่านตัวจัดการแพ็กเกจยังตรวจสอบเพิ่มเติมว่า
+Gateway ที่รีสตาร์ตรายงานเวอร์ชันแพ็กเกจที่คาดไว้; การอัปเดต git-checkout
+ตรวจสอบสุขภาพ gateway และความพร้อมของบริการหลังการ rebuild บน macOS
+การตรวจสอบหลังอัปเดตยังตรวจสอบว่า LaunchAgent ถูกโหลด/กำลังรันสำหรับโปรไฟล์ที่ใช้งานอยู่
+และพอร์ต loopback ที่กำหนดค่าสุขภาพดี หากติดตั้ง plist แล้ว
+แต่ launchd ไม่ได้ควบคุมดูแล OpenClaw จะ bootstrap LaunchAgent ใหม่
+โดยอัตโนมัติ แล้วรันการตรวจสุขภาพ/เวอร์ชัน/ช่องทางซ้ำ การ bootstrap ใหม่
+โหลดงาน RunAtLoad โดยตรง ดังนั้นการกู้คืนการอัปเดตจะไม่
+`kickstart -k` Gateway ที่เพิ่ง spawn ทันที หาก Gateway ยัง
+ไม่สุขภาพดี คำสั่งจะออกด้วย non-zero และพิมพ์ path บันทึกการรีสตาร์ต
+พร้อมคำแนะนำการรีสตาร์ต, ติดตั้งใหม่ และ rollback แพ็กเกจอย่างชัดเจน หากรีสตาร์ต
+รันไม่ได้ คำสั่งจะพิมพ์ `Gateway: restart skipped (...)` หรือ
+`Gateway: restart failed: ...` พร้อมคำใบ้ `openclaw gateway restart` แบบทำเอง
+เมื่อใช้ `--no-restart` การแทนที่แพ็กเกจหรือ rebuild git ยังคงรัน แต่
+บริการที่จัดการไว้จะไม่ถูกหยุดหรือรีสตาร์ต ดังนั้น Gateway ที่กำลังรันอาจยังใช้โค้ดเก่า
+จนกว่าคุณจะรีสตาร์ตด้วยตนเอง
+
+### รูปแบบคำตอบของระนาบควบคุม
+
+เมื่อเรียก `update.run` ผ่านระนาบควบคุมของ Gateway บนการติดตั้ง
+ผ่านตัวจัดการแพ็กเกจหรือ git checkout ที่ถูกควบคุมดูแล ตัวจัดการจะรายงาน
+การเริ่มต้น handoff แยกจากการอัปเดต CLI ที่ดำเนินต่อหลังจาก
+Gateway ออก:
+
+- `ok: true`, `result.status: "skipped"`,
+  `result.reason: "managed-service-handoff-started"` และ
+  `handoff.status: "started"` หมายความว่า Gateway สร้าง handoff ให้บริการที่จัดการไว้
+  และกำหนดเวลาการรีสตาร์ตของตัวเอง เพื่อให้ตัวช่วยแบบ detached สามารถรัน
+  `openclaw update --yes --json` นอกกระบวนการบริการที่กำลังทำงานอยู่
+- `ok: false`, `result.reason: "managed-service-handoff-unavailable"` และ
+  `handoff.status: "unavailable"` หมายความว่า OpenClaw ไม่พบขอบเขตบริการที่ควบคุมดูแล
+  และตัวตนบริการที่คงทนสำหรับ handoff ที่ปลอดภัย ตัวอย่างเช่น
+  handoff ของ systemd ต้องใช้อัตลักษณ์ unit ของ OpenClaw
+  (`OPENCLAW_SYSTEMD_UNIT`) ไม่ใช่เพียงเครื่องหมายกระบวนการ systemd แวดล้อม
+  คำตอบมี `handoff.command` ซึ่งเป็นคำสั่ง shell ที่ให้รันจากนอก
+  Gateway
+- `ok: false`, `result.reason: "managed-service-handoff-failed"` หมายความว่า
+  Gateway พยายามสร้าง handoff แต่ไม่สามารถ spawn ตัวช่วยแบบ detached ได้
+
+payload `sentinel` ยังคงถูกเขียนก่อน Gateway ออก และ handoff ของ CLI
+อัปเดต restart sentinel เดียวกันหลังจากการตรวจสุขภาพการรีสตาร์ตบริการที่จัดการไว้
+เสร็จสิ้น ระหว่าง handoff sentinel อาจมี
+`stats.reason: "restart-health-pending"` โดยไม่มี continuation สำเร็จ;
+Gateway ที่รีสตาร์ตจะ polling ต่อไป และจะเรียก continuation หลังจาก CLI
+ตรวจสอบสุขภาพบริการและเขียน sentinel ใหม่พร้อมผลลัพธ์ `ok` สุดท้ายแล้วเท่านั้น
+`openclaw status` และ `openclaw status --all` แสดงแถว `Update restart`
+ขณะที่ sentinel นั้นค้างอยู่หรือล้มเหลว และ `update.status` จะรีเฟรชและ
+ส่งคืน sentinel ล่าสุด
+
+## โฟลว์ git checkout
 
 ### การเลือกช่องทาง
 
-- `stable`: checkout แท็ก non-beta ล่าสุด จากนั้น build และ doctor
-- `beta`: ให้ความสำคัญกับแท็ก `-beta` ล่าสุด แต่ถอยกลับไปใช้แท็ก stable ล่าสุดเมื่อ beta ไม่มีหรือเก่ากว่า
-- `dev`: checkout `main` จากนั้น fetch และ rebase
+- `stable`: checkout tag non-beta ล่าสุด แล้ว build และ doctor
+- `beta`: เลือก tag `-beta` ล่าสุดก่อน แต่ fallback ไปที่ tag stable ล่าสุดเมื่อ beta ไม่มีหรือเก่ากว่า
+- `dev`: checkout `main` แล้ว fetch และ rebase
 
-### ขั้นตอนการอัปเดต
+### ขั้นตอนอัปเดต
 
 <Steps>
   <Step title="ตรวจสอบ worktree ที่สะอาด">
     ต้องไม่มีการเปลี่ยนแปลงที่ยังไม่ได้ commit
   </Step>
   <Step title="สลับช่องทาง">
-    สลับไปยังช่องทางที่เลือก (แท็กหรือสาขา)
+    สลับไปยังช่องทางที่เลือก (tag หรือ branch)
   </Step>
-  <Step title="ดึงข้อมูลจาก upstream">
-    เฉพาะ Dev
+  <Step title="ดึง upstream">
+    สำหรับ dev เท่านั้น
   </Step>
-  <Step title="บิลด์ตรวจล่วงหน้า (เฉพาะ dev)">
-    รันบิลด์ TypeScript ใน worktree ชั่วคราว หาก tip ล้มเหลว จะถอยกลับได้สูงสุด 10 commits เพื่อหา commit ล่าสุดที่ build ได้ ตั้งค่า `OPENCLAW_UPDATE_PREFLIGHT_LINT=1` เพื่อรัน lint ระหว่างการตรวจล่วงหน้านี้ด้วย; lint จะรันในโหมด serial แบบจำกัด เพราะโฮสต์อัปเดตของผู้ใช้มักเล็กกว่า runner ของ CI
+  <Step title="บิลด์ preflight (สำหรับ dev เท่านั้น)">
+    รันการบิลด์ TypeScript ใน worktree ชั่วคราว หาก tip ล้มเหลว จะย้อนกลับไปสูงสุด 10 commits เพื่อหา commit ล่าสุดที่บิลด์ได้ ตั้งค่า `OPENCLAW_UPDATE_PREFLIGHT_LINT=1` เพื่อรัน lint ระหว่าง preflight นี้ด้วย; lint จะรันในโหมด serial ที่จำกัดทรัพยากร เพราะโฮสต์อัปเดตของผู้ใช้มักมีขนาดเล็กกว่า CI runners
   </Step>
   <Step title="Rebase">
-    rebase ไปยัง commit ที่เลือก (เฉพาะ dev)
+    rebase ไปยัง commit ที่เลือก (สำหรับ dev เท่านั้น)
   </Step>
   <Step title="ติดตั้ง dependencies">
-    ใช้ package manager ของ repo สำหรับ checkout ที่ใช้ pnpm ตัวอัปเดตจะ bootstrap `pnpm` เมื่อต้องการ (ผ่าน `corepack` ก่อน จากนั้นใช้ fallback ชั่วคราว `npm install pnpm@11`) แทนการรัน `npm run build` ภายใน workspace ของ pnpm
+    ใช้ package manager ของ repo สำหรับ checkout ที่ใช้ pnpm ตัวอัปเดตจะ bootstrap `pnpm` เมื่อต้องใช้ (ผ่าน `corepack` ก่อน แล้วจึง fallback เป็น `npm install pnpm@11` ชั่วคราว) แทนการรัน `npm run build` ภายใน pnpm workspace
   </Step>
-  <Step title="Build Control UI">
-    build gateway และ Control UI
+  <Step title="บิลด์ Control UI">
+    บิลด์ gateway และ Control UI
   </Step>
-  <Step title="Run doctor">
+  <Step title="รัน doctor">
     `openclaw doctor` รันเป็นการตรวจสอบ safe-update ขั้นสุดท้าย
   </Step>
-  <Step title="Sync plugins">
-    ซิงก์ plugins ไปยังช่องทางที่ใช้งานอยู่ Dev ใช้ plugins ที่ bundled มา; stable และ beta ใช้ npm อัปเดตการติดตั้ง Plugin ที่ติดตามอยู่
+  <Step title="ซิงค์ plugins">
+    ซิงค์ plugins ไปยังช่องทางที่ใช้งานอยู่ dev ใช้ plugins ที่ bundle มา; stable และ beta ใช้ npm อัปเดตการติดตั้ง plugin ที่ติดตามไว้
   </Step>
 </Steps>
 
-บนช่องทางอัปเดต beta การติดตั้ง Plugin ของ npm และ ClawHub ที่ติดตามอยู่และตาม
-สาย default/latest จะลองใช้รุ่น Plugin `@beta` ก่อน หาก Plugin ไม่มี
-รุ่น beta, OpenClaw จะถอยกลับไปใช้ spec default/latest ที่บันทึกไว้และรายงาน
-เป็นคำเตือน สำหรับ plugins ของ npm, OpenClaw จะถอยกลับเช่นกันเมื่อมีแพ็กเกจ beta
-แต่ไม่ผ่านการตรวจสอบการติดตั้ง คำเตือนการถอยกลับของ Plugin เหล่านี้
-ไม่ทำให้การอัปเดตแกนหลักล้มเหลว เวอร์ชันแบบเจาะจงและแท็กแบบชัดเจนจะไม่ถูก
-เขียนใหม่
+บนช่องทางอัปเดต beta การติดตั้ง plugin จาก npm และ ClawHub ที่ติดตามไว้ซึ่งตามสาย default/latest
+จะลองใช้ release `@beta` ของ plugin ก่อน หาก plugin ไม่มี release beta
+OpenClaw จะ fallback ไปยัง spec default/latest ที่บันทึกไว้และรายงาน
+เป็นคำเตือน สำหรับ plugins ของ npm OpenClaw จะ fallback ด้วยเมื่อมี
+package beta อยู่แต่ไม่ผ่านการตรวจสอบการติดตั้ง คำเตือน fallback ของ plugin เหล่านี้
+จะไม่ทำให้การอัปเดต core ล้มเหลว เวอร์ชันแบบเจาะจงและ tags แบบชัดเจนจะไม่ถูก
+เขียนทับ
 
 <Warning>
-หากการอัปเดต Plugin ของ npm ที่ปักหมุดเวอร์ชันแบบเจาะจงแก้ไปยังอาร์ติแฟกต์ที่ integrity ต่างจากระเบียนการติดตั้งที่เก็บไว้ `openclaw update` จะยกเลิกการอัปเดตอาร์ติแฟกต์ Plugin นั้นแทนการติดตั้ง ให้ติดตั้งใหม่หรืออัปเดต Plugin นั้นอย่างชัดเจนเฉพาะหลังจากตรวจสอบแล้วว่าคุณเชื่อถืออาร์ติแฟกต์ใหม่
+หากการอัปเดต npm plugin ที่ pin แบบเจาะจง resolve ไปยัง artifact ที่มี integrity ต่างจากบันทึกการติดตั้งที่จัดเก็บไว้ `openclaw update` จะยกเลิกการอัปเดต artifact ของ plugin นั้นแทนการติดตั้ง ให้ติดตั้งใหม่หรืออัปเดต plugin อย่างชัดเจนหลังจากตรวจสอบแล้วเท่านั้นว่าคุณเชื่อถือ artifact ใหม่
 </Warning>
 
 <Note>
-ความล้มเหลวในการซิงก์ Plugin หลังอัปเดตที่จำกัดอยู่กับ Plugin ที่จัดการอยู่และเส้นทางซิงก์สามารถเลี่ยงได้ (เช่น registry ของ npm ที่เข้าถึงไม่ได้สำหรับ Plugin ที่ไม่จำเป็น) จะถูกรายงานเป็นคำเตือนหลังการอัปเดตแกนหลักสำเร็จ ผลลัพธ์ JSON จะคง `status: "ok"` ระดับบนสุดและรายงาน `postUpdate.plugins.status: "warning"` พร้อมคำแนะนำ `openclaw doctor --fix` และ `openclaw plugins inspect <id> --runtime --json` ข้อยกเว้นที่ไม่คาดคิดของตัวอัปเดตหรือการซิงก์ยังคงทำให้ผลลัพธ์การอัปเดตล้มเหลว แก้ข้อผิดพลาดการติดตั้งหรืออัปเดต Plugin แล้วรัน `openclaw doctor --fix` หรือ `openclaw update` อีกครั้ง
+ความล้มเหลวในการซิงค์ plugin หลังอัปเดตที่จำกัดอยู่กับ plugin ที่มีการจัดการ และเส้นทางซิงค์สามารถเลี่ยงได้ (เช่น npm registry ที่เข้าถึงไม่ได้สำหรับ plugin ที่ไม่จำเป็น) จะถูกรายงานเป็นคำเตือนหลังจากการอัปเดต core สำเร็จ ผลลัพธ์ JSON จะคง `status: "ok"` ระดับบนสุดไว้ และรายงาน `postUpdate.plugins.status: "warning"` พร้อมคำแนะนำ `openclaw update repair` และ `openclaw plugins inspect <id> --runtime --json` ข้อยกเว้นที่ไม่คาดคิดจากตัวอัปเดตหรือการซิงค์ยังคงทำให้ผลลัพธ์การอัปเดตล้มเหลว แก้ข้อผิดพลาดการติดตั้งหรืออัปเดต plugin แล้วรัน `openclaw update repair` อีกครั้ง
 
-หลังขั้นตอนซิงก์ราย Plugin, `openclaw update` จะรันรอบ **post-core convergence** ที่บังคับก่อนรีสตาร์ต gateway: โดยจะซ่อม payload ของ Plugin ที่กำหนดค่าไว้แต่หายไป ตรวจสอบระเบียนการติดตั้งที่ติดตามและ _ใช้งานอยู่_ แต่ละรายการบนดิสก์ และตรวจสอบแบบ static ว่า `package.json` ของรายการนั้น parse ได้ (และมี `main` ที่ประกาศไว้อย่างชัดเจน หากมี) ความล้มเหลวจากรอบนี้ และ snapshot คอนฟิก OpenClaw ที่ไม่ถูกต้อง จะคืน `postUpdate.plugins.status: "error"` และเปลี่ยน `status` ระดับบนสุดเป็น `"error"` ดังนั้น `openclaw update` จะออกด้วยรหัสไม่เป็นศูนย์ และ gateway จะ _ไม่_ ถูกรีสตาร์ตพร้อมชุด Plugin ที่ยังไม่ได้ตรวจสอบ ข้อผิดพลาดจะมีบรรทัด `postUpdate.plugins.warnings[].guidance` แบบมีโครงสร้างที่ชี้ไปยัง `openclaw doctor --fix` และ `openclaw plugins inspect <id> --runtime --json` สำหรับการติดตามผล รายการ Plugin ที่ปิดใช้งานและระเบียนที่ไม่ใช่เป้าหมายซิงก์อย่างเป็นทางการที่เชื่อมโยงกับ trusted source จะถูกข้ามที่นี่ โดยสะท้อนนโยบาย `skipDisabledPlugins` ที่ใช้ในการตรวจ payload ที่หายไป ดังนั้นระเบียน Plugin ที่ปิดใช้งานและค้างอยู่จะไม่สามารถบล็อกการอัปเดตที่ถูกต้องได้
+หลังขั้นตอนซิงค์ราย plugin แล้ว `openclaw update` จะรัน pass **การรวมตัวหลัง core** ที่บังคับก่อน Gateway จะถูกรีสตาร์ต: ระบบจะซ่อม payloads ของ plugin ที่กำหนดค่าไว้ซึ่งขาดหาย ตรวจสอบบันทึกการติดตั้งที่ติดตามไว้แต่ละรายการที่ _ใช้งานอยู่_ บนดิสก์ และตรวจสอบแบบ static ว่า `package.json` ของรายการนั้น parse ได้ (และ `main` ที่ประกาศไว้อย่างชัดเจนมีอยู่จริง ถ้ามี) ความล้มเหลวจาก pass นี้ รวมถึง snapshot config ของ OpenClaw ที่ไม่ถูกต้อง จะส่งคืน `postUpdate.plugins.status: "error"` และเปลี่ยน `status` การอัปเดตระดับบนสุดเป็น `"error"` ดังนั้น `openclaw update` จะออกด้วยค่าที่ไม่ใช่ศูนย์ และ Gateway จะ _ไม่_ ถูกรีสตาร์ตพร้อมชุด plugin ที่ยังไม่ได้ตรวจสอบ ข้อผิดพลาดจะมีบรรทัด `postUpdate.plugins.warnings[].guidance` แบบมีโครงสร้างที่ชี้ไปยัง `openclaw update repair` และ `openclaw plugins inspect <id> --runtime --json` สำหรับการติดตามผล รายการ plugin ที่ปิดใช้งานและบันทึกที่ไม่ได้เป็นเป้าหมายซิงค์อย่างเป็นทางการที่เชื่อมกับ trusted-source จะถูกข้ามที่นี่ ซึ่งสอดคล้องกับนโยบาย `skipDisabledPlugins` ที่ใช้โดยการตรวจสอบ payload ที่ขาดหาย ดังนั้นบันทึก plugin ที่ปิดใช้งานซึ่งล้าสมัยจึงไม่สามารถบล็อกการอัปเดตที่ถูกต้องในส่วนอื่นได้
 
-เมื่อ Gateway ที่อัปเดตเริ่มทำงาน การโหลด Plugin จะเป็นแบบตรวจสอบเท่านั้น: การเริ่มต้นจะไม่รัน package managers หรือเปลี่ยนแปลง tree ของ dependency การรีสตาร์ต package-manager `update.run` จะข้ามการเลื่อนเวลาตาม idle และคูลดาวน์รีสตาร์ตปกติหลังจาก tree ของแพ็กเกจถูกสลับแล้ว ดังนั้นกระบวนการเก่าจะไม่สามารถ lazy-load ชิ้นส่วนที่ถูกลบไปแล้วต่อไปได้
+เมื่อ Gateway ที่อัปเดตแล้วเริ่มทำงาน การโหลด plugin จะเป็นแบบตรวจสอบเท่านั้น: การเริ่มต้นจะไม่
+รัน package managers หรือแก้ไข dependency trees การรีสตาร์ต `update.run`
+ของ package manager จะถูกส่งต่อไปยังเส้นทาง managed-service ของ CLI ดังนั้นการสลับ package จึงเกิดขึ้น
+นอกโปรเซส Gateway เดิม และการตรวจสอบ service health จะตัดสินว่าการ
+อัปเดตรายงานว่าเสร็จสมบูรณ์ได้หรือไม่
 
-หาก bootstrap pnpm ยังคงล้มเหลว ตัวอัปเดตจะหยุดตั้งแต่ต้นพร้อมข้อผิดพลาดเฉพาะ package-manager แทนการลอง `npm run build` ภายใน checkout
+หาก bootstrap pnpm ยังคงล้มเหลว ตัวอัปเดตจะหยุดตั้งแต่ต้นพร้อมข้อผิดพลาดเฉพาะ package manager แทนการลอง `npm run build` ภายใน checkout
 </Note>
 
-## ชวเลข `--update`
+## รูปแบบย่อ `--update`
 
-`openclaw --update` จะเขียนใหม่เป็น `openclaw update` (มีประโยชน์สำหรับ shell และสคริปต์ launcher)
+`openclaw --update` จะ rewrite เป็น `openclaw update` (มีประโยชน์สำหรับ shells และ launcher scripts)
 
 ## ที่เกี่ยวข้อง
 
 - `openclaw doctor` (เสนอให้รัน update ก่อนบน git checkouts)
-- [ช่องทางการพัฒนา](/th/install/development-channels)
+- [ช่องทางพัฒนา](/th/install/development-channels)
 - [การอัปเดต](/th/install/updating)
 - [เอกสารอ้างอิง CLI](/th/cli)

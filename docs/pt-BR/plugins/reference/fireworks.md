@@ -4,10 +4,11 @@ read_when:
 summary: Adiciona suporte ao provedor de modelos Fireworks ao OpenClaw.
 title: Plugin Fireworks
 x-i18n:
-    generated_at: "2026-05-02T20:56:10Z"
+    generated_at: "2026-06-27T17:53:25Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3f2cd88b332cf09840d042782175fa20d6f4ec52b8de9fbef3e33eb988854edf
+    source_hash: 1750e345f485fa7d8735a16278422188ad761b0c682cd5f09227f4407d502203
     source_path: plugins/reference/fireworks.md
     workflow: 16
 ---
@@ -19,7 +20,7 @@ Adiciona suporte ao provedor de modelos Fireworks ao OpenClaw.
 ## Distribuição
 
 - Pacote: `@openclaw/fireworks-provider`
-- Rota de instalação: incluído no OpenClaw
+- Rota de instalação: npm; ClawHub: `clawhub:@openclaw/fireworks-provider`
 
 ## Superfície
 

@@ -1,39 +1,30 @@
 ---
 read_when:
-    - Vous installez, configurez ou auditez le Plugin WhatsApp
-summary: Ajoute la surface de canal WhatsApp pour envoyer et recevoir des messages OpenClaw.
+    - Vous installez, configurez ou auditez le plugin WhatsApp
+summary: Plugin de canal WhatsApp OpenClaw pour les conversations WhatsApp Web.
 title: Plugin WhatsApp
 x-i18n:
-    generated_at: "2026-05-05T06:18:18Z"
+    generated_at: "2026-06-27T17:57:36Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a0fa274f7e937894a070abd9307aa12eed17b27275bc7e5cfc432f8a41373c54
+    source_hash: cf563ff1384728455bd4035ba20e3bb793d039c53916cc6ee55c2f3e6fd62f01
     source_path: plugins/reference/whatsapp.md
     workflow: 16
 ---
 
 # Plugin WhatsApp
 
-Ajoute la surface de canal WhatsApp pour l’envoi et la réception de messages OpenClaw.
+Plugin de canal WhatsApp OpenClaw pour les discussions WhatsApp Web.
 
 ## Distribution
 
-- Paquet : `@openclaw/whatsapp`
-- Mode d’installation : npm ; ClawHub
+- Package : `@openclaw/whatsapp`
+- Route d’installation : ClawHub : `clawhub:@openclaw/whatsapp` ; npm
 
 ## Surface
 
-channels: whatsapp
-
-## Note d’installation sous Windows
-
-Sous Windows, le Plugin WhatsApp a besoin que Git soit dans le `PATH` pendant l’installation npm, car l’une de ses dépendances Baileys/libsignal est récupérée depuis une URL git. Installez Git for Windows, puis redémarrez le shell et relancez l’installation :
-
-```powershell
-winget install --id Git.Git -e
-```
-
-Portable Git fonctionne également si son répertoire `bin` est dans le `PATH`.
+channels : whatsapp ; Skills
 
 ## Documentation associée
 

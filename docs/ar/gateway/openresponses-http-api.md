@@ -1,42 +1,44 @@
 ---
 read_when:
-    - دمج البرامج العميلة المتوافقة مع OpenResponses API
-    - تريد مُدخلات قائمة على العناصر، أو استدعاءات أدوات العميل، أو أحداث SSE
-summary: إتاحة نقطة نهاية HTTP ‏/v1/responses متوافقة مع OpenResponses من Gateway
+    - دمج العملاء الذين يتعاملون مع واجهة برمجة تطبيقات OpenResponses
+    - تريد مدخلات قائمة على العناصر، أو استدعاءات أدوات العميل، أو أحداث SSE
+summary: اعرض نقطة نهاية HTTP متوافقة مع OpenResponses على المسار /v1/responses من Gateway
 title: واجهة برمجة تطبيقات OpenResponses
 x-i18n:
-    generated_at: "2026-05-06T07:55:35Z"
+    generated_at: "2026-06-27T17:42:03Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 69d46dc448a8856a6f3213f2fbfdba000a342ec4dcf258435b7029102cfb8119
+    source_hash: fbc41a14f5c585a0fb0aae96fb3d2376f94cdb77f41bcd7cc5e7998a27673c44
     source_path: gateway/openresponses-http-api.md
     workflow: 16
 ---
 
-يمكن لـ Gateway الخاص بـ OpenClaw تقديم نقطة نهاية متوافقة مع OpenResponses باسم `POST /v1/responses`.
+تستطيع Gateway الخاصة بـ OpenClaw تقديم نقطة نهاية `POST /v1/responses` متوافقة مع OpenResponses.
 
-نقطة النهاية هذه **معطلة افتراضيًا**. فعّلها في الإعداد أولًا.
+نقطة النهاية هذه **معطلة افتراضيا**. فعّلها في الإعداد أولا.
 
 - `POST /v1/responses`
 - المنفذ نفسه مثل Gateway (تعدد إرسال WS + HTTP): `http://<gateway-host>:<port>/v1/responses`
 
-داخليًا، تُنفذ الطلبات كتشغيل وكيل Gateway عادي (مسار التعليمات البرمجية نفسه مثل
-`openclaw agent`)، لذلك تتطابق التوجيه/الأذونات/الإعدادات مع Gateway لديك.
+خلف الكواليس، تنفذ الطلبات كتشغيل عادي لوكيل Gateway (مسار الكود نفسه مثل
+`openclaw agent`)، لذلك تتطابق التوجيهات/الأذونات/الإعدادات مع Gateway لديك.
 
 ## المصادقة والأمان والتوجيه
 
-يطابق السلوك التشغيلي [إكمالات محادثة OpenAI](/ar/gateway/openai-http-api):
+يطابق السلوك التشغيلي [إكمالات دردشة OpenAI](/ar/gateway/openai-http-api):
 
 - استخدم مسار مصادقة HTTP المطابق في Gateway:
   - مصادقة السر المشترك (`gateway.auth.mode="token"` أو `"password"`): `Authorization: Bearer <token-or-password>`
-  - مصادقة الوكيل الموثوق (`gateway.auth.mode="trusted-proxy"`): ترويسات وكيل واعية بالهوية من مصدر وكيل موثوق مُعد؛ تتطلب وكلاء local loopback على المضيف نفسه ضبطًا صريحًا لـ `gateway.auth.trustedProxy.allowLoopback = true`
-  - مصادقة الدخول الخاص المفتوحة (`gateway.auth.mode="none"`): لا توجد ترويسة مصادقة
-- تعامل مع نقطة النهاية كأنها وصول مشغل كامل لمثيل Gateway
-- في أوضاع مصادقة السر المشترك (`token` و`password`)، تجاهل قيم `x-openclaw-scopes` الأضيق المعلنة في bearer واستعد افتراضيات المشغل الكاملة العادية
-- في أوضاع HTTP الحاملة لهوية موثوقة (مثل مصادقة الوكيل الموثوق أو `gateway.auth.mode="none"`)، احترم `x-openclaw-scopes` عند وجودها، وإلا فارجع إلى مجموعة النطاقات الافتراضية العادية للمشغل
-- اختر الوكلاء باستخدام `model: "openclaw"` أو `model: "openclaw/default"` أو `model: "openclaw/<agentId>"` أو `x-openclaw-agent-id`
-- استخدم `x-openclaw-model` عندما تريد تجاوز نموذج الواجهة الخلفية للوكيل المحدد
-- استخدم `x-openclaw-session-key` لتوجيه الجلسة الصريح
+  - مصادقة الوكيل الموثوق (`gateway.auth.mode="trusted-proxy"`): ترويسات وكيل مدركة للهوية من مصدر وكيل موثوق مكوّن؛ تتطلب وكلاء local loopback على المضيف نفسه تعيين `gateway.auth.trustedProxy.allowLoopback = true` صراحة
+  - الرجوع المحلي المباشر للوكيل الموثوق: يمكن للمتصلين من المضيف نفسه من دون ترويسات `Forwarded` أو `X-Forwarded-*` أو `X-Real-IP` استخدام `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`
+  - مصادقة مفتوحة لدخول خاص (`gateway.auth.mode="none"`): لا توجد ترويسة مصادقة
+- عامل نقطة النهاية كصلاحية مشغل كاملة لمثيل Gateway
+- لأوضاع مصادقة السر المشترك (`token` و`password`)، تجاهل قيم `x-openclaw-scopes` الأضيق المعلنة في حامل الرمز واستعد افتراضيات المشغل الكاملة العادية
+- لأوضاع HTTP الموثوقة الحاملة للهوية (مثل مصادقة الوكيل الموثوق أو `gateway.auth.mode="none"`)، احترم `x-openclaw-scopes` عند وجودها، وإلا فارجع إلى مجموعة النطاقات الافتراضية العادية للمشغل
+- حدد الوكلاء باستخدام `model: "openclaw"` أو `model: "openclaw/default"` أو `model: "openclaw/<agentId>"` أو `x-openclaw-agent-id`
+- استخدم `x-openclaw-model` عندما تريد تجاوز نموذج الخلفية للوكيل المحدد
+- استخدم `x-openclaw-session-key` لتوجيه جلسة صريح
 - استخدم `x-openclaw-message-channel` عندما تريد سياق قناة دخول اصطناعية غير افتراضية
 
 مصفوفة المصادقة:
@@ -45,45 +47,47 @@ x-i18n:
   - يثبت امتلاك سر مشغل Gateway المشترك
   - يتجاهل `x-openclaw-scopes` الأضيق
   - يستعيد مجموعة نطاقات المشغل الافتراضية الكاملة:
-    `operator.admin`, `operator.approvals`, `operator.pairing`,
-    `operator.read`, `operator.talk.secrets`, `operator.write`
-  - يتعامل مع أدوار المحادثة على نقطة النهاية هذه كأدوار مرسل مالك
-- أوضاع HTTP الحاملة لهوية موثوقة (مثل مصادقة الوكيل الموثوق، أو `gateway.auth.mode="none"` على الدخول الخاص)
+    `operator.admin`، `operator.approvals`، `operator.pairing`،
+    `operator.read`، `operator.talk.secrets`، `operator.write`
+  - يعامل أدوار الدردشة في نقطة النهاية هذه كأدوار مرسلة من المالك
+- أوضاع HTTP الموثوقة الحاملة للهوية (مثل مصادقة الوكيل الموثوق، أو `gateway.auth.mode="none"` على دخول خاص)
   - تحترم `x-openclaw-scopes` عندما تكون الترويسة موجودة
-  - ترجع إلى مجموعة نطاقات المشغل الافتراضية العادية عندما تكون الترويسة غائبة
-  - لا تفقد دلالات المالك إلا عندما يضيّق المستدعي النطاقات صراحةً ويحذف `operator.admin`
+  - تعود إلى مجموعة نطاقات المشغل الافتراضية العادية عندما تكون الترويسة غائبة
+  - لا تفقد دلالات المالك إلا عندما يضيّق المتصل النطاقات صراحة ويحذف `operator.admin`
 
 فعّل نقطة النهاية هذه أو عطّلها باستخدام `gateway.http.endpoints.responses.enabled`.
 
-يتضمن سطح التوافق نفسه أيضًا:
+يشمل سطح التوافق نفسه أيضا:
 
 - `GET /v1/models`
 - `GET /v1/models/{id}`
 - `POST /v1/embeddings`
 - `POST /v1/chat/completions`
 
-للاطلاع على الشرح المرجعي لكيفية توافق نماذج استهداف الوكيل، و`openclaw/default`، وتمرير التضمينات، وتجاوزات نموذج الواجهة الخلفية معًا، راجع [إكمالات محادثة OpenAI](/ar/gateway/openai-http-api#agent-first-model-contract) و[قائمة النماذج وتوجيه الوكلاء](/ar/gateway/openai-http-api#model-list-and-agent-routing).
+للحصول على الشرح القانوني لكيفية ترابط نماذج استهداف الوكلاء و`openclaw/default` وتمرير التضمينات وتجاوزات نموذج الخلفية، راجع [إكمالات دردشة OpenAI](/ar/gateway/openai-http-api#agent-first-model-contract) و[قائمة النماذج وتوجيه الوكلاء](/ar/gateway/openai-http-api#model-list-and-agent-routing).
 
 ## سلوك الجلسة
 
-افتراضيًا تكون نقطة النهاية **عديمة الحالة لكل طلب** (يُنشأ مفتاح جلسة جديد في كل استدعاء).
+افتراضيا تكون نقطة النهاية **عديمة الحالة لكل طلب** (ينشأ مفتاح جلسة جديد في كل استدعاء).
 
-إذا تضمن الطلب سلسلة OpenResponses باسم `user`، يشتق Gateway مفتاح جلسة ثابتًا
-منها، بحيث يمكن للاستدعاءات المتكررة مشاركة جلسة وكيل.
+إذا تضمّن الطلب سلسلة OpenResponses `user`، تشتق Gateway مفتاح جلسة ثابتًا
+منها، لذلك يمكن للاستدعاءات المتكررة مشاركة جلسة وكيل.
 
 ## شكل الطلب (مدعوم)
 
 يتبع الطلب واجهة OpenResponses API مع إدخال قائم على العناصر. الدعم الحالي:
 
-- `input`: سلسلة نصية أو مصفوفة من كائنات عناصر.
-- `instructions`: تُدمج في موجه النظام.
+- `input`: سلسلة أو مصفوفة من كائنات العناصر.
+- `instructions`: تدمج في موجه النظام.
 - `tools`: تعريفات أدوات العميل (أدوات الدوال).
-- `tool_choice`: يرشح أدوات العميل أو يتطلبها.
-- `stream`: يفعّل بث SSE.
-- `max_output_tokens`: حد مخرجات بأفضل جهد (يعتمد على المزوّد).
+- `tool_choice`: `"auto"` أو `"none"` أو `"required"` أو `{ "type": "function", "name": "..." }` لتصفية أدوات العميل أو طلبها.
+- `stream`: يفعل بث SSE.
+- `max_output_tokens`: حد إخراج بأفضل جهد (يعتمد على المزوّد).
+- `temperature`: درجة حرارة أخذ العينات بأفضل جهد، تمرر إلى المزوّد. تتجاهلها خلفية Codex Responses المستندة إلى ChatGPT، والتي تستخدم أخذ عينات ثابتًا من جهة الخادم.
+- `top_p`: أخذ عينات نواتي بأفضل جهد، يمرر إلى المزوّد. ينطبق تحذير Codex Responses نفسه كما في `temperature`.
 - `user`: توجيه جلسة ثابت.
 
-مقبول لكن **يُتجاهل حاليًا**:
+مقبول لكن **متجاهل حاليا**:
 
 - `max_tool_calls`
 - `reasoning`
@@ -99,11 +103,11 @@ x-i18n:
 
 ### `message`
 
-الأدوار: `system` و`developer` و`user` و`assistant`.
+الأدوار: `system`، `developer`، `user`، `assistant`.
 
-- يُلحق `system` و`developer` بموجه النظام.
+- يضاف `system` و`developer` إلى موجه النظام.
 - يصبح أحدث عنصر `user` أو `function_call_output` هو "الرسالة الحالية".
-- تُدرج رسائل المستخدم/المساعد السابقة كسجل للسياق.
+- تدرج رسائل المستخدم/المساعد السابقة كسجل للسياق.
 
 ### `function_call_output` (أدوات قائمة على الدور)
 
@@ -119,14 +123,16 @@ x-i18n:
 
 ### `reasoning` و`item_reference`
 
-مقبولان لتوافق المخطط لكنهما يُتجاهلان عند بناء الموجه.
+مقبولان لتوافق المخطط لكن يتم تجاهلهما عند بناء الموجه.
 
 ## الأدوات (أدوات دوال من جانب العميل)
 
-وفر الأدوات باستخدام `tools: [{ type: "function", function: { name, description?, parameters? } }]`.
+قدّم الأدوات باستخدام `tools: [{ type: "function", name, description?, parameters? }]`.
 
-إذا قرر الوكيل استدعاء أداة، فستُرجع الاستجابة عنصر إخراج `function_call`.
-بعد ذلك ترسل طلب متابعة مع `function_call_output` لمواصلة الدور.
+إذا قرر الوكيل استدعاء أداة، ترجع الاستجابة عنصر إخراج `function_call`.
+ثم ترسل طلب متابعة مع `function_call_output` لمتابعة الدور.
+
+بالنسبة إلى `tool_choice: "required"` و`tool_choice` المثبت على دالة، تضيّق نقطة النهاية مجموعة أدوات الدوال العميلة المعروضة، وتوجّه وقت التشغيل لاستدعاء أداة عميل قبل الاستجابة، وترفض الدور إذا لم يتضمن استدعاء أداة عميل منظما مطابقا. ينطبق هذا العقد على قائمة HTTP `tools` التي يوفّرها المتصل، وليس على كل أداة وكيل داخلية في OpenClaw. ترجع الطلبات غير المتدفقة `502` مع `api_error`؛ وتصدر الطلبات المتدفقة حدث `response.failed`. يطابق هذا عقد `/v1/chat/completions`.
 
 ## الصور (`input_image`)
 
@@ -139,8 +145,8 @@ x-i18n:
 }
 ```
 
-أنواع MIME المسموح بها (حاليًا): `image/jpeg`, `image/png`, `image/gif`, `image/webp`, `image/heic`, `image/heif`.
-الحجم الأقصى (حاليًا): 10MB.
+أنواع MIME المسموح بها (حاليا): `image/jpeg`، `image/png`، `image/gif`، `image/webp`، `image/heic`، `image/heif`.
+الحجم الأقصى (حاليا): 10MB.
 
 ## الملفات (`input_file`)
 
@@ -158,42 +164,42 @@ x-i18n:
 }
 ```
 
-أنواع MIME المسموح بها (حاليًا): `text/plain`, `text/markdown`, `text/html`, `text/csv`,
-`application/json`, `application/pdf`.
+أنواع MIME المسموح بها (حاليا): `text/plain`، `text/markdown`، `text/html`، `text/csv`،
+`application/json`، `application/pdf`.
 
-الحجم الأقصى (حاليًا): 5MB.
+الحجم الأقصى (حاليا): 5MB.
 
 السلوك الحالي:
 
-- يُفك ترميز محتوى الملف ويُضاف إلى **موجه النظام**، لا إلى رسالة المستخدم،
-  لذلك يبقى مؤقتًا (لا يستمر في سجل الجلسة).
-- يُلف نص الملف المفكك ترميزه كـ **محتوى خارجي غير موثوق** قبل إضافته،
-  بحيث تُعامل بايتات الملف كبيانات، لا كتعليمات موثوقة.
-- تستخدم الكتلة المُحقنة علامات حدود صريحة مثل
+- يفك ترميز محتوى الملف ويضاف إلى **موجه النظام**، وليس رسالة المستخدم،
+  لذلك يبقى مؤقتا (لا يستمر في سجل الجلسة).
+- يغلّف نص الملف المفكوك كـ **محتوى خارجي غير موثوق** قبل إضافته،
+  لذلك تعامل بايتات الملف كبيانات، لا كتعليمات موثوقة.
+- تستخدم الكتلة المحقونة علامات حدود صريحة مثل
   `<<<EXTERNAL_UNTRUSTED_CONTENT id="...">>>` /
   `<<<END_EXTERNAL_UNTRUSTED_CONTENT id="...">>>` وتتضمن سطر بيانات وصفية
   `Source: External`.
-- يحذف مسار إدخال الملفات هذا عمدًا لافتة `SECURITY NOTICE:` الطويلة للحفاظ على
-  ميزانية الموجه؛ وتبقى علامات الحدود والبيانات الوصفية في مكانها.
-- تُحلل ملفات PDF لاستخراج النص أولًا. إذا وُجد نص قليل، تُحوّل الصفحات الأولى
-  إلى صور نقطية وتُمرر إلى النموذج، وتستخدم كتلة الملف المُحقنة
+- يحذف مسار إدخال الملفات هذا عمدا لافتة `SECURITY NOTICE:` الطويلة
+  للحفاظ على ميزانية الموجه؛ وتظل علامات الحدود والبيانات الوصفية في مكانها.
+- تحلل ملفات PDF كنص أولا. إذا عثر على نص قليل، تحول الصفحات الأولى
+  إلى صور نقطية وتمرر إلى النموذج، وتستخدم كتلة الملف المحقونة
   العنصر النائب `[PDF content rendered to images]`.
 
-يوفر Plugin المضمّن `document-extract` تحليل PDF، وهو يستخدم بنية `pdfjs-dist` القديمة
-الصديقة لـ Node (بلا عامل). تتوقع بنية PDF.js الحديثة
-عمال متصفح/عموميات DOM، لذلك لا تُستخدم في Gateway.
+يوفّر Plugin `document-extract` المضمن تحليل PDF، ويستخدم
+`clawpdf` وبيئة تشغيل PDFium WebAssembly المعبأة الخاصة به لاستخراج النص
+وعرض الصفحات.
 
 افتراضيات جلب URL:
 
 - `files.allowUrl`: `true`
 - `images.allowUrl`: `true`
-- `maxUrlParts`: `8` (إجمالي أجزاء `input_file` + `input_image` القائمة على URL لكل طلب)
-- الطلبات محمية (حل DNS، حظر عناوين IP الخاصة، حدود إعادة التوجيه، المهل الزمنية).
-- تُدعم قوائم السماح الاختيارية بأسماء المضيفين لكل نوع إدخال (`files.urlAllowlist`, `images.urlAllowlist`).
-  - مضيف دقيق: `"cdn.example.com"`
-  - نطاقات فرعية بحرف بدل: `"*.assets.example.com"` (لا يطابق apex)
+- `maxUrlParts`: `8` (إجمالي أجزاء `input_file` + `input_image` المستندة إلى URL لكل طلب)
+- الطلبات محروسة (تحليل DNS، حظر عناوين IP الخاصة، حدود إعادة التوجيه، المهل).
+- تدعم قوائم السماح الاختيارية لأسماء المضيفين لكل نوع إدخال (`files.urlAllowlist`، `images.urlAllowlist`).
+  - المضيف المطابق: `"cdn.example.com"`
+  - نطاقات فرعية بحرف بدل: `"*.assets.example.com"` (لا يطابق الجذر)
   - تعني قوائم السماح الفارغة أو المحذوفة عدم وجود قيد قائمة سماح لأسماء المضيفين.
-- لتعطيل عمليات الجلب القائمة على URL بالكامل، اضبط `files.allowUrl: false` و/أو `images.allowUrl: false`.
+- لتعطيل عمليات الجلب المستندة إلى URL بالكامل، اضبط `files.allowUrl: false` و/أو `images.allowUrl: false`.
 
 ## حدود الملفات + الصور (الإعداد)
 
@@ -265,24 +271,24 @@ x-i18n:
 - `images.maxBytes`: 10MB
 - `images.maxRedirects`: 3
 - `images.timeoutMs`: 10s
-- تُقبل مصادر HEIC/HEIF لـ `input_image` وتُطبّع إلى JPEG قبل التسليم إلى المزوّد.
+- تقبل مصادر HEIC/HEIF `input_image` عندما يكون محول نظام متاحا وتطبع إلى JPEG قبل تسليمها إلى المزوّد. المحولات المدعومة هي `sips` في macOS أو ImageMagick أو GraphicsMagick أو ffmpeg.
 
 ملاحظة أمنية:
 
-- تُفرض قوائم السماح لـ URL قبل الجلب وعلى قفزات إعادة التوجيه.
+- تطبق قوائم سماح URL قبل الجلب وعلى قفزات إعادة التوجيه.
 - لا يتجاوز السماح باسم مضيف حظر عناوين IP الخاصة/الداخلية.
-- بالنسبة إلى Gateways المعروضة على الإنترنت، طبّق ضوابط خروج الشبكة إضافةً إلى حراس مستوى التطبيق.
+- بالنسبة إلى بوابات Gateway المعرضة للإنترنت، طبّق ضوابط خروج الشبكة إضافة إلى حراس مستوى التطبيق.
   راجع [الأمان](/ar/gateway/security).
 
 ## البث (SSE)
 
-اضبط `stream: true` لتلقي أحداث Server-Sent Events (SSE):
+عيّن `stream: true` لتلقي أحداث مرسلة من الخادم (SSE):
 
 - `Content-Type: text/event-stream`
 - كل سطر حدث هو `event: <type>` و`data: <json>`
-- ينتهي البث بـ `data: [DONE]`
+- ينتهي الدفق بـ `data: [DONE]`
 
-أنواع الأحداث المنبعثة حاليًا:
+أنواع الأحداث الصادرة حاليا:
 
 - `response.created`
 - `response.in_progress`
@@ -297,9 +303,9 @@ x-i18n:
 
 ## الاستخدام
 
-تُملأ `usage` عندما يبلّغ المزوّد الأساسي عن أعداد الرموز.
-يطبع OpenClaw الأسماء المستعارة الشائعة بأسلوب OpenAI قبل وصول تلك العدادات إلى
-أسطح الحالة/الجلسة اللاحقة، بما في ذلك `input_tokens` / `output_tokens`
+تعبأ `usage` عندما يبلغ المزوّد الأساسي عن أعداد الرموز.
+يطبع OpenClaw الأسماء المستعارة الشائعة بأسلوب OpenAI قبل أن تصل تلك العدادات
+إلى أسطح الحالة/الجلسة اللاحقة، بما في ذلك `input_tokens` / `output_tokens`
 و`prompt_tokens` / `completion_tokens`.
 
 ## الأخطاء
@@ -318,7 +324,7 @@ x-i18n:
 
 ## أمثلة
 
-بلا بث:
+غير متدفق:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/responses \
@@ -331,7 +337,7 @@ curl -sS http://127.0.0.1:18789/v1/responses \
   }'
 ```
 
-مع البث:
+متدفق:
 
 ```bash
 curl -N http://127.0.0.1:18789/v1/responses \

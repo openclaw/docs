@@ -1,51 +1,52 @@
 ---
 read_when:
     - Vuoi abilitare o configurare web_search
-    - Vuoi abilitare o configurare x_search
-    - È necessario scegliere un provider di ricerca
-    - Vuoi comprendere il rilevamento automatico e il fallback del provider
+    - Si desidera abilitare o configurare x_search
+    - Devi scegliere un provider di ricerca
+    - Vuoi comprendere il rilevamento automatico e la selezione del provider
 sidebarTitle: Web Search
-summary: web_search, x_search e web_fetch -- cercano sul web, cercano post su X o recuperano il contenuto di una pagina
+summary: web_search, x_search e web_fetch -- cerca sul web, cerca post su X oppure recupera il contenuto della pagina
 title: Ricerca web
 x-i18n:
-    generated_at: "2026-05-11T20:41:11Z"
+    generated_at: "2026-06-27T18:25:22Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 0c2806730f8c9cb33a3c142d5283de0f1231502e052c6da796c31125834a94e6
+    source_hash: a448de6760546863b840118ab04fec8ef4b3213c124a7f229ffe67536327f9a4
     source_path: tools/web.md
     workflow: 16
 ---
 
 Lo strumento `web_search` cerca nel web usando il provider configurato e
-restituisce risultati. I risultati sono memorizzati nella cache per query per 15 minuti (configurabile).
+restituisce risultati. I risultati vengono memorizzati nella cache per query per 15 minuti (configurabile).
 
-OpenClaw include anche `x_search` per i post di X (in precedenza Twitter) e
+OpenClaw include anche `x_search` per i post di X (precedentemente Twitter) e
 `web_fetch` per il recupero leggero di URL. In questa fase, `web_fetch` resta
-locale mentre `web_search` e `x_search` possono usare xAI Responses internamente.
+locale mentre `web_search` e `x_search` possono usare xAI Responses sotto il cofano.
 
 <Info>
-  `web_search` è uno strumento HTTP leggero, non un'automazione del browser. Per
-  siti con molto JS o accessi, usa il [Browser web](/it/tools/browser). Per
-  recuperare un URL specifico, usa [Recupero web](/it/tools/web-fetch).
+  `web_search` è uno strumento HTTP leggero, non automazione del browser. Per
+  siti ricchi di JS o accessi con login, usa [Web Browser](/it/tools/browser). Per
+  recuperare un URL specifico, usa [Web Fetch](/it/tools/web-fetch).
 </Info>
 
 ## Avvio rapido
 
 <Steps>
-  <Step title="Scegli un provider">
-    Scegli un provider e completa l'eventuale configurazione richiesta. Alcuni provider sono
+  <Step title="Choose a provider">
+    Scegli un provider e completa qualsiasi configurazione richiesta. Alcuni provider sono
     senza chiave, mentre altri usano chiavi API. Consulta le pagine dei provider qui sotto per
     i dettagli.
   </Step>
-  <Step title="Configura">
+  <Step title="Configure">
     ```bash
     openclaw configure --section web
     ```
-    Questo memorizza il provider e le eventuali credenziali necessarie. Puoi anche impostare una variabile
+    Questo salva il provider e qualsiasi credenziale necessaria. Puoi anche impostare una variabile
     d'ambiente (per esempio `BRAVE_API_KEY`) e saltare questo passaggio per i provider
     basati su API.
   </Step>
-  <Step title="Usalo">
+  <Step title="Use it">
     L'agente ora può chiamare `web_search`:
 
     ```javascript
@@ -61,29 +62,32 @@ locale mentre `web_search` e `x_search` possono usare xAI Responses internamente
   </Step>
 </Steps>
 
-## Scegliere un provider
+## Scelta di un provider
 
 <CardGroup cols={2}>
   <Card title="Brave Search" icon="shield" href="/it/tools/brave-search">
-    Risultati strutturati con frammenti. Supporta la modalità `llm-context` e filtri per paese/lingua. È disponibile un piano gratuito.
+    Risultati strutturati con frammenti. Supporta la modalità `llm-context` e filtri per paese/lingua. Piano gratuito disponibile.
+  </Card>
+  <Card title="Codex Hosted Search" icon="search" href="/it/plugins/codex-harness">
+    Risposte fondate sintetizzate dall'AI tramite il tuo account app-server Codex.
   </Card>
   <Card title="DuckDuckGo" icon="bird" href="/it/tools/duckduckgo-search">
-    Ripiego senza chiave. Non è richiesta alcuna chiave API. Integrazione non ufficiale basata su HTML.
+    Provider senza chiave. Nessuna chiave API necessaria. Integrazione non ufficiale basata su HTML.
   </Card>
   <Card title="Exa" icon="brain" href="/it/tools/exa-search">
     Ricerca neurale + per parole chiave con estrazione dei contenuti (evidenziazioni, testo, riepiloghi).
   </Card>
   <Card title="Firecrawl" icon="flame" href="/it/tools/firecrawl">
-    Risultati strutturati. Da usare preferibilmente con `firecrawl_search` e `firecrawl_scrape` per l'estrazione approfondita.
+    Risultati strutturati. Ideale in abbinamento a `firecrawl_search` e `firecrawl_scrape` per l'estrazione approfondita.
   </Card>
   <Card title="Gemini" icon="sparkles" href="/it/tools/gemini-search">
-    Risposte sintetizzate dall'IA con citazioni tramite ancoraggio a Google Search.
+    Risposte sintetizzate dall'AI con citazioni tramite grounding di Google Search.
   </Card>
   <Card title="Grok" icon="zap" href="/it/tools/grok-search">
-    Risposte sintetizzate dall'IA con citazioni tramite ancoraggio web di xAI.
+    Risposte sintetizzate dall'AI con citazioni tramite grounding web di xAI.
   </Card>
   <Card title="Kimi" icon="moon" href="/it/tools/kimi-search">
-    Risposte sintetizzate dall'IA con citazioni tramite la ricerca web Moonshot; i ripieghi chat non ancorati falliscono esplicitamente.
+    Risposte sintetizzate dall'AI con citazioni tramite ricerca web Moonshot; i fallback di chat senza grounding falliscono esplicitamente.
   </Card>
   <Card title="MiniMax Search" icon="globe" href="/it/tools/minimax-search">
     Risultati strutturati tramite l'API di ricerca MiniMax Token Plan.
@@ -91,49 +95,88 @@ locale mentre `web_search` e `x_search` possono usare xAI Responses internamente
   <Card title="Ollama Web Search" icon="globe" href="/it/tools/ollama-search">
     Ricerca tramite un host Ollama locale con accesso effettuato o l'API Ollama ospitata.
   </Card>
+  <Card title="Parallel" icon="layer-group" href="/it/tools/parallel-search">
+    API Parallel Search a pagamento (`PARALLEL_API_KEY`); limiti di frequenza più elevati e ottimizzazione degli obiettivi.
+  </Card>
+  <Card title="Parallel Search (Free)" icon="layer-group" href="/it/tools/parallel-search">
+    Attivazione senza chiave. Search MCP gratuito di Parallel, con estratti densi ottimizzati per LLM e nessuna chiave API.
+  </Card>
   <Card title="Perplexity" icon="search" href="/it/tools/perplexity-search">
-    Risultati strutturati con controlli per l'estrazione dei contenuti e filtro per domini.
+    Risultati strutturati con controlli di estrazione dei contenuti e filtro per dominio.
   </Card>
   <Card title="SearXNG" icon="server" href="/it/tools/searxng-search">
-    Metaricerca ospitata in autonomia. Non è richiesta alcuna chiave API. Aggrega Google, Bing, DuckDuckGo e altro.
+    Meta-ricerca self-hosted. Nessuna chiave API necessaria. Aggrega Google, Bing, DuckDuckGo e altro.
   </Card>
   <Card title="Tavily" icon="globe" href="/it/tools/tavily">
     Risultati strutturati con profondità di ricerca, filtro per argomento e `tavily_extract` per l'estrazione da URL.
   </Card>
 </CardGroup>
 
-### Confronto tra provider
+### Confronto dei provider
 
-| Provider                                  | Stile dei risultati                                           | Filtri                                           | Chiave API                                                                              |
-| ----------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------- |
-| [Brave](/it/tools/brave-search)              | Frammenti strutturati                                         | Paese, lingua, periodo, modalità `llm-context`   | `BRAVE_API_KEY`                                                                         |
-| [DuckDuckGo](/it/tools/duckduckgo-search)    | Frammenti strutturati                                         | --                                               | Nessuna (senza chiave)                                                                  |
-| [Exa](/it/tools/exa-search)                  | Strutturati + estratti                                        | Modalità neurale/per parole chiave, data, estrazione dei contenuti | `EXA_API_KEY`                                                                           |
-| [Firecrawl](/it/tools/firecrawl)             | Frammenti strutturati                                         | Tramite lo strumento `firecrawl_search`          | `FIRECRAWL_API_KEY`                                                                     |
-| [Gemini](/it/tools/gemini-search)            | Sintetizzati dall'IA + citazioni                              | --                                               | `GEMINI_API_KEY`                                                                        |
-| [Grok](/it/tools/grok-search)                | Sintetizzati dall'IA + citazioni                              | --                                               | `XAI_API_KEY`                                                                           |
-| [Kimi](/it/tools/kimi-search)                | Sintetizzati dall'IA + citazioni; fallisce sui ripieghi chat non ancorati | --                                               | `KIMI_API_KEY` / `MOONSHOT_API_KEY`                                                     |
-| [MiniMax Search](/it/tools/minimax-search)   | Frammenti strutturati                                         | Regione (`global` / `cn`)                        | `MINIMAX_CODE_PLAN_KEY` / `MINIMAX_CODING_API_KEY` / `MINIMAX_OAUTH_TOKEN`              |
-| [Ollama Web Search](/it/tools/ollama-search) | Frammenti strutturati                                         | --                                               | Nessuna per host locali con accesso effettuato; `OLLAMA_API_KEY` per la ricerca diretta su `https://ollama.com` |
-| [Perplexity](/it/tools/perplexity-search)    | Frammenti strutturati                                         | Paese, lingua, periodo, domini, limiti dei contenuti | `PERPLEXITY_API_KEY` / `OPENROUTER_API_KEY`                                             |
-| [SearXNG](/it/tools/searxng-search)          | Frammenti strutturati                                         | Categorie, lingua                                | Nessuna (ospitato in autonomia)                                                        |
-| [Tavily](/it/tools/tavily)                   | Frammenti strutturati                                         | Tramite lo strumento `tavily_search`             | `TAVILY_API_KEY`                                                                        |
+| Provider                                         | Stile dei risultati                                           | Filtri                                           | Chiave API                                                                               |
+| ------------------------------------------------ | -------------------------------------------------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| [Brave](/it/tools/brave-search)                     | Frammenti strutturati                                         | Paese, lingua, tempo, modalità `llm-context`     | `BRAVE_API_KEY`                                                                         |
+| [Codex Hosted Search](/it/plugins/codex-harness)    | Sintesi AI + URL delle fonti                                  | Domini, dimensione del contesto, posizione utente | Nessuna; usa l'accesso Codex/OpenAI                                                     |
+| [DuckDuckGo](/it/tools/duckduckgo-search)           | Frammenti strutturati                                         | --                                               | Nessuna (senza chiave)                                                                  |
+| [Exa](/it/tools/exa-search)                         | Strutturati + estratti                                        | Modalità neurale/parole chiave, data, estrazione dei contenuti | `EXA_API_KEY`                                                                           |
+| [Firecrawl](/it/tools/firecrawl)                    | Frammenti strutturati                                         | Tramite lo strumento `firecrawl_search`          | `FIRECRAWL_API_KEY`                                                                     |
+| [Gemini](/it/tools/gemini-search)                   | Sintesi AI + citazioni                                        | --                                               | `GEMINI_API_KEY`                                                                        |
+| [Grok](/it/tools/grok-search)                       | Sintesi AI + citazioni                                        | --                                               | xAI OAuth, `XAI_API_KEY` o `plugins.entries.xai.config.webSearch.apiKey`                |
+| [Kimi](/it/tools/kimi-search)                       | Sintesi AI + citazioni; fallisce sui fallback di chat senza grounding | --                                               | `KIMI_API_KEY` / `MOONSHOT_API_KEY`                                                     |
+| [MiniMax Search](/it/tools/minimax-search)          | Frammenti strutturati                                         | Regione (`global` / `cn`)                        | `MINIMAX_CODE_PLAN_KEY` / `MINIMAX_CODING_API_KEY` / `MINIMAX_OAUTH_TOKEN`              |
+| [Ollama Web Search](/it/tools/ollama-search)        | Frammenti strutturati                                         | --                                               | Nessuna per host locali con accesso effettuato; `OLLAMA_API_KEY` per ricerca diretta su `https://ollama.com` |
+| [Parallel](/it/tools/parallel-search)               | Estratti densi classificati per il contesto LLM               | --                                               | `PARALLEL_API_KEY` (a pagamento)                                                        |
+| [Parallel Search (Free)](/it/tools/parallel-search) | Estratti densi classificati per il contesto LLM               | --                                               | Nessuna (Search MCP gratuito)                                                           |
+| [Perplexity](/it/tools/perplexity-search)           | Frammenti strutturati                                         | Paese, lingua, tempo, domini, limiti di contenuto | `PERPLEXITY_API_KEY` / `OPENROUTER_API_KEY`                                             |
+| [SearXNG](/it/tools/searxng-search)                 | Frammenti strutturati                                         | Categorie, lingua                                | Nessuna (self-hosted)                                                                   |
+| [Tavily](/it/tools/tavily)                          | Frammenti strutturati                                         | Tramite lo strumento `tavily_search`             | `TAVILY_API_KEY`                                                                        |
 
 ## Rilevamento automatico
 
-## Ricerca web nativa di OpenAI
+## Ricerca web nativa OpenAI
 
-I modelli diretti OpenAI Responses usano automaticamente lo strumento `web_search` ospitato da OpenAI quando la ricerca web di OpenClaw è abilitata e non è fissato alcun provider gestito. Questo comportamento è gestito dal provider nel Plugin OpenAI incluso e si applica solo al traffico API OpenAI nativo, non agli URL base di proxy compatibili con OpenAI o alle route Azure. Imposta `tools.web.search.provider` su un altro provider, come `brave`, per mantenere lo strumento `web_search` gestito per i modelli OpenAI, oppure imposta `tools.web.search.enabled: false` per disabilitare sia la ricerca gestita sia la ricerca OpenAI nativa.
+I modelli OpenAI Responses diretti usano automaticamente lo strumento `web_search` ospitato da OpenAI quando la ricerca web di OpenClaw è abilitata e non è fissato alcun provider gestito. Questo è un comportamento di proprietà del provider nel Plugin OpenAI incluso e si applica solo al traffico API OpenAI nativo, non agli URL base proxy compatibili con OpenAI o alle route Azure. Imposta `tools.web.search.provider` su un altro provider come `brave` per mantenere lo strumento `web_search` gestito per i modelli OpenAI, oppure imposta `tools.web.search.enabled: false` per disabilitare sia la ricerca gestita sia la ricerca OpenAI nativa.
 
-## Ricerca web nativa di Codex
+## Ricerca web nativa Codex
 
-I modelli compatibili con Codex possono facoltativamente usare lo strumento `web_search` Responses nativo del provider invece della funzione `web_search` gestita di OpenClaw.
+Il runtime app-server Codex usa automaticamente lo strumento `web_search` ospitato da Codex
+quando la ricerca web è abilitata e non è selezionato alcun provider gestito. La ricerca
+ospitata nativa e lo strumento dinamico `web_search` gestito da OpenClaw sono mutuamente esclusivi,
+quindi la ricerca gestita non può aggirare le restrizioni native sui domini. OpenClaw usa lo
+strumento gestito quando la ricerca ospitata non è disponibile, è disabilitata esplicitamente o
+viene sostituita da un provider gestito selezionato. OpenClaw mantiene disabilitata l'estensione
+`web.run` autonoma di Codex perché il traffico app-server di produzione rifiuta il suo
+namespace `web` definito dall'utente.
 
-- Configuralo in `tools.web.search.openaiCodex`
-- Si attiva solo per i modelli compatibili con Codex (`openai-codex/*` o provider che usano `api: "openai-codex-responses"`)
-- `web_search` gestito continua ad applicarsi ai modelli non Codex
-- `mode: "cached"` è l'impostazione predefinita e consigliata
+- Configura la ricerca nativa in `tools.web.search.openaiCodex`
+- Imposta `tools.web.search.provider: "codex"` per predisporre Codex Hosted Search come
+  provider `web_search` gestito per qualsiasi modello padre. Ogni chiamata esegue un
+  turno app-server Codex effimero e limitato e fallisce se Codex non emette un elemento
+  `webSearch` ospitato.
+- `mode: "cached"` è la preferenza predefinita, ma Codex la risolve in accesso esterno
+  live per turni app-server senza restrizioni; imposta `"live"` per richiedere
+  esplicitamente l'accesso live
+- Imposta `tools.web.search.provider` su un provider gestito come `brave` per usare
+  invece il `web_search` gestito da OpenClaw
+- Imposta `tools.web.search.openaiCodex.enabled: false` per rinunciare alla ricerca
+  ospitata da Codex; gli altri provider gestiti restano disponibili
+- Limitare la superficie dello strumento nativo Codex mantiene disponibile anche il `web_search`
+  gestito
+- Quando `allowedDomains` è impostato, il fallback gestito automatico fallisce in modo chiuso se
+  la ricerca ospitata non è disponibile, così l'elenco consentito nativo non può essere aggirato
+- Le esecuzioni solo LLM con strumenti disabilitati disabilitano sia la ricerca nativa sia quella gestita
 - `tools.web.search.enabled: false` disabilita sia la ricerca gestita sia quella nativa
+
+Le modifiche persistenti effettive alla policy di ricerca Codex avviano un nuovo thread vincolato così
+un thread app-server già caricato non può mantenere accesso obsoleto alla ricerca ospitata.
+Le restrizioni transitorie per turno usano un thread temporaneo ristretto e preservano
+il binding esistente per una ripresa successiva.
+
+Anche il traffico OpenAI ChatGPT Responses diretto può usare lo strumento
+`web_search` ospitato da OpenAI. Quel percorso separato resta opt-in tramite
+`tools.web.search.openaiCodex.enabled: true` e si applica solo ai modelli
+`openai/*` idonei che usano `api: "openai-chatgpt-responses"`.
 
 ```json5
 {
@@ -141,6 +184,8 @@ I modelli compatibili con Codex possono facoltativamente usare lo strumento `web
     web: {
       search: {
         enabled: true,
+        // Optional: use Codex Hosted Search from non-Codex parent models too.
+        provider: "codex",
         openaiCodex: {
           enabled: true,
           mode: "cached",
@@ -158,16 +203,27 @@ I modelli compatibili con Codex possono facoltativamente usare lo strumento `web
 }
 ```
 
-Se la ricerca Codex nativa è abilitata ma il modello corrente non è compatibile con Codex, OpenClaw mantiene il normale comportamento `web_search` gestito.
+Per runtime e provider che non supportano la ricerca nativa Codex, Codex può
+usare il fallback `web_search` gestito tramite il namespace degli strumenti dinamici di OpenClaw.
+Usa un provider gestito esplicito quando hai bisogno dei controlli di rete specifici
+del provider di OpenClaw invece della ricerca ospitata da Codex.
 
-## Sicurezza di rete
+Selezionare `provider: "codex"` abilita il plugin `codex` incluso e usa le
+stesse restrizioni `tools.web.search.openaiCodex` mostrate sopra. Autentica prima
+l'app-server Codex con `openclaw models auth login --provider openai`.
+L'agente padre può usare qualsiasi modello o runtime; solo il worker di ricerca
+delimitato passa tramite Codex.
 
-Le chiamate dei provider `web_search` gestiti usano il percorso di recupero protetto di OpenClaw. Per
-gli host API dei provider attendibili, OpenClaw consente risposte DNS fake-IP di Surge,
-Clash e sing-box in `198.18.0.0/15` e `fc00::/7` solo per quel nome host del provider.
-Le altre destinazioni private, di loopback, link-local e di metadati restano bloccate.
+## Sicurezza della rete
 
-Questa autorizzazione automatica non si applica a URL `web_fetch` arbitrari. Per
+Le chiamate al provider HTTP gestito `web_search` usano il percorso fetch protetto di OpenClaw. Per
+gli host API di provider attendibili, OpenClaw consente le risposte DNS fake-IP
+di Surge, Clash e sing-box in `198.18.0.0/15` e `fc00::/7` solo per quel nome host del provider.
+Le altre destinazioni private, loopback, link-local e di metadati rimangono bloccate.
+Codex Hosted Search è l'eccezione: il suo worker delimitato delega l'accesso alla rete
+allo strumento `web_search` ospitato dell'app-server Codex.
+
+Questa autorizzazione automatica non si applica agli URL arbitrari di `web_fetch`. Per
 `web_fetch`, abilita esplicitamente `tools.web.fetch.ssrfPolicy.allowRfc2544BenchmarkRange` e
 `tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` solo quando il tuo
 proxy attendibile possiede quegli intervalli sintetici.
@@ -177,40 +233,48 @@ proxy attendibile possiede quegli intervalli sintetici.
 Gli elenchi dei provider nella documentazione e nei flussi di configurazione sono alfabetici. Il rilevamento automatico mantiene un
 ordine di precedenza separato.
 
-Se non è impostato alcun `provider`, OpenClaw controlla i provider in quest'ordine e usa il
-primo pronto:
+Se non è impostato alcun `provider`, OpenClaw controlla i provider in questo ordine e usa il
+primo che è pronto:
 
-Prima i provider basati su API:
+Prima i provider supportati da API:
 
 1. **Brave** -- `BRAVE_API_KEY` o `plugins.entries.brave.config.webSearch.apiKey` (ordine 10)
 2. **MiniMax Search** -- `MINIMAX_CODE_PLAN_KEY` / `MINIMAX_CODING_API_KEY` / `MINIMAX_OAUTH_TOKEN` / `MINIMAX_API_KEY` o `plugins.entries.minimax.config.webSearch.apiKey` (ordine 15)
 3. **Gemini** -- `plugins.entries.google.config.webSearch.apiKey`, `GEMINI_API_KEY` o `models.providers.google.apiKey` (ordine 20)
-4. **Grok** -- `XAI_API_KEY` o `plugins.entries.xai.config.webSearch.apiKey` (ordine 30)
+4. **Grok** -- OAuth xAI, `XAI_API_KEY` o `plugins.entries.xai.config.webSearch.apiKey` (ordine 30)
 5. **Kimi** -- `KIMI_API_KEY` / `MOONSHOT_API_KEY` o `plugins.entries.moonshot.config.webSearch.apiKey` (ordine 40)
 6. **Perplexity** -- `PERPLEXITY_API_KEY` / `OPENROUTER_API_KEY` o `plugins.entries.perplexity.config.webSearch.apiKey` (ordine 50)
 7. **Firecrawl** -- `FIRECRAWL_API_KEY` o `plugins.entries.firecrawl.config.webSearch.apiKey` (ordine 60)
-8. **Exa** -- `EXA_API_KEY` o `plugins.entries.exa.config.webSearch.apiKey`; l'opzionale `plugins.entries.exa.config.webSearch.baseUrl` sostituisce l'endpoint Exa (ordine 65)
+8. **Exa** -- `EXA_API_KEY` o `plugins.entries.exa.config.webSearch.apiKey`; `plugins.entries.exa.config.webSearch.baseUrl` opzionale sovrascrive l'endpoint Exa (ordine 65)
 9. **Tavily** -- `TAVILY_API_KEY` o `plugins.entries.tavily.config.webSearch.apiKey` (ordine 70)
+10. **Parallel** -- API Parallel Search a pagamento tramite `PARALLEL_API_KEY` o `plugins.entries.parallel.config.webSearch.apiKey`; `plugins.entries.parallel.config.webSearch.baseUrl` opzionale sovrascrive l'endpoint (ordine 75)
 
-Poi i ripieghi senza chiave:
+Poi i provider con endpoint configurato:
 
-10. **DuckDuckGo** -- ripiego HTML senza chiave, senza account né chiave API (ordine 100)
-11. **Ollama Web Search** -- ripiego senza chiave tramite l'host Ollama locale configurato quando è raggiungibile e l'accesso è stato effettuato con `ollama signin`; può riutilizzare l'autenticazione bearer del provider Ollama quando l'host la richiede, e può chiamare la ricerca diretta su `https://ollama.com` quando configurato con `OLLAMA_API_KEY` (ordine 110)
-12. **SearXNG** -- `SEARXNG_BASE_URL` o `plugins.entries.searxng.config.webSearch.baseUrl` (ordine 200)
+11. **SearXNG** -- `SEARXNG_BASE_URL` o `plugins.entries.searxng.config.webSearch.baseUrl` (ordine 200)
 
-Se non viene rilevato alcun provider, viene usato Brave come ripiego (verrà visualizzato un errore
-di chiave mancante che richiede di configurarne una).
+I provider senza chiave come **Parallel Search (Free)**, **DuckDuckGo**,
+**Ollama Web Search** e **Codex Hosted Search** sono disponibili solo quando li
+selezioni esplicitamente con `tools.web.search.provider` o tramite
+`openclaw configure --section web`. OpenClaw non invia query gestite
+`web_search` a un provider senza chiave solo perché non è configurato alcun provider
+supportato da API.
+
+I modelli OpenAI Responses sono un'eccezione: mentre `tools.web.search.provider` non è
+impostato, usano la ricerca web nativa di OpenAI invece dei provider gestiti
+sopra. Imposta `tools.web.search.provider` su `parallel-free` (o su un altro provider)
+per instradarli attraverso il percorso gestito.
 
 <Note>
-  Tutti i campi chiave dei provider supportano oggetti SecretRef. Le SecretRef con ambito Plugin
+  Tutti i campi chiave dei provider supportano oggetti SecretRef. Le SecretRef con ambito di plugin
   sotto `plugins.entries.<plugin>.config.webSearch.apiKey` vengono risolte per i
-  provider di ricerca web basati su API inclusi, tra cui Brave, Exa, Firecrawl,
-  Gemini, Grok, Kimi, MiniMax, Perplexity e Tavily,
-  sia quando il provider viene scelto esplicitamente tramite `tools.web.search.provider` sia quando
-  viene selezionato tramite rilevamento automatico. In modalità di rilevamento automatico, OpenClaw risolve solo la
+  provider di ricerca web supportati da API installati, inclusi Brave, Exa, Firecrawl,
+  Gemini, Grok, Kimi, MiniMax, Parallel, Perplexity e Tavily,
+  sia che il provider venga scelto esplicitamente tramite `tools.web.search.provider` sia
+  selezionato tramite rilevamento automatico. In modalità rilevamento automatico, OpenClaw risolve solo la
   chiave del provider selezionato -- le SecretRef non selezionate restano inattive, quindi puoi
-  tenere configurati più provider senza sostenere il costo di risoluzione per
-  quelli che non usi.
+  mantenere più provider configurati senza pagare il costo di risoluzione per
+  quelli che non stai usando.
 </Note>
 
 ## Configurazione
@@ -231,51 +295,54 @@ di chiave mancante che richiede di configurarne una).
 }
 ```
 
-La configurazione specifica del provider (chiavi API, URL di base, modalità) si trova in
+La configurazione specifica del provider (chiavi API, URL di base, modalità) si trova sotto
 `plugins.entries.<plugin>.config.webSearch.*`. Gemini può anche riutilizzare
 `models.providers.google.apiKey` e `models.providers.google.baseUrl` come fallback a priorità inferiore
 dopo la sua configurazione dedicata per la ricerca web e `GEMINI_API_KEY`. Consulta le
 pagine dei provider per esempi.
+Grok può anche riutilizzare un profilo di autenticazione OAuth xAI da `openclaw models auth login
+--provider xai --method oauth`; la configurazione con chiave API resta il fallback.
 
-`tools.web.search.provider` viene convalidato rispetto agli ID dei provider di ricerca web
-dichiarati dai manifest dei Plugin inclusi e installati. Un errore di battitura come `"brvae"`
-fa fallire la convalida della configurazione invece di ricorrere silenziosamente al rilevamento automatico. Se un
-provider configurato ha solo prove obsolete del Plugin, come un blocco residuo
-`plugins.entries.<plugin>` dopo la disinstallazione di un Plugin di terze parti,
-OpenClaw mantiene resiliente l'avvio e segnala un avviso, così puoi reinstallare il
-Plugin o eseguire `openclaw doctor --fix` per ripulire la configurazione obsoleta.
+`tools.web.search.provider` viene convalidato rispetto agli id dei provider di ricerca web
+dichiarati dai manifest dei plugin inclusi e installati. Un refuso come `"brvae"`
+fa fallire la convalida della configurazione invece di ricadere silenziosamente sul rilevamento automatico. Se un
+provider configurato ha solo evidenza di plugin obsoleta, come un blocco
+`plugins.entries.<plugin>` rimasto dopo la disinstallazione di un plugin di terze parti,
+OpenClaw mantiene l'avvio resiliente e segnala un avviso così puoi reinstallare il
+plugin o eseguire `openclaw doctor --fix` per ripulire la configurazione obsoleta.
 
-La selezione del provider di fallback `web_fetch` è separata:
+La selezione del provider di fallback di `web_fetch` è separata:
 
 - sceglilo con `tools.web.fetch.provider`
 - oppure ometti quel campo e lascia che OpenClaw rilevi automaticamente il primo provider web-fetch
-  pronto tra le credenziali disponibili
-- `web_fetch` non in sandbox può usare provider di Plugin installati che dichiarano
-  `contracts.webFetchProviders`; i recuperi in sandbox restano limitati a quelli inclusi
-- oggi il provider web-fetch incluso è Firecrawl, configurato in
+  pronto dalle credenziali configurate
+- `web_fetch` non in sandbox può usare provider di plugin installati che dichiarano
+  `contracts.webFetchProviders`; i fetch in sandbox consentono provider inclusi e
+  installazioni verificate di plugin ufficiali, ma escludono plugin esterni di terze parti
+- il plugin ufficiale Firecrawl fornisce il fallback web-fetch, configurato sotto
   `plugins.entries.firecrawl.config.webFetch.*`
 
 Quando scegli **Kimi** durante `openclaw onboard` o
 `openclaw configure --section web`, OpenClaw può anche chiedere:
 
 - la regione API Moonshot (`https://api.moonshot.ai/v1` o `https://api.moonshot.cn/v1`)
-- il modello predefinito di ricerca web Kimi (predefinito: `kimi-k2.6`)
+- il modello di ricerca web Kimi predefinito (predefinito: `kimi-k2.6`)
 
 Per `x_search`, configura `plugins.entries.xai.config.xSearch.*`. Usa lo
-stesso profilo di autenticazione xAI della chat, oppure la credenziale `XAI_API_KEY` / di ricerca web del Plugin
-usata dalla ricerca web Grok.
+stesso profilo di autenticazione xAI della chat, oppure la credenziale
+`XAI_API_KEY` / del plugin web-search usata dalla ricerca web Grok.
 La configurazione legacy `tools.web.x_search.*` viene migrata automaticamente da `openclaw doctor --fix`.
 Quando scegli Grok durante `openclaw onboard` o `openclaw configure --section web`,
-OpenClaw può anche offrire la configurazione facoltativa di `x_search` con la stessa chiave.
-Questo è un passaggio successivo separato all'interno del percorso Grok, non una scelta separata di provider
-di ricerca web di primo livello. Se scegli un altro provider, OpenClaw non
+OpenClaw può anche offrire la configurazione opzionale di `x_search` con la stessa credenziale.
+Questo è un passaggio di follow-up separato all'interno del percorso Grok, non una scelta separata di
+provider di ricerca web di primo livello. Se scegli un altro provider, OpenClaw non
 mostra il prompt `x_search`.
 
-### Archiviazione delle chiavi API
+### Archiviare le chiavi API
 
 <Tabs>
-  <Tab title="Config file">
-    Esegui `openclaw configure --section web` oppure imposta direttamente la chiave:
+  <Tab title="File di configurazione">
+    Esegui `openclaw configure --section web` o imposta direttamente la chiave:
 
     ```json5
     {
@@ -294,7 +361,7 @@ mostra il prompt `x_search`.
     ```
 
   </Tab>
-  <Tab title="Environment variable">
+  <Tab title="Variabile d'ambiente">
     Imposta la variabile d'ambiente del provider nell'ambiente del processo Gateway:
 
     ```bash
@@ -313,29 +380,29 @@ mostra il prompt `x_search`.
 | --------------------- | ----------------------------------------------------- |
 | `query`               | Query di ricerca (obbligatoria)                       |
 | `count`               | Risultati da restituire (1-10, predefinito: 5)        |
-| `country`             | Codice paese ISO a 2 lettere (ad es. "US", "DE")      |
-| `language`            | Codice lingua ISO 639-1 (ad es. "en", "de")           |
+| `country`             | Codice paese ISO a 2 lettere (ad es. "US", "DE")     |
+| `language`            | Codice lingua ISO 639-1 (ad es. "en", "de")          |
 | `search_lang`         | Codice lingua di ricerca (solo Brave)                 |
 | `freshness`           | Filtro temporale: `day`, `week`, `month` o `year`     |
-| `date_after`          | Risultati dopo questa data (AAAA-MM-GG)               |
-| `date_before`         | Risultati prima di questa data (AAAA-MM-GG)           |
-| `ui_lang`             | Codice lingua dell'interfaccia utente (solo Brave)    |
-| `domain_filter`       | Array di allowlist/denylist dei domini (solo Perplexity) |
+| `date_after`          | Risultati dopo questa data (YYYY-MM-DD)               |
+| `date_before`         | Risultati prima di questa data (YYYY-MM-DD)           |
+| `ui_lang`             | Codice lingua dell'interfaccia (solo Brave)           |
+| `domain_filter`       | Array allowlist/denylist di domini (solo Perplexity)  |
 | `max_tokens`          | Budget totale dei contenuti, predefinito 25000 (solo Perplexity) |
 | `max_tokens_per_page` | Limite di token per pagina, predefinito 2048 (solo Perplexity) |
 
 <Warning>
-  Non tutti i parametri funzionano con tutti i provider. La modalità `llm-context` di Brave
-  rifiuta `ui_lang`; anche `date_before` richiede `date_after` perché gli intervalli personalizzati
-  di aggiornamento di Brave richiedono sia la data di inizio sia quella di fine.
+  Non tutti i parametri funzionano con tutti i provider. La modalità Brave `llm-context`
+  rifiuta `ui_lang`; `date_before` richiede anche `date_after` perché gli intervalli
+  di freschezza personalizzati di Brave richiedono sia data di inizio sia data di fine.
   Gemini, Grok e Kimi restituiscono una risposta sintetizzata con citazioni. Accettano
-  `count` per compatibilità con lo strumento condiviso, ma questo non modifica la forma
-  della risposta basata su fonti. Gemini supporta `freshness`, `date_after` e
-  `date_before` convertendoli in intervalli temporali di grounding di Google Search.
-  Perplexity si comporta allo stesso modo quando usi il percorso di compatibilità Sonar/OpenRouter
-  (`plugins.entries.perplexity.config.webSearch.baseUrl` /
+  `count` per compatibilità con lo strumento condiviso, ma non cambia la forma della
+  risposta fondata. Gemini tratta la freschezza `day` come un suggerimento di recenza; valori
+  di freschezza più ampi e date esplicite impostano gli intervalli temporali di grounding di Google Search.
+  Perplexity si comporta allo stesso modo quando usi il percorso di compatibilità
+  Sonar/OpenRouter (`plugins.entries.perplexity.config.webSearch.baseUrl` /
   `model` o `OPENROUTER_API_KEY`).
-  SearXNG accetta `http://` solo per host attendibili di rete privata o local loopback;
+  SearXNG accetta `http://` solo per host attendibili di rete privata o loopback;
   gli endpoint SearXNG pubblici devono usare `https://`.
   Firecrawl e Tavily supportano solo `query` e `count` tramite `web_search`
   -- usa i loro strumenti dedicati per le opzioni avanzate.
@@ -344,20 +411,20 @@ mostra il prompt `x_search`.
 ## x_search
 
 `x_search` interroga i post di X (in precedenza Twitter) usando xAI e restituisce
-risposte sintetizzate dall'IA con citazioni. Accetta query in linguaggio naturale e
-filtri strutturati facoltativi. OpenClaw abilita lo strumento `x_search` xAI integrato
-solo nella richiesta che serve questa chiamata allo strumento.
+risposte sintetizzate dall'AI con citazioni. Accetta query in linguaggio naturale e
+filtri strutturati opzionali. OpenClaw abilita lo strumento integrato xAI `x_search`
+solo sulla richiesta che serve questa chiamata allo strumento.
 
 <Note>
-  xAI documenta `x_search` come supporto per ricerca per parole chiave, ricerca semantica, ricerca utente
-  e recupero di thread. Per statistiche di coinvolgimento per post, come repost,
-  risposte, segnalibri o visualizzazioni, preferisci una ricerca mirata dell'URL esatto del post
-  o dell'ID di stato. Le ricerche ampie per parole chiave possono trovare il post giusto ma restituire metadati
-  per post meno completi. Un buon modello è: individuare prima il post, quindi
-  eseguire una seconda query `x_search` focalizzata su quel post esatto.
+  xAI documenta `x_search` come compatibile con ricerca per parole chiave, ricerca semantica, ricerca utenti
+  e recupero di thread. Per statistiche di engagement per singolo post come repost,
+  risposte, segnalibri o visualizzazioni, preferisci una ricerca mirata per l'URL esatto del post
+  o l'ID stato. Le ricerche ampie per parole chiave possono trovare il post giusto ma restituire metadati
+  per singolo post meno completi. Un buon schema è: individua prima il post, poi
+  esegui una seconda query `x_search` focalizzata su quel post esatto.
 </Note>
 
-### Configurazione di x_search
+### Configurazione x_search
 
 ```json5
 {
@@ -387,18 +454,18 @@ solo nella richiesta che serve questa chiamata allo strumento.
 
 `x_search` invia richieste POST a `<baseUrl>/responses` quando
 `plugins.entries.xai.config.xSearch.baseUrl` è impostato. Se quel campo viene omesso,
-ripiega su `plugins.entries.xai.config.webSearch.baseUrl`, poi sul
-legacy `tools.web.search.grok.baseUrl` e infine sull'endpoint pubblico xAI.
+ricade su `plugins.entries.xai.config.webSearch.baseUrl`, poi sul
+legacy `tools.web.search.grok.baseUrl` e infine sull'endpoint xAI pubblico.
 
-### Parametri di x_search
+### Parametri x_search
 
 | Parametro                    | Descrizione                                            |
 | ---------------------------- | ------------------------------------------------------ |
-| `query`                      | Query di ricerca (obbligatoria)                        |
-| `allowed_x_handles`          | Limita i risultati a specifici handle X                |
-| `excluded_x_handles`         | Escludi specifici handle X                             |
-| `from_date`                  | Includi solo post in questa data o successivi (AAAA-MM-GG) |
-| `to_date`                    | Includi solo post in questa data o precedenti (AAAA-MM-GG) |
+| `query`                      | Query di ricerca (obbligatoria)                       |
+| `allowed_x_handles`          | Limita i risultati a handle X specifici               |
+| `excluded_x_handles`         | Escludi handle X specifici                            |
+| `from_date`                  | Includi solo post in questa data o successivi (YYYY-MM-DD) |
+| `to_date`                    | Includi solo post in questa data o precedenti (YYYY-MM-DD) |
 | `enable_image_understanding` | Consenti a xAI di ispezionare le immagini allegate ai post corrispondenti |
 | `enable_video_understanding` | Consenti a xAI di ispezionare i video allegati ai post corrispondenti |
 
@@ -460,7 +527,7 @@ Se usi profili degli strumenti o allowlist, aggiungi `web_search`, `x_search` o 
 
 ## Correlati
 
-- [Web Fetch](/it/tools/web-fetch) -- recupera un URL ed estrae contenuto leggibile
-- [Browser web](/it/tools/browser) -- automazione completa del browser per siti con molto JavaScript
-- [Ricerca Grok](/it/tools/grok-search) -- Grok come provider `web_search`
-- [Ricerca web Ollama](/it/tools/ollama-search) -- ricerca web senza chiave tramite il tuo host Ollama
+- [Recupero Web](/it/tools/web-fetch) -- recupera un URL ed estrae contenuto leggibile
+- [Browser Web](/it/tools/browser) -- automazione completa del browser per siti con uso intensivo di JS
+- [Ricerca Grok](/it/tools/grok-search) -- Grok come provider di `web_search`
+- [Ricerca Web Ollama](/it/tools/ollama-search) -- ricerca web senza chiavi tramite il tuo host Ollama

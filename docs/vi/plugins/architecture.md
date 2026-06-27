@@ -2,25 +2,26 @@
 read_when:
     - Xây dựng hoặc gỡ lỗi các Plugin OpenClaw gốc
     - Hiểu mô hình năng lực của Plugin hoặc ranh giới quyền sở hữu
-    - Làm việc trên quy trình tải Plugin hoặc hệ thống đăng ký
-    - Triển khai các điểm móc thời gian chạy của nhà cung cấp hoặc Plugin kênh
+    - Đang làm việc trên quy trình nạp Plugin hoặc sổ đăng ký
+    - Triển khai hook runtime của nhà cung cấp hoặc Plugin kênh
 sidebarTitle: Internals
-summary: 'Nội bộ Plugin: mô hình năng lực, quyền sở hữu, hợp đồng, quy trình tải và trình trợ giúp thời gian chạy'
+summary: 'Nội bộ Plugin: mô hình năng lực, quyền sở hữu, hợp đồng, pipeline tải và helper thời gian chạy'
 title: Nội bộ Plugin
 x-i18n:
-    generated_at: "2026-05-02T10:47:02Z"
+    generated_at: "2026-06-27T17:43:41Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 138fb962c98f71e29e8b2621ce318336c38a317636d090eb315fed806fc6abda
+    source_hash: 0e36f77594f16d7f03e31be81a241a15fb15c0b160f22a4dce863f6da184dfe3
     source_path: plugins/architecture.md
     workflow: 16
 ---
 
-Đây là **tài liệu tham chiếu kiến trúc chuyên sâu** cho hệ thống Plugin của OpenClaw. Để xem các hướng dẫn thực hành, hãy bắt đầu với một trong các trang tập trung bên dưới.
+Đây là **tham chiếu kiến trúc chuyên sâu** cho hệ thống Plugin của OpenClaw. Với các hướng dẫn thực hành, hãy bắt đầu bằng một trong các trang tập trung bên dưới.
 
 <CardGroup cols={2}>
   <Card title="Cài đặt và sử dụng Plugin" icon="plug" href="/vi/tools/plugin">
-    Hướng dẫn dành cho người dùng cuối về cách thêm, bật và khắc phục sự cố Plugin.
+    Hướng dẫn cho người dùng cuối về cách thêm, bật và khắc phục sự cố Plugin.
   </Card>
   <Card title="Xây dựng Plugin" icon="rocket" href="/vi/plugins/building-plugins">
     Hướng dẫn tạo Plugin đầu tiên với manifest hoạt động nhỏ nhất.
@@ -40,48 +41,50 @@ x-i18n:
 
 Năng lực là mô hình **Plugin gốc** công khai bên trong OpenClaw. Mỗi Plugin OpenClaw gốc đăng ký với một hoặc nhiều loại năng lực:
 
-| Năng lực                 | Phương thức đăng ký                             | Plugin ví dụ                         |
-| ------------------------ | ----------------------------------------------- | ------------------------------------ |
-| Suy luận văn bản         | `api.registerProvider(...)`                     | `openai`, `anthropic`                |
-| Backend suy luận CLI     | `api.registerCliBackend(...)`                   | `openai`, `anthropic`                |
-| Giọng nói                | `api.registerSpeechProvider(...)`               | `elevenlabs`, `microsoft`            |
-| Phiên âm thời gian thực  | `api.registerRealtimeTranscriptionProvider(...)` | `openai`                             |
-| Giọng nói thời gian thực | `api.registerRealtimeVoiceProvider(...)`        | `openai`                             |
-| Hiểu nội dung phương tiện | `api.registerMediaUnderstandingProvider(...)`  | `openai`, `google`                   |
-| Tạo hình ảnh             | `api.registerImageGenerationProvider(...)`      | `openai`, `google`, `fal`, `minimax` |
-| Tạo nhạc                 | `api.registerMusicGenerationProvider(...)`      | `google`, `minimax`                  |
-| Tạo video                | `api.registerVideoGenerationProvider(...)`      | `qwen`                               |
-| Tìm nạp web              | `api.registerWebFetchProvider(...)`             | `firecrawl`                          |
-| Tìm kiếm web             | `api.registerWebSearchProvider(...)`            | `google`                             |
-| Kênh / nhắn tin          | `api.registerChannel(...)`                      | `msteams`, `matrix`                  |
-| Khám phá Gateway         | `api.registerGatewayDiscoveryService(...)`      | `bonjour`                            |
+| Năng lực               | Phương thức đăng ký                             | Plugin ví dụ                         |
+| ---------------------- | ------------------------------------------------ | ------------------------------------ |
+| Suy luận văn bản       | `api.registerProvider(...)`                      | `openai`, `anthropic`                |
+| Backend suy luận CLI   | `api.registerCliBackend(...)`                    | `openai`, `anthropic`                |
+| Embeddings             | `api.registerEmbeddingProvider(...)`             | Plugin vector do nhà cung cấp sở hữu |
+| Giọng nói              | `api.registerSpeechProvider(...)`                | `elevenlabs`, `microsoft`            |
+| Chuyển lời nói thời gian thực | `api.registerRealtimeTranscriptionProvider(...)` | `openai`                             |
+| Giọng nói thời gian thực | `api.registerRealtimeVoiceProvider(...)`         | `openai`                             |
+| Hiểu nội dung đa phương tiện | `api.registerMediaUnderstandingProvider(...)`    | `openai`, `google`                   |
+| Nguồn bản ghi          | `api.registerTranscriptSourceProvider(...)`      | `discord`                            |
+| Tạo hình ảnh           | `api.registerImageGenerationProvider(...)`       | `openai`, `google`, `fal`, `minimax` |
+| Tạo nhạc               | `api.registerMusicGenerationProvider(...)`       | `google`, `minimax`                  |
+| Tạo video              | `api.registerVideoGenerationProvider(...)`       | `qwen`                               |
+| Tải web                | `api.registerWebFetchProvider(...)`              | `firecrawl`                          |
+| Tìm kiếm web           | `api.registerWebSearchProvider(...)`             | `google`                             |
+| Kênh / nhắn tin        | `api.registerChannel(...)`                       | `msteams`, `matrix`                  |
+| Khám phá Gateway       | `api.registerGatewayDiscoveryService(...)`       | `bonjour`                            |
 
 <Note>
-Một Plugin đăng ký không năng lực nào nhưng cung cấp hook, công cụ, dịch vụ khám phá hoặc dịch vụ nền là Plugin **chỉ có hook kiểu cũ**. Mẫu này vẫn được hỗ trợ đầy đủ.
+Một Plugin đăng ký không năng lực nào nhưng cung cấp hook, công cụ, dịch vụ khám phá hoặc dịch vụ nền là Plugin **chỉ hook kế thừa**. Mẫu này vẫn được hỗ trợ đầy đủ.
 </Note>
 
 ### Lập trường tương thích bên ngoài
 
-Mô hình năng lực đã được đưa vào core và hiện được các Plugin đóng gói/gốc sử dụng, nhưng khả năng tương thích Plugin bên ngoài vẫn cần một tiêu chuẩn chặt chẽ hơn so với “nó được xuất ra, nên nó đã đóng băng”.
+Mô hình năng lực đã được đưa vào lõi và hiện được các Plugin đóng gói/gốc sử dụng, nhưng khả năng tương thích Plugin bên ngoài vẫn cần tiêu chuẩn chặt hơn “nó được export, nên nó đã cố định”.
 
 | Tình huống Plugin                                | Hướng dẫn                                                                                         |
-| ------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
-| Plugin bên ngoài hiện có                         | Giữ cho các tích hợp dựa trên hook tiếp tục hoạt động; đây là đường cơ sở tương thích.            |
-| Plugin đóng gói/gốc mới                          | Ưu tiên đăng ký năng lực rõ ràng thay vì truy cập sâu theo nhà cung cấp hoặc thiết kế mới chỉ có hook. |
-| Plugin bên ngoài áp dụng đăng ký năng lực        | Được phép, nhưng hãy xem các bề mặt trợ giúp theo năng lực là đang phát triển trừ khi tài liệu đánh dấu chúng là ổn định. |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Plugin bên ngoài hiện có                         | Giữ cho các tích hợp dựa trên hook tiếp tục hoạt động; đây là nền tảng tương thích.              |
+| Plugin đóng gói/gốc mới                          | Ưu tiên đăng ký năng lực tường minh hơn là truy cập đặc thù theo nhà cung cấp hoặc thiết kế mới chỉ dùng hook. |
+| Plugin bên ngoài áp dụng đăng ký năng lực        | Được phép, nhưng xem các bề mặt trợ giúp riêng theo năng lực là đang phát triển trừ khi tài liệu đánh dấu chúng là ổn định. |
 
-Đăng ký năng lực là hướng đi dự kiến. Hook kiểu cũ vẫn là đường an toàn nhất không gây đứt gãy cho Plugin bên ngoài trong giai đoạn chuyển tiếp. Không phải mọi subpath trợ giúp được xuất đều tương đương nhau — hãy ưu tiên các hợp đồng hẹp đã được tài liệu hóa hơn các export trợ giúp ngẫu nhiên.
+Đăng ký năng lực là hướng đi dự kiến. Hook kế thừa vẫn là đường dẫn an toàn nhất để không gây phá vỡ cho Plugin bên ngoài trong giai đoạn chuyển tiếp. Các đường dẫn con trợ giúp đã export không ngang nhau — ưu tiên các hợp đồng hẹp đã được ghi tài liệu hơn là các export trợ giúp ngẫu nhiên.
 
 ### Hình dạng Plugin
 
-OpenClaw phân loại từng Plugin đã tải thành một hình dạng dựa trên hành vi đăng ký thực tế của nó (không chỉ metadata tĩnh):
+OpenClaw phân loại mỗi Plugin đã tải thành một hình dạng dựa trên hành vi đăng ký thực tế của nó (không chỉ metadata tĩnh):
 
 <AccordionGroup>
   <Accordion title="plain-capability">
     Đăng ký đúng một loại năng lực (ví dụ Plugin chỉ là nhà cung cấp như `mistral`).
   </Accordion>
   <Accordion title="hybrid-capability">
-    Đăng ký nhiều loại năng lực (ví dụ `openai` sở hữu suy luận văn bản, giọng nói, hiểu nội dung phương tiện và tạo hình ảnh).
+    Đăng ký nhiều loại năng lực (ví dụ `openai` sở hữu suy luận văn bản, giọng nói, hiểu nội dung đa phương tiện và tạo hình ảnh).
   </Accordion>
   <Accordion title="hook-only">
     Chỉ đăng ký hook (có kiểu hoặc tùy chỉnh), không có năng lực, công cụ, lệnh hoặc dịch vụ.
@@ -93,30 +96,30 @@ OpenClaw phân loại từng Plugin đã tải thành một hình dạng dựa t
 
 Dùng `openclaw plugins inspect <id>` để xem hình dạng và phân tích năng lực của một Plugin. Xem [tham chiếu CLI](/vi/cli/plugins#inspect) để biết chi tiết.
 
-### Hook kiểu cũ
+### Hook kế thừa
 
-Hook `before_agent_start` vẫn được hỗ trợ như một đường tương thích cho các Plugin chỉ có hook. Các Plugin thực tế kiểu cũ vẫn còn phụ thuộc vào nó.
+Hook `before_agent_start` vẫn được hỗ trợ như một đường dẫn tương thích cho Plugin chỉ dùng hook. Các Plugin thực tế kế thừa vẫn phụ thuộc vào nó.
 
-Hướng đi:
+Định hướng:
 
 - giữ cho nó hoạt động
-- ghi tài liệu rằng nó là kiểu cũ
+- ghi tài liệu nó là kế thừa
 - ưu tiên `before_model_resolve` cho công việc ghi đè mô hình/nhà cung cấp
-- ưu tiên `before_prompt_build` cho công việc chỉnh sửa prompt
-- chỉ gỡ bỏ sau khi mức sử dụng thực tế giảm và phạm vi fixture chứng minh việc di chuyển là an toàn
+- ưu tiên `before_prompt_build` cho công việc thay đổi prompt
+- chỉ xóa sau khi mức sử dụng thực tế giảm và phạm vi fixture chứng minh việc di trú là an toàn
 
 ### Tín hiệu tương thích
 
-Khi chạy `openclaw doctor` hoặc `openclaw plugins inspect <id>`, bạn có thể thấy một trong các nhãn sau:
+Khi chạy `openclaw doctor` hoặc `openclaw plugins inspect <id>`, bạn có thể thấy một trong các nhãn này:
 
-| Tín hiệu                     | Ý nghĩa                                                         |
-| ---------------------------- | --------------------------------------------------------------- |
-| **cấu hình hợp lệ**          | Cấu hình phân tích được bình thường và Plugin được phân giải     |
-| **khuyến nghị tương thích**  | Plugin dùng một mẫu được hỗ trợ nhưng cũ hơn (ví dụ `hook-only`) |
-| **cảnh báo kiểu cũ**         | Plugin dùng `before_agent_start`, tính năng này đã bị phản đối  |
-| **lỗi cứng**                 | Cấu hình không hợp lệ hoặc Plugin không tải được                |
+| Tín hiệu                   | Ý nghĩa                                                      |
+| -------------------------- | ------------------------------------------------------------ |
+| **config hợp lệ**          | Config phân tích được và Plugin resolve được                 |
+| **khuyến nghị tương thích** | Plugin dùng một mẫu được hỗ trợ nhưng cũ hơn (ví dụ `hook-only`) |
+| **cảnh báo kế thừa**       | Plugin dùng `before_agent_start`, vốn đã bị phản đối sử dụng |
+| **lỗi cứng**               | Config không hợp lệ hoặc Plugin không tải được               |
 
-Cả `hook-only` lẫn `before_agent_start` đều sẽ không làm hỏng Plugin của bạn hôm nay: `hook-only` chỉ là khuyến nghị, và `before_agent_start` chỉ kích hoạt cảnh báo. Các tín hiệu này cũng xuất hiện trong `openclaw status --all` và `openclaw plugins doctor`.
+Cả `hook-only` lẫn `before_agent_start` đều sẽ không làm hỏng Plugin của bạn hôm nay: `hook-only` là khuyến nghị, còn `before_agent_start` chỉ kích hoạt cảnh báo. Các tín hiệu này cũng xuất hiện trong `openclaw status --all` và `openclaw plugins doctor`.
 
 ## Tổng quan kiến trúc
 
@@ -124,87 +127,87 @@ Hệ thống Plugin của OpenClaw có bốn lớp:
 
 <Steps>
   <Step title="Manifest + khám phá">
-    OpenClaw tìm các Plugin ứng viên từ đường dẫn đã cấu hình, gốc workspace, gốc Plugin toàn cục và Plugin đóng gói. Khâu khám phá đọc manifest `openclaw.plugin.json` gốc cùng các manifest bundle được hỗ trợ trước.
+    OpenClaw tìm các Plugin ứng viên từ những đường dẫn đã cấu hình, root workspace, root Plugin toàn cục và Plugin đóng gói. Khám phá đọc manifest gốc `openclaw.plugin.json` cùng các manifest bundle được hỗ trợ trước.
   </Step>
   <Step title="Bật + xác thực">
-    Core quyết định một Plugin đã được khám phá là được bật, bị tắt, bị chặn hay được chọn cho một slot độc quyền như bộ nhớ.
+    Lõi quyết định một Plugin đã khám phá được bật, tắt, chặn hay được chọn cho một vị trí độc quyền như bộ nhớ.
   </Step>
   <Step title="Tải runtime">
-    Plugin OpenClaw gốc được tải trong tiến trình và đăng ký năng lực vào một registry trung tâm. JavaScript đóng gói tải qua `require` gốc; TypeScript nguồn cục bộ của bên thứ ba là phương án dự phòng Jiti khẩn cấp. Các bundle tương thích được chuẩn hóa thành bản ghi registry mà không import mã runtime.
+    Plugin OpenClaw gốc được tải trong cùng tiến trình và đăng ký năng lực vào một registry trung tâm. JavaScript đã đóng gói tải qua `require` gốc; TypeScript nguồn cục bộ của bên thứ ba là fallback Jiti khẩn cấp. Các bundle tương thích được chuẩn hóa thành bản ghi registry mà không import mã runtime.
   </Step>
   <Step title="Tiêu thụ bề mặt">
     Phần còn lại của OpenClaw đọc registry để phơi bày công cụ, kênh, thiết lập nhà cung cấp, hook, route HTTP, lệnh CLI và dịch vụ.
   </Step>
 </Steps>
 
-Riêng với CLI của Plugin, khám phá lệnh gốc được tách thành hai pha:
+Riêng với CLI Plugin, khám phá lệnh root được chia thành hai pha:
 
-- metadata tại thời điểm phân tích cú pháp đến từ `registerCli(..., { descriptors: [...] })`
-- module CLI thật của Plugin có thể vẫn lazy và đăng ký ở lần gọi đầu tiên
+- metadata thời điểm phân tích đến từ `registerCli(..., { descriptors: [...] })`
+- module CLI Plugin thật có thể vẫn lazy và đăng ký khi được gọi lần đầu
 
-Điều đó giữ mã CLI do Plugin sở hữu bên trong Plugin, đồng thời vẫn cho phép OpenClaw giữ trước tên lệnh gốc trước khi phân tích cú pháp.
+Điều đó giữ mã CLI do Plugin sở hữu bên trong Plugin, trong khi vẫn cho phép OpenClaw giữ trước tên lệnh root trước khi phân tích.
 
 Ranh giới thiết kế quan trọng:
 
-- xác thực manifest/cấu hình nên hoạt động từ **metadata manifest/schema** mà không thực thi mã Plugin
+- xác thực manifest/config nên hoạt động từ **metadata manifest/schema** mà không thực thi mã Plugin
 - khám phá năng lực gốc có thể tải mã entry Plugin đáng tin cậy để xây dựng snapshot registry không kích hoạt
 - hành vi runtime gốc đến từ đường dẫn `register(api)` của module Plugin với `api.registrationMode === "full"`
 
-Sự phân tách đó cho phép OpenClaw xác thực cấu hình, giải thích Plugin bị thiếu/bị tắt và xây dựng gợi ý UI/schema trước khi runtime đầy đủ hoạt động.
+Sự tách biệt đó cho phép OpenClaw xác thực config, giải thích Plugin bị thiếu/bị tắt và xây dựng gợi ý UI/schema trước khi runtime đầy đủ hoạt động.
 
 ### Snapshot metadata Plugin và bảng tra cứu
 
-Khi Gateway khởi động, nó xây dựng một `PluginMetadataSnapshot` cho snapshot cấu hình hiện tại. Snapshot này chỉ có metadata: nó lưu chỉ mục Plugin đã cài đặt, registry manifest, chẩn đoán manifest, bản đồ chủ sở hữu, bộ chuẩn hóa id Plugin và bản ghi manifest. Nó không giữ module Plugin đã tải, SDK nhà cung cấp, nội dung package hoặc export runtime.
+Khi khởi động, Gateway xây dựng một `PluginMetadataSnapshot` cho snapshot config hiện tại. Snapshot này chỉ chứa metadata: nó lưu chỉ mục Plugin đã cài đặt, registry manifest, chẩn đoán manifest, bản đồ owner, bộ chuẩn hóa id Plugin và bản ghi manifest. Nó không giữ module Plugin đã tải, SDK nhà cung cấp, nội dung gói hoặc export runtime.
 
-Xác thực cấu hình có nhận biết Plugin, tự động bật khi khởi động và bootstrap Plugin của Gateway dùng snapshot đó thay vì tự xây dựng lại metadata manifest/chỉ mục một cách độc lập. `PluginLookUpTable` được suy ra từ cùng snapshot và thêm kế hoạch Plugin khởi động cho cấu hình runtime hiện tại.
+Xác thực config có nhận biết Plugin, tự động bật khi khởi động và bootstrap Plugin Gateway tiêu thụ snapshot đó thay vì tự xây dựng lại metadata manifest/chỉ mục độc lập. `PluginLookUpTable` được dẫn xuất từ cùng snapshot và thêm kế hoạch Plugin khởi động cho config runtime hiện tại.
 
-Sau khi khởi động, Gateway giữ snapshot metadata hiện tại như một sản phẩm runtime có thể thay thế. Khám phá nhà cung cấp runtime lặp lại có thể mượn snapshot đó thay vì dựng lại chỉ mục đã cài đặt và registry manifest cho mỗi lượt catalog nhà cung cấp. Snapshot được xóa hoặc thay thế khi Gateway tắt, khi cấu hình/kho Plugin thay đổi và khi ghi chỉ mục đã cài đặt; bên gọi quay về đường dẫn manifest/chỉ mục lạnh khi không có snapshot hiện tại tương thích. Kiểm tra tương thích phải bao gồm các gốc khám phá Plugin như `plugins.load.paths` và workspace tác nhân mặc định, vì Plugin workspace là một phần của phạm vi metadata.
+Sau khi khởi động, Gateway giữ snapshot metadata hiện tại như một sản phẩm runtime có thể thay thế. Khám phá nhà cung cấp runtime lặp lại có thể mượn snapshot đó thay vì tái tạo chỉ mục đã cài đặt và registry manifest cho mỗi lượt catalog nhà cung cấp. Snapshot được xóa hoặc thay thế khi Gateway tắt, khi config/tồn kho Plugin thay đổi và khi ghi chỉ mục đã cài đặt; caller fallback về đường dẫn manifest/chỉ mục lạnh khi không có snapshot hiện tại tương thích. Kiểm tra tương thích phải bao gồm các root khám phá Plugin như `plugins.load.paths` và workspace agent mặc định, vì Plugin workspace là một phần của phạm vi metadata.
 
-Snapshot và bảng tra cứu giữ các quyết định khởi động lặp lại trên đường nhanh:
+Snapshot và bảng tra cứu giữ các quyết định khởi động lặp lại trên đường dẫn nhanh:
 
 - quyền sở hữu kênh
-- khởi động kênh trì hoãn
+- khởi động kênh bị hoãn
 - id Plugin khởi động
 - quyền sở hữu nhà cung cấp và backend CLI
-- quyền sở hữu nhà cung cấp thiết lập, bí danh lệnh, nhà cung cấp catalog mô hình và hợp đồng manifest
-- xác thực schema cấu hình Plugin và schema cấu hình kênh
+- quyền sở hữu thiết lập nhà cung cấp, bí danh lệnh, nhà cung cấp catalog mô hình và hợp đồng manifest
+- xác thực schema config Plugin và schema config kênh
 - quyết định tự động bật khi khởi động
 
-Ranh giới an toàn là thay thế snapshot, không phải đột biến. Xây dựng lại snapshot khi cấu hình, kho Plugin, bản ghi cài đặt hoặc chính sách chỉ mục đã lưu thay đổi. Đừng xem nó là một registry toàn cục rộng có thể đột biến, và đừng giữ các snapshot lịch sử không giới hạn. Tải Plugin runtime vẫn tách biệt với snapshot metadata để trạng thái runtime cũ không thể bị che giấu phía sau cache metadata.
+Ranh giới an toàn là thay thế snapshot, không phải đột biến. Xây dựng lại snapshot khi config, tồn kho Plugin, bản ghi cài đặt hoặc chính sách chỉ mục đã lưu thay đổi. Đừng xem nó là registry toàn cục rộng có thể đột biến, và đừng giữ các snapshot lịch sử không giới hạn. Việc tải Plugin runtime vẫn tách biệt với snapshot metadata để trạng thái runtime cũ không thể bị ẩn sau cache metadata.
 
-Quy tắc cache được ghi tài liệu trong [nội bộ kiến trúc Plugin](/vi/plugins/architecture-internals#plugin-cache-boundary): metadata manifest và khám phá là mới trừ khi bên gọi giữ một snapshot, bảng tra cứu hoặc registry manifest rõ ràng cho luồng hiện tại. Cache metadata ẩn và TTL theo đồng hồ không thuộc quy trình tải Plugin. Chỉ cache loader runtime, module và artifact phụ thuộc mới có thể tồn tại sau khi mã hoặc artifact đã cài đặt thật sự được tải.
+Quy tắc cache được ghi tài liệu trong [nội bộ kiến trúc Plugin](/vi/plugins/architecture-internals#plugin-cache-boundary): metadata manifest và khám phá là mới trừ khi caller giữ một snapshot, bảng tra cứu hoặc registry manifest tường minh cho luồng hiện tại. Cache metadata ẩn và TTL theo đồng hồ treo tường không phải là một phần của việc tải Plugin. Chỉ cache trình tải runtime, module và artifact phụ thuộc mới có thể tồn tại sau khi mã hoặc artifact đã cài đặt thực sự được tải.
 
-Một số bên gọi trên đường lạnh vẫn dựng lại registry manifest trực tiếp từ chỉ mục Plugin đã cài đặt được lưu bền thay vì nhận `PluginLookUpTable` của Gateway. Đường này hiện dựng lại registry theo nhu cầu; hãy ưu tiên truyền bảng tra cứu hiện tại hoặc registry manifest rõ ràng qua các luồng runtime khi bên gọi đã có sẵn một cái.
+Một số caller đường dẫn lạnh vẫn tái tạo registry manifest trực tiếp từ chỉ mục Plugin đã cài đặt được lưu, thay vì nhận `PluginLookUpTable` của Gateway. Đường dẫn đó hiện tái tạo registry theo nhu cầu; ưu tiên truyền bảng tra cứu hiện tại hoặc registry manifest tường minh qua các luồng runtime khi caller đã có một cái.
 
 ### Lập kế hoạch kích hoạt
 
-Lập kế hoạch kích hoạt là một phần của mặt phẳng điều khiển. Bên gọi có thể hỏi Plugin nào liên quan đến một lệnh, nhà cung cấp, kênh, route, harness tác nhân hoặc năng lực cụ thể trước khi tải các registry runtime rộng hơn.
+Lập kế hoạch kích hoạt là một phần của control plane. Caller có thể hỏi Plugin nào liên quan đến một lệnh, nhà cung cấp, kênh, route, harness agent hoặc năng lực cụ thể trước khi tải các registry runtime rộng hơn.
 
-Trình lập kế hoạch giữ hành vi manifest hiện tại tương thích:
+Planner giữ cho hành vi manifest hiện tại tương thích:
 
-- các trường `activation.*` là gợi ý lập kế hoạch rõ ràng
-- `providers`, `channels`, `commandAliases`, `setup.providers`, `contracts.tools` và hook vẫn là phương án dự phòng quyền sở hữu manifest
-- API trình lập kế hoạch chỉ có id vẫn có sẵn cho các bên gọi hiện có
-- API kế hoạch báo nhãn lý do để chẩn đoán có thể phân biệt gợi ý rõ ràng với phương án dự phòng quyền sở hữu
+- Các trường `activation.*` là gợi ý rõ ràng cho bộ lập kế hoạch
+- `providers`, `channels`, `commandAliases`, `setup.providers`, `contracts.tools` và hook vẫn là cơ chế dự phòng quyền sở hữu manifest
+- API bộ lập kế hoạch chỉ dùng id vẫn còn sẵn cho các caller hiện có
+- API plan báo cáo nhãn lý do để chẩn đoán có thể phân biệt gợi ý rõ ràng với cơ chế dự phòng quyền sở hữu
 
 <Warning>
-Đừng xem `activation` là một hook vòng đời hoặc phần thay thế cho `register(...)`. Đây là siêu dữ liệu dùng để thu hẹp phạm vi tải. Ưu tiên các trường sở hữu khi chúng đã mô tả mối quan hệ; chỉ dùng `activation` cho các gợi ý bổ sung cho bộ lập kế hoạch.
+Đừng xem `activation` là hook vòng đời hoặc phần thay thế cho `register(...)`. Đây là metadata dùng để thu hẹp phạm vi tải. Ưu tiên các trường quyền sở hữu khi chúng đã mô tả mối quan hệ; chỉ dùng `activation` cho các gợi ý bổ sung cho bộ lập kế hoạch.
 </Warning>
 
-### Plugin kênh và công cụ tin nhắn dùng chung
+### Plugin kênh và công cụ thông báo dùng chung
 
-Plugin kênh không cần đăng ký một công cụ gửi/chỉnh sửa/thả cảm xúc riêng cho các hành động trò chuyện thông thường. OpenClaw giữ một công cụ `message` dùng chung trong lõi, còn Plugin kênh sở hữu phần khám phá và thực thi đặc thù theo kênh phía sau công cụ đó.
+Plugin kênh không cần đăng ký công cụ gửi/sửa/phản ứng riêng cho các hành động chat thông thường. OpenClaw giữ một công cụ `message` dùng chung trong lõi, còn Plugin kênh sở hữu phần khám phá và thực thi theo từng kênh phía sau công cụ đó.
 
 Ranh giới hiện tại là:
 
-- lõi sở hữu máy chủ công cụ `message` dùng chung, nối dây prompt, ghi sổ phiên/luồng, và điều phối thực thi
-- Plugin kênh sở hữu khám phá hành động theo phạm vi, khám phá năng lực, và mọi mảnh schema đặc thù theo kênh
-- Plugin kênh sở hữu ngữ pháp hội thoại phiên theo nhà cung cấp, chẳng hạn cách id hội thoại mã hóa id luồng hoặc kế thừa từ hội thoại cha
-- Plugin kênh thực thi hành động cuối cùng thông qua bộ chuyển đổi hành động của chúng
+- lõi sở hữu host của công cụ `message` dùng chung, nối prompt, ghi sổ session/thread và điều phối thực thi
+- Plugin kênh sở hữu khám phá hành động theo phạm vi, khám phá capability và mọi mảnh schema riêng cho kênh
+- Plugin kênh sở hữu ngữ pháp hội thoại session theo provider, chẳng hạn cách id hội thoại mã hóa id thread hoặc kế thừa từ hội thoại cha
+- Plugin kênh thực thi hành động cuối cùng thông qua adapter hành động của chúng
 
-Đối với Plugin kênh, bề mặt SDK là `ChannelMessageActionAdapter.describeMessageTool(...)`. Lệnh gọi khám phá hợp nhất đó cho phép một Plugin trả về các hành động hiển thị, năng lực, và phần đóng góp schema cùng nhau để các phần đó không bị lệch nhau.
+Đối với Plugin kênh, bề mặt SDK là `ChannelMessageActionAdapter.describeMessageTool(...)`. Lệnh gọi khám phá hợp nhất đó cho phép Plugin trả về các hành động hiển thị, capability và phần đóng góp schema cùng nhau để những phần này không bị lệch nhau.
 
-Khi một tham số công cụ tin nhắn đặc thù theo kênh mang nguồn media như đường dẫn cục bộ hoặc URL media từ xa, Plugin cũng nên trả về `mediaSourceParams` từ `describeMessageTool(...)`. Lõi dùng danh sách rõ ràng đó để áp dụng chuẩn hóa đường dẫn sandbox và gợi ý truy cập media đi ra mà không mã hóa cứng tên tham số do Plugin sở hữu. Ưu tiên các map theo phạm vi hành động ở đó, không phải một danh sách phẳng cho toàn kênh, để một tham số media chỉ dành cho hồ sơ không bị chuẩn hóa trên các hành động không liên quan như `send`.
+Khi tham số message-tool riêng cho kênh mang nguồn media như đường dẫn cục bộ hoặc URL media từ xa, Plugin cũng nên trả về `mediaSourceParams` từ `describeMessageTool(...)`. Lõi dùng danh sách rõ ràng đó để áp dụng chuẩn hóa đường dẫn sandbox và gợi ý truy cập media đi ra mà không hardcode tên tham số thuộc sở hữu Plugin. Ưu tiên map theo phạm vi hành động ở đó, không phải một danh sách phẳng cho toàn kênh, để tham số media chỉ dành cho profile không bị chuẩn hóa trên các hành động không liên quan như `send`.
 
 Lõi truyền phạm vi runtime vào bước khám phá đó. Các trường quan trọng gồm:
 
@@ -215,108 +218,108 @@ Lõi truyền phạm vi runtime vào bước khám phá đó. Các trường qua
 - `sessionKey`
 - `sessionId`
 - `agentId`
-- `requesterSenderId` đầu vào đáng tin cậy
+- `requesterSenderId` inbound đáng tin cậy
 
-Điều đó quan trọng với các Plugin nhạy theo ngữ cảnh. Một kênh có thể ẩn hoặc hiển thị các hành động tin nhắn dựa trên tài khoản đang hoạt động, phòng/luồng/tin nhắn hiện tại, hoặc danh tính người yêu cầu đáng tin cậy mà không mã hóa cứng các nhánh đặc thù theo kênh trong công cụ `message` của lõi.
+Điều đó quan trọng với các Plugin nhạy theo ngữ cảnh. Một kênh có thể ẩn hoặc hiển thị hành động thông báo dựa trên tài khoản đang hoạt động, phòng/thread/thông báo hiện tại hoặc định danh người yêu cầu đáng tin cậy mà không hardcode các nhánh riêng cho kênh trong công cụ `message` của lõi.
 
-Đây là lý do các thay đổi định tuyến runner nhúng vẫn là công việc của Plugin: runner chịu trách nhiệm chuyển tiếp danh tính chat/phiên hiện tại vào ranh giới khám phá Plugin để công cụ `message` dùng chung hiển thị đúng bề mặt do kênh sở hữu cho lượt hiện tại.
+Đây là lý do các thay đổi định tuyến embedded-runner vẫn là công việc của Plugin: runner chịu trách nhiệm chuyển tiếp định danh chat/session hiện tại vào ranh giới khám phá Plugin để công cụ `message` dùng chung hiển thị đúng bề mặt thuộc sở hữu kênh cho lượt hiện tại.
 
-Đối với các helper thực thi do kênh sở hữu, các Plugin đi kèm nên giữ runtime thực thi bên trong các mô-đun extension của chính chúng. Lõi không còn sở hữu các runtime hành động tin nhắn Discord, Slack, Telegram, hoặc WhatsApp trong `src/agents/tools`. Chúng tôi không phát hành các subpath `plugin-sdk/*-action-runtime` riêng, và các Plugin đi kèm nên import mã runtime cục bộ của chính chúng trực tiếp từ các mô-đun do extension sở hữu.
+Đối với helper thực thi thuộc sở hữu kênh, Plugin được đóng gói nên giữ runtime thực thi bên trong module extension của chính chúng. Lõi không còn sở hữu runtime hành động thông báo của Discord, Slack, Telegram hoặc WhatsApp trong `src/agents/tools`. Chúng tôi không phát hành các subpath `plugin-sdk/*-action-runtime` riêng, và Plugin được đóng gói nên import trực tiếp mã runtime cục bộ của chính chúng từ các module thuộc sở hữu extension.
 
-Cùng ranh giới đó áp dụng cho các seam SDK mang tên nhà cung cấp nói chung: lõi không nên import các barrel tiện ích đặc thù theo kênh cho Slack, Discord, Signal, WhatsApp, hoặc các extension tương tự. Nếu lõi cần một hành vi, hãy dùng barrel `api.ts` / `runtime-api.ts` của chính Plugin đi kèm hoặc nâng nhu cầu đó thành một năng lực chung hẹp trong SDK dùng chung.
+Ranh giới tương tự áp dụng cho các seam SDK đặt tên theo provider nói chung: lõi không nên import các barrel tiện ích riêng cho kênh dành cho Slack, Discord, Signal, WhatsApp hoặc các extension tương tự. Nếu lõi cần một hành vi, hãy hoặc tiêu thụ barrel `api.ts` / `runtime-api.ts` của chính Plugin được đóng gói, hoặc nâng nhu cầu đó thành một capability chung hẹp trong SDK dùng chung.
 
-Các Plugin đi kèm tuân theo cùng quy tắc. `runtime-api.ts` của một Plugin đi kèm không nên re-export facade `openclaw/plugin-sdk/<plugin-id>` mang thương hiệu riêng của nó. Các facade mang thương hiệu đó vẫn là shim tương thích cho Plugin bên ngoài và người dùng cũ, nhưng các Plugin đi kèm nên dùng export cục bộ cùng các subpath SDK chung hẹp như `openclaw/plugin-sdk/channel-policy`, `openclaw/plugin-sdk/runtime-store`, hoặc `openclaw/plugin-sdk/webhook-ingress`. Mã mới không nên thêm facade SDK đặc thù theo plugin-id trừ khi ranh giới tương thích cho một hệ sinh thái bên ngoài hiện có yêu cầu điều đó.
+Plugin được đóng gói tuân theo cùng quy tắc. `runtime-api.ts` của Plugin được đóng gói không nên re-export facade có thương hiệu `openclaw/plugin-sdk/<plugin-id>` của chính nó. Các facade có thương hiệu đó vẫn là shim tương thích cho Plugin bên ngoài và consumer cũ hơn, nhưng Plugin được đóng gói nên dùng export cục bộ cộng với các subpath SDK chung hẹp như `openclaw/plugin-sdk/channel-policy`, `openclaw/plugin-sdk/runtime-store` hoặc `openclaw/plugin-sdk/webhook-ingress`. Mã mới không nên thêm facade SDK riêng theo plugin-id trừ khi ranh giới tương thích cho một hệ sinh thái bên ngoài hiện có yêu cầu điều đó.
 
-Riêng với bình chọn, có hai đường thực thi:
+Riêng với poll, có hai đường thực thi:
 
-- `outbound.sendPoll` là baseline dùng chung cho các kênh phù hợp với mô hình bình chọn chung
-- `actions.handleAction("poll")` là đường được ưu tiên cho ngữ nghĩa bình chọn đặc thù theo kênh hoặc các tham số bình chọn bổ sung
+- `outbound.sendPoll` là baseline dùng chung cho các kênh phù hợp với mô hình poll chung
+- `actions.handleAction("poll")` là đường ưu tiên cho ngữ nghĩa poll riêng cho kênh hoặc tham số poll bổ sung
 
-Lõi hiện hoãn phân tích bình chọn dùng chung cho đến sau khi điều phối bình chọn của Plugin từ chối hành động, để các handler bình chọn do Plugin sở hữu có thể nhận các trường bình chọn đặc thù theo kênh mà không bị bộ phân tích bình chọn chung chặn trước.
+Lõi hiện trì hoãn phân tích cú pháp poll dùng chung cho đến sau khi điều phối poll của Plugin từ chối hành động, để handler poll thuộc sở hữu Plugin có thể chấp nhận các trường poll riêng cho kênh mà không bị trình phân tích cú pháp poll chung chặn trước.
 
-Xem [nội bộ kiến trúc Plugin](/vi/plugins/architecture-internals) để biết đầy đủ trình tự khởi động.
+Xem [nội bộ kiến trúc Plugin](/vi/plugins/architecture-internals) để biết toàn bộ trình tự khởi động.
 
-## Mô hình sở hữu năng lực
+## Mô hình sở hữu capability
 
-OpenClaw xem một Plugin gốc là ranh giới sở hữu cho một **công ty** hoặc một **tính năng**, không phải một túi chứa các tích hợp không liên quan.
+OpenClaw xem Plugin native là ranh giới sở hữu cho một **công ty** hoặc một **tính năng**, không phải một túi gom các tích hợp không liên quan.
 
 Điều đó có nghĩa là:
 
-- một Plugin công ty thường nên sở hữu toàn bộ các bề mặt hướng tới OpenClaw của công ty đó
-- một Plugin tính năng thường nên sở hữu toàn bộ bề mặt tính năng mà nó giới thiệu
-- các kênh nên dùng các năng lực lõi dùng chung thay vì triển khai lại hành vi nhà cung cấp theo kiểu tùy biến
+- Plugin công ty thường nên sở hữu tất cả các bề mặt hướng OpenClaw của công ty đó
+- Plugin tính năng thường nên sở hữu toàn bộ bề mặt tính năng mà nó giới thiệu
+- kênh nên tiêu thụ capability lõi dùng chung thay vì tự triển khai lại hành vi provider theo kiểu tùy biến
 
 <AccordionGroup>
-  <Accordion title="Nhà cung cấp đa năng lực">
-    `openai` sở hữu suy luận văn bản, giọng nói, thoại thời gian thực, hiểu media, và tạo ảnh. `google` sở hữu suy luận văn bản cùng hiểu media, tạo ảnh, và tìm kiếm web. `qwen` sở hữu suy luận văn bản cùng hiểu media và tạo video.
+  <Accordion title="Vendor multi-capability">
+    `openai` sở hữu suy luận văn bản, giọng nói, thoại realtime, hiểu media và tạo ảnh. `google` sở hữu suy luận văn bản cùng với hiểu media, tạo ảnh và tìm kiếm web. `qwen` sở hữu suy luận văn bản cùng với hiểu media và tạo video.
   </Accordion>
-  <Accordion title="Nhà cung cấp đơn năng lực">
-    `elevenlabs` và `microsoft` sở hữu giọng nói; `firecrawl` sở hữu tìm nạp web; `minimax` / `mistral` / `moonshot` / `zai` sở hữu các backend hiểu media.
+  <Accordion title="Vendor single-capability">
+    `elevenlabs` và `microsoft` sở hữu giọng nói; `firecrawl` sở hữu web-fetch; `minimax` / `mistral` / `moonshot` / `zai` sở hữu backend hiểu media.
   </Accordion>
-  <Accordion title="Plugin tính năng">
-    `voice-call` sở hữu truyền tải cuộc gọi, công cụ, CLI, route, và cầu nối media-stream Twilio, nhưng dùng các năng lực giọng nói, phiên âm thời gian thực, và thoại thời gian thực dùng chung thay vì import trực tiếp Plugin nhà cung cấp.
+  <Accordion title="Feature plugin">
+    `voice-call` sở hữu truyền tải cuộc gọi, công cụ, CLI, route và cầu nối media-stream Twilio, nhưng tiêu thụ capability giọng nói dùng chung, phiên âm realtime và thoại realtime thay vì import trực tiếp Plugin vendor.
   </Accordion>
 </AccordionGroup>
 
-Trạng thái đích mong muốn là:
+Trạng thái đích dự kiến là:
 
-- OpenAI nằm trong một Plugin ngay cả khi nó bao phủ mô hình văn bản, giọng nói, hình ảnh, và video trong tương lai
-- một nhà cung cấp khác có thể làm tương tự cho phạm vi bề mặt của chính họ
-- các kênh không quan tâm Plugin nhà cung cấp nào sở hữu provider; chúng dùng hợp đồng năng lực dùng chung do lõi hiển thị
+- OpenAI nằm trong một Plugin ngay cả khi nó trải rộng qua mô hình văn bản, giọng nói, ảnh và video trong tương lai
+- một vendor khác có thể làm tương tự cho bề mặt của chính họ
+- kênh không quan tâm Plugin vendor nào sở hữu provider; chúng tiêu thụ hợp đồng capability dùng chung do lõi phơi bày
 
-Đây là điểm phân biệt chính:
+Đây là điểm khác biệt then chốt:
 
 - **Plugin** = ranh giới sở hữu
-- **năng lực** = hợp đồng lõi mà nhiều Plugin có thể triển khai hoặc dùng
+- **capability** = hợp đồng lõi mà nhiều Plugin có thể triển khai hoặc tiêu thụ
 
-Vì vậy nếu OpenClaw thêm một miền mới như video, câu hỏi đầu tiên không phải là "provider nào nên mã hóa cứng xử lý video?" Câu hỏi đầu tiên là "hợp đồng năng lực video lõi là gì?" Khi hợp đồng đó tồn tại, Plugin nhà cung cấp có thể đăng ký theo nó và Plugin kênh/tính năng có thể dùng nó.
+Vì vậy, nếu OpenClaw thêm một miền mới như video, câu hỏi đầu tiên không phải là "provider nào nên hardcode xử lý video?" Câu hỏi đầu tiên là "hợp đồng capability video của lõi là gì?" Khi hợp đồng đó tồn tại, Plugin vendor có thể đăng ký theo hợp đồng đó và Plugin kênh/tính năng có thể tiêu thụ nó.
 
-Nếu năng lực đó chưa tồn tại, hướng đi đúng thường là:
+Nếu capability chưa tồn tại, hướng đi đúng thường là:
 
 <Steps>
-  <Step title="Định nghĩa năng lực">
-    Định nghĩa năng lực còn thiếu trong lõi.
+  <Step title="Define the capability">
+    Định nghĩa capability còn thiếu trong lõi.
   </Step>
-  <Step title="Hiển thị qua SDK">
-    Hiển thị nó qua API/runtime Plugin theo cách có kiểu.
+  <Step title="Expose through the SDK">
+    Phơi bày nó qua API/runtime Plugin theo cách có kiểu.
   </Step>
-  <Step title="Nối dây bên dùng">
-    Nối dây các kênh/tính năng theo năng lực đó.
+  <Step title="Wire consumers">
+    Nối kênh/tính năng vào capability đó.
   </Step>
-  <Step title="Triển khai của nhà cung cấp">
-    Để Plugin nhà cung cấp đăng ký triển khai.
+  <Step title="Vendor implementations">
+    Để Plugin vendor đăng ký implementation.
   </Step>
 </Steps>
 
-Điều này giữ quyền sở hữu rõ ràng trong khi tránh hành vi lõi phụ thuộc vào một nhà cung cấp duy nhất hoặc một đường mã đặc thù theo Plugin dùng một lần.
+Điều này giữ quyền sở hữu rõ ràng trong khi tránh hành vi lõi phụ thuộc vào một vendor duy nhất hoặc một đường mã riêng cho Plugin chỉ dùng một lần.
 
-### Phân lớp năng lực
+### Phân lớp capability
 
 Dùng mô hình tư duy này khi quyết định mã thuộc về đâu:
 
 <Tabs>
-  <Tab title="Lớp năng lực lõi">
-    Điều phối dùng chung, chính sách, fallback, quy tắc merge cấu hình, ngữ nghĩa phân phối, và hợp đồng có kiểu.
+  <Tab title="Core capability layer">
+    Điều phối dùng chung, policy, fallback, quy tắc merge cấu hình, ngữ nghĩa delivery và hợp đồng có kiểu.
   </Tab>
-  <Tab title="Lớp Plugin nhà cung cấp">
-    API đặc thù theo nhà cung cấp, xác thực, danh mục mô hình, tổng hợp giọng nói, tạo ảnh, backend video tương lai, endpoint sử dụng.
+  <Tab title="Vendor plugin layer">
+    API riêng cho vendor, auth, catalog mô hình, tổng hợp giọng nói, tạo ảnh, backend video trong tương lai, endpoint usage.
   </Tab>
-  <Tab title="Lớp Plugin kênh/tính năng">
-    Tích hợp Slack/Discord/voice-call/v.v. dùng các năng lực lõi và trình bày chúng trên một bề mặt.
+  <Tab title="Channel/feature plugin layer">
+    Tích hợp Slack/Discord/voice-call/v.v. tiêu thụ capability lõi và trình bày chúng trên một bề mặt.
   </Tab>
 </Tabs>
 
-Ví dụ, TTS đi theo hình dạng này:
+Ví dụ, TTS theo hình dạng này:
 
-- lõi sở hữu chính sách TTS tại thời điểm trả lời, thứ tự fallback, tùy chọn, và phân phối qua kênh
-- `openai`, `elevenlabs`, và `microsoft` sở hữu các triển khai tổng hợp
-- `voice-call` dùng helper runtime TTS điện thoại
+- lõi sở hữu policy TTS tại thời điểm trả lời, thứ tự fallback, pref và delivery qua kênh
+- `openai`, `elevenlabs` và `microsoft` sở hữu implementation tổng hợp
+- `voice-call` tiêu thụ helper runtime TTS điện thoại
 
-Mẫu tương tự nên được ưu tiên cho các năng lực trong tương lai.
+Nên ưu tiên cùng mẫu đó cho các capability trong tương lai.
 
-### Ví dụ Plugin công ty đa năng lực
+### Ví dụ Plugin công ty đa capability
 
-Một Plugin công ty nên tạo cảm giác gắn kết từ bên ngoài. Nếu OpenClaw có các hợp đồng dùng chung cho mô hình, giọng nói, phiên âm thời gian thực, thoại thời gian thực, hiểu media, tạo ảnh, tạo video, tìm nạp web, và tìm kiếm web, một nhà cung cấp có thể sở hữu toàn bộ bề mặt của mình ở một nơi:
+Plugin công ty nên tạo cảm giác gắn kết từ bên ngoài. Nếu OpenClaw có các hợp đồng dùng chung cho mô hình, giọng nói, phiên âm realtime, thoại realtime, hiểu media, tạo ảnh, tạo video, web fetch và tìm kiếm web, vendor có thể sở hữu tất cả bề mặt của mình ở một nơi:
 
 ```ts
 import type { OpenClawPluginDefinition } from "openclaw/plugin-sdk/plugin-entry";
@@ -370,119 +373,119 @@ const plugin: OpenClawPluginDefinition = {
 export default plugin;
 ```
 
-Điều quan trọng không phải là tên helper chính xác. Hình dạng mới là điều quan trọng:
+Điều quan trọng không phải là tên helper chính xác. Hình dạng mới quan trọng:
 
-- một Plugin sở hữu bề mặt nhà cung cấp
-- lõi vẫn sở hữu các hợp đồng năng lực
-- các kênh và Plugin tính năng dùng helper `api.runtime.*`, không dùng mã nhà cung cấp
-- kiểm thử hợp đồng có thể xác nhận rằng Plugin đã đăng ký các năng lực mà nó tuyên bố sở hữu
+- một Plugin sở hữu bề mặt vendor
+- lõi vẫn sở hữu hợp đồng capability
+- kênh và Plugin tính năng tiêu thụ helper `api.runtime.*`, không phải mã vendor
+- test hợp đồng có thể assert rằng Plugin đã đăng ký các capability mà nó tuyên bố sở hữu
 
-### Ví dụ năng lực: hiểu video
+### Ví dụ capability: hiểu video
 
-OpenClaw đã xem hiểu hình ảnh/âm thanh/video là một năng lực dùng chung. Cùng mô hình sở hữu đó áp dụng ở đây:
+OpenClaw đã xem hiểu ảnh/audio/video là một capability dùng chung. Cùng mô hình sở hữu cũng áp dụng ở đó:
 
 <Steps>
-  <Step title="Lõi định nghĩa hợp đồng">
+  <Step title="Core defines the contract">
     Lõi định nghĩa hợp đồng hiểu media.
   </Step>
-  <Step title="Plugin nhà cung cấp đăng ký">
-    Plugin nhà cung cấp đăng ký `describeImage`, `transcribeAudio`, và `describeVideo` khi phù hợp.
+  <Step title="Vendor plugins register">
+    Plugin vendor đăng ký `describeImage`, `transcribeAudio` và `describeVideo` khi áp dụng.
   </Step>
-  <Step title="Bên dùng dùng hành vi dùng chung">
-    Các kênh và Plugin tính năng dùng hành vi lõi dùng chung thay vì nối dây trực tiếp tới mã nhà cung cấp.
+  <Step title="Consumers use the shared behavior">
+    Kênh và Plugin tính năng tiêu thụ hành vi lõi dùng chung thay vì nối trực tiếp vào mã vendor.
   </Step>
 </Steps>
 
-Điều đó tránh nhúng các giả định video của một provider vào lõi. Plugin sở hữu bề mặt nhà cung cấp; lõi sở hữu hợp đồng năng lực và hành vi fallback.
+Điều đó tránh đưa giả định video của một provider vào lõi. Plugin sở hữu bề mặt vendor; lõi sở hữu hợp đồng capability và hành vi fallback.
 
-Tạo video đã dùng cùng trình tự đó: lõi sở hữu hợp đồng năng lực có kiểu và helper runtime, còn Plugin nhà cung cấp đăng ký các triển khai `api.registerVideoGenerationProvider(...)` theo nó.
+Tạo video đã dùng cùng trình tự đó: lõi sở hữu hợp đồng capability có kiểu và helper runtime, còn Plugin vendor đăng ký implementation `api.registerVideoGenerationProvider(...)` theo hợp đồng đó.
 
-Cần một checklist triển khai cụ thể? Xem [Sổ tay năng lực](/vi/plugins/architecture).
+Cần checklist triển khai cụ thể? Xem [Capability Cookbook](/vi/plugins/adding-capabilities).
 
 ## Hợp đồng và thực thi
 
-Bề mặt API Plugin được cố ý định kiểu và tập trung trong `OpenClawPluginApi`. Hợp đồng đó định nghĩa các điểm đăng ký được hỗ trợ và các helper runtime mà một Plugin có thể dựa vào.
+Bề mặt API Plugin được cố ý định kiểu và tập trung trong `OpenClawPluginApi`. Hợp đồng đó định nghĩa các điểm đăng ký được hỗ trợ và các helper runtime mà Plugin có thể dựa vào.
 
-Lý do điều này quan trọng:
+Vì sao điều này quan trọng:
 
-- tác giả Plugin có một chuẩn nội bộ ổn định duy nhất
-- lõi có thể từ chối quyền sở hữu trùng lặp như hai Plugin đăng ký cùng một id provider
-- khởi động có thể hiển thị chẩn đoán có thể hành động cho đăng ký sai định dạng
-- kiểm thử hợp đồng có thể thực thi quyền sở hữu Plugin đi kèm và ngăn trôi lệch âm thầm
+- tác giả Plugin có một chuẩn nội bộ ổn định
+- lõi có thể từ chối quyền sở hữu trùng lặp, chẳng hạn hai Plugin đăng ký cùng một provider id
+- khởi động có thể hiển thị chẩn đoán có thể hành động cho đăng ký malformed
+- test hợp đồng có thể thực thi quyền sở hữu Plugin được đóng gói và ngăn drift âm thầm
 
 Có hai lớp thực thi:
 
 <AccordionGroup>
-  <Accordion title="Thực thi đăng ký thời gian chạy">
-    Sổ đăng ký plugin xác thực các đăng ký khi plugin tải. Ví dụ: id nhà cung cấp trùng lặp, id nhà cung cấp giọng nói trùng lặp và đăng ký sai định dạng sẽ tạo chẩn đoán plugin thay vì hành vi không xác định.
+  <Accordion title="Thực thi đăng ký lúc chạy">
+    Sổ đăng ký Plugin xác thực các đăng ký khi Plugin được tải. Ví dụ: id nhà cung cấp trùng lặp, id nhà cung cấp giọng nói trùng lặp, và đăng ký sai định dạng sẽ tạo chẩn đoán Plugin thay vì hành vi không xác định.
   </Accordion>
   <Accordion title="Kiểm thử hợp đồng">
-    Các plugin đi kèm được ghi lại trong sổ đăng ký hợp đồng trong quá trình chạy kiểm thử để OpenClaw có thể khẳng định quyền sở hữu một cách tường minh. Hiện nay, cơ chế này được dùng cho nhà cung cấp mô hình, nhà cung cấp giọng nói, nhà cung cấp tìm kiếm web và quyền sở hữu đăng ký đi kèm.
+    Các Plugin đi kèm được ghi lại trong sổ đăng ký hợp đồng trong các lần chạy kiểm thử để OpenClaw có thể xác nhận quyền sở hữu một cách rõ ràng. Hiện nay, cơ chế này được dùng cho nhà cung cấp mô hình, nhà cung cấp giọng nói, nhà cung cấp tìm kiếm web, và quyền sở hữu đăng ký đi kèm.
   </Accordion>
 </AccordionGroup>
 
-Hiệu quả thực tế là OpenClaw biết trước plugin nào sở hữu bề mặt nào. Điều đó cho phép lõi và các kênh kết hợp liền mạch vì quyền sở hữu được khai báo, có kiểu và có thể kiểm thử thay vì ngầm định.
+Tác dụng thực tế là OpenClaw biết ngay từ đầu Plugin nào sở hữu bề mặt nào. Nhờ đó, lõi và các kênh có thể kết hợp liền mạch vì quyền sở hữu được khai báo, có kiểu, và có thể kiểm thử thay vì chỉ ngầm định.
 
-### Nội dung thuộc về một hợp đồng
+### Những gì thuộc về một hợp đồng
 
 <Tabs>
   <Tab title="Hợp đồng tốt">
     - có kiểu
-    - nhỏ gọn
+    - nhỏ
     - dành riêng cho năng lực
     - do lõi sở hữu
-    - có thể tái sử dụng bởi nhiều plugin
-    - có thể được kênh/tính năng sử dụng mà không cần biết nhà cung cấp
+    - có thể tái sử dụng bởi nhiều Plugin
+    - có thể được kênh/tính năng tiêu thụ mà không cần biết nhà cung cấp
 
   </Tab>
   <Tab title="Hợp đồng xấu">
     - chính sách dành riêng cho nhà cung cấp bị ẩn trong lõi
-    - lối thoát plugin dùng một lần bỏ qua sổ đăng ký
+    - lối thoát Plugin dùng một lần để vượt qua sổ đăng ký
     - mã kênh truy cập thẳng vào phần triển khai của nhà cung cấp
-    - đối tượng thời gian chạy tùy biến không thuộc `OpenClawPluginApi` hoặc `api.runtime`
+    - đối tượng lúc chạy tùy biến không thuộc `OpenClawPluginApi` hoặc `api.runtime`
 
   </Tab>
 </Tabs>
 
-Khi chưa chắc chắn, hãy nâng mức trừu tượng: định nghĩa năng lực trước, rồi để plugin cắm vào năng lực đó.
+Khi không chắc, hãy nâng mức trừu tượng: định nghĩa năng lực trước, rồi để các Plugin cắm vào năng lực đó.
 
 ## Mô hình thực thi
 
-Plugin OpenClaw gốc chạy **trong tiến trình** cùng với Gateway. Chúng không được đặt trong sandbox. Một plugin gốc đã tải có cùng ranh giới tin cậy cấp tiến trình như mã lõi.
+Các Plugin OpenClaw gốc chạy **trong cùng tiến trình** với Gateway. Chúng không được sandbox. Một Plugin gốc đã tải có cùng ranh giới tin cậy cấp tiến trình như mã lõi.
 
 <Warning>
-Hệ quả của plugin gốc: plugin có thể đăng ký công cụ, trình xử lý mạng, hook và dịch vụ; lỗi plugin có thể làm sập hoặc gây mất ổn định gateway; và plugin gốc độc hại tương đương với thực thi mã tùy ý bên trong tiến trình OpenClaw.
+Hệ quả của Plugin gốc: một Plugin có thể đăng ký công cụ, trình xử lý mạng, hook, và dịch vụ; lỗi Plugin có thể làm sập hoặc gây mất ổn định gateway; và một Plugin gốc độc hại tương đương với việc thực thi mã tùy ý bên trong tiến trình OpenClaw.
 </Warning>
 
-Các gói tương thích mặc định an toàn hơn vì OpenClaw hiện coi chúng là gói siêu dữ liệu/nội dung. Trong các bản phát hành hiện tại, điều đó chủ yếu nghĩa là Skills đi kèm.
+Các gói tương thích mặc định an toàn hơn vì OpenClaw hiện xem chúng là gói siêu dữ liệu/nội dung. Trong các bản phát hành hiện tại, điều đó chủ yếu có nghĩa là Skills đi kèm.
 
-Dùng danh sách cho phép và đường dẫn cài đặt/tải tường minh cho các plugin không đi kèm. Hãy coi plugin trong workspace là mã thời gian phát triển, không phải mặc định sản xuất.
+Dùng danh sách cho phép và đường dẫn cài đặt/tải rõ ràng cho các Plugin không đi kèm. Xem Plugin trong workspace là mã dành cho thời gian phát triển, không phải mặc định sản xuất.
 
-Đối với tên gói workspace đi kèm, giữ id plugin neo theo tên npm: mặc định là `@openclaw/<id>`, hoặc một hậu tố có kiểu đã được phê duyệt như `-provider`, `-plugin`, `-speech`, `-sandbox` hoặc `-media-understanding` khi gói chủ ý phơi bày một vai trò plugin hẹp hơn.
+Đối với tên gói workspace đi kèm, hãy giữ id Plugin neo theo tên npm: mặc định là `@openclaw/<id>`, hoặc một hậu tố có kiểu đã được phê duyệt như `-provider`, `-plugin`, `-speech`, `-sandbox`, hoặc `-media-understanding` khi gói cố ý phơi bày một vai trò Plugin hẹp hơn.
 
 <Note>
-**Ghi chú tin cậy:** `plugins.allow` tin cậy **id plugin**, không phải nguồn gốc xuất xứ. Một plugin workspace có cùng id với plugin đi kèm sẽ chủ ý che khuất bản đi kèm khi plugin workspace đó được bật/đưa vào danh sách cho phép. Đây là hành vi bình thường và hữu ích cho phát triển cục bộ, kiểm thử bản vá và hotfix. Mức tin cậy plugin đi kèm được phân giải từ snapshot nguồn — manifest và mã trên ổ đĩa tại thời điểm tải — thay vì từ siêu dữ liệu cài đặt. Một bản ghi cài đặt bị hỏng hoặc bị thay thế không thể âm thầm mở rộng bề mặt tin cậy của plugin đi kèm vượt quá những gì nguồn thực tế tuyên bố.
+**Ghi chú về tin cậy:** `plugins.allow` tin cậy **id Plugin**, không phải nguồn gốc xuất xứ. Một Plugin trong workspace có cùng id với Plugin đi kèm sẽ cố ý che khuất bản đi kèm khi Plugin workspace đó được bật/đưa vào danh sách cho phép. Đây là hành vi bình thường và hữu ích cho phát triển cục bộ, kiểm thử bản vá, và hotfix. Mức tin cậy của Plugin đi kèm được xác định từ snapshot nguồn — manifest và mã trên đĩa tại thời điểm tải — chứ không phải từ siêu dữ liệu cài đặt. Một bản ghi cài đặt bị hỏng hoặc bị thay thế không thể âm thầm mở rộng bề mặt tin cậy của Plugin đi kèm vượt quá những gì nguồn thực tế khai báo.
 </Note>
 
 ## Ranh giới xuất
 
-OpenClaw xuất các năng lực, không phải tiện ích triển khai.
+OpenClaw xuất năng lực, không xuất tiện ích triển khai.
 
-Giữ đăng ký năng lực ở dạng công khai. Lược bỏ các export trợ giúp không thuộc hợp đồng:
+Giữ đăng ký năng lực ở dạng công khai. Cắt bớt các export trợ giúp không thuộc hợp đồng:
 
-- đường dẫn con trợ giúp dành riêng cho plugin đi kèm
-- đường dẫn con hệ thống thời gian chạy không được chủ định làm API công khai
+- đường dẫn con trợ giúp dành riêng cho Plugin đi kèm
+- đường dẫn con hệ thống ống dẫn lúc chạy không nhằm làm API công khai
 - trợ giúp tiện ích dành riêng cho nhà cung cấp
 - trợ giúp thiết lập/onboarding là chi tiết triển khai
 
-Các đường dẫn con trợ giúp dành riêng cho plugin đi kèm đã được dành riêng nay đã bị loại khỏi bản đồ export SDK được tạo. Giữ các trợ giúp dành riêng cho chủ sở hữu bên trong gói plugin sở hữu; chỉ nâng cấp hành vi host có thể tái sử dụng thành hợp đồng SDK chung như `plugin-sdk/gateway-runtime`, `plugin-sdk/security-runtime` và `plugin-sdk/plugin-config-runtime`.
+Các đường dẫn con trợ giúp dành riêng cho Plugin đi kèm đã được loại bỏ khỏi bản đồ export SDK được tạo. Giữ trợ giúp dành riêng cho chủ sở hữu bên trong gói Plugin sở hữu; chỉ nâng cấp hành vi host có thể tái sử dụng thành hợp đồng SDK chung như `plugin-sdk/gateway-runtime`, `plugin-sdk/security-runtime`, và `plugin-sdk/plugin-config-runtime`.
 
-## Nội bộ và tham khảo
+## Nội bộ và tham chiếu
 
-Đối với pipeline tải, mô hình sổ đăng ký, hook thời gian chạy nhà cung cấp, tuyến HTTP Gateway, schema công cụ tin nhắn, phân giải mục tiêu kênh, catalog nhà cung cấp, plugin công cụ ngữ cảnh và hướng dẫn thêm năng lực mới, xem [Nội bộ kiến trúc Plugin](/vi/plugins/architecture-internals).
+Để biết pipeline tải, mô hình sổ đăng ký, hook lúc chạy của nhà cung cấp, route HTTP của Gateway, schema công cụ tin nhắn, phân giải mục tiêu kênh, catalog nhà cung cấp, Plugin công cụ ngữ cảnh, và hướng dẫn thêm năng lực mới, xem [Nội bộ kiến trúc Plugin](/vi/plugins/architecture-internals).
 
 ## Liên quan
 
-- [Xây dựng plugin](/vi/plugins/building-plugins)
+- [Xây dựng Plugin](/vi/plugins/building-plugins)
 - [Manifest Plugin](/vi/plugins/manifest)
-- [Thiết lập SDK Plugin](/vi/plugins/sdk-setup)
+- [Thiết lập Plugin SDK](/vi/plugins/sdk-setup)

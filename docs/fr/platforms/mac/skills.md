@@ -1,50 +1,53 @@
 ---
 read_when:
-    - Mise à jour de l’interface de réglages macOS des Skills
-    - Modification du contrôle ou du comportement d’installation des Skills
-summary: Interface de réglages macOS des Skills et statut adossé au gateway
+    - Mise à jour de l’interface utilisateur des paramètres Skills macOS
+    - Modification du verrouillage des Skills ou du comportement d’installation
+summary: Interface des réglages Skills macOS et statut adossé au Gateway
 title: Skills (macOS)
 x-i18n:
-    generated_at: "2026-04-24T07:21:04Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T17:44:16Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: dcd89d27220644866060d0f9954a116e6093d22f7ebd32d09dc16871c25b988e
+    source_hash: 5ecc470f1645051e03ab4f51bcb4972da4853c690354bc8ea18a89fcd387d413
     source_path: platforms/mac/skills.md
-    workflow: 15
+    workflow: 16
 ---
 
-L’application macOS expose les Skills OpenClaw via le gateway ; elle n’analyse pas les Skills localement.
+L’app macOS expose les Skills OpenClaw via le Gateway ; il n’analyse pas les Skills localement.
 
 ## Source de données
 
-- `skills.status` (gateway) renvoie tous les Skills ainsi que leur éligibilité et les prérequis manquants
-  (y compris les blocages de liste d’autorisation pour les Skills intégrés).
-- Les prérequis sont dérivés de `metadata.openclaw.requires` dans chaque `SKILL.md`.
+- `skills.status` (Gateway) renvoie tous les Skills avec leur éligibilité et les exigences manquantes
+  (y compris les blocages par liste d’autorisation pour les Skills groupés).
+- Les exigences sont dérivées de `metadata.openclaw.requires` dans chaque `SKILL.md`.
 
 ## Actions d’installation
 
 - `metadata.openclaw.install` définit les options d’installation (brew/node/go/uv).
-- L’application appelle `skills.install` pour exécuter les installateurs sur l’hôte gateway.
-- Les constats `critical` intégrés de code dangereux bloquent `skills.install` par défaut ; les constats suspects n’émettent toujours qu’un avertissement. Le remplacement dangereux existe sur la requête gateway, mais le flux par défaut de l’application reste en échec fermé.
-- Si chaque option d’installation est `download`, le gateway expose tous les
+- L’app appelle `skills.install` pour exécuter les programmes d’installation sur l’hôte Gateway.
+- La stratégie `security.installPolicy`, contrôlée par l’opérateur, peut bloquer les installations de Skills
+  adossées au Gateway avant l’exécution des métadonnées d’installation. Le blocage intégré du code dangereux
+  au moment de l’installation ne fait pas partie du flux d’installation des Skills.
+- Si chaque option d’installation est `download`, le Gateway expose tous les
   choix de téléchargement.
-- Sinon, le gateway choisit un installateur préféré en fonction des préférences d’installation actuelles
-  et des binaires présents sur l’hôte : Homebrew en premier lorsque
+- Sinon, le Gateway choisit un programme d’installation préféré à l’aide des préférences
+  d’installation actuelles et des binaires de l’hôte : Homebrew d’abord quand
   `skills.install.preferBrew` est activé et que `brew` existe, puis `uv`, puis le
-  gestionnaire Node configuré dans `skills.install.nodeManager`, puis des replis
-  ultérieurs comme `go` ou `download`.
+  gestionnaire Node configuré depuis `skills.install.nodeManager`, puis les solutions
+  de repli ultérieures comme `go` ou `download`.
 - Les libellés d’installation Node reflètent le gestionnaire Node configuré, y compris `yarn`.
 
-## Variables d’environnement / clés API
+## Clés Env/API
 
-- L’application stocke les clés dans `~/.openclaw/openclaw.json` sous `skills.entries.<skillKey>`.
-- `skills.update` applique des patches à `enabled`, `apiKey` et `env`.
+- L’app stocke les clés dans `~/.openclaw/openclaw.json` sous `skills.entries.<skillKey>`.
+- `skills.update` applique des correctifs à `enabled`, `apiKey` et `env`.
 
 ## Mode distant
 
-- Les mises à jour d’installation + de configuration se produisent sur l’hôte gateway (pas sur le Mac local).
+- Les mises à jour d’installation et de configuration ont lieu sur l’hôte Gateway (et non sur le Mac local).
 
-## Associé
+## Associés
 
 - [Skills](/fr/tools/skills)
-- [Application macOS](/fr/platforms/macos)
+- [app macOS](/fr/platforms/macos)

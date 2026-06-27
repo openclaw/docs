@@ -2,14 +2,15 @@
 read_when:
     - Weryfikacja pokrycia poświadczeń SecretRef
     - Audytowanie, czy poświadczenie kwalifikuje się do `secrets configure` lub `secrets apply`
-    - Sprawdzanie, dlaczego dane uwierzytelniające znajdują się poza obsługiwanym zakresem
-summary: Kanoniczny zakres obsługiwanych i nieobsługiwanych poświadczeń SecretRef
+    - Weryfikacja, dlaczego poświadczenie znajduje się poza obsługiwanym zakresem
+summary: Kanoniczny obsługiwany i nieobsługiwany obszar poświadczeń SecretRef
 title: Powierzchnia poświadczeń SecretRef
 x-i18n:
-    generated_at: "2026-05-10T19:54:30Z"
+    generated_at: "2026-06-27T18:19:51Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2778ea781f7b6fc4d579892225f9cf29bfb8f9ece5961554620ca8e82123ceff
+    source_hash: 668ee7e72565194bfe53a397767d060e5fe7743c9bf8bde2597ec3dad2a32431
     source_path: reference/secretref-credential-surface.md
     workflow: 16
 ---
@@ -19,7 +20,7 @@ Ta strona definiuje kanoniczną powierzchnię poświadczeń SecretRef.
 Zakres:
 
 - W zakresie: wyłącznie poświadczenia dostarczane przez użytkownika, których OpenClaw nie tworzy ani nie rotuje.
-- Poza zakresem: poświadczenia tworzone lub rotowane w czasie wykonywania, materiały odświeżania OAuth oraz artefakty podobne do sesji.
+- Poza zakresem: poświadczenia tworzone w czasie wykonywania lub rotowane, materiały odświeżania OAuth oraz artefakty podobne do sesji.
 
 ## Obsługiwane poświadczenia
 
@@ -45,11 +46,15 @@ Zakres:
 - `agents.list[].tts.providers.*.apiKey`
 - `agents.list[].memorySearch.remote.apiKey`
 - `talk.providers.*.apiKey`
+- `talk.realtime.providers.*.apiKey`
 - `messages.tts.providers.*.apiKey`
 - `tools.web.fetch.firecrawl.apiKey`
 - `plugins.entries.acpx.config.mcpServers.*.env.*`
 - `plugins.entries.brave.config.webSearch.apiKey`
+- `plugins.entries.codex.config.appServer.authToken`
+- `plugins.entries.codex.config.appServer.headers.*`
 - `plugins.entries.exa.config.webSearch.apiKey`
+- `plugins.entries.google-meet.config.realtime.providers.*.apiKey`
 - `plugins.entries.google.config.webSearch.apiKey`
 - `plugins.entries.xai.config.webSearch.apiKey`
 - `plugins.entries.moonshot.config.webSearch.apiKey`
@@ -57,10 +62,12 @@ Zakres:
 - `plugins.entries.firecrawl.config.webSearch.apiKey`
 - `plugins.entries.minimax.config.webSearch.apiKey`
 - `plugins.entries.tavily.config.webSearch.apiKey`
+- `plugins.entries.parallel.config.webSearch.apiKey`
 - `plugins.entries.voice-call.config.realtime.providers.*.apiKey`
 - `plugins.entries.voice-call.config.streaming.providers.*.apiKey`
 - `plugins.entries.voice-call.config.tts.providers.*.apiKey`
 - `plugins.entries.voice-call.config.twilio.authToken`
+- `tools.web.search.*.apiKey`
 - `tools.web.search.apiKey`
 - `gateway.auth.password`
 - `gateway.auth.token`
@@ -73,12 +80,16 @@ Zakres:
 - `channels.telegram.accounts.*.webhookSecret`
 - `channels.slack.botToken`
 - `channels.slack.appToken`
+- `channels.slack.relay.authToken`
 - `channels.slack.userToken`
 - `channels.slack.signingSecret`
 - `channels.slack.accounts.*.botToken`
 - `channels.slack.accounts.*.appToken`
+- `channels.slack.accounts.*.relay.authToken`
 - `channels.slack.accounts.*.userToken`
 - `channels.slack.accounts.*.signingSecret`
+- `channels.sms.authToken`
+- `channels.sms.accounts.*.authToken`
 - `channels.discord.token`
 - `channels.discord.pluralkit.token`
 - `channels.discord.voice.tts.providers.*.apiKey`
@@ -112,8 +123,8 @@ Zakres:
 - `channels.zalo.webhookSecret`
 - `channels.zalo.accounts.*.botToken`
 - `channels.zalo.accounts.*.webhookSecret`
-- `channels.googlechat.serviceAccount` przez sąsiedni `serviceAccountRef` (wyjątek zgodności)
-- `channels.googlechat.accounts.*.serviceAccount` przez sąsiedni `serviceAccountRef` (wyjątek zgodności)
+- `channels.googlechat.serviceAccount` przez sąsiednie `serviceAccountRef` (wyjątek zgodności)
+- `channels.googlechat.accounts.*.serviceAccount` przez sąsiednie `serviceAccountRef` (wyjątek zgodności)
 
 ### Cele `auth-profiles.json` (`secrets configure` + `secrets apply` + `secrets audit`)
 
@@ -124,18 +135,18 @@ Zakres:
 
 Uwagi:
 
-- Cele planu auth-profile wymagają `agentId`.
+- Cele planu profilu uwierzytelniania wymagają `agentId`.
 - Wpisy planu wskazują `profiles.*.key` / `profiles.*.token` i zapisują sąsiednie referencje (`keyRef` / `tokenRef`).
-- Referencje auth-profile są uwzględniane w rozwiązywaniu w czasie wykonywania i pokryciu audytu.
-- W `openclaw.json` SecretRefs muszą używać obiektów strukturalnych, takich jak `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`. Starsze ciągi znaczników `secretref-env:<ENV_VAR>` są odrzucane na ścieżkach poświadczeń SecretRef; uruchom `openclaw doctor --fix`, aby zmigrować poprawne znaczniki.
-- Strażnik polityki OAuth: `auth.profiles.<id>.mode = "oauth"` nie może być łączone z wejściami SecretRef dla tego profilu. Uruchamianie/ponowne ładowanie oraz rozwiązywanie auth-profile szybko kończą się błędem, gdy ta polityka zostanie naruszona.
-- W przypadku dostawców modeli zarządzanych przez SecretRef wygenerowane wpisy `agents/*/agent/models.json` utrwalają niesekretne znaczniki (nie rozwiązane wartości sekretów) dla powierzchni `apiKey`/nagłówków.
-- Trwałość znaczników jest autorytatywna względem źródła: OpenClaw zapisuje znaczniki z aktywnego zrzutu konfiguracji źródłowej (przed rozwiązaniem), nie z rozwiązanych wartości sekretów w czasie wykonywania.
-- W przypadku wyszukiwania w sieci:
+- Referencje profili uwierzytelniania są uwzględnione w rozwiązywaniu w czasie wykonywania i w zakresie audytu.
+- W `openclaw.json` SecretRefs muszą używać obiektów strukturalnych, takich jak `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`. Starsze ciągi znaczników `secretref-env:<ENV_VAR>` są odrzucane na ścieżkach poświadczeń SecretRef; uruchom `openclaw doctor --fix`, aby zmigrować prawidłowe znaczniki.
+- Ochrona zasad OAuth: `auth.profiles.<id>.mode = "oauth"` nie może być łączone z danymi wejściowymi SecretRef dla tego profilu. Uruchamianie/ponowne ładowanie oraz rozwiązywanie profilu uwierzytelniania kończą się szybko błędem, gdy ta zasada zostanie naruszona.
+- Dla dostawców modeli zarządzanych przez SecretRef wygenerowane wpisy `agents/*/agent/models.json` utrwalają niejawne znaczniki (nie rozwiązane wartości sekretów) dla powierzchni `apiKey`/nagłówków.
+- Utrwalanie znaczników jest autorytatywne względem źródła: OpenClaw zapisuje znaczniki z aktywnej migawki konfiguracji źródłowej (przed rozwiązaniem), a nie z rozwiązanych wartości sekretów w czasie wykonywania.
+- Dla wyszukiwania w sieci:
   - W trybie jawnego dostawcy (ustawione `tools.web.search.provider`) aktywny jest tylko klucz wybranego dostawcy.
-  - W trybie automatycznym (nieustawione `tools.web.search.provider`) aktywny jest tylko pierwszy klucz dostawcy, który zostanie rozwiązany zgodnie z priorytetem.
-  - W trybie automatycznym referencje niewybranych dostawców są traktowane jako nieaktywne do czasu wybrania.
-  - Starsze ścieżki dostawców `tools.web.search.*` nadal są rozwiązywane w okresie zgodności, ale kanoniczną powierzchnią SecretRef jest `plugins.entries.<plugin>.config.webSearch.*`.
+  - W trybie automatycznym (nieustawione `tools.web.search.provider`) aktywny jest tylko pierwszy klucz dostawcy, który rozwiązuje się według priorytetu.
+  - W trybie automatycznym referencje niewybranych dostawców są traktowane jako nieaktywne, dopóki nie zostaną wybrane.
+  - Starsze ścieżki dostawców `tools.web.search.*` nadal rozwiązują się w oknie zgodności, ale kanoniczną powierzchnią SecretRef jest `plugins.entries.<plugin>.config.webSearch.*`.
 
 ## Nieobsługiwane poświadczenia
 
@@ -157,9 +168,9 @@ Poświadczenia poza zakresem obejmują:
 
 Uzasadnienie:
 
-- Te poświadczenia należą do klas tworzonych, rotowanych, przenoszących sesję lub trwałych dla OAuth, które nie pasują do zewnętrznego rozwiązywania SecretRef tylko do odczytu.
+- Te poświadczenia należą do klas tworzonych, rotowanych, zawierających sesję lub trwałych dla OAuth, które nie pasują do rozwiązywania zewnętrznego SecretRef tylko do odczytu.
 
 ## Powiązane
 
 - [Zarządzanie sekretami](/pl/gateway/secrets)
-- [Semantyka poświadczeń uwierzytelniających](/pl/auth-credential-semantics)
+- [Semantyka poświadczeń uwierzytelniania](/pl/auth-credential-semantics)

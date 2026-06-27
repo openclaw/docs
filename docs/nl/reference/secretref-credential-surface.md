@@ -1,27 +1,28 @@
 ---
 read_when:
-    - SecretRef-credentialdekking verifiëren
-    - Controleren of een aanmeldgegeven in aanmerking komt voor `secrets configure` of `secrets apply`
+    - SecretRef-dekking voor referenties verifiëren
+    - Controleren of een referentie in aanmerking komt voor `secrets configure` of `secrets apply`
     - Controleren waarom een aanmeldingsgegeven buiten het ondersteunde oppervlak valt
-summary: Canonieke ondersteunde versus niet-ondersteunde SecretRef-interface voor inloggegevens
-title: SecretRef-interface voor inloggegevens
+summary: Canoniek ondersteund versus niet-ondersteund SecretRef-referentieoppervlak
+title: SecretRef-referentieoppervlak
 x-i18n:
-    generated_at: "2026-05-11T20:49:17Z"
+    generated_at: "2026-06-27T18:19:49Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2778ea781f7b6fc4d579892225f9cf29bfb8f9ece5961554620ca8e82123ceff
+    source_hash: 668ee7e72565194bfe53a397767d060e5fe7743c9bf8bde2597ec3dad2a32431
     source_path: reference/secretref-credential-surface.md
     workflow: 16
 ---
 
-Deze pagina definieert het canonieke SecretRef-credentialoppervlak.
+Deze pagina definieert het canonieke SecretRef-oppervlak voor referenties.
 
 Scope-intentie:
 
-- Binnen scope: strikt door gebruikers aangeleverde credentials die OpenClaw niet aanmaakt of roteert.
-- Buiten scope: tijdens runtime aangemaakte of roterende credentials, OAuth-refreshmateriaal en sessieachtige artefacten.
+- Binnen scope: strikt door de gebruiker aangeleverde referenties die OpenClaw niet uitgeeft of roteert.
+- Buiten scope: tijdens runtime uitgegeven of roterende referenties, OAuth-refreshmateriaal en sessieachtige artefacten.
 
-## Ondersteunde credentials
+## Ondersteunde referenties
 
 ### `openclaw.json`-doelen (`secrets configure` + `secrets apply` + `secrets audit`)
 
@@ -45,11 +46,15 @@ Scope-intentie:
 - `agents.list[].tts.providers.*.apiKey`
 - `agents.list[].memorySearch.remote.apiKey`
 - `talk.providers.*.apiKey`
+- `talk.realtime.providers.*.apiKey`
 - `messages.tts.providers.*.apiKey`
 - `tools.web.fetch.firecrawl.apiKey`
 - `plugins.entries.acpx.config.mcpServers.*.env.*`
 - `plugins.entries.brave.config.webSearch.apiKey`
+- `plugins.entries.codex.config.appServer.authToken`
+- `plugins.entries.codex.config.appServer.headers.*`
 - `plugins.entries.exa.config.webSearch.apiKey`
+- `plugins.entries.google-meet.config.realtime.providers.*.apiKey`
 - `plugins.entries.google.config.webSearch.apiKey`
 - `plugins.entries.xai.config.webSearch.apiKey`
 - `plugins.entries.moonshot.config.webSearch.apiKey`
@@ -57,10 +62,12 @@ Scope-intentie:
 - `plugins.entries.firecrawl.config.webSearch.apiKey`
 - `plugins.entries.minimax.config.webSearch.apiKey`
 - `plugins.entries.tavily.config.webSearch.apiKey`
+- `plugins.entries.parallel.config.webSearch.apiKey`
 - `plugins.entries.voice-call.config.realtime.providers.*.apiKey`
 - `plugins.entries.voice-call.config.streaming.providers.*.apiKey`
 - `plugins.entries.voice-call.config.tts.providers.*.apiKey`
 - `plugins.entries.voice-call.config.twilio.authToken`
+- `tools.web.search.*.apiKey`
 - `tools.web.search.apiKey`
 - `gateway.auth.password`
 - `gateway.auth.token`
@@ -73,12 +80,16 @@ Scope-intentie:
 - `channels.telegram.accounts.*.webhookSecret`
 - `channels.slack.botToken`
 - `channels.slack.appToken`
+- `channels.slack.relay.authToken`
 - `channels.slack.userToken`
 - `channels.slack.signingSecret`
 - `channels.slack.accounts.*.botToken`
 - `channels.slack.accounts.*.appToken`
+- `channels.slack.accounts.*.relay.authToken`
 - `channels.slack.accounts.*.userToken`
 - `channels.slack.accounts.*.signingSecret`
+- `channels.sms.authToken`
+- `channels.sms.accounts.*.authToken`
 - `channels.discord.token`
 - `channels.discord.pluralkit.token`
 - `channels.discord.voice.tts.providers.*.apiKey`
@@ -112,8 +123,8 @@ Scope-intentie:
 - `channels.zalo.webhookSecret`
 - `channels.zalo.accounts.*.botToken`
 - `channels.zalo.accounts.*.webhookSecret`
-- `channels.googlechat.serviceAccount` via naastgelegen `serviceAccountRef` (compatibiliteitsuitzondering)
-- `channels.googlechat.accounts.*.serviceAccount` via naastgelegen `serviceAccountRef` (compatibiliteitsuitzondering)
+- `channels.googlechat.serviceAccount` via sibling `serviceAccountRef` (compatibiliteitsuitzondering)
+- `channels.googlechat.accounts.*.serviceAccount` via sibling `serviceAccountRef` (compatibiliteitsuitzondering)
 
 ### `auth-profiles.json`-doelen (`secrets configure` + `secrets apply` + `secrets audit`)
 
@@ -124,22 +135,22 @@ Scope-intentie:
 
 Opmerkingen:
 
-- Auth-profile-plandoelen vereisen `agentId`.
-- Planvermeldingen richten zich op `profiles.*.key` / `profiles.*.token` en schrijven naastgelegen refs (`keyRef` / `tokenRef`).
-- Auth-profile-refs zijn opgenomen in runtimeresolutie en auditdekking.
-- In `openclaw.json` moeten SecretRefs gestructureerde objecten gebruiken, zoals `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`. Verouderde `secretref-env:<ENV_VAR>`-markertekens worden geweigerd op SecretRef-credentialpaden; voer `openclaw doctor --fix` uit om geldige markertekens te migreren.
-- OAuth-beleidsbewaking: `auth.profiles.<id>.mode = "oauth"` kan niet worden gecombineerd met SecretRef-invoer voor dat profiel. Opstarten/herladen en auth-profile-resolutie falen snel wanneer dit beleid wordt geschonden.
-- Voor door SecretRef beheerde modelproviders blijven gegenereerde `agents/*/agent/models.json`-vermeldingen niet-geheime markertekens behouden (niet opgeloste geheime waarden) voor `apiKey`-/headeroppervlakken.
-- Markerpersistentie is brongezaghebbend: OpenClaw schrijft markertekens uit de actieve bronconfiguratiesnapshot (vóór resolutie), niet uit opgeloste runtimegeheimwaarden.
+- Doelen voor auth-profielplannen vereisen `agentId`.
+- Planvermeldingen richten zich op `profiles.*.key` / `profiles.*.token` en schrijven sibling-refs (`keyRef` / `tokenRef`).
+- Auth-profielrefs zijn opgenomen in runtime-resolutie en auditdekking.
+- In `openclaw.json` moeten SecretRefs gestructureerde objecten gebruiken, zoals `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`. Verouderde markerstrings `secretref-env:<ENV_VAR>` worden geweigerd op SecretRef-referentiepaden; voer `openclaw doctor --fix` uit om geldige markers te migreren.
+- OAuth-beleidswacht: `auth.profiles.<id>.mode = "oauth"` kan niet worden gecombineerd met SecretRef-invoer voor dat profiel. Opstarten/herladen en auth-profielresolutie falen snel wanneer dit beleid wordt geschonden.
+- Voor door SecretRef beheerde modelproviders blijven gegenereerde vermeldingen in `agents/*/agent/models.json` niet-geheime markers bevatten (geen opgeloste geheime waarden) voor `apiKey`-/header-oppervlakken.
+- Markerpersistentie is bronautoritair: OpenClaw schrijft markers vanuit de actieve bronconfiguratiesnapshot (vóór resolutie), niet vanuit opgeloste geheime waarden tijdens runtime.
 - Voor webzoekopdrachten:
   - In expliciete providermodus (`tools.web.search.provider` ingesteld) is alleen de geselecteerde providersleutel actief.
-  - In automatische modus (`tools.web.search.provider` niet ingesteld) is alleen de eerste providersleutel die volgens prioriteit wordt opgelost actief.
+  - In automatische modus (`tools.web.search.provider` niet ingesteld) is alleen de eerste providersleutel die volgens de voorrang wordt opgelost actief.
   - In automatische modus worden niet-geselecteerde providerrefs als inactief behandeld totdat ze worden geselecteerd.
-  - Verouderde `tools.web.search.*`-providerpaden worden tijdens de compatibiliteitsperiode nog steeds opgelost, maar het canonieke SecretRef-oppervlak is `plugins.entries.<plugin>.config.webSearch.*`.
+  - Verouderde providerpaden `tools.web.search.*` worden tijdens de compatibiliteitsperiode nog steeds opgelost, maar het canonieke SecretRef-oppervlak is `plugins.entries.<plugin>.config.webSearch.*`.
 
-## Niet-ondersteunde credentials
+## Niet-ondersteunde referenties
 
-Credentials buiten scope zijn onder andere:
+Referenties buiten scope omvatten:
 
 [//]: # "secretref-unsupported-list-start"
 
@@ -155,11 +166,11 @@ Credentials buiten scope zijn onder andere:
 
 [//]: # "secretref-unsupported-list-end"
 
-Motivering:
+Reden:
 
-- Deze credentials zijn aangemaakte, geroteerde, sessiedragende of OAuth-duurzame klassen die niet passen bij alleen-lezen externe SecretRef-resolutie.
+- Deze referenties zijn uitgegeven, geroteerd, sessiedragend of OAuth-duurzame klassen die niet passen bij alleen-lezen externe SecretRef-resolutie.
 
 ## Gerelateerd
 
 - [Geheimenbeheer](/nl/gateway/secrets)
-- [Semantiek van auth-credentials](/nl/auth-credential-semantics)
+- [Semantiek van auth-referenties](/nl/auth-credential-semantics)

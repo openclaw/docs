@@ -2,13 +2,14 @@
 read_when:
     - Chcesz używać Perplexity Search do wyszukiwania w sieci
     - Musisz skonfigurować PERPLEXITY_API_KEY lub OPENROUTER_API_KEY
-summary: Perplexity Search API i zgodność Sonar/OpenRouter z web_search
+summary: Perplexity Search API oraz zgodność Sonar/OpenRouter z web_search
 title: Wyszukiwanie Perplexity
 x-i18n:
-    generated_at: "2026-05-06T09:34:05Z"
+    generated_at: "2026-06-27T18:29:43Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 113abafae66acd8aaa0302b687ba13347eb44a81a4217b61bb68f07d8a119cb0
+    source_hash: 6ef003238bc38dd3d92b98654598cba05fb1c324d8ca766a683cf1defe5bd435
     source_path: tools/perplexity-search.md
     workflow: 16
 ---
@@ -16,8 +17,17 @@ x-i18n:
 OpenClaw obsługuje Perplexity Search API jako dostawcę `web_search`.
 Zwraca ustrukturyzowane wyniki z polami `title`, `url` i `snippet`.
 
-Dla zgodności OpenClaw obsługuje także starsze konfiguracje Perplexity Sonar/OpenRouter.
-Jeśli używasz `OPENROUTER_API_KEY`, klucza `sk-or-...` w `plugins.entries.perplexity.config.webSearch.apiKey` albo ustawiasz `plugins.entries.perplexity.config.webSearch.baseUrl` / `model`, dostawca przełącza się na ścieżkę chat-completions i zwraca odpowiedzi syntetyzowane przez AI z cytowaniami zamiast ustrukturyzowanych wyników Search API.
+Dla zgodności OpenClaw obsługuje również starsze konfiguracje Perplexity Sonar/OpenRouter.
+Jeśli używasz `OPENROUTER_API_KEY`, klucza `sk-or-...` w `plugins.entries.perplexity.config.webSearch.apiKey` albo ustawisz `plugins.entries.perplexity.config.webSearch.baseUrl` / `model`, dostawca przełącza się na ścieżkę chat completions i zwraca odpowiedzi zsyntetyzowane przez AI z cytowaniami zamiast ustrukturyzowanych wyników Search API.
+
+## Zainstaluj Plugin
+
+Zainstaluj oficjalny Plugin, a następnie uruchom ponownie Gateway:
+
+```bash
+openclaw plugins install @openclaw/perplexity-plugin
+openclaw gateway restart
+```
 
 ## Uzyskiwanie klucza API Perplexity
 
@@ -27,7 +37,7 @@ Jeśli używasz `OPENROUTER_API_KEY`, klucza `sk-or-...` w `plugins.entries.perp
 
 ## Zgodność z OpenRouter
 
-Jeśli już używasz OpenRouter dla Perplexity Sonar, pozostaw `provider: "perplexity"` i ustaw `OPENROUTER_API_KEY` w środowisku Gateway albo zapisz klucz `sk-or-...` w `plugins.entries.perplexity.config.webSearch.apiKey`.
+Jeśli używasz już OpenRouter dla Perplexity Sonar, pozostaw `provider: "perplexity"` i ustaw `OPENROUTER_API_KEY` w środowisku Gateway albo zapisz klucz `sk-or-...` w `plugins.entries.perplexity.config.webSearch.apiKey`.
 
 Opcjonalne ustawienia zgodności:
 
@@ -90,15 +100,15 @@ Opcjonalne ustawienia zgodności:
 
 ## Gdzie ustawić klucz
 
-**Przez konfigurację:** uruchom `openclaw configure --section web`. Zapisuje to klucz w
+**Przez konfigurację:** uruchom `openclaw configure --section web`. Polecenie zapisuje klucz w
 `~/.openclaw/openclaw.json` pod `plugins.entries.perplexity.config.webSearch.apiKey`.
-To pole akceptuje także obiekty SecretRef.
+To pole akceptuje również obiekty SecretRef.
 
-**Przez środowisko:** ustaw `PERPLEXITY_API_KEY` lub `OPENROUTER_API_KEY`
+**Przez środowisko:** ustaw `PERPLEXITY_API_KEY` albo `OPENROUTER_API_KEY`
 w środowisku procesu Gateway. W przypadku instalacji gateway umieść go w
-`~/.openclaw/.env` (lub w środowisku swojej usługi). Zobacz [zmienne środowiskowe](/pl/help/faq#env-vars-and-env-loading).
+`~/.openclaw/.env` (albo w środowisku swojej usługi). Zobacz [zmienne środowiskowe](/pl/help/faq#env-vars-and-env-loading).
 
-Jeśli skonfigurowano `provider: "perplexity"`, a SecretRef klucza Perplexity nie zostanie rozwiązany i nie ma awaryjnej wartości ze środowiska, uruchamianie/ponowne ładowanie szybko kończy się błędem.
+Jeśli skonfigurowano `provider: "perplexity"`, a SecretRef klucza Perplexity nie da się rozwiązać i nie ma zapasowej wartości ze środowiska, uruchomienie lub ponowne wczytanie kończy się szybkim błędem.
 
 ## Parametry narzędzia
 
@@ -147,9 +157,9 @@ Limit tokenów na stronę.
 Dla starszej ścieżki zgodności Sonar/OpenRouter:
 
 - `query`, `count` i `freshness` są akceptowane
-- `count` służy tam tylko do zgodności; odpowiedź nadal jest jedną syntetyzowaną
+- `count` służy tam tylko do zgodności; odpowiedź nadal jest jedną zsyntetyzowaną
   odpowiedzią z cytowaniami, a nie listą N wyników
-- Filtry dostępne tylko w Search API, takie jak `country`, `language`, `date_after`,
+- filtry dostępne tylko w Search API, takie jak `country`, `language`, `date_after`,
   `date_before`, `domain_filter`, `max_tokens` i `max_tokens_per_page`,
   zwracają jawne błędy
 
@@ -206,22 +216,22 @@ await web_search({
 
 - Perplexity Search API zwraca ustrukturyzowane wyniki wyszukiwania w sieci (`title`, `url`, `snippet`)
 - OpenRouter albo jawne `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` przełącza Perplexity z powrotem na chat completions Sonar dla zgodności
-- Zgodność Sonar/OpenRouter zwraca jedną syntetyzowaną odpowiedź z cytowaniami, a nie ustrukturyzowane wiersze wyników
+- Zgodność Sonar/OpenRouter zwraca jedną zsyntetyzowaną odpowiedź z cytowaniami, a nie ustrukturyzowane wiersze wyników
 - Wyniki są domyślnie buforowane przez 15 minut (konfigurowalne przez `cacheTtlMinutes`)
 
 ## Powiązane
 
 <CardGroup cols={2}>
-  <Card title="Web search overview" href="/pl/tools/web" icon="globe">
+  <Card title="Przegląd wyszukiwania w sieci" href="/pl/tools/web" icon="globe">
     Wszyscy dostawcy i reguły automatycznego wykrywania.
   </Card>
-  <Card title="Brave search" href="/pl/tools/brave-search" icon="shield">
+  <Card title="Wyszukiwanie Brave" href="/pl/tools/brave-search" icon="shield">
     Ustrukturyzowane wyniki z filtrami kraju i języka.
   </Card>
-  <Card title="Exa search" href="/pl/tools/exa-search" icon="magnifying-glass">
-    Wyszukiwanie neuronowe z wyodrębnianiem treści.
+  <Card title="Wyszukiwanie Exa" href="/pl/tools/exa-search" icon="magnifying-glass">
+    Wyszukiwanie neuronowe z ekstrakcją treści.
   </Card>
-  <Card title="Perplexity Search API docs" href="https://docs.perplexity.ai/docs/search/quickstart" icon="arrow-up-right-from-square">
+  <Card title="Dokumentacja Perplexity Search API" href="https://docs.perplexity.ai/docs/search/quickstart" icon="arrow-up-right-from-square">
     Oficjalny szybki start i dokumentacja referencyjna Perplexity Search API.
   </Card>
 </CardGroup>

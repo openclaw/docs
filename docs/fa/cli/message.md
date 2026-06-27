@@ -5,10 +5,11 @@ read_when:
 summary: مرجع CLI برای `openclaw message` (ارسال + کنش‌های کانال)
 title: پیام
 x-i18n:
-    generated_at: "2026-05-11T20:29:23Z"
+    generated_at: "2026-06-27T17:25:16Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 12ae0e32e86a87076e795cbb18e34d9a37797323f805f4edbd4351e73dbdac46
+    source_hash: 4a8a716435313efa41a13ee5c6392eb2e4cfca2ede3e4690b157d26d077f7d56
     source_path: cli/message.md
     workflow: 16
 ---
@@ -18,7 +19,7 @@ x-i18n:
 فرمان خروجی واحد برای ارسال پیام‌ها و کنش‌های کانال
 (Discord/Google Chat/iMessage/Matrix/Mattermost (Plugin)/Microsoft Teams/Signal/Slack/Telegram/WhatsApp).
 
-## استفاده
+## کاربرد
 
 ```
 openclaw message <subcommand> [flags]
@@ -27,47 +28,47 @@ openclaw message <subcommand> [flags]
 انتخاب کانال:
 
 - اگر بیش از یک کانال پیکربندی شده باشد، `--channel` الزامی است.
-- اگر دقیقا یک کانال پیکربندی شده باشد، همان پیش‌فرض می‌شود.
-- مقدارها: `discord|googlechat|imessage|matrix|mattermost|msteams|signal|slack|telegram|whatsapp` (Mattermost به Plugin نیاز دارد)
-- وقتی `--channel` یا یک مقصد دارای پیشوند کانال وجود داشته باشد، `openclaw message` کانال انتخاب‌شده را به Plugin مالک آن نگاشت می‌کند؛ در غیر این صورت، Pluginهای کانال پیکربندی‌شده را برای استنباط کانال پیش‌فرض بارگذاری می‌کند.
+- اگر دقیقا یک کانال پیکربندی شده باشد، همان کانال پیش‌فرض می‌شود.
+- مقادیر: `discord|googlechat|imessage|matrix|mattermost|msteams|signal|slack|telegram|whatsapp` (Mattermost به Plugin نیاز دارد)
+- `openclaw message` وقتی `--channel` یا هدفی با پیشوند کانال وجود داشته باشد، کانال انتخاب‌شده را به Plugin مالک آن نگاشت می‌کند؛ در غیر این صورت Pluginهای کانال پیکربندی‌شده را برای استنتاج کانال پیش‌فرض بارگذاری می‌کند.
 
-قالب‌های مقصد (`--target`):
+قالب‌های هدف (`--target`):
 
 - WhatsApp: E.164، JID گروه، یا JID کانال/خبرنامه WhatsApp (`...@newsletter`)
-- Telegram: شناسه چت، `@username`، یا مقصد موضوع انجمن (`-1001234567890:topic:42`، یا `--thread-id 42`)
+- Telegram: شناسه گفت‌وگو، `@username`، یا هدف موضوع انجمن (`-1001234567890:topic:42`، یا `--thread-id 42`)
 - Discord: `channel:<id>` یا `user:<id>` (یا منشن `<@id>`؛ شناسه‌های عددی خام به‌عنوان کانال در نظر گرفته می‌شوند)
 - Google Chat: `spaces/<spaceId>` یا `users/<userId>`
 - Slack: `channel:<id>` یا `user:<id>` (شناسه خام کانال پذیرفته می‌شود)
-- Mattermost (Plugin): `channel:<id>`، `user:<id>`، یا `@username` (شناسه‌های ساده به‌عنوان کانال در نظر گرفته می‌شوند)
+- Mattermost (Plugin): `channel:<id>`، `user:<id>`، یا `@username` (شناسه‌های تنها به‌عنوان کانال در نظر گرفته می‌شوند)
 - Signal: `+E.164`، `group:<id>`، `signal:+E.164`، `signal:group:<id>`، یا `username:<name>`/`u:<name>`
-- iMessage: هندل، `chat_id:<id>`، `chat_guid:<guid>`، یا `chat_identifier:<id>`
+- iMessage: دستگیره، `chat_id:<id>`، `chat_guid:<guid>`، یا `chat_identifier:<id>`
 - Matrix: `@user:server`، `!room:server`، یا `#alias:server`
 - Microsoft Teams: شناسه مکالمه (`19:...@thread.tacv2`) یا `conversation:<id>` یا `user:<aad-object-id>`
 
 جست‌وجوی نام:
 
-- برای ارائه‌دهندگان پشتیبانی‌شده (Discord/Slack/و غیره)، نام کانال‌هایی مانند `Help` یا `#help` از طریق کش دایرکتوری حل می‌شوند.
-- در صورت نبودن در کش، OpenClaw وقتی ارائه‌دهنده پشتیبانی کند، جست‌وجوی زنده دایرکتوری را امتحان می‌کند.
+- برای ارائه‌دهنده‌های پشتیبانی‌شده (Discord/Slack/و غیره)، نام‌های کانال مانند `Help` یا `#help` از طریق کش فهرست نگاشت می‌شوند.
+- در صورت خطای کش، OpenClaw وقتی ارائه‌دهنده از آن پشتیبانی کند، تلاش می‌کند جست‌وجوی زنده فهرست انجام دهد.
 
 ## پرچم‌های رایج
 
 - `--channel <name>`
 - `--account <id>`
-- `--target <dest>` (کانال یا کاربر مقصد برای send/poll/read/و غیره)
-- `--targets <name>` (تکرارشونده؛ فقط پخش)
+- `--target <dest>` (کانال یا کاربر هدف برای ارسال/نظرسنجی/خواندن/و غیره)
+- `--targets <name>` (تکرارشونده؛ فقط پخش همگانی)
 - `--json`
 - `--dry-run`
 - `--verbose`
 
 ## رفتار SecretRef
 
-- `openclaw message` پیش از اجرای کنش انتخاب‌شده، SecretRefهای پشتیبانی‌شده کانال را حل می‌کند.
-- حل‌کردن در صورت امکان به مقصد کنش فعال محدود می‌شود:
-  - در سطح کانال وقتی `--channel` تنظیم شده باشد (یا از مقصدهای دارای پیشوند مانند `discord:...` استنباط شود)
-  - در سطح حساب وقتی `--account` تنظیم شده باشد (سراسری‌های کانال + سطح‌های حساب انتخاب‌شده)
-  - وقتی `--account` حذف شده باشد، OpenClaw دامنه SecretRef حساب `default` را اجبار نمی‌کند
-- SecretRefهای حل‌نشده در کانال‌های نامرتبط، کنش پیام هدفمند را مسدود نمی‌کنند.
-- اگر SecretRef کانال/حساب انتخاب‌شده حل‌نشده باشد، فرمان برای آن کنش به‌صورت بسته شکست می‌خورد.
+- `openclaw message` پیش از اجرای کنش انتخاب‌شده، SecretRefهای کانال پشتیبانی‌شده را نگاشت می‌کند.
+- نگاشت تا حد امکان به هدف کنش فعال محدود می‌شود:
+  - در سطح کانال وقتی `--channel` تنظیم شده باشد (یا از هدف‌های پیشونددار مانند `discord:...` استنتاج شود)
+  - در سطح حساب وقتی `--account` تنظیم شده باشد (سراسری‌های کانال + سطوح حساب انتخاب‌شده)
+  - وقتی `--account` حذف شده باشد، OpenClaw محدوده SecretRef حساب `default` را اجبار نمی‌کند
+- SecretRefهای نگاشت‌نشده در کانال‌های نامرتبط، کنش پیام هدف‌دار را مسدود نمی‌کنند.
+- اگر SecretRef کانال/حساب انتخاب‌شده نگاشت‌نشده باشد، فرمان برای آن کنش با حالت بسته شکست می‌خورد.
 
 ## کنش‌ها
 
@@ -77,13 +78,13 @@ openclaw message <subcommand> [flags]
   - کانال‌ها: WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (Plugin)/Signal/iMessage/Matrix/Microsoft Teams
   - الزامی: `--target`، به‌علاوه `--message`، `--media`، یا `--presentation`
   - اختیاری: `--media`، `--presentation`، `--delivery`، `--pin`، `--reply-to`، `--thread-id`، `--gif-playback`، `--force-document`، `--silent`
-  - بارهای ارائه مشترک: `--presentation` بلوک‌های معنایی (`text`، `context`، `divider`، `buttons`، `select`) را می‌فرستد که هسته از طریق قابلیت‌های اعلام‌شده کانال انتخاب‌شده رندر می‌کند. [ارائه پیام](/fa/plugins/message-presentation) را ببینید.
-  - ترجیح‌های تحویل عمومی: `--delivery` راهنماهای تحویل مانند `{ "pin": true }` را می‌پذیرد؛ `--pin` میان‌بر تحویل سنجاق‌شده است وقتی کانال از آن پشتیبانی کند.
-  - فقط Telegram: `--force-document` (ارسال تصویرها، GIFها، و ویدئوها به‌صورت سند برای پرهیز از فشرده‌سازی Telegram)
+  - بارهای نمایشی مشترک: `--presentation` بلوک‌های معنایی (`text`، `context`، `divider`، `buttons`، `select`) را ارسال می‌کند که هسته آن‌ها را از طریق قابلیت‌های اعلام‌شده کانال انتخاب‌شده رندر می‌کند. [ارائه پیام](/fa/plugins/message-presentation) را ببینید.
+  - ترجیح‌های تحویل عمومی: `--delivery` راهنمایی‌های تحویل مانند `{ "pin": true }` را می‌پذیرد؛ `--pin` میان‌بری برای تحویل سنجاق‌شده است وقتی کانال از آن پشتیبانی کند.
+  - Telegram + WhatsApp: `--force-document` (ارسال تصویرها، GIFها و ویدئوها به‌صورت سند برای جلوگیری از فشرده‌سازی کانال)
   - فقط Telegram: `--thread-id` (شناسه موضوع انجمن)
-  - فقط Slack: `--thread-id` (برچسب زمانی رشته؛ `--reply-to` از همان فیلد استفاده می‌کند)
+  - فقط Slack: `--thread-id` (مُهر زمانی رشته؛ `--reply-to` از همان فیلد استفاده می‌کند)
   - Telegram + Discord: `--silent`
-  - فقط WhatsApp: `--gif-playback`؛ کانال‌ها/خبرنامه‌های WhatsApp با JID بومی `@newsletter` خود نشانی‌دهی می‌شوند.
+  - فقط WhatsApp: `--gif-playback`؛ کانال‌ها/خبرنامه‌های WhatsApp با JID بومی `@newsletter` خودشان آدرس‌دهی می‌شوند.
 
 - `poll`
   - کانال‌ها: WhatsApp/Telegram/Discord/Matrix/Microsoft Teams
@@ -93,12 +94,13 @@ openclaw message <subcommand> [flags]
   - فقط Telegram: `--poll-duration-seconds` (5-600)، `--silent`، `--poll-anonymous` / `--poll-public`، `--thread-id`
 
 - `react`
-  - کانال‌ها: Discord/Google Chat/Slack/Telegram/WhatsApp/Signal/Matrix
+  - کانال‌ها: Discord/Google Chat/Matrix/Nextcloud Talk/Signal/Slack/Telegram/WhatsApp
   - الزامی: `--message-id`، `--target`
   - اختیاری: `--emoji`، `--remove`، `--participant`، `--from-me`، `--target-author`، `--target-author-uuid`
-  - نکته: `--remove` به `--emoji` نیاز دارد (`--emoji` را حذف کنید تا واکنش‌های خودتان پاک شوند، اگر پشتیبانی شود؛ /tools/reactions را ببینید)
+  - نکته: `--remove` به `--emoji` نیاز دارد (`--emoji` را حذف کنید تا واکنش‌های خودتان، در صورت پشتیبانی، پاک شوند؛ /tools/reactions را ببینید)
   - فقط WhatsApp: `--participant`، `--from-me`
   - واکنش‌های گروه Signal: `--target-author` یا `--target-author-uuid` الزامی است
+  - Nextcloud Talk: فقط افزودن واکنش؛ `--remove` با خطایی روشن رد می‌شود (/tools/reactions را ببینید)
 
 - `reactions`
   - کانال‌ها: Discord/Google Chat/Slack/Matrix
@@ -109,7 +111,7 @@ openclaw message <subcommand> [flags]
   - کانال‌ها: Discord/Slack/Matrix
   - الزامی: `--target`
   - اختیاری: `--limit`، `--message-id`، `--before`، `--after`
-  - فقط Slack: `--message-id` یک برچسب زمانی پیام مشخص Slack را می‌خواند؛ با `--thread-id` ترکیب کنید تا پاسخ دقیق یک رشته خوانده شود.
+  - فقط Slack: `--message-id` یک مُهر زمانی پیام مشخص Slack را می‌خواند؛ با `--thread-id` ترکیب کنید تا یک پاسخ دقیق رشته خوانده شود.
   - فقط Discord: `--around`
 
 - `edit`
@@ -177,7 +179,7 @@ openclaw message <subcommand> [flags]
   - کانال‌ها: Discord
   - الزامی: `--guild-id`، `--sticker-name`، `--sticker-desc`، `--sticker-tags`، `--media`
 
-### نقش‌ها / کانال‌ها / اعضا / صوت
+### نقش‌ها / کانال‌ها / اعضا / صدا
 
 - `role info` (Discord): `--guild-id`
 - `role add` / `role remove` (Discord): `--guild-id`، `--user-id`، `--role-id`
@@ -194,15 +196,15 @@ openclaw message <subcommand> [flags]
 
 ### مدیریت محتوا (Discord)
 
-- `timeout`: `--guild-id`، `--user-id` (`--duration-min` یا `--until` اختیاری؛ برای پاک‌کردن timeout هر دو را حذف کنید)
+- `timeout`: `--guild-id`، `--user-id` (`--duration-min` یا `--until` اختیاری؛ برای پاک کردن timeout هر دو را حذف کنید)
 - `kick`: `--guild-id`، `--user-id` (+ `--reason`)
 - `ban`: `--guild-id`، `--user-id` (+ `--delete-days`، `--reason`)
   - `timeout` از `--reason` نیز پشتیبانی می‌کند
 
-### پخش
+### پخش همگانی
 
 - `broadcast`
-  - کانال‌ها: هر کانال پیکربندی‌شده؛ از `--channel all` برای هدف‌گرفتن همه ارائه‌دهندگان استفاده کنید
+  - کانال‌ها: هر کانال پیکربندی‌شده؛ برای هدف‌گیری همه ارائه‌دهندگان از `--channel all` استفاده کنید
   - الزامی: `--targets <target...>`
   - اختیاری: `--message`، `--media`، `--dry-run`
 
@@ -223,9 +225,9 @@ openclaw message send --channel discord \
   --presentation '{"blocks":[{"type":"buttons","buttons":[{"label":"Approve","value":"approve","style":"success"},{"label":"Decline","value":"decline","style":"danger"}]}]}'
 ```
 
-هسته همان بار `presentation` را بسته به قابلیت کانال به مولفه‌های Discord، بلوک‌های Slack، دکمه‌های درون‌خطی Telegram، props در Mattermost، یا کارت‌های Teams/Feishu تبدیل می‌کند. برای قرارداد کامل و قواعد fallback، [ارائه پیام](/fa/plugins/message-presentation) را ببینید.
+هسته همان بار داده `presentation` را بسته به قابلیت کانال، به کامپوننت‌های Discord، بلوک‌های Slack، دکمه‌های درون‌خطی Telegram، props در Mattermost یا کارت‌های Teams/Feishu تبدیل می‌کند. برای قرارداد کامل و قواعد fallback، [ارائه پیام](/fa/plugins/message-presentation) را ببینید.
 
-ارسال یک بار ارائه غنی‌تر:
+ارسال بار داده ارائه غنی‌تر:
 
 ```bash
 openclaw message send --channel googlechat --target spaces/AAA... \
@@ -253,7 +255,7 @@ openclaw message poll --channel telegram \
   --poll-duration-seconds 120 --silent
 ```
 
-ارسال پیام proactive در Teams:
+ارسال پیام پیش‌دستانه Teams:
 
 ```
 openclaw message send --channel msteams \
@@ -291,6 +293,16 @@ openclaw message send --channel telegram --target @mychat --message "Choose:" \
   --presentation '{"blocks":[{"type":"buttons","buttons":[{"label":"Yes","value":"cmd:yes"},{"label":"No","value":"cmd:no"}]}]}'
 ```
 
+ارسال دکمه Mini App در Telegram از طریق ارائه عمومی:
+
+```
+openclaw message send --channel telegram --target 123456789 --message "Open app:" \
+  --presentation '{"blocks":[{"type":"buttons","buttons":[{"label":"Launch","webApp":{"url":"https://example.com/app"}}]}]}'
+```
+
+دکمه‌های وب‌اپ Telegram فقط در چت‌های خصوصی بین کاربر و
+ربات پشتیبانی می‌شوند. بارهای داده JSON قدیمی‌تر که از `web_app` استفاده می‌کنند همچنان parse می‌شوند، اما `webApp` فیلد canonical ارائه است.
+
 ارسال کارت Teams از طریق ارائه عمومی:
 
 ```bash
@@ -299,7 +311,7 @@ openclaw message send --channel msteams \
   --presentation '{"title":"Status update","blocks":[{"type":"text","text":"Build completed"}]}'
 ```
 
-ارسال تصویر Telegram به‌صورت سند برای پرهیز از فشرده‌سازی:
+ارسال تصویر Telegram یا WhatsApp به‌صورت سند برای جلوگیری از فشرده‌سازی:
 
 ```bash
 openclaw message send --channel telegram --target @mychat \
@@ -309,4 +321,4 @@ openclaw message send --channel telegram --target @mychat \
 ## مرتبط
 
 - [مرجع CLI](/fa/cli)
-- [ارسال Agent](/fa/tools/agent-send)
+- [ارسال عامل](/fa/tools/agent-send)

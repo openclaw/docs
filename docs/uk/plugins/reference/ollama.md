@@ -1,30 +1,32 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте плагін ollama
-summary: Додає підтримку постачальника моделей Ollama до OpenClaw.
+    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin ollama
+summary: Додає підтримку провайдера моделей Ollama та Ollama Cloud до OpenClaw.
 title: Plugin Ollama
 x-i18n:
-    generated_at: "2026-05-02T15:20:25Z"
+    generated_at: "2026-06-27T18:00:39Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3257b3086e28e62c0c9bdc4ff22bd8c7a6ea6bec0ed018e5a93e811ba0353a23
+    source_hash: 25f12b28696c80f0d15069b6c8b0b4c84d54bf5119208dd80eafd230b6d8f314
     source_path: plugins/reference/ollama.md
     workflow: 16
 ---
 
 # Ollama Plugin
 
-Додає підтримку постачальника моделей Ollama до OpenClaw.
+Додає підтримку провайдерів моделей Ollama та Ollama Cloud до OpenClaw.
 
 ## Розповсюдження
 
 - Пакет: `@openclaw/ollama-provider`
-- Шлях встановлення: входить до OpenClaw
+- Маршрут встановлення: включено в OpenClaw
 
-## Інтерфейс
+## Поверхня
 
-постачальники: ollama; контракти: memoryEmbeddingProviders, webSearchProviders
+провайдери: ollama, ollama-cloud; контракти: memoryEmbeddingProviders, webSearchProviders
 
-## Пов’язані документи
+## Пов’язана документація
 
 - [ollama](/uk/providers/ollama)
+- [ollama-cloud](/uk/providers/ollama-cloud)

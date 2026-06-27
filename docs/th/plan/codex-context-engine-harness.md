@@ -1,15 +1,16 @@
 ---
 read_when:
-    - คุณกำลังเชื่อมพฤติกรรมวงจรชีวิตของเอนจินบริบทเข้ากับฮาร์เนส Codex
-    - คุณต้องใช้ lossless-claw หรือ Plugin เอนจินบริบทอื่นเพื่อทำงานกับเซสชันฮาร์เนสแบบฝังของ codex/*
-    - คุณกำลังเปรียบเทียบพฤติกรรมบริบทของ PI แบบฝังและเซิร์ฟเวอร์แอป Codex
-summary: ข้อกำหนดสำหรับทำให้ฮาร์เนสแอปเซิร์ฟเวอร์ Codex ที่มาพร้อมชุดรองรับ Plugin เอนจินบริบทของ OpenClaw
-title: การพอร์ตเอนจินบริบทของ Codex Harness
+    - คุณกำลังเชื่อมพฤติกรรมวงจรชีวิตของ context-engine เข้ากับฮาร์เนสของ Codex
+    - คุณต้องใช้ lossless-claw หรือ Plugin เอนจินบริบทอื่นเพื่อทำงานกับเซสชัน harness แบบฝังของ codex/*
+    - คุณกำลังเปรียบเทียบพฤติกรรมบริบทของแอปเซิร์ฟเวอร์ OpenClaw และ Codex แบบฝังตัว
+summary: ข้อกำหนดสำหรับทำให้ฮาร์เนส app-server ของ Codex ที่บันเดิลมารองรับ Plugin context-engine ของ OpenClaw
+title: พอร์ตเครื่องยนต์บริบทของ Codex Harness
 x-i18n:
-    generated_at: "2026-05-03T10:14:04Z"
+    generated_at: "2026-06-27T17:47:40Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6575c25973d43c04cada6157e39c52ea5ad1cc60171cf801fe36cbb9c54c9237
+    source_hash: a757ee324e7937e30736ff8a82d86fec6b3fe93e837a71a69a6d0af911e9f395
     source_path: plan/codex-context-engine-harness.md
     workflow: 16
 ---
@@ -20,60 +21,77 @@ x-i18n:
 
 ## เป้าหมาย
 
-ทำให้ bundled Codex app-server harness เคารพสัญญาวงจรชีวิต context-engine ของ OpenClaw แบบเดียวกับที่ embedded PI turns เคารพอยู่แล้ว
+ทำให้ฮาร์เนส Codex app-server ที่บันเดิลมาด้วยปฏิบัติตามสัญญาวงจรชีวิต
+context-engine เดียวกับที่เทิร์น OpenClaw แบบฝังตัวปฏิบัติตามอยู่แล้ว
 
-เซสชันที่ใช้ `agents.defaults.embeddedHarness.runtime: "codex"` หรือโมเดล `codex/*` ควรยังคงให้ context-engine plugin ที่เลือกไว้ เช่น `lossless-claw` ควบคุมการประกอบ context, การ ingest หลัง turn, การบำรุงรักษา และนโยบาย compaction ระดับ OpenClaw ได้เท่าที่ขอบเขต Codex app-server อนุญาต
+เซสชันที่ใช้ provider/model `agentRuntime.id: "codex"` หรือโมเดล `codex/*`
+ควรยังคงให้ Plugin context-engine ที่เลือกไว้ เช่น
+`lossless-claw` ควบคุมการประกอบบริบท การนำเข้าหลังเทิร์น การบำรุงรักษา และ
+นโยบาย Compaction ระดับ OpenClaw ได้เท่าที่ขอบเขต Codex app-server อนุญาต
 
 ## สิ่งที่ไม่ใช่เป้าหมาย
 
-- ไม่ reimplement internals ของ Codex app-server
-- ไม่ทำให้ native thread compaction ของ Codex สร้างสรุปแบบ lossless-claw
-- ไม่บังคับให้โมเดลที่ไม่ใช่ Codex ใช้ Codex harness
-- ไม่เปลี่ยนพฤติกรรมเซสชัน ACP/acpx ข้อกำหนดนี้มีไว้สำหรับ path ของ non-ACP embedded agent harness เท่านั้น
-- ไม่ทำให้ third-party plugins ลงทะเบียน Codex app-server extension factories; ขอบเขตความไว้วางใจของ bundled-plugin ที่มีอยู่ยังคงไม่เปลี่ยนแปลง
+- ไม่ต้องนำ internals ของ Codex app-server มาใช้งานใหม่
+- ไม่ต้องทำให้ Compaction เธรดแบบเนทีฟของ Codex สร้างสรุปแบบ lossless-claw
+- ไม่ต้องบังคับให้โมเดลที่ไม่ใช่ Codex ใช้ฮาร์เนส Codex
+- ไม่ต้องเปลี่ยนพฤติกรรมเซสชัน ACP/acpx ข้อกำหนดนี้มีไว้สำหรับเส้นทาง
+  ฮาร์เนสเอเจนต์แบบฝังตัวที่ไม่ใช่ ACP เท่านั้น
+- ไม่ต้องให้ Plugin จากบุคคลที่สามลงทะเบียน factory ส่วนขยาย Codex app-server;
+  ขอบเขตความเชื่อถือของ bundled-plugin ที่มีอยู่ยังคงไม่เปลี่ยนแปลง
 
 ## สถาปัตยกรรมปัจจุบัน
 
-embedded run loop จะ resolve context engine ที่กำหนดค่าไว้หนึ่งครั้งต่อ run ก่อนเลือก low-level harness ที่เป็นรูปธรรม:
+ลูปรันแบบฝังตัวจะแก้ไขเอนจินบริบทที่กำหนดค่าไว้หนึ่งครั้งต่อการรันก่อน
+เลือกฮาร์เนสระดับต่ำที่เป็นรูปธรรม:
 
-- `src/agents/pi-embedded-runner/run.ts`
-  - เริ่มต้น context-engine plugins
+- `src/agents/embedded-agent-runner/run.ts`
+  - เริ่มต้น Plugin context-engine
   - เรียก `resolveContextEngine(params.config)`
-  - ส่ง `contextEngine` และ `contextTokenBudget` เข้าไปยัง `runEmbeddedAttemptWithBackend(...)`
+  - ส่ง `contextEngine` และ `contextTokenBudget` เข้าไปใน
+    `runEmbeddedAttemptWithBackend(...)`
 
-`runEmbeddedAttemptWithBackend(...)` delegate ไปยัง agent harness ที่เลือกไว้:
+`runEmbeddedAttemptWithBackend(...)` มอบหมายต่อให้ฮาร์เนสเอเจนต์ที่เลือก:
 
-- `src/agents/pi-embedded-runner/run/backend.ts`
+- `src/agents/embedded-agent-runner/run/backend.ts`
 - `src/agents/harness/selection.ts`
 
-Codex app-server harness ลงทะเบียนโดย bundled Codex plugin:
+ฮาร์เนส Codex app-server ลงทะเบียนโดย Plugin Codex ที่บันเดิลมาด้วย:
 
 - `extensions/codex/index.ts`
 - `extensions/codex/harness.ts`
 
-implementation ของ Codex harness ได้รับ `EmbeddedRunAttemptParams` เดียวกับ attempts ที่หนุนด้วย PI:
+การใช้งานฮาร์เนส Codex ได้รับ `EmbeddedRunAttemptParams` เดียวกับ
+attempt OpenClaw ในตัว:
 
 - `extensions/codex/src/app-server/run-attempt.ts`
 
-นั่นหมายความว่า hook point ที่ต้องใช้คือโค้ดที่ OpenClaw ควบคุม ขอบเขตภายนอกคือโปรโตคอล Codex app-server เอง: OpenClaw ควบคุมสิ่งที่ส่งไปยัง `thread/start`, `thread/resume` และ `turn/start` ได้ และสังเกต notifications ได้ แต่ไม่สามารถเปลี่ยน thread store ภายในหรือ native compactor ของ Codex ได้
+นั่นหมายความว่าจุด hook ที่ต้องการอยู่ในโค้ดที่ OpenClaw ควบคุม ขอบเขตภายนอก
+คือโปรโตคอล Codex app-server เอง: OpenClaw ควบคุมสิ่งที่ส่งไปยัง
+`thread/start`, `thread/resume` และ `turn/start` ได้ และสังเกตการณ์
+notifications ได้ แต่ไม่สามารถเปลี่ยนแปลง store เธรดภายในหรือ compactor
+แบบเนทีฟของ Codex ได้
 
 ## ช่องว่างปัจจุบัน
 
-Embedded PI attempts เรียกวงจรชีวิต context-engine โดยตรง:
+attempt OpenClaw ในตัวเรียกวงจรชีวิต context-engine โดยตรง:
 
 - bootstrap/maintenance ก่อน attempt
-- assemble ก่อน model call
+- assemble ก่อนการเรียกโมเดล
 - afterTurn หรือ ingest หลัง attempt
-- maintenance หลัง turn ที่สำเร็จ
-- context-engine compaction สำหรับ engines ที่เป็นเจ้าของ compaction
+- maintenance หลังเทิร์นที่สำเร็จ
+- Compaction ของ context-engine สำหรับเอนจินที่เป็นเจ้าของ Compaction
 
-โค้ด PI ที่เกี่ยวข้อง:
+โค้ด OpenClaw ที่เกี่ยวข้อง:
 
-- `src/agents/pi-embedded-runner/run/attempt.ts`
-- `src/agents/pi-embedded-runner/run/attempt.context-engine-helpers.ts`
-- `src/agents/pi-embedded-runner/context-engine-maintenance.ts`
+- `src/agents/embedded-agent-runner/run/attempt.ts`
+- `src/agents/embedded-agent-runner/run/attempt.context-engine-helpers.ts`
+- `src/agents/embedded-agent-runner/context-engine-maintenance.ts`
 
-Codex app-server attempts ในปัจจุบันรัน generic agent-harness hooks และ mirror transcript แต่ไม่เรียก `params.contextEngine.bootstrap`, `params.contextEngine.assemble`, `params.contextEngine.afterTurn`, `params.contextEngine.ingestBatch`, `params.contextEngine.ingest` หรือ `params.contextEngine.maintain`
+attempt Codex app-server ปัจจุบันรัน hook ฮาร์เนสเอเจนต์ทั่วไปและ mirror
+ทรานสคริปต์ แต่ไม่เรียก `params.contextEngine.bootstrap`,
+`params.contextEngine.assemble`, `params.contextEngine.afterTurn`,
+`params.contextEngine.ingestBatch`, `params.contextEngine.ingest` หรือ
+`params.contextEngine.maintain`
 
 โค้ด Codex ที่เกี่ยวข้อง:
 
@@ -84,68 +102,77 @@ Codex app-server attempts ในปัจจุบันรัน generic agent-
 
 ## พฤติกรรมที่ต้องการ
 
-สำหรับ turns ของ Codex harness OpenClaw ควรรักษาวงจรชีวิตนี้:
+สำหรับเทิร์นฮาร์เนส Codex, OpenClaw ควรรักษาวงจรชีวิตนี้ไว้:
 
-1. อ่าน mirrored OpenClaw session transcript
-2. Bootstrap context engine ที่ใช้งานอยู่เมื่อมีไฟล์เซสชันก่อนหน้าอยู่
+1. อ่านทรานสคริปต์เซสชัน OpenClaw ที่ mirror ไว้
+2. Bootstrap เอนจินบริบทที่ใช้งานอยู่เมื่อมีไฟล์เซสชันก่อนหน้า
 3. รัน bootstrap maintenance เมื่อพร้อมใช้งาน
-4. Assemble context โดยใช้ context engine ที่ใช้งานอยู่
-5. แปลง context ที่ assemble แล้วเป็น inputs ที่เข้ากันได้กับ Codex
-6. เริ่มหรือ resume Codex thread ด้วย developer instructions ที่รวม context-engine `systemPromptAddition` ใดๆ
-7. เริ่ม Codex turn ด้วย prompt ที่ assemble แล้วสำหรับผู้ใช้
-8. Mirror ผลลัพธ์ Codex กลับเข้า OpenClaw transcript
-9. เรียก `afterTurn` หาก implement ไว้ มิฉะนั้นใช้ `ingestBatch`/`ingest` โดยใช้ mirrored transcript snapshot
-10. รัน turn maintenance หลัง turns ที่สำเร็จและไม่ถูกยกเลิก
-11. รักษา native compaction signals ของ Codex และ OpenClaw compaction hooks
+4. ประกอบบริบทโดยใช้เอนจินบริบทที่ใช้งานอยู่
+5. แปลงบริบทที่ประกอบแล้วให้เป็นอินพุตที่เข้ากันได้กับ Codex
+6. เริ่มหรือ resume เธรด Codex ด้วยคำสั่งสำหรับนักพัฒนาที่รวม
+   `systemPromptAddition` ของ context-engine ถ้ามี
+7. เริ่มเทิร์น Codex ด้วยพรอมป์ที่ผู้ใช้เห็นซึ่งประกอบแล้ว
+8. Mirror ผลลัพธ์ Codex กลับเข้าไปในทรานสคริปต์ OpenClaw
+9. เรียก `afterTurn` หากมีการใช้งาน มิฉะนั้นใช้ `ingestBatch`/`ingest` โดยใช้
+   snapshot ทรานสคริปต์ที่ mirror ไว้
+10. รัน maintenance ของเทิร์นหลังเทิร์นที่สำเร็จและไม่ถูกยกเลิก
+11. รักษาสัญญาณ Compaction แบบเนทีฟของ Codex และ hook Compaction ของ OpenClaw
 
-## ข้อจำกัดในการออกแบบ
+## ข้อจำกัดด้านการออกแบบ
 
-### Codex app-server ยังคงเป็น canonical สำหรับ native thread state
+### Codex app-server ยังคงเป็น canonical สำหรับสถานะเธรดแบบเนทีฟ
 
-Codex เป็นเจ้าของ native thread และ internal extended history ใดๆ ของตัวเอง OpenClaw ไม่ควรพยายาม mutate internal history ของ app-server ยกเว้นผ่าน protocol calls ที่รองรับ
+Codex เป็นเจ้าของเธรดแบบเนทีฟและประวัติแบบขยายภายในใดๆ OpenClaw ไม่ควรพยายาม
+แก้ไขประวัติภายในของ app-server ยกเว้นผ่านการเรียกโปรโตคอลที่รองรับ
 
-transcript mirror ของ OpenClaw ยังคงเป็นแหล่งข้อมูลสำหรับฟีเจอร์ของ OpenClaw:
+ทรานสคริปต์ mirror ของ OpenClaw ยังคงเป็นแหล่งที่มาสำหรับฟีเจอร์ OpenClaw:
 
-- chat history
-- search
-- การทำ bookkeeping ของ `/new` และ `/reset`
-- การสลับ model หรือ harness ในอนาคต
-- สถานะ context-engine plugin
+- ประวัติแชต
+- การค้นหา
+- งานบันทึกบัญชีของ `/new` และ `/reset`
+- การสลับโมเดลหรือฮาร์เนสในอนาคต
+- สถานะ Plugin context-engine
 
-### Context engine assembly ต้องถูก project เป็น Codex inputs
+### การประกอบของเอนจินบริบทต้องถูก project เข้าไปในอินพุต Codex
 
-interface ของ context-engine คืนค่า OpenClaw `AgentMessage[]` ไม่ใช่ Codex thread patch Codex app-server `turn/start` รับ current user input ขณะที่ `thread/start` และ `thread/resume` รับ developer instructions
+อินเทอร์เฟซ context-engine คืนค่า OpenClaw `AgentMessage[]` ไม่ใช่ patch เธรด
+Codex `turn/start` ของ Codex app-server รับอินพุตผู้ใช้ปัจจุบัน ในขณะที่
+`thread/start` และ `thread/resume` รับคำสั่งสำหรับนักพัฒนา
 
-ดังนั้น implementation จึงต้องมี projection layer เวอร์ชันแรกที่ปลอดภัยควรหลีกเลี่ยงการแสร้งว่าสามารถแทนที่ internal history ของ Codex ได้ ควร inject context ที่ assemble แล้วเป็น prompt/developer-instruction material แบบ deterministic รอบ current turn
+ดังนั้นการใช้งานจึงต้องมีเลเยอร์ projection เวอร์ชันแรกที่ปลอดภัยควรหลีกเลี่ยง
+การทำเหมือนว่าสามารถแทนที่ประวัติภายในของ Codex ได้ ควร inject บริบทที่ประกอบแล้ว
+เป็นเนื้อหาพรอมป์/คำสั่งสำหรับนักพัฒนาแบบกำหนดแน่นอนรอบเทิร์นปัจจุบัน
 
 ### ความเสถียรของ prompt-cache สำคัญ
 
-สำหรับ engines อย่าง lossless-claw context ที่ assemble แล้วควรเป็น deterministic สำหรับ inputs ที่ไม่เปลี่ยนแปลง อย่าเพิ่ม timestamps, random ids หรือการเรียงลำดับที่ไม่ deterministic ในข้อความ context ที่สร้างขึ้น
+สำหรับเอนจินอย่าง lossless-claw บริบทที่ประกอบแล้วควร deterministic สำหรับ
+อินพุตที่ไม่เปลี่ยนแปลง อย่าเพิ่ม timestamp, id แบบสุ่ม หรือการจัดลำดับที่
+ไม่ deterministic ลงในข้อความบริบทที่สร้างขึ้น
 
-### semantics ของ runtime selection ไม่เปลี่ยน
+### ความหมายของการเลือก runtime ไม่เปลี่ยนแปลง
 
-Harness selection ยังคงเหมือนเดิม:
+การเลือกฮาร์เนสยังคงเหมือนเดิม:
 
-- `runtime: "pi"` บังคับใช้ PI
-- `runtime: "codex"` เลือก Codex harness ที่ลงทะเบียนไว้
-- `runtime: "auto"` ให้ plugin harnesses claim providers ที่รองรับ
-- `auto` runs ที่ไม่ match จะใช้ PI
+- `runtime: "openclaw"` เลือกฮาร์เนส OpenClaw ในตัว
+- `runtime: "codex"` เลือกฮาร์เนส Codex ที่ลงทะเบียนไว้
+- `runtime: "auto"` ให้ฮาร์เนส Plugin อ้างสิทธิ์ provider ที่รองรับ
+- การรัน `auto` ที่ไม่ match ใช้ฮาร์เนส OpenClaw ในตัว
 
-งานนี้เปลี่ยนสิ่งที่เกิดขึ้นหลังจากเลือก Codex harness แล้ว
+งานนี้เปลี่ยนสิ่งที่เกิดขึ้นหลังจากเลือกฮาร์เนส Codex แล้ว
 
-## แผน implementation
+## แผนการใช้งาน
 
-### 1. Export หรือย้าย reusable context-engine attempt helpers
+### 1. Export หรือย้าย helper attempt ของ context-engine ที่ใช้ซ้ำได้
 
-ปัจจุบัน reusable lifecycle helpers อยู่ใต้ PI runner:
+วันนี้ helper วงจรชีวิตที่ใช้ซ้ำได้อยู่ใต้ embedded agent runner:
 
-- `src/agents/pi-embedded-runner/run/attempt.context-engine-helpers.ts`
-- `src/agents/pi-embedded-runner/run/attempt.prompt-helpers.ts`
-- `src/agents/pi-embedded-runner/context-engine-maintenance.ts`
+- `src/agents/embedded-agent-runner/run/attempt.context-engine-helpers.ts`
+- `src/agents/embedded-agent-runner/run/attempt.prompt-helpers.ts`
+- `src/agents/embedded-agent-runner/context-engine-maintenance.ts`
 
-Codex ไม่ควร import จาก implementation path ที่ชื่อสื่อถึง PI หากหลีกเลี่ยงได้
+Codex ควร import helper ที่เป็นกลางต่อฮาร์เนสแทนที่จะเอื้อมเข้าไปในรายละเอียดการใช้งานของ runner
 
-สร้างโมดูลแบบ harness-neutral เช่น:
+สร้างโมดูลที่เป็นกลางต่อฮาร์เนส เช่น:
 
 - `src/agents/harness/context-engine-lifecycle.ts`
 
@@ -158,9 +185,9 @@ Codex ไม่ควร import จาก implementation path ที่ชื่
 - `buildAfterTurnRuntimeContextFromUsage`
 - wrapper ขนาดเล็กรอบ `runContextEngineMaintenance`
 
-ทำให้ PI imports ยังใช้งานได้ โดย re-export จากไฟล์เดิมหรืออัปเดต PI call sites ใน PR เดียวกัน
+อัปเดต call site ของฮาร์เนสในตัวใน PR เดียวกัน
 
-ชื่อ helper ที่เป็นกลางไม่ควรกล่าวถึง PI
+ชื่อ helper ที่เป็นกลางไม่ควรกล่าวถึงฮาร์เนสในตัว
 
 ชื่อที่แนะนำ:
 
@@ -170,19 +197,19 @@ Codex ไม่ควร import จาก implementation path ที่ชื่
 - `buildHarnessContextEngineRuntimeContext`
 - `runHarnessContextEngineMaintenance`
 
-### 2. เพิ่ม Codex context projection helper
+### 2. เพิ่ม helper projection บริบทของ Codex
 
 เพิ่มโมดูลใหม่:
 
 - `extensions/codex/src/app-server/context-engine-projection.ts`
 
-หน้าที่:
+ความรับผิดชอบ:
 
-- รับ `AgentMessage[]` ที่ assemble แล้ว, original mirrored history และ current prompt
-- กำหนดว่า context ใดควรอยู่ใน developer instructions เทียบกับ current user input
-- รักษา current user prompt ให้เป็น actionable request สุดท้าย
-- render prior messages ในรูปแบบที่ stable และชัดเจน
-- หลีกเลี่ยง metadata ที่ volatile
+- รับ `AgentMessage[]` ที่ประกอบแล้ว ประวัติที่ mirror เดิม และพรอมป์ปัจจุบัน
+- ตัดสินใจว่าบริบทใดควรอยู่ในคำสั่งสำหรับนักพัฒนาเทียบกับอินพุตผู้ใช้ปัจจุบัน
+- รักษาพรอมป์ผู้ใช้ปัจจุบันให้เป็นคำขอที่ actionable ขั้นสุดท้าย
+- Render ข้อความก่อนหน้าในรูปแบบที่เสถียรและชัดเจน
+- หลีกเลี่ยง metadata ที่ผันผวน
 
 API ที่เสนอ:
 
@@ -204,13 +231,13 @@ export function projectContextEngineAssemblyForCodex(params: {
 
 projection แรกที่แนะนำ:
 
-- ใส่ `systemPromptAddition` เข้าไปใน developer instructions
-- ใส่ assembled transcript context ก่อน current prompt ใน `promptText`
-- ติดป้ายอย่างชัดเจนว่าเป็น OpenClaw assembled context
-- ให้ current prompt อยู่ท้ายสุด
-- ไม่รวม current user prompt ซ้ำหากปรากฏอยู่ที่ tail แล้ว
+- ใส่ `systemPromptAddition` เข้าไปในคำสั่งสำหรับนักพัฒนา
+- ใส่บริบททรานสคริปต์ที่ประกอบแล้วไว้ก่อนพรอมป์ปัจจุบันใน `promptText`
+- ติดป้ายชัดเจนว่าเป็นบริบทที่ OpenClaw ประกอบไว้
+- เก็บพรอมป์ปัจจุบันไว้ท้ายสุด
+- ตัดพรอมป์ผู้ใช้ปัจจุบันที่ซ้ำออก หากปรากฏอยู่ที่ส่วนท้ายแล้ว
 
-ตัวอย่างรูปแบบ prompt:
+รูปร่างพรอมป์ตัวอย่าง:
 
 ```text
 OpenClaw assembled context for this turn:
@@ -227,18 +254,21 @@ Current user request:
 ...
 ```
 
-วิธีนี้สวยงามน้อยกว่า native Codex history surgery แต่ implement ได้ภายใน OpenClaw และรักษา semantics ของ context-engine
+วิธีนี้สง่างามน้อยกว่าการผ่าตัดประวัติ Codex แบบเนทีฟ แต่ใช้งานได้ภายใน OpenClaw
+และรักษาความหมายของ context-engine
 
-การปรับปรุงในอนาคต: หาก Codex app-server เปิดเผย protocol สำหรับแทนที่หรือเสริม thread history ให้เปลี่ยน projection layer นี้ไปใช้ API นั้น
+การปรับปรุงในอนาคต: หาก Codex app-server เปิดเผยโปรโตคอลสำหรับแทนที่หรือ
+เสริมประวัติเธรด ให้สลับเลเยอร์ projection นี้ไปใช้ API นั้น
 
-### 3. Wire bootstrap ก่อน Codex thread startup
+### 3. Wire bootstrap ก่อน startup เธรด Codex
 
 ใน `extensions/codex/src/app-server/run-attempt.ts`:
 
-- อ่าน mirrored session history เหมือนปัจจุบัน
-- กำหนดว่าไฟล์เซสชันมีอยู่ก่อน run นี้หรือไม่ ควรใช้ helper ที่ตรวจ `fs.stat(params.sessionFile)` ก่อน mirror writes
-- เปิด `SessionManager` หรือใช้ narrow session manager adapter หาก helper ต้องการ
-- เรียก neutral bootstrap helper เมื่อมี `params.contextEngine`
+- อ่านประวัติเซสชันที่ mirror ไว้ตามปัจจุบัน
+- ระบุว่าไฟล์เซสชันมีอยู่ก่อนการรันนี้หรือไม่ ควรใช้ helper ที่ตรวจ
+  `fs.stat(params.sessionFile)` ก่อนการเขียน mirror
+- เปิด `SessionManager` หรือใช้ adapter session manager แบบแคบหาก helper ต้องการ
+- เรียก helper bootstrap ที่เป็นกลางเมื่อมี `params.contextEngine`
 
 Pseudo-flow:
 
@@ -260,20 +290,23 @@ await bootstrapHarnessContextEngine({
 });
 ```
 
-ใช้ convention ของ `sessionKey` เดียวกับ Codex tool bridge และ transcript mirror ปัจจุบัน Codex คำนวณ `sandboxSessionKey` จาก `params.sessionKey` หรือ `params.sessionId`; ใช้ค่านี้อย่างสม่ำเสมอ เว้นแต่มีเหตุผลให้รักษา raw `params.sessionKey`
+ใช้ convention `sessionKey` เดียวกับ tool bridge ของ Codex และ transcript mirror
+ปัจจุบัน Codex คำนวณ `sandboxSessionKey` จาก `params.sessionKey` หรือ
+`params.sessionId`; ใช้ค่านั้นอย่างสอดคล้อง เว้นแต่มีเหตุผลให้รักษา
+`params.sessionKey` ดิบไว้
 
 ### 4. Wire assemble ก่อน `thread/start` / `thread/resume` และ `turn/start`
 
 ใน `runCodexAppServerAttempt`:
 
-1. สร้าง dynamic tools ก่อน เพื่อให้ context engine เห็นชื่อเครื่องมือจริงที่พร้อมใช้งาน
-2. อ่าน mirrored session history
-3. รัน context-engine `assemble(...)` เมื่อมี `params.contextEngine`
-4. Project ผลลัพธ์ที่ assemble แล้วเป็น:
-   - developer instruction addition
-   - prompt text สำหรับ `turn/start`
+1. สร้าง dynamic tools ก่อน เพื่อให้เอนจินบริบทเห็นชื่อเครื่องมือที่พร้อมใช้จริง
+2. อ่านประวัติเซสชันที่ mirror ไว้
+3. รัน `assemble(...)` ของ context-engine เมื่อมี `params.contextEngine`
+4. Project ผลลัพธ์ที่ประกอบแล้วเป็น:
+   - ส่วนเพิ่มคำสั่งสำหรับนักพัฒนา
+   - ข้อความพรอมป์สำหรับ `turn/start`
 
-hook call ที่มีอยู่:
+การเรียก hook ที่มีอยู่:
 
 ```ts
 resolveAgentHarnessBeforePromptBuildResult({
@@ -284,54 +317,58 @@ resolveAgentHarnessBeforePromptBuildResult({
 });
 ```
 
-ควรกลายเป็น context-aware:
+ควรกลายเป็นแบบรู้บริบท:
 
-1. คำนวณ base developer instructions ด้วย `buildDeveloperInstructions(params)`
-2. apply context-engine assembly/projection
-3. รัน `before_prompt_build` ด้วย projected prompt/developer instructions
+1. คำนวณคำสั่งสำหรับนักพัฒนาฐานด้วย `buildDeveloperInstructions(params)`
+2. apply การประกอบ/projection ของ context-engine
+3. รัน `before_prompt_build` ด้วยพรอมป์/คำสั่งสำหรับนักพัฒนาที่ project แล้ว
 
-ลำดับนี้ทำให้ generic prompt hooks เห็น prompt เดียวกับที่ Codex จะได้รับ หากเราต้องการ strict PI parity ให้รัน context-engine assembly ก่อน hook composition เพราะ PI apply context-engine `systemPromptAddition` กับ final system prompt หลัง prompt pipeline ของมัน invariant สำคัญคือทั้ง context engine และ hooks ได้ลำดับที่ deterministic และมีเอกสารกำกับ
+ลำดับนี้ทำให้ hook พรอมป์ทั่วไปเห็นพรอมป์เดียวกับที่ Codex จะได้รับ หากเราต้องการ
+ความเท่าเทียมกับ OpenClaw อย่างเข้มงวด ให้รันการประกอบ context-engine ก่อน
+การประกอบ hook เพราะฮาร์เนสในตัว apply `systemPromptAddition` ของ context-engine
+กับ system prompt ขั้นสุดท้ายหลัง pipeline พรอมป์ของมัน invariant สำคัญคือ
+ทั้ง context engine และ hook ได้ลำดับที่ deterministic และจัดทำเอกสารไว้
 
-ลำดับที่แนะนำสำหรับ implementation แรก:
+ลำดับที่แนะนำสำหรับการใช้งานครั้งแรก:
 
 1. `buildDeveloperInstructions(params)`
 2. context-engine `assemble()`
-3. append/prepend `systemPromptAddition` ไปยัง developer instructions
-4. project assembled messages เป็น prompt text
+3. append/prepend `systemPromptAddition` เข้าไปในคำสั่งสำหรับนักพัฒนา
+4. project ข้อความที่ประกอบแล้วเข้าไปในข้อความพรอมป์
 5. `resolveAgentHarnessBeforePromptBuildResult(...)`
-6. ส่ง final developer instructions ไปยัง `startOrResumeThread(...)`
-7. ส่ง final prompt text ไปยัง `buildTurnStartParams(...)`
+6. ส่งคำสั่งสำหรับนักพัฒนาขั้นสุดท้ายไปยัง `startOrResumeThread(...)`
+7. ส่งข้อความพรอมป์ขั้นสุดท้ายไปยัง `buildTurnStartParams(...)`
 
-spec ควรถูก encode ใน tests เพื่อไม่ให้การเปลี่ยนแปลงในอนาคต reorder โดยไม่ตั้งใจ
+ควร encode spec นี้ไว้ใน tests เพื่อไม่ให้การเปลี่ยนแปลงในอนาคต reorder โดยไม่ตั้งใจ
 
-### 5. รักษา formatting ที่ stable สำหรับ prompt-cache
+### 5. รักษาการจัดรูปแบบที่เสถียรสำหรับ prompt-cache
 
-projection helper ต้องสร้าง output ที่ byte-stable สำหรับ inputs ที่เหมือนกัน:
+helper projection ต้องสร้างเอาต์พุตที่ byte-stable สำหรับอินพุตเดียวกัน:
 
-- ลำดับ message ที่ stable
-- role labels ที่ stable
-- ไม่มี generated timestamps
-- ไม่มี object key order leakage
-- ไม่มี random delimiters
-- ไม่มี per-run ids
+- ลำดับข้อความที่เสถียร
+- ป้าย role ที่เสถียร
+- ไม่มี timestamp ที่สร้างขึ้น
+- ไม่มีการรั่วไหลของลำดับ key ของ object
+- ไม่มี delimiter แบบสุ่ม
+- ไม่มี id ต่อการรัน
 
-ใช้ fixed delimiters และ sections ที่ชัดเจน
+ใช้ delimiter คงที่และ section ที่ชัดเจน
 
 ### 6. Wire post-turn หลัง transcript mirroring
 
-Codex `CodexAppServerEventProjector` สร้าง `messagesSnapshot` ภายในสำหรับ
-turn ปัจจุบัน `mirrorTranscriptBestEffort(...)` เขียน snapshot นั้นลงใน
-transcript mirror ของ OpenClaw
+`CodexAppServerEventProjector` ของ Codex สร้าง `messagesSnapshot` ภายในเครื่องสำหรับ
+รอบปัจจุบัน `mirrorTranscriptBestEffort(...)` เขียนสแนปชอตนั้นไปยังมิเรอร์ทรานสคริปต์ของ
+OpenClaw
 
-หลังจากการ mirror สำเร็จหรือล้มเหลว ให้เรียก context-engine finalizer ด้วย
-message snapshot ที่ดีที่สุดที่มี:
+หลังจากมิเรอร์สำเร็จหรือล้มเหลว ให้เรียก finalizer ของ context-engine ด้วย
+สแนปชอตข้อความที่ดีที่สุดที่มีอยู่:
 
-- เลือกใช้ context ของ session ที่ mirror แล้วแบบเต็มหลังจากเขียนก่อน เพราะ `afterTurn`
-  คาดหวัง snapshot ของ session ไม่ใช่เฉพาะ turn ปัจจุบัน
-- fallback เป็น `historyMessages + result.messagesSnapshot` หากเปิดไฟล์ session
-  ซ้ำไม่ได้
+- ควรใช้บริบทเซสชันที่มิเรอร์แล้วแบบเต็มหลังการเขียน เพราะ `afterTurn`
+  คาดหวังสแนปชอตของเซสชัน ไม่ใช่เฉพาะรอบปัจจุบัน
+- ย้อนกลับไปใช้ `historyMessages + result.messagesSnapshot` หากไม่สามารถ
+  เปิดไฟล์เซสชันซ้ำได้
 
-Pseudo-flow:
+โฟลว์จำลอง:
 
 ```ts
 const prePromptMessageCount = historyMessages.length;
@@ -364,151 +401,151 @@ await finalizeHarnessContextEngineTurn({
 });
 ```
 
-หากการ mirror ล้มเหลว ยังคงเรียก `afterTurn` ด้วย fallback snapshot แต่ให้บันทึกว่า
-context engine กำลัง ingest จากข้อมูล turn fallback
+หากการมิเรอร์ล้มเหลว ยังคงเรียก `afterTurn` ด้วยสแนปชอตสำรอง แต่ให้บันทึกว่า
+context engine กำลังนำเข้าจากข้อมูลรอบสำรอง
 
-### 7. ปรับ usage และ runtime context ของ prompt-cache ให้เป็นมาตรฐาน
+### 7. ทำให้ usage และบริบทรันไทม์ของ prompt-cache เป็นมาตรฐาน
 
-ผลลัพธ์ของ Codex มี usage ที่ปรับเป็นมาตรฐานจาก token notification ของ app-server เมื่อ
-มีให้ใช้ ส่ง usage นั้นเข้าไปใน runtime context ของ context-engine
+ผลลัพธ์ของ Codex รวม usage ที่ทำให้เป็นมาตรฐานจากการแจ้งเตือนโทเค็นของ app-server เมื่อ
+มีข้อมูล ส่ง usage นั้นเข้าไปในบริบทรันไทม์ของ context-engine
 
-หากในที่สุด Codex app-server เปิดเผยรายละเอียดการอ่าน/เขียน cache ให้ map รายละเอียดนั้นเข้า
-`ContextEnginePromptCacheInfo` จนกว่าจะถึงตอนนั้น ให้ละ `promptCache` แทนการ
+หากในอนาคต Codex app-server เปิดเผยรายละเอียดการอ่าน/เขียนแคช ให้แมปข้อมูลเหล่านั้นเข้า
+`ContextEnginePromptCacheInfo` ก่อนถึงตอนนั้น ให้ละ `promptCache` แทนที่จะ
 สร้างค่าศูนย์ขึ้นมาเอง
 
 ### 8. นโยบาย Compaction
 
-มีระบบ Compaction สองระบบ:
+มีระบบ Compaction อยู่สองระบบ:
 
-1. `compact()` ของ context-engine ใน OpenClaw
-2. `thread/compact/start` แบบ native ของ Codex app-server
+1. context-engine `compact()` ของ OpenClaw
+2. `thread/compact/start` เนทีฟของ Codex app-server
 
-อย่ารวมสองอย่างนี้เข้าด้วยกันแบบเงียบ ๆ
+อย่ารวมสองระบบนี้เข้าด้วยกันโดยเงียบๆ
 
-#### `/compact` และ Compaction ของ OpenClaw แบบ explicit
+#### `/compact` และ Compaction ของ OpenClaw แบบชัดเจน
 
-เมื่อ context engine ที่เลือกมี `info.ownsCompaction === true` Compaction ของ
-OpenClaw แบบ explicit ควรเลือกใช้ผลลัพธ์ `compact()` ของ context engine เป็นหลักสำหรับ
-transcript mirror ของ OpenClaw และ state ของ Plugin
+เมื่อ context engine ที่เลือกมี `info.ownsCompaction === true` การทำ Compaction ของ
+OpenClaw แบบชัดเจนควรให้ความสำคัญกับผลลัพธ์ `compact()` ของ context engine สำหรับ
+มิเรอร์ทรานสคริปต์ของ OpenClaw และสถานะของ Plugin
 
-เมื่อ Codex harness ที่เลือกมี native thread binding เราอาจ request Compaction แบบ native
-ของ Codex เพิ่มเติมเพื่อให้ thread ของ app-server ยังอยู่ในสภาพดี แต่ต้องรายงานสิ่งนี้เป็น
-backend action แยกต่างหากในรายละเอียด
+เมื่อ Codex harness ที่เลือกมี binding ของเธรดเนทีฟ เราอาจร้องขอ Compaction เนทีฟของ
+Codex เพิ่มเติมเพื่อให้เธรด app-server ยังทำงานได้ดี แต่ต้องรายงานเป็นการกระทำของ
+แบ็กเอนด์แยกต่างหากในรายละเอียด
 
 พฤติกรรมที่แนะนำ:
 
 - หาก `contextEngine.info.ownsCompaction === true`:
   - เรียก `compact()` ของ context-engine ก่อน
-  - จากนั้นเรียก Compaction แบบ native ของ Codex แบบ best-effort เมื่อมี thread binding
-  - คืนผลลัพธ์ของ context-engine เป็นผลลัพธ์หลัก
-  - ใส่สถานะ Compaction แบบ native ของ Codex ใน `details.codexNativeCompaction`
-- หาก context engine ที่ active ไม่ได้เป็นเจ้าของ Compaction:
-  - รักษาพฤติกรรม Compaction แบบ native ของ Codex ปัจจุบันไว้
+  - จากนั้นเรียก Compaction เนทีฟของ Codex แบบ best-effort เมื่อมี binding ของเธรด
+  - ส่งผลลัพธ์ของ context-engine กลับเป็นผลลัพธ์หลัก
+  - รวมสถานะ Compaction เนทีฟของ Codex ไว้ใน `details.codexNativeCompaction`
+- หาก context engine ที่ใช้งานอยู่ไม่ได้เป็นเจ้าของ Compaction:
+  - รักษาพฤติกรรม Compaction เนทีฟของ Codex ปัจจุบันไว้
 
 สิ่งนี้น่าจะต้องเปลี่ยน `extensions/codex/src/app-server/compact.ts` หรือ
 ห่อจากเส้นทาง Compaction ทั่วไป ขึ้นอยู่กับว่า
-`maybeCompactAgentHarnessSession(...)` ถูก invoke ที่ไหน
+`maybeCompactAgentHarnessSession(...)` ถูกเรียกใช้ที่ใด
 
-#### เหตุการณ์ contextCompaction แบบ native ของ Codex ระหว่าง turn
+#### เหตุการณ์ contextCompaction เนทีฟของ Codex ระหว่างรอบ
 
-Codex อาจ emit เหตุการณ์ item แบบ `contextCompaction` ระหว่าง turn ให้คงการ emit hook
-Compaction before/after ปัจจุบันใน `event-projector.ts` แต่ไม่ต้องถือว่าสิ่งนั้นเป็น
+Codex อาจปล่อยเหตุการณ์ไอเท็ม `contextCompaction` ระหว่างรอบ ให้คงการปล่อยฮุก
+Compaction ก่อน/หลังปัจจุบันไว้ใน `event-projector.ts` แต่อย่าถือว่านั่นเป็น
 Compaction ของ context-engine ที่เสร็จสมบูรณ์แล้ว
 
-สำหรับ engine ที่เป็นเจ้าของ Compaction ให้ emit diagnostic แบบ explicit เมื่อ Codex ทำ
-Compaction แบบ native อยู่ดี:
+สำหรับเอนจินที่เป็นเจ้าของ Compaction ให้ปล่อย diagnostic อย่างชัดเจนเมื่อ Codex ทำ
+Compaction เนทีฟอยู่ดี:
 
-- ชื่อ stream/event: stream `compaction` ที่มีอยู่ยอมรับได้
+- ชื่อสตรีม/เหตุการณ์: ใช้สตรีม `compaction` ที่มีอยู่ได้
 - รายละเอียด: `{ backend: "codex-app-server", ownsCompaction: true }`
 
-สิ่งนี้ทำให้ตรวจสอบการแยกส่วนได้
+สิ่งนี้ทำให้การแยกตรวจสอบได้
 
-### 9. การ reset session และพฤติกรรม binding
+### 9. การรีเซ็ตเซสชันและพฤติกรรม binding
 
-`reset(...)` ของ Codex harness ที่มีอยู่จะล้าง Codex app-server binding ออกจาก
-ไฟล์ session ของ OpenClaw ให้รักษาพฤติกรรมนั้นไว้
+`reset(...)` ของ Codex harness ที่มีอยู่ล้าง binding ของ Codex app-server ออกจาก
+ไฟล์เซสชันของ OpenClaw ให้รักษาพฤติกรรมนั้นไว้
 
-และต้องให้แน่ใจว่าการ cleanup state ของ context-engine ยังคงเกิดขึ้นผ่านเส้นทาง lifecycle
-ของ session OpenClaw ที่มีอยู่ อย่าเพิ่ม cleanup เฉพาะ Codex เว้นแต่ lifecycle ของ
-context-engine ปัจจุบันจะพลาดเหตุการณ์ reset/delete สำหรับทุก harness
+ตรวจสอบด้วยว่าการล้างสถานะของ context-engine ยังคงเกิดขึ้นผ่านเส้นทาง lifecycle
+เซสชันของ OpenClaw ที่มีอยู่ อย่าเพิ่มการล้างเฉพาะ Codex เว้นแต่ lifecycle ของ
+context-engine จะพลาดเหตุการณ์ reset/delete สำหรับ harness ทั้งหมดในปัจจุบัน
 
 ### 10. การจัดการข้อผิดพลาด
 
-ทำตาม semantics ของ PI:
+ทำตามความหมายในตัวของ OpenClaw:
 
-- bootstrap failures เตือนและดำเนินต่อ
-- assemble failures เตือนและ fallback ไปยัง pipeline messages/prompt ที่ยังไม่ได้ assemble
-- afterTurn/ingest failures เตือนและทำเครื่องหมาย post-turn finalization ว่าไม่สำเร็จ
-- maintenance ทำงานเฉพาะหลังจาก turn ที่สำเร็จ ไม่ถูก abort และไม่ใช่ yield turns
-- compaction errors ไม่ควรถูก retry เป็น prompt ใหม่
+- ความล้มเหลวของ bootstrap ให้เตือนและดำเนินการต่อ
+- ความล้มเหลวของ assemble ให้เตือนและ fallback ไปยังข้อความ/พรอมป์ของ pipeline ที่ยังไม่ได้ assemble
+- ความล้มเหลวของ afterTurn/ingest ให้เตือนและทำเครื่องหมายว่าการ finalize หลังรอบไม่สำเร็จ
+- maintenance ทำงานเฉพาะหลังรอบที่สำเร็จ ไม่ถูกยกเลิก และไม่ใช่ yield เท่านั้น
+- ข้อผิดพลาดของ Compaction ไม่ควรถูกลองใหม่เป็นพรอมป์ใหม่
 
 ส่วนเพิ่มเติมเฉพาะ Codex:
 
-- หาก context projection ล้มเหลว ให้เตือนและ fallback ไปยัง prompt เดิม
-- หาก transcript mirror ล้มเหลว ยังพยายาม finalization ของ context-engine ด้วย
-  fallback messages
-- หาก Compaction แบบ native ของ Codex ล้มเหลวหลังจาก Compaction ของ context-engine สำเร็จ
-  อย่าทำให้ Compaction ทั้งหมดของ OpenClaw ล้มเหลวเมื่อ context engine เป็นตัวหลัก
+- หากการฉายบริบทล้มเหลว ให้เตือนและ fallback ไปยังพรอมป์เดิม
+- หากมิเรอร์ทรานสคริปต์ล้มเหลว ยังคงพยายาม finalize context-engine ด้วย
+  ข้อความสำรอง
+- หาก Compaction เนทีฟของ Codex ล้มเหลวหลังจาก Compaction ของ context-engine สำเร็จ
+  อย่าทำให้ Compaction ทั้งหมดของ OpenClaw ล้มเหลวเมื่อ context engine เป็นหลัก
 
 ## แผนการทดสอบ
 
-### Unit tests
+### การทดสอบหน่วย
 
-เพิ่ม tests ภายใต้ `extensions/codex/src/app-server`:
+เพิ่มการทดสอบใต้ `extensions/codex/src/app-server`:
 
 1. `run-attempt.context-engine.test.ts`
-   - Codex เรียก `bootstrap` เมื่อมีไฟล์ session อยู่
-   - Codex เรียก `assemble` พร้อม mirrored messages, token budget, tool names,
-     citations mode, model id และ prompt
-   - `systemPromptAddition` รวมอยู่ใน developer instructions
-   - Assembled messages ถูก project เข้าไปใน prompt ก่อน request ปัจจุบัน
-   - Codex เรียก `afterTurn` หลัง transcript mirroring
-   - หากไม่มี `afterTurn` Codex เรียก `ingestBatch` หรือ `ingest` ราย message
-   - Turn maintenance ทำงานหลัง turn ที่สำเร็จ
-   - Turn maintenance ไม่ทำงานเมื่อมี prompt error, abort หรือ yield abort
+   - Codex เรียก `bootstrap` เมื่อมีไฟล์เซสชันอยู่
+   - Codex เรียก `assemble` ด้วยข้อความที่มิเรอร์แล้ว, งบโทเค็น, ชื่อเครื่องมือ,
+     โหมด citations, id ของโมเดล และพรอมป์
+   - `systemPromptAddition` รวมอยู่ในคำสั่งสำหรับนักพัฒนา
+   - ข้อความที่ assemble แล้วถูกฉายเข้าไปในพรอมป์ก่อนคำขอปัจจุบัน
+   - Codex เรียก `afterTurn` หลังจากมิเรอร์ทรานสคริปต์
+   - หากไม่มี `afterTurn` Codex เรียก `ingestBatch` หรือ `ingest` รายข้อความ
+   - turn maintenance ทำงานหลังรอบที่สำเร็จ
+   - turn maintenance ไม่ทำงานเมื่อเกิดข้อผิดพลาดของพรอมป์ การยกเลิก หรือ yield abort
 
 2. `context-engine-projection.test.ts`
-   - output คงที่สำหรับ input ที่เหมือนกัน
-   - ไม่มี current prompt ซ้ำเมื่อ assembled history มีอยู่แล้ว
-   - รองรับ history ว่าง
+   - เอาต์พุตคงที่สำหรับอินพุตที่เหมือนกัน
+   - ไม่มีพรอมป์ปัจจุบันซ้ำเมื่อประวัติที่ assemble แล้วรวมพรอมป์นั้นอยู่
+   - รองรับประวัติว่าง
    - รักษาลำดับ role
-   - ใส่ system prompt addition เฉพาะใน developer instructions
+   - รวม system prompt addition เฉพาะในคำสั่งสำหรับนักพัฒนา
 
 3. `compact.context-engine.test.ts`
    - ผลลัพธ์หลักของ context engine ที่เป็นเจ้าของชนะ
-   - สถานะ Compaction แบบ native ของ Codex ปรากฏในรายละเอียดเมื่อมีการพยายามด้วย
-   - ความล้มเหลวแบบ native ของ Codex ไม่ทำให้ Compaction ของ context-engine ที่เป็นเจ้าของล้มเหลว
-   - context engine ที่ไม่ได้เป็นเจ้าของรักษาพฤติกรรม Compaction แบบ native ปัจจุบันไว้
+   - สถานะ Compaction เนทีฟของ Codex ปรากฏในรายละเอียดเมื่อพยายามทำด้วย
+   - ความล้มเหลวเนทีฟของ Codex ไม่ทำให้ Compaction ของ context-engine ที่เป็นเจ้าของล้มเหลว
+   - context engine ที่ไม่ได้เป็นเจ้าของรักษาพฤติกรรม Compaction เนทีฟปัจจุบันไว้
 
-### Tests ที่มีอยู่ที่ต้องอัปเดต
+### การทดสอบที่มีอยู่ที่ต้องอัปเดต
 
-- `extensions/codex/src/app-server/run-attempt.test.ts` หากมีอยู่ มิฉะนั้นใช้
-  tests การ run ของ Codex app-server ที่ใกล้ที่สุด
+- `extensions/codex/src/app-server/run-attempt.test.ts` หากมี มิฉะนั้นให้ใช้
+  การทดสอบการรันของ Codex app-server ที่ใกล้ที่สุด
 - `extensions/codex/src/app-server/event-projector.test.ts` เฉพาะเมื่อรายละเอียดเหตุการณ์
   Compaction เปลี่ยน
 - `src/agents/harness/selection.test.ts` ไม่ควรต้องเปลี่ยน เว้นแต่พฤติกรรม config
-  เปลี่ยน ควรคงเสถียร
-- Tests context-engine ของ PI ควรผ่านต่อไปโดยไม่เปลี่ยนแปลง
+  เปลี่ยน ควรคงที่
+- การทดสอบ context-engine ของ harness ในตัวควรผ่านต่อไปโดยไม่เปลี่ยนแปลง
 
-### Integration / live tests
+### การทดสอบ Integration / live
 
-เพิ่มหรือขยาย live Codex harness smoke tests:
+เพิ่มหรือขยายการทดสอบ smoke แบบ live ของ Codex harness:
 
-- configure `plugins.slots.contextEngine` เป็น test engine
-- configure `agents.defaults.model` เป็น model `codex/*`
-- configure `agents.defaults.embeddedHarness.runtime = "codex"`
-- assert ว่า test engine สังเกตเห็น:
+- กำหนดค่า `plugins.slots.contextEngine` เป็นเอนจินทดสอบ
+- กำหนดค่า `agents.defaults.model` เป็นโมเดล `codex/*`
+- กำหนดค่า provider/model `agentRuntime.id = "codex"`
+- ยืนยันว่าเอนจินทดสอบสังเกตเห็น:
   - bootstrap
   - assemble
   - afterTurn หรือ ingest
   - maintenance
 
-หลีกเลี่ยงการต้องใช้ lossless-claw ใน core tests ของ OpenClaw ใช้ fake
-context engine plugin ขนาดเล็กใน repo
+หลีกเลี่ยงการต้องใช้ lossless-claw ในการทดสอบ core ของ OpenClaw ใช้ Plugin
+context engine ปลอมขนาดเล็กภายในรีโป
 
-## Observability
+## ความสามารถในการสังเกต
 
-เพิ่ม debug logs รอบการเรียก lifecycle ของ Codex context-engine:
+เพิ่มล็อก debug รอบการเรียก lifecycle ของ context-engine ของ Codex:
 
 - `codex context engine bootstrap started/completed/failed`
 - `codex context engine assemble applied`
@@ -516,12 +553,12 @@ context engine plugin ขนาดเล็กใน repo
 - `codex context engine maintenance skipped` พร้อมเหตุผล
 - `codex native compaction completed alongside context-engine compaction`
 
-หลีกเลี่ยงการ log prompt หรือ transcript contents แบบเต็ม
+หลีกเลี่ยงการล็อกพรอมป์เต็มหรือเนื้อหาทรานสคริปต์
 
-เพิ่ม structured fields เมื่อมีประโยชน์:
+เพิ่มฟิลด์แบบมีโครงสร้างเมื่อเป็นประโยชน์:
 
 - `sessionId`
-- `sessionKey` redacted หรือละไว้ตามแนวปฏิบัติการ logging ที่มีอยู่
+- `sessionKey` ที่ redact หรือละไว้ตามแนวปฏิบัติการล็อกที่มีอยู่
 - `engineId`
 - `threadId`
 - `turnId`
@@ -529,57 +566,55 @@ context engine plugin ขนาดเล็กใน repo
 - `estimatedTokens`
 - `hasSystemPromptAddition`
 
-## การ migration / ความเข้ากันได้
+## การย้ายข้อมูล / ความเข้ากันได้
 
-สิ่งนี้ควร backward-compatible:
+สิ่งนี้ควรเข้ากันได้ย้อนหลัง:
 
-- หากไม่มี context engine ถูก configure พฤติกรรม context engine แบบ legacy ควรเทียบเท่ากับ
+- หากไม่ได้กำหนดค่า context engine พฤติกรรม context engine แบบเดิมควรเทียบเท่ากับ
   พฤติกรรม Codex harness ในปัจจุบัน
-- หาก `assemble` ของ context-engine ล้มเหลว Codex ควรดำเนินต่อด้วยเส้นทาง
-  prompt เดิม
-- Codex thread bindings ที่มีอยู่ควรยัง valid
-- Dynamic tool fingerprinting ไม่ควรรวม output ของ context-engine มิฉะนั้น
-  การเปลี่ยน context ทุกครั้งอาจบังคับให้เกิด Codex thread ใหม่ ควรให้เฉพาะ tool catalog
-  มีผลต่อ dynamic tool fingerprint
+- หาก `assemble` ของ context-engine ล้มเหลว Codex ควรดำเนินต่อด้วยเส้นทางพรอมป์เดิม
+- binding ของเธรด Codex ที่มีอยู่ควรยังคงใช้ได้
+- dynamic tool fingerprinting ไม่ควรรวมเอาต์พุตของ context-engine มิฉะนั้น
+  การเปลี่ยนบริบททุกครั้งอาจบังคับให้สร้างเธรด Codex ใหม่ เฉพาะแค็ตตาล็อกเครื่องมือ
+  เท่านั้นที่ควรมีผลต่อ dynamic tool fingerprint
 
-## คำถามที่ยังเปิดอยู่
+## คำถามเปิด
 
-1. ควร inject assembled context ทั้งหมดเข้า user prompt ทั้งหมดเข้า
-   developer instructions หรือ split?
+1. ควรฉีดบริบทที่ assemble แล้วทั้งหมดเข้าไปในพรอมป์ผู้ใช้ ทั้งหมดเข้าไปใน
+   คำสั่งสำหรับนักพัฒนา หรือแบ่งกัน?
 
-   คำแนะนำ: split ใส่ `systemPromptAddition` ใน developer instructions;
-   ใส่ assembled transcript context ใน user prompt wrapper วิธีนี้ตรงกับ
-   protocol ของ Codex ปัจจุบันที่สุดโดยไม่ mutate native thread history
+   คำแนะนำ: แบ่งกัน ใส่ `systemPromptAddition` ในคำสั่งสำหรับนักพัฒนา;
+   ใส่บริบททรานสคริปต์ที่ assemble แล้วใน wrapper ของพรอมป์ผู้ใช้ วิธีนี้สอดคล้องกับ
+   โปรโตคอล Codex ปัจจุบันที่สุดโดยไม่แก้ไขประวัติเธรดเนทีฟ
 
-2. ควรปิดใช้งาน Compaction แบบ native ของ Codex เมื่อ context engine เป็นเจ้าของ
+2. ควรปิดใช้งาน Compaction เนทีฟของ Codex เมื่อ context engine เป็นเจ้าของ
    Compaction หรือไม่?
 
-   คำแนะนำ: ไม่ใช่ในตอนแรก Compaction แบบ native ของ Codex อาจยังจำเป็นเพื่อให้
-   thread ของ app-server ยังทำงานได้ แต่ต้องรายงานเป็น Compaction แบบ native ของ Codex
+   คำแนะนำ: ไม่ใช่ในตอนแรก Compaction เนทีฟของ Codex อาจยังจำเป็นเพื่อให้เธรด
+   app-server ยังทำงานอยู่ แต่ต้องรายงานเป็น Compaction เนทีฟของ Codex
    ไม่ใช่ Compaction ของ context-engine
 
-3. `before_prompt_build` ควรรันก่อนหรือหลัง context-engine assembly?
+3. `before_prompt_build` ควรทำงานก่อนหรือหลังการ assemble ของ context-engine?
 
-   คำแนะนำ: หลัง context-engine projection สำหรับ Codex เพื่อให้ generic harness
-   hooks เห็น prompt/developer instructions จริงที่ Codex จะได้รับ หาก parity กับ PI
-   ต้องการตรงกันข้าม ให้ encode ลำดับที่เลือกใน tests และ document ไว้ที่นี่
+   คำแนะนำ: หลังการฉาย context-engine สำหรับ Codex เพื่อให้ฮุก harness ทั่วไป
+   เห็นพรอมป์/คำสั่งสำหรับนักพัฒนาจริงที่ Codex จะได้รับ หากความเท่าเทียมกับ
+   harness ในตัวต้องการลำดับตรงข้าม ให้เข้ารหัสลำดับที่เลือกไว้ในการทดสอบและบันทึกไว้ที่นี่
 
 4. Codex app-server สามารถรับ structured context/history override ในอนาคตได้หรือไม่?
 
-   ไม่ทราบ หากทำได้ ให้แทนที่ text projection layer ด้วย protocol นั้นและ
-   คง lifecycle calls ไว้เหมือนเดิม
+   ยังไม่ทราบ หากทำได้ ให้แทนที่เลเยอร์การฉายข้อความด้วยโปรโตคอลนั้นและ
+   คงการเรียก lifecycle ไว้เหมือนเดิม
 
-## Acceptance criteria
+## เกณฑ์การยอมรับ
 
-- turn ของ embedded harness `codex/*` invoke lifecycle assemble ของ context engine
-  ที่เลือก
-- `systemPromptAddition` ของ context-engine ส่งผลต่อ developer instructions ของ Codex
-- Assembled context ส่งผลต่อ input ของ Codex turn อย่างกำหนดซ้ำได้
-- Codex turns ที่สำเร็จเรียก `afterTurn` หรือ ingest fallback
-- Codex turns ที่สำเร็จรัน turn maintenance ของ context-engine
-- turns ที่ failed/aborted/yield-aborted ไม่รัน turn maintenance
-- Compaction ที่ context-engine เป็นเจ้าของยังเป็นตัวหลักสำหรับ state ของ OpenClaw/Plugin
-- Compaction แบบ native ของ Codex ยังคงตรวจสอบได้ในฐานะพฤติกรรม native ของ Codex
-- พฤติกรรม context-engine ของ PI ที่มีอยู่ไม่เปลี่ยนแปลง
+- รอบของ embedded harness แบบ `codex/*` เรียก lifecycle assemble ของ context engine ที่เลือก
+- `systemPromptAddition` ของ context-engine มีผลต่อคำสั่งสำหรับนักพัฒนาของ Codex
+- บริบทที่ assemble แล้วมีผลต่ออินพุตรอบของ Codex อย่างกำหนดแน่นอน
+- รอบ Codex ที่สำเร็จเรียก `afterTurn` หรือ ingest fallback
+- รอบ Codex ที่สำเร็จเรียกใช้ turn maintenance ของ context-engine
+- รอบที่ล้มเหลว/ถูกยกเลิก/yield-aborted ไม่เรียกใช้ turn maintenance
+- Compaction ที่ context-engine เป็นเจ้าของยังคงเป็นหลักสำหรับสถานะ OpenClaw/Plugin
+- Compaction เนทีฟของ Codex ยังคงตรวจสอบได้ในฐานะพฤติกรรมเนทีฟของ Codex
+- พฤติกรรม context-engine ของ harness ในตัวที่มีอยู่ไม่เปลี่ยนแปลง
 - พฤติกรรม Codex harness ที่มีอยู่ไม่เปลี่ยนแปลงเมื่อไม่ได้เลือก context engine
   ที่ไม่ใช่ legacy หรือเมื่อ assembly ล้มเหลว

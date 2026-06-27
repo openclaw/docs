@@ -1,39 +1,40 @@
 ---
 read_when:
     - Je wilt OpenClaw verbinden met QQ
-    - Je moet QQ Bot-inloggegevens instellen
-    - Je wilt ondersteuning voor groeps- of privéchats met QQ Bot
-summary: QQ Bot instellen, configureren en gebruiken
-title: QQ-bot
+    - Je moet QQ Bot-inloggegevens configureren
+    - Je wilt ondersteuning voor QQ Bot-groepen of privéchats
+summary: QQ Bot-installatie, configuratie en gebruik
+title: QQ bot
 x-i18n:
-    generated_at: "2026-05-04T02:21:44Z"
+    generated_at: "2026-06-27T17:12:25Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e17fa0da2f6939ed28cac5f13b3e37e6c63b87a10250ff213f7a86685a6141d6
+    source_hash: eb452e331ce196d1517af2f87a5187cb4b2cb53aee2bbff47cbdf73e2b3e7dee
     source_path: channels/qqbot.md
     workflow: 16
 ---
 
-QQ Bot verbindt met OpenClaw via de officiële QQ Bot API (WebSocket gateway). De
-Plugin ondersteunt C2C-privéchats, @berichten in groepen en berichten in guild-kanalen met
+QQ Bot verbindt met OpenClaw via de officiële QQ Bot API (WebSocket-gateway). De
+Plugin ondersteunt C2C-privéchat, @berichten in groepen en berichten in guildkanalen met
 rijke media (afbeeldingen, spraak, video, bestanden).
 
-Status: downloadbare Plugin. Directe berichten, groepschats, guild-kanalen en
+Status: downloadbare Plugin. Directe berichten, groepschats, guildkanalen en
 media worden ondersteund. Reacties en threads worden niet ondersteund.
 
 ## Installeren
 
-Installeer QQ Bot vóór de configuratie:
+Installeer QQ Bot vóór de setup:
 
 ```bash
 openclaw plugins install @openclaw/qqbot
 ```
 
-## Instellen
+## Setup
 
 1. Ga naar het [QQ Open Platform](https://q.qq.com/) en scan de QR-code met je
-   telefoon-QQ om je te registreren / in te loggen.
-2. Klik op **Bot maken** om een nieuwe QQ-bot te maken.
+   telefoon-QQ om te registreren / in te loggen.
+2. Klik op **Create Bot** om een nieuwe QQ-bot te maken.
 3. Zoek **AppID** en **AppSecret** op de instellingenpagina van de bot en kopieer ze.
 
 > AppSecret wordt niet als platte tekst opgeslagen — als je de pagina verlaat zonder het op te slaan,
@@ -47,7 +48,7 @@ openclaw channels add --channel qqbot --token "AppID:AppSecret"
 
 5. Herstart de Gateway.
 
-Interactieve instelpaden:
+Interactieve setuppaden:
 
 ```bash
 openclaw channels add
@@ -70,12 +71,12 @@ Minimale configuratie:
 }
 ```
 
-Omgevingsvariabelen voor standaardaccount:
+Omgevingsvariabelen voor het standaardaccount:
 
 - `QQBOT_APP_ID`
 - `QQBOT_CLIENT_SECRET`
 
-Bestandsgebaseerde AppSecret:
+AppSecret ondersteund door bestand:
 
 ```json5
 {
@@ -105,14 +106,14 @@ Env SecretRef AppSecret:
 
 Opmerkingen:
 
-- Env-terugval geldt alleen voor het standaard QQ Bot-account.
+- Env-fallback geldt alleen voor het standaard-QQ Bot-account.
 - `openclaw channels add --channel qqbot --token-file ...` levert alleen de
   AppSecret; de AppID moet al zijn ingesteld in de configuratie of `QQBOT_APP_ID`.
-- `clientSecret` accepteert ook SecretRef-invoer, niet alleen een plattetekststring.
-- Verouderde `secretref:/...`-markeringsstrings zijn geen geldige `clientSecret`-waarden;
+- `clientSecret` accepteert ook SecretRef-invoer, niet alleen een plattetekstreeks.
+- Oude `secretref:/...`-markerteksten zijn geen geldige `clientSecret`-waarden;
   gebruik gestructureerde SecretRef-objecten zoals in het voorbeeld hierboven.
 
-### Multi-account instellen
+### Setup voor meerdere accounts
 
 Voer meerdere QQ-bots uit onder één OpenClaw-instantie:
 
@@ -138,7 +139,7 @@ Voer meerdere QQ-bots uit onder één OpenClaw-instantie:
 Elk account start zijn eigen WebSocket-verbinding en onderhoudt een onafhankelijke
 tokencache (geïsoleerd op `appId`).
 
-Voeg een tweede bot toe via de CLI:
+Voeg een tweede bot toe via CLI:
 
 ```bash
 openclaw channels add --channel qqbot --account bot2 --token "222222222:secret-of-bot-2"
@@ -146,8 +147,8 @@ openclaw channels add --channel qqbot --account bot2 --token "222222222:secret-o
 
 ### Groepschats
 
-Ondersteuning voor QQ Bot-groepschats gebruikt QQ-groep-OpenID's, geen weergavenamen. Voeg de bot toe
-aan een groep en vermeld hem vervolgens of configureer de groep om zonder vermelding te werken.
+Ondersteuning voor groepschat in QQ Bot gebruikt QQ-groep-OpenID's, geen weergavenamen. Voeg de bot
+toe aan een groep en vermeld hem daarna of configureer de groep om zonder vermelding te draaien.
 
 ```json5
 {
@@ -158,13 +159,15 @@ aan een groep en vermeld hem vervolgens of configureer de groep om zonder vermel
       groups: {
         "*": {
           requireMention: true,
+          commandLevel: "all",
           historyLimit: 50,
-          toolPolicy: "restricted",
+          tools: { deny: ["exec", "read", "write"] },
         },
         GROUP_OPENID: {
           name: "Release room",
           requireMention: false,
           ignoreOtherMentions: true,
+          commandLevel: "safety",
           historyLimit: 20,
           prompt: "Keep replies short and operational.",
         },
@@ -178,29 +181,46 @@ aan een groep en vermeld hem vervolgens of configureer de groep om zonder vermel
 `groups.GROUP_OPENID`-vermelding overschrijft die standaardwaarden voor één groep. Groepsinstellingen
 omvatten:
 
-- `requireMention`: vereist een @vermelding voordat de bot antwoordt. Standaard: `true`.
-- `ignoreOtherMentions`: laat berichten vallen die iemand anders vermelden maar niet de bot.
+- `requireMention`: vereis een @vermelding voordat de bot antwoordt. Standaard: `true`.
+- `commandLevel`: bepaal welke ingebouwde slash-opdrachten in groepen kunnen draaien.
+  Standaard: `all`, waarmee het bestaande QQBot-groepsgedrag behouden blijft wanneer de
+  instelling wordt weggelaten.
+- `ignoreOtherMentions`: verwijder berichten die iemand anders vermelden maar niet de bot.
 - `historyLimit`: bewaar recente groepsberichten zonder vermelding als context voor de volgende vermelde beurt. Stel in op `0` om uit te schakelen.
-- `toolPolicy`: `full`, `restricted` of `none` voor tools binnen de groepsscope.
-- `name`: gebruiksvriendelijk label dat in logs en groepscontext wordt gebruikt.
+- `tools`: sta tools toe/weiger tools voor de hele groep.
+- `toolsBySender`: groepsoverschrijvingen voor tools per afzender; zie [Groepen](/nl/channels/groups#groupchannel-tool-restrictions-optional).
+- `name`: vriendelijk label dat wordt gebruikt in logs en groepscontext.
 - `prompt`: gedragsprompt per groep die aan de agentcontext wordt toegevoegd.
 
-Activeringsmodi zijn `mention` en `always`. `requireMention: true` wordt gekoppeld aan
-`mention`; `requireMention: false` wordt gekoppeld aan `always`. Een activeringsoverride op sessieniveau,
-indien aanwezig, wint van de configuratie.
+`commandLevel` accepteert:
+
+- `all`: houd herkende ingebouwde opdrachten beschikbaar zoals voorheen. Sommige opdrachten kunnen
+  verborgen blijven in menu's, maar geautoriseerde gebruikers kunnen ze nog steeds in de groep uitvoeren.
+- `safety`: sta gangbare samenwerkingsopdrachten toe zoals `/help`, `/btw` en
+  `/stop`; vraag gebruikers om gevoelige opdrachten zoals `/config`, `/tools` en
+  `/bash` in privéchat uit te voeren.
+- `strict`: sta alleen de groepssessiebesturing toe die nodig is voor strikte groepswerking.
+  `/stop` blijft urgent, zodat een geautoriseerde afzender een actieve uitvoering kan
+  onderbreken.
+
+Oude QQBot-`toolPolicy`-vermeldingen zijn uitgefaseerd. Voer `openclaw doctor --fix` uit om ze naar `tools` te migreren.
+
+Activatiemodi zijn `mention` en `always`. `requireMention: true` wordt gekoppeld aan
+`mention`; `requireMention: false` wordt gekoppeld aan `always`. Een activeringsoverschrijving
+op sessieniveau, indien aanwezig, wint van de configuratie.
 
 De inkomende wachtrij is per peer. Groepspeers krijgen een grotere wachtrijlimiet, houden menselijke
-berichten vóór botgeschreven chatter wanneer de wachtrij vol is, en voegen uitbarstingen van normale
-groepsberichten samen tot één toegeschreven beurt. Slash-commando's worden nog steeds één voor één uitgevoerd.
+berichten vóór door bots geschreven tekst wanneer de wachtrij vol is, en voegen bursts van normale
+groepsberichten samen tot één toegeschreven beurt. Slash-opdrachten worden nog steeds één voor één uitgevoerd.
 
 ### Spraak (STT / TTS)
 
-STT en TTS ondersteunen configuratie op twee niveaus met prioritaire terugval:
+STT- en TTS-ondersteuning gebruikt configuratie op twee niveaus met prioriteitsfallback:
 
-| Instelling | Plugin-specifiek                                         | Framework-terugval            |
-| ---------- | -------------------------------------------------------- | ----------------------------- |
-| STT        | `channels.qqbot.stt`                                     | `tools.media.audio.models[0]` |
-| TTS        | `channels.qqbot.tts`, `channels.qqbot.accounts.<id>.tts` | `messages.tts`                |
+| Instelling | Plugin-specifiek                                         | Framework-fallback           |
+| ------- | -------------------------------------------------------- | ----------------------------- |
+| STT     | `channels.qqbot.stt`                                     | `tools.media.audio.models[0]` |
+| TTS     | `channels.qqbot.tts`, `channels.qqbot.accounts.<id>.tts` | `messages.tts`                |
 
 ```json5
 {
@@ -229,16 +249,16 @@ STT en TTS ondersteunen configuratie op twee niveaus met prioritaire terugval:
 }
 ```
 
-Stel `enabled: false` in op een van beide om uit te schakelen.
-TTS-overrides op accountniveau gebruiken dezelfde vorm als `messages.tts` en worden diep samengevoegd
+Stel `enabled: false` op een van beide in om uit te schakelen.
+TTS-overschrijvingen op accountniveau gebruiken dezelfde vorm als `messages.tts` en worden diep samengevoegd
 over de kanaal-/globale TTS-configuratie.
 
-Inkomende QQ-spraakbijlagen worden aan agents beschikbaar gesteld als audiomedia-metadata, terwijl
+Inkomende QQ-spraakbijlagen worden aan agents beschikbaar gesteld als metadata voor audiomedia terwijl
 ruwe spraakbestanden buiten generieke `MediaPaths` blijven. `[[audio_as_voice]]`-antwoorden in platte
-tekst synthetiseren TTS en verzenden een native QQ-spraakbericht wanneer TTS is
+tekst synthetiseren TTS en sturen een native QQ-spraakbericht wanneer TTS is
 geconfigureerd.
 
-Upload-/transcodeergedrag voor uitgaande audio kan ook worden afgestemd met
+Gedrag voor uitgaande audiouploads/transcodering kan ook worden afgestemd met
 `channels.qqbot.audioFormatPolicy`:
 
 - `sttDirectFormats`
@@ -251,63 +271,67 @@ Upload-/transcodeergedrag voor uitgaande audio kan ook worden afgestemd met
 | -------------------------- | ------------------ |
 | `qqbot:c2c:OPENID`         | Privéchat (C2C)    |
 | `qqbot:group:GROUP_OPENID` | Groepschat         |
-| `qqbot:channel:CHANNEL_ID` | Guild-kanaal       |
+| `qqbot:channel:CHANNEL_ID` | Guildkanaal        |
 
-> Elke bot heeft zijn eigen set gebruikers-OpenID's. Een OpenID die door Bot A is ontvangen **kan niet**
+> Elke bot heeft zijn eigen set gebruikers-OpenID's. Een OpenID die is ontvangen door Bot A **kan niet**
 > worden gebruikt om berichten via Bot B te verzenden.
 
-## Slash-commando's
+## Slash-opdrachten
 
-Ingebouwde commando's die vóór de AI-wachtrij worden onderschept:
+Ingebouwde opdrachten die vóór de AI-wachtrij worden onderschept:
 
-| Commando       | Beschrijving                                                                                                   |
-| -------------- | -------------------------------------------------------------------------------------------------------------- |
-| `/bot-ping`    | Latentietest                                                                                                   |
-| `/bot-version` | Toon de versie van het OpenClaw-framework                                                                      |
-| `/bot-help`    | Alle commando's weergeven                                                                                      |
-| `/bot-me`      | Toon de QQ-gebruikers-ID (openid) van de afzender voor `allowFrom`/`groupAllowFrom`-instelling                 |
-| `/bot-upgrade` | Toon de link naar de QQBot-upgradehandleiding                                                                  |
-| `/bot-logs`    | Exporteer recente Gateway-logs als bestand                                                                     |
-| `/bot-approve` | Keur een wachtende QQ Bot-actie goed (bijvoorbeeld het bevestigen van een C2C- of groepsupload) via de native flow. |
+| Opdracht       | Beschrijving                                                                                            |
+| -------------- | -------------------------------------------------------------------------------------------------------- |
+| `/bot-ping`    | Latentietest                                                                                            |
+| `/bot-version` | Toon de OpenClaw-frameworkversie                                                                        |
+| `/bot-help`    | Geef alle opdrachten weer                                                                               |
+| `/bot-me`      | Toon de QQ-gebruikers-ID (openid) van de afzender voor `allowFrom`/`groupAllowFrom`-setup                |
+| `/bot-upgrade` | Toon de link naar de QQBot-upgradehandleiding                                                           |
+| `/bot-logs`    | Exporteer recente gatewaylogs als bestand                                                               |
+| `/bot-approve` | Keur een openstaande QQ Bot-actie goed (bijvoorbeeld het bevestigen van een C2C- of groepsupload) via de native flow. |
 
-Voeg `?` toe aan een commando voor gebruikshulp (bijvoorbeeld `/bot-upgrade ?`).
+Voeg `?` toe aan een opdracht voor gebruikshulp (bijvoorbeeld `/bot-upgrade ?`).
 
-Admin-commando's (`/bot-me`, `/bot-upgrade`, `/bot-logs`, `/bot-clear-storage`, `/bot-streaming`, `/bot-approve`) zijn alleen voor directe berichten en vereisen de openid van de afzender in een expliciete niet-wildcard `allowFrom`-lijst. Een wildcard `allowFrom: ["*"]` staat chat toe maar verleent geen toegang tot admin-commando's. Groepsberichten worden eerst tegen `groupAllowFrom` gematcht en vallen terug op `allowFrom`. Het uitvoeren van een admin-commando in een groep retourneert een hint in plaats van stilzwijgend te worden genegeerd.
+Beheerdersopdrachten (`/bot-me`, `/bot-upgrade`, `/bot-logs`, `/bot-clear-storage`, `/bot-streaming`, `/bot-approve`) zijn alleen voor directe berichten en vereisen de openid van de afzender in een expliciete niet-wildcard `allowFrom`-lijst. Een wildcard `allowFrom: ["*"]` staat chat toe, maar verleent geen toegang tot beheerdersopdrachten. Groepsberichten worden eerst gematcht tegen `groupAllowFrom` en vallen terug op `allowFrom`. Het uitvoeren van een beheerdersopdracht in een groep retourneert een hint in plaats van stilzwijgend te worden genegeerd.
+
+Wanneer QQ Bot exec-goedkeuringen de standaardfallback voor dezelfde chat gebruiken, volgen native klikken
+op goedkeuringsknoppen dezelfde expliciete niet-wildcard-toelatingslijst voor opdrachten. Configureer
+`channels.qqbot.execApprovals.approvers` om alleen goedkeuringstoegang te verlenen zonder bredere opdrachttoegang.
 
 ## Engine-architectuur
 
 QQ Bot wordt geleverd als een zelfstandige engine binnen de Plugin:
 
-- Elk account bezit een geïsoleerde resourcestack (WebSocket-verbinding, API-client, tokencache, root voor mediaopslag) met `appId` als sleutel. Accounts delen nooit inkomende/uitgaande status.
-- De multi-accountlogger tagt logregels met het eigenaaraccount, zodat diagnostiek gescheiden blijft wanneer je meerdere bots onder één gateway uitvoert.
-- Inkomende, uitgaande en gateway-bridgepaden delen één root voor mediapayloads onder `~/.openclaw/media`, zodat uploads, downloads en transcodeercaches in één bewaakte directory terechtkomen in plaats van in een boom per subsysteem.
-- Levering van rijke media loopt via één `sendMedia`-pad voor C2C- en groepsdoelen. Lokale bestanden en buffers boven de drempel voor grote bestanden gebruiken QQ's chunked-upload-eindpunten, terwijl kleinere payloads de one-shot media-API gebruiken.
-- Referenties kunnen worden geback-upt en hersteld als onderdeel van standaard OpenClaw-referentiesnapshots; de engine koppelt de resourcestack van elk account opnieuw bij herstel zonder een nieuwe QR-codekoppeling te vereisen.
+- Elk account bezit een geïsoleerde resourcestack (WebSocket-verbinding, API-client, tokencache, mediaopslagroot) gekoppeld aan `appId`. Accounts delen nooit inkomende/uitgaande status.
+- De logger voor meerdere accounts tagt logregels met het eigenaaraccount, zodat diagnostiek gescheiden blijft wanneer je meerdere bots onder één gateway uitvoert.
+- Inkomende, uitgaande en gatewaybridgepaden delen één root voor mediapayloads onder `~/.openclaw/media`, zodat uploads, downloads en transcoderingscaches onder één bewaakte map terechtkomen in plaats van een boom per subsysteem.
+- Levering van rijke media loopt via één `sendMedia`-pad voor C2C- en groepsdoelen. Lokale bestanden en buffers boven de drempel voor grote bestanden gebruiken QQ's chunked-upload-eindpunten, terwijl kleinere payloads de eenmalige media-API gebruiken.
+- Referenties kunnen worden geback-upt en hersteld als onderdeel van standaard OpenClaw-referentiesnapshots; de engine koppelt de resourcestack van elk account opnieuw bij herstel zonder een nieuw QR-codepaar te vereisen.
 
 ## Onboarding met QR-code
 
 Als alternatief voor het handmatig plakken van `AppID:AppSecret` ondersteunt de engine een onboardingflow met QR-code om een QQ Bot aan OpenClaw te koppelen:
 
-1. Voer het instelpad voor QQ Bot uit (bijvoorbeeld `openclaw channels add --channel qqbot`) en kies de QR-codeflow wanneer daarom wordt gevraagd.
+1. Voer het QQ Bot-setuppad uit (bijvoorbeeld `openclaw channels add --channel qqbot`) en kies de QR-codeflow wanneer daarom wordt gevraagd.
 2. Scan de gegenereerde QR-code met de telefoonapp die aan de doel-QQ Bot is gekoppeld.
-3. Keur de koppeling goed op de telefoon. OpenClaw bewaart de geretourneerde referenties in `credentials/` onder de juiste accountscope.
+3. Keur de koppeling goed op de telefoon. OpenClaw bewaart de teruggegeven referenties in `credentials/` onder de juiste accountscope.
 
-Goedkeuringsprompts die door de bot zelf worden gegenereerd (bijvoorbeeld flows "deze actie toestaan?" die door de QQ Bot API worden aangeboden) verschijnen als native OpenClaw-prompts die je kunt accepteren met `/bot-approve` in plaats van via de ruwe QQ-client te antwoorden.
+Goedkeuringsprompts die door de bot zelf worden gegenereerd (bijvoorbeeld "allow this action?"-flows die door de QQ Bot API worden blootgesteld) verschijnen als native OpenClaw-prompts die je met `/bot-approve` kunt accepteren in plaats van te antwoorden via de ruwe QQ-client.
 
 ## Probleemoplossing
 
 - **Bot antwoordt "gone to Mars":** referenties zijn niet geconfigureerd of Gateway is niet gestart.
-- **Geen inkomende berichten:** controleer of `appId` en `clientSecret` correct zijn, en of de
+- **Geen inkomende berichten:** controleer of `appId` en `clientSecret` correct zijn en of de
   bot is ingeschakeld op het QQ Open Platform.
-- **Herhaalde zelfantwoorden:** OpenClaw registreert QQ-uitgaande ref-indexen als
-  door de bot geschreven en negeert inkomende events waarvan de huidige `msgIdx` overeenkomt met dat
- zelfde botaccount. Dit voorkomt platform-echolussen, terwijl gebruikers nog steeds
-  eerdere botberichten kunnen citeren of erop kunnen antwoorden.
-- **Setup met `--token-file` toont nog steeds niet-geconfigureerd:** `--token-file` stelt alleen
-  de AppSecret in. Je hebt nog steeds `appId` nodig in de configuratie of `QQBOT_APP_ID`.
-- **Proactieve berichten komen niet aan:** QQ kan door de bot geïnitieerde berichten onderscheppen als
-  de gebruiker niet recent heeft geïnterageerd.
-- **Spraak wordt niet getranscribeerd:** zorg dat STT is geconfigureerd en dat de provider bereikbaar is.
+- **Herhaalde zelfantwoorden:** OpenClaw registreert QQ-indexen voor uitgaande verwijzingen als
+  door de bot geschreven en negeert inkomende gebeurtenissen waarvan de huidige `msgIdx` overeenkomt met dat
+  zelfde botaccount. Dit voorkomt platform-echoloops, terwijl gebruikers nog steeds eerdere botberichten
+  kunnen citeren of erop kunnen antwoorden.
+- **Setup met `--token-file` wordt nog steeds als niet-geconfigureerd weergegeven:** `--token-file` stelt alleen
+  de AppSecret in. Je hebt nog steeds `appId` in de configuratie of `QQBOT_APP_ID` nodig.
+- **Proactieve berichten komen niet aan:** QQ kan door de bot gestarte berichten onderscheppen als
+  de gebruiker recent geen interactie heeft gehad.
+- **Spraak niet getranscribeerd:** zorg ervoor dat STT is geconfigureerd en de provider bereikbaar is.
 
 ## Gerelateerd
 

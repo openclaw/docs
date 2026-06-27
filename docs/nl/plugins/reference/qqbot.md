@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Je installeert, configureert of voert een audit uit op de qqbot Plugin
-summary: Voegt de QQ Bot-kanaalinterface toe voor het verzenden en ontvangen van OpenClaw-berichten.
+    - Je installeert, configureert of controleert de qqbot-plugin
+summary: OpenClaw QQ Bot-kanaal-Plugin voor workflows voor groepen en directe berichten.
 title: QQ Bot-plugin
 x-i18n:
-    generated_at: "2026-05-03T11:15:54Z"
+    generated_at: "2026-06-27T18:03:27Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 988c342ef1cabeda5e3ede7ea598e3a96945bf814f9f823f17e1c357bfe3bf9c
+    source_hash: 10e67c8c8bd01a2fcd3ca55c32f6941cd52551ad241cb16a2ea38c62d80cfeb9
     source_path: plugins/reference/qqbot.md
     workflow: 16
 ---
 
 # QQ Bot-Plugin
 
-Voegt het QQ Bot-kanaaloppervlak toe voor het verzenden en ontvangen van OpenClaw-berichten.
+OpenClaw QQ Bot-kanaalplugin voor workflows met groepen en directe berichten.
 
 ## Distributie
 
@@ -25,6 +26,6 @@ Voegt het QQ Bot-kanaaloppervlak toe voor het verzenden en ontvangen van OpenCla
 
 kanalen: qqbot; contracten: tools; Skills
 
-## Gerelateerde documentatie
+## Gerelateerde docs
 
 - [qqbot](/nl/channels/qqbot)

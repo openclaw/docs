@@ -1,148 +1,228 @@
 ---
 read_when:
     - 在 Windows 上安裝 OpenClaw
-    - 在原生 Windows 與 WSL2 之間做選擇
-    - 正在查詢 Windows 配套應用程式狀態
-summary: Windows 支援：原生與 WSL2 安裝途徑、守護程式與目前注意事項
+    - 在 Windows Hub、原生 Windows 與 WSL2 之間選擇
+    - 設定 Windows 伴隨應用程式或 Windows 節點模式
+summary: Windows 支援：Windows Hub、原生命令列介面與閘道、WSL2 閘道設定、節點模式與疑難排解
 title: Windows
 x-i18n:
-    generated_at: "2026-05-05T06:17:52Z"
+    generated_at: "2026-06-27T19:33:07Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: adf885747e3a897cb4ee57f6494805468d38c4595c0ab7582b063153a1134d18
+    source_hash: e7c7bde33f27bce6c1136ccf688547ee82750d317a997c4a45b354c52ae1b690
     source_path: platforms/windows.md
     workflow: 16
 ---
 
-OpenClaw 同時支援 **原生 Windows** 與 **WSL2**。WSL2 是較穩定的路徑，並建議用於完整體驗：CLI、Gateway 與工具都在 Linux 內執行，具有完整相容性。原生 Windows 可用於核心 CLI 與 Gateway 使用，但有一些注意事項如下。
+OpenClaw 隨附原生 **Windows Hub** 輔助應用程式，以及 Windows 命令列介面支援。
+想要具備設定、系統匣狀態、聊天、命令中心診斷，以及 Windows 節點能力的桌面應用程式時，請使用 Windows Hub。想直接使用命令列介面/閘道時，請使用 PowerShell
+安裝程式。想要最相容於 Linux 的閘道執行階段時，請使用 WSL2。
 
-原生 Windows 配套應用程式正在規劃中。
+## 建議：Windows Hub
 
-## WSL2（建議）
+Windows Hub 是適用於 Windows 10 20H2+ 與 Windows 11 的原生 WinUI 輔助應用程式。它不需要系統管理員權限即可安裝，並在 OpenClaw 發行版本中提供已簽署的
+x64 與 ARM64 安裝程式。
 
-- [開始使用](/zh-TW/start/getting-started)（在 WSL 內使用）
-- [安裝與更新](/zh-TW/install/updating)
-- 官方 WSL2 指南（Microsoft）：[https://learn.microsoft.com/windows/wsl/install](https://learn.microsoft.com/windows/wsl/install)
+從 [OpenClaw 發行版本頁面](https://github.com/openclaw/openclaw/releases)下載最新穩定版安裝程式：
 
-## 原生 Windows 狀態
+- [OpenClawCompanion-Setup-x64.exe](https://github.com/openclaw/openclaw/releases/download/v2026.6.5/OpenClawCompanion-Setup-x64.exe)
+- [OpenClawCompanion-Setup-arm64.exe](https://github.com/openclaw/openclaw/releases/download/v2026.6.5/OpenClawCompanion-Setup-arm64.exe)
+- [總和檢查碼](https://github.com/openclaw/openclaw/releases/download/v2026.6.5/OpenClawCompanion-SHA256SUMS.txt)
 
-原生 Windows CLI 流程正在改善，但 WSL2 仍是建議路徑。
+如果上方下載連結回傳 404，請前往[發行版本頁面](https://github.com/openclaw/openclaw/releases)，並在最新發行版本中尋找 `OpenClawCompanion-Setup-*` 資產。
 
-目前在原生 Windows 上運作良好的項目：
+安裝後，從開始功能表或系統匣啟動 **OpenClaw Companion**。安裝程式也會新增閘道設定、聊天、設定、
+檢查更新，以及解除安裝的捷徑。
 
-- 透過 `install.ps1` 使用網站安裝程式
-- 本機 CLI 使用，例如 `openclaw --version`、`openclaw doctor` 與 `openclaw plugins list --json`
-- 嵌入式本機 agent/provider 冒煙測試，例如：
+### Windows Hub 包含的內容
+
+- 系統匣狀態與登入時啟動
+- 本機應用程式擁有的 WSL 閘道首次執行設定
+- 本機、遠端與 SSH 通道閘道的連線設定
+- 原生聊天視窗，以及瀏覽器控制介面存取
+- 針對工作階段、用量、通道、節點、配對與
+  修復命令的命令中心診斷
+- Windows 節點模式，可供代理控制畫布、螢幕、攝影機、通知、
+  裝置狀態、文字轉語音、語音轉文字，以及受控的 `system.run`
+- 適用於 Claude Desktop、Claude Code 與
+  Cursor 等 MCP 用戶端的本機 MCP 伺服器模式
+
+### 首次啟動
+
+首次啟動時，如果沒有可用的已儲存閘道，Windows Hub 會開啟設定。
+最快的路徑是 **在本機設定**，這會佈建由應用程式擁有的
+`OpenClawGateway` WSL 發行版、在其中安裝閘道，並配對應用程式。
+這不會匯出或修改你現有的 Ubuntu 發行版。
+
+如果你已有閘道，請選擇 **進階設定** 或開啟連線分頁。你可以連線到：
+
+- 這台電腦上的本機閘道
+- 這台電腦上的 WSL 閘道
+- 透過 URL 與權杖或設定碼連線的遠端閘道
+- 透過 SSH 通道存取的閘道
+
+設定完成後，系統匣圖示會變成綠色。從系統匣開啟 **命令中心**，以確認連線、配對、節點狀態與通道健康狀態。
+
+## Windows 節點模式
+
+Windows Hub 可以註冊為一等 OpenClaw 節點。代理之後就能透過閘道使用
+已宣告的 Windows 原生能力。
+
+常見命令包括：
+
+- `canvas.present`, `canvas.hide`, `canvas.navigate`, `canvas.eval`,
+  `canvas.snapshot`
+- `screen.snapshot`，以及在明確選擇加入後使用 `screen.record`
+- `camera.list`，以及在明確選擇加入後使用 `camera.snap`, `camera.clip`
+- `system.notify`, `system.run`, `system.run.prepare`, `system.which`
+- `location.get`, `device.info`, `device.status`
+- `stt.transcribe`, `tts.speak`
+
+節點模式需要閘道配對。如果應用程式顯示配對要求，請從閘道主機核准：
 
 ```powershell
-openclaw agent --local --agent main --thinking low -m "Reply with exactly WINDOWS-HATCH-OK."
+openclaw devices list
+openclaw devices approve <request-id>
+openclaw nodes status
 ```
 
-目前注意事項：
+閘道只會轉送節點宣告且伺服器政策允許的命令。
+隱私敏感命令，例如 `screen.record`, `camera.snap` 與
+`camera.clip`，需要明確在 `gateway.nodes.allowCommands` 選擇加入。
 
-- `openclaw onboard --non-interactive` 仍預期可連線的本機 Gateway，除非你傳入 `--skip-health`
-- `openclaw onboard --non-interactive --install-daemon` 與 `openclaw gateway install` 會先嘗試 Windows 工作排程器
-- 如果建立工作排程遭拒，OpenClaw 會退回使用每位使用者的 Startup 資料夾登入項目，並立即啟動 Gateway
-- 如果 `schtasks` 本身卡住或停止回應，OpenClaw 現在會快速中止該路徑，並改為退回，而不是永久掛住
-- 可用時仍偏好使用工作排程器，因為它們提供較好的監督器狀態
+## 本機 MCP 模式
 
-如果你只想使用原生 CLI，而不安裝 Gateway 服務，請使用以下其中一種：
+Windows Hub 可以將相同的 Windows 原生能力登錄檔作為迴送上的本機
+MCP 伺服器公開。當你想讓本機 MCP 用戶端在沒有執行 OpenClaw 閘道的情況下驅動
+Windows 能力時，這很實用。
+
+在 Windows Hub 設定的開發者/進階區段中啟用它。伺服器啟用後，應用程式會顯示迴送端點與持有人權杖。
+
+模式矩陣：
+
+| 節點模式 | MCP 伺服器 | 行為                               |
+| -------- | ---------- | ---------------------------------- |
+| 關閉     | 關閉       | 僅供操作員使用的桌面應用程式       |
+| 開啟     | 關閉       | 已連線到閘道的 Windows 節點        |
+| 關閉     | 開啟       | 僅本機 MCP 伺服器                  |
+| 開啟     | 開啟       | 閘道節點加本機 MCP 伺服器          |
+
+## 原生 Windows 命令列介面與閘道
+
+若要以終端機優先的方式使用，請從 PowerShell 安裝 OpenClaw：
 
 ```powershell
-openclaw onboard --non-interactive --skip-health
-openclaw gateway run
+iwr -useb https://openclaw.ai/install.ps1 | iex
 ```
 
-如果你確實想在原生 Windows 上使用受管理的啟動：
+驗證：
+
+```powershell
+openclaw --version
+openclaw doctor
+openclaw gateway status --json
+```
+
+原生 Windows 命令列介面與閘道流程受到支援，並會持續改善。
+受管理啟動會在可用時使用 Windows 排定工作。該工作會在 OpenClaw 狀態目錄中保留可讀的
+`gateway.cmd` 指令碼，但會透過產生的 `gateway.vbs` WScript 包裝器啟動它，讓背景閘道不會開啟
+可見的主控台視窗。如果工作建立遭拒，OpenClaw 會退回使用
+每位使用者的 Startup 資料夾登入項目。
+
+若要安裝閘道服務：
 
 ```powershell
 openclaw gateway install
 openclaw gateway status --json
 ```
 
-如果建立工作排程遭封鎖，退回服務模式仍會在登入後透過目前使用者的 Startup 資料夾自動啟動。
+如果你只想使用命令列介面，而不需要受管理的閘道服務：
 
-## Gateway
-
-- [Gateway 操作手冊](/zh-TW/gateway)
-- [設定](/zh-TW/gateway/configuration)
-
-## Gateway 服務安裝（CLI）
-
-在 WSL2 內：
-
-```
-openclaw onboard --install-daemon
+```powershell
+openclaw onboard --non-interactive --skip-health
+openclaw gateway run
 ```
 
-或：
+## WSL2 閘道
 
-```
-openclaw gateway install
-```
+WSL2 仍然是 Windows 上最相容於 Linux 的閘道執行階段。Windows Hub
+可以為你設定由應用程式擁有的 WSL 閘道，或者你也可以在自己的發行版內手動安裝。
 
-或：
+手動設定：
 
-```
-openclaw configure
-```
-
-在提示時選取 **Gateway 服務**。
-
-修復/遷移：
-
-```
-openclaw doctor
+```powershell
+wsl --install
+# Or pick a distro explicitly:
+wsl --list --online
+wsl --install -d Ubuntu-24.04
 ```
 
-## Windows 登入前自動啟動 Gateway
+在 WSL 內啟用 systemd：
 
-對於無頭設定，請確保即使沒有人登入 Windows，完整開機鏈也會執行。
+```bash
+sudo tee /etc/wsl.conf >/dev/null <<'EOF'
+[boot]
+systemd=true
+EOF
+```
 
-### 1) 讓使用者服務在未登入時持續執行
+從 PowerShell 重新啟動 WSL：
+
+```powershell
+wsl --shutdown
+```
+
+接著使用 Linux 快速入門在 WSL 內安裝 OpenClaw：
+
+```bash
+curl -fsSL https://openclaw.ai/install.sh | bash
+openclaw gateway status
+```
+
+## Windows 登入前自動啟動閘道
+
+對於無頭 WSL 設定，請確保即使沒有人登入 Windows，完整啟動鏈也會執行。
 
 在 WSL 內：
 
 ```bash
+sudo apt-get install -y dbus-x11
 sudo loginctl enable-linger "$(whoami)"
-```
-
-### 2) 安裝 OpenClaw Gateway 使用者服務
-
-在 WSL 內：
-
-```bash
 openclaw gateway install
 ```
-
-### 3) 在 Windows 開機時自動啟動 WSL
 
 以系統管理員身分在 PowerShell 中執行：
 
 ```powershell
-schtasks /create /tn "WSL Boot" /tr "wsl.exe -d Ubuntu --exec /bin/true" /sc onstart /ru SYSTEM
+schtasks /create /tn "WSL Boot" /tr "wsl.exe -d Ubuntu --exec dbus-launch true" /sc onstart /ru "$env:USERNAME"
 ```
 
-將 `Ubuntu` 替換為以下指令中的發行版名稱：
+將 `Ubuntu` 替換為此命令中的發行版名稱：
 
 ```powershell
 wsl --list --verbose
 ```
 
-### 驗證啟動鏈
+> **注意：** 與舊版做法相比有兩項變更：
+>
+> - **使用 `dbus-launch true` 而不是 `/bin/true`** — 在 WSL ≥ 2.6.1.0 中，一項迴歸問題（[microsoft/WSL #13416](https://github.com/microsoft/WSL/issues/13416)）會導致發行版在最後一個用戶端結束後 15–20 秒閒置終止，即使已啟用 linger 也是如此。`dbus-launch true` 會讓 init 的子程序保持存活，作為因應措施（[社群討論，microsoft/WSL #9245](https://github.com/microsoft/WSL/discussions/9245)）。
+> - **使用 `/ru "$env:USERNAME"` 而不是 `/ru SYSTEM`** — 每位使用者的 WSL 發行版（預設設定）對 SYSTEM 帳戶不可見；工作看起來會執行，但發行版從未啟動。以你自己的帳戶執行可避免此問題。建立工作時，Windows 會提示輸入你的密碼。
 
-重新開機後（在 Windows 登入前），從 WSL 檢查：
+重新開機後，從 WSL 驗證：
 
 ```bash
 systemctl --user is-enabled openclaw-gateway.service
 systemctl --user status openclaw-gateway.service --no-pager
 ```
 
-## 進階：透過 LAN 公開 WSL 服務（portproxy）
+## 透過 LAN 公開 WSL 服務
 
-WSL 有自己的虛擬網路。如果另一台機器需要連到 **WSL 內** 執行的服務（SSH、本機 TTS 伺服器或 Gateway），你必須將 Windows 連接埠轉送到目前的 WSL IP。WSL IP 會在重新啟動後變更，因此你可能需要重新整理轉送規則。
+WSL 有自己的虛擬網路。如果另一台機器必須連到 WSL 內的服務，
+請將 Windows 連接埠轉送到目前的 WSL IP。WSL IP 可能會在重新啟動後變更，
+因此請在需要時重新整理轉送規則。
 
-範例（PowerShell **以系統管理員身分**）：
+以系統管理員身分在 PowerShell 中執行的範例：
 
 ```powershell
 $Distro = "Ubuntu-24.04"
@@ -154,104 +234,65 @@ if (-not $WslIp) { throw "WSL IP not found." }
 
 netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=$ListenPort `
   connectaddress=$WslIp connectport=$TargetPort
-```
 
-允許連接埠通過 Windows 防火牆（一次性）：
-
-```powershell
 New-NetFirewallRule -DisplayName "WSL SSH $ListenPort" -Direction Inbound `
   -Protocol TCP -LocalPort $ListenPort -Action Allow
 ```
 
-在 WSL 重新啟動後重新整理 portproxy：
+注意事項：
+
+- 從另一台機器進行 SSH 時，目標是 Windows 主機 IP，例如
+  `ssh user@windows-host -p 2222`。
+- 遠端節點必須指向可連線的閘道 URL，而不是 `127.0.0.1`。
+- LAN 存取請使用 `listenaddress=0.0.0.0`。僅限本機存取請使用 `127.0.0.1`。
+
+## 疑難排解
+
+### 系統匣圖示未出現
+
+在工作管理員中檢查 `OpenClaw.Tray.WinUI.exe`。如果它正在執行，請開啟
+隱藏的系統匣圖示區域並釘選它。如果它未執行，請從開始功能表啟動 **OpenClaw
+Companion**。
+
+### 本機設定失敗
+
+從 Windows Hub 開啟設定記錄，或檢查：
 
 ```powershell
-netsh interface portproxy delete v4tov4 listenport=$ListenPort listenaddress=0.0.0.0 | Out-Null
-netsh interface portproxy add v4tov4 listenport=$ListenPort listenaddress=0.0.0.0 `
-  connectaddress=$WslIp connectport=$TargetPort | Out-Null
+notepad "$env:LOCALAPPDATA\OpenClawTray\Logs\Setup\easy-setup-latest.txt"
 ```
 
-備註：
+常見原因包括 WSL 已停用、虛擬化被封鎖、應用程式擁有的 WSL
+狀態過舊，或安裝閘道套件時發生網路故障。
 
-- 從另一台機器進行 SSH 時，目標是 **Windows 主機 IP**（範例：`ssh user@windows-host -p 2222`）。
-- 遠端節點必須指向 **可連線** 的 Gateway URL（不是 `127.0.0.1`）；使用 `openclaw status --all` 確認。
-- 使用 `listenaddress=0.0.0.0` 供 LAN 存取；`127.0.0.1` 會讓它僅限本機。
-- 如果你希望自動執行，請註冊一個工作排程，在登入時執行重新整理步驟。
+### 應用程式指出需要配對
 
-## WSL2 逐步安裝
-
-### 1) 安裝 WSL2 + Ubuntu
-
-開啟 PowerShell（系統管理員）：
+從閘道核准操作員或節點要求：
 
 ```powershell
-wsl --install
-# Or pick a distro explicitly:
-wsl --list --online
-wsl --install -d Ubuntu-24.04
+openclaw devices list
+openclaw devices approve <request-id>
 ```
 
-如果 Windows 要求，請重新開機。
+如果裝置已有權杖，請在核准後從連線分頁重新連線。
 
-### 2) 啟用 systemd（Gateway 安裝所需）
+### 網頁聊天無法連到遠端閘道
 
-在你的 WSL 終端機中：
+遠端網頁聊天需要 HTTPS 或 localhost。對於自我簽署憑證，請在 Windows 中信任
+該憑證，或使用 SSH 通道連到 localhost URL。
 
-```bash
-sudo tee /etc/wsl.conf >/dev/null <<'EOF'
-[boot]
-systemd=true
-EOF
-```
+### `screen.snapshot`、攝影機或音訊命令失敗
 
-然後從 PowerShell：
+確認 Windows 對攝影機、麥克風、螢幕擷取與
+通知的權限。封裝安裝會宣告受保護的能力，但 Windows
+仍可能在命令首次使用它們時提示。
 
-```powershell
-wsl --shutdown
-```
+### Git 或 GitHub 連線失敗
 
-重新開啟 Ubuntu，然後驗證：
+有些網路會封鎖或限速連到 GitHub 的 HTTPS。如果 `git clone` 或 `gh auth
+login` 失敗，請嘗試其他網路、VPN，或 HTTP/HTTPS Proxy。
 
-```bash
-systemctl --user status
-```
-
-### 3) 安裝 OpenClaw（在 WSL 內）
-
-若是在 WSL 內進行一般首次設定，請遵循 Linux 開始使用流程：
-
-```bash
-git clone https://github.com/openclaw/openclaw.git
-cd openclaw
-pnpm install
-pnpm build
-pnpm ui:build
-pnpm openclaw onboard --install-daemon
-```
-
-如果你是從原始碼開發，而不是進行首次導覽設定，請使用 [設定](/zh-TW/start/setup) 中的原始碼開發迴圈：
-
-```bash
-pnpm install
-# First run only (or after resetting local OpenClaw config/workspace)
-pnpm openclaw setup
-pnpm gateway:watch
-```
-
-完整指南：[開始使用](/zh-TW/start/getting-started)
-
-## Windows 配套應用程式
-
-我們尚未有 Windows 配套應用程式。如果你想協助實現，歡迎貢獻。
-
-## Git 與 GitHub 連線（貢獻者）
-
-某些網路會封鎖或限速到 GitHub 的 HTTPS。如果 `git clone` 因逾時或連線重設而失敗，請嘗試其他網路、VPN，或你的組織提供的 HTTP/HTTPS Proxy。
-
-如果 `gh auth login` 在瀏覽器裝置流程期間失敗（例如連線到 `github.com:443` 逾時），請改用個人存取權杖進行驗證：
-
-1. 建立至少具有 `repo` 範圍（classic PAT）或等效細粒度存取權的權杖。
-2. 在目前工作階段的 PowerShell 中：
+若要在目前工作階段使用權杖式 `gh` 驗證：
 
 ```powershell
 $env:GH_TOKEN="<your-token>"
@@ -259,18 +300,12 @@ gh auth status
 gh auth setup-git
 ```
 
-3. 如果 `gh auth status` 警告缺少 `read:org`，請建立包含該範圍的權杖，並重新指派變數：
-
-```powershell
-$env:GH_TOKEN="<your-token-with-repo-and-read:org>"
-gh auth status
-```
-
-`gh auth refresh -s read:org` 只適用於你透過 `gh auth login` 驗證，且已儲存可重新整理的憑證時（不適用於使用 `GH_TOKEN` 時）。
-
-切勿提交權杖，或將其貼到 issue 或 pull request 中。
+絕不要提交權杖，或將它們貼到議題或拉取要求中。
 
 ## 相關
 
-- [安裝總覽](/zh-TW/install)
-- [平台](/zh-TW/platforms)
+- [安裝概觀](/zh-TW/install)
+- [Node.js 設定](/zh-TW/install/node)
+- [節點](/zh-TW/nodes)
+- [控制介面](/zh-TW/web/control-ui)
+- [閘道組態](/zh-TW/gateway/configuration)

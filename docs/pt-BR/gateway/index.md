@@ -1,13 +1,14 @@
 ---
 read_when:
-    - Executando ou depurando o processo do Gateway
+    - Executando ou depurando o processo do gateway
 summary: Runbook para o serviço Gateway, ciclo de vida e operações
-title: Manual de operações do Gateway
+title: Manual operacional do Gateway
 x-i18n:
-    generated_at: "2026-05-10T19:34:59Z"
+    generated_at: "2026-06-27T17:30:55Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 54f868e0b263e346876fb5c4f6a359e8a6f6802871f6931668ebe57140ca2711
+    source_hash: b0bbbcad26df135e1475cbeb14f1299b48bae62be759b2e6c6f82164d175601b
     source_path: gateway/index.md
     workflow: 16
 ---
@@ -16,10 +17,10 @@ Use esta página para a inicialização do dia 1 e as operações do dia 2 do se
 
 <CardGroup cols={2}>
   <Card title="Solução de problemas aprofundada" icon="siren" href="/pt-BR/gateway/troubleshooting">
-    Diagnósticos orientados por sintoma com sequências exatas de comandos e assinaturas de logs.
+    Diagnósticos orientados por sintomas, com sequências exatas de comandos e assinaturas de logs.
   </Card>
   <Card title="Configuração" icon="sliders" href="/pt-BR/gateway/configuration">
-    Guia de configuração orientado por tarefa + referência completa de configuração.
+    Guia de configuração orientado a tarefas + referência completa de configuração.
   </Card>
   <Card title="Gerenciamento de segredos" icon="key-round" href="/pt-BR/gateway/secrets">
     Contrato SecretRef, comportamento de snapshot em runtime e operações de migração/recarregamento.
@@ -52,41 +53,42 @@ openclaw status
 openclaw logs --follow
 ```
 
-Linha de base saudável: `Runtime: running`, `Connectivity probe: ok` e `Capability: ...` que corresponde ao que você espera. Use `openclaw gateway status --require-rpc` quando precisar de comprovação de RPC com escopo de leitura, não apenas alcançabilidade.
+Linha de base íntegra: `Runtime: running`, `Connectivity probe: ok` e `Capability: ...` que corresponda ao que você espera. Use `openclaw gateway status --require-rpc` quando precisar de prova de RPC em escopo de leitura, não apenas acessibilidade.
 
   </Step>
 
-  <Step title="Valide a prontidão do canal">
+  <Step title="Valide a prontidão dos canais">
 
 ```bash
 openclaw channels status --probe
 ```
 
-Com um Gateway alcançável, isso executa probes de canais por conta ao vivo e auditorias opcionais.
-Se o Gateway estiver inalcançável, a CLI recorre a resumos de canais somente de configuração em vez
-da saída de probe ao vivo.
+Com um Gateway acessível, isso executa sondagens de canal por conta ao vivo e auditorias opcionais.
+Se o Gateway estiver inacessível, a CLI recorre a resumos de canais apenas por configuração em vez
+da saída de sondagem ao vivo.
 
   </Step>
 </Steps>
 
 <Note>
-O recarregamento da configuração do Gateway observa o caminho do arquivo de configuração ativo (resolvido a partir dos padrões de perfil/estado, ou de `OPENCLAW_CONFIG_PATH` quando definido).
+O recarregamento da configuração do Gateway observa o caminho do arquivo de configuração ativo (resolvido a partir dos padrões de perfil/estado, ou `OPENCLAW_CONFIG_PATH` quando definido).
 O modo padrão é `gateway.reload.mode="hybrid"`.
-Após o primeiro carregamento bem-sucedido, o processo em execução serve o snapshot ativo da configuração em memória; um recarregamento bem-sucedido troca esse snapshot atomicamente.
+Após o primeiro carregamento bem-sucedido, o processo em execução serve o snapshot de configuração ativo em memória; um recarregamento bem-sucedido troca esse snapshot atomicamente.
 </Note>
 
 ## Modelo de runtime
 
 - Um processo sempre ativo para roteamento, plano de controle e conexões de canais.
 - Porta única multiplexada para:
-  - Controle/RPC via WebSocket
-  - APIs HTTP, compatíveis com OpenAI (`/v1/models`, `/v1/embeddings`, `/v1/chat/completions`, `/v1/responses`, `/tools/invoke`)
+  - Controle/RPC por WebSocket
+  - APIs HTTP (`/v1/models`, `/v1/embeddings`, `/v1/chat/completions`, `/v1/responses`, `/tools/invoke`)
+  - Rotas HTTP de Plugin, como `/api/v1/admin/rpc` opcional
   - UI de controle e hooks
 - Modo de bind padrão: `loopback`.
 - A autenticação é exigida por padrão. Configurações com segredo compartilhado usam
   `gateway.auth.token` / `gateway.auth.password` (ou
-  `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`), e configurações de
-  proxy reverso não loopback podem usar `gateway.auth.mode: "trusted-proxy"`.
+  `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`), e configurações de proxy reverso
+  não loopback podem usar `gateway.auth.mode: "trusted-proxy"`.
 
 ## Endpoints compatíveis com OpenAI
 
@@ -100,31 +102,33 @@ A superfície de compatibilidade de maior impacto do OpenClaw agora é:
 
 Por que esse conjunto importa:
 
-- A maioria das integrações com Open WebUI, LobeChat e LibreChat faz primeiro o probe de `/v1/models`.
+- A maioria das integrações com Open WebUI, LobeChat e LibreChat sondam `/v1/models` primeiro.
 - Muitos pipelines de RAG e memória esperam `/v1/embeddings`.
-- Clientes nativos de agente preferem cada vez mais `/v1/responses`.
+- Clientes nativos de agentes preferem cada vez mais `/v1/responses`.
 
 Nota de planejamento:
 
-- `/v1/models` é agent-first: ele retorna `openclaw`, `openclaw/default` e `openclaw/<agentId>`.
-- `openclaw/default` é o alias estável que sempre aponta para o agente padrão configurado.
-- Use `x-openclaw-model` quando quiser substituir o provedor/modelo de backend; caso contrário, o modelo normal e a configuração de embeddings do agente selecionado permanecem no controle.
+- `/v1/models` é orientado a agentes: retorna `openclaw`, `openclaw/default` e `openclaw/<agentId>`.
+- `openclaw/default` é o alias estável que sempre mapeia para o agente padrão configurado.
+- Use `x-openclaw-model` quando quiser uma substituição de provedor/modelo de backend; caso contrário, a configuração normal de modelo e embeddings do agente selecionado permanece no controle.
 
-Todos esses endpoints rodam na porta principal do Gateway e usam o mesmo limite de autenticação de operador confiável que o restante da API HTTP do Gateway.
+Tudo isso é executado na porta principal do Gateway e usa o mesmo limite de autenticação de operador confiável do restante da API HTTP do Gateway.
+
+RPC HTTP administrativo (`POST /api/v1/admin/rpc`) é uma rota de Plugin separada, desativada por padrão, para ferramentas de host que não podem usar RPC por WebSocket. Consulte [RPC HTTP administrativo](/pt-BR/plugins/admin-http-rpc).
 
 ### Precedência de porta e bind
 
-| Configuração | Ordem de resolução                                           |
+| Configuração | Ordem de resolução                                            |
 | ------------ | ------------------------------------------------------------- |
 | Porta do Gateway | `--port` → `OPENCLAW_GATEWAY_PORT` → `gateway.port` → `18789` |
-| Modo de bind | CLI/sobrescrita → `gateway.bind` → `loopback`                    |
+| Modo de bind | CLI/substituição → `gateway.bind` → `loopback`                    |
 
 Serviços de Gateway instalados registram o `--port` resolvido nos metadados do supervisor. Depois de alterar `gateway.port`, execute `openclaw doctor --fix` ou `openclaw gateway install --force` para que launchd/systemd/schtasks inicie o processo na nova porta.
 
-A inicialização do Gateway usa a mesma porta efetiva e o mesmo bind quando semeia origens locais da
-UI de controle para binds não loopback. Por exemplo, `--bind lan --port 3000`
-semeia `http://localhost:3000` e `http://127.0.0.1:3000` antes da execução da
-validação de runtime. Adicione explicitamente quaisquer origens de navegador remoto, como URLs de proxy HTTPS, a
+A inicialização do Gateway usa a mesma porta e o mesmo bind efetivos ao semear origens locais
+da UI de controle para binds não loopback. Por exemplo, `--bind lan --port 3000`
+semeia `http://localhost:3000` e `http://127.0.0.1:3000` antes da execução
+da validação em runtime. Adicione explicitamente quaisquer origens de navegador remoto, como URLs de proxy HTTPS, a
 `gateway.controlUi.allowedOrigins`.
 
 ### Modos de recarregamento a quente
@@ -132,8 +136,8 @@ validação de runtime. Adicione explicitamente quaisquer origens de navegador r
 | `gateway.reload.mode` | Comportamento                              |
 | --------------------- | ------------------------------------------ |
 | `off`                 | Sem recarregamento de configuração         |
-| `hot`                 | Aplica somente alterações seguras a quente |
-| `restart`             | Reinicia em alterações que exigem recarregamento |
+| `hot`                 | Aplica apenas mudanças seguras a quente    |
+| `restart`             | Reinicia em mudanças que exigem recarregamento |
 | `hybrid` (padrão)     | Aplica a quente quando seguro, reinicia quando necessário |
 
 ## Conjunto de comandos do operador
@@ -150,15 +154,15 @@ openclaw logs --follow
 openclaw doctor
 ```
 
-`gateway status --deep` é para descoberta extra de serviços (LaunchDaemons/unidades
-systemd do sistema/schtasks), não para um probe de integridade RPC mais profundo.
+`gateway status --deep` é para descoberta extra de serviços (LaunchDaemons/unidades de sistema
+systemd/schtasks), não uma sondagem de integridade RPC mais profunda.
 
 ## Vários gateways (mesmo host)
 
 A maioria das instalações deve executar um Gateway por máquina. Um único Gateway pode hospedar vários
 agentes e canais.
 
-Você só precisa de vários gateways quando quiser intencionalmente isolamento ou um bot de resgate.
+Você só precisa de vários gateways quando deseja intencionalmente isolamento ou um bot de resgate.
 
 Verificações úteis:
 
@@ -170,17 +174,19 @@ openclaw gateway probe
 O que esperar:
 
 - `gateway status --deep` pode relatar `Other gateway-like services detected (best effort)`
-  e imprimir dicas de limpeza quando instalações obsoletas de launchd/systemd/schtasks ainda existirem.
-- `gateway probe` pode avisar sobre `multiple reachable gateways` quando mais de um destino
-  responde.
+  e imprimir dicas de limpeza quando instalações antigas de launchd/systemd/schtasks ainda estiverem presentes.
+- `gateway probe` pode avisar sobre `multiple reachable gateway identities` quando gateways distintos
+  respondem, ou quando o OpenClaw não consegue provar que os destinos acessíveis são o mesmo Gateway.
+  Um túnel SSH, uma URL de proxy ou uma URL remota configurada para o mesmo Gateway é um
+  Gateway com vários transportes, mesmo quando as portas de transporte são diferentes.
 - Se isso for intencional, isole portas, configuração/estado e raízes de workspace por Gateway.
 
 Checklist por instância:
 
-- `gateway.port` único
-- `OPENCLAW_CONFIG_PATH` único
-- `OPENCLAW_STATE_DIR` único
-- `agents.defaults.workspace` único
+- `gateway.port` exclusivo
+- `OPENCLAW_CONFIG_PATH` exclusivo
+- `OPENCLAW_STATE_DIR` exclusivo
+- `agents.defaults.workspace` exclusivo
 
 Exemplo:
 
@@ -194,25 +200,25 @@ Configuração detalhada: [/gateway/multiple-gateways](/pt-BR/gateway/multiple-g
 ## Acesso remoto
 
 Preferido: Tailscale/VPN.
-Fallback: túnel SSH.
+Alternativa: túnel SSH.
 
 ```bash
 ssh -N -L 18789:127.0.0.1:18789 user@host
 ```
 
-Então conecte clientes localmente a `ws://127.0.0.1:18789`.
+Depois conecte clientes localmente a `ws://127.0.0.1:18789`.
 
 <Warning>
-Túneis SSH não contornam a autenticação do Gateway. Para autenticação com segredo compartilhado, os clientes ainda
-devem enviar `token`/`password` mesmo pelo túnel. Para modos que carregam identidade,
-a requisição ainda precisa satisfazer esse caminho de autenticação.
+Túneis SSH não ignoram a autenticação do Gateway. Para autenticação com segredo compartilhado, os clientes ainda
+devem enviar `token`/`password` mesmo pelo túnel. Para modos com identidade,
+a solicitação ainda precisa satisfazer esse caminho de autenticação.
 </Warning>
 
-Veja: [Gateway remoto](/pt-BR/gateway/remote), [Autenticação](/pt-BR/gateway/authentication), [Tailscale](/pt-BR/gateway/tailscale).
+Consulte: [Gateway remoto](/pt-BR/gateway/remote), [Autenticação](/pt-BR/gateway/authentication), [Tailscale](/pt-BR/gateway/tailscale).
 
 ## Supervisão e ciclo de vida do serviço
 
-Use execuções supervisionadas para confiabilidade semelhante à produção.
+Use execuções supervisionadas para confiabilidade semelhante à de produção.
 
 <Tabs>
   <Tab title="macOS (launchd)">
@@ -226,7 +232,7 @@ openclaw gateway stop
 
 Use `openclaw gateway restart` para reinicializações. Não encadeie `openclaw gateway stop` e `openclaw gateway start` como substituto de reinicialização.
 
-No macOS, `gateway stop` usa `launchctl bootout` por padrão — isso remove o LaunchAgent da sessão de boot atual sem persistir uma desativação, então a recuperação automática por KeepAlive ainda funciona após falhas inesperadas e `gateway start` reativa tudo de forma limpa. Para suprimir persistentemente o respawn automático entre reinicializações, passe `--disable`: `openclaw gateway stop --disable`.
+No macOS, `gateway stop` usa `launchctl bootout` por padrão — isso remove o LaunchAgent da sessão de inicialização atual sem persistir uma desativação, portanto a recuperação automática KeepAlive ainda funciona após falhas inesperadas e `gateway start` reativa tudo de forma limpa. Para suprimir persistentemente o respawn automático entre reinicializações, passe `--disable`: `openclaw gateway stop --disable`.
 
 Os rótulos do LaunchAgent são `ai.openclaw.gateway` (padrão) ou `ai.openclaw.<profile>` (perfil nomeado). `openclaw doctor` audita e repara desvios de configuração do serviço.
 
@@ -246,7 +252,7 @@ Para persistência após logout, habilite lingering:
 sudo loginctl enable-linger <user>
 ```
 
-Exemplo manual de unidade de usuário quando você precisa de um caminho de instalação personalizado:
+Exemplo de unidade de usuário manual quando você precisa de um caminho de instalação personalizado:
 
 ```ini
 [Unit]
@@ -261,6 +267,7 @@ RestartSec=5
 TimeoutStopSec=30
 TimeoutStartSec=30
 SuccessExitStatus=0 143
+OOMPolicy=continue
 KillMode=control-group
 
 [Install]
@@ -278,16 +285,16 @@ openclaw gateway restart
 openclaw gateway stop
 ```
 
-A inicialização gerenciada nativa do Windows usa uma Tarefa Agendada chamada `OpenClaw Gateway`
+A inicialização gerenciada nativa no Windows usa uma Tarefa Agendada chamada `OpenClaw Gateway`
 (ou `OpenClaw Gateway (<profile>)` para perfis nomeados). Se a criação da Tarefa Agendada
-for negada, o OpenClaw recorre a um launcher por usuário na pasta de Inicialização
+for negada, o OpenClaw recorre a um inicializador por usuário na pasta Startup
 que aponta para `gateway.cmd` dentro do diretório de estado.
 
   </Tab>
 
   <Tab title="Linux (serviço do sistema)">
 
-Use uma unidade do sistema para hosts multiusuário/sempre ativos.
+Use uma unidade de sistema para hosts multiusuário/sempre ativos.
 
 ```bash
 sudo systemctl daemon-reload
@@ -298,12 +305,12 @@ Use o mesmo corpo de serviço da unidade de usuário, mas instale-o em
 `/etc/systemd/system/openclaw-gateway[-<profile>].service` e ajuste
 `ExecStart=` se o binário `openclaw` estiver em outro lugar.
 
-Não permita também que `openclaw doctor --fix` instale um serviço de Gateway em nível de usuário para o mesmo perfil/porta. O doctor recusa essa instalação automática quando encontra um serviço de Gateway do OpenClaw em nível de sistema; use `OPENCLAW_SERVICE_REPAIR_POLICY=external` quando a unidade do sistema for dona do ciclo de vida.
+Não permita também que `openclaw doctor --fix` instale um serviço de Gateway em nível de usuário para o mesmo perfil/porta. O Doctor recusa essa instalação automática quando encontra um serviço de Gateway OpenClaw em nível de sistema; use `OPENCLAW_SERVICE_REPAIR_POLICY=external` quando a unidade de sistema for dona do ciclo de vida.
 
   </Tab>
 </Tabs>
 
-## Caminho rápido do perfil de desenvolvimento
+## Caminho rápido do perfil dev
 
 ```bash
 openclaw --dev setup
@@ -319,24 +326,25 @@ Os padrões incluem estado/configuração isolados e porta base do Gateway `1900
 - O Gateway retorna o snapshot `hello-ok` (`presence`, `health`, `stateVersion`, `uptimeMs`, limites/política).
 - `hello-ok.features.methods` / `events` são uma lista conservadora de descoberta, não
   um despejo gerado de todas as rotas auxiliares chamáveis.
-- Requisições: `req(method, params)` → `res(ok/payload|error)`.
+- Solicitações: `req(method, params)` → `res(ok/payload|error)`.
 - Eventos comuns incluem `connect.challenge`, `agent`, `chat`,
-  `session.message`, `session.tool`, `sessions.changed`, `presence`, `tick`,
-  `health`, `heartbeat`, eventos de ciclo de vida de pareamento/aprovação e `shutdown`.
+  `session.message`, `session.operation`, `session.tool`, `sessions.changed`,
+  `presence`, `tick`, `health`, `heartbeat`, eventos de ciclo de vida de pareamento/aprovação,
+  e `shutdown`.
 
 Execuções de agentes têm duas etapas:
 
-1. Ack imediato aceito (`status:"accepted"`)
+1. Confirmação aceita imediata (`status:"accepted"`)
 2. Resposta final de conclusão (`status:"ok"|"error"`), com eventos `agent` transmitidos entre elas.
 
-Veja a documentação completa do protocolo: [Protocolo do Gateway](/pt-BR/gateway/protocol).
+Consulte a documentação completa do protocolo: [Protocolo do Gateway](/pt-BR/gateway/protocol).
 
 ## Verificações operacionais
 
-### Liveness
+### Vitalidade
 
 - Abra WS e envie `connect`.
-- Espere uma resposta `hello-ok` com snapshot.
+- Espere resposta `hello-ok` com snapshot.
 
 ### Prontidão
 
@@ -352,12 +360,12 @@ Eventos não são reproduzidos. Em lacunas de sequência, atualize o estado (`he
 
 ## Assinaturas comuns de falha
 
-| Assinatura                                                    | Problema provável                                                                    |
-| ------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `refusing to bind gateway ... without auth`                   | Bind não-loopback sem um caminho de autenticação do Gateway válido                   |
-| `another gateway instance is already listening` / `EADDRINUSE` | Conflito de porta                                                                     |
-| `Gateway start blocked: set gateway.mode=local`               | Configuração definida para modo remoto, ou o carimbo de modo local está ausente de uma configuração danificada |
-| `unauthorized` during connect                                 | Incompatibilidade de autenticação entre o cliente e o Gateway                         |
+| Assinatura                                                     | Problema provável                                                              |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `refusing to bind gateway ... without auth`                    | Vinculação fora de loopback sem um caminho válido de autenticação do Gateway   |
+| `another gateway instance is already listening` / `EADDRINUSE` | Conflito de porta                                                              |
+| `Gateway start blocked: set gateway.mode=local`                | Configuração definida para modo remoto, ou carimbo de modo local ausente em uma configuração danificada |
+| `unauthorized` during connect                                  | Incompatibilidade de autenticação entre cliente e Gateway                      |
 
 Para escadas completas de diagnóstico, use [Solução de problemas do Gateway](/pt-BR/gateway/troubleshooting).
 
@@ -365,7 +373,7 @@ Para escadas completas de diagnóstico, use [Solução de problemas do Gateway](
 
 - Clientes do protocolo Gateway falham rapidamente quando o Gateway está indisponível (sem fallback implícito para canal direto).
 - Primeiros frames inválidos/sem conexão são rejeitados e fechados.
-- O encerramento gracioso emite o evento `shutdown` antes do fechamento do socket.
+- O encerramento gracioso emite o evento `shutdown` antes de fechar o socket.
 
 ---
 
@@ -374,7 +382,7 @@ Relacionado:
 - [Solução de problemas](/pt-BR/gateway/troubleshooting)
 - [Processo em segundo plano](/pt-BR/gateway/background-process)
 - [Configuração](/pt-BR/gateway/configuration)
-- [Integridade](/pt-BR/gateway/health)
+- [Saúde](/pt-BR/gateway/health)
 - [Doctor](/pt-BR/gateway/doctor)
 - [Autenticação](/pt-BR/gateway/authentication)
 

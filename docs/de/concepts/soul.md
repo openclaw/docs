@@ -1,58 +1,59 @@
 ---
 read_when:
-    - Sie möchten, dass Ihr Agent weniger generisch klingt
+    - Ihr Agent soll weniger generisch klingen
     - Sie bearbeiten SOUL.md
-    - Sie möchten eine stärkere Persönlichkeit, ohne Sicherheit oder Kürze zu gefährden
-summary: Verwenden Sie SOUL.md, um Ihrem OpenClaw-Agenten eine echte Stimme statt generischem Assistenten-Einheitsbrei zu geben.
+    - Sie möchten eine stärkere Persönlichkeit, ohne Sicherheit oder Kürze zu beeinträchtigen
+summary: Verwenden Sie SOUL.md, um Ihrem OpenClaw-Agenten eine echte Stimme zu geben, statt generischem Assistenten-Einheitsbrei
 title: SOUL.md-Persönlichkeitsleitfaden
 x-i18n:
-    generated_at: "2026-05-06T06:45:45Z"
+    generated_at: "2026-06-27T17:26:39Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2101c0c7a22ab1fe5acfd0d2d413a002326dca380fc6e020a7d77a242d13c3d7
+    source_hash: d916e5c9a97f25b53c93da7969583a535b48ad49e02c30bbbbf2dbe0da0f589a
     source_path: concepts/soul.md
     workflow: 16
 ---
 
 `SOUL.md` ist der Ort, an dem die Stimme Ihres Agenten lebt.
 
-OpenClaw bindet sie in normalen Sitzungen ein, daher hat sie echtes Gewicht. Wenn Ihr Agent
-fad, ausweichend oder seltsam nach Konzern klingt, ist dies meist die Datei, die Sie korrigieren sollten.
+OpenClaw injiziert sie in normalen Sitzungen, daher hat sie echtes Gewicht. Wenn Ihr Agent
+fade, ausweichend oder seltsam nach Konzernkommunikation klingt, ist dies meistens die Datei, die Sie korrigieren sollten.
 
 ## Was in SOUL.md gehört
 
-Nehmen Sie Dinge auf, die verändern, wie es sich anfühlt, mit dem Agenten zu sprechen:
+Schreiben Sie dort hinein, was verändert, wie sich das Gespräch mit dem Agenten anfühlt:
 
 - Ton
 - Meinungen
 - Kürze
 - Humor
 - Grenzen
-- Standardmaß an Direktheit
+- standardmäßiger Grad an Direktheit
 
 Machen Sie daraus **nicht**:
 
 - eine Lebensgeschichte
 - ein Changelog
-- einen Sicherheitsrichtlinien-Dump
-- eine riesige Wand aus Stimmungen ohne Verhaltenswirkung
+- eine Ablage für Sicherheitsrichtlinien
+- eine riesige Wand aus Stimmung ohne Verhaltenseffekt
 
 Kurz schlägt lang. Präzise schlägt vage.
 
 ## Warum das funktioniert
 
-Das entspricht den Prompt-Richtlinien von OpenAI:
+Das entspricht den Prompt-Empfehlungen von OpenAI:
 
-- Der Prompt-Engineering-Leitfaden sagt, dass Verhalten auf hoher Ebene, Ton, Ziele und
-  Beispiele in die Anweisungsebene mit hoher Priorität gehören, nicht versteckt in der
-  Benutzereingabe.
+- Der Prompt-Engineering-Leitfaden sagt, dass übergeordnetes Verhalten, Ton, Ziele und
+  Beispiele in die Instruktionsschicht mit hoher Priorität gehören, nicht versteckt in den
+  Nutzer-Turn.
 - Derselbe Leitfaden empfiehlt, Prompts wie etwas zu behandeln, das Sie iterieren,
-  festschreiben und evaluieren, nicht wie magische Prosa, die Sie einmal schreiben und vergessen.
+  festschreiben und auswerten, nicht wie magische Prosa, die Sie einmal schreiben und vergessen.
 
-Für OpenClaw ist `SOUL.md` genau diese Ebene.
+Für OpenClaw ist `SOUL.md` diese Schicht.
 
-Wenn Sie mehr Persönlichkeit wollen, schreiben Sie stärkere Anweisungen. Wenn Sie stabile
-Persönlichkeit wollen, halten Sie sie knapp und versioniert.
+Wenn Sie eine bessere Persönlichkeit wollen, schreiben Sie stärkere Anweisungen. Wenn Sie eine stabile
+Persönlichkeit wollen, halten Sie sie prägnant und versioniert.
 
 OpenAI-Referenzen:
 
@@ -85,7 +86,7 @@ Save the new `SOUL.md`. Welcome to having a personality.
 Gute `SOUL.md`-Regeln klingen so:
 
 - eine Haltung haben
-- Fülltext weglassen
+- Füllwörter weglassen
 - witzig sein, wenn es passt
 - schlechte Ideen früh benennen
 - knapp bleiben, außer Tiefe ist wirklich nützlich
@@ -96,28 +97,28 @@ Schlechte `SOUL.md`-Regeln klingen so:
 - umfassende und durchdachte Unterstützung bieten
 - eine positive und unterstützende Erfahrung sicherstellen
 
-Mit dieser zweiten Liste bekommen Sie Brei.
+Mit der zweiten Liste bekommen Sie Brei.
 
 ## Eine Warnung
 
-Persönlichkeit ist keine Erlaubnis, schlampig zu sein.
+Persönlichkeit ist keine Erlaubnis für Nachlässigkeit.
 
-Behalten Sie `AGENTS.md` für Betriebsregeln. Behalten Sie `SOUL.md` für Stimme, Haltung und
+Nutzen Sie `AGENTS.md` für Betriebsregeln. Nutzen Sie `SOUL.md` für Stimme, Haltung und
 Stil. Wenn Ihr Agent in gemeinsamen Kanälen, öffentlichen Antworten oder Kundenoberflächen
-arbeitet, stellen Sie sicher, dass der Ton weiterhin zum Umfeld passt.
+arbeitet, stellen Sie sicher, dass der Ton weiterhin zum Raum passt.
 
 Scharf ist gut. Nervig ist es nicht.
 
 ## Verwandt
 
 <CardGroup cols={2}>
-  <Card title="Agent-Workspace" href="/de/concepts/agent-workspace" icon="folder-open">
-    Workspace-Dateien, die OpenClaw in den System-Prompt einbindet.
+  <Card title="Agent workspace" href="/de/concepts/agent-workspace" icon="folder-open">
+    Workspace-Dateien, die OpenClaw in den Modellkontext injiziert.
   </Card>
-  <Card title="System-Prompt" href="/de/concepts/system-prompt" icon="message-lines">
-    Wie `SOUL.md` in den System-Prompt pro Runde zusammengesetzt wird.
+  <Card title="System prompt" href="/de/concepts/system-prompt" icon="message-lines">
+    Wie `SOUL.md` in den Laufzeitkontext von OpenClaw und Codex eingebunden wird.
   </Card>
-  <Card title="SOUL.md-Vorlage" href="/de/reference/templates/SOUL" icon="file-lines">
-    Startvorlage für eine Persönlichkeitsdatei.
+  <Card title="SOUL.md template" href="/de/reference/templates/SOUL" icon="file-lines">
+    Einstiegsvorlage für eine Persönlichkeitsdatei.
   </Card>
 </CardGroup>

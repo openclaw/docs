@@ -1,46 +1,47 @@
 ---
 read_when:
-    - Je moet sessie-ID's, transcript-JSONL of sessions.json-velden debuggen
+    - Je moet sessie-id's, transcript-JSONL of velden in sessions.json debuggen
     - Je wijzigt het gedrag voor automatische Compaction of voegt "pre-Compaction"-opschoning toe
-    - Je wilt geheugenflushes of stille systeembeurten implementeren
-summary: 'Diepgaande uitleg: sessieopslag + transcripten, levenscyclus en interne werking van (automatische) Compaction'
+    - U wilt memory-flushes of stille systeembeurten implementeren
+summary: 'Diepgaand: sessiestore + transcripten, levenscyclus en interne werking van (auto-)Compaction'
 title: Diepgaande uitleg over sessiebeheer
 x-i18n:
-    generated_at: "2026-05-11T20:49:29Z"
+    generated_at: "2026-06-27T18:19:42Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4ed30f6b1943b2ed5808c5ccdd593e6899e10fb7f75ff5911e6a9623a30ed6be
+    source_hash: 7d4b6195c54024a8c0096ec2462ba367dbb6e16a8f6e10f2f912b879848c65af
     source_path: reference/session-management-compaction.md
     workflow: 16
 ---
 
-OpenClaw beheert sessies end-to-end in deze gebieden:
+OpenClaw beheert sessies end-to-end over deze gebieden:
 
-- **Sessierouting** (hoe inkomende berichten aan een `sessionKey` worden gekoppeld)
-- **Sessieopslag** (`sessions.json`) en wat deze bijhoudt
-- **Transcript-persistentie** (`*.jsonl`) en de structuur ervan
-- **Transcript-hygiëne** (providerspecifieke correcties vóór runs)
+- **Sessieroutering** (hoe inkomende berichten aan een `sessionKey` worden gekoppeld)
+- **Sessiestore** (`sessions.json`) en wat deze bijhoudt
+- **Transcriptpersistentie** (`*.jsonl`) en de structuur ervan
+- **Transcripthygiëne** (providerspecifieke correcties vóór runs)
 - **Contextlimieten** (contextvenster versus bijgehouden tokens)
-- **Compaction** (handmatige en automatische compaction) en waar pre-compaction-werk kan worden gekoppeld
-- **Stille huishouding** (geheugenschrijfacties die geen voor gebruikers zichtbare uitvoer mogen produceren)
+- **Compaction** (handmatige en automatische compaction) en waar je pre-compaction-werk kunt inhaken
+- **Stil onderhoud** (geheugenschrijfacties die geen voor gebruikers zichtbare uitvoer mogen produceren)
 
 Als je eerst een overzicht op hoger niveau wilt, begin dan met:
 
 - [Sessiebeheer](/nl/concepts/session)
 - [Compaction](/nl/concepts/compaction)
 - [Geheugenoverzicht](/nl/concepts/memory)
-- [Geheugen zoeken](/nl/concepts/memory-search)
+- [Geheugenzoekactie](/nl/concepts/memory-search)
 - [Sessies opschonen](/nl/concepts/session-pruning)
-- [Transcript-hygiëne](/nl/reference/transcript-hygiene)
+- [Transcripthygiëne](/nl/reference/transcript-hygiene)
 
 ---
 
 ## Bron van waarheid: de Gateway
 
-OpenClaw is ontworpen rond één **Gateway-proces** dat eigenaar is van de sessiestatus.
+OpenClaw is ontworpen rond één **Gateway-proces** dat sessiestatus beheert.
 
-- UI's (macOS-app, web Control UI, TUI) moeten de Gateway bevragen voor sessielijsten en tokenaantallen.
-- In externe modus staan sessiebestanden op de externe host; "je lokale Mac-bestanden controleren" weerspiegelt niet wat de Gateway gebruikt.
+- UI's (macOS-app, web-Control UI, TUI) moeten de Gateway bevragen voor sessielijsten en tokentellingen.
+- In remote-modus staan sessiebestanden op de externe host; "je lokale Mac-bestanden controleren" weerspiegelt niet wat de Gateway gebruikt.
 
 ---
 
@@ -48,24 +49,21 @@ OpenClaw is ontworpen rond één **Gateway-proces** dat eigenaar is van de sessi
 
 OpenClaw bewaart sessies in twee lagen:
 
-1. **Sessieopslag (`sessions.json`)**
+1. **Sessiestore (`sessions.json`)**
    - Key/value-map: `sessionKey -> SessionEntry`
-   - Klein, muteerbaar, veilig te bewerken (of entries te verwijderen)
+   - Klein, muteerbaar, veilig te bewerken (of vermeldingen te verwijderen)
    - Houdt sessiemetadata bij (huidige sessie-id, laatste activiteit, schakelaars, tokentellers, enz.)
 
 2. **Transcript (`<sessionId>.jsonl`)**
-   - Append-only transcript met boomstructuur (entries hebben `id` + `parentId`)
-   - Slaat het daadwerkelijke gesprek + tool-calls + compaction-samenvattingen op
+   - Append-only transcript met boomstructuur (vermeldingen hebben `id` + `parentId`)
+   - Slaat het daadwerkelijke gesprek + toolaanroepen + compaction-samenvattingen op
    - Wordt gebruikt om de modelcontext voor toekomstige beurten opnieuw op te bouwen
-   - Grote pre-compaction-debugcheckpoints worden overgeslagen zodra het actieve
-     transcript de groottelimiet voor checkpoints overschrijdt, zodat een tweede enorme
-     `.checkpoint.*.jsonl`-kopie wordt vermeden.
+   - Compaction-checkpoints zijn metadata over het gecompacteerde opvolgtranscript. Nieuwe compactions schrijven geen tweede `.checkpoint.*.jsonl`-kopie.
 
 Gateway-geschiedenislezers moeten vermijden het hele transcript te materialiseren, tenzij
-het oppervlak expliciet willekeurige toegang tot historische data nodig heeft. Geschiedenis
-van de eerste pagina, ingesloten chatgeschiedenis, herstel na herstart en token-/gebruikscontroles gebruiken begrensde tail-reads.
-Volledige transcript-scans lopen via de asynchrone transcriptindex, die wordt
-gecached op bestandspad plus `mtimeMs`/`size` en wordt gedeeld tussen gelijktijdige lezers.
+het oppervlak expliciet willekeurige historische toegang nodig heeft. Geschiedenis van de
+eerste pagina, ingesloten chatgeschiedenis, herstel na herstart en token-/gebruikscontroles gebruiken begrensde tail-reads. Volledige transcriptscans lopen via de asynchrone transcriptindex, die wordt
+gecached op bestandspad plus `mtimeMs`/`size` en gedeeld wordt tussen gelijktijdige lezers.
 
 ---
 
@@ -73,48 +71,57 @@ gecached op bestandspad plus `mtimeMs`/`size` en wordt gedeeld tussen gelijktijd
 
 Per agent, op de Gateway-host:
 
-- Opslag: `~/.openclaw/agents/<agentId>/sessions/sessions.json`
+- Store: `~/.openclaw/agents/<agentId>/sessions/sessions.json`
 - Transcripts: `~/.openclaw/agents/<agentId>/sessions/<sessionId>.jsonl`
   - Telegram-onderwerpsessies: `.../<sessionId>-topic-<threadId>.jsonl`
 
-OpenClaw resolveert deze via `src/config/sessions.ts`.
+OpenClaw lost deze op via `src/config/sessions.ts`.
 
 ---
 
-## Onderhoud van opslag en schijfcontroles
+## Store-onderhoud en schijfcontroles
 
 Sessiepersistentie heeft automatische onderhoudscontroles (`session.maintenance`) voor `sessions.json`, transcriptartefacten en trajectory-sidecars:
 
-- `mode`: `warn` (standaard) of `enforce`
-- `pruneAfter`: leeftijdsgrens voor verouderde entries (standaard `30d`)
-- `maxEntries`: maximumaantal entries in `sessions.json` (standaard `500`)
+- `mode`: `enforce` (standaard) of `warn`
+- `pruneAfter`: leeftijdsdrempel voor verouderde vermeldingen (standaard `30d`)
+- `maxEntries`: maximumaantal vermeldingen in `sessions.json` (standaard `500`)
+- Retentie van kortlevende Gateway-model-run-probes staat vast op `24h`, maar is drukgestuurd: verouderde strikte probe-rijen worden alleen verwijderd wanneer onderhouds-/capdruk op sessievermeldingen wordt bereikt. Dit geldt alleen voor strikte expliciete probe-keys die overeenkomen met `agent:*:explicit:model-run-<uuid>` en wordt uitgevoerd vóór globale opschoning/capping van verouderde vermeldingen wanneer het draait.
 - `resetArchiveRetention`: retentie voor `*.reset.<timestamp>`-transcriptarchieven (standaard: hetzelfde als `pruneAfter`; `false` schakelt opschoning uit)
 - `maxDiskBytes`: optioneel budget voor de sessiemap
 - `highWaterBytes`: optioneel doel na opschoning (standaard `80%` van `maxDiskBytes`)
 
-Normale Gateway-schrijfacties lopen via een sessieschrijver per opslag die mutaties binnen het proces serialiseert zonder een runtime-bestandslock te nemen. Hot-path patch-helpers lenen de gevalideerde muteerbare cache terwijl ze die schrijverslot vasthouden, zodat grote `sessions.json`-bestanden niet voor elke metadata-update worden gekloond of opnieuw gelezen. Runtimecode moet de voorkeur geven aan `updateSessionStore(...)` of `updateSessionStoreEntry(...)`; directe saves van de hele opslag zijn compatibiliteits- en offline-onderhoudstools. Wanneer een Gateway bereikbaar is, delegeren niet-dry-run `openclaw sessions cleanup` en `openclaw agents delete` opslagmutaties aan de Gateway, zodat opschoning in dezelfde schrijfwachtrij komt; `--store <path>` is het expliciete offline reparatiepad voor direct bestandsonderhoud. `maxEntries`-opschoning wordt nog steeds gebatcht voor productiecaps, dus een opslag kan kort boven de geconfigureerde cap uitkomen voordat de volgende high-water-opschoning deze weer terugschrijft. Lezen uit de sessieopslag prune't of capped geen entries tijdens het opstarten van de Gateway; gebruik schrijfacties of `openclaw sessions cleanup --enforce` voor opschoning. `openclaw sessions cleanup --enforce` past de geconfigureerde cap nog steeds onmiddellijk toe en prune't oude, niet-gerefereerde transcript-, checkpoint- en trajectory-artefacten, zelfs wanneer er geen schijfbudget is geconfigureerd.
+Normale Gateway-schrijfacties lopen via een sessieschrijver per store die mutaties binnen het proces serialiseert zonder een runtime-bestandslock te nemen. Hot-path patchhelpers lenen de gevalideerde muteerbare cache terwijl ze die schrijverslot vasthouden, zodat grote `sessions.json`-bestanden niet voor elke metadata-update worden gekloond of opnieuw gelezen. Runtimecode moet bij voorkeur `updateSessionStore(...)` of `updateSessionStoreEntry(...)` gebruiken; directe saves van de hele store zijn compatibiliteits- en offline-onderhoudstools. Wanneer een Gateway bereikbaar is, delegeren niet-dry-run `openclaw sessions cleanup` en `openclaw agents delete` store-mutaties aan de Gateway, zodat opschoning in dezelfde schrijverswachtrij terechtkomt; `--store <path>` is het expliciete offline-reparatiepad voor direct bestandsonderhoud. `maxEntries`-opschoning wordt nog steeds gebatcht voor productiecapgroottes, dus een store kan kortstondig de geconfigureerde cap overschrijden voordat de volgende high-water-opschoning deze weer terugschrijft. Sessiestore-reads prunen of cappen geen vermeldingen tijdens het opstarten van de Gateway; gebruik schrijfaanroepen of `openclaw sessions cleanup --enforce` voor opschoning. `openclaw sessions cleanup --enforce` past de geconfigureerde cap nog steeds direct toe en prunet oude niet-gerefereerde transcript-, checkpoint- en trajectory-artefacten, zelfs wanneer er geen schijfbudget is geconfigureerd.
 
-Onderhoud bewaart duurzame externe gesprekspointers zoals groepssessies
-en thread-scoped chatsessies, maar synthetische runtime-entries voor cron, hooks,
-Heartbeat, ACP en sub-agents kunnen nog steeds worden verwijderd wanneer ze de
-geconfigureerde leeftijd, telling of schijfbudget overschrijden.
+Onderhoud behoudt duurzame externe gesprekspointers zoals groepssessies
+en thread-scoped chatsessies, maar synthetische runtime-vermeldingen voor Cron, hooks,
+Heartbeat, ACP en subagents kunnen nog steeds worden verwijderd wanneer ze de
+geconfigureerde leeftijd, telling of het schijfbudget overschrijden. Gateway-model-run-probesessies gebruiken de
+afzonderlijke `24h`-model-run-retentie alleen wanneer hun key exact overeenkomt met
+`agent:*:explicit:model-run-<uuid>`; andere expliciete sessies maken geen deel uit van
+die retentie. De model-run-opschoning wordt alleen toegepast bij capdruk op sessievermeldingen. Geïsoleerde Cron-runs behouden hun eigen `cron.sessionRetention`-controle,
+onafhankelijk van model-run-proberetentie.
 
-OpenClaw maakt niet langer automatische `sessions.json.bak.*`-rotatieback-ups tijdens Gateway-schrijfacties. De legacy sleutel `session.maintenance.rotateBytes` wordt genegeerd en `openclaw doctor --fix` verwijdert deze uit oudere configuraties.
+OpenClaw maakt niet langer automatische `sessions.json.bak.*`-rotatieback-ups tijdens Gateway-schrijfacties. De legacy-key `session.maintenance.rotateBytes` wordt genegeerd en `openclaw doctor --fix` verwijdert deze uit oudere configuraties.
 
-Transcriptmutaties gebruiken een sessieschrijflock op het transcriptbestand. Lock-acquisitie wacht maximaal
-`session.writeLock.acquireTimeoutMs` voordat een busy-session-fout zichtbaar wordt; de standaard is `60000`
-ms. Verhoog dit alleen wanneer legitieme voorbereiding, opschoning, compaction of transcript-mirrorwerk
-langer concurreert op trage machines. Detectie van verouderde locks en waarschuwingen voor maximale houdtijd blijven aparte beleidsregels.
+Transcriptmutaties gebruiken een sessieschrijflock op het transcriptbestand. Lockverwerving wacht maximaal
+`session.writeLock.acquireTimeoutMs` voordat een fout voor een bezette sessie wordt getoond; de standaard is `60000`
+ms. Verhoog dit alleen wanneer legitiem voorbereidings-, opschonings-, compaction- of transcriptmirrorwerk
+langer concurreert op trage machines. `session.writeLock.staleMs` bepaalt wanneer een bestaande lock als
+verouderd kan worden teruggevorderd; de standaard is `1800000` ms. `session.writeLock.maxHoldMs` bepaalt de
+in-process watchdog-vrijgavedrempel; de standaard is `300000` ms. Nood-env-overrides zijn
+`OPENCLAW_SESSION_WRITE_LOCK_ACQUIRE_TIMEOUT_MS`, `OPENCLAW_SESSION_WRITE_LOCK_STALE_MS` en
+`OPENCLAW_SESSION_WRITE_LOCK_MAX_HOLD_MS`.
 
 Handhavingsvolgorde voor opschoning van schijfbudget (`mode: "enforce"`):
 
 1. Verwijder eerst de oudste gearchiveerde, verweesde transcript- of verweesde trajectory-artefacten.
-2. Als het doel nog steeds wordt overschreden, verwijder dan de oudste sessie-entries en hun transcript-/trajectory-bestanden.
+2. Als het nog steeds boven het doel zit, verwijder dan de oudste sessievermeldingen en hun transcript-/trajectory-bestanden.
 3. Ga door totdat het gebruik op of onder `highWaterBytes` ligt.
 
-In `mode: "warn"` rapporteert OpenClaw potentiële verwijderingen, maar muteert de opslag/bestanden niet.
+In `mode: "warn"` rapporteert OpenClaw mogelijke verwijderingen, maar muteert de store/bestanden niet.
 
-Voer onderhoud op verzoek uit:
+Voer onderhoud op aanvraag uit:
 
 ```bash
 openclaw sessions cleanup --dry-run
@@ -123,32 +130,32 @@ openclaw sessions cleanup --enforce
 
 ---
 
-## Cron-sessies en run-logs
+## Cron-sessies en runlogs
 
-Geïsoleerde Cron-runs maken ook sessie-entries/transcripts aan, en ze hebben specifieke retentiecontroles:
+Geïsoleerde Cron-runs maken ook sessievermeldingen/transcripts aan, en ze hebben speciale retentiecontroles:
 
-- `cron.sessionRetention` (standaard `24h`) prune't oude geïsoleerde Cron-run-sessies uit de sessieopslag (`false` schakelt dit uit).
-- `cron.runLog.maxBytes` + `cron.runLog.keepLines` prune'n `~/.openclaw/cron/runs/<jobId>.jsonl`-bestanden (standaarden: `2_000_000` bytes en `2000` regels).
+- `cron.sessionRetention` (standaard `24h`) prunet oude geïsoleerde Cron-run-sessies uit de sessiestore (`false` schakelt uit).
+- `cron.runLog.keepLines` prunet bewaarde SQLite-run-history-rijen per Cron-job (standaard: `2000`). `cron.runLog.maxBytes` blijft geaccepteerd voor oudere bestandsgebaseerde runlogs.
 
-Wanneer Cron geforceerd een nieuwe geïsoleerde run-sessie aanmaakt, sanitizet het de vorige
-`cron:<jobId>`-sessie-entry voordat de nieuwe rij wordt geschreven. Het neemt veilige
-voorkeuren mee, zoals instellingen voor thinking/fast/verbose, labels en expliciete
-door de gebruiker geselecteerde model-/auth-overrides. Het laat omgevingsgesprekscontext vallen,
-zoals kanaal-/groepsrouting, verzend- of wachtrijbeleid, elevation, oorsprong en ACP
-runtime-binding, zodat een nieuwe geïsoleerde run geen verouderde delivery- of
-runtime-authority van een oudere run kan erven.
+Wanneer Cron geforceerd een nieuwe geïsoleerde run-sessie maakt, saneert het de vorige
+`cron:<jobId>`-sessievermelding voordat de nieuwe rij wordt geschreven. Het neemt veilige
+voorkeuren mee, zoals thinking-/fast-/verbose-instellingen, labels en expliciete
+door de gebruiker gekozen model-/auth-overrides. Het laat ambient gesprekscontext vallen,
+zoals kanaal-/groepsroutering, verzend- of wachtrijbeleid, elevatie, oorsprong en ACP-
+runtimebinding, zodat een nieuwe geïsoleerde run geen verouderde afleverings- of
+runtimebevoegdheid van een oudere run kan erven.
 
 ---
 
 ## Sessiesleutels (`sessionKey`)
 
-Een `sessionKey` identificeert _in welke gespreksemmer_ je zit (routing + isolatie).
+Een `sessionKey` identificeert _in welke gespreksbucket_ je zit (routering + isolatie).
 
 Veelvoorkomende patronen:
 
 - Hoofd-/directe chat (per agent): `agent:<agentId>:<mainKey>` (standaard `main`)
 - Groep: `agent:<agentId>:<channel>:group:<id>`
-- Ruimte/kanaal (Discord/Slack): `agent:<agentId>:<channel>:channel:<id>` of `...:room:<id>`
+- Room/kanaal (Discord/Slack): `agent:<agentId>:<channel>:channel:<id>` of `...:room:<id>`
 - Cron: `cron:<job.id>`
 - Webhook: `hook:<uuid>` (tenzij overschreven)
 
@@ -163,31 +170,32 @@ Elke `sessionKey` wijst naar een huidige `sessionId` (het transcriptbestand dat 
 Vuistregels:
 
 - **Reset** (`/new`, `/reset`) maakt een nieuwe `sessionId` voor die `sessionKey`.
-- **Dagelijkse reset** (standaard 4:00 AM lokale tijd op de gateway-host) maakt een nieuwe `sessionId` bij het volgende bericht na de resetgrens.
-- **Idle-verval** (`session.reset.idleMinutes` of legacy `session.idleMinutes`) maakt een nieuwe `sessionId` wanneer een bericht binnenkomt na het idle-venster. Wanneer dagelijks + idle beide zijn geconfigureerd, wint wat het eerst verloopt.
-- **Systeemevents** (Heartbeat, Cron-wakeups, exec-meldingen, gateway-boekhouding) kunnen de sessierij muteren, maar verlengen de dagelijkse/idle resetversheid niet. Reset-rollover verwijdert queued systeemeventmeldingen voor de vorige sessie voordat de nieuwe prompt wordt gebouwd.
-- **Parent fork-beleid** gebruikt de actieve branch van Pi bij het maken van een thread- of subagent-fork. Als die branch te groot is, start OpenClaw het kind met geïsoleerde context in plaats van te falen of onbruikbare geschiedenis te erven. Het sizingbeleid is automatisch; legacy `session.parentForkMaxTokens`-configuratie wordt verwijderd door `openclaw doctor --fix`.
+- **Dagelijkse reset** (standaard 4:00 AM lokale tijd op de Gateway-host) maakt een nieuwe `sessionId` aan bij het volgende bericht na de resetgrens.
+- **Inactiviteitsverloop** (`session.reset.idleMinutes` of legacy `session.idleMinutes`) maakt een nieuwe `sessionId` aan wanneer een bericht binnenkomt na het inactiviteitsvenster. Wanneer dagelijks + inactiviteit beide zijn geconfigureerd, wint wat het eerst verloopt.
+- **Control UI reconnect resume** kan de momenteel zichtbare sessie behouden voor één reconnect-send wanneer de Gateway de overeenkomende `sessionId` ontvangt van een operator-UI-client. Gewone verouderde sends maken nog steeds een nieuwe `sessionId`.
+- **Systeemgebeurtenissen** (Heartbeat, Cron-wakeups, exec-notificaties, Gateway-boekhouding) kunnen de sessierij muteren, maar verlengen de versheid voor dagelijkse/inactiviteitsreset niet. Reset-rollover verwijdert in de wachtrij staande systeemgebeurtenismeldingen voor de vorige sessie voordat de verse prompt wordt opgebouwd.
+- **Parent-forkbeleid** gebruikt de actieve branch van OpenClaw bij het maken van een thread- of subagent-fork. Als die branch te groot is, start OpenClaw het kind met geïsoleerde context in plaats van te falen of onbruikbare geschiedenis te erven. Het sizingbeleid is automatisch; legacy-configuratie `session.parentForkMaxTokens` wordt verwijderd door `openclaw doctor --fix`.
 
 Implementatiedetail: de beslissing gebeurt in `initSessionState()` in `src/auto-reply/reply/session.ts`.
 
 ---
 
-## Schema voor sessieopslag (`sessions.json`)
+## Sessiestore-schema (`sessions.json`)
 
-Het waardetype van de opslag is `SessionEntry` in `src/config/sessions.ts`.
+Het waardetype van de store is `SessionEntry` in `src/config/sessions.ts`.
 
 Belangrijke velden (niet uitputtend):
 
 - `sessionId`: huidige transcript-id (bestandsnaam wordt hiervan afgeleid, tenzij `sessionFile` is ingesteld)
 - `sessionStartedAt`: starttijdstempel voor de huidige `sessionId`; dagelijkse reset
-  gebruikt dit voor versheid. Legacy rijen kunnen dit afleiden uit de JSONL-sessieheader.
-- `lastInteractionAt`: tijdstempel van de laatste echte gebruikers-/kanaalinteractie; idle reset
-  gebruikt dit voor versheid, zodat Heartbeat-, Cron- en exec-events sessies niet
-  levend houden. Legacy rijen zonder dit veld vallen terug op de herstelde sessiestarttijd
-  voor idle-versheid.
-- `updatedAt`: tijdstempel van de laatste mutatie van de opslagrij, gebruikt voor lijsten, pruning en
-  boekhouding. Dit is niet de autoriteit voor dagelijkse/idle resetversheid.
-- `sessionFile`: optionele expliciete override voor transcriptpad
+  gebruikt dit voor versheid. Legacy-rijen kunnen dit afleiden uit de JSONL-sessieheader.
+- `lastInteractionAt`: tijdstempel van de laatste echte gebruikers-/kanaalinteractie; inactiviteitsreset
+  gebruikt dit voor versheid, zodat Heartbeat-, Cron- en exec-gebeurtenissen sessies niet
+  levend houden. Legacy-rijen zonder dit veld vallen terug op de herstelde sessiestarttijd
+  voor inactiviteitsversheid.
+- `updatedAt`: tijdstempel van de laatste mutatie van de store-rij, gebruikt voor lijsten, pruning en
+  boekhouding. Het is niet de autoriteit voor versheid van dagelijkse/inactiviteitsreset.
+- `sessionFile`: optionele expliciete overschrijving van transcriptpad
 - `chatType`: `direct | group | room` (helpt UI's en verzendbeleid)
 - `provider`, `subject`, `room`, `space`, `displayName`: metadata voor groeps-/kanaallabeling
 - Schakelaars:
@@ -197,32 +205,32 @@ Belangrijke velden (niet uitputtend):
   - `providerOverride`, `modelOverride`, `authProfileOverride`
 - Tokentellers (best-effort / providerafhankelijk):
   - `inputTokens`, `outputTokens`, `totalTokens`, `contextTokens`
-- `compactionCount`: hoe vaak automatische compaction is voltooid voor deze sessiesleutel
-- `memoryFlushAt`: tijdstempel van de laatste pre-compaction-geheugenflush
-- `memoryFlushCompactionCount`: compaction-aantal toen de laatste flush draaide
+- `compactionCount`: hoe vaak automatische compaction is voltooid voor deze sessiekey
+- `memoryFlushAt`: tijdstempel voor de laatste pre-compaction-geheugenflush
+- `memoryFlushCompactionCount`: compaction-telling toen de laatste flush draaide
 
-De opslag is veilig te bewerken, maar de Gateway is de autoriteit: deze kan entries herschrijven of rehydrateren terwijl sessies draaien.
+De store is veilig te bewerken, maar de Gateway is de autoriteit: deze kan vermeldingen herschrijven of opnieuw hydrateren terwijl sessies draaien.
 
 ---
 
 ## Transcriptstructuur (`*.jsonl`)
 
-Transcripts worden beheerd door `SessionManager` van `@earendil-works/pi-coding-agent`.
+Transcripts worden beheerd door `SessionManager` van `openclaw/plugin-sdk/agent-sessions`.
 
 Het bestand is JSONL:
 
 - Eerste regel: sessieheader (`type: "session"`, bevat `id`, `cwd`, `timestamp`, optioneel `parentSession`)
-- Daarna: sessie-entries met `id` + `parentId` (boom)
+- Daarna: sessievermeldingen met `id` + `parentId` (boom)
 
-Opmerkelijke entrytypen:
+Opmerkelijke vermeldingstypen:
 
-- `message`: gebruiker-/assistant-/toolResult-berichten
-- `custom_message`: door extensie ingevoegde berichten die _wel_ in de modelcontext terechtkomen (kunnen verborgen zijn voor UI)
+- `message`: user-/assistant-/toolResult-berichten
+- `custom_message`: door extensie geïnjecteerde berichten die _wel_ in de modelcontext terechtkomen (kunnen verborgen zijn voor de UI)
 - `custom`: extensiestatus die _niet_ in de modelcontext terechtkomt
-- `compaction`: gepersisteerde compaction-samenvatting met `firstKeptEntryId` en `tokensBefore`
-- `branch_summary`: gepersisteerde samenvatting bij het navigeren door een boombranch
+- `compaction`: blijvend opgeslagen Compaction-samenvatting met `firstKeptEntryId` en `tokensBefore`
+- `branch_summary`: blijvend opgeslagen samenvatting bij het navigeren door een boomtak
 
-OpenClaw "corrigeert" transcripts bewust **niet**; de Gateway gebruikt `SessionManager` om ze te lezen/schrijven.
+OpenClaw "herstelt" transcripties bewust **niet**; de Gateway gebruikt `SessionManager` om ze te lezen/schrijven.
 
 ---
 
@@ -230,13 +238,13 @@ OpenClaw "corrigeert" transcripts bewust **niet**; de Gateway gebruikt `SessionM
 
 Twee verschillende concepten zijn belangrijk:
 
-1. **Modelcontextvenster**: harde cap per model (tokens zichtbaar voor het model)
-2. **Tellers in sessieopslag**: rollende statistieken die naar `sessions.json` worden geschreven (gebruikt voor /status en dashboards)
+1. **Modelcontextvenster**: harde limiet per model (tokens zichtbaar voor het model)
+2. **Sessiestore-tellers**: voortschrijdende statistieken die naar `sessions.json` worden geschreven (gebruikt voor /status en dashboards)
 
 Als je limieten afstemt:
 
 - Het contextvenster komt uit de modelcatalogus (en kan via configuratie worden overschreven).
-- `contextTokens` in de opslag is een runtime schatting/rapportagewaarde; behandel het niet als een strikte garantie.
+- `contextTokens` in de store is een runtime-schatting/rapportagewaarde; behandel het niet als een strikte garantie.
 
 Zie voor meer informatie [/token-use](/nl/reference/token-use).
 
@@ -244,76 +252,88 @@ Zie voor meer informatie [/token-use](/nl/reference/token-use).
 
 ## Compaction: wat het is
 
-Compaction vat oudere gesprekken samen in een gepersisteerde `compaction`-entry in het transcript en houdt recente berichten intact.
+Compaction vat oudere conversatie samen in een blijvend opgeslagen `compaction`-item in de transcriptie en houdt recente berichten intact.
 
-Na compaction zien toekomstige beurten:
+Na Compaction zien toekomstige beurten:
 
-- De compaction-samenvatting
+- De Compaction-samenvatting
 - Berichten na `firstKeptEntryId`
 
-Compaction is **persistent** (in tegenstelling tot sessie-opschoning). Zie [/concepts/session-pruning](/nl/concepts/session-pruning).
+Herinjectie van AGENTS.md-secties na Compaction is opt-in via
+`agents.defaults.compaction.postCompactionSections`; wanneer dit niet is ingesteld of `[]` is,
+voegt OpenClaw geen AGENTS.md-fragmenten toe boven op de Compaction-samenvatting.
 
-## Compaction-chunkgrenzen en tool-koppeling
+Compaction is **blijvend** (anders dan sessiesnoei). Zie [/concepts/session-pruning](/nl/concepts/session-pruning).
 
-Wanneer OpenClaw een lang transcript opsplitst in Compaction-chunks, houdt het
+## Compaction-chunkgrenzen en toolkoppeling
+
+Wanneer OpenClaw een lange transcriptie in Compaction-chunks splitst, houdt het
 assistant-toolaanroepen gekoppeld aan hun bijbehorende `toolResult`-items.
 
-- Als de splitsing op basis van tokensaandeel tussen een toolaanroep en het resultaat ervan valt, verschuift OpenClaw
-  de grens naar het assistant-toolaanroepbericht in plaats van het
-  paar te scheiden.
-- Als een afsluitend tool-resultaatblok de chunk anders boven het doel zou brengen,
-  behoudt OpenClaw dat wachtende toolblok en houdt het de niet-samengevatte staart
+- Als de tokenaandeel-split tussen een toolaanroep en het resultaat ervan valt, verschuift OpenClaw
+  de grens naar het assistant-toolaanroepbericht in plaats van het paar te scheiden.
+- Als een afsluitend tool-resultaatblok de chunk anders boven het doel zou duwen,
+  behoudt OpenClaw dat wachtende toolblok en laat het de niet-samengevatte staart
   intact.
-- Afgebroken toolaanroepblokken of toolaanroepblokken met fouten houden een wachtende splitsing niet open.
+- Afgebroken/foutieve toolaanroepblokken houden geen wachtende split open.
 
 ---
 
-## Wanneer auto-Compaction plaatsvindt (Pi-runtime)
+## Wanneer automatische Compaction plaatsvindt (OpenClaw-runtime)
 
-In de ingebedde Pi-agent wordt auto-Compaction in twee gevallen geactiveerd:
+In de ingebedde OpenClaw-agent wordt automatische Compaction in twee gevallen geactiveerd:
 
-1. **Overflow-herstel**: het model retourneert een context-overflowfout
+1. **Overloopherstel**: het model retourneert een contextoverloopfout
    (`request_too_large`, `context length exceeded`, `input exceeds the maximum
 number of tokens`, `input token count exceeds the maximum number of input
 tokens`, `input is too long for the model`, `ollama error: context length
-exceeded`, en vergelijkbare provider-vormige varianten) → comprimeren → opnieuw proberen.
-2. **Drempelonderhoud**: na een succesvolle beurt, wanneer:
+exceeded`, en vergelijkbare provider-vormige varianten) → compact → opnieuw proberen.
+   Wanneer de provider het geprobeerde tokenaantal rapporteert, geeft OpenClaw dat
+   waargenomen aantal door aan Compaction voor overloopherstel. Als de provider
+   overloop bevestigt maar geen parsebaar aantal blootlegt, geeft OpenClaw een minimaal
+   boven-budget synthetisch aantal door aan Compaction-engines en diagnostiek.
+   Als overloopherstel nog steeds mislukt, toont OpenClaw expliciete instructies aan de
+   gebruiker en behoudt het de huidige sessiemapping in plaats van de sessiesleutel
+   stilzwijgend naar een nieuw sessie-id te roteren. De volgende stap wordt door de operator bepaald:
+   probeer het bericht opnieuw, voer `/compact` uit, of voer `/new` uit wanneer een nieuwe sessie
+   de voorkeur heeft.
+2. **Drempelonderhoud**: na een geslaagde beurt, wanneer:
 
 `contextTokens > contextWindow - reserveTokens`
 
 Waarbij:
 
 - `contextWindow` het contextvenster van het model is
-- `reserveTokens` gereserveerde ruimte is voor prompts + de volgende modeluitvoer
+- `reserveTokens` ruimte is die is gereserveerd voor prompts + de volgende modeluitvoer
 
-Dit zijn Pi-runtime-semantieken (OpenClaw consumeert de events, maar Pi bepaalt wanneer er wordt gecomprimeerd).
+Dit zijn OpenClaw-runtime-semantieken.
 
 OpenClaw kan ook een preflight lokale Compaction activeren voordat de volgende
 run wordt geopend wanneer `agents.defaults.compaction.maxActiveTranscriptBytes` is ingesteld en het
-actieve transcriptbestand die grootte bereikt. Dit is een bestandsgroottebeveiliging voor lokale
+actieve transcriptiebestand die grootte bereikt. Dit is een bestandsgroottebeveiliging voor lokale
 heropenkosten, geen ruwe archivering: OpenClaw voert nog steeds normale semantische Compaction uit,
-en vereist `truncateAfterCompaction` zodat de gecomprimeerde samenvatting een
-nieuw opvolgend transcript kan worden.
+en vereist `truncateAfterCompaction` zodat de gecompacteerde samenvatting een
+nieuwe opvolgertranscriptie kan worden.
 
-Voor ingebedde Pi-runs voegt `agents.defaults.compaction.midTurnPrecheck.enabled: true`
-een optionele tool-loopbeveiliging toe. Nadat een toolresultaat is toegevoegd en vóór de
+Voor ingebedde OpenClaw-runs voegt `agents.defaults.compaction.midTurnPrecheck.enabled: true`
+een opt-in tool-loopbeveiliging toe. Nadat een toolresultaat is toegevoegd en vóór de
 volgende modelaanroep, schat OpenClaw de promptdruk met dezelfde preflight-
-budgetlogica die aan het begin van de beurt wordt gebruikt. Als de context niet meer past, comprimeert de beveiliging
-niet binnen Pi's `transformContext`-hook. Het genereert een gestructureerd
-mid-turn precheck-signaal, stopt de huidige promptinzending en laat de
-buitenste run-loop het bestaande herstelpad gebruiken: te grote toolresultaten afkappen
-wanneer dat genoeg is, of de geconfigureerde Compaction-modus activeren en opnieuw proberen. De
+budgetlogica die aan het begin van een beurt wordt gebruikt. Als de context niet meer past, compact de beveiliging
+niet binnen de `transformContext`-hook van de OpenClaw-runtime. Het verhoogt een gestructureerd
+mid-turn-prechecksignaal, stopt de huidige promptinzending en laat de
+buitenste runloop het bestaande herstelpad gebruiken: te grote toolresultaten inkorten
+wanneer dat voldoende is, of de geconfigureerde Compaction-modus activeren en opnieuw proberen. De
 optie is standaard uitgeschakeld en werkt met zowel `default`- als `safeguard`-
-Compaction-modi, inclusief provider-ondersteunde safeguard-Compaction.
+Compaction-modi, inclusief provider-backed safeguard Compaction.
 Dit staat los van `maxActiveTranscriptBytes`: de bytegroottebeveiliging draait
-voordat een beurt wordt geopend, terwijl mid-turn precheck later in de ingebedde Pi-tool-
-loop draait nadat nieuwe toolresultaten zijn toegevoegd.
+voordat een beurt wordt geopend, terwijl mid-turn precheck later in de ingebedde OpenClaw-toolloop draait
+nadat nieuwe toolresultaten zijn toegevoegd.
 
 ---
 
 ## Compaction-instellingen (`reserveTokens`, `keepRecentTokens`)
 
-Pi's Compaction-instellingen staan in de Pi-instellingen:
+De Compaction-instellingen van de OpenClaw-runtime staan in agentinstellingen:
 
 ```json5
 {
@@ -325,140 +345,140 @@ Pi's Compaction-instellingen staan in de Pi-instellingen:
 }
 ```
 
-OpenClaw dwingt ook een veiligheidsvloer af voor ingebedde runs:
+OpenClaw handhaaft ook een veiligheidsvloer voor ingebedde runs:
 
 - Als `compaction.reserveTokens < reserveTokensFloor`, verhoogt OpenClaw dit.
 - De standaardvloer is `20000` tokens.
 - Stel `agents.defaults.compaction.reserveTokensFloor: 0` in om de vloer uit te schakelen.
-- Als deze al hoger is, laat OpenClaw deze ongemoeid.
+- Als deze al hoger is, laat OpenClaw hem ongemoeid.
 - Handmatige `/compact` respecteert een expliciete `agents.defaults.compaction.keepRecentTokens`
-  en behoudt Pi's afkappunt voor de recente staart. Zonder expliciet bewaarbudget
-  blijft handmatige Compaction een hard checkpoint en begint de herbouwde context vanaf
+  en behoudt het recente-staart-afkappunt van de OpenClaw-runtime. Zonder een expliciet bewaarbudget
+  blijft handmatige Compaction een hard checkpoint en begint opnieuw opgebouwde context vanaf
   de nieuwe samenvatting.
 - Stel `agents.defaults.compaction.midTurnPrecheck.enabled: true` in om de
   optionele tool-loop-precheck uit te voeren na nieuwe toolresultaten en vóór de volgende model-
   aanroep. Dit is alleen een trigger; samenvattingsgeneratie gebruikt nog steeds het geconfigureerde
   Compaction-pad. Het staat los van `maxActiveTranscriptBytes`, wat een
-  bytegroottebeveiliging voor actieve transcriptie aan het begin van een beurt is.
+  bytegroottebeveiliging voor actieve transcripties bij het begin van een beurt is.
 - Stel `agents.defaults.compaction.maxActiveTranscriptBytes` in op een bytewaarde of
-  string zoals `"20mb"` om lokale Compaction uit te voeren vóór een beurt wanneer het actieve
-  transcript groot wordt. Deze beveiliging is alleen actief wanneer
+  tekenreeks zoals `"20mb"` om lokale Compaction vóór een beurt uit te voeren wanneer de actieve
+  transcriptie groot wordt. Deze beveiliging is alleen actief wanneer
   `truncateAfterCompaction` ook is ingeschakeld. Laat dit niet ingesteld of stel `0` in om
   uit te schakelen.
 - Wanneer `agents.defaults.compaction.truncateAfterCompaction` is ingeschakeld,
-  roteert OpenClaw het actieve transcript naar een gecomprimeerde opvolger-JSONL na
-  Compaction. Het oude volledige transcript blijft gearchiveerd en gekoppeld vanuit het
-  Compaction-checkpoint in plaats van ter plekke herschreven te worden.
+  roteert OpenClaw de actieve transcriptie na Compaction naar een gecompacteerde opvolger-JSONL.
+  Branch-/herstel-checkpointacties gebruiken die gecompacteerde opvolger;
+  oudere pre-Compaction-checkpointbestanden blijven leesbaar zolang ernaar wordt verwezen.
 
-Waarom: laat genoeg ruimte over voor multi-turn "housekeeping" (zoals geheugenschrijfacties) voordat Compaction onvermijdelijk wordt.
+Waarom: genoeg ruimte overlaten voor multi-turn "huishouding" (zoals geheugenschrijfacties) voordat Compaction onvermijdelijk wordt.
 
-Implementatie: `ensurePiCompactionReserveTokens()` in `src/agents/pi-settings.ts`
-(aangeroepen vanuit `src/agents/pi-embedded-runner.ts`).
+Implementatie: `applyAgentCompactionSettingsFromConfig()` in `src/agents/agent-settings.ts`
+(aangeroepen vanuit ingebedde-runner-beurt- en Compaction-instelpaden).
 
 ---
 
 ## Pluggable Compaction-providers
 
-Plugins kunnen een Compaction-provider registreren via `registerCompactionProvider()` op de Plugin-API. Wanneer `agents.defaults.compaction.provider` is ingesteld op een geregistreerde provider-id, delegeert de safeguard-Plugin samenvatting aan die provider in plaats van aan de ingebouwde `summarizeInStages`-pipeline.
+Plugins kunnen een Compaction-provider registreren via `registerCompactionProvider()` op de Plugin-API. Wanneer `agents.defaults.compaction.provider` is ingesteld op een geregistreerd provider-id, delegeert de safeguard-extensie samenvatting aan die provider in plaats van aan de ingebouwde `summarizeInStages`-pipeline.
 
 - `provider`: id van een geregistreerde Compaction-provider-Plugin. Laat niet ingesteld voor standaard LLM-samenvatting.
 - Het instellen van een `provider` forceert `mode: "safeguard"`.
-- Providers ontvangen dezelfde Compaction-instructies en hetzelfde beleid voor behoud van identifiers als het ingebouwde pad.
-- De safeguard behoudt nog steeds recente-beurt- en split-turn-achtervoegselcontext na provideruitvoer.
-- Ingebouwde safeguard-samenvatting destilleert eerdere samenvattingen opnieuw met nieuwe berichten
+- Providers ontvangen dezelfde Compaction-instructies en hetzelfde identifier-preservation-beleid als het ingebouwde pad.
+- De safeguard behoudt nog steeds recente-beurt- en split-turn-suffixcontext na provideruitvoer.
+- Ingebouwde safeguard-samenvatting distilleert eerdere samenvattingen opnieuw met nieuwe berichten
   in plaats van de volledige vorige samenvatting letterlijk te behouden.
-- Safeguard-modus schakelt standaard kwaliteitsaudits van samenvattingen in; stel
+- Safeguard-modus schakelt standaard audits voor samenvattingskwaliteit in; stel
   `qualityGuard.enabled: false` in om retry-on-malformed-output-gedrag over te slaan.
 - Als de provider faalt of een leeg resultaat retourneert, valt OpenClaw automatisch terug op ingebouwde LLM-samenvatting.
-- Afbreek-/timeoutsignalen worden opnieuw gegooid (niet ingeslikt) om annulering door de aanroeper te respecteren.
+- Afbreek-/time-outsignalen worden opnieuw geworpen (niet ingeslikt) om annulering door de aanroeper te respecteren.
 
-Bron: `src/plugins/compaction-provider.ts`, `src/agents/pi-hooks/compaction-safeguard.ts`.
+Bron: `src/plugins/compaction-provider.ts`, `src/agents/agent-hooks/compaction-safeguard.ts`.
 
 ---
 
-## Gebruikerszichtbare oppervlakken
+## Voor gebruikers zichtbare oppervlakken
 
-Je kunt Compaction en sessiestatus observeren via:
+Je kunt Compaction en sessiestatus bekijken via:
 
 - `/status` (in elke chatsessie)
 - `openclaw status` (CLI)
 - `openclaw sessions` / `sessions --json`
-- Gateway-logs (`pnpm gateway:watch` of `openclaw logs --follow`): `embedded run auto-compaction start` + `complete`
+- Gateway-logboeken (`pnpm gateway:watch` of `openclaw logs --follow`): `embedded run auto-compaction start` + `complete`
 - Uitgebreide modus: `🧹 Auto-compaction complete` + Compaction-aantal
 
 ---
 
-## Stille housekeeping (`NO_REPLY`)
+## Stille huishouding (`NO_REPLY`)
 
 OpenClaw ondersteunt "stille" beurten voor achtergrondtaken waarbij de gebruiker geen tussentijdse uitvoer zou moeten zien.
 
 Conventie:
 
-- De assistant begint zijn uitvoer met de exacte stille token `NO_REPLY` /
-  `no_reply` om aan te geven "lever geen antwoord af bij de gebruiker".
-- OpenClaw verwijdert/onderdrukt dit in de afleverlaag.
-- Exacte onderdrukking van stille tokens is hoofdletterongevoelig, dus `NO_REPLY` en
-  `no_reply` tellen allebei wanneer de volledige payload alleen de stille token is.
-- Dit is alleen voor echte achtergrond-/niet-afleverbeurten; het is geen snelkoppeling voor
+- De assistant begint zijn uitvoer met het exacte stille token `NO_REPLY` /
+  `no_reply` om aan te geven "lever geen antwoord aan de gebruiker".
+- OpenClaw stript/onderdrukt dit in de afleverlaag.
+- Exacte stille-tokenonderdrukking is hoofdletterongevoelig, dus `NO_REPLY` en
+  `no_reply` tellen allebei wanneer de hele payload alleen het stille token is.
+- Dit is alleen voor echte achtergrond-/geen-aflevering-beurten; het is geen snelkoppeling voor
   gewone uitvoerbare gebruikersverzoeken.
 
 Vanaf `2026.1.10` onderdrukt OpenClaw ook **concept-/typestreaming** wanneer een
 gedeeltelijke chunk begint met `NO_REPLY`, zodat stille bewerkingen geen gedeeltelijke
-uitvoer midden in een beurt lekken.
+uitvoer halverwege een beurt lekken.
 
 ---
 
-## "Memory flush" vóór Compaction (geïmplementeerd)
+## Pre-Compaction "geheugenflush" (geïmplementeerd)
 
-Doel: voordat auto-Compaction plaatsvindt, voer een stille agentische beurt uit die duurzame
-status naar schijf schrijft (bijv. `memory/YYYY-MM-DD.md` in de agentwerkruimte), zodat Compaction geen
-kritieke context kan wissen.
+Doel: voordat automatische Compaction plaatsvindt, een stille agentische beurt uitvoeren die duurzame
+status naar schijf schrijft (bijv. `memory/YYYY-MM-DD.md` in de agentwerkruimte), zodat Compaction
+kritieke context niet kan wissen.
 
 OpenClaw gebruikt de **pre-threshold flush**-aanpak:
 
 1. Bewaak het contextgebruik van de sessie.
-2. Wanneer dit een "zachte drempel" overschrijdt (onder Pi's Compaction-drempel), voer een stille
-   "write memory now"-richtlijn uit naar de agent.
-3. Gebruik de exacte stille token `NO_REPLY` / `no_reply` zodat de gebruiker
+2. Wanneer dit een "zachte drempel" overschrijdt (onder de Compaction-drempel van de OpenClaw-runtime), voer dan een stille
+   "schrijf geheugen nu"-instructie uit naar de agent.
+3. Gebruik het exacte stille token `NO_REPLY` / `no_reply` zodat de gebruiker
    niets ziet.
 
-Config (`agents.defaults.compaction.memoryFlush`):
+Configuratie (`agents.defaults.compaction.memoryFlush`):
 
 - `enabled` (standaard: `true`)
-- `model` (optionele exacte provider/model-override voor de flush-beurt, bijvoorbeeld `ollama/qwen3:8b`)
+- `model` (optionele exacte provider/model-overschrijving voor de flush-beurt, bijvoorbeeld `ollama/qwen3:8b`)
 - `softThresholdTokens` (standaard: `4000`)
 - `prompt` (gebruikersbericht voor de flush-beurt)
 - `systemPrompt` (extra systeemprompt toegevoegd voor de flush-beurt)
 
 Opmerkingen:
 
-- De standaardprompt/systeemprompt bevatten een `NO_REPLY`-hint om
+- De standaardprompt/systeemprompt bevat een `NO_REPLY`-hint om
   aflevering te onderdrukken.
 - Wanneer `model` is ingesteld, gebruikt de flush-beurt dat model zonder de
-  fallbackketen van de actieve sessie te erven, zodat lokale housekeeping niet stilletjes
-  terugvalt op een betaald gespreksmodel.
-- De flush draait eenmaal per Compaction-cyclus (bijgehouden in `sessions.json`).
-- De flush draait alleen voor ingebedde Pi-sessies (CLI-backends slaan deze over).
+  fallbackketen van de actieve sessie te erven, zodat lokale huishouding niet stilzwijgend
+  terugvalt op een betaald conversatiemodel.
+- De flush draait één keer per Compaction-cyclus (bijgehouden in `sessions.json`).
+- De flush draait alleen voor ingebedde OpenClaw-sessies (CLI-backends slaan dit over).
 - De flush wordt overgeslagen wanneer de sessiewerkruimte alleen-lezen is (`workspaceAccess: "ro"` of `"none"`).
-- Zie [Memory](/nl/concepts/memory) voor de bestandsindeling van de werkruimte en schrijfpatronen.
+- Zie [Geheugen](/nl/concepts/memory) voor de bestandsindeling van de werkruimte en schrijfpatronen.
 
-Pi stelt ook een `session_before_compact`-hook beschikbaar in de Plugin-API, maar OpenClaw's
-flush-logica leeft momenteel aan de Gateway-kant.
+OpenClaw stelt ook een `session_before_compact`-hook beschikbaar in de extensie-API, maar de
+flushlogica van OpenClaw leeft vandaag aan de Gateway-kant.
 
 ---
 
-## Checklist voor probleemoplossing
+## Probleemoplossingschecklist
 
-- Sessiesleutel onjuist? Begin met [/concepts/session](/nl/concepts/session) en bevestig de `sessionKey` in `/status`.
-- Mismatch tussen store en transcript? Bevestig de Gateway-host en het store-pad vanuit `openclaw status`.
+- Verkeerde sessiesleutel? Begin met [/concepts/session](/nl/concepts/session) en bevestig de `sessionKey` in `/status`.
+- Store versus transcriptie komt niet overeen? Bevestig de Gateway-host en het store-pad via `openclaw status`.
 - Compaction-spam? Controleer:
-  - contextvenster van het model (te klein)
+  - modelcontextvenster (te klein)
   - Compaction-instellingen (`reserveTokens` te hoog voor het modelvenster kan eerdere Compaction veroorzaken)
-  - opgeblazen toolresultaten: schakel sessie-opschoning in en stem deze af
-- Stille beurten lekken? Bevestig dat het antwoord begint met `NO_REPLY` (hoofdletterongevoelige exacte token) en dat je een build gebruikt met de streamingonderdrukkingsfix.
+  - opgeblazen toolresultaten: schakel sessiesnoei in/stem het af
+- Lekken stille beurten? Bevestig dat het antwoord begint met `NO_REPLY` (hoofdletterongevoelig exact token) en dat je een build gebruikt die de fix voor streamingonderdrukking bevat.
 
 ## Gerelateerd
 
 - [Sessiebeheer](/nl/concepts/session)
-- [Sessie-opschoning](/nl/concepts/session-pruning)
-- [Context-engine](/nl/concepts/context-engine)
+- [Sessiesnoei](/nl/concepts/session-pruning)
+- [Contextengine](/nl/concepts/context-engine)

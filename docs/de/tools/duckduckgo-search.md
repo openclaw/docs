@@ -1,24 +1,25 @@
 ---
 read_when:
-    - Sie möchten einen Provider für die Websuche, der keinen API-Schlüssel erfordert
+    - Sie möchten einen Websuch-Provider, der keinen API-Schlüssel erfordert
     - Sie möchten DuckDuckGo für web_search verwenden
-    - Sie benötigen eine konfigurationsfreie Ausweichlösung für die Suche
-summary: DuckDuckGo-Websuche -- Fallback-Provider ohne Schlüssel (experimentell, HTML-basiert)
+    - Sie möchten einen ausdrücklich ausgewählten suchschlüsselfreien Provider
+summary: DuckDuckGo-Websuche -- Provider ohne API-Schlüssel (experimentell, HTML-basiert)
 title: DuckDuckGo-Suche
 x-i18n:
-    generated_at: "2026-05-06T07:05:10Z"
+    generated_at: "2026-06-27T18:17:11Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 89c23535730dc272b88e22d1dbeef61abd55a7968d9e57bdce20594df8a2c0f2
+    source_hash: c042a3cd4fa6f37cb42b88930b5fe0122a561a810e275f26d9c1eb56502495a7
     source_path: tools/duckduckgo-search.md
     workflow: 16
 ---
 
-OpenClaw unterstützt DuckDuckGo als **schlüsselfreien** `web_search`-Provider. Es ist kein API-Schlüssel und kein Konto erforderlich.
+OpenClaw unterstützt DuckDuckGo als **Provider ohne API-Schlüssel** für `web_search`. Es ist kein API-Schlüssel und kein Konto erforderlich.
 
 <Warning>
   DuckDuckGo ist eine **experimentelle, inoffizielle** Integration, die Ergebnisse
-  aus DuckDuckGos Nicht-JavaScript-Suchseiten abruft - nicht aus einer offiziellen API. Rechnen Sie
+  aus den Nicht-JavaScript-Suchseiten von DuckDuckGo abruft - nicht aus einer offiziellen API. Rechnen Sie
   mit gelegentlichen Ausfällen durch Bot-Challenge-Seiten oder HTML-Änderungen.
 </Warning>
 
@@ -91,17 +92,17 @@ Parameter überschreiben Konfigurationswerte pro Abfrage.
 
 ## Hinweise
 
-- **Kein API-Schlüssel** - funktioniert sofort, ohne Konfiguration
-- **Experimentell** - sammelt Ergebnisse aus DuckDuckGos Nicht-JavaScript-HTML-
-  Suchseiten, nicht aus einer offiziellen API oder einem SDK
+- **Kein API-Schlüssel** - funktioniert, nachdem Sie DuckDuckGo als Ihren `web_search`-
+  Provider ausgewählt haben
+- **Experimentell** - sammelt Ergebnisse aus den Nicht-JavaScript-HTML-
+  Suchseiten von DuckDuckGo, nicht aus einer offiziellen API oder einem SDK
 - **Bot-Challenge-Risiko** - DuckDuckGo kann CAPTCHAs ausliefern oder Anfragen
   bei starker oder automatisierter Nutzung blockieren
 - **HTML-Parsing** - Ergebnisse hängen von der Seitenstruktur ab, die sich ohne
-  Ankündigung ändern kann
-- **Reihenfolge der automatischen Erkennung** - DuckDuckGo ist der erste schlüsselfreie Fallback
-  (Reihenfolge 100) in der automatischen Erkennung. API-gestützte Provider mit konfigurierten Schlüsseln werden
-  zuerst ausgeführt, dann Ollama Web Search (Reihenfolge 110), dann SearXNG (Reihenfolge 200)
-- **SafeSearch ist standardmäßig moderat**, wenn nicht konfiguriert
+  Vorankündigung ändern kann
+- **Explizite Auswahl** - OpenClaw wählt DuckDuckGo nicht automatisch aus,
+  wenn kein API-gestützter Provider konfiguriert ist
+- **SafeSearch ist standardmäßig auf moderat gesetzt**, wenn nicht konfiguriert
 
 <Tip>
   Für den Produktionseinsatz sollten Sie [Brave Search](/de/tools/brave-search) (kostenloses Kontingent
@@ -110,6 +111,6 @@ Parameter überschreiben Konfigurationswerte pro Abfrage.
 
 ## Verwandt
 
-- [Web Search-Übersicht](/de/tools/web) -- alle Provider und automatische Erkennung
+- [Web Search-Überblick](/de/tools/web) -- alle Provider und automatische Erkennung
 - [Brave Search](/de/tools/brave-search) -- strukturierte Ergebnisse mit kostenlosem Kontingent
 - [Exa Search](/de/tools/exa-search) -- neuronale Suche mit Inhaltsextraktion

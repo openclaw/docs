@@ -4,22 +4,23 @@ read_when:
 summary: Tautan terkurasi ke dokumentasi OpenClaw yang paling sering digunakan.
 title: Direktori dokumentasi
 x-i18n:
-    generated_at: "2026-05-10T19:53:00Z"
+    generated_at: "2026-06-27T18:13:45Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ddd6903aeb87e36db977b2cef62bd80e84fc67633ca00beb3365ced1f5abdd99
+    source_hash: f7d45effe4df50fb544e9f6fd2fcd87f4ed674eba0042eace757dbfcad93d07a
     source_path: start/docs-directory.md
     workflow: 16
 ---
 
 <Note>
-Halaman ini adalah indeks terkurasi. Jika Anda baru mulai, mulai dari [Memulai](/id/start/getting-started).
-Untuk peta dokumentasi lengkap, lihat [Pusat dokumentasi](/id/start/hubs).
+Halaman ini adalah indeks terkurasi. Jika Anda baru mulai, mulai dengan [Memulai](/id/start/getting-started).
+Untuk peta dokumentasi yang lengkap, lihat [Hub dokumentasi](/id/start/hubs).
 </Note>
 
 ## Mulai di sini
 
-- [Pusat dokumentasi (semua halaman ditautkan)](/id/start/hubs)
+- [Hub dokumentasi (semua halaman ditautkan)](/id/start/hubs)
 - [Bantuan](/id/help)
 - [Konfigurasi](/id/gateway/configuration)
 - [Contoh konfigurasi](/id/gateway/configuration-examples)
@@ -32,7 +33,7 @@ Untuk peta dokumentasi lengkap, lihat [Pusat dokumentasi](/id/start/hubs).
 - [Skills](/id/tools/skills)
 - [Konfigurasi Skills](/id/tools/skills-config)
 - [Templat ruang kerja](/id/reference/templates/AGENTS)
-- [Adapter RPC](/id/reference/rpc)
+- [Adaptor RPC](/id/reference/rpc)
 - [Runbook Gateway](/id/gateway)
 - [Node (iOS dan Android)](/id/nodes)
 - [Permukaan web (UI Kontrol)](/id/web)
@@ -57,11 +58,10 @@ Untuk peta dokumentasi lengkap, lihat [Pusat dokumentasi](/id/start/hubs).
 
 - [Aplikasi macOS](/id/platforms/macos)
 - [Aplikasi iOS](/id/platforms/ios)
-- [Aplikasi Android](/id/platforms/android)
-- [Windows (WSL2)](/id/platforms/windows)
+- [Hub Windows](/id/platforms/windows)
 - [Aplikasi Linux](/id/platforms/linux)
 
-## Operasi dan keamanan
+## Operasi dan keselamatan
 
 - [Sesi](/id/concepts/session)
 - [Pekerjaan Cron](/id/automation/cron-jobs)
@@ -73,4 +73,4 @@ Untuk peta dokumentasi lengkap, lihat [Pusat dokumentasi](/id/start/hubs).
 ## Terkait
 
 - [Memulai](/id/start/getting-started)
-- [Pusat dokumentasi](/id/start/hubs)
+- [Hub dokumentasi](/id/start/hubs)

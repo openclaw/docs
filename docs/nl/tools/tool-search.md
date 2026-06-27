@@ -1,31 +1,32 @@
 ---
 read_when:
-    - Je wilt dat PI-agenten een grote toolcatalogus gebruiken zonder elk toolschema aan de prompt toe te voegen
-    - Je wilt OpenClaw-tools, MCP-tools en clienttools beschikbaar maken via één compact PI-oppervlak
-    - Je implementeert of debugt tooldetectie voor Pi-uitvoeringen
-summary: 'Toolzoekfunctie: comprimeer grote PI-toolcatalogi achter zoeken, beschrijven en aanroepen'
+    - Je wilt dat OpenClaw-agenten een grote toolcatalogus gebruiken zonder elk toolschema aan de prompt toe te voegen
+    - Je wilt OpenClaw-tools, MCP-tools en clienttools beschikbaar maken via één compact runtime-oppervlak
+    - Je implementeert of debugt toolontdekking voor OpenClaw-runs
+summary: 'Zoeken in tools: maak grote OpenClaw-toolcatalogi compact achter zoeken, beschrijven en aanroepen'
 title: Zoeken naar tools
 x-i18n:
-    generated_at: "2026-05-11T20:55:31Z"
+    generated_at: "2026-06-27T18:31:06Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 410f21a4d56af163d03023f7280469e55e17e8296ee16f7b12cc2589494d0a0c
+    source_hash: 23b46264bab307bbfdfeb1e358c566d498f3bcf77f187ba05d2ae319e115e1f4
     source_path: tools/tool-search.md
     workflow: 16
 ---
 
-Tool Search is een experimentele OpenClaw PI-agentfunctie. Het geeft PI-agenten één
+Tool Search is een experimentele runtimefunctie voor OpenClaw-agenten. Het geeft agenten één
 compacte manier om grote toolcatalogi te ontdekken en aan te roepen. Het is nuttig wanneer de run
-veel beschikbare tools heeft, maar het model er waarschijnlijk maar enkele nodig heeft.
+veel beschikbare tools heeft, maar het model waarschijnlijk maar een paar daarvan nodig heeft.
 
-Deze pagina documenteert OpenClaw PI Tool Search. Het is niet de Codex-native tool
-search- of dynamic-tools-surface. Codex-native code mode, tool search, deferred
-dynamic tools en nested tool calls zijn stabiele Codex harness-surfaces en zijn
+Deze pagina documenteert OpenClaw Tool Search. Het is niet de Codex-native tool
+search- of dynamic-tools-oppervlakte. Codex-native code mode, tool search, uitgestelde
+dynamic tools en geneste toolaanroepen zijn stabiele Codex-harness-oppervlakken en zijn
 niet afhankelijk van `tools.toolSearch`.
 
-Wanneer dit voor PI is ingeschakeld, ontvangt het model standaard één `tool_search_code`-tool.
-Die tool voert een korte JavaScript-body uit in een geïsoleerd Node-subproces met een
-`openclaw.tools`-bridge:
+Wanneer dit is ingeschakeld voor OpenClaw-runs, ontvangt het model standaard één `tool_search_code`-tool.
+Die tool voert een korte JavaScript-body uit in een geïsoleerd Node-subproces
+met een `openclaw.tools`-brug:
 
 ```js
 const hits = await openclaw.tools.search("create a GitHub issue");
@@ -36,78 +37,89 @@ return await openclaw.tools.call(tool.id, {
 });
 ```
 
-De catalogus kan OpenClaw-tools, Plugin-tools, MCP-tools en
-door clients aangeleverde tools bevatten. Het model ziet niet vooraf elk volledig schema.
+De catalogus kan OpenClaw-tools, Plugin-tools, MCP-tools en door clients geleverde
+tools bevatten. Het model ziet niet vooraf elk volledig schema.
 In plaats daarvan doorzoekt het compacte descriptors, beschrijft het één geselecteerde tool wanneer het
 het exacte schema nodig heeft, en roept het die tool aan via OpenClaw.
 
-Codex harness-runs ontvangen deze experimentele OpenClaw Tool Search-controls niet.
-OpenClaw geeft productcapaciteiten door aan Codex als dynamic tools, en
-Codex beheert de stabiele native code mode, native tool search, deferred dynamic
-tools en nested tool calls.
+Codex-harness-runs ontvangen deze experimentele OpenClaw Tool Search-besturingselementen niet.
+OpenClaw geeft productmogelijkheden door aan Codex als dynamic tools, en
+Codex bezit de stabiele native code mode, native tool search, uitgestelde dynamic
+tools en geneste toolaanroepen.
 
 ## Hoe een beurt wordt uitgevoerd
 
-Tijdens de planning bouwt de PI embedded runner de effectieve catalogus voor de
-run:
+Tijdens het plannen bouwt de ingesloten runner van OpenClaw de effectieve catalogus voor de
+run op:
 
 1. Los het actieve toolbeleid op voor de agent, het profiel, de sandbox en de sessie.
-2. Vermeld geschikte OpenClaw- en Plugin-tools.
-3. Vermeld geschikte MCP-tools via de sessie-MCP-runtime.
-4. Voeg geschikte clienttools toe die voor de huidige run zijn aangeleverd.
+2. Maak een lijst van in aanmerking komende OpenClaw- en Plugin-tools.
+3. Maak een lijst van in aanmerking komende MCP-tools via de MCP-runtime van de sessie.
+4. Voeg in aanmerking komende clienttools toe die voor de huidige run zijn aangeleverd.
 5. Indexeer compacte descriptors voor zoeken.
-6. Stel de PI-codebridge of de gestructureerde fallbacktools beschikbaar aan het
-   model.
+6. Stel de OpenClaw-codebrug, de gestructureerde fallback-tools of het
+   compacte directory-oppervlak beschikbaar aan het model.
 
 Tijdens uitvoering keert elke echte toolaanroep terug naar OpenClaw. De geïsoleerde Node-
 runtime bevat geen Plugin-implementaties, MCP-clientobjecten of geheimen.
-`openclaw.tools.call(...)` gaat via de bridge terug naar de Gateway, waar het
-normale beleid, goedkeuringen, hooks, logging en resultaatverwerking nog steeds gelden.
+`openclaw.tools.call(...)` gaat via de brug terug de Gateway in, waar het
+normale beleid, goedkeuring, hook, logging en resultaatverwerking nog steeds van toepassing zijn.
 
 ## Modi
 
-`tools.toolSearch` heeft twee modelgerichte modi:
+`tools.toolSearch` heeft drie modelgerichte modi:
 
-- `code`: stelt `tool_search_code` beschikbaar, de standaard compacte JavaScript-bridge.
+- `code`: stelt `tool_search_code` beschikbaar, de standaard compacte JavaScript-brug.
 - `tools`: stelt `tool_search`, `tool_describe` en `tool_call` beschikbaar als gewone
   gestructureerde tools voor providers die geen code zouden moeten ontvangen.
+- `directory`: stelt `tool_search`, `tool_describe` en `tool_call` beschikbaar plus een
+  begrensde promptdirectory met beschikbare toolnamen en beschrijvingen voor
+  providers die toolnamen zouden moeten zien zonder elk volledig schema. OpenClaw kan
+  ook een kleine begrensde set waarschijnlijke of vereiste toolschema's rechtstreeks
+  beschikbaar stellen voor de huidige beurt.
 
-Beide modi gebruiken dezelfde catalogus en hetzelfde uitvoeringspad. Het enige verschil is de
-vorm die het model ziet. Als de huidige runtime het geïsoleerde Node-
-childproces voor code mode niet kan starten, valt de standaardmodus `code` terug op `tools` vóór
-cataloguscompactie.
+Alle modi gebruiken dezelfde beleidsgefilterde catalogus en het normale OpenClaw-uitvoeringspad.
+Als de huidige runtime het geïsoleerde Node-kindproces voor code mode niet kan starten,
+valt de standaardmodus `code` terug op `tools` vóór catalogus-
+Compaction. In de modus `directory` blijven door clients geleverde tools rechtstreeks zichtbaar
+voor de huidige run, terwijl OpenClaw-tools, Plugin-tools en MCP-tools achter de directorycatalogus kunnen worden
+gecomprimeerd. Een rechtstreekse aanroep naar een exacte verborgen
+directorynaam wordt vóór uitvoering vanuit dezelfde geautoriseerde catalogus gehydrateerd.
 
-Beide modi zijn experimenteel. Geef voor kleine PI-toolcatalogi de voorkeur aan directe
-toolblootstelling, en geef voor Codex harness-runs de voorkeur aan de Codex-native stabiele surfaces.
+Alle modi zijn experimenteel. Geef de voorkeur aan directe toolblootstelling voor kleine OpenClaw-
+toolcatalogi, en geef de voorkeur aan de Codex-native stabiele oppervlakken voor Codex-harness-runs.
 
-Er is geen afzonderlijke configuratie voor bronselectie. Wanneer Tool Search is ingeschakeld, bevat de
-catalogus geschikte OpenClaw-, MCP- en clienttools na normale beleidsfiltering.
+Er is geen aparte configuratie voor bronselectie. Wanneer Tool Search is ingeschakeld, bevat de
+catalogus in aanmerking komende OpenClaw-, MCP- en clienttools na normale beleidsfiltering.
 
 ## Waarom dit bestaat
 
 Grote catalogi zijn nuttig maar duur. Elk toolschema naar het model sturen
-maakt de aanvraag groter, vertraagt de planning en vergroot de kans op onbedoelde
+maakt de aanvraag groter, vertraagt planning en vergroot de kans op onbedoelde
 toolselectie.
 
 Tool Search verandert de vorm:
 
 - directe tools: het model ziet elk geselecteerd schema vóór het eerste token
-- Tool Search-code mode: het model ziet één compacte codetool en een kort API-
+- Tool Search code mode: het model ziet één compacte codetool en een kort API-
   contract
-- Tool Search-tools mode: het model ziet drie compacte gestructureerde fallback-
+- Tool Search tools mode: het model ziet drie compacte gestructureerde fallback-
   tools
-- tijdens de beurt: het model laadt alleen de toolschema's die het daadwerkelijk nodig heeft
+- Tool Search directory mode: het model ziet een begrensde directory plus
+  zoek-/beschrijf-/aanroepbesturing en een kleine begrensde set waarschijnlijke of vereiste
+  schema's
+- tijdens de beurt: het model kan resterende schema's laden wanneer nodig
 
 Directe toolblootstelling blijft de juiste standaard voor kleine catalogi. Tool Search
 is het meest geschikt wanneer één run veel tools kan zien, vooral van MCP-servers of
-door clients aangeleverde app-tools.
+door clients geleverde app-tools.
 
 ## API
 
 `openclaw.tools.search(query, options?)`
 
 Doorzoekt de effectieve catalogus voor de huidige run. Resultaten zijn compact en veilig
-om terug in de promptcontext te plaatsen.
+om terug te plaatsen in promptcontext.
 
 ```js
 const hits = await openclaw.tools.search("calendar event", { limit: 5 });
@@ -138,39 +150,53 @@ De gestructureerde fallbackmodus stelt dezelfde bewerkingen beschikbaar als tool
 - `tool_describe`
 - `tool_call`
 
+Directory-modus stelt beschikbaar:
+
+- `tool_search`
+- `tool_describe`
+- `tool_call`
+
+Deze houdt ook door clients geleverde tools rechtstreeks zichtbaar en kan een kleine
+begrensde set waarschijnlijke of vereiste catalogustoolschema's rechtstreeks beschikbaar stellen voor de huidige
+beurt. Als de begrensde directory vermeldingen weglaat, gebruik dan `tool_search` om ze te vinden. Als
+het model rechtstreeks een exacte verborgen directorytoolnaam aanvraagt, hydrateert OpenClaw
+die vanuit de geautoriseerde catalogus vóór normale uitvoering.
+Toolnamen van clients in directory-modus mogen niet botsen met OpenClaw-, Plugin- of MCP-
+toolnamen, omdat exacte uitgestelde dispatch die namen gebruikt.
+
 ## Runtimegrens
 
-De codebridge draait in een kortlevend Node-subproces. Het subproces start
-met ingeschakelde Node-permissiemodus, een lege omgeving, geen filesystem- of
-netwerkrechten, en geen child-process- of workerrechten. OpenClaw dwingt een
-wall-clock-time-out af in het bovenliggende proces en beëindigt het subproces bij time-out, inclusief
-na async continuations.
+De codebrug draait in een kortlevend Node-subproces. Het subproces start
+met Node-permissiemodus ingeschakeld, een lege omgeving, geen bestandssysteem- of
+netwerktoekenningen en geen toekenningen voor kindprocessen of workers. OpenClaw dwingt een
+wall-clock-time-out in het ouderproces af en beëindigt het subproces bij time-out, inclusief
+na asynchrone voortzettingen.
 
-De runtime stelt alleen het volgende beschikbaar:
+De runtime stelt alleen beschikbaar:
 
 - `console.log`, `console.warn` en `console.error`
 - `openclaw.tools.search`
 - `openclaw.tools.describe`
 - `openclaw.tools.call`
 
-Normaal OpenClaw-gedrag blijft gelden voor definitieve aanroepen:
+Normaal OpenClaw-gedrag blijft van toepassing op uiteindelijke aanroepen:
 
-- beleid voor het toestaan en weigeren van tools
+- tool-allow- en deny-beleid
 - toolbeperkingen per agent en per sandbox
-- owner-only-afscherming
+- toolbeleid van kanaal/runtime
 - goedkeuringshooks
 - Plugin-`before_tool_call`-hooks
 - sessie-identiteit, logs en telemetrie
 
 ## Configuratie
 
-Schakel Tool Search in voor PI-runs met de standaard codebridge:
+Schakel Tool Search voor OpenClaw-runs in met de standaard codebrug:
 
 ```bash
 openclaw config set tools.toolSearch true
 ```
 
-Equivalent JSON:
+Equivalente JSON:
 
 ```json5
 {
@@ -180,7 +206,7 @@ Equivalent JSON:
 }
 ```
 
-Gebruik in plaats daarvan de gestructureerde fallbacktools voor PI-runs:
+Gebruik in plaats daarvan de gestructureerde fallback-tools voor OpenClaw-runs:
 
 ```json5
 {
@@ -192,7 +218,19 @@ Gebruik in plaats daarvan de gestructureerde fallbacktools voor PI-runs:
 }
 ```
 
-Stem de time-out voor code mode en limieten voor zoekresultaten af:
+Gebruik in plaats daarvan het compacte directory-oppervlak voor OpenClaw-runs:
+
+```json5
+{
+  tools: {
+    toolSearch: {
+      mode: "directory",
+    },
+  },
+}
+```
+
+Stem de code-mode-time-out en limieten voor zoekresultaten af:
 
 ```json5
 {
@@ -219,57 +257,57 @@ Schakel het uit:
 
 ## Prompt en telemetrie
 
-Tool Search registreert voldoende telemetrie om het te vergelijken met directe toolblootstelling:
+Tool Search legt genoeg telemetrie vast om het te vergelijken met directe toolblootstelling:
 
-- totaal aantal geserialiseerde tool- en promptbytes dat naar de harness is gestuurd
-- catalogusgrootte en uitsplitsing per bron
-- aantallen voor zoeken, beschrijven en aanroepen
-- definitieve toolaanroepen uitgevoerd via OpenClaw
+- totaal aantal geserialiseerde tool- en promptbytes dat naar de harness is verzonden
+- catalogusgrootte en bronuitsplitsing
+- aantallen zoek-, beschrijf- en aanroepacties
+- uiteindelijke toolaanroepen uitgevoerd via OpenClaw
 - geselecteerde tool-id's en bronnen
 
-Sessielogs zouden het mogelijk moeten maken om te beantwoorden:
+Sessielogs moeten het mogelijk maken te beantwoorden:
 
 - hoeveel toolschema's het model vooraf zag
-- hoeveel zoek- en beschrijfbewerkingen het heeft uitgevoerd
-- welke definitieve tool is aangeroepen
+- hoeveel zoek- en beschrijfbewerkingen het uitvoerde
+- welke uiteindelijke tool werd aangeroepen
 - of het resultaat afkomstig was van OpenClaw, MCP of een clienttool
 
 ## E2E-validatie
 
-De Gateway E2E-runner bewijst beide paden met de PI-harness:
+De Gateway E2E-runner bewijst beide paden met de OpenClaw-runtime:
 
 ```bash
 node --import tsx scripts/tool-search-gateway-e2e.ts
 ```
 
 Deze maakt een tijdelijke nep-Plugin met een grote toolcatalogus, start de mock-
-OpenAI-provider, start een Gateway één keer in directe modus en één keer met Tool Search
-ingeschakeld, en vergelijkt vervolgens provider-requestpayloads en sessielogs.
+OpenAI-provider, start eenmaal een Gateway in directe modus en eenmaal met Tool Search
+ingeschakeld, en vergelijkt daarna provider-aanvraagpayloads en sessielogs.
 
 De regressie bewijst:
 
 1. Directe modus kan de nep-Plugin-tool aanroepen.
 2. Tool Search kan dezelfde nep-Plugin-tool aanroepen.
 3. Directe modus stelt de schema's van de nep-Plugin-tool rechtstreeks beschikbaar aan de provider.
-4. Tool Search stelt alleen de compacte bridge beschikbaar.
-5. De Tool Search-requestpayload is kleiner voor de grote nepcatalogus.
-6. Sessielogs tonen de verwachte aantallen toolaanroepen en telemetrie voor bridged calls.
+4. Tool Search stelt alleen de compacte brug beschikbaar.
+5. De Tool Search-aanvraagpayload is kleiner voor de grote nepcatalogus.
+6. Sessielogs tonen de verwachte aantallen toolaanroepen en telemetrie voor overbrugde aanroepen.
 
 ## Faalgedrag
 
 Tool Search moet gesloten falen:
 
 - als een tool niet in het effectieve beleid staat, mag zoeken deze niet retourneren
-- als een geselecteerde tool niet meer beschikbaar is, moet `tool_call` mislukken
+- als een geselecteerde tool niet meer beschikbaar is, moet `tool_call` falen
 - als beleid of goedkeuring uitvoering blokkeert, moet het aanroepresultaat die
-  blokkade melden in plaats van deze te omzeilen
-- als de codebridge geen geïsoleerde runtime kan maken, gebruik dan `mode: "tools"` of
+  blokkade rapporteren in plaats van deze te omzeilen
+- als de codebrug geen geïsoleerde runtime kan maken, gebruik dan `mode: "tools"` of
   schakel Tool Search uit voor die deployment
 
 ## Gerelateerd
 
 - [Tools en plugins](/nl/tools)
-- [Multi-agent sandbox en tools](/nl/tools/multi-agent-sandbox-tools)
+- [Multi-agent-sandbox en tools](/nl/tools/multi-agent-sandbox-tools)
 - [Exec-tool](/nl/tools/exec)
 - [ACP-agenten instellen](/nl/tools/acp-agents-setup)
 - [Plugins bouwen](/nl/plugins/building-plugins)

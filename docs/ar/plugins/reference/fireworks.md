@@ -1,13 +1,14 @@
 ---
 read_when:
-    - أنت تثبّت Plugin fireworks أو تهيّئه أو تدقّقه
-summary: يضيف دعم مزوّد نماذج Fireworks إلى OpenClaw.
+    - أنت تثبّت أو تهيئ أو تدقق Plugin fireworks
+summary: يضيف دعم موفّر نماذج Fireworks إلى OpenClaw.
 title: Plugin Fireworks
 x-i18n:
-    generated_at: "2026-05-02T20:55:57Z"
+    generated_at: "2026-06-27T18:12:30Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3f2cd88b332cf09840d042782175fa20d6f4ec52b8de9fbef3e33eb988854edf
+    source_hash: 1750e345f485fa7d8735a16278422188ad761b0c682cd5f09227f4407d502203
     source_path: plugins/reference/fireworks.md
     workflow: 16
 ---
@@ -19,9 +20,9 @@ x-i18n:
 ## التوزيع
 
 - الحزمة: `@openclaw/fireworks-provider`
-- مسار التثبيت: مضمّن في OpenClaw
+- مسار التثبيت: npm؛ ClawHub: `clawhub:@openclaw/fireworks-provider`
 
-## السطح
+## الواجهة
 
 providers: fireworks
 

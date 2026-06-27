@@ -1,26 +1,27 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de memory-core Plugin
-summary: Voegt ondersteuning toe voor providers voor geheugen-embeddings. Voegt door agents aanroepbare tools toe.
-title: Memory Core-Plugin
+    - U installeert, configureert of controleert de memory-core-plugin
+summary: Voegt door agents aanroepbare tools toe.
+title: Memory Core-plugin
 x-i18n:
-    generated_at: "2026-05-02T20:52:32Z"
+    generated_at: "2026-06-27T18:02:05Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7c9c5d79e5a17c13592f2d485ac24a5e2e5e3640ea68fc5315a6ba8f1640e0ef
+    source_hash: cda6ebb02b0e4c1616f68c3c9636b269248b4c63ca5f778d7f8c48152b27f303
     source_path: plugins/reference/memory-core.md
     workflow: 16
 ---
 
-# Memory Core Plugin
+# Memory Core-Plugin
 
-Voegt ondersteuning toe voor geheugen-embeddingproviders. Voegt door agents aanroepbare tools toe.
+Voegt hulpmiddelen toe die door agents kunnen worden aangeroepen.
 
 ## Distributie
 
 - Pakket: `@openclaw/memory-core`
 - Installatieroute: inbegrepen in OpenClaw
 
-## Interface
+## Oppervlak
 
-contracts: memoryEmbeddingProviders, tools
+contracts: tools

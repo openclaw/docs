@@ -1,20 +1,21 @@
 ---
 read_when:
     - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin lobster
-summary: Công cụ quy trình làm việc được định kiểu với các phê duyệt có thể tiếp tục.
-title: Plugin Tôm hùm
+summary: Plugin công cụ quy trình làm việc Lobster cho các pipeline có kiểu và phê duyệt có thể tiếp tục.
+title: Plugin Lobster
 x-i18n:
-    generated_at: "2026-05-03T10:41:53Z"
+    generated_at: "2026-06-27T17:53:38Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 50b4849c8ea841a543655eead358c550f223a3100ac538b41c27f59706e6cf27
+    source_hash: b91ea189fe8339380e2a7ef8a8761ea1591e1f1d8459b4a554211128c33f338b
     source_path: plugins/reference/lobster.md
     workflow: 16
 ---
 
 # Plugin Lobster
 
-Công cụ quy trình làm việc được định kiểu với các phê duyệt có thể tiếp tục.
+Plugin công cụ quy trình làm việc Lobster cho các pipeline có kiểu và các phê duyệt có thể tiếp tục.
 
 ## Phân phối
 
@@ -23,4 +24,4 @@ Công cụ quy trình làm việc được định kiểu với các phê duyệ
 
 ## Bề mặt
 
-hợp đồng: công cụ
+contracts: tools

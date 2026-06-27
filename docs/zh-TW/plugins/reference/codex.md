@@ -1,29 +1,30 @@
 ---
 read_when:
-    - 您正在安裝、設定或稽核 codex Plugin
-summary: Codex app-server 測試框架和由 Codex 管理的 GPT 模型目錄。
-title: Codex Plugin
+    - 你正在安裝、設定或稽核 codex 外掛
+summary: OpenClaw Codex 應用程式伺服器測試框架與模型提供者外掛，搭配由 Codex 管理的 GPT 目錄。
+title: Codex 外掛
 x-i18n:
-    generated_at: "2026-05-03T21:39:56Z"
+    generated_at: "2026-06-27T19:41:44Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c049ce912109d9489a3bcdf31aa01668802ab4b9ded8fdd63e470a5901b261c5
+    source_hash: 8b9c123c0f72d6fb2a8d089ba8ad2cb3227a6c201925678124bd504324392253
     source_path: plugins/reference/codex.md
     workflow: 16
 ---
 
-# Codex Plugin
+# Codex 外掛
 
-Codex 應用程式伺服器測試框架和 Codex 管理的 GPT 模型目錄。
+OpenClaw Codex 應用程式伺服器框架與模型提供者外掛，搭配由 Codex 管理的 GPT 目錄。
 
-## 發行
+## 分發
 
 - 套件：`@openclaw/codex`
 - 安裝途徑：npm；ClawHub
 
 ## 介面
 
-提供者：codex；合約：mediaUnderstandingProviders、migrationProviders
+提供者：codex；合約：mediaUnderstandingProviders, migrationProviders, webSearchProviders
 
 ## 相關文件
 

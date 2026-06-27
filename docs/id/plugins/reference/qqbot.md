@@ -1,20 +1,21 @@
 ---
 read_when:
     - Anda sedang menginstal, mengonfigurasi, atau mengaudit Plugin qqbot
-summary: Menambahkan permukaan kanal QQ Bot untuk mengirim dan menerima pesan OpenClaw.
-title: Plugin Bot QQ
+summary: Plugin kanal Bot QQ OpenClaw untuk alur kerja grup dan pesan langsung.
+title: Plugin bot QQ
 x-i18n:
-    generated_at: "2026-05-03T09:21:14Z"
+    generated_at: "2026-06-27T17:56:30Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 988c342ef1cabeda5e3ede7ea598e3a96945bf814f9f823f17e1c357bfe3bf9c
+    source_hash: 10e67c8c8bd01a2fcd3ca55c32f6941cd52551ad241cb16a2ea38c62d80cfeb9
     source_path: plugins/reference/qqbot.md
     workflow: 16
 ---
 
 # Plugin QQ Bot
 
-Menambahkan permukaan channel QQ Bot untuk mengirim dan menerima pesan OpenClaw.
+Plugin saluran OpenClaw QQ Bot untuk alur kerja grup dan pesan langsung.
 
 ## Distribusi
 
@@ -23,7 +24,7 @@ Menambahkan permukaan channel QQ Bot untuk mengirim dan menerima pesan OpenClaw.
 
 ## Permukaan
 
-channel: qqbot; kontrak: alat; Skills
+channels: qqbot; contracts: tools; skills
 
 ## Dokumentasi terkait
 

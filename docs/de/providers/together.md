@@ -1,14 +1,15 @@
 ---
 read_when:
     - Sie möchten Together AI mit OpenClaw verwenden
-    - Sie benötigen die Umgebungsvariable für den API-Schlüssel oder die CLI-Authentifizierungsoption
+    - Sie benötigen die Umgebungsvariable für den API-Schlüssel oder die Authentifizierungsauswahl der CLI
 summary: Einrichtung von Together AI (Authentifizierung + Modellauswahl)
 title: Together AI
 x-i18n:
-    generated_at: "2026-04-30T07:12:08Z"
+    generated_at: "2026-06-27T18:07:33Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a7713c0b1e64014bbdd87a120de0a950b583afd1481338f2c6cccfb2b7da76e7
+    source_hash: a1f803ae88828a775d93dcf8b0b62e70b1dbd0cf963639121e2995fabfcd280b
     source_path: providers/together.md
     workflow: 16
 ---
@@ -40,7 +41,9 @@ Modelle wie Llama, DeepSeek, Kimi und weitere über eine einheitliche API.
     {
       agents: {
         defaults: {
-          model: { primary: "together/moonshotai/Kimi-K2.5" },
+          model: {
+            primary: "together/meta-llama/Llama-3.3-70B-Instruct-Turbo",
+          },
         },
       },
     }
@@ -58,36 +61,34 @@ openclaw onboard --non-interactive \
 ```
 
 <Note>
-Die Onboarding-Voreinstellung legt `together/moonshotai/Kimi-K2.5` als Standardmodell fest.
+Die Onboarding-Voreinstellung legt
+`together/meta-llama/Llama-3.3-70B-Instruct-Turbo` als Standardmodell fest.
 </Note>
 
 ## Integrierter Katalog
 
 OpenClaw liefert diesen gebündelten Together-Katalog mit:
 
-| Modellreferenz                                               | Name                                   | Eingabe     | Kontext    | Hinweise                                  |
-| ------------------------------------------------------------ | -------------------------------------- | ----------- | ---------- | ----------------------------------------- |
-| `together/moonshotai/Kimi-K2.5`                              | Kimi K2.5                              | Text, Bild  | 262,144    | Standardmodell; Reasoning aktiviert       |
-| `together/zai-org/GLM-4.7`                                   | GLM 4.7 Fp8                            | Text        | 202,752    | Allzweck-Textmodell                       |
-| `together/meta-llama/Llama-3.3-70B-Instruct-Turbo`           | Llama 3.3 70B Instruct Turbo           | Text        | 131,072    | Schnelles Instruktionsmodell              |
-| `together/meta-llama/Llama-4-Scout-17B-16E-Instruct`         | Llama 4 Scout 17B 16E Instruct         | Text, Bild  | 10,000,000 | Multimodal                                |
-| `together/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8` | Llama 4 Maverick 17B 128E Instruct FP8 | Text, Bild  | 20,000,000 | Multimodal                                |
-| `together/deepseek-ai/DeepSeek-V3.1`                         | DeepSeek V3.1                          | Text        | 131,072    | Allgemeines Textmodell                    |
-| `together/deepseek-ai/DeepSeek-R1`                           | DeepSeek R1                            | Text        | 131,072    | Reasoning-Modell                          |
-| `together/moonshotai/Kimi-K2-Instruct-0905`                  | Kimi K2-Instruct 0905                  | Text        | 262,144    | Sekundäres Kimi-Textmodell                |
+| Modell-Ref                                         | Name                         | Eingabe     | Kontext | Hinweise             |
+| -------------------------------------------------- | ---------------------------- | ----------- | ------- | -------------------- |
+| `together/meta-llama/Llama-3.3-70B-Instruct-Turbo` | Llama 3.3 70B Instruct Turbo | Text        | 131.072 | Standardmodell       |
+| `together/moonshotai/Kimi-K2.6`                    | Kimi K2.6 FP4                | Text, Bild  | 262.144 | Kimi Reasoning Model |
+| `together/deepseek-ai/DeepSeek-V4-Pro`             | DeepSeek V4 Pro              | Text        | 512.000 | Reasoning-Textmodell |
+| `together/Qwen/Qwen2.5-7B-Instruct-Turbo`          | Qwen2.5 7B Instruct Turbo    | Text        | 32.768  | Schnelles Textmodell |
+| `together/zai-org/GLM-5.1`                         | GLM 5.1 FP4                  | Text        | 202.752 | Reasoning-Textmodell |
 
 ## Videogenerierung
 
-Das gebündelte `together`-Plugin registriert außerdem Videogenerierung über das
+Das gebündelte `together`-Plugin registriert außerdem die Videogenerierung über das
 gemeinsame Tool `video_generate`.
 
-| Eigenschaft              | Wert                                  |
-| ------------------------ | ------------------------------------- |
-| Standard-Videomodell     | `together/Wan-AI/Wan2.2-T2V-A14B`     |
-| Modi                     | Text-zu-Video, Einzelbildreferenz     |
-| Unterstützte Parameter   | `aspectRatio`, `resolution`           |
+| Eigenschaft            | Wert                                                                                     |
+| ---------------------- | ---------------------------------------------------------------------------------------- |
+| Standard-Videomodell   | `together/Wan-AI/Wan2.2-T2V-A14B`                                                        |
+| Modi                   | Text-zu-Video; Einzelbildreferenz nur mit `Wan-AI/Wan2.2-I2V-A14B`                       |
+| Unterstützte Parameter | `aspectRatio`, `resolution`                                                              |
 
-So verwenden Sie Together als Standard-Provider für Video:
+So verwenden Sie Together als Standard-Video-Provider:
 
 ```json5
 {
@@ -107,15 +108,15 @@ Provider-Auswahl und das Failover-Verhalten.
 </Tip>
 
 <AccordionGroup>
-  <Accordion title="Hinweis zur Umgebung">
-    Wenn der Gateway als Daemon läuft (launchd/systemd), stellen Sie sicher,
+  <Accordion title="Umgebungshinweis">
+    Wenn der Gateway als Daemon ausgeführt wird (launchd/systemd), stellen Sie sicher,
     dass `TOGETHER_API_KEY` für diesen Prozess verfügbar ist (zum Beispiel in
     `~/.openclaw/.env` oder über `env.shellEnv`).
 
     <Warning>
-    Schlüssel, die nur in Ihrer interaktiven Shell gesetzt sind, sind für daemonverwaltete
-    Gateway-Prozesse nicht sichtbar. Verwenden Sie `~/.openclaw/.env` oder die
-    Konfiguration `env.shellEnv` für dauerhafte Verfügbarkeit.
+    Schlüssel, die nur in Ihrer interaktiven Shell gesetzt sind, sind für von Daemons
+    verwaltete Gateway-Prozesse nicht sichtbar. Verwenden Sie die Konfiguration
+    `~/.openclaw/.env` oder `env.shellEnv` für dauerhafte Verfügbarkeit.
     </Warning>
 
   </Accordion>
@@ -124,19 +125,19 @@ Provider-Auswahl und das Failover-Verhalten.
     - Prüfen Sie, ob Ihr Schlüssel funktioniert: `openclaw models list --provider together`
     - Wenn Modelle nicht angezeigt werden, bestätigen Sie, dass der API-Schlüssel in der richtigen
       Umgebung für Ihren Gateway-Prozess gesetzt ist.
-    - Modellreferenzen verwenden die Form `together/<model-id>`.
+    - Modell-Refs verwenden die Form `together/<model-id>`.
 
   </Accordion>
 </AccordionGroup>
 
-## Verwandte Themen
+## Verwandt
 
 <CardGroup cols={2}>
   <Card title="Modellauswahl" href="/de/concepts/model-providers" icon="layers">
-    Provider-Regeln, Modellreferenzen und Failover-Verhalten.
+    Provider-Regeln, Modell-Refs und Failover-Verhalten.
   </Card>
   <Card title="Videogenerierung" href="/de/tools/video-generation" icon="video">
-    Gemeinsame Videogenerierungs-Tool-Parameter und Provider-Auswahl.
+    Gemeinsame Tool-Parameter für die Videogenerierung und Provider-Auswahl.
   </Card>
   <Card title="Konfigurationsreferenz" href="/de/gateway/configuration-reference" icon="gear">
     Vollständiges Konfigurationsschema einschließlich Provider-Einstellungen.

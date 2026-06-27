@@ -1,93 +1,157 @@
 ---
 read_when:
-    - Publikowanie umiejętności lub pluginu
-    - Debugowanie błędów zakresu właściciela lub pakietu
-    - Dodawanie interfejsu publikowania, CLI lub zachowania backendu
+    - Publikowanie umiejętności lub Plugin
+    - Debugowanie błędów właściciela lub zakresu pakietu
+    - Dodawanie zachowania publikowania w UI, CLI lub backendzie
 summary: Jak działa publikowanie w ClawHub dla Skills, pluginów, właścicieli, zakresów, wydań i weryfikacji.
 x-i18n:
-    generated_at: "2026-05-11T20:24:41Z"
+    generated_at: "2026-06-27T17:17:50Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 566c37b7845159ad100837e34bed7c60411bba6a0b3436ab899fe5e345237727
+    source_hash: 5c0270c0bc3316d970feddfc689c1125e1c90a62beeb40d8098dc6a6752cfa70
     source_path: clawhub/publishing.md
     workflow: 16
 ---
 
 # Publikowanie
 
-Publikowanie w ClawHub ma zakres właściciela: każda publikacja wskazuje wydawcę, a
-serwer decyduje, czy zalogowany użytkownik ma prawo tam publikować.
+Publikowanie wysyła folder Skills lub pakiet pluginu do ClawHub pod wybranym
+właścicielem. ClawHub sprawdza, czy Twój token może publikować dla tego
+właściciela, weryfikuje metadane, nazwę, wersję, pliki i informacje o źródle,
+a następnie zapisuje wydanie i uruchamia automatyczne kontrole bezpieczeństwa.
 
-## Właściciele
-
-Właściciel to identyfikator wydawcy w ClawHub, taki jak `@alice` lub `@openclaw`.
-Właściciele osobowi są tworzeni dla użytkowników. Właściciele organizacyjni mogą mieć wielu członków.
-
-Podczas publikowania używasz swojego właściciela osobowego albo wybierasz właściciela organizacyjnego,
-u którego masz dostęp wydawcy.
+Jeśli walidacja się nie powiedzie, nic nie zostanie opublikowane. Nowe wydania
+mogą też pozostać niedostępne w standardowych miejscach instalacji i pobierania,
+dopóki przegląd się nie zakończy.
 
 ## Skills
 
-Skills publikuje się z folderu skill. Strona publiczna to:
+Najprostszą ścieżką publikowania jest CLI. Zaloguj się, a następnie opublikuj
+lokalny folder Skills:
 
-```text
-https://clawhub.ai/<owner>/<slug>
+```bash
+clawhub login
+clawhub skill publish ./my-skill \
+  --slug my-skill \
+  --name "My Skill" \
+  --owner <owner>
 ```
 
-Przykład:
+Użyj `--owner <handle>` podczas publikowania jako właściciel organizacji. Pomiń
+ten argument, aby publikować jako uwierzytelniony użytkownik. Publikowanie
+pomija niezmienioną zawartość. Nowe Skills zaczyna od wersji `1.0.0`, a późniejsze
+zmiany automatycznie publikują kolejną wersję poprawkową. Przekaż `--version`
+tylko wtedy, gdy potrzebujesz jawnej wersji.
 
-```text
-https://clawhub.ai/alice/review-helper
+W przypadku repozytoriów katalogu użyj wielokrotnego użytku workflow
+[`skill-publish.yml` ClawHub](https://github.com/openclaw/clawhub/blob/main/.github/workflows/skill-publish.yml).
+Wywołuje on `skill publish` dla każdego bezpośredniego folderu Skills pod
+`root` (domyślnie: `skills`) albo tylko dla folderu podanego jako `skill_path`.
+
+```yaml
+jobs:
+  publish:
+    uses: openclaw/clawhub/.github/workflows/skill-publish.yml@main
+    with:
+      owner: <owner>
+      dry_run: false
+    secrets:
+      clawhub_token: ${{ secrets.CLAWHUB_TOKEN }}
 ```
 
-Żądanie publikacji obejmuje wybranego właściciela, slug, wersję, dziennik zmian i
-pliki. Serwer sprawdza, czy aktor może publikować jako ten właściciel, zanim
-utworzy wydanie.
-
-Aby przenieść istniejący skill do innego właściciela podczas publikowania nowej wersji, wybierz
-nowego właściciela i jawnie potwierdź przeniesienie własności. W CLI/API przekaż
-docelowego właściciela oraz zgodę na migrację:
-
-```sh
-clawhub skill publish ./review-helper --owner openclaw --migrate-owner --version 1.2.0
-```
-
-Migracja właściciela skill wymaga dostępu administratora lub właściciela zarówno u bieżącego właściciela,
-jak i u właściciela docelowego. Zachowuje skill, historię wersji, statystyki,
-komentarze, forki, aliasy i ścieżkę audytu; adresy URL starego właściciela nadal działają przez
-ścieżkę aliasu/przekierowania.
+Użyj `dry_run: true`, aby podejrzeć nowe i zmienione Skills bez publikowania.
 
 ## Pluginy
 
-Pluginy używają nazw pakietów w stylu npm. Nazwy pakietów z zakresem zawierają właściciela w
-pierwszej części nazwy:
+Pluginy używają nazw pakietów w stylu npm. Nazwy pakietów z zakresem zawierają
+właściciela w pierwszej części nazwy:
 
 ```text
 @owner/package-name
 ```
 
-Zakres musi odpowiadać wybranemu właścicielowi publikacji. Jeśli pakiet nazywa się
-`@openclaw/dronzer`, można go opublikować tylko jako `@openclaw`. Jeśli publikujesz jako
-`@vintageayu`, zmień nazwę pakietu na `@vintageayu/dronzer`.
+Zakres musi pasować do wybranego właściciela publikacji. Jeśli Twój pakiet nosi
+nazwę `@openclaw/dronzer`, może zostać opublikowany tylko jako `@openclaw`.
+Jeśli publikujesz jako `@vintageayu`, zmień nazwę pakietu na
+`@vintageayu/dronzer`.
 
-Zapobiega to sytuacji, w której pakiet rości sobie prawo do przestrzeni nazw organizacji, której wydawca
-nie kontroluje.
+Zapobiega to sytuacji, w której pakiet rości sobie prawo do przestrzeni nazw
+organizacji, której publikujący nie kontroluje.
 
-## Przebieg wydania
+Jeśli jesteś prawowitym właścicielem organizacji, marki, zakresu pakietu,
+uchwytu właściciela lub przestrzeni nazw, która jest już zajęta albo
+zarezerwowana w ClawHub, otwórz
+[zgłoszenie roszczenia organizacji / przestrzeni nazw](https://github.com/openclaw/clawhub/issues/new?template=org-namespace-claim.yml)
+z publicznym, niewrażliwym dowodem. Zobacz
+[Roszczenia organizacji i przestrzeni nazw](/pl/clawhub/namespace-claims), aby
+sprawdzić, co dołączyć, a czego nie umieszczać w publicznych zgłoszeniach.
 
-1. Interfejs użytkownika, CLI lub workflow GitHub zbiera metadane pakietu i pliki.
-2. Żądanie publikacji jest wysyłane do ClawHub z wybranym właścicielem.
-3. Serwer weryfikuje uprawnienia właściciela, zakres pakietu, nazwę pakietu, wersję,
-   limity plików i metadane źródła.
-4. ClawHub zapisuje wydanie i uruchamia automatyczne kontrole bezpieczeństwa.
-5. Nowe wydania są ukryte przed standardowymi powierzchniami instalacji/pobierania do czasu zakończenia
-   przeglądu i weryfikacji.
+### Przed opublikowaniem pluginu
 
-Jeśli weryfikacja nie powiedzie się, wydanie nie zostanie utworzone.
+- Wybierz właściciela pasującego do zakresu pakietu.
+- Dołącz `openclaw.plugin.json`. Pluginy kodowe potrzebują też `package.json` z
+  `openclaw.compat.pluginApi` i `openclaw.build.openclawVersion`.
+- Aby pokazać niestandardową ikonę karty pluginu, dodaj `icon` do
+  `openclaw.plugin.json` z dowolnym adresem URL obrazu HTTPS.
+- Dołącz repozytorium źródłowe i metadane dokładnego commita albo użyj CLI z
+  checkoutu opartego na GitHub, aby mogło je wykryć.
+- Uruchom `clawhub package validate <source>` przed publikacją. W przypadku
+  ustaleń dotyczących pakietu, manifestu, importu SDK lub artefaktu zobacz
+  [Poprawki walidacji pluginów](/pl/clawhub/plugin-validation-fixes).
+- Uruchom `clawhub package publish <source> --dry-run` przed utworzeniem wydania.
+- Spodziewaj się, że nowe wydania pozostaną poza publicznymi miejscami
+  instalacji, dopóki nie zakończą się automatyczne kontrole bezpieczeństwa i
+  weryfikacja.
 
-## FAQ
+### Zaufane publikowanie pakietów
 
-### Zakres pakietu musi odpowiadać wybranemu właścicielowi
+Zaufane publikowanie pakietu wymaga dwuetapowej konfiguracji:
+
+1. Opublikuj pakiet raz przez standardowe ręczne lub uwierzytelnione tokenem
+   `clawhub package publish`. Tworzy to wiersz pakietu i ustanawia menedżerów
+   pakietu, którzy mogą zmieniać jego konfigurację zaufanego publikującego.
+2. Menedżer pakietu ustawia konfigurację zaufanego publikującego GitHub Actions:
+
+```bash
+clawhub package trusted-publisher set @owner/package-name \
+  --repository owner/repo \
+  --workflow-filename package-publish.yml
+```
+
+Po ustawieniu konfiguracji przyszłe obsługiwane publikacje GitHub Actions mogą
+używać OIDC/zaufanego publikowania bez przechowywania długotrwałego tokena
+ClawHub w repozytorium. Skonfigurowane repozytorium i nazwa pliku workflow muszą
+pasować do roszczenia OIDC GitHub Actions. Jeśli przekażesz też
+`--environment <name>`, roszczenie środowiska GitHub Actions musi dokładnie
+pasować do tej nazwy.
+
+ClawHub weryfikuje skonfigurowane repozytorium GitHub podczas ustawiania
+konfiguracji zaufanego publikującego. Repozytoria publiczne można zweryfikować
+przez publiczne metadane GitHub. Repozytoria prywatne wymagają, aby ClawHub miał
+dostęp GitHub do tego repozytorium, na przykład przez przyszłą instalację ClawHub
+GitHub App lub inną autoryzowaną integrację GitHub.
+
+Obecny workflow publikowania pakietów wielokrotnego użytku obsługuje zaufane
+publikowanie bez sekretów dla publikacji `workflow_dispatch`, gdy dostępne jest
+`id-token: write`. Rzeczywiste publikacje z wypchnięcia tagu nadal potrzebują
+`clawhub_token`, więc zachowaj `CLAWHUB_TOKEN` dla wydań tagów, pierwszych
+publikacji, niezaufanych pakietów lub publikacji awaryjnych.
+
+Sprawdź lub usuń konfigurację za pomocą:
+
+```bash
+clawhub package trusted-publisher get @owner/package-name
+clawhub package trusted-publisher delete @owner/package-name
+```
+
+Usunięcie konfiguracji zaufanego publikującego jest ścieżką wycofania. Wyłącza
+przyszłe wystawianie tokenów zaufanego publikowania, dopóki menedżer pakietu nie
+ustawi konfiguracji ponownie.
+
+## Najczęstsze pytania
+
+### Zakres pakietu musi pasować do wybranego właściciela
 
 Jeśli zakres pakietu i wybrany właściciel nie pasują do siebie, ClawHub odrzuca
 publikację:
@@ -97,19 +161,29 @@ Package scope "@openclaw" must match selected owner "@vintageayu".
 Publish as "@openclaw" or rename this package to "@vintageayu/dronzer".
 ```
 
-Aby to naprawić, wybierz właściciela wskazanego przez zakres pakietu albo zmień nazwę
-pakietu tak, aby zakres odpowiadał właścicielowi, jako którego możesz publikować.
+Aby to naprawić, wybierz właściciela wskazanego przez zakres pakietu albo zmień
+nazwę pakietu tak, aby zakres pasował do właściciela, jako którego możesz
+publikować.
 
-Jeśli nazwa pakietu ma już właściwy zakres, ale pakiet należy do
-niewłaściwego wydawcy, zamiast tego przenieś własność:
+Jeśli nazwa pakietu ma już właściwy zakres, ale pakiet należy do niewłaściwego
+publikującego, zamiast tego przenieś własność:
 
 ```sh
 clawhub package transfer @opik/opik-openclaw --to opik
 ```
 
-Używaj transferu pakietu lub skill tylko wtedy, gdy masz dostęp administratora zarówno do
-bieżącego właściciela, jak i wydawcy docelowego. Transfer pakietu nie pozwala
-publikować w zakresie, którego nie możesz zarządzać.
+Używaj przenoszenia pakietu lub Skills tylko wtedy, gdy masz dostęp
+administracyjny zarówno do bieżącego właściciela, jak i do docelowego
+publikującego. Przeniesienie pakietu nie pozwala publikować w zakresie, którym
+nie możesz zarządzać.
 
-Chroni to przestrzenie nazw organizacji. Pakiet o nazwie `@openclaw/dronzer` rości sobie prawo do
-przestrzeni nazw `@openclaw`, więc publikować go mogą tylko wydawcy z dostępem do właściciela `@openclaw`.
+Jeśli nie masz dostępu do bieżącego właściciela, ale uważasz, że Twoja
+organizacja, projekt lub marka jest prawowitym właścicielem przestrzeni nazw,
+otwórz
+[zgłoszenie roszczenia organizacji / przestrzeni nazw](https://github.com/openclaw/clawhub/issues/new?template=org-namespace-claim.yml)
+z publicznym, niewrażliwym dowodem do przeglądu przez zespół. Przed zgłoszeniem
+zobacz [Roszczenia organizacji i przestrzeni nazw](/pl/clawhub/namespace-claims).
+
+Chroni to przestrzenie nazw organizacji. Pakiet o nazwie `@openclaw/dronzer`
+rości sobie prawo do przestrzeni nazw `@openclaw`, więc tylko publikujący z
+dostępem do właściciela `@openclaw` mogą go opublikować.

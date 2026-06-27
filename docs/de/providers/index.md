@@ -1,14 +1,15 @@
 ---
 read_when:
     - Sie möchten einen Modell-Provider auswählen
-    - Sie benötigen einen schnellen Überblick über die unterstützten LLM-Backends
+    - Sie benötigen einen schnellen Überblick über unterstützte LLM-Backends
 summary: Von OpenClaw unterstützte Modell-Provider (LLMs)
 title: Provider-Verzeichnis
 x-i18n:
-    generated_at: "2026-05-06T07:00:57Z"
+    generated_at: "2026-06-27T18:04:38Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cfc3a15880a5e1881c1a58c60c9ad7e5624350a8db848d03c7cef6ee18c14b81
+    source_hash: a340f6a48f6f1d50116316f9679b009365cd617b3453ebd9b2b31e70f6b94c31
     source_path: providers/index.md
     workflow: 16
 ---
@@ -20,7 +21,7 @@ Suchen Sie Dokumentation zu Chat-Kanälen (WhatsApp/Telegram/Discord/Slack/Matte
 
 ## Schnellstart
 
-1. Authentifizieren Sie sich beim Provider (in der Regel über `openclaw onboard`).
+1. Authentifizieren Sie sich beim Provider (normalerweise über `openclaw onboard`).
 2. Legen Sie das Standardmodell fest:
 
 ```json5
@@ -40,18 +41,20 @@ Suchen Sie Dokumentation zu Chat-Kanälen (WhatsApp/Telegram/Discord/Slack/Matte
 - [BytePlus (International)](/de/concepts/model-providers#byteplus-international)
 - [Cerebras](/de/providers/cerebras)
 - [Chutes](/de/providers/chutes)
+- [Cohere](/de/providers/cohere)
 - [Cloudflare AI Gateway](/de/providers/cloudflare-ai-gateway)
 - [ComfyUI](/de/providers/comfy)
 - [DeepSeek](/de/providers/deepseek)
+- [ds4 (lokales DeepSeek V4)](/de/providers/ds4)
 - [ElevenLabs](/de/providers/elevenlabs)
 - [fal](/de/providers/fal)
 - [Fireworks](/de/providers/fireworks)
 - [GitHub Copilot](/de/providers/github-copilot)
-- [GLM-Modelle](/de/providers/glm)
+- [GMI Cloud](/de/providers/gmi)
 - [Google (Gemini)](/de/providers/google)
 - [Gradium](/de/providers/gradium)
 - [Groq (LPU-Inferenz)](/de/providers/groq)
-- [Hugging Face (Inference)](/de/providers/huggingface)
+- [Hugging Face (Inferenz)](/de/providers/huggingface)
 - [inferrs (lokale Modelle)](/de/providers/inferrs)
 - [Kilocode](/de/providers/kilocode)
 - [LiteLLM (einheitlicher Gateway)](/de/providers/litellm)
@@ -60,7 +63,9 @@ Suchen Sie Dokumentation zu Chat-Kanälen (WhatsApp/Telegram/Discord/Slack/Matte
 - [Mistral](/de/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/de/providers/moonshot)
 - [NVIDIA](/de/providers/nvidia)
+- [NovitaAI](/de/providers/novita)
 - [Ollama (Cloud + lokale Modelle)](/de/providers/ollama)
+- [Ollama Cloud](/de/providers/ollama-cloud)
 - [OpenAI (API + Codex)](/de/providers/openai)
 - [OpenCode](/de/providers/opencode)
 - [OpenCode Go](/de/providers/opencode-go)
@@ -68,6 +73,7 @@ Suchen Sie Dokumentation zu Chat-Kanälen (WhatsApp/Telegram/Discord/Slack/Matte
 - [Perplexity (Websuche)](/de/providers/perplexity-provider)
 - [Qianfan](/de/providers/qianfan)
 - [Qwen Cloud](/de/providers/qwen)
+- [Qwen OAuth / Portal](/de/providers/qwen-oauth)
 - [Runway](/de/providers/runway)
 - [SenseAudio](/de/providers/senseaudio)
 - [SGLang (lokale Modelle)](/de/providers/sglang)
@@ -82,7 +88,7 @@ Suchen Sie Dokumentation zu Chat-Kanälen (WhatsApp/Telegram/Discord/Slack/Matte
 - [Vydra](/de/providers/vydra)
 - [xAI](/de/providers/xai)
 - [Xiaomi](/de/providers/xiaomi)
-- [Z.AI](/de/providers/zai)
+- [Z.AI (GLM)](/de/providers/zai)
 
 ## Gemeinsame Übersichtsseiten
 
@@ -102,7 +108,7 @@ Suchen Sie Dokumentation zu Chat-Kanälen (WhatsApp/Telegram/Discord/Slack/Matte
 
 ## Community-Tools
 
-- [Claude Max API Proxy](/de/providers/claude-max-api-proxy) - Community-Proxy für Claude-Abonnement-Anmeldedaten (prüfen Sie vor der Verwendung die Anthropic-Richtlinien/-Bedingungen)
+- [Claude Max API Proxy](/de/providers/claude-max-api-proxy) - Community-Proxy für Claude-Abonnement-Anmeldedaten (prüfen Sie vor der Nutzung die Richtlinien/Nutzungsbedingungen von Anthropic)
 
-Den vollständigen Provider-Katalog (xAI, Groq, Mistral usw.) und erweiterte Konfiguration
+Den vollständigen Provider-Katalog (xAI, Groq, Mistral usw.) und die erweiterte Konfiguration
 finden Sie unter [Modell-Provider](/de/concepts/model-providers).

@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Vuoi accedere rapidamente alle pagine principali della documentazione
-summary: Link curati alla documentazione OpenClaw più usata.
+    - Vuoi accedere rapidamente alle pagine chiave della documentazione
+summary: Link selezionati alla documentazione OpenClaw più usata.
 title: Directory della documentazione
 x-i18n:
-    generated_at: "2026-05-10T19:52:08Z"
+    generated_at: "2026-06-27T18:16:20Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ddd6903aeb87e36db977b2cef62bd80e84fc67633ca00beb3365ced1f5abdd99
+    source_hash: f7d45effe4df50fb544e9f6fd2fcd87f4ed674eba0042eace757dbfcad93d07a
     source_path: start/docs-directory.md
     workflow: 16
 ---
 
 <Note>
-Questa pagina è un indice curato. Se sei nuovo, inizia da [Guida introduttiva](/it/start/getting-started).
-Per una mappa completa della documentazione, consulta [Hub della documentazione](/it/start/hubs).
+Questa pagina è un indice curato. Se sei alle prime armi, inizia da [Guida introduttiva](/it/start/getting-started).
+Per una mappa completa della documentazione, vedi [Hub della documentazione](/it/start/hubs).
 </Note>
 
 ## Inizia qui
@@ -30,23 +31,23 @@ Per una mappa completa della documentazione, consulta [Hub della documentazione]
 - [Modalità Nix](/it/install/nix)
 - [Configurazione dell'assistente OpenClaw](/it/start/openclaw)
 - [Skills](/it/tools/skills)
-- [Configurazione delle Skills](/it/tools/skills-config)
+- [Configurazione Skills](/it/tools/skills-config)
 - [Modelli di workspace](/it/reference/templates/AGENTS)
 - [Adattatori RPC](/it/reference/rpc)
 - [Runbook del Gateway](/it/gateway)
 - [Nodi (iOS e Android)](/it/nodes)
-- [Superfici web (interfaccia di controllo)](/it/web)
-- [Discovery e trasporti](/it/gateway/discovery)
+- [Superfici web (Control UI)](/it/web)
+- [Rilevamento e trasporti](/it/gateway/discovery)
 - [Accesso remoto](/it/gateway/remote)
 
-## Provider e UX
+## Provider ed esperienza utente
 
 - [WebChat](/it/web/webchat)
-- [Interfaccia di controllo (browser)](/it/web/control-ui)
+- [Control UI (browser)](/it/web/control-ui)
 - [Telegram](/it/channels/telegram)
 - [Discord](/it/channels/discord)
 - [Mattermost](/it/channels/mattermost)
-- [Bot QQ](/it/channels/qqbot)
+- [QQ Bot](/it/channels/qqbot)
 - [iMessage](/it/channels/imessage)
 - [Gruppi](/it/channels/groups)
 - [Messaggi di gruppo WhatsApp](/it/channels/group-messages)
@@ -58,13 +59,13 @@ Per una mappa completa della documentazione, consulta [Hub della documentazione]
 - [App macOS](/it/platforms/macos)
 - [App iOS](/it/platforms/ios)
 - [App Android](/it/platforms/android)
-- [Windows (WSL2)](/it/platforms/windows)
+- [Windows Hub](/it/platforms/windows)
 - [App Linux](/it/platforms/linux)
 
 ## Operazioni e sicurezza
 
 - [Sessioni](/it/concepts/session)
-- [Job Cron](/it/automation/cron-jobs)
+- [Processi Cron](/it/automation/cron-jobs)
 - [Webhook](/it/automation/cron-jobs#webhooks)
 - [Hook Gmail (Pub/Sub)](/it/automation/cron-jobs#gmail-pubsub-integration)
 - [Sicurezza](/it/gateway/security)

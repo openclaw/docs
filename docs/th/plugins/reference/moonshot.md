@@ -4,10 +4,11 @@ read_when:
 summary: เพิ่มการรองรับผู้ให้บริการโมเดล Moonshot ให้กับ OpenClaw.
 title: Plugin Moonshot
 x-i18n:
-    generated_at: "2026-05-02T20:54:22Z"
+    generated_at: "2026-06-27T18:03:41Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 30a828575030bb3b35b0d5a2887682e1d63cba03f1d010cd94b93d99df3e9e2f
+    source_hash: 477307769a710ac8d430a837d7b5ffda012a942f3b44f367bf4ea0770b87f48e
     source_path: plugins/reference/moonshot.md
     workflow: 16
 ---
@@ -16,10 +17,10 @@ x-i18n:
 
 เพิ่มการรองรับผู้ให้บริการโมเดล Moonshot ให้กับ OpenClaw
 
-## การเผยแพร่
+## การแจกจ่าย
 
 - แพ็กเกจ: `@openclaw/moonshot-provider`
-- เส้นทางการติดตั้ง: รวมอยู่ใน OpenClaw
+- เส้นทางติดตั้ง: npm; ClawHub: `clawhub:@openclaw/moonshot-provider`
 
 ## พื้นผิว
 

@@ -1,24 +1,25 @@
 ---
 read_when:
-    - Bạn cần nhật ký gỡ lỗi có mục tiêu mà không cần tăng mức ghi nhật ký toàn cục
-    - Bạn cần thu thập nhật ký theo từng hệ thống con để được hỗ trợ
+    - Bạn cần nhật ký gỡ lỗi có mục tiêu mà không tăng mức ghi nhật ký toàn cục
+    - Bạn cần thu thập nhật ký dành riêng cho hệ thống con để hỗ trợ
 summary: Cờ chẩn đoán cho nhật ký gỡ lỗi có mục tiêu
-title: Cờ chẩn đoán
+title: Các cờ chẩn đoán
 x-i18n:
-    generated_at: "2026-05-02T10:40:24Z"
+    generated_at: "2026-06-27T17:27:30Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1d0ff92d45cf1c5a12a7103ba5b97d656a55a13a7a4f2e86e26ba3a9cfae7687
+    source_hash: c78c5c2f90fb1d601d0a3ef94919310759d58c9f9c70a093c91f31594bc777fb
     source_path: diagnostics/flags.md
     workflow: 16
 ---
 
-Cờ chẩn đoán cho phép bạn bật nhật ký gỡ lỗi có mục tiêu mà không cần bật ghi nhật ký chi tiết ở mọi nơi. Các cờ là tùy chọn bật và không có tác dụng trừ khi một hệ thống con kiểm tra chúng.
+Cờ chẩn đoán cho phép bạn bật các nhật ký gỡ lỗi có mục tiêu mà không cần bật ghi nhật ký chi tiết ở mọi nơi. Các cờ là tùy chọn bật và không có hiệu lực trừ khi một hệ thống con kiểm tra chúng.
 
 ## Cách hoạt động
 
 - Cờ là chuỗi (không phân biệt chữ hoa chữ thường).
-- Bạn có thể bật cờ trong cấu hình hoặc qua ghi đè bằng biến môi trường.
+- Bạn có thể bật cờ trong cấu hình hoặc thông qua một ghi đè env.
 - Hỗ trợ ký tự đại diện:
   - `telegram.*` khớp với `telegram.http`
   - `*` bật tất cả cờ
@@ -45,7 +46,7 @@ Nhiều cờ:
 
 Khởi động lại Gateway sau khi thay đổi cờ.
 
-## Ghi đè bằng biến môi trường (một lần)
+## Ghi đè env (một lần)
 
 ```bash
 OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
@@ -57,10 +58,54 @@ Tắt tất cả cờ:
 OPENCLAW_DIAGNOSTICS=0
 ```
 
-## Tạo tác dòng thời gian
+`OPENCLAW_DIAGNOSTICS=0` là một ghi đè tắt ở cấp tiến trình: nó tắt
+các cờ từ cả env và cấu hình cho tiến trình đó.
 
-Cờ `timeline` ghi các sự kiện thời gian khởi động và thời gian chạy có cấu trúc cho
-các bộ kiểm thử QA bên ngoài:
+## Cờ profiling
+
+Cờ profiler bật các khoảng đo thời gian có mục tiêu mà không nâng cấp độ
+ghi nhật ký toàn cục. Chúng bị tắt theo mặc định.
+
+Bật tất cả các span được kiểm soát bởi profiler cho một lần chạy Gateway:
+
+```bash
+OPENCLAW_DIAGNOSTICS=profiler openclaw gateway run
+```
+
+Chỉ bật các span profiler điều phối phản hồi:
+
+```bash
+OPENCLAW_DIAGNOSTICS=reply.profiler openclaw gateway run
+```
+
+Chỉ bật các span profiler khởi động app-server/công cụ/luồng của Codex:
+
+```bash
+OPENCLAW_DIAGNOSTICS=codex.profiler openclaw gateway run
+```
+
+Bật cờ profiler từ cấu hình:
+
+```json
+{
+  "diagnostics": {
+    "flags": ["reply.profiler", "codex.profiler"]
+  }
+}
+```
+
+Khởi động lại Gateway sau khi thay đổi cờ cấu hình. Để tắt một cờ profiler,
+hãy xóa nó khỏi `diagnostics.flags` và khởi động lại. Để tạm thời tắt mọi
+cờ chẩn đoán ngay cả khi cấu hình bật cờ profiler, hãy khởi động tiến trình với:
+
+```bash
+OPENCLAW_DIAGNOSTICS=0 openclaw gateway run
+```
+
+## Artifact timeline
+
+Cờ `timeline` ghi các sự kiện đo thời gian khởi động và thời gian chạy có cấu trúc cho
+các harness QA bên ngoài:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=timeline \
@@ -78,24 +123,25 @@ Bạn cũng có thể bật cờ này trong cấu hình:
 }
 ```
 
-Đường dẫn tệp dòng thời gian vẫn lấy từ
+Đường dẫn tệp timeline vẫn đến từ
 `OPENCLAW_DIAGNOSTICS_TIMELINE_PATH`. Khi `timeline` chỉ được bật từ
-cấu hình, các khoảng thời gian tải cấu hình sớm nhất sẽ không được phát ra vì OpenClaw
-chưa đọc cấu hình; các khoảng thời gian khởi động tiếp theo sử dụng cờ cấu hình.
+cấu hình, các span tải cấu hình sớm nhất không được phát ra vì OpenClaw chưa
+đọc cấu hình; các span khởi động tiếp theo sử dụng cờ cấu hình.
 
 `OPENCLAW_DIAGNOSTICS=1`, `OPENCLAW_DIAGNOSTICS=all`, và
-`OPENCLAW_DIAGNOSTICS=*` cũng bật dòng thời gian vì chúng bật mọi
-cờ chẩn đoán. Nên dùng `timeline` khi bạn chỉ muốn tạo tác thời gian JSONL.
+`OPENCLAW_DIAGNOSTICS=*` cũng bật timeline vì chúng bật mọi
+cờ chẩn đoán. Ưu tiên `timeline` khi bạn chỉ muốn artifact đo thời gian
+JSONL.
 
-Bản ghi dòng thời gian sử dụng bao bọc `openclaw.diagnostics.v1`. Sự kiện có thể bao gồm
-id tiến trình, tên giai đoạn, tên khoảng thời gian, thời lượng, id Plugin, số lượng phụ thuộc,
-mẫu độ trễ vòng lặp sự kiện, tên thao tác nhà cung cấp, trạng thái thoát của tiến trình con,
-và tên/thông báo lỗi khởi động. Hãy xem các tệp dòng thời gian là
-tạo tác chẩn đoán cục bộ; kiểm tra chúng trước khi chia sẻ ra ngoài máy của bạn.
+Bản ghi timeline sử dụng envelope `openclaw.diagnostics.v1`. Sự kiện có thể bao gồm
+id tiến trình, tên pha, tên span, thời lượng, id Plugin, số lượng dependency,
+mẫu độ trễ event-loop, tên thao tác provider, trạng thái thoát của tiến trình con,
+và tên/thông báo lỗi khởi động. Hãy xem các tệp timeline là artifact chẩn đoán
+cục bộ; rà soát chúng trước khi chia sẻ ra ngoài máy của bạn.
 
 ## Nhật ký được ghi ở đâu
 
-Các cờ phát nhật ký vào tệp nhật ký chẩn đoán chuẩn. Theo mặc định:
+Cờ phát nhật ký vào tệp nhật ký chẩn đoán tiêu chuẩn. Theo mặc định:
 
 ```
 /tmp/openclaw/openclaw-YYYY-MM-DD.log
@@ -123,20 +169,20 @@ Lọc chẩn đoán HTTP của Brave Search:
 rg "brave http" /tmp/openclaw/openclaw-*.log
 ```
 
-Hoặc theo dõi trong khi tái hiện:
+Hoặc tail trong khi tái hiện:
 
 ```bash
 tail -f /tmp/openclaw/openclaw-$(date +%F).log | rg "telegram http error"
 ```
 
-Với các Gateway từ xa, bạn cũng có thể dùng `openclaw logs --follow` (xem [/cli/logs](/vi/cli/logs)).
+Đối với Gateway từ xa, bạn cũng có thể dùng `openclaw logs --follow` (xem [/cli/logs](/vi/cli/logs)).
 
 ## Ghi chú
 
-- Nếu `logging.level` được đặt cao hơn `warn`, các nhật ký này có thể bị chặn. Giá trị mặc định `info` là phù hợp.
-- `brave.http` ghi nhật ký URL/tham số truy vấn yêu cầu Brave Search, trạng thái/thời gian phản hồi, và sự kiện cache hit/miss/write. Nó không ghi nhật ký khóa API hoặc nội dung phản hồi, nhưng truy vấn tìm kiếm có thể nhạy cảm.
-- Có thể để các cờ bật an toàn; chúng chỉ ảnh hưởng đến dung lượng nhật ký cho hệ thống con cụ thể.
-- Dùng [/logging](/vi/logging) để thay đổi đích nhật ký, cấp độ và biên tập.
+- Nếu `logging.level` được đặt cao hơn `warn`, các nhật ký này có thể bị chặn. Mặc định `info` là ổn.
+- `brave.http` ghi nhật ký URL/tham số truy vấn yêu cầu Brave Search, trạng thái/thời gian phản hồi, và các sự kiện cache hit/miss/write. Nó không ghi nhật ký khóa API hoặc phần thân phản hồi, nhưng truy vấn tìm kiếm có thể nhạy cảm.
+- Có thể để cờ luôn bật; chúng chỉ ảnh hưởng đến dung lượng nhật ký cho hệ thống con cụ thể.
+- Dùng [/logging](/vi/logging) để thay đổi đích, cấp độ, và biên tập nhật ký.
 
 ## Liên quan
 

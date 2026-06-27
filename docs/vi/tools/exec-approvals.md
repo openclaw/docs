@@ -1,88 +1,101 @@
 ---
 read_when:
     - Cấu hình phê duyệt exec hoặc danh sách cho phép
-    - Triển khai trải nghiệm người dùng phê duyệt exec trong ứng dụng macOS
-    - Rà soát các lời nhắc thoát khỏi môi trường hộp cát và những hệ quả của chúng
+    - Triển khai trải nghiệm phê duyệt exec trong ứng dụng macOS
+    - Rà soát các prompt thoát sandbox và tác động của chúng
 sidebarTitle: Exec approvals
-summary: 'Phê duyệt thực thi trên máy chủ: các tùy chọn điều chỉnh chính sách, danh sách cho phép và quy trình làm việc YOLO/nghiêm ngặt'
+summary: 'Phê duyệt thực thi trên máy chủ: nút chính sách, danh sách cho phép và quy trình làm việc YOLO/nghiêm ngặt'
 title: Phê duyệt thực thi
 x-i18n:
-    generated_at: "2026-05-11T20:37:31Z"
+    generated_at: "2026-06-27T18:15:36Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2966a6f4633046941a9ef3267bad10f3a153956361b9f088fb3e29fcd3fcb99d
+    source_hash: 44a4a5c9c56da458fdb25d5fe698df305af17188695d8befc1d4cfd8e8333e96
     source_path: tools/exec-approvals.md
     workflow: 16
 ---
 
-Phê duyệt exec là **lan can bảo vệ của ứng dụng đồng hành / host node** để cho phép
-một tác nhân trong sandbox chạy lệnh trên một host thật (`gateway` hoặc `node`). Một
-khóa liên động an toàn: lệnh chỉ được phép khi policy + allowlist +
-(phê duyệt người dùng tùy chọn) đều đồng ý. Phê duyệt exec xếp **chồng lên trên**
-policy công cụ và cổng elevated (trừ khi elevated được đặt thành `full`, khi đó
+Phê duyệt exec là **lan can bảo vệ của ứng dụng đồng hành / máy chủ node** để cho phép
+một agent trong sandbox chạy lệnh trên máy chủ thật (`gateway` hoặc `node`). Một
+khóa liên động an toàn: lệnh chỉ được cho phép khi policy + allowlist +
+(phê duyệt tùy chọn của người dùng) đều đồng ý. Phê duyệt exec xếp **ở trên**
+tool policy và elevated gating (trừ khi elevated được đặt thành `full`, khi đó
 bỏ qua phê duyệt).
 
+Để xem tổng quan theo chế độ về `deny`, `allowlist`, `ask`, `auto`, `full`,
+ánh xạ Codex Guardian, và quyền harness ACPX, xem
+[Các chế độ quyền](/vi/tools/permission-modes).
+
 <Note>
-Policy hiệu lực là policy **nghiêm ngặt hơn** giữa `tools.exec.*` và mặc định
-phê duyệt; nếu một trường phê duyệt bị bỏ qua, giá trị `tools.exec` sẽ được
-dùng. Host exec cũng dùng trạng thái phê duyệt cục bộ trên máy đó - một
-`ask: "always"` cục bộ của host trong `~/.openclaw/exec-approvals.json` sẽ tiếp tục
-nhắc ngay cả khi phiên hoặc mặc định cấu hình yêu cầu `ask: "on-miss"`.
+Policy có hiệu lực là policy **nghiêm ngặt hơn** giữa `tools.exec.*` và giá trị
+mặc định của phê duyệt; nếu một trường phê duyệt bị bỏ qua, giá trị `tools.exec`
+được dùng. Host exec cũng dùng trạng thái phê duyệt cục bộ trên máy đó - một
+`ask: "always"` cục bộ trên máy chủ trong tệp phê duyệt của máy chủ thực thi sẽ tiếp tục
+nhắc ngay cả khi mặc định phiên hoặc cấu hình yêu cầu `ask: "on-miss"`.
 </Note>
 
-## Kiểm tra policy hiệu lực
+## Kiểm tra policy có hiệu lực
 
-| Lệnh                                                             | Nội dung hiển thị                                                                     |
+| Lệnh                                                             | Nội dung hiển thị                                                                      |
 | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `openclaw approvals get` / `--gateway` / `--node <id\|name\|ip>` | Policy được yêu cầu, nguồn policy của host, và kết quả hiệu lực.                       |
-| `openclaw exec-policy show`                                      | Chế độ xem đã hợp nhất trên máy cục bộ.                                                |
-| `openclaw exec-policy set` / `preset`                            | Đồng bộ hóa policy được yêu cầu cục bộ với tệp phê duyệt host cục bộ trong một bước.  |
+| `openclaw approvals get` / `--gateway` / `--node <id\|name\|ip>` | Policy được yêu cầu, nguồn policy của máy chủ, và kết quả có hiệu lực.                 |
+| `openclaw exec-policy show`                                      | Dạng xem đã hợp nhất trên máy cục bộ.                                                   |
+| `openclaw exec-policy set` / `preset`                            | Đồng bộ policy được yêu cầu cục bộ với tệp phê duyệt máy chủ cục bộ trong một bước.    |
 
 Khi một phạm vi cục bộ yêu cầu `host=node`, `exec-policy show` báo cáo
-phạm vi đó là do node quản lý khi chạy thay vì giả vờ rằng tệp phê duyệt
-cục bộ là nguồn sự thật.
+phạm vi đó là do node quản lý khi chạy thay vì giả vờ rằng tệp
+phê duyệt cục bộ là nguồn sự thật.
 
-Nếu giao diện ứng dụng đồng hành **không khả dụng**, mọi yêu cầu thường
-sẽ nhắc đều được giải quyết bằng **ask fallback** (mặc định: `deny`).
+Nếu UI ứng dụng đồng hành **không khả dụng**, mọi yêu cầu vốn
+thường sẽ nhắc đều được giải quyết bằng **ask fallback** (mặc định: `deny`).
 
 <Tip>
-Các client phê duyệt chat native có thể gieo các tiện ích theo từng kênh vào
-tin nhắn phê duyệt đang chờ. Ví dụ, Matrix gieo các lối tắt phản ứng
+Các client phê duyệt chat native có thể gieo các tiện ích theo kênh trên
+thông báo phê duyệt đang chờ. Ví dụ, Matrix gieo các lối tắt reaction
 (`✅` cho phép một lần, `❌` từ chối, `♾️` luôn cho phép) trong khi vẫn để lại
-các lệnh `/approve ...` trong tin nhắn làm phương án dự phòng.
+các lệnh `/approve ...` trong thông báo làm phương án dự phòng.
 </Tip>
 
-## Nơi áp dụng
+## Phạm vi áp dụng
 
-Phê duyệt exec được thực thi cục bộ trên host thực thi:
+Phê duyệt exec được thực thi cục bộ trên máy chủ thực thi:
 
-- **Host Gateway** → tiến trình `openclaw` trên máy gateway.
-- **Host node** → trình chạy node (ứng dụng đồng hành macOS hoặc host node headless).
+- **Máy chủ Gateway** → tiến trình `openclaw` trên máy gateway.
+- **Máy chủ node** → node runner (ứng dụng đồng hành macOS hoặc máy chủ node headless).
 
 ### Mô hình tin cậy
 
-- Các caller đã xác thực qua Gateway là operator đáng tin cậy cho Gateway đó.
-- Các node đã ghép đôi mở rộng năng lực operator đáng tin cậy đó lên host node.
-- Phê duyệt exec giảm rủi ro thực thi ngoài ý muốn, nhưng **không** phải là ranh giới xác thực theo từng người dùng hay policy filesystem chỉ đọc.
-- Sau khi được phê duyệt, một lệnh có thể thay đổi tệp theo quyền host hoặc sandbox filesystem đã chọn.
-- Các lần chạy trên host node đã được phê duyệt ràng buộc ngữ cảnh thực thi chuẩn: cwd chuẩn, argv chính xác, ràng buộc env khi có, và đường dẫn executable được ghim khi áp dụng.
-- Với shell script và các lệnh gọi tệp trực tiếp qua interpreter/runtime, OpenClaw cũng cố gắng ràng buộc một toán hạng tệp cục bộ cụ thể. Nếu tệp đã ràng buộc đó thay đổi sau khi phê duyệt nhưng trước khi thực thi, lần chạy bị từ chối thay vì thực thi nội dung đã lệch.
-- Ràng buộc tệp cố ý là nỗ lực tốt nhất, **không** phải mô hình ngữ nghĩa hoàn chỉnh cho mọi đường dẫn loader interpreter/runtime. Nếu chế độ phê duyệt không thể xác định chính xác một tệp cục bộ cụ thể để ràng buộc, nó từ chối tạo một lần chạy được phê duyệt hậu thuẫn thay vì giả vờ có độ bao phủ đầy đủ.
+- Các caller đã xác thực với Gateway là operator đáng tin cậy cho Gateway đó.
+- Các node đã ghép cặp mở rộng năng lực operator đáng tin cậy đó lên máy chủ node.
+- Phê duyệt exec giảm rủi ro thực thi ngoài ý muốn, nhưng **không** phải là ranh giới xác thực theo người dùng hoặc policy chỉ đọc hệ thống tệp.
+- Sau khi được phê duyệt, một lệnh có thể thay đổi tệp theo quyền hệ thống tệp của máy chủ hoặc sandbox đã chọn.
+- Các lượt chạy trên máy chủ node đã phê duyệt ràng buộc ngữ cảnh thực thi chuẩn: cwd chuẩn, argv chính xác, ràng buộc env khi có, và đường dẫn executable được ghim khi áp dụng.
+- Với shell script và các lời gọi tệp interpreter/runtime trực tiếp, OpenClaw cũng cố gắng ràng buộc một toán hạng tệp cục bộ cụ thể. Nếu tệp đã ràng buộc đó thay đổi sau khi phê duyệt nhưng trước khi thực thi, lượt chạy bị từ chối thay vì thực thi nội dung đã trôi lệch.
+- Ràng buộc tệp được chủ ý triển khai theo kiểu nỗ lực tốt nhất, **không** phải là mô hình ngữ nghĩa hoàn chỉnh của mọi đường dẫn loader interpreter/runtime. Nếu chế độ phê duyệt không thể xác định đúng một tệp cục bộ cụ thể để ràng buộc, nó từ chối tạo lượt chạy dựa trên phê duyệt thay vì giả vờ có phạm vi bao phủ đầy đủ.
 
-### Tách biệt trên macOS
+### Phân tách trên macOS
 
-- **Dịch vụ host node** chuyển tiếp `system.run` đến **ứng dụng macOS** qua IPC cục bộ.
-- **Ứng dụng macOS** thực thi phê duyệt và chạy lệnh trong ngữ cảnh giao diện.
+- **Dịch vụ máy chủ node** chuyển tiếp `system.run` đến **ứng dụng macOS** qua IPC cục bộ.
+- **Ứng dụng macOS** thực thi phê duyệt và chạy lệnh trong ngữ cảnh UI.
 
 ## Cài đặt và lưu trữ
 
-Phê duyệt nằm trong một tệp JSON cục bộ trên host thực thi:
+Phê duyệt nằm trong một tệp JSON cục bộ trên máy chủ thực thi. Khi
+`OPENCLAW_STATE_DIR` được đặt, tệp đi theo thư mục state đó;
+nếu không, nó dùng thư mục state mặc định của OpenClaw:
 
 ```text
+$OPENCLAW_STATE_DIR/exec-approvals.json
+# otherwise
 ~/.openclaw/exec-approvals.json
 ```
 
-Lược đồ ví dụ:
+Socket phê duyệt mặc định đi theo cùng root:
+`$OPENCLAW_STATE_DIR/exec-approvals.sock`, hoặc
+`~/.openclaw/exec-approvals.sock` khi biến chưa được đặt.
+
+Ví dụ schema:
 
 ```json
 {
@@ -121,11 +134,25 @@ Lược đồ ví dụ:
 
 ## Núm policy
 
+### `tools.exec.mode`
+
+`tools.exec.mode` là bề mặt policy đã chuẩn hóa được ưu tiên cho host exec.
+Các giá trị là:
+
+- `deny` - chặn host exec.
+- `allowlist` - chỉ chạy các lệnh trong allowlist mà không hỏi.
+- `ask` - dùng policy allowlist và hỏi khi không khớp.
+- `auto` - dùng policy allowlist, chạy trực tiếp các kết quả khớp xác định được, và gửi các lần thiếu phê duyệt qua reviewer tự động native của OpenClaw trước khi rơi về tuyến phê duyệt của con người.
+- `full` - chạy host exec mà không có lời nhắc phê duyệt.
+
+`tools.exec.security` / `tools.exec.ask` cũ vẫn được hỗ trợ và vẫn thắng
+khi được đặt ở phạm vi phiên hoặc agent hẹp hơn.
+
 ### `exec.security`
 
 <ParamField path="security" type='"deny" | "allowlist" | "full"'>
-  - `deny` - chặn tất cả yêu cầu host exec.
-  - `allowlist` - chỉ cho phép các lệnh có trong allowlist.
+  - `deny` - chặn mọi yêu cầu host exec.
+  - `allowlist` - chỉ cho phép các lệnh trong allowlist.
   - `full` - cho phép mọi thứ (tương đương elevated).
 
 </ParamField>
@@ -133,16 +160,23 @@ Lược đồ ví dụ:
 ### `exec.ask`
 
 <ParamField path="ask" type='"off" | "on-miss" | "always"'>
-  - `off` - không bao giờ nhắc.
-  - `on-miss` - chỉ nhắc khi allowlist không khớp.
-  - `always` - nhắc trên mọi lệnh. Tin cậy bền vững `allow-always` **không** triệt tiêu lời nhắc khi chế độ ask hiệu lực là `always`.
+  Policy hỏi được cấu hình cho host exec. Kiểm soát hành vi lời nhắc
+  phê duyệt cơ sở từ `tools.exec.ask` và mặc định phê duyệt máy chủ. Tham số
+  tool `ask` theo từng lệnh gọi (xem [Tool exec](/vi/tools/exec#parameters))
+  chỉ có thể làm cơ sở đó nghiêm ngặt hơn, và các lệnh gọi model có nguồn gốc kênh sẽ bỏ qua nó
+  khi ask máy chủ có hiệu lực là `off`.
+
+- `off` - không bao giờ nhắc.
+- `on-miss` - chỉ nhắc khi allowlist không khớp.
+- `always` - nhắc trên mọi lệnh. Tin cậy bền vững `allow-always` **không** chặn lời nhắc khi chế độ ask có hiệu lực là `always`.
 
 </ParamField>
 
 ### `askFallback`
 
 <ParamField path="askFallback" type='"deny" | "allowlist" | "full"'>
-  Cách giải quyết khi cần nhắc nhưng không thể truy cập giao diện.
+  Cách giải quyết khi cần lời nhắc nhưng không có UI nào có thể truy cập. Nếu trường này
+  bị bỏ qua, OpenClaw mặc định là `deny`.
 
 - `deny` - chặn.
 - `allowlist` - chỉ cho phép nếu allowlist khớp.
@@ -153,10 +187,9 @@ Lược đồ ví dụ:
 ### `tools.exec.strictInlineEval`
 
 <ParamField path="strictInlineEval" type="boolean">
-  Khi là `true`, OpenClaw coi các dạng eval mã inline là chỉ được phê duyệt,
-  ngay cả khi chính binary interpreter đã nằm trong allowlist. Phòng thủ theo chiều sâu
-  cho các loader interpreter không ánh xạ gọn vào một toán hạng tệp
-  ổn định.
+  Khi là `true`, OpenClaw xem các dạng code-eval inline là chỉ được chạy sau phê duyệt
+  ngay cả khi binary interpreter đã nằm trong allowlist. Đây là phòng thủ nhiều lớp
+  cho các loader interpreter không ánh xạ rõ ràng tới một toán hạng tệp ổn định.
 </ParamField>
 
 Ví dụ mà chế độ nghiêm ngặt bắt được:
@@ -170,59 +203,63 @@ Ví dụ mà chế độ nghiêm ngặt bắt được:
 - `osascript -e`
 
 Trong chế độ nghiêm ngặt, các lệnh này vẫn cần phê duyệt rõ ràng, và
-`allow-always` không tự động lưu bền các mục allowlist mới cho chúng.
+`allow-always` không tự động lưu các mục allowlist mới cho chúng.
 
 ### `tools.exec.commandHighlighting`
 
 <ParamField path="commandHighlighting" type="boolean" default="false">
-  Chỉ kiểm soát cách trình bày trong lời nhắc phê duyệt exec. Khi bật,
-  OpenClaw có thể đính kèm các span lệnh suy ra từ parser để lời nhắc
-  phê duyệt Web có thể tô sáng token lệnh. Đặt thành `true` để bật
+  Chỉ kiểm soát phần trình bày trong lời nhắc phê duyệt exec. Khi bật,
+  OpenClaw có thể đính kèm các đoạn lệnh do parser suy ra để lời nhắc phê duyệt
+  trên Web có thể tô sáng token lệnh. Đặt thành `true` để bật
   tô sáng văn bản lệnh.
 </ParamField>
 
-Cài đặt này **không** thay đổi `security`, `ask`, so khớp allowlist,
-hành vi strict inline-eval, chuyển tiếp phê duyệt, hay thực thi lệnh.
+Cài đặt này **không** thay đổi `security`, `ask`, cách khớp allowlist,
+hành vi strict inline-eval, chuyển tiếp phê duyệt, hoặc thực thi lệnh.
 Có thể đặt toàn cục dưới `tools.exec.commandHighlighting` hoặc theo từng
-tác nhân dưới `agents.list[].tools.exec.commandHighlighting`.
+agent dưới `agents.list[].tools.exec.commandHighlighting`.
 
 ## Chế độ YOLO (không phê duyệt)
 
 Nếu muốn host exec chạy mà không có lời nhắc phê duyệt, bạn phải mở
 **cả hai** lớp policy - policy exec được yêu cầu trong cấu hình OpenClaw
-(`tools.exec.*`) **và** policy phê duyệt cục bộ của host trong
-`~/.openclaw/exec-approvals.json`.
+(`tools.exec.*`) **và** policy phê duyệt cục bộ của máy chủ trong
+tệp phê duyệt của máy chủ thực thi.
 
-YOLO là hành vi mặc định của host trừ khi bạn siết chặt rõ ràng:
+OpenClaw mặc định `askFallback` bị bỏ qua thành `deny`. Đặt
+`askFallback` của máy chủ thành `full` một cách rõ ràng khi lời nhắc phê duyệt không có UI
+nên rơi về cho phép.
 
-| Lớp                   | Cài đặt YOLO              |
-| --------------------- | -------------------------- |
+| Lớp                  | Cài đặt YOLO              |
+| -------------------- | ------------------------- |
 | `tools.exec.security` | `full` trên `gateway`/`node` |
-| `tools.exec.ask`      | `off`                      |
-| Host `askFallback`    | `full`                     |
+| `tools.exec.ask`      | `off`                     |
+| Host `askFallback`    | `full`                    |
 
 <Warning>
 **Các điểm khác biệt quan trọng:**
 
-- `tools.exec.host=auto` chọn exec chạy **ở đâu**: sandbox khi khả dụng, nếu không thì gateway.
-- YOLO chọn host exec được phê duyệt **như thế nào**: `security=full` cộng với `ask=off`.
-- Trong chế độ YOLO, OpenClaw **không** thêm một cổng phê duyệt che giấu lệnh theo heuristic riêng hoặc lớp từ chối script-preflight lên trên policy host exec đã cấu hình.
-- `auto` không biến định tuyến gateway thành một override tự do từ một phiên sandbox. Yêu cầu theo từng lệnh gọi `host=node` được cho phép từ `auto`; `host=gateway` chỉ được cho phép từ `auto` khi không có runtime sandbox nào đang hoạt động. Để có mặc định ổn định không phải auto, đặt `tools.exec.host` hoặc dùng `/exec host=...` rõ ràng.
+- `tools.exec.host=auto` chọn **nơi** exec chạy: sandbox khi khả dụng, nếu không thì gateway.
+- YOLO chọn **cách** host exec được phê duyệt: `security=full` cộng với `ask=off`.
+- Trong chế độ YOLO, OpenClaw **không** thêm một cổng phê duyệt heuristic riêng cho lệnh bị làm rối hoặc lớp từ chối preflight script lên trên policy host exec đã cấu hình.
+- `auto` không biến định tuyến gateway thành một quyền ghi đè miễn phí từ phiên trong sandbox. Yêu cầu theo từng lệnh gọi `host=node` được phép từ `auto`; `host=gateway` chỉ được phép từ `auto` khi không có runtime sandbox nào đang hoạt động. Để có mặc định không phải auto ổn định, đặt `tools.exec.host` hoặc dùng `/exec host=...` rõ ràng.
 
 </Warning>
 
-Các provider dựa trên CLI có cung cấp chế độ quyền không tương tác riêng
-có thể tuân theo policy này. Claude CLI thêm
-`--permission-mode bypassPermissions` khi policy exec được yêu cầu của OpenClaw
-là YOLO. Ghi đè hành vi backend đó bằng các đối số Claude rõ ràng
-dưới `agents.defaults.cliBackends.claude-cli.args` / `resumeArgs` -
-ví dụ `--permission-mode default`, `acceptEdits`, hoặc
-`bypassPermissions`.
+Các provider dựa trên CLI phơi bày chế độ quyền không tương tác riêng
+có thể đi theo policy này. Claude CLI thêm
+`--permission-mode bypassPermissions` khi policy exec có hiệu lực của OpenClaw
+là YOLO. Với các phiên live Claude do OpenClaw quản lý, policy exec có hiệu lực
+của OpenClaw có thẩm quyền hơn chế độ quyền native của Claude:
+YOLO chuẩn hóa các lần khởi chạy live thành `--permission-mode bypassPermissions`, và
+policy exec có hiệu lực hạn chế chuẩn hóa các lần khởi chạy live thành
+`--permission-mode default`, ngay cả khi args backend Claude thô chỉ định một
+chế độ khác.
 
-Nếu muốn thiết lập bảo thủ hơn, hãy siết một trong hai lớp trở lại
+Nếu muốn thiết lập thận trọng hơn, siết policy exec của OpenClaw lại thành
 `allowlist` / `on-miss` hoặc `deny`.
 
-### Thiết lập "không bao giờ nhắc" bền vững cho gateway-host
+### Thiết lập “không bao giờ nhắc” bền vững cho máy chủ gateway
 
 <Steps>
   <Step title="Đặt policy cấu hình được yêu cầu">
@@ -233,7 +270,7 @@ Nếu muốn thiết lập bảo thủ hơn, hãy siết một trong hai lớp t
     openclaw gateway restart
     ```
   </Step>
-  <Step title="Khớp tệp phê duyệt của host">
+  <Step title="Khớp tệp phê duyệt máy chủ">
     ```bash
     openclaw approvals set --stdin <<'EOF'
     {
@@ -258,15 +295,15 @@ openclaw exec-policy preset yolo
 Lối tắt cục bộ đó cập nhật cả hai:
 
 - `tools.exec.host/security/ask` cục bộ.
-- Mặc định `~/.openclaw/exec-approvals.json` cục bộ.
+- Mặc định tệp phê duyệt cục bộ, bao gồm `askFallback: "full"`.
 
-Nó cố ý chỉ áp dụng cục bộ. Để thay đổi phê duyệt gateway-host hoặc node-host
-từ xa, dùng `openclaw approvals set --gateway` hoặc
+Nó được chủ ý giới hạn cho cục bộ. Để thay đổi phê duyệt máy chủ gateway hoặc
+máy chủ node từ xa, dùng `openclaw approvals set --gateway` hoặc
 `openclaw approvals set --node <id|name|ip>`.
 
-### Host node
+### Máy chủ node
 
-Với host node, áp dụng cùng tệp phê duyệt trên node đó thay vào đó:
+Với máy chủ node, áp dụng cùng tệp phê duyệt trên node đó thay thế:
 
 ```bash
 openclaw approvals set --node <id|name|ip> --stdin <<'EOF'
@@ -284,34 +321,36 @@ EOF
 <Note>
 **Giới hạn chỉ cục bộ:**
 
-- `openclaw exec-policy` không đồng bộ hóa phê duyệt node.
+- `openclaw exec-policy` không đồng bộ phê duyệt node.
 - `openclaw exec-policy set --host node` bị từ chối.
-- Phê duyệt exec của node được lấy từ node khi chạy, vì vậy các cập nhật nhắm đến node phải dùng `openclaw approvals --node ...`.
+- Phê duyệt exec của node được lấy từ node khi chạy, vì vậy các cập nhật nhắm vào node phải dùng `openclaw approvals --node ...`.
 
 </Note>
 
 ### Lối tắt chỉ cho phiên
 
 - `/exec security=full ask=off` chỉ thay đổi phiên hiện tại.
-- `/elevated full` là lối tắt phá kính khẩn cấp cũng bỏ qua phê duyệt exec cho phiên đó.
+- `/elevated full` là lối tắt khẩn cấp bỏ qua phê duyệt exec chỉ khi
+  cả chính sách được yêu cầu và tệp phê duyệt của host đều phân giải thành
+  `security: "full"` và `ask: "off"`. Tệp host nghiêm ngặt hơn, chẳng hạn
+  `ask: "always"`, vẫn sẽ nhắc xác nhận.
 
-Nếu tệp phê duyệt host vẫn nghiêm ngặt hơn cấu hình, policy host nghiêm ngặt hơn
-vẫn thắng.
+Nếu tệp phê duyệt của host vẫn nghiêm ngặt hơn cấu hình, chính sách host
+nghiêm ngặt hơn vẫn thắng.
 
-## Allowlist (theo tác nhân)
+## Danh sách cho phép (theo từng agent)
 
-Allowlist là **theo tác nhân**. Nếu có nhiều tác nhân, hãy chuyển tác nhân
-bạn đang chỉnh sửa trong ứng dụng macOS. Pattern là so khớp glob.
+Danh sách cho phép là **theo từng agent**. Nếu có nhiều agent, hãy chuyển
+agent bạn đang chỉnh sửa trong ứng dụng macOS. Các mẫu là kết quả khớp glob.
 
-Pattern có thể là glob đường dẫn binary đã phân giải hoặc glob tên lệnh trần.
-Tên trần chỉ khớp các lệnh được gọi qua `PATH`, nên `rg` có thể khớp
+Mẫu có thể là glob đường dẫn binary đã phân giải hoặc glob tên lệnh trần.
+Tên trần chỉ khớp các lệnh được gọi thông qua `PATH`, nên `rg` có thể khớp
 `/opt/homebrew/bin/rg` khi lệnh là `rg`, nhưng **không** khớp `./rg` hoặc
-`/tmp/rg`. Dùng glob đường dẫn khi bạn muốn tin cậy một vị trí binary
-cụ thể.
+`/tmp/rg`. Dùng glob đường dẫn khi bạn muốn tin cậy một vị trí binary cụ thể.
 
-Các mục `agents.default` cũ được di trú sang `agents.main` khi tải.
-Các chuỗi shell như `echo ok && pwd` vẫn cần mọi đoạn cấp cao nhất
-thỏa mãn quy tắc allowlist.
+Các mục `agents.default` cũ được di chuyển sang `agents.main` khi tải.
+Chuỗi shell như `echo ok && pwd` vẫn cần mọi phân đoạn cấp cao nhất
+thỏa mãn quy tắc danh sách cho phép.
 
 Ví dụ:
 
@@ -320,13 +359,13 @@ Ví dụ:
 - `~/.local/bin/*`
 - `/opt/homebrew/bin/rg`
 
-### Giới hạn đối số bằng argPattern
+### Hạn chế đối số bằng argPattern
 
-Thêm `argPattern` khi một mục allowlist cần khớp một binary và một
-hình dạng đối số cụ thể. OpenClaw đánh giá biểu thức chính quy
-trên các đối số lệnh đã phân tích, loại trừ token executable
-(`argv[0]`). Với các mục viết tay, đối số được nối bằng một
-dấu cách đơn, vì vậy hãy neo pattern khi cần khớp chính xác.
+Thêm `argPattern` khi một mục danh sách cho phép cần khớp một binary và một
+dạng đối số cụ thể. OpenClaw đánh giá biểu thức chính quy trên các đối số
+lệnh đã phân tích, không bao gồm token thực thi (`argv[0]`). Với các mục
+được viết thủ công, đối số được nối bằng một dấu cách, vì vậy hãy neo mẫu
+khi bạn cần khớp chính xác.
 
 ```json
 {
@@ -344,83 +383,85 @@ dấu cách đơn, vì vậy hãy neo pattern khi cần khớp chính xác.
 }
 ```
 
-Mục đó cho phép `python3 safe.py`; `python3 other.py` là một allowlist
-miss. Nếu một mục chỉ theo đường dẫn cho cùng binary cũng có mặt, các đối số
-không khớp vẫn có thể fallback về mục chỉ theo đường dẫn đó. Bỏ qua mục chỉ theo
-đường dẫn khi mục tiêu là giới hạn binary ở các đối số đã khai báo.
+Mục đó cho phép `python3 safe.py`; `python3 other.py` là một lần trượt
+danh sách cho phép. Nếu cũng có một mục chỉ theo đường dẫn cho cùng binary,
+các đối số không khớp vẫn có thể rơi về mục chỉ theo đường dẫn đó. Bỏ mục
+chỉ theo đường dẫn khi mục tiêu là hạn chế binary vào các đối số đã khai báo.
 
-Các mục được lưu bởi luồng phê duyệt có thể dùng định dạng dấu phân tách nội bộ để
-khớp argv chính xác. Ưu tiên dùng UI hoặc luồng phê duyệt để tạo lại các
-mục đó thay vì chỉnh sửa thủ công giá trị đã mã hóa. Nếu OpenClaw không thể
-phân tích argv cho một đoạn lệnh, các mục có `argPattern` sẽ không khớp.
+Các mục được lưu bởi luồng phê duyệt có thể dùng một định dạng phân tách
+nội bộ để khớp argv chính xác. Ưu tiên dùng UI hoặc luồng phê duyệt để tạo
+lại các mục đó thay vì chỉnh sửa thủ công giá trị đã mã hóa. Nếu OpenClaw
+không thể phân tích argv cho một phân đoạn lệnh, các mục có `argPattern`
+sẽ không khớp.
 
-Mỗi mục allowlist hỗ trợ:
+Mỗi mục danh sách cho phép hỗ trợ:
 
 | Trường             | Ý nghĩa                                                       |
 | ------------------ | ------------------------------------------------------------- |
-| `pattern`          | Glob đường dẫn nhị phân đã phân giải hoặc glob tên lệnh trần |
-| `argPattern`       | Regex argv tùy chọn; các mục bị bỏ qua chỉ theo đường dẫn     |
+| `pattern`          | Glob đường dẫn binary đã phân giải hoặc glob tên lệnh trần    |
+| `argPattern`       | Regex argv tùy chọn; mục bị bỏ qua là chỉ theo đường dẫn      |
 | `id`               | UUID ổn định dùng cho định danh UI                            |
-| `source`           | Nguồn mục, chẳng hạn như `allow-always`                       |
+| `source`           | Nguồn mục, chẳng hạn `allow-always`                           |
 | `commandText`      | Văn bản lệnh được ghi lại khi luồng phê duyệt tạo mục         |
-| `lastUsedAt`       | Dấu thời gian lần dùng gần nhất                               |
+| `lastUsedAt`       | Dấu thời gian sử dụng gần nhất                                |
 | `lastUsedCommand`  | Lệnh gần nhất đã khớp                                         |
-| `lastResolvedPath` | Đường dẫn nhị phân đã phân giải gần nhất                      |
+| `lastResolvedPath` | Đường dẫn binary được phân giải gần nhất                      |
 
-## Tự động cho phép CLI của skill
+## Tự động cho phép CLI của Skills
 
-Khi bật **Tự động cho phép CLI của skill**, các tệp thực thi được tham chiếu bởi
-những skill đã biết được xem là nằm trong allowlist trên các Node (Node macOS hoặc máy chủ
-Node không giao diện). Cơ chế này dùng `skills.bins` qua Gateway RPC để lấy
-danh sách bin của skill. Tắt tùy chọn này nếu bạn muốn allowlist thủ công nghiêm ngặt.
+Khi bật **Tự động cho phép CLI của Skills**, các tệp thực thi được tham chiếu
+bởi Skills đã biết được coi là nằm trong danh sách cho phép trên Node (Node
+macOS hoặc host Node headless). Cơ chế này dùng `skills.bins` qua Gateway RPC
+để lấy danh sách bin của skill. Tắt tùy chọn này nếu bạn muốn danh sách cho
+phép thủ công nghiêm ngặt.
 
 <Warning>
-- Đây là một **allowlist tiện lợi ngầm định**, tách biệt với các mục allowlist đường dẫn thủ công.
-- Cơ chế này dành cho môi trường vận hành đáng tin cậy, nơi Gateway và Node nằm trong cùng ranh giới tin cậy.
-- Nếu bạn yêu cầu sự tin cậy tường minh nghiêm ngặt, hãy giữ `autoAllowSkills: false` và chỉ dùng các mục allowlist đường dẫn thủ công.
+- Đây là một **danh sách cho phép tiện lợi ngầm định**, tách biệt với các mục danh sách cho phép đường dẫn thủ công.
+- Nó dành cho các môi trường vận hành đáng tin cậy, nơi Gateway và Node nằm trong cùng ranh giới tin cậy.
+- Nếu bạn cần tin cậy tường minh nghiêm ngặt, hãy giữ `autoAllowSkills: false` và chỉ dùng các mục danh sách cho phép đường dẫn thủ công.
 
 </Warning>
 
 ## Bin an toàn và chuyển tiếp phê duyệt
 
-Để biết về bin an toàn (đường dẫn nhanh chỉ dùng stdin), chi tiết ràng buộc trình thông dịch và
-cách chuyển tiếp lời nhắc phê duyệt tới Slack/Discord/Telegram (hoặc chạy chúng dưới dạng
-máy khách phê duyệt gốc), xem
+Để biết về bin an toàn (đường dẫn nhanh chỉ dùng stdin), chi tiết binding
+trình thông dịch, và cách chuyển tiếp lời nhắc phê duyệt tới Slack/Discord/Telegram
+(hoặc chạy chúng như client phê duyệt native), xem
 [Phê duyệt exec - nâng cao](/vi/tools/exec-approvals-advanced).
 
-## Chỉnh sửa UI điều khiển
+## Chỉnh sửa Control UI
 
-Dùng thẻ **UI điều khiển → Node → Phê duyệt exec** để chỉnh sửa mặc định,
-ghi đè theo agent và allowlist. Chọn một phạm vi (Mặc định hoặc một agent),
-điều chỉnh chính sách, thêm/xóa mẫu allowlist, rồi **Lưu**. UI
-hiển thị siêu dữ liệu lần dùng gần nhất theo từng mẫu để bạn có thể giữ danh sách gọn gàng.
+Dùng thẻ **Control UI → Nodes → Exec approvals** để chỉnh sửa mặc định,
+ghi đè theo từng agent và danh sách cho phép. Chọn một phạm vi (Mặc định
+hoặc một agent), tinh chỉnh chính sách, thêm/xóa mẫu danh sách cho phép,
+rồi **Lưu**. UI hiển thị metadata sử dụng gần nhất theo từng mẫu để bạn
+có thể giữ danh sách gọn gàng.
 
-Bộ chọn mục tiêu chọn **Gateway** (phê duyệt cục bộ) hoặc một **Node**.
+Bộ chọn mục tiêu chọn **Gateway** (phê duyệt local) hoặc một **Node**.
 Node phải quảng bá `system.execApprovals.get/set` (ứng dụng macOS hoặc
-máy chủ Node không giao diện). Nếu một Node chưa quảng bá phê duyệt exec,
-hãy chỉnh sửa trực tiếp `~/.openclaw/exec-approvals.json` cục bộ của Node đó.
+host Node headless). Nếu một Node chưa quảng bá phê duyệt exec, hãy chỉnh
+sửa trực tiếp tệp phê duyệt local của nó.
 
-CLI: `openclaw approvals` hỗ trợ chỉnh sửa Gateway hoặc Node - xem
+CLI: `openclaw approvals` hỗ trợ chỉnh sửa gateway hoặc node - xem
 [CLI phê duyệt](/vi/cli/approvals).
 
 ## Luồng phê duyệt
 
-Khi cần lời nhắc, Gateway phát
-`exec.approval.requested` tới các máy khách vận hành. UI điều khiển và ứng dụng macOS
-giải quyết yêu cầu qua `exec.approval.resolve`, sau đó Gateway chuyển tiếp
-yêu cầu đã được phê duyệt tới máy chủ Node.
+Khi cần lời nhắc, gateway phát sóng
+`exec.approval.requested` tới các client vận hành. Control UI và ứng dụng
+macOS phân giải nó qua `exec.approval.resolve`, sau đó gateway chuyển tiếp
+yêu cầu đã được phê duyệt tới host Node.
 
-Với `host=node`, yêu cầu phê duyệt bao gồm payload `systemRunPlan`
-chuẩn tắc. Gateway dùng kế hoạch đó làm ngữ cảnh
-command/cwd/session có thẩm quyền khi chuyển tiếp các yêu cầu `system.run`
-đã được phê duyệt.
+Với `host=node`, yêu cầu phê duyệt bao gồm payload `systemRunPlan` chuẩn.
+Gateway dùng kế hoạch đó làm ngữ cảnh command/cwd/session có thẩm quyền khi
+chuyển tiếp các yêu cầu `system.run` đã được phê duyệt.
 
-Điều đó quan trọng đối với độ trễ phê duyệt bất đồng bộ:
+Điều đó quan trọng với độ trễ phê duyệt async:
 
-- Đường dẫn exec của Node chuẩn bị trước một kế hoạch chuẩn tắc duy nhất.
-- Bản ghi phê duyệt lưu kế hoạch đó và siêu dữ liệu ràng buộc của nó.
-- Sau khi được phê duyệt, lệnh gọi `system.run` được chuyển tiếp cuối cùng sẽ tái sử dụng kế hoạch đã lưu thay vì tin vào các chỉnh sửa sau đó của bên gọi.
-- Nếu bên gọi thay đổi `command`, `rawCommand`, `cwd`, `agentId` hoặc `sessionKey` sau khi yêu cầu phê duyệt được tạo, Gateway sẽ từ chối lần chạy được chuyển tiếp vì phê duyệt không khớp.
+- Đường dẫn exec của Node chuẩn bị trước một kế hoạch chuẩn duy nhất.
+- Bản ghi phê duyệt lưu kế hoạch đó và metadata binding của nó.
+- Sau khi được phê duyệt, lệnh gọi `system.run` được chuyển tiếp cuối cùng dùng lại kế hoạch đã lưu thay vì tin các chỉnh sửa sau đó của caller.
+- Nếu caller thay đổi `command`, `rawCommand`, `cwd`, `agentId`, hoặc `sessionKey` sau khi yêu cầu phê duyệt được tạo, gateway từ chối lần chạy được chuyển tiếp vì phê duyệt không khớp.
 
 ## Sự kiện hệ thống
 
@@ -428,52 +469,58 @@ Vòng đời exec được hiển thị dưới dạng thông báo hệ thống:
 
 - `Exec running` (chỉ khi lệnh vượt quá ngưỡng thông báo đang chạy).
 - `Exec finished`.
-- `Exec denied`.
 
 Các thông báo này được đăng vào phiên của agent sau khi Node báo cáo sự kiện.
-Phê duyệt exec do Gateway lưu trữ phát cùng các sự kiện vòng đời khi
-lệnh hoàn tất (và tùy chọn khi chạy lâu hơn ngưỡng).
-Các exec có cổng phê duyệt tái sử dụng id phê duyệt làm `runId` trong những
-thông báo này để dễ đối chiếu.
+Phê duyệt exec bị từ chối là trạng thái kết thúc đối với chính lệnh host:
+lệnh không chạy. Với phê duyệt async của agent chính có phiên gốc, OpenClaw
+đăng việc từ chối trở lại phiên đó dưới dạng followup nội bộ để agent có thể
+ngừng chờ lệnh async và tránh sửa lỗi thiếu kết quả. Nếu không có phiên hoặc
+không thể tiếp tục phiên, OpenClaw vẫn có thể báo cáo từ chối ngắn gọn cho
+operator hoặc tuyến trò chuyện trực tiếp. Từ chối cho phiên subagent không
+được đăng trở lại subagent.
+Phê duyệt exec do Gateway host phát ra cùng các sự kiện vòng đời khi lệnh
+kết thúc (và tùy chọn khi chạy lâu hơn ngưỡng). Exec được chặn bởi phê duyệt
+dùng lại id phê duyệt làm `runId` trong các thông báo này để dễ đối chiếu.
 
 ## Hành vi khi phê duyệt bị từ chối
 
-Khi một phê duyệt exec bất đồng bộ bị từ chối, OpenClaw ngăn agent
-tái sử dụng đầu ra từ bất kỳ lần chạy trước nào của cùng lệnh trong phiên.
-Lý do từ chối được truyền kèm hướng dẫn tường minh rằng không có đầu ra lệnh
-nào khả dụng, điều này ngăn agent tuyên bố có đầu ra mới hoặc
-lặp lại lệnh bị từ chối bằng kết quả cũ từ một lần chạy thành công trước đó.
+Khi một phê duyệt exec async bị từ chối, OpenClaw coi lệnh host là đã kết
+thúc và fail-closed. Với phiên agent chính, việc từ chối được gửi dưới dạng
+followup phiên nội bộ cho agent biết lệnh async không chạy. Điều đó giữ tính
+liên tục của transcript mà không lộ đầu ra lệnh cũ. Nếu không thể gửi tới
+phiên, OpenClaw rơi về thông báo từ chối ngắn gọn cho operator hoặc trò
+chuyện trực tiếp khi có tuyến an toàn.
 
-## Hàm ý
+## Hệ quả
 
-- **`full`** rất mạnh; ưu tiên dùng allowlist khi có thể.
+- **`full`** rất mạnh; ưu tiên danh sách cho phép khi có thể.
 - **`ask`** giữ bạn trong vòng kiểm soát trong khi vẫn cho phép phê duyệt nhanh.
-- Allowlist theo agent ngăn phê duyệt của một agent rò rỉ sang agent khác.
-- Phê duyệt chỉ áp dụng cho yêu cầu exec trên máy chủ từ **người gửi được ủy quyền**. Người gửi không được ủy quyền không thể phát hành `/exec`.
-- `/exec security=full` là tiện ích cấp phiên cho các vận hành viên được ủy quyền và bỏ qua phê duyệt theo thiết kế. Để chặn cứng exec trên máy chủ, hãy đặt bảo mật phê duyệt thành `deny` hoặc từ chối công cụ `exec` qua chính sách công cụ.
+- Danh sách cho phép theo từng agent ngăn phê duyệt của một agent rò rỉ sang agent khác.
+- Phê duyệt chỉ áp dụng cho yêu cầu exec host từ **người gửi được ủy quyền**. Người gửi không được ủy quyền không thể phát hành `/exec`.
+- `/exec security=full` là tiện ích cấp phiên cho operator được ủy quyền và bỏ qua phê duyệt theo thiết kế. Để chặn cứng exec host, đặt bảo mật phê duyệt thành `deny` hoặc từ chối công cụ `exec` qua chính sách công cụ.
 
 ## Liên quan
 
 <CardGroup cols={2}>
   <Card title="Exec approvals - advanced" href="/vi/tools/exec-approvals-advanced" icon="gear">
-    Bin an toàn, ràng buộc trình thông dịch và chuyển tiếp phê duyệt tới chat.
+    Bin an toàn, binding trình thông dịch, và chuyển tiếp phê duyệt tới trò chuyện.
   </Card>
   <Card title="Exec tool" href="/vi/tools/exec" icon="terminal">
     Công cụ thực thi lệnh shell.
   </Card>
   <Card title="Elevated mode" href="/vi/tools/elevated" icon="shield-exclamation">
-    Đường dẫn phá kính khẩn cấp cũng bỏ qua phê duyệt.
+    Đường dẫn khẩn cấp cũng bỏ qua phê duyệt.
   </Card>
   <Card title="Sandboxing" href="/vi/gateway/sandboxing" icon="box">
     Chế độ sandbox và quyền truy cập workspace.
   </Card>
   <Card title="Security" href="/vi/gateway/security" icon="lock">
-    Mô hình bảo mật và tăng cường bảo vệ.
+    Mô hình bảo mật và gia cố.
   </Card>
   <Card title="Sandbox vs tool policy vs elevated" href="/vi/gateway/sandbox-vs-tool-policy-vs-elevated" icon="sliders">
-    Khi nào nên dùng từng biện pháp kiểm soát.
+    Khi nào nên dùng từng cơ chế kiểm soát.
   </Card>
   <Card title="Skills" href="/vi/tools/skills" icon="sparkles">
-    Hành vi tự động cho phép dựa trên skill.
+    Hành vi tự động cho phép dựa trên Skills.
   </Card>
 </CardGroup>

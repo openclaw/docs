@@ -1,26 +1,27 @@
 ---
 read_when:
-    - تقوم بتثبيت Plugin searxng أو تكوينه أو تدقيقه
-summary: يضيف دعم موفّر البحث على الويب.
+    - أنت تثبّت Plugin searxng أو تهيئه أو تراجعه.
+summary: يضيف دعم مزوّد البحث على الويب.
 title: Plugin SearXNG
 x-i18n:
-    generated_at: "2026-05-02T20:59:10Z"
+    generated_at: "2026-06-27T18:15:21Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 10b4111629b0ec9b86a98513dff46ee08f64d767d103be572849788a57d494c9
+    source_hash: 96d320ccd6ec69e380edfcfa33b498569058be6953257b5770cd4eea95cb401a
     source_path: plugins/reference/searxng.md
     workflow: 16
 ---
 
-# SearXNG Plugin
+# Plugin SearXNG
 
-يضيف دعم موفّري بحث الويب.
+يضيف دعم مزوّدات بحث الويب.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/searxng-plugin`
-- مسار التثبيت: مضمن في OpenClaw
+- مسار التثبيت: npm؛ ClawHub: `clawhub:@openclaw/searxng-plugin`
 
-## السطح
+## الواجهة
 
-contracts: webSearchProviders
+العقود: webSearchProviders

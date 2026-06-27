@@ -1,43 +1,44 @@
 ---
 read_when:
-    - Je wilt een terminalinterface voor de Gateway (geschikt voor bediening op afstand)
+    - Je wilt een terminal-UI voor de Gateway (geschikt voor gebruik op afstand)
     - Je wilt url/token/session vanuit scripts doorgeven
     - Je wilt de TUI in lokale ingebedde modus uitvoeren zonder Gateway
-    - Je wilt openclaw chat of openclaw tui --local gebruiken
-summary: CLI-referentie voor `openclaw tui` (door Gateway ondersteunde of lokaal ingebouwde terminal-UI)
+    - U wilt openclaw chat of openclaw tui --local gebruiken
+summary: CLI-referentie voor `openclaw tui` (Gateway-ondersteunde of lokale ingebedde terminal-UI)
 title: TUI
 x-i18n:
-    generated_at: "2026-05-10T19:30:44Z"
+    generated_at: "2026-06-27T17:23:58Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3e59f0f5360a456d19cfee38adc540b27665c55de68480616f269d1088f13677
+    source_hash: 514bbbcd0b695e8d4ccc87d1e242d816e264ac1f8b137f2bd891803ef7f48d5a
     source_path: cli/tui.md
     workflow: 16
 ---
 
 # `openclaw tui`
 
-Open de terminal-UI die is verbonden met de Gateway, of voer deze uit in lokale ingebedde
+Open de terminal-UI die is verbonden met de Gateway, of voer deze uit in lokale ingesloten
 modus.
 
 Gerelateerd:
 
-- TUI-gids: [TUI](/nl/web/tui)
+- TUI-handleiding: [TUI](/nl/web/tui)
 
 ## Opties
 
-| Vlag                  | Standaardwaarde                          | Beschrijving                                                                       |
-| --------------------- | ----------------------------------------- | ---------------------------------------------------------------------------------- |
-| `--local`             | `false`                                   | Voer uit tegen de lokale ingebedde agent-runtime in plaats van een Gateway.        |
-| `--url <url>`         | `gateway.remote.url` uit de configuratie  | Gateway WebSocket-URL.                                                             |
-| `--token <token>`     | (geen)                                    | Gateway-token indien vereist.                                                      |
-| `--password <pass>`   | (geen)                                    | Gateway-wachtwoord indien vereist.                                                 |
-| `--session <key>`     | `main` (of `global` wanneer scope globaal is) | Sessiesleutel. Binnen een agent-werkruimte selecteert deze automatisch die agent, tenzij voorafgegaan door een prefix. |
-| `--deliver`           | `false`                                   | Lever assistentantwoorden via geconfigureerde kanalen.                             |
-| `--thinking <level>`  | (modelstandaard)                          | Overschrijving van denkniveau.                                                     |
-| `--message <text>`    | (geen)                                    | Verzend een eerste bericht na het verbinden.                                       |
-| `--timeout-ms <ms>`   | `agents.defaults.timeoutSeconds`          | Agent-time-out. Ongeldige waarden loggen een waarschuwing en worden genegeerd.     |
-| `--history-limit <n>` | `200`                                     | Geschiedenisitems om te laden bij koppelen.                                        |
+| Vlag                  | Standaard                                | Beschrijving                                                                       |
+| --------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------- |
+| `--local`             | `false`                                  | Voer uit tegen de lokale ingesloten agentruntime in plaats van een Gateway.        |
+| `--url <url>`         | `gateway.remote.url` uit config          | Gateway WebSocket-URL.                                                             |
+| `--token <token>`     | (geen)                                   | Gateway-token indien vereist.                                                      |
+| `--password <pass>`   | (geen)                                   | Gateway-wachtwoord indien vereist.                                                 |
+| `--session <key>`     | `main` (of `global` wanneer scope globaal is) | Sessiesleutel. Binnen een agentwerkruimte selecteert dit automatisch die agent, tenzij voorafgegaan door een prefix. |
+| `--deliver`           | `false`                                  | Lever assistentantwoorden via geconfigureerde kanalen.                             |
+| `--thinking <level>`  | (modelstandaard)                         | Overschrijving van denkniveau.                                                     |
+| `--message <text>`    | (geen)                                   | Stuur een eerste bericht na het verbinden.                                         |
+| `--timeout-ms <ms>`   | `agents.defaults.timeoutSeconds`         | Agenttime-out. Ongeldige waarden loggen een waarschuwing en worden genegeerd.      |
+| `--history-limit <n>` | `200`                                    | Geschiedenisitems om te laden bij koppelen.                                        |
 
 Aliassen: `openclaw chat` en `openclaw terminal` roepen dezelfde opdracht aan met impliciet `--local`.
 
@@ -45,11 +46,13 @@ Opmerkingen:
 
 - `chat` en `terminal` zijn aliassen voor `openclaw tui --local`.
 - `--local` kan niet worden gecombineerd met `--url`, `--token` of `--password`.
-- `tui` lost waar mogelijk geconfigureerde Gateway-authenticatie-SecretRefs op voor token-/wachtwoordauthenticatie (`env`/`file`/`exec`-providers).
-- Wanneer gestart vanuit een geconfigureerde agent-werkruimtemap, selecteert TUI automatisch die agent als standaard voor de sessiesleutel (tenzij `--session` expliciet `agent:<id>:...` is).
-- Lokale modus gebruikt de ingebedde agent-runtime rechtstreeks. De meeste lokale tools werken, maar functies die alleen in de Gateway beschikbaar zijn, zijn niet beschikbaar.
-- Lokale modus voegt `/auth [provider]` toe binnen het opdrachtoppervlak van de TUI.
-- Plugin-goedkeuringspoorten blijven gelden in lokale modus. Tools waarvoor goedkeuring vereist is, vragen in de terminal om een beslissing; niets wordt stilzwijgend automatisch goedgekeurd omdat de Gateway niet betrokken is.
+- `tui` lost geconfigureerde Gateway-authenticatie-SecretRefs op voor token-/wachtwoordauthenticatie wanneer mogelijk (`env`/`file`/`exec` providers).
+- Wanneer gestart vanuit een geconfigureerde agentwerkruimtemap, selecteert TUI automatisch die agent voor de standaardsessiesleutel (tenzij `--session` expliciet `agent:<id>:...` is).
+- Om de Gateway-hostnaam in de voettekst te tonen voor niet-lokale URL-ondersteunde verbindingen, voer `openclaw config set tui.footer.showRemoteHost true` uit. Het hostlabel staat standaard uit en verschijnt nooit voor loopback- of ingesloten lokale verbindingen.
+- Lokale modus gebruikt de ingesloten agentruntime rechtstreeks. De meeste lokale tools werken, maar functies die alleen via de Gateway beschikbaar zijn, zijn niet beschikbaar.
+- Lokale modus voegt `/auth [provider]` toe binnen het TUI-oppervlak voor opdrachten.
+- Plugin-goedkeuringspoorten blijven ook gelden in lokale modus. Tools die goedkeuring vereisen vragen in de terminal om een beslissing; niets wordt stilzwijgend automatisch goedgekeurd omdat de Gateway niet betrokken is.
+- Sessie[doelen](/nl/tools/goal) verschijnen in de voettekst en kunnen worden beheerd met `/goal`.
 
 ## Voorbeelden
 
@@ -66,13 +69,13 @@ openclaw tui --session bugfix
 
 ## Configuratieherstellus
 
-Gebruik lokale modus wanneer de huidige configuratie al valideert en je wilt dat de
-ingebedde agent deze inspecteert, vergelijkt met de documentatie en helpt deze te
-herstellen vanuit dezelfde terminal:
+Gebruik lokale modus wanneer de huidige config al valideert en je wilt dat de
+ingesloten agent deze inspecteert, vergelijkt met de docs en helpt deze te herstellen
+vanuit dezelfde terminal:
 
 Als `openclaw config validate` al faalt, gebruik dan eerst `openclaw configure` of
-`openclaw doctor --fix`. `openclaw chat` omzeilt de beveiliging tegen ongeldige
-configuratie niet.
+`openclaw doctor --fix`. `openclaw chat` omzeilt de bewaking voor ongeldige
+config niet.
 
 ```bash
 openclaw chat
@@ -88,9 +91,10 @@ Daarna binnen de TUI:
 ```
 
 Pas gerichte fixes toe met `openclaw config set` of `openclaw configure`, en voer daarna
-`openclaw config validate` opnieuw uit. Zie [TUI](/nl/web/tui) en [Config](/nl/cli/config).
+`openclaw config validate` opnieuw uit. Zie [TUI](/nl/web/tui) en [Configuratie](/nl/cli/config).
 
 ## Gerelateerd
 
 - [CLI-referentie](/nl/cli)
 - [TUI](/nl/web/tui)
+- [Doel](/nl/tools/goal)

@@ -1,27 +1,28 @@
 ---
 read_when:
-    - می‌خواهید مدل‌های پیش‌فرض را تغییر دهید یا وضعیت احراز هویت ارائه‌دهنده را مشاهده کنید
-    - می‌خواهید مدل‌ها/ارائه‌دهندگان موجود را اسکن کنید و نمایه‌های احراز هویت را اشکال‌زدایی کنید.
-summary: مرجع CLI برای `openclaw models` (status/list/set/scan، نام‌های مستعار، جایگزین‌ها، احراز هویت)
+    - می‌خواهید مدل‌های پیش‌فرض را تغییر دهید یا وضعیت احراز هویت ارائه‌دهنده را ببینید
+    - می‌خواهید مدل‌ها/ارائه‌دهندگان موجود را اسکن کنید و پروفایل‌های احراز هویت را اشکال‌زدایی کنید
+summary: مرجع CLI برای `openclaw models` (status/list/set/scan، نام‌های مستعار، fallbackها، احراز هویت)
 title: مدل‌ها
 x-i18n:
-    generated_at: "2026-05-12T00:59:23Z"
+    generated_at: "2026-06-27T17:25:29Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 532bccd19b53517447ad784a1103fa65efe890bf35100bb88161a88aeb3c67b1
+    source_hash: 15d0a01e0f8f971996359413306a1c694e5a787eaef69b13eb8ac63c2a7c8990
     source_path: cli/models.md
     workflow: 16
 ---
 
 # `openclaw models`
 
-کشف، پویش، و پیکربندی مدل‌ها (مدل پیش‌فرض، جایگزین‌ها، نمایه‌های احراز هویت).
+کشف، پویش و پیکربندی مدل (مدل پیش‌فرض، جایگزین‌ها، پروفایل‌های احراز هویت).
 
 مرتبط:
 
 - ارائه‌دهندگان + مدل‌ها: [مدل‌ها](/fa/providers/models)
 - مفاهیم انتخاب مدل + فرمان اسلش `/models`: [مفهوم مدل‌ها](/fa/concepts/models)
-- راه‌اندازی احراز هویت ارائه‌دهنده: [شروع کار](/fa/start/getting-started)
+- راه‌اندازی احراز هویت ارائه‌دهنده: [شروع به کار](/fa/start/getting-started)
 
 ## فرمان‌های رایج
 
@@ -32,86 +33,87 @@ openclaw models set <model-or-alias>
 openclaw models scan
 ```
 
-`openclaw models status` مقدارهای پیش‌فرض/جایگزین حل‌شده را همراه با نمای کلی احراز هویت نشان می‌دهد.
-وقتی نماگرفت‌های مصرف ارائه‌دهنده در دسترس باشند، بخش وضعیت OAuth/کلید API شامل
-بازه‌های مصرف ارائه‌دهنده و نماگرفت‌های سهمیه است.
-ارائه‌دهندگان فعلی بازه مصرف: Anthropic، GitHub Copilot، Gemini CLI، OpenAI
-Codex، MiniMax، Xiaomi، و z.ai. احراز هویت مصرف، در صورت وجود، از hookهای اختصاصی ارائه‌دهنده
-گرفته می‌شود؛ در غیر این صورت OpenClaw به اعتبارنامه‌های OAuth/کلید API
-مطابق از نمایه‌های احراز هویت، env، یا config برمی‌گردد.
-در خروجی `--json`، `auth.providers` نمای کلی ارائه‌دهنده با آگاهی از env/config/store
-است، در حالی که `auth.oauth` فقط سلامت نمایه auth-store است.
-برای اجرای probeهای زنده احراز هویت در برابر هر نمایه پیکربندی‌شده ارائه‌دهنده، `--probe` را اضافه کنید.
-Probeها درخواست‌های واقعی هستند (ممکن است token مصرف کنند و rate limitها را فعال کنند).
-برای بررسی وضعیت مدل/احراز هویت یک agent پیکربندی‌شده، از `--agent <id>` استفاده کنید. وقتی حذف شود،
-فرمان در صورت تنظیم بودن از `OPENCLAW_AGENT_DIR`/`PI_CODING_AGENT_DIR` استفاده می‌کند، وگرنه از
-agent پیش‌فرض پیکربندی‌شده.
-ردیف‌های probe می‌توانند از نمایه‌های احراز هویت، اعتبارنامه‌های env، یا `models.json` بیایند.
-برای عیب‌یابی OAuth در Codex، `openclaw models status`،
-`openclaw models auth list --provider openai-codex`، و
+`openclaw models status` پیش‌فرض/جایگزین‌های حل‌شده را همراه با نمای کلی احراز هویت نشان می‌دهد.
+وقتی نماهای لحظه‌ای استفاده از ارائه‌دهنده در دسترس باشند، بخش وضعیت OAuth/API-key
+شامل پنجره‌های استفاده ارائه‌دهنده و نماهای لحظه‌ای سهمیه است.
+ارائه‌دهندگان فعلی پنجره استفاده: Anthropic، GitHub Copilot، Gemini CLI، OpenAI،
+MiniMax، Xiaomi و z.ai. احراز هویت استفاده، در صورت وجود، از هوک‌های اختصاصی ارائه‌دهنده
+می‌آید؛ در غیر این صورت OpenClaw به اعتبارنامه‌های OAuth/API-key مطابق
+از پروفایل‌های احراز هویت، env یا پیکربندی بازمی‌گردد.
+در خروجی `--json`، `auth.providers` نمای کلی ارائه‌دهنده آگاه از env/config/store
+است، در حالی که `auth.oauth` فقط سلامت پروفایل auth-store است.
+برای اجرای پروب‌های زنده احراز هویت روی هر پروفایل ارائه‌دهنده پیکربندی‌شده، `--probe` را اضافه کنید.
+پروب‌ها درخواست‌های واقعی هستند (ممکن است توکن مصرف کنند و محدودیت نرخ را فعال کنند).
+برای بررسی وضعیت مدل/احراز هویت یک عامل پیکربندی‌شده، از `--agent <id>` استفاده کنید. وقتی حذف شود،
+فرمان اگر `OPENCLAW_AGENT_DIR` تنظیم شده باشد از آن استفاده می‌کند، وگرنه از
+عامل پیش‌فرض پیکربندی‌شده استفاده می‌کند.
+ردیف‌های پروب می‌توانند از پروفایل‌های احراز هویت، اعتبارنامه‌های env یا `models.json` بیایند.
+برای عیب‌یابی OAuth مربوط به OpenAI ChatGPT/Codex، `openclaw models status`،
+`openclaw models auth list --provider openai` و
 `openclaw config get agents.defaults.model --json` سریع‌ترین راه برای
-تأیید این هستند که آیا یک agent نمایه احراز هویت قابل استفاده `openai-codex` برای
+تایید این هستند که آیا یک عامل پروفایل OAuth قابل‌استفاده `openai` برای
 `openai/*` از طریق runtime بومی Codex دارد یا نه. [راه‌اندازی ارائه‌دهنده OpenAI](/fa/providers/openai#check-and-recover-codex-oauth-routing) را ببینید.
 
-نکته‌ها:
+نکات:
 
 - `models set <model-or-alias>` مقدار `provider/model` یا یک alias را می‌پذیرد.
-- `models list` فقط‌خواندنی است: config، نمایه‌های احراز هویت، وضعیت catalog موجود
-  و ردیف‌های catalog متعلق به ارائه‌دهنده را می‌خواند، اما `models.json`
-  را بازنویسی نمی‌کند.
-- ستون `Auth` در سطح ارائه‌دهنده و فقط‌خواندنی است. این مقدار از metadata محلی
-  نمایه احراز هویت، نشانگرهای env، کلیدهای پیکربندی‌شده ارائه‌دهنده، نشانگرهای ارائه‌دهنده محلی،
-  نشانگرهای env/profile مربوط به AWS Bedrock، و metadata احراز هویت مصنوعی Plugin محاسبه می‌شود؛
+- `models list` فقط خواندنی است: پیکربندی، پروفایل‌های احراز هویت، وضعیت catalog موجود
+  و ردیف‌های catalog متعلق به ارائه‌دهنده را می‌خواند، اما
+  `models.json` را بازنویسی نمی‌کند.
+- ستون `Auth` در سطح ارائه‌دهنده و فقط خواندنی است. این مقدار از فراداده پروفایل احراز هویت محلی،
+  نشانگرهای env، کلیدهای ارائه‌دهنده پیکربندی‌شده، نشانگرهای ارائه‌دهنده محلی،
+  نشانگرهای env/profile مربوط به AWS Bedrock و فراداده synthetic-auth مربوط به Plugin محاسبه می‌شود؛
   runtime ارائه‌دهنده را بارگذاری نمی‌کند، secretهای keychain را نمی‌خواند، APIهای
-  ارائه‌دهنده را فراخوانی نمی‌کند، یا آمادگی دقیق اجرای هر مدل را اثبات نمی‌کند.
-- `models list --all --provider <id>` می‌تواند ردیف‌های catalog ایستا و متعلق به ارائه‌دهنده
-  را از مانیفست‌های Plugin یا metadata catalog ارائه‌دهنده bundled شامل کند، حتی وقتی
-  هنوز با آن ارائه‌دهنده احراز هویت نکرده‌اید. این ردیف‌ها تا زمانی که احراز هویت
-  مطابق پیکربندی نشود همچنان ناموجود نشان داده می‌شوند.
-- `models list` در حالی که کشف catalog ارائه‌دهنده کند است، control plane را پاسخ‌گو نگه می‌دارد.
+  ارائه‌دهنده را فراخوانی نمی‌کند، یا آمادگی اجرای دقیق برای هر مدل را اثبات نمی‌کند.
+- `models list --all --provider <id>` می‌تواند ردیف‌های catalog ایستای متعلق به ارائه‌دهنده
+  را از manifestهای Plugin یا فراداده catalog ارائه‌دهنده bundled شامل کند، حتی وقتی هنوز
+  با آن ارائه‌دهنده احراز هویت نکرده‌اید. آن ردیف‌ها تا زمانی که احراز هویت مطابق
+  پیکربندی نشود همچنان به‌صورت در دسترس نبودن نمایش داده می‌شوند.
+- `models list` هنگام کند بودن کشف catalog ارائه‌دهنده، control plane را پاسخ‌گو نگه می‌دارد.
   نماهای پیش‌فرض و پیکربندی‌شده پس از یک انتظار کوتاه به ردیف‌های مدل پیکربندی‌شده یا
-  مصنوعی برمی‌گردند و می‌گذارند کشف در پس‌زمینه تمام شود. وقتی به catalog دقیق و کامل
-  کشف‌شده نیاز دارید و مایلید منتظر کشف ارائه‌دهنده بمانید، از `--all` استفاده کنید.
-- `models list --all` گسترده، ردیف‌های catalog مانیفست را بدون بارگذاری hookهای مکمل runtime
-  ارائه‌دهنده، روی ردیف‌های registry ادغام می‌کند. مسیرهای سریع مانیفست فیلترشده با ارائه‌دهنده
+  synthetic بازمی‌گردند و اجازه می‌دهند کشف در پس‌زمینه تمام شود.
+  وقتی به catalog دقیق و کامل کشف‌شده نیاز دارید و مایلید منتظر کشف ارائه‌دهنده بمانید،
+  از `--all` استفاده کنید.
+- `models list --all` گسترده، ردیف‌های catalog manifest را روی ردیف‌های registry ادغام می‌کند
+  بدون اینکه هوک‌های مکمل runtime ارائه‌دهنده را بارگذاری کند. مسیرهای سریع manifest فیلترشده بر اساس ارائه‌دهنده
   فقط از ارائه‌دهندگانی استفاده می‌کنند که با `static` علامت‌گذاری شده‌اند؛ ارائه‌دهندگانی که با `refreshable`
-  علامت‌گذاری شده‌اند بر پایه registry/cache می‌مانند و ردیف‌های مانیفست را به‌عنوان مکمل اضافه می‌کنند، در حالی که
-  ارائه‌دهندگان علامت‌گذاری‌شده با `runtime` روی کشف registry/runtime باقی می‌مانند.
-- `models list` metadata مدل بومی و سقف‌های runtime را جدا نگه می‌دارد. در خروجی جدولی،
-  `Ctx` وقتی یک سقف runtime مؤثر با پنجره context بومی تفاوت داشته باشد `contextTokens/contextWindow`
-  را نشان می‌دهد؛ ردیف‌های JSON وقتی ارائه‌دهنده آن سقف را expose کند شامل `contextTokens`
-  هستند.
-- `models list --provider <id>` بر اساس شناسه ارائه‌دهنده، مانند `moonshot` یا
-  `openai-codex`، فیلتر می‌کند. برچسب‌های نمایشی از انتخاب‌گرهای تعاملی ارائه‌دهنده،
+  علامت‌گذاری شده‌اند، registry/cache-backed می‌مانند و ردیف‌های manifest را به‌عنوان مکمل اضافه می‌کنند، در حالی که
+  ارائه‌دهندگان علامت‌گذاری‌شده با `runtime` روی کشف registry/runtime می‌مانند.
+- `models list` فراداده مدل بومی و سقف‌های runtime را جدا نگه می‌دارد. در خروجی جدول،
+  وقتی سقف runtime موثر با پنجره context بومی فرق داشته باشد، `Ctx` مقدار `contextTokens/contextWindow`
+  را نشان می‌دهد؛ ردیف‌های JSON وقتی ارائه‌دهنده آن سقف را افشا کند، `contextTokens`
+  را شامل می‌شوند.
+- `models list --provider <id>` بر اساس شناسه ارائه‌دهنده فیلتر می‌کند، مانند `moonshot` یا
+  `openai`. این فرمان برچسب‌های نمایشی pickerهای تعاملی ارائه‌دهنده،
   مانند `Moonshot AI`، را نمی‌پذیرد.
-- ارجاع‌های مدل با تقسیم روی **اولین** `/` parse می‌شوند. اگر شناسه مدل شامل `/` باشد (به سبک OpenRouter)، پیشوند ارائه‌دهنده را وارد کنید (مثال: `openrouter/moonshotai/kimi-k2`).
+- ارجاع‌های مدل با جدا کردن روی **اولین** `/` تجزیه می‌شوند. اگر شناسه مدل شامل `/` است (به سبک OpenRouter)، پیشوند ارائه‌دهنده را وارد کنید (مثال: `openrouter/moonshotai/kimi-k2`).
 - اگر ارائه‌دهنده را حذف کنید، OpenClaw ابتدا ورودی را به‌عنوان alias حل می‌کند، سپس
-  به‌عنوان تطابق یکتای ارائه‌دهنده پیکربندی‌شده برای همان شناسه دقیق مدل، و فقط پس از آن
-  با یک هشدار deprecation به ارائه‌دهنده پیش‌فرض پیکربندی‌شده برمی‌گردد.
-  اگر آن ارائه‌دهنده دیگر مدل پیش‌فرض پیکربندی‌شده را expose نکند، OpenClaw
-  به‌جای نمایش یک پیش‌فرض کهنه مربوط به ارائه‌دهنده حذف‌شده، به اولین ارائه‌دهنده/مدل پیکربندی‌شده
-  برمی‌گردد.
-- `models status` ممکن است در خروجی احراز هویت برای placeholderهای غیرsecret (برای مثال `OPENAI_API_KEY`، `secretref-managed`، `minimax-oauth`، `oauth:chutes`، `ollama-local`) به‌جای mask کردن آن‌ها به‌عنوان secret، `marker(<value>)` نشان دهد.
+  به‌عنوان تطابق یکتای ارائه‌دهنده پیکربندی‌شده برای همان شناسه دقیق مدل، و فقط بعد از آن
+  با یک هشدار deprecation به ارائه‌دهنده پیش‌فرض پیکربندی‌شده بازمی‌گردد.
+  اگر آن ارائه‌دهنده دیگر مدل پیش‌فرض پیکربندی‌شده را ارائه نکند، OpenClaw
+  به‌جای نمایش یک پیش‌فرض کهنه مربوط به ارائه‌دهنده حذف‌شده، به اولین ارائه‌دهنده/مدل
+  پیکربندی‌شده بازمی‌گردد.
+- `models status` ممکن است در خروجی احراز هویت برای placeholderهای غیرمحرمانه (برای مثال `OPENAI_API_KEY`، `secretref-managed`، `minimax-oauth`، `oauth:chutes`، `ollama-local`) مقدار `marker(<value>)` را نشان دهد، به‌جای اینکه آن‌ها را مانند secretها mask کند.
 
 ### پویش مدل‌ها
 
-`models scan` catalog عمومی `:free` متعلق به OpenRouter را می‌خواند و candidateها را برای
-استفاده به‌عنوان fallback رتبه‌بندی می‌کند. خود catalog عمومی است، بنابراین پویش‌های فقط metadata به
-کلید OpenRouter نیاز ندارند.
+`models scan` catalog عمومی `:free` مربوط به OpenRouter را می‌خواند و candidateها را برای
+استفاده به‌عنوان fallback رتبه‌بندی می‌کند. خود catalog عمومی است، بنابراین پویش‌های فقط فراداده
+به کلید OpenRouter نیاز ندارند.
 
-به‌طور پیش‌فرض OpenClaw تلاش می‌کند پشتیبانی tool و image را با فراخوانی‌های زنده مدل probe کند.
-اگر هیچ کلید OpenRouter پیکربندی نشده باشد، فرمان به خروجی فقط metadata
-برمی‌گردد و توضیح می‌دهد که مدل‌های `:free` همچنان برای probe و inference به
-`OPENROUTER_API_KEY` نیاز دارند.
+به‌صورت پیش‌فرض OpenClaw تلاش می‌کند پشتیبانی از tool و image را با فراخوانی‌های زنده مدل probe کند.
+اگر هیچ کلید OpenRouter پیکربندی نشده باشد، فرمان به خروجی فقط فراداده
+بازمی‌گردد و توضیح می‌دهد که مدل‌های `:free` همچنان برای
+پروب‌ها و inference به `OPENROUTER_API_KEY` نیاز دارند.
 
 گزینه‌ها:
 
-- `--no-probe` (فقط metadata؛ بدون جست‌وجوی config/secrets)
+- `--no-probe` (فقط فراداده؛ بدون lookup پیکربندی/secretها)
 - `--min-params <b>`
 - `--max-age-days <days>`
 - `--provider <name>`
 - `--max-candidates <n>`
-- `--timeout <ms>` (timeout درخواست catalog و هر probe)
+- `--timeout <ms>` (درخواست catalog و timeout برای هر probe)
 - `--concurrency <n>`
 - `--yes`
 - `--no-input`
@@ -119,8 +121,8 @@ agent پیش‌فرض پیکربندی‌شده.
 - `--set-image`
 - `--json`
 
-`--set-default` و `--set-image` به probeهای زنده نیاز دارند؛ نتایج پویش فقط metadata
-اطلاعاتی هستند و روی config اعمال نمی‌شوند.
+`--set-default` و `--set-image` به پروب‌های زنده نیاز دارند؛ نتایج پویش فقط فراداده
+اطلاعاتی هستند و به پیکربندی اعمال نمی‌شوند.
 
 ### وضعیت مدل‌ها
 
@@ -128,20 +130,20 @@ agent پیش‌فرض پیکربندی‌شده.
 
 - `--json`
 - `--plain`
-- `--check` (exit 1=منقضی/مفقود، 2=در حال انقضا)
-- `--probe` (probe زنده نمایه‌های احراز هویت پیکربندی‌شده)
-- `--probe-provider <name>` (probe یک ارائه‌دهنده)
-- `--probe-profile <id>` (شناسه‌های profile تکراری یا جداشده با کاما)
+- `--check` (exit 1=منقضی‌شده/مفقود، 2=در حال انقضا)
+- `--probe` (پروب زنده پروفایل‌های احراز هویت پیکربندی‌شده)
+- `--probe-provider <name>` (پروب یک ارائه‌دهنده)
+- `--probe-profile <id>` (شناسه‌های پروفایل تکراری یا جداشده با کاما)
 - `--probe-timeout <ms>`
 - `--probe-concurrency <n>`
 - `--probe-max-tokens <n>`
-- `--agent <id>` (شناسه agent پیکربندی‌شده؛ `OPENCLAW_AGENT_DIR`/`PI_CODING_AGENT_DIR` را override می‌کند)
+- `--agent <id>` (شناسه عامل پیکربندی‌شده؛ `OPENCLAW_AGENT_DIR` را override می‌کند)
 
-`--json` stdout را برای payload JSON رزرو نگه می‌دارد. تشخیص‌های auth-profile، ارائه‌دهنده،
-و startup به stderr هدایت می‌شوند تا scriptها بتوانند stdout را مستقیم
+`--json` stdout را برای payload JSON رزرو نگه می‌دارد. diagnostics مربوط به پروفایل احراز هویت، ارائه‌دهنده
+و startup به stderr هدایت می‌شوند تا اسکریپت‌ها بتوانند stdout را مستقیم
 به ابزارهایی مانند `jq` pipe کنند.
 
-bucketهای وضعیت probe:
+bucketهای وضعیت پروب:
 
 - `ok`
 - `auth`
@@ -152,15 +154,15 @@ bucketهای وضعیت probe:
 - `unknown`
 - `no_model`
 
-موردهای detail/reason-code مربوط به probe که باید انتظار داشته باشید:
+موارد detail/reason-code پروب که باید انتظار داشت:
 
-- `excluded_by_auth_order`: یک profile ذخیره‌شده وجود دارد، اما
-  `auth.order.<provider>` صریح آن را حذف کرده است، بنابراین probe به‌جای
-  تلاش برای آن، حذف را گزارش می‌کند.
+- `excluded_by_auth_order`: یک پروفایل ذخیره‌شده وجود دارد، اما
+  `auth.order.<provider>` صریح آن را حذف کرده است، بنابراین پروب به‌جای
+  امتحان کردن آن، exclusion را گزارش می‌کند.
 - `missing_credential`، `invalid_expires`، `expired`، `unresolved_ref`:
-  profile وجود دارد اما eligible/resolvable نیست.
-- `no_model`: احراز هویت ارائه‌دهنده وجود دارد، اما OpenClaw نتوانست یک
-  candidate مدل قابل probe برای آن ارائه‌دهنده حل کند.
+  پروفایل حاضر است اما eligible/resolvable نیست.
+- `no_model`: احراز هویت ارائه‌دهنده وجود دارد، اما OpenClaw نتوانست یک candidate
+  مدل قابل probe برای آن ارائه‌دهنده حل کند.
 
 ## Aliasها + fallbackها
 
@@ -169,61 +171,75 @@ openclaw models aliases list
 openclaw models fallbacks list
 ```
 
-## نمایه‌های احراز هویت
+## پروفایل‌های احراز هویت
 
 ```bash
 openclaw models auth add
 openclaw models auth list [--provider <id>] [--json]
 openclaw models auth login --provider <id>
+openclaw models auth login --provider openai --profile-id openai:work
+openclaw models auth paste-api-key --provider <id>
 openclaw models auth setup-token --provider <id>
 openclaw models auth paste-token
 ```
 
-`models auth add` helper تعاملی احراز هویت است. بسته به
-ارائه‌دهنده‌ای که انتخاب می‌کنید، می‌تواند جریان احراز هویت ارائه‌دهنده
-(OAuth/کلید API) را اجرا کند یا شما را به paste دستی token راهنمایی کند.
+`models auth add` راهنمای تعاملی احراز هویت است. بسته به ارائه‌دهنده‌ای که انتخاب می‌کنید،
+می‌تواند یک جریان احراز هویت ارائه‌دهنده (OAuth/API key) را اجرا کند یا شما را به paste دستی token راهنمایی کند.
 
-`models auth list` نمایه‌های احراز هویت ذخیره‌شده برای agent انتخاب‌شده را بدون
-چاپ token، کلید API، یا مواد secret مربوط به OAuth فهرست می‌کند. از `--provider <id>` برای
-فیلتر کردن به یک ارائه‌دهنده، مانند `openai-codex`، و از `--json` برای scripting استفاده کنید.
+`models auth list` پروفایل‌های احراز هویت ذخیره‌شده را برای عامل انتخاب‌شده فهرست می‌کند
+بدون اینکه token، API-key یا ماده secret مربوط به OAuth را چاپ کند. از `--provider <id>` برای
+فیلتر کردن به یک ارائه‌دهنده، مانند `openai`، و از `--json` برای اسکریپت‌نویسی استفاده کنید.
 
-`models auth login` جریان احراز هویت Plugin ارائه‌دهنده (OAuth/کلید API) را اجرا می‌کند. از
+`models auth login` جریان احراز هویت Plugin ارائه‌دهنده (OAuth/API key) را اجرا می‌کند. از
 `openclaw plugins list` استفاده کنید تا ببینید کدام ارائه‌دهندگان نصب شده‌اند.
-برای نوشتن نتایج احراز هویت در store یک agent پیکربندی‌شده مشخص، از
-`openclaw models auth --agent <id> <subcommand>` استفاده کنید. پرچم parent `--agent` توسط
-`add`، `list`، `login`، `setup-token`، `paste-token`، و
+برای نوشتن نتایج احراز هویت در store یک عامل پیکربندی‌شده مشخص، از
+`openclaw models auth --agent <id> <subcommand>` استفاده کنید. flag والد `--agent` توسط
+`add`، `list`، `login`، `paste-api-key`، `setup-token`، `paste-token` و
 `login-github-copilot` رعایت می‌شود.
 
-برای مدل‌های OpenAI، `--provider openai` به‌طور پیش‌فرض از ورود با حساب ChatGPT/Codex استفاده می‌کند.
-فقط وقتی از `--method api-key` استفاده کنید که می‌خواهید یک profile کلید API مربوط به OpenAI اضافه کنید،
-معمولاً به‌عنوان پشتیبان برای محدودیت‌های subscription مربوط به Codex. نگارش قدیمی
-`--provider openai-codex` همچنان برای scriptهای موجود کار می‌کند.
+برای مدل‌های OpenAI، `--provider openai` به‌صورت پیش‌فرض وارد شدن با حساب ChatGPT/Codex است.
+فقط وقتی از `--method api-key` استفاده کنید که می‌خواهید یک پروفایل API-key OpenAI اضافه کنید،
+معمولا به‌عنوان پشتیبان برای محدودیت‌های subscription مربوط به Codex. برای مهاجرت وضعیت auth/profile
+قدیمی با پیشوند legacy OpenAI Codex به `openai`، `openclaw doctor --fix` را اجرا کنید.
 
 مثال‌ها:
 
 ```bash
 openclaw models auth login --provider openai --set-default
 openclaw models auth login --provider openai --method api-key
+openclaw models auth paste-api-key --provider openai
 openclaw models auth list --provider openai
 ```
 
-نکته‌ها:
+نکات:
 
-- `setup-token` و `paste-token` برای ارائه‌دهندگانی که روش‌های احراز هویت token را expose می‌کنند،
-  همچنان فرمان‌های token عمومی باقی می‌مانند.
-- `setup-token` به TTY تعاملی نیاز دارد و روش احراز هویت token ارائه‌دهنده را اجرا می‌کند
-  (به‌طور پیش‌فرض روش `setup-token` همان ارائه‌دهنده، وقتی یکی را expose کند).
+- `login` برای ارائه‌دهندگانی که در هنگام login از پروفایل‌های نام‌گذاری‌شده پشتیبانی می‌کنند،
+  `--profile-id <id>` را می‌پذیرد. از این برای جدا نگه داشتن چند login برای یک
+  ارائه‌دهنده استفاده کنید.
+- `paste-api-key` کلیدهای API تولیدشده در جای دیگر را می‌پذیرد، مقدار کلید
+  را prompt می‌کند، و آن را در شناسه پروفایل پیش‌فرض `<provider>:manual` می‌نویسد، مگر اینکه
+  `--profile-id` را پاس دهید. در automation، کلید را روی stdin pipe کنید، برای مثال
+  `printf "%s\n" "$OPENAI_API_KEY" | openclaw models auth paste-api-key --provider openai`.
+- `setup-token` و `paste-token` به‌عنوان فرمان‌های generic token برای ارائه‌دهندگانی باقی می‌مانند
+  که روش‌های احراز هویت token را افشا می‌کنند.
+- `setup-token` به یک TTY تعاملی نیاز دارد و روش token-auth ارائه‌دهنده را اجرا می‌کند
+  (وقتی آن ارائه‌دهنده روش `setup-token` را افشا کند، به‌صورت پیش‌فرض همان روش).
 - `paste-token` یک رشته token تولیدشده در جای دیگر یا از automation را می‌پذیرد.
-- `paste-token` به `--provider` نیاز دارد، مقدار token را prompt می‌کند، و آن را
-  در شناسه profile پیش‌فرض `<provider>:manual` می‌نویسد، مگر اینکه
+- `paste-token` به `--provider` نیاز دارد، به‌صورت پیش‌فرض مقدار token را prompt می‌کند،
+  و آن را در شناسه پروفایل پیش‌فرض `<provider>:manual` می‌نویسد، مگر اینکه
   `--profile-id` را پاس دهید.
-- `paste-token --expires-in <duration>` یک انقضای مطلق token را از یک
-  duration نسبی مانند `365d` یا `12h` ذخیره می‌کند.
-- نکته Anthropic: کارکنان Anthropic به ما گفتند استفاده از Claude CLI به سبک OpenClaw دوباره مجاز است، بنابراین OpenClaw استفاده مجدد از Claude CLI و استفاده از `claude -p` را برای این یکپارچه‌سازی مجاز تلقی می‌کند، مگر اینکه Anthropic سیاست جدیدی منتشر کند.
-- `setup-token` / `paste-token` مربوط به Anthropic همچنان به‌عنوان یک مسیر token پشتیبانی‌شده OpenClaw در دسترس هستند، اما OpenClaw اکنون در صورت وجود، استفاده مجدد از Claude CLI و `claude -p` را ترجیح می‌دهد.
+- در automation، به‌جای پاس دادن token به‌عنوان آرگومان، آن را روی stdin pipe کنید تا
+  اعتبارنامه‌های ارائه‌دهنده در shell history یا process list ظاهر نشوند.
+- `paste-token --expires-in <duration>` انقضای مطلق token را از یک
+  مدت نسبی مانند `365d` یا `12h` ذخیره می‌کند.
+- برای `openai`، کلیدهای API OpenAI و ماده token مربوط به ChatGPT/OAuth
+  شکل‌های احراز هویت متفاوتی هستند. از `paste-api-key` برای کلیدهای API OpenAI با `sk-...` و
+  از `paste-token` فقط برای ماده احراز هویت token استفاده کنید.
+- نکته Anthropic: کارکنان Anthropic به ما گفته‌اند استفاده به سبک OpenClaw از Claude CLI دوباره مجاز است، بنابراین OpenClaw استفاده مجدد از Claude CLI و استفاده از `claude -p` را برای این integration مجاز تلقی می‌کند، مگر اینکه Anthropic سیاست جدیدی منتشر کند.
+- `setup-token` / `paste-token` مربوط به Anthropic همچنان به‌عنوان یک مسیر token پشتیبانی‌شده OpenClaw در دسترس هستند، اما OpenClaw اکنون استفاده مجدد از Claude CLI و `claude -p` را، وقتی در دسترس باشد، ترجیح می‌دهد.
 
 ## مرتبط
 
 - [مرجع CLI](/fa/cli)
 - [انتخاب مدل](/fa/concepts/model-providers)
-- [failover مدل](/fa/concepts/model-failover)
+- [Failover مدل](/fa/concepts/model-failover)

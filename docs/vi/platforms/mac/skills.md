@@ -1,50 +1,53 @@
 ---
 read_when:
-    - Cập nhật giao diện cài đặt Skills trên macOS
+    - Đang cập nhật giao diện cài đặt Skills trên macOS
     - Thay đổi cơ chế kiểm soát Skills hoặc hành vi cài đặt
-summary: Giao diện cài đặt Skills trên macOS và trạng thái được Gateway hỗ trợ
+summary: Giao diện cài đặt Skills trên macOS và trạng thái dựa trên Gateway
 title: Skills (macOS)
 x-i18n:
-    generated_at: "2026-04-29T22:57:38Z"
+    generated_at: "2026-06-27T17:42:49Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: dcd89d27220644866060d0f9954a116e6093d22f7ebd32d09dc16871c25b988e
+    source_hash: 5ecc470f1645051e03ab4f51bcb4972da4853c690354bc8ea18a89fcd387d413
     source_path: platforms/mac/skills.md
     workflow: 16
 ---
 
-Ứng dụng macOS hiển thị các Skills của OpenClaw thông qua Gateway; ứng dụng không phân tích Skills cục bộ.
+Ứng dụng macOS hiển thị Skills của OpenClaw thông qua Gateway; ứng dụng không phân tích Skills cục bộ.
 
 ## Nguồn dữ liệu
 
-- `skills.status` (Gateway) trả về tất cả Skills cùng với điều kiện đủ dùng và các yêu cầu còn thiếu
-  (bao gồm các chặn allowlist cho Skills được đóng gói sẵn).
+- `skills.status` (Gateway) trả về tất cả Skills cùng với tính đủ điều kiện và các yêu cầu còn thiếu
+  (bao gồm cả các chặn bằng danh sách cho phép đối với Skills đi kèm).
 - Các yêu cầu được suy ra từ `metadata.openclaw.requires` trong mỗi `SKILL.md`.
 
 ## Hành động cài đặt
 
 - `metadata.openclaw.install` định nghĩa các tùy chọn cài đặt (brew/node/go/uv).
 - Ứng dụng gọi `skills.install` để chạy trình cài đặt trên máy chủ Gateway.
-- Các phát hiện dangerous-code tích hợp sẵn ở mức `critical` chặn `skills.install` theo mặc định; các phát hiện đáng ngờ vẫn chỉ cảnh báo. Ghi đè dangerous tồn tại trên yêu cầu Gateway, nhưng luồng ứng dụng mặc định vẫn fail-closed.
-- Nếu mọi tùy chọn cài đặt đều là `download`, Gateway hiển thị tất cả
-  lựa chọn tải xuống.
-- Nếu không, Gateway chọn một trình cài đặt ưu tiên bằng cách dùng các tùy chọn
-  cài đặt hiện tại và các binary trên máy chủ: Homebrew trước khi
+- `security.installPolicy` do người vận hành sở hữu có thể chặn các lượt cài đặt Skills
+  được Gateway hỗ trợ trước khi siêu dữ liệu trình cài đặt chạy. Cơ chế chặn mã nguy hiểm
+  tích hợp sẵn tại thời điểm cài đặt không phải là một phần của luồng cài đặt Skills.
+- Nếu mọi tùy chọn cài đặt đều là `download`, Gateway sẽ hiển thị tất cả lựa chọn
+  tải xuống.
+- Nếu không, Gateway chọn một trình cài đặt ưu tiên bằng các tùy chọn cài đặt
+  hiện tại và các tệp nhị phân trên máy chủ: Homebrew trước khi
   `skills.install.preferBrew` được bật và `brew` tồn tại, sau đó là `uv`, rồi đến
   trình quản lý node được cấu hình từ `skills.install.nodeManager`, rồi các
   phương án dự phòng sau đó như `go` hoặc `download`.
-- Nhãn cài đặt Node phản ánh trình quản lý node đã cấu hình, bao gồm `yarn`.
+- Nhãn cài đặt Node phản ánh trình quản lý node đã cấu hình, bao gồm cả `yarn`.
 
-## Khóa môi trường/API
+## Khóa env/API
 
 - Ứng dụng lưu khóa trong `~/.openclaw/openclaw.json` dưới `skills.entries.<skillKey>`.
 - `skills.update` vá `enabled`, `apiKey`, và `env`.
 
 ## Chế độ từ xa
 
-- Cài đặt + cập nhật cấu hình diễn ra trên máy chủ Gateway (không phải máy Mac cục bộ).
+- Các bản cập nhật cài đặt và cấu hình diễn ra trên máy chủ Gateway (không phải máy Mac cục bộ).
 
 ## Liên quan
 
 - [Skills](/vi/tools/skills)
-- [ứng dụng macOS](/vi/platforms/macos)
+- [Ứng dụng macOS](/vi/platforms/macos)

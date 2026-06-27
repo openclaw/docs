@@ -1,20 +1,21 @@
 ---
 read_when:
-    - É necessário instalar o Node.js antes de instalar o OpenClaw
+    - Você precisa instalar o Node.js antes de instalar o OpenClaw
     - Você instalou o OpenClaw, mas `openclaw` retorna comando não encontrado
     - npm install -g falha com problemas de permissões ou de PATH
-summary: Instale e configure o Node.js para o OpenClaw - requisitos de versão, opções de instalação e solução de problemas do PATH
+summary: Instale e configure o Node.js para o OpenClaw - requisitos de versão, opções de instalação e solução de problemas de PATH
 title: Node.js
 x-i18n:
-    generated_at: "2026-05-07T13:20:30Z"
+    generated_at: "2026-06-27T17:39:09Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: de8ef8d00c8996741187000f55d07d15a2d09e89b6deb99cf687b6b9128ad266
+    source_hash: 90a2461458fd9995df264753259a3297b8aa316f9e4efd8290e527cbb46fc4e3
     source_path: install/node.md
     workflow: 16
 ---
 
-OpenClaw requer **Node 22.16 ou mais recente**. **Node 24 é o runtime padrão e recomendado** para instalações, CI e fluxos de lançamento. Node 22 continua com suporte pela linha LTS ativa. O [script de instalação](/pt-BR/install#alternative-install-methods) detectará e instalará o Node automaticamente - esta página é para quando você quiser configurar o Node por conta própria e garantir que tudo esteja conectado corretamente (versões, PATH, instalações globais).
+OpenClaw requer **Node 22.19 ou mais recente**. **Node 24 é o runtime padrão e recomendado** para instalações, CI e fluxos de trabalho de lançamento. Node 22 continua compatível pela linha LTS ativa. O [script de instalação](/pt-BR/install#alternative-install-methods) detectará e instalará o Node automaticamente - esta página é para quando você quiser configurar o Node por conta própria e garantir que tudo esteja conectado corretamente (versões, PATH, instalações globais).
 
 ## Verifique sua versão
 
@@ -22,7 +23,7 @@ OpenClaw requer **Node 22.16 ou mais recente**. **Node 24 é o runtime padrão e
 node -v
 ```
 
-Se isso imprimir `v24.x.x` ou superior, você está no padrão recomendado. Se imprimir `v22.16.x` ou superior, você está no caminho compatível do Node 22 LTS, mas ainda recomendamos atualizar para o Node 24 quando for conveniente. Se o Node não estiver instalado ou a versão for antiga demais, escolha um método de instalação abaixo.
+Se isso imprimir `v24.x.x` ou superior, você está no padrão recomendado. Se imprimir `v22.19.x` ou superior, você está no caminho compatível do Node 22 LTS, mas ainda recomendamos atualizar para Node 24 quando for conveniente. Se o Node não estiver instalado ou a versão for antiga demais, escolha um método de instalação abaixo.
 
 ## Instale o Node
 
@@ -34,7 +35,7 @@ Se isso imprimir `v24.x.x` ou superior, você está no padrão recomendado. Se i
     brew install node
     ```
 
-    Ou baixe o instalador para macOS em [nodejs.org](https://nodejs.org/).
+    Ou baixe o instalador do macOS em [nodejs.org](https://nodejs.org/).
 
   </Tab>
   <Tab title="Linux">
@@ -67,13 +68,13 @@ Se isso imprimir `v24.x.x` ou superior, você está no padrão recomendado. Se i
     choco install nodejs-lts
     ```
 
-    Ou baixe o instalador para Windows em [nodejs.org](https://nodejs.org/).
+    Ou baixe o instalador do Windows em [nodejs.org](https://nodejs.org/).
 
   </Tab>
 </Tabs>
 
-<Accordion title="Using a version manager (nvm, fnm, mise, asdf)">
-  Gerenciadores de versões permitem alternar entre versões do Node facilmente. Opções populares:
+<Accordion title="Usando um gerenciador de versões (nvm, fnm, mise, asdf)">
+  Gerenciadores de versões permitem alternar facilmente entre versões do Node. Opções populares:
 
 - [**fnm**](https://github.com/Schniz/fnm) - rápido, multiplataforma
 - [**nvm**](https://github.com/nvm-sh/nvm) - amplamente usado no macOS/Linux
@@ -87,7 +88,7 @@ fnm use 24
 ```
 
   <Warning>
-  Verifique se o gerenciador de versões está inicializado no arquivo de inicialização do seu shell (`~/.zshrc` ou `~/.bashrc`). Se não estiver, `openclaw` pode não ser encontrado em novas sessões do terminal porque o PATH não incluirá o diretório bin do Node.
+  Garanta que seu gerenciador de versões esteja inicializado no arquivo de inicialização do shell (`~/.zshrc` ou `~/.bashrc`). Se não estiver, `openclaw` talvez não seja encontrado em novas sessões de terminal porque o PATH não incluirá o diretório bin do Node.
   </Warning>
 </Accordion>
 
@@ -98,12 +99,12 @@ fnm use 24
 Isso quase sempre significa que o diretório bin global do npm não está no seu PATH.
 
 <Steps>
-  <Step title="Find your global npm prefix">
+  <Step title="Encontre seu prefixo global do npm">
     ```bash
     npm prefix -g
     ```
   </Step>
-  <Step title="Check if it's on your PATH">
+  <Step title="Verifique se ele está no seu PATH">
     ```bash
     echo "$PATH"
     ```
@@ -111,7 +112,7 @@ Isso quase sempre significa que o diretório bin global do npm não está no seu
     Procure por `<npm-prefix>/bin` (macOS/Linux) ou `<npm-prefix>` (Windows) na saída.
 
   </Step>
-  <Step title="Add it to your shell startup file">
+  <Step title="Adicione-o ao arquivo de inicialização do shell">
     <Tabs>
       <Tab title="macOS / Linux">
         Adicione a `~/.zshrc` ou `~/.bashrc`:

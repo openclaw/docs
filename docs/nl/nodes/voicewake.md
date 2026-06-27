@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Gedrag of standaardinstellingen voor spraakwekwoorden wijzigen
-    - Nieuwe Node-platforms toevoegen waarvoor synchronisatie van wekwoorden nodig is
-summary: Globale spraakwekwoorden (in beheer van de Gateway) en hoe ze tussen nodes synchroniseren
+    - Gedrag of standaardinstellingen van spraakactiveringswoorden wijzigen
+    - Nieuwe node-platforms toevoegen die wake-word-synchronisatie nodig hebben
+summary: Globale spraakwekwoorden (eigendom van Gateway) en hoe ze tussen nodes synchroniseren
 title: Spraakactivering
 x-i18n:
-    generated_at: "2026-05-06T09:22:04Z"
+    generated_at: "2026-06-27T17:45:38Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a284cbe3e12784a8d7a3eab6ba8ae230123557bca7593c956111199b94b91b73
+    source_hash: 3c57955e8061eca2f9fec83500e829f183cd3ef9f794bf385823a28f9c89b0a4
     source_path: nodes/voicewake.md
     workflow: 16
 ---
@@ -16,38 +17,41 @@ x-i18n:
 OpenClaw behandelt **wekwoorden als één globale lijst** die eigendom is van de **Gateway**.
 
 - Er zijn **geen aangepaste wekwoorden per node**.
-- **Elke node-/app-UI kan** de lijst bewerken; wijzigingen worden door de Gateway opgeslagen en naar iedereen uitgezonden.
-- macOS en iOS behouden lokale schakelaars voor **spraakactivering ingeschakeld/uitgeschakeld** (lokale UX en machtigingen verschillen).
-- Android houdt spraakactivering momenteel uitgeschakeld en gebruikt een handmatige microfoonflow in het tabblad Spraak.
+- **Elke node-/app-UI mag** de lijst bewerken; wijzigingen worden door de Gateway opgeslagen en naar iedereen uitgezonden.
+- macOS en iOS behouden lokale schakelaars voor **Voice Wake ingeschakeld/uitgeschakeld** (lokale UX + machtigingen verschillen).
+- Android houdt Voice Wake momenteel uitgeschakeld en gebruikt een handmatige microfoonflow in het tabblad Voice.
 
 ## Opslag (Gateway-host)
 
-Wekwoorden worden op de gatewaymachine opgeslagen op:
+Wekwoorden en routeringsregels worden opgeslagen in de gateway-statusdatabase:
 
-- `~/.openclaw/settings/voicewake.json`
+- `~/.openclaw/state/openclaw.sqlite`
 
-Vorm:
+De actieve tabellen zijn:
 
-```json
-{ "triggers": ["openclaw", "claude", "computer"], "updatedAtMs": 1730000000000 }
-```
+- `voicewake_triggers`
+- `voicewake_routing_config`
+- `voicewake_routing_routes`
+
+Verouderde bestanden `settings/voicewake.json` en `settings/voicewake-routing.json` zijn
+alleen invoer voor doctor-migratie; de runtime leest en schrijft de SQLite-tabellen.
 
 ## Protocol
 
 ### Methoden
 
 - `voicewake.get` → `{ triggers: string[] }`
-- `voicewake.set` met params `{ triggers: string[] }` → `{ triggers: string[] }`
+- `voicewake.set` met parameters `{ triggers: string[] }` → `{ triggers: string[] }`
 
 Opmerkingen:
 
 - Triggers worden genormaliseerd (bijgesneden, lege waarden verwijderd). Lege lijsten vallen terug op standaardwaarden.
-- Limieten worden afgedwongen voor veiligheid (limieten voor aantal/lengte).
+- Limieten worden om veiligheidsredenen afgedwongen (maxima voor aantal/lengte).
 
 ### Routeringsmethoden (trigger → doel)
 
 - `voicewake.routing.get` → `{ config: VoiceWakeRoutingConfig }`
-- `voicewake.routing.set` met params `{ config: VoiceWakeRoutingConfig }` → `{ config: VoiceWakeRoutingConfig }`
+- `voicewake.routing.set` met parameters `{ config: VoiceWakeRoutingConfig }` → `{ config: VoiceWakeRoutingConfig }`
 
 Vorm van `VoiceWakeRoutingConfig`:
 
@@ -60,7 +64,7 @@ Vorm van `VoiceWakeRoutingConfig`:
 }
 ```
 
-Routedoelen ondersteunen exact één van:
+Routedoelen ondersteunen precies één van:
 
 - `{ "mode": "current" }`
 - `{ "agentId": "main" }`
@@ -71,27 +75,27 @@ Routedoelen ondersteunen exact één van:
 - `voicewake.changed` payload `{ triggers: string[] }`
 - `voicewake.routing.changed` payload `{ config: VoiceWakeRoutingConfig }`
 
-Wie dit ontvangt:
+Wie ontvangt dit:
 
 - Alle WebSocket-clients (macOS-app, WebChat, enz.)
-- Alle verbonden nodes (iOS/Android), en ook bij het verbinden van een node als een initiële push met de "huidige status".
+- Alle verbonden nodes (iOS/Android), en ook bij node-verbinding als een initiële push van de "huidige status".
 
 ## Clientgedrag
 
 ### macOS-app
 
-- Gebruikt de globale lijst om `VoiceWakeRuntime`-triggers te gate'en.
-- Het bewerken van "Triggerwoorden" in de instellingen voor spraakactivering roept `voicewake.set` aan en vertrouwt vervolgens op de broadcast om andere clients gesynchroniseerd te houden.
+- Gebruikt de globale lijst om `VoiceWakeRuntime`-triggers te bewaken.
+- Het bewerken van "Trigger words" in Voice Wake-instellingen roept `voicewake.set` aan en vertrouwt daarna op de uitzending om andere clients synchroon te houden.
 
 ### iOS-node
 
-- Gebruikt de globale lijst voor triggerdetectie door `VoiceWakeManager`.
-- Het bewerken van wekwoorden in Instellingen roept `voicewake.set` aan (via de Gateway-WS) en houdt lokale wekwoorddetectie ook responsief.
+- Gebruikt de globale lijst voor triggerdetectie met `VoiceWakeManager`.
+- Het bewerken van Wake Words in Settings roept `voicewake.set` aan (via de Gateway WS) en houdt lokale wekwoorddetectie ook responsief.
 
 ### Android-node
 
-- Spraakactivering is momenteel uitgeschakeld in de Android-runtime/-instellingen.
-- Android-spraak gebruikt handmatige microfoonopname in het tabblad Spraak in plaats van wekwoordtriggers.
+- Voice Wake is momenteel uitgeschakeld in de Android-runtime/-instellingen.
+- Android-spraak gebruikt handmatige microfoonopname in het tabblad Voice in plaats van wekwoordtriggers.
 
 ## Gerelateerd
 

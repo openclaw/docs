@@ -1,25 +1,26 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin msteams
-summary: เพิ่มส่วนติดต่อช่องทาง Microsoft Teams สำหรับการส่งและรับข้อความ OpenClaw
-title: Plugin สำหรับ Microsoft Teams
+summary: Plugin ช่องทาง Microsoft Teams ของ OpenClaw สำหรับการสนทนากับบอต
+title: Plugin Microsoft Teams
 x-i18n:
-    generated_at: "2026-05-03T10:17:13Z"
+    generated_at: "2026-06-27T18:03:40Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b1e72dae5dc51a30521bde8520afec7cd743d236df63f440098b72a922bdad9c
+    source_hash: 32353faf19a94c9df5ffc57fbf0ef91391500e0ae317c9626edcbbcf295c697b
     source_path: plugins/reference/msteams.md
     workflow: 16
 ---
 
 # Plugin Microsoft Teams
 
-เพิ่มพื้นผิวช่องทาง Microsoft Teams สำหรับส่งและรับข้อความ OpenClaw
+Plugin ช่องทาง Microsoft Teams ของ OpenClaw สำหรับการสนทนากับบอท
 
 ## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/msteams`
-- ช่องทางติดตั้ง: npm; ClawHub
+- เส้นทางการติดตั้ง: npm; ClawHub
 
 ## พื้นผิว
 

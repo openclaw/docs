@@ -1,24 +1,25 @@
 ---
 read_when:
-    - Vous souhaitez récupérer une URL et en extraire le contenu lisible
-    - Vous devez configurer web_fetch ou sa solution de repli Firecrawl
+    - Vous voulez récupérer une URL et en extraire le contenu lisible
+    - Vous devez configurer web_fetch ou son repli Firecrawl
     - Vous voulez comprendre les limites et la mise en cache de web_fetch
 sidebarTitle: Web Fetch
 summary: outil web_fetch -- récupération HTTP avec extraction de contenu lisible
 title: Récupération web
 x-i18n:
-    generated_at: "2026-05-06T18:00:57Z"
+    generated_at: "2026-06-27T18:22:32Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 337174898861db217bf0db052d8e8749989c295e89c73d9d5a6911f6335ba03d
+    source_hash: b5a4127b97ded80eec1a5944bc8606069e630c61f89c4d5ce9cb729390b4eb4d
     source_path: tools/web-fetch.md
     workflow: 16
 ---
 
-L’outil `web_fetch` effectue un simple HTTP GET et extrait le contenu lisible
-(HTML vers markdown ou texte). Il n’exécute **pas** JavaScript.
+L’outil `web_fetch` effectue un simple GET HTTP et extrait le contenu lisible
+(HTML vers Markdown ou texte). Il n’exécute **pas** JavaScript.
 
-Pour les sites fortement dépendants de JS ou les pages protégées par connexion, utilisez plutôt le
+Pour les sites qui dépendent fortement de JS ou les pages protégées par connexion, utilisez plutôt le
 [Navigateur Web](/fr/tools/browser).
 
 ## Démarrage rapide
@@ -37,7 +38,7 @@ URL à récupérer. `http(s)` uniquement.
 </ParamField>
 
 <ParamField path="extractMode" type="'markdown' | 'text'" default="markdown">
-Format de sortie après l’extraction du contenu principal.
+Format de sortie après extraction du contenu principal.
 </ParamField>
 
 <ParamField path="maxChars" type="number">
@@ -47,15 +48,15 @@ Tronque la sortie à ce nombre de caractères.
 ## Fonctionnement
 
 <Steps>
-  <Step title="Récupération">
-    Envoie un HTTP GET avec un User-Agent semblable à Chrome et un en-tête
+  <Step title="Fetch">
+    Envoie un GET HTTP avec un User-Agent semblable à celui de Chrome et un en-tête
     `Accept-Language`. Bloque les noms d’hôte privés/internes et revérifie les redirections.
   </Step>
-  <Step title="Extraction">
+  <Step title="Extract">
     Exécute Readability (extraction du contenu principal) sur la réponse HTML.
   </Step>
-  <Step title="Repli (facultatif)">
-    Si Readability échoue et que Firecrawl est configuré, réessaie via l’API
+  <Step title="Fallback (optional)">
+    Si Readability échoue et que Firecrawl est sélectionné, réessaie via l’API
     Firecrawl avec le mode de contournement des bots.
   </Step>
   <Step title="Cache">
@@ -63,6 +64,21 @@ Tronque la sortie à ce nombre de caractères.
     récupérations répétées de la même URL.
   </Step>
 </Steps>
+
+## Mises à jour de progression
+
+`web_fetch` émet une ligne de progression publique uniquement lorsque la récupération est toujours en attente
+après cinq secondes :
+
+```text
+Fetching page content...
+```
+
+Les accès rapides au cache et les réponses réseau rapides se terminent avant le déclenchement du minuteur ; ils
+n’affichent donc pas de ligne de progression. Si l’appel est annulé, le minuteur est effacé.
+Lorsque la récupération finit par se terminer, l’agent reçoit le résultat normal de l’outil ;
+la ligne de progression n’est qu’un état d’interface de canal et ne contient jamais le contenu
+de la page récupérée.
 
 ## Configuration
 
@@ -92,9 +108,9 @@ Tronque la sortie à ce nombre de caractères.
 }
 ```
 
-## Repli Firecrawl
+## Solution de secours Firecrawl
 
-Si l’extraction Readability échoue, `web_fetch` peut se replier sur
+Si l’extraction Readability échoue, `web_fetch` peut se rabattre sur
 [Firecrawl](/fr/tools/firecrawl) pour le contournement des bots et une meilleure extraction :
 
 ```json5
@@ -112,7 +128,7 @@ Si l’extraction Readability échoue, `web_fetch` peut se replier sur
         enabled: true,
         config: {
           webFetch: {
-            apiKey: "fc-...", // optional if FIRECRAWL_API_KEY is set
+            // apiKey: "fc-...", // optional; omit for keyless starter access
             baseUrl: "https://api.firecrawl.dev",
             onlyMainContent: true,
             maxAgeMs: 86400000, // cache duration (1 day)
@@ -125,39 +141,41 @@ Si l’extraction Readability échoue, `web_fetch` peut se replier sur
 }
 ```
 
-`plugins.entries.firecrawl.config.webFetch.apiKey` prend en charge les objets SecretRef.
-L’ancienne configuration `tools.web.fetch.firecrawl.*` est migrée automatiquement par `openclaw doctor --fix`.
+`plugins.entries.firecrawl.config.webFetch.apiKey` est facultatif et prend en charge les objets SecretRef.
+La configuration héritée `tools.web.fetch.firecrawl.*` est migrée automatiquement par `openclaw doctor --fix`.
 
 <Note>
-  Si Firecrawl est activé et que sa SecretRef n’est pas résolue sans solution de repli par variable d’environnement
-  `FIRECRAWL_API_KEY`, le démarrage du Gateway échoue rapidement.
+  Si vous configurez une SecretRef de clé d’API Firecrawl et qu’elle n’est pas résolue sans solution de secours
+  d’environnement `FIRECRAWL_API_KEY`, le démarrage du Gateway échoue rapidement.
 </Note>
 
 <Note>
-  Les remplacements de `baseUrl` Firecrawl sont verrouillés : le trafic hébergé utilise
-  `https://api.firecrawl.dev` ; les remplacements auto-hébergés doivent cibler des points de terminaison privés ou
+  Les substitutions de `baseUrl` Firecrawl sont verrouillées : le trafic hébergé utilise
+  `https://api.firecrawl.dev` ; les substitutions auto-hébergées doivent cibler des points de terminaison privés ou
   internes, et `http://` n’est accepté que pour ces cibles privées.
 </Note>
 
 Comportement d’exécution actuel :
 
-- `tools.web.fetch.provider` sélectionne explicitement le fournisseur de repli de récupération.
-- Si `provider` est omis, OpenClaw détecte automatiquement le premier fournisseur web-fetch
-  prêt à partir des identifiants disponibles. Les appels `web_fetch` non isolés en bac à sable peuvent utiliser
-  les plugins installés qui déclarent `contracts.webFetchProviders` et enregistrent un
-  fournisseur correspondant à l’exécution. Aujourd’hui, le fournisseur groupé est Firecrawl.
-- Les appels `web_fetch` isolés en bac à sable restent limités aux fournisseurs groupés.
-- Si Readability est désactivé, `web_fetch` passe directement au repli du
-  fournisseur sélectionné. Si aucun fournisseur n’est disponible, il échoue de manière fermée.
+- `tools.web.fetch.provider` sélectionne explicitement le fournisseur de secours de récupération.
+- Si `provider` est omis, OpenClaw détecte automatiquement le premier fournisseur web-fetch prêt
+  à partir des identifiants configurés. `web_fetch` non isolé peut utiliser les plugins installés
+  qui déclarent `contracts.webFetchProviders` et enregistrent un fournisseur correspondant
+  à l’exécution. Le Plugin Firecrawl officiel fournit cette solution de secours.
+- Les appels `web_fetch` isolés autorisent les fournisseurs intégrés ainsi que les fournisseurs installés
+  dont la provenance npm officielle ou ClawHub est vérifiée. Aujourd’hui, cela autorise le
+  Plugin Firecrawl officiel ; les plugins de récupération externes tiers restent exclus.
+- Si Readability est désactivé, `web_fetch` passe directement à la solution de secours du
+  fournisseur sélectionné. Si aucun fournisseur n’est disponible, il échoue en mode fermé.
 
-## Proxy d’environnement de confiance
+## Proxy d’environnement approuvé
 
 Si votre déploiement exige que `web_fetch` passe par un proxy sortant
-HTTP(S) de confiance, définissez `tools.web.fetch.useTrustedEnvProxy: true`.
+HTTP(S) approuvé, définissez `tools.web.fetch.useTrustedEnvProxy: true`.
 
-Dans ce mode, OpenClaw applique toujours les vérifications SSRF basées sur le nom d’hôte avant d’envoyer
-la requête, mais il laisse le proxy résoudre le DNS au lieu d’effectuer un épinglage DNS
-local. Activez cette option uniquement lorsque le proxy est contrôlé par l’opérateur et applique
+Dans ce mode, OpenClaw applique toujours les contrôles SSRF fondés sur le nom d’hôte avant d’envoyer
+la requête, mais laisse le proxy résoudre le DNS au lieu d’effectuer un épinglage DNS local.
+Activez ce mode uniquement lorsque le proxy est contrôlé par l’opérateur et applique
 la politique sortante après la résolution DNS.
 
 <Note>
@@ -168,16 +186,16 @@ la politique sortante après la résolution DNS.
 
 ## Limites et sécurité
 
-- `maxChars` est plafonné à `tools.web.fetch.maxCharsCap`
-- Le corps de la réponse est plafonné à `maxResponseBytes` avant l’analyse ; les réponses
-  surdimensionnées sont tronquées avec un avertissement
+- `maxChars` est limité à `tools.web.fetch.maxCharsCap`
+- Le corps de réponse est plafonné à `maxResponseBytes` avant l’analyse ; les réponses
+  trop volumineuses sont tronquées avec un avertissement
 - Les noms d’hôte privés/internes sont bloqués
 - `tools.web.fetch.ssrfPolicy.allowRfc2544BenchmarkRange` et
-  `tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` sont des activations explicites limitées
-  pour les piles de proxy à fausse IP de confiance ; laissez-les non définies sauf si votre proxy possède
+  `tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` sont des opt-ins étroits
+  pour les piles de proxy à fausses IP approuvées ; laissez-les non définis sauf si votre proxy possède
   ces plages synthétiques et applique sa propre politique de destination
 - Les redirections sont vérifiées et limitées par `maxRedirects`
-- `useTrustedEnvProxy` est une activation explicite et ne doit être activée que pour les
+- `useTrustedEnvProxy` est un opt-in explicite et ne doit être activé que pour les
   proxys contrôlés par l’opérateur qui appliquent toujours la politique sortante après la résolution
   DNS
 - `web_fetch` fonctionne au mieux -- certains sites nécessitent le [Navigateur Web](/fr/tools/browser)
@@ -195,8 +213,8 @@ Si vous utilisez des profils d’outils ou des listes d’autorisation, ajoutez 
 }
 ```
 
-## Connexe
+## Associés
 
-- [Recherche Web](/fr/tools/web) -- rechercher sur le Web avec plusieurs fournisseurs
-- [Navigateur Web](/fr/tools/browser) -- automatisation complète du navigateur pour les sites fortement dépendants de JS
-- [Firecrawl](/fr/tools/firecrawl) -- outils de recherche et d’extraction Firecrawl
+- [Recherche Web](/fr/tools/web) -- recherchez sur le Web avec plusieurs fournisseurs
+- [Navigateur Web](/fr/tools/browser) -- automatisation complète du navigateur pour les sites dépendant fortement de JS
+- [Firecrawl](/fr/tools/firecrawl) -- outils de recherche et de scraping Firecrawl

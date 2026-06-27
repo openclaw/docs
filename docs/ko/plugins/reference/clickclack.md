@@ -4,10 +4,11 @@ read_when:
 summary: OpenClaw 메시지를 보내고 받기 위한 Clickclack 채널 표면을 추가합니다.
 title: Clickclack Plugin
 x-i18n:
-    generated_at: "2026-05-10T19:44:33Z"
+    generated_at: "2026-06-27T17:49:42Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 45ce98f1dcbc5d6369489c862704bcd714419aa7e41e33850d3776119822c02e
+    source_hash: d939f5291de0510eaac361732f93fb79cac94656ac56a653f3c9e97394c6a9ae
     source_path: plugins/reference/clickclack.md
     workflow: 16
 ---
@@ -19,7 +20,7 @@ OpenClaw 메시지를 보내고 받기 위한 Clickclack 채널 표면을 추가
 ## 배포
 
 - 패키지: `@openclaw/clickclack`
-- 설치 경로: OpenClaw에 포함됨
+- 설치 경로: npm; ClawHub: `clawhub:@openclaw/clickclack`
 
 ## 표면
 

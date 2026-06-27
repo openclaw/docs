@@ -1,49 +1,50 @@
 ---
 read_when:
-    - การปรับโครงสร้างพฤติกรรมการส่งหรือรับของช่องทาง
-    - การเปลี่ยนการผลัดรอบของช่องทาง การส่งต่อการตอบกลับ คิวขาออก การสตรีมตัวอย่าง หรือ API ข้อความของ Plugin SDK
-    - การออกแบบ Plugin ช่องทางใหม่ที่ต้องการการส่งแบบคงทน การยืนยันการรับ การแสดงตัวอย่าง การแก้ไข หรือการลองซ้ำ
-summary: แผนการออกแบบสำหรับวงจรชีวิตแบบรวมของการรับ ส่ง แสดงตัวอย่าง แก้ไข และสตรีมข้อความแบบคงทน
+    - การรีแฟกเตอร์พฤติกรรมการส่งหรือรับของช่องทาง
+    - การเปลี่ยนแปลงการรับเข้าขาเข้าของช่องทาง, การส่งต่อคำตอบ, คิวขาออก, การสตรีมตัวอย่างล่วงหน้า, หรือ API ข้อความของ Plugin SDK
+    - การออกแบบ Plugin ช่องทางใหม่ที่ต้องการการส่งที่ทนทาน ใบตอบรับ ตัวอย่างก่อนส่ง การแก้ไข หรือการลองส่งซ้ำ
+summary: แผนการออกแบบสำหรับวงจรชีวิตแบบรวมศูนย์ที่คงทนของการรับ ส่ง แสดงตัวอย่าง แก้ไข และสตรีมข้อความ
 title: การปรับโครงสร้างวงจรชีวิตของข้อความ
 x-i18n:
-    generated_at: "2026-05-10T19:33:02Z"
+    generated_at: "2026-06-27T17:27:36Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b2e136f1be0f7c1952731b464c3732c68c14a31e672ce628af8182a3f666c914
+    source_hash: 09afead1194a62453342af6feac20fbed24a7761db07a80234333b65947798bb
     source_path: concepts/message-lifecycle-refactor.md
     workflow: 16
 ---
 
-หน้านี้คือการออกแบบเป้าหมายสำหรับแทนที่ตัวช่วยแบบกระจัดกระจายของรอบช่องทาง, การจัดส่งการตอบกลับ,
-การสตรีมตัวอย่าง และการส่งออกภายนอก ด้วยวงจรชีวิตข้อความที่ทนทานหนึ่งชุด
+หน้านี้คือการออกแบบเป้าหมายสำหรับแทนที่ตัวช่วยที่กระจัดกระจายสำหรับข้อความขาเข้าของช่องทาง การส่งคำตอบ
+การสตรีมตัวอย่าง และการส่งออกขาออก ด้วยวงจรชีวิตข้อความที่ทนทานเพียงหนึ่งเดียว
 
-ฉบับย่อ:
+สรุปสั้น ๆ:
 
 - primitive หลักควรเป็น **receive** และ **send** ไม่ใช่ **reply**
 - การตอบกลับเป็นเพียงความสัมพันธ์บนข้อความขาออก
-- turn เป็นความสะดวกในการประมวลผลขาเข้า ไม่ใช่เจ้าของการส่งมอบ
+- turn เป็นความสะดวกสำหรับการประมวลผลขาเข้า ไม่ใช่เจ้าของการส่งมอบ
 - การส่งต้องอิงบริบท: `begin`, render, preview หรือ stream, final send,
   commit, fail
 - การรับก็ต้องอิงบริบทเช่นกัน: normalize, dedupe, route, record,
   dispatch, platform ack, fail
-- SDK Plugin สาธารณะควรถูกรวมให้เหลือพื้นผิว channel-message ขนาดเล็กหนึ่งชุด
+- SDK Plugin สาธารณะควรยุบเหลือพื้นผิว channel-outbound ขนาดเล็กเพียงหนึ่งเดียว
 
 ## ปัญหา
 
 สแต็กช่องทางปัจจุบันเติบโตมาจากความต้องการเฉพาะที่ถูกต้องหลายอย่าง:
 
-- อะแดปเตอร์ขาเข้าแบบเรียบง่ายใช้ `runtime.channel.turn.run`
-- อะแดปเตอร์ที่สมบูรณ์กว่าใช้ `runtime.channel.turn.runPrepared`
-- ตัวช่วยแบบเดิมใช้ `dispatchInboundReplyWithBase`,
-  `recordInboundSessionAndDispatchReply`, ตัวช่วย payload การตอบกลับ, การแบ่ง chunk การตอบกลับ,
+- อะแดปเตอร์ขาเข้าแบบง่ายใช้ `runtime.channel.inbound.run`
+- อะแดปเตอร์แบบเต็มรูปแบบใช้ `runtime.channel.inbound.runPreparedReply`
+- ตัวช่วย legacy ใช้ `dispatchInboundReplyWithBase`,
+  `recordInboundSessionAndDispatchReply`, ตัวช่วย payload การตอบกลับ, การแบ่งชิ้นส่วนการตอบกลับ,
   การอ้างอิงการตอบกลับ และตัวช่วย runtime ขาออก
-- การสตรีมตัวอย่างอยู่ในตัวจัดส่งเฉพาะช่องทาง
-- กำลังเพิ่มความทนทานของการส่งมอบขั้นสุดท้ายรอบเส้นทาง payload การตอบกลับที่มีอยู่
+- การสตรีมตัวอย่างอยู่ใน dispatcher เฉพาะช่องทาง
+- กำลังเพิ่มความทนทานของการส่งมอบขั้นสุดท้ายรอบ path payload การตอบกลับที่มีอยู่
 
-รูปแบบนั้นแก้บั๊กเฉพาะจุดได้ แต่ทำให้ OpenClaw มีแนวคิดสาธารณะมากเกินไป
-และมีตำแหน่งมากเกินไปที่ semantic ของการส่งมอบอาจคลาดเคลื่อน
+รูปแบบนั้นแก้บั๊กเฉพาะที่ได้ แต่ทำให้ OpenClaw มีแนวคิดสาธารณะมากเกินไป
+และมีจุดมากเกินไปที่ semantics ของการส่งมอบอาจคลาดเคลื่อนได้
 
-ปัญหาด้านความน่าเชื่อถือที่เปิดเผยเรื่องนี้คือ:
+ปัญหาความน่าเชื่อถือที่เผยให้เห็นเรื่องนี้คือ:
 
 ```text
 Telegram polling update acked
@@ -52,73 +53,72 @@ Telegram polling update acked
   -> final response is lost
 ```
 
-invariant เป้าหมายกว้างกว่า Telegram: เมื่อ core ตัดสินใจว่าควรมีข้อความขาออก
-ที่มองเห็นได้ intent ต้องทนทานก่อนพยายามส่งไปยังแพลตฟอร์ม และต้อง commit
-receipt ของแพลตฟอร์มหลังสำเร็จ นั่นทำให้ OpenClaw ฟื้นตัวแบบ at-least-once ได้
-พฤติกรรม exactly-once มีอยู่เฉพาะสำหรับอะแดปเตอร์ที่พิสูจน์ idempotency แบบ native ได้
-หรือ reconcile การพยายามส่งที่ unknown-after-send กับสถานะของแพลตฟอร์มก่อน replay
+invariant เป้าหมายกว้างกว่า Telegram: เมื่อ core ตัดสินว่าควรมีข้อความขาออกที่มองเห็นได้
+intent ต้องทนทานก่อนพยายามส่งไปยังแพลตฟอร์ม และต้อง commit ใบรับของแพลตฟอร์มหลังสำเร็จ
+สิ่งนี้ทำให้ OpenClaw กู้คืนแบบ at-least-once ได้ พฤติกรรม exactly-once มีได้เฉพาะ
+สำหรับอะแดปเตอร์ที่พิสูจน์ native idempotency ได้ หรือ reconcile ความพยายามส่งที่อยู่ในสถานะ
+unknown-after-send กับสถานะแพลตฟอร์มก่อน replay ได้
 
-นั่นคือสถานะปลายทางของการ refactor นี้ ไม่ใช่คำอธิบายของทุกเส้นทางปัจจุบัน
-ระหว่างการย้าย ระบบตัวช่วยขาออกที่มีอยู่อาจยัง fallback ไปส่งโดยตรงเมื่อการเขียนคิวแบบ best-effort ล้มเหลว
-การ refactor จะถือว่าเสร็จสมบูรณ์ก็ต่อเมื่อ final send แบบทนทาน fail closed
-หรือ opt out อย่างชัดเจนด้วยนโยบาย non-durable ที่มีเอกสารกำกับ
+นี่คือสถานะปลายทางของการ refactor นี้ ไม่ใช่คำอธิบายของทุก path ปัจจุบัน
+ระหว่าง migration ตัวช่วยขาออกที่มีอยู่ยังสามารถตกกลับไปเป็น direct send ได้เมื่อการเขียน queue แบบ best-effort ล้มเหลว
+การ refactor จะสมบูรณ์ก็ต่อเมื่อ durable final sends fail closed หรือ opt out อย่างชัดเจนด้วยนโยบาย non-durable ที่มีเอกสารกำกับ
 
 ## เป้าหมาย
 
-- วงจรชีวิตหลักหนึ่งชุดสำหรับเส้นทางรับและส่งข้อความของทุกช่องทาง
-- final send แบบทนทานเป็นค่าเริ่มต้นในวงจรชีวิตข้อความใหม่หลังจากอะแดปเตอร์
-  ประกาศพฤติกรรมที่ replay ได้อย่างปลอดภัย
-- semantic ร่วมสำหรับตัวอย่าง, การแก้ไข, การสตรีม, การ finalize, retry, recovery และ receipt
-- พื้นผิว SDK Plugin ขนาดเล็กที่ Plugin ภายนอกเรียนรู้และดูแลรักษาได้
-- ความเข้ากันได้สำหรับผู้เรียก `channel.turn` ที่มีอยู่ระหว่างการย้าย
+- วงจรชีวิต core เดียวสำหรับ path การรับและส่งข้อความของทุกช่องทาง
+- final sends ที่ทนทานโดยค่าเริ่มต้นในวงจรชีวิตข้อความใหม่ หลังจากอะแดปเตอร์
+  ประกาศพฤติกรรมที่ replay-safe
+- semantics ร่วมสำหรับ preview, edit, stream, finalization, retry, recovery และ receipt
+- พื้นผิว SDK Plugin ขนาดเล็กที่ Plugin ภายนอกสามารถเรียนรู้และดูแลได้
+- ความเข้ากันได้สำหรับ caller ของ inbound reply compatibility ที่มีอยู่ระหว่าง migration
 - จุดขยายที่ชัดเจนสำหรับความสามารถใหม่ของช่องทาง
 - ไม่มี branch เฉพาะแพลตฟอร์มใน core
-- ไม่มีข้อความช่องทางแบบ token-delta การสตรีมของช่องทางยังคงเป็นการส่งมอบตัวอย่างข้อความ,
-  การแก้ไข, การต่อท้าย หรือ block ที่เสร็จสมบูรณ์
-- metadata ต้นทางจาก OpenClaw แบบมีโครงสร้างสำหรับเอาต์พุตด้านปฏิบัติการ/ระบบ เพื่อไม่ให้
-  ความล้มเหลวของ Gateway ที่มองเห็นได้กลับเข้าไปในห้องร่วมที่เปิดใช้บอทเป็น prompt ใหม่
+- ไม่มีข้อความช่องทางแบบ token-delta การสตรีมของช่องทางยังคงเป็น message preview,
+  edit, append หรือการส่งมอบ block ที่เสร็จสมบูรณ์
+- metadata ต้นทางจาก OpenClaw แบบมีโครงสร้างสำหรับ output เชิงปฏิบัติการ/ระบบ เพื่อให้ gateway failure ที่มองเห็นได้
+  ไม่กลับเข้าไปในห้องร่วมที่เปิดใช้บอทในฐานะ prompt ใหม่
 
-## สิ่งที่ไม่ใช่เป้าหมาย
+## ไม่ใช่เป้าหมาย
 
-- อย่าลบ `runtime.channel.turn.*` ในเฟสแรก
-- อย่าบังคับทุกช่องทางให้ใช้พฤติกรรม transport แบบ native เดียวกัน
-- อย่าสอน core เรื่องหัวข้อของ Telegram, สตรีม native ของ Slack, การ redaction ของ Matrix,
-  การ์ด Feishu, เสียง QQ หรือ activity ของ Teams
-- อย่าเผยแพร่ตัวช่วยการย้ายภายในทั้งหมดเป็น API SDK ที่เสถียร
-- อย่าทำให้ retry replay การดำเนินการแพลตฟอร์มแบบ non-idempotent ที่เสร็จแล้ว
+- ไม่บังคับให้ทุกช่องทางที่มีอยู่ใช้การส่งมอบข้อความแบบทนทานในเฟสแรก
+- ไม่บังคับให้ทุกช่องทางมีพฤติกรรม transport native เหมือนกัน
+- ไม่สอน core เกี่ยวกับหัวข้อ Telegram, native streams ของ Slack, redactions ของ Matrix,
+  cards ของ Feishu, เสียงของ QQ หรือ activities ของ Teams
+- ไม่เผยแพร่ตัวช่วย migration ภายในทั้งหมดเป็น API SDK ที่เสถียร
+- ไม่ทำให้ retry replay การดำเนินการแพลตฟอร์มแบบ non-idempotent ที่เสร็จสมบูรณ์แล้ว
 
 ## โมเดลอ้างอิง
 
-Vercel Chat มีโมเดลทางความคิดสาธารณะที่ดี:
+Vercel Chat มี mental model สาธารณะที่ดี:
 
 - `Chat`
 - `Thread`
 - `Channel`
 - `Message`
-- เมธอดของอะแดปเตอร์ เช่น `postMessage`, `editMessage`, `deleteMessage`,
-  `stream`, `startTyping` และการดึงประวัติ
-- state adapter สำหรับ dedupe, lock, queue และ persistence
+- เมธอดอะแดปเตอร์ เช่น `postMessage`, `editMessage`, `deleteMessage`,
+  `stream`, `startTyping` และการดึง history
+- state adapter สำหรับ dedupe, locks, queues และ persistence
 
 OpenClaw ควรยืมคำศัพท์ ไม่ใช่คัดลอกพื้นผิว
 
-สิ่งที่ OpenClaw ต้องการนอกเหนือจากโมเดลนั้น:
+สิ่งที่ OpenClaw ต้องการเพิ่มเติมจากโมเดลนั้น:
 
-- intent การส่งขาออกแบบทนทานก่อนเรียก transport โดยตรง
-- บริบทการส่งที่ชัดเจนพร้อม begin, commit และ fail
-- บริบทการรับที่รู้จักนโยบาย ack ของแพลตฟอร์ม
-- receipt ที่อยู่รอดจากการ restart และขับเคลื่อนการแก้ไข, ลบ, recovery และ
-  การระงับ duplicate ได้
-- SDK สาธารณะที่เล็กลง Plugin ที่ bundled สามารถใช้ตัวช่วย runtime ภายในได้ แต่
-  Plugin ภายนอกควรเห็น API ข้อความที่สอดคล้องกันหนึ่งชุด
-- พฤติกรรมเฉพาะ agent: session, transcript, การสตรีม block, ความคืบหน้าของ tool,
-  approval, media directive, การตอบกลับแบบเงียบ และประวัติการ mention ในกลุ่ม
+- send intents ขาออกที่ทนทานก่อนเรียก transport โดยตรง
+- send contexts ที่ชัดเจนพร้อม begin, commit และ fail
+- receive contexts ที่รู้ policy การ ack ของแพลตฟอร์ม
+- receipts ที่อยู่รอดหลัง restart และสามารถขับเคลื่อน edits, deletes, recovery และ
+  duplicate suppression
+- SDK สาธารณะที่เล็กกว่า Plugin ที่ bundled สามารถใช้ตัวช่วย runtime ภายในได้ แต่
+  Plugin ภายนอกควรเห็น message API ที่สอดคล้องเป็นหนึ่งเดียว
+- พฤติกรรมเฉพาะ agent: sessions, transcripts, block streaming, tool
+  progress, approvals, media directives, silent replies และ history การ mention ใน group
 
-promise แบบ `thread.post()` ยังไม่พอสำหรับ OpenClaw เพราะซ่อน
-ขอบเขตธุรกรรมที่ตัดสินว่าการส่งสามารถ recover ได้หรือไม่
+promise แบบ `thread.post()` ไม่เพียงพอสำหรับ OpenClaw เพราะซ่อน
+ขอบเขตธุรกรรมที่ตัดสินว่าการส่ง recoverable หรือไม่
 
-## โมเดลหลัก
+## โมเดล Core
 
-โดเมนใหม่ควรอยู่ภายใต้ namespace ภายในของ core เช่น
+domain ใหม่ควรอยู่ภายใต้ namespace core ภายใน เช่น
 `src/channels/message/*`
 
 มีแนวคิดสี่อย่าง:
@@ -134,12 +134,12 @@ core.messages.state(...)
 
 `send` เป็นเจ้าของวงจรชีวิตขาออก
 
-`live` เป็นเจ้าของสถานะตัวอย่าง, การแก้ไข, ความคืบหน้า และสตรีม
+`live` เป็นเจ้าของ preview, edit, progress และสถานะ stream
 
-`state` เป็นเจ้าของการจัดเก็บ intent แบบทนทาน, receipt, idempotency, recovery, lock และ
+`state` เป็นเจ้าของ durable intent storage, receipts, idempotency, recovery, locks และ
 dedupe
 
-## คำศัพท์เกี่ยวกับข้อความ
+## คำศัพท์ข้อความ
 
 ### ข้อความ
 
@@ -164,7 +164,7 @@ type ChannelMessage = {
 
 ### เป้าหมาย
 
-เป้าหมายอธิบายว่าข้อความอยู่ที่ใด:
+target อธิบายว่าข้อความอยู่ที่ใด:
 
 ```typescript
 type MessageTarget = {
@@ -180,7 +180,7 @@ type MessageTarget = {
 
 ### ความสัมพันธ์
 
-การตอบกลับคือความสัมพันธ์ ไม่ใช่ API root:
+Reply เป็นความสัมพันธ์ ไม่ใช่ root ของ API:
 
 ```typescript
 type MessageRelation =
@@ -216,15 +216,15 @@ type MessageRelation =
     };
 ```
 
-สิ่งนี้ทำให้เส้นทางส่งเดียวกันจัดการการตอบกลับปกติ, การแจ้งเตือน Cron, prompt ขอ approval,
-การเสร็จสิ้น task, การส่งด้วย message-tool, การส่งจาก CLI หรือ Control UI, ผลลัพธ์จาก subagent
+สิ่งนี้ทำให้ path การส่งเดียวกันรองรับการตอบกลับปกติ การแจ้งเตือน Cron, prompt การอนุมัติ,
+การทำ task ให้เสร็จ, การส่งผ่าน message-tool, การส่งจาก CLI หรือ Control UI, ผลลัพธ์จาก subagent
 และการส่งจาก automation ได้
 
-### ต้นทาง
+### Origin
 
-ต้นทางอธิบายว่าใครสร้างข้อความและ OpenClaw ควรปฏิบัติต่อ echo ของ
-ข้อความนั้นอย่างไร ต้นทางแยกจากความสัมพันธ์: ข้อความอาจเป็นการตอบกลับผู้ใช้
-และยังเป็นเอาต์พุตปฏิบัติการที่มีต้นทางจาก OpenClaw ได้
+Origin อธิบายว่าใครสร้างข้อความและ OpenClaw ควรจัดการ echo ของข้อความนั้นอย่างไร
+มันแยกจาก relation: ข้อความสามารถเป็นการตอบกลับผู้ใช้
+และยังเป็น output เชิงปฏิบัติการที่มีต้นทางจาก OpenClaw ได้
 
 ```typescript
 type MessageOrigin =
@@ -240,17 +240,16 @@ type MessageOrigin =
     };
 ```
 
-Core เป็นเจ้าของความหมายของเอาต์พุตที่มีต้นทางจาก OpenClaw ช่องทางเป็นเจ้าของวิธี
-เข้ารหัสต้นทางนั้นลงใน transport ของตน
+Core เป็นเจ้าของความหมายของ output ที่มีต้นทางจาก OpenClaw ช่องทางเป็นเจ้าของวิธีเข้ารหัส
+origin นั้นลงใน transport ของตน
 
-การใช้งานครั้งแรกที่จำเป็นคือเอาต์พุตความล้มเหลวของ Gateway มนุษย์ยังควรเห็น
-ข้อความเช่น "Agent failed before reply" หรือ "Missing API key" แต่เอาต์พุตปฏิบัติการ
-ของ OpenClaw ที่ติดแท็กต้องไม่ถูกยอมรับเป็นอินพุตที่เขียนโดยบอทในห้องร่วม
-เมื่อเปิดใช้ `allowBots`
+การใช้งานครั้งแรกที่ต้องมีคือ output ของ gateway failure มนุษย์ยังควรเห็น
+ข้อความ เช่น "Agent failed before reply" หรือ "Missing API key" แต่ output เชิงปฏิบัติการของ OpenClaw
+ที่ติด tag ต้องไม่ถูกยอมรับเป็น input ที่เขียนโดยบอทในห้องร่วมเมื่อเปิดใช้ `allowBots`
 
 ### Receipt
 
-Receipt เป็น first-class:
+Receipts เป็น first-class:
 
 ```typescript
 type MessageReceipt = {
@@ -279,17 +278,17 @@ type MessageReceiptPart = {
 };
 ```
 
-Receipt เป็นสะพานจาก intent แบบทนทานไปสู่การแก้ไข, ลบ, finalize ตัวอย่าง,
-การระงับ duplicate และ recovery ในอนาคต
+Receipts เป็นสะพานจาก durable intent ไปสู่ edit, delete, preview
+finalization, duplicate suppression และ recovery ในอนาคต
 
-Receipt สามารถอธิบายข้อความแพลตฟอร์มหนึ่งข้อความหรือการส่งมอบแบบหลายส่วนได้
-ข้อความที่แบ่ง chunk, สื่อพร้อมข้อความ, เสียงพร้อมข้อความ และ fallback แบบการ์ดต้องเก็บ
-id ของแพลตฟอร์มทั้งหมดไว้ ในขณะที่ยังเปิดเผย id หลักสำหรับ threading และการแก้ไขภายหลัง
+receipt สามารถอธิบายข้อความแพลตฟอร์มหนึ่งข้อความหรือการส่งมอบหลายส่วนได้ ข้อความที่แบ่ง chunk,
+สื่อพร้อมข้อความ, เสียงพร้อมข้อความ และ card fallback ต้องเก็บ platform ids ทั้งหมดไว้
+พร้อมกับยังเปิดเผย primary id สำหรับ threading และ edits ภายหลัง
 
 ## บริบทการรับ
 
-การรับไม่ควรเป็นการเรียกตัวช่วยเปล่า ๆ core ต้องมีบริบทที่รู้จัก
-dedupe, routing, การบันทึก session และนโยบาย ack ของแพลตฟอร์ม
+การรับไม่ควรเป็นการเรียกตัวช่วยเปล่า ๆ Core ต้องมี context ที่รู้
+dedupe, routing, session recording และ policy การ ack ของแพลตฟอร์ม
 
 ```typescript
 type MessageReceiveContext = {
@@ -311,7 +310,7 @@ type MessageReceiveContext = {
 };
 ```
 
-ลำดับการรับ:
+Receive flow:
 
 ```text
 platform event
@@ -327,22 +326,22 @@ platform event
   -> ack platform when policy allows
 ```
 
-Ack ไม่ได้มีอย่างเดียว สัญญาการรับต้องแยกสัญญาณเหล่านี้ออกจากกัน:
+Ack ไม่ใช่สิ่งเดียว สัญญา receive ต้องแยกสัญญาณเหล่านี้ออกจากกัน:
 
-- **Transport ack:** บอก webhook หรือ socket ของแพลตฟอร์มว่า OpenClaw รับ
+- **Transport ack:** บอก webhook หรือ socket ของแพลตฟอร์มว่า OpenClaw ยอมรับ
   event envelope แล้ว บางแพลตฟอร์มต้องการสิ่งนี้ก่อน dispatch
 - **Polling offset ack:** เลื่อน cursor เพื่อไม่ให้ fetch event เดิมซ้ำ
-  สิ่งนี้ต้องไม่เลื่อนข้ามงานที่ recover ไม่ได้
-- **Inbound record ack:** ยืนยันว่า OpenClaw persist metadata ขาเข้าเพียงพอสำหรับ
-  dedupe และ route redelivery
-- **User-visible receipt:** พฤติกรรม read/status/typing แบบเลือกใช้ได้; ไม่เป็น
-  ขอบเขตด้านความทนทานเด็ดขาด
+  สิ่งนี้ต้องไม่เลื่อนผ่านงานที่กู้คืนไม่ได้
+- **Inbound record ack:** ยืนยันว่า OpenClaw persist metadata ขาเข้ามากพอสำหรับ
+  dedupe และ route เมื่อมีการส่งซ้ำ
+- **User-visible receipt:** พฤติกรรม read/status/typing ที่เป็นตัวเลือก ไม่เคยเป็น
+  ขอบเขตความทนทาน
 
-`ReceiveAckPolicy` ควบคุมเฉพาะ acknowledgement ของ transport หรือ polling เท่านั้น ต้อง
-ไม่นำไปใช้ซ้ำกับ read receipt หรือ status reaction
+`ReceiveAckPolicy` ควบคุมเฉพาะการ acknowledgement ของ transport หรือ polling เท่านั้น ห้าม
+นำไปใช้ซ้ำสำหรับ read receipts หรือ status reactions
 
-ก่อน authorization ของบอท การรับต้องใช้นโยบาย echo ของ OpenClaw ร่วมกัน
-เมื่อช่องทางสามารถถอดรหัส metadata ต้นทางของข้อความได้:
+ก่อนการอนุญาตบอท receive ต้องใช้นโยบาย echo ร่วมของ OpenClaw
+เมื่อช่องทางสามารถ decode metadata origin ของข้อความได้:
 
 ```typescript
 function shouldDropOpenClawEcho(params: {
@@ -360,11 +359,10 @@ function shouldDropOpenClawEcho(params: {
 }
 ```
 
-การ drop นี้อิงแท็ก ไม่ใช่อิงข้อความ ข้อความในห้องที่เขียนโดยบอทซึ่งมีข้อความความล้มเหลว
-ของ Gateway ที่มองเห็นได้เหมือนกัน แต่ไม่มี metadata ต้นทางของ OpenClaw ยังคงผ่าน
-authorization `allowBots` ตามปกติ
+การ drop นี้อิง tag ไม่ใช่อิงข้อความ ข้อความในห้องที่เขียนโดยบอทและมีข้อความ gateway-failure ที่มองเห็นได้เหมือนกัน
+แต่ไม่มี metadata origin ของ OpenClaw ยังคงผ่าน authorization `allowBots` ตามปกติ
 
-นโยบาย ack ระบุชัดเจน:
+Ack policy ชัดเจน:
 
 ```typescript
 type ReceiveAckPolicy =
@@ -374,19 +372,19 @@ type ReceiveAckPolicy =
   | { kind: "manual" };
 ```
 
-ตอนนี้ Telegram polling ใช้นโยบาย ack ของ receive-context สำหรับ persisted
-restart watermark ตัว tracker ยังสังเกต update ของ grammY เมื่อเข้าสู่
-middleware chain แต่ OpenClaw จะ persist เฉพาะ safe completed update id หลัง
-dispatch สำเร็จ โดยปล่อยให้ update ที่ล้มเหลวหรือ pending ที่ต่ำกว่า replay ได้หลัง restart
-offset fetch `getUpdates` upstream ของ Telegram ยังถูกควบคุมโดย
-ไลบรารี polling ดังนั้นการปรับลึกส่วนที่เหลือคือ polling source ที่ทนทานเต็มรูปแบบ
-หากเราต้องการ redelivery ระดับแพลตฟอร์มนอกเหนือจาก restart watermark ของ OpenClaw
-แพลตฟอร์ม Webhook อาจต้อง ack HTTP ทันที แต่ยังต้องมี inbound dedupe และ
-intent การส่งขาออกแบบทนทาน เพราะ webhook สามารถ redeliver ได้
+ตอนนี้ Telegram polling ใช้ ack policy ของ receive-context สำหรับ persisted
+restart watermark ตัว tracker ยังสังเกต grammY updates ขณะที่เข้าสู่
+middleware chain แต่ OpenClaw persist เฉพาะ safe completed update id หลัง
+dispatch สำเร็จ โดยปล่อยให้ updates ที่ล้มเหลวหรือต่ำกว่าที่ยังค้างอยู่ replay ได้หลัง
+restart offset การ fetch `getUpdates` upstream ของ Telegram ยังคงถูกควบคุมโดย
+polling library ดังนั้นส่วนลึกที่เหลือคือ polling source ที่ทนทานเต็มรูปแบบ
+หากเราต้องการ redelivery ระดับแพลตฟอร์มเหนือกว่า restart
+watermark ของ OpenClaw แพลตฟอร์ม Webhook อาจต้อง HTTP ack ทันที แต่ยังต้องมี
+inbound dedupe และ durable outbound send intents เพราะ webhooks สามารถ redeliver ได้
 
 ## บริบทการส่ง
 
-การส่งก็อิงบริบทเช่นกัน:
+การส่งอิงตามบริบทเช่นกัน:
 
 ```typescript
 type MessageSendContext = {
@@ -411,7 +409,7 @@ type MessageSendContext = {
 };
 ```
 
-การจัดลำดับการทำงานที่แนะนำ:
+การจัดลำดับงานที่แนะนำ:
 
 ```typescript
 await core.messages.withSendContext(message, async (ctx) => {
@@ -439,50 +437,50 @@ begin durable intent
   -> fail durable intent on classified failure
 ```
 
-Intent ต้องมีอยู่ก่อน transport I/O การรีสตาร์ตหลัง begin แต่ก่อน
+intent ต้องมีอยู่ก่อน I/O ของ transport การรีสตาร์ตหลังจากเริ่มแล้วแต่ก่อน
 commit สามารถกู้คืนได้
 
-ขอบเขตที่อันตรายคือหลังแพลตฟอร์มสำเร็จและก่อน commit ใบรับ หาก
-โปรเซสตายตรงนั้น OpenClaw จะไม่สามารถรู้ได้ว่าข้อความของแพลตฟอร์มมีอยู่หรือไม่
-เว้นแต่อะแดปเตอร์จะมี idempotency แบบเนทีฟหรือเส้นทางกระทบยอดใบรับ
-ความพยายามเหล่านั้นต้องดำเนินต่อใน `unknown_after_send` ไม่ใช่เล่นซ้ำแบบไม่ตรวจสอบ Channel
-ที่ไม่มีการกระทบยอดอาจเลือกการเล่นซ้ำแบบ at-least-once ได้เฉพาะเมื่อข้อความที่ซ้ำและมองเห็นได้
-เป็น tradeoff ที่ยอมรับได้และมีเอกสารสำหรับ Channel และความสัมพันธ์นั้น
-สะพานการกระทบยอด SDK ปัจจุบันกำหนดให้อะแดปเตอร์ประกาศ
-`reconcileUnknownSend` จากนั้นขอให้ `durableFinal.reconcileUnknownSend`
-จัดประเภทเอนทรีที่ไม่รู้เป็น `sent`, `not_sent` หรือ `unresolved`; เฉพาะ `not_sent`
-เท่านั้นที่อนุญาตให้เล่นซ้ำ และเอนทรีที่ยังไม่คลี่คลายจะยังเป็นสถานะปลายทางหรือ retry เฉพาะ
+ขอบเขตที่อันตรายคือหลังแพลตฟอร์มส่งสำเร็จและก่อน commit receipt หาก
+กระบวนการตายตรงนั้น OpenClaw จะไม่สามารถรู้ได้ว่าข้อความบนแพลตฟอร์มมีอยู่หรือไม่
+เว้นแต่อะแดปเตอร์จะให้ idempotency แบบเนทีฟหรือเส้นทางกระทบยอด receipt
+ความพยายามเหล่านั้นต้องกลับมาทำงานต่อใน `unknown_after_send` ไม่ใช่เล่นซ้ำแบบไม่ตรวจสอบ ช่องทาง
+ที่ไม่มีการกระทบยอดอาจเลือกเล่นซ้ำแบบ at-least-once ได้ก็ต่อเมื่อข้อความซ้ำที่ผู้ใช้มองเห็น
+เป็น tradeoff ที่ยอมรับได้และมีเอกสารกำกับสำหรับช่องทางและความสัมพันธ์นั้น
+บริดจ์การกระทบยอดของ SDK ปัจจุบันกำหนดให้อะแดปเตอร์ประกาศ
+`reconcileUnknownSend` จากนั้นจึงขอให้ `durableFinal.reconcileUnknownSend`
+จำแนกรายการที่ไม่ทราบสถานะเป็น `sent`, `not_sent` หรือ `unresolved`; เฉพาะ `not_sent`
+เท่านั้นที่อนุญาตให้เล่นซ้ำ และรายการที่ unresolved จะคงเป็น terminal หรือ retry เฉพาะ
 การตรวจสอบการกระทบยอด
 
-ต้องระบุนโยบายความทนทานอย่างชัดเจน:
+นโยบายความทนทานต้องระบุอย่างชัดเจน:
 
 ```typescript
 type MessageDurabilityPolicy = "required" | "best_effort" | "disabled";
 ```
 
 `required` หมายความว่า core ต้อง fail closed เมื่อไม่สามารถเขียน durable intent ได้
-`best_effort` สามารถปล่อยผ่านได้เมื่อ persistence ไม่พร้อมใช้งาน `disabled` คง
-พฤติกรรมส่งโดยตรงแบบเดิมไว้ ระหว่างการย้าย wrapper แบบ legacy และตัวช่วยความเข้ากันได้สาธารณะ
-มีค่าเริ่มต้นเป็น `disabled`; สิ่งเหล่านี้ต้องไม่อนุมาน `required` จาก
-ข้อเท็จจริงที่ว่า Channel มีอะแดปเตอร์ outbound ทั่วไป
+`best_effort` สามารถปล่อยผ่านได้เมื่อ persistence ไม่พร้อมใช้งาน `disabled` จะคง
+พฤติกรรมส่งโดยตรงแบบเดิมไว้ ระหว่างการย้ายข้อมูล wrapper เดิมและตัวช่วย compatibility สาธารณะ
+จะมีค่าเริ่มต้นเป็น `disabled`; ตัวช่วยเหล่านั้นต้องไม่อนุมาน `required` จากข้อเท็จจริง
+ที่ว่าช่องทางมี generic outbound adapter
 
-Send context ยังเป็นเจ้าของผลกระทบหลังส่งภายใน Channel ด้วย การย้ายไม่ปลอดภัย
-หาก durable delivery ข้ามพฤติกรรมภายในที่ก่อนหน้านี้ผูกอยู่กับเส้นทางส่งโดยตรงของ
-Channel ตัวอย่างรวมถึงแคชระงับ self-echo,
-ตัวทำเครื่องหมายการเข้าร่วมเธรด, จุดยึดการแก้ไขแบบเนทีฟ, การเรนเดอร์ลายเซ็นโมเดล,
-และตัวป้องกันการซ้ำเฉพาะแพลตฟอร์ม ผลกระทบเหล่านั้นต้องย้ายเข้าไปใน
-อะแดปเตอร์ส่ง, อะแดปเตอร์เรนเดอร์, หรือ hook send-context ที่มีชื่อ ก่อนที่
-Channel นั้นจะเปิดใช้ durable generic final delivery ได้
+send context ยังเป็นเจ้าของเอฟเฟกต์หลังส่งที่อยู่ภายในช่องทางด้วย การย้ายข้อมูลจะไม่ปลอดภัย
+หาก durable delivery ข้ามพฤติกรรมภายในที่เคยผูกกับเส้นทางส่งโดยตรงของ
+ช่องทาง ตัวอย่างได้แก่แคชระงับ self-echo,
+เครื่องหมายการเข้าร่วม thread, native edit anchors, การ render model-signature,
+และตัวป้องกันข้อความซ้ำเฉพาะแพลตฟอร์ม เอฟเฟกต์เหล่านั้นต้องย้ายไปอยู่ใน
+send adapter, render adapter หรือ send-context hook ที่มีชื่อก่อนที่
+ช่องทางนั้นจะเปิดใช้ durable generic final delivery ได้
 
-ตัวช่วยส่งต้องคืนใบรับกลับไปถึงผู้เรียกของมัน Durable
-wrapper ไม่สามารถกลืน message id หรือแทนที่ผลลัพธ์การส่งของ Channel ด้วย
-`undefined`; buffered dispatcher ใช้ id เหล่านั้นสำหรับจุดยึดเธรด, การแก้ไขภายหลัง,
-การ finalize preview และการระงับการซ้ำ
+ตัวช่วยส่งต้องคืน receipts กลับไปจนถึง caller ของตัวเอง Durable
+wrappers ต้องไม่กลืน message ids หรือแทนที่ผลลัพธ์การส่งของช่องทางด้วย
+`undefined`; buffered dispatchers ใช้ ids เหล่านั้นสำหรับ thread anchors, การแก้ไขภายหลัง,
+การ finalize preview และการระงับข้อความซ้ำ
 
-Fallback send ทำงานกับ batch ไม่ใช่ payload เดี่ยว การเขียน silent-reply ใหม่,
-media fallback, card fallback และการฉาย chunk ทั้งหมดสามารถสร้างข้อความที่ส่งได้
-มากกว่าหนึ่งรายการ ดังนั้น send context ต้องส่ง batch ที่ฉายทั้งหมด
-หรือระบุในเอกสารอย่างชัดเจนว่าเหตุใด payload เดียวจึงถูกต้อง
+fallback send ทำงานกับ batches ไม่ใช่ payload เดี่ยว การ rewrite silent-reply,
+media fallback, card fallback และ chunk projection ล้วนสามารถสร้าง deliverable message
+ได้มากกว่าหนึ่งรายการ ดังนั้น send context ต้องส่ง batch ที่ project แล้วทั้งชุด
+หรือระบุในเอกสารอย่างชัดเจนว่าทำไมจึงใช้ได้แค่ payload เดียว
 
 ```typescript
 type RenderedMessageBatch = {
@@ -499,16 +497,16 @@ type RenderedMessageUnit = {
 };
 ```
 
-เมื่อ fallback ดังกล่าวเป็น durable ต้องแทน batch ที่ฉายทั้งหมดด้วย
-durable send intent หนึ่งรายการหรือแผน batch แบบอะตอมิกอื่น การบันทึกแต่ละ payload
-ทีละรายการไม่เพียงพอ: การ crash ระหว่าง payload อาจทิ้ง fallback ที่มองเห็นได้บางส่วน
-โดยไม่มีบันทึก durable สำหรับ payload ที่เหลือ การกู้คืนต้องรู้ว่า
-unit ใดมีใบรับแล้ว และเล่นซ้ำเฉพาะ unit ที่หายไป หรือทำเครื่องหมาย
-batch เป็น `unknown_after_send` จนกว่าอะแดปเตอร์จะกระทบยอดได้
+เมื่อ fallback ลักษณะนี้มีความทนทาน batch ที่ project แล้วทั้งชุดต้องถูกแทนด้วย
+durable send intent เดียวหรือแผน atomic batch อื่น การบันทึกแต่ละ payload
+ทีละรายการยังไม่พอ: การ crash ระหว่าง payloads อาจทิ้ง fallback บางส่วนที่ผู้ใช้มองเห็น
+ไว้โดยไม่มี durable record สำหรับ payloads ที่เหลือ การกู้คืนต้องรู้ว่า
+units ใดมี receipts แล้ว และเล่นซ้ำเฉพาะ units ที่ขาดหาย หรือทำเครื่องหมาย
+batch เป็น `unknown_after_send` จนกว่า adapter จะกระทบยอดได้
 
-## บริบทสด
+## บริบทแบบเรียลไทม์
 
-พฤติกรรม preview, edit, progress และ stream ควรเป็น lifecycle แบบ opt-in หนึ่งชุด
+พฤติกรรม preview, edit, progress และ stream ควรเป็น lifecycle แบบ opt-in เดียว
 
 ```typescript
 type MessageLiveAdapter = {
@@ -531,7 +529,7 @@ type MessageLiveAdapter = {
 };
 ```
 
-สถานะ live ทนทานพอที่จะกู้คืนหรือระงับรายการซ้ำ:
+live state มีความทนทานพอที่จะกู้คืนหรือระงับรายการซ้ำ:
 
 ```typescript
 type LiveMessageState = {
@@ -546,11 +544,11 @@ type LiveMessageState = {
 
 สิ่งนี้ควรครอบคลุมพฤติกรรมปัจจุบัน:
 
-- Telegram ส่งพร้อมแก้ไข preview โดยมี final ใหม่หลังอายุ preview ค้าง
-- Discord ส่งพร้อมแก้ไข preview ยกเลิกเมื่อมี media/error/explicit reply
-- Slack native stream หรือ draft preview ขึ้นอยู่กับรูปแบบเธรด
-- การ finalize โพสต์ draft ของ Mattermost
-- การ finalize เหตุการณ์ draft ของ Matrix หรือการ redaction เมื่อไม่ตรงกัน
+- Telegram ส่งพร้อม edit preview โดยใช้ final ใหม่หลัง preview เก่าเกินอายุ
+- Discord ส่งพร้อม edit preview และยกเลิกเมื่อมี media/error/explicit reply
+- Slack native stream หรือ draft preview ขึ้นอยู่กับรูปแบบของ thread
+- การ finalize draft post ของ Mattermost
+- การ finalize draft event ของ Matrix หรือ redaction เมื่อไม่ตรงกัน
 - Teams native progress stream
 - QQ Bot stream หรือ fallback แบบสะสม
 
@@ -559,7 +557,7 @@ type LiveMessageState = {
 เป้าหมาย SDK สาธารณะควรเป็น subpath เดียว:
 
 ```typescript
-import { defineChannelMessageAdapter } from "openclaw/plugin-sdk/channel-message";
+import { defineChannelMessageAdapter } from "openclaw/plugin-sdk/channel-outbound";
 ```
 
 รูปทรงเป้าหมาย:
@@ -575,7 +573,7 @@ type ChannelMessageAdapter = {
 };
 ```
 
-อะแดปเตอร์ส่ง:
+send adapter:
 
 ```typescript
 type MessageSendAdapter = {
@@ -593,7 +591,7 @@ type MessageSendAdapter = {
 };
 ```
 
-อะแดปเตอร์รับ:
+receive adapter:
 
 ```typescript
 type MessageReceiveAdapter<TRaw = unknown> = {
@@ -604,12 +602,12 @@ type MessageReceiveAdapter<TRaw = unknown> = {
 };
 ```
 
-ก่อนการอนุญาต preflight core ต้องเรียกใช้ predicate echo ที่ใช้ร่วมกันของ OpenClaw
-เมื่อใดก็ตามที่ `origin.decode` คืน metadata ต้นทาง OpenClaw อะแดปเตอร์รับ
-จัดเตรียมข้อเท็จจริงของแพลตฟอร์ม เช่น ผู้เขียน bot และรูปทรงห้อง; core เป็นเจ้าของการตัดสินใจ drop
-และการจัดลำดับ เพื่อไม่ให้ Channel ต้องนำตัวกรองข้อความไปทำซ้ำ
+ก่อน preflight authorization core ต้องเรียกใช้ shared OpenClaw echo predicate
+เมื่อใดก็ตามที่ `origin.decode` คืน metadata ที่มีต้นกำเนิดจาก OpenClaw receive adapter
+จะให้ข้อเท็จจริงของแพลตฟอร์ม เช่น bot author และ room shape; core เป็นเจ้าของการตัดสินใจ drop
+และการจัดลำดับ เพื่อให้ช่องทางไม่ต้อง implement text filters ซ้ำ
 
-อะแดปเตอร์ต้นทาง:
+origin adapter:
 
 ```typescript
 type MessageOriginAdapter<TRaw = unknown, TNative = unknown> = {
@@ -618,11 +616,11 @@ type MessageOriginAdapter<TRaw = unknown, TNative = unknown> = {
 };
 ```
 
-Core ตั้งค่า `MessageOrigin` Channel แปลค่าไปและกลับจาก
-metadata ของ transport แบบเนทีฟเท่านั้น Slack map สิ่งนี้ไปยัง `chat.postMessage({ metadata })` และ
-`message.metadata` ขาเข้า; Matrix สามารถ map ไปยังเนื้อหาเหตุการณ์เพิ่มเติม; Channel
-ที่ไม่มี metadata แบบเนทีฟสามารถใช้ registry ของ receipt/outbound เมื่อสิ่งนั้นเป็น
-การประมาณที่ดีที่สุดที่มี
+Core ตั้งค่า `MessageOrigin` ช่องทางเพียงแปลค่าไปและกลับจาก metadata ของ
+transport แบบเนทีฟ Slack map สิ่งนี้ไปที่ `chat.postMessage({ metadata })` และ
+`message.metadata` ฝั่ง inbound; Matrix สามารถ map ไปยัง event content เพิ่มเติมได้; ช่องทาง
+ที่ไม่มี native metadata สามารถใช้ receipt/outbound registry เมื่อเป็น
+การประมาณที่ดีที่สุดที่มีอยู่
 
 ความสามารถ:
 
@@ -655,7 +653,7 @@ type MessageCapabilities = {
 
 ## การลดพื้นผิว SDK สาธารณะ
 
-พื้นผิวสาธารณะใหม่ควรดูดซับหรือเลิกใช้พื้นที่เชิงแนวคิดเหล่านี้:
+พื้นผิวสาธารณะใหม่ควรดูดซับหรือ deprecate พื้นที่เชิงแนวคิดเหล่านี้:
 
 - `reply-runtime`
 - `reply-dispatch-runtime`
@@ -667,27 +665,27 @@ type MessageCapabilities = {
 - การใช้งานสาธารณะส่วนใหญ่ของ `outbound-runtime`
 - ตัวช่วย lifecycle ของ draft stream แบบเฉพาะกิจ
 
-Subpath ความเข้ากันได้ยังคงอยู่เป็น wrapper ได้ แต่ Plugin บุคคลที่สามใหม่
+compatibility subpaths สามารถคงอยู่ในฐานะ wrappers ได้ แต่ Plugin บุคคลที่สามใหม่
 ไม่ควรต้องใช้สิ่งเหล่านั้น
 
-Plugin ที่บันเดิลมาอาจคงการ import ตัวช่วยภายในผ่าน subpath runtime
-ที่สงวนไว้ระหว่างย้าย เอกสารสาธารณะควรนำผู้เขียน Plugin ไปยัง
-`plugin-sdk/channel-message` เมื่อมีอยู่แล้ว
+Bundled plugins อาจเก็บการ import ตัวช่วยภายในผ่าน runtime subpaths
+ที่สงวนไว้ระหว่างการย้ายข้อมูล เอกสารสาธารณะควรนำทางผู้เขียน Plugin ไปยัง
+`plugin-sdk/channel-outbound` เมื่อมีอยู่แล้ว
 
-## ความสัมพันธ์กับ channel turn
+## ความสัมพันธ์กับ channel inbound
 
-`runtime.channel.turn.*` ควรคงอยู่ระหว่างการย้าย
+`runtime.channel.inbound.*` คือ runtime bridge ระหว่างการย้ายข้อมูล
 
-มันควรกลายเป็นอะแดปเตอร์ความเข้ากันได้:
+ควรกลายเป็น compatibility adapter:
 
 ```text
-channel.turn.run
+channel.inbound.run
   -> messages.receive context
   -> session dispatch
   -> messages.send context for visible output
 ```
 
-`channel.turn.runPrepared` ก็ควรคงอยู่ในช่วงแรกด้วย:
+`channel.inbound.runPreparedReply` ควรคงอยู่ในช่วงแรกด้วย:
 
 ```text
 channel-owned dispatcher
@@ -696,84 +694,82 @@ channel-owned dispatcher
   -> messages.send for final delivery
 ```
 
-หลังจาก Plugin ที่บันเดิลมาทั้งหมดและเส้นทางความเข้ากันได้ของบุคคลที่สามที่รู้จักทั้งหมดถูกเชื่อมแล้ว
-`channel.turn` สามารถถูกเลิกใช้ได้ ไม่ควรถูกนำออกจนกว่าจะมี
-เส้นทางย้าย SDK ที่เผยแพร่แล้วและ contract test ที่พิสูจน์ว่า Plugin เก่ายังคงทำงานได้
-หรือล้มเหลวด้วยข้อผิดพลาดเวอร์ชันที่ชัดเจน
+พื้นผิว runtime `channel.turn` เดิมถูกลบแล้ว runtime callers ใช้
+`channel.inbound.*`; เอกสารช่องทางและ SDK subpaths ใช้คำนาม inbound/message
 
-## Guardrail ความเข้ากันได้
+## guardrails ด้าน compatibility
 
-ระหว่างการย้าย generic durable delivery เป็นแบบ opt-in สำหรับ Channel ใดก็ตามที่
-callback การส่งปัจจุบันมีผลข้างเคียงนอกเหนือจาก "ส่ง payload นี้"
+ระหว่างการย้ายข้อมูล generic durable delivery เป็น opt-in สำหรับช่องทางใดก็ตามที่
+delivery callback เดิมมี side effects เกินกว่า "send this payload"
 
-Entry point แบบ legacy ไม่เป็น durable ตามค่าเริ่มต้น:
+entry points เดิมเป็น non-durable โดยค่าเริ่มต้น:
 
-- `channel.turn.run` และ `dispatchAssembledChannelTurn` ใช้ callback การส่งของ Channel
-  เว้นแต่ Channel นั้นจะจัดเตรียมอ็อบเจ็กต์นโยบาย/ตัวเลือก durable ที่ตรวจสอบแล้วอย่างชัดเจน
-- `channel.turn.runPrepared` ยังเป็นของ Channel จนกว่า dispatcher ที่เตรียมไว้
+- `channel.inbound.run` และ `dispatchChannelInboundReply` ใช้ delivery callback ของช่องทาง
+  เว้นแต่ว่าช่องทางนั้นจะให้ policy/options object แบบ durable ที่ audit แล้วอย่างชัดเจน
+- `channel.inbound.runPreparedReply` ยังคงเป็นของช่องทางจนกว่า prepared dispatcher
   จะเรียก send context อย่างชัดเจน
-- ตัวช่วยความเข้ากันได้สาธารณะ เช่น `recordInboundSessionAndDispatchReply`,
-  `dispatchInboundReplyWithBase` และตัวช่วย direct-DM ไม่เคยฉีด generic
-  durable delivery ก่อน callback `deliver` หรือ `reply` ที่ผู้เรียกจัดเตรียม
+- ตัวช่วย compatibility สาธารณะ เช่น `recordInboundSessionAndDispatchReply`,
+  `dispatchInboundReplyWithBase` และตัวช่วย direct-DM จะไม่ inject generic
+  durable delivery ก่อน callback `deliver` หรือ `reply` ที่ caller ให้มา
 
-สำหรับชนิดสะพานการย้าย `durable: undefined` หมายถึง "ไม่ durable"
-เส้นทาง durable เปิดใช้ได้เฉพาะด้วยค่านโยบาย/ตัวเลือกที่ชัดเจนเท่านั้น `durable:
-false` ยังคงเป็นการสะกดเพื่อความเข้ากันได้ได้ แต่การใช้งานไม่ควร
-กำหนดให้ Channel ที่ยังไม่ได้ย้ายทุกตัวต้องเพิ่มค่านี้
+สำหรับชนิด migration bridge, `durable: undefined` หมายถึง "not durable"
+เส้นทาง durable จะเปิดใช้เฉพาะด้วยค่า policy/options ที่ชัดเจนเท่านั้น `durable:
+false` สามารถคงอยู่เป็นการสะกดแบบ compatibility ได้ แต่ implementation ไม่ควร
+กำหนดให้ทุกช่องทางที่ยังไม่ย้ายข้อมูลต้องเพิ่มค่านี้
 
-โค้ดสะพานปัจจุบันต้องคงการตัดสินใจเรื่องความทนทานไว้อย่างชัดเจน:
+โค้ด bridge ปัจจุบันต้องทำให้การตัดสินใจเรื่องความทนทานชัดเจน:
 
-- การส่งผลลัพธ์สุดท้ายแบบทนทานคืนสถานะที่จำแนกชนิดได้ `handled_visible` และ
-  `handled_no_send` เป็นสถานะสิ้นสุด; `unsupported` และ `not_applicable` อาจถอยกลับ
-  ไปใช้การส่งที่ช่องทางเป็นเจ้าของ; `failed` ส่งต่อความล้มเหลวในการส่ง
-- การส่งผลลัพธ์สุดท้ายแบบทนทานทั่วไปถูกควบคุมด้วยความสามารถของอะแดปเตอร์ เช่น
-  การส่งแบบเงียบ การคงเป้าหมายการตอบกลับ การคงคำพูดอ้างอิงแบบเนทีฟ และ
-  hook สำหรับส่งข้อความ หากยังไม่มีความเท่าเทียมกัน ควรเลือกการส่งที่ช่องทางเป็นเจ้าของ
+- การส่งมอบผลลัพธ์สุดท้ายแบบคงทนจะคืนค่าสถานะแบบจำแนกชนิด `handled_visible` และ
+  `handled_no_send` เป็นสถานะปลายทาง ส่วน `unsupported` และ `not_applicable` อาจ
+  ถอยกลับไปใช้การส่งมอบที่ช่องเป็นเจ้าของ และ `failed` จะส่งต่อความล้มเหลวในการส่ง
+- การส่งมอบผลลัพธ์สุดท้ายแบบคงทนทั่วไปถูกควบคุมด้วยความสามารถของอะแดปเตอร์ เช่น
+  การส่งแบบเงียบ การคงเป้าหมายการตอบกลับ การคงข้อความอ้างอิงแบบเนทีฟ และ
+  ฮุกการส่งข้อความ หากยังเทียบเท่ากันไม่ครบ ควรเลือกการส่งมอบที่ช่องเป็นเจ้าของ
   ไม่ใช่การส่งทั่วไปที่เปลี่ยนพฤติกรรมที่ผู้ใช้มองเห็น
-- การส่งแบบทนทานที่มีคิวรองรับเปิดเผยอ้างอิง intent การส่ง ฟิลด์เซสชัน
-  `pendingFinalDelivery*` ที่มีอยู่สามารถพก ID ของ intent ระหว่างช่วงเปลี่ยนผ่านได้
-  สถานะสุดท้ายคือ store ของ `MessageSendIntent` แทนข้อความตอบกลับที่ถูกตรึงไว้
-  บวกกับฟิลด์บริบทเฉพาะกิจ
+- การส่งแบบคงทนที่มีคิวหนุนหลังจะแสดงอ้างอิงเจตนาการส่ง ฟิลด์เซสชัน
+  `pendingFinalDelivery*` ที่มีอยู่สามารถพกพา intent id ระหว่างการเปลี่ยนผ่านได้
+  สถานะปลายทางคือสโตร์ `MessageSendIntent` แทนข้อความตอบกลับที่ถูกตรึงไว้พร้อม
+  ฟิลด์บริบทเฉพาะกิจ
 
-อย่าเปิดใช้เส้นทางแบบทนทานทั่วไปสำหรับช่องทางจนกว่าทั้งหมดนี้จะเป็นจริง:
+อย่าเปิดใช้เส้นทางคงทนทั่วไปสำหรับช่องใดจนกว่าสิ่งต่อไปนี้จะเป็นจริงทั้งหมด:
 
 - อะแดปเตอร์การส่งทั่วไปทำงานด้วยพฤติกรรมการเรนเดอร์และการขนส่งเดียวกับ
-  เส้นทางตรงแบบเก่า
-- ผลข้างเคียงภายในเครื่องหลังส่งถูกรักษาไว้ผ่านบริบทการส่ง
-- อะแดปเตอร์คืนใบรับหรือผลลัพธ์การส่งที่มี ID ข้อความของแพลตฟอร์มทั้งหมด
-- เส้นทาง dispatcher ที่เตรียมไว้ต้องเรียกบริบทการส่งใหม่ หรือยังคงถูกบันทึกไว้ในเอกสาร
-  ว่าอยู่นอกการรับประกันแบบทนทาน
-- การส่งแบบถอยกลับรองรับ payload ที่ฉายออกมาทุกตัว ไม่ใช่แค่ตัวแรก
-- การส่งแบบถอยกลับที่ทนทานบันทึกอาร์เรย์ payload ที่ฉายออกมาทั้งหมดเป็น intent
-  หรือแผน batch หนึ่งชุดที่เล่นซ้ำได้
+  เส้นทางตรงเดิม
+- ผลข้างเคียงภายในหลังส่งถูกรักษาไว้ผ่านบริบทการส่ง
+- อะแดปเตอร์คืนใบรับหรือผลลัพธ์การส่งมอบที่มี id ข้อความของแพลตฟอร์มทั้งหมด
+- เส้นทาง dispatcher ที่เตรียมไว้เรียกบริบทการส่งใหม่ หรือยังคงถูกบันทึกไว้ว่า
+  อยู่นอกการรับประกันแบบคงทน
+- การส่งมอบสำรองจัดการ payload ที่ฉายออกมาทุกตัว ไม่ใช่เฉพาะตัวแรก
+- การส่งมอบสำรองแบบคงทนบันทึกอาร์เรย์ payload ที่ฉายออกมาทั้งหมดเป็นเจตนาหรือ
+  แผนแบตช์เดียวที่เล่นซ้ำได้
 
 อันตรายในการย้ายระบบที่ต้องรักษาไว้:
 
-- การส่งของตัวตรวจสอบ iMessage บันทึกข้อความที่ส่งแล้วไว้ใน echo cache หลังจาก
-  ส่งสำเร็จ การส่งผลลัพธ์สุดท้ายแบบทนทานต้องยังเติมข้อมูล cache นั้น มิฉะนั้น
-  OpenClaw อาจนำเข้าการตอบกลับสุดท้ายของตัวเองกลับมาเป็นข้อความขาเข้าจากผู้ใช้
-- Tlon ต่อท้ายลายเซ็นโมเดลแบบไม่บังคับและบันทึกเธรดที่เข้าร่วมหลังจากตอบกลับกลุ่ม
-  การส่งแบบทนทานทั่วไปต้องไม่ข้ามผลเหล่านั้น; ให้ย้ายผลเหล่านั้นเข้าไปในอะแดปเตอร์
-  เรนเดอร์/ส่ง/จบขั้นตอนของ Tlon หรือคง Tlon ไว้บนเส้นทางที่ช่องทางเป็นเจ้าของ
-- Discord และ dispatcher ที่เตรียมไว้อื่น ๆ เป็นเจ้าของพฤติกรรมการส่งตรงและตัวอย่างแสดงผลอยู่แล้ว
-  สิ่งเหล่านี้ไม่อยู่ภายใต้การรับประกันแบบทนทานของ turn ที่ประกอบแล้ว จนกว่า
-  dispatcher ที่เตรียมไว้จะกำหนดเส้นทางผลลัพธ์สุดท้ายผ่านบริบทการส่งอย่างชัดเจน
-- การส่งแบบถอยกลับแบบเงียบของ Telegram ต้องส่งอาร์เรย์ payload ที่ฉายออกมาทั้งหมด
-  ทางลัดแบบ payload เดียวอาจทำให้ payload ถอยกลับเพิ่มเติมหลังการฉายถูกทิ้ง
-- LINE, Zalo, Nostr และเส้นทางประกอบ/ตัวช่วยอื่น ๆ ที่มีอยู่ อาจมี
-  การจัดการโทเค็นตอบกลับ การพร็อกซีสื่อ cache ข้อความที่ส่งแล้ว การล้างสถานะกำลังโหลด/สถานะ
-  หรือเป้าหมายแบบ callback เท่านั้น สิ่งเหล่านี้ยังอยู่บนการส่งที่ช่องทางเป็นเจ้าของจนกว่า
-  semantics เหล่านั้นจะแสดงผ่านอะแดปเตอร์การส่งและได้รับการยืนยันด้วยการทดสอบ
-- ตัวช่วย DM โดยตรงอาจมี callback การตอบกลับที่เป็นเป้าหมายการขนส่งที่ถูกต้องเพียงอย่างเดียว
-  การส่งออกทั่วไปต้องไม่เดาจาก `OriginatingTo` หรือ `To` แล้วข้าม callback นั้น
-- เอาต์พุตความล้มเหลวของ OpenClaw Gateway ต้องยังมองเห็นได้สำหรับมนุษย์ แต่ echo ในห้อง
-  ที่ติดแท็กว่าเขียนโดยบอตต้องถูกทิ้งก่อนการอนุญาต `allowBots`
-  ช่องทางต้องไม่ทำสิ่งนี้ด้วยตัวกรองคำนำหน้าข้อความที่มองเห็นได้ ยกเว้นเป็นมาตรการหยุดฉุกเฉิน
-  ระยะสั้น; สัญญาแบบทนทานคือ metadata ต้นทางแบบมีโครงสร้าง
+- การส่งมอบของตัวเฝ้าดู iMessage บันทึกข้อความที่ส่งแล้วไว้ในแคช echo หลังจาก
+  ส่งสำเร็จ การส่งผลลัพธ์สุดท้ายแบบคงทนยังต้องเติมแคชนั้น ไม่เช่นนั้น
+  OpenClaw อาจนำเข้าคำตอบสุดท้ายของตัวเองซ้ำเป็นข้อความขาเข้าจากผู้ใช้
+- Tlon เพิ่มลายเซ็นโมเดลที่เป็นทางเลือกและบันทึกเธรดที่เข้าร่วมหลังการตอบกลับกลุ่ม
+  การส่งมอบแบบคงทนทั่วไปต้องไม่ข้ามผลเหล่านั้น ให้ย้ายเข้าไปในอะแดปเตอร์
+  render/send/finalize ของ Tlon หรือให้ Tlon อยู่บนเส้นทางที่ช่องเป็นเจ้าของ
+- Discord และ dispatcher ที่เตรียมไว้อื่น ๆ เป็นเจ้าของพฤติกรรมการส่งตรงและการพรีวิวอยู่แล้ว
+  สิ่งเหล่านี้ยังไม่อยู่ภายใต้การรับประกันแบบคงทนของเทิร์นที่ประกอบแล้ว จนกว่า
+  dispatcher ที่เตรียมไว้จะกำหนดเส้นทาง finals ผ่านบริบทการส่งอย่างชัดเจน
+- การส่งมอบสำรองแบบเงียบของ Telegram ต้องส่งอาร์เรย์ payload ที่ฉายออกมาทั้งหมด
+  ทางลัดแบบ payload เดียวอาจทำให้ payload สำรองเพิ่มเติมหลังการฉายถูกทิ้ง
+- LINE, Zalo, Nostr และเส้นทาง assembled/helper อื่นที่มีอยู่ อาจ
+  มีการจัดการ reply-token, การพร็อกซีสื่อ, แคชข้อความที่ส่งแล้ว, การล้าง
+  loading/status หรือเป้าหมายแบบ callback-only สิ่งเหล่านี้ยังอยู่บนการส่งมอบที่ช่อง
+  เป็นเจ้าของจนกว่า semantic เหล่านั้นจะแสดงแทนโดยอะแดปเตอร์การส่งและได้รับการยืนยันด้วยการทดสอบ
+- ตัวช่วย Direct-DM อาจมี callback การตอบกลับที่เป็นเป้าหมายการขนส่งที่ถูกต้องเพียงหนึ่งเดียว
+  outbound ทั่วไปต้องไม่เดาจาก `OriginatingTo` หรือ `To` แล้วข้าม callback นั้น
+- เอาต์พุตความล้มเหลวของ OpenClaw gateway ต้องยังคงมองเห็นได้สำหรับมนุษย์ แต่ echo
+  ในห้องที่ติดแท็กว่าเขียนโดยบอตต้องถูกทิ้งก่อนการอนุญาต `allowBots`
+  ช่องต้องไม่ทำสิ่งนี้ด้วยตัวกรองคำนำหน้าข้อความที่มองเห็นได้ ยกเว้นเป็นมาตรการฉุกเฉิน
+  ระยะสั้น สัญญาแบบคงทนคือเมทาดาทาต้นทางแบบมีโครงสร้าง
 
-## ที่จัดเก็บภายใน
+## พื้นที่จัดเก็บภายใน
 
-คิวแบบทนทานควรเก็บ intent การส่งข้อความ ไม่ใช่ payload การตอบกลับ
+คิวแบบคงทนควรจัดเก็บเจตนาการส่งข้อความ ไม่ใช่ payload การตอบกลับ
 
 ```typescript
 type DurableSendIntent = {
@@ -815,12 +811,12 @@ load pending or sending intents
   -> commit receipt, mark unknown_after_send, or schedule retry
 ```
 
-คิวควรเก็บ identity เพียงพอสำหรับเล่นซ้ำผ่านบัญชีเดียวกัน
-เธรด เป้าหมาย นโยบายการจัดรูปแบบ และกฎสื่อหลังจากรีสตาร์ท
+คิวควรเก็บ identity ให้เพียงพอเพื่อเล่นซ้ำผ่านบัญชี เธรด เป้าหมาย นโยบายการจัดรูปแบบ
+และกฎสื่อเดิมหลังรีสตาร์ต
 
 ## คลาสความล้มเหลว
 
-อะแดปเตอร์ช่องทางจัดประเภทความล้มเหลวของการขนส่งเป็นหมวดหมู่ปิด:
+อะแดปเตอร์ช่องจัดประเภทความล้มเหลวในการขนส่งเป็นหมวดหมู่ปิด:
 
 ```typescript
 type DeliveryFailureKind =
@@ -838,285 +834,278 @@ type DeliveryFailureKind =
 นโยบาย core:
 
 - ลองใหม่สำหรับ `transient` และ `rate_limit`
-- อย่าลองใหม่สำหรับ `invalid_payload` เว้นแต่ว่ามีการเรนเดอร์แบบถอยกลับ
+- อย่าลองใหม่สำหรับ `invalid_payload` เว้นแต่มี fallback สำหรับ render
 - อย่าลองใหม่สำหรับ `auth` หรือ `permission` จนกว่าการกำหนดค่าจะเปลี่ยน
-- สำหรับ `not_found` ให้การจบขั้นตอนแบบสดถอยกลับจากการแก้ไขไปเป็นการส่งใหม่เมื่อ
-  ช่องทางประกาศว่าปลอดภัย
-- สำหรับ `conflict` ให้ใช้กฎใบรับ/ความเป็น idempotent เพื่อตัดสินว่าข้อความ
-  มีอยู่แล้วหรือไม่
-- ข้อผิดพลาดใด ๆ หลังจากอะแดปเตอร์อาจทำ I/O ของแพลตฟอร์มเสร็จแล้วแต่ก่อน commit ใบรับ
-  จะกลายเป็น `unknown_after_send` เว้นแต่ว่าอะแดปเตอร์พิสูจน์ได้ว่าการดำเนินการบนแพลตฟอร์ม
+- สำหรับ `not_found` ให้ live finalization ถอยกลับจากการแก้ไขไปเป็นการส่งใหม่เมื่อ
+  ช่องประกาศว่าปลอดภัย
+- สำหรับ `conflict` ใช้กฎ receipt/idempotency เพื่อตัดสินว่าข้อความมีอยู่แล้วหรือไม่
+- ข้อผิดพลาดใด ๆ หลังจากอะแดปเตอร์อาจทำ I/O ของแพลตฟอร์มเสร็จแล้ว แต่ก่อน commit ใบรับ
+  จะกลายเป็น `unknown_after_send` เว้นแต่อะแดปเตอร์จะพิสูจน์ได้ว่าการดำเนินการบนแพลตฟอร์ม
   ไม่ได้เกิดขึ้น
 
-## การแมปช่องทาง
+## การแมปช่อง
 
-| ช่องทาง         | เป้าหมายการย้ายระบบ                                                                                                                                                                                                                                                                                                                                               |
+| ช่องทาง         | เป้าหมายการย้าย                                                                                                                                                                                                                                                                                                                                               |
 | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Telegram        | รับนโยบาย ack พร้อมการส่งผลลัพธ์สุดท้ายแบบคงทน Adapter แบบสดเป็นเจ้าของการส่งพร้อมการแก้ไขพรีวิว, การส่งผลลัพธ์สุดท้ายของพรีวิวที่ค้าง, หัวข้อ, การข้ามพรีวิว quote-reply, การสำรองสำหรับสื่อ และการจัดการ retry-after                                                                                                                                                                   |
-| Discord         | Adapter การส่งห่อหุ้มการส่ง payload แบบคงทนที่มีอยู่ Adapter แบบสดเป็นเจ้าของการแก้ไขฉบับร่าง, ฉบับร่างความคืบหน้า, การยกเลิกพรีวิวสื่อ/ข้อผิดพลาด, การคงเป้าหมายการตอบกลับ และใบรับรหัสข้อความ ตรวจสอบ echo ความล้มเหลวของ Gateway ที่บอตเขียนในห้องที่ใช้ร่วมกัน ใช้ registry ขาออกหรือสิ่งเทียบเท่าแบบ native อื่น หาก Discord ไม่สามารถพกเมทาดาทาต้นทางบนข้อความปกติได้ |
-| Slack           | Adapter การส่งจัดการโพสต์แชตปกติ Adapter แบบสดเลือกสตรีม native เมื่อรูปร่างของ thread รองรับ มิฉะนั้นใช้พรีวิวฉบับร่าง ใบรับคง timestamp ของ thread Adapter ต้นทางแมปความล้มเหลวของ Gateway ของ OpenClaw ไปยัง Slack `chat.postMessage.metadata` และทิ้ง echo ของห้องบอตที่ติดแท็กก่อนการอนุญาต `allowBots`                                  |
-| WhatsApp        | Adapter การส่งเป็นเจ้าของการส่งข้อความ/สื่อด้วย intent สุดท้ายแบบคงทน Adapter การรับจัดการการกล่าวถึงในกลุ่มและตัวตนผู้ส่ง Live สามารถยังไม่มีได้จนกว่า WhatsApp จะมี transport ที่แก้ไขได้                                                                                                                                                                        |
-| Matrix          | Adapter แบบสดเป็นเจ้าของการแก้ไขเหตุการณ์ฉบับร่าง, การทำให้เป็นผลลัพธ์สุดท้าย, การ redaction, ข้อจำกัดของสื่อที่เข้ารหัส และการสำรองเมื่อเป้าหมายการตอบกลับไม่ตรงกัน Adapter การรับเป็นเจ้าของการเติมข้อมูลเหตุการณ์ที่เข้ารหัสและการ dedupe Adapter ต้นทางควรเข้ารหัสต้นทางความล้มเหลวของ Gateway ของ OpenClaw ลงในเนื้อหาเหตุการณ์ Matrix และทิ้ง echo ของห้องบอตที่กำหนดค่าก่อนการจัดการ `allowBots`              |
-| Mattermost      | Adapter แบบสดเป็นเจ้าของโพสต์ฉบับร่างหนึ่งรายการ, การพับความคืบหน้า/เครื่องมือ, การทำให้เป็นผลลัพธ์สุดท้ายในที่เดิม และการสำรองด้วยการส่งใหม่                                                                                                                                                                                                                                                       |
-| Microsoft Teams | Adapter แบบสดเป็นเจ้าของความคืบหน้า native และพฤติกรรม block stream Adapter การส่งเป็นเจ้าของกิจกรรมและใบรับสิ่งที่แนบ/การ์ด                                                                                                                                                                                                                                        |
-| Feishu          | Adapter การเรนเดอร์เป็นเจ้าของการเรนเดอร์ข้อความ/การ์ด/raw Adapter แบบสดเป็นเจ้าของการ์ดแบบสตรีมและการระงับผลลัพธ์สุดท้ายที่ซ้ำ Adapter การส่งเป็นเจ้าของความคิดเห็น, เซสชันหัวข้อ, สื่อ และการระงับเสียง                                                                                                                                                                      |
-| QQ Bot          | Adapter แบบสดเป็นเจ้าของการสตรีม C2C, timeout ของ accumulator และการส่งผลลัพธ์สุดท้ายสำรอง Adapter การเรนเดอร์เป็นเจ้าของแท็กสื่อและข้อความเป็นเสียง                                                                                                                                                                                                                               |
-| Signal          | Adapter การรับและการส่งแบบง่าย ไม่มี adapter แบบสด เว้นแต่ signal-cli จะเพิ่มการรองรับการแก้ไขที่เชื่อถือได้                                                                                                                                                                                                                                                                |
-| iMessage        | Adapter การรับและการส่งแบบง่าย การส่ง iMessage ต้องคงการเติม echo-cache ของ monitor ก่อนที่ผลลัพธ์สุดท้ายแบบคงทนจะข้ามการส่งผ่าน monitor ได้                                                                                                                                                                                                                 |
-| Google Chat     | Adapter การรับและการส่งแบบง่าย โดยแมปความสัมพันธ์ของ thread ไปยัง spaces และรหัส thread ตรวจสอบพฤติกรรมห้อง `allowBots=true` สำหรับ echo ความล้มเหลวของ Gateway ของ OpenClaw ที่ติดแท็ก                                                                                                                                                                                        |
-| LINE            | Adapter การรับและการส่งแบบง่าย พร้อมข้อจำกัดของ reply-token ที่โมเดลเป็นความสามารถ target/relation                                                                                                                                                                                                                                                           |
-| Nextcloud Talk  | บริดจ์การรับของ SDK พร้อม adapter การส่ง                                                                                                                                                                                                                                                                                                                          |
-| IRC             | Adapter การรับและการส่งแบบง่าย ไม่มีใบรับการแก้ไขแบบคงทน                                                                                                                                                                                                                                                                                                    |
-| Nostr           | Adapter การรับและการส่งสำหรับ DM ที่เข้ารหัส ใบรับคือรหัสเหตุการณ์                                                                                                                                                                                                                                                                                           |
-| QA Channel      | Adapter ทดสอบสัญญาสำหรับพฤติกรรมการรับ, การส่ง, live, การลองซ้ำ และการกู้คืน                                                                                                                                                                                                                                                                                   |
-| Synology Chat   | Adapter การรับและการส่งแบบง่าย                                                                                                                                                                                                                                                                                                                              |
-| Tlon            | Adapter การส่งต้องคงการเรนเดอร์ model-signature และการติดตาม participated-thread ก่อนเปิดใช้การส่งผลลัพธ์สุดท้ายแบบคงทนทั่วไป                                                                                                                                                                                                                        |
-| Twitch          | Adapter การรับและการส่งแบบง่ายพร้อมการจัดประเภท rate-limit                                                                                                                                                                                                                                                                                               |
-| Zalo            | Adapter การรับและการส่งแบบง่าย                                                                                                                                                                                                                                                                                                                              |
-| Zalo Personal   | Adapter การรับและการส่งแบบง่าย                                                                                                                                                                                                                                                                                                                              |
+| Telegram        | รับนโยบาย ack พร้อมการส่งสุดท้ายแบบคงทน Live adapter เป็นเจ้าของการส่งและการแก้ไขตัวอย่างก่อนส่ง, การส่งสุดท้ายของตัวอย่างก่อนส่งที่ค้างเก่า, topics, การข้ามตัวอย่างก่อนส่งของ quote-reply, media fallback และการจัดการ retry-after                                                                                                                                                                   |
+| Discord         | Send adapter ครอบการส่งมอบ payload แบบคงทนที่มีอยู่ Live adapter เป็นเจ้าของการแก้ไขร่าง, ร่างความคืบหน้า, การยกเลิกตัวอย่างก่อนส่งของสื่อ/ข้อผิดพลาด, การรักษาเป้าหมายการตอบกลับ และใบรับ id ข้อความ ตรวจสอบ echo ความล้มเหลวของ Gateway ที่บอตเขียนในห้องที่ใช้ร่วมกัน ใช้รีจิสทรีขาออกหรือสิ่งเทียบเท่าแบบเนทีฟอื่น หาก Discord ไม่สามารถพกพา metadata ต้นทางบนข้อความปกติได้ |
+| Slack           | Send adapter จัดการโพสต์แชตปกติ Live adapter เลือกสตรีมแบบเนทีฟเมื่อรูปทรงของเธรดรองรับ มิฉะนั้นใช้ตัวอย่างร่างก่อนส่ง ใบรับรักษา timestamp ของเธรด Origin adapter แมปความล้มเหลวของ OpenClaw gateway ไปยัง Slack `chat.postMessage.metadata` และทิ้ง echo ในห้องบอตที่ติดแท็กก่อนการอนุญาต `allowBots`                                  |
+| WhatsApp        | Send adapter เป็นเจ้าของการส่งข้อความ/สื่อพร้อม intent สุดท้ายแบบคงทน Receive adapter จัดการการ mention กลุ่มและตัวตนผู้ส่ง Live ยังไม่ต้องมีอยู่จนกว่า WhatsApp จะมี transport ที่แก้ไขได้                                                                                                                                                                        |
+| Matrix          | Live adapter เป็นเจ้าของการแก้ไข draft event, การ finalize, การ redact, ข้อจำกัดสื่อที่เข้ารหัส และ fallback เมื่อเป้าหมายการตอบกลับไม่ตรงกัน Receive adapter เป็นเจ้าของการ hydrate event ที่เข้ารหัสและการ dedupe Origin adapter ควรเข้ารหัสต้นทางความล้มเหลวของ OpenClaw gateway ลงในเนื้อหา event ของ Matrix และทิ้ง echo ในห้องบอตที่กำหนดค่าก่อนการจัดการ `allowBots`              |
+| Mattermost      | Live adapter เป็นเจ้าของ draft post หนึ่งรายการ, การพับรวมความคืบหน้า/เครื่องมือ, การ finalize ในที่เดิม และ fallback แบบส่งใหม่                                                                                                                                                                                                                                                       |
+| Microsoft Teams | Live adapter เป็นเจ้าของความคืบหน้าแบบเนทีฟและพฤติกรรม block stream Send adapter เป็นเจ้าของ activities และใบรับ attachment/card                                                                                                                                                                                                                                        |
+| Feishu          | Render adapter เป็นเจ้าของการ render แบบข้อความ/card/raw Live adapter เป็นเจ้าของการ์ดแบบ streaming และการระงับ final ที่ซ้ำ Send adapter เป็นเจ้าของ comments, topic sessions, สื่อ และการระงับเสียง                                                                                                                                                                      |
+| QQ Bot          | Live adapter เป็นเจ้าของ C2C streaming, accumulator timeout และ fallback final send Render adapter เป็นเจ้าของ media tags และ text-as-voice                                                                                                                                                                                                                               |
+| Signal          | Receive แบบง่ายพร้อม send adapter ไม่มี live adapter เว้นแต่ signal-cli จะเพิ่มการรองรับการแก้ไขที่เชื่อถือได้                                                                                                                                                                                                                                                                |
+| iMessage        | Receive แบบง่ายพร้อม send adapter การส่ง iMessage ต้องรักษาการเติม monitor echo-cache ก่อนที่ final แบบคงทนจะข้ามการส่งมอบผ่าน monitor ได้                                                                                                                                                                                                                 |
+| Google Chat     | Receive แบบง่ายพร้อม send adapter โดยแมปความสัมพันธ์ของเธรดไปยัง spaces และ thread ids ตรวจสอบพฤติกรรมห้อง `allowBots=true` สำหรับ echo ความล้มเหลวของ OpenClaw gateway ที่ติดแท็ก                                                                                                                                                                                        |
+| LINE            | Receive แบบง่ายพร้อม send adapter โดยจำลองข้อจำกัด reply-token เป็นความสามารถ target/relation                                                                                                                                                                                                                                                           |
+| Nextcloud Talk  | SDK receive bridge พร้อม send adapter                                                                                                                                                                                                                                                                                                                          |
+| IRC             | Receive แบบง่ายพร้อม send adapter ไม่มีใบรับการแก้ไขแบบคงทน                                                                                                                                                                                                                                                                                                    |
+| Nostr           | Receive พร้อม send adapter สำหรับ DM ที่เข้ารหัส ใบรับคือ event ids                                                                                                                                                                                                                                                                                           |
+| QA Channel      | Adapter สำหรับ contract-test ของพฤติกรรม receive, send, live, retry และ recovery                                                                                                                                                                                                                                                                                   |
+| Synology Chat   | Receive แบบง่ายพร้อม send adapter                                                                                                                                                                                                                                                                                                                              |
+| Tlon            | Send adapter ต้องรักษาการ render model-signature และการติดตามเธรดที่เข้าร่วมไว้ ก่อนเปิดใช้การส่งมอบ final แบบคงทนทั่วไป                                                                                                                                                                                                                        |
+| Twitch          | Receive แบบง่ายพร้อม send adapter ที่มีการจำแนก rate-limit                                                                                                                                                                                                                                                                                               |
+| Zalo            | Receive แบบง่ายพร้อม send adapter                                                                                                                                                                                                                                                                                                                              |
+| Zalo Personal   | Receive แบบง่ายพร้อม send adapter                                                                                                                                                                                                                                                                                                                              |
 
-## แผนการย้ายระบบ
+## แผนการย้าย
 
 ### ระยะที่ 1: โดเมนข้อความภายใน
 
 - เพิ่มชนิด `src/channels/message/*` สำหรับข้อความ, เป้าหมาย, ความสัมพันธ์,
   ต้นทาง, ใบรับ, ความสามารถ, intent แบบคงทน, บริบทการรับ, บริบทการส่ง,
   บริบท live และคลาสความล้มเหลว
-- เพิ่ม `origin?: MessageOrigin` ไปยังชนิด payload ของบริดจ์การย้ายระบบที่ใช้โดย
-  การส่งการตอบกลับปัจจุบัน จากนั้นย้ายฟิลด์นั้นไปยัง `ChannelMessage` และชนิดข้อความ
-  ที่เรนเดอร์แล้วเมื่อการปรับโครงสร้างแทนที่ reply payload
-- คงส่วนนี้เป็นภายในจนกว่า adapter และการทดสอบจะพิสูจน์รูปร่างได้
-- เพิ่ม unit test ล้วนสำหรับการเปลี่ยนสถานะและ serialization
+- เพิ่ม `origin?: MessageOrigin` ไปยังชนิด payload ของ migration bridge ที่ใช้โดย
+  การส่งมอบการตอบกลับปัจจุบัน จากนั้นย้ายฟิลด์นั้นไปยัง `ChannelMessage` และชนิดข้อความ
+  ที่ render แล้ว เมื่อการ refactor แทนที่ reply payloads
+- เก็บสิ่งนี้ไว้ภายในจนกว่า adapters และ tests จะพิสูจน์รูปทรงได้
+- เพิ่ม unit tests แบบ pure สำหรับ state transitions และ serialization
 
-### ระยะที่ 2: แกนการส่งแบบคงทน
+### ระยะที่ 2: แกนส่งแบบคงทน
 
-- ย้ายคิวขาออกที่มีอยู่จากความคงทนของ reply-payload ไปเป็น intent การส่งข้อความ
+- ย้ายคิวขาออกที่มีอยู่จากความคงทนของ reply-payload ไปยัง intent การส่งข้อความ
   แบบคงทน
-- ให้ intent การส่งแบบคงทนพก array payload ที่ฉายแล้วหรือแผน batch ไม่ใช่
-  reply payload เดียวเท่านั้น
-- คงพฤติกรรมการกู้คืนคิวปัจจุบันผ่านการแปลงเพื่อความเข้ากันได้
+- ให้ durable send intent พกพา projected payload array หรือ batch plan ไม่ใช่
+  reply payload เพียงรายการเดียว
+- รักษาพฤติกรรมการกู้คืนคิวปัจจุบันผ่านการแปลงเพื่อความเข้ากันได้
 - ทำให้ `deliverOutboundPayloads` เรียก `messages.send`
-- ทำให้ความคงทนของ final-send เป็นค่าเริ่มต้นและ fail closed เมื่อเขียน intent แบบคงทน
-  ใน lifecycle ข้อความใหม่ไม่ได้ หลังจาก adapter ประกาศความปลอดภัยในการ replay แล้ว
-  เส้นทางความเข้ากันได้ของ channel-turn และ SDK ที่มีอยู่ยังคงเป็น direct-send โดยค่าเริ่มต้น
-  ระหว่างระยะนี้
+- ทำให้ final-send durability เป็นค่าเริ่มต้นและ fail closed เมื่อไม่สามารถเขียน durable intent
+  ใน lifecycle ข้อความใหม่ได้ หลังจาก adapter ประกาศความปลอดภัยในการ replay แล้ว เส้นทาง inbound runner
+  และความเข้ากันได้ของ SDK ที่มีอยู่ยังคงเป็น direct-send โดยค่าเริ่มต้นในระยะนี้
 - บันทึกใบรับอย่างสม่ำเสมอ
-- ส่งคืนใบรับและผลลัพธ์การส่งไปยังผู้เรียก dispatcher เดิม แทนที่จะถือว่าการส่งแบบคงทน
+- ส่งคืนใบรับและผลลัพธ์การส่งมอบไปยัง caller เดิมของ dispatcher แทนที่จะถือว่า durable send
   เป็น side effect ปลายทาง
-- คงต้นทางข้อความผ่าน intent การส่งแบบคงทน เพื่อให้การกู้คืน, replay และการส่งแบบแบ่งชิ้น
-  คง provenance เชิงปฏิบัติการของ OpenClaw
+- Persist ต้นทางข้อความผ่าน durable send intents เพื่อให้ recovery, replay และ
+  การส่งแบบ chunked รักษาที่มาปฏิบัติการของ OpenClaw
 
-### ระยะที่ 3: บริดจ์ Channel Turn
+### ระยะที่ 3: Channel Inbound Bridge
 
-- ติดตั้ง `channel.turn.run` และ `dispatchAssembledChannelTurn` ใหม่บนฐานของ
+- Implement `channel.inbound.run` และ `dispatchChannelInboundReply` ใหม่บน
   `messages.receive` และ `messages.send`
-- คงชนิด fact ปัจจุบันให้เสถียร
-- คงพฤติกรรม legacy เป็นค่าเริ่มต้น ช่องทาง assembled-turn จะกลายเป็นแบบคงทนก็ต่อเมื่อ
-  adapter ของช่องทางนั้น opt in อย่างชัดเจนด้วยนโยบายความคงทนที่ปลอดภัยต่อการ replay
-- คง `durable: false` เป็นทางหนีเพื่อความเข้ากันได้สำหรับเส้นทางที่ทำ native edit ให้จบ
-  และยัง replay ได้ไม่ปลอดภัย แต่ไม่พึ่งพา marker `false` เพื่อปกป้องช่องทางที่ยังไม่ได้ย้ายระบบ
-- ตั้งค่าความคงทนของ assembled-turn เป็นค่าเริ่มต้นเฉพาะใน lifecycle ข้อความใหม่ หลังจาก
-  การแมปช่องทางพิสูจน์ว่าเส้นทางการส่งทั่วไปคง semantics การส่งของช่องทางเดิมไว้
+- รักษาชนิด fact ปัจจุบันให้เสถียร
+- รักษาพฤติกรรม legacy โดยค่าเริ่มต้น ช่องทางแบบ assembled-turn จะกลายเป็นแบบคงทน
+  ก็ต่อเมื่อ adapter เลือกใช้โดยชัดเจนด้วยนโยบาย durability ที่ replay-safe
+- รักษา `durable: false` เป็นทางออกเพื่อความเข้ากันได้สำหรับเส้นทางที่ finalize
+  native edits และยังไม่สามารถ replay ได้อย่างปลอดภัย แต่อย่าพึ่งพา marker `false`
+  เพื่อปกป้องช่องทางที่ยังไม่ได้ย้าย
+- ตั้งค่า durability ของ assembled-turn เป็นค่าเริ่มต้นเฉพาะใน lifecycle ข้อความใหม่ หลังจาก
+  การแมปช่องทางพิสูจน์ว่าเส้นทางส่งทั่วไปยังรักษา semantics การส่งมอบของช่องทางเดิมไว้ได้
 
-### ระยะที่ 4: บริดจ์ Prepared Dispatcher
+### ระยะที่ 4: Prepared Dispatcher Bridge
 
-- แทนที่ `deliverDurableInboundReplyPayload` ด้วยบริดจ์ send-context
-- เก็บตัวช่วยเดิมไว้เป็น wrapper
-- ย้าย Telegram, WhatsApp, Slack, Signal, iMessage และ Discord ก่อน เพราะ
-  มีงาน durable-final อยู่แล้วหรือมีเส้นทางส่งที่ง่ายกว่า
-- ถือว่า prepared dispatcher ทุกตัวไม่มีการครอบคลุม จนกว่าจะเลือกใช้
-  send context อย่างชัดเจน เอกสารและรายการ changelog ต้องระบุว่า "assembled
-  channel turns" หรือระบุชื่อเส้นทาง channel ที่ย้ายแล้ว แทนการอ้างถึง final replies
-  อัตโนมัติทั้งหมด
-- รักษาพฤติกรรมของ `recordInboundSessionAndDispatchReply`, ตัวช่วย direct-DM และตัวช่วย
-  ความเข้ากันได้สาธารณะที่คล้ายกันให้เหมือนเดิม ตัวช่วยเหล่านี้อาจเปิดเผยการเลือกใช้
-  send-context อย่างชัดเจนในภายหลัง แต่ต้องไม่พยายามส่งแบบ durable ทั่วไปโดยอัตโนมัติ
-  ก่อน delivery callback ที่ caller เป็นเจ้าของ
+- แทนที่ `deliverDurableInboundReplyPayload` ด้วยบริดจ์บริบทการส่ง
+- เก็บ helper เดิมไว้เป็น wrapper
+- พอร์ต Telegram, WhatsApp, Slack, Signal, iMessage และ Discord ก่อน เพราะ
+  มีงาน durable-final อยู่แล้วหรือมีเส้นทางการส่งที่เรียบง่ายกว่า
+- ถือว่า dispatcher ที่เตรียมไว้ทุกตัวไม่ได้ครอบคลุมจนกว่าจะเลือกใช้
+  บริบทการส่งอย่างชัดเจน เอกสารและรายการ changelog ต้องระบุว่า "assembled
+  channel turns" หรือระบุชื่อเส้นทางช่องทางที่ย้ายแล้ว แทนการอ้างว่าเป็น
+  การตอบกลับสุดท้ายอัตโนมัติทั้งหมด
+- รักษาพฤติกรรมของ `recordInboundSessionAndDispatchReply`, helper direct-DM และ helper
+  ความเข้ากันได้สาธารณะอื่น ๆ ที่คล้ายกันให้คงเดิม อาจเปิดเผยการเลือกใช้
+  send-context อย่างชัดเจนได้ภายหลัง แต่ต้องไม่พยายามทำการส่ง durable
+  แบบทั่วไปโดยอัตโนมัติก่อน callback การส่งมอบที่ผู้เรียกเป็นเจ้าของ
 
-### ระยะที่ 5: วงจรชีวิต Live แบบรวมศูนย์
+### ระยะที่ 5: วงจรชีวิตแบบ Live ที่เป็นหนึ่งเดียว
 
-- สร้าง `messages.live` พร้อม proof adapter สองตัว:
-  - Telegram สำหรับส่ง แก้ไข และส่ง final ที่ stale
-  - Matrix สำหรับ draft finalization และ redaction fallback
+- สร้าง `messages.live` พร้อม adapter พิสูจน์สองตัว:
+  - Telegram สำหรับการส่ง รวมถึงการแก้ไข รวมถึงการส่งขั้นสุดท้ายที่หมดอายุ
+  - Matrix สำหรับการสรุป draft ขั้นสุดท้าย รวมถึง fallback การ redaction
 - จากนั้นย้าย Discord, Slack, Mattermost, Teams, QQ Bot และ Feishu
-- ลบโค้ด preview finalization ที่ซ้ำกันหลังจากแต่ละ channel มี
-  parity tests แล้วเท่านั้น
+- ลบโค้ดการสรุป preview ขั้นสุดท้ายที่ซ้ำกันหลังจากแต่ละช่องทางมี
+  การทดสอบ parity แล้วเท่านั้น
 
 ### ระยะที่ 6: SDK สาธารณะ
 
-- เพิ่ม `openclaw/plugin-sdk/channel-message`
-- บันทึกในเอกสารว่าเป็น API ของ channel Plugin ที่แนะนำ
-- อัปเดต package exports, entrypoint inventory, generated API baselines และ
-  เอกสาร Plugin SDK
-- รวม `MessageOrigin`, origin encode/decode hooks และ shared
-  `shouldDropOpenClawEcho` predicate ในพื้นผิว channel-message SDK
-- เก็บ compatibility wrappers สำหรับ subpaths เก่า
-- ทำเครื่องหมายตัวช่วย SDK ที่มีชื่อแบบ reply ว่าเลิกแนะนำในเอกสารหลังจาก Plugin ที่รวมมา
-  ถูกย้ายแล้ว
+- เพิ่ม `openclaw/plugin-sdk/channel-outbound`
+- จัดทำเอกสารว่าเป็น API Plugin ช่องทางที่แนะนำ
+- อัปเดต package exports, inventory ของ entrypoint, baseline API ที่สร้างขึ้น และ
+  เอกสาร SDK ของ Plugin
+- รวม `MessageOrigin`, hook การ encode/decode origin และ predicate ที่ใช้ร่วมกัน
+  `shouldDropOpenClawEcho` ไว้ใน surface ของ channel-outbound SDK
+- เก็บ wrapper ความเข้ากันได้สำหรับ subpath เก่า
+- ทำเครื่องหมาย helper SDK ที่ตั้งชื่อตาม reply ว่าเลิกแนะนำในเอกสารหลังจาก
+  ย้าย Plugin ที่ bundled แล้ว
 
 ### ระยะที่ 7: ตัวส่งทั้งหมด
 
-ย้ายผู้ผลิต outbound ที่ไม่ใช่ reply ทั้งหมดไปยัง `messages.send`:
+ย้าย producer outbound ที่ไม่ใช่ reply ทั้งหมดไปยัง `messages.send`:
 
-- การแจ้งเตือน Cron และ Heartbeat
-- การทำงานของ task เสร็จสิ้น
-- ผลลัพธ์ของ hook
-- approval prompts และ approval results
-- การส่งจาก message tool
-- ประกาศการทำงานของ subagent เสร็จสิ้น
-- การส่งผ่าน CLI หรือ Control UI แบบชัดเจน
+- การแจ้งเตือน cron และ heartbeat
+- การทำงาน task เสร็จสมบูรณ์
+- ผลลัพธ์ hook
+- prompt การอนุมัติและผลลัพธ์การอนุมัติ
+- การส่งของ message tool
+- ประกาศการเสร็จสมบูรณ์ของ subagent
+- การส่งจาก CLI หรือ Control UI อย่างชัดเจน
 - เส้นทาง automation/broadcast
 
 นี่คือจุดที่โมเดลหยุดเป็น "agent replies" และกลายเป็น "OpenClaw sends
 messages"
 
-### ระยะที่ 8: เลิกใช้ Turn
+### ระยะที่ 8: ลบความเข้ากันได้ที่ตั้งชื่อตาม Turn
 
-- เก็บ `channel.turn` ไว้เป็น wrapper อย่างน้อยหนึ่งช่วงเวลาความเข้ากันได้
+- เก็บ wrapper ที่ตั้งชื่อตาม inbound/message ไว้เป็นช่วงเวลาความเข้ากันได้
 - เผยแพร่บันทึกการย้าย
-- รันการทดสอบความเข้ากันได้ของ Plugin SDK กับ import เก่า
-- ลบหรือซ่อนตัวช่วยภายในเก่าหลังจากไม่มี Plugin ที่รวมมาต้องใช้แล้วเท่านั้น
+- รันการทดสอบความเข้ากันได้ของ SDK Plugin กับ import เก่า
+- ลบหรือซ่อน helper ภายในเก่าเฉพาะหลังจากไม่มี Plugin ที่ bundled ต้องใช้แล้ว
   และสัญญาของบุคคลที่สามมีตัวแทนที่เสถียร
 
 ## แผนการทดสอบ
 
-Unit tests:
+การทดสอบ unit:
 
-- การ serialization และ recovery ของ durable send intent
-- การใช้ idempotency key ซ้ำและการระงับรายการซ้ำ
+- การ serialize และกู้คืน send intent แบบ durable
+- การใช้ idempotency key ซ้ำและการกดทับรายการซ้ำ
 - การ commit receipt และการข้าม replay
-- recovery ของ `unknown_after_send` ที่ reconcile ก่อน replay เมื่อ adapter
-  รองรับการ reconciliation
-- นโยบายการจัดประเภท failure
+- การกู้คืน `unknown_after_send` ที่ reconcile ก่อน replay เมื่อ adapter
+  รองรับ reconciliation
+- นโยบายการจำแนกความล้มเหลว
 - ลำดับนโยบาย receive ack
-- การแมป relation สำหรับการส่ง reply, followup, system และ broadcast
-- origin factory สำหรับ Gateway failure และ `shouldDropOpenClawEcho` predicate
-- การรักษา origin ผ่าน payload normalization, chunking, durable queue
-  serialization และ recovery
+- การ map ความสัมพันธ์สำหรับการส่งแบบ reply, followup, system และ broadcast
+- factory origin สำหรับ gateway-failure และ predicate `shouldDropOpenClawEcho`
+- การคง origin ผ่าน payload normalization, chunking, การ serialize durable queue
+  และการกู้คืน
 
-Integration tests:
+การทดสอบ integration:
 
-- adapter อย่างง่ายของ `channel.turn.run` ยังบันทึกและส่ง
-- การส่ง legacy assembled-turn ไม่กลายเป็น durable เว้นแต่ channel
-  จะเลือกใช้อย่างชัดเจน
-- บริดจ์ `channel.turn.runPrepared` ยังบันทึกและ finalize
-- ตัวช่วยความเข้ากันได้สาธารณะเรียก delivery callbacks ที่ caller เป็นเจ้าของโดยค่าเริ่มต้น
-  และไม่ generic-send ก่อน callback เหล่านั้น
-- การส่ง durable fallback replay อาร์เรย์ projected payload ทั้งหมดหลัง
-  restart และไม่สามารถปล่อยให้ payload ภายหลังไม่ถูกบันทึกหลัง crash ช่วงต้น
-- การส่ง durable assembled-turn ส่งคืน platform message ids ไปยัง buffered
-  dispatcher
-- custom delivery hooks ยังคงส่งคืน platform message ids เมื่อ durable delivery
-  ปิดอยู่หรือใช้งานไม่ได้
-- final reply รอดจาก restart ระหว่าง assistant completion และ platform send
-- preview draft finalize ในที่เดิมเมื่ออนุญาต
-- preview draft ถูกยกเลิกหรือ redact เมื่อ media/error/reply-target mismatch
-  ต้องใช้การส่งปกติ
+- adapter แบบง่ายของ `channel.inbound.run` ยังคงบันทึกและส่ง
+- การส่งมอบ assembled-event เดิมจะไม่กลายเป็น durable เว้นแต่ช่องทาง
+  เลือกใช้อย่างชัดเจน
+- บริดจ์ `channel.inbound.runPreparedReply` ยังคงบันทึกและสรุปขั้นสุดท้าย
+- helper ความเข้ากันได้สาธารณะเรียก callback การส่งมอบที่ผู้เรียกเป็นเจ้าของ
+  โดยค่าเริ่มต้น และไม่ generic-send ก่อน callback เหล่านั้น
+- การส่งมอบ durable fallback replay อาร์เรย์ payload ที่ project แล้วทั้งหมดหลัง restart
+  และไม่สามารถปล่อยให้ payload ถัด ๆ ไปไม่ถูกบันทึกหลัง crash ช่วงต้น
+- การส่งมอบ assembled-event แบบ durable ส่งคืน platform message ids ไปยัง dispatcher
+  ที่ buffer ไว้
+- hook การส่งมอบแบบกำหนดเองยังคงส่งคืน platform message ids เมื่อการส่งมอบ durable
+  ถูกปิดใช้งานหรือไม่พร้อมใช้งาน
+- final reply อยู่รอดจาก restart ระหว่าง assistant completion และการส่งไปยัง platform
+- preview draft สรุปในตำแหน่งเดิมเมื่ออนุญาต
+- preview draft ถูกยกเลิกหรือ redacted เมื่อ media/error/reply-target mismatch
+  ต้องใช้การส่งมอบปกติ
 - block streaming และ preview streaming ไม่ส่งข้อความเดียวกันทั้งคู่
-- media ที่ streamed เร็วไม่ถูกทำซ้ำในการส่ง final
+- media ที่ stream เร็วไม่ถูกทำซ้ำในการส่งมอบขั้นสุดท้าย
 
-Channel tests:
+การทดสอบช่องทาง:
 
-- Telegram topic reply ที่ใช้ polling ack ล่าช้าจนถึง safe
-  completed watermark ของ receive context
-- Telegram polling recovery สำหรับ updates ที่ accepted-but-not-delivered ครอบคลุมด้วย
-  persisted safe-completed offset model
-- Telegram stale preview ส่ง final ใหม่และล้าง preview
-- Telegram silent fallback ส่ง projected fallback payload ทุกตัว
-- Telegram silent fallback durability บันทึกอาร์เรย์ projected fallback ทั้งหมด
-  แบบ atomic ไม่ใช่ durable intent แบบ single-payload หนึ่งรายการต่อ loop iteration
+- Telegram topic reply พร้อม polling ack ที่หน่วงไว้จนถึง safe completed watermark
+  ของ receive context
+- การกู้คืน polling ของ Telegram สำหรับ update ที่ยอมรับแล้วแต่ยังไม่ส่งมอบ ครอบคลุมด้วย
+  โมเดล offset safe-completed ที่ persist แล้ว
+- stale preview ของ Telegram ส่ง final ใหม่และล้าง preview
+- silent fallback ของ Telegram ส่งทุก projected fallback payload
+- durability ของ silent fallback ของ Telegram บันทึกอาร์เรย์ fallback ที่ project แล้วทั้งหมด
+  แบบ atomic ไม่ใช่ durable intent แบบ payload เดียวหนึ่งรายการต่อการวนลูปแต่ละครั้ง
 - Discord preview cancel เมื่อมี media/error/explicit reply
-- finals ของ Discord prepared dispatcher route ผ่าน send context ก่อนที่เอกสาร
-  หรือ changelog จะอ้างถึงความ durable ของ Discord final-reply
-- iMessage durable final sends เติม monitor sent-message echo cache
-- เส้นทาง legacy delivery ของ LINE, Zalo และ Nostr ไม่ถูก bypass โดย
-  generic durable send จนกว่าจะมี adapter parity tests
-- การส่ง Direct-DM/Nostr callback ยังคงเป็น authoritative เว้นแต่จะย้ายอย่างชัดเจน
-  ไปยัง message target ที่ครบถ้วนและ send adapter ที่ replay-safe
-- ข้อความ Gateway failure ของ Slack ที่ติดแท็ก OpenClaw ยังคงมองเห็นได้แบบ outbound,
-  bot-room echoes ที่ติดแท็ก drop ก่อน `allowBots` และข้อความ bot ที่ไม่ติดแท็กซึ่งมี
-  ข้อความที่มองเห็นเหมือนกันยังคงทำตาม bot authorization ปกติ
-- Slack native stream fallback ไปยัง draft preview ใน top-level DMs
-- Matrix preview finalization และ redaction fallback
-- room echoes ของ Matrix ที่ติดแท็ก OpenClaw gateway-failure จากบัญชี bot
-  ที่กำหนดค่าไว้ drop ก่อนการจัดการ `allowBots`
-- cascade audits ของ Discord และ Google Chat shared-room gateway-failure ครอบคลุม
-  โหมด `allowBots` ก่อนอ้างถึงการป้องกันทั่วไปที่นั่น
-- Mattermost draft finalization และ fresh-send fallback
-- Teams native progress finalization
-- Feishu duplicate final suppression
-- QQ Bot accumulator timeout fallback
-- Tlon durable final sends รักษา model-signature rendering และ participated
-  thread tracking
-- WhatsApp, Signal, iMessage, Google Chat, LINE, IRC, Nostr, Nextcloud Talk,
-  Synology Chat, Tlon, Twitch, Zalo และ Zalo Personal simple durable final
-  sends
+- final ของ prepared dispatcher ใน Discord route ผ่าน send context ก่อนที่เอกสาร
+  หรือ changelog จะอ้าง durability ของ final-reply ใน Discord
+- การส่ง final แบบ durable ของ iMessage เติม monitor sent-message echo cache
+- เส้นทางการส่งมอบ legacy ของ LINE, Zalo และ Nostr จะไม่ถูกข้ามด้วย
+  generic durable send จนกว่าจะมีการทดสอบ parity ของ adapter
+- การส่งมอบ callback ของ Direct-DM/Nostr ยังคงเป็นแหล่งอ้างอิงหลัก เว้นแต่จะย้ายอย่างชัดเจน
+  ไปยัง message target ที่สมบูรณ์และ send adapter ที่ replay-safe
+- ข้อความ Slack ที่ติดแท็ก OpenClaw gateway failure ยังคงมองเห็นได้ outbound, echo ในห้องของ bot
+  ที่ติดแท็กถูก drop ก่อน `allowBots` และข้อความ bot ที่ไม่ติดแท็กซึ่งมีข้อความที่มองเห็นได้เหมือนกัน
+  ยังคงตาม authorization ของ bot ปกติ
+- native stream fallback ของ Slack ไปยัง draft preview ใน DM ระดับบน
+- การสรุป preview ขั้นสุดท้ายและ redaction fallback ของ Matrix
+- echo ในห้องแบบ gateway-failure ของ OpenClaw ที่ติดแท็กของ Matrix จากบัญชี bot
+  ที่ตั้งค่าไว้ถูก drop ก่อนการจัดการ `allowBots`
+- audit cascade ของ gateway-failure ในห้องร่วมของ Discord และ Google Chat ครอบคลุม
+  โหมด `allowBots` ก่อนอ้างการป้องกันทั่วไปที่นั่น
+- การสรุป draft ขั้นสุดท้ายและ fallback แบบ fresh-send ของ Mattermost
+- การสรุปความคืบหน้าแบบ native ของ Teams
+- การกดทับ final ที่ซ้ำของ Feishu
+- fallback เมื่อ accumulator ของ QQ Bot timeout
+- การส่ง final แบบ durable ของ Tlon คงการเรนเดอร์ model-signature และการติดตาม
+  เธรดที่เข้าร่วม
+- การส่ง final แบบ durable อย่างง่ายของ WhatsApp, Signal, iMessage, Google Chat, LINE, IRC, Nostr, Nextcloud Talk,
+  Synology Chat, Tlon, Twitch, Zalo และ Zalo Personal
 
-Validation:
+การตรวจสอบ:
 
-- ไฟล์ Vitest เป้าหมายระหว่างการพัฒนา
-- `pnpm check:changed` ใน Testbox สำหรับพื้นผิวที่เปลี่ยนทั้งหมด
-- `pnpm check` ที่กว้างขึ้นใน Testbox ก่อน landing refactor ที่สมบูรณ์ หรือหลัง
+- ไฟล์ Vitest แบบเจาะจงระหว่างการพัฒนา
+- `pnpm check:changed` ใน Testbox สำหรับ surface ที่เปลี่ยนทั้งหมด
+- `pnpm check` ที่กว้างขึ้นใน Testbox ก่อนลง refactor ทั้งชุดหรือหลังจาก
   การเปลี่ยนแปลง SDK/export สาธารณะ
-- live หรือ qa-channel smoke สำหรับอย่างน้อยหนึ่ง channel ที่แก้ไขได้และหนึ่ง
-  channel แบบส่งอย่างเดียวง่าย ๆ ก่อนลบ compatibility wrappers
+- live หรือ qa-channel smoke สำหรับช่องทางที่แก้ไขได้อย่างน้อยหนึ่งช่องทางและช่องทาง
+  ส่งอย่างเดียวแบบง่ายหนึ่งช่องทาง ก่อนลบ wrapper ความเข้ากันได้
 
 ## คำถามที่ยังเปิดอยู่
 
-- Telegram ควรแทนที่ grammY runner source ด้วย
-  durable polling source แบบเต็มที่ควบคุม platform-level redelivery ได้ในที่สุดหรือไม่ ไม่ใช่
-  แค่ persisted restart watermark ของ OpenClaw
-- durable live preview state ควรเก็บใน queue record เดียวกับ
-  final send intent หรือใน sibling live-state store
-- compatibility wrappers จะยังคงถูกบันทึกในเอกสารนานเท่าใดหลังจาก
-  `plugin-sdk/channel-message` ship
-- Plugin ภายนอกควร implement receive adapters โดยตรง หรือเพียง
-  provide normalize/send/live hooks ผ่าน `defineChannelMessageAdapter`
-- receipt fields ใดที่ปลอดภัยต่อการเปิดเผยใน SDK สาธารณะ เทียบกับ internal runtime
-  state
-- side effects เช่น self-echo caches และ participated-thread markers
-  ควรถูกจำลองเป็น send-context hooks, adapter-owned finalize steps หรือ
+- Telegram ควรแทนที่แหล่ง runner ของ grammY ด้วยแหล่ง polling แบบ durable อย่างสมบูรณ์ในที่สุดหรือไม่
+  ซึ่งควบคุมการส่งซ้ำระดับ platform ได้ ไม่ใช่เฉพาะ watermark restart ที่ persist แล้วของ OpenClaw
+- สถานะ durable live preview ควรเก็บไว้ใน queue record เดียวกับ
+  final send intent หรือใน live-state store ข้างเคียง
+- wrapper ความเข้ากันได้จะยังอยู่ในเอกสารนานเท่าใดหลังจาก
+  `plugin-sdk/channel-outbound` ship แล้ว
+- Plugin บุคคลที่สามควร implement receive adapter โดยตรง หรือเพียง
+  ให้ normalize/send/live hooks ผ่าน `defineChannelMessageAdapter`
+- receipt fields ใดปลอดภัยสำหรับเปิดเผยใน SDK สาธารณะ เทียบกับสถานะ runtime ภายใน
+- side effect เช่น self-echo cache และ participated-thread marker
+  ควรถูก model เป็น send-context hooks, ขั้นตอน finalize ที่ adapter เป็นเจ้าของ หรือ
   receipt subscribers
-- channel ใดมี native origin metadata, channel ใดต้องใช้ persisted outbound
-  registries และ channel ใดไม่สามารถให้การระงับ cross-bot echo ที่เชื่อถือได้
+- ช่องทางใดมี native origin metadata, ช่องทางใดต้องใช้ outbound registries ที่ persist แล้ว
+  และช่องทางใดไม่สามารถให้การกดทับ echo ข้าม bot ที่เชื่อถือได้
 
 ## เกณฑ์การยอมรับ
 
-- message channel ที่รวมมาทุกตัวส่ง final visible output ผ่าน
+- ช่องทางข้อความที่ bundled ทุกช่องทางส่งผลลัพธ์สุดท้ายที่มองเห็นได้ผ่าน
   `messages.send`
-- inbound message channel ทุกตัวเข้าสู่ระบบผ่าน `messages.receive` หรือ
-  compatibility wrapper ที่มีเอกสาร
-- preview/edit/stream channel ทุกตัวใช้ `messages.live` สำหรับ draft state และ
-  finalization
-- `channel.turn` เป็นเพียง wrapper
-- ตัวช่วย SDK ที่มีชื่อแบบ reply เป็น compatibility exports ไม่ใช่เส้นทางที่แนะนำ
-- durable recovery สามารถ replay pending final sends หลัง restart โดยไม่สูญเสีย
-  final response หรือทำซ้ำ sends ที่ commit แล้ว; sends ที่
-  platform outcome ไม่ทราบแน่ชัดจะถูก reconcile ก่อน replay หรือถูกบันทึกในเอกสารว่า
-  เป็น at-least-once สำหรับ adapter นั้น
-- durable final sends fail closed เมื่อไม่สามารถเขียน durable intent ได้
-  เว้นแต่ caller จะเลือก documented non-durable mode อย่างชัดเจน
-- compatibility helpers ของ legacy channel-turn และ SDK มีค่าเริ่มต้นเป็น direct
-  channel-owned delivery; generic durable send เป็น explicit opt-in เท่านั้น
-- receipts รักษา platform message ids ทั้งหมดสำหรับ multi-part deliveries และ
-  primary id สำหรับความสะดวกของ threading/edit
-- durable wrappers รักษา channel-local side effects ก่อนแทนที่ direct
-  delivery callbacks
-- prepared dispatchers ไม่ถูกนับว่า durable จนกว่า final delivery
-  path จะใช้ send context อย่างชัดเจน
-- fallback delivery จัดการ projected payload ทุกตัว
-- durable fallback delivery บันทึก projected payload ทุกตัวใน replayable
-  intent หรือ batch plan เดียว
-- output ของ Gateway failure ที่มีต้นทางจาก OpenClaw มองเห็นได้สำหรับมนุษย์ แต่
-  room echoes ที่ authored โดย bot และติดแท็กจะถูก drop ก่อน bot authorization บน channel ที่
-  ประกาศรองรับ origin contract
+- ช่องทางข้อความ inbound ทุกช่องทางเข้าสู่ระบบผ่าน `messages.receive` หรือ
+  wrapper ความเข้ากันได้ที่จัดทำเอกสารไว้
+- ช่องทาง preview/edit/stream ทุกช่องทางใช้ `messages.live` สำหรับสถานะ draft และ
+  การสรุปขั้นสุดท้าย
+- `channel.inbound` เป็นเพียง wrapper
+- helper SDK ที่ตั้งชื่อตาม reply เป็น compatibility exports ไม่ใช่เส้นทางที่แนะนำ
+- การกู้คืน durable สามารถ replay final sends ที่รอดำเนินการหลัง restart ได้โดยไม่สูญเสีย
+  final response หรือทำซ้ำการส่งที่ commit แล้ว; การส่งที่ไม่ทราบผลลัพธ์ของ platform
+  จะถูก reconcile ก่อน replay หรือถูกจัดทำเอกสารว่าเป็น at-least-once สำหรับ adapter นั้น
+- การส่ง final แบบ durable fail closed เมื่อเขียน durable intent ไม่ได้
+  เว้นแต่ผู้เรียกเลือกโหมด non-durable ที่จัดทำเอกสารไว้อย่างชัดเจน
+- helper ความเข้ากันได้ของ SDK เดิมค่าเริ่มต้นเป็นการส่งมอบโดยตรงที่ช่องทางเป็นเจ้าของ;
+  generic durable send เป็นการ opt-in อย่างชัดเจนเท่านั้น
+- receipt คง platform message ids ทั้งหมดสำหรับการส่งมอบหลายส่วนและ id หลัก
+  เพื่อความสะดวกในการ threading/edit
+- wrapper durable คง side effect ภายในช่องทางก่อนแทนที่ callback การส่งมอบโดยตรง
+- prepared dispatcher จะไม่ถูกนับว่า durable จนกว่าเส้นทางการส่งมอบขั้นสุดท้าย
+  จะใช้ send context อย่างชัดเจน
+- การส่งมอบ fallback จัดการทุก projected payload
+- การส่งมอบ durable fallback บันทึกทุก projected payload ใน intent หรือ batch plan
+  เดียวที่ replay ได้
+- output gateway failure ที่ OpenClaw สร้างขึ้นมองเห็นได้สำหรับมนุษย์ แต่ echo ในห้องที่เขียนโดย bot
+  และติดแท็กจะถูก drop ก่อน bot authorization บนช่องทางที่ประกาศการรองรับ origin contract
 - เอกสารอธิบาย send, receive, live, state, receipts, relations, failure
   policy, migration และ test coverage
 
 ## ที่เกี่ยวข้อง
 
-- [Messages](/th/concepts/messages)
-- [Streaming and chunking](/th/concepts/streaming)
+- [ข้อความ](/th/concepts/messages)
+- [การสตรีมและการแบ่งชิ้น](/th/concepts/streaming)
 - [Progress drafts](/th/concepts/progress-drafts)
-- [Retry policy](/th/concepts/retry)
-- [Channel turn kernel](/th/plugins/sdk-channel-turn)
+- [นโยบายการลองใหม่](/th/concepts/retry)
+- [API ขาเข้าของช่องทาง](/th/plugins/sdk-channel-inbound)

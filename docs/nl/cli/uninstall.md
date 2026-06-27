@@ -1,21 +1,22 @@
 ---
 read_when:
-    - U wilt de Gateway-service en/of lokale status verwijderen
-    - Je wilt eerst een proefrun uitvoeren
+    - Je wilt de Gateway-service en/of lokale status verwijderen
+    - Je wilt eerst een dry-run
 summary: CLI-referentie voor `openclaw uninstall` (Gateway-service + lokale gegevens verwijderen)
 title: Verwijderen
 x-i18n:
-    generated_at: "2026-04-29T22:35:51Z"
+    generated_at: "2026-06-27T17:23:51Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b774fc006e989068b9126aff2a72888fd808a2e0e3d5ea8b57e6ab9d9f1b63ee
+    source_hash: f90fa8cf513e2e8cd422c3b8a880e7fd20fb71131a3ec88260e765daa2ace543
     source_path: cli/uninstall.md
     workflow: 16
 ---
 
 # `openclaw uninstall`
 
-Deïnstalleer de Gateway-service + lokale gegevens (CLI blijft behouden).
+Verwijder de Gateway-service + lokale gegevens (CLI blijft behouden).
 
 Opties:
 
@@ -26,7 +27,7 @@ Opties:
 - `--all`: verwijder service, status, werkruimte en app
 - `--yes`: sla bevestigingsprompts over
 - `--non-interactive`: schakel prompts uit; vereist `--yes`
-- `--dry-run`: druk acties af zonder bestanden te verwijderen
+- `--dry-run`: toon acties zonder bestanden te verwijderen
 
 Voorbeelden:
 
@@ -41,11 +42,12 @@ openclaw uninstall --dry-run
 
 Opmerkingen:
 
-- Voer eerst `openclaw backup create` uit als je een herstelbare momentopname wilt voordat je status of werkruimtes verwijdert.
-- `--all` is een verkorte schrijfwijze om service, status, werkruimte en app samen te verwijderen.
+- Voer eerst `openclaw backup create` uit als je een herstelbare momentopname wilt voordat je status of werkruimten verwijdert.
+- `--state` behoudt geconfigureerde werkruimtemappen tenzij `--workspace` ook is geselecteerd.
+- `--all` is een verkorte optie om service, status, werkruimte en app samen te verwijderen.
 - `--non-interactive` vereist `--yes`.
 
 ## Gerelateerd
 
 - [CLI-referentie](/nl/cli)
-- [Deïnstalleren](/nl/install/uninstall)
+- [Verwijderen](/nl/install/uninstall)

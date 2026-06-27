@@ -1,26 +1,36 @@
 ---
 read_when:
-    - Вам потрібен єдиний API-ключ для найкращих великих мовних моделей із відкритим кодом
+    - Вам потрібен єдиний API-ключ для провідних LLM з відкритим кодом
     - Ви хочете запускати моделі через API DeepInfra в OpenClaw
-summary: Використовуйте уніфікований API DeepInfra для доступу до найпопулярніших моделей із відкритим кодом і передових моделей в OpenClaw
+summary: Використовуйте уніфікований API DeepInfra, щоб отримати доступ до найпопулярніших open source і frontier моделей в OpenClaw
 title: DeepInfra
 x-i18n:
-    generated_at: "2026-05-06T04:52:48Z"
+    generated_at: "2026-06-27T18:09:59Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5e68c3f764ac91548c2ced0b650e582f6d315ad7f154d19a00f299a3737494cd
+    source_hash: 059a556c24d2de2c8c5290b54c78fbc7451dc534238bfc4c725dcfbbd9a2d17f
     source_path: providers/deepinfra.md
     workflow: 16
 ---
 
-DeepInfra надає **уніфікований API**, який спрямовує запити до найпопулярніших моделей з відкритим кодом і frontier-моделей через один
-endpoint і API-ключ. Він сумісний з OpenAI, тому більшість OpenAI SDK працюють після зміни базового URL.
+DeepInfra надає **уніфікований API**, який маршрутизує запити до найпопулярніших моделей з відкритим кодом і передових моделей через єдину
+кінцеву точку та ключ API. Він сумісний з OpenAI, тому більшість OpenAI SDK працюють після зміни базової URL-адреси.
 
-## Отримання API-ключа
+## Установлення Plugin
+
+Установіть офіційний Plugin, а потім перезапустіть Gateway:
+
+```bash
+openclaw plugins install @openclaw/deepinfra-provider
+openclaw gateway restart
+```
+
+## Отримання ключа API
 
 1. Перейдіть на [https://deepinfra.com/](https://deepinfra.com/)
 2. Увійдіть або створіть обліковий запис
-3. Перейдіть до Dashboard / Keys і згенеруйте новий API-ключ або використайте автоматично створений
+3. Перейдіть до Dashboard / Keys і згенеруйте новий ключ API або використайте автоматично створений
 
 ## Налаштування CLI
 
@@ -41,7 +51,7 @@ export DEEPINFRA_API_KEY="<your-deepinfra-api-key>" # pragma: allowlist secret
   env: { DEEPINFRA_API_KEY: "<your-deepinfra-api-key>" }, // pragma: allowlist secret
   agents: {
     defaults: {
-      model: { primary: "deepinfra/deepseek-ai/DeepSeek-V3.2" },
+      model: { primary: "deepinfra/deepseek-ai/DeepSeek-V4-Flash" },
     },
   },
 }
@@ -49,22 +59,25 @@ export DEEPINFRA_API_KEY="<your-deepinfra-api-key>" # pragma: allowlist secret
 
 ## Підтримувані поверхні OpenClaw
 
-Вбудований plugin реєструє всі поверхні DeepInfra, які відповідають поточним
-контрактам постачальників OpenClaw:
+Plugin реєструє всі поверхні DeepInfra, що відповідають поточним
+контрактам провайдерів OpenClaw. Чат, генерація зображень і генерація відео
+динамічно оновлюють свої каталоги моделей із `/v1/openai/models?sort_by=openclaw&filter=with_meta`,
+коли налаштовано `DEEPINFRA_API_KEY`; інші поверхні використовують наведені нижче добірні
+статичні типові значення.
 
-| Поверхня                  | Модель за замовчуванням            | Конфігурація/інструмент OpenClaw                          |
-| ------------------------- | ---------------------------------- | --------------------------------------------------------- |
-| Чат / постачальник моделей | `deepseek-ai/DeepSeek-V3.2`        | `agents.defaults.model`                                   |
-| Генерація/редагування зображень | `black-forest-labs/FLUX-1-schnell` | `image_generate`, `agents.defaults.imageGenerationModel` |
-| Розуміння медіа           | `moonshotai/Kimi-K2.5` для зображень | розуміння вхідних зображень                              |
-| Мовлення в текст          | `openai/whisper-large-v3-turbo`    | транскрибування вхідного аудіо                            |
-| Текст у мовлення          | `hexgrad/Kokoro-82M`               | `messages.tts.provider: "deepinfra"`                      |
-| Генерація відео           | `Pixverse/Pixverse-T2V`            | `video_generate`, `agents.defaults.videoGenerationModel`  |
-| Векторні представлення пам’яті | `BAAI/bge-m3`                      | `agents.defaults.memorySearch.provider: "deepinfra"`      |
+| Поверхня                 | Типова модель                                                                                        | Конфігурація/інструмент OpenClaw                         |
+| ------------------------ | ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| Чат / провайдер моделей  | перший запис із тегом чату з живого каталогу (резерв із маніфесту `deepseek-ai/DeepSeek-V4-Flash`)   | `agents.defaults.model`                                  |
+| Генерація/редагування зображень | перший запис із тегом `image-gen` з живого каталогу (статичний резерв `black-forest-labs/FLUX-1-schnell`) | `image_generate`, `agents.defaults.imageGenerationModel` |
+| Розуміння медіа          | `moonshotai/Kimi-K2.5` для зображень                                                                 | розуміння вхідних зображень                              |
+| Мовлення в текст         | `openai/whisper-large-v3-turbo`                                                                       | транскрибування вхідного аудіо                           |
+| Текст у мовлення         | `hexgrad/Kokoro-82M`                                                                                  | `messages.tts.provider: "deepinfra"`                     |
+| Генерація відео          | перший запис із тегом `video-gen` з живого каталогу (статичний резерв `Pixverse/Pixverse-T2V`)        | `video_generate`, `agents.defaults.videoGenerationModel` |
+| Вбудовування пам’яті     | `BAAI/bge-m3`                                                                                         | `agents.defaults.memorySearch.provider: "deepinfra"`     |
 
-DeepInfra також надає reranking, класифікацію, виявлення об’єктів та інші
-нативні типи моделей. OpenClaw наразі не має повноцінних контрактів постачальників
-для цих категорій, тому цей plugin поки їх не реєструє.
+DeepInfra також надає повторне ранжування, класифікацію, виявлення об’єктів та інші
+нативні типи моделей. OpenClaw наразі не має повноцінних контрактів провайдерів
+для цих категорій, тому цей Plugin поки що їх не реєструє.
 
 ## Доступні моделі
 
@@ -74,9 +87,11 @@ OpenClaw динамічно виявляє доступні моделі DeepInf
 Будь-яку модель, доступну на [DeepInfra.com](https://deepinfra.com/), можна використовувати з префіксом `deepinfra/`:
 
 ```
-deepinfra/MiniMaxAI/MiniMax-M2.5
+deepinfra/deepseek-ai/DeepSeek-V4-Flash
 deepinfra/deepseek-ai/DeepSeek-V3.2
+deepinfra/MiniMaxAI/MiniMax-M2.5
 deepinfra/moonshotai/Kimi-K2.5
+deepinfra/nvidia/NVIDIA-Nemotron-3-Super-120B-A12B
 deepinfra/zai-org/GLM-5.1
 ...і багато інших
 ```
@@ -84,11 +99,11 @@ deepinfra/zai-org/GLM-5.1
 ## Примітки
 
 - Посилання на моделі мають формат `deepinfra/<provider>/<model>` (наприклад, `deepinfra/Qwen/Qwen3-Max`).
-- Модель за замовчуванням: `deepinfra/deepseek-ai/DeepSeek-V3.2`
-- Базовий URL: `https://api.deepinfra.com/v1/openai`
+- Типова модель: `deepinfra/deepseek-ai/DeepSeek-V4-Flash`
+- Базова URL-адреса: `https://api.deepinfra.com/v1/openai`
 - Нативна генерація відео використовує `https://api.deepinfra.com/v1/inference/<model>`.
 
 ## Пов’язане
 
-- [Постачальники моделей](/uk/concepts/model-providers)
-- [Усі постачальники](/uk/providers/index)
+- [Провайдери моделей](/uk/concepts/model-providers)
+- [Усі провайдери](/uk/providers/index)

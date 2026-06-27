@@ -1,42 +1,45 @@
 ---
 read_when:
     - Bạn muốn danh mục OpenCode Go
-    - Bạn cần các tham chiếu mô hình thời gian chạy cho các mô hình do Go lưu trữ
+    - Bạn cần các tham chiếu mô hình runtime cho các mô hình được lưu trữ bằng Go
 summary: Sử dụng danh mục OpenCode Go với thiết lập OpenCode dùng chung
 title: OpenCode Go
 x-i18n:
-    generated_at: "2026-04-29T23:08:01Z"
+    generated_at: "2026-06-27T18:05:05Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2b2b5ba7f81cc101c3e9abdd79a18dc523a4f18b10242a0513b288fcbcc975e4
+    source_hash: eb4e6bd452eeebca5456b0cd70e7622e07ed050a07ff9d6d00926f32efe90569
     source_path: providers/opencode-go.md
     workflow: 16
 ---
 
-OpenCode Go là danh mục Go trong [OpenCode](/vi/providers/opencode).
-Nó dùng cùng `OPENCODE_API_KEY` như danh mục Zen, nhưng giữ id provider runtime
-`opencode-go` để định tuyến theo từng mô hình ở upstream luôn chính xác.
+OpenCode Go là catalog Go trong [OpenCode](/vi/providers/opencode).
+Nó dùng cùng `OPENCODE_API_KEY` như catalog Zen, nhưng giữ id nhà cung cấp runtime
+`opencode-go` để định tuyến theo từng mô hình ở upstream vẫn chính xác.
 
-| Thuộc tính       | Giá trị                         |
-| ---------------- | ------------------------------- |
-| Provider runtime | `opencode-go`                   |
-| Xác thực         | `OPENCODE_API_KEY`              |
-| Thiết lập cha    | [OpenCode](/vi/providers/opencode) |
+| Thuộc tính          | Giá trị                         |
+| ------------------- | ------------------------------- |
+| Nhà cung cấp runtime | `opencode-go`                  |
+| Xác thực            | `OPENCODE_API_KEY`              |
+| Thiết lập cha       | [OpenCode](/vi/providers/opencode) |
 
-## Danh mục tích hợp sẵn
+## Catalog tích hợp sẵn
 
-OpenClaw lấy hầu hết các hàng trong danh mục Go từ registry mô hình pi được đóng gói kèm và
-bổ sung các hàng upstream hiện tại trong khi registry bắt kịp. Chạy
+OpenClaw lấy hầu hết các hàng catalog Go từ registry mô hình OpenClaw được đóng gói kèm và
+bổ sung các hàng upstream hiện tại trong khi registry đang bắt kịp. Chạy
 `openclaw models list --provider opencode-go` để xem danh sách mô hình hiện tại.
 
-Provider bao gồm:
+Nhà cung cấp bao gồm:
 
 | Tham chiếu mô hình             | Tên                   |
-| ------------------------------ | --------------------- |
+| ------------------------------- | --------------------- |
 | `opencode-go/glm-5`             | GLM-5                 |
 | `opencode-go/glm-5.1`           | GLM-5.1               |
+| `opencode-go/glm-5.2`           | GLM-5.2               |
 | `opencode-go/kimi-k2.5`         | Kimi K2.5             |
 | `opencode-go/kimi-k2.6`         | Kimi K2.6 (giới hạn 3x) |
+| `opencode-go/kimi-k2.7-code`    | Kimi K2.7 Code        |
 | `opencode-go/deepseek-v4-pro`   | DeepSeek V4 Pro       |
 | `opencode-go/deepseek-v4-flash` | DeepSeek V4 Flash     |
 | `opencode-go/mimo-v2-omni`      | MiMo V2 Omni          |
@@ -46,22 +49,24 @@ Provider bao gồm:
 | `opencode-go/qwen3.5-plus`      | Qwen3.5 Plus          |
 | `opencode-go/qwen3.6-plus`      | Qwen3.6 Plus          |
 
+GLM-5.2 dùng cửa sổ ngữ cảnh 1 triệu token và hỗ trợ tối đa 131K token đầu ra.
+
 ## Bắt đầu
 
 <Tabs>
-  <Tab title="Interactive">
+  <Tab title="Tương tác">
     <Steps>
-      <Step title="Run onboarding">
+      <Step title="Chạy quy trình hướng dẫn ban đầu">
         ```bash
         openclaw onboard --auth-choice opencode-go
         ```
       </Step>
-      <Step title="Set a Go model as default">
+      <Step title="Đặt mô hình Go làm mặc định">
         ```bash
         openclaw config set agents.defaults.model.primary "opencode-go/kimi-k2.6"
         ```
       </Step>
-      <Step title="Verify models are available">
+      <Step title="Xác minh mô hình có sẵn">
         ```bash
         openclaw models list --provider opencode-go
         ```
@@ -69,14 +74,14 @@ Provider bao gồm:
     </Steps>
   </Tab>
 
-  <Tab title="Non-interactive">
+  <Tab title="Không tương tác">
     <Steps>
-      <Step title="Pass the key directly">
+      <Step title="Truyền khóa trực tiếp">
         ```bash
         openclaw onboard --opencode-go-api-key "$OPENCODE_API_KEY"
         ```
       </Step>
-      <Step title="Verify models are available">
+      <Step title="Xác minh mô hình có sẵn">
         ```bash
         openclaw models list --provider opencode-go
         ```
@@ -97,34 +102,34 @@ Provider bao gồm:
 ## Cấu hình nâng cao
 
 <AccordionGroup>
-  <Accordion title="Routing behavior">
+  <Accordion title="Hành vi định tuyến">
     OpenClaw tự động xử lý định tuyến theo từng mô hình khi tham chiếu mô hình dùng
-    `opencode-go/...`. Không cần cấu hình provider bổ sung.
+    `opencode-go/...`. Không cần cấu hình nhà cung cấp bổ sung.
   </Accordion>
 
-  <Accordion title="Runtime ref convention">
-    Tham chiếu runtime vẫn rõ ràng: `opencode/...` cho Zen, `opencode-go/...` cho Go.
-    Điều này giữ cho định tuyến theo từng mô hình ở upstream chính xác trên cả hai danh mục.
+  <Accordion title="Quy ước tham chiếu runtime">
+    Tham chiếu runtime luôn rõ ràng: `opencode/...` cho Zen, `opencode-go/...` cho Go.
+    Điều này giữ cho định tuyến theo từng mô hình ở upstream chính xác trên cả hai catalog.
   </Accordion>
 
-  <Accordion title="Shared credentials">
-    Cùng một `OPENCODE_API_KEY` được dùng bởi cả danh mục Zen và Go. Việc nhập
-    khóa trong quá trình thiết lập sẽ lưu thông tin xác thực cho cả hai provider runtime.
+  <Accordion title="Thông tin đăng nhập dùng chung">
+    Cùng một `OPENCODE_API_KEY` được cả catalog Zen và Go sử dụng. Việc nhập
+    khóa trong quá trình thiết lập sẽ lưu thông tin đăng nhập cho cả hai nhà cung cấp runtime.
   </Accordion>
 </AccordionGroup>
 
 <Tip>
-Xem [OpenCode](/vi/providers/opencode) để biết tổng quan onboarding dùng chung và tài liệu tham khảo đầy đủ
-về danh mục Zen + Go.
+Xem [OpenCode](/vi/providers/opencode) để biết tổng quan hướng dẫn thiết lập dùng chung và tham chiếu catalog
+Zen + Go đầy đủ.
 </Tip>
 
 ## Liên quan
 
 <CardGroup cols={2}>
-  <Card title="OpenCode (parent)" href="/vi/providers/opencode" icon="server">
-    Onboarding dùng chung, tổng quan danh mục và ghi chú nâng cao.
+  <Card title="OpenCode (cha)" href="/vi/providers/opencode" icon="server">
+    Hướng dẫn thiết lập dùng chung, tổng quan catalog và ghi chú nâng cao.
   </Card>
-  <Card title="Model selection" href="/vi/concepts/model-providers" icon="layers">
-    Chọn provider, tham chiếu mô hình và hành vi chuyển đổi dự phòng.
+  <Card title="Lựa chọn mô hình" href="/vi/concepts/model-providers" icon="layers">
+    Chọn nhà cung cấp, tham chiếu mô hình và hành vi chuyển đổi dự phòng.
   </Card>
 </CardGroup>

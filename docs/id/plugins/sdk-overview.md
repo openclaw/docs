@@ -1,33 +1,33 @@
 ---
 read_when:
-    - Anda perlu mengetahui subjalur SDK mana yang harus digunakan untuk impor.
+    - Anda perlu mengetahui subpath SDK mana yang harus diimpor
     - Anda menginginkan referensi untuk semua metode pendaftaran pada OpenClawPluginApi
     - Anda sedang mencari ekspor SDK tertentu
 sidebarTitle: Plugin SDK overview
-summary: Peta impor, referensi API pendaftaran, dan arsitektur SDK
-title: Ikhtisar SDK Plugin
+summary: Referensi peta impor, API pendaftaran, dan arsitektur SDK
+title: Ikhtisar Plugin SDK
 x-i18n:
-    generated_at: "2026-05-11T20:33:31Z"
+    generated_at: "2026-06-27T17:59:02Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 633fcffa4256c84c40e8c61e692521583370a368d3058b44d10922279a096b06
+    source_hash: 69321b569f7609c6ee9312f0234ce94f274bf03822df61988f34e1effb55339e
     source_path: plugins/sdk-overview.md
     workflow: 16
 ---
 
-Plugin SDK adalah kontrak bertipe antara plugin dan core. Halaman ini adalah
-referensi untuk **apa yang harus diimpor** dan **apa yang dapat Anda daftarkan**.
+Plugin SDK adalah kontrak bertipe antara Plugin dan core. Halaman ini adalah
+referensi untuk **apa yang perlu diimpor** dan **apa yang dapat Anda daftarkan**.
 
 <Note>
-  Halaman ini ditujukan untuk penulis plugin yang menggunakan `openclaw/plugin-sdk/*` di dalam
+  Halaman ini untuk penulis Plugin yang menggunakan `openclaw/plugin-sdk/*` di dalam
   OpenClaw. Untuk aplikasi eksternal, skrip, dasbor, pekerjaan CI, dan ekstensi IDE
   yang ingin menjalankan agen melalui Gateway, gunakan
-  [OpenClaw App SDK](/id/concepts/openclaw-sdk) dan paket `@openclaw/sdk`
-  sebagai gantinya.
+  [Integrasi Gateway untuk aplikasi eksternal](/id/gateway/external-apps) sebagai gantinya.
 </Note>
 
 <Tip>
-Mencari panduan cara pakai? Mulai dengan [Membangun plugin](/id/plugins/building-plugins), gunakan [Plugin channel](/id/plugins/sdk-channel-plugins) untuk plugin channel, [Plugin provider](/id/plugins/sdk-provider-plugins) untuk plugin provider, [Plugin backend CLI](/id/plugins/cli-backend-plugins) untuk backend CLI AI lokal, dan [Hook plugin](/id/plugins/hooks) untuk plugin hook alat atau siklus hidup.
+Mencari panduan cara kerja? Mulai dengan [Membangun Plugin](/id/plugins/building-plugins), gunakan [Plugin saluran](/id/plugins/sdk-channel-plugins) untuk Plugin saluran, [Plugin penyedia](/id/plugins/sdk-provider-plugins) untuk Plugin penyedia, [Plugin backend CLI](/id/plugins/cli-backend-plugins) untuk backend CLI AI lokal, dan [Hook Plugin](/id/plugins/hooks) untuk Plugin hook alat atau siklus hidup.
 </Tip>
 
 ## Konvensi impor
@@ -40,128 +40,174 @@ import { defineChannelPluginEntry } from "openclaw/plugin-sdk/channel-core";
 ```
 
 Setiap subpath adalah modul kecil yang mandiri. Ini menjaga startup tetap cepat dan
-mencegah masalah dependensi melingkar. Untuk helper entri/build khusus channel,
+mencegah masalah dependensi melingkar. Untuk helper entry/build khusus saluran,
 utamakan `openclaw/plugin-sdk/channel-core`; gunakan `openclaw/plugin-sdk/core` untuk
 permukaan payung yang lebih luas dan helper bersama seperti
 `buildChannelConfigSchema`.
 
-Untuk konfigurasi channel, publikasikan JSON Schema milik channel melalui
+Untuk konfigurasi saluran, publikasikan JSON Schema milik saluran melalui
 `openclaw.plugin.json#channelConfigs`. Subpath `plugin-sdk/channel-config-schema`
-ditujukan untuk primitif skema bersama dan builder generik. Plugin bawaan
-OpenClaw menggunakan `plugin-sdk/bundled-channel-config-schema` untuk skema
-channel bawaan yang dipertahankan. Ekspor kompatibilitas yang deprecated tetap ada di
-`plugin-sdk/channel-config-schema-legacy`; tidak ada subpath skema bawaan yang menjadi
-pola untuk plugin baru.
+ditujukan untuk primitif skema bersama dan builder generik. Plugin bawaan OpenClaw
+menggunakan `plugin-sdk/bundled-channel-config-schema` untuk skema saluran bawaan
+yang dipertahankan. Ekspor kompatibilitas yang sudah deprecated tetap ada di
+`plugin-sdk/channel-config-schema-legacy`; tidak satu pun subpath skema bawaan
+merupakan pola untuk Plugin baru.
 
 <Warning>
-  Jangan impor seam kenyamanan bermerek provider atau channel (misalnya
+  Jangan impor seam kemudahan bermerek penyedia atau saluran (misalnya
   `openclaw/plugin-sdk/slack`, `.../discord`, `.../signal`, `.../whatsapp`).
   Plugin bawaan menyusun subpath SDK generik di dalam barrel `api.ts` /
-  `runtime-api.ts` mereka sendiri; konsumen core sebaiknya menggunakan barrel lokal plugin
-  tersebut atau menambahkan kontrak SDK generik yang sempit saat kebutuhan benar-benar
-  lintas-channel.
+  `runtime-api.ts` miliknya sendiri; konsumen core sebaiknya menggunakan barrel
+  lokal Plugin tersebut atau menambahkan kontrak SDK generik yang sempit ketika kebutuhan
+  benar-benar lintas saluran.
 
-Sekumpulan kecil seam helper plugin bawaan masih muncul di peta ekspor yang dihasilkan
-ketika memiliki penggunaan owner yang terlacak. Seam tersebut hanya ada untuk pemeliharaan
-plugin bawaan dan bukan jalur impor yang direkomendasikan untuk plugin pihak ketiga baru.
+Sekumpulan kecil seam helper Plugin bawaan masih muncul dalam peta ekspor yang
+dihasilkan ketika memiliki penggunaan pemilik yang terlacak. Seam tersebut hanya ada
+untuk pemeliharaan Plugin bawaan dan bukan jalur impor yang direkomendasikan untuk
+Plugin pihak ketiga baru.
 
 `openclaw/plugin-sdk/discord` dan `openclaw/plugin-sdk/telegram-account` juga
-dipertahankan sebagai facade kompatibilitas deprecated untuk penggunaan owner yang terlacak. Jangan
-menyalin jalur impor tersebut ke plugin baru; gunakan helper runtime yang diinjeksi dan
-subpath SDK channel generik sebagai gantinya.
+dipertahankan sebagai facade kompatibilitas deprecated untuk penggunaan pemilik yang
+terlacak. Jangan salin jalur impor tersebut ke Plugin baru; gunakan helper runtime
+yang diinjeksi dan subpath SDK saluran generik sebagai gantinya.
 </Warning>
 
 ## Referensi subpath
 
-Plugin SDK diekspos sebagai sekumpulan subpath sempit yang dikelompokkan berdasarkan area (entri plugin,
-channel, provider, auth, runtime, capability, memory, dan helper plugin bawaan
-yang dicadangkan). Untuk katalog lengkap, yang dikelompokkan dan ditautkan, lihat
+Plugin SDK diekspos sebagai sekumpulan subpath sempit yang dikelompokkan menurut area (entry
+Plugin, saluran, penyedia, auth, runtime, kapabilitas, memori, dan helper
+Plugin bawaan yang dicadangkan). Untuk katalog lengkap — dikelompokkan dan ditautkan — lihat
 [Subpath Plugin SDK](/id/plugins/sdk-subpaths).
 
 Inventaris entrypoint compiler berada di
 `scripts/lib/plugin-sdk-entrypoints.json`; ekspor paket dihasilkan dari
-subset publik setelah mengurangi subpath pengujian/internal lokal repo yang tercantum di
+subset publik setelah mengurangkan subpath repo-lokal pengujian/internal yang tercantum di
 `scripts/lib/plugin-sdk-private-local-only-subpaths.json`. Jalankan
-`pnpm plugin-sdk:surface` untuk mengaudit jumlah ekspor publik. Subpath publik deprecated
-yang sudah cukup lama dan tidak digunakan oleh kode produksi ekstensi bawaan
-dilacak di `scripts/lib/plugin-sdk-deprecated-public-subpaths.json`; barrel re-export
-deprecated yang luas dilacak di
+`pnpm plugin-sdk:surface` untuk mengaudit jumlah ekspor publik. Subpath publik
+deprecated yang sudah cukup lama dan tidak digunakan oleh kode produksi ekstensi bawaan
+dilacak di `scripts/lib/plugin-sdk-deprecated-public-subpaths.json`; barrel
+re-ekspor deprecated yang luas dilacak di
 `scripts/lib/plugin-sdk-deprecated-barrel-subpaths.json`.
 
 ## API pendaftaran
 
-Callback `register(api)` menerima objek `OpenClawPluginApi` dengan metode
-berikut:
+Callback `register(api)` menerima objek `OpenClawPluginApi` dengan
+metode berikut:
 
-### Pendaftaran capability
+### Pendaftaran kapabilitas
 
-| Metode                                           | Yang didaftarkan                       |
+| Metode                                           | Yang didaftarkan                     |
 | ------------------------------------------------ | ------------------------------------- |
 | `api.registerProvider(...)`                      | Inferensi teks (LLM)                  |
-| `api.registerAgentHarness(...)`                  | Eksekutor agen level rendah eksperimental |
+| `api.registerAgentHarness(...)`                  | Executor agen level rendah eksperimental |
 | `api.registerCliBackend(...)`                    | Backend inferensi CLI lokal           |
-| `api.registerChannel(...)`                       | Channel perpesanan                    |
-| `api.registerSpeechProvider(...)`                | Sintesis text-to-speech / STT         |
+| `api.registerChannel(...)`                       | Saluran pesan                         |
+| `api.registerEmbeddingProvider(...)`             | Penyedia embedding vektor yang dapat digunakan ulang    |
+| `api.registerSpeechProvider(...)`                | Sintesis text-to-speech / STT        |
 | `api.registerRealtimeTranscriptionProvider(...)` | Transkripsi realtime streaming        |
-| `api.registerRealtimeVoiceProvider(...)`         | Sesi suara realtime duplex            |
+| `api.registerRealtimeVoiceProvider(...)`         | Sesi suara realtime dupleks           |
 | `api.registerMediaUnderstandingProvider(...)`    | Analisis gambar/audio/video           |
 | `api.registerImageGenerationProvider(...)`       | Pembuatan gambar                      |
 | `api.registerMusicGenerationProvider(...)`       | Pembuatan musik                       |
 | `api.registerVideoGenerationProvider(...)`       | Pembuatan video                       |
-| `api.registerWebFetchProvider(...)`              | Provider fetch / scrape web           |
+| `api.registerWebFetchProvider(...)`              | Penyedia fetch / scrape web           |
 | `api.registerWebSearchProvider(...)`             | Pencarian web                         |
+
+Penyedia embedding yang didaftarkan dengan `api.registerEmbeddingProvider(...)` juga harus
+dicantumkan dalam `contracts.embeddingProviders` di manifes Plugin. Ini
+adalah permukaan embedding generik untuk pembuatan vektor yang dapat digunakan ulang. Pencarian memori
+dapat memakai permukaan penyedia generik ini. Seam lama
+`api.registerMemoryEmbeddingProvider(...)` dan
+`contracts.memoryEmbeddingProviders` adalah kompatibilitas deprecated sementara
+penyedia khusus memori yang ada bermigrasi.
+
+Penyedia khusus memori yang masih mengekspos runtime `batchEmbed(...)` tetap berada pada
+kontrak batching per file yang ada kecuali runtime mereka secara eksplisit menetapkan
+`sourceWideBatchEmbed: true`. Opt-in tersebut memungkinkan host memori mengirim chunk dari
+beberapa file memori kotor dan sumber yang diaktifkan dalam satu panggilan `batchEmbed(...)`
+hingga batas batch host. Adapter batch yang mengunggah file permintaan JSONL harus
+membagi pekerjaan penyedia sebelum batas ukuran unggah dan juga batas jumlah permintaannya.
+Penyedia harus mengembalikan satu embedding per chunk input dalam urutan yang sama dengan
+`batch.chunks`; hilangkan flag tersebut ketika penyedia mengharapkan batch lokal file atau
+tidak dapat mempertahankan urutan input lintas pekerjaan source-wide yang lebih besar.
 
 ### Alat dan perintah
 
-| Metode                         | Yang didaftarkan                              |
-| ------------------------------ | --------------------------------------------- |
-| `api.registerTool(tool, opts?)` | Alat agen (wajib atau `{ optional: true }`)   |
-| `api.registerCommand(def)`      | Perintah kustom (melewati LLM)                |
+Gunakan [`defineToolPlugin`](/id/plugins/tool-plugins) untuk Plugin sederhana yang hanya berisi alat
+dengan nama alat tetap. Gunakan `api.registerTool(...)` langsung untuk Plugin campuran
+atau pendaftaran alat yang sepenuhnya dinamis.
 
-Perintah plugin dapat menetapkan `agentPromptGuidance` saat agen memerlukan petunjuk routing
-singkat milik perintah. Pertahankan teks tersebut tentang perintah itu sendiri; jangan tambahkan
-kebijakan khusus provider atau plugin ke builder prompt core.
+| Metode                          | Yang didaftarkan                             |
+| ------------------------------- | --------------------------------------------- |
+| `api.registerTool(tool, opts?)` | Alat agen (wajib atau `{ optional: true }`) |
+| `api.registerCommand(def)`      | Perintah kustom (melewati LLM)             |
+
+Perintah Plugin dapat menetapkan `agentPromptGuidance` ketika agen memerlukan petunjuk routing
+singkat milik perintah. Jaga agar teks tersebut membahas perintah itu sendiri; jangan tambahkan
+kebijakan khusus penyedia atau Plugin ke builder prompt core.
+
+Entri panduan dapat berupa string legacy, yang berlaku untuk setiap permukaan prompt, atau
+entri terstruktur:
+
+```ts
+agentPromptGuidance: [
+  "Global command hint.",
+  { text: "Only show this in the main OpenClaw prompt.", surfaces: ["openclaw_main"] },
+];
+```
+
+`surfaces` terstruktur dapat menyertakan `openclaw_main`, `codex_app_server`,
+`cli_backend`, `acp_backend`, atau `subagent`. `pi_main` tetap menjadi alias deprecated
+untuk `openclaw_main`. Hilangkan `surfaces` untuk panduan yang sengaja berlaku di semua permukaan. Jangan
+meneruskan array `surfaces` kosong; itu ditolak agar kehilangan cakupan yang tidak disengaja
+tidak menjadi teks prompt global.
+
+Instruksi developer app-server Codex native lebih ketat daripada permukaan prompt lain:
+hanya panduan yang secara eksplisit dicakup ke `codex_app_server` yang dipromosikan ke
+lane prioritas lebih tinggi tersebut. Panduan string legacy dan panduan terstruktur tanpa cakupan
+tetap tersedia untuk permukaan prompt non-Codex demi kompatibilitas.
 
 ### Infrastruktur
 
-| Metode                                         | Yang didaftarkan                         |
+| Metode                                         | Yang didaftarkan                       |
 | ---------------------------------------------- | --------------------------------------- |
-| `api.registerHook(events, handler, opts?)`     | Hook peristiwa                          |
+| `api.registerHook(events, handler, opts?)`     | Hook peristiwa                              |
 | `api.registerHttpRoute(params)`                | Endpoint HTTP Gateway                   |
 | `api.registerGatewayMethod(name, handler)`     | Metode RPC Gateway                      |
-| `api.registerGatewayDiscoveryService(service)` | Pengiklan discovery Gateway lokal      |
-| `api.registerCli(registrar, opts?)`            | Subperintah CLI                         |
+| `api.registerGatewayDiscoveryService(service)` | Advertiser discovery Gateway lokal      |
+| `api.registerCli(registrar, opts?)`            | Subperintah CLI                          |
 | `api.registerNodeCliFeature(registrar, opts?)` | CLI fitur Node di bawah `openclaw nodes` |
-| `api.registerService(service)`                 | Layanan latar belakang                  |
-| `api.registerInteractiveHandler(registration)` | Handler interaktif                      |
-| `api.registerAgentToolResultMiddleware(...)`   | Middleware tool-result runtime          |
-| `api.registerMemoryPromptSupplement(builder)`  | Bagian prompt tambahan yang berdekatan dengan memory |
-| `api.registerMemoryCorpusSupplement(adapter)`  | Korpus pencarian/baca memory tambahan   |
+| `api.registerService(service)`                 | Layanan latar belakang                      |
+| `api.registerInteractiveHandler(registration)` | Handler interaktif                     |
+| `api.registerAgentToolResultMiddleware(...)`   | Middleware hasil alat runtime          |
+| `api.registerMemoryPromptSupplement(builder)`  | Bagian prompt tambahan yang berdekatan dengan memori |
+| `api.registerMemoryCorpusSupplement(adapter)`  | Korpus pencarian/baca memori tambahan      |
 
-### Hook host untuk plugin workflow
+### Hook host untuk Plugin workflow
 
-Hook host adalah seam SDK untuk plugin yang perlu berpartisipasi dalam siklus hidup host,
-bukan hanya menambahkan provider, channel, atau alat. Hook ini adalah kontrak
-generik; Plan Mode dapat menggunakannya, begitu juga workflow persetujuan,
-gate kebijakan workspace, monitor latar belakang, wizard setup, dan plugin pendamping UI.
+Hook host adalah seam SDK untuk Plugin yang perlu berpartisipasi dalam siklus hidup
+host, bukan hanya menambahkan penyedia, saluran, atau alat. Hook ini adalah
+kontrak generik; Plan Mode dapat menggunakannya, tetapi workflow persetujuan,
+gerbang kebijakan workspace, monitor latar belakang, wizard setup, dan Plugin pendamping UI
+juga dapat menggunakannya.
 
-| Metode                                                                               | Kontrak yang dimilikinya                                                                                                          |
+| Metode                                                                               | Kontrak yang dimilikinya                                                                                                           |
 | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
-| `api.session.state.registerSessionExtension(...)`                                    | State sesi milik plugin yang kompatibel dengan JSON dan diproyeksikan melalui sesi Gateway                                         |
-| `api.session.workflow.enqueueNextTurnInjection(...)`                                 | Konteks durable exactly-once yang diinjeksi ke giliran agen berikutnya untuk satu sesi                                             |
-| `api.registerTrustedToolPolicy(...)`                                                 | Kebijakan alat pre-plugin bawaan/tepercaya yang dapat memblokir atau menulis ulang param alat                                     |
-| `api.registerToolMetadata(...)`                                                      | Metadata tampilan katalog alat tanpa mengubah implementasi alat                                                                   |
-| `api.registerCommand(...)`                                                           | Perintah plugin terscope; hasil perintah dapat menetapkan `continueAgent: true`; perintah native Discord mendukung `descriptionLocalizations` |
-| `api.session.controls.registerControlUiDescriptor(...)`                              | Descriptor kontribusi UI kontrol untuk permukaan sesi, alat, run, atau pengaturan                                                 |
-| `api.lifecycle.registerRuntimeLifecycle(...)`                                        | Callback pembersihan untuk resource runtime milik plugin pada jalur reset/delete/reload                                           |
-| `api.agent.events.registerAgentEventSubscription(...)`                               | Subscription peristiwa yang disanitasi untuk state workflow dan monitor                                                           |
-| `api.runContext.setRunContext(...)` / `getRunContext(...)` / `clearRunContext(...)`  | State scratch per-run plugin yang dibersihkan pada siklus hidup run terminal                                                      |
-| `api.session.workflow.registerSessionSchedulerJob(...)`                              | Metadata pembersihan untuk pekerjaan scheduler milik plugin; tidak menjadwalkan pekerjaan atau membuat record tugas               |
-| `api.session.workflow.sendSessionAttachment(...)`                                    | Pengiriman lampiran file yang dimediasi host khusus bawaan ke rute direct-outbound sesi aktif                                     |
-| `api.session.workflow.scheduleSessionTurn(...)` / `unscheduleSessionTurnsByTag(...)` | Giliran sesi terjadwal berbasis Cron khusus bawaan plus pembersihan berbasis tag                                                  |
-| `api.session.controls.registerSessionAction(...)`                                    | Tindakan sesi bertipe yang dapat dikirim klien melalui Gateway                                                                    |
+| `api.session.state.registerSessionExtension(...)`                                    | State sesi yang dimiliki Plugin, kompatibel dengan JSON, dan diproyeksikan melalui sesi Gateway                                    |
+| `api.session.workflow.enqueueNextTurnInjection(...)`                                 | Konteks tahan lama tepat-sekali yang disuntikkan ke giliran agen berikutnya untuk satu sesi                                        |
+| `api.registerTrustedToolPolicy(...)`                                                 | Kebijakan alat tepercaya pra-Plugin yang dibatasi manifest dan dapat memblokir atau menulis ulang parameter alat                  |
+| `api.registerToolMetadata(...)`                                                      | Metadata tampilan katalog alat tanpa mengubah implementasi alat                                                                    |
+| `api.registerCommand(...)`                                                           | Perintah Plugin tercakup; hasil perintah dapat menetapkan `continueAgent: true`; perintah native Discord mendukung `descriptionLocalizations` |
+| `api.session.controls.registerControlUiDescriptor(...)`                              | Deskriptor kontribusi UI Kontrol untuk permukaan sesi, alat, run, atau pengaturan                                                  |
+| `api.lifecycle.registerRuntimeLifecycle(...)`                                        | Callback pembersihan untuk resource runtime yang dimiliki Plugin pada jalur reset/hapus/muat ulang                                 |
+| `api.agent.events.registerAgentEventSubscription(...)`                               | Langganan peristiwa yang disanitasi untuk state workflow dan monitor                                                               |
+| `api.runContext.setRunContext(...)` / `getRunContext(...)` / `clearRunContext(...)`  | State scratch Plugin per-run yang dibersihkan pada siklus hidup run terminal                                                       |
+| `api.session.workflow.registerSessionSchedulerJob(...)`                              | Metadata pembersihan untuk pekerjaan penjadwal yang dimiliki Plugin; tidak menjadwalkan pekerjaan atau membuat rekaman tugas       |
+| `api.session.workflow.sendSessionAttachment(...)`                                    | Pengiriman lampiran file yang dimediasi host dan hanya-bundled ke rute sesi direct-outbound aktif                                  |
+| `api.session.workflow.scheduleSessionTurn(...)` / `unscheduleSessionTurnsByTag(...)` | Giliran sesi terjadwal berbasis Cron yang hanya-bundled plus pembersihan berbasis tag                                              |
+| `api.session.controls.registerSessionAction(...)`                                    | Aksi sesi bertipe yang dapat dikirim klien melalui Gateway                                                                         |
 
-Gunakan namespace yang dikelompokkan untuk kode plugin baru:
+Gunakan namespace terkelompok untuk kode Plugin baru:
 
 - `api.session.state.registerSessionExtension(...)`
 - `api.session.workflow.enqueueNextTurnInjection(...)`
@@ -176,72 +222,79 @@ Gunakan namespace yang dikelompokkan untuk kode plugin baru:
 - `api.runContext.setRunContext(...)` / `getRunContext(...)` / `clearRunContext(...)`
 - `api.lifecycle.registerRuntimeLifecycle(...)`
 
-Metode flat yang setara tetap tersedia sebagai alias kompatibilitas deprecated
-untuk plugin yang sudah ada. Jangan tambahkan kode plugin baru yang memanggil
-`api.registerSessionExtension`, `api.enqueueNextTurnInjection`,
-`api.registerControlUiDescriptor`, `api.registerRuntimeLifecycle`,
-`api.registerAgentEventSubscription`, `api.emitAgentEvent`,
-`api.setRunContext`, `api.getRunContext`, `api.clearRunContext`,
-`api.registerSessionSchedulerJob`, `api.registerSessionAction`,
-`api.sendSessionAttachment`, `api.scheduleSessionTurn`, atau
-`api.unscheduleSessionTurnsByTag` secara langsung.
+Metode datar yang ekuivalen tetap tersedia sebagai alias kompatibilitas yang
+tidak digunakan lagi untuk Plugin yang sudah ada. Jangan tambahkan kode Plugin
+baru yang memanggil `api.registerSessionExtension`,
+`api.enqueueNextTurnInjection`, `api.registerControlUiDescriptor`,
+`api.registerRuntimeLifecycle`, `api.registerAgentEventSubscription`,
+`api.emitAgentEvent`, `api.setRunContext`, `api.getRunContext`,
+`api.clearRunContext`, `api.registerSessionSchedulerJob`,
+`api.registerSessionAction`, `api.sendSessionAttachment`,
+`api.scheduleSessionTurn`, atau `api.unscheduleSessionTurnsByTag` secara
+langsung.
 
-`scheduleSessionTurn(...)` adalah kemudahan dalam cakupan sesi di atas penjadwal
-Cron Gateway. Cron memiliki pengaturan waktu dan membuat catatan tugas latar
-belakang saat turn berjalan; Plugin SDK hanya membatasi sesi target, penamaan
-milik Plugin, dan pembersihan. Gunakan `api.runtime.tasks.managedFlows` di dalam
-turn terjadwal ketika pekerjaan itu sendiri membutuhkan status Task Flow
+`scheduleSessionTurn(...)` adalah kemudahan bercakupan sesi di atas penjadwal
+Cron Gateway. Cron memiliki timing dan membuat rekaman tugas latar belakang saat
+giliran dijalankan; Plugin SDK hanya membatasi sesi target, penamaan yang
+dimiliki Plugin, dan pembersihan. Gunakan `api.runtime.tasks.managedFlows` di
+dalam giliran terjadwal saat pekerjaan itu sendiri membutuhkan state Task Flow
 multi-langkah yang tahan lama.
 
-Kontrak sengaja memisahkan otoritas:
+Kontrak ini sengaja memisahkan otoritas:
 
 - Plugin eksternal dapat memiliki ekstensi sesi, deskriptor UI, perintah,
-  metadata alat, injeksi turn berikutnya, dan hook normal.
+  metadata alat, injeksi giliran berikutnya, dan hook normal.
 - Kebijakan alat tepercaya berjalan sebelum hook `before_tool_call` biasa dan
-  hanya bawaan karena ikut serta dalam kebijakan keselamatan host.
-- Kepemilikan perintah cadangan hanya untuk bawaan. Plugin eksternal harus
-  menggunakan nama perintah atau alias mereka sendiri.
-- `allowPromptInjection=false` menonaktifkan hook yang mengubah prompt termasuk
+  dipercaya host. Kebijakan bundled berjalan lebih dulu; kebijakan
+  Plugin-terpasang memerlukan pengaktifan eksplisit plus id lokalnya dalam
+  `contracts.trustedToolPolicies`, dan berjalan berikutnya sesuai urutan muat
+  Plugin. Id kebijakan dicakup ke Plugin yang mendaftarkannya.
+- Kepemilikan perintah yang dicadangkan hanya untuk bundled. Plugin eksternal
+  harus menggunakan nama perintah atau aliasnya sendiri.
+- `allowPromptInjection=false` menonaktifkan hook yang memutasi prompt termasuk
   `agent_turn_prepare`, `before_prompt_build`, `heartbeat_prompt_contribution`,
-  field prompt dari `before_agent_start` lama, dan
+  field prompt dari `before_agent_start` legacy, dan
   `enqueueNextTurnInjection`.
 
 Contoh konsumen non-Plan:
 
-| Arketipe Plugin             | Hook yang digunakan                                                                                                                             |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Alur kerja persetujuan            | Ekstensi sesi, kelanjutan perintah, injeksi turn berikutnya, deskriptor UI                                                            |
-| Gerbang kebijakan anggaran/workspace | Kebijakan alat tepercaya, metadata alat, proyeksi sesi                                                                                 |
-| Pemantau siklus hidup latar belakang | Pembersihan siklus hidup runtime, langganan peristiwa agen, kepemilikan/pembersihan penjadwal sesi, kontribusi prompt Heartbeat, deskriptor UI |
-| Wizard penyiapan atau onboarding   | Ekstensi sesi, perintah bercakupan, deskriptor Control UI                                                                              |
+| Arketipe Plugin            | Hook yang digunakan                                                                                                                   |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Workflow persetujuan       | Ekstensi sesi, kelanjutan perintah, injeksi giliran berikutnya, deskriptor UI                                                         |
+| Gerbang kebijakan anggaran/workspace | Kebijakan alat tepercaya, metadata alat, proyeksi sesi                                                                               |
+| Monitor siklus hidup latar belakang | Pembersihan siklus hidup runtime, langganan peristiwa agen, kepemilikan/pembersihan penjadwal sesi, kontribusi prompt Heartbeat, deskriptor UI |
+| Wizard penyiapan atau onboarding | Ekstensi sesi, perintah tercakup, deskriptor UI Kontrol                                                                              |
 
 <Note>
-  Namespace admin inti cadangan (`config.*`, `exec.approvals.*`, `wizard.*`,
-  `update.*`) selalu tetap `operator.admin`, bahkan jika Plugin mencoba menetapkan
-  cakupan metode Gateway yang lebih sempit. Lebih baik gunakan prefiks khusus
-  Plugin untuk metode milik Plugin.
+  Namespace admin inti yang dicadangkan (`config.*`, `exec.approvals.*`, `wizard.*`,
+  `update.*`) selalu tetap `operator.admin`, bahkan jika sebuah Plugin mencoba
+  menetapkan cakupan metode gateway yang lebih sempit. Utamakan prefiks khusus
+  Plugin untuk metode yang dimiliki Plugin.
 </Note>
 
 <Accordion title="When to use tool-result middleware">
-  Plugin bawaan dapat menggunakan `api.registerAgentToolResultMiddleware(...)`
-  ketika mereka perlu menulis ulang hasil alat setelah eksekusi dan sebelum
-  runtime memasukkan hasil itu kembali ke model. Ini adalah seam tepercaya yang
-  netral runtime untuk pereduksi keluaran asinkron seperti tokenjuice.
+  Plugin bundled dan Plugin terpasang yang diaktifkan secara eksplisit dengan
+  kontrak manifest yang cocok dapat menggunakan
+  `api.registerAgentToolResultMiddleware(...)` saat perlu menulis ulang hasil
+  alat setelah eksekusi dan sebelum runtime memasukkan hasil tersebut kembali
+  ke model. Ini adalah seam tepercaya yang netral runtime untuk reducer output
+  async seperti tokenjuice.
 
-Plugin bawaan harus mendeklarasikan `contracts.agentToolResultMiddleware` untuk
-setiap runtime yang ditargetkan, misalnya `["pi", "codex"]`. Plugin eksternal
-tidak dapat mendaftarkan middleware ini; pertahankan hook Plugin OpenClaw normal
-untuk pekerjaan yang tidak membutuhkan timing hasil alat pra-model. Jalur lama
-pendaftaran factory ekstensi tertanam khusus Pi telah dihapus.
+Plugin harus mendeklarasikan `contracts.agentToolResultMiddleware` untuk setiap
+runtime target, misalnya `["openclaw", "codex"]`. Plugin terpasang tanpa
+kontrak tersebut, atau tanpa pengaktifan eksplisit, tidak dapat mendaftarkan
+middleware ini; pertahankan hook Plugin OpenClaw normal untuk pekerjaan yang
+tidak membutuhkan timing hasil alat pra-model. Jalur pendaftaran factory
+ekstensi lama yang hanya untuk embedded-runner telah dihapus.
 </Accordion>
 
-### Pendaftaran penemuan Gateway
+### Pendaftaran discovery Gateway
 
 `api.registerGatewayDiscoveryService(...)` memungkinkan Plugin mengiklankan
-Gateway aktif pada transport penemuan lokal seperti mDNS/Bonjour. OpenClaw
-memanggil layanan selama startup Gateway ketika penemuan lokal diaktifkan,
+Gateway aktif pada transport discovery lokal seperti mDNS/Bonjour. OpenClaw
+memanggil layanan selama startup Gateway saat discovery lokal diaktifkan,
 meneruskan port Gateway saat ini dan data petunjuk TXT non-rahasia, lalu
-memanggil handler `stop` yang dikembalikan saat shutdown Gateway.
+memanggil handler `stop` yang dikembalikan selama shutdown Gateway.
 
 ```typescript
 api.registerGatewayDiscoveryService({
@@ -257,9 +310,9 @@ api.registerGatewayDiscoveryService({
 });
 ```
 
-Plugin penemuan Gateway tidak boleh memperlakukan nilai TXT yang diiklankan
-sebagai rahasia atau autentikasi. Penemuan adalah petunjuk routing; autentikasi
-Gateway dan penyematan TLS tetap memiliki kepercayaan.
+Plugin discovery Gateway tidak boleh memperlakukan nilai TXT yang diiklankan
+sebagai rahasia atau autentikasi. Discovery adalah petunjuk routing; autentikasi
+Gateway dan TLS pinning tetap memiliki trust.
 
 ### Metadata pendaftaran CLI
 
@@ -268,17 +321,18 @@ Gateway dan penyematan TLS tetap memiliki kepercayaan.
 - `commands`: nama perintah eksplisit yang dimiliki oleh registrar
 - `descriptors`: deskriptor perintah waktu-parse yang digunakan untuk bantuan
   CLI, routing, dan pendaftaran CLI Plugin lazy
-- `parentPath`: jalur perintah induk opsional untuk grup perintah bersarang,
+- `parentPath`: path perintah induk opsional untuk grup perintah bertingkat,
   seperti `["nodes"]`
 
-Untuk fitur node berpasangan, lebih baik gunakan
+Untuk fitur paired-node, utamakan
 `api.registerNodeCliFeature(registrar, opts?)`. Ini adalah wrapper kecil di
-sekitar `api.registerCli(..., { parentPath: ["nodes"] })` dan membuat perintah
-seperti `openclaw nodes canvas` menjadi fitur node eksplisit milik Plugin.
+sekitar `api.registerCli(..., { parentPath: ["nodes"] })` dan menjadikan
+perintah seperti `openclaw nodes canvas` sebagai fitur node yang dimiliki
+Plugin secara eksplisit.
 
-Jika Anda ingin perintah Plugin tetap dimuat lazy di jalur CLI root normal,
-sediakan `descriptors` yang mencakup setiap root perintah tingkat atas yang
-diekspos oleh registrar tersebut.
+Jika Anda ingin perintah Plugin tetap dimuat secara lazy di jalur CLI root
+normal, sediakan `descriptors` yang mencakup setiap root perintah tingkat atas
+yang diekspos oleh registrar tersebut.
 
 ```typescript
 api.registerCli(
@@ -298,7 +352,8 @@ api.registerCli(
 );
 ```
 
-Perintah bersarang menerima perintah induk yang telah diresolve sebagai `program`:
+Perintah bertingkat menerima perintah induk yang terselesaikan sebagai
+`program`:
 
 ```typescript
 api.registerCli(
@@ -319,71 +374,79 @@ api.registerCli(
 );
 ```
 
-Gunakan `commands` saja hanya ketika Anda tidak membutuhkan pendaftaran CLI root
-lazy. Jalur kompatibilitas eager itu tetap didukung, tetapi tidak memasang
-placeholder berbasis deskriptor untuk pemuatan lazy waktu-parse.
+Gunakan `commands` saja hanya ketika Anda tidak membutuhkan pendaftaran CLI
+root lazy. Jalur kompatibilitas eager tersebut tetap didukung, tetapi tidak
+memasang placeholder berbasis deskriptor untuk pemuatan lazy waktu-parse.
 
 ### Pendaftaran backend CLI
 
 `api.registerCliBackend(...)` memungkinkan Plugin memiliki konfigurasi default
-untuk backend CLI AI lokal seperti `codex-cli`.
+untuk backend CLI AI lokal seperti `claude-cli` atau `my-cli`.
 
-- `id` backend menjadi prefiks penyedia dalam referensi model seperti `codex-cli/gpt-5`.
-- `config` backend menggunakan bentuk yang sama dengan `agents.defaults.cliBackends.<id>`.
+- `id` backend menjadi prefiks provider dalam referensi model seperti `my-cli/gpt-5`.
+- `config` backend menggunakan bentuk yang sama seperti `agents.defaults.cliBackends.<id>`.
 - Konfigurasi pengguna tetap menang. OpenClaw menggabungkan `agents.defaults.cliBackends.<id>` di atas
   default Plugin sebelum menjalankan CLI.
-- Gunakan `normalizeConfig` ketika backend membutuhkan penulisan ulang
-  kompatibilitas setelah penggabungan (misalnya menormalkan bentuk flag lama).
-- Gunakan `resolveExecutionArgs` untuk penulisan ulang argv bercakupan permintaan
-  yang termasuk dialek CLI, seperti memetakan tingkat berpikir OpenClaw ke flag
-  effort native.
+- Gunakan `normalizeConfig` saat backend membutuhkan penulisan ulang
+  kompatibilitas setelah penggabungan (misalnya menormalisasi bentuk flag lama).
+- Gunakan `resolveExecutionArgs` untuk penulisan ulang argv bercakupan
+  permintaan yang termasuk dalam dialek CLI, seperti memetakan level berpikir
+  OpenClaw ke flag effort native. Hook menerima `ctx.executionMode`; gunakan
+  `"side-question"` untuk menambahkan flag isolasi backend-native untuk
+  panggilan `/btw` efemeral. Jika flag tersebut secara andal menonaktifkan alat
+  native untuk CLI yang sebaliknya selalu aktif, deklarasikan juga
+  `sideQuestionToolMode: "disabled"`.
 
-Untuk panduan penulisan menyeluruh, lihat
+Untuk panduan penulisan end-to-end, lihat
 [Plugin backend CLI](/id/plugins/cli-backend-plugins).
 
 ### Slot eksklusif
 
-| Metode                                     | Yang didaftarkan                                                                                                                                         |
-| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `api.registerContextEngine(id, factory)`   | Mesin konteks (satu aktif pada satu waktu). Callback `assemble()` menerima `availableTools` dan `citationsMode` sehingga mesin dapat menyesuaikan tambahan prompt. |
-| `api.registerMemoryCapability(capability)` | Kapabilitas memori terpadu                                                                                                                                 |
-| `api.registerMemoryPromptSection(builder)` | Builder bagian prompt memori                                                                                                                             |
-| `api.registerMemoryFlushPlan(resolver)`    | Resolver rencana flush memori                                                                                                                                |
-| `api.registerMemoryRuntime(runtime)`       | Adapter runtime memori                                                                                                                                    |
+| Metode                                     | Yang didaftarkannya                                                                                                                                                                                   |
+| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `api.registerContextEngine(id, factory)`   | Mesin konteks (satu aktif pada satu waktu). Callback siklus hidup menerima `runtimeSettings` saat host dapat menyediakan diagnostik model/penyedia/mode; mesin ketat yang lebih lama dicoba ulang tanpa kunci tersebut. |
+| `api.registerMemoryCapability(capability)` | Kapabilitas memori terpadu                                                                                                                                                                            |
+| `api.registerMemoryPromptSection(builder)` | Builder bagian prompt memori                                                                                                                                                                          |
+| `api.registerMemoryFlushPlan(resolver)`    | Resolver rencana flush memori                                                                                                                                                                         |
+| `api.registerMemoryRuntime(runtime)`       | Adapter runtime memori                                                                                                                                                                                |
 
-### Adapter embedding memori
+### Adapter embedding memori yang tidak digunakan lagi
 
-| Metode                                         | Yang didaftarkan                              |
-| ---------------------------------------------- | ---------------------------------------------- |
-| `api.registerMemoryEmbeddingProvider(adapter)` | Adapter embedding memori untuk Plugin aktif |
+| Metode                                         | Yang didaftarkannya                              |
+| ---------------------------------------------- | ------------------------------------------------ |
+| `api.registerMemoryEmbeddingProvider(adapter)` | Adapter embedding memori untuk plugin aktif      |
 
-- `registerMemoryCapability` adalah API Plugin memori eksklusif yang disarankan.
+- `registerMemoryCapability` adalah API plugin memori eksklusif yang lebih disarankan.
 - `registerMemoryCapability` juga dapat mengekspos `publicArtifacts.listArtifacts(...)`
-  sehingga Plugin pendamping dapat menggunakan artefak memori yang diekspor melalui
-  `openclaw/plugin-sdk/memory-host-core` alih-alih menjangkau tata letak privat
-  Plugin memori tertentu.
+  sehingga plugin pendamping dapat mengonsumsi artefak memori yang diekspor melalui
+  `openclaw/plugin-sdk/memory-host-core` alih-alih mengakses tata letak privat
+  plugin memori tertentu.
 - `registerMemoryPromptSection`, `registerMemoryFlushPlan`, dan
-  `registerMemoryRuntime` adalah API Plugin memori eksklusif yang kompatibel lama.
-- `MemoryFlushPlan.model` dapat menyematkan turn flush ke referensi `provider/model`
-  persis, seperti `ollama/qwen3:8b`, tanpa mewarisi rantai fallback aktif.
-- `registerMemoryEmbeddingProvider` memungkinkan Plugin memori aktif mendaftarkan
-  satu atau beberapa id adapter embedding (misalnya `openai`, `gemini`, atau id
-  kustom yang ditentukan Plugin).
-- Konfigurasi pengguna seperti `agents.defaults.memorySearch.provider` dan
-  `agents.defaults.memorySearch.fallback` diresolve terhadap id adapter yang
-  terdaftar tersebut.
+  `registerMemoryRuntime` adalah API plugin memori eksklusif yang kompatibel dengan legacy.
+- `MemoryFlushPlan.model` dapat menyematkan giliran flush ke referensi `provider/model`
+  yang tepat, seperti `ollama/qwen3:8b`, tanpa mewarisi rantai fallback aktif.
+- `registerMemoryEmbeddingProvider` tidak digunakan lagi. Penyedia embedding baru
+  sebaiknya menggunakan `api.registerEmbeddingProvider(...)` dan
+  `contracts.embeddingProviders`.
+- Penyedia khusus memori yang sudah ada tetap berfungsi selama jendela migrasi,
+  tetapi laporan inspeksi plugin melaporkan ini sebagai utang kompatibilitas untuk
+  plugin yang tidak dibundel.
 
 ### Peristiwa dan siklus hidup
 
-| Metode                                       | Yang dilakukan                  |
+| Metode                                       | Fungsinya                     |
 | -------------------------------------------- | ----------------------------- |
-| `api.on(hookName, handler, opts?)`           | Hook siklus hidup bertipe          |
-| `api.onConversationBindingResolved(handler)` | Callback binding percakapan |
+| `api.on(hookName, handler, opts?)`           | Hook siklus hidup bertipe     |
+| `api.onConversationBindingResolved(handler)` | Callback binding percakapan   |
 
-Lihat [Hook Plugin](/id/plugins/hooks) untuk contoh, nama hook umum, dan semantik
+Lihat [Hook plugin](/id/plugins/hooks) untuk contoh, nama hook umum, dan semantik
 guard.
 
 ### Semantik keputusan hook
+
+`before_install` adalah hook siklus hidup runtime plugin, bukan permukaan kebijakan
+instal operator. Gunakan `security.installPolicy` saat keputusan izinkan/blokir harus
+mencakup jalur instal atau pembaruan yang didukung CLI dan Gateway.
 
 - `before_tool_call`: mengembalikan `{ block: true }` bersifat terminal. Setelah handler mana pun menetapkannya, handler berprioritas lebih rendah dilewati.
 - `before_tool_call`: mengembalikan `{ block: false }` diperlakukan sebagai tanpa keputusan (sama seperti menghilangkan `block`), bukan sebagai override.
@@ -392,31 +455,31 @@ guard.
 - `reply_dispatch`: mengembalikan `{ handled: true, ... }` bersifat terminal. Setelah handler mana pun mengklaim dispatch, handler berprioritas lebih rendah dan jalur dispatch model default dilewati.
 - `message_sending`: mengembalikan `{ cancel: true }` bersifat terminal. Setelah handler mana pun menetapkannya, handler berprioritas lebih rendah dilewati.
 - `message_sending`: mengembalikan `{ cancel: false }` diperlakukan sebagai tanpa keputusan (sama seperti menghilangkan `cancel`), bukan sebagai override.
-- `message_received`: gunakan field `threadId` bertipe ketika Anda membutuhkan routing thread/topik masuk. Pertahankan `metadata` untuk tambahan khusus kanal.
-- `message_sending`: gunakan field routing bertipe `replyToId` / `threadId` sebelum fallback ke `metadata` khusus kanal.
-- `gateway_start`: gunakan `ctx.config`, `ctx.workspaceDir`, dan `ctx.getCron?.()` untuk status startup milik Gateway alih-alih bergantung pada hook internal `gateway:startup`.
-- `cron_changed`: amati perubahan siklus hidup cron milik Gateway. Gunakan `event.job?.state?.nextRunAtMs` dan `ctx.getCron?.()` saat menyinkronkan penjadwal bangun eksternal, dan pertahankan OpenClaw sebagai sumber kebenaran untuk pemeriksaan jatuh tempo dan eksekusi.
+- `message_received`: gunakan field bertipe `threadId` saat Anda memerlukan perutean thread/topik masuk. Simpan `metadata` untuk tambahan khusus kanal.
+- `message_sending`: gunakan field perutean bertipe `replyToId` / `threadId` sebelum fallback ke `metadata` khusus kanal.
+- `gateway_start`: gunakan `ctx.config`, `ctx.workspaceDir`, dan `ctx.getCron?.()` untuk status startup milik gateway alih-alih bergantung pada hook internal `gateway:startup`.
+- `cron_changed`: amati perubahan siklus hidup cron milik gateway. Gunakan `event.job?.state?.nextRunAtMs` dan `ctx.getCron?.()` saat menyinkronkan penjadwal bangun eksternal, dan pertahankan OpenClaw sebagai sumber kebenaran untuk pemeriksaan jatuh tempo dan eksekusi.
 
 ### Field objek API
 
-| Bidang                   | Tipe                      | Deskripsi                                                                                  |
-| ------------------------ | ------------------------- | ------------------------------------------------------------------------------------------ |
-| `api.id`                 | `string`                  | id Plugin                                                                                  |
-| `api.name`               | `string`                  | Nama tampilan                                                                              |
-| `api.version`            | `string?`                 | Versi Plugin (opsional)                                                                    |
-| `api.description`        | `string?`                 | Deskripsi Plugin (opsional)                                                                |
-| `api.source`             | `string`                  | Jalur sumber Plugin                                                                        |
-| `api.rootDir`            | `string?`                 | Direktori root Plugin (opsional)                                                           |
-| `api.config`             | `OpenClawConfig`          | Snapshot konfigurasi saat ini (snapshot runtime dalam memori aktif saat tersedia)          |
-| `api.pluginConfig`       | `Record<string, unknown>` | Konfigurasi khusus Plugin dari `plugins.entries.<id>.config`                               |
-| `api.runtime`            | `PluginRuntime`           | [Helper runtime](/id/plugins/sdk-runtime)                                                     |
-| `api.logger`             | `PluginLogger`            | Logger bercakupan (`debug`, `info`, `warn`, `error`)                                       |
-| `api.registrationMode`   | `PluginRegistrationMode`  | Mode pemuatan saat ini; `"setup-runtime"` adalah jendela startup/setup ringan pra-entri penuh |
-| `api.resolvePath(input)` | `(string) => string`      | Resolusi jalur relatif terhadap root plugin                                                |
+| Field                    | Tipe                      | Deskripsi                                                                                   |
+| ------------------------ | ------------------------- | ------------------------------------------------------------------------------------------- |
+| `api.id`                 | `string`                  | Id plugin                                                                                   |
+| `api.name`               | `string`                  | Nama tampilan                                                                                |
+| `api.version`            | `string?`                 | Versi plugin (opsional)                                                                     |
+| `api.description`        | `string?`                 | Deskripsi plugin (opsional)                                                                 |
+| `api.source`             | `string`                  | Path sumber plugin                                                                          |
+| `api.rootDir`            | `string?`                 | Direktori root plugin (opsional)                                                            |
+| `api.config`             | `OpenClawConfig`          | Snapshot konfigurasi saat ini (snapshot runtime dalam memori aktif saat tersedia)           |
+| `api.pluginConfig`       | `Record<string, unknown>` | Konfigurasi khusus plugin dari `plugins.entries.<id>.config`                                |
+| `api.runtime`            | `PluginRuntime`           | [Helper runtime](/id/plugins/sdk-runtime)                                                      |
+| `api.logger`             | `PluginLogger`            | Logger berskop (`debug`, `info`, `warn`, `error`)                                           |
+| `api.registrationMode`   | `PluginRegistrationMode`  | Mode pemuatan saat ini; `"setup-runtime"` adalah jendela startup/setup ringan pra-entri-penuh |
+| `api.resolvePath(input)` | `(string) => string`      | Resolve path relatif terhadap root plugin                                                   |
 
 ## Konvensi modul internal
 
-Di dalam plugin Anda, gunakan berkas barrel lokal untuk impor internal:
+Di dalam plugin Anda, gunakan file barrel lokal untuk impor internal:
 
 ```
 my-plugin/
@@ -428,35 +491,34 @@ my-plugin/
 
 <Warning>
   Jangan pernah mengimpor plugin Anda sendiri melalui `openclaw/plugin-sdk/<your-plugin>`
-  dari kode produksi. Arahkan impor internal melalui `./api.ts` atau
-  `./runtime-api.ts`. Jalur SDK hanya merupakan kontrak eksternal.
+  dari kode produksi. Rutekan impor internal melalui `./api.ts` atau
+  `./runtime-api.ts`. Path SDK hanya merupakan kontrak eksternal.
 </Warning>
 
-Permukaan publik Plugin bawaan yang dimuat melalui facade (`api.ts`, `runtime-api.ts`,
-`index.ts`, `setup-entry.ts`, dan berkas entri publik serupa) lebih mengutamakan
+Permukaan publik plugin bundel yang dimuat facade (`api.ts`, `runtime-api.ts`,
+`index.ts`, `setup-entry.ts`, dan file entri publik serupa) lebih memilih
 snapshot konfigurasi runtime aktif saat OpenClaw sudah berjalan. Jika belum ada
-snapshot runtime, permukaan tersebut melakukan fallback ke berkas konfigurasi yang
-di-resolve di disk. Facade Plugin bawaan yang dipaketkan harus dimuat melalui pemuat
-facade Plugin OpenClaw; impor langsung dari `dist/extensions/...` melewati pemeriksaan
-manifest dan sidecar runtime yang digunakan instalasi paket untuk kode milik Plugin.
+snapshot runtime, mereka fallback ke file konfigurasi yang di-resolve di disk.
+Facade plugin bundel terpaket sebaiknya dimuat melalui loader facade plugin
+OpenClaw; impor langsung dari `dist/extensions/...` melewati pemeriksaan manifes
+dan sidecar runtime yang digunakan instalasi terpaket untuk kode milik plugin.
 
-Plugin penyedia dapat mengekspos barrel kontrak lokal Plugin yang sempit saat sebuah
-helper sengaja bersifat khusus penyedia dan belum pantas berada di subjalur SDK generik.
-Contoh bawaan:
+Plugin penyedia dapat mengekspos barrel kontrak lokal-plugin yang sempit saat
+helper secara sengaja khusus untuk penyedia dan belum termasuk dalam subpath SDK
+generik. Contoh yang dibundel:
 
 - **Anthropic**: seam publik `api.ts` / `contract-api.ts` untuk helper stream
-  header beta Claude dan `service_tier`.
+  beta-header Claude dan `service_tier`.
 - **`@openclaw/openai-provider`**: `api.ts` mengekspor builder penyedia,
   helper model default, dan builder penyedia realtime.
 - **`@openclaw/openrouter-provider`**: `api.ts` mengekspor builder penyedia
-  beserta helper onboarding/konfigurasi.
+  serta helper onboarding/konfigurasi.
 
 <Warning>
-  Kode produksi Extension juga harus menghindari impor
-  `openclaw/plugin-sdk/<other-plugin>`. Jika sebuah helper benar-benar dibagikan,
-  promosikan helper tersebut ke subjalur SDK netral seperti
-  `openclaw/plugin-sdk/speech`, `.../provider-model-shared`, atau permukaan lain
-  yang berorientasi kemampuan alih-alih mengaitkan dua Plugin bersama.
+  Kode produksi ekstensi juga sebaiknya menghindari impor `openclaw/plugin-sdk/<other-plugin>`.
+  Jika helper benar-benar dibagikan, promosikan ke subpath SDK netral
+  seperti `openclaw/plugin-sdk/speech`, `.../provider-model-shared`, atau permukaan
+  lain yang berorientasi kapabilitas alih-alih menggandengkan dua plugin.
 </Warning>
 
 ## Terkait
@@ -469,7 +531,7 @@ Contoh bawaan:
     Referensi namespace `api.runtime` lengkap.
   </Card>
   <Card title="Setup dan konfigurasi" icon="sliders" href="/id/plugins/sdk-setup">
-    Pemaketan, manifest, dan skema konfigurasi.
+    Pengemasan, manifes, dan skema konfigurasi.
   </Card>
   <Card title="Pengujian" icon="vial" href="/id/plugins/sdk-testing">
     Utilitas pengujian dan aturan lint.
@@ -477,7 +539,7 @@ Contoh bawaan:
   <Card title="Migrasi SDK" icon="arrows-turn-right" href="/id/plugins/sdk-migration">
     Bermigrasi dari permukaan yang tidak digunakan lagi.
   </Card>
-  <Card title="Internal Plugin" icon="diagram-project" href="/id/plugins/architecture">
-    Arsitektur mendalam dan model kemampuan.
+  <Card title="Internal plugin" icon="diagram-project" href="/id/plugins/architecture">
+    Arsitektur mendalam dan model kapabilitas.
   </Card>
 </CardGroup>

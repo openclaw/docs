@@ -1,156 +1,164 @@
 ---
 read_when:
-    - Suche nach einem Überblick über die Medienfunktionen von OpenClaw
+    - Suchen Sie nach einem Überblick über die Medienfunktionen von OpenClaw
     - Entscheiden, welcher Medien-Provider konfiguriert werden soll
-    - Verstehen, wie die asynchrone Mediengenerierung funktioniert
+    - Verstehen, wie asynchrone Mediengenerierung funktioniert
 sidebarTitle: Media overview
-summary: Funktionen für Bild, Video, Musik, Sprache und Medienverständnis auf einen Blick
+summary: Bild-, Video-, Musik-, Sprach- und Medienverständnis-Funktionen auf einen Blick
 title: Medienübersicht
 x-i18n:
-    generated_at: "2026-05-12T08:46:19Z"
+    generated_at: "2026-06-27T18:19:47Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a7ca89d058467968ee140cb3318fe8a1fb96d09fe7c59982efce36eb9b714591
+    source_hash: c04beb60abbd06d1503302be144e633b526ae55435f061fbb94f6fef85ca9d66
     source_path: tools/media-overview.md
     workflow: 16
 ---
 
 OpenClaw generiert Bilder, Videos und Musik, versteht eingehende Medien
-(Bilder, Audio, Video) und spricht Antworten mit Text-to-Speech laut aus. Alle
-Medienfunktionen sind tool-gesteuert: Der Agent entscheidet anhand der
-Unterhaltung, wann sie verwendet werden, und jedes Tool erscheint nur, wenn
+(Bilder, Audio, Video) und spricht Antworten per Text-to-Speech laut aus. Alle
+Medienfunktionen sind toolgesteuert: Der Agent entscheidet anhand der
+Unterhaltung, wann er sie verwendet, und jedes Tool erscheint nur, wenn
 mindestens ein unterstützender Provider konfiguriert ist.
 
-Live-Sprache verwendet den Talk-Sitzungsvertrag statt des One-Shot-Media-Tool-
-Pfads. Talk hat drei Modi: Provider-natives `realtime`, lokales oder streamendes
-`stt-tts` und `transcription` für reine Beobachtungs-Spracherfassung. Diese Modi
-teilen Provider-Kataloge, Event-Umschläge und Abbruchsemantik mit Telefonie,
-Meetings, Browser-Realtime und nativen Push-to-Talk-Clients.
+Live-Sprache verwendet den Talk-Sitzungsvertrag statt des einmaligen
+Medientool-Pfads. Talk hat drei Modi: provider-natives `realtime`, lokales oder
+streamendes `stt-tts` und `transcription` für reine beobachtende Spracherfassung.
+Diese Modi teilen sich Provider-Kataloge, Ereignis-Umschläge und
+Abbruchsemantik mit Telefonie, Meetings, Browser-Echtzeit und nativen
+Push-to-Talk-Clients.
 
-## Funktionen
+## Fähigkeiten
 
 <CardGroup cols={2}>
-  <Card title="Bildgenerierung" href="/de/tools/image-generation" icon="image">
-    Erstellen und bearbeiten Sie Bilder aus Text-Prompts oder Referenzbildern über
-    `image_generate`. Synchron — wird inline mit der Antwort abgeschlossen.
+  <Card title="Image generation" href="/de/tools/image-generation" icon="image">
+    Erstellen und bearbeiten Sie Bilder aus Text-Prompts oder Referenzbildern
+    über `image_generate`. Asynchron in Chatsitzungen – läuft im Hintergrund
+    und postet das Ergebnis, sobald es bereit ist.
   </Card>
-  <Card title="Videogenerierung" href="/de/tools/video-generation" icon="video">
+  <Card title="Video generation" href="/de/tools/video-generation" icon="video">
     Text-zu-Video, Bild-zu-Video und Video-zu-Video über `video_generate`.
-    Asynchron — läuft im Hintergrund und veröffentlicht das Ergebnis, sobald es bereit ist.
+    Asynchron – läuft im Hintergrund und postet das Ergebnis, sobald es bereit ist.
   </Card>
-  <Card title="Musikgenerierung" href="/de/tools/music-generation" icon="music">
-    Generieren Sie Musik oder Audiospuren über `music_generate`. Asynchron bei gemeinsam genutzten
-    Providern; der ComfyUI-Workflow-Pfad läuft synchron.
+  <Card title="Music generation" href="/de/tools/music-generation" icon="music">
+    Generieren Sie Musik oder Audiospuren über `music_generate`. Asynchron in
+    Chatsitzungen im gemeinsamen Aufgabenlebenszyklus für Mediengenerierung.
   </Card>
-  <Card title="Text-to-Speech" href="/de/tools/tts" icon="microphone">
+  <Card title="Text-to-speech" href="/de/tools/tts" icon="microphone">
     Wandeln Sie ausgehende Antworten über das `tts`-Tool plus
-    `messages.tts`-Konfiguration in gesprochene Audioausgabe um. Synchron.
+    `messages.tts`-Konfiguration in gesprochene Audiodaten um. Synchron.
   </Card>
-  <Card title="Medienverständnis" href="/de/nodes/media-understanding" icon="eye">
-    Fassen Sie eingehende Bilder, Audio und Video mit vision-fähigen Modell-
-    Providern und dedizierten Medienverständnis-Plugins zusammen.
+  <Card title="Media understanding" href="/de/nodes/media-understanding" icon="eye">
+    Fassen Sie eingehende Bilder, Audio und Video mit visionsfähigen
+    Modell-Providern und dedizierten Medienverständnis-Plugins zusammen.
   </Card>
-  <Card title="Speech-to-Text" href="/de/nodes/audio" icon="ear-listen">
-    Transkribieren Sie eingehende Sprachnachrichten über Batch-STT oder Voice Call-
-    Streaming-STT-Provider.
+  <Card title="Speech-to-text" href="/de/nodes/audio" icon="ear-listen">
+    Transkribieren Sie eingehende Sprachnachrichten über Batch-STT oder
+    streamende STT-Provider für Voice Call.
   </Card>
 </CardGroup>
 
-## Provider-Funktionsmatrix
+## Provider-Fähigkeitsmatrix
 
-| Provider    | Bild | Video | Musik | TTS | STT | Realtime-Sprache | Medienverständnis |
-| ----------- | :--: | :---: | :---: | :-: | :-: | :---------------: | :---------------: |
-| Alibaba     |      |   ✓   |       |     |     |                   |                   |
-| BytePlus    |      |   ✓   |       |     |     |                   |                   |
-| ComfyUI     |  ✓   |   ✓   |   ✓   |     |     |                   |                   |
-| DeepInfra   |  ✓   |   ✓   |       |  ✓  |  ✓  |                   |         ✓         |
-| Deepgram    |      |       |       |     |  ✓  |         ✓         |                   |
-| ElevenLabs  |      |       |       |  ✓  |  ✓  |                   |                   |
-| fal         |  ✓   |   ✓   |       |     |     |                   |                   |
-| Google      |  ✓   |   ✓   |   ✓   |  ✓  |     |         ✓         |         ✓         |
-| Gradium     |      |       |       |  ✓  |     |                   |                   |
-| Local CLI   |      |       |       |  ✓  |     |                   |                   |
-| Microsoft   |      |       |       |  ✓  |     |                   |                   |
-| MiniMax     |  ✓   |   ✓   |   ✓   |  ✓  |     |                   |                   |
-| Mistral     |      |       |       |     |  ✓  |                   |                   |
-| OpenAI      |  ✓   |   ✓   |       |  ✓  |  ✓  |         ✓         |         ✓         |
-| OpenRouter  |  ✓   |   ✓   |       |  ✓  |  ✓  |                   |         ✓         |
-| Qwen        |      |   ✓   |       |     |     |                   |                   |
-| Runway      |      |   ✓   |       |     |     |                   |                   |
-| SenseAudio  |      |       |       |     |  ✓  |                   |                   |
-| Together    |      |   ✓   |       |     |     |                   |                   |
-| Vydra       |  ✓   |   ✓   |       |  ✓  |     |                   |                   |
-| xAI         |  ✓   |   ✓   |       |  ✓  |  ✓  |                   |         ✓         |
-| Xiaomi MiMo |  ✓   |       |       |  ✓  |     |                   |         ✓         |
+| Provider          | Bild | Video | Musik | TTS | STT | Echtzeit-Sprache | Medienverständnis |
+| ----------------- | :--: | :---: | :---: | :-: | :-: | :--------------: | :---------------: |
+| Alibaba           |      |   ✓   |       |     |     |                  |                   |
+| BytePlus          |      |   ✓   |       |     |     |                  |                   |
+| ComfyUI           |  ✓   |   ✓   |   ✓   |     |     |                  |                   |
+| DeepInfra         |  ✓   |   ✓   |       |  ✓  |  ✓  |                  |         ✓         |
+| Deepgram          |      |       |       |     |  ✓  |        ✓         |                   |
+| ElevenLabs        |      |       |       |  ✓  |  ✓  |                  |                   |
+| fal               |  ✓   |   ✓   |   ✓   |     |     |                  |                   |
+| Google            |  ✓   |   ✓   |   ✓   |  ✓  |     |        ✓         |         ✓         |
+| Gradium           |      |       |       |  ✓  |     |                  |                   |
+| Local CLI         |      |       |       |  ✓  |     |                  |                   |
+| Microsoft         |      |       |       |  ✓  |     |                  |                   |
+| Microsoft Foundry |  ✓   |       |       |     |     |                  |                   |
+| MiniMax           |  ✓   |   ✓   |   ✓   |  ✓  |     |                  |                   |
+| Mistral           |      |       |       |     |  ✓  |                  |                   |
+| OpenAI            |  ✓   |   ✓   |       |  ✓  |  ✓  |        ✓         |         ✓         |
+| OpenRouter        |  ✓   |   ✓   |   ✓   |  ✓  |  ✓  |                  |         ✓         |
+| Qwen              |      |   ✓   |       |     |     |                  |                   |
+| Runway            |      |   ✓   |       |     |     |                  |                   |
+| SenseAudio        |      |       |       |     |  ✓  |                  |                   |
+| Together          |      |   ✓   |       |     |     |                  |                   |
+| Vydra             |  ✓   |   ✓   |       |  ✓  |     |                  |                   |
+| xAI               |  ✓   |   ✓   |       |  ✓  |  ✓  |                  |         ✓         |
+| Xiaomi MiMo       |  ✓   |       |       |  ✓  |     |                  |         ✓         |
 
 <Note>
-Medienverständnis verwendet jedes vision- oder audiofähige Modell, das
-in Ihrer Provider-Konfiguration registriert ist. Die obige Matrix listet Provider mit dedizierter
-Unterstützung für Medienverständnis auf; die meisten multimodalen LLM-Provider (Anthropic, Google,
-OpenAI usw.) können eingehende Medien ebenfalls verstehen, wenn sie als aktives
-Antwortmodell konfiguriert sind.
+Medienverständnis verwendet jedes visionsfähige oder audiofähige Modell, das in
+Ihrer Provider-Konfiguration registriert ist. Die obige Matrix listet Provider
+mit dedizierter Unterstützung für Medienverständnis auf; die meisten
+multimodalen LLM-Provider (Anthropic, Google, OpenAI usw.) können eingehende
+Medien ebenfalls verstehen, wenn sie als aktives Antwortmodell konfiguriert sind.
 </Note>
 
 ## Asynchron vs. synchron
 
-| Funktion        | Modus        | Warum                                                                                                      |
-| --------------- | ------------ | ---------------------------------------------------------------------------------------------------------- |
-| Bild            | Synchron     | Provider-Antworten kommen innerhalb von Sekunden zurück; wird inline mit der Antwort abgeschlossen.         |
-| Text-to-Speech  | Synchron     | Provider-Antworten kommen innerhalb von Sekunden zurück; wird an das Antwortaudio angehängt.                |
-| Video           | Asynchron    | Provider-Verarbeitung dauert 30 s bis mehrere Minuten; langsame Warteschlangen können bis zum konfigurierten Timeout laufen. |
-| Musik (geteilt) | Asynchron    | Gleiche Provider-Verarbeitungscharakteristik wie bei Video.                                                 |
-| Musik (ComfyUI) | Synchron     | Lokaler Workflow läuft inline gegen den konfigurierten ComfyUI-Server.                                      |
+| Fähigkeit      | Modus      | Warum                                                                                               |
+| -------------- | ---------- | --------------------------------------------------------------------------------------------------- |
+| Bild           | Asynchron  | Die Provider-Verarbeitung kann länger dauern als eine Chat-Runde; generierte Anhänge verwenden den gemeinsamen Abschlusspfad. |
+| Text-to-Speech | Synchron   | Provider-Antworten kehren in Sekunden zurück; sie werden an das Antwortaudio angehängt.             |
+| Video          | Asynchron  | Die Provider-Verarbeitung dauert 30 s bis mehrere Minuten; langsame Warteschlangen können bis zum konfigurierten Timeout laufen. |
+| Musik          | Asynchron  | Dieselbe Provider-Verarbeitungscharakteristik wie bei Video.                                        |
 
-Für asynchrone Tools sendet OpenClaw die Anfrage an den Provider, gibt sofort eine Task-
-ID zurück und verfolgt den Job im Task-Ledger. Der Agent beantwortet weiter
-andere Nachrichten, während der Job läuft. Wenn der Provider fertig ist,
-weckt OpenClaw den Agent mit den generierten Medienpfaden, damit er den
-Benutzer informieren und, wenn es die Richtlinie zur Quelldelivery erfordert, das Ergebnis über
-das Nachrichtentool weiterleiten kann. Bei Gruppen-/Kanalrouten nur über das Nachrichtentool behandelt OpenClaw
-fehlende Zustellnachweise des Nachrichtentools als fehlgeschlagenen Abschlussversuch und sendet
-den generierten Medien-Fallback direkt an den ursprünglichen Kanal.
+Bei asynchronen Tools übermittelt OpenClaw die Anfrage an den Provider, gibt
+sofort eine Aufgaben-ID zurück und verfolgt den Job im Aufgaben-Ledger. Der
+Agent antwortet weiter auf andere Nachrichten, während der Job läuft. Wenn der
+Provider fertig ist, weckt OpenClaw den Agent mit den generierten Medienpfaden,
+damit er den Benutzer über den normalen sichtbaren Antwortmodus der Sitzung
+informieren kann: automatische Zustellung der finalen Antwort, wenn
+konfiguriert, oder `message(action="send")`, wenn die Sitzung das Nachrichtentool
+erfordert. Wenn die anfragende Sitzung inaktiv ist oder ihr aktives Wake
+fehlschlägt und in der Abschlussantwort noch generierte Medien fehlen, sendet
+OpenClaw einen idempotenten direkten Fallback nur mit den fehlenden Medien.
+Medien, die bereits durch die Abschlussantwort zugestellt wurden, werden nicht
+erneut gepostet.
 
 ## Speech-to-Text und Voice Call
 
 Deepgram, DeepInfra, ElevenLabs, Mistral, OpenAI, OpenRouter, SenseAudio und xAI können alle
-eingehendes Audio über den Batch-Pfad `tools.media.audio` transkribieren, wenn sie konfiguriert sind.
-Kanal-Plugins, die eine Sprachnotiz für Mention-Gating oder Befehls-
-Parsing vorab prüfen, markieren den transkribierten Anhang im eingehenden Kontext, sodass der gemeinsame
-Medienverständnis-Durchlauf dieses Transkript wiederverwendet, statt einen zweiten
-STT-Aufruf für dieselbe Audiodatei zu machen.
+eingehendes Audio über den Batch-Pfad `tools.media.audio` transkribieren, wenn
+sie konfiguriert sind. Channel-Plugins, die eine Sprachnotiz für Mention-Gating
+oder Befehlsparsing vorab prüfen, markieren den transkribierten Anhang im
+eingehenden Kontext, sodass der gemeinsame Medienverständnis-Durchlauf dieses
+Transkript wiederverwendet, statt einen zweiten STT-Aufruf für dasselbe Audio
+auszuführen.
 
-Deepgram, ElevenLabs, Mistral, OpenAI und xAI registrieren außerdem Voice Call-
-Streaming-STT-Provider, sodass Live-Telefon-Audio an den ausgewählten
-Vendor weitergeleitet werden kann, ohne auf eine abgeschlossene Aufzeichnung zu warten.
+Deepgram, ElevenLabs, Mistral, OpenAI und xAI registrieren außerdem streamende
+STT-Provider für Voice Call, sodass Live-Telefonaudio an den ausgewählten
+Vendor weitergeleitet werden kann, ohne auf eine abgeschlossene Aufnahme zu warten.
 
-Für Live-Unterhaltungen mit Benutzern bevorzugen Sie den [Talk-Modus](/de/nodes/talk). Batch-Audio-
-Anhänge bleiben auf dem Medienpfad; Browser-Realtime, natives Push-to-Talk,
-Telefonie und Meeting-Audio sollten Talk-Events und die sitzungsbezogenen
-Kataloge verwenden, die vom Gateway zurückgegeben werden.
+Für Live-Unterhaltungen mit Benutzern bevorzugen Sie den [Talk-Modus](/de/nodes/talk).
+Batch-Audioanhänge bleiben auf dem Medienpfad; Browser-Echtzeit, natives
+Push-to-Talk, Telefonie und Meeting-Audio sollten Talk-Ereignisse und die vom
+Gateway zurückgegebenen sitzungsbezogenen Kataloge verwenden.
 
-## Provider-Zuordnungen (wie Vendors auf Oberflächen aufgeteilt werden)
+## Provider-Zuordnungen (wie Vendors Oberflächen aufteilen)
 
 <AccordionGroup>
   <Accordion title="Google">
-    Bild-, Video-, Musik-, Batch-TTS-, Backend-Realtime-Sprach- und
+    Bild-, Video-, Musik-, Batch-TTS-, Backend-Echtzeitsprach- und
     Medienverständnis-Oberflächen.
   </Accordion>
   <Accordion title="OpenAI">
-    Bild-, Video-, Batch-TTS-, Batch-STT-, Voice Call-Streaming-STT-, Backend-
-    Realtime-Sprach- und Memory-Embedding-Oberflächen.
+    Bild-, Video-, Batch-TTS-, Batch-STT-, Voice-Call-Streaming-STT-,
+    Backend-Echtzeitsprach- und Memory-Embedding-Oberflächen.
   </Accordion>
   <Accordion title="DeepInfra">
-    Chat-/Modell-Routing, Bildgenerierung/-bearbeitung, Text-zu-Video, Batch-TTS,
-    Batch-STT, Bild-Medienverständnis und Memory-Embedding-Oberflächen.
-    DeepInfra-native Rerank-/Klassifikations-/Objekterkennungsmodelle werden nicht
-    registriert, bis OpenClaw dedizierte Provider-Verträge für diese
-    Kategorien hat.
+    Chat-/Modell-Routing, Bildgenerierung/-bearbeitung, Text-zu-Video,
+    Batch-TTS, Batch-STT, Bild-Medienverständnis und Memory-Embedding-Oberflächen.
+    DeepInfra-native Re-Ranking-, Klassifizierungs- und Objekterkennungsmodelle
+    werden erst registriert, wenn OpenClaw dedizierte Provider-Verträge für
+    diese Kategorien hat.
   </Accordion>
   <Accordion title="xAI">
-    Bild, Video, Suche, Codeausführung, Batch-TTS, Batch-STT und Voice
-    Call-Streaming-STT. xAI Realtime-Sprache ist eine Upstream-Funktion, wird aber
-    in OpenClaw nicht registriert, bis der gemeinsame Realtime-Sprachvertrag sie
-    abbilden kann.
+    Bild, Video, Suche, Codeausführung, Batch-TTS, Batch-STT und
+    Voice-Call-Streaming-STT. xAI-Echtzeit-Sprache ist eine Upstream-Fähigkeit,
+    wird aber in OpenClaw erst registriert, wenn der gemeinsame Vertrag für
+    Echtzeit-Sprache sie abbilden kann.
   </Accordion>
 </AccordionGroup>
 
@@ -161,5 +169,5 @@ Kataloge verwenden, die vom Gateway zurückgegeben werden.
 - [Musikgenerierung](/de/tools/music-generation)
 - [Text-to-Speech](/de/tools/tts)
 - [Medienverständnis](/de/nodes/media-understanding)
-- [Audioknoten](/de/nodes/audio)
+- [Audio-Nodes](/de/nodes/audio)
 - [Talk-Modus](/de/nodes/talk)

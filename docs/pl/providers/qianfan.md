@@ -1,43 +1,53 @@
 ---
 read_when:
-    - Chcesz jednego klucza API dla wielu LLM-ów
+    - Chcesz jednego klucza API do wielu LLM-ów
     - Potrzebujesz wskazówek dotyczących konfiguracji Baidu Qianfan
 summary: Użyj ujednoliconego API Qianfan, aby uzyskać dostęp do wielu modeli w OpenClaw
 title: Qianfan
 x-i18n:
-    generated_at: "2026-04-30T10:14:57Z"
+    generated_at: "2026-06-27T18:14:44Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6adfbad6c18bf2bcf93d9c56c51591c862ebb751ffd8183015fa2fc9566ce0af
+    source_hash: a8bc31970dc7fbc43819ec6d51f4bd0047b1acc5a03b23b656e617e3abd97475
     source_path: providers/qianfan.md
     workflow: 16
 ---
 
-Qianfan to platforma MaaS firmy Baidu, zapewniająca **ujednolicone API**, które kieruje żądania do wielu modeli za jednym
-punktem końcowym i kluczem API. Jest zgodna z OpenAI, więc większość pakietów SDK OpenAI działa po zmianie bazowego URL-a.
+Qianfan to platforma MaaS firmy Baidu, udostępniająca **ujednolicony interfejs API**, który kieruje żądania do wielu modeli za jednym
+endpointem i kluczem API. Jest zgodna z OpenAI, więc większość zestawów SDK OpenAI działa po zmianie bazowego adresu URL.
 
-| Właściwość | Wartość                           |
-| ---------- | --------------------------------- |
-| Dostawca   | `qianfan`                         |
-| Uwierzytelnianie | `QIANFAN_API_KEY`           |
-| API        | zgodne z OpenAI                   |
-| Bazowy URL | `https://qianfan.baidubce.com/v2` |
+| Właściwość | Wartość                          |
+| ---------- | -------------------------------- |
+| Dostawca   | `qianfan`                        |
+| Uwierzytelnianie | `QIANFAN_API_KEY`          |
+| API        | Zgodne z OpenAI                  |
+| Bazowy adres URL | `https://qianfan.baidubce.com/v2` |
+
+## Zainstaluj Plugin
+
+Zainstaluj oficjalny Plugin, a następnie uruchom ponownie Gateway:
+
+```bash
+openclaw plugins install @openclaw/qianfan-provider
+openclaw gateway restart
+```
 
 ## Pierwsze kroki
 
 <Steps>
-  <Step title="Utwórz konto Baidu Cloud">
-    Zarejestruj się lub zaloguj w [konsoli Qianfan](https://console.bce.baidu.com/qianfan/ais/console/apiKey) i upewnij się, że masz włączony dostęp do API Qianfan.
+  <Step title="Create a Baidu Cloud account">
+    Zarejestruj się lub zaloguj w [Qianfan Console](https://console.bce.baidu.com/qianfan/ais/console/apiKey) i upewnij się, że masz włączony dostęp do API Qianfan.
   </Step>
-  <Step title="Wygeneruj klucz API">
+  <Step title="Generate an API key">
     Utwórz nową aplikację lub wybierz istniejącą, a następnie wygeneruj klucz API. Format klucza to `bce-v3/ALTAK-...`.
   </Step>
-  <Step title="Uruchom onboarding">
+  <Step title="Run onboarding">
     ```bash
     openclaw onboard --auth-choice qianfan-api-key
     ```
   </Step>
-  <Step title="Sprawdź, czy model jest dostępny">
+  <Step title="Verify the model is available">
     ```bash
     openclaw models list --provider qianfan
     ```
@@ -46,13 +56,13 @@ punktem końcowym i kluczem API. Jest zgodna z OpenAI, więc większość pakiet
 
 ## Wbudowany katalog
 
-| Odwołanie do modelu                  | Wejście     | Kontekst | Maks. wyjście | Rozumowanie | Uwagi          |
-| ------------------------------------ | ----------- | -------- | ------------- | ----------- | -------------- |
-| `qianfan/deepseek-v3.2`              | tekst       | 98,304   | 32,768        | Tak         | Model domyślny |
-| `qianfan/ernie-5.0-thinking-preview` | tekst, obraz | 119,000 | 64,000        | Tak         | Multimodalny   |
+| Odwołanie do modelu                  | Dane wejściowe | Kontekst | Maks. dane wyjściowe | Rozumowanie | Uwagi             |
+| ------------------------------------ | -------------- | -------- | -------------------- | ----------- | ----------------- |
+| `qianfan/deepseek-v3.2`              | tekst          | 98,304   | 32,768               | Tak         | Model domyślny    |
+| `qianfan/ernie-5.0-thinking-preview` | tekst, obraz   | 119,000  | 64,000               | Tak         | Multimodalny      |
 
 <Tip>
-Domyślne wbudowane odwołanie do modelu to `qianfan/deepseek-v3.2`. Musisz nadpisać `models.providers.qianfan` tylko wtedy, gdy potrzebujesz niestandardowego bazowego URL-a lub metadanych modelu.
+Domyślne odwołanie do modelu to `qianfan/deepseek-v3.2`. Musisz nadpisać `models.providers.qianfan` tylko wtedy, gdy potrzebujesz niestandardowego bazowego adresu URL lub metadanych modelu.
 </Tip>
 
 ## Przykład konfiguracji
@@ -100,12 +110,12 @@ Domyślne wbudowane odwołanie do modelu to `qianfan/deepseek-v3.2`. Musisz nadp
 ```
 
 <AccordionGroup>
-  <Accordion title="Transport i zgodność">
-    Qianfan działa przez ścieżkę transportu zgodną z OpenAI, a nie przez natywne kształtowanie żądań OpenAI. Oznacza to, że standardowe funkcje pakietów SDK OpenAI działają, ale parametry specyficzne dla dostawcy mogą nie być przekazywane dalej.
+  <Accordion title="Transport and compatibility">
+    Qianfan działa przez ścieżkę transportu zgodną z OpenAI, a nie przez natywne kształtowanie żądań OpenAI. Oznacza to, że standardowe funkcje SDK OpenAI działają, ale parametry specyficzne dla dostawcy mogą nie być przekazywane dalej.
   </Accordion>
 
-  <Accordion title="Katalog i nadpisania">
-    Wbudowany katalog obecnie obejmuje `deepseek-v3.2` i `ernie-5.0-thinking-preview`. Dodaj lub nadpisz `models.providers.qianfan` tylko wtedy, gdy potrzebujesz niestandardowego bazowego URL-a lub metadanych modelu.
+  <Accordion title="Catalog and overrides">
+    Statyczny katalog obejmuje obecnie `deepseek-v3.2` i `ernie-5.0-thinking-preview`. Dodawaj lub nadpisuj `models.providers.qianfan` tylko wtedy, gdy potrzebujesz niestandardowego bazowego adresu URL lub metadanych modelu.
 
     <Note>
     Odwołania do modeli używają prefiksu `qianfan/` (na przykład `qianfan/deepseek-v3.2`).
@@ -113,10 +123,10 @@ Domyślne wbudowane odwołanie do modelu to `qianfan/deepseek-v3.2`. Musisz nadp
 
   </Accordion>
 
-  <Accordion title="Rozwiązywanie problemów">
-    - Upewnij się, że Twój klucz API zaczyna się od `bce-v3/ALTAK-` i ma włączony dostęp do API Qianfan w konsoli Baidu Cloud.
+  <Accordion title="Troubleshooting">
+    - Upewnij się, że klucz API zaczyna się od `bce-v3/ALTAK-` i ma włączony dostęp do API Qianfan w konsoli Baidu Cloud.
     - Jeśli modele nie są wyświetlane, potwierdź, że usługa Qianfan jest aktywowana na Twoim koncie.
-    - Domyślny bazowy URL to `https://qianfan.baidubce.com/v2`. Zmień go tylko wtedy, gdy używasz niestandardowego punktu końcowego lub proxy.
+    - Domyślny bazowy adres URL to `https://qianfan.baidubce.com/v2`. Zmień go tylko wtedy, gdy używasz niestandardowego endpointu lub serwera proxy.
 
   </Accordion>
 </AccordionGroup>
@@ -124,16 +134,16 @@ Domyślne wbudowane odwołanie do modelu to `qianfan/deepseek-v3.2`. Musisz nadp
 ## Powiązane
 
 <CardGroup cols={2}>
-  <Card title="Wybór modelu" href="/pl/concepts/model-providers" icon="layers">
+  <Card title="Model selection" href="/pl/concepts/model-providers" icon="layers">
     Wybieranie dostawców, odwołań do modeli i zachowania przełączania awaryjnego.
   </Card>
-  <Card title="Dokumentacja konfiguracji" href="/pl/gateway/configuration-reference" icon="gear">
-    Pełna dokumentacja konfiguracji OpenClaw.
+  <Card title="Configuration reference" href="/pl/gateway/configuration-reference" icon="gear">
+    Pełne odniesienie konfiguracji OpenClaw.
   </Card>
-  <Card title="Konfiguracja agenta" href="/pl/concepts/agent" icon="robot">
+  <Card title="Agent setup" href="/pl/concepts/agent" icon="robot">
     Konfigurowanie domyślnych ustawień agentów i przypisań modeli.
   </Card>
-  <Card title="Dokumentacja API Qianfan" href="https://cloud.baidu.com/doc/qianfan-api/s/3m7of64lb" icon="arrow-up-right-from-square">
+  <Card title="Qianfan API docs" href="https://cloud.baidu.com/doc/qianfan-api/s/3m7of64lb" icon="arrow-up-right-from-square">
     Oficjalna dokumentacja API Qianfan.
   </Card>
 </CardGroup>

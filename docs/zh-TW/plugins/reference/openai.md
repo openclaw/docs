@@ -1,29 +1,30 @@
 ---
 read_when:
-    - 你正在安裝、設定或稽核 openai Plugin
-summary: 為 OpenClaw 新增對 OpenAI 與 OpenAI Codex 模型提供者的支援。
-title: OpenAI Plugin
+    - 你正在安裝、設定或稽核 openai 外掛
+summary: 為 OpenClaw 新增 OpenAI 模型提供者支援。
+title: OpenAI 外掛
 x-i18n:
-    generated_at: "2026-05-02T20:58:55Z"
+    generated_at: "2026-06-27T19:45:09Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6e6dad420e5879697dda03f866b7c0ef15b020b2c06da6b60293d3914d850969
+    source_hash: c8fa47c22cb54090493f3cbacc461344242e078716760289c0dd4fd0ae8c0085
     source_path: plugins/reference/openai.md
     workflow: 16
 ---
 
-# OpenAI Plugin
+# OpenAI 外掛
 
-為 OpenClaw 新增 OpenAI、OpenAI Codex 模型提供者支援。
+為 OpenClaw 新增 OpenAI 模型提供者支援。
 
-## 發行
+## 發佈
 
 - 套件：`@openclaw/openai-provider`
-- 安裝路徑：包含於 OpenClaw 中
+- 安裝路徑：包含於 OpenClaw
 
-## 公開介面
+## 介面
 
-providers: openai, openai-codex; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders
+providers: openai; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders
 
 ## 相關文件
 

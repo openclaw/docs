@@ -1,23 +1,24 @@
 ---
 read_when:
-    - Ви вирішуєте, чи Plugin постачається в основному пакеті npm, чи встановлюється окремо
-    - Ви оновлюєте метадані вбудованого Plugin-пакета або автоматизацію випуску
+    - Ви вирішуєте, чи Plugin постачається у складі основного npm-пакета, чи встановлюється окремо
+    - Ви оновлюєте метадані пакета bundled Plugin або автоматизацію релізу
     - Вам потрібен канонічний список внутрішніх і зовнішніх Plugin
-summary: Згенерований інвентар плагінів OpenClaw, що постачаються в ядрі, публікуються зовнішньо або зберігаються лише у вихідному коді
-title: Інвентаризація Plugin
+summary: Згенерований інвентар Pluginів OpenClaw, що постачаються в ядрі, публікуються зовні або зберігаються лише у вихідному коді
+title: Інвентар Plugin
 x-i18n:
-    generated_at: "2026-05-11T20:49:01Z"
+    generated_at: "2026-06-27T17:55:13Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1a42c8f230925618eb7c15fd6ea7279694adccd45d8e827bb89dffa13576521d
+    source_hash: a1f0c5aa2c3e5f25308a4398dc2582caa8f355a4dfd0d5693d9cfaf1c1ce6926
     source_path: plugins/plugin-inventory.md
     workflow: 16
 ---
 
 # Інвентар Plugin
 
-Цю сторінку згенеровано з `extensions/*/package.json`, `openclaw.plugin.json`,
-та винятків `files` у кореневому npm-пакеті. Перегенеруйте її за допомогою:
+Цю сторінку згенеровано з `extensions/*/package.json`, `openclaw.plugin.json`
+і виключень `files` кореневого пакета npm. Перегенеруйте її за допомогою:
 
 ```bash
 pnpm plugins:inventory:gen
@@ -25,19 +26,19 @@ pnpm plugins:inventory:gen
 
 ## Визначення
 
-- **Основний npm-пакет:** вбудований у npm-пакет `openclaw` і доступний без окремого встановлення Plugin.
-- **Офіційний зовнішній пакет:** Plugin, який підтримує OpenClaw, вилучений з основного npm-пакета, збережений у цьому офіційному інвентарі та встановлюється за потреби через ClawHub та/або npm.
-- **Лише source checkout:** локальний для репозиторію Plugin, вилучений з опублікованих npm-артефактів і не рекламований як пакет, доступний для встановлення.
+- **Основний пакет npm:** вбудований у пакет npm `openclaw` і доступний без окремого встановлення Plugin.
+- **Офіційний зовнішній пакет:** Plugin, який підтримує OpenClaw, вилучений з основного пакета npm, збережений у цьому офіційному інвентарі та встановлюється на вимогу через ClawHub та/або npm.
+- **Лише source checkout:** локальний для репозиторію Plugin, вилучений з опублікованих артефактів npm і не рекламований як пакет, доступний для встановлення.
 
-Source checkout відрізняються від npm-встановлень: після `pnpm install` вбудовані
-Plugin завантажуються з `extensions/<id>`, тому локальні зміни та локальні для пакета
-workspace-залежності доступні.
+Source checkout відрізняються від встановлень npm: після `pnpm install` вбудовані
+Plugin завантажуються з `extensions/<id>`, тому локальні редагування та локальні
+для пакета залежності workspace доступні.
 
 ## Встановлення Plugin
 
-Використовуйте стовпець **Розповсюдження**, щоб вирішити, чи потрібне встановлення. Plugin, для яких
-вказано `included in OpenClaw`, уже присутні в основному пакеті. Офіційні
-зовнішні пакети потребують одного встановлення, а потім перезапуску Gateway.
+Використовуйте маршрут встановлення в кожному записі, щоб визначити, чи потрібне встановлення. Plugin,
+для яких зазначено `included in OpenClaw`, уже присутні в основному пакеті.
+Офіційні зовнішні пакети потребують одного встановлення, а потім перезапуску Gateway.
 
 Наприклад, Discord є офіційним зовнішнім пакетом:
 
@@ -47,140 +48,282 @@ openclaw gateway restart
 openclaw plugins inspect discord --runtime --json
 ```
 
-Специфікації пакетів без префікса спочатку пробують ClawHub, а потім fallback до npm. Щоб примусово вибрати джерело, використовуйте
-`clawhub:@openclaw/discord` або `npm:@openclaw/discord`. Після встановлення дотримуйтесь
-документації з налаштування Plugin, наприклад [Discord](/uk/channels/discord), щоб додати облікові дані
-та конфігурацію каналу. Див. [Керування Plugin](/uk/plugins/manage-plugins) для команд оновлення,
-видалення та публікації.
+Під час переходу запуску звичайні bare package specs усе ще встановлюються з npm.
+Використовуйте `clawhub:@openclaw/discord` або `npm:@openclaw/discord`, коли потрібне
+явне джерело. Після встановлення дотримуйтеся документації з налаштування Plugin, наприклад
+[Discord](/uk/channels/discord), щоб додати облікові дані та конфігурацію каналу. Див.
+[Керування Plugin](/uk/plugins/manage-plugins) для команд оновлення, видалення та публікації.
 
-## Основний npm-пакет
+Кожен запис містить пакет, маршрут розповсюдження та опис.
 
-| Plugin                                                            | Опис                                                                                                                                                          | Поширення                                                         | Поверхня                                                                                                                                                                                                                                                          |
-| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [alibaba](/uk/plugins/reference/alibaba)                             | Додає підтримку провайдера генерації відео.                                                                                                                              | `@openclaw/alibaba-provider`<br />включено в OpenClaw               | contracts: videoGenerationProviders                                                                                                                                                                                                                              |
-| [amazon-bedrock](/uk/plugins/reference/amazon-bedrock)               | Додає підтримку провайдера моделей Amazon Bedrock до OpenClaw.                                                                                                              | `@openclaw/amazon-bedrock-provider`<br />включено в OpenClaw        | providers: amazon-bedrock; contracts: memoryEmbeddingProviders                                                                                                                                                                                                   |
-| [amazon-bedrock-mantle](/uk/plugins/reference/amazon-bedrock-mantle) | Додає підтримку провайдера моделей Amazon Bedrock Mantle до OpenClaw.                                                                                                       | `@openclaw/amazon-bedrock-mantle-provider`<br />включено в OpenClaw | providers: amazon-bedrock-mantle                                                                                                                                                                                                                                 |
-| [anthropic](/uk/plugins/reference/anthropic)                         | Додає підтримку провайдера моделей Anthropic до OpenClaw.                                                                                                                   | `@openclaw/anthropic-provider`<br />включено в OpenClaw             | providers: anthropic; contracts: mediaUnderstandingProviders                                                                                                                                                                                                     |
-| [anthropic-vertex](/uk/plugins/reference/anthropic-vertex)           | Додає підтримку провайдера моделей Anthropic Vertex до OpenClaw.                                                                                                            | `@openclaw/anthropic-vertex-provider`<br />включено в OpenClaw      | providers: anthropic-vertex                                                                                                                                                                                                                                      |
-| [arcee](/uk/plugins/reference/arcee)                                 | Додає підтримку провайдера моделей Arcee до OpenClaw.                                                                                                                       | `@openclaw/arcee-provider`<br />включено в OpenClaw                 | providers: arcee                                                                                                                                                                                                                                                 |
-| [azure-speech](/uk/plugins/reference/azure-speech)                   | Перетворення тексту на мовлення Azure AI Speech (MP3, нативні голосові нотатки Ogg/Opus, телефонія PCM).                                                                                    | `@openclaw/azure-speech`<br />включено в OpenClaw                   | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [bonjour](/uk/plugins/reference/bonjour)                             | Оголошує локальний OpenClaw Gateway через Bonjour/mDNS.                                                                                                              | `@openclaw/bonjour`<br />включено в OpenClaw                        | plugin                                                                                                                                                                                                                                                           |
-| [browser](/uk/plugins/reference/browser)                             | Додає інструменти, які може викликати агент.                                                                                                                                           | `@openclaw/browser-plugin`<br />включено в OpenClaw                 | contracts: tools; skills                                                                                                                                                                                                                                         |
-| [byteplus](/uk/plugins/reference/byteplus)                           | Додає підтримку провайдерів моделей BytePlus і BytePlus Plan до OpenClaw.                                                                                                     | `@openclaw/byteplus-provider`<br />включено в OpenClaw              | providers: byteplus, byteplus-plan; contracts: videoGenerationProviders                                                                                                                                                                                          |
-| [canvas](/uk/plugins/reference/canvas)                               | Експериментальні поверхні керування Canvas і рендерингу A2UI для спарених вузлів.                                                                                            | `@openclaw/canvas-plugin`<br />включено в OpenClaw                  | contracts: tools                                                                                                                                                                                                                                                 |
-| [cerebras](/uk/plugins/reference/cerebras)                           | Додає підтримку провайдера моделей Cerebras до OpenClaw.                                                                                                                    | `@openclaw/cerebras-provider`<br />включено в OpenClaw              | providers: cerebras                                                                                                                                                                                                                                              |
-| [chutes](/uk/plugins/reference/chutes)                               | Додає підтримку провайдера моделей Chutes до OpenClaw.                                                                                                                      | `@openclaw/chutes-provider`<br />включено в OpenClaw                | providers: chutes                                                                                                                                                                                                                                                |
-| [clickclack](/uk/plugins/reference/clickclack)                       | Додає поверхню каналу Clickclack для надсилання й отримання повідомлень OpenClaw.                                                                                     | `@openclaw/clickclack`<br />включено в OpenClaw                     | channels: clickclack                                                                                                                                                                                                                                             |
-| [cloudflare-ai-gateway](/uk/plugins/reference/cloudflare-ai-gateway) | Додає підтримку провайдера моделей Cloudflare AI Gateway до OpenClaw.                                                                                                       | `@openclaw/cloudflare-ai-gateway-provider`<br />включено в OpenClaw | providers: cloudflare-ai-gateway                                                                                                                                                                                                                                 |
-| [comfy](/uk/plugins/reference/comfy)                                 | Додає підтримку провайдера моделей ComfyUI до OpenClaw.                                                                                                                     | `@openclaw/comfy-provider`<br />включено в OpenClaw                 | providers: comfy; contracts: imageGenerationProviders, musicGenerationProviders, videoGenerationProviders                                                                                                                                                        |
-| [copilot-proxy](/uk/plugins/reference/copilot-proxy)                 | Додає підтримку провайдера моделей Copilot Proxy до OpenClaw.                                                                                                               | `@openclaw/copilot-proxy`<br />включено в OpenClaw                  | providers: copilot-proxy                                                                                                                                                                                                                                         |
-| [deepgram](/uk/plugins/reference/deepgram)                           | Додає підтримку провайдера розуміння медіа. Додає підтримку провайдера транскрибування в реальному часі.                                                                             | `@openclaw/deepgram-provider`<br />включено в OpenClaw              | contracts: mediaUnderstandingProviders, realtimeTranscriptionProviders                                                                                                                                                                                           |
-| [deepinfra](/uk/plugins/reference/deepinfra)                         | Додає підтримку провайдера моделей DeepInfra до OpenClaw.                                                                                                                   | `@openclaw/deepinfra-provider`<br />включено в OpenClaw             | providers: deepinfra; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, speechProviders, videoGenerationProviders                                                                                                      |
-| [deepseek](/uk/plugins/reference/deepseek)                           | Додає підтримку постачальника моделей DeepSeek до OpenClaw.                                                                                                                    | `@openclaw/deepseek-provider`<br />включено в OpenClaw              | providers: deepseek                                                                                                                                                                                                                                              |
-| [document-extract](/uk/plugins/reference/document-extract)           | Витягує текст і резервні зображення сторінок із локальних вкладень документів.                                                                                               | `@openclaw/document-extract-plugin`<br />включено в OpenClaw        | contracts: documentExtractors                                                                                                                                                                                                                                    |
-| [duckduckgo](/uk/plugins/reference/duckduckgo)                       | Додає підтримку постачальника вебпошуку.                                                                                                                                    | `@openclaw/duckduckgo-plugin`<br />включено в OpenClaw              | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [elevenlabs](/uk/plugins/reference/elevenlabs)                       | Додає підтримку постачальника розуміння медіа. Додає підтримку постачальника транскрипції в реальному часі. Додає підтримку постачальника перетворення тексту на мовлення.                                       | `@openclaw/elevenlabs-speech`<br />включено в OpenClaw              | contracts: mediaUnderstandingProviders, realtimeTranscriptionProviders, speechProviders                                                                                                                                                                          |
-| [exa](/uk/plugins/reference/exa)                                     | Додає підтримку постачальника вебпошуку.                                                                                                                                    | `@openclaw/exa-plugin`<br />включено в OpenClaw                     | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [fal](/uk/plugins/reference/fal)                                     | Додає підтримку постачальника моделей fal до OpenClaw.                                                                                                                         | `@openclaw/fal-provider`<br />включено в OpenClaw                   | providers: fal; contracts: imageGenerationProviders, videoGenerationProviders                                                                                                                                                                                    |
-| [file-transfer](/uk/plugins/reference/file-transfer)                 | Отримує, перелічує й записує файли на спарених вузлах через спеціальні команди вузла. Обходить обрізання stdout у bash, використовуючи base64 через node.invoke для двійкових файлів розміром до 16 MB. | `@openclaw/file-transfer`<br />включено в OpenClaw                  | contracts: tools                                                                                                                                                                                                                                                 |
-| [firecrawl](/uk/plugins/reference/firecrawl)                         | Додає інструменти, доступні для виклику агентом. Додає підтримку постачальника веботримання. Додає підтримку постачальника вебпошуку.                                                                        | `@openclaw/firecrawl-plugin`<br />включено в OpenClaw               | contracts: tools, webFetchProviders, webSearchProviders                                                                                                                                                                                                          |
-| [fireworks](/uk/plugins/reference/fireworks)                         | Додає підтримку постачальника моделей Fireworks до OpenClaw.                                                                                                                   | `@openclaw/fireworks-provider`<br />включено в OpenClaw             | providers: fireworks                                                                                                                                                                                                                                             |
-| [github-copilot](/uk/plugins/reference/github-copilot)               | Додає підтримку постачальника моделей GitHub Copilot до OpenClaw.                                                                                                              | `@openclaw/github-copilot-provider`<br />включено в OpenClaw        | providers: github-copilot; contracts: memoryEmbeddingProviders                                                                                                                                                                                                   |
-| [google](/uk/plugins/reference/google)                               | Додає підтримку постачальників моделей Google, Google Gemini CLI, Google Vertex до OpenClaw.                                                                                    | `@openclaw/google-plugin`<br />включено в OpenClaw                  | providers: google, google-gemini-cli, google-vertex; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, musicGenerationProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders, webSearchProviders |
-| [gradium](/uk/plugins/reference/gradium)                             | Додає підтримку постачальника перетворення тексту на мовлення.                                                                                                                                | `@openclaw/gradium-speech`<br />включено в OpenClaw                 | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [groq](/uk/plugins/reference/groq)                                   | Додає підтримку постачальника моделей Groq до OpenClaw.                                                                                                                        | `@openclaw/groq-provider`<br />включено в OpenClaw                  | providers: groq; contracts: mediaUnderstandingProviders                                                                                                                                                                                                          |
-| [huggingface](/uk/plugins/reference/huggingface)                     | Додає підтримку постачальника моделей Hugging Face до OpenClaw.                                                                                                                | `@openclaw/huggingface-provider`<br />включено в OpenClaw           | providers: huggingface                                                                                                                                                                                                                                           |
-| [imessage](/uk/plugins/reference/imessage)                           | Додає поверхню каналу iMessage для надсилання й отримання повідомлень OpenClaw.                                                                                       | `@openclaw/imessage`<br />включено в OpenClaw                       | channels: imessage                                                                                                                                                                                                                                               |
-| [inworld](/uk/plugins/reference/inworld)                             | Потокове перетворення тексту на мовлення Inworld (MP3, OGG_OPUS, PCM-телефонія).                                                                                                     | `@openclaw/inworld-speech`<br />включено в OpenClaw                 | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [irc](/uk/plugins/reference/irc)                                     | Додає поверхню каналу IRC для надсилання й отримання повідомлень OpenClaw.                                                                                            | `@openclaw/irc`<br />включено в OpenClaw                            | channels: irc                                                                                                                                                                                                                                                    |
-| [kilocode](/uk/plugins/reference/kilocode)                           | Додає підтримку постачальника моделей Kilocode до OpenClaw.                                                                                                                    | `@openclaw/kilocode-provider`<br />включено в OpenClaw              | providers: kilocode                                                                                                                                                                                                                                              |
-| [kimi](/uk/plugins/reference/kimi)                                   | Додає підтримку постачальників моделей Kimi, Kimi Coding до OpenClaw.                                                                                                           | `@openclaw/kimi-provider`<br />включено в OpenClaw                  | providers: kimi, kimi-coding                                                                                                                                                                                                                                     |
-| [litellm](/uk/plugins/reference/litellm)                             | Додає підтримку постачальника моделей LiteLLM до OpenClaw.                                                                                                                     | `@openclaw/litellm-provider`<br />включено в OpenClaw               | providers: litellm; contracts: imageGenerationProviders                                                                                                                                                                                                          |
-| [llm-task](/uk/plugins/reference/llm-task)                           | Універсальний LLM-інструмент лише для JSON для структурованих завдань, доступний для виклику з робочих процесів.                                                                                             | `@openclaw/llm-task`<br />включено в OpenClaw                       | contracts: tools                                                                                                                                                                                                                                                 |
-| [lmstudio](/uk/plugins/reference/lmstudio)                           | Додає підтримку постачальника моделей LM Studio до OpenClaw.                                                                                                                   | `@openclaw/lmstudio-provider`<br />включено до OpenClaw              | providers: lmstudio; contracts: memoryEmbeddingProviders                                                                                                                                                                                                         |
-| [mattermost](/uk/plugins/reference/mattermost)                       | Додає поверхню каналу Mattermost для надсилання й отримання повідомлень OpenClaw.                                                                                     | `@openclaw/mattermost`<br />включено до OpenClaw                     | channels: mattermost                                                                                                                                                                                                                                             |
-| [memory-core](/uk/plugins/reference/memory-core)                     | Додає підтримку постачальників векторних представлень пам’яті. Додає інструменти, які може викликати агент.                                                                                                   | `@openclaw/memory-core`<br />включено до OpenClaw                    | contracts: memoryEmbeddingProviders, tools                                                                                                                                                                                                                       |
-| [memory-wiki](/uk/plugins/reference/memory-wiki)                     | Постійний компілятор wiki та сховище знань, сумісне з Obsidian, для OpenClaw.                                                                                         | `@openclaw/memory-wiki`<br />включено до OpenClaw                    | contracts: tools; skills                                                                                                                                                                                                                                         |
-| [microsoft](/uk/plugins/reference/microsoft)                         | Додає підтримку постачальника перетворення тексту на мовлення.                                                                                                                                | `@openclaw/microsoft-speech`<br />включено до OpenClaw               | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [microsoft-foundry](/uk/plugins/reference/microsoft-foundry)         | Додає підтримку постачальника моделей Microsoft Foundry до OpenClaw.                                                                                                           | `@openclaw/microsoft-foundry`<br />включено до OpenClaw              | providers: microsoft-foundry                                                                                                                                                                                                                                     |
-| [migrate-claude](/uk/plugins/reference/migrate-claude)               | Імпортує інструкції Claude Code і Claude Desktop, сервери MCP, Skills і безпечну конфігурацію в OpenClaw.                                                      | `@openclaw/migrate-claude`<br />включено до OpenClaw                 | contracts: migrationProviders                                                                                                                                                                                                                                    |
-| [migrate-hermes](/uk/plugins/reference/migrate-hermes)               | Імпортує конфігурацію Hermes, пам’ять, Skills і підтримувані облікові дані в OpenClaw.                                                                             | `@openclaw/migrate-hermes`<br />включено до OpenClaw                 | contracts: migrationProviders                                                                                                                                                                                                                                    |
-| [minimax](/uk/plugins/reference/minimax)                             | Додає підтримку постачальників моделей MiniMax і MiniMax Portal до OpenClaw.                                                                                                     | `@openclaw/minimax-provider`<br />включено до OpenClaw               | providers: minimax, minimax-portal; contracts: imageGenerationProviders, mediaUnderstandingProviders, musicGenerationProviders, speechProviders, videoGenerationProviders, webSearchProviders                                                                    |
-| [mistral](/uk/plugins/reference/mistral)                             | Додає підтримку постачальника моделей Mistral до OpenClaw.                                                                                                                     | `@openclaw/mistral-provider`<br />включено до OpenClaw               | providers: mistral; contracts: mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders                                                                                                                                             |
-| [moonshot](/uk/plugins/reference/moonshot)                           | Додає підтримку постачальника моделей Moonshot до OpenClaw.                                                                                                                    | `@openclaw/moonshot-provider`<br />включено до OpenClaw              | providers: moonshot; contracts: mediaUnderstandingProviders, webSearchProviders                                                                                                                                                                                  |
-| [nvidia](/uk/plugins/reference/nvidia)                               | Додає підтримку постачальника моделей NVIDIA до OpenClaw.                                                                                                                      | `@openclaw/nvidia-provider`<br />включено до OpenClaw                | providers: nvidia                                                                                                                                                                                                                                                |
-| [oc-path](/uk/plugins/reference/oc-path)                             | Додає CLI шляху openclaw для адресації файлів робочого простору oc://.                                                                                                      | `@openclaw/oc-path`<br />включено до OpenClaw                        | plugin                                                                                                                                                                                                                                                           |
-| [ollama](/uk/plugins/reference/ollama)                               | Додає підтримку постачальника моделей Ollama до OpenClaw.                                                                                                                      | `@openclaw/ollama-provider`<br />включено до OpenClaw                | providers: ollama; contracts: memoryEmbeddingProviders, webSearchProviders                                                                                                                                                                                       |
-| [open-prose](/uk/plugins/reference/open-prose)                       | Пакет Skills для OpenProse VM із slash-командою /prose.                                                                                                                 | `@openclaw/open-prose`<br />включено до OpenClaw                     | skills                                                                                                                                                                                                                                                           |
-| [openai](/uk/plugins/reference/openai)                               | Додає підтримку постачальників моделей OpenAI і OpenAI Codex до OpenClaw.                                                                                                        | `@openclaw/openai-provider`<br />включено до OpenClaw                | providers: openai, openai-codex; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders                                   |
-| [opencode](/uk/plugins/reference/opencode)                           | Додає підтримку постачальника моделей OpenCode до OpenClaw.                                                                                                                    | `@openclaw/opencode-provider`<br />включено до OpenClaw              | providers: opencode; contracts: mediaUnderstandingProviders                                                                                                                                                                                                      |
-| [opencode-go](/uk/plugins/reference/opencode-go)                     | Додає підтримку постачальника моделей OpenCode Go до OpenClaw.                                                                                                                 | `@openclaw/opencode-go-provider`<br />включено до OpenClaw           | providers: opencode-go; contracts: mediaUnderstandingProviders                                                                                                                                                                                                   |
-| [openrouter](/uk/plugins/reference/openrouter)                       | Додає підтримку постачальника моделей OpenRouter до OpenClaw.                                                                                                                  | `@openclaw/openrouter-provider`<br />включено до OpenClaw            | providers: openrouter; contracts: imageGenerationProviders, mediaUnderstandingProviders, speechProviders, videoGenerationProviders                                                                                                                               |
-| [openshell](/uk/plugins/reference/openshell)                         | Бекенд пісочниці на основі OpenShell із дзеркальними локальними робочими просторами та виконанням команд через SSH.                                                                 | `@openclaw/openshell-sandbox`<br />включено до OpenClaw              | plugin                                                                                                                                                                                                                                                           |
-| [perplexity](/uk/plugins/reference/perplexity)                       | Додає підтримку постачальника вебпошуку.                                                                                                                                    | `@openclaw/perplexity-plugin`<br />включено до OpenClaw              | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [qianfan](/uk/plugins/reference/qianfan)                             | Додає до OpenClaw підтримку постачальника моделей Qianfan.                                                                                                           | `@openclaw/qianfan-provider`<br />включено до OpenClaw               | providers: qianfan                                                                                                                                                                                                                                               |
-| [qwen](/uk/plugins/reference/qwen)                                   | Додає до OpenClaw підтримку постачальників моделей Qwen, Qwen Cloud, Model Studio, DashScope.                                                                        | `@openclaw/qwen-provider`<br />включено до OpenClaw                  | providers: qwen, qwencloud, modelstudio, dashscope; contracts: mediaUnderstandingProviders, videoGenerationProviders                                                                                                                                             |
-| [runway](/uk/plugins/reference/runway)                               | Додає підтримку постачальника генерації відео.                                                                                                                       | `@openclaw/runway-provider`<br />включено до OpenClaw                | contracts: videoGenerationProviders                                                                                                                                                                                                                              |
-| [searxng](/uk/plugins/reference/searxng)                             | Додає підтримку постачальника вебпошуку.                                                                                                                             | `@openclaw/searxng-plugin`<br />включено до OpenClaw                 | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [senseaudio](/uk/plugins/reference/senseaudio)                       | Додає підтримку постачальника розуміння медіа.                                                                                                                       | `@openclaw/senseaudio-provider`<br />включено до OpenClaw            | contracts: mediaUnderstandingProviders                                                                                                                                                                                                                           |
-| [sglang](/uk/plugins/reference/sglang)                               | Додає до OpenClaw підтримку постачальника моделей SGLang.                                                                                                            | `@openclaw/sglang-provider`<br />включено до OpenClaw                | providers: sglang                                                                                                                                                                                                                                                |
-| [signal](/uk/plugins/reference/signal)                               | Додає поверхню каналу Signal для надсилання й отримання повідомлень OpenClaw.                                                                                        | `@openclaw/signal`<br />включено до OpenClaw                         | channels: signal                                                                                                                                                                                                                                                 |
-| [skill-workshop](/uk/plugins/reference/skill-workshop)               | Фіксує повторювані робочі процеси як Skills робочої області з очікуванням перевірки, безпечними записами та оновленням промпта Skills.                              | `@openclaw/skill-workshop`<br />включено до OpenClaw                 | contracts: tools                                                                                                                                                                                                                                                 |
-| [slack](/uk/plugins/reference/slack)                                 | Додає поверхню каналу Slack для надсилання й отримання повідомлень OpenClaw.                                                                                         | `@openclaw/slack`<br />включено до OpenClaw                          | channels: slack                                                                                                                                                                                                                                                  |
-| [stepfun](/uk/plugins/reference/stepfun)                             | Додає до OpenClaw підтримку постачальників моделей StepFun, StepFun Plan.                                                                                            | `@openclaw/stepfun-provider`<br />включено до OpenClaw               | providers: stepfun, stepfun-plan                                                                                                                                                                                                                                 |
-| [synthetic](/uk/plugins/reference/synthetic)                         | Додає до OpenClaw підтримку постачальника моделей Synthetic.                                                                                                         | `@openclaw/synthetic-provider`<br />включено до OpenClaw             | providers: synthetic                                                                                                                                                                                                                                             |
-| [tavily](/uk/plugins/reference/tavily)                               | Додає інструменти, які може викликати агент. Додає підтримку постачальника вебпошуку.                                                                                | `@openclaw/tavily-plugin`<br />включено до OpenClaw                  | contracts: tools, webSearchProviders; skills                                                                                                                                                                                                                     |
-| [telegram](/uk/plugins/reference/telegram)                           | Додає поверхню каналу Telegram для надсилання й отримання повідомлень OpenClaw.                                                                                      | `@openclaw/telegram`<br />включено до OpenClaw                       | channels: telegram                                                                                                                                                                                                                                               |
-| [tencent](/uk/plugins/reference/tencent)                             | Додає до OpenClaw підтримку постачальника моделей Tencent TokenHub.                                                                                                  | `@openclaw/tencent-provider`<br />включено до OpenClaw               | providers: tencent-tokenhub                                                                                                                                                                                                                                      |
-| [together](/uk/plugins/reference/together)                           | Додає до OpenClaw підтримку постачальника моделей Together.                                                                                                          | `@openclaw/together-provider`<br />включено до OpenClaw              | providers: together; contracts: videoGenerationProviders                                                                                                                                                                                                         |
-| [tokenjuice](/uk/plugins/reference/tokenjuice)                       | Стискає результати інструментів exec і bash за допомогою редукторів tokenjuice.                                                                                      | `@openclaw/tokenjuice`<br />включено до OpenClaw                     | contracts: agentToolResultMiddleware                                                                                                                                                                                                                             |
-| [tts-local-cli](/uk/plugins/reference/tts-local-cli)                 | Додає підтримку постачальника перетворення тексту на мовлення.                                                                                                       | `@openclaw/tts-local-cli`<br />включено до OpenClaw                  | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [venice](/uk/plugins/reference/venice)                               | Додає до OpenClaw підтримку постачальника моделей Venice.                                                                                                            | `@openclaw/venice-provider`<br />включено до OpenClaw                | providers: venice                                                                                                                                                                                                                                                |
-| [vercel-ai-gateway](/uk/plugins/reference/vercel-ai-gateway)         | Додає до OpenClaw підтримку постачальника моделей Vercel AI Gateway.                                                                                                 | `@openclaw/vercel-ai-gateway-provider`<br />включено до OpenClaw     | providers: vercel-ai-gateway                                                                                                                                                                                                                                     |
-| [vllm](/uk/plugins/reference/vllm)                                   | Додає до OpenClaw підтримку постачальника моделей vLLM.                                                                                                              | `@openclaw/vllm-provider`<br />включено до OpenClaw                  | providers: vllm                                                                                                                                                                                                                                                  |
-| [volcengine](/uk/plugins/reference/volcengine)                       | Додає до OpenClaw підтримку постачальників моделей Volcengine, Volcengine Plan.                                                                                      | `@openclaw/volcengine-provider`<br />включено до OpenClaw            | providers: volcengine, volcengine-plan; contracts: speechProviders                                                                                                                                                                                               |
-| [voyage](/uk/plugins/reference/voyage)                               | Додає підтримку провайдера вбудовування пам’яті.                                                                                                                     | `@openclaw/voyage-provider`<br />включено до OpenClaw                | contracts: memoryEmbeddingProviders                                                                                                                                                                                                                              |
-| [vydra](/uk/plugins/reference/vydra)                                 | Додає підтримку провайдера моделей Vydra до OpenClaw.                                                                                                                | `@openclaw/vydra-provider`<br />включено до OpenClaw                 | providers: vydra; contracts: imageGenerationProviders, speechProviders, videoGenerationProviders                                                                                                                                                                 |
-| [web-readability](/uk/plugins/reference/web-readability)             | Витягує придатний для читання вміст статті з відповідей локального веботримання HTML.                                                                                | `@openclaw/web-readability-plugin`<br />включено до OpenClaw         | contracts: webContentExtractors                                                                                                                                                                                                                                  |
-| [webhooks](/uk/plugins/reference/webhooks)                           | Автентифіковані вхідні Webhook, які прив’язують зовнішню автоматизацію до OpenClaw TaskFlows.                                                                       | `@openclaw/webhooks`<br />включено до OpenClaw                       | plugin                                                                                                                                                                                                                                                           |
-| [xai](/uk/plugins/reference/xai)                                     | Додає підтримку провайдера моделей xAI до OpenClaw.                                                                                                                  | `@openclaw/xai-plugin`<br />включено до OpenClaw                     | providers: xai; contracts: imageGenerationProviders, mediaUnderstandingProviders, realtimeTranscriptionProviders, speechProviders, tools, videoGenerationProviders, webSearchProviders                                                                           |
-| [xiaomi](/uk/plugins/reference/xiaomi)                               | Додає підтримку провайдера моделей Xiaomi до OpenClaw.                                                                                                               | `@openclaw/xiaomi-provider`<br />включено до OpenClaw                | providers: xiaomi; contracts: speechProviders                                                                                                                                                                                                                    |
-| [zai](/uk/plugins/reference/zai)                                     | Додає підтримку провайдера моделей Z.AI до OpenClaw.                                                                                                                 | `@openclaw/zai-provider`<br />включено до OpenClaw                   | providers: zai; contracts: mediaUnderstandingProviders                                                                                                                                                                                                           |
+## Основний пакет npm
+
+59 Plugin
+
+- **[admin-http-rpc](/uk/plugins/reference/admin-http-rpc)** (`@openclaw/admin-http-rpc`) - включено в OpenClaw. Адміністративна кінцева точка HTTP RPC OpenClaw.
+
+- **[alibaba](/uk/plugins/reference/alibaba)** (`@openclaw/alibaba-provider`) - включено в OpenClaw. Додає підтримку провайдера генерації відео.
+
+- **[anthropic](/uk/plugins/reference/anthropic)** (`@openclaw/anthropic-provider`) - включено в OpenClaw. Додає до OpenClaw підтримку провайдера моделей Anthropic.
+
+- **[azure-speech](/uk/plugins/reference/azure-speech)** (`@openclaw/azure-speech`) - включено в OpenClaw. Azure AI Speech text-to-speech (MP3, нативні голосові нотатки Ogg/Opus, PCM-телефонія).
+
+- **[bonjour](/uk/plugins/reference/bonjour)** (`@openclaw/bonjour`) - включено в OpenClaw. Оголошує локальний Gateway OpenClaw через Bonjour/mDNS.
+
+- **[browser](/uk/plugins/reference/browser)** (`@openclaw/browser-plugin`) - включено в OpenClaw. Додає інструменти, які може викликати агент.
+
+- **[byteplus](/uk/plugins/reference/byteplus)** (`@openclaw/byteplus-provider`) - включено в OpenClaw. Додає до OpenClaw підтримку провайдерів моделей BytePlus, BytePlus Plan.
+
+- **[canvas](/uk/plugins/reference/canvas)** (`@openclaw/canvas-plugin`) - включено в OpenClaw. Експериментальні поверхні керування Canvas і рендерингу A2UI для спарених вузлів.
+
+- **[codex-supervisor](/uk/plugins/reference/codex-supervisor)** (`@openclaw/codex-supervisor`) - включено в OpenClaw. Наглядає за сеансами app-server Codex з OpenClaw.
+
+- **[cohere](/uk/plugins/reference/cohere)** (`@openclaw/cohere-provider`) - включено в OpenClaw; npm; ClawHub: `clawhub:@openclaw/cohere-provider`. Plugin провайдера Cohere для OpenClaw.
+
+- **[comfy](/uk/plugins/reference/comfy)** (`@openclaw/comfy-provider`) - включено в OpenClaw. Додає до OpenClaw підтримку провайдера моделей ComfyUI.
+
+- **[copilot-proxy](/uk/plugins/reference/copilot-proxy)** (`@openclaw/copilot-proxy`) - включено в OpenClaw. Додає до OpenClaw підтримку провайдера моделей Copilot Proxy.
+
+- **[deepgram](/uk/plugins/reference/deepgram)** (`@openclaw/deepgram-provider`) - включено в OpenClaw. Додає підтримку провайдера розуміння медіа. Додає підтримку провайдера транскрипції в реальному часі.
+
+- **[document-extract](/uk/plugins/reference/document-extract)** (`@openclaw/document-extract-plugin`) - включено в OpenClaw. Витягує текст і резервні зображення сторінок з локальних вкладень документів.
+
+- **[duckduckgo](/uk/plugins/reference/duckduckgo)** (`@openclaw/duckduckgo-plugin`) - включено в OpenClaw. Додає підтримку провайдера вебпошуку.
+
+- **[elevenlabs](/uk/plugins/reference/elevenlabs)** (`@openclaw/elevenlabs-speech`) - включено в OpenClaw. Додає підтримку провайдера розуміння медіа. Додає підтримку провайдера транскрипції в реальному часі. Додає підтримку провайдера text-to-speech.
+
+- **[fal](/uk/plugins/reference/fal)** (`@openclaw/fal-provider`) - включено в OpenClaw. Додає до OpenClaw підтримку провайдера моделей fal.
+
+- **[file-transfer](/uk/plugins/reference/file-transfer)** (`@openclaw/file-transfer`) - включено в OpenClaw. Отримує, перелічує та записує файли на спарених вузлах через виділені команди вузла. Обходить обрізання stdout bash, використовуючи base64 через node.invoke для бінарних файлів до 16 MB.
+
+- **[github-copilot](/uk/plugins/reference/github-copilot)** (`@openclaw/github-copilot-provider`) - включено в OpenClaw. Додає до OpenClaw підтримку провайдера моделей GitHub Copilot.
+
+- **[google](/uk/plugins/reference/google)** (`@openclaw/google-plugin`) - включено в OpenClaw. Додає до OpenClaw підтримку провайдерів моделей Google, Google Gemini CLI, Google Vertex.
+
+- **[huggingface](/uk/plugins/reference/huggingface)** (`@openclaw/huggingface-provider`) - включено в OpenClaw. Додає до OpenClaw підтримку провайдера моделей Hugging Face.
+
+- **[imessage](/uk/plugins/reference/imessage)** (`@openclaw/imessage`) - включено в OpenClaw. Додає поверхню каналу iMessage для надсилання й отримання повідомлень OpenClaw.
+
+- **[litellm](/uk/plugins/reference/litellm)** (`@openclaw/litellm-provider`) - включено в OpenClaw. Додає до OpenClaw підтримку провайдера моделей LiteLLM.
+
+- **[llm-task](/uk/plugins/reference/llm-task)** (`@openclaw/llm-task`) - включено в OpenClaw. Універсальний JSON-only інструмент LLM для структурованих завдань, який можна викликати з workflows.
+
+- **[lmstudio](/uk/plugins/reference/lmstudio)** (`@openclaw/lmstudio-provider`) - включено в OpenClaw. Додає до OpenClaw підтримку провайдера моделей LM Studio.
+
+- **[memory-core](/uk/plugins/reference/memory-core)** (`@openclaw/memory-core`) - включено в OpenClaw. Додає інструменти, які може викликати агент.
+
+- **[memory-wiki](/uk/plugins/reference/memory-wiki)** (`@openclaw/memory-wiki`) - включено в OpenClaw. Постійний компілятор wiki та сумісне з Obsidian сховище знань для OpenClaw.
+
+- **[microsoft](/uk/plugins/reference/microsoft)** (`@openclaw/microsoft-speech`) - включено в OpenClaw. Додає підтримку провайдера text-to-speech.
+
+- **[microsoft-foundry](/uk/plugins/reference/microsoft-foundry)** (`@openclaw/microsoft-foundry`) - включено в OpenClaw. Додає до OpenClaw підтримку провайдера моделей Microsoft Foundry.
+
+- **[migrate-claude](/uk/plugins/reference/migrate-claude)** (`@openclaw/migrate-claude`) - включено в OpenClaw. Імпортує інструкції Claude Code і Claude Desktop, сервери MCP, skills і безпечну конфігурацію в OpenClaw.
+
+- **[migrate-hermes](/uk/plugins/reference/migrate-hermes)** (`@openclaw/migrate-hermes`) - включено в OpenClaw. Імпортує конфігурацію Hermes, пам’ять, skills і підтримувані облікові дані в OpenClaw.
+
+- **[minimax](/uk/plugins/reference/minimax)** (`@openclaw/minimax-provider`) - включено в OpenClaw. Додає до OpenClaw підтримку провайдерів моделей MiniMax, MiniMax Portal.
+
+- **[mistral](/uk/plugins/reference/mistral)** (`@openclaw/mistral-provider`) - включено в OpenClaw. Додає до OpenClaw підтримку провайдера моделей Mistral.
+
+- **[novita](/uk/plugins/reference/novita)** (`@openclaw/novita-provider`) - включено в OpenClaw. Додає до OpenClaw підтримку провайдерів моделей Novita, Novita AI, Novitaai.
+
+- **[nvidia](/uk/plugins/reference/nvidia)** (`@openclaw/nvidia-provider`) - включено в OpenClaw. Додає до OpenClaw підтримку провайдера моделей NVIDIA.
+
+- **[oc-path](/uk/plugins/reference/oc-path)** (`@openclaw/oc-path`) - включено в OpenClaw. Додає openclaw path CLI для адресації файлів workspace через oc://.
+
+- **[ollama](/uk/plugins/reference/ollama)** (`@openclaw/ollama-provider`) - включено в OpenClaw. Додає до OpenClaw підтримку провайдерів моделей Ollama, Ollama Cloud.
+
+- **[open-prose](/uk/plugins/reference/open-prose)** (`@openclaw/open-prose`) - включено в OpenClaw. Пакет skill OpenProse VM із slash-командою /prose.
+
+- **[openai](/uk/plugins/reference/openai)** (`@openclaw/openai-provider`) - включено в OpenClaw. Додає до OpenClaw підтримку провайдера моделей OpenAI.
+
+- **[opencode](/uk/plugins/reference/opencode)** (`@openclaw/opencode-provider`) - включено в OpenClaw. Додає до OpenClaw підтримку провайдера моделей OpenCode.
+
+- **[opencode-go](/uk/plugins/reference/opencode-go)** (`@openclaw/opencode-go-provider`) - включено в OpenClaw. Додає до OpenClaw підтримку провайдера моделей OpenCode Go.
+
+- **[openrouter](/uk/plugins/reference/openrouter)** (`@openclaw/openrouter-provider`) - включено в OpenClaw. Додає до OpenClaw підтримку провайдера моделей OpenRouter.
+
+- **[policy](/uk/plugins/reference/policy)** (`@openclaw/policy`) - включено в OpenClaw. Додає перевірки doctor на основі політик для відповідності workspace.
+
+- **[runway](/uk/plugins/reference/runway)** (`@openclaw/runway-provider`) - включено в OpenClaw. Додає підтримку провайдера генерації відео.
+
+- **[senseaudio](/uk/plugins/reference/senseaudio)** (`@openclaw/senseaudio-provider`) - включено в OpenClaw. Додає підтримку провайдера розуміння медіа.
+
+- **[sglang](/uk/plugins/reference/sglang)** (`@openclaw/sglang-provider`) - включено в OpenClaw. Додає до OpenClaw підтримку провайдера моделей SGLang.
+
+- **[synthetic](/uk/plugins/reference/synthetic)** (`@openclaw/synthetic-provider`) - включено в OpenClaw. Додає до OpenClaw підтримку провайдера моделей Synthetic.
+
+- **[telegram](/uk/plugins/reference/telegram)** (`@openclaw/telegram`) - включено в OpenClaw. Додає поверхню каналу Telegram для надсилання й отримання повідомлень OpenClaw.
+
+- **[together](/uk/plugins/reference/together)** (`@openclaw/together-provider`) - включено в OpenClaw. Додає до OpenClaw підтримку провайдера моделей Together.
+
+- **[tts-local-cli](/uk/plugins/reference/tts-local-cli)** (`@openclaw/tts-local-cli`) - включено в OpenClaw. Додає підтримку провайдера text-to-speech.
+
+- **[vllm](/uk/plugins/reference/vllm)** (`@openclaw/vllm-provider`) - включено в OpenClaw. Додає до OpenClaw підтримку провайдера моделей vLLM.
+
+- **[volcengine](/uk/plugins/reference/volcengine)** (`@openclaw/volcengine-provider`) - включено в OpenClaw. Додає до OpenClaw підтримку провайдерів моделей Volcengine, Volcengine Plan.
+
+- **[voyage](/uk/plugins/reference/voyage)** (`@openclaw/voyage-provider`) - включено в OpenClaw. Додає підтримку провайдера memory embedding.
+
+- **[vydra](/uk/plugins/reference/vydra)** (`@openclaw/vydra-provider`) - включено в OpenClaw. Додає до OpenClaw підтримку провайдера моделей Vydra.
+
+- **[web-readability](/uk/plugins/reference/web-readability)** (`@openclaw/web-readability-plugin`) - включено в OpenClaw. Витягує придатний для читання вміст статей із локальних HTML-відповідей веботримання.
+
+- **[webhooks](/uk/plugins/reference/webhooks)** (`@openclaw/webhooks`) - включено в OpenClaw. Автентифіковані вхідні webhooks, які прив’язують зовнішню автоматизацію до OpenClaw TaskFlows.
+
+- **[workboard](/uk/plugins/reference/workboard)** (`@openclaw/workboard`) - включено в OpenClaw. Dashboard workboard для issues і сеансів, якими володіє агент.
+
+- **[xai](/uk/plugins/reference/xai)** (`@openclaw/xai-plugin`) - включено в OpenClaw. Додає до OpenClaw підтримку провайдера моделей xAI.
+
+- **[xiaomi](/uk/plugins/reference/xiaomi)** (`@openclaw/xiaomi-provider`) - включено в OpenClaw. Додає до OpenClaw підтримку провайдерів моделей Xiaomi, Xiaomi Token Plan.
 
 ## Офіційні зовнішні пакети
 
-| Plugin                                                              | Опис                                                                                         | Розповсюдження                                                                                  | Поверхня                                                                     |
-| ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
-| [acpx](/uk/plugins/reference/acpx)                                     | Вбудований бекенд середовища виконання ACP із керуванням сеансами й транспортом на боці plugin. | `@openclaw/acpx`<br />npm; ClawHub                                                               | skills                                                                       |
-| [brave](/uk/plugins/reference/brave)                                   | Додає підтримку провайдера вебпошуку.                                                        | `@openclaw/brave-plugin`<br />npm; ClawHub                                                       | contracts: webSearchProviders                                                |
-| [codex](/uk/plugins/reference/codex)                                   | Обв’язка сервера застосунку Codex і каталог моделей GPT, керований Codex.                    | `@openclaw/codex`<br />npm; ClawHub                                                              | providers: codex; contracts: mediaUnderstandingProviders, migrationProviders |
-| [diagnostics-otel](/uk/plugins/reference/diagnostics-otel)             | Експортер діагностики OpenClaw для OpenTelemetry.                                            | `@openclaw/diagnostics-otel`<br />npm; ClawHub: `clawhub:@openclaw/diagnostics-otel`             | plugin                                                                       |
-| [diagnostics-prometheus](/uk/plugins/reference/diagnostics-prometheus) | Експортер діагностики OpenClaw для Prometheus.                                               | `@openclaw/diagnostics-prometheus`<br />npm; ClawHub: `clawhub:@openclaw/diagnostics-prometheus` | plugin                                                                       |
-| [diffs](/uk/plugins/reference/diffs)                                   | Переглядач diff лише для читання та рендерер файлів для агентів.                             | `@openclaw/diffs`<br />npm; ClawHub                                                              | contracts: tools; skills                                                     |
-| [discord](/uk/plugins/reference/discord)                               | Додає поверхню каналу Discord для надсилання й отримання повідомлень OpenClaw.               | `@openclaw/discord`<br />npm; ClawHub                                                            | channels: discord                                                            |
-| [feishu](/uk/plugins/reference/feishu)                                 | Додає поверхню каналу Feishu для надсилання й отримання повідомлень OpenClaw.                | `@openclaw/feishu`<br />npm; ClawHub                                                             | channels: feishu; contracts: tools; skills                                   |
-| [google-meet](/uk/plugins/reference/google-meet)                       | Приєднання до викликів Google Meet через транспорти Chrome або Twilio.                       | `@openclaw/google-meet`<br />npm; ClawHub                                                        | contracts: tools                                                             |
-| [googlechat](/uk/plugins/reference/googlechat)                         | Додає поверхню каналу Google Chat для надсилання й отримання повідомлень OpenClaw.           | `@openclaw/googlechat`<br />npm; ClawHub                                                         | channels: googlechat                                                         |
-| [line](/uk/plugins/reference/line)                                     | Додає поверхню каналу LINE для надсилання й отримання повідомлень OpenClaw.                  | `@openclaw/line`<br />npm; ClawHub                                                               | channels: line                                                               |
-| [lobster](/uk/plugins/reference/lobster)                               | Типізований інструмент робочих процесів із відновлюваними погодженнями.                      | `@openclaw/lobster`<br />npm; ClawHub                                                            | contracts: tools                                                             |
-| [matrix](/uk/plugins/reference/matrix)                                 | Додає поверхню каналу Matrix для надсилання й отримання повідомлень OpenClaw.                | `@openclaw/matrix`<br />ClawHub: `clawhub:@openclaw/matrix`; npm                                 | channels: matrix                                                             |
-| [memory-lancedb](/uk/plugins/reference/memory-lancedb)                 | Додає інструменти, доступні агенту для виклику.                                              | `@openclaw/memory-lancedb`<br />npm; ClawHub                                                     | contracts: tools                                                             |
-| [msteams](/uk/plugins/reference/msteams)                               | Додає поверхню каналу Microsoft Teams для надсилання й отримання повідомлень OpenClaw.       | `@openclaw/msteams`<br />npm; ClawHub                                                            | channels: msteams                                                            |
-| [nextcloud-talk](/uk/plugins/reference/nextcloud-talk)                 | Додає поверхню каналу Nextcloud Talk для надсилання й отримання повідомлень OpenClaw.        | `@openclaw/nextcloud-talk`<br />npm; ClawHub                                                     | channels: nextcloud-talk                                                     |
-| [nostr](/uk/plugins/reference/nostr)                                   | Додає поверхню каналу Nostr для надсилання й отримання повідомлень OpenClaw.                 | `@openclaw/nostr`<br />npm; ClawHub                                                              | channels: nostr                                                              |
-| [qqbot](/uk/plugins/reference/qqbot)                                   | Додає поверхню каналу QQ Bot для надсилання й отримання повідомлень OpenClaw.                | `@openclaw/qqbot`<br />npm; ClawHub                                                              | channels: qqbot; contracts: tools; skills                                    |
-| [synology-chat](/uk/plugins/reference/synology-chat)                   | Додає поверхню каналу Synology Chat для надсилання й отримання повідомлень OpenClaw.         | `@openclaw/synology-chat`<br />npm; ClawHub                                                      | channels: synology-chat                                                      |
-| [tlon](/uk/plugins/reference/tlon)                                     | Додає поверхню каналу Tlon для надсилання й отримання повідомлень OpenClaw.                  | `@openclaw/tlon`<br />npm; ClawHub                                                               | channels: tlon; contracts: tools; skills                                     |
-| [twitch](/uk/plugins/reference/twitch)                                 | Додає поверхню каналу Twitch для надсилання й отримання повідомлень OpenClaw.                | `@openclaw/twitch`<br />npm; ClawHub                                                             | channels: twitch                                                             |
-| [voice-call](/uk/plugins/reference/voice-call)                         | Додає інструменти, доступні агенту для виклику.                                              | `@openclaw/voice-call`<br />npm; ClawHub                                                         | contracts: tools                                                             |
-| [whatsapp](/uk/plugins/reference/whatsapp)                             | Додає поверхню каналу WhatsApp для надсилання й отримання повідомлень OpenClaw.              | `@openclaw/whatsapp`<br />npm; ClawHub                                                           | channels: whatsapp                                                           |
-| [zalo](/uk/plugins/reference/zalo)                                     | Додає поверхню каналу Zalo для надсилання й отримання повідомлень OpenClaw.                  | `@openclaw/zalo`<br />npm; ClawHub                                                               | channels: zalo                                                               |
-| [zalouser](/uk/plugins/reference/zalouser)                             | Додає поверхню каналу Zalo Personal для надсилання й отримання повідомлень OpenClaw.         | `@openclaw/zalouser`<br />npm; ClawHub                                                           | channels: zalouser; contracts: tools                                         |
+68 Plugin
 
-## Лише з робочої копії вихідного коду
+- **[acpx](/uk/plugins/reference/acpx)** (`@openclaw/acpx`) - npm; ClawHub. Backend runtime ACP OpenClaw з керуванням сеансами й транспортом, яким володіє Plugin.
 
-| Plugin                                      | Опис                                                                                  | Розповсюдження                                  | Поверхня             |
-| ------------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------ | -------------------- |
-| [qa-channel](/uk/plugins/reference/qa-channel) | Додає поверхню каналу QA Channel для надсилання й отримання повідомлень OpenClaw.     | `@openclaw/qa-channel`<br />лише з робочої копії вихідного коду | channels: qa-channel |
-| [qa-lab](/uk/plugins/reference/qa-lab)         | Plugin лабораторії QA OpenClaw із приватним інтерфейсом зневаджувача та runner сценаріїв. | `@openclaw/qa-lab`<br />лише з робочої копії вихідного коду     | plugin               |
-| [qa-matrix](/uk/plugins/reference/qa-matrix)   | Runner і substrate транспорту Matrix QA.                                              | `@openclaw/qa-matrix`<br />лише з робочої копії вихідного коду  | plugin               |
+- **[amazon-bedrock](/uk/plugins/reference/amazon-bedrock)** (`@openclaw/amazon-bedrock-provider`) - npm; ClawHub. Plugin провайдера Amazon Bedrock для OpenClaw з виявленням моделей, embeddings і підтримкою guardrail.
+
+- **[amazon-bedrock-mantle](/uk/plugins/reference/amazon-bedrock-mantle)** (`@openclaw/amazon-bedrock-mantle-provider`) - npm; ClawHub. Plugin провайдера OpenClaw Amazon Bedrock Mantle для маршрутизації моделей, сумісної з OpenAI.
+
+- **[anthropic-vertex](/uk/plugins/reference/anthropic-vertex)** (`@openclaw/anthropic-vertex-provider`) - npm; ClawHub. Plugin провайдера OpenClaw Anthropic Vertex для моделей Claude у Google Vertex AI.
+
+- **[arcee](/uk/plugins/reference/arcee)** (`@openclaw/arcee-provider`) - npm; ClawHub: `clawhub:@openclaw/arcee-provider`. Додає підтримку провайдера моделей Arcee до OpenClaw.
+
+- **[brave](/uk/plugins/reference/brave)** (`@openclaw/brave-plugin`) - npm; ClawHub. Plugin провайдера OpenClaw Brave Search для вебпошуку.
+
+- **[cerebras](/uk/plugins/reference/cerebras)** (`@openclaw/cerebras-provider`) - npm; ClawHub: `clawhub:@openclaw/cerebras-provider`. Додає підтримку провайдера моделей Cerebras до OpenClaw.
+
+- **[chutes](/uk/plugins/reference/chutes)** (`@openclaw/chutes-provider`) - npm; ClawHub: `clawhub:@openclaw/chutes-provider`. Додає підтримку провайдера моделей Chutes до OpenClaw.
+
+- **[clickclack](/uk/plugins/reference/clickclack)** (`@openclaw/clickclack`) - npm; ClawHub: `clawhub:@openclaw/clickclack`. Додає поверхню каналу Clickclack для надсилання й отримання повідомлень OpenClaw.
+
+- **[cloudflare-ai-gateway](/uk/plugins/reference/cloudflare-ai-gateway)** (`@openclaw/cloudflare-ai-gateway-provider`) - npm; ClawHub: `clawhub:@openclaw/cloudflare-ai-gateway-provider`. Додає підтримку провайдера моделей Cloudflare AI Gateway до OpenClaw.
+
+- **[codex](/uk/plugins/reference/codex)** (`@openclaw/codex`) - npm; ClawHub. Plugin каркаса app-server OpenClaw Codex і провайдера моделей із каталогом GPT, керованим Codex.
+
+- **[copilot](/uk/plugins/reference/copilot)** (`@openclaw/copilot`) - npm; ClawHub: `clawhub:@openclaw/copilot`. Реєструє середовище виконання агента GitHub Copilot.
+
+- **[deepinfra](/uk/plugins/reference/deepinfra)** (`@openclaw/deepinfra-provider`) - npm; ClawHub: `clawhub:@openclaw/deepinfra-provider`. Додає підтримку провайдера моделей DeepInfra до OpenClaw.
+
+- **[deepseek](/uk/plugins/reference/deepseek)** (`@openclaw/deepseek-provider`) - npm; ClawHub: `clawhub:@openclaw/deepseek-provider`. Додає підтримку провайдера моделей DeepSeek до OpenClaw.
+
+- **[diagnostics-otel](/uk/plugins/reference/diagnostics-otel)** (`@openclaw/diagnostics-otel`) - npm; ClawHub: `clawhub:@openclaw/diagnostics-otel`. Експортер діагностики OpenClaw OpenTelemetry для метрик, трас і журналів.
+
+- **[diagnostics-prometheus](/uk/plugins/reference/diagnostics-prometheus)** (`@openclaw/diagnostics-prometheus`) - npm; ClawHub: `clawhub:@openclaw/diagnostics-prometheus`. Експортер діагностики OpenClaw Prometheus для метрик середовища виконання.
+
+- **[diffs](/uk/plugins/reference/diffs)** (`@openclaw/diffs`) - npm; ClawHub. Plugin OpenClaw для перегляду diff у режимі лише читання і рендерер файлів для агентів.
+
+- **[diffs-language-pack](/uk/plugins/reference/diffs-language-pack)** (`@openclaw/diffs-language-pack`) - npm; ClawHub: `clawhub:@openclaw/diffs-language-pack`. Додає підсвічування синтаксису для мов поза стандартним набором переглядача diff.
+
+- **[discord](/uk/plugins/reference/discord)** (`@openclaw/discord`) - npm; ClawHub. Plugin каналу OpenClaw Discord для каналів, особистих повідомлень, команд і подій застосунку.
+
+- **[exa](/uk/plugins/reference/exa)** (`@openclaw/exa-plugin`) - npm; ClawHub: `clawhub:@openclaw/exa-plugin`. Додає підтримку провайдера вебпошуку.
+
+- **[feishu](/uk/plugins/reference/feishu)** (`@openclaw/feishu`) - npm; ClawHub. Plugin каналу OpenClaw Feishu/Lark для чатів і робочих інструментів (підтримується спільнотою @m1heng).
+
+- **[firecrawl](/uk/plugins/reference/firecrawl)** (`@openclaw/firecrawl-plugin`) - npm; ClawHub: `clawhub:@openclaw/firecrawl-plugin`. Додає інструменти, які можуть викликати агенти. Додає підтримку провайдера веботримання. Додає підтримку провайдера вебпошуку.
+
+- **[fireworks](/uk/plugins/reference/fireworks)** (`@openclaw/fireworks-provider`) - npm; ClawHub: `clawhub:@openclaw/fireworks-provider`. Додає підтримку провайдера моделей Fireworks до OpenClaw.
+
+- **[gmi](/uk/plugins/reference/gmi)** (`@openclaw/gmi-provider`) - npm; ClawHub: `clawhub:@openclaw/gmi-provider`. Plugin провайдера OpenClaw GMI Cloud.
+
+- **[google-meet](/uk/plugins/reference/google-meet)** (`@openclaw/google-meet`) - npm; ClawHub. Plugin учасника OpenClaw Google Meet для приєднання до дзвінків через транспорти Chrome або Twilio.
+
+- **[googlechat](/uk/plugins/reference/googlechat)** (`@openclaw/googlechat`) - npm; ClawHub. Plugin каналу OpenClaw Google Chat для просторів і прямих повідомлень.
+
+- **[gradium](/uk/plugins/reference/gradium)** (`@openclaw/gradium-speech`) - npm; ClawHub: `clawhub:@openclaw/gradium-speech`. Додає підтримку провайдера перетворення тексту на мовлення.
+
+- **[groq](/uk/plugins/reference/groq)** (`@openclaw/groq-provider`) - npm; ClawHub: `clawhub:@openclaw/groq-provider`. Додає підтримку провайдера моделей Groq до OpenClaw.
+
+- **[inworld](/uk/plugins/reference/inworld)** (`@openclaw/inworld-speech`) - npm; ClawHub: `clawhub:@openclaw/inworld-speech`. Потокове перетворення тексту на мовлення Inworld (MP3, OGG_OPUS, PCM-телефонія).
+
+- **[irc](/uk/plugins/reference/irc)** (`@openclaw/irc`) - npm; ClawHub: `clawhub:@openclaw/irc`. Додає поверхню каналу IRC для надсилання й отримання повідомлень OpenClaw.
+
+- **[kilocode](/uk/plugins/reference/kilocode)** (`@openclaw/kilocode-provider`) - npm; ClawHub: `clawhub:@openclaw/kilocode-provider`. Додає підтримку провайдера моделей Kilocode до OpenClaw.
+
+- **[kimi](/uk/plugins/reference/kimi)** (`@openclaw/kimi-provider`) - npm; ClawHub: `clawhub:@openclaw/kimi-provider`. Додає підтримку провайдера моделей Kimi, Kimi Coding до OpenClaw.
+
+- **[line](/uk/plugins/reference/line)** (`@openclaw/line`) - npm; ClawHub. Plugin каналу OpenClaw LINE для чатів LINE Bot API.
+
+- **[llama-cpp](/uk/plugins/reference/llama-cpp)** (`@openclaw/llama-cpp-provider`) - npm; ClawHub. Локальні вбудовування GGUF через node-llama-cpp.
+
+- **[lobster](/uk/plugins/reference/lobster)** (`@openclaw/lobster`) - npm; ClawHub. Plugin інструмента робочих процесів Lobster для типізованих конвеєрів і відновлюваних затверджень.
+
+- **[matrix](/uk/plugins/reference/matrix)** (`@openclaw/matrix`) - ClawHub: `clawhub:@openclaw/matrix`; npm. Plugin каналу OpenClaw Matrix для кімнат і прямих повідомлень.
+
+- **[mattermost](/uk/plugins/reference/mattermost)** (`@openclaw/mattermost`) - npm; ClawHub: `clawhub:@openclaw/mattermost`. Додає поверхню каналу Mattermost для надсилання й отримання повідомлень OpenClaw.
+
+- **[memory-lancedb](/uk/plugins/reference/memory-lancedb)** (`@openclaw/memory-lancedb`) - npm; ClawHub. Plugin довгострокової пам’яті OpenClaw на базі LanceDB з автоматичним пригадуванням, автоматичним захопленням і векторним пошуком.
+
+- **[moonshot](/uk/plugins/reference/moonshot)** (`@openclaw/moonshot-provider`) - npm; ClawHub: `clawhub:@openclaw/moonshot-provider`. Додає підтримку провайдера моделей Moonshot до OpenClaw.
+
+- **[msteams](/uk/plugins/reference/msteams)** (`@openclaw/msteams`) - npm; ClawHub. Plugin каналу OpenClaw Microsoft Teams для розмов із ботом.
+
+- **[nextcloud-talk](/uk/plugins/reference/nextcloud-talk)** (`@openclaw/nextcloud-talk`) - npm; ClawHub. Plugin каналу OpenClaw Nextcloud Talk для розмов.
+
+- **[nostr](/uk/plugins/reference/nostr)** (`@openclaw/nostr`) - npm; ClawHub. Plugin каналу OpenClaw Nostr для зашифрованих прямих повідомлень NIP-04.
+
+- **[openshell](/uk/plugins/reference/openshell)** (`@openclaw/openshell-sandbox`) - npm; ClawHub. Бекенд пісочниці OpenClaw для NVIDIA OpenShell CLI з дзеркальними локальними робочими просторами та виконанням команд SSH.
+
+- **[parallel](/uk/tools/parallel-search)** (`@openclaw/parallel-plugin`) - npm; ClawHub: `clawhub:@openclaw/parallel-plugin`. Додає підтримку провайдера вебпошуку.
+
+- **[perplexity](/uk/plugins/reference/perplexity)** (`@openclaw/perplexity-plugin`) - npm; ClawHub: `clawhub:@openclaw/perplexity-plugin`. Додає підтримку провайдера вебпошуку.
+
+- **[pixverse](/uk/plugins/reference/pixverse)** (`@openclaw/pixverse-provider`) - npm; ClawHub: `clawhub:@openclaw/pixverse-provider`. Plugin провайдера генерації відео OpenClaw PixVerse.
+
+- **[qianfan](/uk/plugins/reference/qianfan)** (`@openclaw/qianfan-provider`) - npm; ClawHub: `clawhub:@openclaw/qianfan-provider`. Додає підтримку провайдера моделей Qianfan до OpenClaw.
+
+- **[qqbot](/uk/plugins/reference/qqbot)** (`@openclaw/qqbot`) - npm; ClawHub. Plugin каналу OpenClaw QQ Bot для групових робочих процесів і робочих процесів прямих повідомлень.
+
+- **[qwen](/uk/plugins/reference/qwen)** (`@openclaw/qwen-provider`) - npm; ClawHub: `clawhub:@openclaw/qwen-provider`. Додає підтримку провайдера моделей Qwen, Qwen Cloud, Model Studio, DashScope, Qwen Oauth, Qwen Portal, Qwen CLI до OpenClaw.
+
+- **[raft](/uk/plugins/reference/raft)** (`@openclaw/raft`) - npm; ClawHub. Plugin каналу OpenClaw Raft для безпечних мостів пробудження CLI.
+
+- **[searxng](/uk/plugins/reference/searxng)** (`@openclaw/searxng-plugin`) - npm; ClawHub: `clawhub:@openclaw/searxng-plugin`. Додає підтримку провайдера вебпошуку.
+
+- **[signal](/uk/plugins/reference/signal)** (`@openclaw/signal`) - npm; ClawHub: `clawhub:@openclaw/signal`. Додає поверхню каналу Signal для надсилання й отримання повідомлень OpenClaw.
+
+- **[slack](/uk/plugins/reference/slack)** (`@openclaw/slack`) - npm; ClawHub. Plugin каналу OpenClaw Slack для каналів, особистих повідомлень, команд і подій застосунку.
+
+- **[sms](/uk/plugins/reference/sms)** (`@openclaw/sms`) - npm; ClawHub: `clawhub:@openclaw/sms`. Plugin каналу Twilio SMS для текстових повідомлень OpenClaw.
+
+- **[stepfun](/uk/plugins/reference/stepfun)** (`@openclaw/stepfun-provider`) - npm; ClawHub: `clawhub:@openclaw/stepfun-provider`. Додає підтримку провайдера моделей StepFun, StepFun Plan до OpenClaw.
+
+- **[synology-chat](/uk/plugins/reference/synology-chat)** (`@openclaw/synology-chat`) - npm; ClawHub. Plugin каналу Synology Chat для каналів OpenClaw і прямих повідомлень.
+
+- **[tavily](/uk/plugins/reference/tavily)** (`@openclaw/tavily-plugin`) - npm; ClawHub: `clawhub:@openclaw/tavily-plugin`. Додає інструменти, які можуть викликати агенти. Додає підтримку провайдера вебпошуку.
+
+- **[tencent](/uk/plugins/reference/tencent)** (`@openclaw/tencent-provider`) - npm; ClawHub: `clawhub:@openclaw/tencent-provider`. Додає підтримку провайдера моделей Tencent TokenHub до OpenClaw.
+
+- **[tlon](/uk/plugins/reference/tlon)** (`@openclaw/tlon`) - npm; ClawHub. Plugin каналу OpenClaw Tlon/Urbit для робочих процесів чату.
+
+- **[tokenjuice](/uk/plugins/reference/tokenjuice)** (`@openclaw/tokenjuice`) - npm; ClawHub: `clawhub:@openclaw/tokenjuice`. Стискає результати інструментів exec і bash за допомогою редукторів tokenjuice.
+
+- **[twitch](/uk/plugins/reference/twitch)** (`@openclaw/twitch`) - npm; ClawHub. Plugin каналу OpenClaw Twitch для робочих процесів чату та модерації.
+
+- **[venice](/uk/plugins/reference/venice)** (`@openclaw/venice-provider`) - npm; ClawHub: `clawhub:@openclaw/venice-provider`. Додає підтримку провайдера моделей Venice до OpenClaw.
+
+- **[vercel-ai-gateway](/uk/plugins/reference/vercel-ai-gateway)** (`@openclaw/vercel-ai-gateway-provider`) - npm; ClawHub: `clawhub:@openclaw/vercel-ai-gateway-provider`. Додає підтримку провайдера моделей Vercel AI Gateway до OpenClaw.
+
+- **[voice-call](/uk/plugins/reference/voice-call)** (`@openclaw/voice-call`) - npm; ClawHub. Plugin голосових викликів OpenClaw для телефонних дзвінків Twilio, Telnyx і Plivo.
+
+- **[whatsapp](/uk/plugins/reference/whatsapp)** (`@openclaw/whatsapp`) - ClawHub: `clawhub:@openclaw/whatsapp`; npm. Plugin каналу OpenClaw WhatsApp для чатів WhatsApp Web.
+
+- **[zai](/uk/plugins/reference/zai)** (`@openclaw/zai-provider`) - npm; ClawHub: `clawhub:@openclaw/zai-provider`. Додає підтримку провайдера моделей Z.AI до OpenClaw.
+
+- **[zalo](/uk/plugins/reference/zalo)** (`@openclaw/zalo`) - npm; ClawHub. Plugin каналу OpenClaw Zalo для ботів і Webhook-чатів.
+
+- **[zalouser](/uk/plugins/reference/zalouser)** (`@openclaw/zalouser`) - npm; ClawHub. Plugin особистого облікового запису OpenClaw Zalo через нативну інтеграцію zca-js.
+
+## Лише робоча копія вихідного коду
+
+3 Plugin
+
+- **[qa-channel](/uk/plugins/reference/qa-channel)** (`@openclaw/qa-channel`) - лише робоча копія вихідного коду. Додає поверхню QA Channel для надсилання й отримання повідомлень OpenClaw.
+
+- **[qa-lab](/uk/plugins/reference/qa-lab)** (`@openclaw/qa-lab`) - лише робоча копія вихідного коду. Plugin QA-лабораторії OpenClaw із приватним інтерфейсом налагодження та засобом запуску сценаріїв.
+
+- **[qa-matrix](/uk/plugins/reference/qa-matrix)** (`@openclaw/qa-matrix`) - лише вихідний checkout. Виконавець і базовий шар транспортної матриці QA.

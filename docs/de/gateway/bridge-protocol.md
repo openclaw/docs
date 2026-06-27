@@ -1,32 +1,33 @@
 ---
 read_when:
     - Node-Clients erstellen oder debuggen (iOS-/Android-/macOS-Node-Modus)
-    - Untersuchung von Kopplungs- oder Bridge-Authentifizierungsfehlern
-    - Überprüfen der vom Gateway exponierten Node-Oberfläche
-summary: 'Historisches Bridge-Protokoll (Legacy-Knoten): TCP JSONL, Pairing, bereichsgebundene RPC'
+    - Pairing- oder Bridge-Authentifizierungsfehler untersuchen
+    - Prüfung der vom Gateway offengelegten Node-Oberfläche
+summary: 'Historisches Bridge-Protokoll (Legacy-Knoten): TCP JSONL, Kopplung, scoped RPC'
 title: Brückenprotokoll
 x-i18n:
-    generated_at: "2026-05-07T13:16:19Z"
+    generated_at: "2026-06-27T17:27:42Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: fc906ca3a8a4ebef9b39c53187bcb4d06b287875b8e8748a168812f9a52e6152
+    source_hash: 485d18f94b731018c6e0df493068b0b6aceff9afba6bebf1350db63c04cee98c
     source_path: gateway/bridge-protocol.md
     workflow: 16
 ---
 
 <Warning>
-Die TCP-Bridge wurde **entfernt**. Aktuelle OpenClaw-Builds liefern den Bridge-Listener nicht mehr aus, und `bridge.*`-Konfigurationsschlüssel sind nicht mehr im Schema enthalten. Diese Seite wird nur zur historischen Referenz beibehalten. Verwenden Sie das [Gateway-Protokoll](/de/gateway/protocol) für alle Node-/Operator-Clients.
+Die TCP-Bridge wurde **entfernt**. Aktuelle OpenClaw-Builds liefern den Bridge-Listener nicht aus, und `bridge.*`-Konfigurationsschlüssel sind nicht mehr im Schema enthalten. Diese Seite wird nur als historische Referenz beibehalten. Verwenden Sie das [Gateway-Protokoll](/de/gateway/protocol) für alle Node-/Operator-Clients.
 </Warning>
 
-## Warum sie existierte
+## Warum es sie gab
 
-- **Sicherheitsgrenze**: Die Bridge stellt eine kleine Allowlist statt der
+- **Sicherheitsgrenze**: Die Bridge stellt eine kleine Zulassungsliste statt der
   vollständigen Gateway-API-Oberfläche bereit.
-- **Pairing + Node-Identität**: Die Node-Zulassung liegt beim Gateway und ist an
-  ein token pro Node gebunden.
-- **Discovery-UX**: Nodes können Gateways über Bonjour im LAN erkennen oder sich
+- **Pairing + Node-Identität**: Die Node-Zulassung gehört dem Gateway und ist an
+  ein Token pro Node gebunden.
+- **Discovery-UX**: Nodes können Gateways per Bonjour im LAN erkennen oder sich
   direkt über ein Tailnet verbinden.
-- **Loopback-WS**: Die vollständige WS-Steuerungsebene bleibt lokal, sofern sie nicht über SSH getunnelt wird.
+- **Loopback-WS**: Die vollständige WS-Steuerungsebene bleibt lokal, sofern sie nicht per SSH getunnelt wird.
 
 ## Transport
 
@@ -35,20 +36,20 @@ Die TCP-Bridge wurde **entfernt**. Aktuelle OpenClaw-Builds liefern den Bridge-L
 - Der historische Standard-Listener-Port war `18790` (aktuelle Builds starten keine
   TCP-Bridge).
 
-Wenn TLS aktiviert ist, enthalten Discovery-TXT-Records `bridgeTls=1` plus
-`bridgeTlsSha256` als nicht geheimen Hinweis. Beachten Sie, dass Bonjour-/mDNS-TXT-Records
-nicht authentifiziert sind; Clients dürfen den angekündigten Fingerprint ohne ausdrückliche Benutzerabsicht oder andere Out-of-Band-Verifizierung nicht als
-autoritatives Pinning behandeln.
+Wenn TLS aktiviert ist, enthalten Discovery-TXT-Einträge `bridgeTls=1` plus
+`bridgeTlsSha256` als nicht geheime Kennung. Beachten Sie, dass Bonjour-/mDNS-TXT-Einträge
+nicht authentifiziert sind; Clients dürfen den beworbenen Fingerprint ohne ausdrückliche Nutzerabsicht oder andere Out-of-Band-Verifizierung nicht als
+autoritativen Pin behandeln.
 
 ## Handshake + Pairing
 
-1. Der Client sendet `hello` mit Node-Metadaten + token (falls bereits gekoppelt).
-2. Wenn nicht gekoppelt, antwortet das Gateway mit `error` (`NOT_PAIRED`/`UNAUTHORIZED`).
+1. Der Client sendet `hello` mit Node-Metadaten + Token (falls bereits gepairt).
+2. Wenn nicht gepairt, antwortet das Gateway mit `error` (`NOT_PAIRED`/`UNAUTHORIZED`).
 3. Der Client sendet `pair-request`.
-4. Das Gateway wartet auf die Freigabe und sendet dann `pair-ok` und `hello-ok`.
+4. Das Gateway wartet auf Genehmigung und sendet dann `pair-ok` und `hello-ok`.
 
 Historisch gab `hello-ok` `serverName` zurück; gehostete Plugin-Oberflächen werden jetzt
-über `pluginSurfaceUrls` angekündigt. Canvas/A2UI verwendet
+über `pluginSurfaceUrls` bekanntgegeben. Canvas/A2UI verwendet
 `pluginSurfaceUrls.canvas`; der veraltete Alias `canvasHostUrl` ist nicht Teil des
 überarbeiteten Protokolls.
 
@@ -56,8 +57,8 @@ Historisch gab `hello-ok` `serverName` zurück; gehostete Plugin-Oberflächen we
 
 Client → Gateway:
 
-- `req` / `res`: begrenztes Gateway-RPC (Chat, Sitzungen, Konfiguration, Zustand, Voicewake, skills.bins)
-- `event`: Node-Signale (Sprachtranskript, Agent-Anfrage, Chat-Abonnement, Exec-Lebenszyklus)
+- `req` / `res`: Gateway-RPC mit begrenztem Scope (Chat, Sitzungen, Konfiguration, Zustand, Voicewake, skills.bins)
+- `event`: Node-Signale (Sprachtranskript, Agent-Anforderung, Chat-Abonnement, Exec-Lifecycle)
 
 Gateway → Client:
 
@@ -66,18 +67,21 @@ Gateway → Client:
 - `event`: Chat-Aktualisierungen für abonnierte Sitzungen
 - `ping` / `pong`: Keepalive
 
-Die Legacy-Allowlist-Durchsetzung lag in `src/gateway/server-bridge.ts` (entfernt).
+Die Legacy-Durchsetzung der Zulassungsliste befand sich in `src/gateway/server-bridge.ts` (entfernt).
 
-## Exec-Lebenszyklusereignisse
+## Exec-Lifecycle-Ereignisse
 
-Nodes können `exec.finished`- oder `exec.denied`-Ereignisse ausgeben, um system.run-Aktivität sichtbar zu machen.
-Diese werden im Gateway Systemereignissen zugeordnet. (Legacy-Nodes können weiterhin `exec.started` ausgeben.)
+Nodes können `exec.finished`-Ereignisse ausgeben, um abgeschlossene `system.run`-Aktivität sichtbar zu machen.
+Diese werden im Gateway auf Systemereignisse abgebildet. (Legacy-Nodes können weiterhin `exec.started` ausgeben.)
+Nodes können `exec.denied` für abgelehnte `system.run`-Versuche ausgeben; das Gateway akzeptiert
+das Ereignis als terminale Ablehnung und stellt kein Systemereignis ein und weckt keine Agent-Arbeit.
 
-Payload-Felder (alle optional, sofern nicht anders angegeben):
+Payload-Felder (alle optional, sofern nicht angegeben):
 
-- `sessionKey` (erforderlich): Agent-Sitzung, die das Systemereignis erhalten soll.
-- `runId`: eindeutige Exec-ID für die Gruppierung.
-- `command`: rohe oder formatierte Befehlszeichenfolge.
+- `sessionKey` (erforderlich): Agent-Sitzung für Ereigniskorrelation und, für
+  `exec.finished`, Systemereigniszustellung.
+- `runId`: eindeutige Exec-ID zur Gruppierung.
+- `command`: roher oder formatierter Befehlsstring.
 - `exitCode`, `timedOut`, `success`, `output`: Abschlussdetails (nur finished).
 - `reason`: Ablehnungsgrund (nur denied).
 
@@ -86,7 +90,7 @@ Payload-Felder (alle optional, sofern nicht anders angegeben):
 - Binden Sie die Bridge an eine Tailnet-IP: `bridge.bind: "tailnet"` in
   `~/.openclaw/openclaw.json` (nur historisch; `bridge.*` ist nicht mehr gültig).
 - Clients verbinden sich über den MagicDNS-Namen oder die Tailnet-IP.
-- Bonjour funktioniert **nicht** netzwerkübergreifend; verwenden Sie bei Bedarf manuellen Host/Port oder Wide-Area-DNS-SD.
+- Bonjour überschreitet **keine** Netzwerkgrenzen; verwenden Sie bei Bedarf manuellen Host/Port oder Wide-Area-DNS-SD.
 
 ## Versionierung
 

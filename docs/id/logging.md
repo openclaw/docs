@@ -1,15 +1,16 @@
 ---
 read_when:
-    - Anda memerlukan ikhtisar yang ramah pemula tentang pencatatan log OpenClaw
-    - Anda ingin mengonfigurasi tingkat log, format, atau penyamaran
+    - Anda memerlukan gambaran umum pencatatan log OpenClaw yang ramah pemula
+    - Anda ingin mengonfigurasi level log, format, atau redaksi
     - Anda sedang memecahkan masalah dan perlu menemukan log dengan cepat
-summary: File log, output konsol, pemantauan tail CLI, dan tab Log UI Kontrol
+summary: File log, output konsol, tailing CLI, dan tab Log UI Kontrol
 title: Pencatatan log
 x-i18n:
-    generated_at: "2026-05-11T20:31:58Z"
+    generated_at: "2026-06-27T17:39:30Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 49b28755998bbe667dd986ae8440d9006d03b0704679bb6d64b5a148a25fc50e
+    source_hash: caf2780dfeeaf29f4ee94429894a03422b211a4414e63062642d1134f38b6b3f
     source_path: logging.md
     workflow: 16
 ---
@@ -17,14 +18,14 @@ x-i18n:
 OpenClaw memiliki dua permukaan log utama:
 
 - **Log file** (baris JSON) yang ditulis oleh Gateway.
-- **Keluaran konsol** yang ditampilkan di terminal dan UI Debug Gateway.
+- **Output konsol** yang ditampilkan di terminal dan UI Debug Gateway.
 
-Tab **Log** UI Kontrol mengikuti log file gateway. Halaman ini menjelaskan lokasi
-log, cara membacanya, dan cara mengonfigurasi level serta format log.
+Tab **Logs** di Control UI mengikuti file log gateway. Halaman ini menjelaskan tempat
+log berada, cara membacanya, serta cara mengonfigurasi level dan format log.
 
-## Lokasi log
+## Tempat log berada
 
-Secara default, Gateway menulis file log bergulir di bawah:
+Secara default, Gateway menulis file log bergilir di bawah:
 
 `/tmp/openclaw/openclaw-YYYY-MM-DD.log`
 
@@ -35,7 +36,7 @@ OpenClaw menyimpan hingga lima arsip bernomor di samping file aktif, seperti
 `openclaw-YYYY-MM-DD.1.log`, dan terus menulis ke log aktif baru alih-alih
 menekan diagnostik.
 
-Anda dapat menimpanya di `~/.openclaw/openclaw.json`:
+Anda dapat menggantinya di `~/.openclaw/openclaw.json`:
 
 ```json
 {
@@ -47,7 +48,7 @@ Anda dapat menimpanya di `~/.openclaw/openclaw.json`:
 
 ## Cara membaca log
 
-### CLI: ikuti langsung (direkomendasikan)
+### CLI: tail langsung (direkomendasikan)
 
 Gunakan CLI untuk mengikuti file log gateway melalui RPC:
 
@@ -57,33 +58,36 @@ openclaw logs --follow
 
 Opsi saat ini yang berguna:
 
-- `--local-time`: render stempel waktu dalam zona waktu lokal Anda
+- `--local-time`: tampilkan stempel waktu dalam zona waktu lokal Anda
 - `--url <url>` / `--token <token>` / `--timeout <ms>`: flag RPC Gateway standar
-- `--expect-final`: flag tunggu respons akhir berbasis agen (diterima di sini melalui lapisan klien bersama)
+- `--expect-final`: flag tunggu respons akhir RPC berbasis agen (diterima di sini melalui lapisan klien bersama)
 
-Mode keluaran:
+Mode output:
 
 - **Sesi TTY**: baris log terstruktur yang rapi dan berwarna.
-- **Sesi non-TTY**: teks biasa.
-- `--json`: JSON yang dibatasi baris (satu peristiwa log per baris).
-- `--plain`: paksa teks biasa dalam sesi TTY.
+- **Sesi non-TTY**: teks polos.
+- `--json`: JSON berbatas baris (satu peristiwa log per baris).
+- `--plain`: paksa teks polos dalam sesi TTY.
 - `--no-color`: nonaktifkan warna ANSI.
 
-Saat Anda meneruskan `--url` eksplisit, CLI tidak otomatis menerapkan konfigurasi atau
-kredensial lingkungan; sertakan sendiri `--token` jika Gateway target
-memerlukan auth.
+Saat Anda meneruskan `--url` eksplisit, CLI tidak otomatis menerapkan kredensial
+konfigurasi atau lingkungan; sertakan sendiri `--token` jika Gateway target
+memerlukan autentikasi.
 
-Dalam mode JSON, CLI menghasilkan objek bertanda `type`:
+Dalam mode JSON, CLI mengeluarkan objek bertanda `type`:
 
-- `meta`: metadata stream (file, cursor, ukuran)
-- `log`: entri log yang diurai
-- `notice`: petunjuk pemotongan / rotasi
-- `raw`: baris log yang tidak diurai
+- `meta`: metadata stream (file, kursor, ukuran)
+- `log`: entri log yang diparsing
+- `notice`: petunjuk pemangkasan / rotasi
+- `raw`: baris log yang tidak diparsing
 
-Jika Gateway local loopback implisit meminta pemasangan, menutup saat koneksi,
-atau waktu habis sebelum `logs.tail` menjawab, `openclaw logs` otomatis kembali ke
-log file Gateway yang dikonfigurasi. Target `--url` eksplisit tidak menggunakan
-fallback ini.
+Jika Gateway local loopback implisit meminta pairing, menutup saat koneksi,
+atau kehabisan waktu sebelum `logs.tail` menjawab, `openclaw logs` otomatis
+beralih ke file log Gateway yang dikonfigurasi. Target `--url` eksplisit tidak
+menggunakan fallback ini. `openclaw logs --follow` lebih ketat: di Linux, perintah
+ini menggunakan jurnal Gateway user-systemd aktif berdasarkan PID bila tersedia,
+dan jika tidak tersedia akan terus mencoba ulang Gateway langsung alih-alih
+mengikuti file berdampingan yang berpotensi usang.
 
 Jika Gateway tidak dapat dijangkau, CLI mencetak petunjuk singkat untuk menjalankan:
 
@@ -91,14 +95,14 @@ Jika Gateway tidak dapat dijangkau, CLI mencetak petunjuk singkat untuk menjalan
 openclaw doctor
 ```
 
-### UI Kontrol (web)
+### Control UI (web)
 
-Tab **Log** UI Kontrol mengikuti file yang sama menggunakan `logs.tail`.
-Lihat [UI Kontrol](/id/web/control-ui) untuk cara membukanya.
+Tab **Logs** di Control UI mengikuti file yang sama menggunakan `logs.tail`.
+Lihat [Control UI](/id/web/control-ui) untuk cara membukanya.
 
-### Log khusus channel
+### Log khusus kanal
 
-Untuk memfilter aktivitas channel (WhatsApp/Telegram/dll.), gunakan:
+Untuk memfilter aktivitas kanal (WhatsApp/Telegram/dll.), gunakan:
 
 ```bash
 openclaw channels logs --channel whatsapp
@@ -108,27 +112,28 @@ openclaw channels logs --channel whatsapp
 
 ### Log file (JSONL)
 
-Setiap baris dalam file log adalah objek JSON. CLI dan UI Kontrol mengurai
-entri ini untuk merender keluaran terstruktur (waktu, level, subsistem, pesan).
+Setiap baris dalam file log adalah objek JSON. CLI dan Control UI mem-parsing
+entri ini untuk merender output terstruktur (waktu, level, subsistem, pesan).
 
-Catatan JSONL log file juga menyertakan bidang tingkat atas yang dapat difilter mesin saat
-tersedia:
+Rekaman JSONL log file juga menyertakan field tingkat atas yang dapat difilter
+mesin bila tersedia:
 
 - `hostname`: nama host gateway.
 - `message`: teks pesan log yang diratakan untuk pencarian teks penuh.
 - `agent_id`: id agen aktif saat panggilan log membawa konteks agen.
 - `session_id`: id/kunci sesi aktif saat panggilan log membawa konteks sesi.
-- `channel`: channel aktif saat panggilan log membawa konteks channel.
+- `channel`: kanal aktif saat panggilan log membawa konteks kanal.
 
-OpenClaw mempertahankan argumen log terstruktur asli di samping bidang-bidang ini
+OpenClaw mempertahankan argumen log terstruktur asli di samping field ini
 sehingga parser yang ada yang membaca kunci argumen tslog bernomor tetap berfungsi.
 
-Aktivitas bicara, suara realtime, dan ruang terkelola memancarkan catatan log siklus hidup
-terbatas melalui pipeline log file yang sama ini. Catatan ini menyertakan jenis peristiwa,
-mode, transport, provider, serta pengukuran ukuran/waktu saat tersedia, tetapi menghilangkan
-teks transkrip, payload audio, id giliran, id panggilan, dan id item provider.
+Aktivitas talk, suara real-time, dan managed-room memancarkan rekaman log siklus
+hidup terbatas melalui pipeline log file yang sama ini. Rekaman ini menyertakan
+jenis peristiwa, mode, transport, penyedia, dan pengukuran ukuran/waktu bila
+tersedia, tetapi menghilangkan teks transkrip, payload audio, id giliran, id
+panggilan, dan id item penyedia.
 
-### Keluaran konsol
+### Output konsol
 
 Log konsol **sadar TTY** dan diformat agar mudah dibaca:
 
@@ -140,11 +145,11 @@ Pemformatan konsol dikendalikan oleh `logging.consoleStyle`.
 
 ### Log WebSocket Gateway
 
-`openclaw gateway` juga memiliki pencatatan protokol WebSocket untuk trafik RPC:
+`openclaw gateway` juga memiliki logging protokol WebSocket untuk traffic RPC:
 
-- mode normal: hanya hasil yang menarik (error, error penguraian, panggilan lambat)
-- `--verbose`: semua trafik permintaan/respons
-- `--ws-log auto|compact|full`: pilih gaya render verbose
+- mode normal: hanya hasil yang menarik (error, error parse, panggilan lambat)
+- `--verbose`: semua traffic permintaan/respons
+- `--ws-log auto|compact|full`: pilih gaya rendering verbose
 - `--compact`: alias untuk `--ws-log compact`
 
 Contoh:
@@ -155,9 +160,9 @@ openclaw gateway --verbose --ws-log compact
 openclaw gateway --verbose --ws-log full
 ```
 
-## Mengonfigurasi pencatatan log
+## Mengonfigurasi logging
 
-Semua konfigurasi pencatatan log berada di bawah `logging` dalam `~/.openclaw/openclaw.json`.
+Semua konfigurasi logging berada di bawah `logging` dalam `~/.openclaw/openclaw.json`.
 
 ```json
 {
@@ -177,14 +182,14 @@ Semua konfigurasi pencatatan log berada di bawah `logging` dalam `~/.openclaw/op
 - `logging.level`: level **log file** (JSONL).
 - `logging.consoleLevel`: level verbositas **konsol**.
 
-Anda dapat menimpa keduanya melalui variabel lingkungan **`OPENCLAW_LOG_LEVEL`** (mis. `OPENCLAW_LOG_LEVEL=debug`). Variabel lingkungan lebih diutamakan daripada file konfigurasi, sehingga Anda dapat menaikkan verbositas untuk satu kali proses tanpa mengedit `openclaw.json`. Anda juga dapat meneruskan opsi CLI global **`--log-level <level>`** (misalnya, `openclaw --log-level debug gateway run`), yang menimpa variabel lingkungan untuk perintah tersebut.
+Anda dapat mengganti keduanya melalui variabel lingkungan **`OPENCLAW_LOG_LEVEL`** (mis. `OPENCLAW_LOG_LEVEL=debug`). Variabel env lebih diprioritaskan daripada file konfigurasi, sehingga Anda dapat menaikkan verbositas untuk satu kali jalan tanpa mengedit `openclaw.json`. Anda juga dapat meneruskan opsi CLI global **`--log-level <level>`** (misalnya, `openclaw --log-level debug gateway run`), yang menggantikan variabel lingkungan untuk perintah tersebut.
 
-`--verbose` hanya memengaruhi keluaran konsol dan verbositas log WS; ini tidak mengubah
+`--verbose` hanya memengaruhi output konsol dan verbositas log WS; flag ini tidak mengubah
 level log file.
 
 ### Diagnostik transport model tertarget
 
-Saat men-debug panggilan provider, gunakan flag lingkungan tertarget alih-alih menaikkan
+Saat men-debug panggilan penyedia, gunakan flag lingkungan tertarget alih-alih menaikkan
 semua log ke `debug`:
 
 ```bash
@@ -194,55 +199,65 @@ OPENCLAW_DEBUG_MODEL_PAYLOAD=tools OPENCLAW_DEBUG_SSE=events openclaw gateway
 
 Flag yang tersedia:
 
-- `OPENCLAW_DEBUG_MODEL_TRANSPORT=1`: pancarkan awal permintaan, respons fetch, header
-  SDK, peristiwa streaming pertama, penyelesaian stream, dan error transport pada
+- `OPENCLAW_DEBUG_MODEL_TRANSPORT=1`: pancarkan awal permintaan, respons fetch, header SDK,
+  peristiwa streaming pertama, penyelesaian stream, dan error transport pada
   level `info`.
-- `OPENCLAW_DEBUG_MODEL_PAYLOAD=summary`: sertakan ringkasan payload permintaan terbatas
-  dalam log permintaan model.
+- `OPENCLAW_DEBUG_MODEL_PAYLOAD=summary`: sertakan ringkasan payload permintaan
+  terbatas dalam log permintaan model.
 - `OPENCLAW_DEBUG_MODEL_PAYLOAD=tools`: sertakan semua nama tool yang menghadap model dalam
   ringkasan payload.
-- `OPENCLAW_DEBUG_MODEL_PAYLOAD=full-redacted`: sertakan snapshot payload JSON yang
-  disunting dan dibatasi. Gunakan hanya saat debugging; rahasia disunting tetapi prompt
+- `OPENCLAW_DEBUG_MODEL_PAYLOAD=full-redacted`: sertakan snapshot payload JSON
+  yang disunting dan dibatasi. Gunakan hanya saat debugging; rahasia disunting tetapi prompt
   dan teks pesan mungkin masih ada.
-- `OPENCLAW_DEBUG_SSE=events`: pancarkan waktu peristiwa pertama dan penyelesaian stream.
-- `OPENCLAW_DEBUG_SSE=peek`: juga pancarkan lima payload peristiwa SSE pertama yang disunting,
-  dibatasi per peristiwa.
+- `OPENCLAW_DEBUG_SSE=events`: pancarkan timing peristiwa pertama dan penyelesaian stream.
+- `OPENCLAW_DEBUG_SSE=peek`: juga pancarkan lima payload peristiwa SSE pertama
+  yang disunting, dibatasi per peristiwa.
 - `OPENCLAW_DEBUG_CODE_MODE=1`: pancarkan diagnostik permukaan model mode kode,
-  termasuk saat tool provider native disembunyikan karena mode kode memiliki
+  termasuk saat tool penyedia native disembunyikan karena mode kode memiliki
   permukaan tool.
 
-Flag ini mencatat melalui pencatatan log OpenClaw normal, sehingga `openclaw logs --follow`
-dan tab Log UI Kontrol menampilkannya. Tanpa flag tersebut, diagnostik yang sama
+Flag ini mencatat melalui logging OpenClaw normal, sehingga `openclaw logs --follow`
+dan tab Logs di Control UI menampilkannya. Tanpa flag tersebut, diagnostik yang sama
 tetap tersedia pada level `debug`.
+
+Metadata awal dan respons `[model-fetch]` (penyedia, API, model, status,
+latensi, dan field permintaan seperti metode, URL, timeout, proxy, dan kebijakan)
+selalu dipancarkan pada level `info` terlepas dari
+`OPENCLAW_DEBUG_MODEL_TRANSPORT`, sehingga kebersihan dasar transport model terlihat
+tanpa flag debug.
 
 ### Korelasi trace
 
 Log file adalah JSONL. Saat panggilan log membawa konteks trace diagnostik yang valid,
-OpenClaw menulis bidang trace sebagai kunci JSON tingkat atas (`traceId`, `spanId`,
+OpenClaw menulis field trace sebagai kunci JSON tingkat atas (`traceId`, `spanId`,
 `parentSpanId`, `traceFlags`) sehingga pemroses log eksternal dapat mengorelasikan baris
-dengan span OTEL dan propagasi `traceparent` provider.
+dengan span OTEL dan propagasi `traceparent` penyedia.
 
-Permintaan HTTP Gateway dan frame WebSocket Gateway membentuk cakupan trace permintaan
-internal. Log dan peristiwa diagnostik yang dipancarkan di dalam cakupan async tersebut mewarisi
-trace permintaan saat tidak meneruskan konteks trace eksplisit. Trace run agen dan
+Permintaan HTTP Gateway dan frame WebSocket Gateway membuat scope trace permintaan
+internal. Log dan peristiwa diagnostik yang dipancarkan di dalam scope async tersebut
+mewarisi trace permintaan saat tidak meneruskan konteks trace eksplisit. Trace agent run dan
 panggilan model menjadi anak dari trace permintaan aktif, sehingga log lokal,
-snapshot diagnostik, span OTEL, dan header `traceparent` provider tepercaya dapat
-digabungkan dengan `traceId` tanpa mencatat permintaan mentah atau konten model.
+snapshot diagnostik, span OTEL, dan header `traceparent` penyedia tepercaya dapat
+digabungkan berdasarkan `traceId` tanpa mencatat konten mentah permintaan atau model.
 
-Catatan log siklus hidup bicara juga mengalir ke log OTLP saat ekspor log OpenTelemetry
-diaktifkan, menggunakan atribut terbatas yang sama dengan log file.
+Rekaman log siklus hidup talk juga mengalir ke ekspor log diagnostics-otel saat
+ekspor log OpenTelemetry diaktifkan, menggunakan atribut terbatas yang sama seperti log file.
+Konfigurasikan `diagnostics.otel.logsExporter` untuk memilih OTLP, stdout JSONL, atau
+kedua sink.
 
-### Ukuran dan waktu panggilan model
+### Ukuran dan timing panggilan model
 
-Diagnostik panggilan model mencatat pengukuran permintaan/respons terbatas tanpa
+Diagnostik panggilan model merekam pengukuran permintaan/respons terbatas tanpa
 menangkap konten prompt atau respons mentah:
 
-- `requestPayloadBytes`: ukuran byte UTF-8 dari payload permintaan model akhir
-- `responseStreamBytes`: ukuran byte UTF-8 dari peristiwa respons model yang di-stream
+- `requestPayloadBytes`: ukuran byte UTF-8 dari payload permintaan model final
+- `responseStreamBytes`: ukuran byte UTF-8 dari payload chunk respons model yang di-stream.
+  Peristiwa teks frekuensi tinggi, thinking, dan delta panggilan tool hanya menghitung
+  byte `delta` inkremental alih-alih snapshot `partial` penuh.
 - `timeToFirstByteMs`: waktu berlalu sebelum peristiwa respons streaming pertama
-- `durationMs`: total durasi panggilan model
+- `durationMs`: durasi total panggilan model
 
-Bidang ini tersedia untuk snapshot diagnostik, hook Plugin panggilan model, dan
+Field ini tersedia untuk snapshot diagnostik, hook Plugin panggilan model, dan
 span/metrik panggilan model OTEL saat ekspor diagnostik diaktifkan.
 
 ### Gaya konsol
@@ -250,54 +265,54 @@ span/metrik panggilan model OTEL saat ekspor diagnostik diaktifkan.
 `logging.consoleStyle`:
 
 - `pretty`: ramah manusia, berwarna, dengan stempel waktu.
-- `compact`: keluaran lebih rapat (terbaik untuk sesi panjang).
+- `compact`: output lebih rapat (terbaik untuk sesi panjang).
 - `json`: JSON per baris (untuk pemroses log).
 
 ### Redaksi
 
-OpenClaw dapat menyunting token sensitif sebelum masuk ke keluaran konsol, log file,
-catatan log OTLP, teks transkrip sesi yang dipertahankan, atau payload peristiwa tool
-UI Kontrol (argumen awal tool, payload hasil parsial/akhir, keluaran exec turunan,
+OpenClaw dapat menyunting token sensitif sebelum mencapai output konsol, log file,
+rekaman log OTLP, teks transkrip sesi yang dipersistenkan, atau payload peristiwa tool
+Control UI (argumen awal tool, payload hasil parsial/final, output exec turunan,
 dan ringkasan patch):
 
 - `logging.redactSensitive`: `off` | `tools` (default: `tools`)
-- `logging.redactPatterns`: daftar string regex untuk menimpa set default. Pola kustom diterapkan di atas default bawaan untuk payload tool UI Kontrol, sehingga menambahkan pola tidak pernah melemahkan redaksi nilai yang sudah tertangkap oleh default.
+- `logging.redactPatterns`: daftar string regex untuk mengganti set default. Pola kustom diterapkan di atas default bawaan untuk payload tool Control UI, sehingga menambahkan pola tidak pernah melemahkan redaksi nilai yang sudah tertangkap oleh default.
 
 Log file dan transkrip sesi tetap JSONL, tetapi nilai rahasia yang cocok
 disamarkan sebelum baris atau pesan ditulis ke disk. Redaksi bersifat upaya terbaik:
-ini diterapkan pada konten pesan yang berisi teks dan string log, bukan setiap
-identifier atau bidang payload biner.
+ini berlaku pada konten pesan yang memuat teks dan string log, bukan setiap
+identifier atau field payload biner.
 
-Default bawaan mencakup kredensial API umum dan nama bidang kredensial pembayaran
+Default bawaan mencakup kredensial API umum dan nama field kredensial pembayaran
 seperti nomor kartu, CVC/CVV, token pembayaran bersama, dan kredensial pembayaran
-saat muncul sebagai bidang JSON, parameter URL, flag CLI, atau assignment.
+saat muncul sebagai field JSON, parameter URL, flag CLI, atau assignment.
 
-`logging.redactSensitive: "off"` hanya menonaktifkan kebijakan log/transkrip umum
-ini. OpenClaw tetap menyunting payload batas keselamatan yang dapat ditampilkan kepada
-klien UI, bundle dukungan, pengamat diagnostik, prompt persetujuan, atau tool
-agen. Contohnya mencakup peristiwa panggilan tool UI Kontrol, keluaran `sessions_history`,
-ekspor dukungan diagnostik, observasi error provider, tampilan perintah persetujuan exec,
+`logging.redactSensitive: "off"` hanya menonaktifkan kebijakan umum log/transkrip
+ini. OpenClaw tetap menyunting payload batas keselamatan yang dapat ditampilkan kepada klien
+UI, bundel dukungan, pengamat diagnostik, prompt persetujuan, atau tool agen.
+Contohnya mencakup peristiwa panggilan tool Control UI, output `sessions_history`,
+ekspor dukungan diagnostik, observasi error penyedia, tampilan perintah persetujuan exec,
 dan log protokol WebSocket Gateway. `logging.redactPatterns` kustom
 masih dapat menambahkan pola khusus proyek pada permukaan tersebut.
 
 ## Diagnostik dan OpenTelemetry
 
 Diagnostik adalah peristiwa terstruktur yang dapat dibaca mesin untuk run model dan
-telemetri alur pesan (Webhook, antrean, status sesi). Diagnostik **tidak**
+telemetri alur pesan (webhook, antrean, status sesi). Diagnostik **tidak**
 menggantikan log — diagnostik memasok metrik, trace, dan exporter. Peristiwa dipancarkan
-dalam proses baik Anda mengekspornya maupun tidak.
+di dalam proses baik Anda mengekspornya maupun tidak.
 
-Dua permukaan bersebelahan:
+Dua permukaan yang berdekatan:
 
 - **Ekspor OpenTelemetry** — kirim metrik, trace, dan log melalui OTLP/HTTP ke
-  collector atau backend yang kompatibel dengan OpenTelemetry apa pun (Grafana, Datadog,
+  kolektor atau backend apa pun yang kompatibel dengan OpenTelemetry (Grafana, Datadog,
   Honeycomb, New Relic, Tempo, dll.). Konfigurasi lengkap, katalog sinyal,
-  nama metrik/span, variabel lingkungan, dan model privasi ada di halaman khusus:
+  nama metrik/span, variabel env, dan model privasi berada di halaman khusus:
   [Ekspor OpenTelemetry](/id/gateway/opentelemetry).
-- **Flag diagnostik** — flag log debug tertarget yang mengarahkan log tambahan ke
+- **Flag diagnostik** — flag log debug tertarget yang merutekan log tambahan ke
   `logging.file` tanpa menaikkan `logging.level`. Flag tidak peka huruf besar/kecil
   dan mendukung wildcard (`telegram.*`, `*`). Konfigurasikan di bawah `diagnostics.flags`
-  atau melalui override lingkungan `OPENCLAW_DIAGNOSTICS=...`. Panduan lengkap:
+  atau melalui override env `OPENCLAW_DIAGNOSTICS=...`. Panduan lengkap:
   [Flag diagnostik](/id/diagnostics/flags).
 
 Untuk mengaktifkan peristiwa diagnostik bagi Plugin atau sink kustom tanpa ekspor OTLP:
@@ -310,16 +325,16 @@ Untuk mengaktifkan peristiwa diagnostik bagi Plugin atau sink kustom tanpa ekspo
 
 Untuk ekspor OTLP ke collector, lihat [Ekspor OpenTelemetry](/id/gateway/opentelemetry).
 
-## Tips pemecahan masalah
+## Kiat pemecahan masalah
 
 - **Gateway tidak dapat dijangkau?** Jalankan `openclaw doctor` terlebih dahulu.
-- **Log kosong?** Periksa bahwa Gateway sedang berjalan dan menulis ke path file
+- **Log kosong?** Periksa bahwa Gateway sedang berjalan dan menulis ke jalur file
   di `logging.file`.
-- **Perlu detail lebih banyak?** Setel `logging.level` ke `debug` atau `trace` dan coba lagi.
+- **Perlu detail lebih lanjut?** Atur `logging.level` ke `debug` atau `trace` dan coba lagi.
 
 ## Terkait
 
 - [Ekspor OpenTelemetry](/id/gateway/opentelemetry) — ekspor OTLP/HTTP, katalog metrik/span, model privasi
-- [Flag diagnostik](/id/diagnostics/flags) — flag log debug tertarget
-- [Internal pencatatan log Gateway](/id/gateway/logging) — gaya log WS, prefiks subsistem, dan penangkapan konsol
+- [Flag diagnostik](/id/diagnostics/flags) — flag log debug yang ditargetkan
+- [Internal logging Gateway](/id/gateway/logging) — gaya log WS, prefiks subsistem, dan penangkapan konsol
 - [Referensi konfigurasi](/id/gateway/configuration-reference#diagnostics) — referensi lengkap bidang `diagnostics.*`

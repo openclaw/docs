@@ -2,52 +2,46 @@
 read_when:
     - أنت تبني Plugin خلفية CLI محلي للذكاء الاصطناعي
     - تريد تسجيل واجهة خلفية لمراجع النماذج مثل acme-cli/model
-    - تحتاج إلى ربط CLI تابع لجهة خارجية بمشغّل الرجوع النصي في OpenClaw
+    - تحتاج إلى تعيين CLI تابع لجهة خارجية إلى مشغّل الرجوع النصي في OpenClaw
 sidebarTitle: CLI backend plugins
-summary: أنشئ Plugin يسجّل خلفية CLI محلية للذكاء الاصطناعي
-title: بناء Plugins الواجهة الخلفية للـ CLI
+summary: أنشئ Plugin يسجّل واجهة خلفية محلية لواجهة AI CLI
+title: بناء Plugins خلفية CLI
 x-i18n:
-    generated_at: "2026-05-07T13:25:28Z"
+    generated_at: "2026-06-27T18:01:05Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9fcd604d35eb20d91350d5201236f22edfe7bb7e52eb19e89bceb8025dd3a29b
+    source_hash: d91c2b712a821005303c6cbb0ccbd8f263c8c30c5dbd6ed05b842c47c63f0542
     source_path: plugins/cli-backend-plugins.md
     workflow: 16
 ---
 
-تتيح Plugins الخلفية الخاصة بـ CLI لـ OpenClaw استدعاء CLI محلي للذكاء الاصطناعي بوصفه خلفية استدلال نصي
-backend. تظهر الخلفية كبادئة موفر في مراجع النماذج:
+تتيح Plugins الخلفيات الخاصة بـ CLI لـ OpenClaw استدعاء CLI محلي للذكاء الاصطناعي كخلفية لاستدلال النصوص. تظهر الخلفية كبادئة موفّر في مراجع النماذج:
 
 ```text
 acme-cli/acme-large
 ```
 
-استخدم خلفية CLI عندما يكون التكامل العلوي مكشوفًا بالفعل كأمر محلي،
-أو عندما يمتلك CLI حالة تسجيل الدخول المحلية، أو عندما يكون CLI بديلًا مفيدًا
-إذا كانت موفرو API غير متاحة.
+استخدم خلفية CLI عندما يكون التكامل العلوي متاحًا بالفعل كأمر محلي، أو عندما يمتلك CLI حالة تسجيل الدخول المحلية، أو عندما يكون CLI بديلًا مفيدًا إذا لم تكن موفّرات API متاحة.
 
 <Info>
-  إذا كانت الخدمة العلوية تعرض API نموذج HTTP عادية، فاكتب
-  [provider plugin](/ar/plugins/sdk-provider-plugins) بدلًا من ذلك. إذا كان وقت التشغيل العلوي
-  يمتلك جلسات وكيل كاملة، أو أحداث أدوات، أو Compaction، أو حالة مهام خلفية،
-  فاستخدم [agent harness](/ar/plugins/sdk-agent-harness).
+  إذا كانت الخدمة العلوية تعرض API نماذج HTTP عادية، فاكتب
+  [provider plugin](/ar/plugins/sdk-provider-plugins) بدلًا من ذلك. إذا كان وقت التشغيل العلوي يمتلك جلسات الوكيل الكاملة، أو أحداث الأدوات، أو Compaction، أو حالة المهام الخلفية، فاستخدم [agent harness](/ar/plugins/sdk-agent-harness).
 </Info>
 
-## ما الذي يمتلكه Plugin
+## ما يملكه Plugin
 
-لدى Plugin خلفية CLI ثلاثة عقود:
+يمتلك Plugin خلفية CLI ثلاثة عقود:
 
-| العقد                | الملف                  | الغرض                                                    |
+| العقد                 | الملف                  | الغرض                                                    |
 | -------------------- | ---------------------- | --------------------------------------------------------- |
-| مدخل الحزمة          | `package.json`         | يوجّه OpenClaw إلى وحدة وقت تشغيل Plugin                 |
-| ملكية البيان         | `openclaw.plugin.json` | يعلن معرّف الخلفية قبل تحميل وقت التشغيل                 |
-| تسجيل وقت التشغيل    | `index.ts`             | يستدعي `api.registerCliBackend(...)` مع افتراضيات الأمر |
+| مدخل الحزمة           | `package.json`         | يوجّه OpenClaw إلى وحدة وقت تشغيل Plugin                 |
+| ملكية البيان          | `openclaw.plugin.json` | يعلن معرّف الخلفية قبل تحميل وقت التشغيل                 |
+| تسجيل وقت التشغيل     | `index.ts`             | يستدعي `api.registerCliBackend(...)` مع افتراضيات الأمر |
 
-البيان هو بيانات وصفية للاكتشاف. لا ينفّذ CLI ولا يسجّل
-سلوك وقت التشغيل. يبدأ سلوك وقت التشغيل عندما يستدعي مدخل Plugin
-`api.registerCliBackend(...)`.
+البيان هو بيانات وصفية للاكتشاف. لا ينفّذ CLI ولا يسجّل سلوك وقت التشغيل. يبدأ سلوك وقت التشغيل عندما يستدعي مدخل Plugin `api.registerCliBackend(...)`.
 
-## Plugin خلفية بالحد الأدنى
+## Plugin خلفية بسيط بالحد الأدنى
 
 <Steps>
   <Step title="Create package metadata">
@@ -76,9 +70,7 @@ acme-cli/acme-large
     }
     ```
 
-    يجب أن تشحن الحزم المنشورة ملفات وقت تشغيل JavaScript مبنية. إذا كان مدخل
-    المصدر لديك هو `./src/index.ts`، فأضف `openclaw.runtimeExtensions` يشير إلى
-    نظير JavaScript المبني. راجع [نقاط الدخول](/ar/plugins/sdk-entrypoints).
+    يجب أن تشحن الحزم المنشورة ملفات وقت تشغيل JavaScript مبنية. إذا كان مدخل المصدر لديك هو `./src/index.ts`، فأضف `openclaw.runtimeExtensions` يشير إلى نظير JavaScript المبني. راجع [Entry points](/ar/plugins/sdk-entrypoints).
 
   </Step>
 
@@ -103,13 +95,9 @@ acme-cli/acme-large
     }
     ```
 
-    `cliBackends` هي قائمة ملكية وقت التشغيل. تتيح لـ OpenClaw التحميل التلقائي لـ
-    Plugin عندما يذكر الإعداد أو اختيار النموذج `acme-cli/...`.
+    `cliBackends` هي قائمة ملكية وقت التشغيل. تسمح لـ OpenClaw بتحميل Plugin تلقائيًا عندما يذكر الإعداد أو اختيار النموذج `acme-cli/...`.
 
-    `setup.cliBackends` هي سطح الإعداد القائم على الواصفات أولًا. أضفها عندما
-    ينبغي لاكتشاف النماذج أو التهيئة الأولية أو الحالة التعرف على الخلفية دون
-    تحميل وقت تشغيل Plugin. استخدم `requiresRuntime: false` فقط عندما تكون تلك
-    الواصفات الثابتة كافية للإعداد.
+    `setup.cliBackends` هو سطح الإعداد المعتمد على الواصفات أولًا. أضفه عندما ينبغي لاكتشاف النماذج، أو الإعداد الأولي، أو الحالة أن يتعرّف على الخلفية من دون تحميل وقت تشغيل Plugin. استخدم `requiresRuntime: false` فقط عندما تكون هذه الواصفات الثابتة كافية للإعداد.
 
   </Step>
 
@@ -168,9 +156,7 @@ acme-cli/acme-large
     });
     ```
 
-    يجب أن يطابق معرّف الخلفية إدخال `cliBackends` في البيان. `config` المسجّل
-    هو الافتراضي فقط؛ يتم دمج إعداد المستخدم ضمن
-    `agents.defaults.cliBackends.acme-cli` فوقه في وقت التشغيل.
+    يجب أن يطابق معرّف الخلفية إدخال `cliBackends` في البيان. `config` المسجّل هو الافتراضي فقط؛ ويُدمج إعداد المستخدم ضمن `agents.defaults.cliBackends.acme-cli` فوقه في وقت التشغيل.
 
   </Step>
 </Steps>
@@ -181,48 +167,60 @@ acme-cli/acme-large
 
 | الحقل                                     | الاستخدام                                                   |
 | ----------------------------------------- | ----------------------------------------------------------- |
-| `command`                                 | اسم الثنائي أو مسار أمر مطلق                                |
-| `args`                                    | argv الأساسي للتشغيلات الجديدة                              |
-| `resumeArgs`                              | argv بديل للجلسات المستأنفة؛ يدعم `{sessionId}`              |
-| `output` / `resumeOutput`                 | المحلّل: `json` أو `jsonl` أو `text`                         |
-| `input`                                   | نقل الموجه: `arg` أو `stdin`                                 |
-| `modelArg`                                | العلم المستخدم قبل معرّف النموذج                            |
-| `modelAliases`                            | ربط معرّفات نماذج OpenClaw بمعرّفات CLI الأصلية              |
-| `sessionArg` / `sessionArgs`              | كيفية تمرير معرّف جلسة                                      |
-| `sessionMode`                             | `always` أو `existing` أو `none`                             |
-| `sessionIdFields`                         | حقول JSON التي يقرؤها OpenClaw من مخرجات CLI                 |
-| `systemPromptArg` / `systemPromptFileArg` | نقل موجه النظام                                             |
-| `systemPromptWhen`                        | `first` أو `always` أو `never`                               |
+| `command`                                 | اسم الملف الثنائي أو مسار الأمر المطلق                     |
+| `args`                                    | argv الأساسية لعمليات التشغيل الجديدة                      |
+| `resumeArgs`                              | argv بديلة للجلسات المستأنفة؛ تدعم `{sessionId}`            |
+| `output` / `resumeOutput`                 | المحلّل: `json` أو `jsonl` أو `text`                        |
+| `input`                                   | نقل الموجّه: `arg` أو `stdin`                               |
+| `modelArg`                                | العلم المستخدم قبل معرّف النموذج                           |
+| `modelAliases`                            | يربط معرّفات نماذج OpenClaw بمعرّفات CLI الأصلية           |
+| `sessionArg` / `sessionArgs`              | كيفية تمرير معرّف الجلسة                                    |
+| `sessionMode`                             | `always` أو `existing` أو `none`                            |
+| `sessionIdFields`                         | حقول JSON التي يقرأها OpenClaw من مخرجات CLI               |
+| `systemPromptArg` / `systemPromptFileArg` | نقل موجّه النظام                                            |
+| `systemPromptWhen`                        | `first` أو `always` أو `never`                              |
 | `imageArg` / `imageMode`                  | دعم مسار الصورة                                             |
-| `serialize`                               | إبقاء تشغيلات الخلفية نفسها مرتبة                           |
+| `serialize`                               | إبقاء عمليات تشغيل الخلفية نفسها مرتبة                     |
 | `reliability.watchdog`                    | ضبط مهلة عدم وجود مخرجات                                    |
 
-فضّل أصغر إعداد ثابت يطابق CLI. أضف استدعاءات راجعة لـ Plugin
-فقط للسلوك الذي ينتمي فعلًا إلى الخلفية.
+فضّل أصغر إعداد ثابت يطابق CLI. أضف استدعاءات Plugin الراجعة فقط للسلوك الذي ينتمي فعلًا إلى الخلفية.
 
 ## خطافات الخلفية المتقدمة
 
 يمكن لـ `CliBackendPlugin` أيضًا تعريف:
 
-| الخطاف                             | الاستخدام                                                |
-| ---------------------------------- | -------------------------------------------------------- |
-| `normalizeConfig(config, context)` | إعادة كتابة إعداد المستخدم القديم بعد الدمج              |
-| `resolveExecutionArgs(ctx)`        | إضافة أعلام خاصة بالطلب مثل جهد التفكير                  |
-| `prepareExecution(ctx)`            | إنشاء جسور مصادقة أو إعداد مؤقتة قبل التشغيل             |
-| `transformSystemPrompt(ctx)`       | تطبيق تحويل نهائي خاص بـ CLI لموجه النظام                |
-| `textTransforms`                   | استبدالات ثنائية الاتجاه للموجه/المخرجات                 |
-| `defaultAuthProfileId`             | تفضيل ملف مصادقة OpenClaw محدد                           |
-| `authEpochMode`                    | تحديد كيف تبطل تغييرات المصادقة جلسات CLI المخزنة        |
-| `nativeToolMode`                   | إعلان ما إذا كان لدى CLI أدوات أصلية دائمة التشغيل       |
-| `bundleMcp` / `bundleMcpMode`      | الاشتراك في جسر أدوات MCP عبر local loopback الخاص بـ OpenClaw |
+| الخطاف                             | الاستخدام                                                                  |
+| ---------------------------------- | --------------------------------------------------------------------------- |
+| `normalizeConfig(config, context)` | يعيد كتابة إعدادات المستخدم القديمة بعد الدمج                              |
+| `resolveExecutionArgs(ctx)`        | يضيف أعلامًا مقيّدة بالطلب مثل جهد التفكير أو عزل السؤال الجانبي           |
+| `prepareExecution(ctx)`            | ينشئ جسور مصادقة أو إعداد مؤقتة قبل التشغيل                                |
+| `transformSystemPrompt(ctx)`       | يطبّق تحويلًا نهائيًا خاصًا بـ CLI لموجّه النظام                            |
+| `textTransforms`                   | استبدالات ثنائية الاتجاه للموجّه/المخرجات                                  |
+| `defaultAuthProfileId`             | يفضّل ملف تعريف مصادقة محددًا في OpenClaw                                  |
+| `authEpochMode`                    | يقرر كيف تؤدي تغييرات المصادقة إلى إبطال جلسات CLI المخزنة                |
+| `nativeToolMode`                   | يعلن ما إذا كان CLI يملك أدوات أصلية مفعّلة دائمًا                         |
+| `sideQuestionToolMode`             | يعلن الأدوات الأصلية المعطلة لأسئلة `/btw` الجانبية                        |
+| `bundleMcp` / `bundleMcpMode`      | يختار استخدام جسر أدوات MCP المحلي من OpenClaw                             |
+| `ownsNativeCompaction`             | الخلفية تمتلك Compaction الخاصة بها - يؤجل OpenClaw                         |
 
-أبق هذه الخطافات مملوكة للموفر. لا تضف فروعًا خاصة بـ CLI إلى النواة عندما
-يمكن لخطاف خلفية التعبير عن السلوك.
+أبقِ هذه الخطافات مملوكة للموفّر. لا تضف فروعًا خاصة بـ CLI إلى النواة عندما يستطيع خطاف خلفية التعبير عن السلوك.
+
+`ctx.executionMode` تكون `"agent"` للدورات العادية و`"side-question"` لاستدعاءات `/btw` المؤقتة. استخدمها عندما يحتاج CLI إلى أعلام مختلفة لمرة واحدة، مثل تعطيل الأدوات الأصلية، أو استمرارية الجلسة، أو سلوك الاستئناف لـ BTW. إذا كانت الخلفية عادة تحتوي على `nativeToolMode: "always-on"` لكن argv الخاصة بالسؤال الجانبي لديها تعطل تلك الأدوات بشكل موثوق، فعيّن أيضًا `sideQuestionToolMode: "disabled"`؛ وإلا يفشل OpenClaw مغلقًا عندما يتطلب BTW تشغيل CLI بلا أدوات.
+
+### `ownsNativeCompaction`: إلغاء استخدام Compaction في OpenClaw
+
+إذا كانت خلفيتك تشغّل وكيلًا يضغط سجلّه **الخاص**، فعيّن `ownsNativeCompaction: true` حتى لا يعمل ملخّص الحماية في OpenClaw أبدًا على جلساته - تعيد دورة حياة Compaction في CLI عملية بلا تأثير وتستمر الدورة. يعلن `claude-cli` ذلك لأن Claude Code يجري Compaction داخليًا بلا نقطة نهاية harness. أما جلسات native-harness مثل Codex فتستمر في التوجيه إلى نقطة نهاية Compaction الخاصة بـ harness بدلًا من ذلك.
+
+**لا تعلن ذلك إلا عندما تنطبق كل الشروط التالية**، وإلا يمكن لجلسة مؤجلة متجاوزة للميزانية أن تبقى فوق الميزانية / تصبح قديمة (لن ينقذها OpenClaw بعد الآن):
+
+- تضغط الخلفية سجلّها أو تحدّه بشكل موثوق عندما يقترب من نافذته؛
+- تحتفظ بجلسة قابلة للاستئناف حتى تبقى الحالة المضغوطة عبر الدورات
+  (مثل `--resume` / `--session-id`)؛
+- ليست جلسة Compaction من native-harness - فالجلسات المطابقة لـ `agentHarnessId` تُوجّه إلى نقطة نهاية harness بدلًا من ذلك.
 
 ## جسر أدوات MCP
 
-لا تتلقى خلفيات CLI أدوات OpenClaw افتراضيًا. إذا كان CLI يستطيع استهلاك
-إعداد MCP، فاشترك صراحة:
+لا تتلقى خلفيات CLI أدوات OpenClaw افتراضيًا. إذا كان CLI يستطيع استهلاك إعداد MCP، فاختر ذلك صراحة:
 
 ```typescript
 return {
@@ -239,15 +237,14 @@ return {
 
 أوضاع الجسر المدعومة هي:
 
-| الوضع                    | الاستخدام                                                       |
-| ------------------------ | ---------------------------------------------------------------- |
-| `claude-config-file`     | CLIs التي تقبل ملف إعداد MCP                                     |
-| `codex-config-overrides` | CLIs التي تقبل تجاوزات الإعداد عبر argv                          |
-| `gemini-system-settings` | CLIs التي تقرأ إعدادات MCP من دليل إعدادات النظام الخاص بها      |
+| الوضع                    | الاستخدام                                            |
+| ------------------------ | ---------------------------------------------------- |
+| `claude-config-file`     | أدوات CLI التي تقبل ملف إعداد MCP                   |
+| `codex-config-overrides` | أدوات CLI التي تقبل تجاوزات الإعداد على argv        |
+| `gemini-system-settings` | أدوات CLI التي تقرأ إعدادات MCP من دليل إعدادات النظام الخاص بها |
 
-فعّل الجسر فقط عندما يستطيع CLI استهلاكه فعليًا. إذا كان لدى CLI طبقة أدوات
-مدمجة خاصة به لا يمكن تعطيلها، فعيّن `nativeToolMode:
-"always-on"` لكي يتمكن OpenClaw من الفشل مغلقًا عندما يتطلب المستدعي عدم وجود أدوات أصلية.
+فعّل الجسر فقط عندما يستطيع CLI استهلاكه فعليًا. إذا كان CLI لديه طبقة أدوات مدمجة خاصة به لا يمكن تعطيلها، فعيّن `nativeToolMode:
+"always-on"` حتى يستطيع OpenClaw الفشل مغلقًا عندما يتطلب المستدعي عدم وجود أدوات أصلية.
 
 ## إعداد المستخدم
 
@@ -275,19 +272,18 @@ return {
 }
 ```
 
-وثّق الحد الأدنى من التجاوزات التي سيحتاجها المستخدمون غالبًا. عادةً يكون ذلك
-`command` فقط عندما يكون الثنائي خارج `PATH`.
+وثّق الحد الأدنى من التجاوز الذي يُرجّح أن يحتاجه المستخدمون. عادةً ما يكون ذلك `command` فقط عندما يكون الملف الثنائي خارج `PATH`.
 
 ## التحقق
 
-بالنسبة إلى Plugins المضمّنة، أضف اختبارًا مركزًا حول الباني وتسجيل الإعداد،
-ثم شغّل مسار الاختبار المستهدف الخاص بـ Plugin:
+بالنسبة إلى Plugins المضمّنة، أضف اختبارًا مركّزًا حول أداة البناء وتسجيل
+الإعداد، ثم شغّل مسار الاختبار المستهدف للـ Plugin:
 
 ```bash
 pnpm test extensions/acme-cli
 ```
 
-بالنسبة إلى Plugins المحلية أو المثبتة، تحقق من الاكتشاف ومن تشغيل نموذج حقيقي واحد:
+بالنسبة إلى Plugins المحلية أو المثبّتة، تحقّق من الاكتشاف ومن تشغيل نموذج حقيقي واحد:
 
 ```bash
 openclaw plugins inspect acme-cli --runtime --json
@@ -295,23 +291,23 @@ openclaw agent --message "reply exactly: backend ok" --model acme-cli/acme-large
 ```
 
 إذا كانت الخلفية تدعم الصور أو MCP، فأضف اختبار دخان حيًا يثبت تلك المسارات
-مع CLI الحقيقي. لا تعتمد على الفحص الثابت لسلوك الموجه أو الصورة أو MCP أو
+باستخدام CLI الحقيقي. لا تعتمد على الفحص الثابت لسلوك الموجّه أو الصورة أو MCP أو
 استئناف الجلسة.
 
 ## قائمة التحقق
 
 <Check>يحتوي `package.json` على `openclaw.extensions` ومدخلات وقت تشغيل مبنية للحزم المنشورة</Check>
 <Check>يعلن `openclaw.plugin.json` عن `cliBackends` و`activation.onStartup` المقصود</Check>
-<Check>يكون `setup.cliBackends` موجودًا عندما ينبغي للإعداد/اكتشاف النماذج رؤية الخلفية باردة</Check>
+<Check>يكون `setup.cliBackends` موجودًا عندما ينبغي للإعداد/اكتشاف النماذج رؤية الخلفية وهي باردة</Check>
 <Check>يستخدم `api.registerCliBackend(...)` معرّف الخلفية نفسه الموجود في البيان</Check>
-<Check>لا تزال تجاوزات المستخدم ضمن `agents.defaults.cliBackends.<id>` هي التي تسود</Check>
-<Check>تطابق إعدادات الجلسة وموجه النظام والصورة ومحلّل المخرجات عقد CLI الحقيقي</Check>
+<Check>تظل تجاوزات المستخدم ضمن `agents.defaults.cliBackends.<id>` هي الغالبة</Check>
+<Check>تطابق إعدادات الجلسة وموجّه النظام والصورة ومحلّل الإخراج عقد CLI الحقيقي</Check>
 <Check>تثبت الاختبارات المستهدفة واختبار دخان CLI حي واحد على الأقل مسار الخلفية</Check>
 
-## ذات صلة
+## ذو صلة
 
-- [خلفيات CLI](/ar/gateway/cli-backends) - إعداد المستخدم وسلوك وقت التشغيل
+- [خلفيات CLI](/ar/gateway/cli-backends) - إعدادات المستخدم وسلوك وقت التشغيل
 - [بناء Plugins](/ar/plugins/building-plugins) - أساسيات الحزمة والبيان
-- [نظرة عامة على SDK الخاص بـ Plugin](/ar/plugins/sdk-overview) - مرجع API التسجيل
+- [نظرة عامة على Plugin SDK](/ar/plugins/sdk-overview) - مرجع واجهة API للتسجيل
 - [بيان Plugin](/ar/plugins/manifest) - `cliBackends` وواصفات الإعداد
-- [agent harness](/ar/plugins/sdk-agent-harness) - أوقات تشغيل الوكلاء الخارجية الكاملة
+- [مشغّل الوكيل](/ar/plugins/sdk-agent-harness) - أوقات تشغيل كاملة للوكلاء الخارجيين

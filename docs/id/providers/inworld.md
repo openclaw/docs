@@ -1,54 +1,64 @@
 ---
 read_when:
     - Anda menginginkan sintesis ucapan Inworld untuk balasan keluar
-    - Anda memerlukan keluaran telefoni PCM atau catatan suara OGG_OPUS dari Inworld
-summary: Streaming teks-ke-ucapan Inworld untuk balasan OpenClaw
+    - Anda memerlukan keluaran catatan suara PCM telephony atau OGG_OPUS dari Inworld
+summary: Inworld streaming text-to-speech untuk balasan OpenClaw
 title: Inworld
 x-i18n:
-    generated_at: "2026-05-06T09:25:31Z"
+    generated_at: "2026-06-27T18:05:04Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: caf291bab5da946262ecaf4263c188c168be08ddb43fda72f250b8f8db87b3ff
+    source_hash: ea65903945586516b51b239f0671b9e59dac92f302442f3cb629f66b68338cfb
     source_path: providers/inworld.md
     workflow: 16
 ---
 
-Inworld adalah penyedia text-to-speech (TTS) streaming. Di OpenClaw, penyedia ini
-mensintesis audio balasan keluar (MP3 secara default, OGG_OPUS untuk catatan suara)
-dan audio PCM untuk saluran telefoni seperti Voice Call.
+  Inworld adalah penyedia text-to-speech (TTS) streaming. Di OpenClaw, layanan ini
+  mensintesis audio balasan keluar (MP3 secara default, OGG_OPUS untuk catatan suara)
+  dan audio PCM untuk kanal telefoni seperti Voice Call.
 
-OpenClaw mengirimkan permintaan ke endpoint TTS streaming Inworld, menggabungkan
-potongan audio base64 yang dikembalikan menjadi satu buffer, lalu menyerahkan hasilnya ke
-pipeline audio balasan standar.
+  OpenClaw mengirim permintaan ke endpoint TTS streaming Inworld, menggabungkan
+  potongan audio base64 yang dikembalikan menjadi satu buffer, lalu menyerahkan hasilnya ke
+  pipeline audio balasan standar.
 
-| Properti      | Nilai                                                           |
-| ------------- | --------------------------------------------------------------- |
-| ID penyedia   | `inworld`                                                       |
-| Plugin        | dibundel, `enabledByDefault: true`                              |
-| Kontrak       | `speechProviders` (hanya TTS)                                   |
-| Variabel env autentikasi | `INWORLD_API_KEY` (HTTP Basic, kredensial dashboard Base64) |
-| URL dasar     | `https://api.inworld.ai`                                        |
-| Suara default | `Sarah`                                                         |
-| Model default | `inworld-tts-1.5-max`                                           |
-| Output        | MP3 (default), OGG_OPUS (catatan suara), PCM 22050 Hz (telefoni) |
-| Situs web     | [inworld.ai](https://inworld.ai)                                |
-| Dokumentasi   | [docs.inworld.ai/tts/tts](https://docs.inworld.ai/tts/tts)      |
+  | Properti      | Nilai                                                           |
+  | ------------- | --------------------------------------------------------------- |
+  | Provider id   | `inworld`                                                       |
+  | Plugin        | paket eksternal resmi                                           |
+  | Kontrak       | `speechProviders` (hanya TTS)                                   |
+  | Auth env var  | `INWORLD_API_KEY` (HTTP Basic, kredensial dasbor Base64)        |
+  | Base URL      | `https://api.inworld.ai`                                        |
+  | Suara default | `Sarah`                                                         |
+  | Model default | `inworld-tts-1.5-max`                                           |
+  | Output        | MP3 (default), OGG_OPUS (catatan suara), PCM 22050 Hz (telefoni) |
+  | Situs web     | [inworld.ai](https://inworld.ai)                                |
+  | Docs          | [docs.inworld.ai/tts/tts](https://docs.inworld.ai/tts/tts)      |
 
-## Memulai
+  ## Instal Plugin
 
-<Steps>
-  <Step title="Tetapkan kunci API Anda">
-    Salin kredensial dari dashboard Inworld Anda (Workspace > API Keys)
-    dan tetapkan sebagai variabel env. Nilainya dikirim apa adanya sebagai kredensial
-    HTTP Basic, jadi jangan enkode Base64 lagi atau mengubahnya menjadi token
-    bearer.
+  Instal plugin resmi, lalu mulai ulang Gateway:
+
+  ```bash
+  openclaw plugins install @openclaw/inworld-speech
+  openclaw gateway restart
+  ```
+
+  ## Memulai
+
+  <Steps>
+  <Step title="Atur kunci API Anda">
+    Salin kredensial dari dasbor Inworld Anda (Workspace > API Keys)
+    dan tetapkan sebagai env var. Nilainya dikirim apa adanya sebagai kredensial HTTP Basic,
+    jadi jangan enkode Base64 lagi atau mengubahnya menjadi bearer
+    token.
 
     ```
     INWORLD_API_KEY=<base64-credential-from-dashboard>
     ```
 
   </Step>
-  <Step title="Pilih Inworld di messages.tts">
+  <Step title="Select Inworld in messages.tts">
     ```json5
     {
       messages: {
@@ -57,7 +67,7 @@ pipeline audio balasan standar.
           provider: "inworld",
           providers: {
             inworld: {
-              voiceId: "Sarah",
+              speakerVoiceId: "Sarah",
               modelId: "inworld-tts-1.5-max",
             },
           },
@@ -66,45 +76,45 @@ pipeline audio balasan standar.
     }
     ```
   </Step>
-  <Step title="Kirim pesan">
-    Kirim balasan melalui saluran mana pun yang terhubung. OpenClaw mensintesis
-    audio dengan Inworld dan mengirimkannya sebagai MP3 (atau OGG_OPUS saat saluran
+  <Step title="Send a message">
+    Kirim balasan melalui channel terhubung mana pun. OpenClaw menyintesis
+    audio dengan Inworld dan mengirimkannya sebagai MP3 (atau OGG_OPUS saat channel
     mengharapkan catatan suara).
   </Step>
 </Steps>
 
 ## Opsi konfigurasi
 
-| Opsi          | Path                                         | Deskripsi                                                         |
-| ------------- | -------------------------------------------- | ----------------------------------------------------------------- |
-| `apiKey`      | `messages.tts.providers.inworld.apiKey`      | Kredensial dashboard Base64. Beralih ke `INWORLD_API_KEY` jika tidak tersedia. |
-| `baseUrl`     | `messages.tts.providers.inworld.baseUrl`     | Timpa URL dasar API Inworld (default `https://api.inworld.ai`).   |
-| `voiceId`     | `messages.tts.providers.inworld.voiceId`     | Pengidentifikasi suara (default `Sarah`).                         |
-| `modelId`     | `messages.tts.providers.inworld.modelId`     | ID model TTS (default `inworld-tts-1.5-max`).                      |
-| `temperature` | `messages.tts.providers.inworld.temperature` | Suhu sampling `0..2` (opsional).                                  |
+| Opsi             | Jalur                                           | Deskripsi                                                         |
+| ---------------- | ----------------------------------------------- | ----------------------------------------------------------------- |
+| `apiKey`         | `messages.tts.providers.inworld.apiKey`         | Kredensial dasbor Base64. Menggunakan `INWORLD_API_KEY` sebagai cadangan. |
+| `baseUrl`        | `messages.tts.providers.inworld.baseUrl`        | Ganti URL dasar API Inworld (default `https://api.inworld.ai`).   |
+| `speakerVoiceId` | `messages.tts.providers.inworld.speakerVoiceId` | Pengidentifikasi suara (default `Sarah`).                         |
+| `modelId`        | `messages.tts.providers.inworld.modelId`        | ID model TTS (default `inworld-tts-1.5-max`).                     |
+| `temperature`    | `messages.tts.providers.inworld.temperature`    | Temperatur sampling `0..2` (opsional).                            |
 
 ## Catatan
 
 <AccordionGroup>
-  <Accordion title="Autentikasi">
-    Inworld menggunakan autentikasi HTTP Basic dengan satu string kredensial yang
-    dienkode Base64. Salin apa adanya dari dashboard Inworld. Penyedia mengirimkannya
-    sebagai `Authorization: Basic <apiKey>` tanpa encoding tambahan apa pun, jadi
-    jangan enkode Base64 sendiri dan jangan berikan token bergaya bearer.
-    Lihat [catatan autentikasi TTS](/id/tools/tts#inworld-primary) untuk keterangan yang sama.
+  <Accordion title="Authentication">
+    Inworld menggunakan autentikasi HTTP Basic dengan satu string kredensial
+    yang dikodekan Base64. Salin persis dari dasbor Inworld. Penyedia mengirimkannya
+    sebagai `Authorization: Basic <apiKey>` tanpa pengodean tambahan, jadi
+    jangan mengodekannya sendiri dengan Base64 dan jangan berikan token bergaya bearer.
+    Lihat [catatan autentikasi TTS](/id/tools/tts#inworld-primary) untuk penjelasan yang sama.
   </Accordion>
-  <Accordion title="Model">
+  <Accordion title="Models">
     ID model yang didukung: `inworld-tts-1.5-max` (default),
     `inworld-tts-1.5-mini`, `inworld-tts-1-max`, `inworld-tts-1`.
   </Accordion>
-  <Accordion title="Output audio">
-    Balasan menggunakan MP3 secara default. Saat target saluran adalah `voice-note`,
+  <Accordion title="Audio outputs">
+    Balasan menggunakan MP3 secara default. Saat target channel adalah `voice-note`,
     OpenClaw meminta `OGG_OPUS` dari Inworld agar audio diputar sebagai gelembung
-    suara native. Sintesis telefoni menggunakan `PCM` mentah pada 22050 Hz untuk
-    memberi masukan ke bridge telefoni.
+    suara native. Sintesis telefoni menggunakan `PCM` mentah pada 22050 Hz untuk mengumpan
+    bridge telefoni.
   </Accordion>
-  <Accordion title="Endpoint kustom">
-    Timpa host API dengan `messages.tts.providers.inworld.baseUrl`.
+  <Accordion title="Custom endpoints">
+    Ganti host API dengan `messages.tts.providers.inworld.baseUrl`.
     Garis miring di akhir dihapus sebelum permintaan dikirim.
   </Accordion>
 </AccordionGroup>
@@ -113,15 +123,15 @@ pipeline audio balasan standar.
 
 <CardGroup cols={2}>
   <Card title="Text-to-speech" href="/id/tools/tts" icon="waveform-lines">
-    Ringkasan TTS, penyedia, dan konfigurasi `messages.tts`.
+    Ikhtisar TTS, penyedia, dan konfigurasi `messages.tts`.
   </Card>
-  <Card title="Konfigurasi" href="/id/gateway/configuration" icon="gear">
+  <Card title="Configuration" href="/id/gateway/configuration" icon="gear">
     Referensi konfigurasi lengkap termasuk pengaturan `messages.tts`.
   </Card>
-  <Card title="Penyedia" href="/id/providers" icon="grid">
-    Semua penyedia OpenClaw yang dibundel.
+  <Card title="Providers" href="/id/providers" icon="grid">
+    Semua penyedia OpenClaw yang didukung.
   </Card>
-  <Card title="Pemecahan masalah" href="/id/help/troubleshooting" icon="wrench">
-    Masalah umum dan langkah-langkah debugging.
+  <Card title="Troubleshooting" href="/id/help/troubleshooting" icon="wrench">
+    Masalah umum dan langkah debugging.
   </Card>
 </CardGroup>

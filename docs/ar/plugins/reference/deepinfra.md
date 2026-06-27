@@ -1,30 +1,31 @@
 ---
 read_when:
-    - أنت بصدد تثبيت Plugin deepinfra أو تهيئته أو تدقيقه
-summary: يضيف دعم موفّر نماذج DeepInfra إلى OpenClaw.
+    - أنت تثبّت Plugin deepinfra أو تهيئه أو تدقّقه.
+summary: يضيف دعم موفر نماذج DeepInfra إلى OpenClaw.
 title: Plugin DeepInfra
 x-i18n:
-    generated_at: "2026-05-02T20:54:53Z"
+    generated_at: "2026-06-27T18:11:29Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: efce7be9c1dc707a55109b6044bd1acd9aefb3a0752caa3b5bcb8fd6aa0d4a1c
+    source_hash: 67ee0e714d812bbb72a05233ac52a17da796631766a9222bb9caa4d441c8433f
     source_path: plugins/reference/deepinfra.md
     workflow: 16
 ---
 
-# DeepInfra Plugin
+# Plugin DeepInfra
 
-يضيف دعم مزوّد نماذج DeepInfra إلى OpenClaw.
+يضيف دعم موفّر نماذج DeepInfra إلى OpenClaw.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/deepinfra-provider`
-- مسار التثبيت: مضمّن في OpenClaw
+- مسار التثبيت: npm؛ ClawHub: `clawhub:@openclaw/deepinfra-provider`
 
-## الواجهة
+## السطح
 
-providers: deepinfra; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, speechProviders, videoGenerationProviders
+الموفّرون: deepinfra؛ العقود: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, speechProviders, videoGenerationProviders
 
-## الوثائق ذات الصلة
+## المستندات ذات الصلة
 
 - [deepinfra](/ar/providers/deepinfra)

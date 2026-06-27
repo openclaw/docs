@@ -2,22 +2,23 @@
 read_when:
     - Anda ingin memahami bagaimana OpenClaw menyusun konteks model
     - Anda sedang beralih antara mesin lama dan mesin Plugin
-    - Anda sedang membangun Plugin mesin konteks
+    - Anda sedang membangun plugin mesin konteks
 sidebarTitle: Context engine
-summary: 'Mesin konteks: penyusunan konteks yang dapat diperluas, Compaction, dan siklus hidup subagen'
+summary: 'Mesin konteks: perakitan konteks yang dapat di-plug, Compaction, dan siklus hidup subagen'
 title: Mesin konteks
 x-i18n:
-    generated_at: "2026-05-06T09:06:30Z"
+    generated_at: "2026-06-27T17:23:34Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 0c33c94971751d92a2ce695db545a0c0abb7adcbe1820383b83f4201fa7e628d
+    source_hash: 124b6daf52f3d58f756352e2e169697541a8b6e67aecaa5a219bed15bda801cd
     source_path: concepts/context-engine.md
     workflow: 16
 ---
 
-Sebuah **mesin konteks** mengontrol bagaimana OpenClaw membangun konteks model untuk setiap proses: pesan mana yang disertakan, bagaimana meringkas riwayat lama, dan bagaimana mengelola konteks lintas batas subagent.
+Mesin **konteks** mengontrol bagaimana OpenClaw membangun konteks model untuk setiap run: pesan mana yang disertakan, bagaimana meringkas riwayat lama, dan bagaimana mengelola konteks melintasi batas subagent.
 
-OpenClaw dilengkapi mesin bawaan `legacy` dan menggunakannya secara default - sebagian besar pengguna tidak perlu mengubah ini. Instal dan pilih mesin Plugin hanya ketika Anda menginginkan perilaku assembly, Compaction, atau pengingatan lintas-sesi yang berbeda.
+OpenClaw dikirimkan dengan mesin bawaan `legacy` dan menggunakannya secara default - sebagian besar pengguna tidak perlu mengubah ini. Instal dan pilih mesin plugin hanya ketika Anda menginginkan perilaku assembly, Compaction, atau recall lintas-sesi yang berbeda.
 
 ## Mulai cepat
 
@@ -29,8 +30,8 @@ OpenClaw dilengkapi mesin bawaan `legacy` dan menggunakannya secara default - se
     cat ~/.openclaw/openclaw.json | jq '.plugins.slots.contextEngine'
     ```
   </Step>
-  <Step title="Instal mesin Plugin">
-    Plugin mesin konteks diinstal seperti Plugin OpenClaw lainnya.
+  <Step title="Instal mesin plugin">
+    Plugin mesin konteks diinstal seperti plugin OpenClaw lainnya.
 
     <Tabs>
       <Tab title="Dari npm">
@@ -68,7 +69,7 @@ OpenClaw dilengkapi mesin bawaan `legacy` dan menggunakannya secara default - se
 
   </Step>
   <Step title="Beralih kembali ke legacy (opsional)">
-    Atur `contextEngine` ke `"legacy"` (atau hapus kunci sepenuhnya - `"legacy"` adalah default).
+    Atur `contextEngine` ke `"legacy"` (atau hapus key sepenuhnya - `"legacy"` adalah default).
   </Step>
 </Steps>
 
@@ -78,52 +79,52 @@ Setiap kali OpenClaw menjalankan prompt model, mesin konteks berpartisipasi pada
 
 <AccordionGroup>
   <Accordion title="1. Ingest">
-    Dipanggil ketika pesan baru ditambahkan ke sesi. Mesin dapat menyimpan atau mengindeks pesan dalam penyimpanan datanya sendiri.
+    Dipanggil saat pesan baru ditambahkan ke sesi. Mesin dapat menyimpan atau mengindeks pesan di penyimpanan datanya sendiri.
   </Accordion>
   <Accordion title="2. Assemble">
-    Dipanggil sebelum setiap proses model. Mesin mengembalikan sekumpulan pesan berurutan (dan `systemPromptAddition` opsional) yang sesuai dengan anggaran token.
+    Dipanggil sebelum setiap run model. Mesin mengembalikan sekumpulan pesan berurutan (dan `systemPromptAddition` opsional) yang sesuai dengan anggaran token.
   </Accordion>
   <Accordion title="3. Compact">
-    Dipanggil ketika jendela konteks penuh, atau ketika pengguna menjalankan `/compact`. Mesin meringkas riwayat lama untuk mengosongkan ruang.
+    Dipanggil saat jendela konteks penuh, atau saat pengguna menjalankan `/compact`. Mesin meringkas riwayat lama untuk mengosongkan ruang.
   </Accordion>
-  <Accordion title="4. Setelah giliran">
-    Dipanggil setelah proses selesai. Mesin dapat mempertahankan status, memicu Compaction latar belakang, atau memperbarui indeks.
+  <Accordion title="4. After turn">
+    Dipanggil setelah run selesai. Mesin dapat mempertahankan state, memicu Compaction latar belakang, atau memperbarui indeks.
   </Accordion>
 </AccordionGroup>
 
-Untuk harness Codex non-ACP bawaan, OpenClaw menerapkan siklus hidup yang sama dengan memproyeksikan konteks yang telah dirakit ke dalam instruksi developer Codex dan prompt giliran saat ini. Codex tetap memiliki riwayat thread native dan compactor native-nya sendiri.
+Untuk harness Codex non-ACP bawaan, OpenClaw menerapkan siklus hidup yang sama dengan memproyeksikan konteks yang telah dirakit ke instruksi developer Codex dan prompt turn saat ini. Codex tetap memiliki riwayat thread native dan compactor native-nya sendiri.
 
 ### Siklus hidup subagent (opsional)
 
 OpenClaw memanggil dua hook siklus hidup subagent opsional:
 
 <ParamField path="prepareSubagentSpawn" type="method">
-  Siapkan status konteks bersama sebelum proses turunan dimulai. Hook menerima kunci sesi induk/turunan, `contextMode` (`isolated` atau `fork`), id/file transkrip yang tersedia, dan TTL opsional. Jika mengembalikan handle rollback, OpenClaw memanggilnya ketika spawn gagal setelah persiapan berhasil.
+  Siapkan state konteks bersama sebelum run child dimulai. Hook menerima key sesi parent/child, `contextMode` (`isolated` atau `fork`), id/file transkrip yang tersedia, dan TTL opsional. Jika mengembalikan handle rollback, OpenClaw memanggilnya ketika spawn gagal setelah persiapan berhasil. Spawn subagent native yang meminta `lightContext` dan terselesaikan menjadi `contextMode="isolated"` sengaja melewati hook ini agar child dimulai dari konteks bootstrap ringan tanpa state pra-spawn yang dikelola mesin konteks.
 </ParamField>
 <ParamField path="onSubagentEnded" type="method">
   Bersihkan saat sesi subagent selesai atau disapu.
 </ParamField>
 
-### Penambahan prompt sistem
+### Tambahan prompt sistem
 
-Metode `assemble` dapat mengembalikan string `systemPromptAddition`. OpenClaw menambahkannya di awal prompt sistem untuk proses tersebut. Ini memungkinkan mesin menyuntikkan panduan pengingatan dinamis, instruksi retrieval, atau petunjuk sadar-konteks tanpa memerlukan file workspace statis.
+Metode `assemble` dapat mengembalikan string `systemPromptAddition`. OpenClaw menambahkan ini di awal prompt sistem untuk run. Ini memungkinkan mesin menyuntikkan panduan recall dinamis, instruksi retrieval, atau petunjuk sadar konteks tanpa memerlukan file workspace statis.
 
 ## Mesin legacy
 
-Mesin `legacy` bawaan mempertahankan perilaku asli OpenClaw:
+Mesin bawaan `legacy` mempertahankan perilaku asli OpenClaw:
 
 - **Ingest**: no-op (manajer sesi menangani persistensi pesan secara langsung).
 - **Assemble**: pass-through (pipeline sanitize → validate → limit yang ada di runtime menangani assembly konteks).
-- **Compact**: mendelegasikan ke Compaction peringkasan bawaan, yang membuat satu ringkasan pesan lama dan menjaga pesan terbaru tetap utuh.
-- **Setelah giliran**: no-op.
+- **Compact**: mendelegasikan ke Compaction peringkasan bawaan, yang membuat satu ringkasan pesan lama dan mempertahankan pesan terbaru tetap utuh.
+- **After turn**: no-op.
 
-Mesin legacy tidak mendaftarkan alat atau menyediakan `systemPromptAddition`.
+Mesin legacy tidak mendaftarkan tool atau menyediakan `systemPromptAddition`.
 
-Ketika tidak ada `plugins.slots.contextEngine` yang ditetapkan (atau diatur ke `"legacy"`), mesin ini digunakan secara otomatis.
+Ketika tidak ada `plugins.slots.contextEngine` yang disetel (atau disetel ke `"legacy"`), mesin ini digunakan secara otomatis.
 
-## Mesin Plugin
+## Mesin plugin
 
-Sebuah Plugin dapat mendaftarkan mesin konteks menggunakan API Plugin:
+Plugin dapat mendaftarkan mesin konteks menggunakan API plugin:
 
 ```ts
 import { buildMemorySystemPromptAddition } from "openclaw/plugin-sdk/core";
@@ -161,8 +162,8 @@ export default function register(api) {
 }
 ```
 
-Factory `ctx` mencakup nilai `config`, `agentDir`, dan `workspaceDir`
-opsional sehingga Plugin dapat menginisialisasi status per-agen atau per-workspace sebelum
+Factory `ctx` menyertakan nilai `config`, `agentDir`, dan `workspaceDir`
+opsional agar plugin dapat menginisialisasi state per-agent atau per-workspace sebelum
 hook siklus hidup pertama berjalan.
 
 Lalu aktifkan di config:
@@ -186,80 +187,145 @@ Lalu aktifkan di config:
 
 Anggota wajib:
 
-| Anggota            | Jenis    | Tujuan                                                     |
-| ------------------ | -------- | ---------------------------------------------------------- |
-| `info`             | Properti | Id mesin, nama, versi, dan apakah mesin memiliki Compaction |
-| `ingest(params)`   | Metode   | Menyimpan satu pesan                                       |
-| `assemble(params)` | Metode   | Membangun konteks untuk proses model (mengembalikan `AssembleResult`) |
-| `compact(params)`  | Metode   | Meringkas/mengurangi konteks                               |
+| Anggota            | Jenis    | Tujuan                                                   |
+| ------------------ | -------- | -------------------------------------------------------- |
+| `info`             | Properti | Id mesin, nama, versi, dan apakah ia memiliki Compaction |
+| `ingest(params)`   | Metode   | Menyimpan satu pesan                                     |
+| `assemble(params)` | Metode   | Membangun konteks untuk run model (mengembalikan `AssembleResult`) |
+| `compact(params)`  | Metode   | Meringkas/mengurangi konteks                             |
 
 `assemble` mengembalikan `AssembleResult` dengan:
 
 <ParamField path="messages" type="Message[]" required>
-  Pesan berurutan yang akan dikirim ke model.
+  Pesan berurutan untuk dikirim ke model.
 </ParamField>
 <ParamField path="estimatedTokens" type="number" required>
-  Perkiraan mesin atas total token dalam konteks yang dirakit. OpenClaw menggunakan ini untuk keputusan ambang Compaction dan pelaporan diagnostik.
+  Estimasi mesin untuk total token dalam konteks yang telah dirakit. OpenClaw menggunakan ini untuk keputusan ambang Compaction dan pelaporan diagnostik.
 </ParamField>
 <ParamField path="systemPromptAddition" type="string">
   Ditambahkan di awal prompt sistem.
 </ParamField>
 <ParamField path="promptAuthority" type='"assembled" | "preassembly_may_overflow"'>
   Mengontrol estimasi token mana yang digunakan runner untuk precheck overflow
-  preventif. Default-nya `"assembled"`, yang berarti hanya estimasi prompt
+  preemptif. Default ke `"assembled"`, yang berarti hanya estimasi prompt
   yang telah dirakit yang diperiksa - sesuai untuk mesin yang mengembalikan
-  konteks berjendela dan mandiri. Atur ke `"preassembly_may_overflow"` hanya
-  ketika tampilan rakitan Anda dapat menyembunyikan risiko overflow dalam
-  transkrip yang mendasarinya; runner kemudian mengambil maksimum dari estimasi
-  rakitan dan estimasi riwayat sesi pra-assembly (tanpa jendela) saat memutuskan
-  apakah akan melakukan Compaction secara preventif. Bagaimanapun, pesan yang Anda
-  kembalikan tetap yang dilihat model - `promptAuthority` hanya memengaruhi precheck.
+  konteks berjendela dan mandiri. Setel ke `"preassembly_may_overflow"` hanya
+  ketika tampilan yang telah dirakit dapat menyembunyikan risiko overflow pada
+  transkrip yang mendasarinya; runner kemudian mengambil nilai maksimum dari
+  estimasi yang telah dirakit dan estimasi riwayat sesi pra-assembly (tanpa jendela)
+  saat memutuskan apakah akan melakukan Compact secara preemptif. Bagaimanapun,
+  pesan yang Anda kembalikan tetap merupakan apa yang dilihat model -
+  `promptAuthority` hanya memengaruhi precheck.
 </ParamField>
 
 `compact` mengembalikan `CompactResult`. Ketika Compaction merotasi transkrip
 aktif, `result.sessionId` dan `result.sessionFile` mengidentifikasi sesi penerus
-yang harus digunakan oleh percobaan ulang atau giliran berikutnya.
+yang harus digunakan retry atau turn berikutnya.
 
 Anggota opsional:
 
 | Anggota                        | Jenis  | Tujuan                                                                                                          |
 | ------------------------------ | ------ | --------------------------------------------------------------------------------------------------------------- |
-| `bootstrap(params)`            | Metode | Menginisialisasi status mesin untuk sesi. Dipanggil sekali saat mesin pertama kali melihat sesi (misalnya, impor riwayat). |
-| `ingestBatch(params)`          | Metode | Mengingest giliran yang selesai sebagai batch. Dipanggil setelah proses selesai, dengan semua pesan dari giliran tersebut sekaligus. |
-| `afterTurn(params)`            | Metode | Pekerjaan siklus hidup pasca-proses (mempertahankan status, memicu Compaction latar belakang).                 |
-| `prepareSubagentSpawn(params)` | Metode | Menyiapkan status bersama untuk sesi turunan sebelum dimulai.                                                   |
+| `bootstrap(params)`            | Metode | Menginisialisasi state mesin untuk sesi. Dipanggil sekali saat mesin pertama kali melihat sesi (misalnya, impor riwayat). |
+| `ingestBatch(params)`          | Metode | Meng-ingest turn yang selesai sebagai batch. Dipanggil setelah run selesai, dengan semua pesan dari turn tersebut sekaligus. |
+| `afterTurn(params)`            | Metode | Pekerjaan siklus hidup pasca-run (mempertahankan state, memicu Compaction latar belakang).                      |
+| `prepareSubagentSpawn(params)` | Metode | Menyiapkan state bersama untuk sesi child sebelum dimulai.                                                       |
 | `onSubagentEnded(params)`      | Metode | Membersihkan setelah subagent berakhir.                                                                         |
-| `dispose()`                    | Metode | Melepaskan resource. Dipanggil saat gateway dimatikan atau Plugin dimuat ulang - bukan per sesi.               |
+| `dispose()`                    | Metode | Melepaskan resource. Dipanggil selama shutdown gateway atau reload plugin - bukan per sesi.                     |
+
+### Pengaturan runtime
+
+Hook siklus hidup yang berjalan di dalam OpenClaw menerima objek
+`runtimeSettings` opsional. Ini adalah permukaan API internal
+producer/consumer yang berversi dan hanya-baca: OpenClaw memproduksinya untuk mesin konteks
+yang dipilih, dan mesin konteks mengonsumsinya di dalam hook siklus hidup. Ini tidak
+dirender langsung kepada pengguna dan tidak membuat permukaan pelaporan khusus.
+
+- `schemaVersion`: saat ini `1`
+- `runtime`: host OpenClaw, mode runtime (`normal`, `fallback`, atau
+  `degraded`), dan id harness/runtime opsional
+- `contextEngineSelection`: id mesin konteks yang dipilih dan sumber pemilihan
+- `executionHost`: id host dan label untuk permukaan yang memanggil hook
+- `model`: model yang diminta, model yang di-resolve, provider, dan family model opsional
+- `limits`: anggaran token prompt dan token output maksimum saat diketahui
+- `diagnostics`: kode alasan fallback tertutup dan degraded saat diketahui
+
+Field yang dapat tidak diketahui direpresentasikan sebagai `null`; field discriminator
+seperti mode runtime dan sumber pemilihan tetap non-nullable. Mesin lama tetap
+kompatibel: jika mesin legacy yang ketat menolak `runtimeSettings` sebagai properti
+yang tidak dikenal, OpenClaw mencoba ulang panggilan siklus hidup tanpanya alih-alih mengarantina
+mesin.
+
+### Persyaratan host
+
+Mesin konteks dapat mendeklarasikan persyaratan kapabilitas host pada `info.hostRequirements`.
+OpenClaw memeriksa persyaratan ini sebelum memulai operasi dan gagal tertutup
+dengan error deskriptif ketika runtime yang dipilih tidak dapat memenuhinya.
+
+Untuk run agent, deklarasikan `assemble-before-prompt` ketika mesin harus mengontrol
+prompt model aktual melalui `assemble()`:
+
+```ts
+info: {
+  id: "my-context-engine",
+  name: "My Context Engine",
+  hostRequirements: {
+    "agent-run": {
+      requiredCapabilities: ["assemble-before-prompt"],
+      unsupportedMessage:
+        "Use the native Codex or OpenClaw embedded runtime, or select the legacy context engine.",
+    },
+  },
+}
+```
+
+Run agent Codex native dan embedded OpenClaw memenuhi `assemble-before-prompt`.
+Backend CLI generik tidak, sehingga mesin yang membutuhkannya ditolak sebelum
+proses CLI dimulai.
+
+### Isolasi kegagalan
+
+OpenClaw mengisolasi mesin plugin yang dipilih dari jalur balasan inti. Jika
+mesin non-legacy hilang, gagal validasi kontrak, melempar selama pembuatan
+factory, atau melempar dari metode siklus hidup, OpenClaw mengarantina mesin tersebut
+untuk proses Gateway saat ini dan menurunkan pekerjaan mesin konteks ke mesin
+bawaan `legacy`. Error dicatat bersama operasi yang gagal sehingga operator
+dapat memperbaiki, memperbarui, atau menonaktifkan plugin tanpa membuat agent
+diam.
+
+Host requirement failures berbeda: ketika sebuah engine menyatakan bahwa runtime
+tidak memiliki kapabilitas wajib, OpenClaw gagal secara tertutup sebelum memulai eksekusi. Itu
+melindungi engine yang akan merusak state jika berjalan di host yang tidak didukung.
 
 ### ownsCompaction
 
-`ownsCompaction` mengontrol apakah auto-compaction bawaan dalam-percobaan milik Pi tetap aktif untuk proses tersebut:
+`ownsCompaction` mengontrol apakah auto-Compaction bawaan dalam percobaan milik runtime OpenClaw tetap diaktifkan untuk eksekusi tersebut:
 
 <AccordionGroup>
   <Accordion title="ownsCompaction: true">
-    Mesin memiliki perilaku Compaction. OpenClaw menonaktifkan auto-compaction bawaan Pi untuk proses tersebut, dan implementasi `compact()` milik mesin bertanggung jawab atas `/compact`, Compaction pemulihan overflow, dan Compaction proaktif apa pun yang ingin dilakukan di `afterTurn()`. OpenClaw mungkin masih menjalankan pengaman overflow pra-prompt; ketika memprediksi seluruh transkrip akan overflow, jalur pemulihan memanggil `compact()` milik mesin aktif sebelum mengirim prompt lain.
+    Engine memiliki perilaku Compaction. OpenClaw menonaktifkan auto-Compaction bawaan runtime OpenClaw untuk eksekusi itu, dan implementasi `compact()` milik engine bertanggung jawab atas `/compact`, Compaction pemulihan overflow, dan Compaction proaktif apa pun yang ingin dilakukannya di `afterTurn()`. OpenClaw masih dapat menjalankan pengaman overflow pra-prompt; ketika pengaman ini memprediksi transkrip lengkap akan overflow, jalur pemulihan memanggil `compact()` milik engine aktif sebelum mengirim prompt lain.
   </Accordion>
-  <Accordion title="ownsCompaction: false atau tidak ditetapkan">
-    Auto-compaction bawaan Pi mungkin masih berjalan selama eksekusi prompt, tetapi metode `compact()` milik mesin aktif tetap dipanggil untuk `/compact` dan pemulihan overflow.
+  <Accordion title="ownsCompaction: false or unset">
+    Auto-Compaction bawaan runtime OpenClaw masih dapat berjalan selama eksekusi prompt, tetapi metode `compact()` milik engine aktif tetap dipanggil untuk `/compact` dan pemulihan overflow.
   </Accordion>
 </AccordionGroup>
 
 <Warning>
-`ownsCompaction: false` **tidak** berarti OpenClaw secara otomatis fallback ke jalur Compaction mesin legacy.
+`ownsCompaction: false` **tidak** berarti OpenClaw otomatis kembali ke jalur Compaction engine lama.
 </Warning>
 
 Itu berarti ada dua pola Plugin yang valid:
 
 <Tabs>
-  <Tab title="Mode memiliki">
+  <Tab title="Owning mode">
     Implementasikan algoritma Compaction Anda sendiri dan tetapkan `ownsCompaction: true`.
   </Tab>
-  <Tab title="Mode delegasi">
+  <Tab title="Delegating mode">
     Tetapkan `ownsCompaction: false` dan buat `compact()` memanggil `delegateCompactionToRuntime(...)` dari `openclaw/plugin-sdk/core` untuk menggunakan perilaku Compaction bawaan OpenClaw.
   </Tab>
 </Tabs>
 
-`compact()` no-op tidak aman untuk mesin non-owning aktif karena menonaktifkan jalur Compaction normal `/compact` dan pemulihan overflow untuk slot mesin tersebut.
+`compact()` no-op tidak aman untuk engine aktif yang tidak memiliki Compaction karena menonaktifkan jalur Compaction normal `/compact` dan pemulihan overflow untuk slot engine tersebut.
 
 ## Referensi konfigurasi
 
@@ -276,38 +342,38 @@ Itu berarti ada dua pola Plugin yang valid:
 ```
 
 <Note>
-Slot bersifat eksklusif saat runtime - hanya satu mesin konteks terdaftar yang di-resolve untuk proses atau operasi Compaction tertentu. Plugin `kind: "context-engine"` lain yang aktif tetap dapat dimuat dan menjalankan kode registrasinya; `plugins.slots.contextEngine` hanya memilih id mesin terdaftar mana yang di-resolve OpenClaw ketika membutuhkan mesin konteks.
+Slot ini eksklusif saat runtime - hanya satu engine konteks terdaftar yang di-resolve untuk eksekusi atau operasi Compaction tertentu. Plugin `kind: "context-engine"` lain yang diaktifkan masih dapat dimuat dan menjalankan kode registrasinya; `plugins.slots.contextEngine` hanya memilih id engine terdaftar mana yang di-resolve OpenClaw saat membutuhkan engine konteks.
 </Note>
 
 <Note>
-**Uninstal Plugin:** ketika Anda menguninstal Plugin yang saat ini dipilih sebagai `plugins.slots.contextEngine`, OpenClaw mereset slot kembali ke default (`legacy`). Perilaku reset yang sama berlaku untuk `plugins.slots.memory`. Tidak diperlukan edit config manual.
+**Penghapusan instalasi Plugin:** saat Anda menghapus instalasi Plugin yang saat ini dipilih sebagai `plugins.slots.contextEngine`, OpenClaw mengatur ulang slot kembali ke default (`legacy`). Perilaku pengaturan ulang yang sama berlaku untuk `plugins.slots.memory`. Tidak diperlukan pengeditan konfigurasi manual.
 </Note>
 
 ## Hubungan dengan Compaction dan memori
 
 <AccordionGroup>
   <Accordion title="Compaction">
-    Compaction adalah salah satu tanggung jawab mesin konteks. Mesin lama mendelegasikan ke peringkasan bawaan OpenClaw. Mesin Plugin dapat menerapkan strategi Compaction apa pun (ringkasan DAG, pengambilan vektor, dll.).
+    Compaction adalah salah satu tanggung jawab engine konteks. Engine lama mendelegasikan ke peringkasan bawaan OpenClaw. Engine Plugin dapat menerapkan strategi Compaction apa pun (ringkasan DAG, pengambilan vektor, dll.).
   </Accordion>
-  <Accordion title="Plugin memori">
-    Plugin memori (`plugins.slots.memory`) terpisah dari mesin konteks. Plugin memori menyediakan pencarian/pengambilan; mesin konteks mengontrol apa yang dilihat model. Keduanya dapat bekerja bersama - mesin konteks mungkin menggunakan data Plugin memori selama perakitan. Mesin Plugin yang menginginkan jalur prompt memori aktif sebaiknya menggunakan `buildMemorySystemPromptAddition(...)` dari `openclaw/plugin-sdk/core`, yang mengonversi bagian prompt memori aktif menjadi `systemPromptAddition` yang siap ditambahkan di awal. Jika sebuah mesin membutuhkan kontrol tingkat lebih rendah, mesin itu tetap dapat mengambil baris mentah dari `openclaw/plugin-sdk/memory-host-core` melalui `buildActiveMemoryPromptSection(...)`.
+  <Accordion title="Memory plugins">
+    Plugin memori (`plugins.slots.memory`) terpisah dari engine konteks. Plugin memori menyediakan pencarian/pengambilan; engine konteks mengontrol apa yang dilihat model. Keduanya dapat bekerja bersama - engine konteks mungkin menggunakan data Plugin memori selama penyusunan. Engine Plugin yang menginginkan jalur prompt memori aktif sebaiknya menggunakan `buildMemorySystemPromptAddition(...)` dari `openclaw/plugin-sdk/core`, yang mengonversi bagian prompt memori aktif menjadi `systemPromptAddition` siap-ditambahkan-di-awal. Jika engine membutuhkan kontrol tingkat lebih rendah, engine masih dapat mengambil baris mentah dari `openclaw/plugin-sdk/memory-host-core` melalui `buildActiveMemoryPromptSection(...)`.
   </Accordion>
-  <Accordion title="Pemangkasan sesi">
-    Pemotongan hasil alat lama di memori tetap berjalan terlepas dari mesin konteks mana yang aktif.
+  <Accordion title="Session pruning">
+    Pemangkasan hasil tool lama di dalam memori tetap berjalan terlepas dari engine konteks mana yang aktif.
   </Accordion>
 </AccordionGroup>
 
 ## Tips
 
-- Gunakan `openclaw doctor` untuk memverifikasi mesin Anda dimuat dengan benar.
-- Jika beralih mesin, sesi yang ada terus berjalan dengan riwayatnya saat ini. Mesin baru mengambil alih untuk eksekusi berikutnya.
-- Kesalahan mesin dicatat dan ditampilkan dalam diagnostik. Jika mesin Plugin gagal didaftarkan atau id mesin yang dipilih tidak dapat diselesaikan, OpenClaw tidak otomatis beralih ke cadangan; eksekusi gagal sampai Anda memperbaiki Plugin atau mengalihkan `plugins.slots.contextEngine` kembali ke `"legacy"`.
+- Gunakan `openclaw doctor` untuk memverifikasi bahwa engine Anda dimuat dengan benar.
+- Jika berganti engine, sesi yang ada tetap berlanjut dengan riwayatnya saat ini. Engine baru mengambil alih untuk eksekusi mendatang.
+- Error engine dicatat dan engine Plugin yang dipilih dikarantina untuk proses Gateway saat ini. OpenClaw kembali ke `legacy` untuk giliran pengguna agar balasan dapat terus berlanjut, tetapi Anda tetap harus memperbaiki, memperbarui, menonaktifkan, atau menghapus instalasi Plugin yang rusak.
 - Untuk pengembangan, gunakan `openclaw plugins install -l ./my-engine` untuk menautkan direktori Plugin lokal tanpa menyalin.
 
 ## Terkait
 
 - [Compaction](/id/concepts/compaction) - meringkas percakapan panjang
-- [Konteks](/id/concepts/context) - cara konteks dibangun untuk giliran agen
-- [Arsitektur Plugin](/id/plugins/architecture) - mendaftarkan Plugin mesin konteks
-- [Manifes Plugin](/id/plugins/manifest) - kolom manifes Plugin
-- [Plugin](/id/tools/plugin) - ikhtisar Plugin
+- [Konteks](/id/concepts/context) - bagaimana konteks dibangun untuk giliran agen
+- [Arsitektur Plugin](/id/plugins/architecture) - mendaftarkan Plugin engine konteks
+- [Manifest Plugin](/id/plugins/manifest) - kolom manifest Plugin
+- [Plugin](/id/tools/plugin) - ringkasan Plugin

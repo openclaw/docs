@@ -1,218 +1,226 @@
 ---
 read_when:
-    - Bạn cần hợp đồng hỗ trợ thời gian chạy của bộ khung Codex
-    - Bạn đang gỡ lỗi các công cụ Codex gốc, móc nối, Compaction hoặc việc tải phản hồi lên
-    - Bạn đang thay đổi hành vi Plugin qua các lượt PI và harness Codex
-summary: Ranh giới thời gian chạy, hook, công cụ, quyền và chẩn đoán cho bộ khung Codex
-title: Môi trường chạy của bộ khung Codex
+    - Bạn cần hợp đồng hỗ trợ runtime của harness Codex
+    - Bạn đang gỡ lỗi các công cụ Codex gốc, hook, Compaction hoặc quá trình tải phản hồi lên
+    - Bạn đang thay đổi hành vi Plugin trên các lượt của OpenClaw và bộ harness Codex
+summary: Ranh giới thời gian chạy, hook, công cụ, quyền và chẩn đoán cho harness Codex
+title: Môi trường chạy của bộ harness Codex
 x-i18n:
-    generated_at: "2026-05-11T20:33:32Z"
+    generated_at: "2026-06-27T17:44:50Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8373441e725360527f89f66883f2bd1a164de558e82d1dee05c29af6756db25e
+    source_hash: 84bca37f41003fd78a8e272cb8a54db05e780fab027af60d2ce058cc472ec001
     source_path: plugins/codex-harness-runtime.md
     workflow: 16
 ---
 
-Trang này ghi lại hợp đồng thời gian chạy cho các lượt của bộ khung Codex. Để thiết lập và
-định tuyến, hãy bắt đầu với [bộ khung Codex](/vi/plugins/codex-harness). Với các trường cấu hình,
-xem [tham chiếu bộ khung Codex](/vi/plugins/codex-harness-reference).
+Trang này ghi lại hợp đồng runtime cho các lượt harness Codex. Để thiết lập và
+định tuyến, hãy bắt đầu với [harness Codex](/vi/plugins/codex-harness). Đối với các trường cấu hình,
+xem [tham chiếu harness Codex](/vi/plugins/codex-harness-reference).
 
 ## Tổng quan
 
-Chế độ Codex không phải là PI với một lệnh gọi mô hình khác ở bên dưới. Codex sở hữu nhiều phần hơn của
+Chế độ Codex không phải là OpenClaw với một lệnh gọi mô hình khác bên dưới. Codex sở hữu nhiều phần hơn của
 vòng lặp mô hình gốc, và OpenClaw điều chỉnh các bề mặt Plugin, công cụ, phiên và
-chẩn đoán của mình quanh ranh giới đó.
+chẩn đoán của nó quanh ranh giới đó.
 
-OpenClaw vẫn sở hữu định tuyến kênh, tệp phiên, gửi tin nhắn hiển thị,
-công cụ động OpenClaw, phê duyệt, gửi phương tiện và một bản sao transcript.
-Codex sở hữu luồng gốc chuẩn, vòng lặp mô hình gốc, tiếp tục công cụ gốc
+OpenClaw vẫn sở hữu định tuyến kênh, tệp phiên, phân phối thông báo hiển thị,
+công cụ động của OpenClaw, phê duyệt, phân phối phương tiện và bản sao transcript.
+Codex sở hữu luồng gốc chính tắc, vòng lặp mô hình gốc, tiếp tục công cụ gốc
 và Compaction gốc.
+
+Định tuyến prompt tuân theo runtime đã chọn, không chỉ chuỗi nhà cung cấp. Một
+lượt Codex gốc nhận chỉ dẫn developer của app-server Codex, trong khi một
+tuyến tương thích OpenClaw rõ ràng giữ prompt hệ thống OpenClaw bình thường ngay cả
+khi nó dùng xác thực hoặc transport OpenAI kiểu Codex.
+
+Codex gốc giữ các chỉ dẫn nền/mô hình do Codex sở hữu và hành vi tài liệu dự án
+theo cấu hình luồng Codex đang hoạt động. OpenClaw bắt đầu và tiếp tục các
+luồng Codex gốc với personality tích hợp của Codex bị tắt để các tệp
+personality workspace và danh tính agent OpenClaw vẫn có thẩm quyền. Các lượt
+OpenClaw nhẹ vẫn giữ cơ chế triệt tiêu tài liệu dự án hiện có. Chỉ dẫn
+developer của OpenClaw bao phủ các mối quan tâm runtime của OpenClaw như phân phối
+kênh nguồn, công cụ động của OpenClaw, ủy quyền ACP, ngữ cảnh adapter và các
+tệp hồ sơ workspace của agent đang hoạt động. Catalog Skills của OpenClaw và các
+con trỏ `MEMORY.md` được định tuyến qua công cụ được chiếu thành chỉ dẫn
+developer cộng tác theo phạm vi lượt cho Codex gốc. Nội dung `BOOTSTRAP.md`
+đang hoạt động và phần chèn dự phòng `MEMORY.md` đầy đủ vẫn dùng ngữ cảnh tham chiếu đầu vào của lượt.
 
 ## Ràng buộc luồng và thay đổi mô hình
 
 Khi một phiên OpenClaw được gắn vào một luồng Codex hiện có, lượt tiếp theo
-sẽ gửi lại mô hình OpenAI đang được chọn, chính sách phê duyệt, sandbox và tầng dịch vụ
-đến app-server. Việc chuyển từ `openai/gpt-5.5` sang
-`openai/gpt-5.2` giữ nguyên ràng buộc luồng nhưng yêu cầu Codex tiếp tục bằng
+gửi lại mô hình OpenAI, chính sách phê duyệt, sandbox và tầng dịch vụ hiện được chọn
+đến app-server. Chuyển từ `openai/gpt-5.5` sang
+`openai/gpt-5.2` giữ ràng buộc luồng nhưng yêu cầu Codex tiếp tục với
 mô hình mới được chọn.
 
 ## Phản hồi hiển thị và Heartbeat
 
-Khi một lượt trò chuyện nguồn chạy qua bộ khung Codex, phản hồi hiển thị mặc định
-dùng công cụ `message` của OpenClaw nếu bản triển khai chưa cấu hình rõ
-`messages.visibleReplies`. Tác nhân vẫn có thể hoàn tất lượt Codex của nó một cách riêng tư;
-nó chỉ đăng lên kênh khi gọi `message(action="send")`. Đặt
-`messages.visibleReplies: "automatic"` để giữ các phản hồi cuối trong trò chuyện trực tiếp trên
-đường gửi tự động cũ.
+Khi một lượt trò chuyện trực tiếp/nguồn chạy qua harness Codex, phản hồi hiển thị
+mặc định là tự động phân phối trợ lý cuối cùng cho các bề mặt WebChat nội bộ.
+Điều này giữ Codex đồng bộ với hợp đồng prompt của harness Pi: agent phản hồi
+bình thường, và OpenClaw đăng văn bản cuối cùng vào cuộc trò chuyện nguồn. Đặt
+`messages.visibleReplies: "message_tool"` khi một cuộc trò chuyện trực tiếp/nguồn cần
+cố ý giữ văn bản trợ lý cuối cùng ở chế độ riêng tư trừ khi agent gọi
+`message(action="send")`.
 
-Các lượt Heartbeat của Codex cũng nhận `heartbeat_respond` trong danh mục công cụ OpenClaw
-có thể tìm kiếm theo mặc định, để tác nhân có thể ghi lại việc lần đánh thức nên giữ
-im lặng hay thông báo mà không mã hóa luồng điều khiển đó trong văn bản cuối.
+Các lượt Heartbeat của Codex cũng mặc định nhận `heartbeat_respond` trong catalog
+công cụ OpenClaw có thể tìm kiếm, để agent có thể ghi lại liệu lần đánh thức nên giữ
+im lặng hay thông báo mà không mã hóa luồng điều khiển đó trong văn bản cuối cùng.
 
-Hướng dẫn chủ động riêng cho Heartbeat được gửi dưới dạng chỉ dẫn dành cho nhà phát triển
-ở chế độ cộng tác Codex trên chính lượt Heartbeat. Các lượt trò chuyện thông thường khôi phục
-chế độ Codex mặc định thay vì mang triết lý Heartbeat trong lời nhắc thời gian chạy
-bình thường của chúng.
+Hướng dẫn chủ động dành riêng cho Heartbeat được gửi dưới dạng chỉ dẫn developer
+chế độ cộng tác Codex ngay trên lượt Heartbeat đó. Các lượt trò chuyện thông thường khôi phục
+chế độ Codex Default thay vì mang triết lý Heartbeat trong prompt runtime
+bình thường của chúng. Khi tồn tại một `HEARTBEAT.md` không rỗng, các chỉ dẫn
+chế độ cộng tác Heartbeat trỏ Codex đến tệp đó thay vì chèn trực tiếp nội dung của nó.
 
 ## Ranh giới hook
 
-Bộ khung Codex có ba lớp hook:
+Harness Codex có ba lớp hook:
 
-| Lớp                                  | Chủ sở hữu               | Mục đích                                                            |
-| ------------------------------------ | ------------------------ | ------------------------------------------------------------------- |
-| Hook Plugin OpenClaw                 | OpenClaw                 | Tương thích sản phẩm/Plugin trên các bộ khung PI và Codex.          |
-| Middleware tiện ích mở rộng app-server Codex | Plugin đóng gói của OpenClaw | Hành vi bộ điều hợp theo từng lượt quanh công cụ động OpenClaw.     |
-| Hook gốc Codex                       | Codex                    | Vòng đời Codex cấp thấp và chính sách công cụ gốc từ cấu hình Codex. |
+| Lớp                                  | Chủ sở hữu                | Mục đích                                                            |
+| ------------------------------------ | ------------------------- | ------------------------------------------------------------------- |
+| Hook Plugin OpenClaw                 | OpenClaw                  | Tương thích sản phẩm/Plugin trên các harness OpenClaw và Codex.     |
+| Middleware tiện ích mở rộng app-server Codex | Plugin đóng gói của OpenClaw | Hành vi adapter theo từng lượt quanh công cụ động của OpenClaw.     |
+| Hook gốc Codex                       | Codex                     | Vòng đời Codex cấp thấp và chính sách công cụ gốc từ cấu hình Codex. |
 
-OpenClaw không dùng các tệp Codex `hooks.json` cấp dự án hoặc toàn cục để định tuyến
-hành vi Plugin OpenClaw. Với công cụ gốc và cầu quyền được hỗ trợ,
-OpenClaw tiêm cấu hình Codex theo từng luồng cho `PreToolUse`, `PostToolUse`,
-`PermissionRequest` và `Stop`.
+OpenClaw không dùng các tệp `hooks.json` cấp dự án hoặc toàn cục của Codex để định tuyến
+hành vi Plugin OpenClaw. Đối với cầu công cụ gốc và quyền được hỗ trợ,
+OpenClaw chèn cấu hình Codex theo từng luồng cho `PreToolUse`, `PostToolUse`,
+`PermissionRequest`, và `Stop`.
 
 Khi phê duyệt app-server Codex được bật, nghĩa là `approvalPolicy` không phải
-`"never"`, cấu hình hook gốc được tiêm mặc định sẽ bỏ qua `PermissionRequest` để
-trình duyệt xét app-server của Codex và cầu phê duyệt của OpenClaw xử lý các
-leo thang thật sau khi duyệt xét. Người vận hành có thể thêm rõ `permission_request` vào
+`"never"`, cấu hình hook gốc mặc định được chèn sẽ bỏ qua `PermissionRequest` để
+reviewer app-server của Codex và cầu phê duyệt của OpenClaw xử lý các
+yêu cầu nâng quyền thực sự sau khi review. Người vận hành có thể thêm rõ ràng `permission_request` vào
 `nativeHookRelay.events` khi cần relay tương thích.
 
 Các hook Codex khác như `SessionStart` và `UserPromptSubmit` vẫn là
 các điều khiển cấp Codex. Chúng không được phơi bày dưới dạng hook Plugin OpenClaw trong hợp đồng v1.
 
-Với công cụ động OpenClaw, OpenClaw thực thi công cụ sau khi Codex yêu cầu
+Đối với công cụ động của OpenClaw, OpenClaw thực thi công cụ sau khi Codex yêu cầu
 lệnh gọi, vì vậy OpenClaw kích hoạt hành vi Plugin và middleware mà nó sở hữu trong
-bộ điều hợp bộ khung. Với công cụ gốc Codex, Codex sở hữu bản ghi công cụ chuẩn.
+adapter harness. Đối với công cụ gốc Codex, Codex sở hữu bản ghi công cụ chính tắc.
 OpenClaw có thể phản chiếu các sự kiện được chọn, nhưng không thể viết lại luồng Codex
-gốc trừ khi Codex phơi bày thao tác đó thông qua app-server hoặc callback
-hook gốc.
+gốc trừ khi Codex phơi bày thao tác đó qua app-server hoặc callback hook gốc.
 
-Thông báo mục app-server Codex cũng cung cấp các quan sát `after_tool_call` bất đồng bộ
-cho các hoàn tất công cụ gốc chưa được relay `PostToolUse` gốc bao phủ.
+Sự kiện `PreToolUse` ở chế độ báo cáo của app-server Codex hoãn yêu cầu phê duyệt Plugin
+đến phê duyệt app-server tương ứng. Nếu một hook `before_tool_call` của OpenClaw
+trả về `requireApproval` trong khi payload gốc đặt chế độ phê duyệt báo cáo
+(`openclaw_approval_mode` là `"report"`), relay hook gốc ghi lại
+yêu cầu phê duyệt Plugin và không trả về quyết định gốc nào. Khi Codex gửi
+yêu cầu phê duyệt app-server cho cùng lần dùng công cụ đó, OpenClaw mở prompt
+phê duyệt Plugin và ánh xạ quyết định trở lại Codex. Sự kiện `PermissionRequest`
+của Codex là một đường phê duyệt riêng và vẫn có thể định tuyến qua phê duyệt OpenClaw
+khi runtime được cấu hình cho cầu đó.
+
+Thông báo mục của app-server Codex cũng cung cấp quan sát `after_tool_call` bất đồng bộ
+cho các lần hoàn tất công cụ gốc chưa được relay `PostToolUse` gốc bao phủ.
 Các quan sát này chỉ dành cho telemetry và tương thích Plugin; chúng không thể chặn,
-trì hoãn hoặc biến đổi lệnh gọi công cụ gốc.
+trì hoãn hoặc thay đổi lệnh gọi công cụ gốc.
 
-Các phép chiếu Compaction và vòng đời LLM đến từ thông báo app-server Codex
-và trạng thái bộ điều hợp OpenClaw, không phải lệnh hook gốc Codex.
-Các sự kiện `before_compaction`, `after_compaction`, `llm_input` và
-`llm_output` của OpenClaw là quan sát cấp bộ điều hợp, không phải bản chụp từng byte
+Các phép chiếu vòng đời Compaction và LLM đến từ thông báo app-server Codex
+và trạng thái adapter OpenClaw, không phải lệnh hook Codex gốc.
+Các sự kiện `before_compaction`, `after_compaction`, `llm_input`, và
+`llm_output` của OpenClaw là quan sát cấp adapter, không phải bản chụp từng byte
 của yêu cầu nội bộ hoặc payload Compaction của Codex.
 
-Thông báo app-server `hook/started` và `hook/completed` gốc Codex được
-chiếu thành sự kiện tác nhân `codex_app_server.hook` để theo dõi quỹ đạo và gỡ lỗi.
+Thông báo app-server `hook/started` và `hook/completed` gốc của Codex được
+chiếu thành sự kiện agent `codex_app_server.hook` để ghi trajectory và gỡ lỗi.
 Chúng không gọi hook Plugin OpenClaw.
 
 ## Hợp đồng hỗ trợ V1
 
-Được hỗ trợ trong thời gian chạy Codex v1:
+Được hỗ trợ trong runtime Codex v1:
 
-| Bề mặt                                        | Hỗ trợ                                                                           | Lý do                                                                                                                                                                                                      |
-| --------------------------------------------- | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Vòng lặp mô hình OpenAI thông qua Codex       | Được hỗ trợ                                                                      | App-server Codex sở hữu lượt OpenAI, tiếp tục luồng gốc và tiếp tục công cụ gốc.                                                                                                                          |
-| Định tuyến và gửi kênh OpenClaw               | Được hỗ trợ                                                                      | Telegram, Discord, Slack, WhatsApp, iMessage và các kênh khác nằm ngoài thời gian chạy mô hình.                                                                                                           |
-| Công cụ động OpenClaw                         | Được hỗ trợ                                                                      | Codex yêu cầu OpenClaw thực thi các công cụ này, vì vậy OpenClaw vẫn nằm trong đường thực thi.                                                                                                            |
-| Plugin lời nhắc và ngữ cảnh                   | Được hỗ trợ                                                                      | OpenClaw xây dựng lớp phủ lời nhắc và chiếu ngữ cảnh vào lượt Codex trước khi bắt đầu hoặc tiếp tục luồng.                                                                                                |
-| Vòng đời công cụ ngữ cảnh                     | Được hỗ trợ                                                                      | Tập hợp, nhập, bảo trì sau lượt và phối hợp Compaction của công cụ ngữ cảnh chạy cho các lượt Codex.                                                                                                      |
-| Hook công cụ động                             | Được hỗ trợ                                                                      | `before_tool_call`, `after_tool_call` và middleware kết quả công cụ chạy quanh các công cụ động do OpenClaw sở hữu.                                                                                       |
-| Hook vòng đời                                 | Được hỗ trợ dưới dạng quan sát của bộ điều hợp                                   | `llm_input`, `llm_output`, `agent_end`, `before_compaction` và `after_compaction` kích hoạt với payload trung thực của chế độ Codex.                                                                       |
-| Cổng sửa đổi câu trả lời cuối                 | Được hỗ trợ thông qua relay hook gốc                                             | Codex `Stop` được relay đến `before_agent_finalize`; `revise` yêu cầu Codex chạy thêm một lượt mô hình nữa trước khi hoàn tất.                                                                            |
-| Chặn hoặc quan sát shell, bản vá và MCP gốc   | Được hỗ trợ thông qua relay hook gốc                                             | Codex `PreToolUse` và `PostToolUse` được relay cho các bề mặt công cụ gốc đã cam kết, bao gồm payload MCP trên app-server Codex `0.125.0` trở lên. Chặn được hỗ trợ; viết lại đối số thì không.          |
-| Chính sách quyền gốc                          | Được hỗ trợ thông qua phê duyệt app-server Codex và relay hook gốc tương thích   | Yêu cầu phê duyệt app-server Codex định tuyến qua OpenClaw sau khi Codex duyệt xét. Relay hook gốc `PermissionRequest` là tùy chọn cho các chế độ phê duyệt gốc vì Codex phát nó trước khi guardian duyệt xét. |
-| Ghi lại quỹ đạo app-server                    | Được hỗ trợ                                                                      | OpenClaw ghi lại yêu cầu mà nó đã gửi đến app-server và các thông báo app-server mà nó nhận được.                                                                                                        |
+| Bề mặt                                       | Hỗ trợ                                                                          | Lý do                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| --------------------------------------------- | -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Vòng lặp mô hình OpenAI thông qua Codex               | Được hỗ trợ                                                                        | Máy chủ ứng dụng Codex sở hữu lượt OpenAI, tiếp tục luồng gốc và tiếp tục công cụ gốc.                                                                                                                                                                                                                                                                                                                                                                                          |
+| Định tuyến và phân phối kênh OpenClaw         | Được hỗ trợ                                                                        | Telegram, Discord, Slack, WhatsApp, iMessage và các kênh khác nằm ngoài runtime mô hình.                                                                                                                                                                                                                                                                                                                                                                                    |
+| Công cụ động OpenClaw                        | Được hỗ trợ                                                                        | Codex yêu cầu OpenClaw thực thi các công cụ này, vì vậy OpenClaw vẫn nằm trong đường dẫn thực thi.                                                                                                                                                                                                                                                                                                                                                                                                |
+| Plugin prompt và ngữ cảnh                    | Được hỗ trợ                                                                        | OpenClaw chiếu prompt/ngữ cảnh riêng của OpenClaw vào lượt Codex trong khi giữ các prompt cơ sở, mô hình và tài liệu dự án đã cấu hình do Codex sở hữu trong luồng Codex gốc. OpenClaw tắt personality tích hợp của Codex cho các luồng gốc để các tệp personality trong workspace của agent vẫn có thẩm quyền. Hướng dẫn developer gốc của Codex chỉ chấp nhận hướng dẫn lệnh được giới hạn phạm vi rõ ràng cho `codex_app_server`; các gợi ý lệnh toàn cục legacy vẫn được giữ cho các bề mặt prompt không phải Codex. |
+| Vòng đời engine ngữ cảnh                      | Được hỗ trợ                                                                        | Việc assemble, ingest và bảo trì sau lượt chạy xung quanh các lượt Codex. Các engine ngữ cảnh không thay thế compaction gốc của Codex.                                                                                                                                                                                                                                                                                                                                                        |
+| Hook công cụ động                            | Được hỗ trợ                                                                        | `before_tool_call`, `after_tool_call` và middleware kết quả công cụ chạy xung quanh các công cụ động do OpenClaw sở hữu.                                                                                                                                                                                                                                                                                                                                                                          |
+| Hook vòng đời                               | Được hỗ trợ dưới dạng quan sát của adapter                                                | `llm_input`, `llm_output`, `agent_end`, `before_compaction` và `after_compaction` kích hoạt với payload chế độ Codex trung thực.                                                                                                                                                                                                                                                                                                                                                           |
+| Cổng sửa đổi câu trả lời cuối cùng                    | Được hỗ trợ thông qua relay hook gốc                                              | Codex `Stop` được relay tới `before_agent_finalize`; `revise` yêu cầu Codex thực hiện thêm một lượt mô hình trước khi hoàn tất.                                                                                                                                                                                                                                                                                                                                                                |
+| Chặn hoặc quan sát shell, patch và MCP gốc | Được hỗ trợ thông qua relay hook gốc                                              | Codex `PreToolUse` và `PostToolUse` được relay cho các bề mặt công cụ gốc đã commit, bao gồm payload MCP trên máy chủ ứng dụng Codex `0.125.0` hoặc mới hơn. Hỗ trợ chặn; không hỗ trợ viết lại đối số.                                                                                                                                                                                                                                                                               |
+| Chính sách quyền gốc                      | Được hỗ trợ thông qua phê duyệt của máy chủ ứng dụng Codex và relay hook gốc tương thích | Các yêu cầu phê duyệt của máy chủ ứng dụng Codex được định tuyến qua OpenClaw sau phần review của Codex. Relay hook gốc `PermissionRequest` là opt-in cho các chế độ phê duyệt gốc vì Codex phát ra nó trước phần review của guardian.                                                                                                                                                                                                                                                                          |
+| Ghi lại quỹ đạo máy chủ ứng dụng                 | Được hỗ trợ                                                                        | OpenClaw ghi lại yêu cầu đã gửi tới máy chủ ứng dụng và các thông báo máy chủ ứng dụng nhận được.                                                                                                                                                                                                                                                                                                                                                                                    |
 
-Không được hỗ trợ trong thời gian chạy Codex v1:
+Không được hỗ trợ trong runtime Codex v1:
 
-| Bề mặt                                              | Ranh giới V1                                                                                                                                   | Đường hướng tương lai                                                                     |
+| Bề mặt                                             | Ranh giới V1                                                                                                                                     | Đường hướng tương lai                                                                               |
 | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| Biến đổi đối số công cụ gốc                         | Hook tiền công cụ gốc Codex có thể chặn, nhưng OpenClaw không viết lại đối số công cụ gốc Codex.                                               | Cần hỗ trợ hook/schema Codex để thay thế đầu vào công cụ.                                 |
-| Lịch sử transcript gốc Codex có thể chỉnh sửa       | Codex sở hữu lịch sử luồng gốc chuẩn. OpenClaw sở hữu bản sao và có thể chiếu ngữ cảnh tương lai, nhưng không nên biến đổi nội bộ không được hỗ trợ. | Thêm API app-server Codex rõ ràng nếu cần phẫu thuật luồng gốc.                          |
-| `tool_result_persist` cho bản ghi công cụ gốc Codex | Hook đó biến đổi các lần ghi transcript do OpenClaw sở hữu, không phải bản ghi công cụ gốc Codex.                                              | Có thể phản chiếu bản ghi đã biến đổi, nhưng viết lại chuẩn cần Codex hỗ trợ.             |
-| Siêu dữ liệu Compaction gốc phong phú               | OpenClaw quan sát bắt đầu và hoàn tất Compaction, nhưng không nhận danh sách giữ/bỏ ổn định, delta token hoặc payload tóm tắt.                 | Cần sự kiện Compaction Codex phong phú hơn.                                               |
-| Can thiệp Compaction                                | Các hook Compaction hiện tại của OpenClaw ở chế độ Codex là cấp thông báo.                                                                     | Thêm hook trước/sau Compaction của Codex nếu Plugin cần phủ quyết hoặc viết lại Compaction gốc. |
-| Ghi lại từng byte yêu cầu API mô hình               | OpenClaw có thể ghi lại yêu cầu và thông báo app-server, nhưng lõi Codex tự xây dựng yêu cầu API OpenAI cuối cùng ở bên trong.                 | Cần sự kiện theo dõi yêu cầu mô hình Codex hoặc API gỡ lỗi.                               |
+| Đột biến đối số công cụ gốc                       | Hook trước công cụ gốc của Codex có thể chặn, nhưng OpenClaw không viết lại đối số công cụ gốc của Codex.                                               | Cần Codex hỗ trợ hook/schema cho đầu vào công cụ thay thế.                            |
+| Lịch sử transcript gốc của Codex có thể chỉnh sửa            | Codex sở hữu lịch sử luồng gốc chuẩn. OpenClaw sở hữu một bản phản chiếu và có thể chiếu ngữ cảnh tương lai, nhưng không nên đột biến các phần nội bộ không được hỗ trợ. | Thêm API máy chủ ứng dụng Codex rõ ràng nếu cần phẫu thuật luồng gốc.                    |
+| `tool_result_persist` cho bản ghi công cụ gốc của Codex | Hook đó biến đổi các lần ghi transcript do OpenClaw sở hữu, không phải bản ghi công cụ gốc của Codex.                                                           | Có thể phản chiếu các bản ghi đã biến đổi, nhưng việc viết lại chuẩn cần Codex hỗ trợ.              |
+| Siêu dữ liệu compaction gốc phong phú                     | OpenClaw có thể yêu cầu compaction gốc, nhưng không nhận được danh sách giữ/bỏ ổn định, delta token, tóm tắt hoàn tất hoặc payload tóm tắt.   | Cần sự kiện compaction Codex phong phú hơn.                                                     |
+| Can thiệp compaction                             | OpenClaw không cho phép Plugin hoặc engine ngữ cảnh phủ quyết, viết lại hoặc thay thế compaction Codex gốc.                                             | Thêm hook trước/sau compaction của Codex nếu Plugin cần phủ quyết hoặc viết lại compaction gốc. |
+| Ghi lại yêu cầu API mô hình chính xác từng byte             | OpenClaw có thể ghi lại các yêu cầu và thông báo máy chủ ứng dụng, nhưng lõi Codex xây dựng yêu cầu API OpenAI cuối cùng ở bên trong.                      | Cần sự kiện theo dõi yêu cầu mô hình của Codex hoặc API gỡ lỗi.                                   |
 
-## Quyền gốc và gợi mở MCP
+## Quyền gốc và elicitation MCP
 
 Đối với `PermissionRequest`, OpenClaw chỉ trả về quyết định cho phép hoặc từ chối rõ ràng
-khi chính sách quyết định. Kết quả không có quyết định không phải là cho phép. Codex xem đó là không có
-quyết định hook và chuyển tiếp sang đường guardian hoặc phê duyệt người dùng của chính nó.
+khi chính sách quyết định. Kết quả không có quyết định không phải là cho phép. Codex coi nó là không có
+quyết định hook và chuyển tiếp sang đường dẫn guardian hoặc phê duyệt người dùng của chính nó.
 
-Codex app-server mặc định bỏ qua hook gốc này trong các chế độ phê duyệt. Hành vi này
+Các chế độ phê duyệt của máy chủ ứng dụng Codex mặc định bỏ qua hook gốc này. Hành vi này
 áp dụng khi `permission_request` được đưa vào rõ ràng trong
-`nativeHookRelay.events` hoặc khi runtime tương thích cài đặt nó.
+`nativeHookRelay.events` hoặc một runtime tương thích cài đặt nó.
 
-Khi operator chọn `allow-always` cho một yêu cầu quyền gốc của Codex,
-OpenClaw ghi nhớ dấu vân tay chính xác của provider/session/tool input/cwd đó trong một
-cửa sổ phiên có giới hạn. Quyết định được ghi nhớ được cố ý chỉ khớp chính xác:
-lệnh, đối số, payload của tool hoặc cwd thay đổi sẽ tạo một phê duyệt
+Khi operator chọn `allow-always` cho yêu cầu quyền gốc của Codex,
+OpenClaw ghi nhớ đúng fingerprint provider/session/đầu vào công cụ/cwd đó trong một
+cửa sổ phiên có giới hạn. Quyết định được ghi nhớ cố ý chỉ khớp chính xác:
+lệnh, đối số, payload công cụ hoặc cwd thay đổi sẽ tạo một phê duyệt
 mới.
 
-Các elicitation phê duyệt tool MCP của Codex được định tuyến qua luồng
-phê duyệt Plugin của OpenClaw khi Codex đánh dấu `_meta.codex_approval_kind` là
-`"mcp_tool_call"`. Prompt `request_user_input` của Codex được gửi lại về
-cuộc trò chuyện gốc, và tin nhắn theo sau tiếp theo trong hàng đợi sẽ trả lời yêu cầu
-server gốc đó thay vì bị điều hướng như ngữ cảnh bổ sung. Các yêu cầu elicitation MCP
-khác sẽ bị từ chối đóng.
+Các elicitation phê duyệt công cụ Codex MCP được định tuyến qua luồng phê duyệt
+Plugin của OpenClaw khi Codex đánh dấu `_meta.codex_approval_kind` là
+`"mcp_tool_call"`. Các prompt Codex `request_user_input` được gửi lại về
+cuộc chat khởi nguồn, và tin nhắn follow-up tiếp theo trong hàng đợi trả lời yêu cầu
+máy chủ gốc đó thay vì được điều hướng như ngữ cảnh bổ sung. Các yêu cầu elicitation MCP
+khác fail closed.
+
+Đối với luồng phê duyệt Plugin chung mang các prompt này, xem
+[Yêu cầu quyền Plugin](/vi/plugins/plugin-permission-requests).
 
 ## Điều hướng hàng đợi
 
-Điều hướng hàng đợi khi lượt đang chạy ánh xạ tới `turn/steer` của Codex app-server. Với
-mặc định `messages.queue.mode: "steer"`, OpenClaw gom các tin nhắn trò chuyện trong hàng đợi
-trong khoảng lặng đã cấu hình và gửi chúng dưới dạng một yêu cầu `turn/steer` theo
-thứ tự đến. Chế độ `queue` cũ gửi các yêu cầu `turn/steer` riêng biệt.
+Điều hướng hàng đợi đang chạy ánh xạ vào `turn/steer` của máy chủ ứng dụng Codex. Với
+mặc định `messages.queue.mode: "steer"`, OpenClaw gom nhóm các tin nhắn chat
+chế độ steer trong cửa sổ yên lặng đã cấu hình và gửi chúng dưới dạng một yêu cầu `turn/steer`
+theo thứ tự đến.
 
-Các lượt review Codex và Compaction thủ công có thể từ chối điều hướng trong cùng lượt. Trong trường hợp đó,
-OpenClaw dùng hàng đợi theo sau khi chế độ đã chọn cho phép fallback.
-Xem [Hàng đợi điều hướng](/vi/concepts/queue-steering).
+Các lượt đánh giá Codex và Compaction thủ công có thể từ chối điều hướng trong cùng lượt. Trong trường hợp đó, OpenClaw đợi lượt chạy đang hoạt động hoàn tất trước khi bắt đầu prompt. Dùng `/queue followup` hoặc `/queue collect` khi mặc định tin nhắn nên được đưa vào hàng đợi thay vì điều hướng. Xem [Hàng đợi điều hướng](/vi/concepts/queue-steering).
 
 ## Tải phản hồi Codex lên
 
-Khi `/diagnostics [note]` được phê duyệt cho một phiên dùng harness Codex gốc,
-OpenClaw cũng gọi `feedback/upload` của Codex app-server cho các thread Codex
-liên quan. Lần tải lên yêu cầu app-server bao gồm log cho từng thread được liệt kê
-và các subthread Codex đã được tạo khi có sẵn.
+Khi `/diagnostics [note]` được phê duyệt cho một phiên dùng harness Codex gốc, OpenClaw cũng gọi Codex app-server `feedback/upload` cho các luồng Codex liên quan. Bản tải lên yêu cầu app-server bao gồm nhật ký cho từng luồng được liệt kê và các luồng con Codex được tạo ra khi có.
 
-Lần tải lên đi qua đường dẫn phản hồi thông thường của Codex tới server OpenAI. Nếu phản hồi Codex
-bị tắt trong app-server đó, lệnh sẽ trả về lỗi của app-server.
-Phản hồi diagnostics đã hoàn tất liệt kê các kênh, id phiên OpenClaw,
-id thread Codex và các lệnh cục bộ `codex resume <thread-id>` cho những thread
-đã được gửi.
+Bản tải lên đi qua đường dẫn phản hồi Codex thông thường tới máy chủ OpenAI. Nếu phản hồi Codex bị tắt trong app-server đó, lệnh sẽ trả về lỗi app-server. Phản hồi chẩn đoán hoàn tất liệt kê các kênh, mã phiên OpenClaw, mã luồng Codex và các lệnh cục bộ `codex resume <thread-id>` cho những luồng đã được gửi.
 
-Nếu bạn từ chối hoặc bỏ qua phê duyệt, OpenClaw không in các id Codex đó và
-không gửi phản hồi Codex. Lần tải lên không thay thế bản xuất diagnostics Gateway
-cục bộ. Xem [Xuất diagnostics](/vi/gateway/diagnostics) để biết về
-phê duyệt, quyền riêng tư, bundle cục bộ và hành vi nhóm chat.
+Nếu bạn từ chối hoặc bỏ qua phê duyệt, OpenClaw không in các mã Codex đó và không gửi phản hồi Codex. Bản tải lên không thay thế bản xuất chẩn đoán Gateway cục bộ. Xem [Xuất chẩn đoán](/vi/gateway/diagnostics) để biết hành vi phê duyệt, quyền riêng tư, gói cục bộ và trò chuyện nhóm.
 
-Chỉ dùng `/codex diagnostics [note]` khi bạn đặc biệt muốn tải phản hồi Codex
-lên cho thread hiện đang gắn mà không cần toàn bộ bundle diagnostics Gateway.
+Chỉ dùng `/codex diagnostics [note]` khi bạn đặc biệt muốn tải phản hồi Codex lên cho luồng hiện đang được gắn mà không có toàn bộ gói chẩn đoán Gateway.
 
-## Compaction và bản sao transcript
+## Compaction và bản sao bản ghi
 
-Khi model đã chọn dùng harness Codex, Compaction thread gốc được
-ủy quyền cho Codex app-server. OpenClaw giữ một bản sao transcript cho lịch sử
-kênh, tìm kiếm, `/new`, `/reset`, và việc chuyển đổi model hoặc harness trong tương lai.
+Khi mô hình được chọn dùng harness Codex, Compaction luồng gốc thuộc về Codex app-server. OpenClaw không chạy Compaction kiểm tra trước cho các lượt Codex, không thay thế Compaction Codex bằng Compaction của context-engine, và không quay về tóm tắt của OpenClaw hoặc OpenAI công khai khi không thể bắt đầu Compaction Codex gốc. OpenClaw giữ một bản sao bản ghi cho lịch sử kênh, tìm kiếm, `/new`, `/reset`, và việc chuyển đổi mô hình hoặc harness trong tương lai.
 
-Bản sao này bao gồm prompt của người dùng, văn bản assistant cuối cùng, và các bản ghi
-lập luận hoặc kế hoạch Codex nhẹ khi app-server phát ra chúng. Hiện tại, OpenClaw chỉ
-ghi nhận các tín hiệu bắt đầu và hoàn tất Compaction gốc. Nó chưa hiển thị
-bản tóm tắt Compaction dễ đọc cho con người hoặc danh sách có thể kiểm toán về những mục Codex
-đã giữ lại sau Compaction.
+Các yêu cầu Compaction rõ ràng, chẳng hạn như `/compact` hoặc thao tác compact thủ công do Plugin yêu cầu, bắt đầu Compaction Codex gốc bằng `thread/compact/start`. OpenClaw trả về sau khi bắt đầu thao tác gốc đó. Nó không đợi hoàn tất, không áp đặt thời gian chờ OpenClaw riêng, không khởi động lại Codex app-server dùng chung, hoặc ghi nhận thao tác đó là một Compaction đã hoàn tất bởi OpenClaw.
 
-Vì Codex sở hữu thread gốc chuẩn, `tool_result_persist` hiện không
-ghi lại các bản ghi kết quả tool gốc của Codex. Nó chỉ áp dụng khi
-OpenClaw đang ghi một kết quả tool transcript phiên do OpenClaw sở hữu.
+Khi một context engine yêu cầu projection khởi tạo luồng Codex, OpenClaw chiếu tên và mã tool-call, hình dạng đầu vào, và nội dung kết quả công cụ đã được biên tập vào luồng Codex mới. Nó không sao chép giá trị đối số tool-call thô vào projection đó.
+
+Bản sao bao gồm prompt của người dùng, văn bản trợ lý cuối cùng, và các bản ghi suy luận hoặc kế hoạch Codex nhẹ khi app-server phát ra chúng. Hiện tại, OpenClaw chỉ ghi nhận các tín hiệu bắt đầu Compaction gốc rõ ràng khi nó yêu cầu Compaction. Nó không cung cấp bản tóm tắt Compaction dễ đọc cho con người hoặc danh sách có thể kiểm tra về những mục mà Codex đã giữ lại sau Compaction.
+
+Vì Codex sở hữu luồng gốc chính thức, `tool_result_persist` hiện không ghi lại các bản ghi kết quả công cụ gốc của Codex. Nó chỉ áp dụng khi OpenClaw đang ghi một kết quả công cụ trong bản ghi phiên do OpenClaw sở hữu.
 
 ## Phương tiện và phân phối
 
-OpenClaw tiếp tục sở hữu việc phân phối phương tiện và lựa chọn provider phương tiện. Hình ảnh,
-video, nhạc, PDF, TTS, và hiểu phương tiện dùng các thiết lập provider/model
-tương ứng như `agents.defaults.imageGenerationModel`, `videoGenerationModel`,
-`pdfModel`, và `messages.tts`.
+OpenClaw tiếp tục sở hữu việc phân phối phương tiện và lựa chọn nhà cung cấp phương tiện. Hình ảnh, video, nhạc, PDF, TTS, và hiểu phương tiện dùng các thiết lập nhà cung cấp/mô hình tương ứng như `agents.defaults.imageGenerationModel`, `videoGenerationModel`, `pdfModel`, và `messages.tts`.
 
-Văn bản, hình ảnh, video, nhạc, TTS, phê duyệt, và đầu ra messaging-tool tiếp tục
-đi qua đường dẫn phân phối OpenClaw thông thường. Tạo phương tiện không yêu cầu PI.
-Khi Codex phát ra một mục tạo hình ảnh gốc với `savedPath`, OpenClaw
-chuyển tiếp chính xác tệp đó qua đường dẫn reply-media thông thường ngay cả khi lượt Codex
-không có văn bản assistant.
+Văn bản, hình ảnh, video, nhạc, TTS, phê duyệt, và đầu ra công cụ nhắn tin tiếp tục đi qua đường dẫn phân phối OpenClaw thông thường. Tạo phương tiện không yêu cầu runtime cũ. Khi Codex phát ra một mục tạo ảnh gốc có `savedPath`, OpenClaw chuyển tiếp đúng tệp đó qua đường dẫn phương tiện phản hồi thông thường ngay cả khi lượt Codex không có văn bản trợ lý.
 
 ## Liên quan
 
@@ -220,6 +228,6 @@ không có văn bản assistant.
 - [Tham chiếu harness Codex](/vi/plugins/codex-harness-reference)
 - [Plugin Codex gốc](/vi/plugins/codex-native-plugins)
 - [Hook Plugin](/vi/plugins/hooks)
-- [Plugin harness agent](/vi/plugins/sdk-agent-harness)
-- [Xuất diagnostics](/vi/gateway/diagnostics)
-- [Xuất trajectory](/vi/tools/trajectory)
+- [Plugin harness tác tử](/vi/plugins/sdk-agent-harness)
+- [Xuất chẩn đoán](/vi/gateway/diagnostics)
+- [Xuất quỹ đạo](/vi/tools/trajectory)

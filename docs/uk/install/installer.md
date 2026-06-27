@@ -1,26 +1,27 @@
 ---
 read_when:
     - Ви хочете зрозуміти `openclaw.ai/install.sh`
-    - Ви хочете автоматизувати встановлення (CI / без інтерфейсу)
-    - Ви хочете встановити з робочої копії GitHub
+    - Ви хочете автоматизувати встановлення (CI / headless)
+    - Ви хочете встановити з checkout GitHub
 summary: Як працюють скрипти інсталятора (install.sh, install-cli.sh, install.ps1), прапорці та автоматизація
 title: Внутрішні механізми інсталятора
 x-i18n:
-    generated_at: "2026-05-07T15:08:58Z"
+    generated_at: "2026-06-27T17:41:31Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a62720526e2a5ffc94555f77e7e806d63768b849a9491b60f6fdc9cf070eed2f
+    source_hash: 72182472f423e64b33afa071feda76c2c9abdf896bffa269f2148124c49a451c
     source_path: install/installer.md
     workflow: 16
 ---
 
-OpenClaw постачає три інсталяційні скрипти, які обслуговуються з `openclaw.ai`.
+OpenClaw постачається з трьома сценаріями інсталятора, які обслуговуються з `openclaw.ai`.
 
-| Скрипт                             | Платформа            | Що він робить                                                                                                               |
-| ---------------------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| [`install.sh`](#installsh)         | macOS / Linux / WSL  | За потреби встановлює Node, встановлює OpenClaw через npm (типово) або git і може запустити onboarding.                    |
-| [`install-cli.sh`](#install-clish) | macOS / Linux / WSL  | Встановлює Node + OpenClaw у локальний префікс (`~/.openclaw`) у режимах npm або git checkout. Root не потрібен.           |
-| [`install.ps1`](#installps1)       | Windows (PowerShell) | За потреби встановлює Node, встановлює OpenClaw через npm (типово) або git і може запустити onboarding.                    |
+| Сценарій                          | Платформа            | Що він робить                                                                                                  |
+| ---------------------------------- | -------------------- | -------------------------------------------------------------------------------------------------------------- |
+| [`install.sh`](#installsh)         | macOS / Linux / WSL  | За потреби встановлює Node, встановлює OpenClaw через npm (типово) або git і може запустити онбординг.         |
+| [`install-cli.sh`](#install-clish) | macOS / Linux / WSL  | Встановлює Node + OpenClaw у локальний префікс (`~/.openclaw`) у режимах npm або git checkout. Root не потрібен. |
+| [`install.ps1`](#installps1)       | Windows (PowerShell) | За потреби встановлює Node, встановлює OpenClaw через npm (типово) або git і може запустити онбординг.         |
 
 ## Швидкі команди
 
@@ -58,7 +59,7 @@ OpenClaw постачає три інсталяційні скрипти, які
 </Tabs>
 
 <Note>
-Якщо встановлення успішне, але `openclaw` не знайдено в новому терміналі, див. [усунення несправностей Node.js](/uk/install/node#troubleshooting).
+Якщо інсталяція успішна, але `openclaw` не знайдено в новому терміналі, див. [усунення несправностей Node.js](/uk/install/node#troubleshooting).
 </Note>
 
 ---
@@ -68,45 +69,45 @@ OpenClaw постачає три інсталяційні скрипти, які
 ## install.sh
 
 <Tip>
-Рекомендовано для більшості інтерактивних встановлень на macOS/Linux/WSL.
+Рекомендовано для більшості інтерактивних інсталяцій на macOS/Linux/WSL.
 </Tip>
 
 ### Процес (install.sh)
 
 <Steps>
-  <Step title="Визначення ОС">
-    Підтримує macOS і Linux (зокрема WSL). Якщо виявлено macOS, встановлює Homebrew, якщо його немає.
+  <Step title="Виявити ОС">
+    Підтримує macOS і Linux (включно з WSL).
   </Step>
-  <Step title="Типово забезпечення Node.js 24">
-    Перевіряє версію Node і за потреби встановлює Node 24 (Homebrew на macOS, скрипти налаштування NodeSource на Linux apt/dnf/yum). OpenClaw все ще підтримує Node 22 LTS, наразі `22.16+`, для сумісності.
+  <Step title="Забезпечити Node.js 24 типово">
+    Перевіряє версію Node і встановлює Node 24 за потреби (Homebrew на macOS, сценарії налаштування NodeSource на Linux apt/dnf/yum). На macOS Homebrew встановлюється лише тоді, коли інсталятору він потрібен для Node або Git. OpenClaw досі підтримує Node 22 LTS, наразі `22.19+`, для сумісності.
+    На Alpine/musl Linux інсталятор використовує пакети apk замість NodeSource; налаштовані репозиторії Alpine мають надавати Node `22.19+` (Alpine 3.21 або новішу на момент написання).
   </Step>
-  <Step title="Забезпечення Git">
-    Встановлює Git, якщо його немає.
+  <Step title="Забезпечити Git">
+    Встановлює Git, якщо його немає, за допомогою виявленого менеджера пакетів, включно з Homebrew на macOS і apk на Alpine.
   </Step>
-  <Step title="Встановлення OpenClaw">
-    - метод `npm` (типово): глобальне встановлення npm
-    - метод `git`: клонує/оновлює репозиторій, встановлює залежності через pnpm, збирає, а потім встановлює обгортку в `~/.local/bin/openclaw`
+  <Step title="Встановити OpenClaw">
+    - метод `npm` (типово): глобальна інсталяція npm
+    - метод `git`: клонувати/оновити репозиторій, встановити залежності за допомогою pnpm, зібрати, потім встановити обгортку в `~/.local/bin/openclaw`
 
   </Step>
-  <Step title="Завдання після встановлення">
-    - Оновлює завантажений сервіс gateway за найкращою спробою (`openclaw gateway install --force`, потім перезапуск)
-    - Запускає `openclaw doctor --non-interactive` під час оновлень і git-встановлень (за найкращою спробою)
-    - Намагається виконати onboarding, коли це доречно (TTY доступний, onboarding не вимкнено, а перевірки bootstrap/config проходять)
-    - Типово встановлює `SHARP_IGNORE_GLOBAL_LIBVIPS=1`
+  <Step title="Завдання після інсталяції">
+    - За можливості оновлює завантажену службу gateway (`openclaw gateway install --force`, потім перезапуск)
+    - Запускає `openclaw doctor --non-interactive` під час оновлень і git-інсталяцій (за можливості)
+    - Намагається запустити онбординг, коли це доречно (TTY доступний, онбординг не вимкнено, а перевірки bootstrap/config пройдено)
 
   </Step>
 </Steps>
 
-### Виявлення checkout вихідного коду
+### Виявлення вихідного checkout
 
-Якщо запущено всередині checkout OpenClaw (`package.json` + `pnpm-workspace.yaml`), скрипт пропонує:
+Якщо запущено всередині checkout OpenClaw (`package.json` + `pnpm-workspace.yaml`), сценарій пропонує:
 
-- використати checkout (`git`), або
-- використати глобальне встановлення (`npm`)
+- використовувати checkout (`git`), або
+- використовувати глобальну інсталяцію (`npm`)
 
-Якщо TTY недоступний і метод встановлення не задано, типово використовується `npm` і виводиться попередження.
+Якщо TTY недоступний і метод інсталяції не задано, типово використовується `npm` і виводиться попередження.
 
-Скрипт завершується з кодом `2` у разі недійсного вибору методу або недійсних значень `--install-method`.
+Сценарій завершується з кодом `2` для недійсного вибору методу або недійсних значень `--install-method`.
 
 ### Приклади (install.sh)
 
@@ -116,19 +117,19 @@ OpenClaw постачає три інсталяційні скрипти, які
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash
     ```
   </Tab>
-  <Tab title="Пропустити onboarding">
+  <Tab title="Пропустити онбординг">
     ```bash
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --no-onboard
     ```
   </Tab>
-  <Tab title="Git-встановлення">
+  <Tab title="Git-інсталяція">
     ```bash
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --install-method git
     ```
   </Tab>
-  <Tab title="GitHub main через npm">
+  <Tab title="Checkout main з GitHub">
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --version main
+    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --install-method git --version main
     ```
   </Tab>
   <Tab title="Пробний запуск">
@@ -141,9 +142,9 @@ OpenClaw постачає три інсталяційні скрипти, які
 <AccordionGroup>
   <Accordion title="Довідник прапорців">
 
-| Прапорець                             | Опис                                                       |
+| Прапорець                            | Опис                                                       |
 | ------------------------------------- | ---------------------------------------------------------- |
-| `--install-method npm\|git`           | Вибрати метод встановлення (типово: `npm`). Псевдонім: `--method` |
+| `--install-method npm\|git`           | Вибрати метод інсталяції (типово: `npm`). Псевдонім: `--method` |
 | `--npm`                               | Скорочення для методу npm                                  |
 | `--git`                               | Скорочення для методу git. Псевдонім: `--github`           |
 | `--version <version\|dist-tag\|spec>` | Версія npm, dist-tag або специфікація пакета (типово: `latest`) |
@@ -151,8 +152,8 @@ OpenClaw постачає три інсталяційні скрипти, які
 | `--git-dir <path>`                    | Каталог checkout (типово: `~/openclaw`). Псевдонім: `--dir` |
 | `--no-git-update`                     | Пропустити `git pull` для наявного checkout                |
 | `--no-prompt`                         | Вимкнути підказки                                          |
-| `--no-onboard`                        | Пропустити onboarding                                      |
-| `--onboard`                           | Увімкнути onboarding                                       |
+| `--no-onboard`                        | Пропустити онбординг                                       |
+| `--onboard`                           | Увімкнути онбординг                                        |
 | `--dry-run`                           | Вивести дії без застосування змін                          |
 | `--verbose`                           | Увімкнути debug-вивід (`set -x`, журнали npm рівня notice) |
 | `--help`                              | Показати використання (`-h`)                               |
@@ -161,19 +162,19 @@ OpenClaw постачає три інсталяційні скрипти, які
 
   <Accordion title="Довідник змінних середовища">
 
-| Змінна                                                  | Опис                                        |
-| ------------------------------------------------------- | ------------------------------------------- |
-| `OPENCLAW_INSTALL_METHOD=git\|npm`                      | Метод встановлення                          |
-| `OPENCLAW_VERSION=latest\|next\|main\|<semver>\|<spec>` | Версія npm, dist-tag або специфікація пакета |
-| `OPENCLAW_BETA=0\|1`                                    | Використати beta, якщо доступна             |
-| `OPENCLAW_GIT_DIR=<path>`                               | Каталог checkout                            |
-| `OPENCLAW_GIT_UPDATE=0\|1`                              | Перемкнути оновлення git                    |
-| `OPENCLAW_NO_PROMPT=1`                                  | Вимкнути підказки                           |
-| `OPENCLAW_NO_ONBOARD=1`                                 | Пропустити onboarding                       |
-| `OPENCLAW_DRY_RUN=1`                                    | Режим пробного запуску                      |
-| `OPENCLAW_VERBOSE=1`                                    | Debug-режим                                 |
-| `OPENCLAW_NPM_LOGLEVEL=error\|warn\|notice`             | Рівень журналювання npm                     |
-| `SHARP_IGNORE_GLOBAL_LIBVIPS=0\|1`                      | Керування поведінкою sharp/libvips (типово: `1`) |
+| Змінна                                            | Опис                                                               |
+| ------------------------------------------------- | ------------------------------------------------------------------ |
+| `OPENCLAW_INSTALL_METHOD=git\|npm`                | Метод інсталяції                                                   |
+| `OPENCLAW_VERSION=latest\|next\|<semver>\|<spec>` | Версія npm, dist-tag або специфікація пакета                       |
+| `OPENCLAW_BETA=0\|1`                              | Використати beta, якщо доступна                                    |
+| `OPENCLAW_HOME=<path>`                            | Базовий каталог для стану OpenClaw і типових шляхів git/онбордингу |
+| `OPENCLAW_GIT_DIR=<path>`                         | Каталог checkout                                                   |
+| `OPENCLAW_GIT_UPDATE=0\|1`                        | Перемкнути оновлення git                                           |
+| `OPENCLAW_NO_PROMPT=1`                            | Вимкнути підказки                                                  |
+| `OPENCLAW_NO_ONBOARD=1`                           | Пропустити онбординг                                               |
+| `OPENCLAW_DRY_RUN=1`                              | Режим пробного запуску                                             |
+| `OPENCLAW_VERBOSE=1`                              | Режим debug                                                        |
+| `OPENCLAW_NPM_LOGLEVEL=error\|warn\|notice`       | Рівень журналювання npm                                            |
 
   </Accordion>
 </AccordionGroup>
@@ -185,29 +186,30 @@ OpenClaw постачає три інсталяційні скрипти, які
 ## install-cli.sh
 
 <Info>
-Призначено для середовищ, де потрібно розмістити все під локальним префіксом
-(типово `~/.openclaw`) і не мати системної залежності Node. Типово підтримує npm-встановлення,
-а також git-checkout встановлення в тому самому процесі з префіксом.
+Призначено для середовищ, де потрібно тримати все під локальним префіксом
+(типово `~/.openclaw`) і без системної залежності Node. Типово підтримує npm-інсталяції,
+а також git-checkout інсталяції в межах того самого процесу з префіксом.
 </Info>
 
 ### Процес (install-cli.sh)
 
 <Steps>
-  <Step title="Встановлення локального runtime Node">
-    Завантажує закріплений підтримуваний tarball Node LTS (версія вбудована в скрипт і оновлюється незалежно) до `<prefix>/tools/node-v<version>` і перевіряє SHA-256.
+  <Step title="Встановити локальне середовище виконання Node">
+    Завантажує зафіксований підтримуваний tarball Node LTS (версію вбудовано в сценарій і оновлюється незалежно) до `<prefix>/tools/node-v<version>` і перевіряє SHA-256.
+    На Alpine/musl Linux, де Node не публікує сумісні tarball для зафіксованого середовища виконання, встановлює `nodejs` і `npm` через `apk` та прив’язує це середовище виконання до шляху обгортки в префіксі. Репозиторії Alpine мають надавати Node `22.19+`; використовуйте Alpine 3.21 або новішу, якщо старіші репозиторії надають лише Node 20 або 21.
   </Step>
-  <Step title="Забезпечення Git">
-    Якщо Git відсутній, намагається встановити через apt/dnf/yum на Linux або Homebrew на macOS.
+  <Step title="Забезпечити Git">
+    Якщо Git відсутній, намагається встановити його через apt/dnf/yum/apk на Linux або Homebrew на macOS.
   </Step>
-  <Step title="Встановлення OpenClaw під префіксом">
-    - метод `npm` (типово): встановлює під префіксом через npm, потім записує обгортку в `<prefix>/bin/openclaw`
-    - метод `git`: клонує/оновлює checkout (типово `~/openclaw`) і все одно записує обгортку в `<prefix>/bin/openclaw`
+  <Step title="Встановити OpenClaw під префіксом">
+    - метод `npm` (типово): встановлює під префіксом за допомогою npm, потім записує обгортку до `<prefix>/bin/openclaw`
+    - метод `git`: клонує/оновлює checkout (типово `~/openclaw`) і все одно записує обгортку до `<prefix>/bin/openclaw`
 
   </Step>
-  <Step title="Оновлення завантаженого сервісу gateway">
-    Якщо сервіс gateway уже завантажено з того самого префікса, скрипт запускає
+  <Step title="Оновити завантажену службу gateway">
+    Якщо службу gateway уже завантажено з того самого префікса, сценарій запускає
     `openclaw gateway install --force`, потім `openclaw gateway restart`, і
-    перевіряє працездатність gateway за найкращою спробою.
+    за можливості перевіряє працездатність gateway.
   </Step>
 </Steps>
 
@@ -224,7 +226,7 @@ OpenClaw постачає три інсталяційні скрипти, які
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash -s -- --prefix /opt/openclaw --version latest
     ```
   </Tab>
-  <Tab title="Git-встановлення">
+  <Tab title="Git-інсталяція">
     ```bash
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash -s -- --install-method git --git-dir ~/openclaw
     ```
@@ -234,7 +236,7 @@ OpenClaw постачає три інсталяційні скрипти, які
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash -s -- --json --prefix /opt/openclaw
     ```
   </Tab>
-  <Tab title="Запустити onboarding">
+  <Tab title="Запустити онбординг">
     ```bash
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash -s -- --onboard
     ```
@@ -244,36 +246,36 @@ OpenClaw постачає три інсталяційні скрипти, які
 <AccordionGroup>
   <Accordion title="Довідник прапорців">
 
-| Прапорець                  | Опис                                                                            |
-| --------------------------- | ------------------------------------------------------------------------------- |
-| `--prefix <path>`           | Префікс встановлення (типово: `~/.openclaw`)                                    |
-| `--install-method npm\|git` | Вибрати метод встановлення (типово: `npm`). Псевдонім: `--method`               |
-| `--npm`                     | Скорочення для методу npm                                                       |
-| `--git`, `--github`         | Скорочення для методу git                                                       |
-| `--git-dir <path>`          | Каталог git checkout (типово: `~/openclaw`). Псевдонім: `--dir`                 |
-| `--version <ver>`           | Версія OpenClaw або dist-tag (типово: `latest`)                                 |
-| `--node-version <ver>`      | Версія Node (типово: `22.22.0`)                                                 |
-| `--json`                    | Виводити події NDJSON                                                           |
-| `--onboard`                 | Запустити `openclaw onboard` після встановлення                                 |
-| `--no-onboard`              | Пропустити onboarding (типово)                                                  |
-| `--set-npm-prefix`          | На Linux примусово задати префікс npm як `~/.npm-global`, якщо поточний префікс недоступний для запису |
-| `--help`                    | Показати використання (`-h`)                                                    |
+| Прапорець                   | Опис                                                                                                  |
+| --------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `--prefix <path>`           | Префікс установлення (за замовчуванням: `~/.openclaw`)                                                |
+| `--install-method npm\|git` | Вибрати метод установлення (за замовчуванням: `npm`). Псевдонім: `--method`                          |
+| `--npm`                     | Скорочення для методу npm                                                                             |
+| `--git`, `--github`         | Скорочення для методу git                                                                             |
+| `--git-dir <path>`          | Директорія checkout Git (за замовчуванням: `~/openclaw`). Псевдонім: `--dir`                         |
+| `--version <ver>`           | Версія OpenClaw або dist-tag (за замовчуванням: `latest`)                                             |
+| `--node-version <ver>`      | Версія Node (за замовчуванням: `22.22.0`)                                                             |
+| `--json`                    | Виводити події NDJSON                                                                                 |
+| `--onboard`                 | Запустити `openclaw onboard` після встановлення                                                       |
+| `--no-onboard`              | Пропустити початкове налаштування (за замовчуванням)                                                  |
+| `--set-npm-prefix`          | У Linux примусово встановити префікс npm на `~/.npm-global`, якщо поточний префікс недоступний на запис |
+| `--help`                    | Показати використання (`-h`)                                                                          |
 
   </Accordion>
 
   <Accordion title="Довідник змінних середовища">
 
-| Змінна                                      | Опис                                          |
-| ------------------------------------------- | --------------------------------------------- |
-| `OPENCLAW_PREFIX=<path>`                    | Префікс встановлення                          |
-| `OPENCLAW_INSTALL_METHOD=git\|npm`          | Метод встановлення                            |
-| `OPENCLAW_VERSION=<ver>`                    | Версія OpenClaw або dist-tag                  |
-| `OPENCLAW_NODE_VERSION=<ver>`               | Версія Node                                   |
-| `OPENCLAW_GIT_DIR=<path>`                   | Каталог робочої копії Git для git-встановлень |
-| `OPENCLAW_GIT_UPDATE=0\|1`                  | Перемкнути git-оновлення для наявних робочих копій |
-| `OPENCLAW_NO_ONBOARD=1`                     | Пропустити початкове налаштування             |
-| `OPENCLAW_NPM_LOGLEVEL=error\|warn\|notice` | Рівень журналювання npm                       |
-| `SHARP_IGNORE_GLOBAL_LIBVIPS=0\|1`          | Керувати поведінкою sharp/libvips (типово: `1`) |
+| Змінна                                      | Опис                                                                        |
+| ------------------------------------------- | --------------------------------------------------------------------------- |
+| `OPENCLAW_PREFIX=<path>`                    | Префікс установлення                                                        |
+| `OPENCLAW_INSTALL_METHOD=git\|npm`          | Метод установлення                                                          |
+| `OPENCLAW_VERSION=<ver>`                    | Версія OpenClaw або dist-tag                                                |
+| `OPENCLAW_NODE_VERSION=<ver>`               | Версія Node                                                                 |
+| `OPENCLAW_HOME=<path>`                      | Базова директорія для стану OpenClaw і стандартних шляхів git/onboarding    |
+| `OPENCLAW_GIT_DIR=<path>`                   | Директорія checkout Git для встановлень через git                           |
+| `OPENCLAW_GIT_UPDATE=0\|1`                  | Перемикач оновлень git для наявних checkout                                 |
+| `OPENCLAW_NO_ONBOARD=1`                     | Пропустити початкове налаштування                                           |
+| `OPENCLAW_NPM_LOGLEVEL=error\|warn\|notice` | Рівень журналювання npm                                                     |
 
   </Accordion>
 </AccordionGroup>
@@ -287,47 +289,47 @@ OpenClaw постачає три інсталяційні скрипти, які
 ### Потік (install.ps1)
 
 <Steps>
-  <Step title="Перевірити середовище PowerShell + Windows">
+  <Step title="Забезпечити середовище PowerShell + Windows">
     Потрібен PowerShell 5+.
   </Step>
-  <Step title="Типово забезпечити Node.js 24">
-    Якщо відсутній, намагається встановити через winget, потім Chocolatey, потім Scoop. Node 22 LTS, наразі `22.16+`, залишається підтримуваним для сумісності.
+  <Step title="Забезпечити Node.js 24 за замовчуванням">
+    Якщо відсутній, виконується спроба встановлення через winget, потім Chocolatey, потім Scoop. Якщо жоден менеджер пакетів недоступний, скрипт завантажує офіційний Windows zip Node.js у `%LOCALAPPDATA%\OpenClaw\deps\portable-node` і додає його до PATH поточного процесу та користувача. Node 22 LTS, наразі `22.19+`, залишається підтримуваним для сумісності.
   </Step>
   <Step title="Встановити OpenClaw">
-    - Метод `npm` (типово): глобальне встановлення npm із вибраним `-Tag`, запущене з доступного для запису тимчасового каталогу інсталятора, тож оболонки, відкриті в захищених папках, як-от `C:\`, усе одно працюють
-    - Метод `git`: клонувати/оновити репозиторій, встановити/зібрати за допомогою pnpm і встановити обгортку в `%USERPROFILE%\.local\bin\openclaw.cmd`
+    - Метод `npm` (за замовчуванням): глобальне встановлення npm з використанням вибраного `-Tag`, запущене з тимчасової директорії інсталятора, доступної на запис, щоб оболонки, відкриті в захищених папках, як-от `C:\`, усе одно працювали
+    - Метод `git`: клонування/оновлення репозиторію, встановлення/збірка з pnpm і встановлення wrapper у `%USERPROFILE%\.local\bin\openclaw.cmd`. Якщо Git відсутній, скрипт початково налаштовує локальний для користувача MinGit у `%LOCALAPPDATA%\OpenClaw\deps\portable-git` і додає його до PATH поточного процесу та користувача.
 
   </Step>
   <Step title="Завдання після встановлення">
-    - Додає потрібний bin-каталог до користувацького PATH, коли це можливо
-    - За можливості оновлює завантажений сервіс Gateway (`openclaw gateway install --force`, потім перезапуск)
-    - Запускає `openclaw doctor --non-interactive` під час оновлень і git-встановлень (за можливості)
+    - Додає потрібну директорію bin до PATH користувача, коли це можливо
+    - Оновлює завантажений сервіс Gateway за принципом best-effort (`openclaw gateway install --force`, потім перезапуск)
+    - Запускає `openclaw doctor --non-interactive` під час оновлень і встановлень через git (best effort)
 
   </Step>
   <Step title="Обробити збої">
-    Встановлення через `iwr ... | iex` і scriptblock повідомляють про завершальну помилку, не закриваючи поточний сеанс PowerShell. Прямі встановлення через `powershell -File` / `pwsh -File` усе ще завершуються з ненульовим кодом для автоматизації.
+    Встановлення через `iwr ... | iex` і scriptblock повідомляють про критичну помилку без закриття поточного сеансу PowerShell. Прямі встановлення через `powershell -File` / `pwsh -File` все одно завершуються з ненульовим кодом для автоматизації.
   </Step>
 </Steps>
 
 ### Приклади (install.ps1)
 
 <Tabs>
-  <Tab title="Типово">
+  <Tab title="За замовчуванням">
     ```powershell
     iwr -useb https://openclaw.ai/install.ps1 | iex
     ```
   </Tab>
-  <Tab title="Git-встановлення">
+  <Tab title="Встановлення через Git">
     ```powershell
     & ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -InstallMethod git
     ```
   </Tab>
-  <Tab title="GitHub main через npm">
+  <Tab title="Checkout GitHub main">
     ```powershell
-    & ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -Tag main
+    & ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -InstallMethod git -Tag main
     ```
   </Tab>
-  <Tab title="Власний git-каталог">
+  <Tab title="Власна директорія git">
     ```powershell
     & ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -InstallMethod git -GitDir "C:\openclaw"
     ```
@@ -337,7 +339,7 @@ OpenClaw постачає три інсталяційні скрипти, які
     & ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -DryRun
     ```
   </Tab>
-  <Tab title="Трасування для налагодження">
+  <Tab title="Трасування налагодження">
     ```powershell
     # install.ps1 has no dedicated -Verbose flag yet.
     Set-PSDebug -Trace 1
@@ -350,32 +352,32 @@ OpenClaw постачає три інсталяційні скрипти, які
 <AccordionGroup>
   <Accordion title="Довідник прапорців">
 
-| Прапорець                   | Опис                                                       |
-| --------------------------- | ---------------------------------------------------------- |
-| `-InstallMethod npm\|git`   | Метод встановлення (типово: `npm`)                         |
-| `-Tag <tag\|version\|spec>` | npm dist-tag, версія або специфікація пакета (типово: `latest`) |
-| `-GitDir <path>`            | Каталог робочої копії (типово: `%USERPROFILE%\openclaw`)   |
-| `-NoOnboard`                | Пропустити початкове налаштування                          |
-| `-NoGitUpdate`              | Пропустити `git pull`                                      |
-| `-DryRun`                   | Лише вивести дії                                           |
+| Прапорець                   | Опис                                                        |
+| --------------------------- | ----------------------------------------------------------- |
+| `-InstallMethod npm\|git`   | Метод установлення (за замовчуванням: `npm`)                |
+| `-Tag <tag\|version\|spec>` | dist-tag npm, версія або специфікація пакета (за замовчуванням: `latest`) |
+| `-GitDir <path>`            | Директорія checkout (за замовчуванням: `%USERPROFILE%\openclaw`) |
+| `-NoOnboard`                | Пропустити початкове налаштування                           |
+| `-NoGitUpdate`              | Пропустити `git pull`                                       |
+| `-DryRun`                   | Лише вивести дії                                            |
 
   </Accordion>
 
   <Accordion title="Довідник змінних середовища">
 
-| Змінна                             | Опис                         |
-| ---------------------------------- | ---------------------------- |
-| `OPENCLAW_INSTALL_METHOD=git\|npm` | Метод встановлення           |
-| `OPENCLAW_GIT_DIR=<path>`          | Каталог робочої копії        |
-| `OPENCLAW_NO_ONBOARD=1`            | Пропустити початкове налаштування |
-| `OPENCLAW_GIT_UPDATE=0`            | Вимкнути git pull            |
-| `OPENCLAW_DRY_RUN=1`               | Режим пробного запуску       |
+| Змінна                             | Опис                                  |
+| ---------------------------------- | ------------------------------------- |
+| `OPENCLAW_INSTALL_METHOD=git\|npm` | Метод установлення                    |
+| `OPENCLAW_GIT_DIR=<path>`          | Директорія checkout                   |
+| `OPENCLAW_NO_ONBOARD=1`            | Пропустити початкове налаштування     |
+| `OPENCLAW_GIT_UPDATE=0`            | Вимкнути git pull                     |
+| `OPENCLAW_DRY_RUN=1`               | Режим пробного запуску                |
 
   </Accordion>
 </AccordionGroup>
 
 <Note>
-Якщо використано `-InstallMethod git` і Git відсутній, скрипт завершується та виводить посилання Git for Windows.
+Якщо використовується `-InstallMethod git` і Git відсутній, скрипт спочатку пробує початково налаштувати локальний для користувача MinGit, перш ніж вивести посилання Git for Windows.
 </Note>
 
 ---
@@ -414,28 +416,19 @@ OpenClaw постачає три інсталяційні скрипти, які
 
 <AccordionGroup>
   <Accordion title="Чому потрібен Git?">
-    Git потрібен для методу встановлення `git`. Для встановлень через `npm` Git усе одно перевіряється/встановлюється, щоб уникнути збоїв `spawn git ENOENT`, коли залежності використовують git URL.
+    Git потрібен для методу встановлення `git`. Для встановлень через `npm` Git усе одно перевіряється/встановлюється, щоб уникнути збоїв `spawn git ENOENT`, коли залежності використовують URL-адреси git.
   </Accordion>
 
   <Accordion title="Чому npm отримує EACCES у Linux?">
-    Деякі конфігурації Linux спрямовують глобальний префікс npm на шляхи, що належать root. `install.sh` може перемкнути префікс на `~/.npm-global` і додати експорти PATH до shell rc-файлів (коли ці файли існують).
-  </Accordion>
-
-  <Accordion title="Проблеми sharp/libvips">
-    Скрипти типово задають `SHARP_IGNORE_GLOBAL_LIBVIPS=1`, щоб уникнути збирання sharp із системним libvips. Щоб перевизначити:
-
-    ```bash
-    SHARP_IGNORE_GLOBAL_LIBVIPS=0 curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash
-    ```
-
+    Деякі конфігурації Linux спрямовують глобальний префікс npm на шляхи, що належать root. `install.sh` може перемкнути префікс на `~/.npm-global` і додати експорти PATH до rc-файлів оболонки (коли ці файли існують).
   </Accordion>
 
   <Accordion title='Windows: "npm error spawn git / ENOENT"'>
-    Встановіть Git for Windows, знову відкрийте PowerShell і повторно запустіть інсталятор.
+    Повторно запустіть інсталятор, щоб він міг початково налаштувати локальний для користувача MinGit, або встановіть Git for Windows і знову відкрийте PowerShell.
   </Accordion>
 
   <Accordion title='Windows: "openclaw is not recognized"'>
-    Запустіть `npm config get prefix` і додайте цей каталог до свого користувацького PATH (у Windows суфікс `\bin` не потрібен), потім знову відкрийте PowerShell.
+    Запустіть `npm config get prefix` і додайте цю директорію до PATH користувача (у Windows суфікс `\bin` не потрібен), потім знову відкрийте PowerShell.
   </Accordion>
 
   <Accordion title="Windows: як отримати докладний вивід інсталятора">
@@ -457,6 +450,6 @@ OpenClaw постачає три інсталяційні скрипти, які
 
 ## Пов’язане
 
-- [Огляд встановлення](/uk/install)
+- [Огляд установлення](/uk/install)
 - [Оновлення](/uk/install/updating)
 - [Видалення](/uk/install/uninstall)

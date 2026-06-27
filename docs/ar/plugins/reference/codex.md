@@ -1,30 +1,31 @@
 ---
 read_when:
-    - أنت تقوم بتثبيت Plugin codex أو تهيئته أو تدقيقه
-summary: أداة اختبار خادم التطبيق في Codex وفهرس نماذج GPT المُدار بواسطة Codex.
+    - أنت تثبّت أو تهيّئ أو تدقق Plugin codex
+summary: أداة OpenClaw Codex app-server harness وPlugin موفّر النماذج مع كتالوج GPT مُدار بواسطة Codex.
 title: Plugin Codex
 x-i18n:
-    generated_at: "2026-05-03T07:36:08Z"
+    generated_at: "2026-06-27T18:11:24Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c049ce912109d9489a3bcdf31aa01668802ab4b9ded8fdd63e470a5901b261c5
+    source_hash: 8b9c123c0f72d6fb2a8d089ba8ad2cb3227a6c201925678124bd504324392253
     source_path: plugins/reference/codex.md
     workflow: 16
 ---
 
-# Codex Plugin
+# Plugin Codex
 
-حزمة اختبار خادم التطبيق في Codex وفهرس نماذج GPT المُدار من Codex.
+Plugin لموفّر نموذج وحزمة تطبيق-خادم Codex في OpenClaw مع كتالوج GPT مُدار بواسطة Codex.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/codex`
 - مسار التثبيت: npm؛ ClawHub
 
-## الواجهة
+## السطح
 
-providers: codex؛ contracts: mediaUnderstandingProviders, migrationProviders
+الموفّرون: codex؛ العقود: mediaUnderstandingProviders, migrationProviders, webSearchProviders
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
 - [codex](/ar/plugins/codex-harness)

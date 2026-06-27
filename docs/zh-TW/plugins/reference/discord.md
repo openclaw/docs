@@ -1,29 +1,30 @@
 ---
 read_when:
-    - 您正在安裝、設定或稽核 Discord Plugin
-summary: 新增 Discord 頻道介面，用於傳送和接收 OpenClaw 訊息。
-title: Discord Plugin
+    - 你正在安裝、設定或稽核 Discord 外掛
+summary: OpenClaw Discord 頻道外掛，用於頻道、私訊、命令和應用程式事件。
+title: Discord 外掛
 x-i18n:
-    generated_at: "2026-05-03T21:40:23Z"
+    generated_at: "2026-06-27T19:42:39Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c0af255dc0e58e91c1f0ebcc5bca46e1e8e80f415ed3f5a9840bb31f717c9703
+    source_hash: 9e3305f8ad8eb84fd350bdfa0983b4fd8f848e0697ecf3e779e31cd6cb44dbf5
     source_path: plugins/reference/discord.md
     workflow: 16
 ---
 
-# Discord Plugin
+# Discord 外掛
 
-新增 Discord 頻道介面，用於傳送與接收 OpenClaw 訊息。
+OpenClaw Discord 頻道外掛，適用於頻道、私訊、指令與應用程式事件。
 
-## 發佈
+## 發行
 
 - 套件：`@openclaw/discord`
 - 安裝途徑：npm；ClawHub
 
 ## 介面
 
-channels: discord
+頻道：discord；契約：transcriptSourceProviders；skills
 
 ## 相關文件
 

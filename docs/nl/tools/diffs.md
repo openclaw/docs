@@ -1,36 +1,37 @@
 ---
 read_when:
-    - Je wilt dat agenten code- of Markdown-wijzigingen als diffs tonen
-    - Je wilt een canvas-klare viewer-URL of een gerenderd diffbestand
+    - Je wilt dat agents code- of Markdown-bewerkingen als diffs tonen
+    - Je wilt een viewer-URL die klaar is voor het canvas of een gerenderd diffbestand
     - Je hebt gecontroleerde, tijdelijke diff-artefacten met veilige standaardinstellingen nodig
 sidebarTitle: Diffs
-summary: Alleen-lezen diffviewer en bestandsrenderer voor agents (optionele Plugin-tool)
+summary: Alleen-lezen diffviewer en bestandsrenderer voor agenten (optionele Plugin-tool)
 title: Verschillen
 x-i18n:
-    generated_at: "2026-05-11T20:52:19Z"
+    generated_at: "2026-06-27T18:24:58Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b9a3dfcab6b4c654645075e3768c13726e10df10632d62ffeeb4de7cc41edf58
+    source_hash: ea3d8e9e026e10b2f3658b795c07ea21062896ab0d45a8cb2dc7e0e9ed9aa658
     source_path: tools/diffs.md
     workflow: 16
 ---
 
-`diffs` is een optioneel Plugin-hulpmiddel met korte ingebouwde systeemrichtlijnen en een bijbehorende skill die wijzigingsinhoud omzet in een alleen-lezen diff-artefact voor agents.
+`diffs` is een optionele plugintool met korte ingebouwde systeeminstructies en een begeleidende skill die wijzigingsinhoud omzet in een read-only diff-artefact voor agents.
 
-Het accepteert een van de volgende opties:
+De tool accepteert een van beide:
 
 - `before`- en `after`-tekst
-- een uniforme `patch`
+- een unified `patch`
 
-Het kan het volgende teruggeven:
+De tool kan het volgende retourneren:
 
-- een Gateway-viewer-URL voor canvas-presentatie
+- een Gateway-viewer-URL voor canvaspresentatie
 - een gerenderd bestandspad (PNG of PDF) voor berichtbezorging
-- beide outputs in een enkele aanroep
+- beide outputs in één aanroep
 
-Wanneer ingeschakeld, voegt de Plugin beknopte gebruiksrichtlijnen toe aan de systeem-prompt-ruimte en stelt ook een gedetailleerde skill beschikbaar voor gevallen waarin de agent uitgebreidere instructies nodig heeft.
+Wanneer ingeschakeld, voegt de Plugin beknopte gebruiksinstructies toe aan de systeempromptruimte en biedt ook een gedetailleerde skill voor gevallen waarin de agent uitgebreidere instructies nodig heeft.
 
-## Snel starten
+## Snelstart
 
 <Steps>
   <Step title="Installeer de Plugin">
@@ -57,18 +58,18 @@ Wanneer ingeschakeld, voegt de Plugin beknopte gebruiksrichtlijnen toe aan de sy
         Canvas-first flows: agents roepen `diffs` aan met `mode: "view"` en openen `details.viewerUrl` met `canvas present`.
       </Tab>
       <Tab title="file">
-        Chatbestandsbezorging: agents roepen `diffs` aan met `mode: "file"` en verzenden `details.filePath` met `message` via `path` of `filePath`.
+        Chatbestandsbezorging: agents roepen `diffs` aan met `mode: "file"` en sturen `details.filePath` met `message` via `path` of `filePath`.
       </Tab>
       <Tab title="both">
-        Gecombineerd: agents roepen `diffs` aan met `mode: "both"` om beide artefacten in een enkele aanroep te krijgen.
+        Gecombineerd: agents roepen `diffs` aan met `mode: "both"` om beide artefacten in één aanroep te krijgen.
       </Tab>
     </Tabs>
   </Step>
 </Steps>
 
-## Ingebouwde systeemrichtlijnen uitschakelen
+## Ingebouwde systeeminstructies uitschakelen
 
-Als je het `diffs`-hulpmiddel ingeschakeld wilt houden maar de ingebouwde systeem-prompt-richtlijnen wilt uitschakelen, stel je `plugins.entries.diffs.hooks.allowPromptInjection` in op `false`:
+Als je de `diffs`-tool ingeschakeld wilt houden maar de ingebouwde systeemprompt-instructies wilt uitschakelen, stel je `plugins.entries.diffs.hooks.allowPromptInjection` in op `false`:
 
 ```json5
 {
@@ -85,21 +86,21 @@ Als je het `diffs`-hulpmiddel ingeschakeld wilt houden maar de ingebouwde systee
 }
 ```
 
-Dit blokkeert de `before_prompt_build`-hook van de diffs-Plugin, terwijl de Plugin, het hulpmiddel en de bijbehorende skill beschikbaar blijven.
+Dit blokkeert de `before_prompt_build`-hook van de diffs-Plugin, terwijl de Plugin, tool en begeleidende skill beschikbaar blijven.
 
-Als je zowel de richtlijnen als het hulpmiddel wilt uitschakelen, schakel dan in plaats daarvan de Plugin uit.
+Als je zowel de instructies als de tool wilt uitschakelen, schakel dan de Plugin zelf uit.
 
 ## Typische agentworkflow
 
 <Steps>
   <Step title="Roep diffs aan">
-    Agent roept het `diffs`-hulpmiddel aan met invoer.
+    Agent roept de `diffs`-tool aan met invoer.
   </Step>
   <Step title="Lees details">
     Agent leest `details`-velden uit de respons.
   </Step>
   <Step title="Presenteer">
-    Agent opent `details.viewerUrl` met `canvas present`, verzendt `details.filePath` met `message` via `path` of `filePath`, of doet beide.
+    Agent opent `details.viewerUrl` met `canvas present`, stuurt `details.filePath` met `message` via `path` of `filePath`, of doet beide.
   </Step>
 </Steps>
 
@@ -126,7 +127,7 @@ Als je zowel de richtlijnen als het hulpmiddel wilt uitschakelen, schakel dan in
   </Tab>
 </Tabs>
 
-## Referentie voor hulpmiddelinvoer
+## Referentie voor toolinvoer
 
 Alle velden zijn optioneel, tenzij anders vermeld.
 
@@ -137,50 +138,52 @@ Alle velden zijn optioneel, tenzij anders vermeld.
   Bijgewerkte tekst. Vereist met `before` wanneer `patch` is weggelaten.
 </ParamField>
 <ParamField path="patch" type="string">
-  Uniforme diff-tekst. Wederzijds uitsluitend met `before` en `after`.
+  Unified diff-tekst. Wederzijds uitsluitend met `before` en `after`.
 </ParamField>
 <ParamField path="path" type="string">
-  Weergavebestandsnaam voor de voor-en-na-modus.
+  Weergavenaam voor bestand in de voor-en-na-modus.
 </ParamField>
 <ParamField path="lang" type="string">
-  Hint voor taaloverschrijving voor de voor-en-na-modus. Onbekende waarden vallen terug op platte tekst.
+  Taaloverride-hint voor de voor-en-na-modus. Onbekende waarden en talen buiten de standaard viewerset vallen terug op platte tekst, tenzij de
+  Diff Viewer Language Pack-Plugin is geïnstalleerd.
 </ParamField>
+
 <ParamField path="title" type="string">
-  Overschrijving van viewertitel.
+  Override voor viewertitel.
 </ParamField>
 <ParamField path="mode" type='"view" | "file" | "both"'>
-  Uitvoermodus. Standaard is de Plugin-standaard `defaults.mode`. Verouderde alias: `"image"` gedraagt zich als `"file"` en wordt nog steeds geaccepteerd voor achterwaartse compatibiliteit.
+  Outputmodus. Standaardwaarde is de Plugin-standaard `defaults.mode`. Verouderde alias: `"image"` gedraagt zich als `"file"` en wordt nog steeds geaccepteerd voor achterwaartse compatibiliteit.
 </ParamField>
 <ParamField path="theme" type='"light" | "dark"'>
-  Viewerthema. Standaard is de Plugin-standaard `defaults.theme`.
+  Viewerthema. Standaardwaarde is de Plugin-standaard `defaults.theme`.
 </ParamField>
 <ParamField path="layout" type='"unified" | "split"'>
-  Diff-indeling. Standaard is de Plugin-standaard `defaults.layout`.
+  Diff-layout. Standaardwaarde is de Plugin-standaard `defaults.layout`.
 </ParamField>
 <ParamField path="expandUnchanged" type="boolean">
   Vouw ongewijzigde secties uit wanneer volledige context beschikbaar is. Alleen optie per aanroep (geen Plugin-standaardsleutel).
 </ParamField>
 <ParamField path="fileFormat" type='"png" | "pdf"'>
-  Gerenderde bestandsindeling. Standaard is de Plugin-standaard `defaults.fileFormat`.
+  Gerenderde bestandsindeling. Standaardwaarde is de Plugin-standaard `defaults.fileFormat`.
 </ParamField>
 <ParamField path="fileQuality" type='"standard" | "hq" | "print"'>
   Kwaliteitspreset voor PNG- of PDF-rendering.
 </ParamField>
 <ParamField path="fileScale" type="number">
-  Overschrijving van apparaatschaal (`1`-`4`).
+  Override voor apparaatschaal (`1`-`4`).
 </ParamField>
 <ParamField path="fileMaxWidth" type="number">
   Maximale renderbreedte in CSS-pixels (`640`-`2400`).
 </ParamField>
 <ParamField path="ttlSeconds" type="number" default="1800">
-  Artefact-TTL in seconden voor viewer- en zelfstandige bestandsoutputs. Max 21600.
+  Artefact-TTL in seconden voor viewer- en zelfstandige bestandsoutputs. Max. 21600.
 </ParamField>
 <ParamField path="baseUrl" type="string">
-  Overschrijving van viewer-URL-origin. Overschrijft Plugin `viewerBaseUrl`. Moet `http` of `https` zijn, zonder query/hash.
+  Override voor oorsprong van viewer-URL. Overschrijft Plugin `viewerBaseUrl`. Moet `http` of `https` zijn, zonder query/hash.
 </ParamField>
 
 <AccordionGroup>
-  <Accordion title="Verouderde invoeraliassen">
+  <Accordion title="Verouderde invoeraliases">
     Nog steeds geaccepteerd voor achterwaartse compatibiliteit:
 
     - `format` -> `fileFormat`
@@ -191,28 +194,46 @@ Alle velden zijn optioneel, tenzij anders vermeld.
 
   </Accordion>
   <Accordion title="Validatie en limieten">
-    - `before` en `after` elk max 512 KiB.
-    - `patch` max 2 MiB.
-    - `path` max 2048 bytes.
-    - `lang` max 128 bytes.
-    - `title` max 1024 bytes.
-    - Limiet voor patchcomplexiteit: max 128 bestanden en 120000 totale regels.
-    - `patch` en `before` of `after` samen worden geweigerd.
+    - `before` en `after` elk maximaal 512 KiB.
+    - `patch` maximaal 2 MiB.
+    - `path` maximaal 2048 bytes.
+    - `lang` maximaal 128 bytes.
+    - `title` maximaal 1024 bytes.
+    - Limiet voor patchcomplexiteit: maximaal 128 bestanden en 120000 totale regels.
+    - `patch` samen met `before` of `after` wordt geweigerd.
     - Veiligheidslimieten voor gerenderde bestanden (van toepassing op PNG en PDF):
-      - `fileQuality: "standard"`: max 8 MP (8.000.000 gerenderde pixels).
-      - `fileQuality: "hq"`: max 14 MP (14.000.000 gerenderde pixels).
-      - `fileQuality: "print"`: max 24 MP (24.000.000 gerenderde pixels).
-      - PDF heeft ook een maximum van 50 pagina's.
+      - `fileQuality: "standard"`: maximaal 8 MP (8.000.000 gerenderde pixels).
+      - `fileQuality: "hq"`: maximaal 14 MP (14.000.000 gerenderde pixels).
+      - `fileQuality: "print"`: maximaal 24 MP (24.000.000 gerenderde pixels).
+      - PDF heeft daarnaast een maximum van 50 pagina's.
 
   </Accordion>
 </AccordionGroup>
 
-## Contract voor outputdetails
+## Syntaxismarkering
 
-Het hulpmiddel retourneert gestructureerde metadata onder `details`.
+OpenClaw bevat syntaxismarkering voor gangbare broncode-, configuratie- en documentatietalen:
+
+`javascript`, `typescript`, `tsx`, `jsx`, `json`, `markdown`, `yaml`, `css`, `html`, `sh`, `python`, `go`, `rust`, `java`, `c`, `cpp`, `csharp`, `php`, `sql`, `docker`, `ruby`, `swift`, `kotlin`, `r`, `dart`, `lua`, `powershell`, `xml` en `toml`.
+
+Gangbare aliassen zoals `js`, `ts`, `bash`, `md`, `yml`, `c++`, `dockerfile`, `rb`, `kt` en `ps1` worden genormaliseerd naar die standaardtalen.
+
+Installeer de Diff Viewer Language Pack-plugin om andere talen te highlighten:
+
+```bash
+openclaw plugins install clawhub:@openclaw/diffs-language-pack
+```
+
+Als het language pack beschikbaar is, kan OpenClaw veel meer talen highlighten. Als het pack niet is geinstalleerd, worden bestanden buiten de standaardlijst nog steeds weergegeven als leesbare platte tekst. Voorbeelden zijn Astro, Vue, Svelte, MDX, GraphQL, Terraform/HCL, Nix, Clojure, Elixir, Haskell, OCaml, Scala, Zig, Solidity, Verilog/VHDL, Fortran, MATLAB, LaTeX, Mermaid, Sass/Less/SCSS, Nginx, Apache, CSV, dotenv, INI en diff-bestanden.
+
+Zie [Diffs Language Pack-plugin](/nl/plugins/reference/diffs-language-pack) voor details en [Shiki-talen](https://shiki.style/languages) voor Shiki's upstream taal- en aliascatalogus.
+
+## Contract voor uitvoerdetails
+
+De tool retourneert gestructureerde metadata onder `details`.
 
 <AccordionGroup>
-  <Accordion title="Viewervelden">
+  <Accordion title="Viewer-velden">
     Gedeelde velden voor modi die een viewer maken:
 
     - `artifactId`
@@ -223,7 +244,7 @@ Het hulpmiddel retourneert gestructureerde metadata onder `details`.
     - `inputKind`
     - `fileCount`
     - `mode`
-    - `context` (`agentId`, `sessionId`, `messageChannel`, `agentAccountId` wanneer beschikbaar)
+    - `context` (`agentId`, `sessionId`, `messageChannel`, `agentAccountId` indien beschikbaar)
 
   </Accordion>
   <Accordion title="Bestandsvelden">
@@ -232,7 +253,7 @@ Het hulpmiddel retourneert gestructureerde metadata onder `details`.
     - `artifactId`
     - `expiresAt`
     - `filePath`
-    - `path` (dezelfde waarde als `filePath`, voor compatibiliteit met bericht-hulpmiddelen)
+    - `path` (dezelfde waarde als `filePath`, voor compatibiliteit met message tools)
     - `fileBytes`
     - `fileFormat`
     - `fileQuality`
@@ -241,7 +262,7 @@ Het hulpmiddel retourneert gestructureerde metadata onder `details`.
 
   </Accordion>
   <Accordion title="Compatibiliteitsaliassen">
-    Ook geretourneerd voor bestaande aanroepers:
+    Ook geretourneerd voor bestaande callers:
 
     - `format` (dezelfde waarde als `fileFormat`)
     - `imagePath` (dezelfde waarde als `filePath`)
@@ -255,23 +276,23 @@ Het hulpmiddel retourneert gestructureerde metadata onder `details`.
 
 Samenvatting van modusgedrag:
 
-| Modus    | Wat wordt geretourneerd                                                                                               |
-| -------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `"view"` | Alleen viewervelden.                                                                                                   |
-| `"file"` | Alleen bestandsvelden, geen viewerartefact.                                                                            |
-| `"both"` | Viewervelden plus bestandsvelden. Als bestandsrendering mislukt, wordt de viewer nog steeds geretourneerd met `fileError` en de alias `imageError`. |
+| Modus    | Wat wordt geretourneerd                                                                                                  |
+| -------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `"view"` | Alleen viewer-velden.                                                                                                    |
+| `"file"` | Alleen bestandsvelden, geen viewer-artifact.                                                                              |
+| `"both"` | Viewer-velden plus bestandsvelden. Als bestandsrendering mislukt, retourneert de viewer nog steeds met alias `fileError` en `imageError`. |
 
 ## Samengevouwen ongewijzigde secties
 
 - De viewer kan rijen tonen zoals `N unmodified lines`.
-- Uitvouwknoppen op die rijen zijn voorwaardelijk en niet gegarandeerd voor elk invoertype.
-- Uitvouwknoppen verschijnen wanneer de gerenderde diff uitbreidbare contextgegevens heeft, wat typisch is voor voor-en-na-invoer.
-- Voor veel uniforme patch-invoer zijn weggelaten contextinhouden niet beschikbaar in de geparste patch-hunks, zodat de rij zonder uitvouwknoppen kan verschijnen. Dit is verwacht gedrag.
+- Uitklapknoppen op die rijen zijn voorwaardelijk en niet gegarandeerd voor elk inputtype.
+- Uitklapknoppen verschijnen wanneer de gerenderde diff uitbreidbare contextgegevens heeft, wat typisch is voor invoer voor en na.
+- Voor veel unified patch-invoer zijn weggelaten contextgedeelten niet beschikbaar in de geparsete patch-hunks, dus de rij kan zonder uitklapknoppen verschijnen. Dit is verwacht gedrag.
 - `expandUnchanged` is alleen van toepassing wanneer uitbreidbare context bestaat.
 
-## Plugin-standaarden
+## Plugin-standaardwaarden
 
-Stel Plugin-brede standaarden in `~/.openclaw/openclaw.json` in:
+Stel Plugin-brede standaardwaarden in `~/.openclaw/openclaw.json` in:
 
 ```json5
 {
@@ -304,7 +325,7 @@ Stel Plugin-brede standaarden in `~/.openclaw/openclaw.json` in:
 }
 ```
 
-Ondersteunde standaarden:
+Ondersteunde standaardwaarden:
 
 - `fontFamily`
 - `fontSize`
@@ -322,12 +343,12 @@ Ondersteunde standaarden:
 - `mode`
 - `ttlSeconds`
 
-Expliciete hulpmiddelparameters overschrijven deze standaarden.
+Expliciete toolparameters overschrijven deze standaardwaarden.
 
-### Configuratie voor persistente viewer-URL
+### Configuratie voor permanente viewer-URL
 
 <ParamField path="viewerBaseUrl" type="string">
-  Plugin-eigen fallback voor geretourneerde viewerlinks wanneer een hulpmiddelaanroep geen `baseUrl` doorgeeft. Moet `http` of `https` zijn, zonder query/hash.
+  Plugin-eigen fallback voor geretourneerde viewerlinks wanneer een toolaanroep geen `baseUrl` doorgeeft. Moet `http` of `https` zijn, zonder query/hash.
 </ParamField>
 
 ```json5
@@ -348,7 +369,7 @@ Expliciete hulpmiddelparameters overschrijven deze standaarden.
 ## Beveiligingsconfiguratie
 
 <ParamField path="security.allowRemoteViewer" type="boolean" default="false">
-  `false`: niet-loopback-aanvragen naar viewerroutes worden geweigerd. `true`: externe viewers zijn toegestaan als het pad met token geldig is.
+  `false`: niet-loopback-verzoeken naar viewerroutes worden geweigerd. `true`: remote viewers zijn toegestaan als het getokeniseerde pad geldig is.
 </ParamField>
 
 ```json5
@@ -368,39 +389,40 @@ Expliciete hulpmiddelparameters overschrijven deze standaarden.
 }
 ```
 
-## Artefactlevenscyclus en opslag
+## Artifact-levenscyclus en opslag
 
 - Artefacten worden opgeslagen onder de tijdelijke submap: `$TMPDIR/openclaw-diffs`.
-- Viewerartefactmetadata bevat:
+- Metadata van viewer-artefacten bevat:
   - willekeurige artefact-ID (20 hex-tekens)
-  - willekeurige token (48 hex-tekens)
+  - willekeurig token (48 hex-tekens)
   - `createdAt` en `expiresAt`
-  - opgeslagen `viewer.html`-pad
-- Standaard artefact-TTL is 30 minuten wanneer niet opgegeven.
-- Maximale geaccepteerde viewer-TTL is 6 uur.
+  - opgeslagen pad naar `viewer.html`
+- De standaard-TTL voor artefacten is 30 minuten wanneer deze niet is opgegeven.
+- De maximaal geaccepteerde viewer-TTL is 6 uur.
 - Opschoning wordt opportunistisch uitgevoerd na het maken van artefacten.
 - Verlopen artefacten worden verwijderd.
 - Fallback-opschoning verwijdert verouderde mappen ouder dan 24 uur wanneer metadata ontbreekt.
 
 ## Viewer-URL en netwerkgedrag
 
-Viewerroute:
+Viewer-route:
 
 - `/plugins/diffs/view/{artifactId}/{token}`
 
-Viewerassets:
+Viewer-assets:
 
 - `/plugins/diffs/assets/viewer.js`
 - `/plugins/diffs/assets/viewer-runtime.js`
+- `/plugins/diffs-language-pack/assets/viewer.js` wanneer de diff een taal uit het Diff Viewer Language Pack gebruikt
 
-Het viewerdocument lost die assets relatief ten opzichte van de viewer-URL op, zodat een optionele `baseUrl`-padprefix ook voor beide assetaanvragen behouden blijft.
+Het viewer-document lost die assets op relatief aan de viewer-URL, zodat een optioneel `baseUrl`-padprefix ook voor beide asset-aanvragen behouden blijft.
 
-Gedrag voor URL-constructie:
+Gedrag voor URL-opbouw:
 
-- Als tool-call `baseUrl` is opgegeven, wordt deze na strikte validatie gebruikt.
+- Als tool-aanroep `baseUrl` is opgegeven, wordt deze gebruikt na strikte validatie.
 - Anders, als Plugin `viewerBaseUrl` is geconfigureerd, wordt deze gebruikt.
-- Zonder een van beide overschrijvingen valt de viewer-URL terug op loopback `127.0.0.1`.
-- Als Gateway-bindmodus `custom` is en `gateway.customBindHost` is ingesteld, wordt die host gebruikt.
+- Zonder een van beide overrides gebruikt de viewer-URL standaard loopback `127.0.0.1`.
+- Als de Gateway-bindmodus `custom` is en `gateway.customBindHost` is ingesteld, wordt die host gebruikt.
 
 `baseUrl`-regels:
 
@@ -416,17 +438,17 @@ Gedrag voor URL-constructie:
     - Getokeniseerde viewer-paden met strikte ID- en tokenvalidatie.
     - CSP voor viewer-respons:
       - `default-src 'none'`
-      - scripts en assets alleen vanaf self
+      - scripts en assets alleen van self
       - geen uitgaande `connect-src`
-    - Throttling van externe missers wanneer externe toegang is ingeschakeld:
-      - 40 fouten per 60 seconden
-      - 60 seconden lockout (`429 Too Many Requests`)
+    - Beperking van externe missers wanneer externe toegang is ingeschakeld:
+      - 40 mislukkingen per 60 seconden
+      - 60 seconden blokkering (`429 Too Many Requests`)
 
   </Accordion>
   <Accordion title="Verharding van bestandsweergave">
-    - Routering van screenshot-browserrequests is standaard geweigerd.
-    - Alleen lokale viewer-assets vanaf `http://127.0.0.1/plugins/diffs/assets/*` zijn toegestaan.
-    - Externe netwerkrequests worden geblokkeerd.
+    - Routering van screenshot-browseraanvragen is standaard geweigerd.
+    - Alleen lokale viewer-assets van `http://127.0.0.1/plugins/diffs/assets/*` zijn toegestaan.
+    - Externe netwerkaanvragen worden geblokkeerd.
 
   </Accordion>
 </AccordionGroup>
@@ -438,8 +460,8 @@ Gedrag voor URL-constructie:
 Volgorde van oplossing:
 
 <Steps>
-  <Step title="Config">
-    `browser.executablePath` in de OpenClaw-config.
+  <Step title="Configuratie">
+    `browser.executablePath` in OpenClaw-configuratie.
   </Step>
   <Step title="Omgevingsvariabelen">
     - `OPENCLAW_BROWSER_EXECUTABLE_PATH`
@@ -447,8 +469,8 @@ Volgorde van oplossing:
     - `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`
 
   </Step>
-  <Step title="Platformfallback">
-    Fallback via platformcommando-/paddetectie.
+  <Step title="Platform-fallback">
+    Fallback voor ontdekking van platformcommando/pad.
   </Step>
 </Steps>
 
@@ -456,39 +478,39 @@ Veelvoorkomende fouttekst:
 
 - `Diff PNG/PDF rendering requires a Chromium-compatible browser...`
 
-Los dit op door Chrome, Chromium, Edge of Brave te installeren, of door een van de opties voor het uitvoerbare pad hierboven in te stellen.
+Los dit op door Chrome, Chromium, Edge of Brave te installeren, of door een van de opties voor uitvoerbaar pad hierboven in te stellen.
 
 ## Probleemoplossing
 
 <AccordionGroup>
   <Accordion title="Invoervalidatiefouten">
-    - `Provide patch or both before and after text.` — neem zowel `before` als `after` op, of geef `patch` op.
+    - `Provide patch or both before and after text.` — voeg zowel `before` als `after` toe, of geef `patch` op.
     - `Provide either patch or before/after input, not both.` — meng invoermodi niet.
-    - `Invalid baseUrl: ...` — gebruik een `http(s)`-origin met optioneel pad, zonder query/hash.
-    - `{field} exceeds maximum size (...)` — verklein de payloadgrootte.
-    - Afwijzing van grote patch — verminder het aantal patchbestanden of het totale aantal regels.
+    - `Invalid baseUrl: ...` — gebruik `http(s)`-origin met optioneel pad, geen query/hash.
+    - `{field} exceeds maximum size (...)` — verklein de payload.
+    - Weigering van grote patch — verminder het aantal patchbestanden of het totale aantal regels.
 
   </Accordion>
   <Accordion title="Toegankelijkheid van viewer">
-    - De viewer-URL resolveert standaard naar `127.0.0.1`.
+    - De viewer-URL wordt standaard opgelost naar `127.0.0.1`.
     - Voor scenario's met externe toegang:
       - stel Plugin `viewerBaseUrl` in, of
-      - geef `baseUrl` per toolaanroep mee, of
+      - geef `baseUrl` per tool-aanroep door, of
       - gebruik `gateway.bind=custom` en `gateway.customBindHost`
-    - Als `gateway.trustedProxies` loopback bevat voor een proxy op dezelfde host (bijvoorbeeld Tailscale Serve), mislukken ruwe loopback-viewerrequests zonder doorgestuurde client-IP-headers bewust fail-closed.
-    - Voor die proxytopologie:
+    - Als `gateway.trustedProxies` loopback bevat voor een proxy op dezelfde host (bijvoorbeeld Tailscale Serve), falen ruwe loopback-viewer-aanvragen zonder doorgestuurde client-IP-headers bewust gesloten.
+    - Voor die proxy-topologie:
       - geef de voorkeur aan `mode: "file"` of `mode: "both"` wanneer je alleen een bijlage nodig hebt, of
-      - schakel bewust `security.allowRemoteViewer` in en stel Plugin `viewerBaseUrl` in of geef een proxy-/publieke `baseUrl` mee wanneer je een deelbare viewer-URL nodig hebt
-    - Schakel `security.allowRemoteViewer` alleen in wanneer je externe viewertoegang bedoelt.
+      - schakel bewust `security.allowRemoteViewer` in en stel Plugin `viewerBaseUrl` in of geef een proxy/openbare `baseUrl` door wanneer je een deelbare viewer-URL nodig hebt
+    - Schakel `security.allowRemoteViewer` alleen in wanneer je externe viewer-toegang bedoelt.
 
   </Accordion>
   <Accordion title="Rij met ongewijzigde regels heeft geen uitklapknop">
-    Dit kan gebeuren bij patchinvoer wanneer de patch geen uitbreidbare context bevat. Dit is verwacht en duidt niet op een viewerfout.
+    Dit kan gebeuren bij patch-invoer wanneer de patch geen uitbreidbare context bevat. Dit is verwacht en duidt niet op een viewer-fout.
   </Accordion>
   <Accordion title="Artefact niet gevonden">
     - Artefact verlopen door TTL.
     - Token of pad gewijzigd.
-    - Opschoning heeft verouderde data verwijderd.
+    - Opschoning heeft verouderde gegevens verwijderd.
 
   </Accordion>
 </AccordionGroup>
@@ -497,13 +519,13 @@ Los dit op door Chrome, Chromium, Edge of Brave te installeren, of door een van 
 
 - Geef de voorkeur aan `mode: "view"` voor lokale interactieve reviews in canvas.
 - Geef de voorkeur aan `mode: "file"` voor uitgaande chatkanalen die een bijlage nodig hebben.
-- Houd `allowRemoteViewer` uitgeschakeld tenzij je deployment externe viewer-URL's vereist.
+- Laat `allowRemoteViewer` uitgeschakeld tenzij je deployment externe viewer-URL's vereist.
 - Stel expliciete korte `ttlSeconds` in voor gevoelige diffs.
-- Vermijd het verzenden van geheimen in diff-invoer wanneer dat niet vereist is.
+- Vermijd het verzenden van geheimen in diff-invoer wanneer dit niet vereist is.
 - Als je kanaal afbeeldingen agressief comprimeert (bijvoorbeeld Telegram of WhatsApp), geef dan de voorkeur aan PDF-uitvoer (`fileFormat: "pdf"`).
 
 <Note>
-Diff-renderingengine mogelijk gemaakt door [Diffs](https://diffs.com).
+Diff-renderingengine aangedreven door [Diffs](https://diffs.com).
 </Note>
 
 ## Gerelateerd

@@ -1,27 +1,28 @@
 ---
 read_when:
     - Anda ingin memilih penyedia model
-    - Anda memerlukan gambaran singkat tentang backend LLM yang didukung
-summary: Penyedia model (model bahasa besar) yang didukung oleh OpenClaw
+    - Anda membutuhkan ikhtisar singkat tentang backend LLM yang didukung
+summary: Penyedia model (LLM) yang didukung oleh OpenClaw
 title: Direktori penyedia
 x-i18n:
-    generated_at: "2026-05-06T09:25:17Z"
+    generated_at: "2026-06-27T18:04:58Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cfc3a15880a5e1881c1a58c60c9ad7e5624350a8db848d03c7cef6ee18c14b81
+    source_hash: a340f6a48f6f1d50116316f9679b009365cd617b3453ebd9b2b31e70f6b94c31
     source_path: providers/index.md
     workflow: 16
 ---
 
-OpenClaw dapat menggunakan banyak penyedia LLM. Pilih penyedia, autentikasikan, lalu tetapkan
+OpenClaw dapat menggunakan banyak penyedia LLM. Pilih penyedia, lakukan autentikasi, lalu atur
 model default sebagai `provider/model`.
 
-Mencari dokumentasi kanal chat (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/dll.)? Lihat [Kanal](/id/channels).
+Mencari dokumentasi kanal chat (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/dll.)? Lihat [Kanal](/id/channels).
 
 ## Mulai cepat
 
-1. Autentikasikan dengan penyedia (biasanya melalui `openclaw onboard`).
-2. Tetapkan model default:
+1. Lakukan autentikasi dengan penyedia (biasanya melalui `openclaw onboard`).
+2. Atur model default:
 
 ```json5
 {
@@ -40,14 +41,16 @@ Mencari dokumentasi kanal chat (WhatsApp/Telegram/Discord/Slack/Mattermost (Plug
 - [BytePlus (Internasional)](/id/concepts/model-providers#byteplus-international)
 - [Cerebras](/id/providers/cerebras)
 - [Chutes](/id/providers/chutes)
+- [Cohere](/id/providers/cohere)
 - [Cloudflare AI Gateway](/id/providers/cloudflare-ai-gateway)
 - [ComfyUI](/id/providers/comfy)
 - [DeepSeek](/id/providers/deepseek)
+- [ds4 (DeepSeek V4 lokal)](/id/providers/ds4)
 - [ElevenLabs](/id/providers/elevenlabs)
 - [fal](/id/providers/fal)
 - [Fireworks](/id/providers/fireworks)
 - [GitHub Copilot](/id/providers/github-copilot)
-- [model GLM](/id/providers/glm)
+- [GMI Cloud](/id/providers/gmi)
 - [Google (Gemini)](/id/providers/google)
 - [Gradium](/id/providers/gradium)
 - [Groq (inferensi LPU)](/id/providers/groq)
@@ -60,7 +63,9 @@ Mencari dokumentasi kanal chat (WhatsApp/Telegram/Discord/Slack/Mattermost (Plug
 - [Mistral](/id/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/id/providers/moonshot)
 - [NVIDIA](/id/providers/nvidia)
-- [Ollama (cloud + model lokal)](/id/providers/ollama)
+- [NovitaAI](/id/providers/novita)
+- [Ollama (model cloud + lokal)](/id/providers/ollama)
+- [Ollama Cloud](/id/providers/ollama-cloud)
 - [OpenAI (API + Codex)](/id/providers/openai)
 - [OpenCode](/id/providers/opencode)
 - [OpenCode Go](/id/providers/opencode-go)
@@ -68,6 +73,7 @@ Mencari dokumentasi kanal chat (WhatsApp/Telegram/Discord/Slack/Mattermost (Plug
 - [Perplexity (pencarian web)](/id/providers/perplexity-provider)
 - [Qianfan](/id/providers/qianfan)
 - [Qwen Cloud](/id/providers/qwen)
+- [Qwen OAuth / Portal](/id/providers/qwen-oauth)
 - [Runway](/id/providers/runway)
 - [SenseAudio](/id/providers/senseaudio)
 - [SGLang (model lokal)](/id/providers/sglang)
@@ -82,14 +88,14 @@ Mencari dokumentasi kanal chat (WhatsApp/Telegram/Discord/Slack/Mattermost (Plug
 - [Vydra](/id/providers/vydra)
 - [xAI](/id/providers/xai)
 - [Xiaomi](/id/providers/xiaomi)
-- [Z.AI](/id/providers/zai)
+- [Z.AI (GLM)](/id/providers/zai)
 
 ## Halaman ikhtisar bersama
 
 - [Varian bawaan tambahan](/id/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy, dan Gemini CLI OAuth
-- [Pembuatan Gambar](/id/tools/image-generation) - Alat bersama `image_generate`, pemilihan penyedia, dan failover
-- [Pembuatan Musik](/id/tools/music-generation) - Alat bersama `music_generate`, pemilihan penyedia, dan failover
-- [Pembuatan Video](/id/tools/video-generation) - Alat bersama `video_generate`, pemilihan penyedia, dan failover
+- [Pembuatan Gambar](/id/tools/image-generation) - Alat `image_generate` bersama, pemilihan penyedia, dan failover
+- [Pembuatan Musik](/id/tools/music-generation) - Alat `music_generate` bersama, pemilihan penyedia, dan failover
+- [Pembuatan Video](/id/tools/video-generation) - Alat `video_generate` bersama, pemilihan penyedia, dan failover
 
 ## Penyedia transkripsi
 
@@ -104,5 +110,5 @@ Mencari dokumentasi kanal chat (WhatsApp/Telegram/Discord/Slack/Mattermost (Plug
 
 - [Claude Max API Proxy](/id/providers/claude-max-api-proxy) - Proxy komunitas untuk kredensial langganan Claude (verifikasi kebijakan/ketentuan Anthropic sebelum digunakan)
 
-Untuk katalog penyedia lengkap (xAI, Groq, Mistral, dll.) dan konfigurasi lanjutan,
+Untuk katalog penyedia lengkap (xAI, Groq, Mistral, dll.) dan konfigurasi tingkat lanjut,
 lihat [Penyedia model](/id/concepts/model-providers).

@@ -1,20 +1,21 @@
 ---
 read_when:
-    - أنت تقوم بتثبيت Plugin السطر أو تكوينه أو تدقيقه
-summary: يضيف واجهة قناة LINE لإرسال رسائل OpenClaw وتلقيها.
+    - أنت تقوم بتثبيت Plugin LINE أو تكوينه أو تدقيقه
+summary: Plugin قناة OpenClaw LINE لمحادثات LINE Bot API.
 title: LINE Plugin
 x-i18n:
-    generated_at: "2026-05-03T07:37:10Z"
+    generated_at: "2026-06-27T18:13:28Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 307e6e08345161bc53fe5a04cc9d0a3fabbc9ff01e9ebcae98a39899288ef4d4
+    source_hash: d561055be3fde476a78bf123f4025ca61e670b005d0b2d63e5b54318975c2fd9
     source_path: plugins/reference/line.md
     workflow: 16
 ---
 
 # LINE Plugin
 
-يضيف سطح قناة LINE لإرسال رسائل OpenClaw واستقبالها.
+Plugin قناة OpenClaw LINE لمحادثات LINE Bot API.
 
 ## التوزيع
 
@@ -23,7 +24,7 @@ x-i18n:
 
 ## السطح
 
-channels: line
+القنوات: line
 
 ## المستندات ذات الصلة
 

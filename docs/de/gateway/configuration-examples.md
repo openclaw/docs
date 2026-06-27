@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Erfahren Sie, wie Sie OpenClaw konfigurieren
+    - Lernen, wie Sie OpenClaw konfigurieren
     - Suche nach Konfigurationsbeispielen
     - OpenClaw zum ersten Mal einrichten
 summary: Schemagenaue Konfigurationsbeispiele für gängige OpenClaw-Setups
 title: Konfigurationsbeispiele
 x-i18n:
-    generated_at: "2026-05-11T20:29:26Z"
+    generated_at: "2026-06-27T17:28:26Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e077b2fe83b1c6e4ffd2ff0029fe3b754c7dc5dced06f134ddf18e9ed6a11fd2
+    source_hash: 945f4cd8571814597ec0188853e91c6483a0d8b09bd0ca7dcfb79eb877607ce2
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Die folgenden Beispiele sind auf das aktuelle Konfigurationsschema abgestimmt. Die vollständige Referenz und Hinweise zu einzelnen Feldern finden Sie unter [Konfiguration](/de/gateway/configuration).
+Die folgenden Beispiele sind am aktuellen Konfigurationsschema ausgerichtet. Die vollständige Referenz und feldspezifische Hinweise finden Sie unter [Konfiguration](/de/gateway/configuration).
 
 ## Schnellstart
 
@@ -27,7 +28,7 @@ Die folgenden Beispiele sind auf das aktuelle Konfigurationsschema abgestimmt. D
 }
 ```
 
-Speichern Sie dies unter `~/.openclaw/openclaw.json`, dann können Sie dem Bot von dieser Nummer aus eine Direktnachricht senden.
+Speichern Sie dies unter `~/.openclaw/openclaw.json`, dann können Sie dem Bot von dieser Nummer aus eine DM senden.
 
 ### Empfohlener Einstieg
 
@@ -58,7 +59,8 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`, dann können Sie dem Bot v
   messages: {
     visibleReplies: "automatic",
     groupChat: {
-      visibleReplies: "message_tool", // default; use "automatic" for legacy room replies
+      visibleReplies: "message_tool", // opt-in; visible output requires message(action=send)
+      unmentionedInbound: "room_event",
     },
   },
 }
@@ -88,12 +90,11 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`, dann können Sie dem Bot v
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
       "anthropic:work": { provider: "anthropic", mode: "api_key" },
       "openai:default": { provider: "openai", mode: "api_key" },
-      "openai-codex:personal": { provider: "openai-codex", mode: "oauth" },
+      "openai:personal": { provider: "openai", mode: "oauth" },
     },
     order: {
       anthropic: ["anthropic:default", "anthropic:work"],
-      openai: ["openai:default"],
-      "openai-codex": ["openai-codex:personal"],
+      openai: ["openai:personal", "openai:default"],
     },
   },
 
@@ -117,21 +118,22 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`, dann können Sie dem Bot v
     ackReactionScope: "group-mentions",
     groupChat: {
       historyLimit: 50,
-      visibleReplies: "message_tool", // normal final replies stay private in groups/channels
+      visibleReplies: "message_tool", // opt in for shared rooms with tool-reliable models
+      unmentionedInbound: "room_event",
     },
     queue: {
-      mode: "steer",
+      mode: "followup",
       debounceMs: 500,
       cap: 20,
       drop: "summarize",
       byChannel: {
-        whatsapp: "steer",
-        telegram: "steer",
-        discord: "steer",
-        slack: "steer",
-        signal: "steer",
-        imessage: "steer",
-        webchat: "steer",
+        whatsapp: "followup",
+        telegram: "followup",
+        discord: "collect",
+        slack: "collect",
+        signal: "followup",
+        imessage: "followup",
+        webchat: "followup",
       },
     },
   },
@@ -390,7 +392,7 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`, dann können Sie dem Bot v
   cron: {
     enabled: true,
     store: "~/.openclaw/cron/cron.json",
-    maxConcurrentRuns: 2, // cron dispatch + isolated cron agent-turn execution
+    maxConcurrentRuns: 8, // default; cron dispatch + isolated cron agent-turn execution
     sessionRetention: "24h",
     runLog: {
       maxBytes: "2mb",
@@ -480,9 +482,9 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`, dann können Sie dem Bot v
 }
 ```
 
-### Per Symlink eingebundenes benachbartes Skill-Repo
+### Per Symlink angebundenes benachbartes Skill-Repository
 
-Verwenden Sie dies, wenn ein integriertes Skill-Stammverzeichnis einen Symlink in ein benachbartes Repo enthält, zum
+Verwenden Sie dies, wenn ein integrierter Skill-Root einen Symlink in ein benachbartes Repository enthält, zum
 Beispiel `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ```json5
@@ -496,11 +498,13 @@ Beispiel `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 }
 ```
 
-- `extraDirs` durchsucht das benachbarte Repo als explizites Skill-Stammverzeichnis.
-- `allowSymlinkTargets` ermöglicht, dass per Symlink eingebundene Skill-Ordner in dieses vertrauenswürdige
-  echte Ziel-Stammverzeichnis aufgelöst werden, ohne beliebige Symlink-Ausbrüche zu erlauben.
+- `extraDirs` durchsucht das benachbarte Repository als expliziten Skill-Root.
+- `allowSymlinkTargets` lässt per Symlink angebundene Skill-Ordner in diesen vertrauenswürdigen
+  echten Ziel-Root auflösen, ohne beliebige Symlink-Ausbrüche zu erlauben.
+- Damit Skill Workshop Schreibvorgänge über dasselbe vertrauenswürdige Symlink-Ziel ausführen kann,
+  setzen Sie `skills.workshop.allowSymlinkTargetWrites: true`.
 
-## Gängige Muster
+## Häufige Muster
 
 ### Gemeinsame Skill-Basis mit einer Überschreibung
 
@@ -523,7 +527,7 @@ Beispiel `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 - `agents.list[].skills` ersetzt diese Basis für einen Agenten.
 - Verwenden Sie `skills: []`, wenn ein Agent keine Skills sehen soll.
 
-### Einrichtung für mehrere Plattformen
+### Multi-Plattform-Einrichtung
 
 ```json5
 {
@@ -544,11 +548,11 @@ Beispiel `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 }
 ```
 
-### Automatische Genehmigung für vertrauenswürdige Node-Netzwerke
+### Automatische Genehmigung für vertrauenswürdiges Node-Netzwerk
 
-Belassen Sie das Geräte-Pairing manuell, sofern Sie den Netzwerkpfad nicht kontrollieren. Für ein dediziertes
-Lab oder ein Tailnet-Subnetz können Sie die automatische Erstgenehmigung von Node-Geräten
-mit exakten CIDRs oder IPs aktivieren:
+Lassen Sie die Gerätekopplung manuell, sofern Sie den Netzwerkpfad nicht kontrollieren. Für ein dediziertes
+Labor oder ein Tailnet-Subnetz können Sie sich mit exakten CIDRs oder IPs für die automatische Genehmigung
+von Node-Geräten bei der ersten Kopplung entscheiden:
 
 ```json5
 {
@@ -562,13 +566,13 @@ mit exakten CIDRs oder IPs aktivieren:
 }
 ```
 
-Dies bleibt deaktiviert, wenn es nicht festgelegt ist. Es gilt nur für frisches `role: node`-Pairing mit
-keinen angeforderten Scopes. Operator-/Browser-Clients sowie Upgrades von Rolle, Scope, Metadaten oder
-öffentlichen Schlüsseln erfordern weiterhin eine manuelle Genehmigung.
+Dies bleibt deaktiviert, wenn es nicht gesetzt ist. Es gilt nur für neue `role: node`-Kopplungen ohne
+angeforderte Scopes. Operator-/Browser-Clients sowie Upgrades von Rolle, Scope, Metadaten oder
+öffentlichem Schlüssel erfordern weiterhin eine manuelle Genehmigung.
 
 ### Sicherer DM-Modus (gemeinsamer Posteingang / Mehrbenutzer-DMs)
 
-Wenn mehr als eine Person Ihrem Bot eine DM senden kann (mehrere Einträge in `allowFrom`, Pairing-Genehmigungen für mehrere Personen oder `dmPolicy: "open"`), aktivieren Sie den **sicheren DM-Modus**, damit DMs von verschiedenen Absendern standardmäßig nicht denselben Kontext teilen:
+Wenn mehr als eine Person Ihrem Bot DMs senden kann (mehrere Einträge in `allowFrom`, Kopplungsgenehmigungen für mehrere Personen oder `dmPolicy: "open"`), aktivieren Sie den **sicheren DM-Modus**, damit DMs von verschiedenen Absendern standardmäßig keinen gemeinsamen Kontext teilen:
 
 ```json5
 {
@@ -592,8 +596,8 @@ Wenn mehr als eine Person Ihrem Bot eine DM senden kann (mehrere Einträge in `a
 }
 ```
 
-Für Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC erfolgt die Absenderautorisierung standardmäßig zuerst anhand der ID.
-Aktivieren Sie direktes, veränderliches Matching nach Name/E-Mail/Nick mit dem `dangerouslyAllowNameMatching: true` des jeweiligen Kanals nur, wenn Sie dieses Risiko ausdrücklich akzeptieren.
+Für Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC ist die Absenderautorisierung standardmäßig ID-basiert.
+Aktivieren Sie direkte veränderbare Namens-/E-Mail-/Nick-Zuordnung mit dem jeweiligen `dangerouslyAllowNameMatching: true` des Kanals nur, wenn Sie dieses Risiko ausdrücklich akzeptieren.
 
 ### Anthropic-API-Schlüssel + MiniMax-Fallback
 
@@ -699,10 +703,10 @@ Aktivieren Sie direktes, veränderliches Matching nach Name/E-Mail/Nick mit dem 
 
 ## Tipps
 
-- Wenn Sie `dmPolicy: "open"` festlegen, muss die zugehörige `allowFrom`-Liste `"*"` enthalten.
+- Wenn Sie `dmPolicy: "open"` setzen, muss die passende `allowFrom`-Liste `"*"` enthalten.
 - Provider-IDs unterscheiden sich (Telefonnummern, Benutzer-IDs, Kanal-IDs). Verwenden Sie die Provider-Dokumentation, um das Format zu bestätigen.
 - Optionale Abschnitte, die Sie später hinzufügen können: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
-- Siehe [Provider](/de/providers) und [Fehlerbehebung](/de/gateway/troubleshooting) für ausführlichere Einrichtungshinweise.
+- Siehe [Provider](/de/providers) und [Problembehandlung](/de/gateway/troubleshooting) für ausführlichere Einrichtungshinweise.
 
 ## Verwandt
 

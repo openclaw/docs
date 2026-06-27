@@ -1,13 +1,14 @@
 ---
 read_when:
-    - cerebras Plugin을 설치, 설정 또는 감사하고 있습니다
-summary: OpenClaw에 Cerebras 모델 공급자 지원을 추가합니다.
+    - cerebras Plugin을 설치, 구성 또는 감사하고 있습니다
+summary: OpenClaw에 Cerebras 모델 제공자 지원을 추가합니다.
 title: Cerebras Plugin
 x-i18n:
-    generated_at: "2026-05-02T21:01:31Z"
+    generated_at: "2026-06-27T17:49:25Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7553ad4a35054942d2f2b734fed4f751765a235194300b7962f9ccd72b20d594
+    source_hash: 272a592b6099b7dc30c48e40e004ca01c1113a1fcf65917ac6266987a63ec01f
     source_path: plugins/reference/cerebras.md
     workflow: 16
 ---
@@ -19,7 +20,7 @@ OpenClaw에 Cerebras 모델 제공자 지원을 추가합니다.
 ## 배포
 
 - 패키지: `@openclaw/cerebras-provider`
-- 설치 경로: OpenClaw에 포함됨
+- 설치 경로: npm; ClawHub: `clawhub:@openclaw/cerebras-provider`
 
 ## 표면
 

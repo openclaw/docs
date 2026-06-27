@@ -1,20 +1,21 @@
 ---
 read_when:
     - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin googlechat
-summary: Thêm giao diện kênh Google Chat để gửi và nhận tin nhắn OpenClaw.
+summary: Plugin kênh Google Chat của OpenClaw dành cho không gian và tin nhắn trực tiếp.
 title: Plugin Google Chat
 x-i18n:
-    generated_at: "2026-05-03T10:41:32Z"
+    generated_at: "2026-06-27T17:52:48Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 9d8626b6b5773218e22534e3f40aa82c5508c3f3e3223f6fd7343118efa63dc1
+    source_hash: 04febb1ead7d63e9ef79ecc52ce69f38a7c4eb404c90019717363f57477cd37d
     source_path: plugins/reference/googlechat.md
     workflow: 16
 ---
 
 # Plugin Google Chat
 
-Thêm bề mặt kênh Google Chat để gửi và nhận tin nhắn OpenClaw.
+Plugin kênh Google Chat của OpenClaw cho các không gian và tin nhắn trực tiếp.
 
 ## Phân phối
 
@@ -23,7 +24,7 @@ Thêm bề mặt kênh Google Chat để gửi và nhận tin nhắn OpenClaw.
 
 ## Bề mặt
 
-channels: googlechat
+kênh: googlechat
 
 ## Tài liệu liên quan
 

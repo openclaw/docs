@@ -1,25 +1,26 @@
 ---
 read_when:
-    - 您想選擇模型提供者
-    - 你需要快速了解支援的 LLM 後端
-summary: OpenClaw 支援的模型提供者（大型語言模型）
+    - 你想要選擇模型提供者
+    - 你需要快速概覽支援的 LLM 後端
+summary: OpenClaw 支援的模型提供者（LLM）
 title: 提供者目錄
 x-i18n:
-    generated_at: "2026-05-06T09:17:19Z"
+    generated_at: "2026-06-27T19:55:06Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cfc3a15880a5e1881c1a58c60c9ad7e5624350a8db848d03c7cef6ee18c14b81
+    source_hash: a340f6a48f6f1d50116316f9679b009365cd617b3453ebd9b2b31e70f6b94c31
     source_path: providers/index.md
     workflow: 16
 ---
 
-OpenClaw 可使用許多 LLM 供應商。選擇一個供應商、完成驗證，然後將預設模型設定為 `provider/model`。
+OpenClaw 可以使用多種 LLM 提供者。選擇一個提供者、完成驗證，然後將預設模型設為 `provider/model`。
 
-在找聊天頻道文件（WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/等等）嗎？請參閱[頻道](/zh-TW/channels)。
+在找聊天頻道文件（WhatsApp/Telegram/Discord/Slack/Mattermost（外掛）/等等）嗎？請參閱[頻道](/zh-TW/channels)。
 
 ## 快速開始
 
-1. 向供應商完成驗證（通常透過 `openclaw onboard`）。
+1. 向提供者驗證（通常透過 `openclaw onboard`）。
 2. 設定預設模型：
 
 ```json5
@@ -28,7 +29,7 @@ OpenClaw 可使用許多 LLM 供應商。選擇一個供應商、完成驗證，
 }
 ```
 
-## 供應商文件
+## 提供者文件
 
 - [Alibaba Model Studio](/zh-TW/providers/alibaba)
 - [Amazon Bedrock](/zh-TW/providers/bedrock)
@@ -39,27 +40,31 @@ OpenClaw 可使用許多 LLM 供應商。選擇一個供應商、完成驗證，
 - [BytePlus（國際版）](/zh-TW/concepts/model-providers#byteplus-international)
 - [Cerebras](/zh-TW/providers/cerebras)
 - [Chutes](/zh-TW/providers/chutes)
+- [Cohere](/zh-TW/providers/cohere)
 - [Cloudflare AI Gateway](/zh-TW/providers/cloudflare-ai-gateway)
 - [ComfyUI](/zh-TW/providers/comfy)
 - [DeepSeek](/zh-TW/providers/deepseek)
+- [ds4（本機 DeepSeek V4）](/zh-TW/providers/ds4)
 - [ElevenLabs](/zh-TW/providers/elevenlabs)
 - [fal](/zh-TW/providers/fal)
 - [Fireworks](/zh-TW/providers/fireworks)
 - [GitHub Copilot](/zh-TW/providers/github-copilot)
-- [GLM 模型](/zh-TW/providers/glm)
+- [GMI Cloud](/zh-TW/providers/gmi)
 - [Google（Gemini）](/zh-TW/providers/google)
 - [Gradium](/zh-TW/providers/gradium)
 - [Groq（LPU 推論）](/zh-TW/providers/groq)
 - [Hugging Face（推論）](/zh-TW/providers/huggingface)
 - [inferrs（本機模型）](/zh-TW/providers/inferrs)
 - [Kilocode](/zh-TW/providers/kilocode)
-- [LiteLLM（統一 Gateway）](/zh-TW/providers/litellm)
+- [LiteLLM（統一閘道）](/zh-TW/providers/litellm)
 - [LM Studio（本機模型）](/zh-TW/providers/lmstudio)
 - [MiniMax](/zh-TW/providers/minimax)
 - [Mistral](/zh-TW/providers/mistral)
 - [Moonshot AI（Kimi + Kimi Coding）](/zh-TW/providers/moonshot)
 - [NVIDIA](/zh-TW/providers/nvidia)
+- [NovitaAI](/zh-TW/providers/novita)
 - [Ollama（雲端 + 本機模型）](/zh-TW/providers/ollama)
+- [Ollama Cloud](/zh-TW/providers/ollama-cloud)
 - [OpenAI（API + Codex）](/zh-TW/providers/openai)
 - [OpenCode](/zh-TW/providers/opencode)
 - [OpenCode Go](/zh-TW/providers/opencode-go)
@@ -67,6 +72,7 @@ OpenClaw 可使用許多 LLM 供應商。選擇一個供應商、完成驗證，
 - [Perplexity（網頁搜尋）](/zh-TW/providers/perplexity-provider)
 - [Qianfan](/zh-TW/providers/qianfan)
 - [Qwen Cloud](/zh-TW/providers/qwen)
+- [Qwen OAuth / Portal](/zh-TW/providers/qwen-oauth)
 - [Runway](/zh-TW/providers/runway)
 - [SenseAudio](/zh-TW/providers/senseaudio)
 - [SGLang（本機模型）](/zh-TW/providers/sglang)
@@ -81,16 +87,16 @@ OpenClaw 可使用許多 LLM 供應商。選擇一個供應商、完成驗證，
 - [Vydra](/zh-TW/providers/vydra)
 - [xAI](/zh-TW/providers/xai)
 - [Xiaomi](/zh-TW/providers/xiaomi)
-- [Z.AI](/zh-TW/providers/zai)
+- [Z.AI（GLM）](/zh-TW/providers/zai)
 
 ## 共用概覽頁面
 
 - [其他內建變體](/zh-TW/providers/models#additional-bundled-provider-variants) - Anthropic Vertex、Copilot Proxy 和 Gemini CLI OAuth
-- [影像生成](/zh-TW/tools/image-generation) - 共用 `image_generate` 工具、供應商選擇和容錯移轉
-- [音樂生成](/zh-TW/tools/music-generation) - 共用 `music_generate` 工具、供應商選擇和容錯移轉
-- [影片生成](/zh-TW/tools/video-generation) - 共用 `video_generate` 工具、供應商選擇和容錯移轉
+- [影像生成](/zh-TW/tools/image-generation) - 共用 `image_generate` 工具、提供者選擇和故障轉移
+- [音樂生成](/zh-TW/tools/music-generation) - 共用 `music_generate` 工具、提供者選擇和故障轉移
+- [影片生成](/zh-TW/tools/video-generation) - 共用 `video_generate` 工具、提供者選擇和故障轉移
 
-## 轉錄供應商
+## 轉錄提供者
 
 - [Deepgram（音訊轉錄）](/zh-TW/providers/deepgram)
 - [ElevenLabs](/zh-TW/providers/elevenlabs#speech-to-text)
@@ -103,5 +109,4 @@ OpenClaw 可使用許多 LLM 供應商。選擇一個供應商、完成驗證，
 
 - [Claude Max API Proxy](/zh-TW/providers/claude-max-api-proxy) - Claude 訂閱憑證的社群代理（使用前請確認 Anthropic 政策/條款）
 
-如需完整的供應商目錄（xAI、Groq、Mistral 等）和進階設定，
-請參閱[模型供應商](/zh-TW/concepts/model-providers)。
+如需完整提供者目錄（xAI、Groq、Mistral 等）和進階設定，請參閱[模型提供者](/zh-TW/concepts/model-providers)。

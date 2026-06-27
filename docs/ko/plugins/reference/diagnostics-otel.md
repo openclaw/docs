@@ -1,26 +1,27 @@
 ---
 read_when:
     - diagnostics-otel Plugin을 설치, 구성 또는 감사하고 있습니다
-summary: OpenClaw 진단용 OpenTelemetry 내보내기 도구.
-title: 진단용 OpenTelemetry Plugin
+summary: 메트릭, 트레이스, 로그를 위한 OpenClaw 진단 OpenTelemetry 내보내기.
+title: Diagnostics OpenTelemetry Plugin
 x-i18n:
-    generated_at: "2026-05-03T06:19:57Z"
+    generated_at: "2026-06-27T17:50:14Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ef589f6f406c4e1ef18667969a59169389f0e74253ceaad061eff6c6eb3d8b31
+    source_hash: 1fdbe6d3e52856e0db8e472aa2607622c60d3f0cadd5db0ae1eac5eedb2d4591
     source_path: plugins/reference/diagnostics-otel.md
     workflow: 16
 ---
 
 # 진단 OpenTelemetry Plugin
 
-OpenClaw 진단 OpenTelemetry 내보내기 도구.
+메트릭, 트레이스, 로그를 위한 OpenClaw 진단 OpenTelemetry 익스포터입니다.
 
 ## 배포
 
 - 패키지: `@openclaw/diagnostics-otel`
 - 설치 경로: npm; ClawHub: `clawhub:@openclaw/diagnostics-otel`
 
-## 표면
+## 노출 영역
 
 Plugin

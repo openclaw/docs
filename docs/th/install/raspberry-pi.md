@@ -1,68 +1,69 @@
 ---
 read_when:
     - การตั้งค่า OpenClaw บน Raspberry Pi
-    - การใช้งาน OpenClaw บนอุปกรณ์ ARM
-    - การสร้าง AI ส่วนตัวราคาประหยัดที่ทำงานตลอดเวลา
-summary: โฮสต์ OpenClaw บน Raspberry Pi สำหรับการโฮสต์ด้วยตนเองที่ทำงานตลอดเวลา
+    - การรัน OpenClaw บนอุปกรณ์ ARM
+    - สร้าง AI ส่วนตัวราคาประหยัดที่เปิดใช้งานตลอดเวลา
+summary: โฮสต์ OpenClaw บน Raspberry Pi เพื่อการโฮสต์ด้วยตนเองที่ทำงานตลอดเวลา
 title: Raspberry Pi
 x-i18n:
-    generated_at: "2026-05-06T09:20:39Z"
+    generated_at: "2026-06-27T17:45:15Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 96df076c2707b0b27751d452f15fad774356a86e96d10bce998581235776c4bc
+    source_hash: 9cd90b4cc70c8fe7eab2a0abadc0e2969c7dc1c09657a0819bc004280ec32ba3
     source_path: install/raspberry-pi.md
     workflow: 16
 ---
 
-เรียกใช้ OpenClaw Gateway แบบถาวรและทำงานตลอดเวลาบน Raspberry Pi เนื่องจาก Pi ทำหน้าที่เป็นเพียง Gateway (โมเดลทำงานในคลาวด์ผ่าน API) แม้แต่ Pi สเปกปานกลางก็รองรับงานได้ดี — ค่าอุปกรณ์ทั่วไปอยู่ที่ **$35–80 จ่ายครั้งเดียว** ไม่มีค่าบริการรายเดือน
+รัน OpenClaw Gateway แบบถาวรและเปิดใช้งานตลอดเวลาบน Raspberry Pi เนื่องจาก Pi เป็นเพียง Gateway (โมเดลรันบนคลาวด์ผ่าน API) แม้แต่ Pi รุ่นไม่สูงมากก็รับภาระงานได้ดี — ต้นทุนฮาร์ดแวร์ทั่วไปคือ **$35–80 จ่ายครั้งเดียว** ไม่มีค่าบริการรายเดือน
 
 ## ความเข้ากันได้ของฮาร์ดแวร์
 
-| รุ่น Pi       | RAM    | ใช้ได้ไหม? | หมายเหตุ                          |
+| Pi model    | RAM    | Works? | Notes                               |
 | ----------- | ------ | ------ | ----------------------------------- |
-| Pi 5        | 4/8 GB | ดีที่สุด | เร็วที่สุด แนะนำ                 |
-| Pi 4        | 4 GB   | ดี     | จุดที่เหมาะสำหรับผู้ใช้ส่วนใหญ่          |
-| Pi 4        | 2 GB   | พอใช้     | เพิ่ม swap                           |
-| Pi 4        | 1 GB   | คับแคบ  | เป็นไปได้เมื่อใช้ swap และ config ขั้นต่ำ |
-| Pi 3B+      | 1 GB   | ช้า   | ใช้ได้แต่หน่วง                 |
-| Pi Zero 2 W | 512 MB | ไม่ได้     | ไม่แนะนำ                    |
+| Pi 5        | 4/8 GB | ดีที่สุด | เร็วที่สุด แนะนำให้ใช้               |
+| Pi 4        | 4 GB   | ดี   | จุดที่คุ้มค่าสำหรับผู้ใช้ส่วนใหญ่          |
+| Pi 4        | 2 GB   | ใช้ได้     | เพิ่ม swap                           |
+| Pi 4        | 1 GB   | ค่อนข้างจำกัด  | เป็นไปได้เมื่อใช้ swap และตั้งค่าน้อยที่สุด |
+| Pi 3B+      | 1 GB   | ช้า   | ใช้งานได้แต่หน่วง                 |
+| Pi Zero 2 W | 512 MB | ไม่     | ไม่แนะนำ                    |
 
-**ขั้นต่ำ:** RAM 1 GB, 1 core, พื้นที่ว่างดิสก์ 500 MB, OS 64-bit
-**แนะนำ:** RAM 2 GB+, SD card 16 GB+ (หรือ USB SSD), Ethernet
+**ขั้นต่ำ:** RAM 1 GB, 1 คอร์, พื้นที่ว่างดิสก์ 500 MB, ระบบปฏิบัติการ 64-bit
+**แนะนำ:** RAM 2 GB ขึ้นไป, การ์ด SD 16 GB ขึ้นไป (หรือ USB SSD), Ethernet
 
 ## ข้อกำหนดเบื้องต้น
 
-- Raspberry Pi 4 หรือ 5 ที่มี RAM 2 GB+ (แนะนำ 4 GB)
-- การ์ด MicroSD (16 GB+) หรือ USB SSD (ประสิทธิภาพดีกว่า)
-- แหล่งจ่ายไฟ Pi อย่างเป็นทางการ
+- Raspberry Pi 4 หรือ 5 พร้อม RAM 2 GB ขึ้นไป (แนะนำ 4 GB)
+- การ์ด MicroSD (16 GB ขึ้นไป) หรือ USB SSD (ประสิทธิภาพดีกว่า)
+- อะแดปเตอร์จ่ายไฟ Pi ทางการ
 - การเชื่อมต่อเครือข่าย (Ethernet หรือ WiFi)
-- Raspberry Pi OS 64-bit (จำเป็น -- อย่าใช้ 32-bit)
+- Raspberry Pi OS แบบ 64-bit (จำเป็น -- อย่าใช้ 32-bit)
 - ประมาณ 30 นาที
 
 ## การตั้งค่า
 
 <Steps>
-  <Step title="แฟลช OS">
-    ใช้ **Raspberry Pi OS Lite (64-bit)** -- ไม่ต้องมีเดสก์ท็อปสำหรับเซิร์ฟเวอร์แบบ headless
+  <Step title="Flash the OS">
+    ใช้ **Raspberry Pi OS Lite (64-bit)** -- ไม่จำเป็นต้องมีเดสก์ท็อปสำหรับเซิร์ฟเวอร์แบบ headless
 
     1. ดาวน์โหลด [Raspberry Pi Imager](https://www.raspberrypi.com/software/)
-    2. เลือก OS: **Raspberry Pi OS Lite (64-bit)**
+    2. เลือกระบบปฏิบัติการ: **Raspberry Pi OS Lite (64-bit)**
     3. ในกล่องโต้ตอบการตั้งค่า ให้กำหนดค่าล่วงหน้า:
        - Hostname: `gateway-host`
        - เปิดใช้ SSH
        - ตั้งชื่อผู้ใช้และรหัสผ่าน
-       - กำหนดค่า WiFi (ถ้าไม่ได้ใช้ Ethernet)
-    4. แฟลชลง SD card หรือไดรฟ์ USB ของคุณ ใส่เข้าเครื่อง แล้วบูต Pi
+       - ตั้งค่า WiFi (ถ้าไม่ได้ใช้ Ethernet)
+    4. เขียนอิมเมจลงในการ์ด SD หรือไดรฟ์ USB ใส่เข้าไป แล้วบูต Pi
 
   </Step>
 
-  <Step title="เชื่อมต่อผ่าน SSH">
+  <Step title="Connect via SSH">
     ```bash
     ssh user@gateway-host
     ```
   </Step>
 
-  <Step title="อัปเดตระบบ">
+  <Step title="Update the system">
     ```bash
     sudo apt update && sudo apt upgrade -y
     sudo apt install -y git curl build-essential
@@ -73,7 +74,7 @@ x-i18n:
 
   </Step>
 
-  <Step title="ติดตั้ง Node.js 24">
+  <Step title="Install Node.js 24">
     ```bash
     curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
     sudo apt install -y nodejs
@@ -81,7 +82,7 @@ x-i18n:
     ```
   </Step>
 
-  <Step title="เพิ่ม swap (สำคัญสำหรับ 2 GB หรือน้อยกว่า)">
+  <Step title="Add swap (important for 2 GB or less)">
     ```bash
     sudo fallocate -l 2G /swapfile
     sudo chmod 600 /swapfile
@@ -96,22 +97,22 @@ x-i18n:
 
   </Step>
 
-  <Step title="ติดตั้ง OpenClaw">
+  <Step title="Install OpenClaw">
     ```bash
     curl -fsSL https://openclaw.ai/install.sh | bash
     ```
   </Step>
 
-  <Step title="เรียกใช้การเริ่มต้นใช้งาน">
+  <Step title="Run onboarding">
     ```bash
     openclaw onboard --install-daemon
     ```
 
-    ทำตามวิซาร์ด แนะนำให้ใช้ API keys แทน OAuth สำหรับอุปกรณ์แบบ headless Telegram เป็นช่องทางที่เริ่มใช้ง่ายที่สุด
+    ทำตามวิซาร์ด แนะนำให้ใช้คีย์ API แทน OAuth สำหรับอุปกรณ์แบบ headless Telegram เป็นช่องทางที่เริ่มต้นได้ง่ายที่สุด
 
   </Step>
 
-  <Step title="ตรวจสอบ">
+  <Step title="Verify">
     ```bash
     openclaw status
     systemctl --user status openclaw-gateway.service
@@ -119,29 +120,29 @@ x-i18n:
     ```
   </Step>
 
-  <Step title="เข้าถึง Control UI">
-    บนคอมพิวเตอร์ของคุณ รับ URL แดชบอร์ดจาก Pi:
+  <Step title="Access the Control UI">
+    บนคอมพิวเตอร์ของคุณ ให้รับ URL แดชบอร์ดจาก Pi:
 
     ```bash
     ssh user@gateway-host 'openclaw dashboard --no-open'
     ```
 
-    จากนั้นสร้าง SSH tunnel ในเทอร์มินัลอีกอัน:
+    จากนั้นสร้างอุโมงค์ SSH ในเทอร์มินัลอีกหน้าต่างหนึ่ง:
 
     ```bash
     ssh -N -L 18789:127.0.0.1:18789 user@gateway-host
     ```
 
-    เปิด URL ที่พิมพ์ออกมาในเบราว์เซอร์ภายในเครื่องของคุณ สำหรับการเข้าถึงระยะไกลแบบทำงานตลอดเวลา ดู [การผสานรวม Tailscale](/th/gateway/tailscale)
+    เปิด URL ที่พิมพ์ออกมาในเบราว์เซอร์ภายในเครื่องของคุณ สำหรับการเข้าถึงระยะไกลแบบเปิดตลอดเวลา โปรดดู [การผสานรวม Tailscale](/th/gateway/tailscale)
 
   </Step>
 </Steps>
 
 ## เคล็ดลับด้านประสิทธิภาพ
 
-**ใช้ USB SSD** -- SD card ช้าและเสื่อมสภาพได้ USB SSD ช่วยเพิ่มประสิทธิภาพได้อย่างมาก ดู [คู่มือการบูต Pi ผ่าน USB](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#usb-mass-storage-boot)
+**ใช้ USB SSD** -- การ์ด SD ช้าและเสื่อมสภาพ USB SSD ช่วยเพิ่มประสิทธิภาพอย่างมาก ดู [คู่มือการบูต Pi จาก USB](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#usb-mass-storage-boot)
 
-**เปิดใช้แคชการคอมไพล์โมดูล** -- เร่งความเร็วการเรียกใช้ CLI ซ้ำ ๆ บนโฮสต์ Pi ที่ใช้พลังงานต่ำกว่า:
+**เปิดใช้แคชการคอมไพล์โมดูล** -- ช่วยเร่งการเรียกใช้ CLI ซ้ำบนโฮสต์ Pi ที่ใช้พลังงานต่ำกว่า:
 
 ```bash
 grep -q 'NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache' ~/.bashrc || cat >> ~/.bashrc <<'EOF' # pragma: allowlist secret
@@ -152,6 +153,8 @@ EOF
 source ~/.bashrc
 ```
 
+`OPENCLAW_NO_RESPAWN=1` ทำให้การรีสตาร์ต Gateway ตามปกติอยู่ภายในกระบวนการเดิม ซึ่งหลีกเลี่ยงการส่งต่อระหว่างกระบวนการเพิ่มเติมและทำให้การติดตาม PID บนโฮสต์ขนาดเล็กเรียบง่าย
+
 **ลดการใช้หน่วยความจำ** -- สำหรับการตั้งค่าแบบ headless ให้คืนหน่วยความจำ GPU และปิดบริการที่ไม่ได้ใช้:
 
 ```bash
@@ -159,7 +162,7 @@ echo 'gpu_mem=16' | sudo tee -a /boot/config.txt
 sudo systemctl disable bluetooth
 ```
 
-**systemd drop-in สำหรับการรีสตาร์ตที่เสถียร** -- ถ้า Pi เครื่องนี้ใช้รัน OpenClaw เป็นหลัก ให้เพิ่ม service drop-in:
+**systemd drop-in สำหรับการรีสตาร์ตที่เสถียร** -- หาก Pi เครื่องนี้ใช้รัน OpenClaw เป็นหลัก ให้เพิ่ม service drop-in:
 
 ```bash
 systemctl --user edit openclaw-gateway.service
@@ -174,7 +177,7 @@ RestartSec=2
 TimeoutStartSec=90
 ```
 
-จากนั้นเรียกใช้ `systemctl --user daemon-reload && systemctl --user restart openclaw-gateway.service` บน Pi แบบ headless ให้เปิดใช้ lingering หนึ่งครั้งด้วย เพื่อให้บริการของผู้ใช้ยังทำงานต่อหลังออกจากระบบ: `sudo loginctl enable-linger "$(whoami)"`
+จากนั้นรัน `systemctl --user daemon-reload && systemctl --user restart openclaw-gateway.service` บน Pi แบบ headless ให้เปิดใช้ lingering หนึ่งครั้งด้วย เพื่อให้บริการของผู้ใช้อยู่รอดหลังออกจากระบบ: `sudo loginctl enable-linger "$(whoami)"`
 
 ## การตั้งค่าโมเดลที่แนะนำ
 
@@ -193,43 +196,43 @@ TimeoutStartSec=90
 }
 ```
 
-อย่ารัน LLM ภายในเครื่องบน Pi — แม้แต่โมเดลขนาดเล็กก็ช้าเกินกว่าจะใช้งานได้จริง ให้ Claude หรือ GPT ทำงานด้านโมเดลแทน
+อย่ารัน LLM ภายในเครื่องบน Pi — แม้แต่โมเดลขนาดเล็กก็ช้าเกินกว่าจะมีประโยชน์ ให้ Claude หรือ GPT ทำงานด้านโมเดลแทน
 
 ## หมายเหตุเกี่ยวกับไบนารี ARM
 
-ฟีเจอร์ส่วนใหญ่ของ OpenClaw ทำงานบน ARM64 ได้โดยไม่ต้องเปลี่ยนแปลง (Node.js, Telegram, WhatsApp/Baileys, Chromium) ไบนารีที่บางครั้งไม่มี build สำหรับ ARM มักเป็นเครื่องมือ Go/Rust CLI ที่เป็นตัวเลือกและมาพร้อมกับ Skills ตรวจสอบหน้า release ของไบนารีที่หายไปว่ามี artifact สำหรับ `linux-arm64` / `aarch64` ก่อนจะย้อนกลับไป build จากซอร์ส
+ฟีเจอร์ส่วนใหญ่ของ OpenClaw ใช้งานได้บน ARM64 โดยไม่ต้องเปลี่ยนแปลง (Node.js, Telegram, WhatsApp/Baileys, Chromium) ไบนารีที่บางครั้งไม่มีบิลด์ ARM มักเป็นเครื่องมือ CLI ของ Go/Rust ที่ Skills จัดส่งมาแบบไม่บังคับ ตรวจสอบหน้า release ของไบนารีที่ขาดหายสำหรับอาร์ติแฟกต์ `linux-arm64` / `aarch64` ก่อนถอยกลับไปบิลด์จากซอร์ส
 
-## ความคงอยู่ของข้อมูลและการสำรองข้อมูล
+## การคงอยู่ของข้อมูลและการสำรองข้อมูล
 
 สถานะของ OpenClaw อยู่ภายใต้:
 
-- `~/.openclaw/` — `openclaw.json`, `auth-profiles.json` แยกตาม agent, สถานะช่องทาง/ผู้ให้บริการ, เซสชัน
-- `~/.openclaw/workspace/` — workspace ของ agent (SOUL.md, หน่วยความจำ, artifacts)
+- `~/.openclaw/` — `openclaw.json`, `auth-profiles.json` ต่อ agent, สถานะ channel/provider, session
+- `~/.openclaw/workspace/` — workspace ของ agent (SOUL.md, memory, artifact)
 
-ข้อมูลเหล่านี้ยังอยู่หลังรีบูต สร้าง snapshot แบบพกพาได้ด้วย:
+ข้อมูลเหล่านี้ยังคงอยู่หลังรีบูต สร้าง snapshot แบบพกพาได้ด้วย:
 
 ```bash
 openclaw backup create
 ```
 
-ถ้าคุณเก็บข้อมูลเหล่านี้บน SSD ทั้งประสิทธิภาพและอายุการใช้งานจะดีกว่า SD card
+หากเก็บข้อมูลเหล่านี้ไว้บน SSD ทั้งประสิทธิภาพและอายุการใช้งานจะดีขึ้นเมื่อเทียบกับการ์ด SD
 
-## การแก้ปัญหา
+## การแก้ไขปัญหา
 
-**หน่วยความจำไม่พอ** -- ตรวจสอบว่า swap ทำงานอยู่ด้วย `free -h` ปิดบริการที่ไม่ได้ใช้ (`sudo systemctl disable cups bluetooth avahi-daemon`) ใช้เฉพาะโมเดลที่อิง API
+**หน่วยความจำไม่พอ** -- ตรวจสอบว่า swap เปิดใช้งานอยู่ด้วย `free -h` ปิดบริการที่ไม่ได้ใช้ (`sudo systemctl disable cups bluetooth avahi-daemon`) ใช้เฉพาะโมเดลแบบ API
 
-**ประสิทธิภาพช้า** -- ใช้ USB SSD แทน SD card ตรวจสอบการถูกจำกัดความเร็ว CPU ด้วย `vcgencmd get_throttled` (ควรคืนค่า `0x0`)
+**ประสิทธิภาพช้า** -- ใช้ USB SSD แทนการ์ด SD ตรวจสอบการลดความเร็ว CPU ด้วย `vcgencmd get_throttled` (ควรส่งคืน `0x0`)
 
-**บริการไม่เริ่มทำงาน** -- ตรวจสอบบันทึกด้วย `journalctl --user -u openclaw-gateway.service --no-pager -n 100` และเรียกใช้ `openclaw doctor --non-interactive` ถ้านี่เป็น Pi แบบ headless ให้ตรวจสอบด้วยว่าเปิดใช้ lingering แล้ว: `sudo loginctl enable-linger "$(whoami)"`
+**บริการไม่เริ่มทำงาน** -- ตรวจสอบล็อกด้วย `journalctl --user -u openclaw-gateway.service --no-pager -n 100` และรัน `openclaw doctor --non-interactive` หากเป็น Pi แบบ headless ให้ตรวจสอบด้วยว่าเปิดใช้ lingering แล้ว: `sudo loginctl enable-linger "$(whoami)"`
 
-**ปัญหาไบนารี ARM** -- ถ้า skill ล้มเหลวพร้อมข้อความ "exec format error" ให้ตรวจสอบว่าไบนารีมี build สำหรับ ARM64 หรือไม่ ตรวจสอบสถาปัตยกรรมด้วย `uname -m` (ควรแสดง `aarch64`)
+**ปัญหาไบนารี ARM** -- หาก skill ล้มเหลวพร้อมข้อความ "exec format error" ให้ตรวจสอบว่าไบนารีมีบิลด์ ARM64 หรือไม่ ตรวจสอบสถาปัตยกรรมด้วย `uname -m` (ควรแสดง `aarch64`)
 
-**WiFi หลุด** -- ปิดการจัดการพลังงาน WiFi: `sudo iwconfig wlan0 power off`
+**WiFi หลุด** -- ปิดการจัดการพลังงานของ WiFi: `sudo iwconfig wlan0 power off`
 
 ## ขั้นตอนถัดไป
 
-- [ช่องทาง](/th/channels) -- เชื่อมต่อ Telegram, WhatsApp, Discord และอื่น ๆ
-- [การกำหนดค่า Gateway](/th/gateway/configuration) -- ตัวเลือก config ทั้งหมด
+- [ช่องทาง](/th/channels) -- เชื่อมต่อ Telegram, WhatsApp, Discord และอื่นๆ
+- [การกำหนดค่า Gateway](/th/gateway/configuration) -- ตัวเลือกการตั้งค่าทั้งหมด
 - [การอัปเดต](/th/install/updating) -- ทำให้ OpenClaw เป็นเวอร์ชันล่าสุดอยู่เสมอ
 
 ## ที่เกี่ยวข้อง

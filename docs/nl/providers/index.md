@@ -2,24 +2,26 @@
 read_when:
     - Je wilt een modelprovider kiezen
     - Je hebt een snel overzicht nodig van ondersteunde LLM-backends
-summary: Modelaanbieders (LLM's) ondersteund door OpenClaw
-title: Providerdirectory
+summary: Modelproviders (LLM's) die door OpenClaw worden ondersteund
+title: Provider-directory
 x-i18n:
-    generated_at: "2026-05-06T09:29:21Z"
+    generated_at: "2026-06-27T18:12:37Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cfc3a15880a5e1881c1a58c60c9ad7e5624350a8db848d03c7cef6ee18c14b81
+    source_hash: a340f6a48f6f1d50116316f9679b009365cd617b3453ebd9b2b31e70f6b94c31
     source_path: providers/index.md
     workflow: 16
 ---
 
-OpenClaw kan veel LLM-providers gebruiken. Kies een provider, authenticeer en stel vervolgens het standaardmodel in als `provider/model`.
+OpenClaw kan veel LLM-providers gebruiken. Kies een provider, verifieer en stel daarna het
+standaardmodel in als `provider/model`.
 
-Op zoek naar docs voor chatkanalen (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/enz.)? Zie [Kanalen](/nl/channels).
+Op zoek naar documentatie voor chatkanalen (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/enz.)? Zie [Kanalen](/nl/channels).
 
-## Snel aan de slag
+## Snelstart
 
-1. Authenticeer bij de provider (meestal via `openclaw onboard`).
+1. Verifieer bij de provider (meestal via `openclaw onboard`).
 2. Stel het standaardmodel in:
 
 ```json5
@@ -28,7 +30,7 @@ Op zoek naar docs voor chatkanalen (WhatsApp/Telegram/Discord/Slack/Mattermost (
 }
 ```
 
-## Provider-docs
+## Providerdocumentatie
 
 - [Alibaba Model Studio](/nl/providers/alibaba)
 - [Amazon Bedrock](/nl/providers/bedrock)
@@ -36,21 +38,23 @@ Op zoek naar docs voor chatkanalen (WhatsApp/Telegram/Discord/Slack/Mattermost (
 - [Anthropic (API + Claude CLI)](/nl/providers/anthropic)
 - [Arcee AI (Trinity-modellen)](/nl/providers/arcee)
 - [Azure Speech](/nl/providers/azure-speech)
-- [BytePlus (internationaal)](/nl/concepts/model-providers#byteplus-international)
+- [BytePlus (Internationaal)](/nl/concepts/model-providers#byteplus-international)
 - [Cerebras](/nl/providers/cerebras)
 - [Chutes](/nl/providers/chutes)
+- [Cohere](/nl/providers/cohere)
 - [Cloudflare AI Gateway](/nl/providers/cloudflare-ai-gateway)
 - [ComfyUI](/nl/providers/comfy)
 - [DeepSeek](/nl/providers/deepseek)
+- [ds4 (lokale DeepSeek V4)](/nl/providers/ds4)
 - [ElevenLabs](/nl/providers/elevenlabs)
 - [fal](/nl/providers/fal)
 - [Fireworks](/nl/providers/fireworks)
 - [GitHub Copilot](/nl/providers/github-copilot)
-- [GLM-modellen](/nl/providers/glm)
+- [GMI Cloud](/nl/providers/gmi)
 - [Google (Gemini)](/nl/providers/google)
 - [Gradium](/nl/providers/gradium)
 - [Groq (LPU-inferentie)](/nl/providers/groq)
-- [Hugging Face (inferentie)](/nl/providers/huggingface)
+- [Hugging Face (Inferentie)](/nl/providers/huggingface)
 - [inferrs (lokale modellen)](/nl/providers/inferrs)
 - [Kilocode](/nl/providers/kilocode)
 - [LiteLLM (uniforme gateway)](/nl/providers/litellm)
@@ -59,14 +63,17 @@ Op zoek naar docs voor chatkanalen (WhatsApp/Telegram/Discord/Slack/Mattermost (
 - [Mistral](/nl/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/nl/providers/moonshot)
 - [NVIDIA](/nl/providers/nvidia)
+- [NovitaAI](/nl/providers/novita)
 - [Ollama (cloud + lokale modellen)](/nl/providers/ollama)
+- [Ollama Cloud](/nl/providers/ollama-cloud)
 - [OpenAI (API + Codex)](/nl/providers/openai)
 - [OpenCode](/nl/providers/opencode)
 - [OpenCode Go](/nl/providers/opencode-go)
 - [OpenRouter](/nl/providers/openrouter)
-- [Perplexity (zoeken op het web)](/nl/providers/perplexity-provider)
+- [Perplexity (webzoekopdracht)](/nl/providers/perplexity-provider)
 - [Qianfan](/nl/providers/qianfan)
 - [Qwen Cloud](/nl/providers/qwen)
+- [Qwen OAuth / Portal](/nl/providers/qwen-oauth)
 - [Runway](/nl/providers/runway)
 - [SenseAudio](/nl/providers/senseaudio)
 - [SGLang (lokale modellen)](/nl/providers/sglang)
@@ -74,14 +81,14 @@ Op zoek naar docs voor chatkanalen (WhatsApp/Telegram/Discord/Slack/Mattermost (
 - [Synthetic](/nl/providers/synthetic)
 - [Tencent Cloud (TokenHub)](/nl/providers/tencent)
 - [Together AI](/nl/providers/together)
-- [Venice (Venice AI, gericht op privacy)](/nl/providers/venice)
+- [Venice (Venice AI, privacygericht)](/nl/providers/venice)
 - [Vercel AI Gateway](/nl/providers/vercel-ai-gateway)
 - [vLLM (lokale modellen)](/nl/providers/vllm)
 - [Volcengine (Doubao)](/nl/providers/volcengine)
 - [Vydra](/nl/providers/vydra)
 - [xAI](/nl/providers/xai)
 - [Xiaomi](/nl/providers/xiaomi)
-- [Z.AI](/nl/providers/zai)
+- [Z.AI (GLM)](/nl/providers/zai)
 
 ## Gedeelde overzichtspagina's
 
@@ -99,8 +106,8 @@ Op zoek naar docs voor chatkanalen (WhatsApp/Telegram/Discord/Slack/Mattermost (
 - [SenseAudio](/nl/providers/senseaudio)
 - [xAI](/nl/providers/xai#speech-to-text)
 
-## Community-tools
+## Communitytools
 
-- [Claude Max API Proxy](/nl/providers/claude-max-api-proxy) - Community-proxy voor Claude-abonnementsreferenties (controleer het Anthropic-beleid/de voorwaarden vóór gebruik)
+- [Claude Max API Proxy](/nl/providers/claude-max-api-proxy) - Communityproxy voor Claude-abonnementsreferenties (controleer het beleid/de voorwaarden van Anthropic vóór gebruik)
 
 Zie [Modelproviders](/nl/concepts/model-providers) voor de volledige providercatalogus (xAI, Groq, Mistral, enz.) en geavanceerde configuratie.

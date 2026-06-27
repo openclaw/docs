@@ -1,14 +1,15 @@
 ---
 read_when:
-    - Você está gerenciando nós emparelhados (câmeras, tela, quadro)
-    - Você precisa aprovar solicitações ou executar comandos node
-summary: Referência da CLI para `openclaw nodes` (status, emparelhamento, invocação, câmera/canvas/tela)
+    - Você está gerenciando nós pareados (câmeras, tela, tela de desenho)
+    - Você precisa aprovar solicitações ou invocar comandos node
+summary: Referência da CLI para `openclaw nodes` (status, pareamento, invocação, câmera/canvas/tela)
 title: Nodes
 x-i18n:
-    generated_at: "2026-05-07T13:14:20Z"
+    generated_at: "2026-06-27T17:20:25Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 681c199462d5f58c3e4346713263a78e7513335f087c713877e3050e21c8e15f
+    source_hash: e752e4a5809e01ee7970204c84d9f1008f146d8a55954f6ed5de527a6a124bc7
     source_path: cli/nodes.md
     workflow: 16
 ---
@@ -19,7 +20,7 @@ Gerencie nós (dispositivos) pareados e invoque capacidades de nós.
 
 Relacionado:
 
-- Visão geral dos nós: [Nós](/pt-BR/nodes)
+- Visão geral de nós: [Nós](/pt-BR/nodes)
 - Câmera: [Nós de câmera](/pt-BR/nodes/camera)
 - Imagens: [Nós de imagem](/pt-BR/nodes/images)
 
@@ -45,19 +46,25 @@ openclaw nodes status --last-connected 24h
 
 `nodes list` imprime tabelas de pendentes/pareados. As linhas pareadas incluem a idade da conexão mais recente (Última conexão).
 Use `--connected` para mostrar apenas nós conectados no momento. Use `--last-connected <duration>` para
-filtrar para nós que se conectaram dentro de uma duração (por exemplo, `24h`, `7d`).
-Use `nodes remove --node <id|name|ip>` para excluir um registro obsoleto de pareamento de nó pertencente ao Gateway.
+filtrar nós que se conectaram dentro de uma duração (por exemplo, `24h`, `7d`).
+Use `nodes remove --node <id|name|ip>` para remover o pareamento de um nó. Para um
+nó respaldado por dispositivo, isso revoga o papel `node` do dispositivo em `devices/paired.json`
+e desconecta suas sessões com papel de nó (um dispositivo com papéis mistos mantém sua linha e
+perde apenas o papel `node`; um dispositivo somente de nó é excluído); também limpa qualquer
+registro de pareamento de nó legado correspondente pertencente ao gateway. `operator.pairing` pode remover
+linhas de nó não operadoras; um chamador com token de dispositivo que revoga seu próprio papel de nó em um
+dispositivo com papéis mistos também precisa de `operator.admin`.
 
-Observação sobre aprovação:
+Observação de aprovação:
 
 - `openclaw nodes pending` precisa apenas do escopo de pareamento.
 - `gateway.nodes.pairing.autoApproveCidrs` pode pular a etapa de pendência apenas para
   pareamento de dispositivo `role: node` explicitamente confiável e de primeira vez. Ele fica desativado por
   padrão e não aprova upgrades.
-- `openclaw nodes approve <requestId>` herda requisitos de escopo extras da
+- `openclaw nodes approve <requestId>` herda requisitos extras de escopo da
   solicitação pendente:
-  - solicitação sem comando: somente pareamento
-  - comandos de nó sem exec: pareamento + escrita
+  - solicitação sem comando: apenas pareamento
+  - comandos de nó não exec: pareamento + escrita
   - `system.run` / `system.run.prepare` / `system.which`: pareamento + admin
 
 ## Invocar
@@ -69,13 +76,13 @@ openclaw nodes invoke --node <id|name|ip> --command <command> --params <json>
 Flags de invocação:
 
 - `--params <json>`: string de objeto JSON (padrão `{}`).
-- `--invoke-timeout <ms>`: tempo limite de invocação do nó (padrão `15000`).
+- `--invoke-timeout <ms>`: timeout de invocação de nó (padrão `15000`).
 - `--idempotency-key <key>`: chave de idempotência opcional.
-- `system.run` e `system.run.prepare` são bloqueados aqui; use a ferramenta `exec` com `host=node` para execução no shell.
+- `system.run` e `system.run.prepare` são bloqueados aqui; use a ferramenta `exec` com `host=node` para execução de shell.
 
-Para execução no shell em um nó, use a ferramenta `exec` com `host=node` em vez de `openclaw nodes run`.
+Para execução de shell em um nó, use a ferramenta `exec` com `host=node` em vez de `openclaw nodes run`.
 A CLI `nodes` agora é focada em capacidades: RPC direto via `nodes invoke`, além de pareamento, câmera,
-tela, localização, Canvas e notificações. Os comandos de Canvas são implementados pelo Plugin experimental Canvas incluído; o core mantém um gancho de compatibilidade para que eles permaneçam em `openclaw nodes canvas`.
+tela, localização, Canvas e notificações. Os comandos Canvas são implementados pelo Plugin Canvas experimental incluído; o core mantém um hook de compatibilidade para que eles permaneçam em `openclaw nodes canvas`.
 
 ## Relacionado
 

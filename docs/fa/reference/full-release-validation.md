@@ -1,192 +1,169 @@
 ---
 read_when:
-    - اجرای اعتبارسنجی کامل انتشار یا اجرای دوبارهٔ آن
-    - مقایسهٔ نمایه‌های اعتبارسنجی انتشار پایدار و کامل
-    - عیب‌یابی شکست‌های مرحلهٔ اعتبارسنجی انتشار
-summary: مراحل اعتبارسنجی کامل انتشار، گردش‌کارهای فرزند، پروفایل‌های انتشار، شناسه‌های اجرای دوباره، و شواهد
+    - اجرای یا اجرای مجدد اعتبارسنجی کامل انتشار
+    - مقایسه پروفایل‌های اعتبارسنجی انتشار پایدار و کامل
+    - اشکال‌زدایی شکست‌های مرحله اعتبارسنجی انتشار
+summary: مراحل اعتبارسنجی انتشار کامل، جریان‌های کاری فرزند، پروفایل‌های انتشار، دستگیره‌های اجرای دوباره، و شواهد
 title: اعتبارسنجی کامل انتشار
 x-i18n:
-    generated_at: "2026-05-11T20:42:49Z"
+    generated_at: "2026-06-27T18:47:25Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3d83d15272e4f7cff82ef791c8dbeb6adc447626ada8ae221d074ee16b2cadd5
+    source_hash: 791930254e3cac7da101d809cfc9b56773225159574d3727189f67cf85bd3fce
     source_path: reference/full-release-validation.md
     workflow: 16
 ---
 
-`Full Release Validation` چتر انتشار است. این تنها نقطه ورود دستی
-برای اثبات پیش از انتشار است، اما بیشتر کار در گردش‌کارهای فرزند انجام می‌شود تا یک
-باکس ناموفق بتواند بدون شروع دوباره کل انتشار، دوباره اجرا شود.
+`Full Release Validation` چتر انتشار است. این نقطهٔ ورود دستی واحد برای اثبات پیش از انتشار است، اما بیشتر کار در گردش‌کارهای فرزند انجام می‌شود تا بتوان یک محیط ناموفق را بدون شروع دوبارهٔ کل انتشار، دوباره اجرا کرد.
 
-آن را از یک ref گردش‌کار مورد اعتماد، معمولا `main`، اجرا کنید و شاخه انتشار،
-تگ، یا SHA کامل کامیت را به‌عنوان `ref` پاس بدهید:
+آن را از یک مرجع گردش‌کار مورد اعتماد، معمولاً `main`، اجرا کنید و شاخهٔ انتشار، برچسب، یا SHA کامل commit را به‌عنوان `ref` پاس دهید:
 
 ```bash
 gh workflow run full-release-validation.yml \
   --ref main \
-  -f ref=release/YYYY.M.D \
+  -f ref=release/YYYY.M.PATCH \
   -f provider=openai \
   -f mode=both \
   -f release_profile=stable
 ```
 
-گردش‌کارهای فرزند از ref گردش‌کار مورد اعتماد برای harness و از ورودی
-`ref` برای نامزد تحت آزمون استفاده می‌کنند. این کار هنگام اعتبارسنجی یک شاخه یا تگ انتشار قدیمی‌تر،
-منطق اعتبارسنجی جدید را در دسترس نگه می‌دارد.
+گردش‌کارهای فرزند از مرجع گردش‌کار مورد اعتماد برای harness و از ورودی `ref` برای نامزد تحت آزمون استفاده می‌کنند. این باعث می‌شود منطق اعتبارسنجی جدید هنگام اعتبارسنجی یک شاخه یا برچسب انتشار قدیمی‌تر هم در دسترس باشد.
 
-به‌صورت پیش‌فرض، `release_profile=stable` مسیرهای مسدودکننده انتشار را اجرا می‌کند و
-soak زنده/Docker جامع را رد می‌کند. برای اضافه کردن مسیرهای soak به اجرای stable،
-`run_release_soak=true` را پاس بدهید. `release_profile=full` همیشه مسیرهای soak را فعال می‌کند تا
-پروفایل مشورتی گسترده هرگز بی‌صدا پوشش را از دست ندهد.
+`release_profile=stable` و `release_profile=full` همیشه soak کامل live/Docker را اجرا می‌کنند. برای گنجاندن همان مسیرهای soak با پروفایل بتا، `run_release_soak=true` را پاس دهید. انتشار پایدار، مانیفست اعتبارسنجی بدون این soak و شواهد مسدودکنندهٔ کارایی محصول را رد می‌کند.
 
-Package Acceptance معمولا tarball نامزد را از `ref` resolve شده می‌سازد،
-از جمله اجراهای SHA کامل که با `pnpm ci:full-release` dispatch شده‌اند. پس از
-انتشار بتا، برای استفاده دوباره از بسته npm منتشرشده در بررسی‌های انتشار، Package Acceptance، cross-OS،
-Docker مسیر انتشار، و Telegram بسته، `release_package_spec=openclaw@YYYY.M.D-beta.N` را پاس بدهید. از `package_acceptance_package_spec`
-فقط زمانی استفاده کنید که Package Acceptance باید عمدا بسته متفاوتی را اثبات کند.
+Package Acceptance معمولاً tarball نامزد را از `ref` حل‌شده می‌سازد، از جمله اجراهای full-SHA که با `pnpm ci:full-release` dispatch شده‌اند. پس از انتشار بتا، `release_package_spec=openclaw@YYYY.M.PATCH-beta.N` را پاس دهید تا بستهٔ npm منتشرشده در بررسی‌های انتشار، Package Acceptance، cross-OS، Docker مسیر انتشار، و package Telegram دوباره استفاده شود. فقط زمانی از `package_acceptance_package_spec` استفاده کنید که Package Acceptance باید عمداً بسته‌ای متفاوت را اثبات کند. مسیر بستهٔ live مربوط به Codex plugin همان وضعیت را دنبال می‌کند: مقدارهای منتشرشدهٔ `release_package_spec` مقدار `codex_plugin_spec=npm:@openclaw/codex@<version>` را مشتق می‌کنند؛ اجراهای SHA/artifact، `extensions/codex` را از ref انتخاب‌شده pack می‌کنند؛ و اپراتورها می‌توانند `codex_plugin_spec` را مستقیماً برای منابع Plugin از نوع `npm:`، `npm-pack:`، یا `git:` تنظیم کنند. این مسیر، تأیید نصب صریح Codex CLI مورد نیاز آن Plugin را اعطا می‌کند، سپس preflight مربوط به Codex CLI و turnهای عامل OpenAI در همان نشست را اجرا می‌کند.
 
 ## مرحله‌های سطح بالا
 
-| مرحله                | جزئیات                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Resolve کردن هدف    | **Job:** `Resolve target ref`<br />**گردش‌کار فرزند:** هیچ‌کدام<br />**اثبات می‌کند:** شاخه انتشار، تگ، یا SHA کامل کامیت را resolve می‌کند و ورودی‌های انتخاب‌شده را ثبت می‌کند.<br />**اجرای دوباره:** اگر این مورد ناموفق شد، umbrella را دوباره اجرا کنید.                                                                                                                                                                                                                               |
-| Vitest و CI عادی | **Job:** `Run normal full CI`<br />**گردش‌کار فرزند:** `CI`<br />**اثبات می‌کند:** گراف CI کامل دستی روی ref هدف، از جمله مسیرهای Linux Node، شاردهای Plugin همراه، قراردادهای کانال، سازگاری Node 22، `check`، `check-additional`، smoke ساخت، بررسی‌های مستندات، Python skills، Windows، macOS، i18n رابط کاربری Control، و Android از طریق umbrella.<br />**اجرای دوباره:** `rerun_group=ci`.                                                  |
-| پیش‌انتشار Plugin    | **Job:** `Run plugin prerelease validation`<br />**گردش‌کار فرزند:** `Plugin Prerelease`<br />**اثبات می‌کند:** بررسی‌های ایستای Plugin مخصوص انتشار، پوشش Plugin عامل‌محور، شاردهای دسته کامل extension، مسیرهای Docker پیش‌انتشار Plugin، و artifact غیرمسدودکننده `plugin-inspector-advisory` برای triage سازگاری.<br />**اجرای دوباره:** `rerun_group=plugin-prerelease`.                                                                          |
-| بررسی‌های انتشار       | **Job:** `Run release/live/Docker/QA validation`<br />**گردش‌کار فرزند:** `OpenClaw Release Checks`<br />**اثبات می‌کند:** smoke نصب، بررسی‌های بسته cross-OS، Package Acceptance، برابری QA Lab، Matrix زنده، و Telegram زنده. با `run_release_soak=true` یا `release_profile=full`، مجموعه‌های جامع زنده/E2E و chunkهای مسیر انتشار Docker را نیز اجرا می‌کند.<br />**اجرای دوباره:** `rerun_group=release-checks` یا یک handle محدودتر release-checks. |
-| artifact بسته     | **Job:** `Prepare release package artifact`<br />**گردش‌کار فرزند:** هیچ‌کدام<br />**اثبات می‌کند:** tarball والد `release-package-under-test` را آن‌قدر زود ایجاد می‌کند که بررسی‌های روبه‌روی بسته که لازم نیست منتظر `OpenClaw Release Checks` بمانند، بتوانند از آن استفاده کنند.<br />**اجرای دوباره:** umbrella را دوباره اجرا کنید یا برای اجرای دوباره بسته منتشرشده، `release_package_spec` را ارائه دهید.                                                                                           |
-| Telegram بسته     | **Job:** `Run package Telegram E2E`<br />**گردش‌کار فرزند:** `NPM Telegram Beta E2E`<br />**اثبات می‌کند:** اثبات بسته Telegram مبتنی بر artifact والد برای `rerun_group=all` با `release_profile=full`، یا اثبات Telegram بسته منتشرشده هنگامی که `release_package_spec` یا `npm_telegram_package_spec` تنظیم شده باشد.<br />**اجرای دوباره:** `rerun_group=npm-telegram` با `release_package_spec` یا `npm_telegram_package_spec`.                           |
-| تاییدکننده umbrella    | **Job:** `Verify full validation`<br />**گردش‌کار فرزند:** هیچ‌کدام<br />**اثبات می‌کند:** نتیجه‌های ثبت‌شده اجرای فرزند را دوباره بررسی می‌کند و جدول‌های کندترین jobها را از گردش‌کارهای فرزند اضافه می‌کند.<br />**اجرای دوباره:** پس از سبز شدن اجرای دوباره یک فرزند ناموفق، فقط همین job را دوباره اجرا کنید.                                                                                                                                                                                    |
+| مرحله | جزئیات |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| حل هدف | **Job:** `Resolve target ref`<br />**گردش‌کار فرزند:** هیچ‌کدام<br />**اثبات می‌کند:** شاخهٔ انتشار، برچسب، یا SHA کامل commit را حل می‌کند و ورودی‌های انتخاب‌شده را ثبت می‌کند.<br />**اجرای دوباره:** اگر این مرحله ناموفق شد، umbrella را دوباره اجرا کنید. |
+| Vitest و CI عادی | **Job:** `Run normal full CI`<br />**گردش‌کار فرزند:** `CI`<br />**اثبات می‌کند:** گراف کامل CI دستی در برابر ref هدف، شامل مسیرهای Linux Node، shardهای Plugin بسته‌بندی‌شده، shardهای قرارداد Plugin و channel، سازگاری Node 22، `check-*`، `check-additional-*`، بررسی‌های smoke آرتیفکت ساخته‌شده، بررسی‌های مستندات، Skills پایتون، Windows، macOS، i18n مربوط به Control UI، و Android از طریق umbrella.<br />**اجرای دوباره:** `rerun_group=ci`. |
+| پیش‌انتشار Plugin | **Job:** `Run plugin prerelease validation`<br />**گردش‌کار فرزند:** `Plugin Prerelease`<br />**اثبات می‌کند:** بررسی‌های ایستای فقط مخصوص انتشار برای Plugin، پوشش agentic Plugin، shardهای کامل دستهٔ extension، مسیرهای Docker پیش‌انتشار Plugin، و یک آرتیفکت غیرمسدودکنندهٔ `plugin-inspector-advisory` برای triage سازگاری.<br />**اجرای دوباره:** `rerun_group=plugin-prerelease`. |
+| بررسی‌های انتشار | **Job:** `Run release/live/Docker/QA validation`<br />**گردش‌کار فرزند:** `OpenClaw Release Checks`<br />**اثبات می‌کند:** smoke نصب، بررسی‌های بستهٔ cross-OS، Package Acceptance، برابری QA Lab، Matrix live، و Telegram live. پروفایل‌های پایدار و کامل همچنین مجموعه‌های کامل live/E2E و chunkهای Docker مسیر انتشار را اجرا می‌کنند؛ بتا می‌تواند با `run_release_soak=true` وارد شود.<br />**اجرای دوباره:** `rerun_group=release-checks` یا یک handle محدودتر برای release-checks. |
+| Package Telegram | **Job:** `Run package Telegram E2E`<br />**گردش‌کار فرزند:** `NPM Telegram Beta E2E`<br />**اثبات می‌کند:** یک Telegram E2E متمرکز برای بستهٔ منتشرشده، زمانی که `release_package_spec` یا `npm_telegram_package_spec` تنظیم شده باشد. اعتبارسنجی کامل نامزد به‌جای آن از Package Acceptance Telegram E2E رسمی استفاده می‌کند.<br />**اجرای دوباره:** `rerun_group=npm-telegram` همراه با `release_package_spec` یا `npm_telegram_package_spec`. |
+| تأییدکنندهٔ umbrella | **Job:** `Verify full validation`<br />**گردش‌کار فرزند:** هیچ‌کدام<br />**اثبات می‌کند:** نتیجه‌های ثبت‌شدهٔ اجرای فرزند را دوباره بررسی می‌کند و جدول‌های کندترین job را از گردش‌کارهای فرزند اضافه می‌کند.<br />**اجرای دوباره:** پس از اجرای دوبارهٔ یک فرزند ناموفق تا سبز شدن، فقط همین job را دوباره اجرا کنید. |
 
-برای `ref=main` و `rerun_group=all`، یک umbrella جدیدتر جایگزین نمونه قدیمی‌تر می‌شود.
-وقتی والد لغو شود، مانیتور آن هر گردش‌کار فرزندی را که قبلا dispatch کرده باشد
-لغو می‌کند. اجراهای اعتبارسنجی شاخه انتشار و تگ، به‌صورت پیش‌فرض یکدیگر را
-لغو نمی‌کنند.
+برای `ref=main` و `rerun_group=all`، یک umbrella جدیدتر جایگزین یک umbrella قدیمی‌تر می‌شود. وقتی والد لغو می‌شود، مانیتور آن هر گردش‌کار فرزندی را که قبلاً dispatch کرده است لغو می‌کند. اجراهای اعتبارسنجی شاخهٔ انتشار و برچسب به‌طور پیش‌فرض یکدیگر را لغو نمی‌کنند.
 
 ## مرحله‌های بررسی انتشار
 
-`OpenClaw Release Checks` بزرگ‌ترین گردش‌کار فرزند است. هدف را یک‌بار resolve می‌کند
-و وقتی مرحله‌های روبه‌روی بسته یا Docker به آن نیاز داشته باشند، یک artifact مشترک
-`release-package-under-test` آماده می‌کند.
+`OpenClaw Release Checks` بزرگ‌ترین گردش‌کار فرزند است. هدف را یک‌بار حل می‌کند و وقتی مرحله‌های مرتبط با بسته یا Docker به آن نیاز داشته باشند، یک آرتیفکت مشترک `release-package-under-test` آماده می‌کند.
 
 | مرحله               | جزئیات                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| هدف انتشار      | **کار:** `Resolve target ref`<br />**گردش کار پشتیبان:** هیچ‌کدام<br />**آزمایش‌ها:** ارجاع انتخاب‌شده، SHA مورد انتظار اختیاری، پروفایل، گروه اجرای مجدد، و فیلتر مجموعه زنده متمرکز.<br />**اجرای مجدد:** `rerun_group=release-checks`.                                                                                                                                                                                                                                                                              |
-| مصنوع بسته    | **کار:** `Prepare release package artifact`<br />**گردش کار پشتیبان:** هیچ‌کدام<br />**آزمایش‌ها:** یک tarball نامزد را بسته‌بندی یا resolve می‌کند و `release-package-under-test` را برای بررسی‌های پایین‌دستی مرتبط با بسته آپلود می‌کند.<br />**اجرای مجدد:** بسته آسیب‌دیده، گروه بین‌سیستمی، یا گروه زنده/E2E.                                                                                                                                                                                                              |
-| دودسنجی نصب       | **کار:** `Run install smoke`<br />**گردش کار پشتیبان:** `Install Smoke`<br />**آزمایش‌ها:** مسیر نصب کامل با استفاده مجدد از تصویر دودسنجی Dockerfile ریشه، نصب بسته QR، دودسنجی‌های Docker ریشه و Gateway، آزمایش‌های Docker نصب‌کننده، دودسنجی ارائه‌دهنده تصویر نصب سراسری Bun، و E2E سریع نصب/حذف نصب Pluginهای همراه.<br />**اجرای مجدد:** `rerun_group=install-smoke`.                                                                                                                                 |
-| بین‌سیستمی            | **کار:** `cross_os_release_checks`<br />**گردش کار پشتیبان:** `OpenClaw Cross-OS Release Checks (Reusable)`<br />**آزمایش‌ها:** مسیرهای تازه و ارتقا روی Linux، Windows و macOS برای ارائه‌دهنده و حالت انتخاب‌شده، با استفاده از tarball نامزد به‌همراه یک بسته مبنا.<br />**اجرای مجدد:** `rerun_group=cross-os`.                                                                                                                                                                                  |
-| E2E مخزن و زنده   | **کار:** `Run repo/live E2E validation`<br />**گردش کار پشتیبان:** `OpenClaw Live And E2E Checks (Reusable)`<br />**آزمایش‌ها:** E2E مخزن، کش زنده، استریم websocket OpenAI، shardهای ارائه‌دهنده زنده بومی و Plugin، و harnessهای مدل/backend/gateway زنده با پشتیبانی Docker که توسط `release_profile` انتخاب می‌شوند.<br />**اجراها:** `run_release_soak=true`، `release_profile=full`، یا `rerun_group=live-e2e` متمرکز.<br />**اجرای مجدد:** `rerun_group=live-e2e`، به‌صورت اختیاری با `live_suite_filter`. |
-| مسیر انتشار Docker | **کار:** `Run Docker release-path validation`<br />**گردش کار پشتیبان:** `OpenClaw Live And E2E Checks (Reusable)`<br />**آزمایش‌ها:** قطعه‌های Docker مسیر انتشار در برابر مصنوع بسته مشترک.<br />**اجراها:** `run_release_soak=true`، `release_profile=full`، یا `rerun_group=live-e2e` متمرکز.<br />**اجرای مجدد:** `rerun_group=live-e2e`.                                                                                                                                                      |
-| پذیرش بسته  | **کار:** `Run package acceptance`<br />**گردش کار پشتیبان:** `Package Acceptance`<br />**آزمایش‌ها:** fixtureهای بسته Plugin آفلاین، به‌روزرسانی Plugin، پذیرش بسته Telegram با mock-OpenAI، و بررسی‌های بازمانده ارتقای منتشرشده در برابر همان tarball. بررسی‌های انتشار مسدودکننده از مبنای پیش‌فرض آخرین نسخه منتشرشده استفاده می‌کنند؛ بررسی‌های soak به هر انتشار پایدار npm در `2026.4.23` یا پس از آن به‌علاوه fixtureهای مسئله گزارش‌شده گسترش می‌یابند.<br />**اجرای مجدد:** `rerun_group=package`.                          |
-| هم‌ارزی QA           | **کار:** `Run QA Lab parity lane` و `Run QA Lab parity report`<br />**گردش کار پشتیبان:** کارهای مستقیم<br />**آزمایش‌ها:** بسته‌های هم‌ارزی عاملی نامزد و مبنا، سپس گزارش هم‌ارزی.<br />**اجرای مجدد:** `rerun_group=qa-parity` یا `rerun_group=qa`.                                                                                                                                                                                                                                          |
-| ماتریس زنده QA      | **کار:** `Run QA Lab live Matrix lane`<br />**گردش کار پشتیبان:** کار مستقیم<br />**آزمایش‌ها:** پروفایل QA ماتریس زنده سریع در محیط `qa-live-shared`.<br />**اجرای مجدد:** `rerun_group=qa-live` یا `rerun_group=qa`.                                                                                                                                                                                                                                                                           |
-| Telegram زنده QA    | **کار:** `Run QA Lab live Telegram lane`<br />**گردش کار پشتیبان:** کار مستقیم<br />**آزمایش‌ها:** QA زنده Telegram با اجاره‌های اعتبارنامه Convex CI.<br />**اجرای مجدد:** `rerun_group=qa-live` یا `rerun_group=qa`.                                                                                                                                                                                                                                                                                       |
-| تاییدکننده انتشار    | **کار:** `Verify release checks`<br />**گردش کار پشتیبان:** هیچ‌کدام<br />**آزمایش‌ها:** کارهای الزامی بررسی انتشار برای گروه اجرای مجدد انتخاب‌شده.<br />**اجرای مجدد:** پس از گذر کارهای فرزند متمرکز، دوباره اجرا کنید.                                                                                                                                                                                                                                                                                                    |
+| هدف انتشار      | **وظیفه:** `Resolve target ref`<br />**گردش‌کار پشتیبان:** هیچ‌کدام<br />**آزمون‌ها:** ref انتخاب‌شده، SHA مورد انتظار اختیاری، پروفایل، گروه اجرای دوباره، و فیلتر مجموعه زنده متمرکز.<br />**اجرای دوباره:** `rerun_group=release-checks`.                                                                                                                                                                                                                                                                              |
+| آرتیفکت بسته    | **وظیفه:** `Prepare release package artifact`<br />**گردش‌کار پشتیبان:** هیچ‌کدام<br />**آزمون‌ها:** یک tarball نامزد را بسته‌بندی یا حل می‌کند و `release-package-under-test` را برای بررسی‌های پایین‌دستیِ روبه‌روی بسته بارگذاری می‌کند.<br />**اجرای دوباره:** گروه بسته، بین‌سیستم‌عاملی، یا زنده/E2E متأثر.                                                                                                                                                                                                              |
+| دودآزمون نصب       | **وظیفه:** `Run install smoke`<br />**گردش‌کار پشتیبان:** `Install Smoke`<br />**آزمون‌ها:** مسیر نصب کامل با استفاده دوباره از تصویر دودآزمون Dockerfile ریشه، نصب بسته QR، دودآزمون‌های Docker ریشه و Gateway، آزمون‌های Docker نصب‌کننده، دودآزمون فراهم‌کننده تصویر با نصب سراسری Bun، و E2E سریع نصب/حذف نصب Plugin همراه.<br />**اجرای دوباره:** `rerun_group=install-smoke`.                                                                                                                                 |
+| بین‌سیستم‌عاملی            | **وظیفه:** `cross_os_release_checks`<br />**گردش‌کار پشتیبان:** `OpenClaw Cross-OS Release Checks (Reusable)`<br />**آزمون‌ها:** مسیرهای تازه و ارتقا روی Linux، Windows و macOS برای فراهم‌کننده و حالت انتخاب‌شده، با استفاده از tarball نامزد به‌همراه یک بسته مبنا.<br />**اجرای دوباره:** `rerun_group=cross-os`.                                                                                                                                                                                  |
+| E2E مخزن و زنده   | **وظیفه:** `Run repo/live E2E validation`<br />**گردش‌کار پشتیبان:** `OpenClaw Live And E2E Checks (Reusable)`<br />**آزمون‌ها:** E2E مخزن، کش زنده، جریان‌سازی websocket OpenAI، شاردهای فراهم‌کننده زنده بومی و Plugin، و هارنس‌های مدل/backend/Gateway زنده مبتنی بر Docker که با `release_profile` انتخاب می‌شوند.<br />**اجراها:** `run_release_soak=true`، `release_profile=full`، یا `rerun_group=live-e2e` متمرکز.<br />**اجرای دوباره:** `rerun_group=live-e2e`، به‌صورت اختیاری با `live_suite_filter`. |
+| مسیر انتشار Docker | **وظیفه:** `Run Docker release-path validation`<br />**گردش‌کار پشتیبان:** `OpenClaw Live And E2E Checks (Reusable)`<br />**آزمون‌ها:** قطعه‌های Docker مسیر انتشار در برابر آرتیفکت بسته مشترک.<br />**اجراها:** `run_release_soak=true`، `release_profile=full`، یا `rerun_group=live-e2e` متمرکز.<br />**اجرای دوباره:** `rerun_group=live-e2e`.                                                                                                                                                      |
+| پذیرش بسته  | **وظیفه:** `Run package acceptance`<br />**گردش‌کار پشتیبان:** `Package Acceptance`<br />**آزمون‌ها:** fixtureهای آفلاین بسته Plugin، به‌روزرسانی Plugin، E2E بسته canonical mock-OpenAI Telegram، و بررسی‌های بازماندن از ارتقای منتشرشده در برابر همان tarball. بررسی‌های مسدودکننده انتشار از آخرین مبنای منتشرشده پیش‌فرض استفاده می‌کنند؛ بررسی‌های soak به هر انتشار پایدار npm در `2026.4.23` یا پس از آن، به‌علاوه fixtureهای issueهای گزارش‌شده، گسترش می‌یابند.<br />**اجرای دوباره:** `rerun_group=package`.                   |
+| هم‌ارزی QA           | **وظیفه:** `Run QA Lab parity lane` و `Run QA Lab parity report`<br />**گردش‌کار پشتیبان:** وظایف مستقیم<br />**آزمون‌ها:** بسته‌های هم‌ارزی agentic نامزد و مبنا، سپس گزارش هم‌ارزی.<br />**اجرای دوباره:** `rerun_group=qa-parity` یا `rerun_group=qa`.                                                                                                                                                                                                                                          |
+| Matrix زنده QA      | **وظیفه:** `Run QA Lab live Matrix lane`<br />**گردش‌کار پشتیبان:** وظیفه مستقیم<br />**آزمون‌ها:** پروفایل QA زنده سریع Matrix در محیط `qa-live-shared`.<br />**اجرای دوباره:** `rerun_group=qa-live` یا `rerun_group=qa`.                                                                                                                                                                                                                                                                           |
+| Telegram زنده QA    | **وظیفه:** `Run QA Lab live Telegram lane`<br />**گردش‌کار پشتیبان:** وظیفه مستقیم<br />**آزمون‌ها:** QA زنده Telegram با leaseهای اعتبارنامه Convex CI.<br />**اجرای دوباره:** `rerun_group=qa-live` یا `rerun_group=qa`.                                                                                                                                                                                                                                                                                       |
+| تأییدکننده انتشار    | **وظیفه:** `Verify release checks`<br />**گردش‌کار پشتیبان:** هیچ‌کدام<br />**آزمون‌ها:** وظایف ضروری بررسی انتشار برای گروه اجرای دوباره انتخاب‌شده.<br />**اجرای دوباره:** پس از موفقیت وظایف فرزند متمرکز، دوباره اجرا کنید.                                                                                                                                                                                                                                                                                                    |
 
 ## قطعه‌های مسیر انتشار Docker
 
 مرحله مسیر انتشار Docker این قطعه‌ها را زمانی اجرا می‌کند که `live_suite_filter`
 خالی باشد:
 
-| قطعه                                                           | پوشش                                                                                          |
-| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `core`                                                          | مسیرهای دودسنجی مسیر انتشار Docker هسته.                                                             |
-| `package-update-openai`                                         | رفتار نصب/به‌روزرسانی بسته OpenAI، نصب درخواستی Codex، و فراخوانی‌های ابزار Chat Completions. |
-| `package-update-anthropic`                                      | رفتار نصب و به‌روزرسانی بسته Anthropic.                                                    |
-| `package-update-core`                                           | رفتار بسته و به‌روزرسانی مستقل از ارائه‌دهنده.                                                     |
-| `plugins-runtime-plugins`                                       | مسیرهای runtime Plugin که رفتار Plugin را تمرین می‌دهند.                                               |
-| `plugins-runtime-services`                                      | مسیرهای runtime Plugin متکی به سرویس و زنده؛ هنگام درخواست شامل OpenWebUI می‌شود.                  |
-| `plugins-runtime-install-a` تا `plugins-runtime-install-h` | دسته‌های نصب/runtime Plugin که برای اعتبارسنجی موازی انتشار تقسیم شده‌اند.                             |
+| قطعه                                                           | پوشش                                                                                                                   |
+| --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `core`                                                          | مسیرهای دودآزمون مسیر انتشار Docker هسته.                                                                                      |
+| `package-update-openai`                                         | رفتار نصب/به‌روزرسانی بسته OpenAI، نصب درخواستی Codex، نوبت‌های زنده Plugin Codex، و فراخوانی‌های ابزار Chat Completions. |
+| `package-update-anthropic`                                      | رفتار نصب و به‌روزرسانی بسته Anthropic.                                                                             |
+| `package-update-core`                                           | رفتار بسته و به‌روزرسانی بی‌طرف نسبت به فراهم‌کننده.                                                                              |
+| `plugins-runtime-plugins`                                       | مسیرهای runtime Plugin که رفتار Plugin را اجرا می‌کنند.                                                                        |
+| `plugins-runtime-services`                                      | مسیرهای runtime Plugin مبتنی بر سرویس و زنده؛ هنگام درخواست شامل OpenWebUI می‌شود.                                           |
+| `plugins-runtime-install-a` تا `plugins-runtime-install-h` | دسته‌های نصب/runtime Plugin که برای اعتبارسنجی موازی انتشار تقسیم شده‌اند.                                                      |
 
-وقتی فقط یک مسیر Docker شکست خورده است، از `docker_lanes=<lane[,lane]>` هدفمند
-روی گردش کار زنده/E2E قابل استفاده مجدد استفاده کنید. مصنوع‌های انتشار شامل فرمان‌های اجرای مجدد
-به‌ازای هر مسیر با ورودی‌های مصنوع بسته و استفاده مجدد از تصویر هستند، در صورت موجود بودن.
+وقتی فقط یک مسیر Docker شکست خورده است، در گردش‌کار قابل‌استفاده‌مجدد زنده/E2E از
+`docker_lanes=<lane[,lane]>` هدفمند استفاده کنید. آرتیفکت‌های انتشار در صورت
+دردسترس‌بودن، فرمان‌های اجرای دوباره مخصوص هر مسیر را با ورودی‌های آرتیفکت بسته
+و استفاده دوباره از تصویر شامل می‌شوند.
 
 ## پروفایل‌های انتشار
 
-`release_profile` عمدتا گستره زنده/ارائه‌دهنده را داخل بررسی‌های انتشار کنترل می‌کند.
-این گزینه CI کامل عادی، پیش‌انتشار Plugin، دودسنجی نصب، پذیرش بسته،
-یا QA Lab را حذف نمی‌کند. برای `stable`، E2E جامع مخزن/زنده و قطعه‌های
-مسیر انتشار Docker پوشش soak هستند و زمانی اجرا می‌شوند که `run_release_soak=true`.
-`full` پوشش soak را فعال می‌کند و همچنین باعث می‌شود اجرای چتری، E2E بسته Telegram
-را در برابر مصنوع بسته انتشار والد اجرا کند، وقتی `rerun_group=all` باشد؛ بنابراین یک نامزد کامل
-پیش از انتشار بی‌صدا آن مسیر بسته Telegram را رد نمی‌کند.
+`release_profile` عمدتاً گستره زنده/فراهم‌کننده را درون بررسی‌های انتشار کنترل می‌کند.
+این گزینه CI کامل عادی، Plugin Prerelease، دودآزمون نصب، پذیرش بسته،
+یا QA Lab را حذف نمی‌کند. پروفایل‌های پایدار و کامل همیشه پوشش جامع E2E مخزن/زنده
+و soak مسیر انتشار Docker را اجرا می‌کنند. پروفایل بتا می‌تواند با
+`run_release_soak=true` آن را فعال کند. Package Acceptance برای هر نامزد کامل،
+E2E بسته canonical Telegram را فراهم می‌کند، بنابراین umbrella آن poller زنده را
+تکرار نمی‌کند.
 
-| پروفایل   | کاربرد مورد نظر                      | پوشش زنده/ارائه‌دهنده شامل‌شده                                                                                                                                                     |
+| پروفایل   | کاربرد موردنظر                      | پوشش زنده/فراهم‌کننده گنجانده‌شده                                                                                                                                                     |
 | --------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `minimum` | سریع‌ترین دودسنجی حیاتی برای انتشار.   | مسیر زنده OpenAI/core، مدل‌های زنده Docker برای OpenAI، هسته Gateway بومی، پروفایل Gateway بومی OpenAI، Plugin بومی OpenAI، و Gateway زنده Docker OpenAI.                     |
-| `stable`  | پروفایل پیش‌فرض تایید انتشار. | `minimum` به‌علاوه دودسنجی Anthropic، Google، MiniMax، backend، harness آزمایش زنده بومی، backend زنده CLI در Docker، اتصال Docker ACP، harness Docker Codex، و یک shard دودسنجی OpenCode Go. |
-| `full`    | جاروب مشورتی گسترده.             | `stable` به‌علاوه ارائه‌دهندگان مشورتی، shardهای زنده Plugin، و shardهای زنده رسانه.                                                                                                        |
+| `minimum` | سریع‌ترین دودآزمون حیاتی برای انتشار.   | مسیر زنده OpenAI/هسته، مدل‌های زنده Docker برای OpenAI، هسته Gateway بومی، پروفایل Gateway بومی OpenAI، Plugin بومی OpenAI، و OpenAI در Gateway زنده Docker.                     |
+| `stable`  | پروفایل پیش‌فرض تأیید انتشار. | `minimum` به‌علاوه دودآزمون Anthropic، Google، MiniMax، backend، هارنس آزمون زنده بومی، backend زنده CLI در Docker، اتصال ACP در Docker، هارنس Codex در Docker، و یک شارد دودآزمون OpenCode Go. |
+| `full`    | پیمایش مشورتی گسترده.             | `stable` به‌علاوه فراهم‌کنندگان مشورتی، شاردهای زنده Plugin، و شاردهای زنده رسانه.                                                                                                        |
 
 ## افزوده‌های فقط کامل
 
-این مجموعه‌ها توسط `stable` رد می‌شوند و توسط `full` شامل می‌شوند:
+این مجموعه‌ها توسط `stable` رد می‌شوند و توسط `full` گنجانده می‌شوند:
 
 | حوزه                             | پوشش فقط کامل                                                                                                          |
 | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | مدل‌های زنده Docker               | OpenCode Go، OpenRouter، xAI، Z.ai، و Fireworks.                                                                          |
-| Gateway زنده Docker              | ارائه‌دهندگان مشورتی تقسیم‌شده به shardهای DeepSeek/Fireworks، OpenCode Go/OpenRouter، و xAI/Z.ai.                              |
-| پروفایل‌های ارائه‌دهنده Gateway بومی | shardهای کامل Anthropic Opus و Sonnet/Haiku، Fireworks، DeepSeek، shardهای کامل مدل OpenCode Go، OpenRouter، xAI، و Z.ai. |
-| shardهای زنده Plugin بومی        | Pluginهای A-K، L-N، O-Z دیگر، Moonshot، و xAI.                                                                             |
-| shardهای زنده رسانه بومی         | گروه‌های صدا، موسیقی Google، موسیقی MiniMax، و ویدئو A-D.                                                                   |
+| Gateway زنده Docker              | فراهم‌کنندگان مشورتی تقسیم‌شده به شاردهای DeepSeek/Fireworks، OpenCode Go/OpenRouter، و xAI/Z.ai.                              |
+| پروفایل‌های فراهم‌کننده Gateway بومی | شاردهای کامل Anthropic Opus و Sonnet/Haiku، Fireworks، DeepSeek، شاردهای کامل مدل OpenCode Go، OpenRouter، xAI، و Z.ai. |
+| شاردهای زنده Plugin بومی        | Pluginهای A-K، L-N، O-Z دیگر، Moonshot، و xAI.                                                                             |
+| شاردهای زنده رسانه بومی         | گروه‌های صوت، موسیقی Google، موسیقی MiniMax، و ویدئو A-D.                                                                   |
 
 `stable` شامل `native-live-src-gateway-profiles-anthropic-smoke` و
-`native-live-src-gateway-profiles-opencode-go-smoke` است؛ `full` به‌جای آن از shardهای
-گسترده‌تر مدل Anthropic و OpenCode Go استفاده می‌کند. اجراهای مجدد متمرکز همچنان می‌توانند از
-دسته‌های تجمیعی `native-live-src-gateway-profiles-anthropic` یا
-`native-live-src-gateway-profiles-opencode-go` استفاده کنند.
+`native-live-src-gateway-profiles-opencode-go-smoke` است؛ `full` به‌جای آن از شاردهای
+گسترده‌تر مدل Anthropic و OpenCode Go استفاده می‌کند. اجرای دوباره متمرکز همچنان می‌تواند از
+handleهای تجمیعی `native-live-src-gateway-profiles-anthropic` یا
+`native-live-src-gateway-profiles-opencode-go` استفاده کند.
 
-## اجراهای مجدد متمرکز
+## اجرای دوباره متمرکز
 
-برای پرهیز از تکرار جعبه‌های انتشار نامرتبط، از `rerun_group` استفاده کنید:
+برای جلوگیری از تکرار باکس‌های انتشار نامرتبط، از `rerun_group` استفاده کنید:
 
 | شناسه              | دامنه                                                                                           |
 | ------------------- | ----------------------------------------------------------------------------------------------- |
-| `all`               | همهٔ مراحل اعتبارسنجی کامل انتشار.                                                             |
-| `ci`                | فقط فرزند CI کامل دستی.                                                                      |
+| `all`               | همه مراحل اعتبارسنجی کامل انتشار.                                                             |
+| `ci`                | فقط فرزند CI کامل دستی.                                                                        |
 | `plugin-prerelease` | فقط فرزند پیش‌انتشار Plugin.                                                                   |
-| `release-checks`    | همهٔ مراحل بررسی‌های انتشار OpenClaw.                                                             |
-| `install-smoke`     | آزمون دود نصب تا بررسی‌های انتشار.                                                           |
-| `cross-os`          | بررسی‌های انتشار میان‌سیستم‌عاملی.                                                                        |
-| `live-e2e`          | اعتبارسنجی E2E مخزن/زنده و مسیر انتشار Docker.                                               |
-| `package`           | پذیرش بسته.                                                                             |
-| `qa`                | هم‌ارزی QA به‌همراه مسیرهای زندهٔ QA.                                                                   |
-| `qa-parity`         | فقط مسیرهای هم‌ارزی QA و گزارش.                                                                |
-| `qa-live`           | فقط Matrix زندهٔ QA و Telegram.                                                               |
-| `npm-telegram`      | E2E Telegram برای بستهٔ منتشرشده؛ به `release_package_spec` یا `npm_telegram_package_spec` نیاز دارد. |
+| `release-checks`    | همه مراحل بررسی‌های انتشار OpenClaw.                                                           |
+| `install-smoke`     | Install Smoke تا بررسی‌های انتشار.                                                           |
+| `cross-os`          | بررسی‌های انتشار میان‌سیستم‌عاملی.                                                            |
+| `live-e2e`          | اعتبارسنجی E2E مخزن/زنده و مسیر انتشار Docker.                                                |
+| `package`           | پذیرش بسته.                                                                                    |
+| `qa`                | برابری QA به‌همراه مسیرهای زنده QA.                                                           |
+| `qa-parity`         | فقط مسیرهای برابری QA و گزارش.                                                                |
+| `qa-live`           | Matrix/Telegram زنده QA به‌همراه مسیرهای دارای گیت Discord، WhatsApp و Slack هنگام فعال بودن. |
+| `npm-telegram`      | E2E Telegram برای بسته منتشرشده؛ به `release_package_spec` یا `npm_telegram_package_spec` نیاز دارد. |
 
-وقتی یک مجموعهٔ زنده شکست خورده است، از `live_suite_filter` همراه با `rerun_group=live-e2e` استفاده کنید.
-شناسه‌های معتبر فیلتر در گردش‌کار زنده/E2E قابل‌استفادهٔ مجدد تعریف شده‌اند، از جمله
-`docker-live-models`، `live-gateway-docker`،
-`live-gateway-anthropic-docker`، `live-gateway-google-docker`،
-`live-gateway-minimax-docker`، `live-gateway-advisory-docker`،
-`live-cli-backend-docker`، `live-acp-bind-docker` و
+وقتی یک مجموعه زنده شکست خورد، از `live_suite_filter` همراه با `rerun_group=live-e2e` استفاده کنید.
+شناسه‌های فیلتر معتبر در گردش‌کار قابل‌استفاده‌مجدد زنده/E2E تعریف شده‌اند، از جمله
+`docker-live-models`, `live-gateway-docker`,
+`live-gateway-anthropic-docker`, `live-gateway-google-docker`,
+`live-gateway-minimax-docker`, `live-gateway-advisory-docker`,
+`live-cli-backend-docker`, `live-acp-bind-docker`, و
 `live-codex-harness-docker`.
 
-شناسهٔ `live-gateway-advisory-docker` یک شناسهٔ اجرای دوبارهٔ تجمیعی برای سه
-شارد ارائه‌دهندهٔ خود است، بنابراین همچنان به همهٔ کارهای مشورتی Gateway در Docker منشعب می‌شود.
+شناسه `live-gateway-advisory-docker` یک شناسه اجرای دوباره تجمیعی برای سه شارد ارائه‌دهنده آن است،
+بنابراین همچنان به همه کارهای Gateway مشورتی Docker منشعب می‌شود.
 
-وقتی یک مسیر میان‌سیستم‌عاملی شکست خورده است، از `cross_os_suite_filter` همراه با `rerun_group=cross-os` استفاده کنید. این فیلتر یک شناسهٔ سیستم‌عامل، یک شناسهٔ مجموعه، یا یک جفت سیستم‌عامل/مجموعه را می‌پذیرد؛
-برای مثال `windows/packaged-upgrade`، `windows` یا `packaged-fresh`. خلاصه‌های میان‌سیستم‌عاملی
-زمان‌بندی‌های هر فاز را برای مسیرهای ارتقای بسته‌بندی‌شده شامل می‌شوند، و فرمان‌های طولانی‌مدت
-خطوط Heartbeat را چاپ می‌کنند تا یک به‌روزرسانی گیرکردهٔ Windows پیش از پایان مهلت کار قابل مشاهده باشد.
+وقتی یک مسیر میان‌سیستم‌عاملی شکست خورد، از `cross_os_suite_filter` همراه با `rerun_group=cross-os` استفاده کنید. این فیلتر یک شناسه سیستم‌عامل، یک شناسه مجموعه، یا یک جفت سیستم‌عامل/مجموعه را می‌پذیرد؛ برای مثال `windows/packaged-upgrade`، `windows` یا `packaged-fresh`. خلاصه‌های میان‌سیستم‌عاملی برای مسیرهای ارتقای بسته‌بندی‌شده زمان‌بندی هر فاز را شامل می‌شوند، و فرمان‌های طولانی‌اجرا خطوط Heartbeat چاپ می‌کنند تا یک به‌روزرسانی گیرکرده Windows پیش از پایان مهلت کار قابل مشاهده باشد.
 
-مسیرهای بررسی انتشار QA مشورتی هستند. شکست فقط مربوط به QA به‌صورت هشدار گزارش می‌شود
-و تأییدکنندهٔ بررسی انتشار را مسدود نمی‌کند؛ وقتی به شواهد تازهٔ QA نیاز دارید،
-`rerun_group=qa`، `qa-parity` یا `qa-live` را دوباره اجرا کنید.
+شکست‌های بررسی انتشار QA اعتبارسنجی عادی انتشار را مسدود می‌کنند. Drift ابزار پویای ضروری OpenClaw در سطح استاندارد نیز تأییدکننده بررسی انتشار را مسدود می‌کند. اجراهای آلفای Tideclaw همچنان می‌توانند مسیرهای بررسی انتشار غیرمرتبط با ایمنی بسته را مشورتی در نظر بگیرند. وقتی `live_suite_filter` به‌طور صریح یک مسیر زنده QA دارای گیت مانند Discord، WhatsApp یا Slack را درخواست می‌کند، متغیر مخزن متناظر `OPENCLAW_RELEASE_QA_*_LIVE_CI_ENABLED` باید فعال باشد؛ در غیر این صورت، دریافت ورودی به‌جای نادیده‌گرفتن بی‌صدای مسیر شکست می‌خورد. وقتی به شواهد تازه QA نیاز دارید، `rerun_group=qa`، `qa-parity` یا `qa-live` را دوباره اجرا کنید.
 
 ## شواهدی که باید نگه دارید
 
-خلاصهٔ `اعتبارسنجی کامل انتشار` را به‌عنوان نمایهٔ سطح انتشار نگه دارید. این خلاصه به
-شناسه‌های اجرای فرزند پیوند می‌دهد و جدول‌های کندترین کارها را شامل می‌شود. برای شکست‌ها، ابتدا
-گردش‌کار فرزند را بررسی کنید، سپس کوچک‌ترین شناسهٔ مطابق بالا را دوباره اجرا کنید.
+خلاصه `Full Release Validation` را به‌عنوان نمایه سطح انتشار نگه دارید. این خلاصه به شناسه‌های اجرای فرزند پیوند می‌دهد و جدول‌های کندترین کارها را شامل می‌شود. برای شکست‌ها، ابتدا گردش‌کار فرزند را بررسی کنید، سپس کوچک‌ترین شناسه منطبق بالا را دوباره اجرا کنید.
 
-مصنوعات مفید:
+آرتیفکت‌های مفید:
 
-- `release-package-under-test` از والد اعتبارسنجی کامل انتشار و `بررسی‌های انتشار OpenClaw`
-- مصنوعات مسیر انتشار Docker زیر `.artifacts/docker-tests/`
-- `package-under-test` پذیرش بسته و مصنوعات پذیرش Docker
-- مصنوعات بررسی انتشار میان‌سیستم‌عاملی برای هر سیستم‌عامل و مجموعه
-- مصنوعات هم‌ارزی QA، Matrix و Telegram
+- `release-package-under-test` از `OpenClaw Release Checks`
+- آرتیفکت‌های مسیر انتشار Docker زیر `.artifacts/docker-tests/`
+- `package-under-test` پذیرش بسته و آرتیفکت‌های پذیرش Docker
+- آرتیفکت‌های بررسی انتشار میان‌سیستم‌عاملی برای هر سیستم‌عامل و مجموعه
+- آرتیفکت‌های برابری QA، Matrix و Telegram
 
 ## فایل‌های گردش‌کار
 

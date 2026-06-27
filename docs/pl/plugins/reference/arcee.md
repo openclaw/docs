@@ -1,25 +1,26 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub przeprowadzasz audyt pluginu arcee
-summary: Dodaje obsługę dostawcy modeli Arcee w OpenClaw.
+    - Instalujesz, konfigurujesz lub audytujesz plugin arcee
+summary: Dodaje obsługę dostawcy modeli Arcee do OpenClaw.
 title: Plugin Arcee
 x-i18n:
-    generated_at: "2026-05-02T20:49:50Z"
+    generated_at: "2026-06-27T17:58:32Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7cff1ab321482d66e4ed6cca64154de57dfc2d5f6fd5ea9221e1126b9278137c
+    source_hash: 9d4880c859c2498ce3708834cdc62a8ff6babb0571672b99d62cc5c2c7299f8e
     source_path: plugins/reference/arcee.md
     workflow: 16
 ---
 
 # Plugin Arcee
 
-Dodaje obsługę dostawcy modeli Arcee do OpenClaw.
+Dodaje do OpenClaw obsługę dostawcy modeli Arcee.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/arcee-provider`
-- Ścieżka instalacji: zawarte w OpenClaw
+- Ścieżka instalacji: npm; ClawHub: `clawhub:@openclaw/arcee-provider`
 
 ## Powierzchnia
 

@@ -1,23 +1,24 @@
 ---
 read_when:
-    - Você quer uma etapa de LLM somente JSON dentro de fluxos de trabalho
-    - Você precisa de saída de modelo de linguagem validada por esquema para automação
-summary: Tarefas de LLM apenas em JSON para fluxos de trabalho (ferramenta de Plugin opcional)
+    - Você quer uma etapa de LLM apenas em JSON dentro dos workflows
+    - Você precisa de saída de LLM validada por esquema para automação
+summary: Tarefas de LLM somente em JSON para fluxos de trabalho (ferramenta de Plugin opcional)
 title: Tarefa de LLM
 x-i18n:
-    generated_at: "2026-05-07T13:25:06Z"
+    generated_at: "2026-06-27T18:16:52Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4f5efe399165e31a7f5966b93c2f83bced4fd96b7f04f5156412fd321bf5f403
+    source_hash: ab83202bd0954a948c933c80de17385eb385573b8e3974dba41ff876f91c3ddb
     source_path: tools/llm-task.md
     workflow: 16
 ---
 
-`llm-task` é uma **ferramenta opcional de Plugin** que executa uma tarefa de LLM somente JSON e
+`llm-task` é uma **ferramenta de Plugin opcional** que executa uma tarefa de LLM somente JSON e
 retorna saída estruturada (opcionalmente validada contra JSON Schema).
 
 Isso é ideal para mecanismos de workflow como Lobster: você pode adicionar uma única etapa de LLM
-sem escrever código personalizado do OpenClaw para cada workflow.
+sem escrever código OpenClaw personalizado para cada workflow.
 
 ## Habilitar o Plugin
 
@@ -43,7 +44,7 @@ sem escrever código personalizado do OpenClaw para cada workflow.
 }
 ```
 
-Use `tools.allow` somente quando quiser o modo de allowlist restritiva.
+Use `tools.allow` somente quando quiser o modo de lista de permissões restritiva.
 
 ## Configuração (opcional)
 
@@ -54,10 +55,10 @@ Use `tools.allow` somente quando quiser o modo de allowlist restritiva.
       "llm-task": {
         "enabled": true,
         "config": {
-          "defaultProvider": "openai-codex",
+          "defaultProvider": "openai",
           "defaultModel": "gpt-5.5",
           "defaultAuthProfileId": "main",
-          "allowedModels": ["openai/gpt-5.4"],
+          "allowedModels": ["openai/gpt-5.5"],
           "maxTokens": 800,
           "timeoutMs": 30000
         }
@@ -67,13 +68,13 @@ Use `tools.allow` somente quando quiser o modo de allowlist restritiva.
 }
 ```
 
-`allowedModels` é uma allowlist de strings `provider/model`. Se definida, qualquer solicitação
-fora da lista será rejeitada.
+`allowedModels` é uma lista de permissões de strings `provider/model`. Se definida, qualquer solicitação
+fora da lista é rejeitada.
 
 ## Parâmetros da ferramenta
 
 - `prompt` (string, obrigatório)
-- `input` (any, opcional)
+- `input` (qualquer, opcional)
 - `schema` (object, JSON Schema opcional)
 - `provider` (string, opcional)
 - `model` (string, opcional)
@@ -94,18 +95,18 @@ Retorna `details.json` contendo o JSON analisado (e valida contra
 
 ### Limitação importante
 
-O exemplo abaixo pressupõe que a **CLI standalone do Lobster** está em execução em um ambiente em que `openclaw.invoke` já tem a URL do gateway e o contexto de autenticação corretos.
+O exemplo abaixo pressupõe que a **CLI standalone do Lobster** está em execução em um ambiente onde `openclaw.invoke` já tem a URL do gateway e o contexto de autenticação corretos.
 
-Para o executor Lobster **embutido** incluído no OpenClaw, esse padrão de CLI aninhada **não é confiável atualmente**:
+Para o executor Lobster **embutido** incluído no OpenClaw, esse padrão de CLI aninhada **não é confiável no momento**:
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{ ... }'
 ```
 
-Até que o Lobster embutido tenha uma ponte compatível para esse fluxo, prefira uma destas opções:
+Até que o Lobster embutido tenha uma ponte compatível para esse fluxo, prefira:
 
-- chamadas diretas da ferramenta `llm-task` fora do Lobster, ou
-- etapas do Lobster que não dependam de chamadas aninhadas de `openclaw.invoke`.
+- chamadas diretas à ferramenta `llm-task` fora do Lobster, ou
+- etapas do Lobster que não dependam de chamadas `openclaw.invoke` aninhadas.
 
 Exemplo da CLI standalone do Lobster:
 
@@ -131,13 +132,13 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 
 ## Observações de segurança
 
-- A ferramenta é **somente JSON** e instrui o modelo a gerar somente JSON (sem
+- A ferramenta é **somente JSON** e instrui o modelo a gerar apenas JSON (sem
   blocos de código, sem comentários).
-- Nenhuma ferramenta é exposta ao modelo nesta execução.
-- Trate a saída como não confiável, a menos que você a valide com `schema`.
-- Coloque aprovações antes de qualquer etapa com efeitos colaterais (enviar, publicar, executar).
+- Nenhuma ferramenta é exposta ao modelo para esta execução.
+- Trate a saída como não confiável, a menos que você valide com `schema`.
+- Coloque aprovações antes de qualquer etapa com efeito colateral (enviar, publicar, executar).
 
-## Relacionados
+## Relacionado
 
 - [Níveis de raciocínio](/pt-BR/tools/thinking)
 - [Subagentes](/pt-BR/tools/subagents)

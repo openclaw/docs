@@ -6,10 +6,11 @@ read_when:
 summary: Канонічна підтримувана й непідтримувана поверхня облікових даних SecretRef
 title: Поверхня облікових даних SecretRef
 x-i18n:
-    generated_at: "2026-05-11T20:56:52Z"
+    generated_at: "2026-06-27T18:18:47Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2778ea781f7b6fc4d579892225f9cf29bfb8f9ece5961554620ca8e82123ceff
+    source_hash: 668ee7e72565194bfe53a397767d060e5fe7743c9bf8bde2597ec3dad2a32431
     source_path: reference/secretref-credential-surface.md
     workflow: 16
 ---
@@ -18,8 +19,8 @@ x-i18n:
 
 Намір області застосування:
 
-- В області застосування: суворо надані користувачем облікові дані, які OpenClaw не створює й не ротирує.
-- Поза областю застосування: облікові дані, створені під час виконання або ротовані, матеріали оновлення OAuth і артефакти, подібні до сесій.
+- В області застосування: строго надані користувачем облікові дані, які OpenClaw не створює і не ротує.
+- Поза областю застосування: облікові дані, створені під час виконання або такі, що ротуються, матеріал оновлення OAuth і артефакти, подібні до сесій.
 
 ## Підтримувані облікові дані
 
@@ -45,11 +46,15 @@ x-i18n:
 - `agents.list[].tts.providers.*.apiKey`
 - `agents.list[].memorySearch.remote.apiKey`
 - `talk.providers.*.apiKey`
+- `talk.realtime.providers.*.apiKey`
 - `messages.tts.providers.*.apiKey`
 - `tools.web.fetch.firecrawl.apiKey`
 - `plugins.entries.acpx.config.mcpServers.*.env.*`
 - `plugins.entries.brave.config.webSearch.apiKey`
+- `plugins.entries.codex.config.appServer.authToken`
+- `plugins.entries.codex.config.appServer.headers.*`
 - `plugins.entries.exa.config.webSearch.apiKey`
+- `plugins.entries.google-meet.config.realtime.providers.*.apiKey`
 - `plugins.entries.google.config.webSearch.apiKey`
 - `plugins.entries.xai.config.webSearch.apiKey`
 - `plugins.entries.moonshot.config.webSearch.apiKey`
@@ -57,10 +62,12 @@ x-i18n:
 - `plugins.entries.firecrawl.config.webSearch.apiKey`
 - `plugins.entries.minimax.config.webSearch.apiKey`
 - `plugins.entries.tavily.config.webSearch.apiKey`
+- `plugins.entries.parallel.config.webSearch.apiKey`
 - `plugins.entries.voice-call.config.realtime.providers.*.apiKey`
 - `plugins.entries.voice-call.config.streaming.providers.*.apiKey`
 - `plugins.entries.voice-call.config.tts.providers.*.apiKey`
 - `plugins.entries.voice-call.config.twilio.authToken`
+- `tools.web.search.*.apiKey`
 - `tools.web.search.apiKey`
 - `gateway.auth.password`
 - `gateway.auth.token`
@@ -73,12 +80,16 @@ x-i18n:
 - `channels.telegram.accounts.*.webhookSecret`
 - `channels.slack.botToken`
 - `channels.slack.appToken`
+- `channels.slack.relay.authToken`
 - `channels.slack.userToken`
 - `channels.slack.signingSecret`
 - `channels.slack.accounts.*.botToken`
 - `channels.slack.accounts.*.appToken`
+- `channels.slack.accounts.*.relay.authToken`
 - `channels.slack.accounts.*.userToken`
 - `channels.slack.accounts.*.signingSecret`
+- `channels.sms.authToken`
+- `channels.sms.accounts.*.authToken`
 - `channels.discord.token`
 - `channels.discord.pluralkit.token`
 - `channels.discord.voice.tts.providers.*.apiKey`
@@ -124,18 +135,18 @@ x-i18n:
 
 Примітки:
 
-- Цілі плану профілю автентифікації потребують `agentId`.
+- Цілі плану auth-profile потребують `agentId`.
 - Записи плану націлюються на `profiles.*.key` / `profiles.*.token` і записують сусідні посилання (`keyRef` / `tokenRef`).
-- Посилання профілю автентифікації включено до розв’язання під час виконання та покриття аудиту.
-- В `openclaw.json` SecretRefs мають використовувати структуровані об’єкти, як-от `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`. Застарілі рядки-маркери `secretref-env:<ENV_VAR>` відхиляються на шляхах облікових даних SecretRef; запустіть `openclaw doctor --fix`, щоб мігрувати дійсні маркери.
-- Захист політики OAuth: `auth.profiles.<id>.mode = "oauth"` не можна поєднувати з вхідними даними SecretRef для цього профілю. Запуск/перезавантаження та розв’язання профілю автентифікації швидко завершуються з помилкою, коли цю політику порушено.
-- Для провайдерів моделей, керованих SecretRef, згенеровані записи `agents/*/agent/models.json` зберігають несекретні маркери (а не розв’язані секретні значення) для поверхонь `apiKey`/заголовків.
-- Збереження маркерів є авторитетним щодо джерела: OpenClaw записує маркери з активного знімка конфігурації джерела (до розв’язання), а не з розв’язаних секретних значень під час виконання.
+- Посилання auth-profile включено до вирішення під час виконання та покриття аудиту.
+- В `openclaw.json` SecretRefs мають використовувати структуровані об'єкти, такі як `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`. Застарілі рядки-маркери `secretref-env:<ENV_VAR>` відхиляються на шляхах облікових даних SecretRef; виконайте `openclaw doctor --fix`, щоб мігрувати чинні маркери.
+- Захист політики OAuth: `auth.profiles.<id>.mode = "oauth"` не можна поєднувати з вхідними даними SecretRef для цього профілю. Запуск/перезавантаження та вирішення auth-profile швидко завершуються помилкою, коли цю політику порушено.
+- Для постачальників моделей, керованих SecretRef, згенеровані записи `agents/*/agent/models.json` зберігають несекретні маркери (а не вирішені секретні значення) для поверхонь `apiKey`/заголовків.
+- Збереження маркерів є авторитетним щодо джерела: OpenClaw записує маркери з активного знімка конфігурації джерела (до вирішення), а не з вирішених секретних значень під час виконання.
 - Для вебпошуку:
-  - У режимі явного провайдера (задано `tools.web.search.provider`) активним є лише ключ вибраного провайдера.
-  - В автоматичному режимі (`tools.web.search.provider` не задано) активним є лише перший ключ провайдера, що розв’язується за пріоритетом.
-  - В автоматичному режимі посилання невибраних провайдерів вважаються неактивними, доки їх не вибрано.
-  - Застарілі шляхи провайдерів `tools.web.search.*` досі розв’язуються протягом вікна сумісності, але канонічною поверхнею SecretRef є `plugins.entries.<plugin>.config.webSearch.*`.
+  - У явному режимі постачальника (коли задано `tools.web.search.provider`) активний лише ключ вибраного постачальника.
+  - В автоматичному режимі (коли `tools.web.search.provider` не задано) активний лише перший ключ постачальника, який вирішується за пріоритетом.
+  - В автоматичному режимі посилання невибраних постачальників вважаються неактивними, доки їх не буде вибрано.
+  - Застарілі шляхи постачальників `tools.web.search.*` усе ще вирішуються протягом вікна сумісності, але канонічною поверхнею SecretRef є `plugins.entries.<plugin>.config.webSearch.*`.
 
 ## Непідтримувані облікові дані
 
@@ -157,9 +168,9 @@ x-i18n:
 
 Обґрунтування:
 
-- Ці облікові дані належать до класів створюваних, ротованих, сесійних або довготривалих OAuth-даних, які не відповідають розв’язанню зовнішнього SecretRef лише для читання.
+- Ці облікові дані належать до класів створюваних, ротованих, пов'язаних із сесією або довготривалих OAuth-даних, які не відповідають read-only зовнішньому вирішенню SecretRef.
 
-## Пов’язане
+## Пов'язане
 
 - [Керування секретами](/uk/gateway/secrets)
 - [Семантика облікових даних автентифікації](/uk/auth-credential-semantics)

@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de openai Plugin
-summary: Voegt ondersteuning voor de modelproviders OpenAI en OpenAI Codex toe aan OpenClaw.
+    - Je installeert, configureert of controleert de openai-Plugin
+summary: Voegt ondersteuning voor OpenAI-modelproviders toe aan OpenClaw.
 title: OpenAI-plugin
 x-i18n:
-    generated_at: "2026-05-02T20:53:51Z"
+    generated_at: "2026-06-27T18:02:53Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6e6dad420e5879697dda03f866b7c0ef15b020b2c06da6b60293d3914d850969
+    source_hash: c8fa47c22cb54090493f3cbacc461344242e078716760289c0dd4fd0ae8c0085
     source_path: plugins/reference/openai.md
     workflow: 16
 ---
 
-# OpenAI Plugin
+# OpenAI-Plugin
 
-Voegt ondersteuning voor OpenAI- en OpenAI Codex-modelproviders toe aan OpenClaw.
+Voegt ondersteuning voor OpenAI-modelprovider toe aan OpenClaw.
 
 ## Distributie
 
@@ -23,7 +24,7 @@ Voegt ondersteuning voor OpenAI- en OpenAI Codex-modelproviders toe aan OpenClaw
 
 ## Oppervlak
 
-providers: openai, openai-codex; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders
+providers: openai; contracten: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders
 
 ## Gerelateerde documentatie
 

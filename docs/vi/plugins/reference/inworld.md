@@ -1,29 +1,30 @@
 ---
 read_when:
-    - Bạn đang cài đặt, cấu hình hoặc đánh giá Plugin inworld
-summary: Chuyển văn bản thành giọng nói dạng phát trực tuyến của Inworld (MP3, OGG_OPUS, PCM cho điện thoại).
+    - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin inworld
+summary: Inworld phát trực tuyến chuyển văn bản thành giọng nói (MP3, OGG_OPUS, PCM điện thoại).
 title: Plugin Inworld
 x-i18n:
-    generated_at: "2026-05-02T20:51:30Z"
+    generated_at: "2026-06-27T17:52:56Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1ad17b02d9c3adb00baf596dbecf5d59f5910688dac76675050e7d0687f09e0c
+    source_hash: 02d912c51460e181e100bc227575cafd1ab3c49494057d2df1e26571000020a8
     source_path: plugins/reference/inworld.md
     workflow: 16
 ---
 
 # Plugin Inworld
 
-Văn bản thành giọng nói phát trực tuyến của Inworld (MP3, OGG_OPUS, PCM điện thoại).
+Chuyển văn bản thành giọng nói dạng phát trực tuyến của Inworld (MP3, OGG_OPUS, PCM điện thoại).
 
 ## Phân phối
 
 - Gói: `@openclaw/inworld-speech`
-- Cách cài đặt: được bao gồm trong OpenClaw
+- Đường dẫn cài đặt: npm; ClawHub: `clawhub:@openclaw/inworld-speech`
 
 ## Giao diện
 
-contracts: speechProviders
+hợp đồng: speechProviders
 
 ## Tài liệu liên quan
 

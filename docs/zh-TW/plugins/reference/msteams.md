@@ -1,29 +1,30 @@
 ---
 read_when:
-    - 你正在安裝、設定或稽核 msteams Plugin
-summary: 新增 Microsoft Teams 頻道介面，用於傳送和接收 OpenClaw 訊息。
-title: Microsoft Teams Plugin
+    - 你正在安裝、設定或稽核 msteams 外掛
+summary: OpenClaw Microsoft Teams 頻道外掛，用於 Bot 對話。
+title: Microsoft Teams 外掛
 x-i18n:
-    generated_at: "2026-05-03T21:41:03Z"
+    generated_at: "2026-06-27T19:44:36Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b1e72dae5dc51a30521bde8520afec7cd743d236df63f440098b72a922bdad9c
+    source_hash: 32353faf19a94c9df5ffc57fbf0ef91391500e0ae317c9626edcbbcf295c697b
     source_path: plugins/reference/msteams.md
     workflow: 16
 ---
 
-# Microsoft Teams Plugin
+# Microsoft Teams 外掛
 
-新增 Microsoft Teams 頻道介面，用於傳送與接收 OpenClaw 訊息。
+用於機器人對話的 OpenClaw Microsoft Teams 頻道外掛。
 
-## 發佈
+## 發佈方式
 
 - 套件：`@openclaw/msteams`
-- 安裝方式：npm；ClawHub
+- 安裝途徑：npm；ClawHub
 
 ## 介面
 
-channels: msteams
+頻道：msteams
 
 ## 相關文件
 

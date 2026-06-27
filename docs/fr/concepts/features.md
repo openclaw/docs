@@ -1,13 +1,14 @@
 ---
 read_when:
-    - Vous voulez obtenir la liste complète de ce qu’OpenClaw prend en charge
-summary: Fonctionnalités d’OpenClaw couvrant les canaux, le routage, les médias et l’UX.
+    - Vous voulez une liste complète de ce que prend en charge OpenClaw
+summary: Capacités d’OpenClaw sur les canaux, le routage, les médias et l’expérience utilisateur.
 title: Fonctionnalités
 x-i18n:
-    generated_at: "2026-05-11T20:30:51Z"
+    generated_at: "2026-06-27T17:23:43Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: eb2e4973ad7f986034e125cd84d9d3f8542ea4821bde28fce2df3fb78c06c34f
+    source_hash: b69cead6fc3c6af91e95f8080d9ca409f24c314cf97f707b67d8fdeb84cf92fa
     source_path: concepts/features.md
     workflow: 16
 ---
@@ -15,23 +16,23 @@ x-i18n:
 ## Points forts
 
 <Columns>
-  <Card title="Canaux" icon="message-square" href="/fr/channels">
-    Discord, iMessage, Signal, Slack, Telegram, WhatsApp, WebChat et plus encore avec un seul Gateway.
+  <Card title="Channels" icon="message-square" href="/fr/channels">
+    Discord, iMessage, Signal, Slack, Telegram, WhatsApp, WebChat, et plus encore avec un seul Gateway.
   </Card>
   <Card title="Plugins" icon="plug" href="/fr/tools/plugin">
-    Les plugins intégrés ajoutent Matrix, Nextcloud Talk, Nostr, Twitch, Zalo et plus encore sans installations séparées dans les versions actuelles normales.
+    Les plugins groupés ajoutent Matrix, Nextcloud Talk, Nostr, Twitch, Zalo, et plus encore sans installations séparées dans les versions actuelles normales.
   </Card>
-  <Card title="Routage" icon="route" href="/fr/concepts/multi-agent">
+  <Card title="Routing" icon="route" href="/fr/concepts/multi-agent">
     Routage multi-agent avec sessions isolées.
   </Card>
-  <Card title="Médias" icon="image" href="/fr/nodes/images">
+  <Card title="Media" icon="image" href="/fr/nodes/images">
     Images, audio, vidéo, documents, et génération d’images/vidéos.
   </Card>
-  <Card title="Applications et UI" icon="monitor" href="/fr/web/control-ui">
-    UI de contrôle web et application compagnon macOS.
+  <Card title="Apps and UI" icon="monitor" href="/fr/platforms">
+    Windows Hub, Web Control UI, application macOS et nœuds mobiles.
   </Card>
-  <Card title="Nœuds mobiles" icon="smartphone" href="/fr/nodes">
-    Nœuds iOS et Android avec appairage, voix/chat, et commandes riches de l’appareil.
+  <Card title="Mobile nodes" icon="smartphone" href="/fr/nodes">
+    Nœuds iOS et Android avec appairage, voix/chat et commandes d’appareil enrichies.
   </Card>
 </Columns>
 
@@ -40,9 +41,9 @@ x-i18n:
 **Canaux :**
 
 - Les canaux intégrés incluent Discord, Google Chat, iMessage, IRC, Signal, Slack, Telegram, WebChat et WhatsApp
-- Les canaux de plugins intégrés incluent Feishu, LINE, Matrix, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Synology Chat, Tlon, Twitch, Zalo et Zalo Personal
-- Les plugins de canaux facultatifs installés séparément incluent Voice Call et des packages tiers comme WeChat
-- Les plugins de canaux tiers peuvent étendre davantage le Gateway, comme WeChat
+- Les canaux de plugins groupés incluent Feishu, LINE, Matrix, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Synology Chat, Tlon, Twitch, Zalo et Zalo Personal
+- Les plugins de canaux optionnels installés séparément incluent Voice Call et des paquets tiers tels que WeChat
+- Les plugins de canaux tiers peuvent étendre davantage le Gateway, par exemple WeChat
 - Prise en charge des discussions de groupe avec activation basée sur les mentions
 - Sécurité des messages privés avec listes d’autorisation et appairage
 
@@ -50,49 +51,49 @@ x-i18n:
 
 - Runtime d’agent intégré avec diffusion en continu des outils
 - Routage multi-agent avec sessions isolées par espace de travail ou expéditeur
-- Sessions : les discussions directes se replient dans `main` partagé ; les groupes sont isolés
-- Diffusion en continu et segmentation pour les longues réponses
+- Sessions : les conversations directes sont regroupées dans `main` ; les groupes sont isolés
+- Diffusion en continu et découpage pour les réponses longues
 
-**Auth et fournisseurs :**
+**Authentification et fournisseurs :**
 
-- Plus de 35 fournisseurs de modèles (Anthropic, OpenAI, Google et plus encore)
-- Auth d’abonnement via OAuth (par ex. OpenAI Codex)
-- Prise en charge des fournisseurs personnalisés et auto-hébergés (vLLM, SGLang, Ollama, et tout endpoint compatible OpenAI ou Anthropic)
+- Plus de 35 fournisseurs de modèles (Anthropic, OpenAI, Google, et plus encore)
+- Authentification par abonnement via OAuth (par ex. OpenAI Codex)
+- Prise en charge des fournisseurs personnalisés et auto-hébergés (vLLM, SGLang, Ollama, et tout point de terminaison compatible OpenAI ou compatible Anthropic)
 
 **Médias :**
 
-- Images, audio, vidéo et documents en entrée et en sortie
-- Surfaces de capacités partagées pour la génération d’images et de vidéos
+- Images, audio, vidéo et documents en entrée comme en sortie
+- Surfaces de capacité partagées pour la génération d’images et la génération de vidéos
 - Transcription des notes vocales
 - Synthèse vocale avec plusieurs fournisseurs
 
 **Applications et interfaces :**
 
 - WebChat et UI de contrôle dans le navigateur
-- Application compagnon dans la barre de menus macOS
+- Application compagnon de barre de menus macOS
 - Nœud iOS avec appairage, Canvas, caméra, enregistrement d’écran, localisation et voix
-- Nœud Android avec appairage, chat, voix, Canvas, caméra et commandes de l’appareil
+- Nœud Android avec appairage, chat, voix, Canvas, caméra et commandes d’appareil
 
 **Outils et automatisation :**
 
-- Automatisation du navigateur, exec, sandboxing
+- Automatisation du navigateur, exécution, sandboxing
 - Recherche web (Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG, Tavily)
 - Tâches Cron et planification Heartbeat
 - Skills, plugins et pipelines de workflow (Lobster)
 
-## Connexe
+## Associés
 
 <CardGroup cols={2}>
-  <Card title="Fonctionnalités expérimentales" href="/fr/concepts/experimental-features" icon="flask">
-    Fonctionnalités facultatives qui n’ont pas encore été livrées dans la surface par défaut.
+  <Card title="Experimental features" href="/fr/concepts/experimental-features" icon="flask">
+    Fonctionnalités opt-in qui n’ont pas encore été livrées sur la surface par défaut.
   </Card>
-  <Card title="Runtime d’agent" href="/fr/concepts/agent" icon="robot">
-    Modèle du runtime d’agent et mode de répartition des exécutions.
+  <Card title="Agent runtime" href="/fr/concepts/agent" icon="robot">
+    Modèle de runtime d’agent et manière dont les exécutions sont distribuées.
   </Card>
-  <Card title="Canaux" href="/fr/channels" icon="message-square">
-    Connectez Telegram, WhatsApp, Discord, Slack et plus encore depuis un seul Gateway.
+  <Card title="Channels" href="/fr/channels" icon="message-square">
+    Connectez Telegram, WhatsApp, Discord, Slack, et plus encore depuis un seul Gateway.
   </Card>
   <Card title="Plugins" href="/fr/tools/plugin" icon="plug">
-    Plugins intégrés et tiers qui étendent OpenClaw.
+    Plugins groupés et tiers qui étendent OpenClaw.
   </Card>
 </CardGroup>

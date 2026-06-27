@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das line-Plugin
-summary: Fügt die LINE-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
+    - Sie installieren, konfigurieren oder prüfen das LINE-Plugin
+summary: OpenClaw LINE-Kanal-Plugin für Chats der LINE Bot API.
 title: LINE-Plugin
 x-i18n:
-    generated_at: "2026-05-03T06:41:50Z"
+    generated_at: "2026-06-27T17:54:39Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 307e6e08345161bc53fe5a04cc9d0a3fabbc9ff01e9ebcae98a39899288ef4d4
+    source_hash: d561055be3fde476a78bf123f4025ca61e670b005d0b2d63e5b54318975c2fd9
     source_path: plugins/reference/line.md
     workflow: 16
 ---
 
 # LINE-Plugin
 
-Fügt die LINE-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
+OpenClaw LINE-Kanal-Plugin für Chats der LINE Bot API.
 
 ## Verteilung
 
@@ -25,6 +26,6 @@ Fügt die LINE-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichte
 
 channels: line
 
-## Zugehörige Dokumentation
+## Verwandte Dokumentation
 
 - [line](/de/channels/line)

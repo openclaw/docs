@@ -1,20 +1,21 @@
 ---
 read_when:
     - Você está instalando, configurando ou auditando o plugin zalo
-summary: Adiciona a interface do canal Zalo para enviar e receber mensagens do OpenClaw.
-title: Plugin Zalo
+summary: Plugin de canal Zalo do OpenClaw para chats de bot e Webhook.
+title: Plugin do Zalo
 x-i18n:
-    generated_at: "2026-05-03T05:54:04Z"
+    generated_at: "2026-06-27T17:57:06Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2914ba7fec4427c6a8a322ea1d9308d9e37a81b5ff51a89b06227e5ecfcef6f2
+    source_hash: ff9da1e1591eaad36db74a27f817dd9dac8791af2d5030fcd3419ee50d2ed4aa
     source_path: plugins/reference/zalo.md
     workflow: 16
 ---
 
-# Plugin Zalo
+# Plugin do Zalo
 
-Adiciona a superfície de canal do Zalo para enviar e receber mensagens do OpenClaw.
+Plugin de canal Zalo do OpenClaw para conversas de bot e Webhook.
 
 ## Distribuição
 
@@ -23,7 +24,7 @@ Adiciona a superfície de canal do Zalo para enviar e receber mensagens do OpenC
 
 ## Superfície
 
-channels: zalo
+canais: zalo
 
 ## Documentação relacionada
 

@@ -5,10 +5,11 @@ read_when:
 summary: Penyiapan Together AI (autentikasi + pemilihan model)
 title: Together AI
 x-i18n:
-    generated_at: "2026-04-30T10:09:15Z"
+    generated_at: "2026-06-27T18:07:43Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a7713c0b1e64014bbdd87a120de0a950b583afd1481338f2c6cccfb2b7da76e7
+    source_hash: a1f803ae88828a775d93dcf8b0b62e70b1dbd0cf963639121e2995fabfcd280b
     source_path: providers/together.md
     workflow: 16
 ---
@@ -16,12 +17,12 @@ x-i18n:
 [Together AI](https://together.ai) menyediakan akses ke model open-source terkemuka
 termasuk Llama, DeepSeek, Kimi, dan lainnya melalui API terpadu.
 
-| Properti      | Nilai                         |
-| ------------- | ----------------------------- |
-| Penyedia      | `together`                    |
-| Autentikasi   | `TOGETHER_API_KEY`            |
-| API           | Kompatibel dengan OpenAI      |
-| URL dasar     | `https://api.together.xyz/v1` |
+| Properti  | Nilai                         |
+| --------- | ----------------------------- |
+| Penyedia  | `together`                    |
+| Autentikasi | `TOGETHER_API_KEY`          |
+| API       | Kompatibel dengan OpenAI      |
+| URL Dasar | `https://api.together.xyz/v1` |
 
 ## Memulai
 
@@ -40,7 +41,9 @@ termasuk Llama, DeepSeek, Kimi, dan lainnya melalui API terpadu.
     {
       agents: {
         defaults: {
-          model: { primary: "together/moonshotai/Kimi-K2.5" },
+          model: {
+            primary: "together/meta-llama/Llama-3.3-70B-Instruct-Turbo",
+          },
         },
       },
     }
@@ -48,7 +51,7 @@ termasuk Llama, DeepSeek, Kimi, dan lainnya melalui API terpadu.
   </Step>
 </Steps>
 
-### Contoh noninteraktif
+### Contoh non-interaktif
 
 ```bash
 openclaw onboard --non-interactive \
@@ -58,35 +61,32 @@ openclaw onboard --non-interactive \
 ```
 
 <Note>
-Preset onboarding menetapkan `together/moonshotai/Kimi-K2.5` sebagai model
-default.
+Preset onboarding menetapkan
+`together/meta-llama/Llama-3.3-70B-Instruct-Turbo` sebagai model default.
 </Note>
 
 ## Katalog bawaan
 
 OpenClaw menyertakan katalog Together bawaan ini:
 
-| Ref model                                                   | Nama                                   | Input       | Konteks    | Catatan                                   |
-| ------------------------------------------------------------ | -------------------------------------- | ----------- | ---------- | ----------------------------------------- |
-| `together/moonshotai/Kimi-K2.5`                              | Kimi K2.5                              | teks, gambar | 262,144    | Model default; penalaran diaktifkan       |
-| `together/zai-org/GLM-4.7`                                   | GLM 4.7 Fp8                            | teks        | 202,752    | Model teks serbaguna                      |
-| `together/meta-llama/Llama-3.3-70B-Instruct-Turbo`           | Llama 3.3 70B Instruct Turbo           | teks        | 131,072    | Model instruksi cepat                     |
-| `together/meta-llama/Llama-4-Scout-17B-16E-Instruct`         | Llama 4 Scout 17B 16E Instruct         | teks, gambar | 10,000,000 | Multimodal                                |
-| `together/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8` | Llama 4 Maverick 17B 128E Instruct FP8 | teks, gambar | 20,000,000 | Multimodal                                |
-| `together/deepseek-ai/DeepSeek-V3.1`                         | DeepSeek V3.1                          | teks        | 131,072    | Model teks umum                           |
-| `together/deepseek-ai/DeepSeek-R1`                           | DeepSeek R1                            | teks        | 131,072    | Model penalaran                           |
-| `together/moonshotai/Kimi-K2-Instruct-0905`                  | Kimi K2-Instruct 0905                  | teks        | 262,144    | Model teks Kimi sekunder                  |
+| Ref model                                          | Nama                         | Input       | Konteks | Catatan              |
+| -------------------------------------------------- | ---------------------------- | ----------- | ------- | -------------------- |
+| `together/meta-llama/Llama-3.3-70B-Instruct-Turbo` | Llama 3.3 70B Instruct Turbo | teks        | 131,072 | Model default        |
+| `together/moonshotai/Kimi-K2.6`                    | Kimi K2.6 FP4                | teks, gambar | 262,144 | Model penalaran Kimi |
+| `together/deepseek-ai/DeepSeek-V4-Pro`             | DeepSeek V4 Pro              | teks        | 512,000 | Model teks penalaran |
+| `together/Qwen/Qwen2.5-7B-Instruct-Turbo`          | Qwen2.5 7B Instruct Turbo    | teks        | 32,768  | Model teks cepat     |
+| `together/zai-org/GLM-5.1`                         | GLM 5.1 FP4                  | teks        | 202,752 | Model teks penalaran |
 
 ## Pembuatan video
 
-Plugin `together` bawaan juga mendaftarkan pembuatan video melalui alat
-bersama `video_generate`.
+Plugin `together` bawaan juga mendaftarkan pembuatan video melalui
+alat bersama `video_generate`.
 
-| Properti             | Nilai                                 |
-| -------------------- | ------------------------------------- |
-| Model video default  | `together/Wan-AI/Wan2.2-T2V-A14B`     |
-| Mode                 | teks-ke-video, referensi gambar tunggal |
-| Parameter yang didukung | `aspectRatio`, `resolution`           |
+| Properti              | Nilai                                                                    |
+| --------------------- | ------------------------------------------------------------------------ |
+| Model video default   | `together/Wan-AI/Wan2.2-T2V-A14B`                                        |
+| Mode                  | teks-ke-video; referensi satu gambar hanya dengan `Wan-AI/Wan2.2-I2V-A14B` |
+| Parameter yang didukung | `aspectRatio`, `resolution`                                            |
 
 Untuk menggunakan Together sebagai penyedia video default:
 
@@ -114,17 +114,17 @@ pemilihan penyedia, dan perilaku failover.
     `~/.openclaw/.env` atau melalui `env.shellEnv`).
 
     <Warning>
-    Kunci yang hanya diatur di shell interaktif Anda tidak terlihat oleh proses
-    gateway yang dikelola daemon. Gunakan konfigurasi `~/.openclaw/.env` atau
-    `env.shellEnv` agar tersedia secara persisten.
+    Kunci yang hanya ditetapkan di shell interaktif Anda tidak terlihat oleh
+    proses gateway yang dikelola daemon. Gunakan konfigurasi `~/.openclaw/.env`
+    atau `env.shellEnv` untuk ketersediaan persisten.
     </Warning>
 
   </Accordion>
 
   <Accordion title="Pemecahan masalah">
     - Verifikasi kunci Anda berfungsi: `openclaw models list --provider together`
-    - Jika model tidak muncul, pastikan kunci API diatur di lingkungan yang benar
-      untuk proses Gateway Anda.
+    - Jika model tidak muncul, pastikan kunci API ditetapkan di lingkungan yang
+      benar untuk proses Gateway Anda.
     - Ref model menggunakan bentuk `together/<model-id>`.
 
   </Accordion>
@@ -143,6 +143,6 @@ pemilihan penyedia, dan perilaku failover.
     Skema konfigurasi lengkap termasuk pengaturan penyedia.
   </Card>
   <Card title="Together AI" href="https://together.ai" icon="arrow-up-right-from-square">
-    Dasbor Together AI, dokumentasi API, dan harga.
+    Dasbor Together AI, dokumen API, dan harga.
   </Card>
 </CardGroup>

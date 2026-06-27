@@ -1,20 +1,21 @@
 ---
 read_when:
-    - يجب تثبيت Node.js قبل تثبيت OpenClaw
-    - ثبّت OpenClaw ولكن `openclaw` يظهر كأمر غير موجود
-    - يفشل npm install -g بسبب مشكلات الأذونات أو PATH
-summary: تثبيت Node.js وتكوينه لـ OpenClaw - متطلبات الإصدار، وخيارات التثبيت، واستكشاف مشكلات PATH وإصلاحها
+    - تحتاج إلى تثبيت Node.js قبل تثبيت OpenClaw
+    - ثبّتَّ OpenClaw ولكن الأمر `openclaw` غير موجود
+    - يفشل `npm install -g` بسبب مشكلات في الأذونات أو PATH
+summary: تثبيت Node.js وتهيئته لـ OpenClaw - متطلبات الإصدار وخيارات التثبيت واستكشاف مشكلات PATH وإصلاحها
 title: Node.js
 x-i18n:
-    generated_at: "2026-05-07T13:23:43Z"
+    generated_at: "2026-06-27T17:53:04Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: de8ef8d00c8996741187000f55d07d15a2d09e89b6deb99cf687b6b9128ad266
+    source_hash: 90a2461458fd9995df264753259a3297b8aa316f9e4efd8290e527cbb46fc4e3
     source_path: install/node.md
     workflow: 16
 ---
 
-يتطلب OpenClaw **Node 22.16 أو أحدث**. **Node 24 هو وقت التشغيل الافتراضي والموصى به** للتثبيتات وCI وسير عمل الإصدارات. يظل Node 22 مدعومًا عبر خط LTS النشط. سيكتشف [نص التثبيت](/ar/install#alternative-install-methods) Node ويثبته تلقائيًا - هذه الصفحة مخصصة للحالات التي تريد فيها إعداد Node بنفسك والتأكد من توصيل كل شيء بشكل صحيح (الإصدارات، PATH، التثبيتات العامة).
+يتطلب OpenClaw **Node 22.19 أو أحدث**. **Node 24 هو وقت التشغيل الافتراضي والموصى به** لعمليات التثبيت وCI وسير عمل الإصدارات. يظل Node 22 مدعومًا عبر مسار LTS النشط. سيكتشف [سكريبت التثبيت](/ar/install#alternative-install-methods) Node ويثبته تلقائيًا - هذه الصفحة مخصصة عندما تريد إعداد Node بنفسك والتأكد من أن كل شيء موصول بشكل صحيح (الإصدارات، PATH، التثبيتات العامة).
 
 ## تحقق من إصدارك
 
@@ -22,7 +23,7 @@ x-i18n:
 node -v
 ```
 
-إذا طبع هذا الأمر `v24.x.x` أو أعلى، فأنت تستخدم الإعداد الافتراضي الموصى به. إذا طبع `v22.16.x` أو أعلى، فأنت على مسار Node 22 LTS المدعوم، لكننا لا نزال نوصي بالترقية إلى Node 24 عندما يكون ذلك مناسبًا. إذا لم يكن Node مثبتًا أو كان الإصدار قديمًا جدًا، فاختر إحدى طرق التثبيت أدناه.
+إذا طبع هذا `v24.x.x` أو أعلى، فأنت تستخدم الافتراضي الموصى به. إذا طبع `v22.19.x` أو أعلى، فأنت تستخدم مسار Node 22 LTS المدعوم، لكننا لا نزال نوصي بالترقية إلى Node 24 عندما يكون ذلك مناسبًا. إذا لم يكن Node مثبتًا أو كان الإصدار قديمًا جدًا، فاختر طريقة تثبيت أدناه.
 
 ## تثبيت Node
 
@@ -34,7 +35,7 @@ node -v
     brew install node
     ```
 
-    أو نزّل مثبت macOS من [nodejs.org](https://nodejs.org/).
+    أو نزّل مثبّت macOS من [nodejs.org](https://nodejs.org/).
 
   </Tab>
   <Tab title="Linux">
@@ -67,7 +68,7 @@ node -v
     choco install nodejs-lts
     ```
 
-    أو نزّل مثبت Windows من [nodejs.org](https://nodejs.org/).
+    أو نزّل مثبّت Windows من [nodejs.org](https://nodejs.org/).
 
   </Tab>
 </Tabs>
@@ -108,7 +109,7 @@ fnm use 24
     echo "$PATH"
     ```
 
-    ابحث عن `<npm-prefix>/bin` (macOS/Linux) أو `<npm-prefix>` (Windows) في الناتج.
+    ابحث عن `<npm-prefix>/bin` (macOS/Linux) أو `<npm-prefix>` (Windows) في المخرجات.
 
   </Step>
   <Step title="Add it to your shell startup file">
@@ -123,16 +124,16 @@ fnm use 24
         ثم افتح طرفية جديدة (أو شغّل `rehash` في zsh / `hash -r` في bash).
       </Tab>
       <Tab title="Windows">
-        أضف ناتج `npm prefix -g` إلى PATH الخاص بالنظام عبر Settings → System → Environment Variables.
+        أضف مخرجات `npm prefix -g` إلى PATH النظام عبر Settings → System → Environment Variables.
       </Tab>
     </Tabs>
 
   </Step>
 </Steps>
 
-### أخطاء الأذونات في `npm install -g` (Linux)
+### أخطاء الأذونات عند `npm install -g` (Linux)
 
-إذا رأيت أخطاء `EACCES`، فبدّل البادئة العامة لـ npm إلى دليل يمكن للمستخدم الكتابة فيه:
+إذا رأيت أخطاء `EACCES`، فبدّل البادئة العامة لـ npm إلى دليل قابل للكتابة من قبل المستخدم:
 
 ```bash
 mkdir -p "$HOME/.npm-global"

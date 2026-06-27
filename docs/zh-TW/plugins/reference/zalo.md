@@ -1,29 +1,30 @@
 ---
 read_when:
-    - 你正在安裝、設定或稽核 zalo Plugin
-summary: 新增 Zalo 頻道介面，用於傳送與接收 OpenClaw 訊息。
-title: Zalo Plugin
+    - 你正在安裝、設定或稽核 Zalo 外掛
+summary: OpenClaw Zalo 頻道外掛，適用於機器人與網路鉤子聊天。
+title: Zalo 外掛
 x-i18n:
-    generated_at: "2026-05-03T21:41:43Z"
+    generated_at: "2026-06-27T19:47:29Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2914ba7fec4427c6a8a322ea1d9308d9e37a81b5ff51a89b06227e5ecfcef6f2
+    source_hash: ff9da1e1591eaad36db74a27f817dd9dac8791af2d5030fcd3419ee50d2ed4aa
     source_path: plugins/reference/zalo.md
     workflow: 16
 ---
 
-# Zalo Plugin
+# Zalo 外掛
 
-新增 Zalo channel 介面，用於傳送和接收 OpenClaw 訊息。
+OpenClaw Zalo 頻道外掛，適用於機器人與網路鉤子聊天。
 
-## 發佈
+## 發行
 
 - 套件：`@openclaw/zalo`
 - 安裝路徑：npm；ClawHub
 
 ## 介面
 
-channel：zalo
+channels: zalo
 
 ## 相關文件
 

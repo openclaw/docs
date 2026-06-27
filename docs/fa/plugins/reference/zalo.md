@@ -1,20 +1,21 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin مربوط به zalo هستید
-summary: سطح کانال Zalo را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
+    - در حال نصب، پیکربندی یا ممیزی افزونهٔ zalo هستید
+summary: Plugin کانال Zalo در OpenClaw برای گفت‌وگوهای ربات و Webhook.
 title: Plugin Zalo
 x-i18n:
-    generated_at: "2026-05-03T11:43:54Z"
+    generated_at: "2026-06-27T18:30:35Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2914ba7fec4427c6a8a322ea1d9308d9e37a81b5ff51a89b06227e5ecfcef6f2
+    source_hash: ff9da1e1591eaad36db74a27f817dd9dac8791af2d5030fcd3419ee50d2ed4aa
     source_path: plugins/reference/zalo.md
     workflow: 16
 ---
 
-# Plugin زالو
+# Plugin Zalo
 
-سطح کانال زالو را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
+Plugin کانال Zalo برای OpenClaw جهت چت‌های ربات و Webhook.
 
 ## توزیع
 
@@ -23,7 +24,7 @@ x-i18n:
 
 ## سطح
 
-کانال‌ها: zalo
+channels: zalo
 
 ## مستندات مرتبط
 

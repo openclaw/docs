@@ -1,46 +1,55 @@
 ---
 read_when:
-    - Anda ingin menggunakan subscription Claude Max dengan alat yang kompatibel dengan OpenAI
+    - Anda ingin menggunakan langganan Claude Max dengan alat yang kompatibel dengan OpenAI
     - Anda menginginkan server API lokal yang membungkus Claude Code CLI
-    - Anda ingin mengevaluasi akses Anthropic berbasis subscription vs berbasis API key
-summary: Proxy komunitas untuk mengekspos kredensial subscription Claude sebagai endpoint yang kompatibel dengan OpenAI
-title: Proxy API Claude Max
+    - Anda ingin mengevaluasi akses Anthropic berbasis langganan dibandingkan berbasis kunci API
+summary: Proksi komunitas untuk mengekspos kredensial langganan Claude sebagai endpoint yang kompatibel dengan OpenAI
+title: Proksi API Claude Max
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T09:22:29Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: 06c685c2f42f462a319ef404e4980f769e00654afb9637d873b98144e6a41c87
-  source_path: providers/claude-max-api-proxy.md
-  workflow: 15
+    generated_at: "2026-06-27T18:03:17Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 24bd2b4b56e4b8829e67f248d0e0a6bad53ccbd9ce98ee288bfa4de93508ef27
+    source_path: providers/claude-max-api-proxy.md
+    workflow: 16
 ---
 
-**claude-max-api-proxy** adalah alat komunitas yang mengekspos subscription Claude Max/Pro Anda sebagai endpoint API yang kompatibel dengan OpenAI. Ini memungkinkan Anda menggunakan subscription Anda dengan alat apa pun yang mendukung format API OpenAI.
+**claude-max-api-proxy** adalah alat komunitas yang mengekspos langganan Claude Max/Pro Anda sebagai endpoint API yang kompatibel dengan OpenAI. Ini memungkinkan Anda menggunakan langganan dengan alat apa pun yang mendukung format OpenAI API.
 
 <Warning>
-Jalur ini hanya kompatibilitas teknis. Anthropic pernah memblokir sebagian penggunaan subscription
-di luar Claude Code. Anda harus memutuskan sendiri apakah ingin menggunakannya dan memverifikasi ketentuan Anthropic saat ini sebelum mengandalkannya.
+Jalur ini hanya untuk kompatibilitas teknis. Anthropic pernah memblokir sebagian penggunaan langganan
+di luar Claude Code sebelumnya. Anda harus memutuskan sendiri apakah akan menggunakannya
+dan memverifikasi aturan penagihan Anthropic saat ini sebelum mengandalkannya.
+
+Dokumentasi dukungan Anthropic saat ini menyatakan bahwa `claude -p` adalah penggunaan Agent SDK/programatik.
+Mulai 15 Juni 2026, penggunaan `claude -p` pada paket langganan mengambil dari kredit Agent SDK
+bulanan terpisah terlebih dahulu, lalu dari kredit penggunaan dengan tarif API standar jika
+kredit penggunaan diaktifkan.
 </Warning>
 
-## Mengapa menggunakannya?
+## Mengapa menggunakan ini?
 
-| Pendekatan              | Biaya                                                | Paling cocok untuk                         |
-| ----------------------- | ---------------------------------------------------- | ------------------------------------------ |
-| API Anthropic           | Bayar per token (~$15/M input, $75/M output untuk Opus) | Aplikasi produksi, volume tinggi        |
-| Subscription Claude Max | $200/bulan flat                                      | Penggunaan personal, pengembangan, penggunaan tak terbatas |
+| Pendekatan               | Jalur biaya                                           | Paling cocok untuk                                  |
+| ------------------------ | ----------------------------------------------------- | --------------------------------------------------- |
+| Anthropic API            | Bayar per token melalui Claude Console atau cloud     | Aplikasi produksi, otomatisasi bersama, volume      |
+| Proxy langganan Claude   | Aturan paket dan kredit Claude Code / `claude -p`     | Eksperimen pribadi dengan alat yang kompatibel      |
 
-Jika Anda memiliki subscription Claude Max dan ingin menggunakannya dengan alat yang kompatibel dengan OpenAI, proxy ini dapat mengurangi biaya untuk beberapa alur kerja. API key tetap merupakan jalur kebijakan yang lebih jelas untuk penggunaan produksi.
+Jika Anda memiliki langganan Claude Max atau Pro dan ingin menggunakannya dengan
+alat yang kompatibel dengan OpenAI, proxy ini mungkin cocok untuk sebagian alur kerja pribadi. Ini bukan
+jalur tarif tetap tanpa batas. API key tetap menjadi jalur kebijakan dan penagihan yang lebih jelas untuk
+penggunaan produksi.
 
 ## Cara kerjanya
 
 ```
-Aplikasi Anda → claude-max-api-proxy → Claude Code CLI → Anthropic (via subscription)
-     (format OpenAI)                (mengonversi format)    (menggunakan login Anda)
+Your App → claude-max-api-proxy → Claude Code CLI / claude -p → Anthropic
+     (OpenAI format)              (converts format)          (uses your login)
 ```
 
-Proxy ini:
+Proxy:
 
-1. Menerima permintaan format OpenAI di `http://localhost:3456/v1/chat/completions`
+1. Menerima permintaan berformat OpenAI di `http://localhost:3456/v1/chat/completions`
 2. Mengonversinya menjadi perintah Claude Code CLI
 3. Mengembalikan respons dalam format OpenAI (streaming didukung)
 
@@ -48,12 +57,12 @@ Proxy ini:
 
 <Steps>
   <Step title="Instal proxy">
-    Memerlukan Node.js 20+ dan Claude Code CLI.
+    Memerlukan Node.js 22+ dan Claude Code CLI.
 
     ```bash
     npm install -g claude-max-api-proxy
 
-    # Verifikasi Claude CLI sudah diautentikasi
+    # Verify Claude CLI is authenticated
     claude --version
     ```
 
@@ -61,15 +70,15 @@ Proxy ini:
   <Step title="Mulai server">
     ```bash
     claude-max-api
-    # Server berjalan di http://localhost:3456
+    # Server runs at http://localhost:3456
     ```
   </Step>
   <Step title="Uji proxy">
     ```bash
-    # Pemeriksaan kesehatan
+    # Health check
     curl http://localhost:3456/health
 
-    # Daftar model
+    # List models
     curl http://localhost:3456/v1/models
 
     # Chat completion
@@ -83,7 +92,7 @@ Proxy ini:
 
   </Step>
   <Step title="Konfigurasikan OpenClaw">
-    Arahkan OpenClaw ke proxy sebagai endpoint kustom yang kompatibel dengan OpenAI:
+    Arahkan OpenClaw ke proxy sebagai endpoint khusus yang kompatibel dengan OpenAI:
 
     ```json5
     {
@@ -104,26 +113,28 @@ Proxy ini:
 
 ## Katalog bawaan
 
-| ID Model          | Dipetakan ke     |
-| ----------------- | ---------------- |
-| `claude-opus-4`   | Claude Opus 4    |
-| `claude-sonnet-4` | Claude Sonnet 4  |
-| `claude-haiku-4`  | Claude Haiku 4   |
+| ID Model          | Dipetakan Ke    |
+| ----------------- | --------------- |
+| `claude-opus-4`   | Claude Opus 4   |
+| `claude-sonnet-4` | Claude Sonnet 4 |
+| `claude-haiku-4`  | Claude Haiku 4  |
 
 ## Konfigurasi lanjutan
 
 <AccordionGroup>
-  <Accordion title="Catatan gaya proxy yang kompatibel dengan OpenAI">
-    Jalur ini menggunakan rute gaya proxy yang kompatibel dengan OpenAI yang sama seperti backend kustom `/v1` lainnya:
+  <Accordion title="Catatan kompatibel dengan OpenAI bergaya proxy">
+    Jalur ini menggunakan rute kompatibel dengan OpenAI bergaya proxy yang sama seperti backend
+    `/v1` khusus lainnya:
 
     - Pembentukan permintaan khusus OpenAI native tidak berlaku
-    - Tidak ada `service_tier`, tidak ada Responses `store`, tidak ada petunjuk prompt-cache, dan tidak ada pembentukan payload reasoning-compat OpenAI
+    - Tidak ada `service_tier`, tidak ada Responses `store`, tidak ada petunjuk prompt-cache, dan tidak ada
+      pembentukan payload kompatibilitas reasoning OpenAI
     - Header atribusi OpenClaw tersembunyi (`originator`, `version`, `User-Agent`)
-      tidak disisipkan pada URL proxy
+      tidak disuntikkan pada URL proxy
 
   </Accordion>
 
-  <Accordion title="Auto-start di macOS dengan LaunchAgent">
+  <Accordion title="Mulai otomatis di macOS dengan LaunchAgent">
     Buat LaunchAgent untuk menjalankan proxy secara otomatis:
 
     ```bash
@@ -158,36 +169,31 @@ Proxy ini:
   </Accordion>
 </AccordionGroup>
 
-## Tautan
-
-- **npm:** [https://www.npmjs.com/package/claude-max-api-proxy](https://www.npmjs.com/package/claude-max-api-proxy)
-- **GitHub:** [https://github.com/atalovesyou/claude-max-api-proxy](https://github.com/atalovesyou/claude-max-api-proxy)
-- **Issues:** [https://github.com/atalovesyou/claude-max-api-proxy/issues](https://github.com/atalovesyou/claude-max-api-proxy/issues)
-
 ## Catatan
 
 - Ini adalah **alat komunitas**, tidak didukung secara resmi oleh Anthropic atau OpenClaw
-- Memerlukan subscription Claude Max/Pro aktif dengan Claude Code CLI yang sudah diautentikasi
+- Memerlukan langganan Claude Max/Pro aktif dengan Claude Code CLI yang telah diautentikasi
+- Mewarisi perilaku penagihan, kredit penggunaan, dan batas laju Claude Code `claude -p`
 - Proxy berjalan secara lokal dan tidak mengirim data ke server pihak ketiga mana pun
-- Respons streaming didukung penuh
+- Respons streaming didukung sepenuhnya
 
 <Note>
-Untuk integrasi Anthropic native dengan Claude CLI atau API key, lihat [Provider Anthropic](/id/providers/anthropic). Untuk subscription OpenAI/Codex, lihat [Provider OpenAI](/id/providers/openai).
+Untuk integrasi Anthropic native dengan Claude CLI atau API key, lihat [penyedia Anthropic](/id/providers/anthropic). Untuk langganan OpenAI/Codex, lihat [penyedia OpenAI](/id/providers/openai).
 </Note>
 
 ## Terkait
 
 <CardGroup cols={2}>
-  <Card title="Anthropic provider" href="/id/providers/anthropic" icon="bolt">
+  <Card title="Penyedia Anthropic" href="/id/providers/anthropic" icon="bolt">
     Integrasi OpenClaw native dengan Claude CLI atau API key.
   </Card>
-  <Card title="OpenAI provider" href="/id/providers/openai" icon="robot">
-    Untuk subscription OpenAI/Codex.
+  <Card title="Penyedia OpenAI" href="/id/providers/openai" icon="robot">
+    Untuk langganan OpenAI/Codex.
   </Card>
-  <Card title="Model selection" href="/id/concepts/model-providers" icon="layers">
-    Ikhtisar semua provider, referensi model, dan perilaku failover.
+  <Card title="Pemilihan model" href="/id/concepts/model-providers" icon="layers">
+    Ringkasan semua penyedia, ref model, dan perilaku failover.
   </Card>
-  <Card title="Configuration" href="/id/gateway/configuration" icon="gear">
-    Referensi konfigurasi lengkap.
+  <Card title="Konfigurasi" href="/id/gateway/configuration" icon="gear">
+    Referensi config lengkap.
   </Card>
 </CardGroup>

@@ -1,20 +1,21 @@
 ---
 read_when:
     - Você quer acesso rápido às principais páginas da documentação
-summary: Links selecionados para as páginas mais usadas da documentação do OpenClaw.
+summary: Links selecionados para a documentação mais usada do OpenClaw.
 title: Diretório de documentação
 x-i18n:
-    generated_at: "2026-05-10T19:50:12Z"
+    generated_at: "2026-06-27T18:12:12Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ddd6903aeb87e36db977b2cef62bd80e84fc67633ca00beb3365ced1f5abdd99
+    source_hash: f7d45effe4df50fb544e9f6fd2fcd87f4ed674eba0042eace757dbfcad93d07a
     source_path: start/docs-directory.md
     workflow: 16
 ---
 
 <Note>
-Esta página é um índice com curadoria. Se você é novo, comece com [Primeiros passos](/pt-BR/start/getting-started).
-Para um mapa completo da documentação, consulte [hubs da documentação](/pt-BR/start/hubs).
+Esta página é um índice selecionado. Se você está começando, comece com [Introdução](/pt-BR/start/getting-started).
+Para ver um mapa completo da documentação, consulte [Hubs da documentação](/pt-BR/start/hubs).
 </Note>
 
 ## Comece aqui
@@ -31,18 +32,18 @@ Para um mapa completo da documentação, consulte [hubs da documentação](/pt-B
 - [Configuração do assistente OpenClaw](/pt-BR/start/openclaw)
 - [Skills](/pt-BR/tools/skills)
 - [Configuração de Skills](/pt-BR/tools/skills-config)
-- [Modelos de workspace](/pt-BR/reference/templates/AGENTS)
+- [Modelos de espaço de trabalho](/pt-BR/reference/templates/AGENTS)
 - [Adaptadores RPC](/pt-BR/reference/rpc)
 - [Runbook do Gateway](/pt-BR/gateway)
 - [Nós (iOS e Android)](/pt-BR/nodes)
-- [Superfícies web (Control UI)](/pt-BR/web)
+- [Superfícies web (UI de controle)](/pt-BR/web)
 - [Descoberta e transportes](/pt-BR/gateway/discovery)
 - [Acesso remoto](/pt-BR/gateway/remote)
 
 ## Provedores e UX
 
 - [WebChat](/pt-BR/web/webchat)
-- [Control UI (navegador)](/pt-BR/web/control-ui)
+- [UI de controle (navegador)](/pt-BR/web/control-ui)
 - [Telegram](/pt-BR/channels/telegram)
 - [Discord](/pt-BR/channels/discord)
 - [Mattermost](/pt-BR/channels/mattermost)
@@ -55,16 +56,16 @@ Para um mapa completo da documentação, consulte [hubs da documentação](/pt-B
 
 ## Aplicativos complementares
 
-- [Aplicativo macOS](/pt-BR/platforms/macos)
-- [Aplicativo iOS](/pt-BR/platforms/ios)
-- [Aplicativo Android](/pt-BR/platforms/android)
-- [Windows (WSL2)](/pt-BR/platforms/windows)
-- [Aplicativo Linux](/pt-BR/platforms/linux)
+- [Aplicativo para macOS](/pt-BR/platforms/macos)
+- [Aplicativo para iOS](/pt-BR/platforms/ios)
+- [Aplicativo para Android](/pt-BR/platforms/android)
+- [Hub do Windows](/pt-BR/platforms/windows)
+- [Aplicativo para Linux](/pt-BR/platforms/linux)
 
 ## Operações e segurança
 
 - [Sessões](/pt-BR/concepts/session)
-- [Tarefas Cron](/pt-BR/automation/cron-jobs)
+- [Trabalhos Cron](/pt-BR/automation/cron-jobs)
 - [Webhooks](/pt-BR/automation/cron-jobs#webhooks)
 - [Hooks do Gmail (Pub/Sub)](/pt-BR/automation/cron-jobs#gmail-pubsub-integration)
 - [Segurança](/pt-BR/gateway/security)
@@ -72,5 +73,5 @@ Para um mapa completo da documentação, consulte [hubs da documentação](/pt-B
 
 ## Relacionado
 
-- [Primeiros passos](/pt-BR/start/getting-started)
+- [Introdução](/pt-BR/start/getting-started)
 - [Hubs da documentação](/pt-BR/start/hubs)

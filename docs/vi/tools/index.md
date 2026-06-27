@@ -2,184 +2,183 @@
 doc-schema-version: 1
 read_when:
     - Bạn muốn hiểu OpenClaw cung cấp những công cụ nào
-    - Bạn đang lựa chọn giữa các công cụ tích hợp sẵn, Skills và Plugin
-    - Bạn cần điểm vào tài liệu phù hợp cho chính sách công cụ, tự động hóa hoặc phối hợp tác nhân
-summary: 'Tổng quan về công cụ, Skills và Plugin của OpenClaw: các tác nhân có thể gọi gì và cách mở rộng chúng'
+    - Bạn đang lựa chọn giữa công cụ tích hợp sẵn, Skills và Plugin
+    - Bạn cần điểm vào tài liệu phù hợp cho chính sách công cụ, tự động hóa hoặc điều phối tác nhân
+summary: 'Tổng quan về công cụ, Skills và Plugin của OpenClaw: tác tử có thể gọi gì và cách mở rộng chúng'
 title: Tổng quan
 x-i18n:
-    generated_at: "2026-05-12T01:00:23Z"
+    generated_at: "2026-06-27T18:17:03Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 94424b04a520009d40d851e46f7ea0e4e914ff39b7d79958194bb123a6ec0b7b
+    source_hash: f49afa2354ebb26eeb5f036cd1f2f7ceb228b01287adbc6c305addfb0af4502d
     source_path: tools/index.md
     workflow: 16
 ---
 
-Use this page to choose the right Capabilities surface. **Tools** are callable
-actions, **skills** teach agents how to work, and **plugins** add runtime
-capabilities such as tools, providers, channels, hooks, and packaged skills.
+Dùng trang này để chọn đúng bề mặt Capabilities. **Công cụ** là các
+hành động có thể gọi, **Skills** dạy tác tử cách làm việc, và **Plugin** thêm
+các capability thời gian chạy như công cụ, nhà cung cấp, kênh, hook và Skills
+được đóng gói.
 
-This is an overview and routing page. For exhaustive tool policy, defaults,
-group membership, provider restrictions, and configuration fields, use
-[Tools and custom providers](/vi/gateway/config-tools).
+Đây là trang tổng quan và định tuyến. Để xem đầy đủ chính sách công cụ, mặc
+định, thành viên nhóm, hạn chế theo nhà cung cấp và các trường cấu hình, hãy dùng
+[Công cụ và nhà cung cấp tùy chỉnh](/vi/gateway/config-tools).
 
-## Start here
+## Bắt đầu tại đây
 
-For most agents, start with the built-in tool categories, then adjust policy
-only when the agent should see fewer tools or needs explicit host access.
+Với hầu hết tác tử, hãy bắt đầu bằng các danh mục công cụ tích hợp sẵn, rồi điều
+chỉnh chính sách chỉ khi tác tử nên thấy ít công cụ hơn hoặc cần quyền truy cập
+máy chủ rõ ràng.
 
-| If you need to...                           | Use this first                                 | Then read                                                               |
-| ------------------------------------------- | ---------------------------------------------- | ----------------------------------------------------------------------- |
-| Let an agent act with existing capabilities | [Built-in tools](#built-in-tool-categories)    | [Tool categories](#built-in-tool-categories)                            |
-| Control what an agent can call              | [Tool policy](#configure-access-and-approvals) | [Tools and custom providers](/vi/gateway/config-tools)                     |
-| Teach an agent a workflow                   | [Skills](#choose-tools-skills-or-plugins)      | [Skills](/vi/tools/skills) and [Creating skills](/vi/tools/creating-skills)   |
-| Add a new integration or runtime surface    | [Plugins](#extend-capabilities)                | [Plugins](/vi/tools/plugin) and [Build plugins](/vi/plugins/building-plugins) |
-| Run work later or in the background         | [Automation](/vi/automation)                      | [Automation overview](/vi/automation)                                      |
-| Coordinate multiple agents or harnesses     | [Sub-agents](/vi/tools/subagents)                 | [ACP agents](/vi/tools/acp-agents) and [Agent send](/vi/tools/agent-send)     |
-| Search a large PI tool catalog              | [Tool Search](/vi/tools/tool-search)              | [Tool Search](/vi/tools/tool-search)                                       |
+| Nếu bạn cần...                                      | Dùng mục này trước                                      | Sau đó đọc                                                                                                                    |
+| --------------------------------------------------- | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Cho phép tác tử hành động bằng các capability sẵn có | [Công cụ tích hợp sẵn](#built-in-tool-categories)       | [Danh mục công cụ](#built-in-tool-categories)                                                                                |
+| Kiểm soát tác tử có thể gọi gì                      | [Chính sách công cụ](#configure-access-and-approvals)   | [Công cụ và nhà cung cấp tùy chỉnh](/vi/gateway/config-tools)                                                                   |
+| Dạy tác tử một workflow                             | [Skills](#choose-tools-skills-or-plugins)               | [Skills](/vi/tools/skills), [Tạo Skills](/vi/tools/creating-skills), và [Skill Workshop](/vi/tools/skill-workshop)                    |
+| Thêm tích hợp mới hoặc bề mặt thời gian chạy        | [Plugin](#extend-capabilities)                          | [Plugin](/vi/tools/plugin) và [Xây dựng Plugin](/vi/plugins/building-plugins)                                                      |
+| Chạy công việc sau hoặc trong nền                   | [Tự động hóa](/vi/automation)                              | [Tổng quan về tự động hóa](/vi/automation)                                                                                      |
+| Điều phối nhiều tác tử hoặc harness                 | [Tác tử phụ](/vi/tools/subagents)                          | [Tác tử ACP](/vi/tools/acp-agents) và [Gửi tác tử](/vi/tools/agent-send)                                                           |
+| Tìm kiếm một danh mục công cụ OpenClaw lớn          | [Tìm kiếm công cụ](/vi/tools/tool-search)                  | [Tìm kiếm công cụ](/vi/tools/tool-search)                                                                                       |
 
-## Choose tools, skills, or plugins
+## Chọn công cụ, Skills hoặc Plugin
 
 <Steps>
   <Step title="Use a tool when the agent needs to act">
-    A tool is a typed function the agent can call, such as `exec`, `browser`,
-    `web_search`, `message`, or `image_generate`. Use tools when the agent
-    needs to read data, change files, send messages, call a provider, or operate
-    another system. Visible tools are sent to the model as structured function
-    definitions.
+    Công cụ là một hàm có kiểu mà tác tử có thể gọi, chẳng hạn như `exec`,
+    `browser`, `web_search`, `message`, hoặc `image_generate`. Dùng công cụ khi
+    tác tử cần đọc dữ liệu, thay đổi tệp, gửi tin nhắn, gọi một nhà cung cấp,
+    hoặc vận hành hệ thống khác. Các công cụ hiển thị được gửi đến mô hình dưới
+    dạng định nghĩa hàm có cấu trúc.
 
-    The model only sees tools that survive the active profile, allow/deny
-    policy, provider restrictions, sandbox state, channel permissions, and
-    plugin availability.
+    Mô hình chỉ thấy các công cụ vượt qua hồ sơ đang hoạt động, chính sách
+    cho phép/từ chối, hạn chế theo nhà cung cấp, trạng thái sandbox, quyền của
+    kênh và tình trạng sẵn có của Plugin.
 
   </Step>
 
   <Step title="Use a skill when the agent needs instructions">
-    A skill is a `SKILL.md` instruction pack loaded into the agent prompt. Use a
-    skill when the agent already has the tools it needs, but needs a repeatable
-    workflow, review rubric, command sequence, or operating constraint.
+    Skill là một gói chỉ dẫn `SKILL.md` được nạp vào prompt của tác tử. Dùng
+    Skill khi tác tử đã có các công cụ cần thiết, nhưng cần một workflow có thể
+    lặp lại, rubric đánh giá, chuỗi lệnh, hoặc ràng buộc vận hành.
 
-    Skills can live in a workspace, shared skill directory, managed OpenClaw
-    skill root, or plugin package.
+    Skills có thể nằm trong workspace, thư mục Skill dùng chung, gốc Skill do
+    OpenClaw quản lý, hoặc gói Plugin.
 
-    [Skills](/vi/tools/skills) | [Creating skills](/vi/tools/creating-skills) | [Skills config](/vi/tools/skills-config)
+    [Skills](/vi/tools/skills) | [Skill Workshop](/vi/tools/skill-workshop) | [Tạo Skills](/vi/tools/creating-skills) | [Cấu hình Skills](/vi/tools/skills-config)
 
   </Step>
 
   <Step title="Use a plugin when OpenClaw needs a new capability">
-    A plugin can add tools, skills, channels, model providers, speech, realtime
-    voice, media generation, web search, web fetch, hooks, and other runtime
-    capabilities. Use a plugin when the capability has code, credentials,
-    lifecycle hooks, manifest metadata, or installable packaging. Existing
-    plugins can be installed from ClawHub, npm, git, local directories, or
-    archives.
+    Plugin có thể thêm công cụ, Skills, kênh, nhà cung cấp mô hình, giọng nói,
+    thoại thời gian thực, tạo media, tìm kiếm web, lấy nội dung web, hook và các
+    capability thời gian chạy khác. Dùng Plugin khi capability có mã, thông tin
+    xác thực, hook vòng đời, siêu dữ liệu manifest hoặc gói có thể cài đặt.
+    Plugin hiện có có thể được cài đặt từ ClawHub, npm, git, thư mục cục bộ,
+    hoặc tệp lưu trữ.
 
-    [Install and configure plugins](/vi/tools/plugin) | [Build plugins](/vi/plugins/building-plugins) | [Plugin SDK](/vi/plugins/sdk-overview)
+    [Cài đặt và cấu hình Plugin](/vi/tools/plugin) | [Xây dựng Plugin](/vi/plugins/building-plugins) | [Plugin SDK](/vi/plugins/sdk-overview)
 
   </Step>
 </Steps>
 
-## Built-in tool categories
+## Danh mục công cụ tích hợp sẵn
 
-The table lists representative tools so you can recognize the surface. It is
-not the full policy reference. For exact groups, defaults, and allow/deny
-semantics, use [Tools and custom providers](/vi/gateway/config-tools).
+Bảng này liệt kê các công cụ đại diện để bạn có thể nhận diện bề mặt. Đây
+không phải tài liệu tham chiếu chính sách đầy đủ. Để biết chính xác các nhóm,
+mặc định và ngữ nghĩa cho phép/từ chối, hãy dùng [Công cụ và nhà cung cấp tùy chỉnh](/vi/gateway/config-tools).
 
-| Category               | Use when the agent needs to...                                                | Representative tools                                                 | Read next                                                              |
-| ---------------------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| Runtime                | Run commands, manage processes, or use provider-backed Python analysis        | `exec`, `process`, `code_execution`                                  | [Exec](/vi/tools/exec), [Code execution](/vi/tools/code-execution)           |
-| Files                  | Read and change workspace files                                               | `read`, `write`, `edit`, `apply_patch`                               | [Apply patch](/vi/tools/apply-patch)                                      |
-| Web                    | Search the web, search X posts, or fetch readable page content                | `web_search`, `x_search`, `web_fetch`                                | [Web tools](/vi/tools/web), [Web fetch](/vi/tools/web-fetch)                 |
-| Browser                | Operate a browser session                                                     | `browser`                                                            | [Browser](/vi/tools/browser)                                              |
-| Messaging and channels | Send replies or channel actions                                               | `message`                                                            | [Agent send](/vi/tools/agent-send)                                        |
-| Sessions and agents    | Inspect sessions, delegate work, steer another run, or report status          | `sessions_*`, `subagents`, `agents_list`, `session_status`           | [Sub-agents](/vi/tools/subagents), [Session tool](/vi/concepts/session-tool) |
-| Automation             | Schedule work or respond to background events                                 | `cron`, `heartbeat_respond`                                          | [Automation](/vi/automation)                                              |
-| Gateway and nodes      | Inspect Gateway state or paired target devices                                | `gateway`, `nodes`                                                   | [Gateway configuration](/vi/gateway/configuration), [Nodes](/vi/nodes)       |
-| Media                  | Analyze, generate, or speak media                                             | `image`, `image_generate`, `music_generate`, `video_generate`, `tts` | [Media overview](/vi/tools/media-overview)                                |
-| Large PI catalogs      | Search and call many eligible tools without sending every schema to the model | `tool_search_code`, `tool_search`, `tool_describe`                   | [Tool Search](/vi/tools/tool-search)                                      |
+| Danh mục                | Dùng khi tác tử cần...                                                        | Công cụ đại diện                                                    | Đọc tiếp                                                                                       |
+| ----------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Thời gian chạy          | Chạy lệnh, quản lý tiến trình, hoặc dùng phân tích Python dựa trên nhà cung cấp | `exec`, `process`, `code_execution`                                 | [Exec](/vi/tools/exec), [Thực thi mã](/vi/tools/code-execution)                                      |
+| Tệp                     | Đọc và thay đổi tệp trong workspace                                           | `read`, `write`, `edit`, `apply_patch`                              | [Áp dụng bản vá](/vi/tools/apply-patch)                                                           |
+| Web                     | Tìm kiếm web, tìm kiếm bài đăng X, hoặc lấy nội dung trang có thể đọc         | `web_search`, `x_search`, `web_fetch`                               | [Công cụ web](/vi/tools/web), [Lấy nội dung web](/vi/tools/web-fetch)                                |
+| Trình duyệt             | Vận hành một phiên trình duyệt                                                | `browser`                                                           | [Trình duyệt](/vi/tools/browser)                                                                  |
+| Nhắn tin và kênh        | Gửi phản hồi hoặc hành động kênh                                              | `message`                                                           | [Gửi tác tử](/vi/tools/agent-send)                                                                |
+| Phiên và tác tử         | Kiểm tra phiên, ủy quyền công việc, điều hướng lượt chạy khác, hoặc báo cáo trạng thái | `sessions_*`, `subagents`, `agents_list`, `session_status`, `goal`  | [Mục tiêu](/vi/tools/goal), [Tác tử phụ](/vi/tools/subagents), [Công cụ phiên](/vi/concepts/session-tool) |
+| Tự động hóa             | Lên lịch công việc hoặc phản hồi sự kiện nền                                  | `cron`, `heartbeat_respond`                                         | [Tự động hóa](/vi/automation)                                                                     |
+| Gateway và node         | Kiểm tra trạng thái Gateway hoặc thiết bị đích đã ghép nối                   | `gateway`, `nodes`                                                  | [Cấu hình Gateway](/vi/gateway/configuration), [Node](/vi/nodes)                                     |
+| Media                   | Phân tích, tạo hoặc nói media                                                 | `image`, `image_generate`, `music_generate`, `video_generate`, `tts` | [Tổng quan media](/vi/tools/media-overview)                                                       |
+| Danh mục OpenClaw lớn   | Tìm kiếm và gọi nhiều công cụ đủ điều kiện mà không gửi mọi schema đến mô hình | `tool_search_code`, `tool_search`, `tool_describe`                  | [Tìm kiếm công cụ](/vi/tools/tool-search)                                                         |
 
 <Note>
-Tool Search is an experimental PI-agent surface. Codex harness runs use
-Codex-native code mode, native tool search, deferred dynamic tools, and nested
-tool calls instead of `tools.toolSearch`.
+Tìm kiếm công cụ là một bề mặt tác tử OpenClaw thử nghiệm. Các lượt chạy Codex
+harness dùng chế độ mã gốc của Codex, tìm kiếm công cụ gốc, công cụ động trì
+hoãn và lời gọi công cụ lồng nhau thay vì `tools.toolSearch`.
 </Note>
 
-## Plugin-provided tools
+## Công cụ do Plugin cung cấp
 
-Plugins can register additional tools. Plugin authors wire tools through
-`api.registerTool(...)` and the manifest's `contracts.tools`; use
-[Plugin SDK](/vi/plugins/sdk-overview) and [Plugin manifest](/vi/plugins/manifest)
-for contract details.
+Plugin có thể đăng ký thêm công cụ. Tác giả Plugin nối công cụ qua
+`api.registerTool(...)` và `contracts.tools` của manifest; dùng
+[Plugin SDK](/vi/plugins/sdk-overview) và [Plugin manifest](/vi/plugins/manifest)
+để xem chi tiết hợp đồng.
 
-Common plugin-provided tools include:
+Các công cụ phổ biến do Plugin cung cấp gồm:
 
-- [Diffs](/vi/tools/diffs) for rendering file and markdown diffs
-- [LLM Task](/vi/tools/llm-task) for JSON-only workflow steps
-- [Lobster](/vi/tools/lobster) for typed workflows with resumable approvals
-- [Tokenjuice](/vi/tools/tokenjuice) for compacting noisy `exec` and `bash` tool
-  output
-- [Tool Search](/vi/tools/tool-search) for discovering and calling large tool
-  catalogs without putting every schema in the prompt
-- [Canvas](/vi/plugins/reference/canvas) for node Canvas control and A2UI
-  rendering
+- [Diff](/vi/tools/diffs) để render diff tệp và markdown
+- [LLM Task](/vi/tools/llm-task) cho các bước workflow chỉ dùng JSON
+- [Lobster](/vi/tools/lobster) cho workflow có kiểu với phê duyệt có thể tiếp tục
+- [Tokenjuice](/vi/tools/tokenjuice) để nén đầu ra công cụ `exec` và `bash` nhiều nhiễu
+- [Tìm kiếm công cụ](/vi/tools/tool-search) để khám phá và gọi các danh mục công cụ lớn
+  mà không đưa mọi schema vào prompt
+- [Canvas](/vi/plugins/reference/canvas) để điều khiển node Canvas và render A2UI
 
-## Configure access and approvals
+## Cấu hình quyền truy cập và phê duyệt
 
-Tool policy is enforced before the model call. If policy removes a tool, the
-model does not receive that tool's schema for the turn. A run can lose tools
-because of global config, per-agent config, channel policy, provider
-restrictions, sandbox rules, owner-only gating, or plugin availability.
+Chính sách công cụ được thực thi trước lời gọi mô hình. Nếu chính sách loại bỏ
+một công cụ, mô hình sẽ không nhận schema của công cụ đó cho lượt này. Một lượt
+chạy có thể mất công cụ vì cấu hình toàn cục, cấu hình theo tác tử, chính sách
+kênh, hạn chế theo nhà cung cấp, quy tắc sandbox, chính sách kênh/thời gian
+chạy, hoặc tình trạng sẵn có của Plugin.
 
-- [Tools and custom providers](/vi/gateway/config-tools) documents tool profiles,
-  allow/deny lists, provider-specific restrictions, loop detection, and
-  provider-backed tool settings.
-- [Exec approvals](/vi/tools/exec-approvals) documents host command approval
-  policy.
-- [Elevated exec](/vi/tools/elevated) documents controlled execution outside the
+- [Công cụ và nhà cung cấp tùy chỉnh](/vi/gateway/config-tools) ghi lại hồ sơ công cụ,
+  danh sách cho phép/từ chối, hạn chế theo nhà cung cấp, phát hiện vòng lặp và
+  thiết lập công cụ dựa trên nhà cung cấp.
+- [Phê duyệt exec](/vi/tools/exec-approvals) ghi lại chính sách phê duyệt lệnh máy chủ.
+- [Exec nâng quyền](/vi/tools/elevated) ghi lại việc thực thi được kiểm soát bên ngoài
   sandbox.
-- [Sandbox vs tool policy vs elevated](/vi/gateway/sandbox-vs-tool-policy-vs-elevated) explains which layer controls file and process access.
-- [Per-agent sandbox and tool restrictions](/vi/tools/multi-agent-sandbox-tools)
-  documents agent-specific restrictions for delegated runs.
+- [Sandbox so với chính sách công cụ so với nâng quyền](/vi/gateway/sandbox-vs-tool-policy-vs-elevated) giải thích lớp nào kiểm soát quyền truy cập tệp và tiến trình.
+- [Sandbox và hạn chế công cụ theo tác tử](/vi/tools/multi-agent-sandbox-tools)
+  ghi lại các hạn chế riêng cho tác tử trong lượt chạy được ủy quyền.
 
-## Extend capabilities
+## Mở rộng capability
 
-Choose the extension path by the job you need OpenClaw to do:
+Chọn đường mở rộng theo công việc bạn cần OpenClaw thực hiện:
 
-- Install or manage an existing plugin with [Plugins](/vi/tools/plugin).
-- Build a new integration, provider, channel, tool, or hook with
-  [Build plugins](/vi/plugins/building-plugins).
-- Add or tune reusable agent instructions with [Skills](/vi/tools/skills) and
-  [Creating skills](/vi/tools/creating-skills).
-- Package reusable workflow material with
-  [Skill workshop](/vi/plugins/skill-workshop) when the workflow belongs in a
-  plugin-distributed skill bundle.
-- Use [Plugin SDK](/vi/plugins/sdk-overview) and [Plugin manifest](/vi/plugins/manifest) when you need implementation contracts.
+- Cài đặt hoặc quản lý Plugin hiện có bằng [Plugin](/vi/tools/plugin).
+- Xây dựng tích hợp, nhà cung cấp, kênh, công cụ hoặc hook mới bằng
+  [Xây dựng Plugin](/vi/plugins/building-plugins).
+- Thêm hoặc tinh chỉnh chỉ dẫn tác tử có thể tái sử dụng bằng [Skills](/vi/tools/skills) và
+  [Tạo Skills](/vi/tools/creating-skills).
+- Dùng [Plugin SDK](/vi/plugins/sdk-overview) và [Plugin manifest](/vi/plugins/manifest) khi bạn cần các hợp đồng triển khai.
 
-## Troubleshoot missing tools
+## Khắc phục sự cố thiếu công cụ
 
-If the model cannot see or call a tool, start with the effective policy for the
-current turn:
+Nếu mô hình không thể thấy hoặc gọi một công cụ, hãy bắt đầu bằng chính sách
+hiệu lực cho lượt hiện tại:
 
-1. Check the active profile, `tools.allow`, and `tools.deny` in
-   [Tools and custom providers](/vi/gateway/config-tools).
-2. Check provider-specific restrictions in
-   [Tools and custom providers](/vi/gateway/config-tools) and confirm the selected
-   [model provider](/vi/concepts/model-providers) supports the tool shape.
-3. Check channel permissions, sandbox state, and elevated access with
-   [Sandbox vs tool policy vs elevated](/vi/gateway/sandbox-vs-tool-policy-vs-elevated) and [Elevated exec](/vi/tools/elevated).
-4. Check whether the owning plugin is installed and enabled in
-   [Plugins](/vi/tools/plugin).
-5. For delegated runs, check per-agent restrictions in
-   [Per-agent sandbox and tool restrictions](/vi/tools/multi-agent-sandbox-tools).
-6. For large PI catalogs, confirm whether the run uses direct tool exposure or
-   [Tool Search](/vi/tools/tool-search).
+1. Kiểm tra hồ sơ đang hoạt động, `tools.allow`, và `tools.deny` trong
+   [Công cụ và nhà cung cấp tùy chỉnh](/vi/gateway/config-tools).
+2. Kiểm tra hạn chế theo nhà cung cấp trong
+   [Công cụ và nhà cung cấp tùy chỉnh](/vi/gateway/config-tools) và xác nhận
+   [nhà cung cấp mô hình](/vi/concepts/model-providers) đã chọn hỗ trợ hình dạng công cụ.
+3. Kiểm tra quyền của kênh, trạng thái sandbox và quyền truy cập nâng quyền bằng
+   [Sandbox so với chính sách công cụ so với nâng quyền](/vi/gateway/sandbox-vs-tool-policy-vs-elevated) và [Exec nâng quyền](/vi/tools/elevated).
+4. Kiểm tra Plugin sở hữu đã được cài đặt và bật trong
+   [Plugin](/vi/tools/plugin).
+5. Với lượt chạy được ủy quyền, kiểm tra hạn chế theo tác tử trong
+   [Sandbox và hạn chế công cụ theo tác tử](/vi/tools/multi-agent-sandbox-tools).
+6. Với các danh mục OpenClaw lớn, xác nhận lượt chạy dùng phơi bày công cụ trực tiếp hay
+   [Tìm kiếm công cụ](/vi/tools/tool-search).
 
-## Related
+## Liên quan
 
-- [Automation](/vi/automation) for cron, tasks, heartbeat, commitments, hooks, standing orders, and Task Flow
-- [Agents](/vi/concepts/agent) for the agent model, sessions, memory, and multi-agent coordination
-- [Tools and custom providers](/vi/gateway/config-tools) for the canonical tool policy reference
-- [Plugins](/vi/tools/plugin) for plugin installation and management
-- [Plugin SDK](/vi/plugins/sdk-overview) for plugin author reference
-- [Skills](/vi/tools/skills) for skill load order, gating, and config
-- [Tool Search](/vi/tools/tool-search) for compact PI tool catalog discovery
+- [Tự động hóa](/vi/automation) cho cron, tác vụ, heartbeat, cam kết, hook, lệnh thường trực và Task Flow
+- [Tác tử](/vi/concepts/agent) cho mô hình tác tử, phiên, bộ nhớ và điều phối nhiều tác tử
+- [Công cụ và nhà cung cấp tùy chỉnh](/vi/gateway/config-tools) cho tài liệu tham chiếu chính sách công cụ chuẩn
+- [Plugin](/vi/tools/plugin) cho cài đặt và quản lý Plugin
+- [Plugin SDK](/vi/plugins/sdk-overview) cho tài liệu tham chiếu dành cho tác giả Plugin
+- [Skills](/vi/tools/skills) cho thứ tự nạp Skill, gating và cấu hình
+- [Skill Workshop](/vi/tools/skill-workshop) cho việc tạo Skill được sinh và được đánh giá
+- [Tìm kiếm công cụ](/vi/tools/tool-search) cho khám phá danh mục công cụ OpenClaw gọn nhẹ

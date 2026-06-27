@@ -1,20 +1,21 @@
 ---
 read_when:
     - È necessario installare Node.js prima di installare OpenClaw
-    - Hai installato OpenClaw ma `openclaw` risulta comando non trovato
+    - Hai installato OpenClaw ma `openclaw` è comando non trovato
     - npm install -g non riesce a causa di problemi di permessi o di PATH
-summary: Installare e configurare Node.js per OpenClaw - requisiti di versione, opzioni di installazione e risoluzione dei problemi di PATH
+summary: Installa e configura Node.js per OpenClaw - requisiti di versione, opzioni di installazione e risoluzione dei problemi del PATH
 title: Node.js
 x-i18n:
-    generated_at: "2026-05-07T13:21:05Z"
+    generated_at: "2026-06-27T17:41:00Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: de8ef8d00c8996741187000f55d07d15a2d09e89b6deb99cf687b6b9128ad266
+    source_hash: 90a2461458fd9995df264753259a3297b8aa316f9e4efd8290e527cbb46fc4e3
     source_path: install/node.md
     workflow: 16
 ---
 
-OpenClaw richiede **Node 22.16 o versioni successive**. **Node 24 è il runtime predefinito e consigliato** per installazioni, CI e flussi di rilascio. Node 22 resta supportato tramite il ramo LTS attivo. Lo [script di installazione](/it/install#alternative-install-methods) rileverà e installerà Node automaticamente: questa pagina serve quando vuoi configurare Node autonomamente e assicurarti che tutto sia collegato correttamente (versioni, PATH, installazioni globali).
+OpenClaw richiede **Node 22.19 o versioni successive**. **Node 24 è il runtime predefinito e consigliato** per installazioni, CI e flussi di lavoro di rilascio. Node 22 resta supportato tramite la linea LTS attiva. Lo [script di installazione](/it/install#alternative-install-methods) rileverà e installerà Node automaticamente: questa pagina serve quando vuoi configurare Node manualmente e assicurarti che tutto sia collegato correttamente (versioni, PATH, installazioni globali).
 
 ## Controlla la tua versione
 
@@ -22,7 +23,7 @@ OpenClaw richiede **Node 22.16 o versioni successive**. **Node 24 è il runtime 
 node -v
 ```
 
-Se stampa `v24.x.x` o superiore, stai usando l’impostazione predefinita consigliata. Se stampa `v22.16.x` o superiore, stai usando il percorso Node 22 LTS supportato, ma consigliamo comunque di passare a Node 24 quando ti è comodo. Se Node non è installato o la versione è troppo vecchia, scegli un metodo di installazione qui sotto.
+Se stampa `v24.x.x` o superiore, stai usando l'impostazione predefinita consigliata. Se stampa `v22.19.x` o superiore, stai usando il percorso Node 22 LTS supportato, ma consigliamo comunque di passare a Node 24 quando possibile. Se Node non è installato o la versione è troppo vecchia, scegli un metodo di installazione qui sotto.
 
 ## Installa Node
 
@@ -34,7 +35,7 @@ Se stampa `v24.x.x` o superiore, stai usando l’impostazione predefinita consig
     brew install node
     ```
 
-    Oppure scarica l’installer per macOS da [nodejs.org](https://nodejs.org/).
+    Oppure scarica l'installer per macOS da [nodejs.org](https://nodejs.org/).
 
   </Tab>
   <Tab title="Linux">
@@ -67,13 +68,13 @@ Se stampa `v24.x.x` o superiore, stai usando l’impostazione predefinita consig
     choco install nodejs-lts
     ```
 
-    Oppure scarica l’installer per Windows da [nodejs.org](https://nodejs.org/).
+    Oppure scarica l'installer per Windows da [nodejs.org](https://nodejs.org/).
 
   </Tab>
 </Tabs>
 
 <Accordion title="Uso di un gestore di versioni (nvm, fnm, mise, asdf)">
-  I gestori di versioni ti permettono di passare facilmente da una versione di Node all’altra. Opzioni popolari:
+  I gestori di versioni ti permettono di passare facilmente tra versioni di Node. Opzioni popolari:
 
 - [**fnm**](https://github.com/Schniz/fnm) - veloce, multipiattaforma
 - [**nvm**](https://github.com/nvm-sh/nvm) - ampiamente usato su macOS/Linux
@@ -87,7 +88,7 @@ fnm use 24
 ```
 
   <Warning>
-  Assicurati che il tuo gestore di versioni sia inizializzato nel file di avvio della shell (`~/.zshrc` o `~/.bashrc`). In caso contrario, `openclaw` potrebbe non essere trovato nelle nuove sessioni del terminale perché il PATH non includerà la directory bin di Node.
+  Assicurati che il tuo gestore di versioni sia inizializzato nel file di avvio della shell (`~/.zshrc` o `~/.bashrc`). In caso contrario, `openclaw` potrebbe non essere trovato nelle nuove sessioni del terminale perché PATH non includerà la directory bin di Node.
   </Warning>
 </Accordion>
 
@@ -108,7 +109,7 @@ Questo significa quasi sempre che la directory bin globale di npm non è nel tuo
     echo "$PATH"
     ```
 
-    Cerca `<npm-prefix>/bin` (macOS/Linux) o `<npm-prefix>` (Windows) nell’output.
+    Cerca `<npm-prefix>/bin` (macOS/Linux) o `<npm-prefix>` (Windows) nell'output.
 
   </Step>
   <Step title="Aggiungilo al file di avvio della shell">
@@ -123,16 +124,16 @@ Questo significa quasi sempre che la directory bin globale di npm non è nel tuo
         Poi apri un nuovo terminale (oppure esegui `rehash` in zsh / `hash -r` in bash).
       </Tab>
       <Tab title="Windows">
-        Aggiungi l’output di `npm prefix -g` al PATH di sistema tramite Impostazioni → Sistema → Variabili d’ambiente.
+        Aggiungi l'output di `npm prefix -g` al PATH di sistema tramite Impostazioni → Sistema → Variabili d'ambiente.
       </Tab>
     </Tabs>
 
   </Step>
 </Steps>
 
-### Errori di permesso su `npm install -g` (Linux)
+### Errori di permessi su `npm install -g` (Linux)
 
-Se vedi errori `EACCES`, cambia il prefisso globale di npm impostandolo su una directory scrivibile dall’utente:
+Se vedi errori `EACCES`, imposta il prefisso globale di npm su una directory scrivibile dall'utente:
 
 ```bash
 mkdir -p "$HOME/.npm-global"
@@ -144,6 +145,6 @@ Aggiungi la riga `export PATH=...` al tuo `~/.bashrc` o `~/.zshrc` per renderla 
 
 ## Correlati
 
-- [Panoramica dell’installazione](/it/install) - tutti i metodi di installazione
+- [Panoramica dell'installazione](/it/install) - tutti i metodi di installazione
 - [Aggiornamento](/it/install/updating) - mantenere OpenClaw aggiornato
-- [Primi passi](/it/start/getting-started) - primi passi dopo l’installazione
+- [Primi passi](/it/start/getting-started) - primi passaggi dopo l'installazione

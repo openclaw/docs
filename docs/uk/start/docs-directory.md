@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Вам потрібен швидкий доступ до ключових сторінок документації
-summary: Добірка посилань на найчастіше використовувану документацію OpenClaw.
+    - Ви хочете швидкий доступ до ключових сторінок документації
+summary: Добірні посилання на найуживаніші документи OpenClaw.
 title: Каталог документації
 x-i18n:
-    generated_at: "2026-05-11T20:57:38Z"
+    generated_at: "2026-06-27T18:21:10Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ddd6903aeb87e36db977b2cef62bd80e84fc67633ca00beb3365ced1f5abdd99
+    source_hash: f7d45effe4df50fb544e9f6fd2fcd87f4ed674eba0042eace757dbfcad93d07a
     source_path: start/docs-directory.md
     workflow: 16
 ---
 
 <Note>
-Ця сторінка — впорядкований індекс. Якщо ви новачок, почніть із [Початку роботи](/uk/start/getting-started).
-Повну карту документації див. у [центрах документації](/uk/start/hubs).
+Ця сторінка є впорядкованим покажчиком. Якщо ви новачок, почніть із [Початку роботи](/uk/start/getting-started).
+Повну мапу документації див. у [центрах документації](/uk/start/hubs).
 </Note>
 
 ## Почніть тут
@@ -24,11 +25,11 @@ x-i18n:
 - [Конфігурація](/uk/gateway/configuration)
 - [Приклади конфігурації](/uk/gateway/configuration-examples)
 - [Slash-команди](/uk/tools/slash-commands)
-- [Багатоагентна маршрутизація](/uk/concepts/multi-agent)
+- [Маршрутизація кількох агентів](/uk/concepts/multi-agent)
 - [Оновлення та відкат](/uk/install/updating)
 - [Сполучення (DM і вузли)](/uk/channels/pairing)
 - [Режим Nix](/uk/install/nix)
-- [Налаштування асистента OpenClaw](/uk/start/openclaw)
+- [Налаштування помічника OpenClaw](/uk/start/openclaw)
 - [Skills](/uk/tools/skills)
 - [Конфігурація Skills](/uk/tools/skills-config)
 - [Шаблони робочого простору](/uk/reference/templates/AGENTS)
@@ -49,7 +50,7 @@ x-i18n:
 - [QQ Bot](/uk/channels/qqbot)
 - [iMessage](/uk/channels/imessage)
 - [Групи](/uk/channels/groups)
-- [Групові повідомлення WhatsApp](/uk/channels/group-messages)
+- [Повідомлення груп WhatsApp](/uk/channels/group-messages)
 - [Медіазображення](/uk/nodes/images)
 - [Медіааудіо](/uk/nodes/audio)
 
@@ -58,14 +59,14 @@ x-i18n:
 - [Застосунок macOS](/uk/platforms/macos)
 - [Застосунок iOS](/uk/platforms/ios)
 - [Застосунок Android](/uk/platforms/android)
-- [Windows (WSL2)](/uk/platforms/windows)
+- [Windows Hub](/uk/platforms/windows)
 - [Застосунок Linux](/uk/platforms/linux)
 
 ## Операції та безпека
 
 - [Сеанси](/uk/concepts/session)
 - [Завдання Cron](/uk/automation/cron-jobs)
-- [Webhooks](/uk/automation/cron-jobs#webhooks)
+- [Webhook-и](/uk/automation/cron-jobs#webhooks)
 - [Хуки Gmail (Pub/Sub)](/uk/automation/cron-jobs#gmail-pubsub-integration)
 - [Безпека](/uk/gateway/security)
 - [Усунення несправностей](/uk/gateway/troubleshooting)

@@ -1,14 +1,15 @@
 ---
 read_when:
     - Você quer o ciclo de desenvolvimento local mais rápido (bun + watch)
-    - Você encontrou problemas com scripts de instalação/patch/ciclo de vida do Bun
-summary: 'Fluxo de trabalho com Bun (experimental): instalações e pontos de atenção em comparação com pnpm'
+    - Você encontrou problemas de instalação, patch ou script de ciclo de vida do Bun
+summary: 'Fluxo de trabalho com Bun (experimental): instalações e pontos de atenção vs pnpm'
 title: Bun (experimental)
 x-i18n:
-    generated_at: "2026-05-10T19:38:15Z"
+    generated_at: "2026-06-27T17:37:35Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d97a7da26520d66e6033065c50d6490c869ace3d5f0b25aafcd196074cf7df7c
+    source_hash: 1c31f2c09f3c1f99ae1a306184a86f2240b0c0f4f655c2759f5aeb6bac6b745a
     source_path: install/bun.md
     workflow: 16
 ---
@@ -17,7 +18,7 @@ x-i18n:
 Bun **não é recomendado para o runtime do Gateway** (problemas conhecidos com WhatsApp e Telegram). Use Node em produção.
 </Warning>
 
-Bun é um runtime local opcional para executar TypeScript diretamente (`bun run ...`, `bun --watch ...`). O gerenciador de pacotes padrão continua sendo `pnpm`, que é totalmente compatível e usado pelo ferramental da documentação. Bun não consegue usar `pnpm-lock.yaml` e o ignorará.
+Bun é um runtime local opcional para executar TypeScript diretamente (`bun run ...`, `bun --watch ...`). O gerenciador de pacotes padrão continua sendo `pnpm`, que tem suporte completo e é usado pelas ferramentas da documentação. Bun não consegue usar `pnpm-lock.yaml` e vai ignorá-lo.
 
 ## Instalação
 
@@ -27,7 +28,7 @@ Bun é um runtime local opcional para executar TypeScript diretamente (`bun run 
     bun install
     ```
 
-    `bun.lock` / `bun.lockb` estão no gitignore, portanto não há rotatividade no repositório. Para ignorar completamente gravações de lockfile:
+    `bun.lock` / `bun.lockb` estão no gitignore, então não há alterações no repo. Para ignorar totalmente gravações de lockfile:
 
     ```sh
     bun install --no-save
@@ -44,9 +45,9 @@ Bun é um runtime local opcional para executar TypeScript diretamente (`bun run 
 
 ## Scripts de ciclo de vida
 
-Bun bloqueia scripts de ciclo de vida de dependências, a menos que sejam explicitamente confiáveis. Para este repositório, os scripts comumente bloqueados não são necessários:
+Bun bloqueia scripts de ciclo de vida de dependências, a menos que eles sejam explicitamente confiáveis. Para este repo, os scripts comumente bloqueados não são necessários:
 
-- `baileys` `preinstall` -- verifica se a versão principal do Node é >= 20 (OpenClaw usa Node 24 por padrão e ainda oferece suporte ao Node 22 LTS, atualmente `22.16+`)
+- `baileys` `preinstall` -- verifica se a versão principal do Node é >= 20 (OpenClaw usa Node 24 por padrão e ainda oferece suporte ao Node 22 LTS, atualmente `22.19+`)
 - `protobufjs` `postinstall` -- emite avisos sobre esquemas de versão incompatíveis (sem artefatos de build)
 
 Se você encontrar um problema de runtime que exija esses scripts, confie neles explicitamente:
@@ -57,9 +58,9 @@ bun pm trust baileys protobufjs
 
 ## Ressalvas
 
-Alguns scripts ainda fixam pnpm diretamente no código (por exemplo, `docs:build`, `ui:*`, `protocol:check`). Execute-os via pnpm por enquanto.
+Alguns scripts ainda têm pnpm fixo no código (por exemplo, `check:docs`, `ui:*`, `protocol:check`). Execute-os via pnpm por enquanto.
 
-## Relacionado
+## Relacionados
 
 - [Visão geral da instalação](/pt-BR/install)
 - [Node.js](/pt-BR/install/node)

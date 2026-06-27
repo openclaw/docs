@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz Plugin msteams
-summary: Dodaje interfejs kanału Microsoft Teams do wysyłania i odbierania wiadomości OpenClaw.
+    - Instalujesz, konfigurujesz lub audytujesz plugin msteams
+summary: Plugin kanału Microsoft Teams w OpenClaw do konwersacji z botem.
 title: Plugin Microsoft Teams
 x-i18n:
-    generated_at: "2026-05-03T09:52:19Z"
+    generated_at: "2026-06-27T18:02:18Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b1e72dae5dc51a30521bde8520afec7cd743d236df63f440098b72a922bdad9c
+    source_hash: 32353faf19a94c9df5ffc57fbf0ef91391500e0ae317c9626edcbbcf295c697b
     source_path: plugins/reference/msteams.md
     workflow: 16
 ---
 
 # Plugin Microsoft Teams
 
-Dodaje interfejs kanału Microsoft Teams do wysyłania i odbierania wiadomości OpenClaw.
+Plugin kanału Microsoft Teams dla rozmów z botem w OpenClaw.
 
 ## Dystrybucja
 

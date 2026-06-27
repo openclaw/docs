@@ -4,23 +4,24 @@ read_when:
 summary: Dodaje obsługę dostawcy wyszukiwania w sieci.
 title: Plugin SearXNG
 x-i18n:
-    generated_at: "2026-05-02T20:55:08Z"
+    generated_at: "2026-06-27T18:03:30Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 10b4111629b0ec9b86a98513dff46ee08f64d767d103be572849788a57d494c9
+    source_hash: 96d320ccd6ec69e380edfcfa33b498569058be6953257b5770cd4eea95cb401a
     source_path: plugins/reference/searxng.md
     workflow: 16
 ---
 
-# SearXNG Plugin
+# Plugin SearXNG
 
-Dodaje obsługę dostawców wyszukiwania w sieci.
+Dodaje obsługę dostawcy wyszukiwania w sieci.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/searxng-plugin`
-- Ścieżka instalacji: dołączony do OpenClaw
+- Ścieżka instalacji: npm; ClawHub: `clawhub:@openclaw/searxng-plugin`
 
-## Interfejs
+## Powierzchnia
 
-contracts: webSearchProviders
+kontrakty: webSearchProviders

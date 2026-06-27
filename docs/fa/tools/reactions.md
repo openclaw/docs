@@ -5,15 +5,16 @@ read_when:
 summary: معناشناسی ابزار واکنش در همه کانال‌های پشتیبانی‌شده
 title: واکنش‌ها
 x-i18n:
-    generated_at: "2026-05-12T01:01:52Z"
+    generated_at: "2026-06-27T19:03:21Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 835c2a580f7f3e098ee956274de24191587929bfea7405a022cd68b35710c455
+    source_hash: 2dc9575eaeb79a56ca82ee491c2974e9984b1a12999762b1532ca9affdbbd72f
     source_path: tools/reactions.md
     workflow: 16
 ---
 
-عامل می‌تواند با استفاده از ابزار `message` و کنش `react`، واکنش‌های ایموجی را به پیام‌ها اضافه یا از آن‌ها حذف کند. رفتار واکنش بسته به کانال و ترابرد متفاوت است.
+عامل می‌تواند با استفاده از ابزار `message` و کنش `react`، واکنش‌های ایموجی را روی پیام‌ها اضافه و حذف کند. رفتار واکنش بسته به کانال و روش انتقال متفاوت است.
 
 ## نحوه کارکرد
 
@@ -26,16 +27,14 @@ x-i18n:
 ```
 
 - هنگام افزودن واکنش، `emoji` الزامی است.
-- برای حذف واکنش(های) ربات، `emoji` را روی یک رشته خالی (`""`) تنظیم کنید.
+- برای حذف واکنش(های) ربات، `emoji` را روی رشته خالی (`""`) تنظیم کنید.
 - برای حذف یک ایموجی مشخص، `remove: true` را تنظیم کنید (به `emoji` غیرخالی نیاز دارد).
-- در کانال‌هایی که از واکنش‌های وضعیت پشتیبانی می‌کنند، تنظیم `trackToolCalls: true` روی یک
-  واکنش به زمان اجرا اجازه می‌دهد از آن پیام واکنش‌داده‌شده برای واکنش‌های پیشرفت ابزار
-  در ادامه همان نوبت استفاده کند.
+- در کانال‌هایی که از واکنش‌های وضعیت پشتیبانی می‌کنند، `trackToolCalls: true` روی یک واکنش به زمان اجرا اجازه می‌دهد در همان نوبت، از آن پیام واکنش‌داده‌شده برای واکنش‌های پیشرفت ابزار بعدی استفاده کند.
 
 ## رفتار کانال
 
 <AccordionGroup>
-  <Accordion title="Discord و Slack">
+  <Accordion title="Discord and Slack">
     - `emoji` خالی همه واکنش‌های ربات روی پیام را حذف می‌کند.
     - `remove: true` فقط ایموجی مشخص‌شده را حذف می‌کند.
 
@@ -47,6 +46,13 @@ x-i18n:
 
   </Accordion>
 
+  <Accordion title="Nextcloud Talk">
+    - فقط افزودن واکنش‌ها: `emoji` الزامی است و باید غیرخالی باشد.
+    - حذف واکنش هنوز پشتیبانی نمی‌شود؛ فراخوانی‌های دارای `remove: true` (یا `emoji` خالی) به‌جای اینکه بی‌سروصدا بدون اثر بمانند، با خطایی روشن رد می‌شوند.
+    - لازم است ربات Talk با قابلیت `reaction` ثبت شده باشد (به [مستندات کانال Nextcloud Talk](/fa/channels/nextcloud-talk) مراجعه کنید).
+
+  </Accordion>
+
   <Accordion title="Telegram">
     - `emoji` خالی واکنش‌های ربات را حذف می‌کند.
     - `remove: true` نیز واکنش‌ها را حذف می‌کند، اما همچنان برای اعتبارسنجی ابزار به `emoji` غیرخالی نیاز دارد.
@@ -55,13 +61,14 @@ x-i18n:
 
   <Accordion title="WhatsApp">
     - `emoji` خالی واکنش ربات را حذف می‌کند.
-    - `remove: true` در داخل به ایموجی خالی نگاشت می‌شود (همچنان در فراخوانی ابزار به `emoji` نیاز دارد).
+    - `remove: true` به‌صورت داخلی به ایموجی خالی نگاشت می‌شود (هنوز به `emoji` در فراخوانی ابزار نیاز دارد).
+    - WhatsApp برای هر پیام یک جایگاه واکنش ربات دارد؛ به‌روزرسانی‌های واکنش وضعیت، به‌جای انباشتن چندین ایموجی، همان جایگاه را جایگزین می‌کنند.
 
   </Accordion>
 
   <Accordion title="Zalo Personal (zalouser)">
     - به `emoji` غیرخالی نیاز دارد.
-    - `remove: true` آن واکنش ایموجی مشخص را حذف می‌کند.
+    - `remove: true` همان واکنش ایموجی مشخص را حذف می‌کند.
 
   </Accordion>
 
@@ -72,27 +79,27 @@ x-i18n:
   </Accordion>
 
   <Accordion title="Signal">
-    - اعلان‌های واکنش ورودی توسط `channels.signal.reactionNotifications` کنترل می‌شوند: `"off"` آن‌ها را غیرفعال می‌کند، `"own"` (پیش‌فرض) وقتی کاربران به پیام‌های ربات واکنش نشان می‌دهند رویداد منتشر می‌کند، و `"all"` برای همه واکنش‌ها رویداد منتشر می‌کند.
+    - اعلان‌های واکنش ورودی با `channels.signal.reactionNotifications` کنترل می‌شوند: `"off"` آن‌ها را غیرفعال می‌کند، `"own"` (پیش‌فرض) وقتی کاربران به پیام‌های ربات واکنش نشان می‌دهند رویداد منتشر می‌کند، و `"all"` برای همه واکنش‌ها رویداد منتشر می‌کند.
 
   </Accordion>
 
   <Accordion title="iMessage">
-    - واکنش‌های خروجی همان tapbackهای iMessage هستند (`love`، `like`، `dislike`، `laugh`، `emphasize` و `question`).
-    - اعلان‌های tapback ورودی توسط `channels.imessage.reactionNotifications` کنترل می‌شوند: `"off"` آن‌ها را غیرفعال می‌کند، `"own"` (پیش‌فرض) وقتی کاربران به پیام‌های نوشته‌شده توسط ربات واکنش نشان می‌دهند رویداد منتشر می‌کند، و `"all"` برای همه tapbackهای فرستندگان مجاز رویداد منتشر می‌کند.
+    - واکنش‌های خروجی tapbackهای iMessage هستند (`love`، `like`، `dislike`، `laugh`، `emphasize` و `question`).
+    - اعلان‌های tapback ورودی با `channels.imessage.reactionNotifications` کنترل می‌شوند: `"off"` آن‌ها را غیرفعال می‌کند، `"own"` (پیش‌فرض) وقتی کاربران به پیام‌های نوشته‌شده توسط ربات واکنش نشان می‌دهند رویداد منتشر می‌کند، و `"all"` برای همه tapbackها از فرستندگان مجاز رویداد منتشر می‌کند.
 
   </Accordion>
 </AccordionGroup>
 
 ## سطح واکنش
 
-پیکربندی `reactionLevel` برای هر کانال کنترل می‌کند که عامل تا چه اندازه از واکنش‌ها استفاده کند. مقدارها معمولا `off`، `ack`، `minimal` یا `extensive` هستند.
+پیکربندی `reactionLevel` برای هر کانال کنترل می‌کند که عامل تا چه اندازه گسترده از واکنش‌ها استفاده کند. مقدارها معمولا `off`، `ack`، `minimal` یا `extensive` هستند.
 
-- [Telegram reactionLevel](/fa/channels/telegram#reaction-notifications) — `channels.telegram.reactionLevel`
-- [WhatsApp reactionLevel](/fa/channels/whatsapp#reaction-level) — `channels.whatsapp.reactionLevel`
+- [reactionLevel در Telegram](/fa/channels/telegram#reaction-notifications) — `channels.telegram.reactionLevel`
+- [reactionLevel در WhatsApp](/fa/channels/whatsapp#reaction-level) — `channels.whatsapp.reactionLevel`
 
-برای تنظیم میزان فعال بودن واکنش عامل به پیام‌ها در هر پلتفرم، `reactionLevel` را روی کانال‌های جداگانه تنظیم کنید.
+برای تنظیم اینکه عامل در هر پلتفرم با چه میزان فعالیت به پیام‌ها واکنش نشان دهد، `reactionLevel` را روی کانال‌های جداگانه تنظیم کنید.
 
 ## مرتبط
 
 - [ارسال عامل](/fa/tools/agent-send) — ابزار `message` که شامل `react` است
-- [کانال‌ها](/fa/channels) — پیکربندی ویژه کانال‌ها
+- [کانال‌ها](/fa/channels) — پیکربندی ویژه هر کانال

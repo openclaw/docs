@@ -1,28 +1,29 @@
 ---
 read_when: You are managing sandbox runtimes or debugging sandbox/tool-policy behavior.
 status: active
-summary: Zarządzaj środowiskami uruchomieniowymi piaskownicy i sprawdzaj obowiązującą politykę piaskownicy
+summary: Zarządzaj środowiskami wykonawczymi sandbox i sprawdzaj obowiązującą politykę sandbox
 title: CLI piaskownicy
 x-i18n:
-    generated_at: "2026-05-03T21:28:59Z"
+    generated_at: "2026-06-27T17:22:57Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c50b97c35ba8cd79416de6a167a7cbc313d063b320db7deafd42f7a570e507ac
+    source_hash: eeba1a5530bb946b334cfe399b7a0c862694ae47c55b2341d7146333e112602a
     source_path: cli/sandbox.md
     workflow: 16
 ---
 
-Zarządzaj środowiskami uruchomieniowymi sandbox na potrzeby izolowanego wykonywania agentów.
+Zarządzaj środowiskami wykonawczymi sandbox do izolowanego uruchamiania agentów.
 
 ## Omówienie
 
-OpenClaw może uruchamiać agentów w izolowanych środowiskach uruchomieniowych sandbox dla bezpieczeństwa. Polecenia `sandbox` pomagają sprawdzać i odtwarzać te środowiska po aktualizacjach lub zmianach konfiguracji.
+OpenClaw może uruchamiać agentów w izolowanych środowiskach wykonawczych sandbox ze względów bezpieczeństwa. Polecenia `sandbox` pomagają sprawdzać i odtwarzać te środowiska po aktualizacjach lub zmianach konfiguracji.
 
 Obecnie zwykle oznacza to:
 
-- Kontenery sandbox Docker
-- Środowiska uruchomieniowe sandbox SSH, gdy `agents.defaults.sandbox.backend = "ssh"`
-- Środowiska uruchomieniowe sandbox OpenShell, gdy `agents.defaults.sandbox.backend = "openshell"`
+- kontenery sandbox Docker
+- środowiska wykonawcze sandbox SSH, gdy `agents.defaults.sandbox.backend = "ssh"`
+- środowiska wykonawcze sandbox OpenShell, gdy `agents.defaults.sandbox.backend = "openshell"`
 
 Dla `ssh` i OpenShell `remote` odtworzenie ma większe znaczenie niż w przypadku Docker:
 
@@ -34,7 +35,7 @@ Dla `ssh` i OpenShell `remote` odtworzenie ma większe znaczenie niż w przypadk
 
 ### `openclaw sandbox explain`
 
-Sprawdź **efektywny** tryb/zakres/dostęp do obszaru roboczego sandbox, politykę narzędzi sandbox oraz bramki podniesionych uprawnień (ze ścieżkami kluczy konfiguracji do naprawy).
+Sprawdź **efektywny** tryb/zakres/dostęp do obszaru roboczego sandbox, politykę narzędzi sandbox oraz bramki podwyższonych uprawnień (ze ścieżkami kluczy konfiguracji do naprawy).
 
 ```bash
 openclaw sandbox explain
@@ -45,7 +46,7 @@ openclaw sandbox explain --json
 
 ### `openclaw sandbox list`
 
-Wyświetl wszystkie środowiska uruchomieniowe sandbox wraz z ich stanem i konfiguracją.
+Wyświetl wszystkie środowiska wykonawcze sandbox wraz z ich stanem i konfiguracją.
 
 ```bash
 openclaw sandbox list
@@ -53,18 +54,18 @@ openclaw sandbox list --browser  # List only browser containers
 openclaw sandbox list --json     # JSON output
 ```
 
-**Dane wyjściowe obejmują:**
+**Dane wyjściowe zawierają:**
 
-- Nazwę i stan środowiska uruchomieniowego
+- Nazwę i stan środowiska wykonawczego
 - Backend (`docker`, `openshell` itd.)
-- Etykietę konfiguracji i informację, czy pasuje do bieżącej konfiguracji
+- Etykietę konfiguracji oraz informację, czy pasuje do bieżącej konfiguracji
 - Wiek (czas od utworzenia)
 - Czas bezczynności (czas od ostatniego użycia)
 - Powiązaną sesję/agenta
 
 ### `openclaw sandbox recreate`
 
-Usuń środowiska uruchomieniowe sandbox, aby wymusić ich odtworzenie ze zaktualizowaną konfiguracją.
+Usuń środowiska wykonawcze sandbox, aby wymusić ich odtworzenie ze zaktualizowaną konfiguracją.
 
 ```bash
 openclaw sandbox recreate --all                # Recreate all containers
@@ -77,18 +78,18 @@ openclaw sandbox recreate --all --force        # Skip confirmation
 **Opcje:**
 
 - `--all`: Odtwórz wszystkie kontenery sandbox
-- `--session <key>`: Odtwórz kontener dla konkretnej sesji
-- `--agent <id>`: Odtwórz kontenery dla konkretnego agenta
+- `--session <key>`: Odtwórz kontener dla określonej sesji
+- `--agent <id>`: Odtwórz kontenery dla określonego agenta
 - `--browser`: Odtwórz tylko kontenery przeglądarki
 - `--force`: Pomiń monit o potwierdzenie
 
 <Note>
-Środowiska uruchomieniowe są automatycznie odtwarzane przy następnym użyciu agenta.
+Środowiska wykonawcze są automatycznie odtwarzane przy następnym użyciu agenta.
 </Note>
 
 ## Przypadki użycia
 
-### Po aktualizacji obrazu Docker
+### Po zaktualizowaniu obrazu Docker
 
 ```bash
 # Pull new image
@@ -111,7 +112,7 @@ openclaw sandbox recreate --all
 openclaw sandbox recreate --all
 ```
 
-### Po zmianie celu SSH lub materiałów uwierzytelniania SSH
+### Po zmianie celu SSH lub materiału uwierzytelniania SSH
 
 ```bash
 # Edit config:
@@ -124,7 +125,7 @@ openclaw sandbox recreate --all
 openclaw sandbox recreate --all
 ```
 
-Dla podstawowego backendu `ssh` odtworzenie usuwa zdalny katalog główny obszaru roboczego dla danego zakresu
+Dla podstawowego backendu `ssh` odtworzenie usuwa główny katalog zdalnego obszaru roboczego dla danego zakresu
 na celu SSH. Następne uruchomienie ponownie zasiewa go z lokalnego obszaru roboczego.
 
 ### Po zmianie źródła, polityki lub trybu OpenShell
@@ -150,7 +151,7 @@ openclaw sandbox recreate --all
 openclaw sandbox recreate --agent family
 ```
 
-### Tylko dla konkretnego agenta
+### Tylko dla określonego agenta
 
 ```bash
 # Update only one agent's containers
@@ -161,28 +162,28 @@ openclaw sandbox recreate --agent alfred
 
 Gdy aktualizujesz konfigurację sandbox:
 
-- Istniejące środowiska uruchomieniowe nadal działają ze starymi ustawieniami.
-- Środowiska uruchomieniowe są usuwane dopiero po 24 godzinach bezczynności.
-- Regularnie używani agenci utrzymują stare środowiska uruchomieniowe aktywne bezterminowo.
+- Istniejące środowiska wykonawcze nadal działają ze starymi ustawieniami.
+- Środowiska wykonawcze są usuwane dopiero po 24 godzinach bezczynności.
+- Regularnie używani agenci utrzymują stare środowiska wykonawcze aktywne bezterminowo.
 
-Użyj `openclaw sandbox recreate`, aby wymusić usunięcie starych środowisk uruchomieniowych. Zostaną one automatycznie odtworzone z bieżącymi ustawieniami, gdy będą ponownie potrzebne.
+Użyj `openclaw sandbox recreate`, aby wymusić usunięcie starych środowisk wykonawczych. Zostaną one automatycznie odtworzone z bieżącymi ustawieniami, gdy będą następnym razem potrzebne.
 
 <Tip>
-Preferuj `openclaw sandbox recreate` zamiast ręcznego czyszczenia specyficznego dla backendu. Używa ono rejestru środowisk uruchomieniowych Gateway i pozwala uniknąć niezgodności, gdy zmieniają się klucze zakresu lub sesji.
+Preferuj `openclaw sandbox recreate` zamiast ręcznego czyszczenia specyficznego dla backendu. Polecenie używa rejestru środowisk wykonawczych Gateway i unika niezgodności, gdy zmieniają się klucze zakresu lub sesji.
 </Tip>
 
 ## Migracja rejestru
 
-OpenClaw przechowuje metadane środowiska uruchomieniowego sandbox jako jeden fragment JSON na wpis kontenera/przeglądarki w katalogu stanu sandbox. Starsze instalacje mogą nadal mieć monolityczne pliki starszego typu:
+OpenClaw przechowuje metadane środowisk wykonawczych sandbox we współdzielonej bazie stanu SQLite. Starsze instalacje mogą nadal mieć starsze pliki rejestru sandbox:
 
 - `~/.openclaw/sandbox/containers.json`
 - `~/.openclaw/sandbox/browsers.json`
 
-Zwykłe odczyty środowisk uruchomieniowych sandbox nie przepisują tych plików. Uruchom `openclaw doctor --fix`, aby zmigrować prawidłowe starsze wpisy do katalogów rejestru podzielonego na fragmenty. Nieprawidłowe starsze pliki są poddawane kwarantannie, aby jeden wadliwy stary rejestr nie mógł ukryć bieżących wpisów środowisk uruchomieniowych.
+Niektóre aktualizacje mogą także mieć po jednym fragmencie JSON na kontener/przeglądarkę w `~/.openclaw/sandbox/containers/` lub `~/.openclaw/sandbox/browsers/`. Zwykłe odczyty środowisk wykonawczych sandbox nie przepisują tych starszych źródeł. Uruchom `openclaw doctor --fix`, aby zmigrować prawidłowe starsze wpisy do SQLite. Nieprawidłowe starsze pliki są poddawane kwarantannie, aby jeden błędny stary rejestr nie mógł ukryć bieżących wpisów środowisk wykonawczych.
 
 ## Konfiguracja
 
-Ustawienia sandbox znajdują się w `~/.openclaw/openclaw.json` pod `agents.defaults.sandbox` (nadpisania dla poszczególnych agentów trafiają do `agents.list[].sandbox`):
+Ustawienia sandbox znajdują się w `~/.openclaw/openclaw.json` w sekcji `agents.defaults.sandbox` (nadpisania dla poszczególnych agentów trafiają do `agents.list[].sandbox`):
 
 ```jsonc
 {

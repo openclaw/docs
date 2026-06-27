@@ -1,27 +1,28 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin google-meet
-summary: เข้าร่วมการโทร Google Meet ผ่านทรานสปอร์ต Chrome หรือ Twilio
+summary: Plugin ผู้เข้าร่วม Google Meet ของ OpenClaw สำหรับเข้าร่วมการโทรผ่านทรานสปอร์ต Chrome หรือ Twilio
 title: Plugin Google Meet
 x-i18n:
-    generated_at: "2026-05-03T10:16:42Z"
+    generated_at: "2026-06-27T18:02:30Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1418e8400d3efc0e9448e337269636d3801cee38ad05be1fa6657564974bfccb
+    source_hash: 2f0086a8b48f6e120ad391a99d60a14d7682910ca3ad176e41a51b341e9bdb49
     source_path: plugins/reference/google-meet.md
     workflow: 16
 ---
 
 # Google Meet Plugin
 
-เข้าร่วมการโทร Google Meet ผ่านทรานสปอร์ต Chrome หรือ Twilio
+Plugin ผู้เข้าร่วม Google Meet ของ OpenClaw สำหรับเข้าร่วมการโทรผ่านทรานสปอร์ต Chrome หรือ Twilio
 
 ## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/google-meet`
 - เส้นทางการติดตั้ง: npm; ClawHub
 
-## ส่วนติดต่อ
+## พื้นผิว
 
 สัญญา: เครื่องมือ
 

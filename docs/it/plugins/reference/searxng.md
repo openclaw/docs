@@ -1,26 +1,27 @@
 ---
 read_when:
-    - Stai installando, configurando o verificando il plugin searxng
-summary: Aggiunge il supporto per il provider di ricerca web.
+    - Stai installando, configurando o verificando il Plugin searxng
+summary: Aggiunge il supporto per i provider di ricerca web.
 title: Plugin SearXNG
 x-i18n:
-    generated_at: "2026-05-02T20:56:55Z"
+    generated_at: "2026-06-27T17:58:58Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 10b4111629b0ec9b86a98513dff46ee08f64d767d103be572849788a57d494c9
+    source_hash: 96d320ccd6ec69e380edfcfa33b498569058be6953257b5770cd4eea95cb401a
     source_path: plugins/reference/searxng.md
     workflow: 16
 ---
 
 # Plugin SearXNG
 
-Aggiunge il supporto per i provider di ricerca web.
+Aggiunge il supporto per provider di ricerca web.
 
 ## Distribuzione
 
 - Pacchetto: `@openclaw/searxng-plugin`
-- Percorso di installazione: incluso in OpenClaw
+- Percorso di installazione: npm; ClawHub: `clawhub:@openclaw/searxng-plugin`
 
 ## Superficie
 
-contratti: webSearchProviders
+contracts: webSearchProviders

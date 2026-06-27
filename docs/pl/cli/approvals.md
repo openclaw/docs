@@ -1,40 +1,41 @@
 ---
 read_when:
-    - Chcesz edytować zatwierdzenia exec z poziomu CLI.
-    - Musisz zarządzać listami dozwolonych na hostach Gateway lub Node.
+    - Chcesz edytować zatwierdzenia exec z poziomu CLI
+    - Musisz zarządzać listami dozwolonych na hostach Gateway lub Node
 summary: Dokumentacja CLI dla `openclaw approvals` i `openclaw exec-policy`
 title: Zatwierdzenia
 x-i18n:
-    generated_at: "2026-04-24T09:01:41Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T17:19:21Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7403f0e35616db5baf3d1564c8c405b3883fc3e5032da9c6a19a32dba8c5fb7d
+    source_hash: e5521622ee48237d3cc9feaa54906d026dfb15da4c9b9b17655cd59b35cae19d
     source_path: cli/approvals.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw approvals`
 
-Zarządzaj zatwierdzeniami exec dla **hosta lokalnego**, **hosta gateway** albo **hosta node**.
-Domyślnie polecenia są kierowane do lokalnego pliku zatwierdzeń na dysku. Użyj `--gateway`, aby kierować je do gateway, albo `--node`, aby kierować je do konkretnego node.
+Zarządzaj zatwierdzeniami exec dla **hosta lokalnego**, **hosta Gateway** lub **hosta węzła**.
+Domyślnie polecenia są kierowane do lokalnego pliku zatwierdzeń na dysku. Użyj `--gateway`, aby wybrać Gateway, albo `--node`, aby wybrać konkretny węzeł.
 
 Alias: `openclaw exec-approvals`
 
 Powiązane:
 
 - Zatwierdzenia exec: [Zatwierdzenia exec](/pl/tools/exec-approvals)
-- Node: [Node](/pl/nodes)
+- Węzły: [Węzły](/pl/nodes)
 
 ## `openclaw exec-policy`
 
-`openclaw exec-policy` to lokalne wygodne polecenie do utrzymywania żądanej konfiguracji
-`tools.exec.*` i lokalnego pliku zatwierdzeń hosta w synchronizacji w jednym kroku.
+`openclaw exec-policy` to lokalne polecenie pomocnicze do utrzymywania żądanej konfiguracji
+`tools.exec.*` i lokalnego pliku zatwierdzeń hosta w zgodności w jednym kroku.
 
 Użyj go, gdy chcesz:
 
 - sprawdzić lokalną żądaną politykę, plik zatwierdzeń hosta i efektywne scalenie
-- zastosować lokalny preset, taki jak YOLO albo deny-all
-- zsynchronizować lokalne `tools.exec.*` i lokalne `~/.openclaw/exec-approvals.json`
+- zastosować lokalne ustawienie wstępne, takie jak YOLO lub deny-all
+- zsynchronizować lokalne `tools.exec.*` i lokalny plik zatwierdzeń hosta
 
 Przykłady:
 
@@ -51,17 +52,17 @@ openclaw exec-policy set --host gateway --security full --ask off --ask-fallback
 Tryby wyjścia:
 
 - bez `--json`: wypisuje czytelny dla człowieka widok tabeli
-- `--json`: wypisuje ustrukturyzowane dane czytelne dla maszyn
+- `--json`: wypisuje ustrukturyzowane wyjście czytelne maszynowo
 
 Bieżący zakres:
 
-- `exec-policy` jest **tylko lokalne**
+- `exec-policy` działa **tylko lokalnie**
 - aktualizuje razem lokalny plik konfiguracji i lokalny plik zatwierdzeń
-- **nie** wypycha polityki do hosta gateway ani hosta node
-- `--host node` jest odrzucane w tym poleceniu, ponieważ zatwierdzenia exec dla node są pobierane z node w czasie działania i muszą być zarządzane przez polecenia zatwierdzeń kierowane do node
-- `openclaw exec-policy show` oznacza zakresy `host=node` jako zarządzane przez node w czasie działania zamiast wyprowadzać efektywną politykę z lokalnego pliku zatwierdzeń
+- **nie** wypycha polityki do hosta Gateway ani hosta węzła
+- `--host node` jest odrzucane w tym poleceniu, ponieważ zatwierdzenia exec węzła są pobierane z węzła w czasie działania i zamiast tego muszą być zarządzane przez polecenia zatwierdzeń kierowane do węzła
+- `openclaw exec-policy show` oznacza zakresy `host=node` jako zarządzane przez węzeł w czasie działania, zamiast wyprowadzać efektywną politykę z lokalnego pliku zatwierdzeń
 
-Jeśli musisz bezpośrednio edytować zatwierdzenia hostów zdalnych, nadal używaj `openclaw approvals set --gateway`
+Jeśli musisz bezpośrednio edytować zatwierdzenia zdalnego hosta, nadal używaj `openclaw approvals set --gateway`
 lub `openclaw approvals set --node <id|name|ip>`.
 
 ## Typowe polecenia
@@ -72,35 +73,35 @@ openclaw approvals get --node <id|name|ip>
 openclaw approvals get --gateway
 ```
 
-`openclaw approvals get` pokazuje teraz efektywną politykę exec dla celów lokalnych, gateway i node:
+`openclaw approvals get` pokazuje teraz efektywną politykę exec dla celów lokalnych, Gateway i węzłów:
 
-- żądaną politykę `tools.exec`
-- politykę pliku zatwierdzeń hosta
+- żądana polityka `tools.exec`
+- polityka z pliku zatwierdzeń hosta
 - efektywny wynik po zastosowaniu reguł pierwszeństwa
 
 Pierwszeństwo jest celowe:
 
 - plik zatwierdzeń hosta jest egzekwowalnym źródłem prawdy
-- żądana polityka `tools.exec` może zawężać lub poszerzać intencję, ale efektywny wynik nadal jest wyprowadzany z reguł hosta
-- `--node` łączy plik zatwierdzeń hosta node z polityką `tools.exec` gateway, ponieważ oba nadal mają zastosowanie w czasie działania
-- jeśli konfiguracja gateway jest niedostępna, CLI wraca do snapshotu zatwierdzeń node i zaznacza, że nie udało się obliczyć końcowej polityki środowiska uruchomieniowego
+- żądana polityka `tools.exec` może zawężać lub rozszerzać intencję, ale efektywny wynik nadal jest wyprowadzany z reguł hosta
+- `--node` łączy plik zatwierdzeń hosta węzła z polityką Gateway `tools.exec`, ponieważ oba nadal obowiązują w czasie działania
+- jeśli konfiguracja Gateway jest niedostępna, CLI wraca do migawki zatwierdzeń węzła i informuje, że nie udało się obliczyć końcowej polityki czasu działania
 
 ## Zastępowanie zatwierdzeń z pliku
 
 ```bash
 openclaw approvals set --file ./exec-approvals.json
 openclaw approvals set --stdin <<'EOF'
-{ version: 1, defaults: { security: "full", ask: "off" } }
+{ version: 1, defaults: { security: "full", ask: "off", askFallback: "full" } }
 EOF
 openclaw approvals set --node <id|name|ip> --file ./exec-approvals.json
 openclaw approvals set --gateway --file ./exec-approvals.json
 ```
 
-`set` akceptuje JSON5, a nie tylko ścisły JSON. Użyj `--file` albo `--stdin`, nie obu naraz.
+`set` akceptuje JSON5, nie tylko ścisły JSON. Użyj `--file` albo `--stdin`, ale nie obu naraz.
 
-## Przykład „nigdy nie pytaj” / YOLO
+## Przykład „Nigdy nie pytaj” / YOLO
 
-Dla hosta, który nigdy nie powinien zatrzymywać się na zatwierdzeniach exec, ustaw domyślne wartości pliku zatwierdzeń hosta na `full` + `off`:
+Dla hosta, który nigdy nie powinien zatrzymywać się na zatwierdzeniach exec, ustaw domyślne zatwierdzenia hosta na `full` + `off`:
 
 ```bash
 openclaw approvals set --stdin <<'EOF'
@@ -115,7 +116,7 @@ openclaw approvals set --stdin <<'EOF'
 EOF
 ```
 
-Wariant dla node:
+Wariant dla węzła:
 
 ```bash
 openclaw approvals set --node <id|name|ip> --stdin <<'EOF'
@@ -130,7 +131,7 @@ openclaw approvals set --node <id|name|ip> --stdin <<'EOF'
 EOF
 ```
 
-To zmienia tylko **plik zatwierdzeń hosta**. Aby utrzymać zgodność z żądaną polityką OpenClaw, ustaw również:
+Zmienia to tylko **plik zatwierdzeń hosta**. Aby zachować zgodność żądanej polityki OpenClaw, ustaw także:
 
 ```bash
 openclaw config set tools.exec.host gateway
@@ -138,13 +139,14 @@ openclaw config set tools.exec.security full
 openclaw config set tools.exec.ask off
 ```
 
-Dlaczego `tools.exec.host=gateway` w tym przykładzie:
+Dlaczego w tym przykładzie `tools.exec.host=gateway`:
 
-- `host=auto` nadal oznacza „sandbox, jeśli dostępny, w przeciwnym razie gateway”.
-- YOLO dotyczy zatwierdzeń, a nie routingu.
-- Jeśli chcesz exec na hoście nawet wtedy, gdy skonfigurowano sandbox, jawnie ustaw wybór hosta przez `gateway` albo `/exec host=gateway`.
+- `host=auto` nadal oznacza „sandbox, gdy dostępny, w przeciwnym razie Gateway”.
+- YOLO dotyczy zatwierdzeń, nie routingu.
+- Jeśli chcesz exec na hoście nawet wtedy, gdy skonfigurowano sandbox, ustaw wybór hosta jawnie przez `gateway` lub `/exec host=gateway`.
 
-To odpowiada obecnemu domyślnemu zachowaniu YOLO dla hosta. Zaostrz je, jeśli chcesz zatwierdzeń.
+Pominięte `askFallback` domyślnie przyjmuje `deny`. Ustaw `askFallback: "full"`
+jawnie podczas aktualizowania hosta bez interfejsu użytkownika, który ma zachować zachowanie nigdy nie pytaj.
 
 Lokalny skrót:
 
@@ -152,8 +154,9 @@ Lokalny skrót:
 openclaw exec-policy preset yolo
 ```
 
-Ten lokalny skrót aktualizuje jednocześnie żądaną lokalną konfigurację `tools.exec.*` i
-lokalne wartości domyślne zatwierdzeń. Jest równoważny intencyjnie ręcznej konfiguracji dwuetapowej powyżej, ale tylko dla maszyny lokalnej.
+Ten lokalny skrót aktualizuje razem zarówno żądaną lokalną konfigurację `tools.exec.*`, jak i
+lokalne domyślne zatwierdzenia. Jest równoważny intencją ręcznej dwuetapowej
+konfiguracji powyżej, ale tylko dla maszyny lokalnej.
 
 ## Pomocniki listy dozwolonych
 
@@ -167,28 +170,30 @@ openclaw approvals allowlist remove "~/Projects/**/bin/rg"
 
 ## Typowe opcje
 
-`get`, `set` i `allowlist add|remove` obsługują:
+`get`, `set` oraz `allowlist add|remove` obsługują:
 
 - `--node <id|name|ip>`
 - `--gateway`
-- współdzielone opcje RPC dla node: `--url`, `--token`, `--timeout`, `--json`
+- współdzielone opcje RPC węzła: `--url`, `--token`, `--timeout`, `--json`
 
-Uwagi dotyczące kierowania:
+Uwagi dotyczące wyboru celu:
 
 - brak flag celu oznacza lokalny plik zatwierdzeń na dysku
-- `--gateway` kieruje do pliku zatwierdzeń hosta gateway
-- `--node` kieruje do jednego hosta node po rozwiązaniu identyfikatora, nazwy, IP lub prefiksu identyfikatora
+- `--gateway` wybiera plik zatwierdzeń hosta Gateway
+- `--node` wybiera jeden host węzła po rozwiązaniu identyfikatora, nazwy, adresu IP lub prefiksu identyfikatora
 
-`allowlist add|remove` obsługuje również:
+`allowlist add|remove` obsługuje także:
 
 - `--agent <id>` (domyślnie `*`)
 
 ## Uwagi
 
-- `--node` używa tego samego mechanizmu rozwiązywania co `openclaw nodes` (id, nazwa, ip albo prefiks id).
-- `--agent` domyślnie ma wartość `"*"`, co dotyczy wszystkich agentów.
-- Host node musi deklarować `system.execApprovals.get/set` (aplikacja macOS albo bezgłowy host node).
-- Pliki zatwierdzeń są przechowywane per host w `~/.openclaw/exec-approvals.json`.
+- `--node` używa tego samego mechanizmu rozwiązywania co `openclaw nodes` (identyfikator, nazwa, adres IP lub prefiks identyfikatora).
+- `--agent` domyślnie przyjmuje `"*"`, co obejmuje wszystkich agentów.
+- Host węzła musi ogłaszać `system.execApprovals.get/set` (aplikacja macOS lub bezgłowy host węzła).
+- Pliki zatwierdzeń są przechowywane osobno dla każdego hosta w katalogu stanu OpenClaw
+  (`$OPENCLAW_STATE_DIR/exec-approvals.json` albo
+  `~/.openclaw/exec-approvals.json`, gdy zmienna nie jest ustawiona).
 
 ## Powiązane
 

@@ -1,23 +1,24 @@
 ---
 read_when:
-    - OpenClaw لا يعمل وتحتاج إلى أسرع مسار لإصلاحه
-    - تحتاج إلى مسار فرز قبل التعمق في أدلة التشغيل المفصلة
-summary: مركز استكشاف أخطاء OpenClaw وإصلاحها بدءًا من الأعراض
-title: استكشاف الأخطاء وإصلاحها العام
+    - OpenClaw لا يعمل وتحتاج إلى أسرع مسار للإصلاح
+    - تحتاج إلى مسار فرز أولي قبل التعمق في أدلة التشغيل المفصلة
+summary: مركز استكشاف الأخطاء وإصلاحها في OpenClaw حسب العَرَض أولًا
+title: استكشاف الأخطاء العامة وإصلاحها
 x-i18n:
-    generated_at: "2026-05-06T07:58:55Z"
+    generated_at: "2026-06-27T17:48:25Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 624fa34cda3b440fa9cc636beb3fe6e3608a77a332933fa593097ebc556ac745
+    source_hash: ae1236c73e3a5c9237bd81d603e8dca18c595a8bcbb71f5931bfbf2389b342cd
     source_path: help/troubleshooting.md
     workflow: 16
 ---
 
-إذا كان لديك دقيقتان فقط، فاستخدم هذه الصفحة كمدخل أولي للفرز.
+إذا كان لديك دقيقتان فقط، فاستخدم هذه الصفحة كبوابة فرز أولية.
 
 ## أول 60 ثانية
 
-شغّل هذا التسلسل الدقيق بالترتيب:
+شغّل هذا السلم المحدد بالترتيب:
 
 ```bash
 openclaw status
@@ -33,45 +34,70 @@ openclaw logs --follow
 
 - `openclaw status` → يعرض القنوات المضبوطة ولا يُظهر أخطاء مصادقة واضحة.
 - `openclaw status --all` → التقرير الكامل موجود وقابل للمشاركة.
-- `openclaw gateway probe` → هدف الـ Gateway المتوقع قابل للوصول (`Reachable: yes`). يخبرك `Capability: ...` بمستوى المصادقة الذي استطاع الفحص إثباته، و`Read probe: limited - missing scope: operator.read` يعني تشخيصات متدهورة، وليس فشل اتصال.
-- `openclaw gateway status` → `Runtime: running` و`Connectivity probe: ok` وسطر `Capability: ...` معقول. استخدم `--require-rpc` إذا كنت تحتاج أيضًا إلى إثبات RPC بنطاق القراءة.
+- `openclaw gateway probe` → هدف Gateway المتوقع قابل للوصول (`Reachable: yes`). يخبرك `Capability: ...` بمستوى المصادقة الذي استطاع الفحص إثباته، و`Read probe: limited - missing scope: operator.read` يعني تشخيصات متدهورة، وليس فشل اتصال.
+- `openclaw gateway status` → `Runtime: running` و`Connectivity probe: ok` وسطر `Capability: ...` معقول. استخدم `--require-rpc` إذا كنت تحتاج أيضًا إلى إثبات RPC بنطاق قراءة.
 - `openclaw doctor` → لا توجد أخطاء ضبط/خدمة مانعة.
-- `openclaw channels status --probe` → يعيد الـ Gateway القابل للوصول حالة النقل الحية لكل حساب
-  إضافة إلى نتائج الفحص/التدقيق مثل `works` أو `audit ok`؛ وإذا كان
-  الـ Gateway غير قابل للوصول، يعود الأمر إلى ملخصات الضبط فقط.
-- `openclaw logs --follow` → نشاط مستقر، ولا توجد أخطاء فادحة متكررة.
+- `openclaw channels status --probe` → يعيد Gateway القابل للوصول حالة نقل حية لكل حساب
+  بالإضافة إلى نتائج الفحص/التدقيق مثل `works` أو `audit ok`؛ إذا كان
+  Gateway غير قابل للوصول، يرجع الأمر إلى ملخصات الضبط فقط.
+- `openclaw logs --follow` → نشاط مستقر، بلا أخطاء فادحة متكررة.
 
-## خطأ Anthropic 429 في السياق الطويل
+## المساعد يبدو محدودًا أو تنقصه الأدوات
+
+إذا كان المساعد لا يستطيع فحص الملفات أو تشغيل الأوامر أو استخدام أتمتة المتصفح أو
+رؤية الأدوات المتوقعة، فتحقق أولًا من ملف الأدوات الفعّال:
+
+```bash
+openclaw status
+openclaw status --all
+openclaw doctor
+```
+
+الأسباب الشائعة:
+
+- `tools.profile: "messaging"` محدود عمدًا للوكلاء المخصصين للدردشة فقط.
+- `tools.profile: "coding"` هو الملف المعتاد لتدفقات عمل المستودعات والملفات والصدفة
+  ووقت التشغيل.
+- `tools.profile: "full"` يكشف أوسع مجموعة أدوات ويجب حصره
+  في الوكلاء الموثوقين الخاضعين لتحكم المشغل.
+- يمكن لتجاوزات `agents.list[].tools` لكل وكيل تضييق الملف الجذري أو توسيعه
+  لوكيل واحد.
+
+غيّر ملف الأدوات الجذري أو الخاص بالوكيل، ثم أعد تشغيل Gateway أو أعد تحميله
+وشغّل `openclaw status --all` مرة أخرى. راجع [الأدوات](/ar/tools) لمعرفة نموذج الملفات
+وتجاوزات السماح/الرفض.
+
+## سياق Anthropic الطويل 429
 
 إذا رأيت:
-`HTTP 429: rate_limit_error: Extra usage is required for long context requests`,
+`HTTP 429: rate_limit_error: Extra usage is required for long context requests`،
 فانتقل إلى [/gateway/troubleshooting#anthropic-429-extra-usage-required-for-long-context](/ar/gateway/troubleshooting#anthropic-429-extra-usage-required-for-long-context).
 
-## الواجهة الخلفية المحلية المتوافقة مع OpenAI تعمل مباشرة لكنها تفشل في OpenClaw
+## الواجهة الخلفية المحلية المتوافقة مع OpenAI تعمل مباشرةً لكنها تفشل في OpenClaw
 
-إذا كانت الواجهة الخلفية المحلية أو ذاتية الاستضافة عند `/v1` تجيب على فحوصات
-`/v1/chat/completions` المباشرة الصغيرة لكنها تفشل مع `openclaw infer model run` أو دورات
-الوكيل العادية:
+إذا كانت واجهة `/v1` المحلية أو ذاتية الاستضافة تجيب على فحوصات
+`/v1/chat/completions` المباشرة الصغيرة لكنها تفشل عند `openclaw infer model run` أو في
+دورات الوكيل العادية:
 
 1. إذا ذكر الخطأ أن `messages[].content` يتوقع سلسلة نصية، فاضبط
    `models.providers.<provider>.models[].compat.requiresStringContent: true`.
-2. إذا استمرت الواجهة الخلفية في الفشل فقط مع دورات وكيل OpenClaw، فاضبط
-   `models.providers.<provider>.models[].compat.supportsTools: false` ثم أعد المحاولة.
-3. إذا ظلت الاستدعاءات المباشرة الصغيرة تعمل لكن مطالبات OpenClaw الأكبر تتسبب في تعطل
-   الواجهة الخلفية، فتعامل مع المشكلة المتبقية على أنها قيدًا في نموذج/خادم المنبع وتابع
-   في دليل التشغيل التفصيلي:
+2. إذا ظلت الواجهة الخلفية تفشل فقط في دورات وكيل OpenClaw، فاضبط
+   `models.providers.<provider>.models[].compat.supportsTools: false` وأعد المحاولة.
+3. إذا كانت الاستدعاءات المباشرة الصغيرة ما زالت تعمل لكن مطالبات OpenClaw الأكبر تتسبب في تعطل
+   الواجهة الخلفية، فتعامل مع المشكلة المتبقية كقيد في النموذج/الخادم upstream وتابع
+   في دليل التشغيل المتعمق:
    [/gateway/troubleshooting#local-openai-compatible-backend-passes-direct-probes-but-agent-runs-fail](/ar/gateway/troubleshooting#local-openai-compatible-backend-passes-direct-probes-but-agent-runs-fail)
 
-## فشل تثبيت Plugin بسبب غياب امتدادات openclaw
+## فشل تثبيت Plugin بسبب فقدان امتدادات openclaw
 
-إذا فشل التثبيت مع `package.json missing openclaw.extensions`، فهذا يعني أن حزمة الـ plugin
-تستخدم بنية قديمة لم يعد OpenClaw يقبلها.
+إذا فشل التثبيت مع `package.json missing openclaw.extensions`، فهذا يعني أن حزمة Plugin
+تستخدم شكلًا قديمًا لم يعد OpenClaw يقبله.
 
-أصلح ذلك في حزمة الـ plugin:
+الإصلاح في حزمة Plugin:
 
 1. أضف `openclaw.extensions` إلى `package.json`.
-2. وجّه الإدخالات إلى ملفات التشغيل المبنية (عادةً `./dist/index.js`).
-3. أعد نشر الـ plugin وشغّل `openclaw plugins install <package>` مرة أخرى.
+2. وجّه الإدخالات إلى ملفات وقت التشغيل المبنية (عادةً `./dist/index.js`).
+3. أعد نشر Plugin وشغّل `openclaw plugins install <package>` مرة أخرى.
 
 مثال:
 
@@ -85,30 +111,80 @@ openclaw logs --follow
 }
 ```
 
-المرجع: [بنية الـ Plugin](/ar/plugins/architecture)
+المرجع: [معمارية Plugin](/ar/plugins/architecture)
+
+## سياسة التثبيت تمنع تثبيتات Plugin أو تحديثاتها
+
+إذا اكتمل تحديث لكن Plugins قديمة أو معطلة أو تعرض رسائل مثل
+`blocked by install policy` أو `install policy failed closed` أو
+`Disabled "<plugin>" after plugin update failure`، فتحقق من
+`security.installPolicy`.
+
+تعمل سياسة التثبيت على تثبيتات Plugin وتحديثاتها. عادةً ما تتحرك إصدارات Plugin
+المملوكة لـ OpenClaw مع إصدار OpenClaw، لذلك قد يحتاج تحديث OpenClaw
+أيضًا إلى تحديثات Plugin مطابقة من `@openclaw/*` أثناء مزامنة ما بعد التحديث.
+
+تجنب أشكال السياسات الواسعة هذه إلا إذا كنت تحافظ أيضًا على قاعدة الترقية المطابقة:
+
+- تثبيت Plugins المملوكة لـ OpenClaw على إصدار قديم محدد واحد، مثل السماح
+  فقط بـ `@openclaw/*@2026.5.3`.
+- الحظر حسب نوع المصدر وحده، مثل كل طلبات Plugin من npm أو الشبكة أو
+  `request.mode: "update"`.
+- التعامل مع أمر السياسة على أنه اختياري. عند تمكين `security.installPolicy`،
+  فإن ملف سياسة تنفيذي مفقودًا أو بطيئًا أو غير قابل للقراءة أو محجوبًا بالأذونات
+  يفشل مغلقًا.
+- الموافقة على إصدارات Plugin دون مراعاة
+  `openclawVersion` في طلب السياسة وبيانات مرشح Plugin الوصفية.
+
+تسمح قواعد السياسة الأكثر أمانًا بتحديثات Plugin الموثوقة المملوكة لـ OpenClaw عندما يكون
+المرشح متوافقًا مع مضيف OpenClaw الحالي، بدلًا من تثبيت
+إصدار واحد إلى الأبد. إذا كنت تحظر npm افتراضيًا، فأنشئ استثناءً ضيقًا
+لحزم Plugin الموثوقة `@openclaw/*` أو معرّفات Plugin التي تستخدمها. إذا كنت
+تميّز بين طلبات التثبيت والتحديث، فطبّق قاعدة الثقة نفسها على
+`request.mode: "update"`.
+
+الاسترداد:
+
+```bash
+openclaw doctor --deep
+openclaw plugins update --all
+openclaw status --all
+```
+
+إذا كانت السياسة صارمة عمدًا، فخففها لنافذة ترقية OpenClaw الموثوقة،
+وأعد تشغيل `openclaw plugins update --all`، ثم أعد القاعدة الأكثر صرامة.
+إذا تم تعطيل Plugin بعد فشل التحديث، فافحصه وأعد تمكينه فقط
+بعد نجاح التحديث:
+
+```bash
+openclaw plugins inspect <plugin-id> --runtime --json
+openclaw plugins enable <plugin-id>
+```
+
+المرجع: [سياسة تثبيت المشغل](/ar/tools/skills-config#operator-install-policy-securityinstallpolicy)
 
 ## Plugin موجود لكنه محجوب بسبب ملكية مشبوهة
 
-إذا أظهرت تحذيرات `openclaw doctor` أو الإعداد أو بدء التشغيل:
+إذا أظهر `openclaw doctor` أو الإعداد أو تحذيرات بدء التشغيل:
 
 ```text
 blocked plugin candidate: suspicious ownership (... uid=1000, expected uid=0 or root)
 plugin present but blocked
 ```
 
-فملفات الـ plugin مملوكة لمستخدم Unix مختلف عن العملية التي تحمّلها.
-لا تزل ضبط الـ plugin. أصلح ملكية الملفات أو شغّل OpenClaw بالمستخدم نفسه
+فإن ملفات Plugin مملوكة لمستخدم Unix مختلف عن العملية التي تحمّلها.
+لا تزل ضبط Plugin. أصلح ملكية الملفات أو شغّل OpenClaw بالمستخدم نفسه
 الذي يملك دليل الحالة.
 
-تعمل تثبيتات Docker عادةً باسم `node` (uid `1000`). في إعداد Docker الافتراضي،
-أصلح عمليات ربط المضيف:
+تعمل تثبيتات Docker عادةً باسم `node` (uid `1000`). بالنسبة لإعداد Docker
+الافتراضي، أصلح نقاط ربط المضيف:
 
 ```bash
 sudo chown -R 1000:1000 /path/to/openclaw-config /path/to/openclaw-workspace
 openclaw doctor --fix
 ```
 
-إذا كنت تشغّل OpenClaw كجذر عمدًا، فأصلح جذر الـ plugin المُدار ليصبح
+إذا كنت تشغّل OpenClaw عمدًا كجذر، فأصلح جذر Plugin المُدار ليكون
 بملكية الجذر بدلًا من ذلك:
 
 ```bash
@@ -118,7 +194,7 @@ openclaw doctor --fix
 
 مستندات أعمق:
 
-- [ملكية مسار الـ Plugin](/ar/tools/plugin#blocked-plugin-path-ownership)
+- [ملكية مسار Plugin](/ar/tools/plugin#blocked-plugin-path-ownership)
 - [أذونات Docker](/ar/install/docker#permissions-and-eacces)
 
 ## شجرة القرار
@@ -144,7 +220,7 @@ flowchart TD
 ```
 
 <AccordionGroup>
-  <Accordion title="لا توجد ردود">
+  <Accordion title="No replies">
     ```bash
     openclaw status
     openclaw gateway status
@@ -153,21 +229,21 @@ flowchart TD
     openclaw logs --follow
     ```
 
-    تبدو المخرجات الجيدة كما يلي:
+    تبدو المخرجات الجيدة كالتالي:
 
     - `Runtime: running`
     - `Connectivity probe: ok`
     - `Capability: read-only` أو `write-capable` أو `admin-capable`
-    - تعرض قناتك أن النقل متصل، وحيثما يكون ذلك مدعومًا، يظهر `works` أو `audit ok` في `channels status --probe`
-    - يظهر المرسل معتمدًا (أو سياسة الرسائل المباشرة مفتوحة/قائمة سماح)
+    - تعرض قناتك أن النقل متصل، وحيثما كان مدعومًا، `works` أو `audit ok` في `channels status --probe`
+    - يظهر المُرسل موافَقًا عليه (أو سياسة الرسائل المباشرة مفتوحة/قائمة سماح)
 
     بصمات السجل الشائعة:
 
-    - `drop guild message (mention required` → حجب اشتراط الإشارة الرسالة في Discord.
-    - `pairing request` → المرسل غير معتمد وينتظر موافقة الاقتران عبر الرسائل المباشرة.
-    - `blocked` / `allowlist` في سجلات القناة → تمت تصفية المرسل أو الغرفة أو المجموعة.
+    - `drop guild message (mention required` → حجب شرط الإشارة الرسالة في Discord.
+    - `pairing request` → المُرسل غير موافَق عليه وينتظر موافقة الاقتران عبر رسالة مباشرة.
+    - `blocked` / `allowlist` في سجلات القناة → تمت تصفية المُرسل أو الغرفة أو المجموعة.
 
-    صفحات تفصيلية:
+    صفحات متعمقة:
 
     - [/gateway/troubleshooting#no-replies](/ar/gateway/troubleshooting#no-replies)
     - [/channels/troubleshooting](/ar/channels/troubleshooting)
@@ -175,7 +251,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="لوحة المعلومات أو واجهة التحكم لا تتصل">
+  <Accordion title="Dashboard or Control UI will not connect">
     ```bash
     openclaw status
     openclaw gateway status
@@ -184,7 +260,7 @@ flowchart TD
     openclaw channels status --probe
     ```
 
-    تبدو المخرجات الجيدة كما يلي:
+    تبدو المخرجات الجيدة كالتالي:
 
     - يظهر `Dashboard: http://...` في `openclaw gateway status`
     - `Connectivity probe: ok`
@@ -195,19 +271,20 @@ flowchart TD
 
     - `device identity required` → لا يستطيع سياق HTTP/غير الآمن إكمال مصادقة الجهاز.
     - `origin not allowed` → `Origin` الخاص بالمتصفح غير مسموح به لهدف Gateway
-      الخاص بواجهة التحكم.
-    - `AUTH_TOKEN_MISMATCH` مع تلميحات إعادة المحاولة (`canRetryWithDeviceToken=true`) → قد تحدث إعادة محاولة موثوقة واحدة باستخدام رمز الجهاز تلقائيًا.
-    - تعيد محاولة الرمز المخزن مؤقتًا هذه استخدام مجموعة النطاقات المخزنة مؤقتًا مع رمز
-      الجهاز المقترن. يحتفظ المستدعون الذين يستخدمون `deviceToken` صريحًا / `scopes` صريحة
-      بمجموعة النطاقات المطلوبة لديهم بدلًا من ذلك.
-    - على مسار واجهة التحكم غير المتزامن عبر Tailscale Serve، تُسلسل المحاولات الفاشلة لنفس
-      `{scope, ip}` قبل أن يسجل المحدد الفشل، لذلك يمكن لإعادة محاولة سيئة ثانية متزامنة أن تعرض `retry later` بالفعل.
+      الخاص بـ Control UI.
+    - `AUTH_TOKEN_MISMATCH` مع تلميحات إعادة المحاولة (`canRetryWithDeviceToken=true`) → قد تحدث إعادة محاولة واحدة موثوقة برمز الجهاز تلقائيًا.
+    - تعيد إعادة المحاولة برمز مخزن مؤقتًا استخدام مجموعة النطاقات المخزنة مع رمز الجهاز
+      المقترن. يحتفظ المستدعون الذين يستخدمون `deviceToken` صريحًا / `scopes` صريحة
+      بمجموعة النطاقات المطلوبة بدلًا من ذلك.
+    - على مسار Control UI غير المتزامن عبر Tailscale Serve، تُسلسل المحاولات الفاشلة لنفس
+      `{scope, ip}` قبل أن يسجل المحدِّد الفشل، لذلك يمكن أن تعرض
+      إعادة محاولة سيئة متزامنة ثانية `retry later` بالفعل.
     - `too many failed authentication attempts (retry later)` من أصل متصفح localhost
-      → تؤدي الإخفاقات المتكررة من `Origin` نفسه إلى قفل مؤقت؛ يستخدم أصل localhost آخر حاوية منفصلة.
+      → الإخفاقات المتكررة من `Origin` نفسه تُقفل مؤقتًا؛ يستخدم أصل localhost آخر حاوية منفصلة.
     - تكرار `unauthorized` بعد إعادة المحاولة تلك → رمز/كلمة مرور خاطئة، أو عدم تطابق وضع المصادقة، أو رمز جهاز مقترن قديم.
-    - `gateway connect failed:` → تستهدف واجهة المستخدم عنوان URL/منفذًا خاطئًا أو Gateway غير قابل للوصول.
+    - `gateway connect failed:` → تستهدف الواجهة عنوان URL/منفذًا خاطئًا أو Gateway غير قابل للوصول.
 
-    صفحات تفصيلية:
+    صفحات متعمقة:
 
     - [/gateway/troubleshooting#dashboard-control-ui-connectivity](/ar/gateway/troubleshooting#dashboard-control-ui-connectivity)
     - [/web/control-ui](/ar/web/control-ui)
@@ -215,7 +292,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="Gateway لا يبدأ أو الخدمة مثبّتة لكنها لا تعمل">
+  <Accordion title="Gateway will not start or service installed but not running">
     ```bash
     openclaw status
     openclaw gateway status
@@ -224,7 +301,7 @@ flowchart TD
     openclaw channels status --probe
     ```
 
-    تبدو المخرجات الجيدة كما يلي:
+    تبدو المخرجات الجيدة كالتالي:
 
     - `Service: ... (loaded)`
     - `Runtime: running`
@@ -233,11 +310,11 @@ flowchart TD
 
     بصمات السجل الشائعة:
 
-    - `Gateway start blocked: set gateway.mode=local` أو `existing config is missing gateway.mode` → وضع الـ Gateway بعيد، أو أن ملف الضبط يفتقد علامة الوضع المحلي ويجب إصلاحه.
-    - `refusing to bind gateway ... without auth` → ربط غير local loopback بدون مسار مصادقة Gateway صالح (رمز/كلمة مرور، أو وكيل موثوق حيث يكون مضبوطًا).
-    - `another gateway instance is already listening` أو `EADDRINUSE` → المنفذ مستخدم بالفعل.
+    - `Gateway start blocked: set gateway.mode=local` أو `existing config is missing gateway.mode` → وضع Gateway بعيد، أو ملف الضبط يفتقد ختم الوضع المحلي ويجب إصلاحه.
+    - `refusing to bind gateway ... without auth` → ربط غير loopback دون مسار مصادقة Gateway صالح (رمز/كلمة مرور، أو trusted-proxy حيث يكون مضبوطًا).
+    - `another gateway instance is already listening` أو `EADDRINUSE` → المنفذ مشغول بالفعل.
 
-    صفحات تفصيلية:
+    صفحات متعمقة:
 
     - [/gateway/troubleshooting#gateway-service-not-running](/ar/gateway/troubleshooting#gateway-service-not-running)
     - [/gateway/background-process](/ar/gateway/background-process)
@@ -245,7 +322,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="القناة تتصل لكن الرسائل لا تتدفق">
+  <Accordion title="القناة متصلة لكن الرسائل لا تتدفق">
     ```bash
     openclaw status
     openclaw gateway status
@@ -254,7 +331,7 @@ flowchart TD
     openclaw channels status --probe
     ```
 
-    تبدو المخرجات الجيدة كما يلي:
+    يبدو الإخراج الجيد كالتالي:
 
     - نقل القناة متصل.
     - تنجح فحوصات الاقتران/قائمة السماح.
@@ -262,9 +339,9 @@ flowchart TD
 
     بصمات السجل الشائعة:
 
-    - `mention required` → حجب اشتراط الإشارة في المجموعة المعالجة.
-    - `pairing` / `pending` → مرسل الرسائل المباشرة غير معتمد بعد.
-    - `not_in_channel` أو `missing_scope` أو `Forbidden` أو `401/403` → مشكلة في رمز أذونات القناة.
+    - `mention required` → منع بوابة الإشارة في المجموعة المعالجة.
+    - `pairing` / `pending` → مرسل الرسائل المباشرة لم تتم الموافقة عليه بعد.
+    - `not_in_channel`, `missing_scope`, `Forbidden`, `401/403` → مشكلة في رمز إذن القناة.
 
     صفحات تفصيلية:
 
@@ -283,20 +360,20 @@ flowchart TD
     openclaw logs --follow
     ```
 
-    تبدو المخرجات الجيدة كما يلي:
+    يبدو الإخراج الجيد كالتالي:
 
-    - يعرض `cron.status` أنه مفعّل مع الاستيقاظ التالي.
+    - يعرض `cron.status` أنه مفعّل مع إيقاظ تالٍ.
     - يعرض `cron runs` إدخالات `ok` حديثة.
-    - Heartbeat مفعّل وليس خارج الساعات النشطة.
+    - Heartbeat مفعّل وليس خارج ساعات النشاط.
 
     بصمات السجل الشائعة:
 
     - `cron: scheduler disabled; jobs will not run automatically` → Cron معطّل.
-    - `heartbeat skipped` مع `reason=quiet-hours` → خارج الساعات النشطة المضبوطة.
-    - `heartbeat skipped` مع `reason=empty-heartbeat-file` → يوجد `HEARTBEAT.md` لكنه يحتوي فقط على هيكل فارغ/رؤوس فقط.
-    - `heartbeat skipped` مع `reason=no-tasks-due` → وضع مهام `HEARTBEAT.md` نشط لكن لم يحِن بعد أي من فواصل المهام.
-    - `heartbeat skipped` مع `reason=alerts-disabled` → كل ظهور Heartbeat معطّل (`showOk` و`showAlerts` و`useIndicator` كلها متوقفة).
-    - `requests-in-flight` → المسار الرئيسي مشغول؛ تم تأجيل استيقاظ Heartbeat.
+    - `heartbeat skipped` مع `reason=quiet-hours` → خارج ساعات النشاط المضبوطة.
+    - `heartbeat skipped` مع `reason=empty-heartbeat-file` → يوجد `HEARTBEAT.md` لكنه يحتوي فقط على فراغات أو تعليقات أو ترويسة أو سياج أو هيكل قائمة تحقق فارغ.
+    - `heartbeat skipped` مع `reason=no-tasks-due` → وضع مهام `HEARTBEAT.md` نشط، لكن لم يحن موعد أي من فواصل المهام بعد.
+    - `heartbeat skipped` مع `reason=alerts-disabled` → كل مرئية Heartbeat معطّلة (`showOk` و`showAlerts` و`useIndicator` كلها متوقفة).
+    - `requests-in-flight` → المسار الرئيسي مشغول؛ تم تأجيل إيقاظ Heartbeat.
     - `unknown accountId` → حساب هدف تسليم Heartbeat غير موجود.
 
     صفحات تفصيلية:
@@ -307,7 +384,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="Node مقترن لكن الأداة تفشل في تنفيذ camera canvas screen exec">
+  <Accordion title="Node مقترن لكن الأداة تفشل في camera أو canvas أو screen أو exec">
     ```bash
     openclaw status
     openclaw gateway status
@@ -316,18 +393,18 @@ flowchart TD
     openclaw logs --follow
     ```
 
-    تبدو المخرجات الجيدة كما يلي:
+    يبدو الإخراج الجيد كالتالي:
 
-    - يظهر Node كمتصل ومقترن لدور `node`.
+    - يظهر Node كمتصل ومقترن للدور `node`.
     - توجد الإمكانية للأمر الذي تستدعيه.
     - حالة الإذن ممنوحة للأداة.
 
     بصمات السجل الشائعة:
 
-    - `NODE_BACKGROUND_UNAVAILABLE` → أحضر تطبيق Node إلى المقدمة.
+    - `NODE_BACKGROUND_UNAVAILABLE` → اجلب تطبيق Node إلى المقدمة.
     - `*_PERMISSION_REQUIRED` → تم رفض/فقدان إذن نظام التشغيل.
-    - `SYSTEM_RUN_DENIED: approval required` → موافقة exec معلقة.
-    - `SYSTEM_RUN_DENIED: allowlist miss` → الأمر غير موجود في قائمة السماح لـ exec.
+    - `SYSTEM_RUN_DENIED: approval required` → موافقة exec معلّقة.
+    - `SYSTEM_RUN_DENIED: allowlist miss` → الأمر غير موجود في قائمة سماح exec.
 
     صفحات تفصيلية:
 
@@ -337,7 +414,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="يطلب Exec الموافقة فجأة">
+  <Accordion title="exec يطلب الموافقة فجأة">
     ```bash
     openclaw config get tools.exec.host
     openclaw config get tools.exec.security
@@ -345,16 +422,16 @@ flowchart TD
     openclaw gateway restart
     ```
 
-    ما الذي تغير:
+    ما الذي تغيّر:
 
-    - إذا لم يتم تعيين `tools.exec.host`، تكون القيمة الافتراضية `auto`.
-    - يتحول `host=auto` إلى `sandbox` عندما يكون وقت تشغيل sandbox نشطا، وإلى `gateway` خلاف ذلك.
-    - `host=auto` للتوجيه فقط؛ وسلوك "YOLO" بلا مطالبة يأتي من `security=full` مع `ask=off` على gateway/node.
-    - على `gateway` و`node`، تكون القيمة الافتراضية غير المعينة لـ `tools.exec.security` هي `full`.
-    - تكون القيمة الافتراضية غير المعينة لـ `tools.exec.ask` هي `off`.
-    - النتيجة: إذا كنت ترى طلبات موافقة، فهذا يعني أن سياسة محلية للمضيف أو خاصة بالجلسة شددت exec بعيدا عن الإعدادات الافتراضية الحالية.
+    - إذا لم يتم ضبط `tools.exec.host`، فالافتراضي هو `auto`.
+    - يتحول `host=auto` إلى `sandbox` عندما يكون وقت تشغيل sandbox نشطًا، وإلى `gateway` خلاف ذلك.
+    - `host=auto` هو توجيه فقط؛ سلوك "YOLO" بلا مطالبة يأتي من `security=full` مع `ask=off` على Gateway/Node.
+    - على `gateway` و`node`، القيمة غير المضبوطة لـ`tools.exec.security` تكون افتراضيًا `full`.
+    - القيمة غير المضبوطة لـ`tools.exec.ask` تكون افتراضيًا `off`.
+    - النتيجة: إذا كنت ترى موافقات، فهذا يعني أن سياسة محلية للمضيف أو خاصة بالجلسة شددت exec بعيدًا عن الإعدادات الافتراضية الحالية.
 
-    استعادة السلوك الافتراضي الحالي بلا موافقة:
+    استعد السلوك الافتراضي الحالي بلا موافقة:
 
     ```bash
     openclaw config set tools.exec.host gateway
@@ -363,16 +440,16 @@ flowchart TD
     openclaw gateway restart
     ```
 
-    بدائل أكثر أمانا:
+    بدائل أكثر أمانًا:
 
-    - عيّن فقط `tools.exec.host=gateway` إذا كنت تريد توجيها مستقرا للمضيف.
-    - استخدم `security=allowlist` مع `ask=on-miss` إذا كنت تريد exec على المضيف مع استمرار المراجعة عند غياب الأمر عن قائمة السماح.
-    - فعّل وضع sandbox إذا كنت تريد أن يتحول `host=auto` مرة أخرى إلى `sandbox`.
+    - اضبط فقط `tools.exec.host=gateway` إذا كنت تريد توجيه مضيف ثابتًا.
+    - استخدم `security=allowlist` مع `ask=on-miss` إذا كنت تريد exec على المضيف لكنك ما زلت تريد المراجعة عند فقدان إدخال في قائمة السماح.
+    - فعّل وضع sandbox إذا كنت تريد أن يعود `host=auto` إلى `sandbox`.
 
-    توقيعات السجل الشائعة:
+    بصمات السجل الشائعة:
 
     - `Approval required.` → الأمر ينتظر `/approve ...`.
-    - `SYSTEM_RUN_DENIED: approval required` → موافقة exec على مضيف Node معلقة.
+    - `SYSTEM_RUN_DENIED: approval required` → موافقة exec على مضيف Node معلّقة.
     - `exec host=sandbox requires a sandbox runtime for this session` → اختيار sandbox ضمني/صريح لكن وضع sandbox متوقف.
 
     صفحات تفصيلية:
@@ -383,7 +460,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="تفشل أداة المتصفح">
+  <Accordion title="أداة المتصفح تفشل">
     ```bash
     openclaw status
     openclaw gateway status
@@ -392,22 +469,22 @@ flowchart TD
     openclaw doctor
     ```
 
-    يبدو الإخراج الجيد هكذا:
+    يبدو الإخراج الجيد كالتالي:
 
-    - تعرض حالة المتصفح `running: true` ومتصفحا/ملفا شخصيا مختارا.
-    - يبدأ `openclaw`، أو يستطيع `user` رؤية تبويبات Chrome المحلية.
+    - تعرض حالة المتصفح `running: true` ومتصفحًا/ملفًا شخصيًا مختارًا.
+    - يبدأ `openclaw`، أو يستطيع `user` رؤية علامات تبويب Chrome المحلية.
 
-    توقيعات السجل الشائعة:
+    بصمات السجل الشائعة:
 
-    - `unknown command "browser"` أو `unknown command 'browser'` → تم تعيين `plugins.allow` ولا يتضمن `browser`.
+    - `unknown command "browser"` أو `unknown command 'browser'` → تم ضبط `plugins.allow` ولا يتضمن `browser`.
     - `Failed to start Chrome CDP on port` → فشل تشغيل المتصفح المحلي.
-    - `browser.executablePath not found` → مسار الملف الثنائي المكوّن خاطئ.
-    - `browser.cdpUrl must be http(s) or ws(s)` → يستخدم عنوان URL المكوّن لـ CDP مخططا غير مدعوم.
-    - `browser.cdpUrl has invalid port` → يحتوي عنوان URL المكوّن لـ CDP على منفذ سيئ أو خارج النطاق.
-    - `No Chrome tabs found for profile="user"` → لا يحتوي ملف إرفاق Chrome MCP الشخصي على تبويبات Chrome محلية مفتوحة.
-    - `Remote CDP for profile "<name>" is not reachable` → لا يمكن الوصول إلى نقطة نهاية CDP البعيدة المكوّنة من هذا المضيف.
-    - `Browser attachOnly is enabled ... not reachable` أو `Browser attachOnly is enabled and CDP websocket ... is not reachable` → لا يحتوي ملف التعريف attach-only على هدف CDP حي.
-    - تجاوزات منفذ العرض / الوضع الداكن / اللغة / عدم الاتصال القديمة على ملفات تعريف attach-only أو CDP البعيدة → شغّل `openclaw browser stop --browser-profile <name>` لإغلاق جلسة التحكم النشطة وتحرير حالة المحاكاة دون إعادة تشغيل Gateway.
+    - `browser.executablePath not found` → مسار الملف التنفيذي المضبوط خاطئ.
+    - `browser.cdpUrl must be http(s) or ws(s)` → يستخدم عنوان URL المضبوط لـ CDP مخططًا غير مدعوم.
+    - `browser.cdpUrl has invalid port` → يحتوي عنوان URL المضبوط لـ CDP على منفذ غير صالح أو خارج النطاق.
+    - `No Chrome tabs found for profile="user"` → لا يحتوي ملف إرفاق Chrome MCP الشخصي على علامات تبويب Chrome محلية مفتوحة.
+    - `Remote CDP for profile "<name>" is not reachable` → نقطة نهاية CDP البعيدة المضبوطة غير قابلة للوصول من هذا المضيف.
+    - `Browser attachOnly is enabled ... not reachable` أو `Browser attachOnly is enabled and CDP websocket ... is not reachable` → ملف attach-only الشخصي لا يحتوي على هدف CDP حي.
+    - تجاوزات منفذ عرض / وضع داكن / لغة / عدم اتصال قديمة على ملفات attach-only أو ملفات CDP البعيدة → شغّل `openclaw browser stop --browser-profile <name>` لإغلاق جلسة التحكم النشطة وتحرير حالة المحاكاة دون إعادة تشغيل Gateway.
 
     صفحات تفصيلية:
 
@@ -420,10 +497,10 @@ flowchart TD
 
 </AccordionGroup>
 
-## ذات صلة
+## ذو صلة
 
-- [الأسئلة الشائعة](/ar/help/faq) — الأسئلة المتكررة
+- [الأسئلة الشائعة](/ar/help/faq) — أسئلة متكررة
 - [استكشاف أخطاء Gateway وإصلاحها](/ar/gateway/troubleshooting) — مشكلات خاصة بـ Gateway
-- [Doctor](/ar/gateway/doctor) — فحوصات صحية وإصلاحات آلية
+- [Doctor](/ar/gateway/doctor) — فحوصات صحة وإصلاحات آلية
 - [استكشاف أخطاء القنوات وإصلاحها](/ar/channels/troubleshooting) — مشكلات اتصال القنوات
 - [استكشاف أخطاء الأتمتة وإصلاحها](/ar/automation/cron-jobs#troubleshooting) — مشكلات Cron وHeartbeat

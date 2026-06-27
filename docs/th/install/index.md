@@ -1,28 +1,33 @@
 ---
 read_when:
-    - คุณต้องการวิธีติดตั้งอื่นนอกเหนือจากคู่มือเริ่มต้นใช้งานแบบรวดเร็ว
-    - คุณต้องการปรับใช้บนแพลตฟอร์มคลาวด์
-    - คุณจำเป็นต้องอัปเดต ย้ายข้อมูล หรือถอนการติดตั้ง
-summary: ติดตั้ง OpenClaw - สคริปต์ติดตั้ง, npm/pnpm/bun, จากซอร์สโค้ด, Docker และอื่นๆ
+    - คุณต้องใช้วิธีติดตั้งอื่นนอกเหนือจากคู่มือเริ่มต้นใช้งานแบบรวดเร็ว
+    - คุณต้องการปรับใช้กับแพลตฟอร์มคลาวด์
+    - คุณต้องอัปเดต ย้ายข้อมูล หรือถอนการติดตั้ง
+summary: ติดตั้ง OpenClaw - สคริปต์ตัวติดตั้ง, npm/pnpm/bun, จากซอร์ส, Docker และอื่นๆ
 title: ติดตั้ง
 x-i18n:
-    generated_at: "2026-05-07T13:21:33Z"
+    generated_at: "2026-06-27T17:44:15Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8a5dc92d262710cc96a160b7cac2b93ee1e25f994ddcd45e274ad96c026b7d72
+    source_hash: a8c6108cecea3e38a6f714758fe4de9b01eebe1c89f9ff68251685c440e8a41f
     source_path: install/index.md
     workflow: 16
 ---
 
 ## ข้อกำหนดของระบบ
 
-- **Node 24** (แนะนำ) หรือ Node 22.16+ - สคริปต์ติดตั้งจัดการเรื่องนี้ให้อัตโนมัติ
-- **macOS, Linux หรือ Windows** - รองรับทั้ง Windows แบบเนทีฟและ WSL2; WSL2 มีความเสถียรมากกว่า ดู [Windows](/th/platforms/windows)
-- จำเป็นต้องใช้ `pnpm` เฉพาะเมื่อคุณ build จากซอร์ส
+- **Node 24** (แนะนำ) หรือ Node 22.19+ - สคริปต์ติดตั้งจัดการส่วนนี้ให้อัตโนมัติ
+- **macOS, Linux หรือ Windows** - ผู้ใช้ Windows สามารถเริ่มด้วยแอป Windows Hub แบบเนทีฟ, ตัวติดตั้ง CLI ผ่าน PowerShell หรือ WSL2 Gateway ดู [Windows](/th/platforms/windows)
+- ต้องใช้ `pnpm` เฉพาะเมื่อคุณ build จากซอร์สเท่านั้น
 
 ## แนะนำ: สคริปต์ติดตั้ง
 
-วิธีติดตั้งที่เร็วที่สุด โดยจะตรวจหา OS ของคุณ ติดตั้ง Node หากจำเป็น ติดตั้ง OpenClaw และเริ่ม onboarding
+วิธีติดตั้งที่เร็วที่สุด ระบบจะตรวจจับ OS ของคุณ ติดตั้ง Node หากจำเป็น ติดตั้ง OpenClaw และเริ่ม onboarding
+
+<Note>
+ผู้ใช้เดสก์ท็อป Windows สามารถติดตั้งแอปคู่หู [Windows Hub](/th/platforms/windows#recommended-windows-hub) แบบเนทีฟได้ด้วย ซึ่งรวมการตั้งค่า สถานะในถาดระบบ แชต โหมด node และโหมด MCP ภายในเครื่อง
+</Note>
 
 <Tabs>
   <Tab title="macOS / Linux / WSL2">
@@ -37,7 +42,7 @@ x-i18n:
   </Tab>
 </Tabs>
 
-หากต้องการติดตั้งโดยไม่รัน onboarding:
+หากต้องการติดตั้งโดยไม่เรียกใช้ onboarding:
 
 <Tabs>
   <Tab title="macOS / Linux / WSL2">
@@ -59,16 +64,16 @@ x-i18n:
 ### ตัวติดตั้งแบบ local prefix (`install-cli.sh`)
 
 ใช้วิธีนี้เมื่อคุณต้องการเก็บ OpenClaw และ Node ไว้ใต้ local prefix เช่น
-`~/.openclaw` โดยไม่ต้องพึ่งการติดตั้ง Node ระดับทั้งระบบ:
+`~/.openclaw` โดยไม่ต้องพึ่งพาการติดตั้ง Node ระดับทั้งระบบ:
 
 ```bash
 curl -fsSL https://openclaw.ai/install-cli.sh | bash
 ```
 
-โดยค่าเริ่มต้นรองรับการติดตั้งผ่าน npm รวมถึงการติดตั้งแบบ git-checkout ภายใต้ flow
+รองรับการติดตั้งผ่าน npm โดยค่าเริ่มต้น รวมถึงการติดตั้งจาก git checkout ภายใต้ flow
 prefix เดียวกัน อ้างอิงฉบับเต็ม: [รายละเอียดภายในของตัวติดตั้ง](/th/install/installer#install-clish)
 
-ติดตั้งไว้แล้วใช่ไหม สลับระหว่างการติดตั้งแบบ package และ git ด้วย
+ติดตั้งไว้แล้วหรือไม่? สลับระหว่างการติดตั้งแบบ package และ git ด้วย
 `openclaw update --channel dev` และ `openclaw update --channel stable` ดู
 [การอัปเดต](/th/install/updating#switch-between-npm-and-git-installs)
 
@@ -82,6 +87,13 @@ prefix เดียวกัน อ้างอิงฉบับเต็ม: [
     npm install -g openclaw@latest
     openclaw onboard --install-daemon
     ```
+
+    <Note>
+    ตัวติดตั้งที่โฮสต์ไว้จะล้างตัวกรองความใหม่ของ npm เช่น `min-release-age`
+    สำหรับการติดตั้ง package OpenClaw หากคุณติดตั้งด้วย npm เอง นโยบาย
+    npm ของคุณยังคงมีผล
+    </Note>
+
   </Tab>
   <Tab title="pnpm">
     ```bash
@@ -91,7 +103,7 @@ prefix เดียวกัน อ้างอิงฉบับเต็ม: [
     ```
 
     <Note>
-    pnpm ต้องได้รับการอนุมัติอย่างชัดเจนสำหรับ packages ที่มี build scripts รัน `pnpm approve-builds -g` หลังการติดตั้งครั้งแรก
+    pnpm ต้องการการอนุมัติอย่างชัดเจนสำหรับ package ที่มีสคริปต์ build ให้เรียกใช้ `pnpm approve-builds -g` หลังการติดตั้งครั้งแรก
     </Note>
 
   </Tab>
@@ -102,24 +114,15 @@ prefix เดียวกัน อ้างอิงฉบับเต็ม: [
     ```
 
     <Note>
-    รองรับ Bun สำหรับเส้นทางการติดตั้ง CLI แบบ global สำหรับรันไทม์ของ Gateway ยังแนะนำให้ใช้ Node เป็นรันไทม์ daemon
+    รองรับ Bun สำหรับเส้นทางการติดตั้ง CLI แบบ global สำหรับ runtime ของ Gateway นั้น Node ยังคงเป็น daemon runtime ที่แนะนำ
     </Note>
 
   </Tab>
 </Tabs>
 
-<Accordion title="การแก้ไขปัญหา: ข้อผิดพลาดการ build ของ sharp (npm)">
-  หาก `sharp` ล้มเหลวเนื่องจาก libvips ที่ติดตั้งแบบ global:
-
-```bash
-SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g openclaw@latest
-```
-
-</Accordion>
-
 ### จากซอร์ส
 
-สำหรับผู้ร่วมพัฒนาหรือใครก็ตามที่ต้องการรันจาก checkout ภายในเครื่อง:
+สำหรับผู้มีส่วนร่วม หรือผู้ที่ต้องการเรียกใช้จาก checkout ภายในเครื่อง:
 
 ```bash
 git clone https://github.com/openclaw/openclaw.git
@@ -131,13 +134,13 @@ openclaw onboard --install-daemon
 
 หรือข้ามการ link แล้วใช้ `pnpm openclaw ...` จากภายใน repo ดู [การตั้งค่า](/th/start/setup) สำหรับ workflow การพัฒนาแบบเต็ม
 
-### ติดตั้งจาก GitHub main
+### ติดตั้งจาก GitHub main checkout
 
 ```bash
-npm install -g github:openclaw/openclaw#main
+curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --install-method git --version main
 ```
 
-### Containers และ package managers
+### Containers และตัวจัดการ package
 
 <CardGroup cols={2}>
   <Card title="Docker" href="/th/install/docker" icon="container">
@@ -150,10 +153,10 @@ npm install -g github:openclaw/openclaw#main
     การติดตั้งแบบ declarative ผ่าน Nix flake
   </Card>
   <Card title="Ansible" href="/th/install/ansible" icon="server">
-    การ provision fleet แบบอัตโนมัติ
+    การจัดเตรียม fleet แบบอัตโนมัติ
   </Card>
   <Card title="Bun" href="/th/install/bun" icon="zap">
-    การใช้งานเฉพาะ CLI ผ่านรันไทม์ Bun
+    การใช้งานเฉพาะ CLI ผ่าน Bun runtime
   </Card>
 </CardGroup>
 
@@ -165,46 +168,66 @@ openclaw doctor         # check for config issues
 openclaw gateway status # verify the Gateway is running
 ```
 
-หากคุณต้องการ managed startup หลังติดตั้ง:
+หากคุณต้องการให้จัดการการเริ่มทำงานหลังติดตั้ง:
 
 - macOS: LaunchAgent ผ่าน `openclaw onboard --install-daemon` หรือ `openclaw gateway install`
-- Linux/WSL2: systemd user service ผ่านคำสั่งเดียวกัน
-- Windows แบบเนทีฟ: ใช้ Scheduled Task ก่อน โดยมีรายการ login ใน Startup-folder ต่อผู้ใช้เป็น fallback หากการสร้าง task ถูกปฏิเสธ
+- Linux/WSL2: บริการ systemd ระดับ user ผ่านคำสั่งเดียวกัน
+- Native Windows: ใช้ Scheduled Task ก่อน พร้อม fallback เป็นรายการ login ในโฟลเดอร์ Startup ต่อผู้ใช้ หากการสร้าง task ถูกปฏิเสธ
 
-## Hosting และ deployment
+## การโฮสต์และการ deploy
 
-Deploy OpenClaw บน cloud server หรือ VPS:
+Deploy OpenClaw บนเซิร์ฟเวอร์คลาวด์หรือ VPS:
 
 <CardGroup cols={3}>
-  <Card title="VPS" href="/th/vps">VPS Linux ใดก็ได้</Card>
-  <Card title="Docker VM" href="/th/install/docker-vm-runtime">ขั้นตอน Docker ร่วมกัน</Card>
-  <Card title="Kubernetes" href="/th/install/kubernetes">K8s</Card>
-  <Card title="Fly.io" href="/th/install/fly">Fly.io</Card>
-  <Card title="Hetzner" href="/th/install/hetzner">Hetzner</Card>
-  <Card title="GCP" href="/th/install/gcp">Google Cloud</Card>
-  <Card title="Azure" href="/th/install/azure">Azure</Card>
-  <Card title="Railway" href="/th/install/railway">Railway</Card>
-  <Card title="Render" href="/th/install/render">Render</Card>
-  <Card title="Northflank" href="/th/install/northflank">Northflank</Card>
+  <Card title="VPS" href="/th/vps">
+    Linux VPS ใดก็ได้
+  </Card>
+  <Card title="Docker VM" href="/th/install/docker-vm-runtime">
+    ขั้นตอน Docker ที่ใช้ร่วมกัน
+  </Card>
+  <Card title="Kubernetes" href="/th/install/kubernetes">
+    การ deploy K8s
+  </Card>
+  <Card title="Fly.io" href="/th/install/fly">
+    Deploy บน Fly.io
+  </Card>
+  <Card title="Hetzner" href="/th/install/hetzner">
+    การ deploy Hetzner
+  </Card>
+  <Card title="GCP" href="/th/install/gcp">
+    การ deploy Google Cloud
+  </Card>
+  <Card title="Azure" href="/th/install/azure">
+    การ deploy Azure
+  </Card>
+  <Card title="Railway" href="/th/install/railway">
+    การ deploy Railway
+  </Card>
+  <Card title="Render" href="/th/install/render">
+    การ deploy Render
+  </Card>
+  <Card title="Northflank" href="/th/install/northflank">
+    การ deploy Northflank
+  </Card>
 </CardGroup>
 
-## อัปเดต ย้าย หรือถอนการติดตั้ง
+## อัปเดต ย้ายข้อมูล หรือถอนการติดตั้ง
 
 <CardGroup cols={3}>
-  <Card title="การอัปเดต" href="/th/install/updating" icon="refresh-cw">
-    ทำให้ OpenClaw เป็นปัจจุบันอยู่เสมอ
+  <Card title="Updating" href="/th/install/updating" icon="refresh-cw">
+    ทำให้ OpenClaw เป็นเวอร์ชันล่าสุดเสมอ
   </Card>
-  <Card title="การย้าย" href="/th/install/migrating" icon="arrow-right">
+  <Card title="Migrating" href="/th/install/migrating" icon="arrow-right">
     ย้ายไปยังเครื่องใหม่
   </Card>
-  <Card title="ถอนการติดตั้ง" href="/th/install/uninstall" icon="trash-2">
+  <Card title="Uninstall" href="/th/install/uninstall" icon="trash-2">
     ลบ OpenClaw ออกทั้งหมด
   </Card>
 </CardGroup>
 
 ## การแก้ไขปัญหา: ไม่พบ `openclaw`
 
-หากติดตั้งสำเร็จแล้วแต่ไม่พบ `openclaw` ใน terminal ของคุณ:
+หากการติดตั้งสำเร็จ แต่ไม่พบ `openclaw` ในเทอร์มินัลของคุณ:
 
 ```bash
 node -v           # Node installed?
@@ -212,10 +235,10 @@ npm prefix -g     # Where are global packages?
 echo "$PATH"      # Is the global bin dir in PATH?
 ```
 
-หาก `$(npm prefix -g)/bin` ไม่อยู่ใน `$PATH` ของคุณ ให้เพิ่มลงในไฟล์ startup ของ shell (`~/.zshrc` หรือ `~/.bashrc`):
+หาก `$(npm prefix -g)/bin` ไม่อยู่ใน `$PATH` ของคุณ ให้เพิ่มลงในไฟล์เริ่มต้นของ shell (`~/.zshrc` หรือ `~/.bashrc`):
 
 ```bash
 export PATH="$(npm prefix -g)/bin:$PATH"
 ```
 
-จากนั้นเปิด terminal ใหม่ ดู [การตั้งค่า Node](/th/install/node) สำหรับรายละเอียดเพิ่มเติม
+จากนั้นเปิดเทอร์มินัลใหม่ ดู [การตั้งค่า Node](/th/install/node) สำหรับรายละเอียดเพิ่มเติม

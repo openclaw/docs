@@ -1,30 +1,31 @@
 ---
 read_when:
     - أنت تقوم بتثبيت Plugin exa أو تكوينه أو تدقيقه
-summary: يضيف دعم موفّر البحث على الويب.
+summary: يضيف دعم مزوّد البحث على الويب.
 title: Plugin Exa
 x-i18n:
-    generated_at: "2026-05-02T20:55:26Z"
+    generated_at: "2026-06-27T18:12:11Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e8cde3e0199d84893e63becdd7a32fbec25d8e90f52ee604dcba78f5a5980f61
+    source_hash: 6170d70f03913f87b62f7a85647b4748032b7d01c56e909826e10e261e58160f
     source_path: plugins/reference/exa.md
     workflow: 16
 ---
 
-# Exa Plugin
+# Plugin Exa
 
-يضيف دعم موفّري بحث الويب.
+يضيف دعم مزود بحث الويب.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/exa-plugin`
-- مسار التثبيت: مضمّن في OpenClaw
+- مسار التثبيت: npm؛ ClawHub: `clawhub:@openclaw/exa-plugin`
 
-## السطح
+## الواجهة
 
 العقود: webSearchProviders
 
-## المستندات ذات الصلة
+## مستندات ذات صلة
 
 - [exa](/ar/tools/exa-search)

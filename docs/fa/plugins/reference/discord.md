@@ -1,20 +1,21 @@
 ---
 read_when:
-    - در حال نصب، پیکربندی یا ممیزی Plugin Discord هستید
-summary: سطح کانال Discord را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
-title: Plugin Discord
+    - در حال نصب، پیکربندی یا ممیزی Plugin Discord هستید.
+summary: OpenClaw Plugin کانال Discord برای کانال‌ها، پیام‌های مستقیم، فرمان‌ها و رویدادهای برنامه.
+title: Discord Plugin
 x-i18n:
-    generated_at: "2026-05-03T11:42:02Z"
+    generated_at: "2026-06-27T18:25:18Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c0af255dc0e58e91c1f0ebcc5bca46e1e8e80f415ed3f5a9840bb31f717c9703
+    source_hash: 9e3305f8ad8eb84fd350bdfa0983b4fd8f848e0697ecf3e779e31cd6cb44dbf5
     source_path: plugins/reference/discord.md
     workflow: 16
 ---
 
-# Discord Plugin
+# Plugin Discord
 
-سطح کانال Discord را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
+Plugin کانال Discord در OpenClaw برای کانال‌ها، پیام‌های مستقیم، فرمان‌ها و رویدادهای برنامه.
 
 ## توزیع
 
@@ -23,7 +24,7 @@ x-i18n:
 
 ## سطح
 
-channels: discord
+کانال‌ها: discord؛ قراردادها: transcriptSourceProviders؛ Skills
 
 ## مستندات مرتبط
 

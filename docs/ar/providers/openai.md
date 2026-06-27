@@ -1,106 +1,128 @@
 ---
 read_when:
     - تريد استخدام نماذج OpenAI في OpenClaw
-    - تريد استخدام مصادقة اشتراك Codex بدلاً من مفاتيح API
+    - تريد مصادقة اشتراك Codex بدلاً من مفاتيح API
     - تحتاج إلى سلوك تنفيذ أكثر صرامة لوكيل GPT-5
 summary: استخدم OpenAI عبر مفاتيح API أو اشتراك Codex في OpenClaw
 title: OpenAI
 x-i18n:
-    generated_at: "2026-05-11T20:39:57Z"
+    generated_at: "2026-06-27T18:26:43Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d63b8eff93ecffd85c2110f42044c26621ff50eb62c35b7cc99a07f0e6be1ffb
+    source_hash: 3f5346c6bb85341c4e1709e3023dee8b32a413189d5564778e9c919b7eaa78f1
     source_path: providers/openai.md
     workflow: 16
 ---
 
-توفر OpenAI واجهات API للمطورين لنماذج GPT، ويتوفر Codex أيضًا كوكيل برمجة ضمن خطة
-ChatGPT عبر عملاء Codex من OpenAI. يبقي OpenClaw هذه
-الأسطح منفصلة حتى يظل الإعداد قابلاً للتنبؤ.
+توفّر OpenAI واجهات API للمطوّرين لنماذج GPT، كما يتوفر Codex أيضًا كوكيل برمجة ضمن خطة
+ChatGPT من خلال عملاء Codex لدى OpenAI. يستخدم OpenClaw معرّف مزوّد واحدًا،
+`openai`، لكلا شكلي المصادقة.
 
-يستخدم OpenClaw المسار `openai/*` باعتباره مسار نموذج OpenAI القياسي. تعمل
-دورات الوكيل المضمّنة على نماذج OpenAI عبر وقت تشغيل خادم تطبيق Codex الأصلي
-افتراضيًا؛ وتظل مصادقة مفتاح API المباشرة من OpenAI متاحة لأسطح OpenAI غير الوكيلة
-مثل الصور والتضمينات والكلام والوقت الفعلي.
+يستخدم OpenClaw المسار `openai/*` بصفته مسار نموذج OpenAI القياسي. تعمل أدوار الوكيل
+المضمّنة على نماذج OpenAI عبر وقت تشغيل خادم تطبيق Codex الأصلي
+افتراضيًا؛ وتظل مصادقة مفتاح API المباشرة من OpenAI متاحة لأسطح OpenAI غير الخاصة بالوكلاء
+مثل الصور والتضمينات والكلام والوقت الحقيقي.
 
-- **نماذج الوكلاء** - نماذج `openai/*` عبر وقت تشغيل Codex؛ سجّل الدخول باستخدام
-  مصادقة Codex لاستخدام اشتراك ChatGPT/Codex، أو اضبط نسخة احتياطية متوافقة مع Codex
+- **نماذج الوكيل** - نماذج `openai/*` عبر وقت تشغيل Codex؛ سجّل الدخول باستخدام
+  مصادقة Codex لاستخدام اشتراك ChatGPT/Codex، أو اضبط ملفًا احتياطيًا متوافقًا مع Codex
   لمفتاح API من OpenAI عندما تريد عمدًا مصادقة مفتاح API.
-- **واجهات API غير الوكيلة من OpenAI** - وصول مباشر إلى OpenAI Platform مع فوترة حسب
-  الاستخدام عبر `OPENAI_API_KEY` أو إعداد مفتاح API من OpenAI.
-- **الإعداد القديم** - يتم إصلاح مراجع نماذج `openai-codex/*` بواسطة
+- **واجهات API غير الخاصة بالوكلاء من OpenAI** - وصول مباشر إلى OpenAI Platform مع فوترة قائمة على الاستخدام
+  عبر `OPENAI_API_KEY` أو إعداد مفتاح API من OpenAI.
+- **الإعداد القديم** - تُصلَح مراجع نماذج Codex القديمة بواسطة
   `openclaw doctor --fix` إلى `openai/*` بالإضافة إلى وقت تشغيل Codex.
 
-تدعم OpenAI صراحةً استخدام OAuth للاشتراك في الأدوات الخارجية وسير العمل مثل OpenClaw.
+تدعم OpenAI صراحة استخدام OAuth الخاص بالاشتراكات في الأدوات الخارجية وسير العمل مثل OpenClaw.
 
-الموفر والنموذج ووقت التشغيل والقناة طبقات منفصلة. إذا كانت هذه التسميات
-تختلط معًا، فاقرأ [أزمنة تشغيل الوكلاء](/ar/concepts/agent-runtimes) قبل
+المزوّد والنموذج ووقت التشغيل والقناة طبقات منفصلة. إذا كانت هذه التسميات
+تختلط معًا، فاقرأ [أوقات تشغيل الوكيل](/ar/concepts/agent-runtimes) قبل
 تغيير الإعداد.
 
-## الاختيار السريع
+## اختيار سريع
 
-| الهدف                                                 | استخدم                                                      | ملاحظات                                                                 |
+| الهدف                                                 | الاستخدام                                                      | ملاحظات                                                                 |
 | ---------------------------------------------------- | -------------------------------------------------------- | --------------------------------------------------------------------- |
 | اشتراك ChatGPT/Codex مع وقت تشغيل Codex الأصلي | `openai/gpt-5.5`                                         | إعداد وكيل OpenAI الافتراضي. سجّل الدخول باستخدام مصادقة Codex.                  |
-| فوترة مفتاح API مباشرة لنماذج الوكلاء              | `openai/gpt-5.5` بالإضافة إلى ملف تعريف مفتاح API متوافق مع Codex | استخدم `auth.order.openai` لوضع النسخة الاحتياطية بعد مصادقة الاشتراك.  |
-| فوترة مفتاح API مباشرة عبر PI صريح           | `openai/gpt-5.5` بالإضافة إلى وقت تشغيل الموفر/النموذج `pi`        | اختر ملف تعريف مفتاح API عاديًا لـ `openai`.                             |
-| أحدث اسم مستعار لواجهة API لنموذج Instant في ChatGPT                     | `openai/chat-latest`                                     | مفتاح API مباشر فقط. اسم مستعار متحرك للتجارب، وليس الافتراضي.   |
-| مصادقة اشتراك ChatGPT/Codex عبر PI صريح  | `openai/gpt-5.5` بالإضافة إلى وقت تشغيل الموفر/النموذج `pi`        | اختر ملف تعريف مصادقة `openai-codex` لمسار التوافق.    |
-| توليد الصور أو تحريرها                          | `openai/gpt-image-2`                                     | يعمل مع `OPENAI_API_KEY` أو OpenAI Codex OAuth.             |
+| فوترة مفتاح API مباشرة لنماذج الوكيل              | `openai/gpt-5.5` بالإضافة إلى ملف مفتاح API متوافق مع Codex | استخدم `auth.order.openai` لوضع النسخة الاحتياطية بعد مصادقة الاشتراك.  |
+| فوترة مفتاح API مباشرة عبر OpenClaw صريح     | `openai/gpt-5.5` بالإضافة إلى وقت تشغيل المزوّد/النموذج `openclaw`  | اختر ملف مفتاح API عاديًا لـ `openai`.                             |
+| أحدث اسم مستعار لواجهة ChatGPT Instant API                     | `openai/chat-latest`                                     | مفتاح API مباشر فقط. اسم مستعار متغيّر للتجارب، وليس الافتراضي.   |
+| مصادقة اشتراك ChatGPT/Codex عبر OpenClaw     | `openai/gpt-5.5` بالإضافة إلى وقت تشغيل المزوّد/النموذج `openclaw`  | اختر ملف OAuth لـ `openai` لمسار التوافق.         |
+| إنشاء الصور أو تحريرها                          | `openai/gpt-image-2`                                     | يعمل مع `OPENAI_API_KEY` أو OpenAI Codex OAuth.             |
 | صور بخلفية شفافة                        | `openai/gpt-image-1.5`                                   | استخدم `outputFormat=png` أو `webp` و`openai.background=transparent`. |
 
 ## خريطة التسمية
 
-الأسماء متشابهة لكنها ليست قابلة للتبادل:
+الأسماء متشابهة لكنها غير قابلة للتبادل:
 
-| الاسم الذي تراه                            | الطبقة                      | المعنى                                                                                                              |
-| --------------------------------------- | -------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `openai`                                | بادئة الموفر            | مسار نموذج OpenAI القياسي؛ تستخدم دورات الوكيل وقت تشغيل Codex.                                                     |
-| `openai-codex`                          | بادئة المصادقة/ملف التعريف القديمة | مساحة أسماء أقدم لملف تعريف OpenAI Codex OAuth/الاشتراك. لا تزال ملفات التعريف الحالية و`auth.order.openai-codex` تعمل. |
-| Plugin `codex`                          | Plugin                     | Plugin مضمّن في OpenClaw يوفر وقت تشغيل خادم تطبيق Codex الأصلي وعناصر تحكم محادثة `/codex`.                    |
-| provider/model `agentRuntime.id: codex` | وقت تشغيل الوكيل              | يفرض حزمة خادم تطبيق Codex الأصلية للدورات المضمّنة المطابقة.                                               |
-| `/codex ...`                            | مجموعة أوامر المحادثة           | ربط/التحكم في سلاسل خادم تطبيق Codex من محادثة.                                                           |
-| `runtime: "acp", agentId: "codex"`      | مسار جلسة ACP          | مسار احتياطي صريح يشغّل Codex عبر ACP/acpx.                                                             |
+| الاسم الذي تراه                            | الطبقة             | المعنى                                                                                           |
+| --------------------------------------- | ----------------- | ------------------------------------------------------------------------------------------------- |
+| `openai`                                | بادئة المزوّد   | مسار نموذج OpenAI القياسي؛ تستخدم أدوار الوكيل وقت تشغيل Codex.                                  |
+| بادئة OpenAI Codex القديمة              | بادئة قديمة     | مساحة أسماء أقدم للنموذج/الملف. ينقلها `openclaw doctor --fix` إلى `openai`.                   |
+| Plugin `codex`                          | Plugin            | Plugin مضمّن في OpenClaw يوفّر وقت تشغيل خادم تطبيق Codex الأصلي وعناصر تحكم محادثة `/codex`. |
+| المزوّد/النموذج `agentRuntime.id: codex` | وقت تشغيل الوكيل     | يفرض حزام خادم تطبيق Codex الأصلي للأدوار المضمّنة المطابقة.                            |
+| `/codex ...`                            | مجموعة أوامر المحادثة  | ربط/التحكم في سلاسل خادم تطبيق Codex من محادثة.                                        |
+| `runtime: "acp", agentId: "codex"`      | مسار جلسة ACP | مسار احتياطي صريح يشغّل Codex عبر ACP/acpx.                                          |
 
-هذا يعني أن الإعداد يمكن أن يحتوي عمدًا على مراجع نماذج `openai/*` بينما لا تزال ملفات
-تعريف المصادقة تشير إلى بيانات اعتماد متوافقة مع Codex. فضّل `auth.order.openai`
-للإعداد الجديد؛ وتظل ملفات تعريف `openai-codex:*` الحالية و`auth.order.openai-codex`
-مدعومة. يعيد `openclaw doctor --fix` كتابة مراجع نماذج `openai-codex/*` القديمة
-إلى مسار نموذج OpenAI القياسي.
+يعني هذا أن الإعداد يمكن أن يحتوي عمدًا على مراجع نماذج `openai/*` بينما تشير ملفات
+المصادقة إلى بيانات اعتماد مفتاح API أو ChatGPT/Codex OAuth. استخدم
+`auth.order.openai` للإعداد؛ يعيد `openclaw doctor --fix` كتابة مراجع
+نماذج Codex القديمة ومعرّفات ملفات مصادقة Codex القديمة وترتيب مصادقة
+Codex القديم إلى مسار OpenAI القياسي.
 
 <Note>
-يتوفر GPT-5.5 عبر الوصول المباشر بمفتاح API إلى OpenAI Platform وعبر
+يتوفر GPT-5.5 عبر وصول مفتاح API المباشر إلى OpenAI Platform وكذلك عبر
 مسارات الاشتراك/OAuth. لاشتراك ChatGPT/Codex مع تنفيذ Codex الأصلي،
-استخدم `openai/gpt-5.5`؛ يؤدي غياب إعداد وقت التشغيل الآن إلى اختيار حزمة Codex
-لدورات وكيل OpenAI. استخدم ملفات تعريف مفتاح API من OpenAI فقط عندما تريد
-مصادقة مفتاح API مباشرة لنموذج وكيل OpenAI.
+استخدم `openai/gpt-5.5`؛ اختيار عدم ضبط إعداد وقت التشغيل يحدد الآن حزام Codex
+لأدوار وكيل OpenAI. استخدم ملفات مفتاح API من OpenAI فقط عندما تريد
+مصادقة مفتاح API مباشرة لنموذج وكيل من OpenAI.
 </Note>
 
 <Note>
-تتطلب دورات نماذج وكيل OpenAI Plugin خادم تطبيق Codex المضمّن. يظل إعداد وقت تشغيل
-PI الصريح متاحًا كمسار توافق اختياري. عندما يتم اختيار PI صراحةً مع ملف تعريف مصادقة
-`openai-codex`، يبقي OpenClaw مرجع النموذج العام كـ `openai/*` ويوجّه PI داخليًا عبر
-نقل مصادقة Codex القديم. شغّل `openclaw doctor --fix` لإصلاح مراجع نماذج
-`openai-codex/*` القديمة أو تثبيتات جلسة PI القديمة التي لا تأتي من
+تتطلب أدوار نماذج وكيل OpenAI Plugin خادم تطبيق Codex المضمّن. يظل
+إعداد وقت تشغيل OpenClaw الصريح متاحًا كمسار توافق اختياري. عندما يتم
+اختيار OpenClaw صراحةً مع ملف OAuth لـ `openai`، يحتفظ OpenClaw
+بمرجع النموذج العام كـ `openai/*` ويوجّه داخليًا عبر نقل مصادقة Codex.
+شغّل `openclaw doctor --fix` لإصلاح مراجع نماذج Codex القديمة
+أو `codex-cli/*` أو تثبيتات جلسة وقت التشغيل القديمة التي لا تأتي من
 إعداد وقت تشغيل صريح.
 </Note>
 
 ## تغطية ميزات OpenClaw
 
-| قدرة OpenAI         | سطح OpenClaw                                                                 | الحالة                                                 |
-| ------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| المحادثة / Responses          | موفر نموذج `openai/<model>`                                                  | نعم                                                    |
-| نماذج اشتراك Codex | `openai/<model>` مع `openai-codex` OAuth                                       | نعم                                                    |
-| مراجع نماذج Codex القديمة   | `openai-codex/<model>`                                                           | يتم إصلاحها بواسطة doctor إلى `openai/<model>`                 |
-| حزمة خادم تطبيق Codex  | `openai/<model>` مع وقت تشغيل محذوف أو `agentRuntime.id: codex` للموفر/النموذج | نعم                                                    |
-| البحث في الويب من جهة الخادم    | أداة OpenAI Responses الأصلية                                                     | نعم، عندما يكون البحث في الويب مفعلاً ولا يكون أي موفر مثبتًا |
-| الصور                    | `image_generate`                                                                 | نعم                                                    |
-| الفيديوهات                    | `video_generate`                                                                 | نعم                                                    |
-| تحويل النص إلى كلام            | `messages.tts.provider: "openai"` / `tts`                                        | نعم                                                    |
-| تحويل الكلام إلى نص على دفعات      | `tools.media.audio` / فهم الوسائط                                        | نعم                                                    |
-| تحويل الكلام إلى نص بالتدفق  | Voice Call `streaming.provider: "openai"`                                        | نعم                                                    |
-| صوت الوقت الفعلي            | Voice Call `realtime.provider: "openai"` / Control UI Talk                       | نعم                                                    |
-| التضمينات                | موفر تضمين الذاكرة                                                        | نعم                                                    |
+| قدرة OpenAI         | سطح OpenClaw                                                                              | الحالة                                                                 |
+| ------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| المحادثة / Responses          | مزوّد نموذج `openai/<model>`                                                               | نعم                                                                    |
+| نماذج اشتراك Codex | `openai/<model>` مع OpenAI OAuth                                                            | نعم                                                                    |
+| مراجع نماذج Codex القديمة   | مراجع نماذج Codex القديمة أو `codex-cli/<model>`                                                | يصلحها doctor إلى `openai/<model>`                                 |
+| حزام خادم تطبيق Codex  | `openai/<model>` مع وقت تشغيل محذوف أو المزوّد/النموذج `agentRuntime.id: codex`              | نعم                                                                    |
+| بحث الويب من جهة الخادم    | أداة OpenAI Responses الأصلية                                                                  | نعم، عندما يكون بحث الويب مفعّلًا ولا يوجد مزوّد مثبت                 |
+| الصور                    | `image_generate`                                                                              | نعم                                                                    |
+| الفيديوهات                    | `video_generate`                                                                              | نعم                                                                    |
+| تحويل النص إلى كلام            | `messages.tts.provider: "openai"` / `tts`                                                     | نعم                                                                    |
+| تحويل الكلام إلى نص دفعي      | `tools.media.audio` / فهم الوسائط                                                     | نعم                                                                    |
+| تحويل الكلام إلى نص بالتدفق  | Voice Call `streaming.provider: "openai"`                                                     | نعم                                                                    |
+| الصوت في الوقت الحقيقي            | Voice Call `realtime.provider: "openai"` / Control UI Talk `talk.realtime.provider: "openai"` | نعم (يتطلب أرصدة OpenAI Platform، وليس اشتراك Codex/ChatGPT) |
+| التضمينات                | مزوّد تضمينات الذاكرة                                                                     | نعم                                                                    |
+
+<Note>
+  يمر صوت OpenAI Realtime (المستخدم بواسطة `realtime.provider: "openai"` في Voice Call و
+  Control UI Talk مع `talk.realtime.provider: "openai"`) عبر
+  **OpenAI Platform Realtime API** العامة، التي تُفوتر مقابل أرصدة OpenAI
+  Platform بدلًا من حصة اشتراك Codex/ChatGPT. الحساب الذي يملك
+  OpenAI OAuth سليمًا ويشغّل نماذج محادثة مدعومة بـ Codex دون مشكلة
+  لا يزال يحتاج إلى ملف مصادقة مفتاح API من OpenAI أو مفتاح API من Platform مع فوترة
+  Platform ممولة لصوت Realtime.
+
+الإصلاح: اشحن أرصدة Platform في
+[platform.openai.com/account/billing](https://platform.openai.com/account/billing)
+للمؤسسة الداعمة لبيانات اعتماد الوقت الحقيقي لديك. يقبل صوت Realtime
+ملف مصادقة مفتاح API لـ `openai` الذي أنشأه `openclaw onboard --auth-choice openai-api-key`،
+أو `OPENAI_API_KEY` من Platform مضبوطًا عبر `talk.realtime.providers.openai.apiKey`
+لـ Control UI Talk، أو `plugins.entries.voice-call.config.realtime.providers.openai.apiKey`
+لـ Voice Call، أو متغير البيئة `OPENAI_API_KEY`. لا تزال ملفات OpenAI OAuth
+قادرة على تشغيل نماذج محادثة `openai/*` المدعومة بـ Codex في تثبيت
+OpenClaw نفسه، لكنها لا تضبط صوت Realtime.
+</Note>
 
 ## تضمينات الذاكرة
 
@@ -120,10 +142,10 @@ PI الصريح متاحًا كمسار توافق اختياري. عندما ي
 }
 ```
 
-بالنسبة إلى نقاط النهاية المتوافقة مع OpenAI التي تتطلب تسميات تضمين غير متماثلة، عيّن
-`queryInputType` و`documentInputType` ضمن `memorySearch`. يمرر OpenClaw
-هذه الحقول كحقول طلب `input_type` خاصة بالموفر: تستخدم تضمينات الاستعلام
-`queryInputType`؛ وتستخدم مقاطع الذاكرة المفهرسة والفهرسة الدفعية
+بالنسبة إلى نقاط النهاية المتوافقة مع OpenAI التي تتطلب تسميات تضمين غير متناظرة، اضبط
+`queryInputType` و`documentInputType` ضمن `memorySearch`. يمرّر OpenClaw
+هذه القيم كحقول طلب `input_type` خاصة بالمزوّد: تستخدم تضمينات الاستعلام
+`queryInputType`؛ وتستخدم أجزاء الذاكرة المفهرسة والفهرسة الدفعية
 `documentInputType`. راجع [مرجع إعداد الذاكرة](/ar/reference/memory-config#provider-specific-config) للاطلاع على المثال الكامل.
 
 ## البدء
@@ -131,25 +153,25 @@ PI الصريح متاحًا كمسار توافق اختياري. عندما ي
 اختر طريقة المصادقة المفضلة لديك واتبع خطوات الإعداد.
 
 <Tabs>
-  <Tab title="مفتاح API (OpenAI Platform)">
-    **الأفضل لـ:** الوصول المباشر إلى API والفوترة حسب الاستخدام.
+  <Tab title="API key (OpenAI Platform)">
+    **الأفضل لـ:** الوصول المباشر إلى API والفوترة القائمة على الاستخدام.
 
     <Steps>
-      <Step title="احصل على مفتاح API الخاص بك">
-        أنشئ أو انسخ مفتاح API من [لوحة تحكم OpenAI Platform](https://platform.openai.com/api-keys).
+      <Step title="Get your API key">
+        أنشئ مفتاح API أو انسخه من [لوحة تحكم OpenAI Platform](https://platform.openai.com/api-keys).
       </Step>
-      <Step title="شغّل الإعداد">
+      <Step title="Run onboarding">
         ```bash
         openclaw onboard --auth-choice openai-api-key
         ```
 
-        أو مرّر المفتاح مباشرةً:
+        أو مرّر المفتاح مباشرة:
 
         ```bash
         openclaw onboard --openai-api-key "$OPENAI_API_KEY"
         ```
       </Step>
-      <Step title="تحقق من أن النموذج متاح">
+      <Step title="Verify the model is available">
         ```bash
         openclaw models list --provider openai
         ```
@@ -160,69 +182,69 @@ PI الصريح متاحًا كمسار توافق اختياري. عندما ي
 
     | مرجع النموذج              | إعداد وقت التشغيل             | المسار                       | المصادقة             |
     | ---------------------- | -------------------------- | --------------------------- | ---------------- |
-    | `openai/gpt-5.5`      | محذوف / `agentRuntime.id: "codex"` للموفر/النموذج | حزمة خادم تطبيق Codex | ملف تعريف OpenAI متوافق مع Codex |
-    | `openai/gpt-5.4-mini` | محذوف / `agentRuntime.id: "codex"` للموفر/النموذج | حزمة خادم تطبيق Codex | ملف تعريف OpenAI متوافق مع Codex |
-    | `openai/gpt-5.5`      | `agentRuntime.id: "pi"` للموفر/النموذج              | وقت تشغيل PI المضمّن      | ملف تعريف `openai` أو ملف تعريف `openai-codex` محدد |
+    | `openai/gpt-5.5`      | محذوف / المزوّد/النموذج `agentRuntime.id: "codex"` | حزام خادم تطبيق Codex | ملف OpenAI متوافق مع Codex |
+    | `openai/gpt-5.4-mini` | محذوف / المزوّد/النموذج `agentRuntime.id: "codex"` | حزام خادم تطبيق Codex | ملف OpenAI متوافق مع Codex |
+    | `openai/gpt-5.5`      | المزوّد/النموذج `agentRuntime.id: "openclaw"`              | وقت تشغيل OpenClaw المضمّن      | ملف `openai` المحدد |
 
     <Note>
-    تستخدم نماذج وكلاء `openai/*` حزمة خادم تطبيق Codex. لاستخدام مصادقة مفتاح API
-    لنموذج وكيل، أنشئ ملف تعريف مفتاح API متوافقًا مع Codex ورتبه
-    باستخدام `auth.order.openai`؛ يظل `OPENAI_API_KEY` هو الاحتياطي المباشر لأسطح
-    OpenAI API غير الوكيلة. لا تزال إدخالات `auth.order.openai-codex` الأقدم
-    تعمل.
+    تستخدم نماذج الوكلاء `openai/*` حزمة تشغيل خادم تطبيق Codex. لاستخدام مصادقة مفتاح API
+    لنموذج وكيل، أنشئ ملفًا تعريفيًا لمفتاح API متوافقًا مع Codex ورتّبه
+    باستخدام `auth.order.openai`؛ يظل `OPENAI_API_KEY` مسار الرجوع المباشر
+    لأسطح OpenAI API غير الخاصة بالوكلاء. شغّل `openclaw doctor --fix` لترحيل
+    إدخالات ترتيب مصادقة Codex القديمة.
     </Note>
 
-    ### مثال إعداد
+    ### مثال الإعدادات
 
     ```json5
     {
-      env: { OPENAI_API_KEY: "sk-..." },
+      env: { OPENAI_API_KEY: "example-openai-key-not-real" },
       agents: { defaults: { model: { primary: "openai/gpt-5.5" } } },
     }
     ```
 
-    لتجربة نموذج Instant الحالي في ChatGPT من OpenAI API، عيّن النموذج
-    إلى `openai/chat-latest`:
+    لتجربة نموذج Instant الحالي في ChatGPT من OpenAI API، اضبط النموذج
+    على `openai/chat-latest`:
 
     ```json5
     {
-      env: { OPENAI_API_KEY: "sk-..." },
+      env: { OPENAI_API_KEY: "example-openai-key-not-real" },
       agents: { defaults: { model: { primary: "openai/chat-latest" } } },
     }
     ```
 
-    `chat-latest` اسم مستعار متحرك. توثقه OpenAI بوصفه أحدث نموذج Instant
-    مستخدمًا في ChatGPT وتوصي بـ `gpt-5.5` لاستخدام API في الإنتاج، لذا
-    أبقِ `openai/gpt-5.5` كافتراضي مستقر ما لم تكن تريد صراحةً
-    سلوك هذا الاسم المستعار. يقبل الاسم المستعار حاليًا إسهاب نص `medium` فقط، لذلك
-    يطبع OpenClaw تجاوزات إسهاب نص OpenAI غير المتوافقة لهذا
-    النموذج إلى صيغة متوافقة.
+    `chat-latest` اسم مستعار متحرك. توثقه OpenAI على أنه أحدث نموذج Instant
+    مستخدم في ChatGPT وتوصي بـ `gpt-5.5` لاستخدام API في الإنتاج، لذا
+    أبقِ `openai/gpt-5.5` كافتراضي مستقر ما لم تكن تريد صراحةً سلوك ذلك
+    الاسم المستعار. لا يقبل الاسم المستعار حاليًا إلا إسهاب نص `medium`، لذلك
+    يطبّع OpenClaw تجاوزات إسهاب نص OpenAI غير المتوافقة لهذا
+    النموذج.
 
     <Warning>
-    لا يعرّض OpenClaw **`openai/gpt-5.3-codex-spark`**. ترفض طلبات OpenAI API الحية ذلك النموذج، ولا يعرّضه كتالوج Codex الحالي أيضًا.
+    لا يعرّض OpenClaw **النموذج** `gpt-5.3-codex-spark` عبر مسار مفتاح OpenAI API المباشر. لا يتوفر إلا عبر إدخالات كتالوج اشتراك Codex عندما يعرّضه حسابك المسجّل دخوله.
     </Warning>
 
   </Tab>
 
   <Tab title="Codex subscription">
-    **الأنسب لـ:** استخدام اشتراك ChatGPT/Codex الخاص بك مع تنفيذ خادم تطبيق Codex الأصلي بدلًا من مفتاح API منفصل. يتطلب Codex السحابي تسجيل الدخول إلى ChatGPT.
+    **الأفضل لـ:** استخدام اشتراك ChatGPT/Codex لديك مع تنفيذ خادم تطبيق Codex الأصلي بدلًا من مفتاح API منفصل. يتطلب Codex السحابي تسجيل الدخول إلى ChatGPT.
 
     <Steps>
       <Step title="Run Codex OAuth">
         ```bash
-        openclaw onboard --auth-choice openai-codex
+        openclaw onboard --auth-choice openai
         ```
 
-        أو شغّل OAuth مباشرة:
+        أو شغّل OAuth مباشرةً:
 
         ```bash
-        openclaw models auth login --provider openai-codex
+        openclaw models auth login --provider openai
         ```
 
-        للإعدادات عديمة الواجهة أو غير المناسبة لاستدعاءات العودة، أضف `--device-code` لتسجيل الدخول باستخدام تدفق رمز جهاز ChatGPT بدلًا من استدعاء عودة متصفح localhost:
+        للإعدادات عديمة الواجهة أو التي لا تناسبها ردود النداء، أضف `--device-code` لتسجيل الدخول بتدفق رمز جهاز ChatGPT بدلًا من رد نداء متصفح localhost:
 
         ```bash
-        openclaw models auth login --provider openai-codex --device-code
+        openclaw models auth login --provider openai --device-code
         ```
       </Step>
       <Step title="Use the canonical OpenAI model route">
@@ -230,44 +252,47 @@ PI الصريح متاحًا كمسار توافق اختياري. عندما ي
         openclaw config set agents.defaults.model.primary openai/gpt-5.5
         ```
 
-        لا يلزم أي تكوين وقت تشغيل للمسار الافتراضي. تختار دورات وكيل OpenAI
-        وقت تشغيل خادم تطبيق Codex الأصلي تلقائيًا، ويثبّت OpenClaw
-        أو يصلح Plugin المضمّن الخاص بـ Codex عند اختيار هذا المسار.
+        لا يلزم إعداد تشغيل للمسار الافتراضي. تختار دورات وكيل OpenAI
+        بيئة تشغيل خادم تطبيق Codex الأصلية تلقائيًا، ويثبّت OpenClaw
+        Plugin Codex المضمّن أو يصلحه عند اختيار هذا المسار.
       </Step>
       <Step title="Verify Codex auth is available">
         ```bash
-        openclaw models list --provider openai-codex
+        openclaw models list --provider openai
         ```
 
         بعد تشغيل Gateway، أرسل `/codex status` أو `/codex models`
-        في الدردشة للتحقق من وقت تشغيل خادم التطبيق الأصلي.
+        في الدردشة للتحقق من بيئة تشغيل خادم التطبيق الأصلية.
       </Step>
     </Steps>
 
     ### ملخص المسار
 
-    | مرجع النموذج | تكوين وقت التشغيل | المسار | المصادقة |
+    | مرجع النموذج | إعدادات التشغيل | المسار | المصادقة |
     |-----------|----------------|-------|------|
-    | `openai/gpt-5.5` | محذوف / موفر/نموذج `agentRuntime.id: "codex"` | حاضنة خادم تطبيق Codex الأصلية | تسجيل دخول Codex أو ملف تعريف مصادقة `openai` مرتب |
-    | `openai/gpt-5.5` | موفر/نموذج `agentRuntime.id: "pi"` | وقت تشغيل PI المضمّن مع نقل Codex-auth الداخلي | ملف تعريف `openai-codex` المحدد |
-    | `openai-codex/gpt-5.5` | أصلحه doctor | مسار قديم أُعيدت كتابته إلى `openai/gpt-5.5` | ملف تعريف `openai-codex` موجود |
+    | `openai/gpt-5.5` | محذوف / موفر/نموذج `agentRuntime.id: "codex"` | حزمة تشغيل خادم تطبيق Codex الأصلية | تسجيل دخول Codex أو ملف مصادقة `openai` مرتب |
+    | `openai/gpt-5.5` | موفر/نموذج `agentRuntime.id: "openclaw"` | بيئة تشغيل OpenClaw المضمّنة مع نقل مصادقة Codex داخلي | ملف OAuth `openai` المحدد |
+    | مرجع Codex GPT-5.5 قديم | يُصلَح بواسطة doctor | يُعاد كتابة المسار القديم إلى `openai/gpt-5.5` | ملف OAuth OpenAI مرحّل |
+    | `codex-cli/gpt-5.5` | يُصلَح بواسطة doctor | يُعاد كتابة مسار CLI القديم إلى `openai/gpt-5.5` | مصادقة خادم تطبيق Codex |
 
     <Warning>
-    لا تكوّن مراجع نماذج أقدم مثل `openai-codex/gpt-5.1*` أو `openai-codex/gpt-5.2*` أو
-    `openai-codex/gpt-5.3*`. ترفض حسابات ChatGPT/Codex OAuth الآن
-    تلك النماذج. استخدم `openai/gpt-5.5`؛ تختار دورات وكيل OpenAI الآن وقت تشغيل Codex
-    افتراضيًا.
+    فضّل `openai/gpt-5.5` لإعداد وكيل جديد مدعوم باشتراك. مراجع Codex GPT
+    القديمة الأقدم هي مسارات OpenClaw قديمة، وليست مسار بيئة تشغيل Codex
+    الأصلي؛ شغّل `openclaw doctor --fix` عندما تريد ترحيلها إلى مراجع
+    `openai/*` القانونية. يظل `gpt-5.3-codex-spark` مقصورًا على الحسابات التي
+    يعلن كتالوج اشتراك Codex لديها عن ذلك النموذج؛ وتظل مراجع مفتاح OpenAI API
+    المباشر ومراجع Azure الخاصة به محجوبة.
     </Warning>
 
     <Note>
-    بادئة النموذج `openai-codex/*` هي تكوين قديم يصلحه doctor. لإعداد
-    الاشتراك الشائع مع وقت التشغيل الأصلي، سجّل الدخول بمصادقة Codex
-    لكن أبقِ مرجع النموذج على `openai/gpt-5.5`. يجب أن يضع التكوين الجديد ترتيب مصادقة
-    وكيل OpenAI تحت `auth.order.openai`؛ وتظل إدخالات `auth.order.openai-codex`
-    الأقدم صالحة.
+    بادئة نموذج Codex القديمة هي إعدادات قديمة يصلحها doctor. لإعداد
+    الاشتراك الشائع مع بيئة التشغيل الأصلية، سجّل الدخول بمصادقة Codex
+    لكن أبقِ مرجع النموذج على `openai/gpt-5.5`. ينبغي أن تضع الإعدادات الجديدة
+    ترتيب مصادقة وكيل OpenAI تحت `auth.order.openai`؛ ويرحّل doctor إدخالات
+    ترتيب مصادقة Codex القديمة الأقدم.
     </Note>
 
-    ### مثال تكوين
+    ### مثال الإعدادات
 
     ```json5
     {
@@ -281,8 +306,8 @@ PI الصريح متاحًا كمسار توافق اختياري. عندما ي
     ```
 
     مع نسخة احتياطية بمفتاح API، أبقِ النموذج على `openai/gpt-5.5` وضع
-    ترتيب المصادقة تحت `openai`. سيحاول OpenClaw استخدام الاشتراك أولًا، ثم
-    مفتاح API، مع البقاء على حاضنة Codex:
+    ترتيب المصادقة تحت `openai`. سيجرب OpenClaw الاشتراك أولًا، ثم
+    مفتاح API، مع البقاء على حزمة تشغيل Codex:
 
     ```json5
     {
@@ -295,7 +320,7 @@ PI الصريح متاحًا كمسار توافق اختياري. عندما ي
       auth: {
         order: {
           openai: [
-            "openai-codex:user@example.com",
+            "openai:user@example.com",
             "openai:api-key-backup",
           ],
         },
@@ -304,17 +329,17 @@ PI الصريح متاحًا كمسار توافق اختياري. عندما ي
     ```
 
     <Note>
-    لم تعد عملية الإعداد تستورد مادة OAuth من `~/.codex`. سجّل الدخول باستخدام OAuth عبر المتصفح (الافتراضي) أو تدفق رمز الجهاز أعلاه — يدير OpenClaw بيانات الاعتماد الناتجة في مخزن مصادقة الوكيل الخاص به.
+    لم يعد الإعداد الأولي يستورد مادة OAuth من `~/.codex`. سجّل الدخول باستخدام OAuth في المتصفح (الافتراضي) أو تدفق رمز الجهاز أعلاه — يدير OpenClaw بيانات الاعتماد الناتجة في مخزن مصادقة الوكلاء الخاص به.
     </Note>
 
-    ### فحص توجيه Codex OAuth واستعادته
+    ### فحص مسار Codex OAuth واستعادته
 
-    استخدم هذه الأوامر لمعرفة النموذج ووقت التشغيل ومسار المصادقة التي يستخدمها
+    استخدم هذه الأوامر لمعرفة النموذج وبيئة التشغيل ومسار المصادقة الذي يستخدمه
     وكيلك الافتراضي:
 
     ```bash
     openclaw models status
-    openclaw models auth list --provider openai-codex
+    openclaw models auth list --provider openai
     openclaw config get agents.defaults.model --json
     openclaw config get models.providers.openai.agentRuntime --json
     ```
@@ -323,58 +348,66 @@ PI الصريح متاحًا كمسار توافق اختياري. عندما ي
 
     ```bash
     openclaw models status --agent <id>
-    openclaw models auth list --agent <id> --provider openai-codex
+    openclaw models auth list --agent <id> --provider openai
     ```
 
-    إذا كان تكوين أقدم لا يزال يحتوي على `openai-codex/gpt-*` أو تثبيت جلسة OpenAI PI
-    قديمًا بدون تكوين وقت تشغيل صريح، فأصلحه:
+    إذا كانت إعدادات أقدم ما زالت تحتوي على مراجع Codex GPT قديمة أو تثبيت
+    جلسة بيئة تشغيل OpenAI متقادمًا بلا إعداد تشغيل صريح، فأصلحها:
 
     ```bash
     openclaw doctor --fix
     openclaw config validate
     ```
 
-    إذا أظهر `models auth list --provider openai-codex` عدم وجود ملف تعريف قابل للاستخدام، فسجّل
+    إذا أظهر `models auth list --provider openai` عدم وجود ملف تعريف صالح للاستخدام، فسجّل
     الدخول مرة أخرى:
 
     ```bash
-    openclaw models auth login --provider openai-codex
-    openclaw models status --probe --probe-provider openai-codex
+    openclaw models auth login --provider openai
+    openclaw models status --probe --probe-provider openai
     ```
 
-    `openai/*` هو مسار النموذج لدورات وكيل OpenAI عبر Codex. يظل
-    معرف موفر المصادقة/ملف التعريف `openai-codex` مقبولًا لملفات التعريف
-    والقوائم في CLI الحالية.
+    استخدم `--profile-id` عندما تريد عدة عمليات تسجيل دخول Codex OAuth في الوكيل
+    نفسه وتريد لاحقًا التحكم بها عبر ترتيب المصادقة أو `/model ...@<profileId>`:
+
+    ```bash
+    openclaw models auth login --provider openai --profile-id openai:ritsuko
+    openclaw models auth login --provider openai --profile-id openai:lain
+    ```
+
+    `openai/*` هو مسار النموذج لدورات وكيل OpenAI عبر Codex. شغّل
+    `openclaw doctor --fix` لترحيل معرّفات ملفات تعريف بادئة OpenAI Codex القديمة الأقدم
+    وإدخالات الترتيب قبل الاعتماد على ترتيب ملفات التعريف.
 
     ### مؤشر الحالة
 
-    تعرض دردشة `/status` وقت تشغيل النموذج النشط للجلسة الحالية.
-    تظهر حاضنة خادم تطبيق Codex المضمّنة كـ `Runtime: OpenAI Codex` لدورات نماذج وكيل
-    OpenAI. تُصلح تثبيتات جلسات PI القديمة إلى Codex ما لم
-    يثبّت التكوين PI صراحة.
+    تعرض دردشة `/status` بيئة تشغيل النموذج النشطة للجلسة الحالية.
+    تظهر حزمة تشغيل خادم تطبيق Codex المضمّنة كـ `Runtime: OpenAI Codex` عند
+    دورات نماذج وكيل OpenAI. تُصلَح تثبيتات جلسات بيئة تشغيل OpenAI المتقادمة إلى Codex ما لم
+    تثبّت الإعدادات OpenClaw صراحةً.
 
     ### تحذير doctor
 
-    إذا بقيت مسارات `openai-codex/*` أو تثبيتات OpenAI PI القديمة في التكوين أو
-    حالة الجلسة، فإن `openclaw doctor --fix` يعيد كتابتها إلى `openai/*` مع وقت تشغيل
-    Codex ما لم يكن PI مكوّنًا صراحة.
+    إذا بقيت مراجع نماذج Codex القديمة أو تثبيتات بيئة تشغيل OpenAI المتقادمة في الإعدادات أو
+    حالة الجلسة، فإن `openclaw doctor --fix` يعيد كتابتها إلى `openai/*` مع
+    بيئة تشغيل Codex ما لم يكن OpenClaw معدًا صراحةً.
 
     ### حد نافذة السياق
 
-    يتعامل OpenClaw مع بيانات تعريف النموذج وحد سياق وقت التشغيل كقيمتين منفصلتين.
+    يعامل OpenClaw بيانات تعريف النموذج وحد سياق بيئة التشغيل كقيمتين منفصلتين.
 
     بالنسبة إلى `openai/gpt-5.5` عبر كتالوج Codex OAuth:
 
     - `contextWindow` الأصلي: `1000000`
-    - حد `contextTokens` الافتراضي لوقت التشغيل: `272000`
+    - حد `contextTokens` الافتراضي لبيئة التشغيل: `272000`
 
-    الحد الافتراضي الأصغر يوفر عمليًا خصائص زمن استجابة وجودة أفضل. تجاوزه باستخدام `contextTokens`:
+    يملك الحد الافتراضي الأصغر خصائص كمون وجودة أفضل عمليًا. تجاوزه باستخدام `contextTokens`:
 
     ```json5
     {
       models: {
         providers: {
-          "openai-codex": {
+          openai: {
             models: [{ id: "gpt-5.5", contextTokens: 160000 }],
           },
         },
@@ -383,52 +416,53 @@ PI الصريح متاحًا كمسار توافق اختياري. عندما ي
     ```
 
     <Note>
-    استخدم `contextWindow` للتصريح ببيانات تعريف النموذج الأصلية. استخدم `contextTokens` للحد من ميزانية سياق وقت التشغيل.
+    استخدم `contextWindow` للتصريح ببيانات تعريف النموذج الأصلية. استخدم `contextTokens` لتحديد ميزانية سياق بيئة التشغيل.
     </Note>
 
     ### استعادة الكتالوج
 
-    يستخدم OpenClaw بيانات تعريف كتالوج Codex من المصدر الأعلى لـ `gpt-5.5` عندما تكون
+    يستخدم OpenClaw بيانات تعريف كتالوج Codex upstream لـ `gpt-5.5` عندما تكون
     موجودة. إذا أغفل اكتشاف Codex المباشر صف `gpt-5.5` بينما
-    الحساب مصادق عليه، ينشئ OpenClaw صف نموذج OAuth هذا بحيث
-    لا تفشل عمليات cron والوكيل الفرعي وعمليات نموذج الافتراضي المكوّن برسالة
+    الحساب مصادق عليه، ينشئ OpenClaw صف نموذج OAuth هذا حتى
+    لا تفشل عمليات cron والوكيل الفرعي وعمليات النموذج الافتراضي المعدّة بسبب
     `Unknown model`.
 
   </Tab>
 </Tabs>
 
-## مصادقة خادم تطبيق Codex الأصلي
+## مصادقة خادم تطبيق Codex الأصلية
 
-تستخدم حاضنة خادم تطبيق Codex الأصلية مراجع نماذج `openai/*` مع تكوين وقت تشغيل
-محذوف أو موفر/نموذج `agentRuntime.id: "codex"`، لكن مصادقتها
-لا تزال قائمة على الحساب. يختار OpenClaw المصادقة بهذا الترتيب:
+تستخدم حزمة تشغيل خادم تطبيق Codex الأصلية مراجع نماذج `openai/*` مع حذف
+إعدادات التشغيل أو موفر/نموذج `agentRuntime.id: "codex"`، لكن مصادقتها
+ما زالت قائمة على الحساب. يختار OpenClaw المصادقة بهذا الترتيب:
 
-1. ملفات تعريف مصادقة OpenAI المرتبة للوكيل، ويفضل أن تكون تحت
-   `auth.order.openai`. تظل ملفات تعريف `openai-codex:*` الحالية و
-   `auth.order.openai-codex` صالحة للتثبيتات الأقدم.
-2. حساب خادم التطبيق الحالي، مثل تسجيل دخول ChatGPT محلي عبر Codex CLI.
-3. لعمليات تشغيل خادم التطبيق المحلي عبر stdio فقط، `CODEX_API_KEY`، ثم
-   `OPENAI_API_KEY`، عندما يبلّغ خادم التطبيق عن عدم وجود حساب ولا يزال يتطلب
+1. ملفات مصادقة OpenAI المرتبة للوكيل، ويفضل أن تكون تحت
+   `auth.order.openai`. شغّل `openclaw doctor --fix` لترحيل معرّفات
+   ملفات مصادقة Codex القديمة الأقدم وترتيب مصادقة Codex القديم.
+2. الحساب الحالي لخادم التطبيق، مثل تسجيل دخول ChatGPT محلي في Codex CLI.
+3. لإطلاقات خادم التطبيق المحلية عبر stdio فقط، `CODEX_API_KEY`، ثم
+   `OPENAI_API_KEY`، عندما يبلّغ خادم التطبيق عن عدم وجود حساب وما يزال يتطلب
    مصادقة OpenAI.
 
-هذا يعني أن تسجيل دخول اشتراك ChatGPT/Codex محلي لا يُستبدل لمجرد
+هذا يعني أن تسجيل دخول اشتراك ChatGPT/Codex المحلي لا يُستبدل لمجرد
 أن عملية Gateway لديها أيضًا `OPENAI_API_KEY` لنماذج OpenAI المباشرة
-أو التضمينات. تراجع مفتاح API عبر البيئة هو فقط مسار stdio المحلي بلا حساب؛ ولا
-يُرسل إلى اتصالات خادم التطبيق عبر WebSocket. عند اختيار ملف تعريف Codex
-بنمط الاشتراك، يحافظ OpenClaw أيضًا على `CODEX_API_KEY` و `OPENAI_API_KEY`
+أو التضمينات. رجوع مفتاح API عبر البيئة هو مسار عدم وجود حساب stdio المحلي فقط؛ ولا
+يُرسل إلى اتصالات خادم التطبيق عبر WebSocket. عند تحديد ملف تعريف Codex
+بنمط الاشتراك، يبقي OpenClaw أيضًا `CODEX_API_KEY` و`OPENAI_API_KEY`
 خارج ابن خادم التطبيق stdio المُنشأ ويرسل بيانات الاعتماد المحددة
-عبر RPC تسجيل الدخول إلى خادم التطبيق. عندما يُحظر ملف تعريف الاشتراك هذا بسبب
-حد استخدام Codex، يمكن لـ OpenClaw التدوير إلى ملف تعريف مفتاح API التالي المرتب `openai:*`
-دون تغيير النموذج المحدد أو الخروج من حاضنة Codex. بعد مرور وقت
-إعادة تعيين الاشتراك، يصبح ملف تعريف الاشتراك مؤهلًا مرة أخرى.
+عبر RPC تسجيل دخول خادم التطبيق. عندما يُحظر ملف تعريف الاشتراك هذا بسبب
+حد استخدام Codex، يمكن لـ OpenClaw الدوران إلى ملف تعريف مفتاح API
+`openai:*` المرتب التالي دون تغيير النموذج المحدد أو الخروج من حزمة تشغيل
+Codex. بمجرد مرور وقت إعادة تعيين الاشتراك، يصبح ملف تعريف الاشتراك
+مؤهلًا مرة أخرى.
 
-## توليد الصور
+## إنشاء الصور
 
-يسجل Plugin `openai` المضمّن توليد الصور عبر أداة `image_generate`.
-يدعم توليد الصور بمفتاح API الخاص بـ OpenAI وتوليد الصور عبر Codex OAuth
-من خلال مرجع النموذج نفسه `openai/gpt-image-2`.
+يسجل Plugin `openai` المضمّن إنشاء الصور عبر أداة `image_generate`.
+يدعم إنشاء صور OpenAI بمفتاح API وإنشاء صور Codex OAuth
+عبر مرجع النموذج نفسه `openai/gpt-image-2`.
 
-| القدرة                | مفتاح API لـ OpenAI                     | Codex OAuth                          |
+| القدرة                | مفتاح OpenAI API                     | Codex OAuth                          |
 | ------------------------- | ---------------------------------- | ------------------------------------ |
 | مرجع النموذج                 | `openai/gpt-image-2`               | `openai/gpt-image-2`                 |
 | المصادقة                      | `OPENAI_API_KEY`                   | تسجيل دخول OpenAI Codex OAuth           |
@@ -449,24 +483,24 @@ PI الصريح متاحًا كمسار توافق اختياري. عندما ي
 ```
 
 <Note>
-راجع [توليد الصور](/ar/tools/image-generation) لمعلمات الأداة المشتركة، واختيار الموفر، وسلوك تجاوز الفشل.
+راجع [إنشاء الصور](/ar/tools/image-generation) لمعلمات الأداة المشتركة، واختيار الموفر، وسلوك تجاوز الفشل.
 </Note>
 
-`gpt-image-2` هو الافتراضي لكل من توليد OpenAI من النص إلى الصورة وتحرير الصور.
-تظل `gpt-image-1.5` و `gpt-image-1` و `gpt-image-1-mini` قابلة للاستخدام كتجاوزات
-صريحة للنموذج. استخدم `openai/gpt-image-1.5` لمخرجات PNG/WebP
-بخلفية شفافة؛ ترفض واجهة API الحالية لـ `gpt-image-2`
+`gpt-image-2` هو الافتراضي لكل من إنشاء الصور من نص OpenAI وتحرير الصور.
+تظل `gpt-image-1.5` و`gpt-image-1` و`gpt-image-1-mini` قابلة للاستخدام كتجاوزات
+نموذج صريحة. استخدم `openai/gpt-image-1.5` لإخراج PNG/WebP
+بخلفية شفافة؛ إذ ترفض API الحالية لـ `gpt-image-2`
 `background: "transparent"`.
 
-لطلب بخلفية شفافة، يجب أن يستدعي الوكلاء `image_generate` مع
-`model: "openai/gpt-image-1.5"` و `outputFormat: "png"` أو `"webp"` و
-`background: "transparent"`؛ ولا يزال خيار الموفر الأقدم `openai.background`
-مقبولًا. يحمي OpenClaw أيضًا مسارات OpenAI العامة و
-OpenAI Codex OAuth بإعادة كتابة طلبات الشفافية الافتراضية لـ `openai/gpt-image-2`
-إلى `gpt-image-1.5`؛ وتحتفظ نقاط نهاية Azure ونقاط النهاية المخصصة المتوافقة مع OpenAI
-بأسماء النشر/النموذج المكوّنة لديها.
+لطلب خلفية شفافة، يجب على الوكلاء استدعاء `image_generate` مع
+`model: "openai/gpt-image-1.5"` و`outputFormat: "png"` أو `"webp"` و
+`background: "transparent"`؛ ولا يزال خيار المزوّد الأقدم `openai.background`
+مقبولًا. يحمي OpenClaw أيضًا مسارات OAuth العامة الخاصة بـ OpenAI و
+OpenAI Codex عبر إعادة كتابة طلبات الشفافية الافتراضية `openai/gpt-image-2`
+إلى `gpt-image-1.5`؛ أما Azure ونقاط النهاية المخصصة المتوافقة مع OpenAI
+فتحتفظ بأسماء النشر/النماذج المكوّنة لها.
 
-يُعرض الإعداد نفسه لعمليات CLI عديمة الواجهة:
+يُعرض الإعداد نفسه لتشغيلات CLI بلا واجهة:
 
 ```bash
 openclaw infer image generate \
@@ -477,23 +511,25 @@ openclaw infer image generate \
   --json
 ```
 
-استخدم علامتَي `--output-format` و `--background` نفسيهما مع
+استخدم علامتي `--output-format` و`--background` نفسيهما مع
 `openclaw infer image edit` عند البدء من ملف إدخال.
-تظل `--openai-background` متاحة كاسم مستعار خاص بـ OpenAI.
+يبقى `--openai-background` متاحًا كاسم بديل خاص بـ OpenAI.
+استخدم `--quality low|medium|high|auto` عندما تحتاج إلى التحكم في جودة
+صور OpenAI وتكلفتها. استخدم `--openai-moderation low|auto` لتمرير تلميح
+الإشراف الخاص بالمزوّد في OpenAI من `image generate` أو `image edit`.
 
-بالنسبة إلى تثبيتات Codex OAuth، أبقِ المرجع نفسه `openai/gpt-image-2`. عند تكوين
-ملف تعريف OAuth باسم `openai-codex`، يحل OpenClaw رمز وصول OAuth المخزن ذاك
-ويرسل طلبات الصور عبر خلفية Codex Responses. لا يحاول
-أولًا استخدام `OPENAI_API_KEY` ولا يتراجع بصمت إلى مفتاح API لذلك
-الطلب. كوّن `models.providers.openai` صراحة بمفتاح API أو
-عنوان URL أساسي مخصص أو نقطة نهاية Azure عندما تريد مسار OpenAI Images API
-المباشر بدلًا من ذلك.
-إذا كانت نقطة نهاية الصور المخصصة هذه على عنوان LAN/خاص موثوق، فاضبط أيضًا
-`browser.ssrfPolicy.dangerouslyAllowPrivateNetwork: true`؛ يبقي OpenClaw
-نقاط نهاية الصور الخاصة/الداخلية المتوافقة مع OpenAI محظورة ما لم يكن هذا الاشتراك
-موجودًا.
+لتثبيتات OAuth الخاصة بـ ChatGPT/Codex، احتفظ بمرجع `openai/gpt-image-2`
+نفسه. عند تكوين ملف تعريف OAuth باسم `openai`، يحل OpenClaw رمز وصول OAuth
+المخزن ويرسل طلبات الصور عبر واجهة Codex Responses الخلفية. ولا يجرّب أولًا
+`OPENAI_API_KEY` ولا يعود بصمت إلى مفتاح API لذلك الطلب. كوّن
+`models.providers.openai` صراحةً باستخدام مفتاح API أو عنوان URL أساسي مخصص
+أو نقطة نهاية Azure عندما تريد مسار API المباشر لصور OpenAI بدلًا من ذلك.
+إذا كانت نقطة نهاية الصور المخصصة هذه على عنوان LAN/خاص موثوق، فعيّن أيضًا
+`browser.ssrfPolicy.dangerouslyAllowPrivateNetwork: true`؛ إذ يبقي OpenClaw
+نقاط نهاية الصور الخاصة/الداخلية المتوافقة مع OpenAI محظورة ما لم يكن هذا
+الاشتراك الصريح موجودًا.
 
-توليد:
+التوليد:
 
 ```
 /tool image_generate model=openai/gpt-image-2 prompt="A polished launch poster for OpenClaw on macOS" size=3840x2160 count=1
@@ -505,7 +541,7 @@ openclaw infer image generate \
 /tool image_generate model=openai/gpt-image-1.5 prompt="A simple red circle sticker on a transparent background" outputFormat=png background=transparent
 ```
 
-تحرير:
+التحرير:
 
 ```
 /tool image_generate model=openai/gpt-image-2 prompt="Preserve the object shape, change the material to translucent glass" image=/path/to/reference.png size=1024x1536
@@ -513,15 +549,19 @@ openclaw infer image generate \
 
 ## توليد الفيديو
 
-يسجّل Plugin `openai` المضمّن توليد الفيديو من خلال أداة `video_generate`.
+يسجل Plugin المضمّن `openai` توليد الفيديو عبر أداة `video_generate`.
 
-| الإمكانية | القيمة |
+| القدرة | القيمة |
 | ---------------- | --------------------------------------------------------------------------------- |
 | النموذج الافتراضي | `openai/sora-2` |
-| الأوضاع | تحويل النص إلى فيديو، تحويل الصورة إلى فيديو، تحرير فيديو واحد |
-| المدخلات المرجعية | صورة واحدة أو فيديو واحد |
-| تجاوزات الحجم | مدعومة |
+| الأوضاع | نص إلى فيديو، صورة إلى فيديو، تحرير فيديو واحد |
+| مدخلات مرجعية | صورة واحدة أو فيديو واحد |
+| تجاوزات الحجم | مدعومة للنص إلى فيديو والصورة إلى فيديو |
 | تجاوزات أخرى | يتم تجاهل `aspectRatio` و`resolution` و`audio` و`watermark` مع تحذير من الأداة |
+
+تستخدم طلبات الصورة إلى فيديو في OpenAI المسار `POST /v1/videos` مع صورة
+`input_reference`. تستخدم تحريرات الفيديو الواحد المسار `POST /v1/videos/edits`
+مع الفيديو المرفوع في الحقل `video`.
 
 ```json5
 {
@@ -534,25 +574,25 @@ openclaw infer image generate \
 ```
 
 <Note>
-راجع [توليد الفيديو](/ar/tools/video-generation) لمعلمات الأداة المشتركة، واختيار المزوّد، وسلوك تجاوز الفشل.
+راجع [توليد الفيديو](/ar/tools/video-generation) لمعرفة معاملات الأداة المشتركة واختيار المزوّد وسلوك تجاوز الفشل.
 </Note>
 
-## مساهمة مطالبة GPT-5
+## مساهمة موجه GPT-5
 
-يضيف OpenClaw مساهمة مطالبة GPT-5 مشتركة لتشغيلات عائلة GPT-5 عبر المزوّدين. تُطبَّق حسب معرّف النموذج، لذلك تتلقى `openai/gpt-5.5`، ومراجع ما قبل الإصلاح القديمة مثل `openai-codex/gpt-5.5`، و`openrouter/openai/gpt-5.5`، و`opencode/gpt-5.5`، ومراجع GPT-5 المتوافقة الأخرى الطبقة نفسها. ولا تتلقاها نماذج GPT-4.x الأقدم.
+يضيف OpenClaw مساهمة موجه GPT-5 مشتركة لتشغيلات عائلة GPT-5 على أسطح الموجهات التي يجمّعها OpenClaw. تنطبق حسب معرّف النموذج، لذلك تتلقى مسارات OpenClaw/المزوّد مثل المراجع القديمة قبل الإصلاح (مرجع Codex GPT-5.5 القديم)، و`openrouter/openai/gpt-5.5`، و`opencode/gpt-5.5`، ومراجع GPT-5 المتوافقة الأخرى الطبقة نفسها. لا تنطبق على نماذج GPT-4.x الأقدم.
 
-يستخدم حزام Codex الأصلي المضمّن سلوك GPT-5 نفسه وطبقة Heartbeat عبر تعليمات المطوّر لخادم تطبيق Codex، لذلك تحتفظ جلسات `openai/gpt-5.x` الموجّهة عبر Codex بتوجيهات المتابعة الاستباقية وHeartbeat نفسها، رغم أن Codex يملك بقية مطالبة الحزام.
+لا يتلقى حزام Codex الأصلي المضمّن طبقة OpenClaw GPT-5 هذه عبر تعليمات المطور في خادم تطبيق Codex. يحتفظ Codex الأصلي بسلوك الأساس والنموذج ووثائق المشروع المملوك لـ Codex، بينما يعطل OpenClaw الشخصية المدمجة في Codex للسلاسل الأصلية حتى تبقى ملفات شخصية مساحة عمل الوكيل هي المرجع المعتمد. يساهم OpenClaw فقط بسياق وقت التشغيل مثل تسليم القناة وأدوات OpenClaw الديناميكية وتفويض ACP وسياق مساحة العمل وSkills الخاصة بـ OpenClaw.
 
-تضيف مساهمة GPT-5 عقد سلوك موسومًا لاستمرارية الشخصية، وسلامة التنفيذ، وانضباط الأدوات، وشكل المخرجات، وفحوصات الاكتمال، والتحقق. يبقى سلوك الرد الخاص بالقناة والرسائل الصامتة في مطالبة نظام OpenClaw المشتركة وسياسة التسليم الصادر. تكون إرشادات GPT-5 مفعّلة دائمًا للنماذج المطابقة. طبقة أسلوب التفاعل الودّي منفصلة وقابلة للتهيئة.
+تضيف مساهمة GPT-5 عقد سلوك موسومًا لاستمرارية الشخصية وسلامة التنفيذ وانضباط الأدوات وشكل المخرجات وفحوصات الإكمال والتحقق على موجهات OpenClaw المجمعة المطابقة. يبقى سلوك الرد الخاص بالقناة والرسائل الصامتة في موجه نظام OpenClaw المشترك وسياسة التسليم الصادر. طبقة أسلوب التفاعل الودود منفصلة وقابلة للتكوين.
 
 | القيمة | التأثير |
 | ---------------------- | ------------------------------------------- |
-| `"friendly"` (الافتراضي) | تفعيل طبقة أسلوب التفاعل الودّي |
+| `"friendly"` (افتراضي) | تمكين طبقة أسلوب التفاعل الودود |
 | `"on"` | اسم بديل لـ `"friendly"` |
-| `"off"` | تعطيل طبقة الأسلوب الودّي فقط |
+| `"off"` | تعطيل طبقة الأسلوب الودود فقط |
 
 <Tabs>
-  <Tab title="التهيئة">
+  <Tab title="التكوين">
     ```json5
     {
       agents: {
@@ -573,40 +613,40 @@ openclaw infer image generate \
 </Tabs>
 
 <Tip>
-القيم غير حساسة لحالة الأحرف وقت التشغيل، لذا يعطّل كل من `"Off"` و`"off"` طبقة الأسلوب الودّي.
+القيم غير حساسة لحالة الأحرف في وقت التشغيل، لذلك يعطل كل من `"Off"` و`"off"` طبقة الأسلوب الودود.
 </Tip>
 
 <Note>
-لا يزال `plugins.entries.openai.config.personality` القديم يُقرأ كمسار احتياطي للتوافق عندما لا يكون إعداد `agents.defaults.promptOverlays.gpt5.personality` المشترك مضبوطًا.
+لا يزال `plugins.entries.openai.config.personality` القديم يُقرأ كبديل توافق عندما لا يكون الإعداد المشترك `agents.defaults.promptOverlays.gpt5.personality` معينًا.
 </Note>
 
 ## الصوت والكلام
 
 <AccordionGroup>
-  <Accordion title="توليف الكلام (TTS)">
-    يسجّل Plugin `openai` المضمّن توليف الكلام لسطح `messages.tts`.
+  <Accordion title="اصطناع الكلام (TTS)">
+    يسجل Plugin المضمّن `openai` اصطناع الكلام لسطح `messages.tts`.
 
-    | الإعداد | مسار التهيئة | الافتراضي |
+    | الإعداد | مسار التكوين | الافتراضي |
     |---------|------------|---------|
     | النموذج | `messages.tts.providers.openai.model` | `gpt-4o-mini-tts` |
-    | الصوت | `messages.tts.providers.openai.voice` | `coral` |
-    | السرعة | `messages.tts.providers.openai.speed` | (غير مضبوط) |
-    | التعليمات | `messages.tts.providers.openai.instructions` | (غير مضبوط، `gpt-4o-mini-tts` فقط) |
+    | الصوت | `messages.tts.providers.openai.speakerVoice` | `coral` |
+    | السرعة | `messages.tts.providers.openai.speed` | (غير معين) |
+    | التعليمات | `messages.tts.providers.openai.instructions` | (غير معين، `gpt-4o-mini-tts` فقط) |
     | التنسيق | `messages.tts.providers.openai.responseFormat` | `opus` للملاحظات الصوتية، و`mp3` للملفات |
     | مفتاح API | `messages.tts.providers.openai.apiKey` | يعود إلى `OPENAI_API_KEY` |
     | عنوان URL الأساسي | `messages.tts.providers.openai.baseUrl` | `https://api.openai.com/v1` |
-    | الجسم الإضافي | `messages.tts.providers.openai.extraBody` / `extra_body` | (غير مضبوط) |
+    | جسم إضافي | `messages.tts.providers.openai.extraBody` / `extra_body` | (غير معين) |
 
-    النماذج المتاحة: `gpt-4o-mini-tts`، و`tts-1`، و`tts-1-hd`. الأصوات المتاحة: `alloy`، و`ash`، و`ballad`، و`cedar`، و`coral`، و`echo`، و`fable`، و`juniper`، و`marin`، و`onyx`، و`nova`، و`sage`، و`shimmer`، و`verse`.
+    النماذج المتاحة: `gpt-4o-mini-tts` و`tts-1` و`tts-1-hd`. الأصوات المتاحة: `alloy` و`ash` و`ballad` و`cedar` و`coral` و`echo` و`fable` و`juniper` و`marin` و`onyx` و`nova` و`sage` و`shimmer` و`verse`.
 
-    يتم دمج `extraBody` في JSON طلب `/audio/speech` بعد الحقول التي يولّدها OpenClaw، لذا استخدمه لنقاط النهاية المتوافقة مع OpenAI التي تتطلب مفاتيح إضافية مثل `lang`. يتم تجاهل مفاتيح النموذج الأولي.
+    يتم دمج `extraBody` في JSON طلب `/audio/speech` بعد الحقول التي يولدها OpenClaw، لذلك استخدمه لنقاط النهاية المتوافقة مع OpenAI التي تتطلب مفاتيح إضافية مثل `lang`. يتم تجاهل مفاتيح النموذج الأولي.
 
     ```json5
     {
       messages: {
         tts: {
           providers: {
-            openai: { model: "gpt-4o-mini-tts", voice: "coral" },
+            openai: { model: "gpt-4o-mini-tts", speakerVoice: "coral" },
           },
         },
       },
@@ -614,23 +654,23 @@ openclaw infer image generate \
     ```
 
     <Note>
-    اضبط `OPENAI_TTS_BASE_URL` لتجاوز عنوان URL الأساسي لـ TTS دون التأثير في نقطة نهاية API المحادثة. لا يزال OpenAI TTS يُهيّأ من خلال مفتاح API؛ وللتحدث الراجع المباشر المستند إلى OAuth فقط، استخدم مسار صوت Realtime بدلًا من كلام STT -> TTS في وضع الوكيل.
+    عيّن `OPENAI_TTS_BASE_URL` لتجاوز عنوان URL الأساسي لـ TTS دون التأثير في نقطة نهاية API الدردشة. يتم تكوين كل من OpenAI TTS والصوت الفوري عبر مفتاح API لمنصة OpenAI؛ يمكن لتثبيتات OAuth فقط أن تظل تستخدم نماذج الدردشة المدعومة من Codex، ولكن ليس التحدث الحي العكسي من OpenAI.
     </Note>
 
   </Accordion>
 
-  <Accordion title="تحويل الكلام إلى نص">
-    يسجّل Plugin `openai` المضمّن تحويل الكلام إلى نص على دفعات من خلال
+  <Accordion title="الكلام إلى نص">
+    يسجل Plugin المضمّن `openai` تحويل الكلام إلى نص دفعيًا عبر
     سطح النسخ لفهم الوسائط في OpenClaw.
 
     - النموذج الافتراضي: `gpt-4o-transcribe`
     - نقطة النهاية: OpenAI REST `/v1/audio/transcriptions`
     - مسار الإدخال: رفع ملف صوتي متعدد الأجزاء
-    - مدعوم في OpenClaw حيثما يستخدم نسخ الصوت الوارد
+    - مدعوم من OpenClaw أينما يستخدم نسخ الصوت الوارد
       `tools.media.audio`، بما في ذلك مقاطع قنوات Discord الصوتية ومرفقات
       الصوت في القنوات
 
-    لفرض استخدام OpenAI لنسخ الصوت الوارد:
+    لفرض OpenAI لنسخ الصوت الوارد:
 
     ```json5
     {
@@ -650,70 +690,69 @@ openclaw infer image generate \
     }
     ```
 
-    تُمرَّر تلميحات اللغة والمطالبة إلى OpenAI عند توفيرها بواسطة
-    تهيئة وسائط الصوت المشتركة أو طلب النسخ لكل استدعاء.
+    يتم تمرير تلميحات اللغة والموجه إلى OpenAI عند توفيرها بواسطة
+    تكوين الوسائط الصوتية المشترك أو طلب النسخ لكل استدعاء.
 
   </Accordion>
 
-  <Accordion title="النسخ في الوقت الفعلي">
-    يسجل Plugin `openai` المضمّن النسخ في الوقت الفعلي لـ Plugin المكالمات الصوتية.
+  <Accordion title="النسخ الفوري">
+    يسجل Plugin المضمّن `openai` النسخ الفوري لـ Plugin المكالمات الصوتية.
 
-    | الإعداد | مسار الإعداد | الافتراضي |
+    | الإعداد | مسار التكوين | الافتراضي |
     |---------|------------|---------|
     | النموذج | `plugins.entries.voice-call.config.streaming.providers.openai.model` | `gpt-4o-transcribe` |
-    | اللغة | `...openai.language` | (غير معيّن) |
-    | الموجه | `...openai.prompt` | (غير معيّن) |
+    | اللغة | `...openai.language` | (غير معين) |
+    | الموجه | `...openai.prompt` | (غير معين) |
     | مدة الصمت | `...openai.silenceDurationMs` | `800` |
     | عتبة VAD | `...openai.vadThreshold` | `0.5` |
-    | المصادقة | `...openai.apiKey` أو `OPENAI_API_KEY` أو OAuth لـ `openai-codex` | تتصل مفاتيح API مباشرة؛ ويُصدر OAuth سر عميل نسخ في الوقت الفعلي |
+    | المصادقة | `...openai.apiKey` أو `OPENAI_API_KEY` أو OAuth باسم `openai` | تتصل مفاتيح API مباشرة؛ ويصدر OAuth سر عميل نسخ فوري |
 
     <Note>
-    يستخدم اتصال WebSocket مع `wss://api.openai.com/v1/realtime` مع صوت G.711 u-law ‏(`g711_ulaw` / `audio/pcmu`). عند تكوين OAuth لـ `openai-codex` فقط، يصدر Gateway سر عميل نسخ مؤقتا في الوقت الفعلي قبل فتح WebSocket. موفر البث هذا مخصص لمسار النسخ في الوقت الفعلي في المكالمات الصوتية؛ أما صوت Discord فيسجل حاليا مقاطع قصيرة ويستخدم بدلا من ذلك مسار النسخ الدفعي `tools.media.audio`.
+    يستخدم اتصال WebSocket إلى `wss://api.openai.com/v1/realtime` مع صوت G.711 u-law (`g711_ulaw` / `audio/pcmu`). عندما يكون OAuth باسم `openai` فقط مكونًا، يصدر Gateway سر عميل نسخ فوري مؤقت قبل فتح WebSocket. هذا المزوّد المتدفق مخصص لمسار النسخ الفوري في المكالمات الصوتية؛ أما صوت Discord فيسجل حاليًا مقاطع قصيرة ويستخدم بدلًا من ذلك مسار نسخ `tools.media.audio` الدفعي.
     </Note>
 
   </Accordion>
 
-  <Accordion title="الصوت في الوقت الفعلي">
-    يسجل Plugin `openai` المضمّن الصوت في الوقت الفعلي لـ Plugin المكالمات الصوتية.
+  <Accordion title="الصوت الفوري">
+    يسجل Plugin المضمّن `openai` الصوت الفوري لـ Plugin المكالمات الصوتية.
 
-    | الإعداد | مسار الإعداد | الافتراضي |
+    | الإعداد | مسار التكوين | الافتراضي |
     |---------|------------|---------|
     | النموذج | `plugins.entries.voice-call.config.realtime.providers.openai.model` | `gpt-realtime-2` |
     | الصوت | `...openai.voice` | `alloy` |
-    | الحرارة (جسر نشر Azure) | `...openai.temperature` | `0.8` |
+    | درجة الحرارة (جسر نشر Azure) | `...openai.temperature` | `0.8` |
     | عتبة VAD | `...openai.vadThreshold` | `0.5` |
     | مدة الصمت | `...openai.silenceDurationMs` | `500` |
     | حشو البادئة | `...openai.prefixPaddingMs` | `300` |
-    | جهد الاستدلال | `...openai.reasoningEffort` | (غير معيّن) |
-    | المصادقة | `...openai.apiKey` أو `OPENAI_API_KEY` أو OAuth لـ `openai-codex` | يمكن لـ Browser Talk وجسور الخلفية غير التابعة لـ Azure استخدام OAuth لـ Codex |
+    | جهد الاستدلال | `...openai.reasoningEffort` | (غير معين) |
+    | المصادقة | ملف تعريف مصادقة مفتاح API باسم `openai`، أو `...openai.apiKey`، أو `OPENAI_API_KEY` | مفتاح API لمنصة OpenAI مطلوب؛ لا يكوّن OAuth الخاص بـ OpenAI الصوت الفوري |
 
-    الأصوات المدمجة المتاحة في الوقت الفعلي لـ `gpt-realtime-2`: `alloy`، `ash`،
-    `ballad`، `coral`، `echo`، `sage`، `shimmer`، `verse`، `marin`، `cedar`.
-    توصي OpenAI بـ `marin` و`cedar` للحصول على أفضل جودة في الوقت الفعلي. هذه
+    الأصوات الفورية المدمجة المتاحة لـ `gpt-realtime-2`: `alloy` و`ash`،
+    و`ballad` و`coral` و`echo` و`sage` و`shimmer` و`verse` و`marin` و`cedar`.
+    توصي OpenAI بـ `marin` و`cedar` للحصول على أفضل جودة فورية. هذه
     مجموعة منفصلة عن أصوات تحويل النص إلى كلام أعلاه؛ لا تفترض أن صوت TTS
-    مثل `fable` أو `nova` أو `onyx` صالح لجلسات الوقت الفعلي.
+    مثل `fable` أو `nova` أو `onyx` صالح لجلسات الصوت الفوري.
 
     <Note>
-    تستخدم جسور OpenAI الخلفية في الوقت الفعلي شكل جلسة GA Realtime WebSocket، الذي لا يقبل `session.temperature`. تظل عمليات نشر Azure OpenAI متاحة عبر `azureEndpoint` و`azureDeployment` وتحتفظ بشكل الجلسة المتوافق مع النشر. يدعم استدعاء الأدوات ثنائي الاتجاه وصوت G.711 u-law.
+    تستخدم جسور OpenAI الفورية الخلفية شكل جلسة WebSocket الفورية GA، والذي لا يقبل `session.temperature`. تظل عمليات نشر Azure OpenAI متاحة عبر `azureEndpoint` و`azureDeployment` وتحتفظ بشكل الجلسة المتوافق مع النشر. يدعم استدعاء الأدوات ثنائي الاتجاه وصوت G.711 u-law.
     </Note>
 
     <Note>
-    يتم اختيار الصوت في الوقت الفعلي عند إنشاء الجلسة. تسمح OpenAI بتغيير معظم
-    حقول الجلسة لاحقا، لكن لا يمكن تغيير الصوت بعد أن يصدر النموذج صوتا في تلك
-    الجلسة. تعرض OpenClaw حاليا معرّفات الأصوات المدمجة في الوقت الفعلي كسلاسل.
+    يتم اختيار الصوت الفوري عند إنشاء الجلسة. تسمح OpenAI بتغيير معظم
+    حقول الجلسة لاحقًا، لكن لا يمكن تغيير الصوت بعد أن يصدر النموذج صوتًا
+    في تلك الجلسة. يعرض OpenClaw حاليًا معرّفات الأصوات الفورية المدمجة كسلاسل.
     </Note>
 
     <Note>
-    يستخدم Control UI Talk جلسات OpenAI في المتصفح في الوقت الفعلي مع سر عميل
-    مؤقت يصدره Gateway وتبادل WebRTC SDP مباشر من المتصفح مقابل
-    OpenAI Realtime API. عند عدم تكوين مفتاح OpenAI API مباشر، يمكن لـ
-    Gateway إصدار سر العميل هذا باستخدام ملف تعريف OAuth المحدد لـ `openai-codex`.
-    تستخدم جسور ترحيل Gateway والخلفية في الوقت الفعلي لـ Voice Call
-    آلية OAuth الاحتياطية نفسها لنقاط نهاية OpenAI الأصلية. يتوفر التحقق الحي
-    للمشرفين باستخدام
+    تستخدم Control UI Talk جلسات OpenAI في المتصفح بالوقت الحقيقي مع سر عميل
+    مؤقت يصدره Gateway وتبادل WebRTC SDP مباشر في المتصفح مع
+    OpenAI Realtime API. يصدر Gateway سر العميل هذا باستخدام ملف تعريف مصادقة مفتاح API المحدد
+    لـ `openai` أو مفتاح OpenAI Platform API المكوّن. تستخدم جسور Gateway
+    relay وجسور WebSocket بالوقت الحقيقي في خلفية Voice Call مسار مصادقة مفتاح API فقط نفسه
+    لنقاط نهاية OpenAI الأصلية. يتوفر التحقق المباشر للمشرفين باستخدام
     `OPENAI_API_KEY=... GEMINI_API_KEY=... node --import tsx scripts/dev/realtime-talk-live-smoke.ts`؛
-    تتحقق مسارات OpenAI من جسر WebSocket الخلفي وتبادل WebRTC SDP في المتصفح
-    دون تسجيل الأسرار.
+    تتحقق مسارات OpenAI من كل من جسر WebSocket الخلفي وتبادل
+    WebRTC SDP في المتصفح دون تسجيل الأسرار.
     </Note>
 
   </Accordion>
@@ -722,26 +761,26 @@ openclaw infer image generate \
 ## نقاط نهاية Azure OpenAI
 
 يمكن لموفر `openai` المضمّن استهداف مورد Azure OpenAI لتوليد الصور
-عن طريق تجاوز عنوان URL الأساسي. في مسار توليد الصور، يكتشف OpenClaw
-أسماء مضيفي Azure في `models.providers.openai.baseUrl` ويتحول تلقائيا إلى
-شكل طلبات Azure.
+عبر تجاوز عنوان URL الأساسي. في مسار توليد الصور، يكتشف OpenClaw
+أسماء مضيفي Azure على `models.providers.openai.baseUrl` ويتحوّل إلى
+شكل طلب Azure تلقائياً.
 
 <Note>
-يستخدم الصوت في الوقت الفعلي مسار إعداد منفصلا
+يستخدم الصوت بالوقت الحقيقي مسار إعدادات منفصلاً
 (`plugins.entries.voice-call.config.realtime.providers.openai.azureEndpoint`)
-ولا يتأثر بـ `models.providers.openai.baseUrl`. راجع أكورديون **الصوت في الوقت
-الفعلي** ضمن [الصوت والكلام](#voice-and-speech) لمعرفة إعدادات Azure الخاصة به.
+ولا يتأثر بـ `models.providers.openai.baseUrl`. راجع أكورديون **الصوت بالوقت الحقيقي**
+ضمن [الصوت والكلام](#voice-and-speech) لإعدادات Azure الخاصة به.
 </Note>
 
 استخدم Azure OpenAI عندما:
 
-- تكون لديك بالفعل اشتراك Azure OpenAI أو حصة أو اتفاقية مؤسسية
+- يكون لديك بالفعل اشتراك Azure OpenAI أو حصة استخدام أو اتفاقية مؤسسة
 - تحتاج إلى إقامة بيانات إقليمية أو ضوابط امتثال توفرها Azure
-- تريد إبقاء حركة المرور داخل مستأجر Azure موجود
+- تريد إبقاء حركة المرور داخل مستأجر Azure قائم
 
-### الإعداد
+### الإعدادات
 
-لتوليد صور Azure عبر موفر `openai` المضمّن، وجّه
+لتوليد الصور عبر Azure من خلال موفر `openai` المضمّن، وجّه
 `models.providers.openai.baseUrl` إلى مورد Azure الخاص بك واضبط `apiKey` على
 مفتاح Azure OpenAI (وليس مفتاح OpenAI Platform):
 
@@ -758,80 +797,79 @@ openclaw infer image generate \
 }
 ```
 
-يتعرف OpenClaw على لواحق مضيف Azure هذه لمسار توليد صور Azure:
+يتعرّف OpenClaw على لواحق مضيف Azure هذه لمسار توليد الصور في Azure:
 
 - `*.openai.azure.com`
 - `*.services.ai.azure.com`
 - `*.cognitiveservices.azure.com`
 
-بالنسبة إلى طلبات توليد الصور على مضيف Azure معروف، يقوم OpenClaw بما يلي:
+لطلبات توليد الصور على مضيف Azure معروف، يقوم OpenClaw بما يلي:
 
-- يرسل ترويسة `api-key` بدلا من `Authorization: Bearer`
-- يستخدم مسارات محددة النشر (`/openai/deployments/{deployment}/...`)
+- يرسل ترويسة `api-key` بدلاً من `Authorization: Bearer`
+- يستخدم مسارات محددة النطاق بالنشر (`/openai/deployments/{deployment}/...`)
 - يضيف `?api-version=...` إلى كل طلب
-- يستخدم مهلة طلب افتراضية قدرها 600 ثانية لاستدعاءات توليد الصور في Azure.
-  تظل قيم `timeoutMs` لكل استدعاء تتجاوز هذا الافتراضي.
+- يستخدم مهلة طلب افتراضية مقدارها 600 ثانية لاستدعاءات توليد الصور في Azure.
+  لا تزال قيم `timeoutMs` لكل استدعاء تتجاوز هذا الإعداد الافتراضي.
 
-تحافظ عناوين URL الأساسية الأخرى (OpenAI العام، والوكلاء المتوافقون مع OpenAI) على
-شكل طلب الصور القياسي في OpenAI.
+تحافظ عناوين URL الأساسية الأخرى (OpenAI العام، والوكلاء المتوافقون مع OpenAI)
+على شكل طلب الصور القياسي في OpenAI.
 
 <Note>
-يتطلب توجيه Azure لمسار توليد الصور في موفر `openai`
+يتطلب توجيه Azure لمسار توليد الصور الخاص بموفر `openai`
 OpenClaw 2026.4.22 أو أحدث. تتعامل الإصدارات الأقدم مع أي
-`openai.baseUrl` مخصص مثل نقطة نهاية OpenAI العامة وستفشل مع عمليات نشر صور Azure.
+`openai.baseUrl` مخصص مثل نقطة نهاية OpenAI العامة وستفشل مع عمليات نشر الصور في Azure.
 </Note>
 
-### إصدار واجهة برمجة التطبيقات
+### إصدار API
 
-اضبط `AZURE_OPENAI_API_VERSION` لتثبيت إصدار معاينة Azure محدد أو إصدار GA
-لمسار إنشاء الصور في Azure:
+اضبط `AZURE_OPENAI_API_VERSION` لتثبيت إصدار Azure preview أو GA محدد
+لمسار توليد الصور في Azure:
 
 ```bash
 export AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
-القيمة الافتراضية هي `2024-12-01-preview` عندما لا يكون المتغير مضبوطًا.
+الإعداد الافتراضي هو `2024-12-01-preview` عندما لا يكون المتغير مضبوطاً.
 
-### أسماء النماذج هي أسماء النشر
+### أسماء النماذج هي أسماء عمليات النشر
 
-يربط Azure OpenAI النماذج بعمليات النشر. بالنسبة إلى طلبات إنشاء الصور في Azure
-الموجّهة عبر المزوّد المضمّن `openai`، يجب أن يكون حقل `model` في OpenClaw
-هو **اسم نشر Azure** الذي أعددته في بوابة Azure، وليس معرّف نموذج OpenAI
-العام.
+يربط Azure OpenAI النماذج بعمليات النشر. بالنسبة إلى طلبات توليد الصور في Azure
+الموجّهة عبر موفر `openai` المضمّن، يجب أن يكون حقل `model` في OpenClaw
+هو **اسم نشر Azure** الذي أعددته في بوابة Azure، وليس معرّف نموذج OpenAI العام.
 
-إذا أنشأت نشرًا باسم `gpt-image-2-prod` يقدّم `gpt-image-2`:
+إذا أنشأت عملية نشر باسم `gpt-image-2-prod` تخدم `gpt-image-2`:
 
 ```
 /tool image_generate model=openai/gpt-image-2-prod prompt="A clean poster" size=1024x1024 count=1
 ```
 
-تنطبق قاعدة اسم النشر نفسها على استدعاءات إنشاء الصور الموجّهة عبر
-المزوّد المضمّن `openai`.
+تنطبق قاعدة اسم النشر نفسها على استدعاءات توليد الصور الموجّهة عبر
+موفر `openai` المضمّن.
 
 ### التوفر الإقليمي
 
-يتوفر إنشاء الصور في Azure حاليًا في مجموعة فرعية فقط من المناطق
-(على سبيل المثال `eastus2` و`swedencentral` و`polandcentral` و`westus3`
+يتوفر توليد الصور في Azure حالياً في مجموعة فرعية فقط من المناطق
+(على سبيل المثال `eastus2`، و`swedencentral`، و`polandcentral`، و`westus3`،
 و`uaenorth`). تحقق من قائمة مناطق Microsoft الحالية قبل إنشاء
-نشر، وأكّد أن النموذج المحدد متاح في منطقتك.
+عملية نشر، وتأكد من أن النموذج المحدد متاح في منطقتك.
 
 ### اختلافات المعلمات
 
-لا يقبل Azure OpenAI وOpenAI العام دائمًا معلمات الصور نفسها.
-قد يرفض Azure خيارات يسمح بها OpenAI العام (على سبيل المثال بعض قيم
-`background` على `gpt-image-2`) أو يتيحها فقط على إصدارات نماذج محددة.
-تأتي هذه الاختلافات من Azure ومن النموذج الأساسي، وليس من OpenClaw.
-إذا فشل طلب Azure بخطأ تحقق، فتحقق من مجموعة المعلمات المدعومة بواسطة
-النشر وإصدار واجهة برمجة التطبيقات المحددين لديك في بوابة Azure.
+لا يقبل Azure OpenAI وOpenAI العام دائماً معلمات الصور نفسها.
+قد ترفض Azure خيارات يسمح بها OpenAI العام (مثل بعض قيم
+`background` على `gpt-image-2`) أو تعرضها فقط في إصدارات نماذج محددة.
+تأتي هذه الاختلافات من Azure والنموذج الأساسي، وليس من OpenClaw.
+إذا فشل طلب Azure بخطأ تحقق، فتحقق من مجموعة المعلمات التي تدعمها
+عملية النشر وإصدار API المحددان لديك في بوابة Azure.
 
 <Note>
-يستخدم Azure OpenAI نقلًا أصليًا وسلوك توافق، لكنه لا يتلقى
+يستخدم Azure OpenAI النقل الأصلي وسلوك التوافق، لكنه لا يتلقى
 ترويسات الإسناد المخفية الخاصة بـ OpenClaw — راجع أكورديون **المسارات الأصلية مقابل المسارات المتوافقة مع OpenAI**
 ضمن [الإعدادات المتقدمة](#advanced-configuration).
 
-بالنسبة إلى حركة chat أو Responses على Azure (إلى جانب إنشاء الصور)، استخدم
-تدفق الإعداد الأولي أو إعداد مزوّد Azure مخصصًا — لا يكفي `openai.baseUrl` وحده
-لالتقاط شكل واجهة برمجة تطبيقات/مصادقة Azure. يوجد مزوّد منفصل
+بالنسبة إلى حركة مرور الدردشة أو Responses على Azure (خارج توليد الصور)، استخدم
+تدفق الإعداد الأولي أو إعداد موفر Azure مخصصاً — لا يكفي `openai.baseUrl` وحده
+لالتقاط شكل Azure API/المصادقة. يوجد موفر منفصل
 `azure-openai-responses/*`؛ راجع أكورديون Compaction من جهة الخادم أدناه.
 </Note>
 
@@ -839,17 +877,17 @@ export AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 
 <AccordionGroup>
   <Accordion title="النقل (WebSocket مقابل SSE)">
-    يستخدم OpenClaw نهج WebSocket أولًا مع الرجوع إلى SSE (`"auto"`) لـ `openai/*`.
+    يستخدم OpenClaw نهج WebSocket أولاً مع رجوع احتياطي إلى SSE (`"auto"`) لـ `openai/*`.
 
     في وضع `"auto"`، يقوم OpenClaw بما يلي:
-    - يعيد محاولة فشل WebSocket مبكر مرة واحدة قبل الرجوع إلى SSE
-    - بعد الفشل، يضع علامة على WebSocket باعتباره متدهورًا لمدة نحو 60 ثانية ويستخدم SSE أثناء فترة التهدئة
-    - يرفق ترويسات ثابتة لهوية الجلسة والدورة لإعادة المحاولة وإعادة الاتصال
+    - يعيد محاولة فشل WebSocket مبكر واحد قبل الرجوع احتياطياً إلى SSE
+    - بعد الفشل، يعلّم WebSocket كمتدهور لمدة تقارب 60 ثانية ويستخدم SSE أثناء فترة التهدئة
+    - يرفق ترويسات ثابتة لهوية الجلسة والدورة لإعادة المحاولات وإعادة الاتصال
     - يطبّع عدادات الاستخدام (`input_tokens` / `prompt_tokens`) عبر متغيرات النقل
 
     | القيمة | السلوك |
     |-------|----------|
-    | `"auto"` (الافتراضي) | WebSocket أولًا، ثم الرجوع إلى SSE |
+    | `"auto"` (افتراضي) | WebSocket أولاً، مع رجوع احتياطي إلى SSE |
     | `"sse"` | فرض SSE فقط |
     | `"websocket"` | فرض WebSocket فقط |
 
@@ -868,25 +906,25 @@ export AZURE_OPENAI_API_VERSION="2024-12-01-preview"
     ```
 
     وثائق OpenAI ذات الصلة:
-    - [واجهة Realtime API باستخدام WebSocket](https://platform.openai.com/docs/guides/realtime-websocket)
-    - [استجابات واجهة برمجة التطبيقات المتدفقة (SSE)](https://platform.openai.com/docs/guides/streaming-responses)
+    - [Realtime API مع WebSocket](https://platform.openai.com/docs/guides/realtime-websocket)
+    - [استجابات Streaming API (SSE)](https://platform.openai.com/docs/guides/streaming-responses)
 
   </Accordion>
 
   <Accordion title="الوضع السريع">
-    يتيح OpenClaw مفتاح تبديل مشتركًا للوضع السريع لـ `openai/*`:
+    يعرّض OpenClaw مفتاح تبديل مشتركاً للوضع السريع لـ `openai/*`:
 
-    - **Chat/واجهة المستخدم:** `/fast status|on|off`
-    - **الإعداد:** `agents.defaults.models["<provider>/<model>"].params.fastMode`
+    - **الدردشة/واجهة المستخدم:** `/fast status|auto|on|off`
+    - **الإعدادات:** `agents.defaults.models["<provider>/<model>"].params.fastMode`
 
-    عند تفعيله، يربط OpenClaw الوضع السريع بمعالجة OpenAI ذات الأولوية (`service_tier = "priority"`). يتم الحفاظ على قيم `service_tier` الموجودة، ولا يعيد الوضع السريع كتابة `reasoning` أو `text.verbosity`.
+    عند تفعيله، يربط OpenClaw الوضع السريع بمعالجة الأولوية في OpenAI (`service_tier = "priority"`). يتم الحفاظ على قيم `service_tier` الحالية، ولا يعيد الوضع السريع كتابة `reasoning` أو `text.verbosity`. يبدأ `fastMode: "auto"` استدعاءات النماذج الجديدة بسرعة حتى حد القطع التلقائي، ثم يبدأ استدعاءات إعادة المحاولة أو الرجوع الاحتياطي أو نتيجة الأداة أو المتابعة اللاحقة دون وضع سريع. القيمة الافتراضية لحد القطع هي 60 ثانية؛ اضبط `params.fastAutoOnSeconds` على النموذج النشط لتغييرها.
 
     ```json5
     {
       agents: {
         defaults: {
           models: {
-            "openai/gpt-5.5": { params: { fastMode: true } },
+            "openai/gpt-5.5": { params: { fastMode: "auto", fastAutoOnSeconds: 30 } },
           },
         },
       },
@@ -894,13 +932,13 @@ export AZURE_OPENAI_API_VERSION="2024-12-01-preview"
     ```
 
     <Note>
-    تتغلب تجاوزات الجلسة على الإعداد. تؤدي إزالة تجاوز الجلسة في واجهة الجلسات إلى إعادة الجلسة إلى القيمة الافتراضية المضبوطة.
+    تتغلب تجاوزات الجلسة على الإعدادات. يؤدي مسح تجاوز الجلسة في واجهة Sessions إلى إعادة الجلسة إلى الإعداد الافتراضي المكوّن.
     </Note>
 
   </Accordion>
 
-  <Accordion title="المعالجة ذات الأولوية (service_tier)">
-    تتيح واجهة برمجة تطبيقات OpenAI المعالجة ذات الأولوية عبر `service_tier`. اضبطها لكل نموذج في OpenClaw:
+  <Accordion title="معالجة الأولوية (service_tier)">
+    تعرض API الخاصة بـ OpenAI معالجة الأولوية عبر `service_tier`. اضبطها لكل نموذج في OpenClaw:
 
     ```json5
     {
@@ -914,22 +952,22 @@ export AZURE_OPENAI_API_VERSION="2024-12-01-preview"
     }
     ```
 
-    القيم المدعومة: `auto` و`default` و`flex` و`priority`.
+    القيم المدعومة: `auto`، و`default`، و`flex`، و`priority`.
 
     <Warning>
-    لا يتم تمرير `serviceTier` إلا إلى نقاط نهاية OpenAI الأصلية (`api.openai.com`) ونقاط نهاية Codex الأصلية (`chatgpt.com/backend-api`). إذا وجّهت أيًا من المزوّدين عبر وكيل، يترك OpenClaw `service_tier` كما هو.
+    يتم تمرير `serviceTier` فقط إلى نقاط نهاية OpenAI الأصلية (`api.openai.com`) ونقاط نهاية Codex الأصلية (`chatgpt.com/backend-api`). إذا وجّهت أيّاً من الموفرين عبر وكيل، يترك OpenClaw `service_tier` كما هو.
     </Warning>
 
   </Accordion>
 
   <Accordion title="Compaction من جهة الخادم (Responses API)">
-    بالنسبة إلى نماذج OpenAI Responses المباشرة (`openai/*` على `api.openai.com`)، يفعّل مغلّف تدفق Pi-harness في Plugin OpenAI تلقائيًا Compaction من جهة الخادم:
+    بالنسبة إلى نماذج OpenAI Responses المباشرة (`openai/*` على `api.openai.com`)، يفعّل مغلّف تدفق OpenClaw في Plugin OpenAI ميزة Compaction من جهة الخادم تلقائياً:
 
     - يفرض `store: true` (ما لم يضبط توافق النموذج `supportsStore: false`)
     - يحقن `context_management: [{ type: "compaction", compact_threshold: ... }]`
-    - `compact_threshold` الافتراضي: 70% من `contextWindow` (أو `80000` عندما لا يكون متاحًا)
+    - `compact_threshold` الافتراضي: 70% من `contextWindow` (أو `80000` عند عدم توفره)
 
-    ينطبق هذا على مسار Pi harness المضمّن وعلى hooks مزوّد OpenAI المستخدمة بواسطة عمليات التشغيل المضمّنة. يدير harness خادم تطبيق Codex الأصلي سياقه الخاص عبر Codex ويتم ضبطه بواسطة مسار وكيل OpenAI الافتراضي أو سياسة وقت تشغيل المزوّد/النموذج.
+    ينطبق هذا على مسار تشغيل OpenClaw المدمج وعلى خطاطيف موفر OpenAI المستخدمة في عمليات التشغيل المضمّنة. يدير حزام خادم تطبيق Codex الأصلي سياقه الخاص عبر Codex ويتم إعداده بواسطة مسار الوكيل الافتراضي في OpenAI أو سياسة تشغيل الموفر/النموذج.
 
     <Tabs>
       <Tab title="التفعيل صراحة">
@@ -949,7 +987,7 @@ export AZURE_OPENAI_API_VERSION="2024-12-01-preview"
         }
         ```
       </Tab>
-      <Tab title="عتبة مخصصة">
+      <Tab title="حد مخصص">
         ```json5
         {
           agents: {
@@ -997,42 +1035,43 @@ export AZURE_OPENAI_API_VERSION="2024-12-01-preview"
     {
       agents: {
         defaults: {
-          embeddedPi: { executionContract: "strict-agentic" },
+          embeddedAgent: { executionContract: "strict-agentic" },
         },
       },
     }
     ```
 
     مع `strict-agentic`، يقوم OpenClaw بما يلي:
-    - لم يعد يعامل دورة تحتوي على خطة فقط على أنها تقدم ناجح عندما يكون إجراء أداة متاحًا
-    - يعيد محاولة الدورة بتوجيه للتصرف الآن
-    - يفعّل `update_plan` تلقائيًا للأعمال الكبيرة
-    - يعرض حالة حظر صريحة إذا استمر النموذج في التخطيط دون تنفيذ
+    - يفعّل `update_plan` تلقائياً للأعمال الجوهرية
+    - يعيد محاولة الدورات الفارغة بنيوياً أو المقتصرة على الاستدلال مع متابعة لإجابة مرئية
+    - يستخدم أحداث خطة الحزام الصريحة عندما يوفرها الحزام المحدد
+
+    لا يصنّف OpenClaw نثر المساعد ليقرر ما إذا كانت الدورة خطة أو تحديث تقدم أو إجابة نهائية.
 
     <Note>
-    يقتصر ذلك على عمليات تشغيل OpenAI وCodex من عائلة GPT-5 فقط. تحتفظ المزوّدات الأخرى وعائلات النماذج الأقدم بالسلوك الافتراضي.
+    يقتصر ذلك على عمليات OpenAI وCodex لعائلة GPT-5 فقط. يحتفظ الموفرون الآخرون وعائلات النماذج الأقدم بالسلوك الافتراضي.
     </Note>
 
   </Accordion>
 
   <Accordion title="المسارات الأصلية مقابل المسارات المتوافقة مع OpenAI">
-    يتعامل OpenClaw مع نقاط نهاية OpenAI وCodex وAzure OpenAI المباشرة بشكل مختلف عن وكلاء `/v1` العامة المتوافقة مع OpenAI:
+    يتعامل OpenClaw مع نقاط نهاية OpenAI وCodex وAzure OpenAI المباشرة بشكل مختلف عن وكلاء `/v1` العامين المتوافقين مع OpenAI:
 
     **المسارات الأصلية** (`openai/*`، Azure OpenAI):
-    - تحتفظ بـ `reasoning: { effort: "none" }` فقط للنماذج التي تدعم جهد OpenAI `none`
-    - تحذف reasoning المعطّل للنماذج أو الوكلاء الذين يرفضون `reasoning.effort: "none"`
-    - تضبط مخططات الأدوات افتراضيًا على الوضع الصارم
-    - ترفق ترويسات الإسناد المخفية على المضيفين الأصليين الذين تم التحقق منهم فقط
-    - تحافظ على تشكيل الطلبات الخاص بـ OpenAI فقط (`service_tier` و`store` وتوافق reasoning وتلميحات prompt-cache)
+    - يحتفظ بـ `reasoning: { effort: "none" }` فقط للنماذج التي تدعم جهد OpenAI `none`
+    - يحذف الاستدلال المعطّل للنماذج أو الوكلاء الذين يرفضون `reasoning.effort: "none"`
+    - يضبط مخططات الأدوات افتراضياً على الوضع الصارم
+    - يرفق ترويسات الإسناد المخفية على المضيفين الأصليين المتحقق منهم فقط
+    - يحافظ على تشكيل طلبات OpenAI فقط (`service_tier`، و`store`، وتوافق الاستدلال، وتلميحات ذاكرة التخزين المؤقت للمطالبات)
 
-    **مسارات الوكيل/المسارات المتوافقة:**
-    - تستخدم سلوك توافق أكثر مرونة
-    - تزيل `store` الخاصة بـ Completions من حمولات `openai-completions` غير الأصلية
-    - تقبل تمرير JSON المتقدم `params.extra_body`/`params.extraBody` لوكلاء Completions المتوافقين مع OpenAI
-    - تقبل `params.chat_template_kwargs` لوكلاء Completions المتوافقين مع OpenAI مثل vLLM
-    - لا تفرض مخططات أدوات صارمة أو ترويسات أصلية فقط
+    **مسارات الوكيل/المتوافقة:**
+    - استخدم سلوك توافق أكثر مرونة
+    - أزِل `store` الخاص بـ Completions من حمولات `openai-completions` غير الأصلية
+    - اقبل تمرير JSON المتقدم عبر `params.extra_body`/`params.extraBody` لوكلاء Completions المتوافقين مع OpenAI
+    - اقبل `params.chat_template_kwargs` لوكلاء Completions المتوافقين مع OpenAI مثل vLLM
+    - لا تفرض مخططات أدوات صارمة أو ترويسات خاصة بالأصلية فقط
 
-    يستخدم Azure OpenAI نقلًا أصليًا وسلوك توافق، لكنه لا يتلقى ترويسات الإسناد المخفية.
+    يستخدم Azure OpenAI النقل الأصلي وسلوك التوافق، لكنه لا يتلقى ترويسات الإسناد المخفية.
 
   </Accordion>
 </AccordionGroup>
@@ -1043,11 +1082,11 @@ export AZURE_OPENAI_API_VERSION="2024-12-01-preview"
   <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
     اختيار المزوّدين ومراجع النماذج وسلوك تجاوز الفشل.
   </Card>
-  <Card title="إنشاء الصور" href="/ar/tools/image-generation" icon="image">
-    معلمات أداة الصور المشتركة واختيار المزوّد.
+  <Card title="توليد الصور" href="/ar/tools/image-generation" icon="image">
+    معاملات أداة الصور المشتركة واختيار المزوّد.
   </Card>
-  <Card title="إنشاء الفيديو" href="/ar/tools/video-generation" icon="video">
-    معلمات أداة الفيديو المشتركة واختيار المزوّد.
+  <Card title="توليد الفيديو" href="/ar/tools/video-generation" icon="video">
+    معاملات أداة الفيديو المشتركة واختيار المزوّد.
   </Card>
   <Card title="OAuth والمصادقة" href="/ar/gateway/authentication" icon="key">
     تفاصيل المصادقة وقواعد إعادة استخدام بيانات الاعتماد.

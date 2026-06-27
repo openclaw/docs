@@ -1,16 +1,18 @@
 ---
 read_when:
     - Je wilt webextractie op basis van Firecrawl
-    - Je hebt een Firecrawl API-sleutel nodig
-    - Je wilt Firecrawl als web_search-aanbieder
-    - Je wilt anti-bot-extractie voor web_fetch
-summary: Firecrawl zoeken, scrapen en web_fetch-terugval
+    - Je wilt Firecrawl `web_fetch` zonder sleutel
+    - Je hebt een Firecrawl API-sleutel nodig voor zoeken of hogere limieten
+    - Je wilt Firecrawl als web_search-provider
+    - Je wilt anti-botextractie voor web_fetch
+summary: Firecrawl-zoeken, scrapen en `web_fetch`-fallback
 title: Firecrawl
 x-i18n:
-    generated_at: "2026-05-02T11:29:23Z"
+    generated_at: "2026-06-27T18:26:12Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 0570fde055cf8028cddf78f1ba19225d10cccd0662f45d063f23a39b4a82a7e0
+    source_hash: e8f6ef7ea3711e8e3e55d6eec4a99397dec4efc548c7192924fdd5850cb270bf
     source_path: tools/firecrawl.md
     workflow: 16
 ---
@@ -21,13 +23,24 @@ OpenClaw kan **Firecrawl** op drie manieren gebruiken:
 - als expliciete Plugin-tools: `firecrawl_search` en `firecrawl_scrape`
 - als fallback-extractor voor `web_fetch`
 
-Het is een gehoste extractie-/zoekdienst die bot-omzeiling en caching ondersteunt,
-wat helpt bij sites met veel JS of pagina's die gewone HTTP-fetches blokkeren.
+Het is een gehoste extractie-/zoekservice die bot-omzeiling en caching ondersteunt,
+wat helpt bij JS-zware sites of pagina's die gewone HTTP-fetches blokkeren.
 
-## Een API-sleutel ophalen
+## Plugin installeren
 
-1. Maak een Firecrawl-account aan en genereer een API-sleutel.
-2. Sla deze op in de configuratie of stel `FIRECRAWL_API_KEY` in de Gateway-omgeving in.
+Installeer de officiële Plugin en herstart daarna Gateway:
+
+```bash
+openclaw plugins install @openclaw/firecrawl-plugin
+openclaw gateway restart
+```
+
+## web_fetch zonder sleutel en API-sleutels
+
+De expliciet geselecteerde gehoste Firecrawl-`web_fetch`-fallback ondersteunt starterstoegang
+zonder API-sleutel. Voeg `FIRECRAWL_API_KEY` toe in de gateway-omgeving
+of configureer deze wanneer je hogere limieten nodig hebt. Firecrawl `web_search` en
+`firecrawl_scrape` vereisen een API-sleutel.
 
 ## Firecrawl-zoekfunctie configureren
 
@@ -58,23 +71,29 @@ wat helpt bij sites met veel JS of pagina's die gewone HTTP-fetches blokkeren.
 
 Opmerkingen:
 
-- Firecrawl kiezen tijdens onboarding of met `openclaw configure --section web` schakelt de gebundelde Firecrawl-Plugin automatisch in.
+- Firecrawl kiezen tijdens onboarding of `openclaw configure --section web` schakelt de geïnstalleerde Firecrawl-Plugin automatisch in.
 - `web_search` met Firecrawl ondersteunt `query` en `count`.
-- Gebruik `firecrawl_search` voor Firecrawl-specifieke besturing zoals `sources`, `categories` of het scrapen van resultaten.
-- `baseUrl` gebruikt standaard de gehoste Firecrawl op `https://api.firecrawl.dev`. Zelfgehoste overrides zijn alleen toegestaan voor private/interne endpoints; HTTP wordt alleen geaccepteerd voor die private doelen.
-- `FIRECRAWL_BASE_URL` is de gedeelde env-fallback voor basis-URL's voor Firecrawl-zoeken en -scrapen.
+- Gebruik `firecrawl_search` voor Firecrawl-specifieke instellingen zoals `sources`, `categories` of resultaatscraping.
+- `baseUrl` gebruikt standaard gehoste Firecrawl op `https://api.firecrawl.dev`. Zelfgehoste overrides zijn alleen toegestaan voor private/interne endpoints; HTTP wordt alleen geaccepteerd voor die private doelen.
+- `FIRECRAWL_BASE_URL` is de gedeelde env-fallback voor basis-URL's van Firecrawl-zoek- en scrape-acties.
 
-## Firecrawl-scrape + web_fetch-fallback configureren
+## Firecrawl web_fetch-fallback configureren
 
 ```json5
 {
+  tools: {
+    web: {
+      fetch: {
+        provider: "firecrawl", // explicit selection enables keyless fallback
+      },
+    },
+  },
   plugins: {
     entries: {
       firecrawl: {
         enabled: true,
         config: {
           webFetch: {
-            apiKey: "FIRECRAWL_API_KEY_HERE",
             baseUrl: "https://api.firecrawl.dev",
             onlyMainContent: true,
             maxAgeMs: 172800000,
@@ -89,13 +108,15 @@ Opmerkingen:
 
 Opmerkingen:
 
-- Firecrawl-fallbackpogingen worden alleen uitgevoerd wanneer een API-sleutel beschikbaar is (`plugins.entries.firecrawl.config.webFetch.apiKey` of `FIRECRAWL_API_KEY`).
+- De expliciet geselecteerde Firecrawl-`web_fetch`-fallback werkt zonder API-sleutel. Wanneer deze is geconfigureerd, stuurt OpenClaw `plugins.entries.firecrawl.config.webFetch.apiKey` of `FIRECRAWL_API_KEY` voor hogere limieten.
+- Firecrawl kiezen tijdens onboarding of `openclaw configure --section web` schakelt de Plugin in en selecteert Firecrawl voor `web_fetch`, tenzij er al een andere fetch-provider is geconfigureerd.
+- `firecrawl_scrape` vereist een API-sleutel.
 - `maxAgeMs` bepaalt hoe oud gecachte resultaten mogen zijn (ms). De standaardwaarde is 2 dagen.
-- Verouderde `tools.web.fetch.firecrawl.*`-configuratie wordt automatisch gemigreerd door `openclaw doctor --fix`.
-- Overrides voor Firecrawl-scrape-/basis-URL's volgen dezelfde regel voor gehost/privaat als zoeken: publiek gehost verkeer gebruikt `https://api.firecrawl.dev`; zelfgehoste overrides moeten verwijzen naar private/interne endpoints.
-- `firecrawl_scrape` weigert duidelijke private, loopback-, metadata- en niet-HTTP(S)-doel-URL's voordat ze naar Firecrawl worden doorgestuurd, conform het doelveiligheidscontract van `web_fetch` voor expliciete Firecrawl-scrape-aanroepen.
+- Legacy-configuratie `tools.web.fetch.firecrawl.*` wordt automatisch gemigreerd door `openclaw doctor --fix`.
+- Firecrawl scrape-/basis-URL-overrides volgen dezelfde hosted/private-regel als zoeken: publiek gehost verkeer gebruikt `https://api.firecrawl.dev`; zelfgehoste overrides moeten naar private/interne endpoints resolven.
+- `firecrawl_scrape` weigert duidelijke private, loopback-, metadata- en niet-HTTP(S)-doel-URL's voordat ze naar Firecrawl worden doorgestuurd, in lijn met het doelveiligheidscontract van `web_fetch` voor expliciete Firecrawl-scrape-aanroepen.
 
-`firecrawl_scrape` hergebruikt dezelfde `plugins.entries.firecrawl.config.webFetch.*`-instellingen en env-vars.
+`firecrawl_scrape` hergebruikt dezelfde `plugins.entries.firecrawl.config.webFetch.*`-instellingen en env-vars, inclusief de vereiste API-sleutel.
 
 ### Zelfgehoste Firecrawl
 
@@ -103,14 +124,13 @@ Stel `plugins.entries.firecrawl.config.webSearch.baseUrl`,
 `plugins.entries.firecrawl.config.webFetch.baseUrl` of `FIRECRAWL_BASE_URL` in
 wanneer je Firecrawl zelf draait. OpenClaw accepteert `http://` alleen voor loopback-,
 privénetwerk-, `.local`-, `.internal`- of `.localhost`-doelen. Publieke aangepaste
-hosts worden geweigerd zodat Firecrawl-API-sleutels niet per ongeluk naar willekeurige
-endpoints worden verzonden.
+hosts worden geweigerd zodat Firecrawl-API-sleutels niet per ongeluk naar willekeurige endpoints worden gestuurd.
 
-## Firecrawl-Plugin-tools
+## Firecrawl Plugin-tools
 
 ### `firecrawl_search`
 
-Gebruik dit wanneer je Firecrawl-specifieke zoekbesturing wilt in plaats van generieke `web_search`.
+Gebruik dit wanneer je Firecrawl-specifieke zoekinstellingen wilt in plaats van generieke `web_search`.
 
 Kernparameters:
 
@@ -123,7 +143,7 @@ Kernparameters:
 
 ### `firecrawl_scrape`
 
-Gebruik dit voor pagina's met veel JS of botbescherming waarvoor gewone `web_fetch` zwak is.
+Gebruik dit voor JS-zware of door bots beschermde pagina's waar gewone `web_fetch` zwak is.
 
 Kernparameters:
 
@@ -139,21 +159,21 @@ Kernparameters:
 ## Stealth / bot-omzeiling
 
 Firecrawl biedt een parameter voor **proxy-modus** voor bot-omzeiling (`basic`, `stealth` of `auto`).
-OpenClaw gebruikt altijd `proxy: "auto"` plus `storeInCache: true` voor Firecrawl-verzoeken.
-Als proxy wordt weggelaten, gebruikt Firecrawl standaard `auto`. `auto` probeert opnieuw met stealth-proxy's als een basispoging mislukt, wat meer credits kan gebruiken
-dan scrapen met alleen basic.
+OpenClaw gebruikt altijd `proxy: "auto"` plus `storeInCache: true` voor Firecrawl-aanvragen.
+Als proxy wordt weggelaten, gebruikt Firecrawl standaard `auto`. `auto` probeert het opnieuw met stealth-proxy's als een basispoging mislukt, wat meer credits kan gebruiken
+dan scraping met alleen basic.
 
 ## Hoe `web_fetch` Firecrawl gebruikt
 
 Extractievolgorde van `web_fetch`:
 
 1. Readability (lokaal)
-2. Firecrawl (indien geselecteerd of automatisch gedetecteerd als de actieve web-fetch-fallback)
-3. Basis-HTML-opschoning (laatste fallback)
+2. Firecrawl (wanneer geselecteerd, of automatisch gedetecteerd op basis van geconfigureerde referenties)
+3. Basale HTML-opschoning (laatste fallback)
 
 De selectieknop is `tools.web.fetch.provider`. Als je deze weglaat, detecteert OpenClaw
-automatisch de eerste beschikbare web-fetch-provider op basis van beschikbare referenties.
-Vandaag is de gebundelde provider Firecrawl.
+automatisch de eerste gereedstaande web-fetch-provider op basis van beschikbare referenties.
+De officiële Firecrawl-Plugin biedt die fallback.
 
 ## Gerelateerd
 

@@ -1,39 +1,49 @@
 ---
 read_when:
     - Je wilt Gradium voor tekst-naar-spraak
-    - Je hebt een Gradium-API-sleutel, stem of configuratie voor directivetokens nodig
-summary: Gradium-tekst-naar-spraak gebruiken in OpenClaw
+    - Je hebt configuratie voor een Gradium API-sleutel, stem of directivetoken nodig
+summary: Gebruik Gradium-tekst-naar-spraak in OpenClaw
 title: Gradium
 x-i18n:
-    generated_at: "2026-05-11T20:46:30Z"
+    generated_at: "2026-06-27T18:12:22Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5c79da6ec63532061a8112965a679f1113bbefcc91ee00def8153dd39b5b5e58
+    source_hash: 5178bfaf5087e18d5d71f46d04b16d52e0e132257b9ef772b7869ac11b49a0da
     source_path: providers/gradium.md
     workflow: 16
 ---
 
-[Gradium](https://gradium.ai) is een meegeleverde tekst-naar-spraakprovider voor OpenClaw. De plugin kan normale audioreacties (WAV), met spraaknotities compatibele Opus-uitvoer en 8 kHz u-law-audio voor telefonie-oppervlakken renderen.
+[Gradium](https://gradium.ai) is een tekst-naar-spraak-provider voor OpenClaw. De Plugin kan normale audioreacties (WAV), Opus-uitvoer die compatibel is met spraaknotities, en 8 kHz u-law-audio voor telefonie-oppervlakken renderen.
 
-| Eigenschap      | Waarde                                |
-| ------------- | ------------------------------------ |
-| Provider-id   | `gradium`                            |
-| Auth          | `GRADIUM_API_KEY` of config `apiKey` |
-| Basis-URL      | `https://api.gradium.ai` (standaard)   |
-| Standaardstem | `Emma` (`YTpq7expH9539ERJ`)          |
+| Eigenschap       | Waarde                               |
+| ---------------- | ------------------------------------ |
+| Provider-id      | `gradium`                            |
+| Authenticatie    | `GRADIUM_API_KEY` of config `apiKey` |
+| Basis-URL        | `https://api.gradium.ai` (standaard) |
+| Standaardstem    | `Emma` (`YTpq7expH9539ERJ`)          |
+
+## Plugin installeren
+
+Installeer de officiële Plugin en start daarna Gateway opnieuw:
+
+```bash
+openclaw plugins install @openclaw/gradium-speech
+openclaw gateway restart
+```
 
 ## Instellen
 
-Maak een Gradium API-sleutel aan en stel die vervolgens beschikbaar aan OpenClaw met een env-var of de config-sleutel.
+Maak een Gradium-API-sleutel en stel die daarna beschikbaar aan OpenClaw via een omgevingsvariabele of de configuratiesleutel.
 
 <Tabs>
-  <Tab title="Env-var">
+  <Tab title="Env var">
     ```bash
     export GRADIUM_API_KEY="gsk_..."
     ```
   </Tab>
 
-  <Tab title="Config-sleutel">
+  <Tab title="Config key">
     ```json5
     {
       messages: {
@@ -52,9 +62,9 @@ Maak een Gradium API-sleutel aan en stel die vervolgens beschikbaar aan OpenClaw
   </Tab>
 </Tabs>
 
-De plugin controleert eerst de opgeloste `apiKey` en valt terug op de omgevingsvariabele `GRADIUM_API_KEY`.
+De Plugin controleert eerst de opgeloste `apiKey` en valt terug op de omgevingsvariabele `GRADIUM_API_KEY`.
 
-## Config
+## Configuratie
 
 ```json5
 {
@@ -64,7 +74,7 @@ De plugin controleert eerst de opgeloste `apiKey` en valt terug op de omgevingsv
       provider: "gradium",
       providers: {
         gradium: {
-          voiceId: "YTpq7expH9539ERJ",
+          speakerVoiceId: "YTpq7expH9539ERJ",
           // apiKey: "${GRADIUM_API_KEY}",
           // baseUrl: "https://api.gradium.ai",
         },
@@ -74,17 +84,17 @@ De plugin controleert eerst de opgeloste `apiKey` en valt terug op de omgevingsv
 }
 ```
 
-| Sleutel                                      | Type   | Beschrijving                                                                                   |
-| ---------------------------------------- | ------ | --------------------------------------------------------------------------------------------- |
-| `messages.tts.providers.gradium.apiKey`  | string | Opgeloste API-sleutel. Ondersteunt `${ENV}` en geheime refs.                                          |
-| `messages.tts.providers.gradium.baseUrl` | string | Overschrijft de API-origin. Afsluitende slashes worden verwijderd. Standaard `https://api.gradium.ai`. |
-| `messages.tts.providers.gradium.voiceId` | string | Standaardstem-id dat wordt gebruikt wanneer er geen directive-overschrijving aanwezig is.                                  |
+| Sleutel                                         | Type   | Beschrijving                                                                                              |
+| ----------------------------------------------- | ------ | --------------------------------------------------------------------------------------------------------- |
+| `messages.tts.providers.gradium.apiKey`         | string | Opgeloste API-sleutel. Ondersteunt `${ENV}` en secret refs.                                               |
+| `messages.tts.providers.gradium.baseUrl`        | string | Overschrijft de API-origin. Afsluitende slashes worden verwijderd. Standaard `https://api.gradium.ai`.   |
+| `messages.tts.providers.gradium.speakerVoiceId` | string | Standaardstem-id dat wordt gebruikt wanneer er geen directive-overschrijving aanwezig is.                |
 
 De uitvoeraudio-indeling wordt automatisch geselecteerd door de runtime op basis van het doeloppervlak en is niet configureerbaar vanuit `openclaw.json`. Zie [Uitvoer](#output) hieronder.
 
 ## Stemmen
 
-| Naam      | Stem-ID           |
+| Naam      | Stem-ID            |
 | --------- | ------------------ |
 | Emma      | `YTpq7expH9539ERJ` |
 | Kent      | `LFZvm12tW_z0xfGo` |
@@ -96,9 +106,9 @@ De uitvoeraudio-indeling wordt automatisch geselecteerd door de runtime op basis
 
 Standaardstem: Emma.
 
-### Stemoverschrijving per bericht
+### Stem per bericht overschrijven
 
-Wanneer het actieve spraakbeleid stemoverschrijvingen toestaat, kun je inline van stem wisselen met een directive-token. Al deze tokens worden opgelost naar dezelfde `voiceId`-overschrijving:
+Wanneer het actieve spraakbeleid stemoverschrijvingen toestaat, kun je inline van stem wisselen met een directive-token. Gebruik `speakerVoiceId` voor provider-native stem-id's.
 
 ```text
 /voice:LFZvm12tW_z0xfGo
@@ -108,21 +118,21 @@ Wanneer het actieve spraakbeleid stemoverschrijvingen toestaat, kun je inline va
 /gradiumvoice:LFZvm12tW_z0xfGo
 ```
 
-Als het spraakbeleid stemoverschrijvingen uitschakelt, wordt de directive verbruikt maar genegeerd.
+Als het spraakbeleid stemoverschrijvingen uitschakelt, wordt de directive verwerkt maar genegeerd.
 
 ## Uitvoer
 
 De runtime kiest de uitvoerindeling op basis van het doeloppervlak. De provider synthetiseert momenteel geen andere indelingen.
 
-| Doel         | Indeling      | Bestandsextensie | Samplefrequentie | Spraakcompatibele vlag |
-| -------------- | ----------- | -------- | ----------- | --------------------- |
-| Standaardaudio | `wav`       | `.wav`   | provider    | nee                    |
-| Spraaknotitie     | `opus`      | `.opus`  | provider    | ja                   |
-| Telefonie      | `ulaw_8000` | n.v.t.      | 8 kHz       | n.v.t.                   |
+| Doel             | Indeling    | Bestandsextensie | Samplefrequentie | Spraakcompatibele vlag |
+| ---------------- | ----------- | ---------------- | ---------------- | ---------------------- |
+| Standaardaudio   | `wav`       | `.wav`           | provider         | nee                    |
+| Spraaknotitie    | `opus`      | `.opus`          | provider         | ja                     |
+| Telefonie        | `ulaw_8000` | n.v.t.           | 8 kHz            | n.v.t.                 |
 
 ## Volgorde voor automatische selectie
 
-Onder geconfigureerde TTS-providers is Gradiums volgorde voor automatische selectie `30`. Zie [Tekst-naar-spraak](/nl/tools/tts) voor hoe OpenClaw de actieve provider kiest wanneer `messages.tts.provider` niet is vastgezet.
+Van de geconfigureerde TTS-providers is de automatische selectievolgorde van Gradium `30`. Zie [Tekst-naar-spraak](/nl/tools/tts) voor hoe OpenClaw de actieve provider kiest wanneer `messages.tts.provider` niet is vastgezet.
 
 ## Gerelateerd
 

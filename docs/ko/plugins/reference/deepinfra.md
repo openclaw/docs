@@ -4,10 +4,11 @@ read_when:
 summary: OpenClaw에 DeepInfra 모델 제공자 지원을 추가합니다.
 title: DeepInfra Plugin
 x-i18n:
-    generated_at: "2026-05-02T21:02:05Z"
+    generated_at: "2026-06-27T17:50:19Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: efce7be9c1dc707a55109b6044bd1acd9aefb3a0752caa3b5bcb8fd6aa0d4a1c
+    source_hash: 67ee0e714d812bbb72a05233ac52a17da796631766a9222bb9caa4d441c8433f
     source_path: plugins/reference/deepinfra.md
     workflow: 16
 ---
@@ -19,9 +20,9 @@ OpenClaw에 DeepInfra 모델 제공자 지원을 추가합니다.
 ## 배포
 
 - 패키지: `@openclaw/deepinfra-provider`
-- 설치 경로: OpenClaw에 포함됨
+- 설치 경로: npm; ClawHub: `clawhub:@openclaw/deepinfra-provider`
 
-## 공개 영역
+## 표면
 
 providers: deepinfra; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, speechProviders, videoGenerationProviders
 

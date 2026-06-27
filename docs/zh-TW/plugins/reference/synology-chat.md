@@ -1,20 +1,21 @@
 ---
 read_when:
-    - 你正在安裝、設定或稽核 synology-chat Plugin
-summary: 新增 Synology Chat 頻道介面，用於傳送和接收 OpenClaw 訊息。
-title: Synology Chat Plugin
+    - 你正在安裝、設定或稽核 synology-chat 外掛
+summary: Synology Chat 頻道外掛，適用於 OpenClaw 頻道和私訊。
+title: Synology Chat 外掛
 x-i18n:
-    generated_at: "2026-05-03T21:41:24Z"
+    generated_at: "2026-06-27T19:46:19Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 545eb93ad56c25e1261a0840747a494915a04773636fc14424d9e83395b4f663
+    source_hash: 13caa3939ae9abbf11f95a0578e9fcf79f280c54953bcde76a28383afa43c404
     source_path: plugins/reference/synology-chat.md
     workflow: 16
 ---
 
-# Synology Chat Plugin
+# Synology Chat 外掛
 
-新增 Synology Chat 頻道介面，用於傳送與接收 OpenClaw 訊息。
+適用於 OpenClaw 頻道與直接訊息的 Synology Chat 頻道外掛。
 
 ## 發佈
 

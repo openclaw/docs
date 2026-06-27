@@ -1,30 +1,31 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de memory-lancedb-plugin
-summary: Voegt tools toe die door agents kunnen worden aangeroepen.
+    - Je installeert, configureert of controleert de memory-lancedb Plugin
+summary: OpenClaw-plugin voor langetermijngeheugen ondersteund door LanceDB, met automatisch herinneren, automatisch vastleggen en vectorzoekfunctie.
 title: Geheugen-Lancedb-Plugin
 x-i18n:
-    generated_at: "2026-05-03T11:15:30Z"
+    generated_at: "2026-06-27T18:02:18Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 68b679caf3a16929c59d9029b29f12520cf2a247ee51de0d67382d0caef4e694
+    source_hash: db3843c421abdf738723f87f5bf12ed7acc2e6638e5869c2ad10b4b5722d402d
     source_path: plugins/reference/memory-lancedb.md
     workflow: 16
 ---
 
-# Memory Lancedb Plugin
+# Memory Lancedb-plugin
 
-Voegt tools toe die door agents kunnen worden aangeroepen.
+OpenClaw Plugin voor langetermijngeheugen met LanceDB-backend, met automatisch oproepen, automatisch vastleggen en vectorzoekopdrachten.
 
 ## Distributie
 
 - Pakket: `@openclaw/memory-lancedb`
 - Installatieroute: npm; ClawHub
 
-## Interface
+## Oppervlak
 
-contracts: tools
+contracten: tools
 
-## Gerelateerde documentatie
+## Gerelateerde docs
 
 - [memory-lancedb](/nl/plugins/memory-lancedb)

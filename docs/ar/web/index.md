@@ -2,34 +2,41 @@
 read_when:
     - تريد الوصول إلى Gateway عبر Tailscale
     - تريد واجهة التحكم في المتصفح وتحرير الإعدادات
-summary: 'واجهات الويب في Gateway: واجهة التحكم، أوضاع الربط، والأمان'
+summary: 'أسطح الويب في Gateway: واجهة التحكم، أوضاع الربط، والأمان'
 title: الويب
 x-i18n:
-    generated_at: "2026-04-30T08:34:40Z"
+    generated_at: "2026-06-27T18:48:21Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: d1e357d1e9f4ad0286b9412cd0a684b6428180e0586eef76577ecb2909212fb2
+    source_hash: 1c6b0c9f4ff53af295eb4eef7290d5d6b70c52543f57a9e83c7f8a635a2b35cd
     source_path: web/index.md
     workflow: 16
 ---
 
-يقدّم Gateway **واجهة تحكم عبر المتصفح** صغيرة (Vite + Lit) من المنفذ نفسه مثل Gateway WebSocket:
+يقدّم Gateway **واجهة تحكم في المتصفح** صغيرة (Vite + Lit) من المنفذ نفسه الذي يستخدمه Gateway WebSocket:
 
 - الافتراضي: `http://<host>:18789/`
 - مع `gateway.tls.enabled: true`: `https://<host>:18789/`
-- بادئة اختيارية: عيّن `gateway.controlUi.basePath` (مثل `/openclaw`)
+- بادئة اختيارية: اضبط `gateway.controlUi.basePath` (مثل `/openclaw`)
 
-توجد الإمكانات في [واجهة التحكم](/ar/web/control-ui). تركز بقية هذه الصفحة على أوضاع الربط، والأمان، والأسطح المواجهة للويب.
+توجد الإمكانات في [واجهة التحكم](/ar/web/control-ui). يركز باقي هذه الصفحة على أوضاع الربط، والأمان، والأسطح المواجهة للويب.
 
 ## Webhooks
 
-عندما تكون `hooks.enabled=true`، يوفّر Gateway أيضًا نقطة نهاية Webhook صغيرة على خادم HTTP نفسه.
-راجع [إعدادات Gateway](/ar/gateway/configuration) ← `hooks` للمصادقة والحمولات.
+عند ضبط `hooks.enabled=true`، يوفّر Gateway أيضًا نقطة نهاية Webhook صغيرة على خادم HTTP نفسه.
+راجع [إعدادات Gateway](/ar/gateway/configuration) ← `hooks` للمصادقة + الحمولات.
+
+## Admin HTTP RPC
+
+يكشف Admin HTTP RPC طرائق مختارة من مستوى التحكم في Gateway عند `POST /api/v1/admin/rpc`.
+وهو معطّل افتراضيًا ولا يُسجَّل إلا عند تفعيل Plugin `admin-http-rpc`.
+راجع [Admin HTTP RPC](/ar/plugins/admin-http-rpc) لمعرفة نموذج المصادقة، والطرائق المسموح بها، والمقارنة مع WebSocket.
 
 ## الإعدادات (مفعّلة افتراضيًا)
 
 تكون واجهة التحكم **مفعّلة افتراضيًا** عند وجود الأصول (`dist/control-ui`).
-يمكنك التحكم بها عبر الإعدادات:
+يمكنك التحكم فيها عبر الإعدادات:
 
 ```json5
 {
@@ -41,9 +48,9 @@ x-i18n:
 
 ## الوصول عبر Tailscale
 
-### Serve مدمج (موصى به)
+### Serve المدمج (موصى به)
 
-أبقِ Gateway على loopback ودع Tailscale Serve يعمل كوكيل له:
+أبقِ Gateway على loopback ودع Tailscale Serve يوكّله:
 
 ```json5
 {
@@ -54,7 +61,7 @@ x-i18n:
 }
 ```
 
-ثم ابدأ تشغيل Gateway:
+ثم ابدأ Gateway:
 
 ```bash
 openclaw gateway
@@ -76,8 +83,8 @@ openclaw gateway
 }
 ```
 
-ثم ابدأ تشغيل Gateway (يستخدم هذا المثال غير المعتمد على loopback مصادقة رمز
-سر مشترك):
+ثم ابدأ Gateway (يستخدم هذا المثال غير القائم على loopback مصادقة رمز
+سرّ مشترك):
 
 ```bash
 openclaw gateway
@@ -102,31 +109,32 @@ openclaw gateway
 ## ملاحظات الأمان
 
 - مصادقة Gateway مطلوبة افتراضيًا (رمز، أو كلمة مرور، أو وكيل موثوق، أو ترويسات هوية Tailscale Serve عند تفعيلها).
-- لا تزال عمليات الربط غير المعتمدة على loopback **تتطلب** مصادقة Gateway. عمليًا، يعني ذلك مصادقة الرمز/كلمة المرور أو وكيلاً عكسيًا مدركًا للهوية مع `gateway.auth.mode: "trusted-proxy"`.
-- ينشئ المعالج مصادقة سر مشترك افتراضيًا، وغالبًا ما يولّد
+- لا تزال عمليات الربط غير القائمة على loopback **تتطلب** مصادقة Gateway. عمليًا يعني ذلك مصادقة الرمز/كلمة المرور أو وكيلًا عكسيًا مدركًا للهوية مع `gateway.auth.mode: "trusted-proxy"`.
+- ينشئ المعالج مصادقة سرّ مشترك افتراضيًا، وعادةً ما ينشئ
   رمز Gateway (حتى على loopback).
-- في وضع السر المشترك، ترسل واجهة المستخدم `connect.params.auth.token` أو
+- في وضع السرّ المشترك، ترسل الواجهة `connect.params.auth.token` أو
   `connect.params.auth.password`.
-- عندما تكون `gateway.tls.enabled: true`، تعرض أدوات لوحة المعلومات المحلية والحالة
+- عند ضبط `gateway.tls.enabled: true`، تعرض مساعدات لوحة المعلومات والحالة المحلية
   عناوين URL للوحة المعلومات بصيغة `https://` وعناوين URL لـ WebSocket بصيغة `wss://`.
-- في الأوضاع التي تحمل هوية مثل Tailscale Serve أو `trusted-proxy`، يتم استيفاء
+- في الأوضاع الحاملة للهوية مثل Tailscale Serve أو `trusted-proxy`، يُستوفى
   فحص مصادقة WebSocket من ترويسات الطلب بدلًا من ذلك.
-- لعمليات نشر واجهة التحكم غير المعتمدة على loopback، عيّن `gateway.controlUi.allowedOrigins`
-  صراحةً (الأصول الكاملة). بدون ذلك، يُرفض بدء تشغيل Gateway افتراضيًا.
+- لنشرات واجهة التحكم العامة غير القائمة على loopback، اضبط `gateway.controlUi.allowedOrigins`
+  صراحةً (الأصول الكاملة). تُقبل عمليات التحميل الخاصة من نفس الأصل عبر LAN/Tailnet لـ loopback،
+  وRFC1918/link-local، و`.local`، و`.ts.net`، ومضيفي Tailscale CGNAT.
 - يفعّل `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true`
-  وضع الرجوع إلى أصل ترويسة Host، لكنه تخفيض أمني خطير.
-- مع Serve، يمكن لترويسات هوية Tailscale أن تستوفي مصادقة واجهة التحكم/WebSocket
-  عندما تكون `gateway.auth.allowTailscale` هي `true` (بدون الحاجة إلى رمز/كلمة مرور).
-  لا تستخدم نقاط نهاية HTTP API ترويسات هوية Tailscale هذه؛ بل تتبع
-  وضع مصادقة HTTP العادي الخاص بـ Gateway بدلًا من ذلك. عيّن
+  وضع الرجوع إلى أصل ترويسة Host، لكنه خفض خطير لمستوى الأمان.
+- مع Serve، يمكن لترويسات هوية Tailscale استيفاء مصادقة واجهة التحكم/WebSocket
+  عندما تكون `gateway.auth.allowTailscale` هي `true` (لا يلزم رمز/كلمة مرور).
+  لا تستخدم نقاط نهاية HTTP API ترويسات هوية Tailscale تلك؛ بل تتبع
+  وضع مصادقة HTTP المعتاد في Gateway بدلًا من ذلك. اضبط
   `gateway.auth.allowTailscale: false` لطلب بيانات اعتماد صريحة. راجع
-  [Tailscale](/ar/gateway/tailscale) و[الأمان](/ar/gateway/security). يفترض هذا
-  التدفق بلا رمز أن مضيف Gateway موثوق.
-- يتطلب `gateway.tailscale.mode: "funnel"` أن يكون `gateway.auth.mode: "password"` (كلمة مرور مشتركة).
+  [Tailscale](/ar/gateway/tailscale) و[الأمان](/ar/gateway/security). يفترض
+  هذا التدفق بلا رمز أن مضيف Gateway موثوق.
+- يتطلب `gateway.tailscale.mode: "funnel"` ضبط `gateway.auth.mode: "password"` (كلمة مرور مشتركة).
 
-## بناء واجهة المستخدم
+## بناء الواجهة
 
-يقدّم Gateway الملفات الثابتة من `dist/control-ui`. ابنِها باستخدام:
+يقدّم Gateway الملفات الثابتة من `dist/control-ui`. ابنها باستخدام:
 
 ```bash
 pnpm ui:build

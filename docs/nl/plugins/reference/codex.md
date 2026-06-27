@@ -1,29 +1,30 @@
 ---
 read_when:
     - Je installeert, configureert of controleert de codex-plugin
-summary: Codex-app-serverharnas en door Codex beheerde GPT-modelcatalogus.
+summary: OpenClaw Codex app-server-harnas en modelprovider-Plugin met een door Codex beheerde GPT-catalogus.
 title: Codex-Plugin
 x-i18n:
-    generated_at: "2026-05-03T11:14:02Z"
+    generated_at: "2026-06-27T17:59:44Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c049ce912109d9489a3bcdf31aa01668802ab4b9ded8fdd63e470a5901b261c5
+    source_hash: 8b9c123c0f72d6fb2a8d089ba8ad2cb3227a6c201925678124bd504324392253
     source_path: plugins/reference/codex.md
     workflow: 16
 ---
 
-# Codex Plugin
+# Codex-plugin
 
-Codex app-server-harnas en door Codex beheerde GPT-modelcatalogus.
+OpenClaw Codex app-server-harness en modelprovider-Plugin met een door Codex beheerde GPT-catalogus.
 
 ## Distributie
 
 - Pakket: `@openclaw/codex`
 - Installatieroute: npm; ClawHub
 
-## Interface
+## Oppervlak
 
-providers: codex; contracts: mediaUnderstandingProviders, migrationProviders
+providers: codex; contracts: mediaUnderstandingProviders, migrationProviders, webSearchProviders
 
 ## Gerelateerde documentatie
 
