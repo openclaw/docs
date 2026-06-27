@@ -208,6 +208,10 @@ class I18NScriptTests(unittest.TestCase):
         self.assertIn('python "${I18N_SCRIPT_DIR}/build_pending_manifest.py"', reusable)
         self.assertIn('python "${I18N_SCRIPT_DIR}/commit_locale_artifact.py"', reusable)
         self.assertIn('python "${I18N_SCRIPT_DIR}/dispatch_r2_pages.py" "${args[@]}"', reusable)
+        commit_locale_block = re.search(r"(?ms)^  commit-locale:.*?(?=^  [a-zA-Z0-9_-]+:|\Z)", reusable)
+        self.assertIsNotNone(commit_locale_block)
+        self.assertNotIn("concurrency:", commit_locale_block.group(0))
+        self.assertIn("It retries rebase/push conflicts", commit_locale_artifact.__doc__ or "")
         self.assertIn("--artifact-scope page", reusable)
         self.assertIn('--ref "${{ github.ref_name }}"', reusable)
         self.assertIn('--locale "${{ inputs.locale }}"', reusable)
@@ -226,6 +230,9 @@ class I18NScriptTests(unittest.TestCase):
         self.assertIn("- locale", r2_pages)
         self.assertIn("- page", r2_pages)
         self.assertRegex(r2_pages, r"group: r2-pages\s+cancel-in-progress: false")
+        self.assertIn("run-name: R2 Pages", r2_pages)
+        self.assertIn("request_id:", r2_pages)
+        self.assertIn("Fail stale scoped translation deploy", r2_pages)
         self.assertIn("Refresh scoped docs content from main", r2_pages)
         self.assertIn("SCOPED_CONTENT_SHA: ${{ steps.scoped-content.outputs.content_sha || '' }}", r2_pages)
         self.assertIn("R2_UPLOAD_SCOPE: ${{ steps.artifact-scope.outputs.upload_scope }}", r2_pages)
@@ -636,6 +643,7 @@ class I18NScriptTests(unittest.TestCase):
                 False,
                 "zh-CN",
                 "channels/line",
+                "request-123",
             )
 
         self.assertEqual("28277584371", run_id)
@@ -643,6 +651,7 @@ class I18NScriptTests(unittest.TestCase):
         self.assertIn("force_upload=false", captured)
         self.assertIn("locale=zh-CN", captured)
         self.assertIn("page_path=channels/line", captured)
+        self.assertIn("request_id=request-123", captured)
 
     def test_dispatch_r2_pages_selects_recent_workflow_dispatch(self) -> None:
         calls = {"count": 0}
@@ -681,6 +690,97 @@ class I18NScriptTests(unittest.TestCase):
             )
 
         self.assertEqual("456", run_id)
+
+    def test_dispatch_r2_pages_uses_request_id_to_resolve_concurrent_runs(self) -> None:
+        now = "2026-06-27T03:43:01Z"
+
+        def fake_list(workflow: str, ref: str, repo: str) -> list[dict]:
+            return [
+                {
+                    "databaseId": 123,
+                    "createdAt": now,
+                    "displayTitle": "R2 Pages i18n-r2-locale-ja-JP-aaa",
+                    "status": "queued",
+                    "url": "https://github.com/openclaw/docs/actions/runs/123",
+                },
+                {
+                    "databaseId": 456,
+                    "createdAt": now,
+                    "displayTitle": "R2 Pages i18n-r2-locale-zh-TW-bbb",
+                    "status": "queued",
+                    "url": "https://github.com/openclaw/docs/actions/runs/456",
+                },
+            ]
+
+        with patch.object(dispatch_r2_pages, "list_workflow_dispatch_runs", fake_list), patch.object(dispatch_r2_pages.time, "sleep", lambda _: None):
+            run_id = dispatch_r2_pages.find_dispatched_run(
+                "r2-pages.yml",
+                "main",
+                "openclaw/docs",
+                dispatch_r2_pages.parse_time(now),
+                set(),
+                "i18n-r2-locale-zh-TW-bbb",
+            )
+
+        self.assertEqual("456", run_id)
+
+    def test_dispatch_r2_pages_retries_failed_dispatch_run(self) -> None:
+        dispatches: list[str] = []
+        waited: list[str] = []
+        verified: list[tuple[str, str]] = []
+
+        def fake_dispatch(
+            workflow: str,
+            ref: str,
+            repo: str,
+            artifact_scope: str,
+            force_upload: bool,
+            locale: str = "",
+            page_path: str = "",
+            request_id: str = "",
+        ) -> str:
+            dispatches.append(request_id)
+            return "123" if len(dispatches) == 1 else "456"
+
+        def fake_wait(repo: str, run_id: str, timeout_seconds: int, poll_seconds: int) -> None:
+            waited.append(run_id)
+            if run_id == "123":
+                raise SystemExit("stale scoped deploy")
+
+        def fake_verify(url: str, expected_h1: str, timeout_seconds: int, poll_seconds: int) -> None:
+            verified.append((url, expected_h1))
+
+        argv = [
+            "dispatch_r2_pages.py",
+            "--repo",
+            "openclaw/docs",
+            "--artifact-scope",
+            "locale",
+            "--locale",
+            "zh-TW",
+            "--dispatch-attempts",
+            "2",
+            "--poll-seconds",
+            "1",
+            "--live-url",
+            "https://docs.openclaw.ai/zh-TW/channels/line",
+            "--expect-h1",
+            "LINE",
+        ]
+        with (
+            patch.object(sys, "argv", argv),
+            patch.object(dispatch_r2_pages, "known_workflow_dispatch_run_ids", lambda workflow, ref, repo: set()),
+            patch.object(dispatch_r2_pages, "dispatch", fake_dispatch),
+            patch.object(dispatch_r2_pages, "wait_for_run", fake_wait),
+            patch.object(dispatch_r2_pages, "verify_live_h1", fake_verify),
+            patch.object(dispatch_r2_pages.time, "sleep", lambda _: None),
+        ):
+            dispatch_r2_pages.main()
+
+        self.assertEqual(["123", "456"], waited)
+        self.assertEqual(2, len(dispatches))
+        self.assertNotEqual(dispatches[0], dispatches[1])
+        self.assertEqual([("https://docs.openclaw.ai/zh-TW/channels/line", "LINE")], verified)
 
     def test_dispatch_r2_pages_rejects_ambiguous_new_runs(self) -> None:
         now = "2026-06-27T03:43:01Z"

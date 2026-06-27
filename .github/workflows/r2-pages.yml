@@ -1,4 +1,5 @@
 name: R2 Pages
+run-name: R2 Pages ${{ github.event_name == 'workflow_dispatch' && inputs.request_id || github.sha }}
 
 on:
   push:
@@ -45,6 +46,11 @@ on:
         required: false
         type: boolean
         default: false
+      request_id:
+        description: "Unique caller id used by dispatch waiters to resolve this run."
+        required: false
+        type: string
+        default: ""
 
 permissions:
   actions: write
@@ -219,6 +225,12 @@ jobs:
           else
             echo "stale=false" >> "${GITHUB_OUTPUT}"
           fi
+
+      - name: Fail stale scoped translation deploy
+        if: github.event_name == 'workflow_dispatch' && steps.current-main.outputs.stale == 'true' && (steps.artifact-scope.outputs.scope == 'locale' || steps.artifact-scope.outputs.scope == 'page')
+        run: |
+          echo "Scoped translation content went stale before upload; retry this dispatch against latest main." >&2
+          exit 1
 
       - name: Resolve R2 credentials
         if: steps.artifact-scope.outputs.scope != 'none' && steps.current-main.outputs.stale != 'true'

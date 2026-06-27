@@ -314,9 +314,6 @@ jobs:
     permissions:
       actions: write
       contents: write
-    concurrency:
-      group: docs-i18n-finalize
-      cancel-in-progress: false
     steps:
       # Finalizers apply artifacts to latest main, but deploy/commit control
       # logic must come from this workflow ref so branch canaries test the fix.
