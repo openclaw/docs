@@ -34,6 +34,7 @@ budget_check = load_module("budget_check")
 prepare = load_module("prepare")
 pending = load_module("build_pending_manifest")
 package_artifact = load_module("package_artifact")
+mdx_repair_scope = load_module("mdx_repair_scope")
 apply_artifacts = load_module("apply_artifacts")
 read_source_metadata = load_module("read_source_metadata")
 prune_stale_locale_pages = load_module("prune_stale_locale_pages")
@@ -455,6 +456,46 @@ class I18NScriptTests(unittest.TestCase):
 
             self.assertIn("failed=true", output.read_text(encoding="utf-8"))
             self.assertIn("failed_reason=translation failed", output.read_text(encoding="utf-8"))
+
+    def test_mdx_repair_scope_allows_preexisting_untracked_locale_files_only(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            init_repo(repo)
+            baseline = repo / ".openclaw-sync/mdx/fr.repair-baseline.txt"
+            (repo / "docs/fr").mkdir(parents=True)
+            (repo / "docs/index.md").write_text("# Index\n", encoding="utf-8")
+            (repo / "docs/fr/tracked.md").write_text("# Tracked FR\n", encoding="utf-8")
+            run_git(repo, "add", ".")
+            run_git(repo, "commit", "-m", "initial")
+
+            (repo / "docs/fr/from-translation.md").write_text("# New FR\n", encoding="utf-8")
+            mdx_repair_scope.snapshot_scope(repo, "fr", baseline)
+
+            (repo / "docs/fr/tracked.md").write_text("# Tracked FR repaired\n", encoding="utf-8")
+            mdx_repair_scope.enforce_scope(repo, "fr", baseline)
+
+            (repo / "docs/index.md").write_text("# Source side effect\n", encoding="utf-8")
+            with self.assertRaises(SystemExit):
+                mdx_repair_scope.enforce_scope(repo, "fr", baseline)
+            (repo / "docs/index.md").write_text("# Index\n", encoding="utf-8")
+
+            (repo / "docs/index.md").write_text("# Staged source side effect\n", encoding="utf-8")
+            run_git(repo, "add", "docs/index.md")
+            with self.assertRaises(SystemExit):
+                mdx_repair_scope.enforce_scope(repo, "fr", baseline)
+            run_git(repo, "restore", "--staged", "docs/index.md")
+            (repo / "docs/index.md").write_text("# Index\n", encoding="utf-8")
+
+            (repo / "docs/fr/from-repair.md").write_text("# Repair side effect\n", encoding="utf-8")
+            with self.assertRaises(SystemExit):
+                mdx_repair_scope.enforce_scope(repo, "fr", baseline)
+
+            baseline.write_text(baseline.read_text(encoding="utf-8") + "docs/fr/from-repair.md\n", encoding="utf-8")
+            run_git(repo, "add", "docs/fr/from-repair.md")
+            (repo / "docs/fr/staged-from-repair.md").write_text("# Staged repair side effect\n", encoding="utf-8")
+            run_git(repo, "add", "docs/fr/staged-from-repair.md")
+            with self.assertRaises(SystemExit):
+                mdx_repair_scope.enforce_scope(repo, "fr", baseline)
 
     def test_full_summary_ignores_canary_as_locale_success_and_reports_missing(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

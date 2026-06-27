@@ -185,6 +185,14 @@ jobs:
           node .openclaw-sync/check-docs-mdx.mjs "docs/${LOCALE}" \
             --json-out ".openclaw-sync/mdx/${LOCALE}.json"
 
+      - name: Snapshot translated MDX repair scope
+        if: steps.stale.outputs.skip != 'true' && steps.translate_docs.outcome == 'success' && steps.mdx_check.outcome == 'failure'
+        env:
+          LOCALE: ${{ inputs.locale }}
+        run: |
+          python .github/scripts/i18n/mdx_repair_scope.py snapshot \
+            --baseline "${RUNNER_TEMP}/${LOCALE}.repair-baseline.txt"
+
       - name: Repair translated MDX
         id: mdx_repair
         if: steps.stale.outputs.skip != 'true' && steps.translate_docs.outcome == 'success' && steps.mdx_check.outcome == 'failure'
@@ -208,27 +216,8 @@ jobs:
         env:
           LOCALE: ${{ inputs.locale }}
         run: |
-          set -euo pipefail
-          bad_paths="$(
-            git diff --name-only | while IFS= read -r path; do
-              case "$path" in
-                "docs/${LOCALE}"/*|"docs/.i18n/${LOCALE}.tm.jsonl") ;;
-                *) printf '%s\n' "$path" ;;
-              esac
-            done
-          )"
-          if [ -n "$bad_paths" ]; then
-            echo "Docs MDX repair touched forbidden paths:"
-            printf '%s\n' "$bad_paths"
-            exit 1
-          fi
-
-          untracked_locale="$(git ls-files --others --exclude-standard -- "docs/${LOCALE}")"
-          if [ -n "$untracked_locale" ]; then
-            echo "Docs MDX repair created untracked locale files; forbidden:"
-            printf '%s\n' "$untracked_locale"
-            exit 1
-          fi
+          python .github/scripts/i18n/mdx_repair_scope.py enforce \
+            --baseline "${RUNNER_TEMP}/${LOCALE}.repair-baseline.txt"
 
       - name: Recheck translated MDX
         id: mdx_recheck
