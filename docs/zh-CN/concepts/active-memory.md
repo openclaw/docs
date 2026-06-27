@@ -746,6 +746,7 @@ recall 意外情况是嵌入提供商问题，而不是主动记忆错误。
       `memory sync failed (search-bootstrap)` 或提供商嵌入错误。
     - 运行 `openclaw memory status --deep`，检查记忆搜索后端和索引健康状态。
     - 如果你使用 `ollama`，请确认嵌入模型已安装（`ollama list`）。
+
   </Accordion>
 
   <Accordion title="Gateway 网关重启后的首次 recall 返回 `status=timeout`">
