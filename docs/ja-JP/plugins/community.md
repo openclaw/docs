@@ -1,169 +1,72 @@
 ---
+doc-schema-version: 1
 read_when:
-    - サードパーティ製のOpenClaw Pluginを探したい
-    - 自分のPluginを公開または掲載したい
-summary: 'コミュニティが保守する OpenClaw Plugin: 閲覧、インストール、自作 Plugin の送信'
-title: コミュニティPlugin
+    - サードパーティ製の OpenClaw Plugin を探したい
+    - ClawHubで独自のPluginを公開または掲載したい
+summary: コミュニティ管理のOpenClaw Pluginを見つけて公開する
+title: コミュニティ Plugin
 x-i18n:
-    generated_at: "2026-05-10T19:43:25Z"
+    generated_at: "2026-06-27T12:14:24Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ee23598011f79f46b9171296501605cf0a5ef5aa7b67040135ea47cac21ca6a4
+    source_hash: 0ecf059fa0c32f09d09381b2153a6a63ca522d49719aaa8476209389a6b5b36a
     source_path: plugins/community.md
     workflow: 16
 ---
 
-Community Plugin は、新しいチャネル、ツール、プロバイダー、その他の機能で OpenClaw を拡張するサードパーティパッケージです。コミュニティによって構築、保守され、通常は [ClawHub](/ja-JP/clawhub) で公開され、単一のコマンドでインストールできます。ClawHub pack のインストールが展開される間、素のパッケージ指定では npm が起動時のデフォルトのままです。
+コミュニティ Plugin は、チャネル、ツール、プロバイダー、フック、またはその他の機能で OpenClaw を拡張するサードパーティパッケージです。公開コミュニティ Plugin の主要な発見面として [ClawHub](/ja-JP/clawhub) を使用してください。
 
-ClawHub は Community Plugin の標準の発見サーフェスです。発見しやすくする目的だけで、あなたの Plugin をここに追加する docs-only PR を開かないでください。代わりに ClawHub で公開してください。
+## Plugin を探す
+
+CLI から ClawHub を検索します。
+
+```bash
+openclaw plugins search "calendar"
+```
+
+明示的なソースプレフィックスを指定して ClawHub Plugin をインストールします。
 
 ```bash
 openclaw plugins install clawhub:<package-name>
 ```
 
-npm でホストされているパッケージには `openclaw plugins install <package-name>` を使用してください。
-
-## 掲載 Plugin
-
-### Apify
-
-20,000 以上のすぐに使えるスクレイパーで、任意の Web サイトからデータをスクレイピングできます。依頼するだけで、エージェントに Instagram、Facebook、TikTok、YouTube、Google Maps、Google Search、EC サイトなどからデータを抽出させられます。
-
-- **npm:** `@apify/apify-openclaw-plugin`
-- **リポジトリ:** [github.com/apify/apify-openclaw-plugin](https://github.com/apify/apify-openclaw-plugin)
+npm は、ローンチ移行期間中もサポートされる直接インストールパスです。
 
 ```bash
-openclaw plugins install @apify/apify-openclaw-plugin
+openclaw plugins install npm:<package-name>
 ```
 
-### Codex App Server Bridge
+一般的なインストール、更新、検査、アンインストールの例については、[Plugin を管理する](/ja-JP/plugins/manage-plugins) を使用してください。完全なコマンドリファレンスとソース選択ルールについては、[`openclaw plugins`](/ja-JP/cli/plugins) を使用してください。
 
-Codex App Server の会話向けの独立した OpenClaw ブリッジです。チャットを Codex スレッドにバインドし、プレーンテキストで会話し、再開、計画、レビュー、モデル選択、Compaction などのチャットネイティブなコマンドで制御できます。
+## Plugin を公開する
 
-- **npm:** `openclaw-codex-app-server`
-- **リポジトリ:** [github.com/pwrdrvr/openclaw-codex-app-server](https://github.com/pwrdrvr/openclaw-codex-app-server)
+OpenClaw ユーザーに見つけてインストールしてもらいたい公開コミュニティ Plugin は、ClawHub で公開します。ClawHub はライブのパッケージ一覧、リリース履歴、スキャン状態、インストールヒントを所有します。ドキュメントでは静的なサードパーティ Plugin カタログを維持しません。
 
 ```bash
-openclaw plugins install openclaw-codex-app-server
+clawhub package publish your-org/your-plugin --dry-run
+clawhub package publish your-org/your-plugin
 ```
 
-### DingTalk
+公開する前に、Plugin にパッケージメタデータ、Plugin マニフェスト、セットアップドキュメント、明確なメンテナンス所有者があることを確認してください。ClawHub はリリースを作成する前に、所有者スコープ、パッケージ名、バージョン、ファイル制限、ソースメタデータを検証します。その後、レビューと検証が完了するまで、新しいリリースを通常のインストールおよびダウンロード面から非表示にします。
 
-Stream モードを使用した企業向けロボット連携です。任意の DingTalk クライアント経由で、テキスト、画像、ファイルメッセージをサポートします。
+公開前にこのチェックリストを使用してください。
 
-- **npm:** `@largezhou/ddingtalk`
-- **リポジトリ:** [github.com/largezhou/openclaw-dingtalk](https://github.com/largezhou/openclaw-dingtalk)
+| 要件                 | 理由                                                |
+| -------------------- | --------------------------------------------------- |
+| ClawHub で公開済み   | ユーザーには `openclaw plugins install` ヒントが機能する必要がある |
+| 公開 GitHub リポジトリ | ソースレビュー、Issue 追跡、透明性                 |
+| セットアップと使用方法のドキュメント | ユーザーは設定方法を知る必要がある              |
+| アクティブなメンテナンス | 最近の更新または迅速な Issue 対応                 |
 
-```bash
-openclaw plugins install @largezhou/ddingtalk
-```
+完全な公開契約については、これらのページを使用してください。
 
-### Lossless Claw (LCM)
-
-OpenClaw 向けの Lossless Context Management Plugin です。DAG ベースの会話要約と増分 Compaction により、トークン使用量を削減しながら完全なコンテキスト忠実度を保ちます。
-
-- **npm:** `@martian-engineering/lossless-claw`
-- **リポジトリ:** [github.com/Martian-Engineering/lossless-claw](https://github.com/Martian-Engineering/lossless-claw)
-
-```bash
-openclaw plugins install @martian-engineering/lossless-claw
-```
-
-### Opik
-
-エージェントのトレースを Opik にエクスポートする公式 Plugin です。エージェントの動作、コスト、トークン、エラーなどを監視できます。
-
-- **npm:** `@opik/opik-openclaw`
-- **リポジトリ:** [github.com/comet-ml/opik-openclaw](https://github.com/comet-ml/opik-openclaw)
-
-```bash
-openclaw plugins install @opik/opik-openclaw
-```
-
-### Prometheus Avatar
-
-リアルタイムのリップシンク、感情表現、テキスト読み上げを備えた Live2D アバターを OpenClaw エージェントに与えます。AI アセット生成用のクリエイターツールと、Prometheus Marketplace へのワンクリックデプロイが含まれています。現在はアルファ版です。
-
-- **npm:** `@prometheusavatar/openclaw-plugin`
-- **リポジトリ:** [github.com/myths-labs/prometheus-avatar](https://github.com/myths-labs/prometheus-avatar)
-
-```bash
-openclaw plugins install @prometheusavatar/openclaw-plugin
-```
-
-### QQbot
-
-QQ Bot API 経由で OpenClaw を QQ に接続します。プライベートチャット、グループメンション、チャネルメッセージに加え、音声、画像、動画、ファイルを含むリッチメディアをサポートします。
-
-現在の OpenClaw リリースには QQ Bot がバンドルされています。通常のインストールでは [QQ Bot](/ja-JP/channels/qqbot) のバンドルされたセットアップを使用してください。この外部 Plugin は、Tencent が保守するスタンドアロンパッケージを意図的に使いたい場合にのみインストールしてください。
-
-- **npm:** `@tencent-connect/openclaw-qqbot`
-- **リポジトリ:** [github.com/tencent-connect/openclaw-qqbot](https://github.com/tencent-connect/openclaw-qqbot)
-
-```bash
-openclaw plugins install @tencent-connect/openclaw-qqbot
-```
-
-### wecom
-
-Tencent WeCom チームによる OpenClaw 向け WeCom チャネル Plugin です。WeCom Bot WebSocket 永続接続を基盤とし、ダイレクトメッセージとグループチャット、ストリーミング返信、プロアクティブメッセージング、画像/ファイル処理、Markdown フォーマット、組み込みアクセス制御、ドキュメント/会議/メッセージング Skills をサポートします。
-
-- **npm:** `@wecom/wecom-openclaw-plugin`
-- **リポジトリ:** [github.com/WecomTeam/wecom-openclaw-plugin](https://github.com/WecomTeam/wecom-openclaw-plugin)
-
-```bash
-openclaw plugins install @wecom/wecom-openclaw-plugin
-```
-
-### Yuanbao
-
-Tencent Yuanbao チームによる OpenClaw 向け Yuanbao チャネル Plugin です。WebSocket 永続接続を基盤とし、ダイレクトメッセージとグループチャット、ストリーミング返信、プロアクティブメッセージング、画像/ファイル/音声/動画処理、Markdown フォーマット、組み込みアクセス制御、スラッシュコマンドメニューをサポートします。
-
-- **npm:** `openclaw-plugin-yuanbao`
-- **リポジトリ:** [github.com/YuanbaoTeam/yuanbao-openclaw-plugin](https://github.com/YuanbaoTeam/yuanbao-openclaw-plugin)
-
-```bash
-openclaw plugins install openclaw-plugin-yuanbao
-```
-
-## Plugin を提出する
-
-有用で、ドキュメントが整備され、安全に運用できる Community Plugin を歓迎します。
-
-<Steps>
-  <Step title="ClawHub または npm に公開する">
-    Plugin は `openclaw plugins install \<package-name\>` でインストール可能である必要があります。
-    npm のみの配布が特に必要な場合を除き、[ClawHub](/ja-JP/clawhub) に公開してください。
-    完全なガイドは [Plugin の構築](/ja-JP/plugins/building-plugins) を参照してください。
-
-  </Step>
-
-  <Step title="GitHub でホストする">
-    ソースコードは、セットアップドキュメントと issue トラッカーを備えた公開リポジトリに置く必要があります。
-
-  </Step>
-
-  <Step title="docs PR はソースドキュメントの変更にのみ使う">
-    Plugin を発見しやすくするためだけに docs PR は必要ありません。代わりに ClawHub で公開してください。
-
-    OpenClaw のソースドキュメントに実際のコンテンツ変更が必要な場合にのみ docs PR を開いてください。たとえば、インストール案内の修正や、メインのドキュメントセットに属するクロスリポジトリドキュメントの追加などです。
-
-  </Step>
-</Steps>
-
-## 品質基準
-
-| 要件                        | 理由                                          |
-| --------------------------- | --------------------------------------------- |
-| ClawHub または npm で公開済み | ユーザーは `openclaw plugins install` が動作する必要がある |
-| 公開 GitHub リポジトリ      | ソースレビュー、issue 追跡、透明性            |
-| セットアップと使用方法のドキュメント | ユーザーは設定方法を知る必要がある            |
-| 継続的な保守                | 最近の更新、または迅速な issue 対応           |
-
-労力の少ないラッパー、所有者が不明確なもの、または保守されていないパッケージは却下される場合があります。
+- [ClawHub 公開](/ja-JP/clawhub/publishing) では、所有者、スコープ、リリース、レビュー、パッケージ検証、パッケージ移管について説明します。
+- [Plugin の構築](/ja-JP/plugins/building-plugins) では、Plugin パッケージの形状と最初の公開ワークフローを示します。
+- [Plugin マニフェスト](/ja-JP/plugins/manifest) では、ネイティブ Plugin マニフェストフィールドを定義します。
 
 ## 関連
 
-- [Plugin のインストールと設定](/ja-JP/tools/plugin) — 任意の Plugin をインストールする方法
-- [Plugin の構築](/ja-JP/plugins/building-plugins) — 自分で作成する
-- [Plugin Manifest](/ja-JP/plugins/manifest) — manifest スキーマ
+- [Plugins](/ja-JP/tools/plugin) - インストール、設定、再起動、トラブルシューティング
+- [Plugin を管理する](/ja-JP/plugins/manage-plugins) - コマンド例
+- [ClawHub 公開](/ja-JP/clawhub/publishing) - 公開とリリースのルール

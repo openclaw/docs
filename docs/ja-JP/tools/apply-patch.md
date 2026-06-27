@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 9ff2f8e6ecd55ff1bdc553619ab3d590d0967efe7a9a90a31946ad15fd89a1dc
     source_path: tools/apply-patch.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 構造化されたパッチ形式を使用してファイル変更を適用します。これは、単一の `edit` 呼び出しでは壊れやすくなる複数ファイルまたは複数ハンクの編集に最適です。

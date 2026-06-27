@@ -11,6 +11,7 @@ x-i18n:
     source_hash: d77af5c7281a4abafc184e426b1c37205a6d06a196b50353c1abbf67cc93bb97
     source_path: concepts/memory-honcho.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 [Honcho](https://honcho.dev) は OpenClaw に AI ネイティブなメモリを追加します。会話を専用サービスに永続化し、時間をかけてユーザーとエージェントのモデルを構築することで、ワークスペースの Markdown ファイルを超えたクロスセッションコンテキストをエージェントに提供します。

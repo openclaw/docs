@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 405348eac4c08cc6e28b22cfff615fa34c117dedc51a31613545c4057069c20b
     source_path: plugins/zalouser.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw の Zalo Personal 対応をプラグインで提供し、ネイティブの `zca-js` を使って通常の Zalo ユーザーアカウントを自動化します。

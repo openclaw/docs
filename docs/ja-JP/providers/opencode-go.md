@@ -1,43 +1,45 @@
 ---
 read_when:
-    - OpenCode Go カタログを使いたい
-    - Go ホスト型モデルのランタイムモデル参照が必要です
+    - OpenCode Go カタログが必要です
+    - Go でホストされたモデルにはランタイムモデル参照が必要です
 summary: 共有の OpenCode セットアップで OpenCode Go カタログを使用する
 title: OpenCode Go
 x-i18n:
-    generated_at: "2026-04-25T18:20:24Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T12:46:41Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2b2b5ba7f81cc101c3e9abdd79a18dc523a4f18b10242a0513b288fcbcc975e4
+    source_hash: eb4e6bd452eeebca5456b0cd70e7622e07ed050a07ff9d6d00926f32efe90569
     source_path: providers/opencode-go.md
-    workflow: 15
+    workflow: 16
 ---
 
 OpenCode Go は [OpenCode](/ja-JP/providers/opencode) 内の Go カタログです。
-Zen カタログと同じ `OPENCODE_API_KEY` を使用しますが、ランタイムの
-provider id は `opencode-go` のままなので、上流のモデルごとのルーティングが
-正しく維持されます。
+Zen カタログと同じ `OPENCODE_API_KEY` を使用しますが、アップストリームのモデルごとのルーティングが正しく保たれるよう、ランタイム
+プロバイダー ID `opencode-go` を保持します。
 
-| Property         | Value                           |
+| プロパティ       | 値                              |
 | ---------------- | ------------------------------- |
-| ランタイム provider | `opencode-go`                   |
+| ランタイムプロバイダー | `opencode-go`                   |
 | 認証             | `OPENCODE_API_KEY`              |
-| 親セットアップ     | [OpenCode](/ja-JP/providers/opencode) |
+| 親セットアップ   | [OpenCode](/ja-JP/providers/opencode) |
 
 ## 組み込みカタログ
 
-OpenClaw は Go カタログの大半の行をバンドル済みの pi モデルレジストリから取得し、
-レジストリが追いつくまで現在の上流行を補完します。現在のモデル一覧は
-`openclaw models list --provider opencode-go` を実行してください。
+OpenClaw は、ほとんどの Go カタログ行をバンドルされた OpenClaw モデルレジストリから取得し、
+レジストリが追いつくまで現在のアップストリーム行で補完します。現在のモデル一覧を確認するには
+`openclaw models list --provider opencode-go` を実行します。
 
-この provider には次が含まれます。
+このプロバイダーには次が含まれます。
 
-| Model ref                       | 名前                  |
+| モデル参照                      | 名前                  |
 | ------------------------------- | --------------------- |
 | `opencode-go/glm-5`             | GLM-5                 |
 | `opencode-go/glm-5.1`           | GLM-5.1               |
+| `opencode-go/glm-5.2`           | GLM-5.2               |
 | `opencode-go/kimi-k2.5`         | Kimi K2.5             |
-| `opencode-go/kimi-k2.6`         | Kimi K2.6 (3x 上限)   |
+| `opencode-go/kimi-k2.6`         | Kimi K2.6 (3倍制限) |
+| `opencode-go/kimi-k2.7-code`    | Kimi K2.7 Code        |
 | `opencode-go/deepseek-v4-pro`   | DeepSeek V4 Pro       |
 | `opencode-go/deepseek-v4-flash` | DeepSeek V4 Flash     |
 | `opencode-go/mimo-v2-omni`      | MiMo V2 Omni          |
@@ -47,22 +49,24 @@ OpenClaw は Go カタログの大半の行をバンドル済みの pi モデル
 | `opencode-go/qwen3.5-plus`      | Qwen3.5 Plus          |
 | `opencode-go/qwen3.6-plus`      | Qwen3.6 Plus          |
 
+GLM-5.2 は 100万トークンのコンテキストウィンドウを使用し、最大 131K 出力トークンに対応します。
+
 ## はじめに
 
 <Tabs>
-  <Tab title="対話式">
+  <Tab title="Interactive">
     <Steps>
-      <Step title="オンボーディングを実行する">
+      <Step title="Run onboarding">
         ```bash
         openclaw onboard --auth-choice opencode-go
         ```
       </Step>
-      <Step title="Go モデルをデフォルトに設定する">
+      <Step title="Set a Go model as default">
         ```bash
         openclaw config set agents.defaults.model.primary "opencode-go/kimi-k2.6"
         ```
       </Step>
-      <Step title="モデルが利用可能であることを確認する">
+      <Step title="Verify models are available">
         ```bash
         openclaw models list --provider opencode-go
         ```
@@ -70,14 +74,14 @@ OpenClaw は Go カタログの大半の行をバンドル済みの pi モデル
     </Steps>
   </Tab>
 
-  <Tab title="非対話式">
+  <Tab title="Non-interactive">
     <Steps>
-      <Step title="キーを直接渡す">
+      <Step title="Pass the key directly">
         ```bash
         openclaw onboard --opencode-go-api-key "$OPENCODE_API_KEY"
         ```
       </Step>
-      <Step title="モデルが利用可能であることを確認する">
+      <Step title="Verify models are available">
         ```bash
         openclaw models list --provider opencode-go
         ```
@@ -86,7 +90,7 @@ OpenClaw は Go カタログの大半の行をバンドル済みの pi モデル
   </Tab>
 </Tabs>
 
-## config の例
+## 設定例
 
 ```json5
 {
@@ -98,31 +102,33 @@ OpenClaw は Go カタログの大半の行をバンドル済みの pi モデル
 ## 高度な設定
 
 <AccordionGroup>
-  <Accordion title="ルーティング動作">
-    モデル ref が `opencode-go/...` を使用している場合、OpenClaw はモデルごとのルーティングを自動的に処理します。追加の provider config は不要です。
+  <Accordion title="Routing behavior">
+    モデル参照が `opencode-go/...` を使用している場合、OpenClaw はモデルごとのルーティングを自動的に処理します。
+    追加のプロバイダー設定は不要です。
   </Accordion>
 
-  <Accordion title="ランタイム ref 規約">
-    ランタイム ref は明示的なままです: Zen は `opencode/...`、Go は `opencode-go/...`。
-    これにより、両方のカタログで上流のモデルごとのルーティングを正しく維持できます。
+  <Accordion title="Runtime ref convention">
+    ランタイム参照は明示的なままです。Zen には `opencode/...`、Go には `opencode-go/...` を使用します。
+    これにより、両方のカタログにわたってアップストリームのモデルごとのルーティングが正しく保たれます。
   </Accordion>
 
-  <Accordion title="共有認証情報">
-    同じ `OPENCODE_API_KEY` が Zen と Go の両方のカタログで使用されます。セットアップ中にキーを入力すると、両方のランタイム provider 用の認証情報が保存されます。
+  <Accordion title="Shared credentials">
+    同じ `OPENCODE_API_KEY` が Zen と Go の両方のカタログで使用されます。セットアップ中にキーを入力すると、
+    両方のランタイムプロバイダーの認証情報が保存されます。
   </Accordion>
 </AccordionGroup>
 
 <Tip>
-共有オンボーディングの概要と完全な Zen + Go カタログリファレンスについては、[OpenCode](/ja-JP/providers/opencode) を参照してください。
+共有オンボーディングの概要と Zen + Go カタログ参照全体については、[OpenCode](/ja-JP/providers/opencode) を参照してください。
 </Tip>
 
 ## 関連
 
 <CardGroup cols={2}>
-  <Card title="OpenCode (親)" href="/ja-JP/providers/opencode" icon="server">
-    共有オンボーディング、カタログ概要、高度な注記。
+  <Card title="OpenCode (parent)" href="/ja-JP/providers/opencode" icon="server">
+    共有オンボーディング、カタログ概要、高度なメモ。
   </Card>
-  <Card title="モデル選択" href="/ja-JP/concepts/model-providers" icon="layers">
-    provider、model ref、フェイルオーバー動作の選び方。
+  <Card title="Model selection" href="/ja-JP/concepts/model-providers" icon="layers">
+    プロバイダー、モデル参照、フェイルオーバー動作の選択。
   </Card>
 </CardGroup>

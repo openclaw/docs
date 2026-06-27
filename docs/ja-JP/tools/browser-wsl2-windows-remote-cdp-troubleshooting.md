@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7532c672f7e829b851d175d93354fc586baecea4af5f2555f57908780cedfd02
     source_path: tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 一般的な分割ホスト構成では、OpenClaw Gateway は WSL2 内で実行され、Chrome は Windows 上で実行され、ブラウザー制御は WSL2 と Windows の境界を越える必要があります。[issue #39369](https://github.com/openclaw/openclaw/issues/39369) の階層的な失敗パターンでは、複数の独立した問題が同時に現れることがあり、最初に間違った階層が壊れているように見えます。

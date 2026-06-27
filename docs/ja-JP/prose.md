@@ -1,50 +1,69 @@
 ---
 read_when:
-    - '`.prose` ワークフローを実行または作成したい場合'
-    - OpenProse Plugin を有効にしたい場合
-    - state ストレージを理解する必要がある場合
-summary: 'OpenProse: OpenClaw における `.prose` ワークフロー、スラッシュコマンド、state'
+    - .prose ワークフローファイルを実行または作成したい
+    - OpenProse Pluginを有効にする必要があります
+    - OpenProse が OpenClaw のプリミティブにどのように対応するかを理解する必要があります
+sidebarTitle: OpenProse
+summary: OpenProse は、マルチエージェント AI セッション向けの Markdown ファーストなワークフロー形式です。OpenClaw では、/prose スラッシュコマンドと skill pack を備えた plugin として提供されます。
 title: OpenProse
 x-i18n:
-    generated_at: "2026-04-24T05:13:28Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T12:38:46Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e1d6f3aa64c403daedaeaa2d7934b8474c0756fe09eed09efd1efeef62413e9e
+    source_hash: dde819215f99055c2a83ec32ed6e0700994654ca2d1d9c9dda98b71545f8a012
     source_path: prose.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenProse は、AI セッションをオーケストレーションするための、ポータブルで Markdown ファーストなワークフローフォーマットです。OpenClaw では、OpenProse Skill pack と `/prose` スラッシュコマンドをインストールする Plugin として提供されます。プログラムは `.prose` ファイル内にあり、明示的な制御フローで複数のサブエージェントを起動できます。
+OpenProse は、AI セッションをオーケストレーションするためのポータブルな Markdown ファーストのワークフロー形式です。OpenClaw では、OpenProse skill
+pack と `/prose` スラッシュコマンドをインストールする Plugin として提供されます。プログラムは `.prose` ファイルに置かれ、明示的な制御フローで複数のサブエージェントを起動できます。
 
-公式サイト: [https://www.prose.md](https://www.prose.md)
+<CardGroup cols={3}>
+  <Card title="インストール" icon="download" href="#install">
+    OpenProse Plugin を有効にし、Gateway を再起動します。
+  </Card>
+  <Card title="プログラムを実行" icon="play" href="#slash-command">
+    `/prose run` を使って `.prose` ファイルまたはリモートプログラムを実行します。
+  </Card>
+  <Card title="プログラムを書く" icon="pencil" href="#example">
+    並列ステップと順次ステップを使ってマルチエージェントワークフローを作成します。
+  </Card>
+</CardGroup>
 
-## できること
+## インストール
 
-- 明示的な並列性を持つマルチエージェント調査 + 統合。
-- 再現可能で承認安全なワークフロー（コードレビュー、インシデントトリアージ、コンテンツパイプライン）。
-- サポートされるエージェントランタイムをまたいで実行できる再利用可能な `.prose` プログラム。
+<Steps>
+  <Step title="Plugin を有効にする">
+    バンドル済み Plugin はデフォルトで無効です。OpenProse を有効にします。
 
-## インストール + 有効化
+    ```bash
+    openclaw plugins enable open-prose
+    ```
 
-bundled Plugins はデフォルトで無効です。OpenProse を有効化するには:
+  </Step>
+  <Step title="Gateway を再起動する">
+    ```bash
+    openclaw gateway restart
+    ```
+  </Step>
+  <Step title="検証する">
+    ```bash
+    openclaw plugins list | grep prose
+    ```
 
-```bash
-openclaw plugins enable open-prose
-```
+    `open-prose` が有効として表示されるはずです。`/prose` skill コマンドがチャットで利用可能になります。
 
-Plugin を有効化した後、Gateway を再起動してください。
+  </Step>
+</Steps>
 
-開発/ローカル checkout: `openclaw plugins install ./path/to/local/open-prose-plugin`
-
-関連ドキュメント: [Plugins](/ja-JP/tools/plugin), [Plugin manifest](/ja-JP/plugins/manifest), [Skills](/ja-JP/tools/skills)。
+ローカルチェックアウトの場合: `openclaw plugins install ./path/to/local/open-prose-plugin`
 
 ## スラッシュコマンド
 
-OpenProse は、ユーザーが呼び出せる Skill コマンドとして `/prose` を登録します。これは OpenProse VM 命令にルーティングされ、内部では OpenClaw tools を使います。
+OpenProse は `/prose` を、ユーザーが呼び出せる skill コマンドとして登録します。
 
-一般的なコマンド:
-
-```
+```text
 /prose help
 /prose run <file.prose>
 /prose run <handle/slug>
@@ -54,36 +73,63 @@ OpenProse は、ユーザーが呼び出せる Skill コマンドとして `/pro
 /prose update
 ```
 
-## 例: シンプルな `.prose` ファイル
+`/prose run <handle/slug>` は `https://p.prose.md/<handle>/<slug>` に解決されます。
+直接 URL は `web_fetch` ツールを使ってそのまま取得されます。
+
+トップレベルのリモート実行は明示的です。`.prose` プログラム内のリモートインポートは推移的なコード依存関係です。OpenProse がリモートの `use` ターゲットを取得する前に、解決済みインポート一覧を表示し、その実行についてオペレーターが正確に `approve remote prose imports` と返信することを要求します。
+
+## できること
+
+- 明示的な並列性を備えたマルチエージェントの調査と統合。
+- 繰り返し可能で承認安全なワークフロー（コードレビュー、インシデントトリアージ、コンテンツパイプライン）。
+- サポート対象のエージェントランタイム間で実行できる再利用可能な `.prose` プログラム。
+
+## 例: 並列調査と統合
 
 ```prose
-# 2 つのエージェントを並列実行する調査 + 統合。
+# Research + synthesis with two agents running in parallel.
 
-input topic: "何を調査すべきでしょうか？"
+input topic: "What should we research?"
 
 agent researcher:
   model: sonnet
-  prompt: "徹底的に調査し、出典を明記してください。"
+  prompt: "You research thoroughly and cite sources."
 
 agent writer:
   model: opus
-  prompt: "簡潔な要約を書いてください。"
+  prompt: "You write a concise summary."
 
 parallel:
   findings = session: researcher
-    prompt: "{topic} を調査してください。"
+    prompt: "Research {topic}."
   draft = session: writer
-    prompt: "{topic} を要約してください。"
+    prompt: "Summarize {topic}."
 
-session "findings と draft を統合して最終回答にしてください。"
+session "Merge the findings + draft into a final answer."
 context: { findings, draft }
 ```
 
-## ファイルの保存場所
+## OpenClaw ランタイムの対応
 
-OpenProse は workspace の `.prose/` 配下に state を保持します。
+OpenProse プログラムは OpenClaw プリミティブに対応します。
 
-```
+| OpenProse の概念         | OpenClaw ツール    |
+| ------------------------- | ---------------- |
+| セッション起動 / Task ツール | `sessions_spawn` |
+| ファイル読み取り / 書き込み         | `read` / `write` |
+| Web 取得                 | `web_fetch`      |
+
+<Warning>
+  ツール許可リストが `sessions_spawn`、`read`、`write`、または
+  `web_fetch` をブロックしている場合、OpenProse プログラムは失敗します。
+  [ツール許可リスト設定](/ja-JP/gateway/config-tools)を確認してください。
+</Warning>
+
+## ファイルの場所
+
+OpenProse はワークスペース内の `.prose/` に状態を保持します。
+
+```text
 .prose/
 ├── .env
 ├── runs/
@@ -95,50 +141,53 @@ OpenProse は workspace の `.prose/` 配下に state を保持します。
 └── agents/
 ```
 
-ユーザーレベルの永続エージェントは次に保存されます。
+ユーザーレベルの永続エージェントは次に配置されます。
 
-```
+```text
 ~/.prose/agents/
 ```
 
-## State モード
+## 状態バックエンド
 
-OpenProse は複数の state backend をサポートします。
+<AccordionGroup>
+  <Accordion title="filesystem（デフォルト）">
+    状態はワークスペース内の `.prose/runs/...` に書き込まれます。追加の依存関係は不要です。
+  </Accordion>
+  <Accordion title="in-context">
+    コンテキストウィンドウ内に保持される一時的な状態です。小規模で短命なプログラムに適しています。
+  </Accordion>
+  <Accordion title="sqlite（実験的）">
+    `PATH` 上に `sqlite3` バイナリが必要です。
+  </Accordion>
+  <Accordion title="postgres（実験的）">
+    `psql` と接続文字列が必要です。
 
-- **filesystem**（デフォルト）: `.prose/runs/...`
-- **in-context**: 小さなプログラム向けの一時的なもの
-- **sqlite**（実験的）: `sqlite3` バイナリが必要
-- **postgres**（実験的）: `psql` と接続文字列が必要
+    <Warning>
+      Postgres 認証情報はサブエージェントのログに流れます。専用の最小権限データベースを使用してください。
+    </Warning>
 
-注意:
+  </Accordion>
+</AccordionGroup>
 
-- sqlite/postgres はオプトインで、実験的です。
-- postgres 認証情報はサブエージェントログへ流れ込みます。専用の、最小権限の DB を使ってください。
+## セキュリティ
 
-## リモートプログラム
-
-`/prose run <handle/slug>` は `https://p.prose.md/<handle>/<slug>` に解決されます。
-直接 URL はそのまま取得されます。これは `web_fetch` tool（または POST では `exec`）を使います。
-
-## OpenClaw ランタイムへのマッピング
-
-OpenProse プログラムは OpenClaw のプリミティブにマッピングされます。
-
-| OpenProse の概念           | OpenClaw tool    |
-| -------------------------- | ---------------- |
-| セッション起動 / Task tool | `sessions_spawn` |
-| ファイル読み書き           | `read` / `write` |
-| Web 取得                   | `web_fetch`      |
-
-tool allowlist がこれらの tools をブロックしている場合、OpenProse プログラムは失敗します。[Skills config](/ja-JP/tools/skills-config) を参照してください。
-
-## セキュリティ + 承認
-
-`.prose` ファイルはコードとして扱ってください。実行前に確認してください。副作用を制御するには、OpenClaw の tool allowlist と承認ゲートを使ってください。
-
-決定論的で承認ゲート付きのワークフローについては、[Lobster](/ja-JP/tools/lobster) と比較してください。
+`.prose` ファイルはコードのように扱ってください。リモートの `use` インポートを含め、実行前にレビューしてください。トップレベルの `/prose run https://...` リクエストは明示的ですが、推移的なリモートインポートは、取得または実行される前に実行ごとの承認が必要です。OpenClaw のツール許可リストと承認ゲートを使って副作用を制御してください。決定論的で承認ゲート付きのワークフローについては、[Lobster](/ja-JP/tools/lobster) と比較してください。
 
 ## 関連
 
-- [Text-to-speech](/ja-JP/tools/tts)
-- [Markdown formatting](/ja-JP/concepts/markdown-formatting)
+<CardGroup cols={2}>
+  <Card title="Skills リファレンス" href="/ja-JP/tools/skills" icon="puzzle-piece">
+    OpenProse の skill pack がどのように読み込まれ、どのゲートが適用されるか。
+  </Card>
+  <Card title="サブエージェント" href="/ja-JP/tools/subagents" icon="users">
+    OpenClaw のネイティブなマルチエージェント調整レイヤー。
+  </Card>
+  <Card title="テキスト読み上げ" href="/ja-JP/tools/tts" icon="volume-high">
+    ワークフローに音声出力を追加します。
+  </Card>
+  <Card title="スラッシュコマンド" href="/ja-JP/tools/slash-commands" icon="terminal">
+    /prose を含む、利用可能なすべてのチャットコマンド。
+  </Card>
+</CardGroup>
+
+公式サイト: [https://www.prose.md](https://www.prose.md)

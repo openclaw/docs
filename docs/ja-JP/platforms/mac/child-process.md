@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 543327024f8c635d74ac656923e8e745dc47ca9df0aba5ec51215bd186db2b35
     source_path: platforms/mac/child-process.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 macOS アプリはデフォルトで **launchd 経由で Gateway を管理**し、Gateway を子プロセスとして生成しません。まず、設定済みポートで既に実行中の Gateway への接続を試みます。到達可能なものがない場合は、外部の `openclaw` CLI（埋め込みランタイムなし）を介して launchd サービスを有効にします。これにより、ログイン時の信頼性の高い自動起動と、クラッシュ時の再起動が得られます。

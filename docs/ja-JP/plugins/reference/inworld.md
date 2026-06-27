@@ -1,29 +1,30 @@
 ---
 read_when:
     - inworld Pluginをインストール、設定、または監査しています
-summary: Inworldのストリーミングテキスト読み上げ（MP3、OGG_OPUS、PCM電話音声）。
-title: Inworld Plugin
+summary: Inworld ストリーミングテキスト読み上げ（MP3、OGG_OPUS、PCM テレフォニー）。
+title: Inworld プラグイン
 x-i18n:
-    generated_at: "2026-05-02T20:58:09Z"
+    generated_at: "2026-06-27T12:25:00Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1ad17b02d9c3adb00baf596dbecf5d59f5910688dac76675050e7d0687f09e0c
+    source_hash: 02d912c51460e181e100bc227575cafd1ab3c49494057d2df1e26571000020a8
     source_path: plugins/reference/inworld.md
     workflow: 16
 ---
 
-# Inworld Plugin
+# Inworld プラグイン
 
-Inworld のストリーミングテキスト読み上げ（MP3、OGG_OPUS、PCM テレフォニー）。
+Inworld のストリーミングテキスト読み上げ（MP3、OGG_OPUS、PCM 電話音声）。
 
 ## 配布
 
 - パッケージ: `@openclaw/inworld-speech`
-- インストール経路: OpenClaw に含まれています
+- インストール経路: npm; ClawHub: `clawhub:@openclaw/inworld-speech`
 
 ## サーフェス
 
-contracts: speechProviders
+コントラクト: speechProviders
 
 ## 関連ドキュメント
 

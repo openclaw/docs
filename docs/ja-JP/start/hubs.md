@@ -1,13 +1,14 @@
 ---
 read_when:
-    - ドキュメント全体の完全なマップが必要です
-summary: すべての OpenClaw ドキュメントにリンクするハブ
+    - ドキュメントの完全な一覧が必要な場合
+summary: すべての OpenClaw ドキュメントへリンクするハブ
 title: ドキュメントハブ
 x-i18n:
-    generated_at: "2026-05-12T00:59:21Z"
+    generated_at: "2026-06-27T13:05:07Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f4675773105bbff55e1f38c8449d688dcefc6ad70d9f5e572193f1e0c638e243
+    source_hash: d7d3f089e2caea1e1487c7c0375c62dfb007db05827a77d4e5616839023b9457
     source_path: start/hubs.md
     workflow: 16
 ---
@@ -32,7 +33,7 @@ OpenClaw が初めての場合は、[はじめに](/ja-JP/start/getting-started)
 - [設定例](/ja-JP/gateway/configuration-examples)
 - [OpenClaw アシスタント](/ja-JP/start/openclaw)
 - [ショーケース](/ja-JP/start/showcase)
-- [Lore](/ja-JP/start/lore)
+- [ロア](/ja-JP/start/lore)
 
 ## インストール + 更新
 
@@ -50,7 +51,7 @@ OpenClaw が初めての場合は、[はじめに](/ja-JP/start/getting-started)
 - [エージェントワークスペース](/ja-JP/concepts/agent-workspace)
 - [メモリ](/ja-JP/concepts/memory)
 - [エージェントループ](/ja-JP/concepts/agent-loop)
-- [ストリーミング + チャンク化](/ja-JP/concepts/streaming)
+- [ストリーミング + チャンク分割](/ja-JP/concepts/streaming)
 - [マルチエージェントルーティング](/ja-JP/concepts/multi-agent)
 - [Compaction](/ja-JP/concepts/compaction)
 - [セッション](/ja-JP/concepts/session)
@@ -70,7 +71,7 @@ OpenClaw が初めての場合は、[はじめに](/ja-JP/start/getting-started)
 - [モデルフェイルオーバー](/ja-JP/concepts/model-failover)
 - [OAuth](/ja-JP/concepts/oauth)
 
-## プロバイダー + イングレス
+## プロバイダー + 入口
 
 - [チャットチャネルハブ](/ja-JP/channels)
 - [モデルプロバイダーハブ](/ja-JP/providers/models)
@@ -89,7 +90,7 @@ OpenClaw が初めての場合は、[はじめに](/ja-JP/start/getting-started)
 
 ## Gateway + 運用
 
-- [Gateway ランブック](/ja-JP/gateway)
+- [Gateway 運用手順](/ja-JP/gateway)
 - [ネットワークモデル](/ja-JP/network#core-model)
 - [Gateway ペアリング](/ja-JP/gateway/pairing)
 - [Gateway ロック](/ja-JP/gateway/gateway-lock)
@@ -97,7 +98,7 @@ OpenClaw が初めての場合は、[はじめに](/ja-JP/start/getting-started)
 - [ヘルス](/ja-JP/gateway/health)
 - [Heartbeat](/ja-JP/gateway/heartbeat)
 - [Doctor](/ja-JP/gateway/doctor)
-- [ロギング](/ja-JP/gateway/logging)
+- [ログ記録](/ja-JP/gateway/logging)
 - [サンドボックス化](/ja-JP/gateway/sandboxing)
 - [ダッシュボード](/ja-JP/web/dashboard)
 - [コントロール UI](/ja-JP/web/control-ui)
@@ -142,7 +143,7 @@ OpenClaw が初めての場合は、[はじめに](/ja-JP/start/getting-started)
 - [macOS](/ja-JP/platforms/macos)
 - [iOS](/ja-JP/platforms/ios)
 - [Android](/ja-JP/platforms/android)
-- [Windows (WSL2)](/ja-JP/platforms/windows)
+- [Windows ハブ](/ja-JP/platforms/windows)
 - [Linux](/ja-JP/platforms/linux)
 - [Web サーフェス](/ja-JP/web)
 
@@ -157,7 +158,7 @@ OpenClaw が初めての場合は、[はじめに](/ja-JP/start/getting-started)
 - [macOS 子プロセス](/ja-JP/platforms/mac/child-process)
 - [macOS ヘルス](/ja-JP/platforms/mac/health)
 - [macOS アイコン](/ja-JP/platforms/mac/icon)
-- [macOS ロギング](/ja-JP/platforms/mac/logging)
+- [macOS ログ記録](/ja-JP/platforms/mac/logging)
 - [macOS 権限](/ja-JP/platforms/mac/permissions)
 - [macOS リモート](/ja-JP/platforms/mac/remote)
 - [macOS 署名](/ja-JP/platforms/mac/signing)
@@ -175,7 +176,7 @@ OpenClaw が初めての場合は、[はじめに](/ja-JP/start/getting-started)
 - [エージェントツール](/ja-JP/plugins/building-plugins#registering-agent-tools)
 - [Plugin バンドル](/ja-JP/plugins/bundles)
 - [ClawHub](/ja-JP/clawhub)
-- [ケイパビリティクックブック](/ja-JP/plugins/adding-capabilities)
+- [Capability クックブック](/ja-JP/plugins/adding-capabilities)
 - [音声通話 Plugin](/ja-JP/plugins/voice-call)
 - [Zalo ユーザー Plugin](/ja-JP/plugins/zalouser)
 

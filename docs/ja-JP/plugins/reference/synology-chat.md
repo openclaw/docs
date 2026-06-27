@@ -1,20 +1,21 @@
 ---
 read_when:
     - synology-chat Plugin をインストール、設定、または監査している
-summary: OpenClaw メッセージを送受信するための Synology Chat チャネルサーフェスを追加します。
+summary: OpenClaw チャネルとダイレクトメッセージ向けの Synology Chat チャネルPlugin。
 title: Synology Chat Plugin
 x-i18n:
-    generated_at: "2026-05-03T05:03:51Z"
+    generated_at: "2026-06-27T12:28:54Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 545eb93ad56c25e1261a0840747a494915a04773636fc14424d9e83395b4f663
+    source_hash: 13caa3939ae9abbf11f95a0578e9fcf79f280c54953bcde76a28383afa43c404
     source_path: plugins/reference/synology-chat.md
     workflow: 16
 ---
 
 # Synology Chat Plugin
 
-Synology Chat チャンネルサーフェスを追加し、OpenClaw メッセージの送受信を可能にします。
+OpenClaw チャンネルとダイレクトメッセージ向けの Synology Chat チャンネルPlugin。
 
 ## 配布
 

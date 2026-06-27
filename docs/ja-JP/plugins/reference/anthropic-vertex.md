@@ -1,26 +1,37 @@
 ---
 read_when:
-    - anthropic-vertex Pluginをインストール、設定、または監査しています
-summary: OpenClaw に Anthropic Vertex モデルプロバイダー対応を追加します。
-title: Anthropic Vertex プラグイン
+    - anthropic-vertex pluginをインストール、設定、または監査している
+summary: Google Vertex AI 上の Claude モデル用 OpenClaw Anthropic Vertex プロバイダー Plugin。
+title: Anthropic Vertex Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:54:24Z"
+    generated_at: "2026-06-27T12:21:39Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: fc2c2f3f5d872d55270e494fb4d68a41ac96edec9eb311a12ab47905a14b668e
+    source_hash: f772c9a5bf1edd6a270b7ba5e6d695290fe96648c9ac38d0bc90bb1504f50cd7
     source_path: plugins/reference/anthropic-vertex.md
     workflow: 16
 ---
 
-# Anthropic Vertex plugin
+# Anthropic Vertex Plugin
 
-OpenClaw に Anthropic Vertex モデルプロバイダーサポートを追加します。
+Google Vertex AI 上の Claude モデル向け OpenClaw Anthropic Vertex プロバイダー Plugin。
 
 ## 配布
 
 - パッケージ: `@openclaw/anthropic-vertex-provider`
-- インストール経路: OpenClaw に同梱
+- インストール経路: npm; ClawHub
 
 ## サーフェス
 
 providers: anthropic-vertex
+
+<!-- openclaw-plugin-reference:manual-start -->
+
+## Claude Fable 5
+
+Google Cloud リージョンでモデルが利用可能な場合は、`anthropic-vertex/claude-fable-5` を使用します。
+Fable 5 は常に適応的思考を使用し、デフォルトで `high` effort になります。`/think off` と
+`/think minimal` は、このモデルが思考の無効化をサポートしていないため、`low` effort を使用します。
+
+<!-- openclaw-plugin-reference:manual-end -->

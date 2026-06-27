@@ -1,29 +1,30 @@
 ---
 read_when:
-    - amazon-bedrock Pluginをインストール、設定、または監査しています
-summary: OpenClaw に Amazon Bedrock モデルプロバイダーのサポートを追加します。
+    - amazon-bedrock Pluginのインストール、設定、または監査を行っている
+summary: OpenClaw Amazon Bedrock プロバイダー Plugin。モデル検出、埋め込み、ガードレールをサポートします。
 title: Amazon Bedrock Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:54:20Z"
+    generated_at: "2026-06-27T12:21:40Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 001ec686133a9f6b17c8074bf6710c11ad92679d7badb08a8bef51272c40308d
+    source_hash: bf39e0d58332cd057e8f050dc1a8742c219b62182381a7f47856e3a657b80f03
     source_path: plugins/reference/amazon-bedrock.md
     workflow: 16
 ---
 
-# Amazon Bedrock plugin
+# Amazon Bedrock Plugin
 
-Amazon Bedrock モデルプロバイダー対応を OpenClaw に追加します。
+モデル検出、埋め込み、ガードレールサポートを備えた OpenClaw Amazon Bedrock プロバイダーPlugin。
 
 ## 配布
 
 - パッケージ: `@openclaw/amazon-bedrock-provider`
-- インストール経路: OpenClaw に含まれます
+- インストール経路: npm; ClawHub
 
-## Surface
+## サーフェス
 
-providers: amazon-bedrock; contracts: memoryEmbeddingProviders
+プロバイダー: amazon-bedrock; コントラクト: memoryEmbeddingProviders
 
 ## 関連ドキュメント
 

@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 93383c01d5a5e1e1d412d396ec1def12f388fc7c5da102573373dbc8180497a3
     source_path: plugins/reference/deepgram.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Deepgram Plugin

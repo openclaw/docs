@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 803557a4fc92056c63053a3388100a451b2d85d4e892877707b3c2e3a677c0b0
     source_path: channels/wechat.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClawは、Tencentの外部`@tencent-weixin/openclaw-weixin`チャネルPluginを通じてWeChatに接続します。

@@ -1,26 +1,27 @@
 ---
 read_when:
-    - openshell Plugin をインストール、構成、または監査しています
-summary: ミラーリングされたローカルワークスペースと SSH ベースのコマンド実行を備えた、OpenShell 搭載のサンドボックスバックエンド。
+    - openshell Pluginをインストール、設定、または監査している
+summary: NVIDIA OpenShell CLI 向けの OpenClaw サンドボックスバックエンド。ミラーされたローカルワークスペースと SSH コマンド実行に対応します。
 title: Openshell Plugin
 x-i18n:
-    generated_at: "2026-05-02T21:00:44Z"
+    generated_at: "2026-06-27T12:27:10Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c27c54061615e9765181cc1867109c993614266421ee584df95f04c44b5be735
+    source_hash: f97a099c465df22c0dfd7a68907c1a75c99ca301ad016ceb1be46c81376793f8
     source_path: plugins/reference/openshell.md
     workflow: 16
 ---
 
-# Openshell Plugin
+# Openshell プラグイン
 
-OpenShell を利用し、ミラーされたローカルワークスペースと SSH ベースのコマンド実行を備えたサンドボックスバックエンド。
+ミラーリングされたローカルワークスペースと SSH コマンド実行を備えた、NVIDIA OpenShell CLI 用の OpenClaw サンドボックスバックエンド。
 
 ## 配布
 
 - パッケージ: `@openclaw/openshell-sandbox`
-- インストール経路: OpenClaw に含まれる
+- インストール経路: npm; ClawHub
 
 ## サーフェス
 
-Plugin
+プラグイン

@@ -1,20 +1,21 @@
 ---
 read_when:
-    - lobster Plugin のインストール、設定、または監査を行っています
-summary: 再開可能な承認に対応した型付きワークフローツール。
-title: ロブスター Plugin
+    - lobster Plugin をインストール、設定、または監査している
+summary: 型付きパイプラインと再開可能な承認のための Lobster ワークフローツール Plugin。
+title: Lobster プラグイン
 x-i18n:
-    generated_at: "2026-05-03T05:03:10Z"
+    generated_at: "2026-06-27T12:26:00Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 50b4849c8ea841a543655eead358c550f223a3100ac538b41c27f59706e6cf27
+    source_hash: b91ea189fe8339380e2a7ef8a8761ea1591e1f1d8459b4a554211128c33f338b
     source_path: plugins/reference/lobster.md
     workflow: 16
 ---
 
-# Lobster Plugin
+# Lobster plugin
 
-再開可能な承認を備えた型付きワークフローツール。
+型付きパイプラインと再開可能な承認のための Lobster ワークフローツール Plugin。
 
 ## 配布
 
@@ -23,4 +24,4 @@ x-i18n:
 
 ## サーフェス
 
-コントラクト: tools
+契約: ツール

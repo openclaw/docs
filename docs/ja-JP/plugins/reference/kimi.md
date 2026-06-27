@@ -1,29 +1,30 @@
 ---
 read_when:
     - kimi Plugin をインストール、設定、または監査している
-summary: OpenClaw に Kimi および Kimi Coding モデルプロバイダーのサポートを追加します。
-title: Kimi プラグイン
+summary: Kimi、Kimi CodingモデルプロバイダーのサポートをOpenClawに追加します。
+title: Kimi Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:58:26Z"
+    generated_at: "2026-06-27T12:25:27Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ccfc557ee819deb906b3509febbefcd7879754561c17632b8e544cc8b3b5443e
+    source_hash: 6f609f6e21b493ea83e5cc34a28921be2fed3334b531194050257857a06ef259
     source_path: plugins/reference/kimi.md
     workflow: 16
 ---
 
 # Kimi Plugin
 
-Kimi、Kimi Coding モデルプロバイダー対応を OpenClaw に追加します。
+OpenClaw に Kimi、Kimi Coding モデルプロバイダーのサポートを追加します。
 
 ## 配布
 
 - パッケージ: `@openclaw/kimi-provider`
-- インストール経路: OpenClaw に含まれています
+- インストール経路: npm; ClawHub: `clawhub:@openclaw/kimi-provider`
 
 ## サーフェス
 
-providers: kimi, kimi-coding
+プロバイダー: kimi, kimi-coding
 
 ## 関連ドキュメント
 

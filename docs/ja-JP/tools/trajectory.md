@@ -1,32 +1,38 @@
 ---
 read_when:
-    - エージェントが特定の方法で応答した、失敗した、またはツールを呼び出した理由のデバッグ
-    - OpenClaw セッションのサポートバンドルをエクスポートする
-    - プロンプトコンテキスト、ツール呼び出し、ランタイムエラー、使用状況メタデータの調査
+    - エージェントがなぜ特定の方法で回答、失敗、またはツール呼び出しを行ったのかをデバッグする
+    - OpenClaw セッションのサポートバンドルのエクスポート
+    - プロンプトコンテキスト、ツール呼び出し、ランタイムエラー、または使用状況メタデータの調査
     - 軌跡キャプチャの無効化または移動
-summary: OpenClaw エージェントセッションのデバッグ用に、秘匿化済みの軌跡バンドルをエクスポートする
+summary: OpenClaw エージェントセッションのデバッグ用に秘匿化済み軌跡バンドルをエクスポートする
 title: 軌跡バンドル
 x-i18n:
-    generated_at: "2026-05-04T09:37:17Z"
+    generated_at: "2026-06-27T13:21:13Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b8b1256e52d27185a48ceddaf7937b4f37ad6d57d075fea0d0b6d3abb871f1d8
+    source_hash: bf48616c29a1055f26d39a88869c025db7e6261b13dcaa0cd35be438c6a86a88
     source_path: tools/trajectory.md
     workflow: 16
 ---
 
-Trajectory キャプチャは、OpenClaw のセッションごとのフライトレコーダーです。各エージェント実行の構造化されたタイムラインを記録し、その後 `/export-trajectory` が現在のセッションを秘匿化されたサポートバンドルにパッケージ化します。
+Trajectory capture は OpenClaw のセッション単位のフライトレコーダーです。各 agent 実行の
+構造化タイムラインを記録し、その後 `/export-trajectory` が現在のセッションを
+秘匿化されたサポートバンドルにパッケージ化します。
 
 次のような質問に答える必要がある場合に使用します。
 
-- どのプロンプト、システムプロンプト、ツールがモデルに送信されたか。
-- どのトランスクリプトメッセージとツール呼び出しがこの回答につながったか。
-- 実行はタイムアウト、中止、Compaction、またはプロバイダーエラーに到達したか。
-- どのモデル、Plugin、Skills、ランタイム設定が有効だったか。
-- プロバイダーはどの使用量とプロンプトキャッシュメタデータを返したか。
+- どのプロンプト、システムプロンプト、ツールがモデルに送信されたか？
+- どの transcript メッセージとツール呼び出しがこの回答につながったか？
+- 実行はタイムアウト、中止、Compaction、または provider エラーに到達したか？
+- どのモデル、Plugin、Skills、ランタイム設定が有効だったか？
+- provider はどの使用量とプロンプトキャッシュのメタデータを返したか？
 
-ライブ Gateway の問題について広範なサポートレポートを提出する場合は、まず
-[`/diagnostics`](/ja-JP/gateway/diagnostics#chat-command) から始めてください。Diagnostics はサニタイズ済みの Gateway バンドルを収集し、OpenAI Codex ハーネスセッションでは、承認後に Codex フィードバックを OpenAI サーバーへ送信することもできます。セッションごとの詳細なプロンプト、ツール、トランスクリプトのタイムラインが特に必要な場合は `/export-trajectory` を使用してください。
+ライブ Gateway の問題について広範なサポートレポートを提出する場合は、
+[`/diagnostics`](/ja-JP/gateway/diagnostics#chat-command) から始めてください。Diagnostics は
+サニタイズ済みの Gateway バンドルを収集し、OpenAI Codex harness セッションでは、承認後に
+Codex feedback を OpenAI サーバーへ送信することもできます。セッション単位の詳細なプロンプト、
+ツール、transcript タイムラインが特に必要な場合は `/export-trajectory` を使用してください。
 
 ## クイックスタート
 
@@ -42,7 +48,7 @@ Trajectory キャプチャは、OpenClaw のセッションごとのフライト
 /trajectory
 ```
 
-OpenClaw はワークスペース配下にバンドルを書き込みます。
+OpenClaw はワークスペースの下にバンドルを書き込みます。
 
 ```text
 .openclaw/trajectory-exports/openclaw-trajectory-<session>-<timestamp>/
@@ -54,9 +60,14 @@ OpenClaw はワークスペース配下にバンドルを書き込みます。
 /export-trajectory bug-1234
 ```
 
-カスタムパスは `.openclaw/trajectory-exports/` の内部で解決されます。絶対パスと `~` パスは拒否されます。
+カスタムパスは `.openclaw/trajectory-exports/` 内で解決されます。絶対パスと
+`~` パスは拒否されます。
 
-Trajectory バンドルには、プロンプト、モデルメッセージ、ツールスキーマ、ツール結果、ランタイムイベント、ローカルパスを含めることができます。そのため、チャットのスラッシュコマンドは毎回 exec 承認を通ります。バンドルを作成する意図がある場合に一度エクスポートを承認してください。allow-all は使用しないでください。グループチャットでは、OpenClaw は trajectory の詳細を共有ルームに投稿し返すのではなく、承認プロンプトとエクスポート結果を所有者に非公開で送信します。
+Trajectory バンドルには、プロンプト、モデルメッセージ、ツールスキーマ、ツール結果、
+ランタイムイベント、ローカルパスが含まれる場合があります。そのため、チャットの slash command は
+毎回 exec 承認を通ります。バンドルを作成する意図がある場合に一度だけエクスポートを承認し、
+allow-all は使用しないでください。グループチャットでは、OpenClaw は trajectory の詳細を
+共有ルームに投稿し返すのではなく、承認プロンプトとエクスポート結果を owner に非公開で送信します。
 
 ローカル確認やサポートワークフローでは、承認済みコマンドパスを直接実行することもできます。
 
@@ -66,27 +77,28 @@ openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:12
 
 ## アクセス
 
-Trajectory エクスポートは所有者コマンドです。送信者は、そのチャンネルの通常のコマンド認可チェックと所有者チェックに合格する必要があります。
+Trajectory export は owner コマンドです。送信者は、そのチャネルの通常のコマンド認可チェックと
+owner チェックを通過する必要があります。
 
 ## 記録される内容
 
-Trajectory キャプチャは、OpenClaw エージェント実行でデフォルトで有効です。
+Trajectory capture は OpenClaw agent 実行でデフォルトで有効です。
 
-ランタイムイベントには次が含まれます。
+ランタイムイベントには以下が含まれます。
 
 - `session.started`
 - `trace.metadata`
 - `context.compiled`
 - `prompt.submitted`
-- `model.fallback_step`。ソースモデル、次のモデル、失敗理由/詳細、チェーン内の位置、fallback が進んだか、成功したか、チェーンを使い切ったかを含みます
+- `model.fallback_step`。ソースモデル、次のモデル、失敗理由/詳細、チェーン内の位置、fallback が進行したか、成功したか、またはチェーンを使い切ったかを含む
 - `model.completed`
 - `trace.artifacts`
 - `session.ended`
 
-トランスクリプトイベントも、アクティブなセッションブランチから再構築されます。
+Transcript イベントもアクティブなセッションブランチから再構築されます。
 
 - ユーザーメッセージ
-- アシスタントメッセージ
+- assistant メッセージ
 - ツール呼び出し
 - ツール結果
 - Compaction
@@ -104,22 +116,23 @@ Trajectory キャプチャは、OpenClaw エージェント実行でデフォル
 
 ## バンドルファイル
 
-エクスポートされたバンドルには次を含めることができます。
+エクスポートされたバンドルには以下を含めることができます。
 
 | ファイル              | 内容                                                                                           |
 | --------------------- | ---------------------------------------------------------------------------------------------- |
 | `manifest.json`       | バンドルスキーマ、ソースファイル、イベント数、生成されたファイル一覧                          |
-| `events.jsonl`        | 順序付きのランタイムとトランスクリプトのタイムライン                                           |
-| `session-branch.json` | 秘匿化されたアクティブトランスクリプトブランチとセッションヘッダー                             |
+| `events.jsonl`        | 順序付けされたランタイムと transcript のタイムライン                                           |
+| `session-branch.json` | 秘匿化されたアクティブな transcript ブランチとセッションヘッダー                               |
 | `metadata.json`       | OpenClaw バージョン、OS/ランタイム、モデル、設定スナップショット、Plugin、Skills、プロンプトメタデータ |
-| `artifacts.json`      | 最終ステータス、エラー、使用量、プロンプトキャッシュ、Compaction 数、アシスタントテキスト、ツールメタデータ |
-| `prompts.json`        | 送信されたプロンプトと選択されたプロンプト構築の詳細                                           |
-| `system-prompt.txt`   | キャプチャされた場合の最新のコンパイル済みシステムプロンプト                                  |
-| `tools.json`          | キャプチャされた場合のモデルに送信されたツール定義                                             |
+| `artifacts.json`      | 最終ステータス、エラー、使用量、プロンプトキャッシュ、Compaction 数、assistant テキスト、ツールメタデータ |
+| `prompts.json`        | 送信されたプロンプトと、選択されたプロンプト構築の詳細                                        |
+| `system-prompt.txt`   | 取得された場合の、最新のコンパイル済みシステムプロンプト                                      |
+| `tools.json`          | 取得された場合の、モデルに送信されたツール定義                                                |
 
-`manifest.json` は、そのバンドルに存在するファイルを列挙します。セッションが対応するランタイムデータをキャプチャしなかった場合、一部のファイルは省略されます。
+`manifest.json` は、そのバンドル内に存在するファイルを一覧化します。セッションが対応する
+ランタイムデータを取得していなかった場合、一部のファイルは省略されます。
 
-## キャプチャ場所
+## 取得場所
 
 デフォルトでは、ランタイム trajectory イベントはセッションファイルの横に書き込まれます。
 
@@ -127,13 +140,13 @@ Trajectory キャプチャは、OpenClaw エージェント実行でデフォル
 <session>.trajectory.jsonl
 ```
 
-OpenClaw は、ベストエフォートのポインターファイルもセッションの横に書き込みます。
+OpenClaw はセッションの横にベストエフォートのポインターファイルも書き込みます。
 
 ```text
 <session>.trajectory-path.json
 ```
 
-ランタイム trajectory サイドカーを専用ディレクトリに保存するには、`OPENCLAW_TRAJECTORY_DIR` を設定します。
+`OPENCLAW_TRAJECTORY_DIR` を設定すると、ランタイム trajectory sidecar を専用ディレクトリに保存できます。
 
 ```bash
 export OPENCLAW_TRAJECTORY_DIR=/var/lib/openclaw/trajectories
@@ -141,57 +154,76 @@ export OPENCLAW_TRAJECTORY_DIR=/var/lib/openclaw/trajectories
 
 この変数が設定されている場合、OpenClaw はそのディレクトリにセッション ID ごとに 1 つの JSONL ファイルを書き込みます。
 
-セッションメンテナンスは、所有するセッションエントリがプルーニング、上限適用、またはセッションのディスク予算によって退避されたときに、trajectory サイドカーを削除します。セッションディレクトリ外のランタイムファイルは、ポインターターゲットがそのセッションに属していることをまだ証明できる場合にのみ削除されます。
+Session maintenance は、所有するセッションエントリが sessions ディスク予算によって prune、cap、または evict された場合に trajectory sidecar を削除します。sessions ディレクトリ外のランタイムファイルは、ポインターのターゲットがそのセッションに属していることをまだ証明できる場合にのみ削除されます。
 
-## キャプチャを無効にする
+## 取得を無効にする
 
-OpenClaw を開始する前に `OPENCLAW_TRAJECTORY=0` を設定します。
+OpenClaw を起動する前に `OPENCLAW_TRAJECTORY=0` を設定します。
 
 ```bash
 export OPENCLAW_TRAJECTORY=0
 ```
 
-これにより、ランタイム trajectory キャプチャが無効になります。`/export-trajectory` は引き続きトランスクリプトブランチをエクスポートできますが、コンパイル済みコンテキスト、プロバイダーアーティファクト、プロンプトメタデータなどのランタイム専用ファイルは欠落する場合があります。
+これによりランタイム trajectory capture が無効になります。`/export-trajectory` は引き続き
+transcript ブランチをエクスポートできますが、コンパイル済みコンテキスト、provider artifacts、
+プロンプトメタデータなど、ランタイム専用ファイルが欠落する場合があります。
+
+## flush タイムアウトを調整する
+
+OpenClaw は agent cleanup 中にランタイム trajectory sidecar を flush します。デフォルトの
+cleanup タイムアウトは 10,000 ms です。低速ディスクや大きなストアでは、OpenClaw を起動する前に
+`OPENCLAW_TRAJECTORY_FLUSH_TIMEOUT_MS` を設定します。
+
+```bash
+export OPENCLAW_TRAJECTORY_FLUSH_TIMEOUT_MS=30000
+```
+
+これは、OpenClaw が `openclaw-trajectory-flush` タイムアウトをログに記録して続行するタイミングを制御します。
+trajectory のサイズ上限は変更しません。明示的なタイムアウトを渡さないすべての agent cleanup ステップを調整するには、
+`OPENCLAW_AGENT_CLEANUP_TIMEOUT_MS` を設定します。
 
 ## プライバシーと制限
 
-Trajectory バンドルはサポートとデバッグ向けに設計されており、公開投稿向けではありません。OpenClaw は、エクスポートファイルを書き込む前に機密値を秘匿化します。
+Trajectory バンドルはサポートとデバッグ向けに設計されており、公開投稿向けではありません。
+OpenClaw はエクスポートファイルを書き込む前に機密値を秘匿化します。
 
-- 認証情報と既知のシークレットらしいペイロードフィールド
+- 認証情報と既知の secret らしい payload フィールド
 - 画像データ
-- ローカル状態パス
-- ワークスペースパス。`$WORKSPACE_DIR` に置き換えられます
-- 検出された場合のホームディレクトリパス
+- ローカル state パス
+- workspace パス。`$WORKSPACE_DIR` に置換される
+- home ディレクトリパス。検出された場合
 
-エクスポーターは入力サイズにも上限を設けます。
+exporter は入力サイズも制限します。
 
-- ランタイムサイドカーファイル: ライブキャプチャは 10 MiB で停止し、容量が残っている場合は切り詰めイベントを記録します。エクスポートは既存のランタイムサイドカーを最大 50 MiB まで受け入れます
+- ランタイム sidecar ファイル: live capture は 10 MiB で停止し、空きが残っている場合は切り詰めイベントを記録します。export は既存のランタイム sidecar を最大 50 MiB まで受け付けます
 - セッションファイル: 50 MiB
 - ランタイムイベント: 200,000
-- エクスポートされるイベント総数: 250,000
+- エクスポートされるイベント合計: 250,000
 - 個々のランタイムイベント行は 256 KiB を超えると切り詰められます
 
-チーム外に共有する前に、バンドルを確認してください。秘匿化はベストエフォートであり、アプリケーション固有のすべてのシークレットを把握することはできません。
+チーム外に共有する前に、バンドルを確認してください。秘匿化はベストエフォートであり、
+アプリケーション固有のすべての secret を把握することはできません。
 
 ## トラブルシューティング
 
 エクスポートにランタイムイベントがない場合:
 
-- OpenClaw が `OPENCLAW_TRAJECTORY=0` なしで開始されたことを確認します
-- `OPENCLAW_TRAJECTORY_DIR` が書き込み可能なディレクトリを指しているか確認します
-- セッション内で別のメッセージを実行してから、再度エクスポートします
-- `manifest.json` の `runtimeEventCount` を確認します
+- OpenClaw が `OPENCLAW_TRAJECTORY=0` なしで起動されたことを確認する
+- `OPENCLAW_TRAJECTORY_DIR` が書き込み可能なディレクトリを指しているか確認する
+- セッションで別のメッセージを実行してから、もう一度エクスポートする
+- `manifest.json` の `runtimeEventCount` を確認する
 
 コマンドが出力パスを拒否する場合:
 
-- `bug-1234` のような相対名を使用します
-- `/tmp/...` や `~/...` を渡さないでください
-- エクスポートを `.openclaw/trajectory-exports/` の内部に保持します
+- `bug-1234` のような相対名を使用する
+- `/tmp/...` や `~/...` を渡さない
+- エクスポートを `.openclaw/trajectory-exports/` 内に保つ
 
-エクスポートがサイズエラーで失敗する場合、セッションまたはサイドカーがエクスポートの安全制限を超えています。新しいセッションを開始するか、より小さな再現をエクスポートしてください。
+サイズエラーでエクスポートが失敗する場合、セッションまたは sidecar が export safety limits を超えています。
+新しいセッションを開始するか、より小さな再現をエクスポートしてください。
 
 ## 関連
 
 - [Diffs](/ja-JP/tools/diffs)
 - [セッション管理](/ja-JP/concepts/session)
-- [Exec ツール](/ja-JP/tools/exec)
+- [Exec tool](/ja-JP/tools/exec)

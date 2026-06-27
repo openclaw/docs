@@ -1,15 +1,16 @@
 ---
 read_when:
-    - Plugin をコア npm パッケージに同梱するか、別途インストールするかを判断しています
-    - バンドルされたPluginパッケージのメタデータまたはリリース自動化を更新しています
-    - 内部 Plugin と外部 Plugin の正規一覧が必要です
-summary: コアに同梱、外部公開、またはソースのみで保持されている OpenClaw Plugin の生成済みインベントリ
+    - Plugin がコア npm パッケージに同梱されるか、別途インストールされるかを判断している
+    - バンドル済み Plugin パッケージメタデータまたはリリース自動化を更新しています
+    - 正規の内部 Plugin と外部 Plugin の一覧が必要です
+summary: コアに同梱、外部公開、またはソースのみとして保持されている OpenClaw Plugin の生成済みインベントリ
 title: Plugin インベントリ
 x-i18n:
-    generated_at: "2026-05-10T19:44:52Z"
+    generated_at: "2026-06-27T12:19:50Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1a42c8f230925618eb7c15fd6ea7279694adccd45d8e827bb89dffa13576521d
+    source_hash: a1f0c5aa2c3e5f25308a4398dc2582caa8f355a4dfd0d5693d9cfaf1c1ce6926
     source_path: plugins/plugin-inventory.md
     workflow: 16
 ---
@@ -17,7 +18,7 @@ x-i18n:
 # Plugin インベントリ
 
 このページは `extensions/*/package.json`、`openclaw.plugin.json`、
-およびルート npm パッケージの `files` 除外設定から生成されます。次のコマンドで再生成します。
+およびルート npm パッケージの `files` 除外から生成されています。次のコマンドで再生成します。
 
 ```bash
 pnpm plugins:inventory:gen
@@ -26,18 +27,18 @@ pnpm plugins:inventory:gen
 ## 定義
 
 - **コア npm パッケージ:** `openclaw` npm パッケージに組み込まれており、別途 Plugin をインストールしなくても利用できます。
-- **公式外部パッケージ:** コア npm パッケージから除外され、この公式インベントリに保持され、ClawHub や npm を通じて必要に応じてインストールされる OpenClaw 管理の Plugin です。
-- **ソースチェックアウトのみ:** 公開 npm アーティファクトから除外され、インストール可能なパッケージとして案内されないリポジトリローカルの Plugin です。
+- **公式外部パッケージ:** コア npm パッケージから除外され、この公式インベントリに保持され、ClawHub や npm を通じてオンデマンドでインストールされる OpenClaw 管理の Plugin。
+- **ソースチェックアウトのみ:** 公開 npm アーティファクトから除外され、インストール可能なパッケージとして案内されないリポジトリローカルの Plugin。
 
-ソースチェックアウトは npm インストールとは異なります。`pnpm install` の後、バンドル済み
-Plugin は `extensions/<id>` から読み込まれるため、ローカル編集とパッケージローカルのワークスペース
+ソースチェックアウトは npm インストールとは異なります。`pnpm install` の後、バンドルされた
+plugins は `extensions/<id>` から読み込まれるため、ローカル編集とパッケージローカルのワークスペース
 依存関係を利用できます。
 
 ## Plugin をインストールする
 
-インストールが必要かどうかは **配布形態** 列で判断します。
-`included in OpenClaw` と表示されている Plugin は、すでにコアパッケージに含まれています。公式
-外部パッケージは一度インストールしてから、Gateway を再起動する必要があります。
+各エントリのインストール経路を使って、インストールが必要かどうかを判断します。
+`included in OpenClaw` と記載されている plugins は、すでにコアパッケージに含まれています。
+公式外部パッケージは 1 回インストールしてから、Gateway を再起動する必要があります。
 
 たとえば、Discord は公式外部パッケージです。
 
@@ -47,140 +48,282 @@ openclaw gateway restart
 openclaw plugins inspect discord --runtime --json
 ```
 
-ベアパッケージ指定では、まず ClawHub が試行され、その後 npm にフォールバックします。ソースを強制するには、
-`clawhub:@openclaw/discord` または `npm:@openclaw/discord` を使用します。インストール後は、
-[Discord](/ja-JP/channels/discord) などの Plugin のセットアップドキュメントに従い、認証情報と
-チャンネル設定を追加します。更新、アンインストール、公開コマンドについては、
-[Plugin を管理する](/ja-JP/plugins/manage-plugins) を参照してください。
+ローンチ移行中は、通常の素のパッケージ指定は引き続き npm からインストールされます。
+明示的なソースが必要な場合は `clawhub:@openclaw/discord` または `npm:@openclaw/discord` を使用します。
+インストール後は、認証情報とチャンネル設定を追加するために、[Discord](/ja-JP/channels/discord) などの
+Plugin のセットアップドキュメントに従ってください。更新、アンインストール、公開コマンドについては
+[plugins を管理する](/ja-JP/plugins/manage-plugins) を参照してください。
+
+各エントリには、パッケージ、配布経路、説明が一覧表示されます。
 
 ## コア npm パッケージ
 
-| Plugin                                                            | 説明                                                                                                                                                                     | 配布                                                                   | サーフェス                                                                                                                                                                                                                                                       |
-| ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [alibaba](/ja-JP/plugins/reference/alibaba)                             | 動画生成プロバイダーのサポートを追加します。                                                                                                                             | `@openclaw/alibaba-provider`<br />OpenClaw に含まれる                  | contracts: videoGenerationProviders                                                                                                                                                                                                                              |
-| [amazon-bedrock](/ja-JP/plugins/reference/amazon-bedrock)               | Amazon Bedrock モデルプロバイダーのサポートを OpenClaw に追加します。                                                                                                    | `@openclaw/amazon-bedrock-provider`<br />OpenClaw に含まれる           | providers: amazon-bedrock; contracts: memoryEmbeddingProviders                                                                                                                                                                                                   |
-| [amazon-bedrock-mantle](/ja-JP/plugins/reference/amazon-bedrock-mantle) | Amazon Bedrock Mantle モデルプロバイダーのサポートを OpenClaw に追加します。                                                                                             | `@openclaw/amazon-bedrock-mantle-provider`<br />OpenClaw に含まれる    | providers: amazon-bedrock-mantle                                                                                                                                                                                                                                 |
-| [anthropic](/ja-JP/plugins/reference/anthropic)                         | Anthropic モデルプロバイダーのサポートを OpenClaw に追加します。                                                                                                         | `@openclaw/anthropic-provider`<br />OpenClaw に含まれる                | providers: anthropic; contracts: mediaUnderstandingProviders                                                                                                                                                                                                     |
-| [anthropic-vertex](/ja-JP/plugins/reference/anthropic-vertex)           | Anthropic Vertex モデルプロバイダーのサポートを OpenClaw に追加します。                                                                                                  | `@openclaw/anthropic-vertex-provider`<br />OpenClaw に含まれる         | providers: anthropic-vertex                                                                                                                                                                                                                                      |
-| [arcee](/ja-JP/plugins/reference/arcee)                                 | Arcee モデルプロバイダーのサポートを OpenClaw に追加します。                                                                                                             | `@openclaw/arcee-provider`<br />OpenClaw に含まれる                    | providers: arcee                                                                                                                                                                                                                                                 |
-| [azure-speech](/ja-JP/plugins/reference/azure-speech)                   | Azure AI Speech のテキスト読み上げ（MP3、ネイティブ Ogg/Opus 音声メモ、PCM テレフォニー）。                                                                              | `@openclaw/azure-speech`<br />OpenClaw に含まれる                      | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [bonjour](/ja-JP/plugins/reference/bonjour)                             | ローカル OpenClaw Gateway を Bonjour/mDNS 経由でアドバタイズします。                                                                                                     | `@openclaw/bonjour`<br />OpenClaw に含まれる                           | plugin                                                                                                                                                                                                                                                           |
-| [browser](/ja-JP/plugins/reference/browser)                             | エージェントから呼び出せるツールを追加します。                                                                                                                           | `@openclaw/browser-plugin`<br />OpenClaw に含まれる                    | contracts: tools; skills                                                                                                                                                                                                                                         |
-| [byteplus](/ja-JP/plugins/reference/byteplus)                           | BytePlus、BytePlus Plan モデルプロバイダーのサポートを OpenClaw に追加します。                                                                                          | `@openclaw/byteplus-provider`<br />OpenClaw に含まれる                 | providers: byteplus, byteplus-plan; contracts: videoGenerationProviders                                                                                                                                                                                          |
-| [canvas](/ja-JP/plugins/reference/canvas)                               | ペアリングされたノード向けの実験的な Canvas 制御と A2UI レンダリングサーフェス。                                                                                         | `@openclaw/canvas-plugin`<br />OpenClaw に含まれる                     | contracts: tools                                                                                                                                                                                                                                                 |
-| [cerebras](/ja-JP/plugins/reference/cerebras)                           | Cerebras モデルプロバイダーのサポートを OpenClaw に追加します。                                                                                                         | `@openclaw/cerebras-provider`<br />OpenClaw に含まれる                 | providers: cerebras                                                                                                                                                                                                                                              |
-| [chutes](/ja-JP/plugins/reference/chutes)                               | Chutes モデルプロバイダーのサポートを OpenClaw に追加します。                                                                                                           | `@openclaw/chutes-provider`<br />OpenClaw に含まれる                   | providers: chutes                                                                                                                                                                                                                                                |
-| [clickclack](/ja-JP/plugins/reference/clickclack)                       | OpenClaw メッセージの送受信用 Clickclack チャネルサーフェスを追加します。                                                                                               | `@openclaw/clickclack`<br />OpenClaw に含まれる                        | channels: clickclack                                                                                                                                                                                                                                             |
-| [cloudflare-ai-gateway](/ja-JP/plugins/reference/cloudflare-ai-gateway) | Cloudflare AI Gateway モデルプロバイダーのサポートを OpenClaw に追加します。                                                                                            | `@openclaw/cloudflare-ai-gateway-provider`<br />OpenClaw に含まれる    | providers: cloudflare-ai-gateway                                                                                                                                                                                                                                 |
-| [comfy](/ja-JP/plugins/reference/comfy)                                 | ComfyUI モデルプロバイダーのサポートを OpenClaw に追加します。                                                                                                          | `@openclaw/comfy-provider`<br />OpenClaw に含まれる                    | providers: comfy; contracts: imageGenerationProviders, musicGenerationProviders, videoGenerationProviders                                                                                                                                                        |
-| [copilot-proxy](/ja-JP/plugins/reference/copilot-proxy)                 | Copilot Proxy モデルプロバイダーのサポートを OpenClaw に追加します。                                                                                                    | `@openclaw/copilot-proxy`<br />OpenClaw に含まれる                     | providers: copilot-proxy                                                                                                                                                                                                                                         |
-| [deepgram](/ja-JP/plugins/reference/deepgram)                           | メディア理解プロバイダーのサポートを追加します。リアルタイム文字起こしプロバイダーのサポートを追加します。                                                              | `@openclaw/deepgram-provider`<br />OpenClaw に含まれる                 | contracts: mediaUnderstandingProviders, realtimeTranscriptionProviders                                                                                                                                                                                           |
-| [deepinfra](/ja-JP/plugins/reference/deepinfra)                         | DeepInfra モデルプロバイダーのサポートを OpenClaw に追加します。                                                                                                        | `@openclaw/deepinfra-provider`<br />OpenClaw に含まれる                | providers: deepinfra; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, speechProviders, videoGenerationProviders                                                                                                      |
-| [deepseek](/ja-JP/plugins/reference/deepseek)                           | OpenClaw に DeepSeek モデルプロバイダー対応を追加します。                                                                                                                    | `@openclaw/deepseek-provider`<br />OpenClaw に含まれる              | providers: deepseek                                                                                                                                                                                                                                              |
-| [document-extract](/ja-JP/plugins/reference/document-extract)           | ローカルのドキュメント添付ファイルからテキストとフォールバック用のページ画像を抽出します。                                                                                               | `@openclaw/document-extract-plugin`<br />OpenClaw に含まれる        | contracts: documentExtractors                                                                                                                                                                                                                                    |
-| [duckduckgo](/ja-JP/plugins/reference/duckduckgo)                       | Web 検索プロバイダー対応を追加します。                                                                                                                                    | `@openclaw/duckduckgo-plugin`<br />OpenClaw に含まれる              | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [elevenlabs](/ja-JP/plugins/reference/elevenlabs)                       | メディア理解プロバイダー対応を追加します。リアルタイム文字起こしプロバイダー対応を追加します。テキスト読み上げプロバイダー対応を追加します。                                       | `@openclaw/elevenlabs-speech`<br />OpenClaw に含まれる              | contracts: mediaUnderstandingProviders, realtimeTranscriptionProviders, speechProviders                                                                                                                                                                          |
-| [exa](/ja-JP/plugins/reference/exa)                                     | Web 検索プロバイダー対応を追加します。                                                                                                                                    | `@openclaw/exa-plugin`<br />OpenClaw に含まれる                     | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [fal](/ja-JP/plugins/reference/fal)                                     | OpenClaw に fal モデルプロバイダー対応を追加します。                                                                                                                         | `@openclaw/fal-provider`<br />OpenClaw に含まれる                   | providers: fal; contracts: imageGenerationProviders, videoGenerationProviders                                                                                                                                                                                    |
-| [file-transfer](/ja-JP/plugins/reference/file-transfer)                 | 専用のノードコマンドを介して、ペアリング済みノード上のファイルを取得、一覧表示、書き込みます。最大 16 MB のバイナリに対して node.invoke 経由で base64 を使用することで、bash stdout の切り詰めを回避します。 | `@openclaw/file-transfer`<br />OpenClaw に含まれる                  | contracts: tools                                                                                                                                                                                                                                                 |
-| [firecrawl](/ja-JP/plugins/reference/firecrawl)                         | エージェントから呼び出し可能なツールを追加します。Web 取得プロバイダー対応を追加します。Web 検索プロバイダー対応を追加します。                                                                        | `@openclaw/firecrawl-plugin`<br />OpenClaw に含まれる               | contracts: tools, webFetchProviders, webSearchProviders                                                                                                                                                                                                          |
-| [fireworks](/ja-JP/plugins/reference/fireworks)                         | OpenClaw に Fireworks モデルプロバイダー対応を追加します。                                                                                                                   | `@openclaw/fireworks-provider`<br />OpenClaw に含まれる             | providers: fireworks                                                                                                                                                                                                                                             |
-| [github-copilot](/ja-JP/plugins/reference/github-copilot)               | OpenClaw に GitHub Copilot モデルプロバイダー対応を追加します。                                                                                                              | `@openclaw/github-copilot-provider`<br />OpenClaw に含まれる        | providers: github-copilot; contracts: memoryEmbeddingProviders                                                                                                                                                                                                   |
-| [google](/ja-JP/plugins/reference/google)                               | OpenClaw に Google、Google Gemini CLI、Google Vertex モデルプロバイダー対応を追加します。                                                                                    | `@openclaw/google-plugin`<br />OpenClaw に含まれる                  | providers: google, google-gemini-cli, google-vertex; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, musicGenerationProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders, webSearchProviders |
-| [gradium](/ja-JP/plugins/reference/gradium)                             | テキスト読み上げプロバイダー対応を追加します。                                                                                                                                | `@openclaw/gradium-speech`<br />OpenClaw に含まれる                 | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [groq](/ja-JP/plugins/reference/groq)                                   | OpenClaw に Groq モデルプロバイダー対応を追加します。                                                                                                                        | `@openclaw/groq-provider`<br />OpenClaw に含まれる                  | providers: groq; contracts: mediaUnderstandingProviders                                                                                                                                                                                                          |
-| [huggingface](/ja-JP/plugins/reference/huggingface)                     | OpenClaw に Hugging Face モデルプロバイダー対応を追加します。                                                                                                                | `@openclaw/huggingface-provider`<br />OpenClaw に含まれる           | providers: huggingface                                                                                                                                                                                                                                           |
-| [imessage](/ja-JP/plugins/reference/imessage)                           | OpenClaw メッセージを送受信するための iMessage チャネルサーフェスを追加します。                                                                                       | `@openclaw/imessage`<br />OpenClaw に含まれる                       | channels: imessage                                                                                                                                                                                                                                               |
-| [inworld](/ja-JP/plugins/reference/inworld)                             | Inworld ストリーミングテキスト読み上げ（MP3、OGG_OPUS、PCM telephony）。                                                                                                     | `@openclaw/inworld-speech`<br />OpenClaw に含まれる                 | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [irc](/ja-JP/plugins/reference/irc)                                     | OpenClaw メッセージを送受信するための IRC チャネルサーフェスを追加します。                                                                                            | `@openclaw/irc`<br />OpenClaw に含まれる                            | channels: irc                                                                                                                                                                                                                                                    |
-| [kilocode](/ja-JP/plugins/reference/kilocode)                           | OpenClaw に Kilocode モデルプロバイダー対応を追加します。                                                                                                                    | `@openclaw/kilocode-provider`<br />OpenClaw に含まれる              | providers: kilocode                                                                                                                                                                                                                                              |
-| [kimi](/ja-JP/plugins/reference/kimi)                                   | OpenClaw に Kimi、Kimi Coding モデルプロバイダー対応を追加します。                                                                                                           | `@openclaw/kimi-provider`<br />OpenClaw に含まれる                  | providers: kimi, kimi-coding                                                                                                                                                                                                                                     |
-| [litellm](/ja-JP/plugins/reference/litellm)                             | OpenClaw に LiteLLM モデルプロバイダー対応を追加します。                                                                                                                     | `@openclaw/litellm-provider`<br />OpenClaw に含まれる               | providers: litellm; contracts: imageGenerationProviders                                                                                                                                                                                                          |
-| [llm-task](/ja-JP/plugins/reference/llm-task)                           | ワークフローから呼び出し可能な、構造化タスク用の汎用 JSON 専用 LLM ツール。                                                                                             | `@openclaw/llm-task`<br />OpenClaw に含まれる                       | contracts: tools                                                                                                                                                                                                                                                 |
-| [lmstudio](/ja-JP/plugins/reference/lmstudio)                           | OpenClaw に LM Studio モデルプロバイダーのサポートを追加します。                                                                                                                   | `@openclaw/lmstudio-provider`<br />OpenClaw に同梱              | providers: lmstudio; contracts: memoryEmbeddingProviders                                                                                                                                                                                                         |
-| [mattermost](/ja-JP/plugins/reference/mattermost)                       | OpenClaw メッセージを送受信するための Mattermost チャンネルサーフェスを追加します。                                                                                     | `@openclaw/mattermost`<br />OpenClaw に同梱                     | channels: mattermost                                                                                                                                                                                                                                             |
-| [memory-core](/ja-JP/plugins/reference/memory-core)                     | メモリ埋め込みプロバイダーのサポートを追加します。エージェントから呼び出し可能なツールを追加します。                                                                                                   | `@openclaw/memory-core`<br />OpenClaw に同梱                    | contracts: memoryEmbeddingProviders, tools                                                                                                                                                                                                                       |
-| [memory-wiki](/ja-JP/plugins/reference/memory-wiki)                     | OpenClaw 用の永続的な wiki コンパイラーと Obsidian フレンドリーなナレッジボールトです。                                                                                         | `@openclaw/memory-wiki`<br />OpenClaw に同梱                    | contracts: tools; skills                                                                                                                                                                                                                                         |
-| [microsoft](/ja-JP/plugins/reference/microsoft)                         | テキスト読み上げプロバイダーのサポートを追加します。                                                                                                                                | `@openclaw/microsoft-speech`<br />OpenClaw に同梱               | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [microsoft-foundry](/ja-JP/plugins/reference/microsoft-foundry)         | OpenClaw に Microsoft Foundry モデルプロバイダーのサポートを追加します。                                                                                                           | `@openclaw/microsoft-foundry`<br />OpenClaw に同梱              | providers: microsoft-foundry                                                                                                                                                                                                                                     |
-| [migrate-claude](/ja-JP/plugins/reference/migrate-claude)               | Claude Code と Claude Desktop の手順、MCP サーバー、Skills、安全な設定を OpenClaw にインポートします。                                                      | `@openclaw/migrate-claude`<br />OpenClaw に同梱                 | contracts: migrationProviders                                                                                                                                                                                                                                    |
-| [migrate-hermes](/ja-JP/plugins/reference/migrate-hermes)               | Hermes の設定、メモリ、Skills、サポート対象の認証情報を OpenClaw にインポートします。                                                                             | `@openclaw/migrate-hermes`<br />OpenClaw に同梱                 | contracts: migrationProviders                                                                                                                                                                                                                                    |
-| [minimax](/ja-JP/plugins/reference/minimax)                             | OpenClaw に MiniMax、MiniMax Portal モデルプロバイダーのサポートを追加します。                                                                                                     | `@openclaw/minimax-provider`<br />OpenClaw に同梱               | providers: minimax, minimax-portal; contracts: imageGenerationProviders, mediaUnderstandingProviders, musicGenerationProviders, speechProviders, videoGenerationProviders, webSearchProviders                                                                    |
-| [mistral](/ja-JP/plugins/reference/mistral)                             | OpenClaw に Mistral モデルプロバイダーのサポートを追加します。                                                                                                                     | `@openclaw/mistral-provider`<br />OpenClaw に同梱               | providers: mistral; contracts: mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders                                                                                                                                             |
-| [moonshot](/ja-JP/plugins/reference/moonshot)                           | OpenClaw に Moonshot モデルプロバイダーのサポートを追加します。                                                                                                                    | `@openclaw/moonshot-provider`<br />OpenClaw に同梱              | providers: moonshot; contracts: mediaUnderstandingProviders, webSearchProviders                                                                                                                                                                                  |
-| [nvidia](/ja-JP/plugins/reference/nvidia)                               | OpenClaw に NVIDIA モデルプロバイダーのサポートを追加します。                                                                                                                      | `@openclaw/nvidia-provider`<br />OpenClaw に同梱                | providers: nvidia                                                                                                                                                                                                                                                |
-| [oc-path](/ja-JP/plugins/reference/oc-path)                             | `oc://` ワークスペースファイルアドレス指定用の openclaw path CLI を追加します。                                                                                                      | `@openclaw/oc-path`<br />OpenClaw に同梱                        | plugin                                                                                                                                                                                                                                                           |
-| [ollama](/ja-JP/plugins/reference/ollama)                               | OpenClaw に Ollama モデルプロバイダーのサポートを追加します。                                                                                                                      | `@openclaw/ollama-provider`<br />OpenClaw に同梱                | providers: ollama; contracts: memoryEmbeddingProviders, webSearchProviders                                                                                                                                                                                       |
-| [open-prose](/ja-JP/plugins/reference/open-prose)                       | `/prose` スラッシュコマンドを備えた OpenProse VM Skills パックです。                                                                                                                 | `@openclaw/open-prose`<br />OpenClaw に同梱                     | skills                                                                                                                                                                                                                                                           |
-| [openai](/ja-JP/plugins/reference/openai)                               | OpenClaw に OpenAI、OpenAI Codex モデルプロバイダーのサポートを追加します。                                                                                                        | `@openclaw/openai-provider`<br />OpenClaw に同梱                | providers: openai, openai-codex; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders                                   |
-| [opencode](/ja-JP/plugins/reference/opencode)                           | OpenClaw に OpenCode モデルプロバイダーのサポートを追加します。                                                                                                                    | `@openclaw/opencode-provider`<br />OpenClaw に同梱              | providers: opencode; contracts: mediaUnderstandingProviders                                                                                                                                                                                                      |
-| [opencode-go](/ja-JP/plugins/reference/opencode-go)                     | OpenClaw に OpenCode Go モデルプロバイダーのサポートを追加します。                                                                                                                 | `@openclaw/opencode-go-provider`<br />OpenClaw に同梱           | providers: opencode-go; contracts: mediaUnderstandingProviders                                                                                                                                                                                                   |
-| [openrouter](/ja-JP/plugins/reference/openrouter)                       | OpenClaw に OpenRouter モデルプロバイダーのサポートを追加します。                                                                                                                  | `@openclaw/openrouter-provider`<br />OpenClaw に同梱            | providers: openrouter; contracts: imageGenerationProviders, mediaUnderstandingProviders, speechProviders, videoGenerationProviders                                                                                                                               |
-| [openshell](/ja-JP/plugins/reference/openshell)                         | ミラーリングされたローカルワークスペースと SSH ベースのコマンド実行を備えた、OpenShell によるサンドボックスバックエンドです。                                                                 | `@openclaw/openshell-sandbox`<br />OpenClaw に同梱              | plugin                                                                                                                                                                                                                                                           |
-| [perplexity](/ja-JP/plugins/reference/perplexity)                       | Web 検索プロバイダーのサポートを追加します。                                                                                                                                    | `@openclaw/perplexity-plugin`<br />OpenClaw に同梱              | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [qianfan](/ja-JP/plugins/reference/qianfan)                             | OpenClaw に Qianfan モデルプロバイダーのサポートを追加します。                                                                                                                     | `@openclaw/qianfan-provider`<br />OpenClaw に含まれます               | providers: qianfan                                                                                                                                                                                                                                               |
-| [qwen](/ja-JP/plugins/reference/qwen)                                   | OpenClaw に Qwen、Qwen Cloud、Model Studio、DashScope モデルプロバイダーのサポートを追加します。                                                                                   | `@openclaw/qwen-provider`<br />OpenClaw に含まれます                  | providers: qwen, qwencloud, modelstudio, dashscope; contracts: mediaUnderstandingProviders, videoGenerationProviders                                                                                                                                             |
-| [runway](/ja-JP/plugins/reference/runway)                               | 動画生成プロバイダーのサポートを追加します。                                                                                                                              | `@openclaw/runway-provider`<br />OpenClaw に含まれます                | contracts: videoGenerationProviders                                                                                                                                                                                                                              |
-| [searxng](/ja-JP/plugins/reference/searxng)                             | Web 検索プロバイダーのサポートを追加します。                                                                                                                                    | `@openclaw/searxng-plugin`<br />OpenClaw に含まれます                 | contracts: webSearchProviders                                                                                                                                                                                                                                    |
-| [senseaudio](/ja-JP/plugins/reference/senseaudio)                       | メディア理解プロバイダーのサポートを追加します。                                                                                                                           | `@openclaw/senseaudio-provider`<br />OpenClaw に含まれます            | contracts: mediaUnderstandingProviders                                                                                                                                                                                                                           |
-| [sglang](/ja-JP/plugins/reference/sglang)                               | OpenClaw に SGLang モデルプロバイダーのサポートを追加します。                                                                                                                      | `@openclaw/sglang-provider`<br />OpenClaw に含まれます                | providers: sglang                                                                                                                                                                                                                                                |
-| [signal](/ja-JP/plugins/reference/signal)                               | OpenClaw メッセージを送受信するための Signal チャネルサーフェスを追加します。                                                                                         | `@openclaw/signal`<br />OpenClaw に含まれます                         | channels: signal                                                                                                                                                                                                                                                 |
-| [skill-workshop](/ja-JP/plugins/reference/skill-workshop)               | レビュー待ち、安全な書き込み、Skill プロンプト更新により、反復可能なワークフローをワークスペース Skills として記録します。                                                       | `@openclaw/skill-workshop`<br />OpenClaw に含まれます                 | contracts: tools                                                                                                                                                                                                                                                 |
-| [slack](/ja-JP/plugins/reference/slack)                                 | OpenClaw メッセージを送受信するための Slack チャネルサーフェスを追加します。                                                                                          | `@openclaw/slack`<br />OpenClaw に含まれます                          | channels: slack                                                                                                                                                                                                                                                  |
-| [stepfun](/ja-JP/plugins/reference/stepfun)                             | OpenClaw に StepFun、StepFun Plan モデルプロバイダーのサポートを追加します。                                                                                                       | `@openclaw/stepfun-provider`<br />OpenClaw に含まれます               | providers: stepfun, stepfun-plan                                                                                                                                                                                                                                 |
-| [synthetic](/ja-JP/plugins/reference/synthetic)                         | OpenClaw に Synthetic モデルプロバイダーのサポートを追加します。                                                                                                                   | `@openclaw/synthetic-provider`<br />OpenClaw に含まれます             | providers: synthetic                                                                                                                                                                                                                                             |
-| [tavily](/ja-JP/plugins/reference/tavily)                               | エージェントから呼び出せるツールを追加します。Web 検索プロバイダーのサポートを追加します。                                                                                                         | `@openclaw/tavily-plugin`<br />OpenClaw に含まれます                  | contracts: tools, webSearchProviders; skills                                                                                                                                                                                                                     |
-| [telegram](/ja-JP/plugins/reference/telegram)                           | OpenClaw メッセージを送受信するための Telegram チャネルサーフェスを追加します。                                                                                       | `@openclaw/telegram`<br />OpenClaw に含まれます                       | channels: telegram                                                                                                                                                                                                                                               |
-| [tencent](/ja-JP/plugins/reference/tencent)                             | OpenClaw に Tencent TokenHub モデルプロバイダーのサポートを追加します。                                                                                                            | `@openclaw/tencent-provider`<br />OpenClaw に含まれます               | providers: tencent-tokenhub                                                                                                                                                                                                                                      |
-| [together](/ja-JP/plugins/reference/together)                           | OpenClaw に Together モデルプロバイダーのサポートを追加します。                                                                                                                    | `@openclaw/together-provider`<br />OpenClaw に含まれます              | providers: together; contracts: videoGenerationProviders                                                                                                                                                                                                         |
-| [tokenjuice](/ja-JP/plugins/reference/tokenjuice)                       | tokenjuice reducer で exec と bash ツールの結果を圧縮します。                                                                                                        | `@openclaw/tokenjuice`<br />OpenClaw に含まれます                     | contracts: agentToolResultMiddleware                                                                                                                                                                                                                             |
-| [tts-local-cli](/ja-JP/plugins/reference/tts-local-cli)                 | テキスト読み上げプロバイダーのサポートを追加します。                                                                                                                                | `@openclaw/tts-local-cli`<br />OpenClaw に含まれます                  | contracts: speechProviders                                                                                                                                                                                                                                       |
-| [venice](/ja-JP/plugins/reference/venice)                               | OpenClaw に Venice モデルプロバイダーのサポートを追加します。                                                                                                                      | `@openclaw/venice-provider`<br />OpenClaw に含まれます                | providers: venice                                                                                                                                                                                                                                                |
-| [vercel-ai-gateway](/ja-JP/plugins/reference/vercel-ai-gateway)         | OpenClaw に Vercel AI Gateway モデルプロバイダーのサポートを追加します。                                                                                                           | `@openclaw/vercel-ai-gateway-provider`<br />OpenClaw に含まれます     | providers: vercel-ai-gateway                                                                                                                                                                                                                                     |
-| [vllm](/ja-JP/plugins/reference/vllm)                                   | OpenClaw に vLLM モデルプロバイダーのサポートを追加します。                                                                                                                        | `@openclaw/vllm-provider`<br />OpenClaw に含まれます                  | providers: vllm                                                                                                                                                                                                                                                  |
-| [volcengine](/ja-JP/plugins/reference/volcengine)                       | OpenClaw に Volcengine、Volcengine Plan モデルプロバイダーのサポートを追加します。                                                                                                 | `@openclaw/volcengine-provider`<br />OpenClaw に含まれます            | providers: volcengine, volcengine-plan; contracts: speechProviders                                                                                                                                                                                               |
-| [voyage](/ja-JP/plugins/reference/voyage)                               | メモリ埋め込みプロバイダー対応を追加します。                                                                                                                         | `@openclaw/voyage-provider`<br />OpenClaw に含まれる                 | contracts: memoryEmbeddingProviders                                                                                                                                                                                                                              |
-| [vydra](/ja-JP/plugins/reference/vydra)                                 | OpenClaw に Vydra モデルプロバイダー対応を追加します。                                                                                                               | `@openclaw/vydra-provider`<br />OpenClaw に含まれる                  | providers: vydra; contracts: imageGenerationProviders, speechProviders, videoGenerationProviders                                                                                                                                                                 |
-| [web-readability](/ja-JP/plugins/reference/web-readability)             | ローカル HTML Web 取得レスポンスから読みやすい記事コンテンツを抽出します。                                                                                            | `@openclaw/web-readability-plugin`<br />OpenClaw に含まれる          | contracts: webContentExtractors                                                                                                                                                                                                                                  |
-| [webhooks](/ja-JP/plugins/reference/webhooks)                           | 外部自動化を OpenClaw TaskFlows にバインドする、認証済みの受信 Webhook。                                                                                             | `@openclaw/webhooks`<br />OpenClaw に含まれる                        | plugin                                                                                                                                                                                                                                                           |
-| [xai](/ja-JP/plugins/reference/xai)                                     | OpenClaw に xAI モデルプロバイダー対応を追加します。                                                                                                                 | `@openclaw/xai-plugin`<br />OpenClaw に含まれる                      | providers: xai; contracts: imageGenerationProviders, mediaUnderstandingProviders, realtimeTranscriptionProviders, speechProviders, tools, videoGenerationProviders, webSearchProviders                                                                           |
-| [xiaomi](/ja-JP/plugins/reference/xiaomi)                               | OpenClaw に Xiaomi モデルプロバイダー対応を追加します。                                                                                                              | `@openclaw/xiaomi-provider`<br />OpenClaw に含まれる                 | providers: xiaomi; contracts: speechProviders                                                                                                                                                                                                                    |
-| [zai](/ja-JP/plugins/reference/zai)                                     | OpenClaw に Z.AI モデルプロバイダー対応を追加します。                                                                                                                | `@openclaw/zai-provider`<br />OpenClaw に含まれる                    | providers: zai; contracts: mediaUnderstandingProviders                                                                                                                                                                                                           |
+59 plugins
+
+- **[admin-http-rpc](/ja-JP/plugins/reference/admin-http-rpc)** (`@openclaw/admin-http-rpc`) - OpenClaw に含まれています。OpenClaw 管理 HTTP RPC エンドポイント。
+
+- **[alibaba](/ja-JP/plugins/reference/alibaba)** (`@openclaw/alibaba-provider`) - OpenClaw に含まれています。動画生成プロバイダー対応を追加します。
+
+- **[anthropic](/ja-JP/plugins/reference/anthropic)** (`@openclaw/anthropic-provider`) - OpenClaw に含まれています。OpenClaw に Anthropic モデルプロバイダー対応を追加します。
+
+- **[azure-speech](/ja-JP/plugins/reference/azure-speech)** (`@openclaw/azure-speech`) - OpenClaw に含まれています。Azure AI Speech のテキスト読み上げ（MP3、ネイティブ Ogg/Opus ボイスメモ、PCM 電話音声）。
+
+- **[bonjour](/ja-JP/plugins/reference/bonjour)** (`@openclaw/bonjour`) - OpenClaw に含まれています。ローカル OpenClaw gateway を Bonjour/mDNS でアドバタイズします。
+
+- **[browser](/ja-JP/plugins/reference/browser)** (`@openclaw/browser-plugin`) - OpenClaw に含まれています。エージェントから呼び出せるツールを追加します。
+
+- **[byteplus](/ja-JP/plugins/reference/byteplus)** (`@openclaw/byteplus-provider`) - OpenClaw に含まれています。OpenClaw に BytePlus、BytePlus Plan モデルプロバイダー対応を追加します。
+
+- **[canvas](/ja-JP/plugins/reference/canvas)** (`@openclaw/canvas-plugin`) - OpenClaw に含まれています。ペアリングされたノード向けの実験的な Canvas コントロールおよび A2UI レンダリングサーフェス。
+
+- **[codex-supervisor](/ja-JP/plugins/reference/codex-supervisor)** (`@openclaw/codex-supervisor`) - OpenClaw に含まれています。OpenClaw から Codex app-server セッションを監督します。
+
+- **[cohere](/ja-JP/plugins/reference/cohere)** (`@openclaw/cohere-provider`) - OpenClaw に含まれています。npm。ClawHub: `clawhub:@openclaw/cohere-provider`。OpenClaw Cohere プロバイダー Plugin。
+
+- **[comfy](/ja-JP/plugins/reference/comfy)** (`@openclaw/comfy-provider`) - OpenClaw に含まれています。OpenClaw に ComfyUI モデルプロバイダー対応を追加します。
+
+- **[copilot-proxy](/ja-JP/plugins/reference/copilot-proxy)** (`@openclaw/copilot-proxy`) - OpenClaw に含まれています。OpenClaw に Copilot Proxy モデルプロバイダー対応を追加します。
+
+- **[deepgram](/ja-JP/plugins/reference/deepgram)** (`@openclaw/deepgram-provider`) - OpenClaw に含まれています。メディア理解プロバイダー対応を追加します。リアルタイム文字起こしプロバイダー対応を追加します。
+
+- **[document-extract](/ja-JP/plugins/reference/document-extract)** (`@openclaw/document-extract-plugin`) - OpenClaw に含まれています。ローカルドキュメント添付ファイルからテキストとフォールバックページ画像を抽出します。
+
+- **[duckduckgo](/ja-JP/plugins/reference/duckduckgo)** (`@openclaw/duckduckgo-plugin`) - OpenClaw に含まれています。Web 検索プロバイダー対応を追加します。
+
+- **[elevenlabs](/ja-JP/plugins/reference/elevenlabs)** (`@openclaw/elevenlabs-speech`) - OpenClaw に含まれています。メディア理解プロバイダー対応を追加します。リアルタイム文字起こしプロバイダー対応を追加します。テキスト読み上げプロバイダー対応を追加します。
+
+- **[fal](/ja-JP/plugins/reference/fal)** (`@openclaw/fal-provider`) - OpenClaw に含まれています。OpenClaw に fal モデルプロバイダー対応を追加します。
+
+- **[file-transfer](/ja-JP/plugins/reference/file-transfer)** (`@openclaw/file-transfer`) - OpenClaw に含まれています。専用のノードコマンドを介して、ペアリングされたノード上のファイルを取得、一覧表示、書き込みします。最大 16 MB のバイナリに対して node.invoke 経由で base64 を使用することで、bash stdout の切り捨てを回避します。
+
+- **[github-copilot](/ja-JP/plugins/reference/github-copilot)** (`@openclaw/github-copilot-provider`) - OpenClaw に含まれています。OpenClaw に GitHub Copilot モデルプロバイダー対応を追加します。
+
+- **[google](/ja-JP/plugins/reference/google)** (`@openclaw/google-plugin`) - OpenClaw に含まれています。OpenClaw に Google、Google Gemini CLI、Google Vertex モデルプロバイダー対応を追加します。
+
+- **[huggingface](/ja-JP/plugins/reference/huggingface)** (`@openclaw/huggingface-provider`) - OpenClaw に含まれています。OpenClaw に Hugging Face モデルプロバイダー対応を追加します。
+
+- **[imessage](/ja-JP/plugins/reference/imessage)** (`@openclaw/imessage`) - OpenClaw に含まれています。OpenClaw メッセージの送受信のための iMessage チャンネルサーフェスを追加します。
+
+- **[litellm](/ja-JP/plugins/reference/litellm)** (`@openclaw/litellm-provider`) - OpenClaw に含まれています。OpenClaw に LiteLLM モデルプロバイダー対応を追加します。
+
+- **[llm-task](/ja-JP/plugins/reference/llm-task)** (`@openclaw/llm-task`) - OpenClaw に含まれています。ワークフローから呼び出せる、構造化タスク向けの汎用 JSON 専用 LLM ツール。
+
+- **[lmstudio](/ja-JP/plugins/reference/lmstudio)** (`@openclaw/lmstudio-provider`) - OpenClaw に含まれています。OpenClaw に LM Studio モデルプロバイダー対応を追加します。
+
+- **[memory-core](/ja-JP/plugins/reference/memory-core)** (`@openclaw/memory-core`) - OpenClaw に含まれています。エージェントから呼び出せるツールを追加します。
+
+- **[memory-wiki](/ja-JP/plugins/reference/memory-wiki)** (`@openclaw/memory-wiki`) - OpenClaw に含まれています。OpenClaw 向けの永続 Wiki コンパイラーおよび Obsidian フレンドリーなナレッジ Vault。
+
+- **[microsoft](/ja-JP/plugins/reference/microsoft)** (`@openclaw/microsoft-speech`) - OpenClaw に含まれています。テキスト読み上げプロバイダー対応を追加します。
+
+- **[microsoft-foundry](/ja-JP/plugins/reference/microsoft-foundry)** (`@openclaw/microsoft-foundry`) - OpenClaw に含まれています。OpenClaw に Microsoft Foundry モデルプロバイダー対応を追加します。
+
+- **[migrate-claude](/ja-JP/plugins/reference/migrate-claude)** (`@openclaw/migrate-claude`) - OpenClaw に含まれています。Claude Code と Claude Desktop の手順、MCP サーバー、skills、安全な構成を OpenClaw にインポートします。
+
+- **[migrate-hermes](/ja-JP/plugins/reference/migrate-hermes)** (`@openclaw/migrate-hermes`) - OpenClaw に含まれています。Hermes の構成、メモリ、skills、対応する認証情報を OpenClaw にインポートします。
+
+- **[minimax](/ja-JP/plugins/reference/minimax)** (`@openclaw/minimax-provider`) - OpenClaw に含まれています。OpenClaw に MiniMax、MiniMax Portal モデルプロバイダー対応を追加します。
+
+- **[mistral](/ja-JP/plugins/reference/mistral)** (`@openclaw/mistral-provider`) - OpenClaw に含まれています。OpenClaw に Mistral モデルプロバイダー対応を追加します。
+
+- **[novita](/ja-JP/plugins/reference/novita)** (`@openclaw/novita-provider`) - OpenClaw に含まれています。OpenClaw に Novita、Novita AI、Novitaai モデルプロバイダー対応を追加します。
+
+- **[nvidia](/ja-JP/plugins/reference/nvidia)** (`@openclaw/nvidia-provider`) - OpenClaw に含まれています。OpenClaw に NVIDIA モデルプロバイダー対応を追加します。
+
+- **[oc-path](/ja-JP/plugins/reference/oc-path)** (`@openclaw/oc-path`) - OpenClaw に含まれています。oc:// ワークスペースファイルアドレッシング用の openclaw path CLI を追加します。
+
+- **[ollama](/ja-JP/plugins/reference/ollama)** (`@openclaw/ollama-provider`) - OpenClaw に含まれています。OpenClaw に Ollama、Ollama Cloud モデルプロバイダー対応を追加します。
+
+- **[open-prose](/ja-JP/plugins/reference/open-prose)** (`@openclaw/open-prose`) - OpenClaw に含まれています。/prose スラッシュコマンドを備えた OpenProse VM skill pack。
+
+- **[openai](/ja-JP/plugins/reference/openai)** (`@openclaw/openai-provider`) - OpenClaw に含まれています。OpenClaw に OpenAI モデルプロバイダー対応を追加します。
+
+- **[opencode](/ja-JP/plugins/reference/opencode)** (`@openclaw/opencode-provider`) - OpenClaw に含まれています。OpenClaw に OpenCode モデルプロバイダー対応を追加します。
+
+- **[opencode-go](/ja-JP/plugins/reference/opencode-go)** (`@openclaw/opencode-go-provider`) - OpenClaw に含まれています。OpenClaw に OpenCode Go モデルプロバイダー対応を追加します。
+
+- **[openrouter](/ja-JP/plugins/reference/openrouter)** (`@openclaw/openrouter-provider`) - OpenClaw に含まれています。OpenClaw に OpenRouter モデルプロバイダー対応を追加します。
+
+- **[policy](/ja-JP/plugins/reference/policy)** (`@openclaw/policy`) - OpenClaw に含まれています。ワークスペース準拠のためのポリシーに基づく doctor チェックを追加します。
+
+- **[runway](/ja-JP/plugins/reference/runway)** (`@openclaw/runway-provider`) - OpenClaw に含まれています。動画生成プロバイダー対応を追加します。
+
+- **[senseaudio](/ja-JP/plugins/reference/senseaudio)** (`@openclaw/senseaudio-provider`) - OpenClaw に含まれています。メディア理解プロバイダー対応を追加します。
+
+- **[sglang](/ja-JP/plugins/reference/sglang)** (`@openclaw/sglang-provider`) - OpenClaw に含まれています。OpenClaw に SGLang モデルプロバイダー対応を追加します。
+
+- **[synthetic](/ja-JP/plugins/reference/synthetic)** (`@openclaw/synthetic-provider`) - OpenClaw に含まれています。OpenClaw に Synthetic モデルプロバイダー対応を追加します。
+
+- **[telegram](/ja-JP/plugins/reference/telegram)** (`@openclaw/telegram`) - OpenClaw に含まれています。OpenClaw メッセージの送受信のための Telegram チャンネルサーフェスを追加します。
+
+- **[together](/ja-JP/plugins/reference/together)** (`@openclaw/together-provider`) - OpenClaw に含まれています。OpenClaw に Together モデルプロバイダー対応を追加します。
+
+- **[tts-local-cli](/ja-JP/plugins/reference/tts-local-cli)** (`@openclaw/tts-local-cli`) - OpenClaw に含まれています。テキスト読み上げプロバイダー対応を追加します。
+
+- **[vllm](/ja-JP/plugins/reference/vllm)** (`@openclaw/vllm-provider`) - OpenClaw に含まれています。OpenClaw に vLLM モデルプロバイダー対応を追加します。
+
+- **[volcengine](/ja-JP/plugins/reference/volcengine)** (`@openclaw/volcengine-provider`) - OpenClaw に含まれています。OpenClaw に Volcengine、Volcengine Plan モデルプロバイダー対応を追加します。
+
+- **[voyage](/ja-JP/plugins/reference/voyage)** (`@openclaw/voyage-provider`) - OpenClaw に含まれています。メモリ埋め込みプロバイダー対応を追加します。
+
+- **[vydra](/ja-JP/plugins/reference/vydra)** (`@openclaw/vydra-provider`) - OpenClaw に含まれています。OpenClaw に Vydra モデルプロバイダー対応を追加します。
+
+- **[web-readability](/ja-JP/plugins/reference/web-readability)** (`@openclaw/web-readability-plugin`) - OpenClaw に含まれています。ローカル HTML Web 取得レスポンスから読みやすい記事コンテンツを抽出します。
+
+- **[webhooks](/ja-JP/plugins/reference/webhooks)** (`@openclaw/webhooks`) - OpenClaw に含まれています。外部自動化を OpenClaw TaskFlows にバインドする、認証済みのインバウンド Webhook。
+
+- **[workboard](/ja-JP/plugins/reference/workboard)** (`@openclaw/workboard`) - OpenClaw に含まれています。エージェント所有の Issue とセッションのためのダッシュボード作業ボード。
+
+- **[xai](/ja-JP/plugins/reference/xai)** (`@openclaw/xai-plugin`) - OpenClaw に含まれています。OpenClaw に xAI モデルプロバイダー対応を追加します。
+
+- **[xiaomi](/ja-JP/plugins/reference/xiaomi)** (`@openclaw/xiaomi-provider`) - OpenClaw に含まれています。OpenClaw に Xiaomi、Xiaomi Token Plan モデルプロバイダー対応を追加します。
 
 ## 公式外部パッケージ
 
-| Plugin                                                              | 説明                                                                                  | 配布                                                                                             | サーフェス                                                                   |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
-| [acpx](/ja-JP/plugins/reference/acpx)                                     | Plugin 所有のセッションとトランスポート管理を備えた埋め込み ACP ランタイムバックエンド。 | `@openclaw/acpx`<br />npm; ClawHub                                                               | skills                                                                       |
-| [brave](/ja-JP/plugins/reference/brave)                                   | Web 検索プロバイダーのサポートを追加します。                                           | `@openclaw/brave-plugin`<br />npm; ClawHub                                                       | contracts: webSearchProviders                                                |
-| [codex](/ja-JP/plugins/reference/codex)                                   | Codex app-server ハーネスと Codex 管理の GPT モデルカタログ。                          | `@openclaw/codex`<br />npm; ClawHub                                                              | providers: codex; contracts: mediaUnderstandingProviders, migrationProviders |
-| [diagnostics-otel](/ja-JP/plugins/reference/diagnostics-otel)             | OpenClaw 診断用 OpenTelemetry エクスポーター。                                         | `@openclaw/diagnostics-otel`<br />npm; ClawHub: `clawhub:@openclaw/diagnostics-otel`             | plugin                                                                       |
-| [diagnostics-prometheus](/ja-JP/plugins/reference/diagnostics-prometheus) | OpenClaw 診断用 Prometheus エクスポーター。                                            | `@openclaw/diagnostics-prometheus`<br />npm; ClawHub: `clawhub:@openclaw/diagnostics-prometheus` | plugin                                                                       |
-| [diffs](/ja-JP/plugins/reference/diffs)                                   | エージェント向けの読み取り専用 diff ビューアーとファイルレンダラー。                   | `@openclaw/diffs`<br />npm; ClawHub                                                              | contracts: tools; skills                                                     |
-| [discord](/ja-JP/plugins/reference/discord)                               | OpenClaw メッセージの送受信用に Discord チャンネルサーフェスを追加します。             | `@openclaw/discord`<br />npm; ClawHub                                                            | channels: discord                                                            |
-| [feishu](/ja-JP/plugins/reference/feishu)                                 | OpenClaw メッセージの送受信用に Feishu チャンネルサーフェスを追加します。              | `@openclaw/feishu`<br />npm; ClawHub                                                             | channels: feishu; contracts: tools; skills                                   |
-| [google-meet](/ja-JP/plugins/reference/google-meet)                       | Chrome または Twilio トランスポートを通じて Google Meet 通話に参加します。             | `@openclaw/google-meet`<br />npm; ClawHub                                                        | contracts: tools                                                             |
-| [googlechat](/ja-JP/plugins/reference/googlechat)                         | OpenClaw メッセージの送受信用に Google Chat チャンネルサーフェスを追加します。         | `@openclaw/googlechat`<br />npm; ClawHub                                                         | channels: googlechat                                                         |
-| [line](/ja-JP/plugins/reference/line)                                     | OpenClaw メッセージの送受信用に LINE チャンネルサーフェスを追加します。                | `@openclaw/line`<br />npm; ClawHub                                                               | channels: line                                                               |
-| [lobster](/ja-JP/plugins/reference/lobster)                               | 再開可能な承認を備えた型付きワークフローツール。                                       | `@openclaw/lobster`<br />npm; ClawHub                                                            | contracts: tools                                                             |
-| [matrix](/ja-JP/plugins/reference/matrix)                                 | OpenClaw メッセージの送受信用に Matrix チャンネルサーフェスを追加します。              | `@openclaw/matrix`<br />ClawHub: `clawhub:@openclaw/matrix`; npm                                 | channels: matrix                                                             |
-| [memory-lancedb](/ja-JP/plugins/reference/memory-lancedb)                 | エージェントから呼び出し可能なツールを追加します。                                     | `@openclaw/memory-lancedb`<br />npm; ClawHub                                                     | contracts: tools                                                             |
-| [msteams](/ja-JP/plugins/reference/msteams)                               | OpenClaw メッセージの送受信用に Microsoft Teams チャンネルサーフェスを追加します。     | `@openclaw/msteams`<br />npm; ClawHub                                                            | channels: msteams                                                            |
-| [nextcloud-talk](/ja-JP/plugins/reference/nextcloud-talk)                 | OpenClaw メッセージの送受信用に Nextcloud Talk チャンネルサーフェスを追加します。      | `@openclaw/nextcloud-talk`<br />npm; ClawHub                                                     | channels: nextcloud-talk                                                     |
-| [nostr](/ja-JP/plugins/reference/nostr)                                   | OpenClaw メッセージの送受信用に Nostr チャンネルサーフェスを追加します。               | `@openclaw/nostr`<br />npm; ClawHub                                                              | channels: nostr                                                              |
-| [qqbot](/ja-JP/plugins/reference/qqbot)                                   | OpenClaw メッセージの送受信用に QQ Bot チャンネルサーフェスを追加します。              | `@openclaw/qqbot`<br />npm; ClawHub                                                              | channels: qqbot; contracts: tools; skills                                    |
-| [synology-chat](/ja-JP/plugins/reference/synology-chat)                   | OpenClaw メッセージの送受信用に Synology Chat チャンネルサーフェスを追加します。       | `@openclaw/synology-chat`<br />npm; ClawHub                                                      | channels: synology-chat                                                      |
-| [tlon](/ja-JP/plugins/reference/tlon)                                     | OpenClaw メッセージの送受信用に Tlon チャンネルサーフェスを追加します。                | `@openclaw/tlon`<br />npm; ClawHub                                                               | channels: tlon; contracts: tools; skills                                     |
-| [twitch](/ja-JP/plugins/reference/twitch)                                 | OpenClaw メッセージの送受信用に Twitch チャンネルサーフェスを追加します。              | `@openclaw/twitch`<br />npm; ClawHub                                                             | channels: twitch                                                             |
-| [voice-call](/ja-JP/plugins/reference/voice-call)                         | エージェントから呼び出し可能なツールを追加します。                                     | `@openclaw/voice-call`<br />npm; ClawHub                                                         | contracts: tools                                                             |
-| [whatsapp](/ja-JP/plugins/reference/whatsapp)                             | OpenClaw メッセージの送受信用に WhatsApp チャンネルサーフェスを追加します。            | `@openclaw/whatsapp`<br />npm; ClawHub                                                           | channels: whatsapp                                                           |
-| [zalo](/ja-JP/plugins/reference/zalo)                                     | OpenClaw メッセージの送受信用に Zalo チャンネルサーフェスを追加します。                | `@openclaw/zalo`<br />npm; ClawHub                                                               | channels: zalo                                                               |
-| [zalouser](/ja-JP/plugins/reference/zalouser)                             | OpenClaw メッセージの送受信用に Zalo Personal チャンネルサーフェスを追加します。       | `@openclaw/zalouser`<br />npm; ClawHub                                                           | channels: zalouser; contracts: tools                                         |
+68 plugins
+
+- **[acpx](/ja-JP/plugins/reference/acpx)** (`@openclaw/acpx`) - npm。ClawHub。Plugin 所有のセッション管理とトランスポート管理を備えた OpenClaw ACP ランタイムバックエンド。
+
+- **[amazon-bedrock](/ja-JP/plugins/reference/amazon-bedrock)** (`@openclaw/amazon-bedrock-provider`) - npm。ClawHub。モデル検出、埋め込み、ガードレール対応を備えた OpenClaw Amazon Bedrock プロバイダー Plugin。
+
+- **[amazon-bedrock-mantle](/ja-JP/plugins/reference/amazon-bedrock-mantle)** (`@openclaw/amazon-bedrock-mantle-provider`) - npm; ClawHub。OpenAI互換モデルルーティング向けの OpenClaw Amazon Bedrock Mantle プロバイダープラグイン。
+
+- **[anthropic-vertex](/ja-JP/plugins/reference/anthropic-vertex)** (`@openclaw/anthropic-vertex-provider`) - npm; ClawHub。Google Vertex AI 上の Claude モデル向け OpenClaw Anthropic Vertex プロバイダープラグイン。
+
+- **[arcee](/ja-JP/plugins/reference/arcee)** (`@openclaw/arcee-provider`) - npm; ClawHub: `clawhub:@openclaw/arcee-provider`。OpenClaw に Arcee モデルプロバイダー対応を追加します。
+
+- **[brave](/ja-JP/plugins/reference/brave)** (`@openclaw/brave-plugin`) - npm; ClawHub。ウェブ検索向け OpenClaw Brave Search プロバイダープラグイン。
+
+- **[cerebras](/ja-JP/plugins/reference/cerebras)** (`@openclaw/cerebras-provider`) - npm; ClawHub: `clawhub:@openclaw/cerebras-provider`。OpenClaw に Cerebras モデルプロバイダー対応を追加します。
+
+- **[chutes](/ja-JP/plugins/reference/chutes)** (`@openclaw/chutes-provider`) - npm; ClawHub: `clawhub:@openclaw/chutes-provider`。OpenClaw に Chutes モデルプロバイダー対応を追加します。
+
+- **[clickclack](/ja-JP/plugins/reference/clickclack)** (`@openclaw/clickclack`) - npm; ClawHub: `clawhub:@openclaw/clickclack`。OpenClaw メッセージの送受信用 Clickclack チャネルサーフェスを追加します。
+
+- **[cloudflare-ai-gateway](/ja-JP/plugins/reference/cloudflare-ai-gateway)** (`@openclaw/cloudflare-ai-gateway-provider`) - npm; ClawHub: `clawhub:@openclaw/cloudflare-ai-gateway-provider`。OpenClaw に Cloudflare AI Gateway モデルプロバイダー対応を追加します。
+
+- **[codex](/ja-JP/plugins/reference/codex)** (`@openclaw/codex`) - npm; ClawHub。Codex が管理する GPT カタログを備えた OpenClaw Codex アプリサーバーハーネスおよびモデルプロバイダープラグイン。
+
+- **[copilot](/ja-JP/plugins/reference/copilot)** (`@openclaw/copilot`) - npm; ClawHub: `clawhub:@openclaw/copilot`。GitHub Copilot エージェントランタイムを登録します。
+
+- **[deepinfra](/ja-JP/plugins/reference/deepinfra)** (`@openclaw/deepinfra-provider`) - npm; ClawHub: `clawhub:@openclaw/deepinfra-provider`。OpenClaw に DeepInfra モデルプロバイダー対応を追加します。
+
+- **[deepseek](/ja-JP/plugins/reference/deepseek)** (`@openclaw/deepseek-provider`) - npm; ClawHub: `clawhub:@openclaw/deepseek-provider`。OpenClaw に DeepSeek モデルプロバイダー対応を追加します。
+
+- **[diagnostics-otel](/ja-JP/plugins/reference/diagnostics-otel)** (`@openclaw/diagnostics-otel`) - npm; ClawHub: `clawhub:@openclaw/diagnostics-otel`。メトリクス、トレース、ログ向けの OpenClaw 診断 OpenTelemetry エクスポーター。
+
+- **[diagnostics-prometheus](/ja-JP/plugins/reference/diagnostics-prometheus)** (`@openclaw/diagnostics-prometheus`) - npm; ClawHub: `clawhub:@openclaw/diagnostics-prometheus`。ランタイムメトリクス向けの OpenClaw 診断 Prometheus エクスポーター。
+
+- **[diffs](/ja-JP/plugins/reference/diffs)** (`@openclaw/diffs`) - npm; ClawHub。エージェント向けの OpenClaw 読み取り専用差分ビューアープラグインおよびファイルレンダラー。
+
+- **[diffs-language-pack](/ja-JP/plugins/reference/diffs-language-pack)** (`@openclaw/diffs-language-pack`) - npm; ClawHub: `clawhub:@openclaw/diffs-language-pack`。デフォルトの差分ビューアーセット外の言語向けに構文ハイライトを追加します。
+
+- **[discord](/ja-JP/plugins/reference/discord)** (`@openclaw/discord`) - npm; ClawHub。チャネル、DM、コマンド、アプリイベント向けの OpenClaw Discord チャネルプラグイン。
+
+- **[exa](/ja-JP/plugins/reference/exa)** (`@openclaw/exa-plugin`) - npm; ClawHub: `clawhub:@openclaw/exa-plugin`。ウェブ検索プロバイダー対応を追加します。
+
+- **[feishu](/ja-JP/plugins/reference/feishu)** (`@openclaw/feishu`) - npm; ClawHub。チャットとワークプレースツール向けの OpenClaw Feishu/Lark チャネルプラグイン（@m1heng によるコミュニティメンテナンス）。
+
+- **[firecrawl](/ja-JP/plugins/reference/firecrawl)** (`@openclaw/firecrawl-plugin`) - npm; ClawHub: `clawhub:@openclaw/firecrawl-plugin`。エージェントから呼び出せるツールを追加します。ウェブ取得プロバイダー対応を追加します。ウェブ検索プロバイダー対応を追加します。
+
+- **[fireworks](/ja-JP/plugins/reference/fireworks)** (`@openclaw/fireworks-provider`) - npm; ClawHub: `clawhub:@openclaw/fireworks-provider`。OpenClaw に Fireworks モデルプロバイダー対応を追加します。
+
+- **[gmi](/ja-JP/plugins/reference/gmi)** (`@openclaw/gmi-provider`) - npm; ClawHub: `clawhub:@openclaw/gmi-provider`。OpenClaw GMI Cloud プロバイダープラグイン。
+
+- **[google-meet](/ja-JP/plugins/reference/google-meet)** (`@openclaw/google-meet`) - npm; ClawHub。Chrome または Twilio トランスポート経由で通話に参加するための OpenClaw Google Meet 参加者プラグイン。
+
+- **[googlechat](/ja-JP/plugins/reference/googlechat)** (`@openclaw/googlechat`) - npm; ClawHub。スペースとダイレクトメッセージ向けの OpenClaw Google Chat チャネルプラグイン。
+
+- **[gradium](/ja-JP/plugins/reference/gradium)** (`@openclaw/gradium-speech`) - npm; ClawHub: `clawhub:@openclaw/gradium-speech`。テキスト読み上げプロバイダー対応を追加します。
+
+- **[groq](/ja-JP/plugins/reference/groq)** (`@openclaw/groq-provider`) - npm; ClawHub: `clawhub:@openclaw/groq-provider`。OpenClaw に Groq モデルプロバイダー対応を追加します。
+
+- **[inworld](/ja-JP/plugins/reference/inworld)** (`@openclaw/inworld-speech`) - npm; ClawHub: `clawhub:@openclaw/inworld-speech`。Inworld ストリーミングテキスト読み上げ（MP3、OGG_OPUS、PCM テレフォニー）。
+
+- **[irc](/ja-JP/plugins/reference/irc)** (`@openclaw/irc`) - npm; ClawHub: `clawhub:@openclaw/irc`。OpenClaw メッセージの送受信用 IRC チャネルサーフェスを追加します。
+
+- **[kilocode](/ja-JP/plugins/reference/kilocode)** (`@openclaw/kilocode-provider`) - npm; ClawHub: `clawhub:@openclaw/kilocode-provider`。OpenClaw に Kilocode モデルプロバイダー対応を追加します。
+
+- **[kimi](/ja-JP/plugins/reference/kimi)** (`@openclaw/kimi-provider`) - npm; ClawHub: `clawhub:@openclaw/kimi-provider`。OpenClaw に Kimi、Kimi Coding モデルプロバイダー対応を追加します。
+
+- **[line](/ja-JP/plugins/reference/line)** (`@openclaw/line`) - npm; ClawHub。LINE Bot API チャット向け OpenClaw LINE チャネルプラグイン。
+
+- **[llama-cpp](/ja-JP/plugins/reference/llama-cpp)** (`@openclaw/llama-cpp-provider`) - npm; ClawHub。node-llama-cpp 経由のローカル GGUF 埋め込み。
+
+- **[lobster](/ja-JP/plugins/reference/lobster)** (`@openclaw/lobster`) - npm; ClawHub。型付きパイプラインと再開可能な承認向けの Lobster ワークフローツールプラグイン。
+
+- **[matrix](/ja-JP/plugins/reference/matrix)** (`@openclaw/matrix`) - ClawHub: `clawhub:@openclaw/matrix`; npm。ルームとダイレクトメッセージ向けの OpenClaw Matrix チャネルプラグイン。
+
+- **[mattermost](/ja-JP/plugins/reference/mattermost)** (`@openclaw/mattermost`) - npm; ClawHub: `clawhub:@openclaw/mattermost`。OpenClaw メッセージの送受信用 Mattermost チャネルサーフェスを追加します。
+
+- **[memory-lancedb](/ja-JP/plugins/reference/memory-lancedb)** (`@openclaw/memory-lancedb`) - npm; ClawHub。自動想起、自動キャプチャ、ベクトル検索を備えた OpenClaw LanceDB バックエンド長期記憶プラグイン。
+
+- **[moonshot](/ja-JP/plugins/reference/moonshot)** (`@openclaw/moonshot-provider`) - npm; ClawHub: `clawhub:@openclaw/moonshot-provider`。OpenClaw に Moonshot モデルプロバイダー対応を追加します。
+
+- **[msteams](/ja-JP/plugins/reference/msteams)** (`@openclaw/msteams`) - npm; ClawHub。ボット会話向けの OpenClaw Microsoft Teams チャネルプラグイン。
+
+- **[nextcloud-talk](/ja-JP/plugins/reference/nextcloud-talk)** (`@openclaw/nextcloud-talk`) - npm; ClawHub。会話向けの OpenClaw Nextcloud Talk チャネルプラグイン。
+
+- **[nostr](/ja-JP/plugins/reference/nostr)** (`@openclaw/nostr`) - npm; ClawHub。NIP-04 暗号化ダイレクトメッセージ向けの OpenClaw Nostr チャネルプラグイン。
+
+- **[openshell](/ja-JP/plugins/reference/openshell)** (`@openclaw/openshell-sandbox`) - npm; ClawHub。ミラーリングされたローカルワークスペースと SSH コマンド実行を備えた NVIDIA OpenShell CLI 向け OpenClaw サンドボックスバックエンド。
+
+- **[parallel](/ja-JP/tools/parallel-search)** (`@openclaw/parallel-plugin`) - npm; ClawHub: `clawhub:@openclaw/parallel-plugin`。ウェブ検索プロバイダー対応を追加します。
+
+- **[perplexity](/ja-JP/plugins/reference/perplexity)** (`@openclaw/perplexity-plugin`) - npm; ClawHub: `clawhub:@openclaw/perplexity-plugin`。ウェブ検索プロバイダー対応を追加します。
+
+- **[pixverse](/ja-JP/plugins/reference/pixverse)** (`@openclaw/pixverse-provider`) - npm; ClawHub: `clawhub:@openclaw/pixverse-provider`。OpenClaw PixVerse 動画生成プロバイダープラグイン。
+
+- **[qianfan](/ja-JP/plugins/reference/qianfan)** (`@openclaw/qianfan-provider`) - npm; ClawHub: `clawhub:@openclaw/qianfan-provider`。OpenClaw に Qianfan モデルプロバイダー対応を追加します。
+
+- **[qqbot](/ja-JP/plugins/reference/qqbot)** (`@openclaw/qqbot`) - npm; ClawHub。グループおよびダイレクトメッセージワークフロー向けの OpenClaw QQ Bot チャネルプラグイン。
+
+- **[qwen](/ja-JP/plugins/reference/qwen)** (`@openclaw/qwen-provider`) - npm; ClawHub: `clawhub:@openclaw/qwen-provider`。OpenClaw に Qwen、Qwen Cloud、Model Studio、DashScope、Qwen Oauth、Qwen Portal、Qwen CLI モデルプロバイダー対応を追加します。
+
+- **[raft](/ja-JP/plugins/reference/raft)** (`@openclaw/raft`) - npm; ClawHub。安全な CLI ウェイクブリッジ向け OpenClaw Raft チャネルプラグイン。
+
+- **[searxng](/ja-JP/plugins/reference/searxng)** (`@openclaw/searxng-plugin`) - npm; ClawHub: `clawhub:@openclaw/searxng-plugin`。ウェブ検索プロバイダー対応を追加します。
+
+- **[signal](/ja-JP/plugins/reference/signal)** (`@openclaw/signal`) - npm; ClawHub: `clawhub:@openclaw/signal`。OpenClaw メッセージの送受信用 Signal チャネルサーフェスを追加します。
+
+- **[slack](/ja-JP/plugins/reference/slack)** (`@openclaw/slack`) - npm; ClawHub。チャネル、DM、コマンド、アプリイベント向けの OpenClaw Slack チャネルプラグイン。
+
+- **[sms](/ja-JP/plugins/reference/sms)** (`@openclaw/sms`) - npm; ClawHub: `clawhub:@openclaw/sms`。OpenClaw テキストメッセージ向け Twilio SMS チャネルプラグイン。
+
+- **[stepfun](/ja-JP/plugins/reference/stepfun)** (`@openclaw/stepfun-provider`) - npm; ClawHub: `clawhub:@openclaw/stepfun-provider`。OpenClaw に StepFun、StepFun Plan モデルプロバイダー対応を追加します。
+
+- **[synology-chat](/ja-JP/plugins/reference/synology-chat)** (`@openclaw/synology-chat`) - npm; ClawHub。OpenClaw チャネルとダイレクトメッセージ向け Synology Chat チャネルプラグイン。
+
+- **[tavily](/ja-JP/plugins/reference/tavily)** (`@openclaw/tavily-plugin`) - npm; ClawHub: `clawhub:@openclaw/tavily-plugin`。エージェントから呼び出せるツールを追加します。ウェブ検索プロバイダー対応を追加します。
+
+- **[tencent](/ja-JP/plugins/reference/tencent)** (`@openclaw/tencent-provider`) - npm; ClawHub: `clawhub:@openclaw/tencent-provider`。OpenClaw に Tencent TokenHub モデルプロバイダー対応を追加します。
+
+- **[tlon](/ja-JP/plugins/reference/tlon)** (`@openclaw/tlon`) - npm; ClawHub。チャットワークフロー向け OpenClaw Tlon/Urbit チャネルプラグイン。
+
+- **[tokenjuice](/ja-JP/plugins/reference/tokenjuice)** (`@openclaw/tokenjuice`) - npm; ClawHub: `clawhub:@openclaw/tokenjuice`。tokenjuice リデューサーで exec と bash ツールの結果を圧縮します。
+
+- **[twitch](/ja-JP/plugins/reference/twitch)** (`@openclaw/twitch`) - npm; ClawHub。チャットとモデレーションワークフロー向け OpenClaw Twitch チャネルプラグイン。
+
+- **[venice](/ja-JP/plugins/reference/venice)** (`@openclaw/venice-provider`) - npm; ClawHub: `clawhub:@openclaw/venice-provider`。OpenClaw に Venice モデルプロバイダー対応を追加します。
+
+- **[vercel-ai-gateway](/ja-JP/plugins/reference/vercel-ai-gateway)** (`@openclaw/vercel-ai-gateway-provider`) - npm; ClawHub: `clawhub:@openclaw/vercel-ai-gateway-provider`。OpenClaw に Vercel AI Gateway モデルプロバイダー対応を追加します。
+
+- **[voice-call](/ja-JP/plugins/reference/voice-call)** (`@openclaw/voice-call`) - npm; ClawHub。Twilio、Telnyx、Plivo の電話通話向け OpenClaw voice-call プラグイン。
+
+- **[whatsapp](/ja-JP/plugins/reference/whatsapp)** (`@openclaw/whatsapp`) - ClawHub: `clawhub:@openclaw/whatsapp`; npm。WhatsApp Web チャット向け OpenClaw WhatsApp チャネルプラグイン。
+
+- **[zai](/ja-JP/plugins/reference/zai)** (`@openclaw/zai-provider`) - npm; ClawHub: `clawhub:@openclaw/zai-provider`。OpenClaw に Z.AI モデルプロバイダー対応を追加します。
+
+- **[zalo](/ja-JP/plugins/reference/zalo)** (`@openclaw/zalo`) - npm; ClawHub。ボットおよび Webhook チャット向け OpenClaw Zalo チャネルプラグイン。
+
+- **[zalouser](/ja-JP/plugins/reference/zalouser)** (`@openclaw/zalouser`) - npm; ClawHub。ネイティブ zca-js 統合経由の OpenClaw Zalo Personal Account プラグイン。
 
 ## ソースチェックアウトのみ
 
-| Plugin                                      | 説明                                                                 | 配布                                             | サーフェス           |
-| ------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------ | -------------------- |
-| [qa-channel](/ja-JP/plugins/reference/qa-channel) | OpenClaw メッセージの送受信用に QA Channel サーフェスを追加します。 | `@openclaw/qa-channel`<br />ソースチェックアウトのみ | channels: qa-channel |
-| [qa-lab](/ja-JP/plugins/reference/qa-lab)         | 非公開デバッガー UI とシナリオランナーを備えた OpenClaw QA lab Plugin。 | `@openclaw/qa-lab`<br />ソースチェックアウトのみ     | plugin               |
-| [qa-matrix](/ja-JP/plugins/reference/qa-matrix)   | Matrix QA トランスポートランナーと基盤。                             | `@openclaw/qa-matrix`<br />ソースチェックアウトのみ  | plugin               |
+3個のプラグイン
+
+- **[qa-channel](/ja-JP/plugins/reference/qa-channel)** (`@openclaw/qa-channel`) - ソースチェックアウトのみ。OpenClaw メッセージの送受信用 QA Channel サーフェスを追加します。
+
+- **[qa-lab](/ja-JP/plugins/reference/qa-lab)** (`@openclaw/qa-lab`) - ソースチェックアウトのみ。非公開デバッガー UI とシナリオランナーを備えた OpenClaw QA ラボプラグイン。
+
+- **[qa-matrix](/ja-JP/plugins/reference/qa-matrix)** (`@openclaw/qa-matrix`) - ソースチェックアウトのみ。Matrix QA トランスポートランナーおよび基盤。

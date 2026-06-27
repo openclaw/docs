@@ -1,29 +1,30 @@
 ---
 read_when:
-    - perplexity Pluginをインストール、設定、または監査しています
-summary: ウェブ検索プロバイダーのサポートを追加します。
+    - perplexity Pluginをインストール、設定、または監査している
+summary: Web 検索プロバイダーのサポートを追加します。
 title: Perplexity Plugin
 x-i18n:
-    generated_at: "2026-05-02T21:00:49Z"
+    generated_at: "2026-06-27T12:27:39Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 86183b8201e7c6869eeeada3efcb15fd67c3d958fd5a50a56922bb0a61c5c74d
+    source_hash: c649c4dc4df04ca668e924e2644af970d75eab404b8f57579e509aa061994ffe
     source_path: plugins/reference/perplexity.md
     workflow: 16
 ---
 
-# Perplexity Plugin
+# Perplexity プラグイン
 
 Web 検索プロバイダーのサポートを追加します。
 
 ## 配布
 
 - パッケージ: `@openclaw/perplexity-plugin`
-- インストール経路: OpenClaw に含まれています
+- インストール経路: npm; ClawHub: `clawhub:@openclaw/perplexity-plugin`
 
 ## サーフェス
 
-契約: webSearchProviders
+コントラクト: webSearchProviders
 
 ## 関連ドキュメント
 

@@ -1,20 +1,21 @@
 ---
 read_when:
-    - brave プラグインをインストール、設定、または監査しています
-summary: ウェブ検索プロバイダーのサポートを追加します。
+    - brave plugin をインストール、設定、または監査している
+summary: Web 検索用の OpenClaw Brave Search プロバイダー Plugin。
 title: Brave Plugin
 x-i18n:
-    generated_at: "2026-05-03T05:01:55Z"
+    generated_at: "2026-06-27T12:21:53Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b26d45080e2db635e9b07e1c6b674061c2b82549edc4d8d88e6f4f68bc9d43df
+    source_hash: 265b0efa840eb3ebc7bfc1cc47b703737bbd76050ac95e79825728030a166d37
     source_path: plugins/reference/brave.md
     workflow: 16
 ---
 
 # Brave Plugin
 
-Web検索プロバイダーのサポートを追加します。
+Web 検索用の OpenClaw Brave Search プロバイダー Plugin。
 
 ## 配布
 
@@ -23,7 +24,7 @@ Web検索プロバイダーのサポートを追加します。
 
 ## サーフェス
 
-契約: webSearchProviders
+contracts: webSearchProviders
 
 ## 関連ドキュメント
 

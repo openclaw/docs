@@ -1,20 +1,21 @@
 ---
 read_when:
-    - nostr Plugin をインストール、構成、または監査しています
-summary: OpenClaw メッセージの送受信のための Nostr チャネルサーフェスを追加します。
+    - nostr plugin をインストール、設定、または監査している
+summary: NIP-04 暗号化ダイレクトメッセージ用の OpenClaw Nostr チャンネル Plugin。
 title: Nostr Plugin
 x-i18n:
-    generated_at: "2026-05-03T05:03:43Z"
+    generated_at: "2026-06-27T12:26:50Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1205a3b286e406b41029418b5fb9b12dcb19b35aff60c32d12e60c45804d7eaa
+    source_hash: e56fd9eee17c55bcbba3d7b85d783930c10d2368f36173ac478b254c2bd5ec22
     source_path: plugins/reference/nostr.md
     workflow: 16
 ---
 
-# Nostr プラグイン
+# Nostr Plugin
 
-OpenClaw メッセージを送受信するための Nostr チャンネルサーフェスを追加します。
+NIP-04 暗号化ダイレクトメッセージ用の OpenClaw Nostr チャンネルPlugin。
 
 ## 配布
 

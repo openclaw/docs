@@ -11,6 +11,7 @@ x-i18n:
     source_hash: e2f037a50a85b350163c74cf6b9cce335ecaaa5cccc762124122ad6d0321a1fa
     source_path: channels/matrix-push-rules.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 `channels.matrix.streaming` が `"quiet"` の場合、OpenClaw は単一のプレビューイベントをその場で編集し、確定した編集にカスタムコンテンツフラグを付けます。Matrix クライアントは、ユーザーごとのプッシュルールがそのフラグに一致する場合にのみ、最終編集で通知します。このページは、Matrix をセルフホストしていて、各受信者アカウントにそのルールをインストールしたい運用者向けです。

@@ -11,6 +11,7 @@ x-i18n:
     source_hash: f53af21c746cdd44c71485cbad669f4a01a6e5be956675c73831e7b5f15df8c4
     source_path: providers/senseaudio.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 SenseAudio は OpenClaw の共有 `tools.media.audio` パイプラインを通じて、受信音声とボイスノート添付ファイルを文字起こしできます。OpenClaw はマルチパート音声を OpenAI 互換の文字起こしエンドポイントに投稿し、返されたテキストを `{{Transcript}}` と `[Audio]` ブロックとして注入します。

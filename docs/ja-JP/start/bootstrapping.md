@@ -13,6 +13,7 @@ x-i18n:
     source_hash: e25f05ca47184068b87f0bf8b7dea1c427f4ed48edde170a74888d586b8a606d
     source_path: start/bootstrapping.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 ブートストラップは、エージェントのワークスペースを準備し、ID 詳細を収集する**初回実行**の手順です。これはオンボーディングの後、エージェントが初めて起動するときに実行されます。

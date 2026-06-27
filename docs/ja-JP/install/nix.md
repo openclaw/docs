@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 1b4c2eca298ac7ae60baea4d06855edb73c0b8bfe253a3f478d93e934b31253b
     source_path: install/nix.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw を **[nix-openclaw](https://github.com/openclaw/nix-openclaw)** で宣言的にインストールします - ファーストパーティの、必要な機能を含む Home Manager モジュールです。

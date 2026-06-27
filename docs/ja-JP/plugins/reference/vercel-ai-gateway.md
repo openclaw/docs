@@ -1,25 +1,26 @@
 ---
 read_when:
     - vercel-ai-gateway Plugin をインストール、設定、または監査しています
-summary: OpenClawにVercel AI Gatewayモデルプロバイダー対応を追加します。
-title: Vercel AI Gateway Plugin
+summary: OpenClaw に Vercel AI Gateway モデルプロバイダー対応を追加します。
+title: Vercel AI Gateway プラグイン
 x-i18n:
-    generated_at: "2026-05-02T21:02:59Z"
+    generated_at: "2026-06-27T12:29:44Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1fd4dcc30ddd7893aca6ac32c3ed08b287f70ee047f9013fcbe4a44870c24ef4
+    source_hash: d923028f0767ecf6e55c33ad09f769835d5b91fe5285700fc98b1463e9ab7323
     source_path: plugins/reference/vercel-ai-gateway.md
     workflow: 16
 ---
 
 # Vercel AI Gateway プラグイン
 
-OpenClaw に Vercel AI Gateway モデルプロバイダーのサポートを追加します。
+OpenClaw に Vercel AI Gateway モデルプロバイダー対応を追加します。
 
 ## 配布
 
 - パッケージ: `@openclaw/vercel-ai-gateway-provider`
-- インストール経路: OpenClaw に含まれています
+- インストール経路: npm; ClawHub: `clawhub:@openclaw/vercel-ai-gateway-provider`
 
 ## サーフェス
 

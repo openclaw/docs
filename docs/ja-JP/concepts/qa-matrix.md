@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7c6d836492368c470468547950d3765a64187694852222a5a1f0ae4185569abe
     source_path: concepts/qa-matrix.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Matrix QA レーンは、Docker 内の使い捨て Tuwunel ホームサーバーに対して、バンドルされた `@openclaw/matrix` プラグインを実行します。一時的なドライバー、SUT、オブザーバーのアカウントと、事前投入されたルームも使用します。これは Matrix 向けの、実際のトランスポートを使うライブカバレッジです。

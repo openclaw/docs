@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 3ea07f0ae23076906e2ff0246ac75813572f98cffa50afddb6a6b0af8964c4a9
     source_path: concepts/session-pruning.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 セッションのプルーニングは、各LLM呼び出しの前にコンテキストから**古いツール結果**をトリミングします。これにより、通常の会話テキストを書き換えることなく、蓄積したツール出力（exec結果、ファイル読み取り、検索結果）によるコンテキストの肥大化を抑えます。

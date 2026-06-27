@@ -1,36 +1,37 @@
 ---
 read_when:
     - OpenClaw.app のパッケージ化
-    - macOS Gateway の launchd サービスのデバッグ
+    - macOS Gateway launchd サービスのデバッグ
     - macOS 用 Gateway CLI のインストール
-summary: macOS 上の Gateway ランタイム（外部 launchd サービス）
-title: macOS 上の Gateway
+summary: macOS での Gateway ランタイム（外部 launchd サービス）
+title: macOS での Gateway
 x-i18n:
-    generated_at: "2026-05-07T13:22:04Z"
+    generated_at: "2026-06-27T12:03:31Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: caf129918c46f8f54026e9db04e8ad5a033148899d3029fe1a362bb14c7f25f8
+    source_hash: 76c55e3d24e5bc743233e11be4897f4f2a865c97f2e0d795a472caeb6d097d34
     source_path: platforms/mac/bundled-gateway.md
     workflow: 16
 ---
 
-OpenClaw.app は Node/Bun または Gateway ランタイムを同梱しなくなりました。macOS アプリは**外部**の `openclaw` CLI インストールを前提とし、Gateway を子プロセスとして起動せず、ユーザーごとの launchd サービスを管理して Gateway を実行し続けます（または、既存のローカル Gateway がすでに実行中の場合はそれに接続します）。
+OpenClaw.app は Node/Bun や Gateway ランタイムをバンドルしなくなりました。macOS アプリは**外部**の `openclaw` CLI インストールを想定し、Gateway を子プロセスとして起動せず、Gateway を実行し続けるためにユーザーごとの launchd サービスを管理します（または、既存のローカル Gateway がすでに実行中の場合はそれに接続します）。
 
 ## CLI をインストールする（ローカルモードでは必須）
 
-Mac では Node 24 がデフォルトのランタイムです。Node 22 LTS（現在は `22.16+`）も互換性のため引き続き動作します。その後、`openclaw` をグローバルにインストールします。
+Mac では Node 24 がデフォルトのランタイムです。互換性のため、現在 `22.19+` の Node 22 LTS も引き続き動作します。その後、`openclaw` をグローバルにインストールします。
 
 ```bash
 npm install -g openclaw@<version>
 ```
 
-macOS アプリの **CLI をインストール**ボタンは、アプリが内部で使用するものと同じグローバルインストールフローを実行します。まず npm を優先し、次に pnpm、bun が検出された唯一のパッケージマネージャーである場合は bun を使用します。Node は引き続き推奨される Gateway ランタイムです。
+macOS アプリの **Install CLI** ボタンは、アプリが内部で使用するものと同じグローバルインストールフローを実行します。最初に npm を優先し、次に pnpm、検出されたパッケージマネージャーが bun だけの場合は bun を使用します。Node は引き続き推奨される Gateway ランタイムです。
 
 ## Launchd（LaunchAgent としての Gateway）
 
 ラベル:
 
-- `ai.openclaw.gateway`（または `ai.openclaw.<profile>`。従来の `com.openclaw.*` が残っている場合があります）
+- `ai.openclaw.gateway`（または `ai.openclaw.<profile>`。レガシーの `com.openclaw.*` が残っている場合があります）
 
 Plist の場所（ユーザーごと）:
 
@@ -39,18 +40,19 @@ Plist の場所（ユーザーごと）:
 
 マネージャー:
 
-- macOS アプリは、ローカルモードで LaunchAgent のインストール/更新を管理します。
+- macOS アプリは、ローカルモードで LaunchAgent のインストール/更新を所有します。
 - CLI でもインストールできます: `openclaw gateway install`。
 
 動作:
 
-- 「OpenClaw Active」は LaunchAgent を有効/無効にします。
-- アプリを終了しても Gateway は停止しません（launchd が稼働状態を維持します）。
-- 設定済みポートで Gateway がすでに実行中の場合、アプリは新しい Gateway を起動する代わりにそれへ接続します。
+- 「OpenClaw Active」は LaunchAgent を有効化/無効化します。
+- アプリを終了しても Gateway は停止しません（launchd が維持します）。
+- Gateway が設定済みポートですでに実行中の場合、アプリは新しい Gateway を起動せずに接続します。
 
 ログ:
 
-- launchd stdout/err: `/tmp/openclaw/openclaw-gateway.log`
+- launchd stdout: `~/Library/Logs/openclaw/gateway.log`（プロファイルでは `gateway-<profile>.log` を使用）
+- launchd stderr: 抑制
 
 ## バージョン互換性
 

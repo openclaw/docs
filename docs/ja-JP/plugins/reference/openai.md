@@ -1,29 +1,30 @@
 ---
 read_when:
-    - openai Plugin をインストール、設定、または監査しています
-summary: OpenClaw に OpenAI および OpenAI Codex のモデルプロバイダー対応を追加します。
-title: OpenAI Plugin
+    - openai pluginをインストール、設定、または監査しています
+summary: OpenClaw に OpenAI モデルプロバイダーのサポートを追加します。
+title: OpenAIプラグイン
 x-i18n:
-    generated_at: "2026-05-02T21:00:28Z"
+    generated_at: "2026-06-27T12:27:10Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6e6dad420e5879697dda03f866b7c0ef15b020b2c06da6b60293d3914d850969
+    source_hash: c8fa47c22cb54090493f3cbacc461344242e078716760289c0dd4fd0ae8c0085
     source_path: plugins/reference/openai.md
     workflow: 16
 ---
 
-# OpenAI Plugin
+# OpenAIプラグイン
 
-OpenClaw に OpenAI、OpenAI Codex モデルプロバイダーのサポートを追加します。
+OpenClawにOpenAIモデルプロバイダーサポートを追加します。
 
 ## 配布
 
 - パッケージ: `@openclaw/openai-provider`
-- インストール経路: OpenClaw に含まれます
+- インストール経路: OpenClawに含まれます
 
 ## サーフェス
 
-providers: openai, openai-codex; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders
+providers: openai; contracts: imageGenerationProviders, mediaUnderstandingProviders, memoryEmbeddingProviders, realtimeTranscriptionProviders, realtimeVoiceProviders, speechProviders, videoGenerationProviders
 
 ## 関連ドキュメント
 

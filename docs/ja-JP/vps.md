@@ -1,21 +1,22 @@
 ---
 read_when:
     - Linux サーバーまたはクラウド VPS で Gateway を実行したい
-    - ホスティングガイドの簡単な全体像が必要です
-    - OpenClaw 向けの汎用的な Linux サーバーチューニングを行いたい場合
+    - ホスティングガイドの簡単な一覧が必要です
+    - OpenClaw 向けの汎用 Linux サーバーチューニングが必要な場合
 sidebarTitle: Linux Server
 summary: Linux サーバーまたはクラウド VPS で OpenClaw を実行する — プロバイダー選択、アーキテクチャ、チューニング
 title: Linux サーバー
 x-i18n:
-    generated_at: "2026-04-30T05:41:18Z"
+    generated_at: "2026-06-27T13:23:04Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5e8535af0b6d14123acd46436c2e942008cdb8485ae680fb42e9b175723b2232
+    source_hash: d32ca9cd62e99b340827f086602922eae3731d9b6cb42b1fd629917d604c549b
     source_path: vps.md
     workflow: 16
 ---
 
-任意の Linux サーバーまたはクラウド VPS で OpenClaw Gateway を実行します。このページでは、
+OpenClaw Gateway を任意の Linux サーバーまたはクラウド VPS で実行します。このページでは、
 プロバイダーの選び方、クラウドデプロイの仕組み、どこでも適用できる汎用的な Linux
 チューニングについて説明します。
 
@@ -35,32 +36,32 @@ x-i18n:
   <Card title="Raspberry Pi" href="/ja-JP/install/raspberry-pi">ARM セルフホスト</Card>
 </CardGroup>
 
-**AWS (EC2 / Lightsail / free tier)** でも問題なく動作します。
+**AWS (EC2 / Lightsail / 無料利用枠)** も問題なく動作します。
 コミュニティによる動画ウォークスルーは
 [x.com/techfrenAJ/status/2014934471095812547](https://x.com/techfrenAJ/status/2014934471095812547)
-で利用できます
-（コミュニティリソース -- 利用できなくなる場合があります）。
+で公開されています
+（コミュニティリソース -- 利用できなくなる可能性があります）。
 
 ## クラウド設定の仕組み
 
 - **Gateway は VPS 上で実行**され、状態とワークスペースを所有します。
-- ノートパソコンまたはスマートフォンから **コントロール UI** または **Tailscale/SSH** 経由で接続します。
+- ノート PC やスマートフォンから **Control UI** または **Tailscale/SSH** 経由で接続します。
 - VPS を信頼できる唯一の情報源として扱い、状態とワークスペースを定期的に**バックアップ**します。
-- 安全なデフォルト: Gateway を loopback に保持し、SSH トンネルまたは Tailscale Serve 経由でアクセスします。
-  `lan` または `tailnet` にバインドする場合は、`gateway.auth.token` または `gateway.auth.password` を必須にしてください。
+- セキュアなデフォルト: Gateway は loopback に保持し、SSH トンネルまたは Tailscale Serve 経由でアクセスします。
+  `lan` または `tailnet` にバインドする場合は、`gateway.auth.token` または `gateway.auth.password` を必須にします。
 
 関連ページ: [Gateway リモートアクセス](/ja-JP/gateway/remote)、[プラットフォームハブ](/ja-JP/platforms)。
 
-## まず管理アクセスを強化する
+## まず管理アクセスを堅牢化する
 
-公開 VPS に OpenClaw をインストールする前に、そのマシン自体をどのように管理するかを決めます。
+公開 VPS に OpenClaw をインストールする前に、そのマシン自体をどのように管理するかを決めてください。
 
-- Tailnet のみの管理アクセスにしたい場合は、まず Tailscale をインストールし、VPS を
-  tailnet に参加させ、Tailscale IP または MagicDNS 名経由で 2 つ目の SSH セッションを確認してから、
+- Tailnet のみの管理アクセスにしたい場合は、まず Tailscale をインストールし、VPS を tailnet に参加させ、
+  Tailscale IP または MagicDNS 名経由で 2 つ目の SSH セッションを確認してから、
   公開 SSH を制限します。
-- Tailscale を使用しない場合は、追加のサービスを公開する前に、SSH
-  経路に対して同等の強化を適用します。
-- これは Gateway アクセスとは別です。OpenClaw を loopback にバインドしたまま、
+- Tailscale を使わない場合は、さらに多くのサービスを公開する前に、SSH
+  経路に相当する堅牢化を適用します。
+- これは Gateway アクセスとは別です。OpenClaw を loopback にバインドしたままにし、
   ダッシュボードには SSH トンネルまたは Tailscale Serve を使うこともできます。
 
 Tailscale 固有の Gateway オプションは [Tailscale](/ja-JP/gateway/tailscale) にあります。
@@ -69,16 +70,16 @@ Tailscale 固有の Gateway オプションは [Tailscale](/ja-JP/gateway/tailsc
 
 すべてのユーザーが同じ信頼境界内にいて、エージェントが業務専用である場合、チーム用に単一のエージェントを実行する構成は有効です。
 
-- 専用ランタイム（VPS/VM/コンテナ + 専用 OS ユーザー/アカウント）上に保持します。
-- そのランタイムで個人用の Apple/Google アカウントや、個人用ブラウザー/パスワードマネージャープロファイルにサインインしないでください。
-- ユーザー同士が敵対的である場合は、gateway/ホスト/OS ユーザーごとに分離します。
+- 専用ランタイム（VPS/VM/container + 専用 OS ユーザー/アカウント）で維持します。
+- そのランタイムを個人の Apple/Google アカウントや個人のブラウザー/パスワードマネージャープロファイルにサインインさせないでください。
+- ユーザー同士が敵対的である場合は、gateway/host/OS ユーザー単位で分離します。
 
 セキュリティモデルの詳細: [セキュリティ](/ja-JP/gateway/security)。
 
 ## VPS でノードを使う
 
-Gateway をクラウドに保持し、ローカルデバイス
-（Mac/iOS/Android/headless）上の**ノード**をペアリングできます。ノードは、Gateway がクラウドに留まったまま、
+Gateway をクラウドに置いたまま、ローカルデバイス
+（Mac/iOS/Android/headless）上の**ノード**とペアリングできます。ノードは、Gateway がクラウドに残ったまま、
 ローカルの画面/カメラ/canvas と `system.run`
 機能を提供します。
 
@@ -97,23 +98,23 @@ EOF
 source ~/.bashrc
 ```
 
-- `NODE_COMPILE_CACHE` は、繰り返し実行するコマンドの起動時間を改善します。
-- `OPENCLAW_NO_RESPAWN=1` は、自己再起動パスによる追加の起動オーバーヘッドを回避します。
-- 最初のコマンド実行でキャッシュがウォームアップされ、その後の実行は高速になります。
-- Raspberry Pi 固有の内容は、[Raspberry Pi](/ja-JP/install/raspberry-pi) を参照してください。
+- `NODE_COMPILE_CACHE` は、繰り返し実行するコマンドの起動時間を短縮します。
+- `OPENCLAW_NO_RESPAWN=1` は、通常の Gateway 再起動をプロセス内に保ち、余分なプロセスの引き渡しを避け、小規模ホストでの PID 追跡をシンプルにします。
+- 最初のコマンド実行でキャッシュがウォームアップされ、その後の実行は速くなります。
+- Raspberry Pi 固有の情報は、[Raspberry Pi](/ja-JP/install/raspberry-pi) を参照してください。
 
 ### systemd チューニングチェックリスト（任意）
 
-`systemd` を使用する VM ホストでは、次を検討してください。
+`systemd` を使う VM ホストでは、次を検討してください。
 
-- 安定した起動パスのためにサービス環境変数を追加します。
+- 安定した起動パスのためにサービス環境変数を追加します:
   - `OPENCLAW_NO_RESPAWN=1`
   - `NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache`
-- 再起動動作を明示的に保ちます。
+- 再起動動作を明示的にします:
   - `Restart=always`
   - `RestartSec=2`
   - `TimeoutStartSec=90`
-- ランダム I/O によるコールドスタートのペナルティを減らすため、状態/キャッシュパスには SSD バックのディスクを推奨します。
+- 状態/キャッシュパスには SSD バックのディスクを優先し、ランダム I/O によるコールドスタートのペナルティを減らします。
 
 標準の `openclaw onboard --install-daemon` パスでは、ユーザーユニットを編集します。
 
@@ -130,15 +131,15 @@ RestartSec=2
 TimeoutStartSec=90
 ```
 
-意図的にシステムユニットをインストールした場合は、
-`sudo systemctl edit openclaw-gateway.service` 経由で
+意図的にシステムユニットとしてインストールした場合は、
+`sudo systemctl edit openclaw-gateway.service` で
 `openclaw-gateway.service` を編集します。
 
-`Restart=` ポリシーが自動復旧にどのように役立つか:
+`Restart=` ポリシーが自動復旧にどう役立つか:
 [systemd はサービス復旧を自動化できます](https://www.redhat.com/en/blog/systemd-automate-recovery)。
 
-Linux の OOM 動作、子プロセスの犠牲プロセス選択、`exit 137`
-診断については、[Linux のメモリ圧迫と OOM kill](/ja-JP/platforms/linux#memory-pressure-and-oom-kills) を参照してください。
+Linux の OOM 動作、子プロセスの victim 選択、`exit 137`
+診断については、[Linux のメモリプレッシャーと OOM kill](/ja-JP/platforms/linux#memory-pressure-and-oom-kills) を参照してください。
 
 ## 関連
 

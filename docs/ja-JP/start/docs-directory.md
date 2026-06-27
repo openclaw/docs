@@ -1,28 +1,29 @@
 ---
 read_when:
-    - 主要なドキュメントページにすばやくアクセスしたい
-summary: 最もよく使われる OpenClaw ドキュメントへの厳選リンク。
-title: ドキュメントディレクトリ
+    - 主要なドキュメントページにすばやくアクセスしたい場合
+summary: よく使われる OpenClaw ドキュメントへの厳選リンク。
+title: Docs ディレクトリ
 x-i18n:
-    generated_at: "2026-05-10T19:52:40Z"
+    generated_at: "2026-06-27T13:04:48Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ddd6903aeb87e36db977b2cef62bd80e84fc67633ca00beb3365ced1f5abdd99
+    source_hash: f7d45effe4df50fb544e9f6fd2fcd87f4ed674eba0042eace757dbfcad93d07a
     source_path: start/docs-directory.md
     workflow: 16
 ---
 
 <Note>
-このページはキュレーションされた索引です。初めての場合は、[はじめに](/ja-JP/start/getting-started)から開始してください。
-ドキュメント全体のマップについては、[Docs ハブ](/ja-JP/start/hubs)を参照してください。
+このページは厳選された索引です。初めての場合は、[はじめに](/ja-JP/start/getting-started)から始めてください。
+ドキュメント全体のマップについては、[ドキュメントハブ](/ja-JP/start/hubs)を参照してください。
 </Note>
 
-## ここから開始
+## ここから始める
 
-- [Docs ハブ（すべてのページへのリンク）](/ja-JP/start/hubs)
+- [ドキュメントハブ（すべてのページへのリンク）](/ja-JP/start/hubs)
 - [ヘルプ](/ja-JP/help)
-- [設定](/ja-JP/gateway/configuration)
-- [設定例](/ja-JP/gateway/configuration-examples)
+- [構成](/ja-JP/gateway/configuration)
+- [構成例](/ja-JP/gateway/configuration-examples)
 - [スラッシュコマンド](/ja-JP/tools/slash-commands)
 - [マルチエージェントルーティング](/ja-JP/concepts/multi-agent)
 - [更新とロールバック](/ja-JP/install/updating)
@@ -30,7 +31,7 @@ x-i18n:
 - [Nix モード](/ja-JP/install/nix)
 - [OpenClaw アシスタントのセットアップ](/ja-JP/start/openclaw)
 - [Skills](/ja-JP/tools/skills)
-- [Skills 設定](/ja-JP/tools/skills-config)
+- [Skills 構成](/ja-JP/tools/skills-config)
 - [ワークスペーステンプレート](/ja-JP/reference/templates/AGENTS)
 - [RPC アダプター](/ja-JP/reference/rpc)
 - [Gateway ランブック](/ja-JP/gateway)
@@ -58,7 +59,7 @@ x-i18n:
 - [macOS アプリ](/ja-JP/platforms/macos)
 - [iOS アプリ](/ja-JP/platforms/ios)
 - [Android アプリ](/ja-JP/platforms/android)
-- [Windows（WSL2）](/ja-JP/platforms/windows)
+- [Windows Hub](/ja-JP/platforms/windows)
 - [Linux アプリ](/ja-JP/platforms/linux)
 
 ## 運用と安全性
@@ -73,4 +74,4 @@ x-i18n:
 ## 関連
 
 - [はじめに](/ja-JP/start/getting-started)
-- [Docs ハブ](/ja-JP/start/hubs)
+- [ドキュメントハブ](/ja-JP/start/hubs)

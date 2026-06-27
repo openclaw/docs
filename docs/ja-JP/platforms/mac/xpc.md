@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 359a33f1a4f5854bd18355f588b4465b5627d9c8fa10a37c884995375da32cac
     source_path: platforms/mac/xpc.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 # OpenClaw macOS IPC アーキテクチャ

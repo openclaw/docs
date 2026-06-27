@@ -1,27 +1,28 @@
 ---
 read_when:
-    - SecretRef 認証情報カバレッジの検証
-    - 資格情報が `secrets configure` または `secrets apply` の対象かどうかを監査する
-    - 認証情報がサポート対象範囲外である理由を検証する
-summary: SecretRef 認証情報サーフェスの正規のサポート対象とサポート対象外
-title: SecretRef の認証情報サーフェス
+    - SecretRef 資格情報のカバレッジを検証する
+    - 認証情報が `secrets configure` または `secrets apply` の対象かどうかを監査する
+    - サポート対象範囲外に認証情報がある理由を検証する
+summary: 正規のサポート対象および非サポート対象の SecretRef 認証情報サーフェス
+title: SecretRef 認証情報サーフェス
 x-i18n:
-    generated_at: "2026-05-10T19:52:09Z"
+    generated_at: "2026-06-27T13:01:32Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2778ea781f7b6fc4d579892225f9cf29bfb8f9ece5961554620ca8e82123ceff
+    source_hash: 668ee7e72565194bfe53a397767d060e5fe7743c9bf8bde2597ec3dad2a32431
     source_path: reference/secretref-credential-surface.md
     workflow: 16
 ---
 
-このページは、正準 SecretRef 資格情報サーフェスを定義します。
+このページでは、正準の SecretRef 認証情報サーフェスを定義します。
 
 スコープの意図:
 
-- スコープ内: OpenClaw が発行またはローテーションしない、厳密にユーザー提供の資格情報。
-- スコープ外: 実行時に発行される、またはローテーションされる資格情報、OAuth 更新用データ、セッションに類するアーティファクト。
+- スコープ内: OpenClaw が発行またはローテーションしない、厳密にユーザー指定の認証情報。
+- スコープ外: 実行時に発行される、またはローテーションされる認証情報、OAuth リフレッシュ用素材、およびセッション類似のアーティファクト。
 
-## サポートされる資格情報
+## サポートされる認証情報
 
 ### `openclaw.json` ターゲット (`secrets configure` + `secrets apply` + `secrets audit`)
 
@@ -45,11 +46,15 @@ x-i18n:
 - `agents.list[].tts.providers.*.apiKey`
 - `agents.list[].memorySearch.remote.apiKey`
 - `talk.providers.*.apiKey`
+- `talk.realtime.providers.*.apiKey`
 - `messages.tts.providers.*.apiKey`
 - `tools.web.fetch.firecrawl.apiKey`
 - `plugins.entries.acpx.config.mcpServers.*.env.*`
 - `plugins.entries.brave.config.webSearch.apiKey`
+- `plugins.entries.codex.config.appServer.authToken`
+- `plugins.entries.codex.config.appServer.headers.*`
 - `plugins.entries.exa.config.webSearch.apiKey`
+- `plugins.entries.google-meet.config.realtime.providers.*.apiKey`
 - `plugins.entries.google.config.webSearch.apiKey`
 - `plugins.entries.xai.config.webSearch.apiKey`
 - `plugins.entries.moonshot.config.webSearch.apiKey`
@@ -57,10 +62,12 @@ x-i18n:
 - `plugins.entries.firecrawl.config.webSearch.apiKey`
 - `plugins.entries.minimax.config.webSearch.apiKey`
 - `plugins.entries.tavily.config.webSearch.apiKey`
+- `plugins.entries.parallel.config.webSearch.apiKey`
 - `plugins.entries.voice-call.config.realtime.providers.*.apiKey`
 - `plugins.entries.voice-call.config.streaming.providers.*.apiKey`
 - `plugins.entries.voice-call.config.tts.providers.*.apiKey`
 - `plugins.entries.voice-call.config.twilio.authToken`
+- `tools.web.search.*.apiKey`
 - `tools.web.search.apiKey`
 - `gateway.auth.password`
 - `gateway.auth.token`
@@ -73,12 +80,16 @@ x-i18n:
 - `channels.telegram.accounts.*.webhookSecret`
 - `channels.slack.botToken`
 - `channels.slack.appToken`
+- `channels.slack.relay.authToken`
 - `channels.slack.userToken`
 - `channels.slack.signingSecret`
 - `channels.slack.accounts.*.botToken`
 - `channels.slack.accounts.*.appToken`
+- `channels.slack.accounts.*.relay.authToken`
 - `channels.slack.accounts.*.userToken`
 - `channels.slack.accounts.*.signingSecret`
+- `channels.sms.authToken`
+- `channels.sms.accounts.*.authToken`
 - `channels.discord.token`
 - `channels.discord.pluralkit.token`
 - `channels.discord.voice.tts.providers.*.apiKey`
@@ -112,34 +123,34 @@ x-i18n:
 - `channels.zalo.webhookSecret`
 - `channels.zalo.accounts.*.botToken`
 - `channels.zalo.accounts.*.webhookSecret`
-- 兄弟の `serviceAccountRef` 経由の `channels.googlechat.serviceAccount`（互換性例外）
-- 兄弟の `serviceAccountRef` 経由の `channels.googlechat.accounts.*.serviceAccount`（互換性例外）
+- 兄弟 `serviceAccountRef` 経由の `channels.googlechat.serviceAccount` (互換性の例外)
+- 兄弟 `serviceAccountRef` 経由の `channels.googlechat.accounts.*.serviceAccount` (互換性の例外)
 
 ### `auth-profiles.json` ターゲット (`secrets configure` + `secrets apply` + `secrets audit`)
 
-- `profiles.*.keyRef` (`type: "api_key"`; `auth.profiles.<id>.mode = "oauth"` の場合はサポート対象外)
-- `profiles.*.tokenRef` (`type: "token"`; `auth.profiles.<id>.mode = "oauth"` の場合はサポート対象外)
+- `profiles.*.keyRef` (`type: "api_key"`; `auth.profiles.<id>.mode = "oauth"` の場合は未サポート)
+- `profiles.*.tokenRef` (`type: "token"`; `auth.profiles.<id>.mode = "oauth"` の場合は未サポート)
 
 [//]: # "secretref-supported-list-end"
 
 注記:
 
-- 認証プロファイルのプランターゲットには `agentId` が必要です。
-- プランエントリは `profiles.*.key` / `profiles.*.token` を対象にし、兄弟 ref (`keyRef` / `tokenRef`) を書き込みます。
-- 認証プロファイルの ref は、実行時の解決と監査カバレッジに含まれます。
-- `openclaw.json` では、SecretRefs は `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}` のような構造化オブジェクトを使用する必要があります。レガシーの `secretref-env:<ENV_VAR>` マーカー文字列は SecretRef 資格情報パスでは拒否されます。有効なマーカーを移行するには `openclaw doctor --fix` を実行してください。
-- OAuth ポリシーガード: `auth.profiles.<id>.mode = "oauth"` は、そのプロファイルの SecretRef 入力と組み合わせることはできません。このポリシーに違反した場合、起動/再読み込みと認証プロファイル解決は即座に失敗します。
-- SecretRef 管理のモデルプロバイダーでは、生成される `agents/*/agent/models.json` エントリは `apiKey`/ヘッダーサーフェスについて、シークレット値を解決したものではなく、非シークレットのマーカーを保持します。
-- マーカーの永続化はソース権威です。OpenClaw は、解決済みの実行時シークレット値ではなく、アクティブなソース設定スナップショット（解決前）からマーカーを書き込みます。
-- ウェブ検索について:
-  - 明示的なプロバイダーモード (`tools.web.search.provider` が設定済み) では、選択されたプロバイダーキーのみが有効です。
-  - 自動モード (`tools.web.search.provider` が未設定) では、優先順位に従って解決される最初のプロバイダーキーのみが有効です。
-  - 自動モードでは、選択されていないプロバイダー ref は、選択されるまで非アクティブとして扱われます。
-  - レガシーの `tools.web.search.*` プロバイダーパスは互換性期間中も引き続き解決されますが、正準 SecretRef サーフェスは `plugins.entries.<plugin>.config.webSearch.*` です。
+- auth-profile プランターゲットには `agentId` が必要です。
+- プランエントリは `profiles.*.key` / `profiles.*.token` をターゲットにし、兄弟 ref (`keyRef` / `tokenRef`) を書き込みます。
+- auth-profile ref は実行時解決と監査カバレッジに含まれます。
+- `openclaw.json` では、SecretRef は `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}` のような構造化オブジェクトを使用する必要があります。レガシーの `secretref-env:<ENV_VAR>` マーカー文字列は SecretRef 認証情報パスでは拒否されます。有効なマーカーを移行するには `openclaw doctor --fix` を実行してください。
+- OAuth ポリシーガード: `auth.profiles.<id>.mode = "oauth"` は、そのプロファイルの SecretRef 入力と組み合わせることはできません。このポリシーに違反すると、起動/再読み込みおよび auth-profile 解決は即座に失敗します。
+- SecretRef 管理のモデルプロバイダーでは、生成される `agents/*/agent/models.json` エントリは、`apiKey`/ヘッダーサーフェスについて非シークレットのマーカー (解決済みのシークレット値ではない) を永続化します。
+- マーカーの永続化はソースを権威とします。OpenClaw は解決済みの実行時シークレット値からではなく、アクティブなソース設定スナップショット (解決前) からマーカーを書き込みます。
+- Web 検索について:
+  - 明示的なプロバイダーモード (`tools.web.search.provider` が設定されている) では、選択されたプロバイダーキーのみがアクティブです。
+  - 自動モード (`tools.web.search.provider` が未設定) では、優先順位によって解決される最初のプロバイダーキーのみがアクティブです。
+  - 自動モードでは、選択されていないプロバイダー ref は選択されるまで非アクティブとして扱われます。
+  - レガシーの `tools.web.search.*` プロバイダーパスは互換性期間中も引き続き解決されますが、正準の SecretRef サーフェスは `plugins.entries.<plugin>.config.webSearch.*` です。
 
-## サポート対象外の資格情報
+## サポートされない認証情報
 
-スコープ外の資格情報には以下が含まれます:
+スコープ外の認証情報には以下が含まれます:
 
 [//]: # "secretref-unsupported-list-start"
 
@@ -157,9 +168,9 @@ x-i18n:
 
 根拠:
 
-- これらの資格情報は、発行される、ローテーションされる、セッションを保持する、または OAuth として永続するクラスであり、読み取り専用の外部 SecretRef 解決には適合しません。
+- これらの認証情報は、発行済み、ローテーション対象、セッションを持つ、または OAuth で永続するクラスであり、読み取り専用の外部 SecretRef 解決には適合しません。
 
 ## 関連
 
 - [シークレット管理](/ja-JP/gateway/secrets)
-- [認証資格情報のセマンティクス](/ja-JP/auth-credential-semantics)
+- [認証情報セマンティクス](/ja-JP/auth-credential-semantics)

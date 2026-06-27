@@ -1,26 +1,27 @@
 ---
 read_when:
-    - qa-lab Pluginをインストール、設定、または監査している
-summary: 非公開のデバッガー UI とシナリオランナーを備えた OpenClaw QA ラボ Plugin。
-title: QA Lab Plugin
+    - qa-lab Plugin をインストール、構成、または監査している
+summary: プライベートなデバッガー UI とシナリオランナーを備えた OpenClaw QA ラボプラグイン。
+title: QA Lab plugin
 x-i18n:
-    generated_at: "2026-05-02T21:01:00Z"
+    generated_at: "2026-06-27T12:27:46Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a565d11bc2e1051685b6c067b695fbec980bfe21f50c98d5a616ed3dcbecb98e
+    source_hash: 0de3ac126939c822225cfd4bf75af594e6066f7992cacc71b1455638aab3af0b
     source_path: plugins/reference/qa-lab.md
     workflow: 16
 ---
 
-# QA Lab Plugin
+# QA Lab plugin
 
-非公開デバッガー UI とシナリオランナーを備えた OpenClaw QA lab Plugin。
+プライベートデバッガー UI とシナリオランナーを備えた OpenClaw QA lab plugin。
 
 ## 配布
 
 - パッケージ: `@openclaw/qa-lab`
 - インストール経路: ソースチェックアウトのみ
 
-## サーフェス
+## Surface
 
-Plugin
+contracts: webSearchProviders

@@ -11,6 +11,7 @@ x-i18n:
     source_hash: bd1a5954e3994e3640ee17c62acedc314716c3ed5e52528da436c36c077ebead
     source_path: providers/sglang.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 SGLang は、OpenAI 互換の HTTP API 経由でオープンウェイトモデルを提供します。OpenClaw は、利用可能なモデルの自動検出付きで `openai-completions` プロバイダーファミリーを使用して SGLang に接続します。

@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 8db92aaf1063ebcbd8630dfcb8ca0a4e9eeb1c64f5b8868bf11c836777180515
     source_path: concepts/markdown-formatting.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw は、送信 Markdown をチャネル固有の出力としてレンダリングする前に、共有の中間表現 (IR) へ変換して整形します。IR は元のテキストをそのまま保ちながら、スタイル/リンクのスパンを保持するため、チャンク分割とレンダリングをチャネル間で一貫させられます。

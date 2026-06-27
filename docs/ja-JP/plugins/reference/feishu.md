@@ -1,20 +1,21 @@
 ---
 read_when:
-    - feishu Pluginのインストール、設定、または監査を行っています
-summary: OpenClaw メッセージの送受信に対応する Feishu チャンネルサーフェスを追加します。
+    - feishu plugin のインストール、設定、または監査を行っている
+summary: OpenClaw Feishu/Lark チャネルPlugin。チャットと職場ツール向け（@m1heng によるコミュニティ保守）。
 title: Feishu Plugin
 x-i18n:
-    generated_at: "2026-05-03T05:02:43Z"
+    generated_at: "2026-06-27T12:24:00Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cb9fa20533e6ad7f65ffbb3050166637bea8e8ab867dd3894ad90a77999ba9b8
+    source_hash: d55792e08be92877a8b86548b725b59aee149b352bba8a5e51ed590a59e0dbc9
     source_path: plugins/reference/feishu.md
     workflow: 16
 ---
 
-# Feishu Plugin
+# Feishu プラグイン
 
-OpenClaw メッセージを送受信するための Feishu チャネルサーフェスを追加します。
+チャットとワークプレイスツール向けの OpenClaw Feishu/Lark チャネルプラグイン（@m1heng によりコミュニティメンテナンス）。
 
 ## 配布
 
@@ -23,7 +24,7 @@ OpenClaw メッセージを送受信するための Feishu チャネルサーフ
 
 ## サーフェス
 
-チャネル: feishu; 契約: tools; Skills
+チャネル: feishu; コントラクト: tools; スキル
 
 ## 関連ドキュメント
 

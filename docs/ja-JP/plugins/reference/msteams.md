@@ -1,20 +1,21 @@
 ---
 read_when:
     - msteams Plugin をインストール、設定、または監査しています
-summary: OpenClaw メッセージを送受信するための Microsoft Teams チャネルサーフェスを追加します。
+summary: ボット会話用の OpenClaw Microsoft Teams チャンネル Plugin。
 title: Microsoft Teams Plugin
 x-i18n:
-    generated_at: "2026-05-03T05:03:35Z"
+    generated_at: "2026-06-27T12:26:31Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b1e72dae5dc51a30521bde8520afec7cd743d236df63f440098b72a922bdad9c
+    source_hash: 32353faf19a94c9df5ffc57fbf0ef91391500e0ae317c9626edcbbcf295c697b
     source_path: plugins/reference/msteams.md
     workflow: 16
 ---
 
 # Microsoft Teams Plugin
 
-OpenClaw メッセージを送受信するための Microsoft Teams チャネルサーフェスを追加します。
+ボットの会話向けの OpenClaw Microsoft Teams チャネルPlugin。
 
 ## 配布
 

@@ -1,25 +1,26 @@
 ---
 read_when:
-    - qqbot Plugin をインストール、設定、または監査しています
-summary: OpenClaw メッセージを送受信するための QQ Bot チャンネルサーフェスを追加します。
-title: QQ Bot Plugin
+    - qqbot plugin をインストール、設定、または監査している
+summary: グループおよびダイレクトメッセージのワークフロー向けの OpenClaw QQ Bot チャンネル Plugin。
+title: QQ Bot plugin
 x-i18n:
-    generated_at: "2026-05-03T05:03:45Z"
+    generated_at: "2026-06-27T12:28:02Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 988c342ef1cabeda5e3ede7ea598e3a96945bf814f9f823f17e1c357bfe3bf9c
+    source_hash: 10e67c8c8bd01a2fcd3ca55c32f6941cd52551ad241cb16a2ea38c62d80cfeb9
     source_path: plugins/reference/qqbot.md
     workflow: 16
 ---
 
-# QQ Bot Plugin
+# QQ Bot プラグイン
 
-OpenClaw メッセージを送受信するための QQ Bot チャネルサーフェスを追加します。
+グループおよびダイレクトメッセージのワークフロー向けの OpenClaw QQ Bot チャンネルプラグイン。
 
 ## 配布
 
 - パッケージ: `@openclaw/qqbot`
-- インストール経路: npm; ClawHub
+- インストール経路: npm、ClawHub
 
 ## サーフェス
 

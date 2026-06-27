@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 298b92f27abb8321be807fe4d95c7cd568a0fb8f543d168863b2adb9b3ddcde4
     source_path: security/formal-verification.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 このページは、OpenClaw の**形式的セキュリティモデル**（現時点では TLA+/TLC。必要に応じて追加）を追跡します。

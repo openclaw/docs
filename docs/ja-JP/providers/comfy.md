@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 41dda4be24d5b2c283fa499a345cf9f38747ec19b4010163ceffd998307ca086
     source_path: providers/comfy.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw には、ワークフロー駆動の ComfyUI 実行向けに、`comfy` プラグインが同梱されています。このプラグインは完全にワークフロー駆動であるため、OpenClaw は汎用的な `size`、`aspectRatio`、`resolution`、`durationSeconds`、または TTS 形式のコントロールをグラフにマッピングしようとはしません。

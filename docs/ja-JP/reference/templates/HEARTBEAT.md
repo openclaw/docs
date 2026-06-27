@@ -1,23 +1,31 @@
 ---
 read_when:
-    - ワークスペースを手動でブートストラップする場合
-summary: HEARTBEAT.md のワークスペーステンプレート
+    - ワークスペースを手動でブートストラップする
+summary: HEARTBEAT.md 用のワークスペーステンプレート
 title: HEARTBEAT.md テンプレート
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T05:19:49Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: f234f7f5fd016a29a56bae11fc9114649e9c48acd0ece69a9accf90302ed728c
-  source_path: reference/templates/HEARTBEAT.md
-  workflow: 15
+    generated_at: "2026-06-27T13:02:45Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 44a1ea787d67110ca53d752706b62f5ce5c4df8637897dee97ce6502f6a05eb6
+    source_path: reference/templates/HEARTBEAT.md
+    workflow: 16
 ---
 
-```markdown
-# Heartbeat API 呼び出しをスキップするには、このファイルを空のままにする（またはコメントだけにする）。
+# HEARTBEAT.md テンプレート
 
-# エージェントに定期的に確認してほしいことがある場合は、以下にタスクを追加する。
+`HEARTBEAT.md` はエージェントワークスペースにあります。OpenClaw に Heartbeat モデル呼び出しをスキップさせたい場合は、このファイルを空にするか、Markdown コメントと見出しだけにします。
+
+デフォルトのランタイムテンプレートは次のとおりです。
+
+```markdown
+# Keep this file empty (or with only comments) to skip heartbeat API calls.
+
+# Add tasks below when you want the agent to check something periodically.
 ```
+
+エージェントに何かを定期的に確認させたい場合にのみ、コメントの下に短いタスクを追加します。Heartbeat 指示は定期的な起床時に読み込まれるため、小さく保ってください。
 
 ## 関連
 

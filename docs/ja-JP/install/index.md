@@ -1,28 +1,33 @@
 ---
 read_when:
     - はじめにのクイックスタート以外のインストール方法が必要です
-    - クラウドプラットフォームにデプロイしたい場合
-    - 更新、移行、またはアンインストールする必要があります
+    - クラウドプラットフォームにデプロイしたい
+    - 更新、移行、またはアンインストールが必要です
 summary: OpenClaw のインストール - インストーラースクリプト、npm/pnpm/bun、ソースから、Docker など
 title: インストール
 x-i18n:
-    generated_at: "2026-05-07T13:21:06Z"
+    generated_at: "2026-06-27T11:49:16Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8a5dc92d262710cc96a160b7cac2b93ee1e25f994ddcd45e274ad96c026b7d72
+    source_hash: a8c6108cecea3e38a6f714758fe4de9b01eebe1c89f9ff68251685c440e8a41f
     source_path: install/index.md
     workflow: 16
 ---
 
 ## システム要件
 
-- **Node 24**（推奨）または Node 22.16+ - インストーラースクリプトがこれを自動的に処理します
-- **macOS、Linux、または Windows** - ネイティブ Windows と WSL2 の両方に対応しています。WSL2 のほうが安定しています。[Windows](/ja-JP/platforms/windows) を参照してください。
+- **Node 24**（推奨）または Node 22.19+ - インストーラースクリプトがこれを自動的に処理します
+- **macOS、Linux、または Windows** - Windows ユーザーは、ネイティブの Windows Hub アプリ、PowerShell CLI インストーラー、または WSL2 Gateway から始められます。[Windows](/ja-JP/platforms/windows) を参照してください。
 - ソースからビルドする場合のみ `pnpm` が必要です
 
 ## 推奨: インストーラースクリプト
 
 最速のインストール方法です。OS を検出し、必要に応じて Node をインストールし、OpenClaw をインストールして、オンボーディングを起動します。
+
+<Note>
+Windows デスクトップユーザーは、セットアップ、トレイステータス、チャット、ノードモード、ローカル MCP モードを含むネイティブの [Windows Hub](/ja-JP/platforms/windows#recommended-windows-hub) コンパニオンアプリもインストールできます。
+</Note>
 
 <Tabs>
   <Tab title="macOS / Linux / WSL2">
@@ -59,21 +64,21 @@ x-i18n:
 ### ローカルプレフィックスインストーラー (`install-cli.sh`)
 
 システム全体の Node インストールに依存せず、OpenClaw と Node を
-`~/.openclaw` のようなローカルプレフィックスの下に保持したい場合に使用します:
+`~/.openclaw` のようなローカルプレフィックス配下に保持したい場合に使用します:
 
 ```bash
 curl -fsSL https://openclaw.ai/install-cli.sh | bash
 ```
 
-デフォルトで npm インストールに対応し、同じプレフィックスフローの下での
-git チェックアウトインストールにも対応しています。完全なリファレンス: [インストーラー内部](/ja-JP/install/installer#install-clish)。
+デフォルトで npm インストールに対応し、同じプレフィックスフロー配下での
+git-checkout インストールにも対応しています。完全なリファレンス: [インストーラー内部](/ja-JP/install/installer#install-clish)。
 
-すでにインストール済みですか? `openclaw update --channel dev` と `openclaw update --channel stable` でパッケージインストールと git インストールを切り替えられます。
+すでにインストール済みですか？`openclaw update --channel dev` と `openclaw update --channel stable` でパッケージインストールと git インストールを切り替えられます。
 [更新](/ja-JP/install/updating#switch-between-npm-and-git-installs) を参照してください。
 
 ### npm、pnpm、または bun
 
-Node を自分で管理している場合:
+すでに自分で Node を管理している場合:
 
 <Tabs>
   <Tab title="npm">
@@ -81,6 +86,11 @@ Node を自分で管理している場合:
     npm install -g openclaw@latest
     openclaw onboard --install-daemon
     ```
+
+    <Note>
+    ホスト型インストーラーは、OpenClaw パッケージインストール時に `min-release-age` などの npm 鮮度フィルターを解除します。npm で手動インストールする場合は、自分の npm ポリシーが引き続き適用されます。
+    </Note>
+
   </Tab>
   <Tab title="pnpm">
     ```bash
@@ -107,15 +117,6 @@ Node を自分で管理している場合:
   </Tab>
 </Tabs>
 
-<Accordion title="Troubleshooting: sharp build errors (npm)">
-  グローバルにインストールされた libvips が原因で `sharp` が失敗する場合:
-
-```bash
-SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g openclaw@latest
-```
-
-</Accordion>
-
 ### ソースから
 
 コントリビューター、またはローカルチェックアウトから実行したい場合:
@@ -128,22 +129,22 @@ pnpm link --global
 openclaw onboard --install-daemon
 ```
 
-またはリンクを省略し、リポジトリ内から `pnpm openclaw ...` を使用します。完全な開発ワークフローについては [セットアップ](/ja-JP/start/setup) を参照してください。
+または、リンクを省略してリポジトリ内から `pnpm openclaw ...` を使用します。完全な開発ワークフローについては [セットアップ](/ja-JP/start/setup) を参照してください。
 
-### GitHub main からインストール
+### GitHub main チェックアウトからインストール
 
 ```bash
-npm install -g github:openclaw/openclaw#main
+curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --install-method git --version main
 ```
 
 ### コンテナとパッケージマネージャー
 
 <CardGroup cols={2}>
   <Card title="Docker" href="/ja-JP/install/docker" icon="container">
-    コンテナ化された、またはヘッドレスなデプロイ。
+    コンテナ化またはヘッドレスデプロイ。
   </Card>
   <Card title="Podman" href="/ja-JP/install/podman" icon="container">
-    Docker に代わるルートレスコンテナ。
+    Docker の rootless コンテナ代替。
   </Card>
   <Card title="Nix" href="/ja-JP/install/nix" icon="snowflake">
     Nix flake による宣言的インストール。
@@ -152,11 +153,11 @@ npm install -g github:openclaw/openclaw#main
     自動化されたフリートプロビジョニング。
   </Card>
   <Card title="Bun" href="/ja-JP/install/bun" icon="zap">
-    Bun ランタイムによる CLI のみの使用。
+    Bun ランタイムによる CLI 専用の使用。
   </Card>
 </CardGroup>
 
-## インストールを確認する
+## インストールの確認
 
 ```bash
 openclaw --version      # confirm the CLI is available
@@ -164,37 +165,57 @@ openclaw doctor         # check for config issues
 openclaw gateway status # verify the Gateway is running
 ```
 
-インストール後に管理された起動を使いたい場合:
+インストール後に管理された起動を使用したい場合:
 
 - macOS: `openclaw onboard --install-daemon` または `openclaw gateway install` による LaunchAgent
 - Linux/WSL2: 同じコマンドによる systemd ユーザーサービス
-- ネイティブ Windows: まず Scheduled Task を使用し、タスク作成が拒否された場合はユーザーごとの Startup フォルダーのログイン項目にフォールバック
+- ネイティブ Windows: まず Scheduled Task。タスク作成が拒否された場合は、ユーザーごとの Startup-folder ログイン項目にフォールバック
 
 ## ホスティングとデプロイ
 
-OpenClaw をクラウドサーバーまたは VPS にデプロイします:
+クラウドサーバーまたは VPS に OpenClaw をデプロイします:
 
 <CardGroup cols={3}>
-  <Card title="VPS" href="/ja-JP/vps">任意の Linux VPS</Card>
-  <Card title="Docker VM" href="/ja-JP/install/docker-vm-runtime">共有 Docker 手順</Card>
-  <Card title="Kubernetes" href="/ja-JP/install/kubernetes">K8s</Card>
-  <Card title="Fly.io" href="/ja-JP/install/fly">Fly.io</Card>
-  <Card title="Hetzner" href="/ja-JP/install/hetzner">Hetzner</Card>
-  <Card title="GCP" href="/ja-JP/install/gcp">Google Cloud</Card>
-  <Card title="Azure" href="/ja-JP/install/azure">Azure</Card>
-  <Card title="Railway" href="/ja-JP/install/railway">Railway</Card>
-  <Card title="Render" href="/ja-JP/install/render">Render</Card>
-  <Card title="Northflank" href="/ja-JP/install/northflank">Northflank</Card>
+  <Card title="VPS" href="/ja-JP/vps">
+    任意の Linux VPS。
+  </Card>
+  <Card title="Docker VM" href="/ja-JP/install/docker-vm-runtime">
+    共通の Docker 手順。
+  </Card>
+  <Card title="Kubernetes" href="/ja-JP/install/kubernetes">
+    K8s デプロイ。
+  </Card>
+  <Card title="Fly.io" href="/ja-JP/install/fly">
+    Fly.io にデプロイ。
+  </Card>
+  <Card title="Hetzner" href="/ja-JP/install/hetzner">
+    Hetzner デプロイ。
+  </Card>
+  <Card title="GCP" href="/ja-JP/install/gcp">
+    Google Cloud デプロイ。
+  </Card>
+  <Card title="Azure" href="/ja-JP/install/azure">
+    Azure デプロイ。
+  </Card>
+  <Card title="Railway" href="/ja-JP/install/railway">
+    Railway デプロイ。
+  </Card>
+  <Card title="Render" href="/ja-JP/install/render">
+    Render デプロイ。
+  </Card>
+  <Card title="Northflank" href="/ja-JP/install/northflank">
+    Northflank デプロイ。
+  </Card>
 </CardGroup>
 
-## 更新、移行、またはアンインストール
+## 更新、移行、アンインストール
 
 <CardGroup cols={3}>
   <Card title="Updating" href="/ja-JP/install/updating" icon="refresh-cw">
     OpenClaw を最新の状態に保ちます。
   </Card>
   <Card title="Migrating" href="/ja-JP/install/migrating" icon="arrow-right">
-    新しいマシンへ移動します。
+    新しいマシンへ移行します。
   </Card>
   <Card title="Uninstall" href="/ja-JP/install/uninstall" icon="trash-2">
     OpenClaw を完全に削除します。
@@ -211,10 +232,10 @@ npm prefix -g     # Where are global packages?
 echo "$PATH"      # Is the global bin dir in PATH?
 ```
 
-`$(npm prefix -g)/bin` が `$PATH` に含まれていない場合は、シェル起動ファイル（`~/.zshrc` または `~/.bashrc`）に追加してください:
+`$(npm prefix -g)/bin` が `$PATH` に含まれていない場合は、シェルの起動ファイル（`~/.zshrc` または `~/.bashrc`）に追加してください:
 
 ```bash
 export PATH="$(npm prefix -g)/bin:$PATH"
 ```
 
-その後、新しいターミナルを開きます。詳細については [Node セットアップ](/ja-JP/install/node) を参照してください。
+その後、新しいターミナルを開きます。詳細は [Node セットアップ](/ja-JP/install/node) を参照してください。

@@ -11,6 +11,7 @@ x-i18n:
     source_hash: a0ef2806cfb539157d827fe9c2ffddc914aa680e3ef318c211b2ec1f374cfed2
     source_path: gateway/network-model.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 この内容は [ネットワーク — コアモデル](/ja-JP/network#core-model) に統合されました。

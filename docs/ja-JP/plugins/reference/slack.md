@@ -1,29 +1,30 @@
 ---
 read_when:
-    - Slack Plugin をインストール、設定、または監査しています
-summary: OpenClaw メッセージを送受信するための Slack チャンネルサーフェスを追加します。
+    - slack pluginをインストール、設定、または監査している
+summary: チャンネル、DM、コマンド、アプリイベントに対応する OpenClaw Slack チャンネルPlugin。
 title: Slack Plugin
 x-i18n:
-    generated_at: "2026-05-02T21:02:05Z"
+    generated_at: "2026-06-27T12:28:39Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 53e79f0d6a243a560fdc145b80cc1a2b986ce114fad7c9bb4f1008dc14e3ab24
+    source_hash: 602ccb21ce084219d922860d186664bbb098fd034117893dc7359d79495bedd6
     source_path: plugins/reference/slack.md
     workflow: 16
 ---
 
 # Slack Plugin
 
-OpenClaw メッセージを送受信するための Slack チャネルサーフェスを追加します。
+チャネル、DM、コマンド、アプリイベント向けの OpenClaw Slack チャネル Plugin。
 
 ## 配布
 
 - パッケージ: `@openclaw/slack`
-- インストール経路: OpenClaw に含まれています
+- インストール経路: npm; ClawHub
 
 ## サーフェス
 
-channels: slack
+チャネル: slack; skills
 
 ## 関連ドキュメント
 

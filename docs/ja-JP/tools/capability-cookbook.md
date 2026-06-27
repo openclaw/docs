@@ -9,6 +9,7 @@ x-i18n:
     source_hash: 21ba4dfed555b9f4165ee28066f2c584f539f71416a4aa3b95dde055bc16ab0a
     source_path: tools/capability-cookbook.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 このコントリビューターガイドは [機能の追加](/ja-JP/plugins/adding-capabilities) に移動しました。

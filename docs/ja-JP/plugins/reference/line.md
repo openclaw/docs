@@ -1,30 +1,31 @@
 ---
 read_when:
-    - line Pluginをインストール、設定、または監査しています
-summary: OpenClawメッセージを送受信するためのLINEチャネルサーフェスを追加します。
+    - LINE Pluginをインストール、設定、または監査しています
+summary: LINE Bot APIチャット用のOpenClaw LINEチャネルPlugin。
 title: LINE Plugin
 x-i18n:
-    generated_at: "2026-05-03T05:03:00Z"
+    generated_at: "2026-06-27T12:25:19Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 307e6e08345161bc53fe5a04cc9d0a3fabbc9ff01e9ebcae98a39899288ef4d4
+    source_hash: d561055be3fde476a78bf123f4025ca61e670b005d0b2d63e5b54318975c2fd9
     source_path: plugins/reference/line.md
     workflow: 16
 ---
 
-# LINE プラグイン
+# LINEプラグイン
 
-OpenClaw メッセージを送受信するための LINE channel surface を追加します。
+LINE Bot APIチャット向けのOpenClaw LINEチャンネルプラグイン。
 
 ## 配布
 
 - パッケージ: `@openclaw/line`
 - インストール経路: npm; ClawHub
 
-## Surface
+## サーフェス
 
 channels: line
 
 ## 関連ドキュメント
 
-- [line](/ja-JP/channels/line)
+- [LINE](/ja-JP/channels/line)

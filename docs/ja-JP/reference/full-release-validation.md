@@ -1,182 +1,202 @@
 ---
 read_when:
-    - フルリリース検証の実行または再実行
-    - 安定版と完全版のリリース検証プロファイルの比較
-    - リリース検証ステージの失敗をデバッグする
-summary: フルリリース検証のステージ、子ワークフロー、リリースプロファイル、再実行ハンドル、証跡
+    - Full Release Validation の実行または再実行
+    - 安定版と完全リリース検証プロファイルの比較
+    - リリース検証ステージの失敗のデバッグ
+summary: Full Release Validation のステージ、子ワークフロー、リリースプロファイル、再実行ハンドル、証跡
 title: 完全なリリース検証
 x-i18n:
-    generated_at: "2026-05-11T20:36:46Z"
+    generated_at: "2026-06-27T12:58:27Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3d83d15272e4f7cff82ef791c8dbeb6adc447626ada8ae221d074ee16b2cadd5
+    source_hash: 791930254e3cac7da101d809cfc9b56773225159574d3727189f67cf85bd3fce
     source_path: reference/full-release-validation.md
     workflow: 16
 ---
 
-`Full Release Validation` はリリース検証の包括ワークフローです。これはプレリリース証明の単一の手動
-エントリポイントですが、ほとんどの作業は子ワークフローで行われるため、
-失敗したボックスはリリース全体を再開せずに再実行できます。
+`Full Release Validation` はリリース用の包括ワークフローです。これはリリース前の証明のための単一の手動
+エントリポイントですが、ほとんどの作業は子ワークフローで実行されるため、
+失敗したボックスをリリース全体を再開せずに再実行できます。
 
-信頼できるワークフロー ref、通常は `main` から実行し、リリースブランチ、
+信頼されたワークフロー ref、通常は `main` から実行し、リリースブランチ、
 タグ、または完全なコミット SHA を `ref` として渡します。
 
 ```bash
 gh workflow run full-release-validation.yml \
   --ref main \
-  -f ref=release/YYYY.M.D \
+  -f ref=release/YYYY.M.PATCH \
   -f provider=openai \
   -f mode=both \
   -f release_profile=stable
 ```
 
-子ワークフローはハーネスに信頼できるワークフロー ref を使用し、テスト対象の
-候補には入力 `ref` を使用します。これにより、古いリリースブランチやタグを
-検証するときでも、新しい検証ロジックを利用できます。
+子ワークフローはハーネスに信頼されたワークフロー ref を使用し、テスト対象候補には入力
+`ref` を使用します。これにより、古いリリースブランチやタグを検証するときも
+新しい検証ロジックを利用できます。
 
-デフォルトでは、`release_profile=stable` はリリースをブロックするレーンを実行し、
-網羅的な live/Docker ソークをスキップします。stable 実行にソークレーンを含めるには
-`run_release_soak=true` を渡します。`release_profile=full` は常にソークレーンを有効にするため、
-広範なアドバイザリプロファイルでカバレッジが暗黙に落ちることはありません。
+`release_profile=stable` と `release_profile=full` は常に網羅的な
+live/Docker ソークを実行します。ベータプロファイルで同じソークレーンを含めるには
+`run_release_soak=true` を渡します。Stable 公開では、このソークと
+ブロッキング対象の製品パフォーマンスエビデンスがない検証マニフェストを拒否します。
 
-Package Acceptance は通常、完全 SHA 実行が `pnpm ci:full-release` でディスパッチされた場合も含め、
-解決済みの `ref` から候補 tarball をビルドします。beta 公開後は、
-`release_package_spec=openclaw@YYYY.M.D-beta.N` を渡して、出荷済みの npm パッケージを
-リリースチェック、Package Acceptance、cross-OS、release-path Docker、package Telegram
-全体で再利用します。Package Acceptance で意図的に別のパッケージを証明する必要がある場合のみ、
+パッケージ受け入れは通常、解決された `ref` から候補 tarball をビルドします。
+これには `pnpm ci:full-release` でディスパッチされた完全 SHA の実行も含まれます。ベータ公開後は、
+`release_package_spec=openclaw@YYYY.M.PATCH-beta.N` を渡して、出荷済み npm パッケージを
+リリースチェック、パッケージ受け入れ、クロス OS、リリースパス Docker、パッケージ Telegram で再利用します。
+パッケージ受け入れで意図的に別のパッケージを証明する必要がある場合にのみ、
 `package_acceptance_package_spec` を使用します。
+Codex Plugin の live パッケージレーンは同じ状態に従います。公開済みの
+`release_package_spec` 値から `codex_plugin_spec=npm:@openclaw/codex@<version>` が導出されます。
+SHA/アーティファクト実行では選択された ref から `extensions/codex` をパックします。また、オペレーターは
+`npm:`、`npm-pack:`、または `git:` Plugin
+ソース向けに `codex_plugin_spec` を直接設定できます。このレーンは、その Plugin に必要な明示的な Codex CLI インストール承認を付与し、
+その後 Codex CLI のプリフライトと同一セッションの OpenAI エージェントターンを実行します。
 
 ## トップレベルステージ
 
-| ステージ                | 詳細                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ターゲット解決    | **Job:** `Resolve target ref`<br />**子ワークフロー:** なし<br />**証明内容:** リリースブランチ、タグ、または完全なコミット SHA を解決し、選択された入力を記録します。<br />**再実行:** これが失敗した場合は包括ワークフローを再実行します。                                                                                                                                                                                                                               |
-| Vitest と通常 CI | **Job:** `Run normal full CI`<br />**子ワークフロー:** `CI`<br />**証明内容:** ターゲット ref に対する手動の完全 CI グラフ。Linux Node レーン、バンドルされたPluginシャード、チャネル契約、Node 22 互換性、`check`、`check-additional`、ビルドスモーク、ドキュメントチェック、Python skills、Windows、macOS、Control UI i18n、包括ワークフロー経由の Android を含みます。<br />**再実行:** `rerun_group=ci`。                                                  |
-| Pluginプレリリース    | **Job:** `Run plugin prerelease validation`<br />**子ワークフロー:** `Plugin Prerelease`<br />**証明内容:** リリース専用のPlugin静的チェック、エージェント型Pluginカバレッジ、完全な拡張バッチシャード、Pluginプレリリース Docker レーン、互換性トリアージ用の非ブロッキング `plugin-inspector-advisory` アーティファクト。<br />**再実行:** `rerun_group=plugin-prerelease`。                                                                          |
-| リリースチェック       | **Job:** `Run release/live/Docker/QA validation`<br />**子ワークフロー:** `OpenClaw Release Checks`<br />**証明内容:** インストールスモーク、cross-OS パッケージチェック、Package Acceptance、QA Lab パリティ、live Matrix、live Telegram。`run_release_soak=true` または `release_profile=full` の場合は、網羅的な live/E2E スイートと Docker release-path チャンクも実行します。<br />**再実行:** `rerun_group=release-checks` またはより狭い release-checks ハンドル。 |
-| パッケージアーティファクト     | **Job:** `Prepare release package artifact`<br />**子ワークフロー:** なし<br />**証明内容:** `OpenClaw Release Checks` を待つ必要がないパッケージ向けチェックに十分間に合うよう、親 `release-package-under-test` tarball を作成します。<br />**再実行:** 包括ワークフローを再実行するか、公開済みパッケージの再実行用に `release_package_spec` を指定します。                                                                                           |
-| Package Telegram     | **Job:** `Run package Telegram E2E`<br />**子ワークフロー:** `NPM Telegram Beta E2E`<br />**証明内容:** `rerun_group=all` かつ `release_profile=full` の場合は親アーティファクトに基づく Telegram パッケージ証明、または `release_package_spec` もしくは `npm_telegram_package_spec` が設定されている場合は公開済みパッケージの Telegram 証明。<br />**再実行:** `release_package_spec` または `npm_telegram_package_spec` を指定して `rerun_group=npm-telegram`。                           |
-| 包括検証    | **Job:** `Verify full validation`<br />**子ワークフロー:** なし<br />**証明内容:** 記録された子実行の結論を再チェックし、子ワークフローから最も遅いジョブの表を追記します。<br />**再実行:** 失敗した子を再実行して green にした後、このジョブのみを再実行します。                                                                                                                                                                                    |
+| ステージ                | 詳細                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| ターゲット解決    | **ジョブ:** `Resolve target ref`<br />**子ワークフロー:** なし<br />**証明内容:** リリースブランチ、タグ、または完全なコミット SHA を解決し、選択された入力を記録します。<br />**再実行:** これが失敗した場合は包括ワークフローを再実行します。                                                                                                                                                                                                                                             |
+| Vitest と通常 CI | **ジョブ:** `Run normal full CI`<br />**子ワークフロー:** `CI`<br />**証明内容:** ターゲット ref に対する手動の完全 CI グラフ。Linux Node レーン、同梱 Plugin シャード、Plugin とチャンネル契約シャード、Node 22 互換性、`check-*`、`check-additional-*`、ビルド済みアーティファクトのスモークチェック、ドキュメントチェック、Python Skills、Windows、macOS、Control UI i18n、包括ワークフロー経由の Android を含みます。<br />**再実行:** `rerun_group=ci`。                           |
+| Plugin プレリリース    | **ジョブ:** `Run plugin prerelease validation`<br />**子ワークフロー:** `Plugin Prerelease`<br />**証明内容:** リリース専用の Plugin 静的チェック、エージェント型 Plugin カバレッジ、完全な拡張バッチシャード、Plugin プレリリース Docker レーン、互換性トリアージ用の非ブロッキング `plugin-inspector-advisory` アーティファクト。<br />**再実行:** `rerun_group=plugin-prerelease`。                                                                                        |
+| リリースチェック       | **ジョブ:** `Run release/live/Docker/QA validation`<br />**子ワークフロー:** `OpenClaw Release Checks`<br />**証明内容:** インストールスモーク、クロス OS パッケージチェック、パッケージ受け入れ、QA Lab パリティ、live Matrix、live Telegram。Stable および full プロファイルでは、網羅的な live/E2E スイートと Docker リリースパスチャンクも実行します。ベータは `run_release_soak=true` でオプトインできます。<br />**再実行:** `rerun_group=release-checks` またはより狭い release-checks ハンドル。 |
+| パッケージ Telegram     | **ジョブ:** `Run package Telegram E2E`<br />**子ワークフロー:** `NPM Telegram Beta E2E`<br />**証明内容:** `release_package_spec` または `npm_telegram_package_spec` が設定されている場合の、公開済みパッケージに焦点を当てた Telegram E2E。完全な候補検証では、代わりに正規のパッケージ受け入れ Telegram E2E を使用します。<br />**再実行:** `release_package_spec` または `npm_telegram_package_spec` を指定して `rerun_group=npm-telegram`。                                               |
+| 包括検証    | **ジョブ:** `Verify full validation`<br />**子ワークフロー:** なし<br />**証明内容:** 記録された子実行の結論を再チェックし、子ワークフローから最も遅いジョブの表を追記します。<br />**再実行:** 失敗した子を再実行してグリーンにした後、このジョブのみを再実行します。                                                                                                                                                                                                  |
 
-`ref=main` かつ `rerun_group=all` の場合、新しい包括ワークフローが古いものに優先します。
-親がキャンセルされると、そのモニターはすでにディスパッチした子ワークフローをキャンセルします。
-リリースブランチとタグの検証実行は、デフォルトでは互いをキャンセルしません。
+`ref=main` かつ `rerun_group=all` の場合、新しい包括ワークフローは古いものを置き換えます。
+親がキャンセルされると、そのモニターはすでにディスパッチ済みの子ワークフローをすべて
+キャンセルします。リリースブランチとタグの検証実行は、デフォルトでは互いにキャンセルしません。
 
 ## リリースチェックのステージ
 
 `OpenClaw Release Checks` は最大の子ワークフローです。ターゲットを
-一度だけ解決し、パッケージ向けまたは Docker 向けのステージで必要な場合に
-共有 `release-package-under-test` アーティファクトを準備します。
+一度だけ解決し、パッケージまたは Docker 向けのステージで必要な場合に共有の
+`release-package-under-test` アーティファクトを準備します。
 
 | ステージ               | 詳細                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| リリースターゲット      | **ジョブ:** `Resolve target ref`<br />**バッキングワークフロー:** なし<br />**テスト:** 選択された ref、任意の期待 SHA、プロファイル、再実行グループ、フォーカスされたライブスイートフィルター。<br />**再実行:** `rerun_group=release-checks`。                                                                                                                                                                                                                                                                              |
-| パッケージ成果物    | **ジョブ:** `Prepare release package artifact`<br />**バッキングワークフロー:** なし<br />**テスト:** 1 つの候補 tarball をパックまたは解決し、下流のパッケージ向けチェック用に `release-package-under-test` をアップロードする。<br />**再実行:** 影響を受けたパッケージ、クロス OS、またはライブ/E2E グループ。                                                                                                                                                                                                              |
-| インストールスモーク       | **ジョブ:** `Run install smoke`<br />**バッキングワークフロー:** `Install Smoke`<br />**テスト:** ルート Dockerfile スモークイメージの再利用、QR パッケージインストール、ルートおよび Gateway Docker スモーク、インストーラー Docker テスト、Bun グローバルインストールのイメージプロバイダースモーク、高速なバンドル Plugin のインストール/アンインストール E2E を含む完全なインストールパス。<br />**再実行:** `rerun_group=install-smoke`。                                                                                                                                 |
-| クロス OS            | **ジョブ:** `cross_os_release_checks`<br />**バッキングワークフロー:** `OpenClaw Cross-OS Release Checks (Reusable)`<br />**テスト:** 候補 tarball とベースラインパッケージを使用した、選択されたプロバイダーとモードの Linux、Windows、macOS 上の新規およびアップグレードレーン。<br />**再実行:** `rerun_group=cross-os`。                                                                                                                                                                                  |
-| リポジトリおよびライブ E2E   | **ジョブ:** `Run repo/live E2E validation`<br />**バッキングワークフロー:** `OpenClaw Live And E2E Checks (Reusable)`<br />**テスト:** リポジトリ E2E、ライブキャッシュ、OpenAI websocket ストリーミング、ネイティブライブプロバイダーおよび Plugin シャード、ならびに `release_profile` により選択される Docker ベースのライブモデル/バックエンド/Gateway ハーネス。<br />**実行:** `run_release_soak=true`、`release_profile=full`、またはフォーカスされた `rerun_group=live-e2e`。<br />**再実行:** `rerun_group=live-e2e`、任意で `live_suite_filter` を指定。 |
-| Docker リリースパス | **ジョブ:** `Run Docker release-path validation`<br />**バッキングワークフロー:** `OpenClaw Live And E2E Checks (Reusable)`<br />**テスト:** 共有パッケージ成果物に対するリリースパス Docker チャンク。<br />**実行:** `run_release_soak=true`、`release_profile=full`、またはフォーカスされた `rerun_group=live-e2e`。<br />**再実行:** `rerun_group=live-e2e`。                                                                                                                                                      |
-| パッケージ受け入れ  | **ジョブ:** `Run package acceptance`<br />**バッキングワークフロー:** `Package Acceptance`<br />**テスト:** オフライン Plugin パッケージフィクスチャ、Plugin 更新、モック OpenAI Telegram パッケージ受け入れ、同じ tarball に対する公開済みアップグレード生存チェック。ブロッキングリリースチェックは既定の最新公開済みベースラインを使用する。ソークチェックは `2026.4.23` 以降のすべての安定版 npm リリースと、報告済み issue のフィクスチャまで拡張される。<br />**再実行:** `rerun_group=package`。                          |
-| QA パリティ           | **ジョブ:** `Run QA Lab parity lane` および `Run QA Lab parity report`<br />**バッキングワークフロー:** 直接ジョブ<br />**テスト:** 候補およびベースラインのエージェント型パリティパック、その後パリティレポート。<br />**再実行:** `rerun_group=qa-parity` または `rerun_group=qa`。                                                                                                                                                                                                                                          |
-| QA ライブ Matrix      | **ジョブ:** `Run QA Lab live Matrix lane`<br />**バッキングワークフロー:** 直接ジョブ<br />**テスト:** `qa-live-shared` 環境での高速ライブ Matrix QA プロファイル。<br />**再実行:** `rerun_group=qa-live` または `rerun_group=qa`。                                                                                                                                                                                                                                                                           |
-| QA ライブ Telegram    | **ジョブ:** `Run QA Lab live Telegram lane`<br />**バッキングワークフロー:** 直接ジョブ<br />**テスト:** Convex CI 認証情報リースを使ったライブ Telegram QA。<br />**再実行:** `rerun_group=qa-live` または `rerun_group=qa`。                                                                                                                                                                                                                                                                                       |
-| リリース検証          | **ジョブ:** `Verify release checks`<br />**バッキングワークフロー:** なし<br />**テスト:** 選択された再実行グループに必要なリリースチェックジョブ。<br />**再実行:** フォーカスされた子ジョブが通過した後に再実行。                                                                                                                                                                                                                                                                                                    |
+| リリースターゲット      | **ジョブ:** `Resolve target ref`<br />**Backing workflow:** なし<br />**テスト:** 選択された ref、任意の期待 SHA、プロファイル、再実行グループ、集中 live スイートフィルター。<br />**再実行:** `rerun_group=release-checks`。                                                                                                                                                                                                                                                                              |
+| パッケージアーティファクト    | **ジョブ:** `Prepare release package artifact`<br />**Backing workflow:** なし<br />**テスト:** 1 つの候補 tarball をパックまたは解決し、下流のパッケージ向けチェック用に `release-package-under-test` をアップロードする。<br />**再実行:** 影響を受けたパッケージ、クロス OS、または live/E2E グループ。                                                                                                                                                                                                              |
+| インストールスモーク       | **ジョブ:** `Run install smoke`<br />**Backing workflow:** `Install Smoke`<br />**テスト:** ルート Dockerfile スモークイメージ再利用、QR パッケージインストール、ルートおよび Gateway Docker スモーク、インストーラー Docker テスト、Bun グローバルインストールの image-provider スモーク、高速なバンドル Plugin インストール/アンインストール E2E を含む完全なインストールパス。<br />**再実行:** `rerun_group=install-smoke`。                                                                                                                                 |
+| クロス OS            | **ジョブ:** `cross_os_release_checks`<br />**Backing workflow:** `OpenClaw Cross-OS Release Checks (Reusable)`<br />**テスト:** 候補 tarball とベースラインパッケージを使用し、選択されたプロバイダーとモードについて Linux、Windows、macOS 上で新規およびアップグレードレーンを実行する。<br />**再実行:** `rerun_group=cross-os`。                                                                                                                                                                                  |
+| リポジトリおよび live E2E   | **ジョブ:** `Run repo/live E2E validation`<br />**Backing workflow:** `OpenClaw Live And E2E Checks (Reusable)`<br />**テスト:** リポジトリ E2E、live キャッシュ、OpenAI websocket ストリーミング、ネイティブ live プロバイダーおよび Plugin シャード、`release_profile` で選択された Docker ベースの live モデル/バックエンド/Gateway ハーネス。<br />**実行条件:** `run_release_soak=true`、`release_profile=full`、または集中 `rerun_group=live-e2e`。<br />**再実行:** `rerun_group=live-e2e`、任意で `live_suite_filter` を指定。 |
+| Docker リリースパス | **ジョブ:** `Run Docker release-path validation`<br />**Backing workflow:** `OpenClaw Live And E2E Checks (Reusable)`<br />**テスト:** 共有パッケージアーティファクトに対するリリースパス Docker チャンク。<br />**実行条件:** `run_release_soak=true`、`release_profile=full`、または集中 `rerun_group=live-e2e`。<br />**再実行:** `rerun_group=live-e2e`。                                                                                                                                                      |
+| Package Acceptance  | **ジョブ:** `Run package acceptance`<br />**Backing workflow:** `Package Acceptance`<br />**テスト:** オフライン Plugin パッケージフィクスチャ、Plugin 更新、標準 mock-OpenAI Telegram パッケージ E2E、および同じ tarball に対する published-upgrade survivor チェック。ブロック対象のリリースチェックはデフォルトの最新公開ベースラインを使用し、ソークチェックは `2026.4.23` 以降のすべての安定 npm リリースと報告済み issue フィクスチャに拡張される。<br />**再実行:** `rerun_group=package`。                   |
+| QA パリティ           | **ジョブ:** `Run QA Lab parity lane` および `Run QA Lab parity report`<br />**Backing workflow:** 直接ジョブ<br />**テスト:** 候補およびベースラインのエージェント型パリティパック、その後にパリティレポート。<br />**再実行:** `rerun_group=qa-parity` または `rerun_group=qa`。                                                                                                                                                                                                                                          |
+| QA live Matrix      | **ジョブ:** `Run QA Lab live Matrix lane`<br />**Backing workflow:** 直接ジョブ<br />**テスト:** `qa-live-shared` 環境での高速 live Matrix QA プロファイル。<br />**再実行:** `rerun_group=qa-live` または `rerun_group=qa`。                                                                                                                                                                                                                                                                           |
+| QA live Telegram    | **ジョブ:** `Run QA Lab live Telegram lane`<br />**Backing workflow:** 直接ジョブ<br />**テスト:** Convex CI 認証情報リースを使用する live Telegram QA。<br />**再実行:** `rerun_group=qa-live` または `rerun_group=qa`。                                                                                                                                                                                                                                                                                       |
+| リリース検証          | **ジョブ:** `Verify release checks`<br />**Backing workflow:** なし<br />**テスト:** 選択された再実行グループに必要なリリースチェックジョブ。<br />**再実行:** 集中子ジョブが合格した後に再実行。                                                                                                                                                                                                                                                                                                    |
 
 ## Docker リリースパスチャンク
 
-Docker リリースパスステージは、`live_suite_filter` が空のときに次のチャンクを実行する:
+Docker リリースパスステージは、`live_suite_filter` が空の場合にこれらのチャンクを実行する:
 
-| チャンク                                                           | カバレッジ                                                                                          |
-| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `core`                                                          | コア Docker リリースパススモークレーン。                                                             |
-| `package-update-openai`                                         | OpenAI パッケージのインストール/更新動作、Codex のオンデマンドインストール、Chat Completions ツール呼び出し。 |
-| `package-update-anthropic`                                      | Anthropic パッケージのインストールおよび更新動作。                                                    |
-| `package-update-core`                                           | プロバイダー非依存のパッケージおよび更新動作。                                                     |
-| `plugins-runtime-plugins`                                       | Plugin の動作を実行する Plugin ランタイムレーン。                                               |
-| `plugins-runtime-services`                                      | サービスバックおよびライブ Plugin ランタイムレーン。要求された場合は OpenWebUI を含む。                  |
-| `plugins-runtime-install-a` から `plugins-runtime-install-h` | 並列リリース検証用に分割された Plugin インストール/ランタイムバッチ。                             |
+| チャンク                                                           | カバレッジ                                                                                                                   |
+| --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `core`                                                          | コア Docker リリースパススモークレーン。                                                                                      |
+| `package-update-openai`                                         | OpenAI パッケージのインストール/更新動作、Codex オンデマンドインストール、Codex Plugin の live ターン、Chat Completions ツール呼び出し。 |
+| `package-update-anthropic`                                      | Anthropic パッケージのインストールおよび更新動作。                                                                             |
+| `package-update-core`                                           | プロバイダー非依存のパッケージおよび更新動作。                                                                              |
+| `plugins-runtime-plugins`                                       | Plugin 動作を実行する Plugin ランタイムレーン。                                                                        |
+| `plugins-runtime-services`                                      | サービス backed および live Plugin ランタイムレーン。要求時は OpenWebUI を含む。                                           |
+| `plugins-runtime-install-a` through `plugins-runtime-install-h` | 並列リリース検証用に分割された Plugin インストール/ランタイムバッチ。                                                      |
 
-1 つの Docker レーンだけが失敗した場合は、再利用可能なライブ/E2E ワークフローで対象を絞った `docker_lanes=<lane[,lane]>` を使用する。リリース成果物には、利用可能な場合、パッケージ成果物およびイメージ再利用入力付きのレーンごとの再実行コマンドが含まれる。
+1 つの Docker レーンだけが失敗した場合は、再利用可能な live/E2E ワークフローで
+対象を絞った `docker_lanes=<lane[,lane]>` を使用する。リリースアーティファクトには、利用可能な場合に
+パッケージアーティファクトおよびイメージ再利用の入力を含むレーンごとの再実行
+コマンドが含まれる。
 
 ## リリースプロファイル
 
-`release_profile` は主に、リリースチェック内のライブ/プロバイダーの広さを制御する。
-通常のフル CI、Plugin プレリリース、インストールスモーク、パッケージ受け入れ、QA Lab は削除しない。`stable` では、網羅的なリポジトリ/ライブ E2E と Docker リリースパスチャンクはソークカバレッジであり、`run_release_soak=true` のときに実行される。
-`full` はソークカバレッジを強制的に有効にし、さらに `rerun_group=all` のときにアンブレラ実行で親リリースパッケージ成果物に対してパッケージ Telegram E2E を実行するため、完全な公開前候補がその Telegram パッケージレーンを暗黙にスキップしない。
+`release_profile` は主に、リリースチェック内の live/プロバイダーの幅を制御する。
+通常の完全 CI、Plugin Prerelease、インストールスモーク、パッケージ
+acceptance、QA Lab は削除しない。stable および full プロファイルは常に、網羅的なリポジトリ/live
+E2E と Docker リリースパスのソークカバレッジを実行する。beta プロファイルは
+`run_release_soak=true` でオプトインできる。Package Acceptance はすべての full 候補に標準パッケージ
+Telegram E2E を提供するため、umbrella はその live poller を重複実行しない。
 
-| プロファイル   | 想定用途                      | 含まれるライブ/プロバイダーのカバレッジ                                                                                                                                                     |
+| プロファイル   | 想定用途                      | 含まれる live/プロバイダーカバレッジ                                                                                                                                                     |
 | --------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `minimum` | 最速のリリースクリティカルなスモーク。   | OpenAI/コアライブパス、OpenAI 用 Docker ライブモデル、ネイティブ Gateway コア、ネイティブ OpenAI Gateway プロファイル、ネイティブ OpenAI Plugin、Docker ライブ Gateway OpenAI。                     |
-| `stable`  | 既定のリリース承認プロファイル。 | `minimum` に加え、Anthropic スモーク、Google、MiniMax、バックエンド、ネイティブライブテストハーネス、Docker ライブ CLI バックエンド、Docker ACP バインド、Docker Codex ハーネス、OpenCode Go スモークシャード。 |
-| `full`    | 広範なアドバイザリスイープ。             | `stable` に加え、アドバイザリプロバイダー、Plugin ライブシャード、メディアライブシャード。                                                                                                        |
+| `minimum` | 最速のリリースクリティカルスモーク。   | OpenAI/コア live パス、OpenAI 用 Docker live モデル、ネイティブ Gateway コア、ネイティブ OpenAI Gateway プロファイル、ネイティブ OpenAI Plugin、Docker live Gateway OpenAI。                     |
+| `stable`  | デフォルトのリリース承認プロファイル。 | `minimum` に加えて Anthropic スモーク、Google、MiniMax、バックエンド、ネイティブ live テストハーネス、Docker live CLI バックエンド、Docker ACP bind、Docker Codex ハーネス、OpenCode Go スモークシャード。 |
+| `full`    | 広範な advisory スイープ。             | `stable` に加えて advisory プロバイダー、Plugin live シャード、メディア live シャード。                                                                                                        |
 
 ## full のみの追加
 
-これらのスイートは `stable` ではスキップされ、`full` では含まれる:
+これらのスイートは `stable` ではスキップされ、`full` に含まれる:
 
 | 領域                             | full のみのカバレッジ                                                                                                          |
 | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| Docker ライブモデル               | OpenCode Go、OpenRouter、xAI、Z.ai、Fireworks。                                                                          |
-| Docker ライブ Gateway              | DeepSeek/Fireworks、OpenCode Go/OpenRouter、xAI/Z.ai シャードに分割されたアドバイザリプロバイダー。                              |
-| ネイティブ Gateway プロバイダープロファイル | 完全な Anthropic Opus および Sonnet/Haiku シャード、Fireworks、DeepSeek、完全な OpenCode Go モデルシャード、OpenRouter、xAI、Z.ai。 |
-| ネイティブ Plugin ライブシャード        | Plugins A-K、L-N、O-Z other、Moonshot、xAI。                                                                             |
-| ネイティブメディアライブシャード         | Audio、Google music、MiniMax music、video groups A-D。                                                                   |
+| Docker live モデル               | OpenCode Go、OpenRouter、xAI、Z.ai、Fireworks。                                                                          |
+| Docker live Gateway              | DeepSeek/Fireworks、OpenCode Go/OpenRouter、xAI/Z.ai シャードに分割された advisory プロバイダー。                              |
+| ネイティブ Gateway プロバイダープロファイル | Anthropic Opus および Sonnet/Haiku の full シャード、Fireworks、DeepSeek、OpenCode Go の full モデルシャード、OpenRouter、xAI、Z.ai。 |
+| ネイティブ Plugin live シャード        | Plugins A-K、L-N、O-Z other、Moonshot、xAI。                                                                             |
+| ネイティブメディア live シャード         | Audio、Google music、MiniMax music、video groups A-D。                                                                   |
 
-`stable` には `native-live-src-gateway-profiles-anthropic-smoke` と
-`native-live-src-gateway-profiles-opencode-go-smoke` が含まれる。`full` は代わりに、より広範な Anthropic および OpenCode Go モデルシャードを使用する。フォーカスされた再実行では、引き続き集約ハンドル `native-live-src-gateway-profiles-anthropic` または
-`native-live-src-gateway-profiles-opencode-go` を使用できる。
+`stable` は `native-live-src-gateway-profiles-anthropic-smoke` と
+`native-live-src-gateway-profiles-opencode-go-smoke` を含み、`full` は代わりにより広範な
+Anthropic および OpenCode Go モデルシャードを使用する。集中再実行では引き続き
+集約 `native-live-src-gateway-profiles-anthropic` または
+`native-live-src-gateway-profiles-opencode-go` ハンドルを使用できる。
 
-## フォーカスされた再実行
+## 集中再実行
 
-関連しないリリースボックスの繰り返しを避けるには、`rerun_group` を使用する:
+`rerun_group` を使って、無関係なリリースボックスの繰り返しを避けます。
 
 | ハンドル            | スコープ                                                                                        |
 | ------------------- | ----------------------------------------------------------------------------------------------- |
 | `all`               | すべての完全リリース検証ステージ。                                                              |
-| `ci`                | 手動の完全 CI 子ワークフローのみ。                                                              |
-| `plugin-prerelease` | Plugin プレリリース子ワークフローのみ。                                                         |
-| `release-checks`    | すべての OpenClaw リリースチェックステージ。                                                     |
+| `ci`                | 手動の完全CI子ワークフローのみ。                                                                |
+| `plugin-prerelease` | Pluginプレリリース子ワークフローのみ。                                                          |
+| `release-checks`    | すべてのOpenClawリリースチェックステージ。                                                       |
 | `install-smoke`     | インストールスモークからリリースチェックまで。                                                   |
-| `cross-os`          | クロス OS リリースチェック。                                                                     |
-| `live-e2e`          | リポジトリ/ライブ E2E と Docker リリースパス検証。                                               |
-| `package`           | パッケージ受け入れ。                                                                             |
-| `qa`                | QA パリティと QA ライブレーン。                                                                  |
-| `qa-parity`         | QA パリティレーンとレポートのみ。                                                                |
-| `qa-live`           | QA ライブ Matrix と Telegram のみ。                                                              |
-| `npm-telegram`      | 公開済みパッケージの Telegram E2E。`release_package_spec` または `npm_telegram_package_spec` が必要。 |
+| `cross-os`          | クロスOSリリースチェック。                                                                      |
+| `live-e2e`          | リポジトリ/live E2EとDockerリリースパス検証。                                                    |
+| `package`           | パッケージ受け入れ。                                                                            |
+| `qa`                | QAパリティとQA liveレーン。                                                                      |
+| `qa-parity`         | QAパリティレーンとレポートのみ。                                                                |
+| `qa-live`           | QA live Matrix/Telegramに加え、有効時はゲート付きDiscord、WhatsApp、Slackレーン。               |
+| `npm-telegram`      | 公開済みパッケージのTelegram E2E。`release_package_spec` または `npm_telegram_package_spec` が必要。 |
 
-1 つのライブスイートが失敗した場合は、`rerun_group=live-e2e` とともに `live_suite_filter` を使用します。
-有効なフィルター ID は再利用可能なライブ/E2E ワークフローで定義されており、
+1つのliveスイートが失敗した場合は、`rerun_group=live-e2e` とともに `live_suite_filter` を使います。
+有効なフィルターIDは再利用可能なlive/E2Eワークフローで定義されており、以下を含みます。
 `docker-live-models`、`live-gateway-docker`、
 `live-gateway-anthropic-docker`、`live-gateway-google-docker`、
 `live-gateway-minimax-docker`、`live-gateway-advisory-docker`、
 `live-cli-backend-docker`、`live-acp-bind-docker`、および
-`live-codex-harness-docker` が含まれます。
+`live-codex-harness-docker`。
 
-`live-gateway-advisory-docker` ハンドルは、その 3 つのプロバイダーシャード用の集約再実行ハンドルであるため、
-引き続きすべてのアドバイザリ Docker Gateway ジョブにファンアウトします。
+`live-gateway-advisory-docker` ハンドルは、その3つのプロバイダーシャードに対する集約再実行ハンドルであるため、
+引き続きすべてのadvisory Docker Gatewayジョブにファンアウトします。
 
-1 つのクロス OS レーンが失敗した場合は、`rerun_group=cross-os` とともに `cross_os_suite_filter` を使用します。フィルターは OS ID、スイート ID、または OS/スイートのペアを受け付けます。たとえば `windows/packaged-upgrade`、`windows`、または `packaged-fresh` です。クロス OS
-サマリーにはパッケージ化アップグレードレーンのフェーズごとのタイミングが含まれ、長時間実行される
-コマンドは Heartbeat 行を出力するため、ジョブのタイムアウト前に停止した Windows アップデートを確認できます。
+1つのクロスOSレーンが失敗した場合は、`rerun_group=cross-os` とともに `cross_os_suite_filter` を使います。
+フィルターはOS ID、スイートID、またはOS/スイートのペアを受け付けます。
+たとえば `windows/packaged-upgrade`、`windows`、または `packaged-fresh` です。
+クロスOSサマリーには、パッケージ済みアップグレードレーンのフェーズ別タイミングが含まれ、
+長時間実行されるコマンドはheartbeat行を出力するため、ジョブタイムアウト前に停止したWindows更新が見えるようになります。
 
-QA リリースチェックレーンはアドバイザリです。QA のみの失敗は警告として報告され、
-リリースチェック検証をブロックしません。新しい QA 証拠が必要な場合は `rerun_group=qa`、
-`qa-parity`、または `qa-live` を再実行してください。
+QAリリースチェックの失敗は通常のリリース検証をブロックします。
+標準ティアで必要なOpenClaw動的ツールのドリフトも、リリースチェック検証をブロックします。
+Tideclaw alpha実行では、パッケージ安全性以外のリリースチェックレーンを引き続きadvisoryとして扱う場合があります。
+`live_suite_filter` がDiscord、WhatsApp、Slackなどのゲート付きQA liveレーンを明示的に要求する場合、
+対応する `OPENCLAW_RELEASE_QA_*_LIVE_CI_ENABLED` リポジトリ変数を有効にする必要があります。
+有効でない場合、レーンを黙ってスキップするのではなく、入力キャプチャが失敗します。
+新しいQA証拠が必要な場合は、`rerun_group=qa`、
+`qa-parity`、または `qa-live` を再実行します。
 
 ## 保持する証拠
 
-リリースレベルのインデックスとして `Full Release Validation` サマリーを保持します。これは
-子実行 ID にリンクし、最も遅いジョブの表を含みます。失敗時は、まず子
-ワークフローを確認してから、上記の最小一致ハンドルを再実行します。
+リリースレベルのインデックスとして `Full Release Validation` サマリーを保持します。これは子実行IDにリンクし、
+最も遅いジョブのテーブルを含みます。失敗時はまず子ワークフローを調査し、その後、上記の最小の一致ハンドルを再実行します。
 
 有用なアーティファクト:
 
-- 完全リリース検証親ワークフローおよび `OpenClaw Release Checks` からの `release-package-under-test`
-- `.artifacts/docker-tests/` 配下の Docker リリースパスアーティファクト
-- パッケージ受け入れ `package-under-test` と Docker 受け入れアーティファクト
-- 各 OS とスイートのクロス OS リリースチェックアーティファクト
-- QA パリティ、Matrix、および Telegram アーティファクト
+- `OpenClaw Release Checks` の `release-package-under-test`
+- `.artifacts/docker-tests/` 配下のDockerリリースパスアーティファクト
+- パッケージ受け入れの `package-under-test` とDocker受け入れアーティファクト
+- 各OSとスイートのクロスOSリリースチェックアーティファクト
+- QAパリティ、Matrix、Telegramアーティファクト
 
 ## ワークフローファイル
 

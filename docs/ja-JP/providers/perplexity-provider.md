@@ -1,35 +1,45 @@
 ---
 read_when:
-    - Perplexity を Web 検索プロバイダーとして設定したい
+    - Perplexity を Web 検索プロバイダーとして構成したい
     - Perplexity API キーまたは OpenRouter プロキシ設定が必要です
 summary: Perplexity Web 検索プロバイダーのセットアップ（API キー、検索モード、フィルタリング）
 title: Perplexity
 x-i18n:
-    generated_at: "2026-04-30T05:31:43Z"
+    generated_at: "2026-06-27T12:48:08Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 36475ba0d6ab7d569f83b7f6fdc13c5dbe6b12ca5acab44e8d213da23d04a795
+    source_hash: 3be6f5066ba180a63ea8b374f641613c815be0f84ee1d3577feea04e31ab4694
     source_path: providers/perplexity-provider.md
     workflow: 16
 ---
 
-Perplexity Plugin は、Perplexity Search API または OpenRouter 経由の Perplexity Sonar を通じて Web 検索機能を提供します。
+Perplexity Pluginは、Perplexity Search APIまたはOpenRouter経由のPerplexity Sonarを通じてWeb検索機能を提供します。
 
 <Note>
-このページは Perplexity **provider** のセットアップです。Perplexity **tool**（エージェントでの使用方法）については、[Perplexity tool](/ja-JP/tools/perplexity-search) を参照してください。
+このページはPerplexity **プロバイダー**のセットアップです。Perplexity **ツール**（エージェントがそれをどう使うか）については、[Perplexityツール](/ja-JP/tools/perplexity-search)を参照してください。
 </Note>
 
-| プロパティ | 値 |
+| プロパティ | 値                                                                     |
 | ----------- | ---------------------------------------------------------------------- |
-| 種類 | Web 検索プロバイダー（モデルプロバイダーではありません） |
-| 認証 | `PERPLEXITY_API_KEY`（直接）または `OPENROUTER_API_KEY`（OpenRouter 経由） |
-| 設定パス | `plugins.entries.perplexity.config.webSearch.apiKey` |
+| 種類        | Web検索プロバイダー（モデルプロバイダーではない）                     |
+| 認証        | `PERPLEXITY_API_KEY`（直接）または`OPENROUTER_API_KEY`（OpenRouter経由） |
+| 設定パス    | `plugins.entries.perplexity.config.webSearch.apiKey`                   |
+
+## Pluginをインストール
+
+公式Pluginをインストールしてから、Gatewayを再起動します。
+
+```bash
+openclaw plugins install @openclaw/perplexity-plugin
+openclaw gateway restart
+```
 
 ## はじめに
 
 <Steps>
-  <Step title="API キーを設定する">
-    対話型の Web 検索設定フローを実行します。
+  <Step title="Set the API key">
+    インタラクティブなWeb検索設定フローを実行します。
 
     ```bash
     openclaw configure --section web
@@ -42,62 +52,73 @@ Perplexity Plugin は、Perplexity Search API または OpenRouter 経由の Per
     ```
 
   </Step>
-  <Step title="検索を開始する">
-    キーが設定されると、エージェントは Web 検索に Perplexity を自動的に使用します。追加の手順は不要です。
+  <Step title="Start searching">
+    キーが設定されると、エージェントはWeb検索にPerplexityを自動的に使用します。
+    追加の手順は不要です。
   </Step>
 </Steps>
 
 ## 検索モード
 
-この Plugin は API キーのプレフィックスに基づいてトランスポートを自動選択します。
+PluginはAPIキーのプレフィックスに基づいてトランスポートを自動選択します。
 
 <Tabs>
-  <Tab title="ネイティブ Perplexity API (pplx-)">
-    キーが `pplx-` で始まる場合、OpenClaw はネイティブの Perplexity Search API を使用します。このトランスポートは構造化された結果を返し、ドメイン、言語、日付フィルターをサポートします（下記のフィルタリングオプションを参照）。
+  <Tab title="Native Perplexity API (pplx-)">
+    キーが`pplx-`で始まる場合、OpenClawはネイティブのPerplexity Search
+    APIを使用します。このトランスポートは構造化された結果を返し、ドメイン、言語、
+    日付フィルターをサポートします（下記のフィルタリングオプションを参照）。
   </Tab>
   <Tab title="OpenRouter / Sonar (sk-or-)">
-    キーが `sk-or-` で始まる場合、OpenClaw は Perplexity Sonar モデルを使用して OpenRouter 経由でルーティングします。このトランスポートは引用付きの AI 合成回答を返します。
+    キーが`sk-or-`で始まる場合、OpenClawはPerplexity Sonarモデルを使用して
+    OpenRouter経由でルーティングします。このトランスポートは引用付きのAI合成回答を返します。
   </Tab>
 </Tabs>
 
-| キーのプレフィックス | トランスポート | 機能 |
+| キープレフィックス | トランスポート              | 機能                                             |
 | ---------- | ---------------------------- | ------------------------------------------------ |
-| `pplx-` | ネイティブ Perplexity Search API | 構造化された結果、ドメイン/言語/日付フィルター |
-| `sk-or-` | OpenRouter (Sonar) | 引用付きの AI 合成回答 |
+| `pplx-`    | ネイティブPerplexity Search API | 構造化された結果、ドメイン/言語/日付フィルター |
+| `sk-or-`   | OpenRouter（Sonar）          | 引用付きのAI合成回答                            |
 
-## ネイティブ API フィルタリング
+## ネイティブAPIのフィルタリング
 
 <Note>
-フィルタリングオプションは、ネイティブ Perplexity API（`pplx-` キー）を使用している場合にのみ利用できます。OpenRouter/Sonar 検索はこれらのパラメーターをサポートしていません。
+フィルタリングオプションは、ネイティブのPerplexity API（`pplx-`キー）を使用する場合にのみ利用できます。
+OpenRouter/Sonar検索はこれらのパラメーターをサポートしていません。
 </Note>
 
-ネイティブ Perplexity API を使用する場合、検索では次のフィルターがサポートされます。
+ネイティブのPerplexity APIを使用する場合、検索では次のフィルターがサポートされます。
 
-| フィルター | 説明 | 例 |
+| フィルター     | 説明                                   | 例                                  |
 | -------------- | -------------------------------------- | ----------------------------------- |
-| 国 | 2 文字の国コード | `us`, `de`, `jp` |
-| 言語 | ISO 639-1 言語コード | `en`, `fr`, `zh` |
-| 日付範囲 | 新しさの期間 | `day`, `week`, `month`, `year` |
-| ドメインフィルター | 許可リストまたは拒否リスト（最大 20 ドメイン） | `example.com` |
-| コンテンツ予算 | レスポンスごと / ページごとのトークン上限 | `max_tokens`, `max_tokens_per_page` |
+| 国             | 2文字の国コード                        | `us`, `de`, `jp`                    |
+| 言語           | ISO 639-1言語コード                    | `en`, `fr`, `zh`                    |
+| 日付範囲       | 新しさの期間                           | `day`, `week`, `month`, `year`      |
+| ドメインフィルター | 許可リストまたは拒否リスト（最大20ドメイン） | `example.com`                       |
+| コンテンツ予算 | レスポンスごと/ページごとのトークン制限 | `max_tokens`, `max_tokens_per_page` |
 
 ## 高度な設定
 
 <AccordionGroup>
-  <Accordion title="デーモンプロセス用の環境変数">
-    OpenClaw Gateway がデーモン（launchd/systemd）として実行される場合は、`PERPLEXITY_API_KEY` がそのプロセスで利用できることを確認してください。
+  <Accordion title="Environment variable for daemon processes">
+    OpenClaw Gatewayをデーモン（launchd/systemd）として実行する場合は、
+    `PERPLEXITY_API_KEY`をそのプロセスで利用できるようにしてください。
 
     <Warning>
-    `~/.profile` にのみ設定されたキーは、その環境が明示的にインポートされない限り、launchd/systemd デーモンからは見えません。Gateway プロセスが読み取れるように、キーを `~/.openclaw/.env` または `env.shellEnv` 経由で設定してください。
+    インタラクティブシェルでのみエクスポートされたキーは、その環境が明示的にインポートされない限り、
+    launchd/systemdデーモンからは見えません。Gatewayプロセスがキーを読み取れるようにするには、
+    `~/.openclaw/.env`または`env.shellEnv`でキーを設定してください。
     </Warning>
 
   </Accordion>
 
-  <Accordion title="OpenRouter プロキシのセットアップ">
-    Perplexity 検索を OpenRouter 経由でルーティングしたい場合は、ネイティブの Perplexity キーではなく `OPENROUTER_API_KEY`（プレフィックス `sk-or-`）を設定します。OpenClaw はプレフィックスを検出し、自動的に Sonar トランスポートへ切り替えます。
+  <Accordion title="OpenRouter proxy setup">
+    Perplexity検索をOpenRouter経由でルーティングしたい場合は、ネイティブのPerplexityキーの代わりに
+    `OPENROUTER_API_KEY`（プレフィックス`sk-or-`）を設定します。
+    OpenClawはプレフィックスを検出し、自動的にSonarトランスポートへ切り替えます。
 
     <Tip>
-    OpenRouter トランスポートは、すでに OpenRouter アカウントを持っていて、複数プロバイダーにまたがる請求を一元化したい場合に便利です。
+    OpenRouterトランスポートは、すでにOpenRouterアカウントを持っていて、
+    複数のプロバイダーにまたがる請求を統合したい場合に便利です。
     </Tip>
 
   </Accordion>
@@ -106,10 +127,10 @@ Perplexity Plugin は、Perplexity Search API または OpenRouter 経由の Per
 ## 関連
 
 <CardGroup cols={2}>
-  <Card title="Perplexity 検索ツール" href="/ja-JP/tools/perplexity-search" icon="magnifying-glass">
-    エージェントが Perplexity 検索を呼び出し、結果を解釈する方法。
+  <Card title="Perplexity search tool" href="/ja-JP/tools/perplexity-search" icon="magnifying-glass">
+    エージェントがPerplexity検索を呼び出し、結果を解釈する方法。
   </Card>
-  <Card title="設定リファレンス" href="/ja-JP/gateway/configuration-reference" icon="gear">
-    Plugin エントリを含む完全な設定リファレンス。
+  <Card title="Configuration reference" href="/ja-JP/gateway/configuration-reference" icon="gear">
+    Pluginエントリを含む完全な設定リファレンス。
   </Card>
 </CardGroup>

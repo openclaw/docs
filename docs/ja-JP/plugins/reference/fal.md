@@ -1,18 +1,19 @@
 ---
 read_when:
-    - fal Plugin のインストール、設定、または監査を行っている
+    - fal Plugin をインストール、設定、または監査しています
 summary: OpenClaw に fal モデルプロバイダーのサポートを追加します。
-title: fal Plugin
+title: fal プラグイン
 x-i18n:
-    generated_at: "2026-05-02T20:57:06Z"
+    generated_at: "2026-06-27T12:24:02Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a7401899ad52835dbea562e6481787b15e92f2d7967c99e89fd249a53e4dcd25
+    source_hash: f62d6a642a6edaa581fb23fa27dade77486c827d460f19aa23750959f5aa6f1c
     source_path: plugins/reference/fal.md
     workflow: 16
 ---
 
-# fal Plugin
+# fal プラグイン
 
 OpenClaw に fal モデルプロバイダーのサポートを追加します。
 
@@ -23,7 +24,7 @@ OpenClaw に fal モデルプロバイダーのサポートを追加します。
 
 ## サーフェス
 
-プロバイダー: fal; コントラクト: imageGenerationProviders, videoGenerationProviders
+providers: fal; contracts: imageGenerationProviders, musicGenerationProviders, videoGenerationProviders
 
 ## 関連ドキュメント
 

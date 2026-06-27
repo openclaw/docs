@@ -1,29 +1,30 @@
 ---
 read_when:
-    - Signalプラグインをインストール、設定、または監査している場合
-summary: OpenClaw メッセージを送受信するための Signal チャンネルサーフェスを追加します。
+    - Signal Pluginをインストール、設定、または監査しています
+summary: OpenClaw メッセージの送受信用に Signal チャネルサーフェスを追加します。
 title: Signal Plugin
 x-i18n:
-    generated_at: "2026-05-02T21:01:49Z"
+    generated_at: "2026-06-27T12:28:30Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8d066bcea16277affe7ecc181207330fa9c439ec242bab279c65efdf67b361c6
+    source_hash: 7136222af25d73d50b9a973d287b863176c58d634da4c9d7726d5cc6942135bb
     source_path: plugins/reference/signal.md
     workflow: 16
 ---
 
 # Signal Plugin
 
-OpenClaw メッセージの送受信用に Signal チャネルのサーフェスを追加します。
+OpenClaw メッセージを送受信するための Signal チャネルサーフェスを追加します。
 
 ## 配布
 
 - パッケージ: `@openclaw/signal`
-- インストール経路: OpenClaw に含まれています
+- インストール経路: npm; ClawHub: `clawhub:@openclaw/signal`
 
 ## サーフェス
 
-channels: signal
+チャネル: signal
 
 ## 関連ドキュメント
 

@@ -1,30 +1,31 @@
 ---
 read_when:
     - Discord Pluginをインストール、設定、または監査している
-summary: OpenClaw メッセージの送受信用 Discord チャンネルサーフェスを追加します。
-title: Discord Plugin
+summary: チャンネル、DM、コマンド、アプリイベント向けの OpenClaw Discord チャンネル Plugin。
+title: Discord プラグイン
 x-i18n:
-    generated_at: "2026-05-03T05:02:27Z"
+    generated_at: "2026-06-27T12:23:53Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c0af255dc0e58e91c1f0ebcc5bca46e1e8e80f415ed3f5a9840bb31f717c9703
+    source_hash: 9e3305f8ad8eb84fd350bdfa0983b4fd8f848e0697ecf3e779e31cd6cb44dbf5
     source_path: plugins/reference/discord.md
     workflow: 16
 ---
 
 # Discord Plugin
 
-OpenClaw メッセージの送受信のための Discord チャンネルサーフェスを追加します。
+チャンネル、DM、コマンド、アプリイベント向けの OpenClaw Discord チャンネル Plugin。
 
 ## 配布
 
-- パッケージ: `@openclaw/discord`
+- Package: `@openclaw/discord`
 - インストール経路: npm; ClawHub
 
 ## サーフェス
 
-チャンネル: discord
+channels: discord; contracts: transcriptSourceProviders; skills
 
 ## 関連ドキュメント
 
-- [Discord](/ja-JP/channels/discord)
+- [discord](/ja-JP/channels/discord)

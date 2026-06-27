@@ -1,26 +1,27 @@
 ---
 read_when:
-    - '`openclaw secrets apply`プランを生成またはレビューする場合'
-    - '`Invalid plan target path`エラーをデバッグしている場合'
-    - ターゲットタイプおよびパス検証の動作を理解したい場合
-summary: '`secrets apply`プランのコントラクト: ターゲット検証、パスマッチング、および`auth-profiles.json`ターゲットスコープ'
-title: Secrets適用プランコントラクト
+    - '`openclaw secrets apply` 計画の生成またはレビュー'
+    - '`Invalid plan target path` エラーのデバッグ'
+    - ターゲット種別とパス検証の動作を理解する
+summary: '`secrets apply` 計画のコントラクト: ターゲット検証、パスマッチング、`auth-profiles.json` ターゲットスコープ'
+title: シークレット適用計画のコントラクト
 x-i18n:
-    generated_at: "2026-04-24T04:59:37Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T11:34:53Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 80214353a1368b249784aa084c714e043c2d515706357d4ba1f111a3c68d1a84
+    source_hash: 03f0ca9b433553a2f6d86d01b8c227a24b6f53ef7034a94bd648fbf04c81f13e
     source_path: gateway/secrets-plan-contract.md
-    workflow: 15
+    workflow: 16
 ---
 
-このページでは、`openclaw secrets apply`によって強制される厳密なコントラクトを定義します。
+このページは、`openclaw secrets apply` によって強制される厳密な契約を定義します。
 
-ターゲットがこれらのルールに一致しない場合、設定を変更する前にapplyは失敗します。
+ターゲットがこれらのルールに一致しない場合、apply は設定を変更する前に失敗します。
 
 ## プランファイルの形式
 
-`openclaw secrets apply --from <plan.json>`は、プランターゲットの`targets`配列を想定します。
+`openclaw secrets apply --from <plan.json>` は、プランターゲットの `targets` 配列を期待します。
 
 ```json5
 {
@@ -45,19 +46,55 @@ x-i18n:
 }
 ```
 
-## サポートされるターゲットスコープ
+## プロバイダーの upsert と削除
 
-プランターゲットは、以下にあるサポート対象の資格情報パスに対して受け入れられます。
+プランには、ターゲットごとの書き込みと並行して `secrets.providers` マップを変更する、任意のトップレベルフィールドを 2 つ含めることもできます。
 
-- [SecretRef Credential Surface](/ja-JP/reference/secretref-credential-surface)
+- `providerUpserts` — プロバイダー別名をキーにしたオブジェクトです。各値はプロバイダー定義です（`openclaw.json` の `secrets.providers.<alias>` で受け付けられるものと同じ形式。たとえば `exec` または `file` プロバイダー）。
+- `providerDeletes` — 削除するプロバイダー別名の配列です。
+
+`providerUpserts` は `targets` より前に実行されるため、`target.ref.provider` は同じプランが `providerUpserts` で導入するプロバイダー別名を参照できます。これがない場合、`openclaw.json` にまだ設定されていない別名を参照するプランは `provider "<alias>" is not
+configured` で失敗します。
+
+```json5
+{
+  version: 1,
+  protocolVersion: 1,
+  providerUpserts: {
+    onepassword_anthropic: {
+      source: "exec",
+      command: "/usr/bin/op",
+      args: ["read", "op://Vault/Anthropic/credential"],
+    },
+  },
+  providerDeletes: ["legacy_unused_alias"],
+  targets: [
+    {
+      type: "models.providers.apiKey",
+      path: "models.providers.anthropic.apiKey",
+      pathSegments: ["models", "providers", "anthropic", "apiKey"],
+      providerId: "anthropic",
+      ref: { source: "exec", provider: "onepassword_anthropic", id: "credential" },
+    },
+  ],
+}
+```
+
+`providerUpserts` で導入された exec プロバイダーにも、[Exec プロバイダーの同意動作](#exec-provider-consent-behavior) の exec 同意ルールが適用されます。exec プロバイダーを含むプランでは、書き込みモードで `--allow-exec` が必要です。
+
+## サポートされるターゲット範囲
+
+プランターゲットは、次のサポート対象の認証情報パスで受け付けられます。
+
+- [SecretRef 認証情報サーフェス](/ja-JP/reference/secretref-credential-surface)
 
 ## ターゲットタイプの動作
 
 一般ルール:
 
-- `target.type`は認識される必要があり、正規化された`target.path`の形式と一致している必要があります。
+- `target.type` は認識される必要があり、正規化された `target.path` の形式と一致している必要があります。
 
-既存のプランとの互換性のため、互換エイリアスは引き続き受け入れられます。
+既存のプラン向けに、互換性別名は引き続き受け付けられます。
 
 - `models.providers.apiKey`
 - `skills.entries.apiKey`
@@ -65,57 +102,57 @@ x-i18n:
 
 ## パス検証ルール
 
-各ターゲットは、以下すべてで検証されます。
+各ターゲットは、次のすべてで検証されます。
 
-- `type`は認識されるターゲットタイプでなければなりません。
-- `path`は空でないドット区切りパスでなければなりません。
-- `pathSegments`は省略できます。指定する場合は、`path`と完全に同じパスに正規化されなければなりません。
-- 禁止セグメントは拒否されます: `__proto__`、`prototype`、`constructor`。
-- 正規化されたパスは、ターゲットタイプに登録されたパス形式と一致しなければなりません。
-- `providerId`または`accountId`が設定されている場合、それはパスにエンコードされたidと一致しなければなりません。
-- `auth-profiles.json`ターゲットでは`agentId`が必要です。
-- 新しい`auth-profiles.json`マッピングを作成する場合は、`authProfileProvider`を含めてください。
+- `type` は認識されるターゲットタイプである必要があります。
+- `path` は空でないドットパスである必要があります。
+- `pathSegments` は省略できます。指定する場合、`path` とまったく同じパスに正規化される必要があります。
+- 禁止されたセグメントは拒否されます: `__proto__`、`prototype`、`constructor`。
+- 正規化されたパスは、ターゲットタイプに登録されたパス形式と一致する必要があります。
+- `providerId` または `accountId` が設定されている場合、パスにエンコードされた ID と一致する必要があります。
+- `auth-profiles.json` ターゲットには `agentId` が必要です。
+- 新しい `auth-profiles.json` マッピングを作成する場合は、`authProfileProvider` を含めます。
 
 ## 失敗時の動作
 
-ターゲットが検証に失敗した場合、applyは次のようなエラーで終了します。
+ターゲットが検証に失敗した場合、apply は次のようなエラーで終了します。
 
 ```text
 Invalid plan target path for models.providers.apiKey: models.providers.openai.baseUrl
 ```
 
-無効なプランに対しては、書き込みは一切コミットされません。
+無効なプランでは書き込みはコミットされません。
 
-## Execプロバイダー同意の動作
+## Exec プロバイダーの同意動作
 
-- `--dry-run`は、デフォルトでexec SecretRefチェックをスキップします。
-- exec SecretRef/プロバイダーを含むプランは、`--allow-exec`が設定されていない限り、書き込みモードでは拒否されます。
-- execを含むプランを検証/適用する場合は、ドライランと書き込みコマンドの両方で`--allow-exec`を渡してください。
+- `--dry-run` は、デフォルトで exec SecretRef チェックをスキップします。
+- exec SecretRef/プロバイダーを含むプランは、`--allow-exec` が設定されていない限り、書き込みモードで拒否されます。
+- exec を含むプランを検証または適用する場合は、dry-run と書き込みコマンドの両方で `--allow-exec` を渡します。
 
-## ランタイムおよび監査スコープに関する注意
+## ランタイムと監査範囲の注記
 
-- refのみの`auth-profiles.json`エントリ（`keyRef`/`tokenRef`）は、ランタイム解決と監査対象に含まれます。
-- `secrets apply`は、サポートされる`openclaw.json`ターゲット、サポートされる`auth-profiles.json`ターゲット、および任意の除去ターゲットを書き込みます。
+- ref のみの `auth-profiles.json` エントリ（`keyRef`/`tokenRef`）は、ランタイム解決と監査対象に含まれます。
+- `secrets apply` は、サポート対象の `openclaw.json` ターゲット、サポート対象の `auth-profiles.json` ターゲット、および任意のスクラブターゲットを書き込みます。
 
 ## オペレーターチェック
 
 ```bash
-# 書き込みなしでプランを検証
+# Validate plan without writes
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run
 
-# その後、実際に適用
+# Then apply for real
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json
 
-# execを含むプランでは、両方のモードで明示的にオプトイン
+# For exec-containing plans, opt in explicitly in both modes
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --dry-run --allow-exec
 openclaw secrets apply --from /tmp/openclaw-secrets-plan.json --allow-exec
 ```
 
-無効なターゲットパスメッセージでapplyが失敗した場合は、`openclaw secrets configure`でプランを再生成するか、上記のサポートされる形式にターゲットパスを修正してください。
+apply が無効なターゲットパスのメッセージで失敗した場合は、`openclaw secrets configure` でプランを再生成するか、ターゲットパスを上記のサポート対象形式に修正してください。
 
 ## 関連ドキュメント
 
-- [Secrets Management](/ja-JP/gateway/secrets)
+- [シークレット管理](/ja-JP/gateway/secrets)
 - [CLI `secrets`](/ja-JP/cli/secrets)
-- [SecretRef Credential Surface](/ja-JP/reference/secretref-credential-surface)
-- [Configuration Reference](/ja-JP/gateway/configuration-reference)
+- [SecretRef 認証情報サーフェス](/ja-JP/reference/secretref-credential-surface)
+- [設定リファレンス](/ja-JP/gateway/configuration-reference)

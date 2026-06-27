@@ -1,67 +1,77 @@
 ---
 read_when:
-    - OpenClaw をマシンから削除したい場合
-    - アンインストール後も gateway サービスが動作している場合
-summary: OpenClaw を完全にアンインストールする（CLI、サービス、state、workspace）
+    - マシンからOpenClawを削除したい
+    - アンインストール後も gateway サービスがまだ実行されています
+summary: OpenClaw を完全にアンインストールする（CLI、サービス、状態、ワークスペース）
 title: アンインストール
 x-i18n:
-    generated_at: "2026-04-24T05:05:38Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T11:50:51Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6d73bc46f4878510706132e5c6cfec3c27cdb55578ed059dc12a785712616d75
+    source_hash: 0f63bde2769b3d35d928aed1668121086a2952338f2634d45d55da8cc637025b
     source_path: install/uninstall.md
-    workflow: 15
+    workflow: 16
 ---
 
-方法は 2 つあります:
+2つの手順があります。
 
-- `openclaw` がまだインストールされている場合の **簡単な方法**
-- CLI は消えたがサービスがまだ動いている場合の **手動サービス削除**
+- `openclaw` がまだインストールされている場合は **簡単な手順**。
+- CLI はなくなっているがサービスがまだ実行中の場合は **手動でのサービス削除**。
 
-## 簡単な方法（CLI がまだインストールされている）
+## 簡単な手順（CLI がまだインストールされている場合）
 
-推奨: 組み込みアンインストーラーを使います:
+推奨: 組み込みのアンインストーラーを使用します。
 
 ```bash
 openclaw uninstall
 ```
 
-非対話モード（自動化 / npx）:
+CLI を使用する場合、`--workspace` も選択しない限り、状態の削除では設定済みのワークスペースディレクトリは保持されます。
+
+削除される内容をプレビューします（安全）:
+
+```bash
+openclaw uninstall --dry-run --all
+```
+
+非対話型（自動化 / npx）。スコープを確認した後にのみ、注意して使用してください。
 
 ```bash
 openclaw uninstall --all --yes --non-interactive
 npx -y openclaw uninstall --all --yes --non-interactive
 ```
 
-手動手順（結果は同じ）:
+手動手順（同じ結果）:
 
-1. gateway サービスを停止:
+1. Gateway サービスを停止します。
 
 ```bash
 openclaw gateway stop
 ```
 
-2. gateway サービスをアンインストール（launchd/systemd/schtasks）:
+2. Gateway サービス（launchd/systemd/schtasks）をアンインストールします。
 
 ```bash
 openclaw gateway uninstall
 ```
 
-3. state + config を削除:
+3. 状態 + 設定を削除します。
 
 ```bash
 rm -rf "${OPENCLAW_STATE_DIR:-$HOME/.openclaw}"
 ```
 
-`OPENCLAW_CONFIG_PATH` を state dir 外のカスタム場所に設定していた場合は、そのファイルも削除してください。
+`OPENCLAW_CONFIG_PATH` を状態ディレクトリ外のカスタム場所に設定している場合は、そのファイルも削除してください。
+`~/.openclaw/workspace` など、状態ディレクトリ内のワークスペースを保持したい場合は、`rm -rf` を実行する前に別の場所へ移動するか、状態の内容を選択的に削除してください。
 
-4. workspace を削除（任意。エージェントファイルも削除されます）:
+4. ワークスペースを削除します（任意、エージェントファイルを削除します）。
 
 ```bash
 rm -rf ~/.openclaw/workspace
 ```
 
-5. CLI インストールを削除（使った方法に応じて選ぶ）:
+5. CLI インストールを削除します（使用したものを選んでください）。
 
 ```bash
 npm rm -g openclaw
@@ -75,29 +85,29 @@ bun remove -g openclaw
 rm -rf /Applications/OpenClaw.app
 ```
 
-注記:
+注:
 
-- profile（`--profile` / `OPENCLAW_PROFILE`）を使っていた場合は、各 state dir に対して手順 3 を繰り返してください（デフォルトは `~/.openclaw-<profile>`）。
-- リモートモードでは state dir は **gateway ホスト** 上にあるため、手順 1〜4 もそこで実行してください。
+- プロファイル（`--profile` / `OPENCLAW_PROFILE`）を使用していた場合は、各状態ディレクトリに対して手順 3 を繰り返してください（デフォルトは `~/.openclaw-<profile>`）。
+- リモートモードでは、状態ディレクトリは **Gateway ホスト** 上にあるため、手順 1-4 もそこで実行してください。
 
-## 手動サービス削除（CLI がインストールされていない）
+## 手動でのサービス削除（CLI がインストールされていない場合）
 
-gateway サービスが動き続けているが `openclaw` が存在しない場合は、これを使ってください。
+Gateway サービスが実行され続けているが `openclaw` が見つからない場合に使用します。
 
 ### macOS（launchd）
 
-デフォルトラベルは `ai.openclaw.gateway`（または `ai.openclaw.<profile>`。旧来の `com.openclaw.*` が残っていることもあります）です:
+デフォルトのラベルは `ai.openclaw.gateway`（または `ai.openclaw.<profile>`、レガシーの `com.openclaw.*` がまだ存在する場合があります）です。
 
 ```bash
 launchctl bootout gui/$UID/ai.openclaw.gateway
 rm -f ~/Library/LaunchAgents/ai.openclaw.gateway.plist
 ```
 
-profile を使っていた場合は、ラベルと plist 名を `ai.openclaw.<profile>` に置き換えてください。旧来の `com.openclaw.*` plist がある場合はそれも削除してください。
+プロファイルを使用していた場合は、ラベルと plist 名を `ai.openclaw.<profile>` に置き換えてください。存在する場合は、レガシーの `com.openclaw.*` plist も削除してください。
 
-### Linux（systemd user unit）
+### Linux（systemd ユーザーユニット）
 
-デフォルト unit 名は `openclaw-gateway.service`（または `openclaw-gateway-<profile>.service`）です:
+デフォルトのユニット名は `openclaw-gateway.service`（または `openclaw-gateway-<profile>.service`）です。
 
 ```bash
 systemctl --user disable --now openclaw-gateway.service
@@ -105,34 +115,36 @@ rm -f ~/.config/systemd/user/openclaw-gateway.service
 systemctl --user daemon-reload
 ```
 
-### Windows（Scheduled Task）
+### Windows（スケジュールされたタスク）
 
-デフォルトタスク名は `OpenClaw Gateway`（または `OpenClaw Gateway (<profile>)`）です。
-タスクスクリプトは state dir 配下にあります。
+デフォルトのタスク名は `OpenClaw Gateway`（または `OpenClaw Gateway (<profile>)`）です。
+タスクスクリプトは状態ディレクトリ配下に `gateway.cmd` としてあります。現在のインストールでは、タスクスケジューラが `gateway.cmd` を直接開く代わりに実行する、ウィンドウなしの `gateway.vbs` ランチャーも作成される場合があります。
 
 ```powershell
 schtasks /Delete /F /TN "OpenClaw Gateway"
-Remove-Item -Force "$env:USERPROFILE\.openclaw\gateway.cmd"
+Remove-Item -Force "$env:USERPROFILE\.openclaw\gateway.cmd" -ErrorAction SilentlyContinue
+Remove-Item -Force "$env:USERPROFILE\.openclaw\gateway.vbs" -ErrorAction SilentlyContinue
 ```
 
-profile を使っていた場合は、対応するタスク名と `~\.openclaw-<profile>\gateway.cmd` を削除してください。
+プロファイルを使用していた場合は、一致するタスク名と、`~\.openclaw-<profile>` 配下の `gateway.cmd` /
+`gateway.vbs` ファイルを削除してください。
 
-## 通常インストールとソース checkout の違い
+## 通常インストールとソースチェックアウト
 
 ### 通常インストール（install.sh / npm / pnpm / bun）
 
-`https://openclaw.ai/install.sh` または `install.ps1` を使った場合、CLI は `npm install -g openclaw@latest` でインストールされています。
-`npm rm -g openclaw`（または、その方法でインストールしたなら `pnpm remove -g` / `bun remove -g`）で削除してください。
+`https://openclaw.ai/install.sh` または `install.ps1` を使用した場合、CLI は `npm install -g openclaw@latest` でインストールされています。
+`npm rm -g openclaw`（またはその方法でインストールした場合は `pnpm remove -g` / `bun remove -g`）で削除してください。
 
-### ソース checkout（git clone）
+### ソースチェックアウト（git clone）
 
-リポジトリ checkout から実行している場合（`git clone` + `openclaw ...` / `bun run openclaw ...`）:
+リポジトリのチェックアウト（`git clone` + `openclaw ...` / `bun run openclaw ...`）から実行している場合:
 
-1. リポジトリを削除する **前に** gateway サービスをアンインストールしてください（上記の簡単な方法または手動サービス削除を使う）。
+1. リポジトリを削除する **前に** Gateway サービスをアンインストールします（上記の簡単な手順または手動でのサービス削除を使用）。
 2. リポジトリディレクトリを削除します。
-3. 上記のとおり state + workspace を削除します。
+3. 上記のとおり、状態 + ワークスペースを削除します。
 
 ## 関連
 
-- [Install overview](/ja-JP/install)
-- [Migration guide](/ja-JP/install/migrating)
+- [インストール概要](/ja-JP/install)
+- [移行ガイド](/ja-JP/install/migrating)

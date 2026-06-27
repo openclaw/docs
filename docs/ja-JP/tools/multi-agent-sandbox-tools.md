@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 8d11af55e30996a89e665b258604108a93f4c4271fbe4edfd1caf54864e40f01
     source_path: tools/multi-agent-sandbox-tools.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 マルチエージェント設定内の各エージェントは、グローバルなサンドボックスとツールポリシーを上書きできます。このページでは、エージェントごとの設定、優先順位ルール、例について説明します。
