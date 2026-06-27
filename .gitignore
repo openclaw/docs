@@ -4,3 +4,9 @@ dist/
 node_modules/
 *.log
 .DS_Store
+
+__pycache__/
+*.py[cod]
+
+# Local workflow shell extraction is a test artifact, not sync metadata.
+.openclaw-sync/workflow-shell-check/

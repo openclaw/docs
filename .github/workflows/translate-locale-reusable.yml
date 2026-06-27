@@ -185,6 +185,14 @@ jobs:
           node .openclaw-sync/check-docs-mdx.mjs "docs/${LOCALE}" \
             --json-out ".openclaw-sync/mdx/${LOCALE}.json"
 
+      - name: Snapshot translated MDX repair scope
+        if: steps.stale.outputs.skip != 'true' && steps.translate_docs.outcome == 'success' && steps.mdx_check.outcome == 'failure'
+        env:
+          LOCALE: ${{ inputs.locale }}
+        run: |
+          python .github/scripts/i18n/mdx_repair_scope.py snapshot \
+            --baseline "${RUNNER_TEMP}/${LOCALE}.repair-baseline.txt"
+
       - name: Repair translated MDX
         id: mdx_repair
         if: steps.stale.outputs.skip != 'true' && steps.translate_docs.outcome == 'success' && steps.mdx_check.outcome == 'failure'
@@ -208,27 +216,8 @@ jobs:
         env:
           LOCALE: ${{ inputs.locale }}
         run: |
-          set -euo pipefail
-          bad_paths="$(
-            git diff --name-only | while IFS= read -r path; do
-              case "$path" in
-                "docs/${LOCALE}"/*|"docs/.i18n/${LOCALE}.tm.jsonl") ;;
-                *) printf '%s\n' "$path" ;;
-              esac
-            done
-          )"
-          if [ -n "$bad_paths" ]; then
-            echo "Docs MDX repair touched forbidden paths:"
-            printf '%s\n' "$bad_paths"
-            exit 1
-          fi
-
-          untracked_locale="$(git ls-files --others --exclude-standard -- "docs/${LOCALE}")"
-          if [ -n "$untracked_locale" ]; then
-            echo "Docs MDX repair created untracked locale files; forbidden:"
-            printf '%s\n' "$untracked_locale"
-            exit 1
-          fi
+          python .github/scripts/i18n/mdx_repair_scope.py enforce \
+            --baseline "${RUNNER_TEMP}/${LOCALE}.repair-baseline.txt"
 
       - name: Recheck translated MDX
         id: mdx_recheck
@@ -287,9 +276,9 @@ jobs:
           exit 1
 
   commit-locale:
-    name: Commit ${{ inputs.locale }} artifact
+    name: Finalize ${{ inputs.locale }} artifact
     needs: translate
-    if: inputs.commit_locale && needs.translate.result == 'success'
+    if: needs.translate.result == 'success' && (inputs.commit_locale || inputs.artifact_role == 'canary')
     runs-on: ubuntu-latest
     permissions:
       actions: write
@@ -326,27 +315,31 @@ jobs:
             --expected-locales "${EXPECTED_LOCALES}"
 
       - name: Set up Node for locale validation
-        if: steps.apply.outputs.changed_count != '0'
+        if: inputs.artifact_role == 'canary' || steps.apply.outputs.changed_count != '0'
         uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
 
       - name: Install docs dependencies
-        if: steps.apply.outputs.changed_count != '0'
+        if: inputs.artifact_role == 'canary' || steps.apply.outputs.changed_count != '0'
         run: npm ci
 
       - name: Install validation system dependencies
-        if: steps.apply.outputs.changed_count != '0'
+        if: inputs.artifact_role == 'canary' || steps.apply.outputs.changed_count != '0'
         run: sudo apt-get update && sudo apt-get install -y librsvg2-bin
 
-      - name: Check docs before locale commit
-        if: steps.apply.outputs.changed_count != '0'
+      - name: Install Playwright browser
+        if: inputs.artifact_role == 'canary' || steps.apply.outputs.changed_count != '0'
+        run: npx playwright install --with-deps chromium
+
+      - name: Check docs before artifact finalization
+        if: inputs.artifact_role == 'canary' || steps.apply.outputs.changed_count != '0'
         run: npm run docs:check
 
       - name: Commit locale refresh
         id: locale_commit
-        if: steps.apply.outputs.changed_count != '0'
+        if: inputs.commit_locale && steps.apply.outputs.changed_count != '0'
         env:
           BASE_SOURCE_SHA: ${{ steps.apply.outputs.base_source_sha }}
           LOCALE: ${{ inputs.locale }}
@@ -356,7 +349,7 @@ jobs:
           python .github/scripts/i18n/commit_locale_artifact.py
 
       - name: Dispatch locale docs deploy
-        if: steps.locale_commit.outputs.committed == 'true'
+        if: inputs.commit_locale && steps.locale_commit.outputs.committed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
