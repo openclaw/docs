@@ -240,6 +240,7 @@ openclaw skills workshop apply <proposal-id>
   - **安全を最優先にする** — Skillが`exec`を使用する場合、信頼できない入力から任意のコマンド注入を許さないようにプロンプトを設計してください。
   - **ローカルでテストする** — 共有する前に`openclaw agent --message "..."`を使用します。
   - **ClawHubを使用する** — ゼロから構築する前に、[clawhub.ai](https://clawhub.ai)でコミュニティのSkillsを探します。
+
 </Tip>
 
 ## 関連

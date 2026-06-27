@@ -479,6 +479,7 @@ code-execution tools には Responses API を使います。Realtime voice sessi
     - OpenClaw は現在、xAI マルチエージェントモデルファミリーを公開していません。xAI はこれらのモデルを Responses API 経由で提供していますが、OpenClaw の共有エージェントループで使用されるクライアント側ツールやカスタムツールを受け付けません。[xAI マルチエージェントの制限](https://docs.x.ai/developers/model-capabilities/text/multi-agent#limitations)を参照してください。
     - xAI Realtime voice はまだ OpenClaw プロバイダーとして登録されていません。バッチ STT やストリーミング文字起こしとは異なる双方向音声セッション契約が必要です。
     - xAI 画像 `quality`、画像 `mask`、および追加のネイティブ専用アスペクト比は、共有 `image_generate` ツールに対応するクロスプロバイダーコントロールが追加されるまで公開されません。
+
   </Accordion>
 
   <Accordion title="高度なメモ">
@@ -489,6 +490,7 @@ code-execution tools には Responses API を使います。Realtime voice sessi
     - Grok `web_search` は `plugins.entries.xai.config.webSearch.baseUrl` を読み取ります。`x_search` は `plugins.entries.xai.config.xSearch.baseUrl` を読み取り、その後 Grok web-search ベース URL にフォールバックします。
     - `x_search` と `code_execution` は、コアモデルランタイムにハードコードされるのではなく、バンドルされた xAI plugin が所有します。
     - `code_execution` はリモート xAI サンドボックス実行であり、ローカルの [`exec`](/ja-JP/tools/exec) ではありません。
+
   </Accordion>
 </AccordionGroup>
 
