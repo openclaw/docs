@@ -68,6 +68,10 @@ jobs:
         if: steps.apply.outputs.changed_count != '0'
         run: sudo apt-get update && sudo apt-get install -y librsvg2-bin
 
+      - name: Install Playwright browser
+        if: steps.apply.outputs.changed_count != '0'
+        run: npx playwright install --with-deps chromium
+
       - name: Check aggregate docs
         if: steps.apply.outputs.changed_count != '0'
         run: npm run docs:check

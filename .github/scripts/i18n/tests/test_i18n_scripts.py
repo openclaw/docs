@@ -175,9 +175,14 @@ class I18NScriptTests(unittest.TestCase):
 
     def test_full_workflow_gates_batches_after_canary(self) -> None:
         text = (REPO_ROOT / ".github/workflows/translate-all.yml").read_text(encoding="utf-8")
+        reusable = (REPO_ROOT / ".github/workflows/translate-locale-reusable.yml").read_text(encoding="utf-8")
         for index in range(1, 7):
             self.assertIn(f"translate-batch-{index}:", text)
             self.assertIn("needs.translate-canary.result == 'success'", text)
+        self.assertIn("artifact_role: canary", text)
+        self.assertIn("inputs.commit_locale || inputs.artifact_role == 'canary'", reusable)
+        self.assertIn("inputs.artifact_role == 'canary' || steps.apply.outputs.changed_count != '0'", reusable)
+        self.assertIn("inputs.commit_locale && steps.apply.outputs.changed_count != '0'", reusable)
         self.assertIn("provider-preflight:", text)
         self.assertIn("Translate Full completed with failed or cancelled work", text)
 
