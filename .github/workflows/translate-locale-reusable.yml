@@ -312,6 +312,7 @@ jobs:
     needs: translate
     if: needs.translate.result == 'success' && (inputs.commit_locale || inputs.artifact_role == 'canary')
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     permissions:
       actions: write
       contents: write
