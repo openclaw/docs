@@ -5,41 +5,47 @@ Internal note for the docs publish pipeline. This file is under `docs/.i18n`, wh
 ## Goals
 
 - English docs deploy quickly after every source docs sync.
-- Locale translation does not run for every hot `main` commit.
-- Translation work is debounced so a burst of docs commits becomes one translation wave.
-- Locale jobs translate only pages whose source hash changed since the last successful locale output.
-- Successful locale outputs are committed together, even if one or more locale jobs fail.
-- A weekly reconciliation reruns every locale/page path to repair missed or flaky translations.
+- Incremental translation does not run for every hot `main` commit.
+- Full reconciliation is a recovery path, not a release path.
+- Full reconciliation runs automatically only on the weekly schedule, or manually when an operator starts it.
+- A failed full run can be retried for one locale without rerunning every locale.
+- Provider/key failures stop before locale fan-out.
+- A tiny canary sample must succeed before follow-up full batches start.
+- Locale translation failures are visible as failed GitHub jobs, even when diagnostic artifacts were uploaded.
 
-## Event flow
+## Event Flow
 
 1. `openclaw/openclaw` syncs English docs into `openclaw/docs`.
 2. GitHub Pages deploys English/source changes immediately from the sync commit.
-3. `Translate All` is triggered by the sync commit, release dispatch, manual dispatch, or weekly schedule.
-4. The coordinator waits a cooldown window before starting translation.
-5. After the cooldown, the coordinator reads the current `origin/main` source metadata.
-6. If a newer docs sync arrived during cooldown, the coordinator uses the newer source state.
-7. Per-locale translation jobs run in parallel with `fail-fast: false`.
-8. Each locale job uploads an artifact for the requested source SHA.
-9. The finalizer downloads available artifacts, ignores stale or failed payloads, and pushes one aggregate i18n commit.
-10. After the aggregate commit lands, the finalizer dispatches the Pages deploy once.
-11. The Pages workflow dispatches live smoke after deployment.
+3. `Translate Incremental` debounces source-doc pushes and translates stale locale pages.
+4. `Translate Full` runs only from the weekly schedule or `workflow_dispatch`.
+5. Both workflows read the current `origin/main` source metadata after debounce.
+6. Both workflows run the shared OpenAI provider/key preflight before any locale job.
+7. Full translation plans one canary locale sample and bounded follow-up batches of up to three locales.
+8. If the canary fails, follow-up full batches do not start.
+9. Full locale jobs validate, commit, and dispatch deploy independently after that locale succeeds.
+10. Incremental locale jobs still upload artifacts for the aggregate finalizer.
+11. Failed locale jobs upload failure metadata before failing the job, so artifacts and CI status agree.
 
-## Debounce policy
+## Trigger Policy
 
-The coordinator waits 1 hour after a docs sync or release dispatch, then re-reads `origin/main`.
+`Translate Full` deliberately does not listen to release dispatches or glossary pushes. Release and glossary changes converge through the weekly full run. For urgent recovery, manually run `Translate Full` with `target_locale=all` or a single locale slug.
 
-The default cooldown is controlled by the publish repo variable `OPENCLAW_DOCS_TRANSLATION_COOLDOWN_SECONDS`, which defaults to `3600`. Repository dispatch callers may override it with `client_payload.cooldown_seconds`, and manual runs may set `cooldown_seconds`.
+Top-level full workflow concurrency is serialized with `cancel-in-progress: false`. A new full run waits for a running full run instead of cancelling it.
 
-If `.openclaw-sync/source.json` changed during the wait, it waits again from the newer state. If `main` keeps moving, the wait is capped by `OPENCLAW_DOCS_TRANSLATION_MAX_WAIT_SECONDS`, which defaults to the cooldown value. The newest observed state is translated after the cap.
+Manual `target_locale` accepts `all` or one locale slug such as `fr`, `ja-jp`, or `zh-cn`. A single-locale rerun uses that locale for the canary sample, then schedules only that locale in the first full batch.
 
-Manual and weekly runs do not wait by default.
+## Debounce Policy
 
-## Incremental translation
+The coordinator waits after push-triggered incremental runs. The default cooldown is controlled by `OPENCLAW_DOCS_TRANSLATION_COOLDOWN_SECONDS`, which defaults to `3600`. Manual and weekly runs do not wait by default unless the manual input sets `cooldown_seconds`.
+
+If `.openclaw-sync/source.json` changed during a wait, the workflow waits again from the newer state. If `main` keeps moving, the wait is capped by `OPENCLAW_DOCS_TRANSLATION_MAX_WAIT_SECONDS`, which defaults to the cooldown value.
+
+## Incremental Translation
 
 Each translated page stores `x-i18n.source_hash`. Locale jobs compare the current English page hash with the stored locale hash.
 
-Normal runs translate only:
+Normal incremental runs translate only:
 
 - missing locale pages
 - locale pages with stale `x-i18n.source_hash`
@@ -47,14 +53,32 @@ Normal runs translate only:
 
 Internal files under `docs/.i18n/**` are not translation inputs. Push-triggered runs that only change internal i18n files skip before the locale matrix.
 
-If a locale job fails, its artifact is marked failed and carries no payload. The finalizer still commits successful locales. The failed locale remains stale and is picked up by the next incremental run because its source hashes still do not match.
+Incremental translation uses the provider/key preflight before expanding the locale matrix. If the key is invalid, model access is denied, or quota is exhausted, the preflight job fails and locale jobs are not scheduled.
 
-## Artifact contract
+## Full Translation
 
-Each locale job uploads one artifact named with locale and source SHA:
+Full mode forces every source page for the selected locale into the pending manifest instead of relying on changed source hashes.
+
+The weekly all-locale plan is:
 
 ```text
-i18n-zh-cn-<source-sha>
+provider/key preflight
+  -> canary locale sample
+  -> batch 1, up to 3 locales
+  -> batch 2, up to 3 locales
+  -> ...
+  -> status summary
+```
+
+The canary is a deterministic one-document sample from the first selected locale. It uploads a `canary` artifact, applies it through the same artifact validation path as locale commits, and runs the aggregate docs check without committing or publishing. If it fails translation or validation, later batches are skipped. If it succeeds, the selected locales, including the canary locale, run in normal full batches. If a later locale fails, already successful locales remain committed and published, and the failed locale can be rerun manually.
+
+## Artifact Contract
+
+Each locale job uploads one artifact named with role, locale, shard, and source SHA:
+
+```text
+i18n-zh-cn-s0of1-<source-sha>
+i18n-canary-zh-cn-s0of1-<source-sha>
 ```
 
 Artifact contents:
@@ -67,45 +91,51 @@ payload/docs/<locale>/**
 payload/docs/.i18n/<locale>.tm.jsonl
 ```
 
-`metadata.json` includes the locale, locale slug, source SHA, pending count, changed count, and any failure reason. The finalizer rejects artifacts whose `source_sha` does not match the current `.openclaw-sync/source.json`.
+`metadata.json` includes the artifact role, locale, locale slug, source SHA, pending count, changed count, deleted count, step outcomes, and failure reason. A failed translation writes an empty payload contract, uploads the artifact, then fails the job. Full status summaries count canary artifacts separately and do not treat a canary artifact as a successful locale refresh.
 
-The source repo release workflow dispatches one `translate-all-release` event. The coordinator still accepts old per-locale release events for compatibility, but those are only a fallback.
+## Commit And Deploy Policy
 
-## Aggregate commit
+Full locale jobs are the commit and publish unit. After a locale succeeds, a separate write-permission commit job downloads that locale artifact, applies it to latest `main`, runs `npm run docs:check`, commits only `docs/<locale>/**` and `docs/.i18n/<locale>.tm.jsonl`, pushes with rebase/retry under the shared locale finalizer concurrency, and dispatches `pages.yml`.
 
-The finalizer owns the only locale push in the normal path.
+Artifact application is intentionally conservative when source metadata has moved. The apply step uses latest `main`, copies only payload pages whose embedded `x-i18n.source_hash` still matches the current source page, and skips stale translation memory. If `main` moves again between apply/validation and push, the commit script skips that locale commit so the next manual or weekly run can re-evaluate from the new base.
 
-Commit message:
+Incremental translation keeps the aggregate finalizer. The finalizer downloads available artifacts, applies valid successful payloads, rejects stale or failed artifacts, runs `npm run docs:check`, pushes one aggregate i18n commit, dispatches `pages.yml`, and fails when required locale artifacts are missing or failed.
 
-```text
-chore(i18n): refresh translations
+## Automatic Verification
+
+The script test suite validates the recovery controls:
+
+- `Translate Full` has no release dispatch trigger.
+- glossary pushes do not trigger `Translate Full`.
+- weekly and manual triggers remain present.
+- manual single-locale planning selects only that locale.
+- full canary manifests keep the total pending count but translate only a bounded sample.
+- provider/key preflight classifies invalid key, model access, and quota failures.
+- canary success gates follow-up full batches.
+- full worker fan-out stays within the small-batch budget.
+- full status summaries report locale success, failure, skip reason, and artifact counts from metadata.
+- failed artifact metadata produces visible GitHub output status.
+- locale artifact application still rejects missing, failed, stale, and invalid artifacts.
+
+Run locally:
+
+```bash
+python -m unittest .github/scripts/i18n/tests/test_i18n_scripts.py
+python .github/scripts/i18n/workflow_shell_check.py --check-bash
+python .github/scripts/i18n/budget_check.py
 ```
 
-The commit may contain a partial locale set. The job summary lists applied locales, locales with no changes, missing or failed locales, stale artifacts, and invalid artifacts.
+## Manual Verification
 
-## Weekly reconciliation
+Before merging workflow recovery changes:
 
-The weekly run uses `full` mode. It forces a full reconciliation across every locale and every source page instead of relying only on changed source hashes.
-
-Glossary changes also force full reconciliation because glossary guidance can affect pages whose source hashes did not change.
-
-Expected behavior:
-
-- regenerate or verify every locale page
-- prune stale locale pages
-- refresh translation memory as needed
-- still use parallel locale jobs
-- still commit one aggregate result
-- still tolerate individual locale failures
-
-The weekly run is the repair mechanism for LLM flakiness, partial failures, and missed incremental updates.
-
-## Deployment policy
-
-English deploys from source sync commits.
-
-Translations deploy after the aggregate i18n commit. The finalizer dispatches GitHub Pages once because GitHub suppresses normal push-triggered workflow runs from `GITHUB_TOKEN` commits. The Pages workflow dispatches live smoke after deployment so the smoke test checks the deployed site instead of racing the deploy.
-
-A hot docs day should produce many fast English deploys, but only a small number of locale deploys.
-
-If external deploy providers such as Mintlify watch every push, the aggregate i18n commit is the load reducer. Avoid restoring per-locale pushes to `main`.
+1. Trigger `Translate Full` with a deliberately invalid translation key in a test context and confirm the provider preflight fails before locale jobs start.
+2. Trigger or simulate a canary failure and confirm follow-up full batches are skipped.
+3. Trigger `Translate Full` with `target_locale=fr` and confirm only `fr` runs.
+4. Trigger a small manual full run and confirm a successful locale commits independently and dispatches `pages.yml`.
+5. Observe or simulate a later locale failure and confirm earlier successful locale commits remain published.
+6. Rerun only the failed locale with `target_locale=<slug>` and confirm it commits independently.
+7. Confirm release events do not start `Translate Full`.
+8. Confirm glossary-only changes do not start `Translate Full`.
+9. Check GitHub Actions summaries for selected locales, canary/batch status, artifact counts, and explicit failures.
+10. Confirm the final diff from any locale commit contains only `docs/<locale>/**` and `docs/.i18n/<locale>.tm.jsonl`.
