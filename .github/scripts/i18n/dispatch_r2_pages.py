@@ -16,6 +16,7 @@ Parameters:
   --force-upload: Force R2 object audit/upload input. Default: true.
   --live-url: Optional live URL to verify after upload.
   --expect-h1: Expected h1 text for live URL verification.
+  --dispatch-attempts: Dispatch/retry count for stale scoped uploads. Default: 3.
   --timeout-seconds: Maximum wait. Default: 3600.
   --poll-seconds: Poll interval. Default: 10.
 
@@ -43,6 +44,7 @@ import time
 import urllib.error
 import urllib.request
 from datetime import UTC, datetime
+from uuid import uuid4
 
 
 RUN_URL_RE = re.compile(r"/actions/runs/([0-9]+)")
@@ -74,6 +76,7 @@ def dispatch(
     force_upload: bool,
     locale: str = "",
     page_path: str = "",
+    request_id: str = "",
 ) -> str:
     command = [
         "gh",
@@ -93,6 +96,8 @@ def dispatch(
         command.extend(["-f", f"locale={locale}"])
     if page_path:
         command.extend(["-f", f"page_path={page_path}"])
+    if request_id:
+        command.extend(["-f", f"request_id={request_id}"])
     result = run(command)
     output = "\n".join(part for part in [result.stdout.strip(), result.stderr.strip()] if part)
     if output:
@@ -115,7 +120,7 @@ def list_workflow_dispatch_runs(workflow: str, ref: str, repo: str) -> list[dict
             "--event",
             "workflow_dispatch",
             "--json",
-            "databaseId,createdAt,status,url",
+            "databaseId,createdAt,displayTitle,status,url",
             "--limit",
             "20",
         ]
@@ -123,7 +128,14 @@ def list_workflow_dispatch_runs(workflow: str, ref: str, repo: str) -> list[dict
     return json.loads(result.stdout or "[]")
 
 
-def find_dispatched_run(workflow: str, ref: str, repo: str, started_at: datetime, known_run_ids: set[str]) -> str:
+def find_dispatched_run(
+    workflow: str,
+    ref: str,
+    repo: str,
+    started_at: datetime,
+    known_run_ids: set[str],
+    request_id: str = "",
+) -> str:
     cutoff = started_at.replace(microsecond=0)
     for _ in range(12):
         runs = list_workflow_dispatch_runs(workflow, ref, repo)
@@ -131,6 +143,7 @@ def find_dispatched_run(workflow: str, ref: str, repo: str, started_at: datetime
             item
             for item in runs
             if str(item["databaseId"]) not in known_run_ids and parse_time(item["createdAt"]) >= cutoff
+            and (not request_id or request_id in str(item.get("displayTitle") or ""))
         ]
         if len(recent) == 1:
             run_id = str(recent[0]["databaseId"])
@@ -155,6 +168,14 @@ def known_workflow_dispatch_run_ids(workflow: str, ref: str, repo: str) -> set[s
         raise
     except Exception as exc:
         raise SystemExit(f"could not list existing R2 Pages runs before dispatch: {exc}") from exc
+
+
+def dispatch_request_id(artifact_scope: str, locale: str, page_path: str) -> str:
+    parts = ["i18n-r2", artifact_scope or "full", locale or "all"]
+    if page_path:
+        parts.append(re.sub(r"[^A-Za-z0-9_.-]+", "-", page_path).strip("-")[:48] or "page")
+    parts.append(uuid4().hex[:12])
+    return "-".join(parts)
 
 
 def wait_for_run(repo: str, run_id: str, timeout_seconds: int, poll_seconds: int) -> None:
@@ -236,6 +257,7 @@ Examples:
     parser.add_argument("--force-upload", default=True, action=argparse.BooleanOptionalAction)
     parser.add_argument("--live-url", default="")
     parser.add_argument("--expect-h1", default="")
+    parser.add_argument("--dispatch-attempts", default=3, type=int)
     parser.add_argument("--timeout-seconds", default=3600, type=int)
     parser.add_argument("--poll-seconds", default=10, type=int)
     return parser.parse_args()
@@ -249,23 +271,35 @@ def main() -> None:
         raise SystemExit("timeout-seconds must be >= 1")
     if args.poll_seconds < 1:
         raise SystemExit("poll-seconds must be >= 1")
+    if args.dispatch_attempts < 1:
+        raise SystemExit("dispatch-attempts must be >= 1")
 
     # GitHub's dispatch API can omit the new run URL; snapshot first so fallback
     # resolution cannot attach this deploy gate to a pre-existing R2 run.
-    known_run_ids = known_workflow_dispatch_run_ids(args.workflow, args.ref, args.repo)
-    started_at = datetime.now(UTC)
-    run_id = dispatch(
-        args.workflow,
-        args.ref,
-        args.repo,
-        args.artifact_scope,
-        args.force_upload,
-        args.locale,
-        args.page_path,
-    )
-    if not run_id:
-        run_id = find_dispatched_run(args.workflow, args.ref, args.repo, started_at, known_run_ids)
-    wait_for_run(args.repo, run_id, args.timeout_seconds, args.poll_seconds)
+    for attempt in range(1, args.dispatch_attempts + 1):
+        known_run_ids = known_workflow_dispatch_run_ids(args.workflow, args.ref, args.repo)
+        started_at = datetime.now(UTC)
+        request_id = dispatch_request_id(args.artifact_scope, args.locale, args.page_path)
+        try:
+            run_id = dispatch(
+                args.workflow,
+                args.ref,
+                args.repo,
+                args.artifact_scope,
+                args.force_upload,
+                args.locale,
+                args.page_path,
+                request_id,
+            )
+            if not run_id:
+                run_id = find_dispatched_run(args.workflow, args.ref, args.repo, started_at, known_run_ids, request_id)
+            wait_for_run(args.repo, run_id, args.timeout_seconds, args.poll_seconds)
+            break
+        except SystemExit as exc:
+            if attempt >= args.dispatch_attempts:
+                raise
+            print(f"R2 Pages dispatch attempt {attempt}/{args.dispatch_attempts} failed: {exc}; retrying.")
+            time.sleep(args.poll_seconds)
     verify_live_h1(args.live_url, args.expect_h1, args.timeout_seconds, args.poll_seconds)
 
 
