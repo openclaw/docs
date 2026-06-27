@@ -11,6 +11,8 @@ Parameters:
   --ref: Git ref to dispatch. Default: main.
   --repo: GitHub repository. Default: GITHUB_REPOSITORY.
   --artifact-scope: R2 artifact scope input. Default: full.
+  --locale: Locale code for locale/page scoped uploads.
+  --page-path: Locale-relative page route for page scoped uploads.
   --force-upload: Force R2 object audit/upload input. Default: true.
   --live-url: Optional live URL to verify after upload.
   --expect-h1: Expected h1 text for live URL verification.
@@ -26,6 +28,7 @@ Outputs:
 Examples:
   GH_TOKEN=... GITHUB_REPOSITORY=openclaw/docs python .github/scripts/i18n/dispatch_r2_pages.py
   python .github/scripts/i18n/dispatch_r2_pages.py --repo openclaw/docs --ref main --timeout-seconds 1800
+  python .github/scripts/i18n/dispatch_r2_pages.py --artifact-scope page --locale zh-CN --page-path channels/line --no-force-upload
 """
 
 from __future__ import annotations
@@ -63,23 +66,34 @@ def parse_run_id(output: str) -> str:
     return match.group(1) if match else ""
 
 
-def dispatch(workflow: str, ref: str, repo: str, artifact_scope: str, force_upload: bool) -> str:
-    result = run(
-        [
-            "gh",
-            "workflow",
-            "run",
-            workflow,
-            "--repo",
-            repo,
-            "--ref",
-            ref,
-            "-f",
-            f"artifact_scope={artifact_scope}",
-            "-f",
-            f"force_upload={'true' if force_upload else 'false'}",
-        ]
-    )
+def dispatch(
+    workflow: str,
+    ref: str,
+    repo: str,
+    artifact_scope: str,
+    force_upload: bool,
+    locale: str = "",
+    page_path: str = "",
+) -> str:
+    command = [
+        "gh",
+        "workflow",
+        "run",
+        workflow,
+        "--repo",
+        repo,
+        "--ref",
+        ref,
+        "-f",
+        f"artifact_scope={artifact_scope}",
+        "-f",
+        f"force_upload={'true' if force_upload else 'false'}",
+    ]
+    if locale:
+        command.extend(["-f", f"locale={locale}"])
+    if page_path:
+        command.extend(["-f", f"page_path={page_path}"])
+    result = run(command)
     output = "\n".join(part for part in [result.stdout.strip(), result.stderr.strip()] if part)
     if output:
         print(output)
@@ -209,6 +223,7 @@ def parse_args() -> argparse.Namespace:
 Examples:
   GH_TOKEN=... GITHUB_REPOSITORY=openclaw/docs python .github/scripts/i18n/dispatch_r2_pages.py
   python .github/scripts/i18n/dispatch_r2_pages.py --repo openclaw/docs --ref main --timeout-seconds 1800
+  python .github/scripts/i18n/dispatch_r2_pages.py --artifact-scope locale --locale ja-JP --no-force-upload
   python .github/scripts/i18n/dispatch_r2_pages.py --live-url https://docs.openclaw.ai/zh-CN/channels/line --expect-h1 LINE
 """,
     )
@@ -216,6 +231,8 @@ Examples:
     parser.add_argument("--ref", default="main")
     parser.add_argument("--repo", default=os.environ.get("GITHUB_REPOSITORY", ""))
     parser.add_argument("--artifact-scope", default="full")
+    parser.add_argument("--locale", default="")
+    parser.add_argument("--page-path", default="")
     parser.add_argument("--force-upload", default=True, action=argparse.BooleanOptionalAction)
     parser.add_argument("--live-url", default="")
     parser.add_argument("--expect-h1", default="")
@@ -237,7 +254,15 @@ def main() -> None:
     # resolution cannot attach this deploy gate to a pre-existing R2 run.
     known_run_ids = known_workflow_dispatch_run_ids(args.workflow, args.ref, args.repo)
     started_at = datetime.now(UTC)
-    run_id = dispatch(args.workflow, args.ref, args.repo, args.artifact_scope, args.force_upload)
+    run_id = dispatch(
+        args.workflow,
+        args.ref,
+        args.repo,
+        args.artifact_scope,
+        args.force_upload,
+        args.locale,
+        args.page_path,
+    )
     if not run_id:
         run_id = find_dispatched_run(args.workflow, args.ref, args.repo, started_at, known_run_ids)
     wait_for_run(args.repo, run_id, args.timeout_seconds, args.poll_seconds)

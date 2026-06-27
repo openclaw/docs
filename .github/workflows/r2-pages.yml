@@ -23,6 +23,18 @@ on:
           - auto
           - full
           - shell
+          - locale
+          - page
+      locale:
+        description: "Locale code for locale/page scoped uploads."
+        required: false
+        type: string
+        default: ""
+      page_path:
+        description: "Locale-relative page route for page scoped uploads, for example channels/line."
+        required: false
+        type: string
+        default: ""
       force_upload:
         description: "Audit R2 objects before upload; unchanged objects remain cache hits."
         required: false
@@ -64,15 +76,27 @@ jobs:
           BEFORE_SHA: ${{ github.event.before || '' }}
           EVENT_NAME: ${{ github.event_name }}
           REQUESTED_SCOPE: ${{ inputs.artifact_scope || 'auto' }}
+          REQUESTED_LOCALE: ${{ inputs.locale || '' }}
+          REQUESTED_PAGE_PATH: ${{ inputs.page_path || '' }}
         run: |
           set -euo pipefail
 
           scope="${REQUESTED_SCOPE}"
           if [ -z "${scope}" ]; then scope="auto"; fi
           case "${scope}" in
-            auto|full|shell) ;;
+            auto|full|shell|locale|page) ;;
             *) echo "Invalid artifact scope: ${scope}" >&2; exit 1 ;;
           esac
+          if [ "${scope}" = "locale" ] || [ "${scope}" = "page" ]; then
+            if [ -z "${REQUESTED_LOCALE}" ]; then
+              echo "locale is required for ${scope} artifact scope" >&2
+              exit 1
+            fi
+          fi
+          if [ "${scope}" = "page" ] && [ -z "${REQUESTED_PAGE_PATH}" ]; then
+            echo "page_path is required for page artifact scope" >&2
+            exit 1
+          fi
 
           if [ "${scope}" = "auto" ]; then
             scope="full"
@@ -98,13 +122,17 @@ jobs:
 
           {
             echo "scope=${scope}"
-            echo "partial=$([ "${scope}" = "shell" ] && echo 1 || echo 0)"
+            case "${scope}" in
+              shell|locale|page) echo "upload_scope=${scope}" ;;
+              *) echo "upload_scope=all" ;;
+            esac
+            echo "partial=$([[ "${scope}" = "shell" || "${scope}" = "locale" || "${scope}" = "page" ]] && echo 1 || echo 0)"
             echo "deploy_worker=${deploy_worker}"
           } >> "${GITHUB_OUTPUT}"
           echo "Artifact scope: ${scope}"
 
       - name: Read source metadata
-        if: steps.artifact-scope.outputs.scope == 'full'
+        if: steps.artifact-scope.outputs.scope == 'full' || steps.artifact-scope.outputs.scope == 'locale' || steps.artifact-scope.outputs.scope == 'page'
         id: source-meta
         run: |
           node - <<'NODE'
@@ -116,7 +144,7 @@ jobs:
           NODE
 
       - name: Check out OpenClaw source
-        if: steps.artifact-scope.outputs.scope == 'full'
+        if: steps.artifact-scope.outputs.scope == 'full' || steps.artifact-scope.outputs.scope == 'locale' || steps.artifact-scope.outputs.scope == 'page'
         uses: actions/checkout@v6
         with:
           repository: ${{ steps.source-meta.outputs.repository }}
@@ -288,7 +316,9 @@ jobs:
           R2_UPLOAD_CONCURRENCY: 64
           R2_UPLOAD_PARTIAL: ${{ steps.artifact-scope.outputs.partial }}
           R2_UPLOAD_FORCE: ${{ github.event_name == 'workflow_dispatch' && inputs.force_upload == true && '1' || '0' }}
-          R2_UPLOAD_SCOPE: ${{ steps.artifact-scope.outputs.scope == 'shell' && 'shell' || 'all' }}
+          R2_UPLOAD_SCOPE: ${{ steps.artifact-scope.outputs.upload_scope }}
+          R2_UPLOAD_LOCALE: ${{ inputs.locale || '' }}
+          R2_UPLOAD_PAGE_PATH: ${{ inputs.page_path || '' }}
         run: npm run docs:r2:upload
 
       - name: Deploy Worker before live smoke

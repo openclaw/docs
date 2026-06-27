@@ -119,8 +119,14 @@ def build_pending_manifest(
     pending_files = sorted(pending_files)
     shard_files = [file for index, file in enumerate(pending_files) if index % shard_total == shard_index]
     if pending_limit:
-        canary_source = (docs_root / canary_source_path).resolve() if canary_source_path else None
-        if canary_source in shard_files:
+        if canary_source_path:
+            canary_source = (docs_root / canary_source_path).resolve()
+            try:
+                canary_source.relative_to(docs_root.resolve())
+            except ValueError as exc:
+                raise SystemExit(f"configured canary source must stay under docs: {canary_source_path}") from exc
+            if canary_source not in shard_files:
+                raise SystemExit(f"configured canary source is not pending in this shard: {canary_source_path}")
             # Prefer a user-visible page with known glossary coverage so the
             # canary proves both translation and the deployed page content.
             shard_files = [canary_source]

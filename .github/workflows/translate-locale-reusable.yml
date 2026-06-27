@@ -423,7 +423,20 @@ jobs:
 
           args=()
           if [ "${ARTIFACT_ROLE}" = "canary" ]; then
-            args+=(--live-url "${CANARY_LIVE_URL}" --expect-h1 "${CANARY_EXPECTED_H1}")
+            args+=(
+              --artifact-scope page
+              --locale "${{ inputs.locale }}"
+              --page-path "${{ inputs.canary_live_path }}"
+              --no-force-upload
+              --live-url "${CANARY_LIVE_URL}"
+              --expect-h1 "${CANARY_EXPECTED_H1}"
+            )
+          else
+            args+=(
+              --artifact-scope locale
+              --locale "${{ inputs.locale }}"
+              --no-force-upload
+            )
           fi
           python "${I18N_SCRIPT_DIR}/dispatch_r2_pages.py" "${args[@]}"
 

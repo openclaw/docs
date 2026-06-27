@@ -208,13 +208,25 @@ class I18NScriptTests(unittest.TestCase):
         self.assertIn('python "${I18N_SCRIPT_DIR}/build_pending_manifest.py"', reusable)
         self.assertIn('python "${I18N_SCRIPT_DIR}/commit_locale_artifact.py"', reusable)
         self.assertIn('python "${I18N_SCRIPT_DIR}/dispatch_r2_pages.py" "${args[@]}"', reusable)
-        self.assertIn('--live-url "${CANARY_LIVE_URL}" --expect-h1 "${CANARY_EXPECTED_H1}"', reusable)
+        self.assertIn("--artifact-scope page", reusable)
+        self.assertIn('--locale "${{ inputs.locale }}"', reusable)
+        self.assertIn('--page-path "${{ inputs.canary_live_path }}"', reusable)
+        self.assertIn("--artifact-scope locale", reusable)
+        self.assertIn("--no-force-upload", reusable)
+        self.assertIn('--live-url "${CANARY_LIVE_URL}"', reusable)
+        self.assertIn('--expect-h1 "${CANARY_EXPECTED_H1}"', reusable)
         finalize_reusable = (REPO_ROOT / ".github/workflows/translate-finalize-reusable.yml").read_text(encoding="utf-8")
         self.assertIn('echo "I18N_SCRIPT_DIR=${I18N_SCRIPT_DIR}" >> "$GITHUB_ENV"', finalize_reusable)
         self.assertIn("ref: ${{ github.workflow_sha }}", finalize_reusable)
         self.assertIn('python "${I18N_SCRIPT_DIR}/dispatch_r2_pages.py"', finalize_reusable)
         self.assertIn("provider-preflight:", text)
         self.assertIn("Translate Full completed with failed or cancelled work", text)
+        r2_pages = (REPO_ROOT / ".github/workflows/r2-pages.yml").read_text(encoding="utf-8")
+        self.assertIn("- locale", r2_pages)
+        self.assertIn("- page", r2_pages)
+        self.assertIn("R2_UPLOAD_SCOPE: ${{ steps.artifact-scope.outputs.upload_scope }}", r2_pages)
+        self.assertIn("R2_UPLOAD_LOCALE: ${{ inputs.locale || '' }}", r2_pages)
+        self.assertIn("R2_UPLOAD_PAGE_PATH: ${{ inputs.page_path || '' }}", r2_pages)
 
     def test_prepare_path_selection_matches_incremental_rules(self) -> None:
         self.assertTrue(prepare.is_translatable_doc_path("docs/guide/setup.mdx"))
@@ -386,6 +398,24 @@ class I18NScriptTests(unittest.TestCase):
             self.assertEqual(2, result.total_pending_count)
             self.assertEqual(1, result.pending_count)
             self.assertTrue(result.shard_files[0].as_posix().endswith("/docs/guide/setup.mdx"))
+
+    def test_pending_manifest_canary_rejects_missing_configured_source_page(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            shutil.copytree(FIXTURES / "pending-docs" / "docs", tmp_path / "docs")
+
+            with self.assertRaises(SystemExit):
+                pending.build_pending_manifest(
+                    docs_root=tmp_path / "docs",
+                    openclaw_sync_dir=tmp_path / ".openclaw-sync",
+                    locale="fr",
+                    locale_slug="fr",
+                    mode="full",
+                    shard_index=0,
+                    shard_total=1,
+                    pending_limit=1,
+                    canary_source_path="channels/line.md",
+                )
 
     def test_package_artifact_keeps_only_allowed_changed_paths_and_payload(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -581,6 +611,35 @@ class I18NScriptTests(unittest.TestCase):
     def test_dispatch_r2_pages_parses_run_urls(self) -> None:
         self.assertEqual("28277584371", dispatch_r2_pages.parse_run_id("https://github.com/openclaw/docs/actions/runs/28277584371"))
 
+    def test_dispatch_r2_pages_passes_scoped_inputs(self) -> None:
+        captured: list[str] = []
+
+        def fake_run(args: list[str], check: bool = True) -> subprocess.CompletedProcess[str]:
+            captured.extend(args)
+            return subprocess.CompletedProcess(
+                args=args,
+                returncode=0,
+                stdout="https://github.com/openclaw/docs/actions/runs/28277584371\n",
+                stderr="",
+            )
+
+        with patch.object(dispatch_r2_pages, "run", fake_run):
+            run_id = dispatch_r2_pages.dispatch(
+                "r2-pages.yml",
+                "main",
+                "openclaw/docs",
+                "page",
+                False,
+                "zh-CN",
+                "channels/line",
+            )
+
+        self.assertEqual("28277584371", run_id)
+        self.assertIn("artifact_scope=page", captured)
+        self.assertIn("force_upload=false", captured)
+        self.assertIn("locale=zh-CN", captured)
+        self.assertIn("page_path=channels/line", captured)
+
     def test_dispatch_r2_pages_selects_recent_workflow_dispatch(self) -> None:
         calls = {"count": 0}
         now = "2026-06-27T03:43:01Z"
@@ -657,6 +716,86 @@ class I18NScriptTests(unittest.TestCase):
 
         self.assertEqual(2, len(seen))
         self.assertIn("_openclaw_i18n_canary=", seen[0])
+
+    def test_r2_upload_page_scope_filters_manifest_entries(self) -> None:
+        result = self._run_r2_upload_scope("page", "zh-CN", "channels/line")
+
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertIn("r2 upload scope: page (3/7 manifest entries, partial=true)", result.stdout)
+        self.assertIn("r2 dry-run put: zh-CN/channels/line\n", result.stdout)
+        self.assertIn("r2 dry-run put: zh-CN/channels/line/index.html", result.stdout)
+        self.assertIn("r2 dry-run put: zh-CN/channels/line.md", result.stdout)
+        self.assertNotIn("zh-CN/channels/sms", result.stdout)
+        self.assertNotIn("ja-JP/channels/line", result.stdout)
+        self.assertNotIn("assets/docs-site.css", result.stdout)
+        self.assertNotIn("pagefind/pagefind.js", result.stdout)
+
+    def test_r2_upload_locale_scope_filters_manifest_entries(self) -> None:
+        result = self._run_r2_upload_scope("locale", "zh-CN")
+
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertIn("r2 upload scope: locale (5/7 manifest entries, partial=true)", result.stdout)
+        self.assertIn("r2 dry-run put: zh-CN/channels/line/index.html", result.stdout)
+        self.assertIn("r2 dry-run put: zh-CN/channels/sms/index.html", result.stdout)
+        self.assertIn("r2 dry-run put: pagefind/pagefind.js", result.stdout)
+        self.assertNotIn("ja-JP/channels/line", result.stdout)
+        self.assertNotIn("assets/docs-site.css", result.stdout)
+
+    def _run_r2_upload_scope(self, scope: str, locale: str, page_path: str = "") -> subprocess.CompletedProcess[str]:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            dist = tmp_path / "dist"
+            files = tmp_path / "files"
+            dist.mkdir()
+            files.mkdir()
+            entries = []
+            for key in [
+                "zh-CN/channels/line",
+                "zh-CN/channels/line/index.html",
+                "zh-CN/channels/line.md",
+                "zh-CN/channels/sms/index.html",
+                "ja-JP/channels/line/index.html",
+                "pagefind/pagefind.js",
+                "assets/docs-site.css",
+            ]:
+                file_path = files / key.replace("/", "__")
+                file_path.write_text(key, encoding="utf-8")
+                digest = hashlib.sha256(file_path.read_bytes()).hexdigest()
+                entries.append(
+                    {
+                        "cacheControl": "public, max-age=60",
+                        "contentType": "text/html; charset=utf-8",
+                        "file": str(file_path),
+                        "key": key,
+                        "sha256": digest,
+                    }
+                )
+
+            manifest = tmp_path / "manifest.json"
+            manifest.write_text(json.dumps({"entries": entries, "generatedAt": "2026-06-27T00:00:00Z", "version": 1}), encoding="utf-8")
+            remote_manifest = tmp_path / "remote.json"
+            remote_manifest.write_text(json.dumps({"entries": [], "generatedAt": "2026-06-26T00:00:00Z", "version": 1}), encoding="utf-8")
+
+            test_env = os.environ.copy()
+            test_env.update(
+                {
+                    "R2_UPLOAD_DRY_RUN": "1",
+                    "R2_UPLOAD_MANIFEST_PATH": str(manifest),
+                    "R2_UPLOAD_REMOTE_MANIFEST_PATH": str(remote_manifest),
+                    "R2_UPLOAD_SCOPE": scope,
+                    "R2_UPLOAD_LOCALE": locale,
+                }
+            )
+            if page_path:
+                test_env["R2_UPLOAD_PAGE_PATH"] = page_path
+            return subprocess.run(
+                ["node", str(REPO_ROOT / "scripts/docs-site/r2-upload.mjs")],
+                cwd=tmp_path,
+                env=test_env,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
 
     def test_package_artifact_failure_writes_visible_github_status(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
