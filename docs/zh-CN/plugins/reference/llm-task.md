@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 527b0c04ff3d4b5342f7505da3a37ee108bf1536dde5469a1948b8dd35fed9ac
     source_path: plugins/reference/llm-task.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # LLM Task 插件

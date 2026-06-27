@@ -1,13 +1,14 @@
 ---
 read_when:
-    - 你正在安装、配置或审核 kilocode 插件
+    - 你正在安装、配置或审计 kilocode 插件
 summary: 为 OpenClaw 添加 Kilocode 模型提供商支持。
 title: Kilocode 插件
 x-i18n:
-    generated_at: "2026-05-02T15:14:59Z"
+    generated_at: "2026-06-27T02:48:53Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 66872df1b93d5a9365320e260ee019a9319b8a4ddd7d50b464200c6bd53d002b
+    source_hash: 83843bd0e8a3e9944a60540a0329630f7660f8e9440c157b790ddca8655052f9
     source_path: plugins/reference/kilocode.md
     workflow: 16
 ---
@@ -18,12 +19,12 @@ x-i18n:
 
 ## 分发
 
-- 软件包：`@openclaw/kilocode-provider`
-- 安装方式：包含在 OpenClaw 中
+- 包：`@openclaw/kilocode-provider`
+- 安装方式：npm；ClawHub：`clawhub:@openclaw/kilocode-provider`
 
-## 接口范围
+## 表面
 
-providers: kilocode
+提供商：kilocode
 
 ## 相关文档
 

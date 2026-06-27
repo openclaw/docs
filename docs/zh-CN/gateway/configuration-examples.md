@@ -1,20 +1,21 @@
 ---
 read_when:
     - 学习如何配置 OpenClaw
-    - 查找配置示例
+    - 正在寻找配置示例
     - 首次设置 OpenClaw
-summary: 适用于常见 OpenClaw 设置的符合模式规范的配置示例
+summary: 常见 OpenClaw 设置的 schema 准确配置示例
 title: 配置示例
 x-i18n:
-    generated_at: "2026-05-11T20:28:13Z"
+    generated_at: "2026-06-27T01:59:30Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e077b2fe83b1c6e4ffd2ff0029fe3b754c7dc5dced06f134ddf18e9ed6a11fd2
+    source_hash: 945f4cd8571814597ec0188853e91c6483a0d8b09bd0ca7dcfb79eb877607ce2
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-下面的示例与当前配置结构保持一致。有关完整参考和每个字段的说明，请参阅 [配置](/zh-CN/gateway/configuration)。
+以下示例与当前配置 schema 保持一致。如需完整参考和各字段说明，请参阅[配置](/zh-CN/gateway/configuration)。
 
 ## 快速开始
 
@@ -27,9 +28,9 @@ x-i18n:
 }
 ```
 
-保存到 `~/.openclaw/openclaw.json`，然后你就可以用该号码私信机器人。
+保存到 `~/.openclaw/openclaw.json`，然后你就可以从该号码向 bot 发送私信。
 
-### 推荐入门配置
+### 推荐起始配置
 
 ```json5
 {
@@ -58,7 +59,8 @@ x-i18n:
   messages: {
     visibleReplies: "automatic",
     groupChat: {
-      visibleReplies: "message_tool", // default; use "automatic" for legacy room replies
+      visibleReplies: "message_tool", // opt-in; visible output requires message(action=send)
+      unmentionedInbound: "room_event",
     },
   },
 }
@@ -66,7 +68,7 @@ x-i18n:
 
 ## 扩展示例（主要选项）
 
-> JSON5 允许你使用注释和尾随逗号。普通 JSON 也可以。
+> JSON5 允许使用注释和尾随逗号。普通 JSON 也可以。
 
 ```json5
 {
@@ -88,12 +90,11 @@ x-i18n:
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
       "anthropic:work": { provider: "anthropic", mode: "api_key" },
       "openai:default": { provider: "openai", mode: "api_key" },
-      "openai-codex:personal": { provider: "openai-codex", mode: "oauth" },
+      "openai:personal": { provider: "openai", mode: "oauth" },
     },
     order: {
       anthropic: ["anthropic:default", "anthropic:work"],
-      openai: ["openai:default"],
-      "openai-codex": ["openai-codex:personal"],
+      openai: ["openai:personal", "openai:default"],
     },
   },
 
@@ -117,21 +118,22 @@ x-i18n:
     ackReactionScope: "group-mentions",
     groupChat: {
       historyLimit: 50,
-      visibleReplies: "message_tool", // normal final replies stay private in groups/channels
+      visibleReplies: "message_tool", // opt in for shared rooms with tool-reliable models
+      unmentionedInbound: "room_event",
     },
     queue: {
-      mode: "steer",
+      mode: "followup",
       debounceMs: 500,
       cap: 20,
       drop: "summarize",
       byChannel: {
-        whatsapp: "steer",
-        telegram: "steer",
-        discord: "steer",
-        slack: "steer",
-        signal: "steer",
-        imessage: "steer",
-        webchat: "steer",
+        whatsapp: "followup",
+        telegram: "followup",
+        discord: "collect",
+        slack: "collect",
+        signal: "followup",
+        imessage: "followup",
+        webchat: "followup",
       },
     },
   },
@@ -390,7 +392,7 @@ x-i18n:
   cron: {
     enabled: true,
     store: "~/.openclaw/cron/cron.json",
-    maxConcurrentRuns: 2, // cron dispatch + isolated cron agent-turn execution
+    maxConcurrentRuns: 8, // default; cron dispatch + isolated cron agent-turn execution
     sessionRetention: "24h",
     runLog: {
       maxBytes: "2mb",
@@ -480,9 +482,9 @@ x-i18n:
 }
 ```
 
-### 符号链接到同级技能仓库
+### 符号链接的同级 Skill 仓库
 
-当内置技能根目录包含指向同级仓库的符号链接时使用此配置，例如 `~/.agents/skills/manager -> ~/Projects/manager/skills`。
+当内置 Skill 根目录包含指向同级仓库的符号链接时使用此配置，例如 `~/.agents/skills/manager -> ~/Projects/manager/skills`。
 
 ```json5
 {
@@ -495,12 +497,13 @@ x-i18n:
 }
 ```
 
-- `extraDirs` 会将同级仓库扫描为显式技能根目录。
-- `allowSymlinkTargets` 允许符号链接的技能文件夹解析到该受信任的真实目标根目录，而不会允许任意符号链接逃逸。
+- `extraDirs` 会将同级仓库作为显式 Skill 根目录扫描。
+- `allowSymlinkTargets` 允许符号链接的 Skill 文件夹解析到该受信任的真实目标根目录，而不会允许任意符号链接逃逸。
+- 要让 Skill Workshop 通过同一个受信任的符号链接目标应用写入，请设置 `skills.workshop.allowSymlinkTargetWrites: true`。
 
 ## 常见模式
 
-### 带一个覆盖项的共享技能基线
+### 带有一个覆盖项的共享 Skill 基线
 
 ```json5
 {
@@ -542,10 +545,9 @@ x-i18n:
 }
 ```
 
-### 可信节点网络自动批准
+### 受信任节点网络自动审批
 
-除非你控制网络路径，否则保持设备配对为手动模式。对于专用
-实验室或 tailnet 子网，你可以选择使用精确 CIDR 或 IP 启用首次节点设备自动批准：
+除非你控制网络路径，否则保持设备配对为手动。对于专用实验室或 tailnet 子网，你可以选择用精确的 CIDR 或 IP 启用首次节点设备自动审批：
 
 ```json5
 {
@@ -559,12 +561,11 @@ x-i18n:
 }
 ```
 
-未设置时，此功能保持关闭。它仅适用于没有请求作用域的新 `role: node` 配对。操作员/浏览器客户端，以及角色、作用域、元数据或
-公钥升级仍需要手动批准。
+未设置时，此功能保持关闭。它只适用于没有请求范围的新 `role: node` 配对。操作员/浏览器客户端，以及角色、范围、元数据或公钥升级仍然需要手动审批。
 
 ### 安全私信模式（共享收件箱 / 多用户私信）
 
-如果不止一个人可以私信你的机器人（`allowFrom` 中有多个条目、为多人批准配对，或使用 `dmPolicy: "open"`），请启用**安全私信模式**，这样不同发送者的私信默认不会共享同一个上下文：
+如果不止一个人可以私信你的机器人（`allowFrom` 中有多个条目、对多人批准了配对，或 `dmPolicy: "open"`），请启用**安全私信模式**，这样来自不同发送者的私信默认不会共享同一个上下文：
 
 ```json5
 {
@@ -588,8 +589,8 @@ x-i18n:
 }
 ```
 
-对于 Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC，默认优先使用 ID 进行发送者授权。
-只有在你明确接受该风险时，才为每个渠道启用直接可变的名称/邮箱/昵称匹配，即 `dangerouslyAllowNameMatching: true`。
+对于 Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC，发送者授权默认以 ID 优先。
+只有在你明确接受该风险时，才通过每个渠道的 `dangerouslyAllowNameMatching: true` 启用直接可变的名称/邮箱/昵称匹配。
 
 ### Anthropic API key + MiniMax 回退
 
@@ -695,10 +696,10 @@ x-i18n:
 
 ## 提示
 
-- 如果你设置 `dmPolicy: "open"`，对应的 `allowFrom` 列表必须包含 `"*"`。
-- 提供商 ID 各不相同（电话号码、用户 ID、渠道 ID）。使用提供商文档确认格式。
-- 后续可添加的可选部分：`web`、`browser`、`ui`、`discovery`、`plugins`、`talk`、`signal`、`imessage`。
-- 参阅[提供商](/zh-CN/providers)和[故障排除](/zh-CN/gateway/troubleshooting)，了解更深入的设置说明。
+- 如果你设置 `dmPolicy: "open"`，匹配的 `allowFrom` 列表必须包含 `"*"`。
+- 提供商 ID 各不相同（电话号码、用户 ID、渠道 ID）。请使用提供商文档确认格式。
+- 稍后可添加的可选部分：`web`、`browser`、`ui`、`discovery`、`plugins`、`talk`、`signal`、`imessage`。
+- 请参阅[提供商](/zh-CN/providers)和[故障排除](/zh-CN/gateway/troubleshooting)，了解更深入的设置说明。
 
 ## 相关
 

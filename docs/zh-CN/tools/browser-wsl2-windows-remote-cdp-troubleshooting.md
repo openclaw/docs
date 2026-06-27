@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7532c672f7e829b851d175d93354fc586baecea4af5f2555f57908780cedfd02
     source_path: tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 在常见的分离主机设置中，OpenClaw Gateway 网关运行在 WSL2 内，Chrome 运行在 Windows 上，而浏览器控制必须跨越 WSL2 和 Windows 边界。[issue #39369](https://github.com/openclaw/openclaw/issues/39369) 中的分层故障模式意味着多个相互独立的问题可能会同时出现，这会让错误的那一层先看起来像是坏掉了。

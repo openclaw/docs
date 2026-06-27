@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 543327024f8c635d74ac656923e8e745dc47ca9df0aba5ec51215bd186db2b35
     source_path: platforms/mac/child-process.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 macOS 应用默认**通过 launchd 管理 Gateway 网关**，不会将 Gateway 网关作为子进程启动。它会先尝试连接到配置端口上已在运行的 Gateway 网关；如果没有可访问的 Gateway 网关，它会通过外部 `openclaw` CLI 启用 launchd 服务（不嵌入运行时）。这让你获得可靠的登录时自动启动和崩溃后重启。

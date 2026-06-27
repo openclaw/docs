@@ -4,17 +4,18 @@ read_when:
 summary: 最常用 OpenClaw 文档的精选链接。
 title: 文档目录
 x-i18n:
-    generated_at: "2026-05-10T19:49:02Z"
+    generated_at: "2026-06-27T03:21:40Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ddd6903aeb87e36db977b2cef62bd80e84fc67633ca00beb3365ced1f5abdd99
+    source_hash: f7d45effe4df50fb544e9f6fd2fcd87f4ed674eba0042eace757dbfcad93d07a
     source_path: start/docs-directory.md
     workflow: 16
 ---
 
 <Note>
-此页面是精选索引。如果你是新用户，请从 [入门指南](/zh-CN/start/getting-started) 开始。
-如需完整的文档地图，请参见 [文档中心](/zh-CN/start/hubs)。
+此页面是一个精选索引。如果你是新用户，请从 [入门指南](/zh-CN/start/getting-started) 开始。
+如需完整的文档地图，请参阅 [文档中心](/zh-CN/start/hubs)。
 </Note>
 
 ## 从这里开始
@@ -31,18 +32,18 @@ x-i18n:
 - [OpenClaw 助手设置](/zh-CN/start/openclaw)
 - [Skills](/zh-CN/tools/skills)
 - [Skills 配置](/zh-CN/tools/skills-config)
-- [工作区模板](/zh-CN/reference/templates/AGENTS)
+- [工作空间模板](/zh-CN/reference/templates/AGENTS)
 - [RPC 适配器](/zh-CN/reference/rpc)
 - [Gateway 网关运行手册](/zh-CN/gateway)
 - [节点（iOS 和 Android）](/zh-CN/nodes)
-- [Web 界面（控制 UI）](/zh-CN/web)
+- [Web 界面（Control UI）](/zh-CN/web)
 - [设备发现和传输协议](/zh-CN/gateway/discovery)
 - [远程访问](/zh-CN/gateway/remote)
 
-## 提供商和用户体验
+## 提供商和 UX
 
 - [WebChat](/zh-CN/web/webchat)
-- [控制 UI（浏览器）](/zh-CN/web/control-ui)
+- [Control UI（浏览器）](/zh-CN/web/control-ui)
 - [Telegram](/zh-CN/channels/telegram)
 - [Discord](/zh-CN/channels/discord)
 - [Mattermost](/zh-CN/channels/mattermost)
@@ -58,14 +59,14 @@ x-i18n:
 - [macOS 应用](/zh-CN/platforms/macos)
 - [iOS 应用](/zh-CN/platforms/ios)
 - [Android 应用](/zh-CN/platforms/android)
-- [Windows（WSL2）](/zh-CN/platforms/windows)
+- [Windows Hub](/zh-CN/platforms/windows)
 - [Linux 应用](/zh-CN/platforms/linux)
 
 ## 运维和安全
 
 - [会话](/zh-CN/concepts/session)
 - [Cron 任务](/zh-CN/automation/cron-jobs)
-- [Webhooks](/zh-CN/automation/cron-jobs#webhooks)
+- [Webhook](/zh-CN/automation/cron-jobs#webhooks)
 - [Gmail 钩子（Pub/Sub）](/zh-CN/automation/cron-jobs#gmail-pubsub-integration)
 - [安全](/zh-CN/gateway/security)
 - [故障排除](/zh-CN/gateway/troubleshooting)

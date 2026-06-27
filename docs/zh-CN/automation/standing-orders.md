@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 3a51baa7aca31cb34b682983374d4d551ed6ab57ae54a5c63e7d044bffeef756
     source_path: automation/standing-orders.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 常设指令会向你的智能体授予针对已定义程序的**永久操作权限**。你不必每次都给出单个任务说明，而是定义具有明确范围、触发条件和升级规则的程序，智能体会在这些边界内自主执行。

@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 3ea07f0ae23076906e2ff0246ac75813572f98cffa50afddb6a6b0af8964c4a9
     source_path: concepts/session-pruning.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 会话裁剪会在每次 LLM 调用前，从上下文中裁剪**旧的工具结果**。它可以减少由累计工具输出（执行结果、文件读取结果、搜索结果）带来的上下文膨胀，同时不会改写普通对话文本。

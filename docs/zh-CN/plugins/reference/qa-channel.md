@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 3c6f0aec62fb014895d11fa46b75626d929c326eb2ded463188e4338f0fdae5d
     source_path: plugins/reference/qa-channel.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # QA Channel 插件

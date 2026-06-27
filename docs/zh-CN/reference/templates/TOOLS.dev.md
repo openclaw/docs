@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 23c11e2832ed0dcf9ddd43e5472e0c025c1a91a33299019c16f00a7230e8e99c
     source_path: reference/templates/TOOLS.dev.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 # TOOLS.md - 用户工具说明（可编辑）

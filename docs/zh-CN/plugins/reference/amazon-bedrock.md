@@ -1,29 +1,30 @@
 ---
 read_when:
-    - 你正在安装、配置或审核 amazon-bedrock 插件
-summary: 为 OpenClaw 添加 Amazon Bedrock 模型提供商支持。
+    - 你正在安装、配置或审计 amazon-bedrock 插件
+summary: OpenClaw Amazon Bedrock 提供商插件，支持模型发现、嵌入和护栏。
 title: Amazon Bedrock 插件
 x-i18n:
-    generated_at: "2026-05-02T15:12:07Z"
+    generated_at: "2026-06-27T02:46:04Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 001ec686133a9f6b17c8074bf6710c11ad92679d7badb08a8bef51272c40308d
+    source_hash: bf39e0d58332cd057e8f050dc1a8742c219b62182381a7f47856e3a657b80f03
     source_path: plugins/reference/amazon-bedrock.md
     workflow: 16
 ---
 
 # Amazon Bedrock 插件
 
-为 OpenClaw 添加 Amazon Bedrock 模型提供商支持。
+OpenClaw Amazon Bedrock 提供商插件，支持模型发现、嵌入和 guardrail。
 
 ## 分发
 
 - 包：`@openclaw/amazon-bedrock-provider`
-- 安装路径：包含在 OpenClaw 中
+- 安装路径：npm；ClawHub
 
-## 暴露面
+## 表面
 
-providers：amazon-bedrock；contracts：memoryEmbeddingProviders
+提供商：amazon-bedrock；契约：memoryEmbeddingProviders
 
 ## 相关文档
 

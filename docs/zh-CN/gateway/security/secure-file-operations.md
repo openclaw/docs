@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 19d5b31ec2f2c7ab1033bdb55a701c60468dfac58142f726ecbc9ac933f68e30
     source_path: gateway/security/secure-file-operations.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw 使用 [`@openclaw/fs-safe`](https://github.com/openclaw/fs-safe) 来处理安全敏感的本地文件操作：受根目录边界约束的读写、原子替换、归档解压、临时工作区、JSON 状态以及密钥文件处理。

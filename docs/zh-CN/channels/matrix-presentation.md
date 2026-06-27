@@ -11,6 +11,7 @@ x-i18n:
     source_hash: c89979b6007faaa6af44c7f2511f354b96f163bcd3d5e7f99c405b51c4950537
     source_path: channels/matrix-presentation.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw 可以将规范化的 `MessagePresentation` 元数据附加到出站 Matrix `m.room.message` 事件的 `com.openclaw.presentation` 下。

@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 404b2e47982f7efb9a8bb015ac5d7bd8a06f0a41d966e620c9826735abf7f0e3
     source_path: tools/lobster.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Lobster 是一个工作流 shell，让 OpenClaw 能将多步骤工具序列作为单个、确定性的操作运行，并带有明确的审批检查点。

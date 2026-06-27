@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 358fcff312f71779c671c54f35ca1cbc2df3c399d787886f0201d00eb09628f9
     source_path: plugins/reference/minimax.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # MiniMax 插件

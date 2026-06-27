@@ -1,29 +1,30 @@
 ---
 read_when:
-    - 你正在安装、配置或审计 nostr 插件
-summary: 新增用于发送和接收 OpenClaw 消息的 Nostr 渠道接口。
+    - 你正在安装、配置或审计 Nostr 插件
+summary: OpenClaw Nostr 渠道插件，用于 NIP-04 加密私信。
 title: Nostr 插件
 x-i18n:
-    generated_at: "2026-05-03T02:49:21Z"
+    generated_at: "2026-06-27T02:50:12Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1205a3b286e406b41029418b5fb9b12dcb19b35aff60c32d12e60c45804d7eaa
+    source_hash: e56fd9eee17c55bcbba3d7b85d783930c10d2368f36173ac478b254c2bd5ec22
     source_path: plugins/reference/nostr.md
     workflow: 16
 ---
 
 # Nostr 插件
 
-添加 Nostr 渠道界面，用于发送和接收 OpenClaw 消息。
+用于 NIP-04 加密私信的 OpenClaw Nostr 渠道插件。
 
 ## 分发
 
 - 包：`@openclaw/nostr`
-- 安装方式：npm；ClawHub
+- 安装途径：npm；ClawHub
 
-## 功能面
+## 暴露面
 
-渠道：nostr
+channels: nostr
 
 ## 相关文档
 

@@ -11,6 +11,7 @@ x-i18n:
     source_hash: e2f037a50a85b350163c74cf6b9cce335ecaaa5cccc762124122ad6d0321a1fa
     source_path: channels/matrix-push-rules.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 当 `channels.matrix.streaming` 为 `"quiet"` 时，OpenClaw 会原地编辑单个预览事件，并使用自定义内容标记标识最终完成的编辑。只有当某条按用户设置的推送规则匹配该标记时，Matrix 客户端才会仅对最终编辑发出通知。本页面面向自托管 Matrix 并希望为每个接收方账户安装该规则的运维人员。

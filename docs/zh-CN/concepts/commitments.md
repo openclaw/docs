@@ -13,6 +13,7 @@ x-i18n:
     source_hash: 78841d87fe749aa5b04a967218396df1c1a7884c5767b09215c96aee34fa2014
     source_path: concepts/commitments.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 跟进承诺是短期的后续记忆。启用后，OpenClaw 可以

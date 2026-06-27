@@ -12,6 +12,7 @@ x-i18n:
     source_hash: e447e38cf0086603a7b30ee5204e63cc8227ebc7a56add26d06ac2798a23e26f
     source_path: install/migrating.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw 支持三种迁移路径：从另一个智能体系统导入、将现有安装移到新机器，以及就地升级插件。

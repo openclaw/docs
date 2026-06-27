@@ -11,6 +11,7 @@ x-i18n:
     source_hash: ae98655543d3fe4000c147bb827bb933f806f9953eaacf4b367cf3f64ae9900f
     source_path: reference/templates/USER.dev.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 # USER.md - 用户档案

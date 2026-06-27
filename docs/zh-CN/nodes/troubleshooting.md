@@ -11,6 +11,7 @@ x-i18n:
     source_hash: d53f06367b63125f04b4b542c322e6e50e1f33153e0fbdd09e7a38772c69a438
     source_path: nodes/troubleshooting.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 当节点在状态中可见但节点工具失败时，使用此页面。

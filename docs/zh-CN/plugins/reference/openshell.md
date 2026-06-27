@@ -1,25 +1,26 @@
 ---
 read_when:
     - 你正在安装、配置或审计 openshell 插件
-summary: 由 OpenShell 提供支持的沙箱后端，包含镜像本地工作区和基于 SSH 的命令执行。
+summary: OpenClaw 沙箱后端，用于 NVIDIA OpenShell CLI，支持镜像本地工作区和 SSH 命令执行。
 title: Openshell 插件
 x-i18n:
-    generated_at: "2026-05-02T15:16:27Z"
+    generated_at: "2026-06-27T02:50:42Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c27c54061615e9765181cc1867109c993614266421ee584df95f04c44b5be735
+    source_hash: f97a099c465df22c0dfd7a68907c1a75c99ca301ad016ceb1be46c81376793f8
     source_path: plugins/reference/openshell.md
     workflow: 16
 ---
 
 # Openshell 插件
 
-由 OpenShell 提供支持的沙箱后端，具备镜像的本地工作区和基于 SSH 的命令执行。
+用于 NVIDIA OpenShell CLI 的 OpenClaw 沙箱后端，支持镜像的本地工作区和 SSH 命令执行。
 
 ## 分发
 
 - 包：`@openclaw/openshell-sandbox`
-- 安装路径：包含在 OpenClaw 中
+- 安装路径：npm；ClawHub
 
 ## 表面
 

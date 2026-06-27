@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 50680e099181421505e25cecab2ba331fdaf9839d07fef482ff04976b0fc583e
     source_path: platforms/mac/webchat.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 macOS 菜单栏应用将 WebChat 界面嵌入为原生 SwiftUI 视图。它会连接到 Gateway 网关，并默认使用所选智能体的 **main 会话**（也提供用于其他会话的会话切换器）。

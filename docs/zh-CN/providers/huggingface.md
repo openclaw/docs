@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 93b3049e8d42787acba12ec3ddf70603159251dae1d870047f8ffc9242f202a5
     source_path: providers/huggingface.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 [Hugging Face Inference Providers](https://huggingface.co/docs/inference-providers) 通过单一路由器 API 提供兼容 OpenAI 的聊天补全能力。你只需一个令牌，即可访问许多模型（DeepSeek、Llama 等）。OpenClaw 使用的是**兼容 OpenAI 的端点**（仅聊天补全）；对于文生图、embeddings 或语音，请直接使用 [HF inference clients](https://huggingface.co/docs/api-inference/quicktour)。

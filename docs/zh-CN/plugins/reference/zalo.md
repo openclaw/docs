@@ -1,27 +1,28 @@
 ---
 read_when:
-    - 你正在安装、配置或审计 zalo 插件
-summary: 新增 Zalo 渠道接口，用于发送和接收 OpenClaw 消息。
+    - 你正在安装、配置或审计 Zalo 插件
+summary: 用于机器人和网络钩子聊天的 OpenClaw Zalo 渠道插件。
 title: Zalo 插件
 x-i18n:
-    generated_at: "2026-05-03T02:49:48Z"
+    generated_at: "2026-06-27T02:53:31Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 2914ba7fec4427c6a8a322ea1d9308d9e37a81b5ff51a89b06227e5ecfcef6f2
+    source_hash: ff9da1e1591eaad36db74a27f817dd9dac8791af2d5030fcd3419ee50d2ed4aa
     source_path: plugins/reference/zalo.md
     workflow: 16
 ---
 
 # Zalo 插件
 
-添加 Zalo 渠道界面，用于发送和接收 OpenClaw 消息。
+OpenClaw Zalo 渠道插件，用于机器人和 webhook 聊天。
 
 ## 分发
 
 - 包：`@openclaw/zalo`
-- 安装方式：npm；ClawHub
+- 安装路径：npm；ClawHub
 
-## 接口
+## 表面
 
 channels: zalo
 

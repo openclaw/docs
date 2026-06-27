@@ -11,6 +11,7 @@ x-i18n:
     source_hash: c390da201e2c8685fafa6171a6028bf18fc676b2d46f784651f91cdc6137fdf2
     source_path: providers/alibaba.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw 随附一个内置的 `alibaba` 插件，该插件为 Alibaba Model Studio（DashScope 的国际名称）上的 Wan 模型注册视频生成提供商。该插件默认启用；你只需要设置 API key。

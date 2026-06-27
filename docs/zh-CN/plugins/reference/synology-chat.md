@@ -1,29 +1,30 @@
 ---
 read_when:
-    - 你正在安装、配置或审计 synology-chat 插件
-summary: 新增 Synology Chat 渠道界面，用于发送和接收 OpenClaw 消息。
+    - 你正在安装、配置或审计 Synology Chat 插件
+summary: 用于 OpenClaw 渠道和私信的 Synology Chat 渠道插件。
 title: Synology Chat 插件
 x-i18n:
-    generated_at: "2026-05-03T02:49:42Z"
+    generated_at: "2026-06-27T02:52:09Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 545eb93ad56c25e1261a0840747a494915a04773636fc14424d9e83395b4f663
+    source_hash: 13caa3939ae9abbf11f95a0578e9fcf79f280c54953bcde76a28383afa43c404
     source_path: plugins/reference/synology-chat.md
     workflow: 16
 ---
 
 # Synology Chat 插件
 
-添加 Synology Chat 渠道界面，用于发送和接收 OpenClaw 消息。
+用于 OpenClaw 频道和私信的 Synology Chat 渠道插件。
 
 ## 分发
 
-- 软件包：`@openclaw/synology-chat`
-- 安装路径：npm；ClawHub
+- 包：`@openclaw/synology-chat`
+- 安装途径：npm；ClawHub
 
-## 接口
+## 接口面
 
-channels: synology-chat
+渠道：synology-chat
 
 ## 相关文档
 

@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 9d21d96f680fa24d4a53c1ed5759f800d3cfdc3336789c42c15266edd8ce9e80
     source_path: plugins/webhooks.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Webhooks 插件会添加经过身份验证的 HTTP 路由，用于将外部自动化绑定到 OpenClaw TaskFlows。

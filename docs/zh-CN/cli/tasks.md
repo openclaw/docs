@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 7bbb97690124a8e59ec5e6a517f33166ad449ee6268894ab132ad9cb69dcaa81
     source_path: cli/tasks.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 检查持久后台任务和 Task Flow 状态。没有子命令时，

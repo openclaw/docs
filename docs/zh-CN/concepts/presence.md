@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 6ab76e81fc1842c747b0a33da8cf9874e3537c5ab023450ee1a6a314453e7263
     source_path: concepts/presence.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw “在线状态”是一个轻量级、尽力而为的视图，用于展示：

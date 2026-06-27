@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 3b2fea7449af0ce19d7310eb6cd9f9ee3728db1582d5d4b769aa33393d092383
     source_path: plugins/reference/migrate-claude.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # 迁移 Claude 插件

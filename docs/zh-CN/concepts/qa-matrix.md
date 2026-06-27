@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7c6d836492368c470468547950d3765a64187694852222a5a1f0ae4185569abe
     source_path: concepts/qa-matrix.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Matrix QA 运行线会在 Docker 中使用一次性 Tuwunel homeserver 运行内置的 `@openclaw/matrix` 插件，并创建临时 driver、SUT 和 observer 账号以及预置房间。它为 Matrix 提供真实传输层的 live 覆盖。

@@ -8,6 +8,7 @@ x-i18n:
     source_hash: d0bb68c2881911afc634aaba017444a5a8356f4cc519f0a2b5e415ff9ad739f3
     source_path: automation/auth-monitoring.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 凭证监控位于 [Authentication](/zh-CN/gateway/authentication) 下。

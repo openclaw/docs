@@ -1,21 +1,22 @@
 ---
 read_when:
-    - 你想移除 Gateway 网关服务和/或本地状态
-    - 你想先执行一次演练模式
-summary: '`openclaw uninstall` 的 CLI 参考（移除 Gateway 网关服务和本地数据）'
+    - 你想要移除 Gateway 网关服务和/或本地状态
+    - 你想先进行一次试运行
+summary: '`openclaw uninstall` 的 CLI 参考（移除 Gateway 网关服务 + 本地数据）'
 title: 卸载
 x-i18n:
-    generated_at: "2026-04-24T04:01:47Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T01:44:16Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b774fc006e989068b9126aff2a72888fd808a2e0e3d5ea8b57e6ab9d9f1b63ee
+    source_hash: f90fa8cf513e2e8cd422c3b8a880e7fd20fb71131a3ec88260e765daa2ace543
     source_path: cli/uninstall.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw uninstall`
 
-卸载 Gateway 网关服务和本地数据（CLI 会保留）。
+卸载 Gateway 网关服务和本地数据（CLI 保留）。
 
 选项：
 
@@ -25,8 +26,8 @@ x-i18n:
 - `--app`：移除 macOS 应用
 - `--all`：移除服务、状态、工作区和应用
 - `--yes`：跳过确认提示
-- `--non-interactive`：禁用提示；需要配合 `--yes`
-- `--dry-run`：打印将执行的操作而不删除文件
+- `--non-interactive`：禁用提示；需要 `--yes`
+- `--dry-run`：打印操作而不移除文件
 
 示例：
 
@@ -41,9 +42,10 @@ openclaw uninstall --dry-run
 
 说明：
 
-- 如果你想在移除状态或工作区之前保留一个可恢复的快照，请先运行 `openclaw backup create`。
+- 如果你想在移除状态或工作区之前保留可恢复的快照，请先运行 `openclaw backup create`。
+- `--state` 会保留已配置的工作区目录，除非同时选择了 `--workspace`。
 - `--all` 是同时移除服务、状态、工作区和应用的简写。
-- `--non-interactive` 需要配合 `--yes`。
+- `--non-interactive` 需要 `--yes`。
 
 ## 相关内容
 

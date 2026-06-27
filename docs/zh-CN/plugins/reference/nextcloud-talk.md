@@ -1,27 +1,28 @@
 ---
 read_when:
     - 你正在安装、配置或审计 nextcloud-talk 插件
-summary: 新增 Nextcloud Talk 渠道接入面，用于发送和接收 OpenClaw 消息。
+summary: OpenClaw Nextcloud Talk 对话渠道插件。
 title: Nextcloud Talk 插件
 x-i18n:
-    generated_at: "2026-05-03T02:49:18Z"
+    generated_at: "2026-06-27T02:50:13Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4ef55f1a3a7f9eac5876e5a8e3d6b5182a18c54aee2a6a63e8e4b0115ab7f6a6
+    source_hash: ce8dd648fcc2226e6b365f092eb3dc54062d2c9d8d5c613cb0c2d5e9f237c720
     source_path: plugins/reference/nextcloud-talk.md
     workflow: 16
 ---
 
 # Nextcloud Talk 插件
 
-添加 Nextcloud Talk 渠道界面，用于发送和接收 OpenClaw 消息。
+用于对话的 OpenClaw Nextcloud Talk 渠道插件。
 
 ## 分发
 
-- 包：`@openclaw/nextcloud-talk`
+- Package: `@openclaw/nextcloud-talk`
 - 安装途径：npm；ClawHub
 
-## Surface
+## 表面
 
 channels: nextcloud-talk
 

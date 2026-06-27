@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 678253bd90f0694668400ffddba957e442f8aaed3f5308af3c2481940e104733
     source_path: install/gcp.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 使用 Docker 在 GCP Compute Engine VM 上运行持久化的 OpenClaw Gateway 网关，并具备持久状态、内置二进制文件和安全重启行为。

@@ -1,34 +1,35 @@
 ---
 read_when:
     - 配对或重新连接 Android 节点
-    - 调试 Android Gateway 网关设备发现或身份验证
-    - 验证跨客户端的聊天历史一致性
-summary: Android 应用（节点）：连接操作手册 + 连接/聊天/语音/画布命令界面
+    - 调试 Android 网关发现或认证
+    - 验证各客户端的聊天历史记录一致性
+summary: Android 应用（节点）：连接运行手册 + Connect/Chat/Voice/Canvas 命令界面
 title: Android 应用
 x-i18n:
-    generated_at: "2026-05-06T05:49:40Z"
+    generated_at: "2026-06-27T02:28:21Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cce53df4675e01858ced3d58142512ad096ced0ef50cd617e57b65f9cf911c05
+    source_hash: 5c02d4921c3f3011c09e564d83b773a7c155d17a82a6e70d3fd3e973597142f1
     source_path: platforms/android.md
     workflow: 16
 ---
 
 <Note>
-Android 应用尚未公开发布。源代码位于 [OpenClaw 仓库](https://github.com/openclaw/openclaw)的 `apps/android` 下。你可以使用 Java 17 和 Android SDK（`./gradlew :app:assemblePlayDebug`）自行构建。构建说明请参阅 [apps/android/README.md](https://github.com/openclaw/openclaw/blob/main/apps/android/README.md)。
+官方 Android 应用可在 [Google Play](https://play.google.com/store/apps/details?id=ai.openclaw.app&hl=en_IN) 获取。它是配套节点，需要一个正在运行的 OpenClaw Gateway 网关。源代码也位于 [OpenClaw 仓库](https://github.com/openclaw/openclaw) 的 `apps/android` 下；构建说明见 [apps/android/README.md](https://github.com/openclaw/openclaw/blob/main/apps/android/README.md)。
 </Note>
 
 ## 支持快照
 
 - 角色：配套节点应用（Android 不托管 Gateway 网关）。
 - 需要 Gateway 网关：是（通过 WSL2 在 macOS、Linux 或 Windows 上运行）。
-- 安装：[入门指南](/zh-CN/start/getting-started) + [配对](/zh-CN/channels/pairing)。
+- 安装：应用使用 [Google Play](https://play.google.com/store/apps/details?id=ai.openclaw.app&hl=en_IN)，Gateway 网关使用[入门指南](/zh-CN/start/getting-started)，然后进行[配对](/zh-CN/channels/pairing)。
 - Gateway 网关：[运行手册](/zh-CN/gateway) + [配置](/zh-CN/gateway/configuration)。
   - 协议：[Gateway 网关协议](/zh-CN/gateway/protocol)（节点 + 控制平面）。
 
 ## 系统控制
 
-系统控制（launchd/systemd）位于 Gateway 网关主机上。请参阅 [Gateway 网关](/zh-CN/gateway)。
+系统控制（launchd/systemd）位于 Gateway 网关主机上。见 [Gateway 网关](/zh-CN/gateway)。
 
 ## 连接运行手册
 
@@ -36,29 +37,29 @@ Android 节点应用 ⇄（mDNS/NSD + WebSocket）⇄ **Gateway 网关**
 
 Android 直接连接到 Gateway 网关 WebSocket，并使用设备配对（`role: node`）。
 
-对于 Tailscale 或公网主机，Android 需要安全端点：
+对于 Tailscale 或公网上的主机，Android 需要安全端点：
 
 - 首选：Tailscale Serve / Funnel，使用 `https://<magicdns>` / `wss://<magicdns>`
-- 同样支持：任何其他带有真实 TLS 端点的 `wss://` Gateway 网关 URL
+- 同样支持：任何其他带真实 TLS 端点的 `wss://` Gateway 网关 URL
 - 明文 `ws://` 仍支持私有 LAN 地址 / `.local` 主机，以及 `localhost`、`127.0.0.1` 和 Android 模拟器桥接地址（`10.0.2.2`）
 
 ### 前提条件
 
 - 你可以在“主”机器上运行 Gateway 网关。
-- Android 设备/模拟器可以访问 Gateway 网关 WebSocket：
+- Android 设备/模拟器可以访问 gateway WebSocket：
   - 同一 LAN，使用 mDNS/NSD，**或**
-  - 同一 Tailscale tailnet，使用 Wide-Area Bonjour / 单播 DNS-SD（见下文），**或**
-  - 手动 Gateway 网关主机/端口（回退）
-- Tailnet/公网移动端配对**不**使用原始 tailnet IP `ws://` 端点。请改用 Tailscale Serve 或其他 `wss://` URL。
-- 你可以在 Gateway 网关机器上（或通过 SSH）运行 CLI（`openclaw`）。
+  - 同一 Tailscale tailnet，使用广域 Bonjour / 单播 DNS-SD（见下文），**或**
+  - 手动 gateway 主机/端口（备用）
+- Tailnet/公网移动端配对**不**使用原始 tailnet IP `ws://` 端点。改用 Tailscale Serve 或另一个 `wss://` URL。
+- 你可以在 gateway 机器上运行 CLI（`openclaw`）（或通过 SSH 运行）。
 
-### 1) 启动 Gateway 网关
+### 1. 启动 Gateway 网关
 
 ```bash
 openclaw gateway --port 18789 --verbose
 ```
 
-确认日志中能看到类似内容：
+确认日志中看到类似内容：
 
 - `listening on ws://0.0.0.0:18789`
 
@@ -68,11 +69,11 @@ openclaw gateway --port 18789 --verbose
 openclaw gateway --tailscale serve
 ```
 
-这会为 Android 提供安全的 `wss://` / `https://` 端点。普通的 `gateway.bind: "tailnet"` 设置不足以完成首次远程 Android 配对，除非你还单独终止 TLS。
+这会为 Android 提供安全的 `wss://` / `https://` 端点。单纯的 `gateway.bind: "tailnet"` 设置不足以完成首次远程 Android 配对，除非你还单独终止 TLS。
 
-### 2) 验证设备发现（可选）
+### 2. 验证设备发现（可选）
 
-在 Gateway 网关机器上：
+从 gateway 机器运行：
 
 ```bash
 dns-sd -B _openclaw-gw._tcp local.
@@ -80,48 +81,48 @@ dns-sd -B _openclaw-gw._tcp local.
 
 更多调试说明：[Bonjour](/zh-CN/gateway/bonjour)。
 
-如果你还配置了广域发现域名，请对比：
+如果你还配置了广域设备发现域，请与以下命令对比：
 
 ```bash
 openclaw gateway discover --json
 ```
 
-它会一次性显示 `local.` 加上配置的广域域名，并使用解析后的服务端点，而不是只依赖 TXT 提示。
+它会一次性显示 `local.` 加上已配置的广域域，并使用解析后的服务端点，而不是仅使用 TXT 提示。
 
-#### 通过单播 DNS-SD 进行 tailnet（维也纳 ⇄ 伦敦）发现
+#### 通过单播 DNS-SD 进行 Tailnet（维也纳 ⇄ 伦敦）设备发现
 
-Android NSD/mDNS 发现无法跨网络。如果你的 Android 节点和 Gateway 网关位于不同网络，但通过 Tailscale 连接，请改用 Wide-Area Bonjour / 单播 DNS-SD。
+Android NSD/mDNS 设备发现不会跨网络。如果你的 Android 节点和 gateway 位于不同网络但通过 Tailscale 连接，请改用广域 Bonjour / 单播 DNS-SD。
 
-仅有设备发现不足以进行 tailnet/公网 Android 配对。发现到的路由仍需要安全端点（`wss://` 或 Tailscale Serve）：
+仅有设备发现并不足以完成 tailnet/公网 Android 配对。发现到的路由仍需要安全端点（`wss://` 或 Tailscale Serve）：
 
-1. 在 Gateway 网关主机上设置 DNS-SD 区域（例如 `openclaw.internal.`），并发布 `_openclaw-gw._tcp` 记录。
+1. 在 gateway 主机上设置 DNS-SD 区域（示例 `openclaw.internal.`），并发布 `_openclaw-gw._tcp` 记录。
 2. 为你选择的域配置 Tailscale split DNS，指向该 DNS 服务器。
 
-详细信息和 CoreDNS 示例配置：[Bonjour](/zh-CN/gateway/bonjour)。
+详情和 CoreDNS 配置示例：[Bonjour](/zh-CN/gateway/bonjour)。
 
-### 3) 从 Android 连接
+### 3. 从 Android 连接
 
 在 Android 应用中：
 
-- 应用通过**前台服务**（持久通知）保持 Gateway 网关连接存活。
-- 打开 **Connect** 选项卡。
-- 使用 **Setup Code** 或 **Manual** 模式。
-- 如果设备发现被阻止，请在 **Advanced controls** 中使用手动主机/端口。对于私有 LAN 主机，`ws://` 仍可使用。对于 Tailscale/公网主机，请开启 TLS 并使用 `wss://` / Tailscale Serve 端点。
+- 应用通过**前台服务**（持久通知）保持 gateway 连接存活。
+- 打开**连接**标签页。
+- 使用**设置代码**或**手动**模式。
+- 如果设备发现被阻止，请在**高级控件**中使用手动主机/端口。对于私有 LAN 主机，`ws://` 仍可使用。对于 Tailscale/公网主机，请启用 TLS，并使用 `wss://` / Tailscale Serve 端点。
 
-首次成功配对后，Android 会在启动时自动重新连接：
+首次成功配对后，Android 会在启动时自动重连：
 
 - 手动端点（如果已启用），否则
-- 上次发现的 Gateway 网关（尽力而为）。
+- 上次发现的 gateway（尽力而为）。
 
 ### 在线状态存活信标
 
-在经过身份验证的节点会话连接后，以及应用进入后台但前台服务仍保持连接时，Android 会调用 `node.event`，并带上 `event: "node.presence.alive"`。Gateway 网关只有在已知经过身份验证的节点设备身份之后，才会把它记录为已配对节点/设备元数据上的 `lastSeenAtMs`/`lastSeenReason`。
+经过身份验证的节点会话连接后，以及当前台服务仍保持连接而应用转入后台时，Android 会调用 `node.event`，并携带 `event: "node.presence.alive"`。只有在已知经过身份验证的节点设备身份后，gateway 才会将其记录为已配对节点/设备元数据上的 `lastSeenAtMs`/`lastSeenReason`。
 
-只有当 Gateway 网关响应包含 `handled: true` 时，应用才会把该信标计为成功记录。旧版 Gateway 网关可能会用 `{ "ok": true }` 确认 `node.event`；该响应兼容，但不会计为持久的最后可见时间更新。
+只有当 gateway 响应包含 `handled: true` 时，应用才会将该信标计为已成功记录。较旧的 gateway 可能用 `{ "ok": true }` 确认 `node.event`；该响应是兼容的，但不会计为持久的最后在线时间更新。
 
-### 4) 批准配对（CLI）
+### 4. 批准配对（CLI）
 
-在 Gateway 网关机器上：
+在 gateway 机器上：
 
 ```bash
 openclaw devices list
@@ -145,11 +146,11 @@ openclaw devices reject <requestId>
 }
 ```
 
-默认禁用。它仅适用于没有请求作用域的新 `role: node` 配对。操作员/浏览器配对，以及任何角色、作用域、元数据或公钥变更，仍需要手动批准。
+默认情况下此功能已禁用。它只适用于没有请求作用域的新 `role: node` 配对。操作员/浏览器配对，以及任何角色、作用域、元数据或公钥变更，仍需要手动批准。
 
-### 5) 验证节点已连接
+### 5. 验证节点已连接
 
-- 通过节点 Status：
+- 通过节点状态：
 
   ```bash
   openclaw nodes status
@@ -161,27 +162,27 @@ openclaw devices reject <requestId>
   openclaw gateway call node.list --params "{}"
   ```
 
-### 6) 聊天 + 历史记录
+### 6. 聊天 + 历史记录
 
-Android Chat 选项卡支持会话选择（默认 `main`，以及其他现有会话）：
+Android 聊天标签页支持会话选择（默认 `main`，以及其他现有会话）：
 
-- 历史记录：`chat.history`（显示已规范化；内联指令标签会从可见文本中剥离，纯文本工具调用 XML 载荷（包括 `<tool_call>...</tool_call>`、`<function_call>...</function_call>`、`<tool_calls>...</tool_calls>`、`<function_calls>...</function_calls>` 和被截断的工具调用块）以及泄漏的 ASCII/全角模型控制令牌会被剥离，精确为 `NO_REPLY` / `no_reply` 等纯静默令牌的 assistant 行会被省略，过大的行可被替换为占位符）
+- 历史记录：`chat.history`（已规范化显示；内联指令标签会从可见文本中剥离，纯文本工具调用 XML 载荷（包括 `<tool_call>...</tool_call>`、`<function_call>...</function_call>`、`<tool_calls>...</tool_calls>`、`<function_calls>...</function_calls>` 和被截断的工具调用块）以及泄漏的 ASCII/全角模型控制标记会被剥离，纯静默标记的 assistant 行（如精确的 `NO_REPLY` / `no_reply`）会被省略，过大的行可替换为占位符）
 - 发送：`chat.send`
 - 推送更新（尽力而为）：`chat.subscribe` → `event:"chat"`
 
-### 7) Canvas + 摄像头
+### 7. 画布 + 摄像头
 
-#### Gateway 网关 Canvas 主机（推荐用于 Web 内容）
+#### Gateway 网关画布主机（推荐用于 Web 内容）
 
-如果你希望节点显示智能体可以在磁盘上编辑的真实 HTML/CSS/JS，请将节点指向 Gateway 网关 canvas 主机。
+如果你希望节点显示 agent 可在磁盘上编辑的真实 HTML/CSS/JS，请将节点指向 Gateway 网关画布主机。
 
 <Note>
-节点从 Gateway 网关 HTTP 服务器加载 canvas（与 `gateway.port` 相同端口，默认 `18789`）。
+节点从 Gateway 网关 HTTP 服务器加载画布（与 `gateway.port` 同一端口，默认 `18789`）。
 </Note>
 
-1. 在 Gateway 网关主机上创建 `~/.openclaw/workspace/canvas/index.html`。
+1. 在 gateway 主机上创建 `~/.openclaw/workspace/canvas/index.html`。
 
-2. 将节点导航到该位置（LAN）：
+2. 将节点导航到它（LAN）：
 
 ```bash
 openclaw nodes invoke --node "<Android Node>" --command canvas.navigate --params '{"url":"http://<gateway-hostname>.local:18789/__openclaw__/canvas/"}'
@@ -189,29 +190,30 @@ openclaw nodes invoke --node "<Android Node>" --command canvas.navigate --params
 
 Tailnet（可选）：如果两台设备都在 Tailscale 上，请使用 MagicDNS 名称或 tailnet IP，而不是 `.local`，例如 `http://<gateway-magicdns>:18789/__openclaw__/canvas/`。
 
-该服务器会向 HTML 注入实时重载客户端，并在文件变更时重新加载。
-A2UI 主机位于 `http://<gateway-host>:18789/__openclaw__/a2ui/`。
+此服务器会向 HTML 注入实时重载客户端，并在文件变更时重新加载。Gateway 网关还提供 `/__openclaw__/a2ui/`，但 Android 应用会将远程 A2UI 页面视为仅渲染页面。具备动作能力的 A2UI 命令会先使用应用内置、由应用拥有的 A2UI 页面，再应用消息。
 
-Canvas 命令（仅前台）：
+画布命令（仅前台）：
 
 - `canvas.eval`、`canvas.snapshot`、`canvas.navigate`（使用 `{"url":""}` 或 `{"url":"/"}` 返回默认脚手架）。`canvas.snapshot` 返回 `{ format, base64 }`（默认 `format="jpeg"`）。
-- A2UI：`canvas.a2ui.push`、`canvas.a2ui.reset`（`canvas.a2ui.pushJSONL` 旧版别名）
+- A2UI：`canvas.a2ui.push`、`canvas.a2ui.reset`（`canvas.a2ui.pushJSONL` 旧版别名）。这些命令使用应用内置、由应用拥有的 A2UI 页面，以支持具备动作能力的渲染。
 
-摄像头命令（仅前台；受权限控制）：
+摄像头命令（仅前台；受权限限制）：
 
 - `camera.snap`（jpg）
 - `camera.clip`（mp4）
 
-参数和 CLI 辅助工具请参阅[摄像头节点](/zh-CN/nodes/camera)。
+参数和 CLI 辅助工具见[摄像头节点](/zh-CN/nodes/camera)。
 
-### 8) 语音 + 扩展的 Android 命令表面
+### 8. 语音 + 扩展 Android 命令面
 
-- 语音选项卡：Android 有两种显式采集模式。**Mic** 是手动的语音选项卡会话，会把每次停顿作为聊天轮次发送，并在应用离开前台或用户离开语音选项卡时停止。**Talk** 是连续的 Talk 模式，会持续监听，直到被关闭或节点断开连接。
-- Talk 模式会在采集开始前将现有前台服务从 `dataSync` 提升为 `dataSync|microphone`，然后在 Talk 模式停止时降级。Android 14+ 要求声明 `FOREGROUND_SERVICE_MICROPHONE`、授予 `RECORD_AUDIO` 运行时权限，并在运行时使用麦克风服务类型。
-- 语音回复通过配置的 Gateway 网关 Talk 提供商使用 `talk.speak`。仅在 `talk.speak` 不可用时才使用本地系统 TTS。
+- 语音标签页：Android 有两种显式采集模式。**麦克风**是手动语音标签页会话，会将每次停顿作为一个聊天轮次发送，并在应用离开前台或用户离开语音标签页时停止。**Talk** 是连续 Talk 模式，会一直监听，直到被关闭或节点断开连接。
+- Talk 模式会在采集开始前将现有前台服务从 `connectedDevice` 提升为 `connectedDevice|microphone`，并在 Talk 模式停止时降级。节点服务声明了带 `CHANGE_NETWORK_STATE` 的 `FOREGROUND_SERVICE_CONNECTED_DEVICE`；Android 14+ 还要求声明 `FOREGROUND_SERVICE_MICROPHONE`、获得 `RECORD_AUDIO` 运行时授权，并在运行时使用麦克风服务类型。
+- 默认情况下，Android Talk 使用原生语音识别、Gateway 网关聊天，以及通过已配置 gateway Talk 提供商的 `talk.speak`。只有当 `talk.speak` 不可用时，才使用本地系统 TTS。
+- 只有当 `talk.realtime.mode` 为 `realtime` 且 `talk.realtime.transport` 为 `gateway-relay` 时，Android Talk 才使用实时 Gateway 网关中继。
 - Android UX/运行时中仍禁用语音唤醒。
-- 其他 Android 命令族（可用性取决于设备 + 权限）：
+- 其他 Android 命令族（可用性取决于设备、权限和用户设置）：
   - `device.status`、`device.info`、`device.permissions`、`device.health`
+  - 仅当已启用**设置 > 手机能力 > 已安装应用**时，`device.apps` 才可用；默认列出启动器可见的应用。
   - `notifications.list`、`notifications.actions`（见下方[通知转发](#notification-forwarding)）
   - `photos.latest`
   - `contacts.search`、`contacts.add`
@@ -222,29 +224,29 @@ Canvas 命令（仅前台）：
 
 ## Assistant 入口点
 
-Android 支持从系统 assistant 触发器（Google Assistant）启动 OpenClaw。配置后，长按主屏幕按钮或说“Hey Google, ask OpenClaw...”会打开应用，并将提示词交给聊天输入框。
+Android 支持通过系统 Assistant 触发器（Google Assistant）启动 OpenClaw。配置后，按住主页按钮或说 “Hey Google, ask OpenClaw...” 会打开应用，并将提示词传入聊天编辑器。
 
-这使用 Android **App Actions** 元数据，该元数据在应用清单中声明。Gateway 网关侧无需额外配置；assistant intent 完全由 Android 应用处理，并作为普通聊天消息转发。
+这使用在应用清单中声明的 Android **App Actions** 元数据。Gateway 网关侧不需要额外配置，assistant intent 完全由 Android 应用处理，并作为普通聊天消息转发。
 
 <Note>
-App Actions 的可用性取决于设备、Google Play Services 版本，以及用户是否已将 OpenClaw 设置为默认 assistant 应用。
+App Actions 的可用性取决于设备、Google Play Services 版本，以及用户是否已将 OpenClaw 设为默认 assistant 应用。
 </Note>
 
 ## 通知转发
 
-Android 可以将设备通知作为事件转发到 Gateway 网关。多个控制项可用于限定转发哪些通知以及何时转发。
+Android 可以将设备通知作为事件转发到 gateway。多个控件可让你限定转发哪些通知以及何时转发。
 
-| 键                               | 类型           | 描述                                                                                              |
-| -------------------------------- | -------------- | ------------------------------------------------------------------------------------------------- |
-| `notifications.allowPackages`    | string[]       | 仅转发来自这些包名的通知。如果已设置，所有其他包都会被忽略。                                     |
-| `notifications.denyPackages`     | string[]       | 永不转发来自这些包名的通知。在 `allowPackages` 之后应用。                                        |
-| `notifications.quietHours.start` | string (HH:mm) | 免打扰时段窗口的开始时间（本地设备时间）。此窗口期间会抑制通知。                                 |
-| `notifications.quietHours.end`   | string (HH:mm) | 免打扰时段窗口的结束时间。                                                                        |
-| `notifications.rateLimit`        | number         | 每个包每分钟最多转发的通知数。超出的通知会被丢弃。                                               |
+| 键                               | 类型           | 描述                                                                                           |
+| -------------------------------- | -------------- | ---------------------------------------------------------------------------------------------- |
+| `notifications.allowPackages`    | string[]       | 只转发来自这些包名的通知。如果设置，所有其他包都会被忽略。                                     |
+| `notifications.denyPackages`     | string[]       | 永不转发来自这些包名的通知。在 `allowPackages` 之后应用。                                      |
+| `notifications.quietHours.start` | string (HH:mm) | 免打扰时间窗口的开始时间（本地设备时间）。该窗口期间通知会被抑制。                             |
+| `notifications.quietHours.end`   | string (HH:mm) | 免打扰时间窗口的结束时间。                                                                     |
+| `notifications.rateLimit`        | number         | 每个包每分钟可转发的最大通知数。超出的通知会被丢弃。                                           |
 
 通知选择器还会对转发的通知事件使用更安全的行为，防止意外转发敏感系统通知。
 
-配置示例：
+示例配置：
 
 ```json5
 {
@@ -261,7 +263,7 @@ Android 可以将设备通知作为事件转发到 Gateway 网关。多个控制
 ```
 
 <Note>
-通知转发需要 Android 通知监听器权限。应用会在设置期间提示授予该权限。
+通知转发需要 Android Notification Listener 权限。应用会在设置期间提示授予此权限。
 </Note>
 
 ## 相关

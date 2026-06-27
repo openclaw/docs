@@ -6,55 +6,64 @@ read_when:
 summary: macOS 上的 Gateway 网关运行时（外部 launchd 服务）
 title: macOS 上的 Gateway 网关
 x-i18n:
-    generated_at: "2026-05-07T13:20:25Z"
+    generated_at: "2026-06-27T02:31:17Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: caf129918c46f8f54026e9db04e8ad5a033148899d3029fe1a362bb14c7f25f8
+    source_hash: 76c55e3d24e5bc743233e11be4897f4f2a865c97f2e0d795a472caeb6d097d34
     source_path: platforms/mac/bundled-gateway.md
     workflow: 16
 ---
 
-OpenClaw.app 不再内置 Node/Bun 或 Gateway 网关运行时。macOS 应用需要**外部** `openclaw` CLI 安装，不会将 Gateway 网关作为子进程启动，并会管理每用户的 launchd 服务来保持 Gateway 网关运行（如果已有本地 Gateway 网关正在运行，则附加到现有 Gateway 网关）。
+OpenClaw.app 不再内置 Node/Bun 或 Gateway 网关运行时。macOS 应用
+需要一个**外部**的 `openclaw` CLI 安装，不会将 Gateway 网关作为
+子进程启动，并会管理按用户配置的 launchd 服务，以保持 Gateway 网关
+运行（如果本地 Gateway 网关已在运行，则会附加到现有实例）。
 
 ## 安装 CLI（本地模式必需）
 
-Node 24 是 Mac 上的默认运行时。Node 22 LTS（当前为 `22.16+`）仍可用于兼容。然后全局安装 `openclaw`：
+Node 24 是 Mac 上的默认运行时。Node 22 LTS（当前为 `22.19+`）仍可用于兼容性。然后全局安装 `openclaw`：
 
 ```bash
 npm install -g openclaw@<version>
 ```
 
-macOS 应用中的**安装 CLI**按钮会运行与应用内部使用相同的全局安装流程：它优先使用 npm，其次是 pnpm，如果 bun 是唯一检测到的包管理器，则使用 bun。Node 仍是推荐的 Gateway 网关运行时。
+macOS 应用的**安装 CLI**按钮会运行应用内部使用的同一全局安装流程：
+它会优先使用 npm，然后是 pnpm，如果 bun 是唯一检测到的包管理器，则使用 bun。
+Node 仍是推荐的 Gateway 网关运行时。
 
-## Launchd（作为 LaunchAgent 的 Gateway 网关）
+## Launchd（Gateway 网关作为 LaunchAgent）
 
 标签：
 
 - `ai.openclaw.gateway`（或 `ai.openclaw.<profile>`；旧版 `com.openclaw.*` 可能仍会保留）
 
-Plist 位置（每用户）：
+Plist 位置（按用户）：
 
 - `~/Library/LaunchAgents/ai.openclaw.gateway.plist`
   （或 `~/Library/LaunchAgents/ai.openclaw.<profile>.plist`）
 
 管理器：
 
-- macOS 应用在本地模式下负责 LaunchAgent 的安装/更新。
+- macOS 应用在本地模式下负责安装/更新 LaunchAgent。
 - CLI 也可以安装它：`openclaw gateway install`。
 
 行为：
 
-- “OpenClaw 已启用”会启用/停用 LaunchAgent。
-- 退出应用**不会**停止 Gateway 网关（launchd 会保持其存活）。
-- 如果 Gateway 网关已在配置的端口上运行，应用会附加到它，而不是启动新的 Gateway 网关。
+- “OpenClaw Active” 会启用/禁用 LaunchAgent。
+- 退出应用**不会**停止 Gateway 网关（launchd 会保持其运行）。
+- 如果 Gateway 网关已在配置的端口上运行，应用会附加到
+  该实例，而不是启动新的实例。
 
 日志：
 
-- launchd stdout/err：`/tmp/openclaw/openclaw-gateway.log`
+- launchd stdout：`~/Library/Logs/openclaw/gateway.log`（配置文件使用 `gateway-<profile>.log`）
+- launchd stderr：已抑制
 
 ## 版本兼容性
 
-macOS 应用会检查 Gateway 网关版本是否与自身版本匹配。如果二者不兼容，请更新全局 CLI，使其与应用版本一致。
+macOS 应用会检查 Gateway 网关版本是否与自身版本匹配。如果二者
+不兼容，请更新全局 CLI，使其与应用版本一致。
 
 ## 冒烟检查
 

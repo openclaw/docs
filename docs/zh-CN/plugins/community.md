@@ -1,169 +1,72 @@
 ---
+doc-schema-version: 1
 read_when:
     - 你想查找第三方 OpenClaw 插件
-    - 你想发布或列出自己的插件
-summary: 社区维护的 OpenClaw 插件：浏览、安装并提交你自己的插件
+    - 你想在 ClawHub 上发布或列出你自己的插件
+summary: 查找并发布社区维护的 OpenClaw 插件
 title: 社区插件
 x-i18n:
-    generated_at: "2026-05-10T19:40:45Z"
+    generated_at: "2026-06-27T02:39:21Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ee23598011f79f46b9171296501605cf0a5ef5aa7b67040135ea47cac21ca6a4
+    source_hash: 0ecf059fa0c32f09d09381b2153a6a63ca522d49719aaa8476209389a6b5b36a
     source_path: plugins/community.md
     workflow: 16
 ---
 
-社区插件是第三方包，可为 OpenClaw 扩展新的渠道、工具、提供商或其他能力。它们由社区构建和维护，通常发布在 [ClawHub](/zh-CN/clawhub)，并且可以通过一条命令安装。在 ClawHub 包安装逐步推出期间，npm 仍是裸包规格的默认启动方式。
+社区插件是第三方软件包，可通过渠道、工具、提供商、钩子或其他能力扩展 OpenClaw。将 [ClawHub](/zh-CN/clawhub) 作为公共社区插件的主要发现入口。
 
-ClawHub 是社区插件的规范发现入口。不要仅为了让你的插件可被发现而提交仅文档 PR；请改为将其发布到 ClawHub。
+## 查找插件
+
+从 CLI 搜索 ClawHub：
+
+```bash
+openclaw plugins search "calendar"
+```
+
+使用显式源前缀安装 ClawHub 插件：
 
 ```bash
 openclaw plugins install clawhub:<package-name>
 ```
 
-对 npm 托管的包使用 `openclaw plugins install <package-name>`。
-
-## 已列出的插件
-
-### Apify
-
-使用 20,000 多个现成爬虫从任意网站抓取数据。让你的智能体只需通过请求，即可从 Instagram、Facebook、TikTok、YouTube、Google Maps、Google Search、电商网站等提取数据。
-
-- **npm:** `@apify/apify-openclaw-plugin`
-- **仓库:** [github.com/apify/apify-openclaw-plugin](https://github.com/apify/apify-openclaw-plugin)
+在发布切换期间，npm 仍然是受支持的直接安装路径：
 
 ```bash
-openclaw plugins install @apify/apify-openclaw-plugin
+openclaw plugins install npm:<package-name>
 ```
 
-### Codex App Server Bridge
+常见的安装、更新、检查和卸载示例请参阅 [管理插件](/zh-CN/plugins/manage-plugins)。完整命令参考和源选择规则请参阅 [`openclaw plugins`](/zh-CN/cli/plugins)。
 
-用于 Codex App Server 对话的独立 OpenClaw 桥接插件。将聊天绑定到 Codex 线程，用纯文本与其交互，并通过聊天原生命令控制恢复、规划、审查、模型选择、压缩等功能。
+## 发布插件
 
-- **npm:** `openclaw-codex-app-server`
-- **仓库:** [github.com/pwrdrvr/openclaw-codex-app-server](https://github.com/pwrdrvr/openclaw-codex-app-server)
+如果你希望 OpenClaw 用户发现并安装公共社区插件，请在 ClawHub 上发布。ClawHub 负责实时软件包列表、发布历史、扫描状态和安装提示；文档不会维护静态的第三方插件目录。
 
 ```bash
-openclaw plugins install openclaw-codex-app-server
+clawhub package publish your-org/your-plugin --dry-run
+clawhub package publish your-org/your-plugin
 ```
 
-### DingTalk
+发布前，请确保插件包含软件包元数据、插件清单、设置文档，以及明确的维护负责人。ClawHub 会先验证所有者范围、软件包名称、版本、文件限制和源元数据，然后创建发布；在审核和验证完成前，新发布会对常规安装和下载入口保持隐藏。
 
-使用 Stream 模式的企业机器人集成。通过任意 DingTalk 客户端支持文本、图片和文件消息。
+发布前请使用此检查清单：
 
-- **npm:** `@largezhou/ddingtalk`
-- **仓库:** [github.com/largezhou/openclaw-dingtalk](https://github.com/largezhou/openclaw-dingtalk)
+| 要求                 | 原因                                                |
+| -------------------- | --------------------------------------------------- |
+| 已发布到 ClawHub     | 用户需要 `openclaw plugins install` 提示正常工作 |
+| 公共 GitHub 仓库     | 源代码审查、问题跟踪、透明度                        |
+| 设置和使用文档       | 用户需要知道如何配置它                              |
+| 活跃维护             | 最近有更新，或能及时处理问题                        |
 
-```bash
-openclaw plugins install @largezhou/ddingtalk
-```
+完整发布契约请参阅以下页面：
 
-### Lossless Claw (LCM)
-
-面向 OpenClaw 的无损上下文管理插件。基于 DAG 的对话摘要，支持增量压缩，在减少 token 用量的同时保留完整上下文保真度。
-
-- **npm:** `@martian-engineering/lossless-claw`
-- **仓库:** [github.com/Martian-Engineering/lossless-claw](https://github.com/Martian-Engineering/lossless-claw)
-
-```bash
-openclaw plugins install @martian-engineering/lossless-claw
-```
-
-### Opik
-
-将智能体轨迹导出到 Opik 的官方插件。监控智能体行为、成本、token、错误等。
-
-- **npm:** `@opik/opik-openclaw`
-- **仓库:** [github.com/comet-ml/opik-openclaw](https://github.com/comet-ml/opik-openclaw)
-
-```bash
-openclaw plugins install @opik/opik-openclaw
-```
-
-### Prometheus Avatar
-
-为你的 OpenClaw 智能体提供具备实时唇形同步、情绪表情和文本转语音的 Live2D 头像。包含用于 AI 资产生成的创作者工具，以及一键部署到 Prometheus Marketplace 的能力。目前处于 alpha 阶段。
-
-- **npm:** `@prometheusavatar/openclaw-plugin`
-- **仓库:** [github.com/myths-labs/prometheus-avatar](https://github.com/myths-labs/prometheus-avatar)
-
-```bash
-openclaw plugins install @prometheusavatar/openclaw-plugin
-```
-
-### QQbot
-
-通过 QQ Bot API 将 OpenClaw 连接到 QQ。支持私聊、群组提及、频道消息，以及包括语音、图片、视频和文件在内的富媒体。
-
-当前 OpenClaw 版本内置 QQ Bot。普通安装请使用 [QQ Bot](/zh-CN/channels/qqbot) 中的内置设置；只有在你明确需要腾讯维护的独立包时，才安装此外部插件。
-
-- **npm:** `@tencent-connect/openclaw-qqbot`
-- **仓库:** [github.com/tencent-connect/openclaw-qqbot](https://github.com/tencent-connect/openclaw-qqbot)
-
-```bash
-openclaw plugins install @tencent-connect/openclaw-qqbot
-```
-
-### wecom
-
-由腾讯 WeCom 团队为 OpenClaw 提供的 WeCom 渠道插件。基于 WeCom Bot WebSocket 持久连接，支持私信和群聊、流式回复、主动消息、图片/文件处理、Markdown 格式化、内置访问控制，以及文档/会议/消息 Skills。
-
-- **npm:** `@wecom/wecom-openclaw-plugin`
-- **仓库:** [github.com/WecomTeam/wecom-openclaw-plugin](https://github.com/WecomTeam/wecom-openclaw-plugin)
-
-```bash
-openclaw plugins install @wecom/wecom-openclaw-plugin
-```
-
-### Yuanbao
-
-由腾讯元宝团队为 OpenClaw 提供的腾讯元宝渠道插件。基于 WebSocket 持久连接，支持私信和群聊、流式回复、主动消息、图片/文件/音频/视频处理、Markdown 格式化、内置访问控制，以及斜杠菜单。
-
-- **npm:** `openclaw-plugin-yuanbao`
-- **仓库:** [github.com/YuanbaoTeam/yuanbao-openclaw-plugin](https://github.com/YuanbaoTeam/yuanbao-openclaw-plugin)
-
-```bash
-openclaw plugins install openclaw-plugin-yuanbao
-```
-
-## 提交你的插件
-
-我们欢迎有用、文档完善且运行安全的社区插件。
-
-<Steps>
-  <Step title="发布到 ClawHub 或 npm">
-    你的插件必须能通过 `openclaw plugins install \<package-name\>` 安装。
-    除非你明确需要仅 npm 分发，否则请发布到 [ClawHub](/zh-CN/clawhub)。
-    完整指南见 [构建插件](/zh-CN/plugins/building-plugins)。
-
-  </Step>
-
-  <Step title="托管在 GitHub 上">
-    源代码必须位于公共仓库，并包含设置文档和 issue 跟踪器。
-
-  </Step>
-
-  <Step title="仅将文档 PR 用于源文档变更">
-    你不需要仅为了让插件可被发现而提交文档 PR。请改为将其发布到 ClawHub。
-
-    只有在 OpenClaw 的源文档需要实际内容变更时，才提交文档 PR，例如修正安装指南，或添加属于主文档集的跨仓库文档。
-
-  </Step>
-</Steps>
-
-## 质量门槛
-
-| 要求                        | 原因                                          |
-| --------------------------- | --------------------------------------------- |
-| 发布在 ClawHub 或 npm       | 用户需要 `openclaw plugins install` 可正常工作 |
-| 公共 GitHub 仓库            | 源码审查、issue 跟踪、透明度                  |
-| 设置和使用文档              | 用户需要知道如何配置它                        |
-| 积极维护                    | 最近有更新或能及时处理 issue                  |
-
-低投入封装、所有权不清晰或无人维护的包可能会被拒绝。
+- [ClawHub 发布](/zh-CN/clawhub/publishing) 说明所有者、范围、发布、审核、软件包验证和软件包转让。
+- [构建插件](/zh-CN/plugins/building-plugins) 展示插件软件包形态和首次发布工作流。
+- [插件清单](/zh-CN/plugins/manifest) 定义原生插件清单字段。
 
 ## 相关
 
-- [安装和配置插件](/zh-CN/tools/plugin) — 如何安装任意插件
-- [构建插件](/zh-CN/plugins/building-plugins) — 创建你自己的插件
-- [插件清单](/zh-CN/plugins/manifest) — 清单 schema
+- [插件](/zh-CN/tools/plugin) - 安装、配置、重启和故障排除
+- [管理插件](/zh-CN/plugins/manage-plugins) - 命令示例
+- [ClawHub 发布](/zh-CN/clawhub/publishing) - 发布和版本规则

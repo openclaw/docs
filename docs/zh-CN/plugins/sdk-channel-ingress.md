@@ -13,6 +13,7 @@ x-i18n:
     source_hash: b7f32b9b2e91a2d8cf5a8f2706d071e8daebb3954de4913646aaaaeae4c7141d
     source_path: plugins/sdk-channel-ingress.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # 频道入口 API

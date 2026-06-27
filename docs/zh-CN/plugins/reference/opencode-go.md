@@ -10,6 +10,7 @@ x-i18n:
     source_hash: adf5c43fc8e32041d5b58f5c7fa197015dcebcee3dfc0484081fbd67f14feeb6
     source_path: plugins/reference/opencode-go.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # OpenCode Go 插件

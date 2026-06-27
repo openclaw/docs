@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 3830af0206854e500132edfc9340724fe97f90ca60fa23ce05202d96d9cacf04
     source_path: channels/yuanbao.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 腾讯元宝是腾讯的 AI 助手平台。OpenClaw 渠道插件

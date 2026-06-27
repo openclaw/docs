@@ -1,22 +1,23 @@
 ---
 read_when:
-    - 你想要一份完整的文档地图
-summary: 链接到每篇 OpenClaw 文档的汇总页
+    - 你需要一份完整的文档地图
+summary: 链接到每篇 OpenClaw 文档的枢纽页面
 title: 文档中心
 x-i18n:
-    generated_at: "2026-05-12T00:59:20Z"
+    generated_at: "2026-06-27T03:22:00Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: f4675773105bbff55e1f38c8449d688dcefc6ad70d9f5e572193f1e0c638e243
+    source_hash: d7d3f089e2caea1e1487c7c0375c62dfb007db05827a77d4e5616839023b9457
     source_path: start/hubs.md
     workflow: 16
 ---
 
 <Note>
-如果你刚接触 OpenClaw，请从 [入门指南](/zh-CN/start/getting-started) 开始。
+如果你刚开始使用 OpenClaw，请先阅读[入门指南](/zh-CN/start/getting-started)。
 </Note>
 
-使用这些枢纽来发现每个页面，包括未出现在左侧导航中的深度解析和参考文档。
+使用这些中心页来发现每个页面，包括未显示在左侧导航中的深度解析和参考文档。
 
 ## 从这里开始
 
@@ -25,14 +26,14 @@ x-i18n:
 - [新手引导](/zh-CN/start/onboarding)
 - [新手引导（CLI）](/zh-CN/start/wizard)
 - [设置](/zh-CN/start/setup)
-- [仪表盘（本地 Gateway 网关）](http://127.0.0.1:18789/)
+- [仪表板（本地 Gateway 网关）](http://127.0.0.1:18789/)
 - [帮助](/zh-CN/help)
 - [文档目录](/zh-CN/start/docs-directory)
 - [配置](/zh-CN/gateway/configuration)
 - [配置示例](/zh-CN/gateway/configuration-examples)
 - [OpenClaw 助手](/zh-CN/start/openclaw)
 - [展示](/zh-CN/start/showcase)
-- [背景故事](/zh-CN/start/lore)
+- [背景设定](/zh-CN/start/lore)
 
 ## 安装 + 更新
 
@@ -45,16 +46,16 @@ x-i18n:
 
 - [架构](/zh-CN/concepts/architecture)
 - [功能](/zh-CN/concepts/features)
-- [网络枢纽](/zh-CN/network)
-- [智能体运行时](/zh-CN/concepts/agent)
+- [网络中心](/zh-CN/network)
+- [Agent 运行时](/zh-CN/concepts/agent)
 - [Agent 工作区](/zh-CN/concepts/agent-workspace)
 - [记忆](/zh-CN/concepts/memory)
 - [Agent loop](/zh-CN/concepts/agent-loop)
 - [流式传输 + 分块](/zh-CN/concepts/streaming)
-- [多智能体路由](/zh-CN/concepts/multi-agent)
+- [多 Agent 路由](/zh-CN/concepts/multi-agent)
 - [压缩](/zh-CN/concepts/compaction)
 - [会话](/zh-CN/concepts/session)
-- [会话裁剪](/zh-CN/concepts/session-pruning)
+- [会话修剪](/zh-CN/concepts/session-pruning)
 - [会话工具](/zh-CN/concepts/session-tool)
 - [队列](/zh-CN/concepts/queue)
 - [斜杠命令](/zh-CN/tools/slash-commands)
@@ -67,13 +68,13 @@ x-i18n:
 - [频道路由](/zh-CN/channels/channel-routing)
 - [群组](/zh-CN/channels/groups)
 - [群组消息](/zh-CN/channels/group-messages)
-- [模型故障转移](/zh-CN/concepts/model-failover)
+- [模型故障切换](/zh-CN/concepts/model-failover)
 - [OAuth](/zh-CN/concepts/oauth)
 
 ## 提供商 + 入口
 
-- [聊天渠道枢纽](/zh-CN/channels)
-- [模型提供商枢纽](/zh-CN/providers/models)
+- [聊天渠道中心](/zh-CN/channels)
+- [模型提供商中心](/zh-CN/providers/models)
 - [WhatsApp](/zh-CN/channels/whatsapp)
 - [Telegram](/zh-CN/channels/telegram)
 - [Slack](/zh-CN/channels/slack)
@@ -94,13 +95,13 @@ x-i18n:
 - [Gateway 网关配对](/zh-CN/gateway/pairing)
 - [Gateway 网关锁](/zh-CN/gateway/gateway-lock)
 - [后台进程](/zh-CN/gateway/background-process)
-- [健康状态](/zh-CN/gateway/health)
+- [健康](/zh-CN/gateway/health)
 - [Heartbeat](/zh-CN/gateway/heartbeat)
 - [Doctor](/zh-CN/gateway/doctor)
-- [日志记录](/zh-CN/gateway/logging)
+- [日志](/zh-CN/gateway/logging)
 - [沙箱隔离](/zh-CN/gateway/sandboxing)
-- [仪表盘](/zh-CN/web/dashboard)
-- [控制 UI](/zh-CN/web/control-ui)
+- [仪表板](/zh-CN/web/dashboard)
+- [Control UI](/zh-CN/web/control-ui)
 - [远程访问](/zh-CN/gateway/remote)
 - [远程 Gateway 网关 README](/zh-CN/gateway/remote-gateway-readme)
 - [Tailscale](/zh-CN/gateway/tailscale)
@@ -115,7 +116,7 @@ x-i18n:
 - [Exec 工具](/zh-CN/tools/exec)
 - [PDF 工具](/zh-CN/tools/pdf)
 - [提升权限模式](/zh-CN/tools/elevated)
-- [Cron 任务](/zh-CN/automation/cron-jobs)
+- [Cron 作业](/zh-CN/automation/cron-jobs)
 - [自动化](/zh-CN/automation)
 - [思考 + 详细输出](/zh-CN/tools/thinking)
 - [Models](/zh-CN/concepts/models)
@@ -142,7 +143,7 @@ x-i18n:
 - [macOS](/zh-CN/platforms/macos)
 - [iOS](/zh-CN/platforms/ios)
 - [Android](/zh-CN/platforms/android)
-- [Windows（WSL2）](/zh-CN/platforms/windows)
+- [Windows 中心](/zh-CN/platforms/windows)
 - [Linux](/zh-CN/platforms/linux)
 - [Web 界面](/zh-CN/web)
 
@@ -151,15 +152,15 @@ x-i18n:
 - [macOS 开发设置](/zh-CN/platforms/mac/dev-setup)
 - [macOS 菜单栏](/zh-CN/platforms/mac/menu-bar)
 - [macOS 语音唤醒](/zh-CN/platforms/mac/voicewake)
-- [macOS 语音浮层](/zh-CN/platforms/mac/voice-overlay)
+- [macOS 语音叠层](/zh-CN/platforms/mac/voice-overlay)
 - [macOS WebChat](/zh-CN/platforms/mac/webchat)
 - [macOS Canvas](/zh-CN/platforms/mac/canvas)
 - [macOS 子进程](/zh-CN/platforms/mac/child-process)
-- [macOS 健康状态](/zh-CN/platforms/mac/health)
+- [macOS 健康](/zh-CN/platforms/mac/health)
 - [macOS 图标](/zh-CN/platforms/mac/icon)
-- [macOS 日志记录](/zh-CN/platforms/mac/logging)
+- [macOS 日志](/zh-CN/platforms/mac/logging)
 - [macOS 权限](/zh-CN/platforms/mac/permissions)
-- [macOS 远程访问](/zh-CN/platforms/mac/remote)
+- [macOS 远程](/zh-CN/platforms/mac/remote)
 - [macOS 签名](/zh-CN/platforms/mac/signing)
 - [macOS Gateway 网关（launchd）](/zh-CN/platforms/mac/bundled-gateway)
 - [macOS XPC](/zh-CN/platforms/mac/xpc)
@@ -201,7 +202,7 @@ x-i18n:
 
 - [测试](/zh-CN/reference/test)
 - [发布策略](/zh-CN/reference/RELEASING)
-- [设备型号](/zh-CN/reference/device-models)
+- [设备模型](/zh-CN/reference/device-models)
 
 ## 相关
 

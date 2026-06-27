@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 1dba4fc84deb6e0c8c7b17ebc10182aa6e4bc2c821070e33df44f384e285266f
     source_path: channels/access-groups.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 访问组是你一次定义、并通过 `accessGroup:<name>` 从渠道允许列表引用的具名发送者列表。

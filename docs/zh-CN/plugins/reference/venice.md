@@ -4,10 +4,11 @@ read_when:
 summary: 为 OpenClaw 添加 Venice 模型提供商支持。
 title: Venice 插件
 x-i18n:
-    generated_at: "2026-05-02T15:18:02Z"
+    generated_at: "2026-06-27T02:52:48Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 360110485b78336c672acb6ad458e39d19b585b6532c82f4c99b8857b3f5401d
+    source_hash: 585efb336f3c3f5a9ca7da8a7dfc7bf2e5cb70bcd91fa2c05feea208bd93692e
     source_path: plugins/reference/venice.md
     workflow: 16
 ---
@@ -19,11 +20,11 @@ x-i18n:
 ## 分发
 
 - 包：`@openclaw/venice-provider`
-- 安装方式：包含在 OpenClaw 中
+- 安装路径：npm；ClawHub：`clawhub:@openclaw/venice-provider`
 
-## 暴露面
+## 表面
 
-providers: venice
+提供商：venice
 
 ## 相关文档
 

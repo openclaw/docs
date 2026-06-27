@@ -4,26 +4,27 @@ read_when:
 summary: 新增文本转语音提供商支持。
 title: Gradium 插件
 x-i18n:
-    generated_at: "2026-05-02T15:14:34Z"
+    generated_at: "2026-06-27T02:48:35Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b3b783c4a93c3ef0eda61b4d007d4aebea805b977484db44e62e3b718ca7dd09
+    source_hash: 4ae70f3e901d44c238d6e1abcec13f67c0d19df6f82d92e365c3ddf0355ea23d
     source_path: plugins/reference/gradium.md
     workflow: 16
 ---
 
 # Gradium 插件
 
-添加对文本转语音提供商的支持。
+添加文本转语音提供商支持。
 
 ## 分发
 
-- 包：`@openclaw/gradium-speech`
-- 安装方式：包含在 OpenClaw 中
+- 软件包：`@openclaw/gradium-speech`
+- 安装路径：npm；ClawHub：`clawhub:@openclaw/gradium-speech`
 
-## 表面
+## 接口面
 
-contracts: speechProviders
+契约：speechProviders
 
 ## 相关文档
 

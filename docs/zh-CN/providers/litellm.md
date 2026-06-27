@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 26b5150cfca92c9cd425c864c711efb3ab62ef94377b9d1e5d6476b07bf4c800
     source_path: providers/litellm.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 [LiteLLM](https://litellm.ai) 是一个开源 LLM 网关，提供统一 API 以接入 100 多家模型提供商。通过 LiteLLM 路由 OpenClaw，以获得集中式成本跟踪、日志记录，以及无需更改 OpenClaw 配置即可切换后端的灵活性。

@@ -4,26 +4,27 @@ read_when:
 summary: 为 OpenClaw 添加 StepFun、StepFun Plan 模型提供商支持。
 title: StepFun 插件
 x-i18n:
-    generated_at: "2026-05-02T15:17:19Z"
+    generated_at: "2026-06-27T02:52:10Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 178d5a4c968281e854ca5623ae100b8c51e3c48c3839879352a5988edd9b9653
+    source_hash: 02e2b7fbfb03a348a8a5d368e6fd039cf834ab7d2a9bf82f79729f360660b5de
     source_path: plugins/reference/stepfun.md
     workflow: 16
 ---
 
 # StepFun 插件
 
-为 OpenClaw 添加 StepFun 和 StepFun Plan 模型提供商支持。
+为 OpenClaw 添加 StepFun、StepFun Plan 模型提供商支持。
 
 ## 分发
 
 - 包：`@openclaw/stepfun-provider`
-- 安装方式：包含在 OpenClaw 中
+- 安装路径：npm；ClawHub：`clawhub:@openclaw/stepfun-provider`
 
-## 暴露接口
+## 表面
 
-providers: stepfun, stepfun-plan
+提供商：stepfun, stepfun-plan
 
 ## 相关文档
 

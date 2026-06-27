@@ -11,6 +11,7 @@ x-i18n:
     source_hash: b571f9b29bb2cca0f311db4188c922b2f70ee91cb48b233cf9922e57a7f05340
     source_path: install/exe-dev.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 目标：OpenClaw Gateway 网关在 exe.dev VM 上运行，并可从你的笔记本电脑通过以下地址访问：`https://<vm-name>.exe.xyz`

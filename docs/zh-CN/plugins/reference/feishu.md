@@ -1,29 +1,30 @@
 ---
 read_when:
     - 你正在安装、配置或审计 Feishu 插件
-summary: 新增 Feishu 渠道界面，用于发送和接收 OpenClaw 消息。
+summary: OpenClaw Feishu/Lark 渠道插件，用于聊天和工作场所工具（由 @m1heng 社区维护）。
 title: Feishu 插件
 x-i18n:
-    generated_at: "2026-05-03T02:48:56Z"
+    generated_at: "2026-06-27T02:48:04Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cb9fa20533e6ad7f65ffbb3050166637bea8e8ab867dd3894ad90a77999ba9b8
+    source_hash: d55792e08be92877a8b86548b725b59aee149b352bba8a5e51ed590a59e0dbc9
     source_path: plugins/reference/feishu.md
     workflow: 16
 ---
 
 # Feishu 插件
 
-添加 Feishu 渠道表面，用于发送和接收 OpenClaw 消息。
+OpenClaw Feishu/Lark 频道插件，用于聊天和工作场所工具（由 @m1heng 社区维护）。
 
 ## 分发
 
 - 包：`@openclaw/feishu`
 - 安装路径：npm；ClawHub
 
-## 表面
+## Surface
 
-渠道：feishu；契约：工具；skills
+渠道：feishu；契约：工具；技能
 
 ## 相关文档
 

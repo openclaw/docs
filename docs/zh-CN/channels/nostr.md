@@ -11,6 +11,7 @@ x-i18n:
     source_hash: d6158c22c0ffc5aea56d0ac2b68955f30c3a785013dba5410cbd70f9b689dc3c
     source_path: channels/nostr.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 **Status：** 可选内置插件（默认禁用，直到配置后启用）。

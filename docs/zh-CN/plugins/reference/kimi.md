@@ -4,10 +4,11 @@ read_when:
 summary: 为 OpenClaw 添加 Kimi、Kimi Coding 模型提供商支持。
 title: Kimi 插件
 x-i18n:
-    generated_at: "2026-05-02T15:14:59Z"
+    generated_at: "2026-06-27T02:49:05Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ccfc557ee819deb906b3509febbefcd7879754561c17632b8e544cc8b3b5443e
+    source_hash: 6f609f6e21b493ea83e5cc34a28921be2fed3334b531194050257857a06ef259
     source_path: plugins/reference/kimi.md
     workflow: 16
 ---
@@ -18,12 +19,12 @@ x-i18n:
 
 ## 分发
 
-- 包：`@openclaw/kimi-provider`
-- 安装方式：随 OpenClaw 内置
+- 软件包：`@openclaw/kimi-provider`
+- 安装方式：npm；ClawHub：`clawhub:@openclaw/kimi-provider`
 
 ## 接口面
 
-提供商：kimi, kimi-coding
+providers：kimi、kimi-coding
 
 ## 相关文档
 

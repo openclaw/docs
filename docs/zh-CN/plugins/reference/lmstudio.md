@@ -10,6 +10,7 @@ x-i18n:
     source_hash: ec6c84ec422c0795d00f744239fcad96a5a01ef4fddd4823ba0b6ed93444a75b
     source_path: plugins/reference/lmstudio.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # LM Studio 插件

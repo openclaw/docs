@@ -1,53 +1,60 @@
 ---
 read_when:
-    - 你想将 Claude Max 订阅与兼容 OpenAI 的工具一起使用
-    - 你想要一个封装 Claude Code CLI 的本地 API 服务器
+    - 你想将 Claude Max 订阅与 OpenAI 兼容工具一起使用
+    - 你需要一个包装 Claude Code CLI 的本地 API 服务器
     - 你想评估基于订阅与基于 API key 的 Anthropic 访问方式
-summary: 用于将 Claude 订阅凭证暴露为兼容 OpenAI 端点的社区代理
+summary: 社区代理，用于将 Claude 订阅凭证暴露为 OpenAI 兼容端点
 title: Claude Max API 代理
 x-i18n:
-    generated_at: "2026-04-23T23:01:53Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T03:02:20Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 06c685c2f42f462a319ef404e4980f769e00654afb9637d873b98144e6a41c87
+    source_hash: 24bd2b4b56e4b8829e67f248d0e0a6bad53ccbd9ce98ee288bfa4de93508ef27
     source_path: providers/claude-max-api-proxy.md
-    workflow: 15
+    workflow: 16
 ---
 
-**claude-max-api-proxy** 是一个社区工具，可将你的 Claude Max/Pro 订阅暴露为兼容 OpenAI 的 API 端点。这样一来，你就可以在任何支持 OpenAI API 格式的工具中使用你的订阅。
+**claude-max-api-proxy** 是一个社区工具，可将你的 Claude Max/Pro 订阅公开为 OpenAI 兼容 API 端点。这样你就可以在任何支持 OpenAI API 格式的工具中使用你的订阅。
 
 <Warning>
-这条路径仅用于技术兼容性。Anthropic 过去曾阻止在 Claude Code 之外使用某些订阅
-方式。你必须自行决定是否使用它，并在依赖它之前核实 Anthropic 当前的条款。
+此路径仅用于技术兼容。Anthropic 过去曾阻止在 Claude Code 之外使用某些订阅。
+是否使用它需要你自行决定，并且在依赖它之前核实 Anthropic 当前的计费规则。
+
+Anthropic 当前的支持文档称 `claude -p` 属于 Agent SDK/编程式使用。
+自 2026 年 6 月 15 日起，订阅计划中的 `claude -p` 使用量会先消耗单独的
+每月 Agent SDK 额度；如果启用了使用额度，之后会按标准 API 费率消耗使用额度。
 </Warning>
 
-## 为什么要使用它？
+## 为什么使用它？
 
-| 方式 | 成本 | 最适合 |
-| ----------------------- | --------------------------------------------------- | ------------------------------------------ |
-| Anthropic API | 按 token 付费（Opus 约为输入 $15/M，输出 $75/M） | 生产应用、高流量 |
-| Claude Max 订阅 | 每月固定 $200 | 个人使用、开发、无限量使用 |
+| 方式                      | 成本路径                                        | 最适合                                   |
+| ------------------------- | ----------------------------------------------- | ---------------------------------------- |
+| Anthropic API             | 通过 Claude Console 或云按 token 付费           | 生产应用、共享自动化、大用量             |
+| Claude 订阅代理           | Claude Code / `claude -p` 计划和额度规则        | 使用兼容工具进行个人实验                 |
 
-如果你有 Claude Max 订阅，并且希望将其与兼容 OpenAI 的工具一起使用，那么这个代理可能会降低某些工作流的成本。对于生产用途，API key 仍然是更清晰的策略路径。
+如果你有 Claude Max 或 Pro 订阅，并且想将其用于
+OpenAI 兼容工具，这个代理可能适合某些个人工作流。它不是
+无限量固定费率路径。对于生产用途，API key 仍然是更清晰的策略和计费路径。
 
 ## 工作原理
 
-```text
-你的应用 → claude-max-api-proxy → Claude Code CLI → Anthropic（通过订阅）
-     （OpenAI 格式）              （转换格式）      （使用你的登录）
+```
+Your App → claude-max-api-proxy → Claude Code CLI / claude -p → Anthropic
+     (OpenAI format)              (converts format)          (uses your login)
 ```
 
-该代理会：
+该代理：
 
-1. 在 `http://localhost:3456/v1/chat/completions` 接收 OpenAI 格式请求
-2. 将其转换为 Claude Code CLI 命令
+1. 在 `http://localhost:3456/v1/chat/completions` 接受 OpenAI 格式请求
+2. 将它们转换为 Claude Code CLI 命令
 3. 以 OpenAI 格式返回响应（支持流式传输）
 
-## 快速开始
+## 入门指南
 
 <Steps>
   <Step title="安装代理">
-    需要 Node.js 20+ 和 Claude Code CLI。
+    需要 Node.js 22+ 和 Claude Code CLI。
 
     ```bash
     npm install -g claude-max-api-proxy
@@ -82,7 +89,7 @@ x-i18n:
 
   </Step>
   <Step title="配置 OpenClaw">
-    将 OpenClaw 指向该代理，作为一个自定义的兼容 OpenAI 端点：
+    将 OpenClaw 指向该代理，作为自定义 OpenAI 兼容端点：
 
     ```json5
     {
@@ -103,26 +110,27 @@ x-i18n:
 
 ## 内置目录
 
-| 模型 ID | 映射到 |
+| 模型 ID           | 映射到          |
 | ----------------- | --------------- |
-| `claude-opus-4` | Claude Opus 4 |
+| `claude-opus-4`   | Claude Opus 4   |
 | `claude-sonnet-4` | Claude Sonnet 4 |
-| `claude-haiku-4` | Claude Haiku 4 |
+| `claude-haiku-4`  | Claude Haiku 4  |
 
 ## 高级配置
 
 <AccordionGroup>
-  <Accordion title="代理风格的兼容 OpenAI 说明">
-    这条路径与其他自定义 `/v1` 后端一样，使用同一种代理风格的兼容 OpenAI 路由：
+  <Accordion title="代理式 OpenAI 兼容说明">
+    此路径使用与其他自定义 `/v1` 后端相同的代理式 OpenAI 兼容路由：
 
-    - 不适用原生仅限 OpenAI 的请求塑形
-    - 不支持 `service_tier`、不支持 Responses `store`、不支持提示缓存提示，也不支持
-      OpenAI 推理兼容负载塑形
-    - 不会在该代理 URL 上注入隐藏的 OpenClaw 归属 headers（`originator`、`version`、`User-Agent`）
+    - 原生 OpenAI 专用请求整形不适用
+    - 没有 `service_tier`，没有 Responses `store`，没有 prompt-cache 提示，也没有
+      OpenAI reasoning 兼容载荷整形
+    - 隐藏的 OpenClaw 归因标头（`originator`、`version`、`User-Agent`）
+      不会注入到代理 URL 上
 
   </Accordion>
 
-  <Accordion title="在 macOS 上通过 LaunchAgent 自动启动">
+  <Accordion title="使用 LaunchAgent 在 macOS 上自动启动">
     创建一个 LaunchAgent 以自动运行该代理：
 
     ```bash
@@ -157,30 +165,25 @@ x-i18n:
   </Accordion>
 </AccordionGroup>
 
-## 链接
-
-- **npm：** [https://www.npmjs.com/package/claude-max-api-proxy](https://www.npmjs.com/package/claude-max-api-proxy)
-- **GitHub：** [https://github.com/atalovesyou/claude-max-api-proxy](https://github.com/atalovesyou/claude-max-api-proxy)
-- **Issues：** [https://github.com/atalovesyou/claude-max-api-proxy/issues](https://github.com/atalovesyou/claude-max-api-proxy/issues)
-
 ## 说明
 
-- 这是一个**社区工具**，并未获得 Anthropic 或 OpenClaw 的官方支持
-- 需要已启用的 Claude Max/Pro 订阅，并且 Claude Code CLI 已完成认证
-- 该代理在本地运行，不会将数据发送到任何第三方服务器
-- 完整支持流式响应
+- 这是一个**社区工具**，并非由 Anthropic 或 OpenClaw 官方支持
+- 需要有效的 Claude Max/Pro 订阅，并且 Claude Code CLI 已完成身份验证
+- 继承 Claude Code `claude -p` 的计费、使用额度和速率限制行为
+- 该代理在本地运行，不会向任何第三方服务器发送数据
+- 完全支持流式响应
 
 <Note>
-如需使用通过 Claude CLI 或 API key 的原生 Anthropic 集成，请参见 [Anthropic 提供商](/zh-CN/providers/anthropic)。如需使用 OpenAI/Codex 订阅，请参见 [OpenAI 提供商](/zh-CN/providers/openai)。
+如需通过 Claude CLI 或 API key 使用原生 Anthropic 集成，请参阅 [Anthropic 提供商](/zh-CN/providers/anthropic)。如需 OpenAI/Codex 订阅，请参阅 [OpenAI provider](/zh-CN/providers/openai)。
 </Note>
 
 ## 相关内容
 
 <CardGroup cols={2}>
   <Card title="Anthropic 提供商" href="/zh-CN/providers/anthropic" icon="bolt">
-    通过 Claude CLI 或 API key 实现的原生 OpenClaw 集成。
+    通过 Claude CLI 或 API key 进行原生 OpenClaw 集成。
   </Card>
-  <Card title="OpenAI 提供商" href="/zh-CN/providers/openai" icon="robot">
+  <Card title="OpenAI provider" href="/zh-CN/providers/openai" icon="robot">
     用于 OpenAI/Codex 订阅。
   </Card>
   <Card title="模型选择" href="/zh-CN/concepts/model-providers" icon="layers">

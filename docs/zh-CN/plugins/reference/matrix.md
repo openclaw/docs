@@ -1,30 +1,31 @@
 ---
 read_when:
     - 你正在安装、配置或审计 Matrix 插件
-summary: 新增用于发送和接收 OpenClaw 消息的 Matrix 渠道接口。
+summary: OpenClaw Matrix 渠道插件，用于房间和私信。
 title: Matrix 插件
 x-i18n:
-    generated_at: "2026-05-10T19:42:14Z"
+    generated_at: "2026-06-27T02:49:25Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3c135053034d7d8c79c30316c788270278c00b72c1e0674dcbcc2215f1e23add
+    source_hash: 10497c79a626ea4c49dac80f2b87a3f8756880ed3ec8b8c4566a4bfe2a011a0c
     source_path: plugins/reference/matrix.md
     workflow: 16
 ---
 
 # Matrix 插件
 
-添加 Matrix 渠道接口，用于发送和接收 OpenClaw 消息。
+OpenClaw Matrix 渠道插件，用于房间和私信。
 
 ## 分发
 
-- 包：`@openclaw/matrix`
+- 软件包：`@openclaw/matrix`
 - 安装路径：ClawHub：`clawhub:@openclaw/matrix`；npm
 
-## 接口
+## 接口面
 
-渠道：matrix
+channels: matrix
 
 ## 相关文档
 
-- [matrix](/zh-CN/channels/matrix)
+- [Matrix](/zh-CN/channels/matrix)

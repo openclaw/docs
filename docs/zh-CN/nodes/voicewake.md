@@ -1,36 +1,40 @@
 ---
 read_when:
-    - 更改语音唤醒词的行为或默认值
+    - 更改语音唤醒词行为或默认值
     - 添加需要唤醒词同步的新节点平台
-summary: 全局语音唤醒词（由 Gateway 网关拥有）及其跨节点同步方式
+summary: 全局语音唤醒词（由 Gateway 网关管理）及其如何跨节点同步
 title: 语音唤醒
 x-i18n:
-    generated_at: "2026-05-06T06:16:11Z"
+    generated_at: "2026-06-27T02:25:40Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a284cbe3e12784a8d7a3eab6ba8ae230123557bca7593c956111199b94b91b73
+    source_hash: 3c57955e8061eca2f9fec83500e829f183cd3ef9f794bf385823a28f9c89b0a4
     source_path: nodes/voicewake.md
     workflow: 16
 ---
 
-OpenClaw 将**唤醒词视为一个全局列表**，由 **Gateway 网关**管理。
+OpenClaw 将**唤醒词视为一个全局列表**，由 **Gateway 网关**拥有。
 
-- **没有按节点自定义的唤醒词**。
+- **没有按节点配置的自定义唤醒词**。
 - **任何节点/应用 UI 都可以编辑**该列表；更改由 Gateway 网关持久化，并广播给所有人。
-- macOS 和 iOS 保留本地**语音唤醒启用/禁用**开关（本地 UX + 权限不同）。
-- Android 当前保持语音唤醒关闭，并在语音标签页中使用手动麦克风流程。
+- macOS 和 iOS 保留本地的 **Voice Wake 启用/禁用**开关（本地 UX + 权限不同）。
+- Android 目前保持 Voice Wake 关闭，并在 Voice 标签页中使用手动麦克风流程。
 
 ## 存储（Gateway 网关主机）
 
-唤醒词存储在网关机器上的：
+唤醒词和路由规则存储在 Gateway 网关状态数据库中：
 
-- `~/.openclaw/settings/voicewake.json`
+- `~/.openclaw/state/openclaw.sqlite`
 
-结构：
+当前使用的表为：
 
-```json
-{ "triggers": ["openclaw", "claude", "computer"], "updatedAtMs": 1730000000000 }
-```
+- `voicewake_triggers`
+- `voicewake_routing_config`
+- `voicewake_routing_routes`
+
+旧版 `settings/voicewake.json` 和 `settings/voicewake-routing.json` 文件仅作为
+Doctor 迁移输入；运行时读取和写入 SQLite 表。
 
 ## 协议
 
@@ -41,8 +45,8 @@ OpenClaw 将**唤醒词视为一个全局列表**，由 **Gateway 网关**管理
 
 说明：
 
-- 触发词会被规范化（去除首尾空格，丢弃空值）。空列表会回退到默认值。
-- 出于安全考虑会强制执行限制（数量/长度上限）。
+- 触发词会被规范化（去除首尾空白，丢弃空值）。空列表会回退到默认值。
+- 为安全起见会强制执行限制（数量/长度上限）。
 
 ### 路由方法（触发词 → 目标）
 
@@ -60,7 +64,7 @@ OpenClaw 将**唤醒词视为一个全局列表**，由 **Gateway 网关**管理
 }
 ```
 
-路由目标必须且只能支持以下一种：
+路由目标仅支持以下一种：
 
 - `{ "mode": "current" }`
 - `{ "agentId": "main" }`
@@ -71,7 +75,7 @@ OpenClaw 将**唤醒词视为一个全局列表**，由 **Gateway 网关**管理
 - `voicewake.changed` 载荷 `{ triggers: string[] }`
 - `voicewake.routing.changed` 载荷 `{ config: VoiceWakeRoutingConfig }`
 
-接收者：
+接收方：
 
 - 所有 WebSocket 客户端（macOS 应用、WebChat 等）
 - 所有已连接节点（iOS/Android），并且在节点连接时也会推送一次初始“当前状态”。
@@ -80,18 +84,18 @@ OpenClaw 将**唤醒词视为一个全局列表**，由 **Gateway 网关**管理
 
 ### macOS 应用
 
-- 使用全局列表来限定 `VoiceWakeRuntime` 触发词。
-- 在语音唤醒设置中编辑“触发词”会调用 `voicewake.set`，然后依赖广播让其他客户端保持同步。
+- 使用全局列表来控制 `VoiceWakeRuntime` 触发。
+- 在 Voice Wake 设置中编辑 “Trigger words” 会调用 `voicewake.set`，然后依赖广播让其他客户端保持同步。
 
 ### iOS 节点
 
-- 使用全局列表进行 `VoiceWakeManager` 触发词检测。
-- 在设置中编辑唤醒词会调用 `voicewake.set`（通过 Gateway 网关 WS），同时也会保持本地唤醒词检测响应及时。
+- 使用全局列表进行 `VoiceWakeManager` 触发检测。
+- 在 Settings 中编辑 Wake Words 会调用 `voicewake.set`（通过 Gateway 网关 WS），同时也会让本地唤醒词检测保持响应。
 
 ### Android 节点
 
-- 语音唤醒当前在 Android 运行时/设置中处于禁用状态。
-- Android 语音使用语音标签页中的手动麦克风捕获，而不是唤醒词触发。
+- Voice Wake 目前在 Android 运行时/Settings 中已禁用。
+- Android 语音使用 Voice 标签页中的手动麦克风采集，而不是唤醒词触发。
 
 ## 相关
 

@@ -1,40 +1,31 @@
 ---
 read_when:
     - 你正在安装、配置或审计 WhatsApp 插件
-summary: 新增 WhatsApp 渠道界面，用于发送和接收 OpenClaw 消息。
+summary: OpenClaw WhatsApp 渠道插件，用于 WhatsApp Web 聊天。
 title: WhatsApp 插件
 x-i18n:
-    generated_at: "2026-05-05T04:18:33Z"
+    generated_at: "2026-06-27T02:53:09Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a0fa274f7e937894a070abd9307aa12eed17b27275bc7e5cfc432f8a41373c54
+    source_hash: cf563ff1384728455bd4035ba20e3bb793d039c53916cc6ee55c2f3e6fd62f01
     source_path: plugins/reference/whatsapp.md
     workflow: 16
 ---
 
 # WhatsApp 插件
 
-添加 WhatsApp 渠道界面，用于发送和接收 OpenClaw 消息。
+用于 WhatsApp Web 聊天的 OpenClaw WhatsApp 频道插件。
 
 ## 分发
 
 - 包：`@openclaw/whatsapp`
-- 安装路径：npm；ClawHub
+- 安装路由：ClawHub：`clawhub:@openclaw/whatsapp`；npm
 
-## 界面
+## 表面
 
-channels: whatsapp
-
-## Windows 安装注意事项
-
-在 Windows 上，WhatsApp 插件在 npm 安装期间需要 `PATH` 中存在 Git，因为它的一个 Baileys/libsignal 依赖是从 git URL 获取的。安装 Git for Windows，然后重启 shell 并重新运行安装：
-
-```powershell
-winget install --id Git.Git -e
-```
-
-如果 Portable Git 的 `bin` 目录在 `PATH` 中，也可以使用 Portable Git。
+channels: whatsapp；技能
 
 ## 相关文档
 
-- [whatsapp](/zh-CN/channels/whatsapp)
+- [WhatsApp](/zh-CN/channels/whatsapp)

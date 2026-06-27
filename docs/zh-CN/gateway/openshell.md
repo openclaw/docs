@@ -1,32 +1,43 @@
 ---
 read_when:
-    - 你想使用云托管沙箱，而不是本地 Docker
+    - 你想使用云端托管的沙箱，而不是本地 Docker
     - 你正在设置 OpenShell 插件
-    - 你需要在镜像模式和远程工作区模式之间做出选择
-summary: 使用 OpenShell 作为 OpenClaw 智能体的托管沙箱后端
+    - 你需要在镜像和远程工作区模式之间选择
+summary: 将 OpenShell 用作 OpenClaw 智能体的托管式沙箱后端
 title: OpenShell
 x-i18n:
-    generated_at: "2026-04-27T06:04:22Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T02:04:43Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 694a0a145802f4b624af01b58cbb5886bab7426fb9a90f216480141082089144
+    source_hash: d278f7550a3178c30a1b42f80495c55bb9827f7785ce9c4d1ee4a57adb3a5e4b
     source_path: gateway/openshell.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenShell 是 OpenClaw 的托管沙箱后端。OpenClaw 不再在本地运行 Docker 容器，而是将沙箱生命周期委托给 `openshell` CLI，由它通过基于 SSH 的命令执行来预配远程环境。
+OpenShell 是 OpenClaw 的托管沙箱后端。OpenClaw 不在本地运行 Docker
+容器，而是把沙箱生命周期委托给 `openshell` CLI，
+由它预置支持基于 SSH 命令执行的远程环境。
 
-OpenShell 插件复用了与通用 [SSH backend](/zh-CN/gateway/sandboxing#ssh-backend) 相同的核心 SSH 传输和远程文件系统桥接。它增加了 OpenShell 特有的生命周期管理（`sandbox create/get/delete`、`sandbox ssh-config`）以及可选的 `mirror` 工作区模式。
+OpenShell 插件复用与通用 [SSH 后端](/zh-CN/gateway/sandboxing#ssh-backend)相同的核心 SSH 传输和远程文件系统
+桥接。它增加了 OpenShell 专用生命周期（`sandbox create/get/delete`、`sandbox ssh-config`）
+以及可选的 `mirror` 工作区模式。
 
 ## 前置条件
 
-- 已安装 `openshell` CLI，且可在 `PATH` 中找到（或者通过 `plugins.entries.openshell.config.command` 设置自定义路径）
-- 拥有可访问沙箱的 OpenShell 账户
-- 主机上正在运行 OpenClaw Gateway 网关
+- 已安装 OpenShell 插件（`openclaw plugins install @openclaw/openshell-sandbox`）
+- 已安装 `openshell` CLI 且位于 `PATH` 中（或通过
+  `plugins.entries.openshell.config.command` 设置自定义路径）
+- 具备沙箱访问权限的 OpenShell 账号
+- OpenClaw Gateway 网关正在主机上运行
 
 ## 快速开始
 
-1. 启用插件并设置沙箱后端：
+1. 安装并启用插件，然后设置沙箱后端：
+
+```bash
+openclaw plugins install @openclaw/openshell-sandbox
+```
 
 ```json5
 {
@@ -54,7 +65,8 @@ OpenShell 插件复用了与通用 [SSH backend](/zh-CN/gateway/sandboxing#ssh-b
 }
 ```
 
-2. 重启 Gateway 网关。下一次智能体轮次时，OpenClaw 会创建一个 OpenShell 沙箱，并通过它路由工具执行。
+2. 重启 Gateway 网关。在下一次智能体轮次中，OpenClaw 会创建一个 OpenShell
+   沙箱，并通过它路由工具执行。
 
 3. 验证：
 
@@ -69,77 +81,82 @@ openclaw sandbox explain
 
 ### `mirror`
 
-当你希望**本地工作区保持为权威源**时，请使用 `plugins.entries.openshell.config.mode: "mirror"`。
+当你希望**本地工作区保持规范来源**时，使用 `plugins.entries.openshell.config.mode: "mirror"`。
 
 行为：
 
 - 在 `exec` 之前，OpenClaw 会将本地工作区同步到 OpenShell 沙箱中。
 - 在 `exec` 之后，OpenClaw 会将远程工作区同步回本地工作区。
-- 文件工具仍通过沙箱桥接运行，但在各个轮次之间，本地工作区仍然是事实来源。
+- 文件工具仍通过沙箱桥接运行，但本地工作区在轮次之间仍是事实来源。
 
 最适合：
 
-- 你会在 OpenClaw 之外于本地编辑文件，并希望这些更改自动在沙箱中可见。
-- 你希望 OpenShell 沙箱的行为尽可能接近 Docker 后端。
-- 你希望主机工作区在每次 exec 轮次后都能反映沙箱中的写入。
+- 你在 OpenClaw 外部本地编辑文件，并希望这些更改自动出现在
+  沙箱中。
+- 你希望 OpenShell 沙箱尽可能像 Docker 后端一样运行。
+- 你希望主机工作区在每个 exec 轮次后反映沙箱写入。
 
-权衡：每次 exec 前后都会产生额外的同步成本。
+权衡：每次 exec 前后都有额外同步成本。
 
 ### `remote`
 
-当你希望**OpenShell 工作区成为权威源**时，请使用 `plugins.entries.openshell.config.mode: "remote"`。
+当你希望 **OpenShell 工作区成为规范来源**时，使用 `plugins.entries.openshell.config.mode: "remote"`。
 
 行为：
 
-- 当沙箱首次创建时，OpenClaw 会从本地工作区一次性初始化远程工作区。
-- 之后，`exec`、`read`、`write`、`edit` 和 `apply_patch` 会直接针对远程 OpenShell 工作区运行。
+- 首次创建沙箱时，OpenClaw 会从本地工作区一次性播种远程工作区。
+- 之后，`exec`、`read`、`write`、`edit` 和 `apply_patch` 会
+  直接针对远程 OpenShell 工作区运行。
 - OpenClaw **不会**将远程更改同步回本地工作区。
-- 提示阶段的媒体读取仍然有效，因为文件和媒体工具是通过沙箱桥接读取的。
+- 提示词阶段的媒体读取仍可工作，因为文件和媒体工具会通过
+  沙箱桥接读取。
 
 最适合：
 
-- 沙箱应主要驻留在远程端。
+- 沙箱应主要存在于远端。
 - 你希望降低每轮同步开销。
 - 你不希望主机本地编辑静默覆盖远程沙箱状态。
 
 <Warning>
-如果在初次初始化之后，你在 OpenClaw 之外于主机上编辑文件，远程沙箱**不会**看到这些更改。请使用 `openclaw sandbox recreate` 重新初始化。
+如果你在初始播种后，在 OpenClaw 外部的主机上编辑文件，远程沙箱**不会**看到这些更改。使用 `openclaw sandbox recreate` 重新播种。
 </Warning>
 
-### 如何选择模式
+### 选择模式
 
-|                          | `mirror` | `remote` |
+|                          | `mirror`                   | `remote`                  |
 | ------------------------ | -------------------------- | ------------------------- |
-| **权威工作区** | 本地主机 | 远程 OpenShell |
-| **同步方向** | 双向（每次 exec） | 一次性初始化 |
-| **每轮开销** | 更高（上传 + 下载） | 更低（直接远程操作） |
-| **本地编辑可见？** | 是，在下一次 exec 时 | 否，直到 recreate |
-| **最适合** | 开发工作流 | 长时间运行的智能体、CI |
+| **规范工作区**           | 本地主机                   | 远程 OpenShell            |
+| **同步方向**             | 双向（每次 exec）          | 一次性播种                |
+| **每轮开销**             | 较高（上传 + 下载）        | 较低（直接远程操作）      |
+| **本地编辑可见？**       | 是，下一次 exec 时可见     | 否，直到重新创建          |
+| **最适合**               | 开发工作流                 | 长时间运行的智能体、CI    |
 
 ## 配置参考
 
 所有 OpenShell 配置都位于 `plugins.entries.openshell.config` 下：
 
-| 键名 | 类型 | 默认值 | 说明 |
+| 键                        | 类型                     | 默认值        | 描述                                                  |
 | ------------------------- | ------------------------ | ------------- | ----------------------------------------------------- |
-| `mode` | `"mirror"` 或 `"remote"` | `"mirror"` | 工作区同步模式 |
-| `command` | `string` | `"openshell"` | `openshell` CLI 的路径或名称 |
-| `from` | `string` | `"openclaw"` | 首次创建时使用的沙箱来源 |
-| `gateway` | `string` | — | OpenShell Gateway 网关 名称（`--gateway`） |
-| `gatewayEndpoint` | `string` | — | OpenShell Gateway 网关 端点 URL（`--gateway-endpoint`） |
-| `policy` | `string` | — | 用于创建沙箱的 OpenShell policy ID |
-| `providers` | `string[]` | `[]` | 创建沙箱时要附加的提供商名称 |
-| `gpu` | `boolean` | `false` | 请求 GPU 资源 |
-| `autoProviders` | `boolean` | `true` | 在创建沙箱时传递 `--auto-providers` |
-| `remoteWorkspaceDir` | `string` | `"/sandbox"` | 沙箱内主要可写工作区 |
-| `remoteAgentWorkspaceDir` | `string` | `"/agent"` | 智能体工作区挂载路径（用于只读访问） |
-| `timeoutSeconds` | `number` | `120` | `openshell` CLI 操作超时时间 |
+| `mode`                    | `"mirror"` 或 `"remote"` | `"mirror"`    | 工作区同步模式                                        |
+| `command`                 | `string`                 | `"openshell"` | `openshell` CLI 的路径或名称                          |
+| `from`                    | `string`                 | `"openclaw"`  | 首次创建时的沙箱来源                                  |
+| `gateway`                 | `string`                 | —             | OpenShell Gateway 网关名称（`--gateway`）             |
+| `gatewayEndpoint`         | `string`                 | —             | OpenShell Gateway 网关端点 URL（`--gateway-endpoint`） |
+| `policy`                  | `string`                 | —             | 用于创建沙箱的 OpenShell 策略 ID                      |
+| `providers`               | `string[]`               | `[]`          | 创建沙箱时要附加的提供商名称                          |
+| `gpu`                     | `boolean`                | `false`       | 请求 GPU 资源                                         |
+| `autoProviders`           | `boolean`                | `true`        | 创建沙箱时传递 `--auto-providers`                     |
+| `remoteWorkspaceDir`      | `string`                 | `"/sandbox"`  | 沙箱内的主要可写工作区                                |
+| `remoteAgentWorkspaceDir` | `string`                 | `"/agent"`    | Agent 工作区挂载路径（用于只读访问）                  |
+| `timeoutSeconds`          | `number`                 | `120`         | `openshell` CLI 操作的超时时间                        |
 
-沙箱级设置（`mode`、`scope`、`workspaceAccess`）与任何其他后端一样，配置在 `agents.defaults.sandbox` 下。完整矩阵请参见 [Sandboxing](/zh-CN/gateway/sandboxing)。
+沙箱级设置（`mode`、`scope`、`workspaceAccess`）与任何后端一样，配置在
+`agents.defaults.sandbox` 下。完整矩阵见
+[沙箱隔离](/zh-CN/gateway/sandboxing)。
 
 ## 示例
 
-### 最小 remote 设置
+### 最小远程设置
 
 ```json5
 {
@@ -165,7 +182,7 @@ openclaw sandbox explain
 }
 ```
 
-### 带 GPU 的 mirror 模式
+### 带 GPU 的 Mirror 模式
 
 ```json5
 {
@@ -196,7 +213,7 @@ openclaw sandbox explain
 }
 ```
 
-### 带自定义 Gateway 网关 的按智能体 OpenShell 配置
+### 使用自定义 Gateway 网关的按智能体 OpenShell
 
 ```json5
 {
@@ -235,26 +252,28 @@ openclaw sandbox explain
 
 ## 生命周期管理
 
-OpenShell 沙箱通过常规的沙箱 CLI 管理：
+OpenShell 沙箱通过常规沙箱 CLI 管理：
 
 ```bash
-# 列出所有沙箱运行时（Docker + OpenShell）
+# List all sandbox runtimes (Docker + OpenShell)
 openclaw sandbox list
 
-# 检查生效中的策略
+# Inspect effective policy
 openclaw sandbox explain
 
-# 重新创建（删除远程工作区，并在下次使用时重新初始化）
+# Recreate (deletes remote workspace, re-seeds on next use)
 openclaw sandbox recreate --all
 ```
 
-对于 `remote` 模式，**recreate 特别重要**：它会删除该作用域下的权威远程工作区。下一次使用时，会从本地工作区重新初始化出一个全新的远程工作区。
+对于 `remote` 模式，**重新创建尤其重要**：它会删除该作用域的规范
+远程工作区。下一次使用会从本地工作区播种新的远程工作区。
 
-对于 `mirror` 模式，recreate 主要是重置远程执行环境，因为本地工作区仍然是权威源。
+对于 `mirror` 模式，重新创建主要会重置远程执行环境，因为
+本地工作区仍是规范来源。
 
-### 何时需要 recreate
+### 何时重新创建
 
-在更改以下任一项后，请执行 recreate：
+更改以下任何配置后，请重新创建：
 
 - `agents.defaults.sandbox.backend`
 - `plugins.entries.openshell.config.from`
@@ -267,25 +286,32 @@ openclaw sandbox recreate --all
 
 ## 安全加固
 
-OpenShell 会固定工作区根 fd，并在每次读取前重新检查沙箱身份，因此符号链接替换或重新挂载工作区都无法将读取重定向到预期远程工作区之外。
+OpenShell 会固定工作区根 fd，并在每次读取前重新检查沙箱身份，
+因此符号链接替换或重新挂载的工作区无法将读取重定向到
+预期远程工作区之外。
 
 ## 当前限制
 
 - OpenShell 后端不支持沙箱浏览器。
 - `sandbox.docker.binds` 不适用于 OpenShell。
-- `sandbox.docker.*` 下的 Docker 特定运行时参数仅适用于 Docker 后端。
+- `sandbox.docker.*` 下的 Docker 专用运行时旋钮仅适用于 Docker
+  后端。
 
 ## 工作原理
 
-1. OpenClaw 调用 `openshell sandbox create`（根据配置附带 `--from`、`--gateway`、`--policy`、`--providers`、`--gpu` 参数）。
-2. OpenClaw 调用 `openshell sandbox ssh-config <name>` 获取该沙箱的 SSH 连接详情。
-3. 核心会将 SSH 配置写入临时文件，并使用与通用 SSH 后端相同的远程文件系统桥接打开 SSH 会话。
-4. 在 `mirror` 模式下：exec 前将本地同步到远程，运行后再将结果同步回本地。
-5. 在 `remote` 模式下：创建时初始化一次，之后直接对远程工作区操作。
+1. OpenClaw 调用 `openshell sandbox create`（按配置使用 `--from`、`--gateway`、
+   `--policy`、`--providers`、`--gpu` 标志）。
+2. OpenClaw 调用 `openshell sandbox ssh-config <name>` 获取沙箱的 SSH 连接
+   详情。
+3. 核心将 SSH 配置写入临时文件，并使用与通用 SSH 后端相同的
+   远程文件系统桥接打开 SSH 会话。
+4. 在 `mirror` 模式下：exec 前从本地同步到远程，运行，然后在 exec 后同步回来。
+5. 在 `remote` 模式下：创建时播种一次，然后直接在远程
+   工作区上操作。
 
 ## 相关
 
-- [Sandboxing](/zh-CN/gateway/sandboxing) -- 模式、作用域和后端对比
-- [Sandbox vs Tool Policy vs Elevated](/zh-CN/gateway/sandbox-vs-tool-policy-vs-elevated) -- 调试被阻止的工具
-- [Multi-Agent Sandbox and Tools](/zh-CN/tools/multi-agent-sandbox-tools) -- 按智能体覆盖
-- [Sandbox CLI](/zh-CN/cli/sandbox) -- `openclaw sandbox` 命令
+- [沙箱隔离](/zh-CN/gateway/sandboxing) -- 模式、作用域和后端比较
+- [沙箱、工具策略和提升权限](/zh-CN/gateway/sandbox-vs-tool-policy-vs-elevated) -- 调试被阻止的工具
+- [多 Agent 沙盒和工具](/zh-CN/tools/multi-agent-sandbox-tools) -- 按智能体覆盖
+- [沙箱 CLI](/zh-CN/cli/sandbox) -- `openclaw sandbox` 命令

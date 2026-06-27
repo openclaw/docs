@@ -1,13 +1,14 @@
 ---
 read_when:
     - 你正在安装、配置或审计 Mattermost 插件
-summary: 新增 Mattermost 渠道功能面，用于发送和接收 OpenClaw 消息。
+summary: 添加 Mattermost 渠道接口，用于发送和接收 OpenClaw 消息。
 title: Mattermost 插件
 x-i18n:
-    generated_at: "2026-05-03T02:13:08Z"
+    generated_at: "2026-06-27T02:49:28Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 53b202de33507d8d747cad4e424f6ee7f90dac4dfbded566eb45772f118956db
+    source_hash: 7a05711dbd897c71a19537dc7a2461be3c1c7aa37aa25f3fa0135848644040b4
     source_path: plugins/reference/mattermost.md
     workflow: 16
 ---
@@ -19,9 +20,9 @@ x-i18n:
 ## 分发
 
 - 包：`@openclaw/mattermost`
-- 安装方式：内置于 OpenClaw
+- 安装路径：npm；ClawHub：`clawhub:@openclaw/mattermost`
 
-## 接口
+## 界面
 
 channels: mattermost
 

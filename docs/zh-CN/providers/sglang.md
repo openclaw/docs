@@ -11,6 +11,7 @@ x-i18n:
     source_hash: bd1a5954e3994e3640ee17c62acedc314716c3ed5e52528da436c36c077ebead
     source_path: providers/sglang.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 SGLang 通过 OpenAI 兼容的 HTTP API 提供开源权重模型。OpenClaw 使用 `openai-completions` 提供商家族连接到 SGLang，并自动发现可用模型。

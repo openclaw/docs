@@ -11,6 +11,7 @@ x-i18n:
     source_hash: a0ef2806cfb539157d827fe9c2ffddc914aa680e3ef318c211b2ec1f374cfed2
     source_path: gateway/network-model.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 此内容已合并到 [网络 — 核心模型](/zh-CN/network#core-model)。
