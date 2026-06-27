@@ -131,6 +131,20 @@ jobs:
           } >> "${GITHUB_OUTPUT}"
           echo "Artifact scope: ${scope}"
 
+      - name: Refresh scoped docs content from main
+        if: github.event_name == 'workflow_dispatch' && (steps.artifact-scope.outputs.scope == 'locale' || steps.artifact-scope.outputs.scope == 'page')
+        id: scoped-content
+        run: |
+          set -euo pipefail
+
+          git fetch --quiet origin main:refs/remotes/origin/main
+          content_sha="$(git rev-parse refs/remotes/origin/main)"
+          # Scoped translation deploys must test the workflow/ref under review
+          # while publishing the content that the finalizer just wrote to main.
+          git checkout "${content_sha}" -- docs .openclaw-sync/source.json
+          echo "content_sha=${content_sha}" >> "${GITHUB_OUTPUT}"
+          echo "Scoped docs content refreshed from main ${content_sha}."
+
       - name: Read source metadata
         if: steps.artifact-scope.outputs.scope == 'full' || steps.artifact-scope.outputs.scope == 'locale' || steps.artifact-scope.outputs.scope == 'page'
         id: source-meta
@@ -192,13 +206,16 @@ jobs:
       - name: Check current docs main
         if: steps.artifact-scope.outputs.scope != 'none' || steps.artifact-scope.outputs.deploy_worker == '1'
         id: current-main
+        env:
+          SCOPED_CONTENT_SHA: ${{ steps.scoped-content.outputs.content_sha || '' }}
         run: |
           set -euo pipefail
           git fetch --quiet origin main
           latest="$(git rev-parse refs/remotes/origin/main)"
-          if [ "${GITHUB_SHA}" != "${latest}" ]; then
+          expected="${SCOPED_CONTENT_SHA:-${GITHUB_SHA}}"
+          if [ "${expected}" != "${latest}" ]; then
             echo "stale=true" >> "${GITHUB_OUTPUT}"
-            echo "::notice::Docs main moved to ${latest}; skipping stale R2 upload for ${GITHUB_SHA}."
+            echo "::notice::Docs main moved to ${latest}; skipping stale R2 upload for ${expected}."
           else
             echo "stale=false" >> "${GITHUB_OUTPUT}"
           fi

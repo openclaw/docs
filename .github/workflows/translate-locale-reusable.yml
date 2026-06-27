@@ -424,6 +424,7 @@ jobs:
           args=()
           if [ "${ARTIFACT_ROLE}" = "canary" ]; then
             args+=(
+              --ref "${{ github.ref_name }}"
               --artifact-scope page
               --locale "${{ inputs.locale }}"
               --page-path "${{ inputs.canary_live_path }}"
@@ -433,6 +434,7 @@ jobs:
             )
           else
             args+=(
+              --ref "${{ github.ref_name }}"
               --artifact-scope locale
               --locale "${{ inputs.locale }}"
               --no-force-upload
