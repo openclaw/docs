@@ -1,13 +1,14 @@
 ---
 read_when:
-    - Estás instalando, configurando o auditando el Plugin moonshot
-summary: Añade compatibilidad con el proveedor de modelos Moonshot a OpenClaw.
-title: Plugin Moonshot
+    - Estás instalando, configurando o auditando el plugin moonshot
+summary: Agrega compatibilidad con el proveedor de modelos Moonshot a OpenClaw.
+title: Plugin de Moonshot
 x-i18n:
-    generated_at: "2026-05-02T20:59:12Z"
+    generated_at: "2026-06-27T12:22:26Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 30a828575030bb3b35b0d5a2887682e1d63cba03f1d010cd94b93d99df3e9e2f
+    source_hash: 477307769a710ac8d430a837d7b5ffda012a942f3b44f367bf4ea0770b87f48e
     source_path: plugins/reference/moonshot.md
     workflow: 16
 ---
@@ -19,7 +20,7 @@ Añade compatibilidad con el proveedor de modelos Moonshot a OpenClaw.
 ## Distribución
 
 - Paquete: `@openclaw/moonshot-provider`
-- Ruta de instalación: incluido en OpenClaw
+- Ruta de instalación: npm; ClawHub: `clawhub:@openclaw/moonshot-provider`
 
 ## Superficie
 

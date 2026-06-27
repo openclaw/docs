@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 5dc43662747c0f6119c4a2779d7a4c7aa89e6ac3c6cec3cd34647dfc8e591ae0
     source_path: reference/templates/SOUL.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 # SOUL.md - Quién eres

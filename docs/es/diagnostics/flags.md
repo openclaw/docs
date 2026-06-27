@@ -1,29 +1,30 @@
 ---
 read_when:
-    - Necesitas registros de depuración específicos sin aumentar los niveles de registro globales
-    - Debe capturar registros específicos del subsistema para soporte técnico
-summary: Opciones de diagnóstico para registros de depuración selectivos
-title: Opciones de diagnóstico
+    - Necesitas registros de depuración específicos sin elevar los niveles de registro globales
+    - Necesitas capturar registros específicos del subsistema para soporte
+summary: Indicadores de diagnóstico para registros de depuración específicos
+title: Indicadores de diagnóstico
 x-i18n:
-    generated_at: "2026-05-02T20:46:24Z"
+    generated_at: "2026-06-27T11:22:18Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1d0ff92d45cf1c5a12a7103ba5b97d656a55a13a7a4f2e86e26ba3a9cfae7687
+    source_hash: c78c5c2f90fb1d601d0a3ef94919310759d58c9f9c70a093c91f31594bc777fb
     source_path: diagnostics/flags.md
     workflow: 16
 ---
 
-Los indicadores de diagnóstico te permiten activar registros de depuración específicos sin habilitar el registro detallado en todas partes. Los indicadores son opcionales y no tienen efecto a menos que un subsistema los compruebe.
+Los indicadores de diagnóstico te permiten habilitar registros de depuración específicos sin activar el registro detallado en todas partes. Los indicadores son opcionales y no tienen efecto salvo que un subsistema los compruebe.
 
 ## Cómo funciona
 
 - Los indicadores son cadenas (sin distinción entre mayúsculas y minúsculas).
-- Puedes activar indicadores en la configuración o mediante una anulación de entorno.
+- Puedes habilitar indicadores en la configuración o mediante una sobrescritura de variable de entorno.
 - Se admiten comodines:
   - `telegram.*` coincide con `telegram.http`
-  - `*` activa todos los indicadores
+  - `*` habilita todos los indicadores
 
-## Activar mediante configuración
+## Habilitar mediante configuración
 
 ```json
 {
@@ -45,22 +46,66 @@ Varios indicadores:
 
 Reinicia el Gateway después de cambiar los indicadores.
 
-## Anulación de entorno (puntual)
+## Sobrescritura de entorno (puntual)
 
 ```bash
 OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
 ```
 
-Desactivar todos los indicadores:
+Deshabilitar todos los indicadores:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=0
 ```
 
+`OPENCLAW_DIAGNOSTICS=0` es una sobrescritura de deshabilitación a nivel de proceso: deshabilita
+los indicadores tanto del entorno como de la configuración para ese proceso.
+
+## Indicadores de perfilado
+
+Los indicadores del perfilador habilitan intervalos de medición específicos sin elevar los niveles
+globales de registro. Están deshabilitados de forma predeterminada.
+
+Habilitar todos los intervalos controlados por el perfilador para una ejecución del Gateway:
+
+```bash
+OPENCLAW_DIAGNOSTICS=profiler openclaw gateway run
+```
+
+Habilitar solo los intervalos del perfilador de despacho de respuestas:
+
+```bash
+OPENCLAW_DIAGNOSTICS=reply.profiler openclaw gateway run
+```
+
+Habilitar solo los intervalos del perfilador de inicio/herramienta/hilo del servidor de la aplicación Codex:
+
+```bash
+OPENCLAW_DIAGNOSTICS=codex.profiler openclaw gateway run
+```
+
+Habilitar indicadores del perfilador desde la configuración:
+
+```json
+{
+  "diagnostics": {
+    "flags": ["reply.profiler", "codex.profiler"]
+  }
+}
+```
+
+Reinicia el Gateway después de cambiar los indicadores de configuración. Para deshabilitar un indicador del perfilador,
+elimínalo de `diagnostics.flags` y reinicia. Para deshabilitar temporalmente todos los
+indicadores de diagnóstico incluso cuando la configuración habilita indicadores del perfilador, inicia el proceso con:
+
+```bash
+OPENCLAW_DIAGNOSTICS=0 openclaw gateway run
+```
+
 ## Artefactos de línea de tiempo
 
-El indicador `timeline` escribe eventos estructurados de arranque y temporización
-en tiempo de ejecución para arneses de QA externos:
+El indicador `timeline` escribe eventos estructurados de temporización de inicio y tiempo de ejecución para
+arneses de QA externos:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=timeline \
@@ -68,7 +113,7 @@ OPENCLAW_DIAGNOSTICS_TIMELINE_PATH=/tmp/openclaw-timeline.jsonl \
 openclaw gateway run
 ```
 
-También puedes activarlo en la configuración:
+También puedes habilitarlo en la configuración:
 
 ```json
 {
@@ -79,33 +124,30 @@ También puedes activarlo en la configuración:
 ```
 
 La ruta del archivo de línea de tiempo sigue viniendo de
-`OPENCLAW_DIAGNOSTICS_TIMELINE_PATH`. Cuando `timeline` se activa solo desde la
-configuración, los primeros intervalos de carga de configuración no se emiten
-porque OpenClaw aún no ha leído la configuración; los intervalos de arranque
-posteriores usan el indicador de configuración.
+`OPENCLAW_DIAGNOSTICS_TIMELINE_PATH`. Cuando `timeline` se habilita solo desde la
+configuración, los primeros intervalos de carga de configuración no se emiten porque OpenClaw
+aún no ha leído la configuración; los intervalos de inicio posteriores usan el indicador de configuración.
 
 `OPENCLAW_DIAGNOSTICS=1`, `OPENCLAW_DIAGNOSTICS=all` y
-`OPENCLAW_DIAGNOSTICS=*` también activan la línea de tiempo porque activan todos
-los indicadores de diagnóstico. Prefiere `timeline` cuando solo quieras el
-artefacto de temporización JSONL.
+`OPENCLAW_DIAGNOSTICS=*` también habilitan la línea de tiempo porque habilitan todos los
+indicadores de diagnóstico. Prefiere `timeline` cuando solo quieres el artefacto de temporización
+JSONL.
 
-Los registros de línea de tiempo usan el contenedor `openclaw.diagnostics.v1`.
-Los eventos pueden incluir identificadores de proceso, nombres de fase, nombres
-de intervalo, duraciones, identificadores de Plugin, recuentos de dependencias,
-muestras de retraso del bucle de eventos, nombres de operaciones de proveedor,
-estado de salida de procesos secundarios y nombres/mensajes de errores de
-arranque. Trata los archivos de línea de tiempo como artefactos locales de
-diagnóstico; revísalos antes de compartirlos fuera de tu máquina.
+Los registros de línea de tiempo usan el sobre `openclaw.diagnostics.v1`. Los eventos pueden incluir
+identificadores de proceso, nombres de fase, nombres de intervalo, duraciones, identificadores de Plugin, recuentos de dependencias,
+muestras de retraso del bucle de eventos, nombres de operaciones del proveedor, estado de salida de procesos secundarios
+y nombres/mensajes de errores de inicio. Trata los archivos de línea de tiempo como
+artefactos de diagnóstico locales; revísalos antes de compartirlos fuera de tu máquina.
 
 ## Dónde van los registros
 
-Los indicadores emiten registros en el archivo estándar de registro de diagnóstico. De forma predeterminada:
+Los indicadores emiten registros en el archivo estándar de registros de diagnóstico. De forma predeterminada:
 
 ```
 /tmp/openclaw/openclaw-YYYY-MM-DD.log
 ```
 
-Si defines `logging.file`, usa esa ruta en su lugar. Los registros son JSONL (un objeto JSON por línea). La censura sigue aplicándose según `logging.redactSensitive`.
+Si estableces `logging.file`, usa esa ruta en su lugar. Los registros son JSONL (un objeto JSON por línea). La censura sigue aplicándose según `logging.redactSensitive`.
 
 ## Extraer registros
 
@@ -127,7 +169,7 @@ Filtrar diagnósticos HTTP de Brave Search:
 rg "brave http" /tmp/openclaw/openclaw-*.log
 ```
 
-O sigue el registro mientras reproduces el problema:
+O seguir el registro mientras reproduces:
 
 ```bash
 tail -f /tmp/openclaw/openclaw-$(date +%F).log | rg "telegram http error"
@@ -137,10 +179,10 @@ Para Gateways remotos, también puedes usar `openclaw logs --follow` (consulta [
 
 ## Notas
 
-- Si `logging.level` está configurado por encima de `warn`, estos registros pueden suprimirse. El valor predeterminado `info` funciona bien.
-- `brave.http` registra URL/parámetros de consulta de solicitudes de Brave Search, estado/temporización de respuestas y eventos de acierto/fallo/escritura de caché. No registra claves de API ni cuerpos de respuesta, pero las consultas de búsqueda pueden ser sensibles.
-- Es seguro dejar los indicadores activados; solo afectan al volumen de registro del subsistema específico.
-- Usa [/logging](/es/logging) para cambiar destinos, niveles y censura de registros.
+- Si `logging.level` está establecido por encima de `warn`, estos registros pueden suprimirse. El valor predeterminado `info` es adecuado.
+- `brave.http` registra las URL/parámetros de consulta de solicitudes de Brave Search, el estado/tiempo de respuesta y los eventos de acierto/fallo/escritura en caché. No registra claves de API ni cuerpos de respuesta, pero las consultas de búsqueda pueden ser sensibles.
+- Es seguro dejar los indicadores habilitados; solo afectan el volumen de registro del subsistema específico.
+- Usa [/logging](/es/logging) para cambiar los destinos, niveles y censura de registros.
 
 ## Relacionado
 

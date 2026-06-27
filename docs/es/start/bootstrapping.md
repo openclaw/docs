@@ -13,6 +13,7 @@ x-i18n:
     source_hash: e25f05ca47184068b87f0bf8b7dea1c427f4ed48edde170a74888d586b8a606d
     source_path: start/bootstrapping.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 La inicialización es el ritual de **primera ejecución** que prepara un espacio de trabajo de agente y

@@ -1,31 +1,32 @@
 ---
 read_when:
     - Configuración inicial desde cero
-    - Quieres la forma más rápida de tener un chat funcionando
+    - Quieres la ruta más rápida hacia un chat funcional
 summary: Instala OpenClaw y ejecuta tu primer chat en minutos.
 title: Primeros pasos
 x-i18n:
-    generated_at: "2026-05-07T13:24:25Z"
+    generated_at: "2026-06-27T12:58:02Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 295ce8fd03320027a77a3aef494f785f0fe58e0f57c72ee63f6f9aca68626c20
+    source_hash: 769682cfa35a361cc4adc49f010fed18cf897ce66e1404d07b631e4dede64de8
     source_path: start/getting-started.md
     workflow: 16
 ---
 
 Instala OpenClaw, ejecuta la incorporación y chatea con tu asistente de IA, todo en
-unos 5 minutos. Al final tendrás un Gateway en ejecución, autenticación configurada
+unos 5 minutos. Al finalizar tendrás un Gateway en ejecución, autenticación configurada
 y una sesión de chat funcionando.
 
 ## Lo que necesitas
 
-- **Node.js** — se recomienda Node 24 (también se admite Node 22.16+)
+- **Node.js** — se recomienda Node 24 (Node 22.19+ también es compatible)
 - **Una clave de API** de un proveedor de modelos (Anthropic, OpenAI, Google, etc.) — la incorporación te la pedirá
 
 <Tip>
 Comprueba tu versión de Node con `node --version`.
-**Usuarios de Windows:** se admiten tanto Windows nativo como WSL2. WSL2 es más
-estable y se recomienda para la experiencia completa. Consulta [Windows](/es/platforms/windows).
+**Usuarios de Windows:** la aplicación nativa Windows Hub es la ruta de escritorio más sencilla. El
+instalador de PowerShell y las rutas de Gateway con WSL2 también son compatibles. Consulta [Windows](/es/platforms/windows).
 ¿Necesitas instalar Node? Consulta [Configuración de Node](/es/install/node).
 </Tip>
 
@@ -52,7 +53,7 @@ estable y se recomienda para la experiencia completa. Consulta [Windows](/es/pla
     </Tabs>
 
     <Note>
-    Otros métodos de instalación (Docker, Nix, npm): [Instalación](/es/install).
+    Otros métodos de instalación (Docker, Nix, npm): [Instalar](/es/install).
     </Note>
 
   </Step>
@@ -67,12 +68,12 @@ estable y se recomienda para la experiencia completa. Consulta [Windows](/es/pla
     Consulta [Incorporación (CLI)](/es/start/wizard) para ver la referencia completa.
 
   </Step>
-  <Step title="Verificar que el Gateway esté en ejecución">
+  <Step title="Verificar que el Gateway está en ejecución">
     ```bash
     openclaw gateway status
     ```
 
-    Deberías ver que el Gateway escucha en el puerto 18789.
+    Deberías ver el Gateway escuchando en el puerto 18789.
 
   </Step>
   <Step title="Abrir el panel">
@@ -80,11 +81,11 @@ estable y se recomienda para la experiencia completa. Consulta [Windows](/es/pla
     openclaw dashboard
     ```
 
-    Esto abre la interfaz de control en tu navegador. Si carga, todo funciona.
+    Esto abre la Control UI en tu navegador. Si carga, todo está funcionando.
 
   </Step>
   <Step title="Enviar tu primer mensaje">
-    Escribe un mensaje en el chat de la interfaz de control y deberías recibir una respuesta de IA.
+    Escribe un mensaje en el chat de la Control UI y deberías recibir una respuesta de IA.
 
     ¿Quieres chatear desde tu teléfono en su lugar? El canal más rápido de configurar es
     [Telegram](/es/channels/telegram) (solo un token de bot). Consulta [Canales](/es/channels)
@@ -93,7 +94,7 @@ estable y se recomienda para la experiencia completa. Consulta [Windows](/es/pla
   </Step>
 </Steps>
 
-<Accordion title="Avanzado: montar una compilación personalizada de la interfaz de control">
+<Accordion title="Avanzado: montar una compilación personalizada de Control UI">
   Si mantienes una compilación localizada o personalizada del panel, apunta
   `gateway.controlUi.root` a un directorio que contenga tus recursos estáticos
   compilados y `index.html`.
@@ -125,7 +126,7 @@ openclaw dashboard
 
 </Accordion>
 
-## Qué hacer después
+## Qué hacer a continuación
 
 <Columns>
   <Card title="Conectar un canal" href="/es/channels" icon="message-square">
@@ -145,7 +146,7 @@ openclaw dashboard
 <Accordion title="Avanzado: variables de entorno">
   Si ejecutas OpenClaw como una cuenta de servicio o quieres rutas personalizadas:
 
-- `OPENCLAW_HOME` — directorio de inicio para la resolución interna de rutas
+- `OPENCLAW_HOME` — directorio principal para la resolución de rutas internas
 - `OPENCLAW_STATE_DIR` — sobrescribe el directorio de estado
 - `OPENCLAW_CONFIG_PATH` — sobrescribe la ruta del archivo de configuración
 

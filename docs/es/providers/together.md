@@ -1,45 +1,49 @@
 ---
 read_when:
     - Quieres usar Together AI con OpenClaw
-    - Necesitas la variable de entorno de la clave de API o la opción de autenticación de CLI
+    - Necesitas la variable de entorno de la clave de API o la opción de autenticación de la CLI
 summary: Configuración de Together AI (autenticación + selección de modelo)
 title: Together AI
 x-i18n:
-    generated_at: "2026-04-30T05:59:11Z"
+    generated_at: "2026-06-27T12:44:45Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: a7713c0b1e64014bbdd87a120de0a950b583afd1481338f2c6cccfb2b7da76e7
+    source_hash: a1f803ae88828a775d93dcf8b0b62e70b1dbd0cf963639121e2995fabfcd280b
     source_path: providers/together.md
     workflow: 16
 ---
 
-[Together AI](https://together.ai) proporciona acceso a modelos líderes de código abierto, incluidos Llama, DeepSeek, Kimi y más, mediante una API unificada.
+[Together AI](https://together.ai) proporciona acceso a modelos líderes de código abierto,
+incluidos Llama, DeepSeek, Kimi y más, mediante una API unificada.
 
 | Propiedad | Valor                         |
 | -------- | ----------------------------- |
 | Proveedor | `together`                    |
-| Autenticación     | `TOGETHER_API_KEY`            |
-| API      | compatible con OpenAI             |
+| Autenticación | `TOGETHER_API_KEY`            |
+| API      | Compatible con OpenAI             |
 | URL base | `https://api.together.xyz/v1` |
 
 ## Primeros pasos
 
 <Steps>
-  <Step title="Obtén una clave de API">
+  <Step title="Obtener una clave de API">
     Crea una clave de API en
     [api.together.ai/settings/api-keys](https://api.together.ai/settings/api-keys).
   </Step>
-  <Step title="Ejecuta la incorporación">
+  <Step title="Ejecutar la incorporación">
     ```bash
     openclaw onboard --auth-choice together-api-key
     ```
   </Step>
-  <Step title="Define un modelo predeterminado">
+  <Step title="Establecer un modelo predeterminado">
     ```json5
     {
       agents: {
         defaults: {
-          model: { primary: "together/moonshotai/Kimi-K2.5" },
+          model: {
+            primary: "together/meta-llama/Llama-3.3-70B-Instruct-Turbo",
+          },
         },
       },
     }
@@ -57,37 +61,34 @@ openclaw onboard --non-interactive \
 ```
 
 <Note>
-El ajuste preestablecido de incorporación define `together/moonshotai/Kimi-K2.5` como el modelo
-predeterminado.
+El preajuste de incorporación establece
+`together/meta-llama/Llama-3.3-70B-Instruct-Turbo` como modelo predeterminado.
 </Note>
 
 ## Catálogo integrado
 
 OpenClaw incluye este catálogo de Together integrado:
 
-| Referencia de modelo                                                    | Nombre                                   | Entrada       | Contexto    | Notas                            |
-| ------------------------------------------------------------ | -------------------------------------- | ----------- | ---------- | -------------------------------- |
-| `together/moonshotai/Kimi-K2.5`                              | Kimi K2.5                              | texto, imagen | 262,144    | Modelo predeterminado; razonamiento habilitado |
-| `together/zai-org/GLM-4.7`                                   | GLM 4.7 Fp8                            | texto        | 202,752    | Modelo de texto de propósito general       |
-| `together/meta-llama/Llama-3.3-70B-Instruct-Turbo`           | Llama 3.3 70B Instruct Turbo           | texto        | 131,072    | Modelo de instrucciones rápido           |
-| `together/meta-llama/Llama-4-Scout-17B-16E-Instruct`         | Llama 4 Scout 17B 16E Instruct         | texto, imagen | 10,000,000 | Multimodal                       |
-| `together/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8` | Llama 4 Maverick 17B 128E Instruct FP8 | texto, imagen | 20,000,000 | Multimodal                       |
-| `together/deepseek-ai/DeepSeek-V3.1`                         | DeepSeek V3.1                          | texto        | 131,072    | Modelo de texto general               |
-| `together/deepseek-ai/DeepSeek-R1`                           | DeepSeek R1                            | texto        | 131,072    | Modelo de razonamiento                  |
-| `together/moonshotai/Kimi-K2-Instruct-0905`                  | Kimi K2-Instruct 0905                  | texto        | 262,144    | Modelo de texto Kimi secundario        |
+| Referencia del modelo                                | Nombre                       | Entrada     | Contexto | Notas                |
+| -------------------------------------------------- | ---------------------------- | ----------- | ------- | -------------------- |
+| `together/meta-llama/Llama-3.3-70B-Instruct-Turbo` | Llama 3.3 70B Instruct Turbo | texto       | 131,072 | Modelo predeterminado |
+| `together/moonshotai/Kimi-K2.6`                    | Kimi K2.6 FP4                | texto, imagen | 262,144 | Modelo de razonamiento Kimi |
+| `together/deepseek-ai/DeepSeek-V4-Pro`             | DeepSeek V4 Pro              | texto       | 512,000 | Modelo de texto de razonamiento |
+| `together/Qwen/Qwen2.5-7B-Instruct-Turbo`          | Qwen2.5 7B Instruct Turbo    | texto       | 32,768  | Modelo de texto rápido |
+| `together/zai-org/GLM-5.1`                         | GLM 5.1 FP4                  | texto       | 202,752 | Modelo de texto de razonamiento |
 
-## Generación de video
+## Generación de vídeo
 
-El plugin `together` integrado también registra la generación de video mediante la
+El Plugin `together` integrado también registra la generación de vídeo mediante la
 herramienta compartida `video_generate`.
 
-| Propiedad             | Valor                                 |
-| -------------------- | ------------------------------------- |
-| Modelo de video predeterminado  | `together/Wan-AI/Wan2.2-T2V-A14B`     |
-| Modos                | texto a video, referencia de una sola imagen |
-| Parámetros admitidos | `aspectRatio`, `resolution`           |
+| Propiedad             | Valor                                                                    |
+| -------------------- | ------------------------------------------------------------------------ |
+| Modelo de vídeo predeterminado | `together/Wan-AI/Wan2.2-T2V-A14B`                                        |
+| Modos                | texto a vídeo; solo referencia de imagen única con `Wan-AI/Wan2.2-I2V-A14B` |
+| Parámetros admitidos | `aspectRatio`, `resolution`                                              |
 
-Para usar Together como proveedor de video predeterminado:
+Para usar Together como proveedor de vídeo predeterminado:
 
 ```json5
 {
@@ -102,7 +103,7 @@ Para usar Together como proveedor de video predeterminado:
 ```
 
 <Tip>
-Consulta [Generación de video](/es/tools/video-generation) para ver los parámetros de la herramienta compartida,
+Consulta [Generación de vídeo](/es/tools/video-generation) para ver los parámetros de la herramienta compartida,
 la selección de proveedor y el comportamiento de conmutación por error.
 </Tip>
 
@@ -113,17 +114,17 @@ la selección de proveedor y el comportamiento de conmutación por error.
     `~/.openclaw/.env` o mediante `env.shellEnv`).
 
     <Warning>
-    Las claves definidas solo en tu shell interactiva no son visibles para los procesos de
-    gateway administrados por daemon. Usa `~/.openclaw/.env` o la configuración `env.shellEnv` para
-    disponibilidad persistente.
+    Las claves configuradas solo en tu shell interactiva no son visibles para los procesos de
+    gateway gestionados por daemon. Usa la configuración `~/.openclaw/.env` o `env.shellEnv` para
+    una disponibilidad persistente.
     </Warning>
 
   </Accordion>
 
   <Accordion title="Solución de problemas">
     - Verifica que tu clave funcione: `openclaw models list --provider together`
-    - Si los modelos no aparecen, confirma que la clave de API esté definida en el entorno
-      correcto para tu proceso de Gateway.
+    - Si los modelos no aparecen, confirma que la clave de API esté configurada en el entorno
+      correcto para tu proceso Gateway.
     - Las referencias de modelo usan la forma `together/<model-id>`.
 
   </Accordion>
@@ -132,16 +133,16 @@ la selección de proveedor y el comportamiento de conmutación por error.
 ## Relacionado
 
 <CardGroup cols={2}>
-  <Card title="Selección de modelo" href="/es/concepts/model-providers" icon="layers">
+  <Card title="Selección de modelos" href="/es/concepts/model-providers" icon="layers">
     Reglas de proveedor, referencias de modelo y comportamiento de conmutación por error.
   </Card>
-  <Card title="Generación de video" href="/es/tools/video-generation" icon="video">
-    Parámetros de la herramienta compartida de generación de video y selección de proveedor.
+  <Card title="Generación de vídeo" href="/es/tools/video-generation" icon="video">
+    Parámetros de la herramienta compartida de generación de vídeo y selección de proveedor.
   </Card>
   <Card title="Referencia de configuración" href="/es/gateway/configuration-reference" icon="gear">
-    Esquema de configuración completo, incluida la configuración de proveedores.
+    Esquema completo de configuración, incluida la configuración de proveedores.
   </Card>
   <Card title="Together AI" href="https://together.ai" icon="arrow-up-right-from-square">
-    Panel de Together AI, documentación de API y precios.
+    Panel de Together AI, documentación de la API y precios.
   </Card>
 </CardGroup>

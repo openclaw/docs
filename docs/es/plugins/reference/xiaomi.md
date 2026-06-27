@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Estás instalando, configurando o auditando el Plugin xiaomi
-summary: Agrega compatibilidad con el proveedor de modelos Xiaomi a OpenClaw.
+    - Está instalando, configurando o auditando el Plugin de xiaomi
+summary: Añade compatibilidad con el proveedor de modelos Xiaomi y Xiaomi Token Plan a OpenClaw.
 title: Plugin de Xiaomi
 x-i18n:
-    generated_at: "2026-05-02T21:02:56Z"
+    generated_at: "2026-06-27T12:26:00Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: da5eab95af1e0fb371e5472f0173a8a63bfe2f8ead22734ff5e2941e9299e1b0
+    source_hash: cd7918f5f372158fbf033381b6977fd98ec193f120797bb0eee7095a6a293b86
     source_path: plugins/reference/xiaomi.md
     workflow: 16
 ---
 
 # Plugin de Xiaomi
 
-Añade compatibilidad con el proveedor de modelos Xiaomi a OpenClaw.
+Añade compatibilidad con los proveedores de modelos Xiaomi y Xiaomi Token Plan a OpenClaw.
 
 ## Distribución
 
@@ -23,7 +24,7 @@ Añade compatibilidad con el proveedor de modelos Xiaomi a OpenClaw.
 
 ## Superficie
 
-providers: xiaomi; contracts: speechProviders
+providers: xiaomi, xiaomi-token-plan; contracts: speechProviders
 
 ## Documentación relacionada
 

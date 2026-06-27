@@ -1,27 +1,28 @@
 ---
 read_when:
-    - Quieres eliminar el servicio de Gateway y/o el estado local de OpenClaw
-    - Quieres primero una ejecución de prueba
-summary: Referencia de la CLI para `openclaw uninstall` (eliminar el servicio de Gateway y los datos locales)
+    - Desea eliminar el servicio Gateway o el estado local, o ambos
+    - Quieres hacer primero un ensayo en seco
+summary: Referencia de CLI para `openclaw uninstall` (eliminar el servicio Gateway + datos locales)
 title: Desinstalar
 x-i18n:
-    generated_at: "2026-04-24T05:24:28Z"
-    model: gpt-5.4
+    generated_at: "2026-06-27T11:06:45Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: b774fc006e989068b9126aff2a72888fd808a2e0e3d5ea8b57e6ab9d9f1b63ee
+    source_hash: f90fa8cf513e2e8cd422c3b8a880e7fd20fb71131a3ec88260e765daa2ace543
     source_path: cli/uninstall.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw uninstall`
 
-Desinstala el servicio de Gateway y los datos locales (la CLI permanece).
+Desinstala el servicio Gateway + los datos locales (la CLI permanece).
 
 Opciones:
 
-- `--service`: elimina el servicio de Gateway
+- `--service`: elimina el servicio Gateway
 - `--state`: elimina el estado y la configuración
-- `--workspace`: elimina los directorios de espacios de trabajo
+- `--workspace`: elimina los directorios de espacio de trabajo
 - `--app`: elimina la aplicación de macOS
 - `--all`: elimina el servicio, el estado, el espacio de trabajo y la aplicación
 - `--yes`: omite las solicitudes de confirmación
@@ -41,8 +42,9 @@ openclaw uninstall --dry-run
 
 Notas:
 
-- Ejecuta primero `openclaw backup create` si quieres una instantánea restaurable antes de eliminar el estado o los espacios de trabajo.
-- `--all` es una abreviatura para eliminar conjuntamente el servicio, el estado, el espacio de trabajo y la aplicación.
+- Ejecuta `openclaw backup create` primero si quieres una instantánea restaurable antes de eliminar el estado o los espacios de trabajo.
+- `--state` conserva los directorios de espacio de trabajo configurados a menos que también se seleccione `--workspace`.
+- `--all` es una forma abreviada de eliminar el servicio, el estado, el espacio de trabajo y la aplicación juntos.
 - `--non-interactive` requiere `--yes`.
 
 ## Relacionado

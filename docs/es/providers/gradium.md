@@ -1,39 +1,49 @@
 ---
 read_when:
-    - Quieres Gradium para la conversión de texto a voz
-    - Necesitas una clave de API de Gradium, una voz o una configuración de token de directiva
-summary: Usar la conversión de texto a voz de Gradium en OpenClaw
+    - Quieres Gradium para texto a voz
+    - Necesitas configurar la clave de API de Gradium, la voz o el token de directiva
+summary: Usar texto a voz de Gradium en OpenClaw
 title: Gradium
 x-i18n:
-    generated_at: "2026-05-11T20:50:27Z"
+    generated_at: "2026-06-27T12:37:38Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 5c79da6ec63532061a8112965a679f1113bbefcc91ee00def8153dd39b5b5e58
+    source_hash: 5178bfaf5087e18d5d71f46d04b16d52e0e132257b9ef772b7869ac11b49a0da
     source_path: providers/gradium.md
     workflow: 16
 ---
 
-[Gradium](https://gradium.ai) es un proveedor de texto a voz incluido para OpenClaw. El Plugin puede generar respuestas de audio normales (WAV), salida Opus compatible con notas de voz y audio u-law de 8 kHz para superficies de telefonía.
+[Gradium](https://gradium.ai) es un proveedor de texto a voz para OpenClaw. El Plugin puede generar respuestas de audio normales (WAV), salida Opus compatible con notas de voz y audio u-law de 8 kHz para superficies de telefonía.
 
-| Propiedad     | Valor                                |
-| ------------- | ------------------------------------ |
-| ID del proveedor | `gradium`                         |
-| Autenticación | `GRADIUM_API_KEY` o config `apiKey`  |
-| URL base      | `https://api.gradium.ai` (predeterminada) |
-| Voz predeterminada | `Emma` (`YTpq7expH9539ERJ`)    |
+| Propiedad       | Valor                                |
+| --------------- | ------------------------------------ |
+| ID de proveedor | `gradium`                            |
+| Autenticación   | `GRADIUM_API_KEY` o config `apiKey`  |
+| URL base        | `https://api.gradium.ai` (predeterminado) |
+| Voz predeterminada | `Emma` (`YTpq7expH9539ERJ`)       |
+
+## Instalar Plugin
+
+Instala el Plugin oficial y luego reinicia Gateway:
+
+```bash
+openclaw plugins install @openclaw/gradium-speech
+openclaw gateway restart
+```
 
 ## Configuración
 
-Crea una clave de API de Gradium y luego exponla a OpenClaw con una variable de entorno o la clave de configuración.
+Crea una clave de API de Gradium y luego expónla a OpenClaw con una variable de entorno o con la clave de configuración.
 
 <Tabs>
-  <Tab title="Env var">
+  <Tab title="Variable de entorno">
     ```bash
     export GRADIUM_API_KEY="gsk_..."
     ```
   </Tab>
 
-  <Tab title="Config key">
+  <Tab title="Clave de configuración">
     ```json5
     {
       messages: {
@@ -52,7 +62,7 @@ Crea una clave de API de Gradium y luego exponla a OpenClaw con una variable de 
   </Tab>
 </Tabs>
 
-El Plugin comprueba primero la `apiKey` resuelta y recurre a la variable de entorno `GRADIUM_API_KEY`.
+El Plugin comprueba primero el `apiKey` resuelto y recurre a la variable de entorno `GRADIUM_API_KEY`.
 
 ## Configuración
 
@@ -64,7 +74,7 @@ El Plugin comprueba primero la `apiKey` resuelta y recurre a la variable de ento
       provider: "gradium",
       providers: {
         gradium: {
-          voiceId: "YTpq7expH9539ERJ",
+          speakerVoiceId: "YTpq7expH9539ERJ",
           // apiKey: "${GRADIUM_API_KEY}",
           // baseUrl: "https://api.gradium.ai",
         },
@@ -74,13 +84,13 @@ El Plugin comprueba primero la `apiKey` resuelta y recurre a la variable de ento
 }
 ```
 
-| Clave                                    | Tipo   | Descripción                                                                                   |
-| ---------------------------------------- | ------ | --------------------------------------------------------------------------------------------- |
-| `messages.tts.providers.gradium.apiKey`  | string | Clave de API resuelta. Admite `${ENV}` y referencias a secretos.                              |
-| `messages.tts.providers.gradium.baseUrl` | string | Sobrescribe el origen de la API. Las barras finales se eliminan. El valor predeterminado es `https://api.gradium.ai`. |
-| `messages.tts.providers.gradium.voiceId` | string | ID de voz predeterminado usado cuando no hay ninguna directiva de sobrescritura presente.      |
+| Clave                                           | Tipo   | Descripción                                                                                   |
+| ----------------------------------------------- | ------ | --------------------------------------------------------------------------------------------- |
+| `messages.tts.providers.gradium.apiKey`         | string | Clave de API resuelta. Admite `${ENV}` y referencias a secretos.                              |
+| `messages.tts.providers.gradium.baseUrl`        | string | Sobrescribe el origen de la API. Las barras finales se eliminan. El valor predeterminado es `https://api.gradium.ai`. |
+| `messages.tts.providers.gradium.speakerVoiceId` | string | ID de voz predeterminado usado cuando no hay una sobrescritura por directiva.                 |
 
-El formato de audio de salida se selecciona automáticamente en tiempo de ejecución según la superficie de destino y no se puede configurar desde `openclaw.json`. Consulta [Salida](#output) a continuación.
+El formato de audio de salida lo selecciona automáticamente el runtime según la superficie de destino y no se puede configurar desde `openclaw.json`. Consulta [Salida](#output) más abajo.
 
 ## Voces
 
@@ -98,7 +108,7 @@ Voz predeterminada: Emma.
 
 ### Sobrescritura de voz por mensaje
 
-Cuando la política de habla activa permite sobrescrituras de voz, puedes cambiar de voz en línea usando un token de directiva. Todos estos se resuelven a la misma sobrescritura de `voiceId`:
+Cuando la política de voz activa permite sobrescrituras de voz, puedes cambiar de voz en línea mediante un token de directiva. Usa `speakerVoiceId` para los IDs de voz nativos del proveedor.
 
 ```text
 /voice:LFZvm12tW_z0xfGo
@@ -108,11 +118,11 @@ Cuando la política de habla activa permite sobrescrituras de voz, puedes cambia
 /gradiumvoice:LFZvm12tW_z0xfGo
 ```
 
-Si la política de habla deshabilita las sobrescrituras de voz, la directiva se consume pero se ignora.
+Si la política de voz desactiva las sobrescrituras de voz, la directiva se consume pero se ignora.
 
 ## Salida
 
-El runtime elige el formato de salida a partir de la superficie de destino. Actualmente el proveedor no sintetiza otros formatos.
+El runtime elige el formato de salida a partir de la superficie de destino. Actualmente, el proveedor no sintetiza otros formatos.
 
 | Destino        | Formato     | Ext. de archivo | Frecuencia de muestreo | Indicador compatible con voz |
 | -------------- | ----------- | --------------- | ---------------------- | ---------------------------- |
@@ -122,9 +132,9 @@ El runtime elige el formato de salida a partir de la superficie de destino. Actu
 
 ## Orden de selección automática
 
-Entre los proveedores de TTS configurados, el orden de selección automática de Gradium es `30`. Consulta [Texto a voz](/es/tools/tts) para saber cómo OpenClaw elige el proveedor activo cuando `messages.tts.provider` no está fijado.
+Entre los proveedores de TTS configurados, el orden de selección automática de Gradium es `30`. Consulta [Texto a voz](/es/tools/tts) para ver cómo OpenClaw elige el proveedor activo cuando `messages.tts.provider` no está fijado.
 
 ## Relacionado
 
 - [Texto a voz](/es/tools/tts)
-- [Descripción general de medios](/es/tools/media-overview)
+- [Resumen de medios](/es/tools/media-overview)

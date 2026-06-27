@@ -1,29 +1,30 @@
 ---
 read_when:
     - Está instalando, configurando o auditando el Plugin tavily
-summary: Agrega herramientas invocables por agentes. Agrega compatibilidad con proveedores de búsqueda web.
+summary: Añade herramientas invocables por agentes. Añade compatibilidad con proveedores de búsqueda web.
 title: Plugin de Tavily
 x-i18n:
-    generated_at: "2026-05-02T21:01:24Z"
+    generated_at: "2026-06-27T12:24:48Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 93edd50a97fd677e8825d54911c6e49c50eefc3a00b24927478197dbdcad1101
+    source_hash: 409da2bdfca9c2dd5a2c64565787175b57f2d43f09b1fa484ac54dd1f528c9fb
     source_path: plugins/reference/tavily.md
     workflow: 16
 ---
 
-# Plugin de Tavily
+# Plugin Tavily
 
 Añade herramientas invocables por agentes. Añade compatibilidad con proveedores de búsqueda web.
 
 ## Distribución
 
 - Paquete: `@openclaw/tavily-plugin`
-- Ruta de instalación: incluido en OpenClaw
+- Ruta de instalación: npm; ClawHub: `clawhub:@openclaw/tavily-plugin`
 
 ## Superficie
 
-contracts: tools, webSearchProviders; Skills
+contratos: herramientas, webSearchProviders; skills
 
 ## Documentación relacionada
 

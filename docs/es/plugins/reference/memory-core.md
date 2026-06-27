@@ -1,20 +1,21 @@
 ---
 read_when:
     - Estás instalando, configurando o auditando el plugin memory-core
-summary: Añade compatibilidad con proveedores de embeddings de memoria. Añade herramientas invocables por agentes.
-title: Plugin de Memory Core
+summary: Añade herramientas que los agentes pueden invocar.
+title: Plugin Memory Core
 x-i18n:
-    generated_at: "2026-05-02T20:58:30Z"
+    generated_at: "2026-06-27T12:22:27Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7c9c5d79e5a17c13592f2d485ac24a5e2e5e3640ea68fc5315a6ba8f1640e0ef
+    source_hash: cda6ebb02b0e4c1616f68c3c9636b269248b4c63ca5f778d7f8c48152b27f303
     source_path: plugins/reference/memory-core.md
     workflow: 16
 ---
 
 # Plugin Memory Core
 
-Añade compatibilidad con proveedores de incrustación de memoria. Añade herramientas invocables por agentes.
+Añade herramientas invocables por agentes.
 
 ## Distribución
 
@@ -23,4 +24,4 @@ Añade compatibilidad con proveedores de incrustación de memoria. Añade herram
 
 ## Superficie
 
-contratos: memoryEmbeddingProviders, tools
+contratos: herramientas

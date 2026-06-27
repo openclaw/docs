@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 94c4caa86d4a3eb873d8b6a1cc639edbad3dd7478f401e2ca53f704de095f829
     source_path: providers/mistral.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw incluye un Plugin de Mistral integrado que registra cuatro contratos: completaciones de chat, comprensión multimedia (transcripción por lotes de Voxtral), STT en tiempo real para llamada de voz (Voxtral Realtime) e incrustaciones de memoria (`mistral-embed`).

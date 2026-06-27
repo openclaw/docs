@@ -1,13 +1,14 @@
 ---
 read_when:
-    - Desea tener acceso rápido a páginas clave de la documentación
+    - Quieres acceso rápido a páginas clave de la documentación
 summary: Enlaces seleccionados a la documentación de OpenClaw más utilizada.
-title: Directorio de documentación
+title: Directorio de documentos
 x-i18n:
-    generated_at: "2026-05-11T20:53:15Z"
+    generated_at: "2026-06-27T12:57:41Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: ddd6903aeb87e36db977b2cef62bd80e84fc67633ca00beb3365ced1f5abdd99
+    source_hash: f7d45effe4df50fb544e9f6fd2fcd87f4ed674eba0042eace757dbfcad93d07a
     source_path: start/docs-directory.md
     workflow: 16
 ---
@@ -23,7 +24,7 @@ Para ver un mapa completo de la documentación, consulta [Centros de documentaci
 - [Ayuda](/es/help)
 - [Configuración](/es/gateway/configuration)
 - [Ejemplos de configuración](/es/gateway/configuration-examples)
-- [Comandos de barra](/es/tools/slash-commands)
+- [Comandos slash](/es/tools/slash-commands)
 - [Enrutamiento multiagente](/es/concepts/multi-agent)
 - [Actualización y reversión](/es/install/updating)
 - [Emparejamiento (MD y nodos)](/es/channels/pairing)
@@ -31,18 +32,18 @@ Para ver un mapa completo de la documentación, consulta [Centros de documentaci
 - [Configuración del asistente de OpenClaw](/es/start/openclaw)
 - [Skills](/es/tools/skills)
 - [Configuración de Skills](/es/tools/skills-config)
-- [Plantillas de área de trabajo](/es/reference/templates/AGENTS)
+- [Plantillas de workspace](/es/reference/templates/AGENTS)
 - [Adaptadores RPC](/es/reference/rpc)
 - [Runbook de Gateway](/es/gateway)
 - [Nodos (iOS y Android)](/es/nodes)
-- [Superficies web (IU de control)](/es/web)
-- [Detección y transportes](/es/gateway/discovery)
+- [Superficies web (Control UI)](/es/web)
+- [Descubrimiento y transportes](/es/gateway/discovery)
 - [Acceso remoto](/es/gateway/remote)
 
 ## Proveedores y UX
 
 - [WebChat](/es/web/webchat)
-- [IU de control (navegador)](/es/web/control-ui)
+- [Control UI (navegador)](/es/web/control-ui)
 - [Telegram](/es/channels/telegram)
 - [Discord](/es/channels/discord)
 - [Mattermost](/es/channels/mattermost)
@@ -58,7 +59,7 @@ Para ver un mapa completo de la documentación, consulta [Centros de documentaci
 - [Aplicación para macOS](/es/platforms/macos)
 - [Aplicación para iOS](/es/platforms/ios)
 - [Aplicación para Android](/es/platforms/android)
-- [Windows (WSL2)](/es/platforms/windows)
+- [Windows Hub](/es/platforms/windows)
 - [Aplicación para Linux](/es/platforms/linux)
 
 ## Operaciones y seguridad

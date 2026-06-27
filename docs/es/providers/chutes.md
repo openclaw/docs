@@ -1,85 +1,95 @@
 ---
 read_when:
-    - Desea usar Chutes con OpenClaw
+    - Quieres usar Chutes con OpenClaw
     - Necesitas la ruta de configuración de OAuth o de la clave de API
     - Quieres el modelo predeterminado, los alias o el comportamiento de descubrimiento
 summary: Configuración de Chutes (OAuth o clave de API, descubrimiento de modelos, alias)
 title: Chutes
 x-i18n:
-    generated_at: "2026-04-30T05:57:02Z"
+    generated_at: "2026-06-27T12:34:53Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 52e2c767604ff50cc7fe1a5fcfac03c35345facf2225e80f62476bbc3852199a
+    source_hash: 8f1898c568fd664303a8bb5c2e46228c75f9c217bec5a65e752d9c7e10b980bb
     source_path: providers/chutes.md
     workflow: 16
 ---
 
 [Chutes](https://chutes.ai) expone catálogos de modelos de código abierto mediante una
-API compatible con OpenAI. OpenClaw admite tanto OAuth en navegador como autenticación directa con clave de API
-para el proveedor `chutes` incluido.
+API compatible con OpenAI. OpenClaw admite tanto OAuth en el navegador como autenticación
+directa con clave de API para el proveedor `chutes`.
 
 | Propiedad | Valor                        |
 | -------- | ---------------------------- |
 | Proveedor | `chutes`                     |
 | API      | Compatible con OpenAI        |
 | URL base | `https://llm.chutes.ai/v1`   |
-| Autenticación | OAuth o clave de API (consulta abajo) |
+| Autenticación | OAuth o clave de API (ver abajo) |
+
+## Instalar Plugin
+
+Instala el Plugin oficial y luego reinicia Gateway:
+
+```bash
+openclaw plugins install @openclaw/chutes-provider
+openclaw gateway restart
+```
 
 ## Primeros pasos
 
 <Tabs>
   <Tab title="OAuth">
     <Steps>
-      <Step title="Run the OAuth onboarding flow">
+      <Step title="Ejecutar el flujo de incorporación de OAuth">
         ```bash
         openclaw onboard --auth-choice chutes
         ```
-        OpenClaw inicia el flujo del navegador localmente, o muestra una URL + un flujo de
-        redirección y pegado en hosts remotos/sin interfaz. Los tokens de OAuth se actualizan automáticamente mediante los perfiles de
-        autenticación de OpenClaw.
+        OpenClaw inicia el flujo del navegador localmente, o muestra un flujo con URL y pegado
+        de redirección en hosts remotos o sin interfaz gráfica. Los tokens de OAuth se actualizan
+        automáticamente mediante los perfiles de autenticación de OpenClaw.
       </Step>
-      <Step title="Verify the default model">
+      <Step title="Verificar el modelo predeterminado">
         Después de la incorporación, el modelo predeterminado se establece en
-        `chutes/zai-org/GLM-4.7-TEE` y se registra el catálogo Chutes incluido.
+        `chutes/zai-org/GLM-4.7-TEE` y se registra el catálogo estático de Chutes.
       </Step>
     </Steps>
   </Tab>
-  <Tab title="API key">
+  <Tab title="Clave de API">
     <Steps>
-      <Step title="Get an API key">
+      <Step title="Obtener una clave de API">
         Crea una clave en
         [chutes.ai/settings/api-keys](https://chutes.ai/settings/api-keys).
       </Step>
-      <Step title="Run the API key onboarding flow">
+      <Step title="Ejecutar el flujo de incorporación con clave de API">
         ```bash
         openclaw onboard --auth-choice chutes-api-key
         ```
       </Step>
-      <Step title="Verify the default model">
+      <Step title="Verificar el modelo predeterminado">
         Después de la incorporación, el modelo predeterminado se establece en
-        `chutes/zai-org/GLM-4.7-TEE` y se registra el catálogo Chutes incluido.
+        `chutes/zai-org/GLM-4.7-TEE` y se registra el catálogo estático de Chutes.
       </Step>
     </Steps>
   </Tab>
 </Tabs>
 
 <Note>
-Ambas rutas de autenticación registran el catálogo Chutes incluido y establecen el modelo predeterminado en
-`chutes/zai-org/GLM-4.7-TEE`. Variables de entorno de tiempo de ejecución: `CHUTES_API_KEY`,
+Ambas rutas de autenticación registran el catálogo estático de Chutes y establecen el modelo predeterminado en
+`chutes/zai-org/GLM-4.7-TEE`. Variables de entorno de ejecución: `CHUTES_API_KEY`,
 `CHUTES_OAUTH_TOKEN`.
 </Note>
 
 ## Comportamiento de descubrimiento
 
-Cuando la autenticación de Chutes está disponible, OpenClaw consulta el catálogo Chutes con esa
+Cuando la autenticación de Chutes está disponible, OpenClaw consulta el catálogo de Chutes con esa
 credencial y usa los modelos descubiertos. Si el descubrimiento falla, OpenClaw recurre
-a un catálogo estático incluido para que la incorporación y el inicio sigan funcionando.
+a un catálogo estático para que la incorporación y el inicio sigan funcionando.
 
 ## Alias predeterminados
 
-OpenClaw registra tres alias prácticos para el catálogo Chutes incluido:
+OpenClaw registra tres alias prácticos para el catálogo estático de Chutes:
 
-| Alias           | Modelo de destino                                    |
+| Alias           | Modelo de destino                                     |
 | --------------- | ----------------------------------------------------- |
 | `chutes-fast`   | `chutes/zai-org/GLM-4.7-FP8`                          |
 | `chutes-pro`    | `chutes/deepseek-ai/DeepSeek-V3.2-TEE`                |
@@ -87,7 +97,7 @@ OpenClaw registra tres alias prácticos para el catálogo Chutes incluido:
 
 ## Catálogo inicial integrado
 
-El catálogo de respaldo incluido contiene referencias actuales de Chutes:
+El catálogo estático de respaldo incluye las referencias actuales de Chutes:
 
 | Referencia de modelo                                  |
 | ----------------------------------------------------- |
@@ -117,25 +127,25 @@ El catálogo de respaldo incluido contiene referencias actuales de Chutes:
 ```
 
 <AccordionGroup>
-  <Accordion title="OAuth overrides">
+  <Accordion title="Anulaciones de OAuth">
     Puedes personalizar el flujo de OAuth con variables de entorno opcionales:
 
     | Variable | Propósito |
     | -------- | ------- |
-    | `CHUTES_CLIENT_ID` | ID de cliente OAuth personalizado |
-    | `CHUTES_CLIENT_SECRET` | Secreto de cliente OAuth personalizado |
+    | `CHUTES_CLIENT_ID` | ID de cliente de OAuth personalizado |
+    | `CHUTES_CLIENT_SECRET` | Secreto de cliente de OAuth personalizado |
     | `CHUTES_OAUTH_REDIRECT_URI` | URI de redirección personalizada |
-    | `CHUTES_OAUTH_SCOPES` | Ámbitos OAuth personalizados |
+    | `CHUTES_OAUTH_SCOPES` | Ámbitos de OAuth personalizados |
 
     Consulta la [documentación de OAuth de Chutes](https://chutes.ai/docs/sign-in-with-chutes/overview)
-    para conocer los requisitos de la aplicación de redirección y obtener ayuda.
+    para ver los requisitos de la aplicación de redirección y obtener ayuda.
 
   </Accordion>
 
-  <Accordion title="Notes">
-    - Tanto el descubrimiento con clave de API como con OAuth usan el mismo id de proveedor `chutes`.
+  <Accordion title="Notas">
+    - La clave de API y el descubrimiento de OAuth usan el mismo id de proveedor `chutes`.
     - Los modelos de Chutes se registran como `chutes/<model-id>`.
-    - Si el descubrimiento falla durante el inicio, se usa automáticamente el catálogo estático incluido.
+    - Si el descubrimiento falla al iniciar, se usa automáticamente el catálogo estático.
 
   </Accordion>
 </AccordionGroup>
@@ -143,16 +153,16 @@ El catálogo de respaldo incluido contiene referencias actuales de Chutes:
 ## Relacionado
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/es/concepts/model-providers" icon="layers">
+  <Card title="Selección de modelo" href="/es/concepts/model-providers" icon="layers">
     Reglas de proveedores, referencias de modelos y comportamiento de conmutación por error.
   </Card>
-  <Card title="Configuration reference" href="/es/gateway/configuration-reference" icon="gear">
-    Esquema de configuración completo, incluida la configuración de proveedores.
+  <Card title="Referencia de configuración" href="/es/gateway/configuration-reference" icon="gear">
+    Esquema de configuración completo, incluidos los ajustes de proveedores.
   </Card>
   <Card title="Chutes" href="https://chutes.ai" icon="arrow-up-right-from-square">
     Panel de Chutes y documentación de la API.
   </Card>
-  <Card title="Chutes API keys" href="https://chutes.ai/settings/api-keys" icon="key">
+  <Card title="Claves de API de Chutes" href="https://chutes.ai/settings/api-keys" icon="key">
     Crea y administra claves de API de Chutes.
   </Card>
 </CardGroup>

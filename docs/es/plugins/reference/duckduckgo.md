@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 3b7960979d5dae6c64eb740dcd6f82f3f1fc466aa93cc9b64bdd08293881529c
     source_path: plugins/reference/duckduckgo.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Plugin de DuckDuckGo

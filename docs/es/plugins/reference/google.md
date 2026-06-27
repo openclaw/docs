@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 24246ba7ebfd5c62a6f02ded8c555a5dbdeec3df128bf5863923d32f6424ea57
     source_path: plugins/reference/google.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Plugin de Google

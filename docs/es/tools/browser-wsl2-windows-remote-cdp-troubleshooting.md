@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7532c672f7e829b851d175d93354fc586baecea4af5f2555f57908780cedfd02
     source_path: tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 En la configuración común de host dividido, OpenClaw Gateway se ejecuta dentro de WSL2, Chrome se ejecuta en Windows y el control del navegador debe cruzar el límite entre WSL2 y Windows. El patrón de fallo por capas de [issue #39369](https://github.com/openclaw/openclaw/issues/39369) significa que pueden aparecer varios problemas independientes a la vez, lo que hace que primero parezca rota la capa equivocada.

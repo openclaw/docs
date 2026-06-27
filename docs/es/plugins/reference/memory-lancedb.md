@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Estás instalando, configurando o auditando el Plugin memory-lancedb
-summary: Agrega herramientas invocables por agentes.
+    - Estás instalando, configurando o auditando el plugin memory-lancedb
+summary: Plugin de memoria a largo plazo de OpenClaw respaldado por LanceDB con recuperación automática, captura automática y búsqueda vectorial.
 title: Plugin de memoria Lancedb
 x-i18n:
-    generated_at: "2026-05-03T05:31:47Z"
+    generated_at: "2026-06-27T12:22:13Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 68b679caf3a16929c59d9029b29f12520cf2a247ee51de0d67382d0caef4e694
+    source_hash: db3843c421abdf738723f87f5bf12ed7acc2e6638e5869c2ad10b4b5722d402d
     source_path: plugins/reference/memory-lancedb.md
     workflow: 16
 ---
 
 # Plugin Memory Lancedb
 
-Agrega herramientas que el agente puede llamar.
+Plugin de memoria a largo plazo de OpenClaw respaldado por LanceDB, con recuperación automática, captura automática y búsqueda vectorial.
 
 ## Distribución
 

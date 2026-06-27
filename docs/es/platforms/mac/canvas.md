@@ -12,6 +12,7 @@ x-i18n:
     source_hash: d8e53f5d1c2e5b3b46e77cb74632e56123f3312dfcc395aa5ac8182c8d58b6cf
     source_path: platforms/mac/canvas.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 La app de macOS integra un **panel de Canvas** controlado por agente mediante `WKWebView`. Es un espacio de trabajo visual ligero para HTML/CSS/JS, A2UI y pequeñas superficies de UI interactivas.

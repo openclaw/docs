@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 2845e2575d30865b06f318873da6da8085f4928d059176b514c3195a29a87e36
     source_path: plugins/reference/github-copilot.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Plugin de GitHub Copilot

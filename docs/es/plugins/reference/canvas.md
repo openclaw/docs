@@ -1,13 +1,14 @@
 ---
 read_when:
-    - Está instalando, configurando o auditando el Plugin canvas
+    - Está instalando, configurando o auditando el plugin canvas
 summary: Superficies experimentales de control de Canvas y renderizado de A2UI para nodos emparejados.
-title: Plugin de Canvas
+title: Plugin de lienzo
 x-i18n:
-    generated_at: "2026-05-07T13:21:41Z"
+    generated_at: "2026-06-27T12:19:01Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 282e996cfe0e3f4a646d95bb3beb44f71cfb84079cf68ad968ed91e83069ff37
+    source_hash: 623f241907be5c88e7b20139f8a03e9c54e29df4bc7d3411fa90a029bfcb285f
     source_path: plugins/reference/canvas.md
     workflow: 16
 ---
@@ -19,8 +20,8 @@ Superficies experimentales de control de Canvas y renderizado A2UI para nodos em
 ## Distribución
 
 - Paquete: `@openclaw/canvas-plugin`
-- Ruta de instalación: incluido en OpenClaw
+- Ruta de instalación: incluida en OpenClaw
 
 ## Superficie
 
-contracts: tools
+contratos: herramientas; skills

@@ -11,6 +11,7 @@ x-i18n:
     source_hash: b41e8a911cfbba32f3a1af059df34f73443ea7649bce46a5926cdf26c8399c12
     source_path: cli/flows.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # `openclaw tasks flow`

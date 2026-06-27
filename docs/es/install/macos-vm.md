@@ -1,53 +1,54 @@
 ---
 read_when:
-    - Quieres aislar OpenClaw de tu entorno principal de macOS
-    - Quieres integración con iMessage en un entorno aislado
-    - Quieres un entorno de macOS restablecible que puedas clonar
-    - Quiere comparar opciones de VM de macOS locales frente a alojadas
-summary: Ejecuta OpenClaw en una VM de macOS aislada (local o alojada) cuando necesites aislamiento o iMessage
-title: Máquinas virtuales de macOS
+    - Quieres que OpenClaw esté aislado de tu entorno principal de macOS
+    - Quieres integración con iMessage en un sandbox
+    - Quieres un entorno macOS reiniciable que puedas clonar
+    - Quiere comparar las opciones de máquinas virtuales de macOS locales frente a las alojadas
+summary: Ejecuta OpenClaw en una VM de macOS en entorno aislado (local o alojada) cuando necesites aislamiento o iMessage
+title: VM de macOS
 x-i18n:
-    generated_at: "2026-05-11T20:40:28Z"
+    generated_at: "2026-06-27T11:48:34Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 3502ccaee51261573764440f9e782d2512e9da0332bd15eef3a5c4a83b0c2936
+    source_hash: aee2fa0651b711f29d7d092da931bd924bc8ce8a5ca389cf8f189725fa586f3f
     source_path: install/macos-vm.md
     workflow: 16
 ---
 
-## Valor predeterminado recomendado (la mayoría de los usuarios)
+## Valor predeterminado recomendado (la mayoría de usuarios)
 
-- **VPS Linux pequeño** para un Gateway siempre activo y de bajo costo. Consulta [Alojamiento VPS](/es/vps).
+- **VPS Linux pequeño** para un Gateway siempre activo y de bajo costo. Consulta [alojamiento VPS](/es/vps).
 - **Hardware dedicado** (Mac mini o equipo Linux) si quieres control total y una **IP residencial** para automatización del navegador. Muchos sitios bloquean las IP de centros de datos, por lo que la navegación local suele funcionar mejor.
-- **Híbrido:** mantén el Gateway en un VPS económico y conecta tu Mac como **Node** cuando necesites automatización de navegador/UI. Consulta [Nodes](/es/nodes) y [Gateway remoto](/es/gateway/remote).
+- **Híbrido:** mantén el Gateway en un VPS barato y conecta tu Mac como un **nodo** cuando necesites automatización de navegador/interfaz de usuario. Consulta [Nodos](/es/nodes) y [Gateway remoto](/es/gateway/remote).
 
-Usa una VM de macOS cuando necesites específicamente capacidades exclusivas de macOS, como iMessage, o quieras un aislamiento estricto de tu Mac diario.
+Usa una VM de macOS cuando necesites específicamente capacidades exclusivas de macOS, como iMessage, o quieras aislamiento estricto de tu Mac diario.
 
 ## Opciones de VM de macOS
 
 ### VM local en tu Mac con Apple Silicon (Lume)
 
-Ejecuta OpenClaw en una VM de macOS aislada en tu Mac con Apple Silicon existente usando [Lume](https://cua.ai/docs/lume).
+Ejecuta OpenClaw en una VM de macOS aislada en tu Mac con Apple Silicon actual usando [Lume](https://cua.ai/docs/lume).
 
 Esto te da:
 
-- Entorno macOS completo en aislamiento (tu host se mantiene limpio)
+- Entorno completo de macOS en aislamiento (tu host permanece limpio)
 - Compatibilidad con iMessage mediante `imsg` (la ruta local predeterminada es imposible en Linux/Windows)
-- Restablecimiento instantáneo clonando VM
+- Restablecimiento instantáneo clonando VMs
 - Sin hardware adicional ni costos de nube
 
-### Proveedores de Mac alojados (nube)
+### Proveedores de Mac hospedados (nube)
 
-Si quieres macOS en la nube, los proveedores de Mac alojados también funcionan:
+Si quieres macOS en la nube, los proveedores de Mac hospedados también funcionan:
 
-- [MacStadium](https://www.macstadium.com/) (Mac alojados)
-- Otros proveedores de Mac alojados también funcionan; sigue su documentación de VM + SSH
+- [MacStadium](https://www.macstadium.com/) (Macs hospedados)
+- Otros proveedores de Mac hospedados también funcionan; sigue su documentación de VM + SSH
 
-Una vez que tengas acceso SSH a una VM de macOS, continúa en el paso 6 a continuación.
+Cuando tengas acceso SSH a una VM de macOS, continúa en el paso 6 a continuación.
 
 ---
 
-## Ruta rápida (Lume, usuarios experimentados)
+## Ruta rápida (Lume, usuarios con experiencia)
 
 1. Instala Lume
 2. `lume create openclaw --os macos --ipsw latest`
@@ -85,7 +86,7 @@ Verifica:
 lume --version
 ```
 
-Documentación: [Instalación de Lume](https://cua.ai/docs/lume/guide/getting-started/installation)
+Docs: [Instalación de Lume](https://cua.ai/docs/lume/guide/getting-started/installation)
 
 ---
 
@@ -108,14 +109,14 @@ La descarga puede tardar un tiempo según tu conexión.
 En la ventana VNC:
 
 1. Selecciona idioma y región
-2. Omite el Apple ID (o inicia sesión si quieres iMessage más adelante)
+2. Omite Apple ID (o inicia sesión si quieres iMessage más adelante)
 3. Crea una cuenta de usuario (recuerda el nombre de usuario y la contraseña)
 4. Omite todas las funciones opcionales
 
-Cuando termine la configuración, habilita SSH:
+Después de completar la configuración:
 
-1. Abre Configuración del Sistema → General → Compartir
-2. Habilita "Inicio de sesión remoto"
+1. Habilita SSH: abre Configuración del Sistema -> General -> Compartir y habilita "Inicio de sesión remoto".
+2. Para usar la VM sin pantalla, habilita el inicio de sesión automático: abre Configuración del Sistema -> Usuarios y grupos, selecciona "Iniciar sesión automáticamente como:" y elige el usuario de la VM.
 
 ---
 
@@ -129,7 +130,7 @@ Busca la dirección IP (normalmente `192.168.64.x`).
 
 ---
 
-## 5) Entrar por SSH a la VM
+## 5) Conectarse por SSH a la VM
 
 ```bash
 ssh youruser@192.168.64.X
@@ -148,7 +149,7 @@ npm install -g openclaw@latest
 openclaw onboard --install-daemon
 ```
 
-Sigue las indicaciones de incorporación para configurar tu proveedor de modelos (Anthropic, OpenAI, etc.).
+Sigue las indicaciones de incorporación para configurar tu proveedor de modelo (Anthropic, OpenAI, etc.).
 
 ---
 
@@ -184,7 +185,7 @@ openclaw channels login
 
 ---
 
-## 8) Ejecutar la VM sin interfaz gráfica
+## 8) Ejecutar la VM sin pantalla
 
 Detén la VM y reiníciala sin pantalla:
 
@@ -193,7 +194,7 @@ lume stop openclaw
 lume run openclaw --no-display
 ```
 
-La VM se ejecuta en segundo plano. El daemon de OpenClaw mantiene el Gateway en ejecución.
+La VM se ejecuta en segundo plano. El daemon de OpenClaw mantiene el gateway en ejecución.
 
 Para comprobar el estado:
 
@@ -205,14 +206,14 @@ ssh youruser@192.168.64.X "openclaw status"
 
 ## Extra: integración con iMessage
 
-Esta es la función estrella de ejecutar en macOS. Usa [iMessage](/es/channels/imessage) con `imsg` para añadir Mensajes a OpenClaw.
+Esta es la función estrella de ejecutarlo en macOS. Usa [iMessage](/es/channels/imessage) con `imsg` para añadir Mensajes a OpenClaw.
 
 Dentro de la VM:
 
 1. Inicia sesión en Mensajes.
 2. Instala `imsg`.
 3. Concede Acceso total al disco y permiso de Automatización al proceso que ejecuta OpenClaw/`imsg`.
-4. Verifica la compatibilidad con RPC con `imsg rpc --help`.
+4. Verifica la compatibilidad con RPC mediante `imsg rpc --help`.
 
 Añade esto a tu configuración de OpenClaw:
 
@@ -228,15 +229,15 @@ Añade esto a tu configuración de OpenClaw:
 }
 ```
 
-Reinicia el Gateway. Ahora tu agente puede enviar y recibir iMessages.
+Reinicia el gateway. Ahora tu agente puede enviar y recibir iMessages.
 
-Detalles completos de configuración: [Canal iMessage](/es/channels/imessage)
+Detalles completos de configuración: [canal de iMessage](/es/channels/imessage)
 
 ---
 
 ## Guardar una imagen dorada
 
-Antes de personalizar más, crea una instantánea de tu estado limpio:
+Antes de personalizar más, toma una instantánea de tu estado limpio:
 
 ```bash
 lume stop openclaw
@@ -257,11 +258,11 @@ lume run openclaw --no-display
 
 Mantén la VM en ejecución:
 
-- Manteniendo tu Mac enchufado
-- Deshabilitando el reposo en Configuración del Sistema → Economizador
+- Manteniendo tu Mac conectado a la corriente
+- Desactivando la suspensión en Configuración del Sistema → Economizador de energía
 - Usando `caffeinate` si es necesario
 
-Para un funcionamiento realmente siempre activo, considera un Mac mini dedicado o un VPS pequeño. Consulta [Alojamiento VPS](/es/vps).
+Para una disponibilidad verdaderamente permanente, considera un Mac mini dedicado o un VPS pequeño. Consulta [alojamiento VPS](/es/vps).
 
 ---
 
@@ -269,20 +270,20 @@ Para un funcionamiento realmente siempre activo, considera un Mac mini dedicado 
 
 | Problema                 | Solución                                                                           |
 | ------------------------ | ---------------------------------------------------------------------------------- |
-| No puedes entrar por SSH a la VM | Comprueba que "Inicio de sesión remoto" esté habilitado en Configuración del Sistema de la VM |
-| No aparece la IP de la VM | Espera a que la VM arranque por completo y ejecuta `lume get openclaw` de nuevo    |
-| No se encuentra el comando Lume | Añade `~/.local/bin` a tu PATH                                                     |
+| No se puede entrar por SSH a la VM | Comprueba que "Inicio de sesión remoto" esté habilitado en Configuración del Sistema de la VM |
+| No aparece la IP de la VM | Espera a que la VM arranque por completo y vuelve a ejecutar `lume get openclaw`   |
+| No se encuentra el comando Lume | Añade `~/.local/bin` a tu PATH                                                    |
 | El QR de WhatsApp no se escanea | Asegúrate de haber iniciado sesión en la VM (no en el host) al ejecutar `openclaw channels login` |
 
 ---
 
 ## Documentación relacionada
 
-- [Alojamiento VPS](/es/vps)
-- [Nodes](/es/nodes)
+- [alojamiento VPS](/es/vps)
+- [Nodos](/es/nodes)
 - [Gateway remoto](/es/gateway/remote)
-- [Canal iMessage](/es/channels/imessage)
+- [canal de iMessage](/es/channels/imessage)
 - [Inicio rápido de Lume](https://cua.ai/docs/lume/guide/getting-started/quickstart)
-- [Referencia de la CLI de Lume](https://cua.ai/docs/lume/reference/cli-reference)
+- [Referencia de CLI de Lume](https://cua.ai/docs/lume/reference/cli-reference)
 - [Configuración de VM desatendida](https://cua.ai/docs/lume/guide/fundamentals/unattended-setup) (avanzado)
 - [Aislamiento con Docker](/es/install/docker) (enfoque de aislamiento alternativo)

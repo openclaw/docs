@@ -2,19 +2,20 @@
 read_when:
     - Aprender a configurar OpenClaw
     - Buscando ejemplos de configuración
-    - Configurar OpenClaw por primera vez
-summary: Ejemplos de configuración precisos según el esquema para entornos comunes de OpenClaw
+    - Configuración de OpenClaw por primera vez
+summary: Ejemplos de configuración precisos según el esquema para configuraciones comunes de OpenClaw
 title: Ejemplos de configuración
 x-i18n:
-    generated_at: "2026-05-11T20:34:06Z"
+    generated_at: "2026-06-27T11:26:07Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: e077b2fe83b1c6e4ffd2ff0029fe3b754c7dc5dced06f134ddf18e9ed6a11fd2
+    source_hash: 945f4cd8571814597ec0188853e91c6483a0d8b09bd0ca7dcfb79eb877607ce2
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Los ejemplos siguientes están alineados con el esquema de configuración actual. Para la referencia exhaustiva y las notas por campo, consulta [Configuración](/es/gateway/configuration).
+Los ejemplos siguientes están alineados con el esquema de configuración actual. Para ver la referencia exhaustiva y las notas por campo, consulta [Configuración](/es/gateway/configuration).
 
 ## Inicio rápido
 
@@ -27,7 +28,7 @@ Los ejemplos siguientes están alineados con el esquema de configuración actual
 }
 ```
 
-Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar un DM al bot desde ese número.
+Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar un mensaje directo al bot desde ese número.
 
 ### Inicio recomendado
 
@@ -58,7 +59,8 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar un DM al bot desde ese
   messages: {
     visibleReplies: "automatic",
     groupChat: {
-      visibleReplies: "message_tool", // default; use "automatic" for legacy room replies
+      visibleReplies: "message_tool", // opt-in; visible output requires message(action=send)
+      unmentionedInbound: "room_event",
     },
   },
 }
@@ -66,7 +68,7 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar un DM al bot desde ese
 
 ## Ejemplo ampliado (opciones principales)
 
-> JSON5 te permite usar comentarios y comas finales. El JSON normal también funciona.
+> JSON5 te permite usar comentarios y comas finales. JSON normal también funciona.
 
 ```json5
 {
@@ -88,12 +90,11 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar un DM al bot desde ese
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
       "anthropic:work": { provider: "anthropic", mode: "api_key" },
       "openai:default": { provider: "openai", mode: "api_key" },
-      "openai-codex:personal": { provider: "openai-codex", mode: "oauth" },
+      "openai:personal": { provider: "openai", mode: "oauth" },
     },
     order: {
       anthropic: ["anthropic:default", "anthropic:work"],
-      openai: ["openai:default"],
-      "openai-codex": ["openai-codex:personal"],
+      openai: ["openai:personal", "openai:default"],
     },
   },
 
@@ -117,21 +118,22 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar un DM al bot desde ese
     ackReactionScope: "group-mentions",
     groupChat: {
       historyLimit: 50,
-      visibleReplies: "message_tool", // normal final replies stay private in groups/channels
+      visibleReplies: "message_tool", // opt in for shared rooms with tool-reliable models
+      unmentionedInbound: "room_event",
     },
     queue: {
-      mode: "steer",
+      mode: "followup",
       debounceMs: 500,
       cap: 20,
       drop: "summarize",
       byChannel: {
-        whatsapp: "steer",
-        telegram: "steer",
-        discord: "steer",
-        slack: "steer",
-        signal: "steer",
-        imessage: "steer",
-        webchat: "steer",
+        whatsapp: "followup",
+        telegram: "followup",
+        discord: "collect",
+        slack: "collect",
+        signal: "followup",
+        imessage: "followup",
+        webchat: "followup",
       },
     },
   },
@@ -390,7 +392,7 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar un DM al bot desde ese
   cron: {
     enabled: true,
     store: "~/.openclaw/cron/cron.json",
-    maxConcurrentRuns: 2, // cron dispatch + isolated cron agent-turn execution
+    maxConcurrentRuns: 8, // default; cron dispatch + isolated cron agent-turn execution
     sessionRetention: "24h",
     runLog: {
       maxBytes: "2mb",
@@ -482,7 +484,8 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar un DM al bot desde ese
 
 ### Repositorio de Skills hermano con enlace simbólico
 
-Usa esto cuando una raíz de Skills integrada contiene un enlace simbólico a un repositorio hermano, por ejemplo `~/.agents/skills/manager -> ~/Projects/manager/skills`.
+Usa esto cuando una raíz de Skill integrada contenga un enlace simbólico hacia un repositorio hermano, por
+ejemplo `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 
 ```json5
 {
@@ -495,12 +498,15 @@ Usa esto cuando una raíz de Skills integrada contiene un enlace simbólico a un
 }
 ```
 
-- `extraDirs` analiza el repositorio hermano como una raíz de Skills explícita.
-- `allowSymlinkTargets` permite que las carpetas de Skills con enlaces simbólicos se resuelvan en esa raíz de destino real de confianza sin permitir escapes de enlaces simbólicos arbitrarios.
+- `extraDirs` escanea el repositorio hermano como una raíz de Skill explícita.
+- `allowSymlinkTargets` permite que las carpetas de Skill con enlace simbólico se resuelvan en esa raíz de destino real
+  de confianza sin permitir escapes arbitrarios por enlace simbólico.
+- Para permitir que Skill Workshop escriba a través del mismo destino de enlace simbólico de confianza,
+  establece `skills.workshop.allowSymlinkTargetWrites: true`.
 
 ## Patrones comunes
 
-### Línea base de Skills compartida con una anulación
+### Línea base de Skill compartida con una sobrescritura
 
 ```json5
 {
@@ -519,7 +525,7 @@ Usa esto cuando una raíz de Skills integrada contiene un enlace simbólico a un
 
 - `agents.defaults.skills` es la línea base compartida.
 - `agents.list[].skills` reemplaza esa línea base para un agente.
-- Usa `skills: []` cuando un agente no deba ver ningún Skills.
+- Usa `skills: []` cuando un agente no deba ver ninguna Skill.
 
 ### Configuración multiplataforma
 
@@ -544,9 +550,9 @@ Usa esto cuando una raíz de Skills integrada contiene un enlace simbólico a un
 
 ### Aprobación automática de red de nodos de confianza
 
-Mantén el emparejamiento de dispositivos como manual a menos que controles la ruta de red. Para un
-laboratorio dedicado o una subred tailnet, puedes optar por la aprobación automática
-de dispositivos de nodo en el primer uso con CIDR o IP exactas:
+Mantén el emparejamiento de dispositivos manual salvo que controles la ruta de red. Para un
+laboratorio dedicado o una subred tailnet, puedes activar la aprobación automática
+de dispositivos de nodo por primera vez con CIDR o IP exactos:
 
 ```json5
 {
@@ -560,13 +566,13 @@ de dispositivos de nodo en el primer uso con CIDR o IP exactas:
 }
 ```
 
-Esto permanece desactivado cuando no se configura. Solo se aplica al emparejamiento nuevo con `role: node` sin
-ámbitos solicitados. Los clientes de operador/navegador y las actualizaciones de rol, ámbito, metadatos o
+Esto permanece desactivado cuando no está configurado. Solo se aplica al emparejamiento nuevo con `role: node` y
+sin ámbitos solicitados. Los clientes operador/navegador y las actualizaciones de rol, ámbito, metadatos o
 clave pública siguen requiriendo aprobación manual.
 
-### Modo de DM seguro (bandeja de entrada compartida / DM multiusuario)
+### Modo de DM seguro (bandeja compartida / DM multiusuario)
 
-Si más de una persona puede enviar DM a tu bot (varias entradas en `allowFrom`, aprobaciones de emparejamiento para varias personas o `dmPolicy: "open"`), habilita el **modo de DM seguro** para que los DM de distintos remitentes no compartan un mismo contexto de forma predeterminada:
+Si más de una persona puede enviar DM a tu bot (varias entradas en `allowFrom`, aprobaciones de emparejamiento para varias personas o `dmPolicy: "open"`), habilita el **modo de DM seguro** para que los DM de distintos remitentes no compartan un único contexto de forma predeterminada:
 
 ```json5
 {
@@ -590,8 +596,8 @@ Si más de una persona puede enviar DM a tu bot (varias entradas en `allowFrom`,
 }
 ```
 
-Para Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, la autorización del remitente se basa primero en el ID de forma predeterminada.
-Habilita la coincidencia directa mutable por nombre/correo electrónico/apodo con `dangerouslyAllowNameMatching: true` de cada canal solo si aceptas explícitamente ese riesgo.
+Para Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, la autorización del remitente se basa primero en ID de forma predeterminada.
+Habilita la coincidencia directa con nombre/correo electrónico/apodo mutable mediante `dangerouslyAllowNameMatching: true` de cada canal solo si aceptas explícitamente ese riesgo.
 
 ### Clave de API de Anthropic + respaldo de MiniMax
 
@@ -698,9 +704,9 @@ Habilita la coincidencia directa mutable por nombre/correo electrónico/apodo co
 ## Consejos
 
 - Si configuras `dmPolicy: "open"`, la lista `allowFrom` correspondiente debe incluir `"*"`.
-- Los ID de proveedor varían (números de teléfono, ID de usuario, ID de canal). Usa la documentación del proveedor para confirmar el formato.
+- Los ID de proveedor difieren (números de teléfono, ID de usuario, ID de canal). Usa la documentación del proveedor para confirmar el formato.
 - Secciones opcionales para agregar más adelante: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
-- Consulta [Proveedores](/es/providers) y [Solución de problemas](/es/gateway/troubleshooting) para ver notas de configuración más detalladas.
+- Consulta [Proveedores](/es/providers) y [Solución de problemas](/es/gateway/troubleshooting) para obtener notas de configuración más detalladas.
 
 ## Relacionado
 

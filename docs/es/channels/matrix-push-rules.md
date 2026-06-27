@@ -11,6 +11,7 @@ x-i18n:
     source_hash: e2f037a50a85b350163c74cf6b9cce335ecaaa5cccc762124122ad6d0321a1fa
     source_path: channels/matrix-push-rules.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Cuando `channels.matrix.streaming` es `"quiet"`, OpenClaw edita un único evento de vista previa en el mismo lugar y marca la edición finalizada con una bandera de contenido personalizada. Los clientes Matrix notifican solo en la edición final si una regla push por usuario coincide con esa bandera. Esta página es para operadores que autoalojan Matrix y quieren instalar esa regla para cada cuenta destinataria.

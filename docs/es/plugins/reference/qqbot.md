@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Está instalando, configurando o auditando el plugin qqbot
-summary: Añade la superficie del canal del bot de QQ para enviar y recibir mensajes de OpenClaw.
+    - Estás instalando, configurando o auditando el plugin qqbot
+summary: Plugin de canal de bot QQ de OpenClaw para flujos de trabajo de grupo y de mensajes directos.
 title: Plugin de QQ Bot
 x-i18n:
-    generated_at: "2026-05-03T05:32:09Z"
+    generated_at: "2026-06-27T12:23:56Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 988c342ef1cabeda5e3ede7ea598e3a96945bf814f9f823f17e1c357bfe3bf9c
+    source_hash: 10e67c8c8bd01a2fcd3ca55c32f6941cd52551ad241cb16a2ea38c62d80cfeb9
     source_path: plugins/reference/qqbot.md
     workflow: 16
 ---
 
-# Plugin QQ Bot
+# Plugin de QQ Bot
 
-Añade la superficie de canal de QQ Bot para enviar y recibir mensajes de OpenClaw.
+Plugin de canal QQ Bot de OpenClaw para flujos de trabajo de grupos y mensajes directos.
 
 ## Distribución
 
@@ -23,7 +24,7 @@ Añade la superficie de canal de QQ Bot para enviar y recibir mensajes de OpenCl
 
 ## Superficie
 
-canales: qqbot; contratos: herramientas; habilidades
+canales: qqbot; contratos: herramientas; skills
 
 ## Documentación relacionada
 

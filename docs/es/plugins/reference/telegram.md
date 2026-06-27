@@ -10,6 +10,7 @@ x-i18n:
     source_hash: cada3e82983630e71fa5cc32aa2ef0801eff1cab620f1e7f5c2dfdd3a565924e
     source_path: plugins/reference/telegram.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Plugin de Telegram

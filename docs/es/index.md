@@ -1,13 +1,14 @@
 ---
 read_when:
-    - Presentación de OpenClaw para nuevos usuarios
+    - Presentación de OpenClaw a nuevos usuarios
 summary: OpenClaw es un Gateway multicanal para agentes de IA que se ejecuta en cualquier sistema operativo.
 title: OpenClaw
 x-i18n:
-    generated_at: "2026-05-07T13:19:10Z"
+    generated_at: "2026-06-27T11:45:42Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 7bf82c8551703257e55289d2b82f6436c9900a8afae7ab9b6a655332716ff37b
+    source_hash: fcaa54a0a6d7aa62193fd9f03428bbcbfdcb2c00a184bcd6f49e4e093fefc473
     source_path: index.md
     workflow: 16
 ---
@@ -43,32 +44,32 @@ x-i18n:
   <Card title="Ejecutar la incorporación" href="/es/start/wizard" icon="sparkles">
     Configuración guiada con `openclaw onboard` y flujos de emparejamiento.
   </Card>
-  <Card title="Abrir la interfaz de control" href="/es/web/control-ui" icon="layout-dashboard">
+  <Card title="Abrir la IU de Control" href="/es/web/control-ui" icon="layout-dashboard">
     Inicia el panel del navegador para chat, configuración y sesiones.
   </Card>
 </Columns>
 
 ## ¿Qué es OpenClaw?
 
-OpenClaw es un **gateway autohospedado** que conecta tus aplicaciones de chat y superficies de canal favoritas —canales integrados más plugins de canal incluidos o externos como Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo y más— con agentes de codificación de IA como Pi. Ejecutas un único proceso Gateway en tu propia máquina (o en un servidor), y se convierte en el puente entre tus aplicaciones de mensajería y un asistente de IA siempre disponible.
+OpenClaw es un **gateway autoalojado** que conecta tus aplicaciones de chat y superficies de canal favoritas —canales integrados más plugins de canal incluidos o externos como Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo y más— con agentes de programación de IA. Ejecutas un único proceso de Gateway en tu propia máquina (o en un servidor), y se convierte en el puente entre tus aplicaciones de mensajería y un asistente de IA siempre disponible.
 
-**¿Para quién es?** Para desarrolladores y usuarios avanzados que quieren un asistente personal de IA al que puedan enviar mensajes desde cualquier lugar, sin ceder el control de sus datos ni depender de un servicio alojado.
+**¿Para quién es?** Para desarrolladores y usuarios avanzados que quieren un asistente de IA personal al que puedan escribir desde cualquier lugar, sin renunciar al control de sus datos ni depender de un servicio alojado.
 
 **¿Qué lo hace diferente?**
 
-- **Autohospedado**: se ejecuta en tu hardware, con tus reglas
-- **Multicanal**: un Gateway sirve simultáneamente canales integrados más plugins de canal incluidos o externos
-- **Nativo para agentes**: creado para agentes de codificación con uso de herramientas, sesiones, memoria y enrutamiento multiagente
+- **Autoalojado**: se ejecuta en tu hardware, bajo tus reglas
+- **Multicanal**: un Gateway sirve canales integrados más plugins de canal incluidos o externos simultáneamente
+- **Nativo para agentes**: diseñado para agentes de programación con uso de herramientas, sesiones, memoria y enrutamiento multiagente
 - **Código abierto**: con licencia MIT e impulsado por la comunidad
 
-**¿Qué necesitas?** Node 24 (recomendado), o Node 22 LTS (`22.16+`) para compatibilidad, una clave de API de tu proveedor elegido y 5 minutos. Para obtener la mejor calidad y seguridad, usa el modelo de última generación más potente disponible.
+**¿Qué necesitas?** Node 24 (recomendado) o Node 22 LTS (`22.19+`) por compatibilidad, una clave de API del proveedor que elijas y 5 minutos. Para la mejor calidad y seguridad, usa el modelo de última generación más potente disponible.
 
 ## Cómo funciona
 
 ```mermaid
 flowchart LR
   A["Chat apps + plugins"] --> B["Gateway"]
-  B --> C["Pi agent"]
+  B --> C["OpenClaw agent"]
   B --> D["CLI"]
   B --> E["Web Control UI"]
   B --> F["macOS app"]
@@ -81,22 +82,22 @@ El Gateway es la única fuente de verdad para sesiones, enrutamiento y conexione
 
 <Columns>
   <Card title="Gateway multicanal" icon="network" href="/es/channels">
-    Discord, iMessage, Signal, Slack, Telegram, WhatsApp, WebChat y más con un único proceso Gateway.
+    Discord, iMessage, Signal, Slack, Telegram, WhatsApp, WebChat y más con un único proceso de Gateway.
   </Card>
-  <Card title="Canales de Plugin" icon="plug" href="/es/tools/plugin">
-    Los plugins incluidos añaden Matrix, Nostr, Twitch, Zalo y más en las versiones actuales normales.
+  <Card title="Canales de plugins" icon="plug" href="/es/tools/plugin">
+    Los plugins incluidos agregan Matrix, Nostr, Twitch, Zalo y más en las versiones actuales normales.
   </Card>
   <Card title="Enrutamiento multiagente" icon="route" href="/es/concepts/multi-agent">
     Sesiones aisladas por agente, espacio de trabajo o remitente.
   </Card>
-  <Card title="Soporte multimedia" icon="image" href="/es/nodes/images">
+  <Card title="Compatibilidad multimedia" icon="image" href="/es/nodes/images">
     Envía y recibe imágenes, audio y documentos.
   </Card>
-  <Card title="Interfaz de control web" icon="monitor" href="/es/web/control-ui">
+  <Card title="IU de Control Web" icon="monitor" href="/es/web/control-ui">
     Panel del navegador para chat, configuración, sesiones y nodos.
   </Card>
   <Card title="Nodos móviles" icon="smartphone" href="/es/nodes">
-    Empareja nodos iOS y Android para Canvas, cámara y flujos de trabajo con voz.
+    Empareja nodos iOS y Android para flujos de trabajo con Canvas, cámara y voz.
   </Card>
 </Columns>
 
@@ -114,7 +115,7 @@ El Gateway es la única fuente de verdad para sesiones, enrutamiento y conexione
     ```
   </Step>
   <Step title="Chatear">
-    Abre la interfaz de control en tu navegador y envía un mensaje:
+    Abre la IU de Control en tu navegador y envía un mensaje:
 
     ```bash
     openclaw dashboard
@@ -129,7 +130,7 @@ El Gateway es la única fuente de verdad para sesiones, enrutamiento y conexione
 
 ## Panel
 
-Abre la interfaz de control en el navegador después de que se inicie el Gateway.
+Abre la IU de Control del navegador después de que se inicie el Gateway.
 
 - Valor local predeterminado: [http://127.0.0.1:18789/](http://127.0.0.1:18789/)
 - Acceso remoto: [Superficies web](/es/web) y [Tailscale](/es/gateway/tailscale)
@@ -140,9 +141,9 @@ Abre la interfaz de control en el navegador después de que se inicie el Gateway
 
 ## Configuración (opcional)
 
-La configuración se encuentra en `~/.openclaw/openclaw.json`.
+La configuración está en `~/.openclaw/openclaw.json`.
 
-- Si **no haces nada**, OpenClaw usa el binario Pi incluido en modo RPC con sesiones por remitente.
+- Si **no haces nada**, OpenClaw usa el runtime de agente de OpenClaw incluido con sesiones por remitente.
 - Si quieres restringirlo, empieza con `channels.whatsapp.allowFrom` y (para grupos) reglas de mención.
 
 Ejemplo:
@@ -166,19 +167,19 @@ Ejemplo:
     Toda la documentación y las guías, organizadas por caso de uso.
   </Card>
   <Card title="Configuración" href="/es/gateway/configuration" icon="settings">
-    Ajustes principales del Gateway, tokens y configuración del proveedor.
+    Ajustes principales del Gateway, tokens y configuración de proveedores.
   </Card>
   <Card title="Acceso remoto" href="/es/gateway/remote" icon="globe">
-    Patrones de acceso SSH y tailnet.
+    Patrones de acceso por SSH y tailnet.
   </Card>
   <Card title="Canales" href="/es/channels/telegram" icon="message-square">
     Configuración específica de canal para Feishu, Microsoft Teams, WhatsApp, Telegram, Discord y más.
   </Card>
   <Card title="Nodos" href="/es/nodes" icon="smartphone">
-    Nodos iOS y Android con emparejamiento, Canvas, cámara y acciones de dispositivo.
+    Nodos iOS y Android con emparejamiento, Canvas, cámara y acciones del dispositivo.
   </Card>
   <Card title="Ayuda" href="/es/help" icon="life-buoy">
-    Punto de entrada para soluciones comunes y resolución de problemas.
+    Punto de entrada para correcciones comunes y resolución de problemas.
   </Card>
 </Columns>
 

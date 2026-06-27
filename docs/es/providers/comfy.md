@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 41dda4be24d5b2c283fa499a345cf9f38747ec19b4010163ceffd998307ca086
     source_path: providers/comfy.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw incluye un plugin `comfy` integrado para ejecuciones de ComfyUI basadas en workflows. El plugin está completamente impulsado por workflows, por lo que OpenClaw no intenta mapear controles genéricos como `size`, `aspectRatio`, `resolution`, `durationSeconds` o controles de estilo TTS sobre tu grafo.

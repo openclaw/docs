@@ -1,59 +1,123 @@
 ---
 read_when:
-    - Configurar la política de `tools.*`, las listas de permitidos o las funciones experimentales
+    - Configuración de la política `tools.*`, listas de permitidos o funciones experimentales
     - Registrar proveedores personalizados o anular URL base
-    - Configurar endpoints autohospedados compatibles con OpenAI
+    - Configurar endpoints autoalojados compatibles con OpenAI
 sidebarTitle: Tools and custom providers
-summary: Configuración de herramientas (política, interruptores experimentales, herramientas respaldadas por proveedor) y configuración personalizada de proveedor/base URL
+summary: Configuración de herramientas (política, opciones experimentales, herramientas respaldadas por proveedores) y configuración de proveedor personalizado/URL base personalizada
 title: Configuración — herramientas y proveedores personalizados
 x-i18n:
-    generated_at: "2026-05-11T20:34:07Z"
+    generated_at: "2026-06-27T11:24:25Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c9ab0ec823da1e2e8598d9efb998a207c4486ba82dcf4dd65422c6bf90581b46
+    source_hash: 65de2ec00c28128071b6c1468417b1025d46be6d189a07ade995e050dde6445f
     source_path: gateway/config-tools.md
     workflow: 16
 ---
 
-Claves de configuración `tools.*` y configuración de proveedor personalizado / URL base. Para agentes, canales y otras claves de configuración de nivel superior, consulta la [Referencia de configuración](/es/gateway/configuration-reference).
+`tools.*` claves de configuración y configuración de proveedor personalizado / URL base. Para agents, channels y otras claves de configuración de nivel superior, consulta la [referencia de configuración](/es/gateway/configuration-reference).
 
 ## Herramientas
 
 ### Perfiles de herramientas
 
-`tools.profile` establece una lista base de permitidos antes de `tools.allow`/`tools.deny`:
+`tools.profile` establece una lista de permitidos base antes de `tools.allow`/`tools.deny`:
 
 <Note>
 La incorporación local establece de forma predeterminada las nuevas configuraciones locales en `tools.profile: "coding"` cuando no está definido (se conservan los perfiles explícitos existentes).
 </Note>
 
-| Perfil      | Incluye                                                                                                                        |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `minimal`   | Solo `session_status`                                                                                                          |
-| `coding`    | `group:fs`, `group:runtime`, `group:web`, `group:sessions`, `group:memory`, `cron`, `image`, `image_generate`, `video_generate` |
-| `messaging` | `group:messaging`, `sessions_list`, `sessions_history`, `sessions_send`, `session_status`                                      |
-| `full`      | Sin restricciones (igual que si no estuviera definido)                                                                         |
+| Perfil      | Incluye                                                                                                                                           |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `minimal`   | Solo `session_status`                                                                                                                             |
+| `coding`    | `group:fs`, `group:runtime`, `group:web`, `group:sessions`, `group:memory`, `cron`, `image`, `image_generate`, `skill_workshop`, `video_generate` |
+| `messaging` | `group:messaging`, `sessions_list`, `sessions_history`, `sessions_send`, `session_status`                                                         |
+| `full`      | Sin restricción (igual que sin definir)                                                                                                           |
 
 ### Grupos de herramientas
 
-| Grupo              | Herramientas                                                                                                            |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| `group:runtime`    | `exec`, `process`, `code_execution` (`bash` se acepta como alias de `exec`)                                              |
-| `group:fs`         | `read`, `write`, `edit`, `apply_patch`                                                                                  |
-| `group:sessions`   | `sessions_list`, `sessions_history`, `sessions_send`, `sessions_spawn`, `sessions_yield`, `subagents`, `session_status` |
-| `group:memory`     | `memory_search`, `memory_get`                                                                                           |
-| `group:web`        | `web_search`, `x_search`, `web_fetch`                                                                                   |
-| `group:ui`         | `browser`, `canvas`                                                                                                     |
-| `group:automation` | `heartbeat_respond`, `cron`, `gateway`                                                                                  |
-| `group:messaging`  | `message`                                                                                                               |
-| `group:nodes`      | `nodes`                                                                                                                 |
-| `group:agents`     | `agents_list`, `update_plan`                                                                                            |
+| Grupo              | Herramientas                                                                                                             |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| `group:runtime`    | `exec`, `process`, `code_execution` (`bash` se acepta como alias de `exec`)                                               |
+| `group:fs`         | `read`, `write`, `edit`, `apply_patch`                                                                                   |
+| `group:sessions`   | `sessions_list`, `sessions_history`, `sessions_send`, `sessions_spawn`, `sessions_yield`, `subagents`, `session_status`  |
+| `group:memory`     | `memory_search`, `memory_get`                                                                                            |
+| `group:web`        | `web_search`, `x_search`, `web_fetch`                                                                                    |
+| `group:ui`         | `browser`, `canvas`                                                                                                      |
+| `group:automation` | `heartbeat_respond`, `cron`, `gateway`                                                                                   |
+| `group:messaging`  | `message`                                                                                                                |
+| `group:nodes`      | `nodes`                                                                                                                  |
+| `group:agents`     | `agents_list`, `update_plan`                                                                                             |
 | `group:media`      | `image`, `image_generate`, `music_generate`, `video_generate`, `tts`                                                     |
-| `group:openclaw`   | Todas las herramientas integradas (excluye los Plugins de proveedor)                                                     |
+| `group:openclaw`   | Todas las herramientas integradas (excluye plugins de proveedores)                                                       |
+| `group:plugins`    | Herramientas propiedad de plugins cargados, incluidos los servidores MCP configurados expuestos mediante `bundle-mcp`     |
+
+### MCP y herramientas de plugins dentro de la política de herramientas del sandbox
+
+Los servidores MCP configurados se exponen como herramientas propiedad de plugins bajo el id de plugin `bundle-mcp`. Los perfiles de herramientas normales pueden permitirlos, pero `tools.sandbox.tools` es una puerta adicional para sesiones en sandbox. Si el modo sandbox es `"all"` o `"non-main"`, incluye una de estas entradas en la lista de herramientas permitidas del sandbox cuando las herramientas MCP/plugin deban ser visibles:
+
+- `bundle-mcp` para servidores MCP gestionados por OpenClaw desde `mcp.servers`
+- el id de plugin para un plugin nativo específico
+- `group:plugins` para todas las herramientas propiedad de plugins cargados
+- nombres exactos de herramientas de servidor MCP o globs de servidor como `outlook__send_mail` u `outlook__*` cuando solo quieres un servidor
+
+Los globs de servidor usan el prefijo de servidor MCP seguro para el proveedor, no necesariamente la clave sin procesar de `mcp.servers`. Los caracteres que no sean `[A-Za-z0-9_-]` se convierten en `-`, los nombres que no empiezan con una letra reciben el prefijo `mcp-`, y los prefijos largos o duplicados pueden truncarse o recibir un sufijo; por ejemplo, `mcp.servers["Outlook Graph"]` usa un glob como `outlook-graph__*`.
+
+```json5
+{
+  agents: { defaults: { sandbox: { mode: "all" } } },
+  mcp: {
+    servers: {
+      outlook: { command: "node", args: ["./outlook-mcp.js"] },
+    },
+  },
+  tools: {
+    sandbox: {
+      tools: {
+        alsoAllow: ["web_search", "web_fetch", "memory_search", "memory_get", "bundle-mcp"],
+      },
+    },
+  },
+}
+```
+
+Sin esa entrada de la capa sandbox, el servidor MCP aún puede cargarse correctamente mientras sus herramientas se filtran antes de la solicitud al proveedor. Usa `openclaw doctor` para detectar esta forma en servidores gestionados por OpenClaw en `mcp.servers`. Los servidores MCP cargados desde manifiestos de plugins incluidos o desde `.mcp.json` de Claude usan la misma puerta de sandbox, pero este diagnóstico aún no enumera esas fuentes; usa las mismas entradas de lista de permitidos si sus herramientas desaparecen en turnos en sandbox.
+
+### `tools.codeMode`
+
+`tools.codeMode` habilita la superficie genérica de modo de código de OpenClaw. Cuando está habilitada
+para una ejecución con herramientas, el modelo solo ve `exec` y `wait`; las herramientas normales de OpenClaw
+pasan detrás del puente de catálogo `tools.*` dentro del sandbox, y las herramientas MCP
+están disponibles mediante el espacio de nombres `MCP` generado.
+
+```json5
+{
+  tools: {
+    codeMode: {
+      enabled: true,
+    },
+  },
+}
+```
+
+También se acepta la forma abreviada:
+
+```json5
+{
+  tools: { codeMode: true },
+}
+```
+
+Las declaraciones MCP se exponen mediante la superficie de archivos de API virtual de solo lectura en
+modo de código. El código invitado puede llamar a `API.list("mcp")` y
+`API.read("mcp/<server>.d.ts")` para inspeccionar firmas de estilo TypeScript antes de
+llamar a `MCP.<server>.<tool>()`. Consulta [Modo de código](/es/reference/code-mode) para el
+contrato de runtime, los límites y los pasos de depuración.
 
 ### `tools.allow` / `tools.deny`
 
-Política global de permitir/denegar herramientas (denegar tiene prioridad). No distingue entre mayúsculas y minúsculas, admite comodines `*`. Se aplica incluso cuando el entorno aislado de Docker está desactivado.
+Política global de permitir/denegar herramientas (denegar gana). No distingue mayúsculas/minúsculas, admite comodines `*`. Se aplica incluso cuando el sandbox de Docker está desactivado.
 
 ```json5
 {
@@ -61,7 +125,7 @@ Política global de permitir/denegar herramientas (denegar tiene prioridad). No 
 }
 ```
 
-`write` y `apply_patch` son ids de herramienta separados. `allow: ["write"]` también habilita `apply_patch` para modelos compatibles, pero `deny: ["write"]` no deniega `apply_patch`. Para bloquear toda mutación de archivos, deniega `group:fs` o enumera explícitamente cada herramienta que modifica archivos:
+`write` y `apply_patch` son ids de herramienta separados. `allow: ["write"]` también habilita `apply_patch` para modelos compatibles, pero `deny: ["write"]` no deniega `apply_patch`. Para bloquear toda mutación de archivos, deniega `group:fs` o enumera explícitamente cada herramienta mutadora:
 
 ```json5
 {
@@ -87,7 +151,7 @@ Restringe aún más las herramientas para proveedores o modelos específicos. Or
 
 ### `tools.toolsBySender`
 
-Restringe herramientas para una identidad de solicitante específica. Esto es defensa en profundidad además del control de acceso del canal; los valores del remitente deben provenir del adaptador del canal, no del texto del mensaje.
+Restringe herramientas para una identidad de solicitante específica. Esto es defensa en profundidad además del control de acceso del canal; los valores de remitente deben venir del adaptador de canal, no del texto del mensaje.
 
 ```json5
 {
@@ -101,13 +165,13 @@ Restringe herramientas para una identidad de solicitante específica. Esto es de
 }
 ```
 
-Las claves usan prefijos explícitos: `channel:<channelId>:<senderId>`, `id:<senderId>`, `e164:<phone>`, `username:<handle>`, `name:<displayName>` o `"*"`. Los ids de canal son ids canónicos de OpenClaw; los alias como `teams` se normalizan a `msteams`. Las claves heredadas sin prefijo se aceptan solo como `id:`. El orden de coincidencia es canal+id, id, e164, username, name y luego comodín.
+Las claves usan prefijos explícitos: `channel:<channelId>:<senderId>`, `id:<senderId>`, `e164:<phone>`, `username:<handle>`, `name:<displayName>` o `"*"`. Los ids de canal son ids canónicos de OpenClaw; los alias como `teams` se normalizan a `msteams`. Las claves heredadas sin prefijo se aceptan solo como `id:`. El orden de coincidencia es channel+id, id, e164, username, name y luego comodín.
 
-`agents.list[].tools.toolsBySender` por agente anula la coincidencia global de remitente cuando coincide, incluso con una política `{}` vacía.
+`agents.list[].tools.toolsBySender` por agente sobrescribe la coincidencia global de remitente cuando coincide, incluso con una política vacía `{}`.
 
 ### `tools.elevated`
 
-Controla el acceso elevado a exec fuera del entorno aislado:
+Controla el acceso elevado a exec fuera del sandbox:
 
 ```json5
 {
@@ -123,9 +187,9 @@ Controla el acceso elevado a exec fuera del entorno aislado:
 }
 ```
 
-- La anulación por agente (`agents.list[].tools.elevated`) solo puede restringir más.
+- La sobrescritura por agente (`agents.list[].tools.elevated`) solo puede restringir más.
 - `/elevated on|off|ask|full` almacena el estado por sesión; las directivas en línea se aplican a un solo mensaje.
-- `exec` elevado omite el entorno aislado y usa la ruta de escape configurada (`gateway` de forma predeterminada, o `node` cuando el destino de exec es `node`).
+- `exec` elevado omite el sandboxing y usa la ruta de escape configurada (`gateway` de forma predeterminada, o `node` cuando el destino de exec es `node`).
 
 ### `tools.exec`
 
@@ -150,7 +214,7 @@ Controla el acceso elevado a exec fuera del entorno aislado:
 
 ### `tools.loopDetection`
 
-Las comprobaciones de seguridad de bucles de herramientas están **desactivadas de forma predeterminada**. Establece `enabled: true` para activar la detección. La configuración se puede definir globalmente en `tools.loopDetection` y sobrescribir por agente en `agents.list[].tools.loopDetection`.
+Las comprobaciones de seguridad de bucles de herramientas están **deshabilitadas de forma predeterminada**. Establece `enabled: true` para activar la detección. La configuración puede definirse globalmente en `tools.loopDetection` y sobrescribirse por agente en `agents.list[].tools.loopDetection`.
 
 ```json5
 {
@@ -172,25 +236,25 @@ Las comprobaciones de seguridad de bucles de herramientas están **desactivadas 
 ```
 
 <ParamField path="historySize" type="number">
-  Historial máximo de llamadas a herramientas conservado para el análisis de bucles.
+  Historial máximo de llamadas a herramientas conservado para análisis de bucles.
 </ParamField>
 <ParamField path="warningThreshold" type="number">
   Umbral de patrón repetido sin progreso para advertencias.
 </ParamField>
 <ParamField path="criticalThreshold" type="number">
-  Umbral de repetición más alto para bloquear bucles críticos.
+  Umbral repetitivo más alto para bloquear bucles críticos.
 </ParamField>
 <ParamField path="globalCircuitBreakerThreshold" type="number">
   Umbral de detención estricta para cualquier ejecución sin progreso.
 </ParamField>
 <ParamField path="detectors.genericRepeat" type="boolean">
-  Advierte sobre llamadas repetidas con la misma herramienta y los mismos argumentos.
+  Advierte sobre llamadas repetidas a la misma herramienta/con los mismos argumentos.
 </ParamField>
 <ParamField path="detectors.knownPollNoProgress" type="boolean">
   Advierte/bloquea en herramientas de sondeo conocidas (`process.poll`, `command_status`, etc.).
 </ParamField>
 <ParamField path="detectors.pingPong" type="boolean">
-  Advierte/bloquea en patrones alternos de pares sin progreso.
+  Advierte/bloquea en patrones de pares alternos sin progreso.
 </ParamField>
 
 <Warning>
@@ -237,7 +301,7 @@ Configura la comprensión de medios entrantes (imagen/audio/video):
     media: {
       concurrency: 2,
       asyncCompletion: {
-        directSend: false, // deprecated: completions stay agent-mediated
+        directSend: false, // obsoleto: las finalizaciones permanecen mediadas por el agente
       },
       audio: {
         enabled: true,
@@ -276,21 +340,21 @@ Configura la comprensión de medios entrantes (imagen/audio/video):
 
     **Entrada de CLI** (`type: "cli"`):
 
-    - `command`: ejecutable que se va a ejecutar
-    - `args`: argumentos con plantilla (admite `{{MediaPath}}`, `{{Prompt}}`, `{{MaxChars}}`, etc.; `openclaw doctor --fix` migra marcadores de posición obsoletos `{input}` a `{{MediaPath}}`)
+    - `command`: ejecutable que se debe ejecutar
+    - `args`: argumentos con plantilla (admite `{{MediaPath}}`, `{{Prompt}}`, `{{MaxChars}}`, etc.; `openclaw doctor --fix` migra los marcadores de posición obsoletos `{input}` a `{{MediaPath}}`)
 
     **Campos comunes:**
 
     - `capabilities`: lista opcional (`image`, `audio`, `video`). Valores predeterminados: `openai`/`anthropic`/`minimax` → imagen, `google` → imagen+audio+video, `groq` → audio.
     - `prompt`, `maxChars`, `maxBytes`, `timeoutSeconds`, `language`: sobrescrituras por entrada.
-    - `tools.media.image.timeoutSeconds` y las entradas `timeoutSeconds` de modelo de imagen correspondientes también se aplican cuando el agente llama a la herramienta explícita `image`.
-    - Los fallos pasan a la siguiente entrada.
+    - `tools.media.image.timeoutSeconds` y las entradas `timeoutSeconds` de modelo de imagen coincidentes también se aplican cuando el agente llama a la herramienta explícita `image`. Para comprensión de imágenes, este tiempo de espera se aplica a la solicitud en sí y no se reduce por el trabajo de preparación previo.
+    - Los errores recurren a la siguiente entrada.
 
     La autenticación del proveedor sigue el orden estándar: `auth-profiles.json` → variables de entorno → `models.providers.*.apiKey`.
 
     **Campos de finalización asíncrona:**
 
-    - `asyncCompletion.directSend`: marca de compatibilidad obsoleta. Las tareas de medios asíncronas completadas permanecen mediadas por la sesión solicitante para que el agente reciba el resultado, decida cómo informar al usuario y use la herramienta de mensajes cuando la entrega de origen lo requiera.
+    - `asyncCompletion.directSend`: marca de compatibilidad obsoleta. Las tareas de medios asíncronas completadas permanecen mediadas por la sesión solicitante para que el agente reciba el resultado, decida cómo comunicárselo al usuario y use la herramienta de mensajes cuando la entrega de origen lo requiera.
 
   </Accordion>
 </AccordionGroup>
@@ -327,11 +391,14 @@ Valor predeterminado: `tree` (sesión actual + sesiones generadas por ella, como
 
 <AccordionGroup>
   <Accordion title="Ámbitos de visibilidad">
-    - `self`: solo la clave de sesión actual.
+    - `self`: solo la clave de la sesión actual.
     - `tree`: sesión actual + sesiones generadas por la sesión actual (subagentes).
-    - `agent`: cualquier sesión que pertenezca al id del agente actual (puede incluir otros usuarios si ejecutas sesiones por remitente con el mismo id de agente).
+    - `agent`: cualquier sesión perteneciente al id del agente actual (puede incluir a otros usuarios si ejecutas sesiones por remitente bajo el mismo id de agente).
     - `all`: cualquier sesión. Apuntar entre agentes sigue requiriendo `tools.agentToAgent`.
-    - Restricción de sandbox: cuando la sesión actual está en sandbox y `agents.defaults.sandbox.sessionToolsVisibility="spawned"`, la visibilidad se fuerza a `tree` incluso si `tools.sessions.visibility="all"`.
+    - Restricción del sandbox: cuando la sesión actual está en sandbox y `agents.defaults.sandbox.sessionToolsVisibility="spawned"`, la visibilidad se fuerza a `tree` aunque `tools.sessions.visibility="all"`.
+    - Cuando no es `all`, `sessions_list` incluye un campo compacto `visibility`
+      que describe el modo efectivo y una advertencia de que algunas sesiones pueden
+      omitirse fuera del ámbito actual.
 
   </Accordion>
 </AccordionGroup>
@@ -345,11 +412,11 @@ Controla la compatibilidad con adjuntos en línea para `sessions_spawn`.
   tools: {
     sessions_spawn: {
       attachments: {
-        enabled: false, // opt-in: set true to allow inline file attachments
-        maxTotalBytes: 5242880, // 5 MB total across all files
+        enabled: false, // opt-in: establecer en true para permitir adjuntos de archivo en línea
+        maxTotalBytes: 5242880, // 5 MB en total entre todos los archivos
         maxFiles: 50,
-        maxFileBytes: 1048576, // 1 MB per file
-        retainOnSessionKeep: false, // keep attachments when cleanup="keep"
+        maxFileBytes: 1048576, // 1 MB por archivo
+        retainOnSessionKeep: false, // conservar adjuntos cuando cleanup="keep"
       },
     },
   },
@@ -358,12 +425,13 @@ Controla la compatibilidad con adjuntos en línea para `sessions_spawn`.
 
 <AccordionGroup>
   <Accordion title="Notas sobre adjuntos">
-    - Los adjuntos solo son compatibles con `runtime: "subagent"`. El runtime de ACP los rechaza.
-    - Los archivos se materializan en el espacio de trabajo hijo en `.openclaw/attachments/<uuid>/` con un `.manifest.json`.
-    - El contenido de los adjuntos se redacta automáticamente de la persistencia de la transcripción.
+    - Los adjuntos requieren `enabled: true`.
+    - Los adjuntos de subagente se materializan en el espacio de trabajo hijo en `.openclaw/attachments/<uuid>/` con un `.manifest.json`.
+    - Los adjuntos ACP son solo de imagen y se reenvían en línea al runtime ACP después de pasar los mismos límites de cantidad de archivos, bytes por archivo y bytes totales.
+    - El contenido de los adjuntos se censura automáticamente de la persistencia de la transcripción.
     - Las entradas Base64 se validan con comprobaciones estrictas de alfabeto/relleno y una protección de tamaño previa a la decodificación.
-    - Los permisos de archivo son `0700` para directorios y `0600` para archivos.
-    - La limpieza sigue la política `cleanup`: `delete` siempre elimina los adjuntos; `keep` los conserva solo cuando `retainOnSessionKeep: true`.
+    - Los permisos de archivo de adjuntos de subagente son `0700` para directorios y `0600` para archivos.
+    - La limpieza de subagente sigue la política `cleanup`: `delete` siempre elimina los adjuntos; `keep` los conserva solo cuando `retainOnSessionKeep: true`.
 
   </Accordion>
 </AccordionGroup>
@@ -372,21 +440,21 @@ Controla la compatibilidad con adjuntos en línea para `sessions_spawn`.
 
 ### `tools.experimental`
 
-Flags experimentales de herramientas integradas. Desactivados de forma predeterminada, salvo que se aplique una regla de activación automática estrictamente agéntica de GPT-5.
+Marcas experimentales de herramientas integradas. Desactivado de forma predeterminada salvo que se aplique una regla de activación automática strict-agentic de GPT-5.
 
 ```json5
 {
   tools: {
     experimental: {
-      planTool: true, // enable experimental update_plan
+      planTool: true, // habilitar update_plan experimental
     },
   },
 }
 ```
 
-- `planTool`: habilita la herramienta estructurada `update_plan` para hacer seguimiento de trabajo no trivial de varios pasos.
-- Predeterminado: `false`, salvo que `agents.defaults.embeddedPi.executionContract` (o una anulación por agente) esté configurado como `"strict-agentic"` para una ejecución de la familia GPT-5 de OpenAI u OpenAI Codex. Configúralo en `true` para forzar la activación de la herramienta fuera de ese alcance, o en `false` para mantenerla desactivada incluso en ejecuciones GPT-5 estrictamente agénticas.
-- Cuando está habilitada, el prompt del sistema también añade orientación de uso para que el modelo solo la use en trabajos sustanciales y mantenga como máximo un paso `in_progress`.
+- `planTool`: habilita la herramienta estructurada `update_plan` para el seguimiento de trabajo no trivial de varios pasos.
+- Valor predeterminado: `false` salvo que `agents.defaults.embeddedAgent.executionContract` (o una sobrescritura por agente) esté establecido en `"strict-agentic"` para una ejecución de familia GPT-5 de OpenAI u OpenAI Codex. Establece `true` para forzar la herramienta fuera de ese ámbito, o `false` para mantenerla desactivada incluso en ejecuciones strict-agentic de GPT-5.
+- Cuando está habilitada, el prompt del sistema también añade orientación de uso para que el modelo solo la use en trabajo sustancial y mantenga como máximo un paso `in_progress`.
 
 ### `agents.defaults.subagents`
 
@@ -408,16 +476,18 @@ Flags experimentales de herramientas integradas. Desactivados de forma predeterm
 ```
 
 - `model`: modelo predeterminado para subagentes generados. Si se omite, los subagentes heredan el modelo del llamador.
-- `allowAgents`: lista de permitidos predeterminada de ids de agentes de destino para `sessions_spawn` cuando el agente solicitante no establece su propio `subagents.allowAgents` (`["*"]` = cualquiera; valor predeterminado: solo el mismo agente).
-- `runTimeoutSeconds`: tiempo de espera predeterminado (segundos) para `sessions_spawn` cuando la llamada de herramienta omite `runTimeoutSeconds`. `0` significa sin tiempo de espera.
-- `announceTimeoutMs`: tiempo de espera por llamada (milisegundos) para los intentos de entrega de anuncio `agent` del Gateway. Predeterminado: `120000`. Los reintentos transitorios pueden hacer que la espera total de anuncio sea más larga que un tiempo de espera configurado.
+- `allowAgents`: lista de permitidos predeterminada de ids de agentes de destino configurados para `sessions_spawn` cuando el agente solicitante no establece su propio `subagents.allowAgents` (`["*"]` = cualquier destino configurado; valor predeterminado: solo el mismo agente). Las entradas obsoletas cuya configuración de agente se eliminó son rechazadas por `sessions_spawn` y omitidas de `agents_list`; ejecuta `openclaw doctor --fix` para limpiarlas.
+- `runTimeoutSeconds`: tiempo de espera predeterminado (segundos) para `sessions_spawn`. `0` significa sin tiempo de espera.
+- `announceTimeoutMs`: tiempo de espera por llamada (milisegundos) para los intentos de entrega de anuncio `agent` de Gateway. Valor predeterminado: `120000`. Los reintentos transitorios pueden hacer que la espera total de anuncio sea más larga que un tiempo de espera configurado.
 - Política de herramientas por subagente: `tools.subagents.tools.allow` / `tools.subagents.tools.deny`.
 
 ---
 
-## Proveedores personalizados y URLs base
+## Proveedores personalizados y URL base
 
-OpenClaw usa el catálogo de modelos integrado. Añade proveedores personalizados mediante `models.providers` en la configuración o `~/.openclaw/agents/<agentId>/agent/models.json`.
+Los Plugins de proveedor publican sus propias filas de catálogo de modelos. Añade proveedores personalizados mediante `models.providers` en la configuración o `~/.openclaw/agents/<agentId>/agent/models.json`.
+
+Configurar una `baseUrl` de proveedor personalizado/local también es la decisión estrecha de confianza de red para solicitudes HTTP de modelos: OpenClaw permite ese origen exacto `scheme://host:port` a través de la ruta fetch protegida, sin añadir una opción de configuración separada ni confiar en otros orígenes privados.
 
 ```json5
 {
@@ -449,17 +519,18 @@ OpenClaw usa el catálogo de modelos integrado. Añade proveedores personalizado
 <AccordionGroup>
   <Accordion title="Autenticación y precedencia de combinación">
     - Usa `authHeader: true` + `headers` para necesidades de autenticación personalizadas.
-    - Anula la raíz de configuración del agente con `OPENCLAW_AGENT_DIR` (o `PI_CODING_AGENT_DIR`, un alias heredado de variable de entorno).
+    - Sobrescribe la raíz de configuración del agente con `OPENCLAW_AGENT_DIR`.
     - Precedencia de combinación para IDs de proveedor coincidentes:
-      - Los valores no vacíos de `baseUrl` de `models.json` del agente tienen prioridad.
-      - Los valores no vacíos de `apiKey` del agente tienen prioridad solo cuando ese proveedor no está gestionado por SecretRef en el contexto actual de configuración/perfil de autenticación.
-      - Los valores `apiKey` de proveedor gestionados por SecretRef se actualizan desde marcadores de origen (`ENV_VAR_NAME` para referencias de entorno, `secretref-managed` para referencias de archivo/ejecución) en lugar de persistir secretos resueltos.
-      - Los valores de encabezado de proveedor gestionados por SecretRef se actualizan desde marcadores de origen (`secretref-env:ENV_VAR_NAME` para referencias de entorno, `secretref-managed` para referencias de archivo/ejecución).
-      - `apiKey`/`baseUrl` de agente vacíos o ausentes recurren a `models.providers` en la configuración.
-      - `contextWindow`/`maxTokens` de modelos coincidentes usan el valor más alto entre la configuración explícita y los valores implícitos del catálogo.
-      - `contextTokens` de modelos coincidentes conserva un límite explícito de runtime cuando está presente; úsalo para limitar el contexto efectivo sin cambiar los metadatos nativos del modelo.
-      - Usa `models.mode: "replace"` cuando quieras que la configuración reescriba completamente `models.json`.
-      - La persistencia de marcadores tiene autoridad de origen: los marcadores se escriben desde la instantánea activa de configuración de origen (antes de la resolución), no desde valores secretos de runtime resueltos.
+      - Los valores `baseUrl` no vacíos de `models.json` del agente tienen prioridad.
+      - Los valores `apiKey` no vacíos del agente tienen prioridad solo cuando ese proveedor no está gestionado por SecretRef en el contexto actual de configuración/perfil de autenticación.
+      - Los valores `apiKey` de proveedor gestionados por SecretRef se actualizan desde marcadores de origen (`ENV_VAR_NAME` para refs de entorno, `secretref-managed` para refs de archivo/ejecución) en lugar de persistir secretos resueltos.
+      - Los valores de encabezado de proveedor gestionados por SecretRef se actualizan desde marcadores de origen (`secretref-env:ENV_VAR_NAME` para refs de entorno, `secretref-managed` para refs de archivo/ejecución).
+      - `apiKey`/`baseUrl` del agente vacíos o ausentes recurren a `models.providers` en la configuración.
+      - `contextWindow`/`maxTokens` de modelo coincidentes usan el valor más alto entre la configuración explícita y los valores implícitos del catálogo.
+      - `contextTokens` de modelo coincidente conserva un límite de runtime explícito cuando está presente; úsalo para limitar el contexto efectivo sin cambiar los metadatos nativos del modelo.
+      - Los catálogos de Plugin de proveedor se almacenan como fragmentos de catálogo generados y propiedad del Plugin bajo el estado de Plugin del agente.
+      - Usa `models.mode: "replace"` cuando quieras que la configuración reescriba por completo `models.json` y los fragmentos de catálogo de Plugin activos.
+      - La persistencia de marcadores es autoritativa desde el origen: los marcadores se escriben desde la instantánea de configuración de origen activa (previa a la resolución), no desde valores secretos resueltos en runtime.
 
   </Accordion>
 </AccordionGroup>
@@ -474,59 +545,60 @@ OpenClaw usa el catálogo de modelos integrado. Añade proveedores personalizado
 
   </Accordion>
   <Accordion title="Conexión y autenticación del proveedor">
-    - `models.providers.*.api`: adaptador de solicitud (`openai-completions`, `openai-responses`, `anthropic-messages`, `google-generative-ai`, etc.). Para backends autoalojados `/v1/chat/completions` como MLX, vLLM, SGLang y la mayoría de servidores locales compatibles con OpenAI, usa `openai-completions`. Un proveedor personalizado con `baseUrl` pero sin `api` usa de forma predeterminada `openai-completions`; establece `openai-responses` solo cuando el backend admite `/v1/responses`.
-    - `models.providers.*.apiKey`: credencial del proveedor (se prefiere sustitución SecretRef/env).
+    - `models.providers.*.api`: adaptador de solicitud (`openai-completions`, `openai-responses`, `anthropic-messages`, `google-generative-ai`, etc.). Para backends `/v1/chat/completions` autohospedados como MLX, vLLM, SGLang y la mayoría de servidores locales compatibles con OpenAI, usa `openai-completions`. Un proveedor personalizado con `baseUrl` pero sin `api` usa `openai-completions` de forma predeterminada; configura `openai-responses` solo cuando el backend admita `/v1/responses`.
+    - `models.providers.*.apiKey`: credencial del proveedor (prefiere la sustitución SecretRef/env).
     - `models.providers.*.auth`: estrategia de autenticación (`api-key`, `token`, `oauth`, `aws-sdk`).
-    - `models.providers.*.contextWindow`: ventana de contexto nativa predeterminada para modelos bajo este proveedor cuando la entrada del modelo no establece `contextWindow`.
-    - `models.providers.*.contextTokens`: límite efectivo predeterminado de contexto de runtime para modelos bajo este proveedor cuando la entrada del modelo no establece `contextTokens`.
-    - `models.providers.*.maxTokens`: límite predeterminado de tokens de salida para modelos bajo este proveedor cuando la entrada del modelo no establece `maxTokens`.
-    - `models.providers.*.timeoutSeconds`: tiempo de espera opcional por proveedor para solicitudes HTTP de modelo en segundos, incluido el manejo de conexión, encabezados, cuerpo y anulación total de la solicitud.
+    - `models.providers.*.contextWindow`: ventana de contexto nativa predeterminada para los modelos bajo este proveedor cuando la entrada del modelo no define `contextWindow`.
+    - `models.providers.*.contextTokens`: límite de contexto efectivo de runtime predeterminado para los modelos bajo este proveedor cuando la entrada del modelo no define `contextTokens`.
+    - `models.providers.*.maxTokens`: límite predeterminado de tokens de salida para los modelos bajo este proveedor cuando la entrada del modelo no define `maxTokens`.
+    - `models.providers.*.timeoutSeconds`: tiempo de espera HTTP opcional por proveedor para solicitudes de modelo, en segundos, incluida la conexión, las cabeceras, el cuerpo y la gestión de aborto total de la solicitud.
     - `models.providers.*.injectNumCtxForOpenAICompat`: para Ollama + `openai-completions`, inyecta `options.num_ctx` en las solicitudes (predeterminado: `true`).
-    - `models.providers.*.authHeader`: fuerza el transporte de credenciales en el encabezado `Authorization` cuando sea necesario.
-    - `models.providers.*.baseUrl`: URL base de la API upstream.
-    - `models.providers.*.headers`: encabezados estáticos adicionales para enrutamiento de proxy/inquilino.
+    - `models.providers.*.authHeader`: fuerza el transporte de credenciales en la cabecera `Authorization` cuando sea necesario.
+    - `models.providers.*.baseUrl`: URL base de la API ascendente.
+    - `models.providers.*.headers`: cabeceras estáticas adicionales para enrutamiento de proxy/inquilino.
 
   </Accordion>
-  <Accordion title="Anulaciones de transporte de solicitudes">
-    `models.providers.*.request`: anulaciones de transporte para solicitudes HTTP a proveedores de modelos.
+  <Accordion title="Sobrescrituras de transporte de solicitudes">
+    `models.providers.*.request`: sobrescrituras de transporte para solicitudes HTTP de proveedor de modelos.
 
-    - `request.headers`: encabezados adicionales (combinados con los valores predeterminados del proveedor). Los valores aceptan SecretRef.
-    - `request.auth`: anulación de estrategia de autenticación. Modos: `"provider-default"` (usa la autenticación integrada del proveedor), `"authorization-bearer"` (con `token`), `"header"` (con `headerName`, `value`, `prefix` opcional).
-    - `request.proxy`: anulación de proxy HTTP. Modos: `"env-proxy"` (usa las variables de entorno `HTTP_PROXY`/`HTTPS_PROXY`), `"explicit-proxy"` (con `url`). Ambos modos aceptan un subobjeto `tls` opcional.
-    - `request.tls`: anulación de TLS para conexiones directas. Campos: `ca`, `cert`, `key`, `passphrase` (todos aceptan SecretRef), `serverName`, `insecureSkipVerify`.
-    - `request.allowPrivateNetwork`: cuando es `true`, permite HTTPS a `baseUrl` cuando DNS se resuelve a rangos privados, CGNAT o similares, mediante la protección de fetch HTTP del proveedor (activación explícita del operador para endpoints autoalojados compatibles con OpenAI de confianza). Las URLs de flujo de proveedores de modelo de local loopback como `localhost`, `127.0.0.1` y `[::1]` se permiten automáticamente salvo que esto se establezca explícitamente en `false`; los hosts LAN, tailnet y DNS privados aún requieren activación explícita. WebSocket usa la misma `request` para encabezados/TLS, pero no esa compuerta SSRF de fetch. Predeterminado `false`.
+    - `request.headers`: cabeceras adicionales (fusionadas con los valores predeterminados del proveedor). Los valores aceptan SecretRef.
+    - `request.auth`: sobrescritura de la estrategia de autenticación. Modos: `"provider-default"` (usa la autenticación integrada del proveedor), `"authorization-bearer"` (con `token`), `"header"` (con `headerName`, `value`, `prefix` opcional).
+    - `request.proxy`: sobrescritura de proxy HTTP. Modos: `"env-proxy"` (usa las variables de entorno `HTTP_PROXY`/`HTTPS_PROXY`), `"explicit-proxy"` (con `url`). Ambos modos aceptan un subobjeto `tls` opcional.
+    - `request.tls`: sobrescritura de TLS para conexiones directas. Campos: `ca`, `cert`, `key`, `passphrase` (todos aceptan SecretRef), `serverName`, `insecureSkipVerify`.
+    - `request.allowPrivateNetwork`: cuando es `true`, permite que las solicitudes HTTP de proveedor de modelos a rangos privados, CGNAT o similares pasen por la protección de recuperación HTTP del proveedor. Las URL base de proveedores personalizados/locales ya confían en el origen exacto configurado, excepto los orígenes de metadatos/link-local, que permanecen bloqueados sin aceptación explícita. Configúralo en `false` para excluirte de la confianza en el origen exacto. WebSocket usa el mismo `request` para cabeceras/TLS, pero no esa puerta SSRF de recuperación. Valor predeterminado: `false`.
 
   </Accordion>
   <Accordion title="Entradas del catálogo de modelos">
     - `models.providers.*.models`: entradas explícitas del catálogo de modelos del proveedor.
     - `models.providers.*.models.*.input`: modalidades de entrada del modelo. Usa `["text"]` para modelos solo de texto y `["text", "image"]` para modelos nativos de imagen/visión. Los adjuntos de imagen solo se inyectan en turnos de agente cuando el modelo seleccionado está marcado como compatible con imágenes.
-    - `models.providers.*.models.*.contextWindow`: metadatos de ventana de contexto nativa del modelo. Esto anula el `contextWindow` de nivel de proveedor para ese modelo.
-    - `models.providers.*.models.*.contextTokens`: límite opcional de contexto de runtime. Esto anula el `contextTokens` de nivel de proveedor; úsalo cuando quieras un presupuesto de contexto efectivo menor que el `contextWindow` nativo del modelo; `openclaw models list` muestra ambos valores cuando difieren.
-    - `models.providers.*.models.*.compat.supportsDeveloperRole`: sugerencia opcional de compatibilidad. Para `api: "openai-completions"` con un `baseUrl` no nativo no vacío (host que no sea `api.openai.com`), OpenClaw fuerza esto a `false` en runtime. `baseUrl` vacío/omitido mantiene el comportamiento predeterminado de OpenAI.
-    - `models.providers.*.models.*.compat.requiresStringContent`: sugerencia opcional de compatibilidad para endpoints de chat compatibles con OpenAI solo con cadenas. Cuando es `true`, OpenClaw aplana arrays de texto puro `messages[].content` a cadenas simples antes de enviar la solicitud.
-    - `models.providers.*.models.*.compat.strictMessageKeys`: sugerencia opcional de compatibilidad para endpoints de chat compatibles con OpenAI estrictos. Cuando es `true`, OpenClaw recorta los objetos de mensaje salientes de Chat Completions a `role` y `content` antes de enviar la solicitud.
-    - `models.providers.*.models.*.compat.thinkingFormat`: sugerencia opcional de payload de razonamiento. Usa `"qwen"` para `enable_thinking` de nivel superior, o `"qwen-chat-template"` para `chat_template_kwargs.enable_thinking` en servidores compatibles con OpenAI de la familia Qwen que admiten kwargs de plantilla de chat a nivel de solicitud, como vLLM.
+    - `models.providers.*.models.*.contextWindow`: metadatos de la ventana de contexto nativa del modelo. Esto sobrescribe `contextWindow` a nivel de proveedor para ese modelo.
+    - `models.providers.*.models.*.contextTokens`: límite de contexto de runtime opcional. Esto sobrescribe `contextTokens` a nivel de proveedor; úsalo cuando quieras un presupuesto de contexto efectivo menor que la `contextWindow` nativa del modelo; `openclaw models list` muestra ambos valores cuando difieren.
+    - `models.providers.*.models.*.compat.supportsDeveloperRole`: sugerencia de compatibilidad opcional. Para `api: "openai-completions"` con un `baseUrl` no nativo y no vacío (host distinto de `api.openai.com`), OpenClaw lo fuerza a `false` en runtime. Un `baseUrl` vacío/omitido conserva el comportamiento predeterminado de OpenAI.
+    - `models.providers.*.models.*.compat.requiresStringContent`: sugerencia de compatibilidad opcional para endpoints de chat compatibles con OpenAI que solo aceptan cadenas. Cuando es `true`, OpenClaw aplana los arreglos `messages[].content` de texto puro en cadenas simples antes de enviar la solicitud.
+    - `models.providers.*.models.*.compat.strictMessageKeys`: sugerencia de compatibilidad opcional para endpoints de chat estrictos compatibles con OpenAI. Cuando es `true`, OpenClaw reduce los objetos de mensaje de Chat Completions salientes a `role` y `content` antes de enviar la solicitud.
+    - `models.providers.*.models.*.compat.thinkingFormat`: sugerencia opcional de payload de pensamiento. Usa `"together"` para `reasoning.enabled` al estilo Together, `"qwen"` para `enable_thinking` de nivel superior, o `"qwen-chat-template"` para `chat_template_kwargs.enable_thinking` en servidores compatibles con OpenAI de la familia Qwen que admiten kwargs de plantilla de chat a nivel de solicitud, como vLLM. Los modelos vLLM Qwen configurados exponen opciones binarias `/think` (`off`, `on`) para estos formatos.
+    - `models.providers.*.models.*.compat.requiresReasoningContentOnAssistantMessages`: sugerencia de compatibilidad opcional para backends Chat Completions al estilo DeepSeek que requieren que los mensajes de asistente anteriores conserven `reasoning_content` al reproducirse. Cuando es `true`, OpenClaw conserva ese campo en los mensajes de asistente salientes. Usa esto al conectar un proxy personalizado compatible con DeepSeek que rechaza solicitudes después de retirar el razonamiento. Valor predeterminado: `false`.
 
   </Accordion>
   <Accordion title="Descubrimiento de Amazon Bedrock">
-    - `plugins.entries.amazon-bedrock.config.discovery`: raíz de configuración de descubrimiento automático de Bedrock.
+    - `plugins.entries.amazon-bedrock.config.discovery`: raíz de la configuración de descubrimiento automático de Bedrock.
     - `plugins.entries.amazon-bedrock.config.discovery.enabled`: activa/desactiva el descubrimiento implícito.
     - `plugins.entries.amazon-bedrock.config.discovery.region`: región de AWS para el descubrimiento.
     - `plugins.entries.amazon-bedrock.config.discovery.providerFilter`: filtro opcional de id de proveedor para descubrimiento dirigido.
-    - `plugins.entries.amazon-bedrock.config.discovery.refreshInterval`: intervalo de sondeo para la actualización de descubrimiento.
+    - `plugins.entries.amazon-bedrock.config.discovery.refreshInterval`: intervalo de sondeo para actualizar el descubrimiento.
     - `plugins.entries.amazon-bedrock.config.discovery.defaultContextWindow`: ventana de contexto de reserva para modelos descubiertos.
-    - `plugins.entries.amazon-bedrock.config.discovery.defaultMaxTokens`: tokens máximos de salida de reserva para modelos descubiertos.
+    - `plugins.entries.amazon-bedrock.config.discovery.defaultMaxTokens`: tokens de salida máximos de reserva para modelos descubiertos.
 
   </Accordion>
 </AccordionGroup>
 
-La incorporación interactiva de proveedores personalizados infiere la entrada de imágenes para IDs comunes de modelos de visión como GPT-4o, Claude, Gemini, Qwen-VL, LLaVA, Pixtral, InternVL, Mllama, MiniCPM-V y GLM-4V, y omite la pregunta adicional para familias conocidas que solo admiten texto. Los IDs de modelo desconocidos siguen preguntando por la compatibilidad con imágenes. La incorporación no interactiva usa la misma inferencia; pasa `--custom-image-input` para forzar metadatos compatibles con imágenes o `--custom-text-input` para forzar metadatos solo de texto.
+La incorporación interactiva de proveedores personalizados infiere la entrada de imagen para IDs de modelos de visión comunes como GPT-4o, Claude, Gemini, Qwen-VL, LLaVA, Pixtral, InternVL, Mllama, MiniCPM-V y GLM-4V, y omite la pregunta adicional para familias conocidas que solo admiten texto. Los IDs de modelo desconocidos siguen preguntando por compatibilidad con imágenes. La incorporación no interactiva usa la misma inferencia; pasa `--custom-image-input` para forzar metadatos compatibles con imágenes o `--custom-text-input` para forzar metadatos solo de texto.
 
 ### Ejemplos de proveedores
 
 <AccordionGroup>
   <Accordion title="Cerebras (GLM 4.7 / GPT OSS)">
-    El plugin de proveedor `cerebras` incluido puede configurar esto mediante `openclaw onboard --auth-choice cerebras-api-key`. Usa una configuración de proveedor explícita solo cuando sobrescribas los valores predeterminados.
+    El Plugin de proveedor externo oficial `cerebras` puede configurar esto mediante `openclaw onboard --auth-choice cerebras-api-key`. Usa configuración explícita de proveedor solo al sobrescribir los valores predeterminados.
 
     ```json5
     {
@@ -580,16 +652,16 @@ La incorporación interactiva de proveedores personalizados infiere la entrada d
 
   </Accordion>
   <Accordion title="Modelos locales (LM Studio)">
-    Consulta [Modelos locales](/es/gateway/local-models). TL;DR: ejecuta un modelo local grande mediante la API Responses de LM Studio en hardware serio; mantén los modelos alojados combinados como reserva.
+    Consulta [Modelos locales](/es/gateway/local-models). En resumen: ejecuta un modelo local grande mediante la Responses API de LM Studio en hardware serio; conserva los modelos hospedados fusionados como reserva.
   </Accordion>
-  <Accordion title="MiniMax M2.7 (directo)">
+  <Accordion title="MiniMax M3 (directo)">
     ```json5
     {
       agents: {
         defaults: {
-          model: { primary: "minimax/MiniMax-M2.7" },
+          model: { primary: "minimax/MiniMax-M3" },
           models: {
-            "minimax/MiniMax-M2.7": { alias: "Minimax" },
+            "minimax/MiniMax-M3": { alias: "Minimax" },
           },
         },
       },
@@ -602,12 +674,12 @@ La incorporación interactiva de proveedores personalizados infiere la entrada d
             api: "anthropic-messages",
             models: [
               {
-                id: "MiniMax-M2.7",
-                name: "MiniMax M2.7",
+                id: "MiniMax-M3",
+                name: "MiniMax M3",
                 reasoning: true,
-                input: ["text"],
-                cost: { input: 0.3, output: 1.2, cacheRead: 0.06, cacheWrite: 0.375 },
-                contextWindow: 204800,
+                input: ["text", "image"],
+                cost: { input: 0.6, output: 2.4, cacheRead: 0.12, cacheWrite: 0 },
+                contextWindow: 1000000,
                 maxTokens: 131072,
               },
             ],
@@ -617,7 +689,7 @@ La incorporación interactiva de proveedores personalizados infiere la entrada d
     }
     ```
 
-    Define `MINIMAX_API_KEY`. Atajos: `openclaw onboard --auth-choice minimax-global-api` u `openclaw onboard --auth-choice minimax-cn-api`. El catálogo de modelos usa solo M2.7 de forma predeterminada. En la ruta de streaming compatible con Anthropic, OpenClaw desactiva el razonamiento de MiniMax de forma predeterminada salvo que establezcas `thinking` explícitamente. `/fast on` o `params.fastMode: true` reescribe `MiniMax-M2.7` como `MiniMax-M2.7-highspeed`.
+    Configura `MINIMAX_API_KEY`. Atajos: `openclaw onboard --auth-choice minimax-global-api` o `openclaw onboard --auth-choice minimax-cn-api`. El catálogo de modelos usa M3 de forma predeterminada y también incluye las variantes M2.7. En la ruta de streaming compatible con Anthropic, OpenClaw desactiva el pensamiento de MiniMax M2.x de forma predeterminada salvo que configures explícitamente `thinking`; MiniMax-M3 (y M3.x) permanece en la ruta de pensamiento omitido/adaptativo del proveedor de forma predeterminada. `/fast on` o `params.fastMode: true` reescribe `MiniMax-M2.7` como `MiniMax-M2.7-highspeed`.
 
   </Accordion>
   <Accordion title="Moonshot AI (Kimi)">
@@ -656,7 +728,7 @@ La incorporación interactiva de proveedores personalizados infiere la entrada d
 
     Para el endpoint de China: `baseUrl: "https://api.moonshot.cn/v1"` u `openclaw onboard --auth-choice moonshot-api-key-cn`.
 
-    Los endpoints nativos de Moonshot anuncian compatibilidad de uso en streaming en el transporte compartido `openai-completions`, y OpenClaw lo determina a partir de las capacidades del endpoint en lugar de hacerlo solo por el ID del proveedor integrado.
+    Los endpoints nativos de Moonshot anuncian compatibilidad de uso en streaming en el transporte compartido `openai-completions`, y OpenClaw lo determina a partir de las capacidades del endpoint en lugar de solo el id de proveedor integrado.
 
   </Accordion>
   <Accordion title="OpenCode">
@@ -671,7 +743,7 @@ La incorporación interactiva de proveedores personalizados infiere la entrada d
     }
     ```
 
-    Define `OPENCODE_API_KEY` (u `OPENCODE_ZEN_API_KEY`). Usa referencias `opencode/...` para el catálogo Zen o referencias `opencode-go/...` para el catálogo Go. Atajo: `openclaw onboard --auth-choice opencode-zen` u `openclaw onboard --auth-choice opencode-go`.
+    Configura `OPENCODE_API_KEY` (o `OPENCODE_ZEN_API_KEY`). Usa referencias `opencode/...` para el catálogo Zen o referencias `opencode-go/...` para el catálogo Go. Atajo: `openclaw onboard --auth-choice opencode-zen` u `openclaw onboard --auth-choice opencode-go`.
 
   </Accordion>
   <Accordion title="Synthetic (compatible con Anthropic)">
@@ -708,7 +780,7 @@ La incorporación interactiva de proveedores personalizados infiere la entrada d
     }
     ```
 
-    La URL base debe omitir `/v1` (el cliente Anthropic lo añade). Atajo: `openclaw onboard --auth-choice synthetic-api-key`.
+    La URL base debe omitir `/v1` (el cliente de Anthropic lo agrega). Atajo: `openclaw onboard --auth-choice synthetic-api-key`.
 
   </Accordion>
   <Accordion title="Z.AI (GLM-4.7)">
@@ -723,11 +795,11 @@ La incorporación interactiva de proveedores personalizados infiere la entrada d
     }
     ```
 
-    Define `ZAI_API_KEY`. `z.ai/*` y `z-ai/*` se aceptan como alias. Atajo: `openclaw onboard --auth-choice zai-api-key`.
+    Establece `ZAI_API_KEY`. Las referencias de modelo usan el ID de proveedor canónico `zai/*`. Atajo: `openclaw onboard --auth-choice zai-api-key`.
 
-    - Endpoint general: `https://api.z.ai/api/paas/v4`
-    - Endpoint de codificación (predeterminado): `https://api.z.ai/api/coding/paas/v4`
-    - Para el endpoint general, define un proveedor personalizado con la sobrescritura de URL base.
+    - Punto de conexión general: `https://api.z.ai/api/paas/v4`
+    - Punto de conexión de programación (predeterminado): `https://api.z.ai/api/coding/paas/v4`
+    - Para el punto de conexión general, define un proveedor personalizado con la anulación de la URL base.
 
   </Accordion>
 </AccordionGroup>

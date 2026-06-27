@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 07cc2771bbcb23f010d14de6eb0335d4de60a447ac257174b0f5e3f31f10a2f6
     source_path: plugins/reference/qa-matrix.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Plugin de QA Matrix

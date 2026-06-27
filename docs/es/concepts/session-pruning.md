@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 3ea07f0ae23076906e2ff0246ac75813572f98cffa50afddb6a6b0af8964c4a9
     source_path: concepts/session-pruning.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 La poda de sesión recorta los **resultados antiguos de herramientas** del contexto antes de cada llamada al LLM. Reduce el crecimiento del contexto por salidas acumuladas de herramientas (resultados de ejecución, lecturas de archivos, resultados de búsqueda) sin reescribir el texto normal de la conversación.

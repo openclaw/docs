@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Estás instalando, configurando o auditando el Plugin de line
-summary: Añade la superficie del canal LINE para enviar y recibir mensajes de OpenClaw.
+    - Estás instalando, configurando o auditando el plugin de LINE
+summary: Plugin de canal LINE de OpenClaw para conversaciones de LINE Bot API.
 title: Plugin de LINE
 x-i18n:
-    generated_at: "2026-05-03T05:31:44Z"
+    generated_at: "2026-06-27T12:21:43Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 307e6e08345161bc53fe5a04cc9d0a3fabbc9ff01e9ebcae98a39899288ef4d4
+    source_hash: d561055be3fde476a78bf123f4025ca61e670b005d0b2d63e5b54318975c2fd9
     source_path: plugins/reference/line.md
     workflow: 16
 ---
 
-# Plugin LINE
+# Plugin de LINE
 
-Añade la superficie del canal LINE para enviar y recibir mensajes de OpenClaw.
+Plugin de canal LINE de OpenClaw para chats de LINE Bot API.
 
 ## Distribución
 
@@ -23,7 +24,7 @@ Añade la superficie del canal LINE para enviar y recibir mensajes de OpenClaw.
 
 ## Superficie
 
-channels: line
+canales: line
 
 ## Documentación relacionada
 

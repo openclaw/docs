@@ -8,6 +8,7 @@ x-i18n:
     source_hash: b0241fc7232c73d1f595f18fdf1a2d65475c6a82e3068b0aefb4f95f41712086
     source_path: automation/webhook.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 Esta página se movió a [Tareas programadas](/es/automation/cron-jobs#webhooks). Consulta [Tareas programadas](/es/automation/cron-jobs#webhooks) para la documentación de webhooks.

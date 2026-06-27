@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Está instalando, configurando o auditando el Plugin de Discord
-summary: Agrega la superficie de canal de Discord para enviar y recibir mensajes de OpenClaw.
+    - Estás instalando, configurando o auditando el Plugin de Discord
+summary: Plugin de canal de Discord de OpenClaw para canales, mensajes directos, comandos y eventos de la aplicación.
 title: Plugin de Discord
 x-i18n:
-    generated_at: "2026-05-03T05:31:16Z"
+    generated_at: "2026-06-27T12:20:30Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c0af255dc0e58e91c1f0ebcc5bca46e1e8e80f415ed3f5a9840bb31f717c9703
+    source_hash: 9e3305f8ad8eb84fd350bdfa0983b4fd8f848e0697ecf3e779e31cd6cb44dbf5
     source_path: plugins/reference/discord.md
     workflow: 16
 ---
 
 # Plugin de Discord
 
-Añade la superficie de canal de Discord para enviar y recibir mensajes de OpenClaw.
+Plugin de canal de Discord de OpenClaw para canales, MD, comandos y eventos de la app.
 
 ## Distribución
 
@@ -23,7 +24,7 @@ Añade la superficie de canal de Discord para enviar y recibir mensajes de OpenC
 
 ## Superficie
 
-channels: discord
+canales: discord; contratos: transcriptSourceProviders; Skills
 
 ## Documentación relacionada
 

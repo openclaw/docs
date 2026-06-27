@@ -1,15 +1,16 @@
 ---
 read_when:
-    - Quieres un proveedor de búsqueda web que no requiera clave de API
+    - Quiere un proveedor de búsqueda web que no requiera una clave de API
     - Quieres usar DuckDuckGo para web_search
-    - Necesitas una alternativa de búsqueda sin configuración
-summary: Búsqueda web de DuckDuckGo -- proveedor de respaldo sin clave (experimental, basado en HTML)
+    - Quieres un proveedor de búsqueda sin clave seleccionado explícitamente
+summary: Búsqueda web de DuckDuckGo -- proveedor sin clave (experimental, basado en HTML)
 title: Búsqueda de DuckDuckGo
 x-i18n:
-    generated_at: "2026-05-06T05:50:25Z"
+    generated_at: "2026-06-27T13:03:11Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 89c23535730dc272b88e22d1dbeef61abd55a7968d9e57bdce20594df8a2c0f2
+    source_hash: c042a3cd4fa6f37cb42b88930b5fe0122a561a810e275f26d9c1eb56502495a7
     source_path: tools/duckduckgo-search.md
     workflow: 16
 ---
@@ -18,14 +19,14 @@ OpenClaw admite DuckDuckGo como proveedor `web_search` **sin clave**. No se requ
 clave de API ni cuenta.
 
 <Warning>
-  DuckDuckGo es una integración **experimental y no oficial** que obtiene resultados
-  de las páginas de búsqueda sin JavaScript de DuckDuckGo, no de una API oficial. Espera
-  fallos ocasionales por páginas de verificación de bots o cambios en el HTML.
+  DuckDuckGo es una integración **experimental y no oficial** que extrae resultados
+  de las páginas de búsqueda sin JavaScript de DuckDuckGo, no de una API oficial. Puede haber
+  fallos ocasionales por páginas de desafío antibot o cambios en el HTML.
 </Warning>
 
 ## Configuración
 
-No se necesita clave de API: solo configura DuckDuckGo como tu proveedor:
+No se necesita clave de API; solo configura DuckDuckGo como tu proveedor:
 
 <Steps>
   <Step title="Configure">
@@ -69,18 +70,18 @@ Ajustes opcionales a nivel de Plugin para región y SafeSearch:
 }
 ```
 
-## Parámetros de la herramienta
+## Parámetros de herramienta
 
 <ParamField path="query" type="string" required>
 Consulta de búsqueda.
 </ParamField>
 
 <ParamField path="count" type="number" default="5">
-Resultados que se devolverán (1-10).
+Resultados que devolver (1-10).
 </ParamField>
 
 <ParamField path="region" type="string">
-Código de región de DuckDuckGo (p. ej., `us-en`, `uk-en`, `de-de`).
+Código de región de DuckDuckGo (por ejemplo, `us-en`, `uk-en`, `de-de`).
 </ParamField>
 
 <ParamField path="safeSearch" type="'strict' | 'moderate' | 'off'" default="moderate">
@@ -92,16 +93,16 @@ parámetros de la herramienta anulan los valores de configuración por consulta.
 
 ## Notas
 
-- **Sin clave de API**: funciona de inmediato, sin configuración
+- **Sin clave de API**: funciona después de seleccionar DuckDuckGo como tu proveedor
+  `web_search`
 - **Experimental**: recopila resultados de las páginas de búsqueda HTML sin JavaScript
-  de DuckDuckGo, no de una API ni un SDK oficiales
-- **Riesgo de verificación de bots**: DuckDuckGo puede mostrar CAPTCHA o bloquear solicitudes
-  durante un uso intensivo o automatizado
+  de DuckDuckGo, no de una API o SDK oficial
+- **Riesgo de desafío antibot**: DuckDuckGo puede mostrar CAPTCHA o bloquear solicitudes
+  con uso intensivo o automatizado
 - **Análisis de HTML**: los resultados dependen de la estructura de la página, que puede cambiar sin
   previo aviso
-- **Orden de detección automática**: DuckDuckGo es la primera alternativa sin clave
-  (orden 100) en la detección automática. Los proveedores respaldados por API con claves configuradas se ejecutan
-  primero, luego Ollama Web Search (orden 110) y después SearXNG (orden 200)
+- **Selección explícita**: OpenClaw no elige DuckDuckGo automáticamente
+  cuando no hay configurado un proveedor respaldado por API
 - **SafeSearch usa moderate de forma predeterminada** cuando no está configurado
 
 <Tip>

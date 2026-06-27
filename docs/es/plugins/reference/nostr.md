@@ -1,20 +1,21 @@
 ---
 read_when:
     - Está instalando, configurando o auditando el Plugin de nostr
-summary: Añade la superficie del canal Nostr para enviar y recibir mensajes de OpenClaw.
+summary: Plugin de canal Nostr de OpenClaw para mensajes directos cifrados NIP-04.
 title: Plugin de Nostr
 x-i18n:
-    generated_at: "2026-05-03T05:32:09Z"
+    generated_at: "2026-06-27T12:22:44Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 1205a3b286e406b41029418b5fb9b12dcb19b35aff60c32d12e60c45804d7eaa
+    source_hash: e56fd9eee17c55bcbba3d7b85d783930c10d2368f36173ac478b254c2bd5ec22
     source_path: plugins/reference/nostr.md
     workflow: 16
 ---
 
 # Plugin de Nostr
 
-Añade la superficie del canal Nostr para enviar y recibir mensajes de OpenClaw.
+Plugin de canal Nostr de OpenClaw para mensajes directos cifrados con NIP-04.
 
 ## Distribución
 

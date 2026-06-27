@@ -1,29 +1,30 @@
 ---
 read_when:
-    - Está instalando, configurando o auditando el Plugin de Signal
+    - Estás instalando, configurando o auditando el Plugin de Signal
 summary: Agrega la superficie del canal Signal para enviar y recibir mensajes de OpenClaw.
 title: Plugin de Signal
 x-i18n:
-    generated_at: "2026-05-02T21:00:59Z"
+    generated_at: "2026-06-27T12:24:18Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 8d066bcea16277affe7ecc181207330fa9c439ec242bab279c65efdf67b361c6
+    source_hash: 7136222af25d73d50b9a973d287b863176c58d634da4c9d7726d5cc6942135bb
     source_path: plugins/reference/signal.md
     workflow: 16
 ---
 
 # Plugin de Signal
 
-Añade la superficie del canal Signal para enviar y recibir mensajes de OpenClaw.
+Añade la superficie del canal de Signal para enviar y recibir mensajes de OpenClaw.
 
 ## Distribución
 
 - Paquete: `@openclaw/signal`
-- Ruta de instalación: incluido en OpenClaw
+- Ruta de instalación: npm; ClawHub: `clawhub:@openclaw/signal`
 
 ## Superficie
 
-canales: signal
+channels: signal
 
 ## Documentación relacionada
 

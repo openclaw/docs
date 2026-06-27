@@ -1,20 +1,21 @@
 ---
 read_when:
-    - Está instalando, configurando o auditando el Plugin tlon
-summary: Añade la superficie del canal Tlon para enviar y recibir mensajes de OpenClaw.
+    - Estás instalando, configurando o auditando el plugin tlon
+summary: Plugin de canal Tlon/Urbit de OpenClaw para flujos de trabajo de chat.
 title: Plugin de Tlon
 x-i18n:
-    generated_at: "2026-05-03T05:32:10Z"
+    generated_at: "2026-06-27T12:24:54Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 636c7fc3ae8f8f35337d2fe279f1752226ff7ee017442372878448a82f99ecce
+    source_hash: 6fd1dcc934734599c0b671f0a9659dc5cc6e4ff907e3e14f9ff3ba5ec86aa0cc
     source_path: plugins/reference/tlon.md
     workflow: 16
 ---
 
 # Plugin de Tlon
 
-Añade la superficie de canal de Tlon para enviar y recibir mensajes de OpenClaw.
+Plugin de canal Tlon/Urbit de OpenClaw para flujos de trabajo de chat.
 
 ## Distribución
 
@@ -23,7 +24,7 @@ Añade la superficie de canal de Tlon para enviar y recibir mensajes de OpenClaw
 
 ## Superficie
 
-canales: tlon; contratos: herramientas; Skills
+canales: tlon; Skills
 
 ## Documentación relacionada
 

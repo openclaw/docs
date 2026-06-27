@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 91aab7c105643d8e5d07d89cd5ab176f0a40cd3d23e2b20b3986cbf76f575d64
     source_path: tools/elevated.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Cuando un agente se ejecuta dentro de un sandbox, sus comandos `exec` quedan confinados al

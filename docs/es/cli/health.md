@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 26be7bbbf75c2eca1213fe145fdeeab6fee96798dff457278ac69a20145bf75d
     source_path: cli/health.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # `openclaw health`

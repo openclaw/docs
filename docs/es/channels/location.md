@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 19c10a55e30c70a7af5d041f9a25c0a2783e3191403e7c0cedfbe7dd8f1a77c1
     source_path: channels/location.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw normaliza las ubicaciones compartidas desde canales de chat en:

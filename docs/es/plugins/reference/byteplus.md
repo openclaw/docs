@@ -10,6 +10,7 @@ x-i18n:
     source_hash: ecb4a427b1809c11631115b63e67bc7ce619191a0c840c13cf46cade27e76d4b
     source_path: plugins/reference/byteplus.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Plugin de BytePlus

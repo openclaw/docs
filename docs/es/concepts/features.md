@@ -1,13 +1,14 @@
 ---
 read_when:
     - Quieres una lista completa de lo que admite OpenClaw
-summary: Capacidades de OpenClaw en canales, enrutamiento, medios y experiencia de usuario.
-title: Características
+summary: Capacidades de OpenClaw en canales, enrutamiento, medios y UX.
+title: Funciones
 x-i18n:
-    generated_at: "2026-05-11T20:29:50Z"
+    generated_at: "2026-06-27T11:11:48Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: eb2e4973ad7f986034e125cd84d9d3f8542ea4821bde28fce2df3fb78c06c34f
+    source_hash: b69cead6fc3c6af91e95f8080d9ca409f24c314cf97f707b67d8fdeb84cf92fa
     source_path: concepts/features.md
     workflow: 16
 ---
@@ -16,10 +17,10 @@ x-i18n:
 
 <Columns>
   <Card title="Canales" icon="message-square" href="/es/channels">
-    Discord, iMessage, Signal, Slack, Telegram, WhatsApp, WebChat y más con un solo Gateway.
+    Discord, iMessage, Signal, Slack, Telegram, WhatsApp, WebChat y más con un único Gateway.
   </Card>
   <Card title="Plugins" icon="plug" href="/es/tools/plugin">
-    Los plugins incluidos añaden Matrix, Nextcloud Talk, Nostr, Twitch, Zalo y más sin instalaciones separadas en las versiones actuales normales.
+    Los plugins incluidos agregan Matrix, Nextcloud Talk, Nostr, Twitch, Zalo y más sin instalaciones separadas en las versiones actuales normales.
   </Card>
   <Card title="Enrutamiento" icon="route" href="/es/concepts/multi-agent">
     Enrutamiento multiagente con sesiones aisladas.
@@ -27,11 +28,11 @@ x-i18n:
   <Card title="Multimedia" icon="image" href="/es/nodes/images">
     Imágenes, audio, video, documentos y generación de imágenes/video.
   </Card>
-  <Card title="Apps e interfaz de usuario" icon="monitor" href="/es/web/control-ui">
-    Interfaz de usuario Web Control y app complementaria para macOS.
+  <Card title="Aplicaciones e interfaz de usuario" icon="monitor" href="/es/platforms">
+    Windows Hub, Web Control UI, aplicación para macOS y nodos móviles.
   </Card>
   <Card title="Nodos móviles" icon="smartphone" href="/es/nodes">
-    Nodos iOS y Android con emparejamiento, voz/chat y comandos de dispositivo enriquecidos.
+    Nodos iOS y Android con emparejamiento, voz/chat y comandos enriquecidos del dispositivo.
   </Card>
 </Columns>
 
@@ -43,7 +44,7 @@ x-i18n:
 - Los canales de plugins incluidos incluyen Feishu, LINE, Matrix, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Synology Chat, Tlon, Twitch, Zalo y Zalo Personal
 - Los plugins de canal opcionales instalados por separado incluyen Voice Call y paquetes de terceros como WeChat
 - Los plugins de canal de terceros pueden ampliar aún más el Gateway, como WeChat
-- Compatibilidad con chats grupales mediante activación basada en menciones
+- Compatibilidad con chat grupal con activación basada en menciones
 - Seguridad de DM con listas de permitidos y emparejamiento
 
 **Agente:**
@@ -61,21 +62,21 @@ x-i18n:
 
 **Multimedia:**
 
-- Imágenes, audio, video y documentos de entrada y salida
-- Superficies de capacidad compartidas para generación de imágenes y generación de video
+- Entrada y salida de imágenes, audio, video y documentos
+- Superficies compartidas de capacidad de generación de imágenes y generación de video
 - Transcripción de notas de voz
 - Texto a voz con varios proveedores
 
-**Apps e interfaces:**
+**Aplicaciones e interfaces:**
 
-- WebChat e interfaz de usuario Control en el navegador
-- App complementaria de barra de menús para macOS
+- WebChat e interfaz Control UI del navegador
+- Aplicación complementaria de barra de menús para macOS
 - Nodo iOS con emparejamiento, Canvas, cámara, grabación de pantalla, ubicación y voz
-- Nodo Android con emparejamiento, chat, voz, Canvas, cámara y comandos de dispositivo
+- Nodo Android con emparejamiento, chat, voz, Canvas, cámara y comandos del dispositivo
 
 **Herramientas y automatización:**
 
-- Automatización de navegador, exec, sandboxing
+- Automatización del navegador, ejecución y aislamiento en sandbox
 - Búsqueda web (Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG, Tavily)
 - Tareas Cron y programación de Heartbeat
 - Skills, plugins y pipelines de flujo de trabajo (Lobster)
@@ -84,10 +85,10 @@ x-i18n:
 
 <CardGroup cols={2}>
   <Card title="Funciones experimentales" href="/es/concepts/experimental-features" icon="flask">
-    Funciones opcionales que aún no se han lanzado en la superficie predeterminada.
+    Funciones opcionales que aún no se han publicado en la superficie predeterminada.
   </Card>
-  <Card title="Runtime de agente" href="/es/concepts/agent" icon="robot">
-    Modelo de runtime de agente y cómo se despachan las ejecuciones.
+  <Card title="Runtime del agente" href="/es/concepts/agent" icon="robot">
+    Modelo de runtime del agente y cómo se despachan las ejecuciones.
   </Card>
   <Card title="Canales" href="/es/channels" icon="message-square">
     Conecta Telegram, WhatsApp, Discord, Slack y más desde un solo Gateway.
