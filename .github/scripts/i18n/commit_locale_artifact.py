@@ -5,13 +5,15 @@ Definition:
   This script owns the per-locale commit/push control plane for full
   translation recovery. It expects locale files to have already been applied
   and validated, then commits only docs/<locale> and that locale's translation
-  memory. It retries rebase/push conflicts while guarding against source
-  metadata moving after artifact application.
+  memory. Canary commits are additionally restricted to the sampled page and
+  locale translation memory. It retries rebase/push conflicts while guarding
+  against source metadata moving after artifact application.
 
 Parameters:
   --locale: Locale directory to commit. Default: LOCALE environment variable.
   --base-source-sha: Source SHA observed after artifact application. Default:
     BASE_SOURCE_SHA environment variable.
+  --artifact-dir: Downloaded locale artifact directory. Default: ARTIFACT_DIR.
   --attempts: Push/rebase retry count. Default: 5.
 
 Outputs:
@@ -22,7 +24,8 @@ Outputs:
 
 Examples:
   LOCALE=fr BASE_SOURCE_SHA=abc python .github/scripts/i18n/commit_locale_artifact.py
-  python .github/scripts/i18n/commit_locale_artifact.py --locale zh-CN --base-source-sha abc --attempts 3
+  ARTIFACT_ROLE=canary ARTIFACT_DIR=.openclaw-sync/i18n-artifacts/zh-cn-s0of1 LOCALE=zh-CN BASE_SOURCE_SHA=abc python .github/scripts/i18n/commit_locale_artifact.py
+  python .github/scripts/i18n/commit_locale_artifact.py --locale zh-CN --base-source-sha abc --artifact-dir .openclaw-sync/i18n-artifacts/zh-cn-s0of1 --attempts 3
 """
 
 from __future__ import annotations
@@ -31,6 +34,7 @@ import argparse
 import json
 import os
 import subprocess
+import sys
 import time
 from pathlib import Path
 
@@ -84,11 +88,68 @@ def has_locale_changes(locale: str) -> bool:
     return bool(result.stdout.strip())
 
 
-def commit_locale(locale: str, base_source_sha: str, attempts: int) -> bool:
+def pending_allowed(locale: str, locale_slug: str, shard_index: str, shard_total: str) -> set[str]:
+    pending_file = Path(".openclaw-sync") / f"docs-i18n-{locale_slug}-s{shard_index}of{shard_total}.txt"
+    allowed = {f"docs/.i18n/{locale}.tm.jsonl"}
+    if not pending_file.exists():
+        raise SystemExit(f"missing canary pending manifest: {pending_file}")
+    docs_root = Path("docs").resolve()
+    for line in pending_file.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        source = Path(line.strip()).resolve()
+        rel = source.relative_to(docs_root).as_posix()
+        allowed.add(f"docs/{locale}/{rel}")
+    return allowed
+
+
+def artifact_allowed(locale: str, artifact_dir: str) -> set[str]:
+    artifact = Path(artifact_dir)
+    if not artifact.exists():
+        raise SystemExit(f"missing canary artifact directory: {artifact}")
+    deleted = [line for line in (artifact / "deleted-files.txt").read_text(encoding="utf-8").splitlines() if line.strip()]
+    if deleted:
+        raise SystemExit(f"canary artifact unexpectedly included deleted paths: {', '.join(deleted)}")
+    allowed = set()
+    for line in (artifact / "changed-files.txt").read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        if line == f"docs/.i18n/{locale}.tm.jsonl" or line.startswith(f"docs/{locale}/"):
+            allowed.add(line)
+            continue
+        raise SystemExit(f"canary artifact changed path outside locale scope: {line}")
+    return allowed
+
+
+def enforce_canary_scope(locale: str, allowed: set[str]) -> None:
+    status = git_stdout(["status", "--porcelain", "--untracked-files=all", "--", f"docs/{locale}", f"docs/.i18n/{locale}.tm.jsonl"])
+    changed = {line[3:] for line in status.splitlines() if line.strip()}
+    bad = sorted(path for path in changed if path not in allowed)
+    if bad:
+        print("Canary commit touched paths outside the sampled page contract:", file=sys.stderr)
+        for path in bad:
+            print(path, file=sys.stderr)
+        raise SystemExit(1)
+
+
+def commit_locale(
+    locale: str,
+    base_source_sha: str,
+    attempts: int,
+    artifact_role: str = "",
+    locale_slug: str = "",
+    shard_index: str = "0",
+    shard_total: str = "1",
+    artifact_dir: str = "",
+) -> bool:
     if not has_locale_changes(locale):
         print(f"No {locale} translation changes.")
         write_output("committed", "false")
         return False
+
+    if artifact_role == "canary":
+        allowed = artifact_allowed(locale, artifact_dir) if artifact_dir else pending_allowed(locale, locale_slug or locale, shard_index, shard_total)
+        enforce_canary_scope(locale, allowed)
 
     git_stdout(["config", "user.name", "openclaw-docs-i18n[bot]"])
     git_stdout(["config", "user.email", "openclaw-docs-i18n[bot]@users.noreply.github.com"])
@@ -121,11 +182,12 @@ def parse_args() -> argparse.Namespace:
 
 Examples:
   LOCALE=fr BASE_SOURCE_SHA=abc python .github/scripts/i18n/commit_locale_artifact.py
-  python .github/scripts/i18n/commit_locale_artifact.py --locale zh-CN --base-source-sha abc --attempts 3
+  python .github/scripts/i18n/commit_locale_artifact.py --locale zh-CN --base-source-sha abc --artifact-dir .openclaw-sync/i18n-artifacts/zh-cn-s0of1 --attempts 3
 """,
     )
     parser.add_argument("--locale", default=os.environ.get("LOCALE", ""))
     parser.add_argument("--base-source-sha", default=os.environ.get("BASE_SOURCE_SHA", ""))
+    parser.add_argument("--artifact-dir", default=os.environ.get("ARTIFACT_DIR", ""))
     parser.add_argument("--attempts", default=5, type=int)
     return parser.parse_args()
 
@@ -138,7 +200,16 @@ def main() -> None:
         raise SystemExit("missing base source sha: pass --base-source-sha or set BASE_SOURCE_SHA")
     if args.attempts < 1:
         raise SystemExit("attempts must be >= 1")
-    commit_locale(args.locale, args.base_source_sha, args.attempts)
+    commit_locale(
+        args.locale,
+        args.base_source_sha,
+        args.attempts,
+        artifact_role=os.environ.get("ARTIFACT_ROLE", ""),
+        locale_slug=os.environ.get("LOCALE_SLUG", args.locale),
+        shard_index=os.environ.get("SHARD_INDEX", "0"),
+        shard_total=os.environ.get("SHARD_TOTAL", "1"),
+        artifact_dir=args.artifact_dir,
+    )
 
 
 if __name__ == "__main__":

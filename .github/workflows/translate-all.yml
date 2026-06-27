@@ -37,6 +37,11 @@ on:
           - id
           - pl
           - th
+      canary_only:
+        description: Run only the canary translation, publish, and live smoke.
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   actions: write
@@ -154,9 +159,12 @@ jobs:
       worker_parallel: "3"
       thinking_effort: "medium"
       pending_limit: "1"
+      canary_source_path: channels/line.md
+      canary_live_path: channels/line
+      canary_expected_h1: LINE
       artifact_prefix: i18n-canary
       artifact_role: canary
-      commit_locale: false
+      commit_locale: true
     secrets: inherit
 
   translate-batch-1:
@@ -165,7 +173,7 @@ jobs:
       - prepare
       - plan
       - translate-canary
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && needs.plan.outputs.batch_1_count != '0'
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && needs.plan.outputs.batch_1_count != '0'
     strategy:
       fail-fast: false
       max-parallel: 3
@@ -194,7 +202,7 @@ jobs:
       - plan
       - translate-canary
       - translate-batch-1
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && needs.plan.outputs.batch_2_count != '0'
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && needs.plan.outputs.batch_2_count != '0'
     strategy:
       fail-fast: false
       max-parallel: 3
@@ -223,7 +231,7 @@ jobs:
       - plan
       - translate-canary
       - translate-batch-2
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && needs.plan.outputs.batch_3_count != '0'
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && needs.plan.outputs.batch_3_count != '0'
     strategy:
       fail-fast: false
       max-parallel: 3
@@ -252,7 +260,7 @@ jobs:
       - plan
       - translate-canary
       - translate-batch-3
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && needs.plan.outputs.batch_4_count != '0'
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && needs.plan.outputs.batch_4_count != '0'
     strategy:
       fail-fast: false
       max-parallel: 3
@@ -281,7 +289,7 @@ jobs:
       - plan
       - translate-canary
       - translate-batch-4
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && needs.plan.outputs.batch_5_count != '0'
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && needs.plan.outputs.batch_5_count != '0'
     strategy:
       fail-fast: false
       max-parallel: 3
@@ -310,7 +318,7 @@ jobs:
       - plan
       - translate-canary
       - translate-batch-5
-    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && needs.plan.outputs.batch_6_count != '0'
+    if: always() && needs.prepare.outputs.should_translate == 'true' && needs.translate-canary.result == 'success' && inputs.canary_only != true && needs.plan.outputs.batch_6_count != '0'
     strategy:
       fail-fast: false
       max-parallel: 3
@@ -362,6 +370,7 @@ jobs:
         env:
           SELECTED_LOCALES: ${{ needs.plan.outputs.selected_locales }}
           LOCALE_COUNT: ${{ needs.plan.outputs.locale_count }}
+          CANARY_ONLY: ${{ inputs.canary_only || false }}
           PROVIDER_RESULT: ${{ needs.provider-preflight.result }}
           CANARY_RESULT: ${{ needs.translate-canary.result }}
           BATCH_1_RESULT: ${{ needs.translate-batch-1.result }}
@@ -378,6 +387,7 @@ jobs:
             echo
             echo "- selected locales: \`${SELECTED_LOCALES}\`"
             echo "- locale count: \`${LOCALE_COUNT}\`"
+            echo "- canary only: \`${CANARY_ONLY}\`"
             echo "- provider preflight: \`${PROVIDER_RESULT}\`"
             echo "- canary: \`${CANARY_RESULT}\`"
             echo "- batch 1: \`${BATCH_1_RESULT}\`"

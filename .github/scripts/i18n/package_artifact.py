@@ -144,7 +144,9 @@ def package_artifact(workspace: Path, openclaw_sync_dir: Path) -> dict[str, obje
 
         allowed = read_pending_allowed(workspace, locale, locale_slug, shard_index, shard_total)
         shard_changed = [line for line in changed if line in allowed]
-        if shard_total == 1:
+        if os.environ.get("ARTIFACT_ROLE") == "canary":
+            shard_deleted = []
+        elif shard_total == 1:
             shard_deleted = deleted
         else:
             shard_deleted = [

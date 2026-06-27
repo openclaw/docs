@@ -3,6 +3,8 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 
+import { localeLabels } from "./config.mjs";
+
 const root = process.cwd();
 const bucket = process.env.CLOUDFLARE_R2_BUCKET || "openclaw-docs";
 const manifestPath = resolvePath(process.env.R2_UPLOAD_MANIFEST_PATH || "dist/docs-r2-manifest.json");
@@ -24,6 +26,8 @@ const putAll = process.env.R2_UPLOAD_PUT_ALL === "1";
 const dryRun = process.env.R2_UPLOAD_DRY_RUN === "1";
 const remoteManifestPath = process.env.R2_UPLOAD_REMOTE_MANIFEST_PATH || "";
 const uploadScope = process.env.R2_UPLOAD_SCOPE || "all";
+const uploadLocale = normalizeLocale(process.env.R2_UPLOAD_LOCALE || "");
+const uploadPagePath = normalizePagePath(process.env.R2_UPLOAD_PAGE_PATH || "");
 const partialUpload = process.env.R2_UPLOAD_PARTIAL === "1" || uploadScope !== "all";
 const protectedKeys = new Set([
   "llms-full.txt",
@@ -41,6 +45,9 @@ if (!dryRun && !secretAccessKey) throw new Error("OPENCLAW_R2_SECRET_ACCESS_KEY 
 const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
 if (!Array.isArray(manifest.entries)) throw new Error("dist/docs-r2-manifest.json must contain an entries array");
 const scopedEntries = filterEntriesByScope(manifest.entries, uploadScope);
+if ((uploadScope === "page" || uploadScope === "locale") && scopedEntries.length === 0) {
+  throw new Error(`R2_UPLOAD_SCOPE=${uploadScope} matched zero manifest entries`);
+}
 const remoteManifest = await getRemoteManifest();
 if (partialUpload && !dryRun && remoteManifest.status !== "hit" && process.env.R2_UPLOAD_ALLOW_PARTIAL_WITHOUT_REMOTE !== "1") {
   throw new Error("Partial R2 upload requires an existing remote manifest; run a full upload first or set R2_UPLOAD_ALLOW_PARTIAL_WITHOUT_REMOTE=1");
@@ -84,8 +91,12 @@ function filterEntriesByScope(entries, scope) {
       return entries;
     case "shell":
       return entries.filter((entry) => isShellScopedEntry(entry));
+    case "locale":
+      return entries.filter((entry) => isLocaleScopedEntry(entry, uploadLocale));
+    case "page":
+      return entries.filter((entry) => isPageScopedEntry(entry, uploadLocale, uploadPagePath));
     default:
-      throw new Error(`R2_UPLOAD_SCOPE must be all or shell, got ${scope}`);
+      throw new Error(`R2_UPLOAD_SCOPE must be all, shell, locale, or page, got ${scope}`);
   }
 }
 
@@ -96,6 +107,57 @@ function isShellScopedEntry(entry) {
   if (key.startsWith("og/") || key === "og-card.png") return true;
   if (key.endsWith(".md")) return true;
   return entry.contentType === "text/html; charset=utf-8" || key.endsWith(".html");
+}
+
+function isLocaleScopedEntry(entry, locale) {
+  const key = entry.key;
+  // Locale page changes regenerate Pagefind's global shards. Uploading those
+  // search objects keeps a successful locale publish discoverable without
+  // falling back to a full-site page upload.
+  if (key.startsWith("pagefind/")) return true;
+  return key === locale || key.startsWith(`${locale}/`);
+}
+
+function isPageScopedEntry(entry, locale, pagePath) {
+  const keys = pageScopedKeys(locale, pagePath);
+  return keys.has(entry.key);
+}
+
+function pageScopedKeys(locale, pagePath) {
+  const routeBase = pagePath === "index" ? locale : `${locale}/${pagePath}`;
+  return new Set([
+    routeBase,
+    `${routeBase}/index.html`,
+    pagePath === "index" ? `${locale}/index.md` : `${routeBase}.md`,
+  ]);
+}
+
+function normalizeLocale(value) {
+  if (uploadScope !== "page" && uploadScope !== "locale") return "";
+  const locale = value.trim();
+  if (!locale) throw new Error(`R2_UPLOAD_LOCALE is required for R2_UPLOAD_SCOPE=${uploadScope}`);
+  if (locale === "en") throw new Error("R2_UPLOAD_LOCALE=en is not supported for translation-scoped uploads");
+  if (!Object.hasOwn(localeLabels, locale)) throw new Error(`R2_UPLOAD_LOCALE is not a configured locale: ${locale}`);
+  return locale;
+}
+
+function normalizePagePath(value) {
+  if (uploadScope !== "page") return "";
+  const raw = value.trim();
+  if (!raw) throw new Error("R2_UPLOAD_PAGE_PATH is required for R2_UPLOAD_SCOPE=page");
+  if (raw.startsWith("/") || raw.includes("\\") || raw.includes("?") || raw.includes("#")) {
+    throw new Error(`R2_UPLOAD_PAGE_PATH must be a clean relative docs route, got ${raw}`);
+  }
+  const withoutExtension = raw.replace(/\.(md|mdx)$/u, "");
+  const normalized = path.posix.normalize(withoutExtension);
+  if (normalized === "." || normalized.startsWith("../") || normalized.includes("/../")) {
+    throw new Error(`R2_UPLOAD_PAGE_PATH must stay inside the locale docs tree, got ${raw}`);
+  }
+  const pagePath = normalized.replace(/\/index$/u, "") || "index";
+  if (pagePath.split("/").some((segment) => !segment || segment === "." || segment === "..")) {
+    throw new Error(`R2_UPLOAD_PAGE_PATH contains an invalid segment: ${raw}`);
+  }
+  return pagePath;
 }
 
 function writeUploadManifest(localManifest, currentRemoteManifest, entries) {

@@ -41,6 +41,8 @@ prune_stale_locale_pages = load_module("prune_stale_locale_pages")
 plan_full = load_module("plan_full")
 provider_preflight = load_module("provider_preflight")
 summarize_full = load_module("summarize_full")
+commit_locale_artifact = load_module("commit_locale_artifact")
+dispatch_r2_pages = load_module("dispatch_r2_pages")
 
 
 @contextmanager
@@ -85,12 +87,20 @@ class I18NScriptTests(unittest.TestCase):
 
         called_scripts: set[Path] = set()
         heredoc_pattern = re.compile(r"(?:python|node)\s+-\s+<<['\"]?(?:PY|NODE)['\"]?")
-        script_call_pattern = re.compile(r"python\s+(\.github/scripts/i18n/[A-Za-z0-9_./-]+\.py)\b")
+        script_call_pattern = re.compile(
+            r"python\s+(?:"
+            r"(?P<repo>\.github/scripts/i18n/[A-Za-z0-9_./-]+\.py)"
+            r"|\"\$\{I18N_SCRIPT_DIR\}/(?P<temp>[A-Za-z0-9_-]+\.py)\""
+            r")(?=\s|$)"
+        )
         for workflow in workflows:
             text = workflow.read_text(encoding="utf-8")
             self.assertIsNone(heredoc_pattern.search(text), f"{workflow} still contains inline Python/Node heredoc")
             for match in script_call_pattern.finditer(text):
-                called_scripts.add(REPO_ROOT / match.group(1))
+                if match.group("repo"):
+                    called_scripts.add(REPO_ROOT / match.group("repo"))
+                else:
+                    called_scripts.add(SCRIPT_DIR / match.group("temp"))
 
         expected_scripts = set(SCRIPT_DIR.glob("*.py")) - {SCRIPT_DIR / "__init__.py"}
         self.assertEqual(expected_scripts, called_scripts)
@@ -172,6 +182,7 @@ class I18NScriptTests(unittest.TestCase):
         self.assertIn("schedule:", text)
         self.assertIn("workflow_dispatch:", text)
         self.assertIn("target_locale:", text)
+        self.assertIn("canary_only:", text)
         self.assertIn("cancel-in-progress: false", text)
 
     def test_full_workflow_gates_batches_after_canary(self) -> None:
@@ -180,12 +191,46 @@ class I18NScriptTests(unittest.TestCase):
         for index in range(1, 7):
             self.assertIn(f"translate-batch-{index}:", text)
             self.assertIn("needs.translate-canary.result == 'success'", text)
+            self.assertIn("inputs.canary_only != true", text)
         self.assertIn("artifact_role: canary", text)
+        self.assertIn("canary_source_path: channels/line.md", text)
+        self.assertIn("canary_live_path: channels/line", text)
+        self.assertIn("canary_expected_h1: LINE", text)
+        self.assertRegex(text, r"translate-canary:[\s\S]*?artifact_role: canary[\s\S]*?commit_locale: true")
         self.assertIn("inputs.commit_locale || inputs.artifact_role == 'canary'", reusable)
         self.assertIn("inputs.artifact_role == 'canary' || steps.apply.outputs.changed_count != '0'", reusable)
         self.assertIn("inputs.commit_locale && steps.apply.outputs.changed_count != '0'", reusable)
+        self.assertIn("Fail uncommitted locale refresh", reusable)
+        self.assertIn("inputs.artifact_role == 'canary' || (inputs.commit_locale && steps.locale_commit.outputs.committed == 'true')", reusable)
+        self.assertIn("ARTIFACT_DIR: .openclaw-sync/i18n-artifacts/${{ inputs.locale_slug }}-s${{ inputs.shard_index }}of${{ inputs.shard_total }}", reusable)
+        self.assertIn('echo "I18N_SCRIPT_DIR=${I18N_SCRIPT_DIR}" >> "$GITHUB_ENV"', reusable)
+        self.assertIn("ref: ${{ github.workflow_sha }}", reusable)
+        self.assertIn('python "${I18N_SCRIPT_DIR}/build_pending_manifest.py"', reusable)
+        self.assertIn('python "${I18N_SCRIPT_DIR}/commit_locale_artifact.py"', reusable)
+        self.assertIn('python "${I18N_SCRIPT_DIR}/dispatch_r2_pages.py" "${args[@]}"', reusable)
+        self.assertIn("--artifact-scope page", reusable)
+        self.assertIn('--ref "${{ github.ref_name }}"', reusable)
+        self.assertIn('--locale "${{ inputs.locale }}"', reusable)
+        self.assertIn('--page-path "${{ inputs.canary_live_path }}"', reusable)
+        self.assertIn("--artifact-scope locale", reusable)
+        self.assertIn("--no-force-upload", reusable)
+        self.assertIn('--live-url "${CANARY_LIVE_URL}"', reusable)
+        self.assertIn('--expect-h1 "${CANARY_EXPECTED_H1}"', reusable)
+        finalize_reusable = (REPO_ROOT / ".github/workflows/translate-finalize-reusable.yml").read_text(encoding="utf-8")
+        self.assertIn('echo "I18N_SCRIPT_DIR=${I18N_SCRIPT_DIR}" >> "$GITHUB_ENV"', finalize_reusable)
+        self.assertIn("ref: ${{ github.workflow_sha }}", finalize_reusable)
+        self.assertIn('python "${I18N_SCRIPT_DIR}/dispatch_r2_pages.py"', finalize_reusable)
         self.assertIn("provider-preflight:", text)
         self.assertIn("Translate Full completed with failed or cancelled work", text)
+        r2_pages = (REPO_ROOT / ".github/workflows/r2-pages.yml").read_text(encoding="utf-8")
+        self.assertIn("- locale", r2_pages)
+        self.assertIn("- page", r2_pages)
+        self.assertRegex(r2_pages, r"group: r2-pages\s+cancel-in-progress: false")
+        self.assertIn("Refresh scoped docs content from main", r2_pages)
+        self.assertIn("SCOPED_CONTENT_SHA: ${{ steps.scoped-content.outputs.content_sha || '' }}", r2_pages)
+        self.assertIn("R2_UPLOAD_SCOPE: ${{ steps.artifact-scope.outputs.upload_scope }}", r2_pages)
+        self.assertIn("R2_UPLOAD_LOCALE: ${{ inputs.locale || '' }}", r2_pages)
+        self.assertIn("R2_UPLOAD_PAGE_PATH: ${{ inputs.page_path || '' }}", r2_pages)
 
     def test_prepare_path_selection_matches_incremental_rules(self) -> None:
         self.assertTrue(prepare.is_translatable_doc_path("docs/guide/setup.mdx"))
@@ -289,6 +334,7 @@ class I18NScriptTests(unittest.TestCase):
             self.assertEqual(2, result.all_count)
             self.assertEqual(2, result.total_pending_count)
             self.assertEqual(1, result.pending_count)
+            self.assertEqual("index.md", result.shard_files[0].name)
             self.assertTrue(result.shard_files[0].as_posix().endswith("/docs/index.md"))
             self.assertEqual(str(result.shard_files[0]), result.pending_path.read_text(encoding="utf-8").strip())
 
@@ -335,6 +381,45 @@ class I18NScriptTests(unittest.TestCase):
 
             self.assertEqual(2, result.total_pending_count)
             self.assertEqual(1, result.pending_count)
+
+    def test_pending_manifest_canary_prefers_configured_source_page(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            shutil.copytree(FIXTURES / "pending-docs" / "docs", tmp_path / "docs")
+
+            result = pending.build_pending_manifest(
+                docs_root=tmp_path / "docs",
+                openclaw_sync_dir=tmp_path / ".openclaw-sync",
+                locale="fr",
+                locale_slug="fr",
+                mode="full",
+                shard_index=0,
+                shard_total=1,
+                pending_limit=1,
+                canary_source_path="guide/setup.mdx",
+            )
+
+            self.assertEqual(2, result.total_pending_count)
+            self.assertEqual(1, result.pending_count)
+            self.assertTrue(result.shard_files[0].as_posix().endswith("/docs/guide/setup.mdx"))
+
+    def test_pending_manifest_canary_rejects_missing_configured_source_page(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            shutil.copytree(FIXTURES / "pending-docs" / "docs", tmp_path / "docs")
+
+            with self.assertRaises(SystemExit):
+                pending.build_pending_manifest(
+                    docs_root=tmp_path / "docs",
+                    openclaw_sync_dir=tmp_path / ".openclaw-sync",
+                    locale="fr",
+                    locale_slug="fr",
+                    mode="full",
+                    shard_index=0,
+                    shard_total=1,
+                    pending_limit=1,
+                    canary_source_path="channels/line.md",
+                )
 
     def test_package_artifact_keeps_only_allowed_changed_paths_and_payload(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -418,6 +503,303 @@ class I18NScriptTests(unittest.TestCase):
             self.assertEqual("translation failed", metadata["failed_reason"])
             self.assertEqual("", (artifact / "changed-files.txt").read_text(encoding="utf-8"))
             self.assertEqual("", (artifact / "deleted-files.txt").read_text(encoding="utf-8"))
+
+    def test_canary_package_excludes_unrelated_pruned_deletes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            init_repo(repo)
+            (repo / ".openclaw-sync").mkdir()
+            (repo / "docs/fr").mkdir(parents=True)
+            (repo / "docs/.i18n").mkdir(parents=True)
+            (repo / "docs/index.md").write_text("# Index\n", encoding="utf-8")
+            (repo / "docs/fr/index.md").write_text("# Old Index FR\n", encoding="utf-8")
+            (repo / "docs/fr/removed.md").write_text("# Removed FR\n", encoding="utf-8")
+            run_git(repo, "add", ".")
+            run_git(repo, "commit", "-m", "initial")
+
+            (repo / "docs/fr/index.md").write_text("# New Index FR\n", encoding="utf-8")
+            (repo / "docs/fr/removed.md").unlink()
+            (repo / "docs/.i18n/fr.tm.jsonl").write_text('{"ok":true}\n', encoding="utf-8")
+            (repo / ".openclaw-sync/docs-i18n-fr-s0of1.txt").write_text(str(repo / "docs/index.md") + "\n", encoding="utf-8")
+
+            with chdir(repo), env(
+                {
+                    "GITHUB_WORKSPACE": str(repo),
+                    "LOCALE": "fr",
+                    "LOCALE_SLUG": "fr",
+                    "SOURCE_SHA": "source-a",
+                    "MODE": "full",
+                    "SHARD_INDEX": "0",
+                    "SHARD_TOTAL": "1",
+                    "WORKER_PARALLEL": "3",
+                    "THINKING_EFFORT": "medium",
+                    "PENDING_COUNT": "1",
+                    "TOTAL_PENDING_COUNT": "2",
+                    "ALL_COUNT": "2",
+                    "ARTIFACT_ROLE": "canary",
+                    "TRANSLATE_OUTCOME": "success",
+                    "MDX_CHECK_OUTCOME": "skipped",
+                    "MDX_REPAIR_OUTCOME": "skipped",
+                    "MDX_SCOPE_OUTCOME": "skipped",
+                    "MDX_RECHECK_OUTCOME": "skipped",
+                }
+            ):
+                metadata = package_artifact.package_artifact(repo, Path(".openclaw-sync"))
+
+            artifact = repo / ".openclaw-sync/artifacts/fr-s0of1"
+            self.assertEqual(2, metadata["changed_count"])
+            self.assertEqual(0, metadata["deleted_count"])
+            self.assertEqual(["docs/.i18n/fr.tm.jsonl", "docs/fr/index.md"], (artifact / "changed-files.txt").read_text(encoding="utf-8").splitlines())
+            self.assertEqual("", (artifact / "deleted-files.txt").read_text(encoding="utf-8"))
+
+    def test_canary_commit_scope_allows_only_sampled_page_and_tm(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            init_repo(repo)
+            (repo / ".openclaw-sync").mkdir()
+            (repo / "docs/fr").mkdir(parents=True)
+            (repo / "docs/.i18n").mkdir(parents=True)
+            (repo / "docs/index.md").write_text("# Index\n", encoding="utf-8")
+            (repo / "docs/fr/index.md").write_text("# Old Index FR\n", encoding="utf-8")
+            (repo / "docs/.i18n/fr.tm.jsonl").write_text('{"old":true}\n', encoding="utf-8")
+            run_git(repo, "add", ".")
+            run_git(repo, "commit", "-m", "initial")
+
+            (repo / "docs/fr/index.md").write_text("# New Index FR\n", encoding="utf-8")
+            (repo / "docs/.i18n/fr.tm.jsonl").write_text('{"ok":true}\n', encoding="utf-8")
+            artifact = repo / ".openclaw-sync/i18n-artifacts/fr-s0of1"
+            artifact.mkdir(parents=True)
+            (artifact / "changed-files.txt").write_text("docs/.i18n/fr.tm.jsonl\ndocs/fr/index.md\n", encoding="utf-8")
+            (artifact / "deleted-files.txt").write_text("", encoding="utf-8")
+
+            with chdir(repo):
+                allowed = commit_locale_artifact.artifact_allowed("fr", str(artifact))
+                commit_locale_artifact.enforce_canary_scope("fr", allowed)
+
+    def test_canary_commit_scope_rejects_unrelated_locale_deletes_not_in_artifact(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            init_repo(repo)
+            (repo / ".openclaw-sync").mkdir()
+            (repo / "docs/fr").mkdir(parents=True)
+            (repo / "docs/.i18n").mkdir(parents=True)
+            (repo / "docs/index.md").write_text("# Index\n", encoding="utf-8")
+            (repo / "docs/fr/index.md").write_text("# Old Index FR\n", encoding="utf-8")
+            (repo / "docs/fr/removed.md").write_text("# Removed FR\n", encoding="utf-8")
+            (repo / "docs/.i18n/fr.tm.jsonl").write_text('{"old":true}\n', encoding="utf-8")
+            run_git(repo, "add", ".")
+            run_git(repo, "commit", "-m", "initial")
+
+            (repo / "docs/fr/index.md").write_text("# New Index FR\n", encoding="utf-8")
+            (repo / "docs/fr/removed.md").unlink()
+            artifact = repo / ".openclaw-sync/i18n-artifacts/fr-s0of1"
+            artifact.mkdir(parents=True)
+            (artifact / "changed-files.txt").write_text("docs/fr/index.md\n", encoding="utf-8")
+            (artifact / "deleted-files.txt").write_text("", encoding="utf-8")
+
+            with chdir(repo):
+                allowed = commit_locale_artifact.artifact_allowed("fr", str(artifact))
+                with self.assertRaises(SystemExit):
+                    commit_locale_artifact.enforce_canary_scope("fr", allowed)
+
+    def test_canary_artifact_scope_rejects_deleted_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            artifact = Path(tmp) / "artifact"
+            artifact.mkdir()
+            (artifact / "changed-files.txt").write_text("docs/fr/index.md\n", encoding="utf-8")
+            (artifact / "deleted-files.txt").write_text("docs/fr/removed.md\n", encoding="utf-8")
+
+            with self.assertRaises(SystemExit):
+                commit_locale_artifact.artifact_allowed("fr", str(artifact))
+
+    def test_dispatch_r2_pages_parses_run_urls(self) -> None:
+        self.assertEqual("28277584371", dispatch_r2_pages.parse_run_id("https://github.com/openclaw/docs/actions/runs/28277584371"))
+
+    def test_dispatch_r2_pages_passes_scoped_inputs(self) -> None:
+        captured: list[str] = []
+
+        def fake_run(args: list[str], check: bool = True) -> subprocess.CompletedProcess[str]:
+            captured.extend(args)
+            return subprocess.CompletedProcess(
+                args=args,
+                returncode=0,
+                stdout="https://github.com/openclaw/docs/actions/runs/28277584371\n",
+                stderr="",
+            )
+
+        with patch.object(dispatch_r2_pages, "run", fake_run):
+            run_id = dispatch_r2_pages.dispatch(
+                "r2-pages.yml",
+                "main",
+                "openclaw/docs",
+                "page",
+                False,
+                "zh-CN",
+                "channels/line",
+            )
+
+        self.assertEqual("28277584371", run_id)
+        self.assertIn("artifact_scope=page", captured)
+        self.assertIn("force_upload=false", captured)
+        self.assertIn("locale=zh-CN", captured)
+        self.assertIn("page_path=channels/line", captured)
+
+    def test_dispatch_r2_pages_selects_recent_workflow_dispatch(self) -> None:
+        calls = {"count": 0}
+        now = "2026-06-27T03:43:01Z"
+
+        def fake_run(args: list[str], check: bool = True) -> subprocess.CompletedProcess[str]:
+            calls["count"] += 1
+            payload = [{"databaseId": 123, "createdAt": now, "status": "queued", "url": "https://github.com/openclaw/docs/actions/runs/123"}]
+            return subprocess.CompletedProcess(args=args, returncode=0, stdout=json.dumps(payload), stderr="")
+
+        with patch.object(dispatch_r2_pages, "run", fake_run), patch.object(dispatch_r2_pages.time, "sleep", lambda _: None):
+            run_id = dispatch_r2_pages.find_recent_run("r2-pages.yml", "main", "openclaw/docs", dispatch_r2_pages.parse_time(now))
+
+        self.assertEqual("123", run_id)
+        self.assertEqual(1, calls["count"])
+
+    def test_dispatch_r2_pages_ignores_known_recent_runs(self) -> None:
+        now = "2026-06-27T03:43:01Z"
+
+        def fake_list(workflow: str, ref: str, repo: str) -> list[dict]:
+            self.assertEqual("r2-pages.yml", workflow)
+            self.assertEqual("main", ref)
+            self.assertEqual("openclaw/docs", repo)
+            return [
+                {"databaseId": 123, "createdAt": now, "status": "completed", "url": "https://github.com/openclaw/docs/actions/runs/123"},
+                {"databaseId": 456, "createdAt": now, "status": "queued", "url": "https://github.com/openclaw/docs/actions/runs/456"},
+            ]
+
+        with patch.object(dispatch_r2_pages, "list_workflow_dispatch_runs", fake_list), patch.object(dispatch_r2_pages.time, "sleep", lambda _: None):
+            run_id = dispatch_r2_pages.find_dispatched_run(
+                "r2-pages.yml",
+                "main",
+                "openclaw/docs",
+                dispatch_r2_pages.parse_time(now),
+                {"123"},
+            )
+
+        self.assertEqual("456", run_id)
+
+    def test_dispatch_r2_pages_rejects_ambiguous_new_runs(self) -> None:
+        now = "2026-06-27T03:43:01Z"
+
+        def fake_list(workflow: str, ref: str, repo: str) -> list[dict]:
+            return [
+                {"databaseId": 123, "createdAt": now, "status": "queued", "url": "https://github.com/openclaw/docs/actions/runs/123"},
+                {"databaseId": 456, "createdAt": now, "status": "queued", "url": "https://github.com/openclaw/docs/actions/runs/456"},
+            ]
+
+        with patch.object(dispatch_r2_pages, "list_workflow_dispatch_runs", fake_list), patch.object(dispatch_r2_pages.time, "sleep", lambda _: None):
+            with self.assertRaises(SystemExit):
+                dispatch_r2_pages.find_dispatched_run(
+                    "r2-pages.yml",
+                    "main",
+                    "openclaw/docs",
+                    dispatch_r2_pages.parse_time(now),
+                    set(),
+                )
+
+    def test_dispatch_r2_pages_extracts_h1_text(self) -> None:
+        document = '<html><body><h1 class="title">LINE</h1></body></html>'
+
+        self.assertEqual("LINE", dispatch_r2_pages.extract_h1(document))
+
+    def test_dispatch_r2_pages_live_h1_retries_until_expected(self) -> None:
+        seen: list[str] = []
+
+        def fake_fetch(url: str, timeout_seconds: int = 30) -> str:
+            seen.append(url)
+            if len(seen) == 1:
+                return "<h1>行</h1>"
+            return "<h1>LINE</h1>"
+
+        with patch.object(dispatch_r2_pages, "fetch_text", fake_fetch), patch.object(dispatch_r2_pages.time, "sleep", lambda _: None):
+            dispatch_r2_pages.verify_live_h1("https://docs.openclaw.ai/zh-CN/channels/line", "LINE", 30, 1)
+
+        self.assertEqual(2, len(seen))
+        self.assertIn("_openclaw_i18n_canary=", seen[0])
+
+    def test_r2_upload_page_scope_filters_manifest_entries(self) -> None:
+        result = self._run_r2_upload_scope("page", "zh-CN", "channels/line")
+
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertIn("r2 upload scope: page (3/7 manifest entries, partial=true)", result.stdout)
+        self.assertIn("r2 dry-run put: zh-CN/channels/line\n", result.stdout)
+        self.assertIn("r2 dry-run put: zh-CN/channels/line/index.html", result.stdout)
+        self.assertIn("r2 dry-run put: zh-CN/channels/line.md", result.stdout)
+        self.assertNotIn("zh-CN/channels/sms", result.stdout)
+        self.assertNotIn("ja-JP/channels/line", result.stdout)
+        self.assertNotIn("assets/docs-site.css", result.stdout)
+        self.assertNotIn("pagefind/pagefind.js", result.stdout)
+
+    def test_r2_upload_locale_scope_filters_manifest_entries(self) -> None:
+        result = self._run_r2_upload_scope("locale", "zh-CN")
+
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertIn("r2 upload scope: locale (5/7 manifest entries, partial=true)", result.stdout)
+        self.assertIn("r2 dry-run put: zh-CN/channels/line/index.html", result.stdout)
+        self.assertIn("r2 dry-run put: zh-CN/channels/sms/index.html", result.stdout)
+        self.assertIn("r2 dry-run put: pagefind/pagefind.js", result.stdout)
+        self.assertNotIn("ja-JP/channels/line", result.stdout)
+        self.assertNotIn("assets/docs-site.css", result.stdout)
+
+    def _run_r2_upload_scope(self, scope: str, locale: str, page_path: str = "") -> subprocess.CompletedProcess[str]:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            dist = tmp_path / "dist"
+            files = tmp_path / "files"
+            dist.mkdir()
+            files.mkdir()
+            entries = []
+            for key in [
+                "zh-CN/channels/line",
+                "zh-CN/channels/line/index.html",
+                "zh-CN/channels/line.md",
+                "zh-CN/channels/sms/index.html",
+                "ja-JP/channels/line/index.html",
+                "pagefind/pagefind.js",
+                "assets/docs-site.css",
+            ]:
+                file_path = files / key.replace("/", "__")
+                file_path.write_text(key, encoding="utf-8")
+                digest = hashlib.sha256(file_path.read_bytes()).hexdigest()
+                entries.append(
+                    {
+                        "cacheControl": "public, max-age=60",
+                        "contentType": "text/html; charset=utf-8",
+                        "file": str(file_path),
+                        "key": key,
+                        "sha256": digest,
+                    }
+                )
+
+            manifest = tmp_path / "manifest.json"
+            manifest.write_text(json.dumps({"entries": entries, "generatedAt": "2026-06-27T00:00:00Z", "version": 1}), encoding="utf-8")
+            remote_manifest = tmp_path / "remote.json"
+            remote_manifest.write_text(json.dumps({"entries": [], "generatedAt": "2026-06-26T00:00:00Z", "version": 1}), encoding="utf-8")
+
+            test_env = os.environ.copy()
+            test_env.update(
+                {
+                    "R2_UPLOAD_DRY_RUN": "1",
+                    "R2_UPLOAD_MANIFEST_PATH": str(manifest),
+                    "R2_UPLOAD_REMOTE_MANIFEST_PATH": str(remote_manifest),
+                    "R2_UPLOAD_SCOPE": scope,
+                    "R2_UPLOAD_LOCALE": locale,
+                }
+            )
+            if page_path:
+                test_env["R2_UPLOAD_PAGE_PATH"] = page_path
+            return subprocess.run(
+                ["node", str(REPO_ROOT / "scripts/docs-site/r2-upload.mjs")],
+                cwd=tmp_path,
+                env=test_env,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
 
     def test_package_artifact_failure_writes_visible_github_status(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

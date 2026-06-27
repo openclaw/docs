@@ -25,6 +25,24 @@ jobs:
       group: docs-i18n-finalize
       cancel-in-progress: false
     steps:
+      # The artifact commit targets latest main, while the workflow control
+      # scripts stay pinned to the workflow ref under test.
+      - name: Check out workflow scripts
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: .openclaw-sync/workflow-ref
+          sparse-checkout: .github/scripts/i18n
+          persist-credentials: false
+
+      - name: Stage workflow scripts
+        run: |
+          set -euo pipefail
+          I18N_SCRIPT_DIR="${RUNNER_TEMP}/openclaw-i18n-scripts"
+          echo "I18N_SCRIPT_DIR=${I18N_SCRIPT_DIR}" >> "$GITHUB_ENV"
+          mkdir -p "${I18N_SCRIPT_DIR}"
+          cp -R .openclaw-sync/workflow-ref/.github/scripts/i18n/. "${I18N_SCRIPT_DIR}/"
+
       - name: Check out latest main
         uses: actions/checkout@v6
         with:
@@ -47,7 +65,7 @@ jobs:
           EXPECTED_LOCALES: zh-cn=zh-CN zh-tw=zh-TW ja-jp=ja-JP es=es pt-br=pt-BR ko=ko de=de fr=fr hi=hi ar=ar it=it vi=vi nl=nl fa=fa ru=ru tr=tr uk=uk id=id pl=pl th=th
         run: |
           set -euo pipefail
-          python .github/scripts/i18n/apply_artifacts.py \
+          python "${I18N_SCRIPT_DIR}/apply_artifacts.py" \
             --source-sha "${SOURCE_SHA}" \
             --mode "${MODE}" \
             --shard-total "${SHARD_TOTAL}" \
@@ -126,7 +144,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          gh workflow run pages.yml --ref main
+          python "${I18N_SCRIPT_DIR}/dispatch_r2_pages.py"
 
       - name: Fail incomplete translation run
         if: steps.apply.outputs.stale != 'true' && steps.apply.outputs.incomplete_count != '0'

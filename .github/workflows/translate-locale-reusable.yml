@@ -34,6 +34,10 @@ on:
         required: false
         default: "0"
         type: string
+      canary_source_path:
+        required: false
+        default: ""
+        type: string
       artifact_prefix:
         required: false
         default: i18n
@@ -46,6 +50,14 @@ on:
         required: false
         default: false
         type: boolean
+      canary_live_path:
+        required: false
+        default: channels/line
+        type: string
+      canary_expected_h1:
+        required: false
+        default: LINE
+        type: string
 
 jobs:
   translate:
@@ -57,6 +69,24 @@ jobs:
       group: translate-${{ inputs.locale_slug }}-s${{ inputs.shard_index }}of${{ inputs.shard_total }}
       cancel-in-progress: false
     steps:
+      # Keep workflow control-plane scripts pinned to the workflow ref. The docs
+      # content checkout below may intentionally point at latest main.
+      - name: Check out workflow scripts
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: .openclaw-sync/workflow-ref
+          sparse-checkout: .github/scripts/i18n
+          persist-credentials: false
+
+      - name: Stage workflow scripts
+        run: |
+          set -euo pipefail
+          I18N_SCRIPT_DIR="${RUNNER_TEMP}/openclaw-i18n-scripts"
+          echo "I18N_SCRIPT_DIR=${I18N_SCRIPT_DIR}" >> "$GITHUB_ENV"
+          mkdir -p "${I18N_SCRIPT_DIR}"
+          cp -R .openclaw-sync/workflow-ref/.github/scripts/i18n/. "${I18N_SCRIPT_DIR}/"
+
       - name: Checkout publish repo
         uses: actions/checkout@v6
         with:
@@ -69,7 +99,7 @@ jobs:
         env:
           SOURCE_SHA: ${{ inputs.source_sha }}
         run: |
-          python .github/scripts/i18n/read_source_metadata.py
+          python "${I18N_SCRIPT_DIR}/read_source_metadata.py"
 
       - name: Allow requested source
         id: stale
@@ -106,7 +136,7 @@ jobs:
         env:
           LOCALE: ${{ inputs.locale }}
         run: |
-          python .github/scripts/i18n/prune_stale_locale_pages.py
+          python "${I18N_SCRIPT_DIR}/prune_stale_locale_pages.py"
 
       - name: Build pending docs file list
         id: pending
@@ -118,8 +148,9 @@ jobs:
           SHARD_INDEX: ${{ inputs.shard_index }}
           SHARD_TOTAL: ${{ inputs.shard_total }}
           PENDING_LIMIT: ${{ inputs.pending_limit }}
+          CANARY_SOURCE_PATH: ${{ inputs.canary_source_path }}
         run: |
-          python .github/scripts/i18n/build_pending_manifest.py
+          python "${I18N_SCRIPT_DIR}/build_pending_manifest.py"
 
       - name: Translate changed docs into locale
         id: translate_docs
@@ -190,7 +221,7 @@ jobs:
         env:
           LOCALE: ${{ inputs.locale }}
         run: |
-          python .github/scripts/i18n/mdx_repair_scope.py snapshot \
+          python "${I18N_SCRIPT_DIR}/mdx_repair_scope.py" snapshot \
             --baseline "${RUNNER_TEMP}/${LOCALE}.repair-baseline.txt"
 
       - name: Repair translated MDX
@@ -216,7 +247,7 @@ jobs:
         env:
           LOCALE: ${{ inputs.locale }}
         run: |
-          python .github/scripts/i18n/mdx_repair_scope.py enforce \
+          python "${I18N_SCRIPT_DIR}/mdx_repair_scope.py" enforce \
             --baseline "${RUNNER_TEMP}/${LOCALE}.repair-baseline.txt"
 
       - name: Recheck translated MDX
@@ -253,7 +284,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          python .github/scripts/i18n/package_artifact.py
+          python "${I18N_SCRIPT_DIR}/package_artifact.py"
 
       - name: Upload locale artifact
         if: steps.stale.outputs.skip != 'true'
@@ -287,6 +318,24 @@ jobs:
       group: docs-i18n-finalize
       cancel-in-progress: false
     steps:
+      # Finalizers apply artifacts to latest main, but deploy/commit control
+      # logic must come from this workflow ref so branch canaries test the fix.
+      - name: Check out workflow scripts
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: .openclaw-sync/workflow-ref
+          sparse-checkout: .github/scripts/i18n
+          persist-credentials: false
+
+      - name: Stage workflow scripts
+        run: |
+          set -euo pipefail
+          I18N_SCRIPT_DIR="${RUNNER_TEMP}/openclaw-i18n-scripts"
+          echo "I18N_SCRIPT_DIR=${I18N_SCRIPT_DIR}" >> "$GITHUB_ENV"
+          mkdir -p "${I18N_SCRIPT_DIR}"
+          cp -R .openclaw-sync/workflow-ref/.github/scripts/i18n/. "${I18N_SCRIPT_DIR}/"
+
       - name: Check out latest main
         uses: actions/checkout@v6
         with:
@@ -308,7 +357,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          python .github/scripts/i18n/apply_artifacts.py \
+          python "${I18N_SCRIPT_DIR}/apply_artifacts.py" \
             --source-sha "${SOURCE_SHA}" \
             --mode "${MODE}" \
             --shard-total "${SHARD_TOTAL}" \
@@ -341,21 +390,57 @@ jobs:
         id: locale_commit
         if: inputs.commit_locale && steps.apply.outputs.changed_count != '0'
         env:
+          ARTIFACT_ROLE: ${{ inputs.artifact_role }}
           BASE_SOURCE_SHA: ${{ steps.apply.outputs.base_source_sha }}
           LOCALE: ${{ inputs.locale }}
+          LOCALE_SLUG: ${{ inputs.locale_slug }}
+          SHARD_INDEX: ${{ inputs.shard_index }}
+          SHARD_TOTAL: ${{ inputs.shard_total }}
+          ARTIFACT_DIR: .openclaw-sync/i18n-artifacts/${{ inputs.locale_slug }}-s${{ inputs.shard_index }}of${{ inputs.shard_total }}
         run: |
           set -euo pipefail
 
-          python .github/scripts/i18n/commit_locale_artifact.py
+          python "${I18N_SCRIPT_DIR}/commit_locale_artifact.py"
+
+      - name: Fail uncommitted locale refresh
+        if: inputs.commit_locale && steps.apply.outputs.changed_count != '0' && steps.locale_commit.outputs.committed != 'true'
+        run: |
+          {
+            echo "Locale artifact applied changes but did not commit them."
+            echo "Failing so the translation status does not report an unpublished refresh as successful."
+          } >&2
+          exit 1
 
       - name: Dispatch locale docs deploy
-        if: inputs.commit_locale && steps.locale_commit.outputs.committed == 'true'
+        if: inputs.artifact_role == 'canary' || (inputs.commit_locale && steps.locale_commit.outputs.committed == 'true')
         env:
           GH_TOKEN: ${{ github.token }}
+          ARTIFACT_ROLE: ${{ inputs.artifact_role }}
+          CANARY_LIVE_URL: https://docs.openclaw.ai/${{ inputs.locale }}/${{ inputs.canary_live_path }}
+          CANARY_EXPECTED_H1: ${{ inputs.canary_expected_h1 }}
         run: |
           set -euo pipefail
 
-          gh workflow run pages.yml --ref main
+          args=()
+          if [ "${ARTIFACT_ROLE}" = "canary" ]; then
+            args+=(
+              --ref "${{ github.ref_name }}"
+              --artifact-scope page
+              --locale "${{ inputs.locale }}"
+              --page-path "${{ inputs.canary_live_path }}"
+              --no-force-upload
+              --live-url "${CANARY_LIVE_URL}"
+              --expect-h1 "${CANARY_EXPECTED_H1}"
+            )
+          else
+            args+=(
+              --ref "${{ github.ref_name }}"
+              --artifact-scope locale
+              --locale "${{ inputs.locale }}"
+              --no-force-upload
+            )
+          fi
+          python "${I18N_SCRIPT_DIR}/dispatch_r2_pages.py" "${args[@]}"
 
       - name: Fail incomplete locale artifact
         if: steps.apply.outputs.incomplete_count != '0'
