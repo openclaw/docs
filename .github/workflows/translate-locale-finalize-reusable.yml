@@ -1,0 +1,146 @@
+name: Translate Locale Finalize Reusable
+
+on:
+  workflow_call:
+    inputs:
+      locale:
+        required: true
+        type: string
+      locale_slug:
+        required: true
+        type: string
+      source_sha:
+        required: true
+        type: string
+      mode:
+        required: true
+        type: string
+      shard_total:
+        required: true
+        type: string
+      artifact_prefix:
+        required: true
+        type: string
+
+jobs:
+  finalize-locale:
+    name: Finalize ${{ inputs.locale }} locale artifacts
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      actions: write
+      contents: write
+    steps:
+      # Finalizers apply artifacts to latest main, but deploy/commit control
+      # logic must come from this workflow ref so branch canaries test the fix.
+      - name: Check out workflow scripts
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: .openclaw-sync/workflow-ref
+          sparse-checkout: .github/scripts/i18n
+          persist-credentials: false
+
+      - name: Stage workflow scripts
+        run: |
+          set -euo pipefail
+          I18N_SCRIPT_DIR="${RUNNER_TEMP}/openclaw-i18n-scripts"
+          echo "I18N_SCRIPT_DIR=${I18N_SCRIPT_DIR}" >> "$GITHUB_ENV"
+          mkdir -p "${I18N_SCRIPT_DIR}"
+          cp -R .openclaw-sync/workflow-ref/.github/scripts/i18n/. "${I18N_SCRIPT_DIR}/"
+
+      - name: Check out latest main
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Download locale shard artifacts
+        uses: actions/download-artifact@v8
+        with:
+          pattern: ${{ inputs.artifact_prefix }}-${{ inputs.locale_slug }}-s*of${{ inputs.shard_total }}-${{ inputs.source_sha }}
+          path: .openclaw-sync/i18n-artifacts
+
+      - name: Apply locale shard artifacts
+        id: apply
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          MODE: ${{ inputs.mode }}
+          SHARD_TOTAL: ${{ inputs.shard_total }}
+          EXPECTED_LOCALES: ${{ inputs.locale_slug }}=${{ inputs.locale }}
+        run: |
+          set -euo pipefail
+
+          python "${I18N_SCRIPT_DIR}/apply_artifacts.py" \
+            --source-sha "${SOURCE_SHA}" \
+            --mode "${MODE}" \
+            --shard-total "${SHARD_TOTAL}" \
+            --expected-locales "${EXPECTED_LOCALES}"
+
+      - name: Set up Node for locale validation
+        if: steps.apply.outputs.changed_count != '0'
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install docs dependencies
+        if: steps.apply.outputs.changed_count != '0'
+        run: npm ci
+
+      - name: Install validation system dependencies
+        if: steps.apply.outputs.changed_count != '0'
+        run: sudo apt-get update && sudo apt-get install -y librsvg2-bin
+
+      - name: Install Playwright browser
+        if: steps.apply.outputs.changed_count != '0'
+        run: npx playwright install --with-deps chromium
+
+      - name: Check docs before locale finalization
+        if: steps.apply.outputs.changed_count != '0'
+        run: npm run docs:check
+
+      - name: Commit locale refresh
+        id: locale_commit
+        if: steps.apply.outputs.changed_count != '0'
+        env:
+          ARTIFACT_ROLE: locale
+          BASE_SOURCE_SHA: ${{ steps.apply.outputs.base_source_sha }}
+          LOCALE: ${{ inputs.locale }}
+          LOCALE_SLUG: ${{ inputs.locale_slug }}
+          SHARD_INDEX: "0"
+          SHARD_TOTAL: ${{ inputs.shard_total }}
+        run: |
+          set -euo pipefail
+
+          python "${I18N_SCRIPT_DIR}/commit_locale_artifact.py"
+
+      - name: Fail uncommitted locale refresh
+        if: steps.apply.outputs.changed_count != '0' && steps.locale_commit.outputs.committed != 'true'
+        run: |
+          {
+            echo "Locale shard artifacts applied changes but did not commit them."
+            echo "Failing so the translation status does not report an unpublished refresh as successful."
+          } >&2
+          exit 1
+
+      - name: Dispatch locale docs deploy
+        if: steps.locale_commit.outputs.committed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          python "${I18N_SCRIPT_DIR}/dispatch_r2_pages.py" \
+            --ref "${{ github.ref_name }}" \
+            --artifact-scope locale \
+            --locale "${{ inputs.locale }}" \
+            --no-force-upload
+
+      - name: Fail incomplete locale artifact
+        if: steps.apply.outputs.incomplete_count != '0'
+        run: |
+          {
+            echo "Locale finalizer found missing or failed shard artifact data."
+            cat .openclaw-sync/i18n-incomplete-locales.txt
+          } >&2
+          exit 1

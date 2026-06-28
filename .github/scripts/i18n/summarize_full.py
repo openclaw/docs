@@ -73,9 +73,20 @@ def read_artifacts(artifacts_root: Path) -> tuple[dict[str, dict[str, object]], 
             metadata_only_count += 1
         if artifact_role == "canary":
             continue
-        existing = artifacts.get(locale)
-        if existing is None or (not existing.get("failed_reason") and failed_reason):
-            artifacts[locale] = metadata
+        existing = artifacts.setdefault(
+            locale,
+            {
+                "locale": locale,
+                "changed_count": 0,
+                "deleted_count": 0,
+                "failed_reason": "",
+            },
+        )
+        existing["changed_count"] = int(existing.get("changed_count") or 0) + changed_count
+        existing["deleted_count"] = int(existing.get("deleted_count") or 0) + deleted_count
+        if failed_reason:
+            previous = str(existing.get("failed_reason") or "")
+            existing["failed_reason"] = "; ".join(part for part in [previous, failed_reason] if part)
     return artifacts, invalid, artifact_count, metadata_only_count
 
 

@@ -11,6 +11,7 @@ on:
       - "!docs/es/**"
       - "!docs/fa/**"
       - "!docs/fr/**"
+      - "!docs/hi/**"
       - "!docs/id/**"
       - "!docs/it/**"
       - "!docs/ja-JP/**"
@@ -18,6 +19,7 @@ on:
       - "!docs/nl/**"
       - "!docs/pl/**"
       - "!docs/pt-BR/**"
+      - "!docs/ru/**"
       - "!docs/th/**"
       - "!docs/tr/**"
       - "!docs/uk/**"
@@ -101,6 +103,8 @@ jobs:
             locale_slug: de
           - locale: fr
             locale_slug: fr
+          - locale: hi
+            locale_slug: hi
           - locale: ar
             locale_slug: ar
           - locale: it
@@ -111,6 +115,8 @@ jobs:
             locale_slug: nl
           - locale: fa
             locale_slug: fa
+          - locale: ru
+            locale_slug: ru
           - locale: tr
             locale_slug: tr
           - locale: uk
