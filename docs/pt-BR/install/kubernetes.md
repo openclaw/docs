@@ -5,24 +5,24 @@ read_when:
 summary: Implante o OpenClaw Gateway em um cluster Kubernetes com Kustomize
 title: Kubernetes
 x-i18n:
-    generated_at: "2026-05-06T06:00:28Z"
+    generated_at: "2026-06-28T20:44:06Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c38e42ae9121864333574b668d95f4d1112cada30cd525613d2371f176de4505
+    source_hash: 5a38c2754b4a5267e79854958a252b2e4bc9811da191d8ccf3ac597534cc8e7a
     source_path: install/kubernetes.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Um ponto de partida mínimo para executar o OpenClaw no Kubernetes — não é uma implantação pronta para produção. Ele cobre os recursos principais e deve ser adaptado ao seu ambiente.
+Um ponto de partida mínimo para executar o OpenClaw no Kubernetes — não uma implantação pronta para produção. Ele cobre os recursos principais e deve ser adaptado ao seu ambiente.
 
 ## Por que não Helm?
 
-O OpenClaw é um único contêiner com alguns arquivos de configuração. A personalização interessante está no conteúdo do agente (arquivos markdown, skills, substituições de configuração), não em templates de infraestrutura. O Kustomize gerencia sobreposições sem a sobrecarga de um chart Helm. Se a sua implantação ficar mais complexa, um chart Helm pode ser colocado sobre estes manifests.
+O OpenClaw é um único contêiner com alguns arquivos de configuração. A personalização mais relevante está no conteúdo dos agentes (arquivos markdown, Skills, substituições de configuração), não na modelagem de infraestrutura. O Kustomize lida com sobreposições sem a sobrecarga de um chart Helm. Se sua implantação ficar mais complexa, um chart Helm pode ser aplicado sobre estes manifests.
 
 ## O que você precisa
 
-- Um cluster Kubernetes em execução (AKS, EKS, GKE, k3s, kind, OpenShift, etc.)
+- Um cluster Kubernetes em execução (AKS, EKS, GKE, k3s, kind, OpenShift etc.)
 - `kubectl` conectado ao seu cluster
 - Uma chave de API para pelo menos um provedor de modelos
 
@@ -46,7 +46,7 @@ kubectl get secret openclaw-secrets -n openclaw -o jsonpath='{.data.OPENCLAW_GAT
 
 Para depuração local, `./scripts/k8s/deploy.sh --show-token` imprime o token após a implantação.
 
-## Testes locais com Kind
+## Teste local com Kind
 
 Se você não tiver um cluster, crie um localmente com [Kind](https://kind.sigs.k8s.io/):
 
@@ -69,7 +69,7 @@ export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-O script cria um Kubernetes Secret com a chave de API e um token de Gateway gerado automaticamente, depois implanta. Se o Secret já existir, ele preserva o token de Gateway atual e quaisquer chaves de provedor que não estejam sendo alteradas.
+O script cria um Secret do Kubernetes com a chave de API e um token de Gateway gerado automaticamente, e então implanta. Se o Secret já existir, ele preserva o token de Gateway atual e quaisquer chaves de provedor que não estejam sendo alteradas.
 
 **Opção B** — criar o segredo separadamente:
 
@@ -79,7 +79,7 @@ export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-Use `--show-token` com qualquer comando se quiser que o token seja impresso em stdout para testes locais.
+Use `--show-token` com qualquer comando se quiser que o token seja impresso em stdout para teste local.
 
 ### 2) Acessar o Gateway
 
@@ -103,7 +103,7 @@ Namespace: openclaw (configurable via OPENCLAW_NAMESPACE)
 
 ### Instruções do agente
 
-Edite o `AGENTS.md` em `scripts/k8s/manifests/configmap.yaml` e implante novamente:
+Edite o `AGENTS.md` em `scripts/k8s/manifests/configmap.yaml` e reimplante:
 
 ```bash
 ./scripts/k8s/deploy.sh
@@ -126,7 +126,7 @@ export OPENAI_API_KEY="..."
 
 As chaves de provedor existentes permanecem no Secret, a menos que você as sobrescreva.
 
-Ou aplique um patch diretamente ao Secret:
+Ou aplique um patch diretamente no Secret:
 
 ```bash
 kubectl patch secret openclaw-secrets -n openclaw \
@@ -145,18 +145,18 @@ OPENCLAW_NAMESPACE=my-namespace ./scripts/k8s/deploy.sh
 Edite o campo `image` em `scripts/k8s/manifests/deployment.yaml`:
 
 ```yaml
-image: ghcr.io/openclaw/openclaw:latest # or pin to a specific version from https://github.com/openclaw/openclaw/releases
+image: ghcr.io/openclaw/openclaw:latest # primary; official Docker Hub mirror: openclaw/openclaw:latest
 ```
 
-### Expor além de port-forward
+### Expor além do port-forward
 
-Os manifests padrão vinculam o Gateway ao loopback dentro do pod. Isso funciona com `kubectl port-forward`, mas não funciona com um `Service` do Kubernetes ou caminho de Ingress que precise alcançar o IP do pod.
+Os manifests padrão vinculam o Gateway ao loopback dentro do pod. Isso funciona com `kubectl port-forward`, mas não funciona com um `Service` do Kubernetes ou um caminho de Ingress que precise alcançar o IP do pod.
 
 Se você quiser expor o Gateway por meio de um Ingress ou balanceador de carga:
 
-- Altere o bind do Gateway em `scripts/k8s/manifests/configmap.yaml` de `loopback` para um bind que não seja loopback e corresponda ao seu modelo de implantação
-- Mantenha a autenticação do Gateway ativada e use um ponto de entrada apropriado com terminação TLS
-- Configure a Control UI para acesso remoto usando o modelo de segurança web compatível (por exemplo, HTTPS/Tailscale Serve e origens permitidas explícitas quando necessário)
+- Altere o bind do Gateway em `scripts/k8s/manifests/configmap.yaml` de `loopback` para um bind não loopback que corresponda ao seu modelo de implantação
+- Mantenha a autenticação do Gateway habilitada e use um ponto de entrada adequado com TLS encerrado
+- Configure a Control UI para acesso remoto usando o modelo de segurança web compatível (por exemplo, HTTPS/Tailscale Serve e origens explicitamente permitidas quando necessário)
 
 ## Reimplantar
 
@@ -176,12 +176,12 @@ Isso exclui o namespace e todos os recursos nele, incluindo o PVC.
 
 ## Observações de arquitetura
 
-- O Gateway se vincula ao loopback dentro do pod por padrão, então a configuração incluída é para `kubectl port-forward`
+- O Gateway se vincula ao loopback dentro do pod por padrão, portanto a configuração incluída é para `kubectl port-forward`
 - Nenhum recurso com escopo de cluster — tudo fica em um único namespace
-- Segurança: `readOnlyRootFilesystem`, capacidades `drop: ALL`, usuário não root (UID 1000)
-- A configuração padrão mantém a Control UI no caminho de acesso local mais seguro: bind de loopback mais `kubectl port-forward` para `http://127.0.0.1:18789`
+- Segurança: recursos `readOnlyRootFilesystem`, `drop: ALL`, usuário não root (UID 1000)
+- A configuração padrão mantém a Control UI no caminho mais seguro de acesso local: bind de loopback mais `kubectl port-forward` para `http://127.0.0.1:18789`
 - Se você for além do acesso por localhost, use o modelo remoto compatível: HTTPS/Tailscale mais o bind de Gateway apropriado e as configurações de origem da Control UI
-- Segredos são gerados em um diretório temporário e aplicados diretamente ao cluster — nenhum material secreto é escrito no checkout do repo
+- Os segredos são gerados em um diretório temporário e aplicados diretamente ao cluster — nenhum material secreto é gravado no checkout do repositório
 
 ## Estrutura de arquivos
 

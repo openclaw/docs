@@ -1,32 +1,31 @@
 ---
 read_when:
     - Configuración inicial desde cero
-    - Quieres la ruta más rápida hacia un chat funcional
+    - Quieres la ruta más rápida para tener un chat funcionando
 summary: Instala OpenClaw y ejecuta tu primer chat en minutos.
 title: Primeros pasos
 x-i18n:
-    generated_at: "2026-06-27T12:58:02Z"
+    generated_at: "2026-06-28T20:45:12Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 769682cfa35a361cc4adc49f010fed18cf897ce66e1404d07b631e4dede64de8
+    source_hash: 579ed2b4797dc851b0293b96a4177cc356641b6842fe45c4d48f4e8c224eef75
     source_path: start/getting-started.md
     workflow: 16
 ---
 
 Instala OpenClaw, ejecuta la incorporación y chatea con tu asistente de IA, todo en
-unos 5 minutos. Al finalizar tendrás un Gateway en ejecución, autenticación configurada
-y una sesión de chat funcionando.
+unos 5 minutos. Al final tendrás un Gateway en ejecución, autenticación configurada
+y una sesión de chat funcional.
 
 ## Lo que necesitas
 
-- **Node.js** — se recomienda Node 24 (Node 22.19+ también es compatible)
-- **Una clave de API** de un proveedor de modelos (Anthropic, OpenAI, Google, etc.) — la incorporación te la pedirá
+- **Node.js**: se recomienda Node 24 (también se admite Node 22.19+)
+- **Una clave de API** de un proveedor de modelos (Anthropic, OpenAI, Google, etc.); la incorporación te la pedirá
 
 <Tip>
 Comprueba tu versión de Node con `node --version`.
-**Usuarios de Windows:** la aplicación nativa Windows Hub es la ruta de escritorio más sencilla. El
-instalador de PowerShell y las rutas de Gateway con WSL2 también son compatibles. Consulta [Windows](/es/platforms/windows).
+**Usuarios de Windows:** la aplicación Hub nativa de Windows es la ruta de escritorio más sencilla. También se admiten las rutas del instalador de PowerShell y Gateway en WSL2. Consulta [Windows](/es/platforms/windows).
 ¿Necesitas instalar Node? Consulta [Configuración de Node](/es/install/node).
 </Tip>
 
@@ -53,7 +52,7 @@ instalador de PowerShell y las rutas de Gateway con WSL2 también son compatible
     </Tabs>
 
     <Note>
-    Otros métodos de instalación (Docker, Nix, npm): [Instalar](/es/install).
+    Otros métodos de instalación (Docker, Nix, npm): [Instalación](/es/install).
     </Note>
 
   </Step>
@@ -62,13 +61,16 @@ instalador de PowerShell y las rutas de Gateway con WSL2 también son compatible
     openclaw onboard --install-daemon
     ```
 
-    El asistente te guía para elegir un proveedor de modelos, configurar una clave de API
-    y configurar el Gateway. Tarda unos 2 minutos.
+    El asistente te guía para elegir un proveedor de modelos, definir una clave de API
+    y configurar el Gateway. QuickStart suele tomar solo unos minutos, pero
+    el inicio de sesión del proveedor, el emparejamiento de canales, la instalación del daemon, las descargas de red, Skills
+    o los plugins opcionales pueden hacer que la incorporación completa tarde más. Puedes omitir los pasos opcionales
+    y volver más tarde con `openclaw configure`.
 
     Consulta [Incorporación (CLI)](/es/start/wizard) para ver la referencia completa.
 
   </Step>
-  <Step title="Verificar que el Gateway está en ejecución">
+  <Step title="Verificar que el Gateway esté en ejecución">
     ```bash
     openclaw gateway status
     ```
@@ -81,7 +83,7 @@ instalador de PowerShell y las rutas de Gateway con WSL2 también son compatible
     openclaw dashboard
     ```
 
-    Esto abre la Control UI en tu navegador. Si carga, todo está funcionando.
+    Esto abre la Control UI en tu navegador. Si se carga, todo está funcionando.
 
   </Step>
   <Step title="Enviar tu primer mensaje">
@@ -94,10 +96,10 @@ instalador de PowerShell y las rutas de Gateway con WSL2 también son compatible
   </Step>
 </Steps>
 
-<Accordion title="Avanzado: montar una compilación personalizada de Control UI">
+<Accordion title="Avanzado: montar una compilación personalizada de la Control UI">
   Si mantienes una compilación localizada o personalizada del panel, apunta
   `gateway.controlUi.root` a un directorio que contenga tus recursos estáticos
-  compilados y `index.html`.
+  compilados e `index.html`.
 
 ```bash
 mkdir -p "$HOME/.openclaw/control-ui-custom"
@@ -136,7 +138,7 @@ openclaw dashboard
     Controla quién puede enviar mensajes a tu agente.
   </Card>
   <Card title="Configurar el Gateway" href="/es/gateway/configuration" icon="settings">
-    Modelos, herramientas, sandbox y configuración avanzada.
+    Modelos, herramientas, sandbox y ajustes avanzados.
   </Card>
   <Card title="Explorar herramientas" href="/es/tools" icon="wrench">
     Navegador, exec, búsqueda web, Skills y plugins.
@@ -146,9 +148,9 @@ openclaw dashboard
 <Accordion title="Avanzado: variables de entorno">
   Si ejecutas OpenClaw como una cuenta de servicio o quieres rutas personalizadas:
 
-- `OPENCLAW_HOME` — directorio principal para la resolución de rutas internas
-- `OPENCLAW_STATE_DIR` — sobrescribe el directorio de estado
-- `OPENCLAW_CONFIG_PATH` — sobrescribe la ruta del archivo de configuración
+- `OPENCLAW_HOME`: directorio de inicio para la resolución de rutas internas
+- `OPENCLAW_STATE_DIR`: sobrescribe el directorio de estado
+- `OPENCLAW_CONFIG_PATH`: sobrescribe la ruta del archivo de configuración
 
 Referencia completa: [Variables de entorno](/es/help/environment).
 </Accordion>

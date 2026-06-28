@@ -1,28 +1,28 @@
 ---
 read_when:
-    - Desea ejecutar OpenClaw en un clúster de Kubernetes
-    - Desea probar OpenClaw en un entorno de Kubernetes
-summary: Despliega OpenClaw Gateway en un clúster de Kubernetes con Kustomize
+    - Quieres ejecutar OpenClaw en un clúster de Kubernetes
+    - Quieres probar OpenClaw en un entorno Kubernetes
+summary: Implementar OpenClaw Gateway en un clúster de Kubernetes con Kustomize
 title: Kubernetes
 x-i18n:
-    generated_at: "2026-05-06T05:39:28Z"
+    generated_at: "2026-06-28T20:44:10Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c38e42ae9121864333574b668d95f4d1112cada30cd525613d2371f176de4505
+    source_hash: 5a38c2754b4a5267e79854958a252b2e4bc9811da191d8ccf3ac597534cc8e7a
     source_path: install/kubernetes.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Un punto de partida mínimo para ejecutar OpenClaw en Kubernetes — no una implementación lista para producción. Cubre los recursos principales y está pensado para adaptarse a tu entorno.
+Un punto de partida mínimo para ejecutar OpenClaw en Kubernetes — no es una implementación lista para producción. Cubre los recursos principales y está pensado para adaptarse a tu entorno.
 
 ## ¿Por qué no Helm?
 
-OpenClaw es un solo contenedor con algunos archivos de configuración. La personalización interesante está en el contenido del agente (archivos markdown, skills, sobrescrituras de configuración), no en la generación de plantillas de infraestructura. Kustomize gestiona overlays sin la sobrecarga de un chart de Helm. Si tu implementación se vuelve más compleja, se puede superponer un chart de Helm sobre estos manifiestos.
+OpenClaw es un único contenedor con algunos archivos de configuración. La personalización interesante está en el contenido del agente (archivos Markdown, Skills, sobrescrituras de configuración), no en las plantillas de infraestructura. Kustomize gestiona las superposiciones sin la sobrecarga de un chart de Helm. Si tu implementación se vuelve más compleja, se puede superponer un chart de Helm sobre estos manifiestos.
 
-## Lo que necesitas
+## Qué necesitas
 
-- Un clúster Kubernetes en ejecución (AKS, EKS, GKE, k3s, kind, OpenShift, etc.)
+- Un clúster de Kubernetes en ejecución (AKS, EKS, GKE, k3s, kind, OpenShift, etc.)
 - `kubectl` conectado a tu clúster
 - Una clave de API para al menos un proveedor de modelos
 
@@ -69,7 +69,7 @@ export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-El script crea un Secret de Kubernetes con la clave de API y un token de gateway generado automáticamente, y luego implementa. Si el Secret ya existe, conserva el token de gateway actual y las claves de proveedor que no se estén cambiando.
+El script crea un Secret de Kubernetes con la clave de API y un token de Gateway generado automáticamente, y luego implementa. Si el Secret ya existe, conserva el token de Gateway actual y cualquier clave de proveedor que no se esté cambiando.
 
 **Opción B** — crear el secreto por separado:
 
@@ -81,7 +81,7 @@ export <PROVIDER>_API_KEY="..."
 
 Usa `--show-token` con cualquiera de los comandos si quieres que el token se imprima en stdout para pruebas locales.
 
-### 2) Acceder al gateway
+### 2) Acceder al Gateway
 
 ```bash
 kubectl port-forward svc/openclaw 18789:18789 -n openclaw
@@ -109,9 +109,9 @@ Edita el `AGENTS.md` en `scripts/k8s/manifests/configmap.yaml` y vuelve a implem
 ./scripts/k8s/deploy.sh
 ```
 
-### Configuración del gateway
+### Configuración del Gateway
 
-Edita `openclaw.json` en `scripts/k8s/manifests/configmap.yaml`. Consulta [Configuración del Gateway](/es/gateway/configuration) para la referencia completa.
+Edita `openclaw.json` en `scripts/k8s/manifests/configmap.yaml`. Consulta [Configuración del Gateway](/es/gateway/configuration) para ver la referencia completa.
 
 ### Agregar proveedores
 
@@ -134,7 +134,7 @@ kubectl patch secret openclaw-secrets -n openclaw \
 kubectl rollout restart deployment/openclaw -n openclaw
 ```
 
-### Namespace personalizado
+### Espacio de nombres personalizado
 
 ```bash
 OPENCLAW_NAMESPACE=my-namespace ./scripts/k8s/deploy.sh
@@ -145,17 +145,17 @@ OPENCLAW_NAMESPACE=my-namespace ./scripts/k8s/deploy.sh
 Edita el campo `image` en `scripts/k8s/manifests/deployment.yaml`:
 
 ```yaml
-image: ghcr.io/openclaw/openclaw:latest # or pin to a specific version from https://github.com/openclaw/openclaw/releases
+image: ghcr.io/openclaw/openclaw:latest # primary; official Docker Hub mirror: openclaw/openclaw:latest
 ```
 
 ### Exponer más allá de port-forward
 
-Los manifiestos predeterminados enlazan el gateway a loopback dentro del pod. Eso funciona con `kubectl port-forward`, pero no funciona con un `Service` de Kubernetes ni con una ruta de Ingress que necesite llegar a la IP del pod.
+Los manifiestos predeterminados vinculan el Gateway a loopback dentro del pod. Eso funciona con `kubectl port-forward`, pero no funciona con un `Service` de Kubernetes ni con una ruta de Ingress que necesite llegar a la IP del pod.
 
-Si quieres exponer el gateway mediante un Ingress o un balanceador de carga:
+Si quieres exponer el Gateway mediante un Ingress o un balanceador de carga:
 
-- Cambia el enlace del gateway en `scripts/k8s/manifests/configmap.yaml` de `loopback` a un enlace que no sea loopback y que coincida con tu modelo de implementación
-- Mantén habilitada la autenticación del gateway y usa un punto de entrada adecuado con terminación TLS
+- Cambia el enlace del Gateway en `scripts/k8s/manifests/configmap.yaml` de `loopback` a un enlace que no sea loopback y que coincida con tu modelo de implementación
+- Mantén habilitada la autenticación del Gateway y usa un punto de entrada adecuado con terminación TLS
 - Configura la interfaz de control para acceso remoto usando el modelo de seguridad web compatible (por ejemplo, HTTPS/Tailscale Serve y orígenes permitidos explícitos cuando sea necesario)
 
 ## Volver a implementar
@@ -164,7 +164,7 @@ Si quieres exponer el gateway mediante un Ingress o un balanceador de carga:
 ./scripts/k8s/deploy.sh
 ```
 
-Esto aplica todos los manifiestos y reinicia el pod para recoger cualquier cambio de configuración o secreto.
+Esto aplica todos los manifiestos y reinicia el pod para recoger cualquier cambio de configuración o de secreto.
 
 ## Eliminación
 
@@ -172,15 +172,15 @@ Esto aplica todos los manifiestos y reinicia el pod para recoger cualquier cambi
 ./scripts/k8s/deploy.sh --delete
 ```
 
-Esto elimina el namespace y todos los recursos que contiene, incluido el PVC.
+Esto elimina el espacio de nombres y todos sus recursos, incluido el PVC.
 
 ## Notas de arquitectura
 
-- El gateway se enlaza a loopback dentro del pod de forma predeterminada, por lo que la configuración incluida es para `kubectl port-forward`
-- No hay recursos con alcance de clúster — todo reside en un único namespace
+- El Gateway se vincula a loopback dentro del pod de forma predeterminada, por lo que la configuración incluida es para `kubectl port-forward`
+- No hay recursos con alcance de clúster — todo vive en un único espacio de nombres
 - Seguridad: `readOnlyRootFilesystem`, capacidades `drop: ALL`, usuario no root (UID 1000)
-- La configuración predeterminada mantiene la interfaz de control en la ruta de acceso local más segura: enlace loopback más `kubectl port-forward` a `http://127.0.0.1:18789`
-- Si vas más allá del acceso desde localhost, usa el modelo remoto compatible: HTTPS/Tailscale más el enlace de gateway adecuado y la configuración de origen de la interfaz de control
+- La configuración predeterminada mantiene la interfaz de control en la ruta más segura de acceso local: enlace loopback más `kubectl port-forward` a `http://127.0.0.1:18789`
+- Si vas más allá del acceso localhost, usa el modelo remoto compatible: HTTPS/Tailscale más el enlace de Gateway adecuado y la configuración de origen de la interfaz de control
 - Los secretos se generan en un directorio temporal y se aplican directamente al clúster — no se escribe material secreto en el checkout del repositorio
 
 ## Estructura de archivos
@@ -200,5 +200,5 @@ scripts/k8s/
 ## Relacionado
 
 - [Docker](/es/install/docker)
-- [Runtime de Docker VM](/es/install/docker-vm-runtime)
+- [Tiempo de ejecución de VM Docker](/es/install/docker-vm-runtime)
 - [Resumen de instalación](/es/install)

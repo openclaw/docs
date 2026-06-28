@@ -4,39 +4,41 @@ read_when:
 summary: Gebruik Anthropic Claude via API-sleutels of Claude CLI in OpenClaw
 title: Anthropic
 x-i18n:
-    generated_at: "2026-06-27T18:09:45Z"
+    generated_at: "2026-06-28T20:44:44Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 299bb8661bb894c57ca7a60f350494d22f6b726061ffcb70df053c40a3f842b0
+    source_hash: 48a2792e464175b3ebe6acd92606c20231fd31940f56e2432bb45657eb0a68d7
     source_path: providers/anthropic.md
     workflow: 16
 ---
 
 Anthropic bouwt de **Claude**-modelfamilie. OpenClaw ondersteunt twee auth-routes:
 
-- **API-sleutel** — directe Anthropic API-toegang met verbruiksgebaseerde facturering (`anthropic/*`-modellen)
+- **API-sleutel** — directe Anthropic API-toegang met gebruiksgebaseerde facturering (`anthropic/*`-modellen)
 - **Claude CLI** — hergebruik een bestaande Claude Code-login op dezelfde host
 
 <Warning>
 De Claude CLI-backend van OpenClaw voert de geinstalleerde Claude Code CLI uit in
-niet-interactieve printmodus. De huidige Claude Code-docs van Anthropic beschrijven
-`claude -p` als Agent SDK-/programmatisch gebruik. Vanaf 15 juni 2026 zegt Anthropic
-dat gebruik van `claude -p` met abonnementsplannen niet langer uit de normale Claude
-planlimieten komt; het gebruikt eerst een afzonderlijk maandelijks Agent SDK-tegoed en daarna
-gebruikstegoeden tegen standaard API-tarieven wanneer die tegoeden zijn ingeschakeld.
+niet-interactieve printmodus. De huidige Claude Code-documentatie van Anthropic beschrijft
+`claude -p` als Agent SDK-/programmatisch gebruik. De supportupdate van Anthropic van 15 juni 2026
+heeft de aangekondigde factureringswijziging voor Agent SDK gepauzeerd. Voorlopig zegt Anthropic
+dat gebruik van Claude Agent SDK, `claude -p` en apps van derden nog steeds wordt verrekend met de
+gebruikslimieten van een abonnement. Het eerder aangekondigde maandelijkse Agent SDK-tegoed
+is niet beschikbaar terwijl Anthropic dat plan herziet.
 
-Interactieve Claude Code blijft uit de limieten van het aangemelde Claude-plan komen. API-
-sleutel-auth blijft directe API-facturering op basis van werkelijk gebruik. Gebruik voor lang draaiende Gateway-hosts,
-gedeelde automatisering en voorspelbare productiekosten een Anthropic API-sleutel.
+Interactieve Claude Code wordt nog steeds verrekend met de limieten van het aangemelde Claude-abonnement. API-
+sleutel-auth blijft directe API-facturering op basis van betalen naar gebruik. Gebruik voor langlevende Gateway-hosts,
+gedeelde automatisering en voorspelbare productie-uitgaven een Anthropic API-sleutel.
 
-Huidige openbare docs van Anthropic:
+Controleer de huidige supportartikelen van Anthropic voordat je vertrouwt op
+factureringsgedrag via abonnementen:
 
 - [Claude Code CLI-referentie](https://code.claude.com/docs/en/cli-usage)
-- [Gebruik de Claude Agent SDK met je Claude-plan](https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan)
-- [Gebruik Claude Code met je Pro- of Max-plan](https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan)
-- [Gebruik Claude Code met je Team- of Enterprise-plan](https://support.claude.com/en/articles/11845131-using-claude-code-with-your-team-or-enterprise-plan)
-- [Claude Code-kosten beheren](https://code.claude.com/docs/en/costs)
+- [Gebruik de Claude Agent SDK met je Claude-abonnement](https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan)
+- [Gebruik Claude Code met je Pro- of Max-abonnement](https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan)
+- [Gebruik Claude Code met je Team- of Enterprise-abonnement](https://support.claude.com/en/articles/11845131-using-claude-code-with-your-team-or-enterprise-plan)
+- [Beheer Claude Code-kosten](https://code.claude.com/docs/en/costs)
 
 </Warning>
 
@@ -44,7 +46,7 @@ Huidige openbare docs van Anthropic:
 
 <Tabs>
   <Tab title="API-sleutel">
-    **Beste voor:** standaard API-toegang en verbruiksgebaseerde facturering.
+    **Best voor:** standaard API-toegang en gebruiksgebaseerde facturering.
 
     <Steps>
       <Step title="Haal je API-sleutel op">
@@ -81,7 +83,7 @@ Huidige openbare docs van Anthropic:
   </Tab>
 
   <Tab title="Claude CLI">
-    **Beste voor:** hergebruik van een bestaande Claude CLI-login zonder aparte API-sleutel.
+    **Best voor:** hergebruik van een bestaande Claude CLI-login zonder aparte API-sleutel.
 
     <Steps>
       <Step title="Zorg dat Claude CLI is geinstalleerd en aangemeld">
@@ -112,18 +114,18 @@ Huidige openbare docs van Anthropic:
 
     <Warning>
     Hergebruik van Claude CLI verwacht dat het OpenClaw-proces draait op dezelfde host als de
-    Claude CLI-login. Docker-installaties kunnen een containerhome persistent maken en daar inloggen bij
+    Claude CLI-login. Docker-installaties kunnen een containerhome behouden en daar aanmelden bij
     Claude Code; zie
     [Claude CLI-backend in Docker](/nl/install/docker#claude-cli-backend-in-docker).
-    Andere containerinstallaties, zoals [Podman](/nl/install/podman), mounten host
-    `~/.claude` niet in setup of runtime; gebruik daar een Anthropic API-sleutel, of kies
+    Andere containerinstallaties zoals [Podman](/nl/install/podman) koppelen host
+    `~/.claude` niet aan setup of runtime; gebruik daar een Anthropic API-sleutel, of kies
     een provider met door OpenClaw beheerde OAuth, zoals
     [OpenAI Codex](/nl/providers/openai).
     </Warning>
 
     ### Configuratievoorbeeld
 
-    Geef de voorkeur aan de canonieke Anthropic-modelreferentie plus een CLI-runtime-override:
+    Gebruik bij voorkeur de canonieke Anthropic-modelverwijzing plus een CLI-runtime-override:
 
     ```json5
     {
@@ -140,26 +142,34 @@ Huidige openbare docs van Anthropic:
     }
     ```
 
-    Verouderde `claude-cli/claude-opus-4-7`-modelreferenties blijven werken voor
+    Legacy `claude-cli/claude-opus-4-7`-modelverwijzingen werken nog steeds voor
     compatibiliteit, maar nieuwe configuratie moet provider-/modelselectie als
     `anthropic/*` houden en de uitvoeringsbackend in provider-/modelruntimebeleid plaatsen.
 
     ### Facturering en `claude -p`
 
-    OpenClaw gebruikt Claude Code's niet-interactieve `claude -p`-pad voor Claude CLI-
+    OpenClaw gebruikt het niet-interactieve `claude -p`-pad van Claude Code voor Claude CLI-
     runs. Anthropic behandelt dat pad momenteel als Agent SDK-/programmatisch gebruik:
 
-    - Tot 15 juni 2026 volgt afhandeling voor abonnementsplannen Anthropic's actieve
-      Claude Code-regels voor het aangemelde account.
-    - Vanaf 15 juni 2026 gebruikt `claude -p`-gebruik met abonnementsplannen eerst het
-      maandelijkse Agent SDK-tegoed van de gebruiker en daarna gebruikstegoeden tegen standaard
-      API-tarieven als gebruikstegoeden zijn ingeschakeld.
-    - Console-/API-sleutel-logins gebruiken API-facturering op basis van werkelijk gebruik en ontvangen
-      het abonnementsgebonden Agent SDK-tegoed niet.
+    - De supportupdate van Anthropic van 15 juni 2026 heeft het eerder aangekondigde
+      afzonderlijke Agent SDK-tegoedplan gepauzeerd.
+    - Voorlopig worden Claude Agent SDK, `claude -p` en appgebruik van derden binnen abonnementen
+      nog steeds verrekend met de gebruikslimieten van het aangemelde abonnement.
+    - Het eerder aangekondigde maandelijkse Agent SDK-tegoed is niet beschikbaar terwijl
+      Anthropic dat plan herziet.
+    - Console-/API-sleutel-logins gebruiken API-facturering op basis van betalen naar gebruik en ontvangen
+      het Agent SDK-tegoed voor abonnementen niet.
 
-    Anthropic kan facturerings- en snelheidslimietgedrag van Claude Code wijzigen zonder een
+    Zie het [Agent SDK-abonnementsartikel](https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan)
+    van Anthropic voor de pauzemelding, en de Claude Code-abonnementsartikelen voor
+    [Pro/Max](https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan)
+    en
+    [Team/Enterprise](https://support.claude.com/en/articles/11845131-use-claude-code-with-your-team-or-enterprise-plan)
+    abonnementsgedrag.
+
+    Anthropic kan Claude Code-facturering en rate-limitgedrag wijzigen zonder een
     OpenClaw-release. Controleer `claude auth status`, `/status` en
-    Anthropic's gelinkte docs wanneer voorspelbare facturering belangrijk is.
+    de gekoppelde documentatie van Anthropic wanneer voorspelbare facturering belangrijk is.
 
     <Tip>
     Gebruik voor gedeelde productieautomatisering een Anthropic API-sleutel in plaats van
@@ -171,14 +181,14 @@ Huidige openbare docs van Anthropic:
   </Tab>
 </Tabs>
 
-## Denkstandaarden (Claude Fable 5, 4.8 en 4.6)
+## Thinking-standaarden (Claude Fable 5, 4.8 en 4.6)
 
-`anthropic/claude-fable-5` gebruikt altijd adaptief denken en staat standaard op `high`
-inspanning. Omdat Anthropic niet toestaat dat denken voor dit model wordt uitgeschakeld,
+`anthropic/claude-fable-5` gebruikt altijd adaptief thinking en staat standaard op `high`
+inspanning. Omdat Anthropic niet toestaat dat thinking voor dit model wordt uitgeschakeld,
 gebruiken `/think off` en `/think minimal` `low` inspanning. OpenClaw laat ook aangepaste
 temperatuurwaarden weg voor Fable 5-verzoeken.
 
-Claude Opus 4.8 houdt denken standaard uit in OpenClaw. Wanneer je adaptief denken expliciet inschakelt met `/think high|xhigh|max`, stuurt OpenClaw Anthropic's Opus 4.8-inspanningswaarden; Claude 4.6-modellen gebruiken standaard `adaptive`.
+Claude Opus 4.8 houdt thinking standaard uit in OpenClaw. Wanneer je adaptief thinking expliciet inschakelt met `/think high|xhigh|max`, stuurt OpenClaw de Opus 4.8-inspanningswaarden van Anthropic; Claude 4.6-modellen staan standaard op `adaptive`.
 
 Overschrijf per bericht met `/think:<level>` of in modelparameters:
 
@@ -197,21 +207,21 @@ Overschrijf per bericht met `/think:<level>` of in modelparameters:
 ```
 
 <Note>
-Gerelateerde Anthropic-docs:
-- [Adaptief denken](https://platform.claude.com/docs/en/build-with-claude/adaptive-thinking)
-- [Uitgebreid denken](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)
+Gerelateerde Anthropic-documentatie:
+- [Adaptief thinking](https://platform.claude.com/docs/en/build-with-claude/adaptive-thinking)
+- [Uitgebreid thinking](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)
 
 </Note>
 
 ## Promptcaching
 
-OpenClaw ondersteunt Anthropic's promptcachingfunctie voor API-sleutel-auth.
+OpenClaw ondersteunt de promptcachingfunctie van Anthropic voor API-sleutel-auth.
 
-| Waarde              | Cacheduur    | Beschrijving                                  |
-| ------------------- | ------------ | --------------------------------------------- |
-| `"short"` (standaard) | 5 minuten   | Automatisch toegepast voor API-sleutel-auth   |
-| `"long"`            | 1 uur        | Uitgebreide cache                             |
-| `"none"`            | Geen caching | Promptcaching uitschakelen                    |
+| Waarde              | Cacheduur      | Beschrijving                              |
+| ------------------- | -------------- | ----------------------------------------- |
+| `"short"` (standaard) | 5 minuten    | Automatisch toegepast voor API-sleutel-auth |
+| `"long"`            | 1 uur          | Uitgebreide cache                         |
+| `"none"`            | Geen caching   | Promptcaching uitschakelen                |
 
 ```json5
 {
@@ -229,7 +239,7 @@ OpenClaw ondersteunt Anthropic's promptcachingfunctie voor API-sleutel-auth.
 
 <AccordionGroup>
   <Accordion title="Cache-overschrijvingen per agent">
-    Gebruik parameters op modelniveau als je basis en overschrijf daarna specifieke agents via `agents.list[].params`:
+    Gebruik modelniveauparameters als je basislijn en overschrijf daarna specifieke agents via `agents.list[].params`:
 
     ```json5
     {
@@ -250,19 +260,19 @@ OpenClaw ondersteunt Anthropic's promptcachingfunctie voor API-sleutel-auth.
     }
     ```
 
-    Configuratie-samenvoegvolgorde:
+    Volgorde voor configuratiesamenvoeging:
 
     1. `agents.defaults.models["provider/model"].params`
     2. `agents.list[].params` (overeenkomende `id`, overschrijft per sleutel)
 
-    Hierdoor kan de ene agent een langlevende cache houden terwijl een andere agent op hetzelfde model caching uitschakelt voor piekerig verkeer met weinig hergebruik.
+    Zo kan een agent een langlevende cache behouden terwijl een andere agent op hetzelfde model caching uitschakelt voor piekerig verkeer met weinig hergebruik.
 
   </Accordion>
 
   <Accordion title="Bedrock Claude-opmerkingen">
     - Anthropic Claude-modellen op Bedrock (`amazon-bedrock/*anthropic.claude*`) accepteren `cacheRetention`-doorgifte wanneer geconfigureerd.
     - Niet-Anthropic Bedrock-modellen worden tijdens runtime geforceerd naar `cacheRetention: "none"`.
-    - Slimme standaarden voor API-sleutels vullen ook `cacheRetention: "short"` in voor Claude-on-Bedrock-referenties wanneer er geen expliciete waarde is ingesteld.
+    - Slimme standaarden voor API-sleutels vullen ook `cacheRetention: "short"` in voor Claude-on-Bedrock-verwijzingen wanneer er geen expliciete waarde is ingesteld.
 
   </Accordion>
 </AccordionGroup>
@@ -273,8 +283,8 @@ OpenClaw ondersteunt Anthropic's promptcachingfunctie voor API-sleutel-auth.
   <Accordion title="Snelle modus">
     De gedeelde `/fast`-schakelaar van OpenClaw ondersteunt direct Anthropic-verkeer (API-sleutel en OAuth naar `api.anthropic.com`).
 
-    | Opdracht | Koppelt aan |
-    |---------|-------------|
+    | Opdracht | Komt overeen met |
+    |---------|---------|
     | `/fast on` | `service_tier: "auto"` |
     | `/fast off` | `service_tier: "standard_only"` |
 
@@ -295,7 +305,7 @@ OpenClaw ondersteunt Anthropic's promptcachingfunctie voor API-sleutel-auth.
     <Note>
     - Alleen geinjecteerd voor directe `api.anthropic.com`-verzoeken. Proxyroutes laten `service_tier` ongemoeid.
     - Expliciete `serviceTier`- of `service_tier`-parameters overschrijven `/fast` wanneer beide zijn ingesteld.
-    - Op accounts zonder Priority Tier-capaciteit kan `service_tier: "auto"` resulteren in `standard`.
+    - Bij accounts zonder Priority Tier-capaciteit kan `service_tier: "auto"` uitkomen op `standard`.
 
     </Note>
 
@@ -303,22 +313,22 @@ OpenClaw ondersteunt Anthropic's promptcachingfunctie voor API-sleutel-auth.
 
   <Accordion title="Mediabegrip (afbeelding en PDF)">
     De gebundelde Anthropic-Plugin registreert begrip van afbeeldingen en PDF's. OpenClaw
-    lost mediacapaciteiten automatisch op vanuit de geconfigureerde Anthropic-auth; er is geen
-    extra configuratie nodig.
+    lost mediacapabilities automatisch op vanuit de geconfigureerde Anthropic-auth — er is geen
+    aanvullende configuratie nodig.
 
-    | Eigenschap       | Waarde                |
-    | ---------------- | --------------------- |
-    | Standaardmodel   | `claude-opus-4-8`     |
+    | Eigenschap      | Waarde                |
+    | --------------- | --------------------- |
+    | Standaardmodel  | `claude-opus-4-8`     |
     | Ondersteunde invoer | Afbeeldingen, PDF-documenten |
 
-    Wanneer een afbeelding of PDF aan een gesprek is gekoppeld, routeert OpenClaw deze automatisch
+    Wanneer een afbeelding of PDF aan een gesprek wordt toegevoegd, routeert OpenClaw deze automatisch
     via de Anthropic-provider voor mediabegrip.
 
   </Accordion>
 
   <Accordion title="1M-contextvenster">
-    Anthropic's 1M-contextvenster is beschikbaar op GA-geschikte Claude 4.x-modellen
-    zoals Opus 4.8, Opus 4.7, Opus 4.6 en Sonnet 4.6. OpenClaw schaalt die modellen automatisch naar
+    Het 1M-contextvenster van Anthropic is beschikbaar op GA-capabele Claude 4.x-modellen
+    zoals Opus 4.8, Opus 4.7, Opus 4.6 en Sonnet 4.6. OpenClaw dimensioneert die modellen automatisch op
     1M:
 
     ```json5
@@ -334,64 +344,63 @@ OpenClaw ondersteunt Anthropic's promptcachingfunctie voor API-sleutel-auth.
     ```
 
     Oudere configuraties kunnen `params.context1m: true` behouden, maar OpenClaw stuurt niet langer
-    de vervallen `context-1m-2025-08-07`-betaheader. Oudere `anthropicBeta`-configuratie-
-    vermeldingen met die waarde worden genegeerd tijdens het oplossen van requestheaders en
+    de ingetrokken `context-1m-2025-08-07`-betaheader. Oudere `anthropicBeta`-configuratie-
+    items met die waarde worden genegeerd tijdens het oplossen van requestheaders en
     niet-ondersteunde oudere Claude-modellen blijven op hun normale contextvenster.
 
     `params.context1m: true` geldt ook voor de Claude CLI-backend
-    (`claude-cli/*`) voor in aanmerking komende GA-geschikte Opus- en Sonnet-modellen, waarmee
-    het runtimecontextvenster voor die CLI-sessies behouden blijft zodat het overeenkomt met het directe-API-
+    (`claude-cli/*`) voor in aanmerking komende GA-capabele Opus- en Sonnet-modellen, waarbij
+    het runtimecontextvenster voor die CLI-sessies behouden blijft zodat het overeenkomt met het directe API-
     gedrag.
 
     <Warning>
-    Vereist toegang tot lange context op je Anthropic-referentie. OAuth-/abonnementstoken-auth behoudt de vereiste Anthropic-betaheaders, maar OpenClaw verwijdert de vervallen 1M-betaheader als die in oudere configuratie blijft staan.
+    Vereist long-context-toegang op je Anthropic-referentie. OAuth-/abonnementstoken-auth behoudt de vereiste Anthropic-betaheaders, maar OpenClaw verwijdert de ingetrokken 1M-betaheader als die in oudere configuratie achterblijft.
     </Warning>
 
   </Accordion>
 
-  <Accordion title="Claude Opus 4.8 1M-context">
-    `anthropic/claude-opus-4-8` en de `claude-cli`-variant ervan hebben standaard een 1M-context-
-    venster; geen `params.context1m: true` nodig.
+  <Accordion title="Claude Opus 4.8 1M context">
+    `anthropic/claude-opus-4-8` en de `claude-cli`-variant ervan hebben standaard een 1M-contextvenster — geen `params.context1m: true` nodig.
   </Accordion>
 </AccordionGroup>
 
-## Probleemoplossing
+## Problemen oplossen
 
 <AccordionGroup>
   <Accordion title="401-fouten / token plotseling ongeldig">
-    Anthropic-token-auth verloopt en kan worden ingetrokken. Gebruik voor nieuwe setups in plaats daarvan een Anthropic API-sleutel.
+    Anthropic-tokenauthenticatie verloopt en kan worden ingetrokken. Gebruik voor nieuwe installaties in plaats daarvan een Anthropic API-sleutel.
   </Accordion>
 
   <Accordion title='Geen API-sleutel gevonden voor provider "anthropic"'>
-    Anthropic-auth is **per agent** — nieuwe agents nemen de sleutels van de hoofdagent niet over. Voer onboarding voor die agent opnieuw uit (of configureer een API-sleutel op de Gateway-host) en controleer daarna met `openclaw models status`.
+    Anthropic-authenticatie is **per agent** — nieuwe agents erven de sleutels van de hoofdagent niet. Voer onboarding opnieuw uit voor die agent (of configureer een API-sleutel op de gatewayhost) en controleer daarna met `openclaw models status`.
   </Accordion>
 
-  <Accordion title='Geen inloggegevens gevonden voor profiel "anthropic:default"'>
-    Voer `openclaw models status` uit om te zien welk auth-profiel actief is. Voer onboarding opnieuw uit, of configureer een API-sleutel voor dat profielpad.
+  <Accordion title='Geen referenties gevonden voor profiel "anthropic:default"'>
+    Voer `openclaw models status` uit om te zien welk authenticatieprofiel actief is. Voer onboarding opnieuw uit, of configureer een API-sleutel voor dat profielpad.
   </Accordion>
 
-  <Accordion title="Geen beschikbaar auth-profiel (alles in cooldown)">
-    Controleer `openclaw models status --json` op `auth.unusableProfiles`. Anthropic-rate-limit-cooldowns kunnen modelspecifiek zijn, dus een verwant Anthropic-model kan nog bruikbaar zijn. Voeg een ander Anthropic-profiel toe of wacht tot de cooldown voorbij is.
+  <Accordion title="Geen beschikbaar authenticatieprofiel (allemaal in cooldown)">
+    Controleer `openclaw models status --json` op `auth.unusableProfiles`. Anthropic-rate-limitcooldowns kunnen modelspecifiek zijn, dus een verwant Anthropic-model kan nog steeds bruikbaar zijn. Voeg een ander Anthropic-profiel toe of wacht op de cooldown.
   </Accordion>
 </AccordionGroup>
 
 <Note>
-Meer hulp: [Probleemoplossing](/nl/help/troubleshooting) en [FAQ](/nl/help/faq).
+Meer hulp: [Problemen oplossen](/nl/help/troubleshooting) en [FAQ](/nl/help/faq).
 </Note>
 
 ## Gerelateerd
 
 <CardGroup cols={2}>
   <Card title="Modelselectie" href="/nl/concepts/model-providers" icon="layers">
-    Providers, modelreferenties en failovergedrag kiezen.
+    Providers, modelrefs en failovergedrag kiezen.
   </Card>
   <Card title="CLI-backends" href="/nl/gateway/cli-backends" icon="terminal">
-    Setup en runtimedetails voor de Claude CLI-backend.
+    Installatie van de Claude CLI-backend en runtimedetails.
   </Card>
   <Card title="Promptcaching" href="/nl/reference/prompt-caching" icon="database">
-    Hoe promptcaching werkt bij providers.
+    Hoe promptcaching werkt bij verschillende providers.
   </Card>
-  <Card title="OAuth en auth" href="/nl/gateway/authentication" icon="key">
-    Auth-details en regels voor hergebruik van inloggegevens.
+  <Card title="OAuth en authenticatie" href="/nl/gateway/authentication" icon="key">
+    Authenticatiedetails en regels voor hergebruik van referenties.
   </Card>
 </CardGroup>

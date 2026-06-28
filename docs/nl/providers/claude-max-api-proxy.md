@@ -1,36 +1,38 @@
 ---
 read_when:
-    - Je wilt het Claude Max-abonnement gebruiken met OpenAI-compatibele tools
-    - Je wilt een lokale API-server die Claude Code CLI verpakt
-    - Je wilt toegang tot Anthropic op basis van abonnementen versus op basis van API-sleutels evalueren
-summary: Communityproxy om Claude-abonnementsreferenties bloot te stellen als OpenAI-compatibel eindpunt
+    - Je wilt een Claude Max-abonnement gebruiken met OpenAI-compatibele tools
+    - Je wilt een lokale API-server die Claude Code CLI omhult
+    - Je wilt Anthropic-toegang op basis van abonnementen vergelijken met toegang op basis van API-sleutels
+summary: Communityproxy om Claude-abonnementsreferenties als een OpenAI-compatibel endpoint beschikbaar te stellen
 title: Claude Max API-proxy
 x-i18n:
-    generated_at: "2026-06-27T18:11:04Z"
+    generated_at: "2026-06-28T20:45:02Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 24bd2b4b56e4b8829e67f248d0e0a6bad53ccbd9ce98ee288bfa4de93508ef27
+    source_hash: 5d8800f7d5bd7adf9bff4825a45878a1bbde73b4d54afe4b5b4aa2b1b5523bee
     source_path: providers/claude-max-api-proxy.md
     workflow: 16
 ---
 
-**claude-max-api-proxy** is een communitytool die je Claude Max/Pro-abonnement beschikbaar maakt als een OpenAI-compatibel API-eindpunt. Zo kun je je abonnement gebruiken met elke tool die de OpenAI API-indeling ondersteunt.
+**claude-max-api-proxy** is een community-tool die je Claude Max/Pro-abonnement beschikbaar maakt als een OpenAI-compatibel API-eindpunt. Zo kun je je abonnement gebruiken met elke tool die de OpenAI API-indeling ondersteunt.
 
 <Warning>
-Dit pad is alleen bedoeld voor technische compatibiliteit. Anthropic heeft in het verleden bepaald abonnementsgebruik buiten Claude Code geblokkeerd. Je moet zelf beslissen of je het gebruikt en de huidige factureringsregels van Anthropic controleren voordat je erop vertrouwt.
+Dit pad is alleen bedoeld voor technische compatibiliteit. Anthropic heeft in het verleden sommige abonnementsgebruik buiten Claude Code geblokkeerd. Je moet zelf beslissen of je dit wilt gebruiken en de huidige factureringsregels van Anthropic controleren voordat je erop vertrouwt.
 
-De huidige supportdocumentatie van Anthropic zegt dat `claude -p` Agent SDK-/programmatisch gebruik is. Vanaf 15 juni 2026 gebruikt `claude -p`-gebruik binnen een abonnementsplan eerst een afzonderlijk maandelijks Agent SDK-tegoed, en daarna gebruikstegoeden tegen standaard API-tarieven als gebruikstegoeden zijn ingeschakeld.
+De huidige ondersteuningsdocumentatie van Anthropic zegt dat `claude -p` Agent SDK/programmatisch gebruik is. De supportupdate van Anthropic van 15 juni 2026 heeft het aangekondigde afzonderlijke Agent SDK-tegoedplan gepauzeerd. Voor nu tellen Claude Agent SDK, `claude -p` en gebruik via apps van derden nog steeds mee voor de gebruikslimieten van het ingelogde abonnement.
+
+Controleer voordat je op dit pad vertrouwt het [artikel over het Agent SDK-plan](https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan) van Anthropic, plus de Claude Code-ondersteuningsartikelen voor [Pro/Max](https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan)- of [Team/Enterprise](https://support.claude.com/en/articles/11845131-use-claude-code-with-your-team-or-enterprise-plan)-accounts.
 </Warning>
 
 ## Waarom dit gebruiken?
 
-| Aanpak                    | Kostenroute                                      | Geschikt voor                              |
-| ------------------------- | ----------------------------------------------- | ------------------------------------------ |
+| Aanpak                    | Kostenroute                                      | Beste voor                                      |
+| ------------------------- | ----------------------------------------------- | ----------------------------------------------- |
 | Anthropic API             | Betalen per token via Claude Console of cloud   | Productie-apps, gedeelde automatisering, volume |
 | Claude-abonnementsproxy   | Claude Code / `claude -p`-plan en tegoedregels  | Persoonlijke experimenten met compatibele tools |
 
-Als je een Claude Max- of Pro-abonnement hebt en dit wilt gebruiken met OpenAI-compatibele tools, kan deze proxy bij sommige persoonlijke workflows passen. Het is geen onbeperkt pad met vast tarief. API-sleutels blijven het duidelijkere beleids- en factureringspad voor productiegebruik.
+Als je een Claude Max- of Pro-abonnement hebt en dit wilt gebruiken met OpenAI-compatibele tools, kan deze proxy passen bij sommige persoonlijke workflows. Het is geen onbeperkte route met vast tarief. API-sleutels blijven het duidelijkere beleids- en factureringspad voor productiegebruik.
 
 ## Hoe het werkt
 
@@ -41,9 +43,9 @@ Your App → claude-max-api-proxy → Claude Code CLI / claude -p → Anthropic
 
 De proxy:
 
-1. Accepteert verzoeken in OpenAI-indeling op `http://localhost:3456/v1/chat/completions`
+1. Accepteert OpenAI-indelingsverzoeken op `http://localhost:3456/v1/chat/completions`
 2. Zet ze om naar Claude Code CLI-opdrachten
-3. Retourneert antwoorden in OpenAI-indeling (streaming ondersteund)
+3. Retourneert antwoorden in OpenAI-indeling (streaming wordt ondersteund)
 
 ## Aan de slag
 
@@ -105,11 +107,11 @@ De proxy:
 
 ## Ingebouwde catalogus
 
-| Model-ID          | Komt overeen met |
-| ----------------- | ---------------- |
-| `claude-opus-4`   | Claude Opus 4    |
-| `claude-sonnet-4` | Claude Sonnet 4  |
-| `claude-haiku-4`  | Claude Haiku 4   |
+| Model-ID          | Verwijst naar   |
+| ----------------- | --------------- |
+| `claude-opus-4`   | Claude Opus 4   |
+| `claude-sonnet-4` | Claude Sonnet 4 |
+| `claude-haiku-4`  | Claude Haiku 4  |
 
 ## Geavanceerde configuratie
 
@@ -117,8 +119,8 @@ De proxy:
   <Accordion title="Proxy-style OpenAI-compatible notes">
     Dit pad gebruikt dezelfde proxy-achtige OpenAI-compatibele route als andere aangepaste `/v1`-backends:
 
-    - Native verzoekvorming die alleen voor OpenAI geldt, is niet van toepassing
-    - Geen `service_tier`, geen Responses `store`, geen prompt-cache-hints en geen OpenAI reasoning-compat payloadvorming
+    - Native verzoekvorming alleen voor OpenAI is niet van toepassing
+    - Geen `service_tier`, geen Responses `store`, geen prompt-cachehints en geen OpenAI reasoning-compat-payloadvorming
     - Verborgen OpenClaw-attributieheaders (`originator`, `version`, `User-Agent`) worden niet geïnjecteerd op de proxy-URL
 
   </Accordion>
@@ -160,14 +162,14 @@ De proxy:
 
 ## Opmerkingen
 
-- Dit is een **communitytool**, niet officieel ondersteund door Anthropic of OpenClaw
+- Dit is een **community-tool**, niet officieel ondersteund door Anthropic of OpenClaw
 - Vereist een actief Claude Max/Pro-abonnement waarbij Claude Code CLI is geauthenticeerd
-- Neemt het facturerings-, gebruikstegoed- en rate-limit-gedrag van Claude Code `claude -p` over
+- Erft het facturerings-, gebruikstegoed- en snelheidslimietgedrag van Claude Code `claude -p`
 - De proxy draait lokaal en stuurt geen gegevens naar servers van derden
-- Streamingantwoorden worden volledig ondersteund
+- Streaming-antwoorden worden volledig ondersteund
 
 <Note>
-Zie [Anthropic-provider](/nl/providers/anthropic) voor native Anthropic-integratie met Claude CLI of API-sleutels. Zie [OpenAI-provider](/nl/providers/openai) voor OpenAI/Codex-abonnementen.
+Zie [Anthropic-aanbieder](/nl/providers/anthropic) voor native Anthropic-integratie met Claude CLI of API-sleutels. Zie [OpenAI-aanbieder](/nl/providers/openai) voor OpenAI/Codex-abonnementen.
 </Note>
 
 ## Gerelateerd
@@ -180,7 +182,7 @@ Zie [Anthropic-provider](/nl/providers/anthropic) voor native Anthropic-integrat
     Voor OpenAI/Codex-abonnementen.
   </Card>
   <Card title="Model selection" href="/nl/concepts/model-providers" icon="layers">
-    Overzicht van alle providers, modelrefs en failover-gedrag.
+    Overzicht van alle aanbieders, modelverwijzingen en failover-gedrag.
   </Card>
   <Card title="Configuration" href="/nl/gateway/configuration" icon="gear">
     Volledige configuratiereferentie.

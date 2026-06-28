@@ -1,24 +1,24 @@
 ---
 read_when:
-    - OpenClaw'ı bir Kubernetes kümesinde çalıştırmak istiyorsunuz
-    - OpenClaw'ı bir Kubernetes ortamında test etmek istiyorsunuz
-summary: OpenClaw Gateway'i Kustomize ile bir Kubernetes kümesine dağıtın
+    - OpenClaw'u bir Kubernetes kümesinde çalıştırmak istiyorsunuz
+    - OpenClaw'u bir Kubernetes ortamında test etmek istiyorsunuz
+summary: OpenClaw Gateway'i Kustomize ile bir Kubernetes kümesine dağıt
 title: Kubernetes
 x-i18n:
-    generated_at: "2026-05-06T09:19:06Z"
+    generated_at: "2026-06-28T20:44:10Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c38e42ae9121864333574b668d95f4d1112cada30cd525613d2371f176de4505
+    source_hash: 5a38c2754b4a5267e79854958a252b2e4bc9811da191d8ccf3ac597534cc8e7a
     source_path: install/kubernetes.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-OpenClaw'ı Kubernetes üzerinde çalıştırmak için asgari bir başlangıç noktası — üretime hazır bir dağıtım değildir. Temel kaynakları kapsar ve ortamınıza uyarlanması amaçlanır.
+OpenClaw'ı Kubernetes üzerinde çalıştırmak için minimal bir başlangıç noktası; üretime hazır bir dağıtım değildir. Temel kaynakları kapsar ve ortamınıza uyarlanmak üzere tasarlanmıştır.
 
 ## Neden Helm değil?
 
-OpenClaw, bazı yapılandırma dosyalarına sahip tek bir kapsayıcıdır. Asıl ilginç özelleştirme, altyapı şablonlamasında değil aracı içeriğindedir (markdown dosyaları, skills, yapılandırma geçersiz kılmaları). Kustomize, Helm chart ek yükü olmadan overlay'leri yönetir. Dağıtımınız daha karmaşık hale gelirse, bu manifestlerin üzerine bir Helm chart katmanı eklenebilir.
+OpenClaw, bazı yapılandırma dosyalarına sahip tek bir container'dır. Asıl özelleştirme altyapı şablonlamasında değil, agent içeriğindedir (markdown dosyaları, Skills, yapılandırma geçersiz kılmaları). Kustomize, Helm chart ek yükü olmadan overlay'leri yönetir. Dağıtımınız daha karmaşık hale gelirse, bu manifestlerin üzerine bir Helm chart katman olarak eklenebilir.
 
 ## Gerekenler
 
@@ -37,7 +37,7 @@ kubectl port-forward svc/openclaw 18789:18789 -n openclaw
 open http://localhost:18789
 ```
 
-Denetim Kullanıcı Arayüzü için yapılandırılmış paylaşılan sırrı alın. Bu dağıtım betiği
+Control UI için yapılandırılmış paylaşılan secret'ı alın. Bu dağıtım betiği
 varsayılan olarak token kimlik doğrulaması oluşturur:
 
 ```bash
@@ -48,7 +48,7 @@ Yerel hata ayıklama için `./scripts/k8s/deploy.sh --show-token`, dağıtımdan
 
 ## Kind ile yerel test
 
-Bir kümeniz yoksa, [Kind](https://kind.sigs.k8s.io/) ile yerelde bir küme oluşturun:
+Bir kümeniz yoksa, [Kind](https://kind.sigs.k8s.io/) ile yerel olarak bir tane oluşturun:
 
 ```bash
 ./scripts/k8s/create-kind.sh           # auto-detects docker or podman
@@ -61,7 +61,7 @@ Ardından her zamanki gibi `./scripts/k8s/deploy.sh` ile dağıtın.
 
 ### 1) Dağıt
 
-**Seçenek A** — ortamda API anahtarı (tek adım):
+**Seçenek A** — Ortamda API anahtarı (tek adım):
 
 ```bash
 # Replace with your provider: ANTHROPIC, GEMINI, OPENAI, or OPENROUTER
@@ -69,9 +69,9 @@ export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-Betik, API anahtarı ve otomatik oluşturulmuş bir gateway token'ı içeren bir Kubernetes Secret oluşturur, ardından dağıtır. Secret zaten varsa mevcut gateway token'ını ve değiştirilmeyen sağlayıcı anahtarlarını korur.
+Betik, API anahtarı ve otomatik oluşturulmuş bir Gateway token'ı içeren bir Kubernetes Secret oluşturur, ardından dağıtımı yapar. Secret zaten varsa, mevcut Gateway token'ını ve değiştirilmeyen sağlayıcı anahtarlarını korur.
 
-**Seçenek B** — secret'ı ayrı oluşturun:
+**Seçenek B** — Secret'ı ayrı oluştur:
 
 ```bash
 export <PROVIDER>_API_KEY="..."
@@ -79,7 +79,7 @@ export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-Yerel test için token'ın stdout'a yazdırılmasını istiyorsanız iki komutla da `--show-token` kullanın.
+Yerel test için token'ın stdout'a yazdırılmasını istiyorsanız iki komuttan biriyle `--show-token` kullanın.
 
 ### 2) Gateway'e eriş
 
@@ -88,7 +88,7 @@ kubectl port-forward svc/openclaw 18789:18789 -n openclaw
 open http://localhost:18789
 ```
 
-## Dağıtılanlar
+## Neler dağıtılır?
 
 ```
 Namespace: openclaw (configurable via OPENCLAW_NAMESPACE)
@@ -101,7 +101,7 @@ Namespace: openclaw (configurable via OPENCLAW_NAMESPACE)
 
 ## Özelleştirme
 
-### Aracı talimatları
+### Agent talimatları
 
 `scripts/k8s/manifests/configmap.yaml` içindeki `AGENTS.md` dosyasını düzenleyin ve yeniden dağıtın:
 
@@ -115,7 +115,7 @@ Namespace: openclaw (configurable via OPENCLAW_NAMESPACE)
 
 ### Sağlayıcı ekleme
 
-Ek anahtarları dışa aktararak yeniden çalıştırın:
+Ek anahtarlar dışa aktarılmış şekilde yeniden çalıştırın:
 
 ```bash
 export ANTHROPIC_API_KEY="..."
@@ -124,9 +124,9 @@ export OPENAI_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-Mevcut sağlayıcı anahtarları, üzerine yazmadığınız sürece Secret içinde kalır.
+Mevcut sağlayıcı anahtarları, siz üzerine yazmadıkça Secret içinde kalır.
 
-Veya Secret'ı doğrudan patch'leyin:
+Veya Secret'ı doğrudan patch edin:
 
 ```bash
 kubectl patch secret openclaw-secrets -n openclaw \
@@ -145,18 +145,18 @@ OPENCLAW_NAMESPACE=my-namespace ./scripts/k8s/deploy.sh
 `scripts/k8s/manifests/deployment.yaml` içindeki `image` alanını düzenleyin:
 
 ```yaml
-image: ghcr.io/openclaw/openclaw:latest # or pin to a specific version from https://github.com/openclaw/openclaw/releases
+image: ghcr.io/openclaw/openclaw:latest # primary; official Docker Hub mirror: openclaw/openclaw:latest
 ```
 
 ### Port-forward ötesine açma
 
-Varsayılan manifestler, gateway'i pod içindeki loopback'e bağlar. Bu, `kubectl port-forward` ile çalışır, ancak pod IP'sine ulaşması gereken bir Kubernetes `Service` veya Ingress yolu ile çalışmaz.
+Varsayılan manifestler, Gateway'i pod içinde loopback'e bağlar. Bu, `kubectl port-forward` ile çalışır, ancak pod IP'sine ulaşması gereken bir Kubernetes `Service` veya Ingress yolu ile çalışmaz.
 
-Gateway'i bir Ingress veya load balancer üzerinden açmak istiyorsanız:
+Gateway'i bir Ingress veya yük dengeleyici üzerinden açmak istiyorsanız:
 
-- `scripts/k8s/manifests/configmap.yaml` içindeki gateway bağlamasını `loopback` değerinden dağıtım modelinize uyan loopback olmayan bir bağlamaya değiştirin
-- Gateway kimlik doğrulamasını etkin tutun ve uygun TLS sonlandırmalı bir giriş noktası kullanın
-- Desteklenen web güvenlik modelini kullanarak Denetim Kullanıcı Arayüzü'nü uzak erişim için yapılandırın (örneğin gerektiğinde HTTPS/Tailscale Serve ve açıkça izin verilen origin'ler)
+- `scripts/k8s/manifests/configmap.yaml` içindeki Gateway bind değerini `loopback` yerine dağıtım modelinizle eşleşen loopback olmayan bir bind olarak değiştirin
+- Gateway kimlik doğrulamasını etkin tutun ve doğru TLS sonlandırmalı bir giriş noktası kullanın
+- Desteklenen web güvenliği modelini kullanarak Control UI'ı uzak erişim için yapılandırın (örneğin gerektiğinde HTTPS/Tailscale Serve ve açıkça izin verilen origin'ler)
 
 ## Yeniden dağıtma
 
@@ -172,16 +172,16 @@ Bu, tüm manifestleri uygular ve yapılandırma veya secret değişikliklerini a
 ./scripts/k8s/deploy.sh --delete
 ```
 
-Bu, namespace'i ve PVC dahil içindeki tüm kaynakları siler.
+Bu, namespace'i ve içindeki PVC dahil tüm kaynakları siler.
 
 ## Mimari notları
 
-- Gateway, varsayılan olarak pod içinde loopback'e bağlanır; bu nedenle dahil edilen kurulum `kubectl port-forward` içindir
-- Küme kapsamlı kaynak yoktur — her şey tek bir namespace içinde yaşar
+- Gateway varsayılan olarak pod içinde loopback'e bağlanır, bu nedenle dahil edilen kurulum `kubectl port-forward` içindir
+- Küme kapsamlı kaynak yoktur; her şey tek bir namespace içinde bulunur
 - Güvenlik: `readOnlyRootFilesystem`, `drop: ALL` yetenekleri, root olmayan kullanıcı (UID 1000)
-- Varsayılan yapılandırma, Denetim Kullanıcı Arayüzü'nü daha güvenli yerel erişim yolunda tutar: loopback bağlama artı `http://127.0.0.1:18789` adresine `kubectl port-forward`
-- localhost erişiminin ötesine geçerseniz, desteklenen uzak modeli kullanın: HTTPS/Tailscale artı uygun gateway bağlaması ve Denetim Kullanıcı Arayüzü origin ayarları
-- Secret'lar geçici bir dizinde oluşturulur ve doğrudan kümeye uygulanır — repo checkout'ına hiçbir secret materyali yazılmaz
+- Varsayılan yapılandırma, Control UI'ı daha güvenli yerel erişim yolunda tutar: loopback bind artı `http://127.0.0.1:18789` adresine `kubectl port-forward`
+- localhost erişiminin ötesine geçerseniz, desteklenen uzak modeli kullanın: HTTPS/Tailscale artı uygun Gateway bind ve Control UI origin ayarları
+- Secret'lar geçici bir dizinde oluşturulur ve doğrudan kümeye uygulanır; repo checkout'a hiçbir secret materyali yazılmaz
 
 ## Dosya yapısı
 

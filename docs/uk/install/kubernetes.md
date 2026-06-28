@@ -2,29 +2,29 @@
 read_when:
     - Ви хочете запустити OpenClaw у кластері Kubernetes
     - Ви хочете протестувати OpenClaw у середовищі Kubernetes
-summary: Розгорніть OpenClaw Gateway у кластері Kubernetes за допомогою Kustomize
+summary: Розгортання OpenClaw Gateway у кластері Kubernetes за допомогою Kustomize
 title: Kubernetes
 x-i18n:
-    generated_at: "2026-05-06T01:09:28Z"
+    generated_at: "2026-06-28T20:44:22Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c38e42ae9121864333574b668d95f4d1112cada30cd525613d2371f176de4505
+    source_hash: 5a38c2754b4a5267e79854958a252b2e4bc9811da191d8ccf3ac597534cc8e7a
     source_path: install/kubernetes.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Мінімальна відправна точка для запуску OpenClaw у Kubernetes — не готове до production розгортання. Вона охоплює основні ресурси та призначена для адаптації під ваше середовище.
+Мінімальна відправна точка для запуску OpenClaw на Kubernetes — не готове до production розгортання. Вона охоплює основні ресурси й призначена для адаптації до вашого середовища.
 
 ## Чому не Helm?
 
-OpenClaw — це один контейнер із кількома конфігураційними файлами. Найважливіше налаштування відбувається в контенті агента (markdown-файлах, skills, перевизначеннях конфігурації), а не в шаблонізації інфраструктури. Kustomize обробляє overlay без накладних витрат Helm-чарту. Якщо ваше розгортання стане складнішим, Helm-чарт можна нашарувати поверх цих маніфестів.
+OpenClaw — це один контейнер із кількома файлами конфігурації. Найважливіша кастомізація міститься у вмісті агентів (Markdown-файли, Skills, перевизначення конфігурації), а не в шаблонізації інфраструктури. Kustomize обробляє оверлеї без накладних витрат Helm chart. Якщо ваше розгортання стане складнішим, Helm chart можна накласти поверх цих маніфестів.
 
 ## Що потрібно
 
 - Запущений кластер Kubernetes (AKS, EKS, GKE, k3s, kind, OpenShift тощо)
 - `kubectl`, підключений до вашого кластера
-- API-ключ принаймні для одного провайдера моделей
+- API-ключ принаймні для одного постачальника моделей
 
 ## Швидкий старт
 
@@ -37,8 +37,8 @@ kubectl port-forward svc/openclaw 18789:18789 -n openclaw
 open http://localhost:18789
 ```
 
-Отримайте налаштований спільний секрет для інтерфейсу керування. Цей скрипт розгортання
-типово створює автентифікацію за токеном:
+Отримайте налаштований спільний секрет для Control UI. Цей скрипт розгортання
+за замовчуванням створює автентифікацію через токен:
 
 ```bash
 kubectl get secret openclaw-secrets -n openclaw -o jsonpath='{.data.OPENCLAW_GATEWAY_TOKEN}' | base64 -d
@@ -55,9 +55,9 @@ kubectl get secret openclaw-secrets -n openclaw -o jsonpath='{.data.OPENCLAW_GAT
 ./scripts/k8s/create-kind.sh --delete  # tear down
 ```
 
-Потім розгорніть як зазвичай за допомогою `./scripts/k8s/deploy.sh`.
+Потім розгортайте як зазвичай за допомогою `./scripts/k8s/deploy.sh`.
 
-## Покроково
+## Крок за кроком
 
 ### 1) Розгортання
 
@@ -69,9 +69,9 @@ export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-Скрипт створює Kubernetes Secret з API-ключем і автоматично згенерованим токеном Gateway, а потім виконує розгортання. Якщо Secret уже існує, він зберігає поточний токен Gateway і всі ключі провайдерів, які не змінюються.
+Скрипт створює Kubernetes Secret з API-ключем і автоматично згенерованим токеном Gateway, а потім виконує розгортання. Якщо Secret уже існує, він зберігає поточний токен Gateway і всі ключі постачальників, які не змінюються.
 
-**Варіант B** — створіть secret окремо:
+**Варіант B** — створіть секрет окремо:
 
 ```bash
 export <PROVIDER>_API_KEY="..."
@@ -79,7 +79,7 @@ export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-Використайте `--show-token` з будь-якою командою, якщо хочете вивести токен у stdout для локального тестування.
+Використовуйте `--show-token` з будь-якою командою, якщо хочете вивести токен у stdout для локального тестування.
 
 ### 2) Доступ до Gateway
 
@@ -99,11 +99,11 @@ Namespace: openclaw (configurable via OPENCLAW_NAMESPACE)
 └── Secret/openclaw-secrets    # Gateway token + API keys
 ```
 
-## Налаштування
+## Кастомізація
 
 ### Інструкції агента
 
-Відредагуйте `AGENTS.md` у `scripts/k8s/manifests/configmap.yaml` і розгорніть повторно:
+Відредагуйте `AGENTS.md` у `scripts/k8s/manifests/configmap.yaml` і повторно розгорніть:
 
 ```bash
 ./scripts/k8s/deploy.sh
@@ -111,11 +111,11 @@ Namespace: openclaw (configurable via OPENCLAW_NAMESPACE)
 
 ### Конфігурація Gateway
 
-Відредагуйте `openclaw.json` у `scripts/k8s/manifests/configmap.yaml`. Повний довідник див. у [конфігурації Gateway](/uk/gateway/configuration).
+Відредагуйте `openclaw.json` у `scripts/k8s/manifests/configmap.yaml`. Повну довідку див. у [конфігурації Gateway](/uk/gateway/configuration).
 
-### Додавання провайдерів
+### Додавання постачальників
 
-Запустіть повторно з експортованими додатковими ключами:
+Повторно запустіть із додатковими експортованими ключами:
 
 ```bash
 export ANTHROPIC_API_KEY="..."
@@ -124,9 +124,9 @@ export OPENAI_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-Наявні ключі провайдерів залишаються в Secret, якщо ви їх не перезапишете.
+Наявні ключі постачальників залишаються в Secret, якщо ви їх не перезапишете.
 
-Або оновіть Secret напряму:
+Або пропатчіть Secret напряму:
 
 ```bash
 kubectl patch secret openclaw-secrets -n openclaw \
@@ -145,18 +145,18 @@ OPENCLAW_NAMESPACE=my-namespace ./scripts/k8s/deploy.sh
 Відредагуйте поле `image` у `scripts/k8s/manifests/deployment.yaml`:
 
 ```yaml
-image: ghcr.io/openclaw/openclaw:latest # or pin to a specific version from https://github.com/openclaw/openclaw/releases
+image: ghcr.io/openclaw/openclaw:latest # primary; official Docker Hub mirror: openclaw/openclaw:latest
 ```
 
-### Відкриття доступу за межами port-forward
+### Відкриття доступу поза port-forward
 
-Стандартні маніфести прив’язують Gateway до loopback усередині pod. Це працює з `kubectl port-forward`, але не працює з Kubernetes `Service` або шляхом Ingress, якому потрібно дістатися до IP pod.
+Стандартні маніфести прив’язують Gateway до loopback усередині pod. Це працює з `kubectl port-forward`, але не працює з Kubernetes `Service` або шляхом Ingress, якому потрібно досягати IP pod.
 
 Якщо ви хочете відкрити Gateway через Ingress або балансувальник навантаження:
 
-- Змініть прив’язку Gateway у `scripts/k8s/manifests/configmap.yaml` з `loopback` на не-loopback прив’язку, що відповідає вашій моделі розгортання
-- Залиште автентифікацію Gateway увімкненою та використовуйте належну вхідну точку із завершенням TLS
-- Налаштуйте інтерфейс керування для віддаленого доступу за підтримуваною моделлю веббезпеки (наприклад, HTTPS/Tailscale Serve і явні дозволені origins за потреби)
+- Змініть прив’язку Gateway у `scripts/k8s/manifests/configmap.yaml` з `loopback` на не-loopback-прив’язку, яка відповідає вашій моделі розгортання
+- Залиште автентифікацію Gateway увімкненою та використовуйте належну TLS-терміновану точку входу
+- Налаштуйте Control UI для віддаленого доступу з використанням підтримуваної моделі веббезпеки (наприклад, HTTPS/Tailscale Serve і явні дозволені origins, коли це потрібно)
 
 ## Повторне розгортання
 
@@ -164,7 +164,7 @@ image: ghcr.io/openclaw/openclaw:latest # or pin to a specific version from http
 ./scripts/k8s/deploy.sh
 ```
 
-Це застосовує всі маніфести та перезапускає pod, щоб підхопити будь-які зміни конфігурації або secret.
+Це застосовує всі маніфести й перезапускає pod, щоб підхопити будь-які зміни конфігурації або секретів.
 
 ## Видалення
 
@@ -176,12 +176,12 @@ image: ghcr.io/openclaw/openclaw:latest # or pin to a specific version from http
 
 ## Архітектурні примітки
 
-- Gateway типово прив’язується до loopback усередині pod, тому включене налаштування призначене для `kubectl port-forward`
-- Немає ресурсів рівня кластера — усе розміщено в одному namespace
+- Gateway за замовчуванням прив’язується до loopback усередині pod, тому включене налаштування призначене для `kubectl port-forward`
+- Немає ресурсів на рівні кластера — усе розміщено в одному namespace
 - Безпека: `readOnlyRootFilesystem`, можливості `drop: ALL`, користувач без root-прав (UID 1000)
-- Стандартна конфігурація тримає інтерфейс керування на безпечнішому шляху локального доступу: прив’язка loopback плюс `kubectl port-forward` до `http://127.0.0.1:18789`
-- Якщо ви виходите за межі доступу через localhost, використовуйте підтримувану віддалену модель: HTTPS/Tailscale плюс відповідна прив’язка Gateway і налаштування origin для інтерфейсу керування
-- Secrets генеруються в тимчасовому каталозі та застосовуються безпосередньо до кластера — секретні матеріали не записуються в робочу копію репозиторію
+- Стандартна конфігурація тримає Control UI на безпечнішому шляху локального доступу: прив’язка до loopback плюс `kubectl port-forward` до `http://127.0.0.1:18789`
+- Якщо ви виходите за межі доступу з localhost, використовуйте підтримувану віддалену модель: HTTPS/Tailscale плюс відповідну прив’язку Gateway і налаштування origin для Control UI
+- Секрети генеруються в тимчасовій директорії та застосовуються безпосередньо до кластера — жоден секретний матеріал не записується в checkout репозиторію
 
 ## Структура файлів
 
@@ -200,5 +200,5 @@ scripts/k8s/
 ## Пов’язане
 
 - [Docker](/uk/install/docker)
-- [Середовище виконання Docker VM](/uk/install/docker-vm-runtime)
+- [Docker VM runtime](/uk/install/docker-vm-runtime)
 - [Огляд встановлення](/uk/install)

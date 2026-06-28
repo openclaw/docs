@@ -1,37 +1,37 @@
 ---
 read_when:
-    - OpenCode 호스팅 모델 액세스를 사용하려고 합니다
-    - Zen 및 Go 카탈로그 중에서 선택하려고 합니다
+    - OpenCode 호스팅 모델 액세스를 원함
+    - Zen과 Go 카탈로그 중에서 선택하려고 합니다
 summary: OpenClaw에서 OpenCode Zen 및 Go 카탈로그 사용하기
 title: OpenCode
 x-i18n:
-    generated_at: "2026-04-25T06:09:33Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: cb0521b038e519f139c66f98ddef4919d8c43ce64018ef8af8f7b42ac00114a4
-    source_path: providers/opencode.md
-    workflow: 15
+    generated_at: "2026-06-28T20:44:12Z"
+    model: gpt-5.5
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 1d777563b82aafbe83a5256c11f1a9cd330e782f08dd467583368a77ebca4fc4
+    source_path: providers/opencode.md
+    workflow: 16
 ---
 
-OpenCode는 OpenClaw에서 두 가지 호스팅 카탈로그를 제공합니다:
+OpenCode는 OpenClaw에서 두 개의 호스팅 카탈로그를 제공합니다:
 
-| 카탈로그 | 접두사            | 런타임 provider |
-| -------- | ----------------- | ---------------- |
-| **Zen**  | `opencode/...`    | `opencode`       |
-| **Go**   | `opencode-go/...` | `opencode-go`    |
+| 카탈로그 | 접두사            | 런타임 제공자 |
+| ------- | ----------------- | ---------------- |
+| **Zen** | `opencode/...`    | `opencode`       |
+| **Go**  | `opencode-go/...` | `opencode-go`    |
 
-두 카탈로그 모두 동일한 OpenCode API 키를 사용합니다. OpenClaw는 업스트림 모델별 라우팅이 올바르게 유지되도록 런타임 provider id를
-분리해 두지만, 온보딩과 문서에서는 이를 하나의 OpenCode setup으로 취급합니다.
+두 카탈로그 모두 같은 OpenCode API 키를 사용합니다. OpenClaw는 업스트림 모델별 라우팅이 올바르게 유지되도록 런타임 제공자 ID를
+분리해 두지만, 온보딩과 문서에서는 이를 하나의 OpenCode 설정으로 다룹니다.
 
 ## 시작하기
 
 <Tabs>
-  <Tab title="Zen 카탈로그">
-    **적합한 경우:** 엄선된 OpenCode 멀티 모델 프록시(Claude, GPT, Gemini).
+  <Tab title="Zen catalog">
+    **가장 적합한 용도:** 엄선된 OpenCode 멀티 모델 프록시(Claude, GPT, Gemini, GLM).
 
     <Steps>
-      <Step title="온보딩 실행">
+      <Step title="Run onboarding">
         ```bash
         openclaw onboard --auth-choice opencode-zen
         ```
@@ -42,12 +42,12 @@ OpenCode는 OpenClaw에서 두 가지 호스팅 카탈로그를 제공합니다:
         openclaw onboard --opencode-zen-api-key "$OPENCODE_API_KEY"
         ```
       </Step>
-      <Step title="Zen 모델을 기본값으로 설정">
+      <Step title="Set a Zen model as the default">
         ```bash
         openclaw config set agents.defaults.model.primary "opencode/claude-opus-4-6"
         ```
       </Step>
-      <Step title="모델 사용 가능 여부 확인">
+      <Step title="Verify models are available">
         ```bash
         openclaw models list --provider opencode
         ```
@@ -56,11 +56,11 @@ OpenCode는 OpenClaw에서 두 가지 호스팅 카탈로그를 제공합니다:
 
   </Tab>
 
-  <Tab title="Go 카탈로그">
-    **적합한 경우:** OpenCode가 호스팅하는 Kimi, GLM, MiniMax 라인업.
+  <Tab title="Go catalog">
+    **가장 적합한 용도:** OpenCode가 호스팅하는 Kimi, GLM, MiniMax 라인업.
 
     <Steps>
-      <Step title="온보딩 실행">
+      <Step title="Run onboarding">
         ```bash
         openclaw onboard --auth-choice opencode-go
         ```
@@ -71,12 +71,12 @@ OpenCode는 OpenClaw에서 두 가지 호스팅 카탈로그를 제공합니다:
         openclaw onboard --opencode-go-api-key "$OPENCODE_API_KEY"
         ```
       </Step>
-      <Step title="Go 모델을 기본값으로 설정">
+      <Step title="Set a Go model as the default">
         ```bash
         openclaw config set agents.defaults.model.primary "opencode-go/kimi-k2.6"
         ```
       </Step>
-      <Step title="모델 사용 가능 여부 확인">
+      <Step title="Verify models are available">
         ```bash
         openclaw models list --provider opencode-go
         ```
@@ -86,7 +86,7 @@ OpenCode는 OpenClaw에서 두 가지 호스팅 카탈로그를 제공합니다:
   </Tab>
 </Tabs>
 
-## config 예시
+## 설정 예시
 
 ```json5
 {
@@ -95,62 +95,62 @@ OpenCode는 OpenClaw에서 두 가지 호스팅 카탈로그를 제공합니다:
 }
 ```
 
-## 내장 카탈로그
+## 기본 제공 카탈로그
 
 ### Zen
 
-| 속성             | 값                                                                      |
-| ---------------- | ----------------------------------------------------------------------- |
-| 런타임 provider  | `opencode`                                                              |
-| 예시 모델        | `opencode/claude-opus-4-6`, `opencode/gpt-5.5`, `opencode/gemini-3-pro` |
+| 속성         | 값                                                                                         |
+| ---------------- | --------------------------------------------------------------------------------------------- |
+| 런타임 제공자 | `opencode`                                                                                    |
+| 예시 모델   | `opencode/claude-opus-4-6`, `opencode/gpt-5.5`, `opencode/gemini-3.1-pro`, `opencode/glm-5.2` |
 
 ### Go
 
-| 속성             | 값                                                                       |
+| 속성         | 값                                                                    |
 | ---------------- | ------------------------------------------------------------------------ |
-| 런타임 provider  | `opencode-go`                                                            |
-| 예시 모델        | `opencode-go/kimi-k2.6`, `opencode-go/glm-5`, `opencode-go/minimax-m2.5` |
+| 런타임 제공자 | `opencode-go`                                                            |
+| 예시 모델   | `opencode-go/kimi-k2.6`, `opencode-go/glm-5`, `opencode-go/minimax-m2.5` |
 
-## 고급 구성
+## 고급 설정
 
 <AccordionGroup>
-  <Accordion title="API 키 별칭">
+  <Accordion title="API key aliases">
     `OPENCODE_ZEN_API_KEY`도 `OPENCODE_API_KEY`의 별칭으로 지원됩니다.
   </Accordion>
 
-  <Accordion title="공유 자격 증명">
-    setup 중에 하나의 OpenCode 키를 입력하면 두 런타임
-    provider 모두에 대한 자격 증명이 저장됩니다. 각 카탈로그를 따로 온보딩할 필요는 없습니다.
+  <Accordion title="Shared credentials">
+    설정 중 OpenCode 키 하나를 입력하면 두 런타임
+    제공자의 자격 증명이 저장됩니다. 각 카탈로그를 따로 온보딩할 필요가 없습니다.
   </Accordion>
 
-  <Accordion title="청구 및 대시보드">
-    OpenCode에 로그인하고 청구 정보를 추가한 뒤 API 키를 복사합니다. 청구
-    및 카탈로그 가용성은 OpenCode 대시보드에서 관리됩니다.
+  <Accordion title="Billing and dashboard">
+    OpenCode에 로그인하고 결제 세부 정보를 추가한 뒤 API 키를 복사합니다. 결제
+    및 카탈로그 사용 가능 여부는 OpenCode 대시보드에서 관리됩니다.
   </Accordion>
 
-  <Accordion title="Gemini 재생 동작">
-    Gemini 기반 OpenCode ref는 프록시-Gemini 경로에 유지되므로, OpenClaw는
-    네이티브 Gemini 재생 검증이나 bootstrap 재작성을 활성화하지 않고도 그 경로에서
-    Gemini thought-signature 정리를 유지합니다.
+  <Accordion title="Gemini replay behavior">
+    Gemini 기반 OpenCode 참조는 프록시-Gemini 경로에 유지되므로, OpenClaw는
+    네이티브 Gemini 리플레이 검증이나 부트스트랩 재작성을 활성화하지 않고 그곳에서
+    Gemini 생각 서명 정리를 유지합니다.
   </Accordion>
 
-  <Accordion title="비-Gemini 재생 동작">
-    비-Gemini OpenCode ref는 최소 OpenAI 호환 재생 정책을 유지합니다.
+  <Accordion title="Non-Gemini replay behavior">
+    Gemini가 아닌 OpenCode 참조는 최소한의 OpenAI 호환 리플레이 정책을 유지합니다.
   </Accordion>
 </AccordionGroup>
 
 <Tip>
-setup 중에 하나의 OpenCode 키를 입력하면 Zen 및
-Go 런타임 provider 모두에 대한 자격 증명이 저장되므로 한 번만 온보딩하면 됩니다.
+설정 중 OpenCode 키 하나를 입력하면 Zen 및
+Go 런타임 제공자 모두의 자격 증명이 저장되므로, 온보딩은 한 번만 하면 됩니다.
 </Tip>
 
-## 관련
+## 관련 항목
 
 <CardGroup cols={2}>
-  <Card title="모델 선택" href="/ko/concepts/model-providers" icon="layers">
-    provider, 모델 ref, failover 동작 선택하기.
+  <Card title="Model selection" href="/ko/concepts/model-providers" icon="layers">
+    제공자, 모델 참조, 장애 조치 동작 선택.
   </Card>
-  <Card title="구성 참조" href="/ko/gateway/configuration-reference" icon="gear">
-    에이전트, 모델, provider에 대한 전체 config 참조.
+  <Card title="Configuration reference" href="/ko/gateway/configuration-reference" icon="gear">
+    에이전트, 모델, 제공자를 위한 전체 설정 참조.
   </Card>
 </CardGroup>

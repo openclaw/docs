@@ -1,34 +1,35 @@
 ---
 read_when:
-    - 你想要使用 OpenCode 托管的模型访问权限
-    - 你想在 Zen 和 Go 目录之间进行选择
-summary: 使用 OpenClaw 搭配 OpenCode Zen 和 Go 目录
+    - 你需要 OpenCode 托管的模型访问
+    - 你想在 Zen 和 Go 目录之间做选择
+summary: 将 OpenCode Zen 和 Go 目录与 OpenClaw 搭配使用
 title: OpenCode
 x-i18n:
-    generated_at: "2026-04-25T04:09:45Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: cb0521b038e519f139c66f98ddef4919d8c43ce64018ef8af8f7b42ac00114a4
-    source_path: providers/opencode.md
-    workflow: 15
+    generated_at: "2026-06-28T20:44:18Z"
+    model: gpt-5.5
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 1d777563b82aafbe83a5256c11f1a9cd330e782f08dd467583368a77ebca4fc4
+    source_path: providers/opencode.md
+    workflow: 16
 ---
 
-OpenCode 在 OpenClaw 中提供两个托管目录：
+OpenCode 在 OpenClaw 中公开两个托管目录：
 
-| 目录 | 前缀            | 运行时提供商 |
+| 目录 | 前缀              | 运行时提供商 |
 | ------- | ----------------- | ---------------- |
 | **Zen** | `opencode/...`    | `opencode`       |
 | **Go**  | `opencode-go/...` | `opencode-go`    |
 
-这两个目录使用同一个 OpenCode API 密钥。OpenClaw 会将运行时提供商 id 分开保留，
-以确保上游按模型进行的路由保持正确，但新手引导和文档会将它们视为同一个 OpenCode 设置。
+两个目录使用同一个 OpenCode API key。OpenClaw 会将运行时提供商 id
+分开，以保持上游按模型路由的正确性，但新手引导和文档会把它们视为
+同一个 OpenCode 设置。
 
 ## 入门指南
 
 <Tabs>
   <Tab title="Zen 目录">
-    **最适合：** 精选的 OpenCode 多模型代理（Claude、GPT、Gemini）。
+    **最适合：** 精选的 OpenCode 多模型代理（Claude、GPT、Gemini、GLM）。
 
     <Steps>
       <Step title="运行新手引导">
@@ -36,7 +37,7 @@ OpenCode 在 OpenClaw 中提供两个托管目录：
         openclaw onboard --auth-choice opencode-zen
         ```
 
-        或者直接传入密钥：
+        或直接传入 key：
 
         ```bash
         openclaw onboard --opencode-zen-api-key "$OPENCODE_API_KEY"
@@ -57,7 +58,7 @@ OpenCode 在 OpenClaw 中提供两个托管目录：
   </Tab>
 
   <Tab title="Go 目录">
-    **最适合：** OpenCode 托管的 Kimi、GLM 和 MiniMax 阵容。
+    **最适合：** OpenCode 托管的 Kimi、GLM 和 MiniMax 系列。
 
     <Steps>
       <Step title="运行新手引导">
@@ -65,7 +66,7 @@ OpenCode 在 OpenClaw 中提供两个托管目录：
         openclaw onboard --auth-choice opencode-go
         ```
 
-        或者直接传入密钥：
+        或直接传入 key：
 
         ```bash
         openclaw onboard --opencode-go-api-key "$OPENCODE_API_KEY"
@@ -99,51 +100,56 @@ OpenCode 在 OpenClaw 中提供两个托管目录：
 
 ### Zen
 
-| 属性 | 值 |
-| ---------------- | ----------------------------------------------------------------------- |
-| 运行时提供商 | `opencode`                                                              |
-| 示例模型 | `opencode/claude-opus-4-6`, `opencode/gpt-5.5`, `opencode/gemini-3-pro` |
+| 属性             | 值                                                                                            |
+| ---------------- | --------------------------------------------------------------------------------------------- |
+| 运行时提供商 | `opencode`                                                                                    |
+| 示例模型         | `opencode/claude-opus-4-6`, `opencode/gpt-5.5`, `opencode/gemini-3.1-pro`, `opencode/glm-5.2` |
 
 ### Go
 
-| 属性 | 值 |
+| 属性             | 值                                                                       |
 | ---------------- | ------------------------------------------------------------------------ |
 | 运行时提供商 | `opencode-go`                                                            |
-| 示例模型 | `opencode-go/kimi-k2.6`, `opencode-go/glm-5`, `opencode-go/minimax-m2.5` |
+| 示例模型         | `opencode-go/kimi-k2.6`, `opencode-go/glm-5`, `opencode-go/minimax-m2.5` |
 
 ## 高级配置
 
 <AccordionGroup>
-  <Accordion title="API 密钥别名">
+  <Accordion title="API key 别名">
     `OPENCODE_ZEN_API_KEY` 也支持作为 `OPENCODE_API_KEY` 的别名。
   </Accordion>
 
   <Accordion title="共享凭证">
-    在设置期间输入一个 OpenCode 密钥后，会为两个运行时提供商都存储凭证。你不需要分别为每个目录进行新手引导。
+    在设置期间输入一个 OpenCode key 会为两个运行时
+    提供商存储凭证。你无需分别对每个目录执行新手引导。
   </Accordion>
 
-  <Accordion title="计费和控制台">
-    你需要登录 OpenCode，添加计费信息，并复制你的 API 密钥。计费和目录可用性都在 OpenCode 控制台中管理。
+  <Accordion title="账单和仪表盘">
+    你需要登录 OpenCode，添加账单详细信息，并复制你的 API key。账单
+    和目录可用性在 OpenCode 仪表盘中管理。
   </Accordion>
 
   <Accordion title="Gemini 重放行为">
-    由 Gemini 支持的 OpenCode 引用会继续走代理 Gemini 路径，因此 OpenClaw 会在该路径上保留 Gemini thought-signature 清理，而不会启用原生 Gemini 重放验证或 bootstrap 重写。
+    由 Gemini 支持的 OpenCode 引用会保留在 proxy-Gemini 路径上，因此 OpenClaw 会在
+    该处保留 Gemini 思维签名清理，而不会启用原生 Gemini
+    重放验证或引导重写。
   </Accordion>
 
   <Accordion title="非 Gemini 重放行为">
-    非 Gemini 的 OpenCode 引用会保留最小化的 OpenAI 兼容重放策略。
+    非 Gemini OpenCode 引用保留最小化的 OpenAI 兼容重放策略。
   </Accordion>
 </AccordionGroup>
 
 <Tip>
-在设置期间输入一个 OpenCode 密钥后，会为 Zen 和 Go 两个运行时提供商都存储凭证，因此你只需要完成一次新手引导。
+在设置期间输入一个 OpenCode key 会为 Zen 和
+Go 运行时提供商存储凭证，因此你只需要执行一次新手引导。
 </Tip>
 
-## 相关内容
+## 相关
 
 <CardGroup cols={2}>
   <Card title="模型选择" href="/zh-CN/concepts/model-providers" icon="layers">
-    选择提供商、模型引用和故障切换行为。
+    选择提供商、模型引用和故障转移行为。
   </Card>
   <Card title="配置参考" href="/zh-CN/gateway/configuration-reference" icon="gear">
     智能体、模型和提供商的完整配置参考。

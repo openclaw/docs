@@ -1,24 +1,24 @@
 ---
 read_when:
-    - U wilt OpenClaw uitvoeren op een Kubernetes-cluster
-    - U wilt OpenClaw testen in een Kubernetes-omgeving
+    - Je wilt OpenClaw uitvoeren op een Kubernetes-cluster
+    - Je wilt OpenClaw testen in een Kubernetes-omgeving
 summary: OpenClaw Gateway implementeren in een Kubernetes-cluster met Kustomize
 title: Kubernetes
 x-i18n:
-    generated_at: "2026-05-06T09:19:46Z"
+    generated_at: "2026-06-28T20:44:09Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: c38e42ae9121864333574b668d95f4d1112cada30cd525613d2371f176de4505
+    source_hash: 5a38c2754b4a5267e79854958a252b2e4bc9811da191d8ccf3ac597534cc8e7a
     source_path: install/kubernetes.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
-Een minimaal startpunt om OpenClaw op Kubernetes uit te voeren — geen productieklare deployment. Het behandelt de kernresources en is bedoeld om aan je omgeving te worden aangepast.
+Een minimaal startpunt voor het uitvoeren van OpenClaw op Kubernetes — geen productieklare deployment. Het behandelt de kernresources en is bedoeld om aan je omgeving te worden aangepast.
 
 ## Waarom geen Helm?
 
-OpenClaw is één container met enkele configuratiebestanden. De interessante aanpassing zit in agentinhoud (Markdown-bestanden, Skills, configuratie-overschrijvingen), niet in infrastructuurtemplating. Kustomize verwerkt overlays zonder de overhead van een Helm chart. Als je deployment complexer wordt, kan een Helm chart bovenop deze manifests worden gelegd.
+OpenClaw is één container met enkele configuratiebestanden. De interessante aanpassing zit in agentinhoud (Markdown-bestanden, skills, configuratie-overschrijvingen), niet in infrastructuurtemplating. Kustomize verwerkt overlays zonder de overhead van een Helm-chart. Als je deployment complexer wordt, kan een Helm-chart boven op deze manifests worden gelegd.
 
 ## Wat je nodig hebt
 
@@ -26,7 +26,7 @@ OpenClaw is één container met enkele configuratiebestanden. De interessante aa
 - `kubectl` verbonden met je cluster
 - Een API-sleutel voor ten minste één modelprovider
 
-## Snelle start
+## Snel starten
 
 ```bash
 # Replace with your provider: ANTHROPIC, GEMINI, OPENAI, or OPENROUTER
@@ -37,18 +37,18 @@ kubectl port-forward svc/openclaw 18789:18789 -n openclaw
 open http://localhost:18789
 ```
 
-Haal het geconfigureerde gedeelde geheim op voor de Control UI. Dit deploy-script
-maakt standaard tokenauthenticatie aan:
+Haal het geconfigureerde gedeelde geheim voor de Control UI op. Dit deployscript
+maakt standaard token-authenticatie aan:
 
 ```bash
 kubectl get secret openclaw-secrets -n openclaw -o jsonpath='{.data.OPENCLAW_GATEWAY_TOKEN}' | base64 -d
 ```
 
-Voor lokale debugging drukt `./scripts/k8s/deploy.sh --show-token` het token af na de deployment.
+Voor lokaal debuggen print `./scripts/k8s/deploy.sh --show-token` het token na de deployment.
 
 ## Lokaal testen met Kind
 
-Als je geen cluster hebt, maak er dan lokaal een aan met [Kind](https://kind.sigs.k8s.io/):
+Als je geen cluster hebt, maak er lokaal een aan met [Kind](https://kind.sigs.k8s.io/):
 
 ```bash
 ./scripts/k8s/create-kind.sh           # auto-detects docker or podman
@@ -61,7 +61,7 @@ Deploy daarna zoals gebruikelijk met `./scripts/k8s/deploy.sh`.
 
 ### 1) Deployen
 
-**Optie A** — API-sleutel in de omgeving (één stap):
+**Optie A** — API-sleutel in omgeving (één stap):
 
 ```bash
 # Replace with your provider: ANTHROPIC, GEMINI, OPENAI, or OPENROUTER
@@ -69,9 +69,9 @@ export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-Het script maakt een Kubernetes Secret aan met de API-sleutel en een automatisch gegenereerd gateway-token, en deployt daarna. Als de Secret al bestaat, behoudt het script het huidige gateway-token en provider-sleutels die niet worden gewijzigd.
+Het script maakt een Kubernetes Secret met de API-sleutel en een automatisch gegenereerd gatewaytoken, en voert daarna de deployment uit. Als het Secret al bestaat, behoudt het het huidige gatewaytoken en eventuele providersleutels die niet worden gewijzigd.
 
-**Optie B** — maak het secret apart aan:
+**Optie B** — maak het secret afzonderlijk aan:
 
 ```bash
 export <PROVIDER>_API_KEY="..."
@@ -79,7 +79,7 @@ export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-Gebruik `--show-token` met een van beide opdrachten als je het token voor lokale tests naar stdout wilt laten afdrukken.
+Gebruik `--show-token` met beide commando's als je het token naar stdout wilt laten printen voor lokaal testen.
 
 ### 2) Toegang tot de Gateway
 
@@ -124,9 +124,9 @@ export OPENAI_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-Bestaande provider-sleutels blijven in de Secret staan, tenzij je ze overschrijft.
+Bestaande providersleutels blijven in het Secret, tenzij je ze overschrijft.
 
-Of patch de Secret direct:
+Of patch het Secret rechtstreeks:
 
 ```bash
 kubectl patch secret openclaw-secrets -n openclaw \
@@ -145,17 +145,17 @@ OPENCLAW_NAMESPACE=my-namespace ./scripts/k8s/deploy.sh
 Bewerk het veld `image` in `scripts/k8s/manifests/deployment.yaml`:
 
 ```yaml
-image: ghcr.io/openclaw/openclaw:latest # or pin to a specific version from https://github.com/openclaw/openclaw/releases
+image: ghcr.io/openclaw/openclaw:latest # primary; official Docker Hub mirror: openclaw/openclaw:latest
 ```
 
-### Beschikbaar maken buiten port-forward
+### Buiten port-forward beschikbaar maken
 
-De standaardmanifests binden de Gateway binnen de pod aan loopback. Dat werkt met `kubectl port-forward`, maar niet met een Kubernetes `Service` of Ingress-pad dat het pod-IP moet kunnen bereiken.
+De standaardmanifests binden de Gateway aan loopback binnen de pod. Dat werkt met `kubectl port-forward`, maar niet met een Kubernetes `Service`- of Ingress-pad dat het pod-IP moet bereiken.
 
-Als je de Gateway via een Ingress of load balancer wilt beschikbaar maken:
+Als je de Gateway via een Ingress of load balancer beschikbaar wilt maken:
 
 - Wijzig de Gateway-bind in `scripts/k8s/manifests/configmap.yaml` van `loopback` naar een niet-loopback-bind die past bij je deploymentmodel
-- Houd Gateway-authenticatie ingeschakeld en gebruik een passend TLS-beëindigd toegangspunt
+- Houd Gateway-authenticatie ingeschakeld en gebruik een correct TLS-getermineerd toegangspunt
 - Configureer de Control UI voor externe toegang met het ondersteunde webbeveiligingsmodel (bijvoorbeeld HTTPS/Tailscale Serve en expliciet toegestane origins wanneer nodig)
 
 ## Opnieuw deployen
@@ -164,7 +164,7 @@ Als je de Gateway via een Ingress of load balancer wilt beschikbaar maken:
 ./scripts/k8s/deploy.sh
 ```
 
-Dit past alle manifests toe en herstart de pod om eventuele configuratie- of secret-wijzigingen op te pakken.
+Dit past alle manifests toe en herstart de pod om eventuele wijzigingen in configuratie of secrets op te pakken.
 
 ## Verwijderen
 
@@ -176,12 +176,12 @@ Dit verwijdert de namespace en alle resources daarin, inclusief de PVC.
 
 ## Architectuurnotities
 
-- De Gateway bindt standaard binnen de pod aan loopback, dus de meegeleverde setup is bedoeld voor `kubectl port-forward`
-- Geen cluster-scoped resources — alles staat in één namespace
-- Beveiliging: `readOnlyRootFilesystem`, `drop: ALL`-capabilities, niet-rootgebruiker (UID 1000)
+- De Gateway bindt standaard aan loopback binnen de pod, dus de meegeleverde setup is bedoeld voor `kubectl port-forward`
+- Geen clusterbrede resources — alles bevindt zich in één namespace
+- Beveiliging: `readOnlyRootFilesystem`, `drop: ALL` capabilities, niet-rootgebruiker (UID 1000)
 - De standaardconfiguratie houdt de Control UI op het veiligere pad voor lokale toegang: loopback-bind plus `kubectl port-forward` naar `http://127.0.0.1:18789`
-- Als je verder gaat dan toegang via localhost, gebruik dan het ondersteunde externe model: HTTPS/Tailscale plus de juiste Gateway-bind en origin-instellingen voor de Control UI
-- Secrets worden gegenereerd in een tijdelijke map en direct op het cluster toegepast — er wordt geen geheim materiaal naar de repo-checkout geschreven
+- Als je verder gaat dan localhost-toegang, gebruik dan het ondersteunde externe model: HTTPS/Tailscale plus de juiste Gateway-bind en origin-instellingen voor de Control UI
+- Secrets worden in een tijdelijke directory gegenereerd en rechtstreeks op het cluster toegepast — er wordt geen secretmateriaal naar de repo-checkout geschreven
 
 ## Bestandsstructuur
 

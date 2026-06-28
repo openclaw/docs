@@ -1,54 +1,54 @@
 ---
 read_when:
-    - تريد وصولًا إلى نماذج مستضافة عبر OpenCode
+    - تريد وصولًا إلى النماذج المستضافة على OpenCode
     - تريد الاختيار بين كتالوجَي Zen وGo
-summary: استخدم كتالوجَي OpenCode Zen وGo مع OpenClaw
+summary: استخدم كتالوجات OpenCode Zen وGo مع OpenClaw
 title: OpenCode
 x-i18n:
-    generated_at: "2026-04-25T13:57:03Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: cb0521b038e519f139c66f98ddef4919d8c43ce64018ef8af8f7b42ac00114a4
-    source_path: providers/opencode.md
-    workflow: 15
+    generated_at: "2026-06-28T20:46:28Z"
+    model: gpt-5.5
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 1d777563b82aafbe83a5256c11f1a9cd330e782f08dd467583368a77ebca4fc4
+    source_path: providers/opencode.md
+    workflow: 16
 ---
 
 يعرض OpenCode كتالوجين مستضافين في OpenClaw:
 
-| الكتالوج | البادئة            | مزوّد وقت التشغيل |
+| الكتالوج | البادئة            | موفر وقت التشغيل |
 | ------- | ----------------- | ---------------- |
 | **Zen** | `opencode/...`    | `opencode`       |
 | **Go**  | `opencode-go/...` | `opencode-go`    |
 
-يستخدم كلا الكتالوجين مفتاح OpenCode API نفسه. ويُبقي OpenClaw معرّفات مزوّدي وقت التشغيل
-منفصلة حتى يظل التوجيه لكل نموذج من المصدر الأعلى صحيحًا، لكن الإعداد الأولي والمستندات يعاملانهما
+يستخدم كلا الكتالوجين مفتاح OpenCode API نفسه. يبقي OpenClaw معرّفات موفر وقت التشغيل
+منفصلة حتى يظل التوجيه الصاعد لكل نموذج صحيحا، لكن الإعداد الأولي والوثائق يتعاملان معها
 كإعداد OpenCode واحد.
 
 ## البدء
 
 <Tabs>
-  <Tab title="كتالوج Zen">
-    **الأفضل لـ:** proxy متعدد النماذج المنسّق من OpenCode (Claude، وGPT، وGemini).
+  <Tab title="Zen catalog">
+    **الأفضل لـ:** وكيل OpenCode متعدد النماذج المنسق (Claude، GPT، Gemini، GLM).
 
     <Steps>
-      <Step title="شغّل الإعداد الأولي">
+      <Step title="Run onboarding">
         ```bash
         openclaw onboard --auth-choice opencode-zen
         ```
 
-        أو مرّر المفتاح مباشرة:
+        أو مرر المفتاح مباشرة:
 
         ```bash
         openclaw onboard --opencode-zen-api-key "$OPENCODE_API_KEY"
         ```
       </Step>
-      <Step title="اضبط نموذج Zen كنموذج افتراضي">
+      <Step title="Set a Zen model as the default">
         ```bash
         openclaw config set agents.defaults.model.primary "opencode/claude-opus-4-6"
         ```
       </Step>
-      <Step title="تحقق من أن النماذج متاحة">
+      <Step title="Verify models are available">
         ```bash
         openclaw models list --provider opencode
         ```
@@ -57,27 +57,27 @@ x-i18n:
 
   </Tab>
 
-  <Tab title="كتالوج Go">
+  <Tab title="Go catalog">
     **الأفضل لـ:** تشكيلة Kimi وGLM وMiniMax المستضافة عبر OpenCode.
 
     <Steps>
-      <Step title="شغّل الإعداد الأولي">
+      <Step title="Run onboarding">
         ```bash
         openclaw onboard --auth-choice opencode-go
         ```
 
-        أو مرّر المفتاح مباشرة:
+        أو مرر المفتاح مباشرة:
 
         ```bash
         openclaw onboard --opencode-go-api-key "$OPENCODE_API_KEY"
         ```
       </Step>
-      <Step title="اضبط نموذج Go كنموذج افتراضي">
+      <Step title="Set a Go model as the default">
         ```bash
         openclaw config set agents.defaults.model.primary "opencode-go/kimi-k2.6"
         ```
       </Step>
-      <Step title="تحقق من أن النماذج متاحة">
+      <Step title="Verify models are available">
         ```bash
         openclaw models list --provider opencode-go
         ```
@@ -87,7 +87,7 @@ x-i18n:
   </Tab>
 </Tabs>
 
-## مثال على الإعدادات
+## مثال الإعداد
 
 ```json5
 {
@@ -96,62 +96,62 @@ x-i18n:
 }
 ```
 
-## الكتالوجات المضمّنة
+## الكتالوجات المدمجة
 
 ### Zen
 
-| الخاصية         | القيمة                                                                   |
-| ---------------- | ----------------------------------------------------------------------- |
-| مزوّد وقت التشغيل | `opencode`                                                              |
-| نماذج مثال   | `opencode/claude-opus-4-6`، و`opencode/gpt-5.5`، و`opencode/gemini-3-pro` |
+| الخاصية         | القيمة                                                                                         |
+| ---------------- | --------------------------------------------------------------------------------------------- |
+| موفر وقت التشغيل | `opencode`                                                                                    |
+| نماذج أمثلة   | `opencode/claude-opus-4-6`, `opencode/gpt-5.5`, `opencode/gemini-3.1-pro`, `opencode/glm-5.2` |
 
 ### Go
 
 | الخاصية         | القيمة                                                                    |
 | ---------------- | ------------------------------------------------------------------------ |
-| مزوّد وقت التشغيل | `opencode-go`                                                            |
-| نماذج مثال   | `opencode-go/kimi-k2.6`، و`opencode-go/glm-5`، و`opencode-go/minimax-m2.5` |
+| موفر وقت التشغيل | `opencode-go`                                                            |
+| نماذج أمثلة   | `opencode-go/kimi-k2.6`, `opencode-go/glm-5`, `opencode-go/minimax-m2.5` |
 
-## إعدادات متقدمة
+## الإعداد المتقدم
 
 <AccordionGroup>
-  <Accordion title="الأسماء المستعارة لمفتاح API">
-    كما أن `OPENCODE_ZEN_API_KEY` مدعوم أيضًا كاسم مستعار لـ `OPENCODE_API_KEY`.
+  <Accordion title="API key aliases">
+    `OPENCODE_ZEN_API_KEY` مدعوم أيضا كاسم بديل لـ `OPENCODE_API_KEY`.
   </Accordion>
 
-  <Accordion title="بيانات الاعتماد المشتركة">
-    يؤدي إدخال مفتاح OpenCode واحد أثناء الإعداد إلى تخزين بيانات الاعتماد لكلا
-    مزوّدي وقت التشغيل. ولا تحتاج إلى إعداد كل كتالوج على حدة.
+  <Accordion title="Shared credentials">
+    يؤدي إدخال مفتاح OpenCode واحد أثناء الإعداد إلى تخزين بيانات الاعتماد لكلا موفري
+    وقت التشغيل. لا تحتاج إلى إعداد كل كتالوج على حدة.
   </Accordion>
 
-  <Accordion title="الفوترة ولوحة التحكم">
-    تقوم بتسجيل الدخول إلى OpenCode، وإضافة تفاصيل الفوترة، ونسخ مفتاح API الخاص بك. وتتم إدارة
-    الفوترة وتوفر الكتالوج من لوحة تحكم OpenCode.
+  <Accordion title="Billing and dashboard">
+    تسجل الدخول إلى OpenCode، وتضيف تفاصيل الفوترة، وتنسخ مفتاح API الخاص بك. تتم إدارة الفوترة
+    وتوفر الكتالوج من لوحة تحكم OpenCode.
   </Accordion>
 
-  <Accordion title="سلوك replay في Gemini">
-    تبقى مراجع OpenCode المدعومة من Gemini على مسار proxy-Gemini، ولذلك يحافظ OpenClaw
-    على تنظيف thought-signature الخاص بـ Gemini هناك من دون تفعيل التحقق الأصلي من
-    replay في Gemini أو إعادة كتابة التهيئة.
+  <Accordion title="Gemini replay behavior">
+    تبقى مراجع OpenCode المدعومة من Gemini على مسار proxy-Gemini، لذلك يحتفظ OpenClaw
+    بتنظيف توقيع أفكار Gemini هناك دون تمكين تحقق إعادة التشغيل الأصلي من Gemini
+    أو إعادة كتابة bootstrap.
   </Accordion>
 
-  <Accordion title="سلوك replay لغير Gemini">
-    تبقي مراجع OpenCode غير المدعومة من Gemini على سياسة replay الدنيا المتوافقة مع OpenAI.
+  <Accordion title="Non-Gemini replay behavior">
+    تحتفظ مراجع OpenCode غير Gemini بسياسة إعادة التشغيل الدنيا المتوافقة مع OpenAI.
   </Accordion>
 </AccordionGroup>
 
 <Tip>
-يؤدي إدخال مفتاح OpenCode واحد أثناء الإعداد إلى تخزين بيانات الاعتماد لكل من مزوّدي وقت التشغيل Zen و
+يؤدي إدخال مفتاح OpenCode واحد أثناء الإعداد إلى تخزين بيانات الاعتماد لكل من موفري وقت تشغيل Zen و
 Go، لذلك لا تحتاج إلى الإعداد إلا مرة واحدة.
 </Tip>
 
-## ذو صلة
+## ذات صلة
 
 <CardGroup cols={2}>
-  <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
-    اختيار المزوّدين، ومراجع النماذج، وسلوك الرجوع الاحتياطي.
+  <Card title="Model selection" href="/ar/concepts/model-providers" icon="layers">
+    اختيار الموفرين ومراجع النماذج وسلوك تجاوز الفشل.
   </Card>
-  <Card title="مرجع الإعدادات" href="/ar/gateway/configuration-reference" icon="gear">
-    المرجع الكامل لإعدادات الوكلاء، والنماذج، والمزوّدين.
+  <Card title="Configuration reference" href="/ar/gateway/configuration-reference" icon="gear">
+    مرجع الإعداد الكامل للوكلاء والنماذج والموفرين.
   </Card>
 </CardGroup>

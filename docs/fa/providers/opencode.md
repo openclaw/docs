@@ -1,52 +1,54 @@
 ---
 read_when:
-    - شما دسترسی به مدل‌های میزبانی‌شده توسط OpenCode را می‌خواهید
+    - شما دسترسی به مدل میزبانی‌شده توسط OpenCode را می‌خواهید
     - می‌خواهید بین کاتالوگ‌های Zen و Go یکی را انتخاب کنید
 summary: استفاده از کاتالوگ‌های OpenCode Zen و Go با OpenClaw
 title: OpenCode
 x-i18n:
-    generated_at: "2026-04-29T23:27:31Z"
+    generated_at: "2026-06-28T20:47:10Z"
     model: gpt-5.5
+    postprocess_version: locale-links-v1
     provider: openai
-    source_hash: cb0521b038e519f139c66f98ddef4919d8c43ce64018ef8af8f7b42ac00114a4
+    source_hash: 1d777563b82aafbe83a5256c11f1a9cd330e782f08dd467583368a77ebca4fc4
     source_path: providers/opencode.md
     workflow: 16
-    postprocess_version: locale-links-v1
 ---
 
 OpenCode دو کاتالوگ میزبانی‌شده را در OpenClaw ارائه می‌کند:
 
-| کاتالوگ | پیشوند            | ارائه‌دهنده زمان اجرا |
+| کاتالوگ | پیشوند            | ارائه‌دهندهٔ زمان اجرا |
 | ------- | ----------------- | ---------------- |
 | **Zen** | `opencode/...`    | `opencode`       |
 | **Go**  | `opencode-go/...` | `opencode-go`    |
 
-هر دو کاتالوگ از یک کلید API یکسان OpenCode استفاده می‌کنند. OpenClaw شناسه‌های ارائه‌دهنده زمان اجرا را جدا نگه می‌دارد تا مسیریابی بالادستی برای هر مدل درست باقی بماند، اما راه‌اندازی اولیه و مستندات آن‌ها را به‌عنوان یک راه‌اندازی OpenCode واحد در نظر می‌گیرند.
+هر دو کاتالوگ از یک کلید API OpenCode مشترک استفاده می‌کنند. OpenClaw شناسه‌های ارائه‌دهندهٔ زمان اجرا را
+جدا نگه می‌دارد تا مسیریابی بالادستی برای هر مدل درست بماند، اما راه‌اندازی اولیه و مستندات با آن‌ها
+مثل یک تنظیم OpenCode واحد رفتار می‌کنند.
 
 ## شروع به کار
 
 <Tabs>
-  <Tab title="Zen catalog">
-    **بهترین برای:** پراکسی چندمدلی گزینش‌شده OpenCode (Claude، GPT، Gemini).
+  <Tab title="کاتالوگ Zen">
+    **بهترین گزینه برای:** پروکسی چندمدلی گزینش‌شدهٔ OpenCode (Claude، GPT، Gemini، GLM).
 
     <Steps>
-      <Step title="Run onboarding">
+      <Step title="اجرای راه‌اندازی اولیه">
         ```bash
         openclaw onboard --auth-choice opencode-zen
         ```
 
-        یا کلید را مستقیماً وارد کنید:
+        یا کلید را مستقیم وارد کنید:
 
         ```bash
         openclaw onboard --opencode-zen-api-key "$OPENCODE_API_KEY"
         ```
       </Step>
-      <Step title="Set a Zen model as the default">
+      <Step title="تنظیم یک مدل Zen به‌عنوان پیش‌فرض">
         ```bash
         openclaw config set agents.defaults.model.primary "opencode/claude-opus-4-6"
         ```
       </Step>
-      <Step title="Verify models are available">
+      <Step title="بررسی در دسترس بودن مدل‌ها">
         ```bash
         openclaw models list --provider opencode
         ```
@@ -55,27 +57,27 @@ OpenCode دو کاتالوگ میزبانی‌شده را در OpenClaw ارائ
 
   </Tab>
 
-  <Tab title="Go catalog">
-    **بهترین برای:** مجموعه Kimi، GLM و MiniMax میزبانی‌شده در OpenCode.
+  <Tab title="کاتالوگ Go">
+    **بهترین گزینه برای:** مجموعهٔ Kimi، GLM و MiniMax میزبانی‌شده در OpenCode.
 
     <Steps>
-      <Step title="Run onboarding">
+      <Step title="اجرای راه‌اندازی اولیه">
         ```bash
         openclaw onboard --auth-choice opencode-go
         ```
 
-        یا کلید را مستقیماً وارد کنید:
+        یا کلید را مستقیم وارد کنید:
 
         ```bash
         openclaw onboard --opencode-go-api-key "$OPENCODE_API_KEY"
         ```
       </Step>
-      <Step title="Set a Go model as the default">
+      <Step title="تنظیم یک مدل Go به‌عنوان پیش‌فرض">
         ```bash
         openclaw config set agents.defaults.model.primary "opencode-go/kimi-k2.6"
         ```
       </Step>
-      <Step title="Verify models are available">
+      <Step title="بررسی در دسترس بودن مدل‌ها">
         ```bash
         openclaw models list --provider opencode-go
         ```
@@ -85,7 +87,7 @@ OpenCode دو کاتالوگ میزبانی‌شده را در OpenClaw ارائ
   </Tab>
 </Tabs>
 
-## نمونه پیکربندی
+## نمونهٔ پیکربندی
 
 ```json5
 {
@@ -98,53 +100,58 @@ OpenCode دو کاتالوگ میزبانی‌شده را در OpenClaw ارائ
 
 ### Zen
 
-| ویژگی         | مقدار                                                                   |
-| ---------------- | ----------------------------------------------------------------------- |
-| ارائه‌دهنده زمان اجرا | `opencode`                                                              |
-| مدل‌های نمونه   | `opencode/claude-opus-4-6`, `opencode/gpt-5.5`, `opencode/gemini-3-pro` |
+| ویژگی         | مقدار                                                                                         |
+| ---------------- | --------------------------------------------------------------------------------------------- |
+| ارائه‌دهندهٔ زمان اجرا | `opencode`                                                                                    |
+| مدل‌های نمونه   | `opencode/claude-opus-4-6`, `opencode/gpt-5.5`, `opencode/gemini-3.1-pro`, `opencode/glm-5.2` |
 
 ### Go
 
 | ویژگی         | مقدار                                                                    |
 | ---------------- | ------------------------------------------------------------------------ |
-| ارائه‌دهنده زمان اجرا | `opencode-go`                                                            |
+| ارائه‌دهندهٔ زمان اجرا | `opencode-go`                                                            |
 | مدل‌های نمونه   | `opencode-go/kimi-k2.6`, `opencode-go/glm-5`, `opencode-go/minimax-m2.5` |
 
 ## پیکربندی پیشرفته
 
 <AccordionGroup>
-  <Accordion title="API key aliases">
+  <Accordion title="نام‌های مستعار کلید API">
     `OPENCODE_ZEN_API_KEY` نیز به‌عنوان نام مستعار برای `OPENCODE_API_KEY` پشتیبانی می‌شود.
   </Accordion>
 
-  <Accordion title="Shared credentials">
-    وارد کردن یک کلید OpenCode در زمان راه‌اندازی، اعتبارنامه‌ها را برای هر دو ارائه‌دهنده زمان اجرا ذخیره می‌کند. لازم نیست هر کاتالوگ را جداگانه راه‌اندازی کنید.
+  <Accordion title="اعتبارنامه‌های مشترک">
+    وارد کردن یک کلید OpenCode در زمان راه‌اندازی، اعتبارنامه‌ها را برای هر دو ارائه‌دهندهٔ
+    زمان اجرا ذخیره می‌کند. لازم نیست هر کاتالوگ را جداگانه راه‌اندازی اولیه کنید.
   </Accordion>
 
-  <Accordion title="Billing and dashboard">
-    وارد OpenCode می‌شوید، جزئیات صورت‌حساب را اضافه می‌کنید و کلید API خود را کپی می‌کنید. صورت‌حساب و دسترس‌پذیری کاتالوگ از داشبورد OpenCode مدیریت می‌شوند.
+  <Accordion title="صورتحساب و داشبورد">
+    وارد OpenCode می‌شوید، جزئیات صورتحساب را اضافه می‌کنید و کلید API خود را کپی می‌کنید. صورتحساب
+    و دسترس‌پذیری کاتالوگ از داشبورد OpenCode مدیریت می‌شوند.
   </Accordion>
 
-  <Accordion title="Gemini replay behavior">
-    ارجاع‌های OpenCode مبتنی بر Gemini روی مسیر proxy-Gemini باقی می‌مانند، بنابراین OpenClaw پاک‌سازی امضای فکری Gemini را در همان‌جا نگه می‌دارد، بدون اینکه اعتبارسنجی بازپخش بومی Gemini یا بازنویسی‌های راه‌انداز را فعال کند.
+  <Accordion title="رفتار بازپخش Gemini">
+    ارجاع‌های OpenCode مبتنی بر Gemini روی مسیر پروکسی-Gemini باقی می‌مانند، بنابراین OpenClaw پاک‌سازی
+    امضاهای فکری Gemini را در همان‌جا نگه می‌دارد، بدون اینکه اعتبارسنجی بازپخش بومی Gemini
+    یا بازنویسی‌های bootstrap را فعال کند.
   </Accordion>
 
-  <Accordion title="Non-Gemini replay behavior">
-    ارجاع‌های OpenCode غیر Gemini سیاست بازپخش حداقلی سازگار با OpenAI را حفظ می‌کنند.
+  <Accordion title="رفتار بازپخش غیر Gemini">
+    ارجاع‌های غیر Gemini در OpenCode سیاست بازپخش حداقلی سازگار با OpenAI را حفظ می‌کنند.
   </Accordion>
 </AccordionGroup>
 
 <Tip>
-وارد کردن یک کلید OpenCode در زمان راه‌اندازی، اعتبارنامه‌ها را برای هر دو ارائه‌دهنده زمان اجرای Zen و Go ذخیره می‌کند، بنابراین فقط یک‌بار به راه‌اندازی اولیه نیاز دارید.
+وارد کردن یک کلید OpenCode در زمان راه‌اندازی، اعتبارنامه‌ها را برای هر دو ارائه‌دهندهٔ زمان اجرای Zen و
+Go ذخیره می‌کند، بنابراین فقط یک بار باید راه‌اندازی اولیه کنید.
 </Tip>
 
 ## مرتبط
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/fa/concepts/model-providers" icon="layers">
-    انتخاب ارائه‌دهندگان، ارجاع‌های مدل و رفتار جایگزینی.
+  <Card title="انتخاب مدل" href="/fa/concepts/model-providers" icon="layers">
+    انتخاب ارائه‌دهنده‌ها، ارجاع‌های مدل، و رفتار failover.
   </Card>
-  <Card title="Configuration reference" href="/fa/gateway/configuration-reference" icon="gear">
-    مرجع کامل پیکربندی برای عامل‌ها، مدل‌ها و ارائه‌دهندگان.
+  <Card title="مرجع پیکربندی" href="/fa/gateway/configuration-reference" icon="gear">
+    مرجع کامل پیکربندی برای عامل‌ها، مدل‌ها و ارائه‌دهنده‌ها.
   </Card>
 </CardGroup>

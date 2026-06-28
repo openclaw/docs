@@ -1,16 +1,16 @@
 ---
 read_when:
-    - OpenAI互換ツールで Claude Max サブスクリプションを使いたい場合
-    - ローカル API サーバーで Claude Code CLI をラップしたい
-    - サブスクリプションベースと API キーベースの Anthropic アクセスを評価したい場合
-summary: Claude サブスクリプションの認証情報を OpenAI 互換エンドポイントとして公開するコミュニティプロキシ
-title: Claude Max APIプロキシ
+    - OpenAI互換ツールでClaude Maxサブスクリプションを使用したい
+    - Claude Code CLI をラップするローカル API サーバーが必要です
+    - サブスクリプションベースと API キーベースの Anthropic アクセスを評価したい
+summary: Claude サブスクリプション認証情報を OpenAI 互換エンドポイントとして公開するコミュニティプロキシ
+title: Claude Max API プロキシ
 x-i18n:
-    generated_at: "2026-06-27T12:41:19Z"
+    generated_at: "2026-06-28T20:44:47Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 24bd2b4b56e4b8829e67f248d0e0a6bad53ccbd9ce98ee288bfa4de93508ef27
+    source_hash: 5d8800f7d5bd7adf9bff4825a45878a1bbde73b4d54afe4b5b4aa2b1b5523bee
     source_path: providers/claude-max-api-proxy.md
     workflow: 16
 ---
@@ -18,19 +18,21 @@ x-i18n:
 **claude-max-api-proxy** は、Claude Max/Pro サブスクリプションを OpenAI 互換 API エンドポイントとして公開するコミュニティツールです。これにより、OpenAI API 形式をサポートする任意のツールでサブスクリプションを使用できます。
 
 <Warning>
-この経路は技術的な互換性のみを目的としています。Anthropic は過去に Claude Code 以外での一部のサブスクリプション利用をブロックしたことがあります。これを使用するかどうかは自分で判断し、依存する前に Anthropic の現在の課金ルールを確認する必要があります。
+この経路は技術的な互換性のみを目的としています。Anthropic は過去に Claude Code 外での一部のサブスクリプション使用をブロックしたことがあります。使用するかどうかは自分で判断し、依存する前に Anthropic の現在の課金ルールを確認する必要があります。
 
-Anthropic の現在のサポートドキュメントでは、`claude -p` は Agent SDK/プログラム的な使用とされています。2026 年 6 月 15 日以降、サブスクリプションプランでの `claude -p` 使用は、まず別枠の月次 Agent SDK クレジットから消費され、その後、使用クレジットが有効な場合は標準 API レートで使用クレジットから消費されます。
+Anthropic の現在のサポートドキュメントでは、`claude -p` は Agent SDK/プログラムによる使用とされています。Anthropic の 2026 年 6 月 15 日のサポート更新では、発表済みだった個別の Agent SDK クレジットプランが一時停止されました。現時点では、Claude Agent SDK、`claude -p`、サードパーティアプリの使用は、引き続きサインイン中のサブスクリプションの使用上限から消費されます。
+
+この経路に依存する前に、Anthropic の [Agent SDK プランの記事](https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan)に加え、[Pro/Max](https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan) または [Team/Enterprise](https://support.claude.com/en/articles/11845131-use-claude-code-with-your-team-or-enterprise-plan) アカウント向けの Claude Code サポート記事を確認してください。
 </Warning>
 
 ## なぜこれを使うのか？
 
-| アプローチ                  | コスト経路                                      | 最適な用途                                   |
+| アプローチ                | コスト経路                                      | 最適な用途                                   |
 | ------------------------- | ----------------------------------------------- | ------------------------------------------ |
-| Anthropic API             | Claude Console またはクラウド経由でトークンごとに支払い   | 本番アプリ、共有オートメーション、大量利用 |
-| Claude サブスクリプションプロキシ | Claude Code / `claude -p` プランとクレジットルール | 互換ツールを使った個人実験 |
+| Anthropic API             | Claude Console またはクラウド経由でトークンごとに支払い | 本番アプリ、共有自動化、大量利用 |
+| Claude サブスクリプションプロキシ | Claude Code / `claude -p` のプランとクレジットルール | 互換ツールを使った個人的な実験 |
 
-Claude Max または Pro サブスクリプションがあり、OpenAI 互換ツールでそれを使いたい場合、このプロキシは一部の個人ワークフローに合う可能性があります。これは無制限の定額経路ではありません。本番利用では、API キーのほうがポリシーと課金の経路として明確です。
+Claude Max または Pro サブスクリプションを持っていて、OpenAI 互換ツールで使用したい場合、このプロキシは一部の個人ワークフローに合う可能性があります。これは無制限の定額経路ではありません。本番利用では、APIキーのほうがポリシーと課金の経路として明確です。
 
 ## 仕組み
 
@@ -39,7 +41,7 @@ Your App → claude-max-api-proxy → Claude Code CLI / claude -p → Anthropic
      (OpenAI format)              (converts format)          (uses your login)
 ```
 
-このプロキシは次を行います。
+このプロキシは次のことを行います。
 
 1. `http://localhost:3456/v1/chat/completions` で OpenAI 形式のリクエストを受け付ける
 2. それらを Claude Code CLI コマンドに変換する
@@ -84,7 +86,7 @@ Your App → claude-max-api-proxy → Claude Code CLI / claude -p → Anthropic
 
   </Step>
   <Step title="OpenClaw を設定する">
-    OpenClaw がカスタム OpenAI 互換エンドポイントとしてこのプロキシを指すようにします。
+    カスタムの OpenAI 互換エンドポイントとして、OpenClaw をプロキシに向けます。
 
     ```json5
     {
@@ -105,7 +107,7 @@ Your App → claude-max-api-proxy → Claude Code CLI / claude -p → Anthropic
 
 ## 組み込みカタログ
 
-| モデル ID          | マップ先         |
+| モデル ID          | マッピング先         |
 | ----------------- | --------------- |
 | `claude-opus-4`   | Claude Opus 4   |
 | `claude-sonnet-4` | Claude Sonnet 4 |
@@ -114,17 +116,17 @@ Your App → claude-max-api-proxy → Claude Code CLI / claude -p → Anthropic
 ## 高度な設定
 
 <AccordionGroup>
-  <Accordion title="プロキシ形式の OpenAI 互換に関する注意">
-    この経路は、他のカスタム `/v1` バックエンドと同じプロキシ形式の OpenAI 互換ルートを使用します。
+  <Accordion title="プロキシ方式の OpenAI 互換に関する注意">
+    この経路は、他のカスタム `/v1` バックエンドと同じプロキシ方式の OpenAI 互換ルートを使用します。
 
     - ネイティブの OpenAI 専用リクエスト整形は適用されません
-    - `service_tier`、Responses `store`、プロンプトキャッシュヒント、OpenAI reasoning 互換ペイロード整形はありません
-    - 隠し OpenClaw 帰属ヘッダー（`originator`、`version`、`User-Agent`）はプロキシ URL には注入されません
+    - `service_tier`、Responses `store`、プロンプトキャッシュのヒント、OpenAI reasoning 互換ペイロード整形はありません
+    - 隠し OpenClaw 帰属ヘッダー（`originator`、`version`、`User-Agent`）はプロキシ URL に注入されません
 
   </Accordion>
 
-  <Accordion title="LaunchAgent で macOS 起動時に自動起動する">
-    プロキシを自動実行する LaunchAgent を作成します。
+  <Accordion title="LaunchAgent を使って macOS で自動起動する">
+    プロキシを自動的に実行する LaunchAgent を作成します。
 
     ```bash
     cat > ~/Library/LaunchAgents/com.claude-max-api.plist << 'EOF'
@@ -158,23 +160,23 @@ Your App → claude-max-api-proxy → Claude Code CLI / claude -p → Anthropic
   </Accordion>
 </AccordionGroup>
 
-## 注記
+## 注意事項
 
-- これは **コミュニティツール** であり、Anthropic または OpenClaw によって公式にサポートされているものではありません
+- これは **コミュニティツール** であり、Anthropic または OpenClaw による公式サポートはありません
 - Claude Code CLI で認証済みの有効な Claude Max/Pro サブスクリプションが必要です
-- Claude Code `claude -p` の課金、使用クレジット、レート制限の動作を継承します
-- プロキシはローカルで実行され、データをサードパーティサーバーに送信しません
+- Claude Code `claude -p` の課金、使用クレジット、レート制限の挙動を継承します
+- プロキシはローカルで実行され、サードパーティサーバーにデータを送信しません
 - ストリーミングレスポンスは完全にサポートされています
 
 <Note>
-Claude CLI または API キーを使ったネイティブ Anthropic 統合については、[Anthropic プロバイダー](/ja-JP/providers/anthropic)を参照してください。OpenAI/Codex サブスクリプションについては、[OpenAI プロバイダー](/ja-JP/providers/openai)を参照してください。
+Claude CLI または APIキーを使ったネイティブの Anthropic 連携については、[Anthropic プロバイダー](/ja-JP/providers/anthropic)を参照してください。OpenAI/Codex サブスクリプションについては、[OpenAI プロバイダー](/ja-JP/providers/openai)を参照してください。
 </Note>
 
 ## 関連
 
 <CardGroup cols={2}>
   <Card title="Anthropic プロバイダー" href="/ja-JP/providers/anthropic" icon="bolt">
-    Claude CLI または API キーを使ったネイティブ OpenClaw 統合。
+    Claude CLI または APIキーを使ったネイティブの OpenClaw 連携。
   </Card>
   <Card title="OpenAI プロバイダー" href="/ja-JP/providers/openai" icon="robot">
     OpenAI/Codex サブスクリプション向け。

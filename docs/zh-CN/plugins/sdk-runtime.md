@@ -1,29 +1,29 @@
 ---
 read_when:
     - 你需要从插件调用核心辅助函数（TTS、STT、图像生成、Web 搜索、子智能体、节点）
-    - 你想了解 api.runtime 暴露了什么
-    - 你正在从插件代码访问配置、智能体或媒体辅助工具
+    - 你想了解 `api.runtime` 暴露了什么
+    - 你正在从插件代码访问配置、智能体或媒体辅助函数
 sidebarTitle: Runtime helpers
 summary: api.runtime -- 可供插件使用的注入式运行时辅助工具
 title: 插件运行时辅助工具
 x-i18n:
-    generated_at: "2026-06-27T02:57:01Z"
+    generated_at: "2026-06-28T20:43:58Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6f60c1c206d862e5be767cd56c38f6cacf1e1f3ce43b96fccde376a9be8160be
+    source_hash: b2bd70bb36ab8fb0fbecb982f56b1302a2a01a8d7ae6f78d3558fbaa8c28742e
     source_path: plugins/sdk-runtime.md
     workflow: 16
 ---
 
-这是注册期间注入到每个插件中的 `api.runtime` 对象参考。请使用这些辅助工具，而不是直接导入主机内部机制。
+`api.runtime` 对象参考；该对象会在注册期间注入到每个插件中。请使用这些辅助函数，而不是直接导入宿主内部实现。
 
 <CardGroup cols={2}>
-  <Card title="Channel plugins" href="/zh-CN/plugins/sdk-channel-plugins">
-    分步指南，在渠道插件的上下文中使用这些辅助工具。
+  <Card title="渠道插件" href="/zh-CN/plugins/sdk-channel-plugins">
+    分步指南，在渠道插件的上下文中使用这些辅助函数。
   </Card>
-  <Card title="Provider plugins" href="/zh-CN/plugins/sdk-provider-plugins">
-    分步指南，在提供商插件的上下文中使用这些辅助工具。
+  <Card title="提供商插件" href="/zh-CN/plugins/sdk-provider-plugins">
+    分步指南，在提供商插件的上下文中使用这些辅助函数。
   </Card>
 </CardGroup>
 
@@ -35,21 +35,21 @@ register(api) {
 
 ## 配置加载和写入
 
-优先使用已经传入当前调用路径的配置，例如注册期间的 `api.config`，或渠道/提供商回调中的 `cfg` 参数。这样可以让同一个进程快照贯穿整个工作流程，而不是在热路径上重新解析配置。
+优先使用已经传入当前调用路径的配置，例如注册期间的 `api.config`，或渠道/提供商回调上的 `cfg` 参数。这样可以让一个进程快照贯穿整个工作流程，而不是在热路径上重新解析配置。
 
-只有当长期存在的处理程序需要当前进程快照，并且没有配置传入该函数时，才使用 `api.runtime.config.current()`。返回值是只读的；编辑前请克隆，或使用变更辅助工具。
+仅当长期存在的处理程序需要当前进程快照，并且没有配置传入该函数时，才使用 `api.runtime.config.current()`。返回值是只读的；编辑前请克隆，或使用变更辅助函数。
 
 工具工厂会接收 `ctx.runtimeConfig` 和 `ctx.getRuntimeConfig()`。当配置可能在工具定义创建后发生变化时，请在长期存在的工具 `execute` 回调中使用该 getter。
 
 使用 `api.runtime.config.mutateConfigFile(...)` 或 `api.runtime.config.replaceConfigFile(...)` 持久化更改。每次写入都必须选择一个显式的 `afterWrite` 策略：
 
-- `afterWrite: { mode: "auto" }` 让 Gateway 网关的重新加载规划器决定。
-- `afterWrite: { mode: "restart", reason: "..." }` 在写入方知道热重载不安全时，强制干净重启。
-- `afterWrite: { mode: "none", reason: "..." }` 只有当调用方拥有后续处理时，才抑制自动重新加载/重启。
+- `afterWrite: { mode: "auto" }` 让 Gateway 网关重载规划器决定。
+- `afterWrite: { mode: "restart", reason: "..." }` 会在写入方知道热重载不安全时强制干净重启。
+- `afterWrite: { mode: "none", reason: "..." }` 仅当调用方拥有后续处理时，才抑制自动重载/重启。
 
-变更辅助工具会返回 `afterWrite`，以及一个类型化的 `followUp` 摘要，以便调用方记录日志或测试是否请求了重启。Gateway 网关仍然拥有该重启实际发生的时机。
+变更辅助函数会返回 `afterWrite` 以及一个类型化的 `followUp` 摘要，以便调用方记录日志或测试自己是否请求了重启。Gateway 网关仍然拥有该重启实际发生的时机。
 
-`api.runtime.config.loadConfig()` 和 `api.runtime.config.writeConfigFile(...)` 是 `runtime-config-load-write` 下已弃用的兼容性辅助工具。它们会在运行时警告一次，并在迁移窗口期间继续供旧版外部插件使用。内置插件不得使用它们；如果插件代码调用它们，或从插件 SDK 子路径导入这些辅助工具，配置边界守卫会失败。
+`api.runtime.config.loadConfig()` 和 `api.runtime.config.writeConfigFile(...)` 是 `runtime-config-load-write` 下已弃用的兼容性辅助函数。它们会在运行时警告一次，并在迁移窗口期继续供旧的外部插件使用。内置插件不得使用它们；如果插件代码调用它们，或从插件 SDK 子路径导入这些辅助函数，配置边界守卫会失败。
 
 对于直接 SDK 导入，请使用聚焦的配置子路径，而不是宽泛的
 `openclaw/plugin-sdk/config-runtime` 兼容性 barrel：`config-contracts` 用于
@@ -58,15 +58,15 @@ register(api) {
 `config-mutation` 用于写入。内置插件测试应直接 mock 这些聚焦的
 子路径，而不是 mock 宽泛的兼容性 barrel。
 
-内部 OpenClaw 运行时代码也遵循相同方向：在 CLI、Gateway 网关或进程边界加载一次配置，然后将该值向下传递。成功的变更写入会刷新进程运行时快照，并推进其内部修订版本；长期存在的缓存应基于运行时拥有的缓存键，而不是在本地序列化配置。长期存在的运行时模块对环境中的 `loadConfig()` 调用采用零容忍扫描器；请使用传入的 `cfg`、请求 `context.getRuntimeConfig()`，或在显式进程边界使用 `getRuntimeConfig()`。
+内部 OpenClaw 运行时代码也遵循相同方向：在 CLI、Gateway 网关或进程边界加载一次配置，然后传递该值。成功的变更写入会刷新进程运行时快照，并推进其内部修订版本；长期存在的缓存应基于运行时拥有的缓存键，而不是在本地序列化配置。长期存在的运行时模块对环境中的 `loadConfig()` 调用采用零容忍扫描器；请使用传入的 `cfg`、请求的 `context.getRuntimeConfig()`，或在显式进程边界使用 `getRuntimeConfig()`。
 
-提供商和渠道执行路径必须使用当前运行时配置快照，而不是用于配置回读或编辑的文件快照。文件快照会保留源值，例如用于 UI 和写入的 SecretRef 标记；提供商回调需要已解析的运行时视图。当某个辅助工具可能使用当前源快照或当前运行时快照调用时，请先通过 `selectApplicableRuntimeConfig()` 路由，再读取凭证。
+提供商和渠道执行路径必须使用当前活跃的运行时配置快照，而不是为配置读回或编辑返回的文件快照。文件快照会保留源值，例如供 UI 和写入使用的 SecretRef 标记；提供商回调需要已解析的运行时视图。当某个辅助函数可能同时接收活跃源快照或活跃运行时快照时，请先通过 `selectApplicableRuntimeConfig()` 路由，再读取凭证。
 
-## 可复用运行时实用工具
+## 可复用运行时工具
 
-对机器人撰写的入站消息使用入站 `botLoopProtection` 事实。核心会在会话记录和分发之前应用共享的内存滑动窗口守卫，而不会把策略绑定到某一个渠道。该守卫跟踪 `(scopeId, conversationId, participant pair)` 键，将一对参与者的双向事件合并计数，在窗口预算超出后应用冷却，并机会性修剪不活跃条目。
+对由 bot 生成的入站消息，使用入站 `botLoopProtection` 事实。核心会在会话记录和分发之前应用共享的内存滑动窗口守卫，而不会将策略绑定到某一个渠道。该守卫会跟踪 `(scopeId, conversationId, participant pair)` 键，将一对参与者的两个方向一起计数，在窗口预算超出后应用冷却，并机会性地清理不活跃条目。
 
-向操作者暴露此行为的渠道插件，应优先使用共享的 `channels.defaults.botLoopProtection` 形状作为基线预算，然后在其上叠加渠道/提供商特定的覆盖项。共享配置使用秒，因为它面向用户：
+向操作员暴露此行为的渠道插件应优先使用共享的 `channels.defaults.botLoopProtection` 形状作为基线预算，然后在其上叠加渠道/提供商特定的覆盖项。共享配置使用秒，因为它面向用户：
 
 ```typescript
 type ChannelBotLoopProtectionConfig = {
@@ -77,7 +77,7 @@ type ChannelBotLoopProtectionConfig = {
 };
 ```
 
-随已解析轮次传入规范化的机器人配对事实。核心会解析默认值、单位转换和 `enabled` 语义：
+随已解析的轮次传入规范化后的 bot 对事实。核心会解析默认值、单位转换和 `enabled` 语义：
 
 ```typescript
 return {
@@ -99,8 +99,8 @@ return {
 };
 ```
 
-只有在自定义的双方事件循环不经过共享入站回复 runner 时，才直接使用
-`openclaw/plugin-sdk/pair-loop-guard-runtime`。
+仅对不经过共享入站回复运行器的自定义
+双人事件循环，才直接使用 `openclaw/plugin-sdk/pair-loop-guard-runtime`。
 
 ## 运行时命名空间
 
@@ -139,26 +139,24 @@ return {
     await api.runtime.agent.ensureAgentWorkspace(cfg);
 
     // Run an embedded agent turn
-    const agentDir = api.runtime.agent.resolveAgentDir(cfg);
     const result = await api.runtime.agent.runEmbeddedAgent({
       sessionId: "my-plugin:task-1",
       runId: crypto.randomUUID(),
-      sessionFile: path.join(agentDir, "sessions", "my-plugin-task-1.jsonl"),
       workspaceDir: api.runtime.agent.resolveAgentWorkspaceDir(cfg),
       prompt: "Summarize the latest changes",
       timeoutMs: api.runtime.agent.resolveAgentTimeoutMs(cfg),
     });
     ```
 
-    `runEmbeddedAgent(...)` 是从插件代码启动普通 OpenClaw 智能体轮次的中立辅助工具。它使用与渠道触发回复相同的提供商/模型解析和 agent-harness 选择。
+    `runEmbeddedAgent(...)` 是从插件代码启动普通 OpenClaw 智能体轮次的中立辅助函数。它使用与渠道触发回复相同的提供商/模型解析和智能体 harness 选择。
 
     `runEmbeddedPiAgent(...)` 仍作为现有插件的已弃用兼容性别名保留。新代码应使用 `runEmbeddedAgent(...)`。
 
-    `resolveThinkingPolicy(...)` 返回提供商/模型支持的 thinking level，以及可选默认值。提供商插件通过其 thinking 钩子拥有模型特定配置文件，因此工具插件应调用此运行时辅助工具，而不是导入或重复提供商列表。
+    `resolveThinkingPolicy(...)` 返回提供商/模型支持的 thinking 级别和可选默认值。提供商插件通过自己的 thinking 钩子拥有模型特定配置文件，因此工具插件应调用这个运行时辅助函数，而不是导入或复制提供商列表。
 
-    `normalizeThinkingLevel(...)` 会将用户文本（例如 `on`、`x-high` 或 `extra high`）转换为规范存储级别，然后再对照已解析策略进行检查。
+    `normalizeThinkingLevel(...)` 会在根据已解析策略检查之前，将用户文本（例如 `on`、`x-high` 或 `extra high`）转换为规范存储级别。
 
-    **会话存储辅助工具** 位于 `api.runtime.agent.session` 下：
+    **会话存储辅助函数** 位于 `api.runtime.agent.session` 下：
 
     ```typescript
     const entry = api.runtime.agent.session.getSessionEntry({ agentId, sessionKey });
@@ -172,11 +170,11 @@ return {
     });
     ```
 
-    对于会话工作流，优先使用 `getSessionEntry(...)`、`listSessionEntries(...)`、`patchSessionEntry(...)` 或 `upsertSessionEntry(...)`。这些辅助工具按智能体/会话身份处理会话，因此插件不会依赖旧版 `sessions.json` 存储形状。对于不应刷新会话活动的仅元数据补丁，请使用 `preserveActivity: true`；只有当回调返回完整条目且被删除字段必须保持删除时，才使用 `replaceEntry: true`。
+    对于会话工作流，优先使用 `getSessionEntry(...)`、`listSessionEntries(...)`、`patchSessionEntry(...)` 或 `upsertSessionEntry(...)`。这些辅助函数按智能体/会话身份定位会话，因此插件不依赖旧版 `sessions.json` 存储形状。对于不应刷新会话活动的仅元数据补丁，请使用 `preserveActivity: true`；仅当回调返回完整条目且被删除字段必须保持删除状态时，才使用 `replaceEntry: true`。
 
-    对于 transcript 读取和写入，请导入 `openclaw/plugin-sdk/session-transcript-runtime`，并结合 `{ agentId, sessionKey, sessionId }` 使用 `resolveSessionTranscriptIdentity(...)`、`resolveSessionTranscriptTarget(...)`、`readSessionTranscriptEvents(...)`、`appendSessionTranscriptMessageByIdentity(...)`、`publishSessionTranscriptUpdateByIdentity(...)` 或 `withSessionTranscriptWriteLock(...)`。这些 API 允许插件识别 transcript、读取其事件、追加消息、发布更新，并在同一个 transcript 写锁下运行相关操作。只有在适配已经接收活动 transcript 工件的代码，并且需要每个辅助工具都作用于同一工件时，才传入 `sessionFile`。
+    对于转录读取和写入，请导入 `openclaw/plugin-sdk/session-transcript-runtime`，并使用 `resolveSessionTranscriptIdentity(...)`、`resolveSessionTranscriptTarget(...)`、`readSessionTranscriptEvents(...)`、`appendSessionTranscriptMessageByIdentity(...)`、`publishSessionTranscriptUpdateByIdentity(...)` 或 `withSessionTranscriptWriteLock(...)`，并传入 `{ agentId, sessionKey, sessionId }`。这些 API 让插件可以标识转录、读取其事件、追加消息、发布更新，并在同一个转录写锁下运行相关操作。传入 `sessionFile`、使用 `resolveSessionTranscriptLegacyFileTarget(...)`，或从 `openclaw/plugin-sdk/agent-harness-runtime` 导入低层 `appendSessionTranscriptMessage(...)` / `emitSessionTranscriptUpdate(...)` 均已弃用；这些路径仅供已经接收活跃转录产物的旧版代码使用。
 
-    `loadSessionStore(...)`、`saveSessionStore(...)`、`updateSessionStore(...)` 和 `resolveSessionFilePath(...)` 是兼容性辅助工具，供仍然有意依赖旧版整体存储或 transcript 文件形状的插件使用。新的插件代码不得使用这些辅助工具，现有调用方应迁移到条目辅助工具。
+    `loadSessionStore(...)`、`saveSessionStore(...)`、`updateSessionStore(...)`、`resolveSessionFilePath(...)` 和 `resolveAndPersistSessionFile(...)` 是兼容性辅助函数，适用于仍有意依赖旧版整体存储或转录文件形状的插件。新的插件代码不得使用这些辅助函数，现有调用方应迁移到条目辅助函数和转录身份辅助函数。
 
   </Accordion>
   <Accordion title="api.runtime.agent.defaults">
@@ -190,8 +188,8 @@ return {
   </Accordion>
 
   <Accordion title="api.runtime.llm">
-    运行由主机拥有的文本补全，而无需导入提供商内部机制或
-    重复 OpenClaw 模型/认证/base URL 准备逻辑。
+    运行宿主拥有的文本补全，而无需导入提供商内部实现或
+    复制 OpenClaw 模型/认证/base URL 准备逻辑。
 
     ```typescript
     const result = await api.runtime.llm.complete({
@@ -202,19 +200,20 @@ return {
     });
     ```
 
-    该辅助工具使用与 OpenClaw 内置运行时相同的简单补全准备路径，
-    以及主机拥有的运行时配置快照。上下文引擎会接收绑定到会话的
-    `llm.complete` 能力，因此模型调用会使用当前会话的智能体，
-    不会静默回退到默认智能体。结果会包含提供商/模型/智能体归属，
-    以及可用时的规范化 token、缓存和估算成本用量。
+    该辅助函数使用与 OpenClaw
+    内置运行时相同的简单补全准备路径，以及宿主拥有的运行时配置快照。上下文引擎
+    会接收绑定到会话的 `llm.complete` 能力，因此模型调用使用
+    活跃会话的智能体，并且不会静默回退到默认智能体。
+    结果包含提供商/模型/智能体归因，以及可用时的规范化 token、
+    缓存和估算成本用量。
 
     <Warning>
-    模型覆盖需要操作者在配置中通过 `plugins.entries.<id>.llm.allowModelOverride: true` 显式选择启用。使用 `plugins.entries.<id>.llm.allowedModels` 将受信任插件限制到特定的规范 `provider/model` 目标。跨智能体补全需要 `plugins.entries.<id>.llm.allowAgentIdOverride: true`。
+    模型覆盖需要操作员通过配置中的 `plugins.entries.<id>.llm.allowModelOverride: true` 明确选择启用。使用 `plugins.entries.<id>.llm.allowedModels` 将受信任插件限制为特定的规范 `provider/model` 目标。跨智能体补全需要 `plugins.entries.<id>.llm.allowAgentIdOverride: true`。
     </Warning>
 
   </Accordion>
   <Accordion title="api.runtime.subagent">
-    启动和管理后台子智能体运行。
+    启动并管理后台子智能体运行。
 
     ```typescript
     // Start a subagent run
@@ -242,14 +241,14 @@ return {
     ```
 
     <Warning>
-    模型覆盖（`provider`/`model`）需要操作员在配置中通过 `plugins.entries.<id>.subagent.allowModelOverride: true` 选择启用。不受信任的插件仍然可以运行子智能体，但覆盖请求会被拒绝。
+    模型覆盖（`provider`/`model`）需要操作者通过配置中的 `plugins.entries.<id>.subagent.allowModelOverride: true` 选择启用。不受信任的插件仍可运行子智能体，但覆盖请求会被拒绝。
     </Warning>
 
-    `deleteSession(...)` 可以删除同一插件通过 `api.runtime.subagent.run(...)` 创建的会话。删除任意用户或操作员会话仍然需要管理员范围的 Gateway 网关请求。
+    `deleteSession(...)` 可以删除同一插件通过 `api.runtime.subagent.run(...)` 创建的会话。删除任意用户或操作者会话仍需要具有管理员作用域的 Gateway 网关请求。
 
   </Accordion>
   <Accordion title="api.runtime.nodes">
-    列出已连接的节点，并从 Gateway 网关加载的插件代码或插件 CLI 命令调用节点宿主命令。当插件拥有配对设备上的本地工作时使用它，例如另一台 Mac 上的浏览器或音频桥接器。
+    列出已连接的节点，并从 Gateway 网关加载的插件代码或插件 CLI 命令中调用节点主机命令。当插件拥有已配对设备上的本地工作时使用此功能，例如另一台 Mac 上的浏览器或音频桥接器。
 
     ```typescript
     const { nodes } = await api.runtime.nodes.list({ connected: true });
@@ -262,18 +261,17 @@ return {
     });
     ```
 
-    在 Gateway 网关内部，此运行时位于进程内。在插件 CLI 命令中，它会通过 RPC 调用已配置的 Gateway 网关，因此 `openclaw googlemeet recover-tab` 等命令可以从终端检查已配对的节点。节点命令仍然会经过常规的 Gateway 网关节点配对、命令允许列表、插件节点调用策略和节点本地命令处理。
+    在 Gateway 网关内部，此运行时在进程内运行。在插件 CLI 命令中，它会通过 RPC 调用已配置的 Gateway 网关，因此 `openclaw googlemeet recover-tab` 等命令可以从终端检查已配对节点。节点命令仍会经过正常的 Gateway 网关节点配对、命令允许列表、插件节点调用策略和节点本地命令处理。
 
-    暴露危险节点宿主命令的插件应该使用 `api.registerNodeInvokePolicy(...)` 注册节点调用策略。该策略在 Gateway 网关中运行，位于命令允许列表检查之后、命令转发到节点之前，因此直接的 `node.invoke` 调用和更高层插件工具会共享同一条执行路径。
+    暴露危险节点主机命令的插件应使用 `api.registerNodeInvokePolicy(...)` 注册节点调用策略。该策略在 Gateway 网关中运行，位于命令允许列表检查之后、命令转发到节点之前，因此直接的 `node.invoke` 调用和更高层的插件工具会共享同一条强制执行路径。
 
   </Accordion>
   <Accordion title="api.runtime.tasks.managedFlows">
-    将任务流运行时绑定到现有的 OpenClaw 会话键或受信任工具上下文，然后创建和管理任务流，而无需在每次调用时传入所有者。
+    将任务流运行时绑定到现有 OpenClaw 会话键或受信任的工具上下文，然后无需在每次调用时传入所有者即可创建和管理任务流。
 
-    任务流会跟踪持久的多步骤工作流状态。它不是调度器：
-    对于未来唤醒，请使用 Cron 或 `api.session.workflow.scheduleSessionTurn(...)`，
-    然后在该工作需要流程状态、子任务、等待或取消时，
-    从已调度轮次中使用 `managedFlows`。
+    任务流跟踪持久的多步骤工作流状态。它不是调度器：
+    请使用 Cron 或 `api.session.workflow.scheduleSessionTurn(...)` 进行未来唤醒，
+    然后在计划轮次中，当该工作需要流状态、子任务、等待或取消时使用 `managedFlows`。
 
     ```typescript
     const taskFlow = api.runtime.tasks.managedFlows.fromToolContext(ctx);
@@ -300,7 +298,7 @@ return {
     });
     ```
 
-    当你已经从自己的绑定层获得受信任的 OpenClaw 会话键时，请使用 `bindSession({ sessionKey, requesterOrigin })`。不要从原始用户输入绑定。
+    当你已经从自己的绑定层获得受信任的 OpenClaw 会话键时，请使用 `bindSession({ sessionKey, requesterOrigin })`。不要从原始用户输入进行绑定。
 
   </Accordion>
   <Accordion title="api.runtime.tts">
@@ -326,7 +324,7 @@ return {
     });
     ```
 
-    使用核心 `messages.tts` 配置和提供商选择。返回 PCM 音频缓冲区 + 采样率。
+    使用核心 `messages.tts` 配置和提供商选择。返回 PCM 音频缓冲区和采样率。
 
   </Accordion>
   <Accordion title="api.runtime.mediaUnderstanding">
@@ -388,10 +386,10 @@ return {
     });
     ```
 
-    当没有产生输出时（例如跳过的输入），返回 `{ text: undefined }`。
+    当未生成输出时（例如跳过的输入），返回 `{ text: undefined }`。
 
     <Info>
-    `api.runtime.stt.transcribeAudioFile(...)` 仍作为 `api.runtime.mediaUnderstanding.transcribeAudioFile(...)` 的兼容别名保留。
+    `api.runtime.stt.transcribeAudioFile(...)` 仍作为 `api.runtime.mediaUnderstanding.transcribeAudioFile(...)` 的兼容性别名保留。
     </Info>
 
   </Accordion>
@@ -422,7 +420,7 @@ return {
 
   </Accordion>
   <Accordion title="api.runtime.media">
-    底层媒体工具。
+    低层媒体实用工具。
 
     ```typescript
     const webMedia = await api.runtime.media.loadWebMedia(url);
@@ -447,9 +445,7 @@ return {
 
   </Accordion>
   <Accordion title="api.runtime.config">
-    当前运行时配置快照和事务性配置写入。优先使用
-    已经传入活动调用路径的配置；仅当处理程序需要直接访问进程快照时，
-    才使用 `current()`。
+    当前运行时配置快照和事务性配置写入。优先使用已经传入活动调用路径的配置；仅当处理程序需要直接读取进程快照时才使用 `current()`。
 
     ```typescript
     const cfg = api.runtime.config.current();
@@ -461,13 +457,11 @@ return {
     });
     ```
 
-    `mutateConfigFile(...)` 和 `replaceConfigFile(...)` 会返回 `followUp`
-    值，例如 `{ mode: "restart", requiresRestart: true, reason }`，
-    它会记录写入方意图，而不会从 Gateway 网关手中接管重启控制。
+    `mutateConfigFile(...)` 和 `replaceConfigFile(...)` 会返回 `followUp` 值，例如 `{ mode: "restart", requiresRestart: true, reason }`，用于记录写入方意图，同时不从 Gateway 网关手中接管重启控制。
 
   </Accordion>
   <Accordion title="api.runtime.system">
-    系统级工具。
+    系统级实用工具。
 
     ```typescript
     await api.runtime.system.enqueueSystemEvent(event);
@@ -481,11 +475,7 @@ return {
     const hint = api.runtime.system.formatNativeDependencyHint(pkg);
     ```
 
-    `runCommandWithTimeout(...)` 返回捕获的 `stdout` 和 `stderr`、可选的
-    截断计数、`code`、`signal`、`killed`、`termination` 和
-    `noOutputTimedOut`。当子进程未提供非零退出码时，超时和无输出超时结果会报告 `code: 124`。
-    非超时信号退出仍可能返回 `code: null`，因此请使用 `termination` 和
-    `noOutputTimedOut` 区分超时原因。
+    `runCommandWithTimeout(...)` 返回捕获的 `stdout` 和 `stderr`、可选的截断计数、`code`、`signal`、`killed`、`termination` 和 `noOutputTimedOut`。当子进程未提供非零退出码时，超时和无输出超时结果会报告 `code: 124`。非超时信号退出仍可能返回 `code: null`，因此请使用 `termination` 和 `noOutputTimedOut` 区分超时原因。
 
   </Accordion>
   <Accordion title="api.runtime.events">
@@ -523,7 +513,7 @@ return {
 
   </Accordion>
   <Accordion title="api.runtime.state">
-    状态目录解析和 SQLite 支持的键控存储。
+    状态目录解析和基于 SQLite 的键值存储。
 
     ```typescript
     const stateDir = api.runtime.state.resolveStateDir(process.env);
@@ -540,7 +530,7 @@ return {
     await store.clear();
     ```
 
-    键控存储会在重启后保留，并按运行时绑定的插件 id 隔离。使用 `registerIfAbsent(...)` 进行原子去重声明：当键缺失或已过期并已注册时，它返回 `true`；当已有有效值存在时，它返回 `false`，且不会覆盖其值、创建时间或 TTL。限制：每个命名空间的 `maxEntries`、每个插件 6,000 条有效行、JSON 值小于 64KB，以及可选的 TTL 过期。当一次写入会超过插件行数上限时，运行时可能会从正在写入的命名空间中驱逐最旧的有效行；同级命名空间不会因该次写入而被驱逐，并且如果该命名空间无法释放足够行数，写入仍会失败。
+    键值存储会在重启后保留，并按运行时绑定的插件 id 隔离。使用 `registerIfAbsent(...)` 进行原子去重声明：当键缺失或已过期并完成注册时，它返回 `true`；当已有有效值存在时，它返回 `false`，且不会覆盖该值、创建时间或 TTL。限制：每个命名空间的 `maxEntries`、每个插件 6,000 条有效行、64KB 以下的 JSON 值，以及可选的 TTL 过期。当一次写入会超过插件行数上限时，运行时可能会从正在写入的命名空间中驱逐最旧的有效行；同级命名空间不会因该次写入被驱逐，如果该命名空间无法释放足够的行，该写入仍会失败。
 
     <Warning>
     此版本仅支持内置插件。
@@ -548,7 +538,7 @@ return {
 
   </Accordion>
   <Accordion title="api.runtime.tools">
-    Memory 工具工厂和 CLI。
+    记忆工具工厂和 CLI。
 
     ```typescript
     const getTool = api.runtime.tools.createMemoryGetTool(/* ... */);
@@ -558,7 +548,7 @@ return {
 
   </Accordion>
   <Accordion title="api.runtime.channel">
-    渠道特定的运行时辅助工具（在渠道插件加载时可用）。
+    渠道特定的运行时助手（加载渠道插件时可用）。
 
     `api.runtime.channel.media` 是渠道媒体下载和存储的首选接口：
 
@@ -571,7 +561,7 @@ return {
     });
     ```
 
-    当远程 URL 应成为 OpenClaw 媒体时，使用 `saveRemoteMedia(...)`。当插件已使用插件自有的鉴权、重定向或允许列表处理获取了 `Response` 时，使用 `saveResponseMedia(...)`。仅当插件需要原始字节进行检查、转换、解密或重新上传时，才使用 `readRemoteMediaBuffer(...)`。`fetchRemoteMedia(...)` 仍是 `readRemoteMediaBuffer(...)` 的已弃用兼容别名。
+    当远程 URL 应变为 OpenClaw 媒体时，使用 `saveRemoteMedia(...)`。当插件已经通过插件自有的凭证、重定向或允许列表处理获取了 `Response` 时，使用 `saveResponseMedia(...)`。仅当插件需要原始字节用于检查、转换、解密或重新上传时，才使用 `readRemoteMediaBuffer(...)`。`fetchRemoteMedia(...)` 仍是 `readRemoteMediaBuffer(...)` 的已弃用兼容性别名。
 
     `api.runtime.channel.mentions` 是使用运行时注入的内置渠道插件共享的入站提及策略接口：
 
@@ -600,7 +590,7 @@ return {
     });
     ```
 
-    可用的提及辅助工具：
+    可用的提及助手：
 
     - `buildMentionRegexes`
     - `matchesMentionPatterns`
@@ -608,7 +598,7 @@ return {
     - `implicitMentionKindWhen`
     - `resolveInboundMentionDecision`
 
-    `api.runtime.channel.mentions` 有意不暴露较旧的 `resolveMentionGating*` 兼容辅助工具。请优先使用规范化的 `{ facts, policy }` 路径。
+    `api.runtime.channel.mentions` 有意不暴露旧的 `resolveMentionGating*` 兼容性助手。优先使用规范化的 `{ facts, policy }` 路径。
 
   </Accordion>
 </AccordionGroup>
@@ -618,7 +608,7 @@ return {
 使用 `createPluginRuntimeStore` 存储运行时引用，以便在 `register` 回调之外使用：
 
 <Steps>
-  <Step title="Create the store">
+  <Step title="创建存储">
     ```typescript
     import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
     import type { PluginRuntime } from "openclaw/plugin-sdk/runtime-store";
@@ -630,7 +620,7 @@ return {
     ```
 
   </Step>
-  <Step title="Wire into the entry point">
+  <Step title="接入入口点">
     ```typescript
     export default defineChannelPluginEntry({
       id: "my-plugin",
@@ -641,7 +631,7 @@ return {
     });
     ```
   </Step>
-  <Step title="Access from other files">
+  <Step title="从其他文件访问">
     ```typescript
     export function getRuntime() {
       return store.getRuntime(); // throws if not initialized
@@ -656,12 +646,12 @@ return {
 </Steps>
 
 <Note>
-运行时存储身份建议使用 `pluginId`。较底层的 `key` 形式适用于少见场景，即一个插件有意需要多个运行时槽位。
+运行时存储身份优先使用 `pluginId`。较底层的 `key` 形式适用于少见场景，即一个插件有意需要多个运行时槽位。
 </Note>
 
 ## 其他顶层 `api` 字段
 
-除了 `api.runtime` 之外，API 对象还提供：
+除 `api.runtime` 外，API 对象还提供：
 
 <ParamField path="api.id" type="string">
   插件 id。
@@ -670,16 +660,16 @@ return {
   插件显示名称。
 </ParamField>
 <ParamField path="api.config" type="OpenClawConfig">
-  当前配置快照（可用时为活动的内存中运行时快照）。
+  当前配置快照（可用时为活跃的内存中运行时快照）。
 </ParamField>
 <ParamField path="api.pluginConfig" type="Record<string, unknown>">
-  来自 `plugins.entries.<id>.config` 的插件特定配置。
+  来自 `plugins.entries.<id>.config` 的插件专用配置。
 </ParamField>
 <ParamField path="api.logger" type="PluginLogger">
-  作用域化日志记录器（`debug`、`info`、`warn`、`error`）。
+  作用域日志记录器（`debug`、`info`、`warn`、`error`）。
 </ParamField>
 <ParamField path="api.registrationMode" type="PluginRegistrationMode">
-  当前加载模式；`"setup-runtime"` 是完整入口启动/设置之前的轻量窗口。
+  当前加载模式；`"setup-runtime"` 是轻量级的完整入口前启动/设置窗口。
 </ParamField>
 <ParamField path="api.resolvePath(input)" type="(string) => string">
   解析相对于插件根目录的路径。

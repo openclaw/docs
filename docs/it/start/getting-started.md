@@ -1,32 +1,31 @@
 ---
 read_when:
     - Prima configurazione da zero
-    - Vuoi il percorso più rapido per avere una chat funzionante
+    - Vuoi il percorso più rapido per ottenere una chat funzionante
 summary: Installa OpenClaw ed esegui la tua prima chat in pochi minuti.
-title: Guida introduttiva
+title: Per iniziare
 x-i18n:
-    generated_at: "2026-06-27T18:16:33Z"
+    generated_at: "2026-06-28T20:45:14Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 769682cfa35a361cc4adc49f010fed18cf897ce66e1404d07b631e4dede64de8
+    source_hash: 579ed2b4797dc851b0293b96a4177cc356641b6842fe45c4d48f4e8c224eef75
     source_path: start/getting-started.md
     workflow: 16
 ---
 
-Installa OpenClaw, esegui l'onboarding e chatta con il tuo assistente AI: tutto in
-circa 5 minuti. Alla fine avrai un Gateway in esecuzione, l'autenticazione configurata
+Installa OpenClaw, esegui l’onboarding e chatta con il tuo assistente AI: tutto in
+circa 5 minuti. Alla fine avrai un Gateway in esecuzione, l’autenticazione configurata
 e una sessione di chat funzionante.
 
 ## Cosa ti serve
 
 - **Node.js** — Node 24 consigliato (supportato anche Node 22.19+)
-- **Una chiave API** di un provider di modelli (Anthropic, OpenAI, Google, ecc.) — l'onboarding te la chiederà
+- **Una chiave API** da un fornitore di modelli (Anthropic, OpenAI, Google, ecc.) — l’onboarding te la chiederà
 
 <Tip>
 Controlla la tua versione di Node con `node --version`.
-**Utenti Windows:** l'app Hub nativa per Windows è il percorso desktop più semplice. Sono
-supportati anche l'installer PowerShell e i percorsi Gateway WSL2. Vedi [Windows](/it/platforms/windows).
+**Utenti Windows:** l’app Hub nativa per Windows è il percorso desktop più semplice. Sono supportati anche il programma di installazione PowerShell e i percorsi Gateway WSL2. Vedi [Windows](/it/platforms/windows).
 Devi installare Node? Vedi [Configurazione di Node](/it/install/node).
 </Tip>
 
@@ -53,17 +52,20 @@ Devi installare Node? Vedi [Configurazione di Node](/it/install/node).
     </Tabs>
 
     <Note>
-    Altri metodi di installazione (Docker, Nix, npm): [Installazione](/it/install).
+    Altri metodi di installazione (Docker, Nix, npm): [Installa](/it/install).
     </Note>
 
   </Step>
-  <Step title="Esegui l'onboarding">
+  <Step title="Esegui l’onboarding">
     ```bash
     openclaw onboard --install-daemon
     ```
 
-    La procedura guidata ti accompagna nella scelta di un provider di modelli, nell'impostazione di una chiave API
-    e nella configurazione del Gateway. Richiede circa 2 minuti.
+    La procedura guidata ti accompagna nella scelta di un fornitore di modelli, nell’impostazione di una chiave API
+    e nella configurazione del Gateway. QuickStart richiede di solito solo pochi minuti, ma
+    accesso al fornitore, abbinamento del canale, installazione del demone, download di rete, Skills
+    o Plugin opzionali possono rendere l’onboarding completo più lungo. Puoi saltare i passaggi opzionali
+    e tornarci più tardi con `openclaw configure`.
 
     Vedi [Onboarding (CLI)](/it/start/wizard) per il riferimento completo.
 
@@ -81,30 +83,30 @@ Devi installare Node? Vedi [Configurazione di Node](/it/install/node).
     openclaw dashboard
     ```
 
-    Questo apre la Control UI nel tuo browser. Se si carica, tutto funziona.
+    Questo apre la UI di controllo nel browser. Se si carica, tutto funziona.
 
   </Step>
   <Step title="Invia il tuo primo messaggio">
-    Digita un messaggio nella chat della Control UI e dovresti ricevere una risposta AI.
+    Digita un messaggio nella chat della UI di controllo e dovresti ricevere una risposta AI.
 
-    Vuoi invece chattare dal telefono? Il canale più rapido da configurare è
-    [Telegram](/it/channels/telegram) (basta un token del bot). Vedi [Canali](/it/channels)
+    Vuoi invece chattare dal telefono? Il canale più veloce da configurare è
+    [Telegram](/it/channels/telegram) (basta un token bot). Vedi [Canali](/it/channels)
     per tutte le opzioni.
 
   </Step>
 </Steps>
 
-<Accordion title="Avanzato: monta una build personalizzata della Control UI">
-  Se mantieni una build della dashboard localizzata o personalizzata, punta
-  `gateway.controlUi.root` a una directory che contiene gli asset statici
-  compilati e `index.html`.
+<Accordion title="Avanzato: monta una build personalizzata della UI di controllo">
+  Se mantieni una build localizzata o personalizzata della dashboard, punta
+  `gateway.controlUi.root` a una directory che contiene gli asset statici compilati
+  e `index.html`.
 
 ```bash
 mkdir -p "$HOME/.openclaw/control-ui-custom"
 # Copy your built static files into that directory.
 ```
 
-Quindi imposta:
+Poi imposta:
 
 ```json
 {
@@ -117,7 +119,7 @@ Quindi imposta:
 }
 ```
 
-Riavvia il gateway e riapri la dashboard:
+Riavvia il Gateway e riapri la dashboard:
 
 ```bash
 openclaw gateway restart
@@ -129,10 +131,10 @@ openclaw dashboard
 ## Cosa fare dopo
 
 <Columns>
-  <Card title="Collega un canale" href="/it/channels" icon="message-square">
-    Discord, Feishu, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo e altri.
+  <Card title="Connetti un canale" href="/it/channels" icon="message-square">
+    Discord, Feishu, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo e altro ancora.
   </Card>
-  <Card title="Associazione e sicurezza" href="/it/channels/pairing" icon="shield">
+  <Card title="Abbinamento e sicurezza" href="/it/channels/pairing" icon="shield">
     Controlla chi può inviare messaggi al tuo agente.
   </Card>
   <Card title="Configura il Gateway" href="/it/gateway/configuration" icon="settings">
@@ -143,18 +145,18 @@ openclaw dashboard
   </Card>
 </Columns>
 
-<Accordion title="Avanzato: variabili di ambiente">
+<Accordion title="Avanzato: variabili d’ambiente">
   Se esegui OpenClaw come account di servizio o vuoi percorsi personalizzati:
 
-- `OPENCLAW_HOME` — directory home per la risoluzione interna dei percorsi
-- `OPENCLAW_STATE_DIR` — sostituisce la directory di stato
-- `OPENCLAW_CONFIG_PATH` — sostituisce il percorso del file di configurazione
+- `OPENCLAW_HOME` — directory home per la risoluzione dei percorsi interni
+- `OPENCLAW_STATE_DIR` — sovrascrive la directory dello stato
+- `OPENCLAW_CONFIG_PATH` — sovrascrive il percorso del file di configurazione
 
-Riferimento completo: [Variabili di ambiente](/it/help/environment).
+Riferimento completo: [Variabili d’ambiente](/it/help/environment).
 </Accordion>
 
 ## Correlati
 
-- [Panoramica dell'installazione](/it/install)
+- [Panoramica dell’installazione](/it/install)
 - [Panoramica dei canali](/it/channels)
 - [Configurazione](/it/start/setup)

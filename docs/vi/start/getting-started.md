@@ -5,27 +5,27 @@ read_when:
 summary: Cài đặt OpenClaw và chạy cuộc trò chuyện đầu tiên của bạn chỉ trong vài phút.
 title: Bắt đầu
 x-i18n:
-    generated_at: "2026-06-27T18:12:05Z"
+    generated_at: "2026-06-28T20:45:25Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 769682cfa35a361cc4adc49f010fed18cf897ce66e1404d07b631e4dede64de8
+    source_hash: 579ed2b4797dc851b0293b96a4177cc356641b6842fe45c4d48f4e8c224eef75
     source_path: start/getting-started.md
     workflow: 16
 ---
 
 Cài đặt OpenClaw, chạy thiết lập ban đầu và trò chuyện với trợ lý AI của bạn — tất cả trong
-khoảng 5 phút. Khi hoàn tất, bạn sẽ có một Gateway đang chạy, xác thực đã cấu hình,
+khoảng 5 phút. Khi hoàn tất, bạn sẽ có Gateway đang chạy, xác thực đã cấu hình
 và một phiên trò chuyện hoạt động.
 
 ## Bạn cần gì
 
 - **Node.js** — khuyến nghị Node 24 (cũng hỗ trợ Node 22.19+)
-- **Một khóa API** từ nhà cung cấp mô hình (Anthropic, OpenAI, Google, v.v.) — quá trình thiết lập ban đầu sẽ nhắc bạn nhập
+- **Một khóa API** từ nhà cung cấp mô hình (Anthropic, OpenAI, Google, v.v.) — quy trình thiết lập ban đầu sẽ nhắc bạn nhập
 
 <Tip>
 Kiểm tra phiên bản Node của bạn bằng `node --version`.
-**Người dùng Windows:** ứng dụng Hub gốc cho Windows là đường dẫn desktop dễ nhất. Trình cài đặt
+**Người dùng Windows:** ứng dụng Windows Hub gốc là cách dễ nhất trên desktop. Trình cài đặt
 PowerShell và các đường dẫn WSL2 Gateway cũng được hỗ trợ. Xem [Windows](/vi/platforms/windows).
 Cần cài đặt Node? Xem [Thiết lập Node](/vi/install/node).
 </Tip>
@@ -33,7 +33,7 @@ Cần cài đặt Node? Xem [Thiết lập Node](/vi/install/node).
 ## Thiết lập nhanh
 
 <Steps>
-  <Step title="Cài đặt OpenClaw">
+  <Step title="Install OpenClaw">
     <Tabs>
       <Tab title="macOS / Linux">
         ```bash
@@ -41,7 +41,7 @@ Cần cài đặt Node? Xem [Thiết lập Node](/vi/install/node).
         ```
         <img
   src="/assets/install-script.svg"
-  alt="Quy trình tập lệnh cài đặt"
+  alt="Install Script Process"
   className="rounded-lg"
 />
       </Tab>
@@ -57,18 +57,21 @@ Cần cài đặt Node? Xem [Thiết lập Node](/vi/install/node).
     </Note>
 
   </Step>
-  <Step title="Chạy thiết lập ban đầu">
+  <Step title="Run onboarding">
     ```bash
     openclaw onboard --install-daemon
     ```
 
-    Trình hướng dẫn sẽ dẫn bạn qua việc chọn nhà cung cấp mô hình, đặt khóa API,
-    và cấu hình Gateway. Quá trình này mất khoảng 2 phút.
+    Trình hướng dẫn sẽ dẫn bạn qua việc chọn nhà cung cấp mô hình, đặt khóa API
+    và cấu hình Gateway. QuickStart thường chỉ mất vài phút, nhưng
+    đăng nhập nhà cung cấp, ghép nối kênh, cài đặt daemon, tải xuống qua mạng, Skills
+    hoặc Plugin tùy chọn có thể khiến toàn bộ quy trình thiết lập ban đầu mất nhiều thời gian hơn. Bạn có thể bỏ qua các bước
+    tùy chọn và quay lại sau bằng `openclaw configure`.
 
-    Xem [Thiết lập ban đầu (CLI)](/vi/start/wizard) để biết tài liệu tham chiếu đầy đủ.
+    Xem [Thiết lập ban đầu (CLI)](/vi/start/wizard) để biết tài liệu tham khảo đầy đủ.
 
   </Step>
-  <Step title="Xác minh Gateway đang chạy">
+  <Step title="Verify the Gateway is running">
     ```bash
     openclaw gateway status
     ```
@@ -76,27 +79,27 @@ Cần cài đặt Node? Xem [Thiết lập Node](/vi/install/node).
     Bạn sẽ thấy Gateway đang lắng nghe trên cổng 18789.
 
   </Step>
-  <Step title="Mở dashboard">
+  <Step title="Open the dashboard">
     ```bash
     openclaw dashboard
     ```
 
-    Thao tác này mở Control UI trong trình duyệt của bạn. Nếu giao diện tải được, mọi thứ đang hoạt động.
+    Lệnh này mở Control UI trong trình duyệt của bạn. Nếu giao diện tải lên, mọi thứ đang hoạt động.
 
   </Step>
-  <Step title="Gửi tin nhắn đầu tiên của bạn">
+  <Step title="Send your first message">
     Nhập một tin nhắn trong phần trò chuyện của Control UI và bạn sẽ nhận được phản hồi từ AI.
 
-    Muốn trò chuyện từ điện thoại thay vì vậy? Kênh nhanh nhất để thiết lập là
-    [Telegram](/vi/channels/telegram) (chỉ cần token bot). Xem [Kênh](/vi/channels)
+    Muốn trò chuyện từ điện thoại thay vào đó? Kênh thiết lập nhanh nhất là
+    [Telegram](/vi/channels/telegram) (chỉ cần bot token). Xem [Kênh](/vi/channels)
     để biết tất cả tùy chọn.
 
   </Step>
 </Steps>
 
-<Accordion title="Nâng cao: gắn một bản dựng Control UI tùy chỉnh">
+<Accordion title="Advanced: mount a custom Control UI build">
   Nếu bạn duy trì một bản dựng dashboard đã bản địa hóa hoặc tùy chỉnh, hãy trỏ
-  `gateway.controlUi.root` tới một thư mục chứa các tài nguyên tĩnh đã dựng
+  `gateway.controlUi.root` đến một thư mục chứa các tài nguyên tĩnh đã build
   và `index.html`.
 
 ```bash
@@ -117,7 +120,7 @@ Sau đó đặt:
 }
 ```
 
-Khởi động lại gateway và mở lại dashboard:
+Khởi động lại Gateway và mở lại dashboard:
 
 ```bash
 openclaw gateway restart
@@ -126,31 +129,31 @@ openclaw dashboard
 
 </Accordion>
 
-## Làm gì tiếp theo
+## Việc cần làm tiếp theo
 
 <Columns>
-  <Card title="Kết nối một kênh" href="/vi/channels" icon="message-square">
-    Discord, Feishu, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo, và nhiều hơn nữa.
+  <Card title="Connect a channel" href="/vi/channels" icon="message-square">
+    Discord, Feishu, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo và nhiều nền tảng khác.
   </Card>
-  <Card title="Ghép nối và an toàn" href="/vi/channels/pairing" icon="shield">
+  <Card title="Pairing and safety" href="/vi/channels/pairing" icon="shield">
     Kiểm soát ai có thể nhắn tin cho agent của bạn.
   </Card>
-  <Card title="Cấu hình Gateway" href="/vi/gateway/configuration" icon="settings">
+  <Card title="Configure the Gateway" href="/vi/gateway/configuration" icon="settings">
     Mô hình, công cụ, sandbox và cài đặt nâng cao.
   </Card>
-  <Card title="Duyệt công cụ" href="/vi/tools" icon="wrench">
+  <Card title="Browse tools" href="/vi/tools" icon="wrench">
     Trình duyệt, exec, tìm kiếm web, Skills và Plugin.
   </Card>
 </Columns>
 
-<Accordion title="Nâng cao: biến môi trường">
-  Nếu bạn chạy OpenClaw bằng tài khoản dịch vụ hoặc muốn đường dẫn tùy chỉnh:
+<Accordion title="Advanced: environment variables">
+  Nếu bạn chạy OpenClaw dưới dạng tài khoản dịch vụ hoặc muốn dùng đường dẫn tùy chỉnh:
 
 - `OPENCLAW_HOME` — thư mục home để phân giải đường dẫn nội bộ
 - `OPENCLAW_STATE_DIR` — ghi đè thư mục trạng thái
 - `OPENCLAW_CONFIG_PATH` — ghi đè đường dẫn tệp cấu hình
 
-Tài liệu tham chiếu đầy đủ: [Biến môi trường](/vi/help/environment).
+Tài liệu tham khảo đầy đủ: [Biến môi trường](/vi/help/environment).
 </Accordion>
 
 ## Liên quan

@@ -1,49 +1,50 @@
 ---
 read_when:
-    - Vous souhaitez un accès aux modèles hébergés par OpenCode
+    - Vous voulez accéder à des modèles hébergés par OpenCode
     - Vous souhaitez choisir entre les catalogues Zen et Go
 summary: Utiliser les catalogues OpenCode Zen et Go avec OpenClaw
 title: OpenCode
 x-i18n:
-    generated_at: "2026-04-25T13:56:18Z"
-    model: gpt-5.4
-    provider: openai
-    source_hash: cb0521b038e519f139c66f98ddef4919d8c43ce64018ef8af8f7b42ac00114a4
-    source_path: providers/opencode.md
-    workflow: 15
+    generated_at: "2026-06-28T20:45:18Z"
+    model: gpt-5.5
     postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 1d777563b82aafbe83a5256c11f1a9cd330e782f08dd467583368a77ebca4fc4
+    source_path: providers/opencode.md
+    workflow: 16
 ---
 
 OpenCode expose deux catalogues hébergés dans OpenClaw :
 
-| Catalogue | Préfixe          | Fournisseur runtime |
-| --------- | ---------------- | ------------------- |
-| **Zen**   | `opencode/...`   | `opencode`          |
-| **Go**    | `opencode-go/...` | `opencode-go`      |
+| Catalogue | Préfixe           | Fournisseur d’exécution |
+| --------- | ----------------- | ----------------------- |
+| **Zen**   | `opencode/...`    | `opencode`              |
+| **Go**    | `opencode-go/...` | `opencode-go`           |
 
-Les deux catalogues utilisent la même clé API OpenCode. OpenClaw conserve des identifiants de fournisseur runtime
-distincts afin que le routage en amont par modèle reste correct, mais l’onboarding et la documentation les traitent
-comme une seule configuration OpenCode.
+Les deux catalogues utilisent la même clé API OpenCode. OpenClaw garde les identifiants
+des fournisseurs d’exécution séparés afin que le routage amont par modèle reste correct,
+mais la configuration initiale et la documentation les traitent comme une seule
+configuration OpenCode.
 
-## Démarrage
+## Premiers pas
 
 <Tabs>
   <Tab title="Catalogue Zen">
-    **Idéal pour :** le proxy multi-modèles OpenCode sélectionné (Claude, GPT, Gemini).
+    **Idéal pour :** le proxy multi-modèle OpenCode organisé (Claude, GPT, Gemini, GLM).
 
     <Steps>
-      <Step title="Exécuter l’onboarding">
+      <Step title="Lancer la configuration initiale">
         ```bash
         openclaw onboard --auth-choice opencode-zen
         ```
 
-        Ou passez la clé directement :
+        Ou transmettez directement la clé :
 
         ```bash
         openclaw onboard --opencode-zen-api-key "$OPENCODE_API_KEY"
         ```
       </Step>
-      <Step title="Définir un modèle Zen comme valeur par défaut">
+      <Step title="Définir un modèle Zen comme modèle par défaut">
         ```bash
         openclaw config set agents.defaults.model.primary "opencode/claude-opus-4-6"
         ```
@@ -61,18 +62,18 @@ comme une seule configuration OpenCode.
     **Idéal pour :** la gamme Kimi, GLM et MiniMax hébergée par OpenCode.
 
     <Steps>
-      <Step title="Exécuter l’onboarding">
+      <Step title="Lancer la configuration initiale">
         ```bash
         openclaw onboard --auth-choice opencode-go
         ```
 
-        Ou passez la clé directement :
+        Ou transmettez directement la clé :
 
         ```bash
         openclaw onboard --opencode-go-api-key "$OPENCODE_API_KEY"
         ```
       </Step>
-      <Step title="Définir un modèle Go comme valeur par défaut">
+      <Step title="Définir un modèle Go comme modèle par défaut">
         ```bash
         openclaw config set agents.defaults.model.primary "opencode-go/kimi-k2.6"
         ```
@@ -100,17 +101,17 @@ comme une seule configuration OpenCode.
 
 ### Zen
 
-| Property         | Value                                                                   |
-| ---------------- | ----------------------------------------------------------------------- |
-| Fournisseur runtime | `opencode`                                                           |
-| Exemples de modèles | `opencode/claude-opus-4-6`, `opencode/gpt-5.5`, `opencode/gemini-3-pro` |
+| Propriété                | Valeur                                                                                        |
+| ------------------------ | --------------------------------------------------------------------------------------------- |
+| Fournisseur d’exécution  | `opencode`                                                                                    |
+| Exemples de modèles      | `opencode/claude-opus-4-6`, `opencode/gpt-5.5`, `opencode/gemini-3.1-pro`, `opencode/glm-5.2` |
 
 ### Go
 
-| Property         | Value                                                                    |
-| ---------------- | ------------------------------------------------------------------------ |
-| Fournisseur runtime | `opencode-go`                                                         |
-| Exemples de modèles | `opencode-go/kimi-k2.6`, `opencode-go/glm-5`, `opencode-go/minimax-m2.5` |
+| Propriété                | Valeur                                                                   |
+| ------------------------ | ------------------------------------------------------------------------ |
+| Fournisseur d’exécution  | `opencode-go`                                                            |
+| Exemples de modèles      | `opencode-go/kimi-k2.6`, `opencode-go/glm-5`, `opencode-go/minimax-m2.5` |
 
 ## Configuration avancée
 
@@ -120,38 +121,38 @@ comme une seule configuration OpenCode.
   </Accordion>
 
   <Accordion title="Identifiants partagés">
-    Saisir une clé OpenCode pendant la configuration stocke les identifiants pour les deux fournisseurs runtime.
-    Vous n’avez pas besoin d’effectuer l’onboarding de chaque catalogue séparément.
+    Saisir une clé OpenCode pendant la configuration stocke les identifiants pour les deux
+    fournisseurs d’exécution. Vous n’avez pas besoin d’initialiser chaque catalogue séparément.
   </Accordion>
 
   <Accordion title="Facturation et tableau de bord">
-    Vous vous connectez à OpenCode, ajoutez les détails de facturation, puis copiez votre clé API. La facturation
-    et la disponibilité du catalogue sont gérées depuis le tableau de bord OpenCode.
+    Connectez-vous à OpenCode, ajoutez les informations de facturation et copiez votre clé API.
+    La facturation et la disponibilité des catalogues sont gérées depuis le tableau de bord OpenCode.
   </Accordion>
 
-  <Accordion title="Comportement de relecture Gemini">
+  <Accordion title="Comportement de rejeu Gemini">
     Les références OpenCode adossées à Gemini restent sur le chemin proxy-Gemini, donc OpenClaw conserve
-    l’assainissement des signatures de pensée Gemini sans activer la validation native de relecture Gemini
-    ni les réécritures bootstrap.
+    l’assainissement des signatures de pensée Gemini à cet endroit sans activer la validation de rejeu
+    Gemini native ni les réécritures d’amorçage.
   </Accordion>
 
-  <Accordion title="Comportement de relecture non-Gemini">
-    Les références OpenCode non-Gemini conservent la politique minimale de relecture compatible OpenAI.
+  <Accordion title="Comportement de rejeu non-Gemini">
+    Les références OpenCode non-Gemini conservent la politique de rejeu minimale compatible OpenAI.
   </Accordion>
 </AccordionGroup>
 
 <Tip>
-Saisir une seule clé OpenCode pendant la configuration stocke les identifiants pour les deux fournisseurs runtime Zen et
-Go, vous n’avez donc besoin de faire l’onboarding qu’une seule fois.
+Saisir une clé OpenCode pendant la configuration stocke les identifiants pour les fournisseurs
+d’exécution Zen et Go, vous n’avez donc besoin d’effectuer l’initialisation qu’une seule fois.
 </Tip>
 
-## Liens associés
+## Connexe
 
 <CardGroup cols={2}>
-  <Card title="Sélection de modèle" href="/fr/concepts/model-providers" icon="layers">
-    Choisir les fournisseurs, les références de modèles et le comportement de failover.
+  <Card title="Sélection du modèle" href="/fr/concepts/model-providers" icon="layers">
+    Choisir les fournisseurs, les références de modèle et le comportement de basculement.
   </Card>
   <Card title="Référence de configuration" href="/fr/gateway/configuration-reference" icon="gear">
-    Référence complète de configuration pour agents, modèles et fournisseurs.
+    Référence de configuration complète pour les agents, les modèles et les fournisseurs.
   </Card>
 </CardGroup>

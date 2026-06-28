@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Plugin からコアヘルパー（TTS、STT、画像生成、Web 検索、サブエージェント、ノード）を呼び出す必要がある
-    - api.runtime が公開するものを理解したい
-    - Plugin コードから config、agent、または media ヘルパーにアクセスしている
+    - コアヘルパーをプラグインから呼び出す必要がある (TTS、STT、画像生成、Web検索、サブエージェント、ノード)
+    - api.runtime が何を公開しているかを理解したい
+    - Plugin コードから設定、エージェント、またはメディアヘルパーにアクセスしています
 sidebarTitle: Runtime helpers
-summary: api.runtime -- Pluginで利用できる注入済みランタイムヘルパー
+summary: api.runtime -- Pluginで利用できる注入されたランタイムヘルパー
 title: Plugin ランタイムヘルパー
 x-i18n:
-    generated_at: "2026-06-27T12:34:43Z"
+    generated_at: "2026-06-28T20:44:24Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 6f60c1c206d862e5be767cd56c38f6cacf1e1f3ce43b96fccde376a9be8160be
+    source_hash: b2bd70bb36ab8fb0fbecb982f56b1302a2a01a8d7ae6f78d3558fbaa8c28742e
     source_path: plugins/sdk-runtime.md
     workflow: 16
 ---
 
-すべてのプラグインの登録時に注入される `api.runtime` オブジェクトのリファレンスです。ホスト内部を直接インポートする代わりに、これらのヘルパーを使用してください。
+登録時にすべての Plugin へ注入される `api.runtime` オブジェクトのリファレンス。ホスト内部を直接インポートする代わりに、これらのヘルパーを使用します。
 
 <CardGroup cols={2}>
-  <Card title="チャネルプラグイン" href="/ja-JP/plugins/sdk-channel-plugins">
-    チャネルプラグイン向けに、これらのヘルパーを文脈の中で使用するステップバイステップガイド。
+  <Card title="Channel plugins" href="/ja-JP/plugins/sdk-channel-plugins">
+    チャネル Plugin 向けに、これらのヘルパーを文脈の中で使う手順ガイド。
   </Card>
-  <Card title="プロバイダープラグイン" href="/ja-JP/plugins/sdk-provider-plugins">
-    プロバイダープラグイン向けに、これらのヘルパーを文脈の中で使用するステップバイステップガイド。
+  <Card title="Provider plugins" href="/ja-JP/plugins/sdk-provider-plugins">
+    プロバイダー Plugin 向けに、これらのヘルパーを文脈の中で使う手順ガイド。
   </Card>
 </CardGroup>
 
@@ -35,34 +35,37 @@ register(api) {
 
 ## 設定の読み込みと書き込み
 
-アクティブな呼び出しパスにすでに渡されている設定を優先してください。たとえば、登録時の `api.config` や、チャネル/プロバイダーのコールバックの `cfg` 引数です。これにより、ホットパスで設定を再解析するのではなく、1つのプロセススナップショットを処理全体に流せます。
+アクティブな呼び出しパスへすでに渡されている設定を優先します。たとえば、登録時の `api.config` や、チャネル/プロバイダーのコールバックに渡される `cfg` 引数です。これにより、ホットパス上で設定を再パースする代わりに、1つのプロセススナップショットを処理全体へ流せます。
 
-長寿命のハンドラーが現在のプロセススナップショットを必要とし、その関数に設定が渡されていない場合にのみ、`api.runtime.config.current()` を使用してください。返される値は読み取り専用です。編集する前にクローンするか、ミューテーションヘルパーを使用してください。
+`api.runtime.config.current()` は、長期間存続するハンドラーが現在のプロセススナップショットを必要とし、その関数に設定が渡されていない場合にのみ使用します。返される値は読み取り専用です。編集する前にクローンするか、変更ヘルパーを使用してください。
 
-ツールファクトリは `ctx.runtimeConfig` と `ctx.getRuntimeConfig()` を受け取ります。ツール定義の作成後に設定が変更される可能性がある場合は、長寿命ツールの `execute` コールバック内でゲッターを使用してください。
+ツールファクトリは `ctx.runtimeConfig` と `ctx.getRuntimeConfig()` を受け取ります。ツール定義の作成後に設定が変わる可能性がある場合は、長期間存続するツールの `execute` コールバック内で getter を使用します。
 
-変更を永続化するには、`api.runtime.config.mutateConfigFile(...)` または `api.runtime.config.replaceConfigFile(...)` を使用します。各書き込みでは明示的な `afterWrite` ポリシーを選択する必要があります。
+変更は `api.runtime.config.mutateConfigFile(...)` または `api.runtime.config.replaceConfigFile(...)` で永続化します。各書き込みでは、明示的な `afterWrite` ポリシーを選択する必要があります。
 
-- `afterWrite: { mode: "auto" }` は、Gateway の再読み込みプランナーに判断を委ねます。
+- `afterWrite: { mode: "auto" }` は、gateway のリロード計画に判断を委ねます。
 - `afterWrite: { mode: "restart", reason: "..." }` は、書き込み側がホットリロードは安全でないと判断している場合に、クリーンな再起動を強制します。
-- `afterWrite: { mode: "none", reason: "..." }` は、呼び出し元が後続処理を所有している場合にのみ、自動再読み込み/再起動を抑制します。
+- `afterWrite: { mode: "none", reason: "..." }` は、呼び出し側が後続処理を所有している場合にのみ、自動リロード/再起動を抑制します。
 
-ミューテーションヘルパーは、`afterWrite` に加えて型付きの `followUp` サマリーを返すため、呼び出し元は再起動を要求したかどうかをログ出力またはテストできます。実際にその再起動がいつ行われるかは、引き続き Gateway が所有します。
+変更ヘルパーは `afterWrite` と型付きの `followUp` サマリーを返すため、呼び出し側は再起動を要求したかどうかをログ出力またはテストできます。実際にその再起動がいつ発生するかは、引き続き gateway が所有します。
 
-`api.runtime.config.loadConfig()` と `api.runtime.config.writeConfigFile(...)` は、`runtime-config-load-write` 配下の非推奨の互換ヘルパーです。これらは実行時に一度だけ警告し、移行期間中は古い外部プラグイン向けに利用可能なままです。バンドルプラグインはこれらを使用してはいけません。プラグインコードがこれらを呼び出すか、Plugin SDK サブパスからこれらのヘルパーをインポートすると、設定境界ガードが失敗します。
+`api.runtime.config.loadConfig()` と `api.runtime.config.writeConfigFile(...)` は、`runtime-config-load-write` 配下の非推奨の互換ヘルパーです。実行時に一度だけ警告し、移行期間中は古い外部 Plugin で引き続き利用できます。バンドル Plugin はこれらを使用してはいけません。Plugin コードがこれらを呼び出したり、Plugin SDK サブパスからこれらのヘルパーをインポートしたりすると、設定境界ガードが失敗します。
 
-SDK を直接インポートする場合は、広範な
-`openclaw/plugin-sdk/config-runtime` 互換バレルではなく、焦点を絞った設定サブパスを使用してください。型には `config-contracts`、読み込み済み設定のアサーションとプラグインエントリーの検索には `plugin-config-runtime`、現在のプロセススナップショットには `runtime-config-snapshot`、書き込みには `config-mutation` を使用します。バンドルプラグインのテストでは、広範な互換バレルをモックするのではなく、これらの焦点を絞ったサブパスを直接モックしてください。
+直接 SDK からインポートする場合は、広範な
+`openclaw/plugin-sdk/config-runtime` 互換バレルではなく、焦点を絞った設定サブパスを使用します。型には `config-contracts`、読み込み済み設定のアサーションと Plugin
+エントリ検索には `plugin-config-runtime`、現在のプロセススナップショットには
+`runtime-config-snapshot`、書き込みには `config-mutation` を使用します。バンドル Plugin のテストでは、広範な互換バレルをモックする代わりに、これらの焦点を絞った
+サブパスを直接モックするべきです。
 
-OpenClaw の内部ランタイムコードも同じ方針です。CLI、Gateway、またはプロセス境界で設定を一度読み込み、その値を渡していきます。成功したミューテーション書き込みはプロセスランタイムスナップショットを更新し、その内部リビジョンを進めます。長寿命キャッシュは、設定をローカルでシリアライズするのではなく、ランタイムが所有するキャッシュキーを基準にするべきです。長寿命ランタイムモジュールには、周囲の `loadConfig()` 呼び出しに対するゼロトレランスのスキャナーがあります。渡された `cfg`、リクエストの `context.getRuntimeConfig()`、または明示的なプロセス境界での `getRuntimeConfig()` を使用してください。
+OpenClaw 内部ランタイムコードも同じ方針です。CLI、gateway、またはプロセス境界で設定を一度読み込み、その値を渡していきます。成功した変更書き込みは、プロセスランタイムスナップショットを更新し、内部リビジョンを進めます。長期間存続するキャッシュは、設定をローカルでシリアライズする代わりに、ランタイム所有のキャッシュキーを基準にするべきです。長期間存続するランタイムモジュールには、環境的な `loadConfig()` 呼び出しに対するゼロトレランスのスキャナーがあります。渡された `cfg`、リクエストの `context.getRuntimeConfig()`、または明示的なプロセス境界での `getRuntimeConfig()` を使用してください。
 
-プロバイダーとチャネルの実行パスでは、設定の読み戻しや編集用に返されたファイルスナップショットではなく、アクティブなランタイム設定スナップショットを使用する必要があります。ファイルスナップショットは、UI と書き込み用に SecretRef マーカーなどのソース値を保持します。プロバイダーコールバックには、解決済みのランタイムビューが必要です。ヘルパーがアクティブなソーススナップショットまたはアクティブなランタイムスナップショットのいずれかで呼び出される可能性がある場合は、認証情報を読み取る前に `selectApplicableRuntimeConfig()` を経由してください。
+プロバイダーとチャネルの実行パスでは、設定の読み戻しや編集用に返されるファイルスナップショットではなく、アクティブなランタイム設定スナップショットを使用する必要があります。ファイルスナップショットは、UI と書き込みのために SecretRef マーカーなどのソース値を保持します。プロバイダーコールバックには、解決済みのランタイムビューが必要です。ヘルパーがアクティブなソーススナップショットまたはアクティブなランタイムスナップショットのどちらでも呼び出される可能性がある場合は、認証情報を読む前に `selectApplicableRuntimeConfig()` を通してください。
 
 ## 再利用可能なランタイムユーティリティ
 
-ボットが作成したインバウンドメッセージには、受信した `botLoopProtection` ファクトを使用してください。Core は、ポリシーを特定のチャネルに結び付けずに、セッション記録とディスパッチの前に共有のインメモリスライディングウィンドウガードを適用します。このガードは `(scopeId, conversationId, participant pair)` キーを追跡し、ペアの両方向をまとめてカウントし、ウィンドウの予算を超えるとクールダウンを適用し、非アクティブなエントリーを機会的に刈り込みます。
+bot が作成した受信メッセージには、受信側の `botLoopProtection` facts を使用します。Core は、セッション記録とディスパッチの前に、共有のインメモリ sliding-window ガードを適用します。ポリシーを特定の1つのチャネルに結び付けることはありません。このガードは `(scopeId, conversationId, participant pair)` キーを追跡し、ペアの双方向をまとめてカウントし、ウィンドウの予算を超えるとクールダウンを適用し、非アクティブなエントリを機会的に削除します。
 
-この動作をオペレーターに公開するチャネルプラグインでは、ベースライン予算として共有の `channels.defaults.botLoopProtection` 形状を優先し、その上にチャネル/プロバイダー固有の上書きを重ねるべきです。共有設定はユーザー向けであるため、秒単位を使用します。
+この挙動をオペレーターに公開するチャネル Plugin は、ベースライン予算として共有の `channels.defaults.botLoopProtection` 形状を優先し、その上にチャネル/プロバイダー固有の上書きを重ねるべきです。共有設定はユーザー向けであるため、秒を使用します。
 
 ```typescript
 type ChannelBotLoopProtectionConfig = {
@@ -73,7 +76,7 @@ type ChannelBotLoopProtectionConfig = {
 };
 ```
 
-解決済みターンとともに、正規化済みのボットペアファクトを渡します。Core はデフォルト、単位変換、`enabled` セマンティクスを解決します。
+正規化された bot ペア facts を解決済みターンと一緒に渡します。Core がデフォルト、単位変換、`enabled` セマンティクスを解決します。
 
 ```typescript
 return {
@@ -95,8 +98,8 @@ return {
 };
 ```
 
-共有インバウンド返信ランナーを経由しないカスタムの
-二者間イベントループに限り、`openclaw/plugin-sdk/pair-loop-guard-runtime` を直接使用してください。
+共有の受信返信 runner を通らないカスタムの
+二者間イベントループの場合にのみ、`openclaw/plugin-sdk/pair-loop-guard-runtime` を直接使用します。
 
 ## ランタイム名前空間
 
@@ -135,26 +138,24 @@ return {
     await api.runtime.agent.ensureAgentWorkspace(cfg);
 
     // Run an embedded agent turn
-    const agentDir = api.runtime.agent.resolveAgentDir(cfg);
     const result = await api.runtime.agent.runEmbeddedAgent({
       sessionId: "my-plugin:task-1",
       runId: crypto.randomUUID(),
-      sessionFile: path.join(agentDir, "sessions", "my-plugin-task-1.jsonl"),
       workspaceDir: api.runtime.agent.resolveAgentWorkspaceDir(cfg),
       prompt: "Summarize the latest changes",
       timeoutMs: api.runtime.agent.resolveAgentTimeoutMs(cfg),
     });
     ```
 
-    `runEmbeddedAgent(...)` は、プラグインコードから通常の OpenClaw エージェントターンを開始するための中立的なヘルパーです。チャネルからトリガーされる返信と同じプロバイダー/モデル解決およびエージェントハーネス選択を使用します。
+    `runEmbeddedAgent(...)` は、Plugin コードから通常の OpenClaw エージェントターンを開始するための中立的なヘルパーです。チャネルによってトリガーされる返信と同じプロバイダー/モデル解決とエージェントハーネス選択を使用します。
 
-    `runEmbeddedPiAgent(...)` は、既存プラグイン向けの非推奨の互換エイリアスとして残っています。新しいコードでは `runEmbeddedAgent(...)` を使用してください。
+    `runEmbeddedPiAgent(...)` は、既存の Plugin 向けの非推奨の互換エイリアスとして残っています。新しいコードでは `runEmbeddedAgent(...)` を使用してください。
 
-    `resolveThinkingPolicy(...)` は、プロバイダー/モデルがサポートする thinking レベルと任意のデフォルトを返します。プロバイダープラグインは thinking フックを通じてモデル固有のプロファイルを所有するため、ツールプラグインはプロバイダーリストをインポートまたは重複させるのではなく、このランタイムヘルパーを呼び出すべきです。
+    `resolveThinkingPolicy(...)` は、プロバイダー/モデルがサポートする thinking レベルと任意のデフォルトを返します。プロバイダー Plugin は thinking hooks を通じてモデル固有のプロファイルを所有するため、ツール Plugin はプロバイダーリストをインポートまたは複製する代わりに、このランタイムヘルパーを呼び出すべきです。
 
-    `normalizeThinkingLevel(...)` は、`on`、`x-high`、`extra high` などのユーザーテキストを、解決済みポリシーと照合する前に正規の保存レベルへ変換します。
+    `normalizeThinkingLevel(...)` は、`on`、`x-high`、`extra high` などのユーザーテキストを、解決済みポリシーと照合する前に、正規の保存レベルへ変換します。
 
-    **セッションストアヘルパー** は `api.runtime.agent.session` 配下にあります。
+    **セッションストアヘルパー**は `api.runtime.agent.session` 配下にあります。
 
     ```typescript
     const entry = api.runtime.agent.session.getSessionEntry({ agentId, sessionKey });
@@ -168,15 +169,15 @@ return {
     });
     ```
 
-    セッションワークフローには、`getSessionEntry(...)`、`listSessionEntries(...)`、`patchSessionEntry(...)`、または `upsertSessionEntry(...)` を優先してください。これらのヘルパーはエージェント/セッション ID でセッションを参照するため、プラグインはレガシーな `sessions.json` ストレージ形状に依存しません。セッションアクティビティを更新すべきでないメタデータのみのパッチには `preserveActivity: true` を使用し、コールバックが完全なエントリーを返し、削除済みフィールドを削除済みのままにする必要がある場合にのみ `replaceEntry: true` を使用してください。
+    セッションワークフローには、`getSessionEntry(...)`、`listSessionEntries(...)`、`patchSessionEntry(...)`、または `upsertSessionEntry(...)` を優先します。これらのヘルパーはエージェント/セッション ID でセッションを扱うため、Plugin はレガシーな `sessions.json` ストレージ形状に依存しません。セッションアクティビティを更新すべきでないメタデータのみのパッチには `preserveActivity: true` を使用し、コールバックが完全なエントリを返し、削除済みフィールドを削除済みのままにする必要がある場合にのみ `replaceEntry: true` を使用します。
 
-    トランスクリプトの読み取りと書き込みには、`openclaw/plugin-sdk/session-transcript-runtime` をインポートし、`resolveSessionTranscriptIdentity(...)`、`resolveSessionTranscriptTarget(...)`、`readSessionTranscriptEvents(...)`、`appendSessionTranscriptMessageByIdentity(...)`、`publishSessionTranscriptUpdateByIdentity(...)`、または `withSessionTranscriptWriteLock(...)` を `{ agentId, sessionKey, sessionId }` とともに使用してください。これらの API により、プラグインはトランスクリプトを識別し、そのイベントを読み取り、メッセージを追加し、更新を公開し、同じトランスクリプト書き込みロックの下で関連操作を実行できます。すでにアクティブなトランスクリプトアーティファクトを受け取るコードを適応していて、各ヘルパーをその同じアーティファクト上で動作させる必要がある場合にのみ、`sessionFile` を渡してください。
+    transcript の読み取りと書き込みには、`openclaw/plugin-sdk/session-transcript-runtime` をインポートし、`{ agentId, sessionKey, sessionId }` とともに `resolveSessionTranscriptIdentity(...)`、`resolveSessionTranscriptTarget(...)`、`readSessionTranscriptEvents(...)`、`appendSessionTranscriptMessageByIdentity(...)`、`publishSessionTranscriptUpdateByIdentity(...)`、または `withSessionTranscriptWriteLock(...)` を使用します。これらの API により、Plugin は transcript を識別し、そのイベントを読み取り、メッセージを追加し、更新を公開し、関連する操作を同じ transcript 書き込みロックの下で実行できます。`sessionFile` を渡すこと、`resolveSessionTranscriptLegacyFileTarget(...)` を使用すること、または `openclaw/plugin-sdk/agent-harness-runtime` から低レベルの `appendSessionTranscriptMessage(...)` / `emitSessionTranscriptUpdate(...)` をインポートすることは非推奨です。これらのパスは、すでにアクティブな transcript アーティファクトを受け取っているレガシーコードのためだけに存在します。
 
-    `loadSessionStore(...)`、`saveSessionStore(...)`、`updateSessionStore(...)`、`resolveSessionFilePath(...)` は、レガシーなストア全体またはトランスクリプトファイル形状にまだ意図的に依存しているプラグイン向けの互換ヘルパーです。新しいプラグインコードではこれらのヘルパーを使用してはならず、既存の呼び出し元はエントリーヘルパーへ移行するべきです。
+    `loadSessionStore(...)`、`saveSessionStore(...)`、`updateSessionStore(...)`、`resolveSessionFilePath(...)`、`resolveAndPersistSessionFile(...)` は、レガシーなストア全体または transcript ファイル形状に今も意図的に依存している Plugin 向けの非推奨の互換ヘルパーです。新しい Plugin コードではこれらのヘルパーを使用してはならず、既存の呼び出し元はエントリヘルパーと transcript ID ヘルパーへ移行するべきです。
 
   </Accordion>
   <Accordion title="api.runtime.agent.defaults">
-    デフォルトのモデルおよびプロバイダー定数:
+    デフォルトのモデルとプロバイダー定数:
 
     ```typescript
     const model = api.runtime.agent.defaults.model; // e.g. "anthropic/claude-sonnet-4-6"
@@ -186,7 +187,8 @@ return {
   </Accordion>
 
   <Accordion title="api.runtime.llm">
-    プロバイダー内部をインポートしたり、OpenClaw のモデル/認証/base URL の準備を重複させたりせずに、ホスト所有のテキスト補完を実行します。
+    プロバイダー内部をインポートしたり、OpenClaw のモデル/認証/base URL 準備を
+    複製したりせずに、ホスト所有のテキスト補完を実行します。
 
     ```typescript
     const result = await api.runtime.llm.complete({
@@ -197,15 +199,20 @@ return {
     });
     ```
 
-    このヘルパーは、OpenClaw の組み込みランタイムと同じシンプル補完準備パス、およびホスト所有のランタイム設定スナップショットを使用します。コンテキストエンジンはセッションに紐づく `llm.complete` ケイパビリティを受け取るため、モデル呼び出しはアクティブセッションのエージェントを使用し、デフォルトエージェントへ暗黙にフォールバックしません。結果には、利用可能な場合、プロバイダー/モデル/エージェントの帰属に加えて、正規化済みのトークン、キャッシュ、推定コスト使用量が含まれます。
+    このヘルパーは、OpenClaw の組み込みランタイムと同じ単純補完の準備パスと、
+    ホスト所有のランタイム設定スナップショットを使用します。コンテキストエンジンは
+    セッションに紐づく `llm.complete` capability を受け取るため、モデル呼び出しは
+    アクティブセッションのエージェントを使用し、デフォルトエージェントへ静かにフォールバックしません。
+    結果には、プロバイダー/モデル/エージェントの帰属情報に加えて、利用可能な場合は正規化されたトークン、
+    キャッシュ、推定コスト使用量が含まれます。
 
     <Warning>
-    モデル上書きには、設定の `plugins.entries.<id>.llm.allowModelOverride: true` によるオペレーターの明示的な許可が必要です。信頼済みプラグインを特定の正規 `provider/model` ターゲットに制限するには、`plugins.entries.<id>.llm.allowedModels` を使用してください。エージェントをまたぐ補完には `plugins.entries.<id>.llm.allowAgentIdOverride: true` が必要です。
+    モデル上書きには、設定内の `plugins.entries.<id>.llm.allowModelOverride: true` によるオペレーターのオプトインが必要です。信頼済み Plugin を特定の正規 `provider/model` ターゲットに制限するには、`plugins.entries.<id>.llm.allowedModels` を使用します。エージェントをまたぐ補完には `plugins.entries.<id>.llm.allowAgentIdOverride: true` が必要です。
     </Warning>
 
   </Accordion>
   <Accordion title="api.runtime.subagent">
-    バックグラウンドのサブエージェント実行を起動および管理します。
+    バックグラウンド subagent 実行を起動および管理します。
 
     ```typescript
     // Start a subagent run
@@ -233,14 +240,14 @@ return {
     ```
 
     <Warning>
-    モデルのオーバーライド（`provider`/`model`）には、設定内の `plugins.entries.<id>.subagent.allowModelOverride: true` によるオペレーターの明示的な有効化が必要です。信頼されていない Plugin もサブエージェントを実行できますが、オーバーライド要求は拒否されます。
+    モデルの上書き（`provider`/`model`）には、設定内の `plugins.entries.<id>.subagent.allowModelOverride: true` によるオペレーターのオプトインが必要です。信頼されていない Plugin も subagent を実行できますが、上書きリクエストは拒否されます。
     </Warning>
 
-    `deleteSession(...)` は、同じ Plugin が `api.runtime.subagent.run(...)` を通じて作成したセッションを削除できます。任意のユーザーセッションまたはオペレーターセッションの削除には、引き続き管理者スコープの Gateway 要求が必要です。
+    `deleteSession(...)` は、同じ Plugin が `api.runtime.subagent.run(...)` を通じて作成したセッションを削除できます。任意のユーザーまたはオペレーターのセッションを削除するには、引き続き管理者スコープの Gateway リクエストが必要です。
 
   </Accordion>
   <Accordion title="api.runtime.nodes">
-    接続済みノードを一覧表示し、Gateway に読み込まれた Plugin コードまたは Plugin CLI コマンドからノードホストコマンドを呼び出します。たとえば、別の Mac 上のブラウザーやオーディオブリッジなど、ペアリング済みデバイス上のローカル作業を Plugin が所有している場合に使用します。
+    接続済みノードを一覧表示し、Gateway に読み込まれた Plugin コードまたは Plugin CLI コマンドから node-host コマンドを呼び出します。たとえば別の Mac 上のブラウザーや音声ブリッジなど、ペアリングされたデバイス上のローカル作業を Plugin が所有する場合に使用します。
 
     ```typescript
     const { nodes } = await api.runtime.nodes.list({ connected: true });
@@ -253,16 +260,16 @@ return {
     });
     ```
 
-    Gateway 内では、このランタイムはインプロセスです。Plugin CLI コマンドでは、設定済みの Gateway を RPC 経由で呼び出すため、`openclaw googlemeet recover-tab` などのコマンドはターミナルからペアリング済みノードを検査できます。ノードコマンドは引き続き、通常の Gateway ノードペアリング、コマンド許可リスト、Plugin のノード呼び出しポリシー、ノードローカルのコマンド処理を通過します。
+    Gateway 内では、このランタイムはインプロセスです。Plugin CLI コマンドでは、設定済みの Gateway を RPC 経由で呼び出すため、`openclaw googlemeet recover-tab` などのコマンドはターミナルからペアリング済みノードを検査できます。ノードコマンドは引き続き、通常の Gateway ノードペアリング、コマンド許可リスト、Plugin のノード呼び出しポリシー、ノードローカルのコマンド処理を経由します。
 
-    危険なノードホストコマンドを公開する Plugin は、`api.registerNodeInvokePolicy(...)` でノード呼び出しポリシーを登録する必要があります。このポリシーは、コマンド許可リストのチェック後、コマンドがノードへ転送される前に Gateway 内で実行されるため、直接の `node.invoke` 呼び出しと上位レベルの Plugin ツールは同じ適用経路を共有します。
+    危険な node-host コマンドを公開する Plugin は、`api.registerNodeInvokePolicy(...)` でノード呼び出しポリシーを登録する必要があります。このポリシーは、コマンド許可リストのチェック後、コマンドがノードへ転送される前に Gateway 内で実行されるため、直接の `node.invoke` 呼び出しと高レベルの Plugin ツールは同じ適用経路を共有します。
 
   </Accordion>
   <Accordion title="api.runtime.tasks.managedFlows">
-    Task Flow ランタイムを既存の OpenClaw セッションキーまたは信頼済みツールコンテキストにバインドし、各呼び出しで所有者を渡さずに Task Flow を作成および管理します。
+    Task Flow ランタイムを既存の OpenClaw セッションキーまたは信頼済みツールコンテキストにバインドし、各呼び出しでオーナーを渡さずに Task Flow を作成および管理します。
 
-    Task Flow は、永続的な複数ステップのワークフロー状態を追跡します。これはスケジューラーではありません。
-    将来のウェイクアップには Cron または `api.session.workflow.scheduleSessionTurn(...)` を使用し、その作業でフロー状態、子タスク、待機、キャンセルが必要な場合は、スケジュールされたターンから `managedFlows` を使用します。
+    Task Flow は永続的な複数ステップのワークフロー状態を追跡します。スケジューラーではありません。
+    将来の wakeup には Cron または `api.session.workflow.scheduleSessionTurn(...)` を使用し、その作業でフロー状態、子タスク、待機、キャンセルが必要な場合は、スケジュールされた turn から `managedFlows` を使用します。
 
     ```typescript
     const taskFlow = api.runtime.tasks.managedFlows.fromToolContext(ctx);
@@ -289,7 +296,7 @@ return {
     });
     ```
 
-    独自のバインディング層から信頼済みの OpenClaw セッションキーをすでに持っている場合は、`bindSession({ sessionKey, requesterOrigin })` を使用します。生のユーザー入力からバインドしないでください。
+    独自のバインディングレイヤーから信頼済みの OpenClaw セッションキーをすでに持っている場合は、`bindSession({ sessionKey, requesterOrigin })` を使用します。生のユーザー入力からバインドしないでください。
 
   </Accordion>
   <Accordion title="api.runtime.tts">
@@ -315,7 +322,7 @@ return {
     });
     ```
 
-    コアの `messages.tts` 設定とプロバイダー選択を使用します。PCM オーディオバッファーとサンプルレートを返します。
+    コアの `messages.tts` 設定とプロバイダー選択を使用します。PCM 音声バッファーとサンプルレートを返します。
 
   </Accordion>
   <Accordion title="api.runtime.mediaUnderstanding">
@@ -377,7 +384,7 @@ return {
     });
     ```
 
-    出力が生成されない場合（入力がスキップされた場合など）は、`{ text: undefined }` を返します。
+    出力が生成されない場合（例: 入力がスキップされた場合）は `{ text: undefined }` を返します。
 
     <Info>
     `api.runtime.stt.transcribeAudioFile(...)` は、`api.runtime.mediaUnderstanding.transcribeAudioFile(...)` の互換エイリアスとして残っています。
@@ -436,7 +443,7 @@ return {
 
   </Accordion>
   <Accordion title="api.runtime.config">
-    現在のランタイム設定スナップショットと、トランザクション形式の設定書き込みです。アクティブな呼び出し経路にすでに渡されている設定を優先してください。ハンドラーがプロセスのスナップショットを直接必要とする場合にのみ、`current()` を使用します。
+    現在のランタイム設定スナップショットとトランザクション的な設定書き込み。アクティブな呼び出し経路にすでに渡されている設定を優先してください。ハンドラーがプロセスのスナップショットを直接必要とする場合にのみ `current()` を使用します。
 
     ```typescript
     const cfg = api.runtime.config.current();
@@ -448,7 +455,7 @@ return {
     });
     ```
 
-    `mutateConfigFile(...)` と `replaceConfigFile(...)` は `followUp` 値を返します。たとえば `{ mode: "restart", requiresRestart: true, reason }` は、再起動制御を Gateway から奪わずに書き込み側の意図を記録します。
+    `mutateConfigFile(...)` と `replaceConfigFile(...)` は `followUp` 値を返します。たとえば `{ mode: "restart", requiresRestart: true, reason }` は、gateway から再起動制御を奪わずに書き込み側の意図を記録します。
 
   </Accordion>
   <Accordion title="api.runtime.system">
@@ -466,7 +473,7 @@ return {
     const hint = api.runtime.system.formatNativeDependencyHint(pkg);
     ```
 
-    `runCommandWithTimeout(...)` は、キャプチャされた `stdout` と `stderr`、任意の切り詰め件数、`code`、`signal`、`killed`、`termination`、`noOutputTimedOut` を返します。タイムアウトおよび無出力タイムアウトの結果では、子プロセスが非ゼロの終了コードを提供しない場合に `code: 124` が報告されます。タイムアウトではないシグナル終了でも `code: null` が返る場合があるため、タイムアウト理由を区別するには `termination` と `noOutputTimedOut` を使用します。
+    `runCommandWithTimeout(...)` は、キャプチャされた `stdout` と `stderr`、任意の切り詰め件数、`code`、`signal`、`killed`、`termination`、`noOutputTimedOut` を返します。タイムアウトおよび無出力タイムアウトの結果では、子プロセスが非ゼロの終了コードを提供しない場合に `code: 124` が報告されます。タイムアウト以外のシグナル終了では引き続き `code: null` が返る場合があるため、タイムアウト理由を区別するには `termination` と `noOutputTimedOut` を使用してください。
 
   </Accordion>
   <Accordion title="api.runtime.events">
@@ -483,7 +490,7 @@ return {
 
   </Accordion>
   <Accordion title="api.runtime.logging">
-    ログ記録。
+    ロギング。
 
     ```typescript
     const verbose = api.runtime.logging.shouldLogVerbose();
@@ -492,7 +499,7 @@ return {
 
   </Accordion>
   <Accordion title="api.runtime.modelAuth">
-    モデルとプロバイダー認証の解決。
+    モデルとプロバイダーの認証解決。
 
     ```typescript
     const auth = await api.runtime.modelAuth.getApiKeyForModel({ model, cfg });
@@ -504,7 +511,7 @@ return {
 
   </Accordion>
   <Accordion title="api.runtime.state">
-    状態ディレクトリ解決と、SQLite によって裏付けられたキー付きストレージ。
+    状態ディレクトリの解決と SQLite バックのキー付きストレージ。
 
     ```typescript
     const stateDir = api.runtime.state.resolveStateDir(process.env);
@@ -521,10 +528,10 @@ return {
     await store.clear();
     ```
 
-    Keyed store は再起動後も保持され、ランタイムに紐づくプラグイン ID によって分離されます。アトミックな重複排除クレームには `registerIfAbsent(...)` を使用します。キーが存在しないか期限切れで登録された場合は `true` を返し、ライブ値がすでに存在する場合は、その値、作成時刻、TTL を上書きせずに `false` を返します。制限: namespace ごとに `maxEntries`、プラグインごとにライブ行 6,000 件、64KB 未満の JSON 値、および任意の TTL 期限切れ。書き込みによってプラグインの行上限を超える場合、ランタイムは書き込み対象の namespace から最も古いライブ行を退避することがあります。兄弟 namespace はその書き込みでは退避されず、namespace が十分な行を解放できない場合、その書き込みは引き続き失敗します。
+    キー付きストアは再起動後も保持され、ランタイムに紐づく Plugin id によって分離されます。アトミックな重複排除の要求には `registerIfAbsent(...)` を使用します。キーが存在しない、または期限切れで登録された場合は `true` を返し、ライブ値がすでに存在する場合は、その値、作成時刻、TTL を上書きせずに `false` を返します。制限: namespace ごとの `maxEntries`、Plugin あたり 6,000 件のライブ行、64KB 未満の JSON 値、任意の TTL 期限切れ。書き込みが Plugin の行上限を超える場合、ランタイムは書き込み対象の namespace から最も古いライブ行を退避することがあります。兄弟 namespace はその書き込みでは退避されず、namespace が十分な行を解放できない場合、書き込みは引き続き失敗します。
 
     <Warning>
-    このリリースではバンドルされたプラグインのみです。
+    このリリースではバンドル済み Plugin のみです。
     </Warning>
 
   </Accordion>
@@ -539,9 +546,9 @@ return {
 
   </Accordion>
   <Accordion title="api.runtime.channel">
-    チャンネル固有のランタイムヘルパー（チャンネルプラグインが読み込まれている場合に利用可能）。
+    チャネル固有のランタイムヘルパー（チャネル Plugin が読み込まれている場合に利用可能）。
 
-    `api.runtime.channel.media` は、チャンネルメディアのダウンロードと保存に推奨されるサーフェスです。
+    `api.runtime.channel.media` は、チャネルメディアのダウンロードと保存に推奨されるサーフェスです。
 
     ```typescript
     const saved = await api.runtime.channel.media.saveRemoteMedia({
@@ -552,9 +559,9 @@ return {
     });
     ```
 
-    リモート URL を OpenClaw メディアにする必要がある場合は `saveRemoteMedia(...)` を使用します。プラグインがプラグイン所有の認証、リダイレクト、または allowlist 処理を使ってすでに `Response` を取得している場合は `saveResponseMedia(...)` を使用します。プラグインが検査、変換、復号、または再アップロードのために生バイトを必要とする場合にのみ `readRemoteMediaBuffer(...)` を使用します。`fetchRemoteMedia(...)` は `readRemoteMediaBuffer(...)` の非推奨の互換エイリアスとして残っています。
+    リモート URL を OpenClaw メディアにする必要がある場合は `saveRemoteMedia(...)` を使用します。Plugin が Plugin 所有の認証、リダイレクト、または許可リスト処理で `Response` をすでに取得している場合は `saveResponseMedia(...)` を使用します。Plugin が検査、変換、復号、または再アップロードのために生バイトを必要とする場合にのみ `readRemoteMediaBuffer(...)` を使用します。`fetchRemoteMedia(...)` は `readRemoteMediaBuffer(...)` の非推奨の互換エイリアスとして残っています。
 
-    `api.runtime.channel.mentions` は、ランタイム注入を使用するバンドル済みチャンネルプラグイン向けの共有 inbound メンションポリシーサーフェスです。
+    `api.runtime.channel.mentions` は、ランタイムインジェクションを使用するバンドル済みチャネル Plugin 向けの共有インバウンドメンションポリシーサーフェスです。
 
     ```typescript
     const mentionMatch = api.runtime.channel.mentions.matchesMentionWithExplicit(text, {
@@ -596,10 +603,10 @@ return {
 
 ## ランタイム参照の保存
 
-`register` コールバックの外で使用するランタイム参照を保存するには、`createPluginRuntimeStore` を使用します。
+`register` コールバックの外部で使用するランタイム参照を保存するには、`createPluginRuntimeStore` を使用します。
 
 <Steps>
-  <Step title="ストアを作成する">
+  <Step title="Create the store">
     ```typescript
     import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
     import type { PluginRuntime } from "openclaw/plugin-sdk/runtime-store";
@@ -611,7 +618,7 @@ return {
     ```
 
   </Step>
-  <Step title="エントリポイントに接続する">
+  <Step title="Wire into the entry point">
     ```typescript
     export default defineChannelPluginEntry({
       id: "my-plugin",
@@ -622,7 +629,7 @@ return {
     });
     ```
   </Step>
-  <Step title="他のファイルからアクセスする">
+  <Step title="Access from other files">
     ```typescript
     export function getRuntime() {
       return store.getRuntime(); // throws if not initialized
@@ -637,7 +644,7 @@ return {
 </Steps>
 
 <Note>
-runtime-store の識別には `pluginId` を優先してください。低レベルの `key` 形式は、1 つのプラグインが意図的に複数のランタイムスロットを必要とするまれなケース向けです。
+runtime-store の識別には `pluginId` を優先してください。低レベルの `key` 形式は、1 つの Plugin が意図的に複数のランタイムスロットを必要とするまれなケース向けです。
 </Note>
 
 ## その他のトップレベル `api` フィールド
@@ -654,20 +661,20 @@ runtime-store の識別には `pluginId` を優先してください。低レベ
   現在の config スナップショット（利用可能な場合はアクティブなインメモリランタイムスナップショット）。
 </ParamField>
 <ParamField path="api.pluginConfig" type="Record<string, unknown>">
-  `plugins.entries.<id>.config` からのプラグイン固有の config。
+  `plugins.entries.<id>.config` からの Plugin 固有の config。
 </ParamField>
 <ParamField path="api.logger" type="PluginLogger">
   スコープ付き logger（`debug`、`info`、`warn`、`error`）。
 </ParamField>
 <ParamField path="api.registrationMode" type="PluginRegistrationMode">
-  現在の読み込みモード。`"setup-runtime"` は、完全な entry の前にある軽量な起動/セットアップ期間です。
+  現在の読み込みモード。`"setup-runtime"` は、完全なエントリ起動前の軽量な startup/setup ウィンドウです。
 </ParamField>
 <ParamField path="api.resolvePath(input)" type="(string) => string">
-  プラグインルートからの相対パスを解決します。
+  Plugin ルートからの相対パスを解決します。
 </ParamField>
 
 ## 関連
 
-- [プラグイン内部](/ja-JP/plugins/architecture) — capability モデルと registry
+- [Plugin 内部](/ja-JP/plugins/architecture) — capability モデルと registry
 - [SDK エントリポイント](/ja-JP/plugins/sdk-entrypoints) — `definePluginEntry` オプション
-- [SDK 概要](/ja-JP/plugins/sdk-overview) — subpath リファレンス
+- [SDK 概要](/ja-JP/plugins/sdk-overview) — サブパスリファレンス
