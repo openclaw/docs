@@ -11,6 +11,7 @@ x-i18n:
     source_hash: f53af21c746cdd44c71485cbad669f4a01a6e5be956675c73831e7b5f15df8c4
     source_path: providers/senseaudio.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 SenseAudio می‌تواند پیوست‌های صوتی و یادداشت‌های صوتی ورودی را از طریق خط لوله مشترک `tools.media.audio` در OpenClaw رونویسی کند. OpenClaw صوت چندبخشی را به نقطه پایانی رونویسی سازگار با OpenAI ارسال می‌کند و متن برگشتی را به‌صورت `{{Transcript}}` به‌همراه یک بلوک `[Audio]` تزریق می‌کند.

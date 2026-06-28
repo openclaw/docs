@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 1b44eda85f3a3714d7d360d04fdd2c99a692fa6491f12e73847c5f08d702a62c
     source_path: install/migrating-claude.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw وضعیت محلی Claude را از طریق provider مهاجرت Claude که به‌صورت همراه ارائه شده است، وارد می‌کند. این provider پیش از تغییر وضعیت، هر مورد را پیش‌نمایش می‌کند، اسرار را در طرح‌ها و گزارش‌ها بازنویسی محرمانه می‌کند، و پیش از اعمال، یک پشتیبان تاییدشده ایجاد می‌کند.

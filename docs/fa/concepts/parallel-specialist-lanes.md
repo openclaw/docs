@@ -14,6 +14,7 @@ x-i18n:
     source_hash: 8721056fbe08822ac92d4bc14c8c2b0977e93eaa58c2849f83b3c0f310992f93
     source_path: concepts/parallel-specialist-lanes.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 مسیرهای تخصصی موازی به یک Gateway اجازه می‌دهند چت‌ها یا اتاق‌های مختلف را به

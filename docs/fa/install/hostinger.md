@@ -12,6 +12,7 @@ x-i18n:
     source_hash: d9d221f54d6cd1697a48615c09616ad86968937941899ea7018622302e6ceb53
     source_path: install/hostinger.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw Gateway پایدار را روی [Hostinger](https://www.hostinger.com/openclaw) از طریق استقرار مدیریت‌شده **۱-کلیکی** یا نصب روی **VPS** اجرا کنید.

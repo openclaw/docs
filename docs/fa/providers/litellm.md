@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 26b5150cfca92c9cd425c864c711efb3ab62ef94377b9d1e5d6476b07bf4c800
     source_path: providers/litellm.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 [LiteLLM](https://litellm.ai) یک Gateway متن‌باز برای LLM است که یک API یکپارچه برای بیش از ۱۰۰ ارائه‌دهندهٔ مدل فراهم می‌کند. OpenClaw را از طریق LiteLLM مسیریابی کنید تا ردیابی هزینهٔ متمرکز، ثبت گزارش، و انعطاف‌پذیری برای جابه‌جایی backendها بدون تغییر config OpenClaw را داشته باشید.

@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 404b2e47982f7efb9a8bb015ac5d7bd8a06f0a41d966e620c9826735abf7f0e3
     source_path: tools/lobster.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Lobster یک پوستهٔ گردش‌کار است که به OpenClaw اجازه می‌دهد توالی‌های چندمرحله‌ای ابزار را به‌عنوان یک عملیات واحد و قطعی، با نقاط بازرسی تأیید صریح اجرا کند.

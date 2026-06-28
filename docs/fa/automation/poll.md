@@ -8,6 +8,7 @@ x-i18n:
     source_hash: a277212ed680b7aeb9153d003bc084d2d0c918dc53f2f469c72f7fe5a881cfae
     source_path: automation/poll.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 این صفحه به [ابزار پیام](/fa/cli/message) منتقل شده است. برای مستندات نظرسنجی به [ابزار پیام](/fa/cli/message) مراجعه کنید.

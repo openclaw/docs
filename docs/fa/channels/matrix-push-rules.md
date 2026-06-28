@@ -11,6 +11,7 @@ x-i18n:
     source_hash: e2f037a50a85b350163c74cf6b9cce335ecaaa5cccc762124122ad6d0321a1fa
     source_path: channels/matrix-push-rules.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 وقتی `channels.matrix.streaming` برابر `"quiet"` باشد، OpenClaw یک رویداد پیش‌نمایش واحد را درجا ویرایش می‌کند و ویرایش نهایی‌شده را با یک پرچم محتوای سفارشی علامت‌گذاری می‌کند. کلاینت‌های Matrix فقط زمانی برای ویرایش نهایی اعلان می‌فرستند که یک قانون push مخصوص هر کاربر با آن پرچم مطابقت داشته باشد. این صفحه برای اپراتورهایی است که Matrix را خودشان میزبانی می‌کنند و می‌خواهند آن قانون را برای هر حساب گیرنده نصب کنند.

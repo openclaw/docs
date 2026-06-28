@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 3745783e57c15e75caf28491c6693c64fea018593662a43268e299ed42c3d574
     source_path: plugins/reference/document-extract.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Plugin استخراج سند

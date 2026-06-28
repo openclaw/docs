@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 546b69242fc4674e3d27e79e4c7b5cfecb83bcb17e8edb2a4b62f1a7498fb84f
     source_path: security/incident-response.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 ## 1. تشخیص و تریاژ

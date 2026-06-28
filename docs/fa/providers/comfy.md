@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 41dda4be24d5b2c283fa499a345cf9f38747ec19b4010163ceffd998307ca086
     source_path: providers/comfy.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw یک Plugin همراه با نام `comfy` برای اجرای ComfyUI مبتنی بر گردش کار ارائه می‌کند. این Plugin کاملاً مبتنی بر گردش کار است، بنابراین OpenClaw تلاش نمی‌کند کنترل‌های عمومی `size`، `aspectRatio`، `resolution`، `durationSeconds` یا کنترل‌های سبک TTS را به گراف شما نگاشت کند.

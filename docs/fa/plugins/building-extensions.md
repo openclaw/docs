@@ -10,6 +10,7 @@ x-i18n:
     source_hash: d687ccddfe7dcadf8bdd0fc903bf8a5da112902a8d23086b04da25df752facaf
     source_path: plugins/building-extensions.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 این صفحه به [ساخت Plugin‌ها](/fa/plugins/building-plugins) منتقل شده است.

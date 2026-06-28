@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7532c672f7e829b851d175d93354fc586baecea4af5f2555f57908780cedfd02
     source_path: tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 در چیدمان رایج میزبانِ جداگانه، OpenClaw Gateway داخل WSL2 اجرا می‌شود، Chrome روی Windows اجرا می‌شود، و کنترل مرورگر باید از مرز WSL2 و Windows عبور کند. الگوی خرابی لایه‌ای از [issue #39369](https://github.com/openclaw/openclaw/issues/39369) یعنی چند مشکل مستقل می‌توانند هم‌زمان ظاهر شوند، که باعث می‌شود ابتدا لایه‌ی اشتباه خراب به نظر برسد.

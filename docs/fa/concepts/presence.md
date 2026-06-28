@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 6ab76e81fc1842c747b0a33da8cf9874e3537c5ab023450ee1a6a314453e7263
     source_path: concepts/presence.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 «presence» در OpenClaw نمایی سبک و با بهترین تلاش از موارد زیر است:

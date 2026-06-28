@@ -11,6 +11,7 @@ x-i18n:
     source_hash: b9ce17ca78bbe9836edd4643a262833e52cceb27f441d5922c036777e47a6f74
     source_path: cli/webhooks.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # `openclaw webhooks`

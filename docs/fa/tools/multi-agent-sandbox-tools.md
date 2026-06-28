@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 8d11af55e30996a89e665b258604108a93f4c4271fbe4edfd1caf54864e40f01
     source_path: tools/multi-agent-sandbox-tools.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 هر عامل در یک چیدمان چندعامله می‌تواند Sandbox و سیاست ابزار سراسری را بازنویسی کند. این صفحه پیکربندی به‌ازای هر عامل، قواعد تقدم، و نمونه‌ها را پوشش می‌دهد.

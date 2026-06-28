@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 6f05e58467149f00a531f2e50fc196babdd165cb71bf6ec97144559ee8657b7b
     source_path: plugins/reference/oc-path.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Plugin مسیر Oc

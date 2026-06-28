@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 461c9e3e52db968fc98b058c70070585f272ad27024392a6af0ce3d2f0237635
     source_path: plugins/reference/memory-wiki.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Plugin ویکی حافظه

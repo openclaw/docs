@@ -11,6 +11,7 @@ x-i18n:
     source_hash: d77af5c7281a4abafc184e426b1c37205a6d06a196b50353c1abbf67cc93bb97
     source_path: concepts/memory-honcho.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 [Honcho](https://honcho.dev) حافظه بومیِ هوش مصنوعی را به OpenClaw اضافه می‌کند. این ابزار مکالمه‌ها را در یک سرویس اختصاصی ماندگار می‌کند و به‌مرور زمان مدل‌های کاربر و agent را می‌سازد، تا agent شما زمینه بین‌نشستی‌ای داشته باشد که فراتر از فایل‌های Markdown در workspace است.

@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7c6d836492368c470468547950d3765a64187694852222a5a1f0ae4185569abe
     source_path: concepts/qa-matrix.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 مسیر QA ماتریکس، Plugin همراه `@openclaw/matrix` را در برابر یک homeserver موقت Tuwunel در Docker، با حساب‌های موقت driver، SUT و observer به‌همراه اتاق‌های seedشده اجرا می‌کند. این پوشش زنده و واقعیِ transport برای Matrix است.

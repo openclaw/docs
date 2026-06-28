@@ -11,6 +11,7 @@ x-i18n:
     source_hash: e6a01c20ac6b85a32167fd1d897368ee0ebc6997cbc95a25f831ea7dd2e623c9
     source_path: install/docker-vm-runtime.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 مراحل runtime مشترک برای نصب‌های Docker مبتنی بر VM مانند GCP، Hetzner و ارائه‌دهندگان VPS مشابه.

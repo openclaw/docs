@@ -11,6 +11,7 @@ x-i18n:
     source_hash: e4a4aba32fb44905d079bf2a22e582a3affbe9809eac9af237ce3e48da72b42c
     source_path: cli/reset.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # `openclaw reset`
