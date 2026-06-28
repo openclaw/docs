@@ -2,12 +2,12 @@
 read_when:
     - Segnalare un problema di sicurezza di ClawHub
     - Comprendere la divulgazione delle vulnerabilità di ClawHub
-    - Distinguere i problemi della piattaforma ClawHub dai problemi di Skills o Plugin di terze parti
+    - Distinguere i problemi della piattaforma ClawHub dai problemi di skill o plugin di terze parti
 sidebarTitle: Security
 summary: Come segnalare problemi di sicurezza di ClawHub e quando le vulnerabilità vengono divulgate pubblicamente.
 title: Sicurezza
 x-i18n:
-    generated_at: "2026-06-28T05:07:48Z"
+    generated_at: "2026-06-28T06:02:44Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -21,38 +21,37 @@ x-i18n:
 I problemi di sicurezza di ClawHub possono essere segnalati tramite GitHub Security Advisories per
 `openclaw/clawhub`.
 
-Usa GitHub Security Advisories per le vulnerabilità in ClawHub stesso. Le buone
-segnalazioni per gli advisory di ClawHub includono bug in:
+Usa GitHub Security Advisories per le vulnerabilità in ClawHub stesso. Buone
+segnalazioni di advisory ClawHub includono bug in:
 
 - il sito web, l'API o la CLI di ClawHub
 - pubblicazione nel registro, download, installazioni o integrità degli artefatti
 - autenticazione, autorizzazione o token API
 - scansione, moderazione o gestione delle segnalazioni
 
-Non usare gli advisory di ClawHub per vulnerabilità nel codice sorgente di una skill o
-di un plugin di terze parti. Segnalale direttamente all'editore o al repository
-sorgente collegato dalla scheda di ClawHub.
+Non usare gli advisory di ClawHub per vulnerabilità nel codice sorgente proprio di una skill o di un
+Plugin di terze parti. Segnalale direttamente all'editore o al repository sorgente
+collegato dalla scheda ClawHub.
 
 ## Divulgazione delle vulnerabilità
 
 Poiché ClawHub è un'applicazione cloud ospitata, le vulnerabilità del servizio ClawHub
-non vengono divulgate pubblicamente per impostazione predefinita. Vengono divulgate
-pubblicamente quando esistono prove di un impatto reale sugli utenti o quando gli utenti
-devono intraprendere un'azione.
+non vengono divulgate pubblicamente per impostazione predefinita. Vengono divulgate pubblicamente quando esistono
+prove di un impatto reale sugli utenti o quando gli utenti devono intervenire.
 
 Esempi di impatto reale sugli utenti includono sfruttamento confermato, esposizione di dati
-utente o segreti, contenuti malevoli che raggiungono gli utenti a causa di un errore della piattaforma,
-o qualsiasi problema che richieda agli utenti di ruotare le credenziali, aggiornare il software locale o
+utente o segreti, contenuti dannosi che raggiungono gli utenti a causa di un errore della piattaforma,
+o qualsiasi problema che richieda agli utenti di ruotare le credenziali, aggiornare software locale o
 intraprendere altre azioni protettive.
 
 Le vulnerabilità nel software installato dagli utenti vengono divulgate pubblicamente, come
-pacchetti CLI di ClawHub, binari, librerie o altri artefatti di rilascio che gli utenti
+pacchetti CLI, binari, librerie o altri artefatti di rilascio di ClawHub che gli utenti
 devono aggiornare localmente.
 
 ## Pagine correlate
 
-Per etichette di audit al momento dell'installazione, livelli di rischio, risultati e interpretazione, consulta
+Per etichette di audit in fase di installazione, livelli di rischio, risultati e interpretazione, vedi
 [Audit di sicurezza](/it/clawhub/security-audits).
 
-Per segnalazioni del marketplace, blocchi di moderazione, schede nascoste, ban e stato
-dell'account, consulta [Moderazione e sicurezza dell'account](/it/clawhub/moderation).
+Per segnalazioni del marketplace, sospensioni di moderazione, schede nascoste, ban e stato
+dell'account, vedi [Moderazione e sicurezza dell'account](/it/clawhub/moderation).

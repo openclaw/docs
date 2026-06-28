@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Rivendicare un'organizzazione, un brand, un ambito di pacchetto, un handle del proprietario, uno slug di skill o uno spazio dei nomi di pacchetto
+    - Rivendicazione di un'organizzazione, un brand, un ambito di pacchetto, un handle proprietario, uno slug di skill o uno spazio dei nomi di pacchetto
     - Risoluzione di uno spazio dei nomi già rivendicato o riservato
     - Decidere se usare una segnalazione, un ricorso o una rivendicazione di namespace
 sidebarTitle: Org and Namespace Claims
 summary: Come richiedere una revisione ClawHub per controversie sulla proprietà di organizzazione, brand, handle del proprietario, ambito del pacchetto, slug della skill o namespace.
 title: Rivendicazioni di organizzazione e namespace
 x-i18n:
-    generated_at: "2026-06-28T05:07:30Z"
+    generated_at: "2026-06-28T06:01:41Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -16,45 +16,45 @@ x-i18n:
     workflow: 16
 ---
 
-# Rivendicazioni di organizzazioni e namespace
+# Rivendicazioni di organizzazioni e spazi dei nomi
 
-ClawHub usa handle dei proprietari, handle delle organizzazioni, slug di skill, nomi dei pacchetti Plugin e
-ambiti dei pacchetti come namespace pubblici. Se un namespace sembra appartenere a un
-progetto reale, brand, ecosistema di pacchetti o organizzazione, ma è già
+ClawHub usa handle proprietario, handle dell'organizzazione, slug di skill, nomi di pacchetti Plugin e
+ambiti dei pacchetti come spazi dei nomi pubblici. Se uno spazio dei nomi sembra appartenere a un
+progetto reale, a un marchio, a un ecosistema di pacchetti o a un'organizzazione ma è già
 rivendicato, riservato, fuorviante o contestato su ClawHub, chiedi allo staff di esaminarlo
 con il
-[modulo issue per rivendicazioni di organizzazione / namespace](https://github.com/openclaw/clawhub/issues/new?template=org-namespace-claim.yml).
+[modulo issue Rivendicazione di organizzazione / spazio dei nomi](https://github.com/openclaw/clawhub/issues/new?template=org-namespace-claim.yml).
 
-Usa questo percorso per revisioni pubbliche e non sensibili della proprietà. Non usare le
-segnalazioni nel prodotto o il modulo di ricorso dell'account per le rivendicazioni di namespace.
+Usa questo percorso per revisioni pubbliche e non sensibili della proprietà. Non usare le segnalazioni
+nel prodotto o il modulo di ricorso dell'account per le rivendicazioni di spazi dei nomi.
 
 ## Quando aprire una rivendicazione
 
-Apri una rivendicazione di namespace quando ritieni che lo staff di ClawHub debba verificare se un
-namespace debba essere riservato, trasferito, rinominato, nascosto, messo in quarantena, aliased
-o altrimenti modificato a causa della proprietà nel mondo reale.
+Apri una rivendicazione di spazio dei nomi quando ritieni che lo staff di ClawHub debba verificare se uno
+spazio dei nomi debba essere riservato, trasferito, rinominato, nascosto, messo in quarantena, associato a un alias
+o altrimenti modificato a causa della proprietà reale.
 
 Gli esempi includono:
 
-- un handle di organizzazione che corrisponde alla tua organizzazione GitHub, al tuo progetto, alla tua azienda o community
+- un handle dell'organizzazione che corrisponde alla tua organizzazione GitHub, al tuo progetto, alla tua azienda o alla tua community
 - un ambito di pacchetto come `@example-org/*` che dovrebbe pubblicare solo sotto il
   proprietario ClawHub corrispondente
 - uno slug di skill o un nome di pacchetto Plugin che sembra impersonare un progetto
-- una controversia su brand, marchio, rinomina di progetto o cronologia del pacchetto
+- una controversia su un marchio, un marchio registrato, la ridenominazione di un progetto o la cronologia di un pacchetto
 - un proprietario eliminato, inattivo o irraggiungibile che blocca il legittimo proprietario
-  del namespace
+  dello spazio dei nomi
 
-Se la voce è non sicura, dannosa o fuorviante oltre alla disputa sulla proprietà,
-segui anche le linee guida pertinenti su moderazione o sicurezza. Il modulo di rivendicazione del namespace
-serve per la revisione della proprietà, non per la divulgazione urgente di vulnerabilità.
+Se la voce è non sicura, dannosa o fuorviante oltre alla controversia sulla proprietà,
+segui anche le linee guida di moderazione o sicurezza pertinenti. Il modulo di rivendicazione dello spazio dei nomi
+serve per la revisione della proprietà, non per la divulgazione di emergenza di vulnerabilità.
 
 ## Prima di inviare
 
-Per prima cosa conferma che stai pubblicando con il proprietario che corrisponde al namespace.
+Verifica prima di pubblicare con il proprietario che corrisponde allo spazio dei nomi.
 Per i pacchetti Plugin, i nomi con ambito come `@example-org/example-plugin` devono essere
 pubblicati come proprietario `example-org` corrispondente.
 
-Se puoi gestire il proprietario attuale, correggi direttamente il namespace pubblicando,
+Se puoi gestire il proprietario attuale, correggi direttamente lo spazio dei nomi pubblicando,
 rinominando, trasferendo, nascondendo o eliminando la risorsa interessata. Usa una rivendicazione
 quando non puoi gestire il proprietario attuale o quando lo staff deve risolvere una
 controversia.
@@ -63,41 +63,41 @@ controversia.
 
 Usa prove pubbliche e non sensibili. Le prove utili includono:
 
-- cronologia di organizzazione GitHub, repository, release o manutentori
-- documentazione ufficiale del progetto che nomina il namespace
+- cronologia di organizzazioni GitHub, repository, release o maintainer
+- documentazione ufficiale del progetto che nomina lo spazio dei nomi
 - prova del dominio o del dominio email ufficiale
 - controllo dell'ambito su npm, PyPI, crates.io o altri registri di pacchetti
-- prove di proprietà di marchio, brand o progetto che sia sicuro discutere
+- prove di proprietà del marchio registrato, del marchio o del progetto che sia sicuro discutere
   pubblicamente
-- cronologia del repository sorgente, cronologia del pacchetto o avvisi pubblici di rinomina
+- cronologia del repository sorgente, cronologia del pacchetto o avvisi pubblici di ridenominazione
 - link al proprietario, alla skill, al Plugin, al pacchetto o all'issue ClawHub contestati
 
-Spiega che cosa dimostra ciascun link. Lo staff dovrebbe poter comprendere la
-relazione senza bisogno di credenziali private o segreti.
+Spiega cosa dimostra ogni link. Lo staff deve poter comprendere la
+relazione senza avere bisogno di credenziali o segreti privati.
 
 ## Cosa non includere
 
-Non inserire segreti o prove private in un'issue GitHub pubblica. Non includere:
+Non inserire segreti o prove private in un'issue pubblica di GitHub. Non includere:
 
 - token API, chiavi di firma o credenziali
-- token di challenge DNS
+- token di verifica DNS
 - file legali o contratti privati
 - documenti di identità personali
-- email private, segnalazioni di sicurezza private o dati cliente riservati
+- email private, segnalazioni di sicurezza private o dati riservati dei clienti
 
 Il modulo di rivendicazione chiede se le prove sensibili richiedono un canale privato con lo staff.
 Usa quell'opzione invece di pubblicare materiale sensibile pubblicamente.
 
-## Esiti possibili
+## Possibili esiti
 
-A seconda delle prove e del rischio, lo staff di ClawHub può riservare un namespace,
+A seconda delle prove e del rischio, lo staff di ClawHub può riservare uno spazio dei nomi,
 trasferire la proprietà, rinominare una risorsa, nascondere o mettere in quarantena una voce esistente,
-aggiungere un alias o reindirizzamento, chiedere ulteriori prove o rifiutare la richiesta.
+aggiungere un alias o un reindirizzamento, chiedere ulteriori prove o rifiutare la richiesta.
 
-La revisione del namespace non garantisce che ogni nome corrispondente venga trasferito.
+La revisione dello spazio dei nomi non garantisce che ogni nome corrispondente venga trasferito.
 Lo staff valuta le prove pubbliche, l'uso esistente, il rischio per la sicurezza e l'impatto sugli utenti.
 
-## Documentazione correlata
+## Documenti correlati
 
 - [Pubblicazione](/it/clawhub/publishing)
 - [Risoluzione dei problemi](/it/clawhub/troubleshooting#publish-fails-because-a-namespace-is-claimed-or-reserved)

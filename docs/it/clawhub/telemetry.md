@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Lavorando sui controlli di telemetria / privacy
+    - Lavoro sui controlli di telemetria / privacy
     - Domande su quali dati vengono raccolti
-summary: Installa la telemetria raccolta dalla CLI di ClawHub e come disattivarla.
+summary: Telemetria di installazione raccolta dalla CLI di ClawHub e come disattivarla.
 x-i18n:
-    generated_at: "2026-06-28T05:07:50Z"
+    generated_at: "2026-06-28T06:03:12Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -27,18 +27,18 @@ La telemetria viene inviata solo quando:
 
 Se non hai effettuato l'accesso, non viene segnalato nulla.
 
-## Che cosa raccogliamo
+## Cosa raccogliamo
 
-A ogni `clawhub install` segnalato, la CLI invia un singolo evento di installazione best-effort.
+A ogni `clawhub install` segnalato, la CLI invia un evento di installazione best-effort.
 
 L'evento include:
 
 - `slug`: lo slug della skill installata.
 - `version`: la versione installata, quando nota.
 
-### Che cosa _non_ raccogliamo
+### Cosa _non_ raccogliamo
 
-- Nessun percorso di cartelle o identificatore derivato da cartelle.
+- Nessun percorso di cartella o identificatore derivato da cartelle.
 - Nessun contenuto dei file.
 - Nessun log per esecuzione, prompt o altro output della CLI.
 
@@ -47,12 +47,12 @@ L'evento include:
 ClawHub mantiene contatori aggregati per skill:
 
 - `installsAllTime`: utenti unici che hanno segnalato almeno un'installazione CLI per la skill.
-- `installsCurrent`: utenti unici che hanno segnalato un'installazione e non hanno eliminato la propria
+- `installsCurrent`: utenti unici che hanno segnalato un'installazione e non hanno eliminato la loro
   telemetria.
 
 ## Trasparenza + controlli utente
 
-Tutti vedono solo **contatori di installazioni aggregati**.
+Tutti vedono solo **contatori aggregati delle installazioni**.
 
 L'eliminazione del tuo account elimina anche i tuoi dati di telemetria.
 

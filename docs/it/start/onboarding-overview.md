@@ -12,6 +12,7 @@ x-i18n:
     source_hash: f9b375b9090250992b9deead25ae6502592cb63c9774204782b2d4f69d8f3395
     source_path: start/onboarding-overview.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw offre due percorsi di configurazione iniziale. Entrambi configurano l'autenticazione, il Gateway e

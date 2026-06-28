@@ -10,6 +10,7 @@ x-i18n:
     source_hash: e4b3b2d074cc8d3c19223dbb0c306c6861717d0f35e638e3aab04b03647fd248
     source_path: channels/nextcloud-talk.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Status: Plugin incluso (bot Webhook). Sono supportati messaggi diretti, stanze, reazioni e messaggi markdown.

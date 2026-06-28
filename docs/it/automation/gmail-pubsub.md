@@ -8,6 +8,7 @@ x-i18n:
     source_hash: 4462fb58fa73ac3eb3d8d2994760b96424dcad3f1543e8ff10222936f6c54caf
     source_path: automation/gmail-pubsub.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 Questa pagina è stata spostata in [Task pianificati](/it/automation/cron-jobs#gmail-pubsub-integration). Consulta [Task pianificati](/it/automation/cron-jobs#gmail-pubsub-integration) per la documentazione di Gmail PubSub.

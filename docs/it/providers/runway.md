@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 51980217868c6d2f168f897106f81ea38dfcfde5265b14e394d4e232324a46b7
     source_path: providers/runway.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw include un provider `runway` in bundle per la generazione video ospitata. Il Plugin è abilitato per impostazione predefinita e registra il provider `runway` rispetto al contratto `videoGenerationProviders`.

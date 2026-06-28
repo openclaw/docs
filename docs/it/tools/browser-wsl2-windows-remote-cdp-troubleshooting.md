@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7532c672f7e829b851d175d93354fc586baecea4af5f2555f57908780cedfd02
     source_path: tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Nella configurazione comune con host separati, OpenClaw Gateway viene eseguito dentro WSL2, Chrome viene eseguito su Windows e il controllo del browser deve attraversare il confine tra WSL2 e Windows. Il modello di errore stratificato da [issue #39369](https://github.com/openclaw/openclaw/issues/39369) significa che più problemi indipendenti possono presentarsi contemporaneamente, facendo sembrare guasto per primo il livello sbagliato.

@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 05892ee8f0dc880f68f7cf024de9452b8d999ff1af3c7ca9850fb4f2d732af0c
     source_path: gateway/bonjour.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw può usare Bonjour (mDNS / DNS-SD) per scoprire un Gateway attivo (endpoint WebSocket).

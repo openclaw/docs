@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 4985a57fcff1fc921ef1237f7cf7fd72c0498de11008aaa958ea04893753b381
     source_path: refactor/access.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Il piano di pulizia dell'accesso ai canali ora si trova in [Piano di eliminazione del core di ingresso](/it/refactor/ingress-core).

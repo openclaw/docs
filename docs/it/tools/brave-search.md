@@ -11,6 +11,7 @@ x-i18n:
     source_hash: d2bff7589ddb54d002853898c6fc37e613fd32b0fa69cb0d712d5955973efb39
     source_path: tools/brave-search.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw supporta Brave Search API come provider `web_search`.

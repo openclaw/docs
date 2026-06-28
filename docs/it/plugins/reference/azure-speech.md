@@ -10,6 +10,7 @@ x-i18n:
     source_hash: fdcf7c9166d90a92362478ebc361a2917b9e29c0a7dfdcfa86d34003647a8034
     source_path: plugins/reference/azure-speech.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Plugin Azure Speech

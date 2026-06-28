@@ -13,6 +13,7 @@ x-i18n:
     source_hash: 6102649b381b3b1ecd6f52e1cf518fc36147fe143ebc8fd4be5f44ab26cb3b4d
     source_path: install/hetzner.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 ## Obiettivo

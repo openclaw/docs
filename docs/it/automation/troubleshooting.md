@@ -8,6 +8,7 @@ x-i18n:
     source_hash: e7784858f6d2594a1d6019435b2a5a1647e12f5de6329198db9539e325f73737
     source_path: automation/troubleshooting.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 Questa pagina è stata spostata in [Attività pianificate](/it/automation/cron-jobs#troubleshooting). Consulta [Attività pianificate](/it/automation/cron-jobs#troubleshooting) per la documentazione sulla risoluzione dei problemi.

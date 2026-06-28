@@ -4,7 +4,7 @@ read_when:
     - Un pacchetto non può essere installato, pubblicato o aggiornato
 summary: Risoluzione dei problemi di accesso, installazione, pubblicazione, aggiornamento e API di ClawHub.
 x-i18n:
-    generated_at: "2026-06-28T05:07:56Z"
+    generated_at: "2026-06-28T06:03:13Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -15,12 +15,12 @@ x-i18n:
 
 # Risoluzione dei problemi
 
-## `clawhub login` apre un browser ma non si completa mai
+## `clawhub login` apre un browser ma non completa mai l'operazione
 
 La CLI avvia un server di callback locale di breve durata durante l'accesso tramite browser.
 
 - Assicurati che il browser possa raggiungere `http://127.0.0.1:<port>/callback`.
-- Controlla le regole di firewall locale, VPN e proxy se la callback non arriva mai.
+- Controlla le regole di firewall locale, VPN e proxy se il callback non arriva mai.
 - Negli ambienti headless, crea un token API nell'interfaccia web di ClawHub ed esegui:
 
 ```bash
@@ -36,14 +36,14 @@ clawhub login --token clh_...
 
 ## La ricerca o l'installazione restituisce `Rate limit exceeded` (429)
 
-Leggi le informazioni di riprova nella risposta:
+Leggi le informazioni sul nuovo tentativo nella risposta:
 
 - `Retry-After`: secondi da attendere prima di riprovare.
 - `RateLimit-Limit`: il limite applicato a questa richiesta.
 - `RateLimit-Remaining`: il budget residuo esatto quando l'header è presente. Su `429`, è `0`.
 - `RateLimit-Reset` o `X-RateLimit-Reset`: tempistica di reimpostazione.
 
-Se molti utenti condividono un unico IP di uscita, i limiti IP anonimi possono essere raggiunti anche quando ogni
+Se molti utenti condividono un unico IP di uscita, i limiti per IP anonimi possono essere raggiunti anche quando ogni
 persona invia solo poche richieste. Accedi dove possibile e riprova dopo il
 ritardo indicato.
 
@@ -59,69 +59,69 @@ clawhub search "my query"
 I nomi supportati includono `HTTPS_PROXY`, `HTTP_PROXY`, `https_proxy` e
 `http_proxy`.
 
-## Una skill non compare nella ricerca
+## Una skill non appare nella ricerca
 
-- Controlla lo slug esatto o la pagina del proprietario, se la conosci.
-- Verifica che la release sia pubblica e non bloccata da scansione o moderazione.
+- Controlla lo slug esatto o la pagina del proprietario se la conosci.
+- Verifica che la release sia pubblica e non trattenuta da scansione o moderazione.
 - Se possiedi la skill, accedi e ispezionala:
 
 ```bash
 clawhub inspect @openclaw/demo
 ```
 
-La diagnostica visibile al proprietario può spiegare lo stato di scansione, blocco del caricamento o moderazione.
+La diagnostica visibile al proprietario può spiegare lo stato di scansione, blocco di caricamento o moderazione.
 
 ## La pubblicazione non riesce perché mancano metadati obbligatori
 
-Per le skill, controlla il frontmatter di `SKILL.md`. Le variabili di ambiente e gli
-strumenti obbligatori devono essere dichiarati affinché utenti e scanner possano comprendere il pacchetto.
+Per le skill, controlla il frontmatter di `SKILL.md`. Le variabili d'ambiente e gli
+strumenti obbligatori devono essere dichiarati in modo che utenti e scanner possano comprendere il pacchetto.
 
 Per i plugin, controlla i metadati di compatibilità in `package.json`. Le pubblicazioni di code-plugin
 richiedono campi di compatibilità OpenClaw come `openclaw.compat.pluginApi` e
 `openclaw.build.openclawVersion`.
 
-Visualizza prima in anteprima il payload di pubblicazione:
+Visualizza prima un'anteprima del payload di pubblicazione:
 
 ```bash
 clawhub package publish <source> --family code-plugin --dry-run
 ```
 
-## La pubblicazione non riesce con un errore di proprietario GitHub o sorgente
+## La pubblicazione non riesce con un errore di proprietario GitHub o di origine
 
-ClawHub usa l'identità GitHub e l'attribuzione della sorgente per collegare i pacchetti ai loro
+ClawHub usa l'identità GitHub e l'attribuzione dell'origine per collegare i pacchetti ai rispettivi
 publisher.
 
 - Assicurati di aver effettuato l'accesso con l'account GitHub che possiede o può pubblicare
   il pacchetto.
-- Verifica che l'URL sorgente sia pubblico o accessibile a ClawHub.
-- Per le sorgenti GitHub, usa `owner/repo`, `owner/repo@ref` o un URL GitHub completo.
+- Controlla che l'URL di origine sia pubblico o accessibile a ClawHub.
+- Per le origini GitHub, usa `owner/repo`, `owner/repo@ref` o un URL GitHub completo.
 
 ## La pubblicazione non riesce perché un namespace è rivendicato o riservato
 
-Se una pubblicazione non riesce perché l'handle del proprietario, il namespace dell'organizzazione, lo scope del pacchetto, lo slug della skill
-o il nome del pacchetto è già rivendicato o riservato, verifica innanzitutto che tu stia
+Se una pubblicazione non riesce perché l'handle del proprietario, il namespace dell'organizzazione, l'ambito del pacchetto, lo slug della skill
+o il nome del pacchetto è già rivendicato o riservato, verifica prima che tu stia
 pubblicando con il proprietario corrispondente al namespace. Per i pacchetti plugin,
-i nomi con scope come `@example-org/example-plugin` devono essere pubblicati come proprietario
+i nomi con ambito come `@example-org/example-plugin` devono essere pubblicati come proprietario
 `example-org` corrispondente.
 
-Se ritieni che la tua organizzazione, il tuo progetto o il tuo brand sia il legittimo proprietario del namespace ma
-non riesci a gestire l'attuale proprietario ClawHub, apri una
+Se ritieni che la tua organizzazione, il tuo progetto o il tuo marchio sia il legittimo proprietario del namespace ma
+non puoi gestire l'attuale proprietario ClawHub, apri una
 [segnalazione di rivendicazione organizzazione / namespace](https://github.com/openclaw/clawhub/issues/new?template=org-namespace-claim.yml)
 con prove pubbliche e non sensibili. Consulta
 [Rivendicazioni di organizzazioni e namespace](/it/clawhub/namespace-claims) per indicazioni sulle prove e su cosa
-tenere fuori dalle issue pubbliche.
+escludere dalle issue pubbliche.
 
 ## `sync` dice che non sono state trovate skill
 
-`sync` cerca cartelle che contengono `SKILL.md` o `skill.md`.
+`sync` cerca cartelle contenenti `SKILL.md` o `skill.md`.
 
-Indica le radici che vuoi scansionare:
+Puntalo alle radici che vuoi analizzare:
 
 ```bash
 clawhub sync --root /path/to/skills
 ```
 
-Visualizza prima l'anteprima se non sei sicuro di cosa verrà pubblicato:
+Visualizza prima un'anteprima se non sei sicuro di cosa verrà pubblicato:
 
 ```bash
 clawhub sync --all --dry-run --no-input
@@ -129,7 +129,7 @@ clawhub sync --all --dry-run --no-input
 
 ## `update` rifiuta l'operazione a causa di modifiche locali
 
-I file locali non corrispondono ad alcuna versione conosciuta da ClawHub. Scegli un'opzione:
+I file locali non corrispondono ad alcuna versione conosciuta da ClawHub. Scegline una:
 
 - Mantieni le modifiche locali e salta l'aggiornamento.
 - Sovrascrivi con la versione pubblicata:
@@ -142,7 +142,7 @@ clawhub update @openclaw/demo --force
 
 ## L'installazione di un plugin non riesce in OpenClaw
 
-- Usa una sorgente ClawHub esplicita:
+- Usa un'origine ClawHub esplicita:
 
 ```bash
 openclaw plugins install clawhub:<package>
@@ -154,11 +154,11 @@ openclaw plugins install clawhub:<package>
 - Se il pacchetto è nascosto, trattenuto o bloccato, potrebbe non essere installabile finché
   il proprietario non risolve il problema.
 
-## Le richieste all'API pubblica non riescono
+## Le richieste API pubbliche non riescono
 
-- Rispetta gli header di riprova `429` e metti in cache le risposte pubbliche di elenco/ricerca.
+- Rispetta gli header di nuovo tentativo `429` e memorizza nella cache le risposte pubbliche di elenco/ricerca.
 - Rimanda gli utenti alla scheda ClawHub canonica.
 - Non replicare contenuti nascosti, privati, trattenuti o bloccati dalla moderazione al di fuori della
-  superficie dell'API pubblica.
+  superficie API pubblica.
 
 Consulta [API HTTP](/it/clawhub/http-api) per i dettagli sugli endpoint.

@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 3a51baa7aca31cb34b682983374d4d551ed6ab57ae54a5c63e7d044bffeef756
     source_path: automation/standing-orders.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Gli ordini permanenti concedono al tuo agente **autorità operativa permanente** per programmi definiti. Invece di fornire ogni volta istruzioni per singole attività, definisci programmi con ambito, trigger e regole di escalation chiari, e l'agente esegue autonomamente entro quei confini.
