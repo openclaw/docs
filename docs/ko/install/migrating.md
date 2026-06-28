@@ -12,6 +12,7 @@ x-i18n:
     source_hash: e447e38cf0086603a7b30ee5204e63cc8227ebc7a56add26d06ac2798a23e26f
     source_path: install/migrating.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw는 세 가지 마이그레이션 경로를 지원합니다. 다른 에이전트 시스템에서 가져오기, 기존 설치를 새 머신으로 이동하기, Plugin을 제자리에서 업그레이드하기입니다.

@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 01f2e064891940959acf23c003d7e842386f67ac6c869d0677b802738ac04bdf
     source_path: help/scripts.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 `scripts/` 디렉터리에는 로컬 워크플로와 운영 작업을 위한 헬퍼 스크립트가 포함되어 있습니다.

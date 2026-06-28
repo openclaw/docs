@@ -11,6 +11,7 @@ x-i18n:
     source_hash: d53f06367b63125f04b4b542c322e6e50e1f33153e0fbdd09e7a38772c69a438
     source_path: nodes/troubleshooting.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 상태에는 Node가 표시되지만 Node 도구가 실패할 때 이 페이지를 사용하세요.

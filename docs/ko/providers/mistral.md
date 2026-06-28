@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 94c4caa86d4a3eb873d8b6a1cc639edbad3dd7478f401e2ca53f704de095f829
     source_path: providers/mistral.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw에는 네 가지 계약을 등록하는 번들 Mistral Plugin이 포함되어 있습니다: 채팅 완성, 미디어 이해(Voxtral 일괄 전사), Voice Call용 실시간 STT(Voxtral Realtime), 메모리 임베딩(`mistral-embed`).

@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 2dcf562660fa3d05d22856335a7d2e6e467a432ee6dda5650efd94edde661ba4
     source_path: plugins/reference/browser.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # 브라우저 Plugin

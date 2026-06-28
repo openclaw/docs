@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 3ea07f0ae23076906e2ff0246ac75813572f98cffa50afddb6a6b0af8964c4a9
     source_path: concepts/session-pruning.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 세션 정리는 각 LLM 호출 전에 컨텍스트에서 **오래된 도구 결과**를 잘라냅니다. 일반 대화 텍스트는 다시 쓰지 않고도, 누적된 도구 출력(exec 결과, 파일 읽기, 검색 결과)으로 인한 컨텍스트 비대를 줄입니다.

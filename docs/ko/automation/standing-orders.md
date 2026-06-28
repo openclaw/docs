@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 3a51baa7aca31cb34b682983374d4d551ed6ab57ae54a5c63e7d044bffeef756
     source_path: automation/standing-orders.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 상시 명령은 정의된 프로그램에 대해 에이전트에 **영구 운영 권한**을 부여합니다. 매번 개별 작업 지침을 주는 대신, 명확한 범위, 트리거, 에스컬레이션 규칙이 있는 프로그램을 정의하면 에이전트가 그 경계 안에서 자율적으로 실행합니다.

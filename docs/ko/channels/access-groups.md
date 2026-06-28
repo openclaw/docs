@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 1dba4fc84deb6e0c8c7b17ebc10182aa6e4bc2c821070e33df44f384e285266f
     source_path: channels/access-groups.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 액세스 그룹은 한 번 정의한 뒤 `accessGroup:<name>`으로 채널 허용 목록에서 참조하는 이름 있는 발신자 목록입니다.

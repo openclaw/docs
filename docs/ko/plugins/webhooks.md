@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 9d21d96f680fa24d4a53c1ed5759f800d3cfdc3336789c42c15266edd8ce9e80
     source_path: plugins/webhooks.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Webhooks Plugin은 외부 자동화를 OpenClaw TaskFlow에 바인딩하는 인증된 HTTP 라우트를 추가합니다.

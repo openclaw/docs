@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 8c97bd9c76492b9e7beb0a2623f583a54b5461bebb848fa3ac7e4495322f6456
     source_path: reference/application-modernization-plan.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 ## 목표

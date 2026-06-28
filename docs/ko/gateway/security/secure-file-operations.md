@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 19d5b31ec2f2c7ab1033bdb55a701c60468dfac58142f726ecbc9ac933f68e30
     source_path: gateway/security/secure-file-operations.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw는 보안에 민감한 로컬 파일 작업에 [`@openclaw/fs-safe`](https://github.com/openclaw/fs-safe)를 사용합니다. 여기에는 루트 경계 읽기/쓰기, 원자적 교체, 아카이브 추출, 임시 워크스페이스, JSON 상태, 비밀 파일 처리가 포함됩니다.

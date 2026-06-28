@@ -11,6 +11,7 @@ x-i18n:
     source_hash: e7371231e9795cd899d727b87dfba7a5cae963f1fd1e50226e3fbb7488ef7381
     source_path: security/THREAT-MODEL-ATLAS.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 ## MITRE ATLAS 프레임워크

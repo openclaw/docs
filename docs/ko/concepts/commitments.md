@@ -13,6 +13,7 @@ x-i18n:
     source_hash: 78841d87fe749aa5b04a967218396df1c1a7884c5767b09215c96aee34fa2014
     source_path: concepts/commitments.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 약속은 단기 후속 메모리입니다. 활성화하면 OpenClaw는 대화가 향후 확인할 기회를 만들었음을 알아차리고 나중에 다시 꺼내도록 기억할 수 있습니다.

@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 41dda4be24d5b2c283fa499a345cf9f38747ec19b4010163ceffd998307ca086
     source_path: providers/comfy.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw는 워크플로 기반 ComfyUI 실행을 위한 번들 `comfy` Plugin을 제공합니다. 이 Plugin은 전적으로 워크플로 기반이므로, OpenClaw는 일반적인 `size`, `aspectRatio`, `resolution`, `durationSeconds`, 또는 TTS 스타일 제어를 그래프에 매핑하려고 하지 않습니다.

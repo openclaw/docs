@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 1b2b3e14d69cd0a8629d7c63c907efaba7fc71dbc1453d4bf92830b9b9a8ed7f
     source_path: plugins/reference/volcengine.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Volcengine Plugin

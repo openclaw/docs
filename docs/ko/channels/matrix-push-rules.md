@@ -11,6 +11,7 @@ x-i18n:
     source_hash: e2f037a50a85b350163c74cf6b9cce335ecaaa5cccc762124122ad6d0321a1fa
     source_path: channels/matrix-push-rules.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 `channels.matrix.streaming`이 `"quiet"`인 경우 OpenClaw는 단일 미리 보기 이벤트를 제자리에서 편집하고, 최종 편집에 사용자 지정 콘텐츠 플래그를 표시합니다. Matrix 클라이언트는 사용자별 푸시 규칙이 해당 플래그와 일치할 때만 최종 편집에 대해 알림을 보냅니다. 이 페이지는 Matrix를 자체 호스팅하며 각 수신자 계정에 해당 규칙을 설치하려는 운영자를 위한 것입니다.

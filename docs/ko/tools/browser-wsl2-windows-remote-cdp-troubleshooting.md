@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7532c672f7e829b851d175d93354fc586baecea4af5f2555f57908780cedfd02
     source_path: tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 일반적인 분리 호스트 설정에서는 OpenClaw Gateway가 WSL2 안에서 실행되고, Chrome은 Windows에서 실행되며, 브라우저 제어가 WSL2와 Windows 경계를 넘어야 합니다. [issue #39369](https://github.com/openclaw/openclaw/issues/39369)의 계층적 실패 패턴은 여러 독립적인 문제가 동시에 나타날 수 있음을 의미하며, 이 때문에 먼저 잘못된 계층이 고장 난 것처럼 보일 수 있습니다.

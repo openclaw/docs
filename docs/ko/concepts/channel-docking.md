@@ -12,6 +12,7 @@ x-i18n:
     source_hash: b981cd177ed76194cf18667620a1f9b2f2ba50df42fe203f6f68916971ed6a61
     source_path: concepts/channel-docking.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 채널 도킹은 하나의 OpenClaw 세션에 대한 착신 전환입니다.

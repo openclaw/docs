@@ -13,6 +13,7 @@ x-i18n:
     source_hash: e25f05ca47184068b87f0bf8b7dea1c427f4ed48edde170a74888d586b8a606d
     source_path: start/bootstrapping.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 부트스트래핑은 에이전트 작업 영역을 준비하고 신원 세부 정보를 수집하는 **최초 실행** 절차입니다. 온보딩 후 에이전트가 처음 시작될 때 발생합니다.

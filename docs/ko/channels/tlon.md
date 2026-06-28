@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 1718044541b431ff2437508e7e6659c14206f4aa84ab8b207e0d791dea2a48c5
     source_path: channels/tlon.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Tlon은 Urbit 기반의 탈중앙화 메신저입니다. OpenClaw는 사용자의 Urbit ship에 연결하여

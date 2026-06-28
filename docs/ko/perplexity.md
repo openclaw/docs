@@ -9,6 +9,7 @@ x-i18n:
     source_hash: 1c41e7de5f183075e494182024214e3bbd4a93706de42a4ee6933a0c079d8cd0
     source_path: perplexity.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 이 페이지는 [Perplexity 검색](/ko/tools/perplexity-search)으로 이동했습니다.

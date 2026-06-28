@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 0131c3838ac0240f38e755eb779134d19a935821d90bb2898648b947696be12e
     source_path: cli/daemon.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # `openclaw daemon`

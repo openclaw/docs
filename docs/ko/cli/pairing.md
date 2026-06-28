@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 022018239ab1134b18986be42b8e019f412a1a730a9671f422979909c4a31dc5
     source_path: cli/pairing.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # `openclaw pairing`

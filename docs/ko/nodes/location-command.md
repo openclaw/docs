@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 63ed754bfdda1cf379dcb7ac40817c0b93cc1efe4526512d70258072da4bc8a7
     source_path: nodes/location-command.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 ## 요약

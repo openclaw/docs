@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 8f28962032bc5f6b228de731ae6bd9a22831604b506b7073aeffba19ac22e0e8
     source_path: channels/qa-channel.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 `qa-channel`은 자동화된 OpenClaw QA를 위한 번들 합성 메시지 전송 수단입니다. 프로덕션 채널이 아니며, 상태를 결정적으로 유지하고 완전히 검사 가능하게 하면서 실제 전송 수단에서 사용하는 것과 동일한 채널 Plugin 경계를 실행하기 위해 존재합니다.

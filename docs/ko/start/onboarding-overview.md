@@ -12,6 +12,7 @@ x-i18n:
     source_hash: f9b375b9090250992b9deead25ae6502592cb63c9774204782b2d4f69d8f3395
     source_path: start/onboarding-overview.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw에는 두 가지 온보딩 경로가 있습니다. 둘 다 인증, Gateway, 선택적 채팅 채널을 구성하며, 설정과 상호작용하는 방식만 다릅니다.

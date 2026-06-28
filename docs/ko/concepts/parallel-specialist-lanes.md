@@ -14,6 +14,7 @@ x-i18n:
     source_hash: 8721056fbe08822ac92d4bc14c8c2b0977e93eaa58c2849f83b3c0f310992f93
     source_path: concepts/parallel-specialist-lanes.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 병렬 전문 레인을 사용하면 하나의 Gateway가 여러 채팅이나 방을 서로 다른 에이전트로 라우팅하면서도 사용자 경험을 빠르게 유지할 수 있습니다. 핵심은 병렬성을 단순히 "더 많은 에이전트"가 아니라 희소 자원 설계 문제로 다루는 것입니다.

@@ -1,12 +1,12 @@
 ---
 read_when:
-    - ClawHub 콘텐츠와 관련된 저작권 또는 기타 권리 문제 신고하기
+    - ClawHub 콘텐츠와 관련된 저작권 또는 기타 권리 문제 신고
     - ClawHub 콘텐츠 권리 요청에 응답하기
 sidebarTitle: Content Rights
-summary: ClawHub에 게시된 자료에 대한 저작권 또는 기타 콘텐츠 권리 관련 문제를 제출하는 방법.
+summary: ClawHub에 게시된 자료에 대한 저작권 또는 기타 콘텐츠 권리 관련 우려를 제출하는 방법.
 title: 콘텐츠 권리 요청
 x-i18n:
-    generated_at: "2026-06-28T05:07:00Z"
+    generated_at: "2026-06-28T05:29:13Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -17,20 +17,15 @@ x-i18n:
 
 # 콘텐츠 권리 요청
 
-ClawHub에 게시된 콘텐츠가 귀하의 저작권 또는 기타 권리를 침해한다고 생각하는 경우
-[ClawHub 콘텐츠 권리 요청](https://forms.openclaw.ai/clawhub-content-rights)을 제출하세요.
+ClawHub에 게시된 콘텐츠가 귀하의 저작권 또는 기타 권리를 침해한다고 생각하는 경우 [ClawHub 콘텐츠 권리 요청](https://forms.openclaw.ai/clawhub-content-rights)을 제출하세요.
 
 포함할 내용:
 
 - 하나 이상의 정확한 `https://clawhub.ai/<owner>/skills/<skill>` URL
 - 귀하의 이름, 조직 및 연락처 이메일
 - 권리 관련 우려 사항에 대한 간단한 설명
-- 가능한 경우 뒷받침하는 증거
+- 가능한 경우 증빙 자료
 
-ClawHub 담당자는 요청을 수동으로 검토하며 추가 정보를 얻기 위해 요청자 또는
-게시자에게 연락할 수 있습니다. 상황에 따라 영향을 받은 콘텐츠가 숨겨지거나,
-복원되거나, 변경 없이 유지될 수 있습니다.
+ClawHub 직원은 요청을 수동으로 검토하며, 추가 정보를 위해 요청자 또는 게시자에게 연락할 수 있습니다. 상황에 따라 영향을 받는 콘텐츠가 숨겨지거나 복원되거나 변경되지 않을 수 있습니다.
 
-콘텐츠 권리 문제가 아닌 안전하지 않은 마켓플레이스 콘텐츠의 경우
-[관리 및 계정 안전](/ko/clawhub/moderation)에 설명된 일반 신고 절차를 사용하세요.
-ClawHub 자체의 취약점은 [보안](/ko/clawhub/security)을 참조하세요.
+콘텐츠 권리 문제가 아닌 안전하지 않은 마켓플레이스 콘텐츠의 경우 [Moderation and Account Safety](/ko/clawhub/moderation)에 설명된 일반 신고 절차를 사용하세요. ClawHub 자체의 취약점은 [Security](/ko/clawhub/security)를 참조하세요.

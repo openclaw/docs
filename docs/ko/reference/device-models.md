@@ -11,6 +11,7 @@ x-i18n:
     source_hash: f20e035f787ba7d9bb48d2a18263679d20b295e12ffb263a63c3a0ef72312d34
     source_path: reference/device-models.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 macOS companion 앱은 Apple 모델 식별자(예: `iPad16,6`, `Mac16,6`)를 사람이 읽기 쉬운 이름으로 매핑하여 **Instances** UI에서 친숙한 Apple 디바이스 모델 이름을 표시합니다.

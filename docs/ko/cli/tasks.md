@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 7bbb97690124a8e59ec5e6a517f33166ad449ee6268894ab132ad9cb69dcaa81
     source_path: cli/tasks.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 영속적인 백그라운드 작업과 Task Flow 상태를 검사합니다. 하위 명령이 없으면

@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 404b2e47982f7efb9a8bb015ac5d7bd8a06f0a41d966e620c9826735abf7f0e3
     source_path: tools/lobster.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Lobster는 OpenClaw가 명시적 승인 체크포인트가 있는 단일 결정적 작업으로 다단계 도구 시퀀스를 실행할 수 있게 해주는 워크플로 셸입니다.

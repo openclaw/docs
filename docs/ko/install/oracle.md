@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 9115c83c7a78b78d8b6701b028a2f6e9f08a71f7fff14b7b45f1610b8052c14e
     source_path: install/oracle.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Oracle Cloud의 **Always Free** ARM 티어(최대 4 OCPU, 24GB RAM, 200GB 스토리지)에서 지속 실행되는 OpenClaw Gateway를 무료로 실행합니다.

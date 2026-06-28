@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 8d11af55e30996a89e665b258604108a93f4c4271fbe4edfd1caf54864e40f01
     source_path: tools/multi-agent-sandbox-tools.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 다중 에이전트 설정의 각 에이전트는 전역 샌드박스 및 도구 정책을 재정의할 수 있습니다. 이 페이지에서는 에이전트별 구성, 우선순위 규칙, 예시를 다룹니다.

@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 1b44eda85f3a3714d7d360d04fdd2c99a692fa6491f12e73847c5f08d702a62c
     source_path: install/migrating-claude.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw는 번들로 제공되는 Claude 마이그레이션 공급자를 통해 로컬 Claude 상태를 가져옵니다. 공급자는 상태를 변경하기 전에 모든 항목을 미리 보여 주고, 계획과 보고서에서 비밀 값을 마스킹하며, 적용 전에 검증된 백업을 생성합니다.

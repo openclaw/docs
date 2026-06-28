@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 51980217868c6d2f168f897106f81ea38dfcfde5265b14e394d4e232324a46b7
     source_path: providers/runway.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw는 호스팅 비디오 생성을 위한 번들 `runway` 공급자를 제공합니다. 이 Plugin은 기본적으로 활성화되어 있으며 `videoGenerationProviders` 계약에 대해 `runway` 공급자를 등록합니다.

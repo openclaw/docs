@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 4cda0d96a66d4a6fcf81553d39315ebe01e7ebb4a21bb2994e9a503825bc7fb6
     source_path: reference/credits.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 ## 이름

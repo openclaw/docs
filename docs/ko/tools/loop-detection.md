@@ -13,6 +13,7 @@ x-i18n:
     source_hash: cc261bebc0e3138a98ea8be166edbaf4e133c8f582429c5380fe2954196a6fc5
     source_path: tools/loop-detection.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw에는 반복적인 도구 호출 패턴을 위한 두 가지 협력 가드레일이 있습니다.

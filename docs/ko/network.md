@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7b0ff6c4ee46005aeac1612ea40f1ce3d5824aa507d0842788dbf4bffbaccfcc
     source_path: network.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 이 허브는 OpenClaw가 localhost, LAN, tailnet 전반에서 장치를 연결, 페어링, 보호하는 방식에 대한 핵심 문서로 연결됩니다.

@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 6226af1217e1e8b03b485df99f6375872b487f7040c091f2bb2d85e18dec75d0
     source_path: channels/zalo.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 상태: 실험적입니다. DM이 지원됩니다. 아래 [기능](#capabilities) 섹션은 현재 Marketplace 봇 동작을 반영합니다.

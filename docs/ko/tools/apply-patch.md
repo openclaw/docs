@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 9ff2f8e6ecd55ff1bdc553619ab3d590d0967efe7a9a90a31946ad15fd89a1dc
     source_path: tools/apply-patch.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 구조화된 패치 형식을 사용하여 파일 변경 사항을 적용합니다. 단일 `edit` 호출이 취약할 수 있는 다중 파일

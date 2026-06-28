@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7c6d836492368c470468547950d3765a64187694852222a5a1f0ae4185569abe
     source_path: concepts/qa-matrix.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Matrix QA lane은 Docker의 일회용 Tuwunel homeserver에서 번들된 `@openclaw/matrix` Plugin을 임시 driver, SUT, observer 계정 및 시드된 room과 함께 실행합니다. Matrix에 대한 실제 transport 기반 live coverage입니다.

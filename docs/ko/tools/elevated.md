@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 91aab7c105643d8e5d07d89cd5ab176f0a40cd3d23e2b20b3986cbf76f575d64
     source_path: tools/elevated.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 샌드박스 안에서 에이전트가 실행되면 해당 `exec` 명령은 샌드박스 환경으로 제한됩니다. **권한 상승 모드**를 사용하면 에이전트가 대신 샌드박스를 벗어나 외부에서 명령을 실행할 수 있으며, 승인 게이트를 구성할 수 있습니다.
