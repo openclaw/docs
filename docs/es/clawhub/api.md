@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Crear clientes de API
+    - Creación de clientes de API
     - Agregar endpoints o esquemas
 summary: Descripción general y convenciones de la API REST pública (v1).
 x-i18n:
-    generated_at: "2026-06-28T05:07:03Z"
+    generated_at: "2026-06-28T05:14:39Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -23,14 +23,14 @@ OpenAPI: `/api/v1/openapi.json`
 
 Puedes crear un catálogo, directorio o superficie de búsqueda de terceros sobre las API públicas de lectura de ClawHub. Los metadatos públicos de Skills y los archivos de Skills se publican bajo las reglas de licencia de Skills de ClawHub, mientras que la API en sí tiene límites de tasa y debe consumirse de forma responsable.
 
-Directrices:
+Pautas:
 
 - Usa endpoints públicos de lectura como `GET /api/v1/skills`, `GET /api/v1/search` y `GET /api/v1/skills/{slug}` para listados de catálogo.
-- Almacena en caché las respuestas y respeta `429`, `Retry-After` y los encabezados de límite de tasa en lugar de sondear de forma agresiva.
+- Almacena en caché las respuestas y respeta `429`, `Retry-After` y los encabezados de límite de tasa en lugar de sondear agresivamente.
 - Enlaza de vuelta a la URL canónica de Skills de ClawHub al mostrar listados para que los usuarios puedan inspeccionar el registro de origen del registro.
-- Usa URL de página canónicas con la forma `https://clawhub.ai/<owner>/skills/<slug>`.
-- No des a entender que ClawHub respalda, verifica u opera el sitio de terceros.
-- No repliques contenido oculto, privado o bloqueado por moderación eludiendo filtros de la API pública o límites de autenticación.
+- Usa URL de páginas canónicas con el formato `https://clawhub.ai/<owner>/skills/<slug>`.
+- No insinúes que ClawHub respalda, verifica u opera el sitio de terceros.
+- No reflejes contenido oculto, privado o bloqueado por moderación eludiendo filtros de API pública o límites de autenticación.
 
 ## Autenticación
 
@@ -42,8 +42,8 @@ Directrices:
 Aplicación consciente de la autenticación:
 
 - Solicitudes anónimas: por IP.
-- Solicitudes autenticadas (token Bearer válido): por depósito de usuario.
-- Un token ausente/no válido recurre a la aplicación por IP.
+- Solicitudes autenticadas (token Bearer válido): por bucket de usuario.
+- Token faltante/no válido recurre a aplicación por IP.
 
 - Lectura: 3000/min por IP, 12000/min por clave
 - Escritura: 300/min por IP, 3000/min por clave
@@ -54,10 +54,10 @@ Encabezados: `X-RateLimit-Limit`, `X-RateLimit-Reset`, `RateLimit-Limit`, `RateL
 
 Semántica:
 
-- `X-RateLimit-Reset`: segundos de época Unix (hora absoluta de restablecimiento)
+- `X-RateLimit-Reset`: segundos de época Unix (hora de restablecimiento absoluta)
 - `RateLimit-Reset`: segundos de demora hasta el restablecimiento
 - `X-RateLimit-Remaining` / `RateLimit-Remaining`: presupuesto restante exacto cuando
-  está presente; las solicitudes exitosas fragmentadas lo omiten en lugar de devolver un valor
+  está presente; las solicitudes correctas fragmentadas lo omiten en lugar de devolver un valor
   global aproximado
 - `Retry-After`: segundos de demora que esperar en `429`
 
@@ -77,13 +77,13 @@ retry-after: 34
 Manejo del cliente:
 
 - Prefiere `Retry-After` cuando esté presente.
-- De lo contrario, usa `RateLimit-Reset` o deriva la demora a partir de `X-RateLimit-Reset`.
-- Añade jitter a los reintentos.
+- De lo contrario, usa `RateLimit-Reset` o deriva la demora de `X-RateLimit-Reset`.
+- Agrega jitter a los reintentos.
 
 ## Errores
 
-- Los errores de v1 son texto sin formato (`text/plain; charset=utf-8`), incluidos `400`,
-  `401`, `403`, `404`, `429` y las respuestas de descarga bloqueada.
+- Los errores v1 son texto sin formato (`text/plain; charset=utf-8`), incluidos `400`,
+  `401`, `403`, `404`, `429` y respuestas de descarga bloqueada.
 - Los parámetros de consulta desconocidos se ignoran por compatibilidad.
 - Los parámetros de consulta conocidos con valores no válidos devuelven `400`.
 
@@ -95,9 +95,9 @@ Lectura pública:
   - Filtros opcionales: `highlightedOnly=true`, `nonSuspiciousOnly=true`
   - Alias heredado: `nonSuspicious=true`
 - `GET /api/v1/skills?limit=&cursor=&sort=`
-  - `sort`: `updated` (predeterminado), `recommended` (`default`), `createdAt` (`newest`), `downloads`, `stars` (`rating`), los alias heredados de instalación `installsCurrent`/`installs`/`installsAllTime` se asignan a `downloads`, `trending`
-  - Los valores no válidos de `sort` devuelven `400`
-  - `cursor` se aplica a ordenaciones que no son `trending`
+  - `sort`: `updated` (predeterminado), `recommended` (`default`), `createdAt` (`newest`), `downloads`, `stars` (`rating`), aliases de instalación heredados `installsCurrent`/`installs`/`installsAllTime` se asignan a `downloads`, `trending`
+  - Los valores de `sort` no válidos devuelven `400`
+  - `cursor` se aplica a ordenamientos que no sean `trending`
   - Filtro opcional: `nonSuspiciousOnly=true`
   - Alias heredado: `nonSuspicious=true`
   - Con `nonSuspiciousOnly=true`, las páginas basadas en cursor pueden contener menos de `limit` elementos; usa `nextCursor` para continuar.
@@ -112,14 +112,14 @@ Lectura pública:
 - `GET /api/v1/download?slug=&version=&tag=`
   - Las Skills alojadas devuelven bytes ZIP deterministas.
   - Las Skills actuales respaldadas por GitHub con un análisis `clean` o `suspicious` devuelven un
-    descriptor de transferencia JSON `public-github` en lugar de bytes de ClawHub.
+    descriptor de traspaso JSON `public-github` en lugar de bytes de ClawHub.
 - `GET /api/v1/skills/export?startDate=&endDate=&limit=&cursor=`
   - Las Skills alojadas se exportan como archivos almacenados.
   - Las Skills actuales respaldadas por GitHub con un análisis `clean` o `suspicious` se exportan
-    como descriptores de transferencia `public-github`.
+    como descriptores de traspaso `public-github`.
 - `GET /api/v1/packages?limit=&cursor=&sort=`
   - `sort`: `updated` (predeterminado), `recommended`, `downloads`, alias heredado `installs`
-  - Los valores no válidos de `sort` devuelven `400`
+  - Los valores de `sort` no válidos devuelven `400`
 - `GET /api/v1/plugins?limit=&cursor=&sort=`
   - `sort`: `recommended` (predeterminado), `downloads`, `updated`, alias heredado `installs`
 - `GET /api/v1/plugins/search?q=...`
@@ -131,7 +131,7 @@ Lectura pública:
 
 Autenticación requerida:
 
-- `POST /api/v1/skills` (publicar, se prefiere multipart)
+- `POST /api/v1/skills` (publicación, se prefiere multipart)
 - `DELETE /api/v1/skills/{slug}`
 - `DELETE /api/v1/packages/{name}`
 - `POST /api/v1/skills/{slug}/undelete`
@@ -151,7 +151,7 @@ Autenticación requerida:
 
 Solo administración:
 
-- `POST /api/v1/users/reserve` reserva slugs raíz y marcadores de posición privados de paquetes sin lanzamiento para un identificador de propietario.
+- `POST /api/v1/users/reserve` reserva slugs raíz y marcadores de posición privados de paquetes sin publicación para un identificador de propietario.
 
 ## Heredado
 

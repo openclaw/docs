@@ -1,12 +1,12 @@
 ---
 read_when:
-    - Informar inquietudes sobre derechos de autor u otros derechos relacionados con contenido de ClawHub
+    - Informar sobre inquietudes de derechos de autor u otros derechos relacionadas con contenido de ClawHub
     - Responder a una solicitud de derechos de contenido de ClawHub
 sidebarTitle: Content Rights
-summary: Cómo enviar una inquietud sobre derechos de autor u otros derechos de contenido acerca de material publicado en ClawHub.
+summary: Cómo enviar una inquietud sobre derechos de autor u otros derechos de contenido relacionada con material publicado en ClawHub.
 title: Solicitudes de derechos de contenido
 x-i18n:
-    generated_at: "2026-06-28T05:07:01Z"
+    generated_at: "2026-06-28T05:15:07Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -15,22 +15,22 @@ x-i18n:
     workflow: 16
 ---
 
-# Solicitudes de derechos sobre contenido
+# Solicitudes de derechos de contenido
 
-Si crees que el contenido publicado en ClawHub infringe tus derechos de autor u otros
-derechos, envía una [Solicitud de derechos sobre contenido de ClawHub](https://forms.openclaw.ai/clawhub-content-rights).
+Si cree que el contenido publicado en ClawHub infringe sus derechos de autor u otros
+derechos, envíe una [Solicitud de derechos de contenido de ClawHub](https://forms.openclaw.ai/clawhub-content-rights).
 
-Incluye:
+Incluya:
 
 - una o más URL exactas `https://clawhub.ai/<owner>/skills/<skill>`
-- tu nombre, organización y correo electrónico de contacto
-- una breve explicación del problema de derechos
-- evidencia de respaldo, si está disponible
+- su nombre, organización y correo electrónico de contacto
+- una breve explicación de la inquietud sobre derechos
+- pruebas de respaldo, si están disponibles
 
-El personal de ClawHub revisa las solicitudes manualmente y puede contactar al solicitante o al
-publicador para obtener más información. Según las circunstancias, el contenido afectado
-puede ocultarse, restaurarse o dejarse sin cambios.
+El personal de ClawHub revisa las solicitudes manualmente y puede ponerse en contacto con el solicitante o el
+publicador para obtener más información. Según las circunstancias, el
+contenido afectado puede ocultarse, restaurarse o dejarse sin cambios.
 
-Para contenido inseguro del marketplace que no sea un problema de derechos sobre contenido, usa el
-flujo normal de reportes descrito en [Moderación y seguridad de la cuenta](/es/clawhub/moderation).
-Para vulnerabilidades en ClawHub en sí, consulta [Seguridad](/es/clawhub/security).
+Para contenido inseguro del mercado que no sea una inquietud sobre derechos de contenido, use el
+flujo de denuncia normal descrito en [Moderación y seguridad de la cuenta](/es/clawhub/moderation).
+Para vulnerabilidades en ClawHub, consulte [Seguridad](/es/clawhub/security).

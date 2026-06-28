@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Informar sobre un problema de seguridad de ClawHub
+    - Informar de un problema de seguridad de ClawHub
     - Comprender la divulgación de vulnerabilidades de ClawHub
-    - Distinguir los problemas de la plataforma ClawHub de los problemas de Skills o Plugin de terceros
+    - Distinguir los problemas de la plataforma ClawHub de los problemas de skills o plugins de terceros
 sidebarTitle: Security
 summary: Cómo informar problemas de seguridad de ClawHub y cuándo se divulgan públicamente las vulnerabilidades.
 title: Seguridad
 x-i18n:
-    generated_at: "2026-06-28T05:07:57Z"
+    generated_at: "2026-06-28T05:17:15Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -18,33 +18,33 @@ x-i18n:
 
 # Seguridad
 
-Los problemas de seguridad de ClawHub se pueden informar mediante GitHub Security Advisories para
+Los problemas de seguridad de ClawHub se pueden reportar mediante GitHub Security Advisories para
 `openclaw/clawhub`.
 
 Usa GitHub Security Advisories para vulnerabilidades en ClawHub mismo. Los buenos
-informes de advisory de ClawHub incluyen errores en:
+informes de avisos de ClawHub incluyen errores en:
 
 - el sitio web, la API o la CLI de ClawHub
-- la publicación en el registro, descargas, instalaciones o integridad de artefactos
-- autenticación, autorización o tokens de API
-- escaneo, moderación o gestión de informes
+- la publicación en el registro, las descargas, las instalaciones o la integridad de los artefactos
+- la autenticación, la autorización o los tokens de API
+- el escaneo, la moderación o el manejo de reportes
 
-No uses los advisories de ClawHub para vulnerabilidades en el código fuente propio de una skill o
-Plugin de terceros. Infórmalas directamente al publicador o al repositorio de origen
-enlazado desde la ficha de ClawHub.
+No uses los avisos de ClawHub para vulnerabilidades en el código fuente propio de una Skill o un
+Plugin de terceros. Repórtalas directamente al publicador o al repositorio de origen
+vinculado desde la ficha de ClawHub.
 
 ## Divulgación de vulnerabilidades
 
-Dado que ClawHub es una aplicación en la nube alojada, las vulnerabilidades del servicio de ClawHub
+Como ClawHub es una aplicación en la nube alojada, las vulnerabilidades del servicio ClawHub
 no se divulgan públicamente de forma predeterminada. Se divulgan públicamente cuando hay
-evidencia de impacto real en usuarios o cuando los usuarios necesitan tomar medidas.
+evidencia de impacto real en usuarios o cuando los usuarios deben tomar medidas.
 
 Los ejemplos de impacto real en usuarios incluyen explotación confirmada, exposición de datos
-o secretos de usuarios, contenido malicioso que llega a usuarios debido a una falla de la plataforma,
+o secretos de usuarios, contenido malicioso que llega a los usuarios debido a una falla de la plataforma,
 o cualquier problema que requiera que los usuarios roten credenciales, actualicen software local o
-tomen otra medida de protección.
+tomen otras medidas de protección.
 
-Las vulnerabilidades en software instalado por el usuario se divulgan públicamente, como
+Las vulnerabilidades en software instalado por usuarios se divulgan públicamente, como
 paquetes de la CLI de ClawHub, binarios, bibliotecas u otros artefactos de lanzamiento que los usuarios
 deben actualizar localmente.
 
@@ -53,5 +53,5 @@ deben actualizar localmente.
 Para etiquetas de auditoría en el momento de la instalación, niveles de riesgo, hallazgos e interpretación, consulta
 [Auditorías de seguridad](/es/clawhub/security-audits).
 
-Para informes del marketplace, retenciones de moderación, fichas ocultas, prohibiciones y estado de la cuenta,
+Para reportes del marketplace, retenciones de moderación, fichas ocultas, prohibiciones y estado de la cuenta,
 consulta [Moderación y seguridad de la cuenta](/es/clawhub/moderation).
