@@ -392,11 +392,13 @@ metadata:
     - Belirtimler, platforma göre filtrelemek için `os: ["darwin"|"linux"|"win32"]` içerebilir.
     - Node yüklemeleri `openclaw.json` içindeki `skills.install.nodeManager` ayarına uyar (varsayılan: npm; seçenekler: npm / pnpm / yarn / bun). Bu yalnızca beceri yüklemelerini etkiler; Gateway çalışma zamanı hâlâ Node olmalıdır.
     - Gateway yükleyici tercihi: Homebrew → uv → yapılandırılmış node yöneticisi → go → download.
+
   </Accordion>
   <Accordion title="Per-installer details">
     - **Homebrew:** OpenClaw, Homebrew'u otomatik yüklemez veya brew formüllerini sistem paket komutlarına çevirmez. `brew` olmayan Linux container'larında, yalnızca brew yükleyicileri gizlenir; özel bir imaj kullanın veya bağımlılığı elle yükleyin.
     - **Go:** `go` eksikse ve `brew` kullanılabiliyorsa, Gateway önce Go'yu Homebrew aracılığıyla yükler ve `GOBIN` değerini Homebrew'un `bin` dizinine ayarlar.
     - **Download:** `url` (zorunlu), `archive` (`tar.gz` | `tar.bz2` | `zip`), `extract` (varsayılan: arşiv algılandığında otomatik), `stripComponents`, `targetDir` (varsayılan: `~/.openclaw/tools/<skillKey>`).
+
   </Accordion>
   <Accordion title="Sandboxing notes">
     `requires.bins`, beceri yükleme zamanında **ana makinede** denetlenir. Bir ajan sandbox içinde çalışıyorsa, ikili dosya **container içinde** de bulunmalıdır. Bunu `agents.defaults.sandbox.docker.setupCommand` veya özel bir imaj aracılığıyla yükleyin. `setupCommand`, container oluşturulduktan sonra bir kez çalışır ve sandbox içinde ağ çıkışı, yazılabilir kök dosya sistemi ve root kullanıcı gerektirir.

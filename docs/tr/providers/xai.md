@@ -542,6 +542,7 @@ Eski takma adlar hâlâ kanonik paketli kimliklere normalleştirilir:
     - `x_search` ve `code_execution`, çekirdek model çalışma zamanına sabit kodlanmak
       yerine paketle gelen xAI Plugin tarafından sahiplenilir.
     - `code_execution`, yerel [`exec`](/tr/tools/exec) değil, uzaktan xAI sandbox yürütmesidir.
+
   </Accordion>
 </AccordionGroup>
 
