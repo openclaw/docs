@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 5909a2da50238f14feecc519809d3b1dce90a49dc98142b4797bb45ad0e48cd1
     source_path: plugins/reference/web-readability.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Plugin de lisibilité Web

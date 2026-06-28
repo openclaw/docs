@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Travail sur les contrôles de télémétrie / confidentialité
+    - Travail sur les contrôles de télémétrie et de confidentialité
     - Questions sur les données collectées
 summary: Télémétrie d’installation collectée par la CLI ClawHub et procédure de désactivation.
 x-i18n:
-    generated_at: "2026-06-28T05:07:48Z"
+    generated_at: "2026-06-28T05:43:35Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -15,15 +15,15 @@ x-i18n:
 
 # Télémétrie
 
-ClawHub utilise une télémétrie CLI minimale pour calculer les nombres d’installations agrégés.
+ClawHub utilise une télémétrie CLI minimale pour calculer des nombres d’installations agrégés.
 
 ## Quand la télémétrie est collectée
 
-La télémétrie est envoyée uniquement lorsque :
+La télémétrie n’est envoyée que lorsque :
 
 - Vous êtes connecté dans la CLI.
 - Vous exécutez `clawhub install <slug>`.
-- La télémétrie n’est **pas désactivée** (voir « Désactivation » ci-dessous).
+- La télémétrie n’est **pas désactivée** (voir « Comment désactiver » ci-dessous).
 
 Si vous n’êtes pas connecté, rien n’est signalé.
 
@@ -33,7 +33,7 @@ Si vous n’êtes pas connecté, rien n’est signalé.
 
 L’événement inclut :
 
-- `slug` : le slug de la skill installée.
+- `slug` : le slug de la compétence installée.
 - `version` : la version installée, lorsqu’elle est connue.
 
 ### Ce que nous ne collectons _pas_
@@ -44,9 +44,9 @@ L’événement inclut :
 
 ## Nombres d’installations
 
-ClawHub maintient des compteurs agrégés par skill :
+ClawHub conserve des compteurs agrégés par compétence :
 
-- `installsAllTime` : utilisateurs uniques ayant signalé au moins une installation CLI pour la skill.
+- `installsAllTime` : utilisateurs uniques ayant signalé au moins une installation CLI pour la compétence.
 - `installsCurrent` : utilisateurs uniques ayant signalé une installation et n’ayant pas supprimé leur
   télémétrie.
 
@@ -56,7 +56,7 @@ Tout le monde ne voit que des **compteurs d’installations agrégés**.
 
 La suppression de votre compte supprime également vos données de télémétrie.
 
-## Désactivation de la télémétrie
+## Comment désactiver la télémétrie
 
 Définissez la variable d’environnement :
 
@@ -64,4 +64,4 @@ Définissez la variable d’environnement :
 export CLAWHUB_DISABLE_TELEMETRY=1
 ```
 
-Avec ce paramètre défini, la CLI n’enverra pas de télémétrie d’installation.
+Une fois celle-ci définie, la CLI n’enverra pas de télémétrie d’installation.

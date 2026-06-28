@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 37d5e5dca25cf649a5069360aa4e41fcc33d042dea99f643b98c07189c58f21c
     source_path: cli/commitments.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Répertoriez et gérez les engagements de suivi déduits.

@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 4d899363b3dac4128f3e2a1e30ad11cd5ae0c11cc5229d3f03e15429e2741f8d
     source_path: plugins/reference/synthetic.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Plugin Synthetic

@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 298b92f27abb8321be807fe4d95c7cd568a0fb8f543d168863b2adb9b3ddcde4
     source_path: security/formal-verification.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Cette page suit les **modèles de sécurité formels** d’OpenClaw (TLA+/TLC aujourd’hui ; davantage si nécessaire).

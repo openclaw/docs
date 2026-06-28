@@ -1,12 +1,12 @@
 ---
 read_when:
-    - Signalement de préoccupations relatives aux droits d’auteur ou à d’autres droits concernant le contenu ClawHub
-    - Répondre à une demande relative aux droits de contenu ClawHub
+    - Signaler des problèmes de droits d’auteur ou d’autres droits concernant le contenu ClawHub
+    - Répondre à une demande de droits de contenu ClawHub
 sidebarTitle: Content Rights
-summary: Comment signaler un problème de droit d’auteur ou d’autres droits sur le contenu concernant du contenu publié sur ClawHub.
-title: Demandes relatives aux droits de contenu
+summary: Comment signaler un problème de droits d’auteur ou d’autres droits relatifs au contenu concernant du matériel publié sur ClawHub.
+title: Demandes relatives aux droits sur le contenu
 x-i18n:
-    generated_at: "2026-06-28T05:07:03Z"
+    generated_at: "2026-06-28T05:41:22Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -17,20 +17,20 @@ x-i18n:
 
 # Demandes relatives aux droits sur le contenu
 
-Si vous pensez qu’un contenu publié sur ClawHub enfreint vos droits d’auteur ou d’autres
+Si vous estimez qu’un contenu publié sur ClawHub enfreint vos droits d’auteur ou d’autres
 droits, envoyez une [demande relative aux droits sur le contenu ClawHub](https://forms.openclaw.ai/clawhub-content-rights).
 
 Incluez :
 
 - une ou plusieurs URL exactes `https://clawhub.ai/<owner>/skills/<skill>`
 - votre nom, votre organisation et votre adresse e-mail de contact
-- une brève explication du problème lié aux droits
-- des éléments justificatifs, si disponibles
+- une brève explication du problème relatif aux droits
+- des preuves à l’appui, si disponibles
 
-L’équipe de ClawHub examine les demandes manuellement et peut contacter le demandeur ou
-l’éditeur pour obtenir plus d’informations. Selon les circonstances, le
-contenu concerné peut être masqué, rétabli ou laissé inchangé.
+Le personnel de ClawHub examine les demandes manuellement et peut contacter le demandeur ou
+l’éditeur pour obtenir davantage d’informations. Selon les circonstances, le contenu concerné
+peut être masqué, restauré ou laissé inchangé.
 
-Pour les contenus dangereux de la marketplace qui ne relèvent pas d’un problème de droits sur le contenu, utilisez le
-processus de signalement normal décrit dans [Modération et sécurité du compte](/fr/clawhub/moderation).
+Pour le contenu de place de marché dangereux qui ne relève pas d’un problème de droits sur le contenu, utilisez le
+flux de signalement normal décrit dans [Modération et sécurité du compte](/fr/clawhub/moderation).
 Pour les vulnérabilités dans ClawHub lui-même, consultez [Sécurité](/fr/clawhub/security).

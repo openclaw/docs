@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 4985a57fcff1fc921ef1237f7cf7fd72c0498de11008aaa958ea04893753b381
     source_path: refactor/access.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Le plan de nettoyage de l’accès aux canaux se trouve désormais dans [Plan de suppression du cœur d’ingress](/fr/refactor/ingress-core).

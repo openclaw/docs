@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 8f28962032bc5f6b228de731ae6bd9a22831604b506b7073aeffba19ac22e0e8
     source_path: channels/qa-channel.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 `qa-channel` est un transport de messages synthétique intégré pour la QA automatisée d’OpenClaw. Ce n’est pas un canal de production - il existe pour exercer la même frontière de Plugin de canal que les transports réels, tout en gardant l’état déterministe et entièrement inspectable.

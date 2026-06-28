@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7532c672f7e829b851d175d93354fc586baecea4af5f2555f57908780cedfd02
     source_path: tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Dans la configuration courante à hôtes séparés, le Gateway OpenClaw s’exécute dans WSL2, Chrome s’exécute sur Windows, et le contrôle du navigateur doit traverser la frontière entre WSL2 et Windows. Le schéma de défaillance en couches décrit dans [l’issue #39369](https://github.com/openclaw/openclaw/issues/39369) signifie que plusieurs problèmes indépendants peuvent apparaître en même temps, ce qui peut donner l’impression que la mauvaise couche est cassée en premier.

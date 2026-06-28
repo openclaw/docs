@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 01f2e064891940959acf23c003d7e842386f67ac6c869d0677b802738ac04bdf
     source_path: help/scripts.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Le répertoire `scripts/` contient des scripts d’aide pour les flux de travail locaux et les tâches d’exploitation.

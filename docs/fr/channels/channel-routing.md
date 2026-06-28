@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 92b14cf02b00312121bec2f0f8ec784f36364babd6085d684e71f425dd82715e
     source_path: channels/channel-routing.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Canaux et routage

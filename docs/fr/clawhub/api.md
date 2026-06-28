@@ -1,10 +1,10 @@
 ---
 read_when:
     - Création de clients API
-    - Ajout de points de terminaison ou de schémas
+    - Ajout d’endpoints ou de schémas
 summary: Présentation et conventions de l’API REST publique (v1).
 x-i18n:
-    generated_at: "2026-06-28T05:06:52Z"
+    generated_at: "2026-06-28T05:41:00Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -21,16 +21,16 @@ OpenAPI : `/api/v1/openapi.json`
 
 ## Réutilisation du catalogue public
 
-Vous pouvez créer un catalogue tiers, un annuaire ou une interface de recherche par-dessus les API publiques de lecture de ClawHub. Les métadonnées publiques des Skills et les fichiers de Skills sont publiés selon les règles de licence des Skills de ClawHub, tandis que l’API elle-même est limitée en débit et doit être consommée de manière responsable.
+Vous pouvez créer un catalogue, un répertoire ou une interface de recherche tiers à partir des API publiques de lecture de ClawHub. Les métadonnées publiques des Skills et les fichiers de Skills sont publiés selon les règles de licence des Skills de ClawHub, tandis que l’API elle-même est limitée en débit et doit être consommée de manière responsable.
 
 Consignes :
 
-- Utilisez les points de terminaison publics de lecture comme `GET /api/v1/skills`, `GET /api/v1/search` et `GET /api/v1/skills/{slug}` pour les listes de catalogue.
-- Mettez les réponses en cache et respectez les en-têtes `429`, `Retry-After` et de limite de débit au lieu d’interroger agressivement.
-- Ajoutez un lien vers l’URL canonique du Skill ClawHub lors de l’affichage des listes afin que les utilisateurs puissent inspecter l’enregistrement source du registre.
-- Utilisez les URL de page canoniques au format `https://clawhub.ai/<owner>/skills/<slug>`.
-- Ne laissez pas entendre que ClawHub approuve, vérifie ou exploite le site tiers.
-- Ne dupliquez pas du contenu masqué, privé ou bloqué par la modération en contournant les filtres de l’API publique ou les limites d’authentification.
+- Utilisez les points de terminaison publics de lecture tels que `GET /api/v1/skills`, `GET /api/v1/search` et `GET /api/v1/skills/{slug}` pour les listes de catalogue.
+- Mettez les réponses en cache et respectez `429`, `Retry-After` et les en-têtes de limite de débit au lieu d’interroger de manière agressive.
+- Ajoutez un lien vers l’URL canonique du Skill ClawHub lors de l’affichage des listes afin que les utilisateurs puissent inspecter l’enregistrement du registre source.
+- Utilisez les URL de page canoniques sous la forme `https://clawhub.ai/<owner>/skills/<slug>`.
+- N’insinuez pas que ClawHub approuve, vérifie ou exploite le site tiers.
+- Ne répliquez pas de contenu masqué, privé ou bloqué par modération en contournant les filtres de l’API publique ou les limites d’authentification.
 
 ## Authentification
 
@@ -41,23 +41,23 @@ Consignes :
 
 Application tenant compte de l’authentification :
 
-- Requêtes anonymes : par adresse IP.
+- Requêtes anonymes : par IP.
 - Requêtes authentifiées (jeton Bearer valide) : par compartiment utilisateur.
-- Un jeton manquant ou invalide revient à une application par adresse IP.
+- Un jeton manquant ou invalide revient à une application par IP.
 
-- Lecture : 3000/min par adresse IP, 12000/min par clé
-- Écriture : 300/min par adresse IP, 3000/min par clé
-- Téléchargement : 1200/min par adresse IP, 6000/min par clé
+- Lecture : 3000/min par IP, 12000/min par clé
+- Écriture : 300/min par IP, 3000/min par clé
+- Téléchargement : 1200/min par IP, 6000/min par clé
 
-En-têtes : `X-RateLimit-Limit`, `X-RateLimit-Reset`, `RateLimit-Limit`, `RateLimit-Reset`;
+En-têtes : `X-RateLimit-Limit`, `X-RateLimit-Reset`, `RateLimit-Limit`, `RateLimit-Reset` ;
 `X-RateLimit-Remaining`, `RateLimit-Remaining` et `Retry-After` sont inclus sur `429`.
 
 Sémantique :
 
-- `X-RateLimit-Reset` : secondes d’époque Unix (heure absolue de réinitialisation)
+- `X-RateLimit-Reset` : secondes depuis l’époque Unix (heure de réinitialisation absolue)
 - `RateLimit-Reset` : délai en secondes jusqu’à la réinitialisation
-- `X-RateLimit-Remaining` / `RateLimit-Remaining` : budget restant exact lorsqu’il est
-  présent ; les requêtes réussies partitionnées l’omettent au lieu de renvoyer une valeur
+- `X-RateLimit-Remaining` / `RateLimit-Remaining` : budget restant exact lorsque
+  présent ; les requêtes réussies fragmentées l’omettent plutôt que de renvoyer une valeur
   globale approximative
 - `Retry-After` : délai en secondes à attendre sur `429`
 
@@ -77,14 +77,14 @@ retry-after: 34
 Gestion côté client :
 
 - Préférez `Retry-After` lorsqu’il est présent.
-- Sinon, utilisez `RateLimit-Reset` ou calculez le délai à partir de `X-RateLimit-Reset`.
-- Ajoutez de l’aléa aux nouvelles tentatives.
+- Sinon, utilisez `RateLimit-Reset` ou déduisez le délai à partir de `X-RateLimit-Reset`.
+- Ajoutez une gigue aux nouvelles tentatives.
 
 ## Erreurs
 
-- Les erreurs v1 sont en texte brut (`text/plain; charset=utf-8`), y compris les réponses `400`,
+- Les erreurs v1 sont en texte brut (`text/plain; charset=utf-8`), y compris `400`,
   `401`, `403`, `404`, `429` et les réponses de téléchargement bloqué.
-- Les paramètres de requête inconnus sont ignorés pour la compatibilité.
+- Les paramètres de requête inconnus sont ignorés pour compatibilité.
 - Les paramètres de requête connus avec des valeurs invalides renvoient `400`.
 
 ## Points de terminaison
@@ -97,7 +97,7 @@ Lecture publique :
 - `GET /api/v1/skills?limit=&cursor=&sort=`
   - `sort` : `updated` (par défaut), `recommended` (`default`), `createdAt` (`newest`), `downloads`, `stars` (`rating`), les alias d’installation hérités `installsCurrent`/`installs`/`installsAllTime` correspondent à `downloads`, `trending`
   - Les valeurs `sort` invalides renvoient `400`
-  - `cursor` s’applique aux tris non-`trending`
+  - `cursor` s’applique aux tris non `trending`
   - Filtre facultatif : `nonSuspiciousOnly=true`
   - Alias hérité : `nonSuspicious=true`
   - Avec `nonSuspiciousOnly=true`, les pages basées sur un curseur peuvent contenir moins de `limit` éléments ; utilisez `nextCursor` pour continuer.
@@ -151,8 +151,8 @@ Authentification requise :
 
 Administrateur uniquement :
 
-- `POST /api/v1/users/reserve` réserve les slugs racines et les espaces réservés de packages privés sans publication pour un identifiant de propriétaire.
+- `POST /api/v1/users/reserve` réserve les slugs racine et les espaces réservés de packages privés sans version pour un identifiant de propriétaire.
 
 ## Hérité
 
-Les anciens `/api/*` et `/api/cli/*` sont toujours disponibles. Consultez `DEPRECATIONS.md`.
+Les anciens `/api/*` et `/api/cli/*` restent disponibles. Voir `DEPRECATIONS.md`.

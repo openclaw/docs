@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 3830af0206854e500132edfc9340724fe97f90ca60fa23ce05202d96d9cacf04
     source_path: channels/yuanbao.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Tencent Yuanbao est la plateforme d’assistant IA de Tencent. Le Plugin de canal OpenClaw connecte les bots Yuanbao à OpenClaw via WebSocket afin qu’ils puissent interagir avec les utilisateurs dans des messages directs et des discussions de groupe.

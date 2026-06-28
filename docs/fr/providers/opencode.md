@@ -11,6 +11,7 @@ x-i18n:
     source_hash: cb0521b038e519f139c66f98ddef4919d8c43ce64018ef8af8f7b42ac00114a4
     source_path: providers/opencode.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 OpenCode expose deux catalogues hébergés dans OpenClaw :

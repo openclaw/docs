@@ -1,11 +1,11 @@
 ---
 read_when:
     - Connexion à ClawHub
-    - Utilisation de la CLI ClawHub
+    - Utiliser la CLI ClawHub
     - Débogage des erreurs 401
 summary: Connexion à ClawHub, jetons d’API, connexion CLI, stockage des jetons et révocation.
 x-i18n:
-    generated_at: "2026-06-28T05:07:03Z"
+    generated_at: "2026-06-28T05:41:00Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -23,8 +23,8 @@ via ce compte connecté.
 
 Utilisez GitHub pour vous connecter sur [clawhub.ai](https://clawhub.ai).
 
-Les comptes supprimés, bannis ou désactivés ne peuvent pas terminer la connexion normale à ClawHub.
-Si la connexion vous renvoie à un état déconnecté, votre compte n’est peut-être pas en règle.
+Les comptes supprimés, bannis ou désactivés ne peuvent pas effectuer la connexion ClawHub normale.
+Si la connexion vous ramène à un état déconnecté, votre compte n’est peut-être pas en règle.
 Si votre compte a été banni ou désactivé, utilisez le
 [formulaire d’appel ClawHub](https://appeals.openclaw.ai/) si vous pensez qu’il s’agit d’une
 erreur.
@@ -46,10 +46,10 @@ Ce qui se passe :
 4. Le navigateur redirige vers le rappel local.
 5. La CLI stocke le jeton dans votre fichier de configuration ClawHub.
 
-Si votre navigateur ne peut pas atteindre le rappel local à cause de règles de pare-feu, de VPN ou
-de proxy, utilisez le flux de jeton sans interface graphique.
+Si votre navigateur ne peut pas atteindre le rappel local en raison de règles de pare-feu, de VPN ou
+de proxy, utilisez le flux de jeton sans interface.
 
-## Connexion sans interface graphique
+## Connexion sans interface
 
 Créez un jeton dans l’interface Web ClawHub, puis transmettez-le à la CLI :
 

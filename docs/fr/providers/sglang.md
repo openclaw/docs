@@ -11,6 +11,7 @@ x-i18n:
     source_hash: bd1a5954e3994e3640ee17c62acedc314716c3ed5e52528da436c36c077ebead
     source_path: providers/sglang.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 SGLang sert des modèles à pondérations ouvertes via une API HTTP compatible avec OpenAI. OpenClaw se connecte à SGLang avec la famille de fournisseurs `openai-completions`, avec découverte automatique des modèles disponibles.

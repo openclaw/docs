@@ -11,6 +11,7 @@ x-i18n:
     source_hash: c89979b6007faaa6af44c7f2511f354b96f163bcd3d5e7f99c405b51c4950537
     source_path: channels/matrix-presentation.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw peut joindre des métadonnées `MessagePresentation` normalisées aux événements Matrix `m.room.message` sortants sous `com.openclaw.presentation`.

@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 6a1461a4e6be6145245df937d9438aaba563febe02dd44141f0d1da1ea1c409b
     source_path: plugins/reference/elevenlabs.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Plugin Elevenlabs

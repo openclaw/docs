@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 19d5b31ec2f2c7ab1033bdb55a701c60468dfac58142f726ecbc9ac933f68e30
     source_path: gateway/security/secure-file-operations.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw utilise [`@openclaw/fs-safe`](https://github.com/openclaw/fs-safe) pour les opérations locales sur les fichiers sensibles à la sécurité : lectures/écritures bornées à une racine, remplacement atomique, extraction d’archives, espaces de travail temporaires, état JSON et gestion des fichiers secrets.
