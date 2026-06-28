@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7ab1b7d09dd66c495983aebd4766ce760d659cc6f362bbcd999d1c1345ae38f7
     source_path: install/azure.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 คู่มือนี้ตั้งค่า Azure Linux VM ด้วย Azure CLI, ใช้การเสริมความปลอดภัยของ Network Security Group (NSG), กำหนดค่า Azure Bastion สำหรับการเข้าถึง SSH และติดตั้ง OpenClaw

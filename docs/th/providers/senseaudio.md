@@ -11,6 +11,7 @@ x-i18n:
     source_hash: f53af21c746cdd44c71485cbad669f4a01a6e5be956675c73831e7b5f15df8c4
     source_path: providers/senseaudio.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 SenseAudio สามารถถอดเสียงจากเสียงขาเข้าและไฟล์แนบโน้ตเสียงผ่านไปป์ไลน์ `tools.media.audio` ที่ใช้ร่วมกันของ OpenClaw ได้ OpenClaw จะโพสต์เสียงแบบ multipart ไปยัง endpoint การถอดเสียงที่เข้ากันได้กับ OpenAI และฉีดข้อความที่ส่งกลับมาเป็น `{{Transcript}}` พร้อมบล็อก `[Audio]`

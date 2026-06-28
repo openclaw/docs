@@ -11,6 +11,7 @@ x-i18n:
     source_hash: e2f037a50a85b350163c74cf6b9cce335ecaaa5cccc762124122ad6d0321a1fa
     source_path: channels/matrix-push-rules.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 เมื่อ `channels.matrix.streaming` เป็น `"quiet"` OpenClaw จะแก้ไขอีเวนต์ตัวอย่างเดียวในตำแหน่งเดิม และทำเครื่องหมายการแก้ไขที่เสร็จสมบูรณ์ด้วยแฟล็กเนื้อหาแบบกำหนดเอง ไคลเอนต์ Matrix จะแจ้งเตือนเมื่อมีการแก้ไขสุดท้ายก็ต่อเมื่อกฎการพุชรายผู้ใช้ตรงกับแฟล็กนั้น หน้านี้มีไว้สำหรับผู้ดูแลระบบที่โฮสต์ Matrix เองและต้องการติดตั้งกฎนั้นให้กับแต่ละบัญชีผู้รับ

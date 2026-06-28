@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 5610e076b09d50c23186f1f8db16c039c99d287c34ef6fd71d4272bc527b0388
     source_path: install/northflank.mdx
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 # Northflank

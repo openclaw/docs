@@ -1,10 +1,10 @@
 ---
 read_when:
     - การสร้างไคลเอนต์ API
-    - การเพิ่ม endpoints หรือ schemas
-summary: ภาพรวมและข้อตกลงของ REST API สาธารณะ (v1)
+    - การเพิ่มจุดปลายทางหรือสคีมา
+summary: ภาพรวมและข้อตกลงของ REST API สาธารณะ (v1).
 x-i18n:
-    generated_at: "2026-06-28T07:41:15Z"
+    generated_at: "2026-06-28T10:13:45Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -21,45 +21,45 @@ OpenAPI: `/api/v1/openapi.json`
 
 ## การนำแค็ตตาล็อกสาธารณะไปใช้ซ้ำ
 
-คุณสามารถสร้างแค็ตตาล็อก ไดเรกทอรี หรือพื้นผิวการค้นหาของบุคคลที่สามบน API อ่านสาธารณะของ ClawHub ได้ ข้อมูลเมทาดาทาของ Skills สาธารณะและไฟล์ Skills เผยแพร่ภายใต้กฎสิทธิ์การใช้งาน Skills ของ ClawHub ส่วน API เองมีการจำกัดอัตราและควรใช้งานอย่างรับผิดชอบ
+คุณสามารถสร้างแค็ตตาล็อก ไดเรกทอรี หรือพื้นผิวการค้นหาของบุคคลที่สามบน API อ่านสาธารณะของ ClawHub ได้ ข้อมูลเมทาดาตาของ Skills และไฟล์ Skills สาธารณะเผยแพร่ภายใต้กฎสิทธิ์ใช้งาน Skills ของ ClawHub ขณะที่ตัว API เองมีการจำกัดอัตราและควรใช้งานอย่างรับผิดชอบ
 
 แนวทาง:
 
 - ใช้เอนด์พอยต์อ่านสาธารณะ เช่น `GET /api/v1/skills`, `GET /api/v1/search` และ `GET /api/v1/skills/{slug}` สำหรับรายการแค็ตตาล็อก
-- แคชการตอบกลับและเคารพ `429`, `Retry-After` และเฮดเดอร์จำกัดอัตรา แทนการโพลอย่างถี่เกินไป
-- ลิงก์กลับไปยัง URL Skills ของ ClawHub ที่เป็นต้นฉบับเมื่อแสดงรายการ เพื่อให้ผู้ใช้ตรวจสอบระเบียนรีจิสทรีต้นทางได้
-- ใช้ URL หน้าต้นฉบับในรูปแบบ `https://clawhub.ai/<owner>/skills/<slug>`
-- อย่าสื่อว่า ClawHub รับรอง ตรวจสอบ หรือดำเนินการเว็บไซต์ของบุคคลที่สาม
-- อย่ามิเรอร์เนื้อหาที่ซ่อนอยู่ เป็นส่วนตัว หรือถูกบล็อกโดยการดูแล ด้วยการข้ามตัวกรอง API สาธารณะหรือขอบเขตการยืนยันตัวตน
+- แคชคำตอบและเคารพ `429`, `Retry-After` และเฮดเดอร์จำกัดอัตรา แทนการโพลอย่างถี่เกินไป
+- ลิงก์กลับไปยัง URL Skills ของ ClawHub ที่เป็นแหล่งอ้างอิงหลักเมื่อแสดงรายการ เพื่อให้ผู้ใช้ตรวจสอบระเบียนรีจิสทรีต้นทางได้
+- ใช้ URL หน้าหลักในรูปแบบ `https://clawhub.ai/<owner>/skills/<slug>`
+- อย่าสื่อว่า ClawHub รับรอง ตรวจสอบ หรือดำเนินงานเว็บไซต์ของบุคคลที่สาม
+- อย่าทำสำเนาเนื้อหาที่ซ่อนอยู่ เป็นส่วนตัว หรือถูกบล็อกโดยการดูแลเนื้อหา ด้วยการเลี่ยงตัวกรอง API สาธารณะหรือขอบเขตการยืนยันตัวตน
 
 ## การยืนยันตัวตน
 
-- การอ่านสาธารณะ: ไม่ต้องใช้โทเค็น
-- การเขียน + บัญชี: `Authorization: Bearer clh_...`
+- อ่านสาธารณะ: ไม่ต้องใช้โทเค็น
+- เขียน + บัญชี: `Authorization: Bearer clh_...`
 
 ## ขีดจำกัดอัตรา
 
 การบังคับใช้ที่รับรู้การยืนยันตัวตน:
 
-- คำขอแบบไม่ระบุชื่อ: ต่อ IP
+- คำขอแบบไม่ระบุตัวตน: ต่อ IP
 - คำขอที่ยืนยันตัวตนแล้ว (โทเค็น Bearer ที่ถูกต้อง): ต่อบักเก็ตผู้ใช้
-- โทเค็นที่หายไป/ไม่ถูกต้องจะถอยกลับไปใช้การบังคับใช้ตาม IP
+- โทเค็นที่ขาดหายหรือไม่ถูกต้องจะย้อนกลับไปใช้การบังคับใช้ตาม IP
 
-- อ่าน: 3000/นาที ต่อ IP, 12000/นาที ต่อคีย์
-- เขียน: 300/นาที ต่อ IP, 3000/นาที ต่อคีย์
-- ดาวน์โหลด: 1200/นาที ต่อ IP, 6000/นาที ต่อคีย์
+- อ่าน: 3000/นาทีต่อ IP, 12000/นาทีต่อคีย์
+- เขียน: 300/นาทีต่อ IP, 3000/นาทีต่อคีย์
+- ดาวน์โหลด: 1200/นาทีต่อ IP, 6000/นาทีต่อคีย์
 
 เฮดเดอร์: `X-RateLimit-Limit`, `X-RateLimit-Reset`, `RateLimit-Limit`, `RateLimit-Reset`;
-`X-RateLimit-Remaining`, `RateLimit-Remaining` และ `Retry-After` จะรวมอยู่ใน `429`
+`X-RateLimit-Remaining`, `RateLimit-Remaining` และ `Retry-After` จะถูกรวมไว้เมื่อเป็น `429`
 
 ความหมาย:
 
-- `X-RateLimit-Reset`: วินาทีแบบ Unix epoch (เวลารีเซ็ตแบบสัมบูรณ์)
-- `RateLimit-Reset`: จำนวนวินาทีที่ต้องหน่วงจนถึงการรีเซ็ต
+- `X-RateLimit-Reset`: วินาที Unix epoch (เวลารีเซ็ตแบบสัมบูรณ์)
+- `RateLimit-Reset`: จำนวนวินาทีที่ต้องรอจนถึงการรีเซ็ต
 - `X-RateLimit-Remaining` / `RateLimit-Remaining`: งบประมาณที่เหลือแบบแน่นอนเมื่อ
-  มีอยู่; คำขอที่สำเร็จแบบแบ่งชาร์ดจะละไว้แทนการคืนค่า
-  รวมโดยประมาณ
-- `Retry-After`: จำนวนวินาทีที่ต้องรอบน `429`
+  มีอยู่; คำขอที่สำเร็จแบบแบ่งชาร์ดจะละไว้แทนการส่งคืนค่าโดยรวม
+  แบบประมาณ
+- `Retry-After`: จำนวนวินาทีที่ต้องรอเมื่อได้รับ `429`
 
 ตัวอย่าง `429`:
 
@@ -76,29 +76,29 @@ retry-after: 34
 
 การจัดการฝั่งไคลเอนต์:
 
-- ให้ใช้ `Retry-After` ก่อนเมื่อมีอยู่
-- มิฉะนั้นใช้ `RateLimit-Reset` หรือคำนวณการหน่วงจาก `X-RateLimit-Reset`
-- เพิ่ม jitter ให้กับการลองใหม่
+- ให้ใช้ `Retry-After` เป็นหลักเมื่อมีอยู่
+- มิฉะนั้นให้ใช้ `RateLimit-Reset` หรือคำนวณระยะหน่วงจาก `X-RateLimit-Reset`
+- เพิ่ม jitter ให้การลองใหม่
 
 ## ข้อผิดพลาด
 
 - ข้อผิดพลาด v1 เป็นข้อความล้วน (`text/plain; charset=utf-8`) รวมถึง `400`,
-  `401`, `403`, `404`, `429` และการตอบกลับดาวน์โหลดที่ถูกบล็อก
-- พารามิเตอร์คิวรีที่ไม่รู้จักจะถูกเพิกเฉยเพื่อความเข้ากันได้
-- พารามิเตอร์คิวรีที่รู้จักแต่มีค่าที่ไม่ถูกต้องจะคืน `400`
+  `401`, `403`, `404`, `429` และคำตอบดาวน์โหลดที่ถูกบล็อก
+- พารามิเตอร์คำค้นที่ไม่รู้จักจะถูกละเว้นเพื่อความเข้ากันได้
+- พารามิเตอร์คำค้นที่รู้จักแต่มีค่าไม่ถูกต้องจะส่งคืน `400`
 
 ## เอนด์พอยต์
 
-การอ่านสาธารณะ:
+อ่านสาธารณะ:
 
 - `GET /api/v1/search?q=...`
-  - ตัวกรองทางเลือก: `highlightedOnly=true`, `nonSuspiciousOnly=true`
+  - ตัวกรองเสริม: `highlightedOnly=true`, `nonSuspiciousOnly=true`
   - นามแฝงเดิม: `nonSuspicious=true`
 - `GET /api/v1/skills?limit=&cursor=&sort=`
-  - `sort`: `updated` (ค่าเริ่มต้น), `recommended` (`default`), `createdAt` (`newest`), `downloads`, `stars` (`rating`), นามแฝงการติดตั้งเดิม `installsCurrent`/`installs`/`installsAllTime` แมปไปยัง `downloads`, `trending`
-  - ค่า `sort` ที่ไม่ถูกต้องจะคืน `400`
+  - `sort`: `updated` (ค่าเริ่มต้น), `recommended` (`default`), `createdAt` (`newest`), `downloads`, `stars` (`rating`), นามแฝงการติดตั้งเดิม `installsCurrent`/`installs`/`installsAllTime` จับคู่กับ `downloads`, `trending`
+  - ค่า `sort` ที่ไม่ถูกต้องจะส่งคืน `400`
   - `cursor` ใช้กับการเรียงลำดับที่ไม่ใช่ `trending`
-  - ตัวกรองทางเลือก: `nonSuspiciousOnly=true`
+  - ตัวกรองเสริม: `nonSuspiciousOnly=true`
   - นามแฝงเดิม: `nonSuspicious=true`
   - เมื่อใช้ `nonSuspiciousOnly=true` หน้าที่อิง `cursor` อาจมีรายการน้อยกว่า `limit`; ใช้ `nextCursor` เพื่อดำเนินการต่อ
   - `recommended` ใช้สัญญาณการมีส่วนร่วมและความใหม่
@@ -110,16 +110,16 @@ retry-after: 34
 - `GET /api/v1/skills/{slug}/file?path=&version=&tag=`
 - `GET /api/v1/resolve?slug=&hash=`
 - `GET /api/v1/download?slug=&version=&tag=`
-  - Skills ที่โฮสต์ไว้จะคืนไบต์ ZIP แบบกำหนดได้แน่นอน
-  - Skills ปัจจุบันที่อิง GitHub พร้อมผลสแกน `clean` หรือ `suspicious` จะคืน
+  - Skills ที่โฮสต์ไว้จะส่งคืนไบต์ ZIP แบบกำหนดแน่นอน
+  - Skills ปัจจุบันที่มี GitHub หนุนหลังพร้อมผลสแกน `clean` หรือ `suspicious` จะส่งคืน
     ตัวบรรยายการส่งต่อ JSON `public-github` แทนไบต์จาก ClawHub
 - `GET /api/v1/skills/export?startDate=&endDate=&limit=&cursor=`
   - Skills ที่โฮสต์ไว้จะถูกส่งออกเป็นไฟล์ที่จัดเก็บไว้
-  - Skills ปัจจุบันที่อิง GitHub พร้อมผลสแกน `clean` หรือ `suspicious` จะถูกส่งออก
+  - Skills ปัจจุบันที่มี GitHub หนุนหลังพร้อมผลสแกน `clean` หรือ `suspicious` จะถูกส่งออก
     เป็นตัวบรรยายการส่งต่อ `public-github`
 - `GET /api/v1/packages?limit=&cursor=&sort=`
   - `sort`: `updated` (ค่าเริ่มต้น), `recommended`, `downloads`, นามแฝงเดิม `installs`
-  - ค่า `sort` ที่ไม่ถูกต้องจะคืน `400`
+  - ค่า `sort` ที่ไม่ถูกต้องจะส่งคืน `400`
 - `GET /api/v1/plugins?limit=&cursor=&sort=`
   - `sort`: `recommended` (ค่าเริ่มต้น), `downloads`, `updated`, นามแฝงเดิม `installs`
 - `GET /api/v1/plugins/search?q=...`
@@ -131,7 +131,7 @@ retry-after: 34
 
 ต้องยืนยันตัวตน:
 
-- `POST /api/v1/skills` (เผยแพร่, แนะนำ multipart)
+- `POST /api/v1/skills` (เผยแพร่, แนะนำให้ใช้ multipart)
 - `DELETE /api/v1/skills/{slug}`
 - `DELETE /api/v1/packages/{name}`
 - `POST /api/v1/skills/{slug}/undelete`
@@ -149,10 +149,10 @@ retry-after: 34
 - `GET /api/v1/transfers/outgoing`
 - `GET /api/v1/whoami`
 
-เฉพาะผู้ดูแลระบบ:
+ผู้ดูแลระบบเท่านั้น:
 
-- `POST /api/v1/users/reserve` จอง slug รากและตัวยึดตำแหน่งแพ็กเกจส่วนตัวที่ไม่มีรุ่นเผยแพร่สำหรับแฮนเดิลเจ้าของ
+- `POST /api/v1/users/reserve` จอง root slugs และตัวแทนแพ็กเกจส่วนตัวแบบไม่มีรีลีสสำหรับแฮนเดิลเจ้าของ
 
-## เดิม
+## รุ่นเดิม
 
-`/api/*` และ `/api/cli/*` เดิมยังคงพร้อมใช้งาน ดู `DEPRECATIONS.md`
+รุ่นเดิม `/api/*` และ `/api/cli/*` ยังพร้อมใช้งาน ดู `DEPRECATIONS.md`

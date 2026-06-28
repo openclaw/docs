@@ -11,6 +11,7 @@ x-i18n:
     source_hash: d77af5c7281a4abafc184e426b1c37205a6d06a196b50353c1abbf67cc93bb97
     source_path: concepts/memory-honcho.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 [Honcho](https://honcho.dev) เพิ่ม memory แบบ AI-native ให้กับ OpenClaw โดยจะเก็บ

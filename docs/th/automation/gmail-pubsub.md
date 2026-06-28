@@ -8,6 +8,7 @@ x-i18n:
     source_hash: 4462fb58fa73ac3eb3d8d2994760b96424dcad3f1543e8ff10222936f6c54caf
     source_path: automation/gmail-pubsub.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 หน้านี้ถูกย้ายไปที่ [Scheduled Tasks](/th/automation/cron-jobs#gmail-pubsub-integration) โปรดดูเอกสาร Gmail PubSub ได้ที่ [Scheduled Tasks](/th/automation/cron-jobs#gmail-pubsub-integration)

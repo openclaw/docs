@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 94c4caa86d4a3eb873d8b6a1cc639edbad3dd7478f401e2ca53f704de095f829
     source_path: providers/mistral.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw มี Plugin Mistral ที่มาพร้อมชุดติดตั้ง ซึ่งลงทะเบียนสัญญาไว้สี่รายการ ได้แก่ chat completions, การทำความเข้าใจสื่อ (การถอดเสียงแบบแบตช์ของ Voxtral), STT แบบเรียลไทม์สำหรับ Voice Call (Voxtral Realtime) และ memory embeddings (`mistral-embed`)

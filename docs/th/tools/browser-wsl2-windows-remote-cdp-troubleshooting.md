@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7532c672f7e829b851d175d93354fc586baecea4af5f2555f57908780cedfd02
     source_path: tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 ในการตั้งค่าแบบแยกโฮสต์ที่พบบ่อย OpenClaw Gateway ทำงานภายใน WSL2, Chrome ทำงานบน Windows และการควบคุมเบราว์เซอร์ต้องข้ามขอบเขตระหว่าง WSL2 กับ Windows รูปแบบความล้มเหลวแบบหลายชั้นจาก [issue #39369](https://github.com/openclaw/openclaw/issues/39369) หมายความว่าอาจมีปัญหาหลายอย่างที่เป็นอิสระต่อกันปรากฏขึ้นพร้อมกัน ซึ่งทำให้ดูเหมือนว่าชั้นที่ผิดพังเป็นอย่างแรก

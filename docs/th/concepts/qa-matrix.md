@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7c6d836492368c470468547950d3765a64187694852222a5a1f0ae4185569abe
     source_path: concepts/qa-matrix.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 เลน QA ของ Matrix รัน Plugin `@openclaw/matrix` ที่บันเดิลมากับโฮมเซิร์ฟเวอร์ Tuwunel แบบใช้แล้วทิ้งใน Docker พร้อมบัญชี driver, SUT และ observer ชั่วคราว รวมถึงห้องที่เตรียมข้อมูลไว้แล้ว นี่คือความครอบคลุมแบบสดที่ใช้ทรานสปอร์ตจริงสำหรับ Matrix

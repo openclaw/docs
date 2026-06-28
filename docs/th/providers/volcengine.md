@@ -12,6 +12,7 @@ x-i18n:
     source_hash: b7948a26cc898e125d445e9ae091704f5cf442266d29e712c0dcedbe0dc0cce7
     source_path: providers/volcengine.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 ผู้ให้บริการ Volcengine ให้การเข้าถึงโมเดล Doubao และโมเดลของบุคคลที่สาม

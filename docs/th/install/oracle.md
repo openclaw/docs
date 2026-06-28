@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 9115c83c7a78b78d8b6701b028a2f6e9f08a71f7fff14b7b45f1610b8052c14e
     source_path: install/oracle.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 เรียกใช้ OpenClaw Gateway แบบทำงานต่อเนื่องบน tier ARM **Always Free** ของ Oracle Cloud (สูงสุด 4 OCPU, RAM 24 GB, พื้นที่จัดเก็บ 200 GB) โดยไม่มีค่าใช้จ่าย

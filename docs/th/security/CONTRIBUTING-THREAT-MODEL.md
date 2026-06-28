@@ -11,6 +11,7 @@ x-i18n:
     source_hash: a23ca088d7893180a83c02d6971bbf1c32affa724e43019fd40276eaadc52278
     source_path: security/CONTRIBUTING-THREAT-MODEL.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 ขอบคุณที่ช่วยทำให้ OpenClaw ปลอดภัยยิ่งขึ้น โมเดลภัยคุกคามนี้เป็นเอกสารที่มีการพัฒนาอย่างต่อเนื่อง และเรายินดีรับการมีส่วนร่วมจากทุกคน - คุณไม่จำเป็นต้องเป็นผู้เชี่ยวชาญด้านความปลอดภัย

@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 8d11af55e30996a89e665b258604108a93f4c4271fbe4edfd1caf54864e40f01
     source_path: tools/multi-agent-sandbox-tools.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 เอเจนต์แต่ละตัวในการตั้งค่าแบบหลายเอเจนต์สามารถเขียนทับ sandbox และนโยบายเครื่องมือส่วนกลางได้ หน้านี้ครอบคลุมการกำหนดค่ารายเอเจนต์ กฎลำดับความสำคัญ และตัวอย่างต่าง ๆ

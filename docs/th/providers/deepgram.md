@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 9d591aa24a5477fd9fe69b7a0dc44b204d28ea0c2f89e6dfef66f9ceb76da34d
     source_path: providers/deepgram.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 Deepgram เป็น API สำหรับแปลงเสียงเป็นข้อความ ใน OpenClaw จะใช้สำหรับการถอดเสียงไฟล์เสียง/ข้อความเสียงขาเข้าผ่าน `tools.media.audio` และสำหรับ STT แบบสตรีมมิงของ Voice Call ผ่าน `plugins.entries.voice-call.config.streaming`
