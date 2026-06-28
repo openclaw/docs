@@ -13,6 +13,7 @@ x-i18n:
     source_hash: 311ebbd557e40e38cd25b2f11b887baa4576657095d5a0841d4cb7f71898927d
     source_path: automation/index.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw wykonuje pracę w tle za pomocą zadań, zaplanowanych zadań, wywnioskowanych zobowiązań, hooków zdarzeń i stałych poleceń. Ta strona pomaga wybrać właściwy mechanizm i zrozumieć, jak pasują do siebie.

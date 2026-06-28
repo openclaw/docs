@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Zgłaszanie problemu bezpieczeństwa ClawHub
-    - Zrozumienie procesu ujawniania podatności w ClawHub
-    - Odróżnianie problemów platformy ClawHub od problemów zewnętrznych Skills lub Pluginów
+    - Zgłaszanie problemu z bezpieczeństwem ClawHub
+    - Zrozumienie ujawniania podatności w ClawHub
+    - Odróżnianie problemów z platformą ClawHub od problemów ze Skills lub Pluginami innych firm
 sidebarTitle: Security
-summary: Jak zgłaszać problemy bezpieczeństwa dotyczące ClawHub i kiedy podatności są publicznie ujawniane.
+summary: Jak zgłaszać problemy bezpieczeństwa ClawHub i kiedy luki w zabezpieczeniach są publicznie ujawniane.
 title: Bezpieczeństwo
 x-i18n:
-    generated_at: "2026-06-28T07:42:12Z"
+    generated_at: "2026-06-28T10:03:53Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -29,31 +29,29 @@ zgłoszenia doradcze ClawHub obejmują błędy w:
 - uwierzytelnianiu, autoryzacji lub tokenach API
 - skanowaniu, moderacji lub obsłudze zgłoszeń
 
-Nie używaj zgłoszeń doradczych ClawHub do podatności w kodzie źródłowym
-umiejętności lub pluginu innej firmy. Zgłaszaj je bezpośrednio wydawcy lub do
-repozytorium źródłowego powiązanego z wpisem w ClawHub.
+Nie używaj zgłoszeń doradczych ClawHub do podatności we własnym kodzie źródłowym zewnętrznej umiejętności lub
+pluginu. Zgłaszaj je bezpośrednio wydawcy lub do repozytorium źródłowego
+podlinkowanego w wpisie ClawHub.
 
 ## Ujawnianie podatności
 
 Ponieważ ClawHub jest hostowaną aplikacją chmurową, podatności usługi ClawHub
-domyślnie nie są ujawniane publicznie. Są ujawniane publicznie, gdy istnieją
-dowody rzeczywistego wpływu na użytkowników lub gdy użytkownicy muszą podjąć
-działania.
+nie są domyślnie ujawniane publicznie. Są ujawniane publicznie, gdy istnieją
+dowody rzeczywistego wpływu na użytkowników lub gdy użytkownicy muszą podjąć działania.
 
-Przykłady rzeczywistego wpływu na użytkowników obejmują potwierdzone wykorzystanie,
-ujawnienie danych użytkowników lub sekretów, dotarcie złośliwej treści do
-użytkowników z powodu awarii platformy albo dowolny problem wymagający od
-użytkowników rotacji poświadczeń, aktualizacji lokalnego oprogramowania lub
+Przykłady rzeczywistego wpływu na użytkowników obejmują potwierdzone wykorzystanie, ujawnienie danych
+użytkowników lub sekretów, dotarcie złośliwej treści do użytkowników z powodu awarii platformy
+albo dowolny problem, który wymaga od użytkowników rotacji poświadczeń, aktualizacji lokalnego oprogramowania lub
 podjęcia innych działań ochronnych.
 
-Podatności w oprogramowaniu instalowanym przez użytkownika są ujawniane publicznie,
-na przykład w pakietach ClawHub CLI, plikach binarnych, bibliotekach lub innych
-artefaktach wydania, które użytkownicy muszą zaktualizować lokalnie.
+Podatności w oprogramowaniu instalowanym przez użytkowników są ujawniane publicznie, na przykład
+pakiety CLI ClawHub, binaria, biblioteki lub inne artefakty wydania, które użytkownicy
+muszą zaktualizować lokalnie.
 
 ## Powiązane strony
 
-Informacje o etykietach audytu podczas instalacji, poziomach ryzyka, ustaleniach
-i interpretacji znajdziesz w [Audytach bezpieczeństwa](/pl/clawhub/security-audits).
+Informacje o etykietach audytu podczas instalacji, poziomach ryzyka, ustaleniach i interpretacji znajdziesz w
+[Audytach bezpieczeństwa](/pl/clawhub/security-audits).
 
-Informacje o zgłoszeniach w marketplace, blokadach moderacyjnych, ukrytych wpisach,
-banach i statusie konta znajdziesz w [Moderacji i bezpieczeństwie konta](/pl/clawhub/moderation).
+Informacje o zgłoszeniach w marketplace, wstrzymaniach moderacyjnych, ukrytych wpisach, blokadach i stanie konta
+znajdziesz w [Moderacji i bezpieczeństwie konta](/pl/clawhub/moderation).

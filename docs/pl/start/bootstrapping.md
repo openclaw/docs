@@ -13,6 +13,7 @@ x-i18n:
     source_hash: e25f05ca47184068b87f0bf8b7dea1c427f4ed48edde170a74888d586b8a606d
     source_path: start/bootstrapping.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Inicjalizacja to procedura **pierwszego uruchomienia**, która przygotowuje obszar roboczy agenta i zbiera dane tożsamości. Dzieje się po wdrożeniu, gdy agent uruchamia się po raz pierwszy.

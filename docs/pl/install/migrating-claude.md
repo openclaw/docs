@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 1b44eda85f3a3714d7d360d04fdd2c99a692fa6491f12e73847c5f08d702a62c
     source_path: install/migrating-claude.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw importuje lokalny stan Claude przez dołączonego dostawcę migracji Claude. Dostawca pokazuje podgląd każdego elementu przed zmianą stanu, redaguje sekrety w planach i raportach oraz tworzy zweryfikowaną kopię zapasową przed zastosowaniem zmian.

@@ -3,9 +3,9 @@ read_when:
     - Logowanie do ClawHub
     - Korzystanie z CLI ClawHub
     - Debugowanie błędów 401
-summary: Logowanie do ClawHub, tokeny API, logowanie w CLI, przechowywanie tokenów i unieważnianie.
+summary: Logowanie do ClawHub, tokeny API, logowanie w CLI, przechowywanie tokenów i ich unieważnianie.
 x-i18n:
-    generated_at: "2026-06-28T07:41:26Z"
+    generated_at: "2026-06-28T10:01:08Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -17,21 +17,21 @@ x-i18n:
 # Uwierzytelnianie
 
 ClawHub używa GitHub do logowania w przeglądarce. CLI używa tokenów API ClawHub utworzonych
-za pomocą tego zalogowanego konta.
+przez to zalogowane konto.
 
 ## Logowanie w przeglądarce
 
 Użyj GitHub, aby zalogować się na [clawhub.ai](https://clawhub.ai).
 
-Usunięte, zbanowane lub wyłączone konta nie mogą ukończyć standardowego logowania do ClawHub.
+Usunięte, zbanowane lub wyłączone konta nie mogą ukończyć normalnego logowania do ClawHub.
 Jeśli po logowaniu wracasz do stanu wylogowania, Twoje konto może nie mieć dobrej
 reputacji. Jeśli Twoje konto zostało zbanowane lub wyłączone, użyj
-[formularza odwołania ClawHub](https://appeals.openclaw.ai/), jeśli uważasz, że to
+[formularza odwoławczego ClawHub](https://appeals.openclaw.ai/), jeśli uważasz, że to
 pomyłka.
 
 ## Logowanie w CLI
 
-Domyślny przepływ logowania CLI otwiera przeglądarkę:
+Domyślny przepływ logowania w CLI otwiera przeglądarkę:
 
 ```bash
 clawhub login
@@ -40,35 +40,35 @@ clawhub whoami
 
 Co się dzieje:
 
-1. CLI uruchamia tymczasowy serwer wywołania zwrotnego na `127.0.0.1`.
+1. CLI uruchamia tymczasowy serwer zwrotny na `127.0.0.1`.
 2. Przeglądarka otwiera stronę logowania ClawHub.
 3. Po zalogowaniu przez GitHub ClawHub tworzy token API.
 4. Przeglądarka przekierowuje z powrotem do lokalnego wywołania zwrotnego.
 5. CLI zapisuje token w pliku konfiguracji ClawHub.
 
 Jeśli przeglądarka nie może połączyć się z lokalnym wywołaniem zwrotnym z powodu reguł zapory, VPN lub
-proxy, użyj przepływu tokena bez interfejsu graficznego.
+proxy, użyj przepływu tokenu bez interfejsu graficznego.
 
 ## Logowanie bez interfejsu graficznego
 
-Utwórz token w internetowym interfejsie użytkownika ClawHub, a następnie przekaż go do CLI:
+Utwórz token w interfejsie WWW ClawHub, a następnie przekaż go do CLI:
 
 ```bash
 clawhub login --token clh_...
 ```
 
-Użyj tego przepływu dla serwerów, zadań CI lub środowisk dostępnych tylko z terminala.
+Użyj tego przepływu dla serwerów, zadań CI lub środowisk wyłącznie terminalowych.
 
-W przypadku zdalnych powłok, gdy możesz otworzyć przeglądarkę gdzie indziej, uruchom:
+W przypadku zdalnych powłok, w których możesz otworzyć przeglądarkę gdzie indziej, uruchom:
 
 ```bash
 clawhub login --device
 ```
 
-CLI wyświetla jednorazowy kod i czeka, aż autoryzujesz go pod adresem
+CLI wyświetla jednorazowy kod i czeka, gdy autoryzujesz go pod adresem
 `https://clawhub.ai/cli/device`.
 
-## Przechowywanie tokena
+## Przechowywanie tokenu
 
 Domyślne ścieżki konfiguracji:
 
@@ -82,20 +82,20 @@ Zastąp ścieżkę za pomocą:
 export CLAWHUB_CONFIG_PATH=/path/to/config.json
 ```
 
-Wyświetl zapisany token na potrzeby konfiguracji CI za pomocą:
+Wyświetl zapisany token do konfiguracji CI za pomocą:
 
 ```bash
 clawhub token
 ```
 
-## Unieważnianie
+## Unieważnienie
 
-Tokeny API możesz unieważnić w internetowym interfejsie użytkownika ClawHub.
+Możesz unieważniać tokeny API w interfejsie WWW ClawHub.
 
 Unieważnione, nieprawidłowe lub brakujące tokeny zwracają `401 Unauthorized`. Zaloguj się ponownie
 za pomocą `clawhub login` albo podaj nowy token za pomocą `clawhub login --token`.
 
-Usunięte, zbanowane lub wyłączone konta nie mogą nadal używać istniejących tokenów API.
+Usunięte, zbanowane lub wyłączone konta nie mogą dalej używać istniejących tokenów API.
 Jeśli Twoje konto zostało zbanowane lub wyłączone, użyj
-[formularza odwołania ClawHub](https://appeals.openclaw.ai/), jeśli uważasz, że to
+[formularza odwoławczego ClawHub](https://appeals.openclaw.ai/), jeśli uważasz, że to
 pomyłka.

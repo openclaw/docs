@@ -1,10 +1,10 @@
 ---
 read_when:
     - Polecenia CLI ClawHub lub rejestru OpenClaw kończą się niepowodzeniem
-    - Pakiet nie może zostać zainstalowany, opublikowany ani zaktualizowany
-summary: Rozwiązywanie problemów z logowaniem do ClawHub, instalacją, publikowaniem, aktualizacją i problemami z API.
+    - Nie można zainstalować, opublikować ani zaktualizować pakietu
+summary: Rozwiązywanie problemów z logowaniem, instalacją, publikowaniem, aktualizacją i API w ClawHub.
 x-i18n:
-    generated_at: "2026-06-28T07:42:22Z"
+    generated_at: "2026-06-28T10:04:44Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -19,9 +19,9 @@ x-i18n:
 
 CLI uruchamia krótkotrwały lokalny serwer wywołania zwrotnego podczas logowania w przeglądarce.
 
-- Upewnij się, że przeglądarka może otworzyć `http://127.0.0.1:<port>/callback`.
-- Sprawdź lokalną zaporę, VPN i reguły proxy, jeśli wywołanie zwrotne nigdy nie dociera.
-- W środowiskach bez interfejsu graficznego utwórz token API w interfejsie WWW ClawHub i uruchom:
+- Upewnij się, że przeglądarka może uzyskać dostęp do `http://127.0.0.1:<port>/callback`.
+- Sprawdź reguły lokalnej zapory, VPN i proxy, jeśli wywołanie zwrotne nigdy nie dociera.
+- W środowiskach bez interfejsu graficznego utwórz token API w internetowym interfejsie ClawHub i uruchom:
 
 ```bash
 clawhub login --token clh_...
@@ -32,7 +32,7 @@ clawhub login --token clh_...
 - Zaloguj się ponownie za pomocą `clawhub login`.
 - Jeśli używasz niestandardowej ścieżki konfiguracji, potwierdź, że `CLAWHUB_CONFIG_PATH` wskazuje
   plik zawierający bieżący token.
-- Jeśli używasz tokenu API, potwierdź, że nie został unieważniony w interfejsie WWW.
+- Jeśli używasz tokenu API, potwierdź, że nie został unieważniony w interfejsie internetowym.
 
 ## Wyszukiwanie lub instalacja zwraca `Rate limit exceeded` (429)
 
@@ -47,7 +47,7 @@ Jeśli wielu użytkowników współdzieli jeden wychodzący adres IP, anonimowe 
 osoba wysyła tylko kilka żądań. Zaloguj się tam, gdzie to możliwe, i ponów próbę po
 zgłoszonym opóźnieniu.
 
-## Wyszukiwanie lub instalacja kończy się niepowodzeniem za proxy
+## Wyszukiwanie lub instalacja nie działa za proxy
 
 CLI respektuje standardowe zmienne proxy:
 
@@ -61,7 +61,7 @@ Obsługiwane nazwy obejmują `HTTPS_PROXY`, `HTTP_PROXY`, `https_proxy` i
 
 ## Umiejętność nie pojawia się w wyszukiwaniu
 
-- Sprawdź dokładny slug lub stronę właściciela, jeśli ją znasz.
+- Sprawdź dokładny slug lub stronę właściciela, jeśli je znasz.
 - Potwierdź, że wydanie jest publiczne i nie zostało wstrzymane przez skanowanie ani moderację.
 - Jeśli jesteś właścicielem umiejętności, zaloguj się i sprawdź ją:
 
@@ -69,9 +69,9 @@ Obsługiwane nazwy obejmują `HTTPS_PROXY`, `HTTP_PROXY`, `https_proxy` i
 clawhub inspect @openclaw/demo
 ```
 
-Diagnostyka widoczna dla właściciela może wyjaśnić stan skanowania, blokady przesyłania lub moderacji.
+Diagnostyka widoczna dla właściciela może wyjaśnić stan skanowania, bramki przesyłania lub moderacji.
 
-## Publikacja kończy się niepowodzeniem, ponieważ brakuje wymaganych metadanych
+## Publikowanie kończy się niepowodzeniem, ponieważ brakuje wymaganych metadanych
 
 W przypadku umiejętności sprawdź frontmatter w `SKILL.md`. Wymagane zmienne środowiskowe i
 narzędzia powinny być zadeklarowane, aby użytkownicy i skanery mogli zrozumieć pakiet.
@@ -86,20 +86,20 @@ Najpierw podejrzyj ładunek publikacji:
 clawhub package publish <source> --family code-plugin --dry-run
 ```
 
-## Publikacja kończy się niepowodzeniem z powodu błędu właściciela GitHub lub źródła
+## Publikowanie kończy się niepowodzeniem z powodu błędu właściciela GitHub lub źródła
 
-ClawHub używa tożsamości GitHub i atrybucji źródła, aby połączyć pakiety z ich
+ClawHub używa tożsamości GitHub i atrybucji źródła, aby łączyć pakiety z ich
 wydawcami.
 
 - Upewnij się, że jesteś zalogowany na konto GitHub, które jest właścicielem pakietu lub może go publikować.
-- Sprawdź, czy adres URL źródła jest publiczny albo dostępny dla ClawHub.
+- Sprawdź, czy URL źródła jest publiczny lub dostępny dla ClawHub.
 - W przypadku źródeł GitHub użyj `owner/repo`, `owner/repo@ref` albo pełnego adresu URL GitHub.
 
-## Publikacja kończy się niepowodzeniem, ponieważ przestrzeń nazw jest zajęta lub zarezerwowana
+## Publikowanie kończy się niepowodzeniem, ponieważ przestrzeń nazw jest zajęta lub zarezerwowana
 
-Jeśli publikacja kończy się niepowodzeniem, ponieważ uchwyt właściciela, przestrzeń nazw organizacji, zakres pakietu, slug umiejętności
-lub nazwa pakietu są już zajęte albo zarezerwowane, najpierw potwierdź, że
-publikujesz jako właściciel pasujący do przestrzeni nazw. W przypadku pakietów pluginów
+Jeśli publikowanie kończy się niepowodzeniem, ponieważ identyfikator właściciela, przestrzeń nazw organizacji, zakres pakietu, slug umiejętności
+lub nazwa pakietu są już zajęte albo zarezerwowane, najpierw potwierdź, że publikujesz jako
+właściciel pasujący do przestrzeni nazw. W przypadku pakietów pluginów
 nazwy z zakresem, takie jak `@example-org/example-plugin`, muszą być publikowane jako
 pasujący właściciel `example-org`.
 
@@ -107,14 +107,14 @@ Jeśli uważasz, że Twoja organizacja, projekt lub marka jest prawowitym właś
 nie możesz zarządzać bieżącym właścicielem ClawHub, otwórz
 [zgłoszenie roszczenia organizacji / przestrzeni nazw](https://github.com/openclaw/clawhub/issues/new?template=org-namespace-claim.yml)
 z publicznym, niewrażliwym dowodem. Zobacz
-[Roszczenia organizacji i przestrzeni nazw](/pl/clawhub/namespace-claims), aby uzyskać wskazówki dotyczące dowodów oraz informacje, czego
+[Roszczenia dotyczące organizacji i przestrzeni nazw](/pl/clawhub/namespace-claims), aby uzyskać wskazówki dotyczące dowodów i informacje, czego
 nie umieszczać w publicznych zgłoszeniach.
 
-## `sync` mówi, że nie znaleziono żadnych umiejętności
+## `sync` informuje, że nie znaleziono umiejętności
 
 `sync` szuka folderów zawierających `SKILL.md` lub `skill.md`.
 
-Wskaż korzenie, które chcesz przeskanować:
+Wskaż katalogi główne, które chcesz przeskanować:
 
 ```bash
 clawhub sync --root /path/to/skills
@@ -148,7 +148,7 @@ openclaw plugins install clawhub:<package>
 ```
 
 - Sprawdź stronę szczegółów pakietu pod kątem stanu skanowania i metadanych zgodności.
-- Potwierdź, że Twoja wersja OpenClaw spełnia deklarowany przez pakiet
+- Potwierdź, że Twoja wersja OpenClaw spełnia reklamowany przez pakiet
   zakres zgodności.
 - Jeśli pakiet jest ukryty, wstrzymany lub zablokowany, może nie dać się go zainstalować, dopóki
   właściciel nie rozwiąże problemu.
@@ -156,8 +156,8 @@ openclaw plugins install clawhub:<package>
 ## Publiczne żądania API kończą się niepowodzeniem
 
 - Respektuj nagłówki ponawiania `429` i buforuj publiczne odpowiedzi listy/wyszukiwania.
-- Kieruj użytkowników z powrotem do kanonicznej listy ClawHub.
-- Nie dubluj ukrytych, prywatnych, wstrzymanych ani zablokowanych przez moderację treści poza
+- Kieruj użytkowników z powrotem do kanonicznego wpisu ClawHub.
+- Nie odzwierciedlaj ukrytych, prywatnych, wstrzymanych ani zablokowanych przez moderację treści poza
   publiczną powierzchnią API.
 
-Zobacz [API HTTP](/pl/clawhub/http-api), aby uzyskać szczegóły endpointów.
+Zobacz [HTTP API](/pl/clawhub/http-api), aby poznać szczegóły punktów końcowych.

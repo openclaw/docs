@@ -2,9 +2,9 @@
 read_when:
     - Tworzenie klientów API
     - Dodawanie punktów końcowych lub schematów
-summary: Przegląd i konwencje publicznego REST API (v1).
+summary: Omówienie i konwencje publicznego REST API (v1).
 x-i18n:
-    generated_at: "2026-06-28T07:41:17Z"
+    generated_at: "2026-06-28T10:01:01Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -19,31 +19,31 @@ Baza: `https://clawhub.ai`
 
 OpenAPI: `/api/v1/openapi.json`
 
-## Ponowne użycie katalogu publicznego
+## Ponowne wykorzystanie publicznego katalogu
 
-Możesz zbudować zewnętrzny katalog, spis lub powierzchnię wyszukiwania na podstawie publicznych interfejsów API odczytu ClawHub. Publiczne metadane skillów i pliki skillów są publikowane zgodnie z zasadami licencjonowania skillów ClawHub, natomiast samo API ma limity szybkości i powinno być używane odpowiedzialnie.
+Możesz zbudować zewnętrzny katalog, spis lub powierzchnię wyszukiwania na publicznych interfejsach API odczytu ClawHub. Publiczne metadane Skills i pliki Skills są publikowane zgodnie z zasadami licencji Skills ClawHub, natomiast samo API ma limity szybkości i powinno być używane odpowiedzialnie.
 
 Wytyczne:
 
-- Używaj publicznych punktów końcowych odczytu, takich jak `GET /api/v1/skills`, `GET /api/v1/search` i `GET /api/v1/skills/{slug}` do list katalogowych.
-- Buforuj odpowiedzi i respektuj nagłówki `429`, `Retry-After` oraz limity szybkości zamiast agresywnego odpytywania.
-- Linkuj z powrotem do kanonicznego adresu URL skilla w ClawHub podczas wyświetlania list, aby użytkownicy mogli sprawdzić źródłowy rekord rejestru.
+- Używaj publicznych punktów końcowych odczytu, takich jak `GET /api/v1/skills`, `GET /api/v1/search` i `GET /api/v1/skills/{slug}`, do list katalogowych.
+- Buforuj odpowiedzi i respektuj `429`, `Retry-After` oraz nagłówki limitów szybkości zamiast agresywnego odpytywania.
+- Podczas wyświetlania list linkuj z powrotem do kanonicznego adresu URL Skills w ClawHub, aby użytkownicy mogli sprawdzić źródłowy rekord rejestru.
 - Używaj kanonicznych adresów URL stron w formie `https://clawhub.ai/<owner>/skills/<slug>`.
-- Nie sugeruj, że ClawHub popiera, weryfikuje lub obsługuje witrynę zewnętrzną.
-- Nie kopiuj ukrytych, prywatnych ani zablokowanych przez moderację treści przez obchodzenie publicznych filtrów API lub granic uwierzytelniania.
+- Nie sugeruj, że ClawHub popiera, weryfikuje lub obsługuje zewnętrzną witrynę.
+- Nie mirroruj ukrytych, prywatnych ani zablokowanych przez moderację treści przez obchodzenie publicznych filtrów API lub granic uwierzytelniania.
 
 ## Uwierzytelnianie
 
-- Odczyt publiczny: token nie jest wymagany.
+- Publiczny odczyt: token nie jest wymagany.
 - Zapis + konto: `Authorization: Bearer clh_...`.
 
 ## Limity szybkości
 
-Egzekwowanie z uwzględnieniem uwierzytelniania:
+Egzekwowanie uwzględniające uwierzytelnianie:
 
-- Żądania anonimowe: według adresu IP.
-- Żądania uwierzytelnione (prawidłowy token Bearer): według koszyka użytkownika.
-- Brakujący/nieprawidłowy token przełącza się na egzekwowanie według IP.
+- Żądania anonimowe: na IP.
+- Żądania uwierzytelnione (prawidłowy token Bearer): na pulę użytkownika.
+- Brakujący lub nieprawidłowy token powoduje powrót do egzekwowania według IP.
 
 - Odczyt: 3000/min na IP, 12000/min na klucz
 - Zapis: 300/min na IP, 3000/min na klucz
@@ -54,12 +54,12 @@ Nagłówki: `X-RateLimit-Limit`, `X-RateLimit-Reset`, `RateLimit-Limit`, `RateLi
 
 Semantyka:
 
-- `X-RateLimit-Reset`: sekundy epoki Uniksa (bezwzględny czas resetu)
-- `RateLimit-Reset`: opóźnienie w sekundach do resetu
+- `X-RateLimit-Reset`: sekundy epoki Unix (bezwzględny czas resetu)
+- `RateLimit-Reset`: liczba sekund opóźnienia do resetu
 - `X-RateLimit-Remaining` / `RateLimit-Remaining`: dokładny pozostały budżet, gdy
-  jest obecny; podzielone na shardy udane żądania pomijają go zamiast zwracać przybliżoną
+  jest obecny; shardowane udane żądania pomijają go zamiast zwracać przybliżoną
   wartość globalną
-- `Retry-After`: opóźnienie w sekundach oczekiwania przy `429`
+- `Retry-After`: liczba sekund opóźnienia oczekiwania przy `429`
 
 Przykład `429`:
 
@@ -74,22 +74,22 @@ ratelimit-reset: 34
 retry-after: 34
 ```
 
-Obsługa po stronie klienta:
+Obsługa klienta:
 
 - Preferuj `Retry-After`, gdy jest obecny.
 - W przeciwnym razie użyj `RateLimit-Reset` albo wyprowadź opóźnienie z `X-RateLimit-Reset`.
-- Dodaj losowe rozproszenie do ponowień.
+- Dodaj losowe odchylenie do ponowień.
 
 ## Błędy
 
 - Błędy v1 są zwykłym tekstem (`text/plain; charset=utf-8`), w tym `400`,
-  `401`, `403`, `404`, `429` oraz odpowiedzi blokujące pobieranie.
+  `401`, `403`, `404`, `429` oraz odpowiedzi zablokowanego pobierania.
 - Nieznane parametry zapytania są ignorowane dla zgodności.
 - Znane parametry zapytania z nieprawidłowymi wartościami zwracają `400`.
 
 ## Punkty końcowe
 
-Odczyt publiczny:
+Publiczny odczyt:
 
 - `GET /api/v1/search?q=...`
   - Opcjonalne filtry: `highlightedOnly=true`, `nonSuspiciousOnly=true`
@@ -100,7 +100,7 @@ Odczyt publiczny:
   - `cursor` ma zastosowanie do sortowań innych niż `trending`
   - Opcjonalny filtr: `nonSuspiciousOnly=true`
   - Starszy alias: `nonSuspicious=true`
-  - Przy `nonSuspiciousOnly=true` strony oparte na kursorze mogą zawierać mniej niż `limit` elementów; użyj `nextCursor`, aby kontynuować.
+  - Przy `nonSuspiciousOnly=true` strony oparte na kursorze mogą zawierać mniej elementów niż `limit`; użyj `nextCursor`, aby kontynuować.
   - `recommended` używa sygnałów zaangażowania i aktualności.
 - `GET /api/v1/skills/{slug}`
 - `GET /api/v1/skills/{slug}/moderation`
@@ -110,12 +110,12 @@ Odczyt publiczny:
 - `GET /api/v1/skills/{slug}/file?path=&version=&tag=`
 - `GET /api/v1/resolve?slug=&hash=`
 - `GET /api/v1/download?slug=&version=&tag=`
-  - Hostowane skille zwracają deterministyczne bajty ZIP.
-  - Bieżące skille oparte na GitHubie ze skanem `clean` lub `suspicious` zwracają
+  - Hostowane Skills zwracają deterministyczne bajty ZIP.
+  - Bieżące Skills oparte na GitHub ze skanem `clean` lub `suspicious` zwracają
     deskryptor przekazania JSON `public-github` zamiast bajtów ClawHub.
 - `GET /api/v1/skills/export?startDate=&endDate=&limit=&cursor=`
-  - Hostowane skille są eksportowane jako zapisane pliki.
-  - Bieżące skille oparte na GitHubie ze skanem `clean` lub `suspicious` są eksportowane
+  - Hostowane Skills są eksportowane jako zapisane pliki.
+  - Bieżące Skills oparte na GitHub ze skanem `clean` lub `suspicious` są eksportowane
     jako deskryptory przekazania `public-github`.
 - `GET /api/v1/packages?limit=&cursor=&sort=`
   - `sort`: `updated` (domyślnie), `recommended`, `downloads`, starszy alias `installs`
@@ -131,7 +131,7 @@ Odczyt publiczny:
 
 Wymagane uwierzytelnianie:
 
-- `POST /api/v1/skills` (publikowanie, preferowany multipart)
+- `POST /api/v1/skills` (publikacja, preferowane multipart)
 - `DELETE /api/v1/skills/{slug}`
 - `DELETE /api/v1/packages/{name}`
 - `POST /api/v1/skills/{slug}/undelete`
@@ -151,7 +151,7 @@ Wymagane uwierzytelnianie:
 
 Tylko administrator:
 
-- `POST /api/v1/users/reserve` rezerwuje główne slugi i prywatne zastępcze pakiety bez wydania dla uchwytu właściciela.
+- `POST /api/v1/users/reserve` rezerwuje główne slugi i prywatne symbole zastępcze pakietów bez wydań dla uchwytu właściciela.
 
 ## Starsze
 

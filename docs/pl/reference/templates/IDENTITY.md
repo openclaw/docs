@@ -10,6 +10,7 @@ x-i18n:
     source_hash: a3069210f1ac31a0d39ca054ae84f24466d6acae2e988bed7db1653ab70f0add
     source_path: reference/templates/IDENTITY.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 # IDENTITY.md - Kim jestem?

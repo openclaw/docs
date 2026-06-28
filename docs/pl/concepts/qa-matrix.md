@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7c6d836492368c470468547950d3765a64187694852222a5a1f0ae4185569abe
     source_path: concepts/qa-matrix.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Ścieżka Matrix QA uruchamia dołączony Plugin `@openclaw/matrix` względem jednorazowego homeservera Tuwunel w Dockerze, z tymczasowymi kontami drivera, SUT i obserwatora oraz wstępnie przygotowanymi pokojami. Jest to pokrycie Matrix działające na rzeczywistym transporcie live.

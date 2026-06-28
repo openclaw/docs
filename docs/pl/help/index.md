@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 118e8ad2207d32739d3da7d0097604dfad8e7780843841f4f84a44cd77eb8736
     source_path: help/index.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Szybka ścieżka „odblokowania się” dla najczęstszych problemów:

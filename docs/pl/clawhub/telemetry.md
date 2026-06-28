@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Praca nad kontrolą telemetrii / prywatności
+    - Praca nad kontrolami telemetrii / prywatności
     - Pytania dotyczące tego, jakie dane są zbierane
-summary: Instaluj telemetrię zbieraną przez CLI ClawHub oraz jak z niej zrezygnować.
+summary: Telemetria instalacji zbierana przez CLI ClawHub i sposób rezygnacji.
 x-i18n:
-    generated_at: "2026-06-28T07:42:14Z"
+    generated_at: "2026-06-28T10:04:29Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -15,7 +15,7 @@ x-i18n:
 
 # Telemetria
 
-ClawHub używa minimalnej telemetrii CLI do obliczania zbiorczych liczników instalacji.
+ClawHub używa minimalnej telemetrii CLI do obliczania zagregowanej liczby instalacji.
 
 ## Kiedy telemetria jest zbierana
 
@@ -25,36 +25,36 @@ Telemetria jest wysyłana tylko wtedy, gdy:
 - Uruchamiasz `clawhub install <slug>`.
 - Telemetria **nie jest wyłączona** (zobacz „Jak wyłączyć” poniżej).
 
-Jeśli nie jesteś zalogowany, nic nie jest raportowane.
+Jeśli nie jesteś zalogowany, nic nie jest zgłaszane.
 
 ## Co zbieramy
 
-Przy każdym raportowanym `clawhub install` CLI wysyła jedno zdarzenie instalacji na zasadzie najlepszej próby.
+Przy każdym zgłoszonym `clawhub install` CLI wysyła jedno zdarzenie instalacji w trybie best-effort.
 
-Zdarzenie zawiera:
+Zdarzenie obejmuje:
 
 - `slug`: slug zainstalowanej umiejętności.
 - `version`: zainstalowana wersja, jeśli jest znana.
 
 ### Czego _nie_ zbieramy
 
-- Żadnych ścieżek folderów ani identyfikatorów pochodzących od folderów.
-- Żadnej zawartości plików.
-- Żadnych dzienników z poszczególnych uruchomień, promptów ani innych danych wyjściowych CLI.
+- Brak ścieżek folderów ani identyfikatorów pochodzących od folderów.
+- Brak zawartości plików.
+- Brak dzienników poszczególnych uruchomień, promptów ani innych danych wyjściowych CLI.
 
-## Liczniki instalacji
+## Liczby instalacji
 
-ClawHub utrzymuje zbiorcze liczniki dla każdej umiejętności:
+ClawHub przechowuje zagregowane liczniki dla każdej umiejętności:
 
 - `installsAllTime`: unikalni użytkownicy, którzy zgłosili co najmniej jedną instalację umiejętności przez CLI.
-- `installsCurrent`: unikalni użytkownicy, którzy zgłosili instalację i nie usunęli swoich
-  danych telemetrycznych.
+- `installsCurrent`: unikalni użytkownicy, którzy zgłosili instalację i nie usunęli swojej
+  telemetrii.
 
 ## Przejrzystość + kontrola użytkownika
 
-Wszyscy widzą tylko **zbiorcze liczniki instalacji**.
+Wszyscy widzą tylko **zagregowane liczniki instalacji**.
 
-Usunięcie konta usuwa również Twoje dane telemetryczne.
+Usunięcie konta usuwa także dane telemetryczne.
 
 ## Jak wyłączyć telemetrię
 

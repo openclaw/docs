@@ -1,11 +1,11 @@
 ---
 read_when:
     - Pierwsze użycie ClawHub
-    - Instalowanie Skills lub Plugin z rejestru
+    - Instalowanie skillu lub Plugin z rejestru
     - Publikowanie w ClawHub
-summary: 'Zacznij korzystać z ClawHub: znajduj, instaluj, aktualizuj i publikuj Skills lub Pluginy.'
+summary: 'Zacznij korzystać z ClawHub: znajduj, instaluj, aktualizuj i publikuj Skills lub Plugin.'
 x-i18n:
-    generated_at: "2026-06-28T07:42:00Z"
+    generated_at: "2026-06-28T10:03:24Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -19,12 +19,12 @@ x-i18n:
 ClawHub to rejestr Skills i pluginów OpenClaw.
 
 Używaj OpenClaw, gdy instalujesz rzeczy w OpenClaw. Używaj CLI `clawhub`,
-gdy się logujesz, publikujesz, zarządzasz własnymi wpisami lub korzystasz
-z przepływów pracy specyficznych dla rejestru.
+gdy się logujesz, publikujesz, zarządzasz własnymi listingami lub używasz
+przepływów pracy specyficznych dla rejestru.
 
 ## Znajdowanie i instalowanie skill
 
-Wyszukaj z OpenClaw:
+Szukaj z OpenClaw:
 
 ```bash
 openclaw skills search "calendar"
@@ -36,37 +36,37 @@ Zainstaluj skill:
 openclaw skills install @openclaw/demo
 ```
 
-Zaktualizuj zainstalowane Skills:
+Aktualizuj zainstalowane Skills:
 
 ```bash
 openclaw skills update --all
 ```
 
-OpenClaw zapisuje, skąd pochodzi skill, aby późniejsze aktualizacje nadal mogły
+OpenClaw zapisuje, skąd pochodzi skill, aby późniejsze aktualizacje mogły nadal
 być rozwiązywane przez ClawHub.
 
-## Znajdowanie i instalowanie pluginu
+## Znajdowanie i instalowanie plugina
 
-Wyszukaj z OpenClaw:
+Szukaj z OpenClaw:
 
 ```bash
 openclaw plugins search "calendar"
 ```
 
-Zainstaluj Plugin hostowany w ClawHub z jawnym źródłem ClawHub:
+Zainstaluj plugin hostowany w ClawHub z jawnym źródłem ClawHub:
 
 ```bash
 openclaw plugins install clawhub:<package>
 ```
 
-Zaktualizuj zainstalowane pluginy:
+Aktualizuj zainstalowane pluginy:
 
 ```bash
 openclaw plugins update --all
 ```
 
-Użyj prefiksu `clawhub:`, gdy chcesz, aby OpenClaw rozwiązał pakiet przez
-ClawHub, a nie przez npm ani inne źródło.
+Używaj prefiksu `clawhub:`, gdy chcesz, aby OpenClaw rozwiązywał pakiet przez
+ClawHub, a nie npm lub inne źródło.
 
 ## Logowanie do publikowania
 
@@ -85,7 +85,7 @@ clawhub login
 clawhub whoami
 ```
 
-Środowiska bezinterfejsowe mogą użyć tokenu API z interfejsu webowego ClawHub:
+Środowiska bezinterfejsowe mogą używać tokenu API z webowego UI ClawHub:
 
 ```bash
 clawhub login --token clh_...
@@ -105,15 +105,15 @@ clawhub skill publish ./my-skill \
 
 Polecenie pomija niezmienioną zawartość. Nowe Skills zaczynają od `1.0.0`;
 późniejsze zmiany automatycznie publikują następną wersję poprawkową. Użyj
-`--dry-run`, aby zobaczyć podgląd, albo `--version`, aby wybrać jawną wersję.
+`--dry-run`, aby podejrzeć wynik, lub `--version`, aby wybrać jawną wersję.
 
-Przed publikacją sprawdź metadane w `SKILL.md`. Zadeklaruj wymagane
-zmienne środowiskowe, narzędzia i uprawnienia, aby użytkownicy mogli zrozumieć,
-czego skill potrzebuje, zanim go zainstalują. Zobacz [Format skill](/pl/clawhub/skill-format).
+Przed publikacją sprawdź metadane w `SKILL.md`. Zadeklaruj wymagane zmienne
+środowiskowe, narzędzia i uprawnienia, aby użytkownicy mogli zrozumieć, czego
+potrzebuje skill, zanim go zainstalują. Zobacz [Format skill](/pl/clawhub/skill-format).
 
-W repozytoriach zawierających wiele Skills wielokrotnego użytku przepływ pracy
-GitHub wywołuje `skill publish` dla każdego bezpośredniego folderu skill
-w katalogu `skills/`:
+W przypadku repozytoriów zawierających wiele Skills wielokrotnego użytku
+workflow GitHub wywołuje `skill publish` dla każdego bezpośredniego folderu
+skill w `skills/`:
 
 ```yaml
 jobs:
@@ -123,9 +123,9 @@ jobs:
       dry_run: true
 ```
 
-## Publikowanie pluginu
+## Publikowanie plugina
 
-Opublikuj Plugin z folderu lokalnego, repozytorium GitHub, ref GitHub albo
+Opublikuj plugin z lokalnego folderu, repozytorium GitHub, ref GitHub lub
 istniejącego archiwum:
 
 ```bash
@@ -139,16 +139,17 @@ zgodności, atrybucję źródła i plan przesyłania bez publikowania.
 Pluginy kodu muszą zawierać metadane zgodności z OpenClaw w `package.json`,
 w tym `openclaw.compat.pluginApi` i `openclaw.build.openclawVersion`.
 
-## Inspekcja przed instalacją
+## Sprawdzanie przed instalacją
 
-Przed instalacją użyj strony webowej ClawHub albo poleceń szczegółów CLI, aby
-sprawdzić metadane, linki źródłowe, wersje, dzienniki zmian i stan skanowania:
+Przed instalacją użyj strony webowej ClawHub lub poleceń CLI pokazujących
+szczegóły, aby sprawdzić metadane, linki źródłowe, wersje, dzienniki zmian i
+stan skanowania:
 
 ```bash
 clawhub inspect @openclaw/demo
 clawhub package inspect <package>
 ```
 
-Publiczne wpisy pokazują najnowszy stan skanowania. Wydania wstrzymane lub
-zablokowane przez moderację mogą być ukryte w powierzchniach wyszukiwania
-i instalacji do czasu rozwiązania sprawy.
+Publiczne listingi pokazują najnowszy stan skanowania. Wydania wstrzymane lub
+zablokowane przez moderację mogą być ukryte w wyszukiwarce i powierzchniach
+instalacji do czasu rozwiązania sprawy.

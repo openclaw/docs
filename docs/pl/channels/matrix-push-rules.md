@@ -11,6 +11,7 @@ x-i18n:
     source_hash: e2f037a50a85b350163c74cf6b9cce335ecaaa5cccc762124122ad6d0321a1fa
     source_path: channels/matrix-push-rules.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Gdy `channels.matrix.streaming` ma wartość `"quiet"`, OpenClaw edytuje jedno zdarzenie podglądu w miejscu i oznacza sfinalizowaną edycję niestandardową flagą treści. Klienci Matrix wysyłają powiadomienie o końcowej edycji tylko wtedy, gdy reguła powiadomień push dla danego użytkownika pasuje do tej flagi. Ta strona jest przeznaczona dla operatorów, którzy samodzielnie hostują Matrix i chcą zainstalować tę regułę dla każdego konta odbiorcy.
