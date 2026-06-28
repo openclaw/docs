@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 51b3326b3884013ebcf570b417e66efe62ea89dcdedb5ab3173f39fb021de89f
     source_path: cli/dashboard.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # `openclaw dashboard`

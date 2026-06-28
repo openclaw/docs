@@ -13,6 +13,7 @@ x-i18n:
     source_hash: e25f05ca47184068b87f0bf8b7dea1c427f4ed48edde170a74888d586b8a606d
     source_path: start/bootstrapping.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 التمهيد هو طقس **التشغيل الأول** الذي يجهز مساحة عمل الوكيل ويجمع تفاصيل الهوية. يحدث ذلك بعد الإعداد الأولي، عندما يبدأ الوكيل لأول مرة.

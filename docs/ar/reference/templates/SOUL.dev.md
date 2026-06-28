@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 5df6995280551a5b56f5029bc32388a550b411b37d60cc8f3a138e8e446ce8a7
     source_path: reference/templates/SOUL.dev.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 # SOUL.md - روح C-3PO

@@ -12,6 +12,7 @@ x-i18n:
     source_hash: d0a2dfe4261ab4bc5d234cedf9dff41fbbfbbad8914c6c9c43bc76e8694d99d4
     source_path: tools/minimax-search.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 يدعم OpenClaw مزوّد `web_search` من MiniMax عبر API البحث MiniMax

@@ -11,6 +11,7 @@ x-i18n:
     source_hash: f53af21c746cdd44c71485cbad669f4a01a6e5be956675c73831e7b5f15df8c4
     source_path: providers/senseaudio.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 SenseAudio يمكنه نسخ مرفقات الصوت الواردة والملاحظات الصوتية عبر مسار `tools.media.audio` المشترك في OpenClaw. يرسل OpenClaw الصوت متعدد الأجزاء إلى نقطة نهاية النسخ المتوافقة مع OpenAI ويحقن النص المُعاد في صورة `{{Transcript}}` إضافةً إلى كتلة `[Audio]`.

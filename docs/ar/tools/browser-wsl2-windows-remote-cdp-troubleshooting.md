@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7532c672f7e829b851d175d93354fc586baecea4af5f2555f57908780cedfd02
     source_path: tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 في إعداد المضيف المنقسم الشائع، يعمل OpenClaw Gateway داخل WSL2، ويعمل Chrome على Windows، ويجب أن يعبر التحكم في المتصفح الحد الفاصل بين WSL2 وWindows. يعني نمط الفشل الطبقي من [المشكلة #39369](https://github.com/openclaw/openclaw/issues/39369) أن عدة مشكلات مستقلة يمكن أن تظهر في الوقت نفسه، مما يجعل الطبقة الخطأ تبدو معطلة أولا.

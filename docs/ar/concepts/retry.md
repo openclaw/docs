@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 7720092499effdfa011fc0a0310adb2ecddca9e94f57f749794eab1c9ab4c922
     source_path: concepts/retry.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 ## الأهداف

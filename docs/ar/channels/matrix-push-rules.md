@@ -11,6 +11,7 @@ x-i18n:
     source_hash: e2f037a50a85b350163c74cf6b9cce335ecaaa5cccc762124122ad6d0321a1fa
     source_path: channels/matrix-push-rules.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 عندما تكون `channels.matrix.streaming` هي `"quiet"`، يعدّل OpenClaw حدث معاينة واحدًا في مكانه ويميّز التعديل النهائي بعلامة محتوى مخصصة. لا ترسل عملاء Matrix إشعارًا بشأن التعديل النهائي إلا إذا طابقت قاعدة دفع لكل مستخدم تلك العلامة. هذه الصفحة مخصصة للمشغلين الذين يستضيفون Matrix ذاتيًا ويريدون تثبيت تلك القاعدة لكل حساب مستلِم.

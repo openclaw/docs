@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 50680e099181421505e25cecab2ba331fdaf9839d07fef482ff04976b0fc583e
     source_path: platforms/mac/webchat.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 يُضمّن تطبيق شريط قوائم macOS واجهة WebChat كعرض SwiftUI أصلي. يتصل بـ Gateway ويستخدم **الجلسة الرئيسية** افتراضيًا للوكيل المحدد (مع مبدّل جلسات للجلسات الأخرى).

@@ -8,6 +8,7 @@ x-i18n:
     source_hash: a277212ed680b7aeb9153d003bc084d2d0c918dc53f2f469c72f7fe5a881cfae
     source_path: automation/poll.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 انتقلت هذه الصفحة إلى [أداة الرسائل](/ar/cli/message). راجع [أداة الرسائل](/ar/cli/message) للاطلاع على وثائق الاستطلاعات.

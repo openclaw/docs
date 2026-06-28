@@ -9,6 +9,7 @@ x-i18n:
     source_hash: d9a91ea42a8a600163bcf66ad398677175bd0c5186d3e1dddb629a55c2ea66ed
     source_path: tools/browser-linux-troubleshooting.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 ## المشكلة: "Failed to start Chrome CDP on port 18800"

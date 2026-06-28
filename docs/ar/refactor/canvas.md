@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 1470edb74d5f8fe96224d38821ba0b3b13f8ce756124125af64fc3e49df0fcb8
     source_path: refactor/canvas.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # إعادة هيكلة Plugin Canvas

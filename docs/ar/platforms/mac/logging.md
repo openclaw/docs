@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 76c001008311d4e3f245add4cce32bdcc3eed9d897b30f6884c0649d2f0523df
     source_path: platforms/mac/logging.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # التسجيل (macOS)

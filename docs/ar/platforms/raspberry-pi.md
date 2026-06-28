@@ -9,6 +9,7 @@ x-i18n:
     source_hash: 30119001c6b1ab6ba7524a51de08c1e93999c9ff6acea41a3a36609e300442c9
     source_path: platforms/raspberry-pi.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 انتقلت هذه الصفحة إلى [Raspberry Pi](/ar/install/raspberry-pi).

@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 58a964b4db9526defab6ee47b7a99c11086e345d42c8d20f5262fc134337947f
     source_path: cli/channels.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # `openclaw channels`

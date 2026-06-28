@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 808f04959c70c96c983fb2517234d4c06712049d7afebb9b1b4b340df75d7d70
     source_path: debug/node-issue.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # تعطل Node + tsx بسبب "\_\_name is not a function"

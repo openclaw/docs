@@ -1,10 +1,10 @@
 ---
 read_when:
-    - إنشاء عملاء API
+    - بناء عملاء API
     - إضافة نقاط نهاية أو مخططات
-summary: نظرة عامة على واجهة برمجة تطبيقات REST العامة (v1) واصطلاحاتها.
+summary: نظرة عامة على واجهة REST API العامة (v1) واصطلاحاتها.
 x-i18n:
-    generated_at: "2026-06-28T05:06:56Z"
+    generated_at: "2026-06-28T06:00:17Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -21,43 +21,43 @@ OpenAPI: `/api/v1/openapi.json`
 
 ## إعادة استخدام الفهرس العام
 
-يمكنك بناء فهرس أو دليل أو واجهة بحث تابعة لجهة خارجية فوق واجهات API العامة للقراءة في ClawHub. تُنشر بيانات تعريف المهارات العامة وملفات المهارات بموجب قواعد ترخيص المهارات في ClawHub، بينما تخضع API نفسها لحدود المعدل وينبغي استهلاكها بمسؤولية.
+يمكنك بناء فهرس أو دليل أو واجهة بحث من طرف ثالث فوق واجهات API العامة للقراءة في ClawHub. تُنشر بيانات تعريف المهارات العامة وملفات المهارات بموجب قواعد ترخيص المهارات الخاصة بـ ClawHub، بينما تخضع واجهة API نفسها لحدود معدل ويجب استخدامها بمسؤولية.
 
 الإرشادات:
 
 - استخدم نقاط نهاية القراءة العامة مثل `GET /api/v1/skills` و`GET /api/v1/search` و`GET /api/v1/skills/{slug}` لقوائم الفهرس.
 - خزّن الاستجابات مؤقتًا واحترم رؤوس `429` و`Retry-After` وحدود المعدل بدلًا من الاستطلاع المكثف.
-- اربط بعنوان URL القانوني لمهارة ClawHub عند عرض القوائم حتى يتمكن المستخدمون من فحص سجل السجل المصدر.
-- استخدم عناوين URL القانونية للصفحات بالصيغة `https://clawhub.ai/<owner>/skills/<slug>`.
-- لا توحِ بأن ClawHub يؤيد موقع الجهة الخارجية أو يتحقق منه أو يشغّله.
-- لا تعكس المحتوى المخفي أو الخاص أو المحظور رقابيًا عبر تجاوز مرشحات API العامة أو حدود المصادقة.
+- اربط بعنوان URL القانوني لمهارة ClawHub عند عرض القوائم حتى يتمكن المستخدمون من فحص سجل السجل المصدري.
+- استخدم عناوين URL القانونية للصفحات بالشكل `https://clawhub.ai/<owner>/skills/<slug>`.
+- لا توحِ بأن ClawHub يؤيد موقع الطرف الثالث أو يتحقق منه أو يشغّله.
+- لا تعكس محتوى مخفيًا أو خاصًا أو محظورًا بالإشراف عبر تجاوز مرشحات واجهة API العامة أو حدود المصادقة.
 
 ## المصادقة
 
-- القراءة العامة: لا يلزم رمز مميز.
-- الكتابة + الحساب: `Authorization: Bearer clh_...`.
+- قراءة عامة: لا يلزم رمز مميز.
+- كتابة + حساب: `Authorization: Bearer clh_...`.
 
 ## حدود المعدل
 
 فرض واعٍ بالمصادقة:
 
 - الطلبات المجهولة: لكل عنوان IP.
-- الطلبات المصادق عليها (رمز Bearer صالح): لكل حاوية مستخدم.
-- الرمز المفقود/غير الصالح يعود إلى الفرض بحسب عنوان IP.
+- الطلبات المصادَق عليها (رمز Bearer صالح): لكل حاوية مستخدم.
+- الرمز المفقود/غير الصالح يعود إلى الفرض حسب عنوان IP.
 
 - القراءة: 3000/دقيقة لكل عنوان IP، و12000/دقيقة لكل مفتاح
 - الكتابة: 300/دقيقة لكل عنوان IP، و3000/دقيقة لكل مفتاح
 - التنزيل: 1200/دقيقة لكل عنوان IP، و6000/دقيقة لكل مفتاح
 
-الرؤوس: `X-RateLimit-Limit` و`X-RateLimit-Reset` و`RateLimit-Limit` و`RateLimit-Reset`;
+الرؤوس: `X-RateLimit-Limit` و`X-RateLimit-Reset` و`RateLimit-Limit` و`RateLimit-Reset`؛
 تُضمَّن `X-RateLimit-Remaining` و`RateLimit-Remaining` و`Retry-After` عند `429`.
 
 الدلالات:
 
-- `X-RateLimit-Reset`: ثواني حقبة Unix (وقت إعادة الضبط المطلق)
-- `RateLimit-Reset`: ثواني التأخير حتى إعادة الضبط
+- `X-RateLimit-Reset`: ثواني حقبة Unix (وقت إعادة التعيين المطلق)
+- `RateLimit-Reset`: ثواني التأخير حتى إعادة التعيين
 - `X-RateLimit-Remaining` / `RateLimit-Remaining`: الميزانية المتبقية الدقيقة عند
-  وجودها؛ تحذف الطلبات الناجحة المجزأة هذه القيمة بدلًا من إرجاع قيمة عامة
+  وجودها؛ تحذف الطلبات الناجحة المجزأة ذلك بدلًا من إرجاع قيمة عامة
   تقريبية
 - `Retry-After`: ثواني التأخير للانتظار عند `429`
 
@@ -74,33 +74,33 @@ ratelimit-reset: 34
 retry-after: 34
 ```
 
-تعامل العميل:
+معالجة العميل:
 
 - فضّل `Retry-After` عند وجوده.
-- وإلا استخدم `RateLimit-Reset` أو اشتق التأخير من `X-RateLimit-Reset`.
-- أضف تذبذبًا عشوائيًا إلى إعادة المحاولة.
+- وإلا فاستخدم `RateLimit-Reset` أو استنتج التأخير من `X-RateLimit-Reset`.
+- أضف تباينًا عشوائيًا إلى عمليات إعادة المحاولة.
 
 ## الأخطاء
 
 - أخطاء v1 هي نص عادي (`text/plain; charset=utf-8`)، بما في ذلك `400` و
   `401` و`403` و`404` و`429` واستجابات التنزيل المحظور.
-- يتم تجاهل معلمات الاستعلام غير المعروفة للتوافق.
-- معلمات الاستعلام المعروفة ذات القيم غير الصالحة تُرجع `400`.
+- تُتجاهل معاملات الاستعلام غير المعروفة للتوافق.
+- معاملات الاستعلام المعروفة ذات القيم غير الصالحة تُرجع `400`.
 
 ## نقاط النهاية
 
-القراءة العامة:
+قراءة عامة:
 
 - `GET /api/v1/search?q=...`
   - مرشحات اختيارية: `highlightedOnly=true` و`nonSuspiciousOnly=true`
   - اسم مستعار قديم: `nonSuspicious=true`
 - `GET /api/v1/skills?limit=&cursor=&sort=`
-  - `sort`: `updated` (الافتراضي)، `recommended` (`default`)، `createdAt` (`newest`)، `downloads`، `stars` (`rating`)، أسماء التثبيت المستعارة القديمة `installsCurrent`/`installs`/`installsAllTime` تُعيَّن إلى `downloads`، و`trending`
+  - `sort`: `updated` (الافتراضي)، `recommended` (`default`)، `createdAt` (`newest`)، `downloads`، `stars` (`rating`)، أسماء التثبيت المستعارة القديمة `installsCurrent`/`installs`/`installsAllTime` تُربط إلى `downloads`، `trending`
   - قيم `sort` غير الصالحة تُرجع `400`
-  - ينطبق `cursor` على ترتيبات غير `trending`
+  - ينطبق `cursor` على ترتيبات الفرز غير `trending`
   - مرشح اختياري: `nonSuspiciousOnly=true`
   - اسم مستعار قديم: `nonSuspicious=true`
-  - مع `nonSuspiciousOnly=true`، قد تحتوي الصفحات المستندة إلى المؤشر على عناصر أقل من `limit`؛ استخدم `nextCursor` للمتابعة.
+  - مع `nonSuspiciousOnly=true`، قد تحتوي الصفحات المعتمدة على المؤشر على عناصر أقل من `limit`؛ استخدم `nextCursor` للمتابعة.
   - يستخدم `recommended` إشارات التفاعل والحداثة.
 - `GET /api/v1/skills/{slug}`
 - `GET /api/v1/skills/{slug}/moderation`
@@ -111,11 +111,11 @@ retry-after: 34
 - `GET /api/v1/resolve?slug=&hash=`
 - `GET /api/v1/download?slug=&version=&tag=`
   - تُرجع المهارات المستضافة بايتات ZIP حتمية.
-  - تُرجع المهارات الحالية المدعومة من GitHub ذات فحص `clean` أو `suspicious`
+  - المهارات الحالية المدعومة من GitHub ذات فحص `clean` أو `suspicious` تُرجع
     واصف تسليم JSON باسم `public-github` بدلًا من بايتات ClawHub.
 - `GET /api/v1/skills/export?startDate=&endDate=&limit=&cursor=`
   - تُصدَّر المهارات المستضافة كملفات مخزنة.
-  - تُصدَّر المهارات الحالية المدعومة من GitHub ذات فحص `clean` أو `suspicious`
+  - المهارات الحالية المدعومة من GitHub ذات فحص `clean` أو `suspicious` تُصدَّر
     كواصفات تسليم `public-github`.
 - `GET /api/v1/packages?limit=&cursor=&sort=`
   - `sort`: `updated` (الافتراضي)، `recommended`، `downloads`، الاسم المستعار القديم `installs`
@@ -131,7 +131,7 @@ retry-after: 34
 
 المصادقة مطلوبة:
 
-- `POST /api/v1/skills` (النشر، ويفضَّل multipart)
+- `POST /api/v1/skills` (النشر، ويُفضّل multipart)
 - `DELETE /api/v1/skills/{slug}`
 - `DELETE /api/v1/packages/{name}`
 - `POST /api/v1/skills/{slug}/undelete`
@@ -149,10 +149,10 @@ retry-after: 34
 - `GET /api/v1/transfers/outgoing`
 - `GET /api/v1/whoami`
 
-المسؤولون فقط:
+للمسؤول فقط:
 
-- `POST /api/v1/users/reserve` يحجز slugs الجذرية والعناصر النائبة لحزم no-release الخاصة لمالك معين.
+- `POST /api/v1/users/reserve` يحجز slugs الجذرية وعناصر نائبة لحزم خاصة بلا إصدار لمعرّف مالك.
 
 ## القديم
 
-لا تزال `/api/*` و`/api/cli/*` القديمتان متاحتين. راجع `DEPRECATIONS.md`.
+ما زالت `/api/*` و`/api/cli/*` القديمة متاحة. راجع `DEPRECATIONS.md`.
