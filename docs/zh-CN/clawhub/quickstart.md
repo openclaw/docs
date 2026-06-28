@@ -3,9 +3,9 @@ read_when:
     - 首次使用 ClawHub
     - 从注册表安装技能或插件
     - 发布到 ClawHub
-summary: 开始使用 ClawHub：查找、安装、更新和发布 Skills 或插件。
+summary: 开始使用 ClawHub：查找、安装、更新和发布技能或插件。
 x-i18n:
-    generated_at: "2026-06-28T05:04:42Z"
+    generated_at: "2026-06-28T05:08:38Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -18,7 +18,7 @@ x-i18n:
 
 ClawHub 是 OpenClaw 技能和插件的注册表。
 
-在向 OpenClaw 安装内容时，请使用 OpenClaw。在登录、发布、管理你自己的列表或使用注册表特定工作流时，请使用 `clawhub` CLI。
+将内容安装到 OpenClaw 中时，请使用 OpenClaw。登录、发布、管理自己的列表或使用注册表特定工作流时，请使用 `clawhub` CLI。
 
 ## 查找并安装技能
 
@@ -50,7 +50,7 @@ OpenClaw 会记录技能的来源，因此后续更新可以继续通过 ClawHub
 openclaw plugins search "calendar"
 ```
 
-使用显式 ClawHub 来源安装 ClawHub 托管的插件：
+使用显式 ClawHub 来源安装由 ClawHub 托管的插件：
 
 ```bash
 openclaw plugins install clawhub:<package>
@@ -62,7 +62,7 @@ openclaw plugins install clawhub:<package>
 openclaw plugins update --all
 ```
 
-当你希望 OpenClaw 通过 ClawHub 而不是 npm 或其他来源解析包时，请使用 `clawhub:` 前缀。
+当你希望 OpenClaw 通过 ClawHub 而不是 npm 或其他来源解析软件包时，请使用 `clawhub:` 前缀。
 
 ## 登录以发布
 
@@ -81,7 +81,7 @@ clawhub login
 clawhub whoami
 ```
 
-无头环境可以使用来自 ClawHub 网页 UI 的 API 令牌：
+无头环境可以使用 ClawHub 网页 UI 中的 API 令牌：
 
 ```bash
 clawhub login --token clh_...
@@ -89,7 +89,7 @@ clawhub login --token clh_...
 
 ## 发布技能
 
-技能是一个文件夹，其中包含必需的 `SKILL.md` 文件和可选的支持文件。
+技能是一个包含必需 `SKILL.md` 文件和可选支持文件的文件夹。
 
 ```bash
 clawhub skill publish ./my-skill \
@@ -100,7 +100,7 @@ clawhub skill publish ./my-skill \
 
 该命令会跳过未更改的内容。新技能从 `1.0.0` 开始；后续更改会自动发布下一个补丁版本。使用 `--dry-run` 预览，或使用 `--version` 选择显式版本。
 
-发布前，请检查 `SKILL.md` 中的元数据。声明必需的环境变量、工具和权限，让用户在安装前了解该技能需要什么。参见[技能格式](/zh-CN/clawhub/skill-format)。
+发布前，请检查 `SKILL.md` 中的元数据。声明必需的环境变量、工具和权限，以便用户在安装前了解该技能需要什么。请参阅 [技能格式](/zh-CN/clawhub/skill-format)。
 
 对于包含多个技能的仓库，可复用的 GitHub 工作流会为 `skills/` 下的每个直接技能文件夹调用 `skill publish`：
 
@@ -121,7 +121,7 @@ clawhub package publish <source> --family code-plugin --dry-run
 clawhub package publish <source> --family code-plugin
 ```
 
-先使用 `--dry-run` 预览解析出的包元数据、兼容性字段、来源归属和上传计划，而不实际发布。
+先使用 `--dry-run` 预览已解析的软件包元数据、兼容性字段、来源归属和上传计划，而不实际发布。
 
 代码插件必须在 `package.json` 中包含 OpenClaw 兼容性元数据，包括 `openclaw.compat.pluginApi` 和 `openclaw.build.openclawVersion`。
 
@@ -134,4 +134,4 @@ clawhub inspect @openclaw/demo
 clawhub package inspect <package>
 ```
 
-公开列表会显示最新的扫描状态。因审核而暂停或阻止的发布可能会在解决前从搜索和安装界面中隐藏。
+公开列表会显示最新的扫描状态。因审核而被保留或阻止的发布版本可能会从搜索和安装界面中隐藏，直到问题解决。

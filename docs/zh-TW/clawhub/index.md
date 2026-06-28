@@ -2,13 +2,13 @@
 read_when:
     - 說明 ClawHub 是什麼
     - 搜尋、安裝或更新 Skills 或外掛
-    - 將 Skills 或外掛發布到登錄檔
-    - 在 openclaw 與 clawhub 命令列介面流程之間做選擇
+    - 將 Skills 或外掛發布到註冊表
+    - 在 openclaw 與 clawhub 命令列介面流程之間選擇
 sidebarTitle: ClawHub
-summary: 公開的 ClawHub 概覽，涵蓋探索、安裝、發布、安全性，以及 clawhub 命令列介面。
+summary: 供公開使用的 ClawHub 概覽，涵蓋探索、安裝、發布、安全性與 clawhub 命令列介面。
 title: ClawHub
 x-i18n:
-    generated_at: "2026-06-28T05:03:35Z"
+    generated_at: "2026-06-28T05:08:35Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -19,10 +19,10 @@ x-i18n:
 
 # ClawHub
 
-ClawHub 是 OpenClaw Skills 與外掛的公開登錄檔。
+ClawHub 是 OpenClaw Skills 和外掛的公開登錄檔。
 
-- 使用原生 `openclaw` 命令搜尋、安裝及更新 Skills，並從 ClawHub 安裝外掛。
-- 使用獨立的 `clawhub` 命令列介面進行登錄檔驗證、發布，以及刪除/取消刪除工作流程。
+- 使用原生 `openclaw` 命令來搜尋、安裝和更新 Skills，並從 ClawHub 安裝外掛。
+- 使用獨立的 `clawhub` 命令列介面來處理登錄檔驗證、發布，以及刪除/取消刪除工作流程。
 
 網站：[clawhub.ai](https://clawhub.ai)
 
@@ -44,7 +44,7 @@ openclaw plugins install clawhub:<package>
 openclaw plugins update --all
 ```
 
-當你需要登錄檔驗證工作流程（例如發布或刪除/取消刪除）時，請安裝 ClawHub 命令列介面：
+當你需要發布或刪除/取消刪除等已通過登錄檔驗證的工作流程時，請安裝 ClawHub 命令列介面：
 
 ```bash
 npm i -g clawhub
@@ -54,21 +54,21 @@ pnpm add -g clawhub
 
 ## ClawHub 託管的內容
 
-| 介面           | 儲存內容                                                     | 常見命令                                     |
+| 介面           | 儲存內容                                                     | 典型命令                                     |
 | -------------- | ------------------------------------------------------------ | -------------------------------------------- |
-| Skills         | 含 `SKILL.md` 與支援檔案的版本化文字套件                    | `openclaw skills install @openclaw/demo`     |
-| 程式碼外掛     | 含相容性中繼資料的 OpenClaw 外掛套件                        | `openclaw plugins install clawhub:<package>` |
-| 套件外掛       | 用於 OpenClaw 發行的封裝外掛套件                            | `clawhub package publish <source>`           |
+| Skills         | 含有 `SKILL.md` 與支援檔案的版本化文字套件                  | `openclaw skills install @openclaw/demo`     |
+| 程式碼外掛     | 含相容性中繼資料的 OpenClaw 外掛套件                         | `openclaw plugins install clawhub:<package>` |
+| 套裝外掛       | 用於 OpenClaw 發行的封裝外掛套裝                             | `clawhub package publish <source>`           |
 
-ClawHub 追蹤 semver 版本、如 `latest` 等標籤、變更記錄、檔案、下載次數、星標，以及安全掃描摘要。公開頁面會顯示目前的登錄檔狀態，讓使用者在安裝前檢視 Skills 或外掛。
+ClawHub 追蹤 semver 版本、`latest` 等標籤、變更記錄、檔案、下載次數、星標，以及安全掃描摘要。公開頁面會顯示目前的登錄檔狀態，讓使用者在安裝 Skills 或外掛前先行檢視。
 
 ## 原生 OpenClaw 流程
 
-原生 OpenClaw 命令會安裝到目前使用中的 OpenClaw 工作區，並保存來源中繼資料，讓後續更新命令可以持續使用 ClawHub。
+原生 OpenClaw 命令會安裝到作用中的 OpenClaw 工作區，並保存來源中繼資料，讓後續更新命令可以持續使用 ClawHub。
 
-當外掛安裝應透過 ClawHub 解析時，請使用 `clawhub:<package>`。在發布切換期間，裸露的 npm-safe 外掛規格可能會透過 npm 解析；當來源必須明確時，`npm:<package>` 會維持僅使用 npm。
+當外掛安裝應透過 ClawHub 解析時，請使用 `clawhub:<package>`。在啟動切換期間，裸 npm 安全外掛規格可能會透過 npm 解析；而當來源必須明確指定時，`npm:<package>` 會保持僅使用 npm。
 
-外掛安裝會在封存安裝執行前，驗證宣告的 `pluginApi` 與 `minGatewayVersion` 相容性。當套件版本發布 ClawPack 成品時，OpenClaw 會優先使用精確上傳的 npm-pack `.tgz`，驗證 ClawHub 摘要標頭與下載位元組，並記錄成品中繼資料以供日後更新。
+外掛安裝會在執行封存安裝前，驗證宣告的 `pluginApi` 和 `minGatewayVersion` 相容性。當套件版本發布 ClawPack 成品時，OpenClaw 會優先使用精確上傳的 npm-pack `.tgz`，驗證 ClawHub 摘要標頭和下載位元組，並記錄成品中繼資料以供後續更新使用。
 
 ## ClawHub 命令列介面
 
@@ -85,7 +85,7 @@ clawhub package publish your-org/your-plugin --dry-run
 clawhub package publish your-org/your-plugin
 ```
 
-命令列介面也提供 Skills 安裝/更新命令，可用於直接登錄檔工作流程：
+此命令列介面也提供 Skills 安裝/更新命令，可用於直接登錄檔工作流程：
 
 ```bash
 clawhub install @openclaw/demo
@@ -98,13 +98,13 @@ clawhub list
 
 ## 發布
 
-從包含 `SKILL.md` 的本機資料夾發布 Skills：
+從含有 `SKILL.md` 的本機資料夾發布 Skills：
 
 ```bash
 clawhub skill publish <path>
 ```
 
-常見發布選項：
+常用發布選項：
 
 - `--slug <slug>`：已發布 Skills 的 URL 名稱。
 - `--name <name>`：顯示名稱。
@@ -120,19 +120,19 @@ clawhub package publish <source>
 
 使用 `--dry-run` 建立精確的發布計畫而不上傳，並使用 `--json` 取得適合 CI 的輸出。
 
-程式碼外掛必須在 `package.json` 中包含必要的 OpenClaw 相容性中繼資料，包括 `openclaw.compat.pluginApi` 和 `openclaw.build.openclawVersion`。完整命令參考請參閱 [命令列介面](/zh-TW/clawhub/cli)，Skills 中繼資料請參閱 [Skills 格式](/zh-TW/clawhub/skill-format)。
+程式碼外掛必須在 `package.json` 中包含必要的 OpenClaw 相容性中繼資料，包括 `openclaw.compat.pluginApi` 和 `openclaw.build.openclawVersion`。完整命令參考請參閱[命令列介面](/zh-TW/clawhub/cli)，Skills 中繼資料請參閱[Skills 格式](/zh-TW/clawhub/skill-format)。
 
-## 安全與審核
+## 安全性與審核
 
-ClawHub 預設開放：任何人都可以上傳，但發布需要 GitHub 帳號足夠舊，才能通過上傳門檻。公開詳細頁會在安裝或下載前摘要最新掃描狀態。
+ClawHub 預設開放：任何人都可以上傳，但發布需要 GitHub 帳號年齡足以通過上傳閘門。公開詳情頁會在安裝或下載前摘要最新掃描狀態。
 
-ClawHub 會對已發布的 Skills 和外掛版本執行自動化檢查。被掃描暫停或封鎖的版本可能會從公開目錄和安裝介面消失，但其擁有者仍可在 `/dashboard` 中看見。
+ClawHub 會對已發布的 Skills 和外掛版本執行自動檢查。被掃描保留或封鎖的版本可能會從公開目錄和安裝介面消失，但其擁有者仍可在 `/dashboard` 中看見。
 
-已登入的使用者可以回報 Skills 和套件。審核者可以檢視回報、隱藏或還原內容，並封鎖濫用帳號。政策與執行細節請參閱 [安全](/zh-TW/clawhub/security)、[安全稽核](/zh-TW/clawhub/security-audits)、[審核與帳號安全](/zh-TW/clawhub/moderation)，以及 [可接受使用](/zh-TW/clawhub/acceptable-usage)。
+已登入的使用者可以回報 Skills 和套件。審核者可以審查回報、隱藏或還原內容，並封鎖濫用帳號。政策與執行細節請參閱[安全性](/zh-TW/clawhub/security)、[安全稽核](/zh-TW/clawhub/security-audits)、[審核與帳號安全](/zh-TW/clawhub/moderation)和[可接受使用](/zh-TW/clawhub/acceptable-usage)。
 
 ## 遙測與環境
 
-當你在已登入狀態下執行 `clawhub install` 時，命令列介面可能會以盡力而為方式傳送安裝事件，讓 ClawHub 可計算彙總安裝次數。可使用以下方式停用：
+當你在已登入狀態執行 `clawhub install` 時，命令列介面可能會盡力傳送安裝事件，讓 ClawHub 可以計算彙總安裝數。使用以下方式停用：
 
 ```bash
 export CLAWHUB_DISABLE_TELEMETRY=1
@@ -142,10 +142,10 @@ export CLAWHUB_DISABLE_TELEMETRY=1
 
 | 變數                          | 效果                                              |
 | ----------------------------- | ------------------------------------------------- |
-| `CLAWHUB_SITE`                | 覆寫瀏覽器登入使用的網站 URL。                   |
+| `CLAWHUB_SITE`                | 覆寫用於瀏覽器登入的網站 URL。                   |
 | `CLAWHUB_REGISTRY`            | 覆寫登錄檔 API URL。                             |
-| `CLAWHUB_CONFIG_PATH`         | 覆寫命令列介面儲存 token/config 狀態的位置。     |
+| `CLAWHUB_CONFIG_PATH`         | 覆寫命令列介面儲存權杖/設定狀態的位置。          |
 | `CLAWHUB_WORKDIR`             | 覆寫預設工作目錄。                               |
 | `CLAWHUB_DISABLE_TELEMETRY=1` | 停用安裝遙測。                                   |
 
-更深入的參考資料請參閱 [遙測](/zh-TW/clawhub/telemetry)、[HTTP API](/zh-TW/clawhub/http-api) 和 [疑難排解](/zh-TW/clawhub/troubleshooting)。
+更深入的參考資料請參閱[遙測](/zh-TW/clawhub/telemetry)、[HTTP API](/zh-TW/clawhub/http-api)和[疑難排解](/zh-TW/clawhub/troubleshooting)。

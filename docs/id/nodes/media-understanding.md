@@ -1,30 +1,30 @@
 ---
 read_when:
     - Merancang atau merefaktor pemahaman media
-    - Menyesuaikan prapemrosesan audio/video/gambar masuk
+    - Menyetel prapemrosesan audio/video/gambar masuk
 sidebarTitle: Media understanding
-summary: Pemahaman gambar/audio/video masuk (opsional) dengan mekanisme cadangan penyedia + CLI
+summary: Pemahaman gambar/audio/video masuk (opsional) dengan fallback penyedia + CLI
 title: Pemahaman media
 x-i18n:
-    generated_at: "2026-06-27T17:40:25Z"
+    generated_at: "2026-06-28T05:08:09Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
-    source_hash: 4724578632b0210290d1b32077d2c0ccf7fdfa6b96160f76bf3eff591df7b92e
+    source_hash: 40ce9b5c65857702015172cbba76ea4396267894888487b40c11b5997a992362
     source_path: nodes/media-understanding.md
     workflow: 16
 ---
 
-OpenClaw dapat **merangkum media masuk** (gambar/audio/video) sebelum pipeline balasan berjalan. Ini mendeteksi otomatis saat alat lokal atau kunci penyedia tersedia, dan dapat dinonaktifkan atau disesuaikan. Jika pemahaman dinonaktifkan, model tetap menerima file/URL asli seperti biasa.
+OpenClaw dapat **meringkas media masuk** (gambar/audio/video) sebelum pipeline balasan berjalan. Ini mendeteksi otomatis saat alat lokal atau kunci penyedia tersedia, dan dapat dinonaktifkan atau disesuaikan. Jika pemahaman nonaktif, model tetap menerima file/URL asli seperti biasa.
 
 Perilaku media khusus vendor didaftarkan oleh Plugin vendor, sementara inti OpenClaw memiliki konfigurasi bersama `tools.media`, urutan fallback, dan integrasi pipeline balasan.
 
 ## Tujuan
 
-- Opsional: mencerna terlebih dahulu media masuk menjadi teks singkat untuk routing yang lebih cepat + parsing perintah yang lebih baik.
+- Opsional: pra-cerna media masuk menjadi teks singkat untuk routing lebih cepat + parsing perintah yang lebih baik.
 - Pertahankan pengiriman media asli ke model (selalu).
-- Dukung **API penyedia** dan **fallback CLI**.
-- Izinkan beberapa model dengan fallback berurutan (kesalahan/ukuran/timeout).
+- Mendukung **API penyedia** dan **fallback CLI**.
+- Mengizinkan beberapa model dengan fallback berurutan (kesalahan/ukuran/timeout).
 
 ## Perilaku tingkat tinggi
 
@@ -33,33 +33,33 @@ Perilaku media khusus vendor didaftarkan oleh Plugin vendor, sementara inti Open
     Kumpulkan lampiran masuk (`MediaPaths`, `MediaUrls`, `MediaTypes`).
   </Step>
   <Step title="Pilih per kapabilitas">
-    Untuk setiap kapabilitas yang diaktifkan (gambar/audio/video), pilih lampiran per kebijakan (default: **pertama**).
+    Untuk setiap kapabilitas yang diaktifkan (gambar/audio/video), pilih lampiran berdasarkan kebijakan (default: **pertama**).
   </Step>
   <Step title="Pilih model">
     Pilih entri model pertama yang memenuhi syarat (ukuran + kapabilitas + auth).
   </Step>
   <Step title="Fallback saat gagal">
-    Jika model gagal atau medianya terlalu besar, **fallback ke entri berikutnya**.
+    Jika model gagal atau media terlalu besar, **fallback ke entri berikutnya**.
   </Step>
-  <Step title="Terapkan blok sukses">
-    Saat sukses:
+  <Step title="Terapkan blok berhasil">
+    Saat berhasil:
 
     - `Body` menjadi blok `[Image]`, `[Audio]`, atau `[Video]`.
-    - Audio menetapkan `{{Transcript}}`; parsing perintah menggunakan teks caption bila ada, jika tidak menggunakan transkrip.
+    - Audio menetapkan `{{Transcript}}`; parsing perintah menggunakan teks caption jika ada, jika tidak menggunakan transkrip.
     - Caption dipertahankan sebagai `User text:` di dalam blok.
 
   </Step>
 </Steps>
 
-Jika pemahaman gagal atau dinonaktifkan, **alur balasan berlanjut** dengan body + lampiran asli.
+Jika pemahaman gagal atau dinonaktifkan, **alur balasan tetap berlanjut** dengan body + lampiran asli.
 
 ## Gambaran umum konfigurasi
 
-`tools.media` mendukung **model bersama** plus override per kapabilitas:
+`tools.media` mendukung **model bersama** serta override per kapabilitas:
 
 <AccordionGroup>
   <Accordion title="Kunci tingkat atas">
-    - `tools.media.models`: daftar model bersama (gunakan `capabilities` untuk pembatasan).
+    - `tools.media.models`: daftar model bersama (gunakan `capabilities` sebagai pembatas).
     - `tools.media.image` / `tools.media.audio` / `tools.media.video`:
       - default (`prompt`, `maxChars`, `maxBytes`, `timeoutSeconds`, `language`)
       - override penyedia (`baseUrl`, `headers`, `providerOptions`)
@@ -67,8 +67,8 @@ Jika pemahaman gagal atau dinonaktifkan, **alur balasan berlanjut** dengan body 
       - kontrol echo transkrip audio (`echoTranscript`, default `false`; `echoFormat`)
       - **daftar `models` per kapabilitas** opsional (diprioritaskan sebelum model bersama)
       - kebijakan `attachments` (`mode`, `maxAttachments`, `prefer`)
-      - `scope` (gating opsional berdasarkan channel/chatType/kunci sesi)
-    - `tools.media.concurrency`: maksimum proses kapabilitas serentak (default **2**).
+      - `scope` (pembatasan opsional berdasarkan channel/chatType/kunci sesi)
+    - `tools.media.concurrency`: jumlah maksimum eksekusi kapabilitas serentak (default **2**).
 
   </Accordion>
 </AccordionGroup>
@@ -136,10 +136,10 @@ Setiap entri `models[]` dapat berupa **penyedia** atau **CLI**:
     }
     ```
 
-    Template CLI juga dapat menggunakan:
+    Templat CLI juga dapat menggunakan:
 
     - `{{MediaDir}}` (direktori yang berisi file media)
-    - `{{OutputDir}}` (direktori scratch yang dibuat untuk proses ini)
+    - `{{OutputDir}}` (direktori scratch yang dibuat untuk eksekusi ini)
     - `{{OutputBase}}` (path dasar file scratch, tanpa ekstensi)
 
   </Tab>
@@ -147,9 +147,13 @@ Setiap entri `models[]` dapat berupa **penyedia** atau **CLI**:
 
 ### Kredensial penyedia (`apiKey`)
 
-Pemahaman media penyedia menggunakan resolusi auth penyedia yang sama seperti pemanggilan model normal: profil auth, variabel lingkungan, lalu `models.providers.<providerId>.apiKey`.
+Pemahaman media penyedia menggunakan resolusi auth penyedia yang sama seperti panggilan
+model normal: profil auth, variabel lingkungan, lalu
+`models.providers.<providerId>.apiKey`.
 
-Entri `tools.media.*.models[]` tidak menerima bidang `apiKey` inline. Nilai `provider` dalam entri model media, seperti `openai` atau `moonshot`, harus memiliki kredensial yang tersedia melalui salah satu sumber auth penyedia standar.
+Entri `tools.media.*.models[]` tidak menerima field `apiKey` inline. Nilai
+`provider` dalam entri model media, seperti `openai` atau `moonshot`, harus
+memiliki kredensial yang tersedia melalui salah satu sumber auth penyedia standar.
 
 Contoh minimal:
 
@@ -164,14 +168,15 @@ Contoh minimal:
 }
 ```
 
-Untuk referensi auth penyedia lengkap, termasuk profil, variabel lingkungan, dan URL basis kustom, lihat [Alat dan penyedia kustom](/id/gateway/config-tools).
+Untuk referensi lengkap auth penyedia, termasuk profil, variabel lingkungan,
+dan URL dasar kustom, lihat [Alat dan penyedia kustom](/id/gateway/config-tools).
 
 ## Default dan batas
 
 Default yang direkomendasikan:
 
 - `maxChars`: **500** untuk gambar/video (singkat, ramah perintah)
-- `maxChars`: **tidak disetel** untuk audio (transkrip penuh kecuali Anda menetapkan batas)
+- `maxChars`: **tidak diatur** untuk audio (transkrip lengkap kecuali Anda menetapkan batas)
 - `maxBytes`:
   - gambar: **10MB**
   - audio: **20MB**
@@ -180,12 +185,12 @@ Default yang direkomendasikan:
 <AccordionGroup>
   <Accordion title="Aturan">
     - Jika media melebihi `maxBytes`, model tersebut dilewati dan **model berikutnya dicoba**.
-    - File audio yang lebih kecil dari **1024 byte** diperlakukan sebagai kosong/rusak dan dilewati sebelum transkripsi penyedia/CLI; konteks balasan masuk menerima transkrip placeholder deterministik sehingga agen mengetahui catatan itu terlalu kecil.
+    - File audio yang lebih kecil dari **1024 byte** diperlakukan sebagai kosong/rusak dan dilewati sebelum transkripsi penyedia/CLI; konteks balasan masuk menerima transkrip placeholder deterministik agar agen tahu catatan tersebut terlalu kecil.
     - Jika model mengembalikan lebih dari `maxChars`, output dipangkas.
-    - `prompt` secara default adalah "Describe the {media}." sederhana plus panduan `maxChars` (hanya gambar/video).
+    - `prompt` default berupa "Describe the {media}." sederhana plus panduan `maxChars` (hanya gambar/video).
     - Jika model gambar primer aktif sudah mendukung vision secara native, OpenClaw melewati blok ringkasan `[Image]` dan meneruskan gambar asli ke model sebagai gantinya.
-    - Jika model primer Gateway/WebChat hanya teks, lampiran gambar dipertahankan sebagai ref `media://inbound/*` yang di-offload sehingga alat gambar/PDF atau model gambar yang dikonfigurasi tetap dapat memeriksanya alih-alih kehilangan lampiran.
-    - Permintaan eksplisit `openclaw infer image describe --model <provider/model>` berbeda: permintaan tersebut menjalankan penyedia/model berkapabilitas gambar itu secara langsung, termasuk ref Ollama seperti `ollama/qwen2.5vl:7b`.
+    - Jika model primer Gateway/WebChat hanya teks, lampiran gambar dipertahankan sebagai ref `media://inbound/*` yang dioffload sehingga alat gambar/PDF atau model gambar yang dikonfigurasi tetap dapat memeriksanya, alih-alih kehilangan lampiran.
+    - Permintaan eksplisit `openclaw infer image describe --model <provider/model>` berbeda: permintaan itu menjalankan penyedia/model berkapabilitas gambar tersebut secara langsung, termasuk ref Ollama seperti `ollama/qwen2.5vl:7b`.
     - Jika `<capability>.enabled: true` tetapi tidak ada model yang dikonfigurasi, OpenClaw mencoba **model balasan aktif** saat penyedianya mendukung kapabilitas tersebut.
 
   </Accordion>
@@ -193,7 +198,7 @@ Default yang direkomendasikan:
 
 ### Deteksi otomatis pemahaman media (default)
 
-Jika `tools.media.<capability>.enabled` **tidak** disetel ke `false` dan Anda belum mengonfigurasi model, OpenClaw mendeteksi otomatis dalam urutan ini dan **berhenti pada opsi pertama yang berfungsi**:
+Jika `tools.media.<capability>.enabled` **tidak** diatur ke `false` dan Anda belum mengonfigurasi model, OpenClaw mendeteksi otomatis dalam urutan ini dan **berhenti pada opsi pertama yang berfungsi**:
 
 <Steps>
   <Step title="Model balasan aktif">
@@ -201,7 +206,7 @@ Jika `tools.media.<capability>.enabled` **tidak** disetel ke `false` dan Anda be
   </Step>
   <Step title="agents.defaults.imageModel">
     Ref primer/fallback `agents.defaults.imageModel` (hanya gambar).
-    Prioritaskan ref `provider/model`. Ref bare dikualifikasi dari entri model penyedia berkapabilitas gambar yang dikonfigurasi hanya saat kecocokannya unik.
+    Utamakan ref `provider/model`. Ref polos dikualifikasikan dari entri model penyedia berkapabilitas gambar yang dikonfigurasi hanya saat kecocokannya unik.
   </Step>
   <Step title="CLI lokal (hanya audio)">
     CLI lokal (jika terinstal):
@@ -216,7 +221,7 @@ Jika `tools.media.<capability>.enabled` **tidak** disetel ke `false` dan Anda be
   </Step>
   <Step title="Auth penyedia">
     - Entri `models.providers.*` yang dikonfigurasi dan mendukung kapabilitas dicoba sebelum urutan fallback bawaan.
-    - Penyedia konfigurasi khusus gambar dengan model berkapabilitas gambar didaftarkan otomatis untuk pemahaman media meskipun bukan Plugin vendor bawaan.
+    - Penyedia konfigurasi khusus gambar dengan model berkapabilitas gambar didaftarkan otomatis untuk pemahaman media bahkan saat bukan Plugin vendor bawaan.
     - Pemahaman gambar Ollama tersedia saat dipilih secara eksplisit, misalnya melalui `agents.defaults.imageModel` atau `openclaw infer image describe --model ollama/<vision-model>`.
 
     Urutan fallback bawaan:
@@ -228,7 +233,7 @@ Jika `tools.media.<capability>.enabled` **tidak** disetel ke `false` dan Anda be
   </Step>
 </Steps>
 
-Untuk menonaktifkan deteksi otomatis, setel:
+Untuk menonaktifkan deteksi otomatis, atur:
 
 ```json5
 {
@@ -243,12 +248,12 @@ Untuk menonaktifkan deteksi otomatis, setel:
 ```
 
 <Note>
-Deteksi biner bersifat best-effort di macOS/Linux/Windows; pastikan CLI berada di `PATH` (kami memperluas `~`), atau setel model CLI eksplisit dengan path perintah lengkap.
+Deteksi biner bersifat best-effort di macOS/Linux/Windows; pastikan CLI ada di `PATH` (kami memperluas `~`), atau atur model CLI eksplisit dengan path perintah lengkap.
 </Note>
 
 ### Dukungan lingkungan proxy (model penyedia)
 
-Saat pemahaman media **audio** dan **video** berbasis penyedia diaktifkan, OpenClaw menghormati variabel lingkungan proxy outbound standar untuk panggilan HTTP penyedia:
+Saat pemahaman media berbasis penyedia untuk **audio** dan **video** diaktifkan, OpenClaw mematuhi variabel lingkungan proxy outbound standar untuk panggilan HTTP penyedia:
 
 - `HTTPS_PROXY`
 - `HTTP_PROXY`
@@ -257,11 +262,11 @@ Saat pemahaman media **audio** dan **video** berbasis penyedia diaktifkan, OpenC
 - `http_proxy`
 - `all_proxy`
 
-Jika tidak ada variabel env proxy yang disetel, pemahaman media menggunakan egress langsung. Jika nilai proxy salah bentuk, OpenClaw mencatat peringatan dan fallback ke pengambilan langsung.
+Jika tidak ada variabel lingkungan proxy yang diatur, pemahaman media menggunakan egress langsung. Jika nilai proxy tidak valid, OpenClaw mencatat peringatan dan fallback ke fetch langsung.
 
 ## Kapabilitas (opsional)
 
-Jika Anda menyetel `capabilities`, entri hanya berjalan untuk jenis media tersebut. Untuk daftar bersama, OpenClaw dapat menyimpulkan default:
+Jika Anda mengatur `capabilities`, entri hanya berjalan untuk jenis media tersebut. Untuk daftar bersama, OpenClaw dapat menyimpulkan default:
 
 - `openai`, `anthropic`, `minimax`: **gambar**
 - `minimax-portal`: **gambar**
@@ -274,17 +279,17 @@ Jika Anda menyetel `capabilities`, entri hanya berjalan untuk jenis media terseb
 - `groq`: **audio**
 - `xai`: **audio**
 - `deepgram`: **audio**
-- Any `models.providers.<id>.models[]` catalog with an image-capable model: **image**
+- Katalog `models.providers.<id>.models[]` apa pun dengan model berkapabilitas gambar: **gambar**
 
-Untuk entri CLI, **setel `capabilities` secara eksplisit** untuk menghindari kecocokan yang mengejutkan. Jika Anda menghilangkan `capabilities`, entri tersebut memenuhi syarat untuk daftar tempatnya muncul.
+Untuk entri CLI, **atur `capabilities` secara eksplisit** untuk menghindari kecocokan yang mengejutkan. Jika Anda menghilangkan `capabilities`, entri memenuhi syarat untuk daftar tempat entri itu berada.
 
 ## Matriks dukungan penyedia (integrasi OpenClaw)
 
-| Kapabilitas | Integrasi penyedia                                                                                                           | Catatan                                                                                                                                                                                                                                    |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Gambar      | OpenAI, OpenAI Codex OAuth, Codex app-server, OpenRouter, Anthropic, Google, MiniMax, Moonshot, Qwen, Z.AI, penyedia konfigurasi | Plugin vendor mendaftarkan dukungan gambar; `openai/*` dapat menggunakan routing kunci API atau Codex OAuth; `codex/*` menggunakan giliran Codex app-server terbatas; MiniMax dan MiniMax OAuth sama-sama menggunakan `MiniMax-VL-01`; penyedia konfigurasi berkapabilitas gambar didaftarkan otomatis. |
-| Audio      | OpenAI, Groq, xAI, Deepgram, OpenRouter, Google, SenseAudio, ElevenLabs, Mistral                                             | Transkripsi penyedia (Whisper/Groq/xAI/Deepgram/OpenRouter STT/Gemini/SenseAudio/Scribe/Voxtral).                                                                                                                                         |
-| Video      | Google, Qwen, Moonshot                                                                                                       | Pemahaman video penyedia melalui Plugin vendor; pemahaman video Qwen menggunakan endpoint Standard DashScope.                                                                                                                              |
+| Kapabilitas | Integrasi penyedia                                                                                                           | Catatan                                                                                                                                                                                                                                     |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Gambar     | OpenAI, OpenAI Codex OAuth, Codex app-server, OpenRouter, Anthropic, Google, MiniMax, Moonshot, Qwen, Z.AI, penyedia konfigurasi | Plugin vendor mendaftarkan dukungan gambar; `openai/*` dapat menggunakan routing kunci API atau Codex OAuth; `codex/*` menggunakan giliran Codex app-server terbatas; MiniMax dan MiniMax OAuth sama-sama menggunakan `MiniMax-VL-01`; penyedia konfigurasi berkapabilitas gambar didaftarkan otomatis. |
+| Audio      | OpenAI, Groq, xAI, Deepgram, OpenRouter, Google, SenseAudio, ElevenLabs, Mistral                                             | Transkripsi penyedia (Whisper/Groq/xAI/Deepgram/OpenRouter STT/Gemini/SenseAudio/Scribe/Voxtral).                                                                                                                                           |
+| Video      | Google, Qwen, Moonshot                                                                                                       | Pemahaman video penyedia melalui Plugin vendor; pemahaman video Qwen menggunakan endpoint Standard DashScope.                                                                                                                               |
 
 <Note>
 **Catatan MiniMax**
@@ -296,35 +301,35 @@ Untuk entri CLI, **setel `capabilities` secara eksplisit** untuk menghindari kec
 
 ## Panduan pemilihan model
 
-- Utamakan model generasi terbaru terkuat yang tersedia untuk setiap kapabilitas media saat kualitas dan keamanan penting.
-- Untuk agen berkemampuan alat yang menangani input tidak tepercaya, hindari model media yang lebih lama/lebih lemah.
-- Pertahankan setidaknya satu cadangan per kapabilitas untuk ketersediaan (model berkualitas + model lebih cepat/lebih murah).
-- Cadangan CLI (`whisper-cli`, `whisper`, `gemini`) berguna saat API penyedia tidak tersedia.
-- Catatan `parakeet-mlx`: dengan `--output-dir`, OpenClaw membaca `<output-dir>/<media-basename>.txt` ketika format output adalah `txt` (atau tidak ditentukan); format non-`txt` kembali menggunakan stdout.
+- Utamakan model generasi terbaru terkuat yang tersedia untuk setiap kapabilitas media ketika kualitas dan keamanan penting.
+- Untuk agen berkemampuan alat yang menangani input tidak tepercaya, hindari model media lama/lebih lemah.
+- Simpan setidaknya satu fallback per kapabilitas untuk ketersediaan (model berkualitas + model lebih cepat/lebih murah).
+- Fallback CLI (`whisper-cli`, `whisper`, `gemini`) berguna ketika API penyedia tidak tersedia.
+- Catatan `parakeet-mlx`: dengan `--output-dir`, OpenClaw membaca `<output-dir>/<media-basename>.txt` ketika format output adalah `txt` (atau tidak ditentukan); format non-`txt` fallback ke stdout.
 
 ## Kebijakan lampiran
 
 `attachments` per kapabilitas mengontrol lampiran mana yang diproses:
 
 <ParamField path="mode" type='"first" | "all"' default="first">
-  Apakah memproses lampiran terpilih pertama atau semuanya.
+  Apakah akan memproses lampiran pertama yang dipilih atau semuanya.
 </ParamField>
 <ParamField path="maxAttachments" type="number" default="1">
   Batasi jumlah yang diproses.
 </ParamField>
 <ParamField path="prefer" type='"first" | "last" | "path" | "url"'>
-  Preferensi pemilihan di antara lampiran kandidat.
+  Preferensi pemilihan di antara kandidat lampiran.
 </ParamField>
 
-Saat `mode: "all"`, output diberi label `[Image 1/2]`, `[Audio 2/2]`, dan seterusnya.
+Ketika `mode: "all"`, output diberi label `[Image 1/2]`, `[Audio 2/2]`, dan seterusnya.
 
 <AccordionGroup>
-  <Accordion title="Perilaku ekstraksi lampiran file">
+  <Accordion title="File-attachment extraction behavior">
     - Teks file yang diekstrak dibungkus sebagai **konten eksternal tidak tepercaya** sebelum ditambahkan ke prompt media.
-    - Blok yang disuntikkan menggunakan penanda batas eksplisit seperti `<<<EXTERNAL_UNTRUSTED_CONTENT id="...">>>` / `<<<END_EXTERNAL_UNTRUSTED_CONTENT id="...">>>` dan menyertakan baris metadata `Source: External`.
+    - Blok yang disisipkan menggunakan penanda batas eksplisit seperti `<<<EXTERNAL_UNTRUSTED_CONTENT id="...">>>` / `<<<END_EXTERNAL_UNTRUSTED_CONTENT id="...">>>` dan menyertakan baris metadata `Source: External`.
     - Jalur ekstraksi lampiran ini sengaja menghilangkan banner panjang `SECURITY NOTICE:` untuk menghindari pembengkakan prompt media; penanda batas dan metadata tetap ada.
-    - Jika file tidak memiliki teks yang dapat diekstrak, OpenClaw menyuntikkan `[No extractable text]`.
-    - Jika PDF kembali ke gambar halaman yang dirender di jalur ini, prompt media mempertahankan placeholder `[PDF content rendered to images; images not forwarded to model]` karena langkah ekstraksi lampiran ini meneruskan blok teks, bukan gambar PDF yang dirender.
+    - Jika sebuah file tidak memiliki teks yang dapat diekstrak, OpenClaw menyisipkan `[No extractable text]`.
+    - Jika PDF fallback ke gambar halaman yang dirender dalam jalur ini, OpenClaw meneruskan gambar halaman tersebut ke model balasan berkapabilitas vision dan mempertahankan placeholder `[PDF content rendered to images]` di blok file.
 
   </Accordion>
 </AccordionGroup>
@@ -332,7 +337,7 @@ Saat `mode: "all"`, output diberi label `[Image 1/2]`, `[Audio 2/2]`, dan seteru
 ## Contoh konfigurasi
 
 <Tabs>
-  <Tab title="Model bersama + penimpaan">
+  <Tab title="Shared models + overrides">
     ```json5
     {
       tools: {
@@ -368,7 +373,7 @@ Saat `mode: "all"`, output diberi label `[Image 1/2]`, `[Audio 2/2]`, dan seteru
     }
     ```
   </Tab>
-  <Tab title="Hanya audio + video">
+  <Tab title="Audio + video only">
     ```json5
     {
       tools: {
@@ -407,7 +412,7 @@ Saat `mode: "all"`, output diberi label `[Image 1/2]`, `[Audio 2/2]`, dan seteru
     }
     ```
   </Tab>
-  <Tab title="Hanya gambar">
+  <Tab title="Image-only">
     ```json5
     {
       tools: {
@@ -437,7 +442,7 @@ Saat `mode: "all"`, output diberi label `[Image 1/2]`, `[Audio 2/2]`, dan seteru
     }
     ```
   </Tab>
-  <Tab title="Entri tunggal multimodal">
+  <Tab title="Multi-modal single entry">
     ```json5
     {
       tools: {
@@ -478,7 +483,7 @@ Saat `mode: "all"`, output diberi label `[Image 1/2]`, `[Audio 2/2]`, dan seteru
 
 ## Output status
 
-Saat pemahaman media berjalan, `/status` menyertakan baris ringkasan singkat:
+Ketika pemahaman media berjalan, `/status` menyertakan baris ringkasan singkat:
 
 ```
 📎 Media: image ok (openai/gpt-5.4) · audio skipped (maxBytes)
@@ -488,7 +493,7 @@ Ini menampilkan hasil per kapabilitas dan penyedia/model yang dipilih jika berla
 
 ## Catatan
 
-- Pemahaman bersifat **upaya terbaik**. Kesalahan tidak memblokir balasan.
+- Pemahaman bersifat **upaya terbaik**. Error tidak memblokir balasan.
 - Lampiran tetap diteruskan ke model meskipun pemahaman dinonaktifkan.
 - Gunakan `scope` untuk membatasi tempat pemahaman berjalan (misalnya hanya DM).
 

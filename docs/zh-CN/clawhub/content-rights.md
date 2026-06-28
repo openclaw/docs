@@ -1,12 +1,12 @@
 ---
 read_when:
-    - 举报涉及 ClawHub 内容的版权或其他权利问题
+    - 报告涉及 ClawHub 内容的版权或其他权利问题
     - 响应 ClawHub 内容权利请求
 sidebarTitle: Content Rights
-summary: 如何提交关于 ClawHub 上发布内容的版权或其他内容权利问题。
+summary: 如何提交关于 ClawHub 上发布材料的版权或其他内容权利问题。
 title: 内容权利请求
 x-i18n:
-    generated_at: "2026-06-28T05:02:59Z"
+    generated_at: "2026-06-28T05:08:15Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -17,15 +17,15 @@ x-i18n:
 
 # 内容权利请求
 
-如果你认为 ClawHub 上发布的内容侵犯了你的版权或其他权利，请提交 [ClawHub 内容权利请求](https://forms.openclaw.ai/clawhub-content-rights)。
+如果你认为 ClawHub 上发布的内容侵犯了你的著作权或其他权利，请提交 [ClawHub 内容权利请求](https://forms.openclaw.ai/clawhub-content-rights)。
 
-请包含：
+包括：
 
 - 一个或多个精确的 `https://clawhub.ai/<owner>/skills/<skill>` URL
 - 你的姓名、组织和联系邮箱
 - 对权利问题的简要说明
-- 支持性证据（如果有）
+- 支持证据（如有）
 
 ClawHub 工作人员会人工审核请求，并可能联系请求者或发布者以获取更多信息。根据具体情况，受影响的内容可能会被隐藏、恢复或保持不变。
 
-对于不属于内容权利问题的不安全市场内容，请使用 [Moderation and Account Safety](/zh-CN/clawhub/moderation) 中描述的常规举报流程。对于 ClawHub 本身的漏洞，请参阅 [Security](/zh-CN/clawhub/security)。
+对于不属于内容权利问题的不安全市场内容，请使用[审核与账号安全](/zh-CN/clawhub/moderation)中描述的常规举报流程。对于 ClawHub 本身的漏洞，请参见[安全](/zh-CN/clawhub/security)。

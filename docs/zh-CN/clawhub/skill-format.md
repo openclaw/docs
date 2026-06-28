@@ -4,7 +4,7 @@ read_when:
     - 调试发布失败
 summary: Skill 文件夹格式、必需文件、允许的文件类型、限制。
 x-i18n:
-    generated_at: "2026-06-28T05:05:36Z"
+    generated_at: "2026-06-28T05:08:53Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -25,15 +25,14 @@ x-i18n:
 
 可选：
 
-- 任意支持性的_基于文本的_文件（见“允许的文件”）
-- `.clawhubignore`（发布时使用的忽略模式，旧版为 `.clawdhubignore`）
-- `.gitignore`（同样会被遵循）
+- 任何支持性的_基于文本_文件（见“允许的文件”）
+- `.clawhubignore`（发布时的忽略模式，旧版 `.clawdhubignore`）
+- `.gitignore`（也会被遵循）
 
 ## GitHub 导入
 
-网页版 GitHub 导入器比本地发布/同步更严格。它只会发现由已登录 GitHub 账号拥有的公开、非 fork 仓库中的
-`SKILL.md` 或旧版 `skills.md` 文件。它不会导入私有仓库、fork、
-已归档/已禁用的仓库，或第三方公开仓库。
+Web GitHub 导入器比本地发布/同步更严格。它只会发现由已登录 GitHub 账户拥有的公开、非 fork 仓库中的
+`SKILL.md` 或旧版 `skills.md` 文件。它不会导入私有仓库、fork、已归档/已禁用仓库，或第三方公开仓库。
 
 本地安装元数据（由 CLI 写入）：
 
@@ -45,13 +44,13 @@ x-i18n:
 
 ## `SKILL.md`
 
-- Markdown，可带可选的 YAML frontmatter。
-- 服务器会在发布期间从 frontmatter 中提取元数据。
+- Markdown，可选 YAML frontmatter。
+- 服务器会在发布期间从 frontmatter 提取元数据。
 - `description` 会用作 UI/搜索中的技能摘要。
 
 ## Frontmatter 元数据
 
-技能元数据声明在你的 `SKILL.md` 顶部的 YAML frontmatter 中。这会告诉注册表（以及安全分析）你的技能运行需要什么。
+技能元数据在你的 `SKILL.md` 顶部的 YAML frontmatter 中声明。这会告诉注册表（以及安全分析）你的技能运行所需的内容。
 
 ### 基础 frontmatter
 
@@ -82,28 +81,28 @@ metadata:
 ---
 ```
 
-将 `requires.env` 用于技能运行前必须存在的环境变量。当你需要按变量提供元数据时使用 `envVars`，包括带有 `required: false` 的可选变量。
+对于技能运行前必须存在的环境变量，使用 `requires.env`。当你需要逐变量元数据时，使用 `envVars`，包括带有 `required: false` 的可选变量。
 
 ### 完整字段参考
 
-| 字段               | 类型       | 说明                                                                                                                        |
-| ------------------ | ---------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `requires.env`     | `string[]` | 你的技能所需的必填环境变量。                                                                                                |
-| `requires.bins`    | `string[]` | 必须全部安装的 CLI 二进制文件。                                                                                             |
-| `requires.anyBins` | `string[]` | 至少必须存在一个的 CLI 二进制文件。                                                                                         |
-| `requires.config`  | `string[]` | 你的技能读取的配置文件路径。                                                                                                |
-| `primaryEnv`       | `string`   | 你的技能的主要凭证环境变量。                                                                                                |
-| `envVars`          | `array`    | 环境变量声明，包含 `name`、可选的 `required` 和可选的 `description`。为可选环境变量设置 `required: false`。                 |
-| `always`           | `boolean`  | 如果为 `true`，技能始终处于活动状态（无需显式安装）。                                                                       |
-| `skillKey`         | `string`   | 覆盖技能的调用键。                                                                                                          |
-| `emoji`            | `string`   | 技能的显示表情符号。                                                                                                        |
-| `homepage`         | `string`   | 指向技能主页或文档的 URL。                                                                                                  |
-| `os`               | `string[]` | 操作系统限制（例如 `["macos"]`、`["linux"]`）。                                                                             |
-| `install`          | `array`    | 依赖项的安装规格（见下文）。                                                                                                |
-| `nix`              | `object`   | Nix 插件规格（见 README）。                                                                                                 |
-| `config`           | `object`   | Clawdbot 配置规格（见 README）。                                                                                            |
+| 字段               | 类型       | 描述                                                                                                                                 |
+| ------------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `requires.env`     | `string[]` | 你的技能期望存在的必需环境变量。                                                                                                     |
+| `requires.bins`    | `string[]` | 必须全部已安装的 CLI 二进制文件。                                                                                                    |
+| `requires.anyBins` | `string[]` | 至少必须存在其中一个的 CLI 二进制文件。                                                                                              |
+| `requires.config`  | `string[]` | 你的技能会读取的配置文件路径。                                                                                                       |
+| `primaryEnv`       | `string`   | 你的技能的主凭证环境变量。                                                                                                           |
+| `envVars`          | `array`    | 带有 `name`、可选 `required` 和可选 `description` 的环境变量声明。对于可选环境变量，设置 `required: false`。                         |
+| `always`           | `boolean`  | 如果为 `true`，技能始终处于活动状态（不需要显式安装）。                                                                              |
+| `skillKey`         | `string`   | 覆盖技能的调用键。                                                                                                                   |
+| `emoji`            | `string`   | 技能的显示 emoji。                                                                                                                   |
+| `homepage`         | `string`   | 指向技能主页或文档的 URL。                                                                                                           |
+| `os`               | `string[]` | OS 限制（例如 `["macos"]`、`["linux"]`）。                                                                                           |
+| `install`          | `array`    | 依赖项的安装规范（见下文）。                                                                                                         |
+| `nix`              | `object`   | Nix 插件规范（见 README）。                                                                                                          |
+| `config`           | `object`   | Clawdbot 配置规范（见 README）。                                                                                                     |
 
-### 安装规格
+### 安装规范
 
 如果你的技能需要安装依赖项，请在 `install` 数组中声明它们：
 
@@ -138,9 +137,9 @@ metadata:
         description: Optional default project ID when the user does not specify one.
 ```
 
-### 为什么这很重要
+### 这为什么重要
 
-ClawHub 的安全分析会检查你的技能声明的内容是否与它实际执行的内容一致。如果你的代码引用了 `TODOIST_API_KEY`，但你的 frontmatter 没有在 `requires.env`、`primaryEnv` 或 `envVars` 下声明它，分析会标记元数据不匹配。保持声明准确有助于你的技能通过审核，也有助于用户了解他们正在安装什么。
+ClawHub 的安全分析会检查你的技能声明的内容是否与它实际执行的内容匹配。如果你的代码引用了 `TODOIST_API_KEY`，但你的 frontmatter 没有在 `requires.env`、`primaryEnv` 或 `envVars` 下声明它，分析会标记元数据不匹配。保持声明准确有助于你的技能通过审核，也有助于用户理解他们正在安装什么。
 
 ### 示例：完整 frontmatter
 
@@ -174,34 +173,34 @@ metadata:
 发布只接受“基于文本”的文件。
 
 - 扩展名允许列表位于 `packages/schema/src/textFiles.ts`（`TEXT_FILE_EXTENSIONS`）。
-- 脚本文件在上传后仍会被扫描；PowerShell `.ps1`、`.psm1` 和 `.psd1` 文件会被作为文本接受。
-- 以 `text/` 开头的内容类型会被视为文本；此外还有一个小型允许列表（JSON/YAML/TOML/JS/TS/Markdown/SVG）。
+- 脚本文件在上传后仍会被扫描；PowerShell `.ps1`、`.psm1` 和 `.psd1` 文件会作为文本被接受。
+- 以 `text/` 开头的内容类型会被视为文本；另有一个小型允许列表（JSON/YAML/TOML/JS/TS/Markdown/SVG）。
 
 限制（服务器端）：
 
-- 总包大小：50MB。
-- 嵌入文本包含 `SKILL.md` + 最多约 40 个非 `.md` 文件（尽力上限）。
+- 总 bundle 大小：50MB。
+- 嵌入文本包括 `SKILL.md` + 最多约 40 个非 `.md` 文件（尽力上限）。
 
-## Slug
+## Slugs
 
 - 默认从文件夹名称派生。
-- 包 scope 必须与 ClawHub 发布者 handle 完全匹配。发布者 handle 可以使用小写字母、数字、连字符、点和下划线；它们必须以小写字母或数字开头和结尾。
-- 包 slug 必须为小写且 npm 安全，例如 `@example.tools/demo-plugin` 或 `demo-plugin`。
+- Package 作用域必须与 ClawHub 发布者 handle 完全匹配。发布者 handle 可以使用小写字母、数字、连字符、点和下划线；必须以小写字母或数字开头和结尾。
+- Package slug 必须是小写且 npm-safe，例如 `@example.tools/demo-plugin` 或 `demo-plugin`。
 
 ## 版本控制 + 标签
 
 - 每次发布都会创建一个新版本（semver）。
-- 标签是指向某个版本的字符串指针；常用 `latest`。
+- 标签是指向某个版本的字符串指针；`latest` 很常用。
 
 ## 许可证
 
-- 在 ClawHub 上发布的所有技能均采用 `MIT-0` 许可。
+- 在 ClawHub 上发布的所有技能都采用 `MIT-0` 许可。
 - 任何人都可以使用、修改和重新分发已发布的技能，包括商业用途。
 - 不要求署名。
-- 不要在 `SKILL.md` 中添加冲突的许可证条款；ClawHub 不支持按技能覆盖许可证。
+- 不要在 `SKILL.md` 中添加冲突的许可条款；ClawHub 不支持按技能覆盖许可证。
 
 ## 付费技能
 
 - ClawHub 不支持付费技能、按技能定价、付费墙或收入分成。
-- 不要向 `SKILL.md` 添加定价元数据；它不是技能格式的一部分，也不会让已发布的技能变成付费技能。
-- 如果你的技能集成了付费第三方服务，请在技能说明和环境变量声明中清楚记录外部成本和所需账号（必填变量使用 `requires.env`，可选变量使用带 `required: false` 的 `envVars`）。
+- 不要向 `SKILL.md` 添加定价元数据；它不是技能格式的一部分，也不会让已发布的技能变为付费。
+- 如果你的技能集成了付费第三方服务，请在技能说明和环境变量声明中清楚记录外部成本和所需账户（必需变量用 `requires.env`，可选变量用带 `required: false` 的 `envVars`）。

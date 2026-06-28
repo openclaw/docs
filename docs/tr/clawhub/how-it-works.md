@@ -1,0 +1,113 @@
+---
+read_when:
+    - Listeleri, sürümleri, kurulumları, yayımlamayı ve moderasyonu anlama
+summary: ClawHub listelerinin, sürümlerin, kurulumların, yayınlamanın, taramaların ve güncellemelerin nasıl çalıştığı.
+x-i18n:
+    generated_at: "2026-06-28T05:06:46Z"
+    model: gpt-5.5
+    postprocess_version: locale-links-v1
+    provider: openai
+    source_hash: 747079343899e42d00f84b00c553447abe0b83f2c4f1c9cdbf54725e34779eaf
+    source_path: clawhub/how-it-works.md
+    workflow: 16
+---
+
+# ClawHub Nasıl Çalışır
+
+ClawHub, OpenClaw Skills ve Plugin'leri için kayıt katmanıdır. Kullanıcılara paketleri
+keşfedebilecekleri bir yer, yayıncılara sürüm yayımlayabilecekleri bir yer sağlar ve
+OpenClaw'a bu paketleri güvenle kurup güncellemek için yeterli meta veri verir.
+
+## Kayıt kayıtları
+
+Her herkese açık listeleme şunları içeren bir kayıt kaydıdır:
+
+- sahip ve slug ya da paket adı
+- bir veya daha fazla yayımlanmış sürüm
+- meta veri, özet, dosyalar ve kaynak atfı
+- `latest` gibi değişiklik günlüğü ve etiket bilgileri
+- indirme, kurulum ve yıldız sinyalleri
+- güvenlik taraması ve moderasyon durumu
+
+Listeleme sayfası, kullanıcıların bir skill veya plugin'in kurmadan önce ne yaptığını
+iddia ettiğini inceleyebileceği kanonik yerdir.
+
+## Skills
+
+Bir skill, `SKILL.md` merkezli sürümlenmiş bir metin paketidir. Destekleyici
+dosyalar, örnekler, şablonlar ve betikler içerebilir.
+
+ClawHub, skill adını, açıklamasını, gereksinimlerini, ortam değişkenlerini ve
+meta verilerini anlamak için `SKILL.md` frontmatter'ını okur. Doğru meta veri
+önemlidir; çünkü kullanıcıların skill'i kurup kurmamaya karar vermesine yardımcı olur ve
+otomatik taramaların beyan edilen davranış ile gözlemlenen davranış arasındaki
+uyuşmazlıkları algılamasına yardımcı olur.
+
+Bkz. [Skill biçimi](/tr/clawhub/skill-format).
+
+## Plugin'ler
+
+Plugin'ler, paketlenmiş OpenClaw uzantılarıdır. ClawHub paket meta verilerini,
+uyumluluk bilgilerini, kaynak bağlantılarını, artefaktları ve sürüm kayıtlarını saklar.
+
+OpenClaw, ClawHub'dan bir plugin kurduğunda, kurmadan önce ilan edilen uyumluluk
+meta verilerini denetler. Paket kayıtları API uyumluluğu, minimum gateway sürümü,
+ana makine hedefleri, ortam gereksinimleri ve artefakt özetlerini içerebilir.
+
+Kayıt defterinin doğruluk kaynağı olmasını istediğinizde açık bir ClawHub kurulum
+kaynağı kullanın:
+
+```bash
+openclaw plugins install clawhub:<package>
+```
+
+## Yayınlama
+
+Yayınlama, yeni ve değiştirilemez bir sürüm kaydı oluşturur. Yayıncılar kimliği
+doğrulanmış kayıt iş akışları için `clawhub` CLI'yi kullanır:
+
+```bash
+clawhub skill publish ./my-skill
+clawhub package publish <source> --family code-plugin --dry-run
+clawhub package publish <source> --family code-plugin
+```
+
+Yüklemeden önce çözümlenen yükü önizlemek için kuru çalıştırmaları kullanın.
+Herkese açık sayfalar ardından yayımlanan meta verileri, dosyaları, kaynak atfını
+ve tarama durumunu gösterir.
+
+## Kurulumlar ve güncellemeler
+
+OpenClaw kurulum komutları ClawHub'ı paket kaynağı olarak kullanır:
+
+```bash
+openclaw skills install @openclaw/demo
+openclaw plugins install clawhub:<package>
+```
+
+OpenClaw, güncellemelerin daha sonra aynı kayıt paketini çözebilmesi için
+kurulum kaynağı meta verilerini kaydeder. ClawHub CLI ayrıca, tam bir OpenClaw
+çalışma alanı dışında kayıt tarafından yönetilen skill klasörleri isteyen
+kullanıcılar için doğrudan skill kurulum ve güncelleme iş akışlarını destekler.
+
+## Güvenlik durumu
+
+ClawHub yayınlamaya açıktır, ancak sürümler yine de yükleme kapılarına,
+otomatik denetimlere, kullanıcı raporlarına ve moderatör işlemine tabidir.
+
+Herkese açık sayfalar, mevcut olduğunda tarama özetlerini gösterir. Bekletilen,
+gizlenen veya engellenen içerik; tanılama için sahibine görünür kalırken herkese
+açık arama ve kurulum akışlarından kaybolabilir.
+
+Bkz. [Güvenlik](/tr/clawhub/security), [Güvenlik Denetimleri](/tr/clawhub/security-audits),
+[Moderasyon ve Hesap Güvenliği](/tr/clawhub/moderation) ve
+[Kabul edilebilir kullanım](/tr/clawhub/acceptable-usage).
+
+## API erişimi
+
+ClawHub; keşif, arama, paket ayrıntıları ve indirmeler için herkese açık okuma
+API'leri sunar. Üçüncü taraf kataloglar, kanonik ClawHub listelemesine geri
+bağlantı verdiklerinde, hız sınırlarına uyduklarında ve onay ima etmekten
+kaçındıklarında bu API'leri kullanabilir.
+
+Bkz. [Herkese Açık API](/tr/clawhub/api) ve [HTTP API](/tr/clawhub/http-api).
