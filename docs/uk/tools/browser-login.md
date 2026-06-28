@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 89501b47611a39df5a658ed7e144b7c16a07188dfa52544b56cbfc6e296e2ecc
     source_path: tools/browser-login.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 ## Ручний вхід (рекомендовано)

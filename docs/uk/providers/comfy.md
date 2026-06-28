@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 41dda4be24d5b2c283fa499a345cf9f38747ec19b4010163ceffd998307ca086
     source_path: providers/comfy.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw постачається з вбудованим Plugin `comfy` для запусків ComfyUI на основі робочих процесів. Plugin повністю керується робочими процесами, тому OpenClaw не намагається зіставляти загальні `size`, `aspectRatio`, `resolution`, `durationSeconds` або елементи керування в стилі TTS з вашим графом.

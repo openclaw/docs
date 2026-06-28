@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 2ddfe3e6df5e48616584e912e12eede30a62f869fc307f586c9604c9c06c9e5b
     source_path: install/digitalocean.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Запустіть постійний OpenClaw Gateway на DigitalOcean Droplet (~$6/місяць за план Basic на 1 GB).

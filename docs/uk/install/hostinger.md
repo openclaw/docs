@@ -12,6 +12,7 @@ x-i18n:
     source_hash: d9d221f54d6cd1697a48615c09616ad86968937941899ea7018622302e6ceb53
     source_path: install/hostinger.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 Запустіть постійний Gateway OpenClaw на [Hostinger](https://www.hostinger.com/openclaw) через кероване розгортання **1-Click** або встановлення на **VPS**.

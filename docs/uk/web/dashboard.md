@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 07e11c1f71e6691ee053192e238a3b48568f81c3180e6b5f8e21b6874417e57e
     source_path: web/dashboard.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Інформаційна панель Gateway — це браузерний інтерфейс керування, який за замовчуванням обслуговується за адресою `/`

@@ -11,6 +11,7 @@ x-i18n:
     source_hash: c0d5f16d1369e2783bec6e0c7b2d7bee8aae86f2a424b77b9adf14850de0f20b
     source_path: channels/twitch.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Підтримка чату Twitch через IRC-з’єднання. OpenClaw підключається як користувач Twitch (обліковий запис бота), щоб отримувати й надсилати повідомлення в каналах.

@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 9d21d96f680fa24d4a53c1ed5759f800d3cfdc3336789c42c15266edd8ce9e80
     source_path: plugins/webhooks.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Plugin Webhooks додає автентифіковані HTTP-маршрути, які прив’язують зовнішню

@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7532c672f7e829b851d175d93354fc586baecea4af5f2555f57908780cedfd02
     source_path: tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 У поширеній конфігурації з розділеними хостами OpenClaw Gateway працює всередині WSL2, Chrome працює у Windows, а керування браузером має перетинати межу між WSL2 і Windows. Пошаровий шаблон збоїв з [issue #39369](https://github.com/openclaw/openclaw/issues/39369) означає, що кілька незалежних проблем можуть виникати одночасно, через що спочатку може здаватися, що зламано не той шар.

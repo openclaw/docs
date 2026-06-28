@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 9d064723b97f09105154197e4ef35b98ccb61e4b775f3fd990b18958f751f713
     source_path: cli/completion.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 # `openclaw completion`

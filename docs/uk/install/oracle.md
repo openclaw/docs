@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 9115c83c7a78b78d8b6701b028a2f6e9f08a71f7fff14b7b45f1610b8052c14e
     source_path: install/oracle.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Запустіть постійний OpenClaw Gateway на ARM-рівні **Always Free** Oracle Cloud (до 4 OCPU, 24 ГБ RAM, 200 ГБ сховища) безплатно.

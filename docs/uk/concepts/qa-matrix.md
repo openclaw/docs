@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7c6d836492368c470468547950d3765a64187694852222a5a1f0ae4185569abe
     source_path: concepts/qa-matrix.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 QA-лінія Matrix запускає вбудований Plugin `@openclaw/matrix` проти одноразового homeserver Tuwunel у Docker, з тимчасовими обліковими записами driver, SUT і observer, а також попередньо заповненими кімнатами. Це live-покриття Matrix з реальним транспортом.

@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 4985a57fcff1fc921ef1237f7cf7fd72c0498de11008aaa958ea04893753b381
     source_path: refactor/access.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 План очищення доступу до каналів тепер міститься в [плані видалення вхідного ядра](/uk/refactor/ingress-core).

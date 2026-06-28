@@ -11,6 +11,7 @@ x-i18n:
     source_hash: f53af21c746cdd44c71485cbad669f4a01a6e5be956675c73831e7b5f15df8c4
     source_path: providers/senseaudio.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 SenseAudio може транскрибувати вхідні аудіо- та голосові вкладення через спільний конвеєр OpenClaw `tools.media.audio`. OpenClaw надсилає multipart-аудіо до OpenAI-сумісної кінцевої точки транскрипції та вставляє повернений текст як `{{Transcript}}` разом із блоком `[Audio]`.

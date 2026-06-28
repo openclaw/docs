@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 810b088129bfd963ffe603a7e0a07d099fd2551bf13ebcb702905e1b8135d017
     source_path: reference/templates/TOOLS.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 # TOOLS.md - Локальні нотатки
