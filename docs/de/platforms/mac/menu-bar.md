@@ -10,6 +10,7 @@ x-i18n:
     source_hash: c569ced20b2f6a639d52d373cc8b55a42d7c015a0b234d5154ce67ac03c2eaf6
     source_path: platforms/mac/menu-bar.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 ## Was angezeigt wird

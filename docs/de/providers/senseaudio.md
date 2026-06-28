@@ -11,6 +11,7 @@ x-i18n:
     source_hash: f53af21c746cdd44c71485cbad669f4a01a6e5be956675c73831e7b5f15df8c4
     source_path: providers/senseaudio.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 SenseAudio kann eingehende Audio- und Sprachnachrichten-Anhänge über OpenClaws gemeinsame `tools.media.audio`-Pipeline transkribieren. OpenClaw sendet Audiodaten als Multipart an den OpenAI-kompatiblen Transkriptions-Endpunkt und fügt den zurückgegebenen Text als `{{Transcript}}` plus einen `[Audio]`-Block ein.

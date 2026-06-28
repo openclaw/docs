@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7532c672f7e829b851d175d93354fc586baecea4af5f2555f57908780cedfd02
     source_path: tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Bei der üblichen Split-Host-Konfiguration läuft OpenClaw Gateway in WSL2, Chrome läuft unter Windows, und die Browsersteuerung muss die Grenze zwischen WSL2 und Windows überqueren. Das geschichtete Fehlermuster aus [Issue #39369](https://github.com/openclaw/openclaw/issues/39369) bedeutet, dass mehrere unabhängige Probleme gleichzeitig auftreten können, wodurch zunächst die falsche Schicht defekt wirkt.

@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 8db92aaf1063ebcbd8630dfcb8ca0a4e9eeb1c64f5b8868bf11c836777180515
     source_path: concepts/markdown-formatting.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw formatiert ausgehendes Markdown, indem es vor dem Rendern kanalspezifischer Ausgabe in eine gemeinsame Zwischenrepräsentation (IR) konvertiert wird. Die IR hält den Quelltext unverändert und führt zugleich Stil-/Link-Spans mit, damit Chunking und Rendering über Kanäle hinweg konsistent bleiben können.

@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 9ff2f8e6ecd55ff1bdc553619ab3d590d0967efe7a9a90a31946ad15fd89a1dc
     source_path: tools/apply-patch.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Wenden Sie Dateiänderungen mit einem strukturierten Patch-Format an. Dies ist ideal für Bearbeitungen über mehrere Dateien

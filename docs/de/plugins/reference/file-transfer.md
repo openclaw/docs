@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 63f931b4bac0d212ae503a3816a527b94b3ca113677a6f52416293a2e381b24b
     source_path: plugins/reference/file-transfer.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # File Transfer-Plugin

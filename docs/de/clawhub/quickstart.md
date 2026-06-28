@@ -2,10 +2,10 @@
 read_when:
     - ClawHub zum ersten Mal verwenden
     - Eine Skill oder ein Plugin aus der Registry installieren
-    - Veröffentlichen auf ClawHub
-summary: 'Beginnen Sie mit der Nutzung von ClawHub: Finden, installieren, aktualisieren und veröffentlichen Sie Skills oder Plugins.'
+    - Veröffentlichen in ClawHub
+summary: 'Erste Schritte mit ClawHub: Skills oder Plugins finden, installieren, aktualisieren und veröffentlichen.'
 x-i18n:
-    generated_at: "2026-06-28T05:07:25Z"
+    generated_at: "2026-06-28T05:30:53Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -16,19 +16,21 @@ x-i18n:
 
 # Schnellstart
 
-ClawHub ist eine Registry für OpenClaw-Skills und -Plugins.
+ClawHub ist eine Registry für OpenClaw Skills und Plugins.
 
-Verwenden Sie OpenClaw, wenn Sie Dinge in OpenClaw installieren. Verwenden Sie die `clawhub`-CLI, wenn Sie sich anmelden, veröffentlichen, Ihre eigenen Einträge verwalten oder Registry-spezifische Workflows nutzen.
+Verwenden Sie OpenClaw, wenn Sie Dinge in OpenClaw installieren. Verwenden Sie die `clawhub` CLI,
+wenn Sie sich anmelden, veröffentlichen, Ihre eigenen Einträge verwalten oder
+Registry-spezifische Abläufe nutzen.
 
-## Skill finden und installieren
+## Skill suchen und installieren
 
-Über OpenClaw suchen:
+Suchen aus OpenClaw heraus:
 
 ```bash
 openclaw skills search "calendar"
 ```
 
-Einen Skill installieren:
+Skill installieren:
 
 ```bash
 openclaw skills install @openclaw/demo
@@ -40,11 +42,12 @@ Installierte Skills aktualisieren:
 openclaw skills update --all
 ```
 
-OpenClaw zeichnet auf, woher der Skill stammt, damit spätere Updates weiterhin über ClawHub aufgelöst werden können.
+OpenClaw speichert, woher der Skill stammt, damit spätere Aktualisierungen weiterhin
+über ClawHub aufgelöst werden können.
 
-## Plugin finden und installieren
+## Plugin suchen und installieren
 
-Über OpenClaw suchen:
+Suchen aus OpenClaw heraus:
 
 ```bash
 openclaw plugins search "calendar"
@@ -62,11 +65,12 @@ Installierte Plugins aktualisieren:
 openclaw plugins update --all
 ```
 
-Verwenden Sie das Präfix `clawhub:`, wenn OpenClaw das Paket über ClawHub statt über npm oder eine andere Quelle auflösen soll.
+Verwenden Sie das Präfix `clawhub:`, wenn OpenClaw das Paket über
+ClawHub statt über npm oder eine andere Quelle auflösen soll.
 
-## Für die Veröffentlichung anmelden
+## Für das Veröffentlichen anmelden
 
-Installieren Sie die ClawHub-CLI:
+Installieren Sie die ClawHub CLI:
 
 ```bash
 npm i -g clawhub
@@ -81,7 +85,7 @@ clawhub login
 clawhub whoami
 ```
 
-Headless-Umgebungen können ein API-Token aus der ClawHub-Web-UI verwenden:
+Headless-Umgebungen können ein API-Token aus der ClawHub-Weboberfläche verwenden:
 
 ```bash
 clawhub login --token clh_...
@@ -89,7 +93,8 @@ clawhub login --token clh_...
 
 ## Skill veröffentlichen
 
-Ein Skill ist ein Ordner mit einer erforderlichen Datei `SKILL.md` und optionalen unterstützenden Dateien.
+Ein Skill ist ein Ordner mit einer erforderlichen Datei `SKILL.md` und optionalen unterstützenden
+Dateien.
 
 ```bash
 clawhub skill publish ./my-skill \
@@ -98,11 +103,16 @@ clawhub skill publish ./my-skill \
   --changelog "Initial release"
 ```
 
-Der Befehl überspringt unveränderte Inhalte. Neue Skills beginnen bei `1.0.0`; spätere Änderungen veröffentlichen automatisch die nächste Patch-Version. Verwenden Sie `--dry-run` für eine Vorschau oder `--version`, um eine explizite Version auszuwählen.
+Der Befehl überspringt unveränderte Inhalte. Neue Skills beginnen bei `1.0.0`; spätere Änderungen
+veröffentlichen automatisch die nächste Patch-Version. Verwenden Sie `--dry-run` für eine Vorschau oder
+`--version`, um eine explizite Version auszuwählen.
 
-Prüfen Sie vor der Veröffentlichung die Metadaten in `SKILL.md`. Deklarieren Sie erforderliche Umgebungsvariablen, Tools und Berechtigungen, damit Benutzer vor der Installation verstehen können, was der Skill benötigt. Siehe [Skill-Format](/de/clawhub/skill-format).
+Prüfen Sie vor dem Veröffentlichen die Metadaten in `SKILL.md`. Deklarieren Sie erforderliche
+Umgebungsvariablen, Tools und Berechtigungen, damit Benutzer verstehen können, was der
+Skill benötigt, bevor sie ihn installieren. Siehe [Skill-Format](/de/clawhub/skill-format).
 
-Für Repositories mit mehreren Skills ruft der wiederverwendbare GitHub-Workflow `skill publish` für jeden unmittelbaren Skill-Ordner unter `skills/` auf:
+Für Repositorys mit mehreren Skills ruft der wiederverwendbare GitHub-Workflow
+`skill publish` für jeden direkten Skill-Ordner unter `skills/` auf:
 
 ```yaml
 jobs:
@@ -114,24 +124,29 @@ jobs:
 
 ## Plugin veröffentlichen
 
-Veröffentlichen Sie ein Plugin aus einem lokalen Ordner, einem GitHub-Repository, einer GitHub-Ref oder einem vorhandenen Archiv:
+Veröffentlichen Sie ein Plugin aus einem lokalen Ordner, einem GitHub-Repository, einem GitHub-Ref oder einem
+vorhandenen Archiv:
 
 ```bash
 clawhub package publish <source> --family code-plugin --dry-run
 clawhub package publish <source> --family code-plugin
 ```
 
-Verwenden Sie zuerst `--dry-run`, um eine Vorschau der aufgelösten Paketmetadaten, Kompatibilitätsfelder, Quellenzuordnung und des Upload-Plans zu erhalten, ohne zu veröffentlichen.
+Verwenden Sie zuerst `--dry-run`, um eine Vorschau der aufgelösten Paketmetadaten, Kompatibilitätsfelder,
+Quellenzuordnung und des Upload-Plans zu erhalten, ohne zu veröffentlichen.
 
-Code-Plugins müssen OpenClaw-Kompatibilitätsmetadaten in `package.json` enthalten, einschließlich `openclaw.compat.pluginApi` und `openclaw.build.openclawVersion`.
+Code-Plugins müssen OpenClaw-Kompatibilitätsmetadaten in `package.json` enthalten,
+einschließlich `openclaw.compat.pluginApi` und `openclaw.build.openclawVersion`.
 
 ## Vor der Installation prüfen
 
-Verwenden Sie vor der Installation die ClawHub-Webseite oder CLI-Detailbefehle, um Metadaten, Quelllinks, Versionen, Changelogs und Scan-Status zu prüfen:
+Verwenden Sie vor der Installation die ClawHub-Webseite oder die Detailbefehle der CLI, um
+Metadaten, Quelllinks, Versionen, Änderungsprotokolle und Scan-Status zu prüfen:
 
 ```bash
 clawhub inspect @openclaw/demo
 clawhub package inspect <package>
 ```
 
-Öffentliche Einträge zeigen den neuesten Scan-Status. Releases, die durch Moderation zurückgehalten oder blockiert werden, können aus Such- und Installationsoberflächen ausgeblendet sein, bis sie geklärt sind.
+Öffentliche Einträge zeigen den neuesten Scan-Zustand. Releases, die von der
+Moderation zurückgehalten oder blockiert werden, können aus Such- und Installationsoberflächen ausgeblendet sein, bis sie geklärt sind.

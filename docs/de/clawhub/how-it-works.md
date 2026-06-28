@@ -1,9 +1,9 @@
 ---
 read_when:
-    - Einträge, Versionen, Installationen, Veröffentlichung und Moderation verstehen
-summary: Wie ClawHub-Einträge, Versionen, Installationen, Veröffentlichung, Scans und Updates funktionieren.
+    - Listings, Versionen, Installationen, Veröffentlichung und Moderation verstehen
+summary: Wie ClawHub-Einträge, Versionen, Installationen, Veröffentlichungen, Scans und Updates funktionieren.
 x-i18n:
-    generated_at: "2026-06-28T05:06:45Z"
+    generated_at: "2026-06-28T05:29:15Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -14,7 +14,7 @@ x-i18n:
 
 # So funktioniert ClawHub
 
-ClawHub ist die Registry-Schicht für OpenClaw-Skills und -Plugins. Es bietet Benutzern einen
+ClawHub ist die Registry-Ebene für OpenClaw-Skills und -Plugins. Es gibt Benutzern einen
 Ort, um Pakete zu entdecken, Publishern einen Ort, um Versionen zu veröffentlichen, und
 OpenClaw genügend Metadaten, um diese Pakete sicher zu installieren und zu aktualisieren.
 
@@ -26,19 +26,19 @@ Jedes öffentliche Listing ist ein Registry-Eintrag mit:
 - einer oder mehreren veröffentlichten Versionen
 - Metadaten, Zusammenfassung, Dateien und Quellenangabe
 - Changelog- und Tag-Informationen wie `latest`
-- Download-, Installations- und Star-Signale
-- Sicherheitsscan- und Moderationsstatus
+- Download-, Installations- und Star-Signalen
+- Sicherheits-Scan und Moderationsstatus
 
 Die Listing-Seite ist der kanonische Ort, an dem Benutzer prüfen können, was ein Skill oder
-Plugin zu tun angibt, bevor sie es installieren.
+Plugin zu tun vorgibt, bevor sie es installieren.
 
 ## Skills
 
-Ein Skill ist ein versioniertes Text-Bundle mit `SKILL.md` im Mittelpunkt. Es kann
+Ein Skill ist ein versioniertes Text-Bundle mit `SKILL.md` im Zentrum. Er kann
 unterstützende Dateien, Beispiele, Vorlagen und Skripte enthalten.
 
-ClawHub liest das Frontmatter von `SKILL.md`, um den Namen,
-die Beschreibung, Anforderungen, Umgebungsvariablen und Metadaten des Skills zu verstehen. Genaue
+ClawHub liest das Frontmatter von `SKILL.md`, um den Skill-Namen,
+die Beschreibung, Anforderungen, Umgebungsvariablen und Metadaten zu verstehen. Genaue
 Metadaten sind wichtig, weil sie Benutzern bei der Entscheidung helfen, ob sie den Skill installieren sollen, und
 automatisierten Scans helfen, Abweichungen zwischen deklariertem und beobachtetem Verhalten zu erkennen.
 
@@ -49,11 +49,12 @@ Siehe [Skill-Format](/de/clawhub/skill-format).
 Plugins sind paketierte OpenClaw-Erweiterungen. ClawHub speichert Paketmetadaten,
 Kompatibilitätsinformationen, Quelllinks, Artefakte und Versionseinträge.
 
-Wenn OpenClaw ein Plugin aus ClawHub installiert, prüft es vor der Installation die angekündigten Kompatibilitätsmetadaten. Paketeinträge können API-Kompatibilität,
-Mindestversion des Gateways, Host-Ziele, Umgebungsanforderungen und Artefakt-Digests enthalten.
+Wenn OpenClaw ein Plugin aus ClawHub installiert, prüft es vor der Installation die angezeigten Kompatibilitätsmetadaten.
+Paketeinträge können API-Kompatibilität,
+minimale Gateway-Version, Host-Ziele, Umgebungsanforderungen und Artefakt-Digests enthalten.
 
 Verwenden Sie eine explizite ClawHub-Installationsquelle, wenn die Registry die
-Source of Truth sein soll:
+Quelle der Wahrheit sein soll:
 
 ```bash
 openclaw plugins install clawhub:<package>
@@ -70,8 +71,8 @@ clawhub package publish <source> --family code-plugin --dry-run
 clawhub package publish <source> --family code-plugin
 ```
 
-Verwenden Sie Probeläufe, um die aufgelöste Payload vor dem Upload zu prüfen. Öffentliche Seiten
-zeigen anschließend die veröffentlichten Metadaten, Dateien, Quellenangabe und den Scan-Status an.
+Verwenden Sie Testläufe, um die aufgelöste Payload vor dem Upload in der Vorschau zu prüfen. Öffentliche Seiten zeigen dann
+die veröffentlichten Metadaten, Dateien, Quellenangabe und den Scan-Status an.
 
 ## Installationen und Updates
 
@@ -82,28 +83,28 @@ openclaw skills install @openclaw/demo
 openclaw plugins install clawhub:<package>
 ```
 
-OpenClaw speichert Metadaten zur Installationsquelle, damit Updates später dasselbe
+OpenClaw zeichnet Metadaten zur Installationsquelle auf, damit Updates später dasselbe
 Registry-Paket auflösen können. Die ClawHub-CLI unterstützt außerdem direkte Skill-Installations- und
 Update-Workflows für Benutzer, die Registry-verwaltete Skill-Ordner außerhalb eines
-vollständigen OpenClaw-Workspace verwenden möchten.
+vollständigen OpenClaw-Workspace wünschen.
 
 ## Sicherheitsstatus
 
-ClawHub ist offen für Veröffentlichungen, Releases unterliegen jedoch weiterhin Upload-Gates,
-automatisierten Prüfungen, Benutzermeldungen und Moderatoraktionen.
+ClawHub ist für Veröffentlichungen offen, aber Releases unterliegen weiterhin Upload-Gates,
+automatisierten Prüfungen, Benutzerberichten und Moderatoraktionen.
 
-Öffentliche Seiten zeigen Scan-Zusammenfassungen, sofern verfügbar. Inhalte, die zurückgehalten, verborgen
-oder blockiert werden, können aus öffentlichen Such- und Installationsabläufen verschwinden, bleiben
-für den Owner jedoch zu Diagnosezwecken sichtbar.
+Öffentliche Seiten zeigen Scan-Zusammenfassungen an, wenn sie verfügbar sind. Inhalte, die zurückgehalten, ausgeblendet
+oder blockiert werden, können aus der öffentlichen Suche und Installationsabläufen verschwinden, während sie
+für den Owner zu Diagnosezwecken sichtbar bleiben.
 
-Siehe [Security](/de/clawhub/security), [Security Audits](/de/clawhub/security-audits),
-[Moderation and Account Safety](/de/clawhub/moderation) und
-[Acceptable usage](/de/clawhub/acceptable-usage).
+Siehe [Sicherheit](/de/clawhub/security), [Sicherheits-Audits](/de/clawhub/security-audits),
+[Moderation und Kontosicherheit](/de/clawhub/moderation) und
+[Zulässige Nutzung](/de/clawhub/acceptable-usage).
 
 ## API-Zugriff
 
 ClawHub stellt öffentliche Lese-APIs für Discovery, Suche, Paketdetails und
-Downloads bereit. Drittanbieter-Kataloge dürfen diese APIs verwenden, wenn sie auf das
-kanonische ClawHub-Listing zurückverweisen, Rate Limits einhalten und nicht den Eindruck einer Empfehlung erwecken.
+Downloads bereit. Drittanbieter-Kataloge können diese APIs verwenden, wenn sie auf das
+kanonische ClawHub-Listing zurückverlinken, Rate Limits respektieren und vermeiden, eine Befürwortung zu suggerieren.
 
-Siehe [Public API](/de/clawhub/api) und [HTTP API](/de/clawhub/http-api).
+Siehe [Öffentliche API](/de/clawhub/api) und [HTTP-API](/de/clawhub/http-api).

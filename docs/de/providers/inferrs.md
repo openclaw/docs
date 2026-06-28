@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 8352da589baaa3a193bb3a56d12ee1a50630346dda186898346e805844d22aa1
     source_path: providers/inferrs.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 [inferrs](https://github.com/ericcurtin/inferrs) kann lokale Modelle hinter einer OpenAI-kompatiblen `/v1`-API bereitstellen. OpenClaw funktioniert mit `inferrs` über den generischen `openai-completions`-Pfad.

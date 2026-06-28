@@ -11,6 +11,7 @@ x-i18n:
     source_hash: c38e42ae9121864333574b668d95f4d1112cada30cd525613d2371f176de4505
     source_path: install/kubernetes.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Ein minimaler Ausgangspunkt zum Ausführen von OpenClaw auf Kubernetes — keine produktionsreife Bereitstellung. Er deckt die Kernressourcen ab und ist dafür gedacht, an Ihre Umgebung angepasst zu werden.

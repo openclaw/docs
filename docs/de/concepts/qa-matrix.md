@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7c6d836492368c470468547950d3765a64187694852222a5a1f0ae4185569abe
     source_path: concepts/qa-matrix.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Die Matrix-QA-Lane führt das gebündelte `@openclaw/matrix`-Plugin gegen einen temporären Tuwunel-Homeserver in Docker aus, mit temporären Driver-, SUT- und Observer-Konten sowie vorbefüllten Räumen. Sie ist die Live-Abdeckung mit realem Transport für Matrix.

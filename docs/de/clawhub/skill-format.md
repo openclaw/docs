@@ -2,9 +2,9 @@
 read_when:
     - Skills veröffentlichen
     - Veröffentlichungsfehler debuggen
-summary: Skills-Ordnerformat, erforderliche Dateien, zulässige Dateitypen, Grenzwerte.
+summary: Format des Skill-Ordners, erforderliche Dateien, zulässige Dateitypen, Grenzwerte.
 x-i18n:
-    generated_at: "2026-06-28T05:07:52Z"
+    generated_at: "2026-06-28T05:31:41Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -21,38 +21,38 @@ Ein Skill ist ein Ordner.
 
 Erforderlich:
 
-- `SKILL.md` (oder `skill.md`; veraltetes `skills.md` wird ebenfalls akzeptiert)
+- `SKILL.md` (oder `skill.md`; das Legacy-`skills.md` wird ebenfalls akzeptiert)
 
 Optional:
 
-- beliebige unterstützende _textbasierte_ Dateien (siehe „Zulässige Dateien“)
-- `.clawhubignore` (Ignoriermuster für die Veröffentlichung, veraltet: `.clawdhubignore`)
-- `.gitignore` (wird ebenfalls berücksichtigt)
+- beliebige unterstützende _textbasierte_ Dateien (siehe „Erlaubte Dateien“)
+- `.clawhubignore` (Ignoriermuster für die Veröffentlichung, Legacy `.clawdhubignore`)
+- `.gitignore` (wird ebenfalls beachtet)
 
 ## GitHub-Import
 
-Der GitHub-Importer im Web ist strenger als lokale Veröffentlichung/Synchronisierung. Er findet nur
-`SKILL.md`- oder veraltete `skills.md`-Dateien in öffentlichen, nicht geforkten Repositorys, die dem
-angemeldeten GitHub-Konto gehören. Er importiert keine privaten Repositorys, Forks,
-archivierten/deaktivierten Repositorys oder öffentlichen Repositorys von Drittanbietern.
+Der Web-GitHub-Importer ist strenger als lokales Veröffentlichen/Synchronisieren. Er entdeckt nur
+`SKILL.md`- oder Legacy-`skills.md`-Dateien in öffentlichen, nicht geforkten Repositories, die dem
+angemeldeten GitHub-Konto gehören. Er importiert keine privaten Repos, Forks,
+archivierten/deaktivierten Repos oder öffentlichen Repos von Drittanbietern.
 
 Lokale Installationsmetadaten (von der CLI geschrieben):
 
-- `<skill>/.clawhub/origin.json` (veraltet: `.clawdhub`)
+- `<skill>/.clawhub/origin.json` (Legacy `.clawdhub`)
 
 Workdir-Installationsstatus (von der CLI geschrieben):
 
-- `<workdir>/.clawhub/lock.json` (veraltet: `.clawdhub`)
+- `<workdir>/.clawhub/lock.json` (Legacy `.clawdhub`)
 
 ## `SKILL.md`
 
 - Markdown mit optionalem YAML-Frontmatter.
-- Der Server extrahiert während der Veröffentlichung Metadaten aus dem Frontmatter.
+- Der Server extrahiert beim Veröffentlichen Metadaten aus dem Frontmatter.
 - `description` wird als Skill-Zusammenfassung in der UI/Suche verwendet.
 
 ## Frontmatter-Metadaten
 
-Skill-Metadaten werden im YAML-Frontmatter am Anfang Ihrer `SKILL.md` deklariert. Dies teilt der Registry (und der Sicherheitsanalyse) mit, was Ihr Skill zur Ausführung benötigt.
+Skill-Metadaten werden im YAML-Frontmatter am Anfang Ihrer `SKILL.md` deklariert. Das teilt der Registry (und der Sicherheitsanalyse) mit, was Ihr Skill zur Ausführung benötigt.
 
 ### Einfaches Frontmatter
 
@@ -66,7 +66,7 @@ version: 1.0.0
 
 ### Laufzeitmetadaten (`metadata.openclaw`)
 
-Deklarieren Sie die Laufzeitanforderungen Ihres Skills unter `metadata.openclaw` (Aliasse: `metadata.clawdbot`, `metadata.clawdis`).
+Deklarieren Sie die Laufzeitanforderungen Ihres Skills unter `metadata.openclaw` (Aliase: `metadata.clawdbot`, `metadata.clawdis`).
 
 ```yaml
 ---
@@ -87,26 +87,26 @@ Verwenden Sie `requires.env` für Umgebungsvariablen, die vorhanden sein müssen
 
 ### Vollständige Feldreferenz
 
-| Feld               | Typ        | Beschreibung                                                                                                                                   |
-| ------------------ | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `requires.env`     | `string[]` | Erforderliche Umgebungsvariablen, die Ihr Skill erwartet.                                                                                      |
-| `requires.bins`    | `string[]` | CLI-Binärdateien, die alle installiert sein müssen.                                                                                            |
-| `requires.anyBins` | `string[]` | CLI-Binärdateien, von denen mindestens eine vorhanden sein muss.                                                                               |
-| `requires.config`  | `string[]` | Pfade zu Konfigurationsdateien, die Ihr Skill liest.                                                                                           |
-| `primaryEnv`       | `string`   | Die wichtigste Credential-Umgebungsvariable für Ihren Skill.                                                                                   |
+| Feld               | Typ        | Beschreibung                                                                                                                                                        |
+| ------------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `requires.env`     | `string[]` | Erforderliche Umgebungsvariablen, die Ihr Skill erwartet.                                                                                                           |
+| `requires.bins`    | `string[]` | CLI-Binärdateien, die alle installiert sein müssen.                                                                                                                |
+| `requires.anyBins` | `string[]` | CLI-Binärdateien, von denen mindestens eine vorhanden sein muss.                                                                                                    |
+| `requires.config`  | `string[]` | Pfade zu Konfigurationsdateien, die Ihr Skill liest.                                                                                                               |
+| `primaryEnv`       | `string`   | Die Haupt-Credential-Umgebungsvariable für Ihren Skill.                                                                                                            |
 | `envVars`          | `array`    | Deklarationen von Umgebungsvariablen mit `name`, optionalem `required` und optionaler `description`. Setzen Sie `required: false` für optionale Umgebungsvariablen. |
-| `always`           | `boolean`  | Wenn `true`, ist der Skill immer aktiv (keine explizite Installation erforderlich).                                                            |
-| `skillKey`         | `string`   | Überschreibt den Aufrufschlüssel des Skills.                                                                                                   |
-| `emoji`            | `string`   | Anzeige-Emoji für den Skill.                                                                                                                   |
-| `homepage`         | `string`   | URL zur Homepage oder Dokumentation des Skills.                                                                                                |
-| `os`               | `string[]` | Betriebssystemeinschränkungen (z. B. `["macos"]`, `["linux"]`).                                                                                |
-| `install`          | `array`    | Installationsspezifikationen für Abhängigkeiten (siehe unten).                                                                                 |
-| `nix`              | `object`   | Nix-Plugin-Spezifikation (siehe README).                                                                                                       |
-| `config`           | `object`   | Clawdbot-Konfigurationsspezifikation (siehe README).                                                                                           |
+| `always`           | `boolean`  | Wenn `true`, ist der Skill immer aktiv (keine explizite Installation erforderlich).                                                                                 |
+| `skillKey`         | `string`   | Überschreibt den Aufrufschlüssel des Skills.                                                                                                                       |
+| `emoji`            | `string`   | Anzeige-Emoji für den Skill.                                                                                                                                       |
+| `homepage`         | `string`   | URL zur Homepage oder Dokumentation des Skills.                                                                                                                    |
+| `os`               | `string[]` | Betriebssystemeinschränkungen (z. B. `["macos"]`, `["linux"]`).                                                                                                    |
+| `install`          | `array`    | Installationsspezifikationen für Abhängigkeiten (siehe unten).                                                                                                     |
+| `nix`              | `object`   | Nix-Plugin-Spezifikation (siehe README).                                                                                                                           |
+| `config`           | `object`   | Clawdbot-Konfigurationsspezifikation (siehe README).                                                                                                               |
 
 ### Installationsspezifikationen
 
-Wenn Ihr Skill installierte Abhängigkeiten benötigt, deklarieren Sie diese im Array `install`:
+Wenn Ihr Skill installierte Abhängigkeiten benötigt, deklarieren Sie sie im `install`-Array:
 
 ```yaml
 metadata:
@@ -141,7 +141,7 @@ metadata:
 
 ### Warum das wichtig ist
 
-Die Sicherheitsanalyse von ClawHub prüft, ob die Angaben Ihres Skills mit dem übereinstimmen, was er tatsächlich tut. Wenn Ihr Code auf `TODOIST_API_KEY` verweist, Ihr Frontmatter diese Variable aber nicht unter `requires.env`, `primaryEnv` oder `envVars` deklariert, meldet die Analyse eine Metadatenabweichung. Genaue Deklarationen helfen Ihrem Skill, die Prüfung zu bestehen, und helfen Benutzern zu verstehen, was sie installieren.
+Die Sicherheitsanalyse von ClawHub prüft, ob das, was Ihr Skill deklariert, mit dem übereinstimmt, was er tatsächlich tut. Wenn Ihr Code auf `TODOIST_API_KEY` verweist, Ihr Frontmatter es aber nicht unter `requires.env`, `primaryEnv` oder `envVars` deklariert, kennzeichnet die Analyse eine Metadatenabweichung. Genaue Deklarationen helfen Ihrem Skill, die Prüfung zu bestehen, und helfen Benutzern zu verstehen, was sie installieren.
 
 ### Beispiel: vollständiges Frontmatter
 
@@ -170,9 +170,9 @@ metadata:
 ---
 ```
 
-## Zulässige Dateien
+## Erlaubte Dateien
 
-Nur „textbasierte“ Dateien werden bei der Veröffentlichung akzeptiert.
+Nur „textbasierte“ Dateien werden beim Veröffentlichen akzeptiert.
 
 - Die Erweiterungs-Allowlist befindet sich in `packages/schema/src/textFiles.ts` (`TEXT_FILE_EXTENSIONS`).
 - Skriptdateien werden nach dem Upload weiterhin gescannt; PowerShell-Dateien `.ps1`, `.psm1` und `.psd1` werden als Text akzeptiert.
@@ -186,23 +186,23 @@ Limits (serverseitig):
 ## Slugs
 
 - Standardmäßig aus dem Ordnernamen abgeleitet.
-- Package-Scopes müssen exakt mit dem ClawHub-Publisher-Handle übereinstimmen. Publisher-Handles können Kleinbuchstaben, Zahlen, Bindestriche, Punkte und Unterstriche verwenden; sie müssen mit einem Kleinbuchstaben oder einer Zahl beginnen und enden.
+- Package-Scopes müssen exakt dem ClawHub-Publisher-Handle entsprechen. Publisher-Handles können Kleinbuchstaben, Zahlen, Bindestriche, Punkte und Unterstriche verwenden; sie müssen mit einem Kleinbuchstaben oder einer Zahl beginnen und enden.
 - Package-Slugs müssen kleingeschrieben und npm-sicher sein, zum Beispiel `@example.tools/demo-plugin` oder `demo-plugin`.
 
 ## Versionierung + Tags
 
-- Jede Veröffentlichung erstellt eine neue Version (semver).
-- Tags sind String-Zeiger auf eine Version; `latest` wird häufig verwendet.
+- Jede Veröffentlichung erstellt eine neue Version (Semver).
+- Tags sind Zeichenkettenzeiger auf eine Version; `latest` wird häufig verwendet.
 
 ## Lizenz
 
 - Alle auf ClawHub veröffentlichten Skills sind unter `MIT-0` lizenziert.
 - Jeder darf veröffentlichte Skills verwenden, ändern und weiterverbreiten, auch kommerziell.
-- Eine Namensnennung ist nicht erforderlich.
-- Fügen Sie keine widersprüchlichen Lizenzbedingungen in `SKILL.md` hinzu; ClawHub unterstützt keine Lizenzüberschreibungen pro Skill.
+- Namensnennung ist nicht erforderlich.
+- Fügen Sie in `SKILL.md` keine widersprüchlichen Lizenzbedingungen hinzu; ClawHub unterstützt keine Lizenzüberschreibungen pro Skill.
 
-## Bezahlte Skills
+## Kostenpflichtige Skills
 
-- ClawHub unterstützt keine bezahlten Skills, keine Preisgestaltung pro Skill, keine Paywalls und keine Umsatzbeteiligung.
-- Fügen Sie keine Preismetadaten zu `SKILL.md` hinzu; sie sind nicht Teil des Skill-Formats und machen einen veröffentlichten Skill nicht kostenpflichtig.
+- ClawHub unterstützt keine kostenpflichtigen Skills, keine Preisgestaltung pro Skill, keine Paywalls und keine Umsatzbeteiligung.
+- Fügen Sie `SKILL.md` keine Preismetadaten hinzu; sie sind nicht Teil des Skill-Formats und machen einen veröffentlichten Skill nicht kostenpflichtig.
 - Wenn Ihr Skill in einen kostenpflichtigen Drittanbieterdienst integriert ist, dokumentieren Sie die externen Kosten und das erforderliche Konto klar in den Skill-Anweisungen und Env-Deklarationen (`requires.env` für erforderliche Variablen oder `envVars` mit `required: false` für optionale Variablen).

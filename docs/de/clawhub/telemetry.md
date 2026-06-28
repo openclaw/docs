@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Arbeiten an Telemetrie-/Datenschutzkontrollen
+    - Arbeiten an Telemetrie-/Datenschutzsteuerungen
     - Fragen dazu, welche Daten erfasst werden
-summary: Installationstelemetrie, die von der ClawHub CLI erfasst wird, und wie Sie sich abmelden.
+summary: Von der ClawHub-CLI erfasste Installations-Telemetrie und wie Sie diese deaktivieren.
 x-i18n:
-    generated_at: "2026-06-28T05:07:50Z"
+    generated_at: "2026-06-28T05:31:59Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -29,32 +29,32 @@ Wenn Sie nicht angemeldet sind, wird nichts gemeldet.
 
 ## Was wir erfassen
 
-Bei jedem gemeldeten `clawhub install` sendet die CLI ein Installationsereignis nach bestem Aufwand.
+Bei jedem gemeldeten `clawhub install` sendet die CLI ein Installationsereignis nach dem Best-Effort-Prinzip.
 
 Das Ereignis enthält:
 
-- `slug`: der installierte Skill-Slug.
+- `slug`: den Slug des installierten Skills.
 - `version`: die installierte Version, sofern bekannt.
 
 ### Was wir _nicht_ erfassen
 
 - Keine Ordnerpfade oder aus Ordnern abgeleiteten Kennungen.
 - Keine Dateiinhalte.
-- Keine Logs pro Ausführung, Prompts oder andere CLI-Ausgaben.
+- Keine Pro-Ausführung-Protokolle, Prompts oder andere CLI-Ausgaben.
 
 ## Installationszahlen
 
-ClawHub führt aggregierte Zähler pro Skill:
+ClawHub verwaltet aggregierte Zähler pro Skill:
 
-- `installsAllTime`: eindeutige Benutzer, die mindestens eine CLI-Installation für den Skill gemeldet haben.
-- `installsCurrent`: eindeutige Benutzer, die eine Installation gemeldet und ihre
-  Telemetrie nicht gelöscht haben.
+- `installsAllTime`: eindeutige Nutzer, die mindestens eine CLI-Installation für den Skill gemeldet haben.
+- `installsCurrent`: eindeutige Nutzer, die eine Installation gemeldet und ihre
+  Telemetriedaten nicht gelöscht haben.
 
-## Transparenz und Benutzersteuerung
+## Transparenz + Benutzersteuerung
 
 Alle sehen nur **aggregierte Installationszähler**.
 
-Durch das Löschen Ihres Kontos werden auch Ihre Telemetriedaten gelöscht.
+Wenn Sie Ihr Konto löschen, werden auch Ihre Telemetriedaten gelöscht.
 
 ## So deaktivieren Sie Telemetrie
 

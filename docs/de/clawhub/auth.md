@@ -1,11 +1,11 @@
 ---
 read_when:
     - Bei ClawHub anmelden
-    - Verwendung der ClawHub-CLI
+    - Verwendung der ClawHub CLI
     - 401-Fehler debuggen
 summary: ClawHub-Anmeldung, API-Token, CLI-Anmeldung, Token-Speicherung und Widerruf.
 x-i18n:
-    generated_at: "2026-06-28T05:06:58Z"
+    generated_at: "2026-06-28T05:28:53Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -17,16 +17,16 @@ x-i18n:
 # Authentifizierung
 
 ClawHub verwendet GitHub für die Web-Anmeldung. Die CLI verwendet ClawHub-API-Token, die
-über dieses angemeldete Konto erstellt werden.
+über dieses angemeldete Konto erstellt wurden.
 
 ## Web-Anmeldung
 
-Verwenden Sie GitHub, um sich bei [clawhub.ai](https://clawhub.ai) anzumelden.
+Verwenden Sie GitHub, um sich unter [clawhub.ai](https://clawhub.ai) anzumelden.
 
 Gelöschte, gesperrte oder deaktivierte Konten können die normale ClawHub-Anmeldung nicht abschließen.
-Wenn Sie nach der Anmeldung wieder in einem abgemeldeten Zustand landen, ist Ihr Konto möglicherweise nicht in einwandfreiem
-Status. Wenn Ihr Konto gesperrt oder deaktiviert wurde, verwenden Sie das
-[ClawHub-Einspruchsformular](https://appeals.openclaw.ai/), wenn Sie glauben, dass dies ein
+Wenn Sie nach der Anmeldung wieder in einem abgemeldeten Zustand landen, ist Ihr Konto möglicherweise nicht in gutem
+Zustand. Wenn Ihr Konto gesperrt oder deaktiviert wurde, verwenden Sie das
+[ClawHub-Einspruchsformular](https://appeals.openclaw.ai/), falls Sie glauben, dass dies ein
 Fehler ist.
 
 ## CLI-Anmeldung
@@ -38,7 +38,7 @@ clawhub login
 clawhub whoami
 ```
 
-Was passiert:
+Was geschieht:
 
 1. Die CLI startet einen temporären Callback-Server auf `127.0.0.1`.
 2. Ihr Browser öffnet die ClawHub-Anmeldeseite.
@@ -57,20 +57,20 @@ Erstellen Sie ein Token in der ClawHub-Weboberfläche und übergeben Sie es dann
 clawhub login --token clh_...
 ```
 
-Verwenden Sie diesen Ablauf für Server, CI-Jobs oder reine Terminalumgebungen.
+Verwenden Sie diesen Ablauf für Server, CI-Jobs oder reine Terminal-Umgebungen.
 
-Für Remote-Shells, bei denen Sie an anderer Stelle einen Browser öffnen können, führen Sie Folgendes aus:
+Für Remote-Shells, bei denen Sie an anderer Stelle einen Browser öffnen können, führen Sie aus:
 
 ```bash
 clawhub login --device
 ```
 
-Die CLI gibt einen einmaligen Code aus und wartet, während Sie ihn unter
+Die CLI gibt einen Einmalcode aus und wartet, während Sie ihn unter
 `https://clawhub.ai/cli/device` autorisieren.
 
-## Tokenspeicherung
+## Token-Speicherung
 
-Standard-Konfigurationspfade:
+Standardmäßige Konfigurationspfade:
 
 - macOS: `~/Library/Application Support/clawhub/config.json`
 - Linux/XDG: `$XDG_CONFIG_HOME/clawhub/config.json` oder `~/.config/clawhub/config.json`
@@ -93,9 +93,9 @@ clawhub token
 Sie können API-Token in der ClawHub-Weboberfläche widerrufen.
 
 Widerrufene, ungültige oder fehlende Token geben `401 Unauthorized` zurück. Melden Sie sich erneut
-mit `clawhub login` an oder stellen Sie mit `clawhub login --token` ein frisches Token bereit.
+mit `clawhub login` an oder stellen Sie ein neues Token mit `clawhub login --token` bereit.
 
 Gelöschte, gesperrte oder deaktivierte Konten können vorhandene API-Token nicht weiterverwenden.
 Wenn Ihr Konto gesperrt oder deaktiviert wurde, verwenden Sie das
-[ClawHub-Einspruchsformular](https://appeals.openclaw.ai/), wenn Sie glauben, dass dies ein
+[ClawHub-Einspruchsformular](https://appeals.openclaw.ai/), falls Sie glauben, dass dies ein
 Fehler ist.
