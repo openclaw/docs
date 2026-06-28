@@ -893,7 +893,61 @@ class I18NScriptTests(unittest.TestCase):
         self.assertNotIn("ja-JP/channels/line", result.stdout)
         self.assertNotIn("assets/docs-site.css", result.stdout)
 
-    def _run_r2_upload_scope(self, scope: str, locale: str, page_path: str = "") -> subprocess.CompletedProcess[str]:
+    def test_r2_upload_page_scope_allows_canary_locale_manifest_entries(self) -> None:
+        result = self._run_r2_upload_scope(
+            "page",
+            "hi",
+            "channels/line",
+            extra_keys=[
+                "hi/channels/line",
+                "hi/channels/line/index.html",
+                "hi/channels/line.md",
+            ],
+        )
+
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertIn("r2 upload scope: page (3/10 manifest entries, partial=true)", result.stdout)
+        self.assertIn("r2 dry-run put: hi/channels/line\n", result.stdout)
+        self.assertIn("r2 dry-run put: hi/channels/line/index.html", result.stdout)
+        self.assertIn("r2 dry-run put: hi/channels/line.md", result.stdout)
+
+    def test_r2_upload_page_scope_rejects_unknown_locale_without_manifest_entries(self) -> None:
+        result = self._run_r2_upload_scope("page", "hi", "channels/line")
+
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn("R2_UPLOAD_SCOPE=page matched zero manifest entries", result.stderr)
+
+    def test_r2_upload_locale_scope_rejects_pagefind_only_unknown_locale(self) -> None:
+        result = self._run_r2_upload_scope("locale", "hi")
+
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn("R2_UPLOAD_SCOPE=locale matched no entries for locale hi", result.stderr)
+
+    def test_r2_upload_page_scope_rejects_unclean_locale_code(self) -> None:
+        result = self._run_r2_upload_scope("page", "../hi", "channels/line")
+
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn("R2_UPLOAD_LOCALE must be a clean locale code", result.stderr)
+
+    def test_r2_upload_page_scope_rejects_reserved_asset_prefix_locale(self) -> None:
+        result = self._run_r2_upload_scope("page", "assets", "docs-site.css")
+
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn("R2_UPLOAD_LOCALE cannot use reserved docs asset prefix: assets", result.stderr)
+
+    def test_r2_upload_locale_scope_rejects_reserved_pagefind_prefix_locale(self) -> None:
+        result = self._run_r2_upload_scope("locale", "pagefind")
+
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn("R2_UPLOAD_LOCALE cannot use reserved docs asset prefix: pagefind", result.stderr)
+
+    def _run_r2_upload_scope(
+        self,
+        scope: str,
+        locale: str,
+        page_path: str = "",
+        extra_keys: list[str] | None = None,
+    ) -> subprocess.CompletedProcess[str]:
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)
             dist = tmp_path / "dist"
@@ -909,6 +963,7 @@ class I18NScriptTests(unittest.TestCase):
                 "ja-JP/channels/line/index.html",
                 "pagefind/pagefind.js",
                 "assets/docs-site.css",
+                *(extra_keys or []),
             ]:
                 file_path = files / key.replace("/", "__")
                 file_path.write_text(key, encoding="utf-8")
