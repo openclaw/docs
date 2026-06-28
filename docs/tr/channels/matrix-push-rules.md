@@ -11,6 +11,7 @@ x-i18n:
     source_hash: e2f037a50a85b350163c74cf6b9cce335ecaaa5cccc762124122ad6d0321a1fa
     source_path: channels/matrix-push-rules.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 `channels.matrix.streaming` `"quiet"` olduğunda, OpenClaw tek bir önizleme olayını yerinde düzenler ve sonlandırılmış düzenlemeyi özel bir içerik bayrağıyla işaretler. Matrix istemcileri, son düzenleme için yalnızca kullanıcı başına bir push kuralı bu bayrakla eşleşirse bildirim gösterir. Bu sayfa, Matrix'i kendi barındıran ve bu kuralı her alıcı hesabı için yüklemek isteyen operatörler içindir.

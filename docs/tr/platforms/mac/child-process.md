@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 543327024f8c635d74ac656923e8e745dc47ca9df0aba5ec51215bd186db2b35
     source_path: platforms/mac/child-process.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 macOS uygulaması varsayılan olarak **Gateway'i launchd üzerinden yönetir** ve Gateway'i bir alt süreç olarak başlatmaz. Önce yapılandırılmış bağlantı noktasında hâlihazırda çalışan bir Gateway'e bağlanmayı dener; erişilebilir bir tane yoksa, harici `openclaw` CLI üzerinden launchd hizmetini etkinleştirir (gömülü runtime yoktur). Bu, oturum açıldığında güvenilir otomatik başlatma ve çökmelerde yeniden başlatma sağlar.

@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 2ec2ac3af258ae6876b2c0957e4ffc5db2d780fc9f33458204c8089fd47238bc
     source_path: plugins/reference/xai.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # xAI Plugin

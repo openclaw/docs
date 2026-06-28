@@ -1,11 +1,11 @@
 ---
 read_when:
     - ClawHub'ı ilk kez kullanma
-    - Kayıt defterinden bir Skills veya Plugin yükleme
-    - ClawHub'a yayımlama
+    - Kayıt defterinden bir skill veya plugin yükleme
+    - ClawHub’da Yayınlama
 summary: 'ClawHub''ı kullanmaya başlayın: Skills veya Plugin''leri bulun, yükleyin, güncelleyin ve yayımlayın.'
 x-i18n:
-    generated_at: "2026-06-28T07:42:08Z"
+    generated_at: "2026-06-28T08:17:26Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -14,13 +14,15 @@ x-i18n:
     workflow: 16
 ---
 
-# Hızlı başlangıç
+# Hızlı Başlangıç
 
-ClawHub, OpenClaw Skills ve Plugin'leri için bir kayıt defteridir.
+ClawHub, OpenClaw becerileri ve Plugin'leri için bir kayıt deposudur.
 
-OpenClaw içine bir şeyler kurarken OpenClaw kullanın. Oturum açarken, yayınlarken, kendi listelemelerinizi yönetirken veya kayıt defterine özgü iş akışlarını kullanırken `clawhub` CLI kullanın.
+OpenClaw içine bir şeyler yüklerken OpenClaw kullanın. Oturum açarken,
+yayımlarken, kendi listelemelerinizi yönetirken veya kayıt deposuna özgü iş
+akışlarını kullanırken `clawhub` CLI'yi kullanın.
 
-## Bir skill bulma ve kurma
+## Bir beceri bulma ve yükleme
 
 OpenClaw üzerinden arayın:
 
@@ -28,21 +30,22 @@ OpenClaw üzerinden arayın:
 openclaw skills search "calendar"
 ```
 
-Bir skill kurun:
+Bir beceri yükleyin:
 
 ```bash
 openclaw skills install @openclaw/demo
 ```
 
-Kurulu Skills'i güncelleyin:
+Yüklü becerileri güncelleyin:
 
 ```bash
 openclaw skills update --all
 ```
 
-OpenClaw, skill'in nereden geldiğini kaydeder; böylece sonraki güncellemeler ClawHub üzerinden çözümlenmeye devam edebilir.
+OpenClaw, becerinin nereden geldiğini kaydeder; böylece sonraki güncellemeler
+ClawHub üzerinden çözümlemeye devam edebilir.
 
-## Bir Plugin bulma ve kurma
+## Bir Plugin bulma ve yükleme
 
 OpenClaw üzerinden arayın:
 
@@ -50,27 +53,28 @@ OpenClaw üzerinden arayın:
 openclaw plugins search "calendar"
 ```
 
-Açık bir ClawHub kaynağıyla ClawHub üzerinde barındırılan bir Plugin kurun:
+Açık bir ClawHub kaynağıyla ClawHub'da barındırılan bir Plugin yükleyin:
 
 ```bash
 openclaw plugins install clawhub:<package>
 ```
 
-Kurulu Plugin'leri güncelleyin:
+Yüklü Plugin'leri güncelleyin:
 
 ```bash
 openclaw plugins update --all
 ```
 
-OpenClaw'ın paketi npm veya başka bir kaynak yerine ClawHub üzerinden çözümlemesini istediğinizde `clawhub:` önekini kullanın.
+OpenClaw'ın paketi npm veya başka bir kaynak yerine ClawHub üzerinden
+çözümlemesini istediğinizde `clawhub:` önekini kullanın.
 
-## Yayınlama için oturum açma
+## Yayımlama için oturum açma
 
-ClawHub CLI'yi kurun:
+ClawHub CLI'yi yükleyin:
 
 ```bash
 npm i -g clawhub
-# veya
+# or
 pnpm add -g clawhub
 ```
 
@@ -81,15 +85,17 @@ clawhub login
 clawhub whoami
 ```
 
-Başsız ortamlar ClawHub web kullanıcı arayüzünden bir API belirteci kullanabilir:
+Başsız ortamlar, ClawHub web kullanıcı arayüzünden alınan bir API belirteci
+kullanabilir:
 
 ```bash
 clawhub login --token clh_...
 ```
 
-## Bir skill yayınlama
+## Bir beceri yayımlama
 
-Bir skill, zorunlu bir `SKILL.md` dosyası ve isteğe bağlı destekleyici dosyalar içeren bir klasördür.
+Beceri, gerekli bir `SKILL.md` dosyası ve isteğe bağlı destek dosyaları içeren
+bir klasördür.
 
 ```bash
 clawhub skill publish ./my-skill \
@@ -98,11 +104,16 @@ clawhub skill publish ./my-skill \
   --changelog "Initial release"
 ```
 
-Komut, değişmemiş içeriği atlar. Yeni Skills `1.0.0` ile başlar; sonraki değişiklikler bir sonraki yama sürümünü otomatik olarak yayınlar. Önizlemek için `--dry-run` veya açık bir sürüm seçmek için `--version` kullanın.
+Komut, değişmemiş içeriği atlar. Yeni beceriler `1.0.0` ile başlar; sonraki
+değişiklikler otomatik olarak bir sonraki yama sürümünü yayımlar. Önizleme için
+`--dry-run`, açık bir sürüm seçmek için `--version` kullanın.
 
-Yayınlamadan önce `SKILL.md` içindeki meta verileri kontrol edin. Kullanıcıların skill'i kurmadan önce neye ihtiyaç duyduğunu anlayabilmesi için gerekli ortam değişkenlerini, araçları ve izinleri bildirin. Bkz. [Skill biçimi](/tr/clawhub/skill-format).
+Yayımlamadan önce `SKILL.md` içindeki meta verileri kontrol edin. Gerekli ortam
+değişkenlerini, araçları ve izinleri bildirin; böylece kullanıcılar beceriyi
+yüklemeden önce neye ihtiyaç duyduğunu anlayabilir. Bkz. [Beceri biçimi](/tr/clawhub/skill-format).
 
-Birden fazla skill içeren depolar için yeniden kullanılabilir GitHub iş akışı, `skills/` altındaki her doğrudan skill klasörü için `skill publish` çağırır:
+Birden fazla beceri içeren depolarda, yeniden kullanılabilir GitHub iş akışı
+`skills/` altındaki her doğrudan beceri klasörü için `skill publish` çağırır:
 
 ```yaml
 jobs:
@@ -112,26 +123,34 @@ jobs:
       dry_run: true
 ```
 
-## Bir Plugin yayınlama
+## Bir Plugin yayımlama
 
-Yerel bir klasörden, GitHub deposundan, GitHub referansından veya mevcut bir arşivden bir Plugin yayınlayın:
+Yerel bir klasörden, GitHub deposundan, GitHub ref'inden veya mevcut bir
+arşivden Plugin yayımlayın:
 
 ```bash
 clawhub package publish <source> --family code-plugin --dry-run
 clawhub package publish <source> --family code-plugin
 ```
 
-Yayınlamadan önce çözümlenen paket meta verilerini, uyumluluk alanlarını, kaynak atfını ve yükleme planını önizlemek için önce `--dry-run` kullanın.
+Çözümlenen paket meta verilerini, uyumluluk alanlarını, kaynak atfını ve yükleme
+planını yayımlamadan önizlemek için önce `--dry-run` kullanın.
 
-Kod Plugin'leri, `package.json` içinde `openclaw.compat.pluginApi` ve `openclaw.build.openclawVersion` dahil OpenClaw uyumluluk meta verilerini içermelidir.
+Kod Plugin'leri, `package.json` içinde `openclaw.compat.pluginApi` ve
+`openclaw.build.openclawVersion` dahil olmak üzere OpenClaw uyumluluk meta
+verilerini içermelidir.
 
-## Kurmadan önce inceleme
+## Yüklemeden önce inceleme
 
-Kurmadan önce meta verileri, kaynak bağlantılarını, sürümleri, değişiklik günlüklerini ve tarama durumunu incelemek için ClawHub web sayfasını veya CLI ayrıntı komutlarını kullanın:
+Yüklemeden önce meta verileri, kaynak bağlantılarını, sürümleri, değişiklik
+günlüklerini ve tarama durumunu incelemek için ClawHub web sayfasını veya CLI
+ayrıntı komutlarını kullanın:
 
 ```bash
 clawhub inspect @openclaw/demo
 clawhub package inspect <package>
 ```
 
-Herkese açık listelemeler en son tarama durumunu gösterir. Moderasyon tarafından bekletilen veya engellenen yayınlar, çözülene kadar arama ve kurulum yüzeylerinden gizlenebilir.
+Herkese açık listelemeler en son tarama durumunu gösterir. Moderasyon
+tarafından bekletilen veya engellenen sürümler, çözülene kadar arama ve yükleme
+yüzeylerinden gizlenebilir.

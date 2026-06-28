@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 3ea07f0ae23076906e2ff0246ac75813572f98cffa50afddb6a6b0af8964c4a9
     source_path: concepts/session-pruning.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 Oturum budama, her LLM çağrısından önce bağlamdan **eski araç sonuçlarını** budar. Normal konuşma metnini yeniden yazmadan, birikmiş araç çıktılarından (exec sonuçları, dosya okumaları, arama sonuçları) kaynaklanan bağlam şişmesini azaltır.

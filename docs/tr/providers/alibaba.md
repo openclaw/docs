@@ -11,6 +11,7 @@ x-i18n:
     source_hash: c390da201e2c8685fafa6171a6028bf18fc676b2d46f784651f91cdc6137fdf2
     source_path: providers/alibaba.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw, Alibaba Model Studio'daki (DashScope'un uluslararası adı) Wan modelleri için bir video oluşturma sağlayıcısı kaydeden, paketle birlikte gelen bir `alibaba` Plugin'iyle gelir. Plugin varsayılan olarak etkindir; yalnızca bir API anahtarı ayarlamanız gerekir.

@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7c6d836492368c470468547950d3765a64187694852222a5a1f0ae4185569abe
     source_path: concepts/qa-matrix.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Matrix QA hattı, paketle birlikte gelen `@openclaw/matrix` Plugin'ini Docker içinde tek kullanımlık bir Tuwunel homeserver üzerinde, geçici sürücü, SUT ve gözlemci hesapları ile önceden hazırlanmış odalarla çalıştırır. Matrix için canlı, gerçek taşıma kapsamıdır.

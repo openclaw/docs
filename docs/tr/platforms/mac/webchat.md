@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 50680e099181421505e25cecab2ba331fdaf9839d07fef482ff04976b0fc583e
     source_path: platforms/mac/webchat.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 macOS menü çubuğu uygulaması, WebChat arayüzünü yerel bir SwiftUI görünümü olarak gömer. Gateway'e bağlanır ve seçili agent için varsayılan olarak **ana oturumu** kullanır (diğer oturumlar için bir oturum değiştiriciyle).

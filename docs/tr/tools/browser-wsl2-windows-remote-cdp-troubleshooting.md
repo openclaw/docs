@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7532c672f7e829b851d175d93354fc586baecea4af5f2555f57908780cedfd02
     source_path: tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Yaygın bölünmüş ana makine kurulumunda OpenClaw Gateway WSL2 içinde çalışır, Chrome Windows üzerinde çalışır ve tarayıcı denetimi WSL2 ile Windows sınırını geçmelidir. [issue #39369](https://github.com/openclaw/openclaw/issues/39369) kaynaklı katmanlı hata örüntüsü, birkaç bağımsız sorunun aynı anda ortaya çıkabileceği anlamına gelir; bu da önce yanlış katmanın bozuk görünmesine neden olur.

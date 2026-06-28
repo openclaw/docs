@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7b0ff6c4ee46005aeac1612ea40f1ce3d5824aa507d0842788dbf4bffbaccfcc
     source_path: network.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Bu merkez, OpenClaw'ın localhost, LAN ve tailnet genelinde cihazları nasıl bağladığı, eşleştirdiği ve güvenceye aldığıyla ilgili temel dokümanlara bağlantı verir.

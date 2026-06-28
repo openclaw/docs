@@ -1,11 +1,11 @@
 ---
 read_when:
-    - ClawHub'a oturum açma
-    - ClawHub CLI'ını kullanma
-    - 401 Hatalarını Ayıklama
-summary: ClawHub oturum açma, API belirteçleri, CLI girişi, belirteç depolama ve iptal.
+    - ClawHub'da oturum açma
+    - ClawHub CLI Kullanımı
+    - 401 Hatalarında Hata Ayıklama
+summary: ClawHub oturum açma, API belirteçleri, CLI oturum açma, belirteç depolama ve iptal.
 x-i18n:
-    generated_at: "2026-06-28T07:41:25Z"
+    generated_at: "2026-06-28T08:15:19Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -16,18 +16,13 @@ x-i18n:
 
 # Kimlik Doğrulama
 
-ClawHub, web oturum açma için GitHub kullanır. CLI, oturum açılmış bu hesap
-üzerinden oluşturulan ClawHub API belirteçlerini kullanır.
+ClawHub web oturumu açmak için GitHub kullanır. CLI, oturum açılmış hesap üzerinden oluşturulan ClawHub API belirteçlerini kullanır.
 
 ## Web oturumu açma
 
 [clawhub.ai](https://clawhub.ai) adresinde oturum açmak için GitHub kullanın.
 
-Silinmiş, yasaklanmış veya devre dışı bırakılmış hesaplar normal ClawHub oturum
-açma işlemini tamamlayamaz. Oturum açma sizi oturum kapalı durumuna geri
-döndürüyorsa hesabınız iyi durumda olmayabilir. Hesabınız yasaklandıysa veya
-devre dışı bırakıldıysa, bunun bir hata olduğunu düşünüyorsanız
-[ClawHub itiraz formunu](https://appeals.openclaw.ai/) kullanın.
+Silinmiş, yasaklanmış veya devre dışı bırakılmış hesaplar normal ClawHub oturum açma işlemini tamamlayamaz. Oturum açma sizi oturum kapalı duruma geri döndürürse hesabınız iyi durumda olmayabilir. Hesabınız yasaklandıysa veya devre dışı bırakıldıysa bunun bir hata olduğuna inanıyorsanız [ClawHub itiraz formunu](https://appeals.openclaw.ai/) kullanın.
 
 ## CLI oturumu açma
 
@@ -46,29 +41,25 @@ Olanlar:
 4. Tarayıcı yerel geri çağırmaya yeniden yönlendirilir.
 5. CLI, belirteci ClawHub yapılandırma dosyanızda saklar.
 
-Tarayıcınız güvenlik duvarı, VPN veya proxy kuralları nedeniyle yerel geri
-çağırmaya ulaşamıyorsa tarayıcısız belirteç akışını kullanın.
+Tarayıcınız güvenlik duvarı, VPN veya proxy kuralları nedeniyle yerel geri çağırmaya erişemiyorsa başsız belirteç akışını kullanın.
 
-## Tarayıcısız oturum açma
+## Başsız oturum açma
 
-ClawHub web kullanıcı arayüzünde bir belirteç oluşturun, ardından bunu CLI'ye
-geçirin:
+ClawHub web kullanıcı arayüzünde bir belirteç oluşturun, ardından bunu CLI'ye iletin:
 
 ```bash
 clawhub login --token clh_...
 ```
 
-Bu akışı sunucular, CI işleri veya yalnızca terminal kullanılan ortamlar için
-kullanın.
+Bu akışı sunucular, CI işleri veya yalnızca terminal ortamları için kullanın.
 
-Başka bir yerde tarayıcı açabildiğiniz uzak kabuklar için şunu çalıştırın:
+Başka bir yerde tarayıcı açabileceğiniz uzak kabuklar için şunu çalıştırın:
 
 ```bash
 clawhub login --device
 ```
 
-CLI tek kullanımlık bir kod yazdırır ve siz
-`https://clawhub.ai/cli/device` adresinde yetkilendirirken bekler.
+CLI tek kullanımlık bir kod yazdırır ve siz `https://clawhub.ai/cli/device` adresinde yetkilendirirken bekler.
 
 ## Belirteç depolama
 
@@ -78,13 +69,13 @@ Varsayılan yapılandırma yolları:
 - Linux/XDG: `$XDG_CONFIG_HOME/clawhub/config.json` veya `~/.config/clawhub/config.json`
 - Windows: `%APPDATA%\\clawhub\\config.json`
 
-Yolu şununla geçersiz kılın:
+Yolu şu şekilde geçersiz kılın:
 
 ```bash
 export CLAWHUB_CONFIG_PATH=/path/to/config.json
 ```
 
-CI kurulumu için saklanan belirteci şununla yazdırın:
+CI kurulumu için saklanan belirteci şu komutla yazdırın:
 
 ```bash
 clawhub token
@@ -94,11 +85,6 @@ clawhub token
 
 API belirteçlerini ClawHub web kullanıcı arayüzünde iptal edebilirsiniz.
 
-İptal edilmiş, geçersiz veya eksik belirteçler `401 Unauthorized` döndürür.
-`clawhub login` ile tekrar oturum açın veya `clawhub login --token` ile yeni bir
-belirteç sağlayın.
+İptal edilmiş, geçersiz veya eksik belirteçler `401 Unauthorized` döndürür. `clawhub login` ile yeniden oturum açın veya `clawhub login --token` ile yeni bir belirteç sağlayın.
 
-Silinmiş, yasaklanmış veya devre dışı bırakılmış hesaplar mevcut API
-belirteçlerini kullanmaya devam edemez. Hesabınız yasaklandıysa veya devre dışı
-bırakıldıysa, bunun bir hata olduğunu düşünüyorsanız
-[ClawHub itiraz formunu](https://appeals.openclaw.ai/) kullanın.
+Silinmiş, yasaklanmış veya devre dışı bırakılmış hesaplar mevcut API belirteçlerini kullanmaya devam edemez. Hesabınız yasaklandıysa veya devre dışı bırakıldıysa bunun bir hata olduğuna inanıyorsanız [ClawHub itiraz formunu](https://appeals.openclaw.ai/) kullanın.

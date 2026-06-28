@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 1b44eda85f3a3714d7d360d04fdd2c99a692fa6491f12e73847c5f08d702a62c
     source_path: install/migrating-claude.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw, yerel Claude durumunu paketle birlikte gelen Claude migration sağlayıcısı aracılığıyla içe aktarır. Sağlayıcı, durumu değiştirmeden önce her öğeyi önizler, planlarda ve raporlarda gizli bilgileri redakte eder ve uygulamadan önce doğrulanmış bir yedek oluşturur.

@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 3a51baa7aca31cb34b682983374d4d551ed6ab57ae54a5c63e7d044bffeef756
     source_path: automation/standing-orders.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Daimi emirler, tanımlanmış programlar için ajanınıza **kalıcı işletim yetkisi** verir. Her seferinde tek tek görev talimatları vermek yerine, kapsamı, tetikleyicileri ve yükseltme kuralları net olan programlar tanımlarsınız; ajan da bu sınırlar içinde otonom olarak yürütür.

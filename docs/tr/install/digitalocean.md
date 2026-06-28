@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 2ddfe3e6df5e48616584e912e12eede30a62f869fc307f586c9604c9c06c9e5b
     source_path: install/digitalocean.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw Gateway'i DigitalOcean Droplet üzerinde kalıcı olarak çalıştırın (1 GB Basic plan için ayda yaklaşık 6 ABD doları).

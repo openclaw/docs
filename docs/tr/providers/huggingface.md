@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 93b3049e8d42787acba12ec3ddf70603159251dae1d870047f8ffc9242f202a5
     source_path: providers/huggingface.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 [Hugging Face Inference Providers](https://huggingface.co/docs/inference-providers), tek bir yönlendirici API üzerinden OpenAI uyumlu chat completions sunar. Tek bir token ile birçok modele (DeepSeek, Llama ve daha fazlası) erişirsiniz. OpenClaw, **OpenAI uyumlu uç noktayı** kullanır (yalnızca chat completions); text-to-image, embeddings veya konuşma için [HF inference clients](https://huggingface.co/docs/api-inference/quicktour) doğrudan kullanılmalıdır.

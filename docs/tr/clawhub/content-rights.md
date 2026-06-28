@@ -1,12 +1,12 @@
 ---
 read_when:
-    - ClawHub içerikleriyle ilgili telif hakkı veya diğer haklara ilişkin endişeleri bildirme
+    - ClawHub içeriğiyle ilgili telif hakkı veya diğer hak endişelerini bildirme
     - ClawHub içerik hakları talebine yanıt verme
 sidebarTitle: Content Rights
-summary: ClawHub'da yayımlanan materyalle ilgili telif hakkı veya diğer içerik hakları konusundaki bir endişeyi nasıl bildireceğiniz.
+summary: ClawHub’da yayımlanan materyaller hakkında telif hakkı veya diğer içerik haklarıyla ilgili bir endişenin nasıl bildirileceği.
 title: İçerik Hakları Talepleri
 x-i18n:
-    generated_at: "2026-06-28T07:41:26Z"
+    generated_at: "2026-06-28T08:15:38Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -17,21 +17,16 @@ x-i18n:
 
 # İçerik Hakları Talepleri
 
-ClawHub üzerinde yayımlanan içeriğin telif hakkınızı veya diğer haklarınızı
-ihlal ettiğini düşünüyorsanız bir [ClawHub İçerik Hakları Talebi](https://forms.openclaw.ai/clawhub-content-rights) gönderin.
+ClawHub’da yayımlanan içeriğin telif hakkınızı veya diğer haklarınızı ihlal ettiğini düşünüyorsanız bir [ClawHub İçerik Hakları Talebi](https://forms.openclaw.ai/clawhub-content-rights) gönderin.
 
 Şunları ekleyin:
 
-- bir veya daha fazla tam `https://clawhub.ai/<owner>/skills/<skill>` URL'si
+- bir veya daha fazla tam `https://clawhub.ai/<owner>/skills/<skill>` URL’si
 - adınız, kuruluşunuz ve iletişim e-postanız
 - haklarla ilgili endişenin kısa bir açıklaması
 - varsa destekleyici kanıtlar
 
-ClawHub personeli talepleri manuel olarak inceler ve daha fazla bilgi için talep
-sahibiyle veya yayımcıyla iletişime geçebilir. Koşullara bağlı olarak, etkilenen
-içerik gizlenebilir, geri yüklenebilir veya değiştirilmeden bırakılabilir.
+ClawHub ekibi talepleri manuel olarak inceler ve daha fazla bilgi için talep sahibiyle veya yayımcıyla iletişime geçebilir. Koşullara bağlı olarak, etkilenen içerik gizlenebilir, geri yüklenebilir veya değiştirilmeden bırakılabilir.
 
-İçerik haklarıyla ilgili olmayan güvenli olmayan pazaryeri içeriği için
-[Moderasyon ve Hesap Güvenliği](/tr/clawhub/moderation) bölümünde açıklanan normal
-bildirim akışını kullanın. ClawHub'ın kendisindeki güvenlik açıkları için
-[Güvenlik](/tr/clawhub/security) bölümüne bakın.
+İçerik haklarıyla ilgili olmayan güvenli olmayan pazaryeri içeriği için [Moderasyon ve Hesap Güvenliği](/tr/clawhub/moderation) bölümünde açıklanan normal bildirim akışını kullanın.
+ClawHub’ın kendisindeki güvenlik açıkları için [Güvenlik](/tr/clawhub/security) bölümüne bakın.

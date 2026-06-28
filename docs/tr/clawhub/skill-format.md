@@ -1,10 +1,10 @@
 ---
 read_when:
     - Skills yayımlama
-    - Yayınlama hatalarında hata ayıklama
+    - Yayımlama hatalarında hata ayıklama
 summary: Skill klasörü biçimi, gerekli dosyalar, izin verilen dosya türleri, sınırlar.
 x-i18n:
-    generated_at: "2026-06-28T07:42:24Z"
+    generated_at: "2026-06-28T08:18:25Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -17,39 +17,41 @@ x-i18n:
 
 ## Disk üzerinde
 
-Beceri bir klasördür.
+Bir beceri bir klasördür.
 
-Zorunlu:
+Gerekli:
 
 - `SKILL.md` (veya `skill.md`; eski `skills.md` de kabul edilir)
 
 İsteğe bağlı:
 
-- destekleyici herhangi bir _metin tabanlı_ dosya (“İzin verilen dosyalar” bölümüne bakın)
-- `.clawhubignore` (yayınlama için yok sayma desenleri, eski `.clawdhubignore`)
-- `.gitignore` (bu da dikkate alınır)
+- destekleyici herhangi bir _metin tabanlı_ dosya (bkz. “İzin verilen dosyalar”)
+- `.clawhubignore` (yayımlama için yok sayma kalıpları, eski `.clawdhubignore`)
+- `.gitignore` (ona da uyulur)
 
 ## GitHub içe aktarma
 
-Web GitHub içe aktarıcısı, yerel publish/sync işleminden daha katıdır. Yalnızca oturum açmış GitHub hesabına ait, herkese açık, fork olmayan depolardaki `SKILL.md` veya eski `skills.md` dosyalarını keşfeder. Özel depoları, forkları, arşivlenmiş/devre dışı bırakılmış depoları veya üçüncü taraf herkese açık depoları içe aktarmaz.
+Web GitHub içe aktarıcısı, yerel publish/sync işleminden daha katıdır. Yalnızca oturum açmış GitHub hesabına ait herkese açık, fork olmayan depolardaki
+`SKILL.md` veya eski `skills.md` dosyalarını keşfeder. Özel depoları, fork'ları,
+arşivlenmiş/devre dışı bırakılmış depoları veya üçüncü taraf herkese açık depoları içe aktarmaz.
 
-Yerel kurulum meta verileri (CLI tarafından yazılır):
+Yerel kurulum meta verisi (CLI tarafından yazılır):
 
 - `<skill>/.clawhub/origin.json` (eski `.clawdhub`)
 
-Çalışma dizini kurulum durumu (CLI tarafından yazılır):
+Workdir kurulum durumu (CLI tarafından yazılır):
 
 - `<workdir>/.clawhub/lock.json` (eski `.clawdhub`)
 
 ## `SKILL.md`
 
 - İsteğe bağlı YAML frontmatter içeren Markdown.
-- Sunucu, yayınlama sırasında meta verileri frontmatter’dan çıkarır.
-- `description`, UI/arama içinde beceri özeti olarak kullanılır.
+- Sunucu, yayımlama sırasında meta veriyi frontmatter'dan çıkarır.
+- `description`, UI/aramada beceri özeti olarak kullanılır.
 
-## Frontmatter meta verileri
+## Frontmatter meta verisi
 
-Beceri meta verileri, `SKILL.md` dosyanızın en üstündeki YAML frontmatter içinde bildirilir. Bu, kayıt sistemine (ve güvenlik analizine) becerinizin çalışmak için neye ihtiyaç duyduğunu söyler.
+Beceri meta verisi, `SKILL.md` dosyanızın en üstündeki YAML frontmatter içinde bildirilir. Bu, registry'ye (ve güvenlik analizine) becerinizin çalışmak için neye ihtiyaç duyduğunu söyler.
 
 ### Temel frontmatter
 
@@ -61,9 +63,9 @@ version: 1.0.0
 ---
 ```
 
-### Çalışma zamanı meta verileri (`metadata.openclaw`)
+### Runtime meta verisi (`metadata.openclaw`)
 
-Becerinizin çalışma zamanı gereksinimlerini `metadata.openclaw` altında bildirin (diğer adlar: `metadata.clawdbot`, `metadata.clawdis`).
+Becerinizin runtime gereksinimlerini `metadata.openclaw` altında bildirin (takma adlar: `metadata.clawdbot`, `metadata.clawdis`).
 
 ```yaml
 ---
@@ -80,30 +82,30 @@ metadata:
 ---
 ```
 
-Beceri çalışmadan önce mevcut olması gereken ortam değişkenleri için `requires.env` kullanın. İsteğe bağlı değişkenleri `required: false` ile belirtmek dahil, değişken başına meta veriye ihtiyaç duyduğunuzda `envVars` kullanın.
+Beceri çalışmadan önce mevcut olması gereken ortam değişkenleri için `requires.env` kullanın. İsteğe bağlı değişkenler dahil değişken başına meta veriye ihtiyaç duyduğunuzda `envVars` kullanın ve isteğe bağlı değişkenler için `required: false` belirtin.
 
-### Tam alan başvurusu
+### Tam alan referansı
 
-| Alan               | Tür        | Açıklama                                                                                                                                                 |
-| ------------------ | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `requires.env`     | `string[]` | Becerinizin beklediği zorunlu ortam değişkenleri.                                                                                                        |
-| `requires.bins`    | `string[]` | Tümünün kurulu olması gereken CLI ikilileri.                                                                                                             |
-| `requires.anyBins` | `string[]` | En az birinin mevcut olması gereken CLI ikilileri.                                                                                                       |
-| `requires.config`  | `string[]` | Becerinizin okuduğu yapılandırma dosyası yolları.                                                                                                       |
-| `primaryEnv`       | `string`   | Beceriniz için ana kimlik bilgisi ortam değişkeni.                                                                                                       |
-| `envVars`          | `array`    | `name`, isteğe bağlı `required` ve isteğe bağlı `description` içeren ortam değişkeni bildirimleri. İsteğe bağlı ortam değişkenleri için `required: false` ayarlayın. |
-| `always`           | `boolean`  | `true` ise beceri her zaman etkindir (açık kurulum gerekmez).                                                                                            |
-| `skillKey`         | `string`   | Becerinin çağırma anahtarını geçersiz kılar.                                                                                                            |
-| `emoji`            | `string`   | Beceri için görüntülenecek emoji.                                                                                                                        |
-| `homepage`         | `string`   | Becerinin ana sayfasına veya dokümanlarına giden URL.                                                                                                   |
-| `os`               | `string[]` | İşletim sistemi kısıtlamaları (örn. `["macos"]`, `["linux"]`).                                                                                          |
-| `install`          | `array`    | Bağımlılıklar için kurulum tanımları (aşağıya bakın).                                                                                                   |
-| `nix`              | `object`   | Nix Plugin tanımı (README’ye bakın).                                                                                                                     |
-| `config`           | `object`   | Clawdbot yapılandırma tanımı (README’ye bakın).                                                                                                         |
+| Alan               | Tür        | Açıklama                                                                                                                                      |
+| ------------------ | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `requires.env`     | `string[]` | Becerinizin beklediği zorunlu ortam değişkenleri.                                                                                             |
+| `requires.bins`    | `string[]` | Tamamı kurulu olması gereken CLI ikilileri.                                                                                                    |
+| `requires.anyBins` | `string[]` | En az birinin mevcut olması gereken CLI ikilileri.                                                                                             |
+| `requires.config`  | `string[]` | Becerinizin okuduğu yapılandırma dosyası yolları.                                                                                              |
+| `primaryEnv`       | `string`   | Beceriniz için ana kimlik bilgisi ortam değişkeni.                                                                                             |
+| `envVars`          | `array`    | `name`, isteğe bağlı `required` ve isteğe bağlı `description` içeren ortam değişkeni bildirimleri. İsteğe bağlı env vars için `required: false` ayarlayın. |
+| `always`           | `boolean`  | `true` ise beceri her zaman aktiftir (açık kurulum gerekmez).                                                                                  |
+| `skillKey`         | `string`   | Becerinin çağırma anahtarını geçersiz kılar.                                                                                                   |
+| `emoji`            | `string`   | Beceri için görüntülenecek emoji.                                                                                                              |
+| `homepage`         | `string`   | Becerinin ana sayfasına veya dokümantasyonuna URL.                                                                                             |
+| `os`               | `string[]` | OS kısıtlamaları (ör. `["macos"]`, `["linux"]`).                                                                                               |
+| `install`          | `array`    | Bağımlılıklar için kurulum belirtimleri (aşağıya bakın).                                                                                       |
+| `nix`              | `object`   | Nix Plugin belirtimi (README'ye bakın).                                                                                                        |
+| `config`           | `object`   | Clawdbot yapılandırma belirtimi (README'ye bakın).                                                                                             |
 
-### Kurulum tanımları
+### Kurulum belirtimleri
 
-Becerinizin bağımlılıkların kurulmasına ihtiyacı varsa bunları `install` dizisinde bildirin:
+Becerinizin bağımlılıklarının kurulması gerekiyorsa bunları `install` dizisinde bildirin:
 
 ```yaml
 metadata:
@@ -121,7 +123,7 @@ Desteklenen kurulum türleri: `brew`, `node`, `go`, `uv`.
 
 ### İsteğe bağlı ortam değişkenleri
 
-İsteğe bağlı ortam değişkenlerini `metadata.openclaw.envVars` altında bildirin ve `required: false` olarak ayarlayın. İsteğe bağlı girdileri `requires.env` içine eklemeyin; çünkü `requires.env`, becerinin bunlar olmadan çalışamayacağı anlamına gelir.
+İsteğe bağlı ortam değişkenlerini `metadata.openclaw.envVars` altında bildirin ve `required: false` ayarlayın. İsteğe bağlı girdileri `requires.env` içine eklemeyin, çünkü `requires.env` becerinin onlar olmadan çalışamayacağı anlamına gelir.
 
 ```yaml
 metadata:
@@ -138,7 +140,7 @@ metadata:
 
 ### Bu neden önemli
 
-ClawHub’ın güvenlik analizi, becerinizin bildirdiklerinin gerçekten yaptıklarıyla eşleştiğini kontrol eder. Kodunuz `TODOIST_API_KEY` öğesine başvuruyorsa ancak frontmatter bunu `requires.env`, `primaryEnv` veya `envVars` altında bildirmiyorsa analiz bir meta veri uyuşmazlığı işaretler. Bildirimleri doğru tutmak, becerinizin incelemeden geçmesine ve kullanıcıların ne kurduklarını anlamasına yardımcı olur.
+ClawHub'ın güvenlik analizi, becerinizin bildirdiği şeylerle gerçekte yaptığı şeylerin eşleşip eşleşmediğini denetler. Kodunuz `TODOIST_API_KEY` değerine başvuruyorsa ama frontmatter bunu `requires.env`, `primaryEnv` veya `envVars` altında bildirmiyorsa analiz bir meta veri uyuşmazlığını işaretler. Bildirimleri doğru tutmak, becerinizin incelemeden geçmesine yardımcı olur ve kullanıcıların ne kurduklarını anlamasını sağlar.
 
 ### Örnek: eksiksiz frontmatter
 
@@ -171,35 +173,35 @@ metadata:
 
 Publish tarafından yalnızca “metin tabanlı” dosyalar kabul edilir.
 
-- Uzantı izin listesi `packages/schema/src/textFiles.ts` (`TEXT_FILE_EXTENSIONS`) içindedir.
-- Script dosyaları yüklemeden sonra yine taranır; PowerShell `.ps1`, `.psm1` ve `.psd1` dosyaları metin olarak kabul edilir.
-- `text/` ile başlayan içerik türleri metin olarak değerlendirilir; buna ek olarak küçük bir izin listesi vardır (JSON/YAML/TOML/JS/TS/Markdown/SVG).
+- Uzantı allowlist'i `packages/schema/src/textFiles.ts` içindedir (`TEXT_FILE_EXTENSIONS`).
+- Script dosyaları yüklemeden sonra da taranır; PowerShell `.ps1`, `.psm1` ve `.psd1` dosyaları metin olarak kabul edilir.
+- `text/` ile başlayan içerik türleri metin olarak değerlendirilir; ayrıca küçük bir allowlist vardır (JSON/YAML/TOML/JS/TS/Markdown/SVG).
 
 Sınırlar (sunucu tarafı):
 
-- Toplam paket boyutu: 50 MB.
-- Gömme metni `SKILL.md` + yaklaşık 40 adede kadar `.md` olmayan dosyayı içerir (en iyi çaba sınırı).
+- Toplam paket boyutu: 50MB.
+- Embedding metni `SKILL.md` + en fazla yaklaşık 40 adet `.md` olmayan dosya içerir (en iyi çaba sınırı).
 
-## Slug’lar
+## Slug'lar
 
 - Varsayılan olarak klasör adından türetilir.
-- Paket kapsamları, ClawHub yayıncı tanıtıcısıyla tam olarak eşleşmelidir. Yayıncı tanıtıcıları küçük harf, sayı, kısa çizgi, nokta ve alt çizgi kullanabilir; küçük harf veya sayı ile başlayıp bitmelidir.
-- Paket slug’ları küçük harfli ve npm için güvenli olmalıdır; örneğin `@example.tools/demo-plugin` veya `demo-plugin`.
+- Paket scope'ları ClawHub yayıncı handle'ı ile tam olarak eşleşmelidir. Yayıncı handle'ları küçük harfler, sayılar, kısa çizgiler, noktalar ve alt çizgiler kullanabilir; küçük harf veya sayı ile başlayıp bitmelidir.
+- Paket slug'ları küçük harfli ve npm için güvenli olmalıdır; örneğin `@example.tools/demo-plugin` veya `demo-plugin`.
 
 ## Sürümleme + etiketler
 
-- Her publish yeni bir sürüm (semver) oluşturur.
-- Etiketler bir sürüme işaret eden string işaretçilerdir; `latest` yaygın olarak kullanılır.
+- Her publish yeni bir sürüm oluşturur (semver).
+- Etiketler bir sürüme işaret eden string pointer'lardır; `latest` yaygın olarak kullanılır.
 
 ## Lisans
 
-- ClawHub’da yayınlanan tüm beceriler `MIT-0` altında lisanslanır.
-- Herkes, ticari kullanım dahil olmak üzere yayınlanmış becerileri kullanabilir, değiştirebilir ve yeniden dağıtabilir.
+- ClawHub'da yayımlanan tüm beceriler `MIT-0` kapsamında lisanslanır.
+- Herkes yayımlanmış becerileri ticari kullanım dahil kullanabilir, değiştirebilir ve yeniden dağıtabilir.
 - Atıf gerekli değildir.
 - `SKILL.md` içine çakışan lisans koşulları eklemeyin; ClawHub beceri başına lisans geçersiz kılmalarını desteklemez.
 
 ## Ücretli beceriler
 
 - ClawHub ücretli becerileri, beceri başına fiyatlandırmayı, ödeme duvarlarını veya gelir paylaşımını desteklemez.
-- `SKILL.md` içine fiyatlandırma meta verisi eklemeyin; bu, beceri biçiminin parçası değildir ve yayınlanan bir beceriyi ücretli yapmaz.
-- Beceriniz ücretli bir üçüncü taraf hizmetle entegre oluyorsa dış maliyeti ve gerekli hesabı beceri talimatlarında ve ortam bildirimlerinde açıkça belgeleyin (zorunlu değişkenler için `requires.env` veya isteğe bağlı değişkenler için `required: false` içeren `envVars`).
+- `SKILL.md` içine fiyatlandırma meta verisi eklemeyin; bu beceri biçiminin parçası değildir ve yayımlanmış bir beceriyi ücretli yapmaz.
+- Beceriniz ücretli bir üçüncü taraf hizmetle entegre oluyorsa, harici maliyeti ve gerekli hesabı beceri talimatlarında ve env bildirimlerinde açıkça belgeleyin (zorunlu değişkenler için `requires.env` veya isteğe bağlı değişkenler için `required: false` ile `envVars`).

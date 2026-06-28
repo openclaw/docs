@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Uç noktaları ekleme/değiştirme
-    - CLI ↔ kayıt defteri isteklerinde hata ayıklama
+    - Uç noktalar ekleme/değiştirme
+    - CLI ↔ registry isteklerinde hata ayıklama
 summary: HTTP API referansı (genel + CLI uç noktaları + kimlik doğrulama).
 x-i18n:
-    generated_at: "2026-06-28T07:41:25Z"
+    generated_at: "2026-06-28T08:15:51Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -18,25 +18,28 @@ x-i18n:
 Temel URL: `https://clawhub.ai` (varsayılan).
 
 Tüm v1 yolları `/api/v1/...` altındadır.
-Eski `/api/...` ve `/api/cli/...` uyumluluk için kalır (bkz. `DEPRECATIONS.md`).
+Eski `/api/...` ve `/api/cli/...` uyumluluk için korunur (bkz. `DEPRECATIONS.md`).
 OpenAPI: `/api/v1/openapi.json`.
 
-## Herkese açık katalog yeniden kullanımı
+## Genel katalog yeniden kullanımı
 
-Üçüncü taraf dizinler, ClawHub skills listelemek veya aramak için herkese açık okuma uç noktalarını kullanabilir. Lütfen sonuçları önbelleğe alın, `429`/`Retry-After` değerlerine uyun, kullanıcıları kanonik ClawHub listesine (`https://clawhub.ai/<owner>/skills/<slug>`) geri yönlendirin ve ClawHub'ın üçüncü taraf siteyi onayladığını ima etmekten kaçının. Gizli, özel veya moderasyon tarafından engellenmiş içeriği herkese açık API yüzeyi dışında yansıtmaya çalışmayın.
+Üçüncü taraf dizinler, ClawHub becerilerini listelemek veya aramak için genel okuma uç noktalarını kullanabilir. Lütfen sonuçları önbelleğe alın, `429`/`Retry-After` değerlerine uyun, kullanıcıları standart ClawHub listelemesine (`https://clawhub.ai/<owner>/skills/<slug>`) geri bağlayın ve üçüncü taraf sitenin ClawHub tarafından onaylandığı izlenimini vermekten kaçının. Gizli, özel veya moderasyon tarafından engellenmiş içeriği genel API yüzeyi dışında yansıtmaya çalışmayın.
 
-Web slug kısayolları kayıt ailesi genelinde çözümlenir, ancak API istemcileri rota
-önceliğini yeniden oluşturmak yerine okuma uç noktalarının döndürdüğü kanonik URL'leri
-kullanmalıdır.
+Web `slug` kısayolları kayıt defteri aileleri arasında çözümlenir, ancak API istemcileri rota
+önceliğini yeniden oluşturmaya çalışmak yerine okuma uç noktalarının döndürdüğü standart
+URL'leri kullanmalıdır.
 
 ## Hız sınırları
 
-Zorlama modeli:
+Uygulama modeli:
 
 - Anonim istekler: IP başına uygulanır.
-- Kimliği doğrulanmış istekler (geçerli Bearer token): kullanıcı kovası başına uygulanır.
-- Token eksik/geçersizse davranış IP zorlamasına geri döner.
-- Kimliği doğrulanmış yazma uç noktaları, sunucu nedeni biliyorsa yalın bir `Unauthorized` döndürmemelidir. Eksik tokenlar, geçersiz/iptal edilmiş tokenlar ve silinmiş/yasaklanmış/devre dışı bırakılmış hesapların her biri, CLI istemcilerinin kullanıcılara neyin engel olduğunu söyleyebilmesi için eyleme geçirilebilir metin almalıdır.
+- Kimliği doğrulanmış istekler (geçerli Bearer belirteci): kullanıcı kovası başına uygulanır.
+- Belirteç eksik/geçersizse davranış IP uygulamasına geri döner.
+- Kimliği doğrulanmış yazma uç noktaları, sunucu nedeni bildiğinde yalın bir `Unauthorized`
+  döndürmemelidir. Eksik belirteçler, geçersiz/iptal edilmiş belirteçler ve
+  silinmiş/yasaklanmış/devre dışı bırakılmış hesaplar, CLI istemcilerinin kullanıcılara
+  kendilerini neyin engellediğini söyleyebilmesi için eyleme geçirilebilir metin almalıdır.
 
 - Okuma: IP başına 3000/dk, anahtar başına 12000/dk
 - Yazma: IP başına 300/dk, anahtar başına 3000/dk
@@ -49,12 +52,12 @@ Başlıklar:
 - `429` durumunda: `X-RateLimit-Remaining: 0` ve `RateLimit-Remaining: 0`
 - `429` durumunda: `Retry-After`
 
-Başlık semantiği:
+Başlık anlamları:
 
-- `X-RateLimit-Reset`: mutlak Unix epoch saniyesi
+- `X-RateLimit-Reset`: mutlak Unix epoch saniyeleri
 - `RateLimit-Reset`: sıfırlamaya kadar saniye (gecikme)
-- `X-RateLimit-Remaining` / `RateLimit-Remaining`: varsa tam kalan bütçe.
-  Parçalı başarılı istekler, yaklaşık bir global değer döndürmek yerine bu başlığı atlar.
+- `X-RateLimit-Remaining` / `RateLimit-Remaining`: mevcutsa tam kalan bütçe.
+  Parçalanmış başarılı istekler, yaklaşık bir genel değer döndürmek yerine bu başlığı atlar.
 - `Retry-After`: `429` durumunda yeniden denemeden önce beklenecek saniye (gecikme)
 
 Örnek `429` yanıtı:
@@ -73,38 +76,42 @@ retry-after: 34
 Rate limit exceeded
 ```
 
-İstemci kılavuzu:
+İstemci rehberi:
 
-- `Retry-After` varsa yeniden denemeden önce o kadar saniye bekleyin.
-- Eşzamanlı yeniden denemeleri önlemek için jitter eklenmiş geri çekilme kullanın.
-- `Retry-After` eksikse `RateLimit-Reset` değerine geri dönün (veya `X-RateLimit-Reset` değerinden hesaplayın).
+- `Retry-After` varsa, yeniden denemeden önce belirtilen saniye kadar bekleyin.
+- Eşzamanlı yeniden denemeleri önlemek için jitter eklenmiş backoff kullanın.
+- `Retry-After` eksikse, `RateLimit-Reset` değerine geri dönün (veya `X-RateLimit-Reset` üzerinden hesaplayın).
 
 IP kaynağı:
 
-- `cf-connecting-ip` dahil güvenilir istemci IP başlıklarını yalnızca dağıtım güvenilir iletilmiş başlıkları açıkça etkinleştirdiğinde kullanır.
-- ClawHub, uçta istemci IP'lerini tanımlamak için güvenilir iletme başlıklarını kullanır.
-- Güvenilir istemci IP'si yoksa anonim istekler yalnızca hız sınırı türüne göre kapsamlanan yedek kovalara gider. Bu yedek kovalar, çağıranın sağladığı yolları, slug'ları, paket adlarını, sürümleri, sorgu dizelerini veya diğer yapı parametrelerini içermez.
+- Yalnızca dağıtım güvenilir iletilmiş başlıkları açıkça etkinleştirdiğinde
+  `cf-connecting-ip` dahil güvenilir istemci IP başlıklarını kullanır.
+- ClawHub, kenarda istemci IP'lerini tanımlamak için güvenilir iletme başlıklarını kullanır.
+- Güvenilir istemci IP'si yoksa, anonim istekler yalnızca hız sınırı türüne göre
+  kapsamlandırılmış geri dönüş kovalarını kullanır. Bu geri dönüş kovaları
+  çağıranın sağladığı yolları, slug'ları, paket adlarını, sürümleri, sorgu dizelerini
+  veya diğer yapıt parametrelerini içermez.
 
 ## Hata yanıtları
 
-Herkese açık v1 hata yanıtları `content-type: text/plain; charset=utf-8` ile düz metindir.
-Buna doğrulama hataları (`400`), eksik herkese açık kaynaklar (`404`), kimlik doğrulama ve
-izin hataları (`401`/`403`), hız sınırları (`429`) ve engellenen indirmeler dahildir. İstemciler
-yanıt gövdesini insan tarafından okunabilir bir dize olarak okumalıdır. Bilinmeyen sorgu parametreleri
-uyumluluk için yok sayılır, ancak geçersiz değerlere sahip tanınan sorgu parametreleri
-`400` döndürür.
+Genel v1 hata yanıtları `content-type: text/plain; charset=utf-8` ile düz metindir.
+Buna doğrulama hataları (`400`), eksik genel kaynaklar (`404`), kimlik doğrulama ve
+izin hataları (`401`/`403`), hız sınırları (`429`) ve engellenmiş indirmeler dahildir. İstemciler
+yanıt gövdesini insan tarafından okunabilir bir dize olarak okumalıdır. Bilinmeyen sorgu
+parametreleri uyumluluk için yok sayılır, ancak geçersiz değerlere sahip tanınan sorgu
+parametreleri `400` döndürür.
 
-## Herkese açık uç noktalar (kimlik doğrulama yok)
+## Genel uç noktalar (kimlik doğrulama yok)
 
 ### `GET /api/v1/search`
 
 Sorgu parametreleri:
 
-- `q` (gerekli): sorgu dizesi
+- `q` (zorunlu): sorgu dizesi
 - `limit` (isteğe bağlı): tamsayı
-- `highlightedOnly` (isteğe bağlı): öne çıkarılan skills ile sınırlamak için `true`
-- `nonSuspiciousOnly` (isteğe bağlı): şüpheli (`flagged.suspicious`) skills gizlemek için `true`
-- `nonSuspicious` (isteğe bağlı): `nonSuspiciousOnly` için eski takma ad
+- `highlightedOnly` (isteğe bağlı): öne çıkarılmış becerilere filtrelemek için `true`
+- `nonSuspiciousOnly` (isteğe bağlı): şüpheli (`flagged.suspicious`) becerileri gizlemek için `true`
+- `nonSuspicious` (isteğe bağlı): `nonSuspiciousOnly` için eski ad
 
 Yanıt:
 
@@ -131,18 +138,18 @@ Yanıt:
 
 Notlar:
 
-- Sonuçlar alaka sırasıyla döndürülür (embedding benzerliği + tam slug/ad token artırmaları + küçük bir popülerlik önceliği).
-- Alaka popülerlikten daha güçlüdür. Kesin bir slug veya görünen ad token eşleşmesi, çok daha güçlü etkileşime sahip daha gevşek bir eşleşmenin önüne geçebilir.
-- ASCII metin, sözcük ve noktalama sınırlarında tokenlara ayrılır. Örneğin `personal-map` bağımsız bir `map` tokenı içerirken `amap-jsapi-skill` `amap`, `jsapi` ve `skill` içerir; bu nedenle `map` araması, `personal-map` için `amap-jsapi-skill` değerinden daha güçlü bir sözcüksel eşleşme sağlar.
-- Popülerlik logaritmik ölçeklenir ve sınırlandırılır. Sorgu metni daha zayıf eşleştiğinde yüksek etkileşimli skills daha düşük sıralanabilir.
-- Şüpheli veya gizli moderasyon durumu, çağıran filtrelerine ve geçerli moderasyon durumuna bağlı olarak bir skill'i herkese açık aramadan kaldırabilir.
+- Sonuçlar alaka sırasına göre döndürülür (embedding benzerliği + tam slug/ad token güçlendirmeleri + küçük bir popülerlik önceliği).
+- Alaka, popülerlikten daha güçlüdür. Kesin bir slug veya görünen ad token eşleşmesi, çok daha güçlü etkileşime sahip daha gevşek bir eşleşmenin önüne geçebilir.
+- ASCII metin, sözcük ve noktalama sınırlarında token'lara ayrılır. Örneğin `personal-map` bağımsız bir `map` token'ı içerirken `amap-jsapi-skill` `amap`, `jsapi` ve `skill` içerir; bu nedenle `map` araması `personal-map` için `amap-jsapi-skill` değerine göre daha güçlü bir sözcüksel eşleşme verir.
+- Popülerlik logaritmik ölçeklenir ve üst sınır uygulanır. Yüksek etkileşimli beceriler, sorgu metni daha zayıf bir eşleşmeyse daha aşağıda sıralanabilir.
+- Şüpheli veya gizli moderasyon durumu, çağıran filtrelerine ve mevcut moderasyon durumuna bağlı olarak bir beceriyi genel aramadan kaldırabilir.
 
-Yayıncı keşfedilebilirlik kılavuzu:
+Yayıncı keşfedilebilirlik rehberi:
 
-- Kullanıcıların kelimesi kelimesine arayacağı terimleri görünen ada, özete ve etiketlere koyun. Bağımsız bir slug tokenını yalnızca korumak istediğiniz kararlı bir kimlikse kullanın.
-- Yeni slug daha iyi uzun vadeli kanonik ad olmadığı sürece yalnızca tek bir sorguyu kovalamak için slug'ı yeniden adlandırmayın. Eski slug'lar yönlendirme takma adları olur, ancak kanonik URL, görüntülenen slug ve gelecekteki arama özetleri yeni slug'ı kullanır.
-- Yeniden adlandırma takma adları, eski URL'ler ve kayıt üzerinden çözümlenen kurulumlar için çözümlemeyi korur, ancak arama sıralaması yeniden adlandırma dizine eklendikten sonra kanonik skill meta verilerine dayanır. Mevcut istatistikler skill ile kalır.
-- Bir skill beklenmedik şekilde görünmüyorsa sıralamayla ilgili meta verileri değiştirmeden önce oturum açmışken `clawhub inspect @owner/slug` ile önce moderasyon durumunu kontrol edin.
+- Kullanıcıların kelimenin tam anlamıyla arayacağı terimleri görünen ada, özete ve etiketlere koyun. Bağımsız bir slug token'ını yalnızca korumak istediğiniz kararlı bir kimlik olduğunda kullanın.
+- Yeni slug daha iyi uzun vadeli standart ad değilse, yalnızca tek bir sorguyu yakalamak için bir slug'ı yeniden adlandırmayın. Eski slug'lar yönlendirme adlarına dönüşür, ancak standart URL, görüntülenen slug ve gelecekteki arama özetleri yeni slug'ı kullanır.
+- Yeniden adlandırma adları, eski URL'ler ve kayıt defteri üzerinden çözümlenen kurulumlar için çözümlemeyi korur, ancak arama sıralaması, yeniden adlandırma indekslendikten sonra standart beceri meta verilerine dayanır. Mevcut istatistikler beceriyle kalır.
+- Bir beceri beklenmedik şekilde görünmezse, sıralamayla ilgili meta verileri değiştirmeden önce oturum açmışken önce `clawhub inspect @owner/slug` ile moderasyon durumunu kontrol edin.
 
 ### `GET /api/v1/skills`
 
@@ -150,19 +157,19 @@ Sorgu parametreleri:
 
 - `limit` (isteğe bağlı): tamsayı (1-200)
 - `cursor` (isteğe bağlı): `trending` olmayan herhangi bir sıralama için sayfalama imleci
-- `sort` (isteğe bağlı): `updated` (varsayılan), `recommended` (takma ad: `default`), `createdAt` (takma ad: `newest`), `downloads`, `stars` (takma ad: `rating`), eski kurulum takma adları `installsCurrent`/`installs`/`installsAllTime` `downloads` ile eşleşir, `trending`
-- `nonSuspiciousOnly` (isteğe bağlı): şüpheli (`flagged.suspicious`) skills gizlemek için `true`
-- `nonSuspicious` (isteğe bağlı): `nonSuspiciousOnly` için eski takma ad
+- `sort` (isteğe bağlı): `updated` (varsayılan), `recommended` (ad: `default`), `createdAt` (ad: `newest`), `downloads`, `stars` (ad: `rating`), eski kurulum adları `installsCurrent`/`installs`/`installsAllTime` `downloads` değerine eşlenir, `trending`
+- `nonSuspiciousOnly` (isteğe bağlı): şüpheli (`flagged.suspicious`) becerileri gizlemek için `true`
+- `nonSuspicious` (isteğe bağlı): `nonSuspiciousOnly` için eski ad
 
 Geçersiz `sort` değerleri `400` döndürür.
 
 Notlar:
 
-- `recommended` etkileşim ve güncellik sinyallerini kullanır.
+- `recommended`, etkileşim ve güncellik sinyallerini kullanır.
 - `trending`, son 7 gündeki kurulumlara göre sıralar (telemetri tabanlı).
-- `createdAt` yeni skill taramaları için kararlıdır; `updated` mevcut skills yeniden yayımlandığında değişir.
-- `nonSuspiciousOnly=true` olduğunda, şüpheli skills sayfa alımından sonra filtrelendiği için imleç tabanlı sıralamalar bir sayfada `limit` değerinden daha az öğe döndürebilir.
-- Varsa sayfalamaya devam etmek için `nextCursor` kullanın. Kısa bir sayfa tek başına sonuçların bittiği anlamına gelmez.
+- `createdAt`, yeni beceri taramaları için kararlıdır; `updated`, mevcut beceriler yeniden yayınlandığında değişir.
+- `nonSuspiciousOnly=true` olduğunda, imleç tabanlı sıralamalar bir sayfada `limit` değerinden daha az öğe döndürebilir, çünkü şüpheli beceriler sayfa alındıktan sonra filtrelenir.
+- Mevcut olduğunda sayfalamaya devam etmek için `nextCursor` kullanın. Kısa bir sayfa tek başına sonuçların sonu anlamına gelmez.
 
 Yanıt:
 
@@ -219,11 +226,11 @@ Yanıt:
 
 Notlar:
 
-- Sahip yeniden adlandırma/birleştirme akışları tarafından oluşturulan eski slug'lar kanonik skill'e çözümlenir.
-- `metadata.os`: skill frontmatter içinde bildirilen OS kısıtlamaları (örn. `["macos"]`, `["linux"]`). Bildirilmemişse `null`.
+- Sahip yeniden adlandırma/birleştirme akışları tarafından oluşturulan eski slug'lar standart beceriye çözümlenir.
+- `metadata.os`: Beceri frontmatter'ında bildirilen OS kısıtlamaları (örn. `["macos"]`, `["linux"]`). Bildirilmemişse `null`.
 - `metadata.systems`: Nix sistem hedefleri (örn. `["aarch64-darwin", "x86_64-linux"]`). Bildirilmemişse `null`.
-- Skill'in platform meta verisi yoksa `metadata` `null` olur.
-- `moderation` yalnızca skill işaretliyse veya sahip görüntülüyorsa dahil edilir.
+- Beceri platform meta verisine sahip değilse `metadata` `null` olur.
+- `moderation` yalnızca beceri işaretlenmişse veya sahibi görüntülüyorsa dahil edilir.
 
 ### `GET /api/v1/skills/{slug}/moderation`
 
@@ -258,18 +265,18 @@ Yanıt:
 
 Notlar:
 
-- Sahipler ve moderatörler gizli skills için moderasyon ayrıntılarına erişebilir.
-- Herkese açık çağıranlar yalnızca zaten işaretlenmiş görünür skills için `200` alır.
-- Kanıt herkese açık çağıranlar için redakte edilir ve ham parçaları yalnızca sahipler/moderatörler için içerir.
+- Sahipler ve moderatörler gizli beceriler için moderasyon ayrıntılarına erişebilir.
+- Genel çağıranlar yalnızca zaten işaretlenmiş görünür beceriler için `200` alır.
+- Kanıt genel çağıranlar için redakte edilir ve ham parçaları yalnızca sahipler/moderatörler için içerir.
 
 ### `POST /api/v1/skills/{slug}/report`
 
-Moderatör incelemesi için bir skill bildirin. Raporlar skill düzeyindedir, isteğe bağlı olarak
-bir sürüme bağlanır ve skill rapor kuyruğunu besler.
+Bir beceriyi moderatör incelemesi için bildirin. Bildirimler beceri düzeyindedir, isteğe bağlı olarak
+bir sürüme bağlanır ve beceri bildirim kuyruğunu besler.
 
 Kimlik doğrulama:
 
-- API tokenı gerektirir.
+- Bir API belirteci gerektirir.
 
 İstek:
 
@@ -292,7 +299,7 @@ Yanıt:
 
 ### `GET /api/v1/skills/-/reports`
 
-Skill raporu alımı için moderatör/yönetici uç noktası.
+Beceri bildirim alımı için moderatör/yönetici uç noktası.
 
 Sorgu parametreleri:
 
@@ -332,7 +339,7 @@ Yanıt:
 
 ### `POST /api/v1/skills/-/reports/{reportId}/triage`
 
-Skill raporlarını çözmek veya yeniden açmak için moderatör/yönetici uç noktası.
+Beceri bildirimlerini çözmek veya yeniden açmak için moderatör/yönetici uç noktası.
 
 İstek:
 
@@ -340,9 +347,9 @@ Skill raporlarını çözmek veya yeniden açmak için moderatör/yönetici uç 
 { "status": "confirmed", "note": "Reviewed and hid affected version.", "finalAction": "hide" }
 ```
 
-`note`, `confirmed` ve `dismissed` için gereklidir; `status` tekrar `open` olarak ayarlanırken
-atlanabilir. Aynı denetlenebilir iş akışında skill'i gizlemek için triyaj yapılmış
-raporla birlikte `finalAction: "hide"` geçirin.
+`note`, `confirmed` ve `dismissed` için zorunludur; `status` tekrar `open` olarak
+ayarlanırken atlanabilir. Aynı denetlenebilir iş akışında beceriyi gizlemek için triyajlanmış
+bir bildirimle `finalAction: "hide"` gönderin.
 
 ### `GET /api/v1/skills/{slug}/versions`
 
@@ -353,35 +360,35 @@ Sorgu parametreleri:
 
 ### `GET /api/v1/skills/{slug}/versions/{version}`
 
-Sürüm meta verilerini + dosyalar listesini döndürür.
+Sürüm meta verilerini + dosya listesini döndürür.
 
-- `version.security` varsa normalleştirilmiş tarama doğrulama durumunu ve tarayıcı ayrıntılarını
+- `version.security`, mevcut olduğunda normalleştirilmiş tarama doğrulama durumunu ve tarayıcı ayrıntılarını
   (VirusTotal + LLM) içerir.
 
 ### `GET /api/v1/skills/{slug}/scan`
 
-Bir skill sürümü için güvenlik taraması doğrulama ayrıntılarını döndürür.
+Bir beceri sürümü için güvenlik taraması doğrulama ayrıntılarını döndürür.
 
 Sorgu parametreleri:
 
 - `version` (isteğe bağlı): belirli sürüm dizesi.
-- `tag` (isteğe bağlı): etiketlenmiş bir sürümü çözümle (örneğin `latest`).
+- `tag` (isteğe bağlı): etiketlenmiş bir sürümü çözümler (örneğin `latest`).
 
 Notlar:
 
 - Ne `version` ne de `tag` sağlanırsa en son sürümü kullanır.
-- Normalleştirilmiş doğrulama durumunu ve tarayıcıya özgü ayrıntıları içerir.
-- `security.hasScanResult`, yalnızca bir tarayıcı kesin bir karar (`clean`, `suspicious` veya `malicious`) ürettiğinde `true` olur.
-- `moderation`, en son sürümden türetilmiş güncel Skills düzeyi moderasyon anlık görüntüsüdür.
-- Geçmiş bir sürümü sorgularken, `moderation` ve `security` alanlarını aynı sürüm bağlamı olarak değerlendirmeden önce `moderation.matchesRequestedVersion` ve `moderation.sourceVersion` değerlerini kontrol edin.
+- Normalleştirilmiş doğrulama durumunu ve tarama aracına özgü ayrıntıları içerir.
+- `security.hasScanResult`, yalnızca bir tarama aracı kesin bir karar (`clean`, `suspicious` veya `malicious`) ürettiğinde `true` olur.
+- `moderation`, en son sürümden türetilmiş geçerli beceri düzeyinde moderasyon anlık görüntüsüdür.
+- Geçmiş bir sürümü sorgularken, `moderation` ve `security` değerlerini aynı sürüm bağlamı olarak değerlendirmeden önce `moderation.matchesRequestedVersion` ve `moderation.sourceVersion` değerlerini kontrol edin.
 
 ### `POST /api/v1/skills/-/scan`
 
-Yeni ClawScan işleri için kimlik doğrulamalı gönderim uç noktası.
+Yeni ClawScan işleri için kimliği doğrulanmış gönderim uç noktası.
 
 Yerel yükleme taramaları artık desteklenmez. `multipart/form-data` veya `{ "source": { "kind": "upload" } }` kullanan istekler `410` döndürür.
 
-Yayımlanmış taramalar JSON kullanır:
+Yayınlanmış taramalar JSON kullanır:
 
 ```json
 {
@@ -392,66 +399,66 @@ Yayımlanmış taramalar JSON kullanır:
 
 Notlar:
 
-- Tarama isteği yükleri ve indirilebilir raporlar, saklama süresi dolduktan sonra tarama isteği deposundan silinir.
-- Yayımlanmış taramalar, sahip/yayıncı yönetim erişimi veya platform moderatörü/yönetici yetkisi gerektirir.
-- Yayımlanmış taramalar yalnızca `update: true` olduğunda ve tarama başarıyla tamamlandığında geri yazar.
-- Yanıt `202` olur ve `{ "ok": true, "scanId": "...", "jobId": "...", "status": "queued", "sourceKind": "published", "update": false, "queue": { "queuedAhead": 0, "queuedAheadIsEstimate": false, "position": 1, "running": 0, "runningIsEstimate": false, "note": "Scans are asynchronous and may take time to complete." } }` içerir.
-- Tarama işleri eşzamansızdır. Manuel tarama istekleri normal yayımlama/geri doldurma işlerinden önce önceliklendirilir, ancak tamamlanma yine de worker kullanılabilirliğine bağlıdır.
+- Tarama isteği yükleri ve indirilebilir raporlar, saklama penceresinden sonra tarama isteği deposundan sona erer.
+- Yayınlanmış taramalar sahip/yayıncı yönetim erişimi veya platform moderatörü/yöneticisi yetkisi gerektirir.
+- Yayınlanmış taramalar yalnızca `update: true` olduğunda ve tarama başarıyla tamamlandığında geri yazar.
+- Yanıt, `{ "ok": true, "scanId": "...", "jobId": "...", "status": "queued", "sourceKind": "published", "update": false, "queue": { "queuedAhead": 0, "queuedAheadIsEstimate": false, "position": 1, "running": 0, "runningIsEstimate": false, "note": "Scans are asynchronous and may take time to complete." } }` ile `202` olur.
+- Tarama işleri eşzamansızdır. Manuel tarama istekleri normal yayınlama/geri doldurma işlerinden önce önceliklendirilir, ancak tamamlanma yine de çalışan kullanılabilirliğine bağlıdır.
 
 ### `GET /api/v1/skills/-/scan/{scanId}`
 
-Gönderilmiş bir tarama için kimlik doğrulamalı yoklama uç noktası.
+Gönderilmiş bir tarama için kimliği doğrulanmış yoklama uç noktası.
 
 - Kuyrukta/çalışıyor/başarılı/başarısız durumunu döndürür.
 - Kuyruktayken `queue.queuedAhead` ve `queue.position` değerlerini döndürür; böylece istemciler isteğin önünde kaç öncelikli manuel tarama olduğunu gösterebilir. Çok büyük kuyruklar sınırlandırılır ve `queuedAheadIsEstimate: true` ile raporlanır.
 - Kullanılabilir olduğunda, `report` içinde `clawscan`, `skillspector`, `staticAnalysis` ve `virustotal` bölümleri bulunur.
-- Başarısız tarama işleri `lastError` ile birlikte `status: "failed"` döndürür.
+- Başarısız tarama işleri `lastError` ile `status: "failed"` döndürür.
 
 ### `GET /api/v1/skills/-/scan/{scanId}/download`
 
-Kimlik doğrulamalı rapor arşivi uç noktası.
+Kimliği doğrulanmış rapor arşivi uç noktası.
 
-- Başarılı olmuş bir tarama gerektirir; terminal durumda olmayan taramalar `409` döndürür.
+- Başarılı olmuş bir tarama gerektirir; sonlanmamış taramalar `409` döndürür.
 - `manifest.json`, `clawscan.json`, `skillspector.json`, `static-analysis.json`, `virustotal.json` ve `README.md` içeren bir ZIP döndürür.
 
 ### `GET /api/v1/skills/-/scan/download/{name}?version=<version>&kind=skill|plugin`
 
-Gönderilmiş sürümler için kimlik doğrulamalı saklanan rapor arşivi uç noktası.
+Gönderilmiş sürümler için kimliği doğrulanmış saklanan rapor arşivi uç noktası.
 
-- Skill veya Plugin için sahip/yayıncı yönetim erişimi ya da platform moderatörü/yönetici yetkisi gerektirir.
-- Engellenmiş veya gizlenmiş sürümler dahil olmak üzere, tam gönderilen sürüm için saklanan tarama sonuçlarını döndürür.
+- Beceriye veya Plugin'e sahip/yayıncı yönetim erişimi ya da platform moderatörü/yöneticisi yetkisi gerektirir.
+- Engellenmiş veya gizlenmiş sürümler dahil olmak üzere, tam olarak gönderilen sürüm için saklanan tarama sonuçlarını döndürür.
 - `kind` varsayılan olarak `skill` olur; Plugin/paket taramaları için `kind=plugin` kullanın.
-- Tarama isteği indirmeleriyle aynı ZIP yapısını döndürür.
+- Tarama isteği indirmeleriyle aynı ZIP şeklini döndürür.
 
 ### `POST /api/v1/skills/-/scan/batch`
 
-Yalnızca yöneticilere açık kanonik toplu yeniden tarama rotası. Eski `POST /api/v1/skills/-/rescan-batch` ile aynı yük yapısını kabul eder.
+Yalnızca yöneticilere açık kanonik toplu yeniden tarama rotası. Eski `POST /api/v1/skills/-/rescan-batch` ile aynı yük şeklini kabul eder.
 
 ### `POST /api/v1/skills/-/scan/batch/status`
 
-Yalnızca yöneticilere açık kanonik toplu durum rotası. `{ "jobIds": ["..."] }` kabul eder ve eski `POST /api/v1/skills/-/rescan-batch/status` ile aynı toplu sayaçları döndürür.
+Yalnızca yöneticilere açık kanonik toplu durum rotası. `{ "jobIds": ["..."] }` değerini kabul eder ve eski `POST /api/v1/skills/-/rescan-batch/status` ile aynı toplu sayaçları döndürür.
 
 ### `GET /api/v1/skills/{slug}/verify`
 
-`clawhub skill verify` tarafından kullanılan Skill Card doğrulama zarfını döndürür.
+`clawhub skill verify` tarafından kullanılan Beceri Kartı doğrulama zarfını döndürür.
 
 Sorgu parametreleri:
 
 - `version` (isteğe bağlı): belirli sürüm dizesi.
-- `tag` (isteğe bağlı): etiketlenmiş bir sürümü çözümler (örneğin `latest`).
+- `tag` (isteğe bağlı): etiketlenmiş bir sürümü çözer (örneğin `latest`).
 
 Notlar:
 
-- `ok`, yalnızca seçilen sürümde oluşturulmuş bir Skill Card olduğunda, moderasyon tarafından kötü amaçlı yazılım nedeniyle engellenmemiş olduğunda ve ClawScan doğrulaması temiz olduğunda `true` olur.
-- Skill kimliği, yayıncı kimliği ve seçilen sürüm meta verileri üst düzey zarf alanlarıdır (`slug`, `displayName`, `publisherHandle`, `version`, `resolvedFrom`, `tag`, `createdAt`); böylece kabuk otomasyonu bunları iç içe sarmalayıcıları açmadan okuyabilir.
+- `ok`, yalnızca seçilen sürümde oluşturulmuş bir Beceri Kartı olduğunda, moderasyon tarafından kötü amaçlı yazılım nedeniyle engellenmemiş olduğunda ve ClawScan doğrulaması temiz olduğunda `true` olur.
+- Beceri kimliği, yayıncı kimliği ve seçilen sürüm meta verileri üst düzey zarf alanlarıdır (`slug`, `displayName`, `publisherHandle`, `version`, `resolvedFrom`, `tag`, `createdAt`); böylece kabuk otomasyonu bunları iç içe sarmalayıcıları açmadan okuyabilir.
 - `security`, üst düzey ClawScan/güvenlik kararıdır. Otomasyon `ok`, `decision`, `reasons` ve `security.status` değerlerini temel almalıdır.
-- `security.signals`, `staticScan`, `virusTotal` ve `skillSpector` gibi destekleyici tarayıcı kanıtlarını içerir.
+- `security.signals`, `staticScan`, `virusTotal` ve `skillSpector` gibi destekleyici tarama aracı kanıtlarını içerir.
 - `security.signals.dependencyRegistry`, v1 yanıt uyumluluğu için korunur, ancak bağımlılık kayıt defteri varlık tarayıcısı kullanımdan kaldırılmıştır ve bu anahtar her zaman `null` olur.
-- `provenance`, yalnızca ClawHub yayımlama veya içe aktarma sırasında bir GitHub repo/ref/commit/path çözüp sakladığında `server-resolved-github-import` olur; aksi halde `unavailable` olur.
+- `provenance`, yalnızca ClawHub yayınlama veya içe aktarma sırasında bir GitHub repo/ref/commit/path çözüp sakladığında `server-resolved-github-import` olur; aksi halde `unavailable` olur.
 
 ### `POST /api/v1/skills/-/security-verdicts`
 
-Tam Skill sürümleri için güncel kompakt güvenlik kararlarını döndürür. Bu koleksiyon uç noktası, OpenClaw Control UI gibi, hangi yüklü ClawHub Skill sürümlerini göstermeleri gerektiğini zaten bilen istemciler için tasarlanmıştır.
+Tam beceri sürümleri için geçerli kompakt güvenlik kararlarını döndürür. Bu koleksiyon uç noktası, OpenClaw Control UI gibi, hangi yüklü ClawHub beceri sürümlerini göstermesi gerektiğini zaten bilen istemciler için tasarlanmıştır.
 
 İstek:
 
@@ -464,12 +471,12 @@ Tam Skill sürümleri için güncel kompakt güvenlik kararlarını döndürür.
 Notlar:
 
 - `items`, 1-100 benzersiz `{ slug, version }` çifti içermelidir.
-- Sonuçlar öğe bazındadır; eksik bir Skill veya sürüm tüm yanıtı başarısız yapmaz.
-- Yanıt yalnızca güvenlik içindir. Skill Card verilerini, oluşturulan kart durumunu, yapıt dosyası listelerini veya ayrıntılı tarayıcı yüklerini içermez.
-- `security.signals` yalnızca durum düzeyinde destekleyici kanıt içerir; tam tarayıcı ayrıntıları için `/scan` veya ClawHub güvenlik denetimi sayfasını kullanın.
+- Sonuçlar öğe başınadır; eksik bir beceri veya sürüm tüm yanıtı başarısız yapmaz.
+- Yanıt yalnızca güvenlikle ilgilidir. Beceri Kartı verilerini, oluşturulan kart durumunu, yapıt dosya listelerini veya ayrıntılı tarama aracı yüklerini içermez.
+- `security.signals` yalnızca durum düzeyinde destekleyici kanıt içerir; tam tarama aracı ayrıntıları için `/scan` veya ClawHub güvenlik denetimi sayfasını kullanın.
 - `security.signals.dependencyRegistry`, v1 yanıt uyumluluğu için korunur, ancak bağımlılık kayıt defteri varlık tarayıcısı kullanımdan kaldırılmıştır ve bu anahtar her zaman `null` olur.
-- Skill Card yokluğu bu uç noktanın `ok`, `decision` veya `reasons` değerlerini etkilemez; istemciler kart içeriğine ihtiyaç duyduklarında yüklü `skill-card.md` dosyasını yerel olarak okumalıdır.
-- Tek Skill için Skill Card doğrulama zarfına ihtiyaç duyduğunuzda `/verify`, oluşturulan kart markdown içeriğine ihtiyaç duyduğunuzda `/card` ve ayrıntılı tarayıcı verilerine ihtiyaç duyduğunuzda `/scan` kullanın.
+- Beceri Kartı yokluğu, bu uç noktanın `ok`, `decision` veya `reasons` değerlerini etkilemez; istemciler kart içeriğine ihtiyaç duyduğunda yüklü `skill-card.md` dosyasını yerel olarak okumalıdır.
+- Tek beceri Beceri Kartı doğrulama zarfına ihtiyaç duyduğunuzda `/verify`, oluşturulan kart Markdown'ına ihtiyaç duyduğunuzda `/card` ve ayrıntılı tarama aracı verilerine ihtiyaç duyduğunuzda `/scan` kullanın.
 
 Yanıt:
 
@@ -518,17 +525,17 @@ Yanıt:
 
 ### `GET /api/v1/skills/{slug}/file`
 
-Ham metin içeriği döndürür.
+Ham metin içeriğini döndürür.
 
 Sorgu parametreleri:
 
-- `path` (zorunlu)
+- `path` (gerekli)
 - `version` (isteğe bağlı)
 - `tag` (isteğe bağlı)
 
 Notlar:
 
-- Varsayılan olarak en son sürüm kullanılır.
+- Varsayılan olarak en son sürümü kullanır.
 - Dosya boyutu sınırı: 200KB.
 
 ### `GET /api/v1/packages`
@@ -536,31 +543,29 @@ Notlar:
 Şunlar için birleşik katalog uç noktası:
 
 - skills
-- kod Pluginleri
-- paket Pluginleri
+- kod Plugin'leri
+- paket Plugin'leri
 
 Sorgu parametreleri:
 
-- `limit` (isteğe bağlı): tam sayı (1-100)
+- `limit` (isteğe bağlı): tamsayı (1–100)
 - `cursor` (isteğe bağlı): sayfalama imleci
 - `family` (isteğe bağlı): `skill`, `code-plugin` veya `bundle-plugin`
 - `channel` (isteğe bağlı): `official`, `community` veya `private`
 - `isOfficial` (isteğe bağlı): `true` veya `false`
 - `sort` (isteğe bağlı): `updated` (varsayılan), `recommended`, `trending`, `downloads`, eski takma ad `installs`
-- `category` (isteğe bağlı): Plugin kategori filtresi. Yalnızca istek Plugin
-  paketleriyle sınırlandırıldığında desteklenir (`/api/v1/plugins`,
+- `category` (isteğe bağlı): Plugin kategori filtresi. Yalnızca istek
+  Plugin paketleriyle (`/api/v1/plugins`,
   `/api/v1/code-plugins`, `/api/v1/bundle-plugins` veya
-  `family=code-plugin`/`family=bundle-plugin` içeren paket uç noktaları).
-  Denetimli kategoriler ve eski v1 filtre takma adları `GET /api/v1/plugins`
-  altında belgelenmiştir.
+  `family=code-plugin`/`family=bundle-plugin` içeren paket uç noktaları) sınırlandırıldığında desteklenir. Denetimli kategoriler ve
+  eski v1 filtre takma adları `GET /api/v1/plugins` altında belgelenmiştir.
 
 Notlar:
 
 - `family`, `channel`, `isOfficial`, `featured`,
-  `highlightedOnly` veya `sort` için geçersiz değerler `400` döndürür.
-  Bilinmeyen sorgu parametreleri yok sayılır.
+  `highlightedOnly` veya `sort` için geçersiz değerler `400` döndürür. Bilinmeyen sorgu parametreleri yok sayılır.
 - `GET /api/v1/code-plugins` ve `GET /api/v1/bundle-plugins` sabit aile takma adları olarak kalır.
-- Skill girdileri skill kayıt defteri tarafından desteklenmeye devam eder ve hâlâ yalnızca `POST /api/v1/skills` üzerinden yayımlanabilir.
+- Skill girdileri Skills kayıt defteri tarafından desteklenmeye devam eder ve hâlâ yalnızca `POST /api/v1/skills` üzerinden yayımlanabilir.
 - `POST /api/v1/packages` hâlâ yalnızca code-plugin ve bundle-plugin yayınları içindir.
 - Anonim çağıranlar yalnızca herkese açık paket kanallarını görür.
 - Kimliği doğrulanmış çağıranlar, ait oldukları yayımcılar için özel paketleri listeleme/arama sonuçlarında görebilir.
@@ -572,13 +577,13 @@ Skills + Plugin paketleri genelinde birleşik katalog araması.
 
 Sorgu parametreleri:
 
-- `q` (zorunlu): sorgu dizesi
-- `limit` (isteğe bağlı): tam sayı (1-100)
+- `q` (gerekli): sorgu dizesi
+- `limit` (isteğe bağlı): tamsayı (1–100)
 - `family` (isteğe bağlı): `skill`, `code-plugin` veya `bundle-plugin`
 - `channel` (isteğe bağlı): `official`, `community` veya `private`
 - `isOfficial` (isteğe bağlı): `true` veya `false`
-- `category` (isteğe bağlı): Plugin kategori filtresi. Yalnızca istek Plugin
-  paketleriyle sınırlandırıldığında desteklenir. Denetimli kategoriler ve eski v1
+- `category` (isteğe bağlı): Plugin kategori filtresi. Yalnızca istek
+  Plugin paketleriyle sınırlandırıldığında desteklenir. Denetimli kategoriler ve eski v1
   filtre takma adları `GET /api/v1/plugins` altında belgelenmiştir.
 
 Notlar:
@@ -586,16 +591,16 @@ Notlar:
 - `family`, `channel`, `isOfficial`, `featured` veya
   `highlightedOnly` için geçersiz değerler `400` döndürür. Bilinmeyen sorgu parametreleri yok sayılır.
 - Anonim çağıranlar yalnızca herkese açık paket kanallarını görür.
-- Kimliği doğrulanmış çağıranlar, ait oldukları yayımcılar için özel paketleri arayabilir.
+- Kimliği doğrulanmış çağıranlar, ait oldukları yayımcılar için özel paketlerde arama yapabilir.
 - `channel=private` yalnızca kimliği doğrulanmış çağıranın okuyabildiği paketleri döndürür.
 
 ### `GET /api/v1/plugins`
 
-Code-plugin ve bundle-plugin paketleri genelinde yalnızca Plugin katalog gezintisi.
+Code-plugin ve bundle-plugin paketleri genelinde yalnızca Plugin katalog göz atması.
 
 Sorgu parametreleri:
 
-- `limit` (isteğe bağlı): tam sayı (1-100)
+- `limit` (isteğe bağlı): tamsayı (1-100)
 - `cursor` (isteğe bağlı): sayfalama imleci
 - `isOfficial` (isteğe bağlı): `true` veya `false`
 - `sort` (isteğe bağlı): `recommended` (varsayılan), `trending`, `downloads`, `updated`, eski takma ad `installs`
@@ -609,39 +614,39 @@ Eski v1 filtre takma adları okuma uç noktalarında kabul edilmeye devam eder:
 - `observability` ve `deployment`, `gateway` olarak çözümlenir.
 - `dev-tools`, `runtime` olarak çözümlenir.
 
-`trending`, yedi günlük yükleme/indirme lider tablosudur ve tüm zaman toplamlarını kullanmaz.
-Birleşik `/api/v1/packages` uç noktasında yalnızca Pluginlere özeldir; skill kataloğu için
+`trending`, yedi günlük kurulum/indirme liderlik tablosudur ve tüm zamanların toplamlarını kullanmaz.
+Birleşik `/api/v1/packages` uç noktasında yalnızca Plugin içindir; Skill kataloğu için
 `/api/v1/skills?sort=trending` kullanın.
 
-Eski takma adlar, saklanan veya yazar tarafından beyan edilen kategori değerleri olarak kabul edilmez.
+Eski takma adlar, depolanan veya yazar tarafından bildirilen kategori değerleri olarak kabul edilmez.
 
 ### `GET /api/v1/skills/export`
 
-Çevrimdışı analiz için en son herkese açık skills toplu dışa aktarımı.
+Çevrimdışı analiz için en son herkese açık Skills'in toplu dışa aktarımı.
 
 Kimlik doğrulama:
 
-- API belirteci zorunludur.
+- API belirteci gereklidir.
 
 Sorgu parametreleri:
 
-- `startDate` (zorunlu): Skill `updatedAt` için Unix milisaniye alt sınırı.
-- `endDate` (zorunlu): Skill `updatedAt` için Unix milisaniye üst sınırı.
-- `limit` (isteğe bağlı): tam sayı (1-250), varsayılan `250`.
+- `startDate` (gerekli): Skill `updatedAt` için Unix milisaniye alt sınırı.
+- `endDate` (gerekli): Skill `updatedAt` için Unix milisaniye üst sınırı.
+- `limit` (isteğe bağlı): tamsayı (1-250), varsayılan `250`.
 - `cursor` (isteğe bağlı): önceki yanıttan sayfalama imleci.
 
 Yanıt:
 
 - Gövde: ZIP arşivi.
-- Dışa aktarılan her skill `{publisher}/{slug}/` köküne yerleştirilir.
-- Barındırılan skills, en son saklanan sürüm dosyalarını içerir ve
+- Dışa aktarılan her Skill `{publisher}/{slug}/` konumunda köklenir.
+- Barındırılan Skills, en son depolanmış sürüm dosyalarını içerir ve
   `_manifest.json` içinde `sourceRef: "public-clawhub"` ile listelenir.
-- `clean` veya `suspicious` taraması olan mevcut GitHub destekli skills,
-  `sourceRef: "public-github"`, depo, commit, yol, içerik karması ve arşiv URL’si
-  içeren `_source_handoff.json` dosyasını içerir. ClawHub’da barındırılan kaynak dosyalarını içermezler.
-- Her skill `_export_skill_meta.json` içerir.
+- `clean` veya `suspicious` taramasına sahip güncel GitHub destekli Skills,
+  `_source_handoff.json` içinde `sourceRef: "public-github"`, depo, commit, yol,
+  içerik karması ve arşiv URL'si içerir. ClawHub tarafından barındırılan kaynak dosyalarını içermezler.
+- Her Skill `_export_skill_meta.json` içerir.
 - `_manifest.json` her zaman ZIP kökünde yer alır.
-- Tek tek skills veya dosyalar dışa aktarılamadığında `_errors.json` eklenir.
+- Tek tek Skills veya dosyalar dışa aktarılamadığında `_errors.json` eklenir.
 
 Başlıklar:
 
@@ -653,16 +658,16 @@ Başlıklar:
 
 ### `GET /api/v1/plugins/export`
 
-Çevrimdışı analiz için en son herkese açık Plugin yayınlarının toplu dışa aktarımı.
+Çevrim dışı analiz için en son herkese açık Plugin sürümlerinin toplu dışa aktarımı.
 
 Kimlik doğrulama:
 
-- API belirteci gerekir.
+- API belirteci gereklidir.
 
 Sorgu parametreleri:
 
-- `startDate` (gerekli): Plugin `updatedAt` için Unix milisaniye alt sınırı.
-- `endDate` (gerekli): Plugin `updatedAt` için Unix milisaniye üst sınırı.
+- `startDate` (zorunlu): Plugin `updatedAt` için Unix milisaniye alt sınırı.
+- `endDate` (zorunlu): Plugin `updatedAt` için Unix milisaniye üst sınırı.
 - `limit` (isteğe bağlı): tam sayı (1-250), varsayılan `250`.
 - `cursor` (isteğe bağlı): önceki yanıttan sayfalama imleci.
 - `family` (isteğe bağlı): `code-plugin` veya `bundle-plugin`. Atlanırsa her iki
@@ -671,15 +676,15 @@ Sorgu parametreleri:
 Yanıt:
 
 - Gövde: ZIP arşivi.
-- Dışa aktarılan her Plugin `{family}/{packageName}/` kökünde yer alır.
-- Dışa aktarılan her Plugin, en son yayının depolanmış dosyalarını içerir.
+- Dışa aktarılan her Plugin `{family}/{packageName}/` kökünde bulunur.
+- Dışa aktarılan her Plugin, en son sürümün saklanan dosyalarını içerir.
 - Plugin başına dışa aktarma meta verileri
-  `__clawhub_export/{family}/{packageName}/plugin_meta.json` konumunda depolanır.
-- `_manifest.json` her zaman ZIP kökünde bulunur.
+  `__clawhub_export/{family}/{packageName}/plugin_meta.json` konumunda saklanır.
+- `_manifest.json` her zaman ZIP kökünde yer alır.
 - Tek tek Plugin'ler veya dosyalar dışa aktarılamadığında `_errors.json`
-  eklenir.
+  dahil edilir.
 
-Üst bilgiler:
+Başlıklar:
 
 - `X-Next-Cursor`
 - `X-Has-More`
@@ -689,14 +694,14 @@ Yanıt:
 
 ### `GET /api/v1/plugins/search`
 
-code-plugin ve bundle-plugin paketlerinde yalnızca Plugin araması.
+code-plugin ve bundle-plugin paketleri genelinde yalnızca Plugin araması.
 
 Sorgu parametreleri:
 
-- `q` (gerekli): sorgu dizesi
+- `q` (zorunlu): sorgu dizesi
 - `limit` (isteğe bağlı): tam sayı (1-100)
 - `isOfficial` (isteğe bağlı): `true` veya `false`
-- `category` (isteğe bağlı): Plugin kategorisi filtresi. Geçerli değerler:
+- `category` (isteğe bağlı): Plugin kategori filtresi. Geçerli değerler:
   `channels`, `models`, `memory`, `context`, `voice`, `media`, `web`,
   `tools`, `runtime`, `gateway`, `security`, `other`.
 
@@ -704,11 +709,11 @@ Notlar:
 
 - `GET /api/v1/plugins` altında belgelenen eski v1 filtre takma adları da
   kabul edilir.
-- Kategori filtreleme, arama sorgusu yeniden yazımı değil, Plugin kategori özeti
+- Kategori filtreleme, arama sorgusu yeniden yazımı değil, Plugin kategori özet
   satırlarıyla desteklenen gerçek bir API filtresidir.
-- Sonuçlar alaka sırasına göre döndürülür ve şu anda sayfalanmaz.
-- Plugin araması için tarayıcı kullanıcı arayüzündeki sıralama denetimleri, yüklenen alaka sonuçlarını
-  mevcut `/skills` göz atma davranışıyla eşleşecek şekilde yeniden sıralar.
+- Sonuçlar alaka sırasıyla döndürülür ve şu anda sayfalanmaz.
+- Plugin araması için tarayıcı kullanıcı arayüzü sıralama denetimleri, yüklenen
+  alaka sonuçlarını yeniden sıralar ve mevcut `/skills` göz atma davranışıyla eşleşir.
 
 ### `GET /api/v1/packages/{name}`
 
@@ -717,16 +722,16 @@ Paket ayrıntı meta verilerini döndürür.
 Notlar:
 
 - Skills, birleşik katalogda bu rota üzerinden de çözümlenebilir.
-- Özel paketler, çağıran sahip yayıncıyı okuyamıyorsa `404` döndürür.
+- Özel paketler, çağıran sahip yayıncıyı okuyamadığı sürece `404` döndürür.
 
 ### `DELETE /api/v1/packages/{name}`
 
-Bir paketi ve tüm yayınlarını geçici olarak siler.
+Bir paketi ve tüm sürümlerini geçici olarak siler.
 
 Notlar:
 
-- Paket sahibi, kuruluş yayıncısı sahibi/yöneticisi, platform moderatörü veya
-  platform yöneticisi için API belirteci gerekir.
+- Paket sahibi, kuruluş yayıncı sahibi/yöneticisi, platform moderatörü veya
+  platform yöneticisi için API belirteci gerektirir.
 
 ### `GET /api/v1/packages/{name}/versions`
 
@@ -739,37 +744,37 @@ Sorgu parametreleri:
 
 Notlar:
 
-- Özel paketler, çağıran sahip yayıncıyı okuyamıyorsa `404` döndürür.
+- Özel paketler, çağıran sahip yayıncıyı okuyamadığı sürece `404` döndürür.
 
 ### `GET /api/v1/packages/{name}/versions/{version}`
 
-Dosya meta verileri, uyumluluk, doğrulama, yapıt meta verileri ve tarama verileri
+Dosya meta verileri, uyumluluk, doğrulama, yapı meta verileri ve tarama verileri
 dahil olmak üzere bir paket sürümünü döndürür.
 
 Notlar:
 
 - `version.artifact.kind`, eski dünya paket arşivleri için `legacy-zip` veya
-  ClawPack destekli yayınlar için `npm-pack` olur.
-- ClawPack yayınları npm uyumlu `npmIntegrity`, `npmShasum` ve
+  ClawPack destekli sürümler için `npm-pack` değeridir.
+- ClawPack sürümleri npm uyumlu `npmIntegrity`, `npmShasum` ve
   `npmTarballName` alanlarını içerir.
-- `version.sha256hash`, eski istemciler için kullanımdan kaldırılmış uyumluluk meta verisidir.
-  `/api/v1/packages/{name}/download` tarafından döndürülen tam ZIP baytlarının
-  karmasını alır. Modern istemciler, kanonik yayın yapıtını tanımlayan
+- `version.sha256hash`, eski istemciler için kullanımdan kaldırılmış uyumluluk
+  meta verisidir. `/api/v1/packages/{name}/download` tarafından döndürülen tam
+  ZIP baytlarını hash'ler. Modern istemciler, kanonik sürüm yapısını tanımlayan
   `version.artifact.sha256` alanını kullanmalıdır.
 - `version.vtAnalysis`, `version.llmAnalysis` ve `version.staticScan`, tarama
-  verileri mevcut olduğunda eklenir.
-- Özel paketler, çağıran sahip yayıncıyı okuyamıyorsa `404` döndürür.
+  verileri varsa dahil edilir.
+- Özel paketler, çağıran sahip yayıncıyı okuyamadığı sürece `404` döndürür.
 
 ### `GET /api/v1/packages/{name}/versions/{version}/security`
 
-Kurulum istemcileri için tam paket yayını güvenlik ve güven özeti döndürür.
-Bu, çözümlenen bir yayının kurulup kurulamayacağına karar vermek için herkese açık
-OpenClaw tüketim yüzeyidir.
+Kurulum istemcileri için tam paket sürümü güvenlik ve güven özetini döndürür.
+Bu, çözümlenen bir sürümün kurulup kurulamayacağına karar vermek için herkese
+açık OpenClaw tüketim yüzeyidir.
 
 Kimlik doğrulama:
 
-- Herkese açık okuma uç noktası. Sahip, yayıncı, moderatör veya yönetici belirteci
-  gerekmez.
+- Herkese açık okuma uç noktası. Sahip, yayıncı, moderatör veya yönetici
+  belirteci gerekmez.
 
 Yanıt:
 
@@ -806,69 +811,72 @@ Yanıt alanları:
 - `package.name`, `package.displayName` ve `package.family`, çözümlenen kayıt
   paketini tanımlar.
 - `release.releaseId`, `release.version` ve `release.createdAt`, değerlendirilen
-  tam yayını tanımlar.
+  tam sürümü tanımlar.
 - `release.artifactKind`, `release.artifactSha256`, `release.npmIntegrity`,
-  `release.npmShasum` ve `release.npmTarballName`, yayın yapıtı için bilindiğinde
-  bulunur.
-- `trust.scanStatus`, tarayıcı girdilerinden ve manuel yayın moderasyonundan
-  türetilen etkin güven durumudur.
-- `trust.moderationState` null olabilir. Manuel yayın moderasyonu yoksa `null`
-  olur.
+  `release.npmShasum` ve `release.npmTarballName`, sürüm yapısı için
+  bilindiğinde mevcuttur.
+- `trust.scanStatus`, tarayıcı girdilerinden ve manuel sürüm moderasyonundan
+  türetilen etkili güven durumudur.
+- `trust.moderationState` boş değer alabilir. Manuel sürüm moderasyonu yoksa
+  `null` olur.
 - `trust.blockedFromDownload`, kurulum engelleme sinyalidir. OpenClaw ve diğer
   kurulum istemcileri, tarayıcı veya moderasyon alanlarından engelleme kurallarını
   yeniden türetmek yerine bu değer `true` olduğunda kurulumu engellemelidir.
-- `trust.reasons`, kullanıcıya yönelik ve denetim açıklama listesidir. Gerekçe kodları
-  `manual:quarantined`, `scan:malicious` ve `package:malicious` gibi kararlı,
-  kompakt dizelerdir.
-- `trust.pending`, bir veya daha fazla güven girdisinin hâlâ tamamlanmayı beklediği anlamına gelir.
-- `trust.stale`, güven özetinin güncelliğini yitirmiş girdilerden hesaplandığı ve
-  yüksek güvenli bir izin kararından önce yenileme gerektiriyor olarak ele alınması
+- `trust.reasons`, kullanıcıya yönelik ve denetim açıklaması listesidir. Neden
+  kodları `manual:quarantined`, `scan:malicious` ve `package:malicious` gibi
+  kararlı, kompakt dizelerdir.
+- `trust.pending`, bir veya daha fazla güven girdisinin hâlâ tamamlanmayı
+  beklediği anlamına gelir.
+- `trust.stale`, güven özetinin güncel olmayan girdilerden hesaplandığı ve yüksek
+  güvenli izin kararından önce yenileme gerektiriyor olarak ele alınması
   gerektiği anlamına gelir.
 
 Notlar:
 
-- Bu uç nokta sürüme özeldir. İstemciler, yalnızca en son paket meta verilerini
-  okuduktan sonra değil, kurmayı amaçladıkları paket sürümünü çözdükten sonra
-  bunu çağırmalıdır.
-- Özel paketler, çağıran sahip yayıncıyı okuyamıyorsa `404` döndürür.
-- Bu uç nokta, sahip/moderatör moderasyon uç noktalarından bilinçli olarak daha dardır.
+- Bu uç nokta sürüm açısından kesindir. İstemciler bunu yalnızca en son paket
+  meta verilerini okuduktan sonra değil, kurmayı amaçladıkları paket sürümünü
+  çözdükten sonra çağırmalıdır.
+- Özel paketler, çağıran sahip yayıncıyı okuyamadığı sürece `404` döndürür.
+- Bu uç nokta, sahip/moderatör moderasyon uç noktalarından bilerek daha dardır.
   Kurulum kararını ve herkese açık açıklamayı sunar; bildiren kimliklerini,
-  bildirim gövdelerini, özel kanıtları veya dahili inceleme zaman çizelgelerini
+  rapor gövdelerini, özel kanıtları veya dahili inceleme zaman çizelgelerini
   sunmaz.
 
 ### `GET /api/v1/packages/{name}/versions/{version}/artifact`
 
-Bir paket sürümü için açık yapıt çözümleyici meta verilerini döndürür.
+Bir paket sürümü için açık yapı çözümleyici meta verilerini döndürür.
 
 Notlar:
 
-- Eski paket sürümleri bir `legacy-zip` yapıtı ve eski ZIP `downloadUrl`
+- Eski paket sürümleri bir `legacy-zip` yapısı ve eski ZIP `downloadUrl`
   döndürür.
-- ClawPack sürümleri bir `npm-pack` yapıtı, npm bütünlük alanları, bir
-  `tarballUrl` ve eski ZIP uyumluluk URL'sini döndürür.
+- ClawPack sürümleri bir `npm-pack` yapısı, npm bütünlük alanları, bir
+  `tarballUrl` ve eski ZIP uyumluluk URL'si döndürür.
 - Bu, OpenClaw çözümleyici yüzeyidir; paylaşılan bir URL'den arşiv biçimini
-  tahmin etmeyi önler.
+  tahmin etmekten kaçınır.
 
 ### `GET /api/v1/packages/{name}/versions/{version}/artifact/download`
 
-Açık çözümleyici yolu üzerinden sürüm yapıtını indirir.
+Sürüm yapısını açık çözümleyici yolu üzerinden indirir.
 
 Notlar:
 
-- ClawPack sürümleri, tam yüklenen npm-pack `.tgz` baytlarını akış olarak verir.
-- Eski ZIP sürümleri `/api/v1/packages/{name}/download?version=` adresine yönlendirir.
+- ClawPack sürümleri, tam olarak yüklenen npm-pack `.tgz` baytlarını akış olarak
+  gönderir.
+- Eski ZIP sürümleri `/api/v1/packages/{name}/download?version=` adresine
+  yönlendirir.
 - İndirme hız kovasını kullanır.
 
 ### `GET /api/v1/packages/{name}/readiness`
 
 Gelecekteki OpenClaw tüketimi için hesaplanan hazır olma durumunu döndürür.
 
-Hazırlık denetimleri şunları kapsar:
+Hazır olma kontrolleri şunları kapsar:
 
 - resmi kanal durumu
 - en son sürüm kullanılabilirliği
-- ClawPack npm-pack yapıtı kullanılabilirliği
-- yapıt özeti
+- ClawPack npm-pack yapısı kullanılabilirliği
+- yapı özeti
 - kaynak depo ve commit kökeni
 - OpenClaw uyumluluk meta verileri
 - ana makine hedefleri
@@ -904,7 +912,7 @@ Resmi OpenClaw Plugin geçiş satırlarını listelemek için moderatör uç nok
 
 Kimlik doğrulama:
 
-- Moderatör veya yönetici kullanıcı için API belirteci gerekir.
+- Moderatör veya yönetici kullanıcı için API belirteci gerektirir.
 
 Sorgu parametreleri:
 
@@ -950,7 +958,7 @@ Resmi Plugin geçiş satırı oluşturmak veya güncellemek için yönetici uç 
 
 Kimlik doğrulama:
 
-- Yönetici kullanıcı için API belirteci gerekir.
+- Yönetici kullanıcı için API belirteci gerektirir.
 
 İstek gövdesi:
 
@@ -974,19 +982,19 @@ Kimlik doğrulama:
 
 Notlar:
 
-- `bundledPluginId` küçük harfe normalleştirilir ve kararlı upsert anahtarıdır.
-- `packageName`, npm adına göre normalleştirilir; planlanan geçişler için paket
-  eksik olabilir.
-- Bu yalnızca geçiş hazırlığını izler. OpenClaw üzerinde değişiklik yapmaz veya
-  ClawPack'ler üretmez.
+- `bundledPluginId` küçük harfe normalize edilir ve kararlı upsert anahtarıdır.
+- `packageName` npm adına normalize edilir; planlanan geçişler için paket eksik
+  olabilir.
+- Bu yalnızca geçiş hazır olma durumunu izler. OpenClaw'ı değiştirmez veya
+  ClawPack oluşturmaz.
 
 ### `GET /api/v1/packages/moderation/queue`
 
-Paket yayını inceleme kuyrukları için moderatör/yönetici uç noktası.
+Paket sürümü inceleme kuyrukları için moderatör/yönetici uç noktası.
 
 Kimlik doğrulama:
 
-- Moderatör veya yönetici kullanıcı için API belirteci gerekir.
+- Moderatör veya yönetici kullanıcı için API belirteci gerektirir.
 
 Sorgu parametreleri:
 
@@ -996,10 +1004,10 @@ Sorgu parametreleri:
 
 Durum anlamları:
 
-- `open`: şüpheli, kötü amaçlı, bekleyen, karantinaya alınmış, iptal edilmiş veya bildirilmiş yayınlar.
-- `blocked`: karantinaya alınmış, iptal edilmiş veya kötü amaçlı yayınlar.
-- `manual`: manuel moderasyon geçersiz kılması olan herhangi bir yayın.
-- `all`: manuel geçersiz kılması, temiz olmayan tarama durumu veya paket bildirimi olan herhangi bir yayın.
+- `open`: şüpheli, kötü amaçlı, bekleyen, karantinaya alınmış, geri çekilmiş veya raporlanmış sürümler.
+- `blocked`: karantinaya alınmış, geri çekilmiş veya kötü amaçlı sürümler.
+- `manual`: manuel moderasyon geçersiz kılması olan herhangi bir sürüm.
+- `all`: manuel geçersiz kılma, temiz olmayan tarama durumu veya paket raporu olan herhangi bir sürüm.
 
 Yanıt:
 
@@ -1034,14 +1042,15 @@ Yanıt:
 
 ### `POST /api/v1/packages/{name}/report`
 
-Bir paketi moderatör incelemesi için bildirin. Bildirimler paket düzeyindedir ve isteğe bağlı olarak
-bir sürüme bağlanabilir. Moderasyon kuyruğunu beslerler ancak kendi başlarına
-indirmeleri otomatik olarak gizlemez veya engellemezler; moderatörler yapıtları
-onaylamak, karantinaya almak veya iptal etmek için yayın moderasyonunu kullanmalıdır.
+Moderasyon incelemesi için bir paketi raporlar. Raporlar paket düzeyindedir ve
+isteğe bağlı olarak bir sürüme bağlanır. Moderasyon kuyruğunu beslerler, ancak
+kendi başlarına indirmeleri otomatik olarak gizlemez veya engellemezler;
+moderatörler yapıları onaylamak, karantinaya almak veya geri çekmek için sürüm
+moderasyonunu kullanmalıdır.
 
 Kimlik doğrulama:
 
-- API belirteci gerekir.
+- API belirteci gerektirir.
 
 İstek:
 
@@ -1064,16 +1073,16 @@ Yanıt:
 
 ### `GET /api/v1/packages/reports`
 
-Moderatör/yönetici için paket raporu alım uç noktası.
+Paket raporu alımı için moderatör/admin uç noktası.
 
 Kimlik doğrulama:
 
-- Moderatör veya yönetici kullanıcı için API token’ı gerektirir.
+- Moderatör veya admin kullanıcısı için bir API token'ı gerektirir.
 
 Sorgu parametreleri:
 
 - `status` (isteğe bağlı): `open` (varsayılan), `confirmed`, `dismissed` veya `all`
-- `limit` (isteğe bağlı): tamsayı (1-100)
+- `limit` (isteğe bağlı): tam sayı (1-100)
 - `cursor` (isteğe bağlı): sayfalama imleci
 
 Yanıt:
@@ -1113,8 +1122,8 @@ Paket moderasyon görünürlüğü için sahip/moderatör uç noktası.
 
 Kimlik doğrulama:
 
-- Paket sahibi, yayıncı üyesi, moderatör veya yönetici kullanıcı için API token’ı
-  gerektirir.
+- Paket sahibi, yayıncı üyesi, moderatör veya admin kullanıcısı için bir API
+  token'ı gerektirir.
 
 Yanıt:
 
@@ -1147,7 +1156,7 @@ Yanıt:
 
 ### `POST /api/v1/packages/reports/{reportId}/triage`
 
-Paket raporlarını çözümlemek veya yeniden açmak için moderatör/yönetici uç noktası.
+Paket raporlarını çözmek veya yeniden açmak için moderatör/admin uç noktası.
 
 İstek:
 
@@ -1159,10 +1168,10 @@ Paket raporlarını çözümlemek veya yeniden açmak için moderatör/yönetici
 }
 ```
 
-`note`, `confirmed` ve `dismissed` için zorunludur; `status` yeniden `open`
+`note`, `confirmed` ve `dismissed` için gereklidir; `status` yeniden `open`
 olarak ayarlanırken atlanabilir. Aynı denetlenebilir iş akışında sürüm
-moderasyonu uygulamak için onaylanmış bir raporla birlikte `finalAction: "quarantine"`
-veya `finalAction: "revoke"` geçirin.
+moderasyonu uygulamak için onaylanmış bir raporla `finalAction: "quarantine"`
+veya `finalAction: "revoke"` gönderin.
 
 Yanıt:
 
@@ -1178,7 +1187,7 @@ Yanıt:
 
 ### `POST /api/v1/packages/{name}/versions/{version}/moderation`
 
-Paket sürümü incelemesi için moderatör/yönetici uç noktası.
+Paket sürümü incelemesi için moderatör/admin uç noktası.
 
 İstek:
 
@@ -1192,7 +1201,7 @@ Desteklenen durumlar:
 - `quarantined`: takip beklenirken engellendi.
 - `revoked`: bir sürüm daha önce güvenilir kabul edildikten sonra engellendi.
 
-Karantinaya alınmış ve iptal edilmiş sürümler, yapıt indirme rotalarından `403`
+Karantinaya alınan ve iptal edilen sürümler, yapı indirme rotalarından `403`
 döndürür. Her değişiklik bir denetim günlüğü girdisi yazar.
 
 ### `GET /api/v1/packages/{name}/file`
@@ -1201,18 +1210,18 @@ Bir paket dosyası için ham metin içeriğini döndürür.
 
 Sorgu parametreleri:
 
-- `path` (zorunlu)
+- `path` (gerekli)
 - `version` (isteğe bağlı)
 - `tag` (isteğe bağlı)
 
 Notlar:
 
 - Varsayılan olarak en son sürümü kullanır.
-- İndirme kovasını değil, okuma hız kovasını kullanır.
+- İndirme kotası yerine okuma kotası kovasını kullanır.
 - İkili dosyalar `415` döndürür.
 - Dosya boyutu sınırı: 200KB.
 - Bekleyen VirusTotal taramaları okumaları engellemez; kötü amaçlı sürümler başka yerlerde yine de alıkonabilir.
-- Çağıran, sahibi olan yayıncıyı okuyamıyorsa özel paketler `404` döndürür.
+- Çağıran, sahip yayıncıyı okuyamıyorsa özel paketler `404` döndürür.
 
 ### `GET /api/v1/packages/{name}/download`
 
@@ -1229,10 +1238,10 @@ Notlar:
 - Skills, `GET /api/v1/download` adresine yönlendirilir.
 - Plugin/paket arşivleri, eski OpenClaw istemcilerinin çalışmaya devam etmesi
   için `package/` köküne sahip zip dosyalarıdır.
-- Bu rota yalnızca ZIP olarak kalır. ClawPack `.tgz` dosyalarını akış olarak sunmaz.
-- Yanıtlar, çözümleyici bütünlük denetimleri için `ETag`, `Digest`,
+- Bu rota yalnızca ZIP olarak kalır. ClawPack `.tgz` dosyalarını akıtmaz.
+- Yanıtlar, çözümleyici bütünlük kontrolleri için `ETag`, `Digest`,
   `X-ClawHub-Artifact-Type` ve `X-ClawHub-Artifact-Sha256` başlıklarını içerir.
-- Yalnızca kayıt defterine ait metadata, indirilen arşive enjekte edilmez.
+- Yalnızca kayıt defterine ait metadata indirilen arşive enjekte edilmez.
 - Bekleyen VirusTotal taramaları indirmeleri engellemez; kötü amaçlı sürümler `403` döndürür.
 - Çağıran sahip değilse özel paketler `404` döndürür.
 
@@ -1242,31 +1251,31 @@ ClawPack destekli paket sürümleri için npm uyumlu bir packument döndürür.
 
 Notlar:
 
-- Yalnızca yüklenmiş ClawPack npm-pack tarball’ları olan sürümler listelenir.
-- Eski, yalnızca ZIP sürümleri kasıtlı olarak atlanır.
-- `dist.tarball`, `dist.integrity` ve `dist.shasum`, kullanıcıların isterlerse
-  npm’i aynaya yönlendirebilmesi için npm uyumlu alanlar kullanır.
-- Kapsamlı paket packument’ları hem `/api/npm/@scope/name` yolunu hem de npm’in
+- Yalnızca yüklenmiş ClawPack npm-pack tarball'larına sahip sürümler listelenir.
+- Eski yalnızca ZIP sürümleri bilinçli olarak atlanır.
+- `dist.tarball`, `dist.integrity` ve `dist.shasum`, kullanıcılar isterse npm'i
+  aynaya yönlendirebilsin diye npm uyumlu alanlar kullanır.
+- Kapsamlı paket packument'leri hem `/api/npm/@scope/name` hem de npm'in
   kodlanmış `/api/npm/@scope%2Fname` istek yolunu destekler.
 
 ### `GET /api/npm/{package}/-/{tarball}.tgz`
 
-npm ayna istemcileri için tam olarak yüklenen ClawPack tarball baytlarını akış olarak sunar.
+npm ayna istemcileri için yüklenen ClawPack tarball baytlarını aynen akıtır.
 
 Notlar:
 
-- İndirme hız kovasını kullanır.
-- İndirme başlıkları, ClawHub SHA-256 ile npm integrity/shasum metadata’sını içerir.
-- Moderasyon ve özel paket erişim denetimleri yine uygulanır.
+- İndirme kotası kovasını kullanır.
+- İndirme başlıkları ClawHub SHA-256 ile npm integrity/shasum metadata'sını içerir.
+- Moderasyon ve özel paket erişim kontrolleri uygulanmaya devam eder.
 
 ### `GET /api/v1/resolve`
 
-CLI tarafından yerel bir parmak izini bilinen bir sürüme eşlemek için kullanılır.
+CLI tarafından yerel bir fingerprint'i bilinen bir sürümle eşlemek için kullanılır.
 
 Sorgu parametreleri:
 
-- `slug` (zorunlu)
-- `hash` (zorunlu): paket parmak izinin 64 karakterli hex sha256 değeri
+- `slug` (gerekli)
+- `hash` (gerekli): bundle fingerprint'inin 64 karakterlik hex sha256 değeri
 
 Yanıt:
 
@@ -1276,26 +1285,25 @@ Yanıt:
 
 ### `GET /api/v1/download`
 
-Barındırılan bir beceri sürümü ZIP’ini indirir veya `clean` ya da `suspicious`
-taramasına sahip ve barındırılan sürümü olmayan mevcut GitHub destekli bir beceri
+Barındırılan bir skill sürümü ZIP'ini indirir veya `clean` ya da `suspicious`
+taramasına sahip ve barındırılan sürümü olmayan güncel GitHub destekli bir skill
 için GitHub kaynak devri döndürür.
 
 Sorgu parametreleri:
 
-- `slug` (zorunlu)
-- `version` (isteğe bağlı): semver dizgesi
-- `tag` (isteğe bağlı): etiket adı (örn. `latest`)
+- `slug` (gerekli)
+- `version` (isteğe bağlı): semver dizesi
+- `tag` (isteğe bağlı): tag adı (örn. `latest`)
 
 Notlar:
 
 - Ne `version` ne de `tag` sağlanırsa en son sürüm kullanılır.
-- Geçici olarak silinmiş sürümler `410` döndürür.
-- GitHub destekli beceri devirleri baytları proxy’lemez veya aynalamaz. JSON yanıtı
-  `sourceRef: "public-github"`, `repo`, `commit`, `path`, `contentHash` ve
-  `archiveUrl` içerir; tarama/mevcut durum bir kapıdır ve başarı yükü metadata’sı
-  olarak dahil edilmez.
-- İndirme istatistikleri UTC günü başına benzersiz kimlikler olarak sayılır
-  (API token’ı geçerliyse `userId`, aksi halde IP).
+- Soft-delete edilmiş sürümler `410` döndürür.
+- GitHub destekli skill devirleri baytları proxy'lemez veya aynalamaz. JSON
+  yanıtı `sourceRef: "public-github"`, `repo`, `commit`, `path`, `contentHash`
+  ve `archiveUrl` içerir; tarama/geçerli durum bir kapıdır ve başarı payload
+  metadata'sı olarak dahil edilmez.
+- İndirme istatistikleri UTC günü başına benzersiz kimlikler olarak sayılır (API token'ı geçerliyse `userId`, aksi halde IP).
 
 ## Kimlik doğrulama uç noktaları (Bearer token)
 
@@ -1307,20 +1315,19 @@ Authorization: Bearer clh_...
 
 ### `GET /api/v1/whoami`
 
-Token’ı doğrular ve kullanıcı tanıtıcısını döndürür.
+Token'ı doğrular ve kullanıcı handle'ını döndürür.
 
 ### `POST /api/v1/skills`
 
 Yeni bir sürüm yayınlar.
 
-- Tercih edilen: `payload` JSON + `files[]` blob’ları ile `multipart/form-data`.
+- Tercih edilen: `payload` JSON + `files[]` blob'ları ile `multipart/form-data`.
 - `files` içeren JSON gövdesi (storageId tabanlı) de kabul edilir.
-- İsteğe bağlı yük alanı: `ownerHandle`. Mevcut olduğunda API bu yayıncıyı
-  sunucu tarafında çözer ve aktörün yayıncı erişimine sahip olmasını gerektirir.
-- İsteğe bağlı yük alanı: `migrateOwner`. `ownerHandle` ile birlikte `true`
-  olduğunda, aktör hem mevcut hem de hedef yayıncılarda yönetici/sahipse mevcut
-  bir beceri o sahibe taşınabilir. Bu açık onay olmadan sahip değişiklikleri
-  reddedilir.
+- İsteğe bağlı payload alanı: `ownerHandle`. Mevcut olduğunda API, bu yayıncıyı
+  sunucu tarafında çözümler ve aktörün yayıncı erişimine sahip olmasını gerektirir.
+- İsteğe bağlı payload alanı: `migrateOwner`. `ownerHandle` ile `true` olduğunda,
+  aktör hem mevcut hem de hedef yayıncılarda admin/sahip ise mevcut bir skill o
+  sahibe taşınabilir. Bu açık onay olmadan sahip değişiklikleri reddedilir.
 
 ### `POST /api/v1/packages`
 
@@ -1328,33 +1335,34 @@ Bir code-plugin veya bundle-plugin sürümü yayınlar.
 
 - Bearer token kimlik doğrulaması gerektirir.
 - `multipart/form-data` gerektirir.
-- İzin verilen form alanları `payload`, tekrarlanan `files` blob’ları veya bir
-  `clawpack` tarball referansıdır. `clawpack`, bir `.tgz` blob’u veya upload-url
-  akışı tarafından döndürülen bir storage id olabilir. Aşamalı storage-id yayınları
-  ayrıca bu yükleme URL’siyle döndürülen `clawpackUploadTicket` değerini içermelidir.
-- Aynı istekte ikisini birden değil, `files` veya `clawpack` kullanın.
-- JSON gövdeleri ve çağıran tarafından sağlanan `payload.files` / `payload.artifact`
-  metadata’sı reddedilir.
-- Doğrudan multipart yayın istekleri 18MB ile sınırlandırılır. ClawPack tarball’ları
-  upload-url akışını 120MB tarball sınırına kadar kullanabilir.
-- İsteğe bağlı yük alanı: `ownerHandle`. Mevcut olduğunda, yalnızca yöneticiler o sahip adına yayın yapabilir.
+- İzin verilen form alanları `payload`, tekrarlanan `files` blob'ları veya tek
+  bir `clawpack` tarball referansıdır. `clawpack`, bir `.tgz` blob'u veya
+  upload-url akışı tarafından döndürülen bir storage id olabilir. Aşamalanmış
+  storage-id yayınları, bu yükleme URL'siyle döndürülen `clawpackUploadTicket`
+  değerini de içermelidir.
+- Aynı istekte ya `files` ya da `clawpack` kullanın; ikisini birlikte asla kullanmayın.
+- JSON gövdeleri ve çağıranın sağladığı `payload.files` / `payload.artifact`
+  metadata'sı reddedilir.
+- Doğrudan multipart yayın istekleri 18MB ile sınırlıdır. ClawPack tarball'ları,
+  120MB tarball sınırına kadar upload-url akışını kullanabilir.
+- İsteğe bağlı payload alanı: `ownerHandle`. Mevcut olduğunda yalnızca adminler bu sahip adına yayın yapabilir.
 
 Doğrulama öne çıkanları:
 
 - `family`, `code-plugin` veya `bundle-plugin` olmalıdır.
-- Plugin paketleri `openclaw.plugin.json` gerektirir. ClawPack `.tgz` yüklemeleri
-  bunu `package/openclaw.plugin.json` konumunda içermelidir.
-- Kod plugin’leri `package.json`, kaynak depo metadata’sı, kaynak commit
-  metadata’sı, yapılandırma şeması metadata’sı, `openclaw.compat.pluginApi` ve
+- Plugin paketleri `openclaw.plugin.json` gerektirir. ClawPack `.tgz`
+  yüklemeleri bunu `package/openclaw.plugin.json` konumunda içermelidir.
+- Code plugin'leri `package.json`, kaynak repo metadata'sı, kaynak commit
+  metadata'sı, config schema metadata'sı, `openclaw.compat.pluginApi` ve
   `openclaw.build.openclawVersion` gerektirir.
-- `openclaw.hostTargets` ve `openclaw.environment` isteğe bağlı metadata’dır.
-- Yalnızca `openclaw` kuruluş yayıncısı ve mevcut `openclaw` kuruluş üyelerinin
-  kişisel yayıncıları `official` kanalına yayın yapabilir.
-- Başkası adına yayınlar, resmi kanal uygunluğunu yine hedef sahip hesabına göre doğrular.
+- `openclaw.hostTargets` ve `openclaw.environment` isteğe bağlı metadata'dır.
+- Yalnızca `openclaw` org yayıncısı ve mevcut `openclaw` org üyelerinin kişisel
+  yayıncıları `official` kanalına yayın yapabilir.
+- Başkası adına yapılan yayınlar da official-channel uygunluğunu hedef sahip hesabına göre doğrular.
 
 ### `DELETE /api/v1/skills/{slug}` / `POST /api/v1/skills/{slug}/undelete`
 
-Bir beceriyi geçici olarak siler / geri yükler (sahip, moderatör veya yönetici).
+Bir skill'i soft-delete yapar / geri yükler (sahip, moderatör veya admin).
 
 İsteğe bağlı JSON gövdesi:
 
@@ -1362,10 +1370,10 @@ Bir beceriyi geçici olarak siler / geri yükler (sahip, moderatör veya yöneti
 { "reason": "Held for moderation pending legal review." }
 ```
 
-Mevcut olduğunda `reason`, beceri moderasyon notu olarak saklanır ve denetim günlüğüne kopyalanır.
-Sahip tarafından başlatılan geçici silmeler slug’ı 30 günlüğüne ayırır; ardından slug başka
-bir yayıncı tarafından alınabilir. Bu süre sonu geçerli olduğunda silme yanıtı `slugReservedUntil`
-içerir. Moderatör/yönetici gizlemeleri ve güvenlik kaldırmaları bu şekilde sona ermez.
+Mevcut olduğunda `reason`, skill moderasyon notu olarak saklanır ve denetim günlüğüne kopyalanır.
+Sahip tarafından başlatılan soft delete işlemleri slug'ı 30 gün ayırır; ardından slug başka bir
+yayıncı tarafından talep edilebilir. Silme yanıtı, bu sona erme geçerliyse `slugReservedUntil` içerir.
+Moderatör/admin gizlemeleri ve güvenlik kaldırmaları bu şekilde sona ermez.
 
 Silme yanıtı:
 
@@ -1378,55 +1386,53 @@ Durum kodları:
 - `200`: tamam
 - `401`: yetkisiz
 - `403`: yasak
-- `404`: beceri/kullanıcı bulunamadı
-- `500`: iç sunucu hatası
+- `404`: skill/kullanıcı bulunamadı
+- `500`: dahili sunucu hatası
 
 ### `POST /api/v1/users/publisher`
 
-Yalnızca yönetici. Bir tanıtıcı için kuruluş yayıncısının var olmasını sağlar. Tanıtıcı hâlâ
-eski paylaşımlı kullanıcı/kişisel yayıncıyı işaret ediyorsa uç nokta önce onu bir kuruluş
-yayıncısına taşır. Yeni oluşturulan bir kuruluş için `memberHandle` sağlayın; işlem yapan
-yönetici üye olarak eklenmez. `memberRole` varsayılan olarak `owner` olur.
+Yalnızca admin. Bir handle için bir org yayıncısının var olmasını sağlar. Handle hâlâ
+eski bir paylaşılan kullanıcı/kişisel yayıncıyı gösteriyorsa, uç nokta önce onu bir org yayıncısına taşır.
+Yeni oluşturulan bir org için `memberHandle` sağlayın; işlemi yapan admin üye olarak eklenmez.
+`memberRole` varsayılan olarak `owner` olur.
 
 - Gövde: `{ "handle": "openclaw", "displayName": "OpenClaw", "memberHandle": "alice", "memberRole": "owner", "trusted": true }`
 - Yanıt: `{ "ok": true, "publisherId": "...", "handle": "openclaw", "created": true, "migrated": false, "trusted": true, "member": { "userId": "...", "handle": "alice", "role": "owner" } }`
 
 ### `POST /api/v1/publishers`
 
-Kimliği doğrulanmış self servis kuruluş yayıncısı oluşturma. Yeni bir kuruluş yayıncısı oluşturur ve
-çağıranı sahip olarak ekler. Bu uç nokta mevcut kullanıcı/kişisel tanıtıcıları taşımaz ve
+Kimliği doğrulanmış self-serve org yayıncısı oluşturma. Yeni bir org yayıncısı oluşturur ve
+çağıranı sahip olarak ekler. Bu uç nokta mevcut kullanıcı/kişisel handle'ları taşımaz ve
 yayıncıyı trusted/official olarak işaretlemez.
 
 - Gövde: `{ "handle": "opik", "displayName": "Opik" }`
 - Yanıt: `{ "ok": true, "publisherId": "...", "handle": "opik", "created": true, "trusted": false }`
-- Tanıtıcı zaten bir yayıncı, kullanıcı veya kişisel yayıncı tarafından kullanılıyorsa `409` döndürür.
+- Handle zaten bir yayıncı, kullanıcı veya kişisel yayıncı tarafından kullanılıyorsa `409` döndürür.
 
 ### `POST /api/v1/users/reserve`
 
-Yalnızca yönetici. Bir sürüm yayınlamadan, kök slug’ları ve paket adlarını hak sahibi için ayırır.
-Paket adları sürüm satırı olmayan özel yer tutucu paketlere dönüşür; böylece aynı sahip daha sonra
-gerçek code-plugin veya bundle-plugin sürümünü o ada yayınlayabilir.
+Yalnızca admin. Bir sürüm yayınlamadan, hak sahibi için kök slug'ları ve paket adlarını ayırır.
+Paket adları sürüm satırı olmayan özel yer tutucu paketler hâline gelir; böylece aynı sahip
+daha sonra gerçek code-plugin veya bundle-plugin sürümünü bu ad altında yayınlayabilir.
 
 - Gövde: `{ "handle": "openclaw", "slugs": ["diffs"], "packageNames": ["@openclaw/diffs"], "reason": "reserved for official OpenClaw plugin" }`
 - Yanıt: `{ "ok": true, "succeeded": 2, "failed": 0, "results": [{ "kind": "slug", "name": "diffs", "ok": true, "action": "reserved" }] }`
 
 ### `POST /api/v1/users/publisher-recovery`
 
-Yalnızca yönetici. Convex Auth hesap satırlarını düzenlemeden, doğrulanmış bir yedek GitHub OAuth
-principal’ı için kişisel yayıncıyı kurtarır. İstek, değişmez iki GitHub provider hesap kimliğini
-de belirtmelidir; değişebilir tanıtıcılar yalnızca operatöre dönük bir koruma olarak kullanılır.
+Yalnızca admin. Convex Auth hesap satırlarını düzenlemeden, doğrulanmış bir yedek GitHub OAuth principal'ı
+için kişisel bir yayıncıyı kurtarır. İstek, değişmez iki GitHub provider hesap id'sini de adlandırmalıdır;
+değişebilir handle'lar yalnızca operatöre dönük bir koruma olarak kullanılır.
 
-Uç nokta varsayılan olarak deneme çalıştırmasına ayarlanır. Kurtarmayı uygulamak için personel her iki
-GitHub sorumlusu arasındaki sürekliliği bağımsız olarak doğruladıktan sonra `dryRun: false` ve
+Uç nokta varsayılan olarak deneme çalıştırmasıdır. Kurtarmayı uygulamak için personel her iki GitHub kimliği arasındaki sürekliliği bağımsız olarak doğruladıktan sonra `dryRun: false` ve
 `confirmIdentityVerified: true` gerekir. Hedef kullanıcının mevcut kişisel
 yayıncısında skills, paketler veya GitHub skill kaynakları varsa kurtarma güvenli biçimde başarısız olur.
-Kurtarma ayrıca, doğrudan sahip yollarının yeni yayıncı yetkisiyle uyumlu olması için kurtarılan yayıncının skills,
-skill slug diğer adları, paketleri, paket denetleyici uyarıları ve türetilmiş arama özeti satırları için eski
-`ownerUserId` alanlarını da taşır. Kurtarılan handle için etkin bir korumalı handle
+Kurtarma ayrıca, doğrudan sahip yollarının yeni yayıncı yetkisiyle uyumlu olması için kurtarılan yayıncının skills'leri,
+skill slug takma adları, paketleri, paket denetçisi uyarıları ve türetilmiş arama özeti satırları için eski `ownerUserId` alanlarını da taşır. Kurtarılan handle için etkin korumalı handle
 rezervasyonu da yedek kullanıcıya yeniden atanır; böylece sonraki
-profil eşitlemesi önceki kullanıcının rakip yetkisini geri yükleyemez. Her birincil tablo, uygulama işlemi başına
-100 satırla sınırlıdır; daha büyük kurtarmalar önce sürdürülebilir bir sahip geçişi kullanmalıdır.
-GitHub skill kaynakları yayıncı kapsamındadır ve yeniden yazılmak yerine kontrol edilmiş olarak raporlanır.
+profil senkronizasyonu eski kullanıcının rakip yetkisini geri getiremez. Her birincil tablo, uygulama işlemi başına
+100 satırla sınırlıdır; daha büyük kurtarmalar önce sürdürülebilir bir sahip taşıması kullanmalıdır.
+GitHub skill kaynakları yayıncı kapsamındadır ve yeniden yazılmak yerine denetlenmiş olarak raporlanır.
 
 - Gövde: `{ "handle": "gingiris", "nextUserHandle": "gingiris-1031", "previousGitHubProviderAccountId": "123", "nextGitHubProviderAccountId": "456", "reason": "Verified account continuity for issue #2555", "confirmIdentityVerified": true, "dryRun": false }`
 - Yanıt: `{ "ok": true, "dryRun": false, "recovered": true, "publisherId": "...", "handle": "gingiris", "previousUser": { "userId": "...", "handle": "gingiris", "nextHandle": "gingiris-recovered", "githubProviderAccountId": "123", "authAccountCount": 1 }, "nextUser": { "userId": "...", "handle": "gingiris-1031", "nextHandle": "gingiris", "githubProviderAccountId": "456", "authAccountCount": 1 }, "retiredPersonalPublisher": null, "resourceOwnerMigration": { "limitPerTable": 100, "skills": 1, "skillSlugAliases": 1, "packages": 0, "packageInspectorWarnings": 0, "githubSourcesChecked": 1, "handleReservations": 1 }, "identityVerified": true, "reason": "Verified account continuity for issue #2555" }`
@@ -1442,11 +1448,11 @@ GitHub skill kaynakları yayıncı kapsamındadır ve yeniden yazılmak yerine k
 
 Notlar:
 
-- Her iki uç nokta da API belirteci kimlik doğrulaması gerektirir ve yalnızca skill sahibi için çalışır.
-- `rename`, önceki slug değerini bir yönlendirme diğer adı olarak korur.
-- `merge`, kaynak listelemeyi gizler ve kaynak slug değerini hedef listelemeye yönlendirir.
+- Her iki uç nokta da API token kimlik doğrulaması gerektirir ve yalnızca skill sahibi için çalışır.
+- `rename`, önceki slug'ı yönlendirme takma adı olarak korur.
+- `merge`, kaynak listelemeyi gizler ve kaynak slug'ı hedef listelemeye yönlendirir.
 
-### Sahiplik aktarma uç noktaları
+### Sahipliği aktarma uç noktaları
 
 - `POST /api/v1/skills/{slug}/transfer`
   - Gövde: `{ "toUserHandle": "target_handle", "message": "optional" }`
@@ -1457,11 +1463,11 @@ Notlar:
   - Yanıt (kabul/reddet/iptal): `{ "ok": true, "skillSlug": "demo-skill?" }`
 - `GET /api/v1/transfers/incoming`
 - `GET /api/v1/transfers/outgoing`
-  - Yanıt biçimi: `{ "transfers": [{ "_id": "...", "skill": { "slug": "demo", "displayName": "Demo" }, "fromUser"|"toUser": { "handle": "..." }, "message": "...", "requestedAt": 0, "expiresAt": 0 }] }`
+  - Yanıt şekli: `{ "transfers": [{ "_id": "...", "skill": { "slug": "demo", "displayName": "Demo" }, "fromUser"|"toUser": { "handle": "..." }, "message": "...", "requestedAt": 0, "expiresAt": 0 }] }`
 
 ### `POST /api/v1/users/ban`
 
-Bir kullanıcıyı yasaklayın ve sahip olduğu skills öğelerini kalıcı olarak silin (yalnızca moderatör/yönetici).
+Bir kullanıcıyı yasaklar ve sahip olunan skills'leri kalıcı olarak siler (yalnızca moderatör/yönetici).
 
 Gövde:
 
@@ -1483,7 +1489,7 @@ Yanıt:
 
 ### `POST /api/v1/users/unban`
 
-Bir kullanıcının yasağını kaldırın ve uygun skills öğelerini geri yükleyin (yalnızca yönetici).
+Bir kullanıcının yasağını kaldırır ve uygun skills'leri geri yükler (yalnızca yönetici).
 
 Gövde:
 
@@ -1505,8 +1511,8 @@ Yanıt:
 
 ### `POST /api/v1/users/reclassify-ban`
 
-Mevcut bir yasağın kayıtlı nedenini, yasağı kaldırmadan veya içeriği geri yüklemeden
-değiştirin (yalnızca yönetici). `dryRun`, `false` olmadığı sürece varsayılan olarak deneme çalıştırmasıdır.
+Yasağı kaldırmadan veya içeriği geri yüklemeden mevcut bir yasak için saklanan nedeni değiştirir
+(yalnızca yönetici). `dryRun`, `false` olmadıkça varsayılan olarak deneme çalıştırmasıdır.
 
 Gövde:
 
@@ -1536,7 +1542,7 @@ Yanıt:
 
 ### `POST /api/v1/users/role`
 
-Bir kullanıcı rolünü değiştirin (yalnızca yönetici).
+Bir kullanıcı rolünü değiştirir (yalnızca yönetici).
 
 Gövde:
 
@@ -1558,12 +1564,12 @@ Yanıt:
 
 ### `GET /api/v1/users`
 
-Kullanıcıları listeleyin veya arayın (yalnızca yönetici).
+Kullanıcıları listeler veya arar (yalnızca yönetici).
 
 Sorgu parametreleri:
 
 - `q` (isteğe bağlı): arama sorgusu
-- `query` (isteğe bağlı): `q` için diğer ad
+- `query` (isteğe bağlı): `q` için takma ad
 - `limit` (isteğe bağlı): en fazla sonuç sayısı (varsayılan 20, en fazla 200)
 
 Yanıt:
@@ -1585,7 +1591,7 @@ Yanıt:
 
 ### `POST /api/v1/stars/{slug}` / `DELETE /api/v1/stars/{slug}`
 
-Bir yıldız ekleyin/kaldırın (öne çıkarma). Her iki uç nokta da idempotenttir.
+Bir yıldız ekler/kaldırır (öne çıkarma). Her iki uç nokta da idempotenttir.
 
 Yanıtlar:
 
@@ -1610,9 +1616,8 @@ Eski CLI sürümleri için hâlâ desteklenir:
 
 Kaldırma planı için `DEPRECATIONS.md` dosyasına bakın.
 
-`POST /api/cli/upload-url`, `uploadUrl` ve `uploadTicket` döndürür. Bir ClawPack tarball hazırlayan
-paket yayımlamaları, ortaya çıkan depolama kimliğini `clawpack` olarak ve döndürülen bileti
-`clawpackUploadTicket` olarak göndermelidir.
+`POST /api/cli/upload-url`, `uploadUrl` ve `uploadTicket` döndürür. ClawPack tarball'ını hazırlayan paket
+yayınları, oluşan depolama kimliğini `clawpack` olarak ve döndürülen bileti `clawpackUploadTicket` olarak göndermelidir.
 
 ## Registry keşfi (`/.well-known/clawhub.json`)
 
@@ -1627,4 +1632,4 @@ CLI, registry/kimlik doğrulama ayarlarını siteden keşfedebilir:
 { "apiBase": "https://clawhub.ai", "authBase": "https://clawhub.ai", "minCliVersion": "0.0.5" }
 ```
 
-Kendi kendinize barındırıyorsanız bu dosyayı sunun (veya `CLAWHUB_REGISTRY` değerini açıkça ayarlayın; eski `CLAWDHUB_REGISTRY`).
+Kendi kendine barındırıyorsanız bu dosyayı sunun (veya `CLAWHUB_REGISTRY` değerini açıkça ayarlayın; eski `CLAWDHUB_REGISTRY`).

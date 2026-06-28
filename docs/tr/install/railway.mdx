@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 989c8467ead04b8aa7c94101abd99c936ecd3e451fe728afe8c2f2bd5a78df48
     source_path: install/railway.mdx
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 # Railway

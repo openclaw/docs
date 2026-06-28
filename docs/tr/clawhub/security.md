@@ -1,13 +1,13 @@
 ---
 read_when:
-    - ClawHub güvenlik sorununu bildirme
-    - ClawHub güvenlik açığı ifşasını anlama
-    - ClawHub platform sorunlarını üçüncü taraf beceri veya Plugin sorunlarından ayırt etme
+    - ClawHub güvenlik sorunu bildirme
+    - ClawHub güvenlik açığı bildirimini anlama
+    - ClawHub platform sorunlarını üçüncü taraf skill veya plugin sorunlarından ayırt etme
 sidebarTitle: Security
-summary: ClawHub güvenlik sorunlarını nasıl bildireceğiniz ve güvenlik açıklarının ne zaman kamuya açık olarak duyurulduğu.
+summary: ClawHub güvenlik sorunlarının nasıl bildirileceği ve güvenlik açıklarının ne zaman herkese açıklandığı.
 title: Güvenlik
 x-i18n:
-    generated_at: "2026-06-28T07:42:27Z"
+    generated_at: "2026-06-28T08:18:06Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -18,27 +18,27 @@ x-i18n:
 
 # Güvenlik
 
-ClawHub güvenlik sorunları, `openclaw/clawhub` için GitHub Güvenlik Danışma Bildirimleri üzerinden bildirilebilir.
+ClawHub güvenlik sorunları, `openclaw/clawhub` için GitHub Security Advisories üzerinden bildirilebilir.
 
-ClawHub'ın kendisindeki güvenlik açıkları için GitHub Güvenlik Danışma Bildirimleri'ni kullanın. İyi ClawHub güvenlik danışma bildirimi raporları şunlardaki hataları içerir:
+ClawHub'ın kendisindeki güvenlik açıkları için GitHub Security Advisories kullanın. İyi ClawHub güvenlik bildirimi raporları şunlardaki hataları içerir:
 
-- ClawHub web sitesi, API'si veya CLI'ı
-- kayıt yayımlama, indirmeler, kurulumlar veya artifact bütünlüğü
-- kimlik doğrulama, yetkilendirme veya API token'ları
+- ClawHub web sitesi, API veya CLI
+- kayıt defteri yayımlama, indirmeler, kurulumlar veya yapıt bütünlüğü
+- kimlik doğrulama, yetkilendirme veya API belirteçleri
 - tarama, moderasyon veya rapor işleme
 
-Üçüncü taraf bir becerinin veya Plugin'in kendi kaynak kodundaki güvenlik açıkları için ClawHub güvenlik danışma bildirimlerini kullanmayın. Bunları doğrudan ClawHub listesinden bağlantısı verilen yayımcıya veya kaynak deposuna bildirin.
+Üçüncü taraf bir skill veya plugin'in kendi kaynak kodundaki güvenlik açıkları için ClawHub bildirimlerini kullanmayın. Bunları doğrudan ClawHub listesinden bağlantı verilen yayıncıya veya kaynak depoya bildirin.
 
 ## Güvenlik açığı açıklaması
 
-ClawHub barındırılan bir bulut uygulaması olduğundan, ClawHub hizmet güvenlik açıkları varsayılan olarak herkese açık biçimde açıklanmaz. Gerçek kullanıcı etkisine dair kanıt olduğunda veya kullanıcıların işlem yapması gerektiğinde herkese açık biçimde açıklanırlar.
+ClawHub barındırılan bir bulut uygulaması olduğundan, ClawHub hizmet güvenlik açıkları varsayılan olarak herkese açık şekilde açıklanmaz. Gerçek kullanıcı etkisine dair kanıt olduğunda veya kullanıcıların işlem yapması gerektiğinde herkese açık şekilde açıklanırlar.
 
-Gerçek kullanıcı etkisi örnekleri arasında doğrulanmış istismar, kullanıcı verilerinin veya sırlarının açığa çıkması, bir platform arızası nedeniyle kötü amaçlı içeriğin kullanıcılara ulaşması ya da kullanıcıların kimlik bilgilerini döndürmesini, yerel yazılımı güncellemesini veya başka koruyucu işlem yapmasını gerektiren herhangi bir sorun yer alır.
+Gerçek kullanıcı etkisine örnek olarak doğrulanmış istismar, kullanıcı verilerinin veya sırlarının açığa çıkması, platform hatası nedeniyle kötü amaçlı içeriğin kullanıcılara ulaşması ya da kullanıcıların kimlik bilgilerini döndürmesini, yerel yazılımı güncellemesini veya başka koruyucu işlem yapmasını gerektiren herhangi bir sorun verilebilir.
 
-Kullanıcıların yerelde güncellemesi gereken ClawHub CLI paketleri, ikili dosyalar, kitaplıklar veya diğer sürüm artifact'leri gibi kullanıcı tarafından kurulan yazılımlardaki güvenlik açıkları herkese açık biçimde açıklanır.
+Kullanıcıların yerel olarak güncellemesi gereken ClawHub CLI paketleri, ikili dosyalar, kütüphaneler veya diğer sürüm yapıtları gibi kullanıcı tarafından kurulan yazılımlardaki güvenlik açıkları herkese açık şekilde açıklanır.
 
 ## İlgili sayfalar
 
-Kurulum zamanı denetim etiketleri, risk seviyeleri, bulgular ve yorumlama için [Güvenlik Denetimleri](/tr/clawhub/security-audits) bölümüne bakın.
+Kurulum zamanındaki denetim etiketleri, risk düzeyleri, bulgular ve yorumlama için bkz. [Güvenlik Denetimleri](/tr/clawhub/security-audits).
 
-Pazar yeri raporları, moderasyon bekletmeleri, gizli listeler, yasaklamalar ve hesap durumu için [Moderasyon ve Hesap Güvenliği](/tr/clawhub/moderation) bölümüne bakın.
+Pazar yeri raporları, moderasyon bekletmeleri, gizli listeler, yasaklamalar ve hesap durumu için bkz. [Moderasyon ve Hesap Güvenliği](/tr/clawhub/moderation).

@@ -14,6 +14,7 @@ x-i18n:
     source_hash: b7f4ee447e0b436601c68251c26c1b897a642f6a8b1886d18647b62817996792
     source_path: refactor/acp.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 ACP yaşam döngüsü şu anda çalışıyor, ancak büyük kısmı olaydan sonra çıkarımla belirleniyor.
