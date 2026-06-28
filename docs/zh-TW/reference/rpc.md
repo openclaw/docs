@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 63556f140bee55821fa0a09ff9808e163728049f8db4c58f7bb4ceca6e1cac1a
     source_path: reference/rpc.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw 透過 JSON-RPC 整合外部 CLI。今日使用兩種模式。

@@ -13,6 +13,7 @@ x-i18n:
     source_hash: 311ebbd557e40e38cd25b2f11b887baa4576657095d5a0841d4cb7f71898927d
     source_path: automation/index.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw 透過任務、排程工作、推斷承諾、事件 hooks 與常駐指示在背景執行工作。此頁協助你選擇合適機制，並了解它們如何配合運作。

@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 50680e099181421505e25cecab2ba331fdaf9839d07fef482ff04976b0fc583e
     source_path: platforms/mac/webchat.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 macOS 選單列應用程式會將 WebChat UI 嵌入為原生 SwiftUI 檢視。它會連線至 Gateway，並預設使用所選代理程式的 **主要工作階段**（並提供可切換至其他工作階段的工作階段切換器）。

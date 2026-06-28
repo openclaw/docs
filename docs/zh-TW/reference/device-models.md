@@ -11,6 +11,7 @@ x-i18n:
     source_hash: f20e035f787ba7d9bb48d2a18263679d20b295e12ffb263a63c3a0ef72312d34
     source_path: reference/device-models.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 macOS 輔助應用程式會在 **執行個體** UI 中顯示友善的 Apple 裝置型號名稱，方法是將 Apple 型號識別碼（例如 `iPad16,6`、`Mac16,6`）對應到人類可讀的名稱。

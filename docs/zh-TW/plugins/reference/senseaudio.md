@@ -10,6 +10,7 @@ x-i18n:
     source_hash: b1566a7e33b2f3d367c0fafc364b701aff60587204bb585af1cf15786e5ed330
     source_path: plugins/reference/senseaudio.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Senseaudio 外掛

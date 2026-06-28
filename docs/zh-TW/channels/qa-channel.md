@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 8f28962032bc5f6b228de731ae6bd9a22831604b506b7073aeffba19ac22e0e8
     source_path: channels/qa-channel.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 `qa-channel` 是一個隨附的合成訊息傳輸，用於自動化 OpenClaw QA。它不是生產用途通道；它存在的目的是在保持狀態具決定性且可完整檢查的同時，演練真實傳輸所使用的相同通道 Plugin 邊界。

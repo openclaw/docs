@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 41dda4be24d5b2c283fa499a345cf9f38747ec19b4010163ceffd998307ca086
     source_path: providers/comfy.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw 內建隨附 `comfy` Plugin，用於以工作流程驅動的 ComfyUI 執行。此 Plugin 完全以工作流程驅動，因此 OpenClaw 不會嘗試將通用的 `size`、`aspectRatio`、`resolution`、`durationSeconds` 或 TTS 風格控制項對應到你的圖形。

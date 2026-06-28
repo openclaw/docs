@@ -12,6 +12,7 @@ x-i18n:
     source_hash: b981cd177ed76194cf18667620a1f9b2f2ba50df42fe203f6f68916971ed6a61
     source_path: concepts/channel-docking.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 通道停靠是針對單一 OpenClaw 工作階段的來電轉接。

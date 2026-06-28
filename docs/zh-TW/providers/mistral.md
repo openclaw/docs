@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 94c4caa86d4a3eb873d8b6a1cc639edbad3dd7478f401e2ca53f704de095f829
     source_path: providers/mistral.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw 包含一個內建的 Mistral Plugin，會註冊四種合約：聊天補全、媒體理解（Voxtral 批次轉錄）、Voice Call 即時 STT（Voxtral Realtime），以及記憶嵌入（`mistral-embed`）。

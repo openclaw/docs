@@ -11,6 +11,7 @@ x-i18n:
     source_hash: c38e42ae9121864333574b668d95f4d1112cada30cd525613d2371f176de4505
     source_path: install/kubernetes.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 在 Kubernetes 上執行 OpenClaw 的最小起點，不是可直接用於生產環境的部署。它涵蓋核心資源，並且預期你會依照自己的環境進行調整。

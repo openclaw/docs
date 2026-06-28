@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 82d31ba74694cda9e195534ce33f7b61343546f174ceacd2607aeb1d5487229e
     source_path: install/clawdock.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 ClawDock 是用於基於 Docker 的 OpenClaw 安裝的小型 shell 輔助層。

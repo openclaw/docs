@@ -13,6 +13,7 @@ x-i18n:
     source_hash: e25f05ca47184068b87f0bf8b7dea1c427f4ed48edde170a74888d586b8a606d
     source_path: start/bootstrapping.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 啟動設定是 **首次執行** 的準備流程，會準備代理程式工作區並收集身分詳細資料。它會在入門設定之後、代理程式第一次啟動時發生。

@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 6a169abafa682e99d2cd89dbcc9a738790d7fdfa7ba204f415baac35d6df4a2f
     source_path: start/wizard-cli-automation.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 使用 `--non-interactive` 來自動化 `openclaw onboard`。

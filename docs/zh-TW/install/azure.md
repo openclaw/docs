@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7ab1b7d09dd66c495983aebd4766ce760d659cc6f362bbcd999d1c1345ae38f7
     source_path: install/azure.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 本指南會使用 Azure CLI 設定 Azure Linux VM、套用 Network Security Group (NSG) 強化、設定 Azure Bastion 以便 SSH 存取，並安裝 OpenClaw。

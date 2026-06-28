@@ -12,6 +12,7 @@ x-i18n:
     source_hash: d0a2dfe4261ab4bc5d234cedf9dff41fbbfbbad8914c6c9c43bc76e8694d99d4
     source_path: tools/minimax-search.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw 透過 MiniMax Token Plan 搜尋 API，支援 MiniMax 作為 `web_search` 提供者。它會回傳結構化搜尋結果，包含標題、URL、摘要片段與相關查詢。

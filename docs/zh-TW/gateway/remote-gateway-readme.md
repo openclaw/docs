@@ -9,6 +9,7 @@ x-i18n:
     source_hash: fccc75e672bf3295c335fc4d2f610e9cbb3f1882edd12ffb9d009120291bd2d9
     source_path: gateway/remote-gateway-readme.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 > 此內容已合併至[遠端存取](/zh-TW/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent)。請參閱該頁面的最新指南。

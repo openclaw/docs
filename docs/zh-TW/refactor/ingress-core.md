@@ -13,6 +13,7 @@ x-i18n:
     source_hash: 1fdf1e7c9636d02c48c4b5d2b4a51470317dd64e2270c7fae779777c0d787afc
     source_path: refactor/ingress-core.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Ingress 核心刪除計畫

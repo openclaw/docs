@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 9d591aa24a5477fd9fe69b7a0dc44b204d28ea0c2f89e6dfef66f9ceb76da34d
     source_path: providers/deepgram.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Deepgram 是語音轉文字 API。在 OpenClaw 中，它透過 `tools.media.audio` 用於傳入音訊/語音訊息轉錄，並透過 `plugins.entries.voice-call.config.streaming` 用於 Voice Call 串流 STT。

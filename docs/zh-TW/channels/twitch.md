@@ -11,6 +11,7 @@ x-i18n:
     source_hash: c0d5f16d1369e2783bec6e0c7b2d7bee8aae86f2a424b77b9adf14850de0f20b
     source_path: channels/twitch.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Twitch 透過 IRC 連線支援聊天。OpenClaw 會以 Twitch 使用者（機器人帳號）身分連線，以便在頻道中接收與傳送訊息。

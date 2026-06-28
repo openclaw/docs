@@ -8,6 +8,7 @@ x-i18n:
     source_hash: a277212ed680b7aeb9153d003bc084d2d0c918dc53f2f469c72f7fe5a881cfae
     source_path: automation/poll.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 此頁面已移至 [訊息工具](/zh-TW/cli/message)。請參閱 [訊息工具](/zh-TW/cli/message) 以取得輪詢文件。

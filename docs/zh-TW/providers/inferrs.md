@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 8352da589baaa3a193bb3a56d12ee1a50630346dda186898346e805844d22aa1
     source_path: providers/inferrs.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 [inferrs](https://github.com/ericcurtin/inferrs) 可以透過與 OpenAI 相容的 `/v1` API 提供本機模型。OpenClaw 可透過通用的 `openai-completions` 路徑與 `inferrs` 搭配使用。

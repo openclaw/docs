@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 8d11af55e30996a89e665b258604108a93f4c4271fbe4edfd1caf54864e40f01
     source_path: tools/multi-agent-sandbox-tools.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 每個多代理設定中的代理都可以覆寫全域沙盒和工具政策。本頁說明每代理設定、優先順序規則與範例。

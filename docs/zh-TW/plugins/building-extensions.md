@@ -10,6 +10,7 @@ x-i18n:
     source_hash: d687ccddfe7dcadf8bdd0fc903bf8a5da112902a8d23086b04da25df752facaf
     source_path: plugins/building-extensions.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 此頁面已移至 [建構 Plugin](/zh-TW/plugins/building-plugins)。

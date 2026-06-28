@@ -11,6 +11,7 @@ x-i18n:
     source_hash: e00dd963257cd40235ebf8375ddbc1ba0344b9b3a82886fbf0fcf975390c27f2
     source_path: tools/kimi-search.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw 支援 Kimi 作為 `web_search` 提供者，使用 Moonshot 網頁搜尋產生附有引用的 AI 合成答案。

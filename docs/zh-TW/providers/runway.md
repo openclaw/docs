@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 51980217868c6d2f168f897106f81ea38dfcfde5265b14e394d4e232324a46b7
     source_path: providers/runway.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw 隨附一個用於託管影片生成的 `runway` 提供者。此 Plugin 預設啟用，並針對 `videoGenerationProviders` 合約註冊 `runway` 提供者。

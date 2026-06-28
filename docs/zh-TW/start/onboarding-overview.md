@@ -12,6 +12,7 @@ x-i18n:
     source_hash: f9b375b9090250992b9deead25ae6502592cb63c9774204782b2d4f69d8f3395
     source_path: start/onboarding-overview.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw 有兩種上手設定路徑。兩者都會設定驗證、Gateway，以及

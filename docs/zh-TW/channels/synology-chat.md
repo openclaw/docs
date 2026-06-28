@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 1f1946425fa6e7a071b03d212854476dc2c0af98097f38da93d3711e5a5c7e96
     source_path: channels/synology-chat.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 狀態：使用 Synology Chat Webhook 的隨附 Plugin 直接訊息通道。

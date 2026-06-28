@@ -13,6 +13,7 @@ x-i18n:
     source_hash: 78841d87fe749aa5b04a967218396df1c1a7884c5767b09215c96aee34fa2014
     source_path: concepts/commitments.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 承諾是短期存在的後續追蹤記憶。啟用後，OpenClaw 可以

@@ -8,6 +8,7 @@ x-i18n:
     source_hash: e7784858f6d2594a1d6019435b2a5a1647e12f5de6329198db9539e325f73737
     source_path: automation/troubleshooting.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 此頁面已移至[排程任務](/zh-TW/automation/cron-jobs#troubleshooting)。請參閱[排程任務](/zh-TW/automation/cron-jobs#troubleshooting)以取得疑難排解文件。

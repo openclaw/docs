@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7b0ff6c4ee46005aeac1612ea40f1ce3d5824aa507d0842788dbf4bffbaccfcc
     source_path: network.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 此中心連結 OpenClaw 如何連線、配對，以及在 localhost、LAN 與 tailnet 之間保護裝置安全的核心文件。

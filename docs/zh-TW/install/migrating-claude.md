@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 1b44eda85f3a3714d7d360d04fdd2c99a692fa6491f12e73847c5f08d702a62c
     source_path: install/migrating-claude.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw 透過內建的 Claude 遷移提供者匯入本機 Claude 狀態。提供者會在變更狀態前預覽每個項目，在計畫與報告中遮蔽密鑰，並在套用前建立經驗證的備份。

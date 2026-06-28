@@ -12,6 +12,7 @@ x-i18n:
     source_hash: b7948a26cc898e125d445e9ae091704f5cf442266d29e712c0dcedbe0dc0cce7
     source_path: providers/volcengine.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Volcengine provider 可存取託管在 Volcano Engine 上的 Doubao 模型與第三方模型，並針對一般與程式碼工作負載提供不同端點。同一個內建 Plugin 也可以將 Volcengine Speech 註冊為 TTS provider。

@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7f53e1292d9e5b402186c48c777e7e665c790981a64679c783ae8d8a1f170ee1
     source_path: gateway/discovery.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw 有兩個表面上看起來相似、但實際上不同的問題：

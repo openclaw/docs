@@ -11,6 +11,7 @@ x-i18n:
     source_hash: ced5c9acd13567b2e337611c5dd6428d1c732af30d8d0077e2965d9777b9e6a3
     source_path: reference/templates/IDENTITY.dev.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # IDENTITY.md - 代理程式身分

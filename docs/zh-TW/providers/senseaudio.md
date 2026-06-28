@@ -11,6 +11,7 @@ x-i18n:
     source_hash: f53af21c746cdd44c71485cbad669f4a01a6e5be956675c73831e7b5f15df8c4
     source_path: providers/senseaudio.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 SenseAudio 可透過 OpenClaw 共享的 `tools.media.audio` 管線，轉錄傳入的音訊與語音留言附件。OpenClaw 會將 multipart 音訊傳送到相容於 OpenAI 的轉錄端點，並將傳回的文字注入為 `{{Transcript}}` 加上一個 `[Audio]` 區塊。

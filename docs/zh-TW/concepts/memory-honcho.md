@@ -11,6 +11,7 @@ x-i18n:
     source_hash: d77af5c7281a4abafc184e426b1c37205a6d06a196b50353c1abbf67cc93bb97
     source_path: concepts/memory-honcho.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 [Honcho](https://honcho.dev) 為 OpenClaw 加入 AI 原生記憶。它會將對話持久化到專用服務，並隨時間建立使用者與代理模型，讓你的代理取得跨工作階段的脈絡，超越工作區 Markdown 檔案所能提供的範圍。

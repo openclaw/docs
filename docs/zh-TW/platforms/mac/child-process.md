@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 543327024f8c635d74ac656923e8e745dc47ca9df0aba5ec51215bd186db2b35
     source_path: platforms/mac/child-process.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 macOS app 預設會**透過 launchd 管理 Gateway**，不會將 Gateway 生成為子行程。它會先嘗試連接到已在設定連接埠上執行的 Gateway；如果無法連線，則會透過外部 `openclaw` CLI 啟用 launchd 服務（沒有嵌入式執行階段）。這能提供可靠的登入時自動啟動，以及當機時重新啟動。

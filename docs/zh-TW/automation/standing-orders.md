@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 3a51baa7aca31cb34b682983374d4d551ed6ab57ae54a5c63e7d044bffeef756
     source_path: automation/standing-orders.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 長期指令會授予你的代理程式針對已定義方案的**永久操作權限**。你不必每次都給出個別任務指示，而是以明確範圍、觸發條件與升級規則來定義方案，代理程式便會在這些邊界內自主執行。

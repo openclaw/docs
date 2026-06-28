@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 91aab7c105643d8e5d07d89cd5ab176f0a40cd3d23e2b20b3986cbf76f575d64
     source_path: tools/elevated.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 當代理在沙盒內執行時，它的 `exec` 命令會被限制在沙盒環境中。**Elevated 模式**讓代理改為跳出沙盒，並在沙盒外執行命令，同時可設定核准閘門。

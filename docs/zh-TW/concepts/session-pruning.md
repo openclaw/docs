@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 3ea07f0ae23076906e2ff0246ac75813572f98cffa50afddb6a6b0af8964c4a9
     source_path: concepts/session-pruning.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 工作階段修剪會在每次 LLM 呼叫前，從上下文中裁剪**舊的工具結果**。它會減少累積工具輸出（執行結果、檔案讀取、搜尋結果）造成的上下文膨脹，而不會重寫一般對話文字。

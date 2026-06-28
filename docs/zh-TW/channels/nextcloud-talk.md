@@ -10,6 +10,7 @@ x-i18n:
     source_hash: e4b3b2d074cc8d3c19223dbb0c306c6861717d0f35e638e3aab04b03647fd248
     source_path: channels/nextcloud-talk.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Status：內建 Plugin（Webhook 機器人）。支援直接訊息、聊天室、反應和 Markdown 訊息。
