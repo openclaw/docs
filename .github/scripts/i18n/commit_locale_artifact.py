@@ -82,10 +82,18 @@ def ensure_base_current(base_source_sha: str, locale: str) -> bool:
 
 def has_locale_changes(locale: str) -> bool:
     result = run(
-        ["git", "status", "--porcelain", "--untracked-files=all", "--", f"docs/{locale}", f"docs/.i18n/{locale}.tm.jsonl"],
+        ["git", "status", "--porcelain", "--untracked-files=all", "--", *locale_pathspecs(locale)],
         check=True,
     )
     return bool(result.stdout.strip())
+
+
+def locale_pathspecs(locale: str) -> list[str]:
+    tm_path = f"docs/.i18n/{locale}.tm.jsonl"
+    paths = [f"docs/{locale}"]
+    if Path(tm_path).exists() or run(["git", "ls-files", "--error-unmatch", tm_path], check=False).returncode == 0:
+        paths.append(tm_path)
+    return paths
 
 
 def pending_allowed(locale: str, locale_slug: str, shard_index: str, shard_total: str) -> set[str]:
@@ -122,7 +130,7 @@ def artifact_allowed(locale: str, artifact_dir: str) -> set[str]:
 
 
 def enforce_canary_scope(locale: str, allowed: set[str]) -> None:
-    status = git_stdout(["status", "--porcelain", "--untracked-files=all", "--", f"docs/{locale}", f"docs/.i18n/{locale}.tm.jsonl"])
+    status = git_stdout(["status", "--porcelain", "--untracked-files=all", "--", *locale_pathspecs(locale)])
     changed = {line[3:] for line in status.splitlines() if line.strip()}
     bad = sorted(path for path in changed if path not in allowed)
     if bad:
@@ -153,7 +161,7 @@ def commit_locale(
 
     git_stdout(["config", "user.name", "openclaw-docs-i18n[bot]"])
     git_stdout(["config", "user.email", "openclaw-docs-i18n[bot]@users.noreply.github.com"])
-    git_stdout(["add", f"docs/{locale}", f"docs/.i18n/{locale}.tm.jsonl"])
+    git_stdout(["add", *locale_pathspecs(locale)])
     git_stdout(["commit", "-m", f"chore(i18n): refresh {locale} translations"])
 
     for attempt in range(1, attempts + 1):

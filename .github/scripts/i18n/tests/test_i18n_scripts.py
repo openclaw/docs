@@ -620,6 +620,17 @@ class I18NScriptTests(unittest.TestCase):
                 allowed = commit_locale_artifact.artifact_allowed("fr", str(artifact))
                 commit_locale_artifact.enforce_canary_scope("fr", allowed)
 
+    def test_locale_pathspecs_allow_new_locale_without_tm(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            init_repo(repo)
+            (repo / "docs/hi").mkdir(parents=True)
+            (repo / "docs/hi/index.md").write_text("# Hindi\n", encoding="utf-8")
+
+            with chdir(repo):
+                self.assertEqual(["docs/hi"], commit_locale_artifact.locale_pathspecs("hi"))
+                self.assertTrue(commit_locale_artifact.has_locale_changes("hi"))
+
     def test_canary_commit_scope_rejects_unrelated_locale_deletes_not_in_artifact(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             repo = Path(tmp)
