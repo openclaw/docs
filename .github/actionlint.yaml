@@ -3,3 +3,11 @@ self-hosted-runner:
     - crabbox
     - openclaw
     - docs
+
+paths:
+  .github/workflows/r2-pages.yml:
+    ignore:
+      # GitHub added concurrency `queue: max` on 2026-05-07, but actionlint
+      # 1.7.11 has not learned the key yet. Keep this scoped to R2 Pages.
+      # https://github.blog/changelog/2026-05-07-github-actions-concurrency-groups-now-allow-larger-queues/
+      - 'unexpected key "queue" for "concurrency" section'

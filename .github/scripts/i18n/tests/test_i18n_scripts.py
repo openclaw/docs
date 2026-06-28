@@ -135,7 +135,7 @@ class I18NScriptTests(unittest.TestCase):
             stdout=subprocess.PIPE,
         ).stdout.splitlines()
         changed_paths = changed + untracked
-        allowed_docs_paths = {"docs/.i18n/translation-workflow.md"}
+        allowed_docs_paths = {"docs/.i18n/translation-workflow.md", "docs/.i18n/translation-ci-temporary-todo.md"}
         generated_docs = [
             path
             for path in changed_paths
@@ -192,10 +192,17 @@ class I18NScriptTests(unittest.TestCase):
             self.assertIn(f"translate-batch-{index}:", text)
             self.assertIn("needs.translate-canary.result == 'success'", text)
             self.assertIn("inputs.canary_only != true", text)
+        for index in range(1, 6):
+            self.assertIn(f"needs.finalize-batch-{index}.result == 'success'", text)
         self.assertIn("artifact_role: canary", text)
         self.assertIn("canary_source_path: channels/line.md", text)
         self.assertIn("canary_live_path: channels/line", text)
         self.assertIn("canary_expected_h1: LINE", text)
+        self.assertIn("batch_1_locales:", text)
+        self.assertIn("shard_index: ${{ matrix.shard_index }}", text)
+        self.assertIn("shard_total: ${{ matrix.shard_total }}", text)
+        self.assertIn("commit_locale: false", text)
+        self.assertIn("translate-locale-finalize-reusable.yml", text)
         self.assertRegex(text, r"translate-canary:[\s\S]*?artifact_role: canary[\s\S]*?commit_locale: true")
         self.assertIn("inputs.commit_locale || inputs.artifact_role == 'canary'", reusable)
         self.assertIn("inputs.artifact_role == 'canary' || steps.apply.outputs.changed_count != '0'", reusable)
@@ -224,12 +231,20 @@ class I18NScriptTests(unittest.TestCase):
         self.assertIn('echo "I18N_SCRIPT_DIR=${I18N_SCRIPT_DIR}" >> "$GITHUB_ENV"', finalize_reusable)
         self.assertIn("ref: ${{ github.workflow_sha }}", finalize_reusable)
         self.assertIn('python "${I18N_SCRIPT_DIR}/dispatch_r2_pages.py"', finalize_reusable)
+        locale_finalize_reusable = (REPO_ROOT / ".github/workflows/translate-locale-finalize-reusable.yml").read_text(encoding="utf-8")
+        self.assertIn("Download locale shard artifacts", locale_finalize_reusable)
+        self.assertIn('python "${I18N_SCRIPT_DIR}/apply_artifacts.py"', locale_finalize_reusable)
+        self.assertIn('python "${I18N_SCRIPT_DIR}/commit_locale_artifact.py"', locale_finalize_reusable)
+        self.assertIn('python "${I18N_SCRIPT_DIR}/dispatch_r2_pages.py"', locale_finalize_reusable)
         self.assertIn("provider-preflight:", text)
         self.assertIn("Translate Full completed with failed or cancelled work", text)
         r2_pages = (REPO_ROOT / ".github/workflows/r2-pages.yml").read_text(encoding="utf-8")
+        actionlint_config = (REPO_ROOT / ".github/actionlint.yaml").read_text(encoding="utf-8")
         self.assertIn("- locale", r2_pages)
         self.assertIn("- page", r2_pages)
-        self.assertRegex(r2_pages, r"group: r2-pages\s+cancel-in-progress: false")
+        self.assertRegex(r2_pages, r"group: r2-pages\s+queue: max\s+cancel-in-progress: false")
+        self.assertIn(".github/workflows/r2-pages.yml:", actionlint_config)
+        self.assertIn('unexpected key "queue" for "concurrency" section', actionlint_config)
         self.assertIn("run-name: R2 Pages", r2_pages)
         self.assertIn("request_id:", r2_pages)
         self.assertIn("Fail stale scoped translation deploy", r2_pages)
@@ -251,19 +266,41 @@ class I18NScriptTests(unittest.TestCase):
         self.assertFalse(prepare.incremental_should_translate_paths(["docs/.i18n/glossary.fr.json"]))
         self.assertTrue(prepare.incremental_should_translate_paths(["docs/.i18n/glossary.fr.json", "docs/guide/setup.mdx"]))
 
+    def test_incremental_workflow_schedules_all_expected_finalizer_locales(self) -> None:
+        text = (REPO_ROOT / ".github/workflows/translate-incremental.yml").read_text(encoding="utf-8")
+
+        for locale, slug in apply_artifacts.parse_expected(apply_artifacts.DEFAULT_EXPECTED_LOCALES).items():
+            self.assertIn(f"locale: {slug}", text)
+            self.assertIn(f"locale_slug: {locale}", text)
+            self.assertIn(f'!docs/{slug}/**', text)
+
     def test_full_plan_all_uses_canary_and_small_batches(self) -> None:
-        result = plan_full.plan_full("all", 4)
+        result = plan_full.plan_full("all", 4, FIXTURES / "pending-docs" / "docs")
         self.assertEqual("zh-CN", result["canary"]["locale"])
         self.assertEqual(5, len(result["batches"]))
-        self.assertLessEqual(max(len(batch) for batch in result["batches"]), 4)
+        self.assertEqual(1, result["shard_total"])
+        self.assertLessEqual(max(len(batch) for batch in result["batch_locales"]), 4)
         self.assertEqual(20, sum(len(batch) for batch in result["batches"]))
 
+    def test_full_plan_shards_large_batches_without_increasing_locale_batch_size(self) -> None:
+        result = plan_full.plan_full("ru", 4, FIXTURES / "pending-docs" / "docs", target_docs_per_shard=1, max_shards=4)
+
+        self.assertEqual(2, result["shard_total"])
+        self.assertEqual(
+            [
+                {"locale": "ru", "locale_slug": "ru", "shard_index": "0", "shard_total": "2"},
+                {"locale": "ru", "locale_slug": "ru", "shard_index": "1", "shard_total": "2"},
+            ],
+            result["batches"][0],
+        )
+        self.assertEqual([[{"locale": "ru", "locale_slug": "ru", "shard_total": "2"}]], result["batch_locales"])
+
     def test_full_plan_manual_single_locale_only_selects_target(self) -> None:
-        result = plan_full.plan_full("fr", 3)
+        result = plan_full.plan_full("fr", 3, FIXTURES / "pending-docs" / "docs")
         self.assertEqual({"locale": "fr", "locale_slug": "fr"}, result["canary"])
-        self.assertEqual([[{"locale": "fr", "locale_slug": "fr"}]], result["batches"])
+        self.assertEqual([[{"locale": "fr", "locale_slug": "fr", "shard_index": "0", "shard_total": "1"}]], result["batches"])
         with self.assertRaises(SystemExit):
-            plan_full.plan_full("xx", 3)
+            plan_full.plan_full("xx", 3, FIXTURES / "pending-docs" / "docs")
 
     def test_provider_preflight_classifies_key_model_and_quota_failures(self) -> None:
         self.assertEqual((False, "invalid_key", "OpenAI rejected the translation API key"), provider_preflight.classify_response(401, "{}"))
@@ -582,6 +619,17 @@ class I18NScriptTests(unittest.TestCase):
             with chdir(repo):
                 allowed = commit_locale_artifact.artifact_allowed("fr", str(artifact))
                 commit_locale_artifact.enforce_canary_scope("fr", allowed)
+
+    def test_locale_pathspecs_allow_new_locale_without_tm(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            init_repo(repo)
+            (repo / "docs/hi").mkdir(parents=True)
+            (repo / "docs/hi/index.md").write_text("# Hindi\n", encoding="utf-8")
+
+            with chdir(repo):
+                self.assertEqual(["docs/hi"], commit_locale_artifact.locale_pathspecs("hi"))
+                self.assertTrue(commit_locale_artifact.has_locale_changes("hi"))
 
     def test_canary_commit_scope_rejects_unrelated_locale_deletes_not_in_artifact(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -1004,6 +1052,33 @@ class I18NScriptTests(unittest.TestCase):
             self.assertEqual([], summary.successful)
             self.assertEqual(["fr: no artifact"], summary.skipped)
 
+    def test_full_summary_aggregates_locale_shard_artifacts(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            artifacts = Path(tmp)
+            for index, changed_count in enumerate([2, 3]):
+                self._write_artifact(
+                    artifacts,
+                    f"fr-s{index}of2",
+                    metadata={
+                        "artifact_role": "locale",
+                        "failed_reason": "",
+                        "locale": "fr",
+                        "locale_slug": "fr",
+                        "mode": "full",
+                        "shard_index": index,
+                        "shard_total": 2,
+                        "source_sha": "source-a",
+                        "changed_count": changed_count,
+                        "deleted_count": 1,
+                    },
+                )
+
+            summary = summarize_full.summarize_full(["fr"], artifacts, "success", "success")
+
+            self.assertEqual(["fr: changed=5 deleted=2"], summary.successful)
+            self.assertEqual([], summary.failed)
+            self.assertEqual([], summary.skipped)
+
     def test_apply_artifacts_applies_normal_fixture(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             repo = self._repo_with_source(tmp)
@@ -1045,6 +1120,59 @@ class I18NScriptTests(unittest.TestCase):
             self.assertEqual(0, result["incomplete_count"])
             self.assertTrue((repo / "docs/fr/index.md").exists())
             self.assertIn("Index FR", (repo / "docs/fr/index.md").read_text(encoding="utf-8"))
+
+    def test_apply_artifacts_applies_all_locale_shards_together(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = self._repo_with_source(tmp)
+            (repo / "docs/guide").mkdir()
+            (repo / "docs/guide/setup.md").write_text("# Setup\n", encoding="utf-8")
+            run_git(repo, "add", ".")
+            run_git(repo, "commit", "-m", "add source")
+            artifacts = repo / ".openclaw-sync/i18n-artifacts"
+            self._write_artifact(
+                artifacts,
+                "fr-s0of2",
+                metadata={
+                    "failed_reason": "",
+                    "locale": "fr",
+                    "locale_slug": "fr",
+                    "mode": "full",
+                    "shard_index": 0,
+                    "shard_total": 2,
+                    "source_sha": "source-a",
+                },
+                changed=["docs/fr/index.md"],
+                payload={"docs/fr/index.md": "# Index FR\n"},
+            )
+            self._write_artifact(
+                artifacts,
+                "fr-s1of2",
+                metadata={
+                    "failed_reason": "",
+                    "locale": "fr",
+                    "locale_slug": "fr",
+                    "mode": "full",
+                    "shard_index": 1,
+                    "shard_total": 2,
+                    "source_sha": "source-a",
+                },
+                changed=["docs/fr/guide/setup.md"],
+                payload={"docs/fr/guide/setup.md": "# Setup FR\n"},
+            )
+
+            with chdir(repo):
+                result = apply_artifacts.apply_artifacts(
+                    source_sha="source-a",
+                    mode="full",
+                    shard_total=2,
+                    expected_locales="fr=fr",
+                    artifacts_root=artifacts,
+                    skip_checkout_main=True,
+                )
+
+            self.assertEqual(0, result["incomplete_count"])
+            self.assertIn("Index FR", (repo / "docs/fr/index.md").read_text(encoding="utf-8"))
+            self.assertIn("Setup FR", (repo / "docs/fr/guide/setup.md").read_text(encoding="utf-8"))
 
     def test_apply_artifacts_reports_missing_metadata_fixture(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
