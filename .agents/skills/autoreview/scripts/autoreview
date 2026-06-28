@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 
-ENGINES = ("codex", "claude", "droid", "copilot", "pi", "opencode")
+ENGINES = ("codex", "claude", "droid", "copilot", "cursor-agent", "pi", "opencode")
 SAFE_GIT_CONFIG_ARGS = (
     "-c",
     "core.fsmonitor=false",
@@ -92,6 +92,7 @@ THINKING_LEVELS_BY_ENGINE = {
     "claude": {"low", "medium", "high", "xhigh", "max"},
     "droid": {"off", "none", "low", "medium", "high"},
     "copilot": set(),
+    "cursor-agent": set(),
     "pi": {"off", "minimal", "low", "medium", "high", "xhigh"},
     "opencode": {"minimal", "low", "medium", "high", "max"},
 }
@@ -1024,7 +1025,7 @@ def build_prompt(repo: Path, target: str, target_ref: str | None, bundle: str, e
         {json.dumps(SCHEMA, indent=2)}
         - Do not modify files.
         - Do not invoke nested reviewers or review tools.
-        - Forbidden nested review commands include: codex review, autoreview, claude review, oracle review.
+        - Forbidden nested review commands include: codex review, autoreview, claude review, cursor-agent, oracle review.
         - You may use read-only tools and web search to inspect files, dependency contracts, upstream docs, current behavior, and security implications.
         - Shell commands, if available, must be read-only inspection commands. Do not run tests, formatters, package installs, generators, network mutation commands, git mutation commands, or commands that write files.
         - Report only actionable defects introduced or exposed by this change.
@@ -1414,6 +1415,46 @@ def run_copilot(args: argparse.Namespace, repo: Path, prompt: str) -> str:
     return result.stdout
 
 
+def run_cursor_agent(args: argparse.Namespace, repo: Path, prompt: str) -> str:
+    if args.thinking:
+        raise SystemExit("--thinking is not supported by the cursor-agent engine")
+    if not args.tools:
+        raise SystemExit("--no-tools is not supported by the cursor-agent engine; use --engine claude --no-tools for a no-tools run")
+    if not args.web_search:
+        raise SystemExit("--no-web-search is not supported by the cursor-agent engine; use an engine with a CLI-level web-search disable switch")
+    with tempfile.TemporaryDirectory(prefix="autoreview-cursor-agent.") as tempdir:
+        # Trust only the helper-owned empty workspace, never the reviewed repo.
+        # Cursor may load trusted project hooks/config before model instructions apply.
+        cmd = [
+            resolve_command(args.cursor_agent_bin, repo),
+            "--print",
+            "--output-format",
+            "stream-json" if args.stream_engine_output else "json",
+            "--trust",
+            "--workspace",
+            tempdir,
+            "--mode",
+            "ask",
+            "--sandbox",
+            "enabled",
+        ]
+        if args.model:
+            cmd.extend(["--model", args.model])
+        result = run_with_heartbeat(
+            cmd,
+            Path(tempdir),
+            input_text=prompt,
+            label="cursor-agent",
+            stream_output=args.stream_engine_output,
+            stream_display=CursorAgentStreamDisplay() if args.stream_engine_output else None,
+            resolve_root=repo,
+            env=safe_engine_env(repo, [Path(cmd[0]).parent]),
+        )
+    if result.returncode != 0:
+        raise SystemExit(f"cursor-agent engine failed ({result.returncode})\n{result.stderr or result.stdout}")
+    return result.stdout
+
+
 def build_opencode_cmd(args: argparse.Namespace, repo: Path) -> list[str]:
     cmd = [
         resolve_command(args.opencode_bin, repo),
@@ -1601,6 +1642,41 @@ class ClaudeStreamDisplay:
     def visible(self, text: str) -> str:
         self.last_visible = time.monotonic()
         return text
+
+
+class CursorAgentStreamDisplay(ClaudeStreamDisplay):
+    def __call__(self, name: str, line: str) -> str | None:
+        if name != "stdout":
+            return line
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            return self.visible(line)
+        event_type = event.get("type")
+        if event_type == "system":
+            return self.visible(f"cursor-agent session: {event.get('session_id', '<unknown>')}\n")
+        if event_type == "assistant":
+            return self.assistant_message(event)
+        if event_type == "result":
+            return self.visible(self.flush_hidden() + self.result_summary(event))
+        return self.hidden_activity()
+
+    def result_summary(self, event: dict[str, Any]) -> str:
+        usage = event.get("usage")
+        fields: list[str] = []
+        if isinstance(usage, dict):
+            for key in ("inputTokens", "cacheReadTokens", "cacheWriteTokens", "outputTokens"):
+                value = usage.get(key)
+                if isinstance(value, int):
+                    fields.append(f"{key}={value}")
+        return "cursor-agent usage: " + " ".join(fields) + "\n" if fields else "cursor-agent turn completed\n"
+
+    def flush_hidden(self) -> str:
+        if not self.hidden_events:
+            return ""
+        count = self.hidden_events
+        self.hidden_events = 0
+        return f"cursor-agent activity: {count} hidden tool/status events\n"
 
 
 def format_codex_usage(usage: dict[str, Any]) -> str:
@@ -1904,6 +1980,26 @@ print(json.dumps({"type": "text", "part": {"type": "text", "text": json.dumps(re
 '''
 
 
+def fake_cursor_agent_script() -> str:
+    return r'''#!/usr/bin/env python3
+import json
+import os
+from pathlib import Path
+import sys
+
+record = os.environ["AUTOREVIEW_FAKE_RECORD"]
+args = sys.argv[1:]
+Path(record).write_text(json.dumps({"argv": args, "cwd": os.getcwd(), "stdin": sys.stdin.read()}))
+report = {
+    "findings": [],
+    "overall_correctness": "patch is correct",
+    "overall_explanation": "fake cursor-agent clean",
+    "overall_confidence": 0.99,
+}
+print(json.dumps({"type": "result", "subtype": "success", "result": json.dumps(report)}))
+'''
+
+
 def self_test_engine_isolation() -> int:
     with tempfile.TemporaryDirectory(prefix="autoreview-isolation-test.") as tempdir:
         root = Path(tempdir)
@@ -1914,6 +2010,7 @@ def self_test_engine_isolation() -> int:
         claude_bin = root / "claude"
         pi_bin = root / "pi"
         opencode_bin = root / "opencode"
+        cursor_agent_bin = root / "cursor-agent"
         record_path = root / "record.json"
         pi_invocations_path = root / "pi-invocations.jsonl"
         hostile_ps_path = root / "hostile-ps-ran"
@@ -1921,11 +2018,13 @@ def self_test_engine_isolation() -> int:
         write_executable(claude_bin, fake_claude_script())
         write_executable(pi_bin, fake_pi_script())
         write_executable(opencode_bin, fake_opencode_script())
+        write_executable(cursor_agent_bin, fake_cursor_agent_script())
         write_executable(repo / "ps", f"#!/usr/bin/env python3\nfrom pathlib import Path\nPath({str(hostile_ps_path)!r}).write_text('ran')\n")
 
         args = argparse.Namespace(
             codex_bin=str(codex_bin),
             claude_bin=str(claude_bin),
+            cursor_agent_bin=str(cursor_agent_bin),
             pi_bin=str(pi_bin),
             opencode_bin=str(opencode_bin),
             tools=True,
@@ -2036,6 +2135,32 @@ def self_test_engine_isolation() -> int:
                     raise SystemExit(f"opencode isolation self-test failed: {disabled_tool} tool not disabled")
             if hostile_ps_path.exists():
                 raise SystemExit("heartbeat metrics isolation self-test failed: repo-local ps executed")
+
+            run_cursor_agent(args, repo, "review hostile patch")
+            cursor_record = json.loads(record_path.read_text())
+            cursor_argv = cursor_record["argv"]
+            for required in [
+                "--print",
+                "--output-format",
+                "json",
+                "--trust",
+                "--workspace",
+                "--mode",
+                "ask",
+                "--sandbox",
+                "enabled",
+            ]:
+                if required not in cursor_argv:
+                    raise SystemExit(f"cursor-agent isolation self-test failed: missing {required}")
+            workspace = cursor_argv[cursor_argv.index("--workspace") + 1]
+            if Path(workspace).resolve() == repo.resolve():
+                raise SystemExit("cursor-agent isolation self-test failed: trusted reviewed repo")
+            if Path(cursor_record["cwd"]).resolve() == repo.resolve():
+                raise SystemExit("cursor-agent isolation self-test failed: review ran inside hostile repo")
+            if cursor_record["stdin"] != "review hostile patch":
+                raise SystemExit("cursor-agent isolation self-test failed: prompt not delivered over stdin")
+            if "review hostile patch" in cursor_argv:
+                raise SystemExit("cursor-agent isolation self-test failed: prompt leaked into argv")
 
             os.environ["AUTOREVIEW_FAKE_CLAUDE_VERSION"] = "2.1.168 (Claude Code)"
             try:
@@ -2162,11 +2287,33 @@ def parse_json_candidate(text: str) -> Any | None:
     try:
         parsed = json.loads(stripped)
     except json.JSONDecodeError:
-        return None
+        return parse_embedded_json_object(stripped)
     if isinstance(parsed, str) and parsed != text:
         nested = parse_json_candidate(parsed)
         return nested if nested is not None else parsed
     return parsed
+
+
+def parse_embedded_json_object(text: str) -> Any | None:
+    decoder = json.JSONDecoder()
+    candidates: list[Any] = []
+    for index, char in enumerate(text):
+        if char not in "[{":
+            continue
+        try:
+            parsed, _end = decoder.raw_decode(text[index:])
+        except json.JSONDecodeError:
+            continue
+        if isinstance(parsed, str):
+            nested = parse_json_candidate(parsed)
+            if nested is not None:
+                candidates.append(nested)
+        else:
+            candidates.append(parsed)
+    for candidate in reversed(candidates):
+        if isinstance(candidate, dict) and "findings" in candidate:
+            return candidate
+    return candidates[-1] if candidates else None
 
 
 def _assert_opencode_permission(web_search: bool) -> None:
@@ -2479,7 +2626,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--base")
     parser.add_argument("--commit", default="HEAD")
     parser.add_argument("--engine", choices=ENGINES, default=os.environ.get("AUTOREVIEW_ENGINE", "codex"))
-    parser.add_argument("--reviewers", help="Comma-separated review panel, e.g. codex,claude,pi or codex:gpt-5.5:high.")
+    parser.add_argument("--reviewers", help="Comma-separated review panel, e.g. codex,claude,pi,cursor-agent or codex:gpt-5.5:high.")
     parser.add_argument("--panel", action="store_true", help="Run a Codex/Claude review panel unless --engine changes the first reviewer.")
     parser.add_argument(
         "--model",
@@ -2497,9 +2644,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--claude-bin", default=os.environ.get("CLAUDE_BIN", "claude"))
     parser.add_argument("--droid-bin", default=os.environ.get("DROID_BIN", "droid"))
     parser.add_argument("--copilot-bin", default=os.environ.get("COPILOT_BIN", "copilot"))
+    parser.add_argument("--cursor-agent-bin", default=os.environ.get("CURSOR_AGENT_BIN", "cursor-agent"))
     parser.add_argument("--opencode-bin", default=os.environ.get("OPENCODE_BIN", "opencode"))
     parser.add_argument("--pi-bin", default=os.environ.get("PI_BIN", "pi"))
-    parser.add_argument("--no-tools", dest="tools", action="store_false", default=True, help="Disable tools for engines that support it. Codex, copilot, and opencode reject no-tools review.")
+    parser.add_argument("--no-tools", dest="tools", action="store_false", default=True, help="Disable tools for engines that support it. Codex, copilot, cursor-agent, and opencode reject no-tools review.")
     parser.add_argument("--self-test-opencode-jsonl-parser", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("--self-test-opencode-isolation", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("--self-test-opencode-real-project-isolation", action="store_true", help=argparse.SUPPRESS)
@@ -2520,7 +2668,7 @@ def parse_args() -> argparse.Namespace:
         "--stream-engine-output",
         action="store_true",
         default=os.environ.get("AUTOREVIEW_STREAM_ENGINE_OUTPUT") == "1",
-        help="Stream review engine output while preserving buffered output for validation. Codex output is filtered to hide tool/file chatter.",
+        help="Stream review engine output while preserving buffered output for validation. Codex, Claude, and cursor-agent output is filtered to hide tool/file chatter.",
     )
     parser.add_argument("--parallel-tests", help="Run a test command concurrently with review; failure fails the helper.")
     parser.add_argument(
@@ -2552,6 +2700,8 @@ def run_engine(args: argparse.Namespace, repo: Path, prompt: str) -> str:
         return run_droid(args, repo, prompt)
     if args.engine == "copilot":
         return run_copilot(args, repo, prompt)
+    if args.engine == "cursor-agent":
+        return run_cursor_agent(args, repo, prompt)
     if args.engine == "pi":
         return run_pi(args, repo, prompt)
     if args.engine == "opencode":
@@ -2566,7 +2716,8 @@ def env_defaults_for(env_suffix: str) -> tuple[str | None, dict[str, str]]:
         global_value = global_value.strip() or None
     per_engine: dict[str, str] = {}
     for engine in ENGINES:
-        value = os.environ.get(f"AUTOREVIEW_{engine.upper()}_{env_key}")
+        engine_key = engine.upper().replace("-", "_")
+        value = os.environ.get(f"AUTOREVIEW_{engine_key}_{env_key}")
         if value is None:
             continue
         value = value.strip()
@@ -2801,6 +2952,7 @@ def self_test_config_defaults() -> None:
         "AUTOREVIEW_MODEL",
         "AUTOREVIEW_CODEX_MODEL",
         "AUTOREVIEW_CLAUDE_MODEL",
+        "AUTOREVIEW_CURSOR_AGENT_MODEL",
         "AUTOREVIEW_THINKING",
         "AUTOREVIEW_CODEX_THINKING",
         "AUTOREVIEW_CLAUDE_THINKING",
@@ -2828,6 +2980,11 @@ def self_test_config_defaults() -> None:
             raise SystemExit(f"self-test config defaults failed: global model={global_only.model!r}")
         if global_only.thinking != "low":
             raise SystemExit(f"self-test config defaults failed: global thinking={global_only.thinking!r}")
+        os.environ.pop("AUTOREVIEW_THINKING")
+        os.environ["AUTOREVIEW_CURSOR_AGENT_MODEL"] = "env-cursor-model"
+        cursor_agent = reviewer_args(reviewer_test_args(engine="cursor-agent"))[0]
+        if cursor_agent.model != "env-cursor-model":
+            raise SystemExit(f"self-test config defaults failed: cursor-agent model={cursor_agent.model!r}")
         cli = reviewer_args(reviewer_test_args(engine="codex", model=["cli-model"], thinking=["medium"]))[0]
         if cli.model != "cli-model" or cli.thinking != "medium":
             raise SystemExit("self-test config defaults failed: CLI values should override env")

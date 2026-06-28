@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import runpy
 import subprocess
@@ -203,6 +204,88 @@ class AutoreviewHardeningTests(unittest.TestCase):
 
         self.assertIn("--allow-tool=web_fetch", captured[-1])
         self.assertIn("--allow-all-urls", captured[-1])
+
+    def test_cursor_agent_runs_from_helper_owned_workspace(self) -> None:
+        captured: list[dict[str, object]] = []
+
+        def fake_run_with_heartbeat(
+            cmd: list[str],
+            cwd: Path,
+            **kwargs: object,
+        ) -> subprocess.CompletedProcess[str]:
+            captured.append({"cmd": cmd, "cwd": cwd, **kwargs})
+            report = {
+                "findings": [],
+                "overall_correctness": "patch is correct",
+                "overall_explanation": "ok",
+                "overall_confidence": 0.9,
+            }
+            return subprocess.CompletedProcess(
+                cmd,
+                0,
+                json.dumps({"type": "result", "result": json.dumps(report)}),
+                "",
+            )
+
+        self.helper["run_cursor_agent"].__globals__["run_with_heartbeat"] = fake_run_with_heartbeat
+        self.helper["run_cursor_agent"].__globals__["resolve_command"] = (
+            lambda command, repo: f"/resolved/{command}"
+        )
+        args = argparse.Namespace(
+            cursor_agent_bin="cursor-agent",
+            thinking=None,
+            tools=True,
+            model=None,
+            web_search=True,
+            stream_engine_output=False,
+        )
+
+        self.helper["run_cursor_agent"](args, Path("/repo"), "prompt")
+
+        record = captured[-1]
+        cmd = record["cmd"]
+        cwd = record["cwd"]
+        self.assertIsInstance(cmd, list)
+        self.assertIsInstance(cwd, Path)
+        self.assertIn("--trust", cmd)
+        self.assertIn("--workspace", cmd)
+        workspace = Path(cmd[cmd.index("--workspace") + 1])
+        self.assertEqual(workspace, cwd)
+        self.assertNotEqual(cwd, Path("/repo"))
+        self.assertIn("--mode", cmd)
+        self.assertEqual(cmd[cmd.index("--mode") + 1], "ask")
+        self.assertIn("--sandbox", cmd)
+        self.assertEqual(cmd[cmd.index("--sandbox") + 1], "enabled")
+        self.assertEqual(record["input_text"], "prompt")
+        self.assertNotIn("prompt", cmd)
+        self.assertEqual(record["resolve_root"], Path("/repo"))
+
+    def test_cursor_agent_rejects_no_web_search(self) -> None:
+        args = argparse.Namespace(
+            cursor_agent_bin="cursor-agent",
+            thinking=None,
+            tools=True,
+            model=None,
+            web_search=False,
+            stream_engine_output=False,
+        )
+
+        with self.assertRaisesRegex(SystemExit, "--no-web-search is not supported"):
+            self.helper["run_cursor_agent"](args, Path("/repo"), "prompt")
+
+    def test_extract_json_accepts_cursor_agent_preface_text(self) -> None:
+        report = {
+            "findings": [],
+            "overall_correctness": "patch is correct",
+            "overall_explanation": "ok",
+            "overall_confidence": 0.9,
+        }
+
+        parsed = self.helper["extract_json"](
+            "I checked the patch and will now return JSON.\n" + json.dumps(report)
+        )
+
+        self.assertEqual(parsed["overall_correctness"], "patch is correct")
 
 
 if __name__ == "__main__":
