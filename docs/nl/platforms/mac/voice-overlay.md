@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 5b30f50512e557bd5a50f0e4e8b7955a847b3b554694347d56638581fcda9514
     source_path: platforms/mac/voice-overlay.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Levenscyclus van de spraakoverlay (macOS)

@@ -10,6 +10,7 @@ x-i18n:
     source_hash: a17a753e5a79871deebeac745abb93efe784055f0159cad9540b68cf7784e75b
     source_path: plugins/reference/open-prose.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Open Prose Plugin

@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 855f9312790134f2d1da53ffbb106167c190155510a7bdef212b5d38c2fba0b3
     source_path: cli/directory.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # `openclaw directory`

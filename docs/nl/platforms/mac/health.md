@@ -10,6 +10,7 @@ x-i18n:
     source_hash: a7488b39b0eec013083f52e2798d719bec35780acad743a97f5646a6891810e5
     source_path: platforms/mac/health.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Gezondheidscontroles op macOS

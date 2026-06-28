@@ -12,6 +12,7 @@ x-i18n:
     source_hash: b7948a26cc898e125d445e9ae091704f5cf442266d29e712c0dcedbe0dc0cce7
     source_path: providers/volcengine.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 De Volcengine-provider geeft toegang tot Doubao-modellen en modellen van derden

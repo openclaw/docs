@@ -2,9 +2,9 @@
 read_when:
     - ClawHub CLI- of OpenClaw-registeropdrachten mislukken
     - Een pakket kan niet worden geïnstalleerd, gepubliceerd of bijgewerkt
-summary: Problemen met aanmelden bij ClawHub, installeren, publiceren, bijwerken en API-problemen oplossen.
+summary: Probleemoplossing voor aanmeldings-, installatie-, publicatie-, update- en API-problemen met ClawHub.
 x-i18n:
-    generated_at: "2026-06-28T07:42:49Z"
+    generated_at: "2026-06-28T08:04:38Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -13,15 +13,15 @@ x-i18n:
     workflow: 16
 ---
 
-# Probleemoplossing
+# Problemen oplossen
 
 ## `clawhub login` opent een browser maar wordt nooit voltooid
 
 De CLI start tijdens browserlogin een kortlevende lokale callbackserver.
 
-- Zorg dat je browser `http://127.0.0.1:<port>/callback` kan bereiken.
+- Zorg ervoor dat je browser `http://127.0.0.1:<port>/callback` kan bereiken.
 - Controleer lokale firewall-, VPN- en proxyregels als de callback nooit aankomt.
-- Maak in headless omgevingen een API-token aan in de ClawHub-webinterface en voer uit:
+- Maak in headless omgevingen een API-token aan in de ClawHub-web-UI en voer uit:
 
 ```bash
 clawhub login --token clh_...
@@ -30,21 +30,21 @@ clawhub login --token clh_...
 ## `whoami` of `publish` retourneert `Unauthorized` (401)
 
 - Meld je opnieuw aan met `clawhub login`.
-- Als je een aangepast configuratiepad gebruikt, controleer dan of `CLAWHUB_CONFIG_PATH` naar het
-  bestand wijst dat je huidige token bevat.
-- Als je een API-token gebruikt, controleer dan of het niet is ingetrokken in de webinterface.
+- Als je een aangepast configuratiepad gebruikt, controleer dan of `CLAWHUB_CONFIG_PATH` verwijst naar het
+  bestand dat je huidige token bevat.
+- Als je een API-token gebruikt, controleer dan of het niet is ingetrokken in de web-UI.
 
 ## Zoeken of installeren retourneert `Rate limit exceeded` (429)
 
-Lees de retry-informatie in het antwoord:
+Lees de retry-informatie in de response:
 
-- `Retry-After`: seconden om te wachten voordat je het opnieuw probeert.
-- `RateLimit-Limit`: de limiet die op dit verzoek is toegepast.
+- `Retry-After`: seconden wachten voordat je het opnieuw probeert.
+- `RateLimit-Limit`: de limiet die op deze request is toegepast.
 - `RateLimit-Remaining`: je exacte resterende budget wanneer de header aanwezig is. Bij `429` is dit `0`.
 - `RateLimit-Reset` of `X-RateLimit-Reset`: reset-timing.
 
-Als veel gebruikers één uitgaand IP-adres delen, kunnen anonieme IP-limieten worden geraakt, zelfs wanneer elke
-persoon slechts enkele verzoeken verstuurt. Meld je aan waar mogelijk en probeer het opnieuw na de
+Als veel gebruikers één egress-IP delen, kunnen anonieme IP-limieten worden bereikt, zelfs wanneer elke
+persoon maar een paar requests verstuurt. Meld je aan waar mogelijk en probeer het opnieuw na de
 gerapporteerde vertraging.
 
 ## Zoeken of installeren mislukt achter een proxy
@@ -59,28 +59,28 @@ clawhub search "my query"
 Ondersteunde namen zijn onder andere `HTTPS_PROXY`, `HTTP_PROXY`, `https_proxy` en
 `http_proxy`.
 
-## Een Skill verschijnt niet in zoekresultaten
+## Een Skill verschijnt niet in de zoekresultaten
 
-- Controleer de exacte slug of eigenaars-pagina als je die weet.
+- Controleer de exacte slug of eigenaarspagina als je die kent.
 - Controleer of de release openbaar is en niet wordt vastgehouden door scan of moderatie.
-- Als je eigenaar bent van de Skill, meld je dan aan en inspecteer deze:
+- Als jij de eigenaar van de Skill bent, meld je dan aan en inspecteer deze:
 
 ```bash
 clawhub inspect @openclaw/demo
 ```
 
-Diagnostiek die zichtbaar is voor de eigenaar kan de status van scan, upload-gate of moderatie verklaren.
+Diagnostiek die zichtbaar is voor de eigenaar kan de scan-, upload-gate- of moderatiestatus verklaren.
 
-## Publiceren mislukt omdat vereiste metadata ontbreken
+## Publiceren mislukt omdat vereiste metadata ontbreekt
 
 Controleer voor Skills de frontmatter van `SKILL.md`. Vereiste omgevingsvariabelen en
-tools moeten worden gedeclareerd, zodat gebruikers en scanners het pakket kunnen begrijpen.
+tools moeten worden gedeclareerd zodat gebruikers en scanners het pakket kunnen begrijpen.
 
 Controleer voor plugins de compatibiliteitsmetadata in `package.json`. Publicaties van code-plugins
 hebben OpenClaw-compatibiliteitsvelden nodig, zoals `openclaw.compat.pluginApi` en
 `openclaw.build.openclawVersion`.
 
-Bekijk eerst een preview van de publicatiepayload:
+Bekijk eerst een voorbeeld van de publish-payload:
 
 ```bash
 clawhub package publish <source> --family code-plugin --dry-run
@@ -88,39 +88,39 @@ clawhub package publish <source> --family code-plugin --dry-run
 
 ## Publiceren mislukt met een GitHub-eigenaar- of bronfout
 
-ClawHub gebruikt GitHub-identiteit en brontoeschrijving om pakketten te koppelen aan hun
-uitgevers.
+ClawHub gebruikt GitHub-identiteit en bronvermelding om pakketten aan hun
+publishers te koppelen.
 
-- Zorg dat je bent aangemeld met het GitHub-account dat eigenaar is van het pakket of het kan publiceren.
+- Zorg ervoor dat je bent aangemeld met het GitHub-account dat eigenaar is van het pakket of het kan publiceren.
 - Controleer of de bron-URL openbaar is of toegankelijk is voor ClawHub.
 - Gebruik voor GitHub-bronnen `owner/repo`, `owner/repo@ref` of een volledige GitHub-URL.
 
 ## Publiceren mislukt omdat een namespace is geclaimd of gereserveerd
 
-Als publiceren mislukt omdat de eigenaarshandle, org-namespace, pakket-scope, Skill-
+Als publiceren mislukt omdat de eigenaarshandle, organisatienamespace, pakketscope, Skill-
 slug of pakketnaam al is geclaimd of gereserveerd, controleer dan eerst of je
-publiceert met de eigenaar die overeenkomt met de namespace. Voor plugin-pakketten
+publiceert met de eigenaar die overeenkomt met de namespace. Voor pluginpakketten
 moeten scoped namen zoals `@example-org/example-plugin` worden gepubliceerd als de
 overeenkomende eigenaar `example-org`.
 
-Als je denkt dat jouw org, project of merk de rechtmatige namespace-eigenaar is, maar
+Als je denkt dat je organisatie, project of merk de rechtmatige namespace-eigenaar is maar
 je de huidige ClawHub-eigenaar niet kunt beheren, open dan een
 [Org / Namespace Claim-issue](https://github.com/openclaw/clawhub/issues/new?template=org-namespace-claim.yml)
 met openbaar, niet-gevoelig bewijs. Zie
-[Org- en namespaceclaims](/nl/clawhub/namespace-claims) voor richtlijnen voor bewijs en wat
+[Organisatie- en namespaceclaims](/nl/clawhub/namespace-claims) voor richtlijnen voor bewijs en wat
 je buiten openbare issues moet houden.
 
 ## `sync` zegt dat er geen Skills zijn gevonden
 
 `sync` zoekt naar mappen die `SKILL.md` of `skill.md` bevatten.
 
-Wijs het naar de roots die je wilt scannen:
+Richt het op de roots die je wilt scannen:
 
 ```bash
 clawhub sync --root /path/to/skills
 ```
 
-Bekijk eerst een preview als je niet zeker weet wat er wordt gepubliceerd:
+Bekijk eerst een voorbeeld als je niet zeker weet wat er wordt gepubliceerd:
 
 ```bash
 clawhub sync --all --dry-run --no-input
@@ -128,9 +128,9 @@ clawhub sync --all --dry-run --no-input
 
 ## `update` weigert vanwege lokale wijzigingen
 
-De lokale bestanden komen niet overeen met een versie die ClawHub kent. Kies één optie:
+De lokale bestanden komen niet overeen met een versie die ClawHub kent. Kies een optie:
 
-- Bewaar lokale bewerkingen en sla de update over.
+- Behoud lokale bewerkingen en sla de update over.
 - Overschrijf met de gepubliceerde versie:
 
 ```bash
@@ -139,7 +139,7 @@ clawhub update @openclaw/demo --force
 
 - Publiceer je bewerkte kopie als een nieuwe slug of fork.
 
-## Een plugin-installatie mislukt in OpenClaw
+## Een plugininstallatie mislukt in OpenClaw
 
 - Gebruik een expliciete ClawHub-bron:
 
@@ -153,11 +153,11 @@ openclaw plugins install clawhub:<package>
 - Als het pakket verborgen, vastgehouden of geblokkeerd is, is het mogelijk niet installeerbaar totdat
   de eigenaar het probleem oplost.
 
-## Openbare API-verzoeken mislukken
+## Openbare API-requests mislukken
 
-- Respecteer `429` retry-headers en cache openbare lijst-/zoekantwoorden.
-- Leid gebruikers terug naar de canonieke ClawHub-vermelding.
-- Spiegel geen verborgen, privé-, vastgehouden of door moderatie geblokkeerde inhoud buiten het
+- Respecteer `429`-retryheaders en cache openbare lijst-/zoekresponses.
+- Link gebruikers terug naar de canonieke ClawHub-vermelding.
+- Spiegel geen verborgen, privé-, vastgehouden of door moderatie geblokkeerde content buiten het
   openbare API-oppervlak.
 
-Zie [HTTP API](/nl/clawhub/http-api) voor endpointdetails.
+Zie [HTTP-API](/nl/clawhub/http-api) voor endpointdetails.

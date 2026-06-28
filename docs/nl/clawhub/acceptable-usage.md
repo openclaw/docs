@@ -1,13 +1,13 @@
 ---
 read_when:
     - Uploads controleren op misbruik of beleidsschendingen
-    - Moderatiedocumentatie of beoordelaarsrunbooks schrijven
-    - Bepalen of een skill moet worden verborgen of een gebruiker moet worden geband
+    - Documentatie voor moderatie of reviewer-runbooks schrijven
+    - Beslissen of een skill verborgen moet worden of een gebruiker geblokkeerd moet worden
 sidebarTitle: Acceptable Usage
-summary: 'Marketplacebeleid: wat ClawHub toestaat en wat het niet zal hosten.'
-title: Aanvaardbaar gebruik
+summary: 'Marketplacebeleid: wat ClawHub toestaat en wat het niet host.'
+title: Acceptabel gebruik
 x-i18n:
-    generated_at: "2026-06-28T07:41:39Z"
+    generated_at: "2026-06-28T08:00:47Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -16,102 +16,107 @@ x-i18n:
     workflow: 16
 ---
 
-# Acceptabel gebruik
+# Aanvaardbaar gebruik
 
-ClawHub host Skills, plugins, pakketten en marketplace-metadata voor OpenClaw.
+ClawHub host Skills, Plugins, pakketten en marktplaatsmetadata voor OpenClaw.
 Gebruik deze pagina om te bepalen of content of publicatiegedrag thuishoort op
 ClawHub.
 
-Deze regels gelden voor wat een vermelding doet, wat deze gebruikers vraagt uit te voeren, hoe deze
-zichzelf presenteert en hoe uitgevers ClawHub's oppervlakken voor ontdekking, installatie en
-vertrouwen gebruiken. Zie voor moderatiestatussen en accountstatus
+Deze regels gelden voor wat een vermelding doet, wat deze gebruikers vraagt uit
+te voeren, hoe deze zichzelf presenteert en hoe uitgevers de discovery-,
+installatie- en vertrouwensoppervlakken van ClawHub gebruiken. Zie voor moderatiestanden
+en accountstatus
 [Moderatie en accountveiligheid](/nl/clawhub/moderation). Zie voor auteursrecht of andere
 rechtenclaims [Verzoeken over contentrechten](/nl/clawhub/content-rights).
 
 ## Toegestane content
 
-ClawHub verwelkomt content die nuttig en begrijpelijk is, en te goeder trouw wordt
-gepubliceerd.
+ClawHub verwelkomt content die nuttig, begrijpelijk en te goeder trouw
+gepubliceerd is.
 
-| Categorie                                         | Toegestaan wanneer                                                                                                                      |
+| Categorie                                        | Toegestaan wanneer                                                                                                                |
 | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
-| Productiviteit voor ontwikkelaars                           | De vermelding gebruikers helpt software te bouwen, testen, migreren, debuggen, documenteren of beheren.                                               |
-| Workflows voor UI, data en automatisering               | De scope duidelijk is, vereiste referenties expliciet zijn, en risicovolle acties review-, dry-run-, preview- of bevestigingspaden bevatten. |
-| Defensieve beveiliging, moderatie en misbruikreview | De tool is gepresenteerd voor geautoriseerde review, bewijsmateriaal bewaart en grenzen voor menselijke goedkeuring duidelijk houdt.                          |
-| Persoonlijke of teamworkflows                       | De workflow toestemmingsgebaseerde accounts, transparante installatie en expliciete machtigingen gebruikt.                                            |
-| Onderhouden catalogi                              | Elke vermelding onderscheidend, nuttig, accuraat beschreven en redelijk onderhouden is.                                                |
+| Productiviteit voor ontwikkelaars                | De vermelding gebruikers helpt software te bouwen, testen, migreren, debuggen, documenteren of beheren.                           |
+| UI-, data- en automatiseringsworkflows           | De scope duidelijk is, vereiste inloggegevens expliciet zijn, en risicovolle acties beoordelings-, simulatie-, voorbeeldweergave- of bevestigingspaden bevatten. |
+| Defensieve beveiliging, moderatie en misbruikbeoordeling | De tool is gekaderd voor geautoriseerde beoordeling, bewijs bewaart en grenzen voor menselijke goedkeuring duidelijk houdt.        |
+| Persoonlijke of teamworkflows                    | De workflow accounts op basis van toestemming, transparante installatie en expliciete machtigingen gebruikt.                       |
+| Onderhouden catalogi                             | Elke vermelding onderscheidend, nuttig, nauwkeurig beschreven en redelijk onderhouden is.                                          |
 
-Context is belangrijk. Hetzelfde onderwerp kan acceptabel zijn in een beperkte defensieve of
-toestemmingsgebaseerde setting en onacceptabel wanneer het is verpakt als misbruikworkflow.
+Context is belangrijk. Hetzelfde onderwerp kan acceptabel zijn in een smalle
+defensieve of op toestemming gebaseerde setting en onacceptabel wanneer het als
+misbruikworkflow is verpakt.
 
-## Verboden content
+## Niet-toegestane content
 
 ClawHub host geen content waarvan het hoofddoel misbruik, misleiding, onveilige
-uitvoering of rechteninbreuk is.
+uitvoering of inbreuk op rechten is.
 
-| Categorie                                                    | Niet toegestaan                                                                                                                                                                                                                                                                                                   |
+| Categorie                                                   | Niet toegestaan                                                                                                                                                                                                                                                                                               |
 | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ongeautoriseerde toegang of beveiligingsomzeiling                      | Auth-omzeiling, accountovername, misbruik van rate limits, livecall- of agentovername, herbruikbare sessiediefstal, of automatisch goedkeuren van koppelingsflows voor niet-goedgekeurde gebruikers.                                                                                                                                                   |
-| Platformmisbruik en omzeiling van bans                              | Stealthaccounts na bans, accountopwarming of -farming, nepbetrokkenheid, automatisering met meerdere accounts, massaal posten, spambotten, of automatisering die is gebouwd om detectie te vermijden.                                                                                                                                          |
-| Fraude, scams en misleidende financiële workflows             | Valse certificaten of facturen, misleidende betaalflows, scam-outreach, vals sociaal bewijs, workflows met synthetische identiteiten voor fraude, of tools voor uitgaven/afschrijvingen zonder duidelijke menselijke goedkeuring.                                                                                                                    |
-| Privacy-invasieve verrijking of surveillance                 | Contacten scrapen voor spam, doxxing, stalking, leadextractie gekoppeld aan ongevraagde outreach, heimelijke monitoring, niet-consensuele biometrische matching, of gebruik van gelekte data of breach-dumps.                                                                                                                  |
-| Niet-consensuele imitatie of identiteitsmanipulatie       | Face swap, digitale tweelingen, gekloonde influencers, valse persona's, of andere tooling die wordt gebruikt om iemand na te doen of te misleiden.                                                                                                                                                                                                 |
-| Expliciete seksuele content of generatie voor volwassenen met uitgeschakelde veiligheidsmaatregelen | Genereren van NSFW-afbeeldingen, -video's of -content; wrappers voor adult-content rond API's van derden; of vermeldingen waarvan het primaire doel expliciete seksuele content is.                                                                                                                                                       |
-| Verborgen, onveilige of misleidende uitvoeringsvereisten        | Versluierde installatiecommando's, pipe-to-shell-installers zoals gedownloade content die met `sh` of `bash` wordt uitgevoerd zonder duidelijke beoordeelbaarheid, niet-vermelde vereisten voor geheimen of privésleutels, externe uitvoering van `npx @latest` zonder duidelijke beoordeelbaarheid, of metadata die verbergt wat de vermelding echt nodig heeft om te draaien. |
-| Auteursrechtinbreukmakend of rechten-schendend materiaal           | Iemands anders skill, plugin, docs, merkmiddelen of propriëtaire code opnieuw publiceren zonder toestemming; licentievoorwaarden schenden; of zich voordoen als de oorspronkelijke auteur of uitgever.                                                                                                                            |
+| Ongeautoriseerde toegang of omzeiling van beveiliging       | Auth-omzeiling, accountovername, misbruik van snelheidslimieten, live call- of agentovername, herbruikbare sessiediefstal, of automatisch goedkeuren van koppelingsflows voor niet-goedgekeurde gebruikers.                                                                                                   |
+| Platformmisbruik en omzeiling van bans                      | Stealthaccounts na bans, accountopwarming of -farming, nepbetrokkenheid, automatisering met meerdere accounts, massaal posten, spambots, of automatisering die is gebouwd om detectie te vermijden.                                                                                                          |
+| Fraude, scams en misleidende financiële workflows           | Valse certificaten of facturen, misleidende betalingsflows, scam-outreach, vals sociaal bewijs, workflows met synthetische identiteiten voor fraude, of tools voor uitgeven/incasseren zonder duidelijke menselijke goedkeuring.                                                                               |
+| Privacy-schendende verrijking of surveillance               | Contacten scrapen voor spam, doxxing, stalking, leadextractie gecombineerd met ongevraagde outreach, heimelijke monitoring, biometrische matching zonder toestemming, of gebruik van gelekte data of breach-dumps.                                                                                             |
+| Imitatie zonder toestemming of identiteitsmanipulatie       | Gezichtswissel, digitale tweelingen, gekloonde influencers, neppersona's of andere tooling die wordt gebruikt om te imiteren of te misleiden.                                                                                                                                                                 |
+| Expliciete seksuele content of generatie voor volwassenen met uitgeschakelde veiligheidsfuncties | NSFW-afbeeldings-, video- of contentgeneratie; wrappers voor adult-content rond API's van derden; of vermeldingen waarvan het primaire doel expliciete seksuele content is.                                                                                                                                    |
+| Verborgen, onveilige of misleidende uitvoeringsvereisten    | Verduisterde installatiecommando's, pipe-to-shell-installers zoals gedownloade content die met `sh` of `bash` wordt uitgevoerd zonder duidelijke beoordeelbaarheid, niet-gedeclareerde vereisten voor geheimen of privésleutels, externe `npx @latest`-uitvoering zonder duidelijke beoordeelbaarheid, of metadata die verbergt wat de vermelding echt nodig heeft om te draaien. |
+| Materiaal dat auteursrecht schendt of rechten overtreedt    | Iemands anders Skill, Plugin, docs, merkassets of propriëtaire code opnieuw publiceren zonder toestemming; licentievoorwaarden schenden; of de oorspronkelijke auteur of uitgever imiteren.                                                                                                                   |
 
-## Verboden marketplace-gedrag
+## Niet-toegestaan marktplaatsgedrag
 
-ClawHub beoordeelt ook hoe uitgevers de marketplace gebruiken. Gebruik ClawHub niet om
-ontdekking, statistieken, vertrouwenssignalen, moderatiesystemen of gebruikersaandacht te
-manipuleren.
+ClawHub beoordeelt ook hoe uitgevers de marktplaats gebruiken. Gebruik ClawHub
+niet om discovery, metrics, vertrouwenssignalen, moderatiesystemen of
+gebruikersaandacht te manipuleren.
 
-Verboden marketplace-gedrag omvat:
+Niet-toegestaan marktplaatsgedrag omvat:
 
-- het bulkpubliceren van grote aantallen laagwaardige, duplicatieve, placeholder- of
-  machinaal gegenereerde vermeldingen die geen echte gebruikerswaarde lijken te hebben
-- het overspoelen van zoek- of categorieoppervlakken met vrijwel identieke Skills of plugins
-- het publiceren van honderden vermeldingen met weinig of geen gebruik, onderhoud, bronduidelijkheid
-  of betekenisvolle differentiatie
-- het kunstmatig opdrijven van installaties, downloads, sterren of andere betrokkenheidsstatistieken
-  via automatisering, zelfinstallatielussen, nepaccounts, gecoördineerde
+- in bulk grote aantallen vermeldingen publiceren die weinig moeite tonen,
+  duplicatief zijn, placeholders zijn of door machines zijn gegenereerd en geen
+  echte gebruikerswaarde lijken te hebben
+- zoek- of categorieoppervlakken overspoelen met bijna identieke Skills of Plugins
+- honderden vermeldingen publiceren met weinig of geen gebruik, onderhoud,
+  duidelijkheid over de bron of betekenisvolle differentiatie
+- installaties, downloads, sterren of andere betrokkenheidsmetrics kunstmatig
+  verhogen via automatisering, self-install-loops, nepaccounts, gecoördineerde
   activiteit, betaalde betrokkenheid of ander niet-organisch gedrag
-- accounts maken of roteren om moderatie, bans, uitgeverslimieten of
-  marketplace-review te omzeilen
+- accounts maken of rouleren om moderatie, bans, uitgeverslimieten of
+  marktplaatsbeoordeling te omzeilen
 - gebruikers misleiden over eigendom, bron, mogelijkheden, beveiligingshouding,
   installatievereisten of affiliatie met een ander project of een andere uitgever
-- herhaaldelijk content uploaden die al is verborgen, verwijderd of geblokkeerd
+- herhaaldelijk content uploaden die al verborgen, verwijderd of geblokkeerd is
   zonder het onderliggende probleem op te lossen
 
-Publiceren in hoog volume is niet automatisch misbruik. Grote catalogi zijn acceptabel
-wanneer de vermeldingen betekenisvol verschillend, accuraat beschreven, onderhouden
-en door echte gebruikers gebruikt worden. Grote catalogi worden een probleem voor vertrouwen en veiligheid wanneer
-volume gepaard gaat met dunne, duplicatieve, misleidende, niet-onderhouden of
-kunstmatig gepromote vermeldingen.
+Publiceren met hoog volume is niet automatisch misbruik. Grote catalogi zijn
+acceptabel wanneer de vermeldingen betekenisvol verschillend, nauwkeurig
+beschreven, onderhouden en door echte gebruikers gebruikt worden. Grote catalogi
+worden een vertrouwens- en veiligheidsprobleem wanneer volume gepaard gaat met
+dunne, duplicatieve, misleidende, niet-onderhouden of kunstmatig gepromote
+vermeldingen.
 
 ## Contentrechten
 
-Als je denkt dat content op ClawHub inbreuk maakt op je auteursrecht of andere rechten, gebruik dan
-[Verzoeken over contentrechten](/nl/clawhub/content-rights). Gebruik normale marketplace-
-rapporten niet voor auteursrecht- of rechtenclaims, tenzij de vermelding ook onveilig,
-kwaadaardig of misleidend is.
+Als je denkt dat content op ClawHub inbreuk maakt op je auteursrecht of andere
+rechten, gebruik dan [Verzoeken over contentrechten](/nl/clawhub/content-rights). Gebruik
+normale marktplaatsrapportages niet voor auteursrecht- of rechtenclaims, tenzij
+de vermelding ook onveilig, schadelijk of misleidend is.
 
-## Review en handhaving
+## Beoordeling en handhaving
 
-ClawHub kan geautomatiseerde controles, statistische misbruiksignalen, gebruikersrapporten en
-staffreview gebruiken om onveilige content of misbruikend publicatiegedrag te identificeren. Een signaal
-bewijst op zichzelf geen misbruik; het helpt ClawHub bepalen wat review nodig heeft.
+ClawHub kan geautomatiseerde controles, statistische signalen van misbruik,
+gebruikersrapportages en beoordeling door medewerkers gebruiken om onveilige
+content of misbruikend publicatiegedrag te identificeren. Een signaal bewijst op
+zichzelf geen misbruik; het helpt ClawHub te bepalen wat beoordeling nodig heeft.
 
 We kunnen:
 
-- inbreukmakende vermeldingen verbergen, vasthouden, verwijderen, soft-deleten of, waar ondersteund voor het resourcetype,
-  hard-deleten
+- vermeldingen die regels overtreden verbergen, vasthouden, verwijderen,
+  zacht verwijderen of, waar ondersteund voor het resourcetype, hard verwijderen
 - downloads of installaties blokkeren voor onveilige releases
 - API-tokens intrekken
-- gekoppelde content soft-deleten
+- gekoppelde content zacht verwijderen
 - publicatietoegang beperken
-- recidivisten of ernstige overtreders bannen
+- herhaalde of ernstige overtreders bannen
 
-We garanderen geen handhaving met waarschuwing vooraf bij duidelijk misbruik. Zie
-[Moderatie en accountveiligheid](/nl/clawhub/moderation) voor rapporten, moderatievasthoudingen,
+We garanderen geen handhaving met eerst een waarschuwing bij duidelijk misbruik. Zie
+[Moderatie en accountveiligheid](/nl/clawhub/moderation) voor rapportages, moderatieholds,
 verborgen vermeldingen, bans en accountstatus.

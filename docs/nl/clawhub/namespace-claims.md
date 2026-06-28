@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Een organisatie, merk, pakket-scope, eigenaars-handle, Skills-slug of pakketnaamruimte claimen
-    - Een naamruimte oplossen die al is geclaimd of gereserveerd
-    - Beslissen of u een rapport, bezwaar of namespace-claim gebruikt
+    - Een organisatie, merk, pakketscope, eigenaarshandle, skill-slug of pakketnamespace claimen
+    - Een namespace oplossen die al is geclaimd of gereserveerd
+    - Beslissen of u een melding, beroep of namespace-claim gebruikt
 sidebarTitle: Org and Namespace Claims
-summary: Hoe u een ClawHub-beoordeling aanvraagt voor eigendomsgeschillen over org, merk, owner-handle, package-scope, skill-slug of namespace.
+summary: Hoe u ClawHub-beoordeling aanvraagt voor eigendomsgeschillen over organisatie, merk, eigenaars-handle, pakket-scope, skill-slug of namespace.
 title: Organisatie- en namespaceclaims
 x-i18n:
-    generated_at: "2026-06-28T07:42:16Z"
+    generated_at: "2026-06-28T08:02:24Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -18,69 +18,69 @@ x-i18n:
 
 # Organisatie- en namespaceclaims
 
-ClawHub gebruikt owner-handles, organisatiehandles, skill-slugs, pluginpakketnamen en
-pakketscopes als openbare namespaces. Als een namespace lijkt toe te behoren aan een
-echt project, merk, pakketecosysteem of echte organisatie, maar al is
-geclaimd, gereserveerd, misleidend is of op ClawHub wordt betwist, vraag dan medewerkers om deze te beoordelen
+ClawHub gebruikt eigenaarhandles, organisatiehandles, skill-slugs, pluginpakketnamen en
+pakket-scopes als openbare namespaces. Als een namespace lijkt toe te behoren aan een
+real-world project, merk, pakkettecosysteem of organisatie, maar al is
+geclaimd, gereserveerd, misleidend is of wordt betwist op ClawHub, vraag dan medewerkers om deze te beoordelen
 met het
 [issueformulier voor organisatie-/namespaceclaims](https://github.com/openclaw/clawhub/issues/new?template=org-namespace-claim.yml).
 
 Gebruik dit pad voor openbare, niet-gevoelige eigendomsbeoordeling. Gebruik geen in-product
-meldingen of het accountbezwaarformulier voor namespaceclaims.
+rapportages of het formulier voor accountbezwaar voor namespaceclaims.
 
 ## Wanneer je een claim opent
 
 Open een namespaceclaim wanneer je vindt dat ClawHub-medewerkers moeten beoordelen of een
-namespace moet worden gereserveerd, overgedragen, hernoemd, verborgen, in quarantaine geplaatst, van een alias voorzien
-of anderszins gewijzigd vanwege eigendom in de echte wereld.
+namespace moet worden gereserveerd, overgedragen, hernoemd, verborgen, in quarantaine geplaatst, gealiast
+of anderszins gewijzigd vanwege real-world eigendom.
 
 Voorbeelden zijn:
 
 - een organisatiehandle die overeenkomt met je GitHub-organisatie, project, bedrijf of community
-- een pakketscope zoals `@example-org/*` die alleen mag publiceren onder de
-  overeenkomende ClawHub-owner
-- een skill-slug of pluginpakketnaam die een project lijkt na te doen
-- een merk, handelsmerk, projecthernoeming of geschil over pakketgeschiedenis
-- een verwijderde, inactieve of onbereikbare owner die de rechtmatige namespace-
-  owner blokkeert
+- een pakket-scope zoals `@example-org/*` die alleen mag publiceren onder de
+  overeenkomende ClawHub-eigenaar
+- een skill-slug of pluginpakketnaam die een project lijkt na te bootsen
+- een geschil over een merk, handelsmerk, projecthernoeming of pakketgeschiedenis
+- een verwijderde, inactieve of onbereikbare eigenaar die de rechtmatige namespace-
+  eigenaar blokkeert
 
-Als de vermelding onveilig, kwaadaardig of misleidend is buiten het eigendomsgeschil,
-volg dan ook de relevante moderatie- of beveiligingsrichtlijnen. Het namespaceclaimformulier
-is bedoeld voor eigendomsbeoordeling, niet voor noodmeldingen van kwetsbaarheden.
+Als de vermelding onveilig, schadelijk of misleidend is buiten het eigendomsgeschil,
+volg dan ook de relevante moderatie- of beveiligingsrichtlijnen. Het namespaceclaim-
+formulier is bedoeld voor eigendomsbeoordeling, niet voor spoedmeldingen van kwetsbaarheden.
 
 ## Voordat je indient
 
-Controleer eerst of je publiceert met de owner die overeenkomt met de namespace.
+Controleer eerst of je publiceert met de eigenaar die overeenkomt met de namespace.
 Voor pluginpakketten moeten scoped namen zoals `@example-org/example-plugin` worden
-gepubliceerd als de overeenkomende `example-org`-owner.
+gepubliceerd als de overeenkomende eigenaar `example-org`.
 
-Als je de huidige owner kunt beheren, herstel de namespace dan rechtstreeks door de getroffen resource te publiceren,
-te hernoemen, over te dragen, te verbergen of te verwijderen. Gebruik een claim
-wanneer je de huidige owner niet kunt beheren of wanneer medewerkers een
+Als je de huidige eigenaar kunt beheren, los de namespace dan rechtstreeks op door de getroffen resource te publiceren,
+hernoemen, overdragen, verbergen of verwijderen. Gebruik een claim
+wanneer je de huidige eigenaar niet kunt beheren of wanneer medewerkers een
 geschil moeten oplossen.
 
 ## Bewijs om op te nemen
 
 Gebruik openbaar, niet-gevoelig bewijs. Nuttig bewijs omvat:
 
-- GitHub-organisatie-, repo-, release- of maintainergeschiedenis
+- GitHub-organisatie, repository, release of maintainer-geschiedenis
 - officiële projectdocumentatie die de namespace noemt
-- domein- of officieel e-maildomeinbewijs
-- controle over npm-, PyPI-, crates.io- of andere pakketregistryscopes
+- bewijs van domein of officieel e-maildomein
+- controle over npm-, PyPI-, crates.io- of andere pakketregister-scopes
 - bewijs van handelsmerk-, merk- of projecteigendom dat veilig openbaar kan worden besproken
 - bronrepositorygeschiedenis, pakketgeschiedenis of openbare hernoemingsmeldingen
-- links naar de betwiste ClawHub-owner, skill, plugin, pakket of issue
+- links naar de betwiste ClawHub-eigenaar, skill, plugin, pakket of issue
 
-Leg uit wat elke link bewijst. Medewerkers moeten de
-relatie kunnen begrijpen zonder privéreferenties of geheimen nodig te hebben.
+Leg uit wat elke link bewijst. Medewerkers moeten de relatie kunnen begrijpen
+zonder privé-inloggegevens of geheimen nodig te hebben.
 
 ## Wat je niet moet opnemen
 
 Plaats geen geheimen of privébewijs in een openbaar GitHub-issue. Neem niet op:
 
-- API-tokens, ondertekeningssleutels of referenties
-- DNS-challengetokens
-- privé juridische bestanden of contracten
+- API-tokens, ondertekeningssleutels of inloggegevens
+- DNS-challenge-tokens
+- privéjuridische bestanden of contracten
 - persoonlijke identiteitsdocumenten
 - privé-e-mails, privébeveiligingsrapporten of vertrouwelijke klantgegevens
 
@@ -94,7 +94,7 @@ eigendom overdragen, een resource hernoemen, een bestaande vermelding verbergen 
 een alias of omleiding toevoegen, om meer bewijs vragen of het verzoek afwijzen.
 
 Namespacebeoordeling garandeert niet dat elke overeenkomende naam wordt overgedragen.
-Medewerkers wegen openbaar bewijs, bestaand gebruik, beveiligingsrisico en gebruikersimpact af.
+Medewerkers wegen openbaar bewijs, bestaand gebruik, beveiligingsrisico en impact op gebruikers af.
 
 ## Gerelateerde documentatie
 

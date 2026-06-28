@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 93b3049e8d42787acba12ec3ddf70603159251dae1d870047f8ffc9242f202a5
     source_path: providers/huggingface.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 [Hugging Face Inference Providers](https://huggingface.co/docs/inference-providers) bieden OpenAI-compatibele chatvoltooiingen via een enkele router-API. Je krijgt toegang tot veel modellen (DeepSeek, Llama en meer) met een token. OpenClaw gebruikt het **OpenAI-compatibele eindpunt** (alleen chatvoltooiingen); gebruik voor tekst-naar-afbeelding, embeddings of spraak de [HF-inferenceclients](https://huggingface.co/docs/api-inference/quicktour) rechtstreeks.

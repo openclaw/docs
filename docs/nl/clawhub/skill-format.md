@@ -2,9 +2,9 @@
 read_when:
     - Skills publiceren
     - Publicatiefouten debuggen
-summary: Indeling van Skill-mappen, vereiste bestanden, toegestane bestandstypen, limieten.
+summary: Indeling van Skills-mappen, vereiste bestanden, toegestane bestandstypen, limieten.
 x-i18n:
-    generated_at: "2026-06-28T07:42:46Z"
+    generated_at: "2026-06-28T08:04:12Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -13,7 +13,7 @@ x-i18n:
     workflow: 16
 ---
 
-# Skill-formaat
+# Skill-indeling
 
 ## Op schijf
 
@@ -26,29 +26,29 @@ Vereist:
 Optioneel:
 
 - eventuele ondersteunende _tekstgebaseerde_ bestanden (zie “Toegestane bestanden”)
-- `.clawhubignore` (negeerpatronen voor publiceren, verouderde `.clawdhubignore`)
+- `.clawhubignore` (negeerpatronen voor publiceren, verouderd `.clawdhubignore`)
 - `.gitignore` (wordt ook gerespecteerd)
 
 ## GitHub-import
 
-De GitHub-importer op het web is strenger dan lokaal publiceren/synchroniseren. Deze ontdekt alleen
+De webgebaseerde GitHub-importeur is strikter dan lokaal publiceren/synchroniseren. Deze ontdekt alleen
 `SKILL.md`- of verouderde `skills.md`-bestanden in openbare, niet-geforkte repositories die eigendom zijn van
-het aangemelde GitHub-account. Private repo's, forks,
+het aangemelde GitHub-account. Privé-repo's, forks,
 gearchiveerde/uitgeschakelde repo's of openbare repo's van derden worden niet geïmporteerd.
 
-Lokale installatiemetadata (geschreven door de CLI):
+Metadata van lokale installatie (geschreven door de CLI):
 
-- `<skill>/.clawhub/origin.json` (verouderde `.clawdhub`)
+- `<skill>/.clawhub/origin.json` (verouderd `.clawdhub`)
 
-Installatiestatus van workdir (geschreven door de CLI):
+Installatiestatus van werkmap (geschreven door de CLI):
 
-- `<workdir>/.clawhub/lock.json` (verouderde `.clawdhub`)
+- `<workdir>/.clawhub/lock.json` (verouderd `.clawdhub`)
 
 ## `SKILL.md`
 
 - Markdown met optionele YAML-frontmatter.
-- De server haalt metadata uit frontmatter tijdens het publiceren.
-- `description` wordt gebruikt als de skill-samenvatting in de UI/zoekfunctie.
+- De server extraheert metadata uit frontmatter tijdens publiceren.
+- `description` wordt gebruikt als de samenvatting van de skill in de UI/zoekfunctie.
 
 ## Frontmatter-metadata
 
@@ -87,26 +87,26 @@ Gebruik `requires.env` voor omgevingsvariabelen die aanwezig moeten zijn voordat
 
 ### Volledige veldreferentie
 
-| Veld               | Type       | Beschrijving                                                                                                                                         |
-| ------------------ | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `requires.env`     | `string[]` | Vereiste omgevingsvariabelen die je skill verwacht.                                                                                                  |
-| `requires.bins`    | `string[]` | CLI-binaries die allemaal geïnstalleerd moeten zijn.                                                                                                 |
-| `requires.anyBins` | `string[]` | CLI-binaries waarvan er ten minste één moet bestaan.                                                                                                 |
-| `requires.config`  | `string[]` | Configbestandspaden die je skill leest.                                                                                                              |
-| `primaryEnv`       | `string`   | De belangrijkste credential-env-var voor je skill.                                                                                                   |
+| Veld               | Type       | Beschrijving                                                                                                                                       |
+| ------------------ | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `requires.env`     | `string[]` | Vereiste omgevingsvariabelen die je skill verwacht.                                                                                                |
+| `requires.bins`    | `string[]` | CLI-binaries die allemaal geïnstalleerd moeten zijn.                                                                                               |
+| `requires.anyBins` | `string[]` | CLI-binaries waarvan er ten minste één moet bestaan.                                                                                               |
+| `requires.config`  | `string[]` | Paden naar configuratiebestanden die je skill leest.                                                                                               |
+| `primaryEnv`       | `string`   | De belangrijkste omgevingsvariabele voor referenties voor je skill.                                                                                |
 | `envVars`          | `array`    | Declaraties van omgevingsvariabelen met `name`, optioneel `required` en optioneel `description`. Stel `required: false` in voor optionele env vars. |
-| `always`           | `boolean`  | Als `true`, is de skill altijd actief (geen expliciete installatie nodig).                                                                           |
-| `skillKey`         | `string`   | Overschrijf de invocation key van de skill.                                                                                                          |
-| `emoji`            | `string`   | Weergave-emoji voor de skill.                                                                                                                       |
-| `homepage`         | `string`   | URL naar de homepage of documentatie van de skill.                                                                                                   |
-| `os`               | `string[]` | OS-beperkingen (bijv. `["macos"]`, `["linux"]`).                                                                                                     |
-| `install`          | `array`    | Installatiespecificaties voor afhankelijkheden (zie hieronder).                                                                                      |
-| `nix`              | `object`   | Nix-Plugin-specificatie (zie README).                                                                                                                |
-| `config`           | `object`   | Clawdbot-configspecificatie (zie README).                                                                                                            |
+| `always`           | `boolean`  | Als `true`, is de skill altijd actief (geen expliciete installatie nodig).                                                                          |
+| `skillKey`         | `string`   | Overschrijf de aanroepsleutel van de skill.                                                                                                        |
+| `emoji`            | `string`   | Weergave-emoji voor de skill.                                                                                                                      |
+| `homepage`         | `string`   | URL naar de homepage of docs van de skill.                                                                                                         |
+| `os`               | `string[]` | OS-beperkingen (bijv. `["macos"]`, `["linux"]`).                                                                                                   |
+| `install`          | `array`    | Installatiespecificaties voor afhankelijkheden (zie hieronder).                                                                                    |
+| `nix`              | `object`   | Nix-Plugin-specificatie (zie README).                                                                                                              |
+| `config`           | `object`   | Clawdbot-configuratiespecificatie (zie README).                                                                                                    |
 
 ### Installatiespecificaties
 
-Als je skill geïnstalleerde afhankelijkheden nodig heeft, declareer je die in de `install`-array:
+Als je skill geïnstalleerde afhankelijkheden nodig heeft, declareer je ze in de array `install`:
 
 ```yaml
 metadata:
@@ -120,11 +120,11 @@ metadata:
         bins: [tsc]
 ```
 
-Ondersteunde installatietypen: `brew`, `node`, `go`, `uv`.
+Ondersteunde installatiesoorten: `brew`, `node`, `go`, `uv`.
 
 ### Optionele omgevingsvariabelen
 
-Declareer optionele omgevingsvariabelen onder `metadata.openclaw.envVars` en stel `required: false` in. Voeg geen optionele items toe aan `requires.env`, omdat `requires.env` betekent dat de skill zonder die variabelen niet kan draaien.
+Declareer optionele omgevingsvariabelen onder `metadata.openclaw.envVars` en stel `required: false` in. Voeg geen optionele vermeldingen toe aan `requires.env`, omdat `requires.env` betekent dat de skill niet zonder deze variabelen kan draaien.
 
 ```yaml
 metadata:
@@ -141,7 +141,7 @@ metadata:
 
 ### Waarom dit belangrijk is
 
-De beveiligingsanalyse van ClawHub controleert of wat je skill declareert overeenkomt met wat deze daadwerkelijk doet. Als je code naar `TODOIST_API_KEY` verwijst maar je frontmatter dit niet declareert onder `requires.env`, `primaryEnv` of `envVars`, markeert de analyse dit als een metadata-mismatch. Nauwkeurige declaraties helpen je skill door de review te komen en helpen gebruikers begrijpen wat ze installeren.
+De beveiligingsanalyse van ClawHub controleert of wat je skill declareert overeenkomt met wat deze daadwerkelijk doet. Als je code verwijst naar `TODOIST_API_KEY`, maar je frontmatter deze niet declareert onder `requires.env`, `primaryEnv` of `envVars`, markeert de analyse dit als een metadata-inconsistentie. Nauwkeurige declaraties helpen je skill door de review te komen en helpen gebruikers te begrijpen wat ze installeren.
 
 ### Voorbeeld: volledige frontmatter
 
@@ -175,34 +175,34 @@ metadata:
 Alleen “tekstgebaseerde” bestanden worden geaccepteerd bij publiceren.
 
 - De allowlist voor extensies staat in `packages/schema/src/textFiles.ts` (`TEXT_FILE_EXTENSIONS`).
-- Scriptbestanden worden na upload nog steeds gescand; PowerShell-bestanden `.ps1`, `.psm1` en `.psd1` worden als tekst geaccepteerd.
-- Contenttypen die beginnen met `text/` worden als tekst behandeld; plus een kleine allowlist (JSON/YAML/TOML/JS/TS/Markdown/SVG).
+- Scriptbestanden worden na upload nog steeds gescand; PowerShell-bestanden `.ps1`, `.psm1` en `.psd1` worden geaccepteerd als tekst.
+- Contenttypes die beginnen met `text/` worden behandeld als tekst; plus een kleine allowlist (JSON/YAML/TOML/JS/TS/Markdown/SVG).
 
-Limieten (server-side):
+Limieten (serverzijde):
 
 - Totale bundelgrootte: 50 MB.
-- Embedding-tekst bevat `SKILL.md` + maximaal ~40 niet-`.md`-bestanden (best-effort-limiet).
+- Insluitingstekst bevat `SKILL.md` + maximaal ongeveer 40 niet-`.md`-bestanden (best-effort-limiet).
 
 ## Slugs
 
 - Standaard afgeleid van de mapnaam.
-- Package scopes moeten exact overeenkomen met de ClawHub-publisherhandle. Publisherhandles mogen kleine letters, cijfers, koppeltekens, punten en underscores gebruiken; ze moeten beginnen en eindigen met een kleine letter of cijfer.
+- Package-scopes moeten exact overeenkomen met de ClawHub-uitgevershandle. Uitgevershandles mogen kleine letters, cijfers, koppeltekens, punten en underscores gebruiken; ze moeten beginnen en eindigen met een kleine letter of een cijfer.
 - Package-slugs moeten lowercase en npm-safe zijn, bijvoorbeeld `@example.tools/demo-plugin` of `demo-plugin`.
 
-## Versionering + tags
+## Versiebeheer + tags
 
 - Elke publicatie maakt een nieuwe versie aan (semver).
 - Tags zijn stringverwijzingen naar een versie; `latest` wordt vaak gebruikt.
 
 ## Licentie
 
-- Alle skills die op ClawHub worden gepubliceerd, worden gelicentieerd onder `MIT-0`.
-- Iedereen mag gepubliceerde skills gebruiken, wijzigen en herdistribueren, ook commercieel.
+- Alle skills die op ClawHub worden gepubliceerd, vallen onder de licentie `MIT-0`.
+- Iedereen mag gepubliceerde skills gebruiken, wijzigen en opnieuw verspreiden, ook commercieel.
 - Naamsvermelding is niet vereist.
 - Voeg geen conflicterende licentievoorwaarden toe in `SKILL.md`; ClawHub ondersteunt geen licentie-overschrijvingen per skill.
 
 ## Betaalde skills
 
-- ClawHub ondersteunt geen betaalde skills, prijzen per skill, paywalls of revenue sharing.
-- Voeg geen prijsmetadata toe aan `SKILL.md`; dit maakt geen deel uit van het skill-formaat en maakt een gepubliceerde skill niet betaald.
-- Als je skill integreert met een betaalde service van derden, documenteer dan de externe kosten en het vereiste account duidelijk in de skill-instructies en env-declaraties (`requires.env` voor vereiste variabelen, of `envVars` met `required: false` voor optionele variabelen).
+- ClawHub ondersteunt geen betaalde skills, prijzen per skill, paywalls of omzetdeling.
+- Voeg geen prijsmetadata toe aan `SKILL.md`; dit maakt geen deel uit van de skill-indeling en maakt een gepubliceerde skill niet betaald.
+- Als je skill integreert met een betaalde externe service, documenteer dan de externe kosten en het vereiste account duidelijk in de skill-instructies en env-declaraties (`requires.env` voor vereiste variabelen, of `envVars` met `required: false` voor optionele variabelen).

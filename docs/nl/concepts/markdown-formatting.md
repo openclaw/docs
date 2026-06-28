@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 8db92aaf1063ebcbd8630dfcb8ca0a4e9eeb1c64f5b8868bf11c836777180515
     source_path: concepts/markdown-formatting.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw formatteert uitgaande Markdown door deze om te zetten naar een gedeelde tussenrepresentatie

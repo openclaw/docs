@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 95ffe98a60e9919826a7c7fdb9cbafd63d20ce3de111ac305f43907b1ae442dc
     source_path: install/render.mdx
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Render

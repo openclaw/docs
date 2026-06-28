@@ -11,6 +11,7 @@ x-i18n:
     source_hash: f20e035f787ba7d9bb48d2a18263679d20b295e12ffb263a63c3a0ef72312d34
     source_path: reference/device-models.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 De begeleidende macOS-app toont gebruiksvriendelijke Apple-apparaatmodelnamen in de **Instanties**-UI door Apple-model-ID's (bijv. `iPad16,6`, `Mac16,6`) toe te wijzen aan voor mensen leesbare namen.

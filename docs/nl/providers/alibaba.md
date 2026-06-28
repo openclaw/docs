@@ -11,6 +11,7 @@ x-i18n:
     source_hash: c390da201e2c8685fafa6171a6028bf18fc676b2d46f784651f91cdc6137fdf2
     source_path: providers/alibaba.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw levert een meegeleverde `alibaba`-Plugin die een videogeneratieprovider registreert voor Wan-modellen op Alibaba Model Studio (de internationale naam voor DashScope). De Plugin is standaard ingeschakeld; je hoeft alleen een API-sleutel in te stellen.

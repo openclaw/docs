@@ -1,13 +1,13 @@
 ---
 read_when:
     - Een beveiligingsprobleem met ClawHub melden
-    - Inzicht in de openbaarmaking van kwetsbaarheden in ClawHub
+    - Inzicht in kwetsbaarheidsmeldingen voor ClawHub
     - ClawHub-platformproblemen onderscheiden van problemen met Skills of Plugins van derden
 sidebarTitle: Security
 summary: Hoe u ClawHub-beveiligingsproblemen meldt en wanneer kwetsbaarheden openbaar worden gemaakt.
 title: Beveiliging
 x-i18n:
-    generated_at: "2026-06-28T07:42:29Z"
+    generated_at: "2026-06-28T08:03:49Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -22,22 +22,21 @@ Beveiligingsproblemen in ClawHub kunnen worden gemeld via GitHub Security Adviso
 `openclaw/clawhub`.
 
 Gebruik GitHub Security Advisories voor kwetsbaarheden in ClawHub zelf. Goede
-ClawHub-adviesrapporten omvatten bugs in:
+ClawHub-advisorymeldingen bevatten bugs in:
 
 - de ClawHub-website, API of CLI
-- publiceren in het register, downloads, installaties of artifactintegriteit
+- publiceren naar het register, downloads, installaties of artefactintegriteit
 - authenticatie, autorisatie of API-tokens
-- scannen, moderatie of rapportafhandeling
+- scannen, moderatie of afhandeling van meldingen
 
-Gebruik ClawHub-adviezen niet voor kwetsbaarheden in de eigen broncode van een externe skill of
-Plugin. Meld die rechtstreeks aan de uitgever of de bronrepository
-waarnaar vanuit de ClawHub-vermelding wordt gelinkt.
+Gebruik ClawHub-advisories niet voor kwetsbaarheden in de eigen broncode van een externe skill of
+Plugin. Meld die rechtstreeks aan de uitgever of bronrepository die vanuit de ClawHub-vermelding is gelinkt.
 
 ## Openbaarmaking van kwetsbaarheden
 
 Omdat ClawHub een gehoste cloudapplicatie is, worden kwetsbaarheden in de ClawHub-service
-standaard niet openbaar gemaakt. Ze worden openbaar gemaakt wanneer er
-bewijs is van echte impact op gebruikers of wanneer gebruikers actie moeten ondernemen.
+standaard niet openbaar gemaakt. Ze worden openbaar gemaakt wanneer er bewijs is
+van echte impact op gebruikers of wanneer gebruikers actie moeten ondernemen.
 
 Voorbeelden van echte impact op gebruikers zijn bevestigde uitbuiting, blootstelling van gebruikersgegevens
 of geheimen, schadelijke inhoud die gebruikers bereikt door een platformfout,
@@ -53,5 +52,5 @@ lokaal moeten bijwerken.
 Zie voor auditlabels tijdens installatie, risiconiveaus, bevindingen en interpretatie
 [Beveiligingsaudits](/nl/clawhub/security-audits).
 
-Zie voor marktplaatsrapporten, moderatieblokkeringen, verborgen vermeldingen, bans en accountstatus
+Zie voor marktplaatsmeldingen, moderatieblokkades, verborgen vermeldingen, bans en accountstatus
 [Moderatie en accountveiligheid](/nl/clawhub/moderation).

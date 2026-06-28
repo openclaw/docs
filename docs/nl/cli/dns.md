@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 460bdcbaa2c0c0fc1a4f5bdd76b904d8ac35195a25324c66421abfdc2044bb07
     source_path: cli/dns.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # `openclaw dns`

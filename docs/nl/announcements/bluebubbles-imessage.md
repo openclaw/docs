@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 970e33772534fd3e3d8d3012222bdd9c645ed713b8d38cff21b25b276ae1f544
     source_path: announcements/bluebubbles-imessage.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Verwijdering van BlueBubbles en het imsg iMessage-pad

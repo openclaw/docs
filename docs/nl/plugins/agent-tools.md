@@ -10,6 +10,7 @@ x-i18n:
     source_hash: e73137487a9394454dd037d449bc2a0896725cddc7d0f174eda41f5fdc451982
     source_path: plugins/agent-tools.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Deze pagina is verplaatst. Zie [Plugins bouwen: agenttools registreren](/nl/plugins/building-plugins#registering-agent-tools).

@@ -1,11 +1,11 @@
 ---
 read_when:
-    - ClawHub voor het eerst gebruiken
-    - Een skill of Plugin uit het register installeren
+    - Eerste keer ClawHub gebruiken
+    - Een skill of plugin installeren vanuit het register
     - Publiceren naar ClawHub
-summary: 'Aan de slag met ClawHub: zoek, installeer, werk bij en publiceer Skills of plugins.'
+summary: 'Aan de slag met ClawHub: vind, installeer, werk bij en publiceer skills of plugins.'
 x-i18n:
-    generated_at: "2026-06-28T07:42:08Z"
+    generated_at: "2026-06-28T08:03:02Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -14,15 +14,15 @@ x-i18n:
     workflow: 16
 ---
 
-# Quickstart
+# Snelstart
 
-ClawHub is een register voor OpenClaw Skills en Plugins.
+ClawHub is een register voor OpenClaw-skills en -plugins.
 
-Gebruik OpenClaw wanneer je dingen in OpenClaw installeert. Gebruik de `clawhub` CLI
+Gebruik OpenClaw wanneer je dingen in OpenClaw installeert. Gebruik de `clawhub`-CLI
 wanneer je inlogt, publiceert, je eigen vermeldingen beheert of
 registerspecifieke workflows gebruikt.
 
-## Een Skill zoeken en installeren
+## Een skill zoeken en installeren
 
 Zoek vanuit OpenClaw:
 
@@ -30,22 +30,22 @@ Zoek vanuit OpenClaw:
 openclaw skills search "calendar"
 ```
 
-Installeer een Skill:
+Installeer een skill:
 
 ```bash
 openclaw skills install @openclaw/demo
 ```
 
-Werk geïnstalleerde Skills bij:
+Werk geïnstalleerde skills bij:
 
 ```bash
 openclaw skills update --all
 ```
 
-OpenClaw registreert waar de Skill vandaan kwam, zodat latere updates via
-ClawHub kunnen blijven worden opgelost.
+OpenClaw registreert waar de skill vandaan kwam, zodat latere updates kunnen blijven
+resolven via ClawHub.
 
-## Een Plugin zoeken en installeren
+## Een plugin zoeken en installeren
 
 Zoek vanuit OpenClaw:
 
@@ -53,24 +53,24 @@ Zoek vanuit OpenClaw:
 openclaw plugins search "calendar"
 ```
 
-Installeer een door ClawHub gehoste Plugin met een expliciete ClawHub-bron:
+Installeer een door ClawHub gehoste plugin met een expliciete ClawHub-bron:
 
 ```bash
 openclaw plugins install clawhub:<package>
 ```
 
-Werk geïnstalleerde Plugins bij:
+Werk geïnstalleerde plugins bij:
 
 ```bash
 openclaw plugins update --all
 ```
 
 Gebruik het voorvoegsel `clawhub:` wanneer je wilt dat OpenClaw het pakket via
-ClawHub oplost in plaats van via npm of een andere bron.
+ClawHub resolvet in plaats van via npm of een andere bron.
 
-## Inloggen om te publiceren
+## Inloggen voor publicatie
 
-Installeer de ClawHub CLI:
+Installeer de ClawHub-CLI:
 
 ```bash
 npm i -g clawhub
@@ -85,16 +85,16 @@ clawhub login
 clawhub whoami
 ```
 
-Headless omgevingen kunnen een API-token uit de ClawHub-webinterface gebruiken:
+Headless omgevingen kunnen een API-token uit de ClawHub-web-UI gebruiken:
 
 ```bash
 clawhub login --token clh_...
 ```
 
-## Een Skill publiceren
+## Een skill publiceren
 
-Een Skill is een map met een verplicht `SKILL.md`-bestand en optionele
-ondersteunende bestanden.
+Een skill is een map met een verplicht `SKILL.md`-bestand en optionele ondersteunende
+bestanden.
 
 ```bash
 clawhub skill publish ./my-skill \
@@ -103,17 +103,16 @@ clawhub skill publish ./my-skill \
   --changelog "Initial release"
 ```
 
-De opdracht slaat ongewijzigde inhoud over. Nieuwe Skills beginnen bij `1.0.0`;
-latere wijzigingen publiceren automatisch de volgende patchversie. Gebruik
-`--dry-run` om een voorbeeld te bekijken of `--version` om een expliciete versie
-te kiezen.
+De opdracht slaat ongewijzigde inhoud over. Nieuwe skills beginnen bij `1.0.0`; latere wijzigingen
+publiceren automatisch de volgende patchversie. Gebruik `--dry-run` om een voorbeeld te bekijken of
+`--version` om een expliciete versie te kiezen.
 
 Controleer vóór publicatie de metadata in `SKILL.md`. Declareer vereiste
-omgevingsvariabelen, tools en machtigingen, zodat gebruikers kunnen begrijpen wat
-de Skill nodig heeft voordat ze deze installeren. Zie [Skill-indeling](/nl/clawhub/skill-format).
+omgevingsvariabelen, tools en machtigingen zodat gebruikers begrijpen wat de
+skill nodig heeft voordat ze die installeren. Zie [Skill-indeling](/nl/clawhub/skill-format).
 
-Voor repositories met meerdere Skills roept de herbruikbare GitHub-workflow
-`skill publish` aan voor elke directe Skill-map onder `skills/`:
+Voor repositories met meerdere skills roept de herbruikbare GitHub-workflow
+`skill publish` aan voor elke directe skillmap onder `skills/`:
 
 ```yaml
 jobs:
@@ -123,26 +122,25 @@ jobs:
       dry_run: true
 ```
 
-## Een Plugin publiceren
+## Een plugin publiceren
 
-Publiceer een Plugin vanuit een lokale map, een GitHub-repository, een GitHub-ref
-of een bestaand archief:
+Publiceer een plugin vanuit een lokale map, een GitHub-repository, een GitHub-ref of een
+bestaand archief:
 
 ```bash
 clawhub package publish <source> --family code-plugin --dry-run
 clawhub package publish <source> --family code-plugin
 ```
 
-Gebruik eerst `--dry-run` om een voorbeeld te bekijken van de opgeloste
-pakketmetadata, compatibiliteitsvelden, bronvermelding en het uploadplan zonder
-te publiceren.
+Gebruik eerst `--dry-run` om een voorbeeld te bekijken van de opgeloste pakketmetadata, compatibiliteitsvelden,
+brontoeschrijving en het uploadplan zonder te publiceren.
 
-Code-Plugins moeten OpenClaw-compatibiliteitsmetadata opnemen in `package.json`,
+Codeplugins moeten OpenClaw-compatibiliteitsmetadata bevatten in `package.json`,
 waaronder `openclaw.compat.pluginApi` en `openclaw.build.openclawVersion`.
 
 ## Inspecteren vóór installatie
 
-Gebruik vóór installatie de ClawHub-webpagina of CLI-detailopdrachten om
+Gebruik vóór installatie de ClawHub-webpagina of detailopdrachten van de CLI om
 metadata, bronlinks, versies, changelogs en scanstatus te inspecteren:
 
 ```bash
@@ -150,6 +148,5 @@ clawhub inspect @openclaw/demo
 clawhub package inspect <package>
 ```
 
-Openbare vermeldingen tonen de nieuwste scanstatus. Releases die door moderatie
-worden vastgehouden of geblokkeerd, kunnen verborgen zijn in zoek- en
-installatieoppervlakken totdat dit is opgelost.
+Openbare vermeldingen tonen de nieuwste scanstatus. Releases die door moderatie worden vastgehouden of geblokkeerd,
+kunnen verborgen zijn in zoek- en installatieoppervlakken totdat dit is opgelost.

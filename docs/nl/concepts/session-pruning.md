@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 3ea07f0ae23076906e2ff0246ac75813572f98cffa50afddb6a6b0af8964c4a9
     source_path: concepts/session-pruning.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Sessiesnoei verwijdert **oude toolresultaten** uit de context vóór elke LLM-aanroep. Het vermindert contextoverbelasting door opgehoopte tooluitvoer (exec-resultaten, bestandslezingen, zoekresultaten) zonder normale conversatietekst te herschrijven.

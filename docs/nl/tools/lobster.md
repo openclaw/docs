@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 404b2e47982f7efb9a8bb015ac5d7bd8a06f0a41d966e620c9826735abf7f0e3
     source_path: tools/lobster.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Lobster is een workflowshell waarmee OpenClaw toolreeksen met meerdere stappen kan uitvoeren als één enkele, deterministische bewerking met expliciete goedkeuringscontrolepunten.

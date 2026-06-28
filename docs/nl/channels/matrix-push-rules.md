@@ -11,6 +11,7 @@ x-i18n:
     source_hash: e2f037a50a85b350163c74cf6b9cce335ecaaa5cccc762124122ad6d0321a1fa
     source_path: channels/matrix-push-rules.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Wanneer `channels.matrix.streaming` `"quiet"` is, bewerkt OpenClaw een enkel voorbeeld-event op zijn plaats en markeert de definitieve bewerking met een aangepaste contentvlag. Matrix-clients melden de definitieve bewerking alleen als een pushregel per gebruiker overeenkomt met die vlag. Deze pagina is bedoeld voor operators die Matrix zelf hosten en die regel voor elk ontvangend account willen installeren.

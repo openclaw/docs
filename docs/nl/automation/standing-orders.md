@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 3a51baa7aca31cb34b682983374d4d551ed6ab57ae54a5c63e7d044bffeef756
     source_path: automation/standing-orders.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Vaste opdrachten geven je agent **permanente operationele bevoegdheid** voor gedefinieerde programma's. In plaats van telkens afzonderlijke taakinstructies te geven, definieer je programma's met een duidelijke scope, triggers en escalatieregels - en de agent voert autonoom uit binnen die grenzen.

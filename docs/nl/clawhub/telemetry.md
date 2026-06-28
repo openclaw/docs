@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Werken aan telemetrie- / privacy-instellingen
+    - Werken aan telemetrie / privacy-instellingen
     - Vragen over welke gegevens worden verzameld
 summary: Installatietelemetrie die door de ClawHub CLI wordt verzameld en hoe u zich kunt afmelden.
 x-i18n:
-    generated_at: "2026-06-28T07:42:31Z"
+    generated_at: "2026-06-28T08:04:14Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -33,20 +33,20 @@ Bij elke gerapporteerde `clawhub install` verzendt de CLI één best-effort inst
 
 De gebeurtenis bevat:
 
-- `slug`: de slug van de geïnstalleerde Skill.
-- `version`: de geïnstalleerde versie, wanneer bekend.
+- `slug`: de slug van de geïnstalleerde skill.
+- `version`: de geïnstalleerde versie, indien bekend.
 
 ### Wat we _niet_ verzamelen
 
-- Geen mappaden of uit mappen afgeleide identifiers.
+- Geen mappaden of van mappen afgeleide identifiers.
 - Geen bestandsinhoud.
 - Geen logs per uitvoering, prompts of andere CLI-uitvoer.
 
 ## Installatietellingen
 
-ClawHub houdt geaggregeerde tellers per Skill bij:
+ClawHub houdt geaggregeerde tellers per skill bij:
 
-- `installsAllTime`: unieke gebruikers die ten minste één CLI-installatie voor de Skill hebben gerapporteerd.
+- `installsAllTime`: unieke gebruikers die ten minste één CLI-installatie voor de skill hebben gerapporteerd.
 - `installsCurrent`: unieke gebruikers die een installatie hebben gerapporteerd en hun
   telemetrie niet hebben verwijderd.
 

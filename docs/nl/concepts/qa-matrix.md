@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7c6d836492368c470468547950d3765a64187694852222a5a1f0ae4185569abe
     source_path: concepts/qa-matrix.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 De Matrix-QA-baan voert de gebundelde `@openclaw/matrix` Plugin uit tegen een wegwerp-Tuwunel-homeserver in Docker, met tijdelijke driver-, SUT- en observer-accounts plus vooraf gevulde rooms. Dit is de live, transport-realistische dekking voor Matrix.

@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 26b5150cfca92c9cd425c864c711efb3ab62ef94377b9d1e5d6476b07bf4c800
     source_path: providers/litellm.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 [LiteLLM](https://litellm.ai) is een open-source LLM-Gateway die een uniforme API biedt voor meer dan 100 modelproviders. Routeer OpenClaw via LiteLLM voor gecentraliseerde kostenregistratie, logging en de flexibiliteit om backends te wisselen zonder je OpenClaw-configuratie te wijzigen.
