@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 4985a57fcff1fc921ef1237f7cf7fd72c0498de11008aaa958ea04893753b381
     source_path: refactor/access.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Kế hoạch dọn dẹp quyền truy cập kênh hiện nằm trong [Kế hoạch xóa lõi tiếp nhận](/vi/refactor/ingress-core).

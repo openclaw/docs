@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7532c672f7e829b851d175d93354fc586baecea4af5f2555f57908780cedfd02
     source_path: tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Trong thiết lập tách máy chủ phổ biến, OpenClaw Gateway chạy bên trong WSL2, Chrome chạy trên Windows, và việc điều khiển trình duyệt phải đi qua ranh giới giữa WSL2 và Windows. Mẫu lỗi nhiều lớp từ [vấn đề #39369](https://github.com/openclaw/openclaw/issues/39369) nghĩa là nhiều sự cố độc lập có thể xuất hiện cùng lúc, khiến lớp sai trông như bị hỏng trước tiên.

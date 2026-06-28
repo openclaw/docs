@@ -11,6 +11,7 @@ x-i18n:
     source_hash: bd1a5954e3994e3640ee17c62acedc314716c3ed5e52528da436c36c077ebead
     source_path: providers/sglang.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 SGLang phục vụ các mô hình trọng số mở qua API HTTP tương thích OpenAI. OpenClaw kết nối với SGLang bằng nhóm nhà cung cấp `openai-completions` với khả năng tự động phát hiện các mô hình hiện có.

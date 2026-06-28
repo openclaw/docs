@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 3ea07f0ae23076906e2ff0246ac75813572f98cffa50afddb6a6b0af8964c4a9
     source_path: concepts/session-pruning.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Cắt tỉa phiên lược bỏ **kết quả công cụ cũ** khỏi ngữ cảnh trước mỗi lệnh gọi LLM. Nó giảm tình trạng phình to ngữ cảnh do các đầu ra công cụ tích lũy (kết quả thực thi lệnh, lượt đọc tệp, kết quả tìm kiếm) mà không viết lại văn bản hội thoại thông thường.

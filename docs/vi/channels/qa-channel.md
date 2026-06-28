@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 8f28962032bc5f6b228de731ae6bd9a22831604b506b7073aeffba19ac22e0e8
     source_path: channels/qa-channel.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 `qa-channel` là phương thức truyền tải thông điệp tổng hợp được đóng gói sẵn cho QA tự động của OpenClaw. Đây không phải là kênh sản xuất - nó tồn tại để kiểm thử cùng ranh giới Plugin kênh mà các phương thức truyền tải thật sử dụng, đồng thời giữ trạng thái xác định và có thể kiểm tra đầy đủ.

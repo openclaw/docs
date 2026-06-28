@@ -12,6 +12,7 @@ x-i18n:
     source_hash: d9d221f54d6cd1697a48615c09616ad86968937941899ea7018622302e6ceb53
     source_path: install/hostinger.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Chạy một OpenClaw Gateway bền vững trên [Hostinger](https://www.hostinger.com/openclaw) thông qua triển khai được quản lý bằng **1 cú nhấp** hoặc cài đặt trên **VPS**.

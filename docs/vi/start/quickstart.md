@@ -11,6 +11,7 @@ x-i18n:
     source_hash: faff0c266d7e509952e1492ef224a83c39379461c7258e379296b167beb68ad0
     source_path: start/quickstart.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 <Info>

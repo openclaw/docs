@@ -13,6 +13,7 @@ x-i18n:
     source_hash: 311ebbd557e40e38cd25b2f11b887baa4576657095d5a0841d4cb7f71898927d
     source_path: automation/index.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw chạy công việc trong nền thông qua tác vụ, công việc đã lên lịch, cam kết được suy luận,

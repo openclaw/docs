@@ -11,6 +11,7 @@ x-i18n:
     source_hash: e2f037a50a85b350163c74cf6b9cce335ecaaa5cccc762124122ad6d0321a1fa
     source_path: channels/matrix-push-rules.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Khi `channels.matrix.streaming` là `"quiet"`, OpenClaw chỉnh sửa một sự kiện xem trước duy nhất tại chỗ và đánh dấu bản chỉnh sửa cuối cùng bằng một cờ nội dung tùy chỉnh. Matrix client chỉ thông báo cho bản chỉnh sửa cuối cùng nếu một quy tắc push theo từng người dùng khớp với cờ đó. Trang này dành cho các operator tự host Matrix và muốn cài đặt quy tắc đó cho từng tài khoản người nhận.

@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 51980217868c6d2f168f897106f81ea38dfcfde5265b14e394d4e232324a46b7
     source_path: providers/runway.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw phát hành kèm một nhà cung cấp `runway` được đóng gói sẵn cho tạo video được lưu trữ. Plugin được bật theo mặc định và đăng ký nhà cung cấp `runway` với hợp đồng `videoGenerationProviders`.

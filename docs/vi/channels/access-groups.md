@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 1dba4fc84deb6e0c8c7b17ebc10182aa6e4bc2c821070e33df44f384e285266f
     source_path: channels/access-groups.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Nhóm truy cập là danh sách người gửi có tên mà bạn định nghĩa một lần và tham chiếu từ danh sách cho phép của kênh bằng `accessGroup:<name>`.

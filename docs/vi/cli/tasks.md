@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 7bbb97690124a8e59ec5e6a517f33166ad449ee6268894ab132ad9cb69dcaa81
     source_path: cli/tasks.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Kiểm tra các tác vụ nền bền vững và trạng thái Task Flow. Khi không có lệnh con,

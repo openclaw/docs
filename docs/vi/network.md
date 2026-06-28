@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7b0ff6c4ee46005aeac1612ea40f1ce3d5824aa507d0842788dbf4bffbaccfcc
     source_path: network.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Trung tâm này liên kết đến các tài liệu cốt lõi về cách OpenClaw kết nối, ghép đôi và bảo mật

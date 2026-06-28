@@ -1,12 +1,12 @@
 ---
 read_when:
-    - Báo cáo lo ngại về bản quyền hoặc các quyền khác liên quan đến nội dung ClawHub
+    - Báo cáo các mối quan ngại về bản quyền hoặc quyền khác liên quan đến nội dung ClawHub
     - Phản hồi yêu cầu về quyền nội dung ClawHub
 sidebarTitle: Content Rights
-summary: Cách gửi khiếu nại về bản quyền hoặc quyền nội dung khác đối với tài liệu được xuất bản trên ClawHub.
-title: Yêu cầu về quyền nội dung
+summary: Cách gửi quan ngại về bản quyền hoặc quyền nội dung khác đối với tài liệu được đăng trên ClawHub.
+title: Yêu cầu quyền nội dung
 x-i18n:
-    generated_at: "2026-06-28T05:06:56Z"
+    generated_at: "2026-06-28T06:19:32Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -18,17 +18,17 @@ x-i18n:
 # Yêu cầu về quyền nội dung
 
 Nếu bạn cho rằng nội dung được xuất bản trên ClawHub vi phạm bản quyền hoặc các
-quyền khác của bạn, hãy gửi [Yêu cầu về quyền nội dung trên ClawHub](https://forms.openclaw.ai/clawhub-content-rights).
+quyền khác của bạn, hãy gửi [Yêu cầu về quyền nội dung ClawHub](https://forms.openclaw.ai/clawhub-content-rights).
 
 Bao gồm:
 
-- một hoặc nhiều URL `https://clawhub.ai/<owner>/skills/<skill>` chính xác
+- một hoặc nhiều URL chính xác dạng `https://clawhub.ai/<owner>/skills/<skill>`
 - tên, tổ chức và email liên hệ của bạn
 - phần giải thích ngắn gọn về mối quan ngại liên quan đến quyền
 - bằng chứng hỗ trợ, nếu có
 
-Nhân viên ClawHub xem xét yêu cầu thủ công và có thể liên hệ với người yêu cầu hoặc
-người phát hành để biết thêm thông tin. Tùy theo hoàn cảnh, nội dung bị ảnh hưởng
+Nhân viên ClawHub xem xét yêu cầu theo cách thủ công và có thể liên hệ với người yêu cầu hoặc
+nhà xuất bản để biết thêm thông tin. Tùy theo hoàn cảnh, nội dung bị ảnh hưởng
 có thể bị ẩn, được khôi phục hoặc được giữ nguyên.
 
 Đối với nội dung marketplace không an toàn nhưng không phải là mối quan ngại về quyền nội dung, hãy dùng

@@ -11,6 +11,7 @@ x-i18n:
     source_hash: c0d5f16d1369e2783bec6e0c7b2d7bee8aae86f2a424b77b9adf14850de0f20b
     source_path: channels/twitch.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Hỗ trợ trò chuyện Twitch qua kết nối IRC. OpenClaw kết nối dưới dạng người dùng Twitch (tài khoản bot) để nhận và gửi tin nhắn trong các kênh.

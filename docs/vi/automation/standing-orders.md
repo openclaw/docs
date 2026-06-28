@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 3a51baa7aca31cb34b682983374d4d551ed6ab57ae54a5c63e7d044bffeef756
     source_path: automation/standing-orders.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Các lệnh thường trực cấp cho agent của bạn **quyền vận hành lâu dài** đối với các chương trình đã xác định. Thay vì đưa hướng dẫn riêng lẻ cho từng tác vụ mỗi lần, bạn định nghĩa các chương trình với phạm vi, điều kiện kích hoạt và quy tắc leo thang rõ ràng - và agent tự động thực thi trong các ranh giới đó.

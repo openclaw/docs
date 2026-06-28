@@ -13,6 +13,7 @@ x-i18n:
     source_hash: cc261bebc0e3138a98ea8be166edbaf4e133c8f582429c5380fe2954196a6fc5
     source_path: tools/loop-detection.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw có hai guardrail phối hợp cho các mẫu gọi công cụ lặp lại:

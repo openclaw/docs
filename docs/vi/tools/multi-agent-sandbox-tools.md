@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 8d11af55e30996a89e665b258604108a93f4c4271fbe4edfd1caf54864e40f01
     source_path: tools/multi-agent-sandbox-tools.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Mỗi agent trong một thiết lập đa agent có thể ghi đè sandbox và chính sách công cụ toàn cục. Trang này trình bày cấu hình theo từng agent, quy tắc ưu tiên và ví dụ.

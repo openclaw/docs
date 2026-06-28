@@ -11,6 +11,7 @@ x-i18n:
     source_hash: f53af21c746cdd44c71485cbad669f4a01a6e5be956675c73831e7b5f15df8c4
     source_path: providers/senseaudio.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 SenseAudio có thể chép lại âm thanh đầu vào và tệp đính kèm ghi chú thoại thông qua pipeline `tools.media.audio` dùng chung của OpenClaw. OpenClaw gửi âm thanh multipart đến endpoint chép lời tương thích với OpenAI và chèn văn bản được trả về dưới dạng `{{Transcript}}` cùng một khối `[Audio]`.

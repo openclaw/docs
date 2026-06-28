@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 91aab7c105643d8e5d07d89cd5ab176f0a40cd3d23e2b20b3986cbf76f575d64
     source_path: tools/elevated.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Khi một tác tử chạy bên trong môi trường cách ly, các lệnh `exec` của nó bị giới hạn trong môi trường cách ly. **Chế độ nâng quyền** cho phép tác tử thoát ra và chạy lệnh bên ngoài môi trường cách ly, với các cổng phê duyệt có thể cấu hình.

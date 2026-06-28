@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Xây dựng các client API
-    - Thêm điểm cuối hoặc lược đồ
-summary: Tổng quan và quy ước của REST API công khai (v1).
+    - Xây dựng ứng dụng khách API
+    - Thêm endpoint hoặc schema
+summary: Tổng quan và quy ước của API REST công khai (v1).
 x-i18n:
-    generated_at: "2026-06-28T05:06:51Z"
+    generated_at: "2026-06-28T06:19:12Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -21,16 +21,16 @@ OpenAPI: `/api/v1/openapi.json`
 
 ## Tái sử dụng danh mục công khai
 
-Bạn có thể xây dựng danh mục, thư mục hoặc bề mặt tìm kiếm của bên thứ ba dựa trên các API đọc công khai của ClawHub. Siêu dữ liệu Skills công khai và các tệp Skills được phát hành theo quy tắc giấy phép Skills của ClawHub, trong khi bản thân API có giới hạn tốc độ và nên được sử dụng có trách nhiệm.
+Bạn có thể xây dựng danh mục, thư mục hoặc bề mặt tìm kiếm của bên thứ ba dựa trên các API đọc công khai của ClawHub. Siêu dữ liệu Skills công khai và các tệp Skills được xuất bản theo quy tắc giấy phép Skills của ClawHub, còn bản thân API có giới hạn tốc độ và nên được sử dụng có trách nhiệm.
 
 Hướng dẫn:
 
-- Dùng các endpoint đọc công khai như `GET /api/v1/skills`, `GET /api/v1/search`, và `GET /api/v1/skills/{slug}` cho danh sách danh mục.
-- Lưu cache phản hồi và tôn trọng `429`, `Retry-After`, cùng các header giới hạn tốc độ thay vì polling quá dày.
-- Liên kết lại tới URL Skills ClawHub chuẩn khi hiển thị danh sách để người dùng có thể kiểm tra bản ghi registry nguồn.
-- Dùng URL trang chuẩn theo dạng `https://clawhub.ai/<owner>/skills/<slug>`.
-- Không ngụ ý rằng ClawHub xác nhận, kiểm chứng hoặc vận hành trang của bên thứ ba.
-- Không mirror nội dung bị ẩn, riêng tư hoặc bị chặn kiểm duyệt bằng cách vượt qua các bộ lọc API công khai hoặc ranh giới xác thực.
+- Sử dụng các endpoint đọc công khai như `GET /api/v1/skills`, `GET /api/v1/search`, và `GET /api/v1/skills/{slug}` cho danh sách danh mục.
+- Lưu cache phản hồi và tôn trọng các header `429`, `Retry-After`, và giới hạn tốc độ thay vì thăm dò quá dồn dập.
+- Liên kết trở lại URL Skills ClawHub chính tắc khi hiển thị danh sách để người dùng có thể kiểm tra bản ghi registry nguồn.
+- Sử dụng URL trang chính tắc theo dạng `https://clawhub.ai/<owner>/skills/<slug>`.
+- Không ngụ ý rằng ClawHub chứng thực, xác minh hoặc vận hành trang của bên thứ ba.
+- Không sao chép nội dung bị ẩn, riêng tư hoặc bị chặn kiểm duyệt bằng cách vượt qua bộ lọc API công khai hoặc ranh giới xác thực.
 
 ## Xác thực
 
@@ -45,21 +45,21 @@ Thực thi có nhận biết xác thực:
 - Yêu cầu đã xác thực (token Bearer hợp lệ): theo bucket người dùng.
 - Token bị thiếu/không hợp lệ sẽ quay về thực thi theo IP.
 
-- Đọc: 3000/phút mỗi IP, 12000/phút mỗi khóa
-- Ghi: 300/phút mỗi IP, 3000/phút mỗi khóa
-- Tải xuống: 1200/phút mỗi IP, 6000/phút mỗi khóa
+- Đọc: 3000/phút mỗi IP, 12000/phút mỗi key
+- Ghi: 300/phút mỗi IP, 3000/phút mỗi key
+- Tải xuống: 1200/phút mỗi IP, 6000/phút mỗi key
 
 Header: `X-RateLimit-Limit`, `X-RateLimit-Reset`, `RateLimit-Limit`, `RateLimit-Reset`;
 `X-RateLimit-Remaining`, `RateLimit-Remaining`, và `Retry-After` được bao gồm trên `429`.
 
 Ngữ nghĩa:
 
-- `X-RateLimit-Reset`: giây Unix epoch (thời điểm reset tuyệt đối)
-- `RateLimit-Reset`: số giây trì hoãn cho tới khi reset
+- `X-RateLimit-Reset`: giây Unix epoch (thời điểm đặt lại tuyệt đối)
+- `RateLimit-Reset`: số giây trì hoãn cho đến khi đặt lại
 - `X-RateLimit-Remaining` / `RateLimit-Remaining`: ngân sách còn lại chính xác khi
-  có mặt; các yêu cầu thành công đã sharding sẽ bỏ qua giá trị này thay vì trả về một giá trị
+  có mặt; các yêu cầu thành công đã phân mảnh sẽ bỏ qua giá trị này thay vì trả về một giá trị
   toàn cục xấp xỉ
-- `Retry-After`: số giây trì hoãn cần chờ trên `429`
+- `Retry-After`: số giây trì hoãn cần đợi trên `429`
 
 Ví dụ `429`:
 
@@ -93,15 +93,15 @@ Xử lý phía client:
 
 - `GET /api/v1/search?q=...`
   - Bộ lọc tùy chọn: `highlightedOnly=true`, `nonSuspiciousOnly=true`
-  - Bí danh legacy: `nonSuspicious=true`
+  - Bí danh cũ: `nonSuspicious=true`
 - `GET /api/v1/skills?limit=&cursor=&sort=`
-  - `sort`: `updated` (mặc định), `recommended` (`default`), `createdAt` (`newest`), `downloads`, `stars` (`rating`), các bí danh cài đặt legacy `installsCurrent`/`installs`/`installsAllTime` ánh xạ tới `downloads`, `trending`
+  - `sort`: `updated` (mặc định), `recommended` (`default`), `createdAt` (`newest`), `downloads`, `stars` (`rating`), các bí danh cài đặt cũ `installsCurrent`/`installs`/`installsAllTime` ánh xạ tới `downloads`, `trending`
   - Giá trị `sort` không hợp lệ trả về `400`
   - `cursor` áp dụng cho các kiểu sắp xếp không phải `trending`
   - Bộ lọc tùy chọn: `nonSuspiciousOnly=true`
-  - Bí danh legacy: `nonSuspicious=true`
-  - Với `nonSuspiciousOnly=true`, các trang dựa trên cursor có thể chứa ít hơn `limit` mục; dùng `nextCursor` để tiếp tục.
-  - `recommended` dùng tín hiệu tương tác và độ mới.
+  - Bí danh cũ: `nonSuspicious=true`
+  - Với `nonSuspiciousOnly=true`, các trang dựa trên cursor có thể chứa ít mục hơn `limit`; dùng `nextCursor` để tiếp tục.
+  - `recommended` sử dụng tín hiệu tương tác và độ mới.
 - `GET /api/v1/skills/{slug}`
 - `GET /api/v1/skills/{slug}/moderation`
 - `GET /api/v1/skills/{slug}/versions?limit=&cursor=`
@@ -110,18 +110,18 @@ Xử lý phía client:
 - `GET /api/v1/skills/{slug}/file?path=&version=&tag=`
 - `GET /api/v1/resolve?slug=&hash=`
 - `GET /api/v1/download?slug=&version=&tag=`
-  - Skills được host trả về byte ZIP xác định.
+  - Skills được lưu trữ trả về byte ZIP xác định.
   - Skills hiện tại dựa trên GitHub có bản quét `clean` hoặc `suspicious` trả về một
-    mô tả chuyển giao JSON `public-github` thay vì byte của ClawHub.
+    mô tả bàn giao JSON `public-github` thay vì byte ClawHub.
 - `GET /api/v1/skills/export?startDate=&endDate=&limit=&cursor=`
-  - Skills được host được xuất dưới dạng tệp đã lưu trữ.
+  - Skills được lưu trữ được xuất dưới dạng tệp đã lưu.
   - Skills hiện tại dựa trên GitHub có bản quét `clean` hoặc `suspicious` được xuất
-    dưới dạng mô tả chuyển giao `public-github`.
+    dưới dạng mô tả bàn giao `public-github`.
 - `GET /api/v1/packages?limit=&cursor=&sort=`
-  - `sort`: `updated` (mặc định), `recommended`, `downloads`, bí danh legacy `installs`
+  - `sort`: `updated` (mặc định), `recommended`, `downloads`, bí danh cũ `installs`
   - Giá trị `sort` không hợp lệ trả về `400`
 - `GET /api/v1/plugins?limit=&cursor=&sort=`
-  - `sort`: `recommended` (mặc định), `downloads`, `updated`, bí danh legacy `installs`
+  - `sort`: `recommended` (mặc định), `downloads`, `updated`, bí danh cũ `installs`
 - `GET /api/v1/plugins/search?q=...`
 - `GET /api/v1/packages/{name}/versions/{version}/artifact`
 - `GET /api/v1/packages/{name}/versions/{version}/security`
@@ -129,9 +129,9 @@ Xử lý phía client:
 - `GET /api/npm/{package}`
 - `GET /api/npm/{package}/-/{tarball}.tgz`
 
-Yêu cầu xác thực:
+Cần xác thực:
 
-- `POST /api/v1/skills` (phát hành, ưu tiên multipart)
+- `POST /api/v1/skills` (xuất bản, ưu tiên multipart)
 - `DELETE /api/v1/skills/{slug}`
 - `DELETE /api/v1/packages/{name}`
 - `POST /api/v1/skills/{slug}/undelete`
@@ -149,10 +149,10 @@ Yêu cầu xác thực:
 - `GET /api/v1/transfers/outgoing`
 - `GET /api/v1/whoami`
 
-Chỉ admin:
+Chỉ dành cho quản trị viên:
 
-- `POST /api/v1/users/reserve` giữ trước root slug và placeholder gói riêng tư không có bản phát hành cho handle chủ sở hữu.
+- `POST /api/v1/users/reserve` giữ trước root slug và phần giữ chỗ gói riêng tư không phát hành cho một handle chủ sở hữu.
 
-## Legacy
+## Cũ
 
-Legacy `/api/*` và `/api/cli/*` vẫn khả dụng. Xem `DEPRECATIONS.md`.
+`/api/*` và `/api/cli/*` cũ vẫn khả dụng. Xem `DEPRECATIONS.md`.

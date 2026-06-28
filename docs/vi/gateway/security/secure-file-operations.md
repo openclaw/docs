@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 19d5b31ec2f2c7ab1033bdb55a701c60468dfac58142f726ecbc9ac933f68e30
     source_path: gateway/security/secure-file-operations.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw sử dụng [`@openclaw/fs-safe`](https://github.com/openclaw/fs-safe) cho các thao tác tệp cục bộ nhạy cảm về bảo mật: đọc/ghi giới hạn theo gốc, thay thế nguyên tử, trích xuất kho lưu trữ, không gian làm việc tạm thời, trạng thái JSON và xử lý tệp bí mật.

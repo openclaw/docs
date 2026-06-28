@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 231102d87795a43c45d8fb5dc12cda4faf8f4b9c4f85254e7d44676fead7f00c
     source_path: plugins/reference/migrate-hermes.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Di chuyển Plugin Hermes

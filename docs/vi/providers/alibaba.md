@@ -11,6 +11,7 @@ x-i18n:
     source_hash: c390da201e2c8685fafa6171a6028bf18fc676b2d46f784651f91cdc6137fdf2
     source_path: providers/alibaba.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw cung cấp sẵn một Plugin `alibaba` đăng ký nhà cung cấp tạo video cho các mô hình Wan trên Alibaba Model Studio (tên quốc tế của DashScope). Plugin này được bật theo mặc định; bạn chỉ cần đặt API key.
