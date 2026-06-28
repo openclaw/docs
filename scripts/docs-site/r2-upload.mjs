@@ -26,6 +26,7 @@ const putAll = process.env.R2_UPLOAD_PUT_ALL === "1";
 const dryRun = process.env.R2_UPLOAD_DRY_RUN === "1";
 const remoteManifestPath = process.env.R2_UPLOAD_REMOTE_MANIFEST_PATH || "";
 const uploadScope = process.env.R2_UPLOAD_SCOPE || "all";
+const reservedLocalePrefixes = new Set(["assets", "og", "pagefind"]);
 const uploadLocale = normalizeLocale(process.env.R2_UPLOAD_LOCALE || "");
 const uploadPagePath = normalizePagePath(process.env.R2_UPLOAD_PAGE_PATH || "");
 const partialUpload = process.env.R2_UPLOAD_PARTIAL === "1" || uploadScope !== "all";
@@ -47,6 +48,9 @@ if (!Array.isArray(manifest.entries)) throw new Error("dist/docs-r2-manifest.jso
 const scopedEntries = filterEntriesByScope(manifest.entries, uploadScope);
 if ((uploadScope === "page" || uploadScope === "locale") && scopedEntries.length === 0) {
   throw new Error(`R2_UPLOAD_SCOPE=${uploadScope} matched zero manifest entries`);
+}
+if (uploadScope === "locale" && !scopedEntries.some((entry) => isLocaleManifestEntry(entry, uploadLocale))) {
+  throw new Error(`R2_UPLOAD_SCOPE=locale matched no entries for locale ${uploadLocale}`);
 }
 const remoteManifest = await getRemoteManifest();
 if (partialUpload && !dryRun && remoteManifest.status !== "hit" && process.env.R2_UPLOAD_ALLOW_PARTIAL_WITHOUT_REMOTE !== "1") {
@@ -115,6 +119,11 @@ function isLocaleScopedEntry(entry, locale) {
   // search objects keeps a successful locale publish discoverable without
   // falling back to a full-site page upload.
   if (key.startsWith("pagefind/")) return true;
+  return isLocaleManifestEntry(entry, locale);
+}
+
+function isLocaleManifestEntry(entry, locale) {
+  const key = entry.key;
   return key === locale || key.startsWith(`${locale}/`);
 }
 
@@ -137,7 +146,12 @@ function normalizeLocale(value) {
   const locale = value.trim();
   if (!locale) throw new Error(`R2_UPLOAD_LOCALE is required for R2_UPLOAD_SCOPE=${uploadScope}`);
   if (locale === "en") throw new Error("R2_UPLOAD_LOCALE=en is not supported for translation-scoped uploads");
-  if (!Object.hasOwn(localeLabels, locale)) throw new Error(`R2_UPLOAD_LOCALE is not a configured locale: ${locale}`);
+  if (!/^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/u.test(locale)) {
+    throw new Error(`R2_UPLOAD_LOCALE must be a clean locale code, got ${locale}`);
+  }
+  if (reservedLocalePrefixes.has(locale)) {
+    throw new Error(`R2_UPLOAD_LOCALE cannot use reserved docs asset prefix: ${locale}`);
+  }
   return locale;
 }
 
