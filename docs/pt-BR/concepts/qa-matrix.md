@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7c6d836492368c470468547950d3765a64187694852222a5a1f0ae4185569abe
     source_path: concepts/qa-matrix.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 A trilha de QA do Matrix executa o Plugin `@openclaw/matrix` incluído contra um homeserver Tuwunel descartável no Docker, com contas temporárias de driver, SUT e observador, além de salas semeadas. Ela é a cobertura ao vivo com transporte real para Matrix.

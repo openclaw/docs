@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7ab1b7d09dd66c495983aebd4766ce760d659cc6f362bbcd999d1c1345ae38f7
     source_path: install/azure.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Este guia configura uma VM Linux do Azure com a Azure CLI, aplica endurecimento de Network Security Group (NSG), configura o Azure Bastion para acesso SSH e instala o OpenClaw.

@@ -10,6 +10,7 @@ x-i18n:
     source_hash: cf099e744fc11e302995d0df9f0cbc543702b92c54424aab11502ac2552f642e
     source_path: plugins/reference/comfy.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Plugin do ComfyUI

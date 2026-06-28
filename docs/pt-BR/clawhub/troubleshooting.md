@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Comandos da CLI do ClawHub ou do registro do OpenClaw falham
+    - Falha nos comandos da CLI do ClawHub ou do registro do OpenClaw
     - Um pacote não pode ser instalado, publicado ou atualizado
-summary: Solução de problemas de entrada, instalação, publicação, atualização e API do ClawHub.
+summary: Solução de problemas de login, instalação, publicação, atualização e API do ClawHub.
 x-i18n:
-    generated_at: "2026-06-28T05:07:59Z"
+    generated_at: "2026-06-28T05:32:04Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -19,9 +19,9 @@ x-i18n:
 
 A CLI inicia um servidor de callback local de curta duração durante o login pelo navegador.
 
-- Verifique se seu navegador consegue acessar `http://127.0.0.1:<port>/callback`.
-- Verifique as regras de firewall local, VPN e proxy se o callback nunca chegar.
-- Em ambientes headless, crie um token de API na interface web do ClawHub e execute:
+- Garanta que seu navegador consiga acessar `http://127.0.0.1:<port>/callback`.
+- Verifique regras de firewall local, VPN e proxy se o callback nunca chegar.
+- Em ambientes sem interface gráfica, crie um token de API na interface web do ClawHub e execute:
 
 ```bash
 clawhub login --token clh_...
@@ -30,18 +30,18 @@ clawhub login --token clh_...
 ## `whoami` ou `publish` retorna `Unauthorized` (401)
 
 - Entre novamente com `clawhub login`.
-- Se você usa um caminho de configuração personalizado, confirme se `CLAWHUB_CONFIG_PATH` aponta para o
+- Se você usa um caminho de configuração personalizado, confirme que `CLAWHUB_CONFIG_PATH` aponta para o
   arquivo que contém seu token atual.
-- Se você usa um token de API, confirme se ele não foi revogado na interface web.
+- Se você usa um token de API, confirme que ele não foi revogado na interface web.
 
 ## A busca ou instalação retorna `Rate limit exceeded` (429)
 
 Leia as informações de nova tentativa na resposta:
 
-- `Retry-After`: segundos a esperar antes de tentar novamente.
+- `Retry-After`: segundos a aguardar antes de tentar novamente.
 - `RateLimit-Limit`: o limite aplicado a esta solicitação.
 - `RateLimit-Remaining`: seu orçamento restante exato quando o cabeçalho está presente. Em `429`, ele é `0`.
-- `RateLimit-Reset` ou `X-RateLimit-Reset`: momento da redefinição.
+- `RateLimit-Reset` ou `X-RateLimit-Reset`: tempo de redefinição.
 
 Se muitos usuários compartilham um único IP de saída, os limites de IP anônimo podem ser atingidos mesmo quando cada
 pessoa envia apenas algumas solicitações. Entre quando possível e tente novamente após o
@@ -62,7 +62,7 @@ Os nomes compatíveis incluem `HTTPS_PROXY`, `HTTP_PROXY`, `https_proxy` e
 ## Uma skill não aparece na busca
 
 - Verifique o slug exato ou a página do proprietário, se você souber.
-- Confirme se a versão é pública e não está retida por varredura ou moderação.
+- Confirme que a versão é pública e não está retida por varredura ou moderação.
 - Se você é proprietário da skill, entre e inspecione-a:
 
 ```bash
@@ -74,10 +74,10 @@ Diagnósticos visíveis ao proprietário podem explicar o estado de varredura, b
 ## A publicação falha porque metadados obrigatórios estão ausentes
 
 Para skills, verifique o frontmatter de `SKILL.md`. Variáveis de ambiente e
-ferramentas obrigatórias devem ser declaradas para que usuários e scanners entendam o pacote.
+ferramentas obrigatórias devem ser declaradas para que usuários e scanners consigam entender o pacote.
 
-Para plugins, verifique os metadados de compatibilidade em `package.json`. Publicações de code-plugin
-precisam de campos de compatibilidade do OpenClaw, como `openclaw.compat.pluginApi` e
+Para plugins, verifique os metadados de compatibilidade em `package.json`. Publicações de plugins de código
+precisam de campos de compatibilidade com o OpenClaw, como `openclaw.compat.pluginApi` e
 `openclaw.build.openclawVersion`.
 
 Visualize primeiro o payload de publicação:
@@ -86,42 +86,42 @@ Visualize primeiro o payload de publicação:
 clawhub package publish <source> --family code-plugin --dry-run
 ```
 
-## A publicação falha com um erro de proprietário ou origem do GitHub
+## A publicação falha com um erro de proprietário do GitHub ou de origem
 
 O ClawHub usa identidade do GitHub e atribuição de origem para conectar pacotes aos seus
 publicadores.
 
-- Verifique se você entrou com a conta do GitHub que possui ou pode publicar
+- Garanta que você esteja conectado com a conta do GitHub que possui ou pode publicar
   o pacote.
 - Verifique se a URL de origem é pública ou acessível ao ClawHub.
 - Para origens do GitHub, use `owner/repo`, `owner/repo@ref` ou uma URL completa do GitHub.
 
 ## A publicação falha porque um namespace foi reivindicado ou reservado
 
-Se uma publicação falhar porque o identificador do proprietário, namespace da organização, escopo do pacote, slug da skill
-ou nome do pacote já foi reivindicado ou reservado, primeiro confirme se você está
-publicando com o proprietário que corresponde ao namespace. Para pacotes de plugin,
+Se uma publicação falha porque o identificador do proprietário, namespace da organização, escopo do pacote, slug da skill
+ou nome do pacote já foi reivindicado ou reservado, primeiro confirme que você está
+publicando com o proprietário correspondente ao namespace. Para pacotes de plugins,
 nomes com escopo, como `@example-org/example-plugin`, devem ser publicados como o
 proprietário `example-org` correspondente.
 
 Se você acredita que sua organização, projeto ou marca é o proprietário legítimo do namespace, mas
-não consegue gerenciar o proprietário atual no ClawHub, abra uma
+não consegue gerenciar o proprietário atual do ClawHub, abra uma
 [issue de Reivindicação de Organização / Namespace](https://github.com/openclaw/clawhub/issues/new?template=org-namespace-claim.yml)
 com provas públicas e não sensíveis. Consulte
-[Reivindicações de Organizações e Namespaces](/pt-BR/clawhub/namespace-claims) para orientações sobre evidências e o que
+[Reivindicações de Organização e Namespace](/pt-BR/clawhub/namespace-claims) para orientações de evidência e o que
 manter fora de issues públicas.
 
 ## `sync` diz que nenhuma skill foi encontrada
 
 `sync` procura pastas que contenham `SKILL.md` ou `skill.md`.
 
-Aponte-o para as raízes que você quer varrer:
+Aponte-o para as raízes que você quer verificar:
 
 ```bash
 clawhub sync --root /path/to/skills
 ```
 
-Visualize primeiro se você não tem certeza do que será publicado:
+Visualize primeiro se você não tiver certeza do que será publicado:
 
 ```bash
 clawhub sync --all --dry-run --no-input
@@ -149,15 +149,15 @@ openclaw plugins install clawhub:<package>
 ```
 
 - Verifique a página de detalhes do pacote para ver o estado de varredura e os metadados de compatibilidade.
-- Confirme se sua versão do OpenClaw satisfaz o intervalo de compatibilidade
+- Confirme que sua versão do OpenClaw satisfaz o intervalo de compatibilidade
   anunciado pelo pacote.
-- Se o pacote estiver oculto, retido ou bloqueado, talvez ele não possa ser instalado até que
-  o proprietário resolva o problema.
+- Se o pacote estiver oculto, retido ou bloqueado, talvez ele não possa ser instalado até
+  que o proprietário resolva o problema.
 
-## Solicitações de API pública falham
+## Solicitações à API pública falham
 
-- Respeite os cabeçalhos de nova tentativa `429` e armazene em cache respostas públicas de lista/busca.
-- Direcione os usuários de volta para a listagem canônica do ClawHub.
+- Respeite os cabeçalhos de nova tentativa `429` e armazene em cache respostas públicas de listagem/busca.
+- Direcione os usuários de volta à listagem canônica do ClawHub.
 - Não espelhe conteúdo oculto, privado, retido ou bloqueado por moderação fora da
   superfície da API pública.
 

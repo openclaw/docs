@@ -1,10 +1,10 @@
 ---
 read_when:
-    - Trabalhando em controles de telemetria / privacidade
+    - Trabalhando nos controles de telemetria / privacidade
     - Perguntas sobre quais dados são coletados
-summary: Instale a telemetria coletada pela CLI do ClawHub e saiba como desativá-la.
+summary: Telemetria de instalação coletada pela CLI do ClawHub e como optar por não participar.
 x-i18n:
-    generated_at: "2026-06-28T05:07:49Z"
+    generated_at: "2026-06-28T05:31:42Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -15,21 +15,21 @@ x-i18n:
 
 # Telemetria
 
-ClawHub usa telemetria mínima da CLI para calcular contagens agregadas de instalação.
+O ClawHub usa telemetria mínima da CLI para calcular contagens agregadas de instalações.
 
 ## Quando a telemetria é coletada
 
 A telemetria só é enviada quando:
 
-- Você está conectado na CLI.
+- Você está autenticado na CLI.
 - Você executa `clawhub install <slug>`.
-- A telemetria **não está desativada** (veja “Como desativar” abaixo).
+- A telemetria **não está desabilitada** (veja “Como desabilitar” abaixo).
 
-Se você não estiver conectado, nada será reportado.
+Se você não estiver autenticado, nada será relatado.
 
 ## O que coletamos
 
-Em cada `clawhub install` reportado, a CLI envia um evento de instalação de melhor esforço.
+Em cada `clawhub install` relatado, a CLI envia um evento de instalação de melhor esforço.
 
 O evento inclui:
 
@@ -42,21 +42,21 @@ O evento inclui:
 - Nenhum conteúdo de arquivo.
 - Nenhum log por execução, prompt ou outra saída da CLI.
 
-## Contagens de instalação
+## Contagens de instalações
 
-ClawHub mantém contadores agregados por skill:
+O ClawHub mantém contadores agregados por skill:
 
-- `installsAllTime`: usuários únicos que reportaram pelo menos uma instalação via CLI para a skill.
-- `installsCurrent`: usuários únicos que reportaram uma instalação e não excluíram sua
+- `installsAllTime`: usuários únicos que relataram pelo menos uma instalação da skill pela CLI.
+- `installsCurrent`: usuários únicos que relataram uma instalação e não excluíram sua
   telemetria.
 
 ## Transparência + controles do usuário
 
-Todos veem apenas **contadores agregados de instalação**.
+Todos veem apenas **contadores agregados de instalações**.
 
 Excluir sua conta também exclui seus dados de telemetria.
 
-## Como desativar a telemetria
+## Como desabilitar a telemetria
 
 Defina a variável de ambiente:
 

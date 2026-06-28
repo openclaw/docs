@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 678253bd90f0694668400ffddba957e442f8aaed3f5308af3c2481940e104733
     source_path: install/gcp.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Execute um OpenClaw Gateway persistente em uma VM do GCP Compute Engine usando Docker, com estado durável, binários incorporados e comportamento seguro de reinicialização.

@@ -11,6 +11,7 @@ x-i18n:
     source_hash: e00dd963257cd40235ebf8375ddbc1ba0344b9b3a82886fbf0fcf975390c27f2
     source_path: tools/kimi-search.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw oferece suporte ao Kimi como provedor de `web_search`, usando a pesquisa web da Moonshot para produzir respostas sintetizadas por IA com citações.

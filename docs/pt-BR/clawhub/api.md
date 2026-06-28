@@ -4,7 +4,7 @@ read_when:
     - Adicionando endpoints ou esquemas
 summary: Visão geral e convenções da API REST pública (v1).
 x-i18n:
-    generated_at: "2026-06-28T05:07:01Z"
+    generated_at: "2026-06-28T05:28:47Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -25,25 +25,25 @@ Você pode criar um catálogo, diretório ou superfície de busca de terceiros s
 
 Diretrizes:
 
-- Use endpoints públicos de leitura, como `GET /api/v1/skills`, `GET /api/v1/search` e `GET /api/v1/skills/{slug}`, para listagens de catálogo.
+- Use endpoints públicos de leitura, como `GET /api/v1/skills`, `GET /api/v1/search` e `GET /api/v1/skills/{slug}` para listagens de catálogo.
 - Armazene respostas em cache e respeite `429`, `Retry-After` e cabeçalhos de limite de taxa em vez de fazer polling agressivo.
-- Inclua link para a URL canônica da Skill no ClawHub ao exibir listagens, para que os usuários possam inspecionar o registro de origem no registro.
+- Inclua link para a URL canônica de Skill do ClawHub ao exibir listagens, para que os usuários possam inspecionar o registro de origem do registro.
 - Use URLs de página canônicas no formato `https://clawhub.ai/<owner>/skills/<slug>`.
-- Não sugira que o ClawHub endossa, verifica ou opera o site de terceiros.
-- Não espelhe conteúdo oculto, privado ou bloqueado por moderação burlando filtros da API pública ou limites de autenticação.
+- Não dê a entender que o ClawHub endossa, verifica ou opera o site de terceiros.
+- Não espelhe conteúdo oculto, privado ou bloqueado por moderação contornando filtros da API pública ou limites de autenticação.
 
 ## Autenticação
 
-- Leitura pública: nenhum token necessário.
+- Leitura pública: nenhum token é necessário.
 - Escrita + conta: `Authorization: Bearer clh_...`.
 
 ## Limites de taxa
 
-Aplicação ciente de autenticação:
+Aplicação sensível à autenticação:
 
 - Solicitações anônimas: por IP.
 - Solicitações autenticadas (token Bearer válido): por bucket de usuário.
-- Token ausente/inválido volta para aplicação por IP.
+- Token ausente/inválido recai para aplicação por IP.
 
 - Leitura: 3000/min por IP, 12000/min por chave
 - Escrita: 300/min por IP, 3000/min por chave
@@ -54,12 +54,12 @@ Cabeçalhos: `X-RateLimit-Limit`, `X-RateLimit-Reset`, `RateLimit-Limit`, `RateL
 
 Semântica:
 
-- `X-RateLimit-Reset`: segundos desde a época Unix (hora absoluta de redefinição)
+- `X-RateLimit-Reset`: segundos desde a época Unix (horário absoluto de redefinição)
 - `RateLimit-Reset`: segundos de atraso até a redefinição
 - `X-RateLimit-Remaining` / `RateLimit-Remaining`: orçamento restante exato quando
   presente; solicitações bem-sucedidas fragmentadas o omitem em vez de retornar um valor
   global aproximado
-- `Retry-After`: segundos de atraso para aguardar em `429`
+- `Retry-After`: segundos de atraso a aguardar em `429`
 
 Exemplo de `429`:
 
@@ -97,10 +97,10 @@ Leitura pública:
 - `GET /api/v1/skills?limit=&cursor=&sort=`
   - `sort`: `updated` (padrão), `recommended` (`default`), `createdAt` (`newest`), `downloads`, `stars` (`rating`), aliases legados de instalação `installsCurrent`/`installs`/`installsAllTime` mapeiam para `downloads`, `trending`
   - Valores inválidos de `sort` retornam `400`
-  - `cursor` se aplica a ordenações que não sejam `trending`
+  - `cursor` se aplica a ordenações não `trending`
   - Filtro opcional: `nonSuspiciousOnly=true`
   - Alias legado: `nonSuspicious=true`
-  - Com `nonSuspiciousOnly=true`, páginas baseadas em cursor podem conter menos itens que `limit`; use `nextCursor` para continuar.
+  - Com `nonSuspiciousOnly=true`, páginas baseadas em cursor podem conter menos de `limit` itens; use `nextCursor` para continuar.
   - `recommended` usa sinais de engajamento e recência.
 - `GET /api/v1/skills/{slug}`
 - `GET /api/v1/skills/{slug}/moderation`
@@ -111,11 +111,11 @@ Leitura pública:
 - `GET /api/v1/resolve?slug=&hash=`
 - `GET /api/v1/download?slug=&version=&tag=`
   - Skills hospedadas retornam bytes ZIP determinísticos.
-  - Skills atuais apoiadas pelo GitHub com uma varredura `clean` ou `suspicious` retornam um
+  - Skills atuais baseadas no GitHub com uma varredura `clean` ou `suspicious` retornam um
     descritor de transferência JSON `public-github` em vez de bytes do ClawHub.
 - `GET /api/v1/skills/export?startDate=&endDate=&limit=&cursor=`
   - Skills hospedadas são exportadas como arquivos armazenados.
-  - Skills atuais apoiadas pelo GitHub com uma varredura `clean` ou `suspicious` são exportadas
+  - Skills atuais baseadas no GitHub com uma varredura `clean` ou `suspicious` são exportadas
     como descritores de transferência `public-github`.
 - `GET /api/v1/packages?limit=&cursor=&sort=`
   - `sort`: `updated` (padrão), `recommended`, `downloads`, alias legado `installs`
@@ -131,7 +131,7 @@ Leitura pública:
 
 Autenticação obrigatória:
 
-- `POST /api/v1/skills` (publicar, multipart preferencial)
+- `POST /api/v1/skills` (publicar, multipart preferível)
 - `DELETE /api/v1/skills/{slug}`
 - `DELETE /api/v1/packages/{name}`
 - `POST /api/v1/skills/{slug}/undelete`
@@ -151,8 +151,8 @@ Autenticação obrigatória:
 
 Somente administrador:
 
-- `POST /api/v1/users/reserve` reserva slugs raiz e placeholders privados de pacotes sem release para um handle de proprietário.
+- `POST /api/v1/users/reserve` reserva slugs raiz e placeholders privados de pacotes sem release para um identificador de proprietário.
 
 ## Legado
 
-Legado `/api/*` e `/api/cli/*` ainda disponível. Consulte `DEPRECATIONS.md`.
+Legado `/api/*` e `/api/cli/*` ainda disponíveis. Consulte `DEPRECATIONS.md`.

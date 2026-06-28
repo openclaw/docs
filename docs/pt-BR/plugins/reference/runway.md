@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 52a36a1257fa59b6d159816496158940bdc2c84b1764cc822506b74f22b08465
     source_path: plugins/reference/runway.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Plugin do Runway

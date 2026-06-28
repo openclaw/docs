@@ -12,6 +12,7 @@ x-i18n:
   source_hash: 81a48573782d46f0b018d19ab607729b236c241e57535e4af52eb8c142fee59b
   source_path: providers/synthetic.md
   workflow: 15
+  postprocess_version: locale-links-v1
 ---
 
 [Synthetic](https://synthetic.new) expõe endpoints compatíveis com Anthropic.

@@ -13,6 +13,7 @@ x-i18n:
     source_hash: 311ebbd557e40e38cd25b2f11b887baa4576657095d5a0841d4cb7f71898927d
     source_path: automation/index.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 O OpenClaw executa trabalho em segundo plano por meio de tarefas, trabalhos agendados, compromissos inferidos, hooks de eventos e instruções permanentes. Esta página ajuda você a escolher o mecanismo certo e entender como eles se encaixam.

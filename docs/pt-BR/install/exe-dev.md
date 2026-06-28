@@ -11,6 +11,7 @@ x-i18n:
     source_hash: b571f9b29bb2cca0f311db4188c922b2f70ee91cb48b233cf9922e57a7f05340
     source_path: install/exe-dev.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Objetivo: OpenClaw Gateway em execução em uma VM exe.dev, acessível pelo seu laptop via: `https://<vm-name>.exe.xyz`

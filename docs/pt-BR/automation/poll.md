@@ -8,6 +8,7 @@ x-i18n:
     source_hash: a277212ed680b7aeb9153d003bc084d2d0c918dc53f2f469c72f7fe5a881cfae
     source_path: automation/poll.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 Esta página foi movida para [Message tool](/pt-BR/cli/message). Consulte [Message tool](/pt-BR/cli/message) para ver a documentação sobre enquetes.

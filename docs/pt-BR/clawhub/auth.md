@@ -3,9 +3,9 @@ read_when:
     - Entrando no ClawHub
     - Usando a CLI do ClawHub
     - Depuração de 401s
-summary: Login no ClawHub, tokens de API, login pela CLI, armazenamento de tokens e revogação.
+summary: Login no ClawHub, tokens de API, login da CLI, armazenamento de tokens e revogação.
 x-i18n:
-    generated_at: "2026-06-28T05:07:04Z"
+    generated_at: "2026-06-28T05:28:52Z"
     model: gpt-5.5
     postprocess_version: locale-links-v1
     provider: openai
@@ -16,22 +16,22 @@ x-i18n:
 
 # Autenticação
 
-O ClawHub usa o GitHub para login na Web. A CLI usa tokens de API do ClawHub criados
+O ClawHub usa GitHub para login na web. A CLI usa tokens da API do ClawHub criados
 por meio dessa conta autenticada.
 
-## Login na Web
+## Login na web
 
 Use o GitHub para fazer login em [clawhub.ai](https://clawhub.ai).
 
 Contas excluídas, banidas ou desativadas não conseguem concluir o login normal no ClawHub.
-Se o login retornar você para um estado desconectado, sua conta pode não estar em boa
-situação. Se sua conta foi banida ou desativada, use o
-[formulário de apelação do ClawHub](https://appeals.openclaw.ai/) se você acredita que isso é um
+Se o login retornar você para um estado desconectado, sua conta pode não estar em situação
+regular. Se sua conta foi banida ou desativada, use o
+[formulário de recurso do ClawHub](https://appeals.openclaw.ai/) se você acredita que isso é um
 erro.
 
-## Login na CLI
+## Login pela CLI
 
-O fluxo padrão de login na CLI abre seu navegador:
+O fluxo padrão de login da CLI abre seu navegador:
 
 ```bash
 clawhub login
@@ -40,26 +40,26 @@ clawhub whoami
 
 O que acontece:
 
-1. A CLI inicia um servidor de callback temporário em `127.0.0.1`.
+1. A CLI inicia um servidor temporário de callback em `127.0.0.1`.
 2. Seu navegador abre a página de login do ClawHub.
-3. Após o login com o GitHub, o ClawHub cria um token de API.
+3. Após o login pelo GitHub, o ClawHub cria um token de API.
 4. O navegador redireciona de volta para o callback local.
 5. A CLI armazena o token no seu arquivo de configuração do ClawHub.
 
 Se seu navegador não conseguir acessar o callback local por causa de regras de firewall, VPN ou
-proxy, use o fluxo de token sem interface gráfica.
+proxy, use o fluxo de token headless.
 
-## Login sem interface gráfica
+## Login headless
 
-Crie um token na interface Web do ClawHub e depois passe-o para a CLI:
+Crie um token na interface web do ClawHub e depois passe-o para a CLI:
 
 ```bash
 clawhub login --token clh_...
 ```
 
-Use este fluxo para servidores, trabalhos de CI ou ambientes somente com terminal.
+Use este fluxo para servidores, jobs de CI ou ambientes somente de terminal.
 
-Para shells remotos onde você pode abrir um navegador em outro lugar, execute:
+Para shells remotos em que você pode abrir um navegador em outro lugar, execute:
 
 ```bash
 clawhub login --device
@@ -90,12 +90,12 @@ clawhub token
 
 ## Revogação
 
-Você pode revogar tokens de API na interface Web do ClawHub.
+Você pode revogar tokens de API na interface web do ClawHub.
 
 Tokens revogados, inválidos ou ausentes retornam `401 Unauthorized`. Faça login novamente
 com `clawhub login` ou forneça um token novo com `clawhub login --token`.
 
-Contas excluídas, banidas ou desativadas não podem continuar usando tokens de API existentes.
+Contas excluídas, banidas ou desativadas não conseguem continuar usando tokens de API existentes.
 Se sua conta foi banida ou desativada, use o
-[formulário de apelação do ClawHub](https://appeals.openclaw.ai/) se você acredita que isso é um
+[formulário de recurso do ClawHub](https://appeals.openclaw.ai/) se você acredita que isso é um
 erro.

@@ -12,6 +12,7 @@ x-i18n:
     source_hash: e447e38cf0086603a7b30ee5204e63cc8227ebc7a56add26d06ac2798a23e26f
     source_path: install/migrating.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 OpenClaw oferece suporte a três caminhos de migração: importar de outro sistema de agente, mover uma instalação existente para uma nova máquina e atualizar um Plugin no local.

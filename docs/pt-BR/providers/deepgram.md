@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 9d591aa24a5477fd9fe69b7a0dc44b204d28ea0c2f89e6dfef66f9ceb76da34d
     source_path: providers/deepgram.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 Deepgram é uma API de speech-to-text. No OpenClaw, ela é usada para transcrição

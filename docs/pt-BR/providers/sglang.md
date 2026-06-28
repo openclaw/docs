@@ -11,6 +11,7 @@ x-i18n:
     source_hash: bd1a5954e3994e3640ee17c62acedc314716c3ed5e52528da436c36c077ebead
     source_path: providers/sglang.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 SGLang serve modelos de peso aberto por meio de uma API HTTP compatível com OpenAI. OpenClaw se conecta ao SGLang usando a família de provedores `openai-completions` com descoberta automática dos modelos disponíveis.

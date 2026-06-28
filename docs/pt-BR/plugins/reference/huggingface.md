@@ -10,6 +10,7 @@ x-i18n:
     source_hash: d3f400aed24e630718ce5977e417ff47a8a985a0a385942e1ee6224d830b53e6
     source_path: plugins/reference/huggingface.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # Plugin do Hugging Face

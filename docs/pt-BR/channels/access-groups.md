@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 1dba4fc84deb6e0c8c7b17ebc10182aa6e4bc2c821070e33df44f384e285266f
     source_path: channels/access-groups.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Grupos de acesso são listas nomeadas de remetentes que você define uma vez e referencia a partir de listas de permissão de canais com `accessGroup:<name>`.

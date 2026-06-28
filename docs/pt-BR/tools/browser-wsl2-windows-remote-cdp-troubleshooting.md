@@ -12,6 +12,7 @@ x-i18n:
     source_hash: 7532c672f7e829b851d175d93354fc586baecea4af5f2555f57908780cedfd02
     source_path: tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 Na configuração comum de host dividido, o OpenClaw Gateway roda dentro do WSL2, o Chrome roda no Windows, e o controle do navegador precisa atravessar a fronteira entre WSL2 e Windows. O padrão de falha em camadas de [issue #39369](https://github.com/openclaw/openclaw/issues/39369) significa que vários problemas independentes podem aparecer ao mesmo tempo, o que faz a camada errada parecer quebrada primeiro.

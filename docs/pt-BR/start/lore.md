@@ -10,6 +10,7 @@ x-i18n:
     source_hash: 36a791572e187ed38d86d0f7fd45d6800a9c0f45fd5730db6289cab91c638d4c
     source_path: start/lore.md
     workflow: 15
+    postprocess_version: locale-links-v1
 ---
 
 # O lore do OpenClaw 🦞📖

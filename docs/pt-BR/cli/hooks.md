@@ -11,6 +11,7 @@ x-i18n:
     source_hash: 56dd1ef82458dde3280e2cdfb4f3835211726517416e90625d3272d128eb9e0e
     source_path: cli/hooks.md
     workflow: 16
+    postprocess_version: locale-links-v1
 ---
 
 # `openclaw hooks`
